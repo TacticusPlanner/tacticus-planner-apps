@@ -10,7 +10,10 @@ import { useIsAuthenticated, useMsal } from "@azure/msal-react"
 import { routes as goalsRoutes } from "@/pages/goals"
 import { routes as guildRoutes } from "@/pages/guild"
 import { routes as libraryRoutes } from "@/pages/library"
-import { routes as progressRoutes } from "@/pages/progress"
+import {
+  protectedRoutes as myGameProtectedRoutes,
+  publicRoutes as myGamePublicRoutes,
+} from "@/pages/my-game"
 import { routes as dailiesRoutes } from "@/pages/dailies"
 import { routes as legendaryEventsRoutes } from "@/pages/legendary-events"
 import { isUiKitEnabled } from "@/shared/config"
@@ -51,8 +54,8 @@ const GuildPage = lazy(() =>
 const GoalsLayout = lazy(() =>
   import("@/pages/goals").then((m) => ({ default: m.GoalsLayout }))
 )
-const ProgressLayout = lazy(() =>
-  import("@/pages/progress").then((m) => ({ default: m.ProgressLayout }))
+const MyGameLayout = lazy(() =>
+  import("@/pages/my-game").then((m) => ({ default: m.MyGameLayout }))
 )
 const LegendaryEventsLayout = lazy(() =>
   import("@/pages/legendary-events").then((m) => ({
@@ -62,8 +65,8 @@ const LegendaryEventsLayout = lazy(() =>
 const V1ImportPage = lazy(() =>
   import("@/pages/v1-import").then((m) => ({ default: m.V1ImportPage }))
 )
-// A different page slice (pages/onslaught) nested under "/progress" вЂ” kept here rather than in
-// pages/progress/route.tsx since FSD forbids one page slice importing another's internals.
+// A different page slice (pages/onslaught) nested under "/my-game" - kept here rather than in
+// pages/my-game/route.tsx since FSD forbids one page slice importing another's internals.
 const OnslaughtPage = lazy(() =>
   import("@/pages/onslaught").then((m) => ({ default: m.OnslaughtPage }))
 )
@@ -157,16 +160,20 @@ const appRoutes: RouteObject[] = [
         ),
         children: goalsRoutes,
       },
+      // The only section mixing a public page (Collection) with sign-in-only ones, so the guard
+      // sits on each protected child instead of on the layout.
       {
-        path: "/progress",
-        element: (
-          <ProtectedRoute>
-            <ProgressLayout />
-          </ProtectedRoute>
-        ),
+        path: "/my-game",
+        element: <MyGameLayout />,
         children: [
-          ...progressRoutes,
-          { path: "onslaught", element: <OnslaughtPage /> },
+          ...myGamePublicRoutes,
+          ...[
+            ...myGameProtectedRoutes,
+            { path: "onslaught", element: <OnslaughtPage /> },
+          ].map((route) => ({
+            ...route,
+            element: <ProtectedRoute>{route.element}</ProtectedRoute>,
+          })),
         ],
       },
       {

@@ -36,7 +36,7 @@ vi.mock("@/shared/tour", () => ({
 
 import { DesktopShell as ControlledDesktopShell } from "./desktop-layout"
 import type { NavItem } from "./nav-items"
-import { navItems } from "./nav-items"
+import { filterVisibleNavItems, navItems } from "./nav-items"
 import type { QuickAction } from "./quick-actions"
 import { resolveActiveNavigation } from "./resolve-active-navigation"
 import { useSectionEntryPath } from "./use-section-entry-path"
@@ -306,6 +306,34 @@ describe("DesktopShell", () => {
     const header = screen.getByRole("banner")
     expect(menu.contains(header)).toBe(false)
     expect(header.parentElement).toBe(menu.parentElement?.nextElementSibling)
+  })
+
+  it("lists only Collection in the My Game section menu for an anonymous user", () => {
+    const visible = filterVisibleNavItems(navItems, false)
+    const myGame = visible.find((item) => item.path === "/my-game")!
+    render(
+      <MemoryRouter initialEntries={["/my-game/collection"]}>
+        <TooltipProvider>
+          <DesktopShell
+            visibleItems={visible}
+            activeSection={myGame}
+            pageDescription="Collection"
+            sectionTitle="My Game"
+            onCreateGoal={vi.fn()}
+            getEntryPath={identityEntryPath}
+          />
+        </TooltipProvider>
+      </MemoryRouter>
+    )
+
+    const menu = screen.getByTestId("desktop-section-navigation")
+    expect(
+      within(menu)
+        .getAllByRole("link")
+        .map((link) => link.getAttribute("href"))
+    ).toEqual(["/my-game/collection"])
+    expect(screen.getByTestId("desktop-nav-my-game")).toBeVisible()
+    expect(screen.queryByTestId("desktop-nav-plan")).not.toBeInTheDocument()
   })
 
   it("lists every child page in the persistent section menu, not the header", () => {
@@ -951,7 +979,7 @@ describe("DesktopShell", () => {
     )
 
     // Switch to a different top-level section - Lookup's sidebar link should now remember /mow.
-    fireEvent.click(screen.getByTestId("desktop-nav-progress"))
+    fireEvent.click(screen.getByTestId("desktop-nav-my-game"))
 
     expect(screen.getByTestId("desktop-nav-library")).toHaveAttribute(
       "href",
@@ -977,7 +1005,7 @@ describe("DesktopShell", () => {
     )
   })
 
-  it("lists Events after Progress and before Guild, entering through the section root", () => {
+  it("lists Events after My Game and before Guild, entering through the section root", () => {
     render(
       <MemoryRouter initialEntries={["/home"]}>
         <TooltipProvider>
@@ -992,7 +1020,7 @@ describe("DesktopShell", () => {
         .querySelectorAll<HTMLAnchorElement>('[data-testid^="desktop-nav-"]')
     ).map((link) => link.dataset.testid)
     expect(links.indexOf("desktop-nav-legendary-events")).toBe(
-      links.indexOf("desktop-nav-progress") + 1
+      links.indexOf("desktop-nav-my-game") + 1
     )
     expect(links.indexOf("desktop-nav-guild")).toBe(
       links.indexOf("desktop-nav-legendary-events") + 1

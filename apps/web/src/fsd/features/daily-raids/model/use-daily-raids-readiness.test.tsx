@@ -86,7 +86,8 @@ vi.mock("./use-eligible-campaign-battles", () => ({
   useEligibleCampaignBattles: () => ({
     availableBattles: [],
     liveProgressResult: { value: { battleAttempts: [] } },
-    campaignEventProgressResult: { value: null },
+    campaignEventProgressReady: true,
+    campaignEventProgressError: false,
     campaignProgressResult: { value: null },
   }),
 }))

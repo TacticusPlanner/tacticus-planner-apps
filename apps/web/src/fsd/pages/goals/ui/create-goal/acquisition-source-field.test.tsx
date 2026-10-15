@@ -262,7 +262,7 @@ describe("AcquisitionSourceField", () => {
     const link = screen.getByRole("link", {
       name: "goals.create.acquisitionSources.editOnslaughtProgress",
     })
-    expect(link).toHaveAttribute("href", "/progress/onslaught")
+    expect(link).toHaveAttribute("href", "/my-game/onslaught")
     await userEvent.click(link)
     expect(onNavigateAway).toHaveBeenCalledTimes(1)
   })

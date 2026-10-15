@@ -102,7 +102,8 @@ export function useDailyRaids(
   const {
     availableBattles,
     liveProgressResult,
-    campaignEventProgressResult,
+    campaignEventProgressReady,
+    campaignEventProgressError,
     campaignProgressResult,
   } = useEligibleCampaignBattles(battles, campaignDefinitions)
   const ascensionCostsById = useLiveQuery(() => getAscensionCostsMap(), [])
@@ -266,7 +267,8 @@ export function useDailyRaids(
   if (
     globalPlan.isError ||
     detailQueries.some((query) => query.isError) ||
-    onslaughtProgressQuery.isError
+    onslaughtProgressQuery.isError ||
+    campaignEventProgressError
   ) {
     return { status: "error" }
   }
@@ -279,7 +281,7 @@ export function useDailyRaids(
     battles &&
     campaignDefinitions &&
     liveProgressResult &&
-    campaignEventProgressResult &&
+    campaignEventProgressReady &&
     campaignProgressResult &&
     ascensionCostsById &&
     unlockShardCostsById &&

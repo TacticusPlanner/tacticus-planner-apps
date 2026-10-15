@@ -23,7 +23,12 @@ import { HseLiveProvider } from "./hse-live-provider"
 import { DesktopShell } from "./desktop-layout"
 import { documentTitle } from "./document-title"
 import { MobileShell } from "./mobile-layout"
-import { subItemDescription, subItemLabel, type NavItem } from "./nav-items"
+import {
+  filterVisibleNavItems,
+  subItemDescription,
+  subItemLabel,
+  type NavItem,
+} from "./nav-items"
 import { resolveActiveNavigation } from "./resolve-active-navigation"
 import { createGoalScopeProjectId } from "./create-goal-scope"
 import { useDesktopMenuState } from "./use-desktop-menu-state"
@@ -54,9 +59,9 @@ export function AppShell() {
   const { pathname } = useLocation()
   const navItems = useNavItems()
 
-  const visibleItems = navItems.filter(
-    (item) => isAuthenticated || item.anonymousAllowed
-  )
+  // The header still resolves against the unfiltered tree below, so a signed-out visit to a
+  // sign-in-only route keeps its title while the auth guard handles it.
+  const visibleItems = filterVisibleNavItems(navItems, isAuthenticated)
 
   const { activeItem, activeChild } = resolveActiveNavigation(
     navItems,
@@ -75,6 +80,11 @@ export function AppShell() {
   // Desktop's header title stays pinned to the top-level section (never swaps to the active
   // child, unlike `pageTitle` above) — see design.md's "Desktop header composition" decision.
   const sectionTitle = activeItem ? t(activeItem.labelKey) : undefined
+  // The section menu and mobile tab row list the active section's children, so they get the
+  // visible copy (sign-in-only children dropped). A section hidden altogether keeps its
+  // unfiltered entry so its protected route still renders a header while the guard runs.
+  const visibleActiveSection =
+    visibleItems.find((item) => item.path === activeItem?.path) ?? activeItem
 
   useEffect(() => {
     document.title = documentTitle(pageTitle, t("app.name"))
@@ -89,7 +99,7 @@ export function AppShell() {
           <UserJotProvider>
             <PostHogProvider routeGroup={activeItem?.path}>
               <ShellContent
-                activeSection={activeItem}
+                activeSection={visibleActiveSection}
                 isAuthenticated={isAuthenticated}
                 isMobile={isMobile}
                 pageDescription={pageDescription}

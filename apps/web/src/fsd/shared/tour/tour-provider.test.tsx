@@ -11,8 +11,10 @@ import {
   useTourPageSteps,
 } from "./tour-provider"
 
-const { joyrideStepsRef } = vi.hoisted(() => ({
+const { joyrideStepsRef, joyrideOptionsRef, viewport } = vi.hoisted(() => ({
   joyrideStepsRef: { current: [] as Step[] },
+  joyrideOptionsRef: { current: {} as { scrollOffset?: number } },
+  viewport: { isMobile: false },
 }))
 
 vi.mock("react-i18next", () => ({
@@ -20,12 +22,21 @@ vi.mock("react-i18next", () => ({
 }))
 vi.mock("react-joyride", () => ({
   STATUS: { FINISHED: "finished", SKIPPED: "skipped" },
-  useJoyride: ({ steps }: { steps: Step[] }) => {
+  useJoyride: ({
+    steps,
+    options,
+  }: {
+    steps: Step[]
+    options: { scrollOffset?: number }
+  }) => {
     joyrideStepsRef.current = steps
+    joyrideOptionsRef.current = options
     return { Tour: null }
   },
 }))
-vi.mock("@workspace/ui/hooks/use-mobile", () => ({ useIsMobile: () => false }))
+vi.mock("@workspace/ui/hooks/use-mobile", () => ({
+  useIsMobile: () => viewport.isMobile,
+}))
 vi.mock("../theme/theme-provider", () => ({
   useTheme: () => ({ theme: "light" }),
 }))
@@ -211,4 +222,24 @@ describe("TourProvider", () => {
 
     expect(targets()).toEqual(["general-step"])
   })
+})
+
+describe("TourProvider scrolling", () => {
+  it.each([
+    [false, 64],
+    [true, 140],
+  ])(
+    "scrolls targets clear of the sticky shell header (mobile: %s)",
+    (isMobile, offset) => {
+      viewport.isMobile = isMobile
+      render(
+        <TourProvider>
+          <IsRunningProbe />
+        </TourProvider>
+      )
+
+      expect(joyrideOptionsRef.current.scrollOffset).toBe(offset)
+      viewport.isMobile = false
+    }
+  )
 })

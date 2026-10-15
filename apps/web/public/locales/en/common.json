@@ -209,8 +209,8 @@
     "createGoal": "Create Goal",
     "goals": "Plan",
     "goalsDescription": "Track progress toward your targets",
-    "progress": "Progress",
-    "progressDescription": "Your synced campaign and Onslaught progress",
+    "myGame": "My Game",
+    "myGameDescription": "Your collection and synced game progress",
     "legendaryEvents": "Legendary Events",
     "legendaryEventsDescription": "Active, upcoming and past Legendary Events with your synced progress",
     "uiKit": "UI Kit",
@@ -265,8 +265,10 @@
       "Mythic": "Mythic"
     }
   },
-  "progress": {
+  "myGame": {
     "tabs": {
+      "collection": "Collection",
+      "collectionDescription": "Every character and Machine of War, with what you own and how far each unit has progressed.",
       "onslaught": "Onslaught",
       "onslaughtDescription": "Enter the current sector and tier for each alliance. Ascension estimates use these values and synchronized Onslaught tokens.",
       "campaigns": "Campaigns",
@@ -274,6 +276,37 @@
       "campaign-events": "Campaign Events",
       "campaign-eventsDescription": "Adjust event progress manually. Synchronized values, when available, remain as the baseline."
     },
+    "collection": {
+      "loading": "Loading your collection…",
+      "summary": "{{owned}} of {{total}} units owned",
+      "signInTitle": "Sign in to see your collection",
+      "signInBody": "Every unit is shown greyed out. Sign in and sync with Tacticus to see which units you own and how far each has progressed.",
+      "signIn": "Sign in",
+      "syncTitle": "Sync to see your collection",
+      "syncBody": "Your roster hasn't been synced yet, so every unit is shown greyed out. Sync with Tacticus to see which units you own.",
+      "rosterErrorTitle": "Your roster couldn't be loaded",
+      "rosterErrorBody": "Every unit is shown greyed out until it loads. Try again.",
+      "catalogErrorTitle": "The unit catalog couldn't be loaded",
+      "catalogErrorBody": "The collection can't be shown without it. Try again.",
+      "retry": "Try again",
+      "factionOwned": "{{owned}} of {{total}} owned"
+    }
+  },
+  "unitTile": {
+    "characterAbilities": "Active ability level {{first}}, passive ability level {{second}}",
+    "mowAbilities": "Primary ability level {{first}}, secondary ability level {{second}}",
+    "shards_one": "{{count}} shard",
+    "shards_other": "{{count}} shards",
+    "shardsToUnlock_one": "{{count}} of {{required}} shards to unlock",
+    "shardsToUnlock_other": "{{count}} of {{required}} shards to unlock",
+    "mythicShards_one": "{{count}} mythic shard",
+    "mythicShards_other": "{{count}} mythic shards",
+    "level": "level {{level}}",
+    "notOwned": "not unlocked",
+    "startsAt": "Starts {{rarity}}",
+    "unlockProgress": "Unlock progress"
+  },
+  "progress": {
     "loadError": "Progress data is unexpectedly unavailable. Refresh and try again.",
     "campaigns": {
       "normal": "Normal campaigns",
@@ -281,18 +314,49 @@
     },
     "events": {
       "regular": "Regular battles",
-      "challenges": "Optional challenges",
-      "regularProgress": "{{type}} regular progress",
-      "decrease": "Decrease progress",
-      "increase": "Increase progress",
+      "challenges": "Challenges",
+      "decrease": "Decrease {{type}} progress",
+      "increase": "Increase {{type}} progress",
+      "slider": "{{type}} regular battles completed",
       "max": "Max",
-      "useSynced": "Use synced value",
-      "manual": "Manual",
-      "synced": "Synced",
-      "save": "Save",
+      "maxFor": "Set {{type}} to max",
+      "resetToSynced": "Reset to synced",
+      "source": {
+        "manual": "Manual",
+        "synced": "Synced",
+        "none": "No synced data"
+      },
+      "challengeN": "Challenge {{n}}",
+      "challengeNode": "Node {{id}}",
+      "noBattles": "No battles in this track.",
+      "coreCharacters": "Core characters",
+      "notOwned": "{{name}} (not owned)",
+      "currentEvent": "Current event",
+      "allEvents": "All events",
+      "saveHint": "Unsaved changes appear in a bar at the bottom of the page.",
+      "hideCompleted": "Hide completed events",
+      "allCompleted": "All campaign events are completed.",
+      "showCompleted": "Show completed events",
+      "noEvents": "There are no campaign events to track yet.",
+      "completed": "Completed",
+      "summary": {
+        "track": "{{label}} {{done}}/{{total}}",
+        "challenges": "Challenges"
+      },
+      "unsaved": {
+        "message": "You have unsaved changes",
+        "save": "Save",
+        "discard": "Discard"
+      },
+      "leave": {
+        "title": "Leave without saving?",
+        "description": "Your campaign event changes haven't been saved and will be lost.",
+        "stay": "Stay",
+        "leave": "Leave"
+      },
       "saved": "Campaign event progress saved.",
-      "saveError": "Couldn't save campaign event progress.",
-      "conflict": "Campaign event progress changed elsewhere. Latest values loaded; apply your change again."
+      "saveError": "Couldn't save campaign event progress. Your changes are still here; try again.",
+      "conflict": "Campaign event progress was changed elsewhere. The latest values are loaded and your edits were not saved."
     }
   },
   "legendaryEvents": {
@@ -604,8 +668,10 @@
     "blocked": {
       "label": "Blocked",
       "restrictedLabel": "Restricted",
+      "restrictedExplanation": "Restricted: this goal can only partly progress until the following is resolved.",
       "reasons": {
         "PrerequisiteNotReached": "Waiting on a prerequisite goal to be reached first.",
+        "PrerequisiteNotReachedNamed": "Waiting on the {{unit}} {{goalType}} goal to be reached first.",
         "PlayerDataUnavailable": "Player data for this goal hasn't synced yet.",
         "CatalogDataUnavailable": "Game data hasn't finished loading yet.",
         "MissingAscensionPrerequisite": "An Ascension goal reaching {{progression}} is required.",
@@ -638,7 +704,9 @@
       "selectAll": "Select all goals",
       "selectRow": "Select {{entity}}",
       "selectMode": "Select goals",
-      "selectDone": "Done"
+      "selectDone": "Done",
+      "removeFromProject": "Remove from project",
+      "removeFromProjectCount": "Remove from project ({{count}})"
     },
     "delete": {
       "title_one": "Delete this goal?",
@@ -647,7 +715,9 @@
       "description_other": "This permanently deletes these {{count}} goals from your account, including every project they belong to. This can't be undone.",
       "confirm_one": "Delete goal",
       "confirm_other": "Delete {{count}} goals",
-      "cancel": "Cancel"
+      "cancel": "Cancel",
+      "projectAlternative_one": "To take it out of {{project}} only, cancel and use “Remove from this project” instead.",
+      "projectAlternative_other": "To take them out of {{project}} only, cancel and use “Remove from project” instead."
     },
     "project": {
       "noProjectTitle": "No projects yet",
@@ -726,7 +796,13 @@
       "assemblyLastMembershipTitle": "Nothing was saved: these goals would be left in no project",
       "assemblyLastMembership": "This is the goal's only project. Add it to another project first (the Default project is always available), then remove it here.",
       "assemblySlotConflictTitle": "Nothing was saved: these goals compete for the same slot",
-      "assemblySlotConflict": "{{project}} can hold only one active or paused goal for this slot. Keep just one of the conflicting goals and save again."
+      "assemblySlotConflict": "{{project}} can hold only one active or paused goal for this slot. Keep just one of the conflicting goals and save again.",
+      "removeFromProject": "Remove from this project",
+      "moveToProject": "Move to project",
+      "moveToProjectTitle": "Move to project",
+      "moveToProjectDescription": "This is the goal's only project. Choose a project to move it into, or create a new one.",
+      "moveSelectionDescription_one": "{{project}} is the only project for {{count}} of the selected goals. Choose a project to move it into, or create a new one. The other selected goals are just removed from {{project}}.",
+      "moveSelectionDescription_other": "{{project}} is the only project for {{count}} of the selected goals. Choose a project to move them into, or create a new one. The other selected goals are just removed from {{project}}."
     },
     "toasts": {
       "statusChangedPartial": "Updated {{succeeded}} of {{total}} goals.",
@@ -737,7 +813,15 @@
       "projectMembershipSaved": "{{project}} updated: {{added}} added, {{removed}} removed.",
       "goalsAddedToProject_one": "Added {{count}} goal to {{project}}.",
       "goalsAddedToProject_other": "Added {{count}} goals to {{project}}.",
-      "bulkPartial": "Only {{succeeded}} of {{total}} goals were processed."
+      "bulkPartial": "Only {{succeeded}} of {{total}} goals were processed.",
+      "goalRemovedFromProject": "{{goal}} removed from {{project}}.",
+      "goalRelocated": "{{goal}} moved to {{project}}.",
+      "goalsRemovedFromProject_one": "Removed {{count}} goal from {{project}}.",
+      "goalsRemovedFromProject_other": "Removed {{count}} goals from {{project}}.",
+      "goalsRemovedAndMoved_one": "Removed {{count}} goal from {{project}}; {{moved}} moved to {{destination}}.",
+      "goalsRemovedAndMoved_other": "Removed {{count}} goals from {{project}}; {{moved}} moved to {{destination}}.",
+      "movedButNotRemoved_one": "Added {{count}} goal to {{destination}}, but couldn't remove it from {{project}}: {{error}}",
+      "movedButNotRemoved_other": "Added {{count}} goals to {{destination}}, but couldn't remove them from {{project}}: {{error}}"
     },
     "create": {
       "title": "Create a goal",
@@ -1178,7 +1262,7 @@
       },
       "navigation": {
         "title": "Find your way around",
-        "content": "This menu groups the app's sections, including Legendary Events — use it to navigate between them at any time."
+        "content": "This menu groups the app's sections, including My Game and Legendary Events — use it to navigate between them at any time."
       },
       "sidebarFooter": {
         "title": "Sidebar tools",
@@ -1186,7 +1270,7 @@
       },
       "bottomNavigationGroup": {
         "title": "Your main bar",
-        "content": "Switch sections, add a goal, or sync from here. Open Menu to search pages and quick actions, and to reach Progress and Legendary Events."
+        "content": "Switch sections, add a goal, or sync from here. Open Menu to search pages and quick actions, and to reach My Game and Legendary Events."
       },
       "mobileHeader": {
         "title": "Page header",
@@ -1315,6 +1399,54 @@
         "mythicMaterialSources": {
           "title": "Mythic materials",
           "content": "Choose which shop offers supply this goal's Mythic materials. Unchecking every offer stops counting on shops for them."
+        }
+      }
+    },
+    "collection": {
+      "steps": {
+        "summary": {
+          "title": "Your collection at a glance",
+          "content": "How many of the game's characters and Machines of War you own."
+        },
+        "faction": {
+          "title": "Grouped by faction",
+          "content": "Each card holds one faction's characters and Machines of War — the units you own come first."
+        },
+        "owned": {
+          "title": "An owned unit",
+          "content": "The ring shows its rarity, with stars on top, rank and shards on the portrait, and ability levels either side of its XP level below."
+        },
+        "unowned": {
+          "title": "Not unlocked yet",
+          "content": "Greyed-out units aren't in your roster. The bar shows how close you are to unlocking them."
+        }
+      }
+    },
+    "campaignEvents": {
+      "steps": {
+        "purpose": {
+          "title": "Campaign event progress",
+          "content": "Correct your progress in each campaign event. Daily raids use these values to decide which event nodes you can farm."
+        },
+        "current": {
+          "title": "Current event",
+          "content": "The event running right now is pinned here, already expanded. It's the only event daily raids plan for."
+        },
+        "editor": {
+          "title": "Edit a track",
+          "content": "Step the regular-battle count, drag the bar, or use Max. Toggle challenges one by one. \"Reset to synced\" undoes a manual value."
+        },
+        "summary": {
+          "title": "Event summaries",
+          "content": "Each event shows its progress at a glance and whether values are manual or have no synced data. Open it to edit."
+        },
+        "hideCompleted": {
+          "title": "Hide completed events",
+          "content": "Unfinished events are listed first. Turn this on to hide completed ones; the choice is remembered in this browser."
+        },
+        "save": {
+          "title": "Save your changes",
+          "content": "Once you edit something, a bar with Save and Discard appears at the bottom. You'll be asked before leaving with unsaved changes."
         }
       }
     }

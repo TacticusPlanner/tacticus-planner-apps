@@ -9,6 +9,7 @@ import enEvents from "../../public/locales/en/events.json"
 import enFactions from "../../public/locales/en/factions.json"
 import enLegendaryEvents from "../../public/locales/en/legendaryEvents.json"
 import enMows from "../../public/locales/en/mows.json"
+import enProgression from "../../public/locales/en/progression.json"
 import enTraits from "../../public/locales/en/traits.json"
 import deCommon from "../../public/locales/de/common.json"
 import deLegendaryEvents from "../../public/locales/de/legendaryEvents.json"
@@ -36,6 +37,7 @@ export async function createTestI18n(
         factions: enFactions,
         legendaryEvents: enLegendaryEvents,
         mows: enMows,
+        progression: enProgression,
         traits: enTraits,
         ...extra.en,
       },

@@ -143,4 +143,45 @@ describe("common namespace locale parity", () => {
     expect(description).toMatch(/Maybe clear/)
     expect(description).toMatch(/not imported/)
   })
+
+  it.each([
+    ["de", de],
+    ["es", es],
+    ["fr", fr],
+  ])(
+    "%s translates My Game, the Collection page, unit tiles and the Collection tour",
+    (_, locale) => {
+      expect(locale.nav.myGame).not.toBe(en.nav.myGame)
+      expect(locale.nav.myGameDescription).not.toBe(en.nav.myGameDescription)
+      expect(locale.myGame.tabs.collectionDescription).not.toBe(
+        en.myGame.tabs.collectionDescription
+      )
+      for (const [key, value] of Object.entries(en.myGame.collection)) {
+        expect(
+          locale.myGame.collection[key as keyof typeof en.myGame.collection],
+          key
+        ).not.toBe(value)
+      }
+      for (const [key, value] of Object.entries(en.unitTile)) {
+        expect(locale.unitTile[key as keyof typeof en.unitTile], key).not.toBe(
+          value
+        )
+      }
+      for (const [step, copy] of Object.entries(en.tour.collection.steps)) {
+        const translated =
+          locale.tour.collection.steps[
+            step as keyof typeof en.tour.collection.steps
+          ]
+        expect(translated.title, step).not.toBe(copy.title)
+        expect(translated.content, step).not.toBe(copy.content)
+      }
+      expect(locale.myGame.collection.summary).toContain("{{owned}}")
+      expect(locale.myGame.collection.summary).toContain("{{total}}")
+      expect(locale.unitTile.shardsToUnlock_other).toContain("{{required}}")
+      // The general tour now points at My Game instead of Progress.
+      expect(locale.tour.steps.bottomNavigationGroup.content).toContain(
+        locale.nav.myGame
+      )
+    }
+  )
 })

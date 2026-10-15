@@ -17,7 +17,7 @@ const sync = vi.hoisted(() => ({
   statusText: "Syncing 1/2",
   syncNow: vi.fn(),
 }))
-vi.mock("../providers/player-data-sync-button", () => ({
+vi.mock("@/features/player-data-sync", () => ({
   usePlayerDataSyncStatus: () => sync,
 }))
 

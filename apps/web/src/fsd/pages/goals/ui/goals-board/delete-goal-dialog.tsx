@@ -16,6 +16,9 @@ type Props = {
   onConfirm: () => void
   /** How many goals are being deleted (1 for a row's own menu); the copy pluralises on it. */
   count: number
+  /** The project the goals are viewed in, when the page is scoped to one: the copy then names removal
+   *  from it as the non-destructive alternative. */
+  projectName?: string
 }
 
 /**
@@ -29,6 +32,7 @@ export function DeleteGoalDialog({
   pending,
   onConfirm,
   count,
+  projectName,
 }: Props) {
   const { t } = useTranslation()
 
@@ -48,6 +52,17 @@ export function DeleteGoalDialog({
         <p className="text-sm text-muted-foreground">
           {t("goals.delete.description", { count })}
         </p>
+        {projectName ? (
+          <p
+            className="text-sm text-muted-foreground"
+            data-testid="delete-goal-project-alternative"
+          >
+            {t("goals.delete.projectAlternative", {
+              count,
+              project: projectName,
+            })}
+          </p>
+        ) : null}
         <DialogFooter>
           <Button
             disabled={pending}

@@ -7,12 +7,20 @@ import { useIsAuthenticated } from "@azure/msal-react"
 import {
   deleteGoal,
   goalQueries,
-  updateGoalProjects,
   updateGoalStatus,
   type GoalStatus,
 } from "@/entities/goal"
-import { projectQueries, type ProjectSummary } from "@/entities/project"
+import {
+  changeProjectMembership,
+  projectQueries,
+  type ProjectSummary,
+} from "@/entities/project"
 import { ApiError } from "@/shared/api"
+import { useUnitName } from "@/shared/unit-name"
+
+import { membershipErrorText } from "../projects/project-conflict-copy"
+import { isOnlyMemberOf } from "../projects/project-removal"
+import type { GoalRow } from "../shared/types"
 import { applyOptimisticGoalRemoval } from "./optimistic-goal-removal"
 import { applyOptimisticGoalStatus } from "./optimistic-goal-status"
 
@@ -34,6 +42,7 @@ export function useGoalActions(_onChanged?: () => void) {
   const { t } = useTranslation()
   const isAuthenticated = useIsAuthenticated()
   const queryClient = useQueryClient()
+  const getUnitName = useUnitName()
   const [pendingIds, setPendingIds] = useState<ReadonlySet<string>>(
     () => new Set()
   )
@@ -274,52 +283,127 @@ export function useGoalActions(_onChanged?: () => void) {
     }
   }
 
-  /** Adds each row to `project`, keeping its other memberships; rows already members are skipped. */
+  const goalLabel = (row: GoalRow) =>
+    `${getUnitName(row.entityType, row.entityId)} · ${t(`goals.create.goalTypes.${row.goalType}`)}`
+
+  /** Adds every row to `project` in one membership request, keeping each goal's other memberships;
+   *  goals already in the project are left as they are. The request is atomic, so a rejection (an
+   *  occupied goal slot, say) adds none of them and is reported once. */
   const addToProject = async (
-    rows: readonly {
-      goalId: string
-      projects?: readonly { projectId: string }[]
-    }[],
+    rows: readonly Pick<GoalRow, "goalId">[],
     project: ProjectSummary
   ) => {
-    if (!isAuthenticated) return
-    const targets = rows.filter(
-      (row) => !row.projects?.some((p) => p.projectId === project.projectId)
-    )
-    if (targets.length === 0) return
-    targets.forEach((row) => addPending(row.goalId))
-    let succeeded = 0
+    if (!isAuthenticated || rows.length === 0) return
+    const goalIds = rows.map((row) => row.goalId)
+    goalIds.forEach(addPending)
     try {
-      for (const row of targets) {
-        const ok = await run(
-          row.goalId,
-          () =>
-            updateGoalProjects(row.goalId, [
-              ...(row.projects ?? []).map((p) => p.projectId),
-              project.projectId,
-            ]),
-          { silent: true, trackPending: false }
-        )
-        if (ok) succeeded++
-      }
-      if (succeeded > 0) {
+      const { before, after } = await changeProjectMembership(
+        project.projectId,
+        (current) => [...current, ...goalIds]
+      )
+      const added = after.length - before.length
+      if (added > 0) {
+        void invalidateAll()
         toast.success(
           t("goals.toasts.goalsAddedToProject", {
             project: project.name,
-            count: succeeded,
+            count: added,
           })
         )
       }
-      if (succeeded < targets.length) {
-        toast.error(
-          t("goals.toasts.bulkPartial", {
-            succeeded,
-            total: targets.length,
-          })
-        )
-      }
+    } catch (error) {
+      void invalidateAll()
+      toast.error(membershipErrorText(t, error))
     } finally {
-      targets.forEach((row) => removePending(row.goalId))
+      goalIds.forEach(removePending)
+    }
+  }
+
+  /**
+   * Takes every row out of `project`, leaving its other memberships alone. A row whose only project is
+   * `project` needs `destination`: it joins that project first (one request), and only then are all the
+   * rows removed from `project` (a second one), so an occupied slot in the destination stops the move
+   * before anything is removed. Without a destination such a row is rejected by the server
+   * (`lastProjectMembership`) and nothing is removed. One toast reports the outcome, including when the
+   * move succeeded but the removal then failed and the goals are in both projects.
+   */
+  const removeFromProject = async (
+    rows: readonly GoalRow[],
+    project: ProjectSummary,
+    destination?: ProjectSummary
+  ) => {
+    if (!isAuthenticated || rows.length === 0) return false
+    const goalIds = rows.map((row) => row.goalId)
+    const relocating = destination
+      ? rows
+          .filter((row) => isOnlyMemberOf(row, project.projectId))
+          .map((row) => row.goalId)
+      : []
+    goalIds.forEach(addPending)
+    let movedToDestination = false
+    try {
+      if (destination && relocating.length > 0) {
+        await changeProjectMembership(destination.projectId, (current) => [
+          ...current,
+          ...relocating,
+        ])
+        movedToDestination = true
+      }
+      const { before, after } = await changeProjectMembership(
+        project.projectId,
+        (current) => current.filter((goalId) => !goalIds.includes(goalId))
+      )
+      const removed = before.length - after.length
+      const single = rows.length === 1 ? rows[0] : undefined
+      if (single && destination && relocating.length > 0) {
+        toast.success(
+          t("goals.toasts.goalRelocated", {
+            goal: goalLabel(single),
+            project: destination.name,
+          })
+        )
+      } else if (single) {
+        toast.success(
+          t("goals.toasts.goalRemovedFromProject", {
+            goal: goalLabel(single),
+            project: project.name,
+          })
+        )
+      } else if (destination && relocating.length > 0) {
+        toast.success(
+          t("goals.toasts.goalsRemovedAndMoved", {
+            count: removed,
+            project: project.name,
+            moved: relocating.length,
+            destination: destination.name,
+          })
+        )
+      } else {
+        toast.success(
+          t("goals.toasts.goalsRemovedFromProject", {
+            count: removed,
+            project: project.name,
+          })
+        )
+      }
+      return true
+    } catch (error) {
+      // The two requests are separate, so a failed removal can leave the moved goals in both projects;
+      // say so rather than report only the error.
+      toast.error(
+        movedToDestination && destination
+          ? t("goals.toasts.movedButNotRemoved", {
+              count: relocating.length,
+              project: project.name,
+              destination: destination.name,
+              error: membershipErrorText(t, error),
+            })
+          : membershipErrorText(t, error)
+      )
+      return false
+    } finally {
+      void invalidateAll()
+      goalIds.forEach(removePending)
     }
   }
 
@@ -329,6 +413,7 @@ export function useGoalActions(_onChanged?: () => void) {
     remove,
     removeMany,
     addToProject,
+    removeFromProject,
     pendingIds,
   }
 }

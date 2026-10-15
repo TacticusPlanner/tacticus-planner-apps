@@ -209,8 +209,8 @@
     "createGoal": "Créer un objectif",
     "goals": "Plan",
     "goalsDescription": "Suivez votre progression vers vos objectifs",
-    "progress": "Progression",
-    "progressDescription": "Votre progression synchronisée des campagnes et de l'Onslaught",
+    "myGame": "Mon jeu",
+    "myGameDescription": "Votre collection et votre progression de jeu synchronisée",
     "legendaryEvents": "Événements Légendaires",
     "legendaryEventsDescription": "Événements Légendaires en cours, à venir et passés, avec votre progression synchronisée",
     "uiKit": "Kit d'interface",
@@ -265,8 +265,10 @@
       "Mythic": "Mythique"
     }
   },
-  "progress": {
+  "myGame": {
     "tabs": {
+      "collection": "Collection",
+      "collectionDescription": "Tous les personnages et Machines de guerre : ce que vous possédez et la progression de chaque unité.",
       "onslaught": "Onslaught",
       "onslaughtDescription": "Indiquez le secteur et le palier actuels de chaque alliance. Les estimations d'ascension utilisent ces valeurs ainsi que les jetons Onslaught synchronisés.",
       "campaigns": "Campagnes",
@@ -274,6 +276,37 @@
       "campaign-events": "Événements de campagne",
       "campaign-eventsDescription": "Ajustez manuellement la progression de l'événement. Les valeurs synchronisées, lorsqu'elles sont disponibles, restent la référence."
     },
+    "collection": {
+      "loading": "Chargement de votre collection…",
+      "summary": "{{owned}} unités possédées sur {{total}}",
+      "signInTitle": "Connectez-vous pour voir votre collection",
+      "signInBody": "Toutes les unités sont affichées en grisé. Connectez-vous et synchronisez avec Tacticus pour voir quelles unités vous possédez et la progression de chacune.",
+      "signIn": "Se connecter",
+      "syncTitle": "Synchronisez pour voir votre collection",
+      "syncBody": "Votre effectif n'a pas encore été synchronisé, toutes les unités sont donc affichées en grisé. Synchronisez avec Tacticus pour voir quelles unités vous possédez.",
+      "rosterErrorTitle": "Votre effectif n'a pas pu être chargé",
+      "rosterErrorBody": "Toutes les unités restent en grisé jusqu'à son chargement. Réessayez.",
+      "catalogErrorTitle": "Le catalogue des unités n'a pas pu être chargé",
+      "catalogErrorBody": "La collection ne peut pas s'afficher sans lui. Réessayez.",
+      "retry": "Réessayer",
+      "factionOwned": "{{owned}} possédées sur {{total}}"
+    }
+  },
+  "unitTile": {
+    "characterAbilities": "Capacité active niveau {{first}}, capacité passive niveau {{second}}",
+    "mowAbilities": "Capacité principale niveau {{first}}, capacité secondaire niveau {{second}}",
+    "shards_one": "{{count}} éclat",
+    "shards_other": "{{count}} éclats",
+    "shardsToUnlock_one": "{{count}} éclat sur {{required}} pour débloquer",
+    "shardsToUnlock_other": "{{count}} éclats sur {{required}} pour débloquer",
+    "mythicShards_one": "{{count}} éclat mythique",
+    "mythicShards_other": "{{count}} éclats mythiques",
+    "level": "niveau {{level}}",
+    "notOwned": "non débloquée",
+    "startsAt": "Commence en {{rarity}}",
+    "unlockProgress": "Progression du déblocage"
+  },
+  "progress": {
     "loadError": "Les données de progression sont inexplicablement indisponibles. Actualisez et réessayez.",
     "campaigns": {
       "normal": "Campagnes normales",
@@ -281,18 +314,49 @@
     },
     "events": {
       "regular": "Combats réguliers",
-      "challenges": "Défis optionnels",
-      "regularProgress": "Progression régulière de {{type}}",
-      "decrease": "Diminuer la progression",
-      "increase": "Augmenter la progression",
+      "challenges": "Défis",
+      "decrease": "Diminuer la progression {{type}}",
+      "increase": "Augmenter la progression {{type}}",
+      "slider": "Combats réguliers {{type}} terminés",
       "max": "Max",
-      "useSynced": "Utiliser la valeur synchronisée",
-      "manual": "Manuel",
-      "synced": "Synchronisé",
-      "save": "Enregistrer",
+      "maxFor": "Mettre {{type}} au maximum",
+      "resetToSynced": "Rétablir la valeur synchronisée",
+      "source": {
+        "manual": "Manuel",
+        "synced": "Synchronisé",
+        "none": "Aucune donnée synchronisée"
+      },
+      "challengeN": "Défi {{n}}",
+      "challengeNode": "Nœud {{id}}",
+      "noBattles": "Aucun combat dans ce parcours.",
+      "coreCharacters": "Personnages clés",
+      "notOwned": "{{name}} (non possédé)",
+      "currentEvent": "Événement en cours",
+      "allEvents": "Tous les événements",
+      "saveHint": "Les modifications non enregistrées apparaissent dans une barre en bas de la page.",
+      "hideCompleted": "Masquer les événements terminés",
+      "allCompleted": "Tous les événements de campagne sont terminés.",
+      "showCompleted": "Afficher les événements terminés",
+      "noEvents": "Il n'y a encore aucun événement de campagne à suivre.",
+      "completed": "Terminé",
+      "summary": {
+        "track": "{{label}} {{done}}/{{total}}",
+        "challenges": "Défis"
+      },
+      "unsaved": {
+        "message": "Vous avez des modifications non enregistrées",
+        "save": "Enregistrer",
+        "discard": "Annuler"
+      },
+      "leave": {
+        "title": "Quitter sans enregistrer ?",
+        "description": "Vos modifications des événements de campagne n'ont pas été enregistrées et seront perdues.",
+        "stay": "Rester",
+        "leave": "Quitter"
+      },
       "saved": "Progression de l'événement de campagne enregistrée.",
-      "saveError": "Impossible d'enregistrer la progression de l'événement de campagne.",
-      "conflict": "La progression de l'événement de campagne a changé ailleurs. Les dernières valeurs ont été chargées ; réappliquez votre modification."
+      "saveError": "Impossible d'enregistrer la progression de l'événement de campagne. Vos modifications sont conservées ; réessayez.",
+      "conflict": "La progression de l'événement de campagne a été modifiée ailleurs. Les dernières valeurs sont chargées et vos modifications n'ont pas été enregistrées."
     }
   },
   "legendaryEvents": {
@@ -604,8 +668,10 @@
     "blocked": {
       "label": "Bloqué",
       "restrictedLabel": "Restreint",
+      "restrictedExplanation": "Restreint : cet objectif ne peut progresser que partiellement tant que les points suivants ne sont pas résolus.",
       "reasons": {
         "PrerequisiteNotReached": "En attente qu'un objectif préalable soit atteint en premier.",
+        "PrerequisiteNotReachedNamed": "En attente que l'objectif {{goalType}} de {{unit}} soit atteint en premier.",
         "PlayerDataUnavailable": "Les données du joueur pour cet objectif ne sont pas encore synchronisées.",
         "CatalogDataUnavailable": "Les données de jeu n'ont pas encore fini de se charger.",
         "MissingAscensionPrerequisite": "Un objectif d'Ascension atteignant {{progression}} est requis.",
@@ -638,7 +704,9 @@
       "selectAll": "Sélectionner tous les objectifs",
       "selectRow": "Sélectionner {{entity}}",
       "selectMode": "Sélectionner des objectifs",
-      "selectDone": "Terminé"
+      "selectDone": "Terminé",
+      "removeFromProject": "Retirer du projet",
+      "removeFromProjectCount": "Retirer du projet ({{count}})"
     },
     "delete": {
       "title_one": "Supprimer cet objectif ?",
@@ -647,7 +715,9 @@
       "description_other": "Cette action supprime définitivement ces {{count}} objectifs de votre compte, dans tous les projets auxquels ils appartiennent. Elle est irréversible.",
       "confirm_one": "Supprimer l'objectif",
       "confirm_other": "Supprimer {{count}} objectifs",
-      "cancel": "Annuler"
+      "cancel": "Annuler",
+      "projectAlternative_one": "Pour le retirer uniquement de {{project}}, annulez et utilisez plutôt « Retirer de ce projet ».",
+      "projectAlternative_other": "Pour les retirer uniquement de {{project}}, annulez et utilisez plutôt « Retirer du projet »."
     },
     "project": {
       "noProjectTitle": "Aucun projet pour le moment",
@@ -726,7 +796,13 @@
       "assemblyLastMembershipTitle": "Rien n'a été enregistré : ces objectifs ne seraient plus dans aucun projet",
       "assemblyLastMembership": "C'est le seul projet de cet objectif. Ajoutez-le d'abord à un autre projet (le projet par défaut est toujours disponible), puis retirez-le ici.",
       "assemblySlotConflictTitle": "Rien n'a été enregistré : ces objectifs se disputent le même emplacement",
-      "assemblySlotConflict": "{{project}} ne peut contenir qu'un seul objectif actif ou en pause pour cet emplacement. Ne gardez qu'un des objectifs en conflit et enregistrez à nouveau."
+      "assemblySlotConflict": "{{project}} ne peut contenir qu'un seul objectif actif ou en pause pour cet emplacement. Ne gardez qu'un des objectifs en conflit et enregistrez à nouveau.",
+      "removeFromProject": "Retirer de ce projet",
+      "moveToProject": "Déplacer vers un projet",
+      "moveToProjectTitle": "Déplacer vers un projet",
+      "moveToProjectDescription": "C'est le seul projet de cet objectif. Choisissez un projet où le déplacer, ou créez-en un nouveau.",
+      "moveSelectionDescription_one": "{{project}} est le seul projet de {{count}} des objectifs sélectionnés. Choisissez un projet où le déplacer, ou créez-en un nouveau. Les autres objectifs sélectionnés sont simplement retirés de {{project}}.",
+      "moveSelectionDescription_other": "{{project}} est le seul projet de {{count}} des objectifs sélectionnés. Choisissez un projet où les déplacer, ou créez-en un nouveau. Les autres objectifs sélectionnés sont simplement retirés de {{project}}."
     },
     "toasts": {
       "statusChangedPartial": "{{succeeded}} objectifs mis à jour sur {{total}}.",
@@ -737,7 +813,15 @@
       "projectMembershipSaved": "{{project}} mis à jour : {{added}} ajouté(s), {{removed}} retiré(s).",
       "goalsAddedToProject_one": "{{count}} objectif ajouté à {{project}}.",
       "goalsAddedToProject_other": "{{count}} objectifs ajoutés à {{project}}.",
-      "bulkPartial": "Seuls {{succeeded}} objectifs sur {{total}} ont été traités."
+      "bulkPartial": "Seuls {{succeeded}} objectifs sur {{total}} ont été traités.",
+      "goalRemovedFromProject": "{{goal}} retiré de {{project}}.",
+      "goalRelocated": "{{goal}} déplacé vers {{project}}.",
+      "goalsRemovedFromProject_one": "{{count}} objectif retiré de {{project}}.",
+      "goalsRemovedFromProject_other": "{{count}} objectifs retirés de {{project}}.",
+      "goalsRemovedAndMoved_one": "{{count}} objectif retiré de {{project}} ; {{moved}} déplacé vers {{destination}}.",
+      "goalsRemovedAndMoved_other": "{{count}} objectifs retirés de {{project}} ; {{moved}} déplacés vers {{destination}}.",
+      "movedButNotRemoved_one": "{{count}} objectif a été ajouté à {{destination}}, mais n'a pas pu être retiré de {{project}} : {{error}}",
+      "movedButNotRemoved_other": "{{count}} objectifs ont été ajoutés à {{destination}}, mais n'ont pas pu être retirés de {{project}} : {{error}}"
     },
     "create": {
       "title": "Créer un objectif",
@@ -1178,7 +1262,7 @@
       },
       "navigation": {
         "title": "Naviguez facilement",
-        "content": "Utilisez cette barre de navigation pour vous déplacer entre les sections de l'interface, dont les Événements Légendaires."
+        "content": "Utilisez cette barre de navigation pour vous déplacer entre les sections de l'interface, dont Mon jeu et les Événements Légendaires."
       },
       "sidebarFooter": {
         "title": "Outils de la barre latérale",
@@ -1186,7 +1270,7 @@
       },
       "bottomNavigationGroup": {
         "title": "Votre barre principale",
-        "content": "Changez de section, ajoutez un objectif ou synchronisez depuis ici. Ouvrez le menu pour rechercher des pages et des actions rapides, et pour accéder à Progression et aux Événements Légendaires."
+        "content": "Changez de section, ajoutez un objectif ou synchronisez depuis ici. Ouvrez le menu pour rechercher des pages et des actions rapides, et pour accéder à Mon jeu et aux Événements Légendaires."
       },
       "mobileHeader": {
         "title": "En-tête de page",
@@ -1315,6 +1399,54 @@
         "mythicMaterialSources": {
           "title": "Matériaux mythiques",
           "content": "Choisissez quelles offres de boutique fournissent les matériaux mythiques de cet objectif. Tout décocher arrête de compter sur les boutiques pour eux."
+        }
+      }
+    },
+    "collection": {
+      "steps": {
+        "summary": {
+          "title": "Votre collection en un coup d'œil",
+          "content": "Combien de personnages et de Machines de guerre du jeu vous possédez."
+        },
+        "faction": {
+          "title": "Regroupées par faction",
+          "content": "Chaque carte réunit les personnages et Machines de guerre d'une faction, vos unités en premier."
+        },
+        "owned": {
+          "title": "Une unité possédée",
+          "content": "L'anneau indique sa rareté, avec les étoiles en haut, le rang et les éclats sur le portrait, et en dessous les niveaux de capacité de part et d'autre de son niveau d'XP."
+        },
+        "unowned": {
+          "title": "Pas encore débloquée",
+          "content": "Les unités en grisé ne font pas partie de votre effectif. La barre montre à quel point vous êtes proche de les débloquer."
+        }
+      }
+    },
+    "campaignEvents": {
+      "steps": {
+        "purpose": {
+          "title": "Progression des événements de campagne",
+          "content": "Corrigez votre progression dans chaque événement de campagne. Les raids quotidiens s'en servent pour déterminer quels nœuds d'événement vous pouvez farmer."
+        },
+        "current": {
+          "title": "Événement en cours",
+          "content": "L'événement en cours est épinglé ici, déjà déplié. C'est le seul événement pris en compte par les raids quotidiens."
+        },
+        "editor": {
+          "title": "Modifier un parcours",
+          "content": "Ajustez le nombre de combats réguliers pas à pas, faites glisser la barre ou utilisez Max. Cochez les défis un par un. « Rétablir la valeur synchronisée » annule une valeur manuelle."
+        },
+        "summary": {
+          "title": "Résumés des événements",
+          "content": "Chaque événement affiche sa progression d'un coup d'œil et indique si des valeurs sont manuelles ou sans données synchronisées. Dépliez-le pour le modifier."
+        },
+        "hideCompleted": {
+          "title": "Masquer les événements terminés",
+          "content": "Les événements inachevés apparaissent en premier. Activez cette option pour masquer ceux qui sont terminés ; le choix est mémorisé dans ce navigateur."
+        },
+        "save": {
+          "title": "Enregistrer vos modifications",
+          "content": "Dès que vous modifiez quelque chose, une barre avec Enregistrer et Annuler apparaît en bas. Une confirmation vous est demandée avant de quitter avec des modifications non enregistrées."
         }
       }
     }
