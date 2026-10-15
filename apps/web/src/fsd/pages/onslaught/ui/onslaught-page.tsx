@@ -3,28 +3,10 @@ import { useTranslation } from "react-i18next"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { useIsAuthenticated } from "@azure/msal-react"
 import { useLiveQuery } from "dexie-react-hooks"
-import {
-  onslaughtAllianceIcon,
-  onslaughtTierIcon,
-} from "@workspace/game-catalog"
+import { onslaughtAllianceIcon } from "@workspace/game-catalog"
 import { getOnslaughtRewards } from "@workspace/game-catalog/queries"
-import type { Progression } from "@workspace/game-domain"
 import { Alert, AlertDescription } from "@workspace/ui/components/alert"
 import { Button } from "@workspace/ui/components/button"
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@workspace/ui/components/card"
-import { Label } from "@workspace/ui/components/label"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@workspace/ui/components/select"
 import { Spinner } from "@workspace/ui/components/spinner"
 
 import {
@@ -32,7 +14,6 @@ import {
   onslaughtAlliances,
   onslaughtProgressQueries,
   onslaughtSectors,
-  onslaughtTiers,
   rewardKeys,
   updateOnslaughtProgress,
   type OnslaughtAlliance,
@@ -43,42 +24,22 @@ import {
 import { ApiError } from "@/shared/api"
 import { EntityIcon, ProgressionBadge } from "@/shared/ui"
 
-import { tierAfterSectorChange } from "./tier-after-sector-change"
+import { OnslaughtAllianceCard } from "./onslaught-alliance-card"
+import { OnslaughtEmblem } from "./onslaught-emblem"
+import {
+  formatReward,
+  rewardProgression,
+  useOnslaughtPositionLabel,
+} from "./onslaught-position"
 
 const allianceKey = (alliance: OnslaughtAlliance) =>
   alliance.toLowerCase() as "imperial" | "xenos" | "chaos"
 
-const rewardProgression: Record<(typeof rewardKeys)[number], Progression> = {
-  Common: "Common:None",
-  Uncommon: "Uncommon:TwoStars",
-  Rare: "Rare:FourStars",
-  Epic: "Epic:RedOneStar",
-  Legendary: "Legendary:RedThreeStars",
-  LegendaryBlue: "Legendary:OneBlueStar",
-  Mythic: "Mythic:OneBlueStar",
-}
 const rewardTiers = [1, 2, 3] as const
-
-function OnslaughtEmblem({
-  sector,
-  tier,
-  className = "size-7",
-}: {
-  sector: OnslaughtSector
-  tier: OnslaughtTier
-  className?: string
-}) {
-  return (
-    <EntityIcon
-      src={onslaughtTierIcon(sector, tier)}
-      alt={`${sector} tier ${tier}`}
-      className={className}
-    />
-  )
-}
 
 export function OnslaughtPage() {
   const { t } = useTranslation()
+  const positionLabel = useOnslaughtPositionLabel()
   const isAuthenticated = useIsAuthenticated()
   const queryClient = useQueryClient()
   const rewards = useLiveQuery(() => getOnslaughtRewards(), [])
@@ -110,7 +71,8 @@ export function OnslaughtPage() {
     setDraft((current) => {
       const base = current ?? progressQuery.data
       if (!base) return current
-      return { ...base, [key]: { ...base[key], ...patch } }
+      // Any edit makes the alliance a real position that Save will store.
+      return { ...base, [key]: { ...base[key], ...patch, isSet: true } }
     })
     setMessage(null)
   }
@@ -159,80 +121,25 @@ export function OnslaughtPage() {
     <div className="space-y-8" data-testid="onslaught-page">
       <div className="grid gap-4 md:grid-cols-3">
         {onslaughtAlliances.map((alliance) => {
-          const key = allianceKey(alliance)
-          const value = progress[key]
+          const value = progress[allianceKey(alliance)]
           return (
-            <Card key={alliance}>
-              <CardHeader>
-                <CardTitle>{alliance}</CardTitle>
-              </CardHeader>
-              <CardContent className="grid grid-cols-2 gap-3">
-                <div className="grid gap-1.5">
-                  <Label htmlFor={`${key}-sector`}>
-                    {t("onslaught.sector")}
-                  </Label>
-                  <Select
-                    value={value.sector}
-                    onValueChange={(sector) =>
-                      updateAlliance(alliance, {
-                        sector: sector as OnslaughtSector,
-                        tier: tierAfterSectorChange(
-                          value.sector,
-                          sector as OnslaughtSector,
-                          value.tier
-                        ),
-                      })
-                    }
-                  >
-                    <SelectTrigger
-                      id={`${key}-sector`}
-                      data-testid={`${key}-onslaught-sector`}
-                    >
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {onslaughtSectors.map((sector) => (
-                        <SelectItem key={sector} value={sector}>
-                          <OnslaughtEmblem sector={sector} tier={value.tier} />
-                          <span>{sector}</span>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="grid gap-1.5">
-                  <Label htmlFor={`${key}-tier`}>{t("onslaught.tier")}</Label>
-                  <Select
-                    value={String(value.tier)}
-                    onValueChange={(tier) =>
-                      updateAlliance(alliance, {
-                        tier: Number(tier) as OnslaughtTier,
-                      })
-                    }
-                  >
-                    <SelectTrigger
-                      id={`${key}-tier`}
-                      data-testid={`${key}-onslaught-tier`}
-                    >
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {onslaughtTiers.map((tier) => (
-                        <SelectItem key={tier} value={String(tier)}>
-                          <OnslaughtEmblem sector={value.sector} tier={tier} />
-                          <span>
-                            {tier === 4 ? t("onslaught.tierComplete") : tier}
-                          </span>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </CardContent>
-            </Card>
+            <OnslaughtAllianceCard
+              key={alliance}
+              alliance={alliance}
+              value={value}
+              rewards={rewards}
+              onChange={(patch) => updateAlliance(alliance, patch)}
+            />
           )
         })}
       </div>
+
+      <p
+        className="-mt-4 text-sm text-muted-foreground"
+        data-testid="onslaught-progress-help"
+      >
+        {t("onslaught.help")}
+      </p>
 
       <div className="flex items-center gap-3">
         <Button
@@ -288,6 +195,7 @@ export function OnslaughtPage() {
                   const active = onslaughtAlliances.filter((alliance) => {
                     const value = progress[allianceKey(alliance)]
                     return (
+                      value.isSet &&
                       value.sector === sector &&
                       (value.tier === tier || (tier === 3 && value.tier === 4))
                     )
@@ -300,7 +208,7 @@ export function OnslaughtPage() {
                       <td className="px-3 py-2 font-medium whitespace-nowrap">
                         <span className="inline-flex items-center gap-2">
                           <OnslaughtEmblem sector={sector} tier={tier} />
-                          {sector} {tier}
+                          {positionLabel(sector, tier)}
                         </span>
                       </td>
                       <td className="px-3 py-2">
@@ -309,7 +217,11 @@ export function OnslaughtPage() {
                             <EntityIcon
                               key={alliance}
                               src={onslaughtAllianceIcon(alliance)}
-                              alt={alliance}
+                              alt={
+                                progress[allianceKey(alliance)].tier === 4
+                                  ? `${t(`alliances.${alliance}`)} · ${t("onslaught.tierComplete")}`
+                                  : t(`alliances.${alliance}`)
+                              }
                               className="size-7"
                             />
                           ))}
@@ -341,10 +253,7 @@ export function OnslaughtPage() {
                                 : "px-3 py-2 text-center"
                             }
                           >
-                            {reward.min === reward.max
-                              ? reward.min
-                              : `${reward.min}-${reward.max}`}
-                            {reward.mythic ? "M" : ""}
+                            {formatReward(reward)}
                           </td>
                         )
                       })}

@@ -19,7 +19,10 @@ import {
   acquisitionSourceSeed,
   acquisitionSourcesFromPlan,
 } from "../goal-creation-form/acquisition-plan"
-import { onslaughtShardsPerRun } from "../goal-creation-form/onslaught-yield"
+import {
+  isOnslaughtProgressSaved,
+  onslaughtShardsPerRun,
+} from "../goal-creation-form/onslaught-yield"
 import { useAcquisitionSourceSelection } from "../goal-creation-form/use-acquisition-source-selection"
 import type { useGoalCatalog } from "../shared/use-goal-catalog"
 
@@ -158,7 +161,7 @@ function useEditOnslaughtYield({
       : 0
 
   return {
-    progressSaved: !!onslaughtProgress,
+    progressSaved: isOnslaughtProgressSaved(onslaughtProgress, alliance),
     shardsPerDay: shardsPerRun * ONSLAUGHT_RUNS_PER_DAY,
     currentIsMythic: currentProgression
       ? isMythicProgression(currentProgression)

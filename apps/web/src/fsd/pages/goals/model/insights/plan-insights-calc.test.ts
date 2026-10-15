@@ -670,9 +670,9 @@ describe("computePlanInsights", () => {
         ],
       ]),
       onslaughtProgress: {
-        imperial: { sector: "Stone", tier: 1 },
-        xenos: { sector: "Diamond", tier: 1 },
-        chaos: { sector: "Stone", tier: 1 },
+        imperial: { sector: "Stone", tier: 1, isSet: true },
+        xenos: { sector: "Diamond", tier: 1, isSet: true },
+        chaos: { sector: "Stone", tier: 1, isSet: true },
         revision: 2,
       },
       currentOnslaughtTokens: 1,
@@ -1070,9 +1070,9 @@ describe("computePlanInsights", () => {
   // rest are counted rather than erasing it.
   const onslaughtParams = {
     onslaughtProgress: {
-      imperial: { sector: "Stone" as const, tier: 1 as const },
-      xenos: { sector: "Diamond" as const, tier: 1 as const },
-      chaos: { sector: "Stone" as const, tier: 1 as const },
+      imperial: { sector: "Stone" as const, tier: 1 as const, isSet: true },
+      xenos: { sector: "Diamond" as const, tier: 1 as const, isSet: true },
+      chaos: { sector: "Stone" as const, tier: 1 as const, isSet: true },
       revision: 2,
     },
     onslaughtRewards: [
