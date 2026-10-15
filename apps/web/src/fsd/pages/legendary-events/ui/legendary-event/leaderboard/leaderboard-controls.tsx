@@ -1,6 +1,7 @@
 import { useId } from "react"
 import { useTranslation } from "react-i18next"
 import { Label } from "@workspace/ui/components/label"
+import { Spinner } from "@workspace/ui/components/spinner"
 import { Switch } from "@workspace/ui/components/switch"
 import {
   ToggleGroup,
@@ -9,12 +10,16 @@ import {
 
 import { ObjectiveIcon } from "@/entities/legendary-event"
 
-import type { LeaderboardControlsState } from "../legendary-event-page.view-model"
+import type {
+  LeaderboardControlsState,
+  LeaderboardGoalsViewModel,
+} from "../legendary-event-page.view-model"
 import type { ObjectiveChipGroup } from "./leaderboard.view-model"
 
 /**
  * The one controls bar shared by the lane and Overview leaderboards (design D7): "Only unlocked"
- * (disabled while ownership is unknown), "Deduct scored points" and the objective multi-select
+ * (disabled while ownership is unknown), "Deduct scored points", "Goals Preview" (disabled while
+ * goals load, failed or none target the event's units) and the objective multi-select
  * chips, one group per lane with a lane heading when there are several (design D2 of the Overview
  * refinement). The notes for an unsynced roster and an unavailable progress read sit beneath it.
  */
@@ -23,8 +28,10 @@ export function LeaderboardControls({
   groups,
   rosterAvailable,
   progressAvailable,
+  goals,
 }: {
   state: LeaderboardControlsState
+  goals: LeaderboardGoalsViewModel
   groups: readonly ObjectiveChipGroup[]
   rosterAvailable: boolean
   progressAvailable: boolean
@@ -33,6 +40,9 @@ export function LeaderboardControls({
   const number = new Intl.NumberFormat(i18n.language)
   const unlockedId = useId()
   const deductId = useId()
+  const previewId = useId()
+  const previewHintId = useId()
+  const previewReady = goals.availability === "ready"
   const labelled = groups.length > 1
   const selectedIn = (group: ObjectiveChipGroup) =>
     group.chips
@@ -71,6 +81,38 @@ export function LeaderboardControls({
             onCheckedChange={state.onDeductScoredChange}
           />
           <Label htmlFor={deductId}>{t("leaderboard.deductScored")}</Label>
+        </div>
+        <div className="flex min-h-11 items-center gap-2 md:min-h-0">
+          <Switch
+            aria-describedby={previewHintId}
+            checked={previewReady && goals.previewEnabled}
+            data-testid="leaderboard-goals-preview"
+            disabled={!previewReady}
+            id={previewId}
+            onCheckedChange={goals.onPreviewChange}
+          />
+          <Label htmlFor={previewId}>{t("goalsPreview.switch")}</Label>
+          <span
+            className="flex items-center gap-1 text-xs text-muted-foreground"
+            data-testid="leaderboard-goals-preview-hint"
+            id={previewHintId}
+          >
+            {goals.availability === "loading" ? (
+              <>
+                <Spinner aria-hidden className="size-3" />
+                <span className="sr-only">{t("goalsPreview.loading")}</span>
+              </>
+            ) : null}
+            {goals.availability === "failed"
+              ? t("goalsPreview.unavailable")
+              : null}
+            {goals.availability === "noGoals"
+              ? t("goalsPreview.noGoals")
+              : null}
+            {previewReady ? (
+              <span className="sr-only">{t("goalsPreview.hint")}</span>
+            ) : null}
+          </span>
         </div>
       </div>
       {groups.map((group) => {

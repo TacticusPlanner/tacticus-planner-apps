@@ -12,12 +12,15 @@ import {
   ObjectiveIcon,
   type LeaderboardFigure,
   type LeaderboardRow,
+  type LegendaryEventLaneId,
   type LegendaryEventUnit,
 } from "@/entities/legendary-event"
 
+import type { LeaderboardGoalsViewModel } from "../legendary-event-page.view-model"
 import {
   LeaderboardRank,
   LeaderboardRarity,
+  LeaderboardRowActions,
   LeaderboardUnit,
   ObjectiveIndicator,
 } from "./leaderboard-parts"
@@ -28,14 +31,16 @@ import {
 } from "./leaderboard.view-model"
 
 /** Desktop: one lane's leaderboard as a table, in the fixed default order (no sortable headers),
- *  with one icon-headed column per objective, the shown points figure, the objectives count and,
- *  unless `clearsOf` is absent, the estimated clears. */
+ *  with one icon-headed column per objective, the shown points figure, the objectives count,
+ *  unless `clearsOf` is absent the estimated clears, and a trailing actions menu. */
 export function LeaderboardTable({
   rows,
   objectives,
   figure,
   nameOf,
   clearsOf,
+  goals,
+  laneId,
 }: {
   rows: readonly LeaderboardRow[]
   /** The lane's objectives in catalog `index` order, matching each row's `objectives` flags. */
@@ -43,6 +48,8 @@ export function LeaderboardTable({
   figure: LeaderboardFigure
   nameOf: (unit: LegendaryEventUnit) => string
   clearsOf?: (unitId: string) => LeaderboardClears
+  goals: LeaderboardGoalsViewModel
+  laneId: LegendaryEventLaneId
 }) {
   const { t, i18n } = useTranslation("legendaryEvents")
   const number = new Intl.NumberFormat(i18n.language)
@@ -95,6 +102,9 @@ export function LeaderboardTable({
                 {t("estimates.clears")}
               </TableHead>
             ) : null}
+            <TableHead className="w-10 px-1">
+              <span className="sr-only">{t("leaderboardActions.header")}</span>
+            </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -106,7 +116,12 @@ export function LeaderboardTable({
               key={row.unit.id}
             >
               <TableCell className="max-w-48">
-                <LeaderboardUnit name={nameOf(row.unit)} row={row} />
+                <LeaderboardUnit
+                  goalLines={goals.badgeLines(row.unit.id)}
+                  name={nameOf(row.unit)}
+                  previewed={goals.previewed.has(row.unit.id)}
+                  row={row}
+                />
               </TableCell>
               <TableCell className="px-1">
                 <LeaderboardRarity row={row} />
@@ -142,6 +157,12 @@ export function LeaderboardTable({
               {clearsOf ? (
                 <ClearsCell clears={clearsOf(row.unit.id)} text={clearsText} />
               ) : null}
+              <TableCell className="w-10 px-1">
+                <LeaderboardRowActions
+                  name={nameOf(row.unit)}
+                  onCreateGoal={() => goals.onCreateGoal(row.unit.id, laneId)}
+                />
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>

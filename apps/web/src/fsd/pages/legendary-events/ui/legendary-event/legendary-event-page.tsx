@@ -5,7 +5,9 @@ import { Button } from "@workspace/ui/components/button"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
+import { useCreateGoalLauncher } from "@/entities/goal"
 import {
+  buildLanePointsModel,
   currentLegendaryEventRun,
   type LegendaryEvent,
   type LegendaryEventLaneId,
@@ -18,7 +20,16 @@ import {
   useLegendaryEventUnits,
 } from "@/entities/legendary-event"
 import { useAnnotations } from "@/features/legendary-event-annotations"
-import { useLegendaryEventPlan } from "@/features/legendary-event-teams"
+import {
+  buildUpgradeImpactState,
+  leaderboardRowPrefill,
+  prefillGoalType,
+} from "@/features/legendary-event-goals"
+import {
+  laneTeams,
+  useLegendaryEventPlan,
+} from "@/features/legendary-event-teams"
+import { useAnalyticsActions } from "@/shared/analytics"
 import { useTourPageSteps } from "@/shared/tour"
 import { useUnitName } from "@/shared/unit-name"
 
@@ -29,11 +40,13 @@ import {
   buildProgressGridViewModel,
   buildRewardOutlookViewModel,
   buildRunStatusViewModel,
+  laneEstimateInputs,
   readValue,
   type LegendaryEventPageViewModel,
   type LegendaryEventTab,
 } from "./legendary-event-page.view-model"
 import { useLegendaryEventTutorial } from "./legendary-event.tutorial"
+import { useEventGoals } from "./use-event-goals"
 import { progressHeadingId } from "./progress/progress-heading"
 import { buildMarksByLane } from "./progress/progress-marks"
 import { buildTeamsSectionState } from "./teams/teams.view-model"
@@ -110,6 +123,122 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
         : ({ kind: "pending" } as const),
     [eventData, clearEstimateConfig, battles, roster]
   )
+
+  // Stage 6: goals. The preview feeds only the leaderboards' ownership, rarity, rank and Clears and
+  // the picker; points, team cards, upgrade impact and suggestions stay on the synced roster.
+  const launchCreateGoal = useCreateGoalLauncher()
+  const { captureEvent } = useAnalyticsActions()
+  const [goalsPreview, setGoalsPreview] = useState(false)
+  const syncedRoster = Array.isArray(roster) ? roster : undefined
+  const {
+    byUnit: goalTargetsByUnit,
+    availability: previewAvailability,
+    initialRarityOf,
+    preview,
+    goalUnitIds,
+    goalLines,
+  } = useEventGoals({
+    eventData,
+    units: Array.isArray(units) ? units : undefined,
+    roster: syncedRoster,
+  })
+  const previewOn =
+    goalsPreview && previewAvailability === "ready" && preview !== undefined
+  const leaderboardRoster = previewOn ? preview.roster : roster
+  const previewLeaderboardRows = useMemo(
+    () =>
+      eventData && previewOn
+        ? buildLeaderboardRows(
+            eventData,
+            units,
+            leaderboardRoster,
+            progressGrid
+          )
+        : undefined,
+    [eventData, previewOn, units, leaderboardRoster, progressGrid]
+  )
+  const previewEstimates = useMemo(
+    () =>
+      eventData && preview
+        ? buildClearEstimates({
+            event: eventData,
+            config: clearEstimateConfig,
+            battles,
+            roster: preview.roster,
+          })
+        : undefined,
+    [eventData, preview, clearEstimateConfig, battles]
+  )
+  const changeGoalsPreview = (
+    enabled: boolean,
+    surface: "leaderboard" | "picker"
+  ) => {
+    if (surface === "leaderboard") setGoalsPreview(enabled)
+    captureEvent({
+      type: "legendary_event_goals_preview_toggled",
+      eventId,
+      enabled,
+      surface,
+    })
+  }
+  const createGoalFromRow = (
+    unitId: string,
+    laneId: LegendaryEventLaneId | null
+  ) => {
+    const ownership = syncedRoster
+      ? syncedRoster.some((unit) => unit.unitId === unitId)
+        ? "owned"
+        : "locked"
+      : "unknown"
+    const prefill = leaderboardRowPrefill(unitId, ownership)
+    captureEvent({
+      type: "legendary_event_create_goal_opened",
+      eventId,
+      laneId,
+      source: "leaderboard",
+      goalType: prefillGoalType(prefill),
+    })
+    launchCreateGoal(prefill)
+  }
+  const selectedLane = selectedTab === "overview" ? undefined : selectedTab
+  const upgradeImpact = useMemo(() => {
+    if (!eventData || !selectedLane || !plan.enabled) return null
+    const lane = eventData[selectedLane]
+    const teamsReady =
+      plan.query.data !== undefined &&
+      Array.isArray(units) &&
+      progressValue !== "loading"
+    return buildUpgradeImpactState({
+      teams:
+        teamsReady && plan.query.data
+          ? laneTeams(plan.query.data, selectedLane)
+          : "loading",
+      estimates: laneEstimateInputs(clearEstimates, selectedLane),
+      lane,
+      units: Array.isArray(units) ? units : [],
+      run,
+      model: buildLanePointsModel(lane),
+      progress:
+        progressGrid.kind === "ready"
+          ? progressGrid.lanes[selectedLane]
+          : undefined,
+      initialRarityOf,
+      nameOf: (unitId) => unitName("Character", unitId),
+    })
+    // `unitName` reads the settled catalog; the rest are the page's memoised reads.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    eventData,
+    selectedLane,
+    plan.enabled,
+    plan.query.data,
+    units,
+    progressValue,
+    clearEstimates,
+    run,
+    progressGrid,
+    initialRarityOf,
+  ])
   const selectTab = useCallback((tab: LegendaryEventTab) => {
     setSelectedTab(tab)
   }, [])
@@ -190,14 +319,23 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
     onSelectTab: selectTab,
     onJumpToLane: jumpToLane,
     leaderboard: {
-      ...leaderboardRows,
+      ...(previewLeaderboardRows ?? leaderboardRows),
       onlyUnlocked,
       onOnlyUnlockedChange: setOnlyUnlocked,
       deductScored,
       onDeductScoredChange: setDeductScored,
       selectedObjectives,
       onSelectedObjectivesChange: setSelectedObjectives,
-      clears: clearEstimates,
+      clears: previewOn && previewEstimates ? previewEstimates : clearEstimates,
+      goals: {
+        previewEnabled: goalsPreview,
+        availability: previewAvailability,
+        onPreviewChange: (enabled) =>
+          changeGoalsPreview(enabled, "leaderboard"),
+        previewed: previewOn ? preview.previewed : new Set(),
+        badgeLines: goalLines,
+        onCreateGoal: createGoalFromRow,
+      },
     },
     progressGrid,
     marks: {
@@ -220,7 +358,39 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
       run,
       actions: plan,
       estimates: clearEstimates,
+      eventId,
+      progressByLane:
+        progressGrid.kind === "ready" ? progressGrid.lanes : undefined,
+      goals: {
+        goalLines,
+        goalUnitIds,
+        pickerPreview: (laneId) => {
+          const estimator =
+            previewEstimates?.kind === "ready"
+              ? previewEstimates.byLane[laneId]
+              : undefined
+          return {
+            enabled: goalsPreview,
+            available: previewAvailability === "ready" && preview !== undefined,
+            roster: preview?.roster,
+            previewed: preview?.previewed ?? new Set(),
+            clearsOf: estimator
+              ? (unitId) => estimator.unit(unitId)?.depth ?? null
+              : undefined,
+            onToggle: (enabled) => changeGoalsPreview(enabled, "picker"),
+          }
+        },
+      },
     },
+    upgradeImpact: upgradeImpact
+      ? {
+          state: upgradeImpact,
+          goalTargets: goalTargetsByUnit,
+          teamName: (teamId) =>
+            plan.query.data?.teams.find((team) => team.id === teamId)?.name ??
+            teamId,
+        }
+      : null,
   }
 
   return <LegendaryEventPageView {...viewModel} isMobile={isMobile} />

@@ -1,13 +1,9 @@
-export {
-  useLegendaryEventGoalTargets,
-  type LegendaryEventGoalTargets,
-} from "./model/use-legendary-event-goal-targets"
+export { useLegendaryEventGoalTargets } from "./model/use-legendary-event-goal-targets"
 export {
   leaderboardRowPrefill,
   prefillGoalType,
-  type PrefillGoalType,
 } from "./model/create-goal-prefill"
-export { useGoalLabels, type GoalLabels } from "./model/use-goal-labels"
+export { useGoalLabels } from "./model/use-goal-labels"
 export {
   buildUpgradeImpactState,
   type UpgradeImpactState,

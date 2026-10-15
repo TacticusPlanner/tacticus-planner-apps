@@ -32,7 +32,7 @@ export interface LegendaryEventGoalTarget {
 }
 
 /** The first progression step of a rarity (`Common:None`, `Rare:FourStars`, …). */
-export function baseProgression(rarity: Rarity | undefined): Progression {
+function baseProgression(rarity: Rarity | undefined): Progression {
   return (
     progressionOrder.find((step) => progressionRarity(step) === rarity) ??
     progressionOrder[0]

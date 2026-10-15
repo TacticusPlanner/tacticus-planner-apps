@@ -2,7 +2,6 @@ export {
   useLegendaryEventPlan,
   type DepthEstimateContext,
   type LegendaryEventPlanActions,
-  type TeamOrigin,
 } from "./model/use-legendary-event-plan"
 export type { PickerGoalsPreview } from "./model/team-picker"
 export { laneTeams } from "./model/plan-patches"

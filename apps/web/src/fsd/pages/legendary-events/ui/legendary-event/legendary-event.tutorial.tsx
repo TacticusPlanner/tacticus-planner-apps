@@ -14,6 +14,7 @@ const EVENT_TOUR_TARGETS = {
   overviewLeaderboard: '[data-testid="legendary-event-overview-leaderboard"]',
   laneOverview: '[data-testid="legendary-event-lane-overview"]',
   teams: '[data-testid="legendary-event-teams"]',
+  upgradeImpact: '[data-testid="legendary-event-upgrade-impact"]',
   progressGrid: '[data-testid="legendary-event-progress-grid"]',
   leaderboard: '[data-testid="legendary-event-leaderboard"]',
 } as const
@@ -68,6 +69,7 @@ export function useLegendaryEventTutorial(
         },
       },
       step("teams", "top"),
+      step("upgradeImpact", "top"),
       step("progressGrid", "top"),
       step("leaderboard", "top"),
     ]

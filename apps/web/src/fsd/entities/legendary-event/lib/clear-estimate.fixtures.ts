@@ -54,7 +54,7 @@ export const WORKED_CONFIG: ClearEstimateConfig = {
 }
 
 /** The catalog `initialRarity` of the worked units (Stage 6 unlock step and Goals Preview). */
-export const WORKED_INITIAL_RARITY: Readonly<Record<string, Rarity>> = {
+const WORKED_INITIAL_RARITY: Readonly<Record<string, Rarity>> = {
   ultraCalgar: "Legendary",
   ultraTigurius: "Uncommon",
   ultraTitus: "Epic",

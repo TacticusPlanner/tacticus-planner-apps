@@ -11,6 +11,8 @@ import {
   unitClearEstimate,
   type ClearEstimate,
   type ClearEstimateConfigState,
+  type LaneEstimateInputs,
+  type LegendaryEventGoalTarget,
   type CrossLaneLeaderboardRow,
   type LaneProgressView,
   type LeaderboardRow,
@@ -28,6 +30,8 @@ import {
   type ReadState,
   type RewardProjection,
 } from "@/entities/legendary-event"
+
+import type { UpgradeImpactState } from "@/features/legendary-event-goals"
 
 import type { ProgressMarksViewModel } from "./progress/progress-marks"
 import type { TeamsViewModel } from "./teams/teams-section"
@@ -95,6 +99,15 @@ export interface LegendaryEventPageViewModel {
   marks: ProgressMarksViewModel
   /** The lane tabs' Teams section: the plan, the current run and the plan actions. */
   teams: TeamsViewModel
+  /** The selected lane's Upgrade impact (Stage 6); null on Overview or signed out. */
+  upgradeImpact: UpgradeImpactViewModel | null
+}
+
+interface UpgradeImpactViewModel {
+  state: UpgradeImpactState
+  /** Goal targets by unit, for "In goals" and badges; undefined while goals load or failed. */
+  goalTargets: ReadonlyMap<string, LegendaryEventGoalTarget> | undefined
+  teamName: (teamId: string) => string
 }
 
 type ByLane<T> = Record<LegendaryEventLaneId, T>
@@ -125,10 +138,29 @@ export interface LeaderboardControlsState {
   onSelectedObjectivesChange: (keys: ReadonlySet<string>) => void
 }
 
+/** Goals Preview availability (design D8): goals loading, failed, none for the event's units. */
+export type GoalsPreviewAvailability =
+  "loading" | "failed" | "noGoals" | "ready"
+
+/** The leaderboards' goal integration (Stage 6): the Goals Preview switch, badges, Create goal. */
+export interface LeaderboardGoalsViewModel {
+  /** The page's switch value; only effective while `availability` is ready. */
+  previewEnabled: boolean
+  availability: GoalsPreviewAvailability
+  onPreviewChange: (enabled: boolean) => void
+  /** Units shown at their goal targets (empty while the preview is off). */
+  previewed: ReadonlySet<string>
+  /** A unit's goal badge lines (none while goals load or failed). */
+  badgeLines: (unitId: string) => readonly string[]
+  /** Opens the goal-creation sheet for a row (ownership read from the synced roster). */
+  onCreateGoal: (unitId: string, laneId: LegendaryEventLaneId | null) => void
+}
+
 export type LeaderboardViewModel = LeaderboardRowsViewModel &
   LeaderboardControlsState & {
     /** The lane leaderboards' Clears figure (not shown on the Overview leaderboard). */
     clears: ClearEstimatesViewModel
+    goals: LeaderboardGoalsViewModel
   }
 
 /** The Synced progress section: per-lane progress over the points model, or the read's state. */
@@ -291,10 +323,12 @@ export function buildRewardOutlookViewModel({
 }
 
 /** One lane's estimators over the synced roster (design D3): null when there is nothing to
- *  estimate (no owned member, or the unit is not owned). */
+ *  estimate (no owned member, or the unit is not owned). `inputs` (Stage 6's upgrade impact and
+ *  suggestions) is absent when the roster is unknown or the lane's battles have no powers. */
 interface LaneClearEstimator {
   team: (memberUnitIds: readonly string[]) => ClearEstimate | null
   unit: (unitId: string) => ClearEstimate | null
+  inputs?: LaneEstimateInputs
 }
 
 /**
@@ -348,9 +382,25 @@ export function buildClearEstimates({
             teamClearEstimate(memberUnitIds, powers, rosterById, config.config),
           unit: (unitId) =>
             unitClearEstimate(unitId, powers, rosterById, config.config),
+          inputs: {
+            battlePowers: powers,
+            roster: rosterById,
+            config: config.config,
+          },
         },
       ]
     })
   ) as ByLane<LaneClearEstimator>
   return { kind: "ready", byLane }
+}
+
+/** A lane's estimate inputs for upgrade impact and suggestions: "pending" while estimates load,
+ *  undefined when they are unavailable. */
+export function laneEstimateInputs(
+  clears: ClearEstimatesViewModel,
+  laneId: LegendaryEventLaneId
+): LaneEstimateInputs | "pending" | undefined {
+  if (clears.kind === "pending") return "pending"
+  if (clears.kind === "hidden") return undefined
+  return clears.byLane[laneId].inputs
 }
