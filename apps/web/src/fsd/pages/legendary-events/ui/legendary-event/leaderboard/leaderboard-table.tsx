@@ -21,24 +21,32 @@ import {
   LeaderboardUnit,
   ObjectiveIndicator,
 } from "./leaderboard-parts"
-import type { ObjectiveChip } from "./leaderboard.view-model"
+import {
+  useClearsText,
+  type LeaderboardClears,
+  type ObjectiveChip,
+} from "./leaderboard.view-model"
 
 /** Desktop: one lane's leaderboard as a table, in the fixed default order (no sortable headers),
- *  with one icon-headed column per objective, the shown points figure and the objectives count. */
+ *  with one icon-headed column per objective, the shown points figure, the objectives count and,
+ *  unless `clearsOf` is absent, the estimated clears. */
 export function LeaderboardTable({
   rows,
   objectives,
   figure,
   nameOf,
+  clearsOf,
 }: {
   rows: readonly LeaderboardRow[]
   /** The lane's objectives in catalog `index` order, matching each row's `objectives` flags. */
   objectives: readonly ObjectiveChip[]
   figure: LeaderboardFigure
   nameOf: (unit: LegendaryEventUnit) => string
+  clearsOf?: (unitId: string) => LeaderboardClears
 }) {
   const { t, i18n } = useTranslation("legendaryEvents")
   const number = new Intl.NumberFormat(i18n.language)
+  const clearsText = useClearsText()
 
   return (
     <div className="max-h-[36rem] min-w-0 overflow-y-auto rounded-lg border">
@@ -78,6 +86,15 @@ export function LeaderboardTable({
             <TableHead className="text-right">
               {t("leaderboard.objectives")}
             </TableHead>
+            {clearsOf ? (
+              <TableHead
+                className="text-right"
+                data-testid="leaderboard-clears-head"
+                title={t("estimates.howItWorks")}
+              >
+                {t("estimates.clears")}
+              </TableHead>
+            ) : null}
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -122,10 +139,35 @@ export function LeaderboardTable({
               >
                 {number.format(row.objectivesCount)}
               </TableCell>
+              {clearsOf ? (
+                <ClearsCell clears={clearsOf(row.unit.id)} text={clearsText} />
+              ) : null}
             </TableRow>
           ))}
         </TableBody>
       </Table>
     </div>
+  )
+}
+
+function ClearsCell({
+  clears,
+  text,
+}: {
+  clears: LeaderboardClears
+  text: (clears: LeaderboardClears) => string
+}) {
+  const { t } = useTranslation("legendaryEvents")
+  return (
+    <TableCell
+      className="text-right text-muted-foreground tabular-nums"
+      data-clears={clears.kind}
+      data-testid="leaderboard-clears"
+    >
+      {text(clears)}
+      {clears.kind === "pending" ? (
+        <span className="sr-only">{t("estimates.clearsLoading")}</span>
+      ) : null}
+    </TableCell>
   )
 }
