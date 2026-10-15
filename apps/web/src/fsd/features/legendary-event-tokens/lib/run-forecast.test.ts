@@ -134,6 +134,22 @@ describe("forecastRuns", () => {
     })
   })
 
+  it("opens the chests synced currency already covers in the current run", () => {
+    const run2 = forecastRuns(
+      worked({
+        progress: { ...worked().progress!, currentCurrency: 300 },
+        tokens: [],
+      })
+    ).runs[1]
+
+    // Chest 11 costs 260: the synced 300 opens it before any token is played.
+    expect(run2).toMatchObject({
+      chestsOpened: 1,
+      endingCurrency: 40,
+      endingShards: 275,
+    })
+  })
+
   it("ignores paid inputs with paid options off", () => {
     const run3 = forecastRuns(
       worked({

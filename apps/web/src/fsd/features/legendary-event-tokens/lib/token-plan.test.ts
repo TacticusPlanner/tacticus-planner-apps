@@ -205,7 +205,6 @@ describe("nextToken", () => {
     expect(choice).toMatchObject({
       index: 0,
       reason: "mostPoints",
-      sameTeam: false,
       token: { teamId: "melee", battleIndex: 2, points: 205 },
     })
   })
@@ -222,6 +221,38 @@ describe("nextToken", () => {
       index: 4,
       reason: "mostPointsPlayableNow",
       token: { teamId: "melee", battleIndex: 1, points: 140 },
+    })
+  })
+
+  it("skips a token on the battle of an earlier skipped token", () => {
+    const token = (
+      battleIndex: number,
+      teamId: string,
+      overrides: Partial<PlannedToken> = {}
+    ): PlannedToken => ({
+      laneId: "alpha",
+      battleIndex,
+      teamId,
+      teamName: teamId,
+      clearedIds: [1],
+      points: 50,
+      runningPoints: 0,
+      maybe: false,
+      playableNow: true,
+      ...overrides,
+    })
+    // The flagged token wins battle 3; the second one is valued as if it had.
+    const choice = nextToken({
+      tokens: [
+        token(2, "melee", { clearedIds: [0, 1], maybe: true }),
+        token(2, "five"),
+        token(1, "five"),
+      ],
+    })
+
+    expect(choice).toMatchObject({
+      index: 2,
+      token: { teamId: "five", battleIndex: 1 },
     })
   })
 

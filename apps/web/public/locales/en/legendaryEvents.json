@@ -380,7 +380,6 @@
         "mostPoints": "Most points available now",
         "mostPointsPlayableNow": "Most points among battles you can play now"
       },
-      "sameTeam": "{{reason}} · same team, next battle",
       "upcoming": "{{reason}} for when run {{run}} starts",
       "maybe": "Maybe clear",
       "members": "Members",

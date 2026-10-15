@@ -294,20 +294,31 @@ export interface NextTokenChoice {
   /** Its position in the plan (0-based). */
   index: number
   reason: NextTokenReason
-  /** It continues the previous planned token's team on the next battle of the same lane. */
-  sameTeam: boolean
 }
 
 /**
  * The token the Next token card shows (design D4): the first planned token that is not flagged
- * Maybe and is playable now, else the plan's first token; null for an empty plan.
+ * Maybe, is playable now and has no earlier planned token on its battle, else the plan's first
+ * token; null for an empty plan. A token is valued after every earlier token on its battle, so a
+ * later token on a skipped token's battle would assume that skipped token was played.
  */
 export function nextToken(
   plan: Pick<TokenPlan, "tokens">
 ): NextTokenChoice | null {
   const { tokens } = plan
   if (tokens.length === 0) return null
-  const found = tokens.findIndex((token) => !token.maybe && token.playableNow)
+  const found = tokens.findIndex(
+    (token, index) =>
+      !token.maybe &&
+      token.playableNow &&
+      !tokens
+        .slice(0, index)
+        .some(
+          (earlier) =>
+            earlier.laneId === token.laneId &&
+            earlier.battleIndex === token.battleIndex
+        )
+  )
   const index = found === -1 ? 0 : found
   const token = tokens[index]!
   return {
@@ -316,6 +327,5 @@ export function nextToken(
     // The plan's first token is the best one available now; a later one was picked because the
     // tokens before it are flagged or not playable yet.
     reason: index === 0 ? "mostPoints" : "mostPointsPlayableNow",
-    sameTeam: index > 0 && continues(token, tokens[index - 1]),
   }
 }

@@ -104,7 +104,7 @@ For each lane the planner SHALL compute, from the lane's teams that have a depth
 
 ### Requirement: Next token card heads the Overview tab
 
-The Overview tab SHALL open with a **Next token** card. With a non-empty plan it SHALL show the next token: the first planned token that is not flagged Maybe and whose battle is playable now (its lane's first battle, or synced progress shows the previous battle's defeat-all cleared), or the first planned token when none qualifies. It SHALL show the team name and members' portraits, the lane, "Battle N", "+P points", the icon and name of each objective it clears (defeat-all included), and one reason line: "Most points available now" when it is the plan's first token, otherwise "Most points among battles you can play now"; with " · same team, next battle" appended when it continues the previous planned token's team. When the event is upcoming it SHALL add "for when run N starts". It SHALL carry two actions: **Partly cleared**, which marks the token's objective cells Maybe clear (its defeat-all cell too when it clears no objective), and **Couldn't clear**, which marks every cell it clears Stop here; each is one annotation write for the token's battle through the existing marks contract, and the card and plan recompute at once.
+The Overview tab SHALL open with a **Next token** card. With a non-empty plan it SHALL show the next token: the first planned token that is not flagged Maybe, whose battle is playable now (its lane's first battle, or synced progress shows the previous battle's defeat-all cleared) and that has no earlier planned token on the same battle, or the first planned token when none qualifies. It SHALL show the team name and members' portraits, the lane, "Battle N", "+P points", the icon and name of each objective it clears (defeat-all included), and one reason line: "Most points available now" when it is the plan's first token, otherwise "Most points among battles you can play now". When the event is upcoming it SHALL add "for when run N starts". It SHALL carry two actions: **Partly cleared**, which marks the token's objective cells Maybe clear (its defeat-all cell too when it clears no objective), and **Couldn't clear**, which marks every cell it clears Stop here; each is one annotation write for the token's battle through the existing marks contract, and the card and plan recompute at once.
 
 When there is no next token the card SHALL name what is missing, checked in this order:
 
@@ -126,6 +126,12 @@ The card SHALL NOT render on an archived event. While the roster, plan or clear 
 - **GIVEN** the worked example with battle 3's Melee cell marked Maybe clear
 - **WHEN** the card renders
 - **THEN** it shows Melee → Alpha battle 2, +140, "Most points among battles you can play now", because token 1 is flagged and tokens 2 to 4 need battle 3 won first
+
+#### Scenario: A skipped token's battle is skipped too
+
+- **GIVEN** a plan whose first token is flagged Maybe and whose second token is another team on the same battle
+- **WHEN** the card renders
+- **THEN** it skips the second token too, because its cells and points assume the first one was played
 
 #### Scenario: Couldn't clear
 

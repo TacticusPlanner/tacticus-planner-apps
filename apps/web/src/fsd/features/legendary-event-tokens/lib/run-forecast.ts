@@ -192,8 +192,9 @@ export function forecastRuns({
             : 0
         currency += missionCurrency + bundleCurrency
         shards += showPaidOptions ? values.closeShards : 0
-        openChests()
       }
+      // Synced currency can already cover a chest the game has not opened yet.
+      openChests()
 
       used = Math.min(runSupply.total, tokens.length - tokenIndex)
       for (let index = tokenIndex; index < tokenIndex + used; index++) {

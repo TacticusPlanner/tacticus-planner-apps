@@ -115,19 +115,16 @@ function TokenView({
   const { t, i18n } = useTranslation("legendaryEvents")
   const unitName = useUnitName()
   const number = new Intl.NumberFormat(i18n.language)
-  const { token, reason, sameTeam } = view.next!
+  const { token, reason } = view.next!
   const lane = t(`lanes.${token.laneId}`)
   const battle = token.battleIndex + 1
   const members = view.membersByTeam.get(token.teamId) ?? []
   const reasonText = t(`tokenPlan.nextToken.reasons.${reason}`)
-  const withTeam = sameTeam
-    ? t("tokenPlan.nextToken.sameTeam", { reason: reasonText })
-    : reasonText
   const reasonLine =
     view.upcomingRun === null
-      ? withTeam
+      ? reasonText
       : t("tokenPlan.nextToken.upcoming", {
-          reason: withTeam,
+          reason: reasonText,
           run: view.upcomingRun,
         })
   const canMark =

@@ -380,7 +380,6 @@
         "mostPoints": "Die meisten Punkte, die jetzt verfügbar sind",
         "mostPointsPlayableNow": "Die meisten Punkte unter den Kämpfen, die du jetzt spielen kannst"
       },
-      "sameTeam": "{{reason}} · gleiches Team, nächster Kampf",
       "upcoming": "{{reason}}, sobald Durchlauf {{run}} beginnt",
       "maybe": "Vielleicht schaffbar",
       "members": "Mitglieder",
