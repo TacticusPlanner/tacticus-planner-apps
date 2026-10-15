@@ -53,7 +53,7 @@ export function PlanDayCard({
 
   return (
     <section
-      className="flex h-[var(--plan-card-h,28rem)] min-h-112 w-[85vw] max-w-84 shrink-0 flex-col gap-2 rounded-2xl bg-card p-3 shadow-sm ring-1 ring-foreground/5 md:w-84 dark:ring-foreground/10"
+      className="flex h-[var(--plan-card-h,28rem)] min-h-112 w-[85vw] max-w-84 shrink-0 flex-col gap-2 rounded-[min(var(--radius-4xl),24px)] bg-card p-3 shadow-sm ring-1 ring-foreground/5 md:w-84 dark:ring-foreground/10"
       data-plan-day={day.day}
       data-testid={`plan-day-${day.day}`}
     >
