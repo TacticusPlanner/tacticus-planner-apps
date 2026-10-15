@@ -370,6 +370,28 @@ describe("syncGameCatalog", () => {
     expect(await hasCompleteGameCatalogCache()).toBe(true)
   })
 
+  it("drops an optional dataset the manifest stops listing", async () => {
+    const manifest = createManifest()
+    await syncGameCatalog(new FakeGameCatalogClient(manifest))
+    expect(await getDatasetRecords("horde-mode-tiers")).toHaveLength(1)
+
+    const withdrawn = {
+      ...manifest,
+      sourceHash: "source-withdrawn",
+      datasets: manifest.datasets.filter(
+        (dataset) => dataset.key !== "horde-mode-tiers"
+      ),
+    }
+    const result = await syncGameCatalog(new FakeGameCatalogClient(withdrawn))
+
+    expect(result.status).toBe("ready")
+    expect(await getDatasetRecords("horde-mode-tiers")).toEqual([])
+    expect(
+      await getDatasetRecords("legendary-event-clear-estimate")
+    ).toHaveLength(1)
+    expect(await hasCompleteGameCatalogCache()).toBe(true)
+  })
+
   it("refetches the manifest after an upgrade so a dataset the previous build skipped downloads", async () => {
     const manifest = createManifest()
     await seedSyncedDbBeforeStores(

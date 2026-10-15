@@ -112,6 +112,18 @@ export async function replaceGameCatalogDataset<
   })
 }
 
+/** Empties a dataset the manifest no longer lists and drops its metadata, in one transaction. */
+export async function removeGameCatalogDataset(
+  datasetKey: GameCatalogDatasetKey
+) {
+  const table = catalogDb.table(datasetKey)
+
+  await catalogDb.transaction("rw", table, catalogDb.metadata, async () => {
+    await table.clear()
+    await catalogDb.metadata.delete(datasetKey)
+  })
+}
+
 export async function saveManifestMetadata(
   metadata: GameCatalogDatasetMetadata
 ) {
