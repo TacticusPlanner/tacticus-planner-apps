@@ -18,6 +18,7 @@ const PLOT_WIDTH = 1000
  *
  * The header shows `<x label>: <value>` for the marker, or for the hovered column while hovering.
  * With `onSelect`, clicking a column reports its index (an ability chart sets its level that way).
+ * With `dimFrom`, the columns from that index on are faded and their readout gets `dimmedSuffix`.
  */
 export function LevelChart({
   title,
@@ -29,6 +30,8 @@ export function LevelChart({
   caption,
   onSelect,
   readoutSuffix,
+  dimFrom,
+  dimmedSuffix,
   fromZero = true,
   height = 150,
   locale,
@@ -48,6 +51,10 @@ export function LevelChart({
   onSelect?: (index: number) => void
   /** Appended to the marker's readout, e.g. " (yours)". */
   readoutSuffix?: string
+  /** The first column to fade, e.g. the first rank a unit's stars can't reach. */
+  dimFrom?: number
+  /** Appended to the readout of a faded column. */
+  dimmedSuffix?: string
   fromZero?: boolean
   height?: number
   locale?: string
@@ -81,11 +88,16 @@ export function LevelChart({
     : undefined
 
   const readoutIndex = hoverIndex ?? markerIndex
+  const dimmed = dimFrom !== undefined && dimFrom < count ? dimFrom : undefined
   const readout =
     readoutIndex !== undefined && points[readoutIndex]
       ? `${xLabels[readoutIndex]}: ${formatPoint(points[readoutIndex], locale)}${
           hoverIndex === undefined || hoverIndex === markerIndex
             ? (readoutSuffix ?? "")
+            : ""
+        }${
+          dimmed !== undefined && readoutIndex >= dimmed
+            ? (dimmedSuffix ?? "")
             : ""
         }`
       : ""
@@ -164,6 +176,18 @@ export function LevelChart({
                 strokeWidth={2}
                 strokeLinejoin="round"
                 vectorEffect="non-scaling-stroke"
+              />
+            )}
+            {dimmed !== undefined && (
+              <rect
+                x={dimmed * columnWidth}
+                y={0}
+                width={(count - dimmed) * columnWidth}
+                height={height}
+                fill="var(--card)"
+                fillOpacity={0.7}
+                data-testid={testId && `${testId}-dimmed`}
+                data-from={dimmed}
               />
             )}
             {markerIndex !== undefined && points[markerIndex] && (

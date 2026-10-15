@@ -406,8 +406,6 @@
       "hits_other": "{{count}} golpes",
       "range": "Alcance {{range}}",
       "equipment": "Huecos de equipo",
-      "footnote": "Percentil entre todos los personajes en Mythic Wings, Adamantino II. Comparación completa abajo.",
-      "percentile_ordinal_other": "Percentil {{count}}",
       "pierce": "{{value}} % de tasa de perforación",
       "pierceHint": "Tasa de perforación: cada golpe inflige el mayor valor entre su daño menos la armadura del objetivo o el {{value}} % de su daño. Contra armaduras pesadas, lo que llega es ese {{value}} %.",
       "relicSlot": "Reliquia: {{name}}",
@@ -464,6 +462,8 @@
       "title": "Estadísticas por rango",
       "footnote": "Línea discontinua = rango mostrado ({{rank}}). Pasa el cursor por un gráfico para leer cualquier rango.",
       "yours": " (el tuyo)",
+      "aboveCap": " (por encima del límite para estas estrellas)",
+      "capFootnote": "Los rangos atenuados están por encima de {{rank}}, el límite para estas estrellas.",
       "caption": "{{stat}} pasa de {{from}} en {{firstRank}} a {{to}} en {{lastRank}}.",
       "rank": "Rango"
     },

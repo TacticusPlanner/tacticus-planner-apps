@@ -585,14 +585,38 @@ describe("CharacterUnitPage", () => {
     )
   })
 
-  it("shows the comparison radar's percentiles in the list and At a glance", async () => {
+  it("shows the comparison radar's percentiles in the list only, not At a glance", async () => {
     await renderUnit("/library/characters/ultraTigurius")
     // Of the three characters, Tigurius has the lowest Health: 0% are strictly lower.
     expect(screen.getByTestId("unit-radar-health")).toHaveTextContent("0%")
-    expect(screen.getByTestId("unit-glance-health")).toHaveTextContent(
-      "0th percentile"
+    expect(screen.getByTestId("unit-glance-health")).not.toHaveTextContent(
+      /percentile/
     )
     expect(screen.getByTestId("unit-radar-median")).toBeInTheDocument()
+  })
+
+  it("fades the ranks above the shown stars' cap in Stats by rank", async () => {
+    // Signed out, Tigurius shows its starting Uncommon stars, capped at Bronze I.
+    await renderUnit("/library/characters/ultraTigurius")
+    const dimmed = screen.getByTestId("unit-stats-health-dimmed")
+    // Stone I–III, Iron I–III, Bronze I: the fade starts at the 8th rank.
+    expect(dimmed).toHaveAttribute("data-from", "7")
+    expect(screen.getByTestId("unit-stats-by-rank")).toHaveTextContent(
+      "Faded ranks are above Bronze I, the cap for these stars."
+    )
+  })
+
+  it("marks the rows above the cap in the mobile Stats by rank table", async () => {
+    env.isMobile = true
+    await renderUnit("/library/characters/ultraTigurius")
+    fireEvent.click(screen.getByRole("button", { name: /Stats by rank/ }))
+    const rows = within(screen.getByTestId("unit-stats-table")).getAllByRole(
+      "row"
+    )
+    // Header row, then one row per rank: the 8th rank (row 8) is the first above the cap.
+    expect(rows[7]).not.toHaveAttribute("data-above-cap")
+    expect(rows[8]).toHaveAttribute("data-above-cap", "true")
+    expect(rows[8]).toHaveTextContent("above the cap for these stars")
   })
 
   it("explains the pierce ratio rule with the attack's own percentage", async () => {

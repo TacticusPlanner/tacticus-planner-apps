@@ -135,8 +135,6 @@ function AttackRow({
 export function AtAGlance({
   character,
   stats,
-  healthPercentile,
-  armourPercentile,
   relicSlot,
   slotItems,
   onRelicClick,
@@ -144,8 +142,6 @@ export function AtAGlance({
 }: {
   character: CharacterStorageModel
   stats: UnitStats
-  healthPercentile: number
-  armourPercentile: number
   /** The slot the character's relic goes in (the relic's equipment type) and the relic's name. */
   relicSlot?: { slot: string; name: string }
   /** The items each slot can take (see `equippableItems`). */
@@ -156,14 +152,14 @@ export function AtAGlance({
 }) {
   const { t, i18n } = useTranslation("library")
   const format = new Intl.NumberFormat(i18n.language)
+  // No percentile lines: the radar's percentiles are at its fixed reference, not at these values.
   const boxes: {
     key: "health" | "damage" | "armour" | "movement"
     value: number
-    percentile?: number
   }[] = [
-    { key: "health", value: stats.health, percentile: healthPercentile },
+    { key: "health", value: stats.health },
     { key: "damage", value: stats.damage },
-    { key: "armour", value: stats.armour, percentile: armourPercentile },
+    { key: "armour", value: stats.armour },
     { key: "movement", value: character.movement },
   ]
 
@@ -196,14 +192,6 @@ export function AtAGlance({
             >
               {format.format(box.value)}
             </dd>
-            {box.percentile !== undefined ? (
-              <dd className="text-xs text-muted-foreground">
-                {t("characterUnit.glance.percentile", {
-                  count: box.percentile,
-                  ordinal: true,
-                })}
-              </dd>
-            ) : null}
           </div>
         ))}
       </dl>
@@ -228,9 +216,6 @@ export function AtAGlance({
         slotItems={slotItems}
         onRelicClick={onRelicClick}
       />
-      <p className="text-xs text-muted-foreground">
-        {t("characterUnit.glance.footnote")}
-      </p>
     </div>
   )
 }
@@ -286,17 +271,23 @@ const statKeys = ["health", "damage", "armour"] as const
 export function StatsByRank({
   byRank,
   shownRank,
+  rankCap,
   owned,
   isMobile,
 }: {
   byRank: readonly UnitStats[]
   shownRank: Rank
+  /** The highest rank the shown rarity and stars allow; later ranks are faded. */
+  rankCap: Rank
   owned: boolean
   isMobile: boolean
 }) {
   const { t, i18n } = useTranslation(["library", "progression"])
   const locale = i18n.language
   const markerIndex = ladderRanks.indexOf(shownRank)
+  const capIndex = ladderRanks.indexOf(rankCap)
+  const dimFrom = capIndex === -1 ? undefined : capIndex + 1
+  const aboveCap = (index: number) => dimFrom !== undefined && index >= dimFrom
   const rankLabel = (rank: Rank) =>
     t(`progression:ranks.${rank}`, { defaultValue: rank })
   const xLabels = ladderRanks.map(rankLabel)
@@ -331,12 +322,19 @@ export function StatsByRank({
               key={rank}
               className={cn(
                 "border-t",
-                index === markerIndex && "bg-hl font-semibold"
+                index === markerIndex && "bg-hl font-semibold",
+                aboveCap(index) && "text-muted-foreground"
               )}
               aria-current={index === markerIndex ? "true" : undefined}
+              data-above-cap={aboveCap(index) || undefined}
             >
               <th scope="row" className="py-1 text-left font-normal">
                 {rankLabel(rank)}
+                {aboveCap(index) ? (
+                  <span className="sr-only">
+                    {t("characterUnit.statsByRank.aboveCap")}
+                  </span>
+                ) : null}
               </th>
               {statKeys.map((key) => (
                 <td key={key} className="py-1 text-right">
@@ -369,6 +367,8 @@ export function StatsByRank({
             readoutSuffix={
               owned ? t("characterUnit.statsByRank.yours") : undefined
             }
+            dimFrom={dimFrom}
+            dimmedSuffix={t("characterUnit.statsByRank.aboveCap")}
             caption={t("characterUnit.statsByRank.caption", {
               stat,
               from,

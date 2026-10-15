@@ -4,7 +4,7 @@ import type {
   CharacterStorageModel,
   EquipmentStorageModel,
 } from "@workspace/game-catalog"
-import type { Rank } from "@workspace/game-domain"
+import { lastRank, type Rank } from "@workspace/game-domain"
 import {
   Accordion,
   AccordionContent,
@@ -22,9 +22,6 @@ import {
 import type { UnitStats } from "./character-unit.view-model"
 import { StatRadarCard } from "./stat-radar-card"
 
-const percentileOf = (radar: readonly RadarAxisResult[], axis: string) =>
-  Math.round(radar.find((entry) => entry.axis === axis)?.percentile ?? 0)
-
 /**
  * The Details tab. Desktop: cards in rows (At a glance | Traits; Active | Passive; Compared |
  * Stats by rank; Relic). Mobile: At a glance first, then collapsible sections with a summary value
@@ -37,6 +34,7 @@ export function CharacterUnitDetails({
   radar,
   byRank,
   shownRank,
+  rankCap,
   owned,
   activePanel,
   passivePanel,
@@ -56,6 +54,8 @@ export function CharacterUnitDetails({
   radar: readonly RadarAxisResult[]
   byRank: readonly UnitStats[]
   shownRank: Rank
+  /** The highest rank the shown rarity and stars allow. */
+  rankCap: Rank
   owned: boolean
   activePanel: ReactNode
   passivePanel: ReactNode
@@ -96,8 +96,6 @@ export function CharacterUnitDetails({
     <AtAGlance
       character={character}
       stats={stats}
-      healthPercentile={percentileOf(radar, "health")}
-      armourPercentile={percentileOf(radar, "armour")}
       relicSlot={relicSlot}
       slotItems={slotItems}
       onRelicClick={showRelic}
@@ -115,6 +113,7 @@ export function CharacterUnitDetails({
     <StatsByRank
       byRank={byRank}
       shownRank={shownRank}
+      rankCap={rankCap}
       owned={owned}
       isMobile={isMobile}
     />
@@ -280,6 +279,11 @@ export function CharacterUnitDetails({
             {t("characterUnit.statsByRank.footnote", {
               rank: t(`progression:ranks.${shownRank}`),
             })}
+            {rankCap !== lastRank
+              ? ` ${t("characterUnit.statsByRank.capFootnote", {
+                  rank: t(`progression:ranks.${rankCap}`),
+                })}`
+              : null}
           </p>
         </DetailsCard>
       </div>

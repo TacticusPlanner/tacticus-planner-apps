@@ -10,6 +10,7 @@ import {
 } from "@workspace/game-catalog/queries"
 import {
   maxAbilityLevel,
+  maxRankForProgression,
   progressionRarity,
   type UnitId,
 } from "@workspace/game-domain"
@@ -349,6 +350,7 @@ function CharacterUnit({
               radar={radar}
               byRank={byRank}
               shownRank={shown.rank}
+              rankCap={maxRankForProgression(shown.progression)}
               owned={ownership === "owned" && mode === "base"}
               activePanel={abilityPanel(activeId, "active")}
               passivePanel={abilityPanel(passiveId, "passive")}
