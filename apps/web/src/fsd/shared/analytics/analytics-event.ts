@@ -27,12 +27,24 @@ type LegendaryEventTeamEvent = {
   objectiveCount: number
 }
 
-/** A team's clear depth for the current run was set by hand (null when cleared). */
+/** A team's clear depth for the current run was set by hand (null when cleared). `estimate` is
+ *  the estimate shown at the time (null when none), `fromEstimate` whether the edit started from
+ *  it: together the override log for tuning clear estimates. */
 type LegendaryEventDepthSetEvent = {
   type: "legendary_event_depth_set"
   eventId: string
   laneId: string
   depth: number | null
+  estimate: number | null
+  fromEstimate: boolean
+}
+
+/** Use estimate was pressed: the manual depth was cleared so the estimate shows again. */
+type LegendaryEventDepthEstimateRestoredEvent = {
+  type: "legendary_event_depth_estimate_restored"
+  eventId: string
+  laneId: string
+  estimate: number
 }
 
 /**
@@ -41,4 +53,7 @@ type LegendaryEventDepthSetEvent = {
  * arbitrary payload at a call site - see tacticus-planner-docs/analytics/events-catalog.md.
  */
 export type AnalyticsEvent =
-  PageViewEvent | LegendaryEventTeamEvent | LegendaryEventDepthSetEvent
+  | PageViewEvent
+  | LegendaryEventTeamEvent
+  | LegendaryEventDepthSetEvent
+  | LegendaryEventDepthEstimateRestoredEvent

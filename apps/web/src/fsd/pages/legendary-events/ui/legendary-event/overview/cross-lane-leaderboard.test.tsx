@@ -109,6 +109,7 @@ function Harness({
         onDeductScoredChange: setDeductScored,
         selectedObjectives,
         onSelectedObjectivesChange: setSelectedObjectives,
+        clears: { kind: "hidden" },
       }}
       progressGrid={progressGrid}
     />
