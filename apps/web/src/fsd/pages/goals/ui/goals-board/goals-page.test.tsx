@@ -61,22 +61,27 @@ vi.mock("@/entities/player-data-override", () => ({
       queryKey: ["player-data-overrides", "onslaught"],
       queryFn: () =>
         Promise.resolve({
-          imperial: { sector: "Stone", tier: 1 },
-          xenos: { sector: "Stone", tier: 1 },
-          chaos: { sector: "Stone", tier: 1 },
+          imperial: { sector: "Stone", tier: 1, isSet: true },
+          xenos: { sector: "Stone", tier: 1, isSet: true },
+          chaos: { sector: "Stone", tier: 1, isSet: true },
           revision: 1,
         }),
     }),
   },
   getOnslaughtProgress: () =>
     Promise.resolve({
-      imperial: { sector: "Stone", tier: 1 },
-      xenos: { sector: "Stone", tier: 1 },
-      chaos: { sector: "Stone", tier: 1 },
+      imperial: { sector: "Stone", tier: 1, isSet: true },
+      xenos: { sector: "Stone", tier: 1, isSet: true },
+      chaos: { sector: "Stone", tier: 1, isSet: true },
       revision: 1,
     }),
-  progressForAlliance: (progress: Record<string, unknown>, alliance: string) =>
-    progress[alliance.toLowerCase()],
+  progressForAlliance: (
+    progress: Record<string, { isSet?: boolean } | undefined>,
+    alliance: string
+  ) => {
+    const value = progress[alliance.toLowerCase()]
+    return value?.isSet ? value : undefined
+  },
   onslaughtReward: () => ({ min: 2, max: 3, mythic: false }),
 }))
 

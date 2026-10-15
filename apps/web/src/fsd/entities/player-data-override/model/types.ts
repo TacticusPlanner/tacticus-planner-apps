@@ -16,7 +16,11 @@ export type OnslaughtTier = (typeof onslaughtTiers)[number]
 
 export type OnslaughtAllianceProgress = {
   sector: OnslaughtSector
+  /** 1–3 is the tier currently being farmed; 4 means the sector is complete (pays tier-3 rewards). */
   tier: OnslaughtTier
+  /** False when the player never saved this alliance; `sector`/`tier` are then a Stone 1
+   *  placeholder and must not be used as real progress. */
+  isSet: boolean
 }
 
 export type OnslaughtProgress = {
@@ -38,10 +42,13 @@ export type CampaignEventProgressOverrides = {
   revision: number
 }
 
+/** The alliance's saved position, or `undefined` when the player has not set it — callers treat an
+ *  unset alliance as "Onslaught supplies nothing" instead of falling back to Stone 1. */
 export function progressForAlliance(
   progress: OnslaughtProgress,
   alliance: string
-): OnslaughtAllianceProgress {
+): OnslaughtAllianceProgress | undefined {
   const key = alliance.toLowerCase() as "imperial" | "xenos" | "chaos"
-  return progress[key] ?? { sector: "Stone", tier: 1 }
+  const value = progress[key] as OnslaughtAllianceProgress | undefined
+  return value?.isSet ? value : undefined
 }

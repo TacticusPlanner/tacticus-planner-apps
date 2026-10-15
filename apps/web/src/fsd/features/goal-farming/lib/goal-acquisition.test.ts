@@ -87,7 +87,10 @@ const goldRewards = [
   },
 ] as unknown as OnslaughtRewardStorageModel[]
 
-function ascensionWithOnslaught(rewards: OnslaughtRewardStorageModel[]) {
+function ascensionWithOnslaught(
+  rewards: OnslaughtRewardStorageModel[],
+  isSet = true
+) {
   return computeGoalAcquisition({
     detail: {
       ...goal("Ascension", "Character", [{ kind: "Onslaught", ids: [] }]),
@@ -102,7 +105,7 @@ function ascensionWithOnslaught(rewards: OnslaughtRewardStorageModel[]) {
     playerCharacterById: new Map(),
     playerMowById: new Map(),
     onslaughtProgress: {
-      imperial: { sector: "Gold", tier: 4 },
+      imperial: { sector: "Gold", tier: 4, isSet },
     } as unknown as OnslaughtProgress,
     onslaughtRewards: rewards,
     referenceDate: monday,
@@ -126,6 +129,13 @@ describe("computeGoalAcquisition — Onslaught source (harden-app-against-stale-
     expect(result.onslaughtTokensDelta).toBe(0)
     expect(result.flatSuppliers).toEqual([])
     expect(result.campaignShardsEnabled).toBe(false)
+  })
+
+  it("supplies nothing when the unit's alliance has no saved Onslaught position", () => {
+    const result = ascensionWithOnslaught(goldRewards, false)
+
+    expect(result.onslaughtTokensDelta).toBe(0)
+    expect(result.flatSuppliers).toEqual([])
   })
 })
 
