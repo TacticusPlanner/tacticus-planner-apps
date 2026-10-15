@@ -205,10 +205,10 @@ export function TeamsSection({
           onOpenChange={(open) => {
             if (!open) setEditor(null)
           }}
-          onSubmit={(draft) =>
+          onSubmit={(draft, shown) =>
             editor.team
-              ? actions.updateTeam(editor.team, draft)
-              : actions.createTeam(laneId, draft)
+              ? actions.updateTeam(editor.team, draft, shown)
+              : actions.createTeam(laneId, draft, shown)
           }
           estimateTeam={estimateTeam}
           onlyUnlockedDefault={onlyUnlocked}

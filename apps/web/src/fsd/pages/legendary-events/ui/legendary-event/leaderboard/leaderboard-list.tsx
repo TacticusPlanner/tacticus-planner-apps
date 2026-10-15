@@ -87,14 +87,10 @@ export function LeaderboardList({
                 {clearsOf ? (
                   <>
                     <span aria-hidden="true">{" · "}</span>
-                    <span
-                      data-clears={clearsOf(row.unit.id).kind}
-                      data-testid="leaderboard-clears"
-                    >
-                      {t("estimates.clearsValue", {
-                        value: clearsText(clearsOf(row.unit.id)),
-                      })}
-                    </span>
+                    <ClearsValue
+                      clears={clearsOf(row.unit.id)}
+                      text={clearsText}
+                    />
                   </>
                 ) : null}
               </span>
@@ -103,5 +99,23 @@ export function LeaderboardList({
         </li>
       ))}
     </ul>
+  )
+}
+
+function ClearsValue({
+  clears,
+  text,
+}: {
+  clears: LeaderboardClears
+  text: (clears: LeaderboardClears) => string
+}) {
+  const { t } = useTranslation("legendaryEvents")
+  return (
+    <span data-clears={clears.kind} data-testid="leaderboard-clears">
+      {t("estimates.clearsValue", { value: text(clears) })}
+      {clears.kind === "pending" ? (
+        <span className="sr-only">{t("estimates.clearsLoading")}</span>
+      ) : null}
+    </span>
   )
 }

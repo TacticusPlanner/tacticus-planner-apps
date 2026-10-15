@@ -228,6 +228,16 @@ describe("LeaderboardSection clears", () => {
     )
   })
 
+  it.each(["table", "list"] as const)(
+    "announces a pending Clears figure to screen readers in the %s layout",
+    (layout) => {
+      renderLeaderboard({ clears: { kind: "pending" }, layout })
+      expect(clearsOf(row("bloodDante"))).toHaveTextContent(
+        "Estimating clears…"
+      )
+    }
+  )
+
   it("hides the Clears figure when the clear-estimate dataset is unavailable", () => {
     renderLeaderboard({ clears: { kind: "hidden" } })
     expect(screen.queryByTestId("leaderboard-clears-head")).toBeNull()

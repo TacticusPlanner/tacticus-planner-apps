@@ -45,10 +45,21 @@ type GameCatalogDb = Dexie &
  */
 const catalogDb = new Dexie(catalogDbName) as GameCatalogDb
 
-catalogDb.version(catalogDbVersion).stores({
-  metadata: "key",
-  ...Object.fromEntries(servedDatasetKeys.map((key) => [key, "id"])),
-})
+catalogDb
+  .version(catalogDbVersion)
+  .stores({
+    metadata: "key",
+    ...Object.fromEntries(servedDatasetKeys.map((key) => [key, "id"])),
+  })
+  // Every version bump adds a store, and an older client may already hold the manifest ETag that lists
+  // its dataset (it skipped the key it didn't know yet). Drop the stored ETag so the next sync fetches the
+  // manifest unconditionally: with an optional dataset the cache would otherwise read as complete on the
+  // 304 and the new dataset would wait for the next manifest change.
+  .upgrade((transaction) =>
+    transaction
+      .table<GameCatalogDatasetMetadata, string>("metadata")
+      .update(catalogManifestMetadataKey, { etag: null })
+  )
 
 export async function getGameCatalogMetadata() {
   const values = await catalogDb.metadata.toArray()

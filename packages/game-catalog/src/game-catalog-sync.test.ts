@@ -13,6 +13,7 @@ import {
 } from "./game-catalog-storage"
 import { syncGameCatalog } from "./game-catalog-sync"
 import {
+  catalogManifestMetadataKey,
   servedDatasetKeys,
   type GameCatalogDatasetEnvelope,
   type GameCatalogManifest,
@@ -212,6 +213,45 @@ function seedDbMissingStore(missingKey: string) {
   })
 }
 
+// Simulates a client synced by the previous build: every store but `skippedKey` exists, every other dataset
+// has its metadata, and the manifest row holds an ETag for a manifest that already listed `skippedKey`
+// (which that build did not know, so never downloaded).
+function seedSyncedDbBeforeStore(skippedKey: string, etag: string) {
+  return new Promise<void>((resolve, reject) => {
+    const request = indexedDB.open(catalogDbName, catalogDbVersion - 1)
+
+    request.onupgradeneeded = () => {
+      const db = request.result
+      const metadata = db.createObjectStore("metadata", { keyPath: "key" })
+      const row = {
+        catalogVersion: "dev-1",
+        gameVersion: "1.40",
+        schemaVersion: 11,
+        updatedAt: "2026-10-01T00:00:00Z",
+      }
+
+      for (const key of servedDatasetKeys) {
+        if (key !== skippedKey) {
+          db.createObjectStore(key, { keyPath: "id" })
+          metadata.put({ ...row, key, hash: `${key}-h1` })
+        }
+      }
+      metadata.put({
+        ...row,
+        key: catalogManifestMetadataKey,
+        hash: "source-base",
+        etag,
+      })
+    }
+
+    request.onsuccess = () => {
+      request.result.close()
+      resolve()
+    }
+    request.onerror = () => reject(request.error as Error)
+  })
+}
+
 beforeEach(resetDb)
 
 describe("syncGameCatalog", () => {
@@ -302,6 +342,23 @@ describe("syncGameCatalog", () => {
     expect(result.downloaded).not.toContain("lre-clear-estimate")
     expect(await getDatasetRecords("lre-clear-estimate")).toEqual([])
     expect(await hasCompleteGameCatalogCache()).toBe(true)
+  })
+
+  it("refetches the manifest after an upgrade so a dataset the previous build skipped downloads", async () => {
+    const manifest = createManifest()
+    await seedSyncedDbBeforeStore(
+      "lre-clear-estimate",
+      `"${manifest.sourceHash}"`
+    )
+
+    const client = new FakeGameCatalogClient(manifest, true)
+    const result = await syncGameCatalog(client)
+
+    expect(client.manifestRequests).toEqual([undefined])
+    expect(client.downloaded).toEqual(["lre-clear-estimate"])
+    expect(result.status).toBe("ready")
+    expect(result.firstTime).toBe(false)
+    expect(await getDatasetRecords("lre-clear-estimate")).toHaveLength(1)
   })
 
   it("only downloads datasets whose hash changed", async () => {

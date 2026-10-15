@@ -16,7 +16,10 @@ import { act, fireEvent, render, screen, within } from "@/test/render"
 import { setViewportWidth } from "@/test/viewport"
 
 import type { TeamDraft } from "../model/plan-patches"
-import type { PlanMutationOutcome } from "../model/use-legendary-event-plan"
+import type {
+  DepthEstimateContext,
+  PlanMutationOutcome,
+} from "../model/use-legendary-event-plan"
 import { TeamEditorDialog } from "./team-editor-dialog"
 
 vi.mock("dexie-react-hooks", () => ({
@@ -56,7 +59,10 @@ function renderEditor({
   estimateTeam,
 }: {
   team?: LegendaryEventTeam
-  onSubmit?: (draft: TeamDraft) => Promise<PlanMutationOutcome>
+  onSubmit?: (
+    draft: TeamDraft,
+    shown: DepthEstimateContext
+  ) => Promise<PlanMutationOutcome>
   onOpenChange?: (open: boolean) => void
   estimateTeam?: (memberUnitIds: readonly string[]) => ClearEstimate | null
 } = {}) {
@@ -159,13 +165,16 @@ describe("TeamEditorDialog", () => {
       fireEvent.click(screen.getByTestId("team-editor-save"))
     })
 
-    expect(onSubmit).toHaveBeenCalledWith({
-      name: "Team 3",
-      memberUnitIds: [teamUnits.r.id],
-      reserveUnitId: null,
-      objectiveIndexes: [],
-      expectedBattleClears: 1,
-    })
+    expect(onSubmit).toHaveBeenCalledWith(
+      {
+        name: "Team 3",
+        memberUnitIds: [teamUnits.r.id],
+        reserveUnitId: null,
+        objectiveIndexes: [],
+        expectedBattleClears: 1,
+      },
+      { estimate: null, fromEstimate: false }
+    )
     expect(onOpenChange).toHaveBeenCalledWith(false)
   })
 
@@ -218,7 +227,8 @@ describe("TeamEditorDialog", () => {
         fireEvent.click(screen.getByTestId("team-editor-save"))
       })
       expect(onSubmit).toHaveBeenLastCalledWith(
-        expect.objectContaining({ expectedBattleClears: null })
+        expect.objectContaining({ expectedBattleClears: null }),
+        { estimate: 2, fromEstimate: true }
       )
 
       fireEvent.click(
@@ -228,8 +238,10 @@ describe("TeamEditorDialog", () => {
       await act(async () => {
         fireEvent.click(screen.getByTestId("team-editor-save"))
       })
+      // The override log gets the estimate the depth was stepped from.
       expect(onSubmit).toHaveBeenLastCalledWith(
-        expect.objectContaining({ expectedBattleClears: 3 })
+        expect.objectContaining({ expectedBattleClears: 3 }),
+        { estimate: 2, fromEstimate: true }
       )
     })
 

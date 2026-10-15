@@ -37,7 +37,11 @@ import {
   toggleObjective,
   toggleReserve,
 } from "../model/team-editor-draft"
-import type { PlanMutationOutcome } from "../model/use-legendary-event-plan"
+import { editStartsFromEstimate } from "../model/clear-depth-display"
+import type {
+  DepthEstimateContext,
+  PlanMutationOutcome,
+} from "../model/use-legendary-event-plan"
 import { ClearDepthField } from "./clear-depth-field"
 import { TeamUnitPicker } from "./team-unit-picker"
 
@@ -76,7 +80,11 @@ export function TeamEditorDialog({
   teamNumber: number
   run: LegendaryEventRun
   onlyUnlockedDefault: boolean
-  onSubmit: (draft: TeamDraft) => Promise<PlanMutationOutcome>
+  /** `shown` is the estimate behind the saved depth, for the override log (design D8). */
+  onSubmit: (
+    draft: TeamDraft,
+    shown: DepthEstimateContext
+  ) => Promise<PlanMutationOutcome>
   /** The lane's estimator; absent while estimates are unavailable. */
   estimateTeam?: (memberUnitIds: readonly string[]) => ClearEstimate | null
 }) {
@@ -84,9 +92,8 @@ export function TeamEditorDialog({
   const objectiveLabel = useObjectiveLabel()
   const nameId = useId()
   const context = { lane, units }
-  const [draft, setDraft] = useState(() =>
-    initialEditorDraft(team, run, context)
-  )
+  const [initialDraft] = useState(() => initialEditorDraft(team, run, context))
+  const [draft, setDraft] = useState(initialDraft)
   const [saving, setSaving] = useState(false)
   const [reloaded, setReloaded] = useState(false)
   const number = new Intl.NumberFormat(i18n.language)
@@ -125,7 +132,10 @@ export function TeamEditorDialog({
     if (!canSave) return
     setSaving(true)
     setReloaded(false)
-    const outcome = await onSubmit(toTeamDraft(draft, name))
+    const outcome = await onSubmit(toTeamDraft(draft, name), {
+      estimate: estimate?.depth ?? null,
+      fromEstimate: editStartsFromEstimate(initialDraft.depth, estimate),
+    })
     setSaving(false)
     setReloaded(outcome === "conflict")
     if (outcome === "saved") onOpenChange(false)
