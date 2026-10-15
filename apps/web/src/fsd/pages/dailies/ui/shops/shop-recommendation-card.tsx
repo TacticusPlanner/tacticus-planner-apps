@@ -136,7 +136,7 @@ export function ShopRecommendationCard({
 
   return (
     <div
-      className="flex w-full flex-col gap-2 rounded-lg border bg-card p-3 text-card-foreground shadow-sm"
+      className="flex w-full flex-col gap-2 rounded-[min(var(--radius-4xl),24px)] border bg-card p-3 text-card-foreground shadow-sm"
       data-testid={testId}
     >
       <div className="flex items-start gap-2">

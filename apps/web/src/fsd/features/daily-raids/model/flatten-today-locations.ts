@@ -8,6 +8,8 @@ export type FlattenedRaidLocation = {
   resourceId: string
   raidsToPerform: number
   dailyAttempts: number
+  /** Summed over the merged entries that farm the row's `resourceId` (see `plannedRaidNeed`). */
+  remainingBefore: number
 }
 
 /**
@@ -30,12 +32,16 @@ export function flattenTodayLocations(
     const existing = byBattle.get(entry.battleId)
     if (existing) {
       existing.raidsToPerform += entry.raidsPerformed
+      if (entry.resourceId === existing.resourceId) {
+        existing.remainingBefore += entry.remainingBefore
+      }
     } else {
       byBattle.set(entry.battleId, {
         battleId: entry.battleId,
         resourceId: entry.resourceId,
         raidsToPerform: entry.raidsPerformed,
         dailyAttempts: entry.dailyAttempts,
+        remainingBefore: entry.remainingBefore,
       })
     }
   }
