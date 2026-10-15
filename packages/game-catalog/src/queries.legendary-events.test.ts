@@ -7,6 +7,8 @@ import {
 } from "./game-catalog-storage"
 import {
   getLegendaryEvent,
+  getLegendaryEventBattles,
+  getHordeModeTiers,
   getLegendaryEventCommon,
   getLegendaryEvents,
   hasLegendaryEventsSynced,
@@ -88,5 +90,40 @@ describe("Legendary Event queries", () => {
 
   it("returns null for the reward ladder on an empty store", async () => {
     expect(await getLegendaryEventCommon()).toBeNull()
+  })
+
+  it("returns one event's battles across its lanes", async () => {
+    await replaceGameCatalogDataset(
+      "lre-battles",
+      [
+        { id: "votanUthar-alpha-1", lreId: "votanUthar", power: 1018 },
+        { id: "votanUthar-beta-1", lreId: "votanUthar", power: 1200 },
+        { id: "astarLysander-alpha-1", lreId: "astarLysander", power: 900 },
+      ],
+      metadata("lre-battles")
+    )
+
+    const battles = await getLegendaryEventBattles("votanUthar")
+    expect(battles.map((battle) => battle.id).sort()).toEqual([
+      "votanUthar-alpha-1",
+      "votanUthar-beta-1",
+    ])
+  })
+
+  it("returns the horde-mode tier list, or null when the dataset is absent", async () => {
+    expect(await getHordeModeTiers()).toBeNull()
+
+    const record = {
+      id: "horde-mode-tiers",
+      tiers: [{ tier: "S", multiplier: 1.3 }],
+      characters: [{ unitId: "ultraCalgar", tier: "S" }],
+    }
+    await replaceGameCatalogDataset(
+      "horde-mode-tiers",
+      [record],
+      metadata("horde-mode-tiers")
+    )
+
+    expect(await getHordeModeTiers()).toMatchObject(record)
   })
 })

@@ -17,6 +17,8 @@ import {
 } from "@/features/legendary-event-teams"
 import { ConfirmationDialog, SortableList } from "@/shared/ui"
 
+import type { ClearEstimatesViewModel } from "../legendary-event-page.view-model"
+
 import { TeamCard, type TeamCardActions } from "./team-card"
 import { TeamsEmptyState } from "./teams-empty-state"
 import {
@@ -28,14 +30,21 @@ import {
 
 type TeamsActions = Pick<
   LegendaryEventPlanActions,
-  "createTeam" | "updateTeam" | "deleteTeam" | "reorderLane" | "setDepth"
+  | "createTeam"
+  | "updateTeam"
+  | "deleteTeam"
+  | "reorderLane"
+  | "setDepth"
+  | "restoreEstimate"
 >
 
-/** The page's Teams data (design D2): the section state, the current run and the plan actions. */
+/** The page's Teams data (design D2): the section state, the current run, the plan actions and
+ *  the clear estimates. */
 export interface TeamsViewModel {
   state: TeamsSectionState
   run: LegendaryEventRun
   actions: TeamsActions
+  estimates: ClearEstimatesViewModel
 }
 
 type EditorState = { key: number; team?: LegendaryEventTeam }
@@ -62,16 +71,25 @@ export function TeamsSection({
   const [editor, setEditor] = useState<EditorState | null>(null)
   const [editorCount, setEditorCount] = useState(0)
   const [deleting, setDeleting] = useState<LegendaryEventTeam | null>(null)
-  const { state, run, actions } = teams
+  const { state, run, actions, estimates } = teams
+  const estimateTeam =
+    estimates.kind === "ready" ? estimates.byLane[laneId].team : undefined
 
   const cards = useMemo(
     () =>
       state.kind === "ready"
         ? laneTeams(state.plan, laneId).map((team) =>
-            buildTeamCardViewModel(team, lane, state.units, state.roster, run)
+            buildTeamCardViewModel(
+              team,
+              lane,
+              state.units,
+              state.roster,
+              run,
+              estimateTeam
+            )
           )
         : [],
-    [state, laneId, lane, run]
+    [state, laneId, lane, run, estimateTeam]
   )
 
   if (state.kind === "hidden") return null
@@ -86,7 +104,10 @@ export function TeamsSection({
     return {
       onEdit: () => openEditor(card.team),
       onDelete: () => setDeleting(card.team),
-      onDepthChange: (depth) => void actions.setDepth(card.team, depth),
+      onDepthChange: (depth, shown) =>
+        void actions.setDepth(card.team, depth, shown),
+      onUseEstimate: (estimate) =>
+        void actions.restoreEstimate(card.team, estimate),
       onMoveUp:
         isMobile && moves.up
           ? () => void actions.reorderLane(laneId, moves.up!)
@@ -184,11 +205,12 @@ export function TeamsSection({
           onOpenChange={(open) => {
             if (!open) setEditor(null)
           }}
-          onSubmit={(draft) =>
+          onSubmit={(draft, shown) =>
             editor.team
-              ? actions.updateTeam(editor.team, draft)
-              : actions.createTeam(laneId, draft)
+              ? actions.updateTeam(editor.team, draft, shown)
+              : actions.createTeam(laneId, draft, shown)
           }
+          estimateTeam={estimateTeam}
           onlyUnlockedDefault={onlyUnlocked}
           open
           roster={state.roster}

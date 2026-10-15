@@ -11,10 +11,18 @@ import {
 import { legendaryEventCharacters } from "@/test/fixtures/legendary-event-characters"
 import { lysanderEvent } from "@/test/fixtures/legendary-events"
 import { createTestI18n, i18nWrapper } from "@/test/i18n"
-import { act, fireEvent, render, screen, within } from "@/test/render"
+import {
+  act,
+  cleanup as cleanupRender,
+  fireEvent,
+  render,
+  screen,
+  within,
+} from "@/test/render"
 
 import {
   buildLeaderboardRows,
+  type ClearEstimatesViewModel,
   type LeaderboardRowsViewModel,
   type ProgressGridViewModel,
 } from "../legendary-event-page.view-model"
@@ -73,11 +81,13 @@ function Harness({
   layout,
   laneId = "alpha",
   progressGrid = fiveCleared,
+  clears = { kind: "hidden" },
 }: {
   rows: LeaderboardRowsViewModel
   layout: "table" | "list"
   laneId?: LegendaryEventLaneId
   progressGrid?: ProgressGridViewModel
+  clears?: ClearEstimatesViewModel
 }) {
   const [onlyUnlocked, setOnlyUnlocked] = useState(false)
   const [deductScored, setDeductScored] = useState(true)
@@ -97,6 +107,7 @@ function Harness({
         onDeductScoredChange: setDeductScored,
         selectedObjectives,
         onSelectedObjectivesChange: setSelectedObjectives,
+        clears,
       }}
       progressGrid={progressGrid}
     />
@@ -157,6 +168,91 @@ const eviscerateKey = objectiveFilterKey({
   kind: "DamageType",
   target: "Eviscerate",
   exclude: false,
+})
+
+const estimateFor = (depth: number) => ({
+  depth,
+  battleCount: 18,
+  marginAbovePct: 10,
+  shortfallToNextPct: 10,
+  calibrated: true,
+})
+const noEstimator = { team: () => null, unit: () => null }
+// Dante (owned) is estimated at 6 clears on Alpha; every other unit has no estimate.
+const danteClears: ClearEstimatesViewModel = {
+  kind: "ready",
+  byLane: {
+    alpha: {
+      team: () => null,
+      unit: (unitId) => (unitId === "bloodDante" ? estimateFor(6) : null),
+    },
+    beta: noEstimator,
+    gamma: noEstimator,
+  },
+}
+const clearsOf = (entry: HTMLElement) =>
+  within(entry).getByTestId("leaderboard-clears")
+
+describe("LeaderboardSection clears", () => {
+  beforeAll(async () => {
+    i18n = await createTestI18n("en")
+  })
+
+  it("shows ~n for an owned unit and — for a locked one in a Clears column after Objectives", () => {
+    renderLeaderboard({ clears: danteClears })
+    expect(screen.getByTestId("leaderboard-clears-head")).toHaveTextContent(
+      "Clears"
+    )
+    const headers = screen.getAllByRole("columnheader")
+    expect(headers.at(-1)).toHaveTextContent("Clears")
+    expect(headers.at(-2)).toHaveTextContent("Objectives")
+    expect(clearsOf(row("bloodDante"))).toHaveTextContent("~6")
+    const locked = rows().find((entry) => entry.dataset.ownership === "locked")!
+    expect(clearsOf(locked)).toHaveTextContent("—")
+  })
+
+  it("keeps the default order whatever the estimates", () => {
+    renderLeaderboard()
+    const order = units()
+    cleanupRender()
+    renderLeaderboard({ clears: danteClears })
+    expect(units()).toEqual(order)
+  })
+
+  it("shows a placeholder dash while the estimate inputs load", () => {
+    renderLeaderboard({ clears: { kind: "pending" } })
+    expect(clearsOf(row("bloodDante"))).toHaveTextContent("–")
+    expect(clearsOf(row("bloodDante"))).toHaveAttribute(
+      "data-clears",
+      "pending"
+    )
+  })
+
+  it.each(["table", "list"] as const)(
+    "announces a pending Clears figure to screen readers in the %s layout",
+    (layout) => {
+      renderLeaderboard({ clears: { kind: "pending" }, layout })
+      expect(clearsOf(row("bloodDante"))).toHaveTextContent(
+        "Estimating clears…"
+      )
+    }
+  )
+
+  it("hides the Clears figure when clear estimates are unavailable", () => {
+    renderLeaderboard({ clears: { kind: "hidden" } })
+    expect(screen.queryByTestId("leaderboard-clears-head")).toBeNull()
+    expect(screen.queryAllByTestId("leaderboard-clears")).toHaveLength(0)
+  })
+
+  it("reads Objectives: N · Clears: ~n on a mobile row card", () => {
+    renderLeaderboard({ clears: danteClears, layout: "list" })
+    const dante = row("bloodDante")
+    expect(
+      within(dante).getByTestId("leaderboard-objectives")
+    ).toHaveTextContent("Objectives: 2")
+    expect(clearsOf(dante)).toHaveTextContent("Clears: ~6")
+    expect(dante).toHaveTextContent("Objectives: 2 · Clears: ~6")
+  })
 })
 
 describe("LeaderboardSection", () => {
