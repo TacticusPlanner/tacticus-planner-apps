@@ -646,7 +646,9 @@
       "selectAll": "Alle Ziele auswählen",
       "selectRow": "{{entity}} auswählen",
       "selectMode": "Ziele auswählen",
-      "selectDone": "Fertig"
+      "selectDone": "Fertig",
+      "removeFromProject": "Aus Projekt entfernen",
+      "removeFromProjectCount": "Aus Projekt entfernen ({{count}})"
     },
     "delete": {
       "title_one": "Dieses Ziel löschen?",
@@ -655,7 +657,9 @@
       "description_other": "Dies löscht diese {{count}} Ziele dauerhaft aus deinem Konto, einschließlich aller Projekte, zu denen sie gehören. Dies kann nicht rückgängig gemacht werden.",
       "confirm_one": "Ziel löschen",
       "confirm_other": "{{count}} Ziele löschen",
-      "cancel": "Abbrechen"
+      "cancel": "Abbrechen",
+      "projectAlternative_one": "Um es nur aus {{project}} herauszunehmen, brich ab und nutze stattdessen „Aus diesem Projekt entfernen“.",
+      "projectAlternative_other": "Um sie nur aus {{project}} herauszunehmen, brich ab und nutze stattdessen „Aus Projekt entfernen“."
     },
     "project": {
       "noProjectTitle": "Noch keine Projekte",
@@ -734,7 +738,13 @@
       "assemblyLastMembershipTitle": "Nichts wurde gespeichert: Diese Ziele blieben in keinem Projekt",
       "assemblyLastMembership": "Dies ist das einzige Projekt des Ziels. Füge es zuerst einem anderen Projekt hinzu (das Standardprojekt ist immer verfügbar) und entferne es dann hier.",
       "assemblySlotConflictTitle": "Nichts wurde gespeichert: Diese Ziele konkurrieren um denselben Platz",
-      "assemblySlotConflict": "{{project}} kann für diesen Platz nur ein aktives oder pausiertes Ziel enthalten. Behalte nur eines der konkurrierenden Ziele und speichere erneut."
+      "assemblySlotConflict": "{{project}} kann für diesen Platz nur ein aktives oder pausiertes Ziel enthalten. Behalte nur eines der konkurrierenden Ziele und speichere erneut.",
+      "removeFromProject": "Aus diesem Projekt entfernen",
+      "moveToProject": "In Projekt verschieben",
+      "moveToProjectTitle": "In Projekt verschieben",
+      "moveToProjectDescription": "Dies ist das einzige Projekt dieses Ziels. Wähle ein Projekt, in das es verschoben werden soll, oder erstelle ein neues.",
+      "moveSelectionDescription_one": "{{project}} ist das einzige Projekt für {{count}} der ausgewählten Ziele. Wähle ein Projekt, in das es verschoben werden soll, oder erstelle ein neues. Die übrigen ausgewählten Ziele werden nur aus {{project}} entfernt.",
+      "moveSelectionDescription_other": "{{project}} ist das einzige Projekt für {{count}} der ausgewählten Ziele. Wähle ein Projekt, in das sie verschoben werden sollen, oder erstelle ein neues. Die übrigen ausgewählten Ziele werden nur aus {{project}} entfernt."
     },
     "toasts": {
       "statusChangedPartial": "{{succeeded}} von {{total}} Zielen aktualisiert.",
@@ -745,7 +755,15 @@
       "projectMembershipSaved": "{{project}} aktualisiert: {{added}} hinzugefügt, {{removed}} entfernt.",
       "goalsAddedToProject_one": "{{count}} Ziel zu {{project}} hinzugefügt.",
       "goalsAddedToProject_other": "{{count}} Ziele zu {{project}} hinzugefügt.",
-      "bulkPartial": "Nur {{succeeded}} von {{total}} Zielen wurden verarbeitet."
+      "bulkPartial": "Nur {{succeeded}} von {{total}} Zielen wurden verarbeitet.",
+      "goalRemovedFromProject": "{{goal}} aus {{project}} entfernt.",
+      "goalRelocated": "{{goal}} nach {{project}} verschoben.",
+      "goalsRemovedFromProject_one": "{{count}} Ziel aus {{project}} entfernt.",
+      "goalsRemovedFromProject_other": "{{count}} Ziele aus {{project}} entfernt.",
+      "goalsRemovedAndMoved_one": "{{count}} Ziel aus {{project}} entfernt; {{moved}} nach {{destination}} verschoben.",
+      "goalsRemovedAndMoved_other": "{{count}} Ziele aus {{project}} entfernt; {{moved}} nach {{destination}} verschoben.",
+      "movedButNotRemoved_one": "{{count}} Ziel wurde zu {{destination}} hinzugefügt, konnte aber nicht aus {{project}} entfernt werden: {{error}}",
+      "movedButNotRemoved_other": "{{count}} Ziele wurden zu {{destination}} hinzugefügt, konnten aber nicht aus {{project}} entfernt werden: {{error}}"
     },
     "create": {
       "title": "Ziel erstellen",

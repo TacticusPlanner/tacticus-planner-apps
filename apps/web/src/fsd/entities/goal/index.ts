@@ -7,7 +7,6 @@ export {
   listGoals,
   updateGoal,
   updateGoalOrder,
-  updateGoalProjects,
   updateGoalStatus,
   updateGoalTarget,
 } from "./api/goal.api"
