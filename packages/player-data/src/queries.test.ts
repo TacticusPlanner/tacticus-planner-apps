@@ -11,6 +11,7 @@ import {
   getInventoryAbilityMaterials,
   getInventoryOrbs,
   getInventoryShard,
+  getInventoryShards,
   getInventoryUpgrades,
   getInventoryXpBooks,
   getLiveProgress,
@@ -84,6 +85,7 @@ describe("player-data queries", () => {
       chunks["campaign-events-progress"]
     )
     expect(await getLiveProgress()).toEqual(chunks["live-progress"])
+    expect(await getInventoryShards()).toEqual(chunks["inventory-shards"])
   })
 
   it("reads single records by unit id", async () => {

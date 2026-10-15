@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Lets a signed-in player record each alliance's current Onslaught position (sector and tier) on `/progress/onslaught`, which the game API does not sync, so shard estimates use the right position.
+Lets a signed-in player record each alliance's current Onslaught position (sector and tier) on `/my-game/onslaught`, which the game API does not sync, so shard estimates use the right position.
 
 ## Requirements
 

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest"
 
 import { filterNavigationItems } from "./navigation-filter"
-import { navItems } from "./nav-items"
+import { filterVisibleNavItems, navItems } from "./nav-items"
 
 const labels: Record<string, string> = {
   "library:section.label": "Nachschlagen",
@@ -102,20 +102,91 @@ describe("filterNavigationItems", () => {
 })
 
 describe("navItems", () => {
-  it("places Legendary Events after Progress and before Guild", () => {
+  it("places Legendary Events after My Game and before Guild", () => {
     const paths = navItems.map((item) => item.path)
     expect(paths.indexOf("/legendary-events")).toBe(
-      paths.indexOf("/progress") + 1
+      paths.indexOf("/my-game") + 1
     )
     expect(paths.indexOf("/guild")).toBe(paths.indexOf("/legendary-events") + 1)
   })
 
-  it("hides Legendary Events from anonymous users, like Plan, Progress and Guild", () => {
-    const anonymous = navItems
-      .filter((item) => item.anonymousAllowed)
-      .map((item) => item.path)
-    for (const path of ["/legendary-events", "/plan", "/progress", "/guild"]) {
+  it("lists My Game's children with Collection first", () => {
+    const myGame = navItems.find((item) => item.path === "/my-game")
+    expect(myGame?.children?.map((child) => child.path)).toEqual([
+      "/my-game/collection",
+      "/my-game/onslaught",
+      "/my-game/campaigns",
+      "/my-game/campaign-events",
+    ])
+  })
+
+  it("hides Legendary Events from anonymous users, like Plan and Guild", () => {
+    const anonymous = filterVisibleNavItems(navItems, false).map(
+      (item) => item.path
+    )
+    for (const path of ["/legendary-events", "/plan", "/guild"]) {
       expect(anonymous).not.toContain(path)
     }
+    expect(anonymous).toContain("/my-game")
+  })
+})
+
+describe("filterVisibleNavItems", () => {
+  const myGameChildren = (items: typeof navItems) =>
+    items
+      .find((item) => item.path === "/my-game")
+      ?.children?.map((child) => child.path)
+
+  it("returns the whole tree for a signed-in user", () => {
+    const visible = filterVisibleNavItems(navItems, true)
+    expect(visible).toBe(navItems)
+    expect(myGameChildren(visible)).toHaveLength(4)
+  })
+
+  it("keeps only My Game's anonymous children for a signed-out user", () => {
+    expect(myGameChildren(filterVisibleNavItems(navItems, false))).toEqual([
+      "/my-game/collection",
+    ])
+  })
+
+  it("lets a child inherit its section's access when it sets none", () => {
+    const library = filterVisibleNavItems(navItems, false).find(
+      (item) => item.path === "/library"
+    )
+    expect(library).toBe(navItems.find((item) => item.path === "/library"))
+  })
+
+  it("drops an anonymous section whose children all require sign-in", () => {
+    const items = [
+      {
+        ...navItems.find((item) => item.path === "/my-game")!,
+        children: [
+          {
+            path: "/my-game/onslaught",
+            labelKey: "myGame.tabs.onslaught" as const,
+            descriptionKey: "myGame.tabs.onslaughtDescription" as const,
+            anonymousAllowed: false,
+          },
+        ],
+      },
+    ]
+    expect(filterVisibleNavItems(items, false)).toEqual([])
+  })
+
+  it("keeps sign-in-only children out of an anonymous user's search", () => {
+    const visible = filterVisibleNavItems(navItems, false)
+    const byKey = (key: string) =>
+      ({
+        "myGame.tabs.onslaught": "Onslaught",
+        "myGame.tabs.collection": "Collection",
+      })[key] ?? key
+
+    expect(filterNavigationItems(visible, "onslaught", byKey)).toEqual([])
+    const myGame = filterNavigationItems(visible, "collection", byKey).find(
+      (item) => item.path === "/my-game"
+    )
+    expect(myGame?.children?.map((child) => child.path)).toEqual([
+      "/my-game/collection",
+    ])
   })
 })

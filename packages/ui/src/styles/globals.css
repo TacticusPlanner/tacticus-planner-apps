@@ -38,6 +38,11 @@
   --color-destructive: var(--destructive);
   --color-success-foreground: var(--success-foreground);
   --color-success: var(--success);
+  --color-overlay: var(--overlay);
+  --color-overlay-foreground: var(--overlay-foreground);
+  --color-portrait: var(--portrait);
+  --color-progress: var(--progress);
+  --color-info-bg: var(--info-bg);
   --color-accent-foreground: var(--accent-foreground);
   --color-accent: var(--accent);
   --color-muted-foreground: var(--muted-foreground);
@@ -162,6 +167,40 @@
   --event-bar-foreground: oklch(0.243 0.015 261.655);
   --success: oklch(0.93 0.05 150);
   --success-foreground: oklch(0.37 0.09 150);
+
+  /* Collection unit tiles: overlays on portraits (star pill, lock badge, shard counts), the
+     portrait backdrop while art loads, unlock bars and the sign-in/sync banner. */
+  --overlay: #080a0ec7;
+  --overlay-foreground: #ffffff;
+  --portrait: #d9dde4;
+  --progress: #2a6fcc;
+  --info-bg: #e8eef9;
+
+  /* Faction header bars (Collection), keyed by catalog faction id. Shared by both themes; each
+     keeps >= 4.5:1 against --overlay-foreground. Seeded from V1's factions.json. */
+  --faction-Sisterhood: #962c38;
+  --faction-AdeptusAstartes: #4b4f8a;
+  --faction-Custodes: #7a5c12;
+  --faction-AdeptusMechanicus: #781e2e;
+  --faction-AstraMilitarum: #56602c;
+  --faction-BlackTemplars: #3f4247;
+  --faction-BloodAngels: #a31a19;
+  --faction-DarkAngels: #18542b;
+  --faction-SpaceWolves: #3e5f80;
+  --faction-Ultramarines: #194486;
+  --faction-BlackLegion: #2a1a1c;
+  --faction-DeathGuard: #5f500b;
+  --faction-EmperorsChildren: #874470;
+  --faction-TheLostAndTheDamned: #6b3a2a;
+  --faction-ThousandSons: #0e5a7a;
+  --faction-WorldEaters: #6e1416;
+  --faction-Aeldari: #1d6a70;
+  --faction-Genestealers: #6a3d8f;
+  --faction-LeaguesOfVotann: #6f4e37;
+  --faction-Necrons: #00704f;
+  --faction-Orks: #4a6a1d;
+  --faction-Tau: #8f4c12;
+  --faction-Tyranids: #7f5283;
 }
 
 .dark {
@@ -261,6 +300,10 @@
   --event-bar-foreground: oklch(0.97 0.005 264.532);
   --success: oklch(0.29 0.055 150);
   --success-foreground: oklch(0.87 0.11 150);
+
+  --portrait: #232933;
+  --progress: #4b8ef0;
+  --info-bg: #16202e;
 }
 
 @layer base {

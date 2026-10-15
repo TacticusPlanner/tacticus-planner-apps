@@ -52,6 +52,7 @@ type GoalRowCellsProps = Pick<
   | "onToggleSelected"
   | "reachedByGoalId"
   | "cascadeContext"
+  | "projectRemoval"
 > & {
   row: NonNullable<GoalsListProps["rows"]>[number]
   selected: boolean
@@ -78,6 +79,7 @@ export const GoalRowCells = memo(function GoalRowCells({
   xpBookRarity,
   reachedByGoalId,
   cascadeContext,
+  projectRemoval,
   onToggleSelected,
   selected,
   reorderEnabled,
@@ -173,6 +175,7 @@ export const GoalRowCells = memo(function GoalRowCells({
               actions={actions}
               cascadeContext={cascadeContext}
               onEdit={onEdit}
+              projectRemoval={projectRemoval}
               onOpenChange={(open) => {
                 if (open) setOpenPopoverGoalId(null)
               }}

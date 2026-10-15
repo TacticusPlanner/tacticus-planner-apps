@@ -23,6 +23,8 @@ vi.mock("@/shared/auth", () => ({
 }))
 vi.mock("../providers/player-data-sync-button", () => ({
   PlayerDataSyncButton: () => null,
+}))
+vi.mock("@/features/player-data-sync", () => ({
   usePlayerDataSyncStatus: () => ({
     status: "idle",
     isSyncing: false,

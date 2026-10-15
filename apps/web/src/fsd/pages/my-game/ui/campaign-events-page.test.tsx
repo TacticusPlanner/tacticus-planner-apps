@@ -164,13 +164,13 @@ import { CampaignEventsPage } from "./campaign-events-page"
 function renderPage() {
   const router = createMemoryRouter(
     [
-      { path: "/progress/campaign-events", element: <CampaignEventsPage /> },
+      { path: "/my-game/campaign-events", element: <CampaignEventsPage /> },
       {
-        path: "/progress/campaigns",
+        path: "/my-game/campaigns",
         element: <div data-testid="campaigns-page" />,
       },
     ],
-    { initialEntries: ["/progress/campaign-events"] }
+    { initialEntries: ["/my-game/campaign-events"] }
   )
   const view = render(<RouterProvider router={router} />)
   return { ...view, router }
@@ -634,7 +634,7 @@ describe("CampaignEventsPage", () => {
       const { router } = renderPage()
       await screen.findByTestId("current-event")
       await increaseStandard(user)
-      void router.navigate("/progress/campaigns")
+      void router.navigate("/my-game/campaigns")
       expect(
         await screen.findByText("progress.events.leave.title")
       ).toBeInTheDocument()
@@ -642,7 +642,7 @@ describe("CampaignEventsPage", () => {
         screen.getByRole("button", { name: "progress.events.leave.stay" })
       )
       expect(screen.getByTestId("campaign-events-page")).toBeInTheDocument()
-      void router.navigate("/progress/campaigns")
+      void router.navigate("/my-game/campaigns")
       await user.click(
         await screen.findByRole("button", {
           name: "progress.events.leave.leave",
@@ -654,7 +654,7 @@ describe("CampaignEventsPage", () => {
     it("navigates without asking when there are no edits", async () => {
       const { router } = renderPage()
       await screen.findByTestId("current-event")
-      void router.navigate("/progress/campaigns")
+      void router.navigate("/my-game/campaigns")
       expect(await screen.findByTestId("campaigns-page")).toBeInTheDocument()
     })
   })

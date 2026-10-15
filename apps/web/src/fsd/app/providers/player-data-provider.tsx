@@ -1,8 +1,5 @@
-/* eslint-disable react-refresh/only-export-components */
 import {
-  createContext,
   useCallback,
-  useContext,
   useEffect,
   useMemo,
   useRef,
@@ -27,6 +24,11 @@ import {
   requestApiAccess,
   useActiveAccountId,
 } from "@/shared/auth"
+import {
+  PlayerDataContext,
+  type PlayerDataContextValue,
+  type PlayerDataStatus,
+} from "@/shared/player-data-status"
 
 // A background sync is due once the last successful sync is more than an hour old — matches the
 // "sync at most hourly, but always up to date within an hour" requirement. Re-checked periodically
@@ -61,24 +63,6 @@ function runSharedSync(
 
   return promise
 }
-
-export type PlayerDataStatus = "idle" | "syncing" | "ready" | "stale" | "error"
-
-export type PlayerDataContextValue = {
-  status: PlayerDataStatus
-  progress: PlayerDataSyncProgress | null
-  lastSyncedAt: string | null
-  error: string | null
-  // True when `error` is not a transient failure — acquireAccessToken could not renew the session
-  // silently, so retrying the same sync will just fail the same way. The UI should offer to sign in
-  // again (via requestApiAccess/loginRedirect) instead of a plain "try again".
-  requiresReauth: boolean
-  syncNow: () => void
-}
-
-const PlayerDataContext = createContext<PlayerDataContextValue | undefined>(
-  undefined
-)
 
 export type PlayerDataProviderProps = {
   baseUrl: string
@@ -238,16 +222,4 @@ export function PlayerDataProvider({
       {children}
     </PlayerDataContext.Provider>
   )
-}
-
-export function usePlayerDataStatus() {
-  const context = useContext(PlayerDataContext)
-
-  if (!context) {
-    throw new Error(
-      "usePlayerDataStatus must be used within PlayerDataProvider."
-    )
-  }
-
-  return context
 }

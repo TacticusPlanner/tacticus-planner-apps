@@ -43,6 +43,14 @@ const oklch = (value: string): Rgb => {
     return 255 * (c <= 0.0031308 ? 12.92 * c : 1.055 * c ** (1 / 2.4) - 0.055)
   }) as Rgb
 }
+// `#rrggbb` or `#rrggbbaa`; alpha is returned separately so callers composite it explicitly.
+const hex = (value: string): { rgb: Rgb; alpha: number } => {
+  const n = (i: number) => parseInt(value.slice(i, i + 2), 16)
+  return {
+    rgb: [n(1), n(3), n(5)],
+    alpha: value.length === 9 ? n(7) / 255 : 1,
+  }
+}
 const lum = (c: Rgb) => {
   const f = (v: number) => {
     v /= 255
@@ -60,7 +68,8 @@ const theme = (tokens: Record<string, string>) => {
   const get = (name: string): Rgb => {
     const v = tokens[name]!
     const ref = v.match(/^var\(--([\w-]+)\)$/)
-    return ref ? get(ref[1]!) : oklch(v)
+    if (ref) return get(ref[1]!)
+    return v.startsWith("#") ? hex(v).rgb : oklch(v)
   }
   const mix = (fg: string, alpha: number, bg: string | Rgb): Rgb => {
     const f = get(fg)
@@ -148,4 +157,45 @@ describe.each(Object.entries(themes))("%s contrast", (_name, t) => {
       expect(ratio(t.get("muted-foreground"), tint)).toBeGreaterThanOrEqual(4.5)
     }
   })
+})
+
+describe("collection tile tokens", () => {
+  const factions = Object.keys(light).filter((name) =>
+    name.startsWith("faction-")
+  )
+
+  it("defines a faction colour per catalog faction", () => {
+    expect(factions.length).toBeGreaterThanOrEqual(23)
+  })
+
+  it.each(factions)("%s header text >= 4.5", (faction) => {
+    const t = themes.light
+    expect(
+      ratio(t.get("overlay-foreground"), t.get(faction))
+    ).toBeGreaterThanOrEqual(4.5)
+  })
+
+  it("overlay text >= 4.5 even over a white portrait", () => {
+    const overlay = hex(light.overlay!)
+    const white: Rgb = [255, 255, 255]
+    const pill = overlay.rgb.map(
+      (v, i) => v * overlay.alpha + white[i]! * (1 - overlay.alpha)
+    ) as Rgb
+    expect(
+      ratio(themes.light.get("overlay-foreground"), pill)
+    ).toBeGreaterThanOrEqual(4.5)
+  })
+
+  it.each(Object.entries(themes))(
+    "%s: unlock bar >= 3 against its muted track and banner text >= 4.5",
+    (_name, t) => {
+      expect(ratio(t.get("progress"), t.get("muted"))).toBeGreaterThanOrEqual(3)
+      expect(
+        ratio(t.get("foreground"), t.get("info-bg"))
+      ).toBeGreaterThanOrEqual(4.5)
+      expect(
+        ratio(t.get("muted-foreground"), t.get("info-bg"))
+      ).toBeGreaterThanOrEqual(4.5)
+    }
+  )
 })
