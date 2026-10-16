@@ -121,12 +121,9 @@ export type TokenPlanView =
 export function buildTokenPlanView(input: TokenPlanViewInput): TokenPlanView {
   const { event, lifecycle, progress, plan, resolution, estimates } = input
   const run = currentLegendaryEventRun(resolution)
-  // Every run over (not yet flagged finished) reads as archived: no token plan or forecast.
-  const allRunsEnded =
-    resolution.kind === "known" &&
-    resolution.currentRun === null &&
-    resolution.nextRun === null
-  if (lifecycle.state === "archived" || allRunsEnded || !plan.enabled) {
+  // A finished event (every run over, `isLegendaryEventFinished`) reads as archived: no token plan
+  // or forecast.
+  if (lifecycle.state === "archived" || !plan.enabled) {
     return { kind: "hidden" }
   }
   if (progress === "error") return { kind: "unavailable" }

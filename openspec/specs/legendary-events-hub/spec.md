@@ -6,9 +6,9 @@ The Legendary Events section's hub and event page: how an event's lifecycle is d
 
 ## Requirements
 
-### Requirement: Legendary Event lifecycle is derived from catalog run dates and the finished flag
+### Requirement: Legendary Event lifecycle is derived from catalog run dates
 
-For every Legendary Event in the catalog `lres` dataset the system SHALL derive one lifecycle state from `finished` and `eventStageStartDatesUtc` (the run start dates), evaluated against the current UTC instant: `active` when some run start `s` satisfies `s <= now < s + 7 days`; otherwise `upcoming` when `finished` is false (with the earliest run start later than `now` as the next run start, or no run window when none is announced yet, shown as "to be announced"); otherwise `archived` (only `finished` archives an event). Only parseable run starts SHALL participate; an unparseable entry SHALL be ignored.
+For every Legendary Event in the catalog `lres` dataset the system SHALL derive one lifecycle state from `eventStageStartDatesUtc` (the run start dates), evaluated against the current UTC instant: `active` when some run start `s` satisfies `s <= now < s + 7 days`; otherwise `archived` when the event is finished; otherwise `upcoming` (with the earliest run start later than `now` as the next run start, or no run window when none is announced yet, shown as "to be announced"). An event is finished when all three run starts are listed and parseable and `now` is at or after run 3's start + 7 days; the catalog carries no `finished` flag. Only parseable run starts SHALL participate; an unparseable entry SHALL be ignored.
 
 Assumptions:
 
@@ -18,7 +18,7 @@ Assumptions:
 
 #### Scenario: Run window makes an event active
 
-- **GIVEN** Lysander's run start is 2026-08-30T00:00:00Z, `finished` is false
+- **GIVEN** Lysander's run start is 2026-08-30T00:00:00Z
 - **WHEN** the current instant is 2026-09-02T12:00:00Z
 - **THEN** Lysander is `active`, and its run ends at 2026-09-06T00:00:00Z
 
@@ -30,19 +30,19 @@ Assumptions:
 
 #### Scenario: Future run makes an event upcoming
 
-- **GIVEN** Uthar's run start is 2026-10-04T00:00:00Z, `finished` is false
+- **GIVEN** Uthar's run start is 2026-10-04T00:00:00Z
 - **WHEN** the current instant is 2026-09-20T00:00:00Z
 - **THEN** Uthar is `upcoming` with next run start 2026-10-04T00:00:00Z
 
 #### Scenario: Finished events are archived
 
-- **GIVEN** an event with `finished` true
-- **WHEN** the lifecycle is derived
-- **THEN** it is `archived`
+- **GIVEN** an event whose three run starts are 2025-06-01, 2025-10-05 and 2026-02-01 (00:00 UTC)
+- **WHEN** the lifecycle is derived at 2026-02-08T00:00:00Z or later
+- **THEN** it is `archived`; at 2026-02-07T23:59:59Z it is still `active` (run 3)
 
 #### Scenario: Unfinished event with no future run date is TBA
 
-- **GIVEN** an event with `finished` false and no run start, or only run starts whose windows have passed
+- **GIVEN** an event with fewer than three run starts, none of whose windows is current or in the future (no run start, or only run starts whose windows have passed)
 - **WHEN** the lifecycle is derived
 - **THEN** it is `upcoming` with no run window, the hub card reads "Start date to be announced", it sorts after dated upcoming events, and it has no Home Events row
 

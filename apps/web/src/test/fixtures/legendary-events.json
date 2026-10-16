@@ -2,7 +2,6 @@
   "lysander": {
     "id": "astarLysander",
     "name": "Lysander",
-    "finished": false,
     "eventStageStartDatesUtc": ["2026-08-30T00:00:00Z"],
     "battlesCount": 18,
     "constraintsCount": 7,
@@ -1220,7 +1219,6 @@
   "uthar": {
     "id": "votanUthar",
     "name": "Uthar",
-    "finished": false,
     "eventStageStartDatesUtc": ["2026-10-04T00:00:00Z"],
     "battlesCount": 18,
     "constraintsCount": 7,
@@ -2414,7 +2412,6 @@
   "farsight": {
     "id": "tauFarsight",
     "name": "Farsight",
-    "finished": false,
     "eventStageStartDatesUtc": ["2026-10-18T00:00:00Z"],
     "battlesCount": 18,
     "constraintsCount": 7,

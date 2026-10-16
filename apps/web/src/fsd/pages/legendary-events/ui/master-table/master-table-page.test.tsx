@@ -46,8 +46,11 @@ const characters = UNIT_IDS.map((id) => fixtureCharacter(id))
 const dante = {
   ...lysanderEvent,
   id: "bloodDante",
-  finished: true,
-  eventStageStartDatesUtc: ["2026-01-04T00:00:00Z"],
+  eventStageStartDatesUtc: [
+    "2025-05-04T00:00:00Z",
+    "2025-09-07T00:00:00Z",
+    "2026-01-04T00:00:00Z",
+  ],
 }
 
 const data = vi.hoisted(() => ({

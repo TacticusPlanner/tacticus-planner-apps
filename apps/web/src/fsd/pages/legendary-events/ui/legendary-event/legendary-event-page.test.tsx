@@ -44,8 +44,11 @@ const events = [
   {
     ...lysanderEvent,
     id: "archivedLysander",
-    finished: true,
-    eventStageStartDatesUtc: ["2026-01-01T00:00:00Z"],
+    eventStageStartDatesUtc: [
+      "2025-05-04T00:00:00Z",
+      "2025-09-07T00:00:00Z",
+      "2026-01-01T00:00:00Z",
+    ],
   },
 ]
 const catalog = vi.hoisted(() => ({ synced: true }))

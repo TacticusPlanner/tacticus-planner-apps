@@ -23,6 +23,7 @@ export {
 export {
   LEGENDARY_EVENT_RUN_DURATION_MS,
   deriveLegendaryEventLifecycle,
+  isLegendaryEventFinished,
   orderLegendaryEventsForHub,
   type LegendaryEventHubEntry,
   type LegendaryEventHubGroups,

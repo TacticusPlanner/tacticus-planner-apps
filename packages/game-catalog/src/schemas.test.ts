@@ -62,7 +62,6 @@ const lreRewards = {
 const baseLre = {
   id: "emperLucius",
   name: "Lucius",
-  finished: false,
   eventStageStartDatesUtc: ["2026-02-01T00:00:00Z"],
   battlesCount: 0,
   constraintsCount: 0,

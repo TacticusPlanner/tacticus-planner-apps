@@ -15,17 +15,16 @@ function resolve(
   eventStageStartDatesUtc: string[],
   {
     nowMs = NOW,
-    finished = false,
     syncedRun = null,
     hasProgress = false,
   }: Partial<
     Pick<
       LegendaryEventRunResolutionInput,
       "nowMs" | "syncedRun" | "hasProgress"
-    > & { finished: boolean }
+    >
   > = {}
 ) {
-  const schedule = { finished, eventStageStartDatesUtc }
+  const schedule = { eventStageStartDatesUtc }
   return resolveLegendaryEventRuns({
     lifecycle: deriveLegendaryEventLifecycle(schedule, nowMs),
     schedule,
@@ -184,8 +183,18 @@ describe("resolveLegendaryEventRuns: unknown run", () => {
   })
 
   it("a finished event is never unknown", () => {
-    expect(resolve([], { finished: true, hasProgress: true })).toMatchObject({
+    expect(
+      resolve(
+        [
+          "2025-06-01T00:00:00Z",
+          "2025-10-05T00:00:00Z",
+          "2026-02-01T00:00:00Z",
+        ],
+        { hasProgress: true }
+      )
+    ).toMatchObject({
       kind: "known",
+      endedRuns: 3,
       nextRun: null,
     })
   })

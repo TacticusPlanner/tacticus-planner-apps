@@ -342,7 +342,6 @@ describe("useLegendaryEventPlan", () => {
       const run = currentLegendaryEventRun(
         resolveLegendaryEventRunsAt(
           {
-            finished: false,
             eventStageStartDatesUtc: [
               "2026-03-08T00:00:00Z",
               "2026-10-04T00:00:00Z",
@@ -383,7 +382,7 @@ describe("useLegendaryEventPlan", () => {
     it("writes run 1 when the run is unknown", async () => {
       const run = currentLegendaryEventRun(
         resolveLegendaryEventRunsAt(
-          { finished: false, eventStageStartDatesUtc: [] },
+          { eventStageStartDatesUtc: [] },
           {
             currentEventRun: null,
             currentPoints: 12_530,

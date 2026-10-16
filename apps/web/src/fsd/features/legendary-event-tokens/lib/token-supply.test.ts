@@ -39,7 +39,7 @@ const between = (
   points: number
 ): Pick<TokenSupplyInput, "lifecycle" | "resolution" | "nowMs"> => {
   const nowMs = Date.parse("2026-10-16T00:00:00Z")
-  const schedule = { finished: false, eventStageStartDatesUtc }
+  const schedule = { eventStageStartDatesUtc }
   const lifecycle = deriveLegendaryEventLifecycle(schedule, nowMs)
   return {
     lifecycle,

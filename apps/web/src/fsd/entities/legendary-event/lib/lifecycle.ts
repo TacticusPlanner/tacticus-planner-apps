@@ -4,17 +4,40 @@ import type { LegendaryEventLifecycle } from "../model/types"
  *  catalog-served duration can replace it. */
 export const LEGENDARY_EVENT_RUN_DURATION_MS = 7 * 24 * 60 * 60 * 1000
 
+/** An event has three runs; run `n` starts at element `n − 1` of `eventStageStartDatesUtc`. */
+export const LEGENDARY_EVENT_RUN_COUNT = 3
+
 /** The structural fields lifecycle reads from a catalog event. */
 export interface LegendaryEventSchedule {
-  finished: boolean
   eventStageStartDatesUtc: readonly string[]
 }
 
 /**
- * Derives an event's lifecycle at `nowMs` from its run start dates and `finished` flag: `active`
- * when a run window `[start, start + 7d)` contains now; otherwise `upcoming` (earliest future start)
- * when not finished (`upcoming` with no window when no date is announced yet, i.e. TBA); otherwise `archived`. Unparseable run starts are ignored. The run number is not
- * derived here: `run-resolution.ts` resolves it from the run schedule and the synced run.
+ * Whether every run of the event is over at `nowMs`: all three run starts are announced and
+ * parseable, and run 3's 7-day window has passed. The catalog sends no `finished` flag (its hashed
+ * payload must not depend on the clock), so every consumer derives it here.
+ */
+export function isLegendaryEventFinished(
+  event: LegendaryEventSchedule,
+  nowMs: number
+): boolean {
+  const starts = event.eventStageStartDatesUtc
+    .slice(0, LEGENDARY_EVENT_RUN_COUNT)
+    .map((value) => Date.parse(value))
+  const lastStart = starts[LEGENDARY_EVENT_RUN_COUNT - 1]
+  return (
+    lastStart !== undefined &&
+    !starts.some((start) => Number.isNaN(start)) &&
+    nowMs >= lastStart + LEGENDARY_EVENT_RUN_DURATION_MS
+  )
+}
+
+/**
+ * Derives an event's lifecycle at `nowMs` from its run start dates: `active` when a run window
+ * `[start, start + 7d)` contains now; otherwise `archived` when the event is finished
+ * (`isLegendaryEventFinished`); otherwise `upcoming` (earliest future start, or no window when no
+ * future date is announced yet, i.e. TBA). Unparseable run starts are ignored. The run number is
+ * not derived here: `run-resolution.ts` resolves it from the run schedule and the synced run.
  */
 export function deriveLegendaryEventLifecycle(
   event: LegendaryEventSchedule,
@@ -36,9 +59,9 @@ export function deriveLegendaryEventLifecycle(
     }
   }
 
-  const nextStart = event.finished
-    ? undefined
-    : starts.find((start) => start > nowMs)
+  if (isLegendaryEventFinished(event, nowMs)) return { state: "archived" }
+
+  const nextStart = starts.find((start) => start > nowMs)
   if (nextStart !== undefined) {
     return {
       state: "upcoming",
@@ -48,7 +71,7 @@ export function deriveLegendaryEventLifecycle(
   }
 
   // Unfinished with no future run date: announced event, date TBA.
-  return { state: event.finished ? "archived" : "upcoming" }
+  return { state: "upcoming" }
 }
 
 export interface LegendaryEventHubEntry<TEvent> {

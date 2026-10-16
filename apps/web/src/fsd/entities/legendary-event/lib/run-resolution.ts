@@ -5,11 +5,12 @@ import type {
   LegendaryEventProgress,
 } from "../model/types"
 import {
+  LEGENDARY_EVENT_RUN_COUNT as RUN_COUNT,
   LEGENDARY_EVENT_RUN_DURATION_MS,
   deriveLegendaryEventLifecycle,
+  type LegendaryEventSchedule,
 } from "./lifecycle"
 
-const RUN_COUNT = 3
 const LANES: readonly LegendaryEventLaneId[] = ["alpha", "beta", "gamma"]
 
 /**
@@ -36,11 +37,8 @@ export type LegendaryEventRunResolution =
 
 export interface LegendaryEventRunResolutionInput {
   lifecycle: LegendaryEventLifecycle
-  /** The catalog event's run starts (index = run − 1) and `finished` flag. */
-  schedule: {
-    finished: boolean
-    eventStageStartDatesUtc: readonly string[]
-  }
+  /** The catalog event's run starts (index = run − 1). */
+  schedule: LegendaryEventSchedule
   /** The synced `currentEventRun`; the game sends it only while a run is active. */
   syncedRun: number | null | undefined
   /** Whether the account's synced entry shows progress (`legendaryEventHasProgress`). */
@@ -82,8 +80,8 @@ export function legendaryEventHasProgress(
  * Resolves the ended, current and next run (design D1–D4). Run `n` starts at element `n − 1` of the
  * schedule and lasts 7 days. While the event is active a numeric synced run wins (else the schedule
  * window that holds the clock); otherwise the synced run is ignored, because the game sends none
- * between runs. The run is unknown when an unfinished event's synced entry shows progress but the
- * schedule shows no run ended or in progress.
+ * between runs. The run is unknown when the synced entry shows progress but the schedule shows no
+ * run ended or in progress.
  */
 export function resolveLegendaryEventRuns({
   lifecycle,
@@ -139,7 +137,8 @@ export function resolveLegendaryEventRuns({
     )
       endedRuns = index + 1
   })
-  if (!schedule.finished && hasProgress && endedRuns === 0) return UNKNOWN
+  // A finished event has every run ended (and reads as archived), so it is never unknown.
+  if (hasProgress && endedRuns === 0) return UNKNOWN
   return known(endedRuns, null)
 }
 

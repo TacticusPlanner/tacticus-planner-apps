@@ -154,7 +154,7 @@ export function betweenRunsInput(
   eventStageStartDatesUtc: string[],
   overrides: Partial<TokenPlanViewInput> = {}
 ): TokenPlanViewInput {
-  const schedule = { finished: false, eventStageStartDatesUtc }
+  const schedule = { eventStageStartDatesUtc }
   const lifecycle = deriveLegendaryEventLifecycle(schedule, BETWEEN_RUNS_NOW)
   const progress = {
     ...workedProgress,

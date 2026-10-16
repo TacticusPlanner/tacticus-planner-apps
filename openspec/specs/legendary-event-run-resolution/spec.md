@@ -36,9 +36,9 @@ For each event the planner SHALL resolve `endedRuns` (0 to 3), the run in progre
 
 #### Scenario: Every run has ended
 
-- **GIVEN** a schedule of three run starts all more than 7 days ago and `finished` false
+- **GIVEN** a schedule of three run starts all more than 7 days ago
 - **WHEN** the runs are resolved
-- **THEN** `endedRuns` is 3 and there is no next run, so the event shows no token plan or forecast, as an archived event does
+- **THEN** `endedRuns` is 3 and there is no next run, so the event is finished and archived, and shows no token plan or forecast
 
 ### Requirement: The synced run wins while a run is in progress
 
@@ -58,7 +58,7 @@ While the event is active, a numeric synced `currentEventRun` SHALL be the run i
 
 ### Requirement: The run can be unknown
 
-The run SHALL be unknown when the event is not finished, the account's synced entry shows progress (an encounter or points above 0), and the schedule shows no run ended or in progress (an empty schedule, or only future starts). In the unknown state the planner SHALL show no run number anywhere, and SHALL NOT assume runs 1 or 2 are over or upcoming.
+The run SHALL be unknown when the account's synced entry shows progress (an encounter or points above 0), and the schedule shows no run ended or in progress (an empty schedule, or only future starts). In the unknown state the planner SHALL show no run number anywhere, and SHALL NOT assume runs 1 or 2 are over or upcoming.
 
 #### Scenario: Event with progress and no schedule
 
