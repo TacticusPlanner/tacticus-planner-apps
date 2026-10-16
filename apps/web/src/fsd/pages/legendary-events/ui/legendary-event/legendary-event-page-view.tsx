@@ -17,13 +17,14 @@ import type { LegendaryEventPageViewModel } from "./legendary-event-page.view-mo
 import { LegendaryEventTabs } from "./legendary-event-tabs"
 import { CrossLaneLeaderboard } from "./overview/cross-lane-leaderboard"
 import { LaneSummary } from "./overview/lane-summary"
+import { LastRunCard } from "./overview/last-run-card"
 import { ProgressSection } from "./progress/progress-section"
 import { RunStatusCard } from "./run-status-card"
 import { TeamsSection } from "./teams/teams-section"
 
 /**
  * The event page on both forms (design D3): header, the tab strip, then the Overview tab (Next
- * token, Run status, Token plan, Run forecast, lane summary, cross-lane leaderboard) or a lane tab
+ * token, Run status, Last run, Token plan, Run forecast, lane summary, cross-lane leaderboard) or a lane tab
  * (lane overview, Teams, Upgrade impact, synced progress, then the lane's leaderboard). The forms
  * differ only in the strip's stickiness and in the table-versus-cards rendering of the leaderboard
  * and grid.
@@ -60,6 +61,12 @@ export function LegendaryEventPageView({
             view={tokens.view}
           />
           <RunStatusCard {...props} isMobile={isMobile} />
+          <LastRunCard
+            isMobile={isMobile}
+            lastRun={props.lastRun.state}
+            onEarlierExpanded={props.lastRun.onEarlierExpanded}
+            onViewed={props.lastRun.onViewed}
+          />
           <TokenPlanList
             event={props.event}
             eventId={props.event.id}

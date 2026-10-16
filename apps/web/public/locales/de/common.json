@@ -379,6 +379,10 @@
     "tabs": {
       "allEvents": "Alle Events",
       "allEventsDescription": "Jedes Legendäre Event: aktiv, kommend und archiviert",
+      "masterTable": "Gesamttabelle",
+      "masterTableDescription": "Die Punkte jeder Einheit über die gewählten Legendären Events",
+      "tierList": "Tier-Liste",
+      "tierListDescription": "Die Horde-Modus-Tier-Liste hinter den Abschlussschätzungen",
       "activeEventDescription": "Aktives Legendäres Event mit deinem synchronisierten Fortschritt",
       "upcomingEventDescription": "Bevorstehendes Legendäres Event",
       "archivedEventDescription": "Vergangenes Legendäres Event mit deinem synchronisierten Fortschritt"

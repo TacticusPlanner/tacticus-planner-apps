@@ -275,7 +275,9 @@
       "description": "Das Team und seine Kampftiefen werden aus dem Plan dieses Events entfernt.",
       "confirm": "Löschen",
       "cancel": "Abbrechen"
-    }
+    },
+    "lastRun": "Letzter Durchlauf: bis Kampf {{battle}} geschafft",
+    "lastRunNone": "Letzter Durchlauf: kein Kampf geschafft"
   },
   "objective": {
     "minHits_one": "Mind. {{count}} Treffer",
@@ -352,6 +354,46 @@
         "leaderboard": {
           "title": "Lane-Rangliste",
           "content": "Jede Einheit, die diese Lane erlaubt, ob du sie besitzt, welche Ziele sie erfüllt und welche Punkte sie hier noch erzielen kann. Schalte die Zielvorschau ein, um Einheiten so zu sehen, als hättest du deine aktiven Ziele erreicht, und erstelle über das Menü einer Zeile ein Ziel."
+        },
+        "lastRun": {
+          "title": "Letzter Durchlauf",
+          "content": "So lief dein vorheriger Durchlauf: der tiefste Kampf und die Punkte jeder Bahn, deine eingesetzten Teams und wie weit sie kamen, und was sich seitdem an diesen Einheiten geändert hat."
+        }
+      }
+    },
+    "masterTable": {
+      "steps": {
+        "controls": {
+          "title": "Einstellungen",
+          "content": "Wähle die Events, welche Einheiten gelistet werden, wie Punkte gezählt werden, und suche nach Namen. Die Ansicht bleibt im Link, sodass du sie teilen kannst."
+        },
+        "events": {
+          "title": "Events",
+          "content": "Wähle die Events zum Vergleich. Aktive und kommende Events sind vorausgewählt; archivierte stehen unter der Trennlinie."
+        },
+        "pointsMode": {
+          "title": "Punktemodus",
+          "content": "Verbleibend lässt bereits erzielte Punkte weg, Alle zählt jeden Kampf, und Geschätzt zählt nur die Kämpfe, die du voraussichtlich schaffst."
+        },
+        "firstRow": {
+          "title": "Einheiten",
+          "content": "Die Summe jeder Einheit über die gewählten Events, mit Punkten und Zielen (oder Teams) pro Event. Klicke auf einen Event-Kopf, um danach zu sortieren."
+        }
+      }
+    },
+    "tierList": {
+      "steps": {
+        "row": {
+          "title": "Tier-Zeilen",
+          "content": "Jede Zeile ist ein Horde-Modus-Tier mit seinem Multiplikator. Die Charaktere sind vom höchsten Multiplikator abwärts sortiert."
+        },
+        "tile": {
+          "title": "Ein Charakter",
+          "content": "Porträt, Name und Multiplikator. Ein markierter Multiplikator ist der eigene des Charakters statt der seines Tiers. Wähle die Kachel für Details und einen Link zur Bibliothek."
+        },
+        "filters": {
+          "title": "Filter",
+          "content": "Suche nach Namen, zeige nur deine eigenen Charaktere oder wähle eine Allianz. Die Filter gelten für jede Zeile, auch für „Ohne Tier“."
         }
       }
     }
@@ -500,6 +542,150 @@
       "leftover_one": "{{count}} Token ohne Kampf: Füge ein Team hinzu oder erhöhe eine Tiefe, um ihn zu nutzen",
       "leftover_other": "{{count}} Tokens ohne Kampf: Füge ein Team hinzu oder erhöhe eine Tiefe, um sie zu nutzen",
       "editInputs": "Eingaben bearbeiten"
+    }
+  },
+  "masterTable": {
+    "title": "Gesamttabelle",
+    "subtitle": "Die Punkte jeder Einheit über die gewählten Legendären Events.",
+    "loading": "Gesamttabelle wird geladen",
+    "error": "Die Legendären Events konnten nicht geladen werden.",
+    "noEvents": "Wähle mindestens ein Event.",
+    "noRows": "Keine Einheit passt.",
+    "events": {
+      "label": "Events",
+      "trigger_one": "{{count}} Event",
+      "trigger_other": "{{count}} Events",
+      "archived": "Archiviert"
+    },
+    "controls": {
+      "open": "Einstellungen",
+      "title": "Einstellungen der Gesamttabelle"
+    },
+    "unitSet": {
+      "label": "Einheiten",
+      "all": "Alle",
+      "unlocked": "Freigeschaltet",
+      "inTeams": "In Teams",
+      "teamsUnavailable": "Teams nicht verfügbar",
+      "teamsLoading": "Teams werden geladen",
+      "noRoster": "Synchronisiere deinen Kader",
+      "rosterLoading": "Kader wird geladen"
+    },
+    "points": {
+      "label": "Punkte",
+      "remaining": "Verbleibend",
+      "all": "Alle",
+      "estimated": "Geschätzt",
+      "needsEstimates": "Benötigt Abschlussschätzungen",
+      "estimatesLoading": "Abschlussschätzungen werden geladen",
+      "estimatedFallback": "Geschätzt benötigt Abschlussschätzungen, daher wird Verbleibend angezeigt.",
+      "noProgress": "Kein synchronisierter Fortschritt: Verbleibend zeigt die Punkte aller Kämpfe.",
+      "estimatedFallbackNoRoster": "Geschätzt benötigt einen synchronisierten Kader, daher wird Verbleibend angezeigt."
+    },
+    "search": {
+      "label": "Einheiten suchen",
+      "placeholder": "Einheiten suchen",
+      "clear": "Suche leeren"
+    },
+    "sort": {
+      "label": "Sortieren nach",
+      "total": "Gesamt"
+    },
+    "columns": {
+      "unit": "Einheit",
+      "total": "Gesamt",
+      "points": "Punkte",
+      "objectives": "Ziele",
+      "teams": "Teams"
+    },
+    "cell": {
+      "objectives_one": "{{count}} Ziel",
+      "objectives_other": "{{count}} Ziele",
+      "teams_one": "{{count}} Team",
+      "teams_other": "{{count}} Teams"
+    },
+    "explanation": {
+      "title": "So werden Punkte gezählt",
+      "remaining": "Verbleibend: die Punkte, die in jedem Kampf noch offen sind, ohne das, was dein synchronisierter Fortschritt bereits erledigt hat.",
+      "all": "Alle: Punkte pro Kampf („Alle besiegen“ plus die Ziele, die die Einheit erfüllt) mal die Kämpfe der Bahn.",
+      "estimated": "Geschätzt: Verbleibend, gezählt nur in den Kämpfen, die die Einheit (oder ihre Teams) voraussichtlich schafft.",
+      "inTeams": "In Teams: Eine Einheit zählt „Alle besiegen“ plus nur die Ziele, die ihre Teams auf dieser Bahn abdecken; eine Reserve zählt nur „Alle besiegen“."
+    },
+    "rowsLoading": "Einheiten werden geladen"
+  },
+  "history": {
+    "title": "Letzter Durchlauf",
+    "loading": "Verlauf wird geladen…",
+    "unavailable": "Verlauf nicht verfügbar",
+    "retry": "Erneut versuchen",
+    "noRecords": "Der Verlauf beginnt mit deinem nächsten synchronisierten Durchlauf",
+    "run": "Durchlauf {{run}} von {{total}}",
+    "points": "{{points}} Eventpunkte",
+    "noTeams": "Für diesen Durchlauf waren keine Teams geplant",
+    "lane": {
+      "battle": "Kampf {{battle}}",
+      "noBattle": "kein Kampf geschafft",
+      "summary": "{{lane}}: {{progress}}",
+      "summaryPoints": "{{lane}}: {{progress}} · {{points}} Punkte",
+      "noTeams": "Kein Team auf dieser Bahn",
+      "teamsToggle": "Teams ({{teams}})"
+    },
+    "team": {
+      "cleared": "bis Kampf {{battle}} geschafft",
+      "clearedPlanned": "{{cleared}} · geplant {{planned}}",
+      "noBattle": "kein Kampf geschafft"
+    },
+    "since": {
+      "title": "Seit dem letzten Durchlauf",
+      "titleThen": "Seit diesem Durchlauf",
+      "noSnapshot": "Der damalige Kader ist nicht verfügbar",
+      "noRoster": "Synchronisiere deinen Kader zum Vergleichen",
+      "none": "Seitdem keine Änderungen an diesen Einheiten",
+      "unlocked": "Seit dem letzten Durchlauf freigeschaltet",
+      "rank": "Rang {{from}} → {{to}}",
+      "stars": "Sterne {{from}} → {{to}}",
+      "activeAbility": "Aktive Fähigkeit {{from}} → {{to}}",
+      "passiveAbility": "Passive Fähigkeit {{from}} → {{to}}"
+    },
+    "earlier": {
+      "title": "Frühere Durchläufe ({{runs}})",
+      "entry": "{{run}} · {{date}}"
+    }
+  },
+  "tierList": {
+    "intro": "Die Horde-Modus-Tiers aller Charaktere mit dem Multiplikator, den jeder erhält.",
+    "whatThisMeans": "Was bedeutet das?",
+    "explainer": "Der Multiplikator eines Charakters skaliert seine Kampfkraft in den Abschlussschätzungen der Legendären Events. Charaktere mit Tier nutzen ihren eigenen Multiplikator, falls sie einen haben, sonst den ihres Tiers; Charaktere ohne Tier nutzen 1,0.",
+    "search": "Charaktere suchen",
+    "onlyOwned": "Nur eigene",
+    "syncRoster": "Synchronisiere deinen Kader",
+    "alliance": "Allianz",
+    "allianceAll": "Alle",
+    "filters": "Filter",
+    "filtersDescription": "Nur eigene Charaktere oder eine Allianz anzeigen.",
+    "override": "Eigener Multiplikator",
+    "tileLabel": "{{name}}, {{multiplier}}",
+    "tileLabelOverride": "{{name}}, {{multiplier}} (eigener Multiplikator)",
+    "untiered": "Ohne Tier",
+    "untieredCount_one": "{{count}} Charakter",
+    "untieredCount_other": "{{count}} Charaktere",
+    "untieredHint": "Charaktere ohne Tier nutzen 1,0×. Öffne die Zeile, um sie aufzulisten.",
+    "noCharacter": "Kein Charakter",
+    "noMatch": "Kein Charakter passt zu diesen Filtern.",
+    "clearFilters": "Filter zurücksetzen",
+    "unavailable": "Die Tier-Liste ist noch nicht verfügbar.",
+    "loading": "Tier-Liste wird geladen…",
+    "error": "Die Tier-Liste konnte nicht geladen werden.",
+    "retry": "Erneut versuchen",
+    "details": {
+      "description": "Tier, Multiplikator und Besitz des Charakters.",
+      "tier": "Tier",
+      "multiplier": "Multiplikator",
+      "tierDefault": "Standard des Tiers",
+      "owned": "Besitz",
+      "notUnlocked": "Nicht freigeschaltet",
+      "rosterUnknown": "Synchronisiere deinen Kader",
+      "openInLibrary": "In der Bibliothek öffnen"
     }
   }
 }

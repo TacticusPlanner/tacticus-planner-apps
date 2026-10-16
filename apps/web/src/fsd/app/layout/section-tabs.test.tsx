@@ -163,7 +163,7 @@ describe("SectionTabs", () => {
     expectPath("/legendary-events")
   })
 
-  it("lists All events then the events with their portraits and marks the open one", () => {
+  it("lists All events, Master table, Tier List, then the events with their portraits and marks the open one", () => {
     const item: NavItem = {
       ...section("/legendary-events"),
       children: [
@@ -181,8 +181,15 @@ describe("SectionTabs", () => {
     const tabs = screen.getAllByRole("tab")
     expect(tabs.map((tab) => tab.textContent)).toEqual([
       "legendaryEvents.tabs.allEvents",
+      "legendaryEvents.tabs.masterTable",
+      "legendaryEvents.tabs.tierList",
       "Uthar the Destined",
     ])
+    expect(
+      screen
+        .getByTestId("section-tab-legendary-events-master-table")
+        .querySelector('[data-testid="nav-child-icon"]')
+    ).not.toBeNull()
     const uthar = screen.getByTestId("section-tab-legendary-events-votanUthar")
     expect(uthar).toHaveAttribute("data-state", "active")
     expect(uthar.querySelector("img")).toHaveAttribute("src", "/uthar.png")

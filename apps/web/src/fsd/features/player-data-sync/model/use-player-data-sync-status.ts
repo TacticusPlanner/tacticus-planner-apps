@@ -1,8 +1,5 @@
 import { useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
-import { useQueryClient } from "@tanstack/react-query"
-
-import { goalQueries } from "@/entities/goal"
 import { formatRelativeTime } from "@/shared/lib"
 import {
   usePlayerDataStatus,
@@ -32,11 +29,6 @@ export function usePlayerDataSyncStatus() {
   const { i18n, t } = useTranslation()
   const { error, lastSyncedAt, progress, requiresReauth, status, syncNow } =
     usePlayerDataStatus()
-  const queryClient = useQueryClient()
-  const syncAndRefreshGoals = async () => {
-    await syncNow()
-    await queryClient.invalidateQueries({ queryKey: goalQueries.all() })
-  }
   const [, setRelativeTimeTick] = useState(() => Date.now())
   const isSyncing = status === "syncing"
   const statusLabel = t(statusLabelKeys[status])
@@ -86,6 +78,7 @@ export function usePlayerDataSyncStatus() {
     statusText,
     errorText: error,
     requiresReauth,
-    syncNow: syncAndRefreshGoals,
+    // The provider refreshes the server reads once the sync completes (refreshServerReadsAfterSync).
+    syncNow,
   }
 }

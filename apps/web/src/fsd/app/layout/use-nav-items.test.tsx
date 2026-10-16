@@ -38,12 +38,18 @@ function legendaryEventsChildren(items: ReturnType<typeof useNavItems>) {
   return items.find((item) => item.path === "/legendary-events")?.children
 }
 
+const STATIC_CHILDREN = [
+  "/legendary-events",
+  "/legendary-events/master-table",
+  "/legendary-events/tier-list",
+]
+
 describe("useNavItems", () => {
   beforeEach(() => {
     events.state = { status: "loading", retry: vi.fn(), nowMs: NOW }
   })
 
-  it("lists All events, then two active events by run start", async () => {
+  it("lists All events, Master table and Tier List, then two active events by run start", async () => {
     events.state = {
       status: "ready",
       data: [uthar, lysanderEvent],
@@ -54,6 +60,8 @@ describe("useNavItems", () => {
 
     expect(children?.map((child) => child.path)).toEqual([
       "/legendary-events",
+      "/legendary-events/master-table",
+      "/legendary-events/tier-list",
       "/legendary-events/astarLysander",
       "/legendary-events/votanUthar",
     ])
@@ -62,6 +70,12 @@ describe("useNavItems", () => {
       isLandingPage: true,
     })
     expect(children?.[1]).toMatchObject({
+      labelKey: "legendaryEvents.tabs.masterTable",
+    })
+    expect(children?.[2]).toMatchObject({
+      labelKey: "legendaryEvents.tabs.tierList",
+    })
+    expect(children?.[3]).toMatchObject({
       label: "Lysander",
       description: "Active Legendary Event with your synced progress",
       iconSrc: expect.stringContaining("astar_lysander"),
@@ -80,32 +94,34 @@ describe("useNavItems", () => {
 
     expect(children?.map((child) => child.path)).toEqual([
       "/legendary-events",
+      "/legendary-events/master-table",
+      "/legendary-events/tier-list",
       "/legendary-events/astarLysander",
       "/legendary-events/votanUthar",
     ])
-    expect(children?.[1]).toMatchObject({
+    expect(children?.[3]).toMatchObject({
       label: "Lysander",
       description: "Upcoming Legendary Event",
     })
-    expect(children?.[2]).toMatchObject({
+    expect(children?.[4]).toMatchObject({
       label: "Uthar",
       description: "Past Legendary Event with your synced progress",
     })
   })
 
-  it("keeps only All events while the read is pending or failed", async () => {
+  it("keeps only the static children while the read is pending or failed", async () => {
     expect(
       legendaryEventsChildren(await renderNavItems())?.map(
         (child) => child.path
       )
-    ).toEqual(["/legendary-events"])
+    ).toEqual(STATIC_CHILDREN)
 
     events.state = { status: "error", retry: vi.fn(), nowMs: NOW }
     expect(
       legendaryEventsChildren(await renderNavItems())?.map(
         (child) => child.path
       )
-    ).toEqual(["/legendary-events"])
+    ).toEqual(STATIC_CHILDREN)
   })
 
   it("leaves every other section untouched", async () => {

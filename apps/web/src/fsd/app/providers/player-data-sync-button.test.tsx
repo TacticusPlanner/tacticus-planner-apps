@@ -20,6 +20,9 @@ vi.mock("@/shared/player-data-status", () => ({
 vi.mock("@/entities/goal", () => ({
   goalQueries: { all: () => ["goals"] },
 }))
+vi.mock("@/features/player-data-sync/model/refresh-after-sync", () => ({
+  refreshServerReadsAfterSync: vi.fn(),
+}))
 
 import { PlayerDataSyncButton } from "./player-data-sync-button"
 

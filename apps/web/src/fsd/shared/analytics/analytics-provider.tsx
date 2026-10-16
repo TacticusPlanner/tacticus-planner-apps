@@ -199,6 +199,43 @@ export function useAnalyticsActions() {
         case "legendary_event_run_forecast_expanded":
           client.capture(event.type, { event_id: event.eventId })
           break
+        case "legendary_event_master_table_viewed":
+          client.capture(event.type, {
+            event_count: event.eventCount,
+            unit_set: event.unitSet,
+            points_mode: event.pointsMode,
+          })
+          break
+        case "legendary_event_master_table_changed":
+          client.capture(event.type, {
+            control: event.control,
+            value: event.value,
+            event_count: event.eventCount,
+          })
+          break
+        case "legendary_event_last_run_viewed":
+          client.capture(event.type, {
+            event_id: event.eventId,
+            run: event.run,
+            team_count: event.teamCount,
+            delta_count: event.deltaCount,
+          })
+          break
+        case "legendary_event_earlier_runs_expanded":
+          client.capture(event.type, {
+            event_id: event.eventId,
+            record_count: event.recordCount,
+          })
+          break
+        case "legendary_event_tier_list_viewed":
+          client.capture(event.type, {})
+          break
+        case "legendary_event_tier_list_unit_opened":
+          client.capture(event.type, {
+            unit_id: event.unitId,
+            tier: event.tier,
+          })
+          break
       }
     },
     [client]

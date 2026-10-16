@@ -41,6 +41,7 @@ import {
   type LegendaryEventTab,
 } from "./legendary-event-page.view-model"
 import { useLegendaryEventTutorial } from "./legendary-event.tutorial"
+import { useLastRun } from "./overview/use-last-run"
 import { useEventGoals } from "./use-event-goals"
 import { useUpgradeImpact } from "./use-upgrade-impact"
 import { progressHeadingId } from "./progress/progress-heading"
@@ -201,6 +202,11 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
     })
     launchCreateGoal(prefill)
   }
+  // Run history (design D6–D9): the previous run's card and each team's last-run clear.
+  const runHistory = useLastRun(eventId, event, plan, {
+    progress: progressValue,
+    roster,
+  })
   const selectedLane = selectedTab === "overview" ? undefined : selectedTab
   const upgradeImpact = useUpgradeImpact({
     eventData,
@@ -263,7 +269,7 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
     jumpTarget.current = null
     target.find()?.scrollIntoView({ block: "start" })
   }, [selectedTab])
-  useTourPageSteps(useLegendaryEventTutorial(selectTab))
+  useTourPageSteps(useLegendaryEventTutorial(selectTab, runHistory.hasLastRun))
 
   // Until `lres` has synced an absent event may just not have arrived yet (the catalog init gate
   // renders routes under its overlay), so keep loading instead of bouncing a deep link to the hub.
@@ -378,6 +384,7 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
       actions: plan,
       estimates: clearEstimates,
       eventId,
+      lastRunClears: runHistory.lastRunClears,
       progressByLane:
         progressGrid.kind === "ready" ? progressGrid.lanes : undefined,
       goals: {
@@ -401,6 +408,7 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
         },
       },
     },
+    lastRun: runHistory.lastRun,
     upgradeImpact: upgradeImpact
       ? {
           state: upgradeImpact,

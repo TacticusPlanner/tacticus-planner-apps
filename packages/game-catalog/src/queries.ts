@@ -318,6 +318,19 @@ export async function getLegendaryEventBattles(
   return rows.filter((row) => row.lreId === lreId)
 }
 
+// Several Legendary Events' battles from one read of the `lre-battles` store, grouped by event id.
+// Every requested id is present (an empty list when the catalog has none for it).
+export async function getLegendaryEventsBattles(
+  lreIds: readonly string[]
+): Promise<Record<string, LegendaryEventBattleStorageModel[]>> {
+  const grouped: Record<string, LegendaryEventBattleStorageModel[]> =
+    Object.fromEntries(lreIds.map((lreId) => [lreId, []]))
+  if (lreIds.length === 0) return grouped
+  const rows = await getDatasetRecords("lre-battles")
+  for (const row of rows) grouped[row.lreId]?.push(row)
+  return grouped
+}
+
 // The curated horde-mode tier list — a single record — or `null` when the dataset is absent (not
 // served by the API, or not synced yet).
 export async function getHordeModeTiers(): Promise<HordeModeTiersStorageModel | null> {

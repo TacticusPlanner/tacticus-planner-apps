@@ -9,6 +9,7 @@ import { useLegendaryEventBattles } from "./use-legendary-event-battles"
 import { useLegendaryEventProgress } from "./use-legendary-event-progress"
 import { useLegendaryEventSyncTimes } from "./use-legendary-event-sync-times"
 import { useLegendaryEvents } from "./use-legendary-events"
+import { useLegendaryEventsBattles } from "./use-legendary-events-battles"
 import { useLegendaryEventsProgress } from "./use-legendary-events-progress"
 
 vi.mock("dexie-react-hooks", () => ({
@@ -29,6 +30,7 @@ const store = vi.hoisted(() => ({
   catalogSynced: true,
   metadata: new Map<string, { updatedAt: string }>(),
   hordeModeTiers: null as null | Record<string, unknown>,
+  battleReads: [] as string[][],
 }))
 const lysander = {
   id: "astarLysander",
@@ -54,6 +56,19 @@ vi.mock("@workspace/game-catalog/queries", () => ({
         ? [{ id: "votanUthar-alpha-1", lreId: "votanUthar", power: 1018 }]
         : []
     ),
+  getLegendaryEventsBattles: (ids: readonly string[]) => {
+    store.battleReads.push([...ids])
+    return read(
+      Object.fromEntries(
+        ids.map((id) => [
+          id,
+          id === "votanUthar"
+            ? [{ id: "votanUthar-alpha-1", lreId: "votanUthar", power: 1018 }]
+            : [],
+        ])
+      )
+    )
+  },
   getHordeModeTiers: () => read(store.hordeModeTiers),
   hasLegendaryEventsSynced: async () => store.catalogSynced,
 }))
@@ -129,6 +144,21 @@ describe("Legendary Event read hooks", () => {
     const one = renderHook(() => useLegendaryEventProgress("astarLysander"))
     await waitFor(() => expect(one.result.current.status).toBe("ready"))
     expect(one.result.current).toMatchObject({ data: progress })
+  })
+
+  it("reads several events' battles in one grouped read", async () => {
+    store.battleReads = []
+    const { result } = renderHook(() =>
+      useLegendaryEventsBattles(["votanUthar", "astarLysander"])
+    )
+    await waitFor(() => expect(result.current.status).toBe("ready"))
+    expect(result.current).toMatchObject({
+      data: {
+        votanUthar: [{ id: "votanUthar-alpha-1", power: 1018 }],
+        astarLysander: [],
+      },
+    })
+    expect(store.battleReads).toEqual([["votanUthar", "astarLysander"]])
   })
 
   it("reads one event's battles", async () => {

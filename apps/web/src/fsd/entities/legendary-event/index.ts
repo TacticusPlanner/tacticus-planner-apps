@@ -127,6 +127,8 @@ export {
   createLegendaryEventTeam,
   deleteLegendaryEventTeam,
   getLegendaryEventPlan,
+  getLegendaryEventRunRecords,
+  listLegendaryEventPlans,
   updateLegendaryEventAnnotations,
   updateLegendaryEventPlan,
   updateLegendaryEventRunInputs,
@@ -219,3 +221,58 @@ export {
   teamReaches,
   type LaneEstimateInputs,
 } from "./lib/lane-teams"
+export {
+  type LegendaryEventPlanList,
+  type LegendaryEventRunRecord,
+  type LegendaryEventRunRecordEncounter,
+  type LegendaryEventRunRecordLanes,
+  type LegendaryEventRunRecordTeam,
+  type LegendaryEventRunRecords,
+  type RosterSnapshot,
+  type RosterSnapshotAbility,
+  type RosterSnapshotCharacter,
+  type RosterSnapshotMow,
+} from "./model/run-record.types"
+export { useLegendaryEventPlans } from "./model/use-legendary-event-plans"
+export { useLegendaryEventRunRecords } from "./model/use-legendary-event-run-records"
+export {
+  buildMasterTable,
+  filterMasterTableRows,
+  sortMasterTable,
+  type MasterTable,
+  type MasterTableCell,
+  type MasterTableEventInput,
+  type MasterTableInput,
+  type MasterTableLaneCell,
+  type MasterTablePointsMode,
+  type MasterTableRow,
+  type MasterTableUnitSet,
+} from "./lib/master-table"
+export {
+  previousRunTeamClears,
+  recordHistory,
+  recordLaneSummary,
+  recordTeamClearedBattle,
+  rosterDeltas,
+  selectRunRecords,
+  type RecordLaneSummary,
+  type RosterDelta,
+  type RunHistory,
+  type RunHistoryDeltas,
+  type RunHistoryLane,
+  type RunHistoryTeam,
+  type RunRecordSelection,
+} from "./lib/run-history"
+export {
+  UNTIERED_MULTIPLIER,
+  buildHordeTierList,
+  effectiveHordeMultiplier,
+  type HordeModeTierList,
+  type HordeTierAlliance,
+  type HordeTierList,
+  type HordeTierListFilters,
+  type HordeTierRow,
+  type HordeTierTile,
+} from "./lib/horde-tier-list"
+export { useLegendaryEventsBattles } from "./model/use-legendary-events-battles"
+export { useHordeModeTiers } from "./model/use-horde-mode-tiers"

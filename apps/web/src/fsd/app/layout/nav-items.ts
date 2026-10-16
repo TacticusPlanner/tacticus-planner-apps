@@ -6,7 +6,9 @@ import {
   Gamepad2,
   Home,
   LayoutGrid,
+  ListOrdered,
   ListTodo,
+  Table2,
   Users,
 } from "lucide-react"
 
@@ -35,6 +37,8 @@ type NavLabelKey =
   | "myGame.tabs.campaigns"
   | "myGame.tabs.campaign-events"
   | "legendaryEvents.tabs.allEvents"
+  | "legendaryEvents.tabs.masterTable"
+  | "legendaryEvents.tabs.tierList"
   | "guild.tabs.members"
   // Namespace-prefixed ("dailies:...") rather than living in `common.json` like every other
   // section's tab keys: `dailies` is its own long-standing i18n namespace/file, and duplicating
@@ -87,10 +91,11 @@ interface NavSubItemBase {
   anonymousAllowed?: boolean
 }
 
-/** A static child, labelled through i18n keys like its section. */
+/** A static child, labelled through i18n keys like its section, with an optional icon. */
 interface StaticNavSubItem extends NavSubItemBase {
   labelKey: NavLabelKey
   descriptionKey: NavDescriptionKey
+  icon?: LucideIcon
 }
 
 /** A child resolved from data by `use-nav-items.ts` (design D1): already-localized text and an
@@ -281,7 +286,7 @@ export const navItems: NavItem[] = [
     icon: CalendarDays,
     anonymousAllowed: false,
     mobilePlacement: "menu",
-    // The active events come first (see use-nav-items.ts); All events stays last.
+    // The static children come first, then every catalog event (see use-nav-items.ts).
     dynamicChildren: "legendaryEvents",
     children: [
       {
@@ -290,6 +295,18 @@ export const navItems: NavItem[] = [
         descriptionKey: "legendaryEvents.tabs.allEventsDescription",
         // The hub is a destination of its own; archived and upcoming event pages nest below it.
         isLandingPage: true,
+      },
+      {
+        path: "/legendary-events/master-table",
+        labelKey: "legendaryEvents.tabs.masterTable",
+        descriptionKey: "legendaryEvents.tabs.masterTableDescription",
+        icon: Table2,
+      },
+      {
+        path: "/legendary-events/tier-list",
+        labelKey: "legendaryEvents.tabs.tierList",
+        descriptionKey: "legendaryEvents.tabs.tierListDescription",
+        icon: ListOrdered,
       },
     ],
   },
