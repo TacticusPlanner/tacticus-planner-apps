@@ -317,4 +317,41 @@ describe("useAnalyticsActions", () => {
       scope: "battle",
     })
   })
+
+  it("captures the Legendary Event token plan events with only the declared properties", () => {
+    vi.stubEnv("VITE_POSTHOG_PROJECT_TOKEN", "test-token")
+    const { result } = renderHook(() => useAnalyticsActions())
+
+    result.current.captureEvent({
+      type: "legendary_event_next_token_shown",
+      eventId: "votanUthar",
+      state: "token",
+      planLength: 6,
+      tokensLeftOver: 94,
+    })
+    result.current.captureEvent({
+      type: "legendary_event_token_plan_expanded",
+      eventId: "votanUthar",
+      planLength: 6,
+    })
+    result.current.captureEvent({
+      type: "legendary_event_run_forecast_expanded",
+      eventId: "votanUthar",
+    })
+
+    expect(capture).toHaveBeenCalledWith("legendary_event_next_token_shown", {
+      event_id: "votanUthar",
+      state: "token",
+      plan_length: 6,
+      tokens_left_over: 94,
+    })
+    expect(capture).toHaveBeenCalledWith(
+      "legendary_event_token_plan_expanded",
+      { event_id: "votanUthar", plan_length: 6 }
+    )
+    expect(capture).toHaveBeenCalledWith(
+      "legendary_event_run_forecast_expanded",
+      { event_id: "votanUthar" }
+    )
+  })
 })

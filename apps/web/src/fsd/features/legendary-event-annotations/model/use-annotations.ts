@@ -23,7 +23,7 @@ import {
  * `markBattle` every not-cleared cell of a battle; each action is one optimistic `PUT …/annotations`
  * through the shared plan write queue (a 409 adopts the returned plan with the "reloaded" toast,
  * any other error rolls back with a translated toast). Nothing is sent when the cells already hold
- * the status.
+ * the status. `markToken` sets the cells of one planned token (the Next token card's actions).
  */
 export function useAnnotations(eventId: string) {
   const { t } = useTranslation("legendaryEvents")
@@ -37,7 +37,7 @@ export function useAnnotations(eventId: string) {
     battleIndex: number,
     objectiveIds: number[],
     status: LegendaryEventAnnotationStatus | null,
-    scope: "cell" | "battle"
+    scope: "cell" | "battle" | "token"
   ): Promise<PlanMutationOutcome> => {
     const cached = queryClient.getQueryData<LegendaryEventPlan>(queryKey)
     if (
@@ -106,10 +106,19 @@ export function useAnnotations(eventId: string) {
       "battle"
     )
 
+  /** Marks the cells a planned token clears (the Next token card's actions): one write. */
+  const markToken = (
+    laneId: LegendaryEventLaneId,
+    battleIndex: number,
+    objectiveIds: readonly number[],
+    status: LegendaryEventAnnotationStatus
+  ) => write(laneId, battleIndex, [...objectiveIds], status, "token")
+
   return {
     enabled,
     annotations: query.data?.annotations,
     markCell,
     markBattle,
+    markToken,
   }
 }

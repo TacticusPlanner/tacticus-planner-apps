@@ -182,6 +182,23 @@ export function useAnalyticsActions() {
             suggestion_count: event.suggestionCount,
           })
           break
+        case "legendary_event_next_token_shown":
+          client.capture(event.type, {
+            event_id: event.eventId,
+            state: event.state,
+            plan_length: event.planLength,
+            tokens_left_over: event.tokensLeftOver,
+          })
+          break
+        case "legendary_event_token_plan_expanded":
+          client.capture(event.type, {
+            event_id: event.eventId,
+            plan_length: event.planLength,
+          })
+          break
+        case "legendary_event_run_forecast_expanded":
+          client.capture(event.type, { event_id: event.eventId })
+          break
       }
     },
     [client]

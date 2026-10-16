@@ -106,7 +106,7 @@ type LegendaryEventPaidOptionsToggledEvent = {
 }
 
 /** A Maybe clear / Stop here mark was set (or cleared, status null) on one cell or a whole battle
- *  of the Synced progress grid. */
+ *  of the Synced progress grid, or on a planned token's cells from the Next token card. */
 type LegendaryEventAnnotationSetEvent = {
   type: "legendary_event_annotation_set"
   eventId: string
@@ -114,7 +114,33 @@ type LegendaryEventAnnotationSetEvent = {
   battleIndex: number
   cellCount: number
   status: "maybeClear" | "stopHere" | null
-  scope: "cell" | "battle"
+  scope: "cell" | "battle" | "token"
+}
+
+/** The Next token card's state: a token, or which empty state it shows. */
+type LegendaryEventNextTokenState =
+  "token" | "noTeams" | "noDepth" | "nothingLeft" | "allCleared" | "unavailable"
+
+/** The Next token card rendered (once per page view and state change). */
+type LegendaryEventNextTokenShownEvent = {
+  type: "legendary_event_next_token_shown"
+  eventId: string
+  state: LegendaryEventNextTokenState
+  planLength: number
+  tokensLeftOver: number
+}
+
+/** The Token plan section was expanded. */
+type LegendaryEventTokenPlanExpandedEvent = {
+  type: "legendary_event_token_plan_expanded"
+  eventId: string
+  planLength: number
+}
+
+/** The Run forecast section was expanded. */
+type LegendaryEventRunForecastExpandedEvent = {
+  type: "legendary_event_run_forecast_expanded"
+  eventId: string
 }
 
 /**
@@ -135,3 +161,6 @@ export type AnalyticsEvent =
   | LegendaryEventPaidOptionsToggledEvent
   | LegendaryEventAnnotationSetEvent
   | LegendaryEventDepthEstimateRestoredEvent
+  | LegendaryEventNextTokenShownEvent
+  | LegendaryEventTokenPlanExpandedEvent
+  | LegendaryEventRunForecastExpandedEvent

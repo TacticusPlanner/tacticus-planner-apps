@@ -309,6 +309,10 @@
           "title": "Aperçu et voies",
           "content": "L'Aperçu résume l'événement ; Alpha, Bêta et Gamma ouvrent chacune une voie. Sur mobile, la barre reste sous l'en-tête pendant le défilement."
         },
+        "nextToken": {
+          "title": "Prochain jeton",
+          "content": "Le combat à jouer avec votre prochain jeton : l'équipe, la voie et le combat qui rapportent le plus de points maintenant, d'après votre synchronisation, vos équipes, profondeurs et marques. Si cela ne s'est pas passé comme prévu, marquez-le Réussi en partie ou Échec et le plan se met à jour."
+        },
         "runStatus": {
           "title": "État de la manche",
           "content": "Votre manche, vos jetons, points, monnaie, coffres et fragments issus de votre dernière synchronisation, ainsi que le prochain palier de points."
@@ -316,6 +320,10 @@
         "runInputs": {
           "title": "Saisies par manche",
           "content": "Indiquez pour chaque manche les missions et packs que le jeu ne communique pas. Ils alimentent les prévisions de récompenses de cette carte."
+        },
+        "tokenPlan": {
+          "title": "Plan de jetons",
+          "content": "Tous les jetons que le plan prévoit de jouer dans l'ordre, avec les points cumulés et les paliers franchis. La prévision par manche ci-dessous les répartit sur les manches restantes."
         },
         "laneSummary": {
           "title": "Résumé des voies",
@@ -426,5 +434,72 @@
     "needsEstimates": "Nécessite des estimations de progression",
     "loading": "Chargement des suggestions…",
     "rank": "Suggestion {{rank}}"
+  },
+  "tokenPlan": {
+    "nextToken": {
+      "title": "Prochain jeton",
+      "battle": "{{lane}} · Combat {{battle}}",
+      "points": "+{{points}} points",
+      "reasons": {
+        "mostPoints": "Le plus de points disponibles maintenant",
+        "mostPointsPlayableNow": "Le plus de points parmi les combats jouables maintenant"
+      },
+      "upcoming": "{{reason}} pour le début de la manche {{run}}",
+      "maybe": "Peut-être faisable",
+      "members": "Membres",
+      "objectives": "Réussit",
+      "actions": {
+        "partly": "Réussi en partie",
+        "couldNot": "Échec",
+        "partlyLabel": "Réussi en partie : marquer {{team}} sur {{lane}} combat {{battle}} comme Peut-être faisable",
+        "couldNotLabel": "Échec : marquer {{team}} sur {{lane}} combat {{battle}} comme S'arrêter ici"
+      },
+      "loading": "Chargement du plan de jetons…",
+      "unavailable": "La progression synchronisée est indisponible, il n'y a donc pas de plan de jetons",
+      "allCleared": "Tous les combats sont réussis",
+      "noTeams": "Ajoutez une équipe sur {{lane}} pour obtenir un plan",
+      "noDepth": "Indiquez jusqu'où {{team}} progresse",
+      "nothingLeft": "Vos équipes n'ont plus rien à réussir · {{points}} points restants sur {{lane}}"
+    },
+    "plan": {
+      "title": "Plan de jetons",
+      "summary_one": "{{count}} jeton · +{{points}} points",
+      "summary_other": "{{count}} jetons · +{{points}} points",
+      "battle": "Combat {{battle}}",
+      "points": "+{{points}}",
+      "running": "{{points}} au total",
+      "maybe": "Peut-être faisable",
+      "milestone": "Palier {{milestone}} · +{{currency}} de monnaie",
+      "step": "{{step}} atteint",
+      "fullClear_one": "{{lane}} : réussir entièrement un combat demande {{count}} jeton",
+      "fullClear_other": "{{lane}} : réussir entièrement un combat demande {{count}} jetons",
+      "uncovered": "{{lane}} : aucune équipe ne couvre {{objectives}}"
+    },
+    "forecast": {
+      "title": "Prévision par manche",
+      "header": "À la fin de la manche {{run}} : {{points}} points · {{step}} à {{shards}} fragments près",
+      "headerAllSteps": "À la fin de la manche {{run}} : {{points}} points · toutes les récompenses atteintes",
+      "run": "Manche {{run}}",
+      "states": {
+        "done": "Terminée",
+        "now": "En cours",
+        "next": "Prochaine",
+        "planned": "Prévue"
+      },
+      "finished": "Terminée",
+      "supply": "{{total}} jetons : {{free}} gratuits + {{ad}} pub + {{bonus}} livraison bonus",
+      "uses": "Utilise {{used}} · {{left}} restants",
+      "points": "{{points}} points (+{{earned}})",
+      "currency": "{{currency}} de monnaie en main (+{{earned}} gagnée)",
+      "chests": "{{claimed}} coffres ouverts (+{{opened}})",
+      "shards": "{{shards}} fragments",
+      "reached": "Atteint : {{steps}}",
+      "next": "Suivant : {{step}} · {{shards}} fragments manquants",
+      "allSteps": "Toutes les récompenses atteintes",
+      "ohSoClose": "Oh So Close : {{shards}} fragments pour {{blackstone}} pierre noire",
+      "leftover_one": "{{count}} jeton sans combat à jouer : ajoutez une équipe ou augmentez une profondeur pour l'utiliser",
+      "leftover_other": "{{count}} jetons sans combat à jouer : ajoutez une équipe ou augmentez une profondeur pour les utiliser",
+      "editInputs": "Modifier les saisies"
+    }
   }
 }

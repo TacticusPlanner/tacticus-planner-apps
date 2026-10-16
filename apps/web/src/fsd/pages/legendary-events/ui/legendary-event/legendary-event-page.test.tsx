@@ -37,7 +37,16 @@ vi.mock("dexie-react-hooks", () => ({
   },
 }))
 
-const events = [lysanderEvent, utharEvent]
+const events = [
+  lysanderEvent,
+  utharEvent,
+  {
+    ...lysanderEvent,
+    id: "archivedLysander",
+    finished: true,
+    eventStageStartDatesUtc: ["2026-01-01T00:00:00Z"],
+  },
+]
 const catalog = vi.hoisted(() => ({ synced: true }))
 vi.mock("@workspace/game-catalog/queries", () => ({
   hasLegendaryEventsSynced: async () => catalog.synced,
@@ -88,6 +97,10 @@ const goals = vi.hoisted(() => ({
   details: new Map<string, unknown>(),
 }))
 const launchCreateGoal = vi.hoisted(() => vi.fn())
+const planApi = vi.hoisted(() => ({
+  teams: [] as unknown[],
+  put: vi.fn(),
+}))
 vi.mock("@azure/msal-react", () => ({ useIsAuthenticated: () => true }))
 vi.mock("@/shared/api", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/shared/api")>()),
@@ -102,9 +115,10 @@ vi.mock("@/shared/api", async (importOriginal) => ({
       catalogVersion: "1",
       notes: null,
       showPaidOptions: false,
-      teams: [],
+      teams: planApi.teams,
     }
   },
+  apiPut: planApi.put,
 }))
 // An Active Unlock goal for Cyrus, an Alpha unit the roster does not own.
 function giveCyrusUnlockGoal() {
@@ -227,6 +241,8 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
     goals.summaries = []
     goals.details.clear()
     launchCreateGoal.mockReset()
+    planApi.teams = []
+    planApi.put.mockReset()
     setViewportWidth(1280)
     vi.useFakeTimers({ toFake: ["Date"] })
     vi.setSystemTime(new Date("2026-09-02T12:00:00Z"))
@@ -459,8 +475,10 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
     expect(mobile).toBe(desktop)
     expect(desktop.map((step) => step.target)).toEqual([
       '[data-testid="legendary-event-tabs"]',
+      '[data-testid="legendary-event-next-token"]',
       '[data-testid="legendary-event-run-status"]',
       '[data-testid="legendary-event-run-inputs"]',
+      '[data-testid="legendary-event-token-plan"]',
       '[data-testid="legendary-event-lane-summary"]',
       '[data-testid="legendary-event-overview-leaderboard"]',
       '[data-testid="legendary-event-lane-overview"]',
@@ -469,7 +487,12 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
       '[data-testid="legendary-event-progress-grid"]',
       '[data-testid="legendary-event-leaderboard"]',
     ])
-    for (const step of desktop.slice(0, 5)) {
+    // With no teams the plan is empty, so the Token plan step's target is absent (Joyride skips it).
+    for (const step of desktop.slice(0, 7)) {
+      if (step.target.includes("legendary-event-token-plan")) {
+        expect(document.querySelector(step.target)).toBeNull()
+        continue
+      }
       expect(document.querySelector(step.target)).not.toBeNull()
     }
     // `before` resolves only once the lane section is in the document, which an `act` scope
@@ -478,14 +501,127 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
     const actEnvironment = actGlobal.IS_REACT_ACT_ENVIRONMENT
     actGlobal.IS_REACT_ACT_ENVIRONMENT = false
     try {
-      await desktop[5]!.before!()
+      await desktop[7]!.before!()
     } finally {
       actGlobal.IS_REACT_ACT_ENVIRONMENT = actEnvironment
     }
     expect(selectedTab()).toHaveTextContent("Alpha")
-    for (const step of desktop.slice(5)) {
+    for (const step of desktop.slice(7)) {
       expect(document.querySelector(step.target)).not.toBeNull()
     }
+  })
+
+  describe("token plan on Overview", () => {
+    // Lysander run 1: Alpha battle 1 won, one Alpha team that clears defeat-all three battles
+    // deep, so the plan is Alpha battle 2, battle 3, then battle 1's remaining kill score.
+    const runOneProgress = {
+      ...lysanderProgress,
+      currentEventRun: 1,
+      currentEventTokens: {
+        current: 3,
+        max: 12,
+        nextTokenInSeconds: 5400,
+        regenDelayInSeconds: 10_800,
+      },
+      hasUsedAdForExtraTokenToday: false,
+      extraCurrencyPerPayout: null,
+      currentPoints: 100,
+      currentCurrency: 0,
+      currentClaimedChestIndex: 0,
+      currentShards: 0,
+    }
+    const deepTeam = {
+      id: "deep",
+      laneId: "alpha",
+      name: "Deep",
+      sortOrder: 0,
+      memberUnitIds: ["bloodDante"],
+      reserveUnitId: null,
+      objectiveIndexes: [],
+      runDepths: [
+        {
+          run: 1,
+          expectedBattleClears: 3,
+          expectedBattleClearsSource: "manual",
+          recordedAt: "2026-09-01T00:00:00Z",
+        },
+      ],
+    }
+
+    it("orders the Overview: Next token, Run status, Token plan, Run forecast, lane summary, leaderboard", async () => {
+      player.progress = runOneProgress
+      planApi.teams = [deepTeam]
+      renderPage("/legendary-events/astarLysander")
+      const card = await screen.findByTestId("next-token-view")
+      const leaderboard = await screen.findByTestId(
+        "legendary-event-overview-leaderboard"
+      )
+
+      const order = [
+        screen.getByTestId("legendary-event-next-token"),
+        screen.getByTestId("legendary-event-run-status"),
+        screen.getByTestId("legendary-event-token-plan"),
+        screen.getByTestId("legendary-event-run-forecast"),
+        screen.getByTestId("legendary-event-lane-summary"),
+        leaderboard,
+      ]
+      for (const [index, element] of order.slice(1).entries()) {
+        expect(follows(order[index]!, element)).toBe(true)
+      }
+      expect(card).toHaveAttribute("data-lane", "alpha")
+      expect(card).toHaveAttribute("data-battle", "1")
+      expect(screen.getByTestId("token-plan-summary")).toHaveTextContent(
+        /^3 tokens/
+      )
+    })
+
+    it("re-plans at once when a card action marks the token", async () => {
+      player.progress = runOneProgress
+      planApi.teams = [deepTeam]
+      planApi.put.mockReturnValue(new Promise(() => {}))
+      renderPage("/legendary-events/astarLysander")
+      await screen.findByTestId("next-token-view")
+
+      act(() => fireEvent.click(screen.getByTestId("next-token-could-not")))
+
+      await vi.waitFor(() => expect(planApi.put).toHaveBeenCalledTimes(1))
+      expect(planApi.put).toHaveBeenCalledWith(
+        "/api/v1/me/legendary-event-plans/astarLysander/annotations",
+        {
+          body: {
+            expectedRevision: 0,
+            laneId: "alpha",
+            battleIndex: 1,
+            objectiveIds: [0],
+            status: "stopHere",
+          },
+        }
+      )
+      // Battle 2's defeat-all is Stop here: Alpha stops there, leaving battle 1's kill score.
+      const card = await screen.findByTestId("next-token-view")
+      await vi.waitFor(() => expect(card).toHaveAttribute("data-battle", "0"))
+      expect(screen.getByTestId("token-plan-summary")).toHaveTextContent(
+        /^1 token /
+      )
+    })
+
+    it("names the lane to add a team on when there are no teams", async () => {
+      player.progress = runOneProgress
+      renderPage("/legendary-events/astarLysander")
+
+      expect(await screen.findByTestId("next-token-noTeams")).toHaveTextContent(
+        "Add a team on Alpha to get a plan"
+      )
+    })
+
+    it("renders no token sections on an archived event", async () => {
+      renderPage("/legendary-events/archivedLysander")
+      await screen.findByTestId("legendary-event-overview-leaderboard")
+
+      expect(screen.queryByTestId("legendary-event-next-token")).toBeNull()
+      expect(screen.queryByTestId("legendary-event-token-plan")).toBeNull()
+      expect(screen.queryByTestId("legendary-event-run-forecast")).toBeNull()
+    })
   })
 
   describe("desktop (1280px)", () => {

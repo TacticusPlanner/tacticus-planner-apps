@@ -32,6 +32,11 @@ import {
 } from "@/entities/legendary-event"
 
 import type { UpgradeImpactState } from "@/features/legendary-event-goals"
+import type {
+  MarkTokenHandler,
+  OpenTeamsHandler,
+  TokenPlanView,
+} from "@/features/legendary-event-tokens"
 
 import type { ProgressMarksViewModel } from "./progress/progress-marks"
 import type { TeamsViewModel } from "./teams/teams-section"
@@ -101,6 +106,8 @@ export interface LegendaryEventPageViewModel {
   teams: TeamsViewModel
   /** The selected lane's Upgrade impact (Stage 6); null on Overview or signed out. */
   upgradeImpact: UpgradeImpactViewModel | null
+  /** The Overview's Next token card, Token plan and Run forecast (Stage 4). */
+  tokens: TokensViewModel
 }
 
 interface UpgradeImpactViewModel {
@@ -108,6 +115,14 @@ interface UpgradeImpactViewModel {
   /** Goal targets by unit, for "In goals" and badges; undefined while goals load or failed. */
   goalTargets: ReadonlyMap<string, LegendaryEventGoalTarget> | undefined
   teamName: (teamId: string) => string
+}
+
+interface TokensViewModel {
+  view: TokenPlanView
+  /** Absent while marks cannot be written (signed out, or the plan has not loaded). */
+  onMarkToken: MarkTokenHandler | undefined
+  /** Selects a lane's tab and scrolls its Teams section (or one team's card) into view. */
+  onOpenTeams: OpenTeamsHandler
 }
 
 type ByLane<T> = Record<LegendaryEventLaneId, T>
