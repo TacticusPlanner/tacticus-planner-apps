@@ -68,10 +68,10 @@ Assumptions:
 
 #### Scenario: Worked forecast on Uthar
 
-- **GIVEN** the worked token plan (6 tokens, 978 points from 5,000) and the worked supply (run 2: 32, run 3: 68), synced C 120, K 10, S 250, `votanUthar`'s ladder (chests 11, 12, 13 cost 260, 280, 300; milestone 13 at 5,500 pays 85, milestone 14 at 6,000), unlock 400, and Stage 3's run 3 inputs (10 regular missions, bundle bought, no premium, no Oh So Close shards) with Show paid options on
+- **GIVEN** the worked token plan (6 tokens, 1,136 points from 5,000) and the worked supply (run 2: 32, run 3: 68), synced C 120, K 10, S 250, `votanUthar`'s ladder (chests 11, 12, 13, 14 cost 260, 280, 300, 320; milestone 13 at 5,500 pays 85, milestone 14 at 6,000 pays 90), unlock 400, and Stage 3's run 3 inputs (10 regular missions, bundle bought, no premium, no Oh So Close shards) with Show paid options on
 - **WHEN** the forecast is computed
-- **THEN** run 2 uses 6 of 32 tokens (26 left over), earns 978 points to 5,978, crosses milestone 13 (+85, no bonus) for 205 currency, opens no chest (chest 11 costs 260), ends with 10 chests and 250 shards, next step Unlock with 150 shards missing and no Oh So Close hint (150 > 75)
-- **AND** run 3 uses 0 of 68 tokens (68 left over), earns 0 points (5,978), gains 10 × 25 = 250 from missions and 300 from the bundle (755 in hand), opens chest 11 (495 left) and chest 12 (215 left), ends with 12 chests and 300 shards, next step Unlock with 100 shards missing and no hint
+- **THEN** run 2 uses 6 of 32 tokens (26 left over), earns 1,136 points to 6,136, crosses milestones 13 and 14 (+85 and +90, no bonus) for 295 currency, opens chest 11 (260; 35 left), ends with 11 chests and 275 shards, next step Unlock with 125 shards missing and no Oh So Close hint (125 > 75)
+- **AND** run 3 uses 0 of 68 tokens (68 left over), earns 0 points (6,136), gains 10 × 25 = 250 from missions and 300 from the bundle (585 in hand), opens chest 12 (280; 305 left) and chest 13 (300; 5 left), ends with 13 chests and 325 shards, next step Unlock with 75 shards missing and an Oh So Close hint of 500 + 75 × 100 = 8,000 blackstone
 
 #### Scenario: Oh So Close hint
 
@@ -99,12 +99,12 @@ Assumptions:
 
 ### Requirement: Run forecast section
 
-Below the token plan the Overview tab SHALL show a collapsible **Run forecast**, collapsed by default and remembered per device, headed by the last forecast run's outcome ("By the end of run 3: 5,978 points · Unlock 100 shards short"). Expanded, it SHALL show one block per run 1–3 with its state (Done, Now, Next, Planned); Done blocks show "Finished" only; other blocks show tokens available as free + ad + bonus delivery, "uses N" and "N left over", ending points, currency, chests, shards, the steps reached, the next step with shards missing, and the Oh So Close hint when present. When any run has tokens left over and the plan is shorter than the supply, a line SHALL say "N tokens with nothing to play: add a team or raise a depth to use them" linking to the first lane with points left. An **Edit inputs** link SHALL open the Stage 3 run inputs drawer (which carries Show paid options); the forecast recomputes when the drawer saves. With an empty plan the forecast SHALL still render (inputs alone can open chests). While supply inputs load the section SHALL show a skeleton; when the event's catalog record failed to load it SHALL be hidden with the Run status card's failure note.
+Below the token plan the Overview tab SHALL show a collapsible **Run forecast**, collapsed by default and remembered per device, headed by the last forecast run's outcome ("By the end of run 3: 6,136 points · Unlock 75 shards short"). Expanded, it SHALL show one block per run 1–3 with its state (Done, Now, Next, Planned); Done blocks show "Finished" only; other blocks show tokens available as free + ad + bonus delivery, "uses N" and "N left over", ending points, currency, chests, shards, the steps reached, the next step with shards missing, and the Oh So Close hint when present. When any run has tokens left over and the plan is shorter than the supply, a line SHALL say "N tokens with nothing to play: add a team or raise a depth to use them" linking to the first lane with points left. An **Edit inputs** link SHALL open the Stage 3 run inputs drawer (which carries Show paid options); the forecast recomputes when the drawer saves. With an empty plan the forecast SHALL still render (inputs alone can open chests). While supply inputs load the section SHALL show a skeleton; when the event's catalog record failed to load it SHALL be hidden with the Run status card's failure note.
 
 #### Scenario: Forecast header on the worked example
 
 - **WHEN** the Overview renders the worked forecast
-- **THEN** the collapsed header reads "By the end of run 3: 5,978 points · Unlock 100 shards short"
+- **THEN** the collapsed header reads "By the end of run 3: 6,136 points · Unlock 75 shards short"
 
 #### Scenario: Leftover tokens line
 

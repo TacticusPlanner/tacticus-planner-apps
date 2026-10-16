@@ -10,33 +10,33 @@ Defines how the planner orders the tokens a Legendary Event still rewards (which
 
 The planner SHALL compute one ordered token plan per event, client side and never persisted, as follows.
 
-- **Cells.** Each battle `b` of a lane has six cells: defeat-all (id 0) and the lane's five objectives (id `index + 1`), cleared or not from the synced progress exactly as the progress grid reads them, and a **high score** from the synced `highScore` (0 without an encounter). A lane with no synced record starts with nothing cleared.
+- **Cells.** Each battle `b` of a lane has six cells: defeat-all (id 0) and the lane's five objectives (id `index + 1`), cleared or not from the synced progress exactly as the progress grid reads them, a **kill score** from the synced `encounterPoints` and a **high score** from the synced `highScore` (each 0 without an encounter and at most `battlesPoints[b]`). A lane with no synced record starts with nothing cleared.
 - **Team reach.** A team reaches battle `b` (0-based) when its **depth** for the current run is greater than `b`. The depth is the team's stored depth for the current run (`currentLegendaryEventRun`) when one exists, else its Stage 5 clear estimate, else none; a team with no depth or depth 0 plans nothing. Only a team's non-reserve members and its stored covered objectives count; the reserve never does.
 - **Availability.** Battle `b` of a lane is available when it is the lane's first battle or battle `b − 1` has defeat-all cleared, counting cells cleared earlier in the plan.
-- **Token value.** A token of team `T` on an available, reachable battle `b` clears every cell of `b` that is not cleared, not marked Stop here, and is either defeat-all or an objective `T` covers. It is worth: `battlesPoints[b]` − the battle's high score (not below 0), only when the token clears defeat-all or defeat-all is already cleared; plus `defeatAll[b]` when it clears defeat-all; plus the catalog score of each objective it clears. A token that does not clear defeat-all and whose battle's defeat-all is not already cleared is worth 0 (objectives only count on a won battle). A battle whose defeat-all is marked Stop here is never played, so later battles of that lane stay unavailable unless sync already shows defeat-all cleared there.
+- **Token value.** A token of team `T` on an available, reachable battle `b` clears every cell of `b` that is not cleared, not marked Stop here, and is either defeat-all or an objective `T` covers. It is worth: (`battlesPoints[b]` − the battle's kill score, not below 0) + (`battlesPoints[b]` − the battle's high score, not below 0), only when the token clears defeat-all or defeat-all is already cleared; plus `defeatAll[b]` when it clears defeat-all; plus the catalog score of each objective it clears. A token that does not clear defeat-all and whose battle's defeat-all is not already cleared is worth 0 (objectives only count on a won battle). A battle whose defeat-all is marked Stop here is never played, so later battles of that lane stay unavailable unless sync already shows defeat-all cleared there.
 - **Choice per lane.** The lane's best token is the highest-value token over its available, not-complete battles from the first battle not complete upwards and its teams in their lane order; on equal value the earlier battle wins, then the earlier team.
 - **Choice across lanes.** The next token is the lanes' best token with the most points; on equal points, the one that continues the previous token's team on the next battle of the same lane; then the earlier lane (Alpha, Beta, Gamma).
-- **Plan.** Apply the chosen token (its cells become cleared, the battle's high score becomes `battlesPoints[b]` when it clears defeat-all) and repeat until no token is worth more than 0. Each planned token records its lane, battle, team, cleared cell ids, points, running points (synced `currentPoints` + the plan's points so far), and is **flagged Maybe** when any cell it clears is marked Maybe clear.
+- **Plan.** Apply the chosen token (its cells become cleared, the battle's kill score and high score become `battlesPoints[b]` when it clears defeat-all) and repeat until no token is worth more than 0. Each planned token records its lane, battle, team, cleared cell ids, points, running points (synced `currentPoints` + the plan's points so far), and is **flagged Maybe** when any cell it clears is marked Maybe clear.
 - Only marks in effect count (`applicableAnnotations`: a mark on a cell sync shows cleared is ignored).
 
 All figures are event points. The plan is anchored to the account's current synced progress and its teams' current depths, never to a goal target. It SHALL be recomputed whenever the synced progress, the roster, the plan (teams, depths, marks) or the clear estimates change.
 
 Assumptions:
 
-- A battle is won by clearing defeat-all; a won battle awards its full kill score (`battlesPoints[b]`), and bonus objectives only count on a won battle.
-- The second `battlesPoints[b]` of the maximum model ("high score" beside "kill score") is not counted, matching earned points (its award is unverified, see `legendary-event-synced-progress`).
+- A battle is won by clearing defeat-all; a won battle awards its full kill score and its full high score (each `battlesPoints[b]`), and bonus objectives only count on a won battle.
+- Both `battlesPoints[b]` awards are counted, matching earned points and the maximum model (see `legendary-event-synced-progress`).
 - A team that reaches battle `b` wins it in one token and satisfies every objective it covers there.
 - Battles of a lane unlock in order: battle `b` can be played once battle `b − 1` has been won.
 - Progress carries across the three runs, so one plan covers the rest of the event.
 
 #### Scenario: Worked example on Uthar Alpha
 
-- **GIVEN** `votanUthar` Alpha (`battlesPoints` 29, 31, 35, 39, 41, 43, 45…; `defeatAll` 30 each; objectives Ultramarines 75 (index 0), Resilient 95, Max 2 Hits 50, Melee 65 (index 3), Piercing 90), synced `currentPoints` 5,000, Alpha `encounters[0] = { objectivesCleared: [0, 1], highScore: 29 }` and `encounters[1] = { objectivesCleared: [0], highScore: 31 }`, no other encounters, no marks, no teams on Beta or Gamma
+- **GIVEN** `votanUthar` Alpha (`battlesPoints` 29, 31, 35, 39, 41, 43, 45…; `defeatAll` 30 each; objectives Ultramarines 75 (index 0), Resilient 95, Max 2 Hits 50, Melee 65 (index 3), Piercing 90), synced `currentPoints` 5,000, Alpha `encounters[0] = { objectivesCleared: [0, 1], highScore: 29, encounterPoints: 29 }` and `encounters[1] = { objectivesCleared: [0], highScore: 31, encounterPoints: 31 }`, no other encounters, no marks, no teams on Beta or Gamma
 - **AND** two Alpha teams in this order: **Five** (`ultraCalgar`, `ultraTigurius`, `ultraTitus`, `ultraApothecary`, `ultraEliminatorSgt`, covering Ultramarines, Stage 5 estimated depth 6, no stored depth) and **Melee** (`ultraCalgar`, `ultraTitus`, `ultraApothecary`, covering Ultramarines and Melee, stored depth 5 for the current run)
 - **WHEN** the plan is computed
-- **THEN** the first candidates are battle 1: Melee +65 (Melee only; the high score is already full); battle 2: Five +75, Melee +75 + 65 = 140; battle 3 (available because battle 2's defeat-all is cleared): Five 35 + 30 + 75 = 140, Melee 35 + 30 + 75 + 65 = 205; battle 4 is not available yet
-- **AND** the plan is: 1) Melee → battle 3, +205, running 5,205; 2) Melee → battle 4, 39 + 30 + 140 = +209, running 5,414; 3) Melee → battle 5, 41 + 30 + 140 = +211, running 5,625; 4) Five → battle 6, 43 + 30 + 75 = +148, running 5,773 (Melee's depth 5 does not reach battle 6); 5) Melee → battle 2, +140, running 5,913; 6) Melee → battle 1, +65, running 5,978
-- **AND** nothing else is worth a token (battle 7 is beyond both depths; Resilient, Max 2 Hits and Piercing are covered by no team), so the plan is 6 tokens and 978 points
+- **THEN** the first candidates are battle 1: Melee +65 (Melee only; the kill score and high score are already full); battle 2: Five +75, Melee +75 + 65 = 140; battle 3 (available because battle 2's defeat-all is cleared): Five 35 + 35 + 30 + 75 = 175, Melee 35 + 35 + 30 + 75 + 65 = 240; battle 4 is not available yet
+- **AND** the plan is: 1) Melee → battle 3, +240, running 5,240; 2) Melee → battle 4, 39 + 39 + 30 + 140 = +248, running 5,488; 3) Melee → battle 5, 41 + 41 + 30 + 140 = +252, running 5,740; 4) Five → battle 6, 43 + 43 + 30 + 75 = +191, running 5,931 (Melee's depth 5 does not reach battle 6); 5) Melee → battle 2, +140, running 6,071; 6) Melee → battle 1, +65, running 6,136
+- **AND** nothing else is worth a token (battle 7 is beyond both depths; Resilient, Max 2 Hits and Piercing are covered by no team), so the plan is 6 tokens and 1,136 points
 
 #### Scenario: Maybe clear flags a token but keeps it
 
@@ -48,7 +48,7 @@ Assumptions:
 
 - **GIVEN** the worked example and a Stop here mark on battle 4's defeat-all cell
 - **WHEN** the plan is computed
-- **THEN** the plan is Melee → battle 3 +205, Melee → battle 2 +140, Melee → battle 1 +65 (410 points); battles 4 to 6 are not planned
+- **THEN** the plan is Melee → battle 3 +240, Melee → battle 2 +140, Melee → battle 1 +65 (445 points); battles 4 to 6 are not planned
 
 #### Scenario: Stop here on an objective drops only that objective
 
@@ -79,6 +79,12 @@ Assumptions:
 - **GIVEN** the cases of V1 `token-estimation-service.spec.ts` (`computeNextToken`, `computeAllTokenUsage`, current points) translated into V2 lanes, cells and teams in the test fixture
 - **WHEN** the plan is computed
 - **THEN** the token order, teams, battles and points equal V1's, except where a design deviation (design D3) is pinned by its own case
+
+#### Scenario: Worked example on Fabius Bile, V1 parity
+
+- **GIVEN** `lostaBile` with no synced progress, Alpha teams Final Vengeance + Max 2 hits (depth 6), Black Templars (5), No Bolter + Blast (4), No Bolter + Max 2 hits (7) and Final Vengeance (7), Beta teams No Power + Piercing (6), Max 3 hits + Parry (5) and Deep Strike (6), and Gamma teams Min 5 hits + Mechanical (6), No Flying + Flame (5), Infiltrate (4), Mechanical (7), Flame (6) and No Flying (7)
+- **WHEN** the plan is computed
+- **THEN** it has 55 tokens worth 8,615 points, equal to V1's plan for the same teams and depths; the first-pass tokens are Alpha battles 1 to 6 at 249, 253, 257, 261, 265 and 269, Gamma battles 1 to 6 at 242, 258, 260, 268, 268 and 270, Beta battles 1 to 6 at 238, 242, 246, 250, 254 and 258, then Gamma 7 at 204 and Alpha 7 at 203, followed by 35 second-pass tokens (140 five times, 125 nine times, 100 nine times, 95 seven times, 90 once and 30 four times)
 
 ### Requirement: Fewest tokens to fully clear a battle per lane
 
@@ -119,7 +125,7 @@ The card SHALL NOT render on an archived event. While the roster, plan or clear 
 #### Scenario: Card on the worked example
 
 - **WHEN** the Overview tab renders the worked Uthar Alpha example
-- **THEN** the card shows team Melee with its three portraits, "Alpha · Battle 3", "+205 points", defeat-all, Ultramarines and Melee, and "Most points available now"
+- **THEN** the card shows team Melee with its three portraits, "Alpha · Battle 3", "+240 points", defeat-all, Ultramarines and Melee, and "Most points available now"
 
 #### Scenario: Flagged and unplayable tokens are skipped
 
@@ -169,7 +175,7 @@ Below the Run status card the Overview tab SHALL show a collapsible **Token plan
 #### Scenario: Milestone marker
 
 - **WHEN** the token plan for the worked example is expanded
-- **THEN** token 3 (running 5,625) carries "Milestone 13 · +85 currency" and no other row carries a marker
+- **THEN** token 3 (running 5,740) carries "Milestone 13 · +85 currency", token 5 (running 6,071) carries "Milestone 14 · +90 currency" and no other row carries a marker
 
 #### Scenario: Grouping
 

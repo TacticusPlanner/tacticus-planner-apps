@@ -30,20 +30,20 @@ Assumptions:
 - **GIVEN** `powerRatio` 0.5, `ultraTigurius` in a horde-mode tier with multiplier 1.2, the reachable-points worked example's Alpha lane and synced progress, no teams on Alpha, and a roster whose only units Alpha allows are Calgar, Titus, Incisus (`ultraApothecary`) and Certus (`ultraEliminatorSgt`), each at combat power 8,792, and Tigurius at effective power 10,550.4
 - **AND** on Alpha, Calgar satisfies Ultramarines, Max 2 Hits and Melee (224 points per battle); Titus satisfies Ultramarines and Melee (174); Incisus satisfies Ultramarines, Max 2 Hits, Melee and Piercing (314); Tigurius and Certus satisfy Ultramarines and Max 2 Hits (159); nobody satisfies Resilient
 - **WHEN** suggestions are built
-- **THEN** {Ultramarines} proposes Tigurius, Incisus, Calgar, Titus, Certus, covering Ultramarines, effective power 45,718.4, depth 6, gain 0 + 75 + 140 + 144 + 146 + 148 = 653
-- **AND** {Max 2 Hits} proposes Tigurius, Incisus, Calgar, Certus, covering Ultramarines and Max 2 Hits, effective power 36,926.4, depth 5, gain 50 + 125 + 190 + 194 + 196 = 755
-- **AND** {Melee} proposes Incisus, Calgar, Titus, covering Ultramarines and Melee, effective power 26,376, depth 5, gain 65 + 140 + 205 + 209 + 211 = 830
-- **AND** {Piercing} proposes Incisus alone, covering Ultramarines, Max 2 Hits, Melee and Piercing, effective power 8,792, depth 3 (battle 4's threshold is 10,351.5), gain 205 + 280 + 345 = 830
-- **AND** {Max 2 Hits, Melee} proposes Incisus, Calgar, covering Ultramarines, Max 2 Hits and Melee, effective power 17,584, depth 4, gain 115 + 190 + 255 + 259 = 819
+- **THEN** {Ultramarines} proposes Tigurius, Incisus, Calgar, Titus, Certus, covering Ultramarines, effective power 45,718.4, depth 6, gain 0 + 75 + 175 + 183 + 187 + 191 = 811
+- **AND** {Max 2 Hits} proposes Tigurius, Incisus, Calgar, Certus, covering Ultramarines and Max 2 Hits, effective power 36,926.4, depth 5, gain 50 + 125 + 225 + 233 + 237 = 870
+- **AND** {Melee} proposes Incisus, Calgar, Titus, covering Ultramarines and Melee, effective power 26,376, depth 5, gain 65 + 140 + 240 + 248 + 252 = 945
+- **AND** {Piercing} proposes Incisus alone, covering Ultramarines, Max 2 Hits, Melee and Piercing, effective power 8,792, depth 3 (battle 4's threshold is 10,351.5), gain 205 + 280 + 380 = 865
+- **AND** {Max 2 Hits, Melee} proposes Incisus, Calgar, covering Ultramarines, Max 2 Hits and Melee, effective power 17,584, depth 4, gain 115 + 190 + 290 + 298 = 893
 - **AND** every other subset either has no candidate (Resilient) or the same members as a proposal above
-- **AND** the ranking is Melee team (+830, depth 5), Incisus alone (+830, depth 3), Incisus and Calgar (+819), Max 2 Hits team (+755), Ultramarines team (+653)
+- **AND** the ranking is Melee team (+945, depth 5), Incisus and Calgar (+893), Max 2 Hits team (+870), Incisus alone (+865, depth 3), Ultramarines team (+811)
 
 #### Scenario: Gains re-rank after a team is saved
 
 - **GIVEN** the worked example and the user has saved the Melee proposal (Incisus, Calgar, Titus) as a team with no stored depth
 - **WHEN** suggestions are rebuilt
-- **THEN** the Melee proposal is gone (same members as a team); Incisus alone adds Max 2 Hits and Piercing in battles 1 to 3, +420; the Max 2 Hits team adds Max 2 Hits in battles 1 to 5, +250; Incisus and Calgar add Max 2 Hits in battles 1 to 4, +200; the Ultramarines team adds battle 6, 43 + 30 + 75 = +148
-- **AND** the ranking is +420, +250, +200, +148
+- **THEN** the Melee proposal is gone (same members as a team); Incisus alone adds Max 2 Hits and Piercing in battles 1 to 3, +420; the Max 2 Hits team adds Max 2 Hits in battles 1 to 5, +250; Incisus and Calgar add Max 2 Hits in battles 1 to 4, +200; the Ultramarines team adds battle 6, 43 + 43 + 30 + 75 = +191
+- **AND** the ranking is +420, +250, +200, +191
 
 #### Scenario: Prefer units with goals
 
@@ -63,7 +63,7 @@ Each lane's Teams section SHALL offer a **Suggest teams** button beside Add team
 
 - its members as portraits in order, each with its goal badge and locked styling;
 - its covered objectives as chips;
-- a one-line reason: "Covers Ultramarines and Melee · clears ~5 · +830 points over your teams";
+- a one-line reason: "Covers Ultramarines and Melee · clears ~5 · +945 points over your teams";
 - a **Use this team** action.
 
 **Use this team** SHALL open the team editor (`legendary-event-teams`) as a new team with the proposal's members in order, its derived objectives ticked and the default name. Saving SHALL create the team through the existing create call. Cancelling SHALL save nothing and return to the suggestions. No proposal SHALL ever be saved without the user saving the editor.
