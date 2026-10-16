@@ -10,7 +10,7 @@
     },
     "machinesOfWar": {
       "label": "Máquinas de Guerra",
-      "description": "Explora detalles y estadísticas de Máquinas de Guerra"
+      "description": "Explora las habilidades y los costes de mejora de las Máquinas de Guerra"
     },
     "npcs": {
       "label": "PNJ",
@@ -21,8 +21,6 @@
       "description": "Explora información de jefes de incursión de gremio"
     },
     "noRecords": "No hay entidades seleccionables disponibles.",
-    "raidBossesNoRecords": "Los jefes de incursión de gremio aún no están disponibles en el catálogo.",
-    "detailUnavailable": "Las páginas detalladas de {{name}} aún no están disponibles. Vuelve pronto.",
     "shops": {
       "label": "Tiendas diarias",
       "description": "Consulta lo que cada tienda diaria puede ofrecer en cualquier día de la semana"
@@ -380,6 +378,23 @@
       }
     }
   },
+  "mowsList": {
+    "title": "Máquinas de Guerra",
+    "search": "Buscar Máquinas de Guerra",
+    "noMatching": "Ninguna Máquina de Guerra coincide con tu búsqueda.",
+    "tour": {
+      "steps": {
+        "search": {
+          "title": "Buscar una Máquina de Guerra",
+          "content": "Escribe parte de un nombre para acotar la lista."
+        },
+        "list": {
+          "title": "Abrir una Máquina de Guerra",
+          "content": "Selecciona una Máquina de Guerra para ver sus habilidades y lo que cuesta mejorarlas."
+        }
+      }
+    }
+  },
   "characterUnit": {
     "breadcrumbLibrary": "Biblioteca",
     "header": {
@@ -510,6 +525,84 @@
         "abilityBadge": "Insignia mítica {{alliance}}",
         "xp": "Libro de XP mítico",
         "gold": "Oro"
+      }
+    }
+  },
+  "mowUnit": {
+    "header": {
+      "kind": "{{alliance}} · Máquina de Guerra",
+      "yourUnit": "Tu Máquina de Guerra:",
+      "levels": "principal {{primary}} · secundaria {{secondary}}",
+      "notUnlocked": "No desbloqueada. Los valores empiezan en {{rarity}}.",
+      "showing": "Mostrando {{rarity}}, habilidades en nivel 1."
+    },
+    "tabs": {
+      "upgrades": "Mejoras de habilidades"
+    },
+    "abilities": {
+      "title": "Habilidades",
+      "primary": "Principal",
+      "secondary": "Secundaria",
+      "mythic": "Mítica"
+    },
+    "mythic": {
+      "unnamed": "Habilidad mítica",
+      "unlocks": "Se desbloquea en Mítico",
+      "level": "Nivel {{level}} · según las estrellas azules"
+    },
+    "upgrades": {
+      "from": "Desde el nivel",
+      "to": "Hasta el nivel",
+      "includeOwned": "Incluir materiales propios",
+      "includeOwnedOn": "Las insignias, los componentes y los materiales restan lo que hay en tu inventario; el oro y la chatarra no.",
+      "includeOwnedOff": "Los totales ignoran tu inventario.",
+      "totalTitle": "Total necesario",
+      "gold": "Oro",
+      "salvage": "Chatarra",
+      "components": "Componentes ({{alliance}})",
+      "badges": "Insignias {{rarity}} ({{alliance}})",
+      "forgeBadges": "Insignias de forja {{rarity}}",
+      "materialsTitle": "Materiales de mejora",
+      "covered": "Cubierto",
+      "nothing": "Nada que mejorar: sube un nivel Hasta por encima de su nivel Desde.",
+      "perLevelTitle": "Por nivel",
+      "step": "{{from}} → {{to}}",
+      "columns": {
+        "level": "Nivel",
+        "gold": "Oro",
+        "salvage": "Chatarra",
+        "badges": "Insignias",
+        "forgeBadges": "Insignias de forja",
+        "components": "Componentes",
+        "materials": "Materiales"
+      }
+    },
+    "tour": {
+      "steps": {
+        "header": {
+          "title": "Máquina de Guerra",
+          "content": "La rareza y los niveles de habilidad de tu Máquina de Guerra. Cambia a Personalizados para ver otras rarezas."
+        },
+        "tabs": {
+          "title": "Detalles y mejoras",
+          "content": "Detalles muestra las habilidades; Mejoras de habilidades suma lo que cuesta subirlas."
+        },
+        "ability": {
+          "title": "Habilidades",
+          "content": "El texto de reglas de cada habilidad y cómo crece con el nivel, cuando el texto del juego esté en el planificador."
+        },
+        "upgrades": {
+          "title": "Mejoras de habilidades",
+          "content": "Abre esta pestaña para sumar el oro, las insignias, los componentes y los materiales que necesita una mejora."
+        },
+        "ranges": {
+          "title": "Elige los niveles",
+          "content": "Elige un nivel Desde y Hasta para cada habilidad. Los totales se actualizan al cambiarlos."
+        },
+        "totals": {
+          "title": "Lo que necesitas",
+          "content": "Oro, chatarra, componentes e insignias para los niveles elegidos, por rareza."
+        }
       }
     }
   }

@@ -46,6 +46,7 @@ export function AbilityPanel({
   chartFromZero = true,
   headingLevel = "h3",
   note,
+  levelControl,
   "data-testid": testId,
 }: {
   kind: string
@@ -66,6 +67,9 @@ export function AbilityPanel({
   headingLevel?: "h2" | "h3"
   /** A line under the name, e.g. which other characters share a relic. */
   note?: ReactNode
+  /** Replaces the stepper, for a level the panel doesn't set (a MoW's mythic ability follows its blue
+   *  stars); the chart then doesn't set a level either. */
+  levelControl?: ReactNode
   "data-testid": string
 }) {
   const { t, i18n } = useTranslation("library")
@@ -129,7 +133,9 @@ export function AbilityPanel({
             </p>
           ) : null}
         </div>
-        {text ? (
+        {levelControl ? (
+          levelControl
+        ) : text ? (
           <LevelStepper
             level={level}
             max={maxLevel}
@@ -190,7 +196,11 @@ export function AbilityPanel({
                     xTicks={levelTicks(maxLevel)}
                     fromZero={chartFromZero}
                     markerIndex={level - 1}
-                    onSelect={(index) => onLevelChange(index + 1)}
+                    onSelect={
+                      levelControl
+                        ? undefined
+                        : (index) => onLevelChange(index + 1)
+                    }
                     caption={t("unit.ability.chartCaption", {
                       label,
                       from,
