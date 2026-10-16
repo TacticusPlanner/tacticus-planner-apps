@@ -7,7 +7,7 @@
 
 ## 2. Shared unit components
 
-- [x] 2.1 Extract `CharacterUnitHeader` into `ui/unit/unit-header.tsx` with `customControls`, `portraitBadge`, `kindLine` and info-line props (design D2); verify the existing character unit page tests pass unchanged.
+- [x] 2.1 Extract `CharacterUnitHeader` into `ui/unit/unit-header.tsx` with `customControls`, `kindLine` and info-line props (design D2); verify the existing character unit page tests pass unchanged.
 - [x] 2.2 Extract the characters list's grid and search into `ui/unit/unit-list.tsx`; verify the characters list tests pass unchanged.
 
 ## 3. Machines of War list
