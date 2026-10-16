@@ -1,3 +1,13 @@
+import { useTranslation } from "react-i18next"
+import { Button } from "@workspace/ui/components/button"
+
+import { RunInputsDrawer } from "@/features/legendary-event-run-inputs"
+import {
+  NextTokenCard,
+  RunForecastSection,
+  TokenPlanList,
+} from "@/features/legendary-event-tokens"
+
 import { LaneOverview } from "./lane-overview"
 import { LeaderboardSection } from "./leaderboard/leaderboard-section"
 import { LegendaryEventHeader } from "./legendary-event-header"
@@ -10,8 +20,8 @@ import { RunStatusCard } from "./run-status-card"
 import { TeamsSection } from "./teams/teams-section"
 
 /**
- * The event page on both forms (design D3): header, the tab strip, then the Overview tab (Run
- * status, lane summary, cross-lane leaderboard) or a lane tab (lane overview, Teams, synced
+ * The event page on both forms (design D3): header, the tab strip, then the Overview tab (Next
+ * token, Run status, Token plan, Run forecast, lane summary, cross-lane leaderboard) or a lane tab (lane overview, Teams, synced
  * progress, then the lane's leaderboard). The forms differ only in the strip's stickiness and in the
  * table-versus-cards rendering of the leaderboard and grid.
  */
@@ -19,7 +29,8 @@ export function LegendaryEventPageView({
   isMobile,
   ...props
 }: LegendaryEventPageViewModel & { isMobile: boolean }) {
-  const { selectedTab } = props
+  const { t } = useTranslation("legendaryEvents")
+  const { selectedTab, tokens } = props
   return (
     <div
       className="flex min-w-0 flex-col gap-4"
@@ -36,7 +47,46 @@ export function LegendaryEventPageView({
           className="flex min-w-0 flex-col gap-6"
           data-testid="legendary-event-overview"
         >
+          <NextTokenCard
+            event={props.event}
+            eventId={props.event.id}
+            isMobile={isMobile}
+            onMarkToken={tokens.onMarkToken}
+            onOpenTeams={tokens.onOpenTeams}
+            view={tokens.view}
+          />
           <RunStatusCard {...props} isMobile={isMobile} />
+          <TokenPlanList
+            event={props.event}
+            eventId={props.event.id}
+            isMobile={isMobile}
+            view={tokens.view}
+          />
+          <RunForecastSection
+            editInputs={
+              props.runInputs.enabled ? (
+                <RunInputsDrawer
+                  currentRun={props.runInputs.currentRun}
+                  event={props.event}
+                  isMobile={isMobile}
+                  trigger={
+                    <Button
+                      className="px-0"
+                      data-testid="run-forecast-edit-inputs"
+                      type="button"
+                      variant="link"
+                    >
+                      {t("tokenPlan.forecast.editInputs")}
+                    </Button>
+                  }
+                />
+              ) : null
+            }
+            eventId={props.event.id}
+            isMobile={isMobile}
+            onOpenTeams={tokens.onOpenTeams}
+            view={tokens.view}
+          />
           <LaneSummary
             event={props.event}
             onJumpToLane={props.onJumpToLane}

@@ -122,7 +122,7 @@ export function TeamsSection({
   return (
     <section
       aria-labelledby="legendary-event-teams-title"
-      className="flex min-w-0 flex-col gap-3"
+      className="flex min-w-0 scroll-mt-[calc(var(--mobile-header-height)+3rem)] flex-col gap-3 md:scroll-mt-4"
       data-lane={laneId}
       data-testid="legendary-event-teams"
     >

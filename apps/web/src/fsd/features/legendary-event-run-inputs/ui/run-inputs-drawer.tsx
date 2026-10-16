@@ -1,4 +1,4 @@
-import { useId, type ReactNode } from "react"
+import { useId, type ReactElement, type ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import { SlidersHorizontal } from "lucide-react"
 import { Badge } from "@workspace/ui/components/badge"
@@ -46,14 +46,17 @@ export function RunInputsDrawer({
   event,
   currentRun,
   isMobile,
+  trigger: customTrigger,
 }: {
   event: Pick<LegendaryEvent, "id" | "regularMissions" | "premiumMissions">
   currentRun: LegendaryEventRun
   isMobile: boolean
+  /** Replaces the Inputs button (the Run forecast's Edit inputs link); one focusable element. */
+  trigger?: ReactElement
 }) {
   const { t } = useTranslation("legendaryEvents")
   const inputs = useRunInputs(event.id)
-  const trigger = (
+  const trigger = customTrigger ?? (
     <Button
       data-testid="legendary-event-run-inputs"
       size="sm"

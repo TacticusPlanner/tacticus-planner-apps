@@ -19,6 +19,7 @@ import {
 } from "@/entities/legendary-event"
 import { useAnnotations } from "@/features/legendary-event-annotations"
 import { useLegendaryEventPlan } from "@/features/legendary-event-teams"
+import { useTokenPlan } from "@/features/legendary-event-tokens"
 import { useTourPageSteps } from "@/shared/tour"
 import { useUnitName } from "@/shared/unit-name"
 
@@ -55,9 +56,13 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
   const unitName = useUnitName()
   const syncTimes = useLegendaryEventSyncTimes()
   const [selectedTab, setSelectedTab] = useState<LegendaryEventTab>("overview")
-  // The lane whose progress grid the Overview lane summary asked to show; consumed by the effect
-  // below once that lane's tab has mounted. A ref, not state: it drives a DOM scroll, never a render.
-  const jumpTarget = useRef<LegendaryEventLaneId | null>(null)
+  // The lane section the Overview asked to show (the lane summary's progress grid, or a token
+  // section's Teams section or team card); consumed by the effect below once that lane's tab has
+  // mounted. A ref, not state: it drives a DOM scroll, never a render.
+  const jumpTarget = useRef<{
+    lane: LegendaryEventLaneId
+    find: () => Element | null
+  } | null>(null)
   // Shared by the three lanes' leaderboards and the Overview one; discarded when the page unmounts.
   const [onlyUnlocked, setOnlyUnlocked] = useState(false)
   const [deductScored, setDeductScored] = useState(true)
@@ -110,21 +115,54 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
         : ({ kind: "pending" } as const),
     [eventData, clearEstimateConfig, battles, roster]
   )
+  const progressObservedAtMs =
+    syncTimes.status === "ready" ? syncTimes.data.progressObservedAtMs : null
+  const tokenPlan = useTokenPlan({
+    event: eventData,
+    lifecycle: event.lifecycle,
+    nowMs: event.nowMs,
+    progress: progressValue,
+    progressObservedAtMs,
+    plan: {
+      enabled: plan.enabled,
+      status: plan.query.status,
+      data: plan.query.data,
+    },
+    run,
+    estimates: clearEstimates,
+  })
   const selectTab = useCallback((tab: LegendaryEventTab) => {
     setSelectedTab(tab)
   }, [])
   const jumpToLane = useCallback((lane: LegendaryEventLaneId) => {
-    jumpTarget.current = lane
+    // The heading carries the sticky-strip offset as scroll-margin (see progress-parts.tsx).
+    jumpTarget.current = {
+      lane,
+      find: () => document.getElementById(progressHeadingId(lane)),
+    }
     setSelectedTab(lane)
   }, [])
+  const openTeams = useCallback(
+    (lane: LegendaryEventLaneId, teamId?: string) => {
+      jumpTarget.current = {
+        lane,
+        find: () =>
+          (teamId
+            ? document.querySelector(
+                `[data-testid="legendary-event-team-card"][data-team="${CSS.escape(teamId)}"]`
+              )
+            : null) ??
+          document.querySelector('[data-testid="legendary-event-teams"]'),
+      }
+      setSelectedTab(lane)
+    },
+    []
+  )
   useEffect(() => {
     const target = jumpTarget.current
-    if (!target || target !== selectedTab) return
+    if (!target || target.lane !== selectedTab) return
     jumpTarget.current = null
-    // The heading carries the sticky-strip offset as scroll-margin (see progress-parts.tsx).
-    document
-      .getElementById(progressHeadingId(target))
-      ?.scrollIntoView({ block: "start" })
+    target.find()?.scrollIntoView({ block: "start" })
   }, [selectedTab])
   useTourPageSteps(useLegendaryEventTutorial(selectTab))
 
@@ -171,10 +209,7 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
       progress,
       // A record cached before rewards were served lacks them until the next catalog sync.
       rewards: event.data.rewards as LegendaryEvent["rewards"] | undefined,
-      progressObservedAtMs:
-        syncTimes.status === "ready"
-          ? syncTimes.data.progressObservedAtMs
-          : null,
+      progressObservedAtMs,
       nowMs: event.nowMs,
     }),
     outlook: buildRewardOutlookViewModel({
@@ -207,6 +242,20 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
         void annotations.markCell(laneId, battleIndex, objectiveId, status),
       onMarkBattle: (laneId, battle, status) =>
         void annotations.markBattle(laneId, battle, status),
+    },
+    tokens: {
+      view: tokenPlan,
+      onMarkToken:
+        annotations.enabled && plan.query.data !== undefined
+          ? (laneId, battleIndex, objectiveIds, status) =>
+              void annotations.markToken(
+                laneId,
+                battleIndex,
+                objectiveIds,
+                status
+              )
+          : undefined,
+      onOpenTeams: openTeams,
     },
     teams: {
       state: buildTeamsSectionState({

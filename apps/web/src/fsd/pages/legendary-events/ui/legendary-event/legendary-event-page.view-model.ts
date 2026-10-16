@@ -29,6 +29,12 @@ import {
   type RewardProjection,
 } from "@/entities/legendary-event"
 
+import type {
+  MarkTokenHandler,
+  OpenTeamsHandler,
+  TokenPlanView,
+} from "@/features/legendary-event-tokens"
+
 import type { ProgressMarksViewModel } from "./progress/progress-marks"
 import type { TeamsViewModel } from "./teams/teams-section"
 
@@ -95,6 +101,16 @@ export interface LegendaryEventPageViewModel {
   marks: ProgressMarksViewModel
   /** The lane tabs' Teams section: the plan, the current run and the plan actions. */
   teams: TeamsViewModel
+  /** The Overview's Next token card, Token plan and Run forecast (Stage 4). */
+  tokens: TokensViewModel
+}
+
+interface TokensViewModel {
+  view: TokenPlanView
+  /** Absent while marks cannot be written (signed out, or the plan has not loaded). */
+  onMarkToken: MarkTokenHandler | undefined
+  /** Selects a lane's tab and scrolls its Teams section (or one team's card) into view. */
+  onOpenTeams: OpenTeamsHandler
 }
 
 type ByLane<T> = Record<LegendaryEventLaneId, T>

@@ -35,6 +35,44 @@ export const ASCENSION_STEPS = [
 
 export type AscensionStep = (typeof ASCENSION_STEPS)[number]
 
+/** The first ascension step a shard count has not completed yet, or every step reached. */
+export type AscensionGoal =
+  | {
+      step: AscensionStep
+      /** Cumulative shards that complete the step. */
+      threshold: number
+      /** Shards held beyond the previous step. */
+      shardsTowardStep: number
+      /** Shards this step takes on its own. */
+      stepSize: number
+    }
+  | { step: "fullyAscended" }
+
+/**
+ * The first cumulative ascension threshold (unlock, then + four stars, + five stars, …) above
+ * `shards` (design D2 step 4). Shared by the reward projection and the run forecast so both name
+ * steps the same way.
+ */
+export function nextAscensionStep(
+  shards: number,
+  progression: LegendaryEventRewards["progression"]
+): AscensionGoal {
+  let previous = 0
+  for (const step of ASCENSION_STEPS) {
+    const threshold = previous + progression[step]
+    if (threshold > shards) {
+      return {
+        step,
+        threshold,
+        shardsTowardStep: Math.max(0, shards - previous),
+        stepSize: threshold - previous,
+      }
+    }
+    previous = threshold
+  }
+  return { step: "fullyAscended" }
+}
+
 export interface RewardProjectionInput {
   rewards: LegendaryEventRewards
   /** The account's synced entry for the event; `undefined` when it has none (the base is zero). */
@@ -79,17 +117,7 @@ export interface RewardProjection {
   futureCloseShards: number
   /** Added to every points milestone payout (synced `extraCurrencyPerPayout`, or 15 with premium). */
   bonusPerPayout: number
-  goal:
-    | {
-        step: AscensionStep
-        /** Cumulative shards that complete the step. */
-        threshold: number
-        /** Shards held (plus future close shards) beyond the previous step. */
-        shardsTowardStep: number
-        /** Shards this step takes on its own. */
-        stepSize: number
-      }
-    | { step: "fullyAscended" }
+  goal: AscensionGoal
   /** `null` when every step is reached. */
   chests:
     | { beyondChestLadder: false; required: number; toGo: number }
@@ -205,20 +233,7 @@ export function projectRewards({
 
   // 4. The first cumulative threshold above the shards held plus future close shards.
   const shards = base.shards + futureCloseShards
-  let previous = 0
-  for (const step of ASCENSION_STEPS) {
-    const threshold = previous + rewards.progression[step]
-    if (threshold > shards) {
-      projection.goal = {
-        step,
-        threshold,
-        shardsTowardStep: Math.max(0, shards - previous),
-        stepSize: threshold - previous,
-      }
-      break
-    }
-    previous = threshold
-  }
+  projection.goal = nextAscensionStep(shards, rewards.progression)
   if (projection.goal.step === "fullyAscended") return projection
 
   // 5. Chests: shards held count whatever their source, so to-go is never negative.

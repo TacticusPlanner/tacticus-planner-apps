@@ -309,6 +309,10 @@
           "title": "Übersicht und Lanes",
           "content": "Die Übersicht fasst das Event zusammen; Alpha, Beta und Gamma öffnen je eine Lane. Auf dem Smartphone bleibt die Leiste beim Scrollen unter der Kopfzeile."
         },
+        "nextToken": {
+          "title": "Nächster Token",
+          "content": "Der Kampf für deinen nächsten Token: das Team, die Bahn und der Kampf mit den meisten Punkten, berechnet aus deiner Synchronisierung, deinen Teams, Tiefen und Markierungen. Lief es nicht nach Plan, markiere ihn als „Teilweise geschafft“ oder „Nicht geschafft“, und der Plan passt sich an."
+        },
         "runStatus": {
           "title": "Durchlaufstatus",
           "content": "Dein Durchlauf, deine Token, Punkte, Währung, Truhen und Splitter aus der letzten Synchronisierung sowie der nächste Punkte-Meilenstein."
@@ -316,6 +320,10 @@
         "runInputs": {
           "title": "Eingaben pro Durchlauf",
           "content": "Trage für jeden Durchlauf die Missionen und Pakete ein, die das Spiel nicht meldet. Sie fließen in die Belohnungsaussicht dieser Karte ein."
+        },
+        "tokenPlan": {
+          "title": "Token-Plan",
+          "content": "Alle Tokens, die der Plan der Reihe nach erwartet, mit laufenden Punkten und den erreichten Meilensteinen. Die Durchlaufprognose darunter verteilt sie auf die verbleibenden Durchläufe."
         },
         "laneSummary": {
           "title": "Lane-Zusammenfassung",
@@ -362,5 +370,72 @@
     "clearsNone": "—",
     "clearsPending": "–",
     "clearsLoading": "Kämpfe werden geschätzt…"
+  },
+  "tokenPlan": {
+    "nextToken": {
+      "title": "Nächster Token",
+      "battle": "{{lane}} · Kampf {{battle}}",
+      "points": "+{{points}} Punkte",
+      "reasons": {
+        "mostPoints": "Die meisten Punkte, die jetzt verfügbar sind",
+        "mostPointsPlayableNow": "Die meisten Punkte unter den Kämpfen, die du jetzt spielen kannst"
+      },
+      "upcoming": "{{reason}}, sobald Durchlauf {{run}} beginnt",
+      "maybe": "Vielleicht schaffbar",
+      "members": "Mitglieder",
+      "objectives": "Erfüllt",
+      "actions": {
+        "partly": "Teilweise geschafft",
+        "couldNot": "Nicht geschafft",
+        "partlyLabel": "Teilweise geschafft: {{team}} auf {{lane}} Kampf {{battle}} als „Vielleicht schaffbar“ markieren",
+        "couldNotLabel": "Nicht geschafft: {{team}} auf {{lane}} Kampf {{battle}} als „Hier aufhören“ markieren"
+      },
+      "loading": "Token-Plan wird geladen…",
+      "unavailable": "Synchronisierter Fortschritt ist nicht verfügbar, daher gibt es keinen Token-Plan",
+      "allCleared": "Alle Kämpfe sind abgeschlossen",
+      "noTeams": "Füge auf {{lane}} ein Team hinzu, um einen Plan zu erhalten",
+      "noDepth": "Lege fest, wie weit {{team}} kommt",
+      "nothingLeft": "Deine Teams können nichts mehr abschließen · {{points}} Punkte offen auf {{lane}}"
+    },
+    "plan": {
+      "title": "Token-Plan",
+      "summary_one": "{{count}} Token · +{{points}} Punkte",
+      "summary_other": "{{count}} Tokens · +{{points}} Punkte",
+      "battle": "Kampf {{battle}}",
+      "points": "+{{points}}",
+      "running": "{{points}} gesamt",
+      "maybe": "Vielleicht schaffbar",
+      "milestone": "Meilenstein {{milestone}} · +{{currency}} Währung",
+      "step": "{{step}} erreicht",
+      "fullClear_one": "{{lane}}: Ein vollständiger Abschluss braucht {{count}} Token pro Kampf",
+      "fullClear_other": "{{lane}}: Ein vollständiger Abschluss braucht {{count}} Tokens pro Kampf",
+      "uncovered": "{{lane}}: Kein Team deckt {{objectives}} ab"
+    },
+    "forecast": {
+      "title": "Durchlaufprognose",
+      "header": "Am Ende von Durchlauf {{run}}: {{points}} Punkte · {{step}} fehlen {{shards}} Splitter",
+      "headerAllSteps": "Am Ende von Durchlauf {{run}}: {{points}} Punkte · alle Belohnungsstufen erreicht",
+      "run": "Durchlauf {{run}}",
+      "states": {
+        "done": "Erledigt",
+        "now": "Aktuell",
+        "next": "Als Nächstes",
+        "planned": "Geplant"
+      },
+      "finished": "Abgeschlossen",
+      "supply": "{{total}} Tokens: {{free}} kostenlos + {{ad}} Werbung + {{bonus}} Bonuslieferung",
+      "uses": "Nutzt {{used}} · {{left}} übrig",
+      "points": "{{points}} Punkte (+{{earned}})",
+      "currency": "{{currency}} Währung verfügbar (+{{earned}} verdient)",
+      "chests": "{{claimed}} Truhen geöffnet (+{{opened}})",
+      "shards": "{{shards}} Splitter",
+      "reached": "Erreicht: {{steps}}",
+      "next": "Als Nächstes: {{step}} · {{shards}} Splitter fehlen",
+      "allSteps": "Alle Belohnungsstufen erreicht",
+      "ohSoClose": "Oh So Close: {{shards}} Splitter für {{blackstone}} Schwarzstein",
+      "leftover_one": "{{count}} Token ohne Kampf: Füge ein Team hinzu oder erhöhe eine Tiefe, um ihn zu nutzen",
+      "leftover_other": "{{count}} Tokens ohne Kampf: Füge ein Team hinzu oder erhöhe eine Tiefe, um sie zu nutzen",
+      "editInputs": "Eingaben bearbeiten"
+    }
   }
 }

@@ -309,6 +309,10 @@
           "title": "Resumen y carriles",
           "content": "El Resumen condensa el evento; Alfa, Beta y Gamma abren un carril cada uno. En el móvil la franja se queda bajo la cabecera mientras te desplazas."
         },
+        "nextToken": {
+          "title": "Siguiente ficha",
+          "content": "La batalla para tu siguiente ficha: el equipo, el carril y la batalla que más puntos dan ahora, según tu sincronización, equipos, profundidades y marcas. Si no salió según el plan, márcala como Superada en parte o No superada y el plan se actualiza."
+        },
         "runStatus": {
           "title": "Estado de la tirada",
           "content": "Tu tirada, fichas, puntos, moneda, cofres y fragmentos de tu última sincronización, además del siguiente hito de puntos."
@@ -316,6 +320,10 @@
         "runInputs": {
           "title": "Datos por ronda",
           "content": "Introduce para cada ronda las misiones y los packs que el juego no informa. Alimentan la previsión de recompensas de esta tarjeta."
+        },
+        "tokenPlan": {
+          "title": "Plan de fichas",
+          "content": "Todas las fichas que el plan prevé jugar en orden, con los puntos acumulados y los hitos que alcanzan. La previsión por ronda las reparte entre las rondas que quedan."
         },
         "laneSummary": {
           "title": "Resumen de carriles",
@@ -362,5 +370,72 @@
     "clearsNone": "—",
     "clearsPending": "–",
     "clearsLoading": "Estimando batallas…"
+  },
+  "tokenPlan": {
+    "nextToken": {
+      "title": "Siguiente ficha",
+      "battle": "{{lane}} · Batalla {{battle}}",
+      "points": "+{{points}} puntos",
+      "reasons": {
+        "mostPoints": "La mayor cantidad de puntos disponible ahora",
+        "mostPointsPlayableNow": "La mayor cantidad de puntos entre las batallas que puedes jugar ahora"
+      },
+      "upcoming": "{{reason}} para cuando empiece la ronda {{run}}",
+      "maybe": "Quizá superable",
+      "members": "Miembros",
+      "objectives": "Supera",
+      "actions": {
+        "partly": "Superada en parte",
+        "couldNot": "No superada",
+        "partlyLabel": "Superada en parte: marcar {{team}} en {{lane}} batalla {{battle}} como Quizá superable",
+        "couldNotLabel": "No superada: marcar {{team}} en {{lane}} batalla {{battle}} como Parar aquí"
+      },
+      "loading": "Cargando el plan de fichas…",
+      "unavailable": "El progreso sincronizado no está disponible, así que no hay plan de fichas",
+      "allCleared": "Todas las batallas están superadas",
+      "noTeams": "Añade un equipo en {{lane}} para obtener un plan",
+      "noDepth": "Indica hasta dónde llega {{team}}",
+      "nothingLeft": "A tus equipos no les queda nada por superar · quedan {{points}} puntos en {{lane}}"
+    },
+    "plan": {
+      "title": "Plan de fichas",
+      "summary_one": "{{count}} ficha · +{{points}} puntos",
+      "summary_other": "{{count}} fichas · +{{points}} puntos",
+      "battle": "Batalla {{battle}}",
+      "points": "+{{points}}",
+      "running": "{{points}} en total",
+      "maybe": "Quizá superable",
+      "milestone": "Hito {{milestone}} · +{{currency}} de moneda",
+      "step": "{{step}} alcanzado",
+      "fullClear_one": "{{lane}}: superar una batalla por completo cuesta {{count}} ficha",
+      "fullClear_other": "{{lane}}: superar una batalla por completo cuesta {{count}} fichas",
+      "uncovered": "{{lane}}: ningún equipo cubre {{objectives}}"
+    },
+    "forecast": {
+      "title": "Previsión por ronda",
+      "header": "Al final de la ronda {{run}}: {{points}} puntos · faltan {{shards}} fragmentos para {{step}}",
+      "headerAllSteps": "Al final de la ronda {{run}}: {{points}} puntos · todas las recompensas alcanzadas",
+      "run": "Ronda {{run}}",
+      "states": {
+        "done": "Hecha",
+        "now": "Ahora",
+        "next": "Siguiente",
+        "planned": "Prevista"
+      },
+      "finished": "Finalizada",
+      "supply": "{{total}} fichas: {{free}} gratis + {{ad}} de anuncio + {{bonus}} de entrega extra",
+      "uses": "Usa {{used}} · sobran {{left}}",
+      "points": "{{points}} puntos (+{{earned}})",
+      "currency": "{{currency}} de moneda disponible (+{{earned}} ganada)",
+      "chests": "{{claimed}} cofres abiertos (+{{opened}})",
+      "shards": "{{shards}} fragmentos",
+      "reached": "Alcanzado: {{steps}}",
+      "next": "Siguiente: {{step}} · faltan {{shards}} fragmentos",
+      "allSteps": "Todas las recompensas alcanzadas",
+      "ohSoClose": "Oh So Close: {{shards}} fragmentos por {{blackstone}} de piedra negra",
+      "leftover_one": "{{count}} ficha sin nada que jugar: añade un equipo o sube una profundidad para usarla",
+      "leftover_other": "{{count}} fichas sin nada que jugar: añade un equipo o sube una profundidad para usarlas",
+      "editInputs": "Editar datos"
+    }
   }
 }
