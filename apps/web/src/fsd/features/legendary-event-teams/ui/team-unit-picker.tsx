@@ -1,8 +1,8 @@
-import { useMemo, useState } from "react"
+import { useId, useMemo, useState, type Ref } from "react"
 import { useTranslation } from "react-i18next"
-import { Eye, Lock, ShieldPlus, X } from "lucide-react"
+import { Eye, Lock, ShieldPlus } from "lucide-react"
 import { characterIcon } from "@workspace/game-catalog"
-import { progressionRarity, type UnitId } from "@workspace/game-domain"
+import { progressionRarity } from "@workspace/game-domain"
 import { Button } from "@workspace/ui/components/button"
 import { Input } from "@workspace/ui/components/input"
 import { Switch } from "@workspace/ui/components/switch"
@@ -24,8 +24,12 @@ import { MAX_TEAM_MEMBERS } from "../model/team-editor-draft"
 import {
   buildPickerTiles,
   filterPickerTiles,
+  objectiveChipCounts,
+  toggleObjectiveChip,
   type PickerGoalsPreview,
 } from "../model/team-picker"
+import { TeamPickerObjectiveChips } from "./team-picker-objective-chips"
+import { SelectedChip } from "./team-picker-selected-chip"
 
 /**
  * The editor's unit picker (design D7): the lane's allowed units as tiles (portrait, name, the
@@ -34,7 +38,11 @@ import {
  * ignored and pulses the count badge, which also says a team needs three while it has fewer. A tile's secondary action sets the reserve. The selected
  * members (in position order) and the reserve sit above the grid with remove buttons. With Goals
  * Preview available, a switch (starting from the page's value) shows tiles at their goal targets:
- * owned state, rarity, rank, estimated clears and a preview marker.
+ * owned state, rarity, rank, estimated clears and a preview marker. The lane's objectives sit above
+ * the grid as multi-select chips with how many listed units satisfy each (design D1): units
+ * satisfying every selected objective come first, the others follow dimmed (still selectable, with
+ * an accessible "does not satisfy" description); the selection lives as long as the picker, so it
+ * resets when the editor closes and survives Save and add another.
  */
 export function TeamUnitPicker({
   lane,
@@ -47,6 +55,7 @@ export function TeamUnitPicker({
   onToggleReserve,
   goalsPreview,
   goalLines,
+  searchInputRef,
 }: {
   lane: LegendaryEventLane
   units: readonly LegendaryEventUnit[]
@@ -59,6 +68,8 @@ export function TeamUnitPicker({
   onToggleReserve: (unitId: string) => void
   goalsPreview?: PickerGoalsPreview
   goalLines?: (unitId: string) => readonly string[]
+  /** The search field, focused by Save and add another. */
+  searchInputRef?: Ref<HTMLInputElement>
 }) {
   const { t, i18n } = useTranslation("legendaryEvents")
   const unitName = useUnitName()
@@ -66,6 +77,8 @@ export function TeamUnitPicker({
   const [search, setSearch] = useState("")
   const [onlyUnlocked, setOnlyUnlocked] = useState(onlyUnlockedDefault)
   const [pulse, setPulse] = useState(0)
+  const [selectedObjectives, setSelectedObjectives] = useState<number[]>([])
+  const describedByPrefix = useId()
   const [preview, setPreview] = useState(
     Boolean(goalsPreview?.available && goalsPreview.enabled)
   )
@@ -80,12 +93,16 @@ export function TeamUnitPicker({
   const nameOf = (unit: { id: string }) => unitName("Character", unit.id)
   const tiles = useMemo(
     () =>
-      buildPickerTiles(lane, units, shownRoster, (unit) =>
-        unitName("Character", unit.id)
+      buildPickerTiles(
+        lane,
+        units,
+        shownRoster,
+        (unit) => unitName("Character", unit.id),
+        selectedObjectives
       ),
     // `unitName` is a fresh closure per render; the catalog read behind it settles once.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [lane, units, shownRoster]
+    [lane, units, shownRoster, selectedObjectives]
   )
   const selected = new Set([
     ...memberUnitIds,
@@ -100,6 +117,16 @@ export function TeamUnitPicker({
   const objectives = [...lane.unitsRestrictions].sort(
     (a, b) => a.index - b.index
   )
+  const chipCounts = objectiveChipCounts(
+    shown,
+    objectives.map((objective) => objective.index)
+  )
+  const selectedLabels = objectives
+    .filter((objective) => selectedObjectives.includes(objective.index))
+    .map((objective) => ({
+      index: objective.index,
+      label: objectiveLabel(objective).label,
+    }))
 
   const toggle = (unitId: string) => {
     if (!onToggleMember(unitId)) setPulse((count) => count + 1)
@@ -166,6 +193,7 @@ export function TeamUnitPicker({
           aria-label={t("teams.picker.search")}
           className="max-w-xs"
           data-testid="team-picker-search"
+          ref={searchInputRef}
           onChange={(event) => setSearch(event.target.value)}
           placeholder={t("teams.picker.searchPlaceholder")}
           type="search"
@@ -194,6 +222,16 @@ export function TeamUnitPicker({
           </label>
         ) : null}
       </div>
+      <TeamPickerObjectiveChips
+        counts={chipCounts}
+        objectives={objectives}
+        onToggle={(index) =>
+          setSelectedObjectives((current) =>
+            toggleObjectiveChip(current, index)
+          )
+        }
+        selected={selectedObjectives}
+      />
       {shown.length === 0 ? (
         <p className="text-sm text-muted-foreground">
           {t("teams.picker.empty")}
@@ -212,13 +250,20 @@ export function TeamUnitPicker({
             const previewed = previewOn && goalsPreview?.previewed.has(id)
             const clears = previewUnit ? goalsPreview?.clearsOf?.(id) : null
             const lines = goalLines?.(id) ?? []
+            const dimmed = !tile.matches
+            const missing = selectedLabels
+              .filter((entry) => !tile.satisfied.includes(entry.index))
+              .map((entry) => entry.label)
+            const missingId = `${describedByPrefix}-${id}`
             return (
               <li
                 className={cn(
                   "relative flex min-w-0 flex-col items-stretch rounded-xl border bg-card",
                   isMember && "border-primary ring-2 ring-primary/40",
-                  isReserve && "border-dashed border-primary"
+                  isReserve && "border-dashed border-primary",
+                  dimmed && !isMember && !isReserve && "bg-muted/40"
                 )}
+                data-dimmed={dimmed ? "true" : undefined}
                 data-locked={tile.owned === false ? "true" : undefined}
                 data-preview={previewed ? "true" : undefined}
                 data-selected={isMember ? "true" : undefined}
@@ -231,13 +276,21 @@ export function TeamUnitPicker({
                     isMember ? "teams.picker.remove" : "teams.picker.add",
                     { name }
                   )}
+                  aria-describedby={dimmed ? missingId : undefined}
                   aria-pressed={isMember}
                   className="flex min-w-0 flex-col items-center gap-1 p-1.5 text-center outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   data-testid="team-picker-toggle"
                   onClick={() => toggle(id)}
                   type="button"
                 >
-                  <span className="relative">
+                  {dimmed ? (
+                    <span className="sr-only" id={missingId}>
+                      {t("teams.picker.doesNotSatisfy", {
+                        objectives: missing.join(", "),
+                      })}
+                    </span>
+                  ) : null}
+                  <span className={cn("relative", dimmed && "opacity-60")}>
                     <EntityIcon
                       alt=""
                       className={cn(
@@ -333,47 +386,5 @@ export function TeamUnitPicker({
         </ul>
       )}
     </div>
-  )
-}
-
-function SelectedChip({
-  unitId,
-  label,
-  removeLabel,
-  onRemove,
-  reserve = false,
-}: {
-  unitId: string
-  label: string
-  removeLabel: string
-  onRemove: () => void
-  reserve?: boolean
-}) {
-  return (
-    <li
-      className={cn(
-        "flex items-center gap-1 rounded-full border bg-muted/40 py-0.5 pr-0.5 pl-0.5 text-xs",
-        reserve && "border-dashed"
-      )}
-      data-reserve={reserve ? "true" : undefined}
-      data-testid="team-picker-selected-unit"
-      data-unit={unitId}
-    >
-      <EntityIcon
-        alt=""
-        className="size-5 rounded-full"
-        src={characterIcon(unitId as UnitId)}
-      />
-      <span className="max-w-32 truncate">{label}</span>
-      <Button
-        aria-label={removeLabel}
-        onClick={onRemove}
-        size="icon-xs"
-        type="button"
-        variant="ghost"
-      >
-        <X />
-      </Button>
-    </li>
   )
 }

@@ -41,6 +41,7 @@ import type {
 
 import type { LastRunViewModel } from "./overview/last-run.view-model"
 import type { ProgressMarksViewModel } from "./progress/progress-marks"
+import type { TeamEditorLauncher } from "./teams/team-editor-launcher"
 import type { TeamsViewModel } from "./teams/teams-section"
 
 /** When the next token arrives: at `targetMs`, or already due (the timer ran out since the sync). */
@@ -107,6 +108,8 @@ export interface LegendaryEventPageViewModel {
   marks: ProgressMarksViewModel
   /** The lane tabs' Teams section: the plan, the current run and the plan actions. */
   teams: TeamsViewModel
+  /** The page's single team editor (design D4), opened by Teams and the leaderboards. */
+  teamEditor: TeamEditorLauncher
   /** The selected lane's Upgrade impact (Stage 6); null on Overview or signed out. */
   upgradeImpact: UpgradeImpactViewModel | null
   /** The Overview's Next token card, Token plan and Run forecast (Stage 4). */
@@ -191,6 +194,9 @@ export type LeaderboardViewModel = LeaderboardRowsViewModel &
     /** The lane leaderboards' Clears figure (not shown on the Overview leaderboard). */
     clears: ClearEstimatesViewModel
     goals: LeaderboardGoalsViewModel
+    /** Opens the team editor on the lane with the row's unit as first member (Add to new team);
+     *  absent while teams cannot be edited (signed out, or the plan is not ready). */
+    onAddToTeam?: (unitId: string, laneId: LegendaryEventLaneId) => void
   }
 
 /** The Synced progress section: per-lane progress over the points model, or the read's state. */

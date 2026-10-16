@@ -481,6 +481,81 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
     })
   })
 
+  describe("Add to new team (design D4: one editor for the page)", () => {
+    const openDanteMenu = async () => {
+      const dante = screen
+        .getAllByTestId("leaderboard-row")
+        .find((row) => row.dataset.unit === "bloodDante")!
+      fireEvent.pointerDown(within(dante).getByTestId("leaderboard-row-menu"), {
+        button: 0,
+        ctrlKey: false,
+      })
+      await screen.findByTestId("leaderboard-create-goal")
+    }
+    const editorMembers = () =>
+      within(screen.getByTestId("team-editor"))
+        .getAllByTestId("team-picker-selected-unit")
+        .map((element) => element.dataset.unit)
+
+    it("opens the editor from the Overview leaderboard on the chosen lane", async () => {
+      renderPage("/legendary-events/astarLysander")
+      await screen.findByTestId("legendary-event-overview-leaderboard")
+      await openDanteMenu()
+      const items = await screen.findAllByTestId("leaderboard-add-to-team")
+      expect(items.map((item) => item.textContent)).toEqual([
+        "Add to new team on Alpha",
+        "Add to new team on Gamma",
+      ])
+      fireEvent.click(items[1]!)
+
+      const editor = await screen.findByTestId("team-editor")
+      expect(
+        within(editor).getByRole("heading", { level: 2 })
+      ).toHaveTextContent("Add a team to Gamma")
+      expect(editorMembers()).toEqual(["bloodDante"])
+      expect(screen.getByTestId("legendary-event-overview")).toBeInTheDocument()
+    })
+
+    it("opens the editor from a lane leaderboard with the unit's objectives ticked", async () => {
+      renderPage("/legendary-events/astarLysander")
+      await screen.findByTestId("legendary-event-overview-leaderboard")
+      act(() => selectTab("alpha"))
+      await screen.findByTestId("legendary-event-leaderboard")
+      await openDanteMenu()
+      fireEvent.click(await screen.findByTestId("leaderboard-add-to-team"))
+
+      const editor = await screen.findByTestId("team-editor")
+      expect(
+        within(editor).getByRole("heading", { level: 2 })
+      ).toHaveTextContent("Add a team to Alpha")
+      expect(editorMembers()).toEqual(["bloodDante"])
+      expect(
+        within(editor)
+          .getAllByTestId("team-editor-objective")
+          .map((chip) => [
+            chip.dataset.index,
+            chip.getAttribute("aria-pressed"),
+          ])
+      ).toEqual([
+        ["2", "true"],
+        ["4", "true"],
+      ])
+    })
+  })
+
+  it("names Add to new team in the lane leaderboard tour step", async () => {
+    renderPage("/legendary-events/astarLysander")
+    await screen.findByTestId("legendary-event-overview-leaderboard")
+    const { desktop } = tour.steps as {
+      desktop: { target: string; content: string }[]
+    }
+    const step = desktop.find(
+      (entry) => entry.target === '[data-testid="legendary-event-leaderboard"]'
+    )!
+    expect(step.content).toContain("Create goal")
+    expect(step.content).toContain("Add to new team")
+  })
+
   it("registers the same tour on both forms, lane steps after the tab switch", async () => {
     renderPage("/legendary-events/astarLysander")
     await screen.findByTestId("legendary-event-overview-leaderboard")

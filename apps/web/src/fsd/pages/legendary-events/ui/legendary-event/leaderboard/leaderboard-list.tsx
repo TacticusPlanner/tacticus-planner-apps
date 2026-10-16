@@ -32,6 +32,7 @@ export function LeaderboardList({
   clearsOf,
   goals,
   laneId,
+  onAddToTeam,
 }: {
   rows: readonly LeaderboardRow[]
   objectives: readonly ObjectiveChip[]
@@ -40,6 +41,7 @@ export function LeaderboardList({
   clearsOf?: (unitId: string) => LeaderboardClears
   goals: LeaderboardGoalsViewModel
   laneId: LegendaryEventLaneId
+  onAddToTeam?: (unitId: string, laneId: LegendaryEventLaneId) => void
 }) {
   const { t, i18n } = useTranslation("legendaryEvents")
   const number = new Intl.NumberFormat(i18n.language)
@@ -68,6 +70,15 @@ export function LeaderboardList({
               <LeaderboardRowActions
                 name={nameOf(row.unit)}
                 onCreateGoal={() => goals.onCreateGoal(row.unit.id, laneId)}
+                addToTeam={
+                  onAddToTeam
+                    ? {
+                        laneIds: [laneId],
+                        nameLane: false,
+                        onSelect: (lane) => onAddToTeam(row.unit.id, lane),
+                      }
+                    : undefined
+                }
                 size="card"
               />
             </span>

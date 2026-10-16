@@ -43,6 +43,19 @@ export function checkedObjectives(draft: TeamEditorDraft): number[] {
   return draft.derived.filter((index) => !draft.excluded.includes(index))
 }
 
+/** An empty new-team draft: no members or reserve, the name unset (the derived default shows)
+ *  and no depth. Save and add another resets to it for the next team (design D3). */
+export function emptyEditorDraft(): TeamEditorDraft {
+  return {
+    name: null,
+    memberUnitIds: [],
+    reserveUnitId: null,
+    derived: [],
+    excluded: [],
+    depth: null,
+  }
+}
+
 /** A new team's draft (empty, or from a suggestion's members in order with everything they derive
  *  ticked), or a saved team's: the opt-outs are recovered as the objectives the stored members
  *  derive but the team does not store. */
@@ -53,16 +66,8 @@ export function initialEditorDraft(
   initialMemberUnitIds: readonly string[] = []
 ): TeamEditorDraft {
   if (!team) {
-    const empty: TeamEditorDraft = {
-      name: null,
-      memberUnitIds: [],
-      reserveUnitId: null,
-      derived: [],
-      excluded: [],
-      depth: null,
-    }
     return withMembers(
-      empty,
+      emptyEditorDraft(),
       initialMemberUnitIds.slice(0, MAX_TEAM_MEMBERS),
       context
     )

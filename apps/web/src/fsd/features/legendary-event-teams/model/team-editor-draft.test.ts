@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest"
 import {
   canSaveDraft,
   draftNeedsMembers,
+  emptyEditorDraft,
   type TeamEditorDraft,
 } from "./team-editor-draft"
 
@@ -41,5 +42,11 @@ describe("canSaveDraft (spec: a team needs at least three characters)", () => {
   it("still needs a 1–60 character name", () => {
     expect(canSaveDraft(draft(["a", "b", "c"]), "")).toBe(false)
     expect(canSaveDraft(draft(["a", "b", "c"]), "x".repeat(61))).toBe(false)
+  })
+})
+
+describe("emptyEditorDraft (Save and add another)", () => {
+  it("clears the members, reserve, name, coverage and depth", () => {
+    expect(emptyEditorDraft()).toEqual(draft([]))
   })
 })

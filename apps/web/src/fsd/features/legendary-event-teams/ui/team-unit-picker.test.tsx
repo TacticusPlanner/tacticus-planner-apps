@@ -199,4 +199,104 @@ describe("TeamUnitPicker", () => {
       screen.queryByTestId("team-picker-preview-state")
     ).not.toBeInTheDocument()
   })
+
+  describe("objective chips", () => {
+    const chip = (label: string) =>
+      screen
+        .getAllByTestId("team-picker-objective-chip")
+        .find((element) => element.textContent?.includes(label))!
+    const listed = () =>
+      screen.getAllByTestId("team-picker-tile").map((el) => el.dataset.unit)
+
+    it("shows the lane's objectives with their scores and counts, none selected", async () => {
+      render(<Harness />, { wrapper: i18nWrapper(i18n) })
+      await screen.findByText("Beth")
+      const chips = screen.getAllByTestId("team-picker-objective-chip")
+      expect(chips.map((element) => element.dataset.index)).toEqual([
+        "0",
+        "1",
+        "2",
+      ])
+      expect(
+        chips.every(
+          (element) => element.getAttribute("aria-pressed") === "false"
+        )
+      ).toBe(true)
+      // Melee: every allowed unit but Resh (ranged).
+      expect(chip("Melee")).toHaveAttribute("data-count", "5")
+      expect(chip("Melee")).toHaveAccessibleName("Melee: 5 units satisfy it")
+      expect(screen.queryAllByTestId("team-picker-tile")).not.toHaveLength(0)
+      expect(
+        screen
+          .getAllByTestId("team-picker-tile")
+          .some((element) => element.dataset.dimmed === "true")
+      ).toBe(false)
+    })
+
+    it("lists only the search matches, those satisfying Melee first", async () => {
+      render(<Harness />, { wrapper: i18nWrapper(i18n) })
+      await screen.findByText("Beth")
+      fireEvent.change(screen.getByTestId("team-picker-search"), {
+        target: { value: "h" },
+      })
+      // Aleph, Beth, Resh and He contain "h", in points order.
+      expect(listed()).toEqual([
+        teamUnits.a.id,
+        teamUnits.e.id,
+        teamUnits.b.id,
+        teamUnits.r.id,
+      ])
+      expect(chip("Melee")).toHaveAttribute("data-count", "3")
+
+      // No Resilient lifts Resh above Beth (Resilient), which follows dimmed.
+      fireEvent.click(chip("No Resilient"))
+      expect(listed()).toEqual([
+        teamUnits.a.id,
+        teamUnits.e.id,
+        teamUnits.r.id,
+        teamUnits.b.id,
+      ])
+      expect(tile(teamUnits.b.id)).toHaveAttribute("data-dimmed", "true")
+      fireEvent.click(chip("No Resilient"))
+
+      fireEvent.click(chip("Melee"))
+      expect(chip("Melee")).toHaveAttribute("aria-pressed", "true")
+      expect(listed()).toEqual([
+        teamUnits.a.id,
+        teamUnits.e.id,
+        teamUnits.b.id,
+        teamUnits.r.id,
+      ])
+      expect(tile(teamUnits.r.id)).toHaveAttribute("data-dimmed", "true")
+      expect(
+        within(tile(teamUnits.r.id)).getByTestId("team-picker-toggle")
+      ).toHaveAccessibleDescription("Does not satisfy Melee")
+      expect(tile(teamUnits.a.id)).not.toHaveAttribute("data-dimmed")
+    })
+
+    it("keeps a dimmed unit selectable", async () => {
+      render(<Harness />, { wrapper: i18nWrapper(i18n) })
+      await screen.findByText("Beth")
+      fireEvent.click(chip("Melee"))
+      tap(teamUnits.r.id)
+      expect(
+        screen
+          .getAllByTestId("team-picker-selected-unit")
+          .map((element) => element.dataset.unit)
+      ).toEqual([teamUnits.r.id])
+    })
+
+    it("counts only unlocked units while Only unlocked is on", async () => {
+      render(
+        <Harness
+          roster={[{ unitId: teamUnits.a.id }, { unitId: teamUnits.r.id }]}
+        />,
+        { wrapper: i18nWrapper(i18n) }
+      )
+      await screen.findByText("Beth")
+      fireEvent.click(screen.getByTestId("team-picker-only-unlocked"))
+      expect(chip("Melee")).toHaveAttribute("data-count", "1")
+      expect(listed()).toEqual([teamUnits.a.id, teamUnits.r.id])
+    })
+  })
 })

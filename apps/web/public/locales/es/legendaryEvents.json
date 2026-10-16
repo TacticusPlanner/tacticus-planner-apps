@@ -251,7 +251,15 @@
       "needsMembers": "Un equipo necesita al menos {{min}} personajes",
       "saving": "Guardando…",
       "notSaved": "Tu plan se ha recargado, así que este equipo no se guardó. Revísalo y vuelve a guardarlo.",
-      "cancel": "Cancelar"
+      "cancel": "Cancelar",
+      "saveAndAddAnother": "Guardar y añadir otro",
+      "footer": {
+        "summary": "Resumen del equipo",
+        "noCoverage": "Ningún objetivo cubierto",
+        "depth": "Profundidad {{depth}}",
+        "depthEstimated": "Profundidad ~{{depth}} · estimada",
+        "depthUnset": "Profundidad sin definir"
+      }
     },
     "picker": {
       "count": "{{members}}/5",
@@ -266,7 +274,11 @@
       "setReserve": "Poner a {{name}} como reserva",
       "unsetReserve": "Quitar a {{name}} como reserva",
       "full": "Un equipo tiene como máximo cinco miembros. Quita uno para añadir otro.",
-      "points": "{{points}} pts"
+      "points": "{{points}} pts",
+      "objectives": "Ordenar por objetivo",
+      "objectiveChip_one": "{{objective}}: {{count}} unidad lo cumple",
+      "objectiveChip_other": "{{objective}}: {{count}} unidades lo cumplen",
+      "doesNotSatisfy": "No cumple: {{objectives}}"
     },
     "toasts": {
       "reloaded": "Tu plan cambió en otro dispositivo y se ha recargado. Inténtalo de nuevo.",
@@ -356,7 +368,7 @@
         },
         "leaderboard": {
           "title": "Clasificación del carril",
-          "content": "Cada unidad que este carril permite, si la tienes, qué objetivos cumple y los puntos que aún puede conseguir aquí. Activa la vista de objetivos para ver las unidades como si hubieras alcanzado tus objetivos activos, y usa el menú de una fila para crear un objetivo."
+          "content": "Cada unidad que este carril permite, si la tienes, qué objetivos cumple y los puntos que aún puede conseguir aquí. Activa la vista de objetivos para ver las unidades como si hubieras alcanzado tus objetivos activos, y usa el menú de una fila para «Crear objetivo» o «Añadir a un equipo nuevo»."
         },
         "lastRun": {
           "title": "Última ronda",
@@ -441,7 +453,9 @@
   "leaderboardActions": {
     "header": "Acciones",
     "menu": "Acciones para {{name}}",
-    "createGoal": "Crear objetivo"
+    "createGoal": "Crear objetivo",
+    "addToTeam": "Añadir a un equipo nuevo",
+    "addToTeamOnLane": "Añadir a un equipo nuevo en {{lane}}"
   },
   "upgradeImpact": {
     "title": "Impacto de las mejoras",

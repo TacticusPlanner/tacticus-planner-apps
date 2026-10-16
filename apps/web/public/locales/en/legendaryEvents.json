@@ -251,7 +251,15 @@
       "needsMembers": "A team needs at least {{min}} characters",
       "saving": "Saving…",
       "notSaved": "Your plan was reloaded, so this team was not saved. Check it and save again.",
-      "cancel": "Cancel"
+      "cancel": "Cancel",
+      "saveAndAddAnother": "Save and add another",
+      "footer": {
+        "summary": "Team summary",
+        "noCoverage": "No objective covered",
+        "depth": "Clear depth {{depth}}",
+        "depthEstimated": "Clear depth ~{{depth}} · estimated",
+        "depthUnset": "Clear depth not set"
+      }
     },
     "picker": {
       "count": "{{members}}/5",
@@ -266,7 +274,11 @@
       "setReserve": "Set {{name}} as reserve",
       "unsetReserve": "Remove {{name}} as reserve",
       "full": "A team has at most five members. Remove one to add another.",
-      "points": "{{points}} pts"
+      "points": "{{points}} pts",
+      "objectives": "Rank by objective",
+      "objectiveChip_one": "{{objective}}: {{count}} unit satisfies it",
+      "objectiveChip_other": "{{objective}}: {{count}} units satisfy it",
+      "doesNotSatisfy": "Does not satisfy {{objectives}}"
     },
     "toasts": {
       "reloaded": "Your plan changed on another device and was reloaded. Try again.",
@@ -356,7 +368,7 @@
         },
         "leaderboard": {
           "title": "Lane leaderboard",
-          "content": "Every unit this lane allows, whether you own it, which objectives it meets and the points it can still score here. Turn on Goals Preview to see units as if your active goals were reached, and use a row's menu to create a goal."
+          "content": "Every unit this lane allows, whether you own it, which objectives it meets and the points it can still score here. Turn on Goals Preview to see units as if your active goals were reached, and use a row's menu for Create goal or Add to new team."
         },
         "lastRun": {
           "title": "Last run",
@@ -441,7 +453,9 @@
   "leaderboardActions": {
     "header": "Actions",
     "menu": "Actions for {{name}}",
-    "createGoal": "Create goal"
+    "createGoal": "Create goal",
+    "addToTeam": "Add to new team",
+    "addToTeamOnLane": "Add to new team on {{lane}}"
   },
   "upgradeImpact": {
     "title": "Upgrade impact",

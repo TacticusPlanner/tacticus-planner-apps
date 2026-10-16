@@ -27,3 +27,19 @@ export function editStartsFromEstimate(
 ): boolean {
   return manualDepth === null && estimate !== null
 }
+
+/** The editor footer's depth line (spec: the editor keeps its summary in view): the manual depth,
+ *  else the estimate (marked estimated), else unset. */
+export type ClearDepthSummary =
+  | { kind: "manual"; depth: number }
+  | { kind: "estimate"; depth: number }
+  | { kind: "unset" }
+
+export function clearDepthSummary(
+  manualDepth: number | null,
+  estimate: ClearEstimate | null
+): ClearDepthSummary {
+  if (manualDepth !== null) return { kind: "manual", depth: manualDepth }
+  if (estimate) return { kind: "estimate", depth: estimate.depth }
+  return { kind: "unset" }
+}

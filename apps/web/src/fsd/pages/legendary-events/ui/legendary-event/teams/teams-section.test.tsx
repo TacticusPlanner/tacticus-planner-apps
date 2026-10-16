@@ -4,6 +4,7 @@ import type { i18n as I18n } from "i18next"
 import { beforeAll, describe, expect, it, vi } from "vitest"
 
 import type {
+  LegendaryEvent,
   LegendaryEventPlan,
   LegendaryEventRosterUnit,
   LegendaryEventTeam,
@@ -14,10 +15,12 @@ import {
   teamUnits,
 } from "@/test/fixtures/legendary-event-teams"
 import { createTestI18n, i18nWrapper } from "@/test/i18n"
-import { render, screen, within } from "@/test/render"
+import { render, screen, waitFor, within } from "@/test/render"
 
 import type { ClearEstimatesViewModel } from "../legendary-event-page.view-model"
 
+import { TeamEditorHost } from "./team-editor-host"
+import { useTeamEditorLauncher } from "./team-editor-launcher"
 import { TeamsSection, type TeamsViewModel } from "./teams-section"
 import type { TeamsSectionState } from "./teams.view-model"
 
@@ -103,6 +106,42 @@ const readyEstimates: ClearEstimatesViewModel = {
   byLane: { alpha: estimator, beta: estimator, gamma: estimator },
 }
 
+const lanes = {
+  alpha: teamLane,
+  beta: teamLane,
+  gamma: teamLane,
+} as unknown as Pick<LegendaryEvent, "alpha" | "beta" | "gamma">
+
+/** The Teams section with the page's single editor beside it (design D4). */
+function SectionWithEditor({
+  teams,
+  laneId,
+  isMobile,
+}: {
+  teams: TeamsViewModel
+  laneId: "alpha" | "beta" | "gamma"
+  isMobile: boolean
+}) {
+  const launcher = useTeamEditorLauncher()
+  return (
+    <>
+      <TeamsSection
+        editor={launcher}
+        isMobile={isMobile}
+        lane={teamLane}
+        laneId={laneId}
+        teams={teams}
+      />
+      <TeamEditorHost
+        event={lanes}
+        launcher={launcher}
+        onlyUnlocked={false}
+        teams={teams}
+      />
+    </>
+  )
+}
+
 function renderSection(
   state: TeamsSectionState,
   {
@@ -147,22 +186,14 @@ function renderSection(
     },
   }
   const view = render(
-    <TeamsSection
-      isMobile={isMobile}
-      lane={teamLane}
-      laneId={laneId}
-      onlyUnlocked={false}
-      teams={teams}
-    />,
+    <SectionWithEditor isMobile={isMobile} laneId={laneId} teams={teams} />,
     { wrapper: i18nWrapper(i18n) }
   )
   const rerender = (next: TeamsSectionState) =>
     view.rerender(
-      <TeamsSection
+      <SectionWithEditor
         isMobile={isMobile}
-        lane={teamLane}
         laneId={laneId}
-        onlyUnlocked={false}
         teams={{ ...teams, state: next }}
       />
     )
@@ -292,6 +323,52 @@ describe("TeamsSection", () => {
       .setup()
       .click(screen.getByTestId("legendary-event-add-team"))
     expect(await screen.findByTestId("team-editor")).toBeInTheDocument()
+  })
+
+  it("returns focus to Add team after the editor closes", async () => {
+    renderSection(ready())
+    const user = userEvent.setup()
+    const addTeam = screen.getByTestId("legendary-event-add-team")
+    await user.click(addTeam)
+    const editor = await screen.findByTestId("team-editor")
+    await user.click(within(editor).getByRole("button", { name: "Cancel" }))
+    expect(screen.queryByTestId("team-editor")).toBeNull()
+    await waitFor(() => expect(addTeam).toHaveFocus())
+  })
+
+  it("keeps the editor open after Save and add another and lists the new team behind it", async () => {
+    const actions = renderSection(ready())
+    const user = userEvent.setup()
+    await user.click(screen.getByTestId("legendary-event-add-team"))
+    const editor = await screen.findByTestId("team-editor")
+    for (const unitId of [teamUnits.a.id, teamUnits.b.id, teamUnits.c.id]) {
+      const tile = within(editor)
+        .getAllByTestId("team-picker-tile")
+        .find((element) => element.dataset.unit === unitId)!
+      await user.click(within(tile).getByTestId("team-picker-toggle"))
+    }
+    await user.click(within(editor).getByTestId("team-editor-save-another"))
+    expect(actions.createTeam).toHaveBeenCalledWith(
+      "alpha",
+      expect.objectContaining({
+        memberUnitIds: [teamUnits.a.id, teamUnits.b.id, teamUnits.c.id],
+      }),
+      expect.anything(),
+      undefined
+    )
+    actions.rerender(
+      ready({
+        ...plan,
+        teams: [...plan.teams, team("new", "Melee · Min 5 hits", "alpha", 2)],
+      })
+    )
+    expect(screen.getByTestId("team-editor")).toBeInTheDocument()
+    expect(
+      within(screen.getByTestId("team-editor")).queryAllByTestId(
+        "team-picker-selected-unit"
+      )
+    ).toHaveLength(0)
+    expect(cardNames()).toEqual(["Melee", "Flyers", "Melee · Min 5 hits"])
   })
 
   it("disables Suggest teams with the reason when estimates are unavailable", () => {

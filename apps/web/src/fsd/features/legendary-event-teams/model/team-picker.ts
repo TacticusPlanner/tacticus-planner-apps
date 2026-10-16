@@ -21,18 +21,32 @@ export interface PickerTile {
   pointsPerBattle: number
   /** Catalog `index` of each lane objective the unit satisfies. */
   satisfied: number[]
+  /** Whether the unit satisfies every selected objective chip (true while none is selected);
+   *  a non-matching tile is listed after the matching ones, dimmed. */
+  matches: boolean
+}
+
+/** Whether a unit satisfying `satisfied` meets every selected objective. */
+function matchesObjectives(
+  satisfied: readonly number[],
+  selectedObjectives: readonly number[]
+): boolean {
+  return selectedObjectives.every((index) => satisfied.includes(index))
 }
 
 /**
  * One tile per unit the lane allows (`lane.availableUnitIds`, the list the API validates members
  * against), with its points per battle and satisfied objectives, ordered by points per battle then
- * objectives count descending, then name.
+ * objectives count descending, then name. With objective chips selected (design D1) the units
+ * satisfying every selected objective come first in that order and the others follow, marked as
+ * not matching; no unit is removed.
  */
 export function buildPickerTiles(
   lane: PickerLane,
   units: readonly LegendaryEventUnit[],
   roster: readonly LegendaryEventRosterUnit[] | undefined,
-  nameOf: (unit: LegendaryEventUnit) => string
+  nameOf: (unit: LegendaryEventUnit) => string,
+  selectedObjectives: readonly number[] = []
 ): PickerTile[] {
   const allowed = new Set(lane.availableUnitIds)
   const owned = roster
@@ -47,10 +61,12 @@ export function buildPickerTiles(
         owned: owned ? owned.has(unit.id) : undefined,
         pointsPerBattle: potential.pointsPerBattle,
         satisfied: potential.satisfied,
+        matches: matchesObjectives(potential.satisfied, selectedObjectives),
       }
     })
     .sort(
       (a, b) =>
+        Number(b.matches) - Number(a.matches) ||
         b.pointsPerBattle - a.pointsPerBattle ||
         b.satisfied.length - a.satisfied.length ||
         nameOf(a.unit).localeCompare(nameOf(b.unit))
@@ -79,6 +95,30 @@ export function filterPickerTiles(
     if (onlyUnlocked && tile.owned === false) return false
     return !needle || nameOf(tile.unit).toLocaleLowerCase().includes(needle)
   })
+}
+
+/** Per objective chip, how many of the listed tiles (after the search and Only unlocked)
+ *  satisfy it, so a chip's count is what the grid would list first for it alone. */
+export function objectiveChipCounts(
+  tiles: readonly PickerTile[],
+  objectiveIndexes: readonly number[]
+): Map<number, number> {
+  return new Map(
+    objectiveIndexes.map((index) => [
+      index,
+      tiles.filter((tile) => tile.satisfied.includes(index)).length,
+    ])
+  )
+}
+
+/** Selects an objective chip, or clears it when it already is selected. */
+export function toggleObjectiveChip(
+  selected: readonly number[],
+  index: number
+): number[] {
+  return selected.includes(index)
+    ? selected.filter((entry) => entry !== index)
+    : [...selected, index]
 }
 
 /** Goals Preview inside the picker (spec `legendary-event-goals-preview`): the switch starts from

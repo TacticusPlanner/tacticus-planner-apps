@@ -251,7 +251,15 @@
       "needsMembers": "Ein Team braucht mindestens {{min}} Charaktere",
       "saving": "Wird gespeichert …",
       "notSaved": "Dein Plan wurde neu geladen, daher wurde dieses Team nicht gespeichert. Prüfe es und speichere erneut.",
-      "cancel": "Abbrechen"
+      "cancel": "Abbrechen",
+      "saveAndAddAnother": "Speichern und weiteres anlegen",
+      "footer": {
+        "summary": "Team-Übersicht",
+        "noCoverage": "Kein Ziel abgedeckt",
+        "depth": "Kampftiefe {{depth}}",
+        "depthEstimated": "Kampftiefe ~{{depth}} · geschätzt",
+        "depthUnset": "Kampftiefe nicht gesetzt"
+      }
     },
     "picker": {
       "count": "{{members}}/5",
@@ -266,7 +274,11 @@
       "setReserve": "{{name}} als Reserve festlegen",
       "unsetReserve": "{{name}} als Reserve entfernen",
       "full": "Ein Team hat höchstens fünf Mitglieder. Entferne eines, um ein anderes hinzuzufügen.",
-      "points": "{{points}} Pkt."
+      "points": "{{points}} Pkt.",
+      "objectives": "Nach Ziel ordnen",
+      "objectiveChip_one": "{{objective}}: {{count}} Einheit erfüllt es",
+      "objectiveChip_other": "{{objective}}: {{count}} Einheiten erfüllen es",
+      "doesNotSatisfy": "Erfüllt nicht: {{objectives}}"
     },
     "toasts": {
       "reloaded": "Dein Plan wurde auf einem anderen Gerät geändert und neu geladen. Versuche es erneut.",
@@ -356,7 +368,7 @@
         },
         "leaderboard": {
           "title": "Lane-Rangliste",
-          "content": "Jede Einheit, die diese Lane erlaubt, ob du sie besitzt, welche Ziele sie erfüllt und welche Punkte sie hier noch erzielen kann. Schalte die Zielvorschau ein, um Einheiten so zu sehen, als hättest du deine aktiven Ziele erreicht, und erstelle über das Menü einer Zeile ein Ziel."
+          "content": "Jede Einheit, die diese Lane erlaubt, ob du sie besitzt, welche Ziele sie erfüllt und welche Punkte sie hier noch erzielen kann. Schalte die Zielvorschau ein, um Einheiten so zu sehen, als hättest du deine aktiven Ziele erreicht, und nutze das Menü einer Zeile für „Ziel erstellen“ oder „Zu neuem Team hinzufügen“."
         },
         "lastRun": {
           "title": "Letzter Durchlauf",
@@ -441,7 +453,9 @@
   "leaderboardActions": {
     "header": "Aktionen",
     "menu": "Aktionen für {{name}}",
-    "createGoal": "Ziel erstellen"
+    "createGoal": "Ziel erstellen",
+    "addToTeam": "Zu neuem Team hinzufügen",
+    "addToTeamOnLane": "Zu neuem Team auf {{lane}} hinzufügen"
   },
   "upgradeImpact": {
     "title": "Wirkung von Verbesserungen",

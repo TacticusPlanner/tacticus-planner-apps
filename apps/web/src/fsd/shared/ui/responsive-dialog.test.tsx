@@ -106,4 +106,20 @@ describe("ResponsiveDialog", () => {
     fireEvent.keyDown(screen.getByTestId("shell"), { key: "Escape" })
     expect(onOpenChange).toHaveBeenCalledWith(false)
   })
+
+  it.each([false, true])(
+    "keeps the footer outside the scrolling body (mobile=%s)",
+    (isMobile) => {
+      mobile.value = isMobile
+      renderDialog()
+
+      const shell = screen.getByTestId("shell")
+      const body = shell.querySelector('[data-slot="responsive-dialog-body"]')!
+      const footer = screen.getByText("footer")
+      expect(body).toHaveClass("overflow-y-auto", "min-h-0", "flex-1")
+      expect(body).not.toContainElement(footer)
+      expect(footer).toHaveClass("shrink-0")
+      expect(shell).toHaveClass("flex", "flex-col")
+    }
+  )
 })

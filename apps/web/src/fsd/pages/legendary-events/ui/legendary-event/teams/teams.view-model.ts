@@ -6,6 +6,7 @@ import {
   teamPointsPerBattle,
   type ClearEstimate,
   type LegendaryEventLane,
+  type LegendaryEventLaneId,
   type LegendaryEventPlan,
   type LegendaryEventRosterUnit,
   type LegendaryEventRun,
@@ -13,7 +14,12 @@ import {
   type LegendaryEventUnit,
 } from "@/entities/legendary-event"
 
-import type { ReadValue } from "../legendary-event-page.view-model"
+import type { PickerGoalsPreview } from "@/features/legendary-event-teams"
+
+import type {
+  ClearEstimatesViewModel,
+  ReadValue,
+} from "../legendary-event-page.view-model"
 
 export interface TeamCardMember {
   unitId: string
@@ -203,5 +209,42 @@ export function moveTargets(
   return {
     up: index > 0 ? swap(index - 1) : null,
     down: index >= 0 && index < ids.length - 1 ? swap(index + 1) : null,
+  }
+}
+
+/** The editor picker's Goals Preview for one lane (Stage 6): the page's switch value, the preview
+ *  roster when one exists, and the lane's estimated clears on it. */
+export function pickerGoalsPreview(
+  laneId: LegendaryEventLaneId,
+  {
+    enabled,
+    available,
+    preview,
+    estimates,
+    onToggle,
+  }: {
+    enabled: boolean
+    available: boolean
+    preview:
+      | {
+          roster: readonly LegendaryEventRosterUnit[]
+          previewed: ReadonlySet<string>
+        }
+      | undefined
+    estimates: ClearEstimatesViewModel | undefined
+    onToggle: (enabled: boolean) => void
+  }
+): PickerGoalsPreview {
+  const estimator =
+    estimates?.kind === "ready" ? estimates.byLane[laneId] : undefined
+  return {
+    enabled,
+    available: available && preview !== undefined,
+    roster: preview?.roster,
+    previewed: preview?.previewed ?? new Set(),
+    clearsOf: estimator
+      ? (unitId) => estimator.unit(unitId)?.depth ?? null
+      : undefined,
+    onToggle,
   }
 }

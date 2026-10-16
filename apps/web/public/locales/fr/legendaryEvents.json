@@ -251,7 +251,15 @@
       "needsMembers": "Une équipe a besoin d'au moins {{min}} personnages",
       "saving": "Enregistrement…",
       "notSaved": "Ton plan a été rechargé, cette équipe n'a donc pas été enregistrée. Vérifie-la et enregistre à nouveau.",
-      "cancel": "Annuler"
+      "cancel": "Annuler",
+      "saveAndAddAnother": "Enregistrer et en ajouter une autre",
+      "footer": {
+        "summary": "Résumé de l'équipe",
+        "noCoverage": "Aucun objectif couvert",
+        "depth": "Profondeur {{depth}}",
+        "depthEstimated": "Profondeur ~{{depth}} · estimée",
+        "depthUnset": "Profondeur non définie"
+      }
     },
     "picker": {
       "count": "{{members}}/5",
@@ -266,7 +274,11 @@
       "setReserve": "Mettre {{name}} en réserve",
       "unsetReserve": "Retirer {{name}} de la réserve",
       "full": "Une équipe compte au plus cinq membres. Retires-en un pour en ajouter un autre.",
-      "points": "{{points}} pts"
+      "points": "{{points}} pts",
+      "objectives": "Classer par objectif",
+      "objectiveChip_one": "{{objective}} : {{count}} unité le remplit",
+      "objectiveChip_other": "{{objective}} : {{count}} unités le remplissent",
+      "doesNotSatisfy": "Ne remplit pas : {{objectives}}"
     },
     "toasts": {
       "reloaded": "Ton plan a été modifié sur un autre appareil et a été rechargé. Réessaie.",
@@ -356,7 +368,7 @@
         },
         "leaderboard": {
           "title": "Classement de la voie",
-          "content": "Chaque unité autorisée dans cette voie, si vous la possédez, les objectifs qu'elle remplit et les points qu'elle peut encore marquer ici. Activez l'aperçu des objectifs pour voir les unités comme si vos objectifs actifs étaient atteints, et utilisez le menu d'une ligne pour créer un objectif."
+          "content": "Chaque unité autorisée dans cette voie, si vous la possédez, les objectifs qu'elle remplit et les points qu'elle peut encore marquer ici. Activez l'aperçu des objectifs pour voir les unités comme si vos objectifs actifs étaient atteints, et utilisez le menu d'une ligne pour « Créer un objectif » ou « Ajouter à une nouvelle équipe »."
         },
         "lastRun": {
           "title": "Dernière manche",
@@ -441,7 +453,9 @@
   "leaderboardActions": {
     "header": "Actions",
     "menu": "Actions pour {{name}}",
-    "createGoal": "Créer un objectif"
+    "createGoal": "Créer un objectif",
+    "addToTeam": "Ajouter à une nouvelle équipe",
+    "addToTeamOnLane": "Ajouter à une nouvelle équipe sur {{lane}}"
   },
   "upgradeImpact": {
     "title": "Impact des améliorations",
