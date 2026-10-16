@@ -10,7 +10,7 @@
     },
     "machinesOfWar": {
       "label": "Kriegsmaschinen",
-      "description": "Details und Werte von Kriegsmaschinen durchsuchen"
+      "description": "Fähigkeiten und Upgrade-Kosten von Kriegsmaschinen durchsuchen"
     },
     "npcs": {
       "label": "NPCs",
@@ -21,8 +21,6 @@
       "description": "Informationen zu Gildenraid-Bossen durchsuchen"
     },
     "noRecords": "Keine auswählbaren Einheiten verfügbar.",
-    "raidBossesNoRecords": "Gildenraid-Bosse sind noch nicht im Katalog verfügbar.",
-    "detailUnavailable": "Detaillierte Seiten zu {{name}} sind noch nicht verfügbar – schau bald wieder vorbei.",
     "shops": {
       "label": "Tages-Shops",
       "description": "Sieh dir an, was jeder Tages-Shop an jedem Wochentag anbieten kann"
@@ -321,5 +319,291 @@
     "meleeOnly": "Nur Nahkampf",
     "hasRanged": "Mit Fernkampf",
     "clearOne": "{{name}} zurücksetzen"
+  },
+  "unit": {
+    "nav": {
+      "label": "Einheitennavigation",
+      "backTo": "Zurück zu {{label}}",
+      "previous": "Zurück",
+      "next": "Weiter",
+      "previousUnit": "Vorherige Einheit: {{name}}",
+      "nextUnit": "Nächste Einheit: {{name}}",
+      "position": "{{index}} von {{total}}"
+    },
+    "tabs": {
+      "label": "Bereiche der Einheitenseite",
+      "details": "Details",
+      "rankup": "Rangaufstieg-Materialien"
+    },
+    "values": {
+      "label": "Werte anzeigen für",
+      "yourUnit": "Deine Einheit",
+      "starting": "Startwerte",
+      "custom": "Eigene",
+      "stars": "Seltenheit und Sterne",
+      "rank": "Rang"
+    },
+    "ability": {
+      "level": "Stufe von {{name}}",
+      "levelShort": "St. {{level}}",
+      "lower": "Stufe senken",
+      "raise": "Stufe erhöhen",
+      "yours": "Deine: Stufe {{level}}",
+      "nextLevel": "Nächste Stufe ({{level}}):",
+      "chartTitle": "{{label}} nach Stufe",
+      "chartCaption": "{{label}} steigt von {{from}} auf Stufe 1 auf {{to}} auf Stufe {{maxLevel}}.",
+      "constant": "{{label}} bleibt auf jeder Stufe bei {{value}} und wird daher nicht als Diagramm gezeigt.",
+      "missingText": "Der Regeltext ist noch nicht im Planer."
+    },
+    "notFound": "Diese Einheit ist nicht in der Bibliothek.",
+    "loadFailed": "Charakterdaten konnten nicht geladen werden.",
+    "retry": "Erneut versuchen"
+  },
+  "charactersList": {
+    "title": "Charaktere",
+    "search": "Charaktere suchen",
+    "searchPlaceholder": "Nach Name suchen…",
+    "noMatching": "Keine Charaktere passen zu deiner Suche.",
+    "clearSearch": "Suche zurücksetzen",
+    "tour": {
+      "steps": {
+        "search": {
+          "title": "Charakter finden",
+          "content": "Gib einen Teil des Namens ein, um die Liste einzugrenzen."
+        },
+        "list": {
+          "title": "Charakter öffnen",
+          "content": "Wähle einen Charakter, um seine Werte, Eigenschaften, Fähigkeiten und Rangaufstieg-Materialien zu sehen."
+        }
+      }
+    }
+  },
+  "mowsList": {
+    "title": "Kriegsmaschinen",
+    "search": "Kriegsmaschinen suchen",
+    "noMatching": "Keine Kriegsmaschinen passen zu deiner Suche.",
+    "tour": {
+      "steps": {
+        "search": {
+          "title": "Kriegsmaschine finden",
+          "content": "Gib einen Teil des Namens ein, um die Liste einzugrenzen."
+        },
+        "list": {
+          "title": "Kriegsmaschine öffnen",
+          "content": "Wähle eine Kriegsmaschine, um ihre Fähigkeiten und die Kosten ihrer Verbesserung zu sehen."
+        }
+      }
+    }
+  },
+  "characterUnit": {
+    "breadcrumbLibrary": "Bibliothek",
+    "header": {
+      "yourUnit": "Deine Einheit:",
+      "abilities": "Fähigkeiten {{active}} / {{passive}}",
+      "relic": "Relikt Stufe {{level}}",
+      "notUnlocked": "Nicht freigeschaltet. Die Werte beginnen bei {{rarity}}, {{stars}}, {{rank}}.",
+      "showing": "Angezeigt: {{rarity}}, {{stars}}, {{rank}}, Fähigkeiten auf Stufe 1.",
+      "shards": "{{owned}} / {{needed}} Splitter",
+      "shardProgress": "Splitter bis zur Freischaltung",
+      "signInBanner": "Melde dich an und synchronisiere, um diese Seite mit deinen eigenen Werten zu öffnen.",
+      "signIn": "Anmelden",
+      "syncBanner": "Synchronisiere mit Tacticus (in der Kopfzeile), um diese Seite mit deinen eigenen Werten zu öffnen."
+    },
+    "glance": {
+      "title": "Auf einen Blick",
+      "health": "Leben",
+      "damage": "Schaden",
+      "armour": "Rüstung",
+      "movement": "Bewegung",
+      "melee": "Nahkampf",
+      "ranged": "Fernkampf",
+      "hits_one": "{{count}} Treffer",
+      "hits_other": "{{count}} Treffer",
+      "range": "Reichweite {{range}}",
+      "equipment": "Ausrüstungsplätze",
+      "pierce": "{{value}} % Durchschlagsrate",
+      "pierceHint": "Durchschlagsrate: Jeder Treffer verursacht den höheren Wert aus seinem Schaden minus der Rüstung des Ziels oder {{value}} % seines Schadens. Gegen schwere Rüstung kommen diese {{value}} % an.",
+      "relicSlot": "Relikt: {{name}}",
+      "itemCount_one": "{{count}} Gegenstand",
+      "itemCount_other": "{{count}} Gegenstände",
+      "itemsTitle": "Gegenstände für den Platz {{slot}}",
+      "itemLevels": "Stufe 1 → {{max}}",
+      "itemStats": {
+        "critChance": "Krit-Chance",
+        "critDamage": "Krit-Schaden",
+        "critChanceBonus": "Krit-Chance",
+        "critDamageBonus": "Krit-Schaden",
+        "blockChance": "Blockchance",
+        "blockDamage": "Blockschaden",
+        "blockChanceBonus": "Blockchance",
+        "blockDamageBonus": "Blockschaden",
+        "armor": "Rüstung",
+        "hp": "Lebenspunkte"
+      }
+    },
+    "traits": {
+      "title": "Eigenschaften"
+    },
+    "abilities": {
+      "title": "Fähigkeiten",
+      "active": "Aktiv",
+      "passive": "Passiv"
+    },
+    "compare": {
+      "title": "Im Vergleich zu anderen Charakteren",
+      "subtitle": "Perzentil bei Mythic Wings · Adamant II",
+      "axes": {
+        "health": "Leben",
+        "armour": "Rüstung",
+        "meleeVsInfiniteArmour": "Nahkampfschaden gegen unendliche Rüstung",
+        "meleeVsZeroArmour": "Nahkampfschaden gegen 0 Rüstung",
+        "rangedVsInfiniteArmour": "Fernkampfschaden gegen unendliche Rüstung",
+        "rangedVsZeroArmour": "Fernkampfschaden gegen 0 Rüstung"
+      },
+      "axesShort": {
+        "health": "Leben",
+        "armour": "Rüstung",
+        "meleeVsInfiniteArmour": "Nahkampf ∞",
+        "meleeVsZeroArmour": "Nahkampf 0",
+        "rangedVsInfiniteArmour": "Fernkampf ∞",
+        "rangedVsZeroArmour": "Fernkampf 0"
+      },
+      "percent": "{{value}} %",
+      "caption": "Perzentile: {{values}}.",
+      "footnote": "Gestrichelt = mittlerer Charakter. {{value}} % Rüstung heißt: {{name}} hat mehr Rüstung als {{value}} % der Charaktere bei Mythic Wings, Adamant II.",
+      "damageLink": "So funktioniert Schaden (Tacticus-Wiki)"
+    },
+    "statsByRank": {
+      "title": "Werte nach Rang",
+      "footnote": "Gestrichelte Linie = angezeigter Rang ({{rank}}). Fahre über ein Diagramm, um jeden Rang abzulesen.",
+      "yours": " (deine)",
+      "aboveCap": " (über der Obergrenze für diese Sterne)",
+      "capFootnote": "Blasse Ränge liegen über {{rank}}, der Obergrenze für diese Sterne.",
+      "caption": "{{stat}} steigt von {{from}} bei {{firstRank}} auf {{to}} bei {{lastRank}}.",
+      "rank": "Rang"
+    },
+    "relic": {
+      "kind": "Relikt",
+      "none": "{{name}} hat kein Relikt.",
+      "noneShort": "Keins",
+      "unique": "Einzigartiges Relikt",
+      "shared": "Geteiltes Relikt",
+      "sharedWith": "Auch ausrüstbar für {{names}}"
+    },
+    "tour": {
+      "steps": {
+        "header": {
+          "title": "Die Einheit",
+          "content": "Porträt, Fraktion und die Werte, die die Seite zeigt. Angemeldet und synchronisiert beginnen sie bei deiner eigenen Einheit; wähle „Eigene“, um andere Werte auszuprobieren."
+        },
+        "tabs": {
+          "title": "Details und Rangaufstieg",
+          "content": "Wechsle zwischen den Details der Einheit und dem Rechner für Rangaufstieg-Materialien."
+        },
+        "ability": {
+          "title": "Fähigkeiten",
+          "content": "Ändere die Stufe, um den Regeltext auf dieser Stufe zu lesen; das Diagramm zeigt, wie jeder Wert wächst."
+        },
+        "compare": {
+          "title": "Im Vergleich zu anderen Charakteren",
+          "content": "Wie die Werte dieses Charakters unter allen Charakteren abschneiden, bei Mythic Wings, Adamant II."
+        },
+        "rankup": {
+          "title": "Rangaufstieg-Materialien",
+          "content": "Wähle einen Rangbereich, um die nötigen Verbesserungen und ihre Farm-Orte zu sehen."
+        }
+      }
+    },
+    "mythic": {
+      "kind": "Mythisch",
+      "title": "Mythische Quests",
+      "count_one": "{{count}} Quest",
+      "count_other": "{{count}} Quests",
+      "rewards": {
+        "mythicShards": "Mythische Splitter von {{name}}",
+        "ascensionOrb": "Mythische {{alliance}}-Aufstiegskugel",
+        "abilityBadge": "Mythisches {{alliance}}-Abzeichen",
+        "xp": "Mythisches EP-Buch",
+        "gold": "Gold"
+      }
+    }
+  },
+  "mowUnit": {
+    "header": {
+      "kind": "{{alliance}} · Kriegsmaschine",
+      "yourUnit": "Deine Kriegsmaschine:",
+      "levels": "primär {{primary}} · sekundär {{secondary}}",
+      "notUnlocked": "Nicht freigeschaltet. Die Werte beginnen bei {{rarity}}.",
+      "showing": "Angezeigt: {{rarity}}, Fähigkeiten auf Stufe 1."
+    },
+    "tabs": {
+      "upgrades": "Fähigkeits-Upgrades"
+    },
+    "abilities": {
+      "title": "Fähigkeiten",
+      "primary": "Primär",
+      "secondary": "Sekundär",
+      "mythic": "Mythisch"
+    },
+    "mythic": {
+      "unnamed": "Mythische Fähigkeit",
+      "unlocks": "Ab Mythisch freigeschaltet",
+      "level": "Stufe {{level}} · nach blauen Sternen"
+    },
+    "upgrades": {
+      "from": "Von Stufe",
+      "to": "Bis Stufe",
+      "includeOwned": "Eigene Materialien einbeziehen",
+      "includeOwnedOn": "Abzeichen, Komponenten und Materialien ziehen ab, was in deinem Inventar ist; Gold und Bergungsgut nicht.",
+      "includeOwnedOff": "Die Summen ignorieren dein Inventar.",
+      "totalTitle": "Insgesamt benötigt",
+      "gold": "Goldmünzen",
+      "salvage": "Bergungsgut",
+      "components": "Komponenten ({{alliance}})",
+      "badges": "{{rarity}}-Abzeichen ({{alliance}})",
+      "forgeBadges": "{{rarity}}-Schmiedeabzeichen",
+      "materialsTitle": "Upgrade-Materialien",
+      "covered": "Abgedeckt",
+      "nothing": "Nichts zu verbessern: Setze eine Bis-Stufe über ihre Von-Stufe.",
+      "perLevelTitle": "Pro Stufe",
+      "step": "{{from}} → {{to}}",
+      "columns": {
+        "level": "Stufe",
+        "gold": "Goldmünzen",
+        "salvage": "Bergungsgut",
+        "badges": "Abzeichen",
+        "forgeBadges": "Schmiedeabzeichen",
+        "components": "Komponenten",
+        "materials": "Materialien"
+      }
+    },
+    "tour": {
+      "steps": {
+        "header": {
+          "title": "Kriegsmaschine",
+          "content": "Seltenheit und Fähigkeitsstufen deiner Kriegsmaschine. Wechsle zu Eigene, um andere Seltenheiten anzusehen."
+        },
+        "tabs": {
+          "title": "Details und Upgrades",
+          "content": "Details zeigt die Fähigkeiten; Fähigkeits-Upgrades summiert, was ihre Verbesserung kostet."
+        },
+        "ability": {
+          "title": "Fähigkeiten",
+          "content": "Regeltext jeder Fähigkeit und wie sie mit der Stufe wächst, sobald der Spieltext im Planer ist."
+        },
+        "upgrades": {
+          "title": "Fähigkeits-Upgrades",
+          "content": "Öffne diesen Tab, um Gold, Abzeichen, Komponenten und Materialien für ein Upgrade zu summieren."
+        },
+        "ranges": {
+          "title": "Stufen wählen",
+          "content": "Wähle für jede Fähigkeit eine Von- und Bis-Stufe. Die Summen aktualisieren sich sofort."
+        },
+        "totals": {
+          "title": "Was du brauchst",
+          "content": "Gold, Bergungsgut, Komponenten und Abzeichen für die gewählten Stufen, nach Seltenheit."
+        }
+      }
+    }
   }
 }

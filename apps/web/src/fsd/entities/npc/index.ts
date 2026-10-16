@@ -32,9 +32,9 @@ export {
 } from "./lib/variation-mode"
 export { useNpcLabels } from "./lib/use-npc-labels"
 export {
-  useNpcAbilityText,
-  useNpcTraitText,
-  type NpcAbilityTextEntry,
-  type NpcTraitTextEntry,
-} from "./lib/use-npc-ability-text"
+  useAbilityText as useNpcAbilityText,
+  useTraitText as useNpcTraitText,
+  type AbilityTextEntry as NpcAbilityTextEntry,
+  type TraitTextEntry as NpcTraitTextEntry,
+} from "@/shared/ability-text"
 export { NpcPortrait } from "./ui/npc-portrait"

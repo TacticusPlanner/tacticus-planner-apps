@@ -3,16 +3,25 @@
 /* eslint-disable react-refresh/only-export-components */
 import { lazy } from "react"
 import { Navigate, type RouteObject } from "react-router"
-import { getMows } from "@workspace/game-catalog/queries"
 
-const CharacterLookupPage = lazy(() =>
-  import("./ui/character/character-lookup-page").then((m) => ({
-    default: m.CharacterLookupPage,
+const CharactersListPage = lazy(() =>
+  import("./ui/characters/characters-list-page").then((m) => ({
+    default: m.CharactersListPage,
   }))
 )
-const LibraryCollectionPage = lazy(() =>
-  import("./ui/library-collection-page").then((m) => ({
-    default: m.LibraryCollectionPage,
+const CharacterUnitPage = lazy(() =>
+  import("./ui/character-unit/character-unit-page").then((m) => ({
+    default: m.CharacterUnitPage,
+  }))
+)
+const MowsListPage = lazy(() =>
+  import("./ui/mows/mows-list-page").then((m) => ({
+    default: m.MowsListPage,
+  }))
+)
+const MowUnitPage = lazy(() =>
+  import("./ui/mow-unit/mow-unit-page").then((m) => ({
+    default: m.MowUnitPage,
   }))
 )
 const NpcsPage = lazy(() =>
@@ -33,26 +42,10 @@ const ShopsBrowsePage = lazy(() =>
 // layout element, and just splices this array in as `children`.
 export const routes: RouteObject[] = [
   { index: true, element: <Navigate replace to="/library/characters" /> },
-  { path: "characters", element: <CharacterLookupPage /> },
-  { path: "characters/:entityId", element: <CharacterLookupPage /> },
-  {
-    path: "machines-of-war",
-    element: (
-      <LibraryCollectionPage
-        collection="machines-of-war"
-        getRecords={getMows}
-      />
-    ),
-  },
-  {
-    path: "machines-of-war/:entityId",
-    element: (
-      <LibraryCollectionPage
-        collection="machines-of-war"
-        getRecords={getMows}
-      />
-    ),
-  },
+  { path: "characters", element: <CharactersListPage /> },
+  { path: "characters/:entityId", element: <CharacterUnitPage /> },
+  { path: "machines-of-war", element: <MowsListPage /> },
+  { path: "machines-of-war/:entityId", element: <MowUnitPage /> },
   { path: "npcs", element: <NpcsPage /> },
   { path: "npcs/:entityId", element: <NpcsPage /> },
   { path: "raid-bosses", element: <RaidBossesPage /> },

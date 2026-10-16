@@ -26,8 +26,6 @@ describe("Library translations", () => {
       expect(locale.collections.shops.label).toBeTruthy()
       expect(locale.collections.shops.description).toBeTruthy()
       expect(locale.collections.noRecords).toBeTruthy()
-      expect(locale.collections.raidBossesNoRecords).toBeTruthy()
-      expect(locale.collections.detailUnavailable).toContain("{{name}}")
     }
   })
 
@@ -79,6 +77,39 @@ describe("Library translations", () => {
         "level",
         "stats",
       ])
+    }
+  })
+
+  it("provides the Machines of War list and unit page copy in every locale", () => {
+    for (const section of ["mowsList", "mowUnit"] as const) {
+      const enLeaves = leafKeys(en[section]).sort()
+      for (const [code, locale] of Object.entries(locales)) {
+        const localeSection = (locale as typeof en)[section]
+        expect(leafKeys(localeSection).sort(), code).toEqual(enLeaves)
+        for (const key of enLeaves) {
+          const value = key
+            .split(".")
+            .reduce<unknown>(
+              (node, part) => (node as Record<string, unknown>)[part],
+              localeSection
+            )
+          expect(
+            typeof value === "string" && value.trim() !== "",
+            `${code}:${section}.${key}`
+          ).toBe(true)
+          if (code !== "en" && !/^\{\{\w+\}\}/.test(String(value))) {
+            const english = key
+              .split(".")
+              .reduce<unknown>(
+                (node, part) => (node as Record<string, unknown>)[part],
+                en[section]
+              )
+            expect(value, `${code}:${section}.${key} is untranslated`).not.toBe(
+              english
+            )
+          }
+        }
+      }
     }
   })
 

@@ -11,6 +11,7 @@ import {
   minProgressionForRank,
   progressionOrder,
   progressionRarity,
+  startingProgression,
   statAtRank,
 } from "./progression"
 
@@ -123,5 +124,16 @@ describe("progression values", () => {
     expect(progressionOrder).toHaveLength(20)
     expect(progressionOrder[0]).toBe("Common:None")
     expect(progressionOrder.at(-1)).toBe("Mythic:MythicWings")
+  })
+})
+
+describe("startingProgression", () => {
+  it("starts each rarity at its first step on the ladder", () => {
+    expect(startingProgression("Common")).toBe("Common:None")
+    expect(startingProgression("Uncommon")).toBe("Uncommon:TwoStars")
+    expect(startingProgression("Rare")).toBe("Rare:FourStars")
+    expect(startingProgression("Epic")).toBe("Epic:RedOneStar")
+    expect(startingProgression("Legendary")).toBe("Legendary:RedThreeStars")
+    expect(startingProgression("Mythic")).toBe("Mythic:OneBlueStar")
   })
 })

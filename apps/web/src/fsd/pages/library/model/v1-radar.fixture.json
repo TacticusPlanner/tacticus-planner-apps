@@ -1,0 +1,1201 @@
+{
+  "source": "V1 new-character-data2.json; expected = V1 buildRadarStats percentiles (axis order: health, armour, melee vs inf, melee vs 0, ranged vs inf, ranged vs 0)",
+  "characters": [
+    {
+      "id": "ultraTigurius",
+      "health": 65,
+      "damage": 30,
+      "armour": 14,
+      "meleeDamage": "Physical",
+      "meleeHits": 1,
+      "rangedDamage": "Psychic",
+      "rangedHits": 1
+    },
+    {
+      "id": "ultraEliminatorSgt",
+      "health": 60,
+      "damage": 55,
+      "armour": 18,
+      "meleeDamage": "Physical",
+      "meleeHits": 1,
+      "rangedDamage": "Bolter",
+      "rangedHits": 1
+    },
+    {
+      "id": "ultraInceptorSgt",
+      "health": 85,
+      "damage": 10,
+      "armour": 13,
+      "meleeDamage": "Bolter",
+      "meleeHits": 6,
+      "rangedDamage": null,
+      "rangedHits": null
+    },
+    {
+      "id": "ultraApothecary",
+      "health": 100,
+      "damage": 46,
+      "armour": 22,
+      "meleeDamage": "Piercing",
+      "meleeHits": 1,
+      "rangedDamage": null,
+      "rangedHits": null
+    },
+    {
+      "id": "ultraCalgar",
+      "health": 95,
+      "damage": 28,
+      "armour": 20,
+      "meleeDamage": "Power",
+      "meleeHits": 2,
+      "rangedDamage": null,
+      "rangedHits": null
+    },
+    {
+      "id": "ultraTitus",
+      "health": 95,
+      "damage": 26,
+      "armour": 23,
+      "meleeDamage": "Chain",
+      "meleeHits": 4,
+      "rangedDamage": null,
+      "rangedHits": null
+    },
+    {
+      "id": "adeptRetributor",
+      "health": 75,
+      "damage": 20,
+      "armour": 18,
+      "meleeDamage": "Physical",
+      "meleeHits": 1,
+      "rangedDamage": "Flame",
+      "rangedHits": 4
+    },
+    {
+      "id": "adeptHospitaller",
+      "health": 85,
+      "damage": 20,
+      "armour": 18,
+      "meleeDamage": "Bolter",
+      "meleeHits": 3,
+      "rangedDamage": null,
+      "rangedHits": null
+    },
+    {
+      "id": "adeptMorvenn",
+      "health": 95,
+      "damage": 24,
+      "armour": 24,
+      "meleeDamage": "Power",
+      "meleeHits": 2,
+      "rangedDamage": "Bolter",
+      "rangedHits": 3
+    },
+    {
+      "id": "adeptCanoness",
+      "health": 85,
+      "damage": 30,
+      "armour": 17,
+      "meleeDamage": "Chain",
+      "meleeHits": 3,
+      "rangedDamage": "Bolter",
+      "rangedHits": 2
+    },
+    {
+      "id": "adeptCelestine",
+      "health": 60,
+      "damage": 25,
+      "armour": 20,
+      "meleeDamage": "Power",
+      "meleeHits": 3,
+      "rangedDamage": null,
+      "rangedHits": null
+    },
+    {
+      "id": "necroWarden",
+      "health": 85,
+      "damage": 18,
+      "armour": 20,
+      "meleeDamage": "Physical",
+      "meleeHits": 1,
+      "rangedDamage": "Gauss",
+      "rangedHits": 2
+    },
+    {
+      "id": "necroDestroyer",
+      "health": 80,
+      "damage": 9,
+      "armour": 20,
+      "meleeDamage": "Gauss",
+      "meleeHits": 6,
+      "rangedDamage": "Gauss",
+      "rangedHits": 6
+    },
+    {
+      "id": "necroSpyder",
+      "health": 90,
+      "damage": 12,
+      "armour": 22,
+      "meleeDamage": "Particle",
+      "meleeHits": 5,
+      "rangedDamage": null,
+      "rangedHits": null
+    },
+    {
+      "id": "necroPlasmancer",
+      "health": 75,
+      "damage": 36,
+      "armour": 18,
+      "meleeDamage": "Plasma",
+      "meleeHits": 2,
+      "rangedDamage": "Plasma",
+      "rangedHits": 2
+    },
+    {
+      "id": "necroOverlord",
+      "health": 90,
+      "damage": 25,
+      "armour": 21,
+      "meleeDamage": "Energy",
+      "meleeHits": 4,
+      "rangedDamage": "Energy",
+      "rangedHits": 3
+    },
+    {
+      "id": "necroChronomancer",
+      "health": 75,
+      "damage": 36,
+      "armour": 18,
+      "meleeDamage": "Physical",
+      "meleeHits": 1,
+      "rangedDamage": "Energy",
+      "rangedHits": 2
+    },
+    {
+      "id": "astraPrimarisPsy",
+      "health": 55,
+      "damage": 30,
+      "armour": 20,
+      "meleeDamage": "Psychic",
+      "meleeHits": 1,
+      "rangedDamage": "Psychic",
+      "rangedHits": 1
+    },
+    {
+      "id": "astraYarrick",
+      "health": 75,
+      "damage": 30,
+      "armour": 17,
+      "meleeDamage": "Power",
+      "meleeHits": 3,
+      "rangedDamage": "Bolter",
+      "rangedHits": 2
+    },
+    {
+      "id": "astraBullgryn",
+      "health": 95,
+      "damage": 30,
+      "armour": 35,
+      "meleeDamage": "Physical",
+      "meleeHits": 4,
+      "rangedDamage": null,
+      "rangedHits": null
+    },
+    {
+      "id": "astraOrdnance",
+      "health": 65,
+      "damage": 38,
+      "armour": 15,
+      "meleeDamage": "Las",
+      "meleeHits": 1,
+      "rangedDamage": "Blast",
+      "rangedHits": 3
+    },
+    {
+      "id": "astraCreed",
+      "health": 90,
+      "damage": 38,
+      "armour": 21,
+      "meleeDamage": "Las",
+      "meleeHits": 2,
+      "rangedDamage": null,
+      "rangedHits": null
+    },
+    {
+      "id": "astraDreir",
+      "health": 100,
+      "damage": 28,
+      "armour": 17,
+      "meleeDamage": "Power",
+      "meleeHits": 3,
+      "rangedDamage": null,
+      "rangedHits": null
+    },
+    {
+      "id": "blackTerminator",
+      "health": 110,
+      "damage": 19,
+      "armour": 30,
+      "meleeDamage": "Power",
+      "meleeHits": 4,
+      "rangedDamage": null,
+      "rangedHits": null
+    },
+    {
+      "id": "blackObliterator",
+      "health": 125,
+      "damage": 9,
+      "armour": 12,
+      "meleeDamage": "Power",
+      "meleeHits": 4,
+      "rangedDamage": "HeavyRound",
+      "rangedHits": 6
+    },
+    {
+      "id": "blackPossession",
+      "health": 80,
+      "damage": 16,
+      "armour": 18,
+      "meleeDamage": "Psychic",
+      "meleeHits": 2,
+      "rangedDamage": "Psychic",
+      "rangedHits": 1
+    },
+    {
+      "id": "blackHaarken",
+      "health": 95,
+      "damage": 11,
+      "armour": 20,
+      "meleeDamage": "Piercing",
+      "meleeHits": 4,
+      "rangedDamage": null,
+      "rangedHits": null
+    },
+    {
+      "id": "blackAbaddon",
+      "health": 100,
+      "damage": 15,
+      "armour": 25,
+      "meleeDamage": "Power",
+      "meleeHits": 5,
+      "rangedDamage": "Bolter",
+      "rangedHits": 3
+    },
+    {
+      "id": "deathTyphus",
+      "health": 120,
+      "damage": 18,
+      "armour": 25,
+      "meleeDamage": "Power",
+      "meleeHits": 1,
+      "rangedDamage": "Psychic",
+      "rangedHits": 1
+    },
+    {
+      "id": "deathBlightlord",
+      "health": 120,
+      "damage": 26,
+      "armour": 33,
+      "meleeDamage": "Power",
+      "meleeHits": 3,
+      "rangedDamage": null,
+      "rangedHits": null
+    },
+    {
+      "id": "deathRotbone",
+      "health": 120,
+      "damage": 14,
+      "armour": 27,
+      "meleeDamage": "Power",
+      "meleeHits": 4,
+      "rangedDamage": null,
+      "rangedHits": null
+    },
+    {
+      "id": "deathPutrifier",
+      "health": 120,
+      "damage": 40,
+      "armour": 27,
+      "meleeDamage": "Toxic",
+      "meleeHits": 1,
+      "rangedDamage": null,
+      "rangedHits": null
+    },
+    {
+      "id": "deathBlightbringer",
+      "health": 125,
+      "damage": 40,
+      "armour": 25,
+      "meleeDamage": "Plasma",
+      "meleeHits": 1,
+      "rangedDamage": null,
+      "rangedHits": null
+    },
+    {
+      "id": "orksRuntherd",
+      "health": 120,
+      "damage": 30,
+      "armour": 18,
+      "meleeDamage": "Physical",
+      "meleeHits": 3,
+      "rangedDamage": null,
+      "rangedHits": null
+    },
+    {
+      "id": "orksBigMek",
+      "health": 80,
+      "damage": 25,
+      "armour": 18,
+      "meleeDamage": "Physical",
+      "meleeHits": 4,
+      "rangedDamage": null,
+      "rangedHits": null
+    },
+    {
+      "id": "orksKillaKan",
+      "health": 90,
+      "damage": 23,
+      "armour": 20,
+      "meleeDamage": "Chain",
+      "meleeHits": 3,
+      "rangedDamage": "Projectile",
+      "rangedHits": 3
+    },
+    {
+      "id": "orksNob",
+      "health": 100,
+      "damage": 24,
+      "armour": 15,
+      "meleeDamage": "Eviscerate",
+      "meleeHits": 3,
+      "rangedDamage": null,
+      "rangedHits": null
+    },
+    {
+      "id": "orksWarboss",
+      "health": 100,
+      "damage": 26,
+      "armour": 26,
+      "meleeDamage": "Eviscerate",
+      "meleeHits": 2,
+      "rangedDamage": "Projectile",
+      "rangedHits": 1
+    },
+    {
+      "id": "templSwordBrother",
+      "health": 95,
+      "damage": 60,
+      "armour": 24,
+      "meleeDamage": "Power",
+      "meleeHits": 1,
+      "rangedDamage": null,
+      "rangedHits": null
+    },
+    {
+      "id": "templAggressor",
+      "health": 120,
+      "damage": 18,
+      "armour": 22,
+      "meleeDamage": "Power",
+      "meleeHits": 3,
+      "rangedDamage": "Bolter",
+      "rangedHits": 3
+    },
+    {
+      "id": "templAncient",
+      "health": 100,
+      "damage": 33,
+      "armour": 22,
+      "meleeDamage": "Power",
+      "meleeHits": 2,
+      "rangedDamage": null,
+      "rangedHits": null
+    },
+    {
+      "id": "templChampion",
+      "health": 110,
+      "damage": 25,
+      "armour": 25,
+      "meleeDamage": "Power",
+      "meleeHits": 3,
+      "rangedDamage": null,
+      "rangedHits": null
+    },
+    {
+      "id": "templHelbrecht",
+      "health": 95,
+      "damage": 15,
+      "armour": 22,
+      "meleeDamage": "Power",
+      "meleeHits": 6,
+      "rangedDamage": "Bolter",
+      "rangedHits": 3
+    },
+    {
+      "id": "eldarRanger",
+      "health": 70,
+      "damage": 45,
+      "armour": 18,
+      "meleeDamage": "Physical",
+      "meleeHits": 1,
+      "rangedDamage": "Energy",
+      "rangedHits": 1
+    },
+    {
+      "id": "eldarAutarch",
+      "health": 80,
+      "damage": 14,
+      "armour": 17,
+      "meleeDamage": "Piercing",
+      "meleeHits": 3,
+      "rangedDamage": null,
+      "rangedHits": null
+    },
+    {
+      "id": "eldarFarseer",
+      "health": 75,
+      "damage": 16,
+      "armour": 16,
+      "meleeDamage": "Piercing",
+      "meleeHits": 2,
+      "rangedDamage": "Psychic",
+      "rangedHits": 2
+    },
+    {
+      "id": "eldarMauganRa",
+      "health": 70,
+      "damage": 9,
+      "armour": 22,
+      "meleeDamage": "Power",
+      "meleeHits": 5,
+      "rangedDamage": "HeavyRound",
+      "rangedHits": 6
+    },
+    {
+      "id": "eldarJainZar",
+      "health": 75,
+      "damage": 19,
+      "armour": 18,
+      "meleeDamage": "Piercing",
+      "meleeHits": 3,
+      "rangedDamage": null,
+      "rangedHits": null
+    },
+    {
+      "id": "eldarLhykhis",
+      "health": 75,
+      "damage": 12,
+      "armour": 22,
+      "meleeDamage": "Gauss",
+      "meleeHits": 5,
+      "rangedDamage": "Eviscerate",
+      "rangedHits": 5
+    },
+    {
+      "id": "tauMarksman",
+      "health": 65,
+      "damage": 40,
+      "armour": 16,
+      "meleeDamage": "Pulse",
+      "meleeHits": 1,
+      "rangedDamage": "Piercing",
+      "rangedHits": 1
+    },
+    {
+      "id": "tauCrisis",
+      "health": 105,
+      "damage": 7,
+      "armour": 25,
+      "meleeDamage": "Flame",
+      "meleeHits": 6,
+      "rangedDamage": "Pulse",
+      "rangedHits": 6
+    },
+    {
+      "id": "tauDarkstrider",
+      "health": 75,
+      "damage": 25,
+      "armour": 17,
+      "meleeDamage": "Physical",
+      "meleeHits": 3,
+      "rangedDamage": "Pulse",
+      "rangedHits": 4
+    },
+    {
+      "id": "tauAunShi",
+      "health": 85,
+      "damage": 13,
+      "armour": 16,
+      "meleeDamage": "Power",
+      "meleeHits": 5,
+      "rangedDamage": null,
+      "rangedHits": null
+    },
+    {
+      "id": "tauShadowsun",
+      "health": 80,
+      "damage": 25,
+      "armour": 18,
+      "meleeDamage": "Blast",
+      "meleeHits": 2,
+      "rangedDamage": "Melta",
+      "rangedHits": 2
+    },
+    {
+      "id": "tauFarsight",
+      "health": 100,
+      "damage": 20,
+      "armour": 20,
+      "meleeDamage": "Power",
+      "meleeHits": 4,
+      "rangedDamage": "Plasma",
+      "rangedHits": 2
+    },
+    {
+      "id": "spaceWulfen",
+      "health": 90,
+      "damage": 33,
+      "armour": 20,
+      "meleeDamage": "Power",
+      "meleeHits": 3,
+      "rangedDamage": null,
+      "rangedHits": null
+    },
+    {
+      "id": "spaceHound",
+      "health": 85,
+      "damage": 32,
+      "armour": 23,
+      "meleeDamage": "Physical",
+      "meleeHits": 4,
+      "rangedDamage": null,
+      "rangedHits": null
+    },
+    {
+      "id": "spaceRockfist",
+      "health": 110,
+      "damage": 23,
+      "armour": 26,
+      "meleeDamage": "Power",
+      "meleeHits": 3,
+      "rangedDamage": null,
+      "rangedHits": null
+    },
+    {
+      "id": "spaceStormcaller",
+      "health": 80,
+      "damage": 8,
+      "armour": 26,
+      "meleeDamage": "Psychic",
+      "meleeHits": 3,
+      "rangedDamage": "Psychic",
+      "rangedHits": 2
+    },
+    {
+      "id": "spaceBlackmane",
+      "health": 100,
+      "damage": 14,
+      "armour": 24,
+      "meleeDamage": "Chain",
+      "meleeHits": 7,
+      "rangedDamage": null,
+      "rangedHits": null
+    },
+    {
+      "id": "spaceWolfPriest",
+      "health": 90,
+      "damage": 25,
+      "armour": 21,
+      "meleeDamage": "Power",
+      "meleeHits": 3,
+      "rangedDamage": null,
+      "rangedHits": null
+    },
+    {
+      "id": "thousTzaangor",
+      "health": 65,
+      "damage": 49,
+      "armour": 14,
+      "meleeDamage": "Physical",
+      "meleeHits": 1,
+      "rangedDamage": "HeavyRound",
+      "rangedHits": 1
+    },
+    {
+      "id": "thousTerminator",
+      "health": 90,
+      "damage": 10,
+      "armour": 27,
+      "meleeDamage": "Power",
+      "meleeHits": 4,
+      "rangedDamage": "Flame",
+      "rangedHits": 5
+    },
+    {
+      "id": "thousInfernalMaster",
+      "health": 70,
+      "damage": 18,
+      "armour": 20,
+      "meleeDamage": "Flame",
+      "meleeHits": 2,
+      "rangedDamage": "Psychic",
+      "rangedHits": 1
+    },
+    {
+      "id": "thousSorcerer",
+      "health": 75,
+      "damage": 27,
+      "armour": 18,
+      "meleeDamage": "Flame",
+      "meleeHits": 1,
+      "rangedDamage": "Psychic",
+      "rangedHits": 1
+    },
+    {
+      "id": "thousAhriman",
+      "health": 80,
+      "damage": 30,
+      "armour": 18,
+      "meleeDamage": "Flame",
+      "meleeHits": 1,
+      "rangedDamage": "Psychic",
+      "rangedHits": 1
+    },
+    {
+      "id": "thousSekhetar",
+      "health": 95,
+      "damage": 28,
+      "armour": 22,
+      "meleeDamage": "Power",
+      "meleeHits": 2,
+      "rangedDamage": "HeavyRound",
+      "rangedHits": 2
+    },
+    {
+      "id": "darkaHellblaster",
+      "health": 70,
+      "damage": 50,
+      "armour": 20,
+      "meleeDamage": "Physical",
+      "meleeHits": 1,
+      "rangedDamage": "Plasma",
+      "rangedHits": 1
+    },
+    {
+      "id": "darkaTerminator",
+      "health": 110,
+      "damage": 22,
+      "armour": 29,
+      "meleeDamage": "Power",
+      "meleeHits": 3,
+      "rangedDamage": null,
+      "rangedHits": null
+    },
+    {
+      "id": "darkaCompanion",
+      "health": 90,
+      "damage": 12,
+      "armour": 21,
+      "meleeDamage": "Power",
+      "meleeHits": 6,
+      "rangedDamage": null,
+      "rangedHits": null
+    },
+    {
+      "id": "darkaAsmodai",
+      "health": 90,
+      "damage": 20,
+      "armour": 23,
+      "meleeDamage": "Power",
+      "meleeHits": 4,
+      "rangedDamage": null,
+      "rangedHits": null
+    },
+    {
+      "id": "darkaAzrael",
+      "health": 95,
+      "damage": 28,
+      "armour": 24,
+      "meleeDamage": "Power",
+      "meleeHits": 3,
+      "rangedDamage": "Plasma",
+      "rangedHits": 1
+    },
+    {
+      "id": "darkaSternguard",
+      "health": 85,
+      "damage": 40,
+      "armour": 21,
+      "meleeDamage": "Melta",
+      "meleeHits": 1,
+      "rangedDamage": "Bolter",
+      "rangedHits": 1
+    },
+    {
+      "id": "tyranNeurothrope",
+      "health": 85,
+      "damage": 20,
+      "armour": 17,
+      "meleeDamage": "Physical",
+      "meleeHits": 1,
+      "rangedDamage": "Psychic",
+      "rangedHits": 1
+    },
+    {
+      "id": "tyranTyrantGuard",
+      "health": 125,
+      "damage": 16,
+      "armour": 22,
+      "meleeDamage": "Piercing",
+      "meleeHits": 2,
+      "rangedDamage": null,
+      "rangedHits": null
+    },
+    {
+      "id": "tyranWingedPrime",
+      "health": 100,
+      "damage": 11,
+      "armour": 19,
+      "meleeDamage": "Bio",
+      "meleeHits": 6,
+      "rangedDamage": null,
+      "rangedHits": null
+    },
+    {
+      "id": "tyranDeathleaper",
+      "health": 80,
+      "damage": 24,
+      "armour": 17,
+      "meleeDamage": "Bio",
+      "meleeHits": 3,
+      "rangedDamage": null,
+      "rangedHits": null
+    },
+    {
+      "id": "tyranParasite",
+      "health": 90,
+      "damage": 45,
+      "armour": 17,
+      "meleeDamage": "Toxic",
+      "meleeHits": 1,
+      "rangedDamage": null,
+      "rangedHits": null
+    },
+    {
+      "id": "admecDominus",
+      "health": 90,
+      "damage": 50,
+      "armour": 18,
+      "meleeDamage": "Power",
+      "meleeHits": 1,
+      "rangedDamage": "Gauss",
+      "rangedHits": 1
+    },
+    {
+      "id": "admecManipulus",
+      "health": 95,
+      "damage": 25,
+      "armour": 19,
+      "meleeDamage": "Energy",
+      "meleeHits": 2,
+      "rangedDamage": "Energy",
+      "rangedHits": 2
+    },
+    {
+      "id": "admecMarshall",
+      "health": 85,
+      "damage": 35,
+      "armour": 16,
+      "meleeDamage": "Physical",
+      "meleeHits": 2,
+      "rangedDamage": "Toxic",
+      "rangedHits": 1
+    },
+    {
+      "id": "admecRuststalker",
+      "health": 80,
+      "damage": 30,
+      "armour": 17,
+      "meleeDamage": "Energy",
+      "meleeHits": 2,
+      "rangedDamage": null,
+      "rangedHits": null
+    },
+    {
+      "id": "admecDestroyer",
+      "health": 95,
+      "damage": 25,
+      "armour": 17,
+      "meleeDamage": "Flame",
+      "meleeHits": 4,
+      "rangedDamage": "Physical",
+      "rangedHits": 4
+    },
+    {
+      "id": "worldTerminator",
+      "health": 95,
+      "damage": 20,
+      "armour": 28,
+      "meleeDamage": "Flame",
+      "meleeHits": 4,
+      "rangedDamage": null,
+      "rangedHits": null
+    },
+    {
+      "id": "worldJakhal",
+      "health": 90,
+      "damage": 30,
+      "armour": 10,
+      "meleeDamage": "Chain",
+      "meleeHits": 3,
+      "rangedDamage": null,
+      "rangedHits": null
+    },
+    {
+      "id": "worldEightbound",
+      "health": 100,
+      "damage": 24,
+      "armour": 20,
+      "meleeDamage": "Eviscerate",
+      "meleeHits": 2,
+      "rangedDamage": null,
+      "rangedHits": null
+    },
+    {
+      "id": "worldExecutions",
+      "health": 95,
+      "damage": 48,
+      "armour": 24,
+      "meleeDamage": "Piercing",
+      "meleeHits": 1,
+      "rangedDamage": null,
+      "rangedHits": null
+    },
+    {
+      "id": "worldKharn",
+      "health": 90,
+      "damage": 25,
+      "armour": 20,
+      "meleeDamage": "Eviscerate",
+      "meleeHits": 4,
+      "rangedDamage": null,
+      "rangedHits": null
+    },
+    {
+      "id": "bloodIntercessor",
+      "health": 90,
+      "damage": 40,
+      "armour": 22,
+      "meleeDamage": "Plasma",
+      "meleeHits": 1,
+      "rangedDamage": null,
+      "rangedHits": null
+    },
+    {
+      "id": "bloodDeathCompany",
+      "health": 90,
+      "damage": 30,
+      "armour": 21,
+      "meleeDamage": "Physical",
+      "meleeHits": 4,
+      "rangedDamage": "Blast",
+      "rangedHits": 3
+    },
+    {
+      "id": "bloodSanguinary",
+      "health": 90,
+      "damage": 23,
+      "armour": 23,
+      "meleeDamage": "Chain",
+      "meleeHits": 3,
+      "rangedDamage": null,
+      "rangedHits": null
+    },
+    {
+      "id": "bloodMephiston",
+      "health": 95,
+      "damage": 10,
+      "armour": 20,
+      "meleeDamage": "Psychic",
+      "meleeHits": 3,
+      "rangedDamage": "Psychic",
+      "rangedHits": 2
+    },
+    {
+      "id": "bloodDante",
+      "health": 90,
+      "damage": 11,
+      "armour": 23,
+      "meleeDamage": "Piercing",
+      "meleeHits": 4,
+      "rangedDamage": null,
+      "rangedHits": null
+    },
+    {
+      "id": "bloodTerminator",
+      "health": 105,
+      "damage": 19,
+      "armour": 27,
+      "meleeDamage": "Power",
+      "meleeHits": 4,
+      "rangedDamage": null,
+      "rangedHits": null
+    },
+    {
+      "id": "genesBiophagus",
+      "health": 55,
+      "damage": 36,
+      "armour": 12,
+      "meleeDamage": "Toxic",
+      "meleeHits": 1,
+      "rangedDamage": null,
+      "rangedHits": null
+    },
+    {
+      "id": "genesMagus",
+      "health": 55,
+      "damage": 15,
+      "armour": 11,
+      "meleeDamage": "Psychic",
+      "meleeHits": 2,
+      "rangedDamage": "Psychic",
+      "rangedHits": 2
+    },
+    {
+      "id": "genesPrimus",
+      "health": 70,
+      "damage": 30,
+      "armour": 14,
+      "meleeDamage": "Bio",
+      "meleeHits": 3,
+      "rangedDamage": "Bio",
+      "rangedHits": 1
+    },
+    {
+      "id": "genesKelermorph",
+      "health": 60,
+      "damage": 25,
+      "armour": 13,
+      "meleeDamage": "Projectile",
+      "meleeHits": 3,
+      "rangedDamage": "Projectile",
+      "rangedHits": 3
+    },
+    {
+      "id": "genesPatriarch",
+      "health": 100,
+      "damage": 14,
+      "armour": 17,
+      "meleeDamage": "Eviscerate",
+      "meleeHits": 5,
+      "rangedDamage": null,
+      "rangedHits": null
+    },
+    {
+      "id": "custoVexilusPraetor",
+      "health": 110,
+      "damage": 58,
+      "armour": 28,
+      "meleeDamage": "Physical",
+      "meleeHits": 1,
+      "rangedDamage": null,
+      "rangedHits": null
+    },
+    {
+      "id": "custoAtlacoya",
+      "health": 80,
+      "damage": 30,
+      "armour": 19,
+      "meleeDamage": "Power",
+      "meleeHits": 3,
+      "rangedDamage": null,
+      "rangedHits": null
+    },
+    {
+      "id": "custoKyrus",
+      "health": 95,
+      "damage": 25,
+      "armour": 22,
+      "meleeDamage": "Power",
+      "meleeHits": 3,
+      "rangedDamage": "Bolter",
+      "rangedHits": 2
+    },
+    {
+      "id": "custoBladeChampion",
+      "health": 95,
+      "damage": 21,
+      "armour": 24,
+      "meleeDamage": "Power",
+      "meleeHits": 3,
+      "rangedDamage": null,
+      "rangedHits": null
+    },
+    {
+      "id": "custoTrajann",
+      "health": 100,
+      "damage": 11,
+      "armour": 25,
+      "meleeDamage": "Piercing",
+      "meleeHits": 3,
+      "rangedDamage": null,
+      "rangedHits": null
+    },
+    {
+      "id": "emperNoiseMarine",
+      "health": 85,
+      "damage": 6,
+      "armour": 20,
+      "meleeDamage": "Eviscerate",
+      "meleeHits": 3,
+      "rangedDamage": "Eviscerate",
+      "rangedHits": 6
+    },
+    {
+      "id": "emperFlawlessBlade",
+      "health": 95,
+      "damage": 15,
+      "armour": 19,
+      "meleeDamage": "Piercing",
+      "meleeHits": 3,
+      "rangedDamage": null,
+      "rangedHits": null
+    },
+    {
+      "id": "emperKakophonist",
+      "health": 100,
+      "damage": 17,
+      "armour": 23,
+      "meleeDamage": "Eviscerate",
+      "meleeHits": 3,
+      "rangedDamage": null,
+      "rangedHits": null
+    },
+    {
+      "id": "emperExultant",
+      "health": 90,
+      "damage": 40,
+      "armour": 21,
+      "meleeDamage": "Power",
+      "meleeHits": 1,
+      "rangedDamage": null,
+      "rangedHits": null
+    },
+    {
+      "id": "emperLucius",
+      "health": 90,
+      "damage": 13,
+      "armour": 20,
+      "meleeDamage": "Power",
+      "meleeHits": 6,
+      "rangedDamage": null,
+      "rangedHits": null
+    },
+    {
+      "id": "votanBeserk",
+      "health": 90,
+      "damage": 20,
+      "armour": 14,
+      "meleeDamage": "Eviscerate",
+      "meleeHits": 4,
+      "rangedDamage": null,
+      "rangedHits": null
+    },
+    {
+      "id": "votanIronmaster",
+      "health": 80,
+      "damage": 25,
+      "armour": 16,
+      "meleeDamage": "Power",
+      "meleeHits": 3,
+      "rangedDamage": null,
+      "rangedHits": null
+    },
+    {
+      "id": "votanMemnyr",
+      "health": 90,
+      "damage": 25,
+      "armour": 22,
+      "meleeDamage": "Physical",
+      "meleeHits": 1,
+      "rangedDamage": null,
+      "rangedHits": null
+    },
+    {
+      "id": "votanChampion",
+      "health": 100,
+      "damage": 32,
+      "armour": 28,
+      "meleeDamage": "Eviscerate",
+      "meleeHits": 2,
+      "rangedDamage": "Bolter",
+      "rangedHits": 2
+    },
+    {
+      "id": "votanUthar",
+      "health": 90,
+      "damage": 19,
+      "armour": 23,
+      "meleeDamage": "Plasma",
+      "meleeHits": 3,
+      "rangedDamage": "Energy",
+      "rangedHits": 4
+    },
+    {
+      "id": "astarCyrus",
+      "health": 80,
+      "damage": 28,
+      "armour": 20,
+      "meleeDamage": "Bolter",
+      "meleeHits": 3,
+      "rangedDamage": "Bolter",
+      "rangedHits": 3
+    },
+    {
+      "id": "astarLysander",
+      "health": 110,
+      "damage": 50,
+      "armour": 28,
+      "meleeDamage": "Power",
+      "meleeHits": 1,
+      "rangedDamage": null,
+      "rangedHits": null
+    },
+    {
+      "id": "astarEradicator",
+      "health": 90,
+      "damage": 24,
+      "armour": 18,
+      "meleeDamage": "Melta",
+      "meleeHits": 2,
+      "rangedDamage": "Melta",
+      "rangedHits": 2
+    }
+  ],
+  "expected": {
+    "ultraTigurius": [
+      5.128205128205128, 5.128205128205128, 3.418803418803419,
+      7.6923076923076925, 90.5982905982906, 59.82905982905983
+    ],
+    "eldarLhykhis": [
+      12.82051282051282, 60.68376068376068, 88.03418803418803,
+      50.427350427350426, 88.03418803418803, 85.47008547008546
+    ],
+    "custoTrajann": [
+      73.50427350427351, 82.05128205128204, 59.82905982905983,
+      13.675213675213676, 0, 0
+    ],
+    "votanUthar": [
+      39.31623931623932, 70.94017094017094, 84.61538461538461,
+      47.863247863247864, 82.05128205128204, 94.01709401709401
+    ],
+    "thousTzaangor": [
+      5.128205128205128, 5.128205128205128, 5.982905982905983, 35.8974358974359,
+      84.61538461538461, 74.35897435897436
+    ],
+    "ultraCalgar": [
+      58.97435897435898, 40.17094017094017, 44.44444444444444, 45.2991452991453,
+      0, 0
+    ]
+  }
+}

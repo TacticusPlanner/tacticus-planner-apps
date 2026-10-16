@@ -10,7 +10,7 @@
     },
     "machinesOfWar": {
       "label": "Machines de guerre",
-      "description": "Parcourez les détails et statistiques des Machines de guerre"
+      "description": "Parcourez les capacités et les coûts d’amélioration des Machines de guerre"
     },
     "npcs": {
       "label": "PNJ",
@@ -21,8 +21,6 @@
       "description": "Parcourez les informations des boss de raid de guilde"
     },
     "noRecords": "Aucune entité sélectionnable n’est disponible.",
-    "raidBossesNoRecords": "Les boss de raid de guilde ne sont pas encore disponibles dans le catalogue.",
-    "detailUnavailable": "Les pages détaillées de {{name}} ne sont pas encore disponibles. Revenez bientôt.",
     "shops": {
       "label": "Boutiques quotidiennes",
       "description": "Découvrez ce que chaque boutique quotidienne peut proposer selon le jour de la semaine"
@@ -321,5 +319,293 @@
     "meleeOnly": "Corps à corps uniquement",
     "hasRanged": "Avec attaque à distance",
     "clearOne": "Effacer {{name}}"
+  },
+  "unit": {
+    "nav": {
+      "label": "Navigation entre unités",
+      "backTo": "Retour à {{label}}",
+      "previous": "Précédent",
+      "next": "Suivant",
+      "previousUnit": "Unité précédente : {{name}}",
+      "nextUnit": "Unité suivante : {{name}}",
+      "position": "{{index}} sur {{total}}"
+    },
+    "tabs": {
+      "label": "Sections de la page de l'unité",
+      "details": "Détails",
+      "rankup": "Matériaux de rang"
+    },
+    "values": {
+      "label": "Afficher les valeurs de",
+      "yourUnit": "Votre unité",
+      "starting": "De départ",
+      "custom": "Personnalisées",
+      "stars": "Rareté et étoiles",
+      "rank": "Rang"
+    },
+    "ability": {
+      "level": "Niveau de {{name}}",
+      "levelShort": "Niv. {{level}}",
+      "lower": "Baisser le niveau",
+      "raise": "Augmenter le niveau",
+      "yours": "Le vôtre : niveau {{level}}",
+      "nextLevel": "Niveau suivant ({{level}}) :",
+      "chartTitle": "{{label}} par niveau",
+      "chartCaption": "{{label}} passe de {{from}} au niveau 1 à {{to}} au niveau {{maxLevel}}.",
+      "constant": "{{label}} reste à {{value}} à tous les niveaux et n'est donc pas représenté.",
+      "missingText": "Le texte de règles n'est pas encore dans le planificateur."
+    },
+    "notFound": "Cette unité n'est pas dans la Bibliothèque.",
+    "loadFailed": "Impossible de charger les données des personnages.",
+    "retry": "Réessayer"
+  },
+  "charactersList": {
+    "title": "Personnages",
+    "search": "Rechercher des personnages",
+    "searchPlaceholder": "Rechercher par nom…",
+    "noMatching": "Aucun personnage ne correspond à votre recherche.",
+    "clearSearch": "Effacer la recherche",
+    "tour": {
+      "steps": {
+        "search": {
+          "title": "Trouver un personnage",
+          "content": "Tapez une partie d'un nom pour réduire la liste."
+        },
+        "list": {
+          "title": "Ouvrir un personnage",
+          "content": "Sélectionnez un personnage pour voir ses statistiques, traits, capacités et matériaux de rang."
+        }
+      }
+    }
+  },
+  "mowsList": {
+    "title": "Machines de guerre",
+    "search": "Rechercher des Machines de guerre",
+    "noMatching": "Aucune Machine de guerre ne correspond à votre recherche.",
+    "tour": {
+      "steps": {
+        "search": {
+          "title": "Trouver une Machine de guerre",
+          "content": "Tapez une partie d’un nom pour réduire la liste."
+        },
+        "list": {
+          "title": "Ouvrir une Machine de guerre",
+          "content": "Sélectionnez une Machine de guerre pour voir ses capacités et le coût de leur amélioration."
+        }
+      }
+    }
+  },
+  "characterUnit": {
+    "breadcrumbLibrary": "Bibliothèque",
+    "header": {
+      "yourUnit": "Votre unité :",
+      "abilities": "capacités {{active}} / {{passive}}",
+      "relic": "relique niveau {{level}}",
+      "notUnlocked": "Non débloqué. Les valeurs commencent à {{rarity}}, {{stars}}, {{rank}}.",
+      "showing": "Affichage : {{rarity}}, {{stars}}, {{rank}}, capacités au niveau 1.",
+      "shards": "{{owned}} / {{needed}} fragments",
+      "shardProgress": "Fragments pour le déblocage",
+      "signInBanner": "Connectez-vous et synchronisez pour ouvrir cette page à vos propres valeurs.",
+      "signIn": "Se connecter",
+      "syncBanner": "Synchronisez avec Tacticus (dans l'en-tête) pour ouvrir cette page à vos propres valeurs."
+    },
+    "glance": {
+      "title": "En un coup d'œil",
+      "health": "Points de vie",
+      "damage": "Dégâts",
+      "armour": "Armure",
+      "movement": "Mouvement",
+      "melee": "Corps à corps",
+      "ranged": "À distance",
+      "hits_one": "{{count}} coup",
+      "hits_many": "{{count}} coups",
+      "hits_other": "{{count}} coups",
+      "range": "Portée {{range}}",
+      "equipment": "Emplacements d'équipement",
+      "pierce": "{{value}} % de taux de perforation",
+      "pierceHint": "Taux de perforation : chaque coup inflige la plus grande valeur entre ses dégâts moins l'armure de la cible, ou {{value}} % de ses dégâts. Contre une armure lourde, ce sont ces {{value}} % qui passent.",
+      "relicSlot": "Relique : {{name}}",
+      "itemCount_one": "{{count}} objet",
+      "itemCount_other": "{{count}} objets",
+      "itemsTitle": "Objets pour l'emplacement {{slot}}",
+      "itemLevels": "Niveau 1 → {{max}}",
+      "itemStats": {
+        "critChance": "Chance de critique",
+        "critDamage": "Dégâts critiques",
+        "critChanceBonus": "Chance de critique",
+        "critDamageBonus": "Dégâts critiques",
+        "blockChance": "Chance de blocage",
+        "blockDamage": "Dégâts bloqués",
+        "blockChanceBonus": "Chance de blocage",
+        "blockDamageBonus": "Dégâts bloqués",
+        "armor": "Armure",
+        "hp": "Santé"
+      }
+    },
+    "traits": {
+      "title": "Traits"
+    },
+    "abilities": {
+      "title": "Capacités",
+      "active": "Active",
+      "passive": "Passive"
+    },
+    "compare": {
+      "title": "Comparé aux autres personnages",
+      "subtitle": "Centile à Mythic Wings · Adamantium II",
+      "axes": {
+        "health": "Points de vie",
+        "armour": "Armure",
+        "meleeVsInfiniteArmour": "Dégâts au corps à corps contre armure infinie",
+        "meleeVsZeroArmour": "Dégâts au corps à corps contre armure 0",
+        "rangedVsInfiniteArmour": "Dégâts à distance contre armure infinie",
+        "rangedVsZeroArmour": "Dégâts à distance contre armure 0"
+      },
+      "axesShort": {
+        "health": "PV",
+        "armour": "Armure",
+        "meleeVsInfiniteArmour": "Càc ∞",
+        "meleeVsZeroArmour": "Càc 0",
+        "rangedVsInfiniteArmour": "Distance ∞",
+        "rangedVsZeroArmour": "Distance 0"
+      },
+      "percent": "{{value}} %",
+      "caption": "Centiles : {{values}}.",
+      "footnote": "Pointillés = personnage médian. {{value}} % d'armure signifie que {{name}} a plus d'armure que {{value}} % des personnages à Mythic Wings, Adamantium II.",
+      "damageLink": "Fonctionnement des dégâts (wiki Tacticus)"
+    },
+    "statsByRank": {
+      "title": "Statistiques par rang",
+      "footnote": "Ligne pointillée = rang affiché ({{rank}}). Survolez un graphique pour lire n'importe quel rang.",
+      "yours": " (le vôtre)",
+      "aboveCap": " (au-delà du plafond pour ces étoiles)",
+      "capFootnote": "Les rangs estompés dépassent {{rank}}, le plafond pour ces étoiles.",
+      "caption": "{{stat}} passe de {{from}} à {{firstRank}} à {{to}} à {{lastRank}}.",
+      "rank": "Rang"
+    },
+    "relic": {
+      "kind": "Relique",
+      "none": "{{name}} n'a pas de relique.",
+      "noneShort": "Aucune",
+      "unique": "Relique unique",
+      "shared": "Relique partagée",
+      "sharedWith": "Également équipable par {{names}}"
+    },
+    "tour": {
+      "steps": {
+        "header": {
+          "title": "L'unité",
+          "content": "Son portrait, sa faction et les valeurs affichées par la page. Connecté et synchronisé, elles partent de votre propre unité ; choisissez « Personnalisées » pour essayer d'autres valeurs."
+        },
+        "tabs": {
+          "title": "Détails et rang",
+          "content": "Passez des détails de l'unité au calculateur de matériaux de rang."
+        },
+        "ability": {
+          "title": "Capacités",
+          "content": "Changez le niveau pour lire le texte de règles à ce niveau ; le graphique montre comment chaque valeur évolue."
+        },
+        "compare": {
+          "title": "Comparé aux autres personnages",
+          "content": "Comment les statistiques de ce personnage se classent parmi tous les personnages, à Mythic Wings, Adamantium II."
+        },
+        "rankup": {
+          "title": "Matériaux de rang",
+          "content": "Choisissez une plage de rangs pour voir les améliorations requises et où les farmer."
+        }
+      }
+    },
+    "mythic": {
+      "kind": "Mythique",
+      "title": "Quêtes mythiques",
+      "count_one": "{{count}} quête",
+      "count_many": "{{count}} quêtes",
+      "count_other": "{{count}} quêtes",
+      "rewards": {
+        "mythicShards": "Fragments mythiques de {{name}}",
+        "ascensionOrb": "Orbe d'ascension mythique {{alliance}}",
+        "abilityBadge": "Insigne mythique {{alliance}}",
+        "xp": "Livre d'XP mythique",
+        "gold": "Or"
+      }
+    }
+  },
+  "mowUnit": {
+    "header": {
+      "kind": "{{alliance}} · Machine de guerre",
+      "yourUnit": "Votre Machine de guerre :",
+      "levels": "principale {{primary}} · secondaire {{secondary}}",
+      "notUnlocked": "Non débloquée. Les valeurs commencent à {{rarity}}.",
+      "showing": "Affichage : {{rarity}}, capacités au niveau 1."
+    },
+    "tabs": {
+      "upgrades": "Améliorations des capacités"
+    },
+    "abilities": {
+      "title": "Capacités",
+      "primary": "Principale",
+      "secondary": "Secondaire",
+      "mythic": "Mythique"
+    },
+    "mythic": {
+      "unnamed": "Capacité mythique",
+      "unlocks": "Débloquée au rang Mythique",
+      "level": "Niveau {{level}} · selon les étoiles bleues"
+    },
+    "upgrades": {
+      "from": "Du niveau",
+      "to": "Au niveau",
+      "includeOwned": "Inclure les matériaux possédés",
+      "includeOwnedOn": "Les badges, composants et matériaux déduisent le contenu de votre inventaire ; l'or et la récupération non.",
+      "includeOwnedOff": "Les totaux ignorent votre inventaire.",
+      "totalTitle": "Total requis",
+      "gold": "Or",
+      "salvage": "Récupération",
+      "components": "Composants ({{alliance}})",
+      "badges": "Insignes {{rarity}} ({{alliance}})",
+      "forgeBadges": "Insignes de forge {{rarity}}",
+      "materialsTitle": "Matériaux d’amélioration",
+      "covered": "Couvert",
+      "nothing": "Rien à améliorer : choisissez un niveau d’arrivée au-dessus du niveau de départ.",
+      "perLevelTitle": "Par niveau",
+      "step": "{{from}} → {{to}}",
+      "columns": {
+        "level": "Niveau",
+        "gold": "Or",
+        "salvage": "Récupération",
+        "badges": "Insignes",
+        "forgeBadges": "Insignes de forge",
+        "components": "Composants",
+        "materials": "Matériaux"
+      }
+    },
+    "tour": {
+      "steps": {
+        "header": {
+          "title": "Machine de guerre",
+          "content": "La rareté et les niveaux de capacité de votre Machine de guerre. Passez à Personnalisées pour voir d’autres raretés."
+        },
+        "tabs": {
+          "title": "Détails et améliorations",
+          "content": "Détails montre les capacités ; Améliorations des capacités totalise le coût de leur montée."
+        },
+        "ability": {
+          "title": "Capacités",
+          "content": "Le texte de règles de chaque capacité et sa progression par niveau, dès que le texte du jeu est dans le planificateur."
+        },
+        "upgrades": {
+          "title": "Améliorations des capacités",
+          "content": "Ouvrez cet onglet pour totaliser l’or, les insignes, les composants et les matériaux d’une amélioration."
+        },
+        "ranges": {
+          "title": "Choisir les niveaux",
+          "content": "Choisissez un niveau de départ et d’arrivée pour chaque capacité. Les totaux se mettent à jour aussitôt."
+        },
+        "totals": {
+          "title": "Ce qu’il vous faut",
+          "content": "Or, récupération, composants et insignes pour les niveaux choisis, par rareté."
+        }
+      }
+    }
   }
 }

@@ -152,10 +152,7 @@
     "confirmRetry": "Réessayer"
   },
   "unitLookup": {
-    "subtitle": "Choisissez un personnage et une plage de rangs pour voir les améliorations requises et où les farmer.",
-    "character": "Personnage",
-    "characterPlaceholder": "Sélectionnez un personnage",
-    "noCharacter": "Aucun personnage trouvé.",
+    "subtitle": "Choisissez une plage de rangs pour voir les améliorations requises et où les farmer.",
     "rankRange": "Plage de rangs",
     "start": "De",
     "end": "À",
@@ -1311,26 +1308,6 @@
       "feedback": {
         "title": "Envoyer un commentaire",
         "content": "Partagez vos commentaires ou idées avec le bouton à côté de votre compte. Le lien vers le tableau public reste dans l'en-tête de la page."
-      }
-    },
-    "lookup": {
-      "steps": {
-        "character": {
-          "title": "Choisissez un personnage",
-          "content": "Choisissez le personnage pour lequel consulter les améliorations."
-        },
-        "apply": {
-          "title": "Appliquez vos changements",
-          "content": "Ajustez la plage de rang ou de progression, puis appliquez pour mettre à jour les résultats ci-dessous."
-        },
-        "results": {
-          "title": "Améliorations et lieux de farming",
-          "content": "Consultez les améliorations nécessaires pour cette plage de rang et où les farmer."
-        },
-        "share": {
-          "title": "Partagez cette recherche",
-          "content": "Partagez ou copiez un lien vers ce personnage et cette plage de rang exacts."
-        }
       }
     },
     "overview": {

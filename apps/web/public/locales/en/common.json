@@ -152,10 +152,7 @@
     "confirmRetry": "Retry"
   },
   "unitLookup": {
-    "subtitle": "Pick a character and a rank range to see the required upgrades and where to farm them.",
-    "character": "Character",
-    "characterPlaceholder": "Select a character",
-    "noCharacter": "No character found.",
+    "subtitle": "Pick a rank range to see the required upgrades and where to farm them.",
     "rankRange": "Rank range",
     "start": "From",
     "end": "To",
@@ -1311,26 +1308,6 @@
       "feedback": {
         "title": "Send feedback",
         "content": "Share feedback or ideas with the button next to your account. The public board link stays in the page header."
-      }
-    },
-    "lookup": {
-      "steps": {
-        "character": {
-          "title": "Pick a character",
-          "content": "Choose which character to look up upgrades for."
-        },
-        "apply": {
-          "title": "Apply your changes",
-          "content": "Adjust the rank range or progression, then apply to update the results below."
-        },
-        "results": {
-          "title": "Upgrades and farm locations",
-          "content": "See the upgrades needed for this rank range and where to farm them."
-        },
-        "share": {
-          "title": "Share this lookup",
-          "content": "Share or copy a link to this exact character and rank range."
-        }
       }
     },
     "overview": {

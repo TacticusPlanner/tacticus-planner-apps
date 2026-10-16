@@ -4,6 +4,7 @@ import {
   abilityBadgeIcon,
   forgeBadgeIcon,
   goldIcon,
+  salvageIcon,
   energyIcon,
   onslaughtTokenIcon,
   mowComponentIcon,
@@ -27,6 +28,9 @@ describe("goal resource icons", () => {
       "/game_catalog/books/ui_icon_consumable_xp_book_4.png"
     )
     expect(goldIcon()).toBe("/game_catalog/misc/ui_icon_resource_coin.png")
+    expect(salvageIcon()).toBe(
+      "/game_catalog/resources/ui_icon_resource_salvage.png"
+    )
     expect(mowComponentIcon("Imperial")).toBe(
       "/game_catalog/resources/ui_machines_of_war_tokens_imperial.png"
     )
