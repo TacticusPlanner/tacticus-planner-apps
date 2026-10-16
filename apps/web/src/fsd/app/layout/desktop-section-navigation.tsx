@@ -5,6 +5,7 @@ import { Button } from "@workspace/ui/components/button"
 import { CommandShortcut } from "@workspace/ui/components/command"
 import { cn } from "@workspace/ui/lib/utils"
 
+import { NavChildIcon } from "./nav-child-icon"
 import { NavLiveDot } from "./nav-live-dot"
 import { subItemLabel, type NavItem } from "./nav-items"
 import { sectionShortcut } from "./section-shortcut"
@@ -97,14 +98,7 @@ export function DesktopSectionNavigation({
                   title={subItemLabel(t, child)}
                   to={child.path}
                 >
-                  {"iconSrc" in child && child.iconSrc ? (
-                    <img
-                      alt=""
-                      aria-hidden="true"
-                      className="mr-2 size-5 shrink-0 rounded-full object-cover"
-                      src={child.iconSrc}
-                    />
-                  ) : null}
+                  <NavChildIcon child={child} className="mr-2" />
                   <span className="min-w-0 truncate">
                     {subItemLabel(t, child)}
                   </span>

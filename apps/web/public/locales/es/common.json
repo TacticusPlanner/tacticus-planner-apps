@@ -382,6 +382,10 @@
     "tabs": {
       "allEvents": "Todos los eventos",
       "allEventsDescription": "Todos los Eventos Legendarios: activos, próximos y archivados",
+      "masterTable": "Tabla maestra",
+      "masterTableDescription": "Los puntos de cada unidad en los Eventos Legendarios que elijas",
+      "tierList": "Lista de niveles",
+      "tierListDescription": "La lista de niveles del modo horda que usan las estimaciones de avance",
       "activeEventDescription": "Evento Legendario activo con tu progreso sincronizado",
       "upcomingEventDescription": "Próximo Evento Legendario",
       "archivedEventDescription": "Evento Legendario pasado con tu progreso sincronizado"

@@ -382,6 +382,10 @@
     "tabs": {
       "allEvents": "All events",
       "allEventsDescription": "Every Legendary Event: active, upcoming and archived",
+      "masterTable": "Master table",
+      "masterTableDescription": "Every unit's points across the Legendary Events you pick",
+      "tierList": "Tier List",
+      "tierListDescription": "The horde-mode tier list behind clear estimates",
       "activeEventDescription": "Active Legendary Event with your synced progress",
       "upcomingEventDescription": "Upcoming Legendary Event",
       "archivedEventDescription": "Past Legendary Event with your synced progress"

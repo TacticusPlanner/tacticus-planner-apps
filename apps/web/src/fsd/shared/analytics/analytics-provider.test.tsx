@@ -354,4 +354,68 @@ describe("useAnalyticsActions", () => {
       { event_id: "votanUthar" }
     )
   })
+
+  it("captures the Legendary Event master table, history and tier list events", () => {
+    vi.stubEnv("VITE_POSTHOG_PROJECT_TOKEN", "test-token")
+    const { result } = renderHook(() => useAnalyticsActions())
+
+    result.current.captureEvent({
+      type: "legendary_event_master_table_viewed",
+      eventCount: 4,
+      unitSet: "inTeams",
+      pointsMode: "remaining",
+    })
+    result.current.captureEvent({
+      type: "legendary_event_master_table_changed",
+      control: "events",
+      value: null,
+      eventCount: 2,
+    })
+    result.current.captureEvent({
+      type: "legendary_event_last_run_viewed",
+      eventId: "votanUthar",
+      run: 1,
+      teamCount: 2,
+      deltaCount: 2,
+    })
+    result.current.captureEvent({
+      type: "legendary_event_earlier_runs_expanded",
+      eventId: "tauFarsight",
+      recordCount: 2,
+    })
+    result.current.captureEvent({ type: "legendary_event_tier_list_viewed" })
+    result.current.captureEvent({
+      type: "legendary_event_tier_list_unit_opened",
+      unitId: "custoBladeChampion",
+      tier: "S",
+    })
+
+    expect(capture).toHaveBeenCalledWith(
+      "legendary_event_master_table_viewed",
+      {
+        event_count: 4,
+        unit_set: "inTeams",
+        points_mode: "remaining",
+      }
+    )
+    expect(capture).toHaveBeenCalledWith(
+      "legendary_event_master_table_changed",
+      { control: "events", value: null, event_count: 2 }
+    )
+    expect(capture).toHaveBeenCalledWith("legendary_event_last_run_viewed", {
+      event_id: "votanUthar",
+      run: 1,
+      team_count: 2,
+      delta_count: 2,
+    })
+    expect(capture).toHaveBeenCalledWith(
+      "legendary_event_earlier_runs_expanded",
+      { event_id: "tauFarsight", record_count: 2 }
+    )
+    expect(capture).toHaveBeenCalledWith("legendary_event_tier_list_viewed", {})
+    expect(capture).toHaveBeenCalledWith(
+      "legendary_event_tier_list_unit_opened",
+      { unit_id: "custoBladeChampion", tier: "S" }
+    )
+  })
 })
