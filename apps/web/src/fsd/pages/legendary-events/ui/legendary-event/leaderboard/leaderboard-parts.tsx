@@ -1,7 +1,13 @@
 import { useTranslation } from "react-i18next"
-import { Lock } from "lucide-react"
+import { Eye, Lock, MoreHorizontal } from "lucide-react"
 import { characterIcon, traitIcon } from "@workspace/game-catalog"
 import { Button } from "@workspace/ui/components/button"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@workspace/ui/components/dropdown-menu"
 import { cn } from "@workspace/ui/lib/utils"
 
 import {
@@ -9,6 +15,7 @@ import {
   type LeaderboardUnitRow,
   type ObjectiveIconModel,
 } from "@/entities/legendary-event"
+import { UnitGoalBadge } from "@/entities/goal"
 import { EntityIcon, RankBadge, RarityIcon } from "@/shared/ui"
 
 import type { LeaderboardBody } from "./leaderboard.view-model"
@@ -16,14 +23,19 @@ import type { LeaderboardBody } from "./leaderboard.view-model"
 /** The traits a leaderboard marks after the unit's name (spec: trait markers). */
 const LEADERBOARD_TRAIT_MARKERS = ["Healer", "Mechanic"] as const
 
-/** Portrait, localized name, the Healer / Mechanic markers and, for a unit the roster lacks, the
- *  locked marker. */
+/** Portrait, localized name, the goal badge, the Healer / Mechanic markers, the Goals Preview
+ *  marker and, for a unit the roster lacks, the locked marker. */
 export function LeaderboardUnit({
   row,
   name,
+  goalLines = [],
+  previewed = false,
 }: {
   row: LeaderboardUnitRow
   name: string
+  goalLines?: readonly string[]
+  /** Shown at its goal targets by Goals Preview. */
+  previewed?: boolean
 }) {
   const { t } = useTranslation(["legendaryEvents", "traits"])
   const markers = LEADERBOARD_TRAIT_MARKERS.filter((trait) =>
@@ -45,6 +57,7 @@ export function LeaderboardUnit({
       >
         {name}
       </span>
+      <UnitGoalBadge label={t("goalBadge.label")} lines={goalLines} />
       {markers.map((trait) => {
         const label = t(`traits:${trait}`, { defaultValue: trait })
         return (
@@ -60,6 +73,16 @@ export function LeaderboardUnit({
           </span>
         )
       })}
+      {previewed ? (
+        <span
+          className="inline-flex shrink-0 text-primary"
+          data-testid="leaderboard-preview-marker"
+          title={t("goalsPreview.marker")}
+        >
+          <Eye aria-hidden="true" className="size-4" />
+          <span className="sr-only">{t("goalsPreview.marker")}</span>
+        </span>
+      ) : null}
       {row.ownership === "locked" ? (
         <span
           className="inline-flex shrink-0 items-center gap-1 rounded-full border px-1.5 py-0.5 text-xs text-muted-foreground"
@@ -70,6 +93,43 @@ export function LeaderboardUnit({
         </span>
       ) : null}
     </span>
+  )
+}
+
+/** A row's actions menu (spec: leaderboard rows have an actions menu with Create goal): a
+ *  three-dots button, 44px on the mobile cards. */
+export function LeaderboardRowActions({
+  name,
+  onCreateGoal,
+  size = "table",
+}: {
+  name: string
+  onCreateGoal: () => void
+  size?: "table" | "card"
+}) {
+  const { t } = useTranslation("legendaryEvents")
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button
+          aria-label={t("leaderboardActions.menu", { name })}
+          className={size === "card" ? "size-11 shrink-0" : undefined}
+          data-testid="leaderboard-row-menu"
+          size={size === "card" ? "icon" : "icon-sm"}
+          variant="ghost"
+        >
+          <MoreHorizontal />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <DropdownMenuItem
+          data-testid="leaderboard-create-goal"
+          onSelect={onCreateGoal}
+        >
+          {t("leaderboardActions.createGoal")}
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   )
 }
 

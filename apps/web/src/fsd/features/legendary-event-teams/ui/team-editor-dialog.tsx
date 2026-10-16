@@ -38,6 +38,7 @@ import {
   toggleReserve,
 } from "../model/team-editor-draft"
 import { editStartsFromEstimate } from "../model/clear-depth-display"
+import type { PickerGoalsPreview } from "../model/team-picker"
 import type {
   DepthEstimateContext,
   PlanMutationOutcome,
@@ -47,12 +48,12 @@ import { TeamUnitPicker } from "./team-unit-picker"
 
 /**
  * The team editor (design D3, D7, D8): a dialog on desktop and a bottom sheet on mobile. Opened
- * empty from Add team or prefilled from Edit; mount it with a fresh `key` per opening so the draft
- * starts from the team. Covered objectives follow the members live and can be unticked; the depth
- * is the current run's, and mirrors the card: the members' live estimate shows while no manual
- * depth is set. The dialog closes only once the save succeeded — after a conflict or an
- * error the draft stays for another try; after a conflict (the plan was reloaded, this save was
- * not applied) the dialog says so.
+ * empty from Add team, with a suggestion's members from Use this team, or prefilled from Edit;
+ * mount it with a fresh `key` per opening so the draft starts from the team. Covered objectives
+ * follow the members live and can be unticked; the depth is the current run's, and mirrors the
+ * card: the members' live estimate shows while no manual depth is set. The dialog closes only once
+ * the save succeeded — after a conflict or an error the draft stays for another try; after a
+ * conflict (the plan was reloaded, this save was not applied) the dialog says so.
  */
 export function TeamEditorDialog({
   open,
@@ -67,6 +68,9 @@ export function TeamEditorDialog({
   onlyUnlockedDefault,
   onSubmit,
   estimateTeam,
+  initialMemberUnitIds,
+  goalsPreview,
+  goalLines,
 }: {
   open: boolean
   onOpenChange: (open: boolean) => void
@@ -87,12 +91,19 @@ export function TeamEditorDialog({
   ) => Promise<PlanMutationOutcome>
   /** The lane's estimator; absent while estimates are unavailable. */
   estimateTeam?: (memberUnitIds: readonly string[]) => ClearEstimate | null
+  /** A new team's members, in order (a team suggestion); ignored when editing a team. */
+  initialMemberUnitIds?: readonly string[]
+  goalsPreview?: PickerGoalsPreview
+  /** A unit's goal badge lines; absent or empty shows no badge. */
+  goalLines?: (unitId: string) => readonly string[]
 }) {
   const { t, i18n } = useTranslation("legendaryEvents")
   const objectiveLabel = useObjectiveLabel()
   const nameId = useId()
   const context = { lane, units }
-  const [initialDraft] = useState(() => initialEditorDraft(team, run, context))
+  const [initialDraft] = useState(() =>
+    initialEditorDraft(team, run, context, initialMemberUnitIds)
+  )
   const [draft, setDraft] = useState(initialDraft)
   const [saving, setSaving] = useState(false)
   const [reloaded, setReloaded] = useState(false)
@@ -191,6 +202,8 @@ export function TeamEditorDialog({
           <section className="flex flex-col gap-2">
             <h3 className="text-sm font-medium">{t("teams.editor.members")}</h3>
             <TeamUnitPicker
+              goalLines={goalLines}
+              goalsPreview={goalsPreview}
               lane={lane}
               memberUnitIds={draft.memberUnitIds}
               onToggleMember={handleToggleMember}

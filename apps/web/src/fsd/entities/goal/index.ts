@@ -12,10 +12,17 @@ export {
 } from "./api/goal.api"
 export { goalQueries } from "./api/goal.queries"
 export { useGlobalGoalPlan } from "./model/use-global-goal-plan"
+export {
+  CreateGoalLauncherContext,
+  useCreateGoalLauncher,
+  type CreateGoalPrefill,
+  type LaunchCreateGoal,
+} from "./model/create-goal-launcher"
 export { buildCreateGoalSnapshot } from "./model/goal-snapshot-builder"
 export type { SnapshotMissingUpgradeInput } from "./model/goal-snapshot-builder"
 export { StatusFilterSelect } from "./ui/status-filter-select"
 export { GoalTypeBadge } from "./ui/goal-type-badge"
+export { UnitGoalBadge } from "./ui/unit-goal-badge"
 export { goalTypeIcon } from "./model/goal-type-icon"
 export type {
   GoalStatusFilterCounts,

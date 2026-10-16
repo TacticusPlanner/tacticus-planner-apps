@@ -13,6 +13,7 @@ const fns = {
   setEnabledTypes: vi.fn(),
   selectProjects: vi.fn(),
   setProgressionEnd: vi.fn(),
+  setRankEnd: vi.fn(),
 }
 
 function render(prefill: CreateGoalPrefill | undefined, entityId?: UnitId) {
@@ -23,6 +24,7 @@ function render(prefill: CreateGoalPrefill | undefined, entityId?: UnitId) {
       entityId,
       playerEntity: {},
       ...fns,
+      targetSetters: fns,
     })
   )
 }
@@ -76,6 +78,32 @@ describe("useCreateGoalPrefill", () => {
 
     expect(fns.setEnabledTypes).toHaveBeenCalledWith(new Set(["Unlock"]))
     expect(fns.selectProjects).toHaveBeenCalledWith(["p3"])
+    expect(fns.setProgressionEnd).not.toHaveBeenCalled()
+  })
+
+  it("applies the target rank for a Rank prefill", () => {
+    render(
+      {
+        entityType: "Character",
+        entityId: unitId,
+        goalType: "Rank",
+        rankEnd: "Silver3",
+      },
+      unitId
+    )
+
+    expect(fns.setEnabledTypes).toHaveBeenCalledWith(new Set(["Rank"]))
+    expect(fns.setRankEnd).toHaveBeenCalledWith("Silver3")
+    expect(fns.setProgressionEnd).not.toHaveBeenCalled()
+  })
+
+  it("selects only the unit for a unit-only prefill and keeps the project fallback", () => {
+    render({ entityType: "Character", entityId: unitId }, unitId)
+
+    expect(fns.handleEntityChange).toHaveBeenCalledWith(unitId)
+    expect(fns.setEnabledTypes).toHaveBeenCalledWith(new Set())
+    expect(fns.selectProjects).not.toHaveBeenCalled()
+    expect(fns.setRankEnd).not.toHaveBeenCalled()
     expect(fns.setProgressionEnd).not.toHaveBeenCalled()
   })
 })

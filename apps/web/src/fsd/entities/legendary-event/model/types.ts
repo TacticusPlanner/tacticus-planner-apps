@@ -61,6 +61,8 @@ export type LegendaryEventUnit = Pick<
 > & {
   activeAbilityDamage?: readonly string[]
   passiveAbilityDamage?: readonly string[]
+  /** The rarity a unit unlocks at; read by the unlock step and Goals Preview (Stage 6). */
+  initialRarity?: GameCatalogCharacterView["initialRarity"]
 }
 
 type PlayerCharacterRecord = PlayerDataChunkDto<"characters">[number]

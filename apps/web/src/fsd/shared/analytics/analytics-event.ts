@@ -17,14 +17,53 @@ type PageViewEvent = {
  * Carries ids and counts only, never team names.
  */
 type LegendaryEventTeamEvent = {
-  type:
-    | "legendary_event_team_created"
-    | "legendary_event_team_edited"
-    | "legendary_event_team_deleted"
+  type: "legendary_event_team_edited" | "legendary_event_team_deleted"
   eventId: string
   laneId: string
   memberCount: number
   objectiveCount: number
+}
+
+/** A team was created: from scratch (`manual`) or from a team suggestion, with its 1-based rank in
+ *  the suggestions list (null for `manual`). */
+type LegendaryEventTeamCreatedEvent = Omit<LegendaryEventTeamEvent, "type"> & {
+  type: "legendary_event_team_created"
+  source: "manual" | "suggestion"
+  suggestionRank: number | null
+}
+
+/** Goals Preview was turned on or off on the leaderboard controls or in the team picker. */
+type LegendaryEventGoalsPreviewToggledEvent = {
+  type: "legendary_event_goals_preview_toggled"
+  eventId: string
+  enabled: boolean
+  surface: "leaderboard" | "picker"
+}
+
+/** The goal-creation sheet was opened from a leaderboard row or an Upgrade impact row. */
+type LegendaryEventCreateGoalOpenedEvent = {
+  type: "legendary_event_create_goal_opened"
+  eventId: string
+  laneId: string | null
+  source: "leaderboard" | "upgradeImpact"
+  goalType: "Unlock" | "Ascension" | "Rank" | null
+}
+
+/** A lane's Upgrade impact section was expanded. */
+type LegendaryEventUpgradeImpactExpandedEvent = {
+  type: "legendary_event_upgrade_impact_expanded"
+  eventId: string
+  laneId: string
+  /** null when the section had no rows to count (loading, no teams, no estimates). */
+  rowCount: number | null
+}
+
+/** The Suggest teams dialog was opened on a lane. */
+type LegendaryEventTeamSuggestionsOpenedEvent = {
+  type: "legendary_event_team_suggestions_opened"
+  eventId: string
+  laneId: string
+  suggestionCount: number
 }
 
 /** A team's clear depth for the current run was set by hand (null when cleared). `estimate` is
@@ -112,6 +151,11 @@ type LegendaryEventRunForecastExpandedEvent = {
 export type AnalyticsEvent =
   | PageViewEvent
   | LegendaryEventTeamEvent
+  | LegendaryEventTeamCreatedEvent
+  | LegendaryEventGoalsPreviewToggledEvent
+  | LegendaryEventCreateGoalOpenedEvent
+  | LegendaryEventUpgradeImpactExpandedEvent
+  | LegendaryEventTeamSuggestionsOpenedEvent
   | LegendaryEventDepthSetEvent
   | LegendaryEventRunInputsSavedEvent
   | LegendaryEventPaidOptionsToggledEvent

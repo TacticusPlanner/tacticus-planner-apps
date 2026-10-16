@@ -153,7 +153,31 @@ describe("useLegendaryEventPlan", () => {
       laneId: "alpha",
       memberCount: 3,
       objectiveCount: 2,
+      source: "manual",
+      suggestionRank: null,
     })
+  })
+
+  it("logs a team created from a suggestion with its rank", async () => {
+    api.create.mockResolvedValue(plan(3, [team("new", 0)]))
+    const { result } = setup(plan(2, []), 2)
+
+    await act(async () => {
+      await result.current.createTeam(
+        "alpha",
+        draft,
+        { estimate: null, fromEstimate: false },
+        { source: "suggestion", suggestionRank: 2 }
+      )
+    })
+
+    expect(api.capture).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: "legendary_event_team_created",
+        source: "suggestion",
+        suggestionRank: 2,
+      })
+    )
   })
 
   it("reorders optimistically and rolls back when the request fails", async () => {

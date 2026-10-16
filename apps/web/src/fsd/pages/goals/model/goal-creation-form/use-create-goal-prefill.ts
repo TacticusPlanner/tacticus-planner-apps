@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react"
-import type { Progression, UnitId } from "@workspace/game-domain"
+import type { Progression, Rank, UnitId } from "@workspace/game-domain"
 
 import type { GoalKind } from "@/entities/goal"
 import type { EntityType } from ".//use-create-goal-form"
@@ -14,7 +14,7 @@ export function useCreateGoalPrefill({
   setEntityType,
   setEnabledTypes,
   selectProjects,
-  setProgressionEnd,
+  targetSetters,
 }: {
   open: boolean
   prefill?: CreateGoalPrefill
@@ -24,7 +24,11 @@ export function useCreateGoalPrefill({
   setEntityType: (entityType: EntityType) => void
   setEnabledTypes: (types: ReadonlySet<GoalKind>) => void
   selectProjects: (projectIds: string[]) => void
-  setProgressionEnd: (progression: Progression) => void
+  /** The ascension and rank fields' setters for the prefilled target. */
+  targetSetters: {
+    setProgressionEnd: (progression: Progression) => void
+    setRankEnd: (rank: Rank) => void
+  }
 }) {
   const selectionKeyRef = useRef("")
   const targetKeyRef = useRef("")
@@ -41,9 +45,11 @@ export function useCreateGoalPrefill({
     if ("entityId" in prefill) {
       handleEntityChange(prefill.entityId)
       setEntityType(prefill.entityType)
-      setEnabledTypes(new Set([prefill.goalType]))
+      // A unit-only prefill selects the unit and leaves every goal type unticked.
+      setEnabledTypes(new Set("goalType" in prefill ? [prefill.goalType] : []))
     }
-    selectProjects(prefill.projectIds)
+    // No `projectIds` means no project context: keep the sheet's own membership fallback.
+    if (prefill.projectIds) selectProjects(prefill.projectIds)
     // Render-local coordinators intentionally run once per serialized prefill.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, prefillKey])
@@ -60,8 +66,10 @@ export function useCreateGoalPrefill({
       return
     }
     targetKeyRef.current = prefillKey
+    if (!("goalType" in prefill)) return
     if (prefill.goalType === "Ascension")
-      setProgressionEnd(prefill.requiredProgression)
+      targetSetters.setProgressionEnd(prefill.requiredProgression)
+    if (prefill.goalType === "Rank") targetSetters.setRankEnd(prefill.rankEnd)
     // Unlock has no target field to prefill — selecting the entity/goal type (above) is enough.
     // Field setters are stable and the target applies once per prefill.
     // eslint-disable-next-line react-hooks/exhaustive-deps

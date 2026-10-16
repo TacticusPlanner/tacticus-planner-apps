@@ -339,7 +339,11 @@
         },
         "teams": {
           "title": "Équipes",
-          "content": "Composez les équipes que vous comptez jouer sur cette voie. Chaque carte montre ses membres, les objectifs couverts, ses points par combat et jusqu'où elle devrait aller : une estimation tirée de votre effectif synchronisé, jusqu'à ce que vous définissiez vous-même une profondeur. Utilisez Ajouter une équipe pour en créer une."
+          "content": "Composez les équipes que vous comptez jouer sur cette voie. Chaque carte montre ses membres, les objectifs couverts, ses points par combat et jusqu'où elle devrait aller : une estimation tirée de votre effectif synchronisé, jusqu'à ce que vous définissiez vous-même une profondeur. Utilisez Ajouter une équipe pour en créer une. Suggérer des équipes propose des équipes de votre effectif, classées selon les points qu'elles ajoutent."
+        },
+        "upgradeImpact": {
+          "title": "Impact des améliorations",
+          "content": "Quelle amélioration seule vous rapporte des points sur cette voie : chaque ligne indique le combat qu'elle permet à une équipe d'atteindre et les points ajoutés. Créez-en un objectif d'un geste."
         },
         "progressGrid": {
           "title": "Progression synchronisée",
@@ -347,7 +351,7 @@
         },
         "leaderboard": {
           "title": "Classement de la voie",
-          "content": "Chaque unité autorisée dans cette voie, si vous la possédez, les objectifs qu'elle remplit et les points qu'elle peut encore marquer ici."
+          "content": "Chaque unité autorisée dans cette voie, si vous la possédez, les objectifs qu'elle remplit et les points qu'elle peut encore marquer ici. Activez l'aperçu des objectifs pour voir les unités comme si vos objectifs actifs étaient atteints, et utilisez le menu d'une ligne pour créer un objectif."
         }
       }
     }
@@ -370,6 +374,66 @@
     "clearsNone": "—",
     "clearsPending": "–",
     "clearsLoading": "Estimation des combats…"
+  },
+  "goalsPreview": {
+    "switch": "Aperçu des objectifs",
+    "marker": "Affiché aux cibles des objectifs",
+    "hint": "Affiche les unités comme si vos objectifs actifs étaient atteints. Les points et les équipes ne changent pas.",
+    "loading": "Chargement des objectifs…",
+    "unavailable": "Objectifs indisponibles",
+    "noGoals": "Aucun objectif actif pour les unités de cet événement",
+    "noRoster": "Synchronisez votre effectif pour prévisualiser les objectifs"
+  },
+  "goalBadge": {
+    "label": "Objectifs",
+    "unlock": "Débloquer",
+    "ascension": "Ascension vers {{target}}",
+    "rank": "Rang {{target}}",
+    "rankWithUpgrades": "Rang {{target}} avec {{count}} améliorations",
+    "ability": "Capacités à {{active}} / {{passive}}",
+    "progression": "{{rarity}} {{stars}}"
+  },
+  "leaderboardActions": {
+    "header": "Actions",
+    "menu": "Actions pour {{name}}",
+    "createGoal": "Créer un objectif"
+  },
+  "upgradeImpact": {
+    "title": "Impact des améliorations",
+    "summary_one": "{{count}} amélioration rapporte des points · meilleure +{{best}}",
+    "summary_other": "{{count}} améliorations rapportent des points · meilleure +{{best}}",
+    "hint": "Ce qu'une seule étape suivante d'un membre d'équipe rapporte sur cette voie, par les combats qu'elle permet d'atteindre. D'après votre effectif synchronisé.",
+    "unit": "Unité",
+    "step": "Étape",
+    "teams": "Équipes",
+    "points": "Points",
+    "unlock": "Débloquer",
+    "rank": "Rang {{target}}",
+    "ascension": "Ascension vers {{target}}",
+    "teamChange": "{{team}} : combat {{from}} → {{to}}",
+    "gain": "+{{points}} points",
+    "createGoal": "Créer un objectif",
+    "createGoalFor": "Créer un objectif pour {{name}}",
+    "inGoals": "Dans les objectifs",
+    "needsEstimates": "Nécessite des estimations de progression",
+    "noTeams": "Ajoutez une équipe pour voir quelles améliorations rapportent des points",
+    "noRows": "Aucune étape suivante seule ne rapporte de points sur cette voie",
+    "loading": "Chargement de l'impact des améliorations…",
+    "toggle": "Afficher ou masquer l'impact des améliorations"
+  },
+  "suggestions": {
+    "button": "Suggérer des équipes",
+    "title": "Équipes suggérées pour {{lane}}",
+    "description": "Des équipes tirées de votre effectif, classées selon les points qu'elles ajoutent à vos équipes actuelles. Rien n'est enregistré tant que vous n'enregistrez pas l'équipe.",
+    "onlyUnlocked": "Débloquées uniquement",
+    "preferGoals": "Privilégier les unités avec objectifs",
+    "reason": "Couvre {{objectives}} · franchit ~{{depth}} · +{{points}} points par rapport à vos équipes",
+    "use": "Utiliser cette équipe",
+    "showMore": "Afficher plus",
+    "empty": "Aucune équipe n'ajoute de points à vos équipes actuelles",
+    "needsEstimates": "Nécessite des estimations de progression",
+    "loading": "Chargement des suggestions…",
+    "rank": "Suggestion {{rank}}"
   },
   "tokenPlan": {
     "nextToken": {

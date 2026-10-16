@@ -339,7 +339,11 @@
         },
         "teams": {
           "title": "Teams",
-          "content": "Build the teams you plan to play on this lane. Each card shows its members, the objectives they cover, its points per battle and how deep it should clear: an estimate from your synced roster until you set a depth yourself. Use Add team to start one."
+          "content": "Build the teams you plan to play on this lane. Each card shows its members, the objectives they cover, its points per battle and how deep it should clear: an estimate from your synced roster until you set a depth yourself. Use Add team to start one. Suggest teams proposes teams from your roster, ranked by the points they add."
+        },
+        "upgradeImpact": {
+          "title": "Upgrade impact",
+          "content": "Which single upgrade earns you points on this lane: each row names the battle it lets a team reach and the points it adds. Create a goal for it in one tap."
         },
         "progressGrid": {
           "title": "Synced progress",
@@ -347,7 +351,7 @@
         },
         "leaderboard": {
           "title": "Lane leaderboard",
-          "content": "Every unit this lane allows, whether you own it, which objectives it meets and the points it can still score here."
+          "content": "Every unit this lane allows, whether you own it, which objectives it meets and the points it can still score here. Turn on Goals Preview to see units as if your active goals were reached, and use a row's menu to create a goal."
         }
       }
     }
@@ -370,6 +374,66 @@
     "clearsNone": "—",
     "clearsPending": "–",
     "clearsLoading": "Estimating clears…"
+  },
+  "goalsPreview": {
+    "switch": "Goals Preview",
+    "marker": "Previewed at goal targets",
+    "hint": "Shows units as if your active goals were reached. Points and teams don't change.",
+    "loading": "Loading goals…",
+    "unavailable": "Goals unavailable",
+    "noGoals": "No active goals for this event's units",
+    "noRoster": "Sync your roster to preview goals"
+  },
+  "goalBadge": {
+    "label": "Goals",
+    "unlock": "Unlock",
+    "ascension": "Ascension to {{target}}",
+    "rank": "Rank to {{target}}",
+    "rankWithUpgrades": "Rank to {{target}} with {{count}} upgrades",
+    "ability": "Abilities to {{active}} / {{passive}}",
+    "progression": "{{rarity}} {{stars}}"
+  },
+  "leaderboardActions": {
+    "header": "Actions",
+    "menu": "Actions for {{name}}",
+    "createGoal": "Create goal"
+  },
+  "upgradeImpact": {
+    "title": "Upgrade impact",
+    "summary_one": "{{count}} upgrade adds points · best +{{best}}",
+    "summary_other": "{{count}} upgrades add points · best +{{best}}",
+    "hint": "What one next step of a team member adds on this lane, through the battles it lets a team reach. Based on your synced roster.",
+    "unit": "Unit",
+    "step": "Step",
+    "teams": "Teams",
+    "points": "Points",
+    "unlock": "Unlock",
+    "rank": "Rank to {{target}}",
+    "ascension": "Ascension to {{target}}",
+    "teamChange": "{{team}}: battle {{from}} → {{to}}",
+    "gain": "+{{points}} points",
+    "createGoal": "Create goal",
+    "createGoalFor": "Create goal for {{name}}",
+    "inGoals": "In goals",
+    "needsEstimates": "Needs clear estimates",
+    "noTeams": "Add a team to see which upgrades add points",
+    "noRows": "No single next step adds points on this lane",
+    "loading": "Loading upgrade impact…",
+    "toggle": "Show or hide upgrade impact"
+  },
+  "suggestions": {
+    "button": "Suggest teams",
+    "title": "Suggested teams for {{lane}}",
+    "description": "Teams from your roster, ranked by the points they add over your current teams. Nothing is saved until you save the team.",
+    "onlyUnlocked": "Only unlocked",
+    "preferGoals": "Prefer units with goals",
+    "reason": "Covers {{objectives}} · clears ~{{depth}} · +{{points}} points over your teams",
+    "use": "Use this team",
+    "showMore": "Show more",
+    "empty": "No team adds points over your current teams",
+    "needsEstimates": "Needs clear estimates",
+    "loading": "Loading suggestions…",
+    "rank": "Suggestion {{rank}}"
   },
   "tokenPlan": {
     "nextToken": {

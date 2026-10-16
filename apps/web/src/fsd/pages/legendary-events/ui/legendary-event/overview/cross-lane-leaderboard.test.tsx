@@ -1,6 +1,6 @@
 import { useState } from "react"
 import type { i18n as I18n } from "i18next"
-import { beforeAll, describe, expect, it } from "vitest"
+import { beforeAll, describe, expect, it, vi } from "vitest"
 
 import {
   objectiveFilterKey,
@@ -17,6 +17,7 @@ import { act, fireEvent, render, screen, within } from "@/test/render"
 
 import {
   buildProgressGridViewModel,
+  type LeaderboardGoalsViewModel,
   type LeaderboardRowsViewModel,
   type ProgressGridViewModel,
 } from "../legendary-event-page.view-model"
@@ -83,14 +84,25 @@ const ready: LeaderboardRowsViewModel = {
   progressAvailable: true,
 }
 
+const noGoals: LeaderboardGoalsViewModel = {
+  previewEnabled: false,
+  availability: "noGoals",
+  onPreviewChange: () => {},
+  previewed: new Set(),
+  badgeLines: () => [],
+  onCreateGoal: () => {},
+}
+
 function Harness({
   rows,
   layout,
   progressGrid = progress,
+  goals = noGoals,
 }: {
   rows: LeaderboardRowsViewModel
   layout: "table" | "list"
   progressGrid?: ProgressGridViewModel
+  goals?: LeaderboardGoalsViewModel
 }) {
   const [onlyUnlocked, setOnlyUnlocked] = useState(false)
   const [deductScored, setDeductScored] = useState(true)
@@ -110,6 +122,7 @@ function Harness({
         selectedObjectives,
         onSelectedObjectivesChange: setSelectedObjectives,
         clears: { kind: "hidden" },
+        goals,
       }}
       progressGrid={progressGrid}
     />
@@ -272,5 +285,24 @@ describe("CrossLaneLeaderboard", () => {
     })
     expect(screen.getByTestId("leaderboard-no-eligible")).toBeInTheDocument()
     expect(legendaryEventCharacters.length).toBeGreaterThan(0)
+  })
+
+  it("opens Create goal from a row's actions menu with no lane", async () => {
+    const onCreateGoal = vi.fn()
+    render(
+      <Harness
+        goals={{ ...noGoals, onCreateGoal }}
+        layout="table"
+        rows={ready}
+      />,
+      { wrapper: i18nWrapper(i18n) }
+    )
+    const menu = screen.getAllByRole("button", { name: /^Actions for / })[0]!
+    fireEvent.pointerDown(menu, { button: 0, ctrlKey: false })
+    fireEvent.click(await screen.findByTestId("leaderboard-create-goal"))
+    expect(onCreateGoal).toHaveBeenCalledWith(
+      screen.getAllByTestId("leaderboard-row")[0]!.dataset.unit,
+      null
+    )
   })
 })

@@ -179,6 +179,8 @@ describe("useAnalyticsActions", () => {
       laneId: "alpha",
       memberCount: 3,
       objectiveCount: 2,
+      source: "suggestion",
+      suggestionRank: 1,
     })
     result.current.captureEvent({
       type: "legendary_event_depth_set",
@@ -200,6 +202,8 @@ describe("useAnalyticsActions", () => {
       lane_id: "alpha",
       member_count: 3,
       objective_count: 2,
+      source: "suggestion",
+      suggestion_rank: 1,
     })
     expect(capture).toHaveBeenCalledWith("legendary_event_depth_set", {
       event_id: "astarLysander",
@@ -211,6 +215,56 @@ describe("useAnalyticsActions", () => {
     expect(capture).toHaveBeenCalledWith(
       "legendary_event_depth_estimate_restored",
       { event_id: "astarLysander", lane_id: "beta", estimate: 6 }
+    )
+  })
+
+  it("captures the Legendary Event Stage 6 events with only the declared properties", () => {
+    vi.stubEnv("VITE_POSTHOG_PROJECT_TOKEN", "test-token")
+    const { result } = renderHook(() => useAnalyticsActions())
+
+    result.current.captureEvent({
+      type: "legendary_event_goals_preview_toggled",
+      eventId: "votanUthar",
+      enabled: true,
+      surface: "picker",
+    })
+    result.current.captureEvent({
+      type: "legendary_event_create_goal_opened",
+      eventId: "votanUthar",
+      laneId: null,
+      source: "leaderboard",
+      goalType: "Unlock",
+    })
+    result.current.captureEvent({
+      type: "legendary_event_upgrade_impact_expanded",
+      eventId: "votanUthar",
+      laneId: "alpha",
+      rowCount: 4,
+    })
+    result.current.captureEvent({
+      type: "legendary_event_team_suggestions_opened",
+      eventId: "votanUthar",
+      laneId: "alpha",
+      suggestionCount: 5,
+    })
+
+    expect(capture).toHaveBeenCalledWith(
+      "legendary_event_goals_preview_toggled",
+      { event_id: "votanUthar", enabled: true, surface: "picker" }
+    )
+    expect(capture).toHaveBeenCalledWith("legendary_event_create_goal_opened", {
+      event_id: "votanUthar",
+      lane_id: null,
+      source: "leaderboard",
+      goal_type: "Unlock",
+    })
+    expect(capture).toHaveBeenCalledWith(
+      "legendary_event_upgrade_impact_expanded",
+      { event_id: "votanUthar", lane_id: "alpha", row_count: 4 }
+    )
+    expect(capture).toHaveBeenCalledWith(
+      "legendary_event_team_suggestions_opened",
+      { event_id: "votanUthar", lane_id: "alpha", suggestion_count: 5 }
     )
   })
 

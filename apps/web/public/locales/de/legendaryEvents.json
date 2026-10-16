@@ -339,7 +339,11 @@
         },
         "teams": {
           "title": "Teams",
-          "content": "Stelle die Teams zusammen, die du in dieser Lane spielen willst. Jede Karte zeigt die Mitglieder, die abgedeckten Ziele, die Punkte pro Kampf und wie weit das Team kommen sollte: eine Schätzung aus deinem synchronisierten Kader, bis du selbst eine Tiefe festlegst. Mit „Team hinzufügen“ legst du eines an."
+          "content": "Stelle die Teams zusammen, die du in dieser Lane spielen willst. Jede Karte zeigt die Mitglieder, die abgedeckten Ziele, die Punkte pro Kampf und wie weit das Team kommen sollte: eine Schätzung aus deinem synchronisierten Kader, bis du selbst eine Tiefe festlegst. Mit „Team hinzufügen“ legst du eines an. Teams vorschlagen schlägt Teams aus deinem Kader vor, sortiert nach den Punkten, die sie hinzufügen."
+        },
+        "upgradeImpact": {
+          "title": "Wirkung von Verbesserungen",
+          "content": "Welche einzelne Verbesserung dir auf dieser Lane Punkte bringt: Jede Zeile nennt den Kampf, den ein Team dadurch erreicht, und die zusätzlichen Punkte. Erstelle mit einem Tipp ein Ziel dafür."
         },
         "progressGrid": {
           "title": "Synchronisierter Fortschritt",
@@ -347,7 +351,7 @@
         },
         "leaderboard": {
           "title": "Lane-Rangliste",
-          "content": "Jede Einheit, die diese Lane erlaubt, ob du sie besitzt, welche Ziele sie erfüllt und welche Punkte sie hier noch erzielen kann."
+          "content": "Jede Einheit, die diese Lane erlaubt, ob du sie besitzt, welche Ziele sie erfüllt und welche Punkte sie hier noch erzielen kann. Schalte die Zielvorschau ein, um Einheiten so zu sehen, als hättest du deine aktiven Ziele erreicht, und erstelle über das Menü einer Zeile ein Ziel."
         }
       }
     }
@@ -370,6 +374,66 @@
     "clearsNone": "—",
     "clearsPending": "–",
     "clearsLoading": "Kämpfe werden geschätzt…"
+  },
+  "goalsPreview": {
+    "switch": "Zielvorschau",
+    "marker": "Als Zielstand angezeigt",
+    "hint": "Zeigt Einheiten, als hättest du deine aktiven Ziele erreicht. Punkte und Teams ändern sich nicht.",
+    "loading": "Ziele werden geladen…",
+    "unavailable": "Ziele nicht verfügbar",
+    "noGoals": "Keine aktiven Ziele für die Einheiten dieses Events",
+    "noRoster": "Synchronisiere deinen Kader, um Ziele in der Vorschau zu sehen"
+  },
+  "goalBadge": {
+    "label": "Ziele",
+    "unlock": "Freischalten",
+    "ascension": "Aufstieg zu {{target}}",
+    "rank": "Rang {{target}}",
+    "rankWithUpgrades": "Rang {{target}} mit {{count}} Verbesserungen",
+    "ability": "Fähigkeiten auf {{active}} / {{passive}}",
+    "progression": "{{rarity}} {{stars}}"
+  },
+  "leaderboardActions": {
+    "header": "Aktionen",
+    "menu": "Aktionen für {{name}}",
+    "createGoal": "Ziel erstellen"
+  },
+  "upgradeImpact": {
+    "title": "Wirkung von Verbesserungen",
+    "summary_one": "{{count}} Verbesserung bringt Punkte · beste +{{best}}",
+    "summary_other": "{{count}} Verbesserungen bringen Punkte · beste +{{best}}",
+    "hint": "Was ein einzelner nächster Schritt eines Teammitglieds auf dieser Lane bringt, über die Kämpfe, die ein Team dadurch erreicht. Grundlage ist dein synchronisierter Kader.",
+    "unit": "Einheit",
+    "step": "Schritt",
+    "teams": "Teams",
+    "points": "Punkte",
+    "unlock": "Freischalten",
+    "rank": "Rang {{target}}",
+    "ascension": "Aufstieg zu {{target}}",
+    "teamChange": "{{team}}: Kampf {{from}} → {{to}}",
+    "gain": "+{{points}} Punkte",
+    "createGoal": "Ziel erstellen",
+    "createGoalFor": "Ziel für {{name}} erstellen",
+    "inGoals": "In Zielen",
+    "needsEstimates": "Benötigt Abschluss-Schätzungen",
+    "noTeams": "Füge ein Team hinzu, um zu sehen, welche Verbesserungen Punkte bringen",
+    "noRows": "Kein einzelner nächster Schritt bringt auf dieser Lane Punkte",
+    "loading": "Wirkung wird geladen…",
+    "toggle": "Wirkung von Verbesserungen ein- oder ausblenden"
+  },
+  "suggestions": {
+    "button": "Teams vorschlagen",
+    "title": "Vorgeschlagene Teams für {{lane}}",
+    "description": "Teams aus deinem Kader, sortiert nach den Punkten, die sie zu deinen aktuellen Teams hinzufügen. Nichts wird gespeichert, bis du das Team speicherst.",
+    "onlyUnlocked": "Nur freigeschaltete",
+    "preferGoals": "Einheiten mit Zielen bevorzugen",
+    "reason": "Deckt {{objectives}} ab · schafft ~{{depth}} · +{{points}} Punkte zu deinen Teams",
+    "use": "Dieses Team verwenden",
+    "showMore": "Mehr anzeigen",
+    "empty": "Kein Team bringt Punkte zu deinen aktuellen Teams hinzu",
+    "needsEstimates": "Benötigt Abschluss-Schätzungen",
+    "loading": "Vorschläge werden geladen…",
+    "rank": "Vorschlag {{rank}}"
   },
   "tokenPlan": {
     "nextToken": {

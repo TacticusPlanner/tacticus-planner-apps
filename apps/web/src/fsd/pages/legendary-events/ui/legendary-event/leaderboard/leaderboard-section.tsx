@@ -85,6 +85,8 @@ export function LeaderboardSection({
           <LeaderboardTable
             clearsOf={clearsOf}
             figure={figure}
+            goals={leaderboard.goals}
+            laneId={laneId}
             nameOf={nameOf}
             objectives={objectives}
             rows={result.rows}
@@ -93,6 +95,8 @@ export function LeaderboardSection({
           <LeaderboardList
             clearsOf={clearsOf}
             figure={figure}
+            goals={leaderboard.goals}
+            laneId={laneId}
             nameOf={nameOf}
             objectives={objectives}
             rows={result.rows}
@@ -117,6 +121,7 @@ export function LeaderboardSection({
         {t("leaderboard.title")}
       </h2>
       <LeaderboardControls
+        goals={leaderboard.goals}
         groups={groups}
         progressAvailable={!ready || leaderboard.progressAvailable}
         rosterAvailable={!ready || rosterAvailable}

@@ -226,7 +226,7 @@ export function useCreateGoalForm({
     setEntityType,
     setEnabledTypes,
     selectProjects: projectSelection.selectProjects,
-    setProgressionEnd: ascensionFields.state.setProgressionEnd,
+    targetSetters: { ...ascensionFields.state, ...rankFields.state },
   })
 
   useDefaultUnitPreselect({

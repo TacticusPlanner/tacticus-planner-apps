@@ -189,3 +189,33 @@ export {
   type PowerRatioCalibration,
 } from "./lib/calibrate-power-ratio"
 export { unitCombatPower, unitCombatPowerInput } from "./lib/unit-combat-power"
+export {
+  previewRoster,
+  type LegendaryEventGoalRef,
+  type LegendaryEventGoalTarget,
+  type PreviewRoster,
+} from "./lib/goal-preview-roster"
+export {
+  laneReachablePoints,
+  type LaneReach,
+  type LaneReachablePoints,
+} from "./lib/reachable-points"
+export { type UpgradeStep } from "./lib/upgrade-steps"
+export {
+  laneUpgradeImpact,
+  type ImpactTeam,
+  type UpgradeImpact,
+  type UpgradeImpactInput,
+  type UpgradeImpactRow,
+} from "./lib/upgrade-impact"
+export {
+  SUGGESTION_TEAM_SIZE,
+  suggestLaneTeams,
+  type TeamSuggestion,
+  type TeamSuggestionsInput,
+} from "./lib/team-suggestions"
+export {
+  impactTeams,
+  teamReaches,
+  type LaneEstimateInputs,
+} from "./lib/lane-teams"

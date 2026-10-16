@@ -42,15 +42,17 @@ export function checkedObjectives(draft: TeamEditorDraft): number[] {
   return draft.derived.filter((index) => !draft.excluded.includes(index))
 }
 
-/** A new team's draft, or a saved team's: the opt-outs are recovered as the objectives the stored
- *  members derive but the team does not store. */
+/** A new team's draft (empty, or from a suggestion's members in order with everything they derive
+ *  ticked), or a saved team's: the opt-outs are recovered as the objectives the stored members
+ *  derive but the team does not store. */
 export function initialEditorDraft(
   team: LegendaryEventTeam | undefined,
   run: LegendaryEventRun,
-  context: CoverageContext
+  context: CoverageContext,
+  initialMemberUnitIds: readonly string[] = []
 ): TeamEditorDraft {
   if (!team) {
-    return {
+    const empty: TeamEditorDraft = {
       name: null,
       memberUnitIds: [],
       reserveUnitId: null,
@@ -58,6 +60,11 @@ export function initialEditorDraft(
       excluded: [],
       depth: null,
     }
+    return withMembers(
+      empty,
+      initialMemberUnitIds.slice(0, MAX_TEAM_MEMBERS),
+      context
+    )
   }
   const derived = derivedTeamCoverage(
     team.memberUnitIds,

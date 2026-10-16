@@ -1,31 +1,7 @@
-import { createContext, useContext } from "react"
-import type { Progression, UnitId } from "@workspace/game-domain"
-
-export type CreateGoalPrefill =
-  | {
-      entityType: "Character" | "Mow"
-      entityId: UnitId
-      goalType: "Ascension"
-      requiredProgression: Progression
-      projectIds: string[]
-    }
-  | {
-      entityType: "Character" | "Mow"
-      entityId: UnitId
-      goalType: "Unlock"
-      projectIds: string[]
-    }
-  // Project-only: preselect a project before an entity/goal type is chosen.
-  | { projectIds: string[] }
-
-export type LaunchCreateGoal = (prefill?: CreateGoalPrefill) => void
-
-export const CreateGoalLauncherContext = createContext<LaunchCreateGoal | null>(
-  null
-)
-
-export function useCreateGoalLauncher(): LaunchCreateGoal {
-  const value = useContext(CreateGoalLauncherContext)
-  if (!value) throw new Error("CreateGoalLauncherProvider is missing")
-  return value
-}
+// The launcher lives in `entities/goal` so pages outside Goals can launch creation (design D2).
+export {
+  CreateGoalLauncherContext,
+  useCreateGoalLauncher,
+  type CreateGoalPrefill,
+  type LaunchCreateGoal,
+} from "@/entities/goal"
