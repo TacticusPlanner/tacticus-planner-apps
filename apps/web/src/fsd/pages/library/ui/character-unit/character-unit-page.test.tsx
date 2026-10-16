@@ -116,8 +116,9 @@ const lhykhis = {
   rangeDistance: 2,
   movement: 4,
   traits: ["Infiltrate", "Flying"],
-  activeAbilityNames: ["EmpyricAmbush"],
-  passiveAbilityNames: ["WhisperingWeb"],
+  // Ability ids with no rules text in npcAbilityText, to exercise the missing-text state.
+  activeAbilityNames: ["NoRulesTextActive"],
+  passiveAbilityNames: ["NoRulesTextPassive"],
   equipmentSlots: ["I_Crit", "I_Block", "I_Booster_Crit"],
 }
 const calgar = {
