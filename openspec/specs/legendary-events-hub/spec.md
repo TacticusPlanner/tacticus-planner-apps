@@ -13,8 +13,8 @@ For every Legendary Event in the catalog `lres` dataset the system SHALL derive 
 Assumptions:
 
 - A run lasts 7 days from its start instant (V1's `getLegendaryEventDurationMillis`).
-- `eventStageStartDatesUtc` lists run starts in ISO 8601 UTC; today the catalog serves one element per event (the next run).
-- The run number (1–3) is not in the catalog; when the event is active it is read from the synced `currentEventRun`, and shown only when present.
+- `eventStageStartDatesUtc` lists the announced run starts in ISO 8601 UTC, index = run − 1, at most three (the API's `legendary-event-run-schedule`).
+- The run number is derived from the index of the run start and the clock (`legendary-event-run-resolution`); the synced `currentEventRun` is sent only while a run is active and wins then, and is null between runs.
 
 #### Scenario: Run window makes an event active
 
