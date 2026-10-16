@@ -30,3 +30,15 @@ describe("goals.v1Import.partDescriptions.legendaryEventPlans copy", () => {
     expect(description).toMatch(/progress is not imported/i)
   })
 })
+
+describe("goals.v1Import.legendaryEvents.issues.team_too_small copy", () => {
+  it("says how many units remained and that a team needs three", () => {
+    const issues = en.goals.v1Import.legendaryEvents.issues
+    const text = issues.team_too_small_other
+      .replace("{{count}}", "2")
+      .replace("{{min}}", "3")
+    expect(text).toMatch(/only 2 units of the team remained/i)
+    expect(text).toMatch(/a team needs 3/i)
+    expect(issues.team_too_small_one).toContain("{{count}} unit ")
+  })
+})

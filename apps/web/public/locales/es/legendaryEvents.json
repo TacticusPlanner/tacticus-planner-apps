@@ -215,6 +215,7 @@
     "loadError": "No se pudieron cargar tus equipos.",
     "retry": "Reintentar",
     "partialBadge": "{{members}}/{{max}}",
+    "incomplete": "Necesita al menos {{min}} personajes",
     "reserve": "Reserva",
     "members": "Miembros",
     "pointsPerBattle": "{{points}} puntos por batalla",
@@ -247,12 +248,14 @@
       "noMembers": "Elige unidades para ver qué objetivos cubren juntas.",
       "depth": "Profundidad para la ronda {{run}}",
       "save": "Guardar equipo",
+      "needsMembers": "Un equipo necesita al menos {{min}} personajes",
       "saving": "Guardando…",
       "notSaved": "Tu plan se ha recargado, así que este equipo no se guardó. Revísalo y vuelve a guardarlo.",
       "cancel": "Cancelar"
     },
     "picker": {
       "count": "{{members}}/5",
+      "countBelowMinimum": "{{members}}/5 · al menos {{min}}",
       "search": "Buscar unidades",
       "searchPlaceholder": "Buscar por nombre",
       "onlyUnlocked": "Solo desbloqueadas",

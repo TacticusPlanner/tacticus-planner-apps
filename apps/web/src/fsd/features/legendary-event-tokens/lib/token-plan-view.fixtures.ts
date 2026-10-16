@@ -82,6 +82,23 @@ const workedProgress = {
   currentShards: 250,
 } as unknown as LegendaryEventProgress
 
+/** Uthar Alpha's imported two-member team (spec: a stored team below three characters is
+ *  incomplete): Max 2 Hits and Melee, stored depth 5 for run 2. */
+export const utharShortTeam: LegendaryEventTeam = team({
+  id: "short",
+  name: "Max 2 Hits · Melee",
+  memberUnitIds: ["ultraApothecary", "bloodIntercessor"],
+  objectiveIndexes: [2, 3],
+  runDepths: [
+    {
+      run: 2,
+      expectedBattleClears: 5,
+      expectedBattleClearsSource: "manual",
+      recordedAt: "2026-10-15T00:00:00Z",
+    },
+  ],
+})
+
 export const workedPlan = (
   teams: LegendaryEventTeam[] = workedTeams,
   overrides: Partial<LegendaryEventPlan> = {}

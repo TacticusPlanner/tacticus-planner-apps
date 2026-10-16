@@ -215,6 +215,7 @@
     "loadError": "Deine Teams konnten nicht geladen werden.",
     "retry": "Erneut versuchen",
     "partialBadge": "{{members}}/{{max}}",
+    "incomplete": "Braucht mindestens {{min}} Charaktere",
     "reserve": "Reserve",
     "members": "Mitglieder",
     "pointsPerBattle": "{{points}} Punkte pro Kampf",
@@ -247,12 +248,14 @@
       "noMembers": "Wähle Einheiten, um zu sehen, welche Ziele sie gemeinsam abdecken.",
       "depth": "Kampftiefe für Durchlauf {{run}}",
       "save": "Team speichern",
+      "needsMembers": "Ein Team braucht mindestens {{min}} Charaktere",
       "saving": "Wird gespeichert …",
       "notSaved": "Dein Plan wurde neu geladen, daher wurde dieses Team nicht gespeichert. Prüfe es und speichere erneut.",
       "cancel": "Abbrechen"
     },
     "picker": {
       "count": "{{members}}/5",
+      "countBelowMinimum": "{{members}}/5 · mindestens {{min}}",
       "search": "Einheiten suchen",
       "searchPlaceholder": "Nach Namen suchen",
       "onlyUnlocked": "Nur freigeschaltete",

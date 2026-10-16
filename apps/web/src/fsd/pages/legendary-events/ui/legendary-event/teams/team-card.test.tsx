@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react"
+import userEvent from "@testing-library/user-event"
 import type { i18n as I18n } from "i18next"
 import { beforeAll, describe, expect, it, vi } from "vitest"
 
@@ -7,11 +8,13 @@ import type {
   LegendaryEventRosterUnit,
   LegendaryEventTeam,
 } from "@/entities/legendary-event"
+import { legendaryEventCharacters } from "@/test/fixtures/legendary-event-characters"
 import {
   teamLane,
   teamUnitList,
   teamUnits,
 } from "@/test/fixtures/legendary-event-teams"
+import { utharEvent } from "@/test/fixtures/legendary-events"
 import { createTestI18n, i18nWrapper } from "@/test/i18n"
 import { act, fireEvent, render, screen, within } from "@/test/render"
 
@@ -494,6 +497,82 @@ describe("TeamCard", () => {
       // A full-width flex item wraps onto its own line under the stepper; md:basis-auto puts it
       // back beside it at 768px and up.
       expect(screen.getByTestId("team-card-last-run")).toHaveClass("basis-full")
+    })
+  })
+
+  describe("incomplete team (spec: a stored team below three characters is incomplete)", () => {
+    // Uthar Alpha's imported team: Incisus and a Blood Angels Intercessor, depth 5 for run 2.
+    const uthar = team({
+      id: "uthar-short",
+      name: "Max 2 Hits · Melee",
+      memberUnitIds: ["ultraApothecary", "bloodIntercessor"],
+      reserveUnitId: null,
+      objectiveIndexes: [2, 3],
+      runDepths: [
+        {
+          run: 2,
+          expectedBattleClears: 5,
+          expectedBattleClearsSource: "manual",
+          recordedAt: "2026-10-01T00:00:00Z",
+        },
+      ],
+    })
+    const renderUthar = (value: LegendaryEventTeam) => {
+      const cardActions = actions()
+      const card = buildTeamCardViewModel(
+        value,
+        utharEvent.alpha,
+        legendaryEventCharacters,
+        undefined,
+        2,
+        () => estimateOf()
+      )
+      render(
+        <ul>
+          <TeamCard actions={cardActions} card={card} lane={utharEvent.alpha} />
+        </ul>,
+        { wrapper: i18nWrapper(i18n) }
+      )
+      return { card, cardActions }
+    }
+
+    it("shows both portraits, 2/5 and the warning, with no depth stepper", () => {
+      const { card } = renderUthar(uthar)
+      expect(card.incomplete).toBe(true)
+      expect(card.estimate).toBeNull()
+      expect(card.displayedDepth).toBeNull()
+      // The stored depth is kept for when the team is completed.
+      expect(card.expectedBattleClears).toBe(5)
+      expect(
+        screen
+          .getAllByTestId("team-card-member")
+          .map((member) => member.dataset.unit)
+      ).toEqual(["ultraApothecary", "bloodIntercessor"])
+      expect(screen.getByTestId("team-card-count")).toHaveTextContent("2/5")
+      expect(screen.getByTestId("team-card-incomplete")).toHaveTextContent(
+        "Needs at least 3 characters"
+      )
+      expect(screen.queryByTestId("team-card-depth")).toBeNull()
+      expect(screen.queryByTestId("team-card-depth-label")).toBeNull()
+    })
+
+    it("keeps Edit and Delete", async () => {
+      const { cardActions } = renderUthar(uthar)
+      const user = userEvent.setup()
+      await user.click(screen.getByTestId("team-card-menu"))
+      expect(await screen.findByTestId("team-card-delete")).toBeInTheDocument()
+      await user.click(screen.getByTestId("team-card-edit"))
+      expect(cardActions.onEdit).toHaveBeenCalledTimes(1)
+    })
+
+    it("shows the stored run 2 depth again once a third member is saved", () => {
+      const { card } = renderUthar({
+        ...uthar,
+        memberUnitIds: [...uthar.memberUnitIds, "ultraCalgar"],
+      })
+      expect(card.incomplete).toBe(false)
+      expect(screen.queryByTestId("team-card-incomplete")).toBeNull()
+      expect(stepperInput()).toHaveValue(5)
     })
   })
 })

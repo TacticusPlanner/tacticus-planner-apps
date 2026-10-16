@@ -3,6 +3,7 @@ import {
   applicableAnnotations,
   buildLanePointsModel,
   currentLegendaryEventRun,
+  isCompleteTeam,
   teamDepthForRun,
   teamEffectiveDepth,
   unitNextAscensionStep,
@@ -131,7 +132,11 @@ export function buildTokenPlanView(input: TokenPlanViewInput): TokenPlanView {
     return { kind: "loading" }
   }
   const entry = progress
-  const teams = [...plan.data.teams].sort((a, b) => a.sortOrder - b.sortOrder)
+  // An incomplete team (fewer than three members) is never played: a lane holding only such
+  // teams reads as having no team.
+  const teams = plan.data.teams
+    .filter(isCompleteTeam)
+    .sort((a, b) => a.sortOrder - b.sortOrder)
 
   const lanes = LEGENDARY_EVENT_LANE_IDS.map((laneId): TokenPlanLane => {
     const synced = entry ? entry[laneId] : undefined

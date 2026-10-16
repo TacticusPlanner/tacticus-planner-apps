@@ -29,6 +29,7 @@ import {
   type LaneProgressView,
 } from "./synced-lane-progress"
 import { derivedTeamCoverage } from "./team-coverage"
+import { isCompleteTeam } from "./team-size"
 import {
   remainingLanePoints,
   unitLanePotential,
@@ -183,6 +184,12 @@ interface CellContext {
   rosterById: ClearEstimateRoster | undefined
 }
 
+/** The event's teams the table reads: an incomplete team (fewer than three members) puts no unit
+ *  in In teams and adds no estimate. */
+function completeTeams(entry: MasterTableEventInput): LegendaryEventTeam[] {
+  return (entry.plan?.teams ?? []).filter(isCompleteTeam)
+}
+
 function laneCell(
   context: CellContext,
   unit: LegendaryEventUnit,
@@ -192,7 +199,7 @@ function laneCell(
   const lane = entry.event[laneId]
   if (!isUnitAllowedOnLane(unit, lane)) return undefined
   const potential = unitLanePotential(unit, lane)
-  const teams = entry.plan?.teams ?? []
+  const teams = completeTeams(entry)
   const inTeams = input.unitSet === "inTeams"
   const { holding, asMember } = laneMemberships(teams, laneId, unit.id)
   if (inTeams && holding.length === 0) return { points: 0, depth: null }
@@ -284,7 +291,7 @@ function eventCell(
     ).objectivesCount
   }
   if (!allowed) return undefined
-  const teams = (entry.plan?.teams ?? []).filter(
+  const teams = completeTeams(entry).filter(
     (team) =>
       team.memberUnitIds.includes(unit.id) || team.reserveUnitId === unit.id
   )

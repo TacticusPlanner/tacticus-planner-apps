@@ -682,7 +682,8 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
       laneId: "alpha",
       name: "Deep",
       sortOrder: 0,
-      memberUnitIds: ["bloodDante"],
+      // A team needs three characters for the plan to play it.
+      memberUnitIds: ["bloodDante", "bloodMephiston", "bloodTerminator"],
       reserveUnitId: null,
       objectiveIndexes: [],
       runDepths: [

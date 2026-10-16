@@ -145,4 +145,17 @@ describe("Legendary Events translations", () => {
       en.tour.event.steps.progressGrid.content
     )
   })
+
+  it.each(translated)(
+    "translates the team minimum copy in %s",
+    (_locale, resource) => {
+      expect(resource.teams.editor.needsMembers).not.toBe(
+        en.teams.editor.needsMembers
+      )
+      expect(resource.teams.incomplete).not.toBe(en.teams.incomplete)
+      expect(resource.teams.picker.countBelowMinimum).not.toBe(
+        en.teams.picker.countBelowMinimum
+      )
+    }
+  )
 })

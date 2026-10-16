@@ -39,6 +39,8 @@ const UNIT_IDS = [
   "ultraCalgar",
   "bloodMephiston",
   "tauFarsight",
+  "bloodDeathCompany",
+  "bloodTerminator",
 ] as const
 const characters = UNIT_IDS.map((id) => fixtureCharacter(id))
 const dante = {
@@ -377,7 +379,11 @@ describe("MasterTablePage", () => {
               laneId: "gamma",
               name: "Assault",
               sortOrder: 0,
-              memberUnitIds: ["bloodDante"],
+              memberUnitIds: [
+                "bloodDante",
+                "bloodDeathCompany",
+                "bloodTerminator",
+              ],
               reserveUnitId: null,
               objectiveIndexes: [2, 4],
               runDepths: [],
@@ -392,7 +398,13 @@ describe("MasterTablePage", () => {
       "data-state",
       "on"
     )
-    await waitFor(() => expect(rowIds()).toEqual(["bloodDante"]))
+    await waitFor(() =>
+      expect([...rowIds()].sort()).toEqual([
+        "bloodDante",
+        "bloodDeathCompany",
+        "bloodTerminator",
+      ])
+    )
     const [points, detail] = [
       within(rowOf("bloodDante")).getByTestId("master-table-cell-points"),
       within(rowOf("bloodDante")).getByTestId("master-table-cell-detail"),
@@ -400,6 +412,39 @@ describe("MasterTablePage", () => {
     expect(points).toHaveTextContent("3,078")
     expect(detail).toHaveTextContent("1")
     expect(detail).toHaveTextContent("Gamma")
+  })
+
+  it("stays on All when the selected plan's only team is incomplete", async () => {
+    data.plans = {
+      status: "ready",
+      data: [
+        {
+          eventId: "astarLysander",
+          revision: 1,
+          catalogVersion: "1",
+          notes: null,
+          showPaidOptions: false,
+          teams: [
+            {
+              id: "short",
+              laneId: "gamma",
+              name: "Short",
+              sortOrder: 0,
+              memberUnitIds: ["bloodDante", "bloodDeathCompany"],
+              reserveUnitId: null,
+              objectiveIndexes: [2, 4],
+              runDepths: [],
+            },
+          ],
+        },
+      ],
+    }
+    renderPage("?events=astarLysander&points=all")
+    await ready()
+    expect(screen.getByTestId("master-table-unit-set-all")).toHaveAttribute(
+      "data-state",
+      "on"
+    )
   })
 
   it("disables In teams with Teams unavailable when the plan list fails", async () => {

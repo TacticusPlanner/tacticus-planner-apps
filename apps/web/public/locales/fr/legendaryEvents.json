@@ -215,6 +215,7 @@
     "loadError": "Impossible de charger tes équipes.",
     "retry": "Réessayer",
     "partialBadge": "{{members}}/{{max}}",
+    "incomplete": "Il faut au moins {{min}} personnages",
     "reserve": "Réserve",
     "members": "Membres",
     "pointsPerBattle": "{{points}} points par combat",
@@ -247,12 +248,14 @@
       "noMembers": "Choisis des unités pour voir les objectifs qu'elles couvrent ensemble.",
       "depth": "Profondeur pour la manche {{run}}",
       "save": "Enregistrer l'équipe",
+      "needsMembers": "Une équipe a besoin d'au moins {{min}} personnages",
       "saving": "Enregistrement…",
       "notSaved": "Ton plan a été rechargé, cette équipe n'a donc pas été enregistrée. Vérifie-la et enregistre à nouveau.",
       "cancel": "Annuler"
     },
     "picker": {
       "count": "{{members}}/5",
+      "countBelowMinimum": "{{members}}/5 · au moins {{min}}",
       "search": "Rechercher des unités",
       "searchPlaceholder": "Rechercher par nom",
       "onlyUnlocked": "Uniquement débloquées",

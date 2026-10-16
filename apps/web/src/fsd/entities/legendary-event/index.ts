@@ -177,6 +177,7 @@ export {
 } from "./lib/run-resolution"
 export { derivedTeamCoverage, reconcileCoverage } from "./lib/team-coverage"
 export { teamPointsPerBattle } from "./lib/team-points"
+export { MIN_TEAM_MEMBERS, isCompleteTeam } from "./lib/team-size"
 export {
   clearEstimateConfig,
   estimateClearDepth,

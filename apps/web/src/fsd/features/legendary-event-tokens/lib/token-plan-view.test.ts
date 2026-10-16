@@ -10,6 +10,7 @@ import {
   UTHAR_RUN_STARTS,
   betweenRunsInput,
   inRun,
+  utharShortTeam,
   workedPlan,
   workedTeams,
   workedViewInput,
@@ -206,6 +207,51 @@ describe("buildTokenPlanView", () => {
 
     expect(view.empty).toEqual({ kind: "noTeams", laneId: "alpha" })
     expect(nextTokenCardState(view)).toBe("noTeams")
+  })
+
+  it("ignores an incomplete team: a lane holding only one reads as having no team", () => {
+    const view = ready(
+      buildTokenPlanView(
+        workedViewInput({
+          plan: {
+            enabled: true,
+            status: "success",
+            data: workedPlan([utharShortTeam]),
+          },
+        })
+      )
+    )
+
+    expect(view.plan.tokens).toEqual([])
+    expect(view.empty).toEqual({ kind: "noTeams", laneId: "alpha" })
+    expect(view.membersByTeam.has("short")).toBe(false)
+    expect(view.fullClear).toEqual([])
+  })
+
+  it("never names an incomplete team as needing a depth", () => {
+    const view = ready(
+      buildTokenPlanView(
+        workedViewInput({
+          estimates: { kind: "hidden" },
+          resolution: inRun(1),
+          plan: {
+            enabled: true,
+            status: "success",
+            data: workedPlan([
+              { ...utharShortTeam, sortOrder: 0 },
+              ...workedTeams.map((team) => ({
+                ...team,
+                sortOrder: team.sortOrder + 1,
+              })),
+            ]),
+          },
+        })
+      )
+    )
+
+    expect(view.empty).toEqual(
+      expect.objectContaining({ kind: "noDepth", teamId: "five" })
+    )
   })
 
   it("names the first team without a depth when none has one", () => {

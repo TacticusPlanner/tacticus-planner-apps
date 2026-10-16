@@ -64,6 +64,10 @@ const team = (
   ...overrides,
 })
 
+/** Dante with two Lysander Gamma units that also meet Min 3 Hits and Rapid Assault, so the team's
+ *  derived coverage stays 2 and 4 (a team needs three characters). */
+const DANTE_TEAM = ["bloodDante", "bloodDeathCompany", "bloodTerminator"]
+
 function table(
   events: MasterTableEventInput[],
   overrides: Partial<MasterTableInput> = {}
@@ -178,7 +182,7 @@ describe("buildMasterTable", () => {
         team({
           id: "assault",
           laneId: "gamma",
-          memberUnitIds: ["bloodDante"],
+          memberUnitIds: DANTE_TEAM,
           // Min 3 Hits (2) and Rapid Assault (4), both still derived by Dante.
           objectiveIndexes: [2, 4],
         }),
@@ -187,7 +191,9 @@ describe("buildMasterTable", () => {
     const result = table([{ event: lysanderEvent, plan }], {
       unitSet: "inTeams",
     })
-    expect(result.rows.map((row) => row.unitId)).toEqual(["bloodDante"])
+    expect(result.rows.map((row) => row.unitId).sort()).toEqual(
+      [...DANTE_TEAM].sort()
+    )
     const cell = danteRow(result)!.cells.astarLysander!
     expect(cell).toMatchObject({
       points: 3078,
@@ -203,7 +209,7 @@ describe("buildMasterTable", () => {
         team({
           id: "assault",
           laneId: "gamma",
-          memberUnitIds: ["bloodDante"],
+          memberUnitIds: DANTE_TEAM,
           reserveUnitId: "bloodMephiston",
           objectiveIndexes: [2, 4],
         }),
@@ -226,7 +232,7 @@ describe("buildMasterTable", () => {
         team({
           id: "assault",
           laneId: "gamma",
-          memberUnitIds: ["bloodDante"],
+          memberUnitIds: DANTE_TEAM,
           objectiveIndexes: [2, 4],
           runDepths: [
             {
@@ -269,7 +275,7 @@ describe("buildMasterTable", () => {
         team({
           id: "assault",
           laneId: "gamma",
-          memberUnitIds: ["bloodDante"],
+          memberUnitIds: DANTE_TEAM,
           objectiveIndexes: [2, 4],
           runDepths: [depth(1, 7), depth(3, 3)],
         }),
@@ -293,6 +299,42 @@ describe("buildMasterTable", () => {
     // Between runs on Uthar the resolved run is 3: its depth (3) is read, not run 1's (7).
     expect(cellFor(3)).toEqual({ points: 171 * 3, depth: 3 })
     expect(cellFor(1)).toEqual({ points: 171 * 7, depth: 7 })
+  })
+
+  it("leaves out an incomplete team: Uthar's two-member team adds bloodIntercessor to no set", () => {
+    const short = team({
+      id: "short",
+      laneId: "alpha",
+      memberUnitIds: ["ultraApothecary", "bloodIntercessor"],
+      objectiveIndexes: [2, 3],
+      runDepths: [
+        {
+          run: 2,
+          expectedBattleClears: 5,
+          expectedBattleClearsSource: "manual",
+          recordedAt: "2026-10-01T00:00:00Z",
+        },
+      ],
+    })
+    const input = {
+      event: utharEvent,
+      plan: { teams: [short] },
+      run: 2 as const,
+      battlePowers: { alpha: powersFor(10) },
+    }
+    const inTeams = table([input], { unitSet: "inTeams" })
+    expect(inTeams.rows.map((row) => row.unitId)).not.toContain(
+      "bloodIntercessor"
+    )
+    expect(inTeams.rows).toEqual([])
+    const all = table([input], { pointsMode: "estimated" })
+    const intercessor = all.rows.find(
+      (row) => row.unitId === "bloodIntercessor"
+    )!
+    expect(intercessor.cells.votanUthar).toMatchObject({
+      teamCount: 0,
+      laneIds: [],
+    })
   })
 
   it("lists only owned units in Unlocked", () => {

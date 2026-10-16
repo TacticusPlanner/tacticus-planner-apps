@@ -49,7 +49,7 @@ const team = (
   laneId,
   name,
   sortOrder,
-  memberUnitIds: [teamUnits.a.id],
+  memberUnitIds: [teamUnits.a.id, teamUnits.b.id, teamUnits.c.id],
   reserveUnitId: null,
   objectiveIndexes: [0],
   runDepths: [],
@@ -91,10 +91,9 @@ const estimator = {
   inputs: {
     battlePowers: [1000, 4000, 30000],
     roster: new Map(
-      [teamUnits.a.id, teamUnits.b.id, teamUnits.r.id].map((unitId) => [
-        unitId,
-        rosterUnit(unitId),
-      ])
+      [teamUnits.a.id, teamUnits.b.id, teamUnits.c.id, teamUnits.r.id].map(
+        (unitId) => [unitId, rosterUnit(unitId)]
+      )
     ),
     config: { powerRatio: 0.5, calibrated: true, hordeMultipliers: new Map() },
   },
@@ -111,7 +110,9 @@ function renderSection(
     laneId = "alpha",
     estimates = { kind: "hidden" },
     lastRunClears,
+    run = 1,
   }: {
+    run?: TeamsViewModel["run"]
     isMobile?: boolean
     laneId?: "alpha" | "beta" | "gamma"
     estimates?: ClearEstimatesViewModel
@@ -129,7 +130,7 @@ function renderSection(
   const teams: TeamsViewModel = {
     eventId: "astarLysander",
     state,
-    run: 1,
+    run,
     actions,
     estimates,
     progressByLane: undefined,
@@ -145,7 +146,7 @@ function renderSection(
       }),
     },
   }
-  render(
+  const view = render(
     <TeamsSection
       isMobile={isMobile}
       lane={teamLane}
@@ -155,7 +156,17 @@ function renderSection(
     />,
     { wrapper: i18nWrapper(i18n) }
   )
-  return actions
+  const rerender = (next: TeamsSectionState) =>
+    view.rerender(
+      <TeamsSection
+        isMobile={isMobile}
+        lane={teamLane}
+        laneId={laneId}
+        onlyUnlocked={false}
+        teams={{ ...teams, state: next }}
+      />
+    )
+  return Object.assign(actions, { rerender })
 }
 
 const ready = (value = plan): TeamsSectionState => ({
@@ -332,5 +343,76 @@ describe("TeamsSection", () => {
       expect.anything(),
       { source: "suggestion", suggestionRank: 1 }
     )
+  })
+
+  it("keeps an incomplete team listed and lets Edit complete it, restoring its depth", async () => {
+    const user = userEvent.setup()
+    // Two members with a stored depth of 5 for run 2 (Uthar's imported team, synthetic units).
+    const short: LegendaryEventTeam = {
+      ...team("short", "Short", "alpha", 1),
+      memberUnitIds: [teamUnits.a.id, teamUnits.b.id],
+      runDepths: [
+        {
+          run: 2,
+          expectedBattleClears: 5,
+          expectedBattleClearsSource: "manual",
+          recordedAt: "2026-10-01T00:00:00Z",
+        },
+      ],
+    }
+    const withShort = { ...plan, teams: [plan.teams[1]!, short] }
+    const actions = renderSection(ready(withShort), { run: 2 })
+    expect(cardNames()).toEqual(["Melee", "Short"])
+    const shortCard = () =>
+      screen.getAllByTestId("legendary-event-team-card")[1]!
+    expect(
+      within(shortCard()).getByTestId("team-card-incomplete")
+    ).toHaveTextContent("Needs at least 3 characters")
+    expect(within(shortCard()).queryByTestId("team-card-depth")).toBeNull()
+
+    await user.click(within(shortCard()).getByTestId("team-card-menu"))
+    await user.click(await screen.findByTestId("team-card-edit"))
+    const editor = await screen.findByTestId("team-editor")
+    expect(
+      within(editor)
+        .getAllByTestId("team-picker-selected-unit")
+        .map((element) => element.dataset.unit)
+    ).toEqual([teamUnits.a.id, teamUnits.b.id])
+    expect(within(editor).getByTestId("team-editor-save")).toBeDisabled()
+
+    const tile = within(editor)
+      .getAllByTestId("team-picker-tile")
+      .find((element) => element.dataset.unit === teamUnits.c.id)!
+    await user.click(within(tile).getByTestId("team-picker-toggle"))
+    expect(within(editor).getByTestId("team-editor-save")).toBeEnabled()
+    actions.updateTeam.mockResolvedValue("saved")
+    await user.click(within(editor).getByTestId("team-editor-save"))
+    expect(actions.updateTeam).toHaveBeenCalledWith(
+      short,
+      expect.objectContaining({
+        memberUnitIds: [teamUnits.a.id, teamUnits.b.id, teamUnits.c.id],
+        expectedBattleClears: 5,
+      }),
+      expect.anything()
+    )
+
+    actions.rerender(
+      ready({
+        ...withShort,
+        teams: [
+          plan.teams[1]!,
+          {
+            ...short,
+            memberUnitIds: [teamUnits.a.id, teamUnits.b.id, teamUnits.c.id],
+          },
+        ],
+      })
+    )
+    expect(within(shortCard()).queryByTestId("team-card-incomplete")).toBeNull()
+    expect(
+      within(within(shortCard()).getByTestId("team-card-depth")).getByTestId(
+        "number-stepper-input"
+      )
+    ).toHaveValue(5)
   })
 })

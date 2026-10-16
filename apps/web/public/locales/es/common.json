@@ -627,6 +627,8 @@
           "unknown_objective": "No se reconoció un objetivo y se omitió.",
           "unknown_lane": "No se reconoció la línea del equipo, así que el equipo se omitió.",
           "empty_team": "No se pudo importar ninguna unidad del equipo, así que el equipo se omitió.",
+          "team_too_small_one": "Solo quedó {{count}} unidad del equipo y un equipo necesita {{min}}, así que el equipo se omitió.",
+          "team_too_small_other": "Solo quedaron {{count}} unidades del equipo y un equipo necesita {{min}}, así que el equipo se omitió.",
           "team_truncated": "El equipo tenía más de cinco unidades; se mantuvieron las cinco primeras.",
           "duplicate_team_merged": "Dos equipos tenían las mismas unidades y se fusionaron en uno.",
           "conflicting_depth_discarded": "Se descartó la profundidad distinta de un equipo fusionado.",

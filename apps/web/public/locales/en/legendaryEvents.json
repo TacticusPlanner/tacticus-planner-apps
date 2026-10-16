@@ -215,6 +215,7 @@
     "loadError": "Your teams could not be loaded.",
     "retry": "Retry",
     "partialBadge": "{{members}}/{{max}}",
+    "incomplete": "Needs at least {{min}} characters",
     "reserve": "Reserve",
     "members": "Members",
     "pointsPerBattle": "{{points}} points per battle",
@@ -247,12 +248,14 @@
       "noMembers": "Pick units to see the objectives they cover together.",
       "depth": "Clear depth for run {{run}}",
       "save": "Save team",
+      "needsMembers": "A team needs at least {{min}} characters",
       "saving": "Saving…",
       "notSaved": "Your plan was reloaded, so this team was not saved. Check it and save again.",
       "cancel": "Cancel"
     },
     "picker": {
       "count": "{{members}}/5",
+      "countBelowMinimum": "{{members}}/5 · at least {{min}}",
       "search": "Search units",
       "searchPlaceholder": "Search by name",
       "onlyUnlocked": "Only unlocked",

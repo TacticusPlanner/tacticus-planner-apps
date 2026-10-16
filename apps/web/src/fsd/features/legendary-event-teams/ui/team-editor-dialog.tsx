@@ -6,6 +6,7 @@ import { Spinner } from "@workspace/ui/components/spinner"
 import { cn } from "@workspace/ui/lib/utils"
 
 import {
+  MIN_TEAM_MEMBERS,
   ObjectiveIcon,
   useObjectiveLabel,
   type ClearEstimate,
@@ -30,6 +31,7 @@ import {
   canSaveDraft,
   checkedObjectives,
   defaultTeamName,
+  draftNeedsMembers,
   effectiveTeamName,
   initialEditorDraft,
   toTeamDraft,
@@ -51,7 +53,8 @@ import { TeamUnitPicker } from "./team-unit-picker"
  * empty from Add team, with a suggestion's members from Use this team, or prefilled from Edit;
  * mount it with a fresh `key` per opening so the draft starts from the team. Covered objectives
  * follow the members live and can be unticked; the depth is the current run's, and mirrors the
- * card: the members' live estimate shows while no manual depth is set. The dialog closes only once
+ * card: the members' live estimate shows while no manual depth is set. Below three members Save is
+ * unavailable and the footer says a team needs three characters. The dialog closes only once
  * the save succeeded — after a conflict or an error the draft stays for another try; after a
  * conflict (the plan was reloaded, this save was not applied) the dialog says so.
  */
@@ -100,6 +103,7 @@ export function TeamEditorDialog({
   const { t, i18n } = useTranslation("legendaryEvents")
   const objectiveLabel = useObjectiveLabel()
   const nameId = useId()
+  const needsMembersId = useId()
   const context = { lane, units }
   const [initialDraft] = useState(() =>
     initialEditorDraft(team, run, context, initialMemberUnitIds)
@@ -120,6 +124,7 @@ export function TeamEditorDialog({
   )
   const name = effectiveTeamName(draft, defaultName)
   const nameTooLong = name.length > TEAM_NAME_MAX_LENGTH
+  const needsMembers = draftNeedsMembers(draft)
   const canSave = canSaveDraft(draft, name) && !saving
   const estimate =
     draft.memberUnitIds.length > 0
@@ -297,6 +302,15 @@ export function TeamEditorDialog({
           </p>
         ) : null}
         <ResponsiveDialogFooter>
+          {needsMembers ? (
+            <p
+              className="text-sm text-muted-foreground md:mr-auto"
+              data-testid="team-editor-needs-members"
+              id={needsMembersId}
+            >
+              {t("teams.editor.needsMembers", { min: MIN_TEAM_MEMBERS })}
+            </p>
+          ) : null}
           <Button
             disabled={saving}
             onClick={() => onOpenChange(false)}
@@ -306,6 +320,7 @@ export function TeamEditorDialog({
             {t("teams.editor.cancel")}
           </Button>
           <Button
+            aria-describedby={needsMembers ? needsMembersId : undefined}
             data-testid="team-editor-save"
             disabled={!canSave}
             type="submit"

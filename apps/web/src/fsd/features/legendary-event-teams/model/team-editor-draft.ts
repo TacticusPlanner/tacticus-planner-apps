@@ -1,4 +1,5 @@
 import {
+  MIN_TEAM_MEMBERS,
   derivedTeamCoverage,
   reconcileCoverage,
   teamDepthForRun,
@@ -188,10 +189,16 @@ export function effectiveTeamName(
   return (draft.name ?? "").trim() || defaultName
 }
 
-/** Save needs at least one member and a 1–60 character name. */
+/** Whether the draft has too few members to be a team (spec: a team needs at least three
+ *  characters); the reserve does not count. */
+export function draftNeedsMembers(draft: TeamEditorDraft): boolean {
+  return draft.memberUnitIds.length < MIN_TEAM_MEMBERS
+}
+
+/** Save needs at least three members (the reserve aside) and a 1–60 character name. */
 export function canSaveDraft(draft: TeamEditorDraft, name: string): boolean {
   return (
-    draft.memberUnitIds.length > 0 &&
+    !draftNeedsMembers(draft) &&
     name.length > 0 &&
     name.length <= TEAM_NAME_MAX_LENGTH
   )

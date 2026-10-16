@@ -1,6 +1,6 @@
 import type { CSSProperties } from "react"
 import { useTranslation } from "react-i18next"
-import { GripVertical, MoreHorizontal } from "lucide-react"
+import { GripVertical, MoreHorizontal, TriangleAlert } from "lucide-react"
 import { characterIcon } from "@workspace/game-catalog"
 import type { UnitId } from "@workspace/game-domain"
 import { Button } from "@workspace/ui/components/button"
@@ -13,6 +13,7 @@ import {
 import { cn } from "@workspace/ui/lib/utils"
 
 import {
+  MIN_TEAM_MEMBERS,
   ObjectiveIcon,
   useObjectiveLabel,
   type LegendaryEventLane,
@@ -49,7 +50,9 @@ export interface TeamCardActions {
  * longer derive one), points per battle, the current run's depth stepper with its estimate
  * (manual depth wins; "Set depth" when there is neither) with what the same team cleared last run
  * (beside it on desktop, wrapped under it on mobile), and the actions menu. On desktop the grip
- * is the drag handle. Stepper clicks show at once and are sent as one write once they settle.
+ * is the drag handle. Stepper clicks show at once and are sent as one write once they settle. An
+ * incomplete team (fewer than three members) warns that it needs three characters in place of the
+ * stepper, and keeps Edit, Delete and its place.
  */
 export function TeamCard({
   card,
@@ -240,23 +243,37 @@ export function TeamCard({
           })}
         </span>
         <div className="flex min-w-0 flex-wrap items-start justify-end gap-2">
-          <span
-            className={cn(
-              "pt-1.5 text-xs",
-              needsDepth ? "font-medium text-primary" : "text-muted-foreground"
-            )}
-            data-testid="team-card-depth-label"
-          >
-            {needsDepth ? t("teams.depth.set") : t("teams.depth.label")}
-          </span>
-          <ClearDepthField
-            battleCount={lane.battleIds.length}
-            data-testid="team-card-depth"
-            estimate={card.estimate}
-            lockedMemberCount={card.lockedMemberCount}
-            onChange={setDepth}
-            value={depth}
-          />
+          {card.incomplete ? (
+            <span
+              className="flex items-center gap-1.5 pt-1.5 text-xs font-medium text-destructive"
+              data-testid="team-card-incomplete"
+            >
+              <TriangleAlert aria-hidden className="size-4 shrink-0" />
+              {t("teams.incomplete", { min: MIN_TEAM_MEMBERS })}
+            </span>
+          ) : (
+            <>
+              <span
+                className={cn(
+                  "pt-1.5 text-xs",
+                  needsDepth
+                    ? "font-medium text-primary"
+                    : "text-muted-foreground"
+                )}
+                data-testid="team-card-depth-label"
+              >
+                {needsDepth ? t("teams.depth.set") : t("teams.depth.label")}
+              </span>
+              <ClearDepthField
+                battleCount={lane.battleIds.length}
+                data-testid="team-card-depth"
+                estimate={card.estimate}
+                lockedMemberCount={card.lockedMemberCount}
+                onChange={setDepth}
+                value={depth}
+              />
+            </>
+          )}
           {lastRunClearedBattle === undefined ? null : (
             <span
               className="basis-full pt-0 text-right text-xs text-muted-foreground tabular-nums md:basis-auto md:pt-1.5"

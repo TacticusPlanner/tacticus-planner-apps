@@ -11,6 +11,7 @@ import {
   UTHAR_RUN_STARTS,
   betweenRunsInput,
   inRun,
+  utharShortTeam,
   workedPlan,
   workedTeams,
   workedViewInput,
@@ -177,6 +178,24 @@ describe("NextTokenCard", () => {
       screen.getByRole("button", { name: "Add a team on Alpha to get a plan" })
     )
     expect(onOpenTeams).toHaveBeenCalledWith("alpha", undefined)
+  })
+
+  it("asks for a team on Alpha when its only team is incomplete", () => {
+    renderCard(
+      buildTokenPlanView(
+        workedViewInput({
+          plan: {
+            enabled: true,
+            status: "success",
+            data: workedPlan([utharShortTeam]),
+          },
+        })
+      )
+    )
+
+    expect(
+      screen.getByRole("button", { name: "Add a team on Alpha to get a plan" })
+    ).toBeInTheDocument()
   })
 
   it("links a team without depth to its card", () => {

@@ -10,6 +10,7 @@ import { cn } from "@workspace/ui/lib/utils"
 
 import { UnitGoalBadge } from "@/entities/goal"
 import {
+  MIN_TEAM_MEMBERS,
   ObjectiveIcon,
   useObjectiveLabel,
   type LegendaryEventLane,
@@ -30,7 +31,7 @@ import {
  * The editor's unit picker (design D7): the lane's allowed units as tiles (portrait, name, the
  * objectives each satisfies with the others muted, points per battle, locked styling), a name
  * search and an "only unlocked" switch. A tap toggles membership up to five; a sixth tap is
- * ignored and pulses the count badge. A tile's secondary action sets the reserve. The selected
+ * ignored and pulses the count badge, which also says a team needs three while it has fewer. A tile's secondary action sets the reserve. The selected
  * members (in position order) and the reserve sit above the grid with remove buttons. With Goals
  * Preview available, a switch (starting from the page's value) shows tiles at their goal targets:
  * owned state, rarity, rank, estimated clears and a preview marker.
@@ -119,7 +120,12 @@ export function TeamUnitPicker({
           data-testid="team-picker-count"
           key={pulse}
         >
-          {t("teams.picker.count", { members: memberUnitIds.length })}
+          {memberUnitIds.length < MIN_TEAM_MEMBERS
+            ? t("teams.picker.countBelowMinimum", {
+                members: memberUnitIds.length,
+                min: MIN_TEAM_MEMBERS,
+              })
+            : t("teams.picker.count", { members: memberUnitIds.length })}
         </span>
         <ul
           className="flex min-w-0 flex-wrap gap-1.5"
