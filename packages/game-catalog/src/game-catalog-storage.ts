@@ -21,7 +21,8 @@ export const catalogDbName = "tacticus-planner-game-catalog"
 // v9: add the `horde-mode-tiers` store (same additive cascade).
 // v10: drop the `lre-common` store (each `lres` record now carries its own `rewards` ladder) and its
 // stale metadata row.
-export const catalogDbVersion = 10
+// v11: add the `mythic-quests` store (same additive cascade).
+export const catalogDbVersion = 11
 
 // One EntityTable per served dataset, keyed by "id" — computed from the same union that builds the
 // stores below (GameCatalogDatasetKey === typeof servedDatasetKeys[number]), so every dataset store is
