@@ -43,7 +43,7 @@ describe("TokenPlanList", () => {
     renderList(buildTokenPlanView(workedViewInput()))
 
     expect(screen.getByTestId("token-plan-summary")).toHaveTextContent(
-      "6 tokens · +978 points"
+      "6 tokens · +1,136 points"
     )
     expect(screen.getByTestId("token-plan-toggle")).toHaveAttribute(
       "aria-expanded",
@@ -52,7 +52,7 @@ describe("TokenPlanList", () => {
     expect(screen.queryByTestId("token-plan-row")).toBeNull()
   })
 
-  it("groups consecutive tokens by team and marks milestone 13 on token 3", () => {
+  it("groups consecutive tokens by team and marks milestones 13 and 14 on tokens 3 and 5", () => {
     renderList(buildTokenPlanView(workedViewInput()))
     expand()
 
@@ -69,12 +69,17 @@ describe("TokenPlanList", () => {
       ["melee", 2],
     ])
     const markers = screen.getAllByTestId("token-plan-marker")
-    expect(markers).toHaveLength(1)
+    expect(markers).toHaveLength(2)
     expect(markers[0]!.closest("[data-index]")).toHaveAttribute(
       "data-index",
       "2"
     )
     expect(markers[0]).toHaveTextContent("Milestone 13 · +85 currency")
+    expect(markers[1]!.closest("[data-index]")).toHaveAttribute(
+      "data-index",
+      "4"
+    )
+    expect(markers[1]).toHaveTextContent("Milestone 14 · +90 currency")
     expect(capture).toHaveBeenCalledWith({
       type: "legendary_event_token_plan_expanded",
       eventId: "votanUthar",
@@ -106,7 +111,7 @@ describe("TokenPlanList", () => {
 
     const row = screen.getAllByTestId("token-plan-row")[0]!
     expect(row.children).toHaveLength(2)
-    expect(row).toHaveTextContent("+205")
+    expect(row).toHaveTextContent("+240")
   })
 
   it("is hidden with an empty plan", () => {

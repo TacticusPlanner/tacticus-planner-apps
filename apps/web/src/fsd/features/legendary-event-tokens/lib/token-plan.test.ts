@@ -24,19 +24,20 @@ describe("planTokens", () => {
     const plan = planTokens({ lanes: workedLanes(), startingPoints: 5000 })
 
     expect(summary(plan.tokens)).toEqual([
-      // Battle 3: 35 kill score + 30 defeat-all + 75 Ultramarines + 65 Melee.
-      ["alpha", "melee", 3, 205, 5205],
-      // Battle 4 opens once battle 3 is won: 39 + 30 + 140.
-      ["alpha", "melee", 4, 209, 5414],
-      ["alpha", "melee", 5, 211, 5625],
-      // Melee's depth 5 does not reach battle 6: Five plays it, 43 + 30 + 75.
-      ["alpha", "five", 6, 148, 5773],
-      // Battle 2: Ultramarines + Melee (defeat-all and the high score are already in).
-      ["alpha", "melee", 2, 140, 5913],
+      // Battle 3: 35 kill score + 35 high score + 30 defeat-all + 75 Ultramarines + 65 Melee.
+      ["alpha", "melee", 3, 240, 5240],
+      // Battle 4 opens once battle 3 is won: 39 + 39 + 30 + 140.
+      ["alpha", "melee", 4, 248, 5488],
+      // 41 + 41 + 30 + 140.
+      ["alpha", "melee", 5, 252, 5740],
+      // Melee's depth 5 does not reach battle 6: Five plays it, 43 + 43 + 30 + 75.
+      ["alpha", "five", 6, 191, 5931],
+      // Battle 2: Ultramarines + Melee (defeat-all and both scores are already in).
+      ["alpha", "melee", 2, 140, 6071],
       // Battle 1: Melee only.
-      ["alpha", "melee", 1, 65, 5978],
+      ["alpha", "melee", 1, 65, 6136],
     ])
-    expect(plan.totalPoints).toBe(978)
+    expect(plan.totalPoints).toBe(1136)
     expect(plan.tokens[0]?.clearedIds).toEqual([0, 1, 4])
     expect(plan.tokens.every((token) => !token.maybe)).toBe(true)
     expect(plan.tokens.map((token) => token.playableNow)).toEqual([
@@ -55,7 +56,7 @@ describe("planTokens", () => {
       startingPoints: 5000,
     })
 
-    expect(plan.totalPoints).toBe(978)
+    expect(plan.totalPoints).toBe(1136)
     expect(plan.tokens.map((token) => token.maybe)).toEqual([
       true,
       false,
@@ -73,10 +74,11 @@ describe("planTokens", () => {
     })
 
     expect(summary(plan.tokens)).toEqual([
-      ["alpha", "melee", 3, 205, 5205],
-      ["alpha", "melee", 2, 140, 5345],
-      ["alpha", "melee", 1, 65, 5410],
+      ["alpha", "melee", 3, 240, 5240],
+      ["alpha", "melee", 2, 140, 5380],
+      ["alpha", "melee", 1, 65, 5445],
     ])
+    expect(plan.totalPoints).toBe(445)
   })
 
   it("drops only the objective marked Stop here", () => {
@@ -100,13 +102,13 @@ describe("planTokens", () => {
     expect(plan.tokens).toEqual([])
   })
 
-  it("counts a partial high score once the battle is won", () => {
+  it("counts the kill score left and the high score left once the battle is won", () => {
     const plan = planTokens({
       lanes: [
         utharLane("alpha", {
           synced: {
             encounters: [
-              { objectivesCleared: [0], highScore: 20, encounterPoints: 20 },
+              { objectivesCleared: [0], highScore: 20, encounterPoints: 25 },
             ],
           } as typeof workedAlphaRecord,
           teams: [{ ...fiveTeam, objectiveIndexes: [], depth: 1 }],
@@ -115,7 +117,8 @@ describe("planTokens", () => {
       startingPoints: 0,
     })
 
-    expect(summary(plan.tokens)).toEqual([["alpha", "five", 1, 9, 9]])
+    // Battle 1 (battlesPoints 29): (29 − 25) + (29 − 20).
+    expect(summary(plan.tokens)).toEqual([["alpha", "five", 1, 13, 13]])
     expect(plan.tokens[0]?.clearedIds).toEqual([])
   })
 
@@ -125,8 +128,8 @@ describe("planTokens", () => {
       startingPoints: 0,
     })
 
-    // 29 kill score + 30 defeat-all + 75 Ultramarines.
-    expect(summary(plan.tokens)).toEqual([["alpha", "five", 1, 134, 134]])
+    // 29 kill score + 29 high score + 30 defeat-all + 75 Ultramarines.
+    expect(summary(plan.tokens)).toEqual([["alpha", "five", 1, 163, 163]])
   })
 
   it("prefers the same team on its next battle on a tie", () => {
@@ -145,19 +148,19 @@ describe("planTokens", () => {
       startingPoints: 0,
     })
 
-    // Alpha battle 1 (59) wins the first tie by lane order; Alpha battle 2 (61) then beats Beta
-    // battle 1 (59); Beta follows.
+    // Alpha battle 1 (29 + 29 + 30 = 88) wins the first tie by lane order; Alpha battle 2
+    // (31 + 31 + 30 = 92) then beats Beta battle 1 (88); Beta follows.
     expect(summary(plan.tokens)).toEqual([
-      ["alpha", "a", 1, 59, 59],
-      ["alpha", "a", 2, 61, 120],
-      ["beta", "b", 1, 59, 179],
-      ["beta", "b", 2, 61, 240],
+      ["alpha", "a", 1, 88, 88],
+      ["alpha", "a", 2, 92, 180],
+      ["beta", "b", 1, 88, 268],
+      ["beta", "b", 2, 92, 360],
     ])
   })
 
   it("lets the same team continue over an earlier lane when the points tie", () => {
-    // Alpha battle 1 and Beta battle 2 are both worth 61 to defeat-all-only teams once Beta
-    // battle 1 is played; Beta's team continues.
+    // Alpha battle 1 and Beta battle 2 are both worth 31 + 31 + 30 = 92 to defeat-all-only teams
+    // once Beta battle 1 is played; Beta's team continues.
     const team = { id: "t", name: "T", objectiveIndexes: [], depth: 2 }
     const alpha = {
       ...utharLane("alpha", { teams: [{ ...team, id: "a", depth: 1 }] }),
@@ -181,9 +184,9 @@ describe("planTokens", () => {
     const plan = planTokens({ lanes: [alpha, beta], startingPoints: 0 })
 
     expect(summary(plan.tokens)).toEqual([
-      ["beta", "b", 1, 70, 70],
-      ["beta", "b", 2, 61, 131],
-      ["alpha", "a", 1, 61, 192],
+      ["beta", "b", 1, 110, 110],
+      ["beta", "b", 2, 92, 202],
+      ["alpha", "a", 1, 92, 294],
     ])
   })
 
@@ -205,7 +208,7 @@ describe("nextToken", () => {
     expect(choice).toMatchObject({
       index: 0,
       reason: "mostPoints",
-      token: { teamId: "melee", battleIndex: 2, points: 205 },
+      token: { teamId: "melee", battleIndex: 2, points: 240 },
     })
   })
 

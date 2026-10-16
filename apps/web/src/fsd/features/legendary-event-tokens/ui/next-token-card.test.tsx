@@ -76,7 +76,7 @@ describe("NextTokenCard", () => {
       "Alpha · Battle 3"
     )
     expect(screen.getByTestId("next-token-points")).toHaveTextContent(
-      "+205 points"
+      "+240 points"
     )
     const objectives = within(screen.getByTestId("token-objectives"))
       .getAllByRole("listitem")

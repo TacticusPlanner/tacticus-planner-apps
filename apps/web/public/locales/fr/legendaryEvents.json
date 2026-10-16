@@ -181,7 +181,7 @@
     "unavailable": "Données synchronisées indisponibles",
     "howPoints": {
       "title": "Comment fonctionnent les points",
-      "body": "Les points gagnés d'un combat sont son meilleur score plus le score de chaque objectif que vous y avez rempli, bonus « tout vaincre » compris. Le maximum d'un combat additionne son score d'éliminations, son meilleur score, le bonus « tout vaincre » et le score de chaque objectif ; le maximum de la voie additionne tous les combats."
+      "body": "Les points gagnés d'un combat sont son score d'éliminations plus son meilleur score, auxquels s'ajoutent le bonus « tout vaincre » et le score de chaque objectif que vous y avez rempli. Le maximum d'un combat additionne son score d'éliminations complet, son meilleur score complet, le bonus « tout vaincre » et le score de chaque objectif ; le maximum de la voie additionne tous les combats."
     }
   },
   "annotations": {

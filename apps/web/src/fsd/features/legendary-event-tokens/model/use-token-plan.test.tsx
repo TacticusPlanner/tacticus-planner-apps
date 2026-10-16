@@ -24,7 +24,7 @@ describe("useTokenPlan", () => {
       { initialProps: { lifecycle: { ...input.lifecycle } } }
     )
     const first = result.current
-    expect(first.kind === "ready" && first.plan.totalPoints).toBe(978)
+    expect(first.kind === "ready" && first.plan.totalPoints).toBe(1136)
 
     rerender({ lifecycle: { ...input.lifecycle } })
     expect(result.current).toBe(first)

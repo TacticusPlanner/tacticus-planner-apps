@@ -181,7 +181,7 @@
     "unavailable": "Datos sincronizados no disponibles",
     "howPoints": {
       "title": "Cómo funcionan los puntos",
-      "body": "Los puntos conseguidos en una batalla son su puntuación máxima más la puntuación de cada objetivo que superaste en ella, incluida la bonificación por derrotar a todos. El máximo de una batalla suma su puntuación de bajas, su puntuación máxima, la bonificación por derrotar a todos y la puntuación de cada objetivo; el máximo del carril suma todas las batallas."
+      "body": "Los puntos conseguidos en una batalla son su puntuación de bajas más su puntuación máxima, más la bonificación por derrotar a todos y la puntuación de cada objetivo que superaste en ella. El máximo de una batalla suma su puntuación de bajas completa, su puntuación máxima completa, la bonificación por derrotar a todos y la puntuación de cada objetivo; el máximo del carril suma todas las batallas."
     }
   },
   "annotations": {

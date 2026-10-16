@@ -35,13 +35,13 @@ const row = (unitId: string): UpgradeImpactRow => ({
     progression: "Epic:RedThreeStars",
     unit: unit(unitId),
   },
-  gainPoints: 148,
+  gainPoints: 191,
   teams: [{ teamId: "four", depthBefore: 5, depthAfter: 6 }],
 })
 const WORKED: UpgradeImpactState = {
   kind: "ready",
   impact: {
-    baselinePoints: 505,
+    baselinePoints: 620,
     rows: ["ultraCalgar", "ultraApothecary", "ultraTigurius", "ultraTitus"].map(
       row
     ),
@@ -101,7 +101,7 @@ describe("UpgradeImpactSection", () => {
 
   it("starts collapsed with the derived summary, then shows the rows", () => {
     renderSection(WORKED)
-    expect(summary()).toHaveTextContent("4 upgrades add points · best +148")
+    expect(summary()).toHaveTextContent("4 upgrades add points · best +191")
     expect(screen.queryAllByTestId("upgrade-impact-row")).toHaveLength(0)
     expect(screen.getByTestId("upgrade-impact-toggle")).toHaveAttribute(
       "aria-expanded",
@@ -124,7 +124,7 @@ describe("UpgradeImpactSection", () => {
     ).toHaveTextContent("Four: battle 5 → 6")
     expect(
       within(rows[2]!).getByTestId("upgrade-impact-gain")
-    ).toHaveTextContent("+148 points")
+    ).toHaveTextContent("+191 points")
     expect(window.localStorage.getItem(UPGRADE_IMPACT_OPEN_KEY)).toBe("open")
     expect(capture).toHaveBeenCalledWith({
       type: "legendary_event_upgrade_impact_expanded",

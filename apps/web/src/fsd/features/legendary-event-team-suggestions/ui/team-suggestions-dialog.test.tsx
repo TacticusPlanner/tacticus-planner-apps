@@ -128,9 +128,9 @@ describe("TeamSuggestionsDialog", () => {
     expect(
       within(cards()[0]!).getByTestId("team-suggestion-reason")
     ).toHaveTextContent(
-      "Covers Ultramarines and Melee · clears ~5 · +830 points over your teams"
+      "Covers Ultramarines and Melee · clears ~5 · +945 points over your teams"
     )
-    expect(members(cards()[1]!)).toEqual(["ultraApothecary"])
+    expect(members(cards()[1]!)).toEqual(["ultraApothecary", "ultraCalgar"])
 
     fireEvent.click(screen.getByTestId("team-suggestions-show-more"))
     expect(cards()).toHaveLength(5)
@@ -154,7 +154,7 @@ describe("TeamSuggestionsDialog", () => {
       expect.objectContaining({
         memberUnitIds: ["ultraApothecary", "ultraCalgar", "ultraTitus"],
         coveredObjectiveIndexes: [0, 3],
-        gainPoints: 830,
+        gainPoints: 945,
       }),
       1
     )

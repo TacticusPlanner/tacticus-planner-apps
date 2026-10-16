@@ -167,7 +167,7 @@ describe("LastRunCard", () => {
       "columns"
     )
     expect(laneSummaries()).toEqual([
-      "Alpha: battle 4 · 1,002 points",
+      "Alpha: battle 4 · 1,139 points",
       "Beta: no battle cleared · 0 points",
       "Gamma: no battle cleared · 0 points",
     ])
@@ -375,7 +375,7 @@ describe("LastRunCard", () => {
         entry
           .getAllByTestId("last-run-lane-summary")
           .map((summary) => summary.textContent)[0]
-      ).toBe("Alpha: battle 4 · 1,002 points")
+      ).toBe("Alpha: battle 4 · 1,139 points")
 
       // Closing and reopening records the expansion only once.
       fireEvent.click(toggle)

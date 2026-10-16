@@ -29,14 +29,14 @@ describe("buildTokenPlanView", () => {
         token.points,
       ])
     ).toEqual([
-      ["melee", 2, 205],
-      ["melee", 3, 209],
-      ["melee", 4, 211],
-      ["five", 5, 148],
+      ["melee", 2, 240],
+      ["melee", 3, 248],
+      ["melee", 4, 252],
+      ["five", 5, 191],
       ["melee", 1, 140],
       ["melee", 0, 65],
     ])
-    expect(view.plan.totalPoints).toBe(978)
+    expect(view.plan.totalPoints).toBe(1136)
     expect(view.next).toMatchObject({
       index: 0,
       reason: "mostPoints",
@@ -56,8 +56,8 @@ describe("buildTokenPlanView", () => {
     ])
     expect(view.forecast?.runs.at(-1)).toMatchObject({
       run: 3,
-      endingPoints: 5978,
-      shardsMissing: 100,
+      endingPoints: 6136,
+      shardsMissing: 75,
     })
     expect(view.leftover).toEqual({ tokens: 94, laneId: "alpha" })
     expect(view.upcomingRun).toBeNull()

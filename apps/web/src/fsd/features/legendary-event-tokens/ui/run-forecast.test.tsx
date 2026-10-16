@@ -45,7 +45,7 @@ describe("RunForecastSection", () => {
     renderForecast(buildTokenPlanView(workedViewInput()))
 
     expect(screen.getByTestId("run-forecast-header")).toHaveTextContent(
-      "By the end of run 3: 5,978 points · Unlock 100 shards short"
+      "By the end of run 3: 6,136 points · Unlock 75 shards short"
     )
     expect(screen.queryByTestId("run-forecast-run")).toBeNull()
   })
@@ -83,7 +83,8 @@ describe("RunForecastSection", () => {
     renderForecast(
       buildTokenPlanView({
         ...base,
-        progress: { ...(base.progress as object), currentShards: 340 } as never,
+        // Run 2 opens chest 11 (+25): it ends with 340 shards, 60 short of Unlock.
+        progress: { ...(base.progress as object), currentShards: 315 } as never,
       })
     )
     expand()

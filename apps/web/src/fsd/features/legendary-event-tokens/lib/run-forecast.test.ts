@@ -30,7 +30,7 @@ const supply = (
   total: number
 ): RunSupply => ({ run, state, free: total, ad: 0, bonusDelivery: 0, total })
 
-const workedPoints = [205, 209, 211, 148, 140, 65].map((points) => ({ points }))
+const workedPoints = [240, 248, 252, 191, 140, 65].map((points) => ({ points }))
 
 /** The worked forecast: Uthar in run 2 (32 tokens left), run 3 planned (68), Stage 3's inputs. */
 const worked = (overrides: Partial<ForecastInput> = {}): ForecastInput => ({
@@ -67,18 +67,20 @@ describe("forecastRuns", () => {
       state: "now",
       tokensUsed: 6,
       tokensLeftOver: 26,
-      pointsEarned: 978,
-      endingPoints: 5978,
-      // Milestone 13 at 5,500 pays 85, no bonus; chest 11 costs 260.
-      currencyEarned: 85,
+      pointsEarned: 1136,
+      endingPoints: 6136,
+      // Milestones 13 at 5,500 and 14 at 6,000 pay 85 + 90, no bonus: 295 in hand opens chest 11
+      // (260; 35 left).
+      currencyEarned: 175,
       missionCurrency: 0,
-      endingCurrency: 205,
-      chestsOpened: 0,
-      chestsClaimed: 10,
-      endingShards: 250,
+      endingCurrency: 35,
+      chestsOpened: 1,
+      chestsClaimed: 11,
+      endingShards: 275,
       stepsReached: [],
       next: { step: "unlock", threshold: 400 },
-      shardsMissing: 150,
+      // 125 > 75: no Oh So Close hint.
+      shardsMissing: 125,
       ohSoClose: null,
     })
     expect(run3).toMatchObject({
@@ -86,24 +88,27 @@ describe("forecastRuns", () => {
       tokensUsed: 0,
       tokensLeftOver: 68,
       pointsEarned: 0,
-      endingPoints: 5978,
-      // 10 × 25 missions + the 300 bundle: 755 in hand, chests 11 (260) and 12 (280) open.
+      endingPoints: 6136,
+      // 10 × 25 missions + the 300 bundle: 585 in hand, chests 12 (280; 305 left) and 13 (300; 5
+      // left) open.
       missionCurrency: 250,
       bundleCurrency: 300,
       currencyEarned: 550,
-      endingCurrency: 215,
+      endingCurrency: 5,
       chestsOpened: 2,
-      chestsClaimed: 12,
-      endingShards: 300,
-      shardsMissing: 100,
-      ohSoClose: null,
+      chestsClaimed: 13,
+      endingShards: 325,
+      next: { step: "unlock", threshold: 400 },
+      shardsMissing: 75,
+      // 500 + 75 × 100.
+      ohSoClose: { shards: 75, blackstone: 8000 },
     })
     expect(markers.map((marker) => marker.milestones)).toEqual([
       [],
       [],
       [{ milestone: 13, payout: 85 }],
       [],
-      [],
+      [{ milestone: 14, payout: 90 }],
       [],
     ])
   })
@@ -115,7 +120,8 @@ describe("forecastRuns", () => {
       })
     ).runs[1]
 
-    expect(run2?.currencyEarned).toBe(100)
+    // (85 + 15) + (90 + 15).
+    expect(run2?.currencyEarned).toBe(205)
   })
 
   it("carries the plan into the next run when it is longer than the run", () => {
@@ -158,16 +164,18 @@ describe("forecastRuns", () => {
       })
     ).runs[2]
 
-    // 205 + 250 opens chest 11 (25 shards); the 50 Oh So Close shards are not added.
+    // Run 2 opens chest 11 (275 shards, 35 left); 35 + 250 opens chest 12 (300 shards); the 50
+    // Oh So Close shards are not added.
     expect(run3).toMatchObject({ missionCurrency: 250, bundleCurrency: 0 })
-    expect(run3?.endingShards).toBe(275)
+    expect(run3?.endingShards).toBe(300)
   })
 
   it("adds a planned run's Oh So Close shards", () => {
     const run3 = forecastRuns(worked({ runs: [runInputs(3, 0, 0, false, 75)] }))
       .runs[2]
 
-    expect(run3?.endingShards).toBe(325)
+    // Run 2 ends at 275 shards (chest 11).
+    expect(run3?.endingShards).toBe(350)
   })
 
   it("starts from zero without a synced entry", () => {

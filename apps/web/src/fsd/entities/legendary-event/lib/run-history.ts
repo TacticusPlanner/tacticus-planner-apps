@@ -72,12 +72,17 @@ function deepestBattle(
 export interface RecordLaneSummary {
   /** The highest battle with defeat-all cleared; 0 when none. */
   clearedBattle: number
-  /** The Stage 1 earned points over the current catalog lane; null when the record has more
-   *  battles than the catalog lane (catalog drift). */
+  /** The synced-progress earned points over the current catalog lane, the stored high score
+   *  standing for both awards; null when the record has more battles than the catalog lane
+   *  (catalog drift). */
   points: number | null
 }
 
-/** A record lane's cleared battle and earned points (design D7). */
+/**
+ * A record lane's cleared battle and earned points (design D7). A record keeps only each
+ * encounter's high score, which the game reports equal to the kill score, so it stands for both
+ * awards (`encounterPoints = highScore`).
+ */
 export function recordLaneSummary(
   encounters: readonly LegendaryEventRunRecordEncounter[] | null,
   lane: Pick<
@@ -90,7 +95,10 @@ export function recordLaneSummary(
   const model = buildLanePointsModel(lane)
   if (list.length > model.battles.length) return { clearedBattle, points: null }
   const progress = buildSyncedLaneProgress(model, {
-    encounters: list.map((encounter) => ({ ...encounter, encounterPoints: 0 })),
+    encounters: list.map((encounter) => ({
+      ...encounter,
+      encounterPoints: encounter.highScore,
+    })),
   } as unknown as LegendaryEventLaneRecord)
   return { clearedBattle, points: progress.pointsEarned }
 }

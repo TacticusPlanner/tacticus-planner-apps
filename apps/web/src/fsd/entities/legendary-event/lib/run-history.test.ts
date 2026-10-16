@@ -72,11 +72,23 @@ describe("selectRunRecords", () => {
 })
 
 describe("recordLaneSummary", () => {
-  it("reproduces Uthar Alpha run 1: battle 4; 434 + 291 + 130 + 135 + 12 = 1,002", () => {
+  it("reproduces Uthar Alpha run 1: battle 4; 463 + 322 + 165 + 165 + 24 = 1,139", () => {
+    // Each stored high score counts twice: once as the kill score, once as the high score.
     expect(recordLaneSummary(alphaEncounters, utharEvent.alpha)).toEqual({
       clearedBattle: 4,
-      points: 1002,
+      points: 1139,
     })
+    const encounters = alphaEncounters ?? []
+    const perBattle = encounters.map(
+      (_, index) =>
+        recordLaneSummary(encounters.slice(index, index + 1), {
+          ...utharEvent.alpha,
+          battleIds: utharEvent.alpha.battleIds.slice(index),
+          battlesPoints: utharEvent.alpha.battlesPoints.slice(index),
+          defeatAll: utharEvent.alpha.defeatAll.slice(index),
+        }).points
+    )
+    expect(perBattle).toEqual([463, 322, 165, 165, 24])
   })
 
   it("is 0 / 0 for a null lane", () => {
@@ -176,7 +188,7 @@ describe("recordHistory", () => {
     expect(history.run).toBe(1)
     expect(history.teamCount).toBe(2)
     const alpha = history.lanes.find((lane) => lane.laneId === "alpha")!
-    expect(alpha).toMatchObject({ clearedBattle: 4, points: 1002 })
+    expect(alpha).toMatchObject({ clearedBattle: 4, points: 1139 })
     expect(
       alpha.teams.map((team) => [
         team.team.name,

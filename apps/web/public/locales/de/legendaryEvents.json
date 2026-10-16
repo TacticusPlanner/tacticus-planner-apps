@@ -181,7 +181,7 @@
     "unavailable": "Synchronisierte Daten nicht verfügbar",
     "howPoints": {
       "title": "So funktionieren Punkte",
-      "body": "Die erzielten Punkte eines Kampfes sind sein Highscore plus die Punkte jedes Ziels, das du darin erfüllt hast, einschließlich des Bonus für „Alle besiegen“. Das Maximum eines Kampfes addiert Kill-Punkte, Highscore, den Bonus für „Alle besiegen“ und alle Zielpunkte; das Lane-Maximum addiert alle Kämpfe."
+      "body": "Die erzielten Punkte eines Kampfes sind seine Kill-Punkte plus sein Highscore, dazu der Bonus für „Alle besiegen“ und die Punkte jedes Ziels, das du darin erfüllt hast. Das Maximum eines Kampfes addiert die vollen Kill-Punkte, den vollen Highscore, den Bonus für „Alle besiegen“ und alle Zielpunkte; das Lane-Maximum addiert alle Kämpfe."
     }
   },
   "annotations": {

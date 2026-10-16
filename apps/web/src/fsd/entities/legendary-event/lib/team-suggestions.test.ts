@@ -47,7 +47,7 @@ const suggest = (overrides: Partial<TeamSuggestionsInput> = {}) =>
 const MELEE_TEAM = ["ultraApothecary", "ultraCalgar", "ultraTitus"]
 
 describe("suggestLaneTeams (spec worked examples)", () => {
-  it("ranks the worked Uthar Alpha proposals: 830, 830, 819, 755, 653", () => {
+  it("ranks the worked Uthar Alpha proposals: 945, 893, 870, 865, 811", () => {
     expect(
       suggest().map(
         ({ memberUnitIds, coveredObjectiveIndexes, depth, gainPoints }) => ({
@@ -58,24 +58,21 @@ describe("suggestLaneTeams (spec worked examples)", () => {
         })
       )
     ).toEqual([
+      // 65 + 140 + 240 + 248 + 252
       {
         memberUnitIds: MELEE_TEAM,
         coveredObjectiveIndexes: [ULTRAMARINES, MELEE],
         depth: 5,
-        gainPoints: 830,
+        gainPoints: 945,
       },
-      {
-        memberUnitIds: ["ultraApothecary"],
-        coveredObjectiveIndexes: [ULTRAMARINES, MAX_2_HITS, MELEE, PIERCING],
-        depth: 3,
-        gainPoints: 830,
-      },
+      // 115 + 190 + 290 + 298
       {
         memberUnitIds: ["ultraApothecary", "ultraCalgar"],
         coveredObjectiveIndexes: [ULTRAMARINES, MAX_2_HITS, MELEE],
         depth: 4,
-        gainPoints: 819,
+        gainPoints: 893,
       },
+      // 50 + 125 + 225 + 233 + 237
       {
         memberUnitIds: [
           "ultraTigurius",
@@ -85,8 +82,16 @@ describe("suggestLaneTeams (spec worked examples)", () => {
         ],
         coveredObjectiveIndexes: [ULTRAMARINES, MAX_2_HITS],
         depth: 5,
-        gainPoints: 755,
+        gainPoints: 870,
       },
+      // 205 + 280 + 380
+      {
+        memberUnitIds: ["ultraApothecary"],
+        coveredObjectiveIndexes: [ULTRAMARINES, MAX_2_HITS, MELEE, PIERCING],
+        depth: 3,
+        gainPoints: 865,
+      },
+      // 0 + 75 + 175 + 183 + 187 + 191
       {
         memberUnitIds: [
           "ultraTigurius",
@@ -97,12 +102,12 @@ describe("suggestLaneTeams (spec worked examples)", () => {
         ],
         coveredObjectiveIndexes: [ULTRAMARINES],
         depth: 6,
-        gainPoints: 653,
+        gainPoints: 811,
       },
     ])
   })
 
-  it("re-ranks after the Melee proposal is saved: 420, 250, 200, 148", () => {
+  it("re-ranks after the Melee proposal is saved: 420, 250, 200, 191", () => {
     const suggestions = suggest({
       existingTeams: [
         {
@@ -113,7 +118,7 @@ describe("suggestLaneTeams (spec worked examples)", () => {
       ],
     })
     expect(suggestions.map((suggestion) => suggestion.gainPoints)).toEqual([
-      420, 250, 200, 148,
+      420, 250, 200, 191,
     ])
     expect(
       suggestions.some(

@@ -181,7 +181,7 @@
     "unavailable": "Synced data unavailable",
     "howPoints": {
       "title": "How points work",
-      "body": "Each battle's earned points are its high score plus the score of every objective you cleared in it, including the defeat-all bonus. A battle's maximum adds its kill score, its high score, the defeat-all bonus and every objective's score; the lane maximum adds every battle."
+      "body": "Each battle's earned points are its kill score plus its high score, plus the defeat-all bonus and the score of every objective you cleared in it. A battle's maximum adds its full kill score, its full high score, the defeat-all bonus and every objective's score; the lane maximum adds every battle."
     }
   },
   "annotations": {
