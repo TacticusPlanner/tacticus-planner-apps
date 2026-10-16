@@ -16,6 +16,7 @@ import {
   type LegendaryEventRosterUnit,
   type LegendaryEventRun,
   type LegendaryEventRunResolution,
+  type LegendaryEventTeam,
 } from "@/entities/legendary-event"
 
 import {
@@ -64,6 +65,8 @@ export interface TokenPlanViewInput {
    *  from its next step, as the reward projection's do. */
   eventUnit: Pick<LegendaryEventRosterUnit, "progressionIndex"> | undefined
   estimates: TokenPlanEstimates
+  /** The name a team is shown by (its display name); the stored name when absent. */
+  teamName?: (team: LegendaryEventTeam) => string
 }
 
 /** Why there is no next token (spec: Next token card), checked in this order. */
@@ -150,7 +153,7 @@ export function buildTokenPlanView(input: TokenPlanViewInput): TokenPlanView {
         .filter((team) => team.laneId === laneId)
         .map((team) => ({
           id: team.id,
-          name: team.name,
+          name: input.teamName?.(team) ?? team.name,
           objectiveIndexes: team.objectiveIndexes,
           depth: teamEffectiveDepth(
             teamDepthForRun(team, run)?.expectedBattleClears ?? null,

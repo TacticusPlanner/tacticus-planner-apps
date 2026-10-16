@@ -5,11 +5,13 @@ import {
   recordHistory,
   selectRunRecords,
   type LegendaryEvent,
+  type LegendaryEventLane,
   type LegendaryEventLaneId,
   type LegendaryEventLifecycleState,
   type LegendaryEventProgress,
   type LegendaryEventRosterUnit,
   type LegendaryEventRunRecord,
+  type NamedTeam,
   type ReadState,
   type RunHistory,
 } from "@/entities/legendary-event"
@@ -42,6 +44,38 @@ export interface LastRunInput {
   progress: ReadValue<LegendaryEventProgress | undefined>
   roster: ReadValue<LegendaryEventRosterUnit[] | undefined>
   event: Pick<LegendaryEvent, LegendaryEventLaneId>
+  /** The name a team is shown by (`useTeamDisplayName`); the recorded name when absent. */
+  teamName?: (
+    team: NamedTeam,
+    lane: LegendaryEventLane,
+    laneTeams: readonly NamedTeam[]
+  ) => string
+}
+
+/** The history with each team line named by its display name (spec: a team shows a readable name
+ *  on the last-run team lines); the record itself is not changed. */
+function withTeamNames(
+  history: RunHistory,
+  event: LastRunInput["event"],
+  teamName: LastRunInput["teamName"]
+): RunHistory {
+  if (!teamName) return history
+  return {
+    ...history,
+    lanes: history.lanes.map((lane) => {
+      const teams = lane.teams.map((entry) => entry.team)
+      return {
+        ...lane,
+        teams: lane.teams.map((entry) => ({
+          ...entry,
+          team: {
+            ...entry.team,
+            name: teamName(entry.team, event[lane.laneId], teams),
+          },
+        })),
+      }
+    }),
+  }
 }
 
 /** An active event's current run comes from the synced progress: without it (read failed or no
@@ -63,6 +97,7 @@ export function buildLastRunViewModel({
   progress,
   roster,
   event,
+  teamName,
 }: LastRunInput): LastRunViewModel {
   if (!enabled) return { kind: "hidden" }
   if (records.status === "error") {
@@ -80,15 +115,12 @@ export function buildLastRunViewModel({
   if (!selection) return { kind: "hidden" }
   if (!selection.previous) return { kind: "hidden" }
   const currentRoster = roster === "error" ? undefined : roster
+  const history = (record: LegendaryEventRunRecord) =>
+    withTeamNames(recordHistory(record, event, currentRoster), event, teamName)
   return {
     kind: "ready",
-    previous: recordHistory(selection.previous, event, currentRoster),
-    earlier:
-      lifecycle === "active"
-        ? []
-        : selection.earlier.map((record) =>
-            recordHistory(record, event, currentRoster)
-          ),
+    previous: history(selection.previous),
+    earlier: lifecycle === "active" ? [] : selection.earlier.map(history),
   }
 }
 

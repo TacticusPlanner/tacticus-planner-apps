@@ -363,6 +363,27 @@ describe("MasterTablePage", () => {
     await waitFor(() => expect(rowIds()).toEqual(["bloodDante"]))
   })
 
+  it("marks the selected chips with the thick primary border, tint and checked state", async () => {
+    renderPage("?units=all&points=remaining")
+    await ready()
+    const onClasses = [
+      "data-[state=on]:border-2",
+      "data-[state=on]:border-primary",
+      "data-[state=on]:bg-primary/10",
+    ]
+    for (const id of ["unit-set-all", "points-remaining"]) {
+      const chip = screen.getByTestId(`master-table-${id}`)
+      expect(chip).toHaveAttribute("data-state", "on")
+      expect(chip).toHaveAttribute("aria-checked", "true")
+      expect(chip).toHaveClass(...onClasses)
+    }
+    for (const id of ["unit-set-unlocked", "points-all"]) {
+      const chip = screen.getByTestId(`master-table-${id}`)
+      expect(chip).toHaveAttribute("data-state", "off")
+      expect(chip).toHaveAttribute("aria-checked", "false")
+    }
+  })
+
   it("defaults to In teams when a selected plan has a team, counting team coverage", async () => {
     data.plans = {
       status: "ready",

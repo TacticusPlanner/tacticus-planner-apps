@@ -1,7 +1,8 @@
-import { useMemo } from "react"
+import { useCallback, useMemo } from "react"
 
 import {
   buildLanePointsModel,
+  useTeamDisplayName,
   type LegendaryEvent,
   type LegendaryEventLaneId,
   type LegendaryEventPlan,
@@ -78,4 +79,24 @@ export function useUpgradeImpact({
     progressGrid,
     initialRarityOf,
   ])
+}
+
+/** An Upgrade impact row's team name by id: its display name (spec: a team shows a readable name),
+ *  or the id while the plan does not hold it. */
+export function useImpactTeamName(
+  eventData: Pick<LegendaryEvent, LegendaryEventLaneId> | undefined,
+  planData: LegendaryEventPlan | undefined
+): (teamId: string) => string {
+  const displayName = useTeamDisplayName()
+  return useCallback(
+    (teamId) => {
+      const teams = planData?.teams ?? []
+      const team = teams.find((entry) => entry.id === teamId)
+      if (!team) return teamId
+      return eventData
+        ? displayName(team, eventData[team.laneId], teams)
+        : team.name
+    },
+    [displayName, eventData, planData]
+  )
 }

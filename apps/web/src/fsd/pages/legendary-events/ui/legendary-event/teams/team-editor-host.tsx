@@ -1,8 +1,9 @@
 import { useRef } from "react"
 
-import type {
-  LegendaryEvent,
-  LegendaryEventLaneId,
+import {
+  useTeamDisplayName,
+  type LegendaryEvent,
+  type LegendaryEventLaneId,
 } from "@/entities/legendary-event"
 import { TeamEditorDialog, laneTeams } from "@/features/legendary-event-teams"
 
@@ -29,11 +30,13 @@ export function TeamEditorHost({
   const { editor } = launcher
   // The editor (by mount key) whose suggestion was already saved once.
   const suggestionSavedFor = useRef<number | null>(null)
+  const displayName = useTeamDisplayName()
   const { state, run, actions, estimates } = teams
   if (state.kind !== "ready" || !editor) return null
   const { laneId } = editor
   const estimateTeam =
     estimates.kind === "ready" ? estimates.byLane[laneId].team : undefined
+  const savedTeams = laneTeams(state.plan, laneId)
 
   return (
     <TeamEditorDialog
@@ -69,7 +72,12 @@ export function TeamEditorHost({
       roster={state.roster}
       run={run}
       team={editor.team}
-      teamNumber={laneTeams(state.plan, laneId).length + 1}
+      teamName={
+        editor.team
+          ? displayName(editor.team, event[laneId], savedTeams)
+          : undefined
+      }
+      teamNumber={savedTeams.length + 1}
       units={state.units}
     />
   )

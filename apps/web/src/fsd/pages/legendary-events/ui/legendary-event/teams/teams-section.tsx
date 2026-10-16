@@ -6,6 +6,7 @@ import { Skeleton } from "@workspace/ui/components/skeleton"
 
 import {
   buildLanePointsModel,
+  useTeamDisplayName,
   type LaneProgressView,
   type LegendaryEventLane,
   type LegendaryEventLaneId,
@@ -113,21 +114,26 @@ export function TeamsSection({
     [state, laneId]
   )
 
+  const displayName = useTeamDisplayName()
+  const nameOf = (team: LegendaryEventTeam) =>
+    displayName(team, lane, savedTeams)
   const cards = useMemo(
     () =>
       state.kind === "ready"
-        ? laneTeams(state.plan, laneId).map((team) =>
-            buildTeamCardViewModel(
+        ? savedTeams.map((team) => ({
+            ...buildTeamCardViewModel(
               team,
               lane,
               state.units,
               state.roster,
               run,
               estimateTeam
-            )
-          )
+            ),
+            // Display only (spec: a team shows a readable name): the stored name stays as is.
+            name: displayName(team, lane, savedTeams),
+          }))
         : [],
-    [state, laneId, lane, run, estimateTeam]
+    [state, savedTeams, lane, run, estimateTeam, displayName]
   )
 
   if (state.kind === "hidden") return null
@@ -303,11 +309,13 @@ export function TeamsSection({
         description={t("teams.deleteConfirm.description")}
         onCancel={() => setDeleting(null)}
         onConfirm={() => {
-          if (deleting) void actions.deleteTeam(deleting)
+          if (deleting) void actions.deleteTeam(deleting, nameOf(deleting))
           setDeleting(null)
         }}
         open={deleting !== null}
-        title={t("teams.deleteConfirm.title", { name: deleting?.name ?? "" })}
+        title={t("teams.deleteConfirm.title", {
+          name: deleting ? nameOf(deleting) : "",
+        })}
       />
     </section>
   )

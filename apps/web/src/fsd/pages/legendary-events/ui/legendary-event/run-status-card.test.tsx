@@ -232,7 +232,7 @@ describe("RunStatusCard", () => {
       "3,410 points"
     )
     expect(screen.getByTestId("run-status-currency")).toHaveTextContent(
-      "120 currency"
+      "120 currency in hand"
     )
     // currentClaimedChestIndex is the API's 1-based count of chests opened.
     expect(screen.getByTestId("run-status-chests")).toHaveTextContent(

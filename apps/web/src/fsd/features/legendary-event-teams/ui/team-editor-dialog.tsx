@@ -77,6 +77,7 @@ export function TeamEditorDialog({
   units,
   roster,
   team,
+  teamName,
   teamNumber,
   run,
   onlyUnlockedDefault,
@@ -94,6 +95,8 @@ export function TeamEditorDialog({
   roster: readonly LegendaryEventRosterUnit[] | undefined
   /** The team being edited; absent for a new team. */
   team?: LegendaryEventTeam
+  /** The edited team's display name: the name field starts from it and the title names it. */
+  teamName?: string
   /** N of the "Team N" fallback name. */
   teamNumber: number
   run: LegendaryEventRun
@@ -117,7 +120,7 @@ export function TeamEditorDialog({
   const needsMembersId = useId()
   const context = { lane, units }
   const [initialDraft] = useState(() =>
-    initialEditorDraft(team, run, context, initialMemberUnitIds)
+    initialEditorDraft(team, run, context, initialMemberUnitIds, teamName)
   )
   const [draft, setDraft] = useState(initialDraft)
   const [saving, setSaving] = useState(false)
@@ -193,7 +196,7 @@ export function TeamEditorDialog({
         <ResponsiveDialogHeader>
           <ResponsiveDialogTitle>
             {team
-              ? t("teams.editor.editTitle", { name: team.name })
+              ? t("teams.editor.editTitle", { name: teamName ?? team.name })
               : t("teams.editor.createTitle", {
                   lane: t(`lanes.${laneId}`),
                 })}

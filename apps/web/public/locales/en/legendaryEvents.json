@@ -29,7 +29,7 @@
     "title": "Run status",
     "tokensNext": "{{tokens}}, next in {{when}}",
     "tokensDue": "{{tokens}}, next token ready",
-    "currency": "{{value}} currency",
+    "currency": "{{value}} currency in hand",
     "chests": "{{value}} chests claimed",
     "shards": "{{value}} shards",
     "milestone": "{{points}} points to milestone {{milestone}} (+{{currency}} currency)",
@@ -108,7 +108,7 @@
   },
   "laneSummary": {
     "title": "Lane summary",
-    "battles": "{{cleared}} / {{total}} battles",
+    "battles": "{{cleared}} / {{total}} battles fully cleared",
     "open": "Open the {{lane}} progress grid",
     "noLane": "No progress in this lane",
     "unavailable": "Synced data unavailable",
@@ -332,7 +332,7 @@
         },
         "runStatus": {
           "title": "Run status",
-          "content": "Your run, tokens, points, currency, chests and shards from your last sync, plus the next points milestone."
+          "content": "Your run, tokens, points, currency in hand, chests and shards from your last sync, plus the next points milestone."
         },
         "runInputs": {
           "title": "Run inputs",

@@ -9,6 +9,7 @@ import {
 } from "@workspace/ui/components/toggle-group"
 
 import { ObjectiveIcon } from "@/entities/legendary-event"
+import { FILTER_CHIP_CLASS_NAME } from "@/shared/ui"
 
 import type {
   LeaderboardControlsState,
@@ -152,7 +153,7 @@ export function LeaderboardControls({
             >
               {group.chips.map((chip) => (
                 <ToggleGroupItem
-                  className="data-[state=on]:border-(--event-legendary) data-[state=on]:bg-(--event-legendary)/15"
+                  className={FILTER_CHIP_CLASS_NAME}
                   data-objective={chip.key}
                   data-testid="leaderboard-objective-chip"
                   key={chip.key}

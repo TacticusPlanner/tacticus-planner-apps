@@ -29,7 +29,7 @@
     "title": "Estado de la ronda",
     "tokensNext": "{{tokens}}, la siguiente en {{when}}",
     "tokensDue": "{{tokens}}, la siguiente ficha ya está lista",
-    "currency": "{{value}} de moneda",
+    "currency": "{{value}} de moneda disponible",
     "chests": "{{value}} cofres reclamados",
     "shards": "{{value}} fragmentos",
     "milestone": "{{points}} puntos para el hito {{milestone}} (+{{currency}} de moneda)",
@@ -108,7 +108,7 @@
   },
   "laneSummary": {
     "title": "Resumen de carriles",
-    "battles": "{{cleared}} / {{total}} batallas",
+    "battles": "{{cleared}} / {{total}} batallas superadas por completo",
     "open": "Abrir la cuadrícula de progreso de {{lane}}",
     "noLane": "Sin progreso en este carril",
     "unavailable": "Datos sincronizados no disponibles",
@@ -332,7 +332,7 @@
         },
         "runStatus": {
           "title": "Estado de la tirada",
-          "content": "Tu tirada, fichas, puntos, moneda, cofres y fragmentos de tu última sincronización, además del siguiente hito de puntos."
+          "content": "Tu tirada, fichas, puntos, moneda disponible, cofres y fragmentos de tu última sincronización, además del siguiente hito de puntos."
         },
         "runInputs": {
           "title": "Datos por ronda",

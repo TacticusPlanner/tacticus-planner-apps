@@ -3,12 +3,13 @@ import type { i18n as I18n } from "i18next"
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
-import type {
-  LegendaryEventProgress,
-  LegendaryEventRosterUnit,
-  LegendaryEventRunRecord,
-  LegendaryEventLifecycleState,
-  RunHistory,
+import {
+  useTeamDisplayName,
+  type LegendaryEventProgress,
+  type LegendaryEventRosterUnit,
+  type LegendaryEventRunRecord,
+  type LegendaryEventLifecycleState,
+  type RunHistory,
 } from "@/entities/legendary-event"
 import {
   rosterAfterRun1,
@@ -433,5 +434,46 @@ describe("LastRunCard", () => {
       expect(onViewed).toHaveBeenCalledOnce()
       expect(disconnect).toHaveBeenCalled()
     })
+  })
+
+  it("names a recorded team stored under its lane id by its objectives on the team lines", () => {
+    const record: LegendaryEventRunRecord = {
+      ...utharRun1Record,
+      teams: [
+        {
+          ...utharRun1Record.teams[0]!,
+          name: "alpha",
+          objectiveIndexes: [2, 3],
+        },
+        utharRun1Record.teams[1]!,
+      ],
+    }
+    // As `useLastRun` builds it: the page's display-name resolver names the team lines.
+    function Named() {
+      const teamName = useTeamDisplayName()
+      return (
+        <LastRunCard
+          isMobile={false}
+          lastRun={buildLastRunViewModel({
+            enabled: true,
+            records: { status: "ready", data: [record], retry: () => {} },
+            lifecycle: "archived",
+            progress: undefined,
+            roster,
+            event: utharEvent,
+            teamName,
+          })}
+          onEarlierExpanded={vi.fn()}
+          onViewed={vi.fn()}
+        />
+      )
+    }
+    setViewportWidth(1280)
+    render(<Named />, { wrapper: i18nWrapper(i18n) })
+    expect(
+      screen
+        .getAllByTestId("last-run-team")
+        .map((team) => team.querySelector("span")?.textContent)
+    ).toEqual(["Max 2 hits · Melee", "Melee"])
   })
 })

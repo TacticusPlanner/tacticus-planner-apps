@@ -39,7 +39,7 @@ import { useLastRun } from "./overview/use-last-run"
 import { useCreateGoalFromRow } from "./use-create-goal-from-row"
 import { useEventGoals } from "./use-event-goals"
 import { useEventRuns } from "./use-event-runs"
-import { useUpgradeImpact } from "./use-upgrade-impact"
+import { useImpactTeamName, useUpgradeImpact } from "./use-upgrade-impact"
 import { progressHeadingId } from "./progress/progress-heading"
 import { buildMarksByLane } from "./progress/progress-marks"
 import { useTeamEditorLauncher } from "./teams/team-editor-launcher"
@@ -198,6 +198,7 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
     progressGrid,
     initialRarityOf,
   })
+  const impactTeamName = useImpactTeamName(eventData, plan.query.data)
   const progressObservedAtMs =
     syncTimes.status === "ready" ? syncTimes.data.progressObservedAtMs : null
   const tokenPlan = useTokenPlan({
@@ -394,9 +395,7 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
       ? {
           state: upgradeImpact,
           goalTargets: goalTargetsByUnit,
-          teamName: (teamId) =>
-            plan.query.data?.teams.find((team) => team.id === teamId)?.name ??
-            teamId,
+          teamName: impactTeamName,
         }
       : null,
   }

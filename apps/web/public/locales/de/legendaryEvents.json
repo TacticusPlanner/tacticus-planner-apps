@@ -29,7 +29,7 @@
     "title": "Durchlaufstatus",
     "tokensNext": "{{tokens}}, nächstes in {{when}}",
     "tokensDue": "{{tokens}}, nächstes Token bereit",
-    "currency": "{{value}} Währung",
+    "currency": "{{value}} Währung vorhanden",
     "chests": "{{value}} Truhen beansprucht",
     "shards": "{{value}} Splitter",
     "milestone": "Noch {{points}} Punkte bis Meilenstein {{milestone}} (+{{currency}} Währung)",
@@ -108,7 +108,7 @@
   },
   "laneSummary": {
     "title": "Lane-Zusammenfassung",
-    "battles": "{{cleared}} / {{total}} Kämpfe",
+    "battles": "{{cleared}} / {{total}} Kämpfe vollständig abgeschlossen",
     "open": "Fortschrittsraster der Lane {{lane}} öffnen",
     "noLane": "Kein Fortschritt in dieser Lane",
     "unavailable": "Synchronisierte Daten nicht verfügbar",
@@ -332,7 +332,7 @@
         },
         "runStatus": {
           "title": "Durchlaufstatus",
-          "content": "Dein Durchlauf, deine Token, Punkte, Währung, Truhen und Splitter aus der letzten Synchronisierung sowie der nächste Punkte-Meilenstein."
+          "content": "Dein Durchlauf, deine Token, Punkte, vorhandene Währung, Truhen und Splitter aus der letzten Synchronisierung sowie der nächste Punkte-Meilenstein."
         },
         "runInputs": {
           "title": "Eingaben pro Durchlauf",

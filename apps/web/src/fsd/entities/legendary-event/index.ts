@@ -178,6 +178,8 @@ export {
 export { derivedTeamCoverage, reconcileCoverage } from "./lib/team-coverage"
 export { teamPointsPerBattle } from "./lib/team-points"
 export { MIN_TEAM_MEMBERS, isCompleteTeam } from "./lib/team-size"
+export { type NamedTeam } from "./lib/team-display-name"
+export { useTeamDisplayName } from "./model/use-team-display-name"
 export {
   clearEstimateConfig,
   estimateClearDepth,

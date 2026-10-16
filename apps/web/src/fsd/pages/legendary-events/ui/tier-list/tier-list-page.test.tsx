@@ -611,6 +611,28 @@ describe("TierListPage", () => {
       expect(within(filters).getByTestId("tier-list-alliance")).toBeVisible()
     })
 
+    it("marks the selected alliance chip with the thick primary border, tint and checked state", async () => {
+      setViewportWidth(1280)
+      renderPage("/legendary-events/tier-list?alliance=chaos")
+      await ready()
+
+      const alliance = screen.getByTestId("tier-list-alliance")
+      const chaos = within(alliance).getByRole("radio", { name: "Chaos" })
+      expect(chaos).toHaveAttribute("data-state", "on")
+      expect(chaos).toHaveAttribute("aria-checked", "true")
+      expect(chaos).toHaveClass(
+        "data-[state=on]:border-2",
+        "data-[state=on]:border-primary",
+        "data-[state=on]:bg-primary/10"
+      )
+      for (const name of ["All", "Imperial", "Xenos"]) {
+        expect(within(alliance).getByRole("radio", { name })).toHaveAttribute(
+          "aria-checked",
+          "false"
+        )
+      }
+    })
+
     it("stacks full-width sections with a four-column grid and 44px tiles at 390px", async () => {
       setViewportWidth(390)
       const { container } = renderPage()

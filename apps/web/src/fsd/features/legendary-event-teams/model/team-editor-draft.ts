@@ -58,12 +58,15 @@ export function emptyEditorDraft(): TeamEditorDraft {
 
 /** A new team's draft (empty, or from a suggestion's members in order with everything they derive
  *  ticked), or a saved team's: the opt-outs are recovered as the objectives the stored members
- *  derive but the team does not store. */
+ *  derive but the team does not store. A saved team's name field starts from `displayName` (the
+ *  readable name of a team stored under its lane id, spec: editing offers the readable name), else
+ *  its stored name. */
 export function initialEditorDraft(
   team: LegendaryEventTeam | undefined,
   run: LegendaryEventRun,
   context: CoverageContext,
-  initialMemberUnitIds: readonly string[] = []
+  initialMemberUnitIds: readonly string[] = [],
+  displayName?: string
 ): TeamEditorDraft {
   if (!team) {
     return withMembers(
@@ -78,7 +81,7 @@ export function initialEditorDraft(
     context.units
   )
   return {
-    name: team.name,
+    name: displayName ?? team.name,
     memberUnitIds: [...team.memberUnitIds],
     reserveUnitId: team.reserveUnitId,
     derived,

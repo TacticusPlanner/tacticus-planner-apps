@@ -570,7 +570,7 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
       '[data-testid="legendary-event-next-token"]',
       '[data-testid="legendary-event-run-status"]',
       '[data-testid="legendary-event-run-inputs"]',
-      '[data-testid="legendary-event-token-plan"]',
+      '[data-testid="legendary-event-token-plan-header"]',
       '[data-testid="legendary-event-lane-summary"]',
       '[data-testid="legendary-event-overview-leaderboard"]',
       '[data-testid="legendary-event-lane-overview"]',
@@ -796,6 +796,12 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
       expect(screen.getByTestId("token-plan-summary")).toHaveTextContent(
         /^3 tokens/
       )
+      // The tour's Token plan step highlights this header row, not the whole card.
+      expect(
+        within(screen.getByTestId("legendary-event-token-plan")).getByTestId(
+          "legendary-event-token-plan-header"
+        )
+      ).toContainElement(screen.getByTestId("token-plan-toggle"))
     })
 
     it("re-plans at once when a card action marks the token", async () => {

@@ -117,6 +117,7 @@ export function TeamCard({
         <h3
           className="min-w-0 truncate font-semibold"
           data-testid="team-card-name"
+          title={card.name}
         >
           {card.name}
         </h3>

@@ -35,7 +35,7 @@ import type {
   MasterTablePointsMode,
   MasterTableUnitSet,
 } from "@/entities/legendary-event"
-import { EntityIcon } from "@/shared/ui"
+import { EntityIcon, FILTER_CHIP_CLASS_NAME } from "@/shared/ui"
 
 import { isTourElement } from "./master-table-tour"
 
@@ -277,6 +277,7 @@ function UnitSetControl({
           const loading = loadingLabel(set)
           return (
             <ToggleGroupItem
+              className={FILTER_CHIP_CLASS_NAME}
               data-testid={`master-table-unit-set-${set}`}
               disabled={
                 (set === "unlocked" && unitSets.unlocked !== "ready") ||
@@ -334,6 +335,7 @@ function PointsModeControl({
       >
         {POINTS_MODES.map((mode) => (
           <ToggleGroupItem
+            className={FILTER_CHIP_CLASS_NAME}
             data-testid={`master-table-points-${mode}`}
             disabled={mode === "estimated" && estimated !== "ready"}
             key={mode}

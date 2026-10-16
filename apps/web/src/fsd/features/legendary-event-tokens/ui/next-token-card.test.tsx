@@ -6,7 +6,11 @@ import { createTestI18n, i18nWrapper } from "@/test/i18n"
 import { fireEvent, render, screen, within } from "@/test/render"
 
 import { mark } from "../lib/token-plan.fixtures"
-import { buildTokenPlanView, type TokenPlanView } from "../lib/token-plan-view"
+import {
+  buildTokenPlanView,
+  type TokenPlanView,
+  type TokenPlanViewInput,
+} from "../lib/token-plan-view"
 import {
   UTHAR_RUN_STARTS,
   betweenRunsInput,
@@ -16,7 +20,9 @@ import {
   workedTeams,
   workedViewInput,
 } from "../lib/token-plan-view.fixtures"
+import { useTokenPlan } from "../model/use-token-plan"
 import { NextTokenCard } from "./next-token-card"
+import { TokenPlanList } from "./token-plan-list"
 
 const capture = vi.hoisted(() => vi.fn())
 vi.mock("@/shared/analytics", () => ({
@@ -45,6 +51,38 @@ function renderCard(
     />,
     { wrapper: i18nWrapper(i18n) }
   )
+}
+
+/** The card and the Token plan over the page's hook, so team names resolve as on the page. */
+function PlannedSections({ input }: { input: TokenPlanViewInput }) {
+  const view = useTokenPlan(input)
+  return (
+    <>
+      <NextTokenCard
+        event={utharEvent}
+        eventId="votanUthar"
+        isMobile={false}
+        onMarkToken={onMarkToken}
+        onOpenTeams={onOpenTeams}
+        view={view}
+      />
+      <TokenPlanList
+        event={utharEvent}
+        eventId="votanUthar"
+        isMobile={false}
+        view={view}
+      />
+    </>
+  )
+}
+
+/** Uthar Alpha's team as the V1 import stored it: named "alpha", covering Max 2 Hits and Melee. */
+const importedAlpha = {
+  ...workedTeams[1]!,
+  id: "imported",
+  name: "alpha",
+  sortOrder: 0,
+  objectiveIndexes: [2, 3],
 }
 
 const withMarks = (annotations: ReturnType<typeof mark>[]) =>
@@ -209,6 +247,54 @@ describe("NextTokenCard", () => {
       screen.getByRole("button", { name: "Set how far Five clears" })
     )
     expect(onOpenTeams).toHaveBeenCalledWith("alpha", "five")
+  })
+
+  it("names a team stored under its lane id by its objectives in the depth prompt", () => {
+    render(
+      <PlannedSections
+        input={workedViewInput({
+          estimates: { kind: "hidden" },
+          resolution: inRun(1),
+          plan: {
+            enabled: true,
+            status: "success",
+            data: workedPlan([importedAlpha]),
+          },
+        })}
+      />,
+      { wrapper: i18nWrapper(i18n) }
+    )
+
+    expect(
+      screen.getByRole("button", {
+        name: "Set how far Max 2 hits · Melee clears",
+      })
+    ).toBeInTheDocument()
+  })
+
+  it("names that team by its objectives on the token and in the Token plan groups", () => {
+    render(
+      <PlannedSections
+        input={workedViewInput({
+          plan: {
+            enabled: true,
+            status: "success",
+            data: workedPlan([importedAlpha]),
+          },
+        })}
+      />,
+      { wrapper: i18nWrapper(i18n) }
+    )
+
+    expect(screen.getByTestId("next-token-view")).toHaveTextContent(
+      "Max 2 hits · Melee"
+    )
+    fireEvent.click(screen.getByTestId("token-plan-toggle"))
+    expect(
+      screen
+        .getAllByTestId("token-plan-group")
+        .map((group) => group.querySelector("h3")?.textContent)
+    ).toEqual(["Max 2 hits · Melee"])
   })
 
   it("reads the nothing-left state with the lane's points left", () => {

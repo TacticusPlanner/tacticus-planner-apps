@@ -29,7 +29,7 @@
     "title": "État de la manche",
     "tokensNext": "{{tokens}}, prochain dans {{when}}",
     "tokensDue": "{{tokens}}, prochain jeton prêt",
-    "currency": "{{value}} de monnaie",
+    "currency": "{{value}} de monnaie en main",
     "chests": "{{value}} coffres réclamés",
     "shards": "{{value}} fragments",
     "milestone": "{{points}} points avant le palier {{milestone}} (+{{currency}} de monnaie)",
@@ -108,7 +108,7 @@
   },
   "laneSummary": {
     "title": "Résumé des voies",
-    "battles": "{{cleared}} / {{total}} combats",
+    "battles": "{{cleared}} / {{total}} combats entièrement terminés",
     "open": "Ouvrir la grille de progression de {{lane}}",
     "noLane": "Aucune progression dans cette voie",
     "unavailable": "Données synchronisées indisponibles",
@@ -332,7 +332,7 @@
         },
         "runStatus": {
           "title": "État de la manche",
-          "content": "Votre manche, vos jetons, points, monnaie, coffres et fragments issus de votre dernière synchronisation, ainsi que le prochain palier de points."
+          "content": "Votre manche, vos jetons, points, monnaie en main, coffres et fragments issus de votre dernière synchronisation, ainsi que le prochain palier de points."
         },
         "runInputs": {
           "title": "Saisies par manche",

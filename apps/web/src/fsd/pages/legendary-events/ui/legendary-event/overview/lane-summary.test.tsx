@@ -64,7 +64,7 @@ describe("LaneSummary", () => {
       "4,977 / 9,000"
     )
     expect(within(alpha).getByTestId("lane-summary-battles")).toHaveTextContent(
-      "7 / 18 battles"
+      "7 / 18 battles fully cleared"
     )
     const bar = within(alpha).getByTestId("lane-summary-bar")
     expect(bar.querySelector('[data-slot="progress-indicator"]')).toHaveStyle({
@@ -72,7 +72,7 @@ describe("LaneSummary", () => {
     })
     expect(
       within(row("beta")).getByTestId("lane-summary-battles")
-    ).toHaveTextContent("0 / 18 battles")
+    ).toHaveTextContent("0 / 18 battles fully cleared")
     expect(
       within(row("gamma")).getByTestId("lane-summary-points")
     ).toHaveTextContent(/^0 \//)

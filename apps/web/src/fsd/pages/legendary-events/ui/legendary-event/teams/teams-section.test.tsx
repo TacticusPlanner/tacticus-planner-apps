@@ -312,7 +312,8 @@ describe("TeamsSection", () => {
     expect(actions.deleteTeam).not.toHaveBeenCalled()
     await user.click(screen.getByTestId("confirmation-dialog-confirm"))
     expect(actions.deleteTeam).toHaveBeenCalledWith(
-      expect.objectContaining({ id: "melee" })
+      expect.objectContaining({ id: "melee" }),
+      "Melee"
     )
   })
 
@@ -491,5 +492,66 @@ describe("TeamsSection", () => {
         "number-stepper-input"
       )
     ).toHaveValue(5)
+  })
+
+  describe("teams stored under their lane id", () => {
+    const imported: LegendaryEventTeam = {
+      ...team("imported", "alpha", "alpha", 0),
+      objectiveIndexes: [0, 1],
+    }
+    const bare: LegendaryEventTeam = {
+      ...team("bare", "Alpha", "alpha", 1),
+      objectiveIndexes: [],
+    }
+    const importedPlan = { ...plan, teams: [imported, bare] }
+
+    it("shows them by their covered objectives or Team N, and sends no write", () => {
+      const actions = renderSection(ready(importedPlan))
+      expect(cardNames()).toEqual(["Melee · Min 5 hits", "Team 2"])
+      expect(screen.getAllByTestId("team-card-name")[0]).toHaveAttribute(
+        "title",
+        "Melee · Min 5 hits"
+      )
+      for (const action of [
+        actions.createTeam,
+        actions.updateTeam,
+        actions.deleteTeam,
+        actions.reorderLane,
+        actions.setDepth,
+        actions.restoreEstimate,
+      ]) {
+        expect(action).not.toHaveBeenCalled()
+      }
+    })
+
+    it("prefills the readable name in the editor and saves it when the field is untouched", async () => {
+      const user = userEvent.setup()
+      const actions = renderSection(ready(importedPlan))
+      await user.click(screen.getAllByTestId("team-card-menu")[0]!)
+      await user.click(await screen.findByTestId("team-card-edit"))
+      const editor = await screen.findByTestId("team-editor")
+      expect(within(editor).getByTestId("team-editor-name")).toHaveValue(
+        "Melee · Min 5 hits"
+      )
+      actions.updateTeam.mockResolvedValue("saved")
+      await user.click(within(editor).getByTestId("team-editor-save"))
+      expect(actions.updateTeam).toHaveBeenCalledWith(
+        imported,
+        expect.objectContaining({ name: "Melee · Min 5 hits" }),
+        expect.anything()
+      )
+    })
+
+    it("names the readable name when confirming a delete", async () => {
+      const user = userEvent.setup()
+      const actions = renderSection(ready(importedPlan))
+      await user.click(screen.getAllByTestId("team-card-menu")[1]!)
+      await user.click(await screen.findByTestId("team-card-delete"))
+      expect(screen.getByTestId("confirmation-dialog")).toHaveTextContent(
+        "Team 2"
+      )
+      await user.click(screen.getByTestId("confirmation-dialog-confirm"))
+      expect(actions.deleteTeam).toHaveBeenCalledWith(bare, "Team 2")
+    })
   })
 })

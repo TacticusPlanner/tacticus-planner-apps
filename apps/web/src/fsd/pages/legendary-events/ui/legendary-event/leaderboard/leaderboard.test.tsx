@@ -423,6 +423,18 @@ describe("LeaderboardSection", () => {
     ).toBe(true)
   })
 
+  it("marks a selected objective chip as pressed with the thick primary border and tint", () => {
+    renderLeaderboard()
+    act(() => fireEvent.click(chip(flyingKey)))
+    expect(chip(flyingKey)).toHaveAttribute("aria-pressed", "true")
+    expect(chip(flyingKey)).toHaveClass(
+      "data-[state=on]:border-2",
+      "data-[state=on]:border-primary",
+      "data-[state=on]:bg-primary/10"
+    )
+    expect(chip(eviscerateKey)).toHaveAttribute("aria-pressed", "false")
+  })
+
   it("shows unknown ownership with the toggle disabled when the roster is unavailable", () => {
     renderLeaderboard({
       rows: buildLeaderboardRows(
