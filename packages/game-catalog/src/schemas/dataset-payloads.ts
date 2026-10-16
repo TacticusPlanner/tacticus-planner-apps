@@ -13,6 +13,7 @@ import { lreBattleViewSchema, lreViewSchema } from "./lre"
 import { guildRaidMetaPayloadSchema } from "./guild-raid-meta"
 import { hordeModeTiersSchema } from "./horde-mode-tiers"
 import { mowSchema, mowUpgradeCostSchema } from "./mow"
+import { mythicQuestsSchema } from "./mythic-quests"
 import { characterAbilityCostSchema } from "./character-ability-costs"
 import { npcSchema } from "./npc"
 import { onslaughtRewardSchema } from "./onslaught"
@@ -48,6 +49,7 @@ export const datasetPayloadSchemas = {
   "raid-bosses": raidBossesPayloadSchema,
   // The third non-array payload — another complete object stored as one row.
   "guild-raid-meta": guildRaidMetaPayloadSchema,
+  "mythic-quests": z.array(mythicQuestsSchema),
 } satisfies Record<GameCatalogDatasetKey, z.ZodType>
 
 // Record (per-item) type for each dataset. Every dataset is a plain array, so the record type is the
@@ -76,4 +78,5 @@ export type GameCatalogRecordByKey = {
   // The whole payload object is one stored row (see game-catalog.mapper.ts's `asSingleRow`).
   "raid-bosses": z.infer<typeof raidBossesPayloadSchema>
   "guild-raid-meta": z.infer<typeof guildRaidMetaPayloadSchema>
+  "mythic-quests": z.infer<typeof mythicQuestsSchema>
 }

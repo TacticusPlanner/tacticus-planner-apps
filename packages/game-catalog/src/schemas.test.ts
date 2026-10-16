@@ -193,6 +193,99 @@ describe("catalog schemas", () => {
     expect(result.success).toBe(true)
   })
 
+  it("accepts a MoW with or without its mythic ability", () => {
+    const mow = {
+      id: "ultraDreadnought",
+      name: "Galatian",
+      unitKind: "Mow",
+      faction: "Ultramarines",
+      alliance: "Imperial",
+      primaryAbility: { name: "DutyEternal", recipes: [] },
+      secondaryAbility: { name: "MacroPlasmaIncinerator", recipes: [] },
+    }
+    const withMythic = {
+      ...mow,
+      mythicAbility: { name: "WisdomOfTheAncients" },
+    }
+
+    expect(datasetPayloadSchemas.mows.safeParse([mow]).success).toBe(true)
+    const parsed = datasetPayloadSchemas.mows.parse([withMythic])
+    expect(parsed[0]?.mythicAbility?.name).toBe("WisdomOfTheAncients")
+    expect(
+      datasetPayloadSchemas.mows.safeParse([{ ...mow, mythicAbility: {} }])
+        .success
+    ).toBe(false)
+  })
+
+  it("validates mythic quests with structured rewards and rejects an unknown reward type", () => {
+    const schema = datasetPayloadSchemas["mythic-quests"]
+    // Abaddon's quest 1 as served, plus an equipment reward (quest 5's I_Crit_M006).
+    const abaddon = {
+      unitId: "blackAbaddon",
+      quests: [
+        {
+          number: 1,
+          tasks: [
+            {
+              locaKey: "SlayEnemiesWithHeroToTraitInOneBattle_description",
+              target: 1,
+              parameters: {
+                trait: "Emplacement",
+                heroId: "blackAbaddon",
+                killAmount: "8",
+              },
+            },
+          ],
+          rewards: [
+            { type: "MythicShards", amount: 4, unitId: "blackAbaddon" },
+            {
+              type: "AscensionOrb",
+              amount: 2,
+              rarity: "Mythic",
+              alliance: "Chaos",
+            },
+            { type: "XpBook", amount: 1, rarity: "Mythic" },
+            { type: "Equipment", amount: 1, equipmentId: "I_Crit_M006" },
+          ],
+        },
+      ],
+    }
+
+    const parsed = schema.parse([abaddon])
+    const reward = parsed[0]?.quests[0]?.rewards[3]
+    expect(reward?.type === "Equipment" && reward.equipmentId).toBe(
+      "I_Crit_M006"
+    )
+    expect(
+      schema.safeParse([
+        {
+          ...abaddon,
+          quests: [
+            {
+              number: 1,
+              tasks: [],
+              rewards: [{ type: "BlueStar", amount: 1 }],
+            },
+          ],
+        },
+      ]).success
+    ).toBe(false)
+    expect(
+      schema.safeParse([
+        {
+          ...abaddon,
+          quests: [
+            {
+              number: 1,
+              tasks: [],
+              rewards: [{ type: "MythicShards", amount: 4 }],
+            },
+          ],
+        },
+      ]).success
+    ).toBe(false)
+  })
+
   it("validates the mow-upgrade-costs ladder as its own dataset", () => {
     const result = datasetPayloadSchemas["mow-upgrade-costs"].safeParse([
       {

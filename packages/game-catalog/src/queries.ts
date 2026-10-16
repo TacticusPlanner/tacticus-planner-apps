@@ -22,6 +22,7 @@ import type {
   HordeModeTiersStorageModel,
   LegendaryEventStorageModel,
   MowStorageModel,
+  MythicQuestsStorageModel,
   NpcStorageModel,
   OnslaughtRewardStorageModel,
   RaidBossesStorageModel,
@@ -61,6 +62,15 @@ export async function getNpcsMap(): Promise<Map<string, NpcStorageModel>> {
 export async function getMowsMap(): Promise<Map<string, MowStorageModel>> {
   const mows = await getMows()
   return new Map(mows.map((mow) => [mow.id, mow]))
+}
+
+// Each character's mythic quests, keyed by character id. A character with no quests (or a client whose
+// catalog predates the dataset) is simply absent from the map.
+export async function getMythicQuestsByUnitId(): Promise<
+  Map<string, MythicQuestsStorageModel>
+> {
+  const rows = await getDatasetRecords("mythic-quests")
+  return new Map(rows.map((row) => [row.unitId, row]))
 }
 
 export function getMowUpgradeCosts(): Promise<MowUpgradeCostStorageModel[]> {

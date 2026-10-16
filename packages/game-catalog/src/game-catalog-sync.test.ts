@@ -122,6 +122,18 @@ const datasetData: Record<string, unknown> = {
     bosses: [],
     primes: [],
   },
+  "mythic-quests": [
+    {
+      unitId: "blackAbaddon",
+      quests: [
+        {
+          number: 1,
+          tasks: [],
+          rewards: [{ type: "Gold", amount: 250000 }],
+        },
+      ],
+    },
+  ],
 }
 
 function createManifest(
@@ -319,6 +331,11 @@ describe("syncGameCatalog", () => {
       lres.map((lre) => lre.rewards.chestsMilestones.length).sort()
     ).toEqual([1, 2])
     expect(result.downloaded).not.toContain("lre-common")
+
+    // mythic-quests key on the character id (one record per character with quests).
+    expect((await getDatasetRecords("mythic-quests"))[0]?.id).toBe(
+      "blackAbaddon"
+    )
   })
 
   it("treats a 304 with a complete cache as ready and a later sync as not first-time", async () => {
