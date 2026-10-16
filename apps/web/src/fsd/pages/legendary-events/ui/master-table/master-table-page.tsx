@@ -31,10 +31,12 @@ import { useMasterTableTutorial } from "./master-table.tutorial"
 import {
   estimatedAvailability,
   masterTableEventInputs,
+  masterTableViewSettled,
   nextMasterTableParams,
   parseMasterTableQuery,
   resolveMasterTableState,
   type MasterTablePickerEvent,
+  type MasterTableState,
   type UnitSetAvailability,
 } from "./master-table.view-model"
 
@@ -83,7 +85,12 @@ export function MasterTablePage() {
   const rosterData = roster.status === "ready" ? roster.data : undefined
   const planData = plans.status === "ready" ? plans.data : undefined
   const unitSets: UnitSetAvailability = {
-    unlocked: rosterData ? "ready" : "noRoster",
+    unlocked:
+      roster.status === "loading"
+        ? "loading"
+        : rosterData
+          ? "ready"
+          : "noRoster",
     inTeams:
       plans.status === "ready"
         ? "ready"
@@ -118,7 +125,7 @@ export function MasterTablePage() {
   const estimated = estimatedAvailability({
     config,
     battles: battles.status === "ready" ? battles.data : battles.status,
-    rosterKnown: rosterData !== undefined,
+    roster: unitSets.unlocked,
     events: selectedEvents,
   })
   const state = resolveMasterTableState({
@@ -171,18 +178,29 @@ export function MasterTablePage() {
       )
     : []
 
-  const ready = events.status === "ready" && units.status === "ready"
+  // Recorded once every read the effective unit set and points mode depend on has settled, so
+  // the event carries what the user actually sees rather than a transient fallback.
+  const settled = masterTableViewSettled({
+    events: events.status,
+    units: units.status,
+    plans: plans.status,
+    roster: roster.status,
+    config: config.status,
+    battles: battles.status,
+    state,
+  })
   const viewed = useRef(false)
+  const eventCount = state.selectedEventIds.length
   useEffect(() => {
-    if (!ready || viewed.current) return
+    if (!settled || viewed.current) return
     viewed.current = true
     captureEvent({
       type: "legendary_event_master_table_viewed",
-      eventCount: state.selectedEventIds.length,
+      eventCount,
       unitSet: state.unitSet,
       pointsMode: state.points,
     })
-  }, [ready, captureEvent, state])
+  }, [settled, captureEvent, eventCount, state.unitSet, state.points])
   useTourPageSteps(useMasterTableTutorial(setControlsOpen))
 
   const update = (
@@ -208,6 +226,7 @@ export function MasterTablePage() {
     unitSets,
     estimated,
     onEventsChange: (eventIds: string[]) => {
+      if (eventIds.join(",") === state.selectedEventIds.join(",")) return
       update({
         events: eventIds.join(","),
         sort: state.sort && eventIds.includes(state.sort) ? state.sort : null,
@@ -215,14 +234,17 @@ export function MasterTablePage() {
       changed("events", null, eventIds.length)
     },
     onUnitSetChange: (unitSet: MasterTableUnitSet) => {
+      if (unitSet === state.unitSet) return
       update({ units: unitSet })
       changed("unitSet", unitSet)
     },
     onPointsChange: (points: MasterTablePointsMode) => {
+      if (points === state.points) return
       update({ points })
       changed("pointsMode", points)
     },
     onSortChange: (eventId: string | null) => {
+      if (eventId === state.sort) return
       update({ sort: eventId })
       changed("sort", eventId ?? "total")
     },
@@ -260,8 +282,6 @@ export function MasterTablePage() {
     )
   }
 
-  const estimatesPending =
-    state.points === "estimated" && estimated === "loading"
   return (
     <div
       className="flex min-w-0 flex-col gap-4"
@@ -291,13 +311,15 @@ export function MasterTablePage() {
         >
           {t("masterTable.noEvents")}
         </p>
-      ) : estimatesPending ? (
+      ) : state.pending ? (
         <div
           className="flex flex-col gap-2"
-          data-testid="master-table-estimates-loading"
+          data-testid="master-table-rows-loading"
         >
           <span className="sr-only">
-            {t("masterTable.points.estimatesLoading")}
+            {state.points === "estimated" && estimated === "loading"
+              ? t("masterTable.points.estimatesLoading")
+              : t("masterTable.rowsLoading")}
           </span>
           <Skeleton className="h-12 w-full rounded-xl" />
           <Skeleton className="h-12 w-full rounded-xl" />
@@ -347,7 +369,7 @@ function MasterTableNotes({
   estimatedFallback,
   progressFailed,
 }: {
-  estimatedFallback: boolean
+  estimatedFallback: MasterTableState["estimatedFallback"]
   progressFailed: boolean
 }) {
   const { t } = useTranslation("legendaryEvents")
@@ -356,7 +378,9 @@ function MasterTableNotes({
     <div className="flex flex-col gap-1 text-sm text-muted-foreground">
       {estimatedFallback ? (
         <p data-testid="master-table-estimated-fallback">
-          {t("masterTable.points.estimatedFallback")}
+          {estimatedFallback === "noRoster"
+            ? t("masterTable.points.estimatedFallbackNoRoster")
+            : t("masterTable.points.estimatedFallback")}
         </p>
       ) : null}
       {progressFailed ? (

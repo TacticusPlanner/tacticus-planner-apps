@@ -38,6 +38,9 @@ const data = vi.hoisted(() => ({
   tiers: null as unknown,
   roster: undefined as unknown[] | undefined,
   rosterFail: false,
+  // Set: the roster read stays pending until it is called.
+  releaseRoster: undefined as (() => void) | undefined,
+  rosterPending: false,
 }))
 vi.mock("@workspace/game-catalog/queries", () => ({
   getCharacters: () => {
@@ -52,10 +55,15 @@ vi.mock("@workspace/game-catalog/queries", () => ({
   getMowsMap: async () => new Map(),
 }))
 vi.mock("@workspace/player-data/queries", () => ({
-  getPlayerCharacters: () =>
-    data.rosterFail
+  getPlayerCharacters: () => {
+    if (data.rosterPending)
+      return new Promise((resolve) => {
+        data.releaseRoster = () => resolve(data.roster)
+      })
+    return data.rosterFail
       ? Promise.reject(new Error("player data"))
-      : Promise.resolve(data.roster),
+      : Promise.resolve(data.roster)
+  },
 }))
 const tour = vi.hoisted(() => ({ steps: undefined as unknown }))
 vi.mock("@/shared/tour", () => ({
@@ -131,6 +139,8 @@ describe("TierListPage", () => {
       tiers: hordeModeTiers,
       roster: [calgar],
       rosterFail: false,
+      rosterPending: false,
+      releaseRoster: undefined,
     })
     analytics.captureEvent.mockReset()
     tour.steps = undefined
@@ -264,6 +274,52 @@ describe("TierListPage", () => {
       expect(tileNames(row("A"))).toEqual(["Calgar"])
       openFilters()
       expect(screen.getByTestId("tier-list-only-owned")).toBeChecked()
+    })
+
+    it("waits for the roster on an owned=1 link: loading with the switch on, never the unfiltered list", async () => {
+      data.rosterPending = true
+      renderPage("/legendary-events/tier-list?owned=1")
+
+      // The catalog is ready (the filters render) but the roster is not.
+      await screen.findByTestId(
+        isMobile ? "tier-list-filters" : "tier-list-only-owned"
+      )
+      expect(screen.getByTestId("tier-list-loading")).toBeInTheDocument()
+      expect(screen.queryByTestId("tier-list")).toBeNull()
+      expect(screen.queryAllByTestId("tier-list-tile")).toHaveLength(0)
+      openFilters()
+      expect(screen.getByTestId("tier-list-only-owned")).toBeChecked()
+
+      data.releaseRoster?.()
+      await ready()
+      expect(tileNames(row("S"))).toEqual([])
+      expect(tileNames(row("A"))).toEqual(["Calgar"])
+    })
+
+    it("opens Untiered by itself when a search matches only untiered characters", async () => {
+      renderPage()
+      await ready()
+      const toggle = screen.getByTestId("tier-list-untiered-toggle")
+      expect(toggle).toHaveAttribute("aria-expanded", "false")
+
+      fireEvent.change(screen.getByTestId("tier-list-search"), {
+        target: { value: "dante" },
+      })
+      await waitFor(() =>
+        expect(toggle).toHaveAttribute("aria-expanded", "true")
+      )
+      expect(tileNames(screen.getByTestId("tier-list-untiered"))).toEqual([
+        "Dante",
+      ])
+
+      // The reader can still collapse it, and a search matching a tier leaves it closed.
+      fireEvent.click(toggle)
+      expect(toggle).toHaveAttribute("aria-expanded", "false")
+      fireEvent.change(screen.getByTestId("tier-list-search"), {
+        target: { value: "calg" },
+      })
+      await waitFor(() => expect(tileNames(row("A"))).toEqual(["Calgar"]))
+      expect(toggle).toHaveAttribute("aria-expanded", "false")
     })
 
     it("keeps only Xenos characters when Xenos is picked", async () => {
@@ -514,6 +570,26 @@ describe("TierListPage", () => {
         '[data-testid="tier-list-filters"]'
       )!
       expect(filters.tagName).toBe(isMobile ? "BUTTON" : "DIV")
+    })
+  })
+
+  describe("tour without rendered rows", () => {
+    it("leaves out the row and tile steps when the filters match nothing", async () => {
+      renderPage("/legendary-events/tier-list?q=zzz")
+      await screen.findByTestId("tier-list-no-match")
+
+      const steps = tour.steps as {
+        desktop: { target: string }[]
+        mobile: { target: string }[]
+      }
+      for (const list of [steps.desktop, steps.mobile]) {
+        expect(list.map((step) => step.target)).toEqual([
+          '[data-testid="tier-list-filters"]',
+        ])
+        for (const step of list) {
+          expect(document.querySelector(step.target)).not.toBeNull()
+        }
+      }
     })
   })
 

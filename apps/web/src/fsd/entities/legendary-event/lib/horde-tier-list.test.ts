@@ -140,3 +140,68 @@ describe("effectiveHordeMultiplier", () => {
     expect(unitHordeMultiplier(config, "bloodDante")).toBe(1)
   })
 })
+
+describe("Tier List and estimates on malformed data", () => {
+  const malformed = {
+    tiers: [
+      { tier: "S", multiplier: 1.85 },
+      { tier: "B", multiplier: 1.25 },
+    ],
+    characters: [
+      // Unknown tier with its own multiplier: untiered, at that multiplier, everywhere.
+      { unitId: "ultraCalgar", tier: "Z", multiplier: 3 },
+      // Duplicate unitId: the first entry wins everywhere.
+      { unitId: "bloodDante", tier: "S" },
+      { unitId: "bloodDante", tier: "B", multiplier: 1.1 },
+      // An untiered first entry is not overridden by a later valid one either.
+      { unitId: "custoBladeChampion", tier: "Z" },
+      { unitId: "custoBladeChampion", tier: "S", multiplier: 2 },
+    ],
+  }
+  const list = buildHordeTierList(
+    malformed,
+    legendaryEventCharacters,
+    undefined,
+    NO_FILTERS,
+    nameOf
+  )!
+  const config = clearEstimateConfig(malformed)
+  const rowOf = (unitId: string) =>
+    list.rows.find((row) => row.units.some((tile) => tile.unitId === unitId))
+  const isUntiered = (unitId: string) =>
+    list.untiered.some((unit) => unit.unitId === unitId)
+
+  it("shows an entry with an unknown tier as Untiered with its own multiplier, as estimates use", () => {
+    expect(list.untiered.find((unit) => unit.unitId === "ultraCalgar")).toEqual(
+      {
+        unitId: "ultraCalgar",
+        multiplier: 3,
+        overridden: true,
+        owned: undefined,
+      }
+    )
+    expect(effectiveHordeMultiplier(malformed, "ultraCalgar")).toBe(3)
+    expect(unitHordeMultiplier(config, "ultraCalgar")).toBe(3)
+  })
+
+  it("keeps the first entry of a duplicate unitId in both", () => {
+    expect(rowOf("bloodDante")?.tier).toBe("S")
+    expect(
+      rowOf("bloodDante")?.units.find((tile) => tile.unitId === "bloodDante")
+        ?.multiplier
+    ).toBe(1.85)
+    expect(unitHordeMultiplier(config, "bloodDante")).toBe(1.85)
+    expect(isUntiered("custoBladeChampion")).toBe(true)
+    expect(unitHordeMultiplier(config, "custoBladeChampion")).toBe(1)
+  })
+
+  it("agrees for every catalog character", () => {
+    for (const { id } of legendaryEventCharacters) {
+      const tile = [
+        ...list.rows.flatMap((row) => row.units),
+        ...list.untiered,
+      ].find((unit) => unit.unitId === id)
+      expect(unitHordeMultiplier(config, id)).toBe(tile?.multiplier ?? 1)
+    }
+  })
+})

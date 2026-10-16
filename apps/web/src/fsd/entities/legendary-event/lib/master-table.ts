@@ -111,12 +111,16 @@ type CellLane = Pick<
   | "defeatAll"
 >
 
-const EMPTY_CELL: MasterTableCell = {
-  points: 0,
-  objectivesCount: 0,
-  teamCount: 0,
-  laneIds: [],
-  lanes: {},
+/** A fresh cell for an event the unit cannot play: never shared between rows, so mutating one
+ *  row's cell (or its arrays) cannot leak into another. */
+function emptyCell(): MasterTableCell {
+  return {
+    points: 0,
+    objectivesCount: 0,
+    teamCount: 0,
+    laneIds: [],
+    lanes: {},
+  }
 }
 
 /** The potential as the considered objectives see it: kill points plus their scores. */
@@ -323,7 +327,7 @@ export function buildMasterTable(input: MasterTableInput): MasterTable {
     for (const context of contexts) {
       const cell = eventCell(context, unit)
       if (cell) allowed = true
-      cells[context.entry.event.id] = cell ?? EMPTY_CELL
+      cells[context.entry.event.id] = cell ?? emptyCell()
     }
     if (!allowed) return []
     const rosterEntry = rosterById?.get(unit.id)

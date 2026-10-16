@@ -46,7 +46,8 @@ describe("resolveMasterTableState", () => {
       selectedEventIds: ["votanUthar", "tauFarsight", "astarLysander"],
       unitSet: "all",
       points: "remaining",
-      estimatedFallback: false,
+      estimatedFallback: null,
+      pending: false,
       sort: null,
       q: "",
     })
@@ -104,24 +105,52 @@ describe("resolveMasterTableState", () => {
         unitSets: { unlocked: "noRoster", inTeams: "ready" },
       }).unitSet
     ).toBe("all")
+  })
+
+  it("keeps a requested set whose input is still loading, pending, instead of falling back", () => {
+    expect(
+      resolve("units=unlocked", {
+        unitSets: { unlocked: "loading", inTeams: "ready" },
+      })
+    ).toMatchObject({ unitSet: "unlocked", pending: true })
+    expect(
+      resolve("units=inTeams", {
+        unitSets: { unlocked: "ready", inTeams: "loading" },
+      })
+    ).toMatchObject({ unitSet: "inTeams", pending: true })
+    // A set that does not depend on the loading input is not pending.
+    expect(
+      resolve("units=all", {
+        unitSets: { unlocked: "loading", inTeams: "loading" },
+      })
+    ).toMatchObject({ unitSet: "all", pending: false })
+    // The default waits for the plans: it could turn into In teams.
     expect(
       resolve("", {
         teams: ["votanUthar"],
         unitSets: { unlocked: "ready", inTeams: "loading" },
-      }).unitSet
-    ).toBe("all")
+      })
+    ).toMatchObject({ unitSet: "all", pending: true })
   })
 
   it("shows Remaining with a note when Estimated is unavailable", () => {
     expect(
       resolve("points=estimated", { estimated: "unavailable" })
-    ).toMatchObject({ points: "remaining", estimatedFallback: true })
+    ).toMatchObject({ points: "remaining", estimatedFallback: "unavailable" })
+    expect(
+      resolve("points=estimated", { estimated: "noRoster" })
+    ).toMatchObject({ points: "remaining", estimatedFallback: "noRoster" })
     expect(resolve("points=estimated", { estimated: "loading" })).toMatchObject(
       {
         points: "estimated",
-        estimatedFallback: false,
+        estimatedFallback: null,
+        pending: true,
       }
     )
+    expect(resolve("points=all", { estimated: "loading" })).toMatchObject({
+      points: "all",
+      pending: false,
+    })
   })
 })
 
@@ -153,7 +182,7 @@ describe("estimatedAvailability", () => {
       estimatedAvailability({
         config,
         battles,
-        rosterKnown: true,
+        roster: "ready",
         events: [utharEvent],
       })
     ).toBe("ready")
@@ -161,13 +190,29 @@ describe("estimatedAvailability", () => {
 
   it("needs a roster, the config and every lane's battles", () => {
     expect(
-      estimatedAvailability({ config, battles, rosterKnown: false, events: [] })
+      estimatedAvailability({ config, battles, roster: "noRoster", events: [] })
     ).toBe("noRoster")
+    expect(
+      estimatedAvailability({
+        config,
+        battles,
+        roster: "loading",
+        events: [utharEvent],
+      })
+    ).toBe("loading")
+    expect(
+      estimatedAvailability({
+        config: { status: "loading" },
+        battles,
+        roster: "ready",
+        events: [utharEvent],
+      })
+    ).toBe("loading")
     expect(
       estimatedAvailability({
         config: { status: "failed", retry: () => {} },
         battles,
-        rosterKnown: true,
+        roster: "ready",
         events: [utharEvent],
       })
     ).toBe("unavailable")
@@ -175,7 +220,7 @@ describe("estimatedAvailability", () => {
       estimatedAvailability({
         config,
         battles: "loading",
-        rosterKnown: true,
+        roster: "ready",
         events: [utharEvent],
       })
     ).toBe("loading")
@@ -183,7 +228,7 @@ describe("estimatedAvailability", () => {
       estimatedAvailability({
         config,
         battles: {},
-        rosterKnown: true,
+        roster: "ready",
         events: [utharEvent],
       })
     ).toBe("unavailable")

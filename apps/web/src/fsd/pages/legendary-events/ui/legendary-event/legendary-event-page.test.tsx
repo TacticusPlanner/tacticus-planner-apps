@@ -529,8 +529,17 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
   })
 
   describe("run history", () => {
-    // Lysander has no synced entry, so its newest record is the previous run.
+    // Lysander is active and synced in run 2, so its run 1 record is the previous run.
     const lastRunRecord = { ...utharRun1Record, teams: [] }
+    const runTwoProgress = { ...lysanderProgress, currentEventRun: 2 }
+
+    it("hides the card on an active event with no synced progress (the newest record may be the current run)", async () => {
+      history.records = [utharRun1Record]
+      renderPage("/legendary-events/astarLysander")
+      await screen.findByTestId("legendary-event-overview-leaderboard")
+      expect(screen.queryByTestId("legendary-event-last-run")).toBeNull()
+      expect(screen.queryByTestId("legendary-event-history-note")).toBeNull()
+    })
 
     it("shows the one-line note where the card would be when there are no records, and no tour step", async () => {
       renderPage("/legendary-events/astarLysander")
@@ -552,6 +561,7 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
       async (_form, width) => {
         setViewportWidth(width)
         history.records = [lastRunRecord]
+        player.progress = runTwoProgress
         renderPage("/legendary-events/astarLysander")
         const lastRun = await screen.findByTestId("legendary-event-last-run")
         await within(lastRun).findByTestId("last-run-run")
@@ -638,6 +648,7 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
         },
       ]
       history.records = [utharRun1Record]
+      player.progress = runTwoProgress
       renderPage("/legendary-events/astarLysander")
       await screen.findByTestId("legendary-event-last-run")
       selectTab("alpha")

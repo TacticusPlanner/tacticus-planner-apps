@@ -5,6 +5,7 @@ import { Button } from "@workspace/ui/components/button"
 import { CommandShortcut } from "@workspace/ui/components/command"
 import { cn } from "@workspace/ui/lib/utils"
 
+import { findActiveChild } from "./find-active-child"
 import { NavChildIcon } from "./nav-child-icon"
 import { NavLiveDot } from "./nav-live-dot"
 import { subItemLabel, type NavItem } from "./nav-items"
@@ -34,6 +35,8 @@ export function DesktopSectionNavigation({
   const label = t(item.labelKey)
   const shortcut = sectionShortcut()
   const toggleLabel = t("nav.collapseSection", { section: label })
+  // The most specific match only, so a landing child at the section root is not also current.
+  const activePath = findActiveChild(item.children, pathname)?.path
 
   // The column animates its width like the main rail (200ms linear, none for reduced motion). It
   // stays mounted so it can slide closed: `inert` and (after the transition) `invisible` take the
@@ -82,8 +85,7 @@ export function DesktopSectionNavigation({
         </div>
         <ul className="flex flex-col gap-0.5 px-2 pb-2" id={LIST_ID}>
           {item.children?.map((child) => {
-            const isActive =
-              pathname === child.path || pathname.startsWith(child.path + "/")
+            const isActive = child.path === activePath
 
             return (
               <li key={child.path}>

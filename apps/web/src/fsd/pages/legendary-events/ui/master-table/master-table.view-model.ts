@@ -62,9 +62,12 @@ export interface MasterTablePickerEvent {
   archived: boolean
 }
 
+/** The roster read as the master table sees it: `noRoster` when it failed or never synced. */
+export type RosterAvailability = "ready" | "loading" | "noRoster"
+
 /** Whether each unit set can be chosen: Unlocked needs a roster, In teams the plan list. */
 export interface UnitSetAvailability {
-  unlocked: "ready" | "noRoster"
+  unlocked: RosterAvailability
   inTeams: "ready" | "loading" | "failed"
 }
 
@@ -77,8 +80,12 @@ export interface MasterTableState {
   selectedEventIds: string[]
   unitSet: MasterTableUnitSet
   points: MasterTablePointsMode
-  /** The URL asked for Estimated, which is unavailable: Remaining shows with a note. */
-  estimatedFallback: boolean
+  /** The URL asked for Estimated, which is unavailable: Remaining shows with a note naming the
+   *  cause; null otherwise. */
+  estimatedFallback: "unavailable" | "noRoster" | null
+  /** An input the effective unit set or points mode depends on is still loading: the table shows
+   *  a skeleton rather than rows that flip once it settles. */
+  pending: boolean
   /** An event id among the selected ones; null sorts by the total. */
   sort: string | null
   q: string
@@ -89,7 +96,9 @@ export interface MasterTableState {
  * default selection is every active and upcoming event in hub order; an unknown id is dropped (a
  * query left with no known id falls back to the default); the unit set defaults to In teams when a
  * selected event's plan has a team, else All, and an unavailable set falls back to All; the points
- * mode defaults to Remaining, and Estimated while it is unavailable shows Remaining.
+ * mode defaults to Remaining, and Estimated while it is unavailable shows Remaining. A requested
+ * set or mode whose input is still loading is kept (with `pending`), never swapped for the fallback
+ * until that input settled.
  */
 export function resolveMasterTableState({
   query,
@@ -119,29 +128,42 @@ export function resolveMasterTableState({
           .map((event) => event.id)
           .filter((id) => requested?.includes(id))
 
-  const available = (set: MasterTableUnitSet) =>
-    set === "all" ||
-    (set === "unlocked" && unitSets.unlocked === "ready") ||
-    (set === "inTeams" && unitSets.inTeams === "ready")
+  const availability = (set: MasterTableUnitSet) =>
+    set === "all"
+      ? "ready"
+      : set === "unlocked"
+        ? unitSets.unlocked
+        : unitSets.inTeams
   const derivedUnitSet: MasterTableUnitSet =
     unitSets.inTeams === "ready" && hasTeams(selectedEventIds)
       ? "inTeams"
       : "all"
+  const unitSetLoading =
+    query.units === null
+      ? // The default depends on the plans: All now could turn into In teams.
+        unitSets.inTeams === "loading"
+      : availability(query.units) === "loading"
   const unitSet =
     query.units === null
       ? derivedUnitSet
-      : available(query.units)
+      : availability(query.units) === "ready" || unitSetLoading
         ? query.units
         : "all"
 
   const estimatedFallback =
     query.points === "estimated" &&
     (estimated === "unavailable" || estimated === "noRoster")
+      ? estimated
+      : null
+  const points =
+    estimatedFallback === null ? (query.points ?? "remaining") : "remaining"
   return {
     selectedEventIds,
     unitSet,
-    points: estimatedFallback ? "remaining" : (query.points ?? "remaining"),
+    points,
     estimatedFallback,
+    pending:
+      unitSetLoading || (points === "estimated" && estimated === "loading"),
     sort:
       query.sort !== null && selectedEventIds.includes(query.sort)
         ? query.sort
@@ -174,17 +196,23 @@ export function nextMasterTableParams(
 export function estimatedAvailability({
   config,
   battles,
-  rosterKnown,
+  roster,
   events,
 }: {
   config: ClearEstimateConfigState
   battles: Record<string, LegendaryEventBattle[]> | "loading" | "error"
-  rosterKnown: boolean
+  roster: RosterAvailability
   events: readonly Pick<LegendaryEvent, "id" | LegendaryEventLaneId>[]
 }): EstimatedAvailability {
-  if (!rosterKnown) return "noRoster"
+  if (roster === "noRoster") return "noRoster"
   if (config.status === "failed" || battles === "error") return "unavailable"
-  if (config.status === "loading" || battles === "loading") return "loading"
+  if (
+    roster === "loading" ||
+    config.status === "loading" ||
+    battles === "loading"
+  ) {
+    return "loading"
+  }
   const allPowers = events.every((event) =>
     LEGENDARY_EVENT_LANE_IDS.every(
       (laneId) =>
@@ -235,4 +263,40 @@ export function rowDetailTotal(
     if (!cell) return sum
     return sum + (unitSet === "inTeams" ? cell.teamCount : cell.objectivesCount)
   }, 0)
+}
+
+type ReadStatus = "loading" | "ready" | "error"
+
+/**
+ * Whether the page has settled enough to record `legendary_event_master_table_viewed`: the
+ * catalog (events, units) is ready and the plans, roster and clear-estimate config are no longer
+ * loading (a failure counts as settled: the fallback is what the user sees), nor are the battles
+ * while Estimated is selected, and the effective unit set and points mode are not pending.
+ */
+export function masterTableViewSettled({
+  events,
+  units,
+  plans,
+  roster,
+  config,
+  battles,
+  state,
+}: {
+  events: ReadStatus
+  units: ReadStatus
+  plans: ReadStatus
+  roster: ReadStatus
+  config: ClearEstimateConfigState["status"]
+  battles: ReadStatus
+  state: Pick<MasterTableState, "points" | "pending">
+}): boolean {
+  return (
+    events === "ready" &&
+    units === "ready" &&
+    plans !== "loading" &&
+    roster !== "loading" &&
+    config !== "loading" &&
+    (state.points !== "estimated" || battles !== "loading") &&
+    !state.pending
+  )
 }

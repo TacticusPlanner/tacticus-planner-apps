@@ -3,7 +3,7 @@ import { useIsAuthenticated } from "@azure/msal-react"
 
 import { legendaryEventPlanQueries } from "../api/legendary-event-plan.queries"
 import type { LegendaryEventPlan } from "./plan.types"
-import { queryReadState } from "./use-query-read-state"
+import { useQueryReadState } from "./use-query-read-state"
 import type { ReadState } from "./use-read-state"
 
 /** Every stored plan of the caller (the master table's team membership). Enabled when signed in;
@@ -14,5 +14,5 @@ export function useLegendaryEventPlans(): ReadState<LegendaryEventPlan[]> {
     ...legendaryEventPlanQueries.list(),
     enabled: isAuthenticated,
   })
-  return queryReadState(query)
+  return useQueryReadState(query)
 }

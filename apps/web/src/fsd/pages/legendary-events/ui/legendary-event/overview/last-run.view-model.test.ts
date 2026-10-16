@@ -130,23 +130,41 @@ describe("buildLastRunViewModel", () => {
 
   it("asks for a roster sync when the roster cannot be read", () => {
     for (const value of ["error", undefined] as const) {
-      const view = build({ records: ready([utharRun1Record]), roster: value })
+      const view = build({
+        records: ready([utharRun1Record]),
+        progress: progressIn(2),
+        roster: value,
+      })
       expect(view.kind === "ready" && view.previous.deltas).toEqual({
         kind: "noRoster",
       })
     }
   })
 
-  it("treats a failed progress read as no current record", () => {
-    const view = build({
-      records: ready([utharRun2Record, utharRun1Record]),
-      progress: "error",
-    })
-    expect(runsOf(view)).toEqual({ previous: 2, earlier: [] })
+  it("active event with failed or missing progress: hidden, since the newest record may be the current run", () => {
+    for (const progress of ["error", undefined] as const) {
+      expect(
+        build({ records: ready([utharRun2Record, utharRun1Record]), progress })
+      ).toEqual({ kind: "hidden" })
+    }
+  })
+
+  it("archived or upcoming events need no progress to pick the previous run", () => {
+    for (const lifecycle of ["archived", "upcoming"] as const) {
+      const view = build({
+        records: ready([utharRun2Record, utharRun1Record]),
+        lifecycle,
+        progress: "error",
+      })
+      expect(runsOf(view)).toEqual({ previous: 2, earlier: [1] })
+    }
   })
 
   it("counts the previous run's roster changes for analytics", () => {
-    const view = build({ records: ready([utharRun1Record]) })
+    const view = build({
+      records: ready([utharRun1Record]),
+      progress: progressIn(2),
+    })
     expect(view.kind === "ready" && historyDeltaCount(view.previous)).toBe(2)
   })
 })
@@ -172,6 +190,18 @@ describe("buildLastRunClears", () => {
     expect(teamLastRunClearedBattle(clears, "team-new", "alpha")).toBe(
       undefined
     )
+  })
+
+  it("is undefined on an active event with failed or missing progress", () => {
+    for (const progress of ["error", undefined] as const) {
+      expect(
+        buildLastRunClears({
+          ...input,
+          progress,
+          records: ready([utharRun2Record, utharRun1Record]),
+        })
+      ).toBeUndefined()
+    }
   })
 
   it("is undefined while the records load, after a failed read, or signed out", () => {

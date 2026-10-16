@@ -37,6 +37,8 @@ import type {
 } from "@/entities/legendary-event"
 import { EntityIcon } from "@/shared/ui"
 
+import { isTourElement } from "./master-table-tour"
+
 import {
   POINTS_MODES,
   UNIT_SETS,
@@ -119,6 +121,10 @@ export function MasterTableControls({
         <SheetContent
           className="max-h-[85vh] overflow-y-auto"
           data-testid="master-table-controls-sheet"
+          // The tour's tooltip sits outside the sheet: tapping it must not dismiss the sheet.
+          onInteractOutside={(event) => {
+            if (isTourElement(event.target)) event.preventDefault()
+          }}
           side="bottom"
         >
           <SheetHeader>
@@ -240,11 +246,18 @@ function UnitSetControl({
   onUnitSetChange,
 }: MasterTableControlsProps) {
   const { t } = useTranslation("legendaryEvents")
-  const hint =
+  // Both causes can hold at once (no roster and failed plans): each gets its own line.
+  const hints = [
+    unitSets.unlocked === "noRoster" ? t("masterTable.unitSet.noRoster") : null,
     unitSets.inTeams === "failed"
       ? t("masterTable.unitSet.teamsUnavailable")
-      : unitSets.unlocked === "noRoster"
-        ? t("masterTable.unitSet.noRoster")
+      : null,
+  ].filter((hint): hint is string => hint !== null)
+  const loadingLabel = (set: MasterTableUnitSet) =>
+    set === "unlocked" && unitSets.unlocked === "loading"
+      ? t("masterTable.unitSet.rosterLoading")
+      : set === "inTeams" && unitSets.inTeams === "loading"
+        ? t("masterTable.unitSet.teamsLoading")
         : null
   return (
     <ControlField label={t("masterTable.unitSet.label")}>
@@ -260,34 +273,35 @@ function UnitSetControl({
         value={state.unitSet}
         variant="outline"
       >
-        {UNIT_SETS.map((set) => (
-          <ToggleGroupItem
-            data-testid={`master-table-unit-set-${set}`}
-            disabled={
-              (set === "unlocked" && unitSets.unlocked !== "ready") ||
-              (set === "inTeams" && unitSets.inTeams !== "ready")
-            }
-            key={set}
-            value={set}
-          >
-            {t(`masterTable.unitSet.${set}`)}
-            {set === "inTeams" && unitSets.inTeams === "loading" ? (
-              <Spinner
-                aria-label={t("masterTable.unitSet.teamsLoading")}
-                className="size-3"
-              />
-            ) : null}
-          </ToggleGroupItem>
-        ))}
+        {UNIT_SETS.map((set) => {
+          const loading = loadingLabel(set)
+          return (
+            <ToggleGroupItem
+              data-testid={`master-table-unit-set-${set}`}
+              disabled={
+                (set === "unlocked" && unitSets.unlocked !== "ready") ||
+                (set === "inTeams" && unitSets.inTeams !== "ready")
+              }
+              key={set}
+              value={set}
+            >
+              {t(`masterTable.unitSet.${set}`)}
+              {loading ? (
+                <Spinner aria-label={loading} className="size-3" />
+              ) : null}
+            </ToggleGroupItem>
+          )
+        })}
       </ToggleGroup>
-      {hint ? (
+      {hints.map((hint) => (
         <span
           className="text-xs text-muted-foreground"
           data-testid="master-table-unit-set-hint"
+          key={hint}
         >
           {hint}
         </span>
-      ) : null}
+      ))}
     </ControlField>
   )
 }

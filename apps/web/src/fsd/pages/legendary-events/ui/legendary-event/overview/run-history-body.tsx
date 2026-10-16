@@ -158,7 +158,10 @@ function TeamHistory({ entry }: { entry: RunHistoryTeam }) {
     ...team.memberUnitIds,
     ...(team.reserveUnitId ? [team.reserveUnitId] : []),
   ]
-  const cleared = t("history.team.cleared", { battle: entry.clearedBattle })
+  const cleared =
+    entry.clearedBattle > 0
+      ? t("history.team.cleared", { battle: entry.clearedBattle })
+      : t("history.team.noBattle")
   return (
     <li
       className="flex min-w-0 flex-col gap-1"
@@ -198,6 +201,7 @@ function TeamHistory({ entry }: { entry: RunHistoryTeam }) {
   )
 }
 
+/** A disclosure toggle; `controls` is the id of the region it shows, rendered only while open. */
 export function ToggleButton({
   label,
   open,
@@ -213,7 +217,8 @@ export function ToggleButton({
 }) {
   return (
     <Button
-      aria-controls={controls}
+      // Only while open: the controlled region is not rendered while collapsed.
+      aria-controls={open ? controls : undefined}
       aria-expanded={open}
       className="h-auto justify-start gap-1 self-start px-1 py-0.5"
       data-testid={testId}

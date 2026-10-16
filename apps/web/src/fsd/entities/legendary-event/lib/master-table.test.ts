@@ -267,6 +267,29 @@ describe("buildMasterTable", () => {
     expect(result.rows.map((row) => row.unitId)).not.toContain("tauFarsight")
     expect(result.rows.every((row) => row.total > 0)).toBe(true)
   })
+
+  it("gives each row its own empty cell for an event the unit cannot play", () => {
+    const imperialOnly = {
+      ...lysanderEvent,
+      id: "imperialOnly",
+      beta: lysanderEvent.alpha,
+      gamma: lysanderEvent.alpha,
+    }
+    const result = table([{ event: imperialOnly }, { event: utharEvent }])
+    const empty = result.rows
+      .map((row) => row.cells.imperialOnly!)
+      .filter((cell) => Object.keys(cell.lanes).length === 0)
+    expect(empty.length).toBeGreaterThan(1)
+    expect(empty[0]).toEqual({
+      points: 0,
+      objectivesCount: 0,
+      teamCount: 0,
+      laneIds: [],
+      lanes: {},
+    })
+    expect(empty[0]).not.toBe(empty[1])
+    expect(empty[0]!.laneIds).not.toBe(empty[1]!.laneIds)
+  })
 })
 
 describe("sortMasterTable and filterMasterTableRows", () => {

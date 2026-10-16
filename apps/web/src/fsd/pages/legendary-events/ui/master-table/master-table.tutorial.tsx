@@ -10,6 +10,7 @@ const MASTER_TABLE_TOUR_TARGETS = {
   pointsMode: '[data-testid="master-table-points-mode"]',
   firstRow: '[data-testid="master-table-first-row"]',
 } as const
+const SHEET_SELECTOR = '[data-testid="master-table-controls-sheet"]'
 
 /** Resolves once `selector` is (or is no longer, with `present` false) in the document, or after
  *  `timeoutMs`. */
@@ -37,7 +38,10 @@ function waitForElement(
 /**
  * The master table tour (design D5): the controls (on mobile the Controls button), the event
  * picker, the points mode and the first row. The targets are the same on both forms; on mobile the
- * tour opens the controls sheet before the picker step and closes it before the first-row step.
+ * picker and points-mode steps open the controls sheet (so Back from the first row reopens it) and
+ * the controls and first-row steps close it. The sheet is modal (body pointer events off, focus
+ * trapped), so its steps keep the tooltip clickable and skip Joyride's focus trap, as the general
+ * tour's account-drawer step does.
  */
 export function useMasterTableTutorial(
   setControlsOpen: (open: boolean) => void
@@ -59,33 +63,26 @@ export function useMasterTableTutorial(
       step("pointsMode", "bottom"),
       step("firstRow", "top"),
     ]
+    const openSheet = async () => {
+      setControlsOpen(true)
+      await waitForElement(SHEET_SELECTOR, 1000)
+    }
+    const closeSheet = async () => {
+      setControlsOpen(false)
+      await waitForElement(SHEET_SELECTOR, 1000, false)
+    }
+    const inSheet = (step: Step): Step => ({
+      ...step,
+      before: openSheet,
+      // The modal sheet disables body pointer events; the portaled tooltip must stay tappable.
+      styles: { tooltip: { pointerEvents: "auto" } },
+      disableFocusTrap: true,
+    })
     const mobile: Step[] = [
-      {
-        ...step("controls", "bottom"),
-        before: async () => setControlsOpen(false),
-      },
-      {
-        ...step("events", "top"),
-        before: async () => {
-          setControlsOpen(true)
-          await waitForElement(
-            '[data-testid="master-table-controls-sheet"]',
-            1000
-          )
-        },
-      },
-      step("pointsMode", "top"),
-      {
-        ...step("firstRow", "bottom"),
-        before: async () => {
-          setControlsOpen(false)
-          await waitForElement(
-            '[data-testid="master-table-controls-sheet"]',
-            1000,
-            false
-          )
-        },
-      },
+      { ...step("controls", "bottom"), before: closeSheet },
+      inSheet(step("events", "top")),
+      inSheet(step("pointsMode", "top")),
+      { ...step("firstRow", "bottom"), before: closeSheet },
     ]
     return { desktop, mobile }
   }, [setControlsOpen, t])

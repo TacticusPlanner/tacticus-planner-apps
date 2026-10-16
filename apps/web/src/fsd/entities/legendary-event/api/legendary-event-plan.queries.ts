@@ -56,9 +56,14 @@ export const legendaryEventPlanQueries = {
       },
     }),
   // Its own root: below a detail key it would be cancelled by every plan write of that event.
+  // Invalidating `runRecordsAll()` refreshes every event's records (a sync can create one).
+  runRecordsAll: () => ["legendary-event-run-records"] as const,
   runRecords: (eventId: string) =>
     queryOptions({
-      queryKey: ["legendary-event-run-records", eventId] as const,
+      queryKey: [
+        ...legendaryEventPlanQueries.runRecordsAll(),
+        eventId,
+      ] as const,
       queryFn: async ({ signal }) => {
         try {
           return (await getLegendaryEventRunRecords(eventId, signal)).records

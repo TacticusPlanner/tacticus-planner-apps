@@ -25,9 +25,12 @@ import {
   DEFAULT_TIER_LIST_FILTERS,
   formatMultiplier,
   hasActiveFilters,
+  isAwaitingOwnedRoster,
   isTierListEmpty,
   parseTierListFilters,
+  shouldAutoExpandUntiered,
   tierListSearchParams,
+  tierListFiltersKey,
   tierTileDetails,
   type TierListUrlFilters,
 } from "./tier-list.view-model"
@@ -51,6 +54,8 @@ export function TierListPage() {
   const [searchParams, setSearchParams] = useSearchParams()
   const filters = parseTierListFilters(searchParams)
   const [untieredOpen, setUntieredOpen] = useState(false)
+  // The filters key the reader collapsed the auto-opened Untiered row under.
+  const [untieredDismissedFor, setUntieredDismissedFor] = useState<string>()
   const [selected, setSelected] = useState<
     { tile: TierTileView; row: TierRef } | undefined
   >()
@@ -66,7 +71,7 @@ export function TierListPage() {
   const rosterKnown = rosterData !== undefined
   const nameOf = (unitId: string) => unitName("Character", unitId)
   // Cheap to rebuild, and the unit names resolve asynchronously, so no memo.
-  const list: HordeTierList | null | undefined =
+  const built: HordeTierList | null | undefined =
     units.status === "ready" && tiers.status === "ready"
       ? buildHordeTierList(
           tiers.data,
@@ -77,14 +82,29 @@ export function TierListPage() {
           i18n.language
         )
       : undefined
+  // A `?owned=1` link waits for the roster (loading state) rather than flashing every character.
+  const list = isAwaitingOwnedRoster(filters, roster.status) ? undefined : built
   const noMatch = list ? isTierListEmpty(list) : false
+  // The rows render unless the list is loading, absent, or replaced by the no-match note.
+  const rowsShown = Boolean(list) && !(noMatch && hasActiveFilters(filters))
   const firstRow = list?.rows.find((row) => row.units.length > 0)
+  const filtersKey = tierListFiltersKey(filters)
+  const untieredExpanded =
+    untieredOpen ||
+    (list
+      ? shouldAutoExpandUntiered(list, filters) &&
+        untieredDismissedFor !== filtersKey
+      : false)
+  const changeUntieredExpanded = (expanded: boolean) => {
+    setUntieredOpen(expanded)
+    if (!expanded) setUntieredDismissedFor(filtersKey)
+  }
 
   useTourPageSteps(
     useTierListTutorial({
-      hasRow: list?.rows.some((row) => row.tier === "S") ?? false,
-      hasTile: !noMatch && firstRow !== undefined,
-      hasFilters: Boolean(list),
+      hasRow: rowsShown && Boolean(list?.rows.some((row) => row.tier === "S")),
+      hasTile: rowsShown && firstRow !== undefined,
+      hasFilters: Boolean(built),
     })
   )
 
@@ -212,22 +232,12 @@ export function TierListPage() {
         })}
         <UntieredRow
           count={list.untiered.length}
-          expanded={untieredOpen}
+          expanded={untieredExpanded}
           isMobile={isMobile}
           multiplier={format(UNTIERED_MULTIPLIER)}
-          onExpandedChange={setUntieredOpen}
+          onExpandedChange={changeUntieredExpanded}
         >
-          {list.untiered.map((unit) =>
-            tile(
-              {
-                ...unit,
-                multiplier: UNTIERED_MULTIPLIER,
-                overridden: false,
-              },
-              null,
-              false
-            )
-          )}
+          {list.untiered.map((unit) => tile(unit, null, false))}
         </UntieredRow>
       </div>
     )
@@ -236,7 +246,7 @@ export function TierListPage() {
   return (
     <div className="flex min-w-0 flex-col gap-4" data-testid="tier-list-page">
       <TierListExplainer />
-      {list ? (
+      {built ? (
         isMobile ? (
           <TierListFiltersBar {...filterProps} />
         ) : (

@@ -30,7 +30,8 @@ export interface TierListFiltersProps {
   filters: TierListUrlFilters
   /** False while the roster is unknown: Only owned is disabled with "Sync your roster". */
   rosterKnown: boolean
-  /** The roster read is still pending (no "Sync your roster" note yet). */
+  /** The roster read is still pending (no "Sync your roster" note yet; a requested Only owned
+   *  stays on while the page waits for it). */
   rosterLoading: boolean
   onChange: (patch: Partial<TierListUrlFilters>) => void
 }
@@ -76,7 +77,7 @@ function OnlyOwnedSwitch({
     <div className="flex min-h-11 items-center gap-2 md:min-h-0">
       <Switch
         aria-describedby={showHint ? hintId : undefined}
-        checked={rosterKnown && filters.onlyOwned}
+        checked={(rosterKnown || rosterLoading) && filters.onlyOwned}
         data-testid="tier-list-only-owned"
         disabled={!rosterKnown}
         id={id}
@@ -166,7 +167,7 @@ export function TierListFiltersBar(props: TierListFiltersProps) {
   const { filters, onChange } = props
   const { t } = useTranslation("legendaryEvents")
   const active =
-    (filters.onlyOwned && props.rosterKnown ? 1 : 0) +
+    (filters.onlyOwned && (props.rosterKnown || props.rosterLoading) ? 1 : 0) +
     (filters.alliance === "all" ? 0 : 1)
   return (
     <div className="flex min-w-0 items-center gap-2">

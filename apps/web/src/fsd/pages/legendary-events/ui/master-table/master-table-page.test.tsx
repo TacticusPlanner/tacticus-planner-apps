@@ -18,7 +18,7 @@ import {
   utharEvent,
 } from "@/test/fixtures/legendary-events"
 import { createTestI18n, i18nWrapper } from "@/test/i18n"
-import { fireEvent, render, screen, waitFor, within } from "@/test/render"
+import { act, fireEvent, render, screen, waitFor, within } from "@/test/render"
 import { setViewportWidth } from "@/test/viewport"
 
 import { MasterTablePage } from "./master-table-page"
@@ -54,6 +54,8 @@ const data = vi.hoisted(() => ({
   eventsPending: false,
   roster: undefined as unknown[] | undefined,
   rosterFail: false,
+  /** While set, the roster read waits for it (the roster is loading). */
+  rosterGate: null as Promise<void> | null,
   progress: [] as unknown[],
   progressFail: false,
   battlesFail: false,
@@ -76,21 +78,29 @@ vi.mock("@workspace/game-catalog/queries", () => ({
   getCharactersMap: async () =>
     new Map(characters.map((unit) => [unit.id, unit])),
   getMowsMap: async () => new Map(),
-  getLegendaryEventBattles: (eventId: string) =>
+  getLegendaryEventsBattles: (eventIds: readonly string[]) =>
     read(
-      [utharEvent, lysanderEvent, farsightEvent, dante]
-        .filter((event) => event.id === eventId)
-        .flatMap((event) =>
-          (["alpha", "beta", "gamma"] as const).flatMap((lane) =>
-            event[lane].battleIds.map((id) => ({ id, power: 1e15 }))
-          )
-        ),
+      Object.fromEntries(
+        eventIds.map((eventId) => [
+          eventId,
+          [utharEvent, lysanderEvent, farsightEvent, dante]
+            .filter((event) => event.id === eventId)
+            .flatMap((event) =>
+              (["alpha", "beta", "gamma"] as const).flatMap((lane) =>
+                event[lane].battleIds.map((id) => ({ id, power: 1e15 }))
+              )
+            ),
+        ])
+      ),
       data.battlesFail
     ),
   getHordeModeTiers: async () => null,
 }))
 vi.mock("@workspace/player-data/queries", () => ({
-  getPlayerCharacters: () => read(data.roster, data.rosterFail),
+  getPlayerCharacters: () =>
+    data.rosterGate
+      ? data.rosterGate.then(() => read(data.roster, data.rosterFail))
+      : read(data.roster, data.rosterFail),
   getLegendaryEventsProgress: () => read(data.progress, data.progressFail),
 }))
 vi.mock("@/entities/legendary-event", async (importOriginal) => ({
@@ -114,7 +124,7 @@ function LocationProbe() {
 }
 
 function renderPage(search = "") {
-  return render(
+  const tree = () => (
     <MemoryRouter initialEntries={[`/legendary-events/master-table${search}`]}>
       <LocationProbe />
       <Routes>
@@ -123,10 +133,32 @@ function renderPage(search = "") {
           path="/legendary-events/master-table"
         />
       </Routes>
-    </MemoryRouter>,
-    { wrapper: i18nWrapper(i18n) }
+    </MemoryRouter>
   )
+  const result = render(tree(), { wrapper: i18nWrapper(i18n) })
+  return { ...result, rerenderPage: () => result.rerender(tree()) }
 }
+
+/** Holds the roster read until the returned function is called. */
+function holdRoster() {
+  let release = () => {}
+  data.rosterGate = new Promise<void>((resolve) => {
+    release = resolve
+  })
+  return () => {
+    data.rosterGate = null
+    release()
+  }
+}
+
+const viewedEvents = () =>
+  data.capture.mock.calls
+    .map(([event]) => event as { type: string })
+    .filter((event) => event.type === "legendary_event_master_table_viewed")
+const changedEvents = () =>
+  data.capture.mock.calls
+    .map(([event]) => event as { type: string })
+    .filter((event) => event.type === "legendary_event_master_table_changed")
 
 const ready = () => screen.findByTestId("master-table-page")
 const rowIds = () =>
@@ -167,6 +199,7 @@ describe("MasterTablePage", () => {
         },
       ],
       rosterFail: false,
+      rosterGate: null,
       progress: [],
       progressFail: false,
       battlesFail: false,
@@ -490,5 +523,185 @@ describe("MasterTablePage", () => {
     expect(steps.mobile.map((step) => step.target)).toEqual(targets)
     expect(steps.mobile[1]?.before).toBeTypeOf("function")
     expect(steps.mobile[3]?.before).toBeTypeOf("function")
+  })
+
+  it("keeps a linked Unlocked while the roster loads: spinner, no hint, skeleton rows, then the table", async () => {
+    const release = holdRoster()
+    renderPage("?events=astarLysander,votanUthar&units=unlocked&points=all")
+    await ready()
+    const unlocked = screen.getByTestId("master-table-unit-set-unlocked")
+    expect(unlocked).toBeDisabled()
+    expect(unlocked).toHaveAttribute("data-state", "on")
+    expect(within(unlocked).getByLabelText("Loading roster")).toBeVisible()
+    expect(screen.queryByTestId("master-table-unit-set-hint")).toBeNull()
+    expect(screen.getByTestId("master-table-rows-loading")).toHaveTextContent(
+      "Loading units"
+    )
+    expect(viewedEvents()).toEqual([])
+
+    release()
+    await waitFor(() => expect(rowIds()).toEqual(["bloodDante"]))
+    expect(unlocked).toHaveAttribute("data-state", "on")
+    expect(viewedEvents()).toEqual([
+      {
+        type: "legendary_event_master_table_viewed",
+        eventCount: 2,
+        unitSet: "unlocked",
+        pointsMode: "all",
+      },
+    ])
+  })
+
+  it("keeps a linked Estimated loading (not unavailable) while the roster loads", async () => {
+    const release = holdRoster()
+    renderPage("?events=astarLysander&points=estimated")
+    await ready()
+    expect(screen.getByTestId("master-table-points-estimated")).toHaveAttribute(
+      "data-state",
+      "on"
+    )
+    expect(
+      within(
+        screen.getByTestId("master-table-points-estimated")
+      ).getByLabelText("Loading clear estimates")
+    ).toBeVisible()
+    expect(screen.queryByTestId("master-table-estimated-fallback")).toBeNull()
+    expect(screen.queryByTestId("master-table-points-hint")).toBeNull()
+    expect(screen.getByTestId("master-table-rows-loading")).toBeVisible()
+    expect(viewedEvents()).toEqual([])
+
+    release()
+    await waitFor(() =>
+      expect(screen.queryByTestId("master-table-rows-loading")).toBeNull()
+    )
+    expect(screen.getByTestId("master-table-points-estimated")).toHaveAttribute(
+      "data-state",
+      "on"
+    )
+    expect(screen.queryByTestId("master-table-estimated-fallback")).toBeNull()
+    await waitFor(() =>
+      expect(viewedEvents()).toEqual([
+        expect.objectContaining({ unitSet: "all", pointsMode: "estimated" }),
+      ])
+    )
+  })
+
+  it("keeps a linked In teams while the plans load and records the view once they settle", async () => {
+    data.plans = { status: "loading" }
+    const { rerenderPage } = renderPage("?events=astarLysander&units=inTeams")
+    await ready()
+    const inTeams = screen.getByTestId("master-table-unit-set-inTeams")
+    expect(inTeams).toHaveAttribute("data-state", "on")
+    expect(within(inTeams).getByLabelText("Loading teams")).toBeVisible()
+    expect(screen.getByTestId("master-table-rows-loading")).toBeVisible()
+    // Roster and battles settle; the plans still load.
+    await waitFor(() =>
+      expect(screen.getByTestId("master-table-unit-set-unlocked")).toBeEnabled()
+    )
+    expect(viewedEvents()).toEqual([])
+
+    data.plans = { status: "ready", data: [] }
+    rerenderPage()
+    await waitFor(() =>
+      expect(screen.queryByTestId("master-table-rows-loading")).toBeNull()
+    )
+    expect(inTeams).toHaveAttribute("data-state", "on")
+    await waitFor(() =>
+      expect(viewedEvents()).toEqual([
+        {
+          type: "legendary_event_master_table_viewed",
+          eventCount: 1,
+          unitSet: "inTeams",
+          pointsMode: "remaining",
+        },
+      ])
+    )
+    rerenderPage()
+    expect(viewedEvents()).toHaveLength(1)
+  })
+
+  it("falls back to All once a linked In teams settles to failed plans", async () => {
+    data.plans = { status: "error" }
+    renderPage("?units=inTeams")
+    await ready()
+    await waitFor(() => expect(viewedEvents()).toHaveLength(1))
+    expect(viewedEvents()[0]).toMatchObject({ unitSet: "all" })
+  })
+
+  it("names the missing roster in the Estimated fallback note", async () => {
+    data.roster = undefined
+    renderPage("?points=estimated")
+    await ready()
+    expect(
+      await screen.findByTestId("master-table-estimated-fallback")
+    ).toHaveTextContent("Estimated needs a synced roster")
+  })
+
+  it("shows both unit-set hints when the plans failed and there is no roster", async () => {
+    data.plans = { status: "error" }
+    data.rosterFail = true
+    renderPage()
+    await ready()
+    await waitFor(() =>
+      expect(
+        screen
+          .getAllByTestId("master-table-unit-set-hint")
+          .map((hint) => hint.textContent)
+      ).toEqual(["Sync your roster", "Teams unavailable"])
+    )
+  })
+
+  it("records nothing and keeps the URL when a control is set to its current value", async () => {
+    renderPage("?events=astarLysander,votanUthar&points=all&sort=votanUthar")
+    await ready()
+    await waitFor(() => rowOf("bloodDante"))
+    const before = search().toString()
+    fireEvent.click(screen.getByTestId("master-table-sort-votanUthar"))
+    fireEvent.click(screen.getByTestId("master-table-points-all"))
+    fireEvent.click(screen.getByTestId("master-table-unit-set-all"))
+    expect(search().toString()).toBe(before)
+    expect(changedEvents()).toEqual([])
+  })
+
+  it("keeps the mobile controls sheet open and clickable through the tour's sheet steps", async () => {
+    // The steps wait for the sheet with a Date-based deadline.
+    vi.useRealTimers()
+    setViewportWidth(390)
+    renderPage()
+    await ready()
+    const steps = (
+      data.steps as {
+        mobile: {
+          before?: () => Promise<void>
+          disableFocusTrap?: boolean
+          styles?: { tooltip?: { pointerEvents?: string } }
+        }[]
+      }
+    ).mobile
+    for (const index of [1, 2]) {
+      expect(steps[index]?.disableFocusTrap).toBe(true)
+      expect(steps[index]?.styles?.tooltip?.pointerEvents).toBe("auto")
+    }
+    // Back from the first row lands on the points-mode step, which reopens the sheet.
+    await act(() => steps[3]!.before!())
+    expect(screen.queryByTestId("master-table-controls-sheet")).toBeNull()
+    await act(() => steps[2]!.before!())
+    expect(screen.getByTestId("master-table-controls-sheet")).toBeVisible()
+
+    // Tapping the tour's tooltip is not an outside click that closes the sheet.
+    const portal = document.createElement("div")
+    portal.id = "react-joyride-portal"
+    document.body.append(portal)
+    // Radix attaches its outside-pointer listener a tick after the sheet opens.
+    await act(() => new Promise((resolve) => setTimeout(resolve, 20)))
+    try {
+      fireEvent.pointerDown(portal)
+      fireEvent.click(portal)
+      expect(screen.getByTestId("master-table-controls-sheet")).toBeVisible()
+    } finally {
+      portal.remove()
+    }
+    await act(() => steps[0]!.before!())
+    expect(screen.queryByTestId("master-table-controls-sheet")).toBeNull()
   })
 })

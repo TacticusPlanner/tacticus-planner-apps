@@ -276,7 +276,8 @@
       "confirm": "Supprimer",
       "cancel": "Annuler"
     },
-    "lastRun": "Dernière manche : réussi jusqu'au combat {{battle}}"
+    "lastRun": "Dernière manche : réussi jusqu'au combat {{battle}}",
+    "lastRunNone": "Dernière manche : aucun combat réussi"
   },
   "objective": {
     "minHits_one": "Min. {{count}} coup",
@@ -567,7 +568,8 @@
       "inTeams": "En équipes",
       "teamsUnavailable": "Équipes indisponibles",
       "teamsLoading": "Chargement des équipes",
-      "noRoster": "Synchronisez votre effectif"
+      "noRoster": "Synchronisez votre effectif",
+      "rosterLoading": "Chargement de l'effectif"
     },
     "points": {
       "label": "Points",
@@ -577,7 +579,8 @@
       "needsEstimates": "Nécessite les estimations de progression",
       "estimatesLoading": "Chargement des estimations de progression",
       "estimatedFallback": "Estimés nécessite les estimations de progression, les points Restants sont donc affichés.",
-      "noProgress": "Aucune progression synchronisée : Restants affiche les points de tous les combats."
+      "noProgress": "Aucune progression synchronisée : Restants affiche les points de tous les combats.",
+      "estimatedFallbackNoRoster": "Estimés nécessite un effectif synchronisé, les points Restants sont donc affichés."
     },
     "search": {
       "label": "Rechercher des unités",
@@ -607,7 +610,8 @@
       "all": "Tous : les points par combat (« Tout vaincre » plus les objectifs que l'unité remplit) multipliés par les combats de la voie.",
       "estimated": "Estimés : les Restants, comptés seulement dans les combats que l'unité (ou ses équipes) devrait réussir.",
       "inTeams": "En équipes : une unité compte « Tout vaincre » plus seulement les objectifs couverts par ses équipes sur cette voie ; une réserve ne compte que « Tout vaincre »."
-    }
+    },
+    "rowsLoading": "Chargement des unités"
   },
   "history": {
     "title": "Dernière manche",
@@ -628,7 +632,8 @@
     },
     "team": {
       "cleared": "réussi jusqu'au combat {{battle}}",
-      "clearedPlanned": "{{cleared}} · prévu {{planned}}"
+      "clearedPlanned": "{{cleared}} · prévu {{planned}}",
+      "noBattle": "aucun combat réussi"
     },
     "since": {
       "title": "Depuis la dernière manche",

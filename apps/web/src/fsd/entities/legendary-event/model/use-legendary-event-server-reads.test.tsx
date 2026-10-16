@@ -42,6 +42,34 @@ describe("server read hooks", () => {
     expect(result.current.status === "ready" && result.current.data).toEqual([])
   })
 
+  it("shows loading while a retry after a failure is in flight", async () => {
+    api.records.mockRejectedValueOnce(new Error("boom"))
+    const { result } = renderHook(
+      () => useLegendaryEventRunRecords("votanUthar"),
+      { wrapper: wrapper() }
+    )
+    await waitFor(() => expect(result.current.status).toBe("error"))
+    let resolve!: (value: unknown) => void
+    api.records.mockReturnValueOnce(new Promise((done) => (resolve = done)))
+    act(() => result.current.retry())
+    // TanStack keeps isError during the refetch; the read reports loading, not the old error.
+    await waitFor(() => expect(result.current.status).toBe("loading"))
+    await act(async () => resolve({ eventId: "votanUthar", records: [] }))
+    await waitFor(() => expect(result.current.status).toBe("ready"))
+  })
+
+  it("keeps the same read state object across re-renders with unchanged data", async () => {
+    api.records.mockResolvedValueOnce({ eventId: "votanUthar", records: [] })
+    const { result, rerender } = renderHook(
+      () => useLegendaryEventRunRecords("votanUthar"),
+      { wrapper: wrapper() }
+    )
+    await waitFor(() => expect(result.current.status).toBe("ready"))
+    const first = result.current
+    rerender()
+    expect(result.current).toBe(first)
+  })
+
   it("reports a failed run-records read and retries it", async () => {
     api.records.mockRejectedValueOnce(new Error("boom"))
     const { result } = renderHook(

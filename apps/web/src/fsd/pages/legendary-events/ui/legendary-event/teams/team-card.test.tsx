@@ -477,6 +477,13 @@ describe("TeamCard", () => {
       expect(line).toHaveClass("md:basis-auto")
     })
 
+    it("says no battle was cleared rather than battle 0", () => {
+      renderCard(team(), 1, actions(), 0)
+      expect(screen.getByTestId("team-card-last-run")).toHaveTextContent(
+        "Last run: no battle cleared"
+      )
+    })
+
     it("shows no line for a team created since the previous run", () => {
       renderCard(team(), 1, actions(), undefined)
       expect(screen.queryByTestId("team-card-last-run")).toBeNull()

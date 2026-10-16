@@ -4,11 +4,20 @@ import {
   DEFAULT_TIER_LIST_FILTERS,
   formatMultiplier,
   hasActiveFilters,
+  isAwaitingOwnedRoster,
   isTierListEmpty,
   parseTierListFilters,
+  shouldAutoExpandUntiered,
   tierListSearchParams,
   tierTileDetails,
 } from "./tier-list.view-model"
+
+const untieredTile = {
+  unitId: "x",
+  multiplier: 1,
+  overridden: false,
+  owned: undefined,
+}
 
 const parse = (query: string) =>
   parseTierListFilters(new URLSearchParams(query))
@@ -83,9 +92,56 @@ describe("hasActiveFilters / isTierListEmpty", () => {
     expect(
       isTierListEmpty({
         rows: [row],
-        untiered: [{ unitId: "x", owned: undefined }],
+        untiered: [untieredTile],
       })
     ).toBe(false)
+  })
+})
+
+describe("shouldAutoExpandUntiered", () => {
+  const empty = { tier: "S", multiplier: 1.85, units: [] }
+  const query = { ...DEFAULT_TIER_LIST_FILTERS, query: "dante" }
+
+  it("opens Untiered when a filter is active and only untiered characters match", () => {
+    expect(
+      shouldAutoExpandUntiered(
+        { rows: [empty], untiered: [untieredTile] },
+        query
+      )
+    ).toBe(true)
+  })
+
+  it("stays closed without filters, with a tiered match, or with no untiered match", () => {
+    expect(
+      shouldAutoExpandUntiered(
+        { rows: [empty], untiered: [untieredTile] },
+        DEFAULT_TIER_LIST_FILTERS
+      )
+    ).toBe(false)
+    expect(
+      shouldAutoExpandUntiered(
+        {
+          rows: [{ ...empty, units: [{ ...untieredTile, multiplier: 1.85 }] }],
+          untiered: [untieredTile],
+        },
+        query
+      )
+    ).toBe(false)
+    expect(
+      shouldAutoExpandUntiered({ rows: [empty], untiered: [] }, query)
+    ).toBe(false)
+  })
+})
+
+describe("isAwaitingOwnedRoster", () => {
+  it("waits only while Only owned is asked for and the roster is loading", () => {
+    const owned = { ...DEFAULT_TIER_LIST_FILTERS, onlyOwned: true }
+    expect(isAwaitingOwnedRoster(owned, "loading")).toBe(true)
+    expect(isAwaitingOwnedRoster(owned, "ready")).toBe(false)
+    expect(isAwaitingOwnedRoster(owned, "error")).toBe(false)
+    expect(isAwaitingOwnedRoster(DEFAULT_TIER_LIST_FILTERS, "loading")).toBe(
+      false
+    )
   })
 })
 

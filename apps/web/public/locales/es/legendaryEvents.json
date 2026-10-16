@@ -276,7 +276,8 @@
       "confirm": "Eliminar",
       "cancel": "Cancelar"
     },
-    "lastRun": "Última ronda: superó hasta la batalla {{battle}}"
+    "lastRun": "Última ronda: superó hasta la batalla {{battle}}",
+    "lastRunNone": "Última ronda: ninguna batalla superada"
   },
   "objective": {
     "minHits_one": "Mín. {{count}} golpe",
@@ -567,7 +568,8 @@
       "inTeams": "En equipos",
       "teamsUnavailable": "Equipos no disponibles",
       "teamsLoading": "Cargando equipos",
-      "noRoster": "Sincroniza tu plantilla"
+      "noRoster": "Sincroniza tu plantilla",
+      "rosterLoading": "Cargando plantilla"
     },
     "points": {
       "label": "Puntos",
@@ -577,7 +579,8 @@
       "needsEstimates": "Requiere estimaciones de avance",
       "estimatesLoading": "Cargando estimaciones de avance",
       "estimatedFallback": "Estimados requiere estimaciones de avance, así que se muestran los Restantes.",
-      "noProgress": "Sin progreso sincronizado: Restantes muestra los puntos de todas las batallas."
+      "noProgress": "Sin progreso sincronizado: Restantes muestra los puntos de todas las batallas.",
+      "estimatedFallbackNoRoster": "Estimados requiere una plantilla sincronizada, así que se muestran los Restantes."
     },
     "search": {
       "label": "Buscar unidades",
@@ -607,7 +610,8 @@
       "all": "Todos: puntos por batalla (derrotar a todos más los objetivos que cumple la unidad) por las batallas del carril.",
       "estimated": "Estimados: Restantes, contados solo en las batallas que se espera que la unidad (o sus equipos) supere.",
       "inTeams": "En equipos: una unidad cuenta derrotar a todos más solo los objetivos que cubren sus equipos en ese carril; una reserva cuenta solo derrotar a todos."
-    }
+    },
+    "rowsLoading": "Cargando unidades"
   },
   "history": {
     "title": "Última ronda",
@@ -628,7 +632,8 @@
     },
     "team": {
       "cleared": "superó hasta la batalla {{battle}}",
-      "clearedPlanned": "{{cleared}} · previsto {{planned}}"
+      "clearedPlanned": "{{cleared}} · previsto {{planned}}",
+      "noBattle": "ninguna batalla superada"
     },
     "since": {
       "title": "Desde la última ronda",

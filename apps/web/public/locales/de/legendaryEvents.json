@@ -276,7 +276,8 @@
       "confirm": "Löschen",
       "cancel": "Abbrechen"
     },
-    "lastRun": "Letzter Durchlauf: bis Kampf {{battle}} geschafft"
+    "lastRun": "Letzter Durchlauf: bis Kampf {{battle}} geschafft",
+    "lastRunNone": "Letzter Durchlauf: kein Kampf geschafft"
   },
   "objective": {
     "minHits_one": "Mind. {{count}} Treffer",
@@ -567,7 +568,8 @@
       "inTeams": "In Teams",
       "teamsUnavailable": "Teams nicht verfügbar",
       "teamsLoading": "Teams werden geladen",
-      "noRoster": "Synchronisiere deinen Kader"
+      "noRoster": "Synchronisiere deinen Kader",
+      "rosterLoading": "Kader wird geladen"
     },
     "points": {
       "label": "Punkte",
@@ -577,7 +579,8 @@
       "needsEstimates": "Benötigt Abschlussschätzungen",
       "estimatesLoading": "Abschlussschätzungen werden geladen",
       "estimatedFallback": "Geschätzt benötigt Abschlussschätzungen, daher wird Verbleibend angezeigt.",
-      "noProgress": "Kein synchronisierter Fortschritt: Verbleibend zeigt die Punkte aller Kämpfe."
+      "noProgress": "Kein synchronisierter Fortschritt: Verbleibend zeigt die Punkte aller Kämpfe.",
+      "estimatedFallbackNoRoster": "Geschätzt benötigt einen synchronisierten Kader, daher wird Verbleibend angezeigt."
     },
     "search": {
       "label": "Einheiten suchen",
@@ -607,7 +610,8 @@
       "all": "Alle: Punkte pro Kampf („Alle besiegen“ plus die Ziele, die die Einheit erfüllt) mal die Kämpfe der Bahn.",
       "estimated": "Geschätzt: Verbleibend, gezählt nur in den Kämpfen, die die Einheit (oder ihre Teams) voraussichtlich schafft.",
       "inTeams": "In Teams: Eine Einheit zählt „Alle besiegen“ plus nur die Ziele, die ihre Teams auf dieser Bahn abdecken; eine Reserve zählt nur „Alle besiegen“."
-    }
+    },
+    "rowsLoading": "Einheiten werden geladen"
   },
   "history": {
     "title": "Letzter Durchlauf",
@@ -628,7 +632,8 @@
     },
     "team": {
       "cleared": "bis Kampf {{battle}} geschafft",
-      "clearedPlanned": "{{cleared}} · geplant {{planned}}"
+      "clearedPlanned": "{{cleared}} · geplant {{planned}}",
+      "noBattle": "kein Kampf geschafft"
     },
     "since": {
       "title": "Seit dem letzten Durchlauf",

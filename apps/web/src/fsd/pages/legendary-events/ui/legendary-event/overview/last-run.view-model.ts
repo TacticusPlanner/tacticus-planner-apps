@@ -21,7 +21,8 @@ export const RUN_COUNT = 3
 
 /**
  * The Last run card's state (spec: run history data states): `hidden` when there is nothing to
- * show (signed out, or an active event whose only record is the current run), `loading` while the
+ * show (signed out, an active event whose only record is the current run, or an active event whose
+ * synced progress failed or is missing, so the current run cannot be told apart), `loading` while the
  * records, the synced progress or the roster load, `error` when the records read failed,
  * `noRecords` for the one-line note, and `ready` with the previous run's history and, on archived
  * or upcoming events only, the earlier runs' histories (newest first).
@@ -41,6 +42,18 @@ export interface LastRunInput {
   progress: ReadValue<LegendaryEventProgress | undefined>
   roster: ReadValue<LegendaryEventRosterUnit[] | undefined>
   event: Pick<LegendaryEvent, LegendaryEventLaneId>
+}
+
+/** An active event's current run comes from the synced progress: without it (read failed or no
+ *  entry) the newest record may be the current run, so nothing is selected (undefined). */
+function selectKnownRunRecords(
+  records: readonly LegendaryEventRunRecord[],
+  lifecycle: LegendaryEventLifecycleState,
+  progress: LegendaryEventProgress | undefined | "error"
+) {
+  const known = progress === "error" ? undefined : progress
+  if (lifecycle === "active" && known?.currentEventRun == null) return
+  return selectRunRecords(records, lifecycle, known)
 }
 
 export function buildLastRunViewModel({
@@ -63,11 +76,8 @@ export function buildLastRunViewModel({
     return { kind: "loading" }
   }
   if (records.data.length === 0) return { kind: "noRecords" }
-  const selection = selectRunRecords(
-    records.data,
-    lifecycle,
-    progress === "error" ? undefined : progress
-  )
+  const selection = selectKnownRunRecords(records.data, lifecycle, progress)
+  if (!selection) return { kind: "hidden" }
   if (!selection.previous) return { kind: "hidden" }
   const currentRoster = roster === "error" ? undefined : roster
   return {
@@ -83,7 +93,8 @@ export function buildLastRunViewModel({
 }
 
 /** Each previous-run team's cleared battle, by team id with its lane; undefined while the records
- *  or the synced progress load, when the records read failed, or when signed out (no line). */
+ *  or the synced progress load, when the records read failed, when signed out, or on an active
+ *  event whose synced progress failed or is missing (no line). */
 export type LastRunClears =
   | ReadonlyMap<string, { laneId: LegendaryEventLaneId; clearedBattle: number }>
   | undefined
@@ -100,12 +111,8 @@ export function buildLastRunClears({
   if (!enabled || records.status !== "ready" || progress === "loading") {
     return undefined
   }
-  const { previous } = selectRunRecords(
-    records.data,
-    lifecycle,
-    progress === "error" ? undefined : progress
-  )
-  return previousRunTeamClears(previous)
+  const selection = selectKnownRunRecords(records.data, lifecycle, progress)
+  return selection ? previousRunTeamClears(selection.previous) : undefined
 }
 
 /** The team card's last-run figure: only for a team with the same id on the same lane. */

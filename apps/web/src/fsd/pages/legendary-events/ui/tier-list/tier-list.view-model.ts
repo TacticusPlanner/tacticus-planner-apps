@@ -88,6 +88,39 @@ export function isTierListEmpty(list: HordeTierList): boolean {
   )
 }
 
+/** A filter is active and only Untiered characters match it: the Untiered row opens by itself so the
+ *  matches are not hidden behind empty tier rows. */
+export function shouldAutoExpandUntiered(
+  list: HordeTierList,
+  filters: TierListUrlFilters
+): boolean {
+  return (
+    hasActiveFilters(filters) &&
+    list.untiered.length > 0 &&
+    list.rows.every((row) => row.units.length === 0)
+  )
+}
+
+/** A key identifying the filters, so a collapse of the auto-opened Untiered row lasts only until
+ *  they change. */
+export function tierListFiltersKey(filters: TierListUrlFilters): string {
+  return JSON.stringify([
+    filters.query.trim(),
+    filters.onlyOwned,
+    filters.alliance,
+  ])
+}
+
+/** "Only owned" was asked for but the roster is still loading: the page waits for it (loading
+ *  state, switch on) instead of showing the unfiltered list. Once the roster is known to be
+ *  unavailable (read error, never synced) the filter is ignored instead. */
+export function isAwaitingOwnedRoster(
+  filters: TierListUrlFilters,
+  rosterStatus: "loading" | "ready" | "error"
+): boolean {
+  return filters.onlyOwned && rosterStatus === "loading"
+}
+
 /** A multiplier as "2.0×" / "1.95×": one to two decimals in the reader's locale. */
 export function formatMultiplier(value: number, locale?: string): string {
   return `${new Intl.NumberFormat(locale, {

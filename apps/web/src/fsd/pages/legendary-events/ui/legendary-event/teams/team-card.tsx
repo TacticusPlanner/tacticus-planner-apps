@@ -262,7 +262,9 @@ export function TeamCard({
               className="basis-full pt-0 text-right text-xs text-muted-foreground tabular-nums md:basis-auto md:pt-1.5"
               data-testid="team-card-last-run"
             >
-              {t("teams.lastRun", { battle: lastRunClearedBattle })}
+              {lastRunClearedBattle > 0
+                ? t("teams.lastRun", { battle: lastRunClearedBattle })
+                : t("teams.lastRunNone")}
             </span>
           )}
         </div>

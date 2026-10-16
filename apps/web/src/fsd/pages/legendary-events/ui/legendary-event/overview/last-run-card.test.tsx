@@ -4,6 +4,7 @@ import { afterEach, beforeAll, describe, expect, it, vi } from "vitest"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
 import type {
+  LegendaryEventProgress,
   LegendaryEventRosterUnit,
   LegendaryEventRunRecord,
   LegendaryEventLifecycleState,
@@ -63,7 +64,11 @@ function readyView(
     enabled: true,
     records: { status: "ready", data: records, retry: () => {} },
     lifecycle,
-    progress: undefined,
+    // An active event needs the synced current run (here run 2) to show the previous one.
+    progress:
+      lifecycle === "active"
+        ? ({ currentEventRun: 2 } as unknown as LegendaryEventProgress)
+        : undefined,
     roster: currentRoster,
     event: utharEvent,
   })
@@ -130,6 +135,8 @@ const follows = (first: HTMLElement, second: HTMLElement) =>
   Boolean(
     first.compareDocumentPosition(second) & Node.DOCUMENT_POSITION_FOLLOWING
   )
+const controlledRegion = (toggle: HTMLElement) =>
+  document.getElementById(toggle.getAttribute("aria-controls") ?? "")
 const localDate = (iso: string) =>
   new Intl.DateTimeFormat("en", { dateStyle: "medium" }).format(new Date(iso))
 
@@ -205,8 +212,13 @@ describe("LastRunCard", () => {
     expect(toggles).toHaveLength(1)
     expect(toggles[0]).toHaveTextContent("Teams (2)")
     expect(toggles[0]).toHaveAttribute("aria-expanded", "false")
+    // aria-controls only names the teams list while it is rendered.
+    expect(toggles[0]).not.toHaveAttribute("aria-controls")
     fireEvent.click(toggles[0]!)
     expect(toggles[0]).toHaveAttribute("aria-expanded", "true")
+    expect(controlledRegion(toggles[0]!)).toContainElement(
+      screen.getAllByTestId("last-run-team")[0]!
+    )
     expect(teamLines().map((team) => team.cleared)).toEqual([
       "cleared up to battle 2 · planned 6",
       "cleared up to battle 3",
@@ -260,6 +272,30 @@ describe("LastRunCard", () => {
       expect(screen.queryByTestId("last-run-lane-teams-toggle")).toBeNull()
     })
 
+    it("says no battle was cleared for a team that cleared none, never battle 0", () => {
+      renderCard(
+        readyView([
+          {
+            ...utharRun1Record,
+            teams: [
+              {
+                ...utharRun1Record.teams[1]!,
+                teamId: "team-none",
+                objectiveIndexes: [9],
+              },
+            ],
+          },
+        ]),
+        width
+      )
+      if (width < 768) {
+        fireEvent.click(screen.getByTestId("last-run-lane-teams-toggle"))
+      }
+      expect(screen.getByTestId("last-run-team-cleared")).toHaveTextContent(
+        "no battle cleared"
+      )
+    })
+
     it("replaces the list when the record has no roster snapshot", () => {
       renderCard(
         readyView([{ ...utharRun1Record, rosterSnapshot: null }]),
@@ -308,10 +344,12 @@ describe("LastRunCard", () => {
       const toggle = screen.getByTestId("last-run-earlier-toggle")
       expect(toggle).toHaveTextContent("Earlier runs (2)")
       expect(toggle).toHaveAttribute("aria-expanded", "false")
+      expect(toggle).not.toHaveAttribute("aria-controls")
       expect(screen.queryByTestId("legendary-event-earlier-run")).toBeNull()
 
       fireEvent.click(toggle)
       const entries = screen.getAllByTestId("legendary-event-earlier-run")
+      expect(controlledRegion(toggle)).toContainElement(entries[0]!)
       expect(entries.map((entry) => entry.dataset.record)).toEqual([
         "record-run-2",
         "record-run-1",
@@ -323,8 +361,13 @@ describe("LastRunCard", () => {
 
       const entry = within(entries[1]!)
       expect(entry.queryByTestId("last-run-body")).toBeNull()
-      fireEvent.click(entry.getByTestId("last-run-earlier-entry-toggle"))
+      const entryToggle = entry.getByTestId("last-run-earlier-entry-toggle")
+      expect(entryToggle).not.toHaveAttribute("aria-controls")
+      fireEvent.click(entryToggle)
       expect(entry.getByTestId("last-run-body")).toBeInTheDocument()
+      expect(controlledRegion(entryToggle)).toContainElement(
+        entry.getByTestId("last-run-body")
+      )
       expect(entry.getByTestId("last-run-since")).toHaveTextContent(
         "Since this run"
       )

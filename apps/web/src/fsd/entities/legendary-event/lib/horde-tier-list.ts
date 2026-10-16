@@ -12,24 +12,64 @@ export interface HordeModeTierList {
 /** The multiplier an untiered character uses. */
 export const UNTIERED_MULTIPLIER = 1
 
+/** A character's resolved entry: its tier (null when the catalog lacks that tier) and its
+ *  effective multiplier. */
+interface HordeTierEntry {
+  tier: string | null
+  multiplier: number
+}
+
+const lookups = new WeakMap<
+  HordeModeTierList,
+  ReadonlyMap<string, HordeTierEntry>
+>()
+
 /**
- * A tiered character's effective multiplier: its own `multiplier` when set, else its tier's; null
- * when the character is untiered (or its tier is unknown). The one rule the clear-estimate config
- * and the Tier List share.
+ * The one lookup the clear-estimate config and the Tier List both read, so they always agree on
+ * malformed data. Rules: the first entry for a `unitId` wins (later duplicates are ignored, even
+ * when the first is unusable); the effective multiplier is the character's own `multiplier` when
+ * set, else its tier's (the first `tiers` entry of that name). An entry whose tier is not in `tiers`
+ * leaves the character untiered: with its own `multiplier` it keeps that value (shown in the
+ * Untiered row with it), without one it is absent here and uses 1.0. Cached per dataset object.
+ */
+function hordeTierLookup(
+  tierList: HordeModeTierList
+): ReadonlyMap<string, HordeTierEntry> {
+  const cached = lookups.get(tierList)
+  if (cached) return cached
+  const tierMultipliers = new Map<string, number>()
+  for (const { tier, multiplier } of tierList.tiers) {
+    if (!tierMultipliers.has(tier)) tierMultipliers.set(tier, multiplier)
+  }
+  const lookup = new Map<string, HordeTierEntry>()
+  // Every unitId seen so far, untiered ones too, so a later duplicate never overrides the first.
+  const seen = new Set<string>()
+  for (const entry of tierList.characters) {
+    if (seen.has(entry.unitId)) continue
+    seen.add(entry.unitId)
+    const tierMultiplier = tierMultipliers.get(entry.tier)
+    const multiplier = entry.multiplier ?? tierMultiplier
+    if (multiplier === undefined) continue
+    lookup.set(entry.unitId, {
+      tier: tierMultiplier === undefined ? null : entry.tier,
+      multiplier,
+    })
+  }
+  lookups.set(tierList, lookup)
+  return lookup
+}
+
+/**
+ * A character's effective multiplier (see `hordeTierLookup` for the rules); null when it uses the
+ * untiered 1.0. The one rule the clear-estimate config and the
+ * Tier List share.
  */
 export function effectiveHordeMultiplier(
   tierList: HordeModeTierList | null,
   unitId: string
 ): number | null {
-  const entry = tierList?.characters.find(
-    (character) => character.unitId === unitId
-  )
-  if (!entry) return null
-  return (
-    entry.multiplier ??
-    tierList?.tiers.find((tier) => tier.tier === entry.tier)?.multiplier ??
-    null
-  )
+  if (!tierList) return null
+  return hordeTierLookup(tierList).get(unitId)?.multiplier ?? null
 }
 
 export type HordeTierAlliance = "all" | "Imperial" | "Chaos" | "Xenos"
@@ -61,8 +101,9 @@ export interface HordeTierRow {
 export interface HordeTierList {
   /** One row per catalog tier, in catalog order, even when the filters leave it empty. */
   rows: HordeTierRow[]
-  /** Every other catalog character (1.0), by localized name. */
-  untiered: Omit<HordeTierTile, "multiplier" | "overridden">[]
+  /** Every other catalog character, by localized name: 1.0, or its own multiplier when its entry
+   *  names a tier the catalog lacks (`overridden` then). */
+  untiered: HordeTierTile[]
 }
 
 /**
@@ -91,13 +132,7 @@ export function buildHordeTierList(
     nameOf(a.unitId).localeCompare(nameOf(b.unitId), locale)
   const ownedOf = (unitId: string) => (owned ? owned.has(unitId) : undefined)
 
-  const tierOf = new Map(
-    tierList.characters
-      .filter((entry) =>
-        tierList.tiers.some((tier) => tier.tier === entry.tier)
-      )
-      .map((entry) => [entry.unitId, entry])
-  )
+  const tierOf = hordeTierLookup(tierList)
   const rows = tierList.tiers.map((tier): HordeTierRow => ({
     tier: tier.tier,
     multiplier: tier.multiplier,
@@ -108,7 +143,7 @@ export function buildHordeTierList(
       )
       .map((character) => {
         const multiplier =
-          effectiveHordeMultiplier(tierList, character.id) ?? tier.multiplier
+          tierOf.get(character.id)?.multiplier ?? tier.multiplier
         return {
           unitId: character.id,
           multiplier,
@@ -119,11 +154,17 @@ export function buildHordeTierList(
       .sort((a, b) => b.multiplier - a.multiplier || byName(a, b)),
   }))
   const untiered = characters
-    .filter((character) => !tierOf.has(character.id) && keep(character))
-    .map((character) => ({
-      unitId: character.id,
-      owned: ownedOf(character.id),
-    }))
+    .filter((character) => !tierOf.get(character.id)?.tier && keep(character))
+    .map((character): HordeTierTile => {
+      const multiplier =
+        tierOf.get(character.id)?.multiplier ?? UNTIERED_MULTIPLIER
+      return {
+        unitId: character.id,
+        multiplier,
+        overridden: multiplier !== UNTIERED_MULTIPLIER,
+        owned: ownedOf(character.id),
+      }
+    })
     .sort(byName)
   return { rows, untiered }
 }

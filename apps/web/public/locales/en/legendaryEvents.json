@@ -276,7 +276,8 @@
       "confirm": "Delete",
       "cancel": "Cancel"
     },
-    "lastRun": "Last run: cleared up to battle {{battle}}"
+    "lastRun": "Last run: cleared up to battle {{battle}}",
+    "lastRunNone": "Last run: no battle cleared"
   },
   "objective": {
     "minHits_one": "Min {{count}} hit",
@@ -567,7 +568,8 @@
       "inTeams": "In teams",
       "teamsUnavailable": "Teams unavailable",
       "teamsLoading": "Loading teams",
-      "noRoster": "Sync your roster"
+      "noRoster": "Sync your roster",
+      "rosterLoading": "Loading roster"
     },
     "points": {
       "label": "Points",
@@ -577,7 +579,8 @@
       "needsEstimates": "Needs clear estimates",
       "estimatesLoading": "Loading clear estimates",
       "estimatedFallback": "Estimated needs clear estimates, so Remaining is shown.",
-      "noProgress": "No synced progress: Remaining shows every battle's points."
+      "noProgress": "No synced progress: Remaining shows every battle's points.",
+      "estimatedFallbackNoRoster": "Estimated needs a synced roster, so Remaining is shown."
     },
     "search": {
       "label": "Search units",
@@ -607,7 +610,8 @@
       "all": "All: points per battle (defeat-all plus the objectives the unit fits) times the lane's battles.",
       "estimated": "Estimated: Remaining, counted only within the battles the unit (or its teams) is expected to clear.",
       "inTeams": "In teams: a unit counts defeat-all plus only the objectives its teams on that lane cover; a reserve counts defeat-all only."
-    }
+    },
+    "rowsLoading": "Loading units"
   },
   "history": {
     "title": "Last run",
@@ -628,7 +632,8 @@
     },
     "team": {
       "cleared": "cleared up to battle {{battle}}",
-      "clearedPlanned": "{{cleared}} · planned {{planned}}"
+      "clearedPlanned": "{{cleared}} · planned {{planned}}",
+      "noBattle": "no battle cleared"
     },
     "since": {
       "title": "Since last run",
