@@ -37,8 +37,8 @@ import { SelectedChip } from "./team-picker-selected-chip"
  * search and an "only unlocked" switch. A tap toggles membership up to five; a sixth tap is
  * ignored and pulses the count badge, which also says a team needs three while it has fewer. A
  * tile's secondary action sets the reserve. The selected members (in position order) and the
- * reserve sit above the grid with remove buttons. With Goals
- * Preview available, a switch (starting from the page's value) shows tiles at their goal targets:
+ * reserve sit above the grid with remove buttons. With Goals Preview available, a switch
+ * (starting from the page's value) shows tiles at their goal targets:
  * owned state, rarity, rank, estimated clears and a preview marker. The lane's objectives sit above
  * the grid as multi-select chips with how many listed units satisfy each (design D1): units
  * satisfying every selected objective come first, the others follow dimmed (still selectable, with
