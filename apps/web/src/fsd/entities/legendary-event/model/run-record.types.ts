@@ -7,7 +7,7 @@ import type {
 } from "./plan.types"
 import type { LegendaryEventLaneId } from "./types"
 
-// Hand-written types for `GET /api/v1/me/legendary-event-plans` and
+// Hand-written types (checked against the API's OpenAPI artifact after api#93) for `GET /api/v1/me/legendary-event-plans` and
 // `GET /api/v1/me/legendary-event-plans/{eventId}/run-records` (companion API change
 // add-legendary-event-master-table-and-history, design D1, D4, D5, D6). Both are read-only and
 // read as-is, so they carry no `Dto` suffix (as in `plan.types.ts`).
@@ -54,6 +54,7 @@ export interface RosterSnapshotCharacter {
   unitId: string
   progressionIndex: Progression
   rank: Rank
+  xp: number
   xpLevel: number
   shards: number
   mythicShards: number
@@ -66,6 +67,7 @@ export interface RosterSnapshotCharacter {
 export interface RosterSnapshotMow {
   unitId: string
   progressionIndex: Progression
+  xp: number
   xpLevel: number
   shards: number
   mythicShards: number

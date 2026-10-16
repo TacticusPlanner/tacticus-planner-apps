@@ -55,6 +55,7 @@ export const utharRun1Record: LegendaryEventRunRecord = {
         unitId: "ultraCalgar",
         progressionIndex: "Legendary:RedFiveStars",
         rank: "Diamond1",
+        xp: 0,
         xpLevel: 45,
         shards: 0,
         mythicShards: 0,
