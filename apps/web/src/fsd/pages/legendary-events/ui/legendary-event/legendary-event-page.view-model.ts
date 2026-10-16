@@ -25,6 +25,7 @@ import {
   type LegendaryEventRewards,
   type LegendaryEventRosterUnit,
   type LegendaryEventRun,
+  type LegendaryEventRunResolution,
   type LegendaryEventUnit,
   type NextPointsMilestone,
   type ReadState,
@@ -321,22 +322,33 @@ export function buildRunStatusViewModel({
 }
 
 /**
- * The Reward outlook over the event's ladder, the synced entry and the plan's run inputs (design
- * D2, D6). Signed out (`planEnabled` false) or with a plan that failed to load, the projection runs
- * without inputs; without a synced entry it starts from zero.
+ * The Reward outlook over the event's ladder, the synced entry, the event unit's roster record and
+ * the plan's run inputs (design D2, D6; fix-legendary-event-run-and-goal D5). Signed out
+ * (`planEnabled` false) or with a plan that failed to load, the projection runs without inputs;
+ * without a synced entry it starts from zero. A roster that failed or never synced counts the unit
+ * as not owned (Unlock).
  */
 export function buildRewardOutlookViewModel({
   rewards,
   progress,
+  unit,
+  resolution,
   plan,
   planEnabled,
 }: {
   rewards: LegendaryEventRewards | undefined
   progress: ReadValue<LegendaryEventProgress | undefined>
+  /** The event unit's roster record (`eventUnitRecord`), or the roster read's status. */
+  unit: ReadValue<LegendaryEventRosterUnit | undefined>
+  resolution: LegendaryEventRunResolution
   plan: { isPending: boolean; data: LegendaryEventPlan | undefined }
   planEnabled: boolean
 }): RewardOutlookViewModel {
-  if (progress === "loading" || (planEnabled && plan.isPending)) {
+  if (
+    progress === "loading" ||
+    unit === "loading" ||
+    (planEnabled && plan.isPending)
+  ) {
     return { kind: "loading" }
   }
   if (progress === "error" || !rewards) return { kind: "unavailable" }
@@ -345,10 +357,22 @@ export function buildRewardOutlookViewModel({
     projection: projectRewards({
       rewards,
       progress,
+      resolution,
+      unit: unit === "error" ? undefined : unit,
       runs: plan.data?.runs,
       showPaidOptions: plan.data?.showPaidOptions ?? false,
     }),
   }
+}
+
+/** The event unit's synced roster record; undefined when it is not owned or the roster is unknown. */
+export function eventUnitRecord(
+  roster: ReadValue<readonly LegendaryEventRosterUnit[] | undefined>,
+  eventId: string
+): LegendaryEventRosterUnit | undefined {
+  return Array.isArray(roster)
+    ? roster.find((unit) => unit.unitId === eventId)
+    : undefined
 }
 
 /** One lane's estimators over the synced roster (design D3): null when there is nothing to

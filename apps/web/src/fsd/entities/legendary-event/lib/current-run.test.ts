@@ -4,19 +4,18 @@ import type { LegendaryEventTeam } from "../model/plan.types"
 import { currentLegendaryEventRun, teamDepthForRun } from "./current-run"
 
 describe("currentLegendaryEventRun", () => {
-  it("takes the synced run", () => {
-    expect(currentLegendaryEventRun({ currentEventRun: 2 })).toBe(2)
+  it("takes the run in progress", () => {
+    expect(currentLegendaryEventRun({ currentRun: 2, nextRun: 3 })).toBe(2)
   })
 
-  it("defaults to run 1 without a synced entry or run", () => {
-    expect(currentLegendaryEventRun(undefined)).toBe(1)
-    expect(currentLegendaryEventRun({ currentEventRun: null })).toBe(1)
+  it("takes the next run between runs (Uthar: run 3)", () => {
+    expect(currentLegendaryEventRun({ currentRun: null, nextRun: 3 })).toBe(3)
   })
 
-  it("clamps an out-of-range run", () => {
-    expect(currentLegendaryEventRun({ currentEventRun: 7 })).toBe(3)
-    expect(currentLegendaryEventRun({ currentEventRun: 0 })).toBe(1)
-    expect(currentLegendaryEventRun({ currentEventRun: Number.NaN })).toBe(1)
+  it("defaults to run 1 when the run is unknown or every run is over", () => {
+    expect(currentLegendaryEventRun({ currentRun: null, nextRun: null })).toBe(
+      1
+    )
   })
 })
 

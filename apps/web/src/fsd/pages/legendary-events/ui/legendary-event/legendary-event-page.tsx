@@ -7,7 +7,6 @@ import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
 import { useCreateGoalLauncher } from "@/entities/goal"
 import {
-  currentLegendaryEventRun,
   type LegendaryEvent,
   type LegendaryEventLaneId,
   useClearEstimateConfig,
@@ -43,6 +42,7 @@ import {
 import { useLegendaryEventTutorial } from "./legendary-event.tutorial"
 import { useLastRun } from "./overview/use-last-run"
 import { useEventGoals } from "./use-event-goals"
+import { useEventRuns } from "./use-event-runs"
 import { useUpgradeImpact } from "./use-upgrade-impact"
 import { progressHeadingId } from "./progress/progress-heading"
 import { buildMarksByLane } from "./progress/progress-marks"
@@ -84,20 +84,16 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
   const progressValue = readValue(progress)
   const clearEstimateConfig = useClearEstimateConfig()
   const battles = readValue(useLegendaryEventBattles(eventId))
-  // Depth writes target the synced run, or run 1 without a synced entry (design D8). The Teams
-  // section stays loading until the progress resolves, so nothing captures the default meanwhile.
-  const run = currentLegendaryEventRun(
-    typeof progressValue === "object" ? progressValue : undefined
-  )
-  const plan = useLegendaryEventPlan({ eventId, run })
-  const annotations = useAnnotations(eventId)
   const syncedEntry =
     typeof progressValue === "object" ? progressValue : undefined
+  const eventData = event.status === "ready" ? event.data : undefined
+  const runs = useEventRuns(event, syncedEntry, roster)
+  const plan = useLegendaryEventPlan({ eventId, run: runs.run })
+  const annotations = useAnnotations(eventId)
   const marksByLane = useMemo(
     () => buildMarksByLane(annotations.annotations, syncedEntry),
     [annotations.annotations, syncedEntry]
   )
-  const eventData = event.status === "ready" ? event.data : undefined
   const progressGrid = useMemo(
     () =>
       eventData
@@ -216,7 +212,7 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
     units: Array.isArray(units) ? units : undefined,
     progressPending: progressValue === "loading",
     clearEstimates,
-    run,
+    run: runs.run,
     progressGrid,
     initialRarityOf,
   })
@@ -233,7 +229,8 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
       status: plan.query.status,
       data: plan.query.data,
     },
-    run,
+    resolution: runs.resolution,
+    eventUnit: runs.ownedEventUnit,
     estimates: clearEstimates,
   })
   const selectTab = useCallback((tab: LegendaryEventTab) => {
@@ -320,10 +317,12 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
     outlook: buildRewardOutlookViewModel({
       rewards: event.data.rewards as LegendaryEvent["rewards"] | undefined,
       progress: progressValue,
+      unit: runs.eventUnit,
+      resolution: runs.resolution,
       plan: plan.query,
       planEnabled: plan.enabled,
     }),
-    runInputs: { enabled: plan.enabled, currentRun: run },
+    runInputs: { enabled: plan.enabled, currentRun: runs.run },
     syncedAtMs:
       syncTimes.status === "ready" ? syncTimes.data.syncedAtMs : undefined,
     selectedTab,
@@ -380,7 +379,7 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
         roster,
         runPending: progressValue === "loading",
       }),
-      run,
+      run: runs.run,
       actions: plan,
       estimates: clearEstimates,
       eventId,

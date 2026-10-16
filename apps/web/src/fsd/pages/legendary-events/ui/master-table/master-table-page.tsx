@@ -139,6 +139,7 @@ export function MasterTablePage() {
   const unitsData = units.status === "ready" ? units.data : undefined
   const progressData = progress.status === "ready" ? progress.data : undefined
   const battlesData = battles.status === "ready" ? battles.data : undefined
+  const nowMs = events.nowMs
   const estimateConfig = config.status === "ready" ? config.config : undefined
   const table = useMemo(
     () =>
@@ -149,6 +150,7 @@ export function MasterTablePage() {
               plans: planData,
               progress: progressData,
               battles: battlesData,
+              nowMs,
             }),
             units: unitsData,
             roster: rosterData,
@@ -163,6 +165,7 @@ export function MasterTablePage() {
       planData,
       progressData,
       battlesData,
+      nowMs,
       rosterData,
       estimateConfig,
       state.unitSet,

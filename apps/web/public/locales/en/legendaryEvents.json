@@ -487,6 +487,7 @@
         "mostPointsPlayableNow": "Most points among battles you can play now"
       },
       "upcoming": "{{reason}} for when run {{run}} starts",
+      "upcomingUnknown": "{{reason}} for when the next run starts",
       "maybe": "Maybe clear",
       "members": "Members",
       "objectives": "Clears",
@@ -521,7 +522,10 @@
       "title": "Run forecast",
       "header": "By the end of run {{run}}: {{points}} points · {{step}} {{shards}} shards short",
       "headerAllSteps": "By the end of run {{run}}: {{points}} points · every reward step reached",
+      "headerUnknown": "By the end of the next run: {{points}} points · {{step}} {{shards}} shards short",
+      "headerAllStepsUnknown": "By the end of the next run: {{points}} points · every reward step reached",
       "run": "Run {{run}}",
+      "nextRun": "Next run",
       "states": {
         "done": "Done",
         "now": "Now",

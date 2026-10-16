@@ -257,6 +257,44 @@ describe("buildMasterTable", () => {
     expect(cell.lanes.gamma).toEqual({ points: 171 * 3, depth: 3 })
   })
 
+  it("reads the depth stored for the event's resolved run", () => {
+    const depth = (run: 1 | 3, expectedBattleClears: number) => ({
+      run,
+      expectedBattleClears,
+      expectedBattleClearsSource: "manual" as const,
+      recordedAt: "2026-10-16T00:00:00Z",
+    })
+    const plan = {
+      teams: [
+        team({
+          id: "assault",
+          laneId: "gamma",
+          memberUnitIds: ["bloodDante"],
+          objectiveIndexes: [2, 4],
+          runDepths: [depth(1, 7), depth(3, 3)],
+        }),
+      ],
+    }
+    const cellFor = (run: 1 | 3) =>
+      danteRow(
+        table(
+          [
+            {
+              event: lysanderEvent,
+              plan,
+              run,
+              battlePowers: { gamma: powersFor(10) },
+            },
+          ],
+          { unitSet: "inTeams", pointsMode: "estimated" }
+        )
+      )!.cells.astarLysander!.lanes.gamma
+
+    // Between runs on Uthar the resolved run is 3: its depth (3) is read, not run 1's (7).
+    expect(cellFor(3)).toEqual({ points: 171 * 3, depth: 3 })
+    expect(cellFor(1)).toEqual({ points: 171 * 7, depth: 7 })
+  })
+
   it("lists only owned units in Unlocked", () => {
     const result = table(events, { unitSet: "unlocked" })
     expect(result.rows.map((row) => row.unitId)).toEqual(["bloodDante"])

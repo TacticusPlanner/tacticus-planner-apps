@@ -5,7 +5,10 @@ import { toast } from "sonner"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import {
+  currentLegendaryEventRun,
   legendaryEventPlanQueries,
+  resolveLegendaryEventRunsAt,
+  teamDepthForRun,
   type LegendaryEventPlan,
   type LegendaryEventTeam,
 } from "@/entities/legendary-event"
@@ -312,6 +315,99 @@ describe("useLegendaryEventPlan", () => {
       depth: 9,
       estimate: null,
       fromEstimate: false,
+    })
+  })
+
+  describe("depth run from the resolved runs", () => {
+    const NOW = Date.parse("2026-10-16T00:00:00Z")
+    const withDepthFor = (stored: LegendaryEventTeam) =>
+      api.update.mockImplementation(async (_event, _id, body) =>
+        plan(4, [
+          {
+            ...stored,
+            runDepths: [
+              ...stored.runDepths.filter((entry) => entry.run !== body.run),
+              {
+                run: body.run,
+                expectedBattleClears: body.expectedBattleClears,
+                expectedBattleClearsSource: "manual" as const,
+                recordedAt: "2026-10-16T00:00:00Z",
+              },
+            ].sort((a, b) => a.run - b.run),
+          },
+        ])
+      )
+
+    it("writes an upcoming event's depth under its next run (Uthar between runs: 3) and reads it back", async () => {
+      const run = currentLegendaryEventRun(
+        resolveLegendaryEventRunsAt(
+          {
+            finished: false,
+            eventStageStartDatesUtc: [
+              "2026-03-08T00:00:00Z",
+              "2026-10-04T00:00:00Z",
+            ],
+          },
+          {
+            currentEventRun: null,
+            currentPoints: 13_139,
+            alpha: null,
+            beta: null,
+            gamma: null,
+          },
+          NOW
+        )
+      )
+      expect(run).toBe(3)
+      const stored = team("a", 0)
+      withDepthFor(stored)
+      const { result, cached } = setup(plan(3, [stored]), run)
+
+      await act(async () => {
+        await result.current.setDepth(stored, 9)
+      })
+
+      expect(api.update).toHaveBeenCalledWith(
+        EVENT,
+        "a",
+        expect.objectContaining({ run: 3, expectedBattleClears: 9 })
+      )
+      expect(
+        teamDepthForRun(cached().teams[0]!, run)?.expectedBattleClears
+      ).toBe(9)
+      expect(teamDepthForRun(cached().teams[0]!, 1)?.expectedBattleClears).toBe(
+        7
+      )
+    })
+
+    it("writes run 1 when the run is unknown", async () => {
+      const run = currentLegendaryEventRun(
+        resolveLegendaryEventRunsAt(
+          { finished: false, eventStageStartDatesUtc: [] },
+          {
+            currentEventRun: null,
+            currentPoints: 12_530,
+            alpha: null,
+            beta: null,
+            gamma: null,
+          },
+          NOW
+        )
+      )
+      expect(run).toBe(1)
+      const stored = { ...team("a", 0), runDepths: [] }
+      withDepthFor(stored)
+      const { result } = setup(plan(3, [stored]), run)
+
+      await act(async () => {
+        await result.current.setDepth(stored, 5)
+      })
+
+      expect(api.update).toHaveBeenCalledWith(
+        EVENT,
+        "a",
+        expect.objectContaining({ run: 1, expectedBattleClears: 5 })
+      )
     })
   })
 

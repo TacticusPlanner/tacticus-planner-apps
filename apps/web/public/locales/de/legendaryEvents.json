@@ -487,6 +487,7 @@
         "mostPointsPlayableNow": "Die meisten Punkte unter den Kämpfen, die du jetzt spielen kannst"
       },
       "upcoming": "{{reason}}, sobald Durchlauf {{run}} beginnt",
+      "upcomingUnknown": "{{reason}}, sobald der nächste Durchlauf beginnt",
       "maybe": "Vielleicht schaffbar",
       "members": "Mitglieder",
       "objectives": "Erfüllt",
@@ -521,7 +522,10 @@
       "title": "Durchlaufprognose",
       "header": "Am Ende von Durchlauf {{run}}: {{points}} Punkte · {{step}} fehlen {{shards}} Splitter",
       "headerAllSteps": "Am Ende von Durchlauf {{run}}: {{points}} Punkte · alle Belohnungsstufen erreicht",
+      "headerUnknown": "Am Ende des nächsten Durchlaufs: {{points}} Punkte · {{step}} fehlen {{shards}} Splitter",
+      "headerAllStepsUnknown": "Am Ende des nächsten Durchlaufs: {{points}} Punkte · alle Belohnungsstufen erreicht",
       "run": "Durchlauf {{run}}",
+      "nextRun": "Nächster Durchlauf",
       "states": {
         "done": "Erledigt",
         "now": "Aktuell",

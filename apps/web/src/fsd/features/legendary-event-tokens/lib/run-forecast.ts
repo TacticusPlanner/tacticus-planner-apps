@@ -1,6 +1,7 @@
 import {
   ASCENSION_STEPS,
   BUNDLE_CURRENCY,
+  EMPTY_RUN_INPUT_VALUES,
   MAX_CLOSE_SHARDS,
   MISSION_CURRENCY,
   PREMIUM_BONUS_CURRENCY,
@@ -40,6 +41,9 @@ export interface ForecastInput {
       >
     | undefined
   supply: readonly RunSupply[]
+  /** The event unit's next step (`unitNextAscensionStep`), shared with the reward projection so
+   *  both count the shards from the same step. */
+  fromStep: AscensionStep | "fullyAscended"
   tokens: readonly Pick<PlannedToken, "points">[]
   runs: readonly LegendaryEventRunInputs[] | undefined
   showPaidOptions: boolean
@@ -114,6 +118,7 @@ export function forecastRuns({
   rewards,
   progress,
   supply,
+  fromStep,
   tokens,
   runs,
   showPaidOptions,
@@ -138,7 +143,7 @@ export function forecastRuns({
 
   /** Opens every chest the currency covers; returns the steps newly reached. */
   const openChests = (): { opened: number; steps: AscensionStep[] } => {
-    const before = nextAscensionStep(shards, rewards.progression)
+    const before = nextAscensionStep(shards, rewards.progression, fromStep)
     let opened = 0
     for (;;) {
       const chest = chests[claimed]
@@ -152,7 +157,7 @@ export function forecastRuns({
   }
 
   const stepsBetween = (before: AscensionGoal): AscensionStep[] => {
-    const after = nextAscensionStep(shards, rewards.progression)
+    const after = nextAscensionStep(shards, rewards.progression, fromStep)
     return stepOrder.slice(
       stepIndex(before, stepOrder),
       stepIndex(after, stepOrder)
@@ -164,13 +169,16 @@ export function forecastRuns({
     const startCurrency = currency
     const startClaimed = claimed
     const startShards = shards
-    const startGoal = nextAscensionStep(shards, rewards.progression)
+    const startGoal = nextAscensionStep(shards, rewards.progression, fromStep)
     let missionCurrency = 0
     let bundleCurrency = 0
     let used = 0
 
     if (runSupply.state !== "done") {
-      const values = runInputValues(runs, runSupply.run)
+      // An unknown run's one Next block reads no stored inputs (spec: the unknown state).
+      const values = runSupply.unknownRun
+        ? EMPTY_RUN_INPUT_VALUES
+        : runInputValues(runs, runSupply.run)
       const premium = showPaidOptions ? values.premiumMissions : 0
       const isNow = runSupply.state === "now"
       const syncedBonus = progress?.extraCurrencyPerPayout ?? 0
@@ -217,7 +225,7 @@ export function forecastRuns({
       tokenIndex += used
     }
 
-    const next = nextAscensionStep(shards, rewards.progression)
+    const next = nextAscensionStep(shards, rewards.progression, fromStep)
     return {
       run: runSupply.run,
       state: runSupply.state,

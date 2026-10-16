@@ -487,6 +487,7 @@
         "mostPointsPlayableNow": "La mayor cantidad de puntos entre las batallas que puedes jugar ahora"
       },
       "upcoming": "{{reason}} para cuando empiece la ronda {{run}}",
+      "upcomingUnknown": "{{reason}} para cuando empiece la próxima ronda",
       "maybe": "Quizá superable",
       "members": "Miembros",
       "objectives": "Supera",
@@ -521,7 +522,10 @@
       "title": "Previsión por ronda",
       "header": "Al final de la ronda {{run}}: {{points}} puntos · faltan {{shards}} fragmentos para {{step}}",
       "headerAllSteps": "Al final de la ronda {{run}}: {{points}} puntos · todas las recompensas alcanzadas",
+      "headerUnknown": "Al final de la próxima ronda: {{points}} puntos · faltan {{shards}} fragmentos para {{step}}",
+      "headerAllStepsUnknown": "Al final de la próxima ronda: {{points}} puntos · todas las recompensas alcanzadas",
       "run": "Ronda {{run}}",
+      "nextRun": "Próxima ronda",
       "states": {
         "done": "Hecha",
         "now": "Ahora",

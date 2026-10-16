@@ -37,7 +37,8 @@ const uthar = {
   id: "votanUthar",
   name: "Uthar",
   finished: false,
-  eventStageStartDatesUtc: ["2026-10-04T00:00:00Z"],
+  // Index = run − 1: run 1 started 2026-03-08, run 2 2026-10-04.
+  eventStageStartDatesUtc: ["2026-03-08T00:00:00Z", "2026-10-04T00:00:00Z"],
 }
 describe("Legendary Event queries", () => {
   beforeEach(async () => {

@@ -487,6 +487,7 @@
         "mostPointsPlayableNow": "Le plus de points parmi les combats jouables maintenant"
       },
       "upcoming": "{{reason}} pour le début de la manche {{run}}",
+      "upcomingUnknown": "{{reason}} pour le début de la prochaine manche",
       "maybe": "Peut-être faisable",
       "members": "Membres",
       "objectives": "Réussit",
@@ -521,7 +522,10 @@
       "title": "Prévision par manche",
       "header": "À la fin de la manche {{run}} : {{points}} points · {{step}} à {{shards}} fragments près",
       "headerAllSteps": "À la fin de la manche {{run}} : {{points}} points · toutes les récompenses atteintes",
+      "headerUnknown": "À la fin de la prochaine manche : {{points}} points · {{step}} à {{shards}} fragments près",
+      "headerAllStepsUnknown": "À la fin de la prochaine manche : {{points}} points · toutes les récompenses atteintes",
       "run": "Manche {{run}}",
+      "nextRun": "Prochaine manche",
       "states": {
         "done": "Terminée",
         "now": "En cours",

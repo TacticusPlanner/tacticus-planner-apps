@@ -121,14 +121,16 @@ function TokenView({
   const members = view.membersByTeam.get(token.teamId) ?? []
   const reasonText = t(`tokenPlan.nextToken.reasons.${reason}`)
   const reasonLine =
-    view.upcomingRun === null
+    view.upcoming === null
       ? reasonText
-      : t("tokenPlan.nextToken.upcoming", {
-          reason: reasonText,
-          run: view.upcomingRun,
-        })
+      : view.upcoming.run === null
+        ? t("tokenPlan.nextToken.upcomingUnknown", { reason: reasonText })
+        : t("tokenPlan.nextToken.upcoming", {
+            reason: reasonText,
+            run: view.upcoming.run,
+          })
   const canMark =
-    onMarkToken !== undefined && view.upcomingRun === null && token.playableNow
+    onMarkToken !== undefined && view.upcoming === null && token.playableNow
   const mark = (status: LegendaryEventAnnotationStatus) =>
     onMarkToken?.(
       token.laneId,

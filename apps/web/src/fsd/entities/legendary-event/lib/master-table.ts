@@ -2,6 +2,7 @@ import type { Progression, Rank } from "@workspace/game-domain"
 
 import type {
   LegendaryEventPlan,
+  LegendaryEventRun,
   LegendaryEventTeam,
 } from "../model/plan.types"
 import {
@@ -20,7 +21,7 @@ import {
   type ClearEstimateConfig,
   type ClearEstimateRoster,
 } from "./clear-estimate"
-import { currentLegendaryEventRun, teamDepthForRun } from "./current-run"
+import { teamDepthForRun } from "./current-run"
 import { buildLanePointsModel } from "./lane-points-model"
 import { isUnitAllowedOnLane } from "./objective-match"
 import {
@@ -49,6 +50,9 @@ export interface MasterTableEventInput {
   plan?: Pick<LegendaryEventPlan, "teams">
   /** The synced entry; undefined when there is none or progress failed (nothing is cleared). */
   progress?: LegendaryEventProgress
+  /** The run team depths are read for (`currentLegendaryEventRun` of the event's resolved runs);
+   *  run 1 when absent. */
+  run?: LegendaryEventRun
   /** Each lane's battle powers (Estimated); a lane without them estimates nothing. */
   battlePowers?: Partial<Record<LegendaryEventLaneId, readonly number[] | null>>
 }
@@ -241,7 +245,7 @@ function estimatedDepth(
   const powers = entry.battlePowers?.[laneId] ?? null
   const config = input.config
   if (input.unitSet === "inTeams") {
-    const run = currentLegendaryEventRun(entry.progress)
+    const run = entry.run ?? 1
     const depths = holding.flatMap((team) => {
       const estimate =
         powers && rosterById && config

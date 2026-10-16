@@ -20,7 +20,8 @@ export function useTokenPlan({
   progress,
   progressObservedAtMs,
   plan,
-  run,
+  resolution,
+  eventUnit,
   estimates,
 }: Omit<TokenPlanViewInput, "event" | "lifecycle"> & {
   event: TokenPlanViewInput["event"] | undefined
@@ -48,7 +49,8 @@ export function useTokenPlan({
             progress,
             progressObservedAtMs,
             plan: { enabled, status, data },
-            run,
+            resolution,
+            eventUnit,
             estimates,
           })
         : { kind: "loading" },
@@ -61,7 +63,8 @@ export function useTokenPlan({
       enabled,
       status,
       data,
-      run,
+      resolution,
+      eventUnit,
       estimates,
     ]
   )

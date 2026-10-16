@@ -1,3 +1,4 @@
+import { progressionOrder } from "@workspace/game-domain"
 import { describe, expect, it } from "vitest"
 
 import { utharEvent } from "@/test/fixtures/legendary-events"
@@ -8,10 +9,14 @@ import type {
 } from "../model/plan.types"
 import type { LegendaryEventRewards } from "../model/types"
 import {
+  ASCENSION_STEP_PROGRESSION,
+  ASCENSION_STEPS,
   nextAscensionStep,
   projectRewards,
+  unitNextAscensionStep,
   type RewardProjectionInput,
 } from "./reward-projection"
+import type { LegendaryEventRunResolution } from "./run-resolution"
 
 const uthar = utharEvent.rewards
 
@@ -37,16 +42,42 @@ const synced = (
   currentCurrency: 120,
   currentClaimedChestIndex: 10,
   currentShards: 250,
-  currentEventRun: 2,
   extraCurrencyPerPayout: null,
   ...fields,
 })
+
+/** An active event with `run` in progress. */
+const inRun = (run: LegendaryEventRun): LegendaryEventRunResolution => ({
+  kind: "known",
+  endedRuns: (run - 1) as 0 | 1 | 2,
+  currentRun: run,
+  nextRun: run < 3 ? ((run + 1) as LegendaryEventRun) : null,
+  nextStartMs: null,
+})
+/** An upcoming event whose first `ended` runs are over. */
+const between = (ended: 0 | 1 | 2): LegendaryEventRunResolution => ({
+  kind: "known",
+  endedRuns: ended,
+  currentRun: null,
+  nextRun: (ended + 1) as LegendaryEventRun,
+  nextStartMs: null,
+})
+const UNKNOWN: LegendaryEventRunResolution = {
+  kind: "unknown",
+  endedRuns: null,
+  currentRun: null,
+  nextRun: null,
+  nextStartMs: null,
+}
 
 // The spec's worked example: Uthar in run 2, run inputs 1 `10, 0, off, 0`, 2 `6, 0, off, 0`,
 // 3 `10, 0, bundle on, 0`, Show paid options on.
 const utharExample: RewardProjectionInput = {
   rewards: uthar,
   progress: synced(),
+  resolution: inRun(2),
+  // The event unit is not in the synced roster: the goal starts at Unlock.
+  unit: undefined,
   runs: [runInputs(1, 10), runInputs(2, 6), runInputs(3, 10, 0, true)],
   showPaidOptions: true,
 }
@@ -223,6 +254,8 @@ describe("projectRewards", () => {
     const projection = projectRewards({
       rewards: uthar,
       progress: undefined,
+      resolution: between(0),
+      unit: undefined,
       runs: [runInputs(1, 10)],
       showPaidOptions: false,
     })
@@ -286,6 +319,8 @@ describe("projectRewards", () => {
     const projection = projectRewards({
       rewards: uthar,
       progress: synced({ currentPoints: 26_900, currentCurrency: 0 }),
+      resolution: inRun(2),
+      unit: undefined,
       runs: [],
       showPaidOptions: false,
     })
@@ -361,8 +396,9 @@ describe("projectRewards", () => {
         currentCurrency: 65,
         currentClaimedChestIndex: 2,
         currentShards: 50,
-        currentEventRun: 1,
       }),
+      resolution: inRun(1),
+      unit: undefined,
       runs: [],
       showPaidOptions: false,
     })
@@ -381,8 +417,9 @@ describe("projectRewards", () => {
         currentCurrency: 160,
         currentClaimedChestIndex: 15,
         currentShards: 375,
-        currentEventRun: 1,
       }),
+      resolution: inRun(1),
+      unit: undefined,
       runs: [],
       showPaidOptions: false,
     })
@@ -391,6 +428,148 @@ describe("projectRewards", () => {
       state: "milestone",
       cumulativePoints: 12_500,
     })
+  })
+})
+
+describe("projectRewards: resolved runs and the unit's step", () => {
+  it("works the Uthar example with the unit already unlocked (4 stars at 120)", () => {
+    const projection = projectRewards({
+      rewards: uthar,
+      progress: synced({
+        currentPoints: 13_139,
+        currentCurrency: 60,
+        currentClaimedChestIndex: 17,
+        currentShards: 25,
+      }),
+      resolution: between(2),
+      unit: { progressionIndex: "Legendary:RedThreeStars" },
+      runs: [],
+      showPaidOptions: true,
+    })
+
+    expect(projection.fromStep).toBe("fourStars")
+    expect(projection.futureRuns.map((run) => run.run)).toEqual([3])
+    expect(projection.goal).toEqual({
+      step: "fourStars",
+      threshold: 120,
+      shardsTowardStep: 25,
+      stepSize: 120,
+    })
+    // ⌈(120 − 25) ÷ 25⌉ = 4; 17 + 4 = 21.
+    expect(projection.chests).toEqual({
+      beyondChestLadder: false,
+      required: 21,
+      toGo: 4,
+    })
+    // Chests 1–21 cost 5,250; chests 1–17 3,710 + 60 in hand = 3,770.
+    expect(projection.currency).toEqual({
+      required: 5250,
+      collected: 3770,
+      futureMissions: 0,
+      futureBundles: 0,
+      fromPoints: 1480,
+    })
+    // Running payouts from milestone 29: 320, 650, 990, 1,340, 1,695.
+    expect(projection.points).toEqual({
+      state: "milestone",
+      milestone: 33,
+      cumulativePoints: 14_750,
+      pointsToGo: 1611,
+      averageBattlesPerLane: 9.8,
+    })
+  })
+
+  it("between runs counts only run 3's missions, not run 2's again", () => {
+    const projection = projectRewards({
+      rewards: uthar,
+      progress: synced(),
+      resolution: between(2),
+      unit: undefined,
+      runs: [runInputs(2, 10), runInputs(3, 10)],
+      showPaidOptions: false,
+    })
+
+    expect(projection.currentRun).toBe(3)
+    expect(projection.futureRuns).toEqual([
+      { run: 3, missionCurrency: 250, bundleCurrency: 0, closeShards: 0 },
+    ])
+    expect(projection.currency?.futureMissions).toBe(250)
+  })
+
+  it("counts no future inputs while the run is unknown", () => {
+    const runs = [
+      runInputs(1, 10, 10, true, 20),
+      runInputs(2, 10, 10, true, 20),
+      runInputs(3, 10, 10, true, 20),
+    ]
+    const projection = projectRewards({
+      ...utharExample,
+      resolution: UNKNOWN,
+      runs,
+    })
+
+    expect(projection.futureRuns).toEqual([])
+    expect(projection.futureCloseShards).toBe(0)
+    expect(projection.bonusPerPayout).toBe(0)
+    expect(projection.currency).toMatchObject({
+      futureMissions: 0,
+      futureBundles: 0,
+      // From the synced base alone: 3,350 − 1,620.
+      fromPoints: 1730,
+    })
+    expect(
+      projectRewards({ ...utharExample, resolution: UNKNOWN, runs: [] })
+    ).toEqual(projection)
+  })
+
+  it("counts no future inputs once every run has ended", () => {
+    const projection = projectRewards({
+      ...utharExample,
+      resolution: {
+        kind: "known",
+        endedRuns: 3,
+        currentRun: null,
+        nextRun: null,
+        nextStartMs: null,
+      },
+    })
+
+    expect(projection.futureRuns).toEqual([])
+  })
+
+  it("reports every step reached for a unit at two blue stars", () => {
+    const projection = projectRewards({
+      ...utharExample,
+      unit: { progressionIndex: "Mythic:TwoBlueStars" },
+    })
+
+    expect(projection.goal).toEqual({ step: "fullyAscended" })
+    expect(projection.chests).toBeNull()
+  })
+})
+
+describe("unitNextAscensionStep", () => {
+  it("maps each step to a state of the game-domain progression order, in order", () => {
+    const indexes = ASCENSION_STEPS.map((step) =>
+      progressionOrder.indexOf(ASCENSION_STEP_PROGRESSION[step])
+    )
+    expect(indexes.every((index) => index >= 0)).toBe(true)
+    expect([...indexes].sort((a, b) => a - b)).toEqual(indexes)
+    expect(new Set(indexes).size).toBe(ASCENSION_STEPS.length)
+  })
+
+  it.each([
+    [undefined, "unlock"],
+    ["Legendary:RedThreeStars", "fourStars"],
+    ["Legendary:RedFourStars", "fiveStars"],
+    ["Legendary:OneBlueStar", "mythic"],
+    ["Mythic:OneBlueStar", "twoBlueStars"],
+    ["Mythic:TwoBlueStars", "fullyAscended"],
+    ["Mythic:MythicWings", "fullyAscended"],
+  ] as const)("names the next step of a unit at %s", (state, step) => {
+    expect(
+      unitNextAscensionStep(state ? { progressionIndex: state } : undefined)
+    ).toBe(step)
   })
 })
 
@@ -407,7 +586,7 @@ describe("nextAscensionStep", () => {
   ])(
     "names the step above %i shards",
     (shards, step, threshold, shardsTowardStep, stepSize) => {
-      expect(nextAscensionStep(shards, uthar.progression)).toEqual({
+      expect(nextAscensionStep(shards, uthar.progression, "unlock")).toEqual({
         step,
         threshold,
         shardsTowardStep,
@@ -417,7 +596,25 @@ describe("nextAscensionStep", () => {
   )
 
   it("reports every step reached at the last threshold", () => {
-    expect(nextAscensionStep(1300, uthar.progression)).toEqual({
+    expect(nextAscensionStep(1300, uthar.progression, "unlock")).toEqual({
+      step: "fullyAscended",
+    })
+  })
+
+  it("counts the shards from the unit's next step", () => {
+    expect(nextAscensionStep(25, uthar.progression, "fourStars")).toEqual({
+      step: "fourStars",
+      threshold: 120,
+      shardsTowardStep: 25,
+      stepSize: 120,
+    })
+    expect(nextAscensionStep(130, uthar.progression, "fourStars")).toEqual({
+      step: "fiveStars",
+      threshold: 300,
+      shardsTowardStep: 10,
+      stepSize: 180,
+    })
+    expect(nextAscensionStep(0, uthar.progression, "fullyAscended")).toEqual({
       step: "fullyAscended",
     })
   })

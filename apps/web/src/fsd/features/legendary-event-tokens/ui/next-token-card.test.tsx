@@ -8,7 +8,9 @@ import { fireEvent, render, screen, within } from "@/test/render"
 import { mark } from "../lib/token-plan.fixtures"
 import { buildTokenPlanView, type TokenPlanView } from "../lib/token-plan-view"
 import {
-  WORKED_NOW,
+  UTHAR_RUN_STARTS,
+  betweenRunsInput,
+  inRun,
   workedPlan,
   workedTeams,
   workedViewInput,
@@ -145,23 +147,21 @@ describe("NextTokenCard", () => {
     expect(screen.queryByTestId("next-token-partly")).toBeNull()
   })
 
-  it("adds the run and hides the actions on an upcoming event", () => {
-    renderCard(
-      buildTokenPlanView(
-        workedViewInput({
-          lifecycle: {
-            state: "upcoming",
-            runStartMs: WORKED_NOW + 1,
-            runEndMs: WORKED_NOW + 2,
-          },
-        })
-      )
-    )
+  it("adds the next run and hides the actions for Uthar between runs", () => {
+    renderCard(buildTokenPlanView(betweenRunsInput(UTHAR_RUN_STARTS)))
 
     expect(screen.getByTestId("next-token-reason")).toHaveTextContent(
-      "Most points available now for when run 3 starts"
+      /for when run 3 starts$/
     )
     expect(screen.queryByTestId("next-token-could-not")).toBeNull()
+  })
+
+  it("names no run when the run is unknown (progress, no dates)", () => {
+    renderCard(buildTokenPlanView(betweenRunsInput([])))
+
+    const reason = screen.getByTestId("next-token-reason")
+    expect(reason).toHaveTextContent(/for when the next run starts$/)
+    expect(reason.textContent).not.toMatch(/run \d/)
   })
 
   it("links an empty state to the lane's Teams section", () => {
@@ -182,7 +182,7 @@ describe("NextTokenCard", () => {
   it("links a team without depth to its card", () => {
     renderCard(
       buildTokenPlanView(
-        workedViewInput({ estimates: { kind: "hidden" }, run: 1 })
+        workedViewInput({ estimates: { kind: "hidden" }, resolution: inRun(1) })
       )
     )
 

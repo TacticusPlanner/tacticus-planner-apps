@@ -28,7 +28,15 @@ const supply = (
   run: 1 | 2 | 3,
   state: RunSupply["state"],
   total: number
-): RunSupply => ({ run, state, free: total, ad: 0, bonusDelivery: 0, total })
+): RunSupply => ({
+  run,
+  state,
+  unknownRun: false,
+  free: total,
+  ad: 0,
+  bonusDelivery: 0,
+  total,
+})
 
 const workedPoints = [240, 248, 252, 191, 140, 65].map((points) => ({ points }))
 
@@ -47,6 +55,8 @@ const worked = (overrides: Partial<ForecastInput> = {}): ForecastInput => ({
     supply(2, "now", 32),
     supply(3, "planned", 68),
   ],
+  // The event unit is not in the synced roster: steps start at Unlock.
+  fromStep: "unlock",
   tokens: workedPoints,
   runs: [runInputs(1, 10), runInputs(2, 6), runInputs(3, 10, 0, true)],
   showPaidOptions: true,
@@ -228,6 +238,65 @@ describe("forecastRuns", () => {
     })
   })
 
+  it("counts steps from the owned unit's next step (Uthar at Legendary:RedThreeStars)", () => {
+    // Uthar between runs, unit owned: 25 shards toward 4 stars (120), 17 chests claimed, 60 in hand.
+    const { runs, markers } = forecastRuns(
+      worked({
+        progress: {
+          currentPoints: 13_139,
+          currentCurrency: 60,
+          currentClaimedChestIndex: 17,
+          currentShards: 25,
+          extraCurrencyPerPayout: null,
+        },
+        supply: [
+          supply(1, "done", 0),
+          supply(2, "done", 0),
+          supply(3, "next", 68),
+        ],
+        fromStep: "fourStars",
+        // 1,611 points reach milestone 33 at 14,750: payouts 320 + 330 + 340 + 350 + 355.
+        tokens: [{ points: 1611 }],
+        runs: [],
+      })
+    )
+    const run3 = runs[2]!
+
+    expect(run3).toMatchObject({
+      endingPoints: 14_750,
+      currencyEarned: 1695,
+      chestsClaimed: 21,
+      endingShards: 125,
+      stepsReached: ["fourStars"],
+      next: { step: "fiveStars", threshold: 300 },
+      shardsMissing: 175,
+    })
+    expect(markers[0]?.steps).toEqual(["fourStars"])
+    // From Unlock the same shards would still be 275 short of Unlock.
+    expect(
+      forecastRuns({ ...worked(), fromStep: "unlock" }).runs[1]?.next
+    ).toMatchObject({ step: "unlock" })
+  })
+
+  it("plans one Next block without run inputs while the run is unknown", () => {
+    const { runs } = forecastRuns(
+      worked({
+        supply: [{ ...supply(1, "next", 68), unknownRun: true }],
+        runs: [runInputs(1, 10, 10, true, 50)],
+      })
+    )
+
+    expect(runs).toHaveLength(1)
+    expect(runs[0]).toMatchObject({
+      state: "next",
+      tokensUsed: 6,
+      tokensLeftOver: 62,
+      missionCurrency: 0,
+      bundleCurrency: 0,
+      endingPoints: 6136,
+    })
+  })
+
   // V1 `le-round-outcome-forecast.service.spec.ts`, translated: Dante's first two milestones and
   // chests, 330 shards held, rounds 1 and 2 finished, round 3 upcoming.
   describe("V1 parity", () => {
@@ -259,6 +328,7 @@ describe("forecastRuns", () => {
           supply(2, "done", 0),
           supply(3, "next", 68),
         ],
+        fromStep: "unlock",
         tokens: [],
         runs: [],
         showPaidOptions: true,

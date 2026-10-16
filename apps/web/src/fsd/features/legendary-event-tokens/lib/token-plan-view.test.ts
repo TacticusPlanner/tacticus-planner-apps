@@ -7,7 +7,9 @@ import {
   type TokenPlanReady,
 } from "./token-plan-view"
 import {
-  WORKED_NOW,
+  UTHAR_RUN_STARTS,
+  betweenRunsInput,
+  inRun,
   workedPlan,
   workedTeams,
   workedViewInput,
@@ -60,7 +62,7 @@ describe("buildTokenPlanView", () => {
       shardsMissing: 75,
     })
     expect(view.leftover).toEqual({ tokens: 94, laneId: "alpha" })
-    expect(view.upcomingRun).toBeNull()
+    expect(view.upcoming).toBeNull()
     expect(nextTokenCardState(view)).toBe("token")
   })
 
@@ -87,20 +89,72 @@ describe("buildTokenPlanView", () => {
     })
   })
 
-  it("names the Next run on an upcoming event", () => {
+  it("names run 3 as next for Uthar between runs, with runs 1 and 2 Done", () => {
+    const view = ready(buildTokenPlanView(betweenRunsInput(UTHAR_RUN_STARTS)))
+
+    expect(view.upcoming).toEqual({ run: 3 })
+    expect(
+      view.forecast?.runs.map((run) => [run.run, run.state, run.supply.total])
+    ).toEqual([
+      [1, "done", 0],
+      [2, "done", 0],
+      [3, "next", 68],
+    ])
+  })
+
+  it("reads depths for the next run between runs", () => {
+    // Melee's depth is stored for run 2 only; between runs on Uthar the depth run is 3.
     const view = ready(
       buildTokenPlanView(
-        workedViewInput({
-          lifecycle: {
-            state: "upcoming",
-            runStartMs: WORKED_NOW + 24 * 60 * 60 * 1000,
-            runEndMs: WORKED_NOW + 8 * 24 * 60 * 60 * 1000,
-          },
+        betweenRunsInput(UTHAR_RUN_STARTS, { estimates: { kind: "hidden" } })
+      )
+    )
+
+    expect(view.empty).toMatchObject({ kind: "noDepth" })
+  })
+
+  it("names no run while the run is unknown, with one Next block", () => {
+    const view = ready(buildTokenPlanView(betweenRunsInput([])))
+
+    expect(view.upcoming).toEqual({ run: null })
+    expect(view.forecast?.runs).toHaveLength(1)
+    expect(view.forecast?.runs[0]).toMatchObject({
+      state: "next",
+      supply: { unknownRun: true, total: 68 },
+      // Depths read for run 1 (Melee's run-2 depth does not apply): Five's 811 points to 5,811,
+      // milestone 13 (+85) leaves 205 currency, short of chest 11 (260); no stored inputs count.
+      endingPoints: 5811,
+      missionCurrency: 0,
+      bundleCurrency: 0,
+      chestsClaimed: 10,
+    })
+  })
+
+  it("is hidden once every run has ended", () => {
+    expect(
+      buildTokenPlanView(
+        betweenRunsInput([
+          "2026-03-08T00:00:00Z",
+          "2026-06-07T00:00:00Z",
+          "2026-09-06T00:00:00Z",
+        ])
+      ).kind
+    ).toBe("hidden")
+  })
+
+  it("starts the forecast's steps from the owned unit's next step", () => {
+    const view = ready(
+      buildTokenPlanView(
+        betweenRunsInput(UTHAR_RUN_STARTS, {
+          eventUnit: { progressionIndex: "Legendary:RedThreeStars" },
         })
       )
     )
 
-    expect(view.upcomingRun).toBe(3)
+    // Counted from 4 stars (120, then 5 stars at 300, blue star at 500), not from Unlock (400).
+    const run3 = view.forecast?.runs.at(-1)
+    expect(run3?.stepsReached).toContain("fiveStars")
+    expect(run3?.next).toMatchObject({ step: "blueStar", threshold: 500 })
   })
 
   it.each([
@@ -157,7 +211,7 @@ describe("buildTokenPlanView", () => {
   it("names the first team without a depth when none has one", () => {
     const view = ready(
       buildTokenPlanView(
-        workedViewInput({ estimates: { kind: "hidden" }, run: 1 })
+        workedViewInput({ estimates: { kind: "hidden" }, resolution: inRun(1) })
       )
     )
 
