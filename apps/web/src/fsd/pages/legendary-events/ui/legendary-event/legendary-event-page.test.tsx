@@ -44,8 +44,11 @@ const events = [
   {
     ...lysanderEvent,
     id: "archivedLysander",
-    finished: true,
-    eventStageStartDatesUtc: ["2026-01-01T00:00:00Z"],
+    eventStageStartDatesUtc: [
+      "2025-05-04T00:00:00Z",
+      "2025-09-07T00:00:00Z",
+      "2026-01-01T00:00:00Z",
+    ],
   },
 ]
 const catalog = vi.hoisted(() => ({ synced: true }))
@@ -481,6 +484,81 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
     })
   })
 
+  describe("Add to new team (design D4: one editor for the page)", () => {
+    const openDanteMenu = async () => {
+      const dante = screen
+        .getAllByTestId("leaderboard-row")
+        .find((row) => row.dataset.unit === "bloodDante")!
+      fireEvent.pointerDown(within(dante).getByTestId("leaderboard-row-menu"), {
+        button: 0,
+        ctrlKey: false,
+      })
+      await screen.findByTestId("leaderboard-create-goal")
+    }
+    const editorMembers = () =>
+      within(screen.getByTestId("team-editor"))
+        .getAllByTestId("team-picker-selected-unit")
+        .map((element) => element.dataset.unit)
+
+    it("opens the editor from the Overview leaderboard on the chosen lane", async () => {
+      renderPage("/legendary-events/astarLysander")
+      await screen.findByTestId("legendary-event-overview-leaderboard")
+      await openDanteMenu()
+      const items = await screen.findAllByTestId("leaderboard-add-to-team")
+      expect(items.map((item) => item.textContent)).toEqual([
+        "Add to new team on Alpha",
+        "Add to new team on Gamma",
+      ])
+      fireEvent.click(items[1]!)
+
+      const editor = await screen.findByTestId("team-editor")
+      expect(
+        within(editor).getByRole("heading", { level: 2 })
+      ).toHaveTextContent("Add a team to Gamma")
+      expect(editorMembers()).toEqual(["bloodDante"])
+      expect(screen.getByTestId("legendary-event-overview")).toBeInTheDocument()
+    })
+
+    it("opens the editor from a lane leaderboard with the unit's objectives ticked", async () => {
+      renderPage("/legendary-events/astarLysander")
+      await screen.findByTestId("legendary-event-overview-leaderboard")
+      act(() => selectTab("alpha"))
+      await screen.findByTestId("legendary-event-leaderboard")
+      await openDanteMenu()
+      fireEvent.click(await screen.findByTestId("leaderboard-add-to-team"))
+
+      const editor = await screen.findByTestId("team-editor")
+      expect(
+        within(editor).getByRole("heading", { level: 2 })
+      ).toHaveTextContent("Add a team to Alpha")
+      expect(editorMembers()).toEqual(["bloodDante"])
+      expect(
+        within(editor)
+          .getAllByTestId("team-editor-objective")
+          .map((chip) => [
+            chip.dataset.index,
+            chip.getAttribute("aria-pressed"),
+          ])
+      ).toEqual([
+        ["2", "true"],
+        ["4", "true"],
+      ])
+    })
+  })
+
+  it("names Add to new team in the lane leaderboard tour step", async () => {
+    renderPage("/legendary-events/astarLysander")
+    await screen.findByTestId("legendary-event-overview-leaderboard")
+    const { desktop } = tour.steps as {
+      desktop: { target: string; content: string }[]
+    }
+    const step = desktop.find(
+      (entry) => entry.target === '[data-testid="legendary-event-leaderboard"]'
+    )!
+    expect(step.content).toContain("Create goal")
+    expect(step.content).toContain("Add to new team")
+  })
+
   it("registers the same tour on both forms, lane steps after the tab switch", async () => {
     renderPage("/legendary-events/astarLysander")
     await screen.findByTestId("legendary-event-overview-leaderboard")
@@ -495,7 +573,7 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
       '[data-testid="legendary-event-next-token"]',
       '[data-testid="legendary-event-run-status"]',
       '[data-testid="legendary-event-run-inputs"]',
-      '[data-testid="legendary-event-token-plan"]',
+      '[data-testid="legendary-event-token-plan-header"]',
       '[data-testid="legendary-event-lane-summary"]',
       '[data-testid="legendary-event-overview-leaderboard"]',
       '[data-testid="legendary-event-lane-overview"]',
@@ -682,7 +760,8 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
       laneId: "alpha",
       name: "Deep",
       sortOrder: 0,
-      memberUnitIds: ["bloodDante"],
+      // A team needs three characters for the plan to play it.
+      memberUnitIds: ["bloodDante", "bloodMephiston", "bloodTerminator"],
       reserveUnitId: null,
       objectiveIndexes: [],
       runDepths: [
@@ -720,6 +799,12 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
       expect(screen.getByTestId("token-plan-summary")).toHaveTextContent(
         /^3 tokens/
       )
+      // The tour's Token plan step highlights this header row, not the whole card.
+      expect(
+        within(screen.getByTestId("legendary-event-token-plan")).getByTestId(
+          "legendary-event-token-plan-header"
+        )
+      ).toContainElement(screen.getByTestId("token-plan-toggle"))
     })
 
     it("re-plans at once when a card action marks the token", async () => {

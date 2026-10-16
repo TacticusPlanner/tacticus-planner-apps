@@ -93,6 +93,7 @@ function Harness({
   progressGrid = fiveCleared,
   clears = { kind: "hidden" },
   goals = noGoals,
+  onAddToTeam,
 }: {
   rows: LeaderboardRowsViewModel
   layout: "table" | "list"
@@ -100,6 +101,7 @@ function Harness({
   progressGrid?: ProgressGridViewModel
   goals?: LeaderboardGoalsViewModel
   clears?: ClearEstimatesViewModel
+  onAddToTeam?: (unitId: string, laneId: LegendaryEventLaneId) => void
 }) {
   const [onlyUnlocked, setOnlyUnlocked] = useState(false)
   const [deductScored, setDeductScored] = useState(true)
@@ -121,6 +123,7 @@ function Harness({
         onSelectedObjectivesChange: setSelectedObjectives,
         clears,
         goals,
+        onAddToTeam,
       }}
       progressGrid={progressGrid}
     />
@@ -420,6 +423,18 @@ describe("LeaderboardSection", () => {
     ).toBe(true)
   })
 
+  it("marks a selected objective chip as pressed with the thick primary border and tint", () => {
+    renderLeaderboard()
+    act(() => fireEvent.click(chip(flyingKey)))
+    expect(chip(flyingKey)).toHaveAttribute("aria-pressed", "true")
+    expect(chip(flyingKey)).toHaveClass(
+      "data-[state=on]:border-2",
+      "data-[state=on]:border-primary",
+      "data-[state=on]:bg-primary/10"
+    )
+    expect(chip(eviscerateKey)).toHaveAttribute("aria-pressed", "false")
+  })
+
   it("shows unknown ownership with the toggle disabled when the roster is unavailable", () => {
     renderLeaderboard({
       rows: buildLeaderboardRows(
@@ -608,4 +623,48 @@ describe("LeaderboardSection", () => {
       expect(onPreviewChange).toHaveBeenCalledWith(true)
     })
   })
+
+  describe.each(["table", "list"] as const)(
+    "Add to new team (%s)",
+    (layout) => {
+      const openMenu = async (unit: string) => {
+        fireEvent.pointerDown(
+          within(row(unit)).getByTestId("leaderboard-row-menu"),
+          { button: 0, ctrlKey: false }
+        )
+        await screen.findByTestId("leaderboard-create-goal")
+      }
+
+      it("follows Create goal and opens the editor on the lane with the unit", async () => {
+        const onAddToTeam = vi.fn()
+        const onCreateGoal = vi.fn()
+        renderLeaderboard({
+          layout,
+          onAddToTeam,
+          goals: { ...noGoals, onCreateGoal },
+        })
+        await openMenu("bloodDante")
+        expect(
+          screen.getAllByRole("menuitem").map((item) => item.textContent)
+        ).toEqual(["Create goal", "Add to new team"])
+        fireEvent.click(screen.getByTestId("leaderboard-add-to-team"))
+        expect(onAddToTeam).toHaveBeenCalledWith("bloodDante", "alpha")
+
+        await openMenu("bloodDante")
+        fireEvent.click(screen.getByTestId("leaderboard-create-goal"))
+        expect(onCreateGoal).toHaveBeenCalledWith("bloodDante", "alpha")
+      })
+
+      it("offers it for a locked unit", async () => {
+        const onAddToTeam = vi.fn()
+        renderLeaderboard({ layout, onAddToTeam })
+        const locked = rows().find(
+          (entry) => entry.dataset.ownership === "locked"
+        )!
+        await openMenu(locked.dataset.unit!)
+        fireEvent.click(screen.getByTestId("leaderboard-add-to-team"))
+        expect(onAddToTeam).toHaveBeenCalledWith(locked.dataset.unit, "alpha")
+      })
+    }
+  )
 })

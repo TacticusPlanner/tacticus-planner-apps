@@ -29,7 +29,7 @@
     "title": "Estado de la ronda",
     "tokensNext": "{{tokens}}, la siguiente en {{when}}",
     "tokensDue": "{{tokens}}, la siguiente ficha ya está lista",
-    "currency": "{{value}} de moneda",
+    "currency": "{{value}} de moneda disponible",
     "chests": "{{value}} cofres reclamados",
     "shards": "{{value}} fragmentos",
     "milestone": "{{points}} puntos para el hito {{milestone}} (+{{currency}} de moneda)",
@@ -108,7 +108,7 @@
   },
   "laneSummary": {
     "title": "Resumen de carriles",
-    "battles": "{{cleared}} / {{total}} batallas",
+    "battles": "{{cleared}} / {{total}} batallas superadas por completo",
     "open": "Abrir la cuadrícula de progreso de {{lane}}",
     "noLane": "Sin progreso en este carril",
     "unavailable": "Datos sincronizados no disponibles",
@@ -181,7 +181,7 @@
     "unavailable": "Datos sincronizados no disponibles",
     "howPoints": {
       "title": "Cómo funcionan los puntos",
-      "body": "Los puntos conseguidos en una batalla son su puntuación máxima más la puntuación de cada objetivo que superaste en ella, incluida la bonificación por derrotar a todos. El máximo de una batalla suma su puntuación de bajas, su puntuación máxima, la bonificación por derrotar a todos y la puntuación de cada objetivo; el máximo del carril suma todas las batallas."
+      "body": "Los puntos conseguidos en una batalla son su puntuación de bajas más su puntuación máxima, más la bonificación por derrotar a todos y la puntuación de cada objetivo que superaste en ella. El máximo de una batalla suma su puntuación de bajas completa, su puntuación máxima completa, la bonificación por derrotar a todos y la puntuación de cada objetivo; el máximo del carril suma todas las batallas."
     }
   },
   "annotations": {
@@ -215,6 +215,7 @@
     "loadError": "No se pudieron cargar tus equipos.",
     "retry": "Reintentar",
     "partialBadge": "{{members}}/{{max}}",
+    "incomplete": "Necesita al menos {{min}} personajes",
     "reserve": "Reserva",
     "members": "Miembros",
     "pointsPerBattle": "{{points}} puntos por batalla",
@@ -247,12 +248,22 @@
       "noMembers": "Elige unidades para ver qué objetivos cubren juntas.",
       "depth": "Profundidad para la ronda {{run}}",
       "save": "Guardar equipo",
+      "needsMembers": "Un equipo necesita al menos {{min}} personajes",
       "saving": "Guardando…",
       "notSaved": "Tu plan se ha recargado, así que este equipo no se guardó. Revísalo y vuelve a guardarlo.",
-      "cancel": "Cancelar"
+      "cancel": "Cancelar",
+      "saveAndAddAnother": "Guardar y añadir otro",
+      "footer": {
+        "summary": "Resumen del equipo",
+        "noCoverage": "Ningún objetivo cubierto",
+        "depth": "Profundidad {{depth}}",
+        "depthEstimated": "Profundidad ~{{depth}} · estimada",
+        "depthUnset": "Profundidad sin definir"
+      }
     },
     "picker": {
       "count": "{{members}}/5",
+      "countBelowMinimum": "{{members}}/5 · al menos {{min}}",
       "search": "Buscar unidades",
       "searchPlaceholder": "Buscar por nombre",
       "onlyUnlocked": "Solo desbloqueadas",
@@ -263,7 +274,11 @@
       "setReserve": "Poner a {{name}} como reserva",
       "unsetReserve": "Quitar a {{name}} como reserva",
       "full": "Un equipo tiene como máximo cinco miembros. Quita uno para añadir otro.",
-      "points": "{{points}} pts"
+      "points": "{{points}} pts",
+      "objectives": "Ordenar por objetivo",
+      "objectiveChip_one": "{{objective}}: {{count}} unidad lo cumple",
+      "objectiveChip_other": "{{objective}}: {{count}} unidades lo cumplen",
+      "doesNotSatisfy": "No cumple: {{objectives}}"
     },
     "toasts": {
       "reloaded": "Tu plan cambió en otro dispositivo y se ha recargado. Inténtalo de nuevo.",
@@ -317,7 +332,7 @@
         },
         "runStatus": {
           "title": "Estado de la tirada",
-          "content": "Tu tirada, fichas, puntos, moneda, cofres y fragmentos de tu última sincronización, además del siguiente hito de puntos."
+          "content": "Tu tirada, fichas, puntos, moneda disponible, cofres y fragmentos de tu última sincronización, además del siguiente hito de puntos."
         },
         "runInputs": {
           "title": "Datos por ronda",
@@ -353,7 +368,7 @@
         },
         "leaderboard": {
           "title": "Clasificación del carril",
-          "content": "Cada unidad que este carril permite, si la tienes, qué objetivos cumple y los puntos que aún puede conseguir aquí. Activa la vista de objetivos para ver las unidades como si hubieras alcanzado tus objetivos activos, y usa el menú de una fila para crear un objetivo."
+          "content": "Cada unidad que este carril permite, si la tienes, qué objetivos cumple y los puntos que aún puede conseguir aquí. Activa la vista de objetivos para ver las unidades como si hubieras alcanzado tus objetivos activos, y usa el menú de una fila para «Crear objetivo» o «Añadir a un equipo nuevo»."
         },
         "lastRun": {
           "title": "Última ronda",
@@ -438,7 +453,9 @@
   "leaderboardActions": {
     "header": "Acciones",
     "menu": "Acciones para {{name}}",
-    "createGoal": "Crear objetivo"
+    "createGoal": "Crear objetivo",
+    "addToTeam": "Añadir a un equipo nuevo",
+    "addToTeamOnLane": "Añadir a un equipo nuevo en {{lane}}"
   },
   "upgradeImpact": {
     "title": "Impacto de las mejoras",
@@ -487,6 +504,7 @@
         "mostPointsPlayableNow": "La mayor cantidad de puntos entre las batallas que puedes jugar ahora"
       },
       "upcoming": "{{reason}} para cuando empiece la ronda {{run}}",
+      "upcomingUnknown": "{{reason}} para cuando empiece la próxima ronda",
       "maybe": "Quizá superable",
       "members": "Miembros",
       "objectives": "Supera",
@@ -521,7 +539,10 @@
       "title": "Previsión por ronda",
       "header": "Al final de la ronda {{run}}: {{points}} puntos · faltan {{shards}} fragmentos para {{step}}",
       "headerAllSteps": "Al final de la ronda {{run}}: {{points}} puntos · todas las recompensas alcanzadas",
+      "headerUnknown": "Al final de la próxima ronda: {{points}} puntos · faltan {{shards}} fragmentos para {{step}}",
+      "headerAllStepsUnknown": "Al final de la próxima ronda: {{points}} puntos · todas las recompensas alcanzadas",
       "run": "Ronda {{run}}",
+      "nextRun": "Próxima ronda",
       "states": {
         "done": "Hecha",
         "now": "Ahora",

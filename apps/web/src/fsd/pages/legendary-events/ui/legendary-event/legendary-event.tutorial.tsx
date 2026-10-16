@@ -12,7 +12,8 @@ const EVENT_TOUR_TARGETS = {
   runStatus: '[data-testid="legendary-event-run-status"]',
   lastRun: '[data-testid="legendary-event-last-run"]',
   runInputs: '[data-testid="legendary-event-run-inputs"]',
-  tokenPlan: '[data-testid="legendary-event-token-plan"]',
+  // The header, not the whole card: an expanded plan can be taller than the viewport.
+  tokenPlan: '[data-testid="legendary-event-token-plan-header"]',
   laneSummary: '[data-testid="legendary-event-lane-summary"]',
   overviewLeaderboard: '[data-testid="legendary-event-overview-leaderboard"]',
   laneOverview: '[data-testid="legendary-event-lane-overview"]',
@@ -21,6 +22,17 @@ const EVENT_TOUR_TARGETS = {
   progressGrid: '[data-testid="legendary-event-progress-grid"]',
   leaderboard: '[data-testid="legendary-event-leaderboard"]',
 } as const
+
+/**
+ * Keeps every tooltip inside the viewport (spec: every step's tooltip lies fully inside the
+ * viewport): when neither side of a tall target has room, Joyride's flip leaves the tooltip
+ * overflowing, so the shift also runs on the cross axis (clamping the tooltip vertically, over the
+ * target if need be) and a tooltip taller than a short viewport scrolls inside itself.
+ */
+const EVENT_TOUR_STEP_FIT = {
+  floatingOptions: { shiftOptions: { crossAxis: true, padding: 16 } },
+  styles: { tooltip: { maxHeight: "calc(100dvh - 32px)", overflowY: "auto" } },
+} as const satisfies Pick<Step, "floatingOptions" | "styles">
 
 /** Resolves once `selector` is in the document, or after `timeoutMs`. */
 function waitForElement(selector: string, timeoutMs: number): Promise<void> {
@@ -57,6 +69,7 @@ export function useLegendaryEventTutorial(
       key: keyof typeof EVENT_TOUR_TARGETS,
       placement: Step["placement"]
     ): Step => ({
+      ...EVENT_TOUR_STEP_FIT,
       target: EVENT_TOUR_TARGETS[key],
       placement,
       title: t(`tour.event.steps.${key}.title`),

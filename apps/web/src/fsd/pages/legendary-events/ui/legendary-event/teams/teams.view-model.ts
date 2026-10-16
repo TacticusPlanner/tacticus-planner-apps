@@ -1,10 +1,12 @@
 import {
   derivedTeamCoverage,
+  isCompleteTeam,
   teamDepthForRun,
   teamEffectiveDepth,
   teamPointsPerBattle,
   type ClearEstimate,
   type LegendaryEventLane,
+  type LegendaryEventLaneId,
   type LegendaryEventPlan,
   type LegendaryEventRosterUnit,
   type LegendaryEventRun,
@@ -12,7 +14,12 @@ import {
   type LegendaryEventUnit,
 } from "@/entities/legendary-event"
 
-import type { ReadValue } from "../legendary-event-page.view-model"
+import type { PickerGoalsPreview } from "@/features/legendary-event-teams"
+
+import type {
+  ClearEstimatesViewModel,
+  ReadValue,
+} from "../legendary-event-page.view-model"
 
 export interface TeamCardMember {
   unitId: string
@@ -36,14 +43,18 @@ export interface TeamCardViewModel {
   members: TeamCardMember[]
   reserve: TeamCardMember | null
   memberCount: number
+  /** Fewer than three members (spec: a stored team below three characters is incomplete): the
+   *  card warns, shows no depth and no calculation plays the team. */
+  incomplete: boolean
   coverage: TeamCardCoverage[]
   pointsPerBattle: number
   /** The current run's manual depth; null when that run has none. */
   expectedBattleClears: number | null
-  /** The team's clear estimate on the lane; null when estimates are unavailable or no member is
-   *  owned (design D3, D6). */
+  /** The team's clear estimate on the lane; null when estimates are unavailable, no member is
+   *  owned (design D3, D6) or the team is incomplete. */
   estimate: ClearEstimate | null
-  /** What the card shows (design D2): the manual depth, else the estimate; null shows "Set depth". */
+  /** What the card shows (design D2): the manual depth, else the estimate; null shows "Set depth"
+   *  (an incomplete team shows none: its stored depth is kept for when it is completed). */
   displayedDepth: number | null
   /** Members (reserve excluded) the roster does not hold; 0 when ownership is unknown. */
   lockedMemberCount: number
@@ -64,7 +75,8 @@ type CardLane = Pick<
  * A team's card (design D3, D4): members in position order with ownership, its stored objectives
  * reconciled against the current catalog (an objective the members no longer derive stays visible
  * but muted and out of the points), points per battle over the covered objectives, the current
- * run's manual depth only, and its clear estimate (calculated, never stored).
+ * run's manual depth only, and its clear estimate (calculated, never stored). An incomplete team
+ * keeps its stored depth but has no estimate and no displayed depth.
  */
 export function buildTeamCardViewModel(
   team: LegendaryEventTeam,
@@ -94,7 +106,10 @@ export function buildTeamCardViewModel(
   const members = team.memberUnitIds.map(member)
   const expectedBattleClears =
     teamDepthForRun(team, currentRun)?.expectedBattleClears ?? null
-  const estimate = estimateTeam?.(team.memberUnitIds) ?? null
+  const incomplete = !isCompleteTeam(team)
+  const estimate = incomplete
+    ? null
+    : (estimateTeam?.(team.memberUnitIds) ?? null)
   return {
     id: team.id,
     name: team.name,
@@ -102,6 +117,7 @@ export function buildTeamCardViewModel(
     members,
     reserve: team.reserveUnitId ? member(team.reserveUnitId) : null,
     memberCount: team.memberUnitIds.length,
+    incomplete,
     coverage,
     pointsPerBattle: teamPointsPerBattle(
       lane,
@@ -109,7 +125,9 @@ export function buildTeamCardViewModel(
     ),
     expectedBattleClears,
     estimate,
-    displayedDepth: teamEffectiveDepth(expectedBattleClears, estimate),
+    displayedDepth: incomplete
+      ? null
+      : teamEffectiveDepth(expectedBattleClears, estimate),
     lockedMemberCount: members.filter((entry) => entry.owned === false).length,
     sortOrder: team.sortOrder,
   }
@@ -191,5 +209,42 @@ export function moveTargets(
   return {
     up: index > 0 ? swap(index - 1) : null,
     down: index >= 0 && index < ids.length - 1 ? swap(index + 1) : null,
+  }
+}
+
+/** The editor picker's Goals Preview for one lane (Stage 6): the page's switch value, the preview
+ *  roster when one exists, and the lane's estimated clears on it. */
+export function pickerGoalsPreview(
+  laneId: LegendaryEventLaneId,
+  {
+    enabled,
+    available,
+    preview,
+    estimates,
+    onToggle,
+  }: {
+    enabled: boolean
+    available: boolean
+    preview:
+      | {
+          roster: readonly LegendaryEventRosterUnit[]
+          previewed: ReadonlySet<string>
+        }
+      | undefined
+    estimates: ClearEstimatesViewModel | undefined
+    onToggle: (enabled: boolean) => void
+  }
+): PickerGoalsPreview {
+  const estimator =
+    estimates?.kind === "ready" ? estimates.byLane[laneId] : undefined
+  return {
+    enabled,
+    available: available && preview !== undefined,
+    roster: preview?.roster,
+    previewed: preview?.previewed ?? new Set(),
+    clearsOf: estimator
+      ? (unitId) => estimator.unit(unitId)?.depth ?? null
+      : undefined,
+    onToggle,
   }
 }

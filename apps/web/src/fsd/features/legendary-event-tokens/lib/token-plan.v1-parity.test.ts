@@ -1,12 +1,14 @@
 import { describe, expect, it } from "vitest"
 
-import type {
-  LanePointsModel,
-  LegendaryEventLaneId,
-  LegendaryEventLaneRecord,
-  LegendaryEventObjective,
+import {
+  buildLanePointsModel,
+  type LanePointsModel,
+  type LegendaryEventLaneId,
+  type LegendaryEventLaneRecord,
+  type LegendaryEventObjective,
 } from "@/entities/legendary-event"
 
+import { lostaBileLanes } from "./token-plan.lostabile.fixtures"
 import {
   planTokens,
   type TokenPlanLane,
@@ -14,23 +16,24 @@ import {
 } from "./token-plan"
 
 // V1 `token-estimation-service.spec.ts` › computeNextToken / computeAllTokenUsage, translated:
-// V1's `_killPoints` + `_highScore` become one V2 `battlesPoints` of their sum (V2 counts the kill
-// score once; design D3 a), `_defeatAll` is cell 0, and V1's named restrictions become the lane's
-// objectives in order (cell `index + 1`). A V1 battle with its three default requirements cleared
-// is a V2 battle with defeat-all cleared at a full high score.
+// V1's `_killPoints` and `_highScore` (equal in every case) are the battle's two awards of one V2
+// `battlesPoints` each (the kill score and the high score), `_defeatAll` is cell 0, and V1's named
+// restrictions become the lane's objectives in order (cell `index + 1`). A V1 battle with its three
+// default requirements cleared is a V2 battle with defeat-all cleared at a full kill score and a
+// full high score.
 
 interface V1Lane {
   laneId: LegendaryEventLaneId
   battles: number
-  /** `_killPoints` + `_highScore`. */
-  killAndHigh: number
+  /** `_killPoints`, equal to `_highScore`: one award's `battlesPoints`. */
+  battlePoints: number
   defeatAll: number
   objectives: [name: string, points: number][]
 }
 
 function model({
   battles,
-  killAndHigh,
+  battlePoints,
   defeatAll,
   objectives,
 }: V1Lane): LanePointsModel {
@@ -43,12 +46,12 @@ function model({
     ),
     battles: Array.from({ length: battles }, (_, index) => ({
       index,
-      battlePoints: killAndHigh,
+      battlePoints,
       defeatAllPoints: defeatAll,
       objectiveScores,
-      maxPoints: killAndHigh * 2 + defeatAll + total,
+      maxPoints: battlePoints * 2 + defeatAll + total,
     })),
-    maxPoints: battles * (killAndHigh * 2 + defeatAll + total),
+    maxPoints: battles * (battlePoints * 2 + defeatAll + total),
   }
 }
 
@@ -64,8 +67,8 @@ function synced(lane: V1Lane, cleared: string[][]): LegendaryEventLaneRecord {
             names.includes(name) ? [index + 1] : []
           ),
         ],
-        highScore: defaults ? lane.killAndHigh : 0,
-        encounterPoints: 0,
+        highScore: defaults ? lane.battlePoints : 0,
+        encounterPoints: defaults ? lane.battlePoints : 0,
       }
     }),
   } as unknown as LegendaryEventLaneRecord
@@ -104,7 +107,7 @@ function lane(
 const alpha: V1Lane = {
   laneId: "alpha",
   battles: 3,
-  killAndHigh: 90,
+  battlePoints: 45,
   defeatAll: 60,
   objectives: [
     ["NoPierce", 50],
@@ -178,7 +181,7 @@ describe("V1 parity: computeNextToken", () => {
     ): V1Lane => ({
       laneId,
       battles: 3,
-      killAndHigh: 90,
+      battlePoints: 45,
       defeatAll: 60,
       objectives: [[objective, 60]],
     })
@@ -198,7 +201,8 @@ describe("V1 parity: computeNextToken", () => {
       startingPoints: 0,
     })
 
-    // Alpha battle 2 is worth 90 + 60 = 150 (Pierce already in); Beta battle 2 is 90 + 60 + 60.
+    // Alpha battle 2 is worth 45 + 45 + 60 = 150 (Pierce already in); Beta battle 2 is
+    // 45 + 45 + 60 + 60.
     expect(plan.tokens[0]).toMatchObject({
       laneId: "beta",
       teamId: "team2",
@@ -213,7 +217,7 @@ describe("V1 parity: computeAllTokenUsage", () => {
     const a: V1Lane = {
       laneId: "alpha",
       battles: 3,
-      killAndHigh: 90,
+      battlePoints: 45,
       defeatAll: 60,
       objectives: [
         ["Physical", 70],
@@ -226,7 +230,7 @@ describe("V1 parity: computeAllTokenUsage", () => {
     const b: V1Lane = {
       laneId: "beta",
       battles: 3,
-      killAndHigh: 80,
+      battlePoints: 40,
       defeatAll: 70,
       objectives: [
         ["BlackLegion", 120],
@@ -239,7 +243,7 @@ describe("V1 parity: computeAllTokenUsage", () => {
     const g: V1Lane = {
       laneId: "gamma",
       battles: 3,
-      killAndHigh: 100,
+      battlePoints: 50,
       defeatAll: 50,
       objectives: [
         ["Max1Hits", 100],
@@ -284,7 +288,7 @@ describe("V1 parity: computeAllTokenUsage", () => {
     const v1: V1Lane = {
       laneId: "alpha",
       battles: 2,
-      killAndHigh: 90,
+      battlePoints: 45,
       defeatAll: 60,
       objectives: [
         ["Pierce", 60],
@@ -307,5 +311,117 @@ describe("V1 parity: computeAllTokenUsage", () => {
     })
 
     expect(plan.tokens).toEqual([])
+  })
+})
+
+// The V1 plan for Fabius Bile (`lostaBile`, no synced progress) with the teams and depths below:
+// 55 tokens worth 8,615 points.
+describe("V1 parity: Fabius Bile plan", () => {
+  const objectiveIndexes = (
+    laneId: LegendaryEventLaneId,
+    names: string[]
+  ): number[] =>
+    names.map((name) =>
+      lostaBileLanes[laneId].unitsRestrictions.findIndex(
+        (objective) => objective.name === name
+      )
+    )
+  const fabiusLane = (
+    laneId: LegendaryEventLaneId,
+    teams: [objectives: string[], depth: number][]
+  ): TokenPlanLane => ({
+    laneId,
+    model: buildLanePointsModel(lostaBileLanes[laneId]),
+    synced: undefined,
+    teams: teams.map(([objectives, depth]) => ({
+      id: `${laneId}: ${objectives.join(" + ")}`,
+      name: objectives.join(" + "),
+      objectiveIndexes: objectiveIndexes(laneId, objectives),
+      depth,
+    })),
+    annotations: [],
+  })
+
+  const plan = planTokens({
+    lanes: [
+      fabiusLane("alpha", [
+        [["Final Justice", "Max 2 hits"], 6],
+        [["Black Templars"], 5],
+        [["No Bolter", "Blast"], 4],
+        [["No Bolter", "Max 2 hits"], 7],
+        [["Final Justice"], 7],
+      ]),
+      fabiusLane("beta", [
+        [["No Power", "Piercing"], 6],
+        [["Max 3 hits", "Parry"], 5],
+        [["Teleport Strike"], 6],
+      ]),
+      fabiusLane("gamma", [
+        [["Min 5 hits", "Mechanical"], 6],
+        [["No Flying", "Flame"], 5],
+        [["Infiltrate"], 4],
+        [["Mechanical"], 7],
+        [["Flame"], 6],
+        [["No Flying"], 7],
+      ]),
+    ],
+    startingPoints: 0,
+  })
+
+  it("plans 55 tokens worth 8,615 points", () => {
+    expect(plan.tokens).toHaveLength(55)
+    expect(plan.totalPoints).toBe(8615)
+  })
+
+  it("plays every first pass best first, each award of a won battle counted", () => {
+    expect(
+      plan.tokens
+        .slice(0, 20)
+        .map((token) => [token.laneId, token.battleIndex + 1, token.points])
+    ).toEqual([
+      // Alpha: battlesPoints × 2 + 37 + Final Justice 90 + Max 2 hits 60 (31 + 31 + 37 + 150).
+      ["alpha", 1, 249],
+      ["alpha", 2, 253],
+      ["alpha", 3, 257],
+      ["alpha", 4, 261],
+      ["alpha", 5, 265],
+      ["alpha", 6, 269],
+      // Gamma: battlesPoints × 2 + 46 + Min 5 hits 70 + Mechanical 80 (23 + 23 + 46 + 150).
+      ["gamma", 1, 242],
+      ["gamma", 2, 258],
+      ["gamma", 3, 260],
+      ["gamma", 4, 268],
+      ["gamma", 5, 268],
+      ["gamma", 6, 270],
+      // Beta: battlesPoints × 2 + 40 + No Power 50 + Piercing 90 (29 + 29 + 40 + 140).
+      ["beta", 1, 238],
+      ["beta", 2, 242],
+      ["beta", 3, 246],
+      ["beta", 4, 250],
+      ["beta", 5, 254],
+      ["beta", 6, 258],
+      // Gamma 7: 39 + 39 + 46 + Mechanical 80; Alpha 7: 38 + 38 + 37 + 90.
+      ["gamma", 7, 204],
+      ["alpha", 7, 203],
+    ])
+  })
+
+  it("then plays 35 second-pass tokens on objectives alone", () => {
+    const secondPass = plan.tokens.slice(20)
+    expect(secondPass.every((token) => !token.clearedIds.includes(0))).toBe(
+      true
+    )
+    const counts = new Map<number, number>()
+    for (const token of secondPass) {
+      counts.set(token.points, (counts.get(token.points) ?? 0) + 1)
+    }
+    expect([...counts].sort(([a], [b]) => b - a)).toEqual([
+      [140, 5],
+      [125, 9],
+      [100, 9],
+      [95, 7],
+      [90, 1],
+      [30, 4],
+    ])
   })
 })

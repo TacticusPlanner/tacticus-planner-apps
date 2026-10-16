@@ -35,7 +35,6 @@ const store = vi.hoisted(() => ({
 const lysander = {
   id: "astarLysander",
   name: "Lysander",
-  finished: false,
   eventStageStartDatesUtc: ["2026-08-30T00:00:00Z"],
 }
 const progress = { id: "astarLysander", currentPoints: 3410 }

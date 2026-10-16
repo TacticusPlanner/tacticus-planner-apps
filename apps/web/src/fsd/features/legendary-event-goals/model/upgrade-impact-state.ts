@@ -2,6 +2,7 @@ import type { Rarity } from "@workspace/game-domain"
 
 import {
   impactTeams,
+  isCompleteTeam,
   laneUpgradeImpact,
   type LaneEstimateInputs,
   type LanePointsModel,
@@ -22,8 +23,9 @@ export type UpgradeImpactState =
 
 /**
  * One lane's Upgrade impact from the plan's teams on the lane and its clear-estimate inputs: a
- * skeleton while either loads, "Add a team" without teams, "Needs clear estimates" when the
- * estimates are unavailable (tier list or battles failed, roster unknown), else the rows.
+ * skeleton while either loads, "Add a team" without teams (an incomplete team, below three
+ * members, does not count), "Needs clear estimates" when the estimates are unavailable (tier list
+ * or battles failed, roster unknown), else the rows.
  */
 export function buildUpgradeImpactState({
   teams,
@@ -49,7 +51,7 @@ export function buildUpgradeImpactState({
   nameOf: (unitId: string) => string
 }): UpgradeImpactState {
   if (teams === "loading" || estimates === "pending") return { kind: "loading" }
-  if (teams.length === 0) return { kind: "noTeams" }
+  if (!teams.some(isCompleteTeam)) return { kind: "noTeams" }
   if (!estimates) return { kind: "needsEstimates" }
   return {
     kind: "ready",

@@ -24,7 +24,7 @@ import {
   type LegendaryEventProgress,
   type LegendaryEventRewards,
   type LegendaryEventRosterUnit,
-  type LegendaryEventRun,
+  type LegendaryEventRunResolution,
   type LegendaryEventUnit,
   type NextPointsMilestone,
   type ReadState,
@@ -41,6 +41,7 @@ import type {
 
 import type { LastRunViewModel } from "./overview/last-run.view-model"
 import type { ProgressMarksViewModel } from "./progress/progress-marks"
+import type { TeamEditorLauncher } from "./teams/team-editor-launcher"
 import type { TeamsViewModel } from "./teams/teams-section"
 
 /** When the next token arrives: at `targetMs`, or already due (the timer ran out since the sync). */
@@ -79,7 +80,8 @@ export type RewardOutlookViewModel =
 /** The Run status card's Inputs drawer: shown for signed-in users only. */
 export interface RunInputsViewModel {
   enabled: boolean
-  currentRun: LegendaryEventRun
+  /** The resolved runs the drawer labels Done / Now / Planned against. */
+  runs: LegendaryEventRunResolution
 }
 
 /** The page's tab strip: Overview, then one tab per lane (design D3). */
@@ -106,6 +108,8 @@ export interface LegendaryEventPageViewModel {
   marks: ProgressMarksViewModel
   /** The lane tabs' Teams section: the plan, the current run and the plan actions. */
   teams: TeamsViewModel
+  /** The page's single team editor (design D4), opened by Teams and the leaderboards. */
+  teamEditor: TeamEditorLauncher
   /** The selected lane's Upgrade impact (Stage 6); null on Overview or signed out. */
   upgradeImpact: UpgradeImpactViewModel | null
   /** The Overview's Next token card, Token plan and Run forecast (Stage 4). */
@@ -190,6 +194,9 @@ export type LeaderboardViewModel = LeaderboardRowsViewModel &
     /** The lane leaderboards' Clears figure (not shown on the Overview leaderboard). */
     clears: ClearEstimatesViewModel
     goals: LeaderboardGoalsViewModel
+    /** Opens the team editor on the lane with the row's unit as first member (Add to new team);
+     *  absent while teams cannot be edited (signed out, or the plan is not ready). */
+    onAddToTeam?: (unitId: string, laneId: LegendaryEventLaneId) => void
   }
 
 /** The Synced progress section: per-lane progress over the points model, or the read's state. */
@@ -321,22 +328,33 @@ export function buildRunStatusViewModel({
 }
 
 /**
- * The Reward outlook over the event's ladder, the synced entry and the plan's run inputs (design
- * D2, D6). Signed out (`planEnabled` false) or with a plan that failed to load, the projection runs
- * without inputs; without a synced entry it starts from zero.
+ * The Reward outlook over the event's ladder, the synced entry, the event unit's roster record and
+ * the plan's run inputs (design D2, D6; fix-legendary-event-run-and-goal D5). Signed out
+ * (`planEnabled` false) or with a plan that failed to load, the projection runs without inputs;
+ * without a synced entry it starts from zero. A roster that failed or never synced counts the unit
+ * as not owned (Unlock).
  */
 export function buildRewardOutlookViewModel({
   rewards,
   progress,
+  unit,
+  resolution,
   plan,
   planEnabled,
 }: {
   rewards: LegendaryEventRewards | undefined
   progress: ReadValue<LegendaryEventProgress | undefined>
+  /** The event unit's roster record (`eventUnitRecord`), or the roster read's status. */
+  unit: ReadValue<LegendaryEventRosterUnit | undefined>
+  resolution: LegendaryEventRunResolution
   plan: { isPending: boolean; data: LegendaryEventPlan | undefined }
   planEnabled: boolean
 }): RewardOutlookViewModel {
-  if (progress === "loading" || (planEnabled && plan.isPending)) {
+  if (
+    progress === "loading" ||
+    unit === "loading" ||
+    (planEnabled && plan.isPending)
+  ) {
     return { kind: "loading" }
   }
   if (progress === "error" || !rewards) return { kind: "unavailable" }
@@ -345,10 +363,22 @@ export function buildRewardOutlookViewModel({
     projection: projectRewards({
       rewards,
       progress,
+      resolution,
+      unit: unit === "error" ? undefined : unit,
       runs: plan.data?.runs,
       showPaidOptions: plan.data?.showPaidOptions ?? false,
     }),
   }
+}
+
+/** The event unit's synced roster record; undefined when it is not owned or the roster is unknown. */
+export function eventUnitRecord(
+  roster: ReadValue<readonly LegendaryEventRosterUnit[] | undefined>,
+  eventId: string
+): LegendaryEventRosterUnit | undefined {
+  return Array.isArray(roster)
+    ? roster.find((unit) => unit.unitId === eventId)
+    : undefined
 }
 
 /** One lane's estimators over the synced roster (design D3): null when there is nothing to

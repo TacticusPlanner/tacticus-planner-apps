@@ -11,7 +11,9 @@ import {
 
 import type {
   LegendaryEventPlan,
+  LegendaryEventRosterUnit,
   LegendaryEventRunInputs,
+  LegendaryEventRunResolution,
 } from "@/entities/legendary-event"
 import { lysanderEvent, utharEvent } from "@/test/fixtures/legendary-events"
 import { createTestI18n, i18nWrapper } from "@/test/i18n"
@@ -112,6 +114,26 @@ const utharProgress = {
   currentShards: 250,
   currentEventRun: 2,
 }
+/** Uthar active in run 2 (the worked example), and between runs on 2026-10-16 (runs 1 and 2 over). */
+const UTHAR_RUN_2: LegendaryEventRunResolution = {
+  kind: "known",
+  endedRuns: 1,
+  currentRun: 2,
+  nextRun: 3,
+  nextStartMs: null,
+}
+const UTHAR_BETWEEN_RUNS: LegendaryEventRunResolution = {
+  kind: "known",
+  endedRuns: 2,
+  currentRun: null,
+  nextRun: 3,
+  nextStartMs: null,
+}
+/** The worked examples' event unit is not in the synced roster (the goal starts at Unlock). */
+const OUTLOOK_DEFAULTS: {
+  unit: LegendaryEventRosterUnit | undefined | "loading"
+  resolution: LegendaryEventRunResolution
+} = { unit: undefined, resolution: UTHAR_RUN_2 }
 const runInputs = (
   run: 1 | 2 | 3,
   regularMissions: number,
@@ -136,15 +158,27 @@ const utharPlan: LegendaryEventPlan = {
 }
 const outlookFor = (
   progress: unknown,
-  plan: LegendaryEventPlan | undefined = utharPlan
+  plan: LegendaryEventPlan | undefined = utharPlan,
+  overrides: Partial<typeof OUTLOOK_DEFAULTS> = {}
 ) =>
   buildRewardOutlookViewModel({
+    ...OUTLOOK_DEFAULTS,
+    ...overrides,
     rewards: utharEvent.rewards,
     progress: progress as never,
     plan: { isPending: false, data: plan },
     planEnabled: true,
   })
-const signedOut: RunInputsViewModel = { enabled: false, currentRun: 1 }
+const signedOut: RunInputsViewModel = {
+  enabled: false,
+  runs: {
+    kind: "known",
+    endedRuns: 0,
+    currentRun: null,
+    nextRun: 1,
+    nextStartMs: null,
+  },
+}
 
 let i18n: I18n
 
@@ -198,7 +232,7 @@ describe("RunStatusCard", () => {
       "3,410 points"
     )
     expect(screen.getByTestId("run-status-currency")).toHaveTextContent(
-      "120 currency"
+      "120 currency in hand"
     )
     // currentClaimedChestIndex is the API's 1-based count of chests opened.
     expect(screen.getByTestId("run-status-chests")).toHaveTextContent(
@@ -411,6 +445,75 @@ describe("RunStatusCard", () => {
       expect(screen.queryByTestId("reward-outlook-no-entry")).toBeNull()
     })
 
+    it("aims an owned Uthar at its next step between runs (4 stars at 120)", () => {
+      renderOutlook(
+        outlookFor(
+          synced({
+            currentPoints: 13_139,
+            currentCurrency: 60,
+            currentClaimedChestIndex: 17,
+            currentShards: 25,
+            currentEventRun: null,
+          }),
+          { ...utharPlan, runs: [] },
+          {
+            unit: {
+              unitId: "votanUthar",
+              rank: "Diamond3",
+              progressionIndex: "Legendary:RedThreeStars",
+            } as LegendaryEventRosterUnit,
+            resolution: UTHAR_BETWEEN_RUNS,
+          }
+        )
+      )
+
+      expect(screen.getByTestId("reward-outlook-next")).toHaveTextContent(
+        "Next: 4 stars · 25 / 120 shards"
+      )
+      expect(screen.getByTestId("reward-outlook-chests")).toHaveTextContent(
+        "4 more chests (5,250 currency in total)"
+      )
+      expect(screen.getByTestId("reward-outlook-points")).toHaveTextContent(
+        "1,611 points to reach 14,750 · about 9.8 battles per lane"
+      )
+    })
+
+    it("keeps an unowned Fabius Bile before run 1 at Unlock", () => {
+      // Fabius Bile (lres-lostabile.json) shares Uthar's points milestones, progression and chests
+      // 1–16; no synced entry, run 1 next, no inputs.
+      renderOutlook(
+        outlookFor(
+          undefined,
+          { ...utharPlan, eventId: "lostaBile", runs: [] },
+          {
+            resolution: {
+              kind: "known",
+              endedRuns: 0,
+              currentRun: null,
+              nextRun: 1,
+              nextStartMs: Date.parse("2026-11-08T00:00:00Z"),
+            },
+          }
+        )
+      )
+
+      expect(screen.getByTestId("reward-outlook-next")).toHaveTextContent(
+        "Next: Unlock · 0 / 400 shards"
+      )
+      expect(screen.getByTestId("reward-outlook-chests")).toHaveTextContent(
+        "16 more chests (3,350 currency in total)"
+      )
+      expect(screen.getByTestId("reward-outlook-points")).toHaveTextContent(
+        "13,000 points to reach 13,000"
+      )
+    })
+
+    it("waits for the roster before projecting the goal", () => {
+      expect(outlookFor(synced(), utharPlan, { unit: "loading" })).toEqual({
+        kind: "loading",
+      })
+    })
+
     it("explains the base, the future run currency, the bonus and started runs", () => {
       renderOutlook(outlookFor(synced()))
       const explain = screen.getByTestId("reward-outlook-explain")
@@ -492,6 +595,7 @@ describe("RunStatusCard", () => {
     it("shows a skeleton while the synced entry or the plan loads", () => {
       expect(
         buildRewardOutlookViewModel({
+          ...OUTLOOK_DEFAULTS,
           rewards: utharEvent.rewards,
           progress: synced() as never,
           plan: { isPending: true, data: undefined },
@@ -500,6 +604,7 @@ describe("RunStatusCard", () => {
       ).toEqual({ kind: "loading" })
       renderOutlook(
         buildRewardOutlookViewModel({
+          ...OUTLOOK_DEFAULTS,
           rewards: utharEvent.rewards,
           progress: "loading",
           plan: { isPending: false, data: utharPlan },
@@ -511,6 +616,7 @@ describe("RunStatusCard", () => {
 
     it("runs without inputs when signed out", () => {
       const outlook = buildRewardOutlookViewModel({
+        ...OUTLOOK_DEFAULTS,
         rewards: utharEvent.rewards,
         progress: synced() as never,
         plan: { isPending: true, data: undefined },
@@ -525,6 +631,7 @@ describe("RunStatusCard", () => {
     it("hides the outlook when the catalog ladder or the synced data is unavailable", () => {
       expect(
         buildRewardOutlookViewModel({
+          ...OUTLOOK_DEFAULTS,
           rewards: undefined,
           progress: synced() as never,
           plan: { isPending: false, data: utharPlan },
@@ -552,7 +659,13 @@ describe("RunStatusCard", () => {
       { kind: "unavailable" },
       {
         enabled: true,
-        currentRun: 2,
+        runs: {
+          kind: "known",
+          endedRuns: 1,
+          currentRun: 2,
+          nextRun: 3,
+          nextStartMs: null,
+        },
       }
     )
     expect(screen.getByTestId("legendary-event-run-inputs")).toHaveTextContent(

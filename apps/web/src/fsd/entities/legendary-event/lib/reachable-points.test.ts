@@ -12,40 +12,42 @@ const PIERCING = 4
 const four = { depth: 5, coveredObjectiveIndexes: [ULTRAMARINES] }
 
 describe("laneReachablePoints (spec worked examples)", () => {
-  it("adds 0, 75, 140, 144, 146 = 505 for Four at depth 5", () => {
+  it("adds 0, 75, 175, 183, 187 = 620 for Four at depth 5", () => {
     const reach = laneReachablePoints(UTHAR_ALPHA_MODEL, UTHAR_ALPHA_PROGRESS, [
       four,
     ])
-    expect(reach.perBattle.slice(0, 6)).toEqual([0, 75, 140, 144, 146, 0])
+    expect(reach.perBattle.slice(0, 6)).toEqual([0, 75, 175, 183, 187, 0])
     expect(reach.perBattle).toHaveLength(18)
-    expect(reach.total).toBe(505)
+    expect(reach.total).toBe(620)
   })
 
-  it("counts an objective once when teams overlap: 1,043", () => {
+  it("counts an objective once when teams overlap: 1,201", () => {
     const reach = laneReachablePoints(UTHAR_ALPHA_MODEL, UTHAR_ALPHA_PROGRESS, [
       four,
       { depth: 6, coveredObjectiveIndexes: [ULTRAMARINES, MELEE] },
     ])
-    expect(reach.perBattle.slice(0, 6)).toEqual([65, 140, 205, 209, 211, 213])
-    expect(reach.total).toBe(1043)
+    expect(reach.perBattle.slice(0, 6)).toEqual([65, 140, 240, 248, 252, 256])
+    expect(reach.total).toBe(1201)
   })
 
-  it("counts only the kill score left above a partial high score", () => {
+  it("counts the kill score left and the high score left independently", () => {
     const progress = {
       ...UTHAR_ALPHA_PROGRESS,
       battles: UTHAR_ALPHA_PROGRESS.battles.map((battle) =>
-        battle.index === 2 ? { ...battle, highScore: 20 } : battle
+        battle.index === 2
+          ? { ...battle, killScore: 10, highScore: 20 }
+          : battle
       ),
     }
     const reach = laneReachablePoints(UTHAR_ALPHA_MODEL, progress, [four])
-    expect(reach.perBattle[2]).toBe(35 - 20 + 30 + 75)
+    expect(reach.perBattle[2]).toBe(35 - 10 + (35 - 20) + 30 + 75)
   })
 
   it("reads a lane with no synced record as nothing cleared", () => {
     const reach = laneReachablePoints(UTHAR_ALPHA_MODEL, undefined, [
       { depth: 1, coveredObjectiveIndexes: [] },
     ])
-    expect(reach.total).toBe(29 + 30)
+    expect(reach.total).toBe(29 + 29 + 30)
   })
 
   it("counts nothing a team does not cover and nothing past every depth", () => {
@@ -55,7 +57,7 @@ describe("laneReachablePoints (spec worked examples)", () => {
       { depth: 0, coveredObjectiveIndexes: [PIERCING] },
       four,
     ])
-    expect(reach.total).toBe(505)
+    expect(reach.total).toBe(620)
     expect(
       laneReachablePoints(UTHAR_ALPHA_MODEL, UTHAR_ALPHA_PROGRESS, []).total
     ).toBe(0)

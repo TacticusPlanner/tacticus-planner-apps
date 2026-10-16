@@ -62,7 +62,6 @@ const lreRewards = {
 const baseLre = {
   id: "emperLucius",
   name: "Lucius",
-  finished: false,
   eventStageStartDatesUtc: ["2026-02-01T00:00:00Z"],
   battlesCount: 0,
   constraintsCount: 0,
@@ -389,6 +388,23 @@ describe("catalog schemas", () => {
     expect(
       datasetPayloadSchemas["lre-battles"].safeParse([lreBattle]).success
     ).toBe(true)
+  })
+
+  it("accepts run starts indexed by run, from none announced to all three", () => {
+    for (const eventStageStartDatesUtc of [
+      [],
+      ["2026-03-08T00:00:00Z"],
+      ["2026-03-08T00:00:00Z", "2026-10-04T00:00:00Z"],
+      ["2026-03-08T00:00:00Z", "2026-10-04T00:00:00Z", "2027-03-07T00:00:00Z"],
+    ]) {
+      const parsed = datasetPayloadSchemas.lres.safeParse([
+        { ...baseLre, eventStageStartDatesUtc },
+      ])
+      expect(parsed.success).toBe(true)
+      expect(parsed.data?.[0]?.eventStageStartDatesUtc).toEqual(
+        eventStageStartDatesUtc
+      )
+    }
   })
 
   it("validates the horde-mode-tiers record and rejects a non-positive multiplier", () => {

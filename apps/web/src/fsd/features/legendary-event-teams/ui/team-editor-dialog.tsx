@@ -1,8 +1,9 @@
-import { useId, useState, type FormEvent } from "react"
+import { useId, useRef, useState, type FormEvent } from "react"
 import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
 import { Input } from "@workspace/ui/components/input"
 import { Spinner } from "@workspace/ui/components/spinner"
+import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 import { cn } from "@workspace/ui/lib/utils"
 
 import {
@@ -30,20 +31,26 @@ import {
   canSaveDraft,
   checkedObjectives,
   defaultTeamName,
+  draftNeedsMembers,
   effectiveTeamName,
+  emptyEditorDraft,
   initialEditorDraft,
   toTeamDraft,
   toggleMember,
   toggleObjective,
   toggleReserve,
 } from "../model/team-editor-draft"
-import { editStartsFromEstimate } from "../model/clear-depth-display"
+import {
+  clearDepthSummary,
+  editStartsFromEstimate,
+} from "../model/clear-depth-display"
 import type { PickerGoalsPreview } from "../model/team-picker"
 import type {
   DepthEstimateContext,
   PlanMutationOutcome,
 } from "../model/use-legendary-event-plan"
 import { ClearDepthField } from "./clear-depth-field"
+import { TeamEditorSummary } from "./team-editor-summary"
 import { TeamUnitPicker } from "./team-unit-picker"
 
 /**
@@ -51,9 +58,16 @@ import { TeamUnitPicker } from "./team-unit-picker"
  * empty from Add team, with a suggestion's members from Use this team, or prefilled from Edit;
  * mount it with a fresh `key` per opening so the draft starts from the team. Covered objectives
  * follow the members live and can be unticked; the depth is the current run's, and mirrors the
- * card: the members' live estimate shows while no manual depth is set. The dialog closes only once
+ * card: the members' live estimate shows while no manual depth is set. Below three members Save is
+ * unavailable and the footer says a team needs three characters. The dialog closes only once
  * the save succeeded — after a conflict or an error the draft stays for another try; after a
  * conflict (the plan was reloaded, this save was not applied) the dialog says so.
+ *
+ * The footer stays in view while the body scrolls (design D2): the member count, the covered
+ * objectives as read-only chips, the depth line and the actions, all read from the same draft as
+ * the body. A new team also offers Save and add another (design D3): after a successful save the
+ * draft is reset for the next team on the lane while the picker's chips, search, Only unlocked and
+ * Goals Preview stay, and focus moves to the search field.
  */
 export function TeamEditorDialog({
   open,
@@ -63,6 +77,7 @@ export function TeamEditorDialog({
   units,
   roster,
   team,
+  teamName,
   teamNumber,
   run,
   onlyUnlockedDefault,
@@ -80,6 +95,8 @@ export function TeamEditorDialog({
   roster: readonly LegendaryEventRosterUnit[] | undefined
   /** The team being edited; absent for a new team. */
   team?: LegendaryEventTeam
+  /** The edited team's display name: the name field starts from it and the title names it. */
+  teamName?: string
   /** N of the "Team N" fallback name. */
   teamNumber: number
   run: LegendaryEventRun
@@ -100,12 +117,15 @@ export function TeamEditorDialog({
   const { t, i18n } = useTranslation("legendaryEvents")
   const objectiveLabel = useObjectiveLabel()
   const nameId = useId()
+  const needsMembersId = useId()
   const context = { lane, units }
   const [initialDraft] = useState(() =>
-    initialEditorDraft(team, run, context, initialMemberUnitIds)
+    initialEditorDraft(team, run, context, initialMemberUnitIds, teamName)
   )
   const [draft, setDraft] = useState(initialDraft)
   const [saving, setSaving] = useState(false)
+  const searchInputRef = useRef<HTMLInputElement>(null)
+  const isMobile = useIsMobile()
   const [reloaded, setReloaded] = useState(false)
   const number = new Intl.NumberFormat(i18n.language)
   const objectives = [...lane.unitsRestrictions].sort(
@@ -120,6 +140,7 @@ export function TeamEditorDialog({
   )
   const name = effectiveTeamName(draft, defaultName)
   const nameTooLong = name.length > TEAM_NAME_MAX_LENGTH
+  const needsMembers = draftNeedsMembers(draft)
   const canSave = canSaveDraft(draft, name) && !saving
   const estimate =
     draft.memberUnitIds.length > 0
@@ -138,8 +159,7 @@ export function TeamEditorDialog({
     return !result.refused
   }
 
-  const handleSubmit = async (event: FormEvent) => {
-    event.preventDefault()
+  const save = async (addAnother: boolean) => {
     if (!canSave) return
     setSaving(true)
     setReloaded(false)
@@ -149,8 +169,19 @@ export function TeamEditorDialog({
     })
     setSaving(false)
     setReloaded(outcome === "conflict")
-    if (outcome === "saved") onOpenChange(false)
+    if (outcome !== "saved") return
+    if (addAnother) {
+      setDraft(emptyEditorDraft())
+      searchInputRef.current?.focus()
+    } else {
+      onOpenChange(false)
+    }
   }
+  const handleSubmit = (event: FormEvent) => {
+    event.preventDefault()
+    void save(false)
+  }
+  const actionClassName = isMobile ? "h-11" : undefined
 
   return (
     <ResponsiveDialog
@@ -161,14 +192,11 @@ export function TeamEditorDialog({
       open={open}
       preventOutsideClose
     >
-      <form
-        className="flex min-h-0 flex-1 flex-col"
-        onSubmit={(event) => void handleSubmit(event)}
-      >
+      <form className="flex min-h-0 flex-1 flex-col" onSubmit={handleSubmit}>
         <ResponsiveDialogHeader>
           <ResponsiveDialogTitle>
             {team
-              ? t("teams.editor.editTitle", { name: team.name })
+              ? t("teams.editor.editTitle", { name: teamName ?? team.name })
               : t("teams.editor.createTitle", {
                   lane: t(`lanes.${laneId}`),
                 })}
@@ -213,6 +241,7 @@ export function TeamEditorDialog({
               onlyUnlockedDefault={onlyUnlockedDefault}
               reserveUnitId={draft.reserveUnitId}
               roster={roster}
+              searchInputRef={searchInputRef}
               units={units}
             />
           </section>
@@ -296,23 +325,54 @@ export function TeamEditorDialog({
             {t("teams.editor.notSaved")}
           </p>
         ) : null}
-        <ResponsiveDialogFooter>
-          <Button
-            disabled={saving}
-            onClick={() => onOpenChange(false)}
-            type="button"
-            variant="outline"
+        <ResponsiveDialogFooter className="border-t md:justify-between">
+          <TeamEditorSummary
+            checkedObjectives={objectives.filter((objective) =>
+              checked.includes(objective.index)
+            )}
+            depth={clearDepthSummary(draft.depth, estimate)}
+            memberCount={draft.memberUnitIds.length}
+            needsMembersId={needsMembersId}
+          />
+          <div
+            className="flex shrink-0 flex-wrap justify-end gap-2"
+            data-testid="team-editor-actions"
           >
-            {t("teams.editor.cancel")}
-          </Button>
-          <Button
-            data-testid="team-editor-save"
-            disabled={!canSave}
-            type="submit"
-          >
-            {saving ? <Spinner aria-label={t("teams.editor.saving")} /> : null}
-            {t("teams.editor.save")}
-          </Button>
+            <Button
+              className={actionClassName}
+              disabled={saving}
+              onClick={() => onOpenChange(false)}
+              type="button"
+              variant="outline"
+            >
+              {t("teams.editor.cancel")}
+            </Button>
+            {team ? null : (
+              <Button
+                aria-describedby={needsMembers ? needsMembersId : undefined}
+                className={actionClassName}
+                data-testid="team-editor-save-another"
+                disabled={!canSave}
+                onClick={() => void save(true)}
+                type="button"
+                variant="secondary"
+              >
+                {t("teams.editor.saveAndAddAnother")}
+              </Button>
+            )}
+            <Button
+              aria-describedby={needsMembers ? needsMembersId : undefined}
+              className={actionClassName}
+              data-testid="team-editor-save"
+              disabled={!canSave}
+              type="submit"
+            >
+              {saving ? (
+                <Spinner aria-label={t("teams.editor.saving")} />
+              ) : null}
+              {t("teams.editor.save")}
+            </Button>
+          </div>
         </ResponsiveDialogFooter>
       </form>
     </ResponsiveDialog>

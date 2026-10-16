@@ -29,7 +29,7 @@
     "title": "Durchlaufstatus",
     "tokensNext": "{{tokens}}, nächstes in {{when}}",
     "tokensDue": "{{tokens}}, nächstes Token bereit",
-    "currency": "{{value}} Währung",
+    "currency": "{{value}} Währung vorhanden",
     "chests": "{{value}} Truhen beansprucht",
     "shards": "{{value}} Splitter",
     "milestone": "Noch {{points}} Punkte bis Meilenstein {{milestone}} (+{{currency}} Währung)",
@@ -108,7 +108,7 @@
   },
   "laneSummary": {
     "title": "Lane-Zusammenfassung",
-    "battles": "{{cleared}} / {{total}} Kämpfe",
+    "battles": "{{cleared}} / {{total}} Kämpfe vollständig abgeschlossen",
     "open": "Fortschrittsraster der Lane {{lane}} öffnen",
     "noLane": "Kein Fortschritt in dieser Lane",
     "unavailable": "Synchronisierte Daten nicht verfügbar",
@@ -181,7 +181,7 @@
     "unavailable": "Synchronisierte Daten nicht verfügbar",
     "howPoints": {
       "title": "So funktionieren Punkte",
-      "body": "Die erzielten Punkte eines Kampfes sind sein Highscore plus die Punkte jedes Ziels, das du darin erfüllt hast, einschließlich des Bonus für „Alle besiegen“. Das Maximum eines Kampfes addiert Kill-Punkte, Highscore, den Bonus für „Alle besiegen“ und alle Zielpunkte; das Lane-Maximum addiert alle Kämpfe."
+      "body": "Die erzielten Punkte eines Kampfes sind seine Kill-Punkte plus sein Highscore, dazu der Bonus für „Alle besiegen“ und die Punkte jedes Ziels, das du darin erfüllt hast. Das Maximum eines Kampfes addiert die vollen Kill-Punkte, den vollen Highscore, den Bonus für „Alle besiegen“ und alle Zielpunkte; das Lane-Maximum addiert alle Kämpfe."
     }
   },
   "annotations": {
@@ -215,6 +215,7 @@
     "loadError": "Deine Teams konnten nicht geladen werden.",
     "retry": "Erneut versuchen",
     "partialBadge": "{{members}}/{{max}}",
+    "incomplete": "Braucht mindestens {{min}} Charaktere",
     "reserve": "Reserve",
     "members": "Mitglieder",
     "pointsPerBattle": "{{points}} Punkte pro Kampf",
@@ -247,12 +248,22 @@
       "noMembers": "Wähle Einheiten, um zu sehen, welche Ziele sie gemeinsam abdecken.",
       "depth": "Kampftiefe für Durchlauf {{run}}",
       "save": "Team speichern",
+      "needsMembers": "Ein Team braucht mindestens {{min}} Charaktere",
       "saving": "Wird gespeichert …",
       "notSaved": "Dein Plan wurde neu geladen, daher wurde dieses Team nicht gespeichert. Prüfe es und speichere erneut.",
-      "cancel": "Abbrechen"
+      "cancel": "Abbrechen",
+      "saveAndAddAnother": "Speichern und weiteres anlegen",
+      "footer": {
+        "summary": "Team-Übersicht",
+        "noCoverage": "Kein Ziel abgedeckt",
+        "depth": "Kampftiefe {{depth}}",
+        "depthEstimated": "Kampftiefe ~{{depth}} · geschätzt",
+        "depthUnset": "Kampftiefe nicht gesetzt"
+      }
     },
     "picker": {
       "count": "{{members}}/5",
+      "countBelowMinimum": "{{members}}/5 · mindestens {{min}}",
       "search": "Einheiten suchen",
       "searchPlaceholder": "Nach Namen suchen",
       "onlyUnlocked": "Nur freigeschaltete",
@@ -263,7 +274,11 @@
       "setReserve": "{{name}} als Reserve festlegen",
       "unsetReserve": "{{name}} als Reserve entfernen",
       "full": "Ein Team hat höchstens fünf Mitglieder. Entferne eines, um ein anderes hinzuzufügen.",
-      "points": "{{points}} Pkt."
+      "points": "{{points}} Pkt.",
+      "objectives": "Nach Ziel ordnen",
+      "objectiveChip_one": "{{objective}}: {{count}} Einheit erfüllt es",
+      "objectiveChip_other": "{{objective}}: {{count}} Einheiten erfüllen es",
+      "doesNotSatisfy": "Erfüllt nicht: {{objectives}}"
     },
     "toasts": {
       "reloaded": "Dein Plan wurde auf einem anderen Gerät geändert und neu geladen. Versuche es erneut.",
@@ -317,7 +332,7 @@
         },
         "runStatus": {
           "title": "Durchlaufstatus",
-          "content": "Dein Durchlauf, deine Token, Punkte, Währung, Truhen und Splitter aus der letzten Synchronisierung sowie der nächste Punkte-Meilenstein."
+          "content": "Dein Durchlauf, deine Token, Punkte, vorhandene Währung, Truhen und Splitter aus der letzten Synchronisierung sowie der nächste Punkte-Meilenstein."
         },
         "runInputs": {
           "title": "Eingaben pro Durchlauf",
@@ -353,7 +368,7 @@
         },
         "leaderboard": {
           "title": "Lane-Rangliste",
-          "content": "Jede Einheit, die diese Lane erlaubt, ob du sie besitzt, welche Ziele sie erfüllt und welche Punkte sie hier noch erzielen kann. Schalte die Zielvorschau ein, um Einheiten so zu sehen, als hättest du deine aktiven Ziele erreicht, und erstelle über das Menü einer Zeile ein Ziel."
+          "content": "Jede Einheit, die diese Lane erlaubt, ob du sie besitzt, welche Ziele sie erfüllt und welche Punkte sie hier noch erzielen kann. Schalte die Zielvorschau ein, um Einheiten so zu sehen, als hättest du deine aktiven Ziele erreicht, und nutze das Menü einer Zeile für „Ziel erstellen“ oder „Zu neuem Team hinzufügen“."
         },
         "lastRun": {
           "title": "Letzter Durchlauf",
@@ -438,7 +453,9 @@
   "leaderboardActions": {
     "header": "Aktionen",
     "menu": "Aktionen für {{name}}",
-    "createGoal": "Ziel erstellen"
+    "createGoal": "Ziel erstellen",
+    "addToTeam": "Zu neuem Team hinzufügen",
+    "addToTeamOnLane": "Zu neuem Team auf {{lane}} hinzufügen"
   },
   "upgradeImpact": {
     "title": "Wirkung von Verbesserungen",
@@ -487,6 +504,7 @@
         "mostPointsPlayableNow": "Die meisten Punkte unter den Kämpfen, die du jetzt spielen kannst"
       },
       "upcoming": "{{reason}}, sobald Durchlauf {{run}} beginnt",
+      "upcomingUnknown": "{{reason}}, sobald der nächste Durchlauf beginnt",
       "maybe": "Vielleicht schaffbar",
       "members": "Mitglieder",
       "objectives": "Erfüllt",
@@ -521,7 +539,10 @@
       "title": "Durchlaufprognose",
       "header": "Am Ende von Durchlauf {{run}}: {{points}} Punkte · {{step}} fehlen {{shards}} Splitter",
       "headerAllSteps": "Am Ende von Durchlauf {{run}}: {{points}} Punkte · alle Belohnungsstufen erreicht",
+      "headerUnknown": "Am Ende des nächsten Durchlaufs: {{points}} Punkte · {{step}} fehlen {{shards}} Splitter",
+      "headerAllStepsUnknown": "Am Ende des nächsten Durchlaufs: {{points}} Punkte · alle Belohnungsstufen erreicht",
       "run": "Durchlauf {{run}}",
+      "nextRun": "Nächster Durchlauf",
       "states": {
         "done": "Erledigt",
         "now": "Aktuell",

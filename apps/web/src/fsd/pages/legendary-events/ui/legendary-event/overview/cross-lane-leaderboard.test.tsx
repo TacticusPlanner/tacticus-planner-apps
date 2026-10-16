@@ -16,6 +16,7 @@ import { createTestI18n, i18nWrapper } from "@/test/i18n"
 import { act, fireEvent, render, screen, within } from "@/test/render"
 
 import {
+  buildLeaderboardRows,
   buildProgressGridViewModel,
   type LeaderboardGoalsViewModel,
   type LeaderboardRowsViewModel,
@@ -98,11 +99,13 @@ function Harness({
   layout,
   progressGrid = progress,
   goals = noGoals,
+  onAddToTeam,
 }: {
   rows: LeaderboardRowsViewModel
   layout: "table" | "list"
   progressGrid?: ProgressGridViewModel
   goals?: LeaderboardGoalsViewModel
+  onAddToTeam?: (unitId: string, laneId: "alpha" | "beta" | "gamma") => void
 }) {
   const [onlyUnlocked, setOnlyUnlocked] = useState(false)
   const [deductScored, setDeductScored] = useState(true)
@@ -123,6 +126,7 @@ function Harness({
         onSelectedObjectivesChange: setSelectedObjectives,
         clears: { kind: "hidden" },
         goals,
+        onAddToTeam,
       }}
       progressGrid={progressGrid}
     />
@@ -305,4 +309,54 @@ describe("CrossLaneLeaderboard", () => {
       null
     )
   })
+
+  describe.each(["table", "list"] as const)(
+    "Add to new team (%s)",
+    (layout) => {
+      // Real rows: Dante is allowed on Alpha and Gamma, not on Beta; the roster owns nobody.
+      const realRows = buildLeaderboardRows(
+        lysanderEvent,
+        legendaryEventCharacters,
+        [],
+        progress
+      )
+      const openDanteMenu = async () => {
+        const dantes = screen
+          .getAllByTestId("leaderboard-row")
+          .find((entry) => entry.dataset.unit === "bloodDante")!
+        expect(dantes).toHaveAttribute("data-ownership", "locked")
+        fireEvent.pointerDown(
+          within(dantes).getByTestId("leaderboard-row-menu"),
+          { button: 0, ctrlKey: false }
+        )
+        await screen.findByTestId("leaderboard-create-goal")
+      }
+
+      it("lists one item per lane allowing the unit, after Create goal", async () => {
+        const onAddToTeam = vi.fn()
+        render(
+          <Harness layout={layout} onAddToTeam={onAddToTeam} rows={realRows} />,
+          { wrapper: i18nWrapper(i18n) }
+        )
+        await openDanteMenu()
+        expect(
+          screen.getAllByRole("menuitem").map((item) => item.textContent)
+        ).toEqual([
+          "Create goal",
+          "Add to new team on Alpha",
+          "Add to new team on Gamma",
+        ])
+        fireEvent.click(screen.getByText("Add to new team on Gamma"))
+        expect(onAddToTeam).toHaveBeenCalledWith("bloodDante", "gamma")
+      })
+
+      it("offers no Add to new team while teams cannot be edited", async () => {
+        render(<Harness layout={layout} rows={realRows} />, {
+          wrapper: i18nWrapper(i18n),
+        })
+        await openDanteMenu()
+        expect(screen.queryByTestId("leaderboard-add-to-team")).toBeNull()
+      })
+    }
+  )
 })

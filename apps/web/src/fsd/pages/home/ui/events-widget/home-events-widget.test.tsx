@@ -64,12 +64,10 @@ const rush = entry(
 // Lysander's run 2026-09-29 → 2026-10-06; Uthar's starts 2026-10-11.
 const lysander = {
   id: "astarLysander",
-  finished: false,
   eventStageStartDatesUtc: ["2026-09-29T00:00:00Z"],
 }
 const uthar = {
   id: "votanUthar",
-  finished: false,
   eventStageStartDatesUtc: ["2026-10-11T00:00:00Z"],
 }
 

@@ -9,11 +9,15 @@ export interface BattleProgressView {
   /** How many of `cleared` are true (defeat-all included). */
   clearedCount: number
   /**
-   * `highScore` + the defeat-all score when cleared + Σ cleared objective scores (design D4). The
-   * synced `encounterPoints` is never read.
+   * `killScore` + `highScore` + the defeat-all score when cleared + Σ cleared objective scores: a
+   * fully cleared battle at full scores equals `maxPoints`.
    */
   pointsEarned: number
   maxPoints: number
+  /** The kill score award: synced `encounterPoints`, at most `battlePoints`; 0 without an
+   *  encounter. */
+  killScore: number
+  /** The high score award: synced `highScore`, at most `battlePoints`; 0 without an encounter. */
   highScore: number
   /** Every expected objective id (0 through the objective count) is cleared. */
   complete: boolean
@@ -36,8 +40,9 @@ export interface LaneProgressView {
 /**
  * Maps a synced lane record onto the lane's points model (spec: synced lane data maps onto battles
  * and objectives): `encounters[i]` is battle `i`; in `objectivesCleared` id 0 is defeat-all and id
- * `k` is the objective with catalog `index` `k − 1`. `laneRecord` is `null` for a null lane and
- * `undefined` when the event has no synced entry.
+ * `k` is the objective with catalog `index` `k − 1`. A battle awards its kill score
+ * (`encounterPoints`) and its high score (`highScore`) separately, each capped at `battlesPoints[i]`.
+ * `laneRecord` is `null` for a null lane and `undefined` when the event has no synced entry.
  */
 export function buildSyncedLaneProgress(
   model: LanePointsModel,
@@ -52,7 +57,10 @@ export function buildSyncedLaneProgress(
     const cleared = Array.from({ length: columns }, (_, id) =>
       clearedIds.has(id)
     )
-    const highScore = encounter?.highScore ?? 0
+    const cap = (score: number | undefined) =>
+      Math.min(Math.max(0, score ?? 0), battle.battlePoints)
+    const killScore = cap(encounter?.encounterPoints)
+    const highScore = cap(encounter?.highScore)
     const clearedScores = cleared.reduce(
       (sum, isCleared, id) =>
         isCleared
@@ -67,8 +75,9 @@ export function buildSyncedLaneProgress(
       index: battle.index,
       cleared,
       clearedCount: cleared.filter(Boolean).length,
-      pointsEarned: highScore + clearedScores,
+      pointsEarned: killScore + highScore + clearedScores,
       maxPoints: battle.maxPoints,
+      killScore,
       highScore,
       complete: cleared.every(Boolean),
     }

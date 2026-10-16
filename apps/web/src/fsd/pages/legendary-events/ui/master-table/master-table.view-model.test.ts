@@ -2,8 +2,11 @@ import { describe, expect, it } from "vitest"
 
 import { utharEvent } from "@/test/fixtures/legendary-events"
 
+import type { LegendaryEventProgress } from "@/entities/legendary-event"
+
 import {
   estimatedAvailability,
+  masterTableEventInputs,
   nextMasterTableParams,
   parseMasterTableQuery,
   resolveMasterTableState,
@@ -232,5 +235,50 @@ describe("estimatedAvailability", () => {
         events: [utharEvent],
       })
     ).toBe("unavailable")
+  })
+})
+
+describe("masterTableEventInputs", () => {
+  const NOW = Date.parse("2026-10-16T00:00:00Z")
+  const progress = (currentPoints: number) =>
+    ({
+      id: "votanUthar",
+      currentEventRun: null,
+      currentPoints,
+      alpha: null,
+      beta: null,
+      gamma: null,
+    }) as unknown as LegendaryEventProgress
+
+  it("reads depths for the next run between runs (Uthar: run 3)", () => {
+    const [input] = masterTableEventInputs({
+      events: [
+        {
+          ...utharEvent,
+          eventStageStartDatesUtc: [
+            "2026-03-08T00:00:00Z",
+            "2026-10-04T00:00:00Z",
+          ],
+        },
+      ],
+      plans: undefined,
+      progress: [progress(13_139)],
+      battles: undefined,
+      nowMs: NOW,
+    })
+
+    expect(input?.run).toBe(3)
+  })
+
+  it("reads depths for run 1 when the run is unknown", () => {
+    const [input] = masterTableEventInputs({
+      events: [{ ...utharEvent, eventStageStartDatesUtc: [] }],
+      plans: undefined,
+      progress: [progress(12_530)],
+      battles: undefined,
+      nowMs: NOW,
+    })
+
+    expect(input?.run).toBe(1)
   })
 })

@@ -6,6 +6,7 @@ import { Skeleton } from "@workspace/ui/components/skeleton"
 
 import {
   buildLanePointsModel,
+  useTeamDisplayName,
   type LaneProgressView,
   type LegendaryEventLane,
   type LegendaryEventLaneId,
@@ -15,7 +16,6 @@ import {
 } from "@/entities/legendary-event"
 import { TeamSuggestionsDialog } from "@/features/legendary-event-team-suggestions"
 import {
-  TeamEditorDialog,
   laneTeams,
   type LegendaryEventPlanActions,
   type PickerGoalsPreview,
@@ -32,6 +32,7 @@ import {
 } from "../overview/last-run.view-model"
 
 import { TeamCard, type TeamCardActions } from "./team-card"
+import type { TeamEditorLauncher } from "./team-editor-launcher"
 import { TeamsEmptyState } from "./teams-empty-state"
 import {
   buildTeamCardViewModel,
@@ -75,36 +76,30 @@ export interface TeamsViewModel {
   lastRunClears: LastRunClears
 }
 
-type EditorState = {
-  key: number
-  team?: LegendaryEventTeam
-  /** A team suggestion the editor starts from, with its 1-based rank. */
-  suggestion?: { memberUnitIds: string[]; rank: number }
-}
-
 /**
  * A lane's Teams section (design D5, D6), between the lane overview and the progress grid: one
  * card per team in stored order, an explicit Add team button, Suggest teams (also in the empty
- * state), the editor, delete confirmation, and reorder — drag on desktop, Move up / Move down in
- * the card menu on mobile. A suggestion opens the editor as a new team; cancelling it returns to
- * the suggestions.
+ * state), delete confirmation, and reorder — drag on desktop, Move up / Move down in the card
+ * menu on mobile. Add team, Edit and Use this team open the page's single editor through
+ * `editor` (design D4). A suggestion opens the editor as a new team; cancelling it returns to the
+ * suggestions.
  */
 export function TeamsSection({
   laneId,
   lane,
   teams,
-  onlyUnlocked,
   isMobile,
+  editor,
 }: {
   laneId: LegendaryEventLaneId
   lane: LegendaryEventLane
   teams: TeamsViewModel
-  onlyUnlocked: boolean
   isMobile: boolean
+  /** The page's team editor. */
+  editor: Pick<TeamEditorLauncher, "editor" | "openTeamEditor">
 }) {
   const { t } = useTranslation("legendaryEvents")
-  const [editor, setEditor] = useState<EditorState | null>(null)
-  const [editorCount, setEditorCount] = useState(0)
+  const [suggestCount, setSuggestCount] = useState(0)
   const [deleting, setDeleting] = useState<LegendaryEventTeam | null>(null)
   // The open Suggest teams dialog's mount key (null when closed): a fresh mount resets its toggles.
   const [suggesting, setSuggesting] = useState<number | null>(null)
@@ -119,38 +114,42 @@ export function TeamsSection({
     [state, laneId]
   )
 
+  const displayName = useTeamDisplayName()
+  const nameOf = (team: LegendaryEventTeam) =>
+    displayName(team, lane, savedTeams)
   const cards = useMemo(
     () =>
       state.kind === "ready"
-        ? laneTeams(state.plan, laneId).map((team) =>
-            buildTeamCardViewModel(
+        ? savedTeams.map((team) => ({
+            ...buildTeamCardViewModel(
               team,
               lane,
               state.units,
               state.roster,
               run,
               estimateTeam
-            )
-          )
+            ),
+            // Display only (spec: a team shows a readable name): the stored name stays as is.
+            name: displayName(team, lane, savedTeams),
+          }))
         : [],
-    [state, laneId, lane, run, estimateTeam]
+    [state, savedTeams, lane, run, estimateTeam, displayName]
   )
 
   if (state.kind === "hidden") return null
 
-  const openEditor = (
-    team?: LegendaryEventTeam,
-    suggestion?: EditorState["suggestion"]
-  ) => {
-    setEditor({ key: editorCount, team, suggestion })
-    setEditorCount((count) => count + 1)
-  }
+  const openEditor = (team?: LegendaryEventTeam) =>
+    editor.openTeamEditor({ laneId, team })
   const openSuggestions = () => {
-    setSuggesting(editorCount)
-    setEditorCount((count) => count + 1)
+    setSuggesting(suggestCount)
+    setSuggestCount((count) => count + 1)
   }
   const acceptSuggestion = (suggestion: TeamSuggestion, rank: number) =>
-    openEditor(undefined, { memberUnitIds: suggestion.memberUnitIds, rank })
+    editor.openTeamEditor({
+      laneId,
+      memberUnitIds: suggestion.memberUnitIds,
+      suggestionRank: rank,
+    })
   const suggestButton = (testId: string) => (
     <Button
       aria-describedby={estimateInputs ? undefined : suggestReasonId}
@@ -282,50 +281,13 @@ export function TeamsSection({
         </ul>
       ) : null}
 
-      {state.kind === "ready" && editor ? (
-        <TeamEditorDialog
-          key={editor.key}
-          lane={lane}
-          laneId={laneId}
-          onOpenChange={(open) => {
-            if (!open) setEditor(null)
-          }}
-          onSubmit={(draft, shown) =>
-            editor.team
-              ? actions.updateTeam(editor.team, draft, shown)
-              : actions.createTeam(
-                  laneId,
-                  draft,
-                  shown,
-                  editor.suggestion
-                    ? {
-                        source: "suggestion",
-                        suggestionRank: editor.suggestion.rank,
-                      }
-                    : undefined
-                )
-          }
-          estimateTeam={estimateTeam}
-          goalLines={teams.goals.goalLines}
-          goalsPreview={teams.goals.pickerPreview(laneId)}
-          initialMemberUnitIds={editor.suggestion?.memberUnitIds}
-          onlyUnlockedDefault={onlyUnlocked}
-          open
-          roster={state.roster}
-          run={run}
-          team={editor.team}
-          teamNumber={cards.length + 1}
-          units={state.units}
-        />
-      ) : null}
-
       {state.kind === "ready" && suggesting !== null ? (
         <TeamSuggestionsDialog
           goalLines={teams.goals.goalLines}
           key={suggesting}
           onClose={() => setSuggesting(null)}
           onUseSuggestion={acceptSuggestion}
-          open={!editor?.suggestion}
+          open={editor.editor?.suggestionRank === undefined}
           source={{
             eventId: teams.eventId,
             laneId,
@@ -347,11 +309,13 @@ export function TeamsSection({
         description={t("teams.deleteConfirm.description")}
         onCancel={() => setDeleting(null)}
         onConfirm={() => {
-          if (deleting) void actions.deleteTeam(deleting)
+          if (deleting) void actions.deleteTeam(deleting, nameOf(deleting))
           setDeleting(null)
         }}
         open={deleting !== null}
-        title={t("teams.deleteConfirm.title", { name: deleting?.name ?? "" })}
+        title={t("teams.deleteConfirm.title", {
+          name: deleting ? nameOf(deleting) : "",
+        })}
       />
     </section>
   )

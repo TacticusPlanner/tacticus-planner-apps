@@ -45,7 +45,7 @@ const saved: LegendaryEventTeam = {
   laneId: "alpha",
   name: "Melee",
   sortOrder: 0,
-  memberUnitIds: [teamUnits.a.id, teamUnits.b.id],
+  memberUnitIds: [teamUnits.a.id, teamUnits.b.id, teamUnits.c.id],
   reserveUnitId: null,
   // Min 5 Hits (1) derives but was unticked.
   objectiveIndexes: [0],
@@ -68,9 +68,10 @@ function renderEditor({
   onOpenChange?: (open: boolean) => void
   estimateTeam?: (memberUnitIds: readonly string[]) => ClearEstimate | null
 } = {}) {
-  render(
+  const editor = (key: number) => (
     <TeamEditorDialog
       estimateTeam={estimateTeam}
+      key={key}
       initialMemberUnitIds={initialMemberUnitIds}
       lane={teamLane}
       laneId="alpha"
@@ -83,10 +84,12 @@ function renderEditor({
       team={team}
       teamNumber={3}
       units={teamUnitList}
-    />,
-    { wrapper: i18nWrapper(i18n) }
+    />
   )
-  return { onSubmit, onOpenChange }
+  const view = render(editor(0), { wrapper: i18nWrapper(i18n) })
+  /** Closes and reopens the editor (a fresh mount, as the page host does). */
+  const reopen = () => view.rerender(editor(1))
+  return { onSubmit, onOpenChange, reopen }
 }
 
 const tap = (unitId: string) => {
@@ -136,7 +139,7 @@ describe("TeamEditorDialog", () => {
 
   it("opens a suggestion as a new team: members in order, coverage ticked, default name", async () => {
     const { onSubmit } = renderEditor({
-      initialMemberUnitIds: [teamUnits.b.id, teamUnits.a.id],
+      initialMemberUnitIds: [teamUnits.b.id, teamUnits.a.id, teamUnits.c.id],
     })
     expect(nameInput()).toHaveValue("Melee · Min 5 hits")
     expect(chips()).toEqual([
@@ -150,7 +153,7 @@ describe("TeamEditorDialog", () => {
     })
     expect(onSubmit).toHaveBeenCalledWith(
       expect.objectContaining({
-        memberUnitIds: [teamUnits.b.id, teamUnits.a.id],
+        memberUnitIds: [teamUnits.b.id, teamUnits.a.id, teamUnits.c.id],
         objectiveIndexes: [0, 1],
         name: "Melee · Min 5 hits",
       }),
@@ -191,6 +194,8 @@ describe("TeamEditorDialog", () => {
     expect(screen.getByTestId("team-editor-save")).toBeDisabled()
 
     tap(teamUnits.r.id)
+    tap(teamUnits.c.id)
+    tap(teamUnits.d.id)
     fireEvent.click(screen.getAllByTestId("team-editor-objective")[0]!)
     fireEvent.click(
       within(screen.getByTestId("team-editor-depth")).getByTestId(
@@ -204,7 +209,7 @@ describe("TeamEditorDialog", () => {
     expect(onSubmit).toHaveBeenCalledWith(
       {
         name: "Team 3",
-        memberUnitIds: [teamUnits.r.id],
+        memberUnitIds: [teamUnits.r.id, teamUnits.c.id, teamUnits.d.id],
         reserveUnitId: null,
         objectiveIndexes: [],
         expectedBattleClears: 1,
@@ -232,8 +237,57 @@ describe("TeamEditorDialog", () => {
     )
   })
 
+  describe.each([
+    ["desktop", 1280],
+    ["mobile", 390],
+  ])("team minimum on %s", (_layout, width) => {
+    beforeEach(() => setViewportWidth(width))
+    const save = () => screen.getByTestId("team-editor-save")
+    const count = () => screen.getByTestId("team-picker-count")
+    const message = () => screen.queryByTestId("team-editor-needs-members")
+
+    it("keeps Save unavailable with two members and a reserve, and says why", () => {
+      renderEditor()
+      tap(teamUnits.a.id)
+      tap(teamUnits.b.id)
+      fireEvent.click(
+        within(
+          screen
+            .getAllByTestId("team-picker-tile")
+            .find((element) => element.dataset.unit === teamUnits.c.id)!
+        ).getByTestId("team-picker-reserve")
+      )
+      expect(count()).toHaveTextContent("2/5 · at least 3")
+      expect(message()).toHaveTextContent("A team needs at least 3 characters")
+      expect(save()).toBeDisabled()
+      expect(save()).toHaveAccessibleDescription(
+        "A team needs at least 3 characters"
+      )
+    })
+
+    it("enables Save once a third member is added", () => {
+      renderEditor()
+      tap(teamUnits.a.id)
+      tap(teamUnits.b.id)
+      expect(save()).toBeDisabled()
+      tap(teamUnits.c.id)
+      expect(message()).not.toBeInTheDocument()
+      expect(count()).toHaveTextContent("3/5")
+      expect(count()).not.toHaveTextContent("at least")
+      expect(save()).toBeEnabled()
+    })
+
+    it("makes Save unavailable again when a member of a three-member team is removed", () => {
+      renderEditor({ team: saved })
+      expect(save()).toBeEnabled()
+      tap(teamUnits.c.id)
+      expect(save()).toBeDisabled()
+      expect(message()).toHaveTextContent("A team needs at least 3 characters")
+    })
+  })
+
   describe("estimate in the depth field", () => {
-    // One battle per member: a two-member team is estimated at 2.
+    // One battle per member: a three-member team is estimated at 3.
     const estimateTeam = (memberUnitIds: readonly string[]): ClearEstimate => ({
       depth: memberUnitIds.length,
       battleCount: 18,
@@ -264,20 +318,20 @@ describe("TeamEditorDialog", () => {
       })
       expect(onSubmit).toHaveBeenLastCalledWith(
         expect.objectContaining({ expectedBattleClears: null }),
-        { estimate: 2, fromEstimate: true }
+        { estimate: 3, fromEstimate: true }
       )
 
       fireEvent.click(
         within(depthField()).getByTestId("number-stepper-increase")
       )
-      expect(depthInput()).toHaveValue(3)
+      expect(depthInput()).toHaveValue(4)
       await act(async () => {
         fireEvent.click(screen.getByTestId("team-editor-save"))
       })
       // The override log gets the estimate the depth was stepped from.
       expect(onSubmit).toHaveBeenLastCalledWith(
-        expect.objectContaining({ expectedBattleClears: 3 }),
-        { estimate: 2, fromEstimate: true }
+        expect.objectContaining({ expectedBattleClears: 4 }),
+        { estimate: 3, fromEstimate: true }
       )
     })
 
@@ -298,11 +352,234 @@ describe("TeamEditorDialog", () => {
       })
       expect(depthInput()).toHaveValue(9)
       expect(screen.getByTestId("team-editor-depth-hint")).toHaveTextContent(
-        "estimate ~2"
+        "estimate ~3"
       )
       fireEvent.click(screen.getByTestId("team-editor-depth-use-estimate"))
-      expect(depthInput()).toHaveValue(2)
+      expect(depthInput()).toHaveValue(3)
       expect(depthField()).toHaveAttribute("data-estimated", "true")
+    })
+  })
+
+  describe("footer summary (spec: the editor keeps its summary and actions in view)", () => {
+    const estimateTeam = (memberUnitIds: readonly string[]): ClearEstimate => ({
+      depth: memberUnitIds.length,
+      battleCount: 18,
+      marginAbovePct: 12,
+      shortfallToNextPct: 30,
+      calibrated: true,
+    })
+    const footer = () => screen.getByTestId("team-editor-summary")
+    const footerObjectives = () =>
+      within(footer())
+        .queryAllByTestId("team-editor-summary-objective-label")
+        .map((chip) => chip.textContent)
+
+    it("shows the count, covered objectives, estimated depth and actions for four members", () => {
+      renderEditor({ estimateTeam })
+      for (const unit of [teamUnits.a, teamUnits.b, teamUnits.c, teamUnits.d])
+        tap(unit.id)
+      expect(
+        within(footer()).getByTestId("team-editor-summary-count")
+      ).toHaveTextContent("4/5")
+      expect(footerObjectives()).toEqual(["Melee", "Min 5 hits"])
+      const depth = within(footer()).getByTestId("team-editor-summary-depth")
+      expect(depth).toHaveTextContent("Clear depth ~4 · estimated")
+      expect(depth).toHaveAttribute("data-estimated", "true")
+      const actions = screen.getByTestId("team-editor-actions")
+      expect(
+        within(actions)
+          .getAllByRole("button")
+          .map((button) => button.textContent)
+      ).toEqual(["Cancel", "Save and add another", "Save team"])
+    })
+
+    it("says at least 3 below three members and shows a manual depth", () => {
+      renderEditor()
+      tap(teamUnits.a.id)
+      expect(
+        within(footer()).getByTestId("team-editor-summary-count")
+      ).toHaveTextContent("1/5 · at least 3")
+      expect(
+        within(footer()).getByTestId("team-editor-summary-depth")
+      ).toHaveTextContent("Clear depth not set")
+      fireEvent.click(
+        within(screen.getByTestId("team-editor-depth")).getByTestId(
+          "number-stepper-increase"
+        )
+      )
+      expect(
+        within(footer()).getByTestId("team-editor-summary-depth")
+      ).toHaveTextContent("Clear depth 1")
+    })
+
+    it("follows an untick in the body", () => {
+      renderEditor()
+      tap(teamUnits.a.id)
+      tap(teamUnits.b.id)
+      expect(footerObjectives()).toEqual(["Melee", "Min 5 hits"])
+      fireEvent.click(screen.getAllByTestId("team-editor-objective")[1]!)
+      expect(chips()).toEqual([
+        { label: "Melee", checked: true },
+        { label: "Min 5 hits", checked: false },
+      ])
+      expect(footerObjectives()).toEqual(["Melee"])
+    })
+
+    it("sits outside the scrolling body", () => {
+      renderEditor()
+      const body = screen
+        .getByTestId("team-editor")
+        .querySelector('[data-slot="responsive-dialog-body"]')!
+      expect(body).not.toContainElement(footer())
+      expect(body).not.toContainElement(screen.getByTestId("team-editor-save"))
+    })
+
+    it("offers only Cancel and Save when editing a team", () => {
+      renderEditor({ team: saved })
+      expect(screen.queryByTestId("team-editor-save-another")).toBeNull()
+      expect(
+        within(screen.getByTestId("team-editor-actions"))
+          .getAllByRole("button")
+          .map((button) => button.textContent)
+      ).toEqual(["Cancel", "Save team"])
+    })
+
+    it("gives the actions 44px touch targets on mobile", () => {
+      setViewportWidth(390)
+      renderEditor()
+      for (const button of within(
+        screen.getByTestId("team-editor-actions")
+      ).getAllByRole("button"))
+        expect(button).toHaveClass("h-11")
+    })
+  })
+
+  describe("Save and add another (spec: builds teams in a row)", () => {
+    const saveAnother = () => screen.getByTestId("team-editor-save-another")
+    const chip = (label: string) =>
+      screen
+        .getAllByTestId("team-picker-objective-chip")
+        .find((element) => element.textContent?.includes(label))!
+
+    it("saves, then clears the draft for the next team and keeps the chips and search", async () => {
+      const { onSubmit, onOpenChange } = renderEditor()
+      await screen.findByText("Gimel")
+      expect(saveAnother()).toBeDisabled()
+      fireEvent.click(chip("Melee"))
+      fireEvent.change(screen.getByTestId("team-picker-search"), {
+        target: { value: "e" },
+      })
+      fireEvent.click(screen.getByTestId("team-picker-only-unlocked"))
+      tap(teamUnits.a.id)
+      tap(teamUnits.b.id)
+      tap(teamUnits.c.id)
+      fireEvent.click(
+        within(screen.getByTestId("team-editor-depth")).getByTestId(
+          "number-stepper-increase"
+        )
+      )
+      fireEvent.change(nameInput(), { target: { value: "First" } })
+      expect(saveAnother()).toBeEnabled()
+
+      await act(async () => {
+        fireEvent.click(saveAnother())
+      })
+
+      expect(onSubmit).toHaveBeenCalledWith(
+        expect.objectContaining({
+          name: "First",
+          memberUnitIds: [teamUnits.a.id, teamUnits.b.id, teamUnits.c.id],
+          expectedBattleClears: 1,
+        }),
+        expect.anything()
+      )
+      expect(onOpenChange).not.toHaveBeenCalled()
+      expect(screen.queryAllByTestId("team-picker-selected-unit")).toHaveLength(
+        0
+      )
+      expect(nameInput()).toHaveValue("Team 3")
+      expect(
+        within(screen.getByTestId("team-editor-depth")).getByTestId(
+          "number-stepper-input"
+        )
+      ).toHaveValue(null)
+      expect(chip("Melee")).toHaveAttribute("aria-pressed", "true")
+      expect(screen.getByTestId("team-picker-search")).toHaveValue("e")
+      expect(screen.getByTestId("team-picker-only-unlocked")).toBeChecked()
+      expect(screen.getByTestId("team-picker-search")).toHaveFocus()
+      expect(saveAnother()).toBeDisabled()
+    })
+
+    it("keeps the draft after a conflict and says the save was not applied", async () => {
+      const onSubmit = vi.fn(
+        async (): Promise<PlanMutationOutcome> => "conflict"
+      )
+      const { onOpenChange } = renderEditor({ onSubmit })
+      tap(teamUnits.a.id)
+      tap(teamUnits.b.id)
+      tap(teamUnits.c.id)
+
+      await act(async () => {
+        fireEvent.click(saveAnother())
+      })
+
+      expect(onOpenChange).not.toHaveBeenCalled()
+      expect(
+        screen
+          .getAllByTestId("team-picker-selected-unit")
+          .map((element) => element.dataset.unit)
+      ).toEqual([teamUnits.a.id, teamUnits.b.id, teamUnits.c.id])
+      expect(screen.getByTestId("team-editor-not-saved")).toHaveTextContent(
+        "this team was not saved"
+      )
+    })
+
+    it("keeps the draft after an error", async () => {
+      const onSubmit = vi.fn(async (): Promise<PlanMutationOutcome> => "error")
+      renderEditor({ onSubmit })
+      tap(teamUnits.a.id)
+      tap(teamUnits.b.id)
+      tap(teamUnits.c.id)
+      await act(async () => {
+        fireEvent.click(saveAnother())
+      })
+      expect(screen.getAllByTestId("team-picker-selected-unit")).toHaveLength(3)
+      expect(saveAnother()).toBeEnabled()
+    })
+  })
+
+  describe("objective chips (spec: the picker filter composes with the other controls)", () => {
+    const chip = (label: string) =>
+      screen
+        .getAllByTestId("team-picker-objective-chip")
+        .find((element) => element.textContent?.includes(label))!
+
+    it("lets a dimmed unit be picked, which drops Melee from the coverage", () => {
+      renderEditor()
+      fireEvent.click(chip("Melee"))
+      const resh = screen
+        .getAllByTestId("team-picker-tile")
+        .find((element) => element.dataset.unit === teamUnits.r.id)!
+      expect(resh).toHaveAttribute("data-dimmed", "true")
+      tap(teamUnits.r.id)
+      expect(
+        screen
+          .getAllByTestId("team-picker-selected-unit")
+          .map((element) => element.dataset.unit)
+      ).toEqual([teamUnits.r.id])
+      expect(chips().map((entry) => entry.label)).not.toContain("Melee")
+    })
+
+    it("resets the selection when the editor is closed and reopened", () => {
+      const { reopen } = renderEditor()
+      fireEvent.click(chip("Melee"))
+      expect(chip("Melee")).toHaveAttribute("aria-pressed", "true")
+      reopen()
+      expect(
+        screen
+          .getAllByTestId("team-picker-objective-chip")
+          .every((element) => element.getAttribute("aria-pressed") === "false")
+      ).toBe(true)
     })
   })
 })

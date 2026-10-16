@@ -47,7 +47,7 @@ const suggest = (overrides: Partial<TeamSuggestionsInput> = {}) =>
 const MELEE_TEAM = ["ultraApothecary", "ultraCalgar", "ultraTitus"]
 
 describe("suggestLaneTeams (spec worked examples)", () => {
-  it("ranks the worked Uthar Alpha proposals: 830, 830, 819, 755, 653", () => {
+  it("ranks the worked Uthar Alpha proposals: 945, 870, 811", () => {
     expect(
       suggest().map(
         ({ memberUnitIds, coveredObjectiveIndexes, depth, gainPoints }) => ({
@@ -58,24 +58,14 @@ describe("suggestLaneTeams (spec worked examples)", () => {
         })
       )
     ).toEqual([
+      // 65 + 140 + 240 + 248 + 252
       {
         memberUnitIds: MELEE_TEAM,
         coveredObjectiveIndexes: [ULTRAMARINES, MELEE],
         depth: 5,
-        gainPoints: 830,
+        gainPoints: 945,
       },
-      {
-        memberUnitIds: ["ultraApothecary"],
-        coveredObjectiveIndexes: [ULTRAMARINES, MAX_2_HITS, MELEE, PIERCING],
-        depth: 3,
-        gainPoints: 830,
-      },
-      {
-        memberUnitIds: ["ultraApothecary", "ultraCalgar"],
-        coveredObjectiveIndexes: [ULTRAMARINES, MAX_2_HITS, MELEE],
-        depth: 4,
-        gainPoints: 819,
-      },
+      // 50 + 125 + 225 + 233 + 237
       {
         memberUnitIds: [
           "ultraTigurius",
@@ -85,8 +75,9 @@ describe("suggestLaneTeams (spec worked examples)", () => {
         ],
         coveredObjectiveIndexes: [ULTRAMARINES, MAX_2_HITS],
         depth: 5,
-        gainPoints: 755,
+        gainPoints: 870,
       },
+      // 0 + 75 + 175 + 183 + 187 + 191
       {
         memberUnitIds: [
           "ultraTigurius",
@@ -97,12 +88,24 @@ describe("suggestLaneTeams (spec worked examples)", () => {
         ],
         coveredObjectiveIndexes: [ULTRAMARINES],
         depth: 6,
-        gainPoints: 653,
+        gainPoints: 811,
       },
     ])
   })
 
-  it("re-ranks after the Melee proposal is saved: 420, 250, 200, 148", () => {
+  it("proposes no team for a subset with fewer than three candidates", () => {
+    const subsets = suggest().map((suggestion) =>
+      suggestion.objectiveIndexes.join()
+    )
+    // {Piercing}: Incisus alone; {Max 2 Hits, Melee}: Incisus and Calgar.
+    expect(subsets).not.toContain(String(PIERCING))
+    expect(subsets).not.toContain([MAX_2_HITS, MELEE].join())
+    expect(
+      suggest().every((suggestion) => suggestion.memberUnitIds.length >= 3)
+    ).toBe(true)
+  })
+
+  it("re-ranks after the Melee proposal is saved: 250, 191", () => {
     const suggestions = suggest({
       existingTeams: [
         {
@@ -113,7 +116,7 @@ describe("suggestLaneTeams (spec worked examples)", () => {
       ],
     })
     expect(suggestions.map((suggestion) => suggestion.gainPoints)).toEqual([
-      420, 250, 200, 148,
+      250, 191,
     ])
     expect(
       suggestions.some(

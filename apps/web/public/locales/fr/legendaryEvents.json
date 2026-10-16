@@ -29,7 +29,7 @@
     "title": "État de la manche",
     "tokensNext": "{{tokens}}, prochain dans {{when}}",
     "tokensDue": "{{tokens}}, prochain jeton prêt",
-    "currency": "{{value}} de monnaie",
+    "currency": "{{value}} de monnaie en main",
     "chests": "{{value}} coffres réclamés",
     "shards": "{{value}} fragments",
     "milestone": "{{points}} points avant le palier {{milestone}} (+{{currency}} de monnaie)",
@@ -108,7 +108,7 @@
   },
   "laneSummary": {
     "title": "Résumé des voies",
-    "battles": "{{cleared}} / {{total}} combats",
+    "battles": "{{cleared}} / {{total}} combats entièrement terminés",
     "open": "Ouvrir la grille de progression de {{lane}}",
     "noLane": "Aucune progression dans cette voie",
     "unavailable": "Données synchronisées indisponibles",
@@ -181,7 +181,7 @@
     "unavailable": "Données synchronisées indisponibles",
     "howPoints": {
       "title": "Comment fonctionnent les points",
-      "body": "Les points gagnés d'un combat sont son meilleur score plus le score de chaque objectif que vous y avez rempli, bonus « tout vaincre » compris. Le maximum d'un combat additionne son score d'éliminations, son meilleur score, le bonus « tout vaincre » et le score de chaque objectif ; le maximum de la voie additionne tous les combats."
+      "body": "Les points gagnés d'un combat sont son score d'éliminations plus son meilleur score, auxquels s'ajoutent le bonus « tout vaincre » et le score de chaque objectif que vous y avez rempli. Le maximum d'un combat additionne son score d'éliminations complet, son meilleur score complet, le bonus « tout vaincre » et le score de chaque objectif ; le maximum de la voie additionne tous les combats."
     }
   },
   "annotations": {
@@ -215,6 +215,7 @@
     "loadError": "Impossible de charger tes équipes.",
     "retry": "Réessayer",
     "partialBadge": "{{members}}/{{max}}",
+    "incomplete": "Il faut au moins {{min}} personnages",
     "reserve": "Réserve",
     "members": "Membres",
     "pointsPerBattle": "{{points}} points par combat",
@@ -247,12 +248,22 @@
       "noMembers": "Choisis des unités pour voir les objectifs qu'elles couvrent ensemble.",
       "depth": "Profondeur pour la manche {{run}}",
       "save": "Enregistrer l'équipe",
+      "needsMembers": "Une équipe a besoin d'au moins {{min}} personnages",
       "saving": "Enregistrement…",
       "notSaved": "Ton plan a été rechargé, cette équipe n'a donc pas été enregistrée. Vérifie-la et enregistre à nouveau.",
-      "cancel": "Annuler"
+      "cancel": "Annuler",
+      "saveAndAddAnother": "Enregistrer et en ajouter une autre",
+      "footer": {
+        "summary": "Résumé de l'équipe",
+        "noCoverage": "Aucun objectif couvert",
+        "depth": "Profondeur {{depth}}",
+        "depthEstimated": "Profondeur ~{{depth}} · estimée",
+        "depthUnset": "Profondeur non définie"
+      }
     },
     "picker": {
       "count": "{{members}}/5",
+      "countBelowMinimum": "{{members}}/5 · au moins {{min}}",
       "search": "Rechercher des unités",
       "searchPlaceholder": "Rechercher par nom",
       "onlyUnlocked": "Uniquement débloquées",
@@ -263,7 +274,11 @@
       "setReserve": "Mettre {{name}} en réserve",
       "unsetReserve": "Retirer {{name}} de la réserve",
       "full": "Une équipe compte au plus cinq membres. Retires-en un pour en ajouter un autre.",
-      "points": "{{points}} pts"
+      "points": "{{points}} pts",
+      "objectives": "Classer par objectif",
+      "objectiveChip_one": "{{objective}} : {{count}} unité le remplit",
+      "objectiveChip_other": "{{objective}} : {{count}} unités le remplissent",
+      "doesNotSatisfy": "Ne remplit pas : {{objectives}}"
     },
     "toasts": {
       "reloaded": "Ton plan a été modifié sur un autre appareil et a été rechargé. Réessaie.",
@@ -317,7 +332,7 @@
         },
         "runStatus": {
           "title": "État de la manche",
-          "content": "Votre manche, vos jetons, points, monnaie, coffres et fragments issus de votre dernière synchronisation, ainsi que le prochain palier de points."
+          "content": "Votre manche, vos jetons, points, monnaie en main, coffres et fragments issus de votre dernière synchronisation, ainsi que le prochain palier de points."
         },
         "runInputs": {
           "title": "Saisies par manche",
@@ -353,7 +368,7 @@
         },
         "leaderboard": {
           "title": "Classement de la voie",
-          "content": "Chaque unité autorisée dans cette voie, si vous la possédez, les objectifs qu'elle remplit et les points qu'elle peut encore marquer ici. Activez l'aperçu des objectifs pour voir les unités comme si vos objectifs actifs étaient atteints, et utilisez le menu d'une ligne pour créer un objectif."
+          "content": "Chaque unité autorisée dans cette voie, si vous la possédez, les objectifs qu'elle remplit et les points qu'elle peut encore marquer ici. Activez l'aperçu des objectifs pour voir les unités comme si vos objectifs actifs étaient atteints, et utilisez le menu d'une ligne pour « Créer un objectif » ou « Ajouter à une nouvelle équipe »."
         },
         "lastRun": {
           "title": "Dernière manche",
@@ -438,7 +453,9 @@
   "leaderboardActions": {
     "header": "Actions",
     "menu": "Actions pour {{name}}",
-    "createGoal": "Créer un objectif"
+    "createGoal": "Créer un objectif",
+    "addToTeam": "Ajouter à une nouvelle équipe",
+    "addToTeamOnLane": "Ajouter à une nouvelle équipe sur {{lane}}"
   },
   "upgradeImpact": {
     "title": "Impact des améliorations",
@@ -487,6 +504,7 @@
         "mostPointsPlayableNow": "Le plus de points parmi les combats jouables maintenant"
       },
       "upcoming": "{{reason}} pour le début de la manche {{run}}",
+      "upcomingUnknown": "{{reason}} pour le début de la prochaine manche",
       "maybe": "Peut-être faisable",
       "members": "Membres",
       "objectives": "Réussit",
@@ -521,7 +539,10 @@
       "title": "Prévision par manche",
       "header": "À la fin de la manche {{run}} : {{points}} points · {{step}} à {{shards}} fragments près",
       "headerAllSteps": "À la fin de la manche {{run}} : {{points}} points · toutes les récompenses atteintes",
+      "headerUnknown": "À la fin de la prochaine manche : {{points}} points · {{step}} à {{shards}} fragments près",
+      "headerAllStepsUnknown": "À la fin de la prochaine manche : {{points}} points · toutes les récompenses atteintes",
       "run": "Manche {{run}}",
+      "nextRun": "Prochaine manche",
       "states": {
         "done": "Terminée",
         "now": "En cours",

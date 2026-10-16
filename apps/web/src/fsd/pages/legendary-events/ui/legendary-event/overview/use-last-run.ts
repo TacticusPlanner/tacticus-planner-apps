@@ -2,6 +2,7 @@ import { useCallback, useMemo, useRef } from "react"
 
 import {
   useLegendaryEventRunRecords,
+  useTeamDisplayName,
   type LegendaryEventState,
   type LegendaryEventProgress,
   type LegendaryEventRosterUnit,
@@ -47,6 +48,7 @@ export function useLastRun(
   const lifecycle = eventState.lifecycle?.state
   const records = useLegendaryEventRunRecords(eventId)
   const { captureEvent } = useAnalyticsActions()
+  const teamName = useTeamDisplayName()
   const state = useMemo(
     () =>
       event && lifecycle
@@ -57,9 +59,10 @@ export function useLastRun(
             progress,
             roster,
             event,
+            teamName,
           })
         : ({ kind: "loading" } as const),
-    [event, lifecycle, enabled, records, progress, roster]
+    [event, lifecycle, enabled, records, progress, roster, teamName]
   )
   const lastRunClears = useMemo(
     () =>

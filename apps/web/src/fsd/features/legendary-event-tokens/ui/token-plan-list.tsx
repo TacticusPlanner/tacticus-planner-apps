@@ -59,7 +59,10 @@ export function TokenPlanList({
       className="flex min-w-0 flex-col gap-2 rounded-xl border bg-card p-3"
       data-testid="legendary-event-token-plan"
     >
-      <h2 id="legendary-event-token-plan-title">
+      <h2
+        data-testid="legendary-event-token-plan-header"
+        id="legendary-event-token-plan-title"
+      >
         <Button
           aria-controls={REGION_ID}
           aria-expanded={open}

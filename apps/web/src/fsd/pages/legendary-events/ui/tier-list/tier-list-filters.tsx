@@ -20,6 +20,7 @@ import {
 import { cn } from "@workspace/ui/lib/utils"
 
 import type { HordeTierAlliance } from "@/entities/legendary-event"
+import { FILTER_CHIP_CLASS_NAME } from "@/shared/ui"
 
 import {
   TIER_LIST_ALLIANCES,
@@ -125,7 +126,7 @@ function AllianceFilter({
     >
       {TIER_LIST_ALLIANCES.map((item) => (
         <ToggleGroupItem
-          className={isMobile ? "min-h-11 flex-1" : undefined}
+          className={cn(FILTER_CHIP_CLASS_NAME, isMobile && "min-h-11 flex-1")}
           data-alliance={item}
           key={item}
           value={item}

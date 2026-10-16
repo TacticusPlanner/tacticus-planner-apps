@@ -2,7 +2,7 @@ import type {
   V1LegendaryEventIssue,
   V1LegendaryEventOutcome,
 } from "@/entities/account"
-import { MAX_CLOSE_SHARDS } from "@/entities/legendary-event"
+import { MAX_CLOSE_SHARDS, MIN_TEAM_MEMBERS } from "@/entities/legendary-event"
 
 import type { OutcomeBucketKey } from "./outcome-buckets"
 
@@ -103,6 +103,7 @@ type IssueKey =
   | "goals.v1Import.legendaryEvents.issues.unknown_objective"
   | "goals.v1Import.legendaryEvents.issues.unknown_lane"
   | "goals.v1Import.legendaryEvents.issues.empty_team"
+  | "goals.v1Import.legendaryEvents.issues.team_too_small"
   | "goals.v1Import.legendaryEvents.issues.team_truncated"
   | "goals.v1Import.legendaryEvents.issues.duplicate_team_merged"
   | "goals.v1Import.legendaryEvents.issues.conflicting_depth_discarded"
@@ -126,6 +127,7 @@ const ISSUE_CODES = [
   "unknown_objective",
   "unknown_lane",
   "empty_team",
+  "team_too_small",
   "team_truncated",
   "duplicate_team_merged",
   "conflicting_depth_discarded",
@@ -219,6 +221,16 @@ export function describeLegendaryEventIssue(
           original,
           ...(bound === undefined ? {} : { bound }),
         },
+        showValue: false,
+      }
+    }
+    case "team_too_small": {
+      // The value is how many units remained; the team name shows beside the line.
+      const remaining = Number(issue.value)
+      if (!Number.isInteger(remaining)) return plain
+      return {
+        ...plain,
+        params: { count: remaining, min: MIN_TEAM_MEMBERS },
         showValue: false,
       }
     }

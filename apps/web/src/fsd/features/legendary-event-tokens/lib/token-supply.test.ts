@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest"
 
-import type { LegendaryEventRunInputs } from "@/entities/legendary-event"
+import {
+  deriveLegendaryEventLifecycle,
+  resolveLegendaryEventRunsAt,
+  type LegendaryEventRunInputs,
+  type LegendaryEventRunResolution,
+} from "@/entities/legendary-event"
 
 import { runTokenSupply, type TokenSupplyInput } from "./token-supply"
 
@@ -20,6 +25,43 @@ const premiumRun = (
   updatedAt: "2026-10-15T00:00:00Z",
 })
 
+const inRun = (run: 1 | 2 | 3): LegendaryEventRunResolution => ({
+  kind: "known",
+  endedRuns: (run - 1) as 0 | 1 | 2,
+  currentRun: run,
+  nextRun: run < 3 ? ((run + 1) as 2 | 3) : null,
+  nextStartMs: null,
+})
+
+/** An upcoming event's lifecycle and resolved runs from its schedule on 2026-10-16. */
+const between = (
+  eventStageStartDatesUtc: string[],
+  points: number
+): Pick<TokenSupplyInput, "lifecycle" | "resolution" | "nowMs"> => {
+  const nowMs = Date.parse("2026-10-16T00:00:00Z")
+  const schedule = { eventStageStartDatesUtc }
+  const lifecycle = deriveLegendaryEventLifecycle(schedule, nowMs)
+  return {
+    lifecycle,
+    nowMs,
+    resolution: resolveLegendaryEventRunsAt(
+      schedule,
+      {
+        currentEventRun: null,
+        currentPoints: points,
+        alpha: null,
+        beta: null,
+        gamma: null,
+      },
+      nowMs,
+      lifecycle
+    ),
+  }
+}
+
+const states = (supply: ReturnType<typeof runTokenSupply>) =>
+  supply?.map((run) => [run.run, run.state, run.total])
+
 /** The worked supply: Uthar active in run 2 with 76 hours left, observed now. */
 const worked = (
   overrides: Partial<TokenSupplyInput> = {}
@@ -29,8 +71,8 @@ const worked = (
     runStartMs: NOW + 76 * HOUR - 7 * DAY,
     runEndMs: NOW + 76 * HOUR,
   },
+  resolution: inRun(2),
   progress: {
-    currentEventRun: 2,
     currentEventTokens: {
       current: 3,
       max: 12,
@@ -50,12 +92,29 @@ const worked = (
 describe("runTokenSupply", () => {
   it("works the Uthar run 2 supply", () => {
     expect(runTokenSupply(worked())).toEqual([
-      { run: 1, state: "done", free: 0, ad: 0, bonusDelivery: 0, total: 0 },
+      {
+        run: 1,
+        state: "done",
+        unknownRun: false,
+        free: 0,
+        ad: 0,
+        bonusDelivery: 0,
+        total: 0,
+      },
       // 3 + 1 + ⌊(76 h − 1.5 h) ÷ 3 h⌋ = 28 free; ⌊(76 h − 1 ms) ÷ 24 h⌋ + 1 = 4 ad.
-      { run: 2, state: "now", free: 28, ad: 4, bonusDelivery: 0, total: 32 },
+      {
+        run: 2,
+        state: "now",
+        unknownRun: false,
+        free: 28,
+        ad: 4,
+        bonusDelivery: 0,
+        total: 32,
+      },
       {
         run: 3,
         state: "planned",
+        unknownRun: false,
         free: 61,
         ad: 7,
         bonusDelivery: 0,
@@ -127,28 +186,78 @@ describe("runTokenSupply", () => {
     expect(now?.ad).toBe(1)
   })
 
-  it("plans full runs after the last run on an upcoming event", () => {
+  it("Uthar between runs: runs 1 and 2 Done, run 3 Next with 68", () => {
     const supply = runTokenSupply(
-      worked({
-        lifecycle: {
-          state: "upcoming",
-          runStartMs: NOW + DAY,
-          runEndMs: NOW + 8 * DAY,
-        },
-        progress: { ...worked().progress!, currentEventRun: 1 },
-      })
+      worked(between(["2026-03-08T00:00:00Z", "2026-10-04T00:00:00Z"], 13_139))
     )
 
-    expect(supply?.map((run) => [run.state, run.total])).toEqual([
-      ["done", 0],
-      ["next", 68],
-      ["planned", 68],
+    expect(states(supply)).toEqual([
+      [1, "done", 0],
+      [2, "done", 0],
+      [3, "next", 68],
     ])
+  })
+
+  it("Lysander after run 1: run 1 Done, run 2 Next", () => {
+    const supply = runTokenSupply(
+      worked(between(["2026-08-30T00:00:00Z"], 12_531))
+    )
+
+    expect(states(supply)).toEqual([
+      [1, "done", 0],
+      [2, "next", 68],
+      [3, "planned", 68],
+    ])
+  })
+
+  it("plans one conservative Next run of 68 when the run is unknown", () => {
+    const supply = runTokenSupply(
+      worked({ ...between([], 12_530), runs: [premiumRun(1, 10)] })
+    )
+
+    expect(supply).toEqual([
+      {
+        run: 1,
+        state: "next",
+        unknownRun: true,
+        free: 61,
+        ad: 7,
+        bonusDelivery: 0,
+        total: 68,
+      },
+    ])
+  })
+
+  it("has no supply once every run has ended", () => {
+    expect(
+      runTokenSupply(
+        worked(
+          between(
+            [
+              "2026-03-08T00:00:00Z",
+              "2026-06-07T00:00:00Z",
+              "2026-09-06T00:00:00Z",
+            ],
+            14_000
+          )
+        )
+      )
+    ).toBeNull()
   })
 
   it("plans all three runs without a synced entry", () => {
     const supply = runTokenSupply(
-      worked({ lifecycle: { state: "upcoming" }, progress: undefined })
+      worked({
+        lifecycle: { state: "upcoming" },
+        resolution: {
+          kind: "known",
+          endedRuns: 0,
+          currentRun: null,
+          nextRun: 1,
+          nextStartMs: null,
+        },
+        progress: undefined,
+      })
     )
 
     expect(supply?.map((run) => run.state)).toEqual([
@@ -173,8 +282,8 @@ describe("runTokenSupply", () => {
           runStartMs: NOW - daysIn * DAY,
           runEndMs: NOW - daysIn * DAY + 7 * DAY,
         },
+        resolution: inRun(1),
         progress: {
-          currentEventRun: 1,
           currentEventTokens: null,
           hasUsedAdForExtraTokenToday: adUsed,
           extraCurrencyPerPayout: null,

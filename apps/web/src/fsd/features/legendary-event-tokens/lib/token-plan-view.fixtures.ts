@@ -1,7 +1,10 @@
-import type {
-  LegendaryEventPlan,
-  LegendaryEventProgress,
-  LegendaryEventTeam,
+import {
+  deriveLegendaryEventLifecycle,
+  resolveLegendaryEventRunsAt,
+  type LegendaryEventPlan,
+  type LegendaryEventProgress,
+  type LegendaryEventRunResolution,
+  type LegendaryEventTeam,
 } from "@/entities/legendary-event"
 import { utharEvent } from "@/test/fixtures/legendary-events"
 
@@ -12,7 +15,7 @@ import type { TokenPlanViewInput } from "./token-plan-view"
 // depth 6) and Melee (stored depth 5 for run 2) on Alpha, Stage 3's run 3 inputs.
 
 const HOUR = 60 * 60 * 1000
-export const WORKED_NOW = Date.parse("2026-10-15T12:00:00Z")
+const WORKED_NOW = Date.parse("2026-10-15T12:00:00Z")
 
 const FIVE_MEMBERS = [
   "ultraCalgar",
@@ -79,6 +82,23 @@ const workedProgress = {
   currentShards: 250,
 } as unknown as LegendaryEventProgress
 
+/** Uthar Alpha's imported two-member team (spec: a stored team below three characters is
+ *  incomplete): Max 2 Hits and Melee, stored depth 5 for run 2. */
+export const utharShortTeam: LegendaryEventTeam = team({
+  id: "short",
+  name: "Max 2 Hits · Melee",
+  memberUnitIds: ["ultraApothecary", "bloodIntercessor"],
+  objectiveIndexes: [2, 3],
+  runDepths: [
+    {
+      run: 2,
+      expectedBattleClears: 5,
+      expectedBattleClearsSource: "manual",
+      recordedAt: "2026-10-15T00:00:00Z",
+    },
+  ],
+})
+
 export const workedPlan = (
   teams: LegendaryEventTeam[] = workedTeams,
   overrides: Partial<LegendaryEventPlan> = {}
@@ -116,6 +136,48 @@ const workedEstimates: TokenPlanViewInput["estimates"] = {
   },
 }
 
+/** The run in progress, as resolved while an event is active (the synced run wins). */
+export const inRun = (run: 1 | 2 | 3): LegendaryEventRunResolution => ({
+  kind: "known",
+  endedRuns: (run - 1) as 0 | 1 | 2,
+  currentRun: run,
+  nextRun: run < 3 ? ((run + 1) as 2 | 3) : null,
+  nextStartMs: null,
+})
+
+/** 2026-10-16, between runs: the synced run is null and the schedule decides. */
+const BETWEEN_RUNS_NOW = Date.parse("2026-10-16T00:00:00Z")
+
+/** The page's inputs for an upcoming event at `BETWEEN_RUNS_NOW`: lifecycle and resolved runs from
+ *  its schedule (index = run − 1), with the worked synced entry minus its run number. */
+export function betweenRunsInput(
+  eventStageStartDatesUtc: string[],
+  overrides: Partial<TokenPlanViewInput> = {}
+): TokenPlanViewInput {
+  const schedule = { eventStageStartDatesUtc }
+  const lifecycle = deriveLegendaryEventLifecycle(schedule, BETWEEN_RUNS_NOW)
+  const progress = {
+    ...workedProgress,
+    currentEventRun: null,
+  } as LegendaryEventProgress
+  return workedViewInput({
+    event: { ...utharEvent, ...schedule },
+    lifecycle,
+    nowMs: BETWEEN_RUNS_NOW,
+    progress,
+    progressObservedAtMs: BETWEEN_RUNS_NOW,
+    resolution: resolveLegendaryEventRunsAt(
+      schedule,
+      progress,
+      BETWEEN_RUNS_NOW,
+      lifecycle
+    ),
+    ...overrides,
+  })
+}
+
+export const UTHAR_RUN_STARTS = ["2026-03-08T00:00:00Z", "2026-10-04T00:00:00Z"]
+
 export function workedViewInput(
   overrides: Partial<TokenPlanViewInput> = {}
 ): TokenPlanViewInput {
@@ -130,7 +192,9 @@ export function workedViewInput(
     progress: workedProgress,
     progressObservedAtMs: WORKED_NOW,
     plan: { enabled: true, status: "success", data: workedPlan() },
-    run: 2,
+    resolution: inRun(2),
+    // The event unit is not in the synced roster: the forecast's steps start at Unlock.
+    eventUnit: undefined,
     estimates: workedEstimates,
     ...overrides,
   }

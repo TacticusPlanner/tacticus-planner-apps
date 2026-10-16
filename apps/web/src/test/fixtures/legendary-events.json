@@ -2,7 +2,6 @@
   "lysander": {
     "id": "astarLysander",
     "name": "Lysander",
-    "finished": false,
     "eventStageStartDatesUtc": ["2026-08-30T00:00:00Z"],
     "battlesCount": 18,
     "constraintsCount": 7,
@@ -1220,7 +1219,6 @@
   "uthar": {
     "id": "votanUthar",
     "name": "Uthar",
-    "finished": false,
     "eventStageStartDatesUtc": ["2026-10-04T00:00:00Z"],
     "battlesCount": 18,
     "constraintsCount": 7,
@@ -1895,7 +1893,7 @@
         "label": "Necrons",
         "link": "https://tacticus.wiki.gg/wiki/Necrons#NPC_Units"
       },
-      "killPoints": 34,
+      "killPoints": 30,
       "battlesPoints": [
         29, 31, 35, 39, 41, 43, 45, 47, 47, 49, 47, 53, 51, 59, 59, 57, 61, 59
       ],
@@ -2070,7 +2068,7 @@
         "label": "AdMech and Black Templars",
         "link": "https://tacticus.wiki.gg/wiki/AdMech#NPC_Units"
       },
-      "killPoints": 26,
+      "killPoints": 34,
       "battlesPoints": [
         30, 32, 40, 42, 42, 42, 43, 44, 45, 46, 47, 47, 51, 50, 50, 54, 51, 56
       ],
@@ -2230,7 +2228,7 @@
         "label": "Death Guard",
         "link": "https://tacticus.wiki.gg/wiki/Death_Guard#NPC_Units"
       },
-      "killPoints": 17,
+      "killPoints": 43,
       "battlesPoints": [
         29, 28, 37, 32, 40, 40, 41, 36, 36, 40, 36, 46, 44, 45, 50, 52, 51, 50
       ],
@@ -2414,7 +2412,6 @@
   "farsight": {
     "id": "tauFarsight",
     "name": "Farsight",
-    "finished": false,
     "eventStageStartDatesUtc": ["2026-10-18T00:00:00Z"],
     "battlesCount": 18,
     "constraintsCount": 7,

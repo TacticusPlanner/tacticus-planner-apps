@@ -3,19 +3,18 @@ import type {
   LegendaryEventTeam,
   LegendaryEventTeamRunDepth,
 } from "../model/plan.types"
-import type { LegendaryEventProgress } from "../model/types"
+import type { LegendaryEventRunResolution } from "./run-resolution"
 
 /**
- * The run a depth write targets (design D8): the synced `currentEventRun` of the event's
- * `lre-progress` entry clamped to 1..3, or 1 when the account has no entry (or no run) for it. The
- * catalog carries no run number, so synced progress is the only source.
+ * The run a clear depth is read from and written to (spec: clear depth is a manual stepper per
+ * run): the run in progress, else the next run to start, else run 1 (an unknown run, or every run
+ * over). The run comes from `resolveLegendaryEventRuns`, not from the synced `currentEventRun`
+ * alone, which the game sends only while a run is active.
  */
 export function currentLegendaryEventRun(
-  progressEntry: Pick<LegendaryEventProgress, "currentEventRun"> | undefined
+  resolution: Pick<LegendaryEventRunResolution, "currentRun" | "nextRun">
 ): LegendaryEventRun {
-  const run = progressEntry?.currentEventRun
-  if (typeof run !== "number" || !Number.isFinite(run)) return 1
-  return Math.min(3, Math.max(1, Math.trunc(run))) as LegendaryEventRun
+  return resolution.currentRun ?? resolution.nextRun ?? 1
 }
 
 /** The team's stored depth for `run`, or null when that run has none. */

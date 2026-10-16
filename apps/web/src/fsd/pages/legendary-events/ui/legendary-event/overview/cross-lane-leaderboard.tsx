@@ -28,6 +28,7 @@ import {
   LeaderboardRowActions,
   LeaderboardUnit,
   ObjectiveIndicator,
+  type LeaderboardAddToTeam,
 } from "../leaderboard/leaderboard-parts"
 import {
   crossLaneLeaderboardBody,
@@ -101,6 +102,7 @@ export function CrossLaneLeaderboard({
             goals={leaderboard.goals}
             groups={groups}
             nameOf={nameOf}
+            onAddToTeam={leaderboard.onAddToTeam}
             rows={result.rows}
           />
         ) : (
@@ -109,6 +111,7 @@ export function CrossLaneLeaderboard({
             goals={leaderboard.goals}
             groups={groups}
             nameOf={nameOf}
+            onAddToTeam={leaderboard.onAddToTeam}
             rows={result.rows}
           />
         )
@@ -139,6 +142,21 @@ export function CrossLaneLeaderboard({
       {body}
     </section>
   )
+}
+
+/** Add to new team on the Overview (design D5): one item per lane allowing the unit, in lane
+ *  order, each naming its lane. */
+function crossLaneAddToTeam(
+  row: CrossLaneLeaderboardRow,
+  onAddToTeam:
+    ((unitId: string, laneId: LegendaryEventLaneId) => void) | undefined
+): LeaderboardAddToTeam | undefined {
+  if (!onAddToTeam) return undefined
+  return {
+    laneIds: LEGENDARY_EVENT_LANE_IDS.filter((laneId) => row.lanes[laneId]),
+    nameLane: true,
+    onSelect: (laneId) => onAddToTeam(row.unit.id, laneId),
+  }
 }
 
 /** The lane's objective indicators for one row: met when the unit satisfies the objective (an
@@ -204,12 +222,14 @@ function CrossLaneTable({
   figure,
   nameOf,
   goals,
+  onAddToTeam,
 }: {
   rows: readonly CrossLaneLeaderboardRow[]
   groups: readonly ObjectiveChipGroup[]
   figure: LeaderboardFigure
   nameOf: (unit: LegendaryEventUnit) => string
   goals: LeaderboardGoalsViewModel
+  onAddToTeam?: (unitId: string, laneId: LegendaryEventLaneId) => void
 }) {
   const { t } = useTranslation("legendaryEvents")
   const laneFigure = useLaneFigure(figure)
@@ -300,6 +320,7 @@ function CrossLaneTable({
                 <LeaderboardRowActions
                   name={nameOf(row.unit)}
                   onCreateGoal={() => goals.onCreateGoal(row.unit.id, null)}
+                  addToTeam={crossLaneAddToTeam(row, onAddToTeam)}
                 />
               </TableCell>
             </TableRow>
@@ -316,12 +337,14 @@ function CrossLaneList({
   figure,
   nameOf,
   goals,
+  onAddToTeam,
 }: {
   rows: readonly CrossLaneLeaderboardRow[]
   groups: readonly ObjectiveChipGroup[]
   figure: LeaderboardFigure
   nameOf: (unit: LegendaryEventUnit) => string
   goals: LeaderboardGoalsViewModel
+  onAddToTeam?: (unitId: string, laneId: LegendaryEventLaneId) => void
 }) {
   const { t } = useTranslation("legendaryEvents")
   const laneFigure = useLaneFigure(figure)
@@ -348,6 +371,7 @@ function CrossLaneList({
               <LeaderboardRowActions
                 name={nameOf(row.unit)}
                 onCreateGoal={() => goals.onCreateGoal(row.unit.id, null)}
+                addToTeam={crossLaneAddToTeam(row, onAddToTeam)}
                 size="card"
               />
             </span>

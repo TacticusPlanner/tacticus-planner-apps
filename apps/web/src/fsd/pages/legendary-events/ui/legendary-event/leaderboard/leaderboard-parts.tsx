@@ -13,6 +13,7 @@ import { cn } from "@workspace/ui/lib/utils"
 import {
   ObjectiveIcon,
   type LeaderboardUnitRow,
+  type LegendaryEventLaneId,
   type ObjectiveIconModel,
 } from "@/entities/legendary-event"
 import { UnitGoalBadge } from "@/entities/goal"
@@ -96,15 +97,26 @@ export function LeaderboardUnit({
   )
 }
 
-/** A row's actions menu (spec: leaderboard rows have an actions menu with Create goal): a
- *  three-dots button, 44px on the mobile cards. */
+/** Add to new team in a row's menu: the lanes it offers (one on a lane leaderboard, every lane
+ *  allowing the unit on Overview, which names each lane) and the launcher. */
+export interface LeaderboardAddToTeam {
+  laneIds: readonly LegendaryEventLaneId[]
+  nameLane: boolean
+  onSelect: (laneId: LegendaryEventLaneId) => void
+}
+
+/** A row's actions menu (spec: leaderboard rows have an actions menu with Create goal, then Add to
+ *  new team): a three-dots button, 44px on the mobile cards. */
 export function LeaderboardRowActions({
   name,
   onCreateGoal,
+  addToTeam,
   size = "table",
 }: {
   name: string
   onCreateGoal: () => void
+  /** Absent while teams cannot be edited. */
+  addToTeam?: LeaderboardAddToTeam
   size?: "table" | "card"
 }) {
   const { t } = useTranslation("legendaryEvents")
@@ -128,6 +140,20 @@ export function LeaderboardRowActions({
         >
           {t("leaderboardActions.createGoal")}
         </DropdownMenuItem>
+        {addToTeam?.laneIds.map((laneId) => (
+          <DropdownMenuItem
+            data-lane={laneId}
+            data-testid="leaderboard-add-to-team"
+            key={laneId}
+            onSelect={() => addToTeam.onSelect(laneId)}
+          >
+            {addToTeam.nameLane
+              ? t("leaderboardActions.addToTeamOnLane", {
+                  lane: t(`lanes.${laneId}`),
+                })
+              : t("leaderboardActions.addToTeam")}
+          </DropdownMenuItem>
+        ))}
       </DropdownMenuContent>
     </DropdownMenu>
   )

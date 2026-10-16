@@ -8,6 +8,7 @@ import {
 import { teamDepthForRun } from "./current-run"
 import type { LaneReach } from "./reachable-points"
 import { derivedTeamCoverage } from "./team-coverage"
+import { isCompleteTeam } from "./team-size"
 import type { ImpactTeam } from "./upgrade-impact"
 
 /** What a lane's clear estimates read: the battles' powers, the synced roster and the config. */
@@ -24,7 +25,8 @@ type CoverageLane = Pick<
 
 /**
  * A lane's teams as reachable points read them (design D4): non-reserve members, the stored
- * objectives the current members still derive, and the current run's stored depth.
+ * objectives the current members still derive, and the current run's stored depth. An incomplete
+ * team (fewer than three members) is left out: no calculation plays it.
  */
 export function impactTeams(
   teams: readonly LegendaryEventTeam[],
@@ -32,7 +34,7 @@ export function impactTeams(
   units: readonly LegendaryEventUnit[],
   run: LegendaryEventRun
 ): ImpactTeam[] {
-  return teams.map((team) => {
+  return teams.filter(isCompleteTeam).map((team) => {
     const derived = new Set(
       derivedTeamCoverage(team.memberUnitIds, lane, units)
     )

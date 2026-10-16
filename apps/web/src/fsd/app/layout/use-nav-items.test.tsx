@@ -83,10 +83,20 @@ describe("useNavItems", () => {
   })
 
   it("lists upcoming and archived events after the active ones, each with its lifecycle", async () => {
-    // Uthar archived (finished), Lysander upcoming before its 2026-08-30 start.
+    // Uthar archived (all three runs over), Lysander upcoming before its 2026-08-30 start.
     events.state = {
       status: "ready",
-      data: [lysanderEvent, { ...utharEvent, finished: true }],
+      data: [
+        lysanderEvent,
+        {
+          ...utharEvent,
+          eventStageStartDatesUtc: [
+            "2025-05-04T00:00:00Z",
+            "2025-09-07T00:00:00Z",
+            "2026-01-04T00:00:00Z",
+          ],
+        },
+      ],
       retry: vi.fn(),
       nowMs: Date.parse("2026-08-01T00:00:00Z"),
     }

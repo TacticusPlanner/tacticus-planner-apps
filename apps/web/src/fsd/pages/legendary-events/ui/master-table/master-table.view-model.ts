@@ -1,5 +1,7 @@
 import {
+  currentLegendaryEventRun,
   laneBattlePowers,
+  resolveLegendaryEventRunsAt,
   LEGENDARY_EVENT_LANE_IDS,
   type ClearEstimateConfigState,
   type LegendaryEvent,
@@ -229,6 +231,7 @@ export function masterTableEventInputs({
   plans,
   progress,
   battles,
+  nowMs,
 }: {
   events: readonly LegendaryEvent[]
   /** Undefined while the list loads or failed (no teams). */
@@ -236,20 +239,31 @@ export function masterTableEventInputs({
   /** Undefined when progress failed (nothing cleared). */
   progress: readonly LegendaryEventProgress[] | undefined
   battles: Record<string, LegendaryEventBattle[]> | undefined
+  /** The clock the run each event's depths are read for is resolved at. */
+  nowMs: number
 }): MasterTableEventInput[] {
-  return events.map((event) => ({
-    event,
-    plan: plans?.find((plan) => plan.eventId === event.id),
-    progress: progress?.find((entry) => entry.id === event.id),
-    battlePowers: battles
-      ? Object.fromEntries(
-          LEGENDARY_EVENT_LANE_IDS.map((laneId) => [
-            laneId,
-            laneBattlePowers(event[laneId].battleIds, battles[event.id] ?? []),
-          ])
-        )
-      : undefined,
-  }))
+  return events.map((event) => {
+    const entry = progress?.find((candidate) => candidate.id === event.id)
+    return {
+      event,
+      plan: plans?.find((plan) => plan.eventId === event.id),
+      progress: entry,
+      run: currentLegendaryEventRun(
+        resolveLegendaryEventRunsAt(event, entry, nowMs)
+      ),
+      battlePowers: battles
+        ? Object.fromEntries(
+            LEGENDARY_EVENT_LANE_IDS.map((laneId) => [
+              laneId,
+              laneBattlePowers(
+                event[laneId].battleIds,
+                battles[event.id] ?? []
+              ),
+            ])
+          )
+        : undefined,
+    }
+  })
 }
 
 /** The Total group's second figure: Σ objectives (All, Unlocked) or Σ teams (In teams). */

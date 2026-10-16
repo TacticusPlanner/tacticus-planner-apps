@@ -1,8 +1,9 @@
-import type {
-  LanePointsModel,
-  LegendaryEventAnnotation,
-  LegendaryEventLaneId,
-  LegendaryEventLaneRecord,
+import {
+  buildSyncedLaneProgress,
+  type LanePointsModel,
+  type LegendaryEventAnnotation,
+  type LegendaryEventLaneId,
+  type LegendaryEventLaneRecord,
 } from "@/entities/legendary-event"
 
 // Ported from V1 `TokenEstimationService` (`computeNextToken`, `computeAllTokenUsage`,
@@ -72,6 +73,9 @@ export interface TokenPlan {
 interface LaneState {
   lane: TokenPlanLane
   cleared: boolean[][]
+  /** Per battle, the kill score award earned so far (at most `battlePoints`). */
+  killScore: number[]
+  /** Per battle, the high score award earned so far (at most `battlePoints`). */
   highScore: number[]
   stopHere: Set<string>
   maybeClear: Set<string>
@@ -89,8 +93,8 @@ interface Candidate {
 const cellKey = (battleIndex: number, id: number) => `${battleIndex}:${id}`
 
 function initialLaneState(lane: TokenPlanLane): LaneState {
-  const columns = lane.model.objectives.length + 1
-  const encounters = lane.synced?.encounters ?? []
+  // The same per-battle reading as the progress grid: cleared cells, kill score and high score.
+  const progress = buildSyncedLaneProgress(lane.model, lane.synced)
   const stopHere = new Set<string>()
   const maybeClear = new Set<string>()
   for (const annotation of lane.annotations) {
@@ -100,13 +104,9 @@ function initialLaneState(lane: TokenPlanLane): LaneState {
   }
   return {
     lane,
-    cleared: lane.model.battles.map((battle) => {
-      const ids = new Set(encounters[battle.index]?.objectivesCleared ?? [])
-      return Array.from({ length: columns }, (_, id) => ids.has(id))
-    }),
-    highScore: lane.model.battles.map(
-      (battle) => encounters[battle.index]?.highScore ?? 0
-    ),
+    cleared: progress.battles.map((battle) => [...battle.cleared]),
+    killScore: progress.battles.map((battle) => battle.killScore),
+    highScore: progress.battles.map((battle) => battle.highScore),
     stopHere,
     maybeClear,
   }
@@ -138,7 +138,9 @@ function tokenOn(
   const won = cells[0] === true || clearedIds.includes(0)
   // Objectives only count on a won battle; a Stop here defeat-all is never played.
   if (!won) return null
+  // A won battle awards its full kill score and its full high score.
   const points =
+    Math.max(0, battle.battlePoints - (state.killScore[battleIndex] ?? 0)) +
     Math.max(0, battle.battlePoints - (state.highScore[battleIndex] ?? 0)) +
     clearedIds.reduce(
       (sum, id) =>
@@ -220,7 +222,12 @@ function earnedPoints(state: LaneState): number {
           : total,
       0
     )
-    return sum + (state.highScore[battle.index] ?? 0) + cellPoints
+    return (
+      sum +
+      (state.killScore[battle.index] ?? 0) +
+      (state.highScore[battle.index] ?? 0) +
+      cellPoints
+    )
   }, 0)
 }
 
@@ -252,10 +259,8 @@ export function planTokens({
       state.cleared[chosen.battleIndex]![id] = true
     }
     const battle = state.lane.model.battles[chosen.battleIndex]!
-    state.highScore[chosen.battleIndex] = Math.max(
-      state.highScore[chosen.battleIndex] ?? 0,
-      battle.battlePoints
-    )
+    state.killScore[chosen.battleIndex] = battle.battlePoints
+    state.highScore[chosen.battleIndex] = battle.battlePoints
     runningPoints += chosen.points
     tokens.push({
       laneId: chosen.laneId,

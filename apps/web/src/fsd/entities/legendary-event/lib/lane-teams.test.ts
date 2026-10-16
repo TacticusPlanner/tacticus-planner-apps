@@ -66,4 +66,21 @@ describe("impactTeams / teamReaches", () => {
       teamReaches([{ ...teams[0]!, manualDepth: 2 }], inputs)[0]?.depth
     ).toBe(2)
   })
+
+  it("leaves out an incomplete team (Uthar's two-member team)", () => {
+    const short = {
+      ...team,
+      id: "short",
+      memberUnitIds: ["ultraApothecary", "bloodIntercessor"],
+      reserveUnitId: "ultraCalgar",
+    }
+    expect(
+      impactTeams(
+        [short, team],
+        utharEvent.alpha,
+        legendaryEventCharacters,
+        2
+      ).map((entry) => entry.id)
+    ).toEqual(["melee"])
+  })
 })

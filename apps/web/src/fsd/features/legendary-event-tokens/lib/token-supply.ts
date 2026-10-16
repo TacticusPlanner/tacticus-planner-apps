@@ -1,10 +1,10 @@
 import {
-  currentLegendaryEventRun,
   runInputValues,
   type LegendaryEventLifecycle,
   type LegendaryEventProgress,
   type LegendaryEventRun,
   type LegendaryEventRunInputs,
+  type LegendaryEventRunResolution,
 } from "@/entities/legendary-event"
 
 // Ported from V1 `LeTokenService` and `LeRoundOutcomeForecastService` token counts (design D6),
@@ -28,6 +28,10 @@ export type RunSupplyState = "done" | "now" | "next" | "planned"
 export interface RunSupply {
   run: LegendaryEventRun
   state: RunSupplyState
+  /** True for the one conservative Next run of an unknown run (spec: the unknown state plans one
+   *  conservative run): `run` is then only the depth key and is never shown, and no stored run
+   *  inputs apply to it. */
+  unknownRun: boolean
   free: number
   ad: number
   bonusDelivery: number
@@ -36,11 +40,12 @@ export interface RunSupply {
 
 export interface TokenSupplyInput {
   lifecycle: LegendaryEventLifecycle
+  /** The event's resolved runs (`resolveLegendaryEventRuns`), not the synced run alone. */
+  resolution: LegendaryEventRunResolution
   /** The account's synced entry for the event; `undefined` when it has none. */
   progress:
     | Pick<
         LegendaryEventProgress,
-        | "currentEventRun"
         | "currentEventTokens"
         | "hasUsedAdForExtraTokenToday"
         | "extraCurrencyPerPayout"
@@ -64,11 +69,13 @@ function supply(
   state: RunSupplyState,
   free: number,
   ad: number,
-  bonusDelivery: number
+  bonusDelivery: number,
+  unknownRun = false
 ): RunSupply {
   return {
     run,
     state,
+    unknownRun,
     free,
     ad,
     bonusDelivery,
@@ -112,13 +119,13 @@ function currentRunSupply(
 }
 
 /**
- * Tokens each run 1–3 still supplies (spec: token supply per run); null for an archived event.
- * Active: runs before the synced run are Done, the synced run is Now, later runs are Planned.
- * Upcoming: runs up to the synced `currentEventRun` are Done and the rest Planned, the first of
- * them labelled Next.
+ * Tokens each run 1–3 still supplies (spec: token supply per run) from the resolved runs; null for
+ * an archived event or once every run has ended. Active: runs before the run in progress are Done,
+ * it is Now and later runs are Planned. Upcoming: the ended runs are Done and the rest Planned, the
+ * first of them labelled Next. Unknown run: one Next run of the Planned count, without run inputs.
  */
 export function runTokenSupply(input: TokenSupplyInput): RunSupply[] | null {
-  const { lifecycle, progress, runs, showPaidOptions } = input
+  const { lifecycle, resolution, runs, showPaidOptions } = input
   if (lifecycle.state === "archived") return null
 
   const planned = (run: LegendaryEventRun, state: RunSupplyState) =>
@@ -130,8 +137,14 @@ export function runTokenSupply(input: TokenSupplyInput): RunSupply[] | null {
       premiumPlanned(runs, run, showPaidOptions) ? BONUS_DELIVERY_TOKENS : 0
     )
 
+  if (resolution.kind === "unknown") {
+    return [
+      supply(1, "next", FULL_RUN_FREE_TOKENS, FULL_RUN_AD_TOKENS, 0, true),
+    ]
+  }
+
   if (lifecycle.state === "active") {
-    const current = currentLegendaryEventRun(progress)
+    const current = resolution.currentRun ?? 1
     return RUNS.map((run) =>
       run < current
         ? supply(run, "done", 0, 0, 0)
@@ -141,13 +154,11 @@ export function runTokenSupply(input: TokenSupplyInput): RunSupply[] | null {
     )
   }
 
-  const lastEnded =
-    progress && typeof progress.currentEventRun === "number"
-      ? currentLegendaryEventRun(progress)
-      : 0
+  const { endedRuns, nextRun } = resolution
+  if (nextRun === null) return null
   return RUNS.map((run) =>
-    run <= lastEnded
+    run <= endedRuns
       ? supply(run, "done", 0, 0, 0)
-      : planned(run, run === lastEnded + 1 ? "next" : "planned")
+      : planned(run, run === nextRun ? "next" : "planned")
   )
 }

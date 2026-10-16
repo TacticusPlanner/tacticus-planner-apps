@@ -6,13 +6,14 @@ import type {
 export interface LaneBattlePoints {
   /** 0-based battle index, in `battleIds` order. */
   index: number
-  /** `battlesPoints[i]`: awarded up to once as kill score and once as high score. */
+  /** `battlesPoints[i]`: the cap of each of the battle's two awards, the kill score (synced
+   *  `encounterPoints`) and the high score (synced `highScore`). */
   battlePoints: number
   /** `defeatAll[i]`: the defeat-all objective's score. */
   defeatAllPoints: number
   /** The five objective scores, in catalog `index` order. */
   objectiveScores: number[]
-  /** Kill score + high score + defeat-all + Σ objective scores. */
+  /** `battlePoints` (kill score) + `battlePoints` (high score) + defeat-all + Σ objective scores. */
   maxPoints: number
 }
 
@@ -26,7 +27,10 @@ export interface LanePointsModel {
 
 /**
  * The canonical points model of a lane (spec: canonical lane points model). Every lane, event, hub
- * and Home total derives from this one model.
+ * and Home total derives from this one model. Earned points (`buildSyncedLaneProgress`), reachable
+ * points and the token plan apply the same rule: a battle earns its kill score and its high score
+ * (each up to `battlePoints`), plus defeat-all and each objective once cleared, so a fully cleared
+ * battle at full scores earns exactly its `maxPoints`.
  */
 export function buildLanePointsModel(
   lane: Pick<

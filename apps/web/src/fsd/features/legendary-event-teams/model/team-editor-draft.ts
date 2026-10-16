@@ -1,4 +1,5 @@
 import {
+  MIN_TEAM_MEMBERS,
   derivedTeamCoverage,
   reconcileCoverage,
   teamDepthForRun,
@@ -42,26 +43,34 @@ export function checkedObjectives(draft: TeamEditorDraft): number[] {
   return draft.derived.filter((index) => !draft.excluded.includes(index))
 }
 
+/** An empty new-team draft: no members or reserve, the name unset (the derived default shows)
+ *  and no depth. Save and add another resets to it for the next team (design D3). */
+export function emptyEditorDraft(): TeamEditorDraft {
+  return {
+    name: null,
+    memberUnitIds: [],
+    reserveUnitId: null,
+    derived: [],
+    excluded: [],
+    depth: null,
+  }
+}
+
 /** A new team's draft (empty, or from a suggestion's members in order with everything they derive
  *  ticked), or a saved team's: the opt-outs are recovered as the objectives the stored members
- *  derive but the team does not store. */
+ *  derive but the team does not store. A saved team's name field starts from `displayName` (the
+ *  readable name of a team stored under its lane id, spec: editing offers the readable name), else
+ *  its stored name. */
 export function initialEditorDraft(
   team: LegendaryEventTeam | undefined,
   run: LegendaryEventRun,
   context: CoverageContext,
-  initialMemberUnitIds: readonly string[] = []
+  initialMemberUnitIds: readonly string[] = [],
+  displayName?: string
 ): TeamEditorDraft {
   if (!team) {
-    const empty: TeamEditorDraft = {
-      name: null,
-      memberUnitIds: [],
-      reserveUnitId: null,
-      derived: [],
-      excluded: [],
-      depth: null,
-    }
     return withMembers(
-      empty,
+      emptyEditorDraft(),
       initialMemberUnitIds.slice(0, MAX_TEAM_MEMBERS),
       context
     )
@@ -72,7 +81,7 @@ export function initialEditorDraft(
     context.units
   )
   return {
-    name: team.name,
+    name: displayName ?? team.name,
     memberUnitIds: [...team.memberUnitIds],
     reserveUnitId: team.reserveUnitId,
     derived,
@@ -188,10 +197,16 @@ export function effectiveTeamName(
   return (draft.name ?? "").trim() || defaultName
 }
 
-/** Save needs at least one member and a 1–60 character name. */
+/** Whether the draft has too few members to be a team (spec: a team needs at least three
+ *  characters); the reserve does not count. */
+export function draftNeedsMembers(draft: TeamEditorDraft): boolean {
+  return draft.memberUnitIds.length < MIN_TEAM_MEMBERS
+}
+
+/** Save needs at least three members (the reserve aside) and a 1–60 character name. */
 export function canSaveDraft(draft: TeamEditorDraft, name: string): boolean {
   return (
-    draft.memberUnitIds.length > 0 &&
+    !draftNeedsMembers(draft) &&
     name.length > 0 &&
     name.length <= TEAM_NAME_MAX_LENGTH
   )

@@ -13,7 +13,6 @@ export interface HomeScreenEventEntry {
 /** The fields the rows read from a catalog Legendary Event. */
 export interface LegendaryEventEntry {
   id: string
-  finished: boolean
   eventStageStartDatesUtc: readonly string[]
 }
 

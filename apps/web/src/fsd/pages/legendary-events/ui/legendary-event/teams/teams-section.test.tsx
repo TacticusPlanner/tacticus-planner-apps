@@ -4,6 +4,7 @@ import type { i18n as I18n } from "i18next"
 import { beforeAll, describe, expect, it, vi } from "vitest"
 
 import type {
+  LegendaryEvent,
   LegendaryEventPlan,
   LegendaryEventRosterUnit,
   LegendaryEventTeam,
@@ -14,10 +15,12 @@ import {
   teamUnits,
 } from "@/test/fixtures/legendary-event-teams"
 import { createTestI18n, i18nWrapper } from "@/test/i18n"
-import { render, screen, within } from "@/test/render"
+import { render, screen, waitFor, within } from "@/test/render"
 
 import type { ClearEstimatesViewModel } from "../legendary-event-page.view-model"
 
+import { TeamEditorHost } from "./team-editor-host"
+import { useTeamEditorLauncher } from "./team-editor-launcher"
 import { TeamsSection, type TeamsViewModel } from "./teams-section"
 import type { TeamsSectionState } from "./teams.view-model"
 
@@ -49,7 +52,7 @@ const team = (
   laneId,
   name,
   sortOrder,
-  memberUnitIds: [teamUnits.a.id],
+  memberUnitIds: [teamUnits.a.id, teamUnits.b.id, teamUnits.c.id],
   reserveUnitId: null,
   objectiveIndexes: [0],
   runDepths: [],
@@ -91,10 +94,9 @@ const estimator = {
   inputs: {
     battlePowers: [1000, 4000, 30000],
     roster: new Map(
-      [teamUnits.a.id, teamUnits.b.id, teamUnits.r.id].map((unitId) => [
-        unitId,
-        rosterUnit(unitId),
-      ])
+      [teamUnits.a.id, teamUnits.b.id, teamUnits.c.id, teamUnits.r.id].map(
+        (unitId) => [unitId, rosterUnit(unitId)]
+      )
     ),
     config: { powerRatio: 0.5, calibrated: true, hordeMultipliers: new Map() },
   },
@@ -104,6 +106,42 @@ const readyEstimates: ClearEstimatesViewModel = {
   byLane: { alpha: estimator, beta: estimator, gamma: estimator },
 }
 
+const lanes = {
+  alpha: teamLane,
+  beta: teamLane,
+  gamma: teamLane,
+} as unknown as Pick<LegendaryEvent, "alpha" | "beta" | "gamma">
+
+/** The Teams section with the page's single editor beside it (design D4). */
+function SectionWithEditor({
+  teams,
+  laneId,
+  isMobile,
+}: {
+  teams: TeamsViewModel
+  laneId: "alpha" | "beta" | "gamma"
+  isMobile: boolean
+}) {
+  const launcher = useTeamEditorLauncher()
+  return (
+    <>
+      <TeamsSection
+        editor={launcher}
+        isMobile={isMobile}
+        lane={teamLane}
+        laneId={laneId}
+        teams={teams}
+      />
+      <TeamEditorHost
+        event={lanes}
+        launcher={launcher}
+        onlyUnlocked={false}
+        teams={teams}
+      />
+    </>
+  )
+}
+
 function renderSection(
   state: TeamsSectionState,
   {
@@ -111,7 +149,9 @@ function renderSection(
     laneId = "alpha",
     estimates = { kind: "hidden" },
     lastRunClears,
+    run = 1,
   }: {
+    run?: TeamsViewModel["run"]
     isMobile?: boolean
     laneId?: "alpha" | "beta" | "gamma"
     estimates?: ClearEstimatesViewModel
@@ -129,7 +169,7 @@ function renderSection(
   const teams: TeamsViewModel = {
     eventId: "astarLysander",
     state,
-    run: 1,
+    run,
     actions,
     estimates,
     progressByLane: undefined,
@@ -145,17 +185,19 @@ function renderSection(
       }),
     },
   }
-  render(
-    <TeamsSection
-      isMobile={isMobile}
-      lane={teamLane}
-      laneId={laneId}
-      onlyUnlocked={false}
-      teams={teams}
-    />,
+  const view = render(
+    <SectionWithEditor isMobile={isMobile} laneId={laneId} teams={teams} />,
     { wrapper: i18nWrapper(i18n) }
   )
-  return actions
+  const rerender = (next: TeamsSectionState) =>
+    view.rerender(
+      <SectionWithEditor
+        isMobile={isMobile}
+        laneId={laneId}
+        teams={{ ...teams, state: next }}
+      />
+    )
+  return Object.assign(actions, { rerender })
 }
 
 const ready = (value = plan): TeamsSectionState => ({
@@ -270,7 +312,8 @@ describe("TeamsSection", () => {
     expect(actions.deleteTeam).not.toHaveBeenCalled()
     await user.click(screen.getByTestId("confirmation-dialog-confirm"))
     expect(actions.deleteTeam).toHaveBeenCalledWith(
-      expect.objectContaining({ id: "melee" })
+      expect.objectContaining({ id: "melee" }),
+      "Melee"
     )
   })
 
@@ -281,6 +324,52 @@ describe("TeamsSection", () => {
       .setup()
       .click(screen.getByTestId("legendary-event-add-team"))
     expect(await screen.findByTestId("team-editor")).toBeInTheDocument()
+  })
+
+  it("returns focus to Add team after the editor closes", async () => {
+    renderSection(ready())
+    const user = userEvent.setup()
+    const addTeam = screen.getByTestId("legendary-event-add-team")
+    await user.click(addTeam)
+    const editor = await screen.findByTestId("team-editor")
+    await user.click(within(editor).getByRole("button", { name: "Cancel" }))
+    expect(screen.queryByTestId("team-editor")).toBeNull()
+    await waitFor(() => expect(addTeam).toHaveFocus())
+  })
+
+  it("keeps the editor open after Save and add another and lists the new team behind it", async () => {
+    const actions = renderSection(ready())
+    const user = userEvent.setup()
+    await user.click(screen.getByTestId("legendary-event-add-team"))
+    const editor = await screen.findByTestId("team-editor")
+    for (const unitId of [teamUnits.a.id, teamUnits.b.id, teamUnits.c.id]) {
+      const tile = within(editor)
+        .getAllByTestId("team-picker-tile")
+        .find((element) => element.dataset.unit === unitId)!
+      await user.click(within(tile).getByTestId("team-picker-toggle"))
+    }
+    await user.click(within(editor).getByTestId("team-editor-save-another"))
+    expect(actions.createTeam).toHaveBeenCalledWith(
+      "alpha",
+      expect.objectContaining({
+        memberUnitIds: [teamUnits.a.id, teamUnits.b.id, teamUnits.c.id],
+      }),
+      expect.anything(),
+      undefined
+    )
+    actions.rerender(
+      ready({
+        ...plan,
+        teams: [...plan.teams, team("new", "Melee · Min 5 hits", "alpha", 2)],
+      })
+    )
+    expect(screen.getByTestId("team-editor")).toBeInTheDocument()
+    expect(
+      within(screen.getByTestId("team-editor")).queryAllByTestId(
+        "team-picker-selected-unit"
+      )
+    ).toHaveLength(0)
+    expect(cardNames()).toEqual(["Melee", "Flyers", "Melee · Min 5 hits"])
   })
 
   it("disables Suggest teams with the reason when estimates are unavailable", () => {
@@ -332,5 +421,137 @@ describe("TeamsSection", () => {
       expect.anything(),
       { source: "suggestion", suggestionRank: 1 }
     )
+  })
+
+  it("keeps an incomplete team listed and lets Edit complete it, restoring its depth", async () => {
+    const user = userEvent.setup()
+    // Two members with a stored depth of 5 for run 2 (Uthar's imported team, synthetic units).
+    const short: LegendaryEventTeam = {
+      ...team("short", "Short", "alpha", 1),
+      memberUnitIds: [teamUnits.a.id, teamUnits.b.id],
+      runDepths: [
+        {
+          run: 2,
+          expectedBattleClears: 5,
+          expectedBattleClearsSource: "manual",
+          recordedAt: "2026-10-01T00:00:00Z",
+        },
+      ],
+    }
+    const withShort = { ...plan, teams: [plan.teams[1]!, short] }
+    const actions = renderSection(ready(withShort), { run: 2 })
+    expect(cardNames()).toEqual(["Melee", "Short"])
+    const shortCard = () =>
+      screen.getAllByTestId("legendary-event-team-card")[1]!
+    expect(
+      within(shortCard()).getByTestId("team-card-incomplete")
+    ).toHaveTextContent("Needs at least 3 characters")
+    expect(within(shortCard()).queryByTestId("team-card-depth")).toBeNull()
+
+    await user.click(within(shortCard()).getByTestId("team-card-menu"))
+    await user.click(await screen.findByTestId("team-card-edit"))
+    const editor = await screen.findByTestId("team-editor")
+    expect(
+      within(editor)
+        .getAllByTestId("team-picker-selected-unit")
+        .map((element) => element.dataset.unit)
+    ).toEqual([teamUnits.a.id, teamUnits.b.id])
+    expect(within(editor).getByTestId("team-editor-save")).toBeDisabled()
+
+    const tile = within(editor)
+      .getAllByTestId("team-picker-tile")
+      .find((element) => element.dataset.unit === teamUnits.c.id)!
+    await user.click(within(tile).getByTestId("team-picker-toggle"))
+    expect(within(editor).getByTestId("team-editor-save")).toBeEnabled()
+    actions.updateTeam.mockResolvedValue("saved")
+    await user.click(within(editor).getByTestId("team-editor-save"))
+    expect(actions.updateTeam).toHaveBeenCalledWith(
+      short,
+      expect.objectContaining({
+        memberUnitIds: [teamUnits.a.id, teamUnits.b.id, teamUnits.c.id],
+        expectedBattleClears: 5,
+      }),
+      expect.anything()
+    )
+
+    actions.rerender(
+      ready({
+        ...withShort,
+        teams: [
+          plan.teams[1]!,
+          {
+            ...short,
+            memberUnitIds: [teamUnits.a.id, teamUnits.b.id, teamUnits.c.id],
+          },
+        ],
+      })
+    )
+    expect(within(shortCard()).queryByTestId("team-card-incomplete")).toBeNull()
+    expect(
+      within(within(shortCard()).getByTestId("team-card-depth")).getByTestId(
+        "number-stepper-input"
+      )
+    ).toHaveValue(5)
+  })
+
+  describe("teams stored under their lane id", () => {
+    const imported: LegendaryEventTeam = {
+      ...team("imported", "alpha", "alpha", 0),
+      objectiveIndexes: [0, 1],
+    }
+    const bare: LegendaryEventTeam = {
+      ...team("bare", "Alpha", "alpha", 1),
+      objectiveIndexes: [],
+    }
+    const importedPlan = { ...plan, teams: [imported, bare] }
+
+    it("shows them by their covered objectives or Team N, and sends no write", () => {
+      const actions = renderSection(ready(importedPlan))
+      expect(cardNames()).toEqual(["Melee · Min 5 hits", "Team 2"])
+      expect(screen.getAllByTestId("team-card-name")[0]).toHaveAttribute(
+        "title",
+        "Melee · Min 5 hits"
+      )
+      for (const action of [
+        actions.createTeam,
+        actions.updateTeam,
+        actions.deleteTeam,
+        actions.reorderLane,
+        actions.setDepth,
+        actions.restoreEstimate,
+      ]) {
+        expect(action).not.toHaveBeenCalled()
+      }
+    })
+
+    it("prefills the readable name in the editor and saves it when the field is untouched", async () => {
+      const user = userEvent.setup()
+      const actions = renderSection(ready(importedPlan))
+      await user.click(screen.getAllByTestId("team-card-menu")[0]!)
+      await user.click(await screen.findByTestId("team-card-edit"))
+      const editor = await screen.findByTestId("team-editor")
+      expect(within(editor).getByTestId("team-editor-name")).toHaveValue(
+        "Melee · Min 5 hits"
+      )
+      actions.updateTeam.mockResolvedValue("saved")
+      await user.click(within(editor).getByTestId("team-editor-save"))
+      expect(actions.updateTeam).toHaveBeenCalledWith(
+        imported,
+        expect.objectContaining({ name: "Melee · Min 5 hits" }),
+        expect.anything()
+      )
+    })
+
+    it("names the readable name when confirming a delete", async () => {
+      const user = userEvent.setup()
+      const actions = renderSection(ready(importedPlan))
+      await user.click(screen.getAllByTestId("team-card-menu")[1]!)
+      await user.click(await screen.findByTestId("team-card-delete"))
+      expect(screen.getByTestId("confirmation-dialog")).toHaveTextContent(
+        "Team 2"
+      )
+      await user.click(screen.getByTestId("confirmation-dialog-confirm"))
+      expect(actions.deleteTeam).toHaveBeenCalledWith(bare, "Team 2")
+    })
   })
 })

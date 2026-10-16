@@ -147,13 +147,14 @@ export function useLegendaryEventPlan({
       },
     })
 
-  const deleteTeam = (team: LegendaryEventTeam) =>
+  /** `name` is the team's display name for the toast; the stored name by default. */
+  const deleteTeam = (team: LegendaryEventTeam, name = team.name) =>
     enqueue({
       patch: (plan) => withoutTeam(plan, team.id),
       send: (base) => deleteLegendaryEventTeam(eventId, team.id, base.revision),
       onSaved: () => {
         teamAnalytics("legendary_event_team_deleted", team.laneId, team)
-        toast.success(t("teams.toasts.deleted", { name: team.name }))
+        toast.success(t("teams.toasts.deleted", { name }))
       },
     })
 

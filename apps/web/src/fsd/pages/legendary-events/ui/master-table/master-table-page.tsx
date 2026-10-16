@@ -8,6 +8,7 @@ import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 import {
   buildMasterTable,
   filterMasterTableRows,
+  isCompleteTeam,
   orderLegendaryEventsForHub,
   sortMasterTable,
   useClearEstimateConfig,
@@ -101,7 +102,8 @@ export function MasterTablePage() {
   const query = parseMasterTableQuery(searchParams)
   const hasTeams = (eventIds: readonly string[]) =>
     (planData ?? []).some(
-      (plan) => eventIds.includes(plan.eventId) && plan.teams.length > 0
+      (plan) =>
+        eventIds.includes(plan.eventId) && plan.teams.some(isCompleteTeam)
     )
   // The selection does not depend on Estimated, so it is resolved first to know which events'
   // battles Estimated needs.
@@ -139,6 +141,7 @@ export function MasterTablePage() {
   const unitsData = units.status === "ready" ? units.data : undefined
   const progressData = progress.status === "ready" ? progress.data : undefined
   const battlesData = battles.status === "ready" ? battles.data : undefined
+  const nowMs = events.nowMs
   const estimateConfig = config.status === "ready" ? config.config : undefined
   const table = useMemo(
     () =>
@@ -149,6 +152,7 @@ export function MasterTablePage() {
               plans: planData,
               progress: progressData,
               battles: battlesData,
+              nowMs,
             }),
             units: unitsData,
             roster: rosterData,
@@ -163,6 +167,7 @@ export function MasterTablePage() {
       planData,
       progressData,
       battlesData,
+      nowMs,
       rosterData,
       estimateConfig,
       state.unitSet,

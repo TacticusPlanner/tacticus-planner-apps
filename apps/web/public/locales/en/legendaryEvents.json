@@ -29,7 +29,7 @@
     "title": "Run status",
     "tokensNext": "{{tokens}}, next in {{when}}",
     "tokensDue": "{{tokens}}, next token ready",
-    "currency": "{{value}} currency",
+    "currency": "{{value}} currency in hand",
     "chests": "{{value}} chests claimed",
     "shards": "{{value}} shards",
     "milestone": "{{points}} points to milestone {{milestone}} (+{{currency}} currency)",
@@ -108,7 +108,7 @@
   },
   "laneSummary": {
     "title": "Lane summary",
-    "battles": "{{cleared}} / {{total}} battles",
+    "battles": "{{cleared}} / {{total}} battles fully cleared",
     "open": "Open the {{lane}} progress grid",
     "noLane": "No progress in this lane",
     "unavailable": "Synced data unavailable",
@@ -181,7 +181,7 @@
     "unavailable": "Synced data unavailable",
     "howPoints": {
       "title": "How points work",
-      "body": "Each battle's earned points are its high score plus the score of every objective you cleared in it, including the defeat-all bonus. A battle's maximum adds its kill score, its high score, the defeat-all bonus and every objective's score; the lane maximum adds every battle."
+      "body": "Each battle's earned points are its kill score plus its high score, plus the defeat-all bonus and the score of every objective you cleared in it. A battle's maximum adds its full kill score, its full high score, the defeat-all bonus and every objective's score; the lane maximum adds every battle."
     }
   },
   "annotations": {
@@ -215,6 +215,7 @@
     "loadError": "Your teams could not be loaded.",
     "retry": "Retry",
     "partialBadge": "{{members}}/{{max}}",
+    "incomplete": "Needs at least {{min}} characters",
     "reserve": "Reserve",
     "members": "Members",
     "pointsPerBattle": "{{points}} points per battle",
@@ -247,12 +248,22 @@
       "noMembers": "Pick units to see the objectives they cover together.",
       "depth": "Clear depth for run {{run}}",
       "save": "Save team",
+      "needsMembers": "A team needs at least {{min}} characters",
       "saving": "Saving…",
       "notSaved": "Your plan was reloaded, so this team was not saved. Check it and save again.",
-      "cancel": "Cancel"
+      "cancel": "Cancel",
+      "saveAndAddAnother": "Save and add another",
+      "footer": {
+        "summary": "Team summary",
+        "noCoverage": "No objective covered",
+        "depth": "Clear depth {{depth}}",
+        "depthEstimated": "Clear depth ~{{depth}} · estimated",
+        "depthUnset": "Clear depth not set"
+      }
     },
     "picker": {
       "count": "{{members}}/5",
+      "countBelowMinimum": "{{members}}/5 · at least {{min}}",
       "search": "Search units",
       "searchPlaceholder": "Search by name",
       "onlyUnlocked": "Only unlocked",
@@ -263,7 +274,11 @@
       "setReserve": "Set {{name}} as reserve",
       "unsetReserve": "Remove {{name}} as reserve",
       "full": "A team has at most five members. Remove one to add another.",
-      "points": "{{points}} pts"
+      "points": "{{points}} pts",
+      "objectives": "Rank by objective",
+      "objectiveChip_one": "{{objective}}: {{count}} unit satisfies it",
+      "objectiveChip_other": "{{objective}}: {{count}} units satisfy it",
+      "doesNotSatisfy": "Does not satisfy {{objectives}}"
     },
     "toasts": {
       "reloaded": "Your plan changed on another device and was reloaded. Try again.",
@@ -317,7 +332,7 @@
         },
         "runStatus": {
           "title": "Run status",
-          "content": "Your run, tokens, points, currency, chests and shards from your last sync, plus the next points milestone."
+          "content": "Your run, tokens, points, currency in hand, chests and shards from your last sync, plus the next points milestone."
         },
         "runInputs": {
           "title": "Run inputs",
@@ -353,7 +368,7 @@
         },
         "leaderboard": {
           "title": "Lane leaderboard",
-          "content": "Every unit this lane allows, whether you own it, which objectives it meets and the points it can still score here. Turn on Goals Preview to see units as if your active goals were reached, and use a row's menu to create a goal."
+          "content": "Every unit this lane allows, whether you own it, which objectives it meets and the points it can still score here. Turn on Goals Preview to see units as if your active goals were reached, and use a row's menu for Create goal or Add to new team."
         },
         "lastRun": {
           "title": "Last run",
@@ -438,7 +453,9 @@
   "leaderboardActions": {
     "header": "Actions",
     "menu": "Actions for {{name}}",
-    "createGoal": "Create goal"
+    "createGoal": "Create goal",
+    "addToTeam": "Add to new team",
+    "addToTeamOnLane": "Add to new team on {{lane}}"
   },
   "upgradeImpact": {
     "title": "Upgrade impact",
@@ -487,6 +504,7 @@
         "mostPointsPlayableNow": "Most points among battles you can play now"
       },
       "upcoming": "{{reason}} for when run {{run}} starts",
+      "upcomingUnknown": "{{reason}} for when the next run starts",
       "maybe": "Maybe clear",
       "members": "Members",
       "objectives": "Clears",
@@ -521,7 +539,10 @@
       "title": "Run forecast",
       "header": "By the end of run {{run}}: {{points}} points · {{step}} {{shards}} shards short",
       "headerAllSteps": "By the end of run {{run}}: {{points}} points · every reward step reached",
+      "headerUnknown": "By the end of the next run: {{points}} points · {{step}} {{shards}} shards short",
+      "headerAllStepsUnknown": "By the end of the next run: {{points}} points · every reward step reached",
       "run": "Run {{run}}",
+      "nextRun": "Next run",
       "states": {
         "done": "Done",
         "now": "Now",

@@ -89,6 +89,7 @@ export function LeaderboardSection({
             laneId={laneId}
             nameOf={nameOf}
             objectives={objectives}
+            onAddToTeam={leaderboard.onAddToTeam}
             rows={result.rows}
           />
         ) : (
@@ -99,6 +100,7 @@ export function LeaderboardSection({
             laneId={laneId}
             nameOf={nameOf}
             objectives={objectives}
+            onAddToTeam={leaderboard.onAddToTeam}
             rows={result.rows}
           />
         )

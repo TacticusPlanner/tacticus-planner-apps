@@ -89,8 +89,10 @@ export const lreViewSchema = z.looseObject({
   // The event's unit snowprint id (e.g. "emperLucius") — the stable string id of the LRE.
   id: z.string(),
   name: z.string(),
-  finished: z.boolean(),
-  // Per-event-stage start dates in ISO 8601 UTC; the client derives the current stage from this array.
+  // The announced run starts in ISO 8601 UTC, indexed by run: element 0 starts run 1, element 1
+  // run 2, element 2 run 3 (0 to 3 entries, no gaps). The client derives the current, ended and
+  // next runs, and whether the event is finished, from this array and the clock; the server sends
+  // no run number or finished flag.
   eventStageStartDatesUtc: z.array(z.string()),
   battlesCount: z.number(),
   constraintsCount: z.number(),

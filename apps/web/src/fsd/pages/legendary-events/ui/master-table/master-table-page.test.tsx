@@ -39,13 +39,18 @@ const UNIT_IDS = [
   "ultraCalgar",
   "bloodMephiston",
   "tauFarsight",
+  "bloodDeathCompany",
+  "bloodTerminator",
 ] as const
 const characters = UNIT_IDS.map((id) => fixtureCharacter(id))
 const dante = {
   ...lysanderEvent,
   id: "bloodDante",
-  finished: true,
-  eventStageStartDatesUtc: ["2026-01-04T00:00:00Z"],
+  eventStageStartDatesUtc: [
+    "2025-05-04T00:00:00Z",
+    "2025-09-07T00:00:00Z",
+    "2026-01-04T00:00:00Z",
+  ],
 }
 
 const data = vi.hoisted(() => ({
@@ -244,23 +249,23 @@ describe("MasterTablePage", () => {
     expect(data.capture).toHaveBeenCalledTimes(1)
   })
 
-  it("reproduces Dante across Lysander and Uthar in All mode: 11,142", async () => {
+  it("reproduces Dante across Lysander and Uthar in All mode: 6,534 + 5,004 = 11,538", async () => {
     renderPage("?events=astarLysander,votanUthar&points=all&units=all")
     await ready()
     const dante = await waitFor(() => rowOf("bloodDante"))
     expect(within(dante).getByTestId("master-table-total")).toHaveTextContent(
-      "11,142"
+      "11,538"
     )
     const cells = within(dante).getAllByTestId("master-table-cell-points")
     expect(cells.map((cell) => [cell.dataset.event, cell.textContent])).toEqual(
       [
-        ["votanUthar", "4,608"],
+        ["votanUthar", "5,004"],
         ["astarLysander", "6,534"],
       ]
     )
   })
 
-  it("deducts synced progress in Remaining: 10,382", async () => {
+  it("deducts synced progress in Remaining: 5,774 + 5,004 = 10,778", async () => {
     data.progress = [
       {
         id: "astarLysander",
@@ -275,7 +280,7 @@ describe("MasterTablePage", () => {
     await waitFor(() =>
       expect(
         within(rowOf("bloodDante")).getByTestId("master-table-total")
-      ).toHaveTextContent("10,382")
+      ).toHaveTextContent("10,778")
     )
   })
 
@@ -361,6 +366,27 @@ describe("MasterTablePage", () => {
     await waitFor(() => expect(rowIds()).toEqual(["bloodDante"]))
   })
 
+  it("marks the selected chips with the thick primary border, tint and checked state", async () => {
+    renderPage("?units=all&points=remaining")
+    await ready()
+    const onClasses = [
+      "data-[state=on]:border-2",
+      "data-[state=on]:border-primary",
+      "data-[state=on]:bg-primary/10",
+    ]
+    for (const id of ["unit-set-all", "points-remaining"]) {
+      const chip = screen.getByTestId(`master-table-${id}`)
+      expect(chip).toHaveAttribute("data-state", "on")
+      expect(chip).toHaveAttribute("aria-checked", "true")
+      expect(chip).toHaveClass(...onClasses)
+    }
+    for (const id of ["unit-set-unlocked", "points-all"]) {
+      const chip = screen.getByTestId(`master-table-${id}`)
+      expect(chip).toHaveAttribute("data-state", "off")
+      expect(chip).toHaveAttribute("aria-checked", "false")
+    }
+  })
+
   it("defaults to In teams when a selected plan has a team, counting team coverage", async () => {
     data.plans = {
       status: "ready",
@@ -377,7 +403,11 @@ describe("MasterTablePage", () => {
               laneId: "gamma",
               name: "Assault",
               sortOrder: 0,
-              memberUnitIds: ["bloodDante"],
+              memberUnitIds: [
+                "bloodDante",
+                "bloodDeathCompany",
+                "bloodTerminator",
+              ],
               reserveUnitId: null,
               objectiveIndexes: [2, 4],
               runDepths: [],
@@ -392,7 +422,13 @@ describe("MasterTablePage", () => {
       "data-state",
       "on"
     )
-    await waitFor(() => expect(rowIds()).toEqual(["bloodDante"]))
+    await waitFor(() =>
+      expect([...rowIds()].sort()).toEqual([
+        "bloodDante",
+        "bloodDeathCompany",
+        "bloodTerminator",
+      ])
+    )
     const [points, detail] = [
       within(rowOf("bloodDante")).getByTestId("master-table-cell-points"),
       within(rowOf("bloodDante")).getByTestId("master-table-cell-detail"),
@@ -400,6 +436,39 @@ describe("MasterTablePage", () => {
     expect(points).toHaveTextContent("3,078")
     expect(detail).toHaveTextContent("1")
     expect(detail).toHaveTextContent("Gamma")
+  })
+
+  it("stays on All when the selected plan's only team is incomplete", async () => {
+    data.plans = {
+      status: "ready",
+      data: [
+        {
+          eventId: "astarLysander",
+          revision: 1,
+          catalogVersion: "1",
+          notes: null,
+          showPaidOptions: false,
+          teams: [
+            {
+              id: "short",
+              laneId: "gamma",
+              name: "Short",
+              sortOrder: 0,
+              memberUnitIds: ["bloodDante", "bloodDeathCompany"],
+              reserveUnitId: null,
+              objectiveIndexes: [2, 4],
+              runDepths: [],
+            },
+          ],
+        },
+      ],
+    }
+    renderPage("?events=astarLysander&points=all")
+    await ready()
+    expect(screen.getByTestId("master-table-unit-set-all")).toHaveAttribute(
+      "data-state",
+      "on"
+    )
   })
 
   it("disables In teams with Teams unavailable when the plan list fails", async () => {
@@ -439,7 +508,7 @@ describe("MasterTablePage", () => {
     await waitFor(() =>
       expect(
         within(rowOf("bloodDante")).getByTestId("master-table-total")
-      ).toHaveTextContent("11,142")
+      ).toHaveTextContent("11,538")
     )
   })
 
@@ -496,7 +565,7 @@ describe("MasterTablePage", () => {
         .getAllByTestId("master-table-event-line")
         .map((line) => line.textContent)
     ).toEqual([
-      "Uthar · 4,608 · 3 objectives",
+      "Uthar · 5,004 · 3 objectives",
       "Lysander · 6,534 · 5 objectives",
     ])
     fireEvent.click(screen.getByTestId("master-table-controls"))

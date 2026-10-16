@@ -12,16 +12,16 @@ import { LaneSummary } from "./lane-summary"
 let i18n: I18n
 
 const complete = { objectivesCleared: [0, 1, 2, 3, 4, 5], highScore: 37 }
-// Alpha: the 7 progress-grid.test.tsx encounters (3,410) plus 6 more complete ones (444 each),
-// so 7 of 13 battles are fully cleared and 6,074 points are earned.
+// Alpha: progress-grid.test.tsx's battles 1–7 (2,091) plus 6 more complete ones (37 + 37 + 32 +
+// 375 = 481 each), so 7 of 13 battles are fully cleared and 4,977 points are earned.
 const alphaEncounters = [
   { objectivesCleared: [0, 2, 3], highScore: 31 },
-  { objectivesCleared: [0], highScore: 268 },
-  { objectivesCleared: [0, 1], highScore: 303 },
+  { objectivesCleared: [0], highScore: 28 },
+  { objectivesCleared: [0, 1], highScore: 33 },
   complete,
-  { objectivesCleared: [0, 1, 2], highScore: 318 },
-  { objectivesCleared: [0, 1, 2, 3], highScore: 418 },
-  { objectivesCleared: [0, 1, 2, 3, 5], highScore: 476 },
+  { objectivesCleared: [0, 1, 2], highScore: 44 },
+  { objectivesCleared: [0, 1, 2, 3], highScore: 48 },
+  { objectivesCleared: [0, 1, 2, 3, 5], highScore: 45 },
   ...Array.from({ length: 6 }, () => complete),
 ].map((encounter) => ({ ...encounter, encounterPoints: encounter.highScore }))
 const entry = {
@@ -61,18 +61,18 @@ describe("LaneSummary", () => {
     expect(screen.getAllByTestId("lane-summary-row")).toHaveLength(3)
     const alpha = row("alpha")
     expect(within(alpha).getByTestId("lane-summary-points")).toHaveTextContent(
-      "6,074 / 9,000"
+      "4,977 / 9,000"
     )
     expect(within(alpha).getByTestId("lane-summary-battles")).toHaveTextContent(
-      "7 / 18 battles"
+      "7 / 18 battles fully cleared"
     )
     const bar = within(alpha).getByTestId("lane-summary-bar")
     expect(bar.querySelector('[data-slot="progress-indicator"]')).toHaveStyle({
-      transform: `translateX(-${100 - (6074 / 9000) * 100}%)`,
+      transform: `translateX(-${100 - (4977 / 9000) * 100}%)`,
     })
     expect(
       within(row("beta")).getByTestId("lane-summary-battles")
-    ).toHaveTextContent("0 / 18 battles")
+    ).toHaveTextContent("0 / 18 battles fully cleared")
     expect(
       within(row("gamma")).getByTestId("lane-summary-points")
     ).toHaveTextContent(/^0 \//)

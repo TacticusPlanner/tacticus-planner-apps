@@ -20,11 +20,11 @@ Assumptions:
 
 - **GIVEN** events Lysander and Uthar are selected, points mode All, unit set All, and `bloodDante` (Imperial; traits Flying, Rapid Assault, no Resilient; melee Piercing 4 hits; active ability damage Melta; no ranged attack)
 - **AND** Lysander Alpha (kill points 32; Eviscerate 75, Suppressive Fire 95, Flying 80, Min 5 Hits 85, No Resilient 40), Lysander Beta (No Imperials), Lysander Gamma (kill points 31; No Bolter 40, Healer 100, Min 3 Hits 60, Plasma 95, Rapid Assault 80)
-- **AND** Uthar Alpha (kill points 34; Ultramarines 75, Resilient 95, Max 2 Hits 50, Melee 65, Piercing 90), Uthar Beta (No Imperials), Uthar Gamma (kill points 17; No Power 50, Bolter 85, Mechanical 100, Max 1 Hit 75, Big Target 65), 18 battles per lane
+- **AND** Uthar Alpha (kill points 30; Ultramarines 75, Resilient 95, Max 2 Hits 50, Melee 65, Piercing 90), Uthar Beta (No Imperials), Uthar Gamma (kill points 43; No Power 50, Bolter 85, Mechanical 100, Max 1 Hit 75, Big Target 65), 18 battles per lane
 - **WHEN** the table renders
 - **THEN** Lysander: Alpha 32 + 80 + 40 = 152 per battle × 18 = 2,736 (2 objectives); Beta 0; Gamma 31 + 40 + 60 + 80 = 211 × 18 = 3,798 (3 objectives); cell 6,534 points, 5 objectives
-- **AND** Uthar: Alpha 34 + 65 + 90 = 189 × 18 = 3,402 (2 objectives); Beta 0; Gamma 17 + 50 = 67 × 18 = 1,206 (1 objective); cell 4,608 points, 3 objectives
-- **AND** Dante's total is 6,534 + 4,608 = 11,142
+- **AND** Uthar: Alpha 30 + 65 + 90 = 185 × 18 = 3,330 (2 objectives); Beta 0; Gamma 43 + 50 = 93 × 18 = 1,674 (1 objective); cell 5,004 points, 3 objectives
+- **AND** Dante's total is 6,534 + 5,004 = 11,538
 
 #### Scenario: Sort by one event
 
@@ -49,14 +49,14 @@ Assumptions:
 
 - **GIVEN** the Dante example, Remaining mode, and synced Lysander Alpha battles 1–5 with every objective cleared and nothing cleared elsewhere
 - **WHEN** the table renders
-- **THEN** Lysander Alpha is 152 × 13 = 1,976, Lysander's cell is 1,976 + 3,798 = 5,774, Uthar's is 4,608, and the total is 10,382
+- **THEN** Lysander Alpha is 152 × 13 = 1,976, Lysander's cell is 1,976 + 3,798 = 5,774, Uthar's is 5,004, and the total is 10,778
 
 #### Scenario: Worked example, Estimated
 
 - **GIVEN** the same progress and Dante's Stage 5 estimates of 7 battles on Lysander Alpha, 4 on Lysander Gamma, 6 on Uthar Alpha and 9 on Uthar Gamma
 - **WHEN** Estimated is chosen
 - **THEN** Lysander Alpha counts battles 6–7 only, 152 × 2 = 304; Lysander Gamma 211 × 4 = 844; Lysander's cell is 1,148
-- **AND** Uthar Alpha is 189 × 6 = 1,134, Uthar Gamma 67 × 9 = 603, Uthar's cell 1,737, and the total 2,885
+- **AND** Uthar Alpha is 185 × 6 = 1,110, Uthar Gamma 93 × 9 = 837, Uthar's cell 1,947, and the total 3,095
 
 #### Scenario: Estimated for a locked unit
 

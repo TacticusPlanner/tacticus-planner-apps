@@ -2,15 +2,21 @@ import {
   LEGENDARY_EVENT_LANE_IDS,
   applicableAnnotations,
   buildLanePointsModel,
+  currentLegendaryEventRun,
+  isCompleteTeam,
   teamDepthForRun,
   teamEffectiveDepth,
+  unitNextAscensionStep,
   type ClearEstimate,
   type LegendaryEvent,
   type LegendaryEventLaneId,
   type LegendaryEventLifecycle,
   type LegendaryEventPlan,
   type LegendaryEventProgress,
+  type LegendaryEventRosterUnit,
   type LegendaryEventRun,
+  type LegendaryEventRunResolution,
+  type LegendaryEventTeam,
 } from "@/entities/legendary-event"
 
 import {
@@ -52,9 +58,15 @@ export interface TokenPlanViewInput {
     status: "pending" | "error" | "success"
     data: LegendaryEventPlan | undefined
   }
-  /** The run depths are read for (`currentLegendaryEventRun`). */
-  run: LegendaryEventRun
+  /** The event's resolved runs: the token supply's run states and the run depths are read for
+   *  (`currentLegendaryEventRun`). */
+  resolution: LegendaryEventRunResolution
+  /** The event unit's synced roster record (undefined when not owned): the forecast's steps start
+   *  from its next step, as the reward projection's do. */
+  eventUnit: Pick<LegendaryEventRosterUnit, "progressionIndex"> | undefined
   estimates: TokenPlanEstimates
+  /** The name a team is shown by (its display name); the stored name when absent. */
+  teamName?: (team: LegendaryEventTeam) => string
 }
 
 /** Why there is no next token (spec: Next token card), checked in this order. */
@@ -85,8 +97,9 @@ export interface TokenPlanReady {
   fullClear: LaneFullClear[]
   /** Null when the event's reward ladder is missing (a record cached before rewards were served). */
   forecast: Forecast | null
-  /** The run an upcoming event starts next; null when the event is active. */
-  upcomingRun: LegendaryEventRun | null
+  /** The run an upcoming event starts next (`run` null when the run is unknown); null when the
+   *  event is active. */
+  upcoming: { run: LegendaryEventRun | null } | null
   /** Tokens left over across runs while the plan is shorter than the supply, with the first lane
    *  that still has points left; null when every token has a battle to play. */
   leftover: { tokens: number; laneId: LegendaryEventLaneId | null } | null
@@ -106,15 +119,24 @@ export type TokenPlanView =
  * D4, D6, D8). Depths are the current run's stored depth, else the Stage 5 estimate.
  */
 export function buildTokenPlanView(input: TokenPlanViewInput): TokenPlanView {
-  const { event, lifecycle, progress, plan, run, estimates } = input
-  if (lifecycle.state === "archived" || !plan.enabled) return { kind: "hidden" }
+  const { event, lifecycle, progress, plan, resolution, estimates } = input
+  const run = currentLegendaryEventRun(resolution)
+  // A finished event (every run over, `isLegendaryEventFinished`) reads as archived: no token plan
+  // or forecast.
+  if (lifecycle.state === "archived" || !plan.enabled) {
+    return { kind: "hidden" }
+  }
   if (progress === "error") return { kind: "unavailable" }
   if (plan.status === "error") return { kind: "planError" }
   if (progress === "loading" || !plan.data || estimates.kind === "pending") {
     return { kind: "loading" }
   }
   const entry = progress
-  const teams = [...plan.data.teams].sort((a, b) => a.sortOrder - b.sortOrder)
+  // An incomplete team (fewer than three members) is never played: a lane holding only such
+  // teams reads as having no team.
+  const teams = plan.data.teams
+    .filter(isCompleteTeam)
+    .sort((a, b) => a.sortOrder - b.sortOrder)
 
   const lanes = LEGENDARY_EVENT_LANE_IDS.map((laneId): TokenPlanLane => {
     const synced = entry ? entry[laneId] : undefined
@@ -128,7 +150,7 @@ export function buildTokenPlanView(input: TokenPlanViewInput): TokenPlanView {
         .filter((team) => team.laneId === laneId)
         .map((team) => ({
           id: team.id,
-          name: team.name,
+          name: input.teamName?.(team) ?? team.name,
           objectiveIndexes: team.objectiveIndexes,
           depth: teamEffectiveDepth(
             teamDepthForRun(team, run)?.expectedBattleClears ?? null,
@@ -149,6 +171,7 @@ export function buildTokenPlanView(input: TokenPlanViewInput): TokenPlanView {
   })
   const supply = runTokenSupply({
     lifecycle,
+    resolution,
     progress: entry,
     progressObservedAtMs: input.progressObservedAtMs,
     nowMs: input.nowMs,
@@ -161,6 +184,7 @@ export function buildTokenPlanView(input: TokenPlanViewInput): TokenPlanView {
           rewards: event.rewards,
           progress: entry,
           supply,
+          fromStep: unitNextAscensionStep(input.eventUnit),
           tokens: tokenPlan.tokens,
           runs: plan.data.runs,
           showPaidOptions: plan.data.showPaidOptions,
@@ -187,10 +211,8 @@ export function buildTokenPlanView(input: TokenPlanViewInput): TokenPlanView {
       return figure ? [{ laneId: lane.laneId, figure }] : []
     }),
     forecast,
-    upcomingRun:
-      lifecycle.state === "upcoming"
-        ? (supply?.find((entry) => entry.state === "next")?.run ?? null)
-        : null,
+    upcoming:
+      lifecycle.state !== "upcoming" ? null : { run: resolution.nextRun },
     leftover:
       tokensLeftOver > 0
         ? { tokens: tokensLeftOver, laneId: firstLaneWithPoints }

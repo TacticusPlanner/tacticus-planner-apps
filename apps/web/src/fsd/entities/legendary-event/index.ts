@@ -23,6 +23,7 @@ export {
 export {
   LEGENDARY_EVENT_RUN_DURATION_MS,
   deriveLegendaryEventLifecycle,
+  isLegendaryEventFinished,
   orderLegendaryEventsForHub,
   type LegendaryEventHubEntry,
   type LegendaryEventHubGroups,
@@ -149,6 +150,7 @@ export {
   runInputValues,
 } from "./lib/run-inputs"
 export {
+  ASCENSION_STEP_PROGRESSION,
   ASCENSION_STEPS,
   BATTLE_POINTS_AVERAGE,
   BUNDLE_CURRENCY,
@@ -156,6 +158,7 @@ export {
   PREMIUM_BONUS_CURRENCY,
   nextAscensionStep,
   projectRewards,
+  unitNextAscensionStep,
   type AscensionGoal,
   type AscensionStep,
   type RewardProjection,
@@ -166,8 +169,18 @@ export {
   annotationCellKey,
 } from "./lib/applicable-annotations"
 export { currentLegendaryEventRun, teamDepthForRun } from "./lib/current-run"
+export {
+  legendaryEventHasProgress,
+  resolveLegendaryEventRuns,
+  resolveLegendaryEventRunsAt,
+  type LegendaryEventRunResolution,
+  type LegendaryEventRunResolutionInput,
+} from "./lib/run-resolution"
 export { derivedTeamCoverage, reconcileCoverage } from "./lib/team-coverage"
 export { teamPointsPerBattle } from "./lib/team-points"
+export { MIN_TEAM_MEMBERS, isCompleteTeam } from "./lib/team-size"
+export { type NamedTeam } from "./lib/team-display-name"
+export { useTeamDisplayName } from "./model/use-team-display-name"
 export {
   clearEstimateConfig,
   estimateClearDepth,

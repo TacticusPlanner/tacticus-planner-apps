@@ -55,6 +55,45 @@ describe("Legendary Events translations", () => {
   )
 
   it.each(translated)(
+    "translates the team editor workflow copy in %s",
+    (_locale, resource) => {
+      const pairs = [
+        [resource.teams.picker.objectives, en.teams.picker.objectives],
+        [resource.teams.picker.doesNotSatisfy, en.teams.picker.doesNotSatisfy],
+        [
+          resource.teams.editor.saveAndAddAnother,
+          en.teams.editor.saveAndAddAnother,
+        ],
+        [
+          resource.teams.editor.footer.depthEstimated,
+          en.teams.editor.footer.depthEstimated,
+        ],
+        [
+          resource.leaderboardActions.addToTeam,
+          en.leaderboardActions.addToTeam,
+        ],
+        [
+          resource.leaderboardActions.addToTeamOnLane,
+          en.leaderboardActions.addToTeamOnLane,
+        ],
+      ]
+      for (const [translatedText, english] of pairs) {
+        expect(translatedText).not.toBe(english)
+      }
+      // The lane leaderboard tour step names both menu items.
+      const content = resource.tour.event.steps.leaderboard.content
+      expect(content).toContain(resource.leaderboardActions.createGoal)
+      expect(content).toContain(resource.leaderboardActions.addToTeam)
+    }
+  )
+
+  it("names both menu items in the English tour step", () => {
+    const content = en.tour.event.steps.leaderboard.content
+    expect(content).toContain(en.leaderboardActions.createGoal)
+    expect(content).toContain(en.leaderboardActions.addToTeam)
+  })
+
+  it.each(translated)(
     "translates the token plan copy in %s",
     (_locale, resource) => {
       expect(resource.tokenPlan.nextToken.title).not.toBe(
@@ -145,4 +184,17 @@ describe("Legendary Events translations", () => {
       en.tour.event.steps.progressGrid.content
     )
   })
+
+  it.each(translated)(
+    "translates the team minimum copy in %s",
+    (_locale, resource) => {
+      expect(resource.teams.editor.needsMembers).not.toBe(
+        en.teams.editor.needsMembers
+      )
+      expect(resource.teams.incomplete).not.toBe(en.teams.incomplete)
+      expect(resource.teams.picker.countBelowMinimum).not.toBe(
+        en.teams.picker.countBelowMinimum
+      )
+    }
+  )
 })

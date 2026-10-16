@@ -153,6 +153,27 @@ describe("ImportResult — Legendary Event teams", () => {
     expect(bucket).not.toHaveTextContent("teams count")
   })
 
+  it("explains a team skipped as too small with the units that remained (Melee, 2 remained)", async () => {
+    render(
+      <ImportResult
+        result={result([
+          event({
+            teamsImported: 1,
+            issues: [{ code: "team_too_small", teamName: "Melee", value: "2" }],
+          }),
+        ])}
+      />
+    )
+
+    const bucket = screen.getByTestId("v1-import-le-bucket-imported")
+    expect(await within(bucket).findByText("Lysander")).toBeInTheDocument()
+    const issue = within(bucket).getByTestId("v1-import-le-issue")
+    expect(issue).toHaveTextContent(
+      "goals.v1Import.legendaryEvents.issues.team_too_small count=2 min=3"
+    )
+    expect(issue).toHaveTextContent("Melee")
+  })
+
   it("lists an event the catalog does not carry by its V1 number in the not-imported bucket", () => {
     render(
       <ImportResult

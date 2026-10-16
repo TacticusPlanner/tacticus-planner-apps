@@ -2,6 +2,7 @@ import type { Progression, Rank } from "@workspace/game-domain"
 
 import type {
   LegendaryEventPlan,
+  LegendaryEventRun,
   LegendaryEventTeam,
 } from "../model/plan.types"
 import {
@@ -20,7 +21,7 @@ import {
   type ClearEstimateConfig,
   type ClearEstimateRoster,
 } from "./clear-estimate"
-import { currentLegendaryEventRun, teamDepthForRun } from "./current-run"
+import { teamDepthForRun } from "./current-run"
 import { buildLanePointsModel } from "./lane-points-model"
 import { isUnitAllowedOnLane } from "./objective-match"
 import {
@@ -28,6 +29,7 @@ import {
   type LaneProgressView,
 } from "./synced-lane-progress"
 import { derivedTeamCoverage } from "./team-coverage"
+import { isCompleteTeam } from "./team-size"
 import {
   remainingLanePoints,
   unitLanePotential,
@@ -49,6 +51,9 @@ export interface MasterTableEventInput {
   plan?: Pick<LegendaryEventPlan, "teams">
   /** The synced entry; undefined when there is none or progress failed (nothing is cleared). */
   progress?: LegendaryEventProgress
+  /** The run team depths are read for (`currentLegendaryEventRun` of the event's resolved runs);
+   *  run 1 when absent. */
+  run?: LegendaryEventRun
   /** Each lane's battle powers (Estimated); a lane without them estimates nothing. */
   battlePowers?: Partial<Record<LegendaryEventLaneId, readonly number[] | null>>
 }
@@ -179,6 +184,12 @@ interface CellContext {
   rosterById: ClearEstimateRoster | undefined
 }
 
+/** The event's teams the table reads: an incomplete team (fewer than three members) puts no unit
+ *  in In teams and adds no estimate. */
+function completeTeams(entry: MasterTableEventInput): LegendaryEventTeam[] {
+  return (entry.plan?.teams ?? []).filter(isCompleteTeam)
+}
+
 function laneCell(
   context: CellContext,
   unit: LegendaryEventUnit,
@@ -188,7 +199,7 @@ function laneCell(
   const lane = entry.event[laneId]
   if (!isUnitAllowedOnLane(unit, lane)) return undefined
   const potential = unitLanePotential(unit, lane)
-  const teams = entry.plan?.teams ?? []
+  const teams = completeTeams(entry)
   const inTeams = input.unitSet === "inTeams"
   const { holding, asMember } = laneMemberships(teams, laneId, unit.id)
   if (inTeams && holding.length === 0) return { points: 0, depth: null }
@@ -241,7 +252,7 @@ function estimatedDepth(
   const powers = entry.battlePowers?.[laneId] ?? null
   const config = input.config
   if (input.unitSet === "inTeams") {
-    const run = currentLegendaryEventRun(entry.progress)
+    const run = entry.run ?? 1
     const depths = holding.flatMap((team) => {
       const estimate =
         powers && rosterById && config
@@ -280,7 +291,7 @@ function eventCell(
     ).objectivesCount
   }
   if (!allowed) return undefined
-  const teams = (entry.plan?.teams ?? []).filter(
+  const teams = completeTeams(entry).filter(
     (team) =>
       team.memberUnitIds.includes(unit.id) || team.reserveUnitId === unit.id
   )

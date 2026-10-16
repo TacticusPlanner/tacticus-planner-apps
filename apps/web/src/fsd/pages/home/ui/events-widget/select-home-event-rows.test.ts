@@ -7,9 +7,8 @@ const hse = (definitionId: string, startUtc: string, endUtc: string) => ({
   startUtc,
   endUtc,
 })
-const le = (id: string, start: string, finished = false) => ({
+const le = (id: string, start: string) => ({
   id,
-  finished,
   eventStageStartDatesUtc: [start],
 })
 

@@ -5,9 +5,7 @@ import { Button } from "@workspace/ui/components/button"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
-import { useCreateGoalLauncher } from "@/entities/goal"
 import {
-  currentLegendaryEventRun,
   type LegendaryEvent,
   type LegendaryEventLaneId,
   useClearEstimateConfig,
@@ -19,10 +17,6 @@ import {
   useLegendaryEventUnits,
 } from "@/entities/legendary-event"
 import { useAnnotations } from "@/features/legendary-event-annotations"
-import {
-  leaderboardRowPrefill,
-  prefillGoalType,
-} from "@/features/legendary-event-goals"
 import { useLegendaryEventPlan } from "@/features/legendary-event-teams"
 import { useTokenPlan } from "@/features/legendary-event-tokens"
 import { useAnalyticsActions } from "@/shared/analytics"
@@ -42,11 +36,17 @@ import {
 } from "./legendary-event-page.view-model"
 import { useLegendaryEventTutorial } from "./legendary-event.tutorial"
 import { useLastRun } from "./overview/use-last-run"
+import { useCreateGoalFromRow } from "./use-create-goal-from-row"
 import { useEventGoals } from "./use-event-goals"
-import { useUpgradeImpact } from "./use-upgrade-impact"
+import { useEventRuns } from "./use-event-runs"
+import { useImpactTeamName, useUpgradeImpact } from "./use-upgrade-impact"
 import { progressHeadingId } from "./progress/progress-heading"
 import { buildMarksByLane } from "./progress/progress-marks"
-import { buildTeamsSectionState } from "./teams/teams.view-model"
+import { useTeamEditorLauncher } from "./teams/team-editor-launcher"
+import {
+  buildTeamsSectionState,
+  pickerGoalsPreview,
+} from "./teams/teams.view-model"
 
 /** `/legendary-events/:eventId`: computes the page's view model once and renders the tab-strip
  *  page (design D3). An unknown id replaces the route with the hub. The content is keyed by the
@@ -84,20 +84,17 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
   const progressValue = readValue(progress)
   const clearEstimateConfig = useClearEstimateConfig()
   const battles = readValue(useLegendaryEventBattles(eventId))
-  // Depth writes target the synced run, or run 1 without a synced entry (design D8). The Teams
-  // section stays loading until the progress resolves, so nothing captures the default meanwhile.
-  const run = currentLegendaryEventRun(
-    typeof progressValue === "object" ? progressValue : undefined
-  )
-  const plan = useLegendaryEventPlan({ eventId, run })
-  const annotations = useAnnotations(eventId)
   const syncedEntry =
     typeof progressValue === "object" ? progressValue : undefined
+  const eventData = event.status === "ready" ? event.data : undefined
+  const runs = useEventRuns(event, syncedEntry, roster)
+  const plan = useLegendaryEventPlan({ eventId, run: runs.run })
+  const annotations = useAnnotations(eventId)
+  const teamEditor = useTeamEditorLauncher()
   const marksByLane = useMemo(
     () => buildMarksByLane(annotations.annotations, syncedEntry),
     [annotations.annotations, syncedEntry]
   )
-  const eventData = event.status === "ready" ? event.data : undefined
   const progressGrid = useMemo(
     () =>
       eventData
@@ -127,7 +124,6 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
 
   // Stage 6: goals. The preview feeds only the leaderboards' ownership, rarity, rank and Clears and
   // the picker; points, team cards, upgrade impact and suggestions stay on the synced roster.
-  const launchCreateGoal = useCreateGoalLauncher()
   const { captureEvent } = useAnalyticsActions()
   const [goalsPreview, setGoalsPreview] = useState(false)
   const syncedRoster = Array.isArray(roster) ? roster : undefined
@@ -183,25 +179,7 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
       surface,
     })
   }
-  const createGoalFromRow = (
-    unitId: string,
-    laneId: LegendaryEventLaneId | null
-  ) => {
-    const ownership = syncedRoster
-      ? syncedRoster.some((unit) => unit.unitId === unitId)
-        ? "owned"
-        : "locked"
-      : "unknown"
-    const prefill = leaderboardRowPrefill(unitId, ownership)
-    captureEvent({
-      type: "legendary_event_create_goal_opened",
-      eventId,
-      laneId,
-      source: "leaderboard",
-      goalType: prefillGoalType(prefill),
-    })
-    launchCreateGoal(prefill)
-  }
+  const createGoalFromRow = useCreateGoalFromRow(eventId, syncedRoster)
   // Run history (design D6–D9): the previous run's card and each team's last-run clear.
   const runHistory = useLastRun(eventId, event, plan, {
     progress: progressValue,
@@ -216,10 +194,11 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
     units: Array.isArray(units) ? units : undefined,
     progressPending: progressValue === "loading",
     clearEstimates,
-    run,
+    run: runs.run,
     progressGrid,
     initialRarityOf,
   })
+  const impactTeamName = useImpactTeamName(eventData, plan.query.data)
   const progressObservedAtMs =
     syncTimes.status === "ready" ? syncTimes.data.progressObservedAtMs : null
   const tokenPlan = useTokenPlan({
@@ -233,7 +212,8 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
       status: plan.query.status,
       data: plan.query.data,
     },
-    run,
+    resolution: runs.resolution,
+    eventUnit: runs.ownedEventUnit,
     estimates: clearEstimates,
   })
   const selectTab = useCallback((tab: LegendaryEventTab) => {
@@ -305,6 +285,15 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
     return <Navigate replace to="/legendary-events" />
   }
 
+  const teamsState = buildTeamsSectionState({
+    enabled: plan.enabled,
+    query: plan.query,
+    units,
+    retryUnits: unitsRead.retry,
+    roster,
+    runPending: progressValue === "loading",
+  })
+  const { openTeamEditor } = teamEditor
   const viewModel: LegendaryEventPageViewModel = {
     event: event.data,
     name: unitName("Character", event.data.id),
@@ -320,10 +309,12 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
     outlook: buildRewardOutlookViewModel({
       rewards: event.data.rewards as LegendaryEvent["rewards"] | undefined,
       progress: progressValue,
+      unit: runs.eventUnit,
+      resolution: runs.resolution,
       plan: plan.query,
       planEnabled: plan.enabled,
     }),
-    runInputs: { enabled: plan.enabled, currentRun: run },
+    runInputs: { enabled: plan.enabled, runs: runs.resolution },
     syncedAtMs:
       syncTimes.status === "ready" ? syncTimes.data.syncedAtMs : undefined,
     selectedTab,
@@ -338,6 +329,11 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
       selectedObjectives,
       onSelectedObjectivesChange: setSelectedObjectives,
       clears: previewOn && previewEstimates ? previewEstimates : clearEstimates,
+      onAddToTeam:
+        teamsState.kind === "ready"
+          ? (unitId, laneId) =>
+              openTeamEditor({ laneId, memberUnitIds: [unitId] })
+          : undefined,
       goals: {
         previewEnabled: goalsPreview,
         availability: previewAvailability,
@@ -372,15 +368,8 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
       onOpenTeams: openTeams,
     },
     teams: {
-      state: buildTeamsSectionState({
-        enabled: plan.enabled,
-        query: plan.query,
-        units,
-        retryUnits: unitsRead.retry,
-        roster,
-        runPending: progressValue === "loading",
-      }),
-      run,
+      state: teamsState,
+      run: runs.run,
       actions: plan,
       estimates: clearEstimates,
       eventId,
@@ -390,32 +379,23 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
       goals: {
         goalLines,
         goalUnitIds,
-        pickerPreview: (laneId) => {
-          const estimator =
-            previewEstimates?.kind === "ready"
-              ? previewEstimates.byLane[laneId]
-              : undefined
-          return {
+        pickerPreview: (laneId) =>
+          pickerGoalsPreview(laneId, {
             enabled: goalsPreview,
-            available: previewAvailability === "ready" && preview !== undefined,
-            roster: preview?.roster,
-            previewed: preview?.previewed ?? new Set(),
-            clearsOf: estimator
-              ? (unitId) => estimator.unit(unitId)?.depth ?? null
-              : undefined,
+            available: previewAvailability === "ready",
+            preview,
+            estimates: previewEstimates,
             onToggle: (enabled) => changeGoalsPreview(enabled, "picker"),
-          }
-        },
+          }),
       },
     },
+    teamEditor,
     lastRun: runHistory.lastRun,
     upgradeImpact: upgradeImpact
       ? {
           state: upgradeImpact,
           goalTargets: goalTargetsByUnit,
-          teamName: (teamId) =>
-            plan.query.data?.teams.find((team) => team.id === teamId)?.name ??
-            teamId,
+          teamName: impactTeamName,
         }
       : null,
   }

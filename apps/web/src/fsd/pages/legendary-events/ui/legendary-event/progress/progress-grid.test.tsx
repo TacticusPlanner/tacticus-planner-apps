@@ -22,28 +22,37 @@ import { ProgressSection } from "./progress-section"
 
 let i18n: I18n
 
-// `encounterPoints` mirrors the synced shape but is never read (earned points come from the high
-// score and the cleared scores).
+// The game reports `encounterPoints` (the kill score) equal to `highScore`; earned points are the
+// kill score plus the high score plus the cleared scores.
 const encounter = (objectivesCleared: number[], highScore: number) => ({
   objectivesCleared,
   highScore,
   encounterPoints: highScore,
 })
 
-// Alpha: seven synced battles summing to 3,410 points (defeat-all 32; Eviscerate 75, Suppressive
-// Fire 95, Flying 80, Min 5 hits 85, No Resilient 40); battle 1 partly cleared, battle 4 complete.
+// Alpha: synced battles 1–7 (defeat-all 32; Eviscerate 75, Suppressive Fire 95, Flying 80, Min 5
+// hits 85, No Resilient 40; battlesPoints 32, 28, 33, 37, 44, 48, 45); battle 1 partly cleared,
+// battle 4 complete.
 const alphaEncounters = [
-  encounter([0, 2, 3], 31), // 31 + 32 + 95 + 80 = 238
-  encounter([0], 268), // 268 + 32 = 300
-  encounter([0, 1], 303), // 303 + 32 + 75 = 410
-  encounter([0, 1, 2, 3, 4, 5], 37), // 37 + 32 + 375 = 444
-  encounter([0, 1, 2], 318), // 318 + 202 = 520
-  encounter([0, 1, 2, 3], 418), // 418 + 282 = 700
-  encounter([0, 1, 2, 3, 5], 476), // 476 + 322 = 798
+  encounter([0, 2, 3], 31), // 31 + 31 + 32 + 95 + 80 = 269
+  encounter([0], 28), // 28 + 28 + 32 = 88
+  encounter([0, 1], 33), // 33 + 33 + 32 + 75 = 173
+  encounter([0, 1, 2, 3, 4, 5], 37), // 37 + 37 + 32 + 375 = 481
+  encounter([0, 1, 2], 44), // 44 + 44 + 202 = 290
+  encounter([0, 1, 2, 3], 48), // 48 + 48 + 282 = 378
+  encounter([0, 1, 2, 3, 5], 45), // 45 + 45 + 322 = 412
+]
+// Battles 1–10, summing to 3,410 points: battles 1–7 (2,091), then battles 8 and 9 complete at full
+// scores (battlesPoints 48 and 44) and battle 10 partly cleared.
+const syncedEncounters = [
+  ...alphaEncounters,
+  encounter([0, 1, 2, 3, 4, 5], 48), // 48 + 48 + 407 = 503
+  encounter([0, 1, 2, 3, 4, 5], 44), // 44 + 44 + 407 = 495
+  encounter([0, 2, 3, 5], 37), // 37 + 37 + 32 + 95 + 80 + 40 = 321
 ]
 const entry = {
   id: "astarLysander",
-  alpha: { encounters: alphaEncounters },
+  alpha: { encounters: syncedEncounters },
   beta: { encounters: [] },
   gamma: null,
 } as unknown as LegendaryEventProgress
@@ -111,7 +120,7 @@ describe("ProgressSection", () => {
     ).toBeInTheDocument()
   })
 
-  it("maps a partly cleared battle: 238 / 471 and high score 31", () => {
+  it("maps a partly cleared battle: 269 / 471 and high score 31", () => {
     renderProgress(entry)
     const [first] = rowsIn("alpha")
     // defeat-all, Eviscerate, Suppressive Fire, Flying, Min 5 hits, No Resilient
@@ -124,7 +133,7 @@ describe("ProgressSection", () => {
       false,
     ])
     expect(within(first!).getByTestId("progress-row-points")).toHaveTextContent(
-      "238 / 471"
+      "269 / 471"
     )
     expect(
       within(first!).getByTestId("progress-row-high-score")
@@ -138,7 +147,7 @@ describe("ProgressSection", () => {
     expect(clearedFlags(fourth).every(Boolean)).toBe(true)
     expect(fourth.dataset.complete).toBe("true")
     expect(within(fourth).getByTestId("progress-row-points")).toHaveTextContent(
-      /^444 \//
+      "481 / 481"
     )
   })
 
@@ -146,7 +155,7 @@ describe("ProgressSection", () => {
     renderProgress(entry)
     const rows = rowsIn("alpha")
     expect(rows).toHaveLength(18)
-    for (const row of rows.slice(7)) {
+    for (const row of rows.slice(10)) {
       expect(clearedFlags(row).some(Boolean)).toBe(false)
       expect(within(row).getByTestId("progress-row-points")).toHaveTextContent(
         /^0 \//
@@ -189,6 +198,15 @@ describe("ProgressSection", () => {
     ).toHaveTextContent(/^0 \/ [\d,]+$/)
   })
 
+  it("explains that earned points count the kill score and the high score", () => {
+    renderProgress(entry)
+    const disclosure = screen.getByTestId("progress-how-points")
+    expect(disclosure).not.toHaveAttribute("open")
+    expect(disclosure).toHaveTextContent(
+      "Each battle's earned points are its kill score plus its high score, plus the defeat-all bonus and the score of every objective you cleared in it."
+    )
+  })
+
   it("reports a failed read", () => {
     renderProgress("error")
     expect(screen.getByTestId("progress-unavailable")).toBeInTheDocument()
@@ -204,7 +222,7 @@ describe("ProgressSection", () => {
       within(screen.getAllByTestId("progress-row")[0]!).getByTestId(
         "progress-row-points"
       )
-    ).toHaveTextContent("238 / 471")
+    ).toHaveTextContent("269 / 471")
   })
 })
 

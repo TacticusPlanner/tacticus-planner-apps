@@ -627,6 +627,8 @@
           "unknown_objective": "Ein Ziel wurde nicht erkannt und weggelassen.",
           "unknown_lane": "Die Bahn des Teams wurde nicht erkannt, daher wurde das Team übersprungen.",
           "empty_team": "Keine Einheit des Teams konnte importiert werden, daher wurde das Team übersprungen.",
+          "team_too_small_one": "Nur {{count}} Einheit des Teams blieb übrig, ein Team braucht aber {{min}}, daher wurde das Team übersprungen.",
+          "team_too_small_other": "Nur {{count}} Einheiten des Teams blieben übrig, ein Team braucht aber {{min}}, daher wurde das Team übersprungen.",
           "team_truncated": "Das Team hatte mehr als fünf Einheiten; die ersten fünf wurden übernommen.",
           "duplicate_team_merged": "Zwei Teams hatten dieselben Einheiten und wurden zusammengeführt.",
           "conflicting_depth_discarded": "Die abweichende Kampftiefe eines zusammengeführten Teams wurde verworfen.",

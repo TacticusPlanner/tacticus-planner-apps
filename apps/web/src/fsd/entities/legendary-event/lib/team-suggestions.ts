@@ -10,6 +10,7 @@ import { objectivesSatisfied } from "./objective-match"
 import { laneReachablePoints, type LaneReach } from "./reachable-points"
 import type { LaneProgressView } from "./synced-lane-progress"
 import { derivedTeamCoverage } from "./team-coverage"
+import { MIN_TEAM_MEMBERS } from "./team-size"
 import { unitLanePotential } from "./unit-potential"
 
 export const SUGGESTION_TEAM_SIZE = 5
@@ -64,8 +65,9 @@ const memberKey = (ids: readonly string[]) => [...ids].sort().join("|")
 
 /**
  * Proposed teams for a lane (spec: team suggestions per lane): for every one- or two-objective
- * subset, the five best units satisfying all of it, ranked by the lane reachable points each adds
- * over the existing teams. Never stored.
+ * subset, the five best units satisfying all of it (none when fewer than three do: a team needs
+ * three characters), ranked by the lane reachable points each adds over the existing teams. Never
+ * stored.
  */
 export function suggestLaneTeams(
   input: TeamSuggestionsInput
@@ -112,7 +114,7 @@ export function suggestLaneTeams(
       )
       .slice(0, SUGGESTION_TEAM_SIZE)
       .map((candidate) => candidate.unit.id)
-    if (members.length === 0) continue
+    if (members.length < MIN_TEAM_MEMBERS) continue
     const key = memberKey(members)
     if (seen.has(key) || existingKeys.has(key)) continue
     seen.add(key)

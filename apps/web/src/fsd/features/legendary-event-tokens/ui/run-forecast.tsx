@@ -34,7 +34,7 @@ export function RunForecastSection({
   editInputs: ReactNode
   onOpenTeams: OpenTeamsHandler
 }) {
-  const { t, i18n } = useTranslation("legendaryEvents")
+  const { t } = useTranslation("legendaryEvents")
   const { captureEvent } = useAnalyticsActions()
   const [open, setOpen] = useStoredOpen(OPEN_KEY)
   if (view.kind === "loading") {
@@ -48,7 +48,6 @@ export function RunForecastSection({
   const { runs } = view.forecast
   const last = runs.at(-1)
   if (!last) return null
-  const number = new Intl.NumberFormat(i18n.language)
 
   const toggle = () => {
     if (!open) {
@@ -81,17 +80,7 @@ export function RunForecastSection({
               className="text-sm font-normal text-muted-foreground"
               data-testid="run-forecast-header"
             >
-              {last.next.step === "fullyAscended"
-                ? t("tokenPlan.forecast.headerAllSteps", {
-                    run: last.run,
-                    points: number.format(last.endingPoints),
-                  })
-                : t("tokenPlan.forecast.header", {
-                    run: last.run,
-                    points: number.format(last.endingPoints),
-                    step: t(`outlook.steps.${last.next.step}`),
-                    shards: number.format(last.shardsMissing),
-                  })}
+              <ForecastHeader last={last} />
             </span>
           </span>
           <ChevronDown
@@ -121,20 +110,42 @@ export function RunForecastSection({
   )
 }
 
+/** "By the end of run N: …", or "By the end of the next run: …" when the run is unknown. */
+function ForecastHeader({ last }: { last: RunForecast }) {
+  const { t, i18n } = useTranslation("legendaryEvents")
+  const number = new Intl.NumberFormat(i18n.language)
+  const unknown = last.supply.unknownRun
+  const points = number.format(last.endingPoints)
+  if (last.next.step === "fullyAscended") {
+    return unknown
+      ? t("tokenPlan.forecast.headerAllStepsUnknown", { points })
+      : t("tokenPlan.forecast.headerAllSteps", { run: last.run, points })
+  }
+  const step = t(`outlook.steps.${last.next.step}`)
+  const shards = number.format(last.shardsMissing)
+  return unknown
+    ? t("tokenPlan.forecast.headerUnknown", { points, step, shards })
+    : t("tokenPlan.forecast.header", { run: last.run, points, step, shards })
+}
+
 function RunBlock({ run, isMobile }: { run: RunForecast; isMobile: boolean }) {
   const { t, i18n } = useTranslation("legendaryEvents")
   const number = new Intl.NumberFormat(i18n.language)
   const title = (
     <span className="flex items-baseline gap-2">
       <span className="font-semibold">
-        {t("tokenPlan.forecast.run", { run: run.run })}
+        {run.supply.unknownRun
+          ? t("tokenPlan.forecast.nextRun")
+          : t("tokenPlan.forecast.run", { run: run.run })}
       </span>
-      <span
-        className="text-xs text-muted-foreground"
-        data-testid="run-forecast-state"
-      >
-        {t(`tokenPlan.forecast.states.${run.state}`)}
-      </span>
+      {run.supply.unknownRun ? null : (
+        <span
+          className="text-xs text-muted-foreground"
+          data-testid="run-forecast-state"
+        >
+          {t(`tokenPlan.forecast.states.${run.state}`)}
+        </span>
+      )}
     </span>
   )
   const body =

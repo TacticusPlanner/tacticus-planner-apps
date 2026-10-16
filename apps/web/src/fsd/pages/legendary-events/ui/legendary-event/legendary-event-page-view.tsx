@@ -20,6 +20,7 @@ import { LaneSummary } from "./overview/lane-summary"
 import { LastRunCard } from "./overview/last-run-card"
 import { ProgressSection } from "./progress/progress-section"
 import { RunStatusCard } from "./run-status-card"
+import { TeamEditorHost } from "./teams/team-editor-host"
 import { TeamsSection } from "./teams/teams-section"
 
 /**
@@ -27,7 +28,8 @@ import { TeamsSection } from "./teams/teams-section"
  * token, Run status, Last run, Token plan, Run forecast, lane summary, cross-lane leaderboard) or a lane tab
  * (lane overview, Teams, Upgrade impact, synced progress, then the lane's leaderboard). The forms
  * differ only in the strip's stickiness and in the table-versus-cards rendering of the leaderboard
- * and grid.
+ * and grid. The team editor is mounted once here (design D4), so the Teams section and both
+ * leaderboards open the same instance.
  */
 export function LegendaryEventPageView({
   isMobile,
@@ -77,7 +79,7 @@ export function LegendaryEventPageView({
             editInputs={
               props.runInputs.enabled ? (
                 <RunInputsDrawer
-                  currentRun={props.runInputs.currentRun}
+                  runs={props.runInputs.runs}
                   event={props.event}
                   isMobile={isMobile}
                   trigger={
@@ -118,10 +120,10 @@ export function LegendaryEventPageView({
         >
           <LaneOverview event={props.event} laneIds={[selectedTab]} />
           <TeamsSection
+            editor={props.teamEditor}
             isMobile={isMobile}
             lane={props.event[selectedTab]}
             laneId={selectedTab}
-            onlyUnlocked={props.leaderboard.onlyUnlocked}
             teams={props.teams}
           />
           {props.upgradeImpact ? (
@@ -151,6 +153,12 @@ export function LegendaryEventPageView({
           />
         </div>
       )}
+      <TeamEditorHost
+        event={props.event}
+        launcher={props.teamEditor}
+        onlyUnlocked={props.leaderboard.onlyUnlocked}
+        teams={props.teams}
+      />
     </div>
   )
 }

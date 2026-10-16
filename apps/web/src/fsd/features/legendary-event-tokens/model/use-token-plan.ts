@@ -1,6 +1,10 @@
-import { useMemo } from "react"
+import { useCallback, useMemo } from "react"
 
-import type { LegendaryEventLifecycle } from "@/entities/legendary-event"
+import {
+  useTeamDisplayName,
+  type LegendaryEventLifecycle,
+  type LegendaryEventTeam,
+} from "@/entities/legendary-event"
 
 import {
   buildTokenPlanView,
@@ -20,9 +24,10 @@ export function useTokenPlan({
   progress,
   progressObservedAtMs,
   plan,
-  run,
+  resolution,
+  eventUnit,
   estimates,
-}: Omit<TokenPlanViewInput, "event" | "lifecycle"> & {
+}: Omit<TokenPlanViewInput, "event" | "lifecycle" | "teamName"> & {
   event: TokenPlanViewInput["event"] | undefined
   lifecycle: LegendaryEventLifecycle | undefined
 }): TokenPlanView {
@@ -38,6 +43,15 @@ export function useTokenPlan({
         : ({ state, runStartMs, runEndMs } as LegendaryEventLifecycle),
     [state, runStartMs, runEndMs]
   )
+  // Tokens, groups and prompts name a team by its display name (spec: a team shows a readable name).
+  const displayName = useTeamDisplayName()
+  const teamName = useCallback(
+    (team: LegendaryEventTeam) =>
+      event
+        ? displayName(team, event[team.laneId], data?.teams ?? [])
+        : team.name,
+    [displayName, event, data]
+  )
   return useMemo(
     () =>
       event && stableLifecycle
@@ -48,8 +62,10 @@ export function useTokenPlan({
             progress,
             progressObservedAtMs,
             plan: { enabled, status, data },
-            run,
+            resolution,
+            eventUnit,
             estimates,
+            teamName,
           })
         : { kind: "loading" },
     [
@@ -61,8 +77,10 @@ export function useTokenPlan({
       enabled,
       status,
       data,
-      run,
+      resolution,
+      eventUnit,
       estimates,
+      teamName,
     ]
   )
 }

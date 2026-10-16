@@ -5,7 +5,11 @@ import { createTestI18n, i18nWrapper } from "@/test/i18n"
 import { fireEvent, render, screen } from "@/test/render"
 
 import { buildTokenPlanView, type TokenPlanView } from "../lib/token-plan-view"
-import { workedViewInput } from "../lib/token-plan-view.fixtures"
+import {
+  UTHAR_RUN_STARTS,
+  betweenRunsInput,
+  workedViewInput,
+} from "../lib/token-plan-view.fixtures"
 import { RunForecastSection } from "./run-forecast"
 
 const capture = vi.hoisted(() => vi.fn())
@@ -45,7 +49,7 @@ describe("RunForecastSection", () => {
     renderForecast(buildTokenPlanView(workedViewInput()))
 
     expect(screen.getByTestId("run-forecast-header")).toHaveTextContent(
-      "By the end of run 3: 5,978 points · Unlock 100 shards short"
+      "By the end of run 3: 6,136 points · Unlock 75 shards short"
     )
     expect(screen.queryByTestId("run-forecast-run")).toBeNull()
   })
@@ -78,12 +82,45 @@ describe("RunForecastSection", () => {
     })
   })
 
+  it("marks runs 1 and 2 Done and run 3 Next for Uthar between runs", () => {
+    renderForecast(buildTokenPlanView(betweenRunsInput(UTHAR_RUN_STARTS)))
+    expect(screen.getByTestId("run-forecast-header")).toHaveTextContent(
+      /^By the end of run 3:/
+    )
+    expand()
+
+    const runs = screen.getAllByTestId("run-forecast-run")
+    expect(runs.map((run) => run.dataset.run)).toEqual(["1", "2", "3"])
+    expect(
+      screen.getAllByTestId("run-forecast-state").map((s) => s.textContent)
+    ).toEqual(["Done", "Done", "Next"])
+  })
+
+  it("heads an unknown run with the next run and shows one Next block without a run number", () => {
+    renderForecast(buildTokenPlanView(betweenRunsInput([])))
+
+    const header = screen.getByTestId("run-forecast-header")
+    expect(header).toHaveTextContent(/^By the end of the next run: /)
+    expand()
+
+    const runs = screen.getAllByTestId("run-forecast-run")
+    expect(runs).toHaveLength(1)
+    expect(runs[0]).toHaveTextContent(/^Next run/)
+    expect(screen.getByTestId("run-forecast-supply")).toHaveTextContent(
+      "68 tokens: 61 free + 7 ad + 0 bonus delivery"
+    )
+    expect(
+      screen.getByTestId("legendary-event-run-forecast").textContent
+    ).not.toMatch(/\b[Rr]un \d/)
+  })
+
   it("shows the Oh So Close hint when a run ends within 75 shards", () => {
     const base = workedViewInput()
     renderForecast(
       buildTokenPlanView({
         ...base,
-        progress: { ...(base.progress as object), currentShards: 340 } as never,
+        // Run 2 opens chest 11 (+25): it ends with 340 shards, 60 short of Unlock.
+        progress: { ...(base.progress as object), currentShards: 315 } as never,
       })
     )
     expand()

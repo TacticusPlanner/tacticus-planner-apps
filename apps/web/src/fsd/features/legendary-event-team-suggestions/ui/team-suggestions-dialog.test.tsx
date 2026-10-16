@@ -116,7 +116,7 @@ describe("TeamSuggestionsDialog", () => {
     setViewportWidth(1280)
   })
 
-  it("shows the first three worked proposals with their reasons, then up to ten", async () => {
+  it("shows the three worked proposals with their reasons", async () => {
     renderDialog()
     await screen.findAllByText("Incisus")
     expect(cards()).toHaveLength(3)
@@ -128,18 +128,52 @@ describe("TeamSuggestionsDialog", () => {
     expect(
       within(cards()[0]!).getByTestId("team-suggestion-reason")
     ).toHaveTextContent(
-      "Covers Ultramarines and Melee · clears ~5 · +830 points over your teams"
+      "Covers Ultramarines and Melee · clears ~5 · +945 points over your teams"
     )
-    expect(members(cards()[1]!)).toEqual(["ultraApothecary"])
-
-    fireEvent.click(screen.getByTestId("team-suggestions-show-more"))
-    expect(cards()).toHaveLength(5)
+    expect(members(cards()[1]!)).toEqual([
+      "ultraTigurius",
+      "ultraApothecary",
+      "ultraCalgar",
+      "ultraEliminatorSgt",
+    ])
+    expect(members(cards()[2]!)).toHaveLength(5)
+    expect(
+      screen.queryByTestId("team-suggestions-show-more")
+    ).not.toBeInTheDocument()
     expect(capture).toHaveBeenCalledWith({
       type: "legendary_event_team_suggestions_opened",
       eventId: "votanUthar",
       laneId: "alpha",
-      suggestionCount: 5,
+      suggestionCount: 3,
     })
+  })
+
+  it("ignores an incomplete existing team (Uthar's two-member team) in the gains", async () => {
+    renderDialog({
+      teams: [
+        {
+          id: "short",
+          laneId: "alpha",
+          name: "Max 2 Hits · Melee",
+          sortOrder: 0,
+          memberUnitIds: ["ultraApothecary", "bloodIntercessor"],
+          reserveUnitId: null,
+          objectiveIndexes: [2, 3],
+          runDepths: [
+            {
+              run: 1,
+              expectedBattleClears: 5,
+              expectedBattleClearsSource: "manual",
+              recordedAt: "2026-10-01T00:00:00Z",
+            },
+          ],
+        },
+      ],
+    })
+    await screen.findAllByText("Incisus")
+    expect(
+      within(cards()[0]!).getByTestId("team-suggestion-reason")
+    ).toHaveTextContent("+945 points over your teams")
   })
 
   it("hands a proposal and its rank to Use this team", async () => {
@@ -154,7 +188,7 @@ describe("TeamSuggestionsDialog", () => {
       expect.objectContaining({
         memberUnitIds: ["ultraApothecary", "ultraCalgar", "ultraTitus"],
         coveredObjectiveIndexes: [0, 3],
-        gainPoints: 830,
+        gainPoints: 945,
       }),
       1
     )

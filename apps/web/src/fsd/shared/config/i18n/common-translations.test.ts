@@ -184,4 +184,15 @@ describe("common namespace locale parity", () => {
       )
     }
   )
+
+  it.each([
+    ["de", de],
+    ["es", es],
+    ["fr", fr],
+  ])("%s translates the too-small team import reason", (_, locale) => {
+    const issues = locale.goals.v1Import.legendaryEvents.issues
+    const english = en.goals.v1Import.legendaryEvents.issues
+    expect(issues.team_too_small_one).not.toBe(english.team_too_small_one)
+    expect(issues.team_too_small_other).not.toBe(english.team_too_small_other)
+  })
 })

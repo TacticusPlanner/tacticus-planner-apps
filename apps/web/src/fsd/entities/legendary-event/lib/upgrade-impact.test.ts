@@ -59,7 +59,7 @@ const impact = (overrides: Partial<UpgradeImpactInput> = {}) =>
   })
 
 describe("laneUpgradeImpact (spec worked examples)", () => {
-  it("lists four +148 rows, Four battle 5 → 6, ordered by name", () => {
+  it("lists four +191 rows, Four battle 5 → 6, ordered by name", () => {
     expect(
       teamEffectivePower(FOUR_MEMBERS, workedRoster, WORKED_CONFIG)
     ).toBeCloseTo(37534.8, 6)
@@ -79,7 +79,7 @@ describe("laneUpgradeImpact (spec worked examples)", () => {
     ).toBeCloseTo(38041.8, 6)
 
     const result = impact()
-    expect(result.baselinePoints).toBe(505)
+    expect(result.baselinePoints).toBe(620)
     expect(result.rows.map((row) => row.unitId)).toEqual([
       "ultraCalgar",
       "ultraApothecary",
@@ -88,7 +88,7 @@ describe("laneUpgradeImpact (spec worked examples)", () => {
     ])
     for (const row of result.rows) {
       expect(row.step.kind).toBe("ascension")
-      expect(row.gainPoints).toBe(148)
+      expect(row.gainPoints).toBe(191)
       expect(row.teams).toEqual([
         { teamId: "four", depthBefore: 5, depthAfter: 6 },
       ])
@@ -99,11 +99,11 @@ describe("laneUpgradeImpact (spec worked examples)", () => {
     })
   })
 
-  it("moves a stored depth by the estimate delta: 4 → 5, +146", () => {
+  it("moves a stored depth by the estimate delta: 4 → 5, +187", () => {
     const result = impact({ teams: [{ ...four, manualDepth: 4 }] })
-    expect(result.baselinePoints).toBe(359)
+    expect(result.baselinePoints).toBe(433)
     const tigurius = result.rows.find((row) => row.unitId === "ultraTigurius")
-    expect(tigurius?.gainPoints).toBe(146)
+    expect(tigurius?.gainPoints).toBe(187)
     expect(tigurius?.teams).toEqual([
       { teamId: "four", depthBefore: 4, depthAfter: 5 },
     ])
@@ -143,8 +143,8 @@ describe("laneUpgradeImpact (spec worked examples)", () => {
       teams: [four, { ...four, id: "copy", manualDepth: 4 }],
     })
     const tigurius = result.rows.find((row) => row.unitId === "ultraTigurius")
-    // Copy's 4 → 5 adds nothing Four does not already reach; Four's 5 → 6 adds 148.
-    expect(tigurius?.gainPoints).toBe(148)
+    // Copy's 4 → 5 adds nothing Four does not already reach; Four's 5 → 6 adds 43 + 43 + 30 + 75 = 191.
+    expect(tigurius?.gainPoints).toBe(191)
     expect(tigurius?.teams).toEqual([
       { teamId: "four", depthBefore: 5, depthAfter: 6 },
       { teamId: "copy", depthBefore: 4, depthAfter: 5 },
@@ -162,7 +162,7 @@ describe("laneUpgradeImpact (spec worked examples)", () => {
     expect(result.rows).toHaveLength(4)
     for (const row of result.rows) {
       expect(row.step).toMatchObject({ kind: "rank", rank: "Gold1" })
-      expect(row.gainPoints).toBe(148)
+      expect(row.gainPoints).toBe(191)
       expect(row.teams).toEqual([
         { teamId: "four", depthBefore: 5, depthAfter: 6 },
       ])
@@ -193,7 +193,8 @@ describe("laneUpgradeImpact (spec worked examples)", () => {
     })
     const calgar = result.rows.find((row) => row.unitId === "ultraCalgar")
     expect(calgar?.step.kind).toBe("unlock")
-    expect(calgar?.gainPoints).toBe(140)
+    // Battle 3: 35 + 35 + 30 + 75.
+    expect(calgar?.gainPoints).toBe(175)
     expect(calgar?.teams).toEqual([
       { teamId: "four", depthBefore: 2, depthAfter: 3 },
     ])
