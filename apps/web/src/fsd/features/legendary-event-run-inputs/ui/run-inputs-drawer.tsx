@@ -27,6 +27,7 @@ import {
   MAX_CLOSE_SHARDS,
   type LegendaryEvent,
   type LegendaryEventRun,
+  type LegendaryEventRunResolution,
 } from "@/entities/legendary-event"
 import { NumberStepper } from "@/shared/ui"
 
@@ -39,17 +40,18 @@ const CLOSE_SHARDS_STEP = 25
 /**
  * The Run status card's Inputs button and its drawer (design D5): a right-side sheet at or above
  * 768px and a swipe-to-dismiss bottom drawer (90% of the height) below it. Runs 1–3 are stacked and
- * labelled Done / Now / Planned against the current run; every run stays editable. Paid fields
+ * labelled Done / Now / Planned against the resolved runs (no labels while the run is unknown);
+ * every run stays editable. Paid fields
  * show only with Show paid options on. Closing returns focus to the Inputs button.
  */
 export function RunInputsDrawer({
   event,
-  currentRun,
+  runs,
   isMobile,
   trigger: customTrigger,
 }: {
   event: Pick<LegendaryEvent, "id" | "regularMissions" | "premiumMissions">
-  currentRun: LegendaryEventRun
+  runs: LegendaryEventRunResolution
   isMobile: boolean
   /** Replaces the Inputs button (the Run forecast's Edit inputs link); one focusable element. */
   trigger?: ReactElement
@@ -68,12 +70,7 @@ export function RunInputsDrawer({
     </Button>
   )
   const body = (
-    <RunInputsBody
-      currentRun={currentRun}
-      event={event}
-      inputs={inputs}
-      touch={isMobile}
-    />
+    <RunInputsBody event={event} runs={runs} inputs={inputs} touch={isMobile} />
   )
 
   if (isMobile) {
@@ -113,12 +110,12 @@ export function RunInputsDrawer({
 
 function RunInputsBody({
   event,
-  currentRun,
+  runs,
   inputs,
   touch,
 }: {
   event: Pick<LegendaryEvent, "regularMissions" | "premiumMissions">
-  currentRun: LegendaryEventRun
+  runs: LegendaryEventRunResolution
   inputs: RunInputsActions
   touch: boolean
 }) {
@@ -164,12 +161,12 @@ function RunInputsBody({
       </div>
       {RUNS.map((run) => {
         const values = inputs.values(run)
-        const phase = runInputsPhase(run, currentRun)
+        const phase = runInputsPhase(run, runs)
         return (
           <section
             aria-labelledby={`${paidId}-run-${run}`}
             className="flex flex-col gap-3 rounded-xl border p-3"
-            data-phase={phase}
+            data-phase={phase ?? undefined}
             data-run={run}
             data-testid="run-inputs-run"
             key={run}
@@ -178,12 +175,14 @@ function RunInputsBody({
               <h3 className="font-semibold" id={`${paidId}-run-${run}`}>
                 {t("runInputs.run", { run })}
               </h3>
-              <Badge
-                data-testid="run-inputs-phase"
-                variant={phase === "now" ? "default" : "outline"}
-              >
-                {t(`runInputs.phase.${phase}`)}
-              </Badge>
+              {phase ? (
+                <Badge
+                  data-testid="run-inputs-phase"
+                  variant={phase === "now" ? "default" : "outline"}
+                >
+                  {t(`runInputs.phase.${phase}`)}
+                </Badge>
+              ) : null}
             </div>
             {phase === "now" ? (
               <p

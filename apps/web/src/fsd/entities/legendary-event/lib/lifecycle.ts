@@ -14,7 +14,7 @@ export interface LegendaryEventSchedule {
  * Derives an event's lifecycle at `nowMs` from its run start dates and `finished` flag: `active`
  * when a run window `[start, start + 7d)` contains now; otherwise `upcoming` (earliest future start)
  * when not finished (`upcoming` with no window when no date is announced yet, i.e. TBA); otherwise `archived`. Unparseable run starts are ignored. The run number is not
- * derived here: the catalog has no run number, so it only ever comes from the synced progress.
+ * derived here: `run-resolution.ts` resolves it from the run schedule and the synced run.
  */
 export function deriveLegendaryEventLifecycle(
   event: LegendaryEventSchedule,

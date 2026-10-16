@@ -150,7 +150,7 @@ export function RunStatusCard({
         {runInputs.enabled ? (
           <CardAction>
             <RunInputsDrawer
-              currentRun={runInputs.currentRun}
+              runs={runInputs.runs}
               event={event}
               isMobile={isMobile}
             />

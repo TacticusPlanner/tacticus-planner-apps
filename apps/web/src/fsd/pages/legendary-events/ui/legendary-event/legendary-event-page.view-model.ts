@@ -24,7 +24,6 @@ import {
   type LegendaryEventProgress,
   type LegendaryEventRewards,
   type LegendaryEventRosterUnit,
-  type LegendaryEventRun,
   type LegendaryEventRunResolution,
   type LegendaryEventUnit,
   type NextPointsMilestone,
@@ -80,7 +79,8 @@ export type RewardOutlookViewModel =
 /** The Run status card's Inputs drawer: shown for signed-in users only. */
 export interface RunInputsViewModel {
   enabled: boolean
-  currentRun: LegendaryEventRun
+  /** The resolved runs the drawer labels Done / Now / Planned against. */
+  runs: LegendaryEventRunResolution
 }
 
 /** The page's tab strip: Overview, then one tab per lane (design D3). */
