@@ -91,4 +91,26 @@ describe("usePlanWriteQueue", () => {
     )
     expect(marks.result.current.pending).toBe(false)
   })
+
+  it("refreshes the plan list after a saved write", async () => {
+    const queryClient = new QueryClient({
+      defaultOptions: { queries: { retry: false, staleTime: Infinity } },
+    })
+    queryClient.setQueryData(
+      legendaryEventPlanQueries.detail(EVENT).queryKey,
+      plan(2)
+    )
+    const invalidate = vi.spyOn(queryClient, "invalidateQueries")
+    const wrapper = ({ children }: { children: ReactNode }) => (
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    )
+    const queue = renderHook(() => usePlanWriteQueue(EVENT), { wrapper })
+    await act(async () => {
+      await queue.result.current.enqueue({ send: async () => plan(3) })
+    })
+    expect(invalidate).toHaveBeenCalledWith({
+      queryKey: legendaryEventPlanQueries.list().queryKey,
+      exact: true,
+    })
+  })
 })

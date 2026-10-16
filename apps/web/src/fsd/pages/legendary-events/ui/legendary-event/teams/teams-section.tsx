@@ -26,6 +26,10 @@ import {
   laneEstimateInputs,
   type ClearEstimatesViewModel,
 } from "../legendary-event-page.view-model"
+import {
+  teamLastRunClearedBattle,
+  type LastRunClears,
+} from "../overview/last-run.view-model"
 
 import { TeamCard, type TeamCardActions } from "./team-card"
 import { TeamsEmptyState } from "./teams-empty-state"
@@ -66,6 +70,9 @@ export interface TeamsViewModel {
   progressByLane:
     Partial<Record<LegendaryEventLaneId, LaneProgressView>> | undefined
   goals: TeamsGoalsViewModel
+  /** Each previous-run team's cleared battle (the card's last-run line); undefined while the run
+   *  records load or when their read failed (no line). */
+  lastRunClears: LastRunClears
 }
 
 type EditorState = {
@@ -158,6 +165,8 @@ export function TeamsSection({
     </Button>
   )
   const ids = cards.map((card) => card.id)
+  const lastRunOf = (teamId: string) =>
+    teamLastRunClearedBattle(teams.lastRunClears, teamId, laneId)
   const cardActions = (card: TeamCardViewModel): TeamCardActions => {
     const moves = moveTargets(ids, card.id)
     return {
@@ -249,6 +258,7 @@ export function TeamsSection({
                 card={card}
                 key={card.id}
                 lane={lane}
+                lastRunClearedBattle={lastRunOf(card.id)}
               />
             ))
           ) : (
@@ -263,6 +273,7 @@ export function TeamsSection({
                   actions={cardActions(card)}
                   card={card}
                   lane={lane}
+                  lastRunClearedBattle={lastRunOf(card.id)}
                   sortable={sortable}
                 />
               )}

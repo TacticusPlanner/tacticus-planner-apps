@@ -49,6 +49,8 @@ describe("app routes", () => {
     const section = findRoute(routes, "/legendary-events")
     expect(section?.children?.map((child) => child.path ?? "index")).toEqual([
       "index",
+      "master-table",
+      "tier-list",
       ":eventId",
     ])
     expect(findRoute(routes, "/events")).toBeUndefined()

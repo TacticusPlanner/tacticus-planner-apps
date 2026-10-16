@@ -10,9 +10,15 @@ import type {
   UpdateTeamOrderRequestDto,
   UpdateTeamRequestDto,
 } from "../model/plan.types"
+import type {
+  LegendaryEventPlanList,
+  LegendaryEventRunRecords,
+} from "../model/run-record.types"
+
+const PLANS_PATH = "/api/v1/me/legendary-event-plans"
 
 const planPath = (eventId: string) =>
-  `/api/v1/me/legendary-event-plans/${encodeURIComponent(eventId)}`
+  `${PLANS_PATH}/${encodeURIComponent(eventId)}`
 
 const teamPath = (eventId: string, teamId: string) =>
   `${planPath(eventId)}/teams/${encodeURIComponent(teamId)}`
@@ -20,6 +26,23 @@ const teamPath = (eventId: string, teamId: string) =>
 /** The caller's plan for one event; a plan never written reads as an empty plan at revision 0. */
 export function getLegendaryEventPlan(eventId: string, signal?: AbortSignal) {
   return apiGet<LegendaryEventPlan>(planPath(eventId), { signal })
+}
+
+/** Every plan stored for the caller (never an empty plan for an event without a row), including
+ *  plans whose event has left the catalog. */
+export function listLegendaryEventPlans(signal?: AbortSignal) {
+  return apiGet<LegendaryEventPlanList>(PLANS_PATH, { signal })
+}
+
+/** The caller's run records of one event, newest first; 404 when the id is neither a catalog event
+ *  nor has any record. */
+export function getLegendaryEventRunRecords(
+  eventId: string,
+  signal?: AbortSignal
+) {
+  return apiGet<LegendaryEventRunRecords>(`${planPath(eventId)}/run-records`, {
+    signal,
+  })
 }
 
 // Every mutation carries `expectedRevision` and answers with the whole plan. A stale revision (or,

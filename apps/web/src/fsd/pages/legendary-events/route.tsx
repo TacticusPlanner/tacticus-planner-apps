@@ -9,6 +9,16 @@ const LegendaryEventsHubPage = lazy(() =>
     default: m.LegendaryEventsHubPage,
   }))
 )
+const MasterTablePage = lazy(() =>
+  import("./ui/master-table/master-table-page").then((m) => ({
+    default: m.MasterTablePage,
+  }))
+)
+const TierListPage = lazy(() =>
+  import("./ui/tier-list/tier-list-page").then((m) => ({
+    default: m.TierListPage,
+  }))
+)
 const LegendaryEventPage = lazy(() =>
   import("./ui/legendary-event/legendary-event-page").then((m) => ({
     default: m.LegendaryEventPage,
@@ -20,5 +30,8 @@ const LegendaryEventPage = lazy(() =>
 // have no redirect (design D2): they fall through to the app's not-found redirect.
 export const routes: RouteObject[] = [
   { index: true, element: <LegendaryEventsHubPage /> },
+  // Static children before `:eventId`, so neither path is ever read as an event id.
+  { path: "master-table", element: <MasterTablePage /> },
+  { path: "tier-list", element: <TierListPage /> },
   { path: ":eventId", element: <LegendaryEventPage /> },
 ]

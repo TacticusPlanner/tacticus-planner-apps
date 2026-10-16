@@ -29,6 +29,7 @@ import {
   type NextPointsMilestone,
   type ReadState,
   type RewardProjection,
+  type RunHistory,
 } from "@/entities/legendary-event"
 
 import type { UpgradeImpactState } from "@/features/legendary-event-goals"
@@ -38,6 +39,7 @@ import type {
   TokenPlanView,
 } from "@/features/legendary-event-tokens"
 
+import type { LastRunViewModel } from "./overview/last-run.view-model"
 import type { ProgressMarksViewModel } from "./progress/progress-marks"
 import type { TeamsViewModel } from "./teams/teams-section"
 
@@ -108,6 +110,17 @@ export interface LegendaryEventPageViewModel {
   upgradeImpact: UpgradeImpactViewModel | null
   /** The Overview's Next token card, Token plan and Run forecast (Stage 4). */
   tokens: TokensViewModel
+  /** The Overview's Last run card (run history). */
+  lastRun: LastRunSectionViewModel
+}
+
+/** The Last run card's state and its analytics callbacks (design D9). */
+export interface LastRunSectionViewModel {
+  state: LastRunViewModel
+  /** Records `legendary_event_last_run_viewed`, once per page view. */
+  onViewed: (history: RunHistory) => void
+  /** Records `legendary_event_earlier_runs_expanded`. */
+  onEarlierExpanded: (recordCount: number) => void
 }
 
 interface UpgradeImpactViewModel {

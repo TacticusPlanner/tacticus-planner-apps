@@ -1,4 +1,8 @@
 import type { LegendaryEventRosterUnit } from "../model/types"
+import {
+  effectiveHordeMultiplier,
+  type HordeModeTierList,
+} from "./horde-tier-list"
 import { unitCombatPower } from "./unit-combat-power"
 
 /**
@@ -35,12 +39,6 @@ export interface ClearEstimate {
 /** The roster by unit id, as the estimate reads it. */
 export type ClearEstimateRoster = ReadonlyMap<string, LegendaryEventRosterUnit>
 
-/** The catalog horde-mode tier list, as the config reads it. */
-export interface HordeModeTierList {
-  tiers: readonly { tier: string; multiplier: number }[]
-  characters: readonly { unitId: string; tier: string; multiplier?: number }[]
-}
-
 /**
  * The config from the power-ratio constants and the catalog `horde-mode-tiers` list (null when that
  * dataset is absent: every character is then untiered). A character's own `multiplier` overrides its
@@ -49,19 +47,14 @@ export interface HordeModeTierList {
 export function clearEstimateConfig(
   hordeModeTiers: HordeModeTierList | null
 ): ClearEstimateConfig {
-  const multiplierByTier = new Map(
-    (hordeModeTiers?.tiers ?? []).map((entry) => [entry.tier, entry.multiplier])
-  )
   return {
     powerRatio: CLEAR_ESTIMATE_POWER_RATIO,
     calibrated: CLEAR_ESTIMATE_CALIBRATED,
     hordeMultipliers: new Map(
-      (hordeModeTiers?.characters ?? []).flatMap(
-        ({ unitId, tier, multiplier }) => {
-          const effective = multiplier ?? multiplierByTier.get(tier)
-          return effective === undefined ? [] : [[unitId, effective] as const]
-        }
-      )
+      (hordeModeTiers?.characters ?? []).flatMap(({ unitId }) => {
+        const effective = effectiveHordeMultiplier(hordeModeTiers, unitId)
+        return effective === null ? [] : [[unitId, effective] as const]
+      })
     ),
   }
 }

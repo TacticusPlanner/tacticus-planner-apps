@@ -58,10 +58,16 @@ describe("filterNavigationItems", () => {
     }
   )
 
-  it("finds the Legendary Events section and its All events child by 'legendary'", () => {
+  it("finds the Legendary Events section and its static children by 'legendary'", () => {
     const localized: Record<string, string> = {
       "nav.legendaryEvents": "Legendary Events",
       "legendaryEvents.tabs.allEvents": "All events",
+      "legendaryEvents.tabs.masterTable": "Master table",
+      "legendaryEvents.tabs.masterTableDescription":
+        "Every unit's points across the events you pick",
+      "legendaryEvents.tabs.tierList": "Tier List",
+      "legendaryEvents.tabs.tierListDescription":
+        "The horde-mode tier list behind clear estimates",
     }
     const results = filterNavigationItems(
       navItems,
@@ -72,7 +78,32 @@ describe("filterNavigationItems", () => {
     const section = results.find((item) => item.path === "/legendary-events")
     expect(section?.children?.map((child) => child.path)).toEqual([
       "/legendary-events",
+      "/legendary-events/master-table",
+      "/legendary-events/tier-list",
     ])
+  })
+
+  it.each([
+    ["master", "/legendary-events/master-table"],
+    ["tier", "/legendary-events/tier-list"],
+  ])("finds the static Legendary Events child by '%s'", (query, path) => {
+    const localized: Record<string, string> = {
+      "nav.legendaryEvents": "Legendary Events",
+      "nav.legendaryEventsDescription": "Active, upcoming and past events",
+      "legendaryEvents.tabs.allEvents": "All events",
+      "legendaryEvents.tabs.allEventsDescription": "Every event",
+      "legendaryEvents.tabs.masterTable": "Master table",
+      "legendaryEvents.tabs.masterTableDescription": "Every unit's points",
+      "legendaryEvents.tabs.tierList": "Tier List",
+      "legendaryEvents.tabs.tierListDescription": "Horde-mode multipliers",
+    }
+    const results = filterNavigationItems(
+      navItems,
+      query,
+      (key) => localized[key] ?? ""
+    )
+    const section = results.find((item) => item.path === "/legendary-events")
+    expect(section?.children?.map((child) => child.path)).toEqual([path])
   })
 
   it("finds an active event's dynamic child by its name", () => {

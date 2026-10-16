@@ -23,7 +23,13 @@ function renderLegendaryEventsRoutes(entries: string[]) {
               <Route element={<div data-testid="hub" />} index key="index" />
             ) : (
               <Route
-                element={<div data-testid="event-page" />}
+                element={
+                  <div
+                    data-testid={
+                      route.path === ":eventId" ? "event-page" : route.path
+                    }
+                  />
+                }
                 key={route.path}
                 path={route.path}
               />
@@ -45,6 +51,17 @@ describe("legendary events routes", () => {
   it("routes an event page by id", () => {
     renderLegendaryEventsRoutes(["/legendary-events/astarLysander"])
     expect(screen.getByTestId("event-page")).toBeInTheDocument()
+  })
+
+  it("routes the master table and the tier list, never as event ids", () => {
+    renderLegendaryEventsRoutes(["/legendary-events/master-table"])
+    expect(screen.getByTestId("master-table")).toBeInTheDocument()
+    expect(screen.queryByTestId("event-page")).toBeNull()
+  })
+
+  it("routes the tier list", () => {
+    renderLegendaryEventsRoutes(["/legendary-events/tier-list"])
+    expect(screen.getByTestId("tier-list")).toBeInTheDocument()
   })
 
   it("leaves the old /events paths to the not-found route", () => {

@@ -143,6 +143,51 @@ type LegendaryEventRunForecastExpandedEvent = {
   eventId: string
 }
 
+/** The Legendary Events master table was opened (once per visit) with its starting controls. */
+type LegendaryEventMasterTableViewedEvent = {
+  type: "legendary_event_master_table_viewed"
+  eventCount: number
+  unitSet: "all" | "unlocked" | "inTeams"
+  pointsMode: "remaining" | "all" | "estimated"
+}
+
+/** A master table control changed: `value` is the new unit set, points mode or sort (an event id,
+ *  or "total"); for the event picker `eventCount` carries the new selection size instead. */
+type LegendaryEventMasterTableChangedEvent = {
+  type: "legendary_event_master_table_changed"
+  control: "events" | "unitSet" | "pointsMode" | "sort"
+  value: string | null
+  eventCount: number | null
+}
+
+/** The event page's Last run card first became visible (once per page view). */
+type LegendaryEventLastRunViewedEvent = {
+  type: "legendary_event_last_run_viewed"
+  eventId: string
+  run: number
+  teamCount: number
+  deltaCount: number
+}
+
+/** The Earlier runs list of an archived or upcoming event was opened. */
+type LegendaryEventEarlierRunsExpandedEvent = {
+  type: "legendary_event_earlier_runs_expanded"
+  eventId: string
+  recordCount: number
+}
+
+/** The horde-mode Tier List page was opened (once per visit). */
+type LegendaryEventTierListViewedEvent = {
+  type: "legendary_event_tier_list_viewed"
+}
+
+/** A Tier List tile's details opened; `tier` is the tier name or "untiered". */
+type LegendaryEventTierListUnitOpenedEvent = {
+  type: "legendary_event_tier_list_unit_opened"
+  unitId: string
+  tier: string
+}
+
 /**
  * Every event the product may report to the analytics destination. A discriminated union rather
  * than a free-form property bag, so declaring a new event is a type change here rather than an
@@ -164,3 +209,9 @@ export type AnalyticsEvent =
   | LegendaryEventNextTokenShownEvent
   | LegendaryEventTokenPlanExpandedEvent
   | LegendaryEventRunForecastExpandedEvent
+  | LegendaryEventMasterTableViewedEvent
+  | LegendaryEventMasterTableChangedEvent
+  | LegendaryEventLastRunViewedEvent
+  | LegendaryEventEarlierRunsExpandedEvent
+  | LegendaryEventTierListViewedEvent
+  | LegendaryEventTierListUnitOpenedEvent

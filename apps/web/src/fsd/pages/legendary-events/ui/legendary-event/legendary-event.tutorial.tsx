@@ -10,6 +10,7 @@ const EVENT_TOUR_TARGETS = {
   tabs: '[data-testid="legendary-event-tabs"]',
   nextToken: '[data-testid="legendary-event-next-token"]',
   runStatus: '[data-testid="legendary-event-run-status"]',
+  lastRun: '[data-testid="legendary-event-last-run"]',
   runInputs: '[data-testid="legendary-event-run-inputs"]',
   tokenPlan: '[data-testid="legendary-event-token-plan"]',
   laneSummary: '[data-testid="legendary-event-lane-summary"]',
@@ -38,14 +39,17 @@ function waitForElement(selector: string, timeoutMs: number): Promise<void> {
 
 /**
  * The event page tour (spec: the Events pages have Joyride tours): the tab strip, the Next token
- * card (in whichever state it renders), Run status, its Inputs button (the same target on both
+ * card (in whichever state it renders), Run status, the Last run card (only when it renders, so
+ * the tour never shows an empty step), Run status's Inputs button (the same target on both
  * forms), the Token plan header, the Overview lane summary and cross-lane
  * leaderboard, then, after switching to Alpha through
  * `selectTab`, Alpha's lane overview, Teams section (with its Add team button), progress grid (and
  * its marks) and leaderboard. Desktop and mobile share the steps.
  */
 export function useLegendaryEventTutorial(
-  selectTab: (tab: LegendaryEventTab) => void
+  selectTab: (tab: LegendaryEventTab) => void,
+  /** The Last run card renders: its step follows Run status. */
+  hasLastRun = false
 ): TourPageSteps {
   const { t } = useTranslation("legendaryEvents")
   return useMemo(() => {
@@ -62,6 +66,7 @@ export function useLegendaryEventTutorial(
       step("tabs", "bottom"),
       step("nextToken", "bottom"),
       step("runStatus", "bottom"),
+      ...(hasLastRun ? [step("lastRun", "top")] : []),
       step("runInputs", "bottom"),
       step("tokenPlan", "bottom"),
       step("laneSummary", "top"),
@@ -79,5 +84,5 @@ export function useLegendaryEventTutorial(
       step("leaderboard", "top"),
     ]
     return { desktop: steps, mobile: steps }
-  }, [selectTab, t])
+  }, [hasLastRun, selectTab, t])
 }

@@ -8,6 +8,7 @@ import {
 import {
   getLegendaryEvent,
   getLegendaryEventBattles,
+  getLegendaryEventsBattles,
   getHordeModeTiers,
   getLegendaryEvents,
   hasLegendaryEventsSynced,
@@ -78,6 +79,39 @@ describe("Legendary Event queries", () => {
       "votanUthar-alpha-1",
       "votanUthar-beta-1",
     ])
+  })
+
+  it("returns several events' battles grouped by event from one read", async () => {
+    await replaceGameCatalogDataset(
+      "lre-battles",
+      [
+        { id: "votanUthar-alpha-1", lreId: "votanUthar", power: 1018 },
+        { id: "votanUthar-beta-1", lreId: "votanUthar", power: 1200 },
+        { id: "astarLysander-alpha-1", lreId: "astarLysander", power: 900 },
+        { id: "tauFarsight-alpha-1", lreId: "tauFarsight", power: 700 },
+      ],
+      metadata("lre-battles")
+    )
+
+    const battles = await getLegendaryEventsBattles([
+      "votanUthar",
+      "astarLysander",
+      "notAnEvent",
+    ])
+    expect(Object.keys(battles)).toEqual([
+      "votanUthar",
+      "astarLysander",
+      "notAnEvent",
+    ])
+    expect(battles.votanUthar?.map((battle) => battle.id).sort()).toEqual([
+      "votanUthar-alpha-1",
+      "votanUthar-beta-1",
+    ])
+    expect(battles.astarLysander?.map((battle) => battle.id)).toEqual([
+      "astarLysander-alpha-1",
+    ])
+    expect(battles.notAnEvent).toEqual([])
+    expect(await getLegendaryEventsBattles([])).toEqual({})
   })
 
   it("returns the horde-mode tier list, or null when the dataset is absent", async () => {

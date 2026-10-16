@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next"
 import { Tabs, TabsList, TabsTrigger } from "@workspace/ui/components/tabs"
 
 import { findActiveChild } from "./find-active-child"
+import { NavChildIcon } from "./nav-child-icon"
 import { NavLiveDot } from "./nav-live-dot"
 import { subItemLabel, type NavItem } from "./nav-items"
 
@@ -70,14 +71,7 @@ export function SectionTabs({ item }: { item: NavItem }) {
             }}
             value={child.path}
           >
-            {"iconSrc" in child && child.iconSrc ? (
-              <img
-                alt=""
-                aria-hidden="true"
-                className="size-5 shrink-0 rounded-full object-cover"
-                src={child.iconSrc}
-              />
-            ) : null}
+            <NavChildIcon child={child} />
             {subItemLabel(t, child)}
             <NavLiveDot item={child} />
           </TabsTrigger>

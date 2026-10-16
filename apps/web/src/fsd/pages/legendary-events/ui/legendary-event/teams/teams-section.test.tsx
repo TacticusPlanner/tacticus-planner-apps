@@ -110,10 +110,12 @@ function renderSection(
     isMobile = false,
     laneId = "alpha",
     estimates = { kind: "hidden" },
+    lastRunClears,
   }: {
     isMobile?: boolean
     laneId?: "alpha" | "beta" | "gamma"
     estimates?: ClearEstimatesViewModel
+    lastRunClears?: TeamsViewModel["lastRunClears"]
   } = {}
 ) {
   const actions = {
@@ -131,6 +133,7 @@ function renderSection(
     actions,
     estimates,
     progressByLane: undefined,
+    lastRunClears,
     goals: {
       goalLines: () => [],
       goalUnitIds: new Set(),
@@ -175,6 +178,28 @@ describe("TeamsSection", () => {
     expect(screen.getByTestId("legendary-event-add-team")).toHaveTextContent(
       "Add team"
     )
+  })
+
+  it("shows the last-run line only on teams of the previous run on the same lane", () => {
+    renderSection(ready(), {
+      lastRunClears: new Map([
+        ["melee", { laneId: "alpha" as const, clearedBattle: 3 }],
+        // Same id recorded on another lane: no line on Alpha.
+        ["flyers", { laneId: "beta" as const, clearedBattle: 5 }],
+      ]),
+    })
+    const lines = screen
+      .getAllByTestId("legendary-event-team-card")
+      .map(
+        (card) =>
+          within(card).queryByTestId("team-card-last-run")?.textContent ?? null
+      )
+    expect(lines).toEqual(["Last run: cleared up to battle 3", null])
+  })
+
+  it("shows no last-run line while the run records load or failed", () => {
+    renderSection(ready(), { lastRunClears: undefined })
+    expect(screen.queryByTestId("team-card-last-run")).toBeNull()
   })
 
   it("names the lane when it has no team", () => {

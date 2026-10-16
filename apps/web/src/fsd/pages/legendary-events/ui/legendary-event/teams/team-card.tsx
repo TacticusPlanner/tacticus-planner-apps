@@ -47,7 +47,8 @@ export interface TeamCardActions {
  * One team on a lane (design D4): name with the "N/5" badge for a partial team, member portraits
  * in position order and the reserve, the covered objectives as chips (muted when the members no
  * longer derive one), points per battle, the current run's depth stepper with its estimate
- * (manual depth wins; "Set depth" when there is neither) and the actions menu. On desktop the grip
+ * (manual depth wins; "Set depth" when there is neither) with what the same team cleared last run
+ * (beside it on desktop, wrapped under it on mobile), and the actions menu. On desktop the grip
  * is the drag handle. Stepper clicks show at once and are sent as one write once they settle.
  */
 export function TeamCard({
@@ -55,10 +56,13 @@ export function TeamCard({
   lane,
   actions,
   sortable,
+  lastRunClearedBattle,
 }: {
   card: TeamCardViewModel
   lane: Pick<LegendaryEventLane, "unitsRestrictions" | "battleIds">
   actions: TeamCardActions
+  /** What the same team cleared in the previous run; absent hides the line. */
+  lastRunClearedBattle?: number
   /** Desktop drag wiring; absent on mobile. */
   sortable?: SortableRenderProps
 }) {
@@ -253,6 +257,16 @@ export function TeamCard({
             onChange={setDepth}
             value={depth}
           />
+          {lastRunClearedBattle === undefined ? null : (
+            <span
+              className="basis-full pt-0 text-right text-xs text-muted-foreground tabular-nums md:basis-auto md:pt-1.5"
+              data-testid="team-card-last-run"
+            >
+              {lastRunClearedBattle > 0
+                ? t("teams.lastRun", { battle: lastRunClearedBattle })
+                : t("teams.lastRunNone")}
+            </span>
+          )}
         </div>
       </div>
     </li>

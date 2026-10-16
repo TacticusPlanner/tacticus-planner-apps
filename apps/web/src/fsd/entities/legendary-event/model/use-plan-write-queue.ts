@@ -115,6 +115,12 @@ export function usePlanWriteQueue(eventId: string) {
   ): Promise<PlanMutationOutcome> => {
     // Looked up per write (not held across renders): the queue is mutable shared state.
     const state = planWriteQueueState(queryClient, eventId)
+    // The plan list (master table) is a separate read of every plan: refreshed after each write.
+    const invalidateList = () =>
+      void queryClient.invalidateQueries({
+        queryKey: legendaryEventPlanQueries.list().queryKey,
+        exact: true,
+      })
     const show = (plan: LegendaryEventPlan) =>
       queryClient.setQueryData<LegendaryEventPlan>(
         queryKey,
@@ -148,6 +154,7 @@ export function usePlanWriteQueue(eventId: string) {
         state.confirmed = plan
         dropPatch()
         show(plan)
+        invalidateList()
         operation.onSaved?.(plan)
         return "saved"
       } catch (error) {
@@ -161,6 +168,7 @@ export function usePlanWriteQueue(eventId: string) {
           state.patches = []
           state.confirmed = conflict.plan
           show(conflict.plan)
+          invalidateList()
           toast(t("teams.toasts.reloaded"))
           return "conflict"
         }

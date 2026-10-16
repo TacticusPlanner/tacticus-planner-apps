@@ -8,6 +8,7 @@ import {
 } from "react"
 
 import { useIsAuthenticated } from "@azure/msal-react"
+import { useQueryClient } from "@tanstack/react-query"
 
 import {
   PlayerDataHttpClient,
@@ -18,6 +19,7 @@ import {
   type PlayerDataSyncResult,
 } from "@workspace/player-data"
 
+import { refreshServerReadsAfterSync } from "@/features/player-data-sync"
 import {
   acquireAccessToken,
   isInteractionRequired,
@@ -87,6 +89,7 @@ export function PlayerDataProvider({
   const [error, setError] = useState<string | null>(null)
   const [requiresReauth, setRequiresReauth] = useState(false)
   const hasRequestedApiAccess = useRef(false)
+  const queryClient = useQueryClient()
 
   const client = useMemo(() => {
     if (!isAuthenticated || !accountId) {
@@ -112,6 +115,9 @@ export function PlayerDataProvider({
         hasRequestedApiAccess.current = false
         setLastSyncedAt(result.syncedAt)
         setStatus(result.status)
+        // Manual and background syncs alike: refetch the server reads the sync can change (goals,
+        // Legendary Event run records and plans) now that it has finished.
+        void refreshServerReadsAfterSync(queryClient)
       } catch (caught) {
         const syncError =
           caught instanceof Error ? caught : new Error(String(caught))
@@ -145,7 +151,7 @@ export function PlayerDataProvider({
         }
       }
     },
-    []
+    [queryClient]
   )
 
   // Auto-sync: only fires when the last successful sync is more than an hour old (or there has never

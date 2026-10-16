@@ -9,6 +9,13 @@ const api = vi.hoisted(() => ({
 }))
 
 vi.mock("@/shared/api", () => ({
+  ApiError: class ApiError extends Error {
+    readonly status: number
+    constructor(status: number, message: string) {
+      super(message)
+      this.status = status
+    }
+  },
   apiDelete: api.delete,
   apiGet: api.get,
   apiPost: api.post,
@@ -20,10 +27,14 @@ import type {
   LegendaryEventPlan,
   UpdateTeamRequestDto,
 } from "../model/plan.types"
+import { ApiError } from "@/shared/api"
+
 import {
   createLegendaryEventTeam,
   deleteLegendaryEventTeam,
   getLegendaryEventPlan,
+  getLegendaryEventRunRecords,
+  listLegendaryEventPlans,
   updateLegendaryEventAnnotations,
   updateLegendaryEventPlan,
   updateLegendaryEventRunInputs,
@@ -153,5 +164,66 @@ describe("legendary event plan API", () => {
     api.get.mockResolvedValueOnce(plan(6))
     await client.fetchQuery({ ...options, staleTime: 0 })
     expect(client.getQueryData(options.queryKey)?.revision).toBe(6)
+  })
+
+  it("lists every stored plan", () => {
+    const signal = new AbortController().signal
+    listLegendaryEventPlans(signal)
+    expect(api.get).toHaveBeenCalledWith("/api/v1/me/legendary-event-plans", {
+      signal,
+    })
+  })
+
+  it("reads one event's run records", () => {
+    const signal = new AbortController().signal
+    getLegendaryEventRunRecords("astarLysander", signal)
+    expect(api.get).toHaveBeenCalledWith(`${BASE}/run-records`, { signal })
+  })
+
+  it("reads run records newest first, and a 404 as no records", async () => {
+    const client = new QueryClient()
+    const options = legendaryEventPlanQueries.runRecords("astarLysander")
+    api.get.mockResolvedValueOnce({
+      eventId: "astarLysander",
+      records: [{ id: "r2" }, { id: "r1" }],
+    })
+    expect(
+      (await client.fetchQuery(options)).map((record) => record.id)
+    ).toEqual(["r2", "r1"])
+
+    api.get.mockRejectedValueOnce(new ApiError(404, "not found"))
+    expect(await client.fetchQuery({ ...options, staleTime: 0 })).toEqual([])
+
+    api.get.mockRejectedValueOnce(new ApiError(500, "boom"))
+    await expect(
+      client.fetchQuery({ ...options, staleTime: 0, retry: false })
+    ).rejects.toThrow("boom")
+  })
+
+  it("keeps the list under the plans root and seeds uncached plans from it", async () => {
+    const plan = (eventId: string, revision: number): LegendaryEventPlan => ({
+      eventId,
+      revision,
+      catalogVersion: "1",
+      notes: null,
+      showPaidOptions: false,
+      teams: [],
+    })
+    const client = new QueryClient()
+    const list = legendaryEventPlanQueries.list()
+    expect(list.queryKey.slice(0, 1)).toEqual(legendaryEventPlanQueries.all())
+    const uthar = legendaryEventPlanQueries.detail("votanUthar").queryKey
+    client.setQueryData(uthar, plan("votanUthar", 9))
+
+    api.get.mockResolvedValueOnce({
+      plans: [plan("astarLysander", 2), plan("votanUthar", 6)],
+    })
+    expect(await client.fetchQuery(list)).toHaveLength(2)
+    expect(
+      client.getQueryData(
+        legendaryEventPlanQueries.detail("astarLysander").queryKey
+      )?.revision
+    ).toBe(2)
+    expect(client.getQueryData(uthar)?.revision).toBe(9)
   })
 })
