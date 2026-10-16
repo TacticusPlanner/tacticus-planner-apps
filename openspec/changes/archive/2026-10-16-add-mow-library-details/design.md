@@ -57,7 +57,7 @@ from `features/goal-farming`; nothing else needs the calculator.
 
 `CharacterUnitHeader` becomes `ui/unit/unit-header.tsx` (`UnitHeader`). The rank-specific parts move to
 props: `customControls` (the selects shown in Custom: character passes progression + rank, MoW passes
-progression only), `portraitBadge` (rank badge, absent for MoWs), `kindLine` ("<alliance> · Machine of
+progression only), `kindLine` ("<alliance> · Machine of
 War"), and the info-line strings. Ownership, sign-in/sync banner and shard bar stay inside. The character
 page passes its current content, so its tests must pass unchanged (regression check).
 
