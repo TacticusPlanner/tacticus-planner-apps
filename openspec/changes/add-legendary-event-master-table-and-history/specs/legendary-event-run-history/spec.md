@@ -54,17 +54,17 @@ Assumptions:
 
 ### Requirement: Roster changes since the previous run
 
-For the distinct members and reserves of the previous record's teams, the system SHALL compare the record's roster unit with the current synced roster and list per unit: **unlocked** when absent from the record and owned now; **stars** from → to when the current progression is later; **rank** from → to when the current rank is later (applied upgrades ignored); and each **ability** whose level rose, from → to. Units with no change, and units owned neither then nor now, SHALL be omitted. Values that went down SHALL be ignored.
+For the distinct members and reserves of the previous record's teams, the system SHALL compare the unit in the record's roster snapshot with the current synced roster and list per unit: **unlocked** when absent from the record and owned now; **stars** from → to when the current progression is later; **rank** from → to when the current rank is later (applied upgrades ignored); and each **ability** whose level rose, from → to. Units with no change, and units owned neither then nor now, SHALL be omitted. Values that went down SHALL be ignored.
 
 #### Scenario: Worked example, Calgar progressed
 
-- **GIVEN** the record's roster has `ultraCalgar` at Diamond1, `Legendary:RedFiveStars`, active 40, passive 38, and the current roster has him at Diamond3, `Legendary:OneBlueStar`, active 45, passive 38
+- **GIVEN** the record's roster snapshot has `ultraCalgar` at Diamond1, `Legendary:RedFiveStars`, active 40, passive 38, and the current roster has him at Diamond3, `Legendary:OneBlueStar`, active 45, passive 38
 - **WHEN** roster changes are listed
 - **THEN** Calgar shows rank Diamond 1 → Diamond 3, stars 5 red → 1 blue, and active ability 40 → 45, and no passive line
 
 #### Scenario: Worked example, unlocked since
 
-- **GIVEN** `ultraTigurius` is in a team of the record but absent from its roster, and owned now
+- **GIVEN** `ultraTigurius` is in a team of the record but absent from its roster snapshot, and owned now
 - **WHEN** roster changes are listed
 - **THEN** Tigurius shows "Unlocked since last run"
 
@@ -90,7 +90,7 @@ The Overview tab SHALL show a **Last run** card for the previous run when one ex
 
 ### Requirement: Run history data states are distinct
 
-The history SHALL distinguish: records loading (card skeleton); records read failed ("History unavailable" with Retry, the rest of the page unaffected); no record at all for the event (a one-line "History starts with your next synced run" note in the card's place); an active event whose only record is the current run (no card and no note); a previous record with no teams ("No teams were planned for this run" and no Since last run list); and a roster that cannot be read (the Since last run list replaced by "Sync your roster to compare").
+The history SHALL distinguish: records loading (card skeleton); records read failed ("History unavailable" with Retry, the rest of the page unaffected); no record at all for the event (a one-line "History starts with your next synced run" note in the card's place); an active event whose only record is the current run (no card and no note); a previous record with no teams ("No teams were planned for this run" and no Since last run list); a record with no roster snapshot (the Since last run list replaced by "Roster at the time is unavailable"); and a roster that cannot be read (the Since last run list replaced by "Sync your roster to compare").
 
 #### Scenario: First recorded run
 
