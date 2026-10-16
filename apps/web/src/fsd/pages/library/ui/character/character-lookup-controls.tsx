@@ -16,18 +16,11 @@ import {
   rankAt,
   rankIndex,
   rankOrder,
-  type FactionGroup,
   type Progression,
   type Rank,
-  type UnitId,
 } from "@workspace/game-domain"
 
-import {
-  ProgressionSelect,
-  RankBadge,
-  RankSelect,
-  UnitCombobox,
-} from "@/shared/ui"
+import { ProgressionSelect, RankBadge, RankSelect } from "@/shared/ui"
 
 import { shareCurrentLookupUrl } from "./character-lookup-share"
 
@@ -36,9 +29,6 @@ import { shareCurrentLookupUrl } from "./character-lookup-share"
 const maxIndex = rankIndex(lastRank)
 
 export function CharacterLookupControls({
-  characterGroups,
-  characterId,
-  onCharacterChange,
   rankStart,
   rankEnd,
   onRangeChange,
@@ -55,9 +45,6 @@ export function CharacterLookupControls({
   applyDisabled,
   isMobile,
 }: {
-  characterGroups: FactionGroup[]
-  characterId?: UnitId
-  onCharacterChange: (id: UnitId) => void
   rankStart: Rank
   rankEnd: Rank
   onRangeChange: (start: Rank, end: Rank) => void
@@ -106,17 +93,6 @@ export function CharacterLookupControls({
 
   return (
     <div className="flex flex-col gap-5">
-      <div className="grid gap-2" data-testid="lookup-character-select">
-        <Label>{t("unitLookup.character")}</Label>
-        <UnitCombobox
-          groups={characterGroups}
-          value={characterId}
-          onChange={onCharacterChange}
-          placeholder={t("unitLookup.characterPlaceholder")}
-          emptyText={t("unitLookup.noCharacter")}
-        />
-      </div>
-
       <div className="grid gap-2">
         <Label>{t("unitLookup.rankRange")}</Label>
         {isMobile ? (

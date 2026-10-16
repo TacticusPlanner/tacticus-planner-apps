@@ -321,5 +321,196 @@
     "meleeOnly": "Solo cuerpo a cuerpo",
     "hasRanged": "Con ataque a distancia",
     "clearOne": "Borrar {{name}}"
+  },
+  "unit": {
+    "nav": {
+      "label": "Navegación de unidades",
+      "backTo": "Volver a {{label}}",
+      "previous": "Anterior",
+      "next": "Siguiente",
+      "previousUnit": "Unidad anterior: {{name}}",
+      "nextUnit": "Unidad siguiente: {{name}}",
+      "position": "{{index}} de {{total}}"
+    },
+    "tabs": {
+      "label": "Secciones de la página de la unidad",
+      "details": "Detalles",
+      "rankup": "Materiales de rango"
+    },
+    "values": {
+      "label": "Mostrar valores de",
+      "yourUnit": "Tu unidad",
+      "starting": "Iniciales",
+      "custom": "Personalizados",
+      "stars": "Rareza y estrellas",
+      "rank": "Rango"
+    },
+    "ability": {
+      "level": "Nivel de {{name}}",
+      "levelShort": "Nv {{level}}",
+      "lower": "Bajar nivel",
+      "raise": "Subir nivel",
+      "yours": "El tuyo: nivel {{level}}",
+      "nextLevel": "Siguiente nivel ({{level}}):",
+      "chartTitle": "{{label}} por nivel",
+      "chartCaption": "{{label}} pasa de {{from}} en el nivel 1 a {{to}} en el nivel {{maxLevel}}.",
+      "constant": "{{label}} se mantiene en {{value}} en todos los niveles, así que no se muestra en un gráfico.",
+      "missingText": "El texto de reglas aún no está en el planificador."
+    },
+    "notFound": "Esta unidad no está en la Biblioteca.",
+    "loadFailed": "No se pudieron cargar los datos de personajes.",
+    "retry": "Reintentar"
+  },
+  "charactersList": {
+    "title": "Personajes",
+    "search": "Buscar personajes",
+    "searchPlaceholder": "Buscar por nombre…",
+    "noMatching": "Ningún personaje coincide con tu búsqueda.",
+    "clearSearch": "Borrar búsqueda",
+    "tour": {
+      "steps": {
+        "search": {
+          "title": "Buscar un personaje",
+          "content": "Escribe parte de un nombre para acotar la lista."
+        },
+        "list": {
+          "title": "Abrir un personaje",
+          "content": "Selecciona un personaje para ver sus estadísticas, rasgos, habilidades y materiales de rango."
+        }
+      }
+    }
+  },
+  "characterUnit": {
+    "breadcrumbLibrary": "Biblioteca",
+    "header": {
+      "yourUnit": "Tu unidad:",
+      "abilities": "habilidades {{active}} / {{passive}}",
+      "relic": "reliquia nivel {{level}}",
+      "notUnlocked": "No desbloqueado. Los valores empiezan en {{rarity}}, {{stars}}, {{rank}}.",
+      "showing": "Mostrando {{rarity}}, {{stars}}, {{rank}}, habilidades en nivel 1.",
+      "shards": "{{owned}} / {{needed}} fragmentos",
+      "shardProgress": "Fragmentos para desbloquear",
+      "signInBanner": "Inicia sesión y sincroniza para abrir esta página con tus propios valores.",
+      "signIn": "Iniciar sesión",
+      "syncBanner": "Sincroniza con Tacticus (en la cabecera) para abrir esta página con tus propios valores."
+    },
+    "glance": {
+      "title": "De un vistazo",
+      "health": "Salud",
+      "damage": "Daño",
+      "armour": "Armadura",
+      "movement": "Movimiento",
+      "melee": "Cuerpo a cuerpo",
+      "ranged": "A distancia",
+      "hits_one": "{{count}} golpe",
+      "hits_other": "{{count}} golpes",
+      "range": "Alcance {{range}}",
+      "equipment": "Huecos de equipo",
+      "pierce": "{{value}} % de tasa de perforación",
+      "pierceHint": "Tasa de perforación: cada golpe inflige el mayor valor entre su daño menos la armadura del objetivo o el {{value}} % de su daño. Contra armaduras pesadas, lo que llega es ese {{value}} %.",
+      "relicSlot": "Reliquia: {{name}}",
+      "itemCount_one": "{{count}} objeto",
+      "itemCount_other": "{{count}} objetos",
+      "itemsTitle": "Objetos para la ranura {{slot}}",
+      "itemLevels": "Nivel 1 → {{max}}",
+      "itemStats": {
+        "critChance": "Prob. de crítico",
+        "critDamage": "Daño crítico",
+        "critChanceBonus": "Prob. de crítico",
+        "critDamageBonus": "Daño crítico",
+        "blockChance": "Prob. de bloqueo",
+        "blockDamage": "Daño bloqueado",
+        "blockChanceBonus": "Prob. de bloqueo",
+        "blockDamageBonus": "Daño bloqueado",
+        "armor": "Armadura",
+        "hp": "Salud"
+      }
+    },
+    "traits": {
+      "title": "Rasgos"
+    },
+    "abilities": {
+      "title": "Habilidades",
+      "active": "Activa",
+      "passive": "Pasiva"
+    },
+    "compare": {
+      "title": "Comparado con otros personajes",
+      "subtitle": "Percentil en Mythic Wings · Adamantino II",
+      "axes": {
+        "health": "Salud",
+        "armour": "Armadura",
+        "meleeVsInfiniteArmour": "Daño cuerpo a cuerpo contra armadura infinita",
+        "meleeVsZeroArmour": "Daño cuerpo a cuerpo contra armadura 0",
+        "rangedVsInfiniteArmour": "Daño a distancia contra armadura infinita",
+        "rangedVsZeroArmour": "Daño a distancia contra armadura 0"
+      },
+      "axesShort": {
+        "health": "Salud",
+        "armour": "Armadura",
+        "meleeVsInfiniteArmour": "C. a c. ∞",
+        "meleeVsZeroArmour": "C. a c. 0",
+        "rangedVsInfiniteArmour": "Distancia ∞",
+        "rangedVsZeroArmour": "Distancia 0"
+      },
+      "percent": "{{value}} %",
+      "caption": "Percentiles: {{values}}.",
+      "footnote": "Discontinua = personaje mediano. Un {{value}} % de armadura significa que {{name}} tiene más armadura que el {{value}} % de los personajes en Mythic Wings, Adamantino II.",
+      "damageLink": "Cómo funciona el daño (wiki de Tacticus)"
+    },
+    "statsByRank": {
+      "title": "Estadísticas por rango",
+      "footnote": "Línea discontinua = rango mostrado ({{rank}}). Pasa el cursor por un gráfico para leer cualquier rango.",
+      "yours": " (el tuyo)",
+      "aboveCap": " (por encima del límite para estas estrellas)",
+      "capFootnote": "Los rangos atenuados están por encima de {{rank}}, el límite para estas estrellas.",
+      "caption": "{{stat}} pasa de {{from}} en {{firstRank}} a {{to}} en {{lastRank}}.",
+      "rank": "Rango"
+    },
+    "relic": {
+      "kind": "Reliquia",
+      "none": "{{name}} no tiene reliquia.",
+      "noneShort": "Ninguna",
+      "unique": "Reliquia única",
+      "shared": "Reliquia compartida",
+      "sharedWith": "También la pueden equipar {{names}}"
+    },
+    "tour": {
+      "steps": {
+        "header": {
+          "title": "La unidad",
+          "content": "Su retrato, facción y los valores que muestra la página. Con la sesión iniciada y sincronizada, empiezan en tu propia unidad; elige «Personalizados» para probar otros valores."
+        },
+        "tabs": {
+          "title": "Detalles y rango",
+          "content": "Cambia entre los detalles de la unidad y la calculadora de materiales de rango."
+        },
+        "ability": {
+          "title": "Habilidades",
+          "content": "Cambia el nivel para leer el texto de reglas en ese nivel; el gráfico muestra cómo crece cada valor."
+        },
+        "compare": {
+          "title": "Comparado con otros personajes",
+          "content": "Cómo se sitúan las estadísticas de este personaje entre todos los personajes, en Mythic Wings, Adamantino II."
+        },
+        "rankup": {
+          "title": "Materiales de rango",
+          "content": "Elige un intervalo de rangos para ver las mejoras necesarias y dónde conseguirlas."
+        }
+      }
+    },
+    "mythic": {
+      "kind": "Mítico",
+      "title": "Misiones míticas",
+      "count_one": "{{count}} misión",
+      "count_other": "{{count}} misiones",
+      "rewards": {
+        "mythicShards": "Fragmentos míticos de {{name}}",
+        "ascensionOrb": "Orbe de ascensión mítico {{alliance}}",
+        "abilityBadge": "Insignia mítica {{alliance}}",
+        "xp": "Libro de XP mítico",
+        "gold": "Oro"
+      }
+    }
   }
 }

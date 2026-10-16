@@ -2,8 +2,9 @@ import { useCallback } from "react"
 import { useTranslation } from "react-i18next"
 
 /**
- * Rules-text resolution for NPC abilities, from the id-keyed `npcAbilityText` game-data namespace
- * (ported from V1's ability table). The served `npcs` dataset carries ability ids only; the
+ * Rules-text resolution for unit abilities (NPCs and characters share ability ids), from the id-keyed
+ * `npcAbilityText` game-data namespace (ported from V1's ability table). The served datasets carry
+ * ability ids only; the
  * `{[variable]}` tokens in a description are resolved against these per-ability-level tables, indexed
  * by the selected stat row's `abilityLevel`.
  *
@@ -11,7 +12,7 @@ import { useTranslation } from "react-i18next"
  * and constant tables, so a caller can never render a leftover token. In practice that is every
  * ability the page displays; an id absent here has no text, and the caller renders its name alone.
  */
-export type NpcAbilityTextEntry = {
+export type AbilityTextEntry = {
   description: string
   variables: Record<string, (string | number)[]>
   /** Level-independent values (hit counts, ranges, damage profiles) the description also references. */
@@ -20,19 +21,19 @@ export type NpcAbilityTextEntry = {
   scaled: string[]
 }
 
-export type NpcTraitTextEntry = {
+export type TraitTextEntry = {
   description: string
   variables: Record<string, (string | number)[]>
 }
 
-export function useNpcAbilityText() {
+export function useAbilityText() {
   const { i18n } = useTranslation("npcAbilityText")
 
   return useCallback(
-    (abilityId: string): NpcAbilityTextEntry | undefined =>
+    (abilityId: string): AbilityTextEntry | undefined =>
       (i18n.getResource(i18n.language, "npcAbilityText", abilityId) ??
         i18n.getResource("en", "npcAbilityText", abilityId)) as
-        NpcAbilityTextEntry | undefined,
+        AbilityTextEntry | undefined,
     [i18n]
   )
 }
@@ -44,14 +45,14 @@ export function useNpcAbilityText() {
  * Traits have no levels — each value is stored as a single-element array so the shared renderer,
  * which indexes variables by level, resolves them at level 1.
  */
-export function useNpcTraitText() {
+export function useTraitText() {
   const { i18n } = useTranslation("npcTraitText")
 
   return useCallback(
-    (traitId: string): NpcTraitTextEntry | undefined =>
+    (traitId: string): TraitTextEntry | undefined =>
       (i18n.getResource(i18n.language, "npcTraitText", traitId) ??
         i18n.getResource("en", "npcTraitText", traitId)) as
-        NpcTraitTextEntry | undefined,
+        TraitTextEntry | undefined,
     [i18n]
   )
 }

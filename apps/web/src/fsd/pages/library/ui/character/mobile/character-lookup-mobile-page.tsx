@@ -1,12 +1,7 @@
 import { useEffect, useRef } from "react"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 
-import type {
-  FactionGroup,
-  Progression,
-  Rank,
-  UnitId,
-} from "@workspace/game-domain"
+import type { Progression, Rank } from "@workspace/game-domain"
 
 import type { CampaignInsight } from "@/features/campaign-insights"
 
@@ -20,8 +15,6 @@ import { UnitProfile } from "../unit-profile"
 import type { UnitProfileViewModel } from "../unit-profile.view-model"
 
 interface CharacterLookupMobilePageProps {
-  characterGroups: FactionGroup[]
-  characterId: UnitId | undefined
   rankStart: Rank
   rankEnd: Rank
   progressionStart: Progression
@@ -36,7 +29,6 @@ interface CharacterLookupMobilePageProps {
   groups: RankGroupViewModel[]
   campaignInsights: CampaignInsight[]
   eventInsights: CampaignInsight[]
-  onCharacterChange: (id: UnitId) => void
   onRangeChange: (start: Rank, end: Rank) => void
   onProgressionRangeChange: (start: Progression, end: Progression) => void
   onPointFiveChange: (value: boolean) => void
@@ -47,8 +39,6 @@ interface CharacterLookupMobilePageProps {
 
 export function CharacterLookupMobilePage({
   loading,
-  characterGroups,
-  characterId,
   rankStart,
   rankEnd,
   progressionStart,
@@ -62,7 +52,6 @@ export function CharacterLookupMobilePage({
   groups,
   campaignInsights,
   eventInsights,
-  onCharacterChange,
   onRangeChange,
   onProgressionRangeChange,
   onPointFiveChange,
@@ -73,9 +62,9 @@ export function CharacterLookupMobilePage({
   const resultsRef = useRef<HTMLDivElement>(null)
   const pendingScrollRef = useRef(false)
 
-  // Only the Apply button should trigger this scroll - picking a different character also
-  // recomputes profile/groups/baseUpgrades (it commits immediately, see useLookupSelection), but
-  // that shouldn't yank the page down, so the pending flag is only ever set from handleApply below.
+  // Only the Apply button should trigger this scroll - a late player-data prefill also recomputes
+  // profile/groups/baseUpgrades, but that shouldn't yank the page down, so the pending flag is only
+  // ever set from handleApply below.
   useEffect(() => {
     if (!pendingScrollRef.current) return
     pendingScrollRef.current = false
@@ -100,9 +89,6 @@ export function CharacterLookupMobilePage({
   return (
     <div className="flex flex-col gap-8">
       <CharacterLookupControls
-        characterGroups={characterGroups}
-        characterId={characterId}
-        onCharacterChange={onCharacterChange}
         rankStart={rankStart}
         rankEnd={rankEnd}
         onRangeChange={onRangeChange}

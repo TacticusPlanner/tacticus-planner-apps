@@ -1,11 +1,6 @@
 import { Skeleton } from "@workspace/ui/components/skeleton"
 
-import type {
-  FactionGroup,
-  Progression,
-  Rank,
-  UnitId,
-} from "@workspace/game-domain"
+import type { Progression, Rank } from "@workspace/game-domain"
 
 import type { CampaignInsight } from "@/features/campaign-insights"
 
@@ -19,8 +14,6 @@ import { UnitProfile } from "../unit-profile"
 import type { UnitProfileViewModel } from "../unit-profile.view-model"
 
 interface CharacterLookupDesktopPageProps {
-  characterGroups: FactionGroup[]
-  characterId: UnitId | undefined
   rankStart: Rank
   rankEnd: Rank
   progressionStart: Progression
@@ -35,7 +28,6 @@ interface CharacterLookupDesktopPageProps {
   groups: RankGroupViewModel[]
   campaignInsights: CampaignInsight[]
   eventInsights: CampaignInsight[]
-  onCharacterChange: (id: UnitId) => void
   onRangeChange: (start: Rank, end: Rank) => void
   onProgressionRangeChange: (start: Progression, end: Progression) => void
   onPointFiveChange: (value: boolean) => void
@@ -46,8 +38,6 @@ interface CharacterLookupDesktopPageProps {
 
 export function CharacterLookupDesktopPage({
   loading,
-  characterGroups,
-  characterId,
   rankStart,
   rankEnd,
   progressionStart,
@@ -61,7 +51,6 @@ export function CharacterLookupDesktopPage({
   groups,
   campaignInsights,
   eventInsights,
-  onCharacterChange,
   onRangeChange,
   onProgressionRangeChange,
   onPointFiveChange,
@@ -85,9 +74,6 @@ export function CharacterLookupDesktopPage({
     <div className="flex items-start gap-8">
       <div className="sticky top-6 w-80 shrink-0">
         <CharacterLookupControls
-          characterGroups={characterGroups}
-          characterId={characterId}
-          onCharacterChange={onCharacterChange}
           rankStart={rankStart}
           rankEnd={rankEnd}
           onRangeChange={onRangeChange}
