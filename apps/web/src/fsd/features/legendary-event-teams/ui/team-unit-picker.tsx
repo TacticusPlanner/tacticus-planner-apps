@@ -31,8 +31,9 @@ import {
  * The editor's unit picker (design D7): the lane's allowed units as tiles (portrait, name, the
  * objectives each satisfies with the others muted, points per battle, locked styling), a name
  * search and an "only unlocked" switch. A tap toggles membership up to five; a sixth tap is
- * ignored and pulses the count badge, which also says a team needs three while it has fewer. A tile's secondary action sets the reserve. The selected
- * members (in position order) and the reserve sit above the grid with remove buttons. With Goals
+ * ignored and pulses the count badge, which also says a team needs three while it has fewer. A
+ * tile's secondary action sets the reserve. The selected members (in position order) and the
+ * reserve sit above the grid with remove buttons. With Goals
  * Preview available, a switch (starting from the page's value) shows tiles at their goal targets:
  * owned state, rarity, rank, estimated clears and a preview marker.
  */

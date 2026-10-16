@@ -627,7 +627,7 @@
           "unknown_objective": "Un objectif n'a pas été reconnu et a été écarté.",
           "unknown_lane": "La voie de l'équipe n'a pas été reconnue, l'équipe a donc été ignorée.",
           "empty_team": "Aucune unité de l'équipe n'a pu être importée, l'équipe a donc été ignorée.",
-          "team_too_small_one": "Il ne restait que {{count}} unité de l'équipe alors qu'une équipe en demande au moins {{min}}, l'équipe a donc été ignorée.",
+          "team_too_small_one": "Il ne restait qu'une seule unité de l'équipe alors qu'une équipe en demande au moins {{min}}, l'équipe a donc été ignorée.",
           "team_too_small_other": "Il ne restait que {{count}} unités de l'équipe alors qu'une équipe en demande au moins {{min}}, l'équipe a donc été ignorée.",
           "team_truncated": "L'équipe comptait plus de cinq unités ; les cinq premières ont été gardées.",
           "duplicate_team_merged": "Deux équipes avaient les mêmes unités et ont été fusionnées.",
