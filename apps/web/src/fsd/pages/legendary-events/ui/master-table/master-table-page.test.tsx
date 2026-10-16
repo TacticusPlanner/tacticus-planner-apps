@@ -244,23 +244,23 @@ describe("MasterTablePage", () => {
     expect(data.capture).toHaveBeenCalledTimes(1)
   })
 
-  it("reproduces Dante across Lysander and Uthar in All mode: 11,142", async () => {
+  it("reproduces Dante across Lysander and Uthar in All mode: 6,534 + 5,004 = 11,538", async () => {
     renderPage("?events=astarLysander,votanUthar&points=all&units=all")
     await ready()
     const dante = await waitFor(() => rowOf("bloodDante"))
     expect(within(dante).getByTestId("master-table-total")).toHaveTextContent(
-      "11,142"
+      "11,538"
     )
     const cells = within(dante).getAllByTestId("master-table-cell-points")
     expect(cells.map((cell) => [cell.dataset.event, cell.textContent])).toEqual(
       [
-        ["votanUthar", "4,608"],
+        ["votanUthar", "5,004"],
         ["astarLysander", "6,534"],
       ]
     )
   })
 
-  it("deducts synced progress in Remaining: 10,382", async () => {
+  it("deducts synced progress in Remaining: 5,774 + 5,004 = 10,778", async () => {
     data.progress = [
       {
         id: "astarLysander",
@@ -275,7 +275,7 @@ describe("MasterTablePage", () => {
     await waitFor(() =>
       expect(
         within(rowOf("bloodDante")).getByTestId("master-table-total")
-      ).toHaveTextContent("10,382")
+      ).toHaveTextContent("10,778")
     )
   })
 
@@ -439,7 +439,7 @@ describe("MasterTablePage", () => {
     await waitFor(() =>
       expect(
         within(rowOf("bloodDante")).getByTestId("master-table-total")
-      ).toHaveTextContent("11,142")
+      ).toHaveTextContent("11,538")
     )
   })
 
@@ -496,7 +496,7 @@ describe("MasterTablePage", () => {
         .getAllByTestId("master-table-event-line")
         .map((line) => line.textContent)
     ).toEqual([
-      "Uthar · 4,608 · 3 objectives",
+      "Uthar · 5,004 · 3 objectives",
       "Lysander · 6,534 · 5 objectives",
     ])
     fireEvent.click(screen.getByTestId("master-table-controls"))

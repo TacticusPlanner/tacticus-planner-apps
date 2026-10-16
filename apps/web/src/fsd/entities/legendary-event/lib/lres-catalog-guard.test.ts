@@ -132,3 +132,28 @@ describe("served lres against the objective matcher", () => {
     }
   })
 })
+
+describe("served lres lane kill points", () => {
+  const killPointsOf = (event: LegendaryEvent) =>
+    LEGENDARY_EVENT_LANE_IDS.map((laneId) => event[laneId].killPoints)
+
+  it("equals each lane's first defeat-all score on every served lane", () => {
+    for (const event of servedEvents) {
+      for (const { where, lane } of lanesOf(event)) {
+        expect(lane.killPoints, where).toBe(lane.defeatAll[0])
+      }
+    }
+  })
+
+  it("carries Uthar's corrected bases 30 / 34 / 43 (were 34 / 26 / 17)", () => {
+    expect(killPointsOf(utharEvent)).toEqual([30, 34, 43])
+    expect(
+      LEGENDARY_EVENT_LANE_IDS.map((laneId) => utharEvent[laneId].defeatAll[0])
+    ).toEqual([30, 34, 43])
+  })
+
+  it("leaves Lysander's and Farsight's bases unchanged", () => {
+    expect(killPointsOf(lysanderEvent)).toEqual([32, 38, 31])
+    expect(killPointsOf(farsightEvent)).toEqual([34, 26, 17])
+  })
+})
