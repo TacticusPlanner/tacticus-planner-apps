@@ -94,14 +94,14 @@ The event picker SHALL list every catalog Legendary Event in hub order: active a
 
 #### Scenario: Default selection
 
-- **GIVEN** Uthar active, Farsight and Lysander upcoming, Dante, Trajann and Lucius archived
+- **GIVEN** Uthar active, Farsight and Lysander upcoming, and Fabius Bile upcoming
 - **WHEN** the page opens without query parameters
-- **THEN** Uthar, Farsight and Lysander are selected and the archived events are listed unselected below the divider
+- **THEN** all four are selected, and any archived event the catalog serves is listed unselected below the divider
 
 #### Scenario: Shared link restores the view
 
-- **WHEN** the user opens `/legendary-events/master-table?events=bloodDante,votanUthar&units=unlocked&points=all&sort=bloodDante`
-- **THEN** Dante and Uthar are selected, Unlocked and All are active, and rows are sorted by Dante
+- **WHEN** the user opens `/legendary-events/master-table?events=tauFarsight,votanUthar&units=unlocked&points=all&sort=tauFarsight`
+- **THEN** Farsight and Uthar are selected, Unlocked and All are active, and rows are sorted by Farsight
 
 #### Scenario: No event selected
 

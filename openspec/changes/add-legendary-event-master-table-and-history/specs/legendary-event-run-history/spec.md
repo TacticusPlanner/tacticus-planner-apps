@@ -23,9 +23,9 @@ Assumptions:
 - **WHEN** the page loads
 - **THEN** run 2 is the previous run and run 1 is an earlier run
 
-#### Scenario: Archived event
+#### Scenario: Event that is not active
 
-- **GIVEN** Dante is archived with records for runs 3, 2 and 1
+- **GIVEN** Farsight is upcoming with records for runs 3, 2 and 1
 - **WHEN** the page loads
 - **THEN** run 3 is the previous run and runs 2 and 1 are earlier runs
 
