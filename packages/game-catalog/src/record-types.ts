@@ -12,7 +12,7 @@ import type {
   farmLocationSchema,
   lreBattleSchema,
   lreBattleViewSchema,
-  lreCommonSchema,
+  lreRewardsSchema,
   lreEnemySchema,
   lreTrackViewSchema,
   lreViewSchema,
@@ -56,7 +56,7 @@ export type GameCatalogLreView = z.infer<typeof lreViewSchema>
 export type GameCatalogLreTrackView = z.infer<typeof lreTrackViewSchema>
 export type GameCatalogLreBattle = z.infer<typeof lreBattleSchema>
 export type GameCatalogLreBattleView = z.infer<typeof lreBattleViewSchema>
-export type GameCatalogLreCommon = z.infer<typeof lreCommonSchema>
+export type GameCatalogLreRewards = z.infer<typeof lreRewardsSchema>
 export type GameCatalogLreWave = z.infer<typeof lreWaveSchema>
 export type GameCatalogLreEnemy = z.infer<typeof lreEnemySchema>
 export type GameCatalogFarmLocation = z.infer<typeof farmLocationSchema>

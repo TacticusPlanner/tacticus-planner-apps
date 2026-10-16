@@ -2,31 +2,50 @@ import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import {
   Card,
+  CardAction,
   CardContent,
   CardHeader,
   CardTitle,
 } from "@workspace/ui/components/card"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 
-import type { LegendaryEventLifecycle } from "@/entities/legendary-event"
+import type {
+  LegendaryEvent,
+  LegendaryEventLifecycle,
+} from "@/entities/legendary-event"
+import { RunInputsDrawer } from "@/features/legendary-event-run-inputs"
 import { formatEventCountdown, formatRelativeTime } from "@/shared/lib"
 
 import { EventTimingLines } from "../shared/event-timing-lines"
-import type { RunStatusViewModel } from "./legendary-event-page.view-model"
+import type {
+  RewardOutlookViewModel,
+  RunInputsViewModel,
+  RunStatusViewModel,
+} from "./legendary-event-page.view-model"
+import { RewardOutlook } from "./reward-outlook"
 
-/** The event's run status from the last sync. Refreshing is the shell's Sync action; there is
- *  deliberately no sync control here (design D8). */
+/** The event's run status from the last sync, the Inputs drawer (signed in) and the Reward
+ *  outlook. Refreshing is the shell's Sync action; there is deliberately no sync control here
+ *  (design D8). */
 export function RunStatusCard({
+  event,
   lifecycle,
   nowMs,
   runStatus,
+  outlook,
+  runInputs,
   syncedAtMs,
+  isMobile,
 }: {
+  event: Pick<LegendaryEvent, "id" | "regularMissions" | "premiumMissions">
   lifecycle: LegendaryEventLifecycle
   nowMs: number
   runStatus: RunStatusViewModel
+  outlook: RewardOutlookViewModel
+  runInputs: RunInputsViewModel
   /** `null` before the first sync; `undefined` while unknown, which hides the line. */
   syncedAtMs: number | null | undefined
+  isMobile: boolean
 }) {
   const { t, i18n } = useTranslation("legendaryEvents")
   const number = new Intl.NumberFormat(i18n.language)
@@ -128,10 +147,20 @@ export function RunStatusCard({
         <CardTitle>
           <h2>{t("runStatus.title")}</h2>
         </CardTitle>
+        {runInputs.enabled ? (
+          <CardAction>
+            <RunInputsDrawer
+              currentRun={runInputs.currentRun}
+              event={event}
+              isMobile={isMobile}
+            />
+          </CardAction>
+        ) : null}
       </CardHeader>
       <CardContent className="flex flex-col gap-3">
         <EventTimingLines lifecycle={lifecycle} nowMs={nowMs} />
         {body}
+        <RewardOutlook outlook={outlook} />
         {syncedAtMs === undefined ? null : (
           <p
             className="text-xs text-muted-foreground"

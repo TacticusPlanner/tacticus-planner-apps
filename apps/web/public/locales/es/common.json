@@ -96,6 +96,9 @@
     }
   },
   "accountGate": {
+    "loading": "Cargando tu cuenta…",
+    "reauthenticating": "Hay que renovar tu sesión: te llevamos a iniciar sesión…",
+    "slow": "Esto está tardando más de lo habitual. Espera, por favor: recargar o volver a iniciar sesión no lo acelerará.",
     "errorTitle": "No se pudo conectar con el servicio",
     "errorDescription": "No pudimos comprobar el estado de tu cuenta ahora mismo. Tu sesión está bien: inténtalo de nuevo en un momento.",
     "retry": "Reintentar"
@@ -242,7 +245,23 @@
   "onslaught": {
     "sector": "Sector",
     "tier": "Nivel",
-    "tierComplete": "Nivel 4 · sector completo",
+    "tierComplete": "Sector completado",
+    "tierNumber": "Nivel {{tier}}",
+    "position": "{{sector}} · Nivel {{tier}}",
+    "positionComplete": "{{sector}} · Sector completado",
+    "notSet": "Sin definir",
+    "notSetHint": "Elige el sector en el que está esta alianza para ver sus fragmentos por partida.",
+    "yieldPerRun": "Fragmentos por partida en esta posición",
+    "help": "Elige el sector y el nivel que estás farmeando ahora, el que usará tu próxima partida. Cuando hayas superado el nivel 3, marca «Sector completado»; un sector completado sigue dando las recompensas del nivel 3 hasta que pases al siguiente sector.",
+    "sectors": {
+      "Stone": "Piedra",
+      "Iron": "Hierro",
+      "Bronze": "Bronce",
+      "Silver": "Plata",
+      "Gold": "Oro",
+      "Diamond": "Diamante",
+      "Adamantine": "Adamantio"
+    },
     "save": "Guardar",
     "saving": "Guardando…",
     "saved": "Progreso de Onslaught guardado.",
@@ -267,7 +286,7 @@
       "collection": "Colección",
       "collectionDescription": "Todos los personajes y Máquinas de Guerra: lo que tienes y cuánto ha progresado cada unidad.",
       "onslaught": "Onslaught",
-      "onslaughtDescription": "Introduce el sector y el nivel actuales de cada alianza. Las estimaciones de ascensión usan estos valores junto con las fichas de Onslaught sincronizadas.",
+      "onslaughtDescription": "Para cada alianza, elige el sector y el nivel que estás farmeando ahora. Las estimaciones de objetivos usan estas posiciones y tus fichas de Onslaught sincronizadas; las alianzas sin definir no aportan fragmentos de Onslaught.",
       "campaigns": "Campañas",
       "campaignsDescription": "Tu progreso de campaña se sincroniza desde la API de Tacticus y no se puede editar aquí.",
       "campaign-events": "Eventos de campaña",
@@ -395,7 +414,8 @@
       "title": "Incursiones diarias",
       "empty": "No hay nada que asaltar hoy.",
       "error": "No se pudieron cargar las incursiones de hoy.",
-      "noGoals": "Aún no hay objetivos activos. Añade objetivos para planificar tus incursiones."
+      "noGoals": "Aún no hay objetivos activos. Añade objetivos para planificar tus incursiones.",
+      "limitReached": "Límite diario de energía alcanzado: incursiones extra:"
     },
     "events": {
       "title": "Eventos",
@@ -524,7 +544,7 @@
         "legendaryEventPlans": "Equipos de Eventos Legendarios"
       },
       "partDescriptions": {
-        "legendaryEventPlans": "Equipos creados a mano y notas de los eventos que conoce el planificador. El progreso del evento no se importa."
+        "legendaryEventPlans": "Equipos creados a mano, notas, datos de misiones y packs por ronda y marcas «Quizá superable» / «Parar aquí» de los eventos que conoce el planificador. El progreso del evento no se importa."
       },
       "submit": "Importar selección",
       "submitting": "Importando…",
@@ -569,10 +589,25 @@
         "title": "Equipos de Eventos Legendarios",
         "teams_one": "{{count}} equipo",
         "teams_other": "{{count}} equipos",
+        "runs_one": "datos de {{count}} ronda",
+        "runs_other": "datos de {{count}} rondas",
+        "marks_one": "{{count}} marca",
+        "marks_other": "{{count}} marcas",
         "v1Event": "Evento V1 {{id}}",
+        "lanes": {
+          "alpha": "Alfa",
+          "beta": "Beta",
+          "gamma": "Gamma"
+        },
+        "fields": {
+          "regularMissions": "misiones normales",
+          "premiumMissions": "misiones prémium",
+          "closeShards": "fragmentos de «Oh So Close»"
+        },
         "reasons": {
           "imported": "Equipos importados.",
           "imported_without_teams": "Importado, pero no se pudo conservar ninguno de sus equipos.",
+          "inputs_imported": "Se importaron datos por ronda, marcas o notas; no se añadió ningún equipo.",
           "plan_already_exists": "Este evento ya tiene equipos en el planificador, así que no se cambió nada.",
           "event_not_in_catalog": "El planificador aún no tiene este evento.",
           "no_legendary_event_imported": "No se pudieron importar los equipos de ningún evento.",
@@ -592,7 +627,17 @@
           "duplicate_team_merged": "Dos equipos tenían las mismas unidades y se fusionaron en uno.",
           "conflicting_depth_discarded": "Se descartó la profundidad distinta de un equipo fusionado.",
           "existing_notes_kept": "El planificador ya tenía notas para este evento, así que no se importaron las notas de V1.",
-          "notes_truncated": "Las notas de V1 eran demasiado largas y se acortaron. Longitud original en caracteres:"
+          "notes_truncated": "Las notas de V1 eran demasiado largas y se acortaron. Longitud original en caracteres:",
+          "run_input_clamped": "Ronda {{run}}: {{field}} reducidas de {{original}} al máximo del evento, {{bound}}.",
+          "run_input_clamped_unbounded": "Ronda {{run}}: {{field}} reducidas de {{original}} al máximo del evento.",
+          "unknown_run": "Se omitieron los datos de una ronda no reconocida:",
+          "existing_run_inputs_kept": "La ronda {{run}} ya tenía datos en el planificador, así que se conservaron y no se importaron los de V1.",
+          "unknown_battle": "Se omitió una marca en la batalla {{battle}} de {{lane}}: el carril tiene {{count}} batallas.",
+          "unknown_battle_unbounded": "Se omitió una marca en la batalla {{battle}} de {{lane}}: el carril no tiene esa batalla.",
+          "existing_annotations_kept_one": "Se conservó {{count}} marca que ya estaba en el planificador.",
+          "existing_annotations_kept_other": "Se conservaron {{count}} marcas que ya estaban en el planificador.",
+          "unknown_objective_mark": "Se omitió una marca en el objetivo no reconocido «{{objective}}» de {{lane}}.",
+          "unknown_lane_mark": "Se omitió una marca en el carril no reconocido «{{lane}}»."
         }
       }
     },

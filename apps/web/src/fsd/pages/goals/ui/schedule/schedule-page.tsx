@@ -87,7 +87,7 @@ function SchedulePlan({ raids }: { raids: DailyRaidsReadyViewModel }) {
     <div className="space-y-5" data-testid="raids-plan-page">
       <section data-testid="plan-summary">
         <div
-          className="grid grid-cols-2 overflow-hidden rounded-2xl bg-card shadow-sm ring-1 ring-foreground/5 md:grid-cols-5 dark:ring-foreground/10"
+          className="grid grid-cols-2 overflow-hidden rounded-[min(var(--radius-4xl),24px)] bg-card shadow-sm ring-1 ring-foreground/5 md:grid-cols-5 dark:ring-foreground/10"
           data-testid="plan-summary-stats"
         >
           {(
@@ -131,7 +131,7 @@ function SchedulePlan({ raids }: { raids: DailyRaidsReadyViewModel }) {
             >
               <span
                 aria-hidden="true"
-                className="flex size-8 shrink-0 items-center justify-center rounded-xl bg-muted text-muted-foreground [&>svg]:size-4"
+                className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground [&>svg]:size-4"
               >
                 {icon}
               </span>

@@ -54,6 +54,14 @@ vi.mock("@/shared/tour", () => ({
   useTourPageSteps: () => undefined,
 }))
 
+// The saved Onslaught progress the Ascension card's Onslaught group reads; reset in beforeEach.
+const savedOnslaughtProgress = {
+  imperial: { sector: "Stone", tier: 1, isSet: true },
+  xenos: { sector: "Stone", tier: 1, isSet: true },
+  chaos: { sector: "Stone", tier: 1, isSet: true },
+  revision: 1,
+}
+let onslaughtProgressFixture: unknown = savedOnslaughtProgress
 vi.mock("@/entities/player-data-override", () => ({
   campaignEventProgressQueries: {
     current: () => ({
@@ -67,24 +75,23 @@ vi.mock("@/entities/player-data-override", () => ({
   onslaughtProgressQueries: {
     current: () => ({
       queryKey: ["player-data-overrides", "onslaught"],
-      queryFn: () =>
-        Promise.resolve({
-          imperial: { sector: "Stone", tier: 1 },
-          xenos: { sector: "Stone", tier: 1 },
-          chaos: { sector: "Stone", tier: 1 },
-          revision: 1,
-        }),
+      queryFn: () => Promise.resolve(onslaughtProgressFixture),
     }),
   },
   getOnslaughtProgress: () =>
     Promise.resolve({
-      imperial: { sector: "Stone", tier: 1 },
-      xenos: { sector: "Stone", tier: 1 },
-      chaos: { sector: "Stone", tier: 1 },
+      imperial: { sector: "Stone", tier: 1, isSet: true },
+      xenos: { sector: "Stone", tier: 1, isSet: true },
+      chaos: { sector: "Stone", tier: 1, isSet: true },
       revision: 1,
     }),
-  progressForAlliance: (progress: Record<string, unknown>, alliance: string) =>
-    progress[alliance.toLowerCase()],
+  progressForAlliance: (
+    progress: Record<string, { isSet?: boolean } | undefined>,
+    alliance: string
+  ) => {
+    const value = progress[alliance.toLowerCase()]
+    return value?.isSet ? value : undefined
+  },
   onslaughtReward: () => ({ min: 2, max: 3, mythic: false }),
 }))
 
@@ -502,6 +509,7 @@ async function selectMow() {
 
 describe("CreateGoalSheet", () => {
   beforeEach(() => {
+    onslaughtProgressFixture = savedOnslaughtProgress
     shopsFixture = []
     createCombinedGoals.mockReset()
     listProjects.mockReset()
@@ -1034,6 +1042,47 @@ describe("CreateGoalSheet", () => {
     })
     expect(requirement).not.toHaveTextContent(
       "goals.create.shardLocations.energyValue"
+    )
+  })
+
+  async function openAscensionOnslaughtGroup() {
+    getPlayerCharacter.mockResolvedValue(undefined) // locked, so Ascension (and its Onslaught group) is offered
+    render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
+    await selectCharacter()
+    await vi.waitFor(() => {
+      expect(
+        screen.getByTestId("create-goal-type-toggle-Ascension")
+      ).not.toBeDisabled()
+    })
+    fireEvent.click(screen.getByTestId("create-goal-type-toggle-Ascension"))
+    return screen.findByTestId("create-goal-acquisition-yield-onslaught")
+  }
+
+  it("shows the Onslaught yield, not the set-progress prompt, once progress is saved (UserJot: Onslaught progress doesn't pull through)", async () => {
+    const note = await openAscensionOnslaughtGroup()
+    await vi.waitFor(() =>
+      expect(note).toHaveTextContent(
+        "goals.create.acquisitionSources.shardsPerDay"
+      )
+    )
+    expect(note).not.toHaveTextContent(
+      "goals.create.acquisitionSources.onslaughtNoProgress"
+    )
+  })
+
+  it("prompts to set Onslaught progress when the API reports the alliance as unset", async () => {
+    const unset = { sector: "Stone", tier: 1, isSet: false }
+    onslaughtProgressFixture = {
+      imperial: unset,
+      xenos: unset,
+      chaos: unset,
+      revision: 0,
+    }
+    const note = await openAscensionOnslaughtGroup()
+    await vi.waitFor(() =>
+      expect(note).toHaveTextContent(
+        "goals.create.acquisitionSources.onslaughtNoProgress"
+      )
     )
   })
 

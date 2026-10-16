@@ -25,6 +25,7 @@ import {
   LeaderboardEmptyBody,
   LeaderboardRank,
   LeaderboardRarity,
+  LeaderboardRowActions,
   LeaderboardUnit,
   ObjectiveIndicator,
 } from "../leaderboard/leaderboard-parts"
@@ -36,6 +37,7 @@ import {
   type ObjectiveChipGroup,
 } from "../leaderboard/leaderboard.view-model"
 import type {
+  LeaderboardGoalsViewModel,
   LeaderboardViewModel,
   ProgressGridViewModel,
 } from "../legendary-event-page.view-model"
@@ -96,6 +98,7 @@ export function CrossLaneLeaderboard({
         layout === "table" ? (
           <CrossLaneTable
             figure={figure}
+            goals={leaderboard.goals}
             groups={groups}
             nameOf={nameOf}
             rows={result.rows}
@@ -103,6 +106,7 @@ export function CrossLaneLeaderboard({
         ) : (
           <CrossLaneList
             figure={figure}
+            goals={leaderboard.goals}
             groups={groups}
             nameOf={nameOf}
             rows={result.rows}
@@ -126,6 +130,7 @@ export function CrossLaneLeaderboard({
         {t("leaderboard.title")}
       </h2>
       <LeaderboardControls
+        goals={leaderboard.goals}
         groups={groups}
         progressAvailable={!ready || leaderboard.progressAvailable}
         rosterAvailable={!ready || rosterAvailable}
@@ -198,11 +203,13 @@ function CrossLaneTable({
   groups,
   figure,
   nameOf,
+  goals,
 }: {
   rows: readonly CrossLaneLeaderboardRow[]
   groups: readonly ObjectiveChipGroup[]
   figure: LeaderboardFigure
   nameOf: (unit: LegendaryEventUnit) => string
+  goals: LeaderboardGoalsViewModel
 }) {
   const { t } = useTranslation("legendaryEvents")
   const laneFigure = useLaneFigure(figure)
@@ -223,6 +230,9 @@ function CrossLaneTable({
                 {t(`lanes.${laneId}`)}
               </TableHead>
             ))}
+            <TableHead className="w-10 px-1" rowSpan={2}>
+              <span className="sr-only">{t("leaderboardActions.header")}</span>
+            </TableHead>
           </TableRow>
           <TableRow>
             <TableHead className="h-6 py-0 text-xs font-normal" colSpan={3}>
@@ -246,7 +256,12 @@ function CrossLaneTable({
               key={row.unit.id}
             >
               <TableCell className="max-w-48">
-                <LeaderboardUnit name={nameOf(row.unit)} row={row} />
+                <LeaderboardUnit
+                  goalLines={goals.badgeLines(row.unit.id)}
+                  name={nameOf(row.unit)}
+                  previewed={goals.previewed.has(row.unit.id)}
+                  row={row}
+                />
               </TableCell>
               <TableCell className="px-1">
                 <LeaderboardRarity row={row} />
@@ -281,6 +296,12 @@ function CrossLaneTable({
                   </TableCell>
                 )
               })}
+              <TableCell className="w-10 px-1">
+                <LeaderboardRowActions
+                  name={nameOf(row.unit)}
+                  onCreateGoal={() => goals.onCreateGoal(row.unit.id, null)}
+                />
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>
@@ -294,11 +315,13 @@ function CrossLaneList({
   groups,
   figure,
   nameOf,
+  goals,
 }: {
   rows: readonly CrossLaneLeaderboardRow[]
   groups: readonly ObjectiveChipGroup[]
   figure: LeaderboardFigure
   nameOf: (unit: LegendaryEventUnit) => string
+  goals: LeaderboardGoalsViewModel
 }) {
   const { t } = useTranslation("legendaryEvents")
   const laneFigure = useLaneFigure(figure)
@@ -313,10 +336,20 @@ function CrossLaneList({
           key={row.unit.id}
         >
           <div className="flex min-w-0 items-center justify-between gap-2">
-            <LeaderboardUnit name={nameOf(row.unit)} row={row} />
-            <span className="flex shrink-0 items-center gap-1">
+            <LeaderboardUnit
+              goalLines={goals.badgeLines(row.unit.id)}
+              name={nameOf(row.unit)}
+              previewed={goals.previewed.has(row.unit.id)}
+              row={row}
+            />
+            <span className="-my-1.5 -mr-1.5 flex shrink-0 items-center gap-1">
               <LeaderboardRarity row={row} />
               <LeaderboardRank row={row} />
+              <LeaderboardRowActions
+                name={nameOf(row.unit)}
+                onCreateGoal={() => goals.onCreateGoal(row.unit.id, null)}
+                size="card"
+              />
             </span>
           </div>
           <div className="flex min-w-0 flex-col gap-1 text-sm">

@@ -40,6 +40,62 @@
     "syncedAgo": "Sincronizado {{when}}",
     "neverSynced": "Aún sin sincronizar"
   },
+  "runInputs": {
+    "button": "Datos",
+    "title": "Datos por ronda",
+    "description": "Misiones y packs que el juego no informa. Alimentan la previsión de recompensas de la tarjeta Estado de la ronda.",
+    "run": "Ronda {{run}}",
+    "phase": {
+      "done": "Hecha",
+      "now": "Ahora",
+      "planned": "Prevista"
+    },
+    "nowHint": "La previsión de recompensas lee esta ronda de tu progreso sincronizado, así que estos datos cuentan a partir de la siguiente ronda.",
+    "regularMissions": "Misiones normales",
+    "premiumMissions": "Misiones prémium",
+    "bundle": "Compré el pack de 300 de moneda",
+    "closeShards": "Fragmentos de «Oh So Close»",
+    "showPaidOptions": "Mostrar opciones de pago",
+    "fieldLabel": "{{field}}, ronda {{run}}",
+    "decrease": "Reducir {{field}}, ronda {{run}}",
+    "increase": "Aumentar {{field}}, ronda {{run}}",
+    "unavailable": "No se pudo cargar tu plan.",
+    "toasts": {
+      "error": "No se pudieron guardar tus datos por ronda."
+    }
+  },
+  "outlook": {
+    "title": "Previsión de recompensas",
+    "steps": {
+      "unlock": "Desbloqueo",
+      "fourStars": "4 estrellas",
+      "fiveStars": "5 estrellas",
+      "blueStar": "Estrella azul",
+      "mythic": "Mítico",
+      "twoBlueStars": "Dos estrellas azules"
+    },
+    "next": "Siguiente: {{step}} · {{shards}} / {{threshold}} fragmentos",
+    "chests_one": "{{chests}} cofre más ({{currency}} de moneda en total)",
+    "chests_other": "{{chests}} cofres más ({{currency}} de moneda en total)",
+    "points": "{{points}} puntos para llegar a {{target}} · unas {{battles}} batallas por carril",
+    "fullyAscended": "Todas las recompensas alcanzadas",
+    "beyondChests": "No alcanzable en este evento (necesita {{required}} cofres y el evento tiene {{ladder}})",
+    "affordableNow": "Ya tienes moneda suficiente para los cofres",
+    "beyondPoints": "Los puntos por sí solos no bastan: faltan {{currency}} de moneda",
+    "noEntry": "Todavía no hay progreso sincronizado",
+    "explain": {
+      "title": "Cómo se calcula",
+      "base": "De tu última sincronización: {{currency}} de moneda disponible, {{chests}} cofres reclamados, {{shards}} fragmentos, {{points}} puntos",
+      "noBase": "Todavía no hay progreso sincronizado, así que se parte de cero",
+      "missions": "{{currency}} de moneda de las misiones de la ronda {{run}}",
+      "bundle": "{{currency}} de moneda del pack de la ronda {{run}}",
+      "closeShards": "{{shards}} fragmentos de «Oh So Close» de la ronda {{run}}",
+      "noFutureInputs": "Sin datos para rondas posteriores",
+      "bonus": "+{{currency}} de moneda en cada hito de puntos (pase prémium)",
+      "noBonus": "Sin bonificación en los hitos de puntos",
+      "startedRuns": "Cuenta lo que ya ganaste según la sincronización más tus datos para rondas posteriores; las rondas ya empezadas no se suman otra vez."
+    }
+  },
   "lanes": {
     "alpha": "Alfa",
     "beta": "Beta",
@@ -126,6 +182,29 @@
     "howPoints": {
       "title": "Cómo funcionan los puntos",
       "body": "Los puntos conseguidos en una batalla son su puntuación máxima más la puntuación de cada objetivo que superaste en ella, incluida la bonificación por derrotar a todos. El máximo de una batalla suma su puntuación de bajas, su puntuación máxima, la bonificación por derrotar a todos y la puntuación de cada objetivo; el máximo del carril suma todas las batallas."
+    }
+  },
+  "annotations": {
+    "maybeClear": "Quizá superable",
+    "stopHere": "Parar aquí",
+    "notMarked": "Sin marcar",
+    "clearMarks": "Quitar marcas",
+    "cell": {
+      "maybeClear": "{{objective}}: no completado, marcado como «Quizá superable»",
+      "stopHere": "{{objective}}: no completado, marcado como «Parar aquí»"
+    },
+    "menuLabel": "{{objective}}, batalla {{battle}}",
+    "battleMenuLabel": "Batalla {{battle}}: todos los objetivos no completados",
+    "rowAction": "Marcar la batalla {{battle}}",
+    "rowActionHeader": "Marcas",
+    "legend": {
+      "title": "Marcas",
+      "maybeClear": "Quizá superable: vale la pena intentarlo si el equipo llega tan lejos.",
+      "stopHere": "Parar aquí: no merece tus fichas.",
+      "note": "Las marcas son solo recordatorios: nunca cambian los puntos y desaparecen cuando la sincronización muestra el objetivo completado."
+    },
+    "toasts": {
+      "error": "No se pudieron guardar tus marcas."
     }
   },
   "teams": {
@@ -230,9 +309,21 @@
           "title": "Resumen y carriles",
           "content": "El Resumen condensa el evento; Alfa, Beta y Gamma abren un carril cada uno. En el móvil la franja se queda bajo la cabecera mientras te desplazas."
         },
+        "nextToken": {
+          "title": "Siguiente ficha",
+          "content": "La batalla para tu siguiente ficha: el equipo, el carril y la batalla que más puntos dan ahora, según tu sincronización, equipos, profundidades y marcas. Si no salió según el plan, márcala como Superada en parte o No superada y el plan se actualiza."
+        },
         "runStatus": {
           "title": "Estado de la tirada",
           "content": "Tu tirada, fichas, puntos, moneda, cofres y fragmentos de tu última sincronización, además del siguiente hito de puntos."
+        },
+        "runInputs": {
+          "title": "Datos por ronda",
+          "content": "Introduce para cada ronda las misiones y los packs que el juego no informa. Alimentan la previsión de recompensas de esta tarjeta."
+        },
+        "tokenPlan": {
+          "title": "Plan de fichas",
+          "content": "Todas las fichas que el plan prevé jugar en orden, con los puntos acumulados y los hitos que alcanzan. La previsión por ronda las reparte entre las rondas que quedan."
         },
         "laneSummary": {
           "title": "Resumen de carriles",
@@ -248,17 +339,167 @@
         },
         "teams": {
           "title": "Equipos",
-          "content": "Crea los equipos que piensas jugar en este carril. Cada tarjeta muestra sus miembros, los objetivos que cubren, sus puntos por batalla y hasta dónde esperas que llegue. Usa Añadir equipo para empezar uno."
+          "content": "Crea los equipos que piensas jugar en este carril. Cada tarjeta muestra sus miembros, los objetivos que cubren, sus puntos por batalla y hasta dónde debería llegar: una estimación a partir de tu plantilla sincronizada hasta que fijes tú una profundidad. Usa Añadir equipo para empezar uno. Sugerir equipos propone equipos de tu plantilla, ordenados por los puntos que suman."
+        },
+        "upgradeImpact": {
+          "title": "Impacto de las mejoras",
+          "content": "Qué mejora por sí sola te da puntos en este carril: cada fila indica la batalla que permite alcanzar a un equipo y los puntos que suma. Crea un objetivo para ella con un toque."
         },
         "progressGrid": {
           "title": "Progreso sincronizado",
-          "content": "Tus objetivos superados y puntos por batalla de tu última sincronización, con los puntos conseguidos en el carril frente a su máximo."
+          "content": "Tus objetivos superados y puntos por batalla de tu última sincronización, con los puntos conseguidos en el carril frente a su máximo. Marca un objetivo no completado como «Quizá superable» o «Parar aquí», o una batalla entera desde la acción de su fila."
         },
         "leaderboard": {
           "title": "Clasificación del carril",
-          "content": "Cada unidad que este carril permite, si la tienes, qué objetivos cumple y los puntos que aún puede conseguir aquí."
+          "content": "Cada unidad que este carril permite, si la tienes, qué objetivos cumple y los puntos que aún puede conseguir aquí. Activa la vista de objetivos para ver las unidades como si hubieras alcanzado tus objetivos activos, y usa el menú de una fila para crear un objetivo."
         }
       }
+    }
+  },
+  "estimates": {
+    "estimated": "estimado",
+    "uncalibrated": "Sin calibrar: la proporción de poder de la estimación aún no se ha ajustado con resultados reales, así que tómala como una guía aproximada.",
+    "howItWorks": "Estimado a partir del poder de combate de tu plantilla sincronizada frente al poder de cada batalla. No se tienen en cuenta el equipo, las sinergias ni los objetivos difíciles; fija una profundidad para sustituirla.",
+    "marginAbove": "{{percent}} % por encima de la batalla {{battle}}",
+    "shortfallNext": "{{percent}} % por debajo de la batalla {{battle}}",
+    "notEnough": "Aún no basta para la batalla 1",
+    "useEstimate": "Usar estimación",
+    "estimateHint": "estimación ~{{depth}}",
+    "lockedNotCounted_one": "{{count}} miembro bloqueado no contado",
+    "lockedNotCounted_other": "{{count}} miembros bloqueados no contados",
+    "clears": "Batallas",
+    "clearsLabel": "Batallas estimadas",
+    "clearsValue": "Batallas: {{value}}",
+    "clearsEstimate": "~{{depth}}",
+    "clearsNone": "—",
+    "clearsPending": "–",
+    "clearsLoading": "Estimando batallas…"
+  },
+  "goalsPreview": {
+    "switch": "Vista de objetivos",
+    "marker": "Mostrado con los objetivos alcanzados",
+    "hint": "Muestra las unidades como si hubieras alcanzado tus objetivos activos. Los puntos y los equipos no cambian.",
+    "loading": "Cargando objetivos…",
+    "unavailable": "Objetivos no disponibles",
+    "noGoals": "No hay objetivos activos para las unidades de este evento",
+    "noRoster": "Sincroniza tu plantilla para previsualizar los objetivos"
+  },
+  "goalBadge": {
+    "label": "Objetivos",
+    "unlock": "Desbloquear",
+    "ascension": "Ascender a {{target}}",
+    "rank": "Rango {{target}}",
+    "rankWithUpgrades": "Rango {{target}} con {{count}} mejoras",
+    "ability": "Habilidades a {{active}} / {{passive}}",
+    "progression": "{{rarity}} {{stars}}"
+  },
+  "leaderboardActions": {
+    "header": "Acciones",
+    "menu": "Acciones para {{name}}",
+    "createGoal": "Crear objetivo"
+  },
+  "upgradeImpact": {
+    "title": "Impacto de las mejoras",
+    "summary_one": "{{count}} mejora suma puntos · mejor +{{best}}",
+    "summary_other": "{{count}} mejoras suman puntos · mejor +{{best}}",
+    "hint": "Lo que aporta en este carril un único paso siguiente de un miembro del equipo, por las batallas que permite alcanzar. Basado en tu plantilla sincronizada.",
+    "unit": "Unidad",
+    "step": "Paso",
+    "teams": "Equipos",
+    "points": "Puntos",
+    "unlock": "Desbloquear",
+    "rank": "Rango {{target}}",
+    "ascension": "Ascender a {{target}}",
+    "teamChange": "{{team}}: batalla {{from}} → {{to}}",
+    "gain": "+{{points}} puntos",
+    "createGoal": "Crear objetivo",
+    "createGoalFor": "Crear objetivo para {{name}}",
+    "inGoals": "En objetivos",
+    "needsEstimates": "Necesita estimaciones de superación",
+    "noTeams": "Añade un equipo para ver qué mejoras suman puntos",
+    "noRows": "Ningún paso siguiente por sí solo suma puntos en este carril",
+    "loading": "Cargando el impacto de las mejoras…",
+    "toggle": "Mostrar u ocultar el impacto de las mejoras"
+  },
+  "suggestions": {
+    "button": "Sugerir equipos",
+    "title": "Equipos sugeridos para {{lane}}",
+    "description": "Equipos de tu plantilla, ordenados por los puntos que suman a tus equipos actuales. No se guarda nada hasta que guardes el equipo.",
+    "onlyUnlocked": "Solo desbloqueadas",
+    "preferGoals": "Preferir unidades con objetivos",
+    "reason": "Cubre {{objectives}} · supera ~{{depth}} · +{{points}} puntos sobre tus equipos",
+    "use": "Usar este equipo",
+    "showMore": "Mostrar más",
+    "empty": "Ningún equipo suma puntos a tus equipos actuales",
+    "needsEstimates": "Necesita estimaciones de superación",
+    "loading": "Cargando sugerencias…",
+    "rank": "Sugerencia {{rank}}"
+  },
+  "tokenPlan": {
+    "nextToken": {
+      "title": "Siguiente ficha",
+      "battle": "{{lane}} · Batalla {{battle}}",
+      "points": "+{{points}} puntos",
+      "reasons": {
+        "mostPoints": "La mayor cantidad de puntos disponible ahora",
+        "mostPointsPlayableNow": "La mayor cantidad de puntos entre las batallas que puedes jugar ahora"
+      },
+      "upcoming": "{{reason}} para cuando empiece la ronda {{run}}",
+      "maybe": "Quizá superable",
+      "members": "Miembros",
+      "objectives": "Supera",
+      "actions": {
+        "partly": "Superada en parte",
+        "couldNot": "No superada",
+        "partlyLabel": "Superada en parte: marcar {{team}} en {{lane}} batalla {{battle}} como Quizá superable",
+        "couldNotLabel": "No superada: marcar {{team}} en {{lane}} batalla {{battle}} como Parar aquí"
+      },
+      "loading": "Cargando el plan de fichas…",
+      "unavailable": "El progreso sincronizado no está disponible, así que no hay plan de fichas",
+      "allCleared": "Todas las batallas están superadas",
+      "noTeams": "Añade un equipo en {{lane}} para obtener un plan",
+      "noDepth": "Indica hasta dónde llega {{team}}",
+      "nothingLeft": "A tus equipos no les queda nada por superar · quedan {{points}} puntos en {{lane}}"
+    },
+    "plan": {
+      "title": "Plan de fichas",
+      "summary_one": "{{count}} ficha · +{{points}} puntos",
+      "summary_other": "{{count}} fichas · +{{points}} puntos",
+      "battle": "Batalla {{battle}}",
+      "points": "+{{points}}",
+      "running": "{{points}} en total",
+      "maybe": "Quizá superable",
+      "milestone": "Hito {{milestone}} · +{{currency}} de moneda",
+      "step": "{{step}} alcanzado",
+      "fullClear_one": "{{lane}}: superar una batalla por completo cuesta {{count}} ficha",
+      "fullClear_other": "{{lane}}: superar una batalla por completo cuesta {{count}} fichas",
+      "uncovered": "{{lane}}: ningún equipo cubre {{objectives}}"
+    },
+    "forecast": {
+      "title": "Previsión por ronda",
+      "header": "Al final de la ronda {{run}}: {{points}} puntos · faltan {{shards}} fragmentos para {{step}}",
+      "headerAllSteps": "Al final de la ronda {{run}}: {{points}} puntos · todas las recompensas alcanzadas",
+      "run": "Ronda {{run}}",
+      "states": {
+        "done": "Hecha",
+        "now": "Ahora",
+        "next": "Siguiente",
+        "planned": "Prevista"
+      },
+      "finished": "Finalizada",
+      "supply": "{{total}} fichas: {{free}} gratis + {{ad}} de anuncio + {{bonus}} de entrega extra",
+      "uses": "Usa {{used}} · sobran {{left}}",
+      "points": "{{points}} puntos (+{{earned}})",
+      "currency": "{{currency}} de moneda disponible (+{{earned}} ganada)",
+      "chests": "{{claimed}} cofres abiertos (+{{opened}})",
+      "shards": "{{shards}} fragmentos",
+      "reached": "Alcanzado: {{steps}}",
+      "next": "Siguiente: {{step}} · faltan {{shards}} fragmentos",
+      "allSteps": "Todas las recompensas alcanzadas",
+      "ohSoClose": "Oh So Close: {{shards}} fragmentos por {{blackstone}} de piedra negra",
+      "leftover_one": "{{count}} ficha sin nada que jugar: añade un equipo o sube una profundidad para usarla",
+      "leftover_other": "{{count}} fichas sin nada que jugar: añade un equipo o sube una profundidad para usarlas",
+      "editInputs": "Editar datos"
     }
   }
 }

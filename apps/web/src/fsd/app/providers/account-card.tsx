@@ -1,6 +1,7 @@
 import { useState, type ReactNode } from "react"
 import {
   Download,
+  LoaderCircle,
   LogOut,
   MapIcon,
   MessageSquareText,
@@ -8,6 +9,7 @@ import {
 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Separator } from "@workspace/ui/components/separator"
+import { Skeleton } from "@workspace/ui/components/skeleton"
 import { cn } from "@workspace/ui/lib/utils"
 
 import { AccountAvatar } from "./account-avatar"
@@ -31,6 +33,7 @@ export function AccountCard({
   applicationAccountId,
   canEditName,
   className,
+  identityPending = false,
   onEditName,
   onFeedback,
   onImportV1,
@@ -45,6 +48,8 @@ export function AccountCard({
   applicationAccountId: string | null
   canEditName: boolean
   className?: string
+  /** /me has not answered yet: show a loading identity instead of the neutral label and email. */
+  identityPending?: boolean
   onEditName: () => void
   onFeedback: () => void
   onImportV1: () => void
@@ -71,18 +76,36 @@ export function AccountCard({
           applicationAccountId={applicationAccountId}
           className="size-10 shrink-0 text-base"
           displayName={accountName}
+          pending={identityPending}
         />
-        <div className="min-w-0 flex-1 text-left leading-tight">
-          <div className="truncate font-medium" title={accountName}>
-            {accountName}
-          </div>
+        {identityPending ? (
           <div
-            className="truncate text-xs text-muted-foreground"
-            title={accountEmail}
+            className="flex min-w-0 flex-1 flex-col gap-1.5"
+            data-testid="auth-account-identity-loading"
+            role="status"
           >
-            {accountEmail}
+            <Skeleton className="h-4 w-28 rounded-md" />
+            <div className="flex items-center gap-1 text-xs text-muted-foreground">
+              <LoaderCircle
+                className="size-3 animate-spin"
+                aria-hidden="true"
+              />
+              {t("auth.accountLoading")}
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="min-w-0 flex-1 text-left leading-tight">
+            <div className="truncate font-medium" title={accountName}>
+              {accountName}
+            </div>
+            <div
+              className="truncate text-xs text-muted-foreground"
+              title={accountEmail}
+            >
+              {accountEmail}
+            </div>
+          </div>
+        )}
         {canEditName ? <EditDisplayNameButton onClick={onEditName} /> : null}
       </div>
       <Separator />

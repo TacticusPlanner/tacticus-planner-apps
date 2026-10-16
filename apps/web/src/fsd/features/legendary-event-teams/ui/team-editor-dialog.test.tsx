@@ -2,7 +2,10 @@ import { useEffect, useState } from "react"
 import type { i18n as I18n } from "i18next"
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
 
-import type { LegendaryEventTeam } from "@/entities/legendary-event"
+import type {
+  ClearEstimate,
+  LegendaryEventTeam,
+} from "@/entities/legendary-event"
 import {
   teamLane,
   teamUnitList,
@@ -13,7 +16,10 @@ import { act, fireEvent, render, screen, within } from "@/test/render"
 import { setViewportWidth } from "@/test/viewport"
 
 import type { TeamDraft } from "../model/plan-patches"
-import type { PlanMutationOutcome } from "../model/use-legendary-event-plan"
+import type {
+  DepthEstimateContext,
+  PlanMutationOutcome,
+} from "../model/use-legendary-event-plan"
 import { TeamEditorDialog } from "./team-editor-dialog"
 
 vi.mock("dexie-react-hooks", () => ({
@@ -50,13 +56,22 @@ function renderEditor({
   team,
   onSubmit = vi.fn(async (): Promise<PlanMutationOutcome> => "saved"),
   onOpenChange = vi.fn(),
+  estimateTeam,
+  initialMemberUnitIds,
 }: {
+  initialMemberUnitIds?: readonly string[]
   team?: LegendaryEventTeam
-  onSubmit?: (draft: TeamDraft) => Promise<PlanMutationOutcome>
+  onSubmit?: (
+    draft: TeamDraft,
+    shown: DepthEstimateContext
+  ) => Promise<PlanMutationOutcome>
   onOpenChange?: (open: boolean) => void
+  estimateTeam?: (memberUnitIds: readonly string[]) => ClearEstimate | null
 } = {}) {
   render(
     <TeamEditorDialog
+      estimateTeam={estimateTeam}
+      initialMemberUnitIds={initialMemberUnitIds}
       lane={teamLane}
       laneId="alpha"
       onOpenChange={onOpenChange}
@@ -119,6 +134,39 @@ describe("TeamEditorDialog", () => {
     expect(nameInput()).toHaveValue("Melee · Min 5 hits")
   })
 
+  it("opens a suggestion as a new team: members in order, coverage ticked, default name", async () => {
+    const { onSubmit } = renderEditor({
+      initialMemberUnitIds: [teamUnits.b.id, teamUnits.a.id],
+    })
+    expect(nameInput()).toHaveValue("Melee · Min 5 hits")
+    expect(chips()).toEqual([
+      { label: "Melee", checked: true },
+      { label: "Min 5 hits", checked: true },
+    ])
+    expect(onSubmit).not.toHaveBeenCalled()
+
+    await act(async () => {
+      fireEvent.click(screen.getByTestId("team-editor-save"))
+    })
+    expect(onSubmit).toHaveBeenCalledWith(
+      expect.objectContaining({
+        memberUnitIds: [teamUnits.b.id, teamUnits.a.id],
+        objectiveIndexes: [0, 1],
+        name: "Melee · Min 5 hits",
+      }),
+      { estimate: null, fromEstimate: false }
+    )
+  })
+
+  it("saves nothing when a suggestion's editor is cancelled", () => {
+    const { onSubmit, onOpenChange } = renderEditor({
+      initialMemberUnitIds: [teamUnits.a.id],
+    })
+    fireEvent.click(screen.getByRole("button", { name: "Cancel" }))
+    expect(onOpenChange).toHaveBeenCalledWith(false)
+    expect(onSubmit).not.toHaveBeenCalled()
+  })
+
   it("reopens a saved team with its untick kept", () => {
     renderEditor({ team: saved })
     expect(nameInput()).toHaveValue("Melee")
@@ -153,13 +201,16 @@ describe("TeamEditorDialog", () => {
       fireEvent.click(screen.getByTestId("team-editor-save"))
     })
 
-    expect(onSubmit).toHaveBeenCalledWith({
-      name: "Team 3",
-      memberUnitIds: [teamUnits.r.id],
-      reserveUnitId: null,
-      objectiveIndexes: [],
-      expectedBattleClears: 1,
-    })
+    expect(onSubmit).toHaveBeenCalledWith(
+      {
+        name: "Team 3",
+        memberUnitIds: [teamUnits.r.id],
+        reserveUnitId: null,
+        objectiveIndexes: [],
+        expectedBattleClears: 1,
+      },
+      { estimate: null, fromEstimate: false }
+    )
     expect(onOpenChange).toHaveBeenCalledWith(false)
   })
 
@@ -179,5 +230,79 @@ describe("TeamEditorDialog", () => {
     expect(screen.getByTestId("team-editor-not-saved")).toHaveTextContent(
       "this team was not saved"
     )
+  })
+
+  describe("estimate in the depth field", () => {
+    // One battle per member: a two-member team is estimated at 2.
+    const estimateTeam = (memberUnitIds: readonly string[]): ClearEstimate => ({
+      depth: memberUnitIds.length,
+      battleCount: 18,
+      marginAbovePct: 12,
+      shortfallToNextPct: 30,
+      calibrated: true,
+    })
+    const depthField = () => screen.getByTestId("team-editor-depth")
+    const depthInput = () =>
+      within(depthField()).getByTestId("number-stepper-input")
+
+    it("mirrors the card: the members' live estimate shows while no depth is set", () => {
+      renderEditor({ estimateTeam })
+      tap(teamUnits.a.id)
+      expect(depthInput()).toHaveValue(1)
+      expect(depthField()).toHaveAttribute("data-estimated", "true")
+      tap(teamUnits.b.id)
+      expect(depthInput()).toHaveValue(2)
+      expect(screen.getByTestId("team-editor-depth-margin")).toHaveTextContent(
+        "12% above battle 2 · 30% short of battle 3"
+      )
+    })
+
+    it("saves a manual depth stepped from the estimate, and none when left on it", async () => {
+      const { onSubmit } = renderEditor({ team: saved, estimateTeam })
+      await act(async () => {
+        fireEvent.click(screen.getByTestId("team-editor-save"))
+      })
+      expect(onSubmit).toHaveBeenLastCalledWith(
+        expect.objectContaining({ expectedBattleClears: null }),
+        { estimate: 2, fromEstimate: true }
+      )
+
+      fireEvent.click(
+        within(depthField()).getByTestId("number-stepper-increase")
+      )
+      expect(depthInput()).toHaveValue(3)
+      await act(async () => {
+        fireEvent.click(screen.getByTestId("team-editor-save"))
+      })
+      // The override log gets the estimate the depth was stepped from.
+      expect(onSubmit).toHaveBeenLastCalledWith(
+        expect.objectContaining({ expectedBattleClears: 3 }),
+        { estimate: 2, fromEstimate: true }
+      )
+    })
+
+    it("offers Use estimate beside a manual depth", () => {
+      renderEditor({
+        team: {
+          ...saved,
+          runDepths: [
+            {
+              run: 2,
+              expectedBattleClears: 9,
+              expectedBattleClearsSource: "manual",
+              recordedAt: "2026-10-01T00:00:00Z",
+            },
+          ],
+        },
+        estimateTeam,
+      })
+      expect(depthInput()).toHaveValue(9)
+      expect(screen.getByTestId("team-editor-depth-hint")).toHaveTextContent(
+        "estimate ~2"
+      )
+      fireEvent.click(screen.getByTestId("team-editor-depth-use-estimate"))
+      expect(depthInput()).toHaveValue(2)
+      expect(depthField()).toHaveAttribute("data-estimated", "true")
+    })
   })
 })

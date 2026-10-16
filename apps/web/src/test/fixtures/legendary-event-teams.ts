@@ -48,7 +48,8 @@ export const teamUnitList = Object.values(
   teamUnits
 ) as unknown as GameCatalogCharacterView[]
 
-/** Kill points 30; Melee 20, Min 5 Hits 25, No Resilient 15; Xenos are not allowed. */
+/** Kill points 30; Melee 20, Min 5 Hits 25, No Resilient 15; 18 battles of 100 battle points and
+ *  30 defeat-all; Xenos are not allowed. */
 export const teamLane = {
   killPoints: 30,
   allowedUnitsFilter: [{ kind: "Alliance", target: "Xenos", exclude: true }],
@@ -74,6 +75,7 @@ export const teamLane = {
   ],
   battleIds: Array.from({ length: 18 }, (_, index) => `battle-${index + 1}`),
   battlesPoints: Array.from({ length: 18 }, () => 100),
+  defeatAll: Array.from({ length: 18 }, () => 30),
   availableUnitIds: Object.values(teamUnits)
     .filter((entry) => entry.alliance !== "Xenos")
     .map((entry) => entry.id),

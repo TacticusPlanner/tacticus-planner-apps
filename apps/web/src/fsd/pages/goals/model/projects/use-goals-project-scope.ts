@@ -9,8 +9,9 @@ const PARAM = "project"
  * The Goals page's project scope (`goals-navigation`: "Goals project scope is URL state") — the
  * `?project=` search param, validated against the loaded project list. Writes replace the history
  * entry, so Back leaves the page rather than stepping through scopes. An unknown or archived id is
- * dropped from the URL once the list is known; while it is loading or failed the param is kept and
- * the page shows all goals.
+ * dropped from the URL once the list is known; while it is loading or failed the param is kept.
+ * `requestedProjectId` is the raw param, so the page can hold its loading state while the list that
+ * validates it is still loading instead of briefly listing every goal.
  */
 export function useGoalsProjectScope(
   projects: ProjectSummary[],
@@ -49,5 +50,9 @@ export function useGoalsProjectScope(
     [setParams]
   )
 
-  return { projectId: valid ? raw : undefined, setProjectId }
+  return {
+    projectId: valid ? raw : undefined,
+    requestedProjectId: raw ?? undefined,
+    setProjectId,
+  }
 }

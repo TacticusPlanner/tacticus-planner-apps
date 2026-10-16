@@ -17,12 +17,9 @@ import {
   vi,
 } from "vitest"
 
+import { CreateGoalLauncherContext } from "@/entities/goal"
 import { legendaryEventCharacters } from "@/test/fixtures/legendary-event-characters"
-import {
-  legendaryEventCommon,
-  lysanderEvent,
-  utharEvent,
-} from "@/test/fixtures/legendary-events"
+import { lysanderEvent, utharEvent } from "@/test/fixtures/legendary-events"
 import { createTestI18n, i18nWrapper } from "@/test/i18n"
 import { act, fireEvent, render, screen, within } from "@/test/render"
 import { setViewportWidth } from "@/test/viewport"
@@ -40,16 +37,26 @@ vi.mock("dexie-react-hooks", () => ({
   },
 }))
 
-const events = [lysanderEvent, utharEvent]
+const events = [
+  lysanderEvent,
+  utharEvent,
+  {
+    ...lysanderEvent,
+    id: "archivedLysander",
+    finished: true,
+    eventStageStartDatesUtc: ["2026-01-01T00:00:00Z"],
+  },
+]
 const catalog = vi.hoisted(() => ({ synced: true }))
 vi.mock("@workspace/game-catalog/queries", () => ({
   hasLegendaryEventsSynced: async () => catalog.synced,
   getLegendaryEvent: async (id: string) =>
     events.find((event) => event.id === id),
-  getLegendaryEventCommon: async () => legendaryEventCommon,
   getCharactersMap: async () => new Map(),
   getMowsMap: async () => new Map(),
   getCharacters: async () => legendaryEventCharacters,
+  getLegendaryEventBattles: async () => [],
+  getHordeModeTiers: async () => null,
 }))
 // Dante owned, everyone else locked; no synced entry for any event unless a test sets one.
 const player = vi.hoisted(() => ({
@@ -84,18 +91,56 @@ const lysanderProgress = {
 }
 // Signed in, with an empty plan per event (the Teams section's own states are covered in
 // teams-section.test.tsx).
+// The goal list is empty unless a test sets Active goals (summaries and details by goal id).
+const goals = vi.hoisted(() => ({
+  summaries: [] as unknown[],
+  details: new Map<string, unknown>(),
+}))
+const launchCreateGoal = vi.hoisted(() => vi.fn())
+const planApi = vi.hoisted(() => ({
+  teams: [] as unknown[],
+  put: vi.fn(),
+}))
 vi.mock("@azure/msal-react", () => ({ useIsAuthenticated: () => true }))
 vi.mock("@/shared/api", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/shared/api")>()),
-  apiGet: async (path: string) => ({
-    eventId: path.split("/").at(-1),
-    revision: 0,
-    catalogVersion: "1",
-    notes: null,
-    showPaidOptions: false,
-    teams: [],
-  }),
+  apiGet: async (path: string) => {
+    if (path === "/api/v1/me/goals")
+      return { goals: goals.summaries, orderRevision: 0 }
+    if (path.startsWith("/api/v1/me/goals/"))
+      return goals.details.get(path.split("/").at(-1)!)
+    return {
+      eventId: path.split("/").at(-1),
+      revision: 0,
+      catalogVersion: "1",
+      notes: null,
+      showPaidOptions: false,
+      teams: planApi.teams,
+    }
+  },
+  apiPut: planApi.put,
 }))
+// An Active Unlock goal for Cyrus, an Alpha unit the roster does not own.
+function giveCyrusUnlockGoal() {
+  goals.summaries = [
+    {
+      goalId: "goal-cyrus",
+      entityId: "astarCyrus",
+      entityType: "Character",
+      goalType: "Unlock",
+      status: "Active",
+      globalPriority: 1,
+    },
+  ]
+  goals.details.set("goal-cyrus", {
+    goalId: "goal-cyrus",
+    entityId: "astarCyrus",
+    entityType: "Character",
+    goalType: "Unlock",
+    status: "Active",
+    config: { rank: null, progression: null, ability: null },
+  })
+}
 vi.mock("@/shared/tour", () => ({
   useTourPageSteps: (steps: unknown) => {
     tour.steps = steps
@@ -141,7 +186,16 @@ function renderPage(path: string) {
         />
       </Routes>
     </MemoryRouter>,
-    { wrapper: i18nWrapper(i18n) }
+    {
+      wrapper: ({ children }) => {
+        const I18nWrapper = i18nWrapper(i18n)
+        return (
+          <CreateGoalLauncherContext.Provider value={launchCreateGoal}>
+            <I18nWrapper>{children}</I18nWrapper>
+          </CreateGoalLauncherContext.Provider>
+        )
+      },
+    }
   )
 }
 
@@ -168,7 +222,9 @@ const follows = (first: HTMLElement, second: HTMLElement) =>
     first.compareDocumentPosition(second) & Node.DOCUMENT_POSITION_FOLLOWING
   )
 
-describe("LegendaryEventPage", () => {
+// Whole-page renders (three lanes of progress grid, each not-cleared cell a mark menu) run close to
+// the 5s default under coverage instrumentation in CI.
+describe("LegendaryEventPage", { timeout: 15_000 }, () => {
   beforeAll(async () => {
     i18n = await createTestI18n("en")
   })
@@ -182,6 +238,11 @@ describe("LegendaryEventPage", () => {
       },
     ]
     player.progress = undefined
+    goals.summaries = []
+    goals.details.clear()
+    launchCreateGoal.mockReset()
+    planApi.teams = []
+    planApi.put.mockReset()
     setViewportWidth(1280)
     vi.useFakeTimers({ toFake: ["Date"] })
     vi.setSystemTime(new Date("2026-09-02T12:00:00Z"))
@@ -246,7 +307,7 @@ describe("LegendaryEventPage", () => {
     )
   })
 
-  it("shows one lane per tab in the order overview, teams, progress grid, leaderboard", async () => {
+  it("shows one lane per tab in the order overview, teams, upgrade impact, progress grid, leaderboard", async () => {
     renderPage("/legendary-events/astarLysander")
     await screen.findByTestId("legendary-event-overview-leaderboard")
 
@@ -255,6 +316,7 @@ describe("LegendaryEventPage", () => {
     expect(laneLabels()).toEqual(["beta"])
     const overview = screen.getByTestId("legendary-event-lane-overview")
     const teams = screen.getByTestId("legendary-event-teams")
+    const impact = screen.getByTestId("legendary-event-upgrade-impact")
     const grid = screen.getByTestId("legendary-event-progress-grid")
     const leaderboard = await screen.findByTestId("legendary-event-leaderboard")
     expect(teams).toHaveAttribute("data-lane", "beta")
@@ -262,7 +324,8 @@ describe("LegendaryEventPage", () => {
       await screen.findByTestId("legendary-event-teams-empty")
     ).toHaveTextContent("No teams on Beta yet.")
     expect(follows(overview, teams)).toBe(true)
-    expect(follows(teams, grid)).toBe(true)
+    expect(follows(teams, impact)).toBe(true)
+    expect(follows(impact, grid)).toBe(true)
     expect(follows(grid, leaderboard)).toBe(true)
     expect(lanesOf("progress-lane")).toEqual(["beta"])
     expect(lanesOf("leaderboard-lane")).toEqual(["beta"])
@@ -270,7 +333,8 @@ describe("LegendaryEventPage", () => {
     expect(screen.queryByTestId("legendary-event-lane-summary")).toBeNull()
   })
 
-  // Three full page renders; under coverage instrumentation this exceeds the 5s default.
+  // Three full page renders, each with the Stage 6 goal reads; under coverage instrumentation in CI
+  // this exceeds the suite's 15s.
   it("resets the tab to Overview on another event", async () => {
     renderPage("/legendary-events/astarLysander")
     await screen.findByTestId("legendary-event-page")
@@ -287,7 +351,7 @@ describe("LegendaryEventPage", () => {
     fireEvent.click(screen.getByTestId("open-lysander"))
     await screen.findByText("Lysander", { selector: "h1" })
     expect(selectedTab()).toHaveTextContent("Overview")
-  }, 10_000)
+  }, 30_000)
 
   it("jumps from a lane summary row to that lane's progress grid heading", async () => {
     // The setup file stubs scrollIntoView on HTMLElement.prototype, which shadows Element's.
@@ -351,6 +415,55 @@ describe("LegendaryEventPage", () => {
     expect(lockedRows().length).toBeGreaterThan(0)
   })
 
+  // Two full page renders with goal reads; slow under coverage instrumentation in CI.
+  it("previews goal targets on the leaderboards, shared across tabs and reset on leaving", async () => {
+    giveCyrusUnlockGoal()
+    renderPage("/legendary-events/astarLysander")
+    await screen.findByTestId("legendary-event-overview-leaderboard")
+    const previewSwitch = await screen.findByTestId("leaderboard-goals-preview")
+    await vi.waitFor(() => expect(previewSwitch).toBeEnabled())
+    act(() => toggleOnlyUnlocked())
+    act(() => selectTab("alpha"))
+    await screen.findByTestId("legendary-event-leaderboard")
+    expect(screen.getAllByTestId("leaderboard-row")).toHaveLength(1)
+
+    act(() => fireEvent.click(screen.getByTestId("leaderboard-goals-preview")))
+    // Cyrus's Unlock goal makes him owned in the preview, so Only unlocked keeps his row.
+    const rows = screen.getAllByTestId("leaderboard-row")
+    expect(rows).toHaveLength(2)
+    expect(screen.getAllByTestId("leaderboard-preview-marker")).toHaveLength(1)
+
+    act(() => selectTab("overview"))
+    expect(screen.getByTestId("leaderboard-goals-preview")).toHaveAttribute(
+      "aria-checked",
+      "true"
+    )
+
+    fireEvent.click(screen.getByTestId("open-uthar"))
+    await screen.findByText("Uthar", { selector: "h1" })
+    await screen.findByTestId("legendary-event-overview-leaderboard")
+    expect(screen.getByTestId("leaderboard-goals-preview")).toHaveAttribute(
+      "aria-checked",
+      "false"
+    )
+  }, 30_000)
+
+  it("launches goal creation from a leaderboard row with the unit prefilled", async () => {
+    renderPage("/legendary-events/astarLysander")
+    await screen.findByTestId("legendary-event-overview-leaderboard")
+    act(() => toggleOnlyUnlocked())
+    act(() => selectTab("alpha"))
+    await screen.findByTestId("legendary-event-leaderboard")
+
+    const menu = screen.getByTestId("leaderboard-row-menu")
+    fireEvent.pointerDown(menu, { button: 0, ctrlKey: false })
+    fireEvent.click(await screen.findByTestId("leaderboard-create-goal"))
+    expect(launchCreateGoal).toHaveBeenCalledWith({
+      entityType: "Character",
+      entityId: "bloodDante",
+    })
+  })
+
   it("registers the same tour on both forms, lane steps after the tab switch", async () => {
     renderPage("/legendary-events/astarLysander")
     await screen.findByTestId("legendary-event-overview-leaderboard")
@@ -362,15 +475,24 @@ describe("LegendaryEventPage", () => {
     expect(mobile).toBe(desktop)
     expect(desktop.map((step) => step.target)).toEqual([
       '[data-testid="legendary-event-tabs"]',
+      '[data-testid="legendary-event-next-token"]',
       '[data-testid="legendary-event-run-status"]',
+      '[data-testid="legendary-event-run-inputs"]',
+      '[data-testid="legendary-event-token-plan"]',
       '[data-testid="legendary-event-lane-summary"]',
       '[data-testid="legendary-event-overview-leaderboard"]',
       '[data-testid="legendary-event-lane-overview"]',
       '[data-testid="legendary-event-teams"]',
+      '[data-testid="legendary-event-upgrade-impact"]',
       '[data-testid="legendary-event-progress-grid"]',
       '[data-testid="legendary-event-leaderboard"]',
     ])
-    for (const step of desktop.slice(0, 4)) {
+    // With no teams the plan is empty, so the Token plan step's target is absent (Joyride skips it).
+    for (const step of desktop.slice(0, 7)) {
+      if (step.target.includes("legendary-event-token-plan")) {
+        expect(document.querySelector(step.target)).toBeNull()
+        continue
+      }
       expect(document.querySelector(step.target)).not.toBeNull()
     }
     // `before` resolves only once the lane section is in the document, which an `act` scope
@@ -379,14 +501,127 @@ describe("LegendaryEventPage", () => {
     const actEnvironment = actGlobal.IS_REACT_ACT_ENVIRONMENT
     actGlobal.IS_REACT_ACT_ENVIRONMENT = false
     try {
-      await desktop[4]!.before!()
+      await desktop[7]!.before!()
     } finally {
       actGlobal.IS_REACT_ACT_ENVIRONMENT = actEnvironment
     }
     expect(selectedTab()).toHaveTextContent("Alpha")
-    for (const step of desktop.slice(4)) {
+    for (const step of desktop.slice(7)) {
       expect(document.querySelector(step.target)).not.toBeNull()
     }
+  })
+
+  describe("token plan on Overview", () => {
+    // Lysander run 1: Alpha battle 1 won, one Alpha team that clears defeat-all three battles
+    // deep, so the plan is Alpha battle 2, battle 3, then battle 1's remaining kill score.
+    const runOneProgress = {
+      ...lysanderProgress,
+      currentEventRun: 1,
+      currentEventTokens: {
+        current: 3,
+        max: 12,
+        nextTokenInSeconds: 5400,
+        regenDelayInSeconds: 10_800,
+      },
+      hasUsedAdForExtraTokenToday: false,
+      extraCurrencyPerPayout: null,
+      currentPoints: 100,
+      currentCurrency: 0,
+      currentClaimedChestIndex: 0,
+      currentShards: 0,
+    }
+    const deepTeam = {
+      id: "deep",
+      laneId: "alpha",
+      name: "Deep",
+      sortOrder: 0,
+      memberUnitIds: ["bloodDante"],
+      reserveUnitId: null,
+      objectiveIndexes: [],
+      runDepths: [
+        {
+          run: 1,
+          expectedBattleClears: 3,
+          expectedBattleClearsSource: "manual",
+          recordedAt: "2026-09-01T00:00:00Z",
+        },
+      ],
+    }
+
+    it("orders the Overview: Next token, Run status, Token plan, Run forecast, lane summary, leaderboard", async () => {
+      player.progress = runOneProgress
+      planApi.teams = [deepTeam]
+      renderPage("/legendary-events/astarLysander")
+      const card = await screen.findByTestId("next-token-view")
+      const leaderboard = await screen.findByTestId(
+        "legendary-event-overview-leaderboard"
+      )
+
+      const order = [
+        screen.getByTestId("legendary-event-next-token"),
+        screen.getByTestId("legendary-event-run-status"),
+        screen.getByTestId("legendary-event-token-plan"),
+        screen.getByTestId("legendary-event-run-forecast"),
+        screen.getByTestId("legendary-event-lane-summary"),
+        leaderboard,
+      ]
+      for (const [index, element] of order.slice(1).entries()) {
+        expect(follows(order[index]!, element)).toBe(true)
+      }
+      expect(card).toHaveAttribute("data-lane", "alpha")
+      expect(card).toHaveAttribute("data-battle", "1")
+      expect(screen.getByTestId("token-plan-summary")).toHaveTextContent(
+        /^3 tokens/
+      )
+    })
+
+    it("re-plans at once when a card action marks the token", async () => {
+      player.progress = runOneProgress
+      planApi.teams = [deepTeam]
+      planApi.put.mockReturnValue(new Promise(() => {}))
+      renderPage("/legendary-events/astarLysander")
+      await screen.findByTestId("next-token-view")
+
+      act(() => fireEvent.click(screen.getByTestId("next-token-could-not")))
+
+      await vi.waitFor(() => expect(planApi.put).toHaveBeenCalledTimes(1))
+      expect(planApi.put).toHaveBeenCalledWith(
+        "/api/v1/me/legendary-event-plans/astarLysander/annotations",
+        {
+          body: {
+            expectedRevision: 0,
+            laneId: "alpha",
+            battleIndex: 1,
+            objectiveIds: [0],
+            status: "stopHere",
+          },
+        }
+      )
+      // Battle 2's defeat-all is Stop here: Alpha stops there, leaving battle 1's kill score.
+      const card = await screen.findByTestId("next-token-view")
+      await vi.waitFor(() => expect(card).toHaveAttribute("data-battle", "0"))
+      expect(screen.getByTestId("token-plan-summary")).toHaveTextContent(
+        /^1 token /
+      )
+    })
+
+    it("names the lane to add a team on when there are no teams", async () => {
+      player.progress = runOneProgress
+      renderPage("/legendary-events/astarLysander")
+
+      expect(await screen.findByTestId("next-token-noTeams")).toHaveTextContent(
+        "Add a team on Alpha to get a plan"
+      )
+    })
+
+    it("renders no token sections on an archived event", async () => {
+      renderPage("/legendary-events/archivedLysander")
+      await screen.findByTestId("legendary-event-overview-leaderboard")
+
+      expect(screen.queryByTestId("legendary-event-next-token")).toBeNull()
+      expect(screen.queryByTestId("legendary-event-token-plan")).toBeNull()
+      expect(screen.queryByTestId("legendary-event-run-forecast")).toBeNull()
+    })
   })
 
   describe("desktop (1280px)", () => {

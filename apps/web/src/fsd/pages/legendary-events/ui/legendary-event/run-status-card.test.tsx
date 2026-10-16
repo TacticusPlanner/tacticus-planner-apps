@@ -9,14 +9,37 @@ import {
   vi,
 } from "vitest"
 
+import type {
+  LegendaryEventPlan,
+  LegendaryEventRunInputs,
+} from "@/entities/legendary-event"
+import { lysanderEvent, utharEvent } from "@/test/fixtures/legendary-events"
 import { createTestI18n, i18nWrapper } from "@/test/i18n"
-import { render, screen } from "@/test/render"
+import { fireEvent, render, screen, within } from "@/test/render"
 
 import {
+  buildRewardOutlookViewModel,
   buildRunStatusViewModel,
+  type RewardOutlookViewModel,
+  type RunInputsViewModel,
   type RunStatusViewModel,
 } from "./legendary-event-page.view-model"
 import { RunStatusCard } from "./run-status-card"
+
+vi.mock("@azure/msal-react", () => ({ useIsAuthenticated: () => true }))
+vi.mock("@/shared/api", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/shared/api")>()),
+  apiGet: async () => ({
+    eventId: "votanUthar",
+    revision: 1,
+    catalogVersion: "1",
+    notes: null,
+    showPaidOptions: false,
+    teams: [],
+    runs: [],
+    annotations: [],
+  }),
+}))
 
 const NOW = Date.parse("2026-09-02T12:00:00Z")
 const lifecycle = {
@@ -31,12 +54,12 @@ const OBSERVED = NOW - 10 * 60_000
 type BuildInput = Parameters<typeof buildRunStatusViewModel>[0]
 const build = (
   progress: BuildInput["progress"],
-  common: BuildInput["common"],
+  rewards: BuildInput["rewards"],
   progressObservedAtMs: number | null = OBSERVED
 ) =>
   buildRunStatusViewModel({
     progress,
-    common,
+    rewards,
     progressObservedAtMs,
     nowMs: NOW,
   })
@@ -62,7 +85,6 @@ const lysanderProgress = {
   extraCurrencyPerPayout: null,
 }
 const ladder = {
-  id: "lre-common",
   pointsMilestones: [
     { milestone: 13, cumulativePoints: 3000, engramPayout: 55 },
     { milestone: 14, cumulativePoints: 3500, engramPayout: 60 },
@@ -79,16 +101,67 @@ const ladder = {
   shardsPerChest: 25,
 }
 
+// The spec's worked example: Uthar in run 2 with 5,000 points, 120 currency, 10 chests and 250
+// shards; run 3 plans 10 missions and the bundle.
+const utharProgress = {
+  ...lysanderProgress,
+  id: "votanUthar",
+  currentPoints: 5000,
+  currentCurrency: 120,
+  currentClaimedChestIndex: 10,
+  currentShards: 250,
+  currentEventRun: 2,
+}
+const runInputs = (
+  run: 1 | 2 | 3,
+  regularMissions: number,
+  bundlePurchased = false
+): LegendaryEventRunInputs => ({
+  run,
+  regularMissions,
+  premiumMissions: 0,
+  bundlePurchased,
+  closeShards: 0,
+  updatedAt: "2026-10-10T00:00:00Z",
+})
+const utharPlan: LegendaryEventPlan = {
+  eventId: "votanUthar",
+  revision: 3,
+  catalogVersion: "1",
+  notes: null,
+  showPaidOptions: true,
+  teams: [],
+  runs: [runInputs(1, 10), runInputs(2, 6), runInputs(3, 10, true)],
+  annotations: [],
+}
+const outlookFor = (
+  progress: unknown,
+  plan: LegendaryEventPlan | undefined = utharPlan
+) =>
+  buildRewardOutlookViewModel({
+    rewards: utharEvent.rewards,
+    progress: progress as never,
+    plan: { isPending: false, data: plan },
+    planEnabled: true,
+  })
+const signedOut: RunInputsViewModel = { enabled: false, currentRun: 1 }
+
 let i18n: I18n
 
 function renderCard(
   runStatus: RunStatusViewModel,
-  syncedAtMs: number | null | undefined = OBSERVED
+  syncedAtMs: number | null | undefined = OBSERVED,
+  outlook: RewardOutlookViewModel = { kind: "unavailable" },
+  runInputsView: RunInputsViewModel = signedOut
 ) {
   return render(
     <RunStatusCard
+      event={utharEvent}
+      isMobile={false}
       lifecycle={lifecycle}
       nowMs={NOW}
+      outlook={outlook}
+      runInputs={runInputsView}
       runStatus={runStatus}
       syncedAtMs={syncedAtMs}
     />,
@@ -109,7 +182,7 @@ describe("RunStatusCard", () => {
   it("renders the populated example", () => {
     const view = build(
       { status: "ready", data: lysanderProgress as never, retry },
-      { status: "ready", data: ladder as never, retry },
+      ladder as never,
       NOW
     )
     renderCard(view)
@@ -149,14 +222,18 @@ describe("RunStatusCard", () => {
       data: lysanderProgress as never,
       retry,
     }
-    const common = { status: "ready" as const, data: ladder as never, retry }
+    const rewards = ladder as never
 
     // Observed exactly at sync time: the full 1 hr 30 min remain.
     const fresh = render(
       <RunStatusCard
+        event={utharEvent}
+        isMobile={false}
         lifecycle={lifecycle}
         nowMs={NOW}
-        runStatus={build(progress, common, NOW)}
+        outlook={{ kind: "unavailable" }}
+        runInputs={signedOut}
+        runStatus={build(progress, rewards, NOW)}
         syncedAtMs={NOW}
       />,
       { wrapper: i18nWrapper(i18n) }
@@ -167,7 +244,7 @@ describe("RunStatusCard", () => {
     fresh.unmount()
 
     // Observed two hours ago: the 1 hr 30 min timer has run out.
-    renderCard(build(progress, common, NOW - 2 * 3_600_000))
+    renderCard(build(progress, rewards, NOW - 2 * 3_600_000))
     expect(screen.getByTestId("run-status-tokens")).toHaveTextContent(
       "3/12 tokens, next token ready"
     )
@@ -181,7 +258,7 @@ describe("RunStatusCard", () => {
           data: { ...lysanderProgress, currentClaimedChestIndex: -1 } as never,
           retry,
         },
-        { status: "ready", data: ladder as never, retry }
+        ladder as never
       )
     )
     expect(screen.getByTestId("run-status-chests")).toHaveTextContent(
@@ -192,7 +269,7 @@ describe("RunStatusCard", () => {
   it("shows a dash for the milestone without the reward ladder", () => {
     const view = build(
       { status: "ready", data: lysanderProgress as never, retry },
-      { status: "error", retry }
+      undefined
     )
     renderCard(view)
 
@@ -215,7 +292,7 @@ describe("RunStatusCard", () => {
         } as never,
         retry,
       },
-      { status: "ready", data: ladder as never, retry }
+      ladder as never
     )
     renderCard(view)
 
@@ -228,7 +305,7 @@ describe("RunStatusCard", () => {
   it("shows the run timing and the no-entry body for an event not in the chunk", () => {
     const view = build(
       { status: "ready", data: undefined, retry },
-      { status: "ready", data: ladder as never, retry }
+      ladder as never
     )
     renderCard(view)
 
@@ -240,12 +317,7 @@ describe("RunStatusCard", () => {
   })
 
   it("shows synced data unavailable in place of the values when player data fails", () => {
-    renderCard(
-      build(
-        { status: "error", retry },
-        { status: "ready", data: ladder as never, retry }
-      )
-    )
+    renderCard(build({ status: "error", retry }, ladder as never))
 
     expect(screen.getByTestId("run-status-unavailable")).toHaveTextContent(
       "Synced data unavailable"
@@ -274,13 +346,217 @@ describe("RunStatusCard", () => {
 
     render(
       <RunStatusCard
+        event={utharEvent}
+        isMobile={false}
         lifecycle={lifecycle}
         nowMs={NOW}
+        outlook={{ kind: "unavailable" }}
+        runInputs={signedOut}
         runStatus={{ kind: "noEntry" }}
         syncedAtMs={undefined}
       />,
       { wrapper: i18nWrapper(i18n) }
     )
     expect(screen.queryByTestId("run-status-synced-at")).toBeNull()
+  })
+
+  it("reads each event's own points ladder for the milestone line", () => {
+    // Uthar's ladder here pays its next milestone at 3,600 instead of Lysander's 3,500.
+    const utharRewards = {
+      ...utharEvent.rewards,
+      pointsMilestones: utharEvent.rewards.pointsMilestones.map((milestone) =>
+        milestone.cumulativePoints === 3500
+          ? { ...milestone, cumulativePoints: 3600, engramPayout: 70 }
+          : milestone
+      ),
+    }
+    const progress = {
+      status: "ready" as const,
+      data: lysanderProgress as never,
+      retry,
+    }
+
+    const lysander = renderCard(build(progress, lysanderEvent.rewards))
+    expect(screen.getByTestId("run-status-milestone")).toHaveTextContent(
+      "90 points to milestone 9 (+65 currency)"
+    )
+    lysander.unmount()
+
+    renderCard(build(progress, utharRewards))
+    expect(screen.getByTestId("run-status-milestone")).toHaveTextContent(
+      "190 points to milestone 9 (+70 currency)"
+    )
+  })
+
+  describe("Reward outlook", () => {
+    const synced = (fields: Record<string, unknown> = {}) => ({
+      ...utharProgress,
+      ...fields,
+    })
+    const renderOutlook = (outlook: RewardOutlookViewModel) =>
+      renderCard({ kind: "noEntry" }, OBSERVED, outlook)
+
+    it("shows the Uthar worked example in one line per figure", () => {
+      renderOutlook(outlookFor(synced()))
+
+      expect(screen.getByTestId("reward-outlook-next")).toHaveTextContent(
+        "Next: Unlock · 250 / 400 shards"
+      )
+      expect(screen.getByTestId("reward-outlook-chests")).toHaveTextContent(
+        "6 more chests (3,350 currency in total)"
+      )
+      expect(screen.getByTestId("reward-outlook-points")).toHaveTextContent(
+        "5,000 points to reach 10,000 · about 6.7 battles per lane"
+      )
+      expect(screen.queryByTestId("reward-outlook-no-entry")).toBeNull()
+    })
+
+    it("explains the base, the future run currency, the bonus and started runs", () => {
+      renderOutlook(outlookFor(synced()))
+      const explain = screen.getByTestId("reward-outlook-explain")
+      fireEvent.click(within(explain).getByText("How this is worked out"))
+
+      const lines = within(explain)
+        .getAllByRole("listitem")
+        .map((line) => line.textContent)
+      expect(lines).toEqual([
+        "From your last sync: 120 currency in hand, 10 chests claimed, 250 shards, 5,000 points",
+        "250 currency from run 3 missions",
+        "300 currency from the run 3 bundle",
+        "No payout bonus on points milestones",
+        expect.stringMatching(/runs already started are not added again/),
+      ])
+    })
+
+    it("says every step is reached", () => {
+      renderOutlook(outlookFor(synced({ currentShards: 1300 })))
+      expect(screen.getByTestId("reward-outlook-complete")).toHaveTextContent(
+        "Every reward step reached"
+      )
+      expect(screen.queryByTestId("reward-outlook-chests")).toBeNull()
+      expect(screen.queryByTestId("reward-outlook-points")).toBeNull()
+    })
+
+    it("says a goal beyond the chest ladder is not reachable", () => {
+      renderOutlook(
+        outlookFor(
+          synced({ currentClaimedChestIndex: 41, currentShards: 50 }),
+          undefined
+        )
+      )
+      expect(
+        screen.getByTestId("reward-outlook-beyond-chests")
+      ).toHaveTextContent(
+        "Not reachable this event (needs 55 chests, the event has 54)"
+      )
+      expect(screen.queryByTestId("reward-outlook-points")).toBeNull()
+    })
+
+    it("says when the currency already covers the chests", () => {
+      renderOutlook(outlookFor(synced({ currentCurrency: 2000 })))
+      expect(screen.getByTestId("reward-outlook-affordable")).toHaveTextContent(
+        "Enough currency for the chests now"
+      )
+    })
+
+    it("says when points alone cannot cover the chests", () => {
+      renderOutlook(
+        outlookFor(synced({ currentPoints: 26_900, currentCurrency: 0 }), {
+          ...utharPlan,
+          runs: [],
+        })
+      )
+      expect(
+        screen.getByTestId("reward-outlook-beyond-points")
+      ).toHaveTextContent("Points alone can't cover it: 1,135 currency short")
+    })
+
+    it("computes from zero with a note without a synced entry", () => {
+      renderCard(
+        { kind: "noEntry" },
+        OBSERVED,
+        outlookFor(undefined, { ...utharPlan, runs: [runInputs(1, 10)] })
+      )
+      expect(screen.getByTestId("run-status-no-entry")).toBeInTheDocument()
+      expect(screen.getByTestId("reward-outlook-no-entry")).toHaveTextContent(
+        "No synced progress yet"
+      )
+      expect(screen.getByTestId("reward-outlook-next")).toHaveTextContent(
+        "Next: Unlock · 0 / 400 shards"
+      )
+      expect(screen.getByTestId("reward-outlook-chests")).toHaveTextContent(
+        "16 more chests (3,350 currency in total)"
+      )
+    })
+
+    it("shows a skeleton while the synced entry or the plan loads", () => {
+      expect(
+        buildRewardOutlookViewModel({
+          rewards: utharEvent.rewards,
+          progress: synced() as never,
+          plan: { isPending: true, data: undefined },
+          planEnabled: true,
+        })
+      ).toEqual({ kind: "loading" })
+      renderOutlook(
+        buildRewardOutlookViewModel({
+          rewards: utharEvent.rewards,
+          progress: "loading",
+          plan: { isPending: false, data: utharPlan },
+          planEnabled: true,
+        })
+      )
+      expect(screen.getByTestId("reward-outlook-loading")).toBeInTheDocument()
+    })
+
+    it("runs without inputs when signed out", () => {
+      const outlook = buildRewardOutlookViewModel({
+        rewards: utharEvent.rewards,
+        progress: synced() as never,
+        plan: { isPending: true, data: undefined },
+        planEnabled: false,
+      })
+      expect(outlook).toMatchObject({
+        kind: "ready",
+        projection: { futureRuns: [{ run: 3, missionCurrency: 0 }] },
+      })
+    })
+
+    it("hides the outlook when the catalog ladder or the synced data is unavailable", () => {
+      expect(
+        buildRewardOutlookViewModel({
+          rewards: undefined,
+          progress: synced() as never,
+          plan: { isPending: false, data: utharPlan },
+          planEnabled: true,
+        })
+      ).toEqual({ kind: "unavailable" })
+      renderCard(
+        build({ status: "error", retry }, utharEvent.rewards),
+        OBSERVED,
+        outlookFor("error")
+      )
+      expect(screen.getByTestId("run-status-unavailable")).toBeInTheDocument()
+      expect(screen.queryByTestId("reward-outlook")).toBeNull()
+    })
+  })
+
+  it("carries the Inputs button for signed-in users only", () => {
+    const { unmount } = renderCard({ kind: "noEntry" })
+    expect(screen.queryByTestId("legendary-event-run-inputs")).toBeNull()
+    unmount()
+
+    renderCard(
+      { kind: "noEntry" },
+      OBSERVED,
+      { kind: "unavailable" },
+      {
+        enabled: true,
+        currentRun: 2,
+      }
+    )
+    expect(screen.getByTestId("legendary-event-run-inputs")).toHaveTextContent(
+      "Inputs"
+    )
   })
 })

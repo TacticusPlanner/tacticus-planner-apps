@@ -2,7 +2,7 @@ import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
 
 /** Shown when the plan-aware estimates failed to load, so missing farming details are not silent. */
-export function GoalsEstimatesError({ onRetry }: { onRetry: () => void }) {
+function GoalsEstimatesError({ onRetry }: { onRetry: () => void }) {
   const { t } = useTranslation()
   return (
     <div
@@ -14,6 +14,44 @@ export function GoalsEstimatesError({ onRetry }: { onRetry: () => void }) {
         {t("goals.order.estimatesRetry")}
       </Button>
     </div>
+  )
+}
+
+/** The notices that resolve after the rows (estimates failed, no farmable demand). The page renders
+ *  them below the list, not above it, so their late arrival never pushes the rows down. */
+export function GoalsLateNotices({
+  insightsRun,
+  hasActiveGoals,
+}: {
+  insightsRun: {
+    loading: boolean
+    isError: boolean
+    retry: () => void
+    result: { estimates: ReadonlyMap<string, unknown> }
+  }
+  hasActiveGoals: boolean
+}) {
+  const { t } = useTranslation()
+  // Active goals exist but the plan has nothing farmable to estimate for them.
+  const noFarmableDemand =
+    !insightsRun.loading &&
+    !insightsRun.isError &&
+    insightsRun.result.estimates.size === 0 &&
+    hasActiveGoals
+  return (
+    <>
+      {insightsRun.isError ? (
+        <GoalsEstimatesError onRetry={insightsRun.retry} />
+      ) : null}
+      {noFarmableDemand ? (
+        <p
+          className="text-sm text-muted-foreground"
+          data-testid="goals-no-farmable"
+        >
+          {t("goals.order.noFarmableDemand")}
+        </p>
+      ) : null}
+    </>
   )
 }
 

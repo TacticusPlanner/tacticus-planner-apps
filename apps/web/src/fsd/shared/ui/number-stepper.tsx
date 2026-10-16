@@ -18,7 +18,8 @@ type NumberStepperLabels = {
 /**
  * "− input +" over an integer `min..max` (extracted from the progress page's event card pattern).
  * `value` null renders an empty input; + then starts at `min`. With `clearable`, a clear control
- * (and an emptied input) sets null. Typed entries commit on blur or Enter, clamped.
+ * (and an emptied input) sets null. Typed entries commit on blur or Enter, clamped. − / + move by
+ * `step` (1 by default); `touch` sizes them for touch (40px).
  */
 export function NumberStepper({
   value,
@@ -28,6 +29,8 @@ export function NumberStepper({
   labels,
   clearable = false,
   disabled = false,
+  step = 1,
+  touch = false,
   placeholder,
   className,
   "data-testid": testId,
@@ -39,6 +42,8 @@ export function NumberStepper({
   labels: NumberStepperLabels
   clearable?: boolean
   disabled?: boolean
+  step?: number
+  touch?: boolean
   placeholder?: string
   className?: string
   "data-testid"?: string
@@ -72,7 +77,8 @@ export function NumberStepper({
         aria-label={labels.decrease}
         data-testid="number-stepper-decrease"
         disabled={disabled || value === null || value <= min}
-        onClick={() => commit(stepStepperValue(value, -1, min, max))}
+        className={cn(touch && "size-10")}
+        onClick={() => commit(stepStepperValue(value, -step, min, max))}
         size="icon-sm"
         type="button"
         variant="outline"
@@ -99,7 +105,8 @@ export function NumberStepper({
         aria-label={labels.increase}
         data-testid="number-stepper-increase"
         disabled={disabled || (value !== null && value >= max)}
-        onClick={() => commit(stepStepperValue(value, 1, min, max))}
+        className={cn(touch && "size-10")}
+        onClick={() => commit(stepStepperValue(value, step, min, max))}
         size="icon-sm"
         type="button"
         variant="outline"

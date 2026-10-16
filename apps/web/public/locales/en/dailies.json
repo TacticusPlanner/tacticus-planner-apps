@@ -178,14 +178,18 @@
   "schedule": {
     "raids_one": "{{count}} attempt used",
     "raids_other": "{{count}} attempts used",
+    "upgradesLeft_one": "{{count}} upgrade left",
+    "upgradesLeft_other": "{{count}} upgrades left",
+    "shardsLeft_one": "{{count}} shard left",
+    "shardsLeft_other": "{{count}} shards left",
     "progress": "{{owned}} of {{target}} owned",
-    "node": "{{node}} · {{raids}} attempts used",
-    "maxRaids": "Max raids",
     "fullyRaided": "Fully raided"
   },
   "bonus": {
     "title": "Bonus raids",
-    "showMore": "Show more"
+    "showMore": "Show more",
+    "limitReached": "Daily energy limit reached — these bonus raids are what's left worth raiding.",
+    "limitReachedEmpty": "Daily energy limit reached. No bonus raids left today."
   },
   "todaysAttempts": {
     "title": "Today's attempts",

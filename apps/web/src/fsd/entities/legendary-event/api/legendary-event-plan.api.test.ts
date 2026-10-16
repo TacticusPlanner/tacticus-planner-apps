@@ -24,7 +24,9 @@ import {
   createLegendaryEventTeam,
   deleteLegendaryEventTeam,
   getLegendaryEventPlan,
+  updateLegendaryEventAnnotations,
   updateLegendaryEventPlan,
+  updateLegendaryEventRunInputs,
   updateLegendaryEventTeam,
   updateLegendaryEventTeamOrder,
 } from "./legendary-event-plan.api"
@@ -92,6 +94,36 @@ describe("legendary event plan API", () => {
     }
     updateLegendaryEventTeamOrder("astarLysander", body)
     expect(api.put).toHaveBeenCalledWith(`${BASE}/teams/order`, { body })
+  })
+
+  it("writes one run's inputs under its run number", () => {
+    const body = {
+      expectedRevision: 6,
+      regularMissions: 10,
+      premiumMissions: 0,
+      bundlePurchased: true,
+      closeShards: 25,
+    }
+    updateLegendaryEventRunInputs("astarLysander", 3, body)
+    expect(api.put).toHaveBeenCalledWith(`${BASE}/runs/3`, { body })
+  })
+
+  it("writes the marks of one battle", () => {
+    const body = {
+      expectedRevision: 7,
+      laneId: "alpha" as const,
+      battleIndex: 8,
+      objectiveIds: [0, 1, 3, 4, 5],
+      status: "maybeClear" as const,
+    }
+    updateLegendaryEventAnnotations("astarLysander", body)
+    expect(api.put).toHaveBeenCalledWith(`${BASE}/annotations`, { body })
+
+    const clear = { ...body, objectiveIds: [3], status: null }
+    updateLegendaryEventAnnotations("astarLysander", clear)
+    expect(api.put).toHaveBeenLastCalledWith(`${BASE}/annotations`, {
+      body: clear,
+    })
   })
 
   it("keys the plan query per event under one root", () => {

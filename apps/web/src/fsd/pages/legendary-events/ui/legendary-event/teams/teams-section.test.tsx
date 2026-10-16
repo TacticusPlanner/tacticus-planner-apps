@@ -5,6 +5,7 @@ import { beforeAll, describe, expect, it, vi } from "vitest"
 
 import type {
   LegendaryEventPlan,
+  LegendaryEventRosterUnit,
   LegendaryEventTeam,
 } from "@/entities/legendary-event"
 import {
@@ -13,7 +14,9 @@ import {
   teamUnits,
 } from "@/test/fixtures/legendary-event-teams"
 import { createTestI18n, i18nWrapper } from "@/test/i18n"
-import { render, screen } from "@/test/render"
+import { render, screen, within } from "@/test/render"
+
+import type { ClearEstimatesViewModel } from "../legendary-event-page.view-model"
 
 import { TeamsSection, type TeamsViewModel } from "./teams-section"
 import type { TeamsSectionState } from "./teams.view-model"
@@ -66,18 +69,79 @@ const plan: LegendaryEventPlan = {
   ],
 }
 
+vi.mock("@/shared/analytics", () => ({
+  useAnalyticsActions: () => ({ captureEvent: vi.fn() }),
+}))
+
+// Gold1 / Epic:RedOneStar / 3 upgrades / 20 / 15: combat power 8,792 each.
+const rosterUnit = (unitId: string) =>
+  ({
+    unitId,
+    rank: "Gold1",
+    progressionIndex: "Epic:RedOneStar",
+    appliedUpgradeSlots: [0, 1, 2],
+    abilities: [
+      { abilityId: "active", level: 20 },
+      { abilityId: "passive", level: 15 },
+    ],
+  }) as LegendaryEventRosterUnit
+const estimator = {
+  team: () => null,
+  unit: () => null,
+  inputs: {
+    battlePowers: [1000, 4000, 30000],
+    roster: new Map(
+      [teamUnits.a.id, teamUnits.b.id, teamUnits.r.id].map((unitId) => [
+        unitId,
+        rosterUnit(unitId),
+      ])
+    ),
+    config: { powerRatio: 0.5, calibrated: true, hordeMultipliers: new Map() },
+  },
+}
+const readyEstimates: ClearEstimatesViewModel = {
+  kind: "ready",
+  byLane: { alpha: estimator, beta: estimator, gamma: estimator },
+}
+
 function renderSection(
   state: TeamsSectionState,
-  { isMobile = false, laneId = "alpha" as const } = {}
+  {
+    isMobile = false,
+    laneId = "alpha",
+    estimates = { kind: "hidden" },
+  }: {
+    isMobile?: boolean
+    laneId?: "alpha" | "beta" | "gamma"
+    estimates?: ClearEstimatesViewModel
+  } = {}
 ) {
   const actions = {
-    createTeam: vi.fn(),
+    createTeam: vi.fn().mockResolvedValue("saved"),
     updateTeam: vi.fn(),
     deleteTeam: vi.fn(),
     reorderLane: vi.fn().mockResolvedValue("saved"),
     setDepth: vi.fn(),
+    restoreEstimate: vi.fn(),
   }
-  const teams: TeamsViewModel = { state, run: 1, actions }
+  const teams: TeamsViewModel = {
+    eventId: "astarLysander",
+    state,
+    run: 1,
+    actions,
+    estimates,
+    progressByLane: undefined,
+    goals: {
+      goalLines: () => [],
+      goalUnitIds: new Set(),
+      pickerPreview: () => ({
+        enabled: false,
+        available: false,
+        roster: undefined,
+        previewed: new Set(),
+      }),
+    },
+  }
   render(
     <TeamsSection
       isMobile={isMobile}
@@ -192,5 +256,56 @@ describe("TeamsSection", () => {
       .setup()
       .click(screen.getByTestId("legendary-event-add-team"))
     expect(await screen.findByTestId("team-editor")).toBeInTheDocument()
+  })
+
+  it("disables Suggest teams with the reason when estimates are unavailable", () => {
+    renderSection(ready())
+    const button = screen.getByTestId("legendary-event-suggest-teams")
+    expect(button).toBeDisabled()
+    expect(button).toHaveAccessibleDescription("Needs clear estimates")
+  })
+
+  it("opens a suggestion in the editor as a new team, and returns to the suggestions on cancel", async () => {
+    const user = userEvent.setup()
+    const actions = renderSection(ready(), {
+      laneId: "gamma",
+      estimates: readyEstimates,
+    })
+    await user.click(
+      within(screen.getByTestId("legendary-event-teams-empty")).getByTestId(
+        "legendary-event-suggest-teams-empty"
+      )
+    )
+    const proposals = await screen.findAllByTestId("team-suggestion")
+    expect(proposals.length).toBeGreaterThan(0)
+    const members = within(proposals[0]!)
+      .getAllByTestId("team-suggestion-member")
+      .map((element) => element.dataset.unit)
+
+    await user.click(within(proposals[0]!).getByTestId("team-suggestion-use"))
+    const editor = await screen.findByTestId("team-editor")
+    expect(
+      within(editor)
+        .getAllByTestId("team-picker-selected-unit")
+        .map((element) => element.dataset.unit)
+    ).toEqual(members)
+    expect(screen.queryByTestId("team-suggestions")).toBeNull()
+
+    await user.click(within(editor).getByRole("button", { name: "Cancel" }))
+    expect(await screen.findByTestId("team-suggestions")).toBeInTheDocument()
+    expect(actions.createTeam).not.toHaveBeenCalled()
+
+    await user.click(
+      within(screen.getAllByTestId("team-suggestion")[0]!).getByTestId(
+        "team-suggestion-use"
+      )
+    )
+    await user.click(await screen.findByTestId("team-editor-save"))
+    expect(actions.createTeam).toHaveBeenCalledWith(
+      "gamma",
+      expect.objectContaining({ memberUnitIds: members }),
+      expect.anything(),
+      { source: "suggestion", suggestionRank: 1 }
+    )
   })
 })

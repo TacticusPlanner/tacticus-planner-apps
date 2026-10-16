@@ -13,6 +13,7 @@ function entry(overrides: Partial<RaidBreakdownEntry>): RaidBreakdownEntry {
     itemsFarmed: 1,
     energySpent: 6,
     dailyAttempts: 5,
+    remainingBefore: 1,
     ...overrides,
   }
 }
@@ -40,6 +41,8 @@ describe("flattenTodayLocations", () => {
         resourceId: "upgrade-1",
         raidsToPerform: 5,
         dailyAttempts: 5,
+        remainingBefore: 2,
+        dropRate: 0.5,
       },
     ])
   })
@@ -57,6 +60,8 @@ describe("flattenTodayLocations", () => {
         resourceId: "upgrade-1",
         raidsToPerform: 4,
         dailyAttempts: 5,
+        remainingBefore: 1,
+        dropRate: 0.25,
       },
     ])
   })

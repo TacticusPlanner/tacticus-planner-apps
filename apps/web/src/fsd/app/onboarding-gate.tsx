@@ -13,6 +13,10 @@ import {
 } from "@/shared/auth"
 
 import { SETUP_STEP_PATHS } from "./account-setup-routes"
+import { useDelayedFlag } from "./use-delayed-flag"
+
+// A healthy /me answers in well under a second; past this, say so rather than look frozen.
+export const ACCOUNT_GATE_SLOW_MS = 5000
 
 function logApiAccessError(error: unknown) {
   console.error("[MSAL] api-access failed", error)
@@ -43,14 +47,37 @@ export function OnboardingGate({ children }: { children: ReactNode }) {
     logApiAccessError
   )
 
-  if (
-    state.status === "idle" ||
-    state.status === "loading" ||
-    reauthenticating
-  ) {
+  const waiting =
+    state.status === "idle" || state.status === "loading" || reauthenticating
+  const slow = useDelayedFlag(
+    waiting && !reauthenticating,
+    ACCOUNT_GATE_SLOW_MS
+  )
+
+  if (waiting) {
     return (
-      <div className="flex min-h-svh items-center justify-center">
-        <Spinner className="size-8 text-primary" />
+      <div className="flex min-h-svh items-center justify-center p-6">
+        <div
+          aria-live="polite"
+          className="flex max-w-sm flex-col items-center gap-3 text-center"
+          data-testid="account-gate-loading"
+          role="status"
+        >
+          <Spinner aria-hidden="true" className="size-8 text-primary" />
+          <p className="text-sm font-medium">
+            {reauthenticating
+              ? t("accountGate.reauthenticating")
+              : t("accountGate.loading")}
+          </p>
+          {slow ? (
+            <p
+              className="text-sm text-muted-foreground"
+              data-testid="account-gate-slow"
+            >
+              {t("accountGate.slow")}
+            </p>
+          ) : null}
+        </div>
       </div>
     )
   }

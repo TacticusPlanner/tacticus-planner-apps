@@ -3,32 +3,47 @@ import { useTranslation } from "react-i18next"
 import type {
   LeaderboardFigure,
   LeaderboardRow,
+  LegendaryEventLaneId,
   LegendaryEventUnit,
 } from "@/entities/legendary-event"
 
+import type { LeaderboardGoalsViewModel } from "../legendary-event-page.view-model"
 import {
   LeaderboardRank,
   LeaderboardRarity,
+  LeaderboardRowActions,
   LeaderboardUnit,
   ObjectiveIndicator,
 } from "./leaderboard-parts"
-import type { ObjectiveChip } from "./leaderboard.view-model"
+import {
+  useClearsText,
+  type LeaderboardClears,
+  type ObjectiveChip,
+} from "./leaderboard.view-model"
 
-/** Mobile: one lane's leaderboard as row cards (portrait, name, rarity and rank, the objective
- *  icon indicators, the shown points figure and "Objectives: N"). */
+/** Mobile: one lane's leaderboard as row cards (portrait, name, rarity and rank, the actions menu
+ *  in the corner, the objective icon indicators, the shown points figure and "Objectives: N ·
+ *  Clears: ~n"). */
 export function LeaderboardList({
   rows,
   objectives,
   figure,
   nameOf,
+  clearsOf,
+  goals,
+  laneId,
 }: {
   rows: readonly LeaderboardRow[]
   objectives: readonly ObjectiveChip[]
   figure: LeaderboardFigure
   nameOf: (unit: LegendaryEventUnit) => string
+  clearsOf?: (unitId: string) => LeaderboardClears
+  goals: LeaderboardGoalsViewModel
+  laneId: LegendaryEventLaneId
 }) {
   const { t, i18n } = useTranslation("legendaryEvents")
   const number = new Intl.NumberFormat(i18n.language)
+  const clearsText = useClearsText()
 
   return (
     <ul className="flex min-w-0 flex-col gap-2" data-testid="leaderboard-list">
@@ -41,10 +56,20 @@ export function LeaderboardList({
           key={row.unit.id}
         >
           <div className="flex min-w-0 items-center justify-between gap-2">
-            <LeaderboardUnit name={nameOf(row.unit)} row={row} />
-            <span className="flex shrink-0 items-center gap-1">
+            <LeaderboardUnit
+              goalLines={goals.badgeLines(row.unit.id)}
+              name={nameOf(row.unit)}
+              previewed={goals.previewed.has(row.unit.id)}
+              row={row}
+            />
+            <span className="-my-1.5 -mr-1.5 flex shrink-0 items-center gap-1">
               <LeaderboardRarity row={row} />
               <LeaderboardRank row={row} />
+              <LeaderboardRowActions
+                name={nameOf(row.unit)}
+                onCreateGoal={() => goals.onCreateGoal(row.unit.id, laneId)}
+                size="card"
+              />
             </span>
           </div>
           <div className="flex min-w-0 items-center justify-between gap-2">
@@ -71,18 +96,44 @@ export function LeaderboardList({
                   ),
                 })}
               </span>
-              <span
-                className="text-xs text-muted-foreground tabular-nums"
-                data-testid="leaderboard-objectives"
-              >
-                {t("leaderboard.objectivesValue", {
-                  count: number.format(row.objectivesCount),
-                })}
+              <span className="text-xs text-muted-foreground tabular-nums">
+                <span data-testid="leaderboard-objectives">
+                  {t("leaderboard.objectivesValue", {
+                    count: number.format(row.objectivesCount),
+                  })}
+                </span>
+                {clearsOf ? (
+                  <>
+                    <span aria-hidden="true">{" · "}</span>
+                    <ClearsValue
+                      clears={clearsOf(row.unit.id)}
+                      text={clearsText}
+                    />
+                  </>
+                ) : null}
               </span>
             </span>
           </div>
         </li>
       ))}
     </ul>
+  )
+}
+
+function ClearsValue({
+  clears,
+  text,
+}: {
+  clears: LeaderboardClears
+  text: (clears: LeaderboardClears) => string
+}) {
+  const { t } = useTranslation("legendaryEvents")
+  return (
+    <span data-clears={clears.kind} data-testid="leaderboard-clears">
+      {t("estimates.clearsValue", { value: text(clears) })}
+      {clears.kind === "pending" ? (
+        <span className="sr-only">{t("estimates.clearsLoading")}</span>
+      ) : null}
+    </span>
   )
 }

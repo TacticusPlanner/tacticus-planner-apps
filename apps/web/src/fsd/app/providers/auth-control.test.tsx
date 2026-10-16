@@ -335,6 +335,80 @@ describe("AuthControl", () => {
     expect(screen.queryByText("Test User")).not.toBeInTheDocument()
   })
 
+  it("shows a loading identity, not the neutral label and email, while the account loads on desktop", () => {
+    isMobile.mockReturnValue(false)
+    renderAuthControl()
+
+    const trigger = screen.getByTestId("auth-account-trigger")
+    expect(trigger).toHaveAttribute("aria-busy", "true")
+    expect(screen.getByTestId("auth-account-loading")).toHaveTextContent(
+      "auth.accountLoading"
+    )
+    expect(screen.queryByTestId("auth-account-name")).not.toBeInTheDocument()
+    expect(screen.getByTestId("auth-account-avatar")).toHaveAttribute(
+      "data-pending",
+      "true"
+    )
+
+    fireEvent.click(trigger)
+
+    const identity = screen.getByTestId("auth-account-identity")
+    expect(
+      within(identity).getByTestId("auth-account-identity-loading")
+    ).toHaveTextContent("auth.accountLoading")
+    expect(within(identity).queryByText("auth.account")).not.toBeInTheDocument()
+    expect(screen.queryByText("test@example.com")).not.toBeInTheDocument()
+    expect(
+      screen.queryByTestId("auth-edit-display-name")
+    ).not.toBeInTheDocument()
+  })
+
+  it("keeps the loading identity while an interaction-required error starts re-authentication", () => {
+    isMobile.mockReturnValue(false)
+    isInteractionRequired.mockReturnValue(true)
+    useCurrentUser.mockReturnValue({
+      state: { status: "error", error: new Error("interaction_required") },
+    })
+    renderAuthControl()
+
+    expect(screen.getByTestId("auth-account-loading")).toBeInTheDocument()
+    fireEvent.click(screen.getByTestId("auth-account-trigger"))
+    expect(screen.queryByText("test@example.com")).not.toBeInTheDocument()
+  })
+
+  it("shows a loading identity in the mobile drawer while the account loads", () => {
+    isMobile.mockReturnValue(true)
+    renderAuthControl()
+
+    expect(screen.getByTestId("auth-account-avatar")).toHaveAttribute(
+      "data-pending",
+      "true"
+    )
+    fireEvent.click(screen.getByTestId("auth-account-trigger"))
+
+    const drawer = screen.getByTestId("auth-account-drawer")
+    expect(
+      within(drawer).getByTestId("auth-account-identity-loading")
+    ).toBeInTheDocument()
+    expect(
+      within(drawer).queryByText("test@example.com")
+    ).not.toBeInTheDocument()
+  })
+
+  it("replaces the loading identity with the confirmed name once the account loads", () => {
+    isMobile.mockReturnValue(false)
+    useCurrentUser.mockReturnValue({ state: confirmedState })
+    renderAuthControl()
+
+    expect(screen.queryByTestId("auth-account-loading")).not.toBeInTheDocument()
+    expect(screen.getByTestId("auth-account-name")).toHaveTextContent(
+      "Test User"
+    )
+    expect(screen.getByTestId("auth-account-trigger")).not.toHaveAttribute(
+      "aria-busy"
+    )
+  })
+
   it("shows the game catalog status badge inside the desktop user menu", () => {
     isMobile.mockReturnValue(false)
     renderAuthControl()

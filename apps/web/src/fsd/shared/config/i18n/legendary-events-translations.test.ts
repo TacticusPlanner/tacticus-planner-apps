@@ -54,6 +54,67 @@ describe("Legendary Events translations", () => {
     }
   )
 
+  it.each(translated)(
+    "translates the token plan copy in %s",
+    (_locale, resource) => {
+      expect(resource.tokenPlan.nextToken.title).not.toBe(
+        en.tokenPlan.nextToken.title
+      )
+      expect(resource.tokenPlan.nextToken.reasons.mostPoints).not.toBe(
+        en.tokenPlan.nextToken.reasons.mostPoints
+      )
+      expect(resource.tokenPlan.nextToken.actions.couldNot).not.toBe(
+        en.tokenPlan.nextToken.actions.couldNot
+      )
+      expect(resource.tokenPlan.plan.title).not.toBe(en.tokenPlan.plan.title)
+      expect(resource.tokenPlan.forecast.header).not.toBe(
+        en.tokenPlan.forecast.header
+      )
+      expect(resource.tour.event.steps.nextToken.content).not.toBe(
+        en.tour.event.steps.nextToken.content
+      )
+      expect(resource.tour.event.steps.tokenPlan.content).not.toBe(
+        en.tour.event.steps.tokenPlan.content
+      )
+    }
+  )
+
+  it.each(translated)(
+    "translates the run inputs, outlook and marks copy in %s",
+    (_locale, resource) => {
+      expect(resource.runInputs.description).not.toBe(en.runInputs.description)
+      expect(resource.runInputs.showPaidOptions).not.toBe(
+        en.runInputs.showPaidOptions
+      )
+      expect(resource.runInputs.toasts.error).not.toBe(
+        en.runInputs.toasts.error
+      )
+      expect(resource.outlook.title).not.toBe(en.outlook.title)
+      expect(resource.outlook.steps.unlock).not.toBe(en.outlook.steps.unlock)
+      expect(resource.outlook.explain.startedRuns).not.toBe(
+        en.outlook.explain.startedRuns
+      )
+      expect(resource.annotations.maybeClear).not.toBe(
+        en.annotations.maybeClear
+      )
+      expect(resource.annotations.stopHere).not.toBe(en.annotations.stopHere)
+      expect(resource.annotations.legend.note).not.toBe(
+        en.annotations.legend.note
+      )
+      expect(resource.tour.event.steps.runInputs.content).not.toBe(
+        en.tour.event.steps.runInputs.content
+      )
+      expect(resource.tour.event.steps.progressGrid.content).not.toBe(
+        en.tour.event.steps.progressGrid.content
+      )
+    }
+  )
+
+  it("mentions marks in the progress grid tour step", () => {
+    expect(en.tour.event.steps.progressGrid.content).toMatch(/Maybe clear/)
+    expect(en.tour.event.steps.progressGrid.content).toMatch(/Stop here/)
+  })
+
   it.each(translated)("translates the page copy in %s", (_locale, resource) => {
     expect(resource.hub.noActive).not.toBe(en.hub.noActive)
     expect(resource.runStatus.noEntry).not.toBe(en.runStatus.noEntry)

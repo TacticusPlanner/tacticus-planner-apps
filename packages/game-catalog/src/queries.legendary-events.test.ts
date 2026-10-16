@@ -7,7 +7,8 @@ import {
 } from "./game-catalog-storage"
 import {
   getLegendaryEvent,
-  getLegendaryEventCommon,
+  getLegendaryEventBattles,
+  getHordeModeTiers,
   getLegendaryEvents,
   hasLegendaryEventsSynced,
 } from "./queries"
@@ -37,21 +38,6 @@ const uthar = {
   finished: false,
   eventStageStartDatesUtc: ["2026-10-04T00:00:00Z"],
 }
-const common = {
-  id: "common",
-  pointsMilestones: [{ milestone: 1, cumulativePoints: 100, engramPayout: 25 }],
-  chestsMilestones: [{ chestLevel: 1, engramCost: 60 }],
-  progression: {
-    unlock: 400,
-    fourStars: 120,
-    fiveStars: 180,
-    blueStar: 200,
-    mythic: 250,
-    twoBlueStars: 150,
-  },
-  shardsPerChest: 25,
-}
-
 describe("Legendary Event queries", () => {
   beforeEach(async () => {
     await Dexie.delete(catalogDbName)
@@ -76,17 +62,38 @@ describe("Legendary Event queries", () => {
     expect(await hasLegendaryEventsSynced()).toBe(false)
   })
 
-  it("returns the single shared reward ladder", async () => {
+  it("returns one event's battles across its lanes", async () => {
     await replaceGameCatalogDataset(
-      "lre-common",
-      [common],
-      metadata("lre-common")
+      "lre-battles",
+      [
+        { id: "votanUthar-alpha-1", lreId: "votanUthar", power: 1018 },
+        { id: "votanUthar-beta-1", lreId: "votanUthar", power: 1200 },
+        { id: "astarLysander-alpha-1", lreId: "astarLysander", power: 900 },
+      ],
+      metadata("lre-battles")
     )
 
-    expect(await getLegendaryEventCommon()).toMatchObject(common)
+    const battles = await getLegendaryEventBattles("votanUthar")
+    expect(battles.map((battle) => battle.id).sort()).toEqual([
+      "votanUthar-alpha-1",
+      "votanUthar-beta-1",
+    ])
   })
 
-  it("returns null for the reward ladder on an empty store", async () => {
-    expect(await getLegendaryEventCommon()).toBeNull()
+  it("returns the horde-mode tier list, or null when the dataset is absent", async () => {
+    expect(await getHordeModeTiers()).toBeNull()
+
+    const record = {
+      id: "horde-mode-tiers",
+      tiers: [{ tier: "S", multiplier: 1.3 }],
+      characters: [{ unitId: "ultraCalgar", tier: "S" }],
+    }
+    await replaceGameCatalogDataset(
+      "horde-mode-tiers",
+      [record],
+      metadata("horde-mode-tiers")
+    )
+
+    expect(await getHordeModeTiers()).toMatchObject(record)
   })
 })

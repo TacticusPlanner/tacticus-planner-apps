@@ -1,7 +1,7 @@
 import type {
   GameCatalogCharacterView,
   GameCatalogLreTrackView,
-  LegendaryEventCommonStorageModel,
+  LegendaryEventBattleStorageModel,
   LegendaryEventStorageModel,
 } from "@workspace/game-catalog"
 import type { PlayerDataChunkDto } from "@workspace/player-data"
@@ -12,8 +12,12 @@ import type { PlayerDataChunkDto } from "@workspace/player-data"
 /** One catalog Legendary Event; `id` is the event unit's snowprint id (e.g. "astarLysander"). */
 export type LegendaryEvent = LegendaryEventStorageModel
 
-/** The shared reward ladder (`lre-common`), assumed the same for every event. */
-export type LegendaryEventCommon = LegendaryEventCommonStorageModel
+/** The event's own reward ladder: points milestones, chest costs, the unit's ascension steps
+ *  (incremental shards) and the shards per chest. Ladders differ between events. */
+export type LegendaryEventRewards = LegendaryEvent["rewards"]
+
+/** One catalog battle of an event's lane (`lre-battles`), keyed `{lreId}-{track}-{number}`. */
+export type LegendaryEventBattle = LegendaryEventBattleStorageModel
 
 export type LegendaryEventLaneId = "alpha" | "beta" | "gamma"
 
@@ -57,13 +61,20 @@ export type LegendaryEventUnit = Pick<
 > & {
   activeAbilityDamage?: readonly string[]
   passiveAbilityDamage?: readonly string[]
+  /** The rarity a unit unlocks at; read by the unlock step and Goals Preview (Stage 6). */
+  initialRarity?: GameCatalogCharacterView["initialRarity"]
 }
 
-/** The roster fields the leaderboard reads (one synced `characters` record). */
+type PlayerCharacterRecord = PlayerDataChunkDto<"characters">[number]
+
+/** The roster fields the leaderboard and clear estimates read (one synced `characters` record).
+ *  Abilities and applied upgrades feed combat power; they are optional so a caller that only
+ *  needs ownership can pass a narrower record (combat power then uses level 1 and no upgrades). */
 export type LegendaryEventRosterUnit = Pick<
-  PlayerDataChunkDto<"characters">[number],
+  PlayerCharacterRecord,
   "unitId" | "rank" | "progressionIndex"
->
+> &
+  Partial<Pick<PlayerCharacterRecord, "abilities" | "appliedUpgradeSlots">>
 
 export type LegendaryEventLifecycleState = "active" | "upcoming" | "archived"
 

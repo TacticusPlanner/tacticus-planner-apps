@@ -49,6 +49,7 @@ function entry(
     itemsFarmed: raidsPerformed,
     energySpent: raidsPerformed * 6,
     dailyAttempts,
+    remainingBefore: raidsPerformed,
   }
 }
 
@@ -75,6 +76,7 @@ function bonusEntry(
     itemsFarmed: raidsPerformed,
     energySpent: raidsPerformed * 6,
     dailyAttempts,
+    remainingBefore: raidsPerformed,
   }
 }
 
@@ -311,13 +313,13 @@ describe("RaidSchedule location emphasis", () => {
     expect(screen.getByTestId(`raid-location-${b2}`)).toBeInTheDocument()
   })
 
-  it("shows Max raids when the planned raid count itself equals the node's daily cap", () => {
+  it("shows nothing when the planned raid count reaches the node's daily cap", () => {
     render(
       <RaidSchedule
         attemptsLeftByBattle={new Map([[b1, 4]])}
         attemptsUsedByBattle={new Map()}
         emphasis="location"
-        entries={[entry(b1, 6, 6)]}
+        entries={[{ ...entry(b1, 6, 6), remainingBefore: 9 }]}
         goalsById={new Map([["g1", goal]])}
         locationsByBattleId={
           new Map([[b1, location("B1", "Octarius", "Elite 1")]])
@@ -329,12 +331,32 @@ describe("RaidSchedule location emphasis", () => {
       />
     )
 
-    expect(screen.getByTestId(`raid-location-${b1}`)).toHaveTextContent(
-      "schedule.maxRaids"
+    const row = screen.getByTestId(`raid-location-${b1}`)
+    expect(row).not.toHaveTextContent("schedule.upgradesLeft")
+    expect(row).not.toHaveTextContent("schedule.raids")
+  })
+
+  it("shows the upgrades still needed when the plan stops below the node's daily cap", () => {
+    render(
+      <RaidSchedule
+        attemptsLeftByBattle={new Map([[b1, 4]])}
+        attemptsUsedByBattle={new Map()}
+        emphasis="location"
+        entries={[{ ...entry(b1, 3, 6), remainingBefore: 2.4 }]}
+        goalsById={new Map([["g1", goal]])}
+        locationsByBattleId={
+          new Map([[b1, location("B1", "Octarius", "Elite 1")]])
+        }
+        resourceLabels={new Map([["upgrade1", "Ceramite"]])}
+        resourceProgress={new Map()}
+        resourceVisuals={new Map()}
+        testId="schedule"
+      />
     )
-    expect(
-      screen.queryByText('schedule.raids:{"count":6}')
-    ).not.toBeInTheDocument()
+
+    const row = screen.getByTestId(`raid-location-${b1}`)
+    expect(row).toHaveTextContent('schedule.upgradesLeft:{"count":3}')
+    expect(row).not.toHaveTextContent("schedule.raids")
   })
 
   it("excludes a fully-raided location from the card but keeps the card for its other locations", () => {
