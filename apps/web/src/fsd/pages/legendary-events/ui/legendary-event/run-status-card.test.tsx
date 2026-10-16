@@ -169,7 +169,16 @@ const outlookFor = (
     plan: { isPending: false, data: plan },
     planEnabled: true,
   })
-const signedOut: RunInputsViewModel = { enabled: false, currentRun: 1 }
+const signedOut: RunInputsViewModel = {
+  enabled: false,
+  runs: {
+    kind: "known",
+    endedRuns: 0,
+    currentRun: null,
+    nextRun: 1,
+    nextStartMs: null,
+  },
+}
 
 let i18n: I18n
 
@@ -650,7 +659,13 @@ describe("RunStatusCard", () => {
       { kind: "unavailable" },
       {
         enabled: true,
-        currentRun: 2,
+        runs: {
+          kind: "known",
+          endedRuns: 1,
+          currentRun: 2,
+          nextRun: 3,
+          nextStartMs: null,
+        },
       }
     )
     expect(screen.getByTestId("legendary-event-run-inputs")).toHaveTextContent(

@@ -77,7 +77,7 @@ export function LegendaryEventPageView({
             editInputs={
               props.runInputs.enabled ? (
                 <RunInputsDrawer
-                  currentRun={props.runInputs.currentRun}
+                  runs={props.runInputs.runs}
                   event={props.event}
                   isMobile={isMobile}
                   trigger={

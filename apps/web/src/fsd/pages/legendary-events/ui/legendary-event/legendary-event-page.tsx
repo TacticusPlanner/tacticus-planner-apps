@@ -322,7 +322,7 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
       plan: plan.query,
       planEnabled: plan.enabled,
     }),
-    runInputs: { enabled: plan.enabled, currentRun: runs.run },
+    runInputs: { enabled: plan.enabled, runs: runs.resolution },
     syncedAtMs:
       syncTimes.status === "ready" ? syncTimes.data.syncedAtMs : undefined,
     selectedTab,

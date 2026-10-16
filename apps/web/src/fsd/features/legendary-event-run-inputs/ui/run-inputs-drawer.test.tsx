@@ -4,6 +4,7 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
 import type {
   LegendaryEventPlan,
   LegendaryEventRunInputs,
+  LegendaryEventRunResolution,
 } from "@/entities/legendary-event"
 import { utharEvent } from "@/test/fixtures/legendary-events"
 import { createTestI18n, i18nWrapper } from "@/test/i18n"
@@ -52,15 +53,18 @@ const plan = (
 
 let i18n: I18n
 
-async function openDrawer(currentRun: 1 | 2 | 3 = 2) {
-  render(
-    <RunInputsDrawer
-      currentRun={currentRun}
-      event={utharEvent}
-      isMobile={false}
-    />,
-    { wrapper: i18nWrapper(i18n) }
-  )
+const RUN_2_ACTIVE: LegendaryEventRunResolution = {
+  kind: "known",
+  endedRuns: 1,
+  currentRun: 2,
+  nextRun: 3,
+  nextStartMs: null,
+}
+
+async function openDrawer(runs: LegendaryEventRunResolution = RUN_2_ACTIVE) {
+  render(<RunInputsDrawer event={utharEvent} isMobile={false} runs={runs} />, {
+    wrapper: i18nWrapper(i18n),
+  })
   const trigger = screen.getByTestId("legendary-event-run-inputs")
   trigger.focus()
   fireEvent.click(trigger)
@@ -87,7 +91,7 @@ describe("RunInputsDrawer", () => {
   })
 
   it("labels runs Done, Now and Planned for a run-2 account with the stored values", async () => {
-    const drawer = await openDrawer(2)
+    const drawer = await openDrawer(RUN_2_ACTIVE)
 
     expect(within(drawer).getByText("Run inputs")).toBeInTheDocument()
     const phases = [1, 2, 3].map(
@@ -107,6 +111,42 @@ describe("RunInputsDrawer", () => {
         .getAttribute("value")
     )
     expect(regular).toEqual(["10", "0", "0"])
+  })
+
+  it("labels Uthar's runs Done, Done, Planned between runs 2 and 3, with no now hint", async () => {
+    await openDrawer({
+      kind: "known",
+      endedRuns: 2,
+      currentRun: null,
+      nextRun: 3,
+      nextStartMs: null,
+    })
+
+    expect(
+      [1, 2, 3].map(
+        (run) =>
+          within(runBlock(run)).getByTestId("run-inputs-phase").textContent
+      )
+    ).toEqual(["Done", "Done", "Planned"])
+    expect(screen.queryByTestId("run-inputs-now-hint")).toBeNull()
+  })
+
+  it("labels no run while the run is unknown, keeping every run editable", async () => {
+    await openDrawer({
+      kind: "unknown",
+      endedRuns: null,
+      currentRun: null,
+      nextRun: null,
+      nextStartMs: null,
+    })
+
+    expect(screen.queryAllByTestId("run-inputs-phase")).toEqual([])
+    expect(screen.queryByTestId("run-inputs-now-hint")).toBeNull()
+    expect(
+      [1, 2, 3].map(
+        (run) => stepperIn(runBlock(run), "run-inputs-regular") !== null
+      )
+    ).toEqual([true, true, true])
   })
 
   it("shows only regular missions while Show paid options is off", async () => {

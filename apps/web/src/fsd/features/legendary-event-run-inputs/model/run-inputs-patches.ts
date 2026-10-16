@@ -2,17 +2,24 @@ import type {
   LegendaryEventPlan,
   LegendaryEventRun,
   LegendaryEventRunInputValues,
+  LegendaryEventRunResolution,
 } from "@/entities/legendary-event"
 
-/** How a run reads in the drawer: before the current run, the current run, or after it. */
+/** How a run reads in the drawer: ended, in progress, or still to come. */
 export type RunInputsPhase = "done" | "now" | "planned"
 
+/**
+ * A run's phase against the resolved runs (spec: legendary-event-run-resolution): ended runs are
+ * Done, the run in progress is Now (active events only) and the rest are Planned. Null while the
+ * run is unknown, so no run is labelled.
+ */
 export function runInputsPhase(
   run: LegendaryEventRun,
-  currentRun: LegendaryEventRun
-): RunInputsPhase {
-  if (run < currentRun) return "done"
-  return run === currentRun ? "now" : "planned"
+  runs: LegendaryEventRunResolution
+): RunInputsPhase | null {
+  if (runs.kind === "unknown") return null
+  if (run <= runs.endedRuns) return "done"
+  return run === runs.currentRun ? "now" : "planned"
 }
 
 export function sameRunInputValues(
