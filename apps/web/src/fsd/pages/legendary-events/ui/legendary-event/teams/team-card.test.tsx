@@ -116,7 +116,8 @@ const stepperInput = () =>
 function renderCard(
   value: LegendaryEventTeam,
   run: 1 | 2 = 1,
-  cardActions = actions()
+  cardActions = actions(),
+  lastRunClearedBattle?: number
 ) {
   const card = buildTeamCardViewModel(
     value,
@@ -127,7 +128,12 @@ function renderCard(
   )
   render(
     <ul>
-      <TeamCard actions={cardActions} card={card} lane={teamLane} />
+      <TeamCard
+        actions={cardActions}
+        card={card}
+        lane={teamLane}
+        lastRunClearedBattle={lastRunClearedBattle}
+      />
     </ul>,
     { wrapper: i18nWrapper(i18n) }
   )
@@ -458,5 +464,29 @@ describe("TeamCard", () => {
       "title",
       "Not covered by the current members"
     )
+  })
+
+  describe("last run line (spec: legendary-event-teams)", () => {
+    it("reads what the same team cleared last run beside the stepper, which keeps this run's depth", () => {
+      renderCard(team(), 1, actions(), 3)
+      const line = screen.getByTestId("team-card-last-run")
+      expect(line).toHaveTextContent("Last run: cleared up to battle 3")
+      expect(stepperInput()).toHaveValue(7)
+      // Beside the depth stepper: the same row as the stepper.
+      expect(line.parentElement).toBe(depthField().parentElement)
+      expect(line).toHaveClass("md:basis-auto")
+    })
+
+    it("shows no line for a team created since the previous run", () => {
+      renderCard(team(), 1, actions(), undefined)
+      expect(screen.queryByTestId("team-card-last-run")).toBeNull()
+    })
+
+    it("wraps under the stepper below 768px", () => {
+      renderCard(team(), 1, actions(), 3)
+      // A full-width flex item wraps onto its own line under the stepper; md:basis-auto puts it
+      // back beside it at 768px and up.
+      expect(screen.getByTestId("team-card-last-run")).toHaveClass("basis-full")
+    })
   })
 })

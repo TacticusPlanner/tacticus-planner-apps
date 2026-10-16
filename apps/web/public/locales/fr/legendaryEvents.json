@@ -275,7 +275,8 @@
       "description": "L'équipe et ses profondeurs sont retirées du plan de cet événement.",
       "confirm": "Supprimer",
       "cancel": "Annuler"
-    }
+    },
+    "lastRun": "Dernière manche : réussi jusqu'au combat {{battle}}"
   },
   "objective": {
     "minHits_one": "Min. {{count}} coup",
@@ -352,6 +353,46 @@
         "leaderboard": {
           "title": "Classement de la voie",
           "content": "Chaque unité autorisée dans cette voie, si vous la possédez, les objectifs qu'elle remplit et les points qu'elle peut encore marquer ici. Activez l'aperçu des objectifs pour voir les unités comme si vos objectifs actifs étaient atteints, et utilisez le menu d'une ligne pour créer un objectif."
+        },
+        "lastRun": {
+          "title": "Dernière manche",
+          "content": "Le bilan de ta manche précédente : le combat le plus avancé et les points de chaque voie, les équipes utilisées et jusqu'où elles sont allées, et ce qui a changé depuis sur ces unités."
+        }
+      }
+    },
+    "masterTable": {
+      "steps": {
+        "controls": {
+          "title": "Réglages",
+          "content": "Choisissez les événements, les unités à lister, la façon de compter les points, et recherchez par nom. La vue reste dans le lien, vous pouvez donc la partager."
+        },
+        "events": {
+          "title": "Événements",
+          "content": "Choisissez les événements à comparer. Les événements actifs et à venir sont présélectionnés ; les archivés sont sous le séparateur."
+        },
+        "pointsMode": {
+          "title": "Mode de points",
+          "content": "Restants exclut ce que vous avez déjà marqué, Tous compte chaque combat, et Estimés ne compte que les combats que vous devriez réussir."
+        },
+        "firstRow": {
+          "title": "Unités",
+          "content": "Le total de chaque unité sur les événements choisis, avec ses points et objectifs (ou équipes) par événement. Cliquez sur l'en-tête d'un événement pour trier par celui-ci."
+        }
+      }
+    },
+    "tierList": {
+      "steps": {
+        "row": {
+          "title": "Lignes de tiers",
+          "content": "Chaque ligne est un tier du mode horde avec son multiplicateur. Les personnages sont triés du multiplicateur le plus élevé au plus bas."
+        },
+        "tile": {
+          "title": "Un personnage",
+          "content": "Le portrait, le nom et le multiplicateur. Un multiplicateur marqué est celui du personnage et non celui de son tier. Sélectionnez la tuile pour ses détails et un lien vers la Bibliothèque."
+        },
+        "filters": {
+          "title": "Filtres",
+          "content": "Recherchez par nom, affichez uniquement vos personnages ou choisissez une alliance. Les filtres s'appliquent à toutes les lignes, Non classés compris."
         }
       }
     }
@@ -500,6 +541,146 @@
       "leftover_one": "{{count}} jeton sans combat à jouer : ajoutez une équipe ou augmentez une profondeur pour l'utiliser",
       "leftover_other": "{{count}} jetons sans combat à jouer : ajoutez une équipe ou augmentez une profondeur pour les utiliser",
       "editInputs": "Modifier les saisies"
+    }
+  },
+  "masterTable": {
+    "title": "Tableau général",
+    "subtitle": "Les points de chaque unité sur les Événements Légendaires choisis.",
+    "loading": "Chargement du tableau général",
+    "error": "Les Événements Légendaires n'ont pas pu être chargés.",
+    "noEvents": "Choisissez au moins un événement.",
+    "noRows": "Aucune unité ne correspond.",
+    "events": {
+      "label": "Événements",
+      "trigger_one": "{{count}} événement",
+      "trigger_other": "{{count}} événements",
+      "archived": "Archivés"
+    },
+    "controls": {
+      "open": "Réglages",
+      "title": "Réglages du tableau général"
+    },
+    "unitSet": {
+      "label": "Unités",
+      "all": "Toutes",
+      "unlocked": "Débloquées",
+      "inTeams": "En équipes",
+      "teamsUnavailable": "Équipes indisponibles",
+      "teamsLoading": "Chargement des équipes",
+      "noRoster": "Synchronisez votre effectif"
+    },
+    "points": {
+      "label": "Points",
+      "remaining": "Restants",
+      "all": "Tous",
+      "estimated": "Estimés",
+      "needsEstimates": "Nécessite les estimations de progression",
+      "estimatesLoading": "Chargement des estimations de progression",
+      "estimatedFallback": "Estimés nécessite les estimations de progression, les points Restants sont donc affichés.",
+      "noProgress": "Aucune progression synchronisée : Restants affiche les points de tous les combats."
+    },
+    "search": {
+      "label": "Rechercher des unités",
+      "placeholder": "Rechercher des unités",
+      "clear": "Effacer la recherche"
+    },
+    "sort": {
+      "label": "Trier par",
+      "total": "Total"
+    },
+    "columns": {
+      "unit": "Unité",
+      "total": "Total",
+      "points": "Points",
+      "objectives": "Objectifs",
+      "teams": "Équipes"
+    },
+    "cell": {
+      "objectives_one": "{{count}} objectif",
+      "objectives_other": "{{count}} objectifs",
+      "teams_one": "{{count}} équipe",
+      "teams_other": "{{count}} équipes"
+    },
+    "explanation": {
+      "title": "Comment les points sont comptés",
+      "remaining": "Restants : les points encore à marquer dans chaque combat, sans ce que votre progression synchronisée a déjà validé.",
+      "all": "Tous : les points par combat (« Tout vaincre » plus les objectifs que l'unité remplit) multipliés par les combats de la voie.",
+      "estimated": "Estimés : les Restants, comptés seulement dans les combats que l'unité (ou ses équipes) devrait réussir.",
+      "inTeams": "En équipes : une unité compte « Tout vaincre » plus seulement les objectifs couverts par ses équipes sur cette voie ; une réserve ne compte que « Tout vaincre »."
+    }
+  },
+  "history": {
+    "title": "Dernière manche",
+    "loading": "Chargement de l'historique…",
+    "unavailable": "Historique indisponible",
+    "retry": "Réessayer",
+    "noRecords": "L'historique commence avec ta prochaine manche synchronisée",
+    "run": "Manche {{run}} sur {{total}}",
+    "points": "{{points}} points d'événement",
+    "noTeams": "Aucune équipe n'était prévue pour cette manche",
+    "lane": {
+      "battle": "combat {{battle}}",
+      "noBattle": "aucun combat réussi",
+      "summary": "{{lane}} : {{progress}}",
+      "summaryPoints": "{{lane}} : {{progress}} · {{points}} points",
+      "noTeams": "Aucune équipe sur cette voie",
+      "teamsToggle": "Équipes ({{teams}})"
+    },
+    "team": {
+      "cleared": "réussi jusqu'au combat {{battle}}",
+      "clearedPlanned": "{{cleared}} · prévu {{planned}}"
+    },
+    "since": {
+      "title": "Depuis la dernière manche",
+      "titleThen": "Depuis cette manche",
+      "noSnapshot": "L'effectif de l'époque est indisponible",
+      "noRoster": "Synchronise ton effectif pour comparer",
+      "none": "Aucun changement sur ces unités depuis",
+      "unlocked": "Débloqué depuis la dernière manche",
+      "rank": "Rang {{from}} → {{to}}",
+      "stars": "Étoiles {{from}} → {{to}}",
+      "activeAbility": "Capacité active {{from}} → {{to}}",
+      "passiveAbility": "Capacité passive {{from}} → {{to}}"
+    },
+    "earlier": {
+      "title": "Manches précédentes ({{runs}})",
+      "entry": "{{run}} · {{date}}"
+    }
+  },
+  "tierList": {
+    "intro": "Les tiers du mode horde de chaque personnage, avec le multiplicateur qu'il reçoit.",
+    "whatThisMeans": "Qu'est-ce que cela signifie ?",
+    "explainer": "Le multiplicateur d'un personnage ajuste sa puissance de combat dans les estimations de progression des Événements Légendaires. Les personnages classés utilisent leur propre multiplicateur s'ils en ont un, sinon celui de leur tier ; les personnages non classés utilisent 1,0.",
+    "search": "Rechercher des personnages",
+    "onlyOwned": "Possédés uniquement",
+    "syncRoster": "Synchronisez votre effectif",
+    "alliance": "Alliance",
+    "allianceAll": "Toutes",
+    "filters": "Filtres",
+    "filtersDescription": "Afficher uniquement vos personnages ou une alliance.",
+    "override": "Multiplicateur propre",
+    "tileLabel": "{{name}}, {{multiplier}}",
+    "tileLabelOverride": "{{name}}, {{multiplier}} (multiplicateur propre)",
+    "untiered": "Non classés",
+    "untieredCount_one": "{{count}} personnage",
+    "untieredCount_other": "{{count}} personnages",
+    "untieredHint": "Les personnages non classés utilisent 1,0×. Ouvrez la ligne pour les afficher.",
+    "noCharacter": "Aucun personnage",
+    "noMatch": "Aucun personnage ne correspond à ces filtres.",
+    "clearFilters": "Effacer les filtres",
+    "unavailable": "La liste des tiers n'est pas encore disponible.",
+    "loading": "Chargement de la liste des tiers…",
+    "error": "Impossible de charger la liste des tiers.",
+    "retry": "Réessayer",
+    "details": {
+      "description": "Le tier, le multiplicateur et la possession du personnage.",
+      "tier": "Tier",
+      "multiplier": "Multiplicateur",
+      "tierDefault": "Valeur du tier",
+      "owned": "Possédé",
+      "notUnlocked": "Non débloqué",
+      "rosterUnknown": "Synchronisez votre effectif",
+      "openInLibrary": "Ouvrir dans la Bibliothèque"
     }
   }
 }

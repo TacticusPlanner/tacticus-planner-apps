@@ -19,6 +19,7 @@ import {
 
 import { CreateGoalLauncherContext } from "@/entities/goal"
 import { legendaryEventCharacters } from "@/test/fixtures/legendary-event-characters"
+import { utharRun1Record } from "@/test/fixtures/legendary-event-run-records"
 import { lysanderEvent, utharEvent } from "@/test/fixtures/legendary-events"
 import { createTestI18n, i18nWrapper } from "@/test/i18n"
 import { act, fireEvent, render, screen, within } from "@/test/render"
@@ -101,6 +102,15 @@ const planApi = vi.hoisted(() => ({
   teams: [] as unknown[],
   put: vi.fn(),
 }))
+// The event's run records (newest first); `failRecords` makes the read fail.
+const history = vi.hoisted(() => ({
+  records: [] as unknown[],
+  failRecords: false,
+}))
+const analytics = vi.hoisted(() => ({ capture: vi.fn() }))
+vi.mock("@/shared/analytics", () => ({
+  useAnalyticsActions: () => ({ captureEvent: analytics.capture }),
+}))
 vi.mock("@azure/msal-react", () => ({ useIsAuthenticated: () => true }))
 vi.mock("@/shared/api", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/shared/api")>()),
@@ -109,6 +119,10 @@ vi.mock("@/shared/api", async (importOriginal) => ({
       return { goals: goals.summaries, orderRevision: 0 }
     if (path.startsWith("/api/v1/me/goals/"))
       return goals.details.get(path.split("/").at(-1)!)
+    if (path.endsWith("/run-records")) {
+      if (history.failRecords) throw new Error("run records unavailable")
+      return { eventId: path.split("/").at(-2), records: history.records }
+    }
     return {
       eventId: path.split("/").at(-1),
       revision: 0,
@@ -243,6 +257,9 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
     launchCreateGoal.mockReset()
     planApi.teams = []
     planApi.put.mockReset()
+    history.records = []
+    history.failRecords = false
+    analytics.capture.mockReset()
     setViewportWidth(1280)
     vi.useFakeTimers({ toFake: ["Date"] })
     vi.setSystemTime(new Date("2026-09-02T12:00:00Z"))
@@ -509,6 +526,125 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
     for (const step of desktop.slice(7)) {
       expect(document.querySelector(step.target)).not.toBeNull()
     }
+  })
+
+  describe("run history", () => {
+    // Lysander has no synced entry, so its newest record is the previous run.
+    const lastRunRecord = { ...utharRun1Record, teams: [] }
+
+    it("shows the one-line note where the card would be when there are no records, and no tour step", async () => {
+      renderPage("/legendary-events/astarLysander")
+      expect(
+        await screen.findByTestId("legendary-event-history-note")
+      ).toHaveTextContent("History starts with your next synced run")
+      expect(screen.queryByTestId("legendary-event-last-run")).toBeNull()
+      const { desktop } = tour.steps as { desktop: { target: string }[] }
+      expect(
+        desktop.some((step) => step.target.includes("legendary-event-last-run"))
+      ).toBe(false)
+    })
+
+    it.each([
+      ["desktop", 1280],
+      ["mobile", 390],
+    ])(
+      "%s: the Last run card follows Run status, the tour highlights it next, and it is reported once",
+      async (_form, width) => {
+        setViewportWidth(width)
+        history.records = [lastRunRecord]
+        renderPage("/legendary-events/astarLysander")
+        const lastRun = await screen.findByTestId("legendary-event-last-run")
+        await within(lastRun).findByTestId("last-run-run")
+        expect(
+          follows(screen.getByTestId("legendary-event-run-status"), lastRun)
+        ).toBe(true)
+
+        const { desktop, mobile } = tour.steps as {
+          desktop: { target: string }[]
+          mobile: { target: string }[]
+        }
+        for (const steps of [desktop, mobile]) {
+          const targets = steps.map((step) => step.target)
+          const runStatus = targets.indexOf(
+            '[data-testid="legendary-event-run-status"]'
+          )
+          expect(targets[runStatus + 1]).toBe(
+            '[data-testid="legendary-event-last-run"]'
+          )
+        }
+
+        const viewed = () =>
+          analytics.capture.mock.calls.filter(
+            ([event]) => event.type === "legendary_event_last_run_viewed"
+          )
+        expect(viewed()).toEqual([
+          [
+            {
+              type: "legendary_event_last_run_viewed",
+              eventId: "astarLysander",
+              run: 1,
+              teamCount: 0,
+              deltaCount: 0,
+            },
+          ],
+        ])
+        // Leaving the Overview and coming back is the same page view.
+        selectTab("alpha")
+        await screen.findByTestId("legendary-event-lane")
+        selectTab("overview")
+        await screen.findByTestId("legendary-event-last-run")
+        expect(viewed()).toHaveLength(1)
+      }
+    )
+
+    it("shows History unavailable with Retry when the read fails, the rest of the Overview intact", async () => {
+      history.failRecords = true
+      renderPage("/legendary-events/astarLysander")
+      expect(await screen.findByTestId("last-run-error")).toHaveTextContent(
+        "History unavailable"
+      )
+      expect(
+        screen.getByTestId("legendary-event-run-status")
+      ).toBeInTheDocument()
+      expect(
+        await screen.findByTestId("legendary-event-overview-leaderboard")
+      ).toBeInTheDocument()
+      expect(
+        screen.getByTestId("legendary-event-lane-summary")
+      ).toBeInTheDocument()
+    })
+
+    it("shows each lane team's last-run clear on its card", async () => {
+      planApi.teams = [
+        {
+          id: "team-melee",
+          laneId: "alpha",
+          name: "Melee",
+          sortOrder: 0,
+          memberUnitIds: ["bloodDante"],
+          reserveUnitId: null,
+          objectiveIndexes: [3],
+          runDepths: [],
+        },
+        {
+          id: "team-new",
+          laneId: "alpha",
+          name: "New",
+          sortOrder: 1,
+          memberUnitIds: ["bloodDante"],
+          reserveUnitId: null,
+          objectiveIndexes: [],
+          runDepths: [],
+        },
+      ]
+      history.records = [utharRun1Record]
+      renderPage("/legendary-events/astarLysander")
+      await screen.findByTestId("legendary-event-last-run")
+      selectTab("alpha")
+      const line = await screen.findByTestId("team-card-last-run")
+      expect(line).toHaveTextContent("Last run: cleared up to battle 3")
+      expect(screen.getAllByTestId("team-card-last-run")).toHaveLength(1)
+    })
   })
 
   describe("token plan on Overview", () => {

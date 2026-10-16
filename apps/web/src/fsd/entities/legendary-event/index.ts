@@ -274,3 +274,5 @@ export {
   type HordeTierRow,
   type HordeTierTile,
 } from "./lib/horde-tier-list"
+export { useLegendaryEventsBattles } from "./model/use-legendary-events-battles"
+export { useHordeModeTiers } from "./model/use-horde-mode-tiers"

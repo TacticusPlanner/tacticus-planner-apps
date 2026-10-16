@@ -275,7 +275,8 @@
       "description": "El equipo y sus profundidades se quitan del plan de este evento.",
       "confirm": "Eliminar",
       "cancel": "Cancelar"
-    }
+    },
+    "lastRun": "Última ronda: superó hasta la batalla {{battle}}"
   },
   "objective": {
     "minHits_one": "Mín. {{count}} golpe",
@@ -352,6 +353,46 @@
         "leaderboard": {
           "title": "Clasificación del carril",
           "content": "Cada unidad que este carril permite, si la tienes, qué objetivos cumple y los puntos que aún puede conseguir aquí. Activa la vista de objetivos para ver las unidades como si hubieras alcanzado tus objetivos activos, y usa el menú de una fila para crear un objetivo."
+        },
+        "lastRun": {
+          "title": "Última ronda",
+          "content": "Cómo fue tu ronda anterior: la batalla más profunda y los puntos de cada carril, los equipos que usaste y hasta dónde llegaron, y qué cambió desde entonces en esas unidades."
+        }
+      }
+    },
+    "masterTable": {
+      "steps": {
+        "controls": {
+          "title": "Controles",
+          "content": "Elige los eventos, qué unidades listar, cómo se cuentan los puntos y busca por nombre. La vista queda en el enlace, así que puedes compartirla."
+        },
+        "events": {
+          "title": "Eventos",
+          "content": "Elige los eventos que comparar. Los activos y próximos vienen seleccionados; los archivados están bajo el separador."
+        },
+        "pointsMode": {
+          "title": "Modo de puntos",
+          "content": "Restantes deja fuera lo que ya conseguiste, Todos cuenta cada batalla y Estimados cuenta solo las batallas que se espera que superes."
+        },
+        "firstRow": {
+          "title": "Unidades",
+          "content": "El total de cada unidad en los eventos elegidos, con sus puntos y objetivos (o equipos) por evento. Pulsa la cabecera de un evento para ordenar por él."
+        }
+      }
+    },
+    "tierList": {
+      "steps": {
+        "row": {
+          "title": "Filas de niveles",
+          "content": "Cada fila es un nivel del modo horda con su multiplicador. Los personajes van del multiplicador más alto al más bajo."
+        },
+        "tile": {
+          "title": "Un personaje",
+          "content": "El retrato, el nombre y el multiplicador. Un multiplicador marcado es el propio del personaje y no el de su nivel. Selecciona la ficha para ver los detalles y un enlace a la Biblioteca."
+        },
+        "filters": {
+          "title": "Filtros",
+          "content": "Busca por nombre, muestra solo los personajes que tienes o elige una alianza. Los filtros se aplican a todas las filas, también a Sin nivel."
         }
       }
     }
@@ -500,6 +541,146 @@
       "leftover_one": "{{count}} ficha sin nada que jugar: añade un equipo o sube una profundidad para usarla",
       "leftover_other": "{{count}} fichas sin nada que jugar: añade un equipo o sube una profundidad para usarlas",
       "editInputs": "Editar datos"
+    }
+  },
+  "masterTable": {
+    "title": "Tabla maestra",
+    "subtitle": "Los puntos de cada unidad en los Eventos Legendarios que elijas.",
+    "loading": "Cargando la tabla maestra",
+    "error": "No se pudieron cargar los Eventos Legendarios.",
+    "noEvents": "Elige al menos un evento.",
+    "noRows": "Ninguna unidad coincide.",
+    "events": {
+      "label": "Eventos",
+      "trigger_one": "{{count}} evento",
+      "trigger_other": "{{count}} eventos",
+      "archived": "Archivados"
+    },
+    "controls": {
+      "open": "Controles",
+      "title": "Controles de la tabla maestra"
+    },
+    "unitSet": {
+      "label": "Unidades",
+      "all": "Todas",
+      "unlocked": "Desbloqueadas",
+      "inTeams": "En equipos",
+      "teamsUnavailable": "Equipos no disponibles",
+      "teamsLoading": "Cargando equipos",
+      "noRoster": "Sincroniza tu plantilla"
+    },
+    "points": {
+      "label": "Puntos",
+      "remaining": "Restantes",
+      "all": "Todos",
+      "estimated": "Estimados",
+      "needsEstimates": "Requiere estimaciones de avance",
+      "estimatesLoading": "Cargando estimaciones de avance",
+      "estimatedFallback": "Estimados requiere estimaciones de avance, así que se muestran los Restantes.",
+      "noProgress": "Sin progreso sincronizado: Restantes muestra los puntos de todas las batallas."
+    },
+    "search": {
+      "label": "Buscar unidades",
+      "placeholder": "Buscar unidades",
+      "clear": "Borrar búsqueda"
+    },
+    "sort": {
+      "label": "Ordenar por",
+      "total": "Total"
+    },
+    "columns": {
+      "unit": "Unidad",
+      "total": "Total",
+      "points": "Puntos",
+      "objectives": "Objetivos",
+      "teams": "Equipos"
+    },
+    "cell": {
+      "objectives_one": "{{count}} objetivo",
+      "objectives_other": "{{count}} objetivos",
+      "teams_one": "{{count}} equipo",
+      "teams_other": "{{count}} equipos"
+    },
+    "explanation": {
+      "title": "Cómo se cuentan los puntos",
+      "remaining": "Restantes: los puntos que quedan por conseguir en cada batalla, sin lo que tu progreso sincronizado ya ha completado.",
+      "all": "Todos: puntos por batalla (derrotar a todos más los objetivos que cumple la unidad) por las batallas del carril.",
+      "estimated": "Estimados: Restantes, contados solo en las batallas que se espera que la unidad (o sus equipos) supere.",
+      "inTeams": "En equipos: una unidad cuenta derrotar a todos más solo los objetivos que cubren sus equipos en ese carril; una reserva cuenta solo derrotar a todos."
+    }
+  },
+  "history": {
+    "title": "Última ronda",
+    "loading": "Cargando el historial…",
+    "unavailable": "Historial no disponible",
+    "retry": "Reintentar",
+    "noRecords": "El historial empieza con tu próxima ronda sincronizada",
+    "run": "Ronda {{run}} de {{total}}",
+    "points": "{{points}} puntos de evento",
+    "noTeams": "No se planificaron equipos para esta ronda",
+    "lane": {
+      "battle": "batalla {{battle}}",
+      "noBattle": "ninguna batalla superada",
+      "summary": "{{lane}}: {{progress}}",
+      "summaryPoints": "{{lane}}: {{progress}} · {{points}} puntos",
+      "noTeams": "Ningún equipo en este carril",
+      "teamsToggle": "Equipos ({{teams}})"
+    },
+    "team": {
+      "cleared": "superó hasta la batalla {{battle}}",
+      "clearedPlanned": "{{cleared}} · previsto {{planned}}"
+    },
+    "since": {
+      "title": "Desde la última ronda",
+      "titleThen": "Desde esta ronda",
+      "noSnapshot": "La plantilla de entonces no está disponible",
+      "noRoster": "Sincroniza tu plantilla para comparar",
+      "none": "Sin cambios en estas unidades desde entonces",
+      "unlocked": "Desbloqueado desde la última ronda",
+      "rank": "Rango {{from}} → {{to}}",
+      "stars": "Estrellas {{from}} → {{to}}",
+      "activeAbility": "Habilidad activa {{from}} → {{to}}",
+      "passiveAbility": "Habilidad pasiva {{from}} → {{to}}"
+    },
+    "earlier": {
+      "title": "Rondas anteriores ({{runs}})",
+      "entry": "{{run}} · {{date}}"
+    }
+  },
+  "tierList": {
+    "intro": "Los niveles del modo horda de cada personaje, con el multiplicador que recibe.",
+    "whatThisMeans": "Qué significa",
+    "explainer": "El multiplicador de un personaje escala su poder de combate en las estimaciones de avance de los Eventos Legendarios. Los personajes con nivel usan su propio multiplicador si lo tienen y, si no, el de su nivel; los personajes sin nivel usan 1,0.",
+    "search": "Buscar personajes",
+    "onlyOwned": "Solo los míos",
+    "syncRoster": "Sincroniza tu plantilla",
+    "alliance": "Alianza",
+    "allianceAll": "Todas",
+    "filters": "Filtros",
+    "filtersDescription": "Muestra solo tus personajes o una alianza.",
+    "override": "Multiplicador propio",
+    "tileLabel": "{{name}}, {{multiplier}}",
+    "tileLabelOverride": "{{name}}, {{multiplier}} (multiplicador propio)",
+    "untiered": "Sin nivel",
+    "untieredCount_one": "{{count}} personaje",
+    "untieredCount_other": "{{count}} personajes",
+    "untieredHint": "Los personajes sin nivel usan 1,0×. Abre la fila para verlos.",
+    "noCharacter": "Ningún personaje",
+    "noMatch": "Ningún personaje coincide con estos filtros.",
+    "clearFilters": "Borrar filtros",
+    "unavailable": "La lista de niveles aún no está disponible.",
+    "loading": "Cargando la lista de niveles…",
+    "error": "No se pudo cargar la lista de niveles.",
+    "retry": "Reintentar",
+    "details": {
+      "description": "El nivel, el multiplicador y la propiedad del personaje.",
+      "tier": "Nivel",
+      "multiplier": "Multiplicador",
+      "tierDefault": "Por defecto del nivel",
+      "owned": "En propiedad",
+      "notUnlocked": "No desbloqueado",
+      "rosterUnknown": "Sincroniza tu plantilla",
+      "openInLibrary": "Abrir en la Biblioteca"
     }
   }
 }

@@ -275,7 +275,8 @@
       "description": "The team and its clear depths are removed from this event's plan.",
       "confirm": "Delete",
       "cancel": "Cancel"
-    }
+    },
+    "lastRun": "Last run: cleared up to battle {{battle}}"
   },
   "objective": {
     "minHits_one": "Min {{count}} hit",
@@ -352,6 +353,46 @@
         "leaderboard": {
           "title": "Lane leaderboard",
           "content": "Every unit this lane allows, whether you own it, which objectives it meets and the points it can still score here. Turn on Goals Preview to see units as if your active goals were reached, and use a row's menu to create a goal."
+        },
+        "lastRun": {
+          "title": "Last run",
+          "content": "How your previous run went: each lane's deepest battle and points, the teams you used and how far they got, and what changed on those units since."
+        }
+      }
+    },
+    "masterTable": {
+      "steps": {
+        "controls": {
+          "title": "Controls",
+          "content": "Choose the events, which units to list, how points are counted, and search by name. The view stays in the link, so you can share it."
+        },
+        "events": {
+          "title": "Events",
+          "content": "Pick the events to compare. Active and upcoming events are selected first; archived events sit below the divider."
+        },
+        "pointsMode": {
+          "title": "Points mode",
+          "content": "Remaining leaves out what you already scored, All counts every battle, and Estimated counts only the battles you are expected to clear."
+        },
+        "firstRow": {
+          "title": "Units",
+          "content": "Each unit's total across the selected events, with its points and objectives (or teams) per event. Click an event header to sort by it."
+        }
+      }
+    },
+    "tierList": {
+      "steps": {
+        "row": {
+          "title": "Tier rows",
+          "content": "Each row is a horde-mode tier with its multiplier. Characters are ordered from the highest multiplier down."
+        },
+        "tile": {
+          "title": "A character",
+          "content": "The portrait, name and multiplier. A marked multiplier is the character's own rather than its tier's. Select the tile for its details and a link to the Library."
+        },
+        "filters": {
+          "title": "Filters",
+          "content": "Search by name, show only the characters you own, or pick an alliance. The filters apply to every row, Untiered included."
         }
       }
     }
@@ -500,6 +541,146 @@
       "leftover_one": "{{count}} token with nothing to play: add a team or raise a depth to use it",
       "leftover_other": "{{count}} tokens with nothing to play: add a team or raise a depth to use them",
       "editInputs": "Edit inputs"
+    }
+  },
+  "masterTable": {
+    "title": "Master table",
+    "subtitle": "Every unit's points across the Legendary Events you pick.",
+    "loading": "Loading the master table",
+    "error": "The Legendary Events could not be loaded.",
+    "noEvents": "Pick at least one event.",
+    "noRows": "No unit matches.",
+    "events": {
+      "label": "Events",
+      "trigger_one": "{{count}} event",
+      "trigger_other": "{{count}} events",
+      "archived": "Archived"
+    },
+    "controls": {
+      "open": "Controls",
+      "title": "Master table controls"
+    },
+    "unitSet": {
+      "label": "Units",
+      "all": "All",
+      "unlocked": "Unlocked",
+      "inTeams": "In teams",
+      "teamsUnavailable": "Teams unavailable",
+      "teamsLoading": "Loading teams",
+      "noRoster": "Sync your roster"
+    },
+    "points": {
+      "label": "Points",
+      "remaining": "Remaining",
+      "all": "All",
+      "estimated": "Estimated",
+      "needsEstimates": "Needs clear estimates",
+      "estimatesLoading": "Loading clear estimates",
+      "estimatedFallback": "Estimated needs clear estimates, so Remaining is shown.",
+      "noProgress": "No synced progress: Remaining shows every battle's points."
+    },
+    "search": {
+      "label": "Search units",
+      "placeholder": "Search units",
+      "clear": "Clear search"
+    },
+    "sort": {
+      "label": "Sort by",
+      "total": "Total"
+    },
+    "columns": {
+      "unit": "Unit",
+      "total": "Total",
+      "points": "Points",
+      "objectives": "Objectives",
+      "teams": "Teams"
+    },
+    "cell": {
+      "objectives_one": "{{count}} objective",
+      "objectives_other": "{{count}} objectives",
+      "teams_one": "{{count}} team",
+      "teams_other": "{{count}} teams"
+    },
+    "explanation": {
+      "title": "How points work",
+      "remaining": "Remaining: the points still to score in every battle, leaving out what your synced progress has cleared.",
+      "all": "All: points per battle (defeat-all plus the objectives the unit fits) times the lane's battles.",
+      "estimated": "Estimated: Remaining, counted only within the battles the unit (or its teams) is expected to clear.",
+      "inTeams": "In teams: a unit counts defeat-all plus only the objectives its teams on that lane cover; a reserve counts defeat-all only."
+    }
+  },
+  "history": {
+    "title": "Last run",
+    "loading": "Loading run history…",
+    "unavailable": "History unavailable",
+    "retry": "Retry",
+    "noRecords": "History starts with your next synced run",
+    "run": "Run {{run}} of {{total}}",
+    "points": "{{points}} event points",
+    "noTeams": "No teams were planned for this run",
+    "lane": {
+      "battle": "battle {{battle}}",
+      "noBattle": "no battle cleared",
+      "summary": "{{lane}}: {{progress}}",
+      "summaryPoints": "{{lane}}: {{progress}} · {{points}} points",
+      "noTeams": "No team on this lane",
+      "teamsToggle": "Teams ({{teams}})"
+    },
+    "team": {
+      "cleared": "cleared up to battle {{battle}}",
+      "clearedPlanned": "{{cleared}} · planned {{planned}}"
+    },
+    "since": {
+      "title": "Since last run",
+      "titleThen": "Since this run",
+      "noSnapshot": "Roster at the time is unavailable",
+      "noRoster": "Sync your roster to compare",
+      "none": "No changes to these units since then",
+      "unlocked": "Unlocked since last run",
+      "rank": "Rank {{from}} → {{to}}",
+      "stars": "Stars {{from}} → {{to}}",
+      "activeAbility": "Active ability {{from}} → {{to}}",
+      "passiveAbility": "Passive ability {{from}} → {{to}}"
+    },
+    "earlier": {
+      "title": "Earlier runs ({{runs}})",
+      "entry": "{{run}} · {{date}}"
+    }
+  },
+  "tierList": {
+    "intro": "Horde-mode tiers for every character, with the multiplier each one gets.",
+    "whatThisMeans": "What this means",
+    "explainer": "A character's multiplier scales its combat power in the Legendary Event clear estimates. Tiered characters use their own multiplier when they have one, otherwise their tier's; untiered characters use 1.0.",
+    "search": "Search characters",
+    "onlyOwned": "Only owned",
+    "syncRoster": "Sync your roster",
+    "alliance": "Alliance",
+    "allianceAll": "All",
+    "filters": "Filters",
+    "filtersDescription": "Show only owned characters or one alliance.",
+    "override": "Own multiplier",
+    "tileLabel": "{{name}}, {{multiplier}}",
+    "tileLabelOverride": "{{name}}, {{multiplier}} (own multiplier)",
+    "untiered": "Untiered",
+    "untieredCount_one": "{{count}} character",
+    "untieredCount_other": "{{count}} characters",
+    "untieredHint": "Characters without a tier use 1.0×. Open the row to list them.",
+    "noCharacter": "No character",
+    "noMatch": "No character matches these filters.",
+    "clearFilters": "Clear filters",
+    "unavailable": "Tier list not available yet.",
+    "loading": "Loading the tier list…",
+    "error": "Couldn't load the tier list.",
+    "retry": "Retry",
+    "details": {
+      "description": "The character's tier, multiplier and owned state.",
+      "tier": "Tier",
+      "multiplier": "Multiplier",
+      "tierDefault": "Tier default",
+      "owned": "Owned",
+      "notUnlocked": "Not unlocked",
+      "rosterUnknown": "Sync your roster",
+      "openInLibrary": "Open in Library"
     }
   }
 }
