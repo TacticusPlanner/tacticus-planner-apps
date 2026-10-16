@@ -36,6 +36,7 @@ export {
   progressionAt,
   progressionRarity,
   progressionStarsIndex,
+  startingProgression,
   statAtRank,
   maxRankForProgression,
   minProgressionForRank,
@@ -48,6 +49,7 @@ export {
   levelCapForProgression,
   type Progression,
 } from "./progression"
+export { pierceRatio } from "./pierce-ratio"
 
 export {
   characterCombatPower,

@@ -30,6 +30,8 @@
   --color-chart-3: var(--chart-3);
   --color-chart-2: var(--chart-2);
   --color-chart-1: var(--chart-1);
+  --color-chart-grid: var(--chart-grid);
+  --color-hl: var(--hl);
   --color-ring: var(--ring);
   --color-input: var(--input);
   --color-border: var(--border);
@@ -89,6 +91,9 @@
   --chart-3: oklch(0.53 0.13 155);
   --chart-4: oklch(0.7 0.125 75.15);
   --chart-5: oklch(0.64 0.13 240.047);
+  /* Chart gridlines and radar rings; highlight behind level-dependent values in rules text. */
+  --chart-grid: #e6e9ee;
+  --hl: #e3ecfb;
   --radius: 0.625rem;
   --sidebar: oklch(0.955 0.008 252.392);
   --sidebar-foreground: oklch(0.243 0.015 261.655);
@@ -223,6 +228,8 @@
   --chart-3: oklch(0.68 0.14 155);
   --chart-4: oklch(0.82 0.16 80);
   --chart-5: oklch(0.82 0.05 235);
+  --chart-grid: #20262e;
+  --hl: #1c2a40;
   --sidebar: oklch(0.165 0.016 255);
   --sidebar-foreground: oklch(0.866 0.013 266.689);
   --sidebar-primary: oklch(0.64 0.13 240.047);

@@ -1,5 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react"
-import { useParams } from "react-router"
+import { useEffect, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { useIsAuthenticated } from "@azure/msal-react"
 import { useLiveQuery } from "dexie-react-hooks"
@@ -12,10 +11,7 @@ import {
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
 import { mapCharacterStorageToDomain } from "@/features/rank-lookup"
-import { useTourPageSteps } from "@/shared/tour"
 
-import { useLibraryRouteSelection } from "../../model/use-library-route-selection"
-import { useCharacterLookupTutorial } from "./character-lookup.tutorial"
 import { CharacterLookupDesktopPage } from "./desktop/character-lookup-desktop-page"
 import { CharacterLookupMobilePage } from "./mobile/character-lookup-mobile-page"
 import { useCharacterLookupCalc } from "./hooks/use-character-lookup-calc"
@@ -27,55 +23,43 @@ import { useLookupSelection } from "./hooks/use-lookup-selection"
 // useLiveQuery, since its `defaultResult` argument is only returned before the first resolution.
 const PLAYER_CHARACTER_LOADING = Symbol("loading")
 
-export function CharacterLookupPage() {
-  // No explicit namespace list needed: "unitLookup.subtitle" (the only key used directly here)
-  // lives in "common", i18next's configured defaultNS. useCharacterLookupCatalog/
-  // useCharacterLookupCalc each load whatever other namespaces their own translated output needs.
+/**
+ * The unit page's Rank-up materials tab: the former Character Lookup calculator, moved in complete
+ * (rank and progression ranges, ".5", include owned, Apply, Share, the range in the URL). The unit
+ * page owns which character it is; the page remounts this tab per character.
+ */
+export function CharacterRankUpTab({
+  characterId: unitId,
+}: {
+  characterId: UnitId
+}) {
+  // "unitLookup.subtitle" (the only key used directly here) lives in "common", i18next's configured
+  // defaultNS. useCharacterLookupCatalog/useCharacterLookupCalc each load whatever other namespaces
+  // their own translated output needs.
   const { t } = useTranslation()
   const isMobile = useIsMobile()
   const isAuthenticated = useIsAuthenticated()
-  const { entityId: routeCharacterId } = useParams()
-
-  useTourPageSteps(useCharacterLookupTutorial())
 
   const {
     charactersById,
     upgradesById,
     battlesById,
     releaseTypeByGroupId,
-    characterGroups,
     loading,
   } = useCharacterLookupCatalog()
-  const characterIds = useMemo(
-    () => (charactersById ? [...charactersById.keys()] : undefined),
-    [charactersById]
-  )
-  const routeSelection = useLibraryRouteSelection({
-    collectionPath: "/library/characters",
-    entityId: routeCharacterId,
-    entityIds: characterIds,
-    loading,
-  })
 
   const {
     applied,
     draft,
     isDirty,
-    setDraftCharacterId,
     applyPlayerPrefill,
     setDraftRange,
     setDraftProgressionRange,
     setDraftPointFive,
     handleApply,
-  } = useLookupSelection(routeSelection.selectedId)
+  } = useLookupSelection(unitId)
 
-  const handleCharacterChange = (id: UnitId) => {
-    setDraftCharacterId(id)
-    routeSelection.select(id)
-  }
-
-  const draftCharacterId =
-    draft.characterId ?? characterGroups[0]?.members[0]?.id
+  const draftCharacterId = draft.characterId ?? unitId
 
   // Synced player record for the currently selected character only (not the whole roster) — used
   // just to prefill the "from" rank/progression once it loads, see the effect below. MoWs are
@@ -152,7 +136,7 @@ export function CharacterLookupPage() {
   // player owns), used only once includeOwned is on; harmless/unused otherwise.
   const inventoryUpgrades = useLiveQuery(() => getInventoryUpgrades(), [])
 
-  const characterId = applied.characterId ?? characterGroups[0]?.members[0]?.id
+  const characterId = applied.characterId ?? unitId
 
   const character = characterId ? charactersById?.get(characterId) : undefined
   const characterForCalc = character
@@ -173,8 +157,6 @@ export function CharacterLookupPage() {
     })
 
   const sharedProps = {
-    characterGroups,
-    characterId: draftCharacterId,
     rankStart: draft.rankStart,
     rankEnd: draft.rankEnd,
     progressionStart: draft.progressionStart,
@@ -189,7 +171,6 @@ export function CharacterLookupPage() {
     groups,
     campaignInsights,
     eventInsights,
-    onCharacterChange: handleCharacterChange,
     onRangeChange: setDraftRange,
     onProgressionRangeChange: setDraftProgressionRange,
     onPointFiveChange: setDraftPointFive,
@@ -199,7 +180,7 @@ export function CharacterLookupPage() {
   }
 
   return (
-    <div className="flex flex-col gap-8" data-testid="character-lookup-page">
+    <div className="flex flex-col gap-8" data-testid="character-rank-up-tab">
       <p className="text-muted-foreground">{t("unitLookup.subtitle")}</p>
 
       {isMobile ? (

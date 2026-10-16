@@ -152,10 +152,7 @@
     "confirmRetry": "Reintentar"
   },
   "unitLookup": {
-    "subtitle": "Elige un personaje y un intervalo de rangos para ver las mejoras necesarias y dónde conseguirlas.",
-    "character": "Personaje",
-    "characterPlaceholder": "Selecciona un personaje",
-    "noCharacter": "No se encontró ningún personaje.",
+    "subtitle": "Elige un intervalo de rangos para ver las mejoras necesarias y dónde conseguirlas.",
     "rankRange": "Intervalo de rangos",
     "start": "Desde",
     "end": "Hasta",
@@ -1307,26 +1304,6 @@
       "feedback": {
         "title": "Enviar comentarios",
         "content": "Comparte comentarios o ideas con el botón junto a tu cuenta. El enlace al tablero público sigue en el encabezado de la página."
-      }
-    },
-    "lookup": {
-      "steps": {
-        "character": {
-          "title": "Elige un personaje",
-          "content": "Elige para qué personaje quieres consultar las mejoras."
-        },
-        "apply": {
-          "title": "Aplica tus cambios",
-          "content": "Ajusta el intervalo de rango o progresión y aplica los cambios para actualizar los resultados de abajo."
-        },
-        "results": {
-          "title": "Mejoras y lugares de cultivo",
-          "content": "Consulta las mejoras necesarias para este intervalo de rango y dónde conseguirlas."
-        },
-        "share": {
-          "title": "Comparte esta consulta",
-          "content": "Comparte o copia un enlace a este personaje e intervalo de rango exactos."
-        }
       }
     },
     "overview": {

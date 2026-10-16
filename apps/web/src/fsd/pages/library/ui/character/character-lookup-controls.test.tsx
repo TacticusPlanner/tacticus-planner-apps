@@ -2,12 +2,6 @@ import { fireEvent, render, screen } from "@testing-library/react"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { TooltipProvider } from "@workspace/ui/components/tooltip"
 
-import {
-  factionIdSchema,
-  unitIdSchema,
-  type FactionGroup,
-} from "@workspace/game-domain"
-
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
 }))
@@ -36,19 +30,8 @@ function renderControls(props: Parameters<typeof CharacterLookupControls>[0]) {
   )
 }
 
-const characterGroups: FactionGroup[] = [
-  {
-    factionId: factionIdSchema.parse("Ultramarines"),
-    factionName: "Ultramarines",
-    members: [{ id: unitIdSchema.parse("cato"), name: "Cato Sicarius" }],
-  },
-]
-
 function baseProps() {
   return {
-    characterGroups,
-    characterId: unitIdSchema.parse("cato"),
-    onCharacterChange: vi.fn(),
     rankStart: "Stone1" as const,
     rankEnd: "Iron1" as const,
     onRangeChange: vi.fn(),
@@ -79,7 +62,7 @@ describe("CharacterLookupControls", () => {
     renderControls(props)
 
     expect(screen.getAllByRole("slider")).toHaveLength(2)
-    expect(screen.queryAllByRole("combobox")).toHaveLength(3) // character + 2 progression selects
+    expect(screen.queryAllByRole("combobox")).toHaveLength(2) // 2 progression selects (no picker)
 
     fireEvent.click(screen.getByTestId("lookup-apply-button"))
     expect(props.onApply).toHaveBeenCalledTimes(1)
@@ -89,12 +72,12 @@ describe("CharacterLookupControls", () => {
     renderControls({ ...baseProps(), isMobile: true })
 
     expect(screen.queryAllByRole("slider")).toHaveLength(0)
-    // character combobox + 2 progression selects + 2 rank selects
-    expect(screen.getAllByRole("combobox")).toHaveLength(5)
+    // 2 rank selects + 2 progression selects (the unit page owns the character; no picker)
+    expect(screen.getAllByRole("combobox")).toHaveLength(4)
   })
 
-  // Render order (mobile): character combobox [0], rank start [1], rank end [2], progression
-  // start [3], progression end [4] — matches the JSX order and the combobox-count assertion
+  // Render order (mobile): rank start [0], rank end [1], progression start [2], progression
+  // end [3] — matches the JSX order and the combobox-count assertion
   // above. RankSelect itself is generically tested (rank-select.test.tsx); these confirm
   // CharacterLookupControls computes the right options to hand it.
   it("offers the start select every rank up to and including the current end (LIB-02)", () => {
@@ -105,7 +88,7 @@ describe("CharacterLookupControls", () => {
       rankEnd: "Iron1",
     })
 
-    const [, startCombobox] = screen.getAllByRole("combobox")
+    const [startCombobox] = screen.getAllByRole("combobox")
     fireEvent.click(startCombobox!)
 
     const values = screen
@@ -123,7 +106,7 @@ describe("CharacterLookupControls", () => {
       rankEnd: "Iron1",
     })
 
-    const [, , endCombobox] = screen.getAllByRole("combobox")
+    const [, endCombobox] = screen.getAllByRole("combobox")
     fireEvent.click(endCombobox!)
 
     const values = screen
@@ -140,7 +123,7 @@ describe("CharacterLookupControls", () => {
       rankEnd: "Iron1",
     })
 
-    const [, startCombobox, endCombobox] = screen.getAllByRole("combobox")
+    const [startCombobox, endCombobox] = screen.getAllByRole("combobox")
 
     fireEvent.click(startCombobox!)
     const startValues = screen

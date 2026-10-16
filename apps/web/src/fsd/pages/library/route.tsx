@@ -5,9 +5,14 @@ import { lazy } from "react"
 import { Navigate, type RouteObject } from "react-router"
 import { getMows } from "@workspace/game-catalog/queries"
 
-const CharacterLookupPage = lazy(() =>
-  import("./ui/character/character-lookup-page").then((m) => ({
-    default: m.CharacterLookupPage,
+const CharactersListPage = lazy(() =>
+  import("./ui/characters/characters-list-page").then((m) => ({
+    default: m.CharactersListPage,
+  }))
+)
+const CharacterUnitPage = lazy(() =>
+  import("./ui/character-unit/character-unit-page").then((m) => ({
+    default: m.CharacterUnitPage,
   }))
 )
 const LibraryCollectionPage = lazy(() =>
@@ -33,8 +38,8 @@ const ShopsBrowsePage = lazy(() =>
 // layout element, and just splices this array in as `children`.
 export const routes: RouteObject[] = [
   { index: true, element: <Navigate replace to="/library/characters" /> },
-  { path: "characters", element: <CharacterLookupPage /> },
-  { path: "characters/:entityId", element: <CharacterLookupPage /> },
+  { path: "characters", element: <CharactersListPage /> },
+  { path: "characters/:entityId", element: <CharacterUnitPage /> },
   {
     path: "machines-of-war",
     element: (

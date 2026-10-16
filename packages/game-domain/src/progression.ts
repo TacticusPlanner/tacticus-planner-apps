@@ -49,6 +49,17 @@ export function progressionRarity(value: Progression): Rarity {
   return value.slice(0, value.indexOf(":")) as Rarity
 }
 
+/** Where a unit of the given starting rarity begins: the first step of that rarity on the ladder
+ *  (Common, no stars; Uncommon, 2 stars; Rare, 4 stars; Epic, 1 red star; Legendary, 3 red stars;
+ *  Mythic, 1 blue star). Matches V1's `initialProgressionIndex` for every character. */
+export function startingProgression(rarity: Rarity): Progression {
+  const step = progressionOrder.find(
+    (value) => progressionRarity(value) === rarity
+  )
+  if (step === undefined) throw new Error(`Unknown rarity: ${rarity}`)
+  return step
+}
+
 const progressionStarsIndexBySuffix: Readonly<Record<string, number>> = {
   None: 0,
   OneStar: 1,
