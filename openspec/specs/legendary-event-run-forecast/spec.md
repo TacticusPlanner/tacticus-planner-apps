@@ -10,7 +10,7 @@ Defines how the planner counts the tokens a Legendary Event's remaining runs sup
 
 The planner SHALL count, for each run 1–3, the tokens still to come:
 
-- **Run states.** With the event active, runs before the current run (`currentLegendaryEventRun`) are **Done** and supply nothing, the current run is **Now**, and later runs are **Planned**. With the event upcoming, runs up to the synced `currentEventRun` are Done and every later run is Planned (all three without a synced entry); the first Planned run is labelled **Next**. An archived event has no forecast.
+- **Run states.** With the event active, runs before the resolved current run are **Done** and supply nothing, the current run is **Now**, and later runs are **Planned**. With the event upcoming, the runs that have ended (`legendary-event-run-resolution`) are Done and every later run is Planned; the first Planned run is labelled **Next**. When the run is unknown the supply is one **Next** run with the Planned token count and no other run. An archived event, or one whose three runs have all ended, has no forecast.
 - **Now.** Free tokens = the synced bucket's `current`, + 1 when the next token instant (the instant the chunk was observed + `nextTokenInSeconds`) is before the run's end, + ⌊(run end − next token instant) ÷ `regenDelayInSeconds`⌋ (when the bucket is null, free tokens = ⌊(run end − now) ÷ 10,800 s⌋ with no + 1, as in V1). Ad tokens = ⌊(run end − now − 1 ms) ÷ 1 day⌋, + 1 when `hasUsedAdForExtraTokenToday` is not true. Bonus-delivery tokens = 6 when the run's premium track is planned (stored premium missions > 0 with Show paid options on) and not already bought (synced `extraCurrencyPerPayout` not > 0); else 0.
 - **Planned.** 61 free + 7 ad tokens, + 6 bonus-delivery tokens when that run's stored premium missions > 0 and Show paid options is on.
 
@@ -20,7 +20,7 @@ Assumptions:
 - Buying the premium track (bonus delivery) for a run grants 6 tokens in that run.
 - Tokens are spent as they arrive, so the bucket's `max` never caps the supply.
 - The regeneration delay is the synced `regenDelayInSeconds`; this projects the synced figures forward and never replaces them in Run status.
-- Between runs, the synced `currentEventRun` is the run that last ended.
+- Between runs the game sends no run number; the ended runs come from the run schedule (`legendary-event-run-resolution`).
 
 #### Scenario: Worked supply, Uthar run 2
 
@@ -42,9 +42,15 @@ Assumptions:
 
 #### Scenario: Upcoming event
 
-- **GIVEN** Uthar is upcoming and the synced `currentEventRun` is 1
+- **GIVEN** Uthar is upcoming, its schedule lists the starts of runs 1 and 2 (both ended) and the synced `currentEventRun` is null
 - **WHEN** the supply is counted
-- **THEN** run 1 is Done, run 2 is Next with 68 tokens and run 3 Planned with 68
+- **THEN** runs 1 and 2 are Done and run 3 is Next with 68 tokens
+
+#### Scenario: Unknown run
+
+- **GIVEN** an upcoming event with an empty schedule, a synced entry with progress and a null `currentEventRun`
+- **WHEN** the supply is counted
+- **THEN** it is one Next run with 68 tokens and no Done or later run
 
 ### Requirement: Run-by-run forecast from the token plan
 
@@ -54,7 +60,7 @@ The planner SHALL spend the token plan's tokens in order across the runs that ar
 - currency += for each points milestone of the event's `rewards.pointsMilestones` crossed in the run, `engramPayout` + the run's payout bonus (Now: synced `extraCurrencyPerPayout` when > 0, else 15 when the premium track is planned for it; Planned: 15 when its stored premium missions > 0); for Planned runs only, + (regular + premium missions) × (25, + 15 with premium missions) + the bundle (300, + 15 with premium missions) when bought, with paid inputs read as 0 when Show paid options is off;
 - chests: while the next chest's `engramCost` ≤ currency, open it (currency −= its cost, shards += `shardsPerChest`);
 - shards += the run's stored Oh So Close shards (Planned runs only, paid options on);
-- the **next step** is the first cumulative ascension threshold (unlock, + four stars, + five stars, + blue star, + mythic, + two blue stars) above the shards, with the shards still missing; "every step reached" when none;
+- the **next step** is the first cumulative ascension threshold above the shards, counted from the event unit's next step as in `legendary-event-reward-projection` (steps in order: unlock, + four stars, + five stars, + blue star, + mythic, + two blue stars), with the shards still missing; "every step reached" when none;
 - an **Oh So Close hint** when 0 < shards missing ≤ 75: its blackstone price is 500 + 100 per shard for Unlock, 500 + 50 per shard for later steps.
 
 Each run reports: tokens available, tokens the plan uses, tokens left over, points earned and ending points, currency earned and ending currency, chests opened and the total claimed, ending shards, the steps reached in the run, the next step with shards missing, and the hint. All figures are in event units (tokens, points, currency, chests, shards), anchored to current synced progress, the plan's current teams and depths, and the stored run inputs.
@@ -68,10 +74,10 @@ Assumptions:
 
 #### Scenario: Worked forecast on Uthar
 
-- **GIVEN** the worked token plan (6 tokens, 978 points from 5,000) and the worked supply (run 2: 32, run 3: 68), synced C 120, K 10, S 250, `votanUthar`'s ladder (chests 11, 12, 13 cost 260, 280, 300; milestone 13 at 5,500 pays 85, milestone 14 at 6,000), unlock 400, and Stage 3's run 3 inputs (10 regular missions, bundle bought, no premium, no Oh So Close shards) with Show paid options on
+- **GIVEN** the worked token plan (6 tokens, 1,136 points from 5,000) and the worked supply (run 2: 32, run 3: 68), the event unit not in the synced roster, synced C 120, K 10, S 250, `votanUthar`'s ladder (chests 11, 12, 13, 14 cost 260, 280, 300, 320; milestone 13 at 5,500 pays 85, milestone 14 at 6,000 pays 90), unlock 400, and Stage 3's run 3 inputs (10 regular missions, bundle bought, no premium, no Oh So Close shards) with Show paid options on
 - **WHEN** the forecast is computed
-- **THEN** run 2 uses 6 of 32 tokens (26 left over), earns 978 points to 5,978, crosses milestone 13 (+85, no bonus) for 205 currency, opens no chest (chest 11 costs 260), ends with 10 chests and 250 shards, next step Unlock with 150 shards missing and no Oh So Close hint (150 > 75)
-- **AND** run 3 uses 0 of 68 tokens (68 left over), earns 0 points (5,978), gains 10 × 25 = 250 from missions and 300 from the bundle (755 in hand), opens chest 11 (495 left) and chest 12 (215 left), ends with 12 chests and 300 shards, next step Unlock with 100 shards missing and no hint
+- **THEN** run 2 uses 6 of 32 tokens (26 left over), earns 1,136 points to 6,136, crosses milestones 13 and 14 (+85 and +90, no bonus) for 295 currency, opens chest 11 (260; 35 left), ends with 11 chests and 275 shards, next step Unlock with 125 shards missing and no Oh So Close hint (125 > 75)
+- **AND** run 3 uses 0 of 68 tokens (68 left over), earns 0 points (6,136), gains 10 × 25 = 250 from missions and 300 from the bundle (585 in hand), opens chest 12 (280; 305 left) and chest 13 (300; 5 left), ends with 13 chests and 325 shards, next step Unlock with 75 shards missing and an Oh So Close hint of 500 + 75 × 100 = 8,000 blackstone
 
 #### Scenario: Oh So Close hint
 
@@ -99,12 +105,12 @@ Assumptions:
 
 ### Requirement: Run forecast section
 
-Below the token plan the Overview tab SHALL show a collapsible **Run forecast**, collapsed by default and remembered per device, headed by the last forecast run's outcome ("By the end of run 3: 5,978 points · Unlock 100 shards short"). Expanded, it SHALL show one block per run 1–3 with its state (Done, Now, Next, Planned); Done blocks show "Finished" only; other blocks show tokens available as free + ad + bonus delivery, "uses N" and "N left over", ending points, currency, chests, shards, the steps reached, the next step with shards missing, and the Oh So Close hint when present. When any run has tokens left over and the plan is shorter than the supply, a line SHALL say "N tokens with nothing to play: add a team or raise a depth to use them" linking to the first lane with points left. An **Edit inputs** link SHALL open the Stage 3 run inputs drawer (which carries Show paid options); the forecast recomputes when the drawer saves. With an empty plan the forecast SHALL still render (inputs alone can open chests). While supply inputs load the section SHALL show a skeleton; when the event's catalog record failed to load it SHALL be hidden with the Run status card's failure note.
+Below the token plan the Overview tab SHALL show a collapsible **Run forecast**, collapsed by default and remembered per device, headed by the last forecast run's outcome ("By the end of run 3: 6,136 points · Unlock 75 shards short"). Expanded, it SHALL show one block per run 1–3 with its state (Done, Now, Next, Planned); Done blocks show "Finished" only; other blocks show tokens available as free + ad + bonus delivery, "uses N" and "N left over", ending points, currency, chests, shards, the steps reached, the next step with shards missing, and the Oh So Close hint when present. When any run has tokens left over and the plan is shorter than the supply, a line SHALL say "N tokens with nothing to play: add a team or raise a depth to use them" linking to the first lane with points left. An **Edit inputs** link SHALL open the Stage 3 run inputs drawer (which carries Show paid options); the forecast recomputes when the drawer saves. With an empty plan the forecast SHALL still render (inputs alone can open chests). While supply inputs load the section SHALL show a skeleton; when the event's catalog record failed to load it SHALL be hidden with the Run status card's failure note.
 
 #### Scenario: Forecast header on the worked example
 
 - **WHEN** the Overview renders the worked forecast
-- **THEN** the collapsed header reads "By the end of run 3: 5,978 points · Unlock 100 shards short"
+- **THEN** the collapsed header reads "By the end of run 3: 6,136 points · Unlock 75 shards short"
 
 #### Scenario: Leftover tokens line
 

@@ -13,8 +13,8 @@ For every Legendary Event in the catalog `lres` dataset the system SHALL derive 
 Assumptions:
 
 - A run lasts 7 days from its start instant (V1's `getLegendaryEventDurationMillis`).
-- `eventStageStartDatesUtc` lists run starts in ISO 8601 UTC; today the catalog serves one element per event (the next run).
-- The run number (1–3) is not in the catalog; when the event is active it is read from the synced `currentEventRun`, and shown only when present.
+- `eventStageStartDatesUtc` lists the announced run starts in ISO 8601 UTC, index = run − 1, at most three (the API's `legendary-event-run-schedule`).
+- The run number is derived from the index of the run start and the clock (`legendary-event-run-resolution`); the synced `currentEventRun` is sent only while a run is active and wins then, and is null between runs.
 
 #### Scenario: Run window makes an event active
 
@@ -147,7 +147,7 @@ Each row SHALL show the event unit's portrait and localized name and its timing:
 
 ### Requirement: Run status is read from the synced progress chunk
 
-The Run status section SHALL show, from the synced `lre-progress` entry whose `id` equals the event id: "Event N of 3" from `currentEventRun` (omitted when null); tokens `current/max` with "next token in …", counted down from the instant the chunk was observed plus `nextTokenInSeconds` and read as "next token ready" once that instant has passed (omitted when the bucket is null or full); `currentPoints`; `currentCurrency`; claimed chests as `currentClaimedChestIndex` (the Tacticus API sends a 1-based count of chests opened, and -1 when it omits the field, which reads as 0); `currentShards`; and the next points milestone: the first entry of the event's own `rewards.pointsMilestones` (from its `lres` record) whose `cumulativePoints` exceeds `currentPoints`, as "N points to milestone M (+E currency)", or "—" when no such entry exists or the event's record is unavailable. It SHALL show the run timing from the lifecycle and "Synced X ago" from the player-data manifest `syncedAt` (hidden while that read is pending, "Not synced yet" before the first sync). It SHALL NOT offer its own sync control. It SHALL carry the Inputs button (see `legendary-event-run-inputs`) and the Reward outlook (see `legendary-event-reward-projection`). When the chunk has no entry for the event it SHALL show a "no synced progress for this event yet" body, the run timing, the Inputs button and the outlook computed from zero.
+The Run status section SHALL show, from the synced `lre-progress` entry whose `id` equals the event id: "Event N of 3" from `currentEventRun` (omitted when null); tokens `current/max` with "next token in …", counted down from the instant the chunk was observed plus `nextTokenInSeconds` and read as "next token ready" once that instant has passed (omitted when the bucket is null or full); `currentPoints`; `currentCurrency`, labelled as currency in hand ("120 currency in hand"); claimed chests as `currentClaimedChestIndex` (the Tacticus API sends a 1-based count of chests opened, and -1 when it omits the field, which reads as 0); `currentShards`; and the next points milestone: the first entry of the event's own `rewards.pointsMilestones` (from its `lres` record) whose `cumulativePoints` exceeds `currentPoints`, as "N points to milestone M (+E currency)", or "—" when no such entry exists or the event's record is unavailable. It SHALL show the run timing from the lifecycle and "Synced X ago" from the player-data manifest `syncedAt` (hidden while that read is pending, "Not synced yet" before the first sync). It SHALL NOT offer its own sync control. It SHALL carry the Inputs button (see `legendary-event-run-inputs`) and the Reward outlook (see `legendary-event-reward-projection`). When the chunk has no entry for the event it SHALL show a "no synced progress for this event yet" body, the run timing, the Inputs button and the outlook computed from zero.
 
 Assumptions:
 
@@ -159,7 +159,7 @@ Assumptions:
 - **GIVEN** Lysander's synced entry has `currentEventRun` 1, tokens `{ current: 3, max: 12, nextTokenInSeconds: 5400 }`, `currentPoints` 3410, `currentCurrency` 120, `currentClaimedChestIndex` 4, `currentShards` 125, and the first milestone above 3,410 in Lysander's `rewards.pointsMilestones` is `{ milestone: 14, cumulativePoints: 3500, engramPayout: 60 }`
 - **WHEN** the section renders
 - **AND** the chunk was observed at the current instant
-- **THEN** it shows "Event 1 of 3", "3/12 tokens, next in 1 hr 30 min", "3,410 points", "120 currency", "4 chests claimed", "125 shards", and "90 points to milestone 14 (+60 currency)"
+- **THEN** it shows "Event 1 of 3", "3/12 tokens, next in 1 hr 30 min", "3,410 points", "120 currency in hand", "4 chests claimed", "125 shards", and "90 points to milestone 14 (+60 currency)"
 
 #### Scenario: Next-token countdown advances between syncs
 
@@ -237,7 +237,7 @@ While the catalog `lres` read is pending the hub and event page SHALL show a ske
 
 ### Requirement: The Events pages have Joyride tours
 
-The hub SHALL have a page tour with steps for the Active group (or the no-event line) and one upcoming row, on desktop and mobile. The event page SHALL have a page tour that targets, in order, the tab strip, the Next token card, the Run status card, its Run inputs button, the Token plan header, the Overview lane summary and the cross-lane leaderboard, then (after switching to Alpha) the lane overview, the Teams section (which holds its Add team button), the progress grid and the leaderboard; the same steps on desktop and mobile. The Next token step SHALL target the card in whichever state it renders (token or empty state). Step titles and content SHALL be localized in en/de/es/fr.
+The hub SHALL have a page tour with steps for the Active group (or the no-event line) and one upcoming row, on desktop and mobile. The event page SHALL have a page tour that targets, in order, the tab strip, the Next token card, the Run status card, its Run inputs button, the Token plan header, the Overview lane summary and the cross-lane leaderboard, then (after switching to Alpha) the lane overview, the Teams section (which holds its Add team button), the progress grid and the leaderboard; the same steps on desktop and mobile. The Next token step SHALL target the card in whichever state it renders (token or empty state). Every step's tooltip SHALL lie fully inside the viewport when it shows; a tall target such as an expanded Token plan is highlighted by its header, not its whole list. Step titles and content SHALL be localized in en/de/es/fr.
 
 #### Scenario: Event page tour on desktop
 
@@ -249,15 +249,21 @@ The hub SHALL have a page tour with steps for the Active group (or the no-event 
 - **WHEN** the page tour starts below 768px
 - **THEN** the same steps run in the same order; the strip step targets the sticky strip and the lane steps follow the switch to Alpha, each target scrolled into view
 
+#### Scenario: Token plan step with a long plan
+
+- **GIVEN** the Token plan is expanded with 24 tokens on a 1280 by 784 viewport
+- **WHEN** the tour reaches the Token plan step
+- **THEN** the Token plan header is highlighted, the tooltip's title, text and buttons are all inside the viewport, and the step does not scroll the list out of view
+
 ### Requirement: The Overview tab summarises the event
 
-The Overview tab SHALL show, in order: the **Next token** card (see `legendary-event-token-plan`); the Run status card (unchanged from its requirement); the collapsible **Token plan** (see `legendary-event-token-plan`); the collapsible **Run forecast** (see `legendary-event-run-forecast`); a **lane summary** with one row per lane (Alpha, Beta, Gamma) carrying the lane's earned points of its maximum as text and a bar, the count of fully cleared battles of the lane's battle count, and an **objectives line** with one indicator per lane objective in the lane's objective order (the objective's icon, "cleared / battles" where cleared is the number of the lane's battles whose synced progress has that objective cleared, and a bar in the same accent colour as the lane bar); and the cross-lane Eligibility leaderboard (specified in `legendary-event-eligibility`). Activating a lane summary row SHALL select that lane's tab and scroll the page so that lane's Synced progress grid is at the top of the viewport (below the sticky strip on mobile). When the synced progress read failed the lane summary SHALL show "synced data unavailable" in place of the figures and the objectives line; when the event has no synced entry it SHALL show 0 of the maximum for each lane and 0 of the battle count for each objective.
+The Overview tab SHALL show, in order: the **Next token** card (see `legendary-event-token-plan`); the Run status card (unchanged from its requirement); the collapsible **Token plan** (see `legendary-event-token-plan`); the collapsible **Run forecast** (see `legendary-event-run-forecast`); a **lane summary** with one row per lane (Alpha, Beta, Gamma) carrying the lane's earned points of its maximum as text and a bar, the count of fully cleared battles of the lane's battle count ("N / M battles fully cleared", a battle counting when all six of its cells are cleared), and an **objectives line** with one indicator per lane objective in the lane's objective order (the objective's icon, "cleared / battles" where cleared is the number of the lane's battles whose synced progress has that objective cleared, and a bar in the same accent colour as the lane bar); and the cross-lane Eligibility leaderboard (specified in `legendary-event-eligibility`). Activating a lane summary row SHALL select that lane's tab and scroll the page so that lane's Synced progress grid is at the top of the viewport (below the sticky strip on mobile). When the synced progress read failed the lane summary SHALL show "synced data unavailable" in place of the figures and the objectives line; when the event has no synced entry it SHALL show 0 of the maximum for each lane and 0 of the battle count for each objective.
 
 #### Scenario: Lane summary figures
 
 - **GIVEN** Lysander's synced entry yields Alpha 3,410 of 9,000 earned with 7 of 18 battles fully cleared
 - **WHEN** Overview renders
-- **THEN** the Alpha row reads "3,410 / 9,000" with a bar at about 38% and "7 / 18 battles"
+- **THEN** the Alpha row reads "3,410 / 9,000" with a bar at about 38% and "7 / 18 battles fully cleared"
 
 #### Scenario: Lane summary objective counts
 

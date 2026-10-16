@@ -30,7 +30,7 @@ A lane tab SHALL show a Teams section, between the lane overview and the synced 
 
 ### Requirement: Team editor derives covered objectives from members
 
-The team editor SHALL open from Add team (empty) or Edit (prefilled) as a dialog on desktop and a bottom sheet on mobile. It SHALL offer only the lane's allowed units in a picker where each unit shows its name, portrait, the objective icons it satisfies (muted when not), its points per battle and locked styling when not owned; the picker SHALL be searchable by name and SHALL have an "only unlocked" filter defaulting to the page's shared value. The user SHALL select up to five members, kept in the order they were selected (the editor offers no drag reorder of members), and may mark one further unit as reserve. The covered objectives SHALL be derived as the objectives every non-reserve member satisfies, shown as checked chips the user can untick. On every member change the set SHALL be reconciled against the previous derivation: an objective that still derives keeps the user's tick or untick, an objective that newly derives (it did not derive from the previous members) is ticked, and an objective that no longer derives is removed. On opening a saved team the previous derivation is that of the stored members, so an objective that derives but is not stored stays unticked. A team MAY be saved with zero covered objectives. The name SHALL default to the covered objective labels joined by " · " (or "Team N") and be editable, 1–60 characters. Save SHALL be unavailable with zero members and while a save is in progress. The editor SHALL close only once the save succeeded; after a conflict or any other failure it SHALL stay open with the draft, and after a conflict it SHALL say in the dialog that this save was not applied because the plan was reloaded.
+The team editor SHALL open from Add team (empty) or Edit (prefilled) as a dialog on desktop and a bottom sheet on mobile. It SHALL offer only the lane's allowed units in a picker where each unit shows its name, portrait, the objective icons it satisfies (muted when not), its points per battle and locked styling when not owned; the picker SHALL be searchable by name, SHALL have an "only unlocked" filter defaulting to the page's shared value and SHALL carry objective chips that reorder the grid (`legendary-event-team-editor-workflow`). The user SHALL select up to five members, kept in the order they were selected (the editor offers no drag reorder of members), and may mark one further unit as reserve. The covered objectives SHALL be derived as the objectives every non-reserve member satisfies, shown as checked chips the user can untick. On every member change the set SHALL be reconciled against the previous derivation: an objective that still derives keeps the user's tick or untick, an objective that newly derives (it did not derive from the previous members) is ticked, and an objective that no longer derives is removed. On opening a saved team the previous derivation is that of the stored members, so an objective that derives but is not stored stays unticked. A team MAY be saved with zero covered objectives. The name SHALL default to the covered objective labels joined by " · " (or "Team N") and be editable, 1–60 characters. Save SHALL be unavailable with fewer than three non-reserve members (see `legendary-event-team-size`) and while a save is in progress. The editor SHALL close only once the save succeeded, unless the user chose Save and add another (`legendary-event-team-editor-workflow`), which keeps it open for the next team; after a conflict or any other failure it SHALL stay open with the draft, and after a conflict it SHALL say in the dialog that this save was not applied because the plan was reloaded.
 
 #### Scenario: Coverage follows the members
 
@@ -69,7 +69,7 @@ The team editor SHALL open from Add team (empty) or Edit (prefilled) as a dialog
 
 ### Requirement: Clear depth is a manual stepper per run
 
-Each card and the editor SHALL expose the clear depth of the current run as a stepper bounded 1..(lane battle count) with a clear control that sets it to null. The current run SHALL be the synced `currentEventRun` for the event, or 1 when the account has no synced entry for it. Every depth write SHALL carry that run, so a depth set during another run is kept. Any value set by the user SHALL be stored with source `manual`. On the card, each stepper change SHALL show at once, and a rapid run of changes SHALL be sent as one write carrying the final value once the changes settle; a run that ends on the starting value SHALL send nothing. When the current run has no manual depth and a clear estimate exists (see `legendary-event-clear-estimates`), the stepper SHALL show the estimate marked "estimated" with its margin line ("N% above battle n · M% short of battle n+1"), and − or + SHALL start from the estimate and store a manual depth. When a manual depth exists and an estimate exists, the card SHALL show a muted "estimate ~n" hint and a **Use estimate** control that clears the current run's manual depth. An estimated depth of 0 SHALL read "Not enough for battle 1 yet". Members that are not owned SHALL be noted as not counted. The estimate SHALL never be written to the API; the `estimate` source is not used by this client. Every depth write SHALL report the estimate shown at the time (or none) with the analytics event.
+Each card and the editor SHALL expose the clear depth of the current run as a stepper bounded 1..(lane battle count) with a clear control that sets it to null. The current run SHALL be the event's resolved run (`legendary-event-run-resolution`): the run in progress, else the next run to start, and run 1 when the run is unknown. Every depth write SHALL carry that run, so a depth set during another run is kept. Any value set by the user SHALL be stored with source `manual`. On the card, each stepper change SHALL show at once, and a rapid run of changes SHALL be sent as one write carrying the final value once the changes settle; a run that ends on the starting value SHALL send nothing. When the current run has no manual depth and a clear estimate exists (see `legendary-event-clear-estimates`), the stepper SHALL show the estimate marked "estimated" with its margin line ("N% above battle n · M% short of battle n+1"), and − or + SHALL start from the estimate and store a manual depth. When a manual depth exists and an estimate exists, the card SHALL show a muted "estimate ~n" hint and a **Use estimate** control that clears the current run's manual depth. An estimated depth of 0 SHALL read "Not enough for battle 1 yet". Members that are not owned SHALL be noted as not counted. The estimate SHALL never be written to the API; the `estimate` source is not used by this client. Every depth write SHALL report the estimate shown at the time (or none) with the analytics event.
 
 #### Scenario: Depth set from the card
 
@@ -191,3 +191,40 @@ When the event has a previous run (see `legendary-event-run-history`) whose team
 
 - **WHEN** the card renders below 768px
 - **THEN** the last-run line wraps under the depth stepper instead of beside it
+
+### Requirement: A team shows a readable name wherever it is named
+
+A team whose stored name is empty or equals its lane id (case-insensitive, such as the "alpha" a V1 import stored) SHALL be shown by its covered objective labels joined by " · ", or "Team N" (its 1-based position in the lane) when it covers none; any other stored name is shown as stored. This display name SHALL be used on the team card, the token plan, the Next token card and its prompts, upgrade-impact rows and the last-run team lines.
+
+#### Scenario: Imported team named after its lane
+
+- **GIVEN** Uthar Alpha holds a team stored as "alpha" covering Max 2 Hits and Melee
+- **WHEN** its card renders and a depth prompt names it
+- **THEN** the card title reads "Max 2 hits · Melee" and the prompt reads "Set how far Max 2 hits · Melee clears"
+
+#### Scenario: A chosen name is kept
+
+- **GIVEN** a team stored as "Melee rush"
+- **WHEN** it is shown anywhere
+- **THEN** it reads "Melee rush"
+
+#### Scenario: No objectives
+
+- **GIVEN** the second Alpha team is stored as "alpha" and covers no objective
+- **WHEN** it is shown
+- **THEN** it reads "Team 2"
+
+### Requirement: Editing a team named after its lane offers the readable name
+
+Opening the editor on a team whose stored name is empty or equals its lane id SHALL prefill the name field with its display name. Saving then stores that name; the stored name is never changed by display alone.
+
+#### Scenario: Edit and save
+
+- **GIVEN** Uthar Alpha's team stored as "alpha" covering Max 2 Hits and Melee
+- **WHEN** the user opens it in the editor and saves without touching the name
+- **THEN** the name field showed "Max 2 hits · Melee" and the team is saved with that name
+
+#### Scenario: Display alone changes nothing stored
+
+- **WHEN** the team card renders the display name
+- **THEN** no write is sent and the stored name stays "alpha"
