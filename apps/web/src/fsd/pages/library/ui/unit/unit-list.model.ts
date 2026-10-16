@@ -1,7 +1,7 @@
 import { allianceRank, factionRank } from "@workspace/game-domain"
 import type { Alliance, FactionId, UnitId } from "@workspace/game-domain"
 
-export type CharacterListItem = {
+export type UnitListItem = {
   id: UnitId
   name: string
   factionId: FactionId
@@ -9,11 +9,11 @@ export type CharacterListItem = {
   alliance: Alliance
 }
 
-/** The characters list's order: alliance, then faction (game order), then localized name. */
-export function orderCharacters(
-  items: readonly CharacterListItem[],
+/** A unit list's order: alliance, then faction (game order), then localized name. */
+export function orderUnits<Item extends UnitListItem>(
+  items: readonly Item[],
   locale?: string
-): CharacterListItem[] {
+): Item[] {
   return [...items].sort(
     (a, b) =>
       allianceRank(a.alliance) - allianceRank(b.alliance) ||
@@ -23,11 +23,11 @@ export function orderCharacters(
 }
 
 /** Case-insensitive name search; an empty query keeps everything. */
-export function searchCharacters(
-  items: readonly CharacterListItem[],
+export function searchUnits<Item extends UnitListItem>(
+  items: readonly Item[],
   query: string,
   locale?: string
-): CharacterListItem[] {
+): Item[] {
   const needle = query.trim().toLocaleLowerCase(locale)
   if (!needle) return [...items]
   return items.filter((item) =>

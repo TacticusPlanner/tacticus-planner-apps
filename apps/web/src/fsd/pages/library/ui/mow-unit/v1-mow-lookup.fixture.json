@@ -1,0 +1,2335 @@
+{
+  "source": "V1 MowLookupService over V1 new-mow-data.json / new-recipe-data.json",
+  "costs": [
+    {
+      "level": 2,
+      "gold": 15,
+      "salvage": 5,
+      "components": 1,
+      "badges": { "rarity": "Common", "amount": 1 }
+    },
+    {
+      "level": 3,
+      "gold": 30,
+      "salvage": 5,
+      "components": 1,
+      "badges": { "rarity": "Common", "amount": 1 }
+    },
+    {
+      "level": 4,
+      "gold": 60,
+      "salvage": 5,
+      "components": 1,
+      "badges": { "rarity": "Common", "amount": 1 }
+    },
+    {
+      "level": 5,
+      "gold": 90,
+      "salvage": 5,
+      "components": 1,
+      "badges": { "rarity": "Common", "amount": 1 }
+    },
+    {
+      "level": 6,
+      "gold": 120,
+      "salvage": 5,
+      "components": 2,
+      "badges": { "rarity": "Common", "amount": 1 }
+    },
+    {
+      "level": 7,
+      "gold": 180,
+      "salvage": 5,
+      "components": 2,
+      "badges": { "rarity": "Common", "amount": 1 }
+    },
+    {
+      "level": 8,
+      "gold": 240,
+      "salvage": 5,
+      "components": 3,
+      "badges": { "rarity": "Common", "amount": 1 }
+    },
+    {
+      "level": 9,
+      "gold": 300,
+      "salvage": 0,
+      "components": 3,
+      "badges": { "rarity": "Uncommon", "amount": 1 },
+      "forgeBadges": { "rarity": "Uncommon", "amount": 1 }
+    },
+    {
+      "level": 10,
+      "gold": 360,
+      "salvage": 0,
+      "components": 3,
+      "badges": { "rarity": "Uncommon", "amount": 1 },
+      "forgeBadges": { "rarity": "Uncommon", "amount": 1 }
+    },
+    {
+      "level": 11,
+      "gold": 420,
+      "salvage": 0,
+      "components": 3,
+      "badges": { "rarity": "Uncommon", "amount": 1 },
+      "forgeBadges": { "rarity": "Uncommon", "amount": 1 }
+    },
+    {
+      "level": 12,
+      "gold": 480,
+      "salvage": 0,
+      "components": 4,
+      "badges": { "rarity": "Uncommon", "amount": 1 },
+      "forgeBadges": { "rarity": "Uncommon", "amount": 1 }
+    },
+    {
+      "level": 13,
+      "gold": 540,
+      "salvage": 0,
+      "components": 4,
+      "badges": { "rarity": "Uncommon", "amount": 1 },
+      "forgeBadges": { "rarity": "Uncommon", "amount": 1 }
+    },
+    {
+      "level": 14,
+      "gold": 600,
+      "salvage": 0,
+      "components": 5,
+      "badges": { "rarity": "Uncommon", "amount": 1 },
+      "forgeBadges": { "rarity": "Uncommon", "amount": 1 }
+    },
+    {
+      "level": 15,
+      "gold": 750,
+      "salvage": 0,
+      "components": 5,
+      "badges": { "rarity": "Uncommon", "amount": 1 },
+      "forgeBadges": { "rarity": "Uncommon", "amount": 1 }
+    },
+    {
+      "level": 16,
+      "gold": 900,
+      "salvage": 0,
+      "components": 5,
+      "badges": { "rarity": "Uncommon", "amount": 1 },
+      "forgeBadges": { "rarity": "Uncommon", "amount": 1 }
+    },
+    {
+      "level": 17,
+      "gold": 1050,
+      "salvage": 0,
+      "components": 5,
+      "badges": { "rarity": "Uncommon", "amount": 1 },
+      "forgeBadges": { "rarity": "Uncommon", "amount": 1 }
+    },
+    {
+      "level": 18,
+      "gold": 1200,
+      "salvage": 0,
+      "components": 6,
+      "badges": { "rarity": "Rare", "amount": 1 },
+      "forgeBadges": { "rarity": "Rare", "amount": 1 }
+    },
+    {
+      "level": 19,
+      "gold": 1500,
+      "salvage": 0,
+      "components": 6,
+      "badges": { "rarity": "Rare", "amount": 1 },
+      "forgeBadges": { "rarity": "Rare", "amount": 1 }
+    },
+    {
+      "level": 20,
+      "gold": 1800,
+      "salvage": 0,
+      "components": 6,
+      "badges": { "rarity": "Rare", "amount": 1 },
+      "forgeBadges": { "rarity": "Rare", "amount": 1 }
+    },
+    {
+      "level": 21,
+      "gold": 2100,
+      "salvage": 0,
+      "components": 7,
+      "badges": { "rarity": "Rare", "amount": 1 },
+      "forgeBadges": { "rarity": "Rare", "amount": 1 }
+    },
+    {
+      "level": 22,
+      "gold": 2400,
+      "salvage": 0,
+      "components": 7,
+      "badges": { "rarity": "Rare", "amount": 1 },
+      "forgeBadges": { "rarity": "Rare", "amount": 1 }
+    },
+    {
+      "level": 23,
+      "gold": 2700,
+      "salvage": 0,
+      "components": 8,
+      "badges": { "rarity": "Rare", "amount": 1 },
+      "forgeBadges": { "rarity": "Rare", "amount": 1 }
+    },
+    {
+      "level": 24,
+      "gold": 3000,
+      "salvage": 0,
+      "components": 8,
+      "badges": { "rarity": "Rare", "amount": 1 },
+      "forgeBadges": { "rarity": "Rare", "amount": 1 }
+    },
+    {
+      "level": 25,
+      "gold": 3300,
+      "salvage": 0,
+      "components": 9,
+      "badges": { "rarity": "Rare", "amount": 1 },
+      "forgeBadges": { "rarity": "Rare", "amount": 1 }
+    },
+    {
+      "level": 26,
+      "gold": 3600,
+      "salvage": 0,
+      "components": 10,
+      "badges": { "rarity": "Rare", "amount": 1 },
+      "forgeBadges": { "rarity": "Rare", "amount": 1 }
+    },
+    {
+      "level": 27,
+      "gold": 3900,
+      "salvage": 0,
+      "components": 11,
+      "badges": { "rarity": "Epic", "amount": 1 },
+      "forgeBadges": { "rarity": "Epic", "amount": 1 }
+    },
+    {
+      "level": 28,
+      "gold": 4200,
+      "salvage": 0,
+      "components": 12,
+      "badges": { "rarity": "Epic", "amount": 1 },
+      "forgeBadges": { "rarity": "Epic", "amount": 1 }
+    },
+    {
+      "level": 29,
+      "gold": 4500,
+      "salvage": 0,
+      "components": 13,
+      "badges": { "rarity": "Epic", "amount": 1 },
+      "forgeBadges": { "rarity": "Epic", "amount": 1 }
+    },
+    {
+      "level": 30,
+      "gold": 4800,
+      "salvage": 0,
+      "components": 14,
+      "badges": { "rarity": "Epic", "amount": 1 },
+      "forgeBadges": { "rarity": "Epic", "amount": 1 }
+    },
+    {
+      "level": 31,
+      "gold": 5100,
+      "salvage": 0,
+      "components": 15,
+      "badges": { "rarity": "Epic", "amount": 1 },
+      "forgeBadges": { "rarity": "Epic", "amount": 1 }
+    },
+    {
+      "level": 32,
+      "gold": 5400,
+      "salvage": 0,
+      "components": 16,
+      "badges": { "rarity": "Epic", "amount": 1 },
+      "forgeBadges": { "rarity": "Epic", "amount": 1 }
+    },
+    {
+      "level": 33,
+      "gold": 5700,
+      "salvage": 0,
+      "components": 17,
+      "badges": { "rarity": "Epic", "amount": 1 },
+      "forgeBadges": { "rarity": "Epic", "amount": 1 }
+    },
+    {
+      "level": 34,
+      "gold": 6000,
+      "salvage": 0,
+      "components": 18,
+      "badges": { "rarity": "Epic", "amount": 1 },
+      "forgeBadges": { "rarity": "Epic", "amount": 1 }
+    },
+    {
+      "level": 35,
+      "gold": 6600,
+      "salvage": 0,
+      "components": 19,
+      "badges": { "rarity": "Epic", "amount": 1 },
+      "forgeBadges": { "rarity": "Epic", "amount": 1 }
+    },
+    {
+      "level": 36,
+      "gold": 7200,
+      "salvage": 0,
+      "components": 20,
+      "badges": { "rarity": "Legendary", "amount": 1 },
+      "forgeBadges": { "rarity": "Legendary", "amount": 1 }
+    },
+    {
+      "level": 37,
+      "gold": 7800,
+      "salvage": 0,
+      "components": 21,
+      "badges": { "rarity": "Legendary", "amount": 1 },
+      "forgeBadges": { "rarity": "Legendary", "amount": 1 }
+    },
+    {
+      "level": 38,
+      "gold": 8400,
+      "salvage": 0,
+      "components": 22,
+      "badges": { "rarity": "Legendary", "amount": 1 },
+      "forgeBadges": { "rarity": "Legendary", "amount": 1 }
+    },
+    {
+      "level": 39,
+      "gold": 9000,
+      "salvage": 0,
+      "components": 23,
+      "badges": { "rarity": "Legendary", "amount": 1 },
+      "forgeBadges": { "rarity": "Legendary", "amount": 1 }
+    },
+    {
+      "level": 40,
+      "gold": 9600,
+      "salvage": 0,
+      "components": 24,
+      "badges": { "rarity": "Legendary", "amount": 1 },
+      "forgeBadges": { "rarity": "Legendary", "amount": 1 }
+    },
+    {
+      "level": 41,
+      "gold": 10800,
+      "salvage": 0,
+      "components": 26,
+      "badges": { "rarity": "Legendary", "amount": 1 },
+      "forgeBadges": { "rarity": "Legendary", "amount": 1 }
+    },
+    {
+      "level": 42,
+      "gold": 12000,
+      "salvage": 0,
+      "components": 28,
+      "badges": { "rarity": "Legendary", "amount": 2 },
+      "forgeBadges": { "rarity": "Legendary", "amount": 2 }
+    },
+    {
+      "level": 43,
+      "gold": 13500,
+      "salvage": 0,
+      "components": 30,
+      "badges": { "rarity": "Legendary", "amount": 3 },
+      "forgeBadges": { "rarity": "Legendary", "amount": 3 }
+    },
+    {
+      "level": 44,
+      "gold": 15000,
+      "salvage": 0,
+      "components": 32,
+      "badges": { "rarity": "Legendary", "amount": 4 },
+      "forgeBadges": { "rarity": "Legendary", "amount": 4 }
+    },
+    {
+      "level": 45,
+      "gold": 18000,
+      "salvage": 0,
+      "components": 34,
+      "badges": { "rarity": "Legendary", "amount": 5 },
+      "forgeBadges": { "rarity": "Legendary", "amount": 5 }
+    },
+    {
+      "level": 46,
+      "gold": 24000,
+      "salvage": 0,
+      "components": 36,
+      "badges": { "rarity": "Legendary", "amount": 6 },
+      "forgeBadges": { "rarity": "Legendary", "amount": 6 }
+    },
+    {
+      "level": 47,
+      "gold": 30000,
+      "salvage": 0,
+      "components": 39,
+      "badges": { "rarity": "Legendary", "amount": 7 },
+      "forgeBadges": { "rarity": "Legendary", "amount": 7 }
+    },
+    {
+      "level": 48,
+      "gold": 45000,
+      "salvage": 0,
+      "components": 42,
+      "badges": { "rarity": "Legendary", "amount": 8 },
+      "forgeBadges": { "rarity": "Legendary", "amount": 8 }
+    },
+    {
+      "level": 49,
+      "gold": 60000,
+      "salvage": 0,
+      "components": 46,
+      "badges": { "rarity": "Legendary", "amount": 9 },
+      "forgeBadges": { "rarity": "Legendary", "amount": 9 }
+    },
+    {
+      "level": 50,
+      "gold": 75000,
+      "salvage": 0,
+      "components": 50,
+      "badges": { "rarity": "Legendary", "amount": 10 },
+      "forgeBadges": { "rarity": "Legendary", "amount": 10 }
+    },
+    {
+      "level": 51,
+      "gold": 80000,
+      "salvage": 0,
+      "components": 50,
+      "badges": { "rarity": "Mythic", "amount": 1 },
+      "forgeBadges": { "rarity": "Mythic", "amount": 1 }
+    },
+    {
+      "level": 52,
+      "gold": 85000,
+      "salvage": 0,
+      "components": 50,
+      "badges": { "rarity": "Mythic", "amount": 1 },
+      "forgeBadges": { "rarity": "Mythic", "amount": 1 }
+    },
+    {
+      "level": 53,
+      "gold": 90000,
+      "salvage": 0,
+      "components": 50,
+      "badges": { "rarity": "Mythic", "amount": 1 },
+      "forgeBadges": { "rarity": "Mythic", "amount": 1 }
+    },
+    {
+      "level": 54,
+      "gold": 95000,
+      "salvage": 0,
+      "components": 50,
+      "badges": { "rarity": "Mythic", "amount": 1 },
+      "forgeBadges": { "rarity": "Mythic", "amount": 1 }
+    },
+    {
+      "level": 55,
+      "gold": 100000,
+      "salvage": 0,
+      "components": 50,
+      "badges": { "rarity": "Mythic", "amount": 1 },
+      "forgeBadges": { "rarity": "Mythic", "amount": 1 }
+    },
+    {
+      "level": 56,
+      "gold": 105000,
+      "salvage": 0,
+      "components": 50,
+      "badges": { "rarity": "Mythic", "amount": 1 },
+      "forgeBadges": { "rarity": "Mythic", "amount": 1 }
+    },
+    {
+      "level": 57,
+      "gold": 110000,
+      "salvage": 0,
+      "components": 50,
+      "badges": { "rarity": "Mythic", "amount": 2 },
+      "forgeBadges": { "rarity": "Mythic", "amount": 2 }
+    },
+    {
+      "level": 58,
+      "gold": 115000,
+      "salvage": 0,
+      "components": 50,
+      "badges": { "rarity": "Mythic", "amount": 3 },
+      "forgeBadges": { "rarity": "Mythic", "amount": 3 }
+    },
+    {
+      "level": 59,
+      "gold": 120000,
+      "salvage": 0,
+      "components": 50,
+      "badges": { "rarity": "Mythic", "amount": 4 },
+      "forgeBadges": { "rarity": "Mythic", "amount": 4 }
+    },
+    {
+      "level": 60,
+      "gold": 125000,
+      "salvage": 0,
+      "components": 50,
+      "badges": { "rarity": "Mythic", "amount": 5 },
+      "forgeBadges": { "rarity": "Mythic", "amount": 5 }
+    }
+  ],
+  "mows": {
+    "ultraDreadnought": {
+      "primary": [
+        ["upgHpC002", "upgDmgC001", "upgArmC001"],
+        ["upgHpC014", "upgDmgC012", "upgArmC013"],
+        ["upgHpC004", "upgHpC002", "upgHpC014"],
+        ["upgDmgC011", "upgDmgC001", "upgDmgC012"],
+        ["upgArmC002", "upgArmC001", "upgArmC013"],
+        ["upgHpC002", "upgHpC014", "upgHpC004"],
+        ["upgDmgC001", "upgDmgC012", "upgDmgC011"],
+        ["upgArmC001", "upgArmC013", "upgArmC002"],
+        ["upgHpC014", "upgHpC004", "upgHpU006"],
+        ["upgDmgC012", "upgDmgC011", "upgDmgU011"],
+        ["upgArmC013", "upgArmC002", "upgArmU001"],
+        ["upgHpC004", "upgHpU014", "upgHpU004C"],
+        ["upgDmgC011", "upgDmgU009", "upgDmgU001C"],
+        ["upgArmC002", "upgArmU001", "upgArmU010C"],
+        ["upgHpU014", "upgHpU006", "upgHpU004C"],
+        ["upgDmgU009", "upgDmgU011", "upgDmgU015C"],
+        ["upgArmU009", "upgArmU005", "upgArmU010C"],
+        ["upgHpU006", "upgHpU014", "upgHpR019"],
+        ["upgDmgU011", "upgDmgU009", "upgDmgR007"],
+        ["upgArmU005", "upgArmU001", "upgArmR015"],
+        ["upgHpU014", "upgHpR019", "upgHpR004C"],
+        ["upgDmgU009", "upgDmgU005", "upgDmgR001C"],
+        ["upgArmU009", "upgArmR015", "upgArmR003C"],
+        ["upgHpR019", "upgHpR005", "upgHpR012C"],
+        ["upgDmgU005", "upgDmgR006", "upgDmgR004C"],
+        ["upgArmR015", "upgArmR005", "upgArmR001C"],
+        ["upgHpR005", "upgDmgR006", "upgHpE003"],
+        ["upgDmgR006", "upgArmR005", "upgDmgE001"],
+        ["upgArmR005", "upgHpR018", "upgArmE010"],
+        ["upgHpR018", "upgHpE003", "upgHpR016C"],
+        ["upgDmgR006", "upgDmgE001", "upgDmgE007C"],
+        ["upgArmR005", "upgArmE010", "upgArmE013"],
+        ["upgHpE003", "upgHpE012", "upgHpE002C"],
+        ["upgDmgE001", "upgDmgE004", "upgDmgE007C"],
+        ["upgArmE010", "upgArmE013", "upgArmE004C"],
+        ["upgHpE003", "upgHpE012", "upgHpL100"],
+        ["upgDmgE001", "upgDmgE004", "upgDmgL001"],
+        ["upgArmE010", "upgArmE013", "upgArmL001"],
+        ["upgHpE012", "upgHpL100", "upgHpL009C"],
+        ["upgDmgE004", "upgHpL100", "upgDmgL006C"],
+        ["upgArmE013", "upgHpL100", "upgArmL004C"],
+        ["upgHpE012", "upgHpL100", "upgHpL001C"],
+        ["upgDmgE004", "upgHpL100", "upgDmgL007C"],
+        ["upgArmE013", "upgHpL100", "upgArmL010C"],
+        ["upgHpL100", "upgDmgL001", "upgHpL120C"],
+        ["upgDmgL001", "upgArmL001", "upgDmgL004C"],
+        ["upgArmL001", "upgDmgL001", "upgArmL006C"],
+        ["upgHpL100", "upgArmL001", "upgHpL017C"],
+        ["upgDmgL001", "upgHpL100", "upgDmgL012C"],
+        ["upgArmL001", "upgHpL100", "upgArmL004C"],
+        ["upgHpM001", "upgDmgL001", "upgHpL100"],
+        ["upgHpM004", "upgArmL001", "upgHpL100"],
+        ["upgHpM004", "upgDmgL001", "upgHpL100"],
+        ["upgHpM001", "upgArmL001", "upgHpL100"],
+        ["upgHpM001", "upgDmgL001", "upgHpL100"],
+        ["upgHpM004", "upgArmL001", "upgDmgL004C"],
+        ["upgHpM001", "upgHpL100", "upgArmL004C"],
+        ["upgHpM004", "upgDmgL001", "upgDmgL004C"],
+        ["upgHpM001", "upgArmL001", "upgHpL214C"],
+        ["upgHpM004", "upgHpL100", "upgDmgL214C"]
+      ],
+      "secondary": [
+        ["upgHpC002", "upgDmgC013", "upgArmC001"],
+        ["upgHpC014", "upgDmgC012", "upgArmC013"],
+        ["upgHpC004", "upgHpC002", "upgHpC014"],
+        ["upgDmgC011", "upgDmgC013", "upgDmgC012"],
+        ["upgArmC002", "upgArmC001", "upgArmC013"],
+        ["upgHpC002", "upgHpC014", "upgHpC004"],
+        ["upgDmgC013", "upgDmgC012", "upgDmgC011"],
+        ["upgArmC001", "upgArmC013", "upgArmC002"],
+        ["upgHpC014", "upgHpC004", "upgHpU006"],
+        ["upgDmgC012", "upgDmgC011", "upgDmgU011"],
+        ["upgArmC013", "upgArmC002", "upgArmU001"],
+        ["upgHpC004", "upgHpU014", "upgHpU004C"],
+        ["upgDmgC011", "upgDmgU009", "upgDmgU018C"],
+        ["upgArmC002", "upgArmU001", "upgArmU010C"],
+        ["upgHpU014", "upgHpU006", "upgHpU004C"],
+        ["upgDmgU009", "upgDmgU011", "upgDmgU015C"],
+        ["upgArmU009", "upgArmU005", "upgArmU010C"],
+        ["upgHpU006", "upgHpU014", "upgHpR019"],
+        ["upgDmgU011", "upgDmgU009", "upgDmgR007"],
+        ["upgArmU005", "upgArmU001", "upgArmR015"],
+        ["upgHpU014", "upgHpR019", "upgHpR004C"],
+        ["upgDmgU009", "upgDmgU005", "upgDmgR13C"],
+        ["upgArmU009", "upgArmR015", "upgArmR003C"],
+        ["upgHpR019", "upgHpR005", "upgHpR012C"],
+        ["upgDmgU005", "upgDmgR006", "upgDmgR004C"],
+        ["upgArmR015", "upgArmR005", "upgArmR001C"],
+        ["upgHpR005", "upgDmgR006", "upgHpE003"],
+        ["upgDmgR006", "upgArmR005", "upgDmgE001"],
+        ["upgArmR005", "upgHpR018", "upgArmE010"],
+        ["upgHpR018", "upgHpE003", "upgHpR016C"],
+        ["upgDmgR006", "upgDmgE001", "upgDmgE007C"],
+        ["upgArmR005", "upgArmE010", "upgArmE013"],
+        ["upgHpE003", "upgHpE012", "upgHpE001C"],
+        ["upgDmgE001", "upgDmgE004", "upgDmgE007C"],
+        ["upgArmE010", "upgArmE013", "upgArmE001C"],
+        ["upgHpE003", "upgHpE012", "upgHpL100"],
+        ["upgDmgE001", "upgDmgE004", "upgDmgL001"],
+        ["upgArmE010", "upgArmE013", "upgArmL001"],
+        ["upgHpE012", "upgHpL100", "upgHpL120C"],
+        ["upgDmgE004", "upgHpL100", "upgDmgL004C"],
+        ["upgArmE013", "upgHpL100", "upgArmL006C"],
+        ["upgHpE012", "upgHpL100", "upgHpL002C"],
+        ["upgDmgE004", "upgHpL100", "upgDmgL015C"],
+        ["upgArmE013", "upgHpL100", "upgArmL004C"],
+        ["upgHpL100", "upgDmgL001", "upgHpL120C"],
+        ["upgDmgL001", "upgArmL001", "upgDmgL120C"],
+        ["upgArmL001", "upgDmgL001", "upgArmL120C"],
+        ["upgHpL100", "upgArmL001", "upgHpL214C"],
+        ["upgDmgL001", "upgHpL100", "upgDmgL214C"],
+        ["upgArmL001", "upgHpL100", "upgArmL214C"],
+        ["upgHpM001", "upgDmgL001", "upgHpL100"],
+        ["upgHpM004", "upgArmL001", "upgHpL100"],
+        ["upgHpM004", "upgDmgL001", "upgHpL100"],
+        ["upgHpM001", "upgArmL001", "upgHpL100"],
+        ["upgHpM001", "upgDmgL001", "upgHpL100"],
+        ["upgHpM004", "upgArmL001", "upgDmgL012C"],
+        ["upgHpM001", "upgHpL100", "upgDmgL012C"],
+        ["upgHpM004", "upgDmgL001", "upgDmgL004C"],
+        ["upgHpM001", "upgArmL001", "upgHpL214C"],
+        ["upgHpM004", "upgHpL100", "upgDmgL214C"]
+      ]
+    },
+    "tyranBiovore": {
+      "primary": [
+        ["upgHpC009", "upgDmgC008", "upgArmC007"],
+        ["upgHpC001", "upgDmgC003", "upgArmC003"],
+        ["upgHpC008", "upgHpC009", "upgHpC001"],
+        ["upgDmgC014", "upgDmgC008", "upgDmgC003"],
+        ["upgArmC005", "upgArmC007", "upgArmC003"],
+        ["upgHpC009", "upgHpC001", "upgHpC008"],
+        ["upgDmgC008", "upgDmgC003", "upgDmgC014"],
+        ["upgArmC007", "upgArmC003", "upgArmC005"],
+        ["upgHpC001", "upgHpC008", "upgHpU007"],
+        ["upgDmgC003", "upgDmgC014", "upgDmgU019"],
+        ["upgArmC003", "upgArmC005", "upgArmU007"],
+        ["upgHpC008", "upgHpU001", "upgHpU010C"],
+        ["upgDmgC014", "upgDmgU014", "upgDmgU008C"],
+        ["upgArmC005", "upgArmU007", "upgArmU004C"],
+        ["upgHpU001", "upgHpU007", "upgHpU010C"],
+        ["upgDmgU014", "upgDmgU019", "upgDmgU016C"],
+        ["upgArmU002", "upgArmU006", "upgArmU004C"],
+        ["upgHpU007", "upgHpU001", "upgHpR033"],
+        ["upgDmgU019", "upgDmgU014", "upgDmgR033"],
+        ["upgArmU006", "upgArmU007", "upgArmR033"],
+        ["upgHpU001", "upgHpR033", "upgHpR009C"],
+        ["upgDmgU014", "upgDmgR033", "upgDmgR14C"],
+        ["upgArmU002", "upgArmR033", "upgArmR002C"],
+        ["upgHpR033", "upgHpR014", "upgHpR003C"],
+        ["upgDmgR033", "upgDmgR003", "upgDmgR012C"],
+        ["upgArmR033", "upgArmR015", "upgArmR004C"],
+        ["upgHpR014", "upgDmgR003", "upgHpE015"],
+        ["upgDmgR003", "upgArmR015", "upgDmgE003"],
+        ["upgArmR015", "upgHpR019", "upgArmE013"],
+        ["upgHpR019", "upgHpE015", "upgHpE033C"],
+        ["upgDmgR003", "upgDmgE003", "upgDmgE033C"],
+        ["upgArmR015", "upgArmE013", "upgArmE033C"],
+        ["upgHpE015", "upgDmgE010", "upgHpE014C"],
+        ["upgDmgE003", "upgArmE013", "upgDmgE009C"],
+        ["upgArmE013", "upgHpE017", "upgArmE003C"],
+        ["upgHpE015", "upgDmgE010", "upgHpL113"],
+        ["upgDmgE003", "upgArmE013", "upgDmgL202"],
+        ["upgArmE013", "upgHpE017", "upgArmL202"],
+        ["upgHpE017", "upgHpL113", "upgHpL033C"],
+        ["upgDmgE010", "upgHpL113", "upgDmgL033C"],
+        ["upgArmE013", "upgHpL113", "upgArmL033C"],
+        ["upgHpE017", "upgHpL113", "upgHpL013C"],
+        ["upgDmgE010", "upgHpL113", "upgDmgL010C"],
+        ["upgArmE013", "upgHpL113", "upgArmL005C"],
+        ["upgHpL113", "upgDmgL202", "upgHpL133C"],
+        ["upgDmgL202", "upgArmL202", "upgDmgL133C"],
+        ["upgArmL202", "upgDmgL202", "upgArmL133C"],
+        ["upgHpL113", "upgArmL202", "upgHpL017C"],
+        ["upgDmgL202", "upgHpL113", "upgDmgL009C"],
+        ["upgArmL202", "upgHpL113", "upgArmL003C"],
+        ["upgHpM002", "upgDmgL202", "upgHpL113"],
+        ["upgHpM004", "upgArmL202", "upgHpL113"],
+        ["upgHpM004", "upgDmgL202", "upgHpL113"],
+        ["upgHpM002", "upgArmL202", "upgHpL113"],
+        ["upgHpM002", "upgDmgL202", "upgHpL113"],
+        ["upgHpM004", "upgArmL202", "upgDmgL033C"],
+        ["upgHpM002", "upgHpL113", "upgArmL033C"],
+        ["upgHpM004", "upgDmgL202", "upgDmgL033C"],
+        ["upgHpM002", "upgArmL202", "upgHpL211C"],
+        ["upgHpM004", "upgHpL113", "upgDmgL211C"]
+      ],
+      "secondary": [
+        ["upgHpC009", "upgDmgC008", "upgArmC007"],
+        ["upgHpC001", "upgDmgC003", "upgArmC003"],
+        ["upgHpC008", "upgHpC009", "upgHpC001"],
+        ["upgDmgC014", "upgDmgC008", "upgDmgC003"],
+        ["upgArmC005", "upgArmC007", "upgArmC003"],
+        ["upgHpC009", "upgHpC001", "upgHpC008"],
+        ["upgDmgC008", "upgDmgC003", "upgDmgC014"],
+        ["upgArmC007", "upgArmC003", "upgArmC005"],
+        ["upgHpC001", "upgHpC008", "upgHpU007"],
+        ["upgDmgC003", "upgDmgC014", "upgDmgU019"],
+        ["upgArmC003", "upgArmC005", "upgArmU007"],
+        ["upgHpC008", "upgHpU001", "upgHpU010C"],
+        ["upgDmgC014", "upgDmgU014", "upgDmgU008C"],
+        ["upgArmC005", "upgArmU007", "upgArmU004C"],
+        ["upgHpU001", "upgHpU007", "upgHpU010C"],
+        ["upgDmgU014", "upgDmgU019", "upgDmgU016C"],
+        ["upgArmU002", "upgArmU006", "upgArmU004C"],
+        ["upgHpU007", "upgHpU001", "upgHpR033"],
+        ["upgDmgU019", "upgDmgU014", "upgDmgR033"],
+        ["upgArmU006", "upgArmU007", "upgArmR033"],
+        ["upgHpU001", "upgHpR033", "upgHpR009C"],
+        ["upgDmgU014", "upgDmgR033", "upgDmgR14C"],
+        ["upgArmU002", "upgArmR033", "upgArmR002C"],
+        ["upgHpR033", "upgHpR014", "upgHpR003C"],
+        ["upgDmgR033", "upgDmgR003", "upgDmgR012C"],
+        ["upgArmR033", "upgArmR015", "upgArmR004C"],
+        ["upgHpR014", "upgDmgR003", "upgHpE015"],
+        ["upgDmgR003", "upgArmR015", "upgDmgE003"],
+        ["upgArmR015", "upgHpR019", "upgArmE013"],
+        ["upgHpR019", "upgHpE015", "upgHpE033C"],
+        ["upgDmgR003", "upgDmgE003", "upgDmgE033C"],
+        ["upgArmR015", "upgArmE013", "upgArmE033C"],
+        ["upgHpE015", "upgDmgE010", "upgHpE013C"],
+        ["upgDmgE003", "upgArmE013", "upgDmgE009C"],
+        ["upgArmE013", "upgHpE017", "upgArmE005C"],
+        ["upgHpE015", "upgDmgE010", "upgHpL113"],
+        ["upgDmgE003", "upgArmE013", "upgDmgL202"],
+        ["upgArmE013", "upgHpE017", "upgArmL202"],
+        ["upgHpE017", "upgHpL113", "upgHpL033C"],
+        ["upgDmgE010", "upgHpL113", "upgDmgL033C"],
+        ["upgArmE013", "upgHpL113", "upgArmL033C"],
+        ["upgHpE017", "upgHpL113", "upgHpL014C"],
+        ["upgDmgE010", "upgHpL113", "upgDmgL016C"],
+        ["upgArmE013", "upgHpL113", "upgArmL003C"],
+        ["upgHpL113", "upgDmgL202", "upgHpL133C"],
+        ["upgDmgL202", "upgArmL202", "upgDmgL133C"],
+        ["upgArmL202", "upgDmgL202", "upgArmL133C"],
+        ["upgHpL113", "upgArmL202", "upgHpL211C"],
+        ["upgDmgL202", "upgHpL113", "upgDmgL211C"],
+        ["upgArmL202", "upgHpL113", "upgArmL211C"],
+        ["upgHpM002", "upgDmgL202", "upgHpL113"],
+        ["upgHpM004", "upgArmL202", "upgHpL113"],
+        ["upgHpM004", "upgDmgL202", "upgHpL113"],
+        ["upgHpM002", "upgArmL202", "upgHpL113"],
+        ["upgHpM002", "upgDmgL202", "upgHpL113"],
+        ["upgHpM004", "upgArmL202", "upgArmL033C"],
+        ["upgHpM002", "upgHpL113", "upgArmL033C"],
+        ["upgHpM004", "upgDmgL202", "upgDmgL033C"],
+        ["upgHpM002", "upgArmL202", "upgHpL211C"],
+        ["upgHpM004", "upgHpL113", "upgDmgL211C"]
+      ]
+    },
+    "blackForgefiend": {
+      "primary": [
+        ["upgHpC002", "upgDmgC008", "upgArmC007"],
+        ["upgHpC014", "upgDmgC004", "upgArmC013"],
+        ["upgHpC010", "upgHpC002", "upgHpC014"],
+        ["upgDmgC014", "upgDmgC008", "upgDmgC004"],
+        ["upgArmC006", "upgArmC007", "upgArmC013"],
+        ["upgHpC002", "upgHpC014", "upgHpC010"],
+        ["upgDmgC008", "upgDmgC004", "upgDmgC014"],
+        ["upgArmC007", "upgArmC013", "upgArmC006"],
+        ["upgHpC014", "upgHpC010", "upgHpU009"],
+        ["upgDmgC004", "upgDmgC014", "upgDmgU019"],
+        ["upgArmC013", "upgArmC006", "upgArmU007"],
+        ["upgHpC010", "upgHpU014", "upgHpU004C"],
+        ["upgDmgC014", "upgDmgU003", "upgDmgU008C"],
+        ["upgArmC006", "upgArmU007", "upgArmU003C"],
+        ["upgHpU014", "upgHpU009", "upgHpU004C"],
+        ["upgDmgU003", "upgDmgU019", "upgDmgU016C"],
+        ["upgArmU009", "upgArmU005", "upgArmU003C"],
+        ["upgHpU009", "upgHpU014", "upgHpR023"],
+        ["upgDmgU019", "upgDmgU003", "upgDmgR023"],
+        ["upgArmU005", "upgArmU007", "upgArmR023"],
+        ["upgHpU014", "upgHpR023", "upgHpR004C"],
+        ["upgDmgU003", "upgDmgR023", "upgDmgR14C"],
+        ["upgArmU009", "upgArmR023", "upgArmR003C"],
+        ["upgHpR023", "upgHpR008", "upgHpR012C"],
+        ["upgDmgR023", "upgDmgR003", "upgDmgR012C"],
+        ["upgArmR023", "upgArmR006", "upgArmR004C"],
+        ["upgHpR008", "upgDmgR003", "upgHpE015"],
+        ["upgDmgR003", "upgArmR006", "upgDmgE003"],
+        ["upgArmR006", "upgHpR018", "upgArmE010"],
+        ["upgHpR018", "upgHpE015", "upgHpE023C"],
+        ["upgDmgR003", "upgDmgE003", "upgDmgE023C"],
+        ["upgArmR006", "upgArmE010", "upgArmE023C"],
+        ["upgHpE015", "upgHpE012", "upgHpE008C"],
+        ["upgDmgE003", "upgDmgE010", "upgDmgE002C"],
+        ["upgArmE010", "upgArmE008", "upgArmE004C"],
+        ["upgHpE015", "upgHpE012", "upgHpL103"],
+        ["upgDmgE003", "upgDmgE010", "upgDmgL202"],
+        ["upgArmE010", "upgArmE008", "upgArmL202"],
+        ["upgHpE012", "upgHpL103", "upgHpL023C"],
+        ["upgDmgE010", "upgHpL103", "upgDmgL023C"],
+        ["upgArmE008", "upgHpL103", "upgArmL023C"],
+        ["upgHpE012", "upgHpL103", "upgHpL001C"],
+        ["upgDmgE010", "upgHpL103", "upgDmgL010C"],
+        ["upgArmE008", "upgHpL103", "upgArmL005C"],
+        ["upgHpL103", "upgDmgL202", "upgHpL123C"],
+        ["upgDmgL202", "upgArmL202", "upgDmgL123C"],
+        ["upgArmL202", "upgDmgL202", "upgArmL123C"],
+        ["upgHpL103", "upgArmL202", "upgHpL013C"],
+        ["upgDmgL202", "upgHpL103", "upgDmgL002C"],
+        ["upgArmL202", "upgHpL103", "upgArmL004C"],
+        ["upgHpM002", "upgDmgL202", "upgHpL103"],
+        ["upgHpM004", "upgArmL202", "upgHpL103"],
+        ["upgHpM004", "upgDmgL202", "upgHpL103"],
+        ["upgHpM002", "upgArmL202", "upgHpL103"],
+        ["upgHpM002", "upgDmgL202", "upgHpL103"],
+        ["upgHpM004", "upgArmL202", "upgDmgL023C"],
+        ["upgHpM002", "upgHpL103", "upgArmL023C"],
+        ["upgHpM004", "upgDmgL202", "upgDmgL023C"],
+        ["upgHpM002", "upgArmL202", "upgHpL212C"],
+        ["upgHpM004", "upgHpL103", "upgDmgL212C"]
+      ],
+      "secondary": [
+        ["upgHpC002", "upgDmgC008", "upgArmC007"],
+        ["upgHpC014", "upgDmgC004", "upgArmC013"],
+        ["upgHpC010", "upgHpC002", "upgHpC014"],
+        ["upgDmgC014", "upgDmgC008", "upgDmgC004"],
+        ["upgArmC006", "upgArmC007", "upgArmC013"],
+        ["upgHpC002", "upgHpC014", "upgHpC010"],
+        ["upgDmgC008", "upgDmgC004", "upgDmgC014"],
+        ["upgArmC007", "upgArmC013", "upgArmC006"],
+        ["upgHpC014", "upgHpC010", "upgHpU009"],
+        ["upgDmgC004", "upgDmgC014", "upgDmgU019"],
+        ["upgArmC013", "upgArmC006", "upgArmU007"],
+        ["upgHpC010", "upgHpU014", "upgHpU004C"],
+        ["upgDmgC014", "upgDmgU003", "upgDmgU008C"],
+        ["upgArmC006", "upgArmU007", "upgArmU003C"],
+        ["upgHpU014", "upgHpU009", "upgHpU004C"],
+        ["upgDmgU003", "upgDmgU019", "upgDmgU016C"],
+        ["upgArmU009", "upgArmU005", "upgArmU003C"],
+        ["upgHpU009", "upgHpU014", "upgHpR023"],
+        ["upgDmgU019", "upgDmgU003", "upgDmgR023"],
+        ["upgArmU005", "upgArmU007", "upgArmR023"],
+        ["upgHpU014", "upgHpR023", "upgHpR004C"],
+        ["upgDmgU003", "upgDmgR023", "upgDmgR14C"],
+        ["upgArmU009", "upgArmR023", "upgArmR003C"],
+        ["upgHpR023", "upgHpR008", "upgHpR012C"],
+        ["upgDmgR023", "upgDmgR003", "upgDmgR012C"],
+        ["upgArmR023", "upgArmR006", "upgArmR004C"],
+        ["upgHpR008", "upgDmgR003", "upgHpE015"],
+        ["upgDmgR003", "upgArmR006", "upgDmgE003"],
+        ["upgArmR006", "upgHpR018", "upgArmE010"],
+        ["upgHpR018", "upgHpE015", "upgHpE023C"],
+        ["upgDmgR003", "upgDmgE003", "upgDmgE023C"],
+        ["upgArmR006", "upgArmE010", "upgArmE023C"],
+        ["upgHpE015", "upgHpE012", "upgHpE001C"],
+        ["upgDmgE003", "upgDmgE010", "upgDmgE002C"],
+        ["upgArmE010", "upgArmE008", "upgArmE005C"],
+        ["upgHpE015", "upgHpE012", "upgHpL103"],
+        ["upgDmgE003", "upgDmgE010", "upgDmgL202"],
+        ["upgArmE010", "upgArmE008", "upgArmL202"],
+        ["upgHpE012", "upgHpL103", "upgHpL023C"],
+        ["upgDmgE010", "upgHpL103", "upgDmgL023C"],
+        ["upgArmE008", "upgHpL103", "upgArmL023C"],
+        ["upgHpE012", "upgHpL103", "upgHpL012C"],
+        ["upgDmgE010", "upgHpL103", "upgDmgL016C"],
+        ["upgArmE008", "upgHpL103", "upgArmL004C"],
+        ["upgHpL103", "upgDmgL202", "upgHpL123C"],
+        ["upgDmgL202", "upgArmL202", "upgDmgL123C"],
+        ["upgArmL202", "upgDmgL202", "upgArmL123C"],
+        ["upgHpL103", "upgArmL202", "upgHpL212C"],
+        ["upgDmgL202", "upgHpL103", "upgDmgL212C"],
+        ["upgArmL202", "upgHpL103", "upgArmL212C"],
+        ["upgHpM002", "upgDmgL202", "upgHpL103"],
+        ["upgHpM004", "upgArmL202", "upgHpL103"],
+        ["upgHpM004", "upgDmgL202", "upgHpL103"],
+        ["upgHpM002", "upgArmL202", "upgHpL103"],
+        ["upgHpM002", "upgDmgL202", "upgHpL103"],
+        ["upgHpM004", "upgArmL202", "upgArmL023C"],
+        ["upgHpM002", "upgHpL103", "upgArmL023C"],
+        ["upgHpM004", "upgDmgL202", "upgDmgL023C"],
+        ["upgHpM002", "upgArmL202", "upgHpL212C"],
+        ["upgHpM004", "upgHpL103", "upgDmgL212C"]
+      ]
+    }
+  },
+  "upgrades": {
+    "upgArmC001": { "rarity": "Common", "crafted": false, "recipe": [] },
+    "upgArmC002": { "rarity": "Common", "crafted": false, "recipe": [] },
+    "upgArmC003": { "rarity": "Common", "crafted": false, "recipe": [] },
+    "upgArmC005": { "rarity": "Common", "crafted": false, "recipe": [] },
+    "upgArmC006": { "rarity": "Common", "crafted": false, "recipe": [] },
+    "upgArmC007": { "rarity": "Common", "crafted": false, "recipe": [] },
+    "upgArmC013": { "rarity": "Common", "crafted": false, "recipe": [] },
+    "upgArmE001C": {
+      "rarity": "Epic",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgArmR001C", "count": 1 },
+        { "material": "upgHpR002", "count": 4 },
+        { "material": "upgArmC002", "count": 4 }
+      ]
+    },
+    "upgArmR001C": {
+      "rarity": "Rare",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgArmU001", "count": 5 },
+        { "material": "upgArmC001", "count": 3 },
+        { "material": "upgHpC016", "count": 3 }
+      ]
+    },
+    "upgArmU001": { "rarity": "Uncommon", "crafted": false, "recipe": [] },
+    "upgHpC016": { "rarity": "Common", "crafted": false, "recipe": [] },
+    "upgHpR002": { "rarity": "Rare", "crafted": false, "recipe": [] },
+    "upgArmE003C": {
+      "rarity": "Epic",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgDmgR005", "count": 6 },
+        { "material": "upgArmU004C", "count": 1 },
+        { "material": "upgArmU006", "count": 6 }
+      ]
+    },
+    "upgDmgR005": { "rarity": "Rare", "crafted": false, "recipe": [] },
+    "upgArmU004C": {
+      "rarity": "Uncommon",
+      "crafted": true,
+      "recipe": [{ "material": "upgArmC005", "count": 6 }]
+    },
+    "upgArmU006": { "rarity": "Uncommon", "crafted": false, "recipe": [] },
+    "upgArmE004C": {
+      "rarity": "Epic",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgArmR015", "count": 6 },
+        { "material": "upgArmU010C", "count": 1 },
+        { "material": "upgArmU005", "count": 6 }
+      ]
+    },
+    "upgArmR015": { "rarity": "Rare", "crafted": false, "recipe": [] },
+    "upgArmU010C": {
+      "rarity": "Uncommon",
+      "crafted": true,
+      "recipe": [{ "material": "upgArmC002", "count": 6 }]
+    },
+    "upgArmU005": { "rarity": "Uncommon", "crafted": false, "recipe": [] },
+    "upgArmE005C": {
+      "rarity": "Epic",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgArmR004C", "count": 1 },
+        { "material": "upgHpR008", "count": 4 },
+        { "material": "upgHpC008", "count": 4 }
+      ]
+    },
+    "upgArmR004C": {
+      "rarity": "Rare",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgArmU007", "count": 5 },
+        { "material": "upgArmC007", "count": 3 },
+        { "material": "upgHpC010", "count": 3 }
+      ]
+    },
+    "upgArmU007": { "rarity": "Uncommon", "crafted": false, "recipe": [] },
+    "upgHpC010": { "rarity": "Common", "crafted": false, "recipe": [] },
+    "upgHpR008": { "rarity": "Rare", "crafted": false, "recipe": [] },
+    "upgHpC008": { "rarity": "Common", "crafted": false, "recipe": [] },
+    "upgArmE008": { "rarity": "Epic", "crafted": false, "recipe": [] },
+    "upgArmE010": { "rarity": "Epic", "crafted": false, "recipe": [] },
+    "upgArmE013": { "rarity": "Epic", "crafted": false, "recipe": [] },
+    "upgArmE023C": {
+      "rarity": "Epic",
+      "crafted": true,
+      "recipe": [{ "material": "upgArmR023", "count": 9 }]
+    },
+    "upgArmR023": { "rarity": "Rare", "crafted": false, "recipe": [] },
+    "upgArmE033C": {
+      "rarity": "Epic",
+      "crafted": true,
+      "recipe": [{ "material": "upgArmR033", "count": 9 }]
+    },
+    "upgArmR033": { "rarity": "Rare", "crafted": false, "recipe": [] },
+    "upgArmL001": { "rarity": "Legendary", "crafted": false, "recipe": [] },
+    "upgArmL003C": {
+      "rarity": "Legendary",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgArmE003C", "count": 2 },
+        { "material": "upgArmE008", "count": 3 }
+      ]
+    },
+    "upgArmL004C": {
+      "rarity": "Legendary",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgArmE004C", "count": 2 },
+        { "material": "upgArmE010", "count": 3 }
+      ]
+    },
+    "upgArmL005C": {
+      "rarity": "Legendary",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgHpE015", "count": 5 },
+        { "material": "upgArmR004C", "count": 3 }
+      ]
+    },
+    "upgHpE015": { "rarity": "Epic", "crafted": false, "recipe": [] },
+    "upgArmL006C": {
+      "rarity": "Legendary",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgArmE010", "count": 5 },
+        { "material": "upgArmR012C", "count": 3 }
+      ]
+    },
+    "upgArmR012C": {
+      "rarity": "Rare",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgArmU009", "count": 5 },
+        { "material": "upgArmC013", "count": 4 },
+        { "material": "upgHpC013", "count": 2 }
+      ]
+    },
+    "upgArmU009": { "rarity": "Uncommon", "crafted": false, "recipe": [] },
+    "upgHpC013": { "rarity": "Common", "crafted": false, "recipe": [] },
+    "upgArmL010C": {
+      "rarity": "Legendary",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgHpE003", "count": 5 },
+        { "material": "upgArmR001C", "count": 3 }
+      ]
+    },
+    "upgHpE003": { "rarity": "Epic", "crafted": false, "recipe": [] },
+    "upgArmL023C": {
+      "rarity": "Legendary",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgArmE023C", "count": 2 },
+        { "material": "upgArmE005C", "count": 1 }
+      ]
+    },
+    "upgArmL033C": {
+      "rarity": "Legendary",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgArmE033C", "count": 2 },
+        { "material": "upgArmE005C", "count": 1 }
+      ]
+    },
+    "upgArmL120C": {
+      "rarity": "Legendary",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgHpL100", "count": 9 },
+        { "material": "upgArmR013C", "count": 1 },
+        { "material": "upgArmR005", "count": 9 }
+      ]
+    },
+    "upgHpL100": { "rarity": "Legendary", "crafted": false, "recipe": [] },
+    "upgArmR013C": {
+      "rarity": "Rare",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgArmU013", "count": 5 },
+        { "material": "upgArmC006", "count": 4 },
+        { "material": "upgHpC015", "count": 2 }
+      ]
+    },
+    "upgArmU013": { "rarity": "Uncommon", "crafted": false, "recipe": [] },
+    "upgHpC015": { "rarity": "Common", "crafted": false, "recipe": [] },
+    "upgArmR005": { "rarity": "Rare", "crafted": false, "recipe": [] },
+    "upgArmL123C": {
+      "rarity": "Legendary",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgHpL103", "count": 9 },
+        { "material": "upgDmgR14C", "count": 1 },
+        { "material": "upgHpR014", "count": 9 }
+      ]
+    },
+    "upgHpL103": { "rarity": "Legendary", "crafted": false, "recipe": [] },
+    "upgDmgR14C": {
+      "rarity": "Rare",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgDmgU011", "count": 5 },
+        { "material": "upgDmgC008", "count": 3 },
+        { "material": "upgDmgC005", "count": 3 }
+      ]
+    },
+    "upgDmgU011": { "rarity": "Uncommon", "crafted": false, "recipe": [] },
+    "upgDmgC008": { "rarity": "Common", "crafted": false, "recipe": [] },
+    "upgDmgC005": { "rarity": "Common", "crafted": false, "recipe": [] },
+    "upgHpR014": { "rarity": "Rare", "crafted": false, "recipe": [] },
+    "upgArmL133C": {
+      "rarity": "Legendary",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgHpL113", "count": 9 },
+        { "material": "upgArmR004C", "count": 1 },
+        { "material": "upgHpR008", "count": 9 }
+      ]
+    },
+    "upgHpL113": { "rarity": "Legendary", "crafted": false, "recipe": [] },
+    "upgArmL202": { "rarity": "Legendary", "crafted": false, "recipe": [] },
+    "upgArmL211C": {
+      "rarity": "Legendary",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgArmL203", "count": 8 },
+        { "material": "upgArmL202", "count": 8 },
+        { "material": "upgArmE009", "count": 8 }
+      ]
+    },
+    "upgArmL203": { "rarity": "Legendary", "crafted": false, "recipe": [] },
+    "upgArmE009": { "rarity": "Epic", "crafted": false, "recipe": [] },
+    "upgArmL212C": {
+      "rarity": "Legendary",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgArmL202", "count": 8 },
+        { "material": "upgArmL001", "count": 8 },
+        { "material": "upgArmE008", "count": 8 }
+      ]
+    },
+    "upgArmL214C": {
+      "rarity": "Legendary",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgArmL204", "count": 8 },
+        { "material": "upgArmL203", "count": 8 },
+        { "material": "upgArmE010", "count": 8 }
+      ]
+    },
+    "upgArmL204": { "rarity": "Legendary", "crafted": false, "recipe": [] },
+    "upgArmR002C": {
+      "rarity": "Rare",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgArmU006", "count": 5 },
+        { "material": "upgArmC005", "count": 6 }
+      ]
+    },
+    "upgArmR003C": {
+      "rarity": "Rare",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgArmU005", "count": 5 },
+        { "material": "upgArmC002", "count": 6 }
+      ]
+    },
+    "upgArmR006": { "rarity": "Rare", "crafted": false, "recipe": [] },
+    "upgArmU002": { "rarity": "Uncommon", "crafted": false, "recipe": [] },
+    "upgArmU003C": {
+      "rarity": "Uncommon",
+      "crafted": true,
+      "recipe": [{ "material": "upgArmC004", "count": 6 }]
+    },
+    "upgArmC004": { "rarity": "Common", "crafted": false, "recipe": [] },
+    "upgDmgC001": { "rarity": "Common", "crafted": false, "recipe": [] },
+    "upgDmgC003": { "rarity": "Common", "crafted": false, "recipe": [] },
+    "upgDmgC004": { "rarity": "Common", "crafted": false, "recipe": [] },
+    "upgDmgC011": { "rarity": "Common", "crafted": false, "recipe": [] },
+    "upgDmgC012": { "rarity": "Common", "crafted": false, "recipe": [] },
+    "upgDmgC013": { "rarity": "Common", "crafted": false, "recipe": [] },
+    "upgDmgC014": { "rarity": "Common", "crafted": false, "recipe": [] },
+    "upgDmgE001": { "rarity": "Epic", "crafted": false, "recipe": [] },
+    "upgDmgE002C": {
+      "rarity": "Epic",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgHpR013C", "count": 1 },
+        { "material": "upgDmgR002", "count": 4 },
+        { "material": "upgDmgC003", "count": 4 }
+      ]
+    },
+    "upgHpR013C": {
+      "rarity": "Rare",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgHpU007", "count": 5 },
+        { "material": "upgHpU018C", "count": 1 }
+      ]
+    },
+    "upgHpU007": { "rarity": "Uncommon", "crafted": false, "recipe": [] },
+    "upgHpU018C": {
+      "rarity": "Uncommon",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgHpC015", "count": 3 },
+        { "material": "upgHpC006", "count": 3 }
+      ]
+    },
+    "upgHpC006": { "rarity": "Common", "crafted": false, "recipe": [] },
+    "upgDmgR002": { "rarity": "Rare", "crafted": false, "recipe": [] },
+    "upgDmgE003": { "rarity": "Epic", "crafted": false, "recipe": [] },
+    "upgDmgE004": { "rarity": "Epic", "crafted": false, "recipe": [] },
+    "upgDmgE007C": {
+      "rarity": "Epic",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgDmgR004C", "count": 1 },
+        { "material": "upgArmR006", "count": 4 },
+        { "material": "upgDmgC012", "count": 4 }
+      ]
+    },
+    "upgDmgR004C": {
+      "rarity": "Rare",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgDmgU009", "count": 5 },
+        { "material": "upgDmgC003", "count": 6 }
+      ]
+    },
+    "upgDmgU009": { "rarity": "Uncommon", "crafted": false, "recipe": [] },
+    "upgDmgE009C": {
+      "rarity": "Epic",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgDmgR012C", "count": 1 },
+        { "material": "upgDmgR003", "count": 4 },
+        { "material": "upgHpC006", "count": 4 }
+      ]
+    },
+    "upgDmgR012C": {
+      "rarity": "Rare",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgDmgU014", "count": 5 },
+        { "material": "upgHpC007", "count": 6 }
+      ]
+    },
+    "upgDmgU014": { "rarity": "Uncommon", "crafted": false, "recipe": [] },
+    "upgHpC007": { "rarity": "Common", "crafted": false, "recipe": [] },
+    "upgDmgR003": { "rarity": "Rare", "crafted": false, "recipe": [] },
+    "upgDmgE010": { "rarity": "Epic", "crafted": false, "recipe": [] },
+    "upgDmgE023C": {
+      "rarity": "Epic",
+      "crafted": true,
+      "recipe": [{ "material": "upgDmgR023", "count": 9 }]
+    },
+    "upgDmgR023": { "rarity": "Rare", "crafted": false, "recipe": [] },
+    "upgDmgE033C": {
+      "rarity": "Epic",
+      "crafted": true,
+      "recipe": [{ "material": "upgDmgR033", "count": 9 }]
+    },
+    "upgDmgR033": { "rarity": "Rare", "crafted": false, "recipe": [] },
+    "upgDmgL001": { "rarity": "Legendary", "crafted": false, "recipe": [] },
+    "upgDmgL002C": {
+      "rarity": "Legendary",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgDmgE003", "count": 7 },
+        { "material": "upgDmgR003", "count": 7 },
+        { "material": "upgDmgR004C", "count": 2 }
+      ]
+    },
+    "upgDmgL004C": {
+      "rarity": "Legendary",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgDmgE020C", "count": 2 },
+        { "material": "upgDmgR015C", "count": 2 }
+      ]
+    },
+    "upgDmgE020C": {
+      "rarity": "Epic",
+      "crafted": true,
+      "recipe": [{ "material": "upgDmgR007", "count": 9 }]
+    },
+    "upgDmgR007": { "rarity": "Rare", "crafted": false, "recipe": [] },
+    "upgDmgR015C": {
+      "rarity": "Rare",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgDmgU015C", "count": 1 },
+        { "material": "upgDmgU003", "count": 5 }
+      ]
+    },
+    "upgDmgU015C": {
+      "rarity": "Uncommon",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgDmgC011", "count": 4 },
+        { "material": "upgDmgC003", "count": 2 }
+      ]
+    },
+    "upgDmgU003": { "rarity": "Uncommon", "crafted": false, "recipe": [] },
+    "upgDmgL006C": {
+      "rarity": "Legendary",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgDmgE008C", "count": 2 },
+        { "material": "upgArmE010", "count": 2 }
+      ]
+    },
+    "upgDmgE008C": {
+      "rarity": "Epic",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgDmgR011C", "count": 1 },
+        { "material": "upgDmgR003", "count": 4 },
+        { "material": "upgHpC014", "count": 4 }
+      ]
+    },
+    "upgDmgR011C": {
+      "rarity": "Rare",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgDmgU010", "count": 2 },
+        { "material": "upgDmgC009", "count": 6 },
+        { "material": "upgHpU014", "count": 3 }
+      ]
+    },
+    "upgDmgU010": { "rarity": "Uncommon", "crafted": false, "recipe": [] },
+    "upgDmgC009": { "rarity": "Common", "crafted": false, "recipe": [] },
+    "upgHpU014": { "rarity": "Uncommon", "crafted": false, "recipe": [] },
+    "upgHpC014": { "rarity": "Common", "crafted": false, "recipe": [] },
+    "upgDmgL007C": {
+      "rarity": "Legendary",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgDmgE001", "count": 7 },
+        { "material": "upgDmgR002", "count": 7 },
+        { "material": "upgDmgR001C", "count": 2 }
+      ]
+    },
+    "upgDmgR001C": {
+      "rarity": "Rare",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgArmU002", "count": 5 },
+        { "material": "upgDmgC001", "count": 6 }
+      ]
+    },
+    "upgDmgL009C": {
+      "rarity": "Legendary",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgDmgE004", "count": 7 },
+        { "material": "upgHpR019", "count": 7 },
+        { "material": "upgDmgR012C", "count": 2 }
+      ]
+    },
+    "upgHpR019": { "rarity": "Rare", "crafted": false, "recipe": [] },
+    "upgDmgL010C": {
+      "rarity": "Legendary",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgDmgE010", "count": 7 },
+        { "material": "upgHpR002", "count": 7 },
+        { "material": "upgDmgR14C", "count": 2 }
+      ]
+    },
+    "upgDmgL012C": {
+      "rarity": "Legendary",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgDmgE007C", "count": 2 },
+        { "material": "upgDmgE003", "count": 2 }
+      ]
+    },
+    "upgDmgL015C": {
+      "rarity": "Legendary",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgDmgR015C", "count": 2 },
+        { "material": "upgDmgR13C", "count": 2 }
+      ]
+    },
+    "upgDmgR13C": {
+      "rarity": "Rare",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgDmgU012", "count": 5 },
+        { "material": "upgDmgC010", "count": 3 },
+        { "material": "upgDmgC013", "count": 3 }
+      ]
+    },
+    "upgDmgU012": { "rarity": "Uncommon", "crafted": false, "recipe": [] },
+    "upgDmgC010": { "rarity": "Common", "crafted": false, "recipe": [] },
+    "upgDmgL016C": {
+      "rarity": "Legendary",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgDmgR016C", "count": 2 },
+        { "material": "upgHpR015C", "count": 2 }
+      ]
+    },
+    "upgDmgR016C": {
+      "rarity": "Rare",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgDmgU016C", "count": 1 },
+        { "material": "upgDmgU019", "count": 5 }
+      ]
+    },
+    "upgDmgU016C": {
+      "rarity": "Uncommon",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgDmgC014", "count": 4 },
+        { "material": "upgDmgC012", "count": 2 }
+      ]
+    },
+    "upgDmgU019": { "rarity": "Uncommon", "crafted": false, "recipe": [] },
+    "upgHpR015C": {
+      "rarity": "Rare",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgHpU012", "count": 5 },
+        { "material": "upgArmC003", "count": 4 },
+        { "material": "upgHpC013", "count": 2 }
+      ]
+    },
+    "upgHpU012": { "rarity": "Uncommon", "crafted": false, "recipe": [] },
+    "upgDmgL023C": {
+      "rarity": "Legendary",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgDmgE023C", "count": 2 },
+        { "material": "upgDmgR016C", "count": 2 }
+      ]
+    },
+    "upgDmgL033C": {
+      "rarity": "Legendary",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgDmgE033C", "count": 2 },
+        { "material": "upgDmgR016C", "count": 2 }
+      ]
+    },
+    "upgDmgL120C": {
+      "rarity": "Legendary",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgHpL100", "count": 9 },
+        { "material": "upgDmgR13C", "count": 1 },
+        { "material": "upgDmgE001", "count": 6 }
+      ]
+    },
+    "upgDmgL123C": {
+      "rarity": "Legendary",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgHpL103", "count": 9 },
+        { "material": "upgDmgR14C", "count": 1 },
+        { "material": "upgDmgE001", "count": 6 }
+      ]
+    },
+    "upgDmgL133C": {
+      "rarity": "Legendary",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgHpL113", "count": 9 },
+        { "material": "upgDmgR14C", "count": 1 },
+        { "material": "upgArmE013", "count": 6 }
+      ]
+    },
+    "upgDmgL202": { "rarity": "Legendary", "crafted": false, "recipe": [] },
+    "upgDmgL211C": {
+      "rarity": "Legendary",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgDmgL202", "count": 8 },
+        { "material": "upgDmgL003", "count": 8 },
+        { "material": "upgDmgE003", "count": 8 }
+      ]
+    },
+    "upgDmgL003": { "rarity": "Legendary", "crafted": false, "recipe": [] },
+    "upgDmgL212C": {
+      "rarity": "Legendary",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgDmgL001", "count": 8 },
+        { "material": "upgDmgL202", "count": 8 },
+        { "material": "upgDmgE010", "count": 8 }
+      ]
+    },
+    "upgDmgL214C": {
+      "rarity": "Legendary",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgDmgL003", "count": 8 },
+        { "material": "upgDmgL204", "count": 8 },
+        { "material": "upgDmgE004", "count": 8 }
+      ]
+    },
+    "upgDmgL204": { "rarity": "Legendary", "crafted": false, "recipe": [] },
+    "upgDmgR006": { "rarity": "Rare", "crafted": false, "recipe": [] },
+    "upgDmgU001C": {
+      "rarity": "Uncommon",
+      "crafted": true,
+      "recipe": [{ "material": "upgDmgC001", "count": 6 }]
+    },
+    "upgDmgU005": { "rarity": "Uncommon", "crafted": false, "recipe": [] },
+    "upgDmgU008C": {
+      "rarity": "Uncommon",
+      "crafted": true,
+      "recipe": [{ "material": "upgDmgC008", "count": 6 }]
+    },
+    "upgDmgU018C": {
+      "rarity": "Uncommon",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgDmgC012", "count": 4 },
+        { "material": "upgHpC013", "count": 2 }
+      ]
+    },
+    "upgHpC001": { "rarity": "Common", "crafted": false, "recipe": [] },
+    "upgHpC002": { "rarity": "Common", "crafted": false, "recipe": [] },
+    "upgHpC004": { "rarity": "Common", "crafted": false, "recipe": [] },
+    "upgHpC009": { "rarity": "Common", "crafted": false, "recipe": [] },
+    "upgHpE001C": {
+      "rarity": "Epic",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgDmgR006", "count": 6 },
+        { "material": "upgHpU004C", "count": 1 },
+        { "material": "upgHpU014", "count": 6 }
+      ]
+    },
+    "upgHpU004C": {
+      "rarity": "Uncommon",
+      "crafted": true,
+      "recipe": [{ "material": "upgHpC002", "count": 6 }]
+    },
+    "upgHpE002C": {
+      "rarity": "Epic",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgHpR005", "count": 6 },
+        { "material": "upgHpU007", "count": 6 },
+        { "material": "upgArmC001", "count": 6 }
+      ]
+    },
+    "upgHpR005": { "rarity": "Rare", "crafted": false, "recipe": [] },
+    "upgHpE008C": {
+      "rarity": "Epic",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgHpR008", "count": 6 },
+        { "material": "upgHpU009", "count": 6 },
+        { "material": "upgHpC010", "count": 6 }
+      ]
+    },
+    "upgHpU009": { "rarity": "Uncommon", "crafted": false, "recipe": [] },
+    "upgHpE012": { "rarity": "Epic", "crafted": false, "recipe": [] },
+    "upgHpE013C": {
+      "rarity": "Epic",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgHpR012C", "count": 1 },
+        { "material": "upgArmR015", "count": 4 },
+        { "material": "upgArmC011", "count": 4 }
+      ]
+    },
+    "upgHpR012C": {
+      "rarity": "Rare",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgHpU014", "count": 5 },
+        { "material": "upgHpC014", "count": 6 }
+      ]
+    },
+    "upgArmC011": { "rarity": "Common", "crafted": false, "recipe": [] },
+    "upgHpE014C": {
+      "rarity": "Epic",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgHpR014", "count": 6 },
+        { "material": "upgHpU016", "count": 6 },
+        { "material": "upgDmgC008", "count": 6 }
+      ]
+    },
+    "upgHpU016": { "rarity": "Uncommon", "crafted": false, "recipe": [] },
+    "upgHpE017": { "rarity": "Epic", "crafted": false, "recipe": [] },
+    "upgHpE023C": {
+      "rarity": "Epic",
+      "crafted": true,
+      "recipe": [{ "material": "upgHpR023", "count": 9 }]
+    },
+    "upgHpR023": { "rarity": "Rare", "crafted": false, "recipe": [] },
+    "upgHpE033C": {
+      "rarity": "Epic",
+      "crafted": true,
+      "recipe": [{ "material": "upgHpR033", "count": 9 }]
+    },
+    "upgHpR033": { "rarity": "Rare", "crafted": false, "recipe": [] },
+    "upgHpL001C": {
+      "rarity": "Legendary",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgHpE001C", "count": 1 },
+        { "material": "upgHpR004C", "count": 2 },
+        { "material": "upgDmgU012", "count": 2 }
+      ]
+    },
+    "upgHpR004C": {
+      "rarity": "Rare",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgArmU008", "count": 5 },
+        { "material": "upgDmgC010", "count": 6 }
+      ]
+    },
+    "upgArmU008": { "rarity": "Uncommon", "crafted": false, "recipe": [] },
+    "upgHpL002C": {
+      "rarity": "Legendary",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgHpE002C", "count": 1 },
+        { "material": "upgHpR016C", "count": 2 },
+        { "material": "upgArmU001", "count": 2 }
+      ]
+    },
+    "upgHpR016C": {
+      "rarity": "Rare",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgHpU016", "count": 5 },
+        { "material": "upgHpC016", "count": 4 },
+        { "material": "upgDmgC013", "count": 2 }
+      ]
+    },
+    "upgHpL009C": {
+      "rarity": "Legendary",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgHpE012", "count": 5 },
+        { "material": "upgArmR012C", "count": 1 },
+        { "material": "upgHpR015C", "count": 2 }
+      ]
+    },
+    "upgHpL012C": {
+      "rarity": "Legendary",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgHpE008C", "count": 1 },
+        { "material": "upgDmgR016C", "count": 2 },
+        { "material": "upgHpU009", "count": 2 }
+      ]
+    },
+    "upgHpL013C": {
+      "rarity": "Legendary",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgHpE013C", "count": 1 },
+        { "material": "upgHpR006C", "count": 2 },
+        { "material": "upgArmU014", "count": 2 }
+      ]
+    },
+    "upgHpR006C": {
+      "rarity": "Rare",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgDmgU014", "count": 5 },
+        { "material": "upgHpC006", "count": 6 }
+      ]
+    },
+    "upgArmU014": { "rarity": "Uncommon", "crafted": false, "recipe": [] },
+    "upgHpL014C": {
+      "rarity": "Legendary",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgHpE014C", "count": 1 },
+        { "material": "upgHpR017C", "count": 2 },
+        { "material": "upgArmU006", "count": 2 }
+      ]
+    },
+    "upgHpR017C": {
+      "rarity": "Rare",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgHpU017", "count": 5 },
+        { "material": "upgHpC017", "count": 6 }
+      ]
+    },
+    "upgHpU017": { "rarity": "Uncommon", "crafted": false, "recipe": [] },
+    "upgHpC017": { "rarity": "Common", "crafted": false, "recipe": [] },
+    "upgHpL017C": {
+      "rarity": "Legendary",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgHpE017", "count": 5 },
+        { "material": "upgHpR017C", "count": 1 },
+        { "material": "upgDmgR001C", "count": 2 }
+      ]
+    },
+    "upgHpL023C": {
+      "rarity": "Legendary",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgHpE023C", "count": 2 },
+        { "material": "upgHpE008C", "count": 1 }
+      ]
+    },
+    "upgHpL033C": {
+      "rarity": "Legendary",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgHpE033C", "count": 2 },
+        { "material": "upgHpE008C", "count": 1 }
+      ]
+    },
+    "upgHpL120C": {
+      "rarity": "Legendary",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgHpL100", "count": 9 },
+        { "material": "upgHpR017C", "count": 1 },
+        { "material": "upgHpE003", "count": 6 }
+      ]
+    },
+    "upgHpL123C": {
+      "rarity": "Legendary",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgHpL103", "count": 9 },
+        { "material": "upgHpR015C", "count": 1 },
+        { "material": "upgDmgE010", "count": 6 }
+      ]
+    },
+    "upgHpL133C": {
+      "rarity": "Legendary",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgHpL113", "count": 9 },
+        { "material": "upgHpR006C", "count": 1 },
+        { "material": "upgDmgE003", "count": 6 }
+      ]
+    },
+    "upgHpL211C": {
+      "rarity": "Legendary",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgDmgL003", "count": 8 },
+        { "material": "upgArmL203", "count": 8 },
+        { "material": "upgHpE015", "count": 8 }
+      ]
+    },
+    "upgHpL212C": {
+      "rarity": "Legendary",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgDmgL202", "count": 8 },
+        { "material": "upgArmL202", "count": 8 },
+        { "material": "upgHpE017", "count": 8 }
+      ]
+    },
+    "upgHpL214C": {
+      "rarity": "Legendary",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgDmgL204", "count": 8 },
+        { "material": "upgArmL204", "count": 8 },
+        { "material": "upgHpE012", "count": 8 }
+      ]
+    },
+    "upgHpM001": { "rarity": "Mythic", "crafted": false, "recipe": [] },
+    "upgHpM002": { "rarity": "Mythic", "crafted": false, "recipe": [] },
+    "upgHpM004": { "rarity": "Mythic", "crafted": false, "recipe": [] },
+    "upgHpR003C": {
+      "rarity": "Rare",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgHpU001", "count": 5 },
+        { "material": "upgHpC001", "count": 6 }
+      ]
+    },
+    "upgHpU001": { "rarity": "Uncommon", "crafted": false, "recipe": [] },
+    "upgHpR009C": {
+      "rarity": "Rare",
+      "crafted": true,
+      "recipe": [
+        { "material": "upgArmU006", "count": 5 },
+        { "material": "upgHpC009", "count": 6 }
+      ]
+    },
+    "upgHpR018": { "rarity": "Rare", "crafted": false, "recipe": [] },
+    "upgHpU006": { "rarity": "Uncommon", "crafted": false, "recipe": [] },
+    "upgHpU010C": {
+      "rarity": "Uncommon",
+      "crafted": true,
+      "recipe": [{ "material": "upgHpC009", "count": 6 }]
+    }
+  },
+  "cases": [
+    {
+      "mowId": "ultraDreadnought",
+      "ranges": {
+        "primary": { "from": 1, "to": 15 },
+        "secondary": { "from": 1, "to": 10 }
+      },
+      "expected": {
+        "gold": 5580,
+        "salvage": 70,
+        "components": 55,
+        "badges": { "Common": 14, "Uncommon": 9 },
+        "forgeBadges": { "Uncommon": 9 },
+        "materials": {
+          "upgArmC001": 6,
+          "upgArmC002": 12,
+          "upgArmC013": 7,
+          "upgArmU001": 2,
+          "upgDmgC001": 9,
+          "upgDmgC011": 6,
+          "upgDmgC012": 7,
+          "upgDmgC013": 3,
+          "upgDmgU009": 1,
+          "upgDmgU011": 1,
+          "upgHpC002": 12,
+          "upgHpC004": 7,
+          "upgHpC014": 8,
+          "upgHpU006": 2,
+          "upgHpU014": 1
+        }
+      }
+    },
+    {
+      "mowId": "ultraDreadnought",
+      "ranges": {
+        "primary": { "from": 20, "to": 45 },
+        "secondary": { "from": 30, "to": 50 }
+      },
+      "expected": {
+        "gold": 548700,
+        "salvage": 0,
+        "components": 1002,
+        "badges": { "Rare": 6, "Epic": 14, "Legendary": 80 },
+        "forgeBadges": { "Rare": 6, "Epic": 14, "Legendary": 80 },
+        "materials": {
+          "upgArmC001": 27,
+          "upgArmC002": 40,
+          "upgArmC003": 8,
+          "upgArmC006": 4,
+          "upgArmC013": 16,
+          "upgArmE010": 20,
+          "upgArmE013": 10,
+          "upgArmL001": 5,
+          "upgArmL204": 8,
+          "upgArmR005": 14,
+          "upgArmR006": 16,
+          "upgArmR015": 33,
+          "upgArmU001": 28,
+          "upgArmU002": 15,
+          "upgArmU005": 36,
+          "upgArmU008": 15,
+          "upgArmU009": 21,
+          "upgArmU013": 5,
+          "upgDmgC001": 18,
+          "upgDmgC003": 38,
+          "upgDmgC009": 12,
+          "upgDmgC010": 27,
+          "upgDmgC011": 16,
+          "upgDmgC012": 16,
+          "upgDmgC013": 17,
+          "upgDmgE001": 20,
+          "upgDmgE004": 16,
+          "upgDmgL001": 6,
+          "upgDmgL003": 8,
+          "upgDmgL204": 16,
+          "upgDmgR002": 7,
+          "upgDmgR003": 8,
+          "upgDmgR006": 17,
+          "upgDmgR007": 18,
+          "upgDmgU003": 20,
+          "upgDmgU005": 2,
+          "upgDmgU009": 26,
+          "upgDmgU010": 4,
+          "upgDmgU012": 17,
+          "upgHpC002": 12,
+          "upgHpC013": 12,
+          "upgHpC014": 14,
+          "upgHpC015": 2,
+          "upgHpC016": 31,
+          "upgHpC017": 12,
+          "upgHpE003": 24,
+          "upgHpE012": 21,
+          "upgHpL100": 53,
+          "upgHpR002": 4,
+          "upgHpR005": 14,
+          "upgHpR018": 3,
+          "upgHpR019": 2,
+          "upgHpU007": 12,
+          "upgHpU012": 10,
+          "upgHpU014": 24,
+          "upgHpU016": 20,
+          "upgHpU017": 10
+        }
+      }
+    },
+    {
+      "mowId": "ultraDreadnought",
+      "ranges": {
+        "primary": { "from": 1, "to": 60 },
+        "secondary": { "from": 1, "to": 60 }
+      },
+      "expected": {
+        "gold": 2888470,
+        "salvage": 70,
+        "components": 2446,
+        "badges": {
+          "Common": 14,
+          "Uncommon": 18,
+          "Rare": 18,
+          "Epic": 18,
+          "Legendary": 120,
+          "Mythic": 40
+        },
+        "forgeBadges": {
+          "Uncommon": 18,
+          "Rare": 18,
+          "Epic": 18,
+          "Legendary": 120,
+          "Mythic": 40
+        },
+        "materials": {
+          "upgArmC001": 36,
+          "upgArmC002": 102,
+          "upgArmC003": 8,
+          "upgArmC006": 4,
+          "upgArmC013": 36,
+          "upgArmE010": 40,
+          "upgArmE013": 10,
+          "upgArmL001": 18,
+          "upgArmL203": 8,
+          "upgArmL204": 32,
+          "upgArmR005": 17,
+          "upgArmR006": 40,
+          "upgArmR015": 60,
+          "upgArmU001": 38,
+          "upgArmU002": 25,
+          "upgArmU005": 68,
+          "upgArmU008": 20,
+          "upgArmU009": 39,
+          "upgArmU013": 5,
+          "upgDmgC001": 39,
+          "upgDmgC003": 100,
+          "upgDmgC009": 12,
+          "upgDmgC010": 36,
+          "upgDmgC011": 64,
+          "upgDmgC012": 52,
+          "upgDmgC013": 23,
+          "upgDmgE001": 21,
+          "upgDmgE003": 6,
+          "upgDmgE004": 16,
+          "upgDmgL001": 18,
+          "upgDmgL003": 8,
+          "upgDmgL204": 32,
+          "upgDmgR002": 7,
+          "upgDmgR003": 8,
+          "upgDmgR006": 20,
+          "upgDmgR007": 92,
+          "upgDmgU003": 60,
+          "upgDmgU005": 4,
+          "upgDmgU009": 68,
+          "upgDmgU010": 4,
+          "upgDmgU011": 6,
+          "upgDmgU012": 22,
+          "upgHpC002": 42,
+          "upgHpC004": 8,
+          "upgHpC013": 20,
+          "upgHpC014": 28,
+          "upgHpC015": 2,
+          "upgHpC016": 34,
+          "upgHpC017": 24,
+          "upgHpE003": 31,
+          "upgHpE012": 37,
+          "upgHpE017": 5,
+          "upgHpL100": 79,
+          "upgHpM001": 10,
+          "upgHpM004": 8,
+          "upgHpR002": 4,
+          "upgHpR005": 16,
+          "upgHpR018": 4,
+          "upgHpR019": 6,
+          "upgHpU006": 6,
+          "upgHpU007": 12,
+          "upgHpU012": 10,
+          "upgHpU014": 36,
+          "upgHpU016": 20,
+          "upgHpU017": 20
+        }
+      }
+    },
+    {
+      "mowId": "tyranBiovore",
+      "ranges": {
+        "primary": { "from": 1, "to": 15 },
+        "secondary": { "from": 1, "to": 10 }
+      },
+      "expected": {
+        "gold": 5580,
+        "salvage": 70,
+        "components": 55,
+        "badges": { "Common": 14, "Uncommon": 9 },
+        "forgeBadges": { "Uncommon": 9 },
+        "materials": {
+          "upgArmC003": 7,
+          "upgArmC005": 12,
+          "upgArmC007": 6,
+          "upgArmU007": 2,
+          "upgDmgC003": 7,
+          "upgDmgC008": 12,
+          "upgDmgC014": 6,
+          "upgDmgU014": 1,
+          "upgDmgU019": 1,
+          "upgHpC001": 8,
+          "upgHpC008": 7,
+          "upgHpC009": 12,
+          "upgHpU001": 1,
+          "upgHpU007": 2
+        }
+      }
+    },
+    {
+      "mowId": "tyranBiovore",
+      "ranges": {
+        "primary": { "from": 20, "to": 45 },
+        "secondary": { "from": 30, "to": 50 }
+      },
+      "expected": {
+        "gold": 548700,
+        "salvage": 0,
+        "components": 1002,
+        "badges": { "Rare": 6, "Epic": 14, "Legendary": 80 },
+        "forgeBadges": { "Rare": 6, "Epic": 14, "Legendary": 80 },
+        "materials": {
+          "upgArmC003": 8,
+          "upgArmC005": 24,
+          "upgArmC007": 24,
+          "upgArmC011": 8,
+          "upgArmE008": 3,
+          "upgArmE013": 21,
+          "upgArmL202": 5,
+          "upgArmL203": 8,
+          "upgArmR015": 13,
+          "upgArmR033": 57,
+          "upgArmU002": 1,
+          "upgArmU006": 31,
+          "upgArmU007": 41,
+          "upgArmU014": 2,
+          "upgDmgC005": 12,
+          "upgDmgC008": 24,
+          "upgDmgC012": 12,
+          "upgDmgC014": 24,
+          "upgDmgE003": 21,
+          "upgDmgE010": 15,
+          "upgDmgL003": 16,
+          "upgDmgL202": 14,
+          "upgDmgR003": 13,
+          "upgDmgR005": 18,
+          "upgDmgR033": 56,
+          "upgDmgU011": 20,
+          "upgDmgU014": 31,
+          "upgDmgU019": 30,
+          "upgHpC001": 6,
+          "upgHpC006": 26,
+          "upgHpC007": 18,
+          "upgHpC008": 12,
+          "upgHpC009": 6,
+          "upgHpC010": 36,
+          "upgHpC013": 4,
+          "upgHpC014": 12,
+          "upgHpC017": 12,
+          "upgHpE015": 20,
+          "upgHpE017": 8,
+          "upgHpL113": 44,
+          "upgHpR002": 7,
+          "upgHpR008": 33,
+          "upgHpR014": 14,
+          "upgHpR019": 3,
+          "upgHpR033": 56,
+          "upgHpU001": 6,
+          "upgHpU009": 12,
+          "upgHpU012": 10,
+          "upgHpU014": 10,
+          "upgHpU016": 12,
+          "upgHpU017": 10
+        }
+      }
+    },
+    {
+      "mowId": "tyranBiovore",
+      "ranges": {
+        "primary": { "from": 1, "to": 60 },
+        "secondary": { "from": 1, "to": 60 }
+      },
+      "expected": {
+        "gold": 2888470,
+        "salvage": 70,
+        "components": 2446,
+        "badges": {
+          "Common": 14,
+          "Uncommon": 18,
+          "Rare": 18,
+          "Epic": 18,
+          "Legendary": 120,
+          "Mythic": 40
+        },
+        "forgeBadges": {
+          "Uncommon": 18,
+          "Rare": 18,
+          "Epic": 18,
+          "Legendary": 120,
+          "Mythic": 40
+        },
+        "materials": {
+          "upgArmC003": 16,
+          "upgArmC005": 74,
+          "upgArmC007": 45,
+          "upgArmC011": 8,
+          "upgArmE008": 6,
+          "upgArmE009": 8,
+          "upgArmE013": 28,
+          "upgArmL202": 26,
+          "upgArmL203": 32,
+          "upgArmR015": 16,
+          "upgArmR033": 114,
+          "upgArmU002": 14,
+          "upgArmU006": 56,
+          "upgArmU007": 71,
+          "upgArmU014": 2,
+          "upgDmgC001": 12,
+          "upgDmgC003": 8,
+          "upgDmgC005": 18,
+          "upgDmgC008": 48,
+          "upgDmgC012": 28,
+          "upgDmgC014": 64,
+          "upgDmgE003": 28,
+          "upgDmgE004": 7,
+          "upgDmgE010": 15,
+          "upgDmgL003": 32,
+          "upgDmgL202": 26,
+          "upgDmgR003": 16,
+          "upgDmgR005": 30,
+          "upgDmgR033": 114,
+          "upgDmgU011": 30,
+          "upgDmgU014": 58,
+          "upgDmgU019": 66,
+          "upgHpC001": 20,
+          "upgHpC006": 32,
+          "upgHpC007": 36,
+          "upgHpC008": 32,
+          "upgHpC009": 42,
+          "upgHpC010": 51,
+          "upgHpC013": 4,
+          "upgHpC014": 12,
+          "upgHpC017": 18,
+          "upgHpE015": 37,
+          "upgHpE017": 13,
+          "upgHpL113": 88,
+          "upgHpM002": 10,
+          "upgHpM004": 8,
+          "upgHpR002": 7,
+          "upgHpR008": 54,
+          "upgHpR014": 16,
+          "upgHpR019": 11,
+          "upgHpR033": 60,
+          "upgHpU001": 18,
+          "upgHpU007": 6,
+          "upgHpU009": 12,
+          "upgHpU012": 10,
+          "upgHpU014": 10,
+          "upgHpU016": 12,
+          "upgHpU017": 15
+        }
+      }
+    },
+    {
+      "mowId": "blackForgefiend",
+      "ranges": {
+        "primary": { "from": 1, "to": 15 },
+        "secondary": { "from": 1, "to": 10 }
+      },
+      "expected": {
+        "gold": 5580,
+        "salvage": 70,
+        "components": 55,
+        "badges": { "Common": 14, "Uncommon": 9 },
+        "forgeBadges": { "Uncommon": 9 },
+        "materials": {
+          "upgArmC004": 6,
+          "upgArmC006": 6,
+          "upgArmC007": 6,
+          "upgArmC013": 7,
+          "upgArmU007": 2,
+          "upgDmgC004": 7,
+          "upgDmgC008": 12,
+          "upgDmgC014": 6,
+          "upgDmgU003": 1,
+          "upgDmgU019": 1,
+          "upgHpC002": 12,
+          "upgHpC010": 7,
+          "upgHpC014": 8,
+          "upgHpU009": 2,
+          "upgHpU014": 1
+        }
+      }
+    },
+    {
+      "mowId": "blackForgefiend",
+      "ranges": {
+        "primary": { "from": 20, "to": 45 },
+        "secondary": { "from": 30, "to": 50 }
+      },
+      "expected": {
+        "gold": 548700,
+        "salvage": 0,
+        "components": 1002,
+        "badges": { "Rare": 6, "Epic": 14, "Legendary": 80 },
+        "forgeBadges": { "Rare": 6, "Epic": 14, "Legendary": 80 },
+        "materials": {
+          "upgArmC002": 24,
+          "upgArmC003": 12,
+          "upgArmC007": 21,
+          "upgArmE008": 8,
+          "upgArmE010": 10,
+          "upgArmL202": 13,
+          "upgArmR006": 5,
+          "upgArmR015": 18,
+          "upgArmR023": 57,
+          "upgArmU005": 24,
+          "upgArmU007": 36,
+          "upgArmU008": 15,
+          "upgArmU009": 1,
+          "upgDmgC003": 8,
+          "upgDmgC005": 15,
+          "upgDmgC008": 15,
+          "upgDmgC010": 18,
+          "upgDmgC012": 16,
+          "upgDmgC014": 32,
+          "upgDmgE001": 6,
+          "upgDmgE003": 7,
+          "upgDmgE010": 29,
+          "upgDmgL001": 8,
+          "upgDmgL202": 22,
+          "upgDmgR002": 8,
+          "upgDmgR003": 5,
+          "upgDmgR006": 12,
+          "upgDmgR023": 56,
+          "upgDmgU003": 1,
+          "upgDmgU011": 25,
+          "upgDmgU012": 2,
+          "upgDmgU014": 5,
+          "upgDmgU019": 40,
+          "upgHpC002": 12,
+          "upgHpC006": 6,
+          "upgHpC007": 6,
+          "upgHpC008": 12,
+          "upgHpC010": 45,
+          "upgHpC013": 6,
+          "upgHpC014": 6,
+          "upgHpC015": 6,
+          "upgHpE012": 8,
+          "upgHpE015": 12,
+          "upgHpE017": 8,
+          "upgHpL103": 44,
+          "upgHpR002": 7,
+          "upgHpR008": 38,
+          "upgHpR014": 9,
+          "upgHpR018": 3,
+          "upgHpR023": 56,
+          "upgHpU007": 10,
+          "upgHpU009": 26,
+          "upgHpU012": 15,
+          "upgHpU014": 18
+        }
+      }
+    },
+    {
+      "mowId": "blackForgefiend",
+      "ranges": {
+        "primary": { "from": 1, "to": 60 },
+        "secondary": { "from": 1, "to": 60 }
+      },
+      "expected": {
+        "gold": 2888470,
+        "salvage": 70,
+        "components": 2446,
+        "badges": {
+          "Common": 14,
+          "Uncommon": 18,
+          "Rare": 18,
+          "Epic": 18,
+          "Legendary": 120,
+          "Mythic": 40
+        },
+        "forgeBadges": {
+          "Uncommon": 18,
+          "Rare": 18,
+          "Epic": 18,
+          "Legendary": 120,
+          "Mythic": 40
+        },
+        "materials": {
+          "upgArmC002": 42,
+          "upgArmC003": 16,
+          "upgArmC004": 24,
+          "upgArmC006": 8,
+          "upgArmC007": 39,
+          "upgArmC011": 4,
+          "upgArmC013": 8,
+          "upgArmE008": 16,
+          "upgArmE010": 14,
+          "upgArmL001": 8,
+          "upgArmL202": 50,
+          "upgArmR006": 8,
+          "upgArmR015": 34,
+          "upgArmR023": 114,
+          "upgArmU005": 44,
+          "upgArmU007": 61,
+          "upgArmU008": 20,
+          "upgArmU009": 4,
+          "upgArmU014": 2,
+          "upgDmgC003": 20,
+          "upgDmgC004": 8,
+          "upgDmgC005": 24,
+          "upgDmgC008": 42,
+          "upgDmgC010": 24,
+          "upgDmgC012": 32,
+          "upgDmgC014": 72,
+          "upgDmgE001": 12,
+          "upgDmgE003": 15,
+          "upgDmgE010": 35,
+          "upgDmgL001": 8,
+          "upgDmgL202": 50,
+          "upgDmgR002": 8,
+          "upgDmgR003": 15,
+          "upgDmgR006": 12,
+          "upgDmgR023": 114,
+          "upgDmgU003": 8,
+          "upgDmgU009": 10,
+          "upgDmgU011": 40,
+          "upgDmgU012": 2,
+          "upgDmgU014": 20,
+          "upgDmgU019": 76,
+          "upgHpC002": 42,
+          "upgHpC006": 18,
+          "upgHpC007": 12,
+          "upgHpC008": 24,
+          "upgHpC010": 65,
+          "upgHpC013": 8,
+          "upgHpC014": 26,
+          "upgHpC015": 6,
+          "upgHpE012": 8,
+          "upgHpE015": 13,
+          "upgHpE017": 24,
+          "upgHpL103": 88,
+          "upgHpM002": 10,
+          "upgHpM004": 8,
+          "upgHpR002": 7,
+          "upgHpR008": 52,
+          "upgHpR014": 18,
+          "upgHpR018": 4,
+          "upgHpR023": 60,
+          "upgHpU007": 10,
+          "upgHpU009": 32,
+          "upgHpU012": 20,
+          "upgHpU014": 35
+        }
+      }
+    }
+  ]
+}

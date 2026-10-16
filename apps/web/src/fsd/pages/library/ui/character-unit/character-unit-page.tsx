@@ -149,11 +149,11 @@ function CharacterUnit({
 
   const player =
     playerCharacter === LOADING ? undefined : (playerCharacter ?? undefined)
-  // Until both reads resolve, a synced player would otherwise see the "no roster" banner first.
-  const ownership =
+  const ownership = unitOwnership(
+    roster !== LOADING && roster !== undefined,
+    player,
     isAuthenticated && (roster === LOADING || playerCharacter === LOADING)
-      ? "loading"
-      : unitOwnership(roster !== LOADING && roster !== undefined, player)
+  )
   const baseValues = player ? playerValues(player) : startingValues(character)
   const [mode, setMode] = useState<ValuesMode>("base")
   const [custom, setCustom] = useState<ShownValues | undefined>()

@@ -2,19 +2,16 @@ import { useMemo } from "react"
 import { useTranslation } from "react-i18next"
 import type { CharacterStorageModel } from "@workspace/game-catalog"
 
-import {
-  orderCharacters,
-  type CharacterListItem,
-} from "./characters-list.view-model"
+import { orderUnits, type UnitListItem } from "../unit/unit-list.model"
 
 /** Every catalog character with its localized name, in the characters list's default order. */
 export function useCharacterListItems(
   characters: readonly CharacterStorageModel[]
-): CharacterListItem[] {
+): UnitListItem[] {
   const { t, i18n } = useTranslation(["characters", "factions"])
   return useMemo(
     () =>
-      orderCharacters(
+      orderUnits(
         characters.map((character) => ({
           id: character.id,
           name: t(`characters:${character.id}`, {

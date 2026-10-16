@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, type ReactNode } from "react"
 import { fireEvent, render, screen, within } from "@testing-library/react"
 import { I18nextProvider } from "react-i18next"
 import type { i18n as I18n } from "i18next"
@@ -23,9 +23,11 @@ beforeAll(async () => {
 function Harness({
   text,
   playerLevel,
+  levelControl,
 }: {
   text: AbilityTextEntry | undefined
   playerLevel?: number
+  levelControl?: ReactNode
 }) {
   const [level, setLevel] = useState(58)
   return (
@@ -41,6 +43,7 @@ function Harness({
         onLevelChange={setLevel}
         maxLevel={60}
         playerLevel={playerLevel}
+        levelControl={levelControl}
         data-testid="panel"
       />
     </I18nextProvider>
@@ -100,5 +103,21 @@ describe("AbilityPanel", () => {
     expect(screen.getByText("Yours: level 46")).toBeInTheDocument()
     expect(screen.queryByTestId("panel-stepper")).not.toBeInTheDocument()
     expect(screen.queryByRole("figure")).not.toBeInTheDocument()
+  })
+
+  it("shows a level control in place of the stepper, and its chart doesn't set the level", () => {
+    render(
+      <Harness
+        text={stormOfWrath}
+        levelControl={<span data-testid="mythic-pill">Unlocks at Mythic</span>}
+      />
+    )
+    expect(screen.getByTestId("mythic-pill")).toBeInTheDocument()
+    expect(screen.queryByTestId("panel-stepper")).not.toBeInTheDocument()
+    fireEvent.click(screen.getByTestId("panel-chart-minDmg-column-39"))
+    expect(screen.getByTestId("panel-chart-minDmg-marker")).toHaveAttribute(
+      "data-index",
+      "57"
+    )
   })
 })
