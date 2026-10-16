@@ -891,9 +891,9 @@ describe("GoalEditDialog", () => {
 
     it("shows the Onslaught yield from the saved Onslaught progress", async () => {
       onslaughtProgressFixture = {
-        imperial: { sector: "Gold", tier: 3 },
-        xenos: { sector: "Stone", tier: 1 },
-        chaos: { sector: "Stone", tier: 1 },
+        imperial: { sector: "Gold", tier: 3, isSet: true },
+        xenos: { sector: "Stone", tier: 1, isSet: true },
+        chaos: { sector: "Stone", tier: 1, isSet: true },
         revision: 1,
       }
       goalOnScreen(ascensionGoal)
@@ -919,6 +919,30 @@ describe("GoalEditDialog", () => {
       expect(
         screen.getByTestId("create-goal-acquisition-yield-onslaught")
       ).toHaveTextContent("goals.create.acquisitionSources.onslaughtNoProgress")
+    })
+
+    it("asks for Onslaught progress when the goal's alliance was never saved", async () => {
+      // The API's unset placeholder (Stone 1, isSet false) must not read as a Stone 1 yield.
+      const unset = { sector: "Stone", tier: 1, isSet: false }
+      onslaughtProgressFixture = {
+        imperial: unset,
+        xenos: unset,
+        chaos: unset,
+        revision: 0,
+      }
+      goalOnScreen(ascensionGoal)
+      renderDialog()
+      await loaded()
+
+      const note = screen.getByTestId("create-goal-acquisition-yield-onslaught")
+      await vi.waitFor(() =>
+        expect(note).toHaveTextContent(
+          "goals.create.acquisitionSources.onslaughtNoProgress"
+        )
+      )
+      expect(note).not.toHaveTextContent(
+        "goals.create.acquisitionSources.shardsPerDay"
+      )
     })
 
     it("keeps Save disabled when nothing changed", async () => {

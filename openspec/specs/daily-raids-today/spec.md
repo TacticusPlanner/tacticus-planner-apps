@@ -56,104 +56,6 @@ Today SHALL compute its schedule from all account goals whose status is `Active`
 - **WHEN** Today loads
 - **THEN** its need is absent from schedule, inventory allocation, and Bonus Raids
 
-### Requirement: Today's raid schedule
-
-Given a project with in-scope goals that have farmable upgrade or shard needs, Today SHALL show one card per upgrade or shard that the day's energy budget can raid, each listing the battle node(s) to raid and the number of raids at each node, for today only (not a multi-day plan).
-
-A node whose real synced attempts today have reached zero remaining (`live-progress.battleAttempts[].attemptsLeft === 0`, matched by campaign group, type, and battle index — standing or event-campaign alike) SHALL be excluded from its resource card's location listing; it appears only in the account-wide "Today's Attempts" section instead (see that requirement). This exclusion is based on the player's real synced attempts, not the simulated plan's own per-node attempt allocation: a node SHALL be excluded even if the simulated plan never scheduled a raid there today, and a node the simulated plan would otherwise treat as fully allocated SHALL remain listed until the player's real attempts there are actually exhausted. A node whose real attempts-left data is unavailable SHALL be treated as not exhausted rather than guessed at. The same treatment applies to node listings in Bonus Raids.
-
-A node that remains listed (real attempts not exhausted) SHALL show its planned raid count, except that a node whose planned raid count itself equals its daily attempt cap SHALL show "Max raids" instead of a numeric count.
-
-The schedule SHALL respect, in this order of application:
-
-1. Priority-ordered shared inventory consumption: when two or more in-scope goals need the same upgrade, existing inventory is applied to the higher-priority goal's need first, and a lower-priority goal only draws against what remains.
-2. Per-battle daily-attempt caps: raids planned against a single battle node SHALL NOT exceed that node's daily attempt cap, shared across every upgrade farmable from that node.
-3. The user's configured daily energy (`planningSettings.dailyEnergy`, default 288 when unset) as the total energy budget for the day.
-
-#### Scenario: Schedule respects the daily energy budget
-
-- **GIVEN** a project whose in-scope goals' total farmable need would cost more energy than `planningSettings.dailyEnergy` to fully clear
-- **WHEN** Today loads
-- **THEN** the schedule includes only as many raids as the daily energy budget affords, in the same priority order the engine allocates energy
-
-#### Scenario: Shared inventory splits by goal priority
-
-- **GIVEN** two in-scope goals in the same project need the same upgrade, existing inventory covers only part of the combined need, and the higher-priority goal's need is fully covered by that inventory
-- **WHEN** Today loads
-- **THEN** the schedule's raid count for that upgrade reflects only the lower-priority goal's uncovered remainder, not the combined need
-
-#### Scenario: A battle node's daily cap limits raids
-
-- **GIVEN** an upgrade's cheapest farmable node has a daily attempt cap lower than what the energy budget could otherwise afford
-- **WHEN** Today loads
-- **THEN** the schedule never plans more raids at that node than its daily attempt cap allows, for that day
-
-#### Scenario: A battle node's daily cap is shared across goals
-
-- **GIVEN** two different in-scope goals both need raids at the same battle node on the same day, and their combined want for that node would exceed its daily attempt cap
-- **WHEN** Today loads
-- **THEN** the combined raids planned at that node across both goals never exceed its daily attempt cap, even though each goal is otherwise within its own energy allowance
-
-#### Scenario: No farmable need
-
-- **GIVEN** a project with no in-scope goals, or in-scope goals with no unmet farmable upgrade or shard needs
-- **WHEN** Today loads
-- **THEN** Today shows an explicit empty message stating there is nothing to raid today, not a blank list
-
-#### Scenario: A node with zero real attempts left is excluded from the schedule
-
-- **GIVEN** a node's real synced attempts today have reached zero remaining
-- **WHEN** Today loads
-- **THEN** that node is excluded from its resource card's location listing, and appears only in Today's Attempts
-
-#### Scenario: An event-campaign node with zero real attempts left is excluded the same as a standing node
-
-- **GIVEN** an event-campaign node's real synced attempts today (matched by its campaign group, type, and battle index) have reached zero remaining
-- **WHEN** Today loads
-- **THEN** that node is excluded from its resource card's location listing the same way a standing-campaign node at zero remaining attempts would be, and appears only in Today's Attempts
-
-#### Scenario: A node with real attempts remaining shows a plain count
-
-- **GIVEN** a node's real synced attempts today have not reached zero remaining
-- **WHEN** Today loads
-- **THEN** that node's listing remains in the resource card, showing its planned raid count
-
-#### Scenario: A node's planned raid count equaling its daily cap shows Max raids
-
-- **GIVEN** a node remains listed (its real attempts are not exhausted) and its planned raid count equals its daily attempt cap
-- **WHEN** Today loads
-- **THEN** that node's listing shows "Max raids" instead of a numeric raid count
-
-#### Scenario: The simulated plan's own allocation does not by itself exclude a node
-
-- **GIVEN** two different in-scope goals each raid the same battle node on the same day, and their combined _simulated_ raid count at that node equals its daily attempt cap, but the player's real synced attempts at that node are not yet exhausted
-- **WHEN** Today loads
-- **THEN** that node remains listed in both goals' resource cards, showing its planned raid count — the simulated plan reaching a node's cap does not by itself exclude it
-
-#### Scenario: An entry's every location has zero real attempts left
-
-- **GIVEN** an upgrade or shard's every farmable location today (across Today's schedule and Bonus Raids) has zero real attempts left
-- **WHEN** Today loads
-- **THEN** that upgrade/shard's card is omitted from Today's schedule (or Bonus Raids) for the day, and its locations are represented only via Today's Attempts if the player actually attempted them there
-
-#### Scenario: A node at its daily cap is marked fully raided
-
-- **GIVEN** a node's planned raid count equals its daily attempt cap and its real synced attempts today have not reached zero remaining
-- **WHEN** Today loads
-- **THEN** that node's listing shows "Max raids" instead of a numeric raid count, replacing the previous in-place "fully raided" indicator now that this determination is attempts-based (see the real-attempts scenarios above)
-
-#### Scenario: A node below its daily cap shows a plain count
-
-- **GIVEN** a node's planned raid count is below its daily attempt cap, and its real synced attempts today have not reached zero remaining
-- **WHEN** Today loads
-- **THEN** that node's listing shows its planned raid count with no Max-raids indicator
-
-#### Scenario: Fully raided combines raids across goals
-
-- **GIVEN** two different in-scope goals each raid the same battle node on the same day, their combined _planned_ raid count at that node equals its daily attempt cap while neither goal's individual entry alone reaches it, and the node's real synced attempts today have not reached zero remaining
-- **WHEN** Today loads
-- **THEN** that node's listing under both goals' entries shows "Max raids", based on the combined planned total rather than either entry's own count alone
-
 ### Requirement: Today and Bonus Raids prioritize long-running resources
 
 Within each goal group, Today and Bonus Raids SHALL order resources by the estimated time investment required to finish that resource: longest estimated completion time first, then greatest estimated energy cost. Configured goal priority SHALL remain the primary ordering between goal groups. Resources tied on both estimates SHALL use a stable deterministic ordering.
@@ -210,6 +112,14 @@ Below a visible separator, Today SHALL show a Bonus Raids section: upgrades or s
 
 Bonus Raids SHALL initially display only the top 3 qualifying entries in that order. When more than 3 entries qualify, Today SHALL show a "Show more" control beneath the visible entries; activating it reveals the remaining entries (still in the same order, still grouped by goal per the grouping requirement above).
 
+Once the real energy spent today (from the player's synced attempts, the same figure Today's energy-usage bar shows) reaches or exceeds the daily energy limit (`planningSettings.dailyEnergy`), Bonus Raids SHALL be the only raids list on Today: the Today's-plan lane SHALL NOT be shown, and the Bonus Raids section SHALL be shown with a short caption stating that the daily energy limit has been reached. The Bonus Raids entries keep the same goal grouping, goal-priority order, exhausted-node exclusion, and top-3 truncation with a "Show more" control described above. When the limit is reached and no Bonus Raids entry remains, the Bonus Raids section SHALL still be shown, with a caption stating that the limit is reached and no bonus raids are left. Below the limit, Today's plan and Bonus Raids render unchanged. When no synced attempt data is available the energy spent is 0, so Today renders unchanged; a daily energy limit of 0 or less is treated as no limit. The Raids Plan tab is unaffected.
+
+Assumptions:
+
+- Energy spent today is the account-wide real spend from synced attempts at standing campaign nodes (Today's "Today shows real daily energy usage" requirement); it is not capped at the limit.
+- The daily energy limit is `planningSettings.dailyEnergy` (default 288 when unset).
+- Bonus Raids are computed from an unlimited energy budget and are not recomputed when the limit is reached; the header's energy and raid totals keep describing the real schedule.
+
 #### Scenario: A zero-raid upgrade appears as a bonus raid
 
 - **GIVEN** an upgrade has an in-scope goal need but the real energy budget is exhausted before any raid against it is planned, while an unlimited budget would raid it at least once
@@ -251,6 +161,36 @@ Bonus Raids SHALL initially display only the top 3 qualifying entries in that or
 - **GIVEN** no upgrade or shard qualifies for Bonus Raids (every farmable need is either fully covered by the real schedule or would still receive zero raids even with unlimited energy)
 - **WHEN** Today loads
 - **THEN** Today shows an explicit empty state for the Bonus Raids section, not a blank section
+
+#### Scenario: Bonus Raids become the only list once the energy limit is spent
+
+- **GIVEN** the daily energy limit is 288 and the player's synced attempts today have spent 288 energy, and Bonus Raids has entries at nodes with attempts left
+- **WHEN** Today loads
+- **THEN** the Today's-plan lane is not shown, and Bonus Raids is the only raids list, captioned that the daily energy limit has been reached
+
+#### Scenario: Bonus Raids keep the top-3 truncation after the limit is spent
+
+- **GIVEN** the energy limit is spent and more than 3 Bonus Raids entries have a node that is not exhausted
+- **WHEN** Today loads
+- **THEN** Bonus Raids shows the first 3 of them followed by a "Show more" control that reveals the rest
+
+#### Scenario: Below the energy limit nothing changes
+
+- **GIVEN** the daily energy limit is 288 and the player's synced attempts today have spent 287 energy
+- **WHEN** Today loads
+- **THEN** Today's plan and Bonus Raids are both shown as before, with no limit-reached caption
+
+#### Scenario: No synced attempts leave Today unchanged
+
+- **GIVEN** no synced attempt data is available for today
+- **WHEN** Today loads
+- **THEN** the energy spent is 0, and Today's plan and Bonus Raids are shown as before
+
+#### Scenario: Limit spent with no bonus raids left
+
+- **GIVEN** the energy limit is spent and no Bonus Raids entry remains
+- **WHEN** Today loads
+- **THEN** the Today's-plan lane is not shown, and the Bonus Raids section says the daily energy limit is reached and no bonus raids are left
 
 ### Requirement: Campaign locations use the Character Lookup presentation
 
@@ -750,3 +690,107 @@ SHALL describe the upgrade quantity.
 - **GIVEN** the player already owns 5 `upgArmC002`
 - **WHEN** Today is shown
 - **THEN** no entry for that goal appears
+
+### Requirement: Today's raid schedule shows what is left to farm
+
+Given a project with in-scope goals that have farmable upgrade or shard needs, Today SHALL show one card per upgrade or shard that the day's energy budget can raid, each listing the battle node(s) to raid, for today only (not a multi-day plan).
+
+A node whose real synced attempts today have reached zero remaining (`live-progress.battleAttempts[].attemptsLeft === 0`, matched by campaign group, type, and battle index — standing or event-campaign alike) SHALL be excluded from its resource card's location listing; it appears only in the account-wide "Today's Attempts" section instead (see that requirement). This exclusion is based on the player's real synced attempts, not the simulated plan's own per-node attempt allocation: a node SHALL be excluded even if the simulated plan never scheduled a raid there today, and a node the simulated plan would otherwise treat as fully allocated SHALL remain listed until the player's real attempts there are actually exhausted. A node whose real attempts-left data is unavailable SHALL be treated as not exhausted rather than guessed at. The same treatment applies to node listings in Bonus Raids.
+
+A node that remains listed (real attempts not exhausted) SHALL NOT show a raid count, since drops are random and a planned count is only an estimate. When its planned raids stop below its daily attempt cap and the expected drops of a full day of attempts at that node (daily attempt cap × drop rate) cover what the goal still needs when it reaches that node, it SHALL instead show that need, rounded up, as "N upgrades left" (or "N shards left" for a shard resource), so the player knows they can stop early. A node whose planned raids reach its daily attempt cap, or whose full day of attempts would not be expected to drop what is still needed (for example when the plan stops below the cap only because the day's energy runs out), SHALL show no count or label at all: the player raids it out. A node without a daily attempt cap always shows the label. Real raid counts appear only in Today's Attempts.
+
+The schedule SHALL respect, in this order of application:
+
+1. Priority-ordered shared inventory consumption: when two or more in-scope goals need the same upgrade, existing inventory is applied to the higher-priority goal's need first, and a lower-priority goal only draws against what remains.
+2. Per-battle daily-attempt caps: raids planned against a single battle node SHALL NOT exceed that node's daily attempt cap, shared across every upgrade farmable from that node.
+3. The user's configured daily energy (`planningSettings.dailyEnergy`, default 288 when unset) as the total energy budget for the day.
+
+#### Scenario: Schedule respects the daily energy budget
+
+- **GIVEN** a project whose in-scope goals' total farmable need would cost more energy than `planningSettings.dailyEnergy` to fully clear
+- **WHEN** Today loads
+- **THEN** the schedule includes only as many raids as the daily energy budget affords, in the same priority order the engine allocates energy
+
+#### Scenario: Shared inventory splits by goal priority
+
+- **GIVEN** two in-scope goals in the same project need the same upgrade, existing inventory covers only part of the combined need, and the higher-priority goal's need is fully covered by that inventory
+- **WHEN** Today loads
+- **THEN** the schedule plans raids for only the lower-priority goal's uncovered remainder of that upgrade, not the combined need
+
+#### Scenario: A battle node's daily cap limits raids
+
+- **GIVEN** an upgrade's cheapest farmable node has a daily attempt cap lower than what the energy budget could otherwise afford
+- **WHEN** Today loads
+- **THEN** the schedule never plans more raids at that node than its daily attempt cap allows, for that day
+
+#### Scenario: A battle node's daily cap is shared across goals
+
+- **GIVEN** two different in-scope goals both need raids at the same battle node on the same day, and their combined want for that node would exceed its daily attempt cap
+- **WHEN** Today loads
+- **THEN** the combined raids planned at that node across both goals never exceed its daily attempt cap, even though each goal is otherwise within its own energy allowance
+
+#### Scenario: No farmable need
+
+- **GIVEN** a project with no in-scope goals, or in-scope goals with no unmet farmable upgrade or shard needs
+- **WHEN** Today loads
+- **THEN** Today shows an explicit empty message stating there is nothing to raid today, not a blank list
+
+#### Scenario: A node with zero real attempts left is excluded from the schedule
+
+- **GIVEN** a node's real synced attempts today have reached zero remaining
+- **WHEN** Today loads
+- **THEN** that node is excluded from its resource card's location listing, and appears only in Today's Attempts
+
+#### Scenario: An event-campaign node with zero real attempts left is excluded the same as a standing node
+
+- **GIVEN** an event-campaign node's real synced attempts today (matched by its campaign group, type, and battle index) have reached zero remaining
+- **WHEN** Today loads
+- **THEN** that node is excluded from its resource card's location listing the same way a standing-campaign node at zero remaining attempts would be, and appears only in Today's Attempts
+
+#### Scenario: A node with real attempts remaining stays listed
+
+- **GIVEN** a node with a positive number of real synced attempts left today
+- **WHEN** Today loads
+- **THEN** that node's listing remains in the resource card
+
+#### Scenario: A node planned up to its daily cap shows no label
+
+- **GIVEN** a node remains listed (its real attempts are not exhausted) and its planned raid count equals its daily attempt cap
+- **WHEN** Today loads
+- **THEN** that node's listing shows no raid count and no "upgrades left" label
+
+#### Scenario: The simulated plan's own allocation does not by itself exclude a node
+
+- **GIVEN** two different in-scope goals each raid the same battle node on the same day, and their combined _simulated_ raid count at that node equals its daily attempt cap, but the player's real synced attempts at that node are not yet exhausted
+- **WHEN** Today loads
+- **THEN** that node remains listed in both goals' resource cards — the simulated plan reaching a node's cap does not by itself exclude it
+
+#### Scenario: An entry's every location has zero real attempts left
+
+- **GIVEN** an upgrade or shard's every farmable location today (across Today's schedule and Bonus Raids) has zero real attempts left
+- **WHEN** Today loads
+- **THEN** that upgrade/shard's card is omitted from Today's schedule (or Bonus Raids) for the day, and its locations are represented only via Today's Attempts if the player actually attempted them there
+
+#### Scenario: A node planned below its daily cap shows the upgrades left
+
+- **GIVEN** a goal still needs 3 of an upgrade when the plan reaches a node, the plan raids that node fewer times than its daily attempt cap, a full day of attempts there is expected to drop at least 3, and the node's real synced attempts today have not reached zero remaining
+- **WHEN** Today loads
+- **THEN** that node's listing shows "3 upgrades left" and no raid count
+
+#### Scenario: A node whose full day of attempts cannot cover the need shows no label
+
+- **GIVEN** a goal still needs 15 of an upgrade when the plan reaches a node with a daily attempt cap of 10 and an expected 0.6 drops per raid, and the plan raids it below the cap because the day's energy runs out
+- **WHEN** Today loads
+- **THEN** that node's listing shows no raid count and no "upgrades left" label
+
+#### Scenario: Upgrades left count what earlier nodes are expected to drop
+
+- **GIVEN** a goal needs 6 of an upgrade, the plan raids its first node up to that node's daily cap with an expected 4 drops, and then raids a second node below its cap whose full day of attempts is expected to drop at least 2
+- **WHEN** Today loads
+- **THEN** the first node shows no label and the second node shows "2 upgrades left"
+
+#### Scenario: A shard resource says shards left
+
+- **GIVEN** a goal still needs 7 shards of a unit when the plan reaches a node, planned below that node's daily cap, and a full day of attempts there is expected to drop at least 7 shards
+- **WHEN** Today loads
+- **THEN** that node's listing shows "7 shards left"

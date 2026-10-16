@@ -115,6 +115,9 @@ export interface RaidBreakdownEntry {
   itemsFarmed: number
   energySpent: number
   dailyAttempts: number
+  /** How many of `resourceId` this goal still needed when raiding this node began: the real
+   *  remaining need, less the expected drops of nodes raided earlier the same day. */
+  remainingBefore: number
 }
 
 /** One selected shop offer's projected contribution to one goal on one plan day (spec: the plan

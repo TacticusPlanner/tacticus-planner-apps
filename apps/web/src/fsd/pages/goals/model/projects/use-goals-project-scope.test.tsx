@@ -42,6 +42,7 @@ describe("useGoalsProjectScope", () => {
   it("scopes to a known non-archived project", () => {
     const { result } = setup("/plan/goals?project=a")
     expect(result.current.scope.projectId).toBe("a")
+    expect(result.current.scope.requestedProjectId).toBe("a")
     expect(result.current.location.search).toBe("?project=a")
   })
 
@@ -58,6 +59,7 @@ describe("useGoalsProjectScope", () => {
     const { result } = setup("/plan/goals?project=a", false, [])
     expect(result.current.scope.projectId).toBeUndefined()
     expect(result.current.location.search).toBe("?project=a")
+    expect(result.current.scope.requestedProjectId).toBe("a")
   })
 
   it("writes and clears the param by replacing the history entry", () => {

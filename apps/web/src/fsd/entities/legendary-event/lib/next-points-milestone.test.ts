@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest"
 
 import { nextPointsMilestone } from "./next-points-milestone"
 
-// The head of the real lre-common ladder (Lysander's catalog source).
+// The head of a real event ladder (Lysander's `rewards`).
 const realLadder = {
   pointsMilestones: [
     { milestone: 7, cumulativePoints: 2500, engramPayout: 55 },

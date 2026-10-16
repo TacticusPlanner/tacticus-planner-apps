@@ -47,7 +47,7 @@ vi.mock("../../model/goals-data/use-goals", () => ({
   }),
 }))
 vi.mock("../../model/attainment/use-goal-attainment", () => ({
-  useGoalAttainment: () => new Map(),
+  useGoalAttainmentState: () => ({ byGoalId: new Map(), pending: false }),
 }))
 vi.mock("../../model/attainment/use-goals-overview-metrics", () => ({
   useGoalsOverviewMetrics: () => new Map(),
@@ -56,7 +56,11 @@ vi.mock("../../model/goals-data/use-goal-actions", () => ({
   useGoalActions: () => ({}),
 }))
 vi.mock("../../model/projects/use-goal-projects", () => ({
-  useGoalProjects: () => ({ byGoalId: new Map(), loadedProjectIds: new Set() }),
+  useGoalProjects: () => ({
+    byGoalId: new Map(),
+    loadedProjectIds: new Set(),
+    pendingProjectIds: new Set(),
+  }),
 }))
 vi.mock("../../model/shared/use-goal-catalog", () => ({
   useGoalCatalog: () => ({ getEntityName: (_type: string, id: string) => id }),
@@ -272,6 +276,14 @@ describe("GoalsPage reordering", () => {
     expect(screen.queryByTestId("goals-order-hint")).not.toBeInTheDocument()
   })
 
+  it("keeps the mobile reorder toggle in place but disabled when reordering is unavailable", () => {
+    state.isMobile = true
+    state.goals = [goal("a", 1)]
+    render(<GoalsPage />)
+    expect(screen.getByTestId("goals-mobile-reorder-toggle")).toBeDisabled()
+    expect(screen.getByTestId("goals-mobile-select-toggle")).toBeEnabled()
+  })
+
   it("keeps a rejected move for review and retries it only on request", () => {
     state.order = {
       ...state.order,
@@ -309,6 +321,13 @@ describe("GoalsPage reordering", () => {
     render(<GoalsPage />)
 
     expect(screen.getByTestId("goals-estimates-error")).toBeInTheDocument()
+    // Below the list, so its late arrival doesn't push the rows down.
+    expect(
+      screen
+        .getByTestId("goals-list")
+        .compareDocumentPosition(screen.getByTestId("goals-estimates-error")) &
+        Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy()
     expect(screen.queryByTestId("goals-no-farmable")).not.toBeInTheDocument()
     fireEvent.click(
       screen.getByRole("button", { name: "goals.order.estimatesRetry" })
@@ -332,6 +351,12 @@ describe("GoalsPage reordering", () => {
     state.goals = [goal("a", 1)]
     const { unmount } = render(<GoalsPage />)
     expect(screen.getByTestId("goals-no-farmable")).toBeInTheDocument()
+    expect(
+      screen
+        .getByTestId("goals-list")
+        .compareDocumentPosition(screen.getByTestId("goals-no-farmable")) &
+        Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy()
     unmount()
 
     state.goals = [goal("a", 1, { status: "Paused" })]

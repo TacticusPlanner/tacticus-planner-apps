@@ -30,7 +30,10 @@ import {
 } from "@/features/goal-farming"
 import type { FlatSupplier } from "@/features/goal-farming"
 import type { GoalAcquisitionPlan } from "./acquisition-plan"
-import { onslaughtShardsPerRun as onslaughtShardsPerRunFor } from "./onslaught-yield"
+import {
+  isOnslaughtProgressSaved,
+  onslaughtShardsPerRun as onslaughtShardsPerRunFor,
+} from "./onslaught-yield"
 
 type PlayerUnit =
   PlayerDataChunkDto<"characters">[number] | PlayerDataChunkDto<"mows">[number]
@@ -311,7 +314,12 @@ export function useProgressionPreview(params: {
       onslaughtShardsPerRun,
       onslaughtShardsPerDay,
       onslaughtCurrentIsMythic,
-      onslaughtProgressSaved: !!onslaughtProgress,
+      // Per alliance: an alliance the player never saved shows the "set your progress" prompt
+      // rather than a Stone 1 placeholder yield.
+      onslaughtProgressSaved: isOnslaughtProgressSaved(
+        onslaughtProgress,
+        params.character?.alliance
+      ),
       campaignShardsPerDay,
       campaignMythicShardsPerDay,
       shopShardsPerDaySelected,

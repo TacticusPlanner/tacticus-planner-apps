@@ -36,6 +36,7 @@ const entry = (goalId: string, resourceId: string, battleId = b1) => ({
   itemsFarmed: 2,
   energySpent: 12,
   dailyAttempts: 10,
+  remainingBefore: 2,
 })
 
 const schedule = (

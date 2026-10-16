@@ -1,5 +1,6 @@
 export {
   servedDatasetKeys,
+  optionalDatasetKeys,
   isServedDatasetKey,
   catalogManifestMetadataKey,
   type GameCatalogDatasetKey,
@@ -29,7 +30,7 @@ export type {
   GameCatalogLreTrackView,
   GameCatalogLreBattle,
   GameCatalogLreBattleView,
-  GameCatalogLreCommon,
+  GameCatalogLreRewards,
   GameCatalogLreWave,
   GameCatalogLreEnemy,
   GameCatalogFarmLocation,
@@ -127,7 +128,8 @@ export {
   type RaidBossesStorageModel,
   type GuildRaidMetaStorageModel,
   type LegendaryEventStorageModel,
-  type LegendaryEventCommonStorageModel,
+  type LegendaryEventBattleStorageModel,
+  type HordeModeTiersStorageModel,
 } from "./game-catalog.storage"
 
 export {

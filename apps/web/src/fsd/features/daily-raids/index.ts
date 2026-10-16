@@ -23,6 +23,8 @@ export { calculateDailyRaids } from "./model/daily-raids-calc"
 export { availableCampaignBattles } from "./model/campaign-event-eligibility"
 export { useEligibleCampaignBattles } from "./model/use-eligible-campaign-battles"
 export { flattenTodayLocations } from "./model/flatten-today-locations"
+// Shared by Dailies > Today and the Home raids widget: promotes Bonus Raids into Today once the plan is done.
+export { selectTodayRaids } from "./model/select-today-raids"
 export type {
   DailyRaidBattleResource,
   DailyRaidLocationViewModel,

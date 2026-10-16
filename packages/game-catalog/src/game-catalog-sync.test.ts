@@ -13,6 +13,7 @@ import {
 } from "./game-catalog-storage"
 import { syncGameCatalog } from "./game-catalog-sync"
 import {
+  catalogManifestMetadataKey,
   servedDatasetKeys,
   type GameCatalogDatasetEnvelope,
   type GameCatalogManifest,
@@ -64,11 +65,42 @@ const datasetData: Record<string, unknown> = {
       battleIds: ["I01"],
     },
   ],
-  lres: [{ id: "emperLucius", name: "Lucius" }],
+  lres: [
+    {
+      id: "emperLucius",
+      name: "Lucius",
+      rewards: {
+        shardsPerChest: 25,
+        chestsMilestones: [{ chestLevel: 1, engramCost: 60 }],
+      },
+    },
+    {
+      id: "votanUthar",
+      name: "Uthar",
+      rewards: {
+        shardsPerChest: 25,
+        chestsMilestones: [
+          { chestLevel: 1, engramCost: 60 },
+          { chestLevel: 2, engramCost: 80 },
+        ],
+      },
+    },
+  ],
   "lre-battles": [
     { id: "emperLucius-alpha-1", lreId: "emperLucius", track: "alpha" },
   ],
-  "lre-common": [{ id: "lre-common", shardsPerChest: 1 }],
+  "horde-mode-tiers": [
+    {
+      id: "horde-mode-tiers",
+      tiers: [
+        { tier: "S", multiplier: 1.85 },
+        { tier: "A", multiplier: 1.55 },
+        { tier: "B", multiplier: 1.25 },
+        { tier: "C", multiplier: 1.05 },
+      ],
+      characters: [{ unitId: "ultraCalgar", tier: "A", multiplier: 1.65 }],
+    },
+  ],
   shops: [
     { id: "guild", slots: [] },
     { id: "war", slots: [] },
@@ -204,6 +236,48 @@ function seedDbMissingStore(missingKey: string) {
   })
 }
 
+// Simulates a client synced by the previous build: every store but `skippedKey` exists, every other dataset
+// has its metadata, and the manifest row holds an ETag for a manifest that already listed `skippedKey`
+// (which that build did not know, so never downloaded).
+function seedSyncedDbBeforeStores(
+  skippedKeys: readonly string[],
+  etag: string
+) {
+  return new Promise<void>((resolve, reject) => {
+    const request = indexedDB.open(catalogDbName, catalogDbVersion - 1)
+
+    request.onupgradeneeded = () => {
+      const db = request.result
+      const metadata = db.createObjectStore("metadata", { keyPath: "key" })
+      const row = {
+        catalogVersion: "dev-1",
+        gameVersion: "1.40",
+        schemaVersion: 11,
+        updatedAt: "2026-10-01T00:00:00Z",
+      }
+
+      for (const key of servedDatasetKeys) {
+        if (!skippedKeys.includes(key)) {
+          db.createObjectStore(key, { keyPath: "id" })
+          metadata.put({ ...row, key, hash: `${key}-h1` })
+        }
+      }
+      metadata.put({
+        ...row,
+        key: catalogManifestMetadataKey,
+        hash: "source-base",
+        etag,
+      })
+    }
+
+    request.onsuccess = () => {
+      request.result.close()
+      resolve()
+    }
+    request.onerror = () => reject(request.error as Error)
+  })
+}
+
 beforeEach(resetDb)
 
 describe("syncGameCatalog", () => {
@@ -235,8 +309,16 @@ describe("syncGameCatalog", () => {
     const abilityLadder = await getDatasetRecords("character-ability-costs")
     expect(abilityLadder.map((row) => row.id)).toEqual(["2", "3"])
 
-    // lres key on the snowprint string id.
-    expect((await getDatasetRecords("lres"))[0]?.id).toBe("emperLucius")
+    // lres key on the snowprint string id, each carrying its own reward ladder (no lre-common).
+    const lres = await getDatasetRecords("lres")
+    expect(lres.map((lre) => lre.id).sort()).toEqual([
+      "emperLucius",
+      "votanUthar",
+    ])
+    expect(
+      lres.map((lre) => lre.rewards.chestsMilestones.length).sort()
+    ).toEqual([1, 2])
+    expect(result.downloaded).not.toContain("lre-common")
   })
 
   it("treats a 304 with a complete cache as ready and a later sync as not first-time", async () => {
@@ -254,7 +336,7 @@ describe("syncGameCatalog", () => {
   it("refetches the manifest without an ETag and repairs an incomplete cache after a 304", async () => {
     const manifest = createManifest()
     await syncGameCatalog(new FakeGameCatalogClient(manifest))
-    await deleteDatasetMetadata("lre-common")
+    await deleteDatasetMetadata("lre-battles")
 
     const client = new FakeGameCatalogClient(manifest, true)
     const result = await syncGameCatalog(client)
@@ -263,10 +345,74 @@ describe("syncGameCatalog", () => {
       `"${manifest.sourceHash}"`,
       undefined,
     ])
-    expect(client.downloaded).toEqual(["lre-common"])
+    expect(client.downloaded).toEqual(["lre-battles"])
     expect(result.status).toBe("ready")
-    expect(result.downloaded).toEqual(["lre-common"])
+    expect(result.downloaded).toEqual(["lre-battles"])
     expect(await hasCompleteGameCatalogCache()).toBe(true)
+  })
+
+  it("syncs horde-mode-tiers as its single record", async () => {
+    await syncGameCatalog(new FakeGameCatalogClient(createManifest()))
+
+    expect(await getDatasetRecords("horde-mode-tiers")).toEqual([
+      expect.objectContaining({ id: "horde-mode-tiers" }),
+    ])
+  })
+
+  it("is ready when the manifest does not list the optional horde-mode-tiers dataset", async () => {
+    const manifest = createManifest()
+    const withoutEstimate = {
+      ...manifest,
+      datasets: manifest.datasets.filter(
+        (dataset) => dataset.key !== "horde-mode-tiers"
+      ),
+    }
+
+    const result = await syncGameCatalog(
+      new FakeGameCatalogClient(withoutEstimate)
+    )
+
+    expect(result.status).toBe("ready")
+    expect(result.downloaded).not.toContain("horde-mode-tiers")
+    expect(await getDatasetRecords("horde-mode-tiers")).toEqual([])
+    expect(await hasCompleteGameCatalogCache()).toBe(true)
+  })
+
+  it("drops an optional dataset the manifest stops listing", async () => {
+    const manifest = createManifest()
+    await syncGameCatalog(new FakeGameCatalogClient(manifest))
+    expect(await getDatasetRecords("horde-mode-tiers")).toHaveLength(1)
+
+    const withdrawn = {
+      ...manifest,
+      sourceHash: "source-withdrawn",
+      datasets: manifest.datasets.filter(
+        (dataset) => dataset.key !== "horde-mode-tiers"
+      ),
+    }
+    const result = await syncGameCatalog(new FakeGameCatalogClient(withdrawn))
+
+    expect(result.status).toBe("ready")
+    expect(await getDatasetRecords("horde-mode-tiers")).toEqual([])
+    expect(await getDatasetRecords("lre-battles")).toHaveLength(1)
+    expect(await hasCompleteGameCatalogCache()).toBe(true)
+  })
+
+  it("refetches the manifest after an upgrade so a dataset the previous build skipped downloads", async () => {
+    const manifest = createManifest()
+    await seedSyncedDbBeforeStores(
+      ["horde-mode-tiers"],
+      `"${manifest.sourceHash}"`
+    )
+
+    const client = new FakeGameCatalogClient(manifest, true)
+    const result = await syncGameCatalog(client)
+
+    expect(client.manifestRequests).toEqual([undefined])
+    expect(client.downloaded).toEqual(["horde-mode-tiers"])
+    expect(result.status).toBe("ready")
+    expect(result.firstTime).toBe(false)
+    expect(await getDatasetRecords("horde-mode-tiers")).toHaveLength(1)
   })
 
   it("only downloads datasets whose hash changed", async () => {
@@ -347,7 +493,7 @@ describe("syncGameCatalog", () => {
   })
 
   it("uses Dexie's own version-upgrade cascade to create a store a client is behind on, instead of wedging the sync", async () => {
-    await seedDbMissingStore("lre-common")
+    await seedDbMissingStore("lre-battles")
 
     const result = await syncGameCatalog(
       new FakeGameCatalogClient(createManifest())
@@ -355,7 +501,9 @@ describe("syncGameCatalog", () => {
 
     expect(result.status).toBe("ready")
     expect(await hasCompleteGameCatalogCache()).toBe(true)
-    expect((await getDatasetRecords("lre-common"))[0]?.id).toBe("lre-common")
+    expect((await getDatasetRecords("lre-battles"))[0]?.id).toBe(
+      "emperLucius-alpha-1"
+    )
   })
 
   it("creates the v5 `shops` store for a client seeded at v4 and populates it", async () => {

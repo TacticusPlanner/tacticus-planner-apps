@@ -17,22 +17,130 @@ type PageViewEvent = {
  * Carries ids and counts only, never team names.
  */
 type LegendaryEventTeamEvent = {
-  type:
-    | "legendary_event_team_created"
-    | "legendary_event_team_edited"
-    | "legendary_event_team_deleted"
+  type: "legendary_event_team_edited" | "legendary_event_team_deleted"
   eventId: string
   laneId: string
   memberCount: number
   objectiveCount: number
 }
 
-/** A team's clear depth for the current run was set by hand (null when cleared). */
+/** A team was created: from scratch (`manual`) or from a team suggestion, with its 1-based rank in
+ *  the suggestions list (null for `manual`). */
+type LegendaryEventTeamCreatedEvent = Omit<LegendaryEventTeamEvent, "type"> & {
+  type: "legendary_event_team_created"
+  source: "manual" | "suggestion"
+  suggestionRank: number | null
+}
+
+/** Goals Preview was turned on or off on the leaderboard controls or in the team picker. */
+type LegendaryEventGoalsPreviewToggledEvent = {
+  type: "legendary_event_goals_preview_toggled"
+  eventId: string
+  enabled: boolean
+  surface: "leaderboard" | "picker"
+}
+
+/** The goal-creation sheet was opened from a leaderboard row or an Upgrade impact row. */
+type LegendaryEventCreateGoalOpenedEvent = {
+  type: "legendary_event_create_goal_opened"
+  eventId: string
+  laneId: string | null
+  source: "leaderboard" | "upgradeImpact"
+  goalType: "Unlock" | "Ascension" | "Rank" | null
+}
+
+/** A lane's Upgrade impact section was expanded. */
+type LegendaryEventUpgradeImpactExpandedEvent = {
+  type: "legendary_event_upgrade_impact_expanded"
+  eventId: string
+  laneId: string
+  /** null when the section had no rows to count (loading, no teams, no estimates). */
+  rowCount: number | null
+}
+
+/** The Suggest teams dialog was opened on a lane. */
+type LegendaryEventTeamSuggestionsOpenedEvent = {
+  type: "legendary_event_team_suggestions_opened"
+  eventId: string
+  laneId: string
+  suggestionCount: number
+}
+
+/** A team's clear depth for the current run was set by hand (null when cleared). `estimate` is
+ *  the estimate shown at the time (null when none), `fromEstimate` whether the edit started from
+ *  it: together the override log for tuning clear estimates. */
 type LegendaryEventDepthSetEvent = {
   type: "legendary_event_depth_set"
   eventId: string
   laneId: string
   depth: number | null
+  estimate: number | null
+  fromEstimate: boolean
+}
+
+/** Use estimate was pressed: the manual depth was cleared so the estimate shows again. */
+type LegendaryEventDepthEstimateRestoredEvent = {
+  type: "legendary_event_depth_estimate_restored"
+  eventId: string
+  laneId: string
+  estimate: number
+}
+
+/** One run's inputs (missions, premium missions, bundle, Oh So Close shards) were saved from the
+ *  run inputs drawer; once per saved write. */
+type LegendaryEventRunInputsSavedEvent = {
+  type: "legendary_event_run_inputs_saved"
+  eventId: string
+  run: number
+  regularMissions: number
+  premiumMissions: number
+  bundlePurchased: boolean
+  closeShards: number
+}
+
+/** The plan's Show paid options switch was turned on or off. */
+type LegendaryEventPaidOptionsToggledEvent = {
+  type: "legendary_event_paid_options_toggled"
+  eventId: string
+  on: boolean
+}
+
+/** A Maybe clear / Stop here mark was set (or cleared, status null) on one cell or a whole battle
+ *  of the Synced progress grid, or on a planned token's cells from the Next token card. */
+type LegendaryEventAnnotationSetEvent = {
+  type: "legendary_event_annotation_set"
+  eventId: string
+  laneId: string
+  battleIndex: number
+  cellCount: number
+  status: "maybeClear" | "stopHere" | null
+  scope: "cell" | "battle" | "token"
+}
+
+/** The Next token card's state: a token, or which empty state it shows. */
+type LegendaryEventNextTokenState =
+  "token" | "noTeams" | "noDepth" | "nothingLeft" | "allCleared" | "unavailable"
+
+/** The Next token card rendered (once per page view and state change). */
+type LegendaryEventNextTokenShownEvent = {
+  type: "legendary_event_next_token_shown"
+  eventId: string
+  state: LegendaryEventNextTokenState
+  planLength: number
+  tokensLeftOver: number
+}
+
+/** The Token plan section was expanded. */
+type LegendaryEventTokenPlanExpandedEvent = {
+  type: "legendary_event_token_plan_expanded"
+  eventId: string
+  planLength: number
+}
+
+/** The Run forecast section was expanded. */
+type LegendaryEventRunForecastExpandedEvent = {
+  type: "legendary_event_run_forecast_expanded"
+  eventId: string
 }
 
 /**
@@ -41,4 +149,18 @@ type LegendaryEventDepthSetEvent = {
  * arbitrary payload at a call site - see tacticus-planner-docs/analytics/events-catalog.md.
  */
 export type AnalyticsEvent =
-  PageViewEvent | LegendaryEventTeamEvent | LegendaryEventDepthSetEvent
+  | PageViewEvent
+  | LegendaryEventTeamEvent
+  | LegendaryEventTeamCreatedEvent
+  | LegendaryEventGoalsPreviewToggledEvent
+  | LegendaryEventCreateGoalOpenedEvent
+  | LegendaryEventUpgradeImpactExpandedEvent
+  | LegendaryEventTeamSuggestionsOpenedEvent
+  | LegendaryEventDepthSetEvent
+  | LegendaryEventRunInputsSavedEvent
+  | LegendaryEventPaidOptionsToggledEvent
+  | LegendaryEventAnnotationSetEvent
+  | LegendaryEventDepthEstimateRestoredEvent
+  | LegendaryEventNextTokenShownEvent
+  | LegendaryEventTokenPlanExpandedEvent
+  | LegendaryEventRunForecastExpandedEvent

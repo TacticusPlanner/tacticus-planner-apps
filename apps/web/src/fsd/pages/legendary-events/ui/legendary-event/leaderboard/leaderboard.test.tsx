@@ -1,6 +1,6 @@
 import { useState } from "react"
 import type { i18n as I18n } from "i18next"
-import { beforeAll, describe, expect, it } from "vitest"
+import { beforeAll, describe, expect, it, vi } from "vitest"
 
 import {
   buildLanePointsModel,
@@ -11,10 +11,19 @@ import {
 import { legendaryEventCharacters } from "@/test/fixtures/legendary-event-characters"
 import { lysanderEvent } from "@/test/fixtures/legendary-events"
 import { createTestI18n, i18nWrapper } from "@/test/i18n"
-import { act, fireEvent, render, screen, within } from "@/test/render"
+import {
+  act,
+  cleanup as cleanupRender,
+  fireEvent,
+  render,
+  screen,
+  within,
+} from "@/test/render"
 
 import {
   buildLeaderboardRows,
+  type ClearEstimatesViewModel,
+  type LeaderboardGoalsViewModel,
   type LeaderboardRowsViewModel,
   type ProgressGridViewModel,
 } from "../legendary-event-page.view-model"
@@ -68,16 +77,29 @@ const untouched: ProgressGridViewModel = {
   },
 }
 
+const noGoals: LeaderboardGoalsViewModel = {
+  previewEnabled: false,
+  availability: "noGoals",
+  onPreviewChange: () => {},
+  previewed: new Set(),
+  badgeLines: () => [],
+  onCreateGoal: () => {},
+}
+
 function Harness({
   rows,
   layout,
   laneId = "alpha",
   progressGrid = fiveCleared,
+  clears = { kind: "hidden" },
+  goals = noGoals,
 }: {
   rows: LeaderboardRowsViewModel
   layout: "table" | "list"
   laneId?: LegendaryEventLaneId
   progressGrid?: ProgressGridViewModel
+  goals?: LeaderboardGoalsViewModel
+  clears?: ClearEstimatesViewModel
 }) {
   const [onlyUnlocked, setOnlyUnlocked] = useState(false)
   const [deductScored, setDeductScored] = useState(true)
@@ -97,6 +119,8 @@ function Harness({
         onDeductScoredChange: setDeductScored,
         selectedObjectives,
         onSelectedObjectivesChange: setSelectedObjectives,
+        clears,
+        goals,
       }}
       progressGrid={progressGrid}
     />
@@ -157,6 +181,93 @@ const eviscerateKey = objectiveFilterKey({
   kind: "DamageType",
   target: "Eviscerate",
   exclude: false,
+})
+
+const estimateFor = (depth: number) => ({
+  depth,
+  battleCount: 18,
+  marginAbovePct: 10,
+  shortfallToNextPct: 10,
+  calibrated: true,
+})
+const noEstimator = { team: () => null, unit: () => null }
+// Dante (owned) is estimated at 6 clears on Alpha; every other unit has no estimate.
+const danteClears: ClearEstimatesViewModel = {
+  kind: "ready",
+  byLane: {
+    alpha: {
+      team: () => null,
+      unit: (unitId) => (unitId === "bloodDante" ? estimateFor(6) : null),
+    },
+    beta: noEstimator,
+    gamma: noEstimator,
+  },
+}
+const clearsOf = (entry: HTMLElement) =>
+  within(entry).getByTestId("leaderboard-clears")
+
+describe("LeaderboardSection clears", () => {
+  beforeAll(async () => {
+    i18n = await createTestI18n("en")
+  })
+
+  it("shows ~n for an owned unit and — for a locked one in a Clears column after Objectives", () => {
+    renderLeaderboard({ clears: danteClears })
+    expect(screen.getByTestId("leaderboard-clears-head")).toHaveTextContent(
+      "Clears"
+    )
+    // The trailing Actions column follows Clears (Stage 6).
+    const headers = screen.getAllByRole("columnheader")
+    expect(headers.at(-1)).toHaveTextContent("Actions")
+    expect(headers.at(-2)).toHaveTextContent("Clears")
+    expect(headers.at(-3)).toHaveTextContent("Objectives")
+    expect(clearsOf(row("bloodDante"))).toHaveTextContent("~6")
+    const locked = rows().find((entry) => entry.dataset.ownership === "locked")!
+    expect(clearsOf(locked)).toHaveTextContent("—")
+  })
+
+  it("keeps the default order whatever the estimates", () => {
+    renderLeaderboard()
+    const order = units()
+    cleanupRender()
+    renderLeaderboard({ clears: danteClears })
+    expect(units()).toEqual(order)
+  })
+
+  it("shows a placeholder dash while the estimate inputs load", () => {
+    renderLeaderboard({ clears: { kind: "pending" } })
+    expect(clearsOf(row("bloodDante"))).toHaveTextContent("–")
+    expect(clearsOf(row("bloodDante"))).toHaveAttribute(
+      "data-clears",
+      "pending"
+    )
+  })
+
+  it.each(["table", "list"] as const)(
+    "announces a pending Clears figure to screen readers in the %s layout",
+    (layout) => {
+      renderLeaderboard({ clears: { kind: "pending" }, layout })
+      expect(clearsOf(row("bloodDante"))).toHaveTextContent(
+        "Estimating clears…"
+      )
+    }
+  )
+
+  it("hides the Clears figure when clear estimates are unavailable", () => {
+    renderLeaderboard({ clears: { kind: "hidden" } })
+    expect(screen.queryByTestId("leaderboard-clears-head")).toBeNull()
+    expect(screen.queryAllByTestId("leaderboard-clears")).toHaveLength(0)
+  })
+
+  it("reads Objectives: N · Clears: ~n on a mobile row card", () => {
+    renderLeaderboard({ clears: danteClears, layout: "list" })
+    const dante = row("bloodDante")
+    expect(
+      within(dante).getByTestId("leaderboard-objectives")
+    ).toHaveTextContent("Objectives: 2")
+    expect(clearsOf(dante)).toHaveTextContent("Clears: ~6")
+    expect(dante).toHaveTextContent("Objectives: 2 · Clears: ~6")
+  })
 })
 
 describe("LeaderboardSection", () => {
@@ -410,5 +521,91 @@ describe("LeaderboardSection", () => {
     expect(within(dante).getByTestId("leaderboard-points")).toHaveTextContent(
       "152 per battle"
     )
+  })
+
+  describe("goals (Stage 6)", () => {
+    const openMenu = async (unit: string) => {
+      const trigger = within(row(unit)).getByTestId("leaderboard-row-menu")
+      fireEvent.pointerDown(trigger, { button: 0, ctrlKey: false })
+      return screen.findByTestId("leaderboard-create-goal")
+    }
+
+    it("ends each table row with an actions menu whose Create goal names the lane", async () => {
+      const onCreateGoal = vi.fn()
+      renderLeaderboard({ goals: { ...noGoals, onCreateGoal } })
+      expect(
+        screen.getByRole("columnheader", { name: "Actions" })
+      ).toBeInTheDocument()
+      expect(
+        within(row("bloodDante")).getByRole("button", {
+          name: "Actions for Dante",
+        })
+      ).toBeInTheDocument()
+      const order = units()
+      fireEvent.click(await openMenu("bloodDante"))
+      expect(onCreateGoal).toHaveBeenCalledWith("bloodDante", "alpha")
+      expect(units()).toEqual(order)
+    })
+
+    it("puts a 44px actions button in each mobile card's corner", () => {
+      renderLeaderboard({ layout: "list" })
+      expect(
+        within(row("bloodDante")).getByTestId("leaderboard-row-menu")
+      ).toHaveClass("size-11")
+    })
+
+    it("shows the goal badge and the preview marker", () => {
+      renderLeaderboard({
+        goals: {
+          ...noGoals,
+          availability: "ready",
+          previewEnabled: true,
+          previewed: new Set(["ultraCalgar"]),
+          badgeLines: (unitId) =>
+            unitId === "ultraCalgar"
+              ? ["Rank to Gold II", "Ascension to Legendary Red Three Stars"]
+              : [],
+        },
+      })
+      expect(
+        within(row("ultraCalgar")).getByRole("img", {
+          name: "Goals: Rank to Gold II; Ascension to Legendary Red Three Stars",
+        })
+      ).toBeInTheDocument()
+      expect(
+        within(row("ultraCalgar")).getByTestId("leaderboard-preview-marker")
+      ).toBeInTheDocument()
+      expect(
+        within(row("bloodDante")).queryByTestId("unit-goal-badge")
+      ).not.toBeInTheDocument()
+    })
+
+    it("disables the Goals Preview switch with the reason", () => {
+      renderLeaderboard({ goals: { ...noGoals, availability: "failed" } })
+      expect(screen.getByTestId("leaderboard-goals-preview")).toBeDisabled()
+      expect(
+        screen.getByTestId("leaderboard-goals-preview-hint")
+      ).toHaveTextContent("Goals unavailable")
+      cleanupRender()
+      renderLeaderboard()
+      expect(
+        screen.getByTestId("leaderboard-goals-preview-hint")
+      ).toHaveTextContent("No active goals for this event's units")
+      cleanupRender()
+      renderLeaderboard({ goals: { ...noGoals, availability: "noRoster" } })
+      expect(screen.getByTestId("leaderboard-goals-preview")).toBeDisabled()
+      expect(
+        screen.getByTestId("leaderboard-goals-preview-hint")
+      ).toHaveTextContent("Sync your roster to preview goals")
+    })
+
+    it("turns Goals Preview on through the page", () => {
+      const onPreviewChange = vi.fn()
+      renderLeaderboard({
+        goals: { ...noGoals, availability: "ready", onPreviewChange },
+      })
+      fireEvent.click(screen.getByTestId("leaderboard-goals-preview"))
+      expect(onPreviewChange).toHaveBeenCalledWith(true)
+    })
   })
 })

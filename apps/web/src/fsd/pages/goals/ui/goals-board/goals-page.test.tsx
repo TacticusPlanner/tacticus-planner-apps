@@ -61,22 +61,27 @@ vi.mock("@/entities/player-data-override", () => ({
       queryKey: ["player-data-overrides", "onslaught"],
       queryFn: () =>
         Promise.resolve({
-          imperial: { sector: "Stone", tier: 1 },
-          xenos: { sector: "Stone", tier: 1 },
-          chaos: { sector: "Stone", tier: 1 },
+          imperial: { sector: "Stone", tier: 1, isSet: true },
+          xenos: { sector: "Stone", tier: 1, isSet: true },
+          chaos: { sector: "Stone", tier: 1, isSet: true },
           revision: 1,
         }),
     }),
   },
   getOnslaughtProgress: () =>
     Promise.resolve({
-      imperial: { sector: "Stone", tier: 1 },
-      xenos: { sector: "Stone", tier: 1 },
-      chaos: { sector: "Stone", tier: 1 },
+      imperial: { sector: "Stone", tier: 1, isSet: true },
+      xenos: { sector: "Stone", tier: 1, isSet: true },
+      chaos: { sector: "Stone", tier: 1, isSet: true },
       revision: 1,
     }),
-  progressForAlliance: (progress: Record<string, unknown>, alliance: string) =>
-    progress[alliance.toLowerCase()],
+  progressForAlliance: (
+    progress: Record<string, { isSet?: boolean } | undefined>,
+    alliance: string
+  ) => {
+    const value = progress[alliance.toLowerCase()]
+    return value?.isSet ? value : undefined
+  },
   onslaughtReward: () => ({ min: 2, max: 3, mythic: false }),
 }))
 
@@ -554,6 +559,63 @@ describe("GoalsPage", () => {
     ).toBeInTheDocument()
   })
 
+  it("holds the Unfulfilled list in its loading state until every goal's attainment is known", async () => {
+    listGoals.mockResolvedValue({ goals: [activeGoal] })
+    let resolveDetail!: (value: unknown) => void
+    getGoalDetail.mockReturnValue(
+      new Promise((resolve) => {
+        resolveDetail = resolve
+      })
+    )
+    renderPage()
+
+    await vi.waitFor(() => expect(getGoalDetail).toHaveBeenCalled())
+    expect(screen.getByTestId("goals-page-loading")).toBeInTheDocument()
+    expect(screen.queryByTestId("goal-row")).toBeNull()
+    expect(screen.queryByTestId("goals-page-filtered-empty")).toBeNull()
+
+    await act(async () => {
+      resolveDetail({
+        ...activeGoal,
+        projectIds: [],
+        dependsOn: [],
+        events: [],
+        config: {
+          rank: {
+            start: 0,
+            startPointFive: false,
+            startAppliedUpgrades: 0,
+            end: 11,
+            endPointFive: false,
+            endAppliedUpgrades: 0,
+          },
+        },
+      })
+      await Promise.resolve()
+    })
+    await vi.waitFor(() =>
+      expect(screen.getAllByTestId("goal-row")).toHaveLength(1)
+    )
+    expect(screen.queryByTestId("goals-page-loading")).toBeNull()
+  })
+
+  it("renders the mobile reorder and select toggles disabled while goals load, so the control row does not shift", async () => {
+    mobile.value = true
+    listGoals.mockReturnValue(new Promise(() => undefined))
+    renderPage()
+
+    expect(await screen.findByTestId("goals-page-loading")).toBeInTheDocument()
+    const row = screen.getByTestId("goals-filter-group")
+    for (const id of [
+      "goals-mobile-reorder-toggle",
+      "goals-mobile-select-toggle",
+    ]) {
+      const toggle = within(row).getByTestId(id)
+      expect(toggle).toBeDisabled()
+      expect(toggle).toHaveAccessibleName()
+    }
+  })
+
   it("moves a goal to the Reached tab once its rank target is met", async () => {
     listGoals.mockResolvedValue({ goals: [activeGoal] })
     getGoalDetail.mockResolvedValue({
@@ -590,7 +652,10 @@ describe("GoalsPage", () => {
     const user = userEvent.setup()
     renderPage()
 
-    await screen.findByTestId("goals-list-table")
+    // Unfulfilled holds its loading state until attainment is known, so the reached goal never
+    // flashes there before dropping out: the tab goes straight to its filtered-empty state.
+    await screen.findByTestId("goals-page-filtered-empty")
+    expect(screen.queryByText("Hero One")).toBeNull()
 
     await user.click(screen.getByTestId("goals-status-filter"))
     // Attainment may already be resolved by the time the dropdown opens (this test's mocks
@@ -1039,6 +1104,55 @@ describe("GoalsPage", () => {
     )
     await user.click(screen.getByTestId("goals-create-goal"))
     expect(onLaunch).toHaveBeenCalledWith({ projectIds: ["proj-2"] })
+  })
+
+  it("holds the loading state on a deep-linked scope until its projects and members load, never the filtered-empty line", async () => {
+    twoProjects()
+    let resolveProjects!: (value: unknown) => void
+    listProjects.mockReturnValue(
+      new Promise((resolve) => {
+        resolveProjects = resolve
+      })
+    )
+    let resolveMembers!: () => void
+    const members = new Promise<void>((resolve) => {
+      resolveMembers = resolve
+    })
+    listProjectGoals.mockImplementation(async (projectId: string) => {
+      await members
+      return {
+        goals:
+          projectId === "proj-1"
+            ? [{ goal: activeGoal, priority: 0 }]
+            : [{ goal: goalB, priority: 0 }],
+      }
+    })
+    renderPage("/plan/goals?project=proj-2")
+
+    // Goals have loaded, but the project list that validates the scope has not: no unscoped rows.
+    await vi.waitFor(() => expect(listGoals).toHaveBeenCalled())
+    expect(await screen.findByTestId("goals-page-loading")).toBeInTheDocument()
+    expect(screen.queryByTestId("goal-row")).toBeNull()
+
+    // The scope is valid, but its member list is still in flight: still loading, not "no matches".
+    await act(async () => {
+      resolveProjects({ projects: [overviewProject, otherProject] })
+      await Promise.resolve()
+    })
+    await screen.findByTestId("goals-project-scope-chip-proj-2")
+    expect(screen.getByTestId("goals-page-loading")).toBeInTheDocument()
+    expect(screen.queryByTestId("goals-page-filtered-empty")).toBeNull()
+    expect(screen.queryByTestId("goal-row")).toBeNull()
+
+    await act(async () => {
+      resolveMembers()
+      await Promise.resolve()
+    })
+    await vi.waitFor(() =>
+      expect(screen.getAllByTestId("goal-row")).toHaveLength(1)
+    )
+    expect(screen.queryByTestId("goals-page-loading")).toBeNull()
+    expect(screen.queryByTestId("goals-page-filtered-empty")).toBeNull()
   })
 
   it("tells an empty project apart from a filter that matches nothing", async () => {

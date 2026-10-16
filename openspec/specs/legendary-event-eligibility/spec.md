@@ -99,7 +99,7 @@ Assumptions:
 
 ### Requirement: Eligibility leaderboard section on the event page
 
-Each lane tab SHALL render an Eligibility leaderboard section after the Synced progress grid, for that lane only. It SHALL list every allowed character with: portrait and localized name; a **trait marker** (the trait's icon with the localized trait name as accessible text) after the name for each of Healer and Mechanic the unit's catalog traits include; owned state (present in the synced `characters` chunk) with the owned unit's rarity and rank, or a "locked" marker; one objective icon per lane objective in the lane's objective order, full-strength when satisfied and muted (reduced opacity, never colour alone) when not, each with accessible text; the unit's points figure (remaining points by default, see the Deduct scored points requirement); and the objectives count labelled "Objectives". Order SHALL be the points figure descending, then objectives count descending, then name ascending, with no user sort control. Filters: "Only unlocked" (default off) and the objective multi-select (see its requirement). Filter and toggle state are shared by the three lanes and the Overview leaderboard, persist while on the page and reset on leaving it. A lane with no allowed units SHALL show a "no eligible units" body. When the roster chunk is unavailable every unit SHALL render with unknown ownership (no locked marker, rarity or rank), an inline "roster not synced" note, and "Only unlocked" disabled.
+Each lane tab SHALL render an Eligibility leaderboard section after the Synced progress grid, for that lane only. It SHALL list every allowed character with: portrait and localized name; a **trait marker** (the trait's icon with the localized trait name as accessible text) after the name for each of Healer and Mechanic the unit's catalog traits include; owned state (present in the synced `characters` chunk) with the owned unit's rarity and rank, or a "locked" marker; one objective icon per lane objective in the lane's objective order, full-strength when satisfied and muted (reduced opacity, never colour alone) when not, each with accessible text; the unit's points figure (remaining points by default, see the Deduct scored points requirement); the objectives count labelled "Objectives"; and the unit's estimated clears on this lane labelled "Clears" (see `legendary-event-clear-estimates`: "~n" for an owned unit, "—" for a locked unit or unknown ownership, a placeholder dash while loading, and absent when estimates are unavailable). Order SHALL be the points figure descending, then objectives count descending, then name ascending, with no user sort control; estimated clears do not affect order. Filters: "Only unlocked" (default off) and the objective multi-select (see its requirement). Filter and toggle state are shared by the three lanes and the Overview leaderboard, persist while on the page and reset on leaving it. The Overview leaderboard does not show estimated clears. A lane with no allowed units SHALL show a "no eligible units" body. When the roster chunk is unavailable every unit SHALL render with unknown ownership (no locked marker, rarity, rank or estimate), an inline "roster not synced" note, and "Only unlocked" disabled.
 
 #### Scenario: Default order
 
@@ -125,6 +125,12 @@ Each lane tab SHALL render an Eligibility leaderboard section after the Synced p
 - **WHEN** their rows render on a lane or Overview leaderboard
 - **THEN** the Healer icon follows the first unit's name with the accessible text "Healer", and no trait marker follows Dante's name
 
+#### Scenario: Estimated clears on a row
+
+- **GIVEN** `ultraTigurius` owned with an estimated 6 clears on Uthar Alpha and `ultraCalgar` not owned
+- **WHEN** the Alpha leaderboard renders
+- **THEN** Tigurius's row shows "Clears ~6" and Calgar's row shows "Clears —"
+
 #### Scenario: Only unlocked
 
 - **WHEN** the user enables "Only unlocked"
@@ -134,17 +140,17 @@ Each lane tab SHALL render an Eligibility leaderboard section after the Synced p
 
 - **GIVEN** the `characters` chunk read failed
 - **WHEN** the leaderboard renders
-- **THEN** rows show no ownership, rarity or rank, the "roster not synced" note is shown and "Only unlocked" is disabled
+- **THEN** rows show no ownership, rarity, rank or estimate, the "roster not synced" note is shown and "Only unlocked" is disabled
 
 #### Scenario: Desktop leaderboard
 
 - **WHEN** the leaderboard renders at or above 768px
-- **THEN** the lane is a table with columns unit, rarity, rank, one column per objective headed by its icon, points, Objectives; headers are not sortable; no horizontal page scroll
+- **THEN** the lane is a table with columns unit, rarity, rank, one column per objective headed by its icon, points, Objectives, Clears; headers are not sortable; no horizontal page scroll
 
 #### Scenario: Mobile leaderboard
 
 - **WHEN** the leaderboard renders below 768px
-- **THEN** each unit is a row card: portrait, name, rarity and rank badges, the row of objective icons, the points figure and "Objectives: N"; the filter and toggle controls sit in one compact bar above the list
+- **THEN** each unit is a row card: portrait, name, rarity and rank badges, the row of objective icons, the points figure and "Objectives: N · Clears: ~n"; the filter and toggle controls sit in one compact bar above the list
 
 #### Scenario: Tour step
 
@@ -256,3 +262,34 @@ The Overview tab SHALL render an Eligibility leaderboard with one row per charac
 
 - **WHEN** Overview renders below 768px
 - **THEN** each unit is a row card with one line per lane beneath the name: the lane label, its indicators and its figure
+
+### Requirement: Leaderboard rows have an actions menu with Create goal
+
+Every row of a lane leaderboard and of the Overview leaderboard SHALL have an actions menu opened from a three-dots button, on both forms. Its accessible name SHALL include the unit's localized name ("Actions for Tigurius"). Its first item, **Create goal**, SHALL open the shell's goal-creation sheet (see `goal-creation-entry-points`) as follows:
+
+- a locked unit opens with the unit selected and goal type Unlock;
+- an owned unit, or a unit whose ownership is unknown because the roster could not be read, opens with the unit selected and no goal type chosen.
+
+Opening the menu SHALL NOT change the row's order, filters or the Goals Preview switch. The menu SHALL show the same items whatever the Goals Preview switch says, because ownership for Create goal is read from the synced roster.
+
+#### Scenario: Create goal for an owned unit
+
+- **GIVEN** Tigurius is owned
+- **WHEN** the user opens his row's actions menu on the Alpha leaderboard and chooses Create goal
+- **THEN** the goal-creation sheet opens with Tigurius selected and no goal type chosen
+
+#### Scenario: Create goal for a locked unit
+
+- **GIVEN** Certus is not owned and Goals Preview is on with an Active Unlock goal previewing him as owned
+- **WHEN** the user chooses Create goal from his row's actions menu on Overview
+- **THEN** the sheet opens with Certus selected and goal type Unlock
+
+#### Scenario: Desktop menu
+
+- **WHEN** a leaderboard renders at or above 768px
+- **THEN** each table row ends with a three-dots button in a narrow trailing column whose header's accessible name is "Actions", and the table keeps no horizontal page scroll
+
+#### Scenario: Mobile menu
+
+- **WHEN** a leaderboard renders below 768px
+- **THEN** each row card has a three-dots button in its top-right corner with a touch target of at least 44px, and opening it does not navigate or expand the card

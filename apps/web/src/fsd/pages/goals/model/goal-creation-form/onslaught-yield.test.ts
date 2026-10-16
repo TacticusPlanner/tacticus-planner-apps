@@ -4,6 +4,7 @@ import type { OnslaughtRewardStorageModel } from "@workspace/game-catalog"
 import type { OnslaughtProgress } from "@/entities/player-data-override"
 
 import {
+  isOnslaughtProgressSaved,
   onslaughtRewardKeyForProgression,
   onslaughtShardsPerRun,
 } from "./onslaught-yield"
@@ -44,9 +45,9 @@ const rewards: OnslaughtRewardStorageModel[] = [
 ]
 
 const progress: OnslaughtProgress = {
-  imperial: { sector: "Gold", tier: 4 },
-  xenos: { sector: "Stone", tier: 1 },
-  chaos: { sector: "Gold", tier: 3 },
+  imperial: { sector: "Gold", tier: 4, isSet: true },
+  xenos: { sector: "Stone", tier: 1, isSet: true },
+  chaos: { sector: "Gold", tier: 3, isSet: true },
   revision: 1,
 }
 
@@ -60,7 +61,7 @@ describe("onslaughtShardsPerRun", () => {
         alliance: "Imperial",
         currentProgression: "Legendary:RedFourStars",
       })
-    ).toEqual({ shardsPerRun: 6, available: true })
+    ).toEqual({ shardsPerRun: 6, available: true, progressSet: true })
   })
 
   it("uses the mythic range once the current progression is Mythic", () => {
@@ -71,7 +72,7 @@ describe("onslaughtShardsPerRun", () => {
         alliance: "Chaos",
         currentProgression: "Mythic:OneBlueStar",
       })
-    ).toEqual({ shardsPerRun: 2, available: true })
+    ).toEqual({ shardsPerRun: 2, available: true, progressSet: true })
   })
 
   it("is unavailable when the saved position has no reward row", () => {
@@ -82,6 +83,44 @@ describe("onslaughtShardsPerRun", () => {
         alliance: "Xenos",
         currentProgression: "Rare:FourStars",
       })
-    ).toEqual({ shardsPerRun: 0, available: false })
+    ).toEqual({ shardsPerRun: 0, available: false, progressSet: true })
+  })
+
+  it("reports an alliance the player never saved instead of yielding its Stone 1 placeholder", () => {
+    expect(
+      onslaughtShardsPerRun({
+        progress: {
+          ...progress,
+          chaos: { sector: "Stone", tier: 1, isSet: false },
+        },
+        rewards,
+        alliance: "Chaos",
+        currentProgression: "Legendary:RedFourStars",
+      })
+    ).toEqual({ shardsPerRun: 0, available: false, progressSet: false })
+  })
+})
+
+describe("isOnslaughtProgressSaved", () => {
+  const unset = { sector: "Stone", tier: 1, isSet: false } as const
+
+  it("is false before the progress query resolves", () => {
+    expect(isOnslaughtProgressSaved(undefined, "Imperial")).toBe(false)
+  })
+
+  it("is false for an alliance the API reports as unset", () => {
+    expect(
+      isOnslaughtProgressSaved({ ...progress, xenos: unset }, "Xenos")
+    ).toBe(false)
+  })
+
+  it("is true for a saved alliance, including a saved Stone 1", () => {
+    expect(isOnslaughtProgressSaved(progress, "Xenos")).toBe(true)
+  })
+
+  it("falls back to Imperial when the unit's alliance is unknown", () => {
+    expect(
+      isOnslaughtProgressSaved({ ...progress, imperial: unset }, undefined)
+    ).toBe(false)
   })
 })

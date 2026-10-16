@@ -11,11 +11,13 @@ import { Skeleton } from "@workspace/ui/components/skeleton"
 import {
   flattenTodayLocations,
   LocationRow,
+  selectTodayRaids,
   useDailyRaids,
 } from "@/features/daily-raids"
 
 /** Home dashboard's Daily Raids widget: today's real (energy-budget) schedule for the account's Active
- * goals in global order (the same run as Today), flattened to one row per battle location regardless
+ * goals in global order (the same run as Today) — or, once today's real energy spend reaches the daily
+ * limit, the Bonus Raids that Today then lists alone (`selectTodayRaids`) — flattened to one row per battle location regardless
  * of which goal it's for, with already-raided/exhausted locations excluded (home-raids-widget spec).
  * Activating the widget opens the full Today page. */
 export function RaidsWidget() {
@@ -63,22 +65,43 @@ export function RaidsWidget() {
       )
     }
 
+    const selection = selectTodayRaids({
+      todayEntries: raids.today.entries,
+      bonusEntries: raids.bonus.entries,
+      attemptsLeftByBattle: raids.attemptsLeftByBattle,
+      dailyEnergy: raids.dailyEnergy,
+      realEnergyUsedToday: raids.realEnergyUsedToday,
+    })
+    // Mirrors Today: once the daily energy limit is spent, Bonus Raids are the only list.
     const locations = flattenTodayLocations(
-      raids.today.entries,
+      selection.energyLimitReached
+        ? selection.bonusEntries
+        : selection.planEntries,
       raids.attemptsLeftByBattle
     )
+    const limitCaption = selection.energyLimitReached ? (
+      <p
+        className="text-sm text-muted-foreground"
+        data-testid="home-raids-energy-limit-reached"
+      >
+        {t("home.raids.limitReached")}
+      </p>
+    ) : null
     if (locations.length === 0) {
       return (
-        <p
-          className="text-sm text-muted-foreground"
-          data-testid="home-raids-empty"
-        >
-          {t("home.raids.empty")}
-        </p>
+        <div className="flex flex-col gap-2">
+          {limitCaption}
+          <p
+            className="text-sm text-muted-foreground"
+            data-testid="home-raids-empty"
+          >
+            {t("home.raids.empty")}
+          </p>
+        </div>
       )
     }
 
-    return (
+    const list = (
       <div
         className="grid grid-cols-1 gap-2 sm:grid-cols-2"
         data-testid="home-raids-list"
@@ -94,6 +117,13 @@ export function RaidsWidget() {
             resourceVisual={raids.resourceVisuals.get(entry.resourceId)}
           />
         ))}
+      </div>
+    )
+    if (!limitCaption) return list
+    return (
+      <div className="flex flex-col gap-2">
+        {limitCaption}
+        {list}
       </div>
     )
   })()

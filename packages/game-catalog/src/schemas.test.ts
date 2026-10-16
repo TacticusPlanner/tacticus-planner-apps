@@ -45,22 +45,7 @@ const lreTrack = {
   availableUnitIds: [],
 }
 
-const baseLre = {
-  id: "emperLucius",
-  name: "Lucius",
-  finished: false,
-  eventStageStartDatesUtc: ["2026-02-01T00:00:00Z"],
-  battlesCount: 0,
-  constraintsCount: 0,
-  regularMissions: [],
-  premiumMissions: [],
-  alpha: lreTrack,
-  beta: lreTrack,
-  gamma: lreTrack,
-}
-
-const lreCommon = {
-  id: "lre-common",
+const lreRewards = {
   pointsMilestones: [{ milestone: 1, cumulativePoints: 100, engramPayout: 25 }],
   chestsMilestones: [{ chestLevel: 1, engramCost: 60 }],
   progression: {
@@ -71,7 +56,22 @@ const lreCommon = {
     mythic: 250,
     twoBlueStars: 150,
   },
-  shardsPerChest: 1,
+  shardsPerChest: 25,
+}
+
+const baseLre = {
+  id: "emperLucius",
+  name: "Lucius",
+  finished: false,
+  eventStageStartDatesUtc: ["2026-02-01T00:00:00Z"],
+  battlesCount: 0,
+  constraintsCount: 0,
+  regularMissions: [],
+  premiumMissions: [],
+  rewards: lreRewards,
+  alpha: lreTrack,
+  beta: lreTrack,
+  gamma: lreTrack,
 }
 
 const lreBattle = {
@@ -291,27 +291,80 @@ describe("catalog schemas", () => {
     expect(result.success).toBe(true)
   })
 
-  it("validates the split lres, lre-battles, and lre-common payloads", () => {
+  it("validates the split lres and lre-battles payloads", () => {
     expect(datasetPayloadSchemas.lres.safeParse([baseLre]).success).toBe(true)
     expect(
       datasetPayloadSchemas["lre-battles"].safeParse([lreBattle]).success
     ).toBe(true)
-    expect(
-      datasetPayloadSchemas["lre-common"].safeParse([lreCommon]).success
-    ).toBe(true)
   })
 
-  it("rejects an lre-common points milestone of the wrong type", () => {
-    const result = datasetPayloadSchemas["lre-common"].safeParse([
+  it("validates the horde-mode-tiers record and rejects a non-positive multiplier", () => {
+    const record = {
+      id: "horde-mode-tiers",
+      tiers: [
+        { tier: "S", multiplier: 1.3 },
+        { tier: "C", multiplier: 0.9 },
+      ],
+      characters: [{ unitId: "ultraTigurius", tier: "S" }],
+    }
+    const schema = datasetPayloadSchemas["horde-mode-tiers"]
+
+    expect(schema.safeParse([record]).success).toBe(true)
+    expect(schema.safeParse([{ ...record, characters: [] }]).success).toBe(true)
+    expect(
+      schema.safeParse([{ ...record, tiers: [{ tier: "S", multiplier: 0 }] }])
+        .success
+    ).toBe(false)
+  })
+
+  it("keeps each event's own reward ladder", () => {
+    const result = datasetPayloadSchemas.lres.parse([
+      baseLre,
       {
-        ...lreCommon,
-        pointsMilestones: [
-          { milestone: "one", cumulativePoints: 100, engramPayout: 25 },
-        ],
+        ...baseLre,
+        id: "votanUthar",
+        rewards: {
+          ...lreRewards,
+          chestsMilestones: [
+            { chestLevel: 1, engramCost: 60 },
+            { chestLevel: 2, engramCost: 80 },
+          ],
+        },
+      },
+    ])
+
+    expect(result.map((lre) => lre.rewards.chestsMilestones.length)).toEqual([
+      1, 2,
+    ])
+  })
+
+  it("rejects an lres record without its reward ladder", () => {
+    const withoutRewards: Partial<typeof baseLre> = { ...baseLre }
+    delete withoutRewards.rewards
+
+    expect(datasetPayloadSchemas.lres.safeParse([withoutRewards]).success).toBe(
+      false
+    )
+  })
+
+  it("rejects a reward points milestone of the wrong type", () => {
+    const result = datasetPayloadSchemas.lres.safeParse([
+      {
+        ...baseLre,
+        rewards: {
+          ...lreRewards,
+          pointsMilestones: [
+            { milestone: "one", cumulativePoints: 100, engramPayout: 25 },
+          ],
+        },
       },
     ])
 
     expect(result.success).toBe(false)
+  })
+
+  it("has no lre-common dataset", () => {
+    expect(Object.keys(datasetPayloadSchemas)).not.toContain("lre-common")
   })
 
   it("validates the split campaign-battles and campaign-definitions payloads", () => {

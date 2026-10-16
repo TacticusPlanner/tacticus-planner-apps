@@ -179,12 +179,22 @@ describe("useAnalyticsActions", () => {
       laneId: "alpha",
       memberCount: 3,
       objectiveCount: 2,
+      source: "suggestion",
+      suggestionRank: 1,
     })
     result.current.captureEvent({
       type: "legendary_event_depth_set",
       eventId: "astarLysander",
       laneId: "beta",
       depth: 4,
+      estimate: 6,
+      fromEstimate: true,
+    })
+    result.current.captureEvent({
+      type: "legendary_event_depth_estimate_restored",
+      eventId: "astarLysander",
+      laneId: "beta",
+      estimate: 6,
     })
 
     expect(capture).toHaveBeenCalledWith("legendary_event_team_created", {
@@ -192,11 +202,156 @@ describe("useAnalyticsActions", () => {
       lane_id: "alpha",
       member_count: 3,
       objective_count: 2,
+      source: "suggestion",
+      suggestion_rank: 1,
     })
     expect(capture).toHaveBeenCalledWith("legendary_event_depth_set", {
       event_id: "astarLysander",
       lane_id: "beta",
       depth: 4,
+      estimate: 6,
+      from_estimate: true,
     })
+    expect(capture).toHaveBeenCalledWith(
+      "legendary_event_depth_estimate_restored",
+      { event_id: "astarLysander", lane_id: "beta", estimate: 6 }
+    )
+  })
+
+  it("captures the Legendary Event Stage 6 events with only the declared properties", () => {
+    vi.stubEnv("VITE_POSTHOG_PROJECT_TOKEN", "test-token")
+    const { result } = renderHook(() => useAnalyticsActions())
+
+    result.current.captureEvent({
+      type: "legendary_event_goals_preview_toggled",
+      eventId: "votanUthar",
+      enabled: true,
+      surface: "picker",
+    })
+    result.current.captureEvent({
+      type: "legendary_event_create_goal_opened",
+      eventId: "votanUthar",
+      laneId: null,
+      source: "leaderboard",
+      goalType: "Unlock",
+    })
+    result.current.captureEvent({
+      type: "legendary_event_upgrade_impact_expanded",
+      eventId: "votanUthar",
+      laneId: "alpha",
+      rowCount: 4,
+    })
+    result.current.captureEvent({
+      type: "legendary_event_team_suggestions_opened",
+      eventId: "votanUthar",
+      laneId: "alpha",
+      suggestionCount: 5,
+    })
+
+    expect(capture).toHaveBeenCalledWith(
+      "legendary_event_goals_preview_toggled",
+      { event_id: "votanUthar", enabled: true, surface: "picker" }
+    )
+    expect(capture).toHaveBeenCalledWith("legendary_event_create_goal_opened", {
+      event_id: "votanUthar",
+      lane_id: null,
+      source: "leaderboard",
+      goal_type: "Unlock",
+    })
+    expect(capture).toHaveBeenCalledWith(
+      "legendary_event_upgrade_impact_expanded",
+      { event_id: "votanUthar", lane_id: "alpha", row_count: 4 }
+    )
+    expect(capture).toHaveBeenCalledWith(
+      "legendary_event_team_suggestions_opened",
+      { event_id: "votanUthar", lane_id: "alpha", suggestion_count: 5 }
+    )
+  })
+
+  it("captures the Legendary Event run input, paid options and mark events with only the declared properties", () => {
+    vi.stubEnv("VITE_POSTHOG_PROJECT_TOKEN", "test-token")
+    const { result } = renderHook(() => useAnalyticsActions())
+
+    result.current.captureEvent({
+      type: "legendary_event_run_inputs_saved",
+      eventId: "votanUthar",
+      run: 3,
+      regularMissions: 10,
+      premiumMissions: 0,
+      bundlePurchased: true,
+      closeShards: 25,
+    })
+    result.current.captureEvent({
+      type: "legendary_event_paid_options_toggled",
+      eventId: "votanUthar",
+      on: true,
+    })
+    result.current.captureEvent({
+      type: "legendary_event_annotation_set",
+      eventId: "astarLysander",
+      laneId: "alpha",
+      battleIndex: 8,
+      cellCount: 5,
+      status: "maybeClear",
+      scope: "battle",
+    })
+
+    expect(capture).toHaveBeenCalledWith("legendary_event_run_inputs_saved", {
+      event_id: "votanUthar",
+      run: 3,
+      regular_missions: 10,
+      premium_missions: 0,
+      bundle_purchased: true,
+      close_shards: 25,
+    })
+    expect(capture).toHaveBeenCalledWith(
+      "legendary_event_paid_options_toggled",
+      { event_id: "votanUthar", on: true }
+    )
+    expect(capture).toHaveBeenCalledWith("legendary_event_annotation_set", {
+      event_id: "astarLysander",
+      lane_id: "alpha",
+      battle_index: 8,
+      cell_count: 5,
+      status: "maybeClear",
+      scope: "battle",
+    })
+  })
+
+  it("captures the Legendary Event token plan events with only the declared properties", () => {
+    vi.stubEnv("VITE_POSTHOG_PROJECT_TOKEN", "test-token")
+    const { result } = renderHook(() => useAnalyticsActions())
+
+    result.current.captureEvent({
+      type: "legendary_event_next_token_shown",
+      eventId: "votanUthar",
+      state: "token",
+      planLength: 6,
+      tokensLeftOver: 94,
+    })
+    result.current.captureEvent({
+      type: "legendary_event_token_plan_expanded",
+      eventId: "votanUthar",
+      planLength: 6,
+    })
+    result.current.captureEvent({
+      type: "legendary_event_run_forecast_expanded",
+      eventId: "votanUthar",
+    })
+
+    expect(capture).toHaveBeenCalledWith("legendary_event_next_token_shown", {
+      event_id: "votanUthar",
+      state: "token",
+      plan_length: 6,
+      tokens_left_over: 94,
+    })
+    expect(capture).toHaveBeenCalledWith(
+      "legendary_event_token_plan_expanded",
+      { event_id: "votanUthar", plan_length: 6 }
+    )
+    expect(capture).toHaveBeenCalledWith(
+      "legendary_event_run_forecast_expanded",
+      { event_id: "votanUthar" }
+    )
   })
 })

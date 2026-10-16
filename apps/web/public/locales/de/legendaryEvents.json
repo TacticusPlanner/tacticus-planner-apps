@@ -40,6 +40,62 @@
     "syncedAgo": "Synchronisiert {{when}}",
     "neverSynced": "Noch nicht synchronisiert"
   },
+  "runInputs": {
+    "button": "Eingaben",
+    "title": "Eingaben pro Durchlauf",
+    "description": "Missionen und Pakete, die das Spiel nicht meldet. Sie fließen in die Belohnungsaussicht der Durchlaufstatus-Karte ein.",
+    "run": "Durchlauf {{run}}",
+    "phase": {
+      "done": "Erledigt",
+      "now": "Aktuell",
+      "planned": "Geplant"
+    },
+    "nowHint": "Die Belohnungsaussicht liest diesen Durchlauf aus deinem synchronisierten Fortschritt, daher zählen diese Eingaben erst ab dem nächsten Durchlauf.",
+    "regularMissions": "Normale Missionen",
+    "premiumMissions": "Premium-Missionen",
+    "bundle": "Paket mit 300 Währung gekauft",
+    "closeShards": "„Oh So Close“-Splitter",
+    "showPaidOptions": "Kostenpflichtige Optionen anzeigen",
+    "fieldLabel": "{{field}}, Durchlauf {{run}}",
+    "decrease": "{{field}} verringern, Durchlauf {{run}}",
+    "increase": "{{field}} erhöhen, Durchlauf {{run}}",
+    "unavailable": "Dein Plan konnte nicht geladen werden.",
+    "toasts": {
+      "error": "Deine Eingaben pro Durchlauf konnten nicht gespeichert werden."
+    }
+  },
+  "outlook": {
+    "title": "Belohnungsaussicht",
+    "steps": {
+      "unlock": "Freischaltung",
+      "fourStars": "4 Sterne",
+      "fiveStars": "5 Sterne",
+      "blueStar": "Blauer Stern",
+      "mythic": "Mythisch",
+      "twoBlueStars": "Zwei blaue Sterne"
+    },
+    "next": "Als Nächstes: {{step}} · {{shards}} / {{threshold}} Splitter",
+    "chests_one": "Noch {{chests}} Truhe ({{currency}} Währung insgesamt)",
+    "chests_other": "Noch {{chests}} Truhen ({{currency}} Währung insgesamt)",
+    "points": "Noch {{points}} Punkte bis {{target}} · etwa {{battles}} Kämpfe pro Bahn",
+    "fullyAscended": "Alle Belohnungsstufen erreicht",
+    "beyondChests": "In diesem Event nicht erreichbar (benötigt {{required}} Truhen, das Event hat {{ladder}})",
+    "affordableNow": "Genug Währung für die Truhen vorhanden",
+    "beyondPoints": "Punkte allein reichen nicht: Es fehlen {{currency}} Währung",
+    "noEntry": "Noch kein synchronisierter Fortschritt",
+    "explain": {
+      "title": "So wird das berechnet",
+      "base": "Aus deiner letzten Synchronisierung: {{currency}} Währung vorhanden, {{chests}} Truhen beansprucht, {{shards}} Splitter, {{points}} Punkte",
+      "noBase": "Noch kein synchronisierter Fortschritt, daher beginnt die Rechnung bei null",
+      "missions": "{{currency}} Währung aus den Missionen von Durchlauf {{run}}",
+      "bundle": "{{currency}} Währung aus dem Paket von Durchlauf {{run}}",
+      "closeShards": "{{shards}} „Oh So Close“-Splitter aus Durchlauf {{run}}",
+      "noFutureInputs": "Keine Eingaben für spätere Durchläufe",
+      "bonus": "+{{currency}} Währung bei jedem Punkte-Meilenstein (Premium-Pfad)",
+      "noBonus": "Kein Bonus auf Punkte-Meilensteine",
+      "startedRuns": "Zählt, was du laut Synchronisierung schon verdient hast, plus deine Eingaben für spätere Durchläufe; bereits begonnene Durchläufe werden nicht noch einmal addiert."
+    }
+  },
   "lanes": {
     "alpha": "Alpha",
     "beta": "Beta",
@@ -126,6 +182,29 @@
     "howPoints": {
       "title": "So funktionieren Punkte",
       "body": "Die erzielten Punkte eines Kampfes sind sein Highscore plus die Punkte jedes Ziels, das du darin erfüllt hast, einschließlich des Bonus für „Alle besiegen“. Das Maximum eines Kampfes addiert Kill-Punkte, Highscore, den Bonus für „Alle besiegen“ und alle Zielpunkte; das Lane-Maximum addiert alle Kämpfe."
+    }
+  },
+  "annotations": {
+    "maybeClear": "Vielleicht schaffbar",
+    "stopHere": "Hier aufhören",
+    "notMarked": "Nicht markiert",
+    "clearMarks": "Markierungen entfernen",
+    "cell": {
+      "maybeClear": "{{objective}}: nicht erledigt, markiert als „Vielleicht schaffbar“",
+      "stopHere": "{{objective}}: nicht erledigt, markiert als „Hier aufhören“"
+    },
+    "menuLabel": "{{objective}}, Kampf {{battle}}",
+    "battleMenuLabel": "Kampf {{battle}}: alle nicht erledigten Ziele",
+    "rowAction": "Kampf {{battle}} markieren",
+    "rowActionHeader": "Markierungen",
+    "legend": {
+      "title": "Markierungen",
+      "maybeClear": "Vielleicht schaffbar: einen Versuch wert, wenn das Team so weit kommt.",
+      "stopHere": "Hier aufhören: deine Token nicht wert.",
+      "note": "Markierungen sind nur Erinnerungen: Sie ändern nie die Punkte und verschwinden, sobald die Synchronisierung das Ziel als erledigt zeigt."
+    },
+    "toasts": {
+      "error": "Deine Markierungen konnten nicht gespeichert werden."
     }
   },
   "teams": {
@@ -230,9 +309,21 @@
           "title": "Übersicht und Lanes",
           "content": "Die Übersicht fasst das Event zusammen; Alpha, Beta und Gamma öffnen je eine Lane. Auf dem Smartphone bleibt die Leiste beim Scrollen unter der Kopfzeile."
         },
+        "nextToken": {
+          "title": "Nächster Token",
+          "content": "Der Kampf für deinen nächsten Token: das Team, die Bahn und der Kampf mit den meisten Punkten, berechnet aus deiner Synchronisierung, deinen Teams, Tiefen und Markierungen. Lief es nicht nach Plan, markiere ihn als „Teilweise geschafft“ oder „Nicht geschafft“, und der Plan passt sich an."
+        },
         "runStatus": {
           "title": "Durchlaufstatus",
           "content": "Dein Durchlauf, deine Token, Punkte, Währung, Truhen und Splitter aus der letzten Synchronisierung sowie der nächste Punkte-Meilenstein."
+        },
+        "runInputs": {
+          "title": "Eingaben pro Durchlauf",
+          "content": "Trage für jeden Durchlauf die Missionen und Pakete ein, die das Spiel nicht meldet. Sie fließen in die Belohnungsaussicht dieser Karte ein."
+        },
+        "tokenPlan": {
+          "title": "Token-Plan",
+          "content": "Alle Tokens, die der Plan der Reihe nach erwartet, mit laufenden Punkten und den erreichten Meilensteinen. Die Durchlaufprognose darunter verteilt sie auf die verbleibenden Durchläufe."
         },
         "laneSummary": {
           "title": "Lane-Zusammenfassung",
@@ -248,17 +339,167 @@
         },
         "teams": {
           "title": "Teams",
-          "content": "Stelle die Teams zusammen, die du in dieser Lane spielen willst. Jede Karte zeigt die Mitglieder, die abgedeckten Ziele, die Punkte pro Kampf und wie weit das Team voraussichtlich kommt. Mit „Team hinzufügen“ legst du eines an."
+          "content": "Stelle die Teams zusammen, die du in dieser Lane spielen willst. Jede Karte zeigt die Mitglieder, die abgedeckten Ziele, die Punkte pro Kampf und wie weit das Team kommen sollte: eine Schätzung aus deinem synchronisierten Kader, bis du selbst eine Tiefe festlegst. Mit „Team hinzufügen“ legst du eines an. Teams vorschlagen schlägt Teams aus deinem Kader vor, sortiert nach den Punkten, die sie hinzufügen."
+        },
+        "upgradeImpact": {
+          "title": "Wirkung von Verbesserungen",
+          "content": "Welche einzelne Verbesserung dir auf dieser Lane Punkte bringt: Jede Zeile nennt den Kampf, den ein Team dadurch erreicht, und die zusätzlichen Punkte. Erstelle mit einem Tipp ein Ziel dafür."
         },
         "progressGrid": {
           "title": "Synchronisierter Fortschritt",
-          "content": "Deine erfüllten Ziele und Punkte pro Kampf aus der letzten Synchronisierung, mit den erzielten Punkten der Lane im Verhältnis zum Maximum."
+          "content": "Deine erfüllten Ziele und Punkte pro Kampf aus der letzten Synchronisierung, mit den erzielten Punkten der Lane im Verhältnis zum Maximum. Markiere ein nicht erledigtes Ziel als „Vielleicht schaffbar“ oder „Hier aufhören“ oder einen ganzen Kampf über die Aktion seiner Zeile."
         },
         "leaderboard": {
           "title": "Lane-Rangliste",
-          "content": "Jede Einheit, die diese Lane erlaubt, ob du sie besitzt, welche Ziele sie erfüllt und welche Punkte sie hier noch erzielen kann."
+          "content": "Jede Einheit, die diese Lane erlaubt, ob du sie besitzt, welche Ziele sie erfüllt und welche Punkte sie hier noch erzielen kann. Schalte die Zielvorschau ein, um Einheiten so zu sehen, als hättest du deine aktiven Ziele erreicht, und erstelle über das Menü einer Zeile ein Ziel."
         }
       }
+    }
+  },
+  "estimates": {
+    "estimated": "geschätzt",
+    "uncalibrated": "Unkalibriert: Das Leistungsverhältnis der Schätzung wurde noch nicht an echten Ergebnissen ausgerichtet, nimm sie also nur als grobe Orientierung.",
+    "howItWorks": "Geschätzt aus der Kampfkraft deines synchronisierten Kaders im Vergleich zur Stärke jedes Kampfes. Ausrüstung, Synergien und schwere Ziele werden nicht berücksichtigt; lege eine Tiefe fest, um sie zu überschreiben.",
+    "marginAbove": "{{percent}} % über Kampf {{battle}}",
+    "shortfallNext": "{{percent}} % unter Kampf {{battle}}",
+    "notEnough": "Reicht noch nicht für Kampf 1",
+    "useEstimate": "Schätzung verwenden",
+    "estimateHint": "Schätzung ~{{depth}}",
+    "lockedNotCounted_one": "{{count}} gesperrtes Mitglied nicht gezählt",
+    "lockedNotCounted_other": "{{count}} gesperrte Mitglieder nicht gezählt",
+    "clears": "Kämpfe",
+    "clearsLabel": "Geschätzte Kämpfe",
+    "clearsValue": "Kämpfe: {{value}}",
+    "clearsEstimate": "~{{depth}}",
+    "clearsNone": "—",
+    "clearsPending": "–",
+    "clearsLoading": "Kämpfe werden geschätzt…"
+  },
+  "goalsPreview": {
+    "switch": "Zielvorschau",
+    "marker": "Als Zielstand angezeigt",
+    "hint": "Zeigt Einheiten, als hättest du deine aktiven Ziele erreicht. Punkte und Teams ändern sich nicht.",
+    "loading": "Ziele werden geladen…",
+    "unavailable": "Ziele nicht verfügbar",
+    "noGoals": "Keine aktiven Ziele für die Einheiten dieses Events",
+    "noRoster": "Synchronisiere deinen Kader, um Ziele in der Vorschau zu sehen"
+  },
+  "goalBadge": {
+    "label": "Ziele",
+    "unlock": "Freischalten",
+    "ascension": "Aufstieg zu {{target}}",
+    "rank": "Rang {{target}}",
+    "rankWithUpgrades": "Rang {{target}} mit {{count}} Verbesserungen",
+    "ability": "Fähigkeiten auf {{active}} / {{passive}}",
+    "progression": "{{rarity}} {{stars}}"
+  },
+  "leaderboardActions": {
+    "header": "Aktionen",
+    "menu": "Aktionen für {{name}}",
+    "createGoal": "Ziel erstellen"
+  },
+  "upgradeImpact": {
+    "title": "Wirkung von Verbesserungen",
+    "summary_one": "{{count}} Verbesserung bringt Punkte · beste +{{best}}",
+    "summary_other": "{{count}} Verbesserungen bringen Punkte · beste +{{best}}",
+    "hint": "Was ein einzelner nächster Schritt eines Teammitglieds auf dieser Lane bringt, über die Kämpfe, die ein Team dadurch erreicht. Grundlage ist dein synchronisierter Kader.",
+    "unit": "Einheit",
+    "step": "Schritt",
+    "teams": "Teams",
+    "points": "Punkte",
+    "unlock": "Freischalten",
+    "rank": "Rang {{target}}",
+    "ascension": "Aufstieg zu {{target}}",
+    "teamChange": "{{team}}: Kampf {{from}} → {{to}}",
+    "gain": "+{{points}} Punkte",
+    "createGoal": "Ziel erstellen",
+    "createGoalFor": "Ziel für {{name}} erstellen",
+    "inGoals": "In Zielen",
+    "needsEstimates": "Benötigt Abschluss-Schätzungen",
+    "noTeams": "Füge ein Team hinzu, um zu sehen, welche Verbesserungen Punkte bringen",
+    "noRows": "Kein einzelner nächster Schritt bringt auf dieser Lane Punkte",
+    "loading": "Wirkung wird geladen…",
+    "toggle": "Wirkung von Verbesserungen ein- oder ausblenden"
+  },
+  "suggestions": {
+    "button": "Teams vorschlagen",
+    "title": "Vorgeschlagene Teams für {{lane}}",
+    "description": "Teams aus deinem Kader, sortiert nach den Punkten, die sie zu deinen aktuellen Teams hinzufügen. Nichts wird gespeichert, bis du das Team speicherst.",
+    "onlyUnlocked": "Nur freigeschaltete",
+    "preferGoals": "Einheiten mit Zielen bevorzugen",
+    "reason": "Deckt {{objectives}} ab · schafft ~{{depth}} · +{{points}} Punkte zu deinen Teams",
+    "use": "Dieses Team verwenden",
+    "showMore": "Mehr anzeigen",
+    "empty": "Kein Team bringt Punkte zu deinen aktuellen Teams hinzu",
+    "needsEstimates": "Benötigt Abschluss-Schätzungen",
+    "loading": "Vorschläge werden geladen…",
+    "rank": "Vorschlag {{rank}}"
+  },
+  "tokenPlan": {
+    "nextToken": {
+      "title": "Nächster Token",
+      "battle": "{{lane}} · Kampf {{battle}}",
+      "points": "+{{points}} Punkte",
+      "reasons": {
+        "mostPoints": "Die meisten Punkte, die jetzt verfügbar sind",
+        "mostPointsPlayableNow": "Die meisten Punkte unter den Kämpfen, die du jetzt spielen kannst"
+      },
+      "upcoming": "{{reason}}, sobald Durchlauf {{run}} beginnt",
+      "maybe": "Vielleicht schaffbar",
+      "members": "Mitglieder",
+      "objectives": "Erfüllt",
+      "actions": {
+        "partly": "Teilweise geschafft",
+        "couldNot": "Nicht geschafft",
+        "partlyLabel": "Teilweise geschafft: {{team}} auf {{lane}} Kampf {{battle}} als „Vielleicht schaffbar“ markieren",
+        "couldNotLabel": "Nicht geschafft: {{team}} auf {{lane}} Kampf {{battle}} als „Hier aufhören“ markieren"
+      },
+      "loading": "Token-Plan wird geladen…",
+      "unavailable": "Synchronisierter Fortschritt ist nicht verfügbar, daher gibt es keinen Token-Plan",
+      "allCleared": "Alle Kämpfe sind abgeschlossen",
+      "noTeams": "Füge auf {{lane}} ein Team hinzu, um einen Plan zu erhalten",
+      "noDepth": "Lege fest, wie weit {{team}} kommt",
+      "nothingLeft": "Deine Teams können nichts mehr abschließen · {{points}} Punkte offen auf {{lane}}"
+    },
+    "plan": {
+      "title": "Token-Plan",
+      "summary_one": "{{count}} Token · +{{points}} Punkte",
+      "summary_other": "{{count}} Tokens · +{{points}} Punkte",
+      "battle": "Kampf {{battle}}",
+      "points": "+{{points}}",
+      "running": "{{points}} gesamt",
+      "maybe": "Vielleicht schaffbar",
+      "milestone": "Meilenstein {{milestone}} · +{{currency}} Währung",
+      "step": "{{step}} erreicht",
+      "fullClear_one": "{{lane}}: Ein vollständiger Abschluss braucht {{count}} Token pro Kampf",
+      "fullClear_other": "{{lane}}: Ein vollständiger Abschluss braucht {{count}} Tokens pro Kampf",
+      "uncovered": "{{lane}}: Kein Team deckt {{objectives}} ab"
+    },
+    "forecast": {
+      "title": "Durchlaufprognose",
+      "header": "Am Ende von Durchlauf {{run}}: {{points}} Punkte · {{step}} fehlen {{shards}} Splitter",
+      "headerAllSteps": "Am Ende von Durchlauf {{run}}: {{points}} Punkte · alle Belohnungsstufen erreicht",
+      "run": "Durchlauf {{run}}",
+      "states": {
+        "done": "Erledigt",
+        "now": "Aktuell",
+        "next": "Als Nächstes",
+        "planned": "Geplant"
+      },
+      "finished": "Abgeschlossen",
+      "supply": "{{total}} Tokens: {{free}} kostenlos + {{ad}} Werbung + {{bonus}} Bonuslieferung",
+      "uses": "Nutzt {{used}} · {{left}} übrig",
+      "points": "{{points}} Punkte (+{{earned}})",
+      "currency": "{{currency}} Währung verfügbar (+{{earned}} verdient)",
+      "chests": "{{claimed}} Truhen geöffnet (+{{opened}})",
+      "shards": "{{shards}} Splitter",
+      "reached": "Erreicht: {{steps}}",
+      "next": "Als Nächstes: {{step}} · {{shards}} Splitter fehlen",
+      "allSteps": "Alle Belohnungsstufen erreicht",
+      "ohSoClose": "Oh So Close: {{shards}} Splitter für {{blackstone}} Schwarzstein",
+      "leftover_one": "{{count}} Token ohne Kampf: Füge ein Team hinzu oder erhöhe eine Tiefe, um ihn zu nutzen",
+      "leftover_other": "{{count}} Tokens ohne Kampf: Füge ein Team hinzu oder erhöhe eine Tiefe, um sie zu nutzen",
+      "editInputs": "Eingaben bearbeiten"
     }
   }
 }

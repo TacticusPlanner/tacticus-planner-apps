@@ -49,7 +49,7 @@ export function PlanMaterialCell({
             target: cell.target,
           })}
           className={cn(
-            "flex min-w-0 flex-col items-center gap-1 rounded-xl border bg-card p-1.5 text-center transition-opacity focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none",
+            "flex min-w-0 flex-col items-center gap-1 rounded-lg border bg-card p-1.5 text-center transition-opacity focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none",
             dimmed && "opacity-30"
           )}
           data-dimmed={dimmed || undefined}

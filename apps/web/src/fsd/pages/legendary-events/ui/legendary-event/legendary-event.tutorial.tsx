@@ -8,11 +8,15 @@ import type { LegendaryEventTab } from "./legendary-event-page.view-model"
 
 const EVENT_TOUR_TARGETS = {
   tabs: '[data-testid="legendary-event-tabs"]',
+  nextToken: '[data-testid="legendary-event-next-token"]',
   runStatus: '[data-testid="legendary-event-run-status"]',
+  runInputs: '[data-testid="legendary-event-run-inputs"]',
+  tokenPlan: '[data-testid="legendary-event-token-plan"]',
   laneSummary: '[data-testid="legendary-event-lane-summary"]',
   overviewLeaderboard: '[data-testid="legendary-event-overview-leaderboard"]',
   laneOverview: '[data-testid="legendary-event-lane-overview"]',
   teams: '[data-testid="legendary-event-teams"]',
+  upgradeImpact: '[data-testid="legendary-event-upgrade-impact"]',
   progressGrid: '[data-testid="legendary-event-progress-grid"]',
   leaderboard: '[data-testid="legendary-event-leaderboard"]',
 } as const
@@ -33,10 +37,12 @@ function waitForElement(selector: string, timeoutMs: number): Promise<void> {
 }
 
 /**
- * The event page tour (spec: the Events pages have Joyride tours): the tab strip, Run status, the
- * Overview lane summary and cross-lane leaderboard, then, after switching to Alpha through
- * `selectTab`, Alpha's lane overview, Teams section (with its Add team button), progress grid and
- * leaderboard. Desktop and mobile share the steps.
+ * The event page tour (spec: the Events pages have Joyride tours): the tab strip, the Next token
+ * card (in whichever state it renders), Run status, its Inputs button (the same target on both
+ * forms), the Token plan header, the Overview lane summary and cross-lane
+ * leaderboard, then, after switching to Alpha through
+ * `selectTab`, Alpha's lane overview, Teams section (with its Add team button), progress grid (and
+ * its marks) and leaderboard. Desktop and mobile share the steps.
  */
 export function useLegendaryEventTutorial(
   selectTab: (tab: LegendaryEventTab) => void
@@ -54,7 +60,10 @@ export function useLegendaryEventTutorial(
     })
     const steps: Step[] = [
       step("tabs", "bottom"),
+      step("nextToken", "bottom"),
       step("runStatus", "bottom"),
+      step("runInputs", "bottom"),
+      step("tokenPlan", "bottom"),
       step("laneSummary", "top"),
       step("overviewLeaderboard", "top"),
       {
@@ -65,6 +74,7 @@ export function useLegendaryEventTutorial(
         },
       },
       step("teams", "top"),
+      step("upgradeImpact", "top"),
       step("progressGrid", "top"),
       step("leaderboard", "top"),
     ]

@@ -1,23 +1,21 @@
-import { useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
-import { useQuery, useQueryClient } from "@tanstack/react-query"
-import { useIsAuthenticated } from "@azure/msal-react"
+import { useQueryClient } from "@tanstack/react-query"
 
 import {
   createLegendaryEventTeam,
   deleteLegendaryEventTeam,
-  legendaryEventPlanConflictDetails,
   legendaryEventPlanQueries,
   updateLegendaryEventTeam,
   updateLegendaryEventTeamOrder,
+  usePlanWriteQueue,
   type LegendaryEventLaneId,
   type LegendaryEventPlan,
   type LegendaryEventRun,
   type LegendaryEventTeam,
+  type PlanMutationOutcome,
 } from "@/entities/legendary-event"
 import { useAnalyticsActions } from "@/shared/analytics"
-import { ApiError } from "@/shared/api"
 
 import {
   draftOfTeam,
@@ -30,33 +28,14 @@ import {
   type TeamDraft,
 } from "./plan-patches"
 
-/** How a plan mutation ended: `saved` (the returned plan is adopted), `conflict` (the plan changed
- *  elsewhere and was reloaded — from this write's 409 body, or from an earlier queued write's,
- *  which discarded this one unsent), `error` (rolled back) or `skipped` (nothing sent: no plan
- *  loaded or nothing changed). */
-export type PlanMutationOutcome = "saved" | "conflict" | "error" | "skipped"
-
-type Patch = (plan: LegendaryEventPlan) => LegendaryEventPlan
-
-type Operation = {
-  /** Applied to the cache at once (optimistic); none for create/update, which wait for the server
-   *  because it assigns ids and validates. */
-  patch?: Patch
-  /** Sends the request against the last server-confirmed plan. */
-  send: (base: LegendaryEventPlan) => Promise<LegendaryEventPlan>
-  onSaved?: (plan: LegendaryEventPlan) => void
-}
+export type { PlanMutationOutcome }
 
 /**
- * The plan of one event and its mutations (design D2). One query per event, enabled when signed
- * in. Every mutation is queued so requests go out one at a time, each with the revision of the
- * plan the previous one returned, and the returned plan is adopted. Reorder, delete and a card's
- * depth change apply optimistically and roll back on failure. A 409 carrying the plan
- * (`legendaryEventPlanStale` / `legendaryEventOrderSetMismatch`) adopts that plan, shows one
- * "reloaded" toast, discards queued writes (they report `conflict` too) and never retries on its
- * own; the caller (the editor) keeps its draft. Before a write the plan query's in-flight refetch is
- * cancelled, and a refetch older than the cache never replaces it (see `legendaryEventPlanQueries`),
- * so the next write never carries a stale revision.
+ * The plan of one event and its team mutations (design D2). The query, the serialised write queue,
+ * optimistic patches and conflict adoption live in the entity's shared `usePlanWriteQueue`, so team
+ * writes share one queue with the run inputs and mark writes of the same event. Reorder, delete and
+ * a card's depth change apply optimistically and roll back on failure; create and update wait for
+ * the server. On a conflict the caller (the editor) keeps its draft.
  */
 export function useLegendaryEventPlan({
   eventId,
@@ -66,96 +45,13 @@ export function useLegendaryEventPlan({
   run: LegendaryEventRun
 }) {
   const { t } = useTranslation("legendaryEvents")
-  const isAuthenticated = useIsAuthenticated()
   const queryClient = useQueryClient()
   const { captureEvent } = useAnalyticsActions()
   const queryKey = legendaryEventPlanQueries.detail(eventId).queryKey
-  const query = useQuery({
-    ...legendaryEventPlanQueries.detail(eventId),
-    enabled: isAuthenticated,
-  })
-  const queue = useRef<Promise<unknown>>(Promise.resolve())
-  // The last plan the server returned; requests are built on it, never on optimistic state.
-  const confirmed = useRef<LegendaryEventPlan | null>(null)
-  const patches = useRef<{ id: number; patch: Patch }[]>([])
-  const nextPatchId = useRef(0)
-  const outstanding = useRef(0)
-  // Bumped by a conflict: operations queued before it are dropped rather than replayed.
-  const generation = useRef(0)
-  const [pendingCount, setPendingCount] = useState(0)
-
-  const show = (plan: LegendaryEventPlan) =>
-    queryClient.setQueryData<LegendaryEventPlan>(
-      queryKey,
-      patches.current.reduce((current, entry) => entry.patch(current), plan)
-    )
-
-  const enqueue = (operation: Operation): Promise<PlanMutationOutcome> => {
-    const cached = queryClient.getQueryData<LegendaryEventPlan>(queryKey)
-    if (!isAuthenticated || !cached) return Promise.resolve("skipped")
-    // A refetch landing after this point would overwrite the optimistic (or confirmed) plan.
-    void queryClient.cancelQueries({ queryKey })
-    if (outstanding.current === 0) confirmed.current = cached
-    const patchId = nextPatchId.current++
-    if (operation.patch) {
-      patches.current = [
-        ...patches.current,
-        { id: patchId, patch: operation.patch },
-      ]
-      queryClient.setQueryData(queryKey, operation.patch(cached))
-    }
-    const dropPatch = () => {
-      patches.current = patches.current.filter((entry) => entry.id !== patchId)
-    }
-    const queuedIn = generation.current
-    outstanding.current += 1
-    setPendingCount((count) => count + 1)
-
-    const outcome = queue.current.then(
-      async (): Promise<PlanMutationOutcome> => {
-        try {
-          // An earlier write's conflict reloaded the plan and discarded this one unsent.
-          if (queuedIn !== generation.current) return "conflict"
-          if (!confirmed.current) return "skipped"
-          const plan = await operation.send(confirmed.current)
-          confirmed.current = plan
-          dropPatch()
-          show(plan)
-          operation.onSaved?.(plan)
-          return "saved"
-        } catch (error) {
-          dropPatch()
-          const conflict =
-            error instanceof ApiError
-              ? legendaryEventPlanConflictDetails(error.details)
-              : null
-          if (conflict) {
-            generation.current += 1
-            patches.current = []
-            confirmed.current = conflict.plan
-            show(conflict.plan)
-            toast(t("teams.toasts.reloaded"))
-            return "conflict"
-          }
-          if (confirmed.current) show(confirmed.current)
-          // The server's message is English and technical: the toast stays translated.
-          toast.error(t("teams.toasts.error"))
-          return "error"
-        } finally {
-          outstanding.current -= 1
-          setPendingCount((count) => Math.max(0, count - 1))
-        }
-      }
-    )
-    queue.current = outcome
-    return outcome
-  }
+  const { query, enabled, pending, enqueue } = usePlanWriteQueue(eventId)
 
   const teamAnalytics = (
-    type:
-      | "legendary_event_team_created"
-      | "legendary_event_team_edited"
-      | "legendary_event_team_deleted",
+    type: "legendary_event_team_edited" | "legendary_event_team_deleted",
     laneId: LegendaryEventLaneId,
     team: Pick<TeamDraft, "memberUnitIds" | "objectiveIndexes">
   ) =>
@@ -167,18 +63,67 @@ export function useLegendaryEventPlan({
       objectiveCount: team.objectiveIndexes.length,
     })
 
-  const createTeam = (laneId: LegendaryEventLaneId, draft: TeamDraft) =>
+  /**
+   * Logs a depth the editor saved as the card's depth events would (the override log, design D8):
+   * clearing the depth while an estimate shows is Use estimate, any other change is a depth set.
+   */
+  const editorDepthAnalytics = (
+    laneId: LegendaryEventLaneId,
+    previous: number | null,
+    depth: number | null,
+    shown: DepthEstimateContext
+  ) => {
+    if (depth === previous) return
+    if (depth === null && shown.estimate !== null) {
+      captureEvent({
+        type: "legendary_event_depth_estimate_restored",
+        eventId,
+        laneId,
+        estimate: shown.estimate,
+      })
+      return
+    }
+    captureEvent({
+      type: "legendary_event_depth_set",
+      eventId,
+      laneId,
+      depth,
+      estimate: shown.estimate,
+      fromEstimate: shown.fromEstimate,
+    })
+  }
+
+  const createTeam = (
+    laneId: LegendaryEventLaneId,
+    draft: TeamDraft,
+    shown: DepthEstimateContext = noEstimateShown,
+    origin: TeamOrigin = manualOrigin
+  ) =>
     enqueue({
       send: (base) =>
         createLegendaryEventTeam(
           eventId,
           teamCreateRequest(laneId, draft, run, base.revision)
         ),
-      onSaved: () =>
-        teamAnalytics("legendary_event_team_created", laneId, draft),
+      onSaved: () => {
+        captureEvent({
+          type: "legendary_event_team_created",
+          eventId,
+          laneId,
+          memberCount: draft.memberUnitIds.length,
+          objectiveCount: draft.objectiveIndexes.length,
+          source: origin.source,
+          suggestionRank: origin.suggestionRank,
+        })
+        editorDepthAnalytics(laneId, null, draft.expectedBattleClears, shown)
+      },
     })
 
-  const updateTeam = (team: LegendaryEventTeam, draft: TeamDraft) =>
+  const updateTeam = (
+    team: LegendaryEventTeam,
+    draft: TeamDraft,
+    shown: DepthEstimateContext = noEstimateShown
+  ) =>
     enqueue({
       send: (base) =>
         updateLegendaryEventTeam(
@@ -191,8 +136,15 @@ export function useLegendaryEventPlan({
             base.teams.find((entry) => entry.id === team.id) ?? team
           )
         ),
-      onSaved: () =>
-        teamAnalytics("legendary_event_team_edited", team.laneId, draft),
+      onSaved: () => {
+        teamAnalytics("legendary_event_team_edited", team.laneId, draft)
+        editorDepthAnalytics(
+          team.laneId,
+          draftOfTeam(team, run).expectedBattleClears,
+          draft.expectedBattleClears,
+          shown
+        )
+      },
     })
 
   const deleteTeam = (team: LegendaryEventTeam) =>
@@ -221,8 +173,12 @@ export function useLegendaryEventPlan({
     })
   }
 
-  /** Sets (or clears, with null) the team's depth for the current run, as a manual value. */
-  const setDepth = (team: LegendaryEventTeam, depth: number | null) =>
+  /** Writes the team's depth for the current run (null clears it). */
+  const writeDepth = (
+    team: LegendaryEventTeam,
+    depth: number | null,
+    onSaved: () => void
+  ) =>
     enqueue({
       patch: (plan) =>
         withTeamDepth(plan, team.id, run, depth, new Date().toISOString()),
@@ -239,25 +195,70 @@ export function useLegendaryEventPlan({
           )
         )
       },
-      onSaved: () =>
-        captureEvent({
-          type: "legendary_event_depth_set",
-          eventId,
-          laneId: team.laneId,
-          depth,
-        }),
+      onSaved,
     })
+
+  /**
+   * Sets (or clears, with null) the team's depth for the current run, as a manual value. The
+   * analytics event carries the estimate shown at the time and whether the edit started from it
+   * (the override log, design D8).
+   */
+  const setDepth = (
+    team: LegendaryEventTeam,
+    depth: number | null,
+    shown: DepthEstimateContext = noEstimateShown
+  ) =>
+    writeDepth(team, depth, () =>
+      captureEvent({
+        type: "legendary_event_depth_set",
+        eventId,
+        laneId: team.laneId,
+        depth,
+        estimate: shown.estimate,
+        fromEstimate: shown.fromEstimate,
+      })
+    )
+
+  /** Use estimate: clears the current run's manual depth so the estimate shows again. */
+  const restoreEstimate = (team: LegendaryEventTeam, estimate: number) =>
+    writeDepth(team, null, () =>
+      captureEvent({
+        type: "legendary_event_depth_estimate_restored",
+        eventId,
+        laneId: team.laneId,
+        estimate,
+      })
+    )
 
   return {
     query,
-    enabled: isAuthenticated,
-    pending: pendingCount > 0,
+    enabled,
+    pending,
     createTeam,
     updateTeam,
     deleteTeam,
     reorderLane,
     setDepth,
+    restoreEstimate,
   }
+}
+
+/** The estimate shown when a depth was edited (null when none was shown). */
+export interface DepthEstimateContext {
+  estimate: number | null
+  fromEstimate: boolean
+}
+
+/** Where a new team came from: the editor from scratch, or a team suggestion (1-based rank). */
+export type TeamOrigin =
+  | { source: "manual"; suggestionRank: null }
+  | { source: "suggestion"; suggestionRank: number }
+
+const manualOrigin: TeamOrigin = { source: "manual", suggestionRank: null }
+
+const noEstimateShown: DepthEstimateContext = {
+  estimate: null,
+  fromEstimate: false,
 }
 
 export type LegendaryEventPlanActions = ReturnType<typeof useLegendaryEventPlan>

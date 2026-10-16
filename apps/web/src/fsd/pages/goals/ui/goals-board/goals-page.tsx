@@ -17,7 +17,7 @@ import {
 } from "@/entities/planning-setting"
 import { usePersistedSelection } from "@/shared/lib"
 
-import { useGoalAttainment } from "../../model/attainment/use-goal-attainment"
+import { useGoalAttainmentState } from "../../model/attainment/use-goal-attainment"
 import { useGoalsOverviewMetrics } from "../../model/attainment/use-goals-overview-metrics"
 import { usePlanInsights } from "../../model/insights/use-plan-insights"
 import { orderRowsByGlobalPriority } from "../../model/shared/goal-row-order"
@@ -28,9 +28,10 @@ import { useGoalActions } from "../../model/goals-data/use-goal-actions"
 import { useGoalsMobileModes } from "../../model/goals-data/use-goals-mobile-modes"
 import { useGoalsSelection } from "../../model/goals-data/use-goals-selection"
 import { useGoals } from "../../model/goals-data/use-goals"
-import { GoalsEstimatesError } from "./goals-estimates-error"
+import { GoalsLateNotices } from "./goals-estimates-error"
 import { GoalsPageStates } from "./goals-page-states"
 import { useGoalsPageReorder } from "../../model/goals-data/use-goals-page-reorder"
+import { isGoalsListLoading } from "../../model/goals-data/goals-list-loading"
 import { useProjects } from "@/entities/project"
 import { useGoalProjects } from "../../model/projects/use-goal-projects"
 import { useGoalCatalog } from "../../model/shared/use-goal-catalog"
@@ -86,13 +87,13 @@ export function GoalsPage() {
   // Membership as a URL-backed filter dimension (`?project=`), not a project selection: deliberately
   // unconnected to the project filter Dailies and Insights use, so scoping Goals never changes what
   // those views operate on (goals-navigation: "Goals project scope is URL state").
-  const { projectId: scopeId, setProjectId: setScopeId } = useGoalsProjectScope(
+  const scope = useGoalsProjectScope(
     projects.projects,
     projects.fetchState.status === "success"
   )
-  const { byGoalId: projectsByGoalId, loadedProjectIds } = useGoalProjects(
-    projects.projects
-  )
+  const { projectId: scopeId, setProjectId: setScopeId } = scope
+  const goalProjects = useGoalProjects(projects.projects)
+  const { byGoalId: projectsByGoalId, loadedProjectIds } = goalProjects
   const nonArchivedGoals = useGoals()
   const archivedGoals = useGoals({ archived: true })
   // The archived query stays for prerequisite cascades only; there is no Archived view any more.
@@ -109,7 +110,8 @@ export function GoalsPage() {
   // Drives the "Unfulfilled" / "Reached" split (plan §3) — computed from synced player
   // progression, not the goal's lifecycle `status`. Archived goals are excluded: attainment isn't
   // meaningful once a goal has been taken out of active planning.
-  const attainmentByGoalId = useGoalAttainment(nonArchivedGoalIds)
+  const { byGoalId: attainmentByGoalId, pending: attainmentPending } =
+    useGoalAttainmentState(nonArchivedGoalIds)
   const isReached = (goalId: string) =>
     attainmentByGoalId.get(goalId)?.reached ?? false
   const reachedByGoalId = useMemo(
@@ -254,13 +256,16 @@ export function GoalsPage() {
       reorderActive,
       toggleReorder,
     })
-  const noFarmableDemand =
-    !insightsRun.loading &&
-    !insightsRun.isError &&
-    insights.estimates.size === 0 &&
-    nonArchivedRows.some((row) => row.status === "Active")
-
-  const isLoading = selectedGoals.isLoading
+  const isLoading = isGoalsListLoading({
+    goalsLoading: selectedGoals.isLoading,
+    tab,
+    requestedProjectId: scope.requestedProjectId,
+    projectsLoading: projects.loading,
+    scopeId,
+    pendingProjectIds: goalProjects.pendingProjectIds,
+    attainmentPending,
+    hasCandidateGoals: filteredNonArchivedRows.length > 0,
+  })
   const fetchError =
     selectedGoals.fetchState.status === "error"
       ? selectedGoals.fetchState.message
@@ -285,17 +290,23 @@ export function GoalsPage() {
     loadedProjectIds.has(scopeId) &&
     (scopeCounts.get(scopeId) ?? 0) === 0
 
-  const reorderToggle =
-    isMobile && reorderAvailable ? (
-      <GoalsMobileReorderToggle
-        active={reorderActive}
-        onToggle={toggleReorderExclusive}
-      />
-    ) : null
-  const selectToggle =
-    isMobile && rows.length > 0 ? (
-      <GoalsMobileSelectToggle active={selectActive} onToggle={toggleSelect} />
-    ) : null
+  // Always rendered on mobile (disabled when unavailable) so the control row keeps its shape while
+  // goals load instead of shifting Create Goal / Planning Settings once the list arrives.
+  // (`GoalsToolbar` places them only in its mobile layout.)
+  const reorderToggle = (
+    <GoalsMobileReorderToggle
+      active={reorderActive}
+      disabled={isLoading || !reorderAvailable}
+      onToggle={toggleReorderExclusive}
+    />
+  )
+  const selectToggle = (
+    <GoalsMobileSelectToggle
+      active={selectActive}
+      disabled={isLoading || rows.length === 0}
+      onToggle={toggleSelect}
+    />
+  )
   const bulkActions = (compact: boolean) => (
     <GoalsBulkControls
       actions={goalActions}
@@ -364,19 +375,6 @@ export function GoalsPage() {
         />
       ) : null}
 
-      {insightsRun.isError ? (
-        <GoalsEstimatesError onRetry={insightsRun.retry} />
-      ) : null}
-
-      {noFarmableDemand ? (
-        <p
-          className="text-sm text-muted-foreground"
-          data-testid="goals-no-farmable"
-        >
-          {t("goals.order.noFarmableDemand")}
-        </p>
-      ) : null}
-
       <GoalsPageStates
         fetchError={fetchError}
         isLoading={isLoading}
@@ -391,7 +389,7 @@ export function GoalsPage() {
         ref={listRef}
         tabIndex={-1}
       >
-        {rowGroups.map((rowGroup) =>
+        {(isLoading ? [] : rowGroups).map((rowGroup) =>
           rowGroup.rows.length > 0 ? (
             <section className="grid gap-2" key={rowGroup.key}>
               {rowGroup.dimension !== "none" ? (
@@ -432,6 +430,11 @@ export function GoalsPage() {
           ) : null
         )}
       </div>
+
+      <GoalsLateNotices
+        hasActiveGoals={nonArchivedRows.some((row) => row.status === "Active")}
+        insightsRun={insightsRun}
+      />
 
       {isMobile && reorderActive ? (
         <MobileReorderBar onDone={exitReorder} pending={orderActions.pending} />

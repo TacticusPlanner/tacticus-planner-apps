@@ -33,8 +33,7 @@ vi.mock("../config/environment", () => ({
 }))
 
 vi.mock("@azure/msal-browser", () => {
-  class InteractionRequiredAuthError extends Error {}
-  class BrowserAuthError extends Error {
+  class AuthError extends Error {
     errorCode: string
 
     constructor(errorCode: string) {
@@ -42,6 +41,8 @@ vi.mock("@azure/msal-browser", () => {
       this.errorCode = errorCode
     }
   }
+  class InteractionRequiredAuthError extends AuthError {}
+  class BrowserAuthError extends AuthError {}
   class PublicClientApplication {
     constructor(configuration: unknown) {
       mocks.constructor(configuration)
@@ -50,9 +51,11 @@ vi.mock("@azure/msal-browser", () => {
   }
 
   return {
+    AuthError,
     BrowserAuthError,
     BrowserAuthErrorCodes: { timedOut: "timed_out" },
     BrowserCacheLocation: { LocalStorage: "localStorage" },
+    CacheLookupPolicy: { AccessTokenAndRefreshToken: 1 },
     EventType: { LOGIN_SUCCESS: "login-success" },
     InteractionRequiredAuthError,
     LogLevel: { Error: 0, Warning: 1, Info: 2, Verbose: 3 },
@@ -61,6 +64,7 @@ vi.mock("@azure/msal-browser", () => {
 })
 
 import {
+  AuthError,
   BrowserAuthError,
   InteractionRequiredAuthError,
   LogLevel,
@@ -73,11 +77,14 @@ import {
   isInteractionRequired,
   loginRequest,
   requestApiAccess,
+  resetSilentRestoreForTesting,
+  SILENT_FRAME_TIMEOUT_MS,
 } from "./authentication"
 
 describe("authentication", () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    resetSilentRestoreForTesting()
     mocks.instance.initialize.mockResolvedValue(undefined)
     mocks.instance.handleRedirectPromise.mockResolvedValue(null)
     mocks.instance.getActiveAccount.mockReturnValue(null)
@@ -183,6 +190,84 @@ describe("authentication", () => {
     expect(isInteractionRequired(new Error("other"))).toBe(false)
   })
 
+  it("caps the hidden sign-in frame wait below MSAL's 10s default", async () => {
+    await initializeAuthentication()
+
+    const configuration = mocks.constructor.mock.calls.at(-1)?.[0] as {
+      system: { iframeBridgeTimeout: number }
+    }
+    expect(configuration.system.iframeBridgeTimeout).toBe(
+      SILENT_FRAME_TIMEOUT_MS
+    )
+    expect(SILENT_FRAME_TIMEOUT_MS).toBeLessThan(10_000)
+  })
+
+  it("treats a rejected refresh token (invalid_grant) as requiring interaction", () => {
+    expect(
+      isInteractionRequired(new AuthError("invalid_grant", "message"))
+    ).toBe(true)
+    expect(
+      isInteractionRequired(new AuthError("network_error", "message"))
+    ).toBe(false)
+  })
+
+  describe("acquireAccessToken after the app-load restore", () => {
+    const account = { homeAccountId: "cached" }
+
+    beforeEach(() => {
+      mocks.instance.getActiveAccount.mockReturnValue(account as never)
+    })
+
+    it("waits for an in-flight restore instead of racing it", async () => {
+      let finishRestore: (value: unknown) => void = () => undefined
+      mocks.instance.acquireTokenSilent
+        .mockImplementationOnce(
+          () =>
+            new Promise((resolve) => {
+              finishRestore = resolve
+            })
+        )
+        .mockResolvedValueOnce({ accessToken: "fresh" })
+      await initializeAuthentication()
+
+      const restore = attemptSilentSignIn(mocks.instance as never)
+      const token = acquireAccessToken()
+      await Promise.resolve()
+      expect(mocks.instance.acquireTokenSilent).toHaveBeenCalledTimes(1)
+
+      finishRestore({ account })
+      await expect(restore).resolves.toBe("success")
+      await expect(token).resolves.toBe("fresh")
+      expect(mocks.instance.acquireTokenSilent).toHaveBeenLastCalledWith({
+        account,
+        scopes: ["api://planner/access"],
+      })
+    })
+
+    it("skips the hidden frame once the restore has failed, so the caller can redirect at once", async () => {
+      const expired = new InteractionRequiredAuthError(
+        "refresh_token_expired",
+        "message"
+      )
+      mocks.instance.acquireTokenSilent.mockRejectedValue(expired)
+      mocks.instance.ssoSilent.mockRejectedValue(
+        new BrowserAuthError("timed_out", "correlation-id")
+      )
+      await initializeAuthentication()
+
+      await expect(attemptSilentSignIn(mocks.instance as never)).resolves.toBe(
+        "failed"
+      )
+      await expect(acquireAccessToken()).rejects.toBe(expired)
+      expect(mocks.instance.acquireTokenSilent).toHaveBeenLastCalledWith({
+        account,
+        cacheLookupPolicy: 1,
+        scopes: ["api://planner/access"],
+      })
+      expect(mocks.instance.ssoSilent).toHaveBeenCalledOnce()
+    })
+  })
+
   it("treats a silent-iframe timeout as requiring interaction", () => {
     expect(
       isInteractionRequired(new BrowserAuthError("timed_out", "correlation-id"))
@@ -195,6 +280,34 @@ describe("authentication", () => {
   })
 
   describe("attemptSilentSignIn", () => {
+    beforeEach(() => {
+      // No usable cached token by default, so the IdP session check is what's exercised.
+      mocks.instance.acquireTokenSilent.mockRejectedValue(
+        new InteractionRequiredAuthError("refresh_token_expired", "message")
+      )
+    })
+
+    it("restores from cached tokens without a hidden frame when they are usable", async () => {
+      const cachedAccount = { homeAccountId: "cached" }
+      mocks.instance.getAllAccounts.mockReturnValue([cachedAccount] as never)
+      mocks.instance.acquireTokenSilent.mockResolvedValue({
+        account: cachedAccount,
+      })
+
+      await expect(attemptSilentSignIn(mocks.instance as never)).resolves.toBe(
+        "success"
+      )
+      expect(mocks.instance.acquireTokenSilent).toHaveBeenCalledWith({
+        account: cachedAccount,
+        cacheLookupPolicy: 1,
+        scopes: ["api://planner/access"],
+      })
+      expect(mocks.instance.ssoSilent).not.toHaveBeenCalled()
+      expect(mocks.instance.setActiveAccount).toHaveBeenCalledWith(
+        cachedAccount
+      )
+    })
+
     it("does not call ssoSilent when there is no cached account", async () => {
       mocks.instance.getAllAccounts.mockReturnValue([])
 

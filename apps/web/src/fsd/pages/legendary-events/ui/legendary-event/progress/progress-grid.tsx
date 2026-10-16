@@ -4,16 +4,25 @@ import { cn } from "@workspace/ui/lib/utils"
 import type { LaneProgressView } from "@/entities/legendary-event"
 
 import type { ProgressColumn } from "./progress-columns"
-import { ClearedCell, ProgressColumnIcon } from "./progress-parts"
+import type { LaneMarks } from "./progress-marks"
+import {
+  BattleRowAction,
+  ProgressCell,
+  ProgressColumnIcon,
+} from "./progress-parts"
 
 /** Desktop: one lane's battles (rows, battle 1 first) by defeat-all and the five objectives, each
- *  row ending with its points earned of the maximum and its high score. Read-only. */
+ *  row ending with its points earned of the maximum and its high score. Cleared state and points
+ *  are read-only; with `marks`, a not-cleared cell opens its mark menu and an incomplete row ends
+ *  with a "⋯" row action. */
 export function ProgressGrid({
   progress,
   columns,
+  marks,
 }: {
   progress: LaneProgressView
   columns: readonly ProgressColumn[]
+  marks?: LaneMarks
 }) {
   const { t, i18n } = useTranslation("legendaryEvents")
   const number = new Intl.NumberFormat(i18n.language)
@@ -54,6 +63,13 @@ export function ProgressGrid({
           <th className="py-1 pl-1 text-right font-medium" scope="col">
             {t("progress.points")}
           </th>
+          {marks ? (
+            <th className="w-7 py-1" scope="col">
+              <span className="sr-only">
+                {t("annotations.rowActionHeader")}
+              </span>
+            </th>
+          ) : null}
         </tr>
       </thead>
       <tbody>
@@ -81,9 +97,12 @@ export function ProgressGrid({
             </th>
             {battle.cleared.map((cleared, index) => (
               <td className="px-0.5 py-0.5 text-center" key={index}>
-                <ClearedCell
+                <ProgressCell
+                  battleIndex={battle.index}
                   cleared={cleared}
                   label={columns[index]?.label ?? ""}
+                  marks={marks}
+                  objectiveId={index}
                 />
               </td>
             ))}
@@ -105,6 +124,13 @@ export function ProgressGrid({
                 </span>
               ) : null}
             </td>
+            {marks ? (
+              <td className="py-0.5 pl-1 text-right">
+                {battle.complete ? null : (
+                  <BattleRowAction battle={battle} marks={marks} />
+                )}
+              </td>
+            ) : null}
           </tr>
         ))}
       </tbody>

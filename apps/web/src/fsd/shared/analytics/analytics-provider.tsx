@@ -96,6 +96,15 @@ export function useAnalyticsActions() {
           })
           break
         case "legendary_event_team_created":
+          client.capture(event.type, {
+            event_id: event.eventId,
+            lane_id: event.laneId,
+            member_count: event.memberCount,
+            objective_count: event.objectiveCount,
+            source: event.source,
+            suggestion_rank: event.suggestionRank,
+          })
+          break
         case "legendary_event_team_edited":
         case "legendary_event_team_deleted":
           client.capture(event.type, {
@@ -110,7 +119,85 @@ export function useAnalyticsActions() {
             event_id: event.eventId,
             lane_id: event.laneId,
             depth: event.depth,
+            estimate: event.estimate,
+            from_estimate: event.fromEstimate,
           })
+          break
+        case "legendary_event_depth_estimate_restored":
+          client.capture(event.type, {
+            event_id: event.eventId,
+            lane_id: event.laneId,
+            estimate: event.estimate,
+          })
+          break
+        case "legendary_event_run_inputs_saved":
+          client.capture(event.type, {
+            event_id: event.eventId,
+            run: event.run,
+            regular_missions: event.regularMissions,
+            premium_missions: event.premiumMissions,
+            bundle_purchased: event.bundlePurchased,
+            close_shards: event.closeShards,
+          })
+          break
+        case "legendary_event_paid_options_toggled":
+          client.capture(event.type, { event_id: event.eventId, on: event.on })
+          break
+        case "legendary_event_annotation_set":
+          client.capture(event.type, {
+            event_id: event.eventId,
+            lane_id: event.laneId,
+            battle_index: event.battleIndex,
+            cell_count: event.cellCount,
+            status: event.status,
+            scope: event.scope,
+          })
+          break
+        case "legendary_event_goals_preview_toggled":
+          client.capture(event.type, {
+            event_id: event.eventId,
+            enabled: event.enabled,
+            surface: event.surface,
+          })
+          break
+        case "legendary_event_create_goal_opened":
+          client.capture(event.type, {
+            event_id: event.eventId,
+            lane_id: event.laneId,
+            source: event.source,
+            goal_type: event.goalType,
+          })
+          break
+        case "legendary_event_upgrade_impact_expanded":
+          client.capture(event.type, {
+            event_id: event.eventId,
+            lane_id: event.laneId,
+            row_count: event.rowCount,
+          })
+          break
+        case "legendary_event_team_suggestions_opened":
+          client.capture(event.type, {
+            event_id: event.eventId,
+            lane_id: event.laneId,
+            suggestion_count: event.suggestionCount,
+          })
+          break
+        case "legendary_event_next_token_shown":
+          client.capture(event.type, {
+            event_id: event.eventId,
+            state: event.state,
+            plan_length: event.planLength,
+            tokens_left_over: event.tokensLeftOver,
+          })
+          break
+        case "legendary_event_token_plan_expanded":
+          client.capture(event.type, {
+            event_id: event.eventId,
+            plan_length: event.planLength,
+          })
+          break
+        case "legendary_event_run_forecast_expanded":
+          client.capture(event.type, { event_id: event.eventId })
           break
       }
     },
