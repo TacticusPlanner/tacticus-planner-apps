@@ -12,6 +12,7 @@ import type {
 
 export {
   servedDatasetKeys,
+  optionalDatasetKeys,
   isServedDatasetKey,
   catalogManifestMetadataKey,
   type GameCatalogDatasetKey,

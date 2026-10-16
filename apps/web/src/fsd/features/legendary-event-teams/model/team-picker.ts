@@ -80,3 +80,20 @@ export function filterPickerTiles(
     return !needle || nameOf(tile.unit).toLocaleLowerCase().includes(needle)
   })
 }
+
+/** Goals Preview inside the picker (spec `legendary-event-goals-preview`): the switch starts from
+ *  the page's value; while on, tiles read the preview roster. */
+export interface PickerGoalsPreview {
+  /** The page's Goals Preview value. */
+  enabled: boolean
+  /** False while goals load, failed or none target the event's units: the switch is disabled. */
+  available: boolean
+  /** The roster as if every Active goal target were reached; undefined while ownership is unknown. */
+  roster: readonly LegendaryEventRosterUnit[] | undefined
+  /** Units whose preview differs from the synced state. */
+  previewed: ReadonlySet<string>
+  /** A unit's estimated clears on the preview roster; absent without clear estimates. */
+  clearsOf?: (unitId: string) => number | null
+  /** Called when the picker's own switch changes (analytics). */
+  onToggle?: (enabled: boolean) => void
+}

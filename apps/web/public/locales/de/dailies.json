@@ -178,14 +178,18 @@
   "schedule": {
     "raids_one": "{{count}} Versuch verbraucht",
     "raids_other": "{{count}} Versuche verbraucht",
+    "upgradesLeft_one": "Noch {{count}} Upgrade",
+    "upgradesLeft_other": "Noch {{count}} Upgrades",
+    "shardsLeft_one": "Noch {{count}} Scherbe",
+    "shardsLeft_other": "Noch {{count}} Scherben",
     "progress": "{{owned}} von {{target}} im Besitz",
-    "node": "{{node}} · {{raids}} Versuche verbraucht",
-    "maxRaids": "Maximal geraidet",
     "fullyRaided": "Vollständig geraidet"
   },
   "bonus": {
     "title": "Bonus-Raids",
-    "showMore": "Mehr anzeigen"
+    "showMore": "Mehr anzeigen",
+    "limitReached": "Tägliches Energielimit erreicht – diese Bonus-Raids lohnen sich noch.",
+    "limitReachedEmpty": "Tägliches Energielimit erreicht. Heute keine Bonus-Raids mehr."
   },
   "todaysAttempts": {
     "title": "Heutige Versuche",

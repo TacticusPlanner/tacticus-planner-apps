@@ -2,8 +2,10 @@ import { useEffect, useState } from "react"
 import { act, renderHook, waitFor } from "@testing-library/react"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
+import { CLEAR_ESTIMATE_POWER_RATIO } from "../lib/clear-estimate"
+import { useClearEstimateConfig } from "./use-clear-estimate-config"
 import { useLegendaryEvent } from "./use-legendary-event"
-import { useLegendaryEventCommon } from "./use-legendary-event-common"
+import { useLegendaryEventBattles } from "./use-legendary-event-battles"
 import { useLegendaryEventProgress } from "./use-legendary-event-progress"
 import { useLegendaryEventSyncTimes } from "./use-legendary-event-sync-times"
 import { useLegendaryEvents } from "./use-legendary-events"
@@ -26,6 +28,7 @@ const store = vi.hoisted(() => ({
   calls: 0,
   catalogSynced: true,
   metadata: new Map<string, { updatedAt: string }>(),
+  hordeModeTiers: null as null | Record<string, unknown>,
 }))
 const lysander = {
   id: "astarLysander",
@@ -45,7 +48,13 @@ vi.mock("@workspace/game-catalog/queries", () => ({
   getLegendaryEvents: () => read([lysander]),
   getLegendaryEvent: (id: string) =>
     read(id === lysander.id ? lysander : undefined),
-  getLegendaryEventCommon: () => read(null),
+  getLegendaryEventBattles: (id: string) =>
+    read(
+      id === "votanUthar"
+        ? [{ id: "votanUthar-alpha-1", lreId: "votanUthar", power: 1018 }]
+        : []
+    ),
+  getHordeModeTiers: () => read(store.hordeModeTiers),
   hasLegendaryEventsSynced: async () => store.catalogSynced,
 }))
 vi.mock("@workspace/player-data/queries", () => ({
@@ -66,6 +75,7 @@ describe("Legendary Event read hooks", () => {
     store.calls = 0
     store.catalogSynced = true
     store.metadata = new Map()
+    store.hordeModeTiers = null
     vi.useFakeTimers({ toFake: ["Date"] })
     vi.setSystemTime(new Date("2026-09-02T12:00:00Z"))
   })
@@ -121,10 +131,47 @@ describe("Legendary Event read hooks", () => {
     expect(one.result.current).toMatchObject({ data: progress })
   })
 
-  it("reads the reward ladder as null before it syncs", async () => {
-    const { result } = renderHook(() => useLegendaryEventCommon())
+  it("reads one event's battles", async () => {
+    const { result } = renderHook(() => useLegendaryEventBattles("votanUthar"))
     await waitFor(() => expect(result.current.status).toBe("ready"))
-    expect(result.current).toMatchObject({ data: null })
+    expect(result.current).toMatchObject({
+      data: [{ id: "votanUthar-alpha-1", power: 1018 }],
+    })
+  })
+
+  it("reads the clear-estimate config as loading, ready or failed", async () => {
+    store.pending = true
+    const loading = renderHook(() => useClearEstimateConfig())
+    expect(loading.result.current.status).toBe("loading")
+    store.pending = false
+
+    // No tier list synced: estimates still show, every character untiered.
+    const untiered = renderHook(() => useClearEstimateConfig())
+    await waitFor(() => expect(untiered.result.current.status).toBe("ready"))
+    const untieredState = untiered.result.current
+    if (untieredState.status !== "ready") throw new Error("not ready")
+    expect(untieredState.config.hordeMultipliers.size).toBe(0)
+
+    store.hordeModeTiers = {
+      id: "horde-mode-tiers",
+      tiers: [{ tier: "A", multiplier: 1.55 }],
+      characters: [
+        { unitId: "ultraTigurius", tier: "A" },
+        { unitId: "ultraCalgar", tier: "A", multiplier: 1.65 },
+      ],
+    }
+    const ready = renderHook(() => useClearEstimateConfig())
+    await waitFor(() => expect(ready.result.current.status).toBe("ready"))
+    const state = ready.result.current
+    if (state.status !== "ready") throw new Error("not ready")
+    expect(state.config.powerRatio).toBe(CLEAR_ESTIMATE_POWER_RATIO)
+    expect(state.config.calibrated).toBe(false)
+    expect(state.config.hordeMultipliers.get("ultraTigurius")).toBe(1.55)
+    expect(state.config.hordeMultipliers.get("ultraCalgar")).toBe(1.65)
+
+    store.fail = true
+    const failed = renderHook(() => useClearEstimateConfig())
+    await waitFor(() => expect(failed.result.current.status).toBe("failed"))
   })
 
   it("reports a progress read failure", async () => {

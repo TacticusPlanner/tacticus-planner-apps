@@ -54,6 +54,7 @@ function GoalsTable({
   xpBookRarity,
   reachedByGoalId,
   cascadeContext,
+  projectRemoval,
   selection = EMPTY_SELECTION,
   onToggleSelected,
   visibleIds,
@@ -122,6 +123,7 @@ function GoalsTable({
                 <GoalRowCells
                   actions={actions}
                   cascadeContext={cascadeContext}
+                  projectRemoval={projectRemoval}
                   dragHandle={sortable.dragHandle}
                   estimates={estimates}
                   levelChargedXp={levelChargedXp}

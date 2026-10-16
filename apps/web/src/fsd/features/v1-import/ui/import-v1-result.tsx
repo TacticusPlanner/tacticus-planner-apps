@@ -31,11 +31,11 @@ import {
 import {
   buildLegendaryEventDiagnosticText,
   groupLegendaryEventOutcomes,
-  issueKeyForLegendaryEventCode,
   legendaryEventsNeedAttention,
   reasonKeyForLegendaryEventCode,
 } from "../model/legendary-event-outcome-buckets"
 import { V1_IMPORT_PARTS } from "../model/parts"
+import { useLegendaryEventIssueText } from "../model/use-legendary-event-issue-text"
 import { useLegendaryEventName } from "../model/use-legendary-event-name"
 import { LegendaryEventImportResult } from "./legendary-event-import-result"
 
@@ -71,6 +71,7 @@ export function ImportResult({ result }: { result: ImportV1ProfileResult }) {
     [result.legendaryEventOutcomes]
   )
   const legendaryEventName = useLegendaryEventName()
+  const legendaryEventIssueText = useLegendaryEventIssueText()
   const hasDiagnostics =
     buckets.notImported.length > 0 ||
     buckets.failed.length > 0 ||
@@ -113,7 +114,7 @@ export function ImportResult({ result }: { result: ImportV1ProfileResult }) {
       title: t("goals.v1Import.legendaryEvents.title"),
       eventName: legendaryEventName,
       reasonFor: (code) => t(reasonKeyForLegendaryEventCode(code)),
-      issueFor: (code) => t(issueKeyForLegendaryEventCode(code)),
+      issueFor: legendaryEventIssueText,
     })
     void navigator.clipboard.writeText(
       [text, legendaryEventText].filter(Boolean).join("\n\n")

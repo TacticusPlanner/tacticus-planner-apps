@@ -1,7 +1,9 @@
 import {
+  AuthError,
   BrowserAuthError,
   BrowserAuthErrorCodes,
   BrowserCacheLocation,
+  CacheLookupPolicy,
   EventType,
   InteractionRequiredAuthError,
   LogLevel,
@@ -16,6 +18,14 @@ import {
 import { getRequiredEnvironmentValue } from "../config/environment"
 
 let authentication: PublicClientApplication | undefined
+
+// How long a hidden prompt=none frame (ssoSilent, or acquireTokenSilent's renewal fallback) may run
+// before MSAL gives up with `timed_out`. MSAL's default is 10s, and the frame only times out when it
+// cannot complete silently (third-party cookies blocked, the IdP showing a page instead of
+// answering) — so the whole wait is dead time before the re-authentication redirect starts. A
+// healthy Entra External ID round trip answers in 1-3s; 6s keeps 2x headroom, and a rare false
+// timeout costs one seamless redirect rather than a broken session.
+export const SILENT_FRAME_TIMEOUT_MS = 6000
 
 function createMsalConfig(): Configuration {
   const authority = getRequiredEnvironmentValue("VITE_MSAL_AUTHORITY")
@@ -41,6 +51,7 @@ function createMsalConfig(): Configuration {
       cacheLocation: BrowserCacheLocation.LocalStorage,
     },
     system: {
+      iframeBridgeTimeout: SILENT_FRAME_TIMEOUT_MS,
       loggerOptions: {
         loggerCallback: (
           level: LogLevel,
@@ -139,10 +150,19 @@ function getActiveAccount() {
 }
 
 export async function acquireAccessToken() {
+  // The app-load silent restore already does whatever renewal is possible (cache, refresh token,
+  // then one hidden frame). Waiting for it keeps the first API call from racing a second hidden
+  // frame against it, and once it has failed there is nothing silent left to try: skip the frame
+  // so the caller gets an interaction-required error now and can redirect, instead of after
+  // another frame timeout.
+  const restoreOutcome = await silentRestore
   const { account, instance } = getActiveAccount()
   const result = await instance.acquireTokenSilent({
     account,
     scopes: loginRequest.scopes,
+    ...(restoreOutcome === "failed"
+      ? { cacheLookupPolicy: CacheLookupPolicy.AccessTokenAndRefreshToken }
+      : {}),
   })
 
   return result.accessToken
@@ -158,10 +178,17 @@ export function isInteractionRequired(error: unknown) {
   // cookies (Safari ITP, Chrome/Firefox privacy modes, etc.) or the IdP session has expired, so it
   // just runs out the clock and MSAL reports a plain timeout rather than InteractionRequiredAuthError.
   // Treat it the same way: only an interactive (redirect) request can resolve it.
-  return (
+  if (
     error instanceof BrowserAuthError &&
     error.errorCode === BrowserAuthErrorCodes.timedOut
-  )
+  ) {
+    return true
+  }
+
+  // With the hidden frame skipped (see acquireTokenSilent's cacheLookupPolicy above) a rejected
+  // refresh token surfaces as the token endpoint's own `invalid_grant` (e.g. the 24h SPA refresh
+  // token lifetime ran out). Only a fresh authorization can replace it.
+  return error instanceof AuthError && error.errorCode === "invalid_grant"
 }
 
 export function requestApiAccess() {
@@ -175,13 +202,42 @@ export function requestApiAccess() {
 
 export type SilentSignInOutcome = "success" | "no-cached-account" | "failed"
 
-export async function attemptSilentSignIn(
+// The in-flight (or settled) app-load restore, shared with acquireAccessToken.
+let silentRestore: Promise<SilentSignInOutcome> | undefined
+
+export function attemptSilentSignIn(
   instance: IPublicClientApplication
 ): Promise<SilentSignInOutcome> {
-  const [cachedAccount] = instance.getAllAccounts()
+  const restore = restoreSession(instance)
+  silentRestore = restore
+  return restore
+}
+
+async function restoreSession(
+  instance: IPublicClientApplication
+): Promise<SilentSignInOutcome> {
+  const cachedAccount =
+    instance.getActiveAccount() ?? instance.getAllAccounts()[0]
 
   if (!cachedAccount) {
     return "no-cached-account"
+  }
+
+  // Cached tokens first: a valid access token or refresh token restores the session with no
+  // hidden frame at all, which is the common case for a returning user within the refresh token's
+  // lifetime. Only when neither is usable is the IdP session checked through a frame.
+  try {
+    const result = await instance.acquireTokenSilent({
+      ...loginRequest,
+      account: cachedAccount,
+      cacheLookupPolicy: CacheLookupPolicy.AccessTokenAndRefreshToken,
+    })
+
+    instance.setActiveAccount(result.account)
+
+    return "success"
+  } catch {
+    // Expected once the refresh token has expired; fall through to the IdP session check.
   }
 
   try {
@@ -206,4 +262,9 @@ export async function attemptSilentSignIn(
 
     return "failed"
   }
+}
+
+// Test-only: forgets the app-load restore so each test starts from a fresh page load.
+export function resetSilentRestoreForTesting() {
+  silentRestore = undefined
 }

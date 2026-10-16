@@ -2,12 +2,17 @@ import type { BattleId } from "@workspace/game-domain"
 import type { RaidBreakdownEntry } from "@/features/goal-farming/@x/daily-raids"
 
 import { isLocationVisible } from "./location-visibility"
+import { entryDropRate } from "./planned-raid-need"
 
 export type FlattenedRaidLocation = {
   battleId: BattleId
   resourceId: string
   raidsToPerform: number
   dailyAttempts: number
+  /** Summed over the merged entries that farm the row's `resourceId` (see `plannedRaidNeed`). */
+  remainingBefore: number
+  /** Expected drops of `resourceId` per raid at this node. */
+  dropRate: number
 }
 
 /**
@@ -16,8 +21,8 @@ export type FlattenedRaidLocation = {
  * per row, no relation to character" requirement (home-raids-widget spec). Entries sharing a
  * `battleId` are merged by summing `raidsPerformed`; a location whose real synced attempts today
  * are exhausted (`isLocationVisible` false) is dropped entirely, and a zero-raid entry is skipped.
- * Only pass `today.entries` (never `bonus.entries` or `todaysAttempts`) — Bonus Raids and Today's
- * Attempts are out of scope for this widget by construction, not by filtering here.
+ * Pass the list `selectTodayRaids` picks (today's plan, or Bonus Raids once the daily energy limit
+ * is spent) — never `todaysAttempts`, which is out of scope for this widget.
  */
 export function flattenTodayLocations(
   entries: readonly RaidBreakdownEntry[],
@@ -30,12 +35,17 @@ export function flattenTodayLocations(
     const existing = byBattle.get(entry.battleId)
     if (existing) {
       existing.raidsToPerform += entry.raidsPerformed
+      if (entry.resourceId === existing.resourceId) {
+        existing.remainingBefore += entry.remainingBefore
+      }
     } else {
       byBattle.set(entry.battleId, {
         battleId: entry.battleId,
         resourceId: entry.resourceId,
         raidsToPerform: entry.raidsPerformed,
         dailyAttempts: entry.dailyAttempts,
+        remainingBefore: entry.remainingBefore,
+        dropRate: entryDropRate(entry),
       })
     }
   }

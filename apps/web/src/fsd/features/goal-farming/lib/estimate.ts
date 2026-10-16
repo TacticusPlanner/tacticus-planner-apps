@@ -219,6 +219,7 @@ export function spendDay(
       itemsFarmed: farmed,
       energySpent: spent,
       dailyAttempts: node.dailyAttempts,
+      remainingBefore: remainingCount,
     })
 
     const nextRemaining = remainingCount - farmed

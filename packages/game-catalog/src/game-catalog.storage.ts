@@ -31,6 +31,7 @@ export type RaidBossesStorageModel = StorageModel<"raid-bosses">
 export type GuildRaidMetaStorageModel = StorageModel<"guild-raid-meta">
 export type MythicQuestsStorageModel = StorageModel<"mythic-quests">
 // Legendary Event datasets. Named by the glossary ("Legendary Event"), while the storage keys keep
-// their V1 names (`lres`, `lre-common`) until the pending API rename to `legendary-events` lands.
+// their V1 name (`lres`) until the pending API rename to `legendary-events` lands.
 export type LegendaryEventStorageModel = StorageModel<"lres">
-export type LegendaryEventCommonStorageModel = StorageModel<"lre-common">
+export type LegendaryEventBattleStorageModel = StorageModel<"lre-battles">
+export type HordeModeTiersStorageModel = StorageModel<"horde-mode-tiers">

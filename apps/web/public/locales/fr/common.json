@@ -96,6 +96,9 @@
     }
   },
   "accountGate": {
+    "loading": "Chargement de votre compte…",
+    "reauthenticating": "Votre connexion doit être renouvelée — redirection vers la connexion…",
+    "slow": "Cela prend plus de temps que d'habitude. Patientez — recharger la page ou vous reconnecter ne l'accélérera pas.",
     "errorTitle": "Service injoignable",
     "errorDescription": "Impossible de vérifier l'état de votre compte pour le moment. Votre connexion est valide : réessayez dans un instant.",
     "retry": "Réessayer"
@@ -209,8 +212,8 @@
     "createGoal": "Créer un objectif",
     "goals": "Plan",
     "goalsDescription": "Suivez votre progression vers vos objectifs",
-    "progress": "Progression",
-    "progressDescription": "Votre progression synchronisée des campagnes et de l'Onslaught",
+    "myGame": "Mon jeu",
+    "myGameDescription": "Votre collection et votre progression de jeu synchronisée",
     "legendaryEvents": "Événements Légendaires",
     "legendaryEventsDescription": "Événements Légendaires en cours, à venir et passés, avec votre progression synchronisée",
     "uiKit": "Kit d'interface",
@@ -245,7 +248,23 @@
   "onslaught": {
     "sector": "Secteur",
     "tier": "Palier",
-    "tierComplete": "Palier 4 · secteur terminé",
+    "tierComplete": "Secteur terminé",
+    "tierNumber": "Palier {{tier}}",
+    "position": "{{sector}} · Palier {{tier}}",
+    "positionComplete": "{{sector}} · Secteur terminé",
+    "notSet": "Non défini",
+    "notSetHint": "Choisissez le secteur de cette alliance pour voir ses éclats par partie.",
+    "yieldPerRun": "Éclats par partie à cette position",
+    "help": "Choisissez le secteur et le palier que vous farmez actuellement, celui qu'utilisera votre prochaine partie. Une fois le palier 3 terminé, cochez « Secteur terminé » ; un secteur terminé continue de donner les récompenses du palier 3 jusqu'à ce que vous passiez au secteur suivant.",
+    "sectors": {
+      "Stone": "Pierre",
+      "Iron": "Fer",
+      "Bronze": "Bronze",
+      "Silver": "Argent",
+      "Gold": "Or",
+      "Diamond": "Diamant",
+      "Adamantine": "Adamantium"
+    },
     "save": "Enregistrer",
     "saving": "Enregistrement…",
     "saved": "Progression de l'Onslaught enregistrée.",
@@ -265,15 +284,48 @@
       "Mythic": "Mythique"
     }
   },
-  "progress": {
+  "myGame": {
     "tabs": {
+      "collection": "Collection",
+      "collectionDescription": "Tous les personnages et Machines de guerre : ce que vous possédez et la progression de chaque unité.",
       "onslaught": "Onslaught",
-      "onslaughtDescription": "Indiquez le secteur et le palier actuels de chaque alliance. Les estimations d'ascension utilisent ces valeurs ainsi que les jetons Onslaught synchronisés.",
+      "onslaughtDescription": "Pour chaque alliance, choisissez le secteur et le palier que vous farmez actuellement. Les estimations d'objectifs utilisent ces positions et vos jetons Onslaught synchronisés ; les alliances non définies ne fournissent aucun éclat d'Onslaught.",
       "campaigns": "Campagnes",
       "campaignsDescription": "Votre progression de campagne est synchronisée depuis l'API Tacticus et ne peut pas être modifiée ici.",
       "campaign-events": "Événements de campagne",
       "campaign-eventsDescription": "Ajustez manuellement la progression de l'événement. Les valeurs synchronisées, lorsqu'elles sont disponibles, restent la référence."
     },
+    "collection": {
+      "loading": "Chargement de votre collection…",
+      "summary": "{{owned}} unités possédées sur {{total}}",
+      "signInTitle": "Connectez-vous pour voir votre collection",
+      "signInBody": "Toutes les unités sont affichées en grisé. Connectez-vous et synchronisez avec Tacticus pour voir quelles unités vous possédez et la progression de chacune.",
+      "signIn": "Se connecter",
+      "syncTitle": "Synchronisez pour voir votre collection",
+      "syncBody": "Votre effectif n'a pas encore été synchronisé, toutes les unités sont donc affichées en grisé. Synchronisez avec Tacticus pour voir quelles unités vous possédez.",
+      "rosterErrorTitle": "Votre effectif n'a pas pu être chargé",
+      "rosterErrorBody": "Toutes les unités restent en grisé jusqu'à son chargement. Réessayez.",
+      "catalogErrorTitle": "Le catalogue des unités n'a pas pu être chargé",
+      "catalogErrorBody": "La collection ne peut pas s'afficher sans lui. Réessayez.",
+      "retry": "Réessayer",
+      "factionOwned": "{{owned}} possédées sur {{total}}"
+    }
+  },
+  "unitTile": {
+    "characterAbilities": "Capacité active niveau {{first}}, capacité passive niveau {{second}}",
+    "mowAbilities": "Capacité principale niveau {{first}}, capacité secondaire niveau {{second}}",
+    "shards_one": "{{count}} éclat",
+    "shards_other": "{{count}} éclats",
+    "shardsToUnlock_one": "{{count}} éclat sur {{required}} pour débloquer",
+    "shardsToUnlock_other": "{{count}} éclats sur {{required}} pour débloquer",
+    "mythicShards_one": "{{count}} éclat mythique",
+    "mythicShards_other": "{{count}} éclats mythiques",
+    "level": "niveau {{level}}",
+    "notOwned": "non débloquée",
+    "startsAt": "Commence en {{rarity}}",
+    "unlockProgress": "Progression du déblocage"
+  },
+  "progress": {
     "loadError": "Les données de progression sont inexplicablement indisponibles. Actualisez et réessayez.",
     "campaigns": {
       "normal": "Campagnes normales",
@@ -365,7 +417,8 @@
       "title": "Raids quotidiens",
       "empty": "Rien à raider aujourd'hui.",
       "error": "Impossible de charger les raids du jour.",
-      "noGoals": "Aucun objectif actif pour l'instant. Ajoutez des objectifs pour planifier vos raids."
+      "noGoals": "Aucun objectif actif pour l'instant. Ajoutez des objectifs pour planifier vos raids.",
+      "limitReached": "Limite d'énergie quotidienne atteinte — raids bonus :"
     },
     "events": {
       "title": "Événements",
@@ -494,7 +547,7 @@
         "legendaryEventPlans": "Équipes des Événements Légendaires"
       },
       "partDescriptions": {
-        "legendaryEventPlans": "Les équipes composées à la main et les notes des événements que le planificateur connaît. La progression des événements n'est pas importée."
+        "legendaryEventPlans": "Les équipes composées à la main, les notes, les saisies de missions et de packs par manche et les marques « Peut-être faisable » / « S'arrêter ici » des événements que le planificateur connaît. La progression des événements n'est pas importée."
       },
       "submit": "Importer la sélection",
       "submitting": "Importation en cours…",
@@ -539,10 +592,25 @@
         "title": "Équipes des Événements Légendaires",
         "teams_one": "{{count}} équipe",
         "teams_other": "{{count}} équipes",
+        "runs_one": "saisies pour {{count}} manche",
+        "runs_other": "saisies pour {{count}} manches",
+        "marks_one": "{{count}} marque",
+        "marks_other": "{{count}} marques",
         "v1Event": "Événement V1 {{id}}",
+        "lanes": {
+          "alpha": "Alpha",
+          "beta": "Bêta",
+          "gamma": "Gamma"
+        },
+        "fields": {
+          "regularMissions": "missions normales",
+          "premiumMissions": "missions premium",
+          "closeShards": "fragments « Oh So Close »"
+        },
         "reasons": {
           "imported": "Équipes importées.",
           "imported_without_teams": "Importé, mais aucune de ses équipes n'a pu être conservée.",
+          "inputs_imported": "Saisies par manche, marques ou notes importées ; aucune équipe n'a été ajoutée.",
           "plan_already_exists": "Cet événement a déjà des équipes dans le planificateur, rien n'a donc été modifié.",
           "event_not_in_catalog": "Le planificateur ne connaît pas encore cet événement.",
           "no_legendary_event_imported": "Aucune équipe d'événement n'a pu être importée.",
@@ -562,7 +630,17 @@
           "duplicate_team_merged": "Deux équipes avaient les mêmes unités et ont été fusionnées.",
           "conflicting_depth_discarded": "La profondeur différente d'une équipe fusionnée a été écartée.",
           "existing_notes_kept": "Le planificateur avait déjà des notes pour cet événement, les notes V1 n'ont donc pas été importées.",
-          "notes_truncated": "Les notes V1 étaient trop longues et ont été raccourcies. Longueur d'origine en caractères :"
+          "notes_truncated": "Les notes V1 étaient trop longues et ont été raccourcies. Longueur d'origine en caractères :",
+          "run_input_clamped": "Manche {{run}} : {{field}} ramenées de {{original}} au maximum de l'événement, {{bound}}.",
+          "run_input_clamped_unbounded": "Manche {{run}} : {{field}} ramenées de {{original}} au maximum de l'événement.",
+          "unknown_run": "Les saisies d'une manche non reconnue ont été ignorées :",
+          "existing_run_inputs_kept": "La manche {{run}} avait déjà des saisies dans le planificateur ; elles ont été conservées et les saisies V1 n'ont pas été importées.",
+          "unknown_battle": "Une marque sur le combat {{battle}} de {{lane}} a été ignorée : la voie compte {{count}} combats.",
+          "unknown_battle_unbounded": "Une marque sur le combat {{battle}} de {{lane}} a été ignorée : ce combat n'existe pas sur la voie.",
+          "existing_annotations_kept_one": "{{count}} marque déjà présente dans le planificateur a été conservée.",
+          "existing_annotations_kept_other": "{{count}} marques déjà présentes dans le planificateur ont été conservées.",
+          "unknown_objective_mark": "Une marque sur l'objectif non reconnu « {{objective}} » de {{lane}} a été ignorée.",
+          "unknown_lane_mark": "Une marque sur la voie non reconnue « {{lane}} » a été ignorée."
         }
       }
     },
@@ -646,7 +724,9 @@
       "selectAll": "Sélectionner tous les objectifs",
       "selectRow": "Sélectionner {{entity}}",
       "selectMode": "Sélectionner des objectifs",
-      "selectDone": "Terminé"
+      "selectDone": "Terminé",
+      "removeFromProject": "Retirer du projet",
+      "removeFromProjectCount": "Retirer du projet ({{count}})"
     },
     "delete": {
       "title_one": "Supprimer cet objectif ?",
@@ -655,7 +735,9 @@
       "description_other": "Cette action supprime définitivement ces {{count}} objectifs de votre compte, dans tous les projets auxquels ils appartiennent. Elle est irréversible.",
       "confirm_one": "Supprimer l'objectif",
       "confirm_other": "Supprimer {{count}} objectifs",
-      "cancel": "Annuler"
+      "cancel": "Annuler",
+      "projectAlternative_one": "Pour le retirer uniquement de {{project}}, annulez et utilisez plutôt « Retirer de ce projet ».",
+      "projectAlternative_other": "Pour les retirer uniquement de {{project}}, annulez et utilisez plutôt « Retirer du projet »."
     },
     "project": {
       "noProjectTitle": "Aucun projet pour le moment",
@@ -734,7 +816,13 @@
       "assemblyLastMembershipTitle": "Rien n'a été enregistré : ces objectifs ne seraient plus dans aucun projet",
       "assemblyLastMembership": "C'est le seul projet de cet objectif. Ajoutez-le d'abord à un autre projet (le projet par défaut est toujours disponible), puis retirez-le ici.",
       "assemblySlotConflictTitle": "Rien n'a été enregistré : ces objectifs se disputent le même emplacement",
-      "assemblySlotConflict": "{{project}} ne peut contenir qu'un seul objectif actif ou en pause pour cet emplacement. Ne gardez qu'un des objectifs en conflit et enregistrez à nouveau."
+      "assemblySlotConflict": "{{project}} ne peut contenir qu'un seul objectif actif ou en pause pour cet emplacement. Ne gardez qu'un des objectifs en conflit et enregistrez à nouveau.",
+      "removeFromProject": "Retirer de ce projet",
+      "moveToProject": "Déplacer vers un projet",
+      "moveToProjectTitle": "Déplacer vers un projet",
+      "moveToProjectDescription": "C'est le seul projet de cet objectif. Choisissez un projet où le déplacer, ou créez-en un nouveau.",
+      "moveSelectionDescription_one": "{{project}} est le seul projet de {{count}} des objectifs sélectionnés. Choisissez un projet où le déplacer, ou créez-en un nouveau. Les autres objectifs sélectionnés sont simplement retirés de {{project}}.",
+      "moveSelectionDescription_other": "{{project}} est le seul projet de {{count}} des objectifs sélectionnés. Choisissez un projet où les déplacer, ou créez-en un nouveau. Les autres objectifs sélectionnés sont simplement retirés de {{project}}."
     },
     "toasts": {
       "statusChangedPartial": "{{succeeded}} objectifs mis à jour sur {{total}}.",
@@ -745,7 +833,15 @@
       "projectMembershipSaved": "{{project}} mis à jour : {{added}} ajouté(s), {{removed}} retiré(s).",
       "goalsAddedToProject_one": "{{count}} objectif ajouté à {{project}}.",
       "goalsAddedToProject_other": "{{count}} objectifs ajoutés à {{project}}.",
-      "bulkPartial": "Seuls {{succeeded}} objectifs sur {{total}} ont été traités."
+      "bulkPartial": "Seuls {{succeeded}} objectifs sur {{total}} ont été traités.",
+      "goalRemovedFromProject": "{{goal}} retiré de {{project}}.",
+      "goalRelocated": "{{goal}} déplacé vers {{project}}.",
+      "goalsRemovedFromProject_one": "{{count}} objectif retiré de {{project}}.",
+      "goalsRemovedFromProject_other": "{{count}} objectifs retirés de {{project}}.",
+      "goalsRemovedAndMoved_one": "{{count}} objectif retiré de {{project}} ; {{moved}} déplacé vers {{destination}}.",
+      "goalsRemovedAndMoved_other": "{{count}} objectifs retirés de {{project}} ; {{moved}} déplacés vers {{destination}}.",
+      "movedButNotRemoved_one": "{{count}} objectif a été ajouté à {{destination}}, mais n'a pas pu être retiré de {{project}} : {{error}}",
+      "movedButNotRemoved_other": "{{count}} objectifs ont été ajoutés à {{destination}}, mais n'ont pas pu être retirés de {{project}} : {{error}}"
     },
     "create": {
       "title": "Créer un objectif",
@@ -1186,7 +1282,7 @@
       },
       "navigation": {
         "title": "Naviguez facilement",
-        "content": "Utilisez cette barre de navigation pour vous déplacer entre les sections de l'interface, dont les Événements Légendaires."
+        "content": "Utilisez cette barre de navigation pour vous déplacer entre les sections de l'interface, dont Mon jeu et les Événements Légendaires."
       },
       "sidebarFooter": {
         "title": "Outils de la barre latérale",
@@ -1194,7 +1290,7 @@
       },
       "bottomNavigationGroup": {
         "title": "Votre barre principale",
-        "content": "Changez de section, ajoutez un objectif ou synchronisez depuis ici. Ouvrez le menu pour rechercher des pages et des actions rapides, et pour accéder à Progression et aux Événements Légendaires."
+        "content": "Changez de section, ajoutez un objectif ou synchronisez depuis ici. Ouvrez le menu pour rechercher des pages et des actions rapides, et pour accéder à Mon jeu et aux Événements Légendaires."
       },
       "mobileHeader": {
         "title": "En-tête de page",
@@ -1323,6 +1419,26 @@
         "mythicMaterialSources": {
           "title": "Matériaux mythiques",
           "content": "Choisissez quelles offres de boutique fournissent les matériaux mythiques de cet objectif. Tout décocher arrête de compter sur les boutiques pour eux."
+        }
+      }
+    },
+    "collection": {
+      "steps": {
+        "summary": {
+          "title": "Votre collection en un coup d'œil",
+          "content": "Combien de personnages et de Machines de guerre du jeu vous possédez."
+        },
+        "faction": {
+          "title": "Regroupées par faction",
+          "content": "Chaque carte réunit les personnages et Machines de guerre d'une faction, vos unités en premier."
+        },
+        "owned": {
+          "title": "Une unité possédée",
+          "content": "L'anneau indique sa rareté, avec les étoiles en haut, le rang et les éclats sur le portrait, et en dessous les niveaux de capacité de part et d'autre de son niveau d'XP."
+        },
+        "unowned": {
+          "title": "Pas encore débloquée",
+          "content": "Les unités en grisé ne font pas partie de votre effectif. La barre montre à quel point vous êtes proche de les débloquer."
         }
       }
     },

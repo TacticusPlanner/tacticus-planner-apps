@@ -9,8 +9,9 @@ import {
   eventsCalendarPayloadSchema,
   eventsCalendarRowSchema,
 } from "./events"
-import { lreBattleViewSchema, lreCommonSchema, lreViewSchema } from "./lre"
+import { lreBattleViewSchema, lreViewSchema } from "./lre"
 import { guildRaidMetaPayloadSchema } from "./guild-raid-meta"
+import { hordeModeTiersSchema } from "./horde-mode-tiers"
 import { mowSchema, mowUpgradeCostSchema } from "./mow"
 import { mythicQuestsSchema } from "./mythic-quests"
 import { characterAbilityCostSchema } from "./character-ability-costs"
@@ -39,7 +40,7 @@ export const datasetPayloadSchemas = {
   "campaign-definitions": z.array(campaignDefinitionSchema),
   lres: z.array(lreViewSchema),
   "lre-battles": z.array(lreBattleViewSchema),
-  "lre-common": z.array(lreCommonSchema),
+  "horde-mode-tiers": z.array(hordeModeTiersSchema),
   "event-definitions": z.array(eventDefinitionSchema),
   // The one exception to "every payload is a plain array" — see events.ts.
   "events-calendar": eventsCalendarPayloadSchema,
@@ -68,7 +69,7 @@ export type GameCatalogRecordByKey = {
   "campaign-definitions": z.infer<typeof campaignDefinitionSchema>
   lres: z.infer<typeof lreViewSchema>
   "lre-battles": z.infer<typeof lreBattleViewSchema>
-  "lre-common": z.infer<typeof lreCommonSchema>
+  "horde-mode-tiers": z.infer<typeof hordeModeTiersSchema>
   "event-definitions": z.infer<typeof eventDefinitionSchema>
   // The flattened storage-row shape (entry + injected `date`), not the raw date-keyed payload — see
   // events.ts and game-catalog.mapper.ts's `byCalendarDate`.

@@ -90,4 +90,60 @@ describe("GoalsBulkActions", () => {
       { goalId: "active-2", previousStatus: "Active" },
     ])
   })
+
+  describe("while scoped to a project", () => {
+    const removal = (available = true) => ({
+      project: { projectId: "p1", name: "Proj" } as never,
+      available,
+      request: vi.fn(),
+    })
+    const member = (goalId: string, projectIds?: string[]): GoalRow => ({
+      ...row(goalId, "Active"),
+      ...(projectIds
+        ? { projects: projectIds.map((projectId) => ({ projectId })) as never }
+        : {}),
+    })
+
+    it("is absent when the page is not scoped", () => {
+      setup([row("a", "Active")])
+      expect(screen.queryByTestId("goals-bulk-removeFromProject")).toBeNull()
+    })
+
+    it("counts and acts on the selected goals whose memberships are known", async () => {
+      const onRemoveFromProject = vi.fn()
+      const rows = [member("a", ["p1"]), member("b", ["p1", "p2"]), member("c")]
+      render(
+        <GoalsBulkActions
+          onAddToProject={vi.fn()}
+          onDelete={vi.fn()}
+          onPause={vi.fn()}
+          onRemoveFromProject={onRemoveFromProject}
+          onResume={vi.fn()}
+          pendingIds={new Set()}
+          projectRemoval={removal()}
+          selectedRows={rows}
+        />
+      )
+      const button = screen.getByTestId("goals-bulk-removeFromProject")
+      expect(button).toHaveTextContent("goals.bulk.removeFromProjectCount:2")
+      await userEvent.setup().click(button)
+      expect(onRemoveFromProject).toHaveBeenCalledWith([rows[0], rows[1]])
+    })
+
+    it("is disabled while the destinations are not loaded", () => {
+      render(
+        <GoalsBulkActions
+          onAddToProject={vi.fn()}
+          onDelete={vi.fn()}
+          onPause={vi.fn()}
+          onRemoveFromProject={vi.fn()}
+          onResume={vi.fn()}
+          pendingIds={new Set()}
+          projectRemoval={removal(false)}
+          selectedRows={[member("a", ["p1"])]}
+        />
+      )
+      expect(screen.getByTestId("goals-bulk-removeFromProject")).toBeDisabled()
+    })
+  })
 })

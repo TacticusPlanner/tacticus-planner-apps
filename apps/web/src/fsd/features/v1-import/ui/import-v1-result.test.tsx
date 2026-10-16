@@ -13,12 +13,13 @@ vi.mock("react-i18next", () => ({
     t: (key: string, options?: Record<string, unknown>) =>
       typeof options?.defaultValue === "string"
         ? options.defaultValue
-        : options
+        : options && Object.keys(options).length > 0
           ? `${key} ${Object.entries(options)
               .map(([k, v]) => `${k}=${v}`)
               .join(" ")}`
           : key,
   }),
+  initReactI18next: { type: "3rdParty", init: vi.fn() },
 }))
 
 vi.mock("@/entities/goal", () => ({
@@ -40,6 +41,17 @@ vi.mock("@workspace/game-catalog/queries", () => ({
   getCharactersMap: () =>
     new Map([["astarLysander", { id: "astarLysander", name: "Lysander" }]]),
   getMowsMap: () => new Map(),
+  // Only the bounds the issue lines read: 10 regular and 10 premium missions, 18 battles a lane.
+  getLegendaryEvents: async () => [
+    {
+      id: "astarLysander",
+      regularMissions: Array.from({ length: 10 }),
+      premiumMissions: Array.from({ length: 10 }),
+      alpha: { battleIds: Array.from({ length: 18 }) },
+      beta: { battleIds: Array.from({ length: 18 }) },
+      gamma: { battleIds: Array.from({ length: 18 }) },
+    },
+  ],
 }))
 
 import { ImportResult } from "./import-v1-result"
@@ -65,6 +77,8 @@ function event(
     code: "imported",
     message: "Imported.",
     teamsImported: 2,
+    runInputsImported: 0,
+    annotationsImported: 0,
     issues: [],
     ...overrides,
   }
@@ -290,5 +304,119 @@ describe("ImportResult — Legendary Event teams", () => {
       "goals.v1Import.legendaryEvents.issues.empty_team (Old)"
     )
     vi.unstubAllGlobals()
+  })
+
+  it("lists an inputs-only event as imported with its runs and marks, not as imported without teams", () => {
+    render(
+      <ImportResult
+        result={result([
+          event({
+            code: "inputs_imported",
+            teamsImported: 0,
+            runInputsImported: 2,
+            annotationsImported: 5,
+          }),
+        ])}
+      />
+    )
+
+    const bucket = screen.getByTestId("v1-import-le-bucket-imported")
+    expect(bucket).toHaveTextContent(
+      "goals.v1Import.legendaryEvents.reasons.inputs_imported"
+    )
+    expect(bucket).not.toHaveTextContent("imported_without_teams")
+    const counts = within(bucket).getByTestId("v1-import-le-counts")
+    expect(counts).toHaveTextContent(
+      "goals.v1Import.legendaryEvents.runs count=2"
+    )
+    expect(counts).toHaveTextContent(
+      "goals.v1Import.legendaryEvents.marks count=5"
+    )
+    expect(counts).not.toHaveTextContent("teams count")
+  })
+
+  it("names a clamped run input with the event's own bound, and a skipped mark's battle", async () => {
+    render(
+      <ImportResult
+        result={result([
+          event({
+            annotationsImported: 3,
+            issues: [
+              {
+                code: "run_input_clamped",
+                teamName: null,
+                value: "2:regularMissions:14",
+              },
+              { code: "unknown_battle", teamName: null, value: "beta:19" },
+              {
+                code: "existing_annotations_kept",
+                teamName: null,
+                value: "4",
+              },
+              { code: "existing_run_inputs_kept", teamName: null, value: "1" },
+            ],
+          }),
+        ])}
+      />
+    )
+
+    const issues = screen.getAllByTestId("v1-import-le-issue")
+    await vi.waitFor(() =>
+      expect(issues[0]).toHaveTextContent(
+        "goals.v1Import.legendaryEvents.issues.run_input_clamped run=2 field=goals.v1Import.legendaryEvents.fields.regularMissions original=14 bound=10"
+      )
+    )
+    expect(issues[1]).toHaveTextContent(
+      "goals.v1Import.legendaryEvents.issues.unknown_battle lane=goals.v1Import.legendaryEvents.lanes.beta battle=20 count=18"
+    )
+    expect(issues[2]).toHaveTextContent(
+      "goals.v1Import.legendaryEvents.issues.existing_annotations_kept count=4"
+    )
+    expect(issues[3]).toHaveTextContent(
+      "goals.v1Import.legendaryEvents.issues.existing_run_inputs_kept run=1"
+    )
+    // The raw `run:field:original` value is not shown beside a described line.
+    expect(issues[0]).not.toHaveTextContent("2:regularMissions:14")
+    expect(
+      within(screen.getByTestId("v1-import-le-counts")).getByText(
+        /marks count=3/
+      )
+    ).toBeInTheDocument()
+  })
+
+  it("reads clamp and battle lines without a bound when the catalog lacks the event", () => {
+    render(
+      <ImportResult
+        result={result([
+          event({
+            eventId: "unknownEvent",
+            issues: [
+              {
+                code: "run_input_clamped",
+                teamName: null,
+                value: "1:premiumMissions:30",
+              },
+              { code: "unknown_battle", teamName: null, value: "alpha:40" },
+              {
+                code: "unknown_objective",
+                teamName: null,
+                value: "gamma:Old objective",
+              },
+            ],
+          }),
+        ])}
+      />
+    )
+
+    const issues = screen.getAllByTestId("v1-import-le-issue")
+    expect(issues[0]).toHaveTextContent(
+      "goals.v1Import.legendaryEvents.issues.run_input_clamped_unbounded"
+    )
+    expect(issues[1]).toHaveTextContent(
+      "goals.v1Import.legendaryEvents.issues.unknown_battle_unbounded"
+    )
+    expect(issues[2]).toHaveTextContent(
+      "goals.v1Import.legendaryEvents.issues.unknown_objective_mark lane=goals.v1Import.legendaryEvents.lanes.gamma objective=Old objective"
+    )
   })
 })

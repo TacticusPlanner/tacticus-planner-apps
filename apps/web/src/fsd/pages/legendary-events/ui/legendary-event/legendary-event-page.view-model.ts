@@ -4,21 +4,41 @@ import {
   buildLaneLeaderboard,
   buildLanePointsModel,
   buildSyncedLaneProgress,
+  laneBattlePowers,
   nextPointsMilestone,
+  projectRewards,
+  teamClearEstimate,
+  unitClearEstimate,
+  type ClearEstimate,
+  type ClearEstimateConfigState,
+  type LaneEstimateInputs,
+  type LegendaryEventGoalTarget,
   type CrossLaneLeaderboardRow,
   type LaneProgressView,
   type LeaderboardRow,
   type LegendaryEvent,
-  type LegendaryEventCommon,
+  type LegendaryEventBattle,
   type LegendaryEventLaneId,
   type LegendaryEventLifecycle,
+  type LegendaryEventPlan,
   type LegendaryEventProgress,
+  type LegendaryEventRewards,
   type LegendaryEventRosterUnit,
+  type LegendaryEventRun,
   type LegendaryEventUnit,
   type NextPointsMilestone,
   type ReadState,
+  type RewardProjection,
 } from "@/entities/legendary-event"
 
+import type { UpgradeImpactState } from "@/features/legendary-event-goals"
+import type {
+  MarkTokenHandler,
+  OpenTeamsHandler,
+  TokenPlanView,
+} from "@/features/legendary-event-tokens"
+
+import type { ProgressMarksViewModel } from "./progress/progress-marks"
 import type { TeamsViewModel } from "./teams/teams-section"
 
 /** When the next token arrives: at `targetMs`, or already due (the timer ran out since the sync). */
@@ -43,9 +63,22 @@ export type RunStatusViewModel =
       currency: number
       chestsClaimed: number
       shards: number
-      /** `undefined` past the last milestone or without `lre-common`. */
+      /** `undefined` past the last milestone or without the event's reward ladder. */
       milestone: NextPointsMilestone | undefined
     }
+
+/** The Run status card's Reward outlook (design D6): a skeleton while the synced entry or the plan
+ *  loads, hidden when the synced data or the event's ladder is unavailable, else the projection. */
+export type RewardOutlookViewModel =
+  | { kind: "loading" }
+  | { kind: "unavailable" }
+  | { kind: "ready"; projection: RewardProjection }
+
+/** The Run status card's Inputs drawer: shown for signed-in users only. */
+export interface RunInputsViewModel {
+  enabled: boolean
+  currentRun: LegendaryEventRun
+}
 
 /** The page's tab strip: Overview, then one tab per lane (design D3). */
 export type LegendaryEventTab = "overview" | LegendaryEventLaneId
@@ -56,6 +89,8 @@ export interface LegendaryEventPageViewModel {
   lifecycle: LegendaryEventLifecycle
   nowMs: number
   runStatus: RunStatusViewModel
+  outlook: RewardOutlookViewModel
+  runInputs: RunInputsViewModel
   /** When player data last synced (manifest `syncedAt`): `null` before the first sync, `undefined`
    *  while that read is pending or failed (the line is then hidden rather than misreported). */
   syncedAtMs: number | null | undefined
@@ -65,8 +100,29 @@ export interface LegendaryEventPageViewModel {
   onJumpToLane: (lane: LegendaryEventLaneId) => void
   leaderboard: LeaderboardViewModel
   progressGrid: ProgressGridViewModel
+  /** Maybe clear / Stop here marks on the progress grid's not-cleared cells. */
+  marks: ProgressMarksViewModel
   /** The lane tabs' Teams section: the plan, the current run and the plan actions. */
   teams: TeamsViewModel
+  /** The selected lane's Upgrade impact (Stage 6); null on Overview or signed out. */
+  upgradeImpact: UpgradeImpactViewModel | null
+  /** The Overview's Next token card, Token plan and Run forecast (Stage 4). */
+  tokens: TokensViewModel
+}
+
+interface UpgradeImpactViewModel {
+  state: UpgradeImpactState
+  /** Goal targets by unit, for "In goals" and badges; undefined while goals load or failed. */
+  goalTargets: ReadonlyMap<string, LegendaryEventGoalTarget> | undefined
+  teamName: (teamId: string) => string
+}
+
+interface TokensViewModel {
+  view: TokenPlanView
+  /** Absent while marks cannot be written (signed out, or the plan has not loaded). */
+  onMarkToken: MarkTokenHandler | undefined
+  /** Selects a lane's tab and scrolls its Teams section (or one team's card) into view. */
+  onOpenTeams: OpenTeamsHandler
 }
 
 type ByLane<T> = Record<LegendaryEventLaneId, T>
@@ -97,8 +153,31 @@ export interface LeaderboardControlsState {
   onSelectedObjectivesChange: (keys: ReadonlySet<string>) => void
 }
 
+/** Goals Preview availability (design D8): goals loading, failed, none for the event's units. */
+/** `noRoster`: goals are known but there is no synced roster to preview them over. */
+export type GoalsPreviewAvailability =
+  "loading" | "failed" | "noGoals" | "noRoster" | "ready"
+
+/** The leaderboards' goal integration (Stage 6): the Goals Preview switch, badges, Create goal. */
+export interface LeaderboardGoalsViewModel {
+  /** The page's switch value; only effective while `availability` is ready. */
+  previewEnabled: boolean
+  availability: GoalsPreviewAvailability
+  onPreviewChange: (enabled: boolean) => void
+  /** Units shown at their goal targets (empty while the preview is off). */
+  previewed: ReadonlySet<string>
+  /** A unit's goal badge lines (none while goals load or failed). */
+  badgeLines: (unitId: string) => readonly string[]
+  /** Opens the goal-creation sheet for a row (ownership read from the synced roster). */
+  onCreateGoal: (unitId: string, laneId: LegendaryEventLaneId | null) => void
+}
+
 export type LeaderboardViewModel = LeaderboardRowsViewModel &
-  LeaderboardControlsState
+  LeaderboardControlsState & {
+    /** The lane leaderboards' Clears figure (not shown on the Overview leaderboard). */
+    clears: ClearEstimatesViewModel
+    goals: LeaderboardGoalsViewModel
+  }
 
 /** The Synced progress section: per-lane progress over the points model, or the read's state. */
 export type ProgressGridViewModel =
@@ -183,18 +262,19 @@ export function buildProgressGridViewModel(
 }
 
 /**
- * Run status from the synced `lre-progress` entry and the shared reward ladder. Tokens and
+ * Run status from the synced `lre-progress` entry and the event's own reward ladder. Tokens and
  * regeneration are read from the sync, never computed locally: the next-token timer is anchored to
  * the instant the chunk was observed (`progressObservedAtMs`), so it counts down between syncs.
  */
 export function buildRunStatusViewModel({
   progress,
-  common,
+  rewards,
   progressObservedAtMs,
   nowMs,
 }: {
   progress: ReadState<LegendaryEventProgress | undefined>
-  common: ReadState<LegendaryEventCommon | null>
+  /** `undefined` for a catalog record cached before rewards were served. */
+  rewards: LegendaryEventRewards | undefined
   progressObservedAtMs: number | null
   nowMs: number
 }): RunStatusViewModel {
@@ -223,9 +303,120 @@ export function buildRunStatusViewModel({
     // omits the field (V1 token-estimation-service documents the same), so clamp at zero.
     chestsClaimed: Math.max(0, entry.currentClaimedChestIndex),
     shards: entry.currentShards,
-    milestone: nextPointsMilestone(
-      common.status === "ready" ? common.data : null,
-      entry.currentPoints
-    ),
+    milestone: nextPointsMilestone(rewards, entry.currentPoints),
   }
+}
+
+/**
+ * The Reward outlook over the event's ladder, the synced entry and the plan's run inputs (design
+ * D2, D6). Signed out (`planEnabled` false) or with a plan that failed to load, the projection runs
+ * without inputs; without a synced entry it starts from zero.
+ */
+export function buildRewardOutlookViewModel({
+  rewards,
+  progress,
+  plan,
+  planEnabled,
+}: {
+  rewards: LegendaryEventRewards | undefined
+  progress: ReadValue<LegendaryEventProgress | undefined>
+  plan: { isPending: boolean; data: LegendaryEventPlan | undefined }
+  planEnabled: boolean
+}): RewardOutlookViewModel {
+  if (progress === "loading" || (planEnabled && plan.isPending)) {
+    return { kind: "loading" }
+  }
+  if (progress === "error" || !rewards) return { kind: "unavailable" }
+  return {
+    kind: "ready",
+    projection: projectRewards({
+      rewards,
+      progress,
+      runs: plan.data?.runs,
+      showPaidOptions: plan.data?.showPaidOptions ?? false,
+    }),
+  }
+}
+
+/** One lane's estimators over the synced roster (design D3): null when there is nothing to
+ *  estimate (no owned member, or the unit is not owned). `inputs` (Stage 6's upgrade impact and
+ *  suggestions) is absent when the roster is unknown or the lane's battles have no powers. */
+interface LaneClearEstimator {
+  team: (memberUnitIds: readonly string[]) => ClearEstimate | null
+  unit: (unitId: string) => ClearEstimate | null
+  inputs?: LaneEstimateInputs
+}
+
+/**
+ * Clear estimates by data state (design D6): `hidden` when the horde-mode tier list or the battles
+ * could not be read, `pending` while the tier list, the battles or the roster load, `ready` otherwise. A roster that could not be read yields estimators that
+ * return null (ownership unknown).
+ */
+export type ClearEstimatesViewModel =
+  | { kind: "hidden" }
+  | { kind: "pending" }
+  | { kind: "ready"; byLane: ByLane<LaneClearEstimator> }
+
+const NO_ESTIMATOR: LaneClearEstimator = { team: () => null, unit: () => null }
+
+export function buildClearEstimates({
+  event,
+  config,
+  battles,
+  roster,
+}: {
+  event: LegendaryEvent
+  config: ClearEstimateConfigState
+  battles: ReadValue<LegendaryEventBattle[]>
+  roster: ReadValue<LegendaryEventRosterUnit[] | undefined>
+}): ClearEstimatesViewModel {
+  if (config.status === "failed") {
+    return { kind: "hidden" }
+  }
+  if (battles === "error") return { kind: "hidden" }
+  if (
+    config.status === "loading" ||
+    battles === "loading" ||
+    roster === "loading"
+  ) {
+    return { kind: "pending" }
+  }
+  const rosterById =
+    roster === "error" || roster === undefined
+      ? undefined
+      : new Map(roster.map((unit) => [unit.unitId as string, unit]))
+  const byLane = Object.fromEntries(
+    LEGENDARY_EVENT_LANE_IDS.map((laneId): [string, LaneClearEstimator] => {
+      const powers = laneBattlePowers(event[laneId].battleIds, battles)
+      if (!rosterById || !powers || powers.length === 0) {
+        return [laneId, NO_ESTIMATOR]
+      }
+      return [
+        laneId,
+        {
+          team: (memberUnitIds) =>
+            teamClearEstimate(memberUnitIds, powers, rosterById, config.config),
+          unit: (unitId) =>
+            unitClearEstimate(unitId, powers, rosterById, config.config),
+          inputs: {
+            battlePowers: powers,
+            roster: rosterById,
+            config: config.config,
+          },
+        },
+      ]
+    })
+  ) as ByLane<LaneClearEstimator>
+  return { kind: "ready", byLane }
+}
+
+/** A lane's estimate inputs for upgrade impact and suggestions: "pending" while estimates load,
+ *  undefined when they are unavailable. */
+export function laneEstimateInputs(
+  clears: ClearEstimatesViewModel,
+  laneId: LegendaryEventLaneId
+): LaneEstimateInputs | "pending" | undefined {
+  if (clears.kind === "pending") return "pending"
+  if (clears.kind === "hidden") return undefined
+  return clears.byLane[laneId].inputs
 }

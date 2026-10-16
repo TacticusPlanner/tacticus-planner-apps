@@ -19,3 +19,14 @@ describe("goals.v1Import.description copy (7.2)", () => {
     expect(description).not.toMatch(/active project/i)
   })
 })
+
+describe("goals.v1Import.partDescriptions.legendaryEventPlans copy", () => {
+  it("names run inputs and marks beside teams and notes, and that progress is not imported", () => {
+    const description = en.goals.v1Import.partDescriptions.legendaryEventPlans
+    expect(description).toMatch(/teams/i)
+    expect(description).toMatch(/notes/i)
+    expect(description).toMatch(/per-run mission and pack inputs/i)
+    expect(description).toMatch(/Maybe clear \/ Stop here marks/)
+    expect(description).toMatch(/progress is not imported/i)
+  })
+})

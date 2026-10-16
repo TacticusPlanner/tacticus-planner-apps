@@ -47,6 +47,7 @@ export function ready(
     itemsFarmed: raidsPerformed,
     energySpent: raidsPerformed * 6,
     dailyAttempts: 10,
+    remainingBefore: raidsPerformed,
   })
   const todayEntries = [entry("g1", "U1", 4), entry("g2", "U1", 3)]
   const day = (number: number) => ({
@@ -190,6 +191,7 @@ export function raidedPlan(attemptsLeft: [typeof battle, number][]) {
     itemsFarmed: 2,
     energySpent: 12,
     dailyAttempts: 10,
+    remainingBefore: 2,
   })
   const base = ready()
   const planDay = (day: number, entries: ReturnType<typeof planEntry>[]) => ({

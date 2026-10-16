@@ -1,7 +1,6 @@
 import { useTranslation } from "react-i18next"
 import { characterIcon, mowIcon } from "@workspace/game-catalog"
 import type { BattleId } from "@workspace/game-domain"
-import { Badge } from "@workspace/ui/components/badge"
 import { Card, CardContent } from "@workspace/ui/components/card"
 import { cn } from "@workspace/ui/lib/utils"
 
@@ -14,6 +13,8 @@ import type {
   DailyRaidResourceVisual,
 } from "../model/daily-raids.domain"
 import { isLocationVisible } from "../model/location-visibility"
+import { plannedRaidNeedForEntry } from "../model/planned-raid-need"
+import { PlannedRaidNeedBadge } from "./planned-raid-need-badge"
 import { ResourceIcon, ResourceIconWithTooltip } from "./resource-icon"
 import { EntityIcon, LocationChips, RankBadge } from "@/shared/ui"
 
@@ -138,11 +139,9 @@ export function ResourceCard({
                         </div>
                       ) : null}
                     </div>
-                    <Badge className="shrink-0 tabular-nums" variant="outline">
-                      {entry.raidsPerformed === entry.dailyAttempts
-                        ? t("schedule.maxRaids")
-                        : t("schedule.raids", { count: entry.raidsPerformed })}
-                    </Badge>
+                    <PlannedRaidNeedBadge
+                      need={plannedRaidNeedForEntry(entry)}
+                    />
                   </div>
                 )
               })}
@@ -181,14 +180,11 @@ export function ResourceCard({
                 <span className="truncate font-medium">{label}</span>
               )}
             </div>
-            <Badge className="shrink-0 tabular-nums" variant="secondary">
-              {t("schedule.raids", {
-                count: resourceEntries.reduce(
-                  (sum, entry) => sum + entry.raidsPerformed,
-                  0
-                ),
-              })}
-            </Badge>
+            {resourceEntries[0] ? (
+              <PlannedRaidNeedBadge
+                need={plannedRaidNeedForEntry(resourceEntries[0])}
+              />
+            ) : null}
           </div>
           <div className="flex flex-wrap items-center gap-1.5">
             {!goal && progress ? (
@@ -203,12 +199,7 @@ export function ResourceCard({
                 return {
                   id: `${entry.battleId}-${entry.raidsPerformed}`,
                   icon: location?.icon,
-                  label: location
-                    ? `${location.shortLabel} · ${t("schedule.raids", { count: entry.raidsPerformed })}`
-                    : t("schedule.node", {
-                        node: entry.battleId,
-                        raids: entry.raidsPerformed,
-                      }),
+                  label: location?.shortLabel ?? entry.battleId,
                   variant: fullyRaided
                     ? ("secondary" as const)
                     : ("outline" as const),

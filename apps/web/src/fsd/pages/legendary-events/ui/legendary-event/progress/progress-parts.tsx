@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next"
-import { Check, Circle } from "lucide-react"
+import { Check, Circle, Ellipsis } from "lucide-react"
+import { Button } from "@workspace/ui/components/button"
 import { Progress } from "@workspace/ui/components/progress"
 import { cn } from "@workspace/ui/lib/utils"
 
@@ -9,8 +10,15 @@ import {
   type LegendaryEventLaneId,
 } from "@/entities/legendary-event"
 
+import {
+  AnnotationMarkIcon,
+  AnnotationMenu,
+  BattleAnnotationMenu,
+} from "@/features/legendary-event-annotations"
+
 import type { ProgressColumn } from "./progress-columns"
 import { progressHeadingId } from "./progress-heading"
+import type { LaneMarks } from "./progress-marks"
 
 export function ProgressColumnIcon({ column }: { column: ProgressColumn }) {
   if (!column.icon) return <Circle aria-hidden="true" className="size-4" />
@@ -19,13 +27,7 @@ export function ProgressColumnIcon({ column }: { column: ProgressColumn }) {
 
 /** A cleared / not-cleared cell: an icon plus "cleared" / "not cleared" text, never colour
  *  alone. */
-export function ClearedCell({
-  cleared,
-  label,
-}: {
-  cleared: boolean
-  label: string
-}) {
+function ClearedCell({ cleared, label }: { cleared: boolean; label: string }) {
   const { t } = useTranslation("legendaryEvents")
   const text = t(cleared ? "progress.cellCleared" : "progress.cellNotCleared", {
     objective: label,
@@ -45,6 +47,89 @@ export function ClearedCell({
       {cleared ? <Check aria-hidden="true" className="size-4" /> : null}
       <span className="sr-only">{text}</span>
     </span>
+  )
+}
+
+/** One grid cell: a cleared cell (or any cell without marks) is a plain indicator; a not-cleared
+ *  cell with marks is the control for its Maybe clear / Stop here mark. */
+export function ProgressCell({
+  cleared,
+  label,
+  battleIndex,
+  objectiveId,
+  marks,
+  touch = false,
+}: {
+  cleared: boolean
+  label: string
+  battleIndex: number
+  objectiveId: number
+  marks: LaneMarks | undefined
+  touch?: boolean
+}) {
+  if (cleared || !marks) return <ClearedCell cleared={cleared} label={label} />
+  return (
+    <AnnotationMenu
+      battle={battleIndex + 1}
+      objective={label}
+      onChange={(status) => marks.onMarkCell(battleIndex, objectiveId, status)}
+      status={marks.statusAt(battleIndex, objectiveId)}
+      touch={touch}
+    />
+  )
+}
+
+/** The desktop row action of an incomplete battle: a "⋯" button opening the battle's mark menu. */
+export function BattleRowAction({
+  battle,
+  marks,
+}: {
+  battle: { index: number; cleared: boolean[] }
+  marks: LaneMarks
+}) {
+  const { t } = useTranslation("legendaryEvents")
+  return (
+    <BattleAnnotationMenu
+      battle={battle.index + 1}
+      onChange={(status) => marks.onMarkBattle(battle, status)}
+      trigger={
+        <Button
+          aria-label={t("annotations.rowAction", { battle: battle.index + 1 })}
+          data-testid="progress-row-action"
+          size="icon-xs"
+          type="button"
+          variant="ghost"
+        >
+          <Ellipsis />
+        </Button>
+      }
+    />
+  )
+}
+
+/** The marks legend under the section header, beside "how points work". */
+export function MarksLegend() {
+  const { t } = useTranslation("legendaryEvents")
+  return (
+    <div
+      className="flex flex-col gap-1 rounded-xl border p-3 text-sm"
+      data-testid="progress-marks-legend"
+    >
+      <p className="font-medium">{t("annotations.legend.title")}</p>
+      <ul className="flex flex-col gap-1 text-muted-foreground">
+        <li className="flex items-start gap-2">
+          <AnnotationMarkIcon className="mt-0.5 shrink-0" status="maybeClear" />
+          <span>{t("annotations.legend.maybeClear")}</span>
+        </li>
+        <li className="flex items-start gap-2">
+          <AnnotationMarkIcon className="mt-0.5 shrink-0" status="stopHere" />
+          <span>{t("annotations.legend.stopHere")}</span>
+        </li>
+      </ul>
+      <p className="text-xs text-muted-foreground">
+        {t("annotations.legend.note")}
+      </p>
+    </div>
   )
 }
 

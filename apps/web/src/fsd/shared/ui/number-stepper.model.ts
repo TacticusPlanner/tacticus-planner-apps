@@ -21,10 +21,11 @@ export function parseStepperInput(
   return clampStepperValue(parsed, min, max)
 }
 
-/** The value after a − or + press; from an empty stepper, + starts at `min`. */
+/** The value after a − or + press (`delta` is ± the step); from an empty stepper, + starts at
+ *  `min`. */
 export function stepStepperValue(
   value: number | null,
-  delta: 1 | -1,
+  delta: number,
   min: number,
   max: number
 ): number {

@@ -96,6 +96,9 @@
     }
   },
   "accountGate": {
+    "loading": "Loading your account…",
+    "reauthenticating": "Your sign-in needs refreshing — taking you to sign in…",
+    "slow": "This is taking longer than usual. Please wait — refreshing or signing in again won't make it faster.",
     "errorTitle": "Couldn't reach the service",
     "errorDescription": "We couldn't check your account status right now. Your sign-in is fine — try again in a moment.",
     "retry": "Retry"
@@ -209,8 +212,8 @@
     "createGoal": "Create Goal",
     "goals": "Plan",
     "goalsDescription": "Track progress toward your targets",
-    "progress": "Progress",
-    "progressDescription": "Your synced campaign and Onslaught progress",
+    "myGame": "My Game",
+    "myGameDescription": "Your collection and synced game progress",
     "legendaryEvents": "Legendary Events",
     "legendaryEventsDescription": "Active, upcoming and past Legendary Events with your synced progress",
     "uiKit": "UI Kit",
@@ -245,7 +248,23 @@
   "onslaught": {
     "sector": "Sector",
     "tier": "Tier",
-    "tierComplete": "Tier 4 · sector complete",
+    "tierComplete": "Sector complete",
+    "tierNumber": "Tier {{tier}}",
+    "position": "{{sector}} · Tier {{tier}}",
+    "positionComplete": "{{sector}} · Sector complete",
+    "notSet": "Not set",
+    "notSetHint": "Choose the sector this alliance is in to see its shards per run.",
+    "yieldPerRun": "Shards per run at this position",
+    "help": "Pick the sector and tier you are currently farming — the one your next run uses. Once you have cleared Tier 3, tick “Sector complete”; a completed sector keeps paying Tier 3 rewards until you move to the next sector.",
+    "sectors": {
+      "Stone": "Stone",
+      "Iron": "Iron",
+      "Bronze": "Bronze",
+      "Silver": "Silver",
+      "Gold": "Gold",
+      "Diamond": "Diamond",
+      "Adamantine": "Adamantine"
+    },
     "save": "Save",
     "saving": "Saving…",
     "saved": "Onslaught progress saved.",
@@ -265,15 +284,48 @@
       "Mythic": "Mythic"
     }
   },
-  "progress": {
+  "myGame": {
     "tabs": {
+      "collection": "Collection",
+      "collectionDescription": "Every character and Machine of War, with what you own and how far each unit has progressed.",
       "onslaught": "Onslaught",
-      "onslaughtDescription": "Enter the current sector and tier for each alliance. Ascension estimates use these values and synchronized Onslaught tokens.",
+      "onslaughtDescription": "For each alliance, pick the sector and tier you are currently farming. Goal estimates use these positions and your synchronized Onslaught tokens; alliances you have not set supply no Onslaught shards.",
       "campaigns": "Campaigns",
       "campaignsDescription": "Your campaign progress is synchronized from the Tacticus API and cannot be edited here.",
       "campaign-events": "Campaign Events",
       "campaign-eventsDescription": "Adjust event progress manually. Synchronized values, when available, remain as the baseline."
     },
+    "collection": {
+      "loading": "Loading your collection…",
+      "summary": "{{owned}} of {{total}} units owned",
+      "signInTitle": "Sign in to see your collection",
+      "signInBody": "Every unit is shown greyed out. Sign in and sync with Tacticus to see which units you own and how far each has progressed.",
+      "signIn": "Sign in",
+      "syncTitle": "Sync to see your collection",
+      "syncBody": "Your roster hasn't been synced yet, so every unit is shown greyed out. Sync with Tacticus to see which units you own.",
+      "rosterErrorTitle": "Your roster couldn't be loaded",
+      "rosterErrorBody": "Every unit is shown greyed out until it loads. Try again.",
+      "catalogErrorTitle": "The unit catalog couldn't be loaded",
+      "catalogErrorBody": "The collection can't be shown without it. Try again.",
+      "retry": "Try again",
+      "factionOwned": "{{owned}} of {{total}} owned"
+    }
+  },
+  "unitTile": {
+    "characterAbilities": "Active ability level {{first}}, passive ability level {{second}}",
+    "mowAbilities": "Primary ability level {{first}}, secondary ability level {{second}}",
+    "shards_one": "{{count}} shard",
+    "shards_other": "{{count}} shards",
+    "shardsToUnlock_one": "{{count}} of {{required}} shards to unlock",
+    "shardsToUnlock_other": "{{count}} of {{required}} shards to unlock",
+    "mythicShards_one": "{{count}} mythic shard",
+    "mythicShards_other": "{{count}} mythic shards",
+    "level": "level {{level}}",
+    "notOwned": "not unlocked",
+    "startsAt": "Starts {{rarity}}",
+    "unlockProgress": "Unlock progress"
+  },
+  "progress": {
     "loadError": "Progress data is unexpectedly unavailable. Refresh and try again.",
     "campaigns": {
       "normal": "Normal campaigns",
@@ -365,7 +417,8 @@
       "title": "Daily Raids",
       "empty": "Nothing to raid today.",
       "error": "Couldn't load today's raids.",
-      "noGoals": "No active goals yet. Add goals to plan your raids."
+      "noGoals": "No active goals yet. Add goals to plan your raids.",
+      "limitReached": "Daily energy limit reached — bonus raids:"
     },
     "events": {
       "title": "Events",
@@ -494,7 +547,7 @@
         "legendaryEventPlans": "Legendary Event teams"
       },
       "partDescriptions": {
-        "legendaryEventPlans": "Hand-built teams and notes for the events the planner knows. Event progress is not imported."
+        "legendaryEventPlans": "Hand-built teams, notes, per-run mission and pack inputs, and Maybe clear / Stop here marks for the events the planner knows. Event progress is not imported."
       },
       "submit": "Import selected",
       "submitting": "Importing…",
@@ -539,10 +592,25 @@
         "title": "Legendary Event teams",
         "teams_one": "{{count}} team",
         "teams_other": "{{count}} teams",
+        "runs_one": "inputs for {{count}} run",
+        "runs_other": "inputs for {{count}} runs",
+        "marks_one": "{{count}} mark",
+        "marks_other": "{{count}} marks",
         "v1Event": "V1 event {{id}}",
+        "lanes": {
+          "alpha": "Alpha",
+          "beta": "Beta",
+          "gamma": "Gamma"
+        },
+        "fields": {
+          "regularMissions": "regular missions",
+          "premiumMissions": "premium missions",
+          "closeShards": "Oh So Close shards"
+        },
         "reasons": {
           "imported": "Teams imported.",
           "imported_without_teams": "Imported, but none of its teams could be kept.",
+          "inputs_imported": "Run inputs, marks or notes imported; no teams were added.",
           "plan_already_exists": "This event already has teams in the planner, so nothing was changed.",
           "event_not_in_catalog": "The planner does not have this event yet.",
           "no_legendary_event_imported": "No event's teams could be imported.",
@@ -562,7 +630,17 @@
           "duplicate_team_merged": "Two teams had the same units and were merged into one.",
           "conflicting_depth_discarded": "A merged team's different clear depth was discarded.",
           "existing_notes_kept": "The planner already had notes for this event, so the V1 notes were not imported.",
-          "notes_truncated": "The V1 notes were too long and were shortened. Original length in characters:"
+          "notes_truncated": "The V1 notes were too long and were shortened. Original length in characters:",
+          "run_input_clamped": "Run {{run}} {{field}} reduced from {{original}} to the event's {{bound}}.",
+          "run_input_clamped_unbounded": "Run {{run}} {{field}} reduced from {{original}} to the event's maximum.",
+          "unknown_run": "Inputs for an unrecognised run were skipped:",
+          "existing_run_inputs_kept": "Run {{run}} already had inputs in the planner, so they were kept and the V1 inputs were not imported.",
+          "unknown_battle": "A mark on {{lane}} battle {{battle}} was skipped: the lane has {{count}} battles.",
+          "unknown_battle_unbounded": "A mark on {{lane}} battle {{battle}} was skipped: the lane has no such battle.",
+          "existing_annotations_kept_one": "{{count}} mark already in the planner was kept.",
+          "existing_annotations_kept_other": "{{count}} marks already in the planner were kept.",
+          "unknown_objective_mark": "A mark on an unrecognised objective \"{{objective}}\" in {{lane}} was skipped.",
+          "unknown_lane_mark": "A mark on an unrecognised lane \"{{lane}}\" was skipped."
         }
       }
     },
@@ -646,7 +724,9 @@
       "selectAll": "Select all goals",
       "selectRow": "Select {{entity}}",
       "selectMode": "Select goals",
-      "selectDone": "Done"
+      "selectDone": "Done",
+      "removeFromProject": "Remove from project",
+      "removeFromProjectCount": "Remove from project ({{count}})"
     },
     "delete": {
       "title_one": "Delete this goal?",
@@ -655,7 +735,9 @@
       "description_other": "This permanently deletes these {{count}} goals from your account, including every project they belong to. This can't be undone.",
       "confirm_one": "Delete goal",
       "confirm_other": "Delete {{count}} goals",
-      "cancel": "Cancel"
+      "cancel": "Cancel",
+      "projectAlternative_one": "To take it out of {{project}} only, cancel and use “Remove from this project” instead.",
+      "projectAlternative_other": "To take them out of {{project}} only, cancel and use “Remove from project” instead."
     },
     "project": {
       "noProjectTitle": "No projects yet",
@@ -734,7 +816,13 @@
       "assemblyLastMembershipTitle": "Nothing was saved: these goals would be left in no project",
       "assemblyLastMembership": "This is the goal's only project. Add it to another project first (the Default project is always available), then remove it here.",
       "assemblySlotConflictTitle": "Nothing was saved: these goals compete for the same slot",
-      "assemblySlotConflict": "{{project}} can hold only one active or paused goal for this slot. Keep just one of the conflicting goals and save again."
+      "assemblySlotConflict": "{{project}} can hold only one active or paused goal for this slot. Keep just one of the conflicting goals and save again.",
+      "removeFromProject": "Remove from this project",
+      "moveToProject": "Move to project",
+      "moveToProjectTitle": "Move to project",
+      "moveToProjectDescription": "This is the goal's only project. Choose a project to move it into, or create a new one.",
+      "moveSelectionDescription_one": "{{project}} is the only project for {{count}} of the selected goals. Choose a project to move it into, or create a new one. The other selected goals are just removed from {{project}}.",
+      "moveSelectionDescription_other": "{{project}} is the only project for {{count}} of the selected goals. Choose a project to move them into, or create a new one. The other selected goals are just removed from {{project}}."
     },
     "toasts": {
       "statusChangedPartial": "Updated {{succeeded}} of {{total}} goals.",
@@ -745,7 +833,15 @@
       "projectMembershipSaved": "{{project}} updated: {{added}} added, {{removed}} removed.",
       "goalsAddedToProject_one": "Added {{count}} goal to {{project}}.",
       "goalsAddedToProject_other": "Added {{count}} goals to {{project}}.",
-      "bulkPartial": "Only {{succeeded}} of {{total}} goals were processed."
+      "bulkPartial": "Only {{succeeded}} of {{total}} goals were processed.",
+      "goalRemovedFromProject": "{{goal}} removed from {{project}}.",
+      "goalRelocated": "{{goal}} moved to {{project}}.",
+      "goalsRemovedFromProject_one": "Removed {{count}} goal from {{project}}.",
+      "goalsRemovedFromProject_other": "Removed {{count}} goals from {{project}}.",
+      "goalsRemovedAndMoved_one": "Removed {{count}} goal from {{project}}; {{moved}} moved to {{destination}}.",
+      "goalsRemovedAndMoved_other": "Removed {{count}} goals from {{project}}; {{moved}} moved to {{destination}}.",
+      "movedButNotRemoved_one": "Added {{count}} goal to {{destination}}, but couldn't remove it from {{project}}: {{error}}",
+      "movedButNotRemoved_other": "Added {{count}} goals to {{destination}}, but couldn't remove them from {{project}}: {{error}}"
     },
     "create": {
       "title": "Create a goal",
@@ -1186,7 +1282,7 @@
       },
       "navigation": {
         "title": "Find your way around",
-        "content": "This menu groups the app's sections, including Legendary Events — use it to navigate between them at any time."
+        "content": "This menu groups the app's sections, including My Game and Legendary Events — use it to navigate between them at any time."
       },
       "sidebarFooter": {
         "title": "Sidebar tools",
@@ -1194,7 +1290,7 @@
       },
       "bottomNavigationGroup": {
         "title": "Your main bar",
-        "content": "Switch sections, add a goal, or sync from here. Open Menu to search pages and quick actions, and to reach Progress and Legendary Events."
+        "content": "Switch sections, add a goal, or sync from here. Open Menu to search pages and quick actions, and to reach My Game and Legendary Events."
       },
       "mobileHeader": {
         "title": "Page header",
@@ -1323,6 +1419,26 @@
         "mythicMaterialSources": {
           "title": "Mythic materials",
           "content": "Choose which shop offers supply this goal's Mythic materials. Unchecking every offer stops counting on shops for them."
+        }
+      }
+    },
+    "collection": {
+      "steps": {
+        "summary": {
+          "title": "Your collection at a glance",
+          "content": "How many of the game's characters and Machines of War you own."
+        },
+        "faction": {
+          "title": "Grouped by faction",
+          "content": "Each card holds one faction's characters and Machines of War — the units you own come first."
+        },
+        "owned": {
+          "title": "An owned unit",
+          "content": "The ring shows its rarity, with stars on top, rank and shards on the portrait, and ability levels either side of its XP level below."
+        },
+        "unowned": {
+          "title": "Not unlocked yet",
+          "content": "Greyed-out units aren't in your roster. The bar shows how close you are to unlocking them."
         }
       }
     },

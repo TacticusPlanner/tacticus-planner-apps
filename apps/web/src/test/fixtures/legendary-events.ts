@@ -2,11 +2,9 @@
 // (tacticus-planner-api GameCatalog Data/lres). Run start dates are pinned for tests: Lysander's is
 // its real 2026-08-30 start; Uthar's and Farsight's are moved into the future so the three events
 // cover the active and upcoming lifecycle states. Each lane's `availableUnitIds` is the server's
-// evaluation over `legendary-event-characters.json`.
-import type {
-  LegendaryEventCommonStorageModel,
-  LegendaryEventStorageModel,
-} from "@workspace/game-catalog"
+// evaluation over `legendary-event-characters.json`. Each event carries its own `rewards` ladder
+// and mission lists from its raw file (Uthar and Farsight have 54 chests, Lysander 60).
+import type { LegendaryEventStorageModel } from "@workspace/game-catalog"
 
 import fixtures from "./legendary-events.json"
 
@@ -16,5 +14,3 @@ export const utharEvent =
   fixtures.uthar as unknown as LegendaryEventStorageModel
 export const farsightEvent =
   fixtures.farsight as unknown as LegendaryEventStorageModel
-export const legendaryEventCommon =
-  fixtures.common as unknown as LegendaryEventCommonStorageModel

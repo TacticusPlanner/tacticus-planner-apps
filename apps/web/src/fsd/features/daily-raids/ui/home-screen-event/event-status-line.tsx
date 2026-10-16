@@ -108,7 +108,7 @@ function StatusFrame({
       <span
         aria-hidden="true"
         className={cn(
-          "flex size-9 shrink-0 items-center justify-center rounded-md",
+          "flex size-9 shrink-0 items-center justify-center rounded-lg",
           eventBarClass("homeScreen")
         )}
       >

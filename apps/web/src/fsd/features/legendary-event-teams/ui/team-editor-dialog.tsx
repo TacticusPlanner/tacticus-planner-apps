@@ -8,6 +8,7 @@ import { cn } from "@workspace/ui/lib/utils"
 import {
   ObjectiveIcon,
   useObjectiveLabel,
+  type ClearEstimate,
   type LegendaryEventLane,
   type LegendaryEventLaneId,
   type LegendaryEventRosterUnit,
@@ -36,17 +37,23 @@ import {
   toggleObjective,
   toggleReserve,
 } from "../model/team-editor-draft"
-import type { PlanMutationOutcome } from "../model/use-legendary-event-plan"
-import { ClearDepthStepper } from "./clear-depth-stepper"
+import { editStartsFromEstimate } from "../model/clear-depth-display"
+import type { PickerGoalsPreview } from "../model/team-picker"
+import type {
+  DepthEstimateContext,
+  PlanMutationOutcome,
+} from "../model/use-legendary-event-plan"
+import { ClearDepthField } from "./clear-depth-field"
 import { TeamUnitPicker } from "./team-unit-picker"
 
 /**
  * The team editor (design D3, D7, D8): a dialog on desktop and a bottom sheet on mobile. Opened
- * empty from Add team or prefilled from Edit; mount it with a fresh `key` per opening so the draft
- * starts from the team. Covered objectives follow the members live and can be unticked; the depth
- * is the current run's. The dialog closes only once the save succeeded — after a conflict or an
- * error the draft stays for another try; after a conflict (the plan was reloaded, this save was
- * not applied) the dialog says so.
+ * empty from Add team, with a suggestion's members from Use this team, or prefilled from Edit;
+ * mount it with a fresh `key` per opening so the draft starts from the team. Covered objectives
+ * follow the members live and can be unticked; the depth is the current run's, and mirrors the
+ * card: the members' live estimate shows while no manual depth is set. The dialog closes only once
+ * the save succeeded — after a conflict or an error the draft stays for another try; after a
+ * conflict (the plan was reloaded, this save was not applied) the dialog says so.
  */
 export function TeamEditorDialog({
   open,
@@ -60,6 +67,10 @@ export function TeamEditorDialog({
   run,
   onlyUnlockedDefault,
   onSubmit,
+  estimateTeam,
+  initialMemberUnitIds,
+  goalsPreview,
+  goalLines,
 }: {
   open: boolean
   onOpenChange: (open: boolean) => void
@@ -73,15 +84,27 @@ export function TeamEditorDialog({
   teamNumber: number
   run: LegendaryEventRun
   onlyUnlockedDefault: boolean
-  onSubmit: (draft: TeamDraft) => Promise<PlanMutationOutcome>
+  /** `shown` is the estimate behind the saved depth, for the override log (design D8). */
+  onSubmit: (
+    draft: TeamDraft,
+    shown: DepthEstimateContext
+  ) => Promise<PlanMutationOutcome>
+  /** The lane's estimator; absent while estimates are unavailable. */
+  estimateTeam?: (memberUnitIds: readonly string[]) => ClearEstimate | null
+  /** A new team's members, in order (a team suggestion); ignored when editing a team. */
+  initialMemberUnitIds?: readonly string[]
+  goalsPreview?: PickerGoalsPreview
+  /** A unit's goal badge lines; absent or empty shows no badge. */
+  goalLines?: (unitId: string) => readonly string[]
 }) {
   const { t, i18n } = useTranslation("legendaryEvents")
   const objectiveLabel = useObjectiveLabel()
   const nameId = useId()
   const context = { lane, units }
-  const [draft, setDraft] = useState(() =>
-    initialEditorDraft(team, run, context)
+  const [initialDraft] = useState(() =>
+    initialEditorDraft(team, run, context, initialMemberUnitIds)
   )
+  const [draft, setDraft] = useState(initialDraft)
   const [saving, setSaving] = useState(false)
   const [reloaded, setReloaded] = useState(false)
   const number = new Intl.NumberFormat(i18n.language)
@@ -98,6 +121,16 @@ export function TeamEditorDialog({
   const name = effectiveTeamName(draft, defaultName)
   const nameTooLong = name.length > TEAM_NAME_MAX_LENGTH
   const canSave = canSaveDraft(draft, name) && !saving
+  const estimate =
+    draft.memberUnitIds.length > 0
+      ? (estimateTeam?.(draft.memberUnitIds) ?? null)
+      : null
+  const owned = roster
+    ? new Set(roster.map((entry) => entry.unitId as string))
+    : undefined
+  const lockedMemberCount = owned
+    ? draft.memberUnitIds.filter((unitId) => !owned.has(unitId)).length
+    : 0
 
   const handleToggleMember = (unitId: string) => {
     const result = toggleMember(draft, unitId, context)
@@ -110,7 +143,10 @@ export function TeamEditorDialog({
     if (!canSave) return
     setSaving(true)
     setReloaded(false)
-    const outcome = await onSubmit(toTeamDraft(draft, name))
+    const outcome = await onSubmit(toTeamDraft(draft, name), {
+      estimate: estimate?.depth ?? null,
+      fromEstimate: editStartsFromEstimate(initialDraft.depth, estimate),
+    })
     setSaving(false)
     setReloaded(outcome === "conflict")
     if (outcome === "saved") onOpenChange(false)
@@ -166,6 +202,8 @@ export function TeamEditorDialog({
           <section className="flex flex-col gap-2">
             <h3 className="text-sm font-medium">{t("teams.editor.members")}</h3>
             <TeamUnitPicker
+              goalLines={goalLines}
+              goalsPreview={goalsPreview}
               lane={lane}
               memberUnitIds={draft.memberUnitIds}
               onToggleMember={handleToggleMember}
@@ -236,9 +274,12 @@ export function TeamEditorDialog({
             <h3 className="text-sm font-medium">
               {t("teams.editor.depth", { run })}
             </h3>
-            <ClearDepthStepper
+            <ClearDepthField
+              align="start"
               battleCount={lane.battleIds.length}
               data-testid="team-editor-depth"
+              estimate={estimate}
+              lockedMemberCount={lockedMemberCount}
               onChange={(depth) =>
                 setDraft((current) => ({ ...current, depth }))
               }

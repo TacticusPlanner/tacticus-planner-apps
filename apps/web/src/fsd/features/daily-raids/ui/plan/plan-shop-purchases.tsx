@@ -81,7 +81,7 @@ export function PlanShopPurchases({
                 }
               )}
               className={cn(
-                "flex items-center gap-2 rounded-xl border bg-card p-1.5 transition-opacity",
+                "flex items-center gap-2 rounded-lg border bg-card p-1.5 transition-opacity",
                 dimmed && "opacity-30"
               )}
               data-dimmed={dimmed || undefined}

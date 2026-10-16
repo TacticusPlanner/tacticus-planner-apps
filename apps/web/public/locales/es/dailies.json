@@ -178,14 +178,18 @@
   "schedule": {
     "raids_one": "{{count}} intento usado",
     "raids_other": "{{count}} intentos usados",
+    "upgradesLeft_one": "Falta {{count}} mejora",
+    "upgradesLeft_other": "Faltan {{count}} mejoras",
+    "shardsLeft_one": "Falta {{count}} fragmento",
+    "shardsLeft_other": "Faltan {{count}} fragmentos",
     "progress": "{{owned}} de {{target}} en posesión",
-    "node": "{{node}} · {{raids}} intentos usados",
-    "maxRaids": "Máximo alcanzado",
     "fullyRaided": "Completado"
   },
   "bonus": {
     "title": "Incursiones extra",
-    "showMore": "Mostrar más"
+    "showMore": "Mostrar más",
+    "limitReached": "Límite diario de energía alcanzado: estas incursiones extra son las que aún merecen la pena.",
+    "limitReachedEmpty": "Límite diario de energía alcanzado. No quedan incursiones extra hoy."
   },
   "todaysAttempts": {
     "title": "Intentos de hoy",

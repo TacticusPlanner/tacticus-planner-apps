@@ -1,4 +1,4 @@
-import type { ReactNode } from "react"
+import { Suspense, type ReactNode } from "react"
 import {
   MemoryRouter,
   Route,
@@ -63,5 +63,53 @@ describe("app routes", () => {
     expect(screen.getByTestId("probe")).toHaveTextContent(
       `/?next=${encodeURIComponent(entry)}`
     )
+  })
+
+  it("registers /my-game with Collection as its default child and no /progress", () => {
+    const section = findRoute(routes, "/my-game")
+    expect(section?.children?.map((child) => child.path ?? "index")).toEqual([
+      "index",
+      "collection",
+      "campaigns",
+      "campaign-events",
+      "onslaught",
+    ])
+    expect(findRoute(routes, "/progress")).toBeUndefined()
+  })
+
+  function renderMyGameChild(childPath: string) {
+    const section = findRoute(routes, "/my-game")
+    const child = section?.children?.find((route) => route.path === childPath)
+    const entry = `/my-game/${childPath}`
+    render(
+      <MemoryRouter initialEntries={[entry]}>
+        <Suspense fallback={null}>
+          <Routes>
+            <Route element={<Probe />} path="/" />
+            <Route element={child?.element} path={entry} />
+          </Routes>
+        </Suspense>
+      </MemoryRouter>
+    )
+    return entry
+  }
+
+  it.each(["onslaught", "campaigns", "campaign-events"])(
+    "bounces an anonymous visitor from /my-game/%s to sign-in",
+    (childPath) => {
+      const entry = renderMyGameChild(childPath)
+
+      expect(screen.getByTestId("probe")).toHaveTextContent(
+        `/?next=${encodeURIComponent(entry)}`
+      )
+    }
+  )
+
+  it("lets an anonymous visitor open /my-game/collection", async () => {
+    renderMyGameChild("collection")
+
+    // Give the lazy page a chance to resolve; no sign-in redirect may happen.
+    await new Promise((resolve) => setTimeout(resolve, 0))
+    expect(screen.queryByTestId("probe")).not.toBeInTheDocument()
   })
 })

@@ -155,19 +155,23 @@ export function computeGoalAcquisition(params: {
   const shopOffers: ShopRewardOffer[] = []
   let onslaughtTokensDelta = 0
 
+  // An alliance the player never saved supplies nothing (no silent Stone 1 yield).
+  const onslaughtEntity = isMowDetail(detail)
+    ? params.mowsById.get(detail.entityId)
+    : params.charactersById.get(detail.entityId)
+  const allianceProgress =
+    onslaughtSource && params.onslaughtProgress
+      ? progressForAlliance(
+          params.onslaughtProgress,
+          onslaughtEntity?.alliance ?? "Imperial"
+        )
+      : undefined
+
   if (
     detail.goalType === "Ascension" &&
     detail.config.progression &&
-    onslaughtSource &&
-    params.onslaughtProgress
+    allianceProgress
   ) {
-    const entity = isMowDetail(detail)
-      ? params.mowsById.get(detail.entityId)
-      : params.charactersById.get(detail.entityId)
-    const allianceProgress = progressForAlliance(
-      params.onslaughtProgress,
-      entity?.alliance ?? "Imperial"
-    )
     const currentProgression = isMowDetail(detail)
       ? params.playerMowById.get(detail.entityId)?.progressionIndex
       : params.playerCharacterById.get(detail.entityId)?.progressionIndex

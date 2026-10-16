@@ -1,7 +1,7 @@
 import type { LegendaryEventLaneId } from "./types"
 
-// Hand-written types for `/api/v1/me/legendary-event-plans/{eventId}` (companion API change
-// add-legendary-event-teams, design D8). Every endpoint answers with the whole plan. The request
+// Hand-written types for `/api/v1/me/legendary-event-plans/{eventId}` (companion API changes
+// add-legendary-event-teams, design D8, and add-legendary-event-run-inputs, design D2, D4, D6). Every endpoint answers with the whole plan. The request
 // and 409 bodies exist only on the wire, so they carry the `Dto` suffix; the plan, team and run
 // depth are read and written as-is by the feature, so they are the (unsuffixed) domain shape too.
 
@@ -35,6 +35,45 @@ export interface LegendaryEventTeam {
   runDepths: LegendaryEventTeamRunDepth[]
 }
 
+/** One run's economy inputs the Tacticus API does not report; runs never written are omitted from
+ *  `runs` and read as zeros. */
+export interface LegendaryEventRunInputs {
+  run: LegendaryEventRun
+  /** 0..the event's catalog regular mission count. */
+  regularMissions: number
+  /** 0..the event's catalog premium mission count. */
+  premiumMissions: number
+  /** The 300-currency bundle was bought this run. */
+  bundlePurchased: boolean
+  /** "Oh So Close" shards, 0..75. */
+  closeShards: number
+  /** ISO 8601 UTC: the last write of this run. */
+  updatedAt: string
+}
+
+/** The editable values of one run (what the drawer edits and the run write sends). */
+export type LegendaryEventRunInputValues = Pick<
+  LegendaryEventRunInputs,
+  "regularMissions" | "premiumMissions" | "bundlePurchased" | "closeShards"
+>
+
+/** A Maybe clear / Stop here reminder on one objective cell of a battle. */
+export type LegendaryEventAnnotationStatus = "maybeClear" | "stopHere"
+
+/**
+ * One stored mark. Cell ids follow the synced `lre-progress` contract: `battleIndex` is the 0-based
+ * `encounters` index, `objectiveId` 0 is defeat-all and 1–5 the objective with catalog `index`
+ * `objectiveId − 1`. A mark applies only while sync shows its cell not cleared (see
+ * `applicableAnnotations`); stale rows stay on the plan, ignored.
+ */
+export interface LegendaryEventAnnotation {
+  laneId: LegendaryEventLaneId
+  battleIndex: number
+  objectiveId: number
+  status: LegendaryEventAnnotationStatus
+  updatedAt: string
+}
+
 export interface LegendaryEventPlan {
   eventId: string
   /** The plan-level concurrency token; 0 for a plan that does not exist yet. */
@@ -44,12 +83,33 @@ export interface LegendaryEventPlan {
   showPaidOptions: boolean
   /** Ordered by lane (alpha, beta, gamma) then `sortOrder`. */
   teams: LegendaryEventTeam[]
+  /** Ascending by run; absent runs omitted. Optional: a plan served before the run inputs change
+   *  (or built by an older test) has none, which reads as no inputs. */
+  runs?: LegendaryEventRunInputs[]
+  /** Ordered by lane, `battleIndex`, then `objectiveId`. Optional like `runs`. */
+  annotations?: LegendaryEventAnnotation[]
 }
 
 export interface UpdatePlanRequestDto {
   expectedRevision: number
   notes: string | null
   showPaidOptions: boolean
+}
+
+/** `PUT …/runs/{run}`: upserts one run's inputs; unchanged values keep the revision. */
+export type UpdateRunInputsRequestDto = LegendaryEventRunInputValues & {
+  expectedRevision: number
+}
+
+/** `PUT …/annotations`: sets (or clears, with null) the status of the listed cells of one battle;
+ *  unchanged cells keep the revision. */
+export interface UpdateAnnotationsRequestDto {
+  expectedRevision: number
+  laneId: LegendaryEventLaneId
+  battleIndex: number
+  /** 1–6 distinct cell ids (0 defeat-all, 1–5 objective index + 1). */
+  objectiveIds: number[]
+  status: LegendaryEventAnnotationStatus | null
 }
 
 /** The team fields a create and an update share; the depth applies to `run` only. */

@@ -1,0 +1,66 @@
+## 1. Navigation: per-child access
+
+- [x] 1.1 Add optional `anonymousAllowed` to `NavSubItemBase` (inheriting the section's value when absent) and replace the section-only filter in `app-shell.tsx` with a `filterVisibleNavItems` helper (sections and children) whose result also supplies the visible active section; verify with `navigation-filter.test.ts` cases for an anonymous user (mixed section keeps only anonymous children; a section left with zero children is dropped) and a signed-in user (all children)
+- [x] 1.2 Make desktop section-entry and last-visited-child resolution fall back to the default child when the remembered child is not visible; verify with a test where the remembered child is `/my-game/campaigns` and the user is anonymous → `/my-game/collection`
+- [x] 1.3 Confirm the desktop section menu, mobile tab row (`section-tabs.tsx`), mobile drawer and navigation search consume the filtered tree; verify with an anonymous-user test per consumer showing only Collection under My Game and no Onslaught search result
+
+## 2. Navigation: My Game section and route move
+
+- [x] 2.1 Rename `pages/progress` to `pages/my-game` (`MyGameLayout`, index → `collection`, children `collection`, `campaigns`, `campaign-events`) and update `app/routes.tsx` to mount `/my-game` unwrapped, with `onslaught`, `campaigns` and `campaign-events` each wrapped in `ProtectedRoute`; verify with routing tests: anonymous on `/my-game/onslaught` hits sign-in handling, anonymous on `/my-game/collection` renders, and `/progress/*` hits not-found
+- [x] 2.2 Replace the Progress `NavItem` in `nav-items.ts` with My Game (`/my-game`, `anonymousAllowed: true`, `mobilePlacement: "menu"`), children Collection (anonymous), Onslaught, Campaigns, Campaign Events (each `anonymousAllowed: false`); verify with the desktop-layout and mobile-layout tests listing the four children in order for a signed-in user
+- [x] 2.3 Update the `/progress/onslaught` link in `pages/goals/ui/create-goal/acquisition-source-field.tsx` and any other `/progress` reference in source and tests; verify `rg "/progress" apps/web/src` returns no route references
+- [x] 2.4 Rename i18n keys `nav.progress*` → `nav.myGame*` and `progress.tabs.*` → `myGame.tabs.*` (plus `collection` / `collectionDescription`) in `common` for en/de/es/fr with real translations, and update typed resources and consumers; verify `pnpm typecheck` and that no locale still contains the old keys
+- [x] 2.5 Update `general.tutorial.tsx` and its `tour.*` copy in all four locales to refer to My Game instead of Progress on desktop and mobile; verify with the general tutorial tests
+
+## 3. Unit tile entity
+
+- [x] 3.1 Create `entities/unit` with a public `UnitTile` (owned character, owned MoW, unowned character with unlock target, unowned MoW with count only, unknown-shards state), reusing `shared/ui` rank badge / rarity icon and the game-catalog icon helpers; verify with component tests per state asserting which indicators render and that power is never rendered
+- [x] 3.2 Give the tile its accessible name and a desktop-only tooltip (none on mobile) and make it non-interactive; verify with tests that clicking does nothing, `aria-label` equals the unit name, and the tooltip appears only at ≥768px
+- [x] 3.3 Run `pnpm lint:fsd` to confirm `entities/unit` imports nothing from features or pages
+
+## 4. Collection view-model
+
+- [x] 4.1 Implement `buildCollectionView` in `pages/my-game/model/collection-view.ts` (roster state, faction grouping and ordering, owned/unowned ordering, progression → rarity/stars, `abilities[0|1]` mapping, unlock cost by initial rarity, summary derived from groups); verify with unit tests using real catalog ids: the spec's Titus, Calgar 75/400 and MoW scenarios, the 84-of-131 summary, alliance order, `mows` chunk unsynced → MoWs unowned, `inventory-shards` missing → no shard counts
+- [x] 4.2 Add a `useCollectionView` hook that reads the catalog, roster and shard inventory, re-reads after sync completes, and exposes loading / catalog-error / roster-error states; verify with hook tests for each state, including the roster appearing after a simulated sync without remount
+
+## 5. Collection page
+
+- [x] 5.1 Build the Collection page (`pages/my-game/ui/collection/`): summary, faction group cards (icon + localized name), tile grid, multi-column desktop and single-column mobile; verify with page tests for owned and unowned rendering at both breakpoints
+- [x] 5.2 Move the player-data status context and `usePlayerDataStatus` from `app/providers` to `shared/player-data-status`, and `usePlayerDataSyncStatus` to a new `features/player-data-sync`, repointing the sidebar button, mobile shell and quick actions; verify the existing sync-button, mobile-layout, quick-actions and nav-live-indicator tests pass unchanged in behaviour and `pnpm lint:fsd` is clean
+- [x] 5.3 Add the no-roster prompts (anonymous → sign in; signed-in not synced → sync prompt with the existing Sync with Tacticus action), the loading state, catalog error with retry and roster error with retry; verify with page tests for each state
+- [x] 5.4 Add `myGame.collection.*` copy in en/de/es/fr with real translations; verify by checking that every key exists in all four locales
+- [x] 5.5 Add `collection.tutorial.tsx` with desktop and mobile steps (summary, first faction group, first owned tile, first unowned tile), registered via `useTourPageSteps`, plus `tour.collection.steps.*` copy in en/de/es/fr; verify with tutorial tests that every step target exists in each layout and the summary step is skipped without a roster
+
+## 6. Desktop verification (viewport ≥768px)
+
+Data states needed: an anonymous session, a signed-in account with a synced roster that has owned and unowned characters and MoWs, and (where feasible) a signed-in account before its first sync.
+
+- [x] 6.1 Signed in and synced: open My Game from the sidebar → lands on Collection; the section menu lists four children; faction cards show owned tiles with all indicators and greyed unowned tiles with shard progress; the tooltip shows the name; clicking does nothing
+- [x] 6.2 Anonymous: My Game shows only Collection; all units greyed; the sign-in prompt is shown; search for "onslaught" finds nothing under My Game; `/my-game/onslaught` triggers sign-in handling
+- [x] 6.3 Run the Collection page tour and the general tour; each step highlights a visible element
+
+## 7. Mobile verification (viewport <768px, same-origin iframe per `tp-manual-ui-verification`)
+
+- [x] 7.1 Signed in and synced: the drawer lists My Game with four children; the header tab row shows four tabs; faction cards are single-column with smaller tiles and no tooltip
+- [x] 7.2 Anonymous: the drawer and tab row show only Collection; the greyed catalog and sign-in prompt render
+- [x] 7.3 Run the Collection page tour on mobile; each step highlights a visible element
+
+## 8. Gates and spec housekeeping
+
+- [x] 8.1 Update the Purpose line of `openspec/specs/onslaught-progress-entry/spec.md` from `/progress/onslaught` to `/my-game/onslaught` (done directly on the branch, since a delta cannot change a Purpose); verify `openspec validate --specs`
+- [x] 8.2 Run `pnpm test:run`, `pnpm typecheck`, `pnpm lint`, `pnpm lint:fsd` and `git diff --check`, all passing
+
+## 9. Cards view redesign (design handoff)
+
+- [x] 9.1 Add the `--overlay`, `--overlay-foreground`, `--portrait`, `--progress`, `--info-bg` and `--faction-<id>` tokens to both themes in `packages/ui/src/styles/globals.css`; verify with a unit test that every faction token gives at least 4.5:1 against `--overlay-foreground`
+- [x] 9.2 Let Collection opt out of the 1600px `PageContainer` cap from `MyGameLayout` while the other My Game pages keep it; verify with a layout test for both routes
+- [x] 9.3 Rebuild `UnitTile` (still non-interactive; click-through is Stage 4): round portrait with rarity ring, star pill, rank badge, shard crystal (and mythic crystal when > 0), one-line name, number boxes, equipment row with item icons; unowned variant with lock badge and `have/need` progress bar (character) or count (MoW); no-roster variant with "Starts <Rarity>"; equal heights; spelled-out `aria-label`; no tooltip; verify with component tests per variant, including that a click does nothing and the progressbar
+- [x] 9.4 Order unowned units nearest to unlock first in `buildCollectionView` and expose each group's owned count; verify with view-model tests
+- [x] 9.5 Rebuild the faction grid and card: equal-width auto-fill grid with stretched rows, faction-coloured header bar with icon, upper-cased name and owned/total (omitted without a roster), seven slots per row on desktop and five on mobile; verify with page tests at both breakpoints
+- [x] 9.6 Replace the loading spinner with skeleton faction cards (`aria-busy`, no pulse under reduced motion); verify with a page test
+- [x] 9.7 Update `unitTile.*`, `myGame.collection.*` and tour copy for the new tile in en/de/es/fr with real translations; verify the translation test and that the tour targets still exist
+- [x] 9.8 Verify on desktop (>=768px): synced roster shows each faction on one row, cards align, the 1440px window shows at least 60 units within about one and a half screens, clicking a tile does nothing, light and dark themes render the overlays readably; anonymous shows "Starts <Rarity>" tiles
+- [x] 9.9 Verify on mobile (<768px, same-origin iframe): five slots per row, no horizontal scroll at 420px, tapping a tile does nothing
+- [x] 9.11 Make page tours scroll each target clear of the sticky shell header (found in 9.8/9.9: Joyride's default 20px offset left targets under the 48px desktop top bar and the ~125px mobile header); verify with a tour-provider test per form factor and by re-running the Collection tour on desktop and mobile
+- [x] 9.10 Run `pnpm test:run`, `pnpm typecheck`, `pnpm lint`, `pnpm lint:fsd` and `git diff --check`, all passing
+- [x] 9.12 Address the #200 review: treat a roster with only one of the `characters`/`mows` chunks as not synced; leave the unowned tour step out when every unit is owned; name units by their catalog name when untranslated instead of depending on `useUnitName`'s separate queries; note that a child's `anonymousAllowed` can only narrow

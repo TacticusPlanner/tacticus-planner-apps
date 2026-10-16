@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react"
+import { act, render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { MemoryRouter, Route, Routes, useLocation } from "react-router"
 import { describe, expect, it, vi } from "vitest"
@@ -44,7 +44,7 @@ vi.mock("@azure/msal-react", () => ({
   useMsal: () => ({ instance: { id: "msal-instance" } }),
 }))
 
-import { OnboardingGate } from "./onboarding-gate"
+import { ACCOUNT_GATE_SLOW_MS, OnboardingGate } from "./onboarding-gate"
 
 function setState(state: CurrentUserState) {
   useCurrentUser.mockReturnValue({ refetch: vi.fn(), state })
@@ -143,6 +143,30 @@ describe("OnboardingGate", () => {
     expect(screen.getByRole("status")).toBeVisible()
   })
 
+  it("labels the loading state and adds a slow-loading note only after a delay", () => {
+    vi.useFakeTimers()
+    try {
+      setState({ status: "loading" })
+
+      renderAt("/guild/members")
+
+      expect(screen.getByRole("status")).toHaveTextContent(
+        "accountGate.loading"
+      )
+      expect(screen.queryByTestId("account-gate-slow")).not.toBeInTheDocument()
+
+      act(() => {
+        vi.advanceTimersByTime(ACCOUNT_GATE_SLOW_MS)
+      })
+
+      expect(screen.getByTestId("account-gate-slow")).toHaveTextContent(
+        "accountGate.slow"
+      )
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
   it("blocks protected content without navigating if the current-user fetch errored", () => {
     setState({ status: "error", error: new Error("boom") })
 
@@ -178,7 +202,9 @@ describe("OnboardingGate", () => {
     renderAt("/guild/members")
 
     expect(requestApiAccessOnce).toHaveBeenCalledWith(error)
-    expect(screen.getByRole("status")).toBeVisible()
+    expect(screen.getByRole("status")).toHaveTextContent(
+      "accountGate.reauthenticating"
+    )
     expect(screen.queryByTestId("account-gate-retry")).not.toBeInTheDocument()
     expect(screen.queryByTestId("protected-content")).not.toBeInTheDocument()
     interactionRequired.mockImplementation(() => false)

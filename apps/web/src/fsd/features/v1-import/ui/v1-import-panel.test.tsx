@@ -53,6 +53,7 @@ vi.mock("@/entities/player-data-override", () => ({
 
 vi.mock("@/entities/legendary-event", () => ({
   legendaryEventPlanQueries: { all: () => ["legendary-event-plans"] },
+  useLegendaryEvents: () => ({ status: "loading", retry: () => {}, nowMs: 0 }),
 }))
 
 vi.mock("@/shared/api", () => ({
