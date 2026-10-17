@@ -8,7 +8,7 @@ import { useNpcLabels } from "@/entities/npc"
 import type { EnemyTileViewModel } from "./battles.view-model"
 
 /**
- * A tile's display name and its spoken level: the raw id while `npcs` is pending (spec: tiles show
+ * A tile's display name and its spoken level: the raw id while `npcs` is pending or failed (spec: tiles show
  * the raw id and no level), else the id-keyed localized name with the served name as fallback.
  */
 export function useEnemyLabels() {
@@ -17,7 +17,7 @@ export function useEnemyLabels() {
 
   const enemyName = useCallback(
     (tile: EnemyTileViewModel) =>
-      tile.level === "pending"
+      tile.level === "pending" || tile.level === "unavailable"
         ? tile.npcId
         : variationName(tile.npcId, tile.npc?.name ?? tile.npcId),
     [variationName]
@@ -25,7 +25,9 @@ export function useEnemyLabels() {
 
   const levelText = useCallback(
     (tile: EnemyTileViewModel) => {
-      if (tile.level === "pending") return undefined
+      if (tile.level === "pending" || tile.level === "unavailable") {
+        return undefined
+      }
       if (!tile.row) return t("battles.enemy.levelUnknown")
       const rank = rankAt(tile.row.rank)
       const rankLabel = t(`progression:ranks.${rank}`, { defaultValue: rank })

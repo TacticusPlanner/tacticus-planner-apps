@@ -197,6 +197,7 @@
     "round": "Round {{round}}",
     "wavePower": "Power {{power}}",
     "noEnemies": "No enemies in this wave",
+    "npcsError": "Enemy levels and stats could not be loaded.",
     "selector": {
       "label": "Battle",
       "complete": "complete",
@@ -211,6 +212,7 @@
       "levelStars_other": "{{rank}} {{count}} stars",
       "levelWings": "{{rank}} with wings",
       "npcsLoading": "Enemy details are still loading.",
+      "npcsError": "Enemy details could not be loaded.",
       "openInLibrary": "Open in Library",
       "detailDescription": "This enemy's stats at its level in this battle."
     },

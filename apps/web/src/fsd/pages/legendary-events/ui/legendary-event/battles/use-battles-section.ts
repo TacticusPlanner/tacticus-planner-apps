@@ -34,7 +34,9 @@ export function useBattlesSection({
   battlesRead: ReadState<LegendaryEventBattle[]>
   progressGrid: ProgressGridViewModel
 }): BattlesViewModel | null {
-  const npcs = readValue(useNpcsById())
+  const npcsRead = useNpcsById()
+  const npcs = readValue(npcsRead)
+  const retryNpcs = npcsRead.retry
   const battles = readValue(battlesRead)
   const retryBattles = battlesRead.retry
   const [selectedByLane, setSelectedByLane] = useState<
@@ -49,13 +51,14 @@ export function useBattlesSection({
             battles,
             retryBattles,
             npcs,
+            retryNpcs,
             progress:
               progressGrid.kind === "ready"
                 ? progressGrid.lanes[laneId]
                 : undefined,
           })
         : undefined,
-    [event, laneId, battles, retryBattles, npcs, progressGrid]
+    [event, laneId, battles, retryBattles, npcs, retryNpcs, progressGrid]
   )
   if (!state || !laneId) return null
   return {

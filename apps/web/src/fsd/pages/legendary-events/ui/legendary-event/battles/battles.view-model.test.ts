@@ -27,7 +27,7 @@ function progress(completeCount: number): LaneProgressView {
 function ready(
   lane: string,
   options: {
-    npcs?: ReadonlyMap<string, NpcRecord> | "loading"
+    npcs?: ReadonlyMap<string, NpcRecord> | "loading" | "error"
     progress?: LaneProgressView
   } = {}
 ) {
@@ -36,6 +36,7 @@ function ready(
     battles: lysanderBattles,
     retryBattles: () => {},
     npcs: options.npcs ?? npcs,
+    retryNpcs: () => {},
     progress: options.progress,
   })
   if (state.kind !== "ready")
@@ -109,6 +110,28 @@ describe("buildBattlesSection", () => {
     })
   })
 
+  it("tells a failed NPC read apart from a pending one and offers its retry", () => {
+    const retryNpcs = vi.fn()
+    const state = buildBattlesSection({
+      battleIds: laneIds("alpha"),
+      battles: lysanderBattles,
+      retryBattles: () => {},
+      npcs: "error",
+      retryNpcs,
+      progress: undefined,
+    })
+    if (state.kind !== "ready") throw new Error("expected ready")
+    expect(state.battles[0]!.waves[0]!.enemies[0]).toMatchObject({
+      npcId: "orksNpc1Grot",
+      row: undefined,
+      level: "unavailable",
+    })
+    state.retryNpcs?.()
+    expect(retryNpcs).toHaveBeenCalledOnce()
+    expect(ready("alpha").retryNpcs).toBeUndefined()
+    expect(ready("alpha", { npcs: "loading" }).retryNpcs).toBeUndefined()
+  })
+
   it("links only variations the Library lists", () => {
     const grot = npcs.get("orksNpc1Grot")!
     const unlisted = new Map(npcs)
@@ -145,6 +168,7 @@ describe("buildBattlesSection", () => {
       battleIds: laneIds("alpha"),
       retryBattles: retry,
       npcs,
+      retryNpcs: () => {},
       progress: undefined,
     }
     expect(buildBattlesSection({ ...base, battles: "loading" })).toEqual({

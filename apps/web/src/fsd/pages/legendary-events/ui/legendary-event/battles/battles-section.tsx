@@ -113,6 +113,17 @@ function ReadyBattles({
         selectedIndex={index}
       />
       <BattleHeader battle={battle} />
+      {state.retryNpcs ? (
+        <div
+          className="flex flex-wrap items-center gap-2"
+          data-testid="battles-npcs-error"
+        >
+          <p className="text-sm text-destructive">{t("battles.npcsError")}</p>
+          <Button onClick={state.retryNpcs} size="sm" variant="outline">
+            {t("hub.retry")}
+          </Button>
+        </div>
+      ) : null}
       {isMobile ? (
         <>
           {map}

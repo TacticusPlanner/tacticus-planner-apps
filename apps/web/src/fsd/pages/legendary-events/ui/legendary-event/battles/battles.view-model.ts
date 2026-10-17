@@ -19,15 +19,16 @@ import type { ReadValue } from "../legendary-event-page.view-model"
 export interface EnemyTileViewModel {
   key: string
   npcId: string
-  /** The served NPC, or undefined while `npcs` is pending or when the id is unknown. */
+  /** The served NPC, or undefined while `npcs` is pending or failed, or when the id is unknown. */
   npc: NpcRecord | undefined
   count: number
   /** The resolved ladder row; undefined when the level is unknown (or NPCs are pending). */
   row: NpcStatRow | undefined
   /** The NPC Library page at this variation and level, when the Library lists the variation. */
   libraryHref: string | undefined
-  /** `pending`: NPCs not read yet; `unknownLevel`: unknown id or an index past the ladder. */
-  level: "resolved" | "unknownLevel" | "pending"
+  /** `pending`: NPCs not read yet; `unavailable`: the NPC read failed; `unknownLevel`: unknown id or
+   *  an index past the ladder. */
+  level: "resolved" | "unknownLevel" | "pending" | "unavailable"
 }
 
 interface WaveViewModel {
@@ -55,6 +56,8 @@ export type BattlesSectionState =
   | { kind: "empty" }
   | {
       kind: "ready"
+      /** Re-runs the `npcs` read; set only when it failed (tiles then show no level). */
+      retryNpcs: (() => void) | undefined
       battles: BattlePreviewViewModel[]
       /** 0-based default selection (first incomplete battle). */
       defaultIndex: number
@@ -80,19 +83,26 @@ export function buildBattlesSection({
   battles,
   retryBattles,
   npcs,
+  retryNpcs,
   progress,
 }: {
   battleIds: readonly string[]
   battles: ReadValue<LegendaryEventBattle[]>
   retryBattles: () => void
   npcs: ReadValue<ReadonlyMap<string, NpcRecord>>
+  retryNpcs: () => void
   progress: LaneProgressView | undefined
 }): BattlesSectionState {
   if (battles === "loading") return { kind: "loading" }
   if (battles === "error") return { kind: "error", retry: retryBattles }
   const lane = orderLaneBattles(battleIds, battles)
   if (lane.length === 0) return { kind: "empty" }
-  const npcsById = typeof npcs === "string" ? undefined : npcs
+  const npcsById =
+    typeof npcs === "string"
+      ? npcs === "error"
+        ? ("unavailable" as const)
+        : ("pending" as const)
+      : npcs
   // Progress is indexed by `battleIds` position, which differs from `lane` if a battle is unserved.
   const positionOf = (battle: LegendaryEventBattle) =>
     battleIds.indexOf(battle.id)
@@ -106,6 +116,7 @@ export function buildBattlesSection({
 
   return {
     kind: "ready",
+    retryNpcs: npcs === "error" ? retryNpcs : undefined,
     defaultIndex: defaultIndex === -1 ? lane.length - 1 : defaultIndex,
     battles: lane.map((battle) => ({
       id: battle.id,
@@ -129,9 +140,9 @@ export function buildBattlesSection({
 function enemyTile(
   enemy: { id: string; ladderIndex: number; count: number },
   key: string,
-  npcsById: ReadonlyMap<string, NpcRecord> | undefined
+  npcsById: ReadonlyMap<string, NpcRecord> | "pending" | "unavailable"
 ): EnemyTileViewModel {
-  if (!npcsById) {
+  if (typeof npcsById === "string") {
     return {
       key,
       npcId: enemy.id,
@@ -139,7 +150,7 @@ function enemyTile(
       count: enemy.count,
       row: undefined,
       libraryHref: undefined,
-      level: "pending",
+      level: npcsById,
     }
   }
   const npc = npcsById.get(enemy.id)

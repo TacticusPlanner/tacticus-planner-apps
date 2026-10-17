@@ -13,10 +13,12 @@ See proposal.md for motivation; behaviour is in `specs/legendary-event-battle-pr
 ## Goals / Non-Goals
 
 **Goals:**
+
 - V1 parity for "what does this battle look like": map, waves, enemies, levels, per-enemy stats.
 - No new network read: reuse the page's `lre-battles` read and the synced `npcs` store.
 
 **Non-Goals:**
+
 - Refactoring the Library's NPC detail into a shared widget. The battle detail is a compact summary that links to the Library for everything else.
 - Changing the served `lre-battles` shape.
 
@@ -43,7 +45,7 @@ The page view model holds `selectedBattleByLane: Partial<Record<LaneId, number>>
 ### D4. Desktop and mobile split
 
 - **Desktop (≥ 768px):** a single-choice toggle group of battle numbers 1–N (wraps on narrow desktop widths); complete battles carry a check icon and an sr-only "complete". Below it a two-column layout: map (fixed 296 px column) left, header and waves right. Enemy details open in a `Popover` anchored to the tile.
-- **Mobile (< 768px):** Previous / "Battle N of M" (a `DropdownMenu` trigger listing all battles) / Next. Header, then a collapsed `Collapsible` "Map", then waves. Enemy details open in a bottom `Sheet`.
+- **Mobile (< 768px):** Previous / "Battle N of M" (a `DropdownMenu` trigger listing all battles) / Next. Header, then a collapsed "Map" disclosure (a button with `aria-expanded` / `aria-controls` over the map region), then waves. Enemy details open in a bottom `Sheet`.
 - **Joyride:** one target, `[data-testid="legendary-event-battles"]` on the section heading, on both forms, so the shared step list in `legendary-event.tutorial.tsx` gains `step("battles", "top")` between `progressGrid` and `leaderboard` and no form-specific selector.
 
 ### D5. Enemy tiles
@@ -56,22 +58,22 @@ Copy `LE1_21.jpg` from V1 `le_maps` and `C1_70.jpg`, `C3_75.jpg`, `MC1_51.jpg` f
 
 ### V1-parity checklist
 
-| V1 element | Decision |
-| --- | --- |
-| Battles tab with ALPHA/BETA/GAMMA radio switch | Redesign: section on each lane tab (D1) |
-| Battle range slider, "Battle N" label | Redesign: number toggle group (desktop), stepper + menu (mobile) |
-| Default battle 1 | Redesign: first incomplete battle from sync |
-| Header: track badge, "Battle N", Total Enemy Power | Keep (power and number); track is the tab; add total enemy count |
-| Show/Hide Map button, map hidden by default, `le_maps/{mapId}.jpg` | Keep the asset ids; desktop shows the map, mobile keeps it collapsed |
-| Map missing (V1 rendered a broken image) | Redesign: "Map not available" placeholder |
-| Waves sorted by round, "Wave N \| Round R", power per wave | Keep |
-| "No Enemies This Wave" / "The battle continues…" | Keep as one "No enemies in this wave" line |
-| "No wave data found." | Keep as the lane/battle missing-data state |
-| One scaled `NpcPortrait` per enemy instance | Redesign: one tile per enemy type with ×N |
-| Unresolved enemy rendered as red "Error: {id}" | Redesign: tile with "Level unknown" |
-| `NpcDetailModal` on click (stats for the level) | Redesign: popover / sheet with summary and Library link |
-| `disallowedFactions`, `tier`, `objectives` per battle | Drop: the lane's allowed rule and objectives are already in the Lane overview |
-| V1 events without V2 catalog data (Dante, Trajann, Lucius) | Drop (catalog-scope rule in `lre-planning.md`) |
+| V1 element                                                         | Decision                                                                      |
+| ------------------------------------------------------------------ | ----------------------------------------------------------------------------- |
+| Battles tab with ALPHA/BETA/GAMMA radio switch                     | Redesign: section on each lane tab (D1)                                       |
+| Battle range slider, "Battle N" label                              | Redesign: number toggle group (desktop), stepper + menu (mobile)              |
+| Default battle 1                                                   | Redesign: first incomplete battle from sync                                   |
+| Header: track badge, "Battle N", Total Enemy Power                 | Keep (power and number); track is the tab; add total enemy count              |
+| Show/Hide Map button, map hidden by default, `le_maps/{mapId}.jpg` | Keep the asset ids; desktop shows the map, mobile keeps it collapsed          |
+| Map missing (V1 rendered a broken image)                           | Redesign: "Map not available" placeholder                                     |
+| Waves sorted by round, "Wave N \| Round R", power per wave         | Keep                                                                          |
+| "No Enemies This Wave" / "The battle continues…"                   | Keep as one "No enemies in this wave" line                                    |
+| "No wave data found."                                              | Keep as the lane/battle missing-data state                                    |
+| One scaled `NpcPortrait` per enemy instance                        | Redesign: one tile per enemy type with ×N                                     |
+| Unresolved enemy rendered as red "Error: {id}"                     | Redesign: tile with "Level unknown"                                           |
+| `NpcDetailModal` on click (stats for the level)                    | Redesign: popover / sheet with summary and Library link                       |
+| `disallowedFactions`, `tier`, `objectives` per battle              | Drop: the lane's allowed rule and objectives are already in the Lane overview |
+| V1 events without V2 catalog data (Dante, Trajann, Lucius)         | Drop (catalog-scope rule in `lre-planning.md`)                                |
 
 ## Risks / Trade-offs
 

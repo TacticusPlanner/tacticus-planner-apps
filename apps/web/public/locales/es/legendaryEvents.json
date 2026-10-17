@@ -197,6 +197,7 @@
     "round": "Ronda {{round}}",
     "wavePower": "Poder {{power}}",
     "noEnemies": "No hay enemigos en esta oleada",
+    "npcsError": "No se pudieron cargar los niveles y estadísticas de los enemigos.",
     "selector": {
       "label": "Batalla",
       "complete": "completada",
@@ -211,6 +212,7 @@
       "levelStars_other": "{{rank}} {{count}} estrellas",
       "levelWings": "{{rank}} con alas",
       "npcsLoading": "Los detalles del enemigo aún se están cargando.",
+      "npcsError": "No se pudieron cargar los detalles del enemigo.",
       "openInLibrary": "Abrir en la Biblioteca",
       "detailDescription": "Las estadísticas de este enemigo a su nivel en esta batalla."
     },

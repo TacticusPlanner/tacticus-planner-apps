@@ -24,6 +24,7 @@ export function lysanderLane(
     npcs: new Map<string, NpcRecord>(
       lysanderBattleNpcs.map((npc) => [npc.id, npc])
     ),
+    retryNpcs: () => {},
     progress: {
       status: "synced",
       battles: Array.from({ length: 18 }, (_, index) => ({

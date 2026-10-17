@@ -197,6 +197,7 @@
     "round": "Tour {{round}}",
     "wavePower": "Puissance {{power}}",
     "noEnemies": "Aucun ennemi dans cette vague",
+    "npcsError": "Les niveaux et statistiques des ennemis n’ont pas pu être chargés.",
     "selector": {
       "label": "Combat",
       "complete": "terminé",
@@ -211,6 +212,7 @@
       "levelStars_other": "{{rank}} {{count}} étoiles",
       "levelWings": "{{rank}} avec ailes",
       "npcsLoading": "Les détails de l’ennemi sont encore en cours de chargement.",
+      "npcsError": "Les détails de l’ennemi n’ont pas pu être chargés.",
       "openInLibrary": "Ouvrir dans la Bibliothèque",
       "detailDescription": "Les statistiques de cet ennemi à son niveau dans ce combat."
     },

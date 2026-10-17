@@ -197,6 +197,7 @@
     "round": "Runde {{round}}",
     "wavePower": "Stärke {{power}}",
     "noEnemies": "Keine Gegner in dieser Welle",
+    "npcsError": "Gegnerstufen und -werte konnten nicht geladen werden.",
     "selector": {
       "label": "Kampf",
       "complete": "abgeschlossen",
@@ -211,6 +212,7 @@
       "levelStars_other": "{{rank}} {{count}} Sterne",
       "levelWings": "{{rank}} mit Flügeln",
       "npcsLoading": "Die Gegnerdetails werden noch geladen.",
+      "npcsError": "Die Gegnerdetails konnten nicht geladen werden.",
       "openInLibrary": "In der Bibliothek öffnen",
       "detailDescription": "Die Werte dieses Gegners auf seiner Stufe in diesem Kampf."
     },

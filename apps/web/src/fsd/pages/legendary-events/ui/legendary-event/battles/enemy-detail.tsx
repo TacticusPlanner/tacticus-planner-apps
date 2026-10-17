@@ -40,7 +40,9 @@ export function EnemyDetail({ tile }: { tile: EnemyTileViewModel }) {
         >
           {tile.level === "pending"
             ? t("battles.enemy.npcsLoading")
-            : t("battles.enemy.levelUnknown")}
+            : tile.level === "unavailable"
+              ? t("battles.enemy.npcsError")
+              : t("battles.enemy.levelUnknown")}
         </p>
       )}
       {tile.libraryHref ? (
