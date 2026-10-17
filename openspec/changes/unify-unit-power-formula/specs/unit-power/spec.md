@@ -58,7 +58,7 @@ An NPC with no damage type and no ranged weapon (`Watcher`, `Spore Mine`) has `w
 
 Assumptions:
 
-- The catalog NPC rows carry no crit, block or power multiplier, and for some NPCs not every ability. For 656 of the 1,292 Legendary Event waves in the 1.43 catalog, the summed NPC power equals the game's wave power within rounding. Waves holding any of 66 NPC ids, mostly bosses, differ (by up to about 1.5×). NPC power is therefore a close estimate, not the game's figure, wherever those fields matter.
+- The catalog NPC rows carry no crit, block or power multiplier, and for some NPCs not every ability. For 655 of the 1,296 Legendary Event waves in the 1.43 catalog, the summed NPC power equals the game's wave power within rounding. Waves holding any of 66 NPC ids, mostly bosses, differ (by up to about 1.5×). NPC power is therefore a close estimate, not the game's figure, wherever those fields matter.
 - A Legendary Event battle's or wave's own catalog `power` remains the game's figure. Features that compare against battle power read that value, not summed NPC power.
 
 #### Scenario: Worked example, Dark Angels Infiltrator

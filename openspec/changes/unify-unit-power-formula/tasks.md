@@ -6,7 +6,7 @@ Apply after the `tacticus-planner-api` companion `unify-unit-power-formula` (the
 
 - [ ] 1.1 Add the `unit-power` schema, payload type and IndexedDB sync to `packages/game-catalog` (`schemas/unit-power.ts`, `dataset-payloads.ts`, queries `getUnitPower`), and verify with a schema test against the API's served sample (Tigurius row, MoW step 19).
 - [ ] 1.2 Port V1's formula to `packages/game-domain/src/unit-power.ts` (`characterStats`, `characterPower`, `mowPower`, `npcPower`, `UnitPowerTables`, `UnitPowerDataError`), and verify by porting V1's `character-power.test.ts` cases (fixture 3,514, worldKharn 936,827, orksWarboss 1,037,811, tyranBiovore 1,040,687, mythic bonus, unknown unit throws) plus the spec worked examples (Tigurius 16,672 and 16,809, stats 7,955/3,671/1,713, Infiltrator 45).
-- [ ] 1.3 Add a parity test that sums `npcPower` over every LE wave in the bundled test catalog and asserts at least 656 of 1,292 waves match the catalog wave power within the enemy count, and verify it passes. It pins today's coverage.
+- [ ] 1.3 Add a parity test that sums `npcPower` over every LE wave in the bundled test catalog and asserts at least 655 of 1,296 waves match the catalog wave power within the enemy count, and verify it passes. It pins today's coverage.
 - [ ] 1.4 Remove `combat-power.ts` (`characterCombatPower`, `abilityCoeff`, …) and its tests from `game-domain`, and keep `statAtRank` only for the comparison radar. Verify with `pnpm typecheck` that no caller remains outside the ones migrated below.
 
 ## 2. Shared loader

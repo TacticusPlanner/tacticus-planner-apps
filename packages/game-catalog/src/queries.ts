@@ -20,6 +20,7 @@ import type {
   EventsCalendarStorageModel,
   LegendaryEventBattleStorageModel,
   HordeModeTiersStorageModel,
+  UnitPowerStorageModel,
   LegendaryEventStorageModel,
   MowStorageModel,
   MythicQuestsStorageModel,
@@ -335,5 +336,12 @@ export async function getLegendaryEventsBattles(
 // served by the API, or not synced yet).
 export async function getHordeModeTiers(): Promise<HordeModeTiersStorageModel | null> {
   const rows = await getDatasetRecords("horde-mode-tiers")
+  return rows[0] ?? null
+}
+
+// The game's power tables — a single record — or `null` when the dataset is absent (not served by the
+// API, or not synced yet).
+export async function getUnitPower(): Promise<UnitPowerStorageModel | null> {
+  const rows = await getDatasetRecords("unit-power")
   return rows[0] ?? null
 }

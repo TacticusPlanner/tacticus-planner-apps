@@ -60,7 +60,7 @@ Power = `characterPower` at the shown values (`ShownValues`), with the ability p
 ## Risks / Trade-offs
 
 - [Every LE and Dailies number shifts] → Estimates move to the game's scale. The spec worked examples were recomputed with the new formula, and the scenarios use `powerRatio` 1.2 so they keep their depth outcomes. The one exception is Certus's unlock preview (2 → 0), because a fresh Stone I unit has power 45 on the game's scale. Calibration via `calibratePowerRatio` is unchanged and can be rerun.
-- [NPC power is approximate] → It matches the game's wave power for 656 of 1,292 LE waves. Waves with any of 66 NPC ids (mostly bosses) differ by up to 1.5×. It is shown only on the NPC library with an "estimated" note, and a catalog parity test pins the matching count so a data refresh that improves or breaks it is visible.
+- [NPC power is approximate] → It matches the game's wave power for 655 of 1,296 LE waves. Waves with any of 66 NPC ids (mostly bosses) differ by up to 1.5×. It is shown only on the NPC library with an "estimated" note, and a catalog parity test pins the matching count so a data refresh that improves or breaks it is visible.
 - [`unit-power` stale after a game patch] → The API refuses to load when a catalog unit is missing from it, and the client returns null for an unknown unit or item instead of a wrong figure.
 - [Bundle and IndexedDB size] → `unit-power` is a few tens of KB served (two curves, about 600 ability modifiers, 130 small unit rows), against about 1.3 MB for V1's slice, because items and upgrades are reused.
 

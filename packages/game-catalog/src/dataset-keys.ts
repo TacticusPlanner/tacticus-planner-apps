@@ -22,6 +22,7 @@ export const servedDatasetKeys = [
   "raid-bosses",
   "guild-raid-meta",
   "mythic-quests",
+  "unit-power",
 ] as const
 
 export type GameCatalogDatasetKey = (typeof servedDatasetKeys)[number]
@@ -30,6 +31,7 @@ export type GameCatalogDatasetKey = (typeof servedDatasetKeys)[number]
 // longer does) leaves the client ready, and the features reading it treat it as absent.
 export const optionalDatasetKeys: readonly GameCatalogDatasetKey[] = [
   "horde-mode-tiers",
+  "unit-power",
 ]
 
 // Metadata-store key for the manifest sync metadata (etag/version) used for delta sync.

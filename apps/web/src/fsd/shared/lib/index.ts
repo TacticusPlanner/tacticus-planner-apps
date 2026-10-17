@@ -17,3 +17,4 @@ export {
   resolveEventColorKey,
   type EventColorKey,
 } from "./event-colors"
+export { useReadState, type ReadState } from "./use-read-state"
