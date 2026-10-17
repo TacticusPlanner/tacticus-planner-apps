@@ -5,7 +5,7 @@
 See proposal.md for motivation; behaviour is in `specs/legendary-event-battle-preview/spec.md` and the `legendary-events-hub` delta.
 
 - The event page (`pages/legendary-events/ui/legendary-event/legendary-event-page.tsx`) already reads `useLegendaryEventBattles(eventId)` (entity hook over `getLegendaryEventBattles`) for clear estimates and the token plan, so the battle bodies are loaded on every event page visit.
-- A served battle (`lreBattleViewSchema`) carries `id`, `lreId`, `track`, `mapId`, `number`, `power`, `tier`, `disallowedFactions` and `waves[] { round, power, enemies[] { id, stars, count } }`. The API aggregates V1's repeated `"{npcId}:{N}"` strings into `{ id, stars: N, count }` (`game-catalog-data` skill).
+- A served battle (`lreBattleViewSchema`) carries `id`, `lreId`, `track`, `mapId`, `number`, `power`, `tier`, `disallowedFactions` and `waves[] { round, power, enemies[] { id, stars, count } }`. The API aggregates V1's repeated `"{npcId}:{N}"` strings into `{ id, stars: N, count }` (`game-catalog-data` skill). The companion API change renames `stars` to `ladderIndex` (its design D2 explains the name); this change reads `ladderIndex`.
 - On the served data (four events, 216 battles, 3,048 enemy entries) `stars` runs from 1 to 56, so it is V1's ladder index, not a star count; four entries (Lysander bosses `templBossHelbrecht`, `templBossSwordBrother`, `blackBossTerminatorLEG`, `blackBossAbaddonLEG`) point past their ladder. Every enemy id exists in `npcs`.
 - `npcs` is read today only inside `pages/library` (`use-npcs-catalog.ts`) and the daily-raids feature (`getNpcsMap` through `useLiveQuery`). `entities/npc` exposes `NpcPortrait`, `useNpcLabels`, `npcSlug`, `buildNpcGroups`, `isVariationAvailable` but no read hook.
 - 185 files ship in `apps/web/public/game_catalog/le_maps/` (tactical `{mapId}.jpg`, 296×408, plus unused `{mapId}_Visual.jpg`). Of the 83 map ids the four catalog events use, 72 have an image; V1 has `LE1_21` (le_maps) and `C1_70`, `C3_75`, `MC1_51` (quest_maps) that V2 lacks; 7 exist nowhere.
@@ -75,7 +75,7 @@ Copy `LE1_21.jpg` from V1 `le_maps` and `C1_70.jpg`, `C3_75.jpg`, `MC1_51.jpg` f
 
 ## Risks / Trade-offs
 
-- [The `stars` misnomer misleads a future consumer into reading a star count] → `resolveLadderRow` is the single exported path, its doc comment and tests name the rule, and the Open Question below tracks a served rename.
+- [The API rename breaks the client's `lre-battles` parse until the schema follows] → the `lreEnemySchema` update is task 1.1 of this change, and both halves merge together after the API half applies.
 - [The ladder index rule is wrong for some boss ladders (four entries point past the end)] → they render "Level unknown" rather than a wrong level; V1 showed an error for the same entries, so this is no regression.
 - [Popover on a tile in a scrolling list on desktop] → Radix popover with collision handling; closes on scroll-away like the leaderboard's menus.
 - [34 MB of maps in `public/`] → already shipped; four files add about 130 KB. Images use `loading="lazy"`.
@@ -86,5 +86,4 @@ Frontend only, additive. No data migration; rollback is a revert.
 
 ## Open Questions
 
-- Rename the served enemy `stars` to `ladderIndex` (or `progressionIndex`) in `tacticus-planner-api`'s `lre-battles` view. V2 is pre-production so the break is allowed, and this change is the first consumer; it is a follow-up because it only changes a field name read in one place (`battles.view-model.ts`).
 - Source the seven map ids with no image anywhere (Fabius Bile's Beta and Gamma, and two Alpha battles) from a newer datamine; the placeholder covers them until then.

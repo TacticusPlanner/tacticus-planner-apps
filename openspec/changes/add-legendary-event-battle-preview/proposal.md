@@ -10,10 +10,10 @@ V1's Legendary Event page has a **Battles** tab (`plan-lre/le-battles.tsx`, `le-
 - **Battle preview.** For the selected battle: number, enemy power and total enemy count; the battle's map; and its waves in round order, each with its round, power and enemies. Each enemy shows its portrait, localized name, count and level (rank and stars from the NPC's stat ladder).
 - **Enemy details.** Tapping an enemy opens a compact detail (popover on desktop, bottom sheet on mobile) with health, damage, armour, attacks and traits at that level, and a link to the full NPC page in the Library at the same variation and level.
 - **Map.** Shown beside the waves on desktop and in a collapsed disclosure on mobile. A battle whose map has no image shows a "map not available" placeholder. The four maps V1 has that V2 is missing (`LE1_21`, `C1_70`, `C3_75`, `MC1_51`) are copied over; seven map ids used by Fabius Bile and none in V1 (`C4_02`, `C4_35`, `C4_66`, `EMC4_05`, `MC4_02`, `PVP_arctic_01`, `PVP_desert_06`) stay on the placeholder.
-- **Enemy level resolution.** A wave enemy's served `stars` value is read as a 1-based index into the NPC's served stat ladder (V1's `id:N` parsing, and the same convention the API uses for guild raid progression indexes), not as a star count. An enemy whose id is unknown or whose index is past the ladder (four Lysander boss entries today) still shows with its count and an "unknown level" label, no stats.
+- **Enemy level resolution.** A wave enemy's served `ladderIndex` (renamed from the misleading `stars` by the companion API change) is read as a 1-based index into the NPC's served stat ladder, as V1 parsed `id:N`. An enemy whose id is unknown or whose index is past the ladder (four Lysander boss entries today) still shows with its count and an "unknown level" label, no stats.
 - **Tour and i18n.** The event page tour gains a Battles step on the lane tab; all new copy in en/de/es/fr.
 
-Out of scope: a Battles tab of its own (V1 layout), the rendered `_Visual` map variants, per-enemy repeated portraits (V2 shows one tile per enemy type with a count), linking progress-grid rows to the preview, battles for events not in the V2 catalog (V1's Dante, Trajann and Lucius), and renaming the served `stars` field (see design, Open Questions).
+Out of scope: a Battles tab of its own (V1 layout), the rendered `_Visual` map variants, per-enemy repeated portraits (V2 shows one tile per enemy type with a count), linking progress-grid rows to the preview, battles for events not in the V2 catalog (V1's Dante, Trajann and Lucius).
 
 ## Capabilities
 
@@ -27,7 +27,8 @@ Out of scope: a Battles tab of its own (V1 layout), the rendered `_Visual` map v
 
 ## Impact
 
-- **Apps only.** No API change: `lre-battles` (map id, power, waves with `{ id, stars, count }`) and `npcs` are already served and synced. Companion API change: none.
+- **Companion API change** `add-legendary-event-battle-preview` in `tacticus-planner-api` (applies first): renames the wave enemy `stars` to `ladderIndex` in raw and served `lre-battles` and bumps the catalog schema version. **BREAKING** for the client's `lre-battles` parse, so both halves merge together. Otherwise `lre-battles` (map id, power, waves) and `npcs` are already served and synced.
+- `packages/game-catalog/src/schemas/lre.ts`: `lreEnemySchema` reads `ladderIndex` instead of `stars`.
 - New `apps/web/src/fsd/pages/legendary-events/ui/legendary-event/battles/` (section, selector, wave list, enemy tile, enemy detail, map, view model), `entities/legendary-event` (pure battle-preview selectors: default battle, enemy level resolution, totals), `entities/npc` (an `useNpcsById` read hook and a compact stat summary reused by the detail), `@workspace/game-catalog` (a `legendaryEventMapImage(mapId)` asset helper next to `npcPortrait`), `legendary-event-page-view.tsx`, `legendary-event.tutorial.tsx`, locales `legendaryEvents.json` in four languages, four map images under `apps/web/public/game_catalog/le_maps/`.
 - Docs: add the battle preview to `tacticus-planner-docs/product/features/lre-planning.md` when this change is archived.
 - No infra change.

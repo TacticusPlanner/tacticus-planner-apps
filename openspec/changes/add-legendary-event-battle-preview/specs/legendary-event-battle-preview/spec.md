@@ -106,21 +106,21 @@ The preview SHALL list the battle's waves sorted by `round` ascending, numbered 
 
 ### Requirement: An enemy's level is resolved from its served ladder index
 
-An enemy's served `stars` SHALL be read as a 1-based index into the NPC's served stat ladder, not a star count: its stats are the row at that index minus 1 (row 0 for 0 or less). Its level SHALL show that row's rank and stars as the NPC Library does.
+An enemy's served `ladderIndex` SHALL be read as a 1-based index into the NPC's served stat ladder, not a star count: its stats are the row at that index minus 1 (row 0 for 0 or less). Its level SHALL show that row's rank and stars as the NPC Library does.
 
 Assumptions:
-- Served `stars` is V1's `"{npcId}:{N}"` index (values reach 56).
+- Served `ladderIndex` is V1's `"{npcId}:{N}"` index (values reach 56).
 - The served ladder is in V1's `NpcService` order.
 
 #### Scenario: Grot in Lysander Alpha battle 1, wave 1
 
-- **GIVEN** the served enemy `{ id: "orksNpc1Grot", stars: 4, count: 7 }` and Grot's served ladder whose row 3 is rank 2, stars 1, health 69, damage 35, armour 0
+- **GIVEN** the served enemy `{ id: "orksNpc1Grot", ladderIndex: 4, count: 7 }` and Grot's served ladder whose row 3 is rank 2, stars 1, health 69, damage 35, armour 0
 - **WHEN** the tile renders
 - **THEN** index 4 reads row 4 − 1 = 3, and the tile shows rank Stone III with 1 star, and the enemy detail shows health 69, damage 35 and armour 0
 
 #### Scenario: Same unit at another index
 
-- **GIVEN** the served enemy `{ id: "orksNpc1Grot", stars: 5, count: 3 }` in Wave 2
+- **GIVEN** the served enemy `{ id: "orksNpc1Grot", ladderIndex: 5, count: 3 }` in Wave 2
 - **WHEN** the tile renders
 - **THEN** it reads row 4 (rank 3, stars 1) and shows Iron I with 1 star
 
@@ -130,7 +130,7 @@ An enemy whose id is not in the served `npcs` dataset, or whose index is past th
 
 #### Scenario: Boss index past the ladder
 
-- **GIVEN** Lysander Beta battle 13's third-round wave serves `{ id: "templBossHelbrecht", stars: 3, count: 1 }` and Helbrecht's served ladder has 2 rows
+- **GIVEN** Lysander Beta battle 13's third-round wave serves `{ id: "templBossHelbrecht", ladderIndex: 3, count: 1 }` and Helbrecht's served ladder has 2 rows
 - **WHEN** the battle is selected
 - **THEN** the wave shows the Initiate and Pyreblaster tiles with their levels and a "Helbrecht" tile labelled "Level unknown", and opening it shows no stats
 

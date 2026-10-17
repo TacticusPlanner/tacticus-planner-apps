@@ -1,11 +1,12 @@
 # Tasks
 
-No companion API change: `lre-battles` and `npcs` are already served, synced and read by the event page.
+Companion API change: `add-legendary-event-battle-preview` in `tacticus-planner-api` (renames wave enemy `stars` to `ladderIndex`); apply it first and merge both halves together.
 
-## 1. Catalog: map assets
+## 1. Catalog: schema and map assets
 
-- [ ] 1.1 Copy `LE1_21.jpg` from V1 `src/assets/images/snowprint_assets/le_maps/` and `C1_70.jpg`, `C3_75.jpg`, `MC1_51.jpg` from V1 `.../quest_maps/` into `apps/web/public/game_catalog/le_maps/`; verify the four files open and are 296 px wide tactical maps (design D6).
-- [ ] 1.2 Add a generator script in `packages/game-catalog/scripts` that writes `LE_MAP_IDS` (tactical `{mapId}.jpg` files only) and the `legendaryEventMap(mapId)` helper next to `npcPortrait`, exported from `@workspace/game-catalog`; verify a test asserts `LE_MAP_IDS` matches the directory listing, `legendaryEventMap("LE1_26")` returns the `le_maps` path and `legendaryEventMap("C4_35")` returns `undefined` (design D2, D6).
+- [ ] 1.1 Update `lreEnemySchema` in `packages/game-catalog/src/schemas/lre.ts` to `{ id, ladderIndex, count }` with a doc comment on the 1-based ladder meaning, and the `lre-battles` fixtures; verify `pnpm --filter @workspace/game-catalog test:run` passes and a schema test rejects an enemy with only `stars`.
+- [ ] 1.2 Copy `LE1_21.jpg` from V1 `src/assets/images/snowprint_assets/le_maps/` and `C1_70.jpg`, `C3_75.jpg`, `MC1_51.jpg` from V1 `.../quest_maps/` into `apps/web/public/game_catalog/le_maps/`; verify the four files open and are 296 px wide tactical maps (design D6).
+- [ ] 1.3 Add a generator script in `packages/game-catalog/scripts` that writes `LE_MAP_IDS` (tactical `{mapId}.jpg` files only) and the `legendaryEventMap(mapId)` helper next to `npcPortrait`, exported from `@workspace/game-catalog`; verify a test asserts `LE_MAP_IDS` matches the directory listing, `legendaryEventMap("LE1_26")` returns the `le_maps` path and `legendaryEventMap("C4_35")` returns `undefined` (design D2, D6).
 
 ## 2. Entities: pure selectors, read hook, shared NPC UI
 
