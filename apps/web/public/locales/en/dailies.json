@@ -309,6 +309,26 @@
           "content": "Each day card lists the upgrades to farm as a grid. Hover or tap an upgrade for its units and nodes; finished upgrades sit under \"Raided\", planned shop purchases under \"Shops\" and Onslaught runs under \"Onslaught\". Drag or swipe to scroll through the days."
         }
       }
+    },
+    "hse": {
+      "steps": {
+        "switcher": {
+          "title": "Choose an event",
+          "content": "Shows the current event by default. Open any other upcoming or past Home Screen Event here, or step through them with the arrows. Your choice stays in the page address, so you can reload or share it."
+        },
+        "status": {
+          "title": "Event status",
+          "content": "The shown event's name and when it ends, starts or ended, and whether it earns points from campaign raiding."
+        },
+        "farm": {
+          "title": "Farm list for event points",
+          "content": "Where to raid today to earn event points while feeding your goals, filled to the energy you have left today."
+        },
+        "top": {
+          "title": "Best locations",
+          "content": "The locations that earn the most event points per raid and per energy, regardless of your goals."
+        }
+      }
     }
   },
   "blockers": {
@@ -377,6 +397,19 @@
   },
   "hse": {
     "title": "Home Screen Event",
+    "switcher": {
+      "label": "Choose a Home Screen Event",
+      "placeholder": "Choose an event",
+      "empty": "No events in the calendar",
+      "previous": "Previous event",
+      "next": "Next event",
+      "option": "{{name}} · {{dates}}",
+      "groups": {
+        "running": "Running",
+        "upcoming": "Upcoming",
+        "past": "Past"
+      }
+    },
     "status": {
       "endsIn": "Ends {{when}}",
       "earnsPoints": "Earns event points from campaign raids: 3 per matching enemy, 5 on Elite nodes.",
@@ -384,6 +417,7 @@
       "noneRunning": "No Home Screen Event is running right now.",
       "next": "Next event: {{name}}",
       "startsIn": "Starts {{when}} ({{date}})",
+      "endedOn": "Ended on {{date}}",
       "noneScheduled": "No Home Screen Event is scheduled.",
       "error": "Event data could not be loaded. The rest of Dailies is unaffected."
     },

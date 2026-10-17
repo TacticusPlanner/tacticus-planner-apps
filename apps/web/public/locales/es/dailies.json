@@ -309,6 +309,26 @@
           "content": "Cada tarjeta de día lista las mejoras a farmear en una cuadrícula. Pasa el ratón o toca una mejora para ver sus unidades y nodos; las mejoras terminadas quedan en «Completados», las compras de tienda previstas en «Tiendas» y las partidas de Onslaught en «Onslaught». Arrastra o desliza para recorrer los días."
         }
       }
+    },
+    "hse": {
+      "steps": {
+        "switcher": {
+          "title": "Elige un evento",
+          "content": "Por defecto se muestra el evento actual. Abre aquí cualquier otro evento de pantalla de inicio próximo o pasado, o recórrelos con las flechas. Tu elección se guarda en la dirección de la página, así que puedes recargarla o compartirla."
+        },
+        "status": {
+          "title": "Estado del evento",
+          "content": "El nombre del evento mostrado, cuándo termina, empieza o terminó, y si da puntos en las incursiones de campaña."
+        },
+        "farm": {
+          "title": "Lista de farmeo para puntos de evento",
+          "content": "Dónde incursionar hoy para ganar puntos de evento mientras avanzas tus objetivos, ajustado a la energía que te queda hoy."
+        },
+        "top": {
+          "title": "Mejores ubicaciones",
+          "content": "Las ubicaciones que dan más puntos de evento por incursión y por energía, sin tener en cuenta tus objetivos."
+        }
+      }
     }
   },
   "blockers": {
@@ -377,6 +397,19 @@
   },
   "hse": {
     "title": "Evento de pantalla de inicio",
+    "switcher": {
+      "label": "Elige un evento de pantalla de inicio",
+      "placeholder": "Elige un evento",
+      "empty": "No hay eventos en el calendario",
+      "previous": "Evento anterior",
+      "next": "Evento siguiente",
+      "option": "{{name}} · {{dates}}",
+      "groups": {
+        "running": "En curso",
+        "upcoming": "Próximos",
+        "past": "Pasados"
+      }
+    },
     "status": {
       "endsIn": "Termina {{when}}",
       "earnsPoints": "Da puntos de evento en las incursiones de campaña: 3 por enemigo válido, 5 en nodos Élite.",
@@ -384,6 +417,7 @@
       "noneRunning": "Ahora mismo no hay ningún evento de pantalla de inicio en curso.",
       "next": "Próximo evento: {{name}}",
       "startsIn": "Empieza {{when}} ({{date}})",
+      "endedOn": "Terminó el {{date}}",
       "noneScheduled": "No hay ningún evento de pantalla de inicio programado.",
       "error": "No se pudieron cargar los datos del evento. El resto de Diarias no se ve afectado."
     },

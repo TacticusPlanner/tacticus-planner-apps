@@ -309,6 +309,26 @@
           "content": "Chaque carte de jour liste les améliorations à farmer sous forme de grille. Survolez ou touchez une amélioration pour voir ses unités et ses nœuds ; les améliorations terminées sont sous « Attaqués », les achats en boutique prévus sous « Boutiques » et les parties d'Onslaught sous « Onslaught ». Faites glisser ou balayez pour parcourir les jours."
         }
       }
+    },
+    "hse": {
+      "steps": {
+        "switcher": {
+          "title": "Choisir un événement",
+          "content": "L'événement en cours est affiché par défaut. Ouvrez ici n'importe quel autre événement d'écran d'accueil à venir ou passé, ou parcourez-les avec les flèches. Votre choix reste dans l'adresse de la page : vous pouvez la recharger ou la partager."
+        },
+        "status": {
+          "title": "Statut de l'événement",
+          "content": "Le nom de l'événement affiché, quand il se termine, commence ou s'est terminé, et s'il rapporte des points avec les raids de campagne."
+        },
+        "farm": {
+          "title": "Liste de farm pour les points d'événement",
+          "content": "Où raider aujourd'hui pour gagner des points d'événement tout en faisant avancer vos objectifs, dans la limite de l'énergie qu'il vous reste aujourd'hui."
+        },
+        "top": {
+          "title": "Meilleurs emplacements",
+          "content": "Les emplacements qui rapportent le plus de points d'événement par raid et par énergie, indépendamment de vos objectifs."
+        }
+      }
     }
   },
   "blockers": {
@@ -377,6 +397,19 @@
   },
   "hse": {
     "title": "Événement d'écran d'accueil",
+    "switcher": {
+      "label": "Choisir un événement d'écran d'accueil",
+      "placeholder": "Choisir un événement",
+      "empty": "Aucun événement dans le calendrier",
+      "previous": "Événement précédent",
+      "next": "Événement suivant",
+      "option": "{{name}} · {{dates}}",
+      "groups": {
+        "running": "En cours",
+        "upcoming": "À venir",
+        "past": "Passés"
+      }
+    },
     "status": {
       "endsIn": "Se termine {{when}}",
       "earnsPoints": "Rapporte des points d'événement avec les raids de campagne : 3 par ennemi concerné, 5 sur les nœuds Élite.",
@@ -384,6 +417,7 @@
       "noneRunning": "Aucun événement d'écran d'accueil n'est en cours actuellement.",
       "next": "Prochain événement : {{name}}",
       "startsIn": "Commence {{when}} ({{date}})",
+      "endedOn": "Terminé le {{date}}",
       "noneScheduled": "Aucun événement d'écran d'accueil n'est prévu.",
       "error": "Les données de l'événement n'ont pas pu être chargées. Le reste des quotidiennes n'est pas affecté."
     },

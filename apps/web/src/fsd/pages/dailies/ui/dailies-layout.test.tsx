@@ -78,6 +78,8 @@ vi.mock("@/features/daily-raids", async (importOriginal) => {
       status: "ready",
       active: null,
       next: null,
+      upcoming: [],
+      instances: [],
       nowMs: 0,
     }),
   }

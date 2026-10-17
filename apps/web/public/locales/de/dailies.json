@@ -309,6 +309,26 @@
           "content": "Jede Tageskarte listet die zu farmenden Verbesserungen als Raster. Fahre mit der Maus über eine Verbesserung oder tippe darauf, um Einheiten und Knoten zu sehen; erledigte Verbesserungen stehen unter „Geraidet“, geplante Shop-Käufe unter „Shops“ und Onslaught-Läufe unter „Onslaught“. Ziehe oder wische, um durch die Tage zu scrollen."
         }
       }
+    },
+    "hse": {
+      "steps": {
+        "switcher": {
+          "title": "Event auswählen",
+          "content": "Standardmäßig wird das aktuelle Event angezeigt. Hier kannst du jedes andere kommende oder vergangene Startbildschirm-Event öffnen oder mit den Pfeilen durchblättern. Deine Auswahl bleibt in der Seitenadresse, sodass du neu laden oder sie teilen kannst."
+        },
+        "status": {
+          "title": "Event-Status",
+          "content": "Name des angezeigten Events, wann es endet, beginnt oder geendet hat und ob es Punkte durch Kampagnen-Raids bringt."
+        },
+        "farm": {
+          "title": "Farm-Liste für Event-Punkte",
+          "content": "Wo du heute raiden solltest, um Event-Punkte zu sammeln und gleichzeitig deine Ziele voranzubringen, aufgefüllt bis zu deiner heute verbleibenden Energie."
+        },
+        "top": {
+          "title": "Beste Orte",
+          "content": "Die Orte mit den meisten Event-Punkten pro Raid und pro Energie, unabhängig von deinen Zielen."
+        }
+      }
     }
   },
   "blockers": {
@@ -377,6 +397,19 @@
   },
   "hse": {
     "title": "Startbildschirm-Event",
+    "switcher": {
+      "label": "Startbildschirm-Event auswählen",
+      "placeholder": "Event auswählen",
+      "empty": "Keine Events im Kalender",
+      "previous": "Vorheriges Event",
+      "next": "Nächstes Event",
+      "option": "{{name}} · {{dates}}",
+      "groups": {
+        "running": "Läuft",
+        "upcoming": "Demnächst",
+        "past": "Vergangen"
+      }
+    },
     "status": {
       "endsIn": "Endet {{when}}",
       "earnsPoints": "Bringt Event-Punkte durch Kampagnen-Raids: 3 pro passendem Gegner, 5 auf Elite-Knoten.",
@@ -384,6 +417,7 @@
       "noneRunning": "Aktuell läuft kein Startbildschirm-Event.",
       "next": "Nächstes Event: {{name}}",
       "startsIn": "Beginnt {{when}} ({{date}})",
+      "endedOn": "Beendet am {{date}}",
       "noneScheduled": "Es ist kein Startbildschirm-Event geplant.",
       "error": "Eventdaten konnten nicht geladen werden. Der Rest der Dailies ist nicht betroffen."
     },

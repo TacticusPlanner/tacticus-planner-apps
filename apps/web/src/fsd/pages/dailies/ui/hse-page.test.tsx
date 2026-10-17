@@ -1,10 +1,18 @@
-import { MemoryRouter, Outlet, Route, Routes } from "react-router"
+import {
+  Link,
+  MemoryRouter,
+  Outlet,
+  Route,
+  Routes,
+  useLocation,
+} from "react-router"
 import userEvent from "@testing-library/user-event"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { act, render, screen, within } from "@/test/render"
 import { battle, offPlanBattle, ready } from "@/test/fixtures/daily-raids"
 import { emptyRaidsFilters } from "@/features/daily-raids"
+import { homeScreenEventReadyAt } from "@/test/fixtures/home-screen-event"
 
 import type { DailiesOutletContext } from "./dailies-layout"
 import { HsePage } from "./hse-page"
@@ -31,6 +39,7 @@ vi.mock("react-i18next", () => ({
         : key,
   }),
 }))
+vi.mock("@/shared/tour", () => ({ useTourPageSteps: () => {} }))
 vi.mock("@workspace/ui/hooks/use-mobile", () => ({
   useIsMobile: () => mocks.isMobile,
 }))
@@ -59,17 +68,22 @@ vi.mock("@/entities/planning-setting", () => ({
 }))
 
 const HOUR = 3_600_000
-const entryOf = (definitionId: string, startMs: number, endMs: number) => ({
+const DAY = 24 * HOUR
+const entryOf = (
+  definitionId: string,
+  startMs: number,
+  endMs: number,
+  occurrenceId: string | null = null
+) => ({
+  occurrenceId,
   definitionId,
   startUtc: new Date(startMs).toISOString(),
   endUtc: new Date(endMs).toISOString(),
+  parameters: null,
 })
-const activeEvent = (definitionId = "hse-machine-hunt") => ({
-  status: "ready",
-  active: entryOf(definitionId, Date.now() - HOUR, Date.now() + 50 * HOUR),
-  next: null,
-  nowMs: Date.now(),
-})
+const readyAt = homeScreenEventReadyAt
+const activeEvent = (definitionId = "hse-machine-hunt") =>
+  readyAt([entryOf(definitionId, Date.now() - HOUR, Date.now() + 50 * HOUR)])
 
 const location = (battleId: typeof battle, name: string) => ({
   id: battleId,
@@ -169,7 +183,20 @@ const withFarm = (
   })
 }
 
-function renderHse(projectId?: string) {
+function LocationProbe() {
+  const location = useLocation()
+  return (
+    <output data-testid="location">{`${location.pathname}${location.search}`}</output>
+  )
+}
+
+function HsePageHarness({
+  projectId,
+  initialEntry = "/",
+}: {
+  projectId?: string
+  initialEntry?: string
+}) {
   const context: DailiesOutletContext = {
     projects: [],
     projectId,
@@ -178,14 +205,31 @@ function renderHse(projectId?: string) {
     projectsError: false,
     retryProjects: vi.fn(),
   }
-  return render(
-    <MemoryRouter initialEntries={["/"]}>
+  return (
+    <MemoryRouter initialEntries={[initialEntry]}>
+      {/* Stand-in for the Dailies tab bar: plain links, as in section-tabs. */}
+      <nav>
+        <Link data-testid="hse-tab" to="/">
+          HSE
+        </Link>
+        <Link data-testid="today-tab" to="/today">
+          Today
+        </Link>
+      </nav>
       <Routes>
         <Route path="/" element={<Outlet context={context} />}>
           <Route index element={<HsePage />} />
+          <Route path="today" element={<p data-testid="today-page" />} />
         </Route>
       </Routes>
+      <LocationProbe />
     </MemoryRouter>
+  )
+}
+
+function renderHse(projectId?: string, initialEntry = "/") {
+  return render(
+    <HsePageHarness initialEntry={initialEntry} projectId={projectId} />
   )
 }
 
@@ -269,19 +313,12 @@ describe("HSE tab states", () => {
   })
 
   it("previews the next event: countdown status, a not-live banner, the lists and every control", () => {
-    mocks.event = {
-      status: "ready",
-      active: null,
-      next: entryOf(
-        "hse-warp-surge",
-        Date.now() + 30 * HOUR,
-        Date.now() + 80 * HOUR
-      ),
-      nowMs: Date.now(),
-    }
+    mocks.event = readyAt([
+      entryOf("hse-warp-surge", Date.now() + 30 * HOUR, Date.now() + 80 * HOUR),
+    ])
     renderHse()
 
-    const next = screen.getByTestId("hse-status-next")
+    const next = screen.getByTestId("hse-status-upcoming")
     expect(next).toHaveTextContent("events:definitions.hse-warp-surge")
     expect(next).toHaveTextContent("dailies:hse.status.startsIn")
     expect(next).toHaveTextContent("tomorrow")
@@ -308,19 +345,16 @@ describe("HSE tab states", () => {
   })
 
   it("keeps the countdown only when the upcoming event has no raid-point rule", () => {
-    mocks.event = {
-      status: "ready",
-      active: null,
-      next: entryOf(
+    mocks.event = readyAt([
+      entryOf(
         "hse-faction-boost",
         Date.now() + 30 * HOUR,
         Date.now() + 80 * HOUR
       ),
-      nowMs: Date.now(),
-    }
+    ])
     renderHse()
 
-    expect(screen.getByTestId("hse-status-next")).toBeInTheDocument()
+    expect(screen.getByTestId("hse-status-upcoming")).toBeInTheDocument()
     expect(screen.queryByTestId("hse-preview-banner")).toBeNull()
     expect(screen.queryByTestId("hse-raids")).not.toBeInTheDocument()
     expect(screen.queryByTestId("hse-top-overall")).not.toBeInTheDocument()
@@ -329,13 +363,17 @@ describe("HSE tab states", () => {
   })
 
   it("says nothing is scheduled when no event is active or upcoming", () => {
-    mocks.event = { status: "ready", active: null, next: null, nowMs: 0 }
+    mocks.event = readyAt([])
     renderHse()
 
     expect(screen.getByTestId("hse-status-none")).toHaveTextContent(
       "dailies:hse.status.noneScheduled"
     )
     expect(screen.queryByTestId("hse-sections")).not.toBeInTheDocument()
+    // The switcher stays, with no options.
+    expect(screen.getByTestId("hse-event-select")).toBeDisabled()
+    expect(screen.getByTestId("hse-event-previous")).toBeDisabled()
+    expect(screen.getByTestId("hse-event-next")).toBeDisabled()
   })
 
   it("explains an active event without raid points and shows no lists or controls", () => {
@@ -608,4 +646,347 @@ describe("HSE tab Raids Filters", () => {
       "hse.top.empty"
     )
   })
+})
+
+describe("HSE instance switcher", () => {
+  // Shaped like the calendar around 2026-10-17T12:48Z: Against the Tide just ended, Psyker Boost
+  // starts in two days, Faction Focus and Operation Imperator start together a week later.
+  const now = Date.now()
+  const tide = entryOf(
+    "hse-against-the-tide",
+    now - 7 * DAY,
+    now - 5 * HOUR,
+    "occ-tide"
+  )
+  const hunt = entryOf(
+    "hse-machine-hunt",
+    now - 15 * DAY,
+    now - 11 * DAY,
+    "occ-hunt"
+  )
+  const psyker = entryOf(
+    "hse-trait-boost-psyker",
+    now + 2 * DAY,
+    now + 6 * DAY,
+    "occ-psyker"
+  )
+  const focus = entryOf(
+    "hse-faction-focus",
+    now + 9 * DAY,
+    now + 15 * DAY,
+    "occ-focus"
+  )
+  const imperator = entryOf(
+    "hse-global-operation-imperator",
+    now + 9 * DAY,
+    now + 15 * DAY,
+    "occ-imperator"
+  )
+  const warpPlaceholder = entryOf(
+    "hse-warp-surge",
+    now + 19 * DAY,
+    now + 22 * DAY
+  )
+  const warpKey = `hse-warp-surge@${warpPlaceholder.startUtc}`
+  const calendar = [hunt, tide, psyker, focus, imperator, warpPlaceholder]
+  const location = () => screen.getByTestId("location").textContent
+
+  const pick = async (
+    user: ReturnType<typeof userEvent.setup>,
+    key: string
+  ) => {
+    await user.click(screen.getByTestId("hse-event-select"))
+    await user.click(screen.getByTestId(`hse-event-option-${key}`))
+  }
+
+  beforeEach(() => {
+    mocks.event = readyAt(calendar, now)
+  })
+
+  it("defaults to the running event", () => {
+    const running = entryOf(
+      "hse-trait-boost-psyker",
+      now - DAY,
+      now + 2 * DAY,
+      "occ-psyker"
+    )
+    mocks.event = readyAt([tide, running, focus], now)
+    renderHse()
+
+    expect(screen.getByTestId("hse-event-select")).toHaveTextContent(
+      "events:definitions.hse-trait-boost-psyker"
+    )
+    expect(screen.getByTestId("hse-status-active")).toBeInTheDocument()
+    expect(location()).toBe("/")
+  })
+
+  it("defaults to the next event with its countdown when none runs", () => {
+    renderHse()
+
+    expect(screen.getByTestId("hse-event-select")).toHaveTextContent(
+      "events:definitions.hse-trait-boost-psyker"
+    )
+    expect(screen.getByTestId("hse-status-upcoming")).toHaveTextContent(
+      "dailies:hse.status.startsIn"
+    )
+  })
+
+  it("steps to the event after next with Next, a same start ordered by definition id", async () => {
+    const user = userEvent.setup()
+    renderHse()
+
+    await user.click(screen.getByTestId("hse-event-next"))
+    expect(location()).toBe("/?event=occ-focus")
+    expect(screen.getByTestId("hse-status-upcoming")).toHaveTextContent(
+      "events:definitions.hse-faction-focus"
+    )
+
+    await user.click(screen.getByTestId("hse-event-next"))
+    expect(location()).toBe("/?event=occ-imperator")
+    expect(screen.getByTestId("hse-status-upcoming")).toHaveTextContent(
+      "events:definitions.hse-global-operation-imperator"
+    )
+  })
+
+  it("lists overlapping running events under Running and opens either", async () => {
+    const user = userEvent.setup()
+    mocks.event = readyAt(calendar, now + 10 * DAY)
+    renderHse()
+
+    await user.click(screen.getByTestId("hse-event-select"))
+    const running = screen.getByTestId("hse-event-group-running")
+    expect(
+      within(running)
+        .getAllByRole("option")
+        .map((option) => option.getAttribute("data-testid"))
+    ).toEqual(["hse-event-option-occ-focus", "hse-event-option-occ-imperator"])
+    await user.click(screen.getByTestId("hse-event-option-occ-imperator"))
+
+    expect(location()).toBe("/?event=occ-imperator")
+    expect(screen.getByTestId("hse-status-active")).toHaveTextContent(
+      "events:definitions.hse-global-operation-imperator"
+    )
+  })
+
+  it("opens a past event from the URL and keeps it across a reload", async () => {
+    const user = userEvent.setup()
+    const { unmount } = renderHse()
+
+    await pick(user, "occ-tide")
+    expect(location()).toBe("/?event=occ-tide")
+    expect(screen.getByTestId("hse-status-past")).toHaveTextContent(
+      "events:definitions.hse-against-the-tide"
+    )
+
+    unmount()
+    renderHse(undefined, "/?event=occ-tide")
+    expect(screen.getByTestId("hse-status-past")).toHaveTextContent(
+      "events:definitions.hse-against-the-tide"
+    )
+    expect(screen.getByTestId("hse-event-select")).toHaveTextContent(
+      "events:definitions.hse-against-the-tide"
+    )
+  })
+
+  it("keys a projected placeholder by definition and start", async () => {
+    const user = userEvent.setup()
+    renderHse()
+
+    await pick(user, warpKey)
+    expect(location()).toBe(`/?event=${encodeURIComponent(warpKey)}`)
+    expect(screen.getByTestId("hse-preview-banner")).toBeInTheDocument()
+  })
+
+  it("falls back to the default and drops a stale key from the URL", () => {
+    renderHse(undefined, "/?event=occ-gone&keep=1")
+
+    expect(screen.getByTestId("hse-event-select")).toHaveTextContent(
+      "events:definitions.hse-trait-boost-psyker"
+    )
+    expect(location()).toBe("/?keep=1")
+  })
+
+  it("keeps the key while the calendar loads", () => {
+    mocks.event = { status: "loading" }
+    renderHse(undefined, "/?event=occ-tide")
+
+    expect(location()).toBe("/?event=occ-tide")
+  })
+
+  it("clears the parameter when the default instance is picked", async () => {
+    const user = userEvent.setup()
+    renderHse(undefined, "/?event=occ-tide")
+
+    await pick(user, "occ-psyker")
+    expect(location()).toBe("/")
+  })
+
+  it("does not carry the selection to other tabs", async () => {
+    const user = userEvent.setup()
+    renderHse(undefined, "/?event=occ-tide")
+    expect(screen.getByTestId("hse-status-past")).toBeInTheDocument()
+
+    // Leave for another Dailies tab, then come back from the tab bar.
+    await user.click(screen.getByTestId("today-tab"))
+    expect(location()).toBe("/today")
+    await user.click(screen.getByTestId("hse-tab"))
+    expect(location()).toBe("/")
+    expect(screen.getByTestId("hse-status-upcoming")).toHaveTextContent(
+      "events:definitions.hse-trait-boost-psyker"
+    )
+  })
+
+  it("keeps a pinned instance when it ends; only its status changes", () => {
+    const running = entryOf(
+      "hse-machine-hunt",
+      now - DAY,
+      now + HOUR,
+      "occ-running-hunt"
+    )
+    mocks.event = readyAt([running, psyker], now)
+    const { rerender } = renderHse(undefined, "/?event=occ-running-hunt")
+    expect(screen.getByTestId("hse-status-active")).toBeInTheDocument()
+
+    mocks.event = readyAt([running, psyker], now + 2 * HOUR)
+    rerender(<HsePageHarness initialEntry="/?event=occ-running-hunt" />)
+
+    expect(location()).toBe("/?event=occ-running-hunt")
+    expect(screen.getByTestId("hse-status-past")).toHaveTextContent(
+      "events:definitions.hse-machine-hunt"
+    )
+  })
+
+  it("sits on the title row at desktop width and on its own full-width row on mobile", () => {
+    renderHse()
+
+    const row = screen.getByTestId("hse-title-row")
+    const switcher = screen.getByTestId("hse-event-switcher")
+    expect(row).toContainElement(switcher)
+    expect(row).toContainElement(screen.getByRole("heading", { level: 1 }))
+    // Mobile: full width, so it wraps below the title; desktop: inline, pushed right.
+    expect(switcher.className).toContain("w-full")
+    expect(switcher.className).toContain("md:w-auto")
+    expect(row.className).toContain("flex-wrap")
+  })
+
+  it("keeps the header controls after the switcher on desktop and moves the switcher below on mobile", () => {
+    const running = entryOf(
+      "hse-machine-hunt",
+      now - DAY,
+      now + DAY,
+      "occ-running-hunt"
+    )
+    mocks.event = readyAt([running], now)
+    renderHse()
+
+    const switcher = screen.getByTestId("hse-event-switcher")
+    const controls = screen.getByTestId("hse-header-controls")
+    // DOM (and desktop) order: title, switcher, controls.
+    expect(
+      switcher.compareDocumentPosition(controls) &
+        Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy()
+    expect(switcher.className).toContain("order-last")
+    expect(switcher.className).toContain("md:order-none")
+  })
+})
+
+describe("HSE selected instance states", () => {
+  const now = Date.now()
+  const runningHunt = entryOf(
+    "hse-machine-hunt",
+    now - DAY,
+    now + 2 * DAY,
+    "occ-running-hunt"
+  )
+  const pastHunt = entryOf(
+    "hse-machine-hunt",
+    now - 15 * DAY,
+    now - 11 * DAY,
+    "occ-past-hunt"
+  )
+  const warp = entryOf(
+    "hse-warp-surge",
+    now + 19 * DAY,
+    now + 22 * DAY,
+    "occ-warp"
+  )
+  const boost = entryOf(
+    "hse-faction-boost",
+    now + 30 * HOUR,
+    now + 3 * DAY,
+    "occ-boost"
+  )
+
+  it("shows a past rule-bearing event without lists, banner or header controls", () => {
+    mocks.event = readyAt([pastHunt, runningHunt], now)
+    renderHse(undefined, "/?event=occ-past-hunt")
+
+    const status = screen.getByTestId("hse-status-past")
+    expect(status).toHaveTextContent("events:definitions.hse-machine-hunt")
+    expect(status).toHaveTextContent("dailies:hse.status.endedOn")
+    expect(screen.queryByTestId("hse-raids")).not.toBeInTheDocument()
+    expect(screen.queryByTestId("hse-top-overall")).not.toBeInTheDocument()
+    expect(screen.queryByTestId("hse-preview-banner")).not.toBeInTheDocument()
+    expect(screen.queryByTestId("hse-header-controls")).not.toBeInTheDocument()
+    expect(screen.queryByTestId("raids-filters")).not.toBeInTheDocument()
+  })
+
+  it("says nothing is scheduled with only past instances, keeping the switcher", async () => {
+    const user = userEvent.setup()
+    mocks.event = readyAt([pastHunt], now)
+    renderHse()
+
+    expect(screen.getByTestId("hse-status-none")).toHaveTextContent(
+      "dailies:hse.status.noneScheduled"
+    )
+    await user.click(screen.getByTestId("hse-event-select"))
+    expect(
+      within(screen.getByTestId("hse-event-group-past")).getAllByRole("option")
+    ).toHaveLength(1)
+  })
+
+  it("previews a later event the player selects while one runs, and returns to the live lists", async () => {
+    const user = userEvent.setup()
+    mocks.event = readyAt([runningHunt, warp], now)
+    renderHse()
+
+    await user.click(screen.getByTestId("hse-event-next"))
+    expect(screen.getByTestId("hse-preview-banner")).toHaveTextContent(
+      "events:definitions.hse-warp-surge"
+    )
+    expect(mocks.raidsArgs.at(-1)).toEqual([
+      undefined,
+      { homeScreenEventId: "hse-warp-surge" },
+    ])
+    expect(screen.getByTestId("hse-header-controls")).toBeInTheDocument()
+
+    await user.click(screen.getByTestId("hse-event-previous"))
+    expect(location()).toBe("/")
+    expect(screen.queryByTestId("hse-preview-banner")).not.toBeInTheDocument()
+    expect(mocks.raidsArgs.at(-1)).toEqual([
+      undefined,
+      { homeScreenEventId: "hse-machine-hunt" },
+    ])
+  })
+
+  it("keeps the default rule-less next event to its countdown, and previews a later rule-bearing one when selected", async () => {
+    const user = userEvent.setup()
+    mocks.event = readyAt([boost, warp], now)
+    renderHse()
+
+    expect(screen.getByTestId("hse-status-upcoming")).toHaveTextContent(
+      "events:definitions.hse-faction-boost"
+    )
+    expect(screen.queryByTestId("hse-raids")).not.toBeInTheDocument()
+    expect(screen.queryByTestId("hse-preview-banner")).not.toBeInTheDocument()
+
+    await user.click(screen.getByTestId("hse-event-next"))
+    expect(screen.getByTestId("hse-preview-banner")).toBeInTheDocument()
+    expect(screen.getByTestId("hse-raids")).toBeInTheDocument()
+  })
+
+  function location() {
+    return screen.getByTestId("location").textContent
+  }
 })
