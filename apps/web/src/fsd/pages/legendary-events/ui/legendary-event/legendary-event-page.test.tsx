@@ -21,6 +21,10 @@ import { CreateGoalLauncherContext } from "@/entities/goal"
 import { legendaryEventCharacters } from "@/test/fixtures/legendary-event-characters"
 import { utharRun1Record } from "@/test/fixtures/legendary-event-run-records"
 import { lysanderEvent, utharEvent } from "@/test/fixtures/legendary-events"
+import {
+  lysanderBattleNpcs,
+  lysanderBattles,
+} from "@/test/fixtures/lysander-battles"
 import { createTestI18n, i18nWrapper } from "@/test/i18n"
 import { act, fireEvent, render, screen, within } from "@/test/render"
 import { setViewportWidth } from "@/test/viewport"
@@ -52,6 +56,14 @@ const events = [
   },
 ]
 const catalog = vi.hoisted(() => ({ synced: true }))
+// The served `lre-battles` (none unless a test sets them); `fail` rejects the read, `pending` never
+// settles it.
+const battlesApi = vi.hoisted(() => ({
+  battles: [] as unknown[],
+  npcs: new Map<string, unknown>(),
+  fail: false,
+  pending: false,
+}))
 vi.mock("@workspace/game-catalog/queries", () => ({
   hasLegendaryEventsSynced: async () => catalog.synced,
   getLegendaryEvent: async (id: string) =>
@@ -59,7 +71,13 @@ vi.mock("@workspace/game-catalog/queries", () => ({
   getCharactersMap: async () => new Map(),
   getMowsMap: async () => new Map(),
   getCharacters: async () => legendaryEventCharacters,
-  getLegendaryEventBattles: async () => [],
+  getLegendaryEventBattles: () =>
+    battlesApi.pending
+      ? new Promise(() => {})
+      : battlesApi.fail
+        ? Promise.reject(new Error("lre-battles unavailable"))
+        : Promise.resolve(battlesApi.battles),
+  getNpcsMap: async () => battlesApi.npcs,
   getHordeModeTiers: async () => null,
 }))
 // Dante owned, everyone else locked; no synced entry for any event unless a test sets one.
@@ -247,6 +265,10 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
   })
   beforeEach(() => {
     catalog.synced = true
+    battlesApi.battles = []
+    battlesApi.npcs = new Map(lysanderBattleNpcs.map((npc) => [npc.id, npc]))
+    battlesApi.fail = false
+    battlesApi.pending = false
     player.roster = [
       {
         unitId: "bloodDante",
@@ -301,6 +323,7 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
     // No lane section renders on Overview.
     expect(screen.queryByTestId("legendary-event-lane-overview")).toBeNull()
     expect(screen.queryByTestId("legendary-event-progress-grid")).toBeNull()
+    expect(screen.queryByTestId("legendary-event-battles")).toBeNull()
     // No synced entry for this event in this test's chunk.
     expect(screen.getByTestId("run-status-no-entry")).toBeInTheDocument()
   })
@@ -327,7 +350,7 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
     )
   })
 
-  it("shows one lane per tab in the order overview, teams, upgrade impact, progress grid, leaderboard", async () => {
+  it("shows one lane per tab in the order overview, teams, upgrade impact, progress grid, battles, leaderboard", async () => {
     renderPage("/legendary-events/astarLysander")
     await screen.findByTestId("legendary-event-overview-leaderboard")
 
@@ -338,6 +361,7 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
     const teams = screen.getByTestId("legendary-event-teams")
     const impact = screen.getByTestId("legendary-event-upgrade-impact")
     const grid = screen.getByTestId("legendary-event-progress-grid")
+    const battles = screen.getByTestId("legendary-event-battles")
     const leaderboard = await screen.findByTestId("legendary-event-leaderboard")
     expect(teams).toHaveAttribute("data-lane", "beta")
     expect(
@@ -346,7 +370,15 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
     expect(follows(overview, teams)).toBe(true)
     expect(follows(teams, impact)).toBe(true)
     expect(follows(impact, grid)).toBe(true)
-    expect(follows(grid, leaderboard)).toBe(true)
+    expect(follows(grid, battles)).toBe(true)
+    expect(follows(battles, leaderboard)).toBe(true)
+    expect(battles).toHaveTextContent("Battles")
+    expect(lanesOf("legendary-event-battles-section")).toEqual(["beta"])
+    // No served battle for Beta in this test's catalog.
+    expect(await screen.findByTestId("battles-empty")).toHaveTextContent(
+      "No battle data for this lane yet"
+    )
+    expect(screen.queryByTestId("battle-selector")).toBeNull()
     expect(lanesOf("progress-lane")).toEqual(["beta"])
     expect(lanesOf("leaderboard-lane")).toEqual(["beta"])
     expect(screen.getAllByTestId("leaderboard-table")).toHaveLength(1)
@@ -372,6 +404,74 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
     await screen.findByText("Lysander", { selector: "h1" })
     expect(selectedTab()).toHaveTextContent("Overview")
   }, 30_000)
+
+  describe("battles", () => {
+    const battleTitle = () => screen.getByTestId("battle-title").textContent
+    const pickBattle = (number: number) =>
+      fireEvent.click(
+        screen.getAllByTestId("battle-selector-item")[number - 1]!
+      )
+
+    it("keeps each lane's battle selection across lane tabs, starting on battle 1 without progress", async () => {
+      battlesApi.battles = lysanderBattles
+      renderPage("/legendary-events/astarLysander")
+      await screen.findByTestId("legendary-event-overview-leaderboard")
+
+      act(() => selectTab("alpha"))
+      await screen.findByTestId("battle-preview")
+      expect(battleTitle()).toBe("Battle 1")
+      expect(screen.getAllByTestId("battle-selector-item")).toHaveLength(18)
+      expect(screen.getByTestId("battle-power")).toHaveTextContent("994")
+      expect(screen.getByTestId("battle-map-image")).toHaveAttribute(
+        "alt",
+        "Map of Alpha battle 1"
+      )
+      act(() => pickBattle(12))
+      expect(battleTitle()).toBe("Battle 12")
+
+      act(() => selectTab("beta"))
+      await screen.findByTestId("battle-preview")
+      expect(battleTitle()).toBe("Battle 1")
+      act(() => pickBattle(3))
+      expect(battleTitle()).toBe("Battle 3")
+
+      act(() => selectTab("alpha"))
+      expect(battleTitle()).toBe("Battle 12")
+      act(() => selectTab("beta"))
+      expect(battleTitle()).toBe("Battle 3")
+    })
+
+    it("shows a skeleton and no selector while the battles read is pending", async () => {
+      battlesApi.pending = true
+      renderPage("/legendary-events/astarLysander")
+      await screen.findByTestId("legendary-event-overview-leaderboard")
+
+      act(() => selectTab("alpha"))
+      expect(screen.getByTestId("battles-loading")).toBeInTheDocument()
+      expect(screen.queryByTestId("battle-selector")).toBeNull()
+    })
+
+    it("shows an error with Retry that re-runs the read, keeping the rest of the lane tab", async () => {
+      battlesApi.fail = true
+      renderPage("/legendary-events/astarLysander")
+      await screen.findByTestId("legendary-event-overview-leaderboard")
+
+      act(() => selectTab("alpha"))
+      const error = await screen.findByTestId("battles-error")
+      expect(
+        await screen.findByTestId("legendary-event-leaderboard")
+      ).toBeInTheDocument()
+      expect(
+        screen.getByTestId("legendary-event-progress-grid")
+      ).toBeInTheDocument()
+
+      battlesApi.fail = false
+      battlesApi.battles = lysanderBattles
+      fireEvent.click(within(error).getByRole("button", { name: "Retry" }))
+      await screen.findByTestId("battle-preview")
+      expect(battleTitle()).toBe("Battle 1")
+    })
+  })
 
   it("jumps from a lane summary row to that lane's progress grid heading", async () => {
     // The setup file stubs scrollIntoView on HTMLElement.prototype, which shadows Element's.
@@ -580,6 +680,7 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
       '[data-testid="legendary-event-teams"]',
       '[data-testid="legendary-event-upgrade-impact"]',
       '[data-testid="legendary-event-progress-grid"]',
+      '[data-testid="legendary-event-battles"]',
       '[data-testid="legendary-event-leaderboard"]',
     ])
     // With no teams the plan is empty, so the Token plan step's target is absent (Joyride skips it).

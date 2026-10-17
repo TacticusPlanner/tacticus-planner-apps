@@ -184,6 +184,44 @@
       "body": "Les points gagnés d'un combat sont son score d'éliminations plus son meilleur score, auxquels s'ajoutent le bonus « tout vaincre » et le score de chaque objectif que vous y avez rempli. Le maximum d'un combat additionne son score d'éliminations complet, son meilleur score complet, le bonus « tout vaincre » et le score de chaque objectif ; le maximum de la voie additionne tous les combats."
     }
   },
+  "battles": {
+    "title": "Combats",
+    "loading": "Chargement des combats…",
+    "error": "Les données des combats n’ont pas pu être chargées.",
+    "empty": "Pas encore de données de combat pour cette voie",
+    "battleTitle": "Combat {{number}}",
+    "enemyPower": "Puissance ennemie",
+    "enemyCount_one": "{{formatted}} ennemi",
+    "enemyCount_other": "{{formatted}} ennemis",
+    "wave": "Vague {{number}}",
+    "round": "Tour {{round}}",
+    "wavePower": "Puissance {{power}}",
+    "noEnemies": "Aucun ennemi dans cette vague",
+    "npcsError": "Les niveaux et statistiques des ennemis n’ont pas pu être chargés.",
+    "selector": {
+      "label": "Combat",
+      "complete": "terminé",
+      "itemComplete": "{{number}} terminé",
+      "previous": "Combat précédent",
+      "next": "Combat suivant",
+      "position": "Combat {{number}} sur {{total}}"
+    },
+    "enemy": {
+      "levelUnknown": "Niveau inconnu",
+      "levelStars_one": "{{rank}} {{count}} étoile",
+      "levelStars_other": "{{rank}} {{count}} étoiles",
+      "levelWings": "{{rank}} avec ailes",
+      "npcsLoading": "Les détails de l’ennemi sont encore en cours de chargement.",
+      "npcsError": "Les détails de l’ennemi n’ont pas pu être chargés.",
+      "openInLibrary": "Ouvrir dans la Bibliothèque",
+      "detailDescription": "Les statistiques de cet ennemi à son niveau dans ce combat."
+    },
+    "map": {
+      "toggle": "Carte",
+      "alt": "Carte du combat {{number}} de {{lane}}",
+      "unavailable": "Carte non disponible"
+    }
+  },
   "annotations": {
     "maybeClear": "Peut-être faisable",
     "stopHere": "S'arrêter ici",
@@ -365,6 +403,10 @@
         "progressGrid": {
           "title": "Progression synchronisée",
           "content": "Vos objectifs remplis et vos points par combat issus de votre dernière synchronisation, avec les points gagnés de la voie par rapport à son maximum. Marquez un objectif non accompli « Peut-être faisable » ou « S'arrêter ici », ou un combat entier depuis l'action de sa ligne."
+        },
+        "battles": {
+          "title": "Combats",
+          "content": "Consultez chaque combat de la voie avant de le jouer : sa carte, ses vagues tour par tour et chaque ennemi avec son niveau. Touchez un ennemi pour voir ses statistiques. Il s’ouvre sur votre prochain combat à jouer."
         },
         "leaderboard": {
           "title": "Classement de la voie",

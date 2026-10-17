@@ -184,6 +184,44 @@
       "body": "Los puntos conseguidos en una batalla son su puntuación de bajas más su puntuación máxima, más la bonificación por derrotar a todos y la puntuación de cada objetivo que superaste en ella. El máximo de una batalla suma su puntuación de bajas completa, su puntuación máxima completa, la bonificación por derrotar a todos y la puntuación de cada objetivo; el máximo del carril suma todas las batallas."
     }
   },
+  "battles": {
+    "title": "Batallas",
+    "loading": "Cargando batallas…",
+    "error": "No se pudieron cargar los datos de las batallas.",
+    "empty": "Todavía no hay datos de batallas para esta línea",
+    "battleTitle": "Batalla {{number}}",
+    "enemyPower": "Poder enemigo",
+    "enemyCount_one": "{{formatted}} enemigo",
+    "enemyCount_other": "{{formatted}} enemigos",
+    "wave": "Oleada {{number}}",
+    "round": "Ronda {{round}}",
+    "wavePower": "Poder {{power}}",
+    "noEnemies": "No hay enemigos en esta oleada",
+    "npcsError": "No se pudieron cargar los niveles y estadísticas de los enemigos.",
+    "selector": {
+      "label": "Batalla",
+      "complete": "completada",
+      "itemComplete": "{{number}} completada",
+      "previous": "Batalla anterior",
+      "next": "Batalla siguiente",
+      "position": "Batalla {{number}} de {{total}}"
+    },
+    "enemy": {
+      "levelUnknown": "Nivel desconocido",
+      "levelStars_one": "{{rank}} {{count}} estrella",
+      "levelStars_other": "{{rank}} {{count}} estrellas",
+      "levelWings": "{{rank}} con alas",
+      "npcsLoading": "Los detalles del enemigo aún se están cargando.",
+      "npcsError": "No se pudieron cargar los detalles del enemigo.",
+      "openInLibrary": "Abrir en la Biblioteca",
+      "detailDescription": "Las estadísticas de este enemigo a su nivel en esta batalla."
+    },
+    "map": {
+      "toggle": "Mapa",
+      "alt": "Mapa de la batalla {{number}} de {{lane}}",
+      "unavailable": "Mapa no disponible"
+    }
+  },
   "annotations": {
     "maybeClear": "Quizá superable",
     "stopHere": "Parar aquí",
@@ -365,6 +403,10 @@
         "progressGrid": {
           "title": "Progreso sincronizado",
           "content": "Tus objetivos superados y puntos por batalla de tu última sincronización, con los puntos conseguidos en el carril frente a su máximo. Marca un objetivo no completado como «Quizá superable» o «Parar aquí», o una batalla entera desde la acción de su fila."
+        },
+        "battles": {
+          "title": "Batallas",
+          "content": "Consulta cualquier batalla de la línea antes de jugarla: su mapa, sus oleadas ronda a ronda y cada enemigo con su nivel. Toca un enemigo para ver sus estadísticas. Se abre en tu próxima batalla por jugar."
         },
         "leaderboard": {
           "title": "Clasificación del carril",

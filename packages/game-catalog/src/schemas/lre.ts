@@ -21,7 +21,9 @@ const lreTrackEnemiesSchema = z.looseObject({
 
 export const lreEnemySchema = z.looseObject({
   id: unitIdSchema,
-  stars: z.number(),
+  // 1-based position of the enemy's row in its npc's served `stats` ladder (V1's N in "{npcId}:{N}"),
+  // not a star count. Served as is: a few boss entries point past the end of their ladder.
+  ladderIndex: z.number(),
   count: z.number(),
 })
 

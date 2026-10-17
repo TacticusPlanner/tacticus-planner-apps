@@ -20,6 +20,8 @@ const EVENT_TOUR_TARGETS = {
   teams: '[data-testid="legendary-event-teams"]',
   upgradeImpact: '[data-testid="legendary-event-upgrade-impact"]',
   progressGrid: '[data-testid="legendary-event-progress-grid"]',
+  // The heading, not the whole section: a battle's waves can be taller than the viewport.
+  battles: '[data-testid="legendary-event-battles"]',
   leaderboard: '[data-testid="legendary-event-leaderboard"]',
 } as const
 
@@ -56,7 +58,7 @@ function waitForElement(selector: string, timeoutMs: number): Promise<void> {
  * forms), the Token plan header, the Overview lane summary and cross-lane
  * leaderboard, then, after switching to Alpha through
  * `selectTab`, Alpha's lane overview, Teams section (with its Add team button), progress grid (and
- * its marks) and leaderboard. Desktop and mobile share the steps.
+ * its marks), Battles preview and leaderboard. Desktop and mobile share the steps.
  */
 export function useLegendaryEventTutorial(
   selectTab: (tab: LegendaryEventTab) => void,
@@ -94,6 +96,7 @@ export function useLegendaryEventTutorial(
       step("teams", "top"),
       step("upgradeImpact", "top"),
       step("progressGrid", "top"),
+      step("battles", "top"),
       step("leaderboard", "top"),
     ]
     return { desktop: steps, mobile: steps }
