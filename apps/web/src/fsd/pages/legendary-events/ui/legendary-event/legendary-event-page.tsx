@@ -23,6 +23,7 @@ import { useAnalyticsActions } from "@/shared/analytics"
 import { useTourPageSteps } from "@/shared/tour"
 import { useUnitName } from "@/shared/unit-name"
 
+import { useBattlesSection } from "./battles/use-battles-section"
 import { LegendaryEventPageView } from "./legendary-event-page-view"
 import {
   buildClearEstimates,
@@ -83,7 +84,8 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
   const roster = readValue(useLegendaryEventRoster())
   const progressValue = readValue(progress)
   const clearEstimateConfig = useClearEstimateConfig()
-  const battles = readValue(useLegendaryEventBattles(eventId))
+  const battlesRead = useLegendaryEventBattles(eventId)
+  const battles = readValue(battlesRead)
   const syncedEntry =
     typeof progressValue === "object" ? progressValue : undefined
   const eventData = event.status === "ready" ? event.data : undefined
@@ -199,6 +201,12 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
     initialRarityOf,
   })
   const impactTeamName = useImpactTeamName(eventData, plan.query.data)
+  const battlesSection = useBattlesSection({
+    event: eventData,
+    laneId: selectedLane,
+    battlesRead,
+    progressGrid,
+  })
   const progressObservedAtMs =
     syncTimes.status === "ready" ? syncTimes.data.progressObservedAtMs : null
   const tokenPlan = useTokenPlan({
@@ -398,6 +406,7 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
           teamName: impactTeamName,
         }
       : null,
+    battles: battlesSection,
   }
 
   return <LegendaryEventPageView {...viewModel} isMobile={isMobile} />

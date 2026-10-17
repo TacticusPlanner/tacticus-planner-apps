@@ -288,4 +288,10 @@ export {
   type HordeTierTile,
 } from "./lib/horde-tier-list"
 export { useLegendaryEventsBattles } from "./model/use-legendary-events-battles"
+export {
+  battleEnemyCount,
+  defaultBattleIndex,
+  orderLaneBattles,
+  sortedWaves,
+} from "./lib/battle-preview"
 export { useHordeModeTiers } from "./model/use-horde-mode-tiers"

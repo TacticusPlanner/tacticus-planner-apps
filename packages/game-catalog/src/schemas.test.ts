@@ -82,7 +82,13 @@ const lreBattle = {
   power: 1000,
   tier: 1,
   disallowedFactions: [],
-  waves: [{ round: 1, power: 500, enemies: [] }],
+  waves: [
+    {
+      round: 1,
+      power: 500,
+      enemies: [{ id: "orksNpc1Grot", ladderIndex: 4, count: 7 }],
+    },
+  ],
 }
 
 const validNpc = {
@@ -388,6 +394,25 @@ describe("catalog schemas", () => {
     expect(
       datasetPayloadSchemas["lre-battles"].safeParse([lreBattle]).success
     ).toBe(true)
+  })
+
+  it("reads a wave enemy's ladderIndex and rejects the old stars field", () => {
+    const parsed = datasetPayloadSchemas["lre-battles"].parse([lreBattle])
+    expect(parsed[0]?.waves[0]?.enemies[0]?.ladderIndex).toBe(4)
+
+    const legacy = {
+      ...lreBattle,
+      waves: [
+        {
+          round: 1,
+          power: 500,
+          enemies: [{ id: "orksNpc1Grot", stars: 4, count: 7 }],
+        },
+      ],
+    }
+    expect(
+      datasetPayloadSchemas["lre-battles"].safeParse([legacy]).success
+    ).toBe(false)
   })
 
   it("accepts run starts indexed by run, from none announced to all three", () => {

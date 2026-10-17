@@ -4,31 +4,31 @@ Companion API change: `add-legendary-event-battle-preview` in `tacticus-planner-
 
 ## 1. Catalog: schema and map assets
 
-- [ ] 1.1 Update `lreEnemySchema` in `packages/game-catalog/src/schemas/lre.ts` to `{ id, ladderIndex, count }` with a doc comment on the 1-based ladder meaning, and the `lre-battles` fixtures; verify `pnpm --filter @workspace/game-catalog test:run` passes and a schema test rejects an enemy with only `stars`.
-- [ ] 1.2 Copy `LE1_21.jpg` from V1 `src/assets/images/snowprint_assets/le_maps/` and `C1_70.jpg`, `C3_75.jpg`, `MC1_51.jpg` from V1 `.../quest_maps/` into `apps/web/public/game_catalog/le_maps/`; verify the four files open and are 296 px wide tactical maps (design D6).
-- [ ] 1.3 Add a generator script in `packages/game-catalog/scripts` that writes `LE_MAP_IDS` (tactical `{mapId}.jpg` files only) and the `legendaryEventMap(mapId)` helper next to `npcPortrait`, exported from `@workspace/game-catalog`; verify a test asserts `LE_MAP_IDS` matches the directory listing, `legendaryEventMap("LE1_26")` returns the `le_maps` path and `legendaryEventMap("C4_35")` returns `undefined` (design D2, D6).
+- [x] 1.1 Update `lreEnemySchema` in `packages/game-catalog/src/schemas/lre.ts` to `{ id, ladderIndex, count }` with a doc comment on the 1-based ladder meaning, and the `lre-battles` fixtures; verify `pnpm --filter @workspace/game-catalog test:run` passes and a schema test rejects an enemy with only `stars`.
+- [x] 1.2 Copy `LE1_21.jpg` from V1 `src/assets/images/snowprint_assets/le_maps/` and `C1_70.jpg`, `C3_75.jpg`, `MC1_51.jpg` from V1 `.../quest_maps/` into `apps/web/public/game_catalog/le_maps/`; verify the four files open and are 296 px wide tactical maps (design D6).
+- [x] 1.3 Add `LE_MAP_IDS` (tactical `{mapId}.jpg` files only; kept by hand, the directory-sync test below fails on drift instead of a generator script) and the `legendaryEventMap(mapId)` helper next to `npcPortrait`, exported from `@workspace/game-catalog`; verify a test asserts `LE_MAP_IDS` matches the directory listing, `legendaryEventMap("LE1_26")` returns the `le_maps` path and `legendaryEventMap("C4_35")` returns `undefined` (design D2, D6).
 
 ## 2. Entities: pure selectors, read hook, shared NPC UI
 
-- [ ] 2.1 Add `entities/legendary-event/lib/battle-preview.ts` (`defaultBattleIndex`, `orderLaneBattles`, `sortedWaves`, `battleEnemyCount`) and export it; verify `battle-preview.test.ts` covers the first-incomplete default (Beta battles 1–6 complete → battle 7), no progress → battle 1, all complete → last battle, ordering by `battleIds`, round sorting, and the Lysander Alpha battle 1 count 7 + 4 + 5 + 6 + 4 + 6 = 32.
-- [ ] 2.2 Add `entities/npc/lib/resolve-ladder-row.ts` (`resolveLadderRow`) and export it; verify `resolve-ladder-row.test.ts` covers Grot index 4 → row 3 (rank 2, stars 1, health 69), index 5 → row 4, index 0 → row 0, Helbrecht index 3 on a 2-row ladder → `undefined`, and an unknown NPC → `undefined`.
-- [ ] 2.3 Add `entities/npc/model/use-npcs-by-id.ts` (`useNpcsById`) over `getNpcsMap` with pending / ready / failed states; verify a hook test covers each state.
-- [ ] 2.4 Move `npc-level-badge.tsx` from `pages/library/ui/npcs/` to `entities/npc/ui/`, export it, and update the Library imports; verify the existing NPC Library tests pass unchanged and `pnpm lint:fsd` passes.
-- [ ] 2.5 Add `entities/npc/ui/npc-stat-summary.tsx` (portrait, localized name and faction, level badge, health / damage / armour, melee and ranged attacks, localized traits for one variation and row); verify `npc-stat-summary.test.tsx` renders Grot at row 3 with health 69, damage 35, armour 0 and its traits.
+- [x] 2.1 Add `entities/legendary-event/lib/battle-preview.ts` (`defaultBattleIndex`, `orderLaneBattles`, `sortedWaves`, `battleEnemyCount`) and export it; verify `battle-preview.test.ts` covers the first-incomplete default (Beta battles 1–6 complete → battle 7), no progress → battle 1, all complete → last battle, ordering by `battleIds`, round sorting, and the Lysander Alpha battle 1 count 7 + 4 + 5 + 6 + 4 + 6 = 32.
+- [x] 2.2 Add `entities/npc/lib/resolve-ladder-row.ts` (`resolveLadderRow`) and export it; verify `resolve-ladder-row.test.ts` covers Grot index 4 → row 3 (rank 2, stars 1, health 69), index 5 → row 4, index 0 → row 0, Helbrecht index 3 on a 2-row ladder → `undefined`, and an unknown NPC → `undefined`.
+- [x] 2.3 Add `entities/npc/model/use-npcs-by-id.ts` (`useNpcsById`) over `getNpcsMap` with pending / ready / failed states; verify a hook test covers each state.
+- [x] 2.4 Move `npc-level-badge.tsx` from `pages/library/ui/npcs/` to `entities/npc/ui/`, export it, and update the Library imports; verify the existing NPC Library tests pass unchanged and `pnpm lint:fsd` passes.
+- [x] 2.5 Add `entities/npc/ui/npc-stat-summary.tsx` (portrait, localized name and faction, level badge, health / damage / armour, melee and ranged attacks, localized traits for one variation and row); verify `npc-stat-summary.test.tsx` renders Grot at row 3 with health 69, damage 35, armour 0 and its traits.
 
 ## 3. Page: Battles section
 
-- [ ] 3.1 Add `pages/legendary-events/ui/legendary-event/battles/battles.view-model.ts` joining the lane's battles, `useNpcsById` and the progress grid into header, wave and tile view models, with per-lane selection state that resets on event change (design D3); verify `battles.view-model.test.ts` covers the Lysander Alpha battle 1 tiles ("Grot ×7" at Stone III 1 star; "Grot ×3" and "Ork Boy"), the Helbrecht "Level unknown" tile, NPCs pending, Library link only for listed variations (`/library/npcs/grot?variation=orksNpc1Grot&level=3`), and selection kept per lane.
-- [ ] 3.2 Add `battle-selector.tsx`: desktop toggle group with complete marks as sr-only text; mobile Previous / "Battle N of M" menu / Next with bounds; verify `battle-selector.test.tsx` covers every scenario of "Desktop and mobile select battles differently".
-- [ ] 3.3 Add `battle-waves.tsx` and `enemy-tile.tsx` (header with power and enemy count formatted for the UI language, waves by round, tiles with ×N and level, empty wave line, accessible tile names); verify `battle-waves.test.tsx` covers the header, wave and empty-wave scenarios and "19,836,420".
-- [ ] 3.4 Add `enemy-detail.tsx`: popover on desktop, bottom sheet on mobile, wrapping `NpcStatSummary` plus the Library link; verify `enemy-detail.test.tsx` covers both forms, focus return on close, the unlisted-NPC case and the unresolved case without stats.
-- [ ] 3.5 Add `battle-map.tsx`: desktop column beside the waves, mobile collapsed "Map" disclosure whose open state survives battle changes, "Map not available" for `undefined` and on image error, lazy loading and "Map of {lane} battle {n}" alt text; verify `battle-map.test.tsx` covers the three map scenarios.
-- [ ] 3.6 Add `battles-section.tsx` (`data-testid="legendary-event-battles"` on the heading) with the skeleton, error with Retry, and "No battle data for this lane yet" states, and render it in `legendary-event-page-view.tsx` between `ProgressSection` and `LeaderboardSection`, lane tabs only; verify `legendary-event-page.test.tsx` covers the lane section order, no section on Overview, and each loading / failure / missing-data scenario.
+- [x] 3.1 Add `pages/legendary-events/ui/legendary-event/battles/battles.view-model.ts` joining the lane's battles, `useNpcsById` and the progress grid into header, wave and tile view models, with per-lane selection state that resets on event change (design D3); verify `battles.view-model.test.ts` covers the Lysander Alpha battle 1 tiles ("Grot ×7" at Stone III 1 star; "Grot ×3" and "Ork Boy"), the Helbrecht "Level unknown" tile, NPCs pending, Library link only for listed variations (`/library/npcs/grot?variation=orksNpc1Grot&level=3`), and selection kept per lane.
+- [x] 3.2 Add `battle-selector.tsx`: desktop toggle group with complete marks as sr-only text; mobile Previous / "Battle N of M" menu / Next with bounds; verify `battle-selector.test.tsx` covers every scenario of "Desktop and mobile select battles differently".
+- [x] 3.3 Add `battle-waves.tsx` and `enemy-tile.tsx` (header with power and enemy count formatted for the UI language, waves by round, tiles with ×N and level, empty wave line, accessible tile names); verify `battle-waves.test.tsx` covers the header, wave and empty-wave scenarios and "19,836,420".
+- [x] 3.4 Add `enemy-detail.tsx`: popover on desktop, bottom sheet on mobile, wrapping `NpcStatSummary` plus the Library link; verify `enemy-detail.test.tsx` covers both forms, focus return on close, the unlisted-NPC case and the unresolved case without stats.
+- [x] 3.5 Add `battle-map.tsx`: desktop column beside the waves, mobile collapsed "Map" disclosure whose open state survives battle changes, "Map not available" for `undefined` and on image error, lazy loading and "Map of {lane} battle {n}" alt text; verify `battle-map.test.tsx` covers the three map scenarios.
+- [x] 3.6 Add `battles-section.tsx` (`data-testid="legendary-event-battles"` on the heading) with the skeleton, error with Retry, and "No battle data for this lane yet" states, and render it in `legendary-event-page-view.tsx` between `ProgressSection` and `LeaderboardSection`, lane tabs only; verify `legendary-event-page.test.tsx` covers the lane section order, no section on Overview, and each loading / failure / missing-data scenario.
 
 ## 4. Tour and i18n
 
-- [ ] 4.1 Add `step("battles", "top")` between `progressGrid` and `leaderboard` in `legendary-event.tutorial.tsx` with its `EVENT_TOUR_TARGETS` entry, the same step on desktop and mobile (design D4), and `tour.event.steps.battles.title` / `.content` in en/de/es/fr; verify the tutorial test lists the step in order on both forms.
-- [ ] 4.2 Add `battles.*` keys to `legendaryEvents.json` in en/de/es/fr (heading, selector labels, "Battle N of M", complete, enemy power, enemy count plural, wave and round labels, no-enemies line, Level unknown, detail labels, Open in Library, Map, map alt text, Map not available, skeleton / error / no-data copy) with real German, Spanish and French translations; verify `legendary-events-translations.test.ts` passes.
+- [x] 4.1 Add `step("battles", "top")` between `progressGrid` and `leaderboard` in `legendary-event.tutorial.tsx` with its `EVENT_TOUR_TARGETS` entry, the same step on desktop and mobile (design D4), and `tour.event.steps.battles.title` / `.content` in en/de/es/fr; verify the tutorial test lists the step in order on both forms.
+- [x] 4.2 Add `battles.*` keys to `legendaryEvents.json` in en/de/es/fr (heading, selector labels, "Battle N of M", complete, enemy power, enemy count plural, wave and round labels, no-enemies line, Level unknown, detail labels, Open in Library, Map, map alt text, Map not available, skeleton / error / no-data copy) with real German, Spanish and French translations; verify `legendary-events-translations.test.ts` passes.
 
 ## 5. Platform-independent verification
 
@@ -50,7 +50,7 @@ Data states: a signed-in profile with Lysander synced and some lanes partly clea
 
 ## 8. Gates
 
-- [ ] 8.1 `pnpm test:run`, `pnpm typecheck`, `pnpm lint`, `pnpm lint:fsd`, `git diff --check` all pass.
+- [x] 8.1 `pnpm test:run`, `pnpm typecheck`, `pnpm lint`, `pnpm lint:fsd`, `git diff --check` all pass.
 
 ## Workflow follow-up
 

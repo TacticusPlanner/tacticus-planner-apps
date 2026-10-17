@@ -34,7 +34,7 @@ V1 had a Battles tab with its own Alpha/Beta/Gamma switch. V2's lane tabs alread
 - `entities/npc/ui/npc-level-badge.tsx`: moved from `pages/library/ui/npcs/` unchanged (rank icon + stars visual for a ladder row) and exported, so the tile, the summary and the Library share one level rendering; the Library imports it from `@/entities/npc`.
 - `entities/npc/ui/npc-stat-summary.tsx`: portrait, name, faction, level, health / damage / armour, attacks, traits for one `(variation, row)`, using `useNpcLabels` and the shared ability-text helpers.
 - `pages/legendary-events/ui/legendary-event/battles/`: `battles-section.tsx`, `battle-selector.tsx` (desktop and mobile forms), `battle-waves.tsx`, `enemy-tile.tsx`, `enemy-detail.tsx` (popover / sheet wrapper around `NpcStatSummary` plus the Library link), `battle-map.tsx`, `battles.view-model.ts` (joins battles, NPCs and progress into tile view models; the only place both entities meet).
-- `@workspace/game-catalog`: `legendaryEventMap(mapId): string | undefined` next to `npcPortrait`, returning `${ASSET_BASE_PATH}/le_maps/${mapId}.jpg` only for ids in a generated `LE_MAP_IDS` set, so a map known to be missing renders the placeholder without a 404. The `<img onError>` fallback still covers a listed file that fails to load.
+- `@workspace/game-catalog`: `legendaryEventMap(mapId): string | undefined` next to `npcPortrait`, returning `${ASSET_BASE_PATH}/le_maps/${mapId}.jpg` only for ids in the `LE_MAP_IDS` set, so a map known to be missing renders the placeholder without a 404. The `<img onError>` fallback still covers a listed file that fails to load.
 
 ### D3. Selection state
 
@@ -52,7 +52,7 @@ One tile per served entry with a ×N badge instead of V1's repeated scaled portr
 
 ### D6. Map assets
 
-Copy `LE1_21.jpg` from V1 `le_maps` and `C1_70.jpg`, `C3_75.jpg`, `MC1_51.jpg` from V1 `quest_maps` into `apps/web/public/game_catalog/le_maps/` (tactical images, V1 only ever showed these). `LE_MAP_IDS` is generated from the directory listing (tactical files only) by a small script in `packages/game-catalog/scripts`, and a unit test asserts it matches the directory so a newly copied map is not silently ignored. The `_Visual` files stay unused.
+Copy `LE1_21.jpg` from V1 `le_maps` and `C1_70.jpg`, `C3_75.jpg`, `MC1_51.jpg` from V1 `quest_maps` into `apps/web/public/game_catalog/le_maps/` (tactical images, V1 only ever showed these). `LE_MAP_IDS` lists the directory's tactical files by hand, and a unit test asserts it matches the directory so a newly copied map is not silently ignored (a generator script was dropped: the test catches the same drift with no extra tooling). The `_Visual` files stay unused.
 
 ### V1-parity checklist
 
