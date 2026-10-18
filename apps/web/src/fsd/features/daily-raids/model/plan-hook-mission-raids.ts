@@ -14,11 +14,15 @@ import type {
   RaidsFilterBattle,
   RaidsFilters,
 } from "./raids-filters/raids-filters.domain"
+import { isEnergyLimitReached } from "./select-today-raids"
 
 /**
  * `useDailyRaids`' HRE suggestions: the mission request applied to the hook's eligible battles,
  * synced attempts, energy and filters. Today's remaining plan is its entries less the attempts
- * already used today (attempts used = the node's cap less its synced attempts left).
+ * already used today (attempts used = the node's cap less its synced attempts left), and nothing
+ * once the daily energy limit is reached, as Today then drops its plan. Nodes with no campaign
+ * type (Indomitus under 5 energy) pass a campaign-type filter: no option can select them, and
+ * mission raids are about the cheapest battles, not drops.
  */
 export function planHookMissionRaids(input: {
   request: MissionRaidsRequest
@@ -57,15 +61,23 @@ export function planHookMissionRaids(input: {
       isEvent: eventCampaignIds.has(battle.campaignGroupId),
     })),
     attemptsLeftByBattle: input.attemptsLeftByBattle,
-    plannedByBattle: input.calculation
-      ? remainingPlannedRaids(input.calculation.today.entries, attemptsUsed)
-      : new Map(),
+    plannedByBattle:
+      input.calculation &&
+      !isEnergyLimitReached(input.dailyEnergy, input.realEnergyUsedToday)
+        ? remainingPlannedRaids(input.calculation.today.entries, attemptsUsed)
+        : new Map(),
     dailyEnergy: input.dailyEnergy,
     realEnergyUsedToday: input.realEnergyUsedToday,
     goalNodesByBattle: input.calculation?.missionGoalNodes ?? new Map(),
     passesFilter: (battleId) => {
       const battle = input.filterBattlesById.get(battleId)
-      return !battle || passLocationFilter(battle, input.raidsFilters)
+      if (!battle) return true
+      return passLocationFilter(
+        battle,
+        battle.campaignType === null
+          ? { ...input.raidsFilters, campaignTypes: [] }
+          : input.raidsFilters
+      )
     },
   })
 }

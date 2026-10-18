@@ -100,6 +100,7 @@
       "planCompletes": "Le plan du jour termine cet objectif.",
       "noEnergy_one": "Il ne reste plus d'énergie aujourd'hui pour d'autres raids. Le plan du jour couvre {{count}} bataille.",
       "noEnergy_other": "Il ne reste plus d'énergie aujourd'hui pour d'autres raids. Le plan du jour couvre {{count}} batailles.",
+      "noAttempts": "Toutes les batailles que l'énergie du jour permet ont déjà utilisé leurs tentatives du jour.",
       "noEvent_one": "Aucun événement de campagne n'est en cours : gagnez {{count}} bataille à la main par une victoire éclair.",
       "noEvent_other": "Aucun événement de campagne n'est en cours : gagnez {{count}} batailles à la main par une victoire éclair.",
       "noCandidates": "Aucune bataille de campagne à raider."

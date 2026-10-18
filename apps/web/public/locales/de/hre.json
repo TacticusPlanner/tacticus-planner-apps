@@ -100,6 +100,7 @@
       "planCompletes": "Der heutige Plan schließt dieses Ziel ab.",
       "noEnergy_one": "Heute ist keine Energie für weitere Raids übrig. Der heutige Plan deckt {{count}} Schlacht ab.",
       "noEnergy_other": "Heute ist keine Energie für weitere Raids übrig. Der heutige Plan deckt {{count}} Schlachten ab.",
+      "noAttempts": "Alle Schlachten, für die die heutige Energie reicht, haben ihre Versuche für heute verbraucht.",
       "noEvent_one": "Es läuft kein Kampagnenevent: Gewinne {{count}} Schlacht manuell mit einem Blitzsieg.",
       "noEvent_other": "Es läuft kein Kampagnenevent: Gewinne {{count}} Schlachten manuell mit einem Blitzsieg.",
       "noCandidates": "Keine raidbaren Kampagnenschlachten."

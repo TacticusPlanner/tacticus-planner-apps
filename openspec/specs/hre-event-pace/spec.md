@@ -64,7 +64,7 @@ Each intermediate value SHALL be shown. Shards are the common unit.
 #### Scenario: Pace from points so far
 
 - **GIVEN** 14,500 points at day 7.0 of 14
-- **THEN** the average is 2,071 a day and the projected end is 14,500 + 2,071 × 7 = 29,000 (rounded to the nearest point)
+- **THEN** the average is 2,071 a day (14,500 / 7, shown rounded) and the projected end is 14,500 + (14,500 / 7) × 7 = 29,000 (rounded to the nearest point)
 
 #### Scenario: Within Oh So Close range
 

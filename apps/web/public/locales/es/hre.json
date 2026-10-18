@@ -100,6 +100,7 @@
       "planCompletes": "El plan de hoy completa este objetivo.",
       "noEnergy_one": "Hoy no queda energía para más incursiones. El plan de hoy cubre {{count}} batalla.",
       "noEnergy_other": "Hoy no queda energía para más incursiones. El plan de hoy cubre {{count}} batallas.",
+      "noAttempts": "Todas las batallas que caben en la energía de hoy ya han usado sus intentos de hoy.",
       "noEvent_one": "No hay ningún evento de campaña en curso: gana {{count}} batalla a mano con una victoria relámpago.",
       "noEvent_other": "No hay ningún evento de campaña en curso: gana {{count}} batallas a mano con una victoria relámpago.",
       "noCandidates": "No hay batallas de campaña disponibles para incursiones."

@@ -167,9 +167,11 @@ function EmptyState({
           ? t("hre:raids.empty.planCompletes")
           : reason === "no-energy"
             ? t("hre:raids.empty.noEnergy", { count: plan.plannedCount })
-            : reason === "no-event"
-              ? t("hre:raids.empty.noEvent", { count: battlesToGo })
-              : t("hre:raids.empty.noCandidates")}
+            : reason === "no-attempts"
+              ? t("hre:raids.empty.noAttempts")
+              : reason === "no-event"
+                ? t("hre:raids.empty.noEvent", { count: battlesToGo })
+                : t("hre:raids.empty.noCandidates")}
       </p>
       {reason === "filtered" ? (
         <Button

@@ -36,7 +36,12 @@ type MissionRaidRow = {
 }
 
 type MissionRaidsEmptyReason =
-  "plan-completes" | "no-energy" | "no-candidates" | "filtered" | "no-event"
+  | "plan-completes"
+  | "no-energy"
+  | "no-attempts"
+  | "no-candidates"
+  | "filtered"
+  | "no-event"
 
 export type MissionRaidPlan = {
   /** Remaining raids on Today's plan that count toward the objective. */
@@ -170,6 +175,8 @@ export function planMissionRaids(
 
   let budget = energyBudget
   let left = battlesLeft
+  // An affordable node with no attempts left: an empty fill then means attempts ran out, not energy.
+  let attemptsBlocked = false
   const rows: MissionRaidRow[] = []
   for (const battle of candidates) {
     if (left <= 0) break
@@ -177,6 +184,7 @@ export function planMissionRaids(
       input.attemptsLeftByBattle.get(battle.id) ??
       (battle.dailyAttempts > 0 ? battle.dailyAttempts : Infinity)
     const attempts = cap - (input.plannedByBattle.get(battle.id) ?? 0)
+    if (attempts <= 0 && budget >= battle.energyCost) attemptsBlocked = true
     const raids = Math.min(
       attempts,
       Math.floor(budget / battle.energyCost),
@@ -193,7 +201,7 @@ export function planMissionRaids(
       goal: input.goalNodesByBattle.get(battle.id) ?? null,
     })
   }
-  return done(rows, "no-energy")
+  return done(rows, attemptsBlocked ? "no-attempts" : "no-energy")
 }
 
 /**

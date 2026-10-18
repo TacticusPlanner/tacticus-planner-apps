@@ -59,6 +59,11 @@ Assumptions:
 - **GIVEN** daily energy 538, 300 spent and 238 still planned on Today
 - **THEN** the budget is 0, no extra raids are suggested, and the section says how many battles today's plan covers
 
+#### Scenario: Daily energy limit reached
+
+- **GIVEN** the real energy spent today has reached the daily energy limit, so Today drops its plan
+- **THEN** Today's plan counts for nothing here: no battles are taken off the objective and no extra raids are suggested
+
 ### Requirement: Candidate locations follow raid eligibility and today's limits
 
 A campaign battle SHALL be a candidate only if all of these hold:
@@ -90,6 +95,11 @@ Assumptions:
 - **GIVEN** the Raids Filters hide Indomitus
 - **THEN** no Indomitus node is listed, even though they are the cheapest
 
+#### Scenario: Campaign-type filter keeps untyped nodes
+
+- **GIVEN** a campaign-type Raids Filter of Standard and Early
+- **THEN** I06 to I14, which have no campaign type and so match no option, stay candidates
+
 ### Requirement: Suggestions minimise energy, then serve goals, and fill to the limits
 
 Candidates SHALL be ordered by energy cost ascending. Within the same cost, a node that drops a resource an in-scope goal still needs SHALL come first, ordered by that goal's best priority, and then by battle id. Each node, in order, SHALL get as many raids as its attempts left, the remaining budget and the battles left for suggestions allow. A node that does not fit SHALL be skipped. Rows with 0 raids SHALL NOT be shown. The totals of raids and energy SHALL be shown, and the energy total SHALL NOT exceed the budget.
@@ -115,6 +125,11 @@ Candidates SHALL be ordered by energy cost ascending. Within the same cost, a no
 
 - **WHEN** there are no candidates
 - **THEN** the section says "No raidable campaign battles"; if the Raids Filters removed every candidate, it also offers to open the filters
+
+#### Scenario: Attempts run out before energy
+
+- **GIVEN** budget left, but every affordable candidate has used its attempts today
+- **THEN** the section says every battle that fits today's energy has used its attempts, not that energy ran out
 
 ### Requirement: Lightning-victory objectives suggest event-campaign raids
 

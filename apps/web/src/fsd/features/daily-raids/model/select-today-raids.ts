@@ -24,6 +24,12 @@ export type TodayRaidsSelection = {
   energyLimitReached: boolean
 }
 
+/** Today's real energy spend has reached the daily energy limit (a limit of 0 or less is none). */
+export const isEnergyLimitReached = (
+  dailyEnergy: number,
+  realEnergyUsedToday: number
+) => dailyEnergy > 0 && realEnergyUsedToday >= dailyEnergy
+
 /**
  * Decides what Today lists, shared by Dailies > Today and the Home raids widget
  * (daily-raids-today / home-raids-widget specs). Below the daily energy limit the plan stands and
@@ -42,8 +48,10 @@ export function selectTodayRaids({
   const visibleBonus = bonusEntries.filter((entry) =>
     isLocationVisible(entry, attemptsLeftByBattle)
   )
-  const energyLimitReached =
-    dailyEnergy > 0 && realEnergyUsedToday >= dailyEnergy
+  const energyLimitReached = isEnergyLimitReached(
+    dailyEnergy,
+    realEnergyUsedToday
+  )
   return {
     planEntries: energyLimitReached ? [] : [...todayEntries],
     bonusEntries: visibleBonus,

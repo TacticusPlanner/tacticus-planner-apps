@@ -103,6 +103,19 @@ describe("planMissionRaids", () => {
     expect(plan.plannedCount).toBe(25)
   })
 
+  it("says attempts ran out when energy is still left", () => {
+    const plan = planMissionRaids(
+      base({
+        attemptsLeftByBattle: new Map(
+          indomitus.map((battle) => [battle.id, 0])
+        ),
+      })
+    )
+    expect(plan.energyBudget).toBe(538)
+    expect(plan.rows).toEqual([])
+    expect(plan.empty).toBe("no-attempts")
+  })
+
   it("leaves a node's attempts to Today's plan and synced usage", () => {
     const battles = [
       { id: id("I30"), energyCost: 6, dailyAttempts: 10, isEvent: false },

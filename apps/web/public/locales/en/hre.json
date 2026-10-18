@@ -100,6 +100,7 @@
       "planCompletes": "Today's plan completes this objective.",
       "noEnergy_one": "No energy is left today for more raids. Today's plan covers {{count}} battle.",
       "noEnergy_other": "No energy is left today for more raids. Today's plan covers {{count}} battles.",
+      "noAttempts": "Every battle that fits today's energy has used its attempts today.",
       "noEvent_one": "No campaign event is running: win {{count}} battle manually with a lightning victory.",
       "noEvent_other": "No campaign event is running: win {{count}} battles manually with a lightning victory.",
       "noCandidates": "No raidable campaign battles."
