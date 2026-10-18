@@ -38,3 +38,11 @@ export {
   type TraitTextEntry as NpcTraitTextEntry,
 } from "@/shared/ability-text"
 export { NpcPortrait } from "./ui/npc-portrait"
+export { NpcLevelBadge } from "./ui/npc-level-badge"
+export { NpcStatSummary } from "./ui/npc-stat-summary"
+export {
+  resolveLadderRow,
+  type ResolvedLadderRow,
+} from "./lib/resolve-ladder-row"
+export { npcLibraryHref } from "./lib/library-href"
+export { useNpcsById, type NpcsByIdState } from "./model/use-npcs-by-id"

@@ -9,10 +9,9 @@ import {
 } from "@workspace/ui/components/select"
 import { cn } from "@workspace/ui/lib/utils"
 
-import { NpcPortrait, type NpcLevelOption } from "@/entities/npc"
+import { NpcLevelBadge, NpcPortrait, type NpcLevelOption } from "@/entities/npc"
 import { EntityIcon } from "@/shared/ui"
 
-import { NpcLevelBadge } from "./npc-level-badge"
 import type { NpcVariationOption } from "./npcs-page.view-model"
 
 export function NpcDetailHeader({

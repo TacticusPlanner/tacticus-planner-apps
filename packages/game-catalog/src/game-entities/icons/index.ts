@@ -12,6 +12,7 @@ export {
 export { shardIcon } from "./shard"
 export { characterIcon, mowIcon } from "./character"
 export { npcPortrait } from "./npc"
+export { legendaryEventMap } from "./le-map"
 export { factionIcon } from "./faction"
 export { abilityIcon } from "./ability"
 export {

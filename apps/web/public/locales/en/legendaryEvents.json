@@ -184,6 +184,44 @@
       "body": "Each battle's earned points are its kill score plus its high score, plus the defeat-all bonus and the score of every objective you cleared in it. A battle's maximum adds its full kill score, its full high score, the defeat-all bonus and every objective's score; the lane maximum adds every battle."
     }
   },
+  "battles": {
+    "title": "Battles",
+    "loading": "Loading battles…",
+    "error": "Battle data could not be loaded.",
+    "empty": "No battle data for this lane yet",
+    "battleTitle": "Battle {{number}}",
+    "enemyPower": "Enemy power",
+    "enemyCount_one": "{{formatted}} enemy",
+    "enemyCount_other": "{{formatted}} enemies",
+    "wave": "Wave {{number}}",
+    "round": "Round {{round}}",
+    "wavePower": "Power {{power}}",
+    "noEnemies": "No enemies in this wave",
+    "npcsError": "Enemy levels and stats could not be loaded.",
+    "selector": {
+      "label": "Battle",
+      "complete": "complete",
+      "itemComplete": "{{number}} complete",
+      "previous": "Previous battle",
+      "next": "Next battle",
+      "position": "Battle {{number}} of {{total}}"
+    },
+    "enemy": {
+      "levelUnknown": "Level unknown",
+      "levelStars_one": "{{rank}} {{count}} star",
+      "levelStars_other": "{{rank}} {{count}} stars",
+      "levelWings": "{{rank}} with wings",
+      "npcsLoading": "Enemy details are still loading.",
+      "npcsError": "Enemy details could not be loaded.",
+      "openInLibrary": "Open in Library",
+      "detailDescription": "This enemy's stats at its level in this battle."
+    },
+    "map": {
+      "toggle": "Map",
+      "alt": "Map of {{lane}} battle {{number}}",
+      "unavailable": "Map not available"
+    }
+  },
   "annotations": {
     "maybeClear": "Maybe clear",
     "stopHere": "Stop here",
@@ -370,6 +408,10 @@
         "progressGrid": {
           "title": "Synced progress",
           "content": "Your cleared objectives and points per battle from your last sync, with the lane's points earned against its maximum. Mark an objective you have not cleared as Maybe clear or Stop here, or a whole battle from its row action."
+        },
+        "battles": {
+          "title": "Battles",
+          "content": "Preview any battle of the lane before you play it: its map, its waves round by round and every enemy with its level. Tap an enemy for its stats. It opens on your next battle to play."
         },
         "leaderboard": {
           "title": "Lane leaderboard",

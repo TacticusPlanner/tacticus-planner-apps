@@ -141,7 +141,7 @@ describe("useLegendaryEventTutorial", () => {
     (_form, viewport) => {
       const { desktop, mobile } = eventSteps()
       const steps = viewport === MOBILE ? (mobile ?? desktop) : desktop
-      expect(steps).toHaveLength(13)
+      expect(steps).toHaveLength(14)
       for (const step of steps) {
         for (const height of [40, 400, TALL_TARGET]) {
           for (const tooltip of TOOLTIPS) {

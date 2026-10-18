@@ -184,6 +184,44 @@
       "body": "Die erzielten Punkte eines Kampfes sind seine Kill-Punkte plus sein Highscore, dazu der Bonus für „Alle besiegen“ und die Punkte jedes Ziels, das du darin erfüllt hast. Das Maximum eines Kampfes addiert die vollen Kill-Punkte, den vollen Highscore, den Bonus für „Alle besiegen“ und alle Zielpunkte; das Lane-Maximum addiert alle Kämpfe."
     }
   },
+  "battles": {
+    "title": "Kämpfe",
+    "loading": "Kämpfe werden geladen…",
+    "error": "Die Kampfdaten konnten nicht geladen werden.",
+    "empty": "Für diese Bahn gibt es noch keine Kampfdaten",
+    "battleTitle": "Kampf {{number}}",
+    "enemyPower": "Feindstärke",
+    "enemyCount_one": "{{formatted}} Gegner",
+    "enemyCount_other": "{{formatted}} Gegner",
+    "wave": "Welle {{number}}",
+    "round": "Runde {{round}}",
+    "wavePower": "Stärke {{power}}",
+    "noEnemies": "Keine Gegner in dieser Welle",
+    "npcsError": "Gegnerstufen und -werte konnten nicht geladen werden.",
+    "selector": {
+      "label": "Kampf",
+      "complete": "abgeschlossen",
+      "itemComplete": "{{number}} abgeschlossen",
+      "previous": "Vorheriger Kampf",
+      "next": "Nächster Kampf",
+      "position": "Kampf {{number}} von {{total}}"
+    },
+    "enemy": {
+      "levelUnknown": "Stufe unbekannt",
+      "levelStars_one": "{{rank}} {{count}} Stern",
+      "levelStars_other": "{{rank}} {{count}} Sterne",
+      "levelWings": "{{rank}} mit Flügeln",
+      "npcsLoading": "Die Gegnerdetails werden noch geladen.",
+      "npcsError": "Die Gegnerdetails konnten nicht geladen werden.",
+      "openInLibrary": "In der Bibliothek öffnen",
+      "detailDescription": "Die Werte dieses Gegners auf seiner Stufe in diesem Kampf."
+    },
+    "map": {
+      "toggle": "Karte",
+      "alt": "Karte von {{lane}} Kampf {{number}}",
+      "unavailable": "Karte nicht verfügbar"
+    }
+  },
   "annotations": {
     "maybeClear": "Vielleicht schaffbar",
     "stopHere": "Hier aufhören",
@@ -370,6 +408,10 @@
         "progressGrid": {
           "title": "Synchronisierter Fortschritt",
           "content": "Deine erfüllten Ziele und Punkte pro Kampf aus der letzten Synchronisierung, mit den erzielten Punkten der Lane im Verhältnis zum Maximum. Markiere ein nicht erledigtes Ziel als „Vielleicht schaffbar“ oder „Hier aufhören“ oder einen ganzen Kampf über die Aktion seiner Zeile."
+        },
+        "battles": {
+          "title": "Kämpfe",
+          "content": "Sieh dir jeden Kampf der Bahn an, bevor du ihn spielst: die Karte, die Wellen Runde für Runde und jeden Gegner mit seiner Stufe. Tippe auf einen Gegner, um seine Werte zu sehen. Geöffnet wird dein nächster zu spielender Kampf."
         },
         "leaderboard": {
           "title": "Lane-Rangliste",

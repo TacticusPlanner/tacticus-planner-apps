@@ -5,7 +5,7 @@ import { cn } from "@workspace/ui/lib/utils"
 
 import { EntityIcon } from "@/shared/ui"
 
-import type { NpcStatRow } from "@/entities/npc"
+import type { NpcStatRow } from "../model/types"
 
 /**
  * A ladder row's rank and stars as icons. NPC rows carry the numeric rank index (0 = Stone I, as V1
