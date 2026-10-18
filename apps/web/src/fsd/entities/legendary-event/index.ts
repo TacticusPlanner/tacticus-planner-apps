@@ -282,6 +282,7 @@ export {
   UNTIERED_MULTIPLIER,
   buildHordeTierList,
   effectiveHordeMultiplier,
+  hordeTierName,
   type HordeModeTierList,
   type HordeTierAlliance,
   type HordeTierList,
@@ -297,3 +298,4 @@ export {
   sortedWaves,
 } from "./lib/battle-preview"
 export { useHordeModeTiers } from "./model/use-horde-mode-tiers"
+export { tierToneClass } from "./lib/tier-tone"

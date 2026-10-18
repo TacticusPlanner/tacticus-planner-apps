@@ -322,7 +322,8 @@
       "sortPointsLeft": "Puntos restantes",
       "sortPower": "Poder",
       "estimating": "Estimando…",
-      "pointsScope": "Puntos restantes en todo el carril, todas las batallas"
+      "pointsScope": "Puntos restantes en todo el carril, todas las batallas",
+      "tier": "Nivel {{tier}}"
     },
     "toasts": {
       "reloaded": "Tu plan cambió en otro dispositivo y se ha recargado. Inténtalo de nuevo.",
