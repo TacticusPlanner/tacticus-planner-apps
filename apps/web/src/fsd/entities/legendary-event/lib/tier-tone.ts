@@ -4,6 +4,7 @@ const TIER_TONES: Readonly<Record<string, string>> = {
   A: "border-chart-2 bg-chart-2/20",
   B: "border-chart-1 bg-chart-1/20",
   C: "border-chart-3 bg-chart-3/20",
+  D: "border-chart-5 bg-chart-5/20",
 }
 const UNTIERED_TONE = "border-border bg-muted"
 
