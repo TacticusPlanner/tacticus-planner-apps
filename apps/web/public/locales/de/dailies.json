@@ -332,6 +332,10 @@
           "title": "Punkteprognose",
           "content": "Die Arena-, Onslaught- und Plünderungslauf-Marken, die du bis zum Event-Ende noch nutzen kannst, welchen Schnitt jede für den letzten Meilenstein braucht und wo deine eigenen Schnitte landen. Bearbeite die Schnitte; sie werden für dieses Event gespeichert."
         },
+        "teams": {
+          "title": "Event-Teams",
+          "content": "Teams für die Dauer des Events, aus deinen stärksten Charakteren gebaut, die punktenden zuerst. Onslaught und Plünderungslauf bekommen ein Team pro Allianz; auf dem Handy wählst du den Modus über den Teams. Regeln, welche Feinde zählen, stehen hier."
+        },
         "farm": {
           "title": "Farm-Liste für Event-Punkte",
           "content": "Wo du heute raiden solltest, um Event-Punkte zu sammeln und gleichzeitig deine Ziele voranzubringen, aufgefüllt bis zu deiner heute verbleibenden Energie."
@@ -634,6 +638,21 @@
         "campaign": "Kampagnen-Raids bringen in diesem Event ebenfalls Punkte; sie werden in der Farmliste unten geplant.",
         "syncedAt": "Marken aus deiner Synchronisierung {{when}}, vorausgesetzt du verbrauchst sie, bevor deine Speicher voll sind.",
         "upcoming": "Die Marken setzen volle Speicher zu Event-Beginn voraus und dass du sie verbrauchst, bevor sie voll sind."
+      }
+    },
+    "teams": {
+      "title": "Event-Teams",
+      "description": "Stärkste Teams für die Modi, in denen dieses Event punktet, angeführt von den Charakteren, die punkten. Onslaught und Plünderungslauf bekommen ein Team pro Allianz.",
+      "modeLabel": "Spielmodus",
+      "anyUnit": "Jede Einheit punktet, daher ist das dein stärkstes Team.",
+      "faction": "Deine stärkste Fraktion hier: {{faction}}.",
+      "broadened": "Weniger als fünf dieser Charaktere punkten im Event, daher füllen deine stärksten anderen das Team auf.",
+      "broadenedNone": "Keiner dieser Charaktere punktet im Event, daher ist das dein stärkstes Team.",
+      "hints": {
+        "allowed": "Nur Abschüsse von {{enemies}}-Feinden zählen.",
+        "excluded": "Nur Abschüsse von Feinden, die nicht {{enemies}} sind, zählen.",
+        "allowedExcluded": "Nur Abschüsse von {{enemies}}-Feinden, die nicht {{excluded}} sind, zählen.",
+        "units": "Nur Abschüsse von {{units}} zählen."
       }
     }
   }

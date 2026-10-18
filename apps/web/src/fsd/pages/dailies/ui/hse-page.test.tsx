@@ -13,6 +13,7 @@ import { act, render, screen, within } from "@/test/render"
 import { battle, offPlanBattle, ready } from "@/test/fixtures/daily-raids"
 import { emptyRaidsFilters } from "@/features/daily-raids"
 import { homeScreenEventReadyAt } from "@/test/fixtures/home-screen-event"
+import { hseTeamsFixtureRead } from "@/test/fixtures/hse-teams"
 
 import type { DailiesOutletContext } from "./dailies-layout"
 import { HsePage } from "./hse-page"
@@ -25,6 +26,8 @@ const { mocks } = vi.hoisted(() => ({
     locations: undefined as unknown,
     raidsArgs: [] as unknown[][],
     hseReads: {} as import("@/test/fixtures/hse-event-points").HseFixtureReads,
+    teamsRead: undefined as
+      import("../model/hse-teams-view-model").HseTeamsRead | undefined,
   },
 }))
 
@@ -68,6 +71,14 @@ vi.mock(
     }
   }
 )
+vi.mock("../model/use-hse-team-recommendations", async () => {
+  const { fixtureHseTeams } = await import("@/test/fixtures/hse-teams")
+  return {
+    useHseTeamRecommendations: (
+      ...[instance, points]: Parameters<typeof fixtureHseTeams>
+    ) => fixtureHseTeams(instance, points, mocks.teamsRead),
+  }
+})
 vi.mock("@/entities/planning-setting", () => ({
   PlanningSettingsTrigger: ({
     onClick,
@@ -254,6 +265,7 @@ beforeEach(() => {
   mocks.locations = readyLocations()
   mocks.raidsArgs.length = 0
   mocks.hseReads = {}
+  mocks.teamsRead = hseTeamsFixtureRead()
   act(() => {})
 })
 
@@ -1199,5 +1211,115 @@ describe("HSE event details and projection", () => {
     expect(screen.getByTestId("hse-event-row").className).not.toContain(
       "md:grid-cols-2"
     )
+  })
+})
+
+describe("HSE event teams", () => {
+  const now = Date.now()
+  const below = (first: HTMLElement, second: HTMLElement) =>
+    Boolean(
+      first.compareDocumentPosition(second) & Node.DOCUMENT_POSITION_FOLLOWING
+    )
+
+  it("shows Psyker Boost's seven teams below the projection", () => {
+    mocks.event = readyAt(
+      [entryOf("hse-trait-boost-psyker", now + 43 * HOUR, now + 139 * HOUR)],
+      now
+    )
+    renderHse()
+
+    const teams = screen.getByTestId("hse-teams")
+    expect(teams).toHaveTextContent("hse.teams.title")
+    expect(below(screen.getByTestId("hse-projection"), teams)).toBe(true)
+    expect(within(teams).getByTestId("hse-team-arena")).toBeInTheDocument()
+    for (const mode of ["onslaught", "salvagerun"]) {
+      for (const alliance of ["imperial", "chaos"])
+        expect(
+          within(teams).getByTestId(`hse-team-${mode}-${alliance}`)
+        ).toBeInTheDocument()
+      expect(
+        within(teams).getByTestId(`hse-team-${mode}-xenos-insufficient-track`)
+      ).toBeInTheDocument()
+    }
+  })
+
+  it("sits above the raid lists of a rule-bearing event", () => {
+    mocks.event = readyAt(
+      [entryOf("hse-machine-hunt", now - DAY, now + DAY)],
+      now
+    )
+    renderHse()
+
+    expect(
+      below(screen.getByTestId("hse-teams"), screen.getByTestId("hse-sections"))
+    ).toBe(true)
+  })
+
+  it("hides the section for a past event", () => {
+    mocks.event = readyAt(
+      [
+        entryOf(
+          "hse-trait-boost-flying",
+          now - 15 * DAY,
+          now - 11 * DAY,
+          "occ-past"
+        ),
+        entryOf("hse-machine-hunt", now - DAY, now + DAY, "occ-now"),
+      ],
+      now
+    )
+    renderHse(undefined, "/?event=occ-past")
+
+    expect(screen.getByTestId("hse-status-past")).toBeInTheDocument()
+    expect(screen.queryByTestId("hse-teams")).not.toBeInTheDocument()
+  })
+
+  it("hides the section for a Global event", () => {
+    mocks.event = readyAt(
+      [entryOf("hse-global-operation-imperator", now - DAY, now + DAY)],
+      now
+    )
+    renderHse()
+
+    expect(screen.queryByTestId("hse-teams")).not.toBeInTheDocument()
+  })
+
+  it("shows the shared loading state while the roster loads, keeping the rest of the page", () => {
+    mocks.teamsRead = undefined
+    mocks.event = readyAt(
+      [entryOf("hse-trait-boost-psyker", now - DAY, now + DAY)],
+      now
+    )
+    renderHse()
+
+    expect(screen.getByTestId("hse-teams-loading")).toBeInTheDocument()
+    expect(screen.getByTestId("hse-projection")).toBeInTheDocument()
+  })
+
+  it("shows the shared error state when the roster cannot be read", () => {
+    mocks.teamsRead = { status: "error" }
+    mocks.event = readyAt(
+      [entryOf("hse-trait-boost-psyker", now - DAY, now + DAY)],
+      now
+    )
+    renderHse()
+
+    expect(screen.getByTestId("hse-teams-error")).toBeInTheDocument()
+    expect(screen.getByTestId("hse-event-details")).toBeInTheDocument()
+  })
+
+  it("switches modes with the segmented control on mobile", async () => {
+    const user = userEvent.setup()
+    mocks.isMobile = true
+    mocks.event = readyAt(
+      [entryOf("hse-trait-boost-psyker", now - DAY, now + DAY)],
+      now
+    )
+    renderHse()
+
+    expect(screen.getByTestId("hse-team-arena")).toBeInTheDocument()
+    await user.click(screen.getByTestId("hse-teams-mode-option-salvagerun"))
+    expect(screen.getByTestId("hse-team-salvagerun-imperial")).toBeVisible()
+    expect(screen.queryByTestId("hse-team-arena")).not.toBeInTheDocument()
   })
 })

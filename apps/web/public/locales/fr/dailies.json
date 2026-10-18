@@ -332,6 +332,10 @@
           "title": "Projection des points",
           "content": "Les jetons d'Arène, d'Onslaught et de Course au pillage que vous pouvez encore utiliser avant la fin de l'événement, la moyenne qu'il faut à chacun pour atteindre le dernier palier et où mènent vos propres moyennes. Modifiez les moyennes ; elles sont mémorisées pour cet événement."
         },
+        "teams": {
+          "title": "Équipes de l'événement",
+          "content": "Les équipes à jouer pendant l'événement, composées de vos personnages les plus forts, ceux qui rapportent des points en premier. Onslaught et la Course au pillage ont une équipe par alliance ; sur mobile, choisissez le mode au-dessus des équipes. Toute règle sur les ennemis qui comptent est indiquée ici."
+        },
         "farm": {
           "title": "Liste de farm pour les points d'événement",
           "content": "Où raider aujourd'hui pour gagner des points d'événement tout en faisant avancer vos objectifs, dans la limite de l'énergie qu'il vous reste aujourd'hui."
@@ -634,6 +638,21 @@
         "campaign": "Les raids de campagne rapportent aussi des points dans cet événement ; ils sont planifiés dans la liste de farm ci-dessous.",
         "syncedAt": "Jetons issus de votre synchronisation {{when}}, en supposant que vous les dépensez avant que vos réserves soient pleines.",
         "upcoming": "Les jetons supposent des réserves pleines au début de l'événement et que vous les dépensez avant qu'elles soient pleines."
+      }
+    },
+    "teams": {
+      "title": "Équipes de l'événement",
+      "description": "Équipes les plus fortes pour les modes où cet événement rapporte des points, menées par les personnages qui en rapportent. Onslaught et la Course au pillage ont une équipe par alliance.",
+      "modeLabel": "Mode de jeu",
+      "anyUnit": "Toute unité rapporte des points, voici donc votre équipe la plus forte.",
+      "faction": "Votre faction la plus forte ici : {{faction}}.",
+      "broadened": "Moins de cinq de ces personnages rapportent des points pour l'événement, vos autres personnages les plus forts complètent donc l'équipe.",
+      "broadenedNone": "Aucun de ces personnages ne rapporte de points pour l'événement, voici donc votre équipe la plus forte.",
+      "hints": {
+        "allowed": "Seules les éliminations d'ennemis {{enemies}} comptent.",
+        "excluded": "Seules les éliminations d'ennemis qui ne sont pas {{enemies}} comptent.",
+        "allowedExcluded": "Seules les éliminations d'ennemis {{enemies}} qui ne sont pas {{excluded}} comptent.",
+        "units": "Seules les éliminations de {{units}} comptent."
       }
     }
   }

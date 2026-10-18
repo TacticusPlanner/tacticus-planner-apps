@@ -26,8 +26,10 @@ import {
 } from "@/entities/planning-setting"
 import { ProjectSelect } from "@/entities/project"
 
+import { useHseTeamRecommendations } from "../model/use-hse-team-recommendations"
 import type { DailiesOutletContext } from "./dailies-layout"
 import { useHseTutorial } from "./hse-page.tutorial"
+import { HseTeamsSection } from "./hse-teams/hse-teams-section"
 
 /** The HSE tab's search parameter holding the selected instance key (HSE-only, never carried over). */
 const EVENT_PARAM = "event"
@@ -37,12 +39,13 @@ const EVENT_PARAM = "event"
  * none running, the next one as a labelled preview); the switcher opens any other upcoming or past
  * instance, held in the `event` URL parameter so it survives a reload. Every instance with scoring
  * data gets its event details (tier, description, milestones) and, when running or upcoming and
- * personal, its points projection for Arena, Onslaught and Salvage Run. Only a running or upcoming
- * rule-bearing instance also gets the farm list, the top-10 lists and the header controls (project
- * selector, Raids Filters, Planning Settings, as on Today); the lists honor the persisted Raids
- * Filters shared with Today. Order: status line, details, projection, then the raid lists. Stacked
- * on mobile (farm list, overall top 10, event-campaign top 10); on desktop details and projection
- * share a row above the farm list, which sits beside a column holding both top-10 lists.
+ * personal, its points projection and event teams for Arena, Onslaught and Salvage Run. Only a
+ * running or upcoming rule-bearing instance also gets the farm list, the top-10 lists and the
+ * header controls (project selector, Raids Filters, Planning Settings, as on Today); the lists honor
+ * the persisted Raids Filters shared with Today. Order: status line, details, projection, event
+ * teams, then the raid lists. Stacked on mobile (farm list, overall top 10, event-campaign top 10);
+ * on desktop details and projection share a row above the teams and the farm list, which sits
+ * beside a column holding both top-10 lists.
  */
 export function HsePage() {
   const context = useOutletContext<DailiesOutletContext>()
@@ -64,12 +67,14 @@ export function HsePage() {
   const eventName = useHomeScreenEventName()
   const points = useHseProjection(instance)
   const shown = hseSectionsShown(points)
+  const teams = useHseTeamRecommendations(instance, points)
 
   useHseTutorial({
     hasSwitcher: state.status === "ready",
     hasDetails: shown.details,
     hasMilestones: shown.milestones,
     hasProjection: shown.projection,
+    hasTeams: teams.status !== "hidden",
     hasLists: !!target,
   })
 
@@ -150,8 +155,7 @@ export function HsePage() {
           <PointsProjection hasRaidLists={!!ruleEventId} state={points} />
         </div>
       ) : null}
-      {/* add-hse-team-suggestions: the event team suggestions section goes here, below the
-          details and projection and above the raid lists. */}
+      <HseTeamsSection view={teams} />
       {target && !target.live ? (
         <EventPreviewBanner entry={target.entry} />
       ) : null}

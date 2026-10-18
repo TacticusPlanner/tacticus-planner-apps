@@ -332,6 +332,10 @@
           "title": "Proyección de puntos",
           "content": "Las fichas de Arena, Onslaught y Carrera de Saqueo que aún puedes usar antes de que acabe el evento, la media que necesita cada una para llegar al último hito y adónde llegan tus propias medias. Edita las medias; se recuerdan para este evento."
         },
+        "teams": {
+          "title": "Equipos del evento",
+          "content": "Equipos para jugar mientras dura el evento, formados con tus personajes más fuertes y primero los que puntúan. Onslaught y Carrera de Saqueo tienen un equipo por alianza; en el móvil, elige el modo encima de los equipos. Aquí se indica cualquier regla sobre qué enemigos cuentan."
+        },
         "farm": {
           "title": "Lista de farmeo para puntos de evento",
           "content": "Dónde incursionar hoy para ganar puntos de evento mientras avanzas tus objetivos, ajustado a la energía que te queda hoy."
@@ -634,6 +638,21 @@
         "campaign": "Las incursiones de campaña también dan puntos en este evento; se planifican en la lista de farmeo de abajo.",
         "syncedAt": "Fichas de tu sincronización {{when}}, suponiendo que las gastas antes de que tus reservas se llenen.",
         "upcoming": "Las fichas suponen reservas llenas al empezar el evento y que las gastas antes de que se llenen."
+      }
+    },
+    "teams": {
+      "title": "Equipos del evento",
+      "description": "Equipos más fuertes para los modos en los que puntúa este evento, encabezados por los personajes que puntúan. Onslaught y Carrera de Saqueo tienen un equipo por alianza.",
+      "modeLabel": "Modo de juego",
+      "anyUnit": "Cualquier unidad puntúa, así que este es tu equipo más fuerte.",
+      "faction": "Tu facción más fuerte aquí: {{faction}}.",
+      "broadened": "Menos de cinco de estos personajes puntúan en el evento, así que tus otros personajes más fuertes completan el equipo.",
+      "broadenedNone": "Ninguno de estos personajes puntúa en el evento, así que este es tu equipo más fuerte.",
+      "hints": {
+        "allowed": "Solo cuentan las eliminaciones de enemigos {{enemies}}.",
+        "excluded": "Solo cuentan las eliminaciones de enemigos que no sean {{enemies}}.",
+        "allowedExcluded": "Solo cuentan las eliminaciones de enemigos {{enemies}} que no sean {{excluded}}.",
+        "units": "Solo cuentan las eliminaciones de {{units}}."
       }
     }
   }

@@ -332,6 +332,10 @@
           "title": "Points projection",
           "content": "The Arena, Onslaught and Salvage Run tokens you can still use before the event ends, what each must average to reach the final milestone, and where your own averages land. Edit the averages; they are remembered for this event."
         },
+        "teams": {
+          "title": "Event teams",
+          "content": "Teams to play while the event runs, built from your strongest characters with the ones that score first. Onslaught and Salvage Run get a team per alliance; on a phone, pick the mode above the teams. Any rule about which enemies count is stated here."
+        },
         "farm": {
           "title": "Farm list for event points",
           "content": "Where to raid today to earn event points while feeding your goals, filled to the energy you have left today."
@@ -634,6 +638,21 @@
         "campaign": "Campaign raids also earn points in this event; they are planned in the farm list below.",
         "syncedAt": "Tokens from your sync {{when}}, assuming you spend them before your buckets fill up.",
         "upcoming": "Tokens assume full buckets when the event starts and that you spend them before they fill up."
+      }
+    },
+    "teams": {
+      "title": "Event teams",
+      "description": "Power teams for the modes this event scores in, led by the characters that score. Onslaught and Salvage Run get one team per alliance.",
+      "modeLabel": "Game mode",
+      "anyUnit": "Any unit scores, so this is your strongest team.",
+      "faction": "Your strongest faction here: {{faction}}.",
+      "broadened": "Fewer than five of these characters score for the event, so your strongest others fill the team.",
+      "broadenedNone": "None of these characters score for the event, so this is your strongest team.",
+      "hints": {
+        "allowed": "Only kills of {{enemies}} enemies count.",
+        "excluded": "Only kills of non-{{enemies}} enemies count.",
+        "allowedExcluded": "Only kills of {{enemies}} enemies that are not {{excluded}} count.",
+        "units": "Only kills of {{units}} count."
       }
     }
   }

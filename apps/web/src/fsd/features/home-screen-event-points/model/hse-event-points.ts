@@ -2,6 +2,7 @@ import {
   hseRestrictionPasses,
   parseHseConfig,
   type GameCatalogHseTier,
+  type GameCatalogHseTracker,
   type GameCatalogHseVariant,
 } from "@workspace/game-catalog"
 
@@ -54,6 +55,8 @@ export type HseDetailsView = {
   definitionId: string
   variantKey: string
   scope: GameCatalogHseVariant["scope"]
+  /** The variant's point trackers (the HSE event teams read their game modes and unit filters). */
+  trackers: readonly GameCatalogHseTracker[]
   tier: GameCatalogHseTier
   playerTier: HsePlayerTier | null
   hasTierChoice: boolean
@@ -196,6 +199,7 @@ export function buildHseEventPointsState(input: {
       definitionId: instance.entry.definitionId,
       variantKey: variant.variantKey,
       scope: variant.scope,
+      trackers: variant.trackers,
       tier,
       playerTier: scoring.playerTier,
       hasTierChoice: scoring.hasTierChoice,

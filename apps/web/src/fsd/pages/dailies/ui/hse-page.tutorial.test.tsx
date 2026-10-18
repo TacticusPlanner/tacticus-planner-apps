@@ -45,6 +45,15 @@ vi.mock(
     return { useHseProjection: useFixtureHseProjection }
   }
 )
+vi.mock("../model/use-hse-team-recommendations", async () => {
+  const { fixtureHseTeams, hseTeamsFixtureRead } =
+    await import("@/test/fixtures/hse-teams")
+  return {
+    useHseTeamRecommendations: (
+      ...[instance, points]: Parameters<typeof fixtureHseTeams>
+    ) => fixtureHseTeams(instance, points, hseTeamsFixtureRead()),
+  }
+})
 vi.mock("@/entities/planning-setting", () => ({
   PlanningSettingsTrigger: () => <button type="button" />,
   PlanningSettingsDialog: () => null,
@@ -98,6 +107,7 @@ describe("useHseTutorial", () => {
     hasDetails: true,
     hasMilestones: true,
     hasProjection: true,
+    hasTeams: true,
     hasLists: true,
   }
   const none = {
@@ -105,10 +115,11 @@ describe("useHseTutorial", () => {
     hasDetails: false,
     hasMilestones: false,
     hasProjection: false,
+    hasTeams: false,
     hasLists: false,
   }
 
-  it("registers localized switcher, status, details, milestones, projection, farm list and top-10 steps on desktop and mobile", () => {
+  it("registers localized switcher, status, details, milestones, projection, teams, farm list and top-10 steps on desktop and mobile", () => {
     renderHook(() => useHseTutorial(all))
     const steps = lastSteps()
 
@@ -119,6 +130,7 @@ describe("useHseTutorial", () => {
       '[data-testid="hse-event-details"]',
       '[data-testid="hse-milestones"]',
       '[data-testid="hse-projection"]',
+      '[data-testid="hse-teams"]',
       '[data-testid="hse-raids"]',
       '[data-testid="hse-top-lists"]',
     ])
@@ -136,7 +148,13 @@ describe("useHseTutorial", () => {
       '[data-testid="hse-event-details"]',
       '[data-testid="hse-milestones"]',
       '[data-testid="hse-projection"]',
+      '[data-testid="hse-teams"]',
     ])
+
+    renderHook(() => useHseTutorial({ ...all, hasTeams: false }))
+    expect(lastSteps().desktop.map((step) => step.target)).not.toContain(
+      '[data-testid="hse-teams"]'
+    )
 
     renderHook(() =>
       useHseTutorial({ ...none, hasSwitcher: true, hasDetails: true })
@@ -171,8 +189,11 @@ describe("HSE tour targets", () => {
 
       const steps = stepsForViewport()
       expect(steps[0]?.target).toBe('[data-testid="hse-event-switcher"]')
-      // Machine Hunt also scores in Arena and Salvage Run, so it gets a projection.
-      expect(steps).toHaveLength(7)
+      // Machine Hunt also scores in Arena and Salvage Run, so it gets a projection and teams.
+      expect(steps).toHaveLength(8)
+      expect(steps.map((step) => step.target)).toContain(
+        '[data-testid="hse-teams"]'
+      )
       for (const step of steps) {
         expect(container.querySelector(step.target)).not.toBeNull()
       }
@@ -183,7 +204,7 @@ describe("HSE tour targets", () => {
     ["mobile", 420],
     ["desktop", 1024],
   ])(
-    "targets the details, milestones and projection of an event without lists (%s, %ipx)",
+    "targets the details, milestones, projection and teams of an event without lists (%s, %ipx)",
     (_viewport, width) => {
       setViewportWidth(width)
       mocks.event = readyWith(
@@ -200,6 +221,7 @@ describe("HSE tour targets", () => {
         '[data-testid="hse-event-details"]',
         '[data-testid="hse-milestones"]',
         '[data-testid="hse-projection"]',
+        '[data-testid="hse-teams"]',
       ])
       for (const step of steps) {
         expect(container.querySelector(step.target)).not.toBeNull()

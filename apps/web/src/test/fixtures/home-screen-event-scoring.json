@@ -4987,5 +4987,352 @@
         ]
       }
     ]
+  },
+  "hse-11th-edition-week-2": {
+    "variants": [
+      {
+        "variantKey": "default",
+        "scope": "Personal",
+        "tiers": [
+          {
+            "tier": "High",
+            "milestones": [
+              {
+                "requiredPoints": 60,
+                "rewardId": "gold",
+                "quantity": 50000
+              },
+              {
+                "requiredPoints": 120,
+                "rewardId": "gold",
+                "quantity": 75000
+              },
+              {
+                "requiredPoints": 180,
+                "rewardId": "gold",
+                "quantity": 100000
+              },
+              {
+                "requiredPoints": 280,
+                "rewardId": "seasonalEventCurrencyJune2026",
+                "quantity": 20
+              },
+              {
+                "requiredPoints": 360,
+                "rewardId": "gold",
+                "quantity": 125000
+              },
+              {
+                "requiredPoints": 460,
+                "rewardId": "gold",
+                "quantity": 150000
+              },
+              {
+                "requiredPoints": 580,
+                "rewardId": "gold",
+                "quantity": 200000
+              },
+              {
+                "requiredPoints": 720,
+                "rewardId": "gold",
+                "quantity": 300000
+              },
+              {
+                "requiredPoints": 880,
+                "rewardId": "seasonalEventCurrencyJune2026",
+                "quantity": 50
+              }
+            ],
+            "repeat": {
+              "points": 150,
+              "rewardId": "gold",
+              "quantity": 100000,
+              "cap": null
+            }
+          },
+          {
+            "tier": "Mid",
+            "milestones": [
+              {
+                "requiredPoints": 50,
+                "rewardId": "gold",
+                "quantity": 10000
+              },
+              {
+                "requiredPoints": 100,
+                "rewardId": "gold",
+                "quantity": 20000
+              },
+              {
+                "requiredPoints": 150,
+                "rewardId": "gold",
+                "quantity": 30000
+              },
+              {
+                "requiredPoints": 250,
+                "rewardId": "seasonalEventCurrencyJune2026",
+                "quantity": 20
+              },
+              {
+                "requiredPoints": 330,
+                "rewardId": "gold",
+                "quantity": 60000
+              },
+              {
+                "requiredPoints": 430,
+                "rewardId": "gold",
+                "quantity": 100000
+              },
+              {
+                "requiredPoints": 550,
+                "rewardId": "gold",
+                "quantity": 200000
+              },
+              {
+                "requiredPoints": 690,
+                "rewardId": "gold",
+                "quantity": 300000
+              },
+              {
+                "requiredPoints": 850,
+                "rewardId": "seasonalEventCurrencyJune2026",
+                "quantity": 50
+              }
+            ],
+            "repeat": {
+              "points": 150,
+              "rewardId": "gold",
+              "quantity": 60000,
+              "cap": null
+            }
+          },
+          {
+            "tier": "Low",
+            "milestones": [
+              {
+                "requiredPoints": 35,
+                "rewardId": "gold",
+                "quantity": 1000
+              },
+              {
+                "requiredPoints": 70,
+                "rewardId": "gold",
+                "quantity": 2000
+              },
+              {
+                "requiredPoints": 105,
+                "rewardId": "gold",
+                "quantity": 3500
+              },
+              {
+                "requiredPoints": 180,
+                "rewardId": "seasonalEventCurrencyJune2026",
+                "quantity": 20
+              },
+              {
+                "requiredPoints": 240,
+                "rewardId": "gold",
+                "quantity": 5000
+              },
+              {
+                "requiredPoints": 360,
+                "rewardId": "gold",
+                "quantity": 10000
+              },
+              {
+                "requiredPoints": 540,
+                "rewardId": "gold",
+                "quantity": 20000
+              },
+              {
+                "requiredPoints": 790,
+                "rewardId": "gold",
+                "quantity": 35000
+              },
+              {
+                "requiredPoints": 1140,
+                "rewardId": "seasonalEventCurrencyJune2026",
+                "quantity": 50
+              }
+            ],
+            "repeat": {
+              "points": 250,
+              "rewardId": "gold",
+              "quantity": 10000,
+              "cap": null
+            }
+          }
+        ],
+        "trackers": [
+          {
+            "kind": "KillUnits",
+            "points": 2,
+            "pointsByRarity": null,
+            "gameModes": {
+              "allowed": ["Onslaught"],
+              "disallowed": null
+            },
+            "enemy": {
+              "tags": {
+                "allowed": null,
+                "disallowed": ["Summon", "Steppable"]
+              },
+              "factionIds": null,
+              "unitIds": null
+            },
+            "player": null
+          }
+        ],
+        "modifiers": [
+          {
+            "kind": "UnitXp",
+            "multiplier": 3.0,
+            "sameFactionTeam": false,
+            "gameModes": {
+              "allowed": ["Onslaught"],
+              "disallowed": null
+            },
+            "player": {
+              "tags": null,
+              "factionIds": {
+                "allowed": ["BloodAngels", "Orks"],
+                "disallowed": null
+              },
+              "unitIds": null
+            }
+          }
+        ]
+      },
+      {
+        "variantKey": "global-blood-angels",
+        "scope": "Global",
+        "tiers": [
+          {
+            "tier": "Default",
+            "milestones": [
+              {
+                "requiredPoints": 6500000,
+                "rewardId": "ShardsBloodAngels",
+                "quantity": 25
+              },
+              {
+                "requiredPoints": 13000000,
+                "rewardId": "stamina",
+                "quantity": 100
+              },
+              {
+                "requiredPoints": 19500000,
+                "rewardId": "seasonalEventCurrencyJune2026",
+                "quantity": 40
+              },
+              {
+                "requiredPoints": 26000000,
+                "rewardId": "eventSummoningToken_BloodAngels",
+                "quantity": 1
+              }
+            ],
+            "repeat": {
+              "points": 2600000,
+              "rewardId": "ShardsBloodAngels",
+              "quantity": 10,
+              "cap": null
+            }
+          }
+        ],
+        "trackers": [
+          {
+            "kind": "KillUnits",
+            "points": 2,
+            "pointsByRarity": null,
+            "gameModes": {
+              "allowed": ["Onslaught"],
+              "disallowed": null
+            },
+            "enemy": {
+              "tags": {
+                "allowed": null,
+                "disallowed": ["Summon", "Steppable"]
+              },
+              "factionIds": null,
+              "unitIds": null
+            },
+            "player": {
+              "tags": null,
+              "factionIds": {
+                "allowed": ["BloodAngels"],
+                "disallowed": null
+              },
+              "unitIds": null
+            }
+          }
+        ],
+        "modifiers": []
+      },
+      {
+        "variantKey": "global-orks",
+        "scope": "Global",
+        "tiers": [
+          {
+            "tier": "Default",
+            "milestones": [
+              {
+                "requiredPoints": 6500000,
+                "rewardId": "ShardsOrks",
+                "quantity": 25
+              },
+              {
+                "requiredPoints": 13000000,
+                "rewardId": "stamina",
+                "quantity": 100
+              },
+              {
+                "requiredPoints": 19500000,
+                "rewardId": "seasonalEventCurrencyJune2026",
+                "quantity": 40
+              },
+              {
+                "requiredPoints": 26000000,
+                "rewardId": "eventSummoningToken_Orks",
+                "quantity": 1
+              }
+            ],
+            "repeat": {
+              "points": 2600000,
+              "rewardId": "ShardsOrks",
+              "quantity": 10,
+              "cap": null
+            }
+          }
+        ],
+        "trackers": [
+          {
+            "kind": "KillUnits",
+            "points": 2,
+            "pointsByRarity": null,
+            "gameModes": {
+              "allowed": ["Onslaught"],
+              "disallowed": null
+            },
+            "enemy": {
+              "tags": {
+                "allowed": null,
+                "disallowed": ["Summon", "Steppable"]
+              },
+              "factionIds": null,
+              "unitIds": null
+            },
+            "player": {
+              "tags": null,
+              "factionIds": {
+                "allowed": ["Orks"],
+                "disallowed": null
+              },
+              "unitIds": null
+            }
+          }
+        ],
+        "modifiers": []
+      }
+    ]
   }
 }
