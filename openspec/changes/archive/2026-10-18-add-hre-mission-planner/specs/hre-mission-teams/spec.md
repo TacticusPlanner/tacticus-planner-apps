@@ -9,6 +9,7 @@ Suggests a team from the player's synced roster for HRE mission objectives that 
 ### Requirement: Lineup-restricted objectives get a team suggestion
 
 When the current mission has a `winWithAllianceLineup`, `winWithoutSummons`, `useAbilitiesFeatured` or `featuredDamage` objective below its target, the tab SHALL suggest one 5-unit team from the synced roster, built in Power mode with the shared team engine. The rules are:
+
 - **All-alliance lineup:** only units of the featured hero's alliance.
 - **Summon-free:** excludes every unit with an ability that summons units, according to the ability rules text.
 - **Featured-hero objective:** the featured hero leads the team when the player has unlocked them.

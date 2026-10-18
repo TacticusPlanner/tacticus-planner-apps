@@ -1,10 +1,10 @@
-# Spec Delta
+# hre-event-pace Specification
 
 ## Purpose
 
 Projects where the player's HRE ends up: event points, then event currency, then chest tier, then event shards, then the featured hero's rarity and stars. It also says what pace and leaderboard rank a chosen target needs.
 
-## ADDED Requirements
+## Requirements
 
 ### Requirement: The player records event points and leaderboard rank
 
@@ -23,6 +23,7 @@ On a running HRE, the tab SHALL let the player enter their current event points 
 ### Requirement: The game's HRE reward tables ship with the app
 
 The projection SHALL use these tables as fixed app data. They come from the HRE wiki page:
+
 - milestone currency per event-point threshold (100 points → 55, up to 1,000,000 points → 265; cumulative 6,090)
 - daily currency payout per rank bracket ("new position" column)
 - week 1 and week 2 crate currency and shards per bracket
@@ -33,6 +34,7 @@ The projection SHALL use these tables as fixed app data. They come from the HRE 
 The minimum of each "X to X+1" shard range SHALL be used.
 
 Assumptions:
+
 - Daily payouts arrive on days 2 to 15, which is 14 payouts. Week 1 and week 2 crates arrive once each.
 - Each completed mission gives 100 currency. The Bonus mission gives none.
 - The rank bracket stays constant for the rest of the event.
@@ -44,6 +46,7 @@ Assumptions:
 ### Requirement: The projection runs from points to shards in one common chain
 
 The projected end points SHALL be the points so far plus the average per elapsed day multiplied by the days left. Elapsed time is measured in days from the start, at least 1. The projection SHALL then compute:
+
 - projected currency: milestone currency for the projected points, plus 100 × 20 for missions, plus 14 daily payouts at the rank bracket, plus both weekly crates' currency
 - the highest chest tier whose cumulative cost fits that currency
 - the projected shards: that tier's cumulative shards plus both weekly crates' shards
@@ -71,6 +74,7 @@ Each intermediate value SHALL be shown. Shards are the common unit.
 ### Requirement: The player picks a target and sees what it needs
 
 The player SHALL be able to pick a target step: unlock, a star, or an ascension, up to Legendary blue star. The default is the first step the projection does not reach. For the target at the current bracket, the tab SHALL show:
+
 - the shards needed
 - the chest tier needed: the lowest tier whose shards plus the crate shards reach the target
 - the currency for that tier

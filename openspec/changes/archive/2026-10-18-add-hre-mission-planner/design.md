@@ -15,10 +15,12 @@
 ## Goals / Non-Goals
 
 **Goals:**
+
 - One HRE tab that a player keeps open during the 14 days: what mission am I on, what does it need, and where do I raid.
 - A new HRE needs only a calendar occurrence (featured hero and window), with no mission edits.
 
 **Non-Goals:**
+
 - An instance switcher for past HREs.
 - Legendary-character events, which have a different structure. They are left out, as Severyn decided.
 - Syncing progress across devices.
@@ -28,17 +30,20 @@
 ### D1. The mission list is a constant in the app, worded by alliance
 
 `features/hre-missions/model/hre-missions.ts` holds the 21 missions as data. A mission is `{ number: 1..21, objectives: [Objective, Objective] }`. An objective is `{ kind, target, qualifier? }`:
+
 - `kind` is one of `campaignWins`, `campaignRaids`, `arenaBattles`, `guildRaids`, `onslaught`, `salvageRuns`, `lightningVictories`, `killEnemies`, `killWithMelee`, `killWithRanged`, `killWithAlliance`, `killFaction`, `damage`, `abilityDamage`, `damageType`, `featuredDamage`, `useAbilities`, `useAbilitiesAlliance`, `useAbilitiesFeatured`, `heal`, `winWithoutSummons` or `winWithAllianceLineup`.
 - `qualifier` is `{ faction }` or `{ damageType }`. Kinds ending in `Alliance` or `Lineup` take the featured hero's alliance, and `*Featured` kinds take the hero's name, both at render time.
 
 The wording comes from i18n templates per kind, with `{{target}}`, `{{alliance}}` and `{{hero}}`. The targets follow Zapspitta's mission sheet, which matches the wiki's current list.
-- *Alternative:* serve the missions from the API catalog per occurrence. That was rejected because the lists do not differ between events, so it would add a dataset, a merge and a schema for nothing.
+
+- _Alternative:_ serve the missions from the API catalog per occurrence. That was rejected because the lists do not differ between events, so it would add a dataset, a merge and a schema for nothing.
 
 ### D2. Slices: tracker in a new `features/hre-missions`, raids in `features/daily-raids`
 
 The raid plan needs the eligibility, attempts, energy, filter and goal-need plumbing that is private to `daily-raids`. So `planMissionRaids` (pure, in a `.ts` file) and `HreRaidsSection` live there, next to `planEventFarm`. `daily-raids` exports them. The section takes `battlesToGo` and `missionNumber` as props.
 
 `features/hre-missions` owns:
+
 - instance selection
 - mission resolution and wording
 - local-storage progress
@@ -48,7 +53,8 @@ The raid plan needs the eligibility, attempts, energy, filter and goal-need plum
 It exports `useHreInstance`, `useHreProgress`, `MissionTracker`, `MissionGuidance`, `selectCampaignObjective` and `remainingCampaignBattles`.
 
 `pages/dailies/ui/hre-page.tsx` composes both slices and passes the numbers between them, so no feature imports a sibling. The token buckets come from the synced player data entity, not from `home-screen-event-points`.
-- *Alternative:* extend `planEventFarm` with a "minimise energy" mode. That was rejected because its candidate rule ("earns points") and its order key are different, and mixing them would blur both specs.
+
+- _Alternative:_ extend `planEventFarm` with a "minimise energy" mode. That was rejected because its candidate rule ("earns points") and its order key are different, and mixing them would blur both specs.
 
 ### D3. Raid order: energy ascending, then goal value, then battle id
 
@@ -78,6 +84,7 @@ The milestone, daily-payout, weekly-crate, chest and shard tables live in `featu
 ### D8. Mission teams in `pages/dailies/model`, next to the HSE teams
 
 `useHreTeamRecommendations` mirrors `useHseTeamRecommendations`. It reads the roster and the character catalog, and calls `buildTeamRecommendations` in Power mode with size 5:
+
 - **All-alliance:** the roster is filtered by alliance.
 - **Featured hero:** a priority pool holding only the featured hero, with `leadWithPools`.
 - **Summon-free:** excludes the summoner set. That set is built once from the `npcAbilityText` English descriptions of each unit's active and passive abilities, where the text opens a `<style="Summon">` span after the verb "summon". The verb check skips abilities that only buff existing summons.

@@ -1,8 +1,13 @@
 import { createContext, useContext } from "react"
 
-/** "A Home Screen Event is running", shared by `HseLiveProvider`; false without a provider. */
-export const HseLiveContext = createContext(false)
+/** Which event signals are running, shared by `HseLiveProvider`; all false without a provider. */
+export type EventLiveSignals = { hse: boolean; hre: boolean }
 
-export function useIsHseLive(): boolean {
+export const HseLiveContext = createContext<EventLiveSignals>({
+  hse: false,
+  hre: false,
+})
+
+export function useEventLiveSignals(): EventLiveSignals {
   return useContext(HseLiveContext)
 }

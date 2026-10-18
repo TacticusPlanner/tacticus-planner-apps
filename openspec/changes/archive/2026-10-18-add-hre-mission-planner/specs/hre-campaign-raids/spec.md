@@ -11,6 +11,7 @@ Tells the player where to raid today so that the current HRE mission's campaign-
 The raid suggestions section SHALL be shown on a running HRE when the current mission has an objective of kind `campaignWins` ("Win N campaign battles"), `campaignRaids` ("Raid N campaign battles") or `lightningVictories` ("Win N lightning victories") whose progress is below its target. The battles still needed SHALL be the target minus the recorded progress. Otherwise, the section SHALL name the next mission that has a campaign objective and its target, or say that no campaign missions are left. It SHALL NOT list raids for a later mission.
 
 Assumptions:
+
 - A raid counts as a won campaign battle, so it advances both `campaignWins` and `campaignRaids` objectives by one.
 - Mission progress counts only while that mission is the current one; battles done earlier do not carry forward.
 
@@ -39,6 +40,7 @@ Assumptions:
 The raids still planned on Today SHALL count toward the battles to go before any HRE suggestion is made. They are Today's plan entries for the same Dailies project selection that have not been done yet. Their energy and attempts SHALL be reserved. The HRE energy budget SHALL be: Planning Settings daily energy, minus energy really spent today, minus the energy of Today's remaining planned raids, never below 0. The attempts left on a node SHALL be reduced by Today's planned raids on it.
 
 Assumptions:
+
 - Every raid on Today's plan is a campaign battle won, so it advances the objective by one.
 - Energy per raid is the battle's `energyCost`. Indomitus I06 to I14 cost 3, I15 to I29 cost 5, other campaign nodes cost 6 and Elite nodes cost 10.
 
@@ -60,6 +62,7 @@ Assumptions:
 ### Requirement: Candidate locations follow raid eligibility and today's limits
 
 A campaign battle SHALL be a candidate only if all of these hold:
+
 1. The player's campaign progress unlocks it, which includes event-campaign nodes only while their event runs.
 2. Its energy cost is above 0.
 3. It has attempts left today after Today's planned raids on it.
@@ -68,6 +71,7 @@ A campaign battle SHALL be a candidate only if all of these hold:
 Attempts left SHALL be the synced attempts left for that node, or the catalog's daily cap for the node when that is not known.
 
 Assumptions:
+
 - The daily cap per node comes from the catalog (`dailyAttempts`): 3 for Indomitus I06 to I14, 10 for every other Standard and Mirror node (including I15), and 6 for Elite nodes. Severyn confirmed the Indomitus value.
 - Synced attempts left take precedence over the catalog cap.
 
@@ -117,6 +121,7 @@ Candidates SHALL be ordered by energy cost ascending. Within the same cost, a no
 When the current mission has a `lightningVictories` objective below its target, the section SHALL suggest raids on event-campaign nodes only, because a raid there counts as a lightning victory. It SHALL use the same budget, Today's-plan reservation, attempts, filters, ordering (energy, then goals, then id) and fill as campaign objectives. The battles to go are the lightning victories still needed. When no campaign event is running, the section SHALL say so and suggest winning battles manually.
 
 Assumptions:
+
 - A raid on an event-campaign node counts as a lightning victory. A raid on a standing campaign node does not.
 - Event-campaign nodes are raidable only while their campaign event runs (the existing eligibility rule).
 - A planned raid on Today counts toward the objective only when it is on an event-campaign node.
@@ -125,11 +130,6 @@ Assumptions:
 
 - **GIVEN** mission 11 at 10 / 25 lightning victories, the campaign event of 2026-10-15 to 2026-10-29 running, no event nodes on Today's plan, and enough energy
 - **THEN** 15 raids are suggested, all on that event campaign's nodes, cheapest first, and no standing-campaign node is listed
-
-#### Scenario: Mission covering both objectives
-
-- **GIVEN** a current mission with both a `campaignWins` and a `lightningVictories` objective open
-- **THEN** event-campaign raids are suggested first for the lightning objective, and they also count toward the campaign wins. Standing-campaign raids fill only the wins still left
 
 #### Scenario: No campaign event running
 

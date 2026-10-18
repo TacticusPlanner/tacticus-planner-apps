@@ -9,6 +9,7 @@ Helps the player clear HRE missions quickly. It gives a short, community-guide t
 ### Requirement: Each objective type has a localized tip
 
 Every objective kind the app knows SHALL have one short localized tip. Tips SHALL be shown under the current mission's objectives. On any other mission, they SHALL be shown on demand by expanding that mission. An unknown objective kind SHALL show no tip. The tips are static copy, not computed. They SHALL include at least:
+
 - campaign wins and raids: use the 3-energy Indomitus nodes, and try to reach mission 19 in week 1
 - Arena: save 7 to 8 tokens before day 1
 - Guild Raid: keep 2 tokens for mission 8
@@ -32,6 +33,7 @@ Every objective kind the app knows SHALL have one short localized tip. Tips SHAL
 For Arena, Guild Raid, Onslaught and Salvage Run, the tab SHALL show the battles that the current mission (less its recorded progress) and all later missions still need of that mode. It SHALL also show the player's current synced tokens for the mode. A mode whose need exceeds the current tokens SHALL be marked "short". A mode with no synced bucket SHALL show "not unlocked". A mode with no remaining need SHALL be hidden. Tokens are compared as a count of battles: one battle uses one token.
 
 Assumptions:
+
 - An `arenaBattles`, `guildRaids`, `onslaught` or `salvageRuns` objective is satisfied by battles of that mode only, and each battle uses one token.
 - Token regeneration during the event is not projected. The comparison uses what is available now.
 

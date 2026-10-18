@@ -13,6 +13,8 @@
     "raidsDescription": "Gasta la energía de hoy en tus objetivos activos por orden de prioridad.",
     "hse": "EPI",
     "hseDescription": "Evento de pantalla de inicio: haz incursiones donde el evento actual da puntos",
+    "hre": "ELH",
+    "hreDescription": "Evento de lanzamiento de héroe: sigue tus misiones y haz incursiones para ellas con la menor energía",
     "shops": "Tiendas",
     "shopsDescription": "Consulta las rotaciones y compras de la tienda",
     "guild-raids": "Incursiones de gremio",
@@ -343,6 +345,38 @@
         "top": {
           "title": "Mejores ubicaciones",
           "content": "Las ubicaciones que dan más puntos de evento por incursión y por energía, sin tener en cuenta tus objetivos."
+        }
+      }
+    },
+    "hre": {
+      "steps": {
+        "header": {
+          "title": "El evento",
+          "content": "El héroe del evento, su alianza y cuándo termina el evento. Antes de que empiece, la pestaña muestra una vista previa del siguiente."
+        },
+        "tracker": {
+          "title": "Tus misiones",
+          "content": "Elige la misión en la que estás y escribe el progreso de sus dos objetivos. El progreso se guarda en este navegador y solo para este evento."
+        },
+        "allMissions": {
+          "title": "Todas las misiones",
+          "content": "Abre la lista completa de misiones. Cada una se despliega con sus consejos."
+        },
+        "raids": {
+          "title": "Incursiones de campaña",
+          "content": "Dónde hacer incursiones hoy para el objetivo de campaña de la misión actual, primero la energía más barata, tras las incursiones que ya están en el plan de hoy. El resumen de abajo cuenta las batallas de campaña que quedan en todo el evento."
+        },
+        "team": {
+          "title": "Equipo de misión",
+          "content": "Un equipo de tu plantilla para misiones que limitan la alineación o necesitan al héroe del evento."
+        },
+        "tokens": {
+          "title": "Fichas necesarias",
+          "content": "Batallas de Arena, incursión de gremio, Onslaught y Carrera de Saqueo que necesitan las misiones restantes, frente a tus fichas actuales."
+        },
+        "pace": {
+          "title": "Ritmo del evento",
+          "content": "Introduce tus puntos del evento y tu puesto para estimar moneda, nivel de cofre y fragmentos, y elige un objetivo para ver los puntos al día que necesita."
         }
       }
     }

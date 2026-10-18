@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next"
 import { cn } from "@workspace/ui/lib/utils"
 
-import { useIsHseLive } from "./hse-live-context"
+import { useEventLiveSignals } from "./hse-live-context"
 import type { NavItem, NavSubItem } from "./nav-items"
 
 /**
@@ -23,8 +23,13 @@ export function NavLiveDot({
   className?: string
 }) {
   const { t } = useTranslation("common")
-  const isHseLive = useIsHseLive()
-  const isLive = item.liveIndicator === "hse" && isHseLive
+  const signals = useEventLiveSignals()
+  const isLive =
+    item.liveIndicator === "events"
+      ? signals.hse || signals.hre
+      : item.liveIndicator
+        ? signals[item.liveIndicator]
+        : false
 
   if (!isLive || hidden) return null
 
