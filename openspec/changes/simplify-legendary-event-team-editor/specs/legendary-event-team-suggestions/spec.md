@@ -10,7 +10,7 @@ For a lane, the planner SHALL build proposals, client side and never stored, as 
 - **Candidates.** For a subset, the units the lane allows that satisfy every objective in it. Units the synced roster lacks are excluded while **Only unlocked** is on.
 - **Order.** Candidates are ordered: units with an Active Unlock, Ascension, Rank or Ability goal first, only while **Prefer units with goals** is on; then effective power on the synced roster (Stage 5), descending; then points per battle, descending; then localized name.
 - **Proposal.** The first five candidates, in that order, with no reserve, when the subset has at least three candidates; a subset with fewer than three has no proposal (a team needs three characters, `legendary-event-team-size`). Its covered objectives are derived from its members (every objective all of them satisfy), and its depth is its Stage 5 team estimate.
-- **Support.** A member is a useful Healer when it has the Healer trait and another member lacks the Mechanical trait, and a useful Mechanic when it has the Mechanic trait and another member has the Mechanical trait. A five-member proposal without a useful Healer takes the first candidate outside it with the Healer trait in place of its last member (candidate order) that is neither Healer nor Mechanic, when the result has a useful Healer; then the same for a Mechanic. Members stay in candidate order.
+- **Support.** A member is a useful Healer when it has the Healer trait and another member lacks the Mechanical trait, and a useful Mechanic when it has the Mechanic trait and another member has the Mechanical trait. A five-member proposal without a useful Healer takes the first candidate outside it that the player holds with the Healer trait in place of its last member (candidate order) that is neither Healer nor Mechanic and whose swap gives a useful Healer while keeping any useful Mechanic, trying earlier such members if needed; then the same for a Mechanic. Members stay in candidate order.
 - **Merging.** Proposals with the same member set are one proposal. A proposal whose member set equals an existing team's on the lane is dropped.
 - **Gain.** A proposal's gain is the lane's reachable points (see `legendary-event-upgrade-impact`) with the proposal added to the lane's existing teams, minus without it. Proposals with a gain of 0 are dropped.
 - **Ranking.** Gain descending, then depth descending, then member count descending, then the lowest catalog index among its covered objectives.
@@ -88,7 +88,7 @@ When clear estimates are unavailable, Suggest teams SHALL be disabled with the r
 
 - **GIVEN** the worked example
 - **WHEN** the user presses Use this team on the Melee team proposal
-- **THEN** the team editor opens as a new team with Incisus, Calgar and Titus selected in that order, Ultramarines and Melee covered, the name "Ultramarines · Melee" and the Melee chip selected in the picker; nothing is saved until the user presses Save
+- **THEN** the team editor opens as a new team with Incisus, Titus and Calgar selected in that order, Ultramarines and Melee covered, the name "Ultramarines · Melee" and the Melee chip selected in the picker; nothing is saved until the user presses Save
 
 #### Scenario: Cancel saves nothing
 

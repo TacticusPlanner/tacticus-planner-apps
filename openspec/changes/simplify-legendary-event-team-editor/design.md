@@ -51,7 +51,7 @@ The Members `<h3>` with the count badge sits on the left of a flex row and `Clea
 After taking the first five candidates of a subset (in the existing order):
 
 - A member is a **useful Healer** when it has the `Healer` trait and another member lacks `Mechanical`. A member is a **useful Mechanic** when it has the `Mechanic` trait and another member has `Mechanical`.
-- If no member is a useful Healer, take the first candidate outside the team with `Healer` that satisfies the subset. Replace the last member in candidate order that is not a Healer or Mechanic, but only if the resulting team has a useful Healer. Then apply the same step for a Mechanic.
+- If no member is a useful Healer, take the first candidate outside the team with `Healer` that satisfies the subset and that the player holds (a locked unit adds no power and cannot be fielded). Replace the last member in candidate order that is not a Healer or Mechanic, but only if the resulting team has a useful Healer and still has a useful Mechanic if it had one; otherwise try the earlier such members, and swap nothing if none works. Then apply the same step for a Mechanic.
 - Teams with fewer than five members already hold every candidate, so nothing is swapped.
 - The member order stays candidate order. Merging, the cleared drop, gain and ranking run on the swapped team.
 

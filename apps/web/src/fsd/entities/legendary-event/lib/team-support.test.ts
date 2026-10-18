@@ -96,6 +96,65 @@ describe("withSupport (spec: team suggestions per lane, Support)", () => {
     ])
   })
 
+  it("keeps the Healer useful when a Mechanic comes in", () => {
+    const candidates = [
+      unit("healer", "Healer"),
+      unit("m1", "Mechanical"),
+      unit("m2", "Mechanical"),
+      unit("m3", "Mechanical"),
+      unit("plain"),
+      unit("mechanic", "Mechanic", "Mechanical"),
+    ]
+    // Replacing Plain would leave the Healer only Mechanical allies, so M3 goes instead.
+    expect(ids(withSupport(candidates.slice(0, 5), candidates, 5))).toEqual([
+      "healer",
+      "m1",
+      "m2",
+      "plain",
+      "mechanic",
+    ])
+  })
+
+  it("keeps the Mechanic useful when a Healer comes in", () => {
+    const candidates = [
+      unit("mechanic", "Mechanic"),
+      unit("c"),
+      unit("d"),
+      unit("e"),
+      unit("tank", "Mechanical"),
+      unit("healer", "Healer"),
+    ]
+    // Replacing the tank would leave the Mechanic nothing to repair, so E goes instead.
+    expect(ids(withSupport(candidates.slice(0, 5), candidates, 5))).toEqual([
+      "mechanic",
+      "c",
+      "d",
+      "tank",
+      "healer",
+    ])
+  })
+
+  it("swaps in only a support that passes canSupport", () => {
+    const candidates = [
+      unit("a"),
+      unit("b"),
+      unit("c"),
+      unit("d"),
+      unit("e"),
+      unit("locked", "Healer"),
+    ]
+    expect(
+      ids(
+        withSupport(
+          candidates.slice(0, 5),
+          candidates,
+          5,
+          (candidate) => candidate.id !== "locked"
+        )
+      )
+    ).toEqual(["a", "b", "c", "d", "e"])
+  })
+
   it("leaves a short team alone (it already holds every candidate)", () => {
     const candidates = [unit("a"), unit("b"), unit("c")]
     expect(ids(withSupport(candidates, candidates, 5))).toEqual(["a", "b", "c"])

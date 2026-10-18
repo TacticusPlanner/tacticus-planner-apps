@@ -70,8 +70,8 @@ const memberKey = (ids: readonly string[]) => [...ids].sort().join("|")
 /**
  * Proposed teams for a lane (spec: team suggestions per lane): for every one- or two-objective
  * subset, the five best units satisfying all of it (none when fewer than three do: a team needs
- * three characters), with a useful Healer or Mechanic swapped in where the team lacks one, ranked by the lane reachable points each adds over the existing teams. Never
- * stored.
+ * three characters), with a held, useful Healer or Mechanic swapped in where the team lacks one,
+ * ranked by the lane reachable points each adds over the existing teams. Never stored.
  */
 export function suggestLaneTeams(
   input: TeamSuggestionsInput
@@ -84,7 +84,7 @@ export function suggestLaneTeams(
     .map((unit) => ({
       unit,
       id: unit.id,
-      traits: unit.traits ?? [],
+      traits: unit.traits,
       satisfied: new Set(objectivesSatisfied(unit, lane)),
       // A unit without power data sorts as 0 (its teams have no estimate).
       power: unitEffectivePower(unit.id, roster, config) ?? 0,
@@ -118,11 +118,13 @@ export function suggestLaneTeams(
     const subsetCandidates = candidates.filter((candidate) =>
       subset.every((index) => candidate.satisfied.has(index))
     )
-    // A useful Healer or Mechanic replaces the weakest plain member (spec: Support).
+    // A useful Healer or Mechanic the player holds replaces the weakest plain member (spec:
+    // Support); a locked one would add no power and could not be fielded.
     const members = withSupport(
       subsetCandidates.slice(0, SUGGESTION_TEAM_SIZE),
       subsetCandidates,
-      SUGGESTION_TEAM_SIZE
+      SUGGESTION_TEAM_SIZE,
+      (candidate) => roster.has(candidate.id)
     ).map((candidate) => candidate.id)
     if (members.length < MIN_TEAM_MEMBERS) continue
     const key = memberKey(members)

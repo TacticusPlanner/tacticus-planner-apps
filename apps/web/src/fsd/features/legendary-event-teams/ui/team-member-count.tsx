@@ -21,7 +21,7 @@ export function TeamMemberCount({
       className={cn(
         "rounded-full border px-2 py-0.5 text-sm font-semibold tabular-nums",
         count === MAX_TEAM_MEMBERS && "border-primary text-primary",
-        pulse > 0 && "animate-[pulse_0.4s_ease-in-out_2]"
+        pulse > 0 && "motion-safe:animate-[pulse_0.4s_ease-in-out_2]"
       )}
       data-pulse={pulse > 0 ? pulse : undefined}
       data-testid="team-picker-count"

@@ -29,36 +29,54 @@ function hasUsefulSupport(
 function swapInSupport(
   team: readonly SupportCandidate[],
   candidates: readonly SupportCandidate[],
-  trait: typeof HEALER | typeof MECHANIC
+  trait: typeof HEALER | typeof MECHANIC,
+  canSupport: (candidate: SupportCandidate) => boolean
 ): SupportCandidate[] {
   if (hasUsefulSupport(team, trait)) return [...team]
   const support = candidates.find(
-    (candidate) => has(candidate, trait) && !team.includes(candidate)
+    (candidate) =>
+      has(candidate, trait) &&
+      !team.includes(candidate) &&
+      canSupport(candidate)
   )
-  const replaced = team.findLastIndex(
-    (member) => !has(member, HEALER) && !has(member, MECHANIC)
-  )
-  if (!support || replaced === -1) return [...team]
-  const swapped = team.filter((_, index) => index !== replaced)
-  swapped.push(support)
-  // Members stay in candidate order.
-  swapped.sort((a, b) => candidates.indexOf(a) - candidates.indexOf(b))
-  return hasUsefulSupport(swapped, trait) ? swapped : [...team]
+  if (!support) return [...team]
+  const other = trait === HEALER ? MECHANIC : HEALER
+  const keepOther = hasUsefulSupport(team, other)
+  // The last member that is neither Healer nor Mechanic goes first; an earlier one is tried when
+  // that swap would leave no one to treat for the new support or for the support already there.
+  for (let replaced = team.length - 1; replaced >= 0; replaced--) {
+    const member = team[replaced]!
+    if (has(member, HEALER) || has(member, MECHANIC)) continue
+    const swapped = team.filter((_, index) => index !== replaced)
+    swapped.push(support)
+    // Members stay in candidate order.
+    swapped.sort((a, b) => candidates.indexOf(a) - candidates.indexOf(b))
+    if (
+      hasUsefulSupport(swapped, trait) &&
+      (!keepOther || hasUsefulSupport(swapped, other))
+    )
+      return swapped
+  }
+  return [...team]
 }
 
 /**
  * The support step of team suggestions (spec: team suggestions per lane): a full team without a
  * useful Healer takes the first candidate outside it with the Healer trait in place of its last
- * member that is neither Healer nor Mechanic, when that gives it a useful Healer; then the same
- * for a Mechanic. `candidates` is the subset's candidates in order and `team` their first five; a
- * shorter team already holds every candidate.
+ * member that is neither Healer nor Mechanic, when that gives it a useful Healer and keeps a
+ * useful Mechanic it had (else an earlier such member, else no swap); then the same for a
+ * Mechanic. `candidates` is the subset's candidates in order and `team` their first five; a
+ * shorter team already holds every candidate. Only a candidate passing `canSupport` (the
+ * suggestions pass "the player holds it") is swapped in.
  */
 export function withSupport<T extends SupportCandidate>(
   team: readonly T[],
   candidates: readonly T[],
-  teamSize: number
+  teamSize: number,
+  canSupport: (candidate: T) => boolean = () => true
 ): T[] {
   if (team.length < teamSize) return [...team]
-  const healed = swapInSupport(team, candidates, HEALER)
-  return swapInSupport(healed, candidates, MECHANIC) as T[]
+  const allowed = canSupport as (candidate: SupportCandidate) => boolean
+  const healed = swapInSupport(team, candidates, HEALER, allowed)
+  return swapInSupport(healed, candidates, MECHANIC, allowed) as T[]
 }
