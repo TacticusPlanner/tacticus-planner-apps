@@ -1,11 +1,16 @@
 import { describe, expect, it } from "vitest"
 
-import { lysanderEvent, utharEvent } from "@/test/fixtures/legendary-events"
+import {
+  lysanderAlphaProgressRecord,
+  lysanderEvent,
+  utharEvent,
+} from "@/test/fixtures/legendary-events"
 
 import { buildLanePointsModel } from "./lane-points-model"
 import {
   buildSyncedLaneProgress,
   objectiveClearedCounts,
+  objectiveClearedThrough,
 } from "./synced-lane-progress"
 
 const model = buildLanePointsModel(lysanderEvent.alpha)
@@ -234,5 +239,24 @@ describe("objectiveClearedCounts", () => {
   it("yields zeros for a lane without progress", () => {
     const view = buildSyncedLaneProgress(model, null)
     expect(objectiveClearedCounts(view, 5)).toEqual([0, 0, 0, 0, 0])
+  })
+})
+
+describe("objectiveClearedThrough", () => {
+  const progress = buildSyncedLaneProgress(model, lysanderAlphaProgressRecord)
+  // Catalog indexes: 0 Eviscerate, 2 Flying, 4 No Resilient.
+  it("is true when every battle 1..depth has the objective cleared", () => {
+    expect(objectiveClearedThrough(model, progress, 4, 13)).toBe(true)
+  })
+
+  it("is false once the depth reaches a battle where it is open", () => {
+    expect(objectiveClearedThrough(model, progress, 4, 14)).toBe(false)
+    expect(objectiveClearedThrough(model, progress, 0, 6)).toBe(false)
+    expect(objectiveClearedThrough(model, progress, 2, 1)).toBe(false)
+  })
+
+  it("is false for a depth below 1 or without progress", () => {
+    expect(objectiveClearedThrough(model, progress, 4, 0)).toBe(false)
+    expect(objectiveClearedThrough(model, undefined, 4, 3)).toBe(false)
   })
 })

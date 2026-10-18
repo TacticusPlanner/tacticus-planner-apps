@@ -1,6 +1,11 @@
 import type { CSSProperties } from "react"
 import { useTranslation } from "react-i18next"
-import { GripVertical, MoreHorizontal, TriangleAlert } from "lucide-react"
+import {
+  Check,
+  GripVertical,
+  MoreHorizontal,
+  TriangleAlert,
+} from "lucide-react"
 import { characterIcon } from "@workspace/game-catalog"
 import type { UnitId } from "@workspace/game-domain"
 import { Button } from "@workspace/ui/components/button"
@@ -27,6 +32,7 @@ import { useDebouncedCommit } from "@/shared/lib"
 import { EntityIcon, type SortableRenderProps } from "@/shared/ui"
 import { useUnitName } from "@/shared/unit-name"
 
+import { PointsLeft, TeamPower } from "./team-card-figures"
 import type { TeamCardMember, TeamCardViewModel } from "./teams.view-model"
 
 const FULL_TEAM = 5
@@ -209,24 +215,46 @@ export function TeamCard({
             if (!objective) return null
             const { label, icon } = objectiveLabel(objective)
             const muted = !entry.derived
+            const cleared = !muted && entry.clearedThrough
+            const clearedLabel =
+              cleared && card.displayedDepth !== null
+                ? t("teams.clearedThrough", { battle: card.displayedDepth })
+                : undefined
             return (
               <li
                 className={cn(
                   "flex max-w-full min-w-0 items-center gap-1.5 rounded-full border bg-muted/40 py-0.5 pr-2 pl-1 text-xs",
-                  muted && "border-dashed text-muted-foreground"
+                  muted && "border-dashed text-muted-foreground",
+                  cleared && "text-muted-foreground"
                 )}
+                data-cleared={cleared ? "true" : undefined}
                 data-muted={muted ? "true" : undefined}
                 data-testid="team-card-objective"
                 key={entry.index}
-                title={muted ? t("teams.notCovered") : undefined}
+                title={muted ? t("teams.notCovered") : clearedLabel}
               >
-                <ObjectiveIcon className="size-4" icon={icon} muted={muted} />
+                <ObjectiveIcon
+                  className="size-4"
+                  icon={icon}
+                  muted={muted || cleared}
+                />
                 <span className="truncate">{label}</span>
-                <span className="font-semibold tabular-nums">
+                <span
+                  className={cn(
+                    "font-semibold tabular-nums",
+                    cleared && "line-through"
+                  )}
+                >
                   {number.format(entry.points)}
                 </span>
+                {cleared ? (
+                  <Check aria-hidden className="size-3.5 shrink-0" />
+                ) : null}
                 {muted ? (
                   <span className="sr-only">{t("teams.notCovered")}</span>
+                ) : null}
+                {clearedLabel ? (
+                  <span className="sr-only">{clearedLabel}</span>
                 ) : null}
               </li>
             )
@@ -235,14 +263,10 @@ export function TeamCard({
       ) : null}
 
       <div className="flex flex-wrap items-center justify-between gap-2">
-        {/* Points per battle and Team power share one line when it fits, and wrap between the
-            two (never inside either) when it does not (French at 375px). */}
+        {/* Points left and Team power share one line when it fits, and wrap between the two
+            (never inside either) when it does not (French at 375px). */}
         <span className="flex min-w-0 flex-wrap items-baseline gap-x-3 text-sm font-medium tabular-nums">
-          <span className="whitespace-nowrap" data-testid="team-card-points">
-            {t("teams.pointsPerBattle", {
-              points: number.format(card.pointsPerBattle),
-            })}
-          </span>
+          <PointsLeft card={card} format={number.format} />
           <TeamPower card={card} format={number.format} />
         </span>
         <div className="flex min-w-0 flex-wrap items-start justify-end gap-2">
@@ -290,46 +314,6 @@ export function TeamCard({
         </div>
       </div>
     </li>
-  )
-}
-
-/** The team's summed power beside points per battle: a placeholder dash while the power data
- *  loads, "—" with the reason for screen readers when the roster is not synced or the power data
- *  is unavailable. */
-function TeamPower({
-  card,
-  format,
-}: {
-  card: Pick<TeamCardViewModel, "teamPower" | "teamPowerStatus">
-  format: (value: number) => string
-}) {
-  const { t } = useTranslation("legendaryEvents")
-  const state = card.teamPowerStatus
-  const reason =
-    state === "noRoster"
-      ? t("teams.power.noRoster")
-      : state === "unavailable"
-        ? t("teams.power.unavailable")
-        : undefined
-  return (
-    <span
-      className="whitespace-nowrap text-muted-foreground"
-      data-state={state}
-      data-testid="team-card-power"
-      title={reason}
-    >
-      {t("teams.power.label")}{" "}
-      {card.teamPower === null ? (
-        <>
-          <span aria-hidden className="text-foreground">
-            —
-          </span>
-          {reason ? <span className="sr-only">{reason}</span> : null}
-        </>
-      ) : (
-        <span className="text-foreground">{format(card.teamPower)}</span>
-      )}
-    </span>
   )
 }
 

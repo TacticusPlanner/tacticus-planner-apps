@@ -1,6 +1,6 @@
 import { useEffect, useId, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
-import { Lock } from "lucide-react"
+import { Check, Lock } from "lucide-react"
 import { characterIcon } from "@workspace/game-catalog"
 import type { UnitId } from "@workspace/game-domain"
 import { Button } from "@workspace/ui/components/button"
@@ -11,6 +11,7 @@ import { cn } from "@workspace/ui/lib/utils"
 import { UnitGoalBadge } from "@/entities/goal"
 import {
   ObjectiveIcon,
+  objectiveClearedThrough,
   useObjectiveLabel,
   type TeamSuggestion,
 } from "@/entities/legendary-event"
@@ -169,12 +170,29 @@ export function TeamSuggestionsDialog({
             data-testid="team-suggestion-list"
           >
             {shown.map((suggestion, index) => {
+              // An objective cleared in every battle the proposal reaches earns nothing: it keeps
+              // its chip with the cleared mark and leaves the reason line (spec: suggestions do
+              // not rely on objectives already cleared).
               const covered = suggestion.coveredObjectiveIndexes.flatMap(
                 (objectiveIndex) => {
                   const label = objectives.get(objectiveIndex)
-                  return label ? [{ objectiveIndex, ...label }] : []
+                  return label
+                    ? [
+                        {
+                          objectiveIndex,
+                          ...label,
+                          cleared: objectiveClearedThrough(
+                            source.model,
+                            source.progress,
+                            objectiveIndex,
+                            suggestion.depth
+                          ),
+                        },
+                      ]
+                    : []
                 }
               )
+              const scoring = covered.filter((objective) => !objective.cleared)
               return (
                 <li
                   aria-label={t("suggestions.rank", { rank: index + 1 })}
@@ -220,15 +238,40 @@ export function TeamSuggestionsDialog({
                     })}
                   </ul>
                   <ul className="flex flex-wrap gap-1.5">
-                    {covered.map(({ objectiveIndex, label, icon }) => (
+                    {covered.map(({ objectiveIndex, label, icon, cleared }) => (
                       <li
-                        className="flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs"
+                        className={cn(
+                          "flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs",
+                          cleared && "text-muted-foreground"
+                        )}
+                        data-cleared={cleared ? "true" : undefined}
                         data-index={objectiveIndex}
                         data-testid="team-suggestion-objective"
                         key={objectiveIndex}
+                        title={
+                          cleared
+                            ? t("teams.clearedThrough", {
+                                battle: suggestion.depth,
+                              })
+                            : undefined
+                        }
                       >
-                        <ObjectiveIcon className="size-3.5" icon={icon} />
+                        <ObjectiveIcon
+                          className="size-3.5"
+                          icon={icon}
+                          muted={cleared}
+                        />
                         {label}
+                        {cleared ? (
+                          <>
+                            <Check aria-hidden className="size-3 shrink-0" />
+                            <span className="sr-only">
+                              {t("teams.clearedThrough", {
+                                battle: suggestion.depth,
+                              })}
+                            </span>
+                          </>
+                        ) : null}
                       </li>
                     ))}
                   </ul>
@@ -237,13 +280,18 @@ export function TeamSuggestionsDialog({
                     data-testid="team-suggestion-reason"
                     id={`${reasonIdPrefix}-${index}`}
                   >
-                    {t("suggestions.reason", {
-                      objectives: list.format(
-                        covered.map((objective) => objective.label)
-                      ),
-                      depth: suggestion.depth,
-                      points: number.format(suggestion.gainPoints),
-                    })}
+                    {scoring.length > 0
+                      ? t("suggestions.reason", {
+                          objectives: list.format(
+                            scoring.map((objective) => objective.label)
+                          ),
+                          depth: suggestion.depth,
+                          points: number.format(suggestion.gainPoints),
+                        })
+                      : t("suggestions.reasonNoObjectives", {
+                          depth: suggestion.depth,
+                          points: number.format(suggestion.gainPoints),
+                        })}
                   </p>
                   <Button
                     aria-describedby={`${reasonIdPrefix}-${index}`}

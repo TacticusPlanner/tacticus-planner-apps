@@ -256,7 +256,6 @@
     "incomplete": "Il faut au moins {{min}} personnages",
     "reserve": "Réserve",
     "members": "Membres",
-    "pointsPerBattle": "{{points}} points par combat",
     "power": {
       "label": "Puissance de l'équipe",
       "unavailable": "Données de puissance indisponibles",
@@ -317,11 +316,14 @@
       "setReserve": "Mettre {{name}} en réserve",
       "unsetReserve": "Retirer {{name}} de la réserve",
       "full": "Une équipe compte au plus cinq membres. Retires-en un pour en ajouter un autre.",
-      "points": "{{points}} pts",
+      "points": "{{points}} pts restants",
       "objectives": "Classer par objectif",
       "objectiveChip_one": "{{objective}} : {{count}} unité le remplit",
       "objectiveChip_other": "{{objective}} : {{count}} unités le remplissent",
-      "doesNotSatisfy": "Ne remplit pas : {{objectives}}"
+      "doesNotSatisfy": "Ne remplit pas : {{objectives}}",
+      "sort": "Trier",
+      "sortPointsLeft": "Points restants",
+      "sortPower": "Puissance"
     },
     "toasts": {
       "reloaded": "Ton plan a été modifié sur un autre appareil et a été rechargé. Réessaie.",
@@ -335,7 +337,10 @@
       "cancel": "Annuler"
     },
     "lastRun": "Dernière manche : réussi jusqu'au combat {{battle}}",
-    "lastRunNone": "Dernière manche : aucun combat réussi"
+    "lastRunNone": "Dernière manche : aucun combat réussi",
+    "pointsLeft": "{{points}} points restants · combats 1–{{depth}}",
+    "pointsLeftNeedsDepth": "Définissez la profondeur pour voir les points restants",
+    "clearedThrough": "Déjà validé jusqu'au combat {{battle}}"
   },
   "objective": {
     "minHits_one": "Min. {{count}} coup",
@@ -399,7 +404,7 @@
         },
         "teams": {
           "title": "Équipes",
-          "content": "Composez les équipes que vous comptez jouer sur cette voie. Chaque carte montre ses membres, les objectifs couverts, ses points par combat et jusqu'où elle devrait aller : une estimation tirée de votre effectif synchronisé, jusqu'à ce que vous définissiez vous-même une profondeur. Utilisez Ajouter une équipe pour en créer une. Suggérer des équipes propose des équipes de votre effectif, classées selon les points qu'elles ajoutent."
+          "content": "Composez les équipes que vous comptez jouer sur cette voie. Chaque carte montre ses membres, les objectifs couverts, jusqu'où elle devrait aller et les points qu'il lui reste jusqu'à ce combat : une estimation tirée de votre effectif synchronisé, jusqu'à ce que vous définissiez vous-même une profondeur. Utilisez Ajouter une équipe pour en créer une. Suggérer des équipes propose des équipes de votre effectif, classées selon les points qu'elles ajoutent."
         },
         "upgradeImpact": {
           "title": "Impact des améliorations",
@@ -539,7 +544,8 @@
     "empty": "Aucune équipe n'ajoute de points à vos équipes actuelles",
     "needsEstimates": "Nécessite des estimations de progression",
     "loading": "Chargement des suggestions…",
-    "rank": "Suggestion {{rank}}"
+    "rank": "Suggestion {{rank}}",
+    "reasonNoObjectives": "Franchit ~{{depth}} · +{{points}} points par rapport à vos équipes"
   },
   "tokenPlan": {
     "nextToken": {

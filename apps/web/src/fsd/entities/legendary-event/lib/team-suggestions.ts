@@ -8,7 +8,10 @@ import {
 import type { LanePointsModel } from "./lane-points-model"
 import { objectivesSatisfied } from "./objective-match"
 import { laneReachablePoints, type LaneReach } from "./reachable-points"
-import type { LaneProgressView } from "./synced-lane-progress"
+import {
+  objectiveClearedThrough,
+  type LaneProgressView,
+} from "./synced-lane-progress"
 import { derivedTeamCoverage } from "./team-coverage"
 import { MIN_TEAM_MEMBERS } from "./team-size"
 import { unitLanePotential } from "./unit-potential"
@@ -122,6 +125,15 @@ export function suggestLaneTeams(
     const covered = derivedTeamCoverage(members, lane, input.units)
     const depth =
       teamClearEstimate(members, battlePowers, roster, config)?.depth ?? 0
+    // A subset objective already cleared through the depth narrowed the candidates for nothing
+    // (spec: suggestions do not rely on objectives already cleared).
+    if (
+      subset.some((index) =>
+        objectiveClearedThrough(model, progress, index, depth)
+      )
+    ) {
+      continue
+    }
     const gainPoints =
       laneReachablePoints(model, progress, [
         ...input.existingTeams,

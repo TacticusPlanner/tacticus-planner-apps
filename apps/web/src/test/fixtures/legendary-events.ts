@@ -14,3 +14,27 @@ export const utharEvent =
   fixtures.uthar as unknown as LegendaryEventStorageModel
 export const farsightEvent =
   fixtures.farsight as unknown as LegendaryEventStorageModel
+
+// Lysander Alpha as synced in the team-planning feedback: battles 1–13 have defeat-all and No
+// Resilient cleared at full kill and high scores, Eviscerate in battles 5–6 only, Flying nowhere;
+// battle 14 onward is untouched. Objective ids: 0 defeat-all, 1 Eviscerate, 2 Suppressive Fire,
+// 3 Flying, 4 Min 5 Hits, 5 No Resilient.
+const lysanderAlphaCleared = [
+  ...Array.from({ length: 4 }, () => [0, 2, 4, 5]),
+  [0, 1, 2, 4, 5],
+  [0, 1, 2, 4, 5],
+  [0, 2, 5],
+  [0, 2, 5],
+  [0, 4, 5],
+  [0, 4, 5],
+  [0, 5],
+  [0, 5],
+  [0, 5],
+]
+export const lysanderAlphaProgressRecord = {
+  encounters: lysanderAlphaCleared.map((objectivesCleared, index) => ({
+    objectivesCleared,
+    highScore: lysanderEvent.alpha.battlesPoints[index]!,
+    encounterPoints: lysanderEvent.alpha.battlesPoints[index]!,
+  })),
+}

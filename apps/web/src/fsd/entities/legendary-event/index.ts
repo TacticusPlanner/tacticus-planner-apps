@@ -70,6 +70,7 @@ export {
 export {
   buildSyncedLaneProgress,
   objectiveClearedCounts,
+  objectiveClearedThrough,
   type BattleProgressView,
   type LaneProgressView,
 } from "./lib/synced-lane-progress"
@@ -177,7 +178,7 @@ export {
   type LegendaryEventRunResolutionInput,
 } from "./lib/run-resolution"
 export { derivedTeamCoverage, reconcileCoverage } from "./lib/team-coverage"
-export { teamPointsPerBattle } from "./lib/team-points"
+export { teamPointsLeft } from "./lib/team-points"
 export { MIN_TEAM_MEMBERS, isCompleteTeam } from "./lib/team-size"
 export { type NamedTeam } from "./lib/team-display-name"
 export { useTeamDisplayName } from "./model/use-team-display-name"

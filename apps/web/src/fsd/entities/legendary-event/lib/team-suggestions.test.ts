@@ -168,3 +168,35 @@ describe("suggestLaneTeams (spec worked examples)", () => {
     )
   })
 })
+
+describe("suggestLaneTeams (objectives already cleared)", () => {
+  // Ultramarines cleared in battles 1..through, everything else as in the worked example.
+  const ultramarinesClearedThrough = (through: number) => ({
+    ...UTHAR_ALPHA_PROGRESS,
+    battles: UTHAR_ALPHA_PROGRESS.battles.map((battle) =>
+      battle.index < through
+        ? {
+            ...battle,
+            cleared: battle.cleared.map((isCleared, column) =>
+              column === ULTRAMARINES + 1 ? true : isCleared
+            ),
+          }
+        : battle
+    ),
+  })
+
+  it("drops the {Ultramarines} proposal when Ultramarines is cleared through its depth 6", () => {
+    const subsets = suggest({ progress: ultramarinesClearedThrough(6) }).map(
+      (suggestion) => suggestion.objectiveIndexes
+    )
+    expect(subsets).not.toContainEqual([ULTRAMARINES])
+    expect(subsets).toContainEqual([MELEE])
+  })
+
+  it("keeps it when battle 6 still has Ultramarines open", () => {
+    const subsets = suggest({ progress: ultramarinesClearedThrough(5) }).map(
+      (suggestion) => suggestion.objectiveIndexes
+    )
+    expect(subsets).toContainEqual([ULTRAMARINES])
+  })
+})

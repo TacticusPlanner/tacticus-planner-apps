@@ -1,5 +1,6 @@
-import { useId, useRef, useState, type FormEvent } from "react"
+import { useId, useMemo, useRef, useState, type FormEvent } from "react"
 import { useTranslation } from "react-i18next"
+import { Check } from "lucide-react"
 import { Button } from "@workspace/ui/components/button"
 import { Input } from "@workspace/ui/components/input"
 import { Spinner } from "@workspace/ui/components/spinner"
@@ -8,8 +9,12 @@ import { cn } from "@workspace/ui/lib/utils"
 
 import {
   ObjectiveIcon,
+  buildLanePointsModel,
+  objectiveClearedThrough,
+  teamEffectiveDepth,
   useObjectiveLabel,
   type ClearEstimate,
+  type LaneProgressView,
   type LegendaryEventLane,
   type LegendaryEventLaneId,
   type LegendaryEventRosterUnit,
@@ -44,7 +49,7 @@ import {
   clearDepthSummary,
   editStartsFromEstimate,
 } from "../model/clear-depth-display"
-import type { PickerGoalsPreview } from "../model/team-picker"
+import type { PickerEstimates, PickerGoalsPreview } from "../model/team-picker"
 import type {
   DepthEstimateContext,
   PlanMutationOutcome,
@@ -62,6 +67,11 @@ import { TeamUnitPicker } from "./team-unit-picker"
  * unavailable and the footer says a team needs three characters. The dialog closes only once
  * the save succeeded — after a conflict or an error the draft stays for another try; after a
  * conflict (the plan was reloaded, this save was not applied) the dialog says so.
+ *
+ * The body reads Name, Covered objectives, Clear depth, then Members, so the team's result sits
+ * above the long unit grid; a covered objective already cleared in every battle 1..the draft's
+ * depth carries a cleared mark (spec: covered objectives already cleared through the depth are
+ * marked) and stays tickable.
  *
  * The footer stays in view while the body scrolls (design D2): the member count, the covered
  * objectives as read-only chips, the depth line and the actions, all read from the same draft as
@@ -86,6 +96,8 @@ export function TeamEditorDialog({
   initialMemberUnitIds,
   goalsPreview,
   goalLines,
+  progress,
+  estimates,
 }: {
   open: boolean
   onOpenChange: (open: boolean) => void
@@ -113,6 +125,10 @@ export function TeamEditorDialog({
   goalsPreview?: PickerGoalsPreview
   /** A unit's goal badge lines; absent or empty shows no badge. */
   goalLines?: (unitId: string) => readonly string[]
+  /** The lane's synced progress; undefined while it loads or failed (nothing is cleared). */
+  progress?: LaneProgressView
+  /** The lane's unit clear estimates and power inputs for the picker; absent when unavailable. */
+  estimates?: PickerEstimates
 }) {
   const { t, i18n } = useTranslation("legendaryEvents")
   const objectiveLabel = useObjectiveLabel()
@@ -149,6 +165,8 @@ export function TeamEditorDialog({
   const owned = roster
     ? new Set(roster.map((entry) => entry.unitId as string))
     : undefined
+  const model = useMemo(() => buildLanePointsModel(lane), [lane])
+  const draftDepth = teamEffectiveDepth(draft.depth, estimate)
   const lockedMemberCount = owned
     ? draft.memberUnitIds.filter((unitId) => !owned.has(unitId)).length
     : 0
@@ -227,25 +245,6 @@ export function TeamEditorDialog({
             ) : null}
           </div>
 
-          <section className="flex flex-col gap-2">
-            <h3 className="text-sm font-medium">{t("teams.editor.members")}</h3>
-            <TeamUnitPicker
-              goalLines={goalLines}
-              goalsPreview={goalsPreview}
-              lane={lane}
-              memberUnitIds={draft.memberUnitIds}
-              onToggleMember={handleToggleMember}
-              onToggleReserve={(unitId) =>
-                setDraft((current) => toggleReserve(current, unitId, context))
-              }
-              onlyUnlockedDefault={onlyUnlockedDefault}
-              reserveUnitId={draft.reserveUnitId}
-              roster={roster}
-              searchInputRef={searchInputRef}
-              units={units}
-            />
-          </section>
-
           <section
             className="flex flex-col gap-2"
             data-testid="team-editor-coverage"
@@ -266,6 +265,17 @@ export function TeamEditorDialog({
                 .map((objective) => {
                   const { label, icon } = objectiveLabel(objective)
                   const isChecked = checked.includes(objective.index)
+                  const cleared =
+                    draftDepth !== null &&
+                    objectiveClearedThrough(
+                      model,
+                      progress,
+                      objective.index,
+                      draftDepth
+                    )
+                  const clearedLabel = cleared
+                    ? t("teams.clearedThrough", { battle: draftDepth })
+                    : undefined
                   return (
                     <li key={objective.index}>
                       <button
@@ -276,6 +286,7 @@ export function TeamEditorDialog({
                             ? "border-primary bg-primary/10"
                             : "bg-transparent text-muted-foreground line-through"
                         )}
+                        data-cleared={cleared ? "true" : undefined}
                         data-index={objective.index}
                         data-testid="team-editor-objective"
                         onClick={() =>
@@ -283,6 +294,7 @@ export function TeamEditorDialog({
                             toggleObjective(current, objective.index)
                           )
                         }
+                        title={clearedLabel}
                         type="button"
                       >
                         <ObjectiveIcon icon={icon} muted={!isChecked} />
@@ -292,6 +304,16 @@ export function TeamEditorDialog({
                         <span className="font-semibold tabular-nums">
                           {number.format(objective.points)}
                         </span>
+                        {cleared ? (
+                          <Check
+                            aria-hidden
+                            className="size-3.5 shrink-0 text-muted-foreground"
+                            data-testid="team-editor-objective-cleared"
+                          />
+                        ) : null}
+                        {clearedLabel ? (
+                          <span className="sr-only">{clearedLabel}</span>
+                        ) : null}
                       </button>
                     </li>
                   )
@@ -313,6 +335,27 @@ export function TeamEditorDialog({
                 setDraft((current) => ({ ...current, depth }))
               }
               value={draft.depth}
+            />
+          </section>
+
+          <section className="flex flex-col gap-2">
+            <h3 className="text-sm font-medium">{t("teams.editor.members")}</h3>
+            <TeamUnitPicker
+              estimates={estimates}
+              goalLines={goalLines}
+              goalsPreview={goalsPreview}
+              lane={lane}
+              memberUnitIds={draft.memberUnitIds}
+              onToggleMember={handleToggleMember}
+              onToggleReserve={(unitId) =>
+                setDraft((current) => toggleReserve(current, unitId, context))
+              }
+              onlyUnlockedDefault={onlyUnlockedDefault}
+              progress={progress}
+              reserveUnitId={draft.reserveUnitId}
+              roster={roster}
+              searchInputRef={searchInputRef}
+              units={units}
             />
           </section>
         </ResponsiveDialogBody>

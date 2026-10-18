@@ -15,7 +15,7 @@ import {
   toggleMember,
   toggleReserve,
 } from "../model/team-editor-draft"
-import type { PickerGoalsPreview } from "../model/team-picker"
+import type { PickerEstimates, PickerGoalsPreview } from "../model/team-picker"
 import { TeamUnitPicker } from "./team-unit-picker"
 
 vi.mock("dexie-react-hooks", () => ({
@@ -27,6 +27,12 @@ vi.mock("dexie-react-hooks", () => ({
     }, [])
     return value
   },
+}))
+// Effective power by unit for the Power sort; the real formula needs the unit-power dataset.
+const POWER: Record<string, number> = { unitA: 10_000, unitR: 30_000 }
+vi.mock("@/entities/legendary-event", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/entities/legendary-event")>()),
+  unitEffectivePower: (unitId: string) => POWER[unitId] ?? 0,
 }))
 vi.mock("@workspace/game-catalog/queries", () => ({
   getCharactersMap: async () =>
@@ -41,16 +47,19 @@ function Harness({
   roster,
   goalsPreview,
   goalLines,
+  estimates,
 }: {
   roster?: { unitId: string }[]
   goalsPreview?: PickerGoalsPreview
   goalLines?: (unitId: string) => readonly string[]
+  estimates?: PickerEstimates
 }) {
   const [draft, setDraft] = useState(() =>
     initialEditorDraft(undefined, 1, context)
   )
   return (
     <TeamUnitPicker
+      estimates={estimates}
       goalLines={goalLines}
       goalsPreview={goalsPreview}
       lane={teamLane}
@@ -71,6 +80,13 @@ function Harness({
   )
 }
 
+/** A synced roster entry: Gold 1 at Epic. */
+const owned = (unitId: string) => ({
+  unitId,
+  rank: "Gold1",
+  progressionIndex: "Epic:RedOneStar",
+})
+
 const tile = (unitId: string) =>
   screen
     .getAllByTestId("team-picker-tile")
@@ -83,17 +99,17 @@ describe("TeamUnitPicker", () => {
     i18n = await createTestI18n("en")
   })
 
-  it("lists only the lane's allowed units with their points per battle", () => {
+  it("lists only the lane's allowed units with their points left", () => {
     render(<Harness />, { wrapper: i18nWrapper(i18n) })
     const ids = screen
       .getAllByTestId("team-picker-tile")
       .map((element) => element.dataset.unit)
     expect(ids).not.toContain(teamUnits.x.id)
     expect(ids).toHaveLength(6)
-    // A: 30 + 20 + 25 + 15.
+    // A, no progress: (30 + 20 + 25 + 15) × 18 battles.
     expect(
       within(tile(teamUnits.a.id)).getByTestId("team-picker-points")
-    ).toHaveTextContent("90 pts")
+    ).toHaveTextContent("1,620 pts left")
   })
 
   it("refuses a sixth member and pulses the count badge", () => {
@@ -131,7 +147,7 @@ describe("TeamUnitPicker", () => {
   })
 
   it("searches by name and hides locked units when only unlocked is on", async () => {
-    render(<Harness roster={[{ unitId: teamUnits.a.id }]} />, {
+    render(<Harness roster={[owned(teamUnits.a.id)]} />, {
       wrapper: i18nWrapper(i18n),
     })
     await screen.findByText("Beth")
@@ -177,7 +193,7 @@ describe("TeamUnitPicker", () => {
           clearsOf: (unitId) => (unitId === teamUnits.b.id ? 2 : 6),
           onToggle,
         }}
-        roster={[{ unitId: teamUnits.a.id }]}
+        roster={[owned(teamUnits.a.id)]}
       />,
       { wrapper: i18nWrapper(i18n) }
     )
@@ -186,7 +202,7 @@ describe("TeamUnitPicker", () => {
     expect(tile(teamUnits.b.id)).not.toHaveAttribute("data-locked")
     expect(tile(teamUnits.b.id)).toHaveAttribute("data-preview", "true")
     expect(
-      within(tile(teamUnits.b.id)).getByTestId("team-picker-preview-state")
+      within(tile(teamUnits.b.id)).getByTestId("team-picker-unit-state")
     ).toHaveTextContent("~2")
     expect(
       within(tile(teamUnits.b.id)).getByTestId("unit-goal-badge")
@@ -196,8 +212,83 @@ describe("TeamUnitPicker", () => {
     expect(onToggle).toHaveBeenCalledWith(false)
     expect(tile(teamUnits.b.id)).toHaveAttribute("data-locked", "true")
     expect(
-      screen.queryByTestId("team-picker-preview-state")
+      within(tile(teamUnits.b.id)).queryByTestId("team-picker-unit-state")
     ).not.toBeInTheDocument()
+    // The synced roster's owned unit keeps its rarity and rank, with no preview marker.
+    expect(
+      within(tile(teamUnits.a.id)).getByTestId("team-picker-unit-state")
+    ).toBeInTheDocument()
+    expect(
+      screen.queryByTestId("team-picker-preview-marker")
+    ).not.toBeInTheDocument()
+  })
+
+  describe("unit strength and sort", () => {
+    const withPower: PickerEstimates = {
+      clearsOf: (unitId) => (unitId === teamUnits.a.id ? 9 : null),
+      config: { unitPower: {} } as never,
+    }
+    const listed = () =>
+      screen.getAllByTestId("team-picker-tile").map((el) => el.dataset.unit)
+
+    it("shows an owned unit's rarity, rank and estimated clears without Goals Preview", async () => {
+      render(
+        <Harness estimates={withPower} roster={[owned(teamUnits.a.id)]} />,
+        { wrapper: i18nWrapper(i18n) }
+      )
+      await screen.findByText("Beth")
+      const state = within(tile(teamUnits.a.id)).getByTestId(
+        "team-picker-unit-state"
+      )
+      expect(state).toHaveTextContent("~9")
+      expect(
+        within(tile(teamUnits.b.id)).queryByTestId("team-picker-unit-state")
+      ).not.toBeInTheDocument()
+      expect(
+        within(tile(teamUnits.a.id)).getByTestId("team-picker-points")
+      ).toHaveTextContent("pts left")
+    })
+
+    it("shows a placeholder dash while estimates load", async () => {
+      render(<Harness estimates="pending" roster={[owned(teamUnits.a.id)]} />, {
+        wrapper: i18nWrapper(i18n),
+      })
+      await screen.findByText("Beth")
+      expect(
+        within(tile(teamUnits.a.id)).getByTestId("team-picker-clears")
+      ).toHaveTextContent("–")
+    })
+
+    it("orders by power and back to points left", async () => {
+      render(
+        <Harness
+          estimates={withPower}
+          roster={[owned(teamUnits.a.id), owned(teamUnits.r.id)]}
+        />,
+        { wrapper: i18nWrapper(i18n) }
+      )
+      await screen.findByText("Beth")
+      // A (90 per battle) leads on points; R (30,000) leads on power.
+      expect(listed()[0]).toBe(teamUnits.a.id)
+      fireEvent.click(screen.getByTestId("team-picker-sort-power"))
+      expect(listed().slice(0, 2)).toEqual([teamUnits.r.id, teamUnits.a.id])
+      fireEvent.click(screen.getByTestId("team-picker-sort-points"))
+      expect(listed()[0]).toBe(teamUnits.a.id)
+    })
+
+    it("disables Power with the reason when power data is unavailable", async () => {
+      render(<Harness roster={[owned(teamUnits.a.id)]} />, {
+        wrapper: i18nWrapper(i18n),
+      })
+      await screen.findByText("Beth")
+      const power = screen.getByTestId("team-picker-sort-power")
+      expect(power).toBeDisabled()
+      expect(power).toHaveAccessibleDescription("Power data unavailable")
+      expect(screen.getByTestId("team-picker-sort-points")).toHaveAttribute(
+        "data-state",
+        "on"
+      )
+    })
   })
 
   describe("objective chips", () => {
@@ -288,9 +379,7 @@ describe("TeamUnitPicker", () => {
 
     it("counts only unlocked units while Only unlocked is on", async () => {
       render(
-        <Harness
-          roster={[{ unitId: teamUnits.a.id }, { unitId: teamUnits.r.id }]}
-        />,
+        <Harness roster={[owned(teamUnits.a.id), owned(teamUnits.r.id)]} />,
         { wrapper: i18nWrapper(i18n) }
       )
       await screen.findByText("Beth")

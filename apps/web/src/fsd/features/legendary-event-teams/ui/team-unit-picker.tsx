@@ -1,8 +1,7 @@
 import { useId, useMemo, useState, type Ref } from "react"
 import { useTranslation } from "react-i18next"
-import { Eye, Lock, ShieldPlus } from "lucide-react"
+import { Lock, ShieldPlus } from "lucide-react"
 import { characterIcon } from "@workspace/game-catalog"
-import { progressionRarity } from "@workspace/game-domain"
 import { Button } from "@workspace/ui/components/button"
 import { Input } from "@workspace/ui/components/input"
 import { Switch } from "@workspace/ui/components/switch"
@@ -12,12 +11,14 @@ import { UnitGoalBadge } from "@/entities/goal"
 import {
   MIN_TEAM_MEMBERS,
   ObjectiveIcon,
+  unitEffectivePower,
   useObjectiveLabel,
+  type LaneProgressView,
   type LegendaryEventLane,
   type LegendaryEventRosterUnit,
   type LegendaryEventUnit,
 } from "@/entities/legendary-event"
-import { EntityIcon, RankBadge, RarityIcon } from "@/shared/ui"
+import { EntityIcon } from "@/shared/ui"
 import { useUnitName } from "@/shared/unit-name"
 
 import { MAX_TEAM_MEMBERS } from "../model/team-editor-draft"
@@ -26,15 +27,20 @@ import {
   filterPickerTiles,
   objectiveChipCounts,
   toggleObjectiveChip,
+  type PickerEstimates,
   type PickerGoalsPreview,
+  type PickerSort,
 } from "../model/team-picker"
 import { TeamPickerObjectiveChips } from "./team-picker-objective-chips"
 import { SelectedChip } from "./team-picker-selected-chip"
+import { TeamPickerSort } from "./team-picker-sort"
+import { TeamPickerUnitState } from "./team-picker-unit-state"
 
 /**
- * The editor's unit picker (design D7): the lane's allowed units as tiles (portrait, name, the
- * objectives each satisfies with the others muted, points per battle, locked styling), a name
- * search and an "only unlocked" switch. A tap toggles membership up to five; a sixth tap is
+ * The editor's unit picker (design D7): the lane's allowed units as tiles (portrait, name, an owned
+ * unit's rarity, rank and estimated clears, the objectives each satisfies with the others muted,
+ * the points it has left, locked styling), a name search, an "only unlocked" switch and a Points
+ * left / Power sort that resets when the editor closes. A tap toggles membership up to five; a sixth tap is
  * ignored and pulses the count badge, which also says a team needs three while it has fewer. A
  * tile's secondary action sets the reserve. The selected members (in position order) and the
  * reserve sit above the grid with remove buttons. With Goals Preview available, a switch
@@ -57,6 +63,8 @@ export function TeamUnitPicker({
   goalsPreview,
   goalLines,
   searchInputRef,
+  progress,
+  estimates,
 }: {
   lane: LegendaryEventLane
   units: readonly LegendaryEventUnit[]
@@ -71,6 +79,10 @@ export function TeamUnitPicker({
   goalLines?: (unitId: string) => readonly string[]
   /** The search field, focused by Save and add another. */
   searchInputRef?: Ref<HTMLInputElement>
+  /** The lane's synced progress; undefined while it loads or failed (nothing is cleared). */
+  progress?: LaneProgressView
+  /** The lane's clear estimates on the synced roster; absent when unavailable. */
+  estimates?: PickerEstimates
 }) {
   const { t, i18n } = useTranslation("legendaryEvents")
   const unitName = useUnitName()
@@ -79,6 +91,7 @@ export function TeamUnitPicker({
   const [onlyUnlocked, setOnlyUnlocked] = useState(onlyUnlockedDefault)
   const [pulse, setPulse] = useState(0)
   const [selectedObjectives, setSelectedObjectives] = useState<number[]>([])
+  const [sort, setSort] = useState<PickerSort>("pointsLeft")
   const describedByPrefix = useId()
   const [preview, setPreview] = useState(
     Boolean(goalsPreview?.available && goalsPreview.enabled)
@@ -92,6 +105,13 @@ export function TeamUnitPicker({
   )
   const number = new Intl.NumberFormat(i18n.language)
   const nameOf = (unit: { id: string }) => unitName("Character", unit.id)
+  const powerConfig =
+    estimates !== "pending" && estimates?.config?.unitPower
+      ? estimates.config
+      : undefined
+  // Power reads the shown roster (synced or Goals Preview); without power data the sort falls back
+  // to Points left (spec: the picker has a Points left / Power sort).
+  const shownSort: PickerSort = powerConfig ? sort : "pointsLeft"
   const tiles = useMemo(
     () =>
       buildPickerTiles(
@@ -99,12 +119,34 @@ export function TeamUnitPicker({
         units,
         shownRoster,
         (unit) => unitName("Character", unit.id),
-        selectedObjectives
+        selectedObjectives,
+        {
+          progress,
+          sort: shownSort,
+          powerOf: powerConfig
+            ? (unitId) => unitEffectivePower(unitId, rosterById, powerConfig)
+            : undefined,
+        }
       ),
     // `unitName` is a fresh closure per render; the catalog read behind it settles once.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [lane, units, shownRoster, selectedObjectives]
+    [
+      lane,
+      units,
+      shownRoster,
+      rosterById,
+      selectedObjectives,
+      progress,
+      shownSort,
+      powerConfig,
+    ]
   )
+  /** A shown unit's estimated clears: the preview roster's while Goals Preview is on. */
+  const clearsOf = (unitId: string): number | null | "pending" => {
+    if (previewOn) return goalsPreview?.clearsOf?.(unitId) ?? null
+    if (estimates === "pending") return "pending"
+    return estimates?.clearsOf(unitId) ?? null
+  }
   const selected = new Set([
     ...memberUnitIds,
     ...(reserveUnitId ? [reserveUnitId] : []),
@@ -208,6 +250,11 @@ export function TeamUnitPicker({
           />
           {t("teams.picker.onlyUnlocked")}
         </label>
+        <TeamPickerSort
+          onChange={setSort}
+          powerAvailable={Boolean(powerConfig)}
+          value={shownSort}
+        />
         {goalsPreview ? (
           <label className="flex items-center gap-2 text-sm">
             <Switch
@@ -247,9 +294,12 @@ export function TeamUnitPicker({
             const isMember = memberUnitIds.includes(id)
             const isReserve = reserveUnitId === id
             const name = nameOf(tile.unit)
-            const previewUnit = previewOn ? rosterById.get(id) : undefined
+            // Rarity, rank and clears for every unit the shown roster holds (spec: picker tiles
+            // show each owned unit's strength); the preview marker stays preview-only.
+            const shownUnit =
+              tile.owned === true ? rosterById.get(id) : undefined
             const previewed = previewOn && goalsPreview?.previewed.has(id)
-            const clears = previewUnit ? goalsPreview?.clearsOf?.(id) : null
+            const clears = shownUnit ? clearsOf(id) : null
             const lines = goalLines?.(id) ?? []
             const dimmed = !tile.matches
             const missing = selectedLabels
@@ -318,31 +368,12 @@ export function TeamUnitPicker({
                       />
                     ) : null}
                   </span>
-                  {previewUnit ? (
-                    <span
-                      className="flex items-center gap-1 text-xs text-muted-foreground"
-                      data-testid="team-picker-preview-state"
-                    >
-                      <RarityIcon
-                        className="size-4"
-                        rarity={progressionRarity(previewUnit.progressionIndex)}
-                      />
-                      <RankBadge
-                        iconClassName="size-4"
-                        rank={previewUnit.rank}
-                        showLabel={false}
-                      />
-                      {clears === null || clears === undefined
-                        ? null
-                        : t("estimates.clearsEstimate", { depth: clears })}
-                      {previewed ? (
-                        <Eye
-                          aria-label={t("goalsPreview.marker")}
-                          className="size-3.5 text-primary"
-                          data-testid="team-picker-preview-marker"
-                        />
-                      ) : null}
-                    </span>
+                  {shownUnit ? (
+                    <TeamPickerUnitState
+                      clears={clears}
+                      previewed={Boolean(previewed)}
+                      unit={shownUnit}
+                    />
                   ) : null}
                   <span className="flex flex-wrap justify-center gap-0.5">
                     {objectives.map((objective) => (
@@ -359,7 +390,7 @@ export function TeamUnitPicker({
                     data-testid="team-picker-points"
                   >
                     {t("teams.picker.points", {
-                      points: number.format(tile.pointsPerBattle),
+                      points: number.format(tile.remainingPoints),
                     })}
                   </span>
                 </button>

@@ -256,7 +256,6 @@
     "incomplete": "Braucht mindestens {{min}} Charaktere",
     "reserve": "Reserve",
     "members": "Mitglieder",
-    "pointsPerBattle": "{{points}} Punkte pro Kampf",
     "power": {
       "label": "Team-Stärke",
       "unavailable": "Stärkedaten nicht verfügbar",
@@ -317,11 +316,14 @@
       "setReserve": "{{name}} als Reserve festlegen",
       "unsetReserve": "{{name}} als Reserve entfernen",
       "full": "Ein Team hat höchstens fünf Mitglieder. Entferne eines, um ein anderes hinzuzufügen.",
-      "points": "{{points}} Pkt.",
+      "points": "Noch {{points}} Pkt.",
       "objectives": "Nach Ziel ordnen",
       "objectiveChip_one": "{{objective}}: {{count}} Einheit erfüllt es",
       "objectiveChip_other": "{{objective}}: {{count}} Einheiten erfüllen es",
-      "doesNotSatisfy": "Erfüllt nicht: {{objectives}}"
+      "doesNotSatisfy": "Erfüllt nicht: {{objectives}}",
+      "sort": "Sortieren",
+      "sortPointsLeft": "Verbleibende Punkte",
+      "sortPower": "Stärke"
     },
     "toasts": {
       "reloaded": "Dein Plan wurde auf einem anderen Gerät geändert und neu geladen. Versuche es erneut.",
@@ -335,7 +337,10 @@
       "cancel": "Abbrechen"
     },
     "lastRun": "Letzter Durchlauf: bis Kampf {{battle}} geschafft",
-    "lastRunNone": "Letzter Durchlauf: kein Kampf geschafft"
+    "lastRunNone": "Letzter Durchlauf: kein Kampf geschafft",
+    "pointsLeft": "Noch {{points}} Punkte · Kämpfe 1–{{depth}}",
+    "pointsLeftNeedsDepth": "Tiefe festlegen, um die verbleibenden Punkte zu sehen",
+    "clearedThrough": "Bereits bis Kampf {{battle}} erfüllt"
   },
   "objective": {
     "minHits_one": "Mind. {{count}} Treffer",
@@ -399,7 +404,7 @@
         },
         "teams": {
           "title": "Teams",
-          "content": "Stelle die Teams zusammen, die du in dieser Lane spielen willst. Jede Karte zeigt die Mitglieder, die abgedeckten Ziele, die Punkte pro Kampf und wie weit das Team kommen sollte: eine Schätzung aus deinem synchronisierten Kader, bis du selbst eine Tiefe festlegst. Mit „Team hinzufügen“ legst du eines an. Teams vorschlagen schlägt Teams aus deinem Kader vor, sortiert nach den Punkten, die sie hinzufügen."
+          "content": "Stelle die Teams zusammen, die du in dieser Lane spielen willst. Jede Karte zeigt die Mitglieder, die abgedeckten Ziele, wie weit das Team kommen sollte und die Punkte, die bis dorthin noch offen sind: eine Schätzung aus deinem synchronisierten Kader, bis du selbst eine Tiefe festlegst. Mit „Team hinzufügen“ legst du eines an. Teams vorschlagen schlägt Teams aus deinem Kader vor, sortiert nach den Punkten, die sie hinzufügen."
         },
         "upgradeImpact": {
           "title": "Wirkung von Verbesserungen",
@@ -539,7 +544,8 @@
     "empty": "Kein Team bringt Punkte zu deinen aktuellen Teams hinzu",
     "needsEstimates": "Benötigt Abschluss-Schätzungen",
     "loading": "Vorschläge werden geladen…",
-    "rank": "Vorschlag {{rank}}"
+    "rank": "Vorschlag {{rank}}",
+    "reasonNoObjectives": "Schafft ~{{depth}} · +{{points}} Punkte zu deinen Teams"
   },
   "tokenPlan": {
     "nextToken": {

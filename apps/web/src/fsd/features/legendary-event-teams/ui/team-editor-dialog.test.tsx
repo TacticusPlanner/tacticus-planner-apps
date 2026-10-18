@@ -2,9 +2,12 @@ import { useEffect, useState } from "react"
 import type { i18n as I18n } from "i18next"
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
 
-import type {
-  ClearEstimate,
-  LegendaryEventTeam,
+import {
+  buildLanePointsModel,
+  buildSyncedLaneProgress,
+  type ClearEstimate,
+  type LaneProgressView,
+  type LegendaryEventTeam,
 } from "@/entities/legendary-event"
 import {
   teamLane,
@@ -58,8 +61,10 @@ function renderEditor({
   onOpenChange = vi.fn(),
   estimateTeam,
   initialMemberUnitIds,
+  progress,
 }: {
   initialMemberUnitIds?: readonly string[]
+  progress?: LaneProgressView
   team?: LegendaryEventTeam
   onSubmit?: (
     draft: TeamDraft,
@@ -79,6 +84,7 @@ function renderEditor({
       onSubmit={onSubmit}
       onlyUnlockedDefault={false}
       open
+      progress={progress}
       roster={undefined}
       run={2}
       team={team}
@@ -283,6 +289,63 @@ describe("TeamEditorDialog", () => {
       tap(teamUnits.c.id)
       expect(save()).toBeDisabled()
       expect(message()).toHaveTextContent("A team needs at least 3 characters")
+    })
+  })
+
+  it("shows Name, Covered objectives and Clear depth above the members", () => {
+    renderEditor()
+    const name = nameInput()
+    const coverage = screen.getByTestId("team-editor-coverage")
+    const depth = screen.getByTestId("team-editor-depth")
+    const picker = screen.getByTestId("team-unit-picker")
+    const follows = (a: Element, b: Element) =>
+      Boolean(a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING)
+    expect(follows(name, coverage)).toBe(true)
+    expect(follows(coverage, depth)).toBe(true)
+    expect(follows(depth, picker)).toBe(true)
+  })
+
+  describe("objectives already cleared (spec: cleared through the depth are marked)", () => {
+    // No Resilient (catalog index 2, objective id 3) cleared in battles 1 and 2.
+    const model = buildLanePointsModel(teamLane)
+    const progress = buildSyncedLaneProgress(model, {
+      encounters: [0, 1].map(() => ({
+        objectivesCleared: [3],
+        highScore: 0,
+        encounterPoints: 0,
+      })),
+    })
+    const estimateTeam = (memberUnitIds: readonly string[]): ClearEstimate => ({
+      depth: memberUnitIds.length,
+      battleCount: 18,
+      marginAbovePct: 0,
+      shortfallToNextPct: 0,
+      calibrated: true,
+    })
+    const noResilient = () =>
+      screen
+        .getAllByTestId("team-editor-objective")
+        .find((chip) => chip.textContent?.includes("No Resilient"))!
+
+    it("marks No Resilient at the estimated depth 1 and drops the mark at depth 3", () => {
+      renderEditor({ estimateTeam, progress })
+      tap(teamUnits.a.id)
+      expect(noResilient()).toHaveAttribute("data-cleared", "true")
+      expect(noResilient()).toHaveAttribute("aria-pressed", "true")
+      expect(
+        within(noResilient()).getByText("Already cleared through battle 1")
+      ).toHaveClass("sr-only")
+
+      const depthField = screen.getByTestId("team-editor-depth")
+      fireEvent.click(within(depthField).getByTestId("number-stepper-increase"))
+      fireEvent.click(within(depthField).getByTestId("number-stepper-increase"))
+      expect(noResilient()).not.toHaveAttribute("data-cleared")
+    })
+
+    it("marks nothing without progress", () => {
+      renderEditor({ estimateTeam })
+      tap(teamUnits.a.id)
+      expect(noResilient()).not.toHaveAttribute("data-cleared")
     })
   })
 
