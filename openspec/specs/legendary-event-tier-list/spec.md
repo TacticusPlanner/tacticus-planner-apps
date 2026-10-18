@@ -36,9 +36,9 @@ Assumptions:
 
 #### Scenario: Untiered characters
 
-- **GIVEN** the catalog has 119 characters, 47 of them tiered
+- **GIVEN** the catalog has 118 characters (the test fixture), 47 of them tiered
 - **WHEN** the page renders
-- **THEN** a collapsed "Untiered · 1.0×" row shows the count 72 and, when opened, lists them by localized name
+- **THEN** a collapsed "Untiered · 1.0×" row shows the count 71 and, when opened, lists them by localized name
 
 ### Requirement: Tier List filters and tile details
 

@@ -2,7 +2,7 @@
 
 ## 1. Tier D
 
-- [x] 1.1 Add `D: "border-chart-5 bg-chart-5/20"` to `TIER_TONES` in `tier-tone.ts`; test: D gets its own tone, an unknown tier still gets the untiered tone (verify: `vitest run tier-tone`)
+- [x] 1.1 Add `D: "border-dashed border-muted-foreground/60 bg-muted"` to `TIER_TONES` in `tier-tone.ts`; test: D gets its own tone, an unknown tier still gets the untiered tone (verify: `vitest run tier-tone`)
 - [x] 1.2 Render five loading skeleton rows in `tier-list-page.tsx`
 
 ## 2. Fixtures and tests

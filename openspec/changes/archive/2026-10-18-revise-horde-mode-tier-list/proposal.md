@@ -4,7 +4,7 @@ The catalog `horde-mode-tiers` dataset is being revised (companion API change **
 
 ## What Changes
 
-- Give tier D its own tone (`chart-5`, unused so far) in `tierToneClass`, so D rows on the Tier List and D badges on team-picker tiles do not look untiered.
+- Give tier D its own tone (a dashed, muted outline) in `tierToneClass`, so D rows on the Tier List and D badges on team-picker tiles do not look untiered.
 - Show five skeleton rows while the Tier List loads.
 - Update the Tier List spec: five tiers (S, A, B, C, D) and worked examples from the revised data.
 - Update the shared `horde-mode-tiers` test fixture to the revised data.

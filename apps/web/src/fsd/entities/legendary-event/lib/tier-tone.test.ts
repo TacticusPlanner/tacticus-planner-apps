@@ -9,7 +9,9 @@ describe("tierToneClass", () => {
     const tones = ["S", "A", "B", "C", "D"].map((tier) => tierToneClass(tier))
     expect(new Set(tones).size).toBe(5)
     expect(tones).not.toContain(UNTIERED)
-    expect(tierToneClass("D")).toBe("border-chart-5 bg-chart-5/20")
+    expect(tierToneClass("D")).toBe(
+      "border-dashed border-muted-foreground/60 bg-muted"
+    )
   })
 
   it("uses the untiered tone for no tier or an unknown one", () => {
