@@ -54,7 +54,7 @@ It exports `useHreInstance`, `useHreProgress`, `MissionTracker`, `MissionGuidanc
 
 ### D3. Raid order: energy ascending, then goal value, then battle id
 
-The objective is a battle count, so energy per battle is the only cost that matters. Indomitus I06 to I14 (3 energy, 90 raids a day) clear a 250-battle mission for 750 energy, against 1,500 on 6-energy nodes. HRE event points are about 3 per energy on any node (the wiki formula: 3 per energy, plus skulls and enemy power), so the cheap nodes cost nothing in points. Goal-needed drops break ties among equal costs, which is how "match my goals" is honoured without paying energy for it. The fill is the same greedy algorithm as `planEventFarm`, capped by battles to go instead of material need.
+The objective is a battle count, so energy per battle is the only cost that matters. Indomitus I06 to I14 cost 3 energy, but they are capped at 3 attempts a day, so only 27 raids a day. After them, I15 to I29 cost 5 energy, with I15 also capped at 3. Every battle on these nodes is still 1 to 3 energy cheaper than on 6-energy nodes. HRE event points are about 3 per energy on any node (the wiki formula: 3 per energy, plus skulls and enemy power), so the cheap nodes cost nothing in points. Goal-needed drops break ties among equal costs, which is how "match my goals" is honoured without paying energy for it. The fill is the same greedy algorithm as `planEventFarm`, capped by battles to go instead of material need.
 
 ### D4. Progress storage
 

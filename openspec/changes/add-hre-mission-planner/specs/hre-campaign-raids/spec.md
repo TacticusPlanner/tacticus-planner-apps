@@ -68,7 +68,7 @@ A campaign battle SHALL be a candidate only if all of these hold:
 Attempts left SHALL be the synced attempts left for that node, or the catalog's daily cap for the node when that is not known.
 
 Assumptions:
-- The daily cap per node comes from the catalog (`dailyAttempts`). It is currently 10 for Standard and Mirror nodes and 6 for Elite nodes, and is still to be confirmed against the game.
+- The daily cap per node comes from the catalog (`dailyAttempts`): 3 for Indomitus I03 to I15, 10 for other Standard and Mirror nodes, and 6 for Elite nodes. The Indomitus value is from Severyn's memory and is still to be confirmed.
 - Synced attempts left take precedence over the catalog cap.
 
 #### Scenario: Locked, used-up and zero-cost nodes excluded
@@ -78,8 +78,8 @@ Assumptions:
 
 #### Scenario: Today's plan uses a node's attempts
 
-- **GIVEN** I06 has a cap of 10, 4 attempts used today, and 3 more raids planned on Today
-- **THEN** I06 has 3 attempts left for suggestions
+- **GIVEN** I30 has a cap of 10, 4 attempts used today, and 3 more raids planned on Today
+- **THEN** I30 has 3 attempts left for suggestions
 
 #### Scenario: Raids Filters respected
 
@@ -92,15 +92,10 @@ Candidates SHALL be ordered by energy cost ascending. Within the same cost, a no
 
 #### Scenario: Worked example, mission 5
 
-- **GIVEN** the "Today's plan covers part of the mission" case (38 battles left, 188 energy budget), with I06 to I14 unlocked, a cap of 10 each, none used or planned today, and no goals
-- **THEN** I06, I07 and I08 get 10 raids each (30 raids, 90 energy), and I09 gets 8 raids (24 energy)
-- **AND** the totals read 38 raids and 114 energy, so 25 + 38 = 63 battles today complete the objective
-
-#### Scenario: Smaller daily caps
-
-- **GIVEN** the same case but each node has only 3 attempts left
-- **THEN** I06 to I14 get 3 raids each (27 raids, 81 energy), and the 5-energy nodes I15, I16 and I17 get 3 raids each and I18 gets 2 (11 raids, 55 energy)
-- **AND** the totals read 38 raids and 136 energy
+- **GIVEN** the "Today's plan covers part of the mission" case (38 battles left, 188 energy budget), with Indomitus unlocked, none of it used or planned today, and no goals
+- **THEN** I06 to I14 (3 energy, cap 3) get 3 raids each (27 raids, 81 energy)
+- **AND** I15 (5 energy, cap 3) gets 3 raids and I16 (5 energy, cap 10) gets 8 (11 raids, 55 energy)
+- **AND** the totals read 38 raids and 136 energy, so 25 + 38 = 63 battles today complete the objective
 
 #### Scenario: Goal tie-break among equal costs
 
@@ -110,7 +105,7 @@ Candidates SHALL be ordered by energy cost ascending. Within the same cost, a no
 #### Scenario: Budget runs out first
 
 - **GIVEN** 38 battles left and 30 energy of budget
-- **THEN** I06 gets 10 raids (30 energy), and the section notes "28 battles left after today's energy"
+- **THEN** I06 to I14 get 10 raids in total: 3 each on I06, I07 and I08, and 1 on I09 (30 energy). The section notes "28 battles left after today's energy"
 
 #### Scenario: No candidates
 
@@ -150,4 +145,4 @@ The tab SHALL show the total campaign battles still needed across the current mi
 - **GIVEN** mission 5 at 37 / 100 wins, and later campaign objectives 16 (Raid 25), 19 (Win 75), 20 (Win 250) and Bonus (Win 250)
 - **THEN** battles still needed = 63 + 25 + 75 + 250 + 250 = 663
 - **AND** with I06 to I14 unlocked, the minimum energy is 663 × 3 = 1,989 energy
-- **AND** with a cap of 10, the capacity is 9 nodes × 10 attempts = 90 raids a day, so it reads "about 8 days of cheapest-node raids" (663 / 90 = 7.4, rounded up). With a cap of 3, it is 27 a day and reads "about 25 days", which is longer than the event
+- **AND** the capacity of the 3-energy nodes is 9 nodes × 3 attempts = 27 raids a day, so it reads "about 25 days of cheapest-node raids" (663 / 27 = 24.6, rounded up). That is longer than the event, which tells the player to use the 5-energy nodes too
