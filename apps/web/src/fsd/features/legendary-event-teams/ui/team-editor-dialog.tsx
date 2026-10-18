@@ -1,14 +1,11 @@
 import { useId, useMemo, useRef, useState, type FormEvent } from "react"
 import { useTranslation } from "react-i18next"
-import { Check } from "lucide-react"
 import { Button } from "@workspace/ui/components/button"
 import { Input } from "@workspace/ui/components/input"
 import { Spinner } from "@workspace/ui/components/spinner"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
-import { cn } from "@workspace/ui/lib/utils"
 
 import {
-  ObjectiveIcon,
   buildLanePointsModel,
   objectiveClearedThrough,
   teamEffectiveDepth,
@@ -42,7 +39,6 @@ import {
   initialEditorDraft,
   toTeamDraft,
   toggleMember,
-  toggleObjective,
   toggleReserve,
 } from "../model/team-editor-draft"
 import {
@@ -56,26 +52,26 @@ import type {
 } from "../model/use-legendary-event-plan"
 import { ClearDepthField } from "./clear-depth-field"
 import { TeamEditorSummary } from "./team-editor-summary"
+import { TeamMemberCount } from "./team-member-count"
 import { TeamUnitPicker } from "./team-unit-picker"
 
 /**
  * The team editor (design D3, D7, D8): a dialog on desktop and a bottom sheet on mobile. Opened
  * empty from Add team, with a suggestion's members from Use this team, or prefilled from Edit;
- * mount it with a fresh `key` per opening so the draft starts from the team. Covered objectives
- * follow the members live and can be unticked; the depth is the current run's, and mirrors the
+ * mount it with a fresh `key` per opening so the draft starts from the team. The team covers
+ * exactly what its members derive (shown in the footer); the depth is the current run's, and mirrors the
  * card: the members' live estimate shows while no manual depth is set. Below three members Save is
  * unavailable and the footer says a team needs three characters. The dialog closes only once
  * the save succeeded — after a conflict or an error the draft stays for another try; after a
  * conflict (the plan was reloaded, this save was not applied) the dialog says so.
  *
- * The body reads Name, Covered objectives, Clear depth, then Members, so the team's result sits
- * above the long unit grid; a covered objective already cleared in every battle 1..the draft's
- * depth carries a cleared mark (spec: covered objectives already cleared through the depth are
- * marked) and stays tickable.
+ * The body reads Name, then a Members row (the count badge, which pulses on a refused sixth
+ * member, and the Clear depth field), then the picker; a suggestion's objectives start selected
+ * as the picker's chips.
  *
- * The footer stays in view while the body scrolls (design D2): the member count, the covered
- * objectives as read-only chips, the depth line and the actions, all read from the same draft as
- * the body. A new team also offers Save and add another (design D3): after a successful save the
+ * The footer stays in view while the body scrolls: the member count, the covered objectives as
+ * read-only chips (one already cleared in every battle 1..the draft's depth carries a cleared
+ * mark), the depth line and the actions, all read from the same draft as the body. A new team also offers Save and add another (design D3): after a successful save the
  * draft is reset for the next team on the lane while the picker's chips, search, Only unlocked and
  * Goals Preview stay, and focus moves to the search field.
  */
@@ -94,6 +90,7 @@ export function TeamEditorDialog({
   onSubmit,
   estimateTeam,
   initialMemberUnitIds,
+  initialObjectives,
   goalsPreview,
   goalLines,
   progress,
@@ -122,6 +119,8 @@ export function TeamEditorDialog({
   estimateTeam?: (memberUnitIds: readonly string[]) => ClearEstimate | null
   /** A new team's members, in order (a team suggestion); ignored when editing a team. */
   initialMemberUnitIds?: readonly string[]
+  /** The picker's objective chips selected on opening (a team suggestion's objectives). */
+  initialObjectives?: readonly number[]
   goalsPreview?: PickerGoalsPreview
   /** A unit's goal badge lines; absent or empty shows no badge. */
   goalLines?: (unitId: string) => readonly string[]
@@ -130,7 +129,7 @@ export function TeamEditorDialog({
   /** The lane's unit clear estimates and power inputs for the picker; absent when unavailable. */
   estimates?: PickerEstimates
 }) {
-  const { t, i18n } = useTranslation("legendaryEvents")
+  const { t } = useTranslation("legendaryEvents")
   const objectiveLabel = useObjectiveLabel()
   const nameId = useId()
   const needsMembersId = useId()
@@ -140,10 +139,10 @@ export function TeamEditorDialog({
   )
   const [draft, setDraft] = useState(initialDraft)
   const [saving, setSaving] = useState(false)
+  const [pulse, setPulse] = useState(0)
   const searchInputRef = useRef<HTMLInputElement>(null)
   const isMobile = useIsMobile()
   const [reloaded, setReloaded] = useState(false)
-  const number = new Intl.NumberFormat(i18n.language)
   const objectives = [...lane.unitsRestrictions].sort(
     (a, b) => a.index - b.index
   )
@@ -171,10 +170,17 @@ export function TeamEditorDialog({
     ? draft.memberUnitIds.filter((unitId) => !owned.has(unitId)).length
     : 0
 
+  const clearedIndexes =
+    draftDepth === null
+      ? []
+      : checked.filter((index) =>
+          objectiveClearedThrough(model, progress, index, draftDepth)
+        )
+
   const handleToggleMember = (unitId: string) => {
     const result = toggleMember(draft, unitId, context)
-    if (!result.refused) setDraft(result.draft)
-    return !result.refused
+    if (result.refused) setPulse((count) => count + 1)
+    else setDraft(result.draft)
   }
 
   const save = async (addAnother: boolean) => {
@@ -245,106 +251,38 @@ export function TeamEditorDialog({
             ) : null}
           </div>
 
-          <section
-            className="flex flex-col gap-2"
-            data-testid="team-editor-coverage"
-          >
-            <h3 className="text-sm font-medium">
-              {t("teams.editor.coverage")}
-            </h3>
-            <p className="text-xs text-muted-foreground">
-              {draft.memberUnitIds.length === 0
-                ? t("teams.editor.noMembers")
-                : draft.derived.length === 0
-                  ? t("teams.editor.noCoverage")
-                  : t("teams.editor.coverageHint")}
-            </p>
-            <ul className="flex flex-wrap gap-2">
-              {objectives
-                .filter((objective) => draft.derived.includes(objective.index))
-                .map((objective) => {
-                  const { label, icon } = objectiveLabel(objective)
-                  const isChecked = checked.includes(objective.index)
-                  const cleared =
-                    draftDepth !== null &&
-                    objectiveClearedThrough(
-                      model,
-                      progress,
-                      objective.index,
-                      draftDepth
-                    )
-                  const clearedLabel = cleared
-                    ? t("teams.clearedThrough", { battle: draftDepth })
-                    : undefined
-                  return (
-                    <li key={objective.index}>
-                      <button
-                        aria-pressed={isChecked}
-                        className={cn(
-                          "flex items-center gap-1.5 rounded-full border py-1 pr-2.5 pl-1.5 text-sm transition-colors",
-                          isChecked
-                            ? "border-primary bg-primary/10"
-                            : "bg-transparent text-muted-foreground line-through"
-                        )}
-                        data-cleared={cleared ? "true" : undefined}
-                        data-index={objective.index}
-                        data-testid="team-editor-objective"
-                        onClick={() =>
-                          setDraft((current) =>
-                            toggleObjective(current, objective.index)
-                          )
-                        }
-                        type="button"
-                      >
-                        <ObjectiveIcon icon={icon} muted={!isChecked} />
-                        <span data-testid="team-editor-objective-label">
-                          {label}
-                        </span>
-                        <span className="font-semibold tabular-nums">
-                          {number.format(objective.points)}
-                        </span>
-                        {cleared ? (
-                          <span aria-hidden title={clearedLabel}>
-                            <Check
-                              aria-hidden
-                              className="size-3.5 shrink-0 text-muted-foreground"
-                              data-testid="team-editor-objective-cleared"
-                            />
-                          </span>
-                        ) : null}
-                        {clearedLabel ? (
-                          <span className="sr-only">{clearedLabel}</span>
-                        ) : null}
-                      </button>
-                    </li>
-                  )
-                })}
-            </ul>
-          </section>
-
           <section className="flex flex-col gap-2">
-            <h3 className="text-sm font-medium">
-              {t("teams.editor.depth", { run })}
-            </h3>
-            <ClearDepthField
-              align="start"
-              battleCount={lane.battleIds.length}
-              data-testid="team-editor-depth"
-              estimate={estimate}
-              lockedMemberCount={lockedMemberCount}
-              onChange={(depth) =>
-                setDraft((current) => ({ ...current, depth }))
-              }
-              value={draft.depth}
-            />
-          </section>
-
-          <section className="flex flex-col gap-2">
-            <h3 className="text-sm font-medium">{t("teams.editor.members")}</h3>
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <h3 className="text-sm font-medium">
+                  {t("teams.editor.members")}
+                </h3>
+                <TeamMemberCount
+                  count={draft.memberUnitIds.length}
+                  pulse={pulse}
+                />
+              </div>
+              <div className="flex items-start gap-2">
+                <span className="pt-1.5 text-sm text-muted-foreground">
+                  {t("teams.editor.depth", { run })}
+                </span>
+                <ClearDepthField
+                  battleCount={lane.battleIds.length}
+                  data-testid="team-editor-depth"
+                  estimate={estimate}
+                  lockedMemberCount={lockedMemberCount}
+                  onChange={(depth) =>
+                    setDraft((current) => ({ ...current, depth }))
+                  }
+                  value={draft.depth}
+                />
+              </div>
+            </div>
             <TeamUnitPicker
               estimates={estimates}
               goalLines={goalLines}
               goalsPreview={goalsPreview}
+              initialObjectives={initialObjectives}
               lane={lane}
               memberUnitIds={draft.memberUnitIds}
               onToggleMember={handleToggleMember}
@@ -374,6 +312,8 @@ export function TeamEditorDialog({
             checkedObjectives={objectives.filter((objective) =>
               checked.includes(objective.index)
             )}
+            clearedIndexes={clearedIndexes}
+            clearedThrough={draftDepth}
             depth={clearDepthSummary(draft.depth, estimate)}
             memberCount={draft.memberUnitIds.length}
             needsMembersId={needsMembersId}

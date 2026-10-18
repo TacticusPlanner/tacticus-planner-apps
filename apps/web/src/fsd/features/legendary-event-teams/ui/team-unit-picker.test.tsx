@@ -112,24 +112,6 @@ describe("TeamUnitPicker", () => {
     ).toHaveTextContent("1,620 pts left")
   })
 
-  it("refuses a sixth member and pulses the count badge", () => {
-    render(<Harness />, { wrapper: i18nWrapper(i18n) })
-    for (const unit of ["a", "b", "c", "d", "e"] as const) {
-      tap(teamUnits[unit].id)
-    }
-    const badge = screen.getByTestId("team-picker-count")
-    expect(badge).toHaveTextContent("5/5")
-    expect(badge).not.toHaveAttribute("data-pulse")
-
-    tap(teamUnits.r.id)
-    expect(screen.getByTestId("team-picker-count")).toHaveTextContent("5/5")
-    expect(screen.getByTestId("team-picker-count")).toHaveAttribute(
-      "data-pulse",
-      "1"
-    )
-    expect(tile(teamUnits.r.id)).not.toHaveAttribute("data-selected")
-  })
-
   it("sets a reserve through the tile's secondary action, apart from the members", () => {
     render(<Harness />, { wrapper: i18nWrapper(i18n) })
     tap(teamUnits.a.id)
@@ -143,7 +125,6 @@ describe("TeamUnitPicker", () => {
       teamUnits.r.id,
     ])
     expect(selected[1]).toHaveAttribute("data-reserve", "true")
-    expect(screen.getByTestId("team-picker-count")).toHaveTextContent("1/5")
   })
 
   it("searches by name and hides locked units when only unlocked is on", async () => {
@@ -259,7 +240,7 @@ describe("TeamUnitPicker", () => {
       ).toHaveTextContent("–")
     })
 
-    it("orders by power and back to points left", async () => {
+    it("orders by power by default, and by points left on request", async () => {
       render(
         <Harness
           estimates={withPower}
@@ -268,12 +249,12 @@ describe("TeamUnitPicker", () => {
         { wrapper: i18nWrapper(i18n) }
       )
       await screen.findByText("Beth")
-      // A (90 per battle) leads on points; R (30,000) leads on power.
-      expect(listed()[0]).toBe(teamUnits.a.id)
-      fireEvent.click(screen.getByTestId("team-picker-sort-power"))
+      // R (30,000) leads on power; A (90 per battle) leads on points.
       expect(listed().slice(0, 2)).toEqual([teamUnits.r.id, teamUnits.a.id])
       fireEvent.click(screen.getByTestId("team-picker-sort-points"))
       expect(listed()[0]).toBe(teamUnits.a.id)
+      fireEvent.click(screen.getByTestId("team-picker-sort-power"))
+      expect(listed()[0]).toBe(teamUnits.r.id)
     })
 
     it("disables Power with the reason when power data is unavailable", async () => {
@@ -348,7 +329,11 @@ describe("TeamUnitPicker", () => {
         teamUnits.b.id,
       ])
       expect(tile(teamUnits.b.id)).toHaveAttribute("data-dimmed", "true")
+      // The counts follow the selection: Aleph and He are Melee and not Resilient.
+      expect(chip("Melee")).toHaveAttribute("data-count", "2")
+      expect(chip("No Resilient")).toHaveAttribute("data-count", "3")
       fireEvent.click(chip("No Resilient"))
+      expect(chip("Melee")).toHaveAttribute("data-count", "3")
 
       fireEvent.click(chip("Melee"))
       expect(chip("Melee")).toHaveAttribute("aria-pressed", "true")

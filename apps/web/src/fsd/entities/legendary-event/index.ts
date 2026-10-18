@@ -177,7 +177,7 @@ export {
   type LegendaryEventRunResolution,
   type LegendaryEventRunResolutionInput,
 } from "./lib/run-resolution"
-export { derivedTeamCoverage, reconcileCoverage } from "./lib/team-coverage"
+export { derivedTeamCoverage } from "./lib/team-coverage"
 export { teamPointsLeft } from "./lib/team-points"
 export { MIN_TEAM_MEMBERS, isCompleteTeam } from "./lib/team-size"
 export { type NamedTeam } from "./lib/team-display-name"

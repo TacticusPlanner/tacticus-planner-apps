@@ -33,22 +33,3 @@ export function derivedTeamCoverage(
   }
   return ascending(covered ?? [])
 }
-
-/**
- * The covered set after the derivation moved from `previousDerived` to `derived` (design D3):
- * `(stored ∩ derived) ∪ (derived − previousDerived)`. An objective that keeps deriving keeps the
- * user's tick or untick, one that newly derives is ticked, one that stops deriving is dropped.
- * With `previousDerived === derived` it is `stored ∩ derived`: nothing is added without a save.
- */
-export function reconcileCoverage(
-  stored: readonly number[],
-  previousDerived: readonly number[],
-  derived: readonly number[]
-): number[] {
-  const derivedSet = new Set(derived)
-  const previous = new Set(previousDerived)
-  return ascending([
-    ...stored.filter((index) => derivedSet.has(index)),
-    ...derived.filter((index) => !previous.has(index)),
-  ])
-}

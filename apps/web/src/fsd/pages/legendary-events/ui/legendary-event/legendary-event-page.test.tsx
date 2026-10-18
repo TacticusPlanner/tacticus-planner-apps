@@ -619,7 +619,7 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
       expect(screen.getByTestId("legendary-event-overview")).toBeInTheDocument()
     })
 
-    it("opens the editor from a lane leaderboard with the unit's objectives ticked", async () => {
+    it("opens the editor from a lane leaderboard covering the unit's objectives", async () => {
       renderPage("/legendary-events/astarLysander")
       await screen.findByTestId("legendary-event-overview-leaderboard")
       act(() => selectTab("alpha"))
@@ -634,15 +634,9 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
       expect(editorMembers()).toEqual(["bloodDante"])
       expect(
         within(editor)
-          .getAllByTestId("team-editor-objective")
-          .map((chip) => [
-            chip.dataset.index,
-            chip.getAttribute("aria-pressed"),
-          ])
-      ).toEqual([
-        ["2", "true"],
-        ["4", "true"],
-      ])
+          .getAllByTestId("team-editor-summary-objective")
+          .map((chip) => chip.dataset.index)
+      ).toEqual(["2", "4"])
     })
   })
 

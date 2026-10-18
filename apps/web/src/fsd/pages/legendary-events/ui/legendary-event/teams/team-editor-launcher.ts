@@ -6,11 +6,13 @@ import type {
 } from "@/entities/legendary-event"
 
 /** What the team editor opens on (design D4): a lane, plus a saved team to edit, or a new team's
- *  first members (a suggestion's, or the leaderboard unit's). */
+ *  first members (a suggestion's, or the leaderboard unit's) and a suggestion's objectives. */
 interface TeamEditorRequest {
   laneId: LegendaryEventLaneId
   team?: LegendaryEventTeam
   memberUnitIds?: readonly string[]
+  /** The objectives the picker's chips start from (the suggestion's). */
+  objectiveIndexes?: readonly number[]
   /** The 1-based rank of the team suggestion the editor starts from. */
   suggestionRank?: number
 }

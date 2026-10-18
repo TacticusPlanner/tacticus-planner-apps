@@ -142,6 +142,22 @@ describe("buildPickerTiles with objective chips", () => {
     )
     expect(unlocked).toHaveLength(flying.length - 3)
   })
+
+  it("counts per chip the units satisfying it together with the selected chips", () => {
+    const objectiveIndexes = alpha.unitsRestrictions.map(
+      (objective) => objective.index
+    )
+    const both = plain.filter(
+      (tile) =>
+        tile.satisfied.includes(FLYING) && tile.satisfied.includes(NO_RESILIENT)
+    ).length
+    const counts = objectiveChipCounts(plain, objectiveIndexes, [FLYING])
+    expect(counts.get(NO_RESILIENT)).toBe(both)
+    expect(counts.get(FLYING)).toBe(
+      plain.filter((tile) => tile.satisfied.includes(FLYING)).length
+    )
+    expect(both).toBeGreaterThan(0)
+  })
 })
 
 describe("buildPickerTiles remaining points and sort", () => {

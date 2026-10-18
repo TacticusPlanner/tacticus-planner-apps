@@ -447,6 +447,12 @@ describe("TeamsSection", () => {
         .getAllByTestId("team-picker-selected-unit")
         .map((element) => element.dataset.unit)
     ).toEqual(members)
+    // The picker's chips start from the proposal's objective subset (one or two objectives).
+    const pressed = within(editor)
+      .getAllByTestId("team-picker-objective-chip")
+      .filter((chip) => chip.getAttribute("aria-pressed") === "true")
+    expect(pressed.length).toBeGreaterThanOrEqual(1)
+    expect(pressed.length).toBeLessThanOrEqual(2)
     expect(screen.queryByTestId("team-suggestions")).toBeNull()
 
     await user.click(within(editor).getByRole("button", { name: "Cancel" }))
