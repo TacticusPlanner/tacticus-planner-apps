@@ -37,6 +37,7 @@ import { TeamsEmptyState } from "./teams-empty-state"
 import {
   buildTeamCardViewModel,
   moveTargets,
+  rosterMap,
   type TeamCardViewModel,
   type TeamPowerSource,
   type TeamsSectionState,
@@ -120,6 +121,13 @@ export function TeamsSection({
   const displayName = useTeamDisplayName()
   const nameOf = (team: LegendaryEventTeam) =>
     displayName(team, lane, savedTeams)
+  const rosterById = useMemo(
+    () =>
+      state.kind === "ready" && state.roster
+        ? rosterMap(state.roster)
+        : undefined,
+    [state]
+  )
   const cards = useMemo(
     () =>
       state.kind === "ready"
@@ -131,13 +139,23 @@ export function TeamsSection({
               state.roster,
               run,
               estimateTeam,
-              unitPower
+              unitPower,
+              rosterById
             ),
             // Display only (spec: a team shows a readable name): the stored name stays as is.
             name: displayName(team, lane, savedTeams),
           }))
         : [],
-    [state, savedTeams, lane, run, estimateTeam, unitPower, displayName]
+    [
+      state,
+      savedTeams,
+      lane,
+      run,
+      estimateTeam,
+      unitPower,
+      rosterById,
+      displayName,
+    ]
   )
 
   if (state.kind === "hidden") return null

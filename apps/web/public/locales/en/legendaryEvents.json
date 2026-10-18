@@ -221,7 +221,8 @@
     "pointsPerBattle": "{{points}} points per battle",
     "power": {
       "label": "Team power",
-      "unavailable": "Power data unavailable"
+      "unavailable": "Power data unavailable",
+      "noRoster": "Sync your roster to see team power"
     },
     "notCovered": "Not covered by the current members",
     "dragHandle": "Drag to reorder {{name}}",

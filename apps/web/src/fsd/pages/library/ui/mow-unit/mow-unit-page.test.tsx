@@ -514,6 +514,16 @@ describe("MowUnitPage", () => {
     expect(screen.queryByTestId("unit-not-unlocked")).not.toBeInTheDocument()
   })
 
+  it("keeps the power loading while a signed-in player's record is still read", async () => {
+    env.authenticated = true
+    env.rosterPending = true
+    await renderUnit("/library/machines-of-war/ultraDreadnought")
+    // Not the starting values' power, shown as ready before the player's own arrive.
+    expect(env.power.status).toBe("ready")
+    expect(screen.getByTestId("unit-power-loading")).toBeInTheDocument()
+    expect(screen.queryByTestId("unit-power-value")).not.toBeInTheDocument()
+  })
+
   it("on mobile, shows Primary expanded and Secondary collapsed with their levels", async () => {
     env.isMobile = true
     env.authenticated = true

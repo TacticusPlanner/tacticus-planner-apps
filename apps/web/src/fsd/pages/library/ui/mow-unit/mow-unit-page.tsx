@@ -185,7 +185,13 @@ function MowUnit({
     ? t(`abilities:${mythicKey}`, { defaultValue: mythicKey })
     : t("mowUnit.mythic.unnamed")
   const mythic = mythicLevel(shown)
-  const power = mowPowerFigure(unitId, shown, levels, powerContext)
+  const power = mowPowerFigure(
+    unitId,
+    shown,
+    levels,
+    powerContext,
+    ownership === "loading"
+  )
 
   // --- Ability upgrades --------------------------------------------------------------------------
   const { ranges, setFrom, setTo } = useMowUpgradeRanges(playerLevels, maxLevel)

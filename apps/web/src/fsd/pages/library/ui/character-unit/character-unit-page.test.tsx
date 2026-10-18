@@ -592,6 +592,17 @@ describe("CharacterUnitPage", () => {
     expect(screen.queryByTestId("unit-not-unlocked")).not.toBeInTheDocument()
   })
 
+  it("keeps the power and stats loading while a signed-in player's record is still read", async () => {
+    env.authenticated = true
+    env.roster = [ownedTigurius]
+    env.rosterPending = true
+    await renderUnit("/library/characters/ultraTigurius")
+    // Not the starting values' power, shown as ready before the player's own arrive.
+    expect(env.power.status).toBe("ready")
+    expect(screen.getByTestId("unit-power-loading")).toBeInTheDocument()
+    expect(screen.queryByTestId("unit-power-value")).not.toBeInTheDocument()
+  })
+
   it("shows the missing-text state for both abilities of a character without rules text", async () => {
     await renderUnit("/library/characters/eldarLhykhis")
     expect(

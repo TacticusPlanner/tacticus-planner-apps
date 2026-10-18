@@ -160,6 +160,15 @@ export async function hasDatasetSynced(
   return (await catalogDb.metadata.get(datasetKey)) !== undefined
 }
 
+/** Whether a full catalog sync has completed in this client at least once: the manifest metadata
+ *  row is written only after every changed dataset stored. Before it, an optional dataset with no
+ *  records is "not synced yet" rather than "not served". */
+export async function hasCatalogSynced(): Promise<boolean> {
+  return (
+    (await catalogDb.metadata.get(catalogManifestMetadataKey)) !== undefined
+  )
+}
+
 export async function clearGameCatalogDb() {
   await catalogDb.transaction(
     "rw",

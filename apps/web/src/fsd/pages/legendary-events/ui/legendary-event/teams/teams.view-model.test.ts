@@ -13,6 +13,7 @@ import { unitPowerContextFixture } from "@/test/fixtures/unit-power"
 import {
   buildTeamCardViewModel,
   buildTeamsSectionState,
+  rosterMap,
   type TeamPowerSource,
 } from "./teams.view-model"
 
@@ -140,7 +141,7 @@ describe("buildTeamCardViewModel team power (spec worked examples)", () => {
   it("sums the members' power without the horde-mode multiplier: 98,895", () => {
     const result = card(team(), WORKED_TEAM.map(owned), unitPower)
     expect(result.teamPower).toBe(98895)
-    expect(result.teamPowerPending).toBe(false)
+    expect(result.teamPowerStatus).toBe("ready")
   })
 
   it("counts neither a locked member nor the reserve: 77,012", () => {
@@ -174,7 +175,31 @@ describe("buildTeamCardViewModel team power (spec worked examples)", () => {
   it("is pending while the power data loads", () => {
     const result = card(team(), WORKED_TEAM.map(owned), "loading")
     expect(result.teamPower).toBeNull()
-    expect(result.teamPowerPending).toBe(true)
+    expect(result.teamPowerStatus).toBe("pending")
+  })
+
+  it("names the roster, not the power data, when the roster is not synced", () => {
+    for (const source of [unitPower, "loading", null, "error"] as const) {
+      const result = card(team(), undefined, source)
+      expect(result.teamPower).toBeNull()
+      expect(result.teamPowerStatus).toBe("noRoster")
+    }
+  })
+
+  it("reads a roster map the section built once", () => {
+    const roster = WORKED_TEAM.map(owned)
+    const result = buildTeamCardViewModel(
+      team(),
+      utharEvent.alpha,
+      legendaryEventCharacters as unknown as LegendaryEventUnit[],
+      roster,
+      1,
+      undefined,
+      unitPower,
+      rosterMap(roster)
+    )
+    expect(result.teamPower).toBe(98895)
+    expect(result.members.every((member) => member.owned)).toBe(true)
   })
 
   it("is unavailable, never a partial sum, without power data or a readable roster", () => {
@@ -182,9 +207,8 @@ describe("buildTeamCardViewModel team power (spec worked examples)", () => {
     for (const source of [null, "error"] as const) {
       const result = card(team(), roster, source)
       expect(result.teamPower).toBeNull()
-      expect(result.teamPowerPending).toBe(false)
+      expect(result.teamPowerStatus).toBe("unavailable")
     }
-    expect(card(team(), undefined, unitPower).teamPower).toBeNull()
     // One owned member wearing an item the power data does not know.
     const unknownItem = roster.map((unit) =>
       unit.unitId === "ultraCalgar"
@@ -196,6 +220,9 @@ describe("buildTeamCardViewModel team power (spec worked examples)", () => {
           }
         : unit
     ) as LegendaryEventRosterUnit[]
-    expect(card(team(), unknownItem, unitPower).teamPower).toBeNull()
+    expect(card(team(), unknownItem, unitPower)).toMatchObject({
+      teamPower: null,
+      teamPowerStatus: "unavailable",
+    })
   })
 })

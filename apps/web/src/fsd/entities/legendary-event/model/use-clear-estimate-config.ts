@@ -1,13 +1,13 @@
 import { useMemo } from "react"
 import { getHordeModeTiers } from "@workspace/game-catalog/queries"
 
-import { useUnitPowerContext } from "@/shared/unit-power"
+import type { UnitPowerContext } from "@/shared/unit-power"
 
 import {
   clearEstimateConfig,
   type ClearEstimateConfig,
 } from "../lib/clear-estimate"
-import { useReadState } from "./use-read-state"
+import { useReadState, type ReadState } from "./use-read-state"
 
 /** The clear-estimate config's state (design D6): `failed` when the tier-list or the power-data
  *  read failed. A missing `horde-mode-tiers` record leaves every character untiered (estimates still
@@ -18,10 +18,12 @@ export type ClearEstimateConfigState =
   | { status: "ready"; config: ClearEstimateConfig }
 
 /** The config, ready once both the tier list and the power context are read, and stable across
- *  renders while they are unchanged (it is a memo input). */
-export function useClearEstimateConfig(): ClearEstimateConfigState {
+ *  renders while they are unchanged (it is a memo input). The page reads the power context once
+ *  (`useUnitPowerContext`) and passes it here, so its tables are built once. */
+export function useClearEstimateConfig(
+  powerRead: ReadState<UnitPowerContext | null>
+): ClearEstimateConfigState {
   const tiersRead = useReadState(getHordeModeTiers, [])
-  const powerRead = useUnitPowerContext()
   const hordeModeTiers =
     tiersRead.status === "ready" ? tiersRead.data : undefined
   const unitPower = powerRead.status === "ready" ? powerRead.data : undefined

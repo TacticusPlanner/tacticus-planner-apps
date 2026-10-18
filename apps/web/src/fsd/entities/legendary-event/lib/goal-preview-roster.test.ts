@@ -150,6 +150,29 @@ describe("previewRoster (spec worked examples)", () => {
     expect(unit.abilities?.map((ability) => ability.level)).toEqual([30, 15])
   })
 
+  it("keeps the applied slots on an equal-rank goal and fills the lowest missing ones", () => {
+    const unit = previewUnit(
+      {
+        ...rosterUnit("ultraCalgar"),
+        rank: "Gold1",
+        appliedUpgradeSlots: [0, 2, 4],
+      },
+      {
+        unitId: "ultraCalgar",
+        goals: [
+          {
+            goalId: "r",
+            kind: "Rank",
+            rankEnd: "Gold1",
+            appliedUpgradesEnd: 4,
+          },
+        ],
+      },
+      "Legendary"
+    )
+    expect(unit.appliedUpgradeSlots).toEqual([0, 1, 2, 4])
+  })
+
   it("leaves a unit without goals as synced, and an unsynced roster unknown", () => {
     const synced = [rosterUnit("ultraTitus")]
     const preview = previewRoster(

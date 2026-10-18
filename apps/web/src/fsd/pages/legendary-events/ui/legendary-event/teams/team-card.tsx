@@ -235,9 +235,10 @@ export function TeamCard({
       ) : null}
 
       <div className="flex flex-wrap items-center justify-between gap-2">
-        {/* Points per battle and Team power share one line on both forms. */}
-        <span className="flex items-baseline gap-x-3 text-sm font-medium whitespace-nowrap tabular-nums">
-          <span data-testid="team-card-points">
+        {/* Points per battle and Team power share one line when it fits, and wrap between the
+            two (never inside either) when it does not (French at 375px). */}
+        <span className="flex min-w-0 flex-wrap items-baseline gap-x-3 text-sm font-medium tabular-nums">
+          <span className="whitespace-nowrap" data-testid="team-card-points">
             {t("teams.pointsPerBattle", {
               points: number.format(card.pointsPerBattle),
             })}
@@ -293,28 +294,29 @@ export function TeamCard({
 }
 
 /** The team's summed power beside points per battle: a placeholder dash while the power data
- *  loads, "—" with the reason for screen readers when it is unavailable. */
+ *  loads, "—" with the reason for screen readers when the roster is not synced or the power data
+ *  is unavailable. */
 function TeamPower({
   card,
   format,
 }: {
-  card: Pick<TeamCardViewModel, "teamPower" | "teamPowerPending">
+  card: Pick<TeamCardViewModel, "teamPower" | "teamPowerStatus">
   format: (value: number) => string
 }) {
   const { t } = useTranslation("legendaryEvents")
-  const state =
-    card.teamPower !== null
-      ? "ready"
-      : card.teamPowerPending
-        ? "pending"
-        : "unavailable"
-  const reason = t("teams.power.unavailable")
+  const state = card.teamPowerStatus
+  const reason =
+    state === "noRoster"
+      ? t("teams.power.noRoster")
+      : state === "unavailable"
+        ? t("teams.power.unavailable")
+        : undefined
   return (
     <span
-      className="text-muted-foreground"
+      className="whitespace-nowrap text-muted-foreground"
       data-state={state}
       data-testid="team-card-power"
-      title={state === "unavailable" ? reason : undefined}
+      title={reason}
     >
       {t("teams.power.label")}{" "}
       {card.teamPower === null ? (
@@ -322,9 +324,7 @@ function TeamPower({
           <span aria-hidden className="text-foreground">
             —
           </span>
-          {state === "unavailable" ? (
-            <span className="sr-only">{reason}</span>
-          ) : null}
+          {reason ? <span className="sr-only">{reason}</span> : null}
         </>
       ) : (
         <span className="text-foreground">{format(card.teamPower)}</span>

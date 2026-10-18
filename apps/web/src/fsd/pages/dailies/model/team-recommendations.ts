@@ -123,6 +123,9 @@ type BuildContext = {
   poolRankById: Map<UnitId, number>
   cappedById: Map<UnitId, boolean>
   combatPowerById: Map<UnitId, number>
+  /** The power data was read (`unitPower` non-null): without it every power is a stand-in 0, so no
+   *  member cites a strength figure. */
+  powerKnown: boolean
   preferences: TeamPreferences
 }
 
@@ -180,7 +183,7 @@ function rationaleFor(id: UnitId, ctx: BuildContext): TeamMemberRationale {
       if (rationale) return rationale
     }
   }
-  if (ctx.mode === "power") {
+  if (ctx.mode === "power" && ctx.powerKnown) {
     return { kind: "strength", combatPower: ctx.combatPowerById.get(id) ?? 0 }
   }
   return { kind: "minimum-size" }
@@ -383,6 +386,7 @@ export function buildTeamRecommendations(
     combatPowerById: new Map(
       input.roster.map((c) => [c.unitId, combatPowerOf(c, input.unitPower)])
     ),
+    powerKnown: input.unitPower !== null,
     preferences: narrowPreferences(input.roster, input.preferences),
   }
 

@@ -807,6 +807,40 @@ describe("NpcsPage power card", () => {
     ).toHaveTextContent("npcs.power.estimate")
   })
 
+  it("closes the estimate note with Escape and keeps it closed", async () => {
+    const user = userEvent.setup()
+    renderPage("/library/npcs/infiltrator")
+    await screen.findByTestId("npc-name")
+    const trigger = screen.getByTestId("npc-stat-power-note")
+    trigger.focus()
+    await screen.findByTestId("npc-stat-power-note-content")
+    await user.keyboard("{Escape}")
+    await waitFor(() =>
+      expect(screen.queryByTestId("npc-stat-power-note-content")).toBeNull()
+    )
+    // Focus is not handed back to the trigger, so its onFocus does not reopen the note.
+    await new Promise((resolve) => setTimeout(resolve, 50))
+    expect(screen.queryByTestId("npc-stat-power-note-content")).toBeNull()
+  })
+
+  it("opens the estimate note on hover without moving focus, and closes it on leave", async () => {
+    const user = userEvent.setup()
+    renderPage("/library/npcs/infiltrator")
+    await screen.findByTestId("npc-name")
+    const trigger = screen.getByTestId("npc-stat-power-note")
+    await user.hover(trigger)
+    const content = await screen.findByTestId("npc-stat-power-note-content")
+    expect(content).not.toContainElement(
+      document.activeElement as HTMLElement | null
+    )
+    await user.unhover(trigger)
+    await waitFor(() =>
+      expect(screen.queryByTestId("npc-stat-power-note-content")).toBeNull()
+    )
+    await new Promise((resolve) => setTimeout(resolve, 50))
+    expect(screen.queryByTestId("npc-stat-power-note-content")).toBeNull()
+  })
+
   it("opens the estimate note on tap", async () => {
     const user = userEvent.setup()
     renderPage("/library/npcs/infiltrator")

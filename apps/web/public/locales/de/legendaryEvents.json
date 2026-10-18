@@ -220,8 +220,9 @@
     "members": "Mitglieder",
     "pointsPerBattle": "{{points}} Punkte pro Kampf",
     "power": {
-      "label": "Team-Kampfkraft",
-      "unavailable": "Kampfkraftdaten nicht verfügbar"
+      "label": "Team-Stärke",
+      "unavailable": "Stärkedaten nicht verfügbar",
+      "noRoster": "Synchronisiere deinen Kader, um die Team-Stärke zu sehen"
     },
     "notCovered": "Von den aktuellen Mitgliedern nicht abgedeckt",
     "dragHandle": "{{name}} zum Umsortieren ziehen",
@@ -419,8 +420,8 @@
   },
   "estimates": {
     "estimated": "geschätzt",
-    "uncalibrated": "Unkalibriert: Das Leistungsverhältnis der Schätzung wurde noch nicht an echten Ergebnissen ausgerichtet, nimm sie also nur als grobe Orientierung.",
-    "howItWorks": "Geschätzt aus der Kampfkraft deines synchronisierten Kaders, Ausrüstung eingeschlossen, im Vergleich zur Stärke jedes Kampfes. Synergien und schwere Ziele werden nicht berücksichtigt; lege eine Tiefe fest, um sie zu überschreiben.",
+    "uncalibrated": "Unkalibriert: Das Stärkeverhältnis der Schätzung wurde noch nicht an echten Ergebnissen ausgerichtet, nimm sie also nur als grobe Orientierung.",
+    "howItWorks": "Geschätzt aus der Stärke deines synchronisierten Kaders, Ausrüstung eingeschlossen, im Vergleich zur Stärke jedes Kampfes. Synergien und schwere Ziele werden nicht berücksichtigt; lege eine Tiefe fest, um sie zu überschreiben.",
     "marginAbove": "{{percent}} % über Kampf {{battle}}",
     "shortfallNext": "{{percent}} % unter Kampf {{battle}}",
     "notEnough": "Reicht noch nicht für Kampf 1",
@@ -680,7 +681,7 @@
   "tierList": {
     "intro": "Die Horde-Modus-Tiers aller Charaktere mit dem Multiplikator, den jeder erhält.",
     "whatThisMeans": "Was bedeutet das?",
-    "explainer": "Der Multiplikator eines Charakters skaliert seine Kampfkraft in den Abschlussschätzungen der Legendären Events. Charaktere mit Tier nutzen ihren eigenen Multiplikator, falls sie einen haben, sonst den ihres Tiers; Charaktere ohne Tier nutzen 1,0.",
+    "explainer": "Der Multiplikator eines Charakters skaliert seine Stärke in den Abschlussschätzungen der Legendären Events. Charaktere mit Tier nutzen ihren eigenen Multiplikator, falls sie einen haben, sonst den ihres Tiers; Charaktere ohne Tier nutzen 1,0.",
     "search": "Charaktere suchen",
     "onlyOwned": "Nur eigene",
     "syncRoster": "Synchronisiere deinen Kader",

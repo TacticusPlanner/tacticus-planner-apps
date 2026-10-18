@@ -282,10 +282,19 @@ describe("buildTeamRecommendations — Power mode", () => {
       teamSize: 3,
       unitPower: null,
     })
-    expect(strengths(unavailable)).toEqual([
-      ["ultraCalgar", 0],
-      ["ultraTigurius", 0],
-      ["zzUnknown", 0],
+    // Ordered as 0 (then unit id), but no member cites a strength figure: the minimum-size
+    // rationale stands in rather than "Chosen for combat strength (0)".
+    expect(planOf(unavailable).members.map((member) => member.unitId)).toEqual([
+      "ultraCalgar",
+      "ultraTigurius",
+      "zzUnknown",
+    ])
+    expect(
+      planOf(unavailable).members.map((member) => member.rationale)
+    ).toEqual([
+      { kind: "minimum-size" },
+      { kind: "minimum-size" },
+      { kind: "minimum-size" },
     ])
     expect(randomOf(unavailable).members).toHaveLength(3)
   })

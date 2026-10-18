@@ -86,11 +86,17 @@ export function characterPowerValues({
   }
 }
 
-/** At a glance and Stats by rank: the stats before equipment, or why there are none yet. */
+/** At a glance and Stats by rank: the stats before equipment, or why there are none yet. The
+ *  ladder is independent of At a glance: `byRank` is null when any of its ranks cannot be computed
+ *  (Stats by rank alone shows unavailable). */
 export type StatsFigure =
   | { status: "loading" }
   | { status: "unavailable" }
-  | { status: "ready"; stats: UnitStats; byRank: readonly UnitStats[] }
+  | {
+      status: "ready"
+      stats: UnitStats
+      byRank: readonly UnitStats[] | null
+    }
 
 export type CharacterPowerView = {
   stats: StatsFigure
@@ -131,15 +137,12 @@ export function characterPowerView(
         )
       : null
   const stats = statsAt(values.rank)
-  const byRank = ladderRanks.map((rank) => statsAt(rank))
-  if (!stats || byRank.some((entry) => entry === null)) {
-    return { stats: { status: "unavailable" }, power, includesItems }
-  }
-  return {
-    stats: { status: "ready", stats, byRank: byRank as UnitStats[] },
-    power,
-    includesItems,
-  }
+  if (!stats) return { stats: { status: "unavailable" }, power, includesItems }
+  const ladder = ladderRanks.map((rank) => statsAt(rank))
+  const byRank = ladder.every((entry) => entry !== null)
+    ? (ladder as UnitStats[])
+    : null
+  return { stats: { status: "ready", stats, byRank }, power, includesItems }
 }
 
 /** The player's level for each of the unit's abilities, by ability id. */

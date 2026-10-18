@@ -179,10 +179,11 @@ function CharacterUnit({
   )
   const radar = buildStatRadar(character, population)
   const shownRelicLevel = relicLevel ?? relic?.equippedLevel ?? 1
-  const powerView = useCharacterPowerView({
+  const { view: powerView, unitPower } = useCharacterPowerView({
     characterId: unitId,
     shown,
     player,
+    playerLoading: ownership === "loading",
     activeLevel: levelOf(activeId ?? ""),
     passiveLevel: levelOf(passiveId ?? ""),
     equippedRelic:
@@ -410,7 +411,7 @@ function CharacterUnit({
               isMobile={isMobile}
             />
           ) : (
-            <CharacterRankUpTab characterId={unitId} />
+            <CharacterRankUpTab characterId={unitId} powerContext={unitPower} />
           )}
         </div>
       </div>

@@ -221,7 +221,8 @@
     "pointsPerBattle": "{{points}} points par combat",
     "power": {
       "label": "Puissance de l'équipe",
-      "unavailable": "Données de puissance indisponibles"
+      "unavailable": "Données de puissance indisponibles",
+      "noRoster": "Synchronisez votre effectif pour voir la puissance de l'équipe"
     },
     "notCovered": "Non couvert par les membres actuels",
     "dragHandle": "Faire glisser pour réordonner {{name}}",

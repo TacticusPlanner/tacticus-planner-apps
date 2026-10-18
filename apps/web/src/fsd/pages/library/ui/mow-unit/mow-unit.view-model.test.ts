@@ -40,6 +40,12 @@ describe("mowPowerFigure", () => {
     ).toEqual({ status: "ready", value: 873_548 })
   })
 
+  it("is loading while the player record is still read, whatever the power data", () => {
+    expect(
+      mowPowerFigure("tyranBiovore", "Common:None", maxed, ready, true)
+    ).toEqual({ status: "loading" })
+  })
+
   it("is unavailable when the dataset failed, is absent or has no entry for the MoW", () => {
     const failed = { status: "error", retry: () => {} } as const
     const absent = { status: "ready", data: null, retry: () => {} } as const

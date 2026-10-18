@@ -312,7 +312,9 @@ export function StatsByRank({
   if (stats.status === "loading") {
     return <Skeleton className="h-32 w-full rounded-lg" />
   }
-  if (stats.status === "unavailable") {
+  // The ladder alone is unavailable when one of its ranks cannot be computed; At a glance still
+  // shows the shown rank's stats.
+  if (stats.status === "unavailable" || !stats.byRank) {
     return (
       <p
         className="text-sm text-muted-foreground"

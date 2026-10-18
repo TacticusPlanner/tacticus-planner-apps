@@ -6,6 +6,7 @@ import {
   teamPointsPerBattle,
   teamPower,
   type ClearEstimate,
+  type ClearEstimateRoster,
   type LegendaryEventLane,
   type LegendaryEventLaneId,
   type LegendaryEventPlan,
@@ -64,10 +65,14 @@ export interface TeamCardViewModel {
    *  multipliers (a locked member adds 0); null when the roster could not be read or any owned
    *  member's power data is unavailable, never a partial sum. */
   teamPower: number | null
-  /** The power data is still loading (the card shows a placeholder dash, not "unavailable"). */
-  teamPowerPending: boolean
+  /** Why `teamPower` is (or is not) shown: `pending` while the power data loads (a placeholder
+   *  dash), `noRoster` when the roster is not synced or unreadable (its own reason, not "power
+   *  unavailable"), `unavailable` when the power data is absent or failed. */
+  teamPowerStatus: TeamPowerStatus
   sortOrder: number
 }
+
+type TeamPowerStatus = "ready" | "pending" | "noRoster" | "unavailable"
 
 /** The power data the card total reads: the context (null when the `unit-power` dataset is
  *  absent), or its read state. */
@@ -97,14 +102,13 @@ export function buildTeamCardViewModel(
   roster: readonly LegendaryEventRosterUnit[] | undefined,
   currentRun: LegendaryEventRun,
   estimateTeam?: TeamEstimator,
-  powerSource: TeamPowerSource = null
+  powerSource: TeamPowerSource = null,
+  /** `roster` keyed by unit id; the section builds it once for all its cards. */
+  rosterById: ClearEstimateRoster | undefined = roster && rosterMap(roster)
 ): TeamCardViewModel {
-  const owned = roster
-    ? new Set(roster.map((entry) => entry.unitId as string))
-    : undefined
   const member = (unitId: string): TeamCardMember => ({
     unitId,
-    owned: owned ? owned.has(unitId) : undefined,
+    owned: rosterById ? rosterById.has(unitId) : undefined,
   })
   const derived = new Set(derivedTeamCoverage(team.memberUnitIds, lane, units))
   const stored = new Set(team.objectiveIndexes)
@@ -142,25 +146,35 @@ export function buildTeamCardViewModel(
       ? null
       : teamEffectiveDepth(expectedBattleClears, estimate),
     lockedMemberCount: members.filter((entry) => entry.owned === false).length,
-    teamPower: cardTeamPower(team.memberUnitIds, roster, powerSource),
-    teamPowerPending: powerSource === "loading",
+    ...cardTeamPower(team.memberUnitIds, rosterById, powerSource),
     sortOrder: team.sortOrder,
   }
 }
 
+/** The roster keyed by unit id, as the card's ownership and power read it. */
+export function rosterMap(
+  roster: readonly LegendaryEventRosterUnit[]
+): ClearEstimateRoster {
+  return new Map(roster.map((unit) => [unit.unitId as string, unit]))
+}
+
 function cardTeamPower(
   memberUnitIds: readonly string[],
-  roster: readonly LegendaryEventRosterUnit[] | undefined,
+  rosterById: ClearEstimateRoster | undefined,
   powerSource: TeamPowerSource
-): number | null {
-  if (!roster || powerSource === "loading" || powerSource === "error") {
-    return null
+): Pick<TeamCardViewModel, "teamPower" | "teamPowerStatus"> {
+  if (!rosterById) return { teamPower: null, teamPowerStatus: "noRoster" }
+  if (powerSource === "loading") {
+    return { teamPower: null, teamPowerStatus: "pending" }
   }
-  return teamPower(
-    memberUnitIds,
-    new Map(roster.map((unit) => [unit.unitId as string, unit])),
-    powerSource
-  )
+  if (powerSource === "error" || powerSource === null) {
+    return { teamPower: null, teamPowerStatus: "unavailable" }
+  }
+  const power = teamPower(memberUnitIds, rosterById, powerSource)
+  return {
+    teamPower: power,
+    teamPowerStatus: power === null ? "unavailable" : "ready",
+  }
 }
 
 /** The Teams section body (design D5): hidden when signed out, a skeleton while the plan, the

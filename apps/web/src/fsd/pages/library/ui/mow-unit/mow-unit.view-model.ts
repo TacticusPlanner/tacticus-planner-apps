@@ -63,13 +63,17 @@ export function costsByLevel(
   return new Map(costs.map((rung) => [rung.level, rung]))
 }
 
-/** The header power at the shown rarity and stars and the Primary and Secondary panel levels. */
+/** The header power at the shown rarity and stars and the Primary and Secondary panel levels;
+ *  loading while the player record is still read (`playerLoading`), since the shown values are the
+ *  starting ones until it arrives. */
 export function mowPowerFigure(
   mowId: string,
   progression: Progression,
   levels: Record<MowAbility, number>,
-  context: ReadState<UnitPowerContext | null>
+  context: ReadState<UnitPowerContext | null>,
+  playerLoading = false
 ): PowerFigure {
+  if (playerLoading) return { status: "loading" }
   return powerFigure(context, (ready) =>
     mowPowerAt(
       mowId,

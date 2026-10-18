@@ -10,6 +10,7 @@ const queries = vi.hoisted(() => ({
   getNpcs: vi.fn(),
   getEquipment: vi.fn(),
   getUpgrades: vi.fn(),
+  hasGameCatalogSynced: vi.fn(),
 }))
 vi.mock("@workspace/game-catalog/queries", () => queries)
 // A plain useLiveQuery stand-in: resolves the querier once per dependency change.
@@ -30,12 +31,14 @@ vi.mock("dexie-react-hooks", async () => {
 import { useUnitPowerContext } from "./use-unit-power-context"
 
 beforeEach(() => {
+  vi.clearAllMocks()
   queries.getUnitPower.mockResolvedValue(unitPowerCatalog.unitPower)
   queries.getCharacters.mockResolvedValue(unitPowerCatalog.characters)
   queries.getMows.mockResolvedValue(unitPowerCatalog.mows)
   queries.getNpcs.mockResolvedValue(unitPowerCatalog.npcs)
   queries.getEquipment.mockResolvedValue(unitPowerCatalog.equipment)
   queries.getUpgrades.mockResolvedValue(unitPowerCatalog.upgrades)
+  queries.hasGameCatalogSynced.mockResolvedValue(true)
 })
 
 describe("useUnitPowerContext", () => {
@@ -54,6 +57,23 @@ describe("useUnitPowerContext", () => {
     const { result } = renderHook(() => useUnitPowerContext())
     await waitFor(() => expect(result.current.status).toBe("ready"))
     expect(result.current.status === "ready" && result.current.data).toBeNull()
+  })
+
+  it("stays loading while the catalog has not finished its first sync", async () => {
+    queries.getUnitPower.mockResolvedValue(null)
+    queries.hasGameCatalogSynced.mockResolvedValue(false)
+    const { result } = renderHook(() => useUnitPowerContext())
+    await waitFor(() => expect(queries.hasGameCatalogSynced).toHaveBeenCalled())
+    // Settled, but not synced yet: still loading, never "absent".
+    await new Promise((resolve) => setTimeout(resolve, 0))
+    expect(result.current.status).toBe("loading")
+  })
+
+  it("does not consult the sync state when the dataset is present", async () => {
+    queries.hasGameCatalogSynced.mockResolvedValue(false)
+    const { result } = renderHook(() => useUnitPowerContext())
+    await waitFor(() => expect(result.current.status).toBe("ready"))
+    expect(queries.hasGameCatalogSynced).not.toHaveBeenCalled()
   })
 
   it("reports an error when a read fails", async () => {

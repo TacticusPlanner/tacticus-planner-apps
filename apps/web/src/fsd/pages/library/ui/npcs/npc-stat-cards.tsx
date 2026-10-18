@@ -86,9 +86,14 @@ function EstimateNote() {
           <Info />
         </Button>
       </PopoverTrigger>
+      {/* A read-only note: focus stays where it is. Moving it in on open (hover would steal focus)
+          or back to the trigger on close would re-fire the trigger's onFocus and reopen the note,
+          so it could never be dismissed. */}
       <PopoverContent
         className="w-72 text-sm"
         data-testid="npc-stat-power-note-content"
+        onOpenAutoFocus={(event) => event.preventDefault()}
+        onCloseAutoFocus={(event) => event.preventDefault()}
       >
         {t("npcs.power.estimate")}
       </PopoverContent>

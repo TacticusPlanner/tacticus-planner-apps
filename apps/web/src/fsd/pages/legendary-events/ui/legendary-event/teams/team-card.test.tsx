@@ -489,24 +489,34 @@ describe("TeamCard", () => {
     }
 
     it("shows the plain sum with digit grouping on the points-per-battle line", () => {
-      const power = renderPower({ teamPower: 98895, teamPowerPending: false })
+      const power = renderPower({ teamPower: 98895, teamPowerStatus: "ready" })
       expect(power).toHaveTextContent("Team power 98,895")
       expect(power).toHaveAttribute("data-state", "ready")
-      // One line on both forms: beside points per battle, which never wraps away from it.
+      // Beside points per battle; the line wraps between the two, never inside either (French at
+      // 375px).
       const points = screen.getByTestId("team-card-points")
       expect(power.parentElement).toBe(points.parentElement)
-      expect(power.parentElement).toHaveClass("whitespace-nowrap")
+      expect(power.parentElement).toHaveClass("flex-wrap", "min-w-0")
+      expect(power.parentElement).not.toHaveClass("whitespace-nowrap")
+      expect(power).toHaveClass("whitespace-nowrap")
+      expect(points).toHaveClass("whitespace-nowrap")
     })
 
     it("shows a placeholder dash while the power data loads", () => {
-      const power = renderPower({ teamPower: null, teamPowerPending: true })
+      const power = renderPower({
+        teamPower: null,
+        teamPowerStatus: "pending",
+      })
       expect(power).toHaveTextContent("Team power —")
       expect(power).toHaveAttribute("data-state", "pending")
       expect(power).not.toHaveTextContent("Power data unavailable")
     })
 
     it("shows — with the reason for screen readers when power data is unavailable", () => {
-      const power = renderPower({ teamPower: null, teamPowerPending: false })
+      const power = renderPower({
+        teamPower: null,
+        teamPowerStatus: "unavailable",
+      })
       expect(power).toHaveAttribute("data-state", "unavailable")
       expect(power).toHaveAttribute("title", "Power data unavailable")
       expect(within(power).getByText("—")).toHaveAttribute("aria-hidden")
@@ -517,6 +527,19 @@ describe("TeamCard", () => {
       expect(screen.getByTestId("team-card-points")).toHaveTextContent(
         "75 points per battle"
       )
+    })
+
+    it("names the unsynced roster, not the power data, as the reason", () => {
+      const power = renderPower({
+        teamPower: null,
+        teamPowerStatus: "noRoster",
+      })
+      expect(power).toHaveAttribute("data-state", "noRoster")
+      expect(power).toHaveAttribute(
+        "title",
+        "Sync your roster to see team power"
+      )
+      expect(power).not.toHaveTextContent("Power data unavailable")
     })
   })
 

@@ -221,7 +221,8 @@
     "pointsPerBattle": "{{points}} puntos por batalla",
     "power": {
       "label": "Poder del equipo",
-      "unavailable": "Datos de poder no disponibles"
+      "unavailable": "Datos de poder no disponibles",
+      "noRoster": "Sincroniza tu plantilla para ver el poder del equipo"
     },
     "notCovered": "Los miembros actuales no lo cubren",
     "dragHandle": "Arrastra para reordenar {{name}}",

@@ -11,7 +11,7 @@ import {
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
 import { mapCharacterStorageToDomain } from "@/features/rank-lookup"
-import { useUnitPowerContext } from "@/shared/unit-power"
+import type { UnitPowerContext } from "@/shared/unit-power"
 
 import { CharacterLookupDesktopPage } from "./desktop/character-lookup-desktop-page"
 import { CharacterLookupMobilePage } from "./mobile/character-lookup-mobile-page"
@@ -31,8 +31,11 @@ const PLAYER_CHARACTER_LOADING = Symbol("loading")
  */
 export function CharacterRankUpTab({
   characterId: unitId,
+  powerContext,
 }: {
   characterId: UnitId
+  /** The unit page's power context (read once there), null until it is ready or when absent. */
+  powerContext: UnitPowerContext | null
 }) {
   // "unitLookup.subtitle" (the only key used directly here) lives in "common", i18next's configured
   // defaultNS. useCharacterLookupCatalog/useCharacterLookupCalc each load whatever other namespaces
@@ -40,7 +43,6 @@ export function CharacterRankUpTab({
   const { t } = useTranslation()
   const isMobile = useIsMobile()
   const isAuthenticated = useIsAuthenticated()
-  const powerContext = useUnitPowerContext()
 
   const {
     charactersById,
@@ -156,7 +158,7 @@ export function CharacterRankUpTab({
       effectiveIncludeOwned,
       playerCharacter,
       inventoryUpgrades,
-      powerContext: powerContext.status === "ready" ? powerContext.data : null,
+      powerContext,
     })
 
   const sharedProps = {

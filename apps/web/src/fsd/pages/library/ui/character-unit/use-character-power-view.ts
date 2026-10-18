@@ -1,4 +1,5 @@
-import { useUnitPowerContext } from "@/shared/unit-power"
+import type { ReadState } from "@/shared/lib"
+import { useUnitPowerContext, type UnitPowerContext } from "@/shared/unit-power"
 
 import {
   characterPowerValues,
@@ -8,15 +9,24 @@ import {
   type ShownValues,
 } from "./character-unit.view-model"
 
+const LOADING: ReadState<UnitPowerContext | null> = {
+  status: "loading",
+  retry: () => {},
+}
+
 /**
  * The character page's stats (At a glance, Stats by rank) and header power at the shown values and
  * panel levels (design D6), both from one set of values so they never disagree. Recomputed as soon
- * as any input changes; never stored.
+ * as any input changes; never stored. While the player record is still read (`playerLoading`) the
+ * shown values are the starting ones, so the figures stay loading rather than show those.
+ *
+ * Also returns the page's one power context read, for the Rank-up materials tab.
  */
 export function useCharacterPowerView({
   characterId,
   shown,
   player,
+  playerLoading,
   activeLevel,
   passiveLevel,
   equippedRelic,
@@ -24,13 +34,14 @@ export function useCharacterPowerView({
   characterId: string
   shown: ShownValues
   player: PlayerCharacter | undefined
+  playerLoading: boolean
   activeLevel: number
   passiveLevel: number
   equippedRelic?: { id: string; level: number }
-}): CharacterPowerView {
+}): { view: CharacterPowerView; unitPower: UnitPowerContext | null } {
   const context = useUnitPowerContext()
   // Cheap (one stat step per ladder rank), so it is recomputed on every render.
-  return characterPowerView(
+  const view = characterPowerView(
     characterId,
     characterPowerValues({
       shown,
@@ -39,6 +50,10 @@ export function useCharacterPowerView({
       passiveLevel,
       equippedRelic,
     }),
-    context
+    playerLoading ? LOADING : context
   )
+  return {
+    view,
+    unitPower: context.status === "ready" ? context.data : null,
+  }
 }

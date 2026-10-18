@@ -228,7 +228,9 @@ describe("characterPowerView", () => {
 
   it("counts the applied slots only at the shown rank in Stats by rank", () => {
     const { view } = viewAt(goldShown, goldTigurius, [20, 15])
-    if (view.stats.status !== "ready") throw new Error("stats not ready")
+    if (view.stats.status !== "ready" || !view.stats.byRank) {
+      throw new Error("stats not ready")
+    }
     expect(view.stats.byRank).toHaveLength(ladderRanks.length)
     expect(view.stats.byRank[ladderRanks.indexOf("Gold1")]).toEqual(
       view.stats.stats
@@ -236,6 +238,39 @@ describe("characterPowerView", () => {
     // Silver III counts none of its own slots: below Gold I with its slots.
     const silver3 = view.stats.byRank[ladderRanks.indexOf("Silver3")]
     expect(silver3.health).toBeLessThan(view.stats.stats.health)
+  })
+
+  it("keeps At a glance when one Stats by rank rank cannot be computed", () => {
+    const tigurius = context.characters.get("ultraTigurius")!
+    // Upgrade rows only up to Gold I: Gold I and every rank below compute, Gold III and up throw.
+    const broken: UnitPowerContext = {
+      ...context,
+      characters: new Map([
+        [
+          "ultraTigurius",
+          {
+            ...tigurius,
+            rankUpUpgrades: tigurius.rankUpUpgrades.slice(
+              0,
+              ladderRanks.indexOf("Gold1") + 1
+            ),
+          },
+        ],
+      ]),
+    }
+    const { view } = viewAt(goldShown, goldTigurius, [20, 15], {
+      status: "ready",
+      data: broken,
+      retry: () => {},
+    })
+    const intact = viewAt(goldShown, goldTigurius, [20, 15]).view.stats
+    if (view.stats.status !== "ready" || intact.status !== "ready") {
+      throw new Error("stats not ready")
+    }
+    // At a glance is unchanged; only the ladder is unavailable.
+    expect(view.stats.stats).toEqual(intact.stats)
+    expect(view.stats.byRank).toBeNull()
+    expect(view.power.status).toBe("ready")
   })
 
   it("is a placeholder while loading and unavailable when the dataset is absent or failed", () => {
