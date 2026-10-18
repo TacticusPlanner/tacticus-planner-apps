@@ -68,7 +68,7 @@ A campaign battle SHALL be a candidate only if all of these hold:
 Attempts left SHALL be the synced attempts left for that node, or the catalog's daily cap for the node when that is not known.
 
 Assumptions:
-- The daily cap per node comes from the catalog (`dailyAttempts`): 3 for Indomitus I03 to I15, 10 for other Standard and Mirror nodes, and 6 for Elite nodes. The Indomitus value is from Severyn's memory and is still to be confirmed.
+- The daily cap per node comes from the catalog (`dailyAttempts`): 3 for Indomitus I06 to I14, 10 for every other Standard and Mirror node (including I15), and 6 for Elite nodes. Severyn confirmed the Indomitus value.
 - Synced attempts left take precedence over the catalog cap.
 
 #### Scenario: Locked, used-up and zero-cost nodes excluded
@@ -94,7 +94,7 @@ Candidates SHALL be ordered by energy cost ascending. Within the same cost, a no
 
 - **GIVEN** the "Today's plan covers part of the mission" case (38 battles left, 188 energy budget), with Indomitus unlocked, none of it used or planned today, and no goals
 - **THEN** I06 to I14 (3 energy, cap 3) get 3 raids each (27 raids, 81 energy)
-- **AND** I15 (5 energy, cap 3) gets 3 raids and I16 (5 energy, cap 10) gets 8 (11 raids, 55 energy)
+- **AND** I15 (5 energy, cap 10) gets 10 raids and I16 gets 1 (11 raids, 55 energy)
 - **AND** the totals read 38 raids and 136 energy, so 25 + 38 = 63 battles today complete the objective
 
 #### Scenario: Goal tie-break among equal costs

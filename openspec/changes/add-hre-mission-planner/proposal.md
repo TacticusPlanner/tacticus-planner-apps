@@ -13,7 +13,7 @@ Hero Release Events (HREs, the catalog's `new-character-event`) run for 14 days,
 - **Event pace**: the player enters event points and leaderboard rank, stored locally. The tab projects the chain from points to currency (milestones, missions, daily payouts, weekly crates), then chest tier, then shards, then rarity and stars. For a target the player picks, it shows the chest tier, currency, points and points per day needed, using the wiki's reward tables shipped with the app.
 - **Mission teams**: a 5-unit team from the synced roster for all-alliance, summon-free and featured-hero objectives, built with the shared team engine.
 - **Live indicator**: the HRE tab and the Dailies entry show the shared "event live" dot while an HRE runs.
-- Calendar data fix in `tacticus-planner-api` (data only, no OpenSpec change): add the running Zapspitta HRE (`orksWeirdboy`, 2026-10-18 to 2026-11-01), correct Sekhetar Robot's `featuredCharacterId` to `thousSekhetar`, and set the daily attempt cap of Indomitus I03 to I15 to 3. That cap is to be confirmed in game, and it also affects Today's planning.
+- Calendar data fix in `tacticus-planner-api` (data only, no OpenSpec change): add the running Zapspitta HRE (`orksWeirdboy`, 2026-10-18 to 2026-11-01), correct Sekhetar Robot's `featuredCharacterId` to `thousSekhetar`, and set the daily attempt cap of Indomitus I06 to I14 to 3. That also affects Today's planning.
 
 ## Capabilities
 

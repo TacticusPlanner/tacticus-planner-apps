@@ -4,7 +4,7 @@ Companion data fix in `tacticus-planner-api` (no OpenSpec change): the Zapspitta
 
 ## 1. Calendar data (tacticus-planner-api)
 
-- [ ] 1.1 Add the Zapspitta occurrence (`orksWeirdboy`, 2026-10-18T00:00Z to 2026-11-01T00:00Z), correct Sekhetar Robot to `thousSekhetar`, set `dailyAttempts` to 3 for Indomitus I03 to I15 in `CampaignDenormalizer` (confirm in game first), and verify with the catalog tests and `dotnet test`
+- [ ] 1.1 Add the Zapspitta occurrence (`orksWeirdboy`, 2026-10-18T00:00Z to 2026-11-01T00:00Z), correct Sekhetar Robot to `thousSekhetar`, set `dailyAttempts` to 3 for Indomitus I06 to I14 in `CampaignDenormalizer`, and verify with the catalog tests and `dotnet test`
 
 ## 2. Mission tracker (`features/hre-missions`)
 
