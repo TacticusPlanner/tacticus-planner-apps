@@ -1,11 +1,22 @@
 import { describe, expect, it } from "vitest"
 
 import {
+  teamLane,
+  teamUnitList,
+  teamUnits,
+} from "@/test/fixtures/legendary-event-teams"
+
+import {
   canSaveDraft,
+  checkedObjectives,
   draftNeedsMembers,
   emptyEditorDraft,
+  initialEditorDraft,
+  toTeamDraft,
   type TeamEditorDraft,
 } from "./team-editor-draft"
+
+const context = { lane: teamLane, units: teamUnitList }
 
 const draft = (
   memberUnitIds: string[],
@@ -15,7 +26,6 @@ const draft = (
   memberUnitIds,
   reserveUnitId,
   derived: [],
-  excluded: [],
   depth: null,
 })
 
@@ -48,5 +58,28 @@ describe("canSaveDraft (spec: a team needs at least three characters)", () => {
 describe("emptyEditorDraft (Save and add another)", () => {
   it("clears the members, reserve, name, coverage and depth", () => {
     expect(emptyEditorDraft()).toEqual(draft([]))
+  })
+})
+
+describe("initialEditorDraft (spec: the team covers what its members derive)", () => {
+  it("opens a saved team with an objective it no longer stores as covered, and saves it", () => {
+    const team = {
+      id: "t1",
+      laneId: "alpha" as const,
+      name: "Melee",
+      sortOrder: 0,
+      memberUnitIds: [teamUnits.a.id, teamUnits.b.id, teamUnits.c.id],
+      reserveUnitId: null,
+      objectiveIndexes: [0],
+      runDepths: [],
+    }
+    const opened = initialEditorDraft(team, 1, context)
+    expect(checkedObjectives(opened)).toEqual([0, 1])
+    expect(toTeamDraft(opened, "Melee").objectiveIndexes).toEqual([0, 1])
+  })
+
+  it("covers everything a suggestion's members derive", () => {
+    const opened = initialEditorDraft(undefined, 1, context, [teamUnits.a.id])
+    expect(checkedObjectives(opened)).toEqual([0, 1, 2])
   })
 })

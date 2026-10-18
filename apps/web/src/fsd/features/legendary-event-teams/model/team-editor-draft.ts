@@ -1,7 +1,6 @@
 import {
   MIN_TEAM_MEMBERS,
   derivedTeamCoverage,
-  reconcileCoverage,
   teamDepthForRun,
   type LegendaryEventLane,
   type LegendaryEventRun,
@@ -20,16 +19,15 @@ type CoverageLane = Pick<
 >
 
 /**
- * The editor's working state (design D3): `derived` is the coverage the current members derive,
- * `excluded` the derived objectives the user unticked. The checked chips — and what is saved — are
- * `derived − excluded`. `name` is null while the user has not typed one (the default name shows).
+ * The editor's working state: `derived` is the coverage the current members derive, and it is
+ * what the team covers and saves. `name` is null while the user has not typed one (the default
+ * name shows).
  */
 export interface TeamEditorDraft {
   name: string | null
   memberUnitIds: string[]
   reserveUnitId: string | null
   derived: number[]
-  excluded: number[]
   depth: number | null
 }
 
@@ -38,9 +36,9 @@ export interface CoverageContext {
   units: readonly LegendaryEventUnit[]
 }
 
-/** The checked objectives: derived and not unticked. */
+/** The covered objectives: everything the members derive. */
 export function checkedObjectives(draft: TeamEditorDraft): number[] {
-  return draft.derived.filter((index) => !draft.excluded.includes(index))
+  return draft.derived
 }
 
 /** An empty new-team draft: no members or reserve, the name unset (the derived default shows)
@@ -51,14 +49,12 @@ export function emptyEditorDraft(): TeamEditorDraft {
     memberUnitIds: [],
     reserveUnitId: null,
     derived: [],
-    excluded: [],
     depth: null,
   }
 }
 
-/** A new team's draft (empty, or from a suggestion's members in order with everything they derive
- *  ticked), or a saved team's: the opt-outs are recovered as the objectives the stored members
- *  derive but the team does not store. A saved team's name field starts from `displayName` (the
+/** A new team's draft (empty, or from a suggestion's members in order), or a saved team's. Either
+ *  way the coverage is what the members derive, whatever the saved team stored. A saved team's name field starts from `displayName` (the
  *  readable name of a team stored under its lane id, spec: editing offers the readable name), else
  *  its stored name. */
 export function initialEditorDraft(
@@ -75,42 +71,29 @@ export function initialEditorDraft(
       context
     )
   }
-  const derived = derivedTeamCoverage(
-    team.memberUnitIds,
-    context.lane,
-    context.units
-  )
   return {
     name: displayName ?? team.name,
     memberUnitIds: [...team.memberUnitIds],
     reserveUnitId: team.reserveUnitId,
-    derived,
-    excluded: derived.filter((index) => !team.objectiveIndexes.includes(index)),
+    derived: derivedTeamCoverage(
+      team.memberUnitIds,
+      context.lane,
+      context.units
+    ),
     depth: teamDepthForRun(team, run)?.expectedBattleClears ?? null,
   }
 }
 
-/** The draft with new members, its coverage reconciled against the previous derivation. */
+/** The draft with new members and the coverage they derive. */
 function withMembers(
   draft: TeamEditorDraft,
   memberUnitIds: string[],
   context: CoverageContext
 ): TeamEditorDraft {
-  const derived = derivedTeamCoverage(
-    memberUnitIds,
-    context.lane,
-    context.units
-  )
-  const checked = reconcileCoverage(
-    checkedObjectives(draft),
-    draft.derived,
-    derived
-  )
   return {
     ...draft,
     memberUnitIds,
-    derived,
-    excluded: derived.filter((index) => !checked.includes(index)),
+    derived: derivedTeamCoverage(memberUnitIds, context.lane, context.units),
   }
 }
 
@@ -163,20 +146,6 @@ export function toggleReserve(
       )
     : draft
   return { ...base, reserveUnitId: unitId }
-}
-
-/** Unticks a checked derived objective or ticks it again. */
-export function toggleObjective(
-  draft: TeamEditorDraft,
-  index: number
-): TeamEditorDraft {
-  if (!draft.derived.includes(index)) return draft
-  return {
-    ...draft,
-    excluded: draft.excluded.includes(index)
-      ? draft.excluded.filter((entry) => entry !== index)
-      : [...draft.excluded, index],
-  }
 }
 
 /** The default name: the checked objectives' labels joined by " · " (cut to the name limit), or

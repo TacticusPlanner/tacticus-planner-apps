@@ -50,7 +50,7 @@ const saved: LegendaryEventTeam = {
   sortOrder: 0,
   memberUnitIds: [teamUnits.a.id, teamUnits.b.id, teamUnits.c.id],
   reserveUnitId: null,
-  // Min 5 Hits (1) derives but was unticked.
+  // Min 5 Hits (1) derives but is not stored.
   objectiveIndexes: [0],
   runDepths: [],
 }
@@ -61,9 +61,11 @@ function renderEditor({
   onOpenChange = vi.fn(),
   estimateTeam,
   initialMemberUnitIds,
+  initialObjectives,
   progress,
 }: {
   initialMemberUnitIds?: readonly string[]
+  initialObjectives?: readonly number[]
   progress?: LaneProgressView
   team?: LegendaryEventTeam
   onSubmit?: (
@@ -78,6 +80,7 @@ function renderEditor({
       estimateTeam={estimateTeam}
       key={key}
       initialMemberUnitIds={initialMemberUnitIds}
+      initialObjectives={initialObjectives}
       lane={teamLane}
       laneId="alpha"
       onOpenChange={onOpenChange}
@@ -104,11 +107,11 @@ const tap = (unitId: string) => {
     .find((element) => element.dataset.unit === unitId)!
   fireEvent.click(within(tile).getByTestId("team-picker-toggle"))
 }
+/** The covered objectives' labels, as the footer lists them. */
 const chips = () =>
-  screen.getAllByTestId("team-editor-objective").map((chip) => ({
-    label: within(chip).getByTestId("team-editor-objective-label").textContent,
-    checked: chip.getAttribute("aria-pressed") === "true",
-  }))
+  screen
+    .queryAllByTestId("team-editor-summary-objective-label")
+    .map((label) => label.textContent)
 const nameInput = () => screen.getByTestId("team-editor-name")
 
 describe("TeamEditorDialog", () => {
@@ -119,20 +122,14 @@ describe("TeamEditorDialog", () => {
 
   it("derives coverage from the members: A ticks all three, adding B drops No Resilient", () => {
     renderEditor()
-    expect(screen.queryAllByTestId("team-editor-objective")).toHaveLength(0)
+    expect(chips()).toEqual([])
+    expect(screen.queryByTestId("team-editor-coverage")).not.toBeInTheDocument()
 
     tap(teamUnits.a.id)
-    expect(chips()).toEqual([
-      { label: "Melee", checked: true },
-      { label: "Min 5 hits", checked: true },
-      { label: "No Resilient", checked: true },
-    ])
+    expect(chips()).toEqual(["Melee", "Min 5 hits", "No Resilient"])
 
     tap(teamUnits.b.id)
-    expect(chips()).toEqual([
-      { label: "Melee", checked: true },
-      { label: "Min 5 hits", checked: true },
-    ])
+    expect(chips()).toEqual(["Melee", "Min 5 hits"])
   })
 
   it("defaults the name to the covered objectives, else Team N", () => {
@@ -148,10 +145,7 @@ describe("TeamEditorDialog", () => {
       initialMemberUnitIds: [teamUnits.b.id, teamUnits.a.id, teamUnits.c.id],
     })
     expect(nameInput()).toHaveValue("Melee · Min 5 hits")
-    expect(chips()).toEqual([
-      { label: "Melee", checked: true },
-      { label: "Min 5 hits", checked: true },
-    ])
+    expect(chips()).toEqual(["Melee", "Min 5 hits"])
     expect(onSubmit).not.toHaveBeenCalled()
 
     await act(async () => {
@@ -176,33 +170,47 @@ describe("TeamEditorDialog", () => {
     expect(onSubmit).not.toHaveBeenCalled()
   })
 
-  it("reopens a saved team with its untick kept", () => {
-    renderEditor({ team: saved })
+  it("reopens a saved team covering what its members derive, and saves that", async () => {
+    const { onSubmit } = renderEditor({ team: saved })
     expect(nameInput()).toHaveValue("Melee")
-    expect(chips()).toEqual([
-      { label: "Melee", checked: true },
-      { label: "Min 5 hits", checked: false },
-    ])
+    expect(chips()).toEqual(["Melee", "Min 5 hits"])
+    await act(async () => {
+      fireEvent.click(screen.getByTestId("team-editor-save"))
+    })
+    expect(onSubmit).toHaveBeenCalledWith(
+      expect.objectContaining({ name: "Melee", objectiveIndexes: [0, 1] }),
+      expect.anything()
+    )
   })
 
-  it("re-ticks an objective that newly derives when a member leaves", () => {
+  it("covers an objective that newly derives when a member leaves", () => {
     renderEditor({ team: saved })
     tap(teamUnits.b.id)
-    expect(chips()).toEqual([
-      { label: "Melee", checked: true },
-      { label: "Min 5 hits", checked: false },
-      { label: "No Resilient", checked: true },
-    ])
+    expect(chips()).toEqual(["Melee", "Min 5 hits", "No Resilient"])
+  })
+
+  it("refuses a sixth member and pulses the count badge", () => {
+    renderEditor()
+    for (const unit of ["a", "b", "c", "d", "e"] as const) {
+      tap(teamUnits[unit].id)
+    }
+    const badge = () => screen.getByTestId("team-picker-count")
+    expect(badge()).toHaveTextContent("5/5")
+    expect(badge()).not.toHaveAttribute("data-pulse")
+    tap(teamUnits.r.id)
+    expect(badge()).toHaveTextContent("5/5")
+    expect(badge()).toHaveAttribute("data-pulse", "1")
+    expect(screen.getAllByTestId("team-picker-selected-unit")).toHaveLength(5)
   })
 
   it("keeps Save unavailable without members and saves a team covering no objective", async () => {
     const { onSubmit, onOpenChange } = renderEditor()
     expect(screen.getByTestId("team-editor-save")).toBeDisabled()
 
+    // Resh is ranged and Beth is Resilient: the three share no objective.
     tap(teamUnits.r.id)
+    tap(teamUnits.b.id)
     tap(teamUnits.c.id)
-    tap(teamUnits.d.id)
-    fireEvent.click(screen.getAllByTestId("team-editor-objective")[0]!)
     fireEvent.click(
       within(screen.getByTestId("team-editor-depth")).getByTestId(
         "number-stepper-increase"
@@ -215,7 +223,7 @@ describe("TeamEditorDialog", () => {
     expect(onSubmit).toHaveBeenCalledWith(
       {
         name: "Team 3",
-        memberUnitIds: [teamUnits.r.id, teamUnits.c.id, teamUnits.d.id],
+        memberUnitIds: [teamUnits.r.id, teamUnits.b.id, teamUnits.c.id],
         reserveUnitId: null,
         objectiveIndexes: [],
         expectedBattleClears: 1,
@@ -292,17 +300,20 @@ describe("TeamEditorDialog", () => {
     })
   })
 
-  it("shows Name, Covered objectives and Clear depth above the members", () => {
+  it("shows Name, then the member count and Clear depth on one row, then the picker", () => {
     renderEditor()
     const name = nameInput()
-    const coverage = screen.getByTestId("team-editor-coverage")
+    const count = screen.getByTestId("team-picker-count")
     const depth = screen.getByTestId("team-editor-depth")
     const picker = screen.getByTestId("team-unit-picker")
     const follows = (a: Element, b: Element) =>
       Boolean(a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING)
-    expect(follows(name, coverage)).toBe(true)
-    expect(follows(coverage, depth)).toBe(true)
+    expect(follows(name, count)).toBe(true)
+    expect(follows(count, depth)).toBe(true)
     expect(follows(depth, picker)).toBe(true)
+    expect(count.parentElement?.parentElement).toBe(
+      depth.parentElement?.parentElement
+    )
   })
 
   describe("objectives already cleared (spec: cleared through the depth are marked)", () => {
@@ -324,14 +335,13 @@ describe("TeamEditorDialog", () => {
     })
     const noResilient = () =>
       screen
-        .getAllByTestId("team-editor-objective")
+        .getAllByTestId("team-editor-summary-objective")
         .find((chip) => chip.textContent?.includes("No Resilient"))!
 
     it("marks No Resilient at the estimated depth 1 and drops the mark at depth 3", () => {
       renderEditor({ estimateTeam, progress })
       tap(teamUnits.a.id)
       expect(noResilient()).toHaveAttribute("data-cleared", "true")
-      expect(noResilient()).toHaveAttribute("aria-pressed", "true")
       expect(
         within(noResilient()).getByText("Already cleared through battle 1")
       ).toHaveClass("sr-only")
@@ -473,19 +483,6 @@ describe("TeamEditorDialog", () => {
       expect(
         within(footer()).getByTestId("team-editor-summary-depth")
       ).toHaveTextContent("Clear depth 1")
-    })
-
-    it("follows an untick in the body", () => {
-      renderEditor()
-      tap(teamUnits.a.id)
-      tap(teamUnits.b.id)
-      expect(footerObjectives()).toEqual(["Melee", "Min 5 hits"])
-      fireEvent.click(screen.getAllByTestId("team-editor-objective")[1]!)
-      expect(chips()).toEqual([
-        { label: "Melee", checked: true },
-        { label: "Min 5 hits", checked: false },
-      ])
-      expect(footerObjectives()).toEqual(["Melee"])
     })
 
     it("sits outside the scrolling body", () => {
@@ -630,7 +627,16 @@ describe("TeamEditorDialog", () => {
           .getAllByTestId("team-picker-selected-unit")
           .map((element) => element.dataset.unit)
       ).toEqual([teamUnits.r.id])
-      expect(chips().map((entry) => entry.label)).not.toContain("Melee")
+      expect(chips()).not.toContain("Melee")
+    })
+
+    it("starts from a suggestion's objectives", () => {
+      renderEditor({
+        initialMemberUnitIds: [teamUnits.a.id],
+        initialObjectives: [0],
+      })
+      expect(chip("Melee")).toHaveAttribute("aria-pressed", "true")
+      expect(chip("Min 5 hits")).toHaveAttribute("aria-pressed", "false")
     })
 
     it("resets the selection when the editor is closed and reopened", () => {

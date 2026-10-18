@@ -175,6 +175,7 @@ export function TeamsSection({
     editor.openTeamEditor({
       laneId,
       memberUnitIds: suggestion.memberUnitIds,
+      objectiveIndexes: suggestion.objectiveIndexes,
       suggestionRank: rank,
     })
   const suggestButton = (testId: string) => (

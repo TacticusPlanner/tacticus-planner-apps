@@ -48,45 +48,6 @@ The total power SHALL be the sum of the non-reserve members' power (the `charact
 - **WHEN** a team card renders
 - **THEN** Team power shows "—" with the reason "Power data unavailable" for screen readers, and the rest of the card is unchanged
 
-### Requirement: Team editor derives covered objectives from members
-
-The team editor SHALL open from Add team (empty) or Edit (prefilled) as a dialog on desktop and a bottom sheet on mobile. It SHALL offer only the lane's allowed units in a picker where each unit shows its name, portrait, the objective icons it satisfies (muted when not), its remaining points, its rarity, rank and estimated clears when owned (`legendary-event-team-editor-workflow`) and locked styling when not owned; the picker SHALL be searchable by name, SHALL have an "only unlocked" filter defaulting to the page's shared value and SHALL carry objective chips that reorder the grid (`legendary-event-team-editor-workflow`). The user SHALL select up to five members, kept in the order they were selected (the editor offers no drag reorder of members), and may mark one further unit as reserve. The covered objectives SHALL be derived as the objectives every non-reserve member satisfies, shown as checked chips the user can untick. On every member change the set SHALL be reconciled against the previous derivation: an objective that still derives keeps the user's tick or untick, an objective that newly derives (it did not derive from the previous members) is ticked, and an objective that no longer derives is removed. On opening a saved team the previous derivation is that of the stored members, so an objective that derives but is not stored stays unticked. A team MAY be saved with zero covered objectives. The name SHALL default to the covered objective labels joined by " · " (or "Team N") and be editable, 1–60 characters. Save SHALL be unavailable with fewer than three non-reserve members (see `legendary-event-team-size`) and while a save is in progress. The editor SHALL close only once the save succeeded, unless the user chose Save and add another (`legendary-event-team-editor-workflow`), which keeps it open for the next team; after a conflict or any other failure it SHALL stay open with the draft, and after a conflict it SHALL say in the dialog that this save was not applied because the plan was reloaded.
-
-#### Scenario: Coverage follows the members
-
-- **GIVEN** units A and B both satisfy Melee and Min 5 Hits and only A satisfies No Resilient
-- **WHEN** the user selects A then B
-- **THEN** after A the chips Melee, Min 5 Hits and No Resilient are checked; after B only Melee and Min 5 Hits remain checked
-
-#### Scenario: Untick survives a save and an edit
-
-- **GIVEN** the user unticks Min 5 Hits and saves
-- **WHEN** the team is edited again with the same members
-- **THEN** Melee is checked and Min 5 Hits is shown unchecked
-
-#### Scenario: Newly derived objective is ticked again
-
-- **GIVEN** units A and B both satisfy Min 5 Hits and only A satisfies No Resilient, the user selected A then B (so No Resilient dropped) and unticked Min 5 Hits
-- **WHEN** the user removes B
-- **THEN** No Resilient is ticked again because it newly derives, and Min 5 Hits stays unticked because it still derives and the user's untick is kept
-
-#### Scenario: Sixth member is refused
-
-- **GIVEN** five members are selected
-- **WHEN** the user taps a sixth unit
-- **THEN** the selection is unchanged and the count badge draws attention
-
-#### Scenario: Reserve does not affect coverage
-
-- **GIVEN** members A and B cover Melee and the reserve unit does not satisfy Melee
-- **WHEN** the reserve is set
-- **THEN** Melee stays covered
-
-#### Scenario: Picker respects the lane
-
-- **WHEN** the editor opens on Beta
-- **THEN** only units allowed on Beta are listed and the objective icons shown are Beta's
-
 ### Requirement: Clear depth is a manual stepper per run
 
 Each card and the editor SHALL expose the clear depth of the current run as a stepper bounded 1..(lane battle count) with a clear control that sets it to null. The current run SHALL be the event's resolved run (`legendary-event-run-resolution`): the run in progress, else the next run to start, and run 1 when the run is unknown. Every depth write SHALL carry that run, so a depth set during another run is kept. Any value set by the user SHALL be stored with source `manual`. On the card, each stepper change SHALL show at once, and a rapid run of changes SHALL be sent as one write carrying the final value once the changes settle; a run that ends on the starting value SHALL send nothing. When the current run has no manual depth and a clear estimate exists (see `legendary-event-clear-estimates`), the stepper SHALL show the estimate marked "estimated" with its margin line ("N% above battle n · M% short of battle n+1"), and − or + SHALL start from the estimate and store a manual depth. When a manual depth exists and an estimate exists, the card SHALL show a muted "estimate ~n" hint and a **Use estimate** control that clears the current run's manual depth. An estimated depth of 0 SHALL read "Not enough for battle 1 yet". Members that are not owned SHALL be noted as not counted. The estimate SHALL never be written to the API; the `estimate` source is not used by this client. Every depth write SHALL report the estimate shown at the time (or none) with the analytics event.
@@ -299,7 +260,7 @@ Assumptions:
 
 ### Requirement: Covered objectives already cleared through the depth are marked
 
-An objective is **cleared through depth D** when the synced progress has it cleared in every battle 1..D (D ≥ 1). On a team card (D = displayed depth) and in the editor (D = the draft's manual or estimated depth), such a covered objective SHALL show a cleared mark ("Already cleared through battle D" for screen readers), stay visible and tickable, and not count toward points. With no depth nothing is marked.
+An objective is **cleared through depth D** when the synced progress has it cleared in every battle 1..D (D ≥ 1). On a team card (D = displayed depth) and in the editor footer (D = the draft's manual or estimated depth), such a covered objective SHALL show a cleared mark ("Already cleared through battle D" for screen readers), stay visible, and not count toward points. With no depth nothing is marked.
 
 #### Scenario: Card marks a spent objective
 
@@ -310,8 +271,8 @@ An objective is **cleared through depth D** when the synced progress has it clea
 #### Scenario: Editor marks it while picking
 
 - **GIVEN** the same progress and an editor draft with three Flying, non-Resilient members and an estimated depth of 12
-- **WHEN** the coverage chips render
-- **THEN** No Resilient is ticked and shows the cleared mark ("Already cleared through battle 12"), and Flying shows none
+- **WHEN** the footer chips render
+- **THEN** No Resilient is covered and shows the cleared mark ("Already cleared through battle 12"), and Flying shows none
 
 #### Scenario: Depth past the cleared battles
 
@@ -320,20 +281,60 @@ An objective is **cleared through depth D** when the synced progress has it clea
 
 ### Requirement: The team editor shows its result above the picker
 
-The team editor body SHALL be ordered Name, Covered objectives, Clear depth for the current run, then Members (count, selected chips, search, switches, objective chips and unit grid), on the desktop dialog and the mobile sheet. The footer (`legendary-event-team-editor-workflow`) is unchanged.
+The team editor body SHALL be ordered Name, then one row holding the Members heading with its count on the left and Clear depth for the current run on the right, then the selected chips, search, switches, objective chips and unit grid, on the desktop dialog and the mobile sheet. The body has no Covered objectives section: the footer (`legendary-event-team-editor-workflow`) shows them.
 
 #### Scenario: Desktop order
 
 - **WHEN** the editor opens at or above 768px
-- **THEN** Covered objectives and Clear depth sit directly under Name, above the unit grid, with no scrolling needed to reach them
+- **THEN** the Members row with Clear depth sits directly under Name, above the unit grid, with no scrolling needed to reach it
 
 #### Scenario: Mobile order
 
 - **WHEN** the editor opens below 768px
-- **THEN** the sheet shows Name, Covered objectives and Clear depth before Members, and the unit grid scrolls underneath them within the sheet body
+- **THEN** the sheet shows Name, then Members and Clear depth on one row at 375px, and the unit grid scrolls underneath within the sheet body
 
 #### Scenario: Coverage updates in place
 
 - **GIVEN** the editor is scrolled to the unit grid
 - **WHEN** the user picks a unit
-- **THEN** the covered objectives above update and the footer summary still shows them without scrolling
+- **THEN** the footer summary's covered objectives update without scrolling
+
+### Requirement: Team editor covers the objectives its members derive
+
+The team editor (Add team or Edit; dialog on desktop, sheet on mobile) SHALL offer the lane's allowed units (`legendary-event-team-editor-workflow`) for up to five members in selection order plus one reserve. Covered objectives SHALL be those every non-reserve member satisfies, read-only, and SHALL be what is saved.
+
+#### Scenario: Coverage follows the members
+
+- **GIVEN** units A and B both satisfy Melee and Min 5 Hits and only A satisfies No Resilient
+- **WHEN** the user selects A then B
+- **THEN** after A the footer shows Melee, Min 5 Hits and No Resilient; after B only Melee and Min 5 Hits
+
+#### Scenario: Sixth member is refused
+
+- **GIVEN** five members are selected
+- **WHEN** the user taps a sixth unit
+- **THEN** the selection is unchanged and the count badge draws attention
+
+#### Scenario: Reserve does not affect coverage
+
+- **GIVEN** members A and B cover Melee and the reserve unit does not satisfy Melee
+- **WHEN** the reserve is set
+- **THEN** Melee stays covered
+
+#### Scenario: Picker respects the lane
+
+- **WHEN** the editor opens on Beta
+- **THEN** only units allowed on Beta are listed and the objective icons shown are Beta's
+
+#### Scenario: Name, Save and failures are unchanged
+
+- **WHEN** the user edits a team
+- **THEN** the name defaults to the covered labels joined by " · " (or "Team N") and is editable, 1–60 characters
+- **AND** Save is unavailable below three non-reserve members (`legendary-event-team-size`) and while saving
+- **AND** the editor closes only once a save succeeds (or stays open for Save and add another), keeps the draft after a failure, and after a conflict says the save was not applied because the plan was reloaded
+
+#### Scenario: Saved team with an objective it no longer stores
+
+- **GIVEN** a saved team whose members derive Melee and Min 5 Hits but whose stored objectives are only Melee
+- **WHEN** it is edited and saved without changes
+- **THEN** the editor shows Melee and Min 5 Hits covered, and the saved team stores both

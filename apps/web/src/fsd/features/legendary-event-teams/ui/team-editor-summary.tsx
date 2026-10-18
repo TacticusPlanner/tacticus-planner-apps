@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next"
+import { Check } from "lucide-react"
 
 import {
   MIN_TEAM_MEMBERS,
@@ -11,15 +12,18 @@ import type { ClearDepthSummary } from "../model/clear-depth-display"
 
 /**
  * The editor footer's read-only summary (design D2): the member count ("n/5 · at least 3" below
- * three, with the minimum message Save is described by), the checked objectives as compact chips
- * and the clear depth (the value, the estimate marked "estimated", or not set). It reads the same
- * draft as the body; unticking and the depth stepper stay in the body.
+ * three, with the minimum message Save is described by), the covered objectives as compact chips
+ * (one already cleared in every battle 1..`clearedThrough` carries a cleared mark) and the clear
+ * depth (the value, the estimate marked "estimated", or not set). It reads the same draft as the
+ * body; the depth stepper stays in the body.
  */
 export function TeamEditorSummary({
   memberCount,
   checkedObjectives,
   depth,
   needsMembersId,
+  clearedIndexes = [],
+  clearedThrough = null,
 }: {
   memberCount: number
   /** The checked objectives, in catalog `index` order. */
@@ -27,6 +31,10 @@ export function TeamEditorSummary({
   depth: ClearDepthSummary
   /** The id of the minimum message, which Save is described by. */
   needsMembersId: string
+  /** The covered objectives already cleared through `clearedThrough`. */
+  clearedIndexes?: readonly number[]
+  /** The depth the cleared marks read; null shows none. */
+  clearedThrough?: number | null
 }) {
   const { t, i18n } = useTranslation("legendaryEvents")
   const objectiveLabel = useObjectiveLabel()
@@ -64,9 +72,13 @@ export function TeamEditorSummary({
         ) : (
           checkedObjectives.map((objective) => {
             const { label, icon } = objectiveLabel(objective)
+            const cleared =
+              clearedThrough !== null &&
+              clearedIndexes.includes(objective.index)
             return (
               <li
                 className="flex items-center gap-1 rounded-full border border-primary/60 bg-primary/10 py-0.5 pr-2 pl-1 text-xs"
+                data-cleared={cleared ? "true" : undefined}
                 data-index={objective.index}
                 data-testid="team-editor-summary-objective"
                 key={objective.index}
@@ -75,6 +87,18 @@ export function TeamEditorSummary({
                 <span data-testid="team-editor-summary-objective-label">
                   {label}
                 </span>
+                {cleared ? (
+                  <>
+                    <Check
+                      aria-hidden
+                      className="size-3.5 shrink-0 text-muted-foreground"
+                      data-testid="team-editor-summary-objective-cleared"
+                    />
+                    <span className="sr-only">
+                      {t("teams.clearedThrough", { battle: clearedThrough })}
+                    </span>
+                  </>
+                ) : null}
               </li>
             )
           })

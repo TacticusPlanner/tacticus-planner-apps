@@ -121,16 +121,21 @@ export function filterPickerTiles(
   })
 }
 
-/** Per objective chip, how many of the listed tiles (after the search and Only unlocked)
- *  satisfy it, so a chip's count is what the grid would list first for it alone. */
+/** Per objective chip, how many of the listed tiles (after the search and Only unlocked) satisfy
+ *  it together with every selected chip, so a chip's count is what the grid would list first with
+ *  that chip added to the selection (a selected chip counts the current selection). */
 export function objectiveChipCounts(
   tiles: readonly PickerTile[],
-  objectiveIndexes: readonly number[]
+  objectiveIndexes: readonly number[],
+  selected: readonly number[] = []
 ): Map<number, number> {
+  const matching = tiles.filter((tile) =>
+    selected.every((index) => tile.satisfied.includes(index))
+  )
   return new Map(
     objectiveIndexes.map((index) => [
       index,
-      tiles.filter((tile) => tile.satisfied.includes(index)).length,
+      matching.filter((tile) => tile.satisfied.includes(index)).length,
     ])
   )
 }

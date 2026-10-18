@@ -9,6 +9,7 @@ import {
   UTHAR_ALPHA_PROGRESS,
   WORKED_CONFIG,
   rosterOf,
+  rosterUnit,
 } from "./clear-estimate.fixtures"
 import { suggestLaneTeams, type TeamSuggestionsInput } from "./team-suggestions"
 
@@ -160,6 +161,45 @@ describe("suggestLaneTeams (spec worked examples)", () => {
         suggestion.memberUnitIds.includes("ultraInceptorSgt")
       )
     ).toBe(false)
+  })
+
+  describe("support (spec: Support)", () => {
+    const plain = [
+      "ultraCalgar",
+      "ultraTigurius",
+      "ultraTitus",
+      "ultraEliminatorSgt",
+      "ultraInceptorSgt",
+    ]
+    const ultramarinesTeam = (
+      overrides: Partial<TeamSuggestionsInput>
+    ): string[] | undefined =>
+      suggest(overrides).find(
+        (suggestion) =>
+          suggestion.objectiveIndexes.length === 1 &&
+          suggestion.objectiveIndexes[0] === ULTRAMARINES
+      )?.memberUnitIds
+
+    it("swaps a held Healer in for the weakest plain member", () => {
+      // Incisus (Healer) at Stone 1 is the weakest of six held Ultramarines.
+      const held = new Map([
+        ...rosterOf(plain),
+        [
+          "ultraApothecary",
+          { ...rosterUnit("ultraApothecary"), rank: "Stone1" as const },
+        ],
+      ])
+      expect(ultramarinesTeam({ roster: held })).toContain("ultraApothecary")
+    })
+
+    it("does not swap in a Healer the player does not hold", () => {
+      const members = ultramarinesTeam({
+        roster: rosterOf(plain),
+        onlyUnlocked: false,
+      })
+      expect(members).toBeDefined()
+      expect(members).not.toContain("ultraApothecary")
+    })
   })
 
   it("proposes nothing when power data is unavailable (every depth reads 0)", () => {

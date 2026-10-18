@@ -9,7 +9,6 @@ import { cn } from "@workspace/ui/lib/utils"
 
 import { UnitGoalBadge } from "@/entities/goal"
 import {
-  MIN_TEAM_MEMBERS,
   ObjectiveIcon,
   unitEffectivePower,
   useObjectiveLabel,
@@ -40,13 +39,14 @@ import { TeamPickerUnitState } from "./team-picker-unit-state"
  * The editor's unit picker (design D7): the lane's allowed units as tiles (portrait, name, an owned
  * unit's rarity, rank and estimated clears, the objectives each satisfies with the others muted,
  * the points it has left, locked styling), a name search, an "only unlocked" switch and a Points
- * left / Power sort that resets when the editor closes. A tap toggles membership up to five; a sixth tap is
- * ignored and pulses the count badge, which also says a team needs three while it has fewer. A
- * tile's secondary action sets the reserve. The selected members (in position order) and the
+ * left / Power sort (Power by default) that resets when the editor closes. A tap toggles membership
+ * up to five; the editor refuses a sixth and pulses its count badge. A tile's secondary action
+ * sets the reserve. The selected members (in position order) and the
  * reserve sit above the grid with remove buttons. With Goals Preview available, a switch
  * (starting from the page's value) shows tiles at their goal targets:
  * owned state, rarity, rank, estimated clears and a preview marker. The lane's objectives sit above
- * the grid as multi-select chips with how many listed units satisfy each (design D1): units
+ * the grid as multi-select chips, starting from `initialObjectives`, each with how many listed units
+ * satisfy it together with the selected ones: units
  * satisfying every selected objective come first, the others follow dimmed (still selectable, with
  * an accessible "does not satisfy" description); the selection lives as long as the picker, so it
  * resets when the editor closes and survives Save and add another.
@@ -65,6 +65,7 @@ export function TeamUnitPicker({
   searchInputRef,
   progress,
   estimates,
+  initialObjectives = [],
 }: {
   lane: LegendaryEventLane
   units: readonly LegendaryEventUnit[]
@@ -72,8 +73,7 @@ export function TeamUnitPicker({
   memberUnitIds: readonly string[]
   reserveUnitId: string | null
   onlyUnlockedDefault: boolean
-  /** Returns false when the toggle was refused (a sixth member). */
-  onToggleMember: (unitId: string) => boolean
+  onToggleMember: (unitId: string) => void
   onToggleReserve: (unitId: string) => void
   goalsPreview?: PickerGoalsPreview
   goalLines?: (unitId: string) => readonly string[]
@@ -83,15 +83,18 @@ export function TeamUnitPicker({
   progress?: LaneProgressView
   /** The lane's clear estimates on the synced roster; absent when unavailable. */
   estimates?: PickerEstimates
+  /** The objective chips selected when the picker opens (a suggestion's objectives). */
+  initialObjectives?: readonly number[]
 }) {
   const { t, i18n } = useTranslation("legendaryEvents")
   const unitName = useUnitName()
   const objectiveLabel = useObjectiveLabel()
   const [search, setSearch] = useState("")
   const [onlyUnlocked, setOnlyUnlocked] = useState(onlyUnlockedDefault)
-  const [pulse, setPulse] = useState(0)
-  const [selectedObjectives, setSelectedObjectives] = useState<number[]>([])
-  const [sort, setSort] = useState<PickerSort>("pointsLeft")
+  const [selectedObjectives, setSelectedObjectives] = useState<number[]>(() => [
+    ...initialObjectives,
+  ])
+  const [sort, setSort] = useState<PickerSort>("power")
   const describedByPrefix = useId()
   const [preview, setPreview] = useState(
     Boolean(goalsPreview?.available && goalsPreview.enabled)
@@ -162,7 +165,8 @@ export function TeamUnitPicker({
   )
   const chipCounts = objectiveChipCounts(
     shown,
-    objectives.map((objective) => objective.index)
+    objectives.map((objective) => objective.index),
+    selectedObjectives
   )
   const selectedLabels = objectives
     .filter((objective) => selectedObjectives.includes(objective.index))
@@ -171,61 +175,36 @@ export function TeamUnitPicker({
       label: objectiveLabel(objective).label,
     }))
 
-  const toggle = (unitId: string) => {
-    if (!onToggleMember(unitId)) setPulse((count) => count + 1)
-  }
-
   return (
     <div className="flex min-w-0 flex-col gap-3" data-testid="team-unit-picker">
-      <div className="flex flex-wrap items-center gap-2">
-        <span
-          aria-live="polite"
-          className={cn(
-            "rounded-full border px-2 py-0.5 text-sm font-semibold tabular-nums",
-            memberUnitIds.length === MAX_TEAM_MEMBERS &&
-              "border-primary text-primary",
-            pulse > 0 && "animate-[pulse_0.4s_ease-in-out_2]"
-          )}
-          data-pulse={pulse > 0 ? pulse : undefined}
-          data-testid="team-picker-count"
-          key={pulse}
-        >
-          {memberUnitIds.length < MIN_TEAM_MEMBERS
-            ? t("teams.picker.countBelowMinimum", {
-                members: memberUnitIds.length,
-                min: MIN_TEAM_MEMBERS,
-              })
-            : t("teams.picker.count", { members: memberUnitIds.length })}
-        </span>
-        <ul
-          className="flex min-w-0 flex-wrap gap-1.5"
-          data-testid="team-picker-selected"
-        >
-          {memberUnitIds.map((unitId) => (
-            <SelectedChip
-              key={unitId}
-              label={nameOf({ id: unitId })}
-              onRemove={() => toggle(unitId)}
-              removeLabel={t("teams.picker.remove", {
-                name: nameOf({ id: unitId }),
-              })}
-              unitId={unitId}
-            />
-          ))}
-          {reserveUnitId ? (
-            <SelectedChip
-              key={`reserve-${reserveUnitId}`}
-              label={`${nameOf({ id: reserveUnitId })} · ${t("teams.reserve")}`}
-              onRemove={() => onToggleReserve(reserveUnitId)}
-              removeLabel={t("teams.picker.unsetReserve", {
-                name: nameOf({ id: reserveUnitId }),
-              })}
-              reserve
-              unitId={reserveUnitId}
-            />
-          ) : null}
-        </ul>
-      </div>
+      <ul
+        className="flex min-w-0 flex-wrap gap-1.5"
+        data-testid="team-picker-selected"
+      >
+        {memberUnitIds.map((unitId) => (
+          <SelectedChip
+            key={unitId}
+            label={nameOf({ id: unitId })}
+            onRemove={() => onToggleMember(unitId)}
+            removeLabel={t("teams.picker.remove", {
+              name: nameOf({ id: unitId }),
+            })}
+            unitId={unitId}
+          />
+        ))}
+        {reserveUnitId ? (
+          <SelectedChip
+            key={`reserve-${reserveUnitId}`}
+            label={`${nameOf({ id: reserveUnitId })} · ${t("teams.reserve")}`}
+            onRemove={() => onToggleReserve(reserveUnitId)}
+            removeLabel={t("teams.picker.unsetReserve", {
+              name: nameOf({ id: reserveUnitId }),
+            })}
+            reserve
+            unitId={reserveUnitId}
+          />
+        ) : null}
+      </ul>
       {memberUnitIds.length === MAX_TEAM_MEMBERS ? (
         <p className="text-xs text-muted-foreground">
           {t("teams.picker.full")}
@@ -286,7 +265,7 @@ export function TeamUnitPicker({
         </p>
       ) : (
         <ul
-          className="grid grid-cols-4 gap-2 md:grid-cols-6"
+          className="grid grid-cols-3 gap-2 md:grid-cols-5"
           data-testid="team-picker-grid"
         >
           {shown.map((tile) => {
@@ -331,7 +310,7 @@ export function TeamUnitPicker({
                   aria-pressed={isMember}
                   className="flex min-w-0 flex-col items-center gap-1 p-1.5 text-center outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   data-testid="team-picker-toggle"
-                  onClick={() => toggle(id)}
+                  onClick={() => onToggleMember(id)}
                   type="button"
                 >
                   {dimmed ? (
