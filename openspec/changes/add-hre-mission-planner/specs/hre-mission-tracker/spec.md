@@ -47,24 +47,24 @@ The event header SHALL show the featured hero's icon and localized name, resolve
 - **GIVEN** `featuredCharacterId` is "unknown-hero" and no unit has that id
 - **THEN** the header shows "unknown-hero" without an icon, and mission 2 reads "Defeat 10 enemies with your alliance's units"
 
-### Requirement: The mission list comes from the catalog, worded for the event
+### Requirement: Every HRE uses the same mission list, worded for the featured hero's alliance
 
-The tab SHALL list the event's missions from the catalog. It SHALL use the occurrence's own list when the catalog has one, and the default template otherwise. Each mission SHALL show its number (1 to 20, then "Bonus") and its two objectives. Each objective SHALL be rendered from its kind, target count and optional qualifier (alliance, faction, damage type or featured hero) in the active locale. An objective kind the app does not know SHALL render as "Unknown objective" with its target, and SHALL NOT break the list.
+The tab SHALL show the one fixed list of 21 missions (1 to 20, then "Bonus"), each with its two objectives, for every HRE. Only the alliance-dependent objectives SHALL change, using the featured hero's alliance (for example "Defeat 10 enemies with Xenos units"), along with the featured-hero objectives of mission 20 and Bonus, which use the hero's name. The list SHALL be shipped with the app, not loaded from the catalog.
 
 #### Scenario: Zapspitta mission 10
 
-- **GIVEN** Zapspitta's list, where mission 10 is `arenaBattles` 4 and `winWithAllianceLineup` 15 with the alliance Xenos
+- **GIVEN** Zapspitta (Xenos)
 - **THEN** mission 10 reads "Play 4 Arena battles" and "Win 15 battles with an all-Xenos team"
 
-#### Scenario: Default template used when no per-occurrence list exists
+#### Scenario: Same list for an Imperial hero
 
-- **GIVEN** an occurrence without its own list
-- **THEN** the 21 default missions are shown, with the featured hero's alliance and name substituted
+- **GIVEN** an HRE whose featured hero is Imperial
+- **THEN** mission 2 reads "Raid 5 campaign battles" and "Defeat 10 enemies with Imperial units", and mission 11 still reads "Defeat 100 units of the Necrons faction"
 
-#### Scenario: Event with no mission data
+#### Scenario: Featured hero in mission 20
 
-- **GIVEN** the catalog has neither a default template nor an occurrence list
-- **THEN** the header still shows, and the mission area says "Mission list not available for this event yet"
+- **GIVEN** Zapspitta
+- **THEN** mission 20 reads "Win 250 campaign battles" and "Use abilities 10 times with Zapspitta"
 
 ### Requirement: The player records their current mission and its progress
 

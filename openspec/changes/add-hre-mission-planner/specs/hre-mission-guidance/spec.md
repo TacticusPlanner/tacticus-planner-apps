@@ -37,7 +37,7 @@ Assumptions:
 
 #### Scenario: Worked example on day 1
 
-- **GIVEN** the Zapspitta list, with the current mission 1 and synced tokens Arena 8, Guild Raid 2, Onslaught 3 and Salvage Run 1
+- **GIVEN** the current mission is 1 and synced tokens Arena 8, Guild Raid 2, Onslaught 3 and Salvage Run 1
 - **THEN** the Arena need is 4 + 4 + 4 = 12 (missions 4, 10 and 15) against 8, marked short
 - **AND** Guild Raid is 2 (mission 8) against 2, Onslaught is 1 (mission 12) against 3, and Salvage Run is 2 (mission 7) against 1, marked short
 

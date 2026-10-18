@@ -1,15 +1,15 @@
 # Tasks
 
-Companion API change: `add-hre-mission-planner` in `tacticus-planner-api`. It applies first.
+Companion data fix in `tacticus-planner-api` (no OpenSpec change): the Zapspitta occurrence and the Sekhetar Robot id. It ships first.
 
-## 1. Catalog schema
+## 1. Calendar data (tacticus-planner-api)
 
-- [ ] 1.1 Add a zod schema for `config.hre` (missions, objectives, kinds and qualifiers, as in design D1) in `packages/game-catalog/src/schemas/events.ts`, export its types, and verify with a schema unit test that a valid, a missing and an unknown-kind payload all parse (an unknown kind is kept as `unknown`)
+- [ ] 1.1 Add the Zapspitta occurrence (`orksWeirdboy`, 2026-10-18T00:00Z to 2026-11-01T00:00Z), correct Sekhetar Robot to `thousSekhetar`, and verify with the catalog tests and `dotnet test`
 
 ## 2. Mission tracker (`features/hre-missions`)
 
 - [ ] 2.1 Implement HRE instance selection (running, otherwise next, otherwise none; tie-breaks) in a `.ts` model and verify with unit tests for the window boundary, preview and overlap scenarios
-- [ ] 2.2 Implement mission resolution (occurrence list, otherwise default, otherwise none) and objective wording inputs (kind, target, resolved alliance, featured hero, or the generic fallback), and verify with unit tests, including the Zapspitta mission 10 and unresolved-hero scenarios
+- [ ] 2.2 Add the 21-mission constant (design D1) and objective wording inputs (kind, target, resolved alliance, featured hero, or the generic fallback), and verify with unit tests for Zapspitta's mission 10, an Imperial hero, mission 20 and an unresolved hero
 - [ ] 2.3 Implement guarded local-storage progress (`tp.dailies.hre.progress.v1`, clamping, "Mission complete" advance, invalid-data drop) and verify with tests for reload, a new instance and throwing storage
 - [ ] 2.4 Build the `MissionTracker` UI (current mission card, progress inputs, done and locked list, all-complete state, read-only preview) and verify with a component test covering the mission 5 scenario
 - [ ] 2.5 Add `selectCampaignObjective` and `remainingCampaignBattles`, and verify the 663-battle worked example with a unit test
@@ -21,7 +21,7 @@ Companion API change: `add-hre-mission-planner` in `tacticus-planner-api`. It ap
 
 ## 4. Campaign raid suggestions (`features/daily-raids`)
 
-- [ ] 4.1 Implement pure `planMissionRaids` (candidates, order: energy, then goal priority, then id, greedy fill capped by battles, budget and attempts) and verify with unit tests for the 63-battle, goal tie-break, budget-first, zero-energy and no-candidate scenarios
+- [ ] 4.1 Implement pure `planMissionRaids`. It counts Today's remaining planned raids first and reserves their energy and attempts. It orders candidates by energy, then goal priority, then id, and fills greedily, capped by the battles left, the budget and the attempts. Verify with unit tests for the plan-covers-part, plan-completes, planned-energy-fills-budget, worked example, smaller caps, goal tie-break, budget-first and no-candidate scenarios
 - [ ] 4.2 Build `HreRaidsSection` (rows reusing `LocationRow`, totals, "battles left after today", empty states including the filtered-out notice, the minimum-energy and days summary) and export it with `planMissionRaids` from the slice's public API; verify with a component test
 
 ## 5. Page, navigation and tour
@@ -46,4 +46,4 @@ Companion API change: `add-hre-mission-planner` in `tacticus-planner-api`. It ap
 
 ## Workflow follow-up
 
-- Archive this change, and its API companion, in the PR before merge.
+- Archive this change in the PR before merge.

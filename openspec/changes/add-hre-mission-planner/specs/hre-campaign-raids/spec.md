@@ -34,24 +34,52 @@ Assumptions:
 - **GIVEN** the tab previews an upcoming HRE
 - **THEN** no raid list is shown; only the remaining-campaign summary (see below) is shown, from mission 1
 
+### Requirement: Today's planned raids count first and reserve their energy and attempts
+
+The raids still planned on Today SHALL count toward the battles to go before any HRE suggestion is made. They are Today's plan entries for the same Dailies project selection that have not been done yet. Their energy and attempts SHALL be reserved. The HRE energy budget SHALL be: Planning Settings daily energy, minus energy really spent today, minus the energy of Today's remaining planned raids, never below 0. The attempts left on a node SHALL be reduced by Today's planned raids on it.
+
+Assumptions:
+- Every raid on Today's plan is a campaign battle won, so it advances the objective by one.
+- Energy per raid is the battle's `energyCost`. Indomitus I06 to I14 cost 3, I15 to I29 cost 5, other campaign nodes cost 6 and Elite nodes cost 10.
+
+#### Scenario: Today's plan covers part of the mission
+
+- **GIVEN** 63 battles to go, Planning Settings daily energy 538, 200 energy spent today, and Today still planning 25 raids at 6 energy (150 energy)
+- **THEN** the section shows "25 battles from today's plan", 38 battles left for suggestions, and a budget of 538 - 200 - 150 = 188 energy
+
+#### Scenario: Today's plan finishes the objective
+
+- **GIVEN** 20 battles to go and Today still planning 24 raids
+- **THEN** no extra raids are suggested and the section says "Today's plan completes this objective"
+
+#### Scenario: Planned energy uses the whole budget
+
+- **GIVEN** daily energy 538, 300 spent and 238 still planned on Today
+- **THEN** the budget is 0, no extra raids are suggested, and the section says how many battles today's plan covers
+
 ### Requirement: Candidate locations follow raid eligibility and today's limits
 
 A campaign battle SHALL be a candidate only if all of these hold:
 1. The player's campaign progress unlocks it, which includes event-campaign nodes only while their event runs.
 2. Its energy cost is above 0.
-3. It has attempts left today: the synced attempts left, or its daily cap when that is not known.
+3. It has attempts left today after Today's planned raids on it.
 4. It passes the persisted Raids Filters.
 
-The energy budget SHALL be the Planning Settings daily energy minus the energy really spent today, never below 0. These are the same inputs the HSE farm list uses.
+Attempts left SHALL be the synced attempts left for that node, or the catalog's daily cap for the node when that is not known.
 
 Assumptions:
-- Daily attempt caps are 10 per Standard node and 6 per Elite node (`dailyAttempts` in the catalog).
-- Energy per raid is the battle's `energyCost`. Indomitus nodes I06 to I14 cost 3 and nodes I15 to I29 cost 5. Other campaign nodes cost 6, and Elite nodes cost 10.
+- The daily cap per node comes from the catalog (`dailyAttempts`). It is currently 10 for Standard and Mirror nodes and 6 for Elite nodes, and is still to be confirmed against the game.
+- Synced attempts left take precedence over the catalog cap.
 
 #### Scenario: Locked, used-up and zero-cost nodes excluded
 
 - **GIVEN** I01 to I05 cost 0 energy, I14 has 0 attempts left, and the player has not unlocked Saim-Hann
 - **THEN** none of I01 to I05, I14 or any Saim-Hann node is a candidate
+
+#### Scenario: Today's plan uses a node's attempts
+
+- **GIVEN** I06 has a cap of 10, 4 attempts used today, and 3 more raids planned on Today
+- **THEN** I06 has 3 attempts left for suggestions
 
 #### Scenario: Raids Filters respected
 
@@ -60,28 +88,32 @@ Assumptions:
 
 ### Requirement: Suggestions minimise energy, then serve goals, and fill to the limits
 
-Candidates SHALL be ordered by energy cost ascending. Within the same cost, a node that drops a resource an in-scope goal still needs SHALL come first, ordered by that goal's best priority, and then by battle id. Goals are scoped by the Dailies project selection, with need allocated as on the HSE farm list. Each node, in order, SHALL get as many raids as its attempts left, the remaining budget and the remaining battles allow. A node that does not fit SHALL be skipped. Rows with 0 raids SHALL NOT be shown. The totals of raids and energy SHALL be shown, and the energy total SHALL NOT exceed the budget.
+Candidates SHALL be ordered by energy cost ascending. Within the same cost, a node that drops a resource an in-scope goal still needs SHALL come first, ordered by that goal's best priority, and then by battle id. Each node, in order, SHALL get as many raids as its attempts left, the remaining budget and the battles left for suggestions allow. A node that does not fit SHALL be skipped. Rows with 0 raids SHALL NOT be shown. The totals of raids and energy SHALL be shown, and the energy total SHALL NOT exceed the budget.
 
-#### Scenario: Worked example, mission 5 with 63 battles to go
+#### Scenario: Worked example, mission 5
 
-- **GIVEN** 63 battles to go, a budget of 240 energy, I06 to I14 unlocked (3 energy, 10 attempts each, none used) and no goals
-- **THEN** I06 to I11 get 10 raids each (60 raids, 6 × 30 = 180 energy), and I12 gets 3 raids (9 energy)
-- **AND** the totals read 63 raids and 189 energy, and I13 and I14 are not shown
+- **GIVEN** the "Today's plan covers part of the mission" case (38 battles left, 188 energy budget), with I06 to I14 unlocked, a cap of 10 each, none used or planned today, and no goals
+- **THEN** I06, I07 and I08 get 10 raids each (30 raids, 90 energy), and I09 gets 8 raids (24 energy)
+- **AND** the totals read 38 raids and 114 energy, so 25 + 38 = 63 battles today complete the objective
+
+#### Scenario: Smaller daily caps
+
+- **GIVEN** the same case but each node has only 3 attempts left
+- **THEN** I06 to I14 get 3 raids each (27 raids, 81 energy), and the 5-energy nodes I15, I16 and I17 get 3 raids each and I18 gets 2 (11 raids, 55 energy)
+- **AND** the totals read 38 raids and 136 energy
 
 #### Scenario: Goal tie-break among equal costs
 
-- **GIVEN** 9 3-energy nodes already used up today, 20 battles to go, and a goal that needs `upgDmgC002`, dropped by I17 (5 energy)
-- **THEN** I17 is listed before I15 and I16 (also 5 energy), and its row shows the goal material icon
+- **GIVEN** every 3-energy node used up today, 20 battles left, and a goal that needs `upgDmgC002`, dropped by I17 (5 energy)
+- **THEN** I17 is listed before I15 and I16, which also cost 5 energy, and its row shows the goal material icon
 
 #### Scenario: Budget runs out first
 
-- **GIVEN** 63 battles to go and 30 energy left today
-- **THEN** I06 gets 10 raids (30 energy), the totals read 10 raids and 30 energy, and the section notes "53 battles left after today's energy"
+- **GIVEN** 38 battles left and 30 energy of budget
+- **THEN** I06 gets 10 raids (30 energy), and the section notes "28 battles left after today's energy"
 
-#### Scenario: No energy or no candidates
+#### Scenario: No candidates
 
-- **WHEN** the budget is 0
-- **THEN** the section says "No energy left today" and lists no raids
 - **WHEN** there are no candidates
 - **THEN** the section says "No raidable campaign battles"; if the Raids Filters removed every candidate, it also offers to open the filters
 
@@ -94,4 +126,4 @@ The tab SHALL show the total campaign battles still needed across the current mi
 - **GIVEN** mission 5 at 37 / 100 wins, and later campaign objectives 16 (Raid 25), 19 (Win 75), 20 (Win 250) and Bonus (Win 250)
 - **THEN** battles still needed = 63 + 25 + 75 + 250 + 250 = 663
 - **AND** with I06 to I14 unlocked, the minimum energy is 663 × 3 = 1,989 energy
-- **AND** the capacity is 9 nodes × 10 attempts = 90 raids a day, so it reads "about 8 days of cheapest-node raids" (663 / 90 = 7.4, rounded up)
+- **AND** with a cap of 10, the capacity is 9 nodes × 10 attempts = 90 raids a day, so it reads "about 8 days of cheapest-node raids" (663 / 90 = 7.4, rounded up). With a cap of 3, it is 27 a day and reads "about 25 days", which is longer than the event

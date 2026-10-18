@@ -7,16 +7,16 @@ Hero Release Events (HREs, the catalog's `new-character-event`) run for 14 days,
 ## What Changes
 
 - New Dailies **HRE** tab at `/dailies/hre`, placed directly after HSE. It shows the running HRE, or the next one as a labelled preview: its featured hero, window and countdown.
-- **Mission tracker**: the event's 21 missions (20 plus the bonus), each with its two objectives worded for the event's alliance and featured hero. The player picks their current mission and enters the progress on each of its two objectives. This is stored per event instance in local storage. Earlier missions show as done and later ones as locked.
-- **Campaign raid suggestions** while the current mission has a campaign objective ("Win N" or "Raid N campaign battles"): a list of where to raid today to finish that objective with the least energy. Nodes are ordered by energy cost, cheapest first. Among nodes with the same cost, those that drop something an in-scope goal still needs come first. The list fills up to the attempts left, the energy left today and the battles still needed. It honours the Dailies project selection, the persisted Raids Filters and Planning Settings, like the HSE farm list. It also shows the battles and minimum energy still needed across all remaining campaign missions.
+- **Mission tracker**: the 21 missions (20 plus the bonus), which are the same in every HRE. They ship with the app, and only the alliance-dependent objectives and the featured-hero objectives change per event. The player picks their current mission and enters the progress on each of its two objectives. This is stored per event instance in local storage. Earlier missions show as done and later ones as locked.
+- **Campaign raid suggestions** while the current mission has a campaign objective ("Win N" or "Raid N campaign battles"). Today's remaining planned raids count first, and their energy and attempts are reserved. The suggestions then fill only the leftover energy (daily energy, minus energy spent, minus Today's planned energy) and leftover attempts per node. The list shows where to raid to finish the objective with the least energy. Nodes are ordered by energy cost, cheapest first. Among nodes with the same cost, those that drop something an in-scope goal still needs come first. The list fills up to the attempts left, the energy left today and the battles still needed. It honours the Dailies project selection, the persisted Raids Filters and Planning Settings, like the HSE farm list. It also shows the battles and minimum energy still needed across all remaining campaign missions.
 - **Mission guidance**: a short tip per objective type, drawn from community guides. Examples: Indomitus 3-energy nodes for the battle counts; saving 7 to 8 Arena tokens for day 1 and 2 Guild Raid tokens for mission 8; Onslaught and Arena for featured-hero damage. Also a "tokens needed" line comparing the synced Arena, Guild Raid, Onslaught and Salvage Run tokens with what the current and remaining missions need.
-- Companion API change, with the same name `add-hre-mission-planner` in `tacticus-planner-api`, applied first. It serves the HRE mission list as `config.hre` on the `new-character-event` definition: a default 21-mission template, plus optional per-occurrence lists. It also adds the missing HRE occurrences: Nubari, 2026-09-13, and Zapspitta, 2026-10-18 to 2026-11-01, with Zapspitta's own mission list.
+- Calendar data fix in `tacticus-planner-api` (data only, no OpenSpec change): add the running Zapspitta HRE (`orksWeirdboy`, 2026-10-18 to 2026-11-01), and correct Sekhetar Robot's `featuredCharacterId` to `thousSekhetar`.
 
 ## Capabilities
 
 ### New Capabilities
 
-- `hre-mission-tracker`: which HRE instance the tab shows, the localized mission list and the player's locally stored mission progress.
+- `hre-mission-tracker`: which HRE instance the tab shows, the fixed mission list worded by alliance and the player's locally stored mission progress.
 - `hre-campaign-raids`: the least-energy raid suggestions for the current mission's campaign objective, and the remaining-campaign-battles summary.
 - `hre-mission-guidance`: tips per objective type and the tokens-needed comparison against synced tokens.
 
@@ -27,7 +27,6 @@ Hero Release Events (HREs, the catalog's `new-character-event`) run for 14 days,
 ## Impact
 
 - `apps/web`: a new `features/hre-missions` slice (model and UI), `pages/dailies/ui/hre-page.tsx` with its tutorial, the dailies route, nav items and the tutorial registry. It reuses `daily-raids` eligibility, attempts left, today's energy, Raids Filters and goal-farming need allocation through their public APIs.
-- `packages/game-catalog`: a zod schema for `config.hre` on event definitions.
 - `apps/web/public/locales/*`: a new `hre` namespace in every supported locale (en, de, es, fr), with mission objective templates, tips and tour steps.
-- `tacticus-planner-api`: the raw `new-character-event-missions.json` dataset, its merge in `EventsDenormalizer`, and the two new occurrences in `event-occurrences.json`. This is non-breaking: an existing key is added under `config`.
+- `tacticus-planner-api`: two edits in `event-occurrences.json`.
 - No sync or backend storage. Mission progress stays in the browser and is not shared across devices.
