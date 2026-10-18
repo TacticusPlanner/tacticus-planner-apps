@@ -488,8 +488,10 @@
       "error": "No se pudieron cargar los detalles del evento.",
       "showMore": "Ver más",
       "showLess": "Ver menos",
+      "descriptionLine": "{{line}}.",
       "milestones": "Hitos",
       "milestonePoints": "{{points}} pts",
+      "milestoneQuantity": "×{{quantity}}",
       "milestoneTooltip": "{{reward}} ×{{quantity}} a los {{points}} puntos",
       "endless": "Sin fin",
       "endlessTooltip": "{{reward}} ×{{quantity}} cada {{points}} puntos tras el último hito",
@@ -582,6 +584,7 @@
       "unitsToFinal": "Por derrotar",
       "required": "Necesario por ficha",
       "points": "{{value}} pts",
+      "pointsNone": "–",
       "units": {
         "kills_one": "{{count}} baja",
         "kills_other": "{{count}} bajas",
@@ -596,6 +599,7 @@
       "finalReached": "Último hito alcanzado",
       "repeatsSoFar_one": "{{count}} recompensa sin fin hasta ahora",
       "repeatsSoFar_other": "{{count}} recompensas sin fin hasta ahora",
+      "finalReachedRepeats": "{{final}} · {{repeats}}",
       "columns": {
         "mode": "Modo",
         "tokens": "Fichas",
@@ -637,6 +641,7 @@
         "battles": "Los modos de combate puntúan una vez por ficha: un combate por ficha.",
         "campaign": "Las incursiones de campaña también dan puntos en este evento; se planifican en la lista de farmeo de abajo.",
         "syncedAt": "Fichas de tu sincronización {{when}}, suponiendo que las gastas antes de que tus reservas se llenen.",
+        "syncUnknown": "Se desconoce la hora de tu sincronización, así que las fichas se cuentan desde ahora, suponiendo que las gastas antes de que tus reservas se llenen.",
         "upcoming": "Las fichas suponen reservas llenas al empezar el evento y que las gastas antes de que se llenen."
       }
     },
@@ -648,6 +653,7 @@
       "faction": "Tu facción más fuerte aquí: {{faction}}.",
       "broadened": "Menos de cinco de estos personajes puntúan en el evento, así que tus otros personajes más fuertes completan el equipo.",
       "broadenedNone": "Ninguno de estos personajes puntúa en el evento, así que este es tu equipo más fuerte.",
+      "broadenedFaction": "Los puntos de alineación requieren un equipo completo de una sola facción y tienes menos de cinco personajes de la facción {{faction}}, así que tus otros personajes más fuertes completan el equipo.",
       "hints": {
         "allowed": "Solo cuentan las eliminaciones de enemigos {{enemies}}.",
         "excluded": "Solo cuentan las eliminaciones de enemigos que no sean {{enemies}}.",

@@ -5334,5 +5334,489 @@
         "modifiers": []
       }
     ]
+  },
+  "hse-11th-edition-week-3": {
+    "variants": [
+      {
+        "variantKey": "default",
+        "scope": "Personal",
+        "tiers": [
+          {
+            "tier": "High",
+            "milestones": [
+              {
+                "requiredPoints": 30,
+                "rewardId": "dust",
+                "quantity": 200
+              },
+              {
+                "requiredPoints": 60,
+                "rewardId": "dust",
+                "quantity": 300
+              },
+              {
+                "requiredPoints": 90,
+                "rewardId": "dust",
+                "quantity": 400
+              },
+              {
+                "requiredPoints": 140,
+                "rewardId": "dust",
+                "quantity": 600
+              },
+              {
+                "requiredPoints": 190,
+                "rewardId": "itemAscensionResource_Legendary",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 240,
+                "rewardId": "dust",
+                "quantity": 1000
+              },
+              {
+                "requiredPoints": 340,
+                "rewardId": "seasonalEventCurrencyJune2026",
+                "quantity": 20
+              },
+              {
+                "requiredPoints": 400,
+                "rewardId": "mythicDust",
+                "quantity": 100
+              },
+              {
+                "requiredPoints": 480,
+                "rewardId": "mythicDust",
+                "quantity": 200
+              },
+              {
+                "requiredPoints": 580,
+                "rewardId": "itemAscensionResource_Mythic",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 700,
+                "rewardId": "mythicDust",
+                "quantity": 400
+              },
+              {
+                "requiredPoints": 840,
+                "rewardId": "mythicDust",
+                "quantity": 550
+              },
+              {
+                "requiredPoints": 1000,
+                "rewardId": "mythicDust",
+                "quantity": 700
+              },
+              {
+                "requiredPoints": 1200,
+                "rewardId": "seasonalEventCurrencyJune2026",
+                "quantity": 50
+              }
+            ],
+            "repeat": {
+              "points": 50,
+              "rewardId": "dust",
+              "quantity": 500,
+              "cap": null
+            }
+          },
+          {
+            "tier": "Mid",
+            "milestones": [
+              {
+                "requiredPoints": 20,
+                "rewardId": "dust",
+                "quantity": 100
+              },
+              {
+                "requiredPoints": 40,
+                "rewardId": "dust",
+                "quantity": 200
+              },
+              {
+                "requiredPoints": 60,
+                "rewardId": "dust",
+                "quantity": 300
+              },
+              {
+                "requiredPoints": 100,
+                "rewardId": "dust",
+                "quantity": 400
+              },
+              {
+                "requiredPoints": 140,
+                "rewardId": "itemAscensionResource_Epic",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 180,
+                "rewardId": "dust",
+                "quantity": 800
+              },
+              {
+                "requiredPoints": 260,
+                "rewardId": "seasonalEventCurrencyJune2026",
+                "quantity": 20
+              },
+              {
+                "requiredPoints": 300,
+                "rewardId": "dust",
+                "quantity": 1000
+              },
+              {
+                "requiredPoints": 360,
+                "rewardId": "dust",
+                "quantity": 1500
+              },
+              {
+                "requiredPoints": 440,
+                "rewardId": "itemAscensionResource_Legendary",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 550,
+                "rewardId": "dust",
+                "quantity": 3000
+              },
+              {
+                "requiredPoints": 690,
+                "rewardId": "dust",
+                "quantity": 5000
+              },
+              {
+                "requiredPoints": 860,
+                "rewardId": "dust",
+                "quantity": 7500
+              },
+              {
+                "requiredPoints": 1060,
+                "rewardId": "seasonalEventCurrencyJune2026",
+                "quantity": 50
+              }
+            ],
+            "repeat": {
+              "points": 50,
+              "rewardId": "dust",
+              "quantity": 500,
+              "cap": null
+            }
+          },
+          {
+            "tier": "Low",
+            "milestones": [
+              {
+                "requiredPoints": 20,
+                "rewardId": "dust",
+                "quantity": 50
+              },
+              {
+                "requiredPoints": 40,
+                "rewardId": "dust",
+                "quantity": 75
+              },
+              {
+                "requiredPoints": 60,
+                "rewardId": "dust",
+                "quantity": 100
+              },
+              {
+                "requiredPoints": 100,
+                "rewardId": "dust",
+                "quantity": 150
+              },
+              {
+                "requiredPoints": 140,
+                "rewardId": "itemAscensionResource_Rare",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 180,
+                "rewardId": "dust",
+                "quantity": 250
+              },
+              {
+                "requiredPoints": 260,
+                "rewardId": "seasonalEventCurrencyJune2026",
+                "quantity": 20
+              },
+              {
+                "requiredPoints": 300,
+                "rewardId": "dust",
+                "quantity": 500
+              },
+              {
+                "requiredPoints": 360,
+                "rewardId": "dust",
+                "quantity": 750
+              },
+              {
+                "requiredPoints": 440,
+                "rewardId": "itemAscensionResource_Epic",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 540,
+                "rewardId": "dust",
+                "quantity": 1500
+              },
+              {
+                "requiredPoints": 660,
+                "rewardId": "dust",
+                "quantity": 2000
+              },
+              {
+                "requiredPoints": 800,
+                "rewardId": "dust",
+                "quantity": 2500
+              },
+              {
+                "requiredPoints": 960,
+                "rewardId": "seasonalEventCurrencyJune2026",
+                "quantity": 50
+              }
+            ],
+            "repeat": {
+              "points": 50,
+              "rewardId": "dust",
+              "quantity": 250,
+              "cap": null
+            }
+          }
+        ],
+        "trackers": [
+          {
+            "kind": "KillUnits",
+            "points": 3,
+            "pointsByRarity": null,
+            "gameModes": {
+              "allowed": ["Arena"],
+              "disallowed": null
+            },
+            "enemy": {
+              "tags": {
+                "allowed": null,
+                "disallowed": ["Summon", "Steppable"]
+              },
+              "factionIds": null,
+              "unitIds": null
+            },
+            "player": null
+          },
+          {
+            "kind": "KillUnits",
+            "points": 1,
+            "pointsByRarity": null,
+            "gameModes": {
+              "allowed": ["Arena"],
+              "disallowed": null
+            },
+            "enemy": {
+              "tags": {
+                "allowed": null,
+                "disallowed": ["Summon", "Steppable"]
+              },
+              "factionIds": null,
+              "unitIds": null
+            },
+            "player": {
+              "tags": null,
+              "factionIds": {
+                "allowed": ["BloodAngels", "Orks"],
+                "disallowed": null
+              },
+              "unitIds": null
+            }
+          }
+        ],
+        "modifiers": [
+          {
+            "kind": "UnitXp",
+            "multiplier": 3.0,
+            "multiplierByRarity": null,
+            "sameFactionTeam": false,
+            "gameModes": {
+              "allowed": ["Arena"],
+              "disallowed": null
+            },
+            "player": {
+              "tags": null,
+              "factionIds": {
+                "allowed": ["BloodAngels", "Orks"],
+                "disallowed": null
+              },
+              "unitIds": null
+            }
+          },
+          {
+            "kind": "StatBoost",
+            "healthPct": 20,
+            "damagePct": 20,
+            "armourPct": 20,
+            "gameModes": {
+              "allowed": ["Arena"],
+              "disallowed": null
+            },
+            "player": {
+              "tags": null,
+              "factionIds": {
+                "allowed": ["BloodAngels"],
+                "disallowed": null
+              },
+              "unitIds": null
+            }
+          },
+          {
+            "kind": "StatBoost",
+            "healthPct": 20,
+            "damagePct": 20,
+            "armourPct": 20,
+            "gameModes": {
+              "allowed": ["Arena"],
+              "disallowed": null
+            },
+            "player": {
+              "tags": null,
+              "factionIds": {
+                "allowed": ["Orks"],
+                "disallowed": null
+              },
+              "unitIds": null
+            }
+          }
+        ]
+      },
+      {
+        "variantKey": "global-blood-angels",
+        "scope": "Global",
+        "tiers": [
+          {
+            "tier": "Default",
+            "milestones": [
+              {
+                "requiredPoints": 7500000,
+                "rewardId": "ShardsBloodAngels",
+                "quantity": 25
+              },
+              {
+                "requiredPoints": 15000000,
+                "rewardId": "specialSummoningToken",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 22500000,
+                "rewardId": "seasonalEventCurrencyJune2026",
+                "quantity": 50
+              },
+              {
+                "requiredPoints": 30000000,
+                "rewardId": "eventSummoningToken_BloodAngels",
+                "quantity": 1
+              }
+            ],
+            "repeat": {
+              "points": 3000000,
+              "rewardId": "ShardsBloodAngels",
+              "quantity": 10,
+              "cap": null
+            }
+          }
+        ],
+        "trackers": [
+          {
+            "kind": "KillUnits",
+            "points": 3,
+            "pointsByRarity": null,
+            "gameModes": {
+              "allowed": ["Arena"],
+              "disallowed": null
+            },
+            "enemy": {
+              "tags": {
+                "allowed": null,
+                "disallowed": ["Summon", "Steppable"]
+              },
+              "factionIds": null,
+              "unitIds": null
+            },
+            "player": {
+              "tags": null,
+              "factionIds": {
+                "allowed": ["BloodAngels"],
+                "disallowed": null
+              },
+              "unitIds": null
+            }
+          }
+        ],
+        "modifiers": []
+      },
+      {
+        "variantKey": "global-orks",
+        "scope": "Global",
+        "tiers": [
+          {
+            "tier": "Default",
+            "milestones": [
+              {
+                "requiredPoints": 7500000,
+                "rewardId": "ShardsOrks",
+                "quantity": 25
+              },
+              {
+                "requiredPoints": 15000000,
+                "rewardId": "specialSummoningToken",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 22500000,
+                "rewardId": "seasonalEventCurrencyJune2026",
+                "quantity": 50
+              },
+              {
+                "requiredPoints": 30000000,
+                "rewardId": "eventSummoningToken_Orks",
+                "quantity": 1
+              }
+            ],
+            "repeat": {
+              "points": 3000000,
+              "rewardId": "ShardsOrks",
+              "quantity": 10,
+              "cap": null
+            }
+          }
+        ],
+        "trackers": [
+          {
+            "kind": "KillUnits",
+            "points": 3,
+            "pointsByRarity": null,
+            "gameModes": {
+              "allowed": ["Arena"],
+              "disallowed": null
+            },
+            "enemy": {
+              "tags": {
+                "allowed": null,
+                "disallowed": ["Summon", "Steppable"]
+              },
+              "factionIds": null,
+              "unitIds": null
+            },
+            "player": {
+              "tags": null,
+              "factionIds": {
+                "allowed": ["Orks"],
+                "disallowed": null
+              },
+              "unitIds": null
+            }
+          }
+        ],
+        "modifiers": []
+      }
+    ]
   }
 }

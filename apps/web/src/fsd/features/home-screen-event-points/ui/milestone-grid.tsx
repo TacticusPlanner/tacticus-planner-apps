@@ -98,7 +98,9 @@ export function MilestoneGrid({
                         />
                       )}
                       <span className="text-xs font-semibold text-muted-foreground tabular-nums">
-                        ×{cell.quantity}
+                        {td("hse.details.milestoneQuantity", {
+                          quantity: cell.quantity,
+                        })}
                       </span>
                     </span>
                     <span

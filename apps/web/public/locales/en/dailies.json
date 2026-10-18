@@ -488,8 +488,10 @@
       "error": "The event details could not be loaded.",
       "showMore": "Show more",
       "showLess": "Show less",
+      "descriptionLine": "{{line}}.",
       "milestones": "Milestones",
       "milestonePoints": "{{points}} pts",
+      "milestoneQuantity": "×{{quantity}}",
       "milestoneTooltip": "{{reward}} ×{{quantity}} at {{points}} points",
       "endless": "Endless",
       "endlessTooltip": "{{reward}} ×{{quantity}} every {{points}} points after the last milestone",
@@ -582,6 +584,7 @@
       "unitsToFinal": "To defeat",
       "required": "Needed per token",
       "points": "{{value}} pts",
+      "pointsNone": "–",
       "units": {
         "kills_one": "{{count}} kill",
         "kills_other": "{{count}} kills",
@@ -596,6 +599,7 @@
       "finalReached": "Final milestone reached",
       "repeatsSoFar_one": "{{count}} endless reward so far",
       "repeatsSoFar_other": "{{count}} endless rewards so far",
+      "finalReachedRepeats": "{{final}} · {{repeats}}",
       "columns": {
         "mode": "Mode",
         "tokens": "Tokens",
@@ -637,6 +641,7 @@
         "battles": "Battle modes score once per token: one battle per token.",
         "campaign": "Campaign raids also earn points in this event; they are planned in the farm list below.",
         "syncedAt": "Tokens from your sync {{when}}, assuming you spend them before your buckets fill up.",
+        "syncUnknown": "Your sync time is unknown, so tokens are counted from now, assuming you spend them before your buckets fill up.",
         "upcoming": "Tokens assume full buckets when the event starts and that you spend them before they fill up."
       }
     },
@@ -648,6 +653,7 @@
       "faction": "Your strongest faction here: {{faction}}.",
       "broadened": "Fewer than five of these characters score for the event, so your strongest others fill the team.",
       "broadenedNone": "None of these characters score for the event, so this is your strongest team.",
+      "broadenedFaction": "Line-up points need a full team of one faction, and you own fewer than five {{faction}} characters, so your strongest others fill the team.",
       "hints": {
         "allowed": "Only kills of {{enemies}} enemies count.",
         "excluded": "Only kills of non-{{enemies}} enemies count.",

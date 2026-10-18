@@ -126,20 +126,18 @@ function projectionView(
   // Only an event that scores in a token mode has a projection (Arsenal of War has none).
   if (hseModeScoring(variant.trackers).length === 0) return { status: "hidden" }
   if (player.status === "error") return { status: "error" }
+  const startMs = Date.parse(instance.entry.startUtc)
   const endMs = Date.parse(instance.entry.endUtc)
   const tokens = hseTokenSupply(
     player.buckets,
     instance.status === "running"
       ? {
           status: "running",
+          startMs,
           endMs,
           observedAtMs: player.observedAtMs ?? Date.now(),
         }
-      : {
-          status: "upcoming",
-          startMs: Date.parse(instance.entry.startUtc),
-          endMs,
-        }
+      : { status: "upcoming", startMs, endMs }
   )
   const projection = projectHsePoints({
     tier,

@@ -17,10 +17,12 @@ vi.mock("dexie-react-hooks", () => ({
 
 const catalog = vi.hoisted(() => ({
   fail: false,
+  synced: true,
   entries: [] as { definitionId: string; startUtc: string; endUtc: string }[],
   ranges: [] as [Date, Date][],
 }))
 vi.mock("@workspace/game-catalog/queries", () => ({
+  hasEventsCalendarSynced: async () => catalog.synced,
   getEventDefinitions: async () => {
     if (catalog.fail) throw new Error("boom")
     return [
@@ -53,6 +55,7 @@ const rush = {
 describe("useActiveHomeScreenEvent", () => {
   beforeEach(() => {
     catalog.fail = false
+    catalog.synced = true
     catalog.entries = [hunt, rush]
     catalog.ranges = []
     vi.useFakeTimers({ toFake: ["Date"] })
@@ -118,6 +121,22 @@ describe("useActiveHomeScreenEvent", () => {
     await act(() => vi.advanceTimersByTimeAsync(60_000))
     expect(huntInstance()?.status).toBe("past")
     expect(result.current).toMatchObject({ active: null, next: rush })
+  })
+
+  it("stays loading until the calendar has synced, so a shared key is not judged stale", async () => {
+    catalog.synced = false
+    catalog.entries = []
+    vi.useFakeTimers({ toFake: ["Date", "setInterval", "clearInterval"] })
+    vi.setSystemTime(new Date("2026-10-01T08:00:00Z"))
+    const { result } = renderHook(() => useActiveHomeScreenEvent())
+    await act(() => vi.advanceTimersByTimeAsync(0))
+    expect(result.current).toEqual({ status: "loading" })
+    expect(catalog.ranges).toEqual([])
+
+    catalog.synced = true
+    catalog.entries = [hunt, rush]
+    await act(() => vi.advanceTimersByTimeAsync(60_000))
+    expect(result.current).toMatchObject({ status: "ready", next: hunt })
   })
 
   it("reports an error when the calendar read fails", async () => {

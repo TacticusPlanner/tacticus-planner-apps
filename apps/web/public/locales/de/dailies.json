@@ -488,8 +488,10 @@
       "error": "Die Event-Details konnten nicht geladen werden.",
       "showMore": "Mehr anzeigen",
       "showLess": "Weniger anzeigen",
+      "descriptionLine": "{{line}}.",
       "milestones": "Meilensteine",
       "milestonePoints": "{{points}} Pkt.",
+      "milestoneQuantity": "×{{quantity}}",
       "milestoneTooltip": "{{reward}} ×{{quantity}} bei {{points}} Punkten",
       "endless": "Endlos",
       "endlessTooltip": "{{reward}} ×{{quantity}} alle {{points}} Punkte nach dem letzten Meilenstein",
@@ -582,6 +584,7 @@
       "unitsToFinal": "Zu besiegen",
       "required": "Benötigt pro Marke",
       "points": "{{value}} Pkt.",
+      "pointsNone": "–",
       "units": {
         "kills_one": "{{count}} Abschuss",
         "kills_other": "{{count}} Abschüsse",
@@ -596,6 +599,7 @@
       "finalReached": "Letzter Meilenstein erreicht",
       "repeatsSoFar_one": "{{count}} Endlos-Belohnung bisher",
       "repeatsSoFar_other": "{{count}} Endlos-Belohnungen bisher",
+      "finalReachedRepeats": "{{final}} · {{repeats}}",
       "columns": {
         "mode": "Modus",
         "tokens": "Marken",
@@ -637,6 +641,7 @@
         "battles": "Kampf-Modi zählen einmal pro Marke: ein Kampf pro Marke.",
         "campaign": "Kampagnen-Raids bringen in diesem Event ebenfalls Punkte; sie werden in der Farmliste unten geplant.",
         "syncedAt": "Marken aus deiner Synchronisierung {{when}}, vorausgesetzt du verbrauchst sie, bevor deine Speicher voll sind.",
+        "syncUnknown": "Der Zeitpunkt deiner Synchronisierung ist unbekannt, daher werden Marken ab jetzt gezählt, vorausgesetzt du verbrauchst sie, bevor deine Speicher voll sind.",
         "upcoming": "Die Marken setzen volle Speicher zu Event-Beginn voraus und dass du sie verbrauchst, bevor sie voll sind."
       }
     },
@@ -648,6 +653,7 @@
       "faction": "Deine stärkste Fraktion hier: {{faction}}.",
       "broadened": "Weniger als fünf dieser Charaktere punkten im Event, daher füllen deine stärksten anderen das Team auf.",
       "broadenedNone": "Keiner dieser Charaktere punktet im Event, daher ist das dein stärkstes Team.",
+      "broadenedFaction": "Aufstellungspunkte brauchen ein volles Team aus einer Fraktion, und du besitzt weniger als fünf Charaktere der Fraktion {{faction}}, daher füllen deine stärksten anderen das Team auf.",
       "hints": {
         "allowed": "Nur Abschüsse von {{enemies}}-Feinden zählen.",
         "excluded": "Nur Abschüsse von Feinden, die nicht {{enemies}} sind, zählen.",

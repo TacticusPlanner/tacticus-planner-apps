@@ -10,6 +10,7 @@ import {
   getEventDefinitionsMap,
   getEventsActiveAt,
   getUpcomingEvents,
+  hasEventsCalendarSynced,
 } from "./queries"
 
 function resetDb() {
@@ -38,6 +39,18 @@ async function seedEventsCalendar(payload: Record<string, unknown[]>) {
 describe("event queries", () => {
   beforeEach(async () => {
     await resetDb()
+  })
+
+  it("reports the calendar synced only once it and the definitions have synced", async () => {
+    expect(await hasEventsCalendarSynced()).toBe(false)
+    await seedEventsCalendar({})
+    expect(await hasEventsCalendarSynced()).toBe(false)
+    await replaceGameCatalogDataset(
+      "event-definitions",
+      [],
+      metadata("event-definitions")
+    )
+    expect(await hasEventsCalendarSynced()).toBe(true)
   })
 
   it("getEventDefinitions/getEventDefinitionsMap round-trip", async () => {

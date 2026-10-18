@@ -8,10 +8,10 @@ import type { HseInstance } from "./hse-event-points"
 import { useHseProjection } from "./use-hse-projection"
 
 vi.mock("dexie-react-hooks", () => ({
-  useLiveQuery: <T,>(querier: () => Promise<T>, deps: unknown[]) => {
+  useLiveQuery: <T,>(querier: () => Promise<T> | T, deps: unknown[]) => {
     const [value, setValue] = useState<T>()
     useEffect(() => {
-      void querier().then(setValue)
+      void Promise.resolve(querier()).then(setValue)
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, deps)
     return value
@@ -21,11 +21,13 @@ vi.mock("dexie-react-hooks", () => ({
 const reads = vi.hoisted(() => ({
   catalogFails: false,
   playerFails: false,
+  catalogReads: 0,
   definitions: [] as { id: string; type: string; config: unknown }[],
 }))
 
 vi.mock("@workspace/game-catalog/queries", () => ({
   getEventDefinitions: async () => {
+    reads.catalogReads += 1
     if (reads.catalogFails) throw new Error("boom")
     return reads.definitions
   },
@@ -89,6 +91,7 @@ beforeEach(() => {
   window.localStorage.clear()
   reads.catalogFails = false
   reads.playerFails = false
+  reads.catalogReads = 0
   reads.definitions = [
     definition(
       "hse-trait-boost-psyker",
@@ -119,9 +122,33 @@ describe("useHseProjection", () => {
     })
   })
 
-  it("has nothing for no instance", async () => {
+  it("has nothing for no instance, without reading the catalog", async () => {
     const { result } = renderHook(() => useHseProjection(null))
     expect(result.current.status).toBe("none")
+    await waitFor(() => expect(result.current.status).toBe("none"))
+    expect(reads.catalogReads).toBe(0)
+  })
+
+  it("is loading, not the previous event's data, right after the selection changes", async () => {
+    const hook = renderHook(
+      ({ target }: { target: HseInstance }) => useHseProjection(target),
+      {
+        initialProps: {
+          target: instance("hse-trait-boost-psyker", "running"),
+        },
+      }
+    )
+    await waitFor(() => expect(hook.result.current.status).toBe("ready"))
+
+    hook.rerender({
+      target: instance("hse-global-operation-imperator", "running"),
+    })
+    expect(hook.result.current.status).toBe("loading")
+    await waitFor(() => expect(hook.result.current.status).toBe("ready"))
+    const state = hook.result.current
+    if (state.status !== "ready") throw new Error(state.status)
+    expect(state.details.definitionId).toBe("hse-global-operation-imperator")
+    expect(state.details.scope).toBe("Global")
   })
 
   it("projects a running personal event from the synced buckets, tier and roster", async () => {

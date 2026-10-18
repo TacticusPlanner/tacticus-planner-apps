@@ -60,6 +60,7 @@ describe("Dailies translations", () => {
     expect(teams.anyUnit).toBeTruthy()
     expect(teams.broadened).toBeTruthy()
     expect(teams.broadenedNone).toBeTruthy()
+    expect(teams.broadenedFaction).toContain("{{faction}}")
     expect(teams.faction).toContain("{{faction}}")
     expect(teams.hints.allowed).toContain("{{enemies}}")
     expect(teams.hints.excluded).toContain("{{enemies}}")
@@ -68,5 +69,21 @@ describe("Dailies translations", () => {
     expect(teams.hints.units).toContain("{{units}}")
     expect(r.tour.hse.steps.teams.title).toBeTruthy()
     expect(r.tour.hse.steps.teams.content).toBeTruthy()
+  })
+
+  it.each([
+    ["en", en],
+    ["de", de],
+    ["es", es],
+    ["fr", fr],
+  ])("templates the HSE joins and the unknown-sync note in %s", (_l, r) => {
+    const projection = r.hse.projection
+    expect(projection.finalReachedRepeats).toContain("{{final}}")
+    expect(projection.finalReachedRepeats).toContain("{{repeats}}")
+    expect(projection.pointsNone).toBeTruthy()
+    expect(projection.notes.syncUnknown).toBeTruthy()
+    expect(projection.notes.syncUnknown).not.toContain("{{when}}")
+    expect(r.hse.details.milestoneQuantity).toContain("{{quantity}}")
+    expect(r.hse.details.descriptionLine).toContain("{{line}}")
   })
 })

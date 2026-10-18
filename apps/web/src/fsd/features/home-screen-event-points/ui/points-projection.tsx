@@ -1,7 +1,6 @@
 import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import { Alert, AlertDescription } from "@workspace/ui/components/alert"
-import { Input } from "@workspace/ui/components/input"
 import { Spinner } from "@workspace/ui/components/spinner"
 import {
   Table,
@@ -17,20 +16,14 @@ import { cn } from "@workspace/ui/lib/utils"
 import { formatRelativeTime } from "@/shared/lib"
 
 import type { HseProjectionMode } from "../lib/hse-projection"
-import type { HseTokenMode } from "../lib/hse-token-supply"
 import type {
   HseEventPointsState,
   HseProjectionView,
 } from "../model/hse-event-points"
+import { AverageInput, PointsSoFarInput } from "./points-projection-inputs"
+import { useModeName } from "./use-mode-name"
 
 type ReadyProjection = Extract<HseProjectionView, { status: "ready" }>
-
-/** An input's text as an average: empty clears it (null), anything else a non-negative number. */
-function parseAverage(raw: string): number | null {
-  if (raw.trim() === "") return null
-  const value = Number(raw)
-  return Number.isFinite(value) ? Math.max(0, value) : null
-}
 
 /**
  * The points projection of a running or upcoming personal event: the final milestone, points so far
@@ -81,11 +74,6 @@ export function PointsProjection({
   return frame(<ReadyProjectionBody hasRaidLists={hasRaidLists} view={view} />)
 }
 
-function useModeName() {
-  const { t } = useTranslation("dailies")
-  return (mode: HseTokenMode) => t(`hse.details.modes.${mode}`)
-}
-
 function ReadyProjectionBody({
   view,
   hasRaidLists,
@@ -123,17 +111,8 @@ function ReadyProjectionBody({
       </Total>
       {view.instanceStatus === "running" ? (
         <Total label={t("hse.projection.pointsSoFar")} testId="points-so-far">
-          <Input
-            aria-describedby="hse-points-so-far-hint"
-            aria-label={t("hse.projection.pointsSoFar")}
-            className="h-7 w-28"
-            data-testid="hse-projection-points-so-far-input"
-            inputMode="numeric"
-            min={0}
-            onChange={(event) =>
-              inputs.setPointsSoFar(parseAverage(event.target.value) ?? 0)
-            }
-            type="number"
+          <PointsSoFarInput
+            onChange={inputs.setPointsSoFar}
             value={inputs.pointsSoFar}
           />
           <span
@@ -146,10 +125,12 @@ function ReadyProjectionBody({
       ) : null}
       <Total label={t("hse.projection.remaining")} testId="remaining">
         {projection.finalReached
-          ? `${t("hse.projection.finalReached")} · ${t(
-              "hse.projection.repeatsSoFar",
-              { count: projection.repeatsSoFar }
-            )}`
+          ? t("hse.projection.finalReachedRepeats", {
+              final: t("hse.projection.finalReached"),
+              repeats: t("hse.projection.repeatsSoFar", {
+                count: projection.repeatsSoFar,
+              }),
+            })
           : pts(projection.remaining)}
       </Total>
       {projection.unitsToFinal !== null && projection.modes[0] ? (
@@ -245,14 +226,17 @@ function ReadyProjectionBody({
     ...(view.scoresInCampaign && hasRaidLists
       ? [{ id: "campaign", text: t("hse.projection.notes.campaign") }]
       : []),
-    view.instanceStatus === "running"
-      ? {
-          id: "sync",
-          text: t("hse.projection.notes.syncedAt", {
-            when: formatRelativeTime(view.observedAtMs, i18n.language) ?? "",
-          }),
-        }
-      : { id: "sync", text: t("hse.projection.notes.upcoming") },
+    {
+      id: "sync",
+      text:
+        view.instanceStatus === "upcoming"
+          ? t("hse.projection.notes.upcoming")
+          : view.observedAtMs === null
+            ? t("hse.projection.notes.syncUnknown")
+            : t("hse.projection.notes.syncedAt", {
+                when: formatRelativeTime(view.observedAtMs, i18n.language),
+              }),
+    },
   ]
 
   return (
@@ -362,55 +346,13 @@ function Total({
   )
 }
 
-function AverageInput({
-  mode,
-  onChange,
-}: {
-  mode: HseProjectionMode
-  onChange: (mode: HseTokenMode, value: number | null) => void
-}) {
-  const { t } = useTranslation("dailies")
-  const modeName = useModeName()
-  if (mode.fixedAverage)
-    return (
-      <span data-testid={`hse-projection-average-${mode.mode}`}>
-        {t("hse.projection.averageFixed")}
-      </span>
-    )
-  return (
-    <span className="flex items-center gap-1.5">
-      <Input
-        aria-label={t("hse.projection.averageLabel", {
-          unit: t(`hse.projection.unit.${mode.unit}`),
-          mode: modeName(mode.mode),
-        })}
-        aria-invalid={mode.average === null || undefined}
-        className="h-7 w-20"
-        data-testid={`hse-projection-average-${mode.mode}`}
-        inputMode="decimal"
-        min={0}
-        onChange={(event) =>
-          onChange(mode.mode, parseAverage(event.target.value))
-        }
-        placeholder={t("hse.projection.averageNeeded")}
-        step="any"
-        type="number"
-        value={mode.average ?? ""}
-      />
-      <span className="text-xs text-muted-foreground">
-        {t(`hse.projection.unit.${mode.unit}`)}
-      </span>
-    </span>
-  )
-}
-
 function ModePoints({ mode }: { mode: HseProjectionMode }) {
   const { t, i18n } = useTranslation("dailies")
   const numbers = new Intl.NumberFormat(i18n.language)
   return (
     <span data-testid={`hse-projection-points-${mode.mode}`}>
       {mode.points === null
-        ? "–"
+        ? t("hse.projection.pointsNone")
         : t("hse.projection.points", {
             value: numbers.format(Math.floor(mode.points)),
           })}

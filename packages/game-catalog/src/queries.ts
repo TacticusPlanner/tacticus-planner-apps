@@ -233,6 +233,17 @@ export async function getEventDefinitionsMap(): Promise<
   return new Map(definitions.map((definition) => [definition.id, definition]))
 }
 
+// Whether the calendar and the event definitions it is read with have both synced at least once, so a
+// caller can tell "no such event" from "the catalog has not arrived yet" (the init gate renders routes
+// under its overlay while the first sync downloads).
+export async function hasEventsCalendarSynced(): Promise<boolean> {
+  const [calendar, definitions] = await Promise.all([
+    hasDatasetSynced("events-calendar"),
+    hasDatasetSynced("event-definitions"),
+  ])
+  return calendar && definitions
+}
+
 // events-calendar is stored one row per (date, entry) pair (see game-catalog.mapper.ts's
 // byCalendarDate), so a multi-day entry appears once per date it spans — dedupe by occurrence identity
 // (an authored occurrence's own id, or definitionId+startUtc for a projected placeholder, which has no

@@ -488,8 +488,10 @@
       "error": "Les détails de l'événement n'ont pas pu être chargés.",
       "showMore": "Afficher plus",
       "showLess": "Afficher moins",
+      "descriptionLine": "{{line}}.",
       "milestones": "Paliers",
       "milestonePoints": "{{points}} pts",
+      "milestoneQuantity": "×{{quantity}}",
       "milestoneTooltip": "{{reward}} ×{{quantity}} à {{points}} points",
       "endless": "Sans fin",
       "endlessTooltip": "{{reward}} ×{{quantity}} tous les {{points}} points après le dernier palier",
@@ -582,6 +584,7 @@
       "unitsToFinal": "À vaincre",
       "required": "Nécessaire par jeton",
       "points": "{{value}} pts",
+      "pointsNone": "–",
       "units": {
         "kills_one": "{{count}} élimination",
         "kills_other": "{{count}} éliminations",
@@ -596,6 +599,7 @@
       "finalReached": "Dernier palier atteint",
       "repeatsSoFar_one": "{{count}} récompense sans fin pour l'instant",
       "repeatsSoFar_other": "{{count}} récompenses sans fin pour l'instant",
+      "finalReachedRepeats": "{{final}} · {{repeats}}",
       "columns": {
         "mode": "Mode",
         "tokens": "Jetons",
@@ -637,6 +641,7 @@
         "battles": "Les modes de combat rapportent une fois par jeton : un combat par jeton.",
         "campaign": "Les raids de campagne rapportent aussi des points dans cet événement ; ils sont planifiés dans la liste de farm ci-dessous.",
         "syncedAt": "Jetons issus de votre synchronisation {{when}}, en supposant que vous les dépensez avant que vos réserves soient pleines.",
+        "syncUnknown": "L'heure de votre synchronisation est inconnue, les jetons sont donc comptés à partir de maintenant, en supposant que vous les dépensez avant que vos réserves soient pleines.",
         "upcoming": "Les jetons supposent des réserves pleines au début de l'événement et que vous les dépensez avant qu'elles soient pleines."
       }
     },
@@ -648,6 +653,7 @@
       "faction": "Votre faction la plus forte ici : {{faction}}.",
       "broadened": "Moins de cinq de ces personnages rapportent des points pour l'événement, vos autres personnages les plus forts complètent donc l'équipe.",
       "broadenedNone": "Aucun de ces personnages ne rapporte de points pour l'événement, voici donc votre équipe la plus forte.",
+      "broadenedFaction": "Les points de composition exigent une équipe complète d'une seule faction et vous possédez moins de cinq personnages de la faction {{faction}}, vos autres personnages les plus forts complètent donc l'équipe.",
       "hints": {
         "allowed": "Seules les éliminations d'ennemis {{enemies}} comptent.",
         "excluded": "Seules les éliminations d'ennemis qui ne sont pas {{enemies}} comptent.",

@@ -165,7 +165,7 @@ function Description({ details }: { details: HseDetailsView }) {
   const collapsible = isMobile && lines.length > 1
   const shown = collapsible && !expanded ? lines.slice(0, 1) : lines
   const item = (line: string, index: number): ReactNode => (
-    <li key={index}>{line}.</li>
+    <li key={index}>{t("hse.details.descriptionLine", { line })}</li>
   )
   return (
     <div className="space-y-1">

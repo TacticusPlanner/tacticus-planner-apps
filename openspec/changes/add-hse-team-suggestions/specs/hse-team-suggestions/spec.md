@@ -21,7 +21,7 @@ For a running or upcoming instance whose resolved variant is `Personal` and has 
 
 ### Requirement: Event units lead each team, chosen in Power mode
 
-Each team SHALL be the shared engine's Plan team in Power mode with a team size of 5, with no XP / Power control, no Random team, no team size control and no preference filters. Its highest-priority pool SHALL be the mode's event units (design D2): the owned characters passing a scoring tracker's player filter (traits or alliance, faction), with characters passing more trackers ranked first; then the engine's full mode-eligible roster. A player filter that only disallows `MachineOfWar` counts as no filter. When no scoring tracker has a player filter, the team SHALL be the strongest five of the mode-eligible roster and say any unit scores. For line-up trackers (Faction Focus), whatever their filter, the pool SHALL be the faction whose five strongest owned characters in the mode-eligible roster have the highest summed combat power (ties by faction id). Members SHALL show the rationale `event-unit` (naming the trait or faction) or `strength`. A team that had to use non-event units SHALL be marked broadened.
+Each team SHALL be the shared engine's Plan team in Power mode with a team size of 5, with no XP / Power control, no Random team, no team size control and no preference filters. Its highest-priority pool SHALL be the mode's event units (design D2): the owned characters passing a scoring tracker's player filter (traits or alliance, faction), with characters passing more trackers ranked first; then the engine's full mode-eligible roster. A player filter that only disallows `MachineOfWar` counts as no filter. When no scoring tracker has a player filter, the team SHALL be the strongest five of the mode-eligible roster and say any unit scores. When a mode mixes a scoring tracker without a narrowing player filter with narrower ones, every unit scores: the filtered characters SHALL only rank first, the team SHALL NOT be marked broadened, and the other members SHALL show the `event-unit` rationale without a named match. For line-up trackers (Faction Focus), whatever their filter, the pool SHALL be one faction of the mode-eligible roster: factions with at least five owned characters there rank first, then by the summed combat power of their five strongest (ties by faction id). Members SHALL show the rationale `event-unit` (naming the trait or faction) or `strength`. A team that had to use non-event units SHALL be marked broadened; a broadened Faction Focus team SHALL say that line-up points need a full team of one faction and fewer than five of that faction are owned.
 
 #### Scenario: Imperial Onslaught team for Psyker Boost
 
@@ -43,10 +43,25 @@ Each team SHALL be the shared engine's Plan team in Power mode with a team size 
 - **GIVEN** Defeat Waves (no player filter)
 - **THEN** each team is the strongest five of its roster and says any unit scores
 
+#### Scenario: Mixed any-unit and narrower trackers
+
+- **GIVEN** 11th Edition Week 3 (Personal), whose Arena trackers give 3 points per kill by any unit and 1 per kill by a Blood Angels or Orks unit
+- **THEN** the Arena team leads with the owned Blood Angels and Orks, is filled with the strongest others, is not marked broadened, and the others show "Scores for the event"
+
 #### Scenario: Faction Focus picks one faction per team
 
-- **GIVEN** in the Xenos track the player's five strongest Necrons sum to more combat power than any other Xenos faction's five strongest
+- **GIVEN** in the Xenos track the player owns at least five Necrons, and their five strongest sum to more combat power than any other Xenos faction with five owned characters
 - **THEN** the Xenos teams are those Necrons and the rationale names Necrons
+
+#### Scenario: Faction Focus prefers a full line-up
+
+- **GIVEN** in Arena the player owns three strong Thousand Sons and five weaker Necrons
+- **THEN** the Arena team is the five Necrons, not broadened, because the Thousand Sons cannot field a full line-up
+
+#### Scenario: Faction Focus without five of any faction
+
+- **GIVEN** no faction in the team's roster has five owned characters
+- **THEN** the faction with the strongest summed characters leads, the strongest others fill the team, and the broadened line says a full team of one faction is needed and fewer than five of that faction are owned
 
 #### Scenario: Too few characters in an alliance
 

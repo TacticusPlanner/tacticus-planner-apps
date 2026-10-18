@@ -36,7 +36,10 @@ The UI reads only this. The status line and tour never recompute.
 
 ### D3. Tokens per mode
 
-Mirrors `token-supply.ts`. For a running event, with `observedAt` the sync instant of the buckets and `end` the event end: `next = observedAt + nextTokenInSeconds`, `tokens = current + (next < end ? 1 : 0) + floor((end - next) / regen)` (assumes the player spends before the bucket caps, as for LRE). For an upcoming event: `tokens = max + floor(duration / regen)` (assumes a full bucket at the start). Past: not projected. The function is extracted to a shared helper only if the LRE code can call it unchanged; otherwise it is a sibling in this slice.
+Mirrors `token-supply.ts`. For a running event, with `observedAt` the sync instant of the buckets and `end` the event end: `next = observedAt + nextTokenInSeconds`, `tokens = current + (next < end ? 1 : 0) + floor((end - next) / regen)` (assumes the player spends before the bucket caps, as for LRE). Two corrections to that formula:
+
+- A sync before the event started (a running event whose buckets were last synced before its start) would otherwise count regeneration from the sync with no cap. The bucket is first rolled forward to the start, `min(max, current + arrivals before start)`, and regeneration then counts only over `[max(observedAt, start), end]`; a bucket capped at the start gets its next token one regeneration after the start (as for an upcoming event).
+- A full bucket (`current >= max`) has stopped regenerating; the Tacticus player API then reports `nextTokenInSeconds: 0` (the sample player response shows `0` for every full bucket, and `current` can exceed `max`, e.g. 15 of 3). The `0` is not a token about to land, so a full bucket counts `current` plus one token per regeneration from when it is first spent: `current + floor((end - from) / regen)`. For an upcoming event: `tokens = max + floor(duration / regen)` (assumes a full bucket at the start). Past: not projected. The function is extracted to a shared helper only if the LRE code can call it unchanged; otherwise it is a sibling in this slice.
 
 ### D4. Points per unit when several trackers apply
 
@@ -57,4 +60,4 @@ Order on the page: status line, event details (tier, description, milestone grid
 ## Risks
 
 - Kill averages are rough (Severyn's estimates). They are editable and persisted, and the required rate does not depend on them.
-- `nextTokenInSeconds` is relative to the sync; a stale sync overstates current tokens. The projection shows the sync time.
+- `nextTokenInSeconds` is relative to the sync; a stale sync overstates current tokens. The projection shows the sync time; when the sync time is unknown it says so and that the tokens are counted from now.

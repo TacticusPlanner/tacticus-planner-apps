@@ -20,7 +20,8 @@ import { hseTeamTestId } from "./hse-team-test-id"
 
 /**
  * One event team: the alliance (or Arena) it is for, how its event units were picked (the Faction
- * Focus faction, or "any unit scores"), the broadened marker when non-event units fill it, and the
+ * Focus faction, or "any unit scores"), the broadened marker when non-event units fill it (for a
+ * Faction Focus team: fewer than five of the faction are owned, so no full line-up), and the
  * shared team list with each member's rationale. A team that cannot be built shows the shared
  * insufficient-roster message instead.
  */
@@ -56,6 +57,8 @@ export function HseTeamCard({
   }
 
   const { pick, team: category } = team
+  const factionName = (factionId: string) =>
+    t(`factions:${factionId}`, { defaultValue: factionId })
   const eventUnits = category.members.filter(
     (member) => member.rationale.kind === "event-unit"
   ).length
@@ -76,9 +79,7 @@ export function HseTeamCard({
         {pick.kind === "faction" ? (
           <CardDescription data-testid={`${testId}-faction`}>
             {t("dailies:hse.teams.faction", {
-              faction: t(`factions:${pick.factionId}`, {
-                defaultValue: pick.factionId,
-              }),
+              faction: factionName(pick.factionId),
             })}
           </CardDescription>
         ) : null}
@@ -94,9 +95,13 @@ export function HseTeamCard({
             className="text-xs text-muted-foreground"
             data-testid={`${testId}-broadened`}
           >
-            {eventUnits === 0
-              ? t("dailies:hse.teams.broadenedNone")
-              : t("dailies:hse.teams.broadened")}
+            {pick.kind === "faction"
+              ? t("dailies:hse.teams.broadenedFaction", {
+                  faction: factionName(pick.factionId),
+                })
+              : eventUnits === 0
+                ? t("dailies:hse.teams.broadenedNone")
+                : t("dailies:hse.teams.broadened")}
           </p>
         ) : null}
         {category.deliveredSize < category.requestedSize ? (

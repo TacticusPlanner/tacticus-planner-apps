@@ -4,7 +4,7 @@
 
 The HSE tab SHALL offer an event switcher listing every Home Screen Event instance in the game-events calendar (authored occurrences and projected placeholders, deduplicated), grouped as Running (window contains now), Upcoming (starts after now, ascending by start) and Past (ended, newest first). Each option SHALL show the localized event name and its start and end dates in the player's locale and timezone, and, for an event with a target parameter (Faction Boost), the localized target. Previous and Next buttons SHALL step to the instance with the closest earlier or later start (ties by definition id) and SHALL be disabled at either end of the list.
 
-With no instance selected the tab SHALL show the default instance: the running HSE chosen by the existing overlap rule, else the next upcoming HSE, else the "no event is scheduled" state. The selection SHALL be held in the URL search parameter `event` of the HSE tab, keyed by the occurrence id or, for a projected placeholder, by definition id and start; it SHALL survive a reload, SHALL NOT be shared with other Dailies tabs, and a key that no longer resolves SHALL fall back to the default and be removed from the URL. Selecting the default instance SHALL remove the parameter. A pinned selection SHALL stay selected when its event starts or ends; only its status changes.
+With no instance selected the tab SHALL show the default instance: the running HSE chosen by the existing overlap rule, else the next upcoming HSE, else the "no event is scheduled" state. The selection SHALL be held in the URL search parameter `event` of the HSE tab, keyed by the occurrence id or, for a projected placeholder, by definition id and start; it SHALL survive a reload, SHALL NOT be shared with other Dailies tabs, and a key that no longer resolves SHALL fall back to the default and be removed from the URL. A key SHALL only be judged against a calendar that has synced at least once: until then the tab SHALL stay loading and keep the parameter. Selecting the default instance SHALL remove the parameter. A pinned selection SHALL stay selected when its event starts or ends; only its status changes.
 
 #### Scenario: Default is the running event
 
@@ -37,6 +37,11 @@ With no instance selected the tab SHALL show the default instance: the running H
 
 - **GIVEN** the URL carries an `event` key that is not in the calendar
 - **THEN** the default instance is shown and the parameter is removed
+
+#### Scenario: Shared link on a fresh device
+
+- **GIVEN** a player opens a shared HSE link with an `event` key on a device whose calendar has not synced yet
+- **THEN** the tab shows its loading state and keeps the parameter until the calendar has synced, then shows that instance
 
 #### Scenario: Other tabs are unaffected
 

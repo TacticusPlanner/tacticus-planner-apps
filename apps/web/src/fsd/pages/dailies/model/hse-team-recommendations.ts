@@ -189,8 +189,10 @@ function modeHints(trackers: readonly GameCatalogHseTracker[]): HseEnemyHint[] {
 }
 
 /**
- * The faction whose five strongest characters in `roster` have the highest summed combat power
- * (ties by faction id), or null for an empty roster (Faction Focus, design D2).
+ * Faction Focus (design D2): a full line-up needs five characters of one faction, so factions with at
+ * least five characters in `roster` rank first; among them (or, when none has five, among all) the
+ * one whose five strongest characters have the highest summed combat power wins, ties by faction id.
+ * Null for an empty roster.
  */
 function strongestFaction(
   roster: readonly TeamRosterCharacter[],
@@ -204,18 +206,20 @@ function strongestFaction(
     powers.push(combatPowerOf(character))
     powersByFaction.set(faction, powers)
   }
-  let best: { faction: string; power: number } | null = null
+  let best: { faction: string; full: boolean; power: number } | null = null
   for (const [faction, powers] of powersByFaction) {
+    const full = powers.length >= HSE_TEAM_SIZE
     const power = [...powers]
       .sort((a, b) => b - a)
       .slice(0, HSE_TEAM_SIZE)
       .reduce((sum, value) => sum + value, 0)
-    if (
+    const better =
       !best ||
-      power > best.power ||
-      (power === best.power && faction < best.faction)
-    )
-      best = { faction, power }
+      (full && !best.full) ||
+      (full === best.full &&
+        (power > best.power ||
+          (power === best.power && faction < best.faction)))
+    if (better) best = { faction, full, power }
   }
   return best?.faction ?? null
 }
@@ -256,6 +260,12 @@ function eventPool(
         filter !== null && narrowsPlayers(filter)
     )
   if (filters.length === 0) return { pick: { kind: "any-unit" }, pools: [] }
+  // A tracker without a narrowing player filter scores for every unit (11th Edition Week 3 in
+  // Arena): the filtered characters only rank first, and the rest still score, so the pool is the
+  // whole roster and the team is never broadened.
+  const anyUnitScores = trackers.some(
+    (tracker) => !narrowsPlayers(tracker.player)
+  )
 
   const matchCount = new Map<UnitId, number>()
   const matchById = new Map<UnitId, EventUnitMatch | undefined>()
@@ -276,7 +286,11 @@ function eventPool(
     pools: [
       {
         id: EVENT_UNITS_POOL_ID,
-        unitIds: new Set(matchCount.keys()),
+        unitIds: anyUnitScores
+          ? new Set(roster.map((character) => character.unitId))
+          : new Set(matchCount.keys()),
+        // A character matching no filter only scores through the any-unit tracker: "Scores for the
+        // event" without a named match.
         rationaleFor: (id) => {
           const match = matchById.get(id)
           return match ? { kind: "event-unit", match } : { kind: "event-unit" }

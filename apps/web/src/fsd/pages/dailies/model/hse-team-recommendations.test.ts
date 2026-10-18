@@ -267,6 +267,28 @@ describe("buildHseTeamRecommendations — player filters", () => {
     ])
   })
 
+  it("keeps 11th Edition Week 3's Arena team unbroadened: any unit scores, Blood Angels and Orks lead", () => {
+    const result = build("hse-11th-edition-week-3")
+    const team = ready(teamOf(modeOf(result, "Arena"), null))
+
+    expect(team.pick).toEqual({ kind: "event-units" })
+    expect(team.team.broadened).toBe(false)
+    expect(ids(team)).toEqual([
+      "bloodMephiston",
+      "ultraCalgar",
+      "thousAhriman",
+      "darkaAzrael",
+      "thousInfernalMaster",
+    ])
+    expect(team.team.members[0]?.rationale).toEqual({
+      kind: "event-unit",
+      match: { via: "faction", id: "BloodAngels" },
+    })
+    // The others score through the any-unit tracker: "Scores for the event", no named match.
+    for (const member of team.team.members.slice(1))
+      expect(member.rationale).toEqual({ kind: "event-unit" })
+  })
+
   it("suggests no team for an event that scores in no token mode (Arsenal of War)", () => {
     expect(build("hse-arsenal-of-war").modes).toEqual([])
   })
@@ -301,6 +323,30 @@ describe("buildHseTeamRecommendations — Faction Focus", () => {
       match: { via: "faction", id: "Necrons" },
     })
     expect(team.team.broadened).toBe(false)
+  })
+
+  it("prefers a faction with five owned characters over a stronger one with fewer", () => {
+    const weakNecrons = ["necroA", "necroB", "necroC", "necroD"].map((id) =>
+      extra(id, "Stone1", "Xenos", "Necrons")
+    )
+    const result = build("hse-faction-focus", {
+      characters: [...hseTeamsFixtureCharacters, ...weakNecrons],
+    })
+    // Thousand Sons (three owned, the strongest sum) cannot field a full line-up; Necrons (five) can.
+    const team = ready(teamOf(modeOf(result, "Arena"), null))
+    expect(team.pick).toEqual({ kind: "faction", factionId: "Necrons" })
+    expect(new Set(ids(team))).toEqual(
+      new Set(["necroSpyder", "necroA", "necroB", "necroC", "necroD"])
+    )
+    expect(team.team.broadened).toBe(false)
+  })
+
+  it("falls back to the strongest sum when no faction has five, marked broadened", () => {
+    const team = ready(
+      teamOf(modeOf(build("hse-faction-focus"), "Arena"), null)
+    )
+    expect(team.pick).toEqual({ kind: "faction", factionId: "ThousandSons" })
+    expect(team.team.broadened).toBe(true)
   })
 
   it("breaks a tie by faction id", () => {

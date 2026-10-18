@@ -21,15 +21,22 @@ import { useHseProjectionInputs } from "./use-hse-projection-inputs"
 
 // `useLiveQuery` has no error channel (a rejected querier throws to the error boundary), so each
 // querier resolves a tagged result instead, like `use-active-home-screen-event.ts`.
-async function readCatalog(definitionId: string): Promise<HseCatalogRead> {
+// The read carries the definition it was made for: `useLiveQuery` keeps its last value while the
+// deps change, so a read for the previously selected event must not show under the new one.
+async function readCatalog(
+  definitionId: string
+): Promise<{ definitionId: string; read: HseCatalogRead }> {
   try {
     const definitions = await getEventDefinitions()
     const definition = definitions.find(
       (candidate) => candidate.id === definitionId
     )
-    return { status: "ready", config: definition?.config ?? null }
+    return {
+      definitionId,
+      read: { status: "ready", config: definition?.config ?? null },
+    }
   } catch {
-    return { status: "error" }
+    return { definitionId, read: { status: "error" } }
   }
 }
 
@@ -83,7 +90,14 @@ export function useHseProjection(
   instance: HseInstance | null
 ): HseEventPointsState {
   const definitionId = instance?.entry.definitionId ?? ""
-  const catalog = useLiveQuery(() => readCatalog(definitionId), [definitionId])
+  // No instance, no catalog read.
+  const catalogRead = useLiveQuery(
+    () => (definitionId ? readCatalog(definitionId) : null),
+    [definitionId]
+  )
+  // A read for another definition (the previous selection) is still loading for this one.
+  const catalog =
+    catalogRead?.definitionId === definitionId ? catalogRead.read : undefined
   const player = useLiveQuery(readPlayer, [])
   const inputs = useHseProjectionInputs(definitionId, instance?.key ?? "")
   return buildHseEventPointsState({ instance, catalog, player, inputs })

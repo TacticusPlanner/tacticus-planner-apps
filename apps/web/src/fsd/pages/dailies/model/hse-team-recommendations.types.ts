@@ -37,11 +37,13 @@ export type HseEnemyHint = {
 
 /** How a team's event-unit pool was chosen (design D2). */
 export type HseTeamPick =
-  /** Owned characters passing a scoring tracker's player filter. */
+  /** Owned characters passing a scoring tracker's player filter. When another scoring tracker of the
+   * mode counts any unit, they only lead the team: the rest score too, so it is never broadened. */
   | { kind: "event-units" }
   /** No scoring tracker has a player filter: any unit scores, so the team is the strongest five. */
   | { kind: "any-unit" }
-  /** A line-up event (Faction Focus): the faction whose five strongest sum highest. */
+  /** A line-up event (Faction Focus): a faction with five owned characters first, then the one
+   * whose five strongest sum highest. */
   | { kind: "faction"; factionId: string }
 
 export type HseTeam =

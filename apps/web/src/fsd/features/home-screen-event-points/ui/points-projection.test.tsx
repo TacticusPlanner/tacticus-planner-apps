@@ -156,6 +156,32 @@ describe("PointsProjection: Psyker Boost worked examples", () => {
 })
 
 describe("PointsProjection: inputs", () => {
+  it("lets points so far be cleared and retyped without a leading zero", async () => {
+    renderHse(i18n, hseInstance("hse-trait-boost-psyker", "running"), {
+      reads: syncedRunning,
+    })
+    const pointsSoFar = screen.getByTestId("hse-projection-points-so-far-input")
+    await userEvent.type(pointsSoFar, "300")
+    expect(total("remaining")).toHaveTextContent("465 pts")
+
+    await userEvent.clear(pointsSoFar)
+    expect(pointsSoFar).toHaveDisplayValue("")
+    expect(total("remaining")).toHaveTextContent("765 pts")
+
+    await userEvent.type(pointsSoFar, "3")
+    expect(pointsSoFar).toHaveDisplayValue("3")
+    expect(total("remaining")).toHaveTextContent("762 pts")
+  })
+
+  it("says the sync time is unknown instead of an empty time", () => {
+    renderHse(i18n, hseInstance("hse-trait-boost-psyker", "running"), {
+      reads: { player: () => hseFixturePlayer({ observedAtMs: null }) },
+    })
+    expect(screen.getByTestId("hse-projection-note-sync")).toHaveTextContent(
+      /^Your sync time is unknown, so tokens are counted from now/
+    )
+  })
+
   it("keeps an edited average per definition across a reload", async () => {
     const { unmount } = renderHse(
       i18n,

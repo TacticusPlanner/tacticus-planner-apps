@@ -135,6 +135,15 @@ describe("HseTeamsSection on desktop", () => {
       screen.getByTestId("hse-team-onslaught-chaos-faction")
     ).toHaveTextContent("Your strongest faction here: Thousand Sons.")
   })
+
+  it("says a broadened Faction Focus team lacks a full line-up of its faction", () => {
+    renderSection(readyView("hse-faction-focus"))
+
+    const broadened = screen.getByTestId("hse-team-arena-broadened")
+    expect(broadened).toHaveTextContent("Line-up points need a full team")
+    expect(broadened).toHaveTextContent("fewer than five Thousand Sons")
+    expect(broadened).not.toHaveTextContent("Fewer than five of these")
+  })
 })
 
 describe("HseTeamsSection on mobile", () => {

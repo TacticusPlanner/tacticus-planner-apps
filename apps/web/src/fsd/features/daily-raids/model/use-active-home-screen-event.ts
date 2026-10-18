@@ -4,6 +4,7 @@ import type { EventsCalendarStorageModel } from "@workspace/game-catalog"
 import {
   getEventDefinitions,
   getUpcomingEvents,
+  hasEventsCalendarSynced,
 } from "@workspace/game-catalog/queries"
 
 import {
@@ -34,8 +35,11 @@ export type ActiveHomeScreenEventState =
 
 // `useLiveQuery` has no error channel (a rejected querier throws to the error boundary), so the
 // querier resolves a tagged result instead, like `use-events-calendar.ts`.
-async function load(nowMs: number): Promise<Ready | { status: "error" }> {
+async function load(nowMs: number): Promise<ActiveHomeScreenEventState> {
   try {
+    // Before the first calendar sync the tables are empty, not "no events": stay loading so a
+    // shared `?event=` key is not judged stale and stripped (the init gate renders pages meanwhile).
+    if (!(await hasEventsCalendarSynced())) return { status: "loading" }
     const [definitions, entries] = await Promise.all([
       getEventDefinitions(),
       getUpcomingEvents(
