@@ -21,7 +21,7 @@ Companion data fix in `tacticus-planner-api` (no OpenSpec change): the Zapspitta
 
 ## 4. Campaign raid suggestions (`features/daily-raids`)
 
-- [ ] 4.1 Implement pure `planMissionRaids`. It counts Today's remaining planned raids first and reserves their energy and attempts. It orders candidates by energy, then goal priority, then id, and fills greedily, capped by the battles left, the budget and the attempts. Verify with unit tests for the plan-covers-part, plan-completes, planned-energy-fills-budget, worked example, smaller caps, goal tie-break, budget-first and no-candidate scenarios
+- [ ] 4.1 Implement pure `planMissionRaids`. It counts Today's remaining planned raids first and reserves their energy and attempts. It orders candidates by energy, then goal priority, then id, and fills greedily, capped by the battles left, the budget and the attempts. Verify with unit tests for the plan-covers-part, plan-completes, planned-energy-fills-budget, worked example, smaller caps, goal tie-break, budget-first and no-candidate scenarios, plus the lightning-victory scenarios (event nodes only, both objectives, no campaign event running)
 - [ ] 4.2 Build `HreRaidsSection` (rows reusing `LocationRow`, totals, "battles left after today", empty states including the filtered-out notice, the minimum-energy and days summary) and export it with `planMissionRaids` from the slice's public API; verify with a component test
 
 ## 5. Page, navigation and tour

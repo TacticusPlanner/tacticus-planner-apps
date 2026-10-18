@@ -8,7 +8,7 @@ Tells the player where to raid today so that the current HRE mission's campaign-
 
 ### Requirement: Raid suggestions appear only for a current campaign objective
 
-The raid suggestions section SHALL be shown on a running HRE when the current mission has an objective of kind `campaignWins` ("Win N campaign battles") or `campaignRaids` ("Raid N campaign battles") whose progress is below its target. The battles still needed SHALL be the target minus the recorded progress. Otherwise, the section SHALL name the next mission that has a campaign objective and its target, or say that no campaign missions are left. It SHALL NOT list raids for a later mission.
+The raid suggestions section SHALL be shown on a running HRE when the current mission has an objective of kind `campaignWins` ("Win N campaign battles"), `campaignRaids` ("Raid N campaign battles") or `lightningVictories` ("Win N lightning victories") whose progress is below its target. The battles still needed SHALL be the target minus the recorded progress. Otherwise, the section SHALL name the next mission that has a campaign objective and its target, or say that no campaign missions are left. It SHALL NOT list raids for a later mission.
 
 Assumptions:
 - A raid counts as a won campaign battle, so it advances both `campaignWins` and `campaignRaids` objectives by one.
@@ -116,6 +116,30 @@ Candidates SHALL be ordered by energy cost ascending. Within the same cost, a no
 
 - **WHEN** there are no candidates
 - **THEN** the section says "No raidable campaign battles"; if the Raids Filters removed every candidate, it also offers to open the filters
+
+### Requirement: Lightning-victory objectives suggest event-campaign raids
+
+When the current mission has a `lightningVictories` objective below its target, the section SHALL suggest raids on event-campaign nodes only, because a raid there counts as a lightning victory. It SHALL use the same budget, Today's-plan reservation, attempts, filters, ordering (energy, then goals, then id) and fill as campaign objectives. The battles to go are the lightning victories still needed. When no campaign event is running, the section SHALL say so and suggest winning battles manually.
+
+Assumptions:
+- A raid on an event-campaign node counts as a lightning victory. A raid on a standing campaign node does not.
+- Event-campaign nodes are raidable only while their campaign event runs (the existing eligibility rule).
+- A planned raid on Today counts toward the objective only when it is on an event-campaign node.
+
+#### Scenario: Mission 11 during a campaign event
+
+- **GIVEN** mission 11 at 10 / 25 lightning victories, the campaign event of 2026-10-15 to 2026-10-29 running, no event nodes on Today's plan, and enough energy
+- **THEN** 15 raids are suggested, all on that event campaign's nodes, cheapest first, and no standing-campaign node is listed
+
+#### Scenario: Mission covering both objectives
+
+- **GIVEN** a current mission with both a `campaignWins` and a `lightningVictories` objective open
+- **THEN** event-campaign raids are suggested first for the lightning objective, and they also count toward the campaign wins. Standing-campaign raids fill only the wins still left
+
+#### Scenario: No campaign event running
+
+- **GIVEN** mission 1 at 0 / 2 lightning victories and no campaign event running
+- **THEN** no raids are listed, and the section says "No campaign event is running: win 2 battles manually with a lightning victory"
 
 ### Requirement: Remaining campaign battles are summarised across missions
 
