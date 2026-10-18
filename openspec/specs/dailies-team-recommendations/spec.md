@@ -234,8 +234,10 @@ vertical list (one character per row). The rarity icon, the rank icon, and the
 Random team's lock toggle SHALL each expose their meaning as a hover/focus
 tooltip. For each character the team SHALL convey why it was chosen — the
 rationale supplied by the winning priority pool, which MAY identify the
-character as the target of an active Onslaught Ascension goal, or that it was
-chosen for combat strength, added to meet the minimum size, or drawn at random.
+character as the target of an active Onslaught Ascension goal or as a unit that
+scores for the selected Home Screen Event (naming the event's trait or faction),
+or that it was chosen for combat strength, added to meet the minimum size, or
+drawn at random.
 
 When a preference filter is active (a preferred trait, a preferred damage type,
 or both), every row SHALL show a marker for each active preference: an emphasised
@@ -257,6 +259,13 @@ preference markers appear on any row.
   rationale marks it as the target of an active Onslaught Ascension goal
 - **THEN** its row conveys that Onslaught Ascend goal reason, distinct from a
   plain project or overall goal reason
+
+#### Scenario: Event unit reason is shown
+
+- **WHEN** a character is chosen because it belongs to a Home Screen Event's
+  event-unit pool (for example a Psyker during Psyker Boost)
+- **THEN** its row conveys that it scores for the event and names the trait or
+  faction
 
 #### Scenario: Single column at every viewport
 

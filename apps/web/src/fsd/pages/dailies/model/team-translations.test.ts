@@ -65,6 +65,8 @@ describe("Dailies team-recommendation translations", () => {
       expect(locale.preferences.missingTrait).toContain("{{attribute}}")
       expect(locale.preferences.missingDamageType).toContain("{{attribute}}")
       expect(locale.rationale.onslaughtGoal).toBeTruthy()
+      expect(locale.rationale.eventUnit).toContain("{{match}}")
+      expect(locale.rationale.eventUnitAny).toBeTruthy()
       expect(locale.category.plan.title).toBeTruthy()
       expect(locale.category.random.title).toBeTruthy()
       expect(locale.category.fewerThanRequested).toContain("{{delivered}}")

@@ -309,6 +309,42 @@
           "content": "Each day card lists the upgrades to farm as a grid. Hover or tap an upgrade for its units and nodes; finished upgrades sit under \"Raided\", planned shop purchases under \"Shops\" and Onslaught runs under \"Onslaught\". Drag or swipe to scroll through the days."
         }
       }
+    },
+    "hse": {
+      "steps": {
+        "switcher": {
+          "title": "Choose an event",
+          "content": "Shows the current event by default. Open any other upcoming or past Home Screen Event here, or step through them with the arrows. Your choice stays in the page address, so you can reload or share it."
+        },
+        "status": {
+          "title": "Event status",
+          "content": "The shown event's name and when it ends, starts or ended, and whether it earns points from campaign raiding."
+        },
+        "details": {
+          "title": "Event details",
+          "content": "What the event rewards and boosts, read from the game data, and the reward tier your power level and roster put you in."
+        },
+        "milestones": {
+          "title": "Milestones",
+          "content": "Every milestone's points and reward. The last cell repeats endlessly after the final milestone."
+        },
+        "projection": {
+          "title": "Points projection",
+          "content": "The Arena, Onslaught and Salvage Run tokens you can still use before the event ends, what each must average to reach the final milestone, and where your own averages land. Edit the averages; they are remembered for this event."
+        },
+        "teams": {
+          "title": "Event teams",
+          "content": "Teams to play while the event runs, built from your strongest characters with the ones that score first. Onslaught and Salvage Run get a team per alliance; on a phone, pick the mode above the teams. Any rule about which enemies count is stated here."
+        },
+        "farm": {
+          "title": "Farm list for event points",
+          "content": "Where to raid today to earn event points while feeding your goals, filled to the energy you have left today."
+        },
+        "top": {
+          "title": "Best locations",
+          "content": "The locations that earn the most event points per raid and per energy, regardless of your goals."
+        }
+      }
     }
   },
   "blockers": {
@@ -377,6 +413,19 @@
   },
   "hse": {
     "title": "Home Screen Event",
+    "switcher": {
+      "label": "Choose a Home Screen Event",
+      "placeholder": "Choose an event",
+      "empty": "No events in the calendar",
+      "previous": "Previous event",
+      "next": "Next event",
+      "option": "{{name}} · {{dates}}",
+      "groups": {
+        "running": "Running",
+        "upcoming": "Upcoming",
+        "past": "Past"
+      }
+    },
     "status": {
       "endsIn": "Ends {{when}}",
       "earnsPoints": "Earns event points from campaign raids: 3 per matching enemy, 5 on Elite nodes.",
@@ -384,6 +433,7 @@
       "noneRunning": "No Home Screen Event is running right now.",
       "next": "Next event: {{name}}",
       "startsIn": "Starts {{when}} ({{date}})",
+      "endedOn": "Ended on {{date}}",
       "noneScheduled": "No Home Screen Event is scheduled.",
       "error": "Event data could not be loaded. The rest of Dailies is unaffected."
     },
@@ -416,6 +466,200 @@
       "filteredEmpty": "No location matches your Raids Filters.",
       "perRaid": "{{points}} pts per raid",
       "perEnergy": "{{value}} pts per energy"
+    },
+    "details": {
+      "title": "Event details",
+      "powerLevel": "Power level: {{value}}",
+      "tier": "Your tier: {{tier}}",
+      "tierRulesLabel": "How your tier is chosen",
+      "tierRules": {
+        "low": "Low: power level below {{threshold}}",
+        "mid": "Mid: power level {{threshold}} or more, without a unit at one blue star",
+        "high": "High: power level {{threshold}} or more, with a character or Machine of War at Legendary one blue star or above"
+      },
+      "tiers": {
+        "High": "High",
+        "Mid": "Mid",
+        "Low": "Low",
+        "Default": "Default"
+      },
+      "global": "Community event: the milestones count the points of every player together.",
+      "noData": "Milestone data is not available yet for this event.",
+      "error": "The event details could not be loaded.",
+      "showMore": "Show more",
+      "showLess": "Show less",
+      "descriptionLine": "{{line}}.",
+      "milestones": "Milestones",
+      "milestonePoints": "{{points}} pts",
+      "milestoneQuantity": "×{{quantity}}",
+      "milestoneTooltip": "{{reward}} ×{{quantity}} at {{points}} points",
+      "endless": "Endless",
+      "endlessTooltip": "{{reward}} ×{{quantity}} every {{points}} points after the last milestone",
+      "endlessCap_one": "up to {{count}} time",
+      "endlessCap_other": "up to {{count}} times",
+      "rewards": {
+        "summoningToken": "Requisition order",
+        "specialSummoningToken": "Blessed requisition order"
+      },
+      "modes": {
+        "Arena": "Arena",
+        "TournamentArena": "Tournament Arena",
+        "Onslaught": "Onslaught",
+        "SalvageRun": "Salvage Run",
+        "Campaign": "campaigns",
+        "MirrorCampaign": "mirror campaigns",
+        "EliteCampaign": "elite campaigns",
+        "MirrorEliteCampaign": "mirror elite campaigns",
+        "CampaignEvent": "campaign events",
+        "Survival": "Survival",
+        "LegendaryEvent": "Legendary Events",
+        "MachinesOfWarEvent": "Machines of War events",
+        "GuildWars": "Guild Wars",
+        "LinearHeroEvent": "hero events"
+      },
+      "tags": {
+        "MachineOfWar": "Machines of War",
+        "Steppable": "Steppables",
+        "Summon": "Summons"
+      },
+      "rarities": {
+        "Common": "Common",
+        "Uncommon": "Uncommon",
+        "Rare": "Rare",
+        "Epic": "Epic",
+        "Legendary": "Legendary",
+        "Mythic": "Mythic"
+      },
+      "phrase": {
+        "modesIn": "in {{modes}}",
+        "modesExcept": "in every mode except {{modes}}",
+        "modesAll": "in every mode",
+        "group": "{{items}}",
+        "excluding": "{{noun}} (excluding {{excluded}})",
+        "allCharacters": "All characters",
+        "charactersOf": "{{filter}} characters",
+        "unitsOf": "{{filter}} units",
+        "characters": "characters",
+        "units": "units",
+        "named": "{{names}}",
+        "enemy": "enemy unit",
+        "enemyOf": "{{filter}} enemy unit",
+        "rateXp": "{{rarity}} {{value}}x",
+        "ratePoints": "{{rarity}} {{value}}"
+      },
+      "lines": {
+        "xp": "{{units}} gain {{multiplier}}x XP {{modes}}",
+        "xpTeam": "{{units}} gain {{multiplier}}x XP {{modes}} when the whole team is from one faction",
+        "xpByRarity": "{{units}} gain bonus XP by rarity ({{rates}}) {{modes}}",
+        "xpByRarityTeam": "{{units}} gain bonus XP by rarity ({{rates}}) {{modes}} when the whole team is from one faction",
+        "stat": "{{units}} have +{{health}}% Health, +{{damage}}% Damage and +{{armour}}% Armour {{modes}}",
+        "kill_one": "You gain {{count}} point for each {{enemy}} you defeat {{modes}}",
+        "kill_other": "You gain {{count}} points for each {{enemy}} you defeat {{modes}}",
+        "killWith_one": "You gain {{count}} point for each {{enemy}} you defeat with {{player}} {{modes}}",
+        "killWith_other": "You gain {{count}} points for each {{enemy}} you defeat with {{player}} {{modes}}",
+        "waves_one": "You gain {{count}} point for each wave you defeat {{modes}}",
+        "waves_other": "You gain {{count}} points for each wave you defeat {{modes}}",
+        "factionMajority_one": "You gain {{count}} point for each battle {{modes}} in which most of the units you deploy are from one faction",
+        "factionMajority_other": "You gain {{count}} points for each battle {{modes}} in which most of the units you deploy are from one faction",
+        "fullLineUp_one": "You gain {{count}} point for each battle {{modes}} in which your whole line-up is from one faction",
+        "fullLineUp_other": "You gain {{count}} points for each battle {{modes}} in which your whole line-up is from one faction",
+        "donateUpgrade_one": "You gain {{count}} point for each upgrade you donate to a guild member",
+        "donateUpgrade_other": "You gain {{count}} points for each upgrade you donate to a guild member",
+        "donateUpgradeByRarity": "You gain points for each upgrade you donate to a guild member: {{rates}}",
+        "donateIntel_one": "You gain {{count}} point for each intel you donate to a guild project",
+        "donateIntel_other": "You gain {{count}} points for each intel you donate to a guild project",
+        "dispatchExpedition_one": "You gain {{count}} point for each expedition you dispatch",
+        "dispatchExpedition_other": "You gain {{count}} points for each expedition you dispatch"
+      }
+    },
+    "projection": {
+      "title": "Points projection",
+      "loading": "Reading your synced tokens…",
+      "error": "Your synced tokens could not be read. The event details are unaffected.",
+      "allLocked": "None of the modes this event scores in is unlocked yet: {{modes}}.",
+      "target": "Final milestone",
+      "pointsSoFar": "Points so far",
+      "pointsSoFarHint": "Copy it from the event in the game; your sync does not include it.",
+      "remaining": "Still needed",
+      "unitsToFinal": "To defeat",
+      "required": "Needed per token",
+      "points": "{{value}} pts",
+      "pointsNone": "–",
+      "units": {
+        "kills_one": "{{count}} kill",
+        "kills_other": "{{count}} kills",
+        "waves_one": "{{count}} wave",
+        "waves_other": "{{count}} waves"
+      },
+      "perToken": {
+        "kills": "{{value}} kills per token",
+        "waves": "{{value}} waves per token",
+        "points": "{{value}} event points per token"
+      },
+      "finalReached": "Final milestone reached",
+      "repeatsSoFar_one": "{{count}} endless reward so far",
+      "repeatsSoFar_other": "{{count}} endless rewards so far",
+      "finalReachedRepeats": "{{final}} · {{repeats}}",
+      "columns": {
+        "mode": "Mode",
+        "tokens": "Tokens",
+        "average": "Average per token",
+        "perUnit": "Points per unit",
+        "points": "Points"
+      },
+      "unit": {
+        "kills": "kills",
+        "waves": "waves",
+        "battles": "battles"
+      },
+      "perUnit": {
+        "kills_one": "{{count}} per kill",
+        "kills_other": "{{count}} per kill",
+        "waves_one": "{{count}} per wave",
+        "waves_other": "{{count}} per wave",
+        "battles_one": "{{count}} per battle",
+        "battles_other": "{{count}} per battle"
+      },
+      "averageLabel": "Average {{unit}} per token in {{mode}}",
+      "averageFixed": "1 battle",
+      "averageNeeded": "Enter an average",
+      "tokensValue_one": "{{count}} token",
+      "tokensValue_other": "{{count}} tokens",
+      "projected": "Projected points",
+      "projectedValue": "{{points}} pts",
+      "needAverage": "Enter an average for every mode to see the projected points.",
+      "milestonesReached": "{{reached}} of {{total}} milestones ({{points}} pts)",
+      "milestonesNone": "0 of {{total}} milestones",
+      "toNext": "{{points}} pts to the next milestone",
+      "toNextRepeat": "{{points}} pts to the next endless reward",
+      "repeats_one": "{{count}} endless reward beyond the final milestone",
+      "repeats_other": "{{count}} endless rewards beyond the final milestone",
+      "notes": {
+        "summed": "{{mode}}: {{count}} point rules apply, so “{{perUnit}}” assumes each one matches all of them.",
+        "locked": "Not unlocked yet, left out: {{modes}}.",
+        "enemyRestricted": "Only some enemies count (see the event details), so enter your average of kills that count.",
+        "battles": "Battle modes score once per token: one battle per token.",
+        "campaign": "Campaign raids also earn points in this event; they are planned in the farm list below.",
+        "syncedAt": "Tokens from your sync {{when}}, assuming you spend them before your buckets fill up.",
+        "syncUnknown": "Your sync time is unknown, so tokens are counted from now, assuming you spend them before your buckets fill up.",
+        "upcoming": "Tokens assume full buckets when the event starts and that you spend them before they fill up."
+      }
+    },
+    "teams": {
+      "title": "Event teams",
+      "description": "Power teams for the modes this event scores in, led by the characters that score. Onslaught and Salvage Run get one team per alliance.",
+      "modeLabel": "Game mode",
+      "anyUnit": "Any unit scores, so this is your strongest team.",
+      "faction": "Your strongest faction here: {{faction}}.",
+      "broadened": "Fewer than five of these characters score for the event, so your strongest others fill the team.",
+      "broadenedNone": "None of these characters score for the event, so this is your strongest team.",
+      "broadenedFaction": "Line-up points need a full team of one faction, and you own fewer than five {{faction}} characters, so your strongest others fill the team.",
+      "hints": {
+        "allowed": "Only kills of {{enemies}} enemies count.",
+        "excluded": "Only kills of non-{{enemies}} enemies count.",
+        "allowedExcluded": "Only kills of {{enemies}} enemies that are not {{excluded}} count.",
+        "units": "Only kills of {{units}} count."
+      }
     }
   }
 }

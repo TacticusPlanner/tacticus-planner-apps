@@ -46,4 +46,44 @@ describe("Dailies translations", () => {
       )
     }
   )
+
+  it.each([
+    ["en", en],
+    ["de", de],
+    ["es", es],
+    ["fr", fr],
+  ])("provides the HSE event teams copy and tour step in %s", (_locale, r) => {
+    const teams = r.hse.teams
+    expect(teams.title).toBeTruthy()
+    expect(teams.description).toBeTruthy()
+    expect(teams.modeLabel).toBeTruthy()
+    expect(teams.anyUnit).toBeTruthy()
+    expect(teams.broadened).toBeTruthy()
+    expect(teams.broadenedNone).toBeTruthy()
+    expect(teams.broadenedFaction).toContain("{{faction}}")
+    expect(teams.faction).toContain("{{faction}}")
+    expect(teams.hints.allowed).toContain("{{enemies}}")
+    expect(teams.hints.excluded).toContain("{{enemies}}")
+    expect(teams.hints.allowedExcluded).toContain("{{enemies}}")
+    expect(teams.hints.allowedExcluded).toContain("{{excluded}}")
+    expect(teams.hints.units).toContain("{{units}}")
+    expect(r.tour.hse.steps.teams.title).toBeTruthy()
+    expect(r.tour.hse.steps.teams.content).toBeTruthy()
+  })
+
+  it.each([
+    ["en", en],
+    ["de", de],
+    ["es", es],
+    ["fr", fr],
+  ])("templates the HSE joins and the unknown-sync note in %s", (_l, r) => {
+    const projection = r.hse.projection
+    expect(projection.finalReachedRepeats).toContain("{{final}}")
+    expect(projection.finalReachedRepeats).toContain("{{repeats}}")
+    expect(projection.pointsNone).toBeTruthy()
+    expect(projection.notes.syncUnknown).toBeTruthy()
+    expect(projection.notes.syncUnknown).not.toContain("{{when}}")
+    expect(r.hse.details.milestoneQuantity).toContain("{{quantity}}")
+    expect(r.hse.details.descriptionLine).toContain("{{line}}")
+  })
 })

@@ -1,0 +1,2250 @@
+{
+  "hse-trait-boost-psyker": {
+    "variants": [
+      {
+        "variantKey": "default",
+        "scope": "Personal",
+        "tiers": [
+          {
+            "tier": "High",
+            "milestones": [
+              {
+                "requiredPoints": 20,
+                "rewardId": "draft_abilityTokensUncommon",
+                "quantity": 3
+              },
+              {
+                "requiredPoints": 40,
+                "rewardId": "draft_abilityTokensRare",
+                "quantity": 2
+              },
+              {
+                "requiredPoints": 60,
+                "rewardId": "draft_abilityTokensEpic",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 80,
+                "rewardId": "draft_abilityTokensLegendary",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 105,
+                "rewardId": "draft_abilityTokensUncommon",
+                "quantity": 5
+              },
+              {
+                "requiredPoints": 135,
+                "rewardId": "draft_abilityTokensRare",
+                "quantity": 4
+              },
+              {
+                "requiredPoints": 165,
+                "rewardId": "draft_abilityTokensEpic",
+                "quantity": 3
+              },
+              {
+                "requiredPoints": 195,
+                "rewardId": "draft_abilityTokensLegendary",
+                "quantity": 2
+              },
+              {
+                "requiredPoints": 230,
+                "rewardId": "draft_abilityTokensUncommon",
+                "quantity": 6
+              },
+              {
+                "requiredPoints": 270,
+                "rewardId": "draft_abilityTokensRare",
+                "quantity": 5
+              },
+              {
+                "requiredPoints": 320,
+                "rewardId": "draft_abilityTokensEpic",
+                "quantity": 4
+              },
+              {
+                "requiredPoints": 370,
+                "rewardId": "draft_abilityTokensLegendary",
+                "quantity": 3
+              },
+              {
+                "requiredPoints": 420,
+                "rewardId": "draft_abilityTokensMythic",
+                "quantity": 2
+              },
+              {
+                "requiredPoints": 470,
+                "rewardId": "draft_abilityTokensUncommon",
+                "quantity": 10
+              },
+              {
+                "requiredPoints": 520,
+                "rewardId": "draft_abilityTokensRare",
+                "quantity": 10
+              },
+              {
+                "requiredPoints": 570,
+                "rewardId": "draft_abilityTokensEpic",
+                "quantity": 10
+              },
+              {
+                "requiredPoints": 645,
+                "rewardId": "specialSummoningToken",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 705,
+                "rewardId": "draft_abilityTokensLegendary",
+                "quantity": 10
+              },
+              {
+                "requiredPoints": 765,
+                "rewardId": "draft_abilityTokensMythic",
+                "quantity": 5
+              }
+            ],
+            "repeat": {
+              "points": 50,
+              "rewardId": "draft_abilityTokensLegendary",
+              "quantity": 1,
+              "cap": null
+            }
+          },
+          {
+            "tier": "Mid",
+            "milestones": [
+              {
+                "requiredPoints": 20,
+                "rewardId": "draft_abilityTokensUncommon",
+                "quantity": 3
+              },
+              {
+                "requiredPoints": 40,
+                "rewardId": "draft_abilityTokensRare",
+                "quantity": 2
+              },
+              {
+                "requiredPoints": 60,
+                "rewardId": "draft_abilityTokensEpic",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 80,
+                "rewardId": "draft_abilityTokensLegendary",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 100,
+                "rewardId": "draft_abilityTokensUncommon",
+                "quantity": 4
+              },
+              {
+                "requiredPoints": 125,
+                "rewardId": "draft_abilityTokensRare",
+                "quantity": 3
+              },
+              {
+                "requiredPoints": 150,
+                "rewardId": "draft_abilityTokensEpic",
+                "quantity": 2
+              },
+              {
+                "requiredPoints": 175,
+                "rewardId": "draft_abilityTokensLegendary",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 200,
+                "rewardId": "draft_abilityTokensUncommon",
+                "quantity": 5
+              },
+              {
+                "requiredPoints": 225,
+                "rewardId": "draft_abilityTokensRare",
+                "quantity": 4
+              },
+              {
+                "requiredPoints": 265,
+                "rewardId": "draft_abilityTokensEpic",
+                "quantity": 3
+              },
+              {
+                "requiredPoints": 305,
+                "rewardId": "draft_abilityTokensLegendary",
+                "quantity": 2
+              },
+              {
+                "requiredPoints": 345,
+                "rewardId": "draft_abilityTokensUncommon",
+                "quantity": 6
+              },
+              {
+                "requiredPoints": 385,
+                "rewardId": "draft_abilityTokensRare",
+                "quantity": 5
+              },
+              {
+                "requiredPoints": 425,
+                "rewardId": "draft_abilityTokensEpic",
+                "quantity": 4
+              },
+              {
+                "requiredPoints": 465,
+                "rewardId": "draft_abilityTokensLegendary",
+                "quantity": 4
+              },
+              {
+                "requiredPoints": 525,
+                "rewardId": "specialSummoningToken",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 565,
+                "rewardId": "draft_abilityTokensLegendary",
+                "quantity": 6
+              },
+              {
+                "requiredPoints": 605,
+                "rewardId": "draft_abilityTokensLegendary",
+                "quantity": 8
+              }
+            ],
+            "repeat": {
+              "points": 40,
+              "rewardId": "draft_abilityTokensLegendary",
+              "quantity": 1,
+              "cap": null
+            }
+          },
+          {
+            "tier": "Low",
+            "milestones": [
+              {
+                "requiredPoints": 10,
+                "rewardId": "draft_abilityTokensCommon",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 20,
+                "rewardId": "draft_abilityTokensCommon",
+                "quantity": 2
+              },
+              {
+                "requiredPoints": 30,
+                "rewardId": "draft_abilityTokensCommon",
+                "quantity": 2
+              },
+              {
+                "requiredPoints": 40,
+                "rewardId": "draft_abilityTokensUncommon",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 50,
+                "rewardId": "draft_abilityTokensCommon",
+                "quantity": 3
+              },
+              {
+                "requiredPoints": 65,
+                "rewardId": "draft_abilityTokensUncommon",
+                "quantity": 2
+              },
+              {
+                "requiredPoints": 80,
+                "rewardId": "draft_abilityTokensRare",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 95,
+                "rewardId": "draft_abilityTokensCommon",
+                "quantity": 4
+              },
+              {
+                "requiredPoints": 110,
+                "rewardId": "draft_abilityTokensUncommon",
+                "quantity": 3
+              },
+              {
+                "requiredPoints": 125,
+                "rewardId": "draft_abilityTokensRare",
+                "quantity": 2
+              },
+              {
+                "requiredPoints": 145,
+                "rewardId": "draft_abilityTokensEpic",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 165,
+                "rewardId": "summoningToken",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 185,
+                "rewardId": "draft_abilityTokensCommon",
+                "quantity": 5
+              },
+              {
+                "requiredPoints": 205,
+                "rewardId": "draft_abilityTokensUncommon",
+                "quantity": 4
+              },
+              {
+                "requiredPoints": 225,
+                "rewardId": "draft_abilityTokensRare",
+                "quantity": 3
+              },
+              {
+                "requiredPoints": 245,
+                "rewardId": "draft_abilityTokensEpic",
+                "quantity": 2
+              },
+              {
+                "requiredPoints": 305,
+                "rewardId": "specialSummoningToken",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 325,
+                "rewardId": "draft_abilityTokensRare",
+                "quantity": 5
+              },
+              {
+                "requiredPoints": 345,
+                "rewardId": "draft_abilityTokensEpic",
+                "quantity": 5
+              }
+            ],
+            "repeat": {
+              "points": 20,
+              "rewardId": "draft_abilityTokensRare",
+              "quantity": 1,
+              "cap": null
+            }
+          }
+        ],
+        "trackers": [
+          {
+            "kind": "KillUnits",
+            "points": 1,
+            "pointsByRarity": null,
+            "gameModes": {
+              "allowed": ["Arena", "SalvageRun", "Onslaught"],
+              "disallowed": null
+            },
+            "enemy": {
+              "tags": {
+                "allowed": null,
+                "disallowed": ["Summon", "Steppable"]
+              },
+              "factionIds": null,
+              "unitIds": null
+            },
+            "player": {
+              "tags": {
+                "allowed": ["Psyker"],
+                "disallowed": null
+              },
+              "factionIds": null,
+              "unitIds": null
+            }
+          }
+        ],
+        "modifiers": [
+          {
+            "kind": "StatBoost",
+            "healthPct": 20,
+            "damagePct": 20,
+            "armourPct": 20,
+            "gameModes": {
+              "allowed": ["Arena"],
+              "disallowed": null
+            },
+            "player": {
+              "tags": {
+                "allowed": ["Psyker"],
+                "disallowed": null
+              },
+              "factionIds": null,
+              "unitIds": null
+            }
+          },
+          {
+            "kind": "UnitXp",
+            "multiplier": 3.0,
+            "sameFactionTeam": false,
+            "gameModes": {
+              "allowed": ["Arena", "SalvageRun", "Onslaught"],
+              "disallowed": null
+            },
+            "player": {
+              "tags": {
+                "allowed": ["Psyker"],
+                "disallowed": null
+              },
+              "factionIds": null,
+              "unitIds": null
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "hse-faction-boost": {
+    "variants": [
+      {
+        "variantKey": "AdeptusMechanicus",
+        "scope": "Personal",
+        "tiers": [
+          {
+            "tier": "High",
+            "milestones": [
+              {
+                "requiredPoints": 100,
+                "rewardId": "seasonalEventCurrencyMarch2026",
+                "quantity": 20
+              },
+              {
+                "requiredPoints": 200,
+                "rewardId": "upgHpE034C",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 300,
+                "rewardId": "I_Crit_L002",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 400,
+                "rewardId": "seasonalEventCurrencyMarch2026",
+                "quantity": 20
+              },
+              {
+                "requiredPoints": 500,
+                "rewardId": "upgDmgL034C",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 600,
+                "rewardId": "upgDmgL015C",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 700,
+                "rewardId": "seasonalEventCurrencyMarch2026",
+                "quantity": 20
+              },
+              {
+                "requiredPoints": 800,
+                "rewardId": "upgArmL010C",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 1000,
+                "rewardId": "specialSummoningToken",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 1100,
+                "rewardId": "seasonalEventCurrencyMarch2026",
+                "quantity": 20
+              },
+              {
+                "requiredPoints": 1250,
+                "rewardId": "abilityTokenMythic_Imperial",
+                "quantity": 3
+              },
+              {
+                "requiredPoints": 1450,
+                "rewardId": "I_Crit_M002",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 1700,
+                "rewardId": "seasonalEventCurrencyMarch2026",
+                "quantity": 25
+              },
+              {
+                "requiredPoints": 2000,
+                "rewardId": "R_Booster_Crit_KardiocoreGalvanus",
+                "quantity": 1
+              }
+            ],
+            "repeat": {
+              "points": 200,
+              "rewardId": "abilityTokenLegendary_Imperial",
+              "quantity": 2,
+              "cap": null
+            }
+          },
+          {
+            "tier": "Mid",
+            "milestones": [
+              {
+                "requiredPoints": 80,
+                "rewardId": "seasonalEventCurrencyMarch2026",
+                "quantity": 20
+              },
+              {
+                "requiredPoints": 160,
+                "rewardId": "upgDmgE034C",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 240,
+                "rewardId": "upgArmE034C",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 320,
+                "rewardId": "seasonalEventCurrencyMarch2026",
+                "quantity": 20
+              },
+              {
+                "requiredPoints": 400,
+                "rewardId": "upgDmgL034C",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 480,
+                "rewardId": "upgDmgL015C",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 560,
+                "rewardId": "seasonalEventCurrencyMarch2026",
+                "quantity": 20
+              },
+              {
+                "requiredPoints": 640,
+                "rewardId": "upgArmL010C",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 790,
+                "rewardId": "specialSummoningToken",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 870,
+                "rewardId": "seasonalEventCurrencyMarch2026",
+                "quantity": 20
+              },
+              {
+                "requiredPoints": 990,
+                "rewardId": "gold",
+                "quantity": 25000
+              },
+              {
+                "requiredPoints": 1150,
+                "rewardId": "abilityTokenLegendary_Imperial",
+                "quantity": 3
+              },
+              {
+                "requiredPoints": 1330,
+                "rewardId": "seasonalEventCurrencyMarch2026",
+                "quantity": 25
+              },
+              {
+                "requiredPoints": 1530,
+                "rewardId": "specialSummoningToken",
+                "quantity": 1
+              }
+            ],
+            "repeat": {
+              "points": 200,
+              "rewardId": "abilityTokenLegendary_Imperial",
+              "quantity": 1,
+              "cap": null
+            }
+          },
+          {
+            "tier": "Low",
+            "milestones": [
+              {
+                "requiredPoints": 60,
+                "rewardId": "seasonalEventCurrencyMarch2026",
+                "quantity": 20
+              },
+              {
+                "requiredPoints": 120,
+                "rewardId": "upgDmgU018C",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 180,
+                "rewardId": "upgDmgR13C",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 240,
+                "rewardId": "seasonalEventCurrencyMarch2026",
+                "quantity": 20
+              },
+              {
+                "requiredPoints": 300,
+                "rewardId": "upgDmgU015C",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 360,
+                "rewardId": "upgArmR001C",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 420,
+                "rewardId": "seasonalEventCurrencyMarch2026",
+                "quantity": 20
+              },
+              {
+                "requiredPoints": 480,
+                "rewardId": "upgDmgR034",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 630,
+                "rewardId": "summoningToken",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 710,
+                "rewardId": "seasonalEventCurrencyMarch2026",
+                "quantity": 20
+              },
+              {
+                "requiredPoints": 830,
+                "rewardId": "gold",
+                "quantity": 5000
+              },
+              {
+                "requiredPoints": 990,
+                "rewardId": "abilityTokenEpic_Imperial",
+                "quantity": 3
+              },
+              {
+                "requiredPoints": 1170,
+                "rewardId": "seasonalEventCurrencyMarch2026",
+                "quantity": 25
+              },
+              {
+                "requiredPoints": 1370,
+                "rewardId": "specialSummoningToken",
+                "quantity": 1
+              }
+            ],
+            "repeat": {
+              "points": 150,
+              "rewardId": "abilityTokenEpic_Imperial",
+              "quantity": 1,
+              "cap": null
+            }
+          }
+        ],
+        "trackers": [
+          {
+            "kind": "KillUnits",
+            "points": 2,
+            "pointsByRarity": null,
+            "gameModes": {
+              "allowed": ["Arena", "SalvageRun", "Onslaught"],
+              "disallowed": null
+            },
+            "enemy": {
+              "tags": {
+                "allowed": null,
+                "disallowed": ["Summon", "Steppable"]
+              },
+              "factionIds": null,
+              "unitIds": null
+            },
+            "player": {
+              "tags": {
+                "allowed": ["Imperial"],
+                "disallowed": ["MachineOfWar"]
+              },
+              "factionIds": null,
+              "unitIds": null
+            }
+          },
+          {
+            "kind": "KillUnits",
+            "points": 1,
+            "pointsByRarity": null,
+            "gameModes": {
+              "allowed": ["Arena", "SalvageRun", "Onslaught"],
+              "disallowed": null
+            },
+            "enemy": {
+              "tags": {
+                "allowed": null,
+                "disallowed": ["Summon", "Steppable"]
+              },
+              "factionIds": null,
+              "unitIds": null
+            },
+            "player": {
+              "tags": {
+                "allowed": null,
+                "disallowed": ["MachineOfWar"]
+              },
+              "factionIds": {
+                "allowed": ["AdeptusMechanicus"],
+                "disallowed": null
+              },
+              "unitIds": null
+            }
+          }
+        ],
+        "modifiers": [
+          {
+            "kind": "UnitXp",
+            "multiplier": 2.0,
+            "sameFactionTeam": true,
+            "gameModes": {
+              "allowed": ["Arena", "SalvageRun", "Onslaught"],
+              "disallowed": null
+            },
+            "player": {
+              "tags": null,
+              "factionIds": {
+                "allowed": ["AdeptusMechanicus"],
+                "disallowed": null
+              },
+              "unitIds": null
+            }
+          },
+          {
+            "kind": "StatBoost",
+            "healthPct": 20,
+            "damagePct": 20,
+            "armourPct": 20,
+            "gameModes": {
+              "allowed": ["Arena"],
+              "disallowed": null
+            },
+            "player": {
+              "tags": null,
+              "factionIds": {
+                "allowed": ["AdeptusMechanicus"],
+                "disallowed": null
+              },
+              "unitIds": null
+            }
+          }
+        ]
+      },
+      {
+        "variantKey": "DarkAngels",
+        "scope": "Personal",
+        "tiers": [
+          {
+            "tier": "High",
+            "milestones": [
+              {
+                "requiredPoints": 50,
+                "rewardId": "upgDmgE032C",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 100,
+                "rewardId": "upgHpE032C",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 150,
+                "rewardId": "I_Crit_L002",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 200,
+                "rewardId": "upgArmE032C",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 250,
+                "rewardId": "upgDmgL032C",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 300,
+                "rewardId": "upgDmgL015C",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 350,
+                "rewardId": "upgArmL032C",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 400,
+                "rewardId": "upgArmL010C",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 500,
+                "rewardId": "specialSummoningToken",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 550,
+                "rewardId": "upgHpL032C",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 625,
+                "rewardId": "gold",
+                "quantity": 50000
+              },
+              {
+                "requiredPoints": 725,
+                "rewardId": "I_Crit_M002",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 850,
+                "rewardId": "abilityTokenMythic_Imperial",
+                "quantity": 3
+              },
+              {
+                "requiredPoints": 1000,
+                "rewardId": "R_Crit_MonsterSlayerOfCaliban",
+                "quantity": 1
+              }
+            ],
+            "repeat": {
+              "points": 50,
+              "rewardId": "abilityTokenMythic_Imperial",
+              "quantity": 1,
+              "cap": 200
+            }
+          },
+          {
+            "tier": "Mid",
+            "milestones": [
+              {
+                "requiredPoints": 40,
+                "rewardId": "I_Crit_R002",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 80,
+                "rewardId": "upgDmgE032C",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 120,
+                "rewardId": "upgArmE032C",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 160,
+                "rewardId": "upgHpE032C",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 200,
+                "rewardId": "upgDmgL032C",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 240,
+                "rewardId": "upgDmgL015C",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 280,
+                "rewardId": "upgArmL032C",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 320,
+                "rewardId": "upgArmL010C",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 420,
+                "rewardId": "specialSummoningToken",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 460,
+                "rewardId": "upgHpL032C",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 520,
+                "rewardId": "gold",
+                "quantity": 25000
+              },
+              {
+                "requiredPoints": 600,
+                "rewardId": "I_Crit_L002",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 700,
+                "rewardId": "abilityTokenLegendary_Imperial",
+                "quantity": 3
+              },
+              {
+                "requiredPoints": 850,
+                "rewardId": "specialSummoningToken",
+                "quantity": 1
+              }
+            ],
+            "repeat": {
+              "points": 40,
+              "rewardId": "abilityTokenLegendary_Imperial",
+              "quantity": 1,
+              "cap": 200
+            }
+          },
+          {
+            "tier": "Low",
+            "milestones": [
+              {
+                "requiredPoints": 30,
+                "rewardId": "I_Crit_C002",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 60,
+                "rewardId": "upgDmgU018C",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 90,
+                "rewardId": "upgDmgR13C",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 120,
+                "rewardId": "upgArmU003C",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 150,
+                "rewardId": "upgDmgU015C",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 180,
+                "rewardId": "upgArmR001C",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 210,
+                "rewardId": "upgHpR003C",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 240,
+                "rewardId": "upgDmgR032",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 340,
+                "rewardId": "summoningToken",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 370,
+                "rewardId": "upgDmgU015C",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 415,
+                "rewardId": "gold",
+                "quantity": 5000
+              },
+              {
+                "requiredPoints": 475,
+                "rewardId": "I_Crit_E002",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 550,
+                "rewardId": "abilityTokenEpic_Imperial",
+                "quantity": 3
+              },
+              {
+                "requiredPoints": 700,
+                "rewardId": "specialSummoningToken",
+                "quantity": 1
+              }
+            ],
+            "repeat": {
+              "points": 30,
+              "rewardId": "abilityTokenEpic_Imperial",
+              "quantity": 1,
+              "cap": 200
+            }
+          }
+        ],
+        "trackers": [
+          {
+            "kind": "KillUnits",
+            "points": 2,
+            "pointsByRarity": null,
+            "gameModes": {
+              "allowed": ["Arena", "SalvageRun", "Onslaught"],
+              "disallowed": null
+            },
+            "enemy": {
+              "tags": {
+                "allowed": null,
+                "disallowed": ["Summon", "Steppable"]
+              },
+              "factionIds": null,
+              "unitIds": null
+            },
+            "player": {
+              "tags": {
+                "allowed": ["Imperial"],
+                "disallowed": ["MachineOfWar"]
+              },
+              "factionIds": null,
+              "unitIds": null
+            }
+          },
+          {
+            "kind": "KillUnits",
+            "points": 1,
+            "pointsByRarity": null,
+            "gameModes": {
+              "allowed": ["Arena", "SalvageRun", "Onslaught"],
+              "disallowed": null
+            },
+            "enemy": {
+              "tags": {
+                "allowed": null,
+                "disallowed": ["Summon", "Steppable"]
+              },
+              "factionIds": null,
+              "unitIds": null
+            },
+            "player": {
+              "tags": {
+                "allowed": null,
+                "disallowed": ["MachineOfWar"]
+              },
+              "factionIds": {
+                "allowed": ["DarkAngels"],
+                "disallowed": null
+              },
+              "unitIds": null
+            }
+          }
+        ],
+        "modifiers": [
+          {
+            "kind": "UnitXp",
+            "multiplier": 2.0,
+            "sameFactionTeam": true,
+            "gameModes": {
+              "allowed": ["Arena", "SalvageRun", "Onslaught"],
+              "disallowed": null
+            },
+            "player": {
+              "tags": null,
+              "factionIds": {
+                "allowed": ["DarkAngels"],
+                "disallowed": null
+              },
+              "unitIds": null
+            }
+          },
+          {
+            "kind": "StatBoost",
+            "healthPct": 20,
+            "damagePct": 20,
+            "armourPct": 20,
+            "gameModes": {
+              "allowed": ["Arena"],
+              "disallowed": null
+            },
+            "player": {
+              "tags": null,
+              "factionIds": {
+                "allowed": ["DarkAngels"],
+                "disallowed": null
+              },
+              "unitIds": null
+            }
+          }
+        ]
+      },
+      {
+        "variantKey": "SpaceWolves",
+        "scope": "Personal",
+        "tiers": [
+          {
+            "tier": "High",
+            "milestones": [
+              {
+                "requiredPoints": 50,
+                "rewardId": "upgDmgE031C",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 100,
+                "rewardId": "upgHpE031C",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 150,
+                "rewardId": "I_Crit_L002",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 200,
+                "rewardId": "upgArmE031C",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 250,
+                "rewardId": "upgDmgL031C",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 300,
+                "rewardId": "upgDmgL015C",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 350,
+                "rewardId": "upgArmL031C",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 400,
+                "rewardId": "upgArmL010C",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 500,
+                "rewardId": "specialSummoningToken",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 550,
+                "rewardId": "upgHpL031C",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 625,
+                "rewardId": "gold",
+                "quantity": 50000
+              },
+              {
+                "requiredPoints": 725,
+                "rewardId": "I_Crit_M002",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 850,
+                "rewardId": "abilityTokenMythic_Imperial",
+                "quantity": 3
+              },
+              {
+                "requiredPoints": 1000,
+                "rewardId": "R_Booster_Crit_WyrdmakersHelm",
+                "quantity": 1
+              }
+            ],
+            "repeat": {
+              "points": 50,
+              "rewardId": "abilityTokenMythic_Imperial",
+              "quantity": 1,
+              "cap": 200
+            }
+          },
+          {
+            "tier": "Mid",
+            "milestones": [
+              {
+                "requiredPoints": 40,
+                "rewardId": "I_Crit_R002",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 80,
+                "rewardId": "upgDmgE031C",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 120,
+                "rewardId": "upgArmE031C",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 160,
+                "rewardId": "upgHpE031C",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 200,
+                "rewardId": "upgDmgL031C",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 240,
+                "rewardId": "upgDmgL015C",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 280,
+                "rewardId": "upgArmL031C",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 320,
+                "rewardId": "upgArmL010C",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 420,
+                "rewardId": "specialSummoningToken",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 460,
+                "rewardId": "upgHpL031C",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 520,
+                "rewardId": "gold",
+                "quantity": 25000
+              },
+              {
+                "requiredPoints": 600,
+                "rewardId": "I_Crit_L002",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 700,
+                "rewardId": "abilityTokenLegendary_Imperial",
+                "quantity": 3
+              },
+              {
+                "requiredPoints": 850,
+                "rewardId": "specialSummoningToken",
+                "quantity": 1
+              }
+            ],
+            "repeat": {
+              "points": 40,
+              "rewardId": "abilityTokenLegendary_Imperial",
+              "quantity": 1,
+              "cap": 200
+            }
+          },
+          {
+            "tier": "Low",
+            "milestones": [
+              {
+                "requiredPoints": 30,
+                "rewardId": "I_Crit_C002",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 60,
+                "rewardId": "upgDmgU018C",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 90,
+                "rewardId": "upgDmgR13C",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 120,
+                "rewardId": "upgArmU003C",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 150,
+                "rewardId": "upgDmgU015C",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 180,
+                "rewardId": "upgArmR003C",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 210,
+                "rewardId": "upgHpR003C",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 240,
+                "rewardId": "upgDmgR031",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 340,
+                "rewardId": "summoningToken",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 370,
+                "rewardId": "upgDmgU015C",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 415,
+                "rewardId": "gold",
+                "quantity": 5000
+              },
+              {
+                "requiredPoints": 475,
+                "rewardId": "I_Crit_E002",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 550,
+                "rewardId": "abilityTokenEpic_Imperial",
+                "quantity": 3
+              },
+              {
+                "requiredPoints": 700,
+                "rewardId": "specialSummoningToken",
+                "quantity": 1
+              }
+            ],
+            "repeat": {
+              "points": 30,
+              "rewardId": "abilityTokenEpic_Imperial",
+              "quantity": 1,
+              "cap": 200
+            }
+          }
+        ],
+        "trackers": [
+          {
+            "kind": "KillUnits",
+            "points": 2,
+            "pointsByRarity": null,
+            "gameModes": {
+              "allowed": ["Arena", "SalvageRun", "Onslaught"],
+              "disallowed": null
+            },
+            "enemy": {
+              "tags": {
+                "allowed": null,
+                "disallowed": ["Summon", "Steppable"]
+              },
+              "factionIds": null,
+              "unitIds": null
+            },
+            "player": {
+              "tags": {
+                "allowed": ["Imperial"],
+                "disallowed": ["MachineOfWar"]
+              },
+              "factionIds": null,
+              "unitIds": null
+            }
+          },
+          {
+            "kind": "KillUnits",
+            "points": 1,
+            "pointsByRarity": null,
+            "gameModes": {
+              "allowed": ["Arena", "SalvageRun", "Onslaught"],
+              "disallowed": null
+            },
+            "enemy": {
+              "tags": {
+                "allowed": null,
+                "disallowed": ["Summon", "Steppable"]
+              },
+              "factionIds": null,
+              "unitIds": null
+            },
+            "player": {
+              "tags": {
+                "allowed": null,
+                "disallowed": ["MachineOfWar"]
+              },
+              "factionIds": {
+                "allowed": ["SpaceWolves"],
+                "disallowed": null
+              },
+              "unitIds": null
+            }
+          }
+        ],
+        "modifiers": [
+          {
+            "kind": "UnitXp",
+            "multiplier": 2.0,
+            "sameFactionTeam": true,
+            "gameModes": {
+              "allowed": ["Arena", "SalvageRun", "Onslaught"],
+              "disallowed": null
+            },
+            "player": {
+              "tags": null,
+              "factionIds": {
+                "allowed": ["SpaceWolves"],
+                "disallowed": null
+              },
+              "unitIds": null
+            }
+          },
+          {
+            "kind": "StatBoost",
+            "healthPct": 20,
+            "damagePct": 20,
+            "armourPct": 20,
+            "gameModes": {
+              "allowed": ["Arena"],
+              "disallowed": null
+            },
+            "player": {
+              "tags": null,
+              "factionIds": {
+                "allowed": ["SpaceWolves"],
+                "disallowed": null
+              },
+              "unitIds": null
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "hse-faction-focus": {
+    "variants": [
+      {
+        "variantKey": "default",
+        "scope": "Personal",
+        "tiers": [
+          {
+            "tier": "High",
+            "milestones": [
+              {
+                "requiredPoints": 35,
+                "rewardId": "gold",
+                "quantity": 50000
+              },
+              {
+                "requiredPoints": 70,
+                "rewardId": "gold",
+                "quantity": 50000
+              },
+              {
+                "requiredPoints": 105,
+                "rewardId": "gold",
+                "quantity": 50000
+              },
+              {
+                "requiredPoints": 140,
+                "rewardId": "gold",
+                "quantity": 50000
+              },
+              {
+                "requiredPoints": 200,
+                "rewardId": "gold",
+                "quantity": 100000
+              },
+              {
+                "requiredPoints": 235,
+                "rewardId": "gold",
+                "quantity": 50000
+              },
+              {
+                "requiredPoints": 270,
+                "rewardId": "gold",
+                "quantity": 50000
+              },
+              {
+                "requiredPoints": 305,
+                "rewardId": "gold",
+                "quantity": 50000
+              },
+              {
+                "requiredPoints": 405,
+                "rewardId": "summoningToken",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 465,
+                "rewardId": "gold",
+                "quantity": 100000
+              },
+              {
+                "requiredPoints": 525,
+                "rewardId": "gold",
+                "quantity": 100000
+              },
+              {
+                "requiredPoints": 625,
+                "rewardId": "gold",
+                "quantity": 250000
+              },
+              {
+                "requiredPoints": 685,
+                "rewardId": "gold",
+                "quantity": 100000
+              },
+              {
+                "requiredPoints": 835,
+                "rewardId": "specialSummoningToken",
+                "quantity": 1
+              }
+            ],
+            "repeat": {
+              "points": 60,
+              "rewardId": "gold",
+              "quantity": 100000,
+              "cap": null
+            }
+          },
+          {
+            "tier": "Mid",
+            "milestones": [
+              {
+                "requiredPoints": 25,
+                "rewardId": "gold",
+                "quantity": 5000
+              },
+              {
+                "requiredPoints": 50,
+                "rewardId": "gold",
+                "quantity": 10000
+              },
+              {
+                "requiredPoints": 75,
+                "rewardId": "gold",
+                "quantity": 15000
+              },
+              {
+                "requiredPoints": 100,
+                "rewardId": "gold",
+                "quantity": 20000
+              },
+              {
+                "requiredPoints": 140,
+                "rewardId": "gold",
+                "quantity": 50000
+              },
+              {
+                "requiredPoints": 165,
+                "rewardId": "gold",
+                "quantity": 25000
+              },
+              {
+                "requiredPoints": 190,
+                "rewardId": "gold",
+                "quantity": 30000
+              },
+              {
+                "requiredPoints": 215,
+                "rewardId": "gold",
+                "quantity": 35000
+              },
+              {
+                "requiredPoints": 295,
+                "rewardId": "summoningToken",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 335,
+                "rewardId": "gold",
+                "quantity": 80000
+              },
+              {
+                "requiredPoints": 375,
+                "rewardId": "gold",
+                "quantity": 100000
+              },
+              {
+                "requiredPoints": 445,
+                "rewardId": "gold",
+                "quantity": 250000
+              },
+              {
+                "requiredPoints": 485,
+                "rewardId": "gold",
+                "quantity": 100000
+              },
+              {
+                "requiredPoints": 610,
+                "rewardId": "specialSummoningToken",
+                "quantity": 1
+              }
+            ],
+            "repeat": {
+              "points": 40,
+              "rewardId": "gold",
+              "quantity": 60000,
+              "cap": null
+            }
+          },
+          {
+            "tier": "Low",
+            "milestones": [
+              {
+                "requiredPoints": 20,
+                "rewardId": "gold",
+                "quantity": 1000
+              },
+              {
+                "requiredPoints": 40,
+                "rewardId": "gold",
+                "quantity": 1500
+              },
+              {
+                "requiredPoints": 60,
+                "rewardId": "gold",
+                "quantity": 2000
+              },
+              {
+                "requiredPoints": 80,
+                "rewardId": "gold",
+                "quantity": 2500
+              },
+              {
+                "requiredPoints": 110,
+                "rewardId": "gold",
+                "quantity": 5000
+              },
+              {
+                "requiredPoints": 130,
+                "rewardId": "gold",
+                "quantity": 3000
+              },
+              {
+                "requiredPoints": 150,
+                "rewardId": "gold",
+                "quantity": 4000
+              },
+              {
+                "requiredPoints": 170,
+                "rewardId": "gold",
+                "quantity": 5000
+              },
+              {
+                "requiredPoints": 230,
+                "rewardId": "summoningToken",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 250,
+                "rewardId": "gold",
+                "quantity": 5000
+              },
+              {
+                "requiredPoints": 280,
+                "rewardId": "gold",
+                "quantity": 10000
+              },
+              {
+                "requiredPoints": 320,
+                "rewardId": "gold",
+                "quantity": 50000
+              },
+              {
+                "requiredPoints": 370,
+                "rewardId": "gold",
+                "quantity": 15000
+              },
+              {
+                "requiredPoints": 450,
+                "rewardId": "specialSummoningToken",
+                "quantity": 1
+              }
+            ],
+            "repeat": {
+              "points": 40,
+              "rewardId": "gold",
+              "quantity": 10000,
+              "cap": null
+            }
+          }
+        ],
+        "trackers": [
+          {
+            "kind": "DeployedUnitsOfFactionMajority",
+            "points": 1,
+            "pointsByRarity": null,
+            "gameModes": {
+              "allowed": ["Arena", "TournamentArena"],
+              "disallowed": null
+            },
+            "enemy": null,
+            "player": {
+              "tags": {
+                "allowed": null,
+                "disallowed": ["MachineOfWar"]
+              },
+              "factionIds": null,
+              "unitIds": null
+            }
+          },
+          {
+            "kind": "DeployedUnitsOfFactionMajority",
+            "points": 3,
+            "pointsByRarity": null,
+            "gameModes": {
+              "allowed": ["SalvageRun", "Onslaught"],
+              "disallowed": null
+            },
+            "enemy": null,
+            "player": {
+              "tags": {
+                "allowed": null,
+                "disallowed": ["MachineOfWar"]
+              },
+              "factionIds": null,
+              "unitIds": null
+            }
+          },
+          {
+            "kind": "FullLineUpOfFaction",
+            "points": 2,
+            "pointsByRarity": null,
+            "gameModes": {
+              "allowed": ["Arena", "TournamentArena"],
+              "disallowed": null
+            },
+            "enemy": null,
+            "player": {
+              "tags": {
+                "allowed": null,
+                "disallowed": ["MachineOfWar"]
+              },
+              "factionIds": null,
+              "unitIds": null
+            }
+          },
+          {
+            "kind": "FullLineUpOfFaction",
+            "points": 5,
+            "pointsByRarity": null,
+            "gameModes": {
+              "allowed": ["SalvageRun", "Onslaught"],
+              "disallowed": null
+            },
+            "enemy": null,
+            "player": {
+              "tags": {
+                "allowed": null,
+                "disallowed": ["MachineOfWar"]
+              },
+              "factionIds": null,
+              "unitIds": null
+            }
+          }
+        ],
+        "modifiers": [
+          {
+            "kind": "UnitXp",
+            "multiplier": 2.0,
+            "sameFactionTeam": true,
+            "gameModes": {
+              "allowed": [
+                "Arena",
+                "SalvageRun",
+                "Onslaught",
+                "TournamentArena"
+              ],
+              "disallowed": null
+            },
+            "player": null
+          }
+        ]
+      },
+      {
+        "variantKey": "october-2026",
+        "scope": "Personal",
+        "tiers": [
+          {
+            "tier": "Default",
+            "milestones": [
+              {
+                "requiredPoints": 20,
+                "rewardId": "seasonalEventCurrencyOctober2026",
+                "quantity": 5
+              },
+              {
+                "requiredPoints": 40,
+                "rewardId": "seasonalEventCurrencyOctober2026",
+                "quantity": 5
+              },
+              {
+                "requiredPoints": 60,
+                "rewardId": "seasonalEventCurrencyOctober2026",
+                "quantity": 5
+              },
+              {
+                "requiredPoints": 100,
+                "rewardId": "seasonalEventCurrencyOctober2026",
+                "quantity": 10
+              },
+              {
+                "requiredPoints": 140,
+                "rewardId": "seasonalEventCurrencyOctober2026",
+                "quantity": 10
+              },
+              {
+                "requiredPoints": 180,
+                "rewardId": "seasonalEventCurrencyOctober2026",
+                "quantity": 10
+              },
+              {
+                "requiredPoints": 240,
+                "rewardId": "seasonalEventCurrencyOctober2026",
+                "quantity": 15
+              },
+              {
+                "requiredPoints": 320,
+                "rewardId": "seasonalEventCurrencyOctober2026",
+                "quantity": 20
+              },
+              {
+                "requiredPoints": 420,
+                "rewardId": "seasonalEventCurrencyOctober2026",
+                "quantity": 25
+              },
+              {
+                "requiredPoints": 540,
+                "rewardId": "seasonalEventCurrencyOctober2026",
+                "quantity": 30
+              },
+              {
+                "requiredPoints": 680,
+                "rewardId": "seasonalEventCurrencyOctober2026",
+                "quantity": 35
+              },
+              {
+                "requiredPoints": 840,
+                "rewardId": "seasonalEventCurrencyOctober2026",
+                "quantity": 40
+              },
+              {
+                "requiredPoints": 1020,
+                "rewardId": "summoningToken",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 1220,
+                "rewardId": "seasonalEventCurrencyOctober2026",
+                "quantity": 50
+              }
+            ],
+            "repeat": {
+              "points": 50,
+              "rewardId": "gold",
+              "quantity": 3000,
+              "cap": null
+            }
+          }
+        ],
+        "trackers": [
+          {
+            "kind": "DeployedUnitsOfFactionMajority",
+            "points": 1,
+            "pointsByRarity": null,
+            "gameModes": {
+              "allowed": ["Arena", "TournamentArena"],
+              "disallowed": null
+            },
+            "enemy": null,
+            "player": {
+              "tags": {
+                "allowed": null,
+                "disallowed": ["MachineOfWar"]
+              },
+              "factionIds": null,
+              "unitIds": null
+            }
+          },
+          {
+            "kind": "DeployedUnitsOfFactionMajority",
+            "points": 3,
+            "pointsByRarity": null,
+            "gameModes": {
+              "allowed": ["SalvageRun", "Onslaught"],
+              "disallowed": null
+            },
+            "enemy": null,
+            "player": {
+              "tags": {
+                "allowed": null,
+                "disallowed": ["MachineOfWar"]
+              },
+              "factionIds": null,
+              "unitIds": null
+            }
+          },
+          {
+            "kind": "FullLineUpOfFaction",
+            "points": 2,
+            "pointsByRarity": null,
+            "gameModes": {
+              "allowed": ["Arena", "TournamentArena"],
+              "disallowed": null
+            },
+            "enemy": null,
+            "player": {
+              "tags": {
+                "allowed": null,
+                "disallowed": ["MachineOfWar"]
+              },
+              "factionIds": null,
+              "unitIds": null
+            }
+          },
+          {
+            "kind": "FullLineUpOfFaction",
+            "points": 5,
+            "pointsByRarity": null,
+            "gameModes": {
+              "allowed": ["SalvageRun", "Onslaught"],
+              "disallowed": null
+            },
+            "enemy": null,
+            "player": {
+              "tags": {
+                "allowed": null,
+                "disallowed": ["MachineOfWar"]
+              },
+              "factionIds": null,
+              "unitIds": null
+            }
+          }
+        ],
+        "modifiers": [
+          {
+            "kind": "UnitXp",
+            "multiplier": 2.0,
+            "sameFactionTeam": true,
+            "gameModes": {
+              "allowed": [
+                "Arena",
+                "SalvageRun",
+                "Onslaught",
+                "TournamentArena"
+              ],
+              "disallowed": null
+            },
+            "player": null
+          }
+        ]
+      }
+    ]
+  },
+  "hse-training-rush": {
+    "variants": [
+      {
+        "variantKey": "default",
+        "scope": "Personal",
+        "tiers": [
+          {
+            "tier": "High",
+            "milestones": [
+              {
+                "requiredPoints": 500,
+                "rewardId": "gold",
+                "quantity": 10000
+              },
+              {
+                "requiredPoints": 1000,
+                "rewardId": "xpLegendary",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 1500,
+                "rewardId": "gold",
+                "quantity": 15000
+              },
+              {
+                "requiredPoints": 2000,
+                "rewardId": "xpLegendary",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 2500,
+                "rewardId": "gold",
+                "quantity": 20000
+              },
+              {
+                "requiredPoints": 4000,
+                "rewardId": "xpMythic",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 5500,
+                "rewardId": "gold",
+                "quantity": 35000
+              },
+              {
+                "requiredPoints": 7000,
+                "rewardId": "xpMythic",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 8500,
+                "rewardId": "gold",
+                "quantity": 50000
+              },
+              {
+                "requiredPoints": 10500,
+                "rewardId": "summoningToken",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 13500,
+                "rewardId": "gold",
+                "quantity": 75000
+              },
+              {
+                "requiredPoints": 17000,
+                "rewardId": "xpMythic",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 21000,
+                "rewardId": "gold",
+                "quantity": 100000
+              },
+              {
+                "requiredPoints": 26000,
+                "rewardId": "specialSummoningToken",
+                "quantity": 1
+              }
+            ],
+            "repeat": {
+              "points": 1000,
+              "rewardId": "xpLegendary",
+              "quantity": 1,
+              "cap": null
+            }
+          },
+          {
+            "tier": "Mid",
+            "milestones": [
+              {
+                "requiredPoints": 500,
+                "rewardId": "gold",
+                "quantity": 5000
+              },
+              {
+                "requiredPoints": 1000,
+                "rewardId": "xpEpic",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 1500,
+                "rewardId": "gold",
+                "quantity": 7500
+              },
+              {
+                "requiredPoints": 2000,
+                "rewardId": "xpEpic",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 2500,
+                "rewardId": "gold",
+                "quantity": 10000
+              },
+              {
+                "requiredPoints": 4000,
+                "rewardId": "xpLegendary",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 5500,
+                "rewardId": "gold",
+                "quantity": 15000
+              },
+              {
+                "requiredPoints": 7000,
+                "rewardId": "xpLegendary",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 8500,
+                "rewardId": "gold",
+                "quantity": 15000
+              },
+              {
+                "requiredPoints": 10000,
+                "rewardId": "summoningToken",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 12000,
+                "rewardId": "gold",
+                "quantity": 35000
+              },
+              {
+                "requiredPoints": 15000,
+                "rewardId": "xpMythic",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 19000,
+                "rewardId": "gold",
+                "quantity": 50000
+              },
+              {
+                "requiredPoints": 24000,
+                "rewardId": "specialSummoningToken",
+                "quantity": 1
+              }
+            ],
+            "repeat": {
+              "points": 1000,
+              "rewardId": "xpLegendary",
+              "quantity": 1,
+              "cap": null
+            }
+          },
+          {
+            "tier": "Low",
+            "milestones": [
+              {
+                "requiredPoints": 300,
+                "rewardId": "gold",
+                "quantity": 500
+              },
+              {
+                "requiredPoints": 600,
+                "rewardId": "xpUncommon",
+                "quantity": 2
+              },
+              {
+                "requiredPoints": 900,
+                "rewardId": "gold",
+                "quantity": 1000
+              },
+              {
+                "requiredPoints": 1200,
+                "rewardId": "xpRare",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 1500,
+                "rewardId": "gold",
+                "quantity": 1500
+              },
+              {
+                "requiredPoints": 2150,
+                "rewardId": "summoningToken",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 3150,
+                "rewardId": "gold",
+                "quantity": 2500
+              },
+              {
+                "requiredPoints": 4150,
+                "rewardId": "xpRare",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 5150,
+                "rewardId": "gold",
+                "quantity": 5000
+              },
+              {
+                "requiredPoints": 6650,
+                "rewardId": "xpEpic",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 8400,
+                "rewardId": "gold",
+                "quantity": 7500
+              },
+              {
+                "requiredPoints": 10400,
+                "rewardId": "xpEpic",
+                "quantity": 1
+              },
+              {
+                "requiredPoints": 12900,
+                "rewardId": "gold",
+                "quantity": 10000
+              },
+              {
+                "requiredPoints": 15900,
+                "rewardId": "specialSummoningToken",
+                "quantity": 1
+              }
+            ],
+            "repeat": {
+              "points": 250,
+              "rewardId": "xpEpic",
+              "quantity": 1,
+              "cap": null
+            }
+          }
+        ],
+        "trackers": [
+          {
+            "kind": "KillUnits",
+            "points": 3,
+            "pointsByRarity": null,
+            "gameModes": {
+              "allowed": null,
+              "disallowed": ["EliteCampaign", "MirrorEliteCampaign"]
+            },
+            "enemy": {
+              "tags": {
+                "allowed": null,
+                "disallowed": ["Summon", "Steppable"]
+              },
+              "factionIds": null,
+              "unitIds": null
+            },
+            "player": null
+          },
+          {
+            "kind": "KillUnits",
+            "points": 5,
+            "pointsByRarity": null,
+            "gameModes": {
+              "allowed": ["EliteCampaign", "MirrorEliteCampaign"],
+              "disallowed": null
+            },
+            "enemy": {
+              "tags": {
+                "allowed": null,
+                "disallowed": ["Summon", "Steppable"]
+              },
+              "factionIds": null,
+              "unitIds": null
+            },
+            "player": null
+          }
+        ],
+        "modifiers": [
+          {
+            "kind": "UnitXp",
+            "multiplierByRarity": {
+              "Common": 2.5,
+              "Uncommon": 3.0,
+              "Rare": 3.5,
+              "Epic": 4.0,
+              "Legendary": 4.5,
+              "Mythic": 5.0
+            },
+            "sameFactionTeam": false,
+            "gameModes": null,
+            "player": null
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -8,21 +8,34 @@ import { eventBarClass, formatRelativeTime } from "@/shared/lib"
 import { EventTypeIcon } from "@/shared/ui"
 
 import { hasHomeScreenEventRule } from "../../model/home-screen-event-rules"
+import {
+  homeScreenEventInstanceKey,
+  type HomeScreenEventEntry,
+  type HomeScreenEventInstance,
+} from "../../model/select-active-home-screen-event"
 import type { ActiveHomeScreenEventState } from "../../model/use-active-home-screen-event"
+import { useHomeScreenEventName } from "./use-home-screen-event-name"
 
 /**
- * What the HSE tab says about the event: the running one (name, remaining time, whether it earns
- * raid points), the next one when nothing runs, or why there is nothing to show. An upcoming event
- * is only ever announced here; it changes no ordering anywhere.
+ * What the HSE tab says about the shown instance: a running one (name, remaining time, whether it
+ * earns raid points), an upcoming one (name, start date and countdown), a past one (name and "Ended
+ * on" date), or why there is nothing to show. Showing an instance changes no ordering anywhere.
  */
 export function EventStatusLine({
   state,
+  instance,
 }: {
   state: ActiveHomeScreenEventState
+  /** The instance the tab shows (see `resolveHomeScreenEventSelection`), or null for none. */
+  instance: HomeScreenEventInstance<HomeScreenEventEntry> | null
 }) {
-  const { t, i18n } = useTranslation(["dailies", "events"])
-  const eventName = (definitionId: string) =>
-    t(`events:definitions.${definitionId}`, { defaultValue: definitionId })
+  const { t, i18n } = useTranslation(["dailies"])
+  const eventName = useHomeScreenEventName()
+  const formatDate = (ms: number) =>
+    new Date(ms).toLocaleString(i18n.language, {
+      dateStyle: "medium",
+      timeStyle: "short",
+    })
 
   if (state.status === "loading") {
     return (
@@ -42,19 +55,19 @@ export function EventStatusLine({
     )
   }
 
-  if (state.active) {
+  if (instance?.status === "running") {
     const when = formatRelativeTime(
-      Date.parse(state.active.endUtc),
+      Date.parse(instance.entry.endUtc),
       i18n.language
     )
     return (
       <StatusFrame testId="hse-status-active">
-        <p className="font-semibold">{eventName(state.active.definitionId)}</p>
+        <p className="font-semibold">{eventName(instance.entry)}</p>
         <p className="text-sm text-muted-foreground">
           {t("dailies:hse.status.endsIn", { when })}
         </p>
         <p className="text-sm">
-          {hasHomeScreenEventRule(state.active.definitionId)
+          {hasHomeScreenEventRule(instance.entry.definitionId)
             ? t("dailies:hse.status.earnsPoints")
             : t("dailies:hse.status.noRaidPoints")}
         </p>
@@ -62,25 +75,42 @@ export function EventStatusLine({
     )
   }
 
-  if (state.next) {
-    const startMs = Date.parse(state.next.startUtc)
+  if (instance?.status === "upcoming") {
+    const startMs = Date.parse(instance.entry.startUtc)
+    const noneRunning = !state.instances.some(
+      (candidate) => candidate.status === "running"
+    )
+    const isNext =
+      state.next !== null &&
+      homeScreenEventInstanceKey(state.next) === instance.key
+    const name = eventName(instance.entry)
     return (
-      <StatusFrame testId="hse-status-next">
-        <p className="text-sm text-muted-foreground">
-          {t("dailies:hse.status.noneRunning")}
-        </p>
+      <StatusFrame testId="hse-status-upcoming">
+        {noneRunning ? (
+          <p className="text-sm text-muted-foreground">
+            {t("dailies:hse.status.noneRunning")}
+          </p>
+        ) : null}
         <p className="font-semibold">
-          {t("dailies:hse.status.next", {
-            name: eventName(state.next.definitionId),
-          })}
+          {isNext ? t("dailies:hse.status.next", { name }) : name}
         </p>
         <p className="text-sm text-muted-foreground">
           {t("dailies:hse.status.startsIn", {
             when: formatRelativeTime(startMs, i18n.language),
-            date: new Date(startMs).toLocaleString(i18n.language, {
-              dateStyle: "medium",
-              timeStyle: "short",
-            }),
+            date: formatDate(startMs),
+          })}
+        </p>
+      </StatusFrame>
+    )
+  }
+
+  if (instance?.status === "past") {
+    return (
+      <StatusFrame testId="hse-status-past">
+        <p className="font-semibold">{eventName(instance.entry)}</p>
+        <p className="text-sm text-muted-foreground">
+          {t("dailies:hse.status.endedOn", {
+            date: formatDate(Date.parse(instance.entry.endUtc)),
           })}
         </p>
       </StatusFrame>

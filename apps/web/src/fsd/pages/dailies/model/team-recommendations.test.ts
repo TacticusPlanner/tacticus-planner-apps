@@ -492,3 +492,54 @@ describe("buildTeamRecommendations — Random team", () => {
     expect(fellBack.members).toHaveLength(5)
   })
 })
+
+describe("buildTeamRecommendations — pools leading Power Mode", () => {
+  const roster = [
+    character("strong", { rank: "Diamond3" }),
+    character("mid", { rank: "Gold1" }),
+    character("weak", { rank: "Stone1" }),
+    character("weaker", { rank: "Stone1" }),
+  ]
+  const eventPool: TeamPoolSpec = {
+    id: "event-units",
+    unitIds: new Set([id("weak"), id("weaker"), id("mid")]),
+    rationaleFor: () => ({ kind: "event-unit" }),
+    rankOf: (unitId) => (unitId === id("weaker") ? 2 : 1),
+  }
+
+  it("orders by combat power alone in Power Mode by default", () => {
+    const plan = planOf(
+      build({ mode: "power", roster, teamSize: 3, pools: [eventPool] })
+    )
+    expect(plan.members.map((m) => m.unitId)).toEqual([
+      id("mid"),
+      id("weak"),
+      id("weaker"),
+    ])
+  })
+
+  it("lets the pool lead, ranked by rankOf, with the strongest others filling the team", () => {
+    const plan = planOf(
+      build({
+        mode: "power",
+        roster,
+        teamSize: 4,
+        pools: [eventPool],
+        leadWithPools: true,
+      })
+    )
+    expect(plan.members.map((m) => m.unitId)).toEqual([
+      id("weaker"),
+      id("mid"),
+      id("weak"),
+      id("strong"),
+    ])
+    expect(plan.members.map((m) => m.rationale.kind)).toEqual([
+      "event-unit",
+      "event-unit",
+      "event-unit",
+      "strength",
+    ])
+    expect(plan.broadened).toBe(true)
+  })
+})

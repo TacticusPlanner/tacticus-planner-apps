@@ -121,6 +121,10 @@ type BuildContext = {
   pools: readonly TeamPoolSpec[]
   /** Higher number = higher-priority pool; absent when the character is in no configured pool. */
   poolRankById: Map<UnitId, number>
+  /** The claiming pool's `rankOf` per character (0 when it has none). */
+  inPoolRankById: Map<UnitId, number>
+  /** True when pool priority orders the Plan Team in Power Mode too (`leadWithPools`). */
+  leadWithPools: boolean
   cappedById: Map<UnitId, boolean>
   combatPowerById: Map<UnitId, number>
   /** The power data was read (`unitPower` non-null): without it every power is a stand-in 0, so no
@@ -233,10 +237,13 @@ function orderCandidates(
     const leftEligible = isEligible(left, ctx) ? 1 : 0
     const rightEligible = isEligible(right, ctx) ? 1 : 0
     if (leftEligible !== rightEligible) return rightEligible - leftEligible
-    if (ctx.mode === "xp") {
+    if (ctx.mode === "xp" || ctx.leadWithPools) {
       const leftPool = ctx.poolRankById.get(left) ?? 0
       const rightPool = ctx.poolRankById.get(right) ?? 0
       if (leftPool !== rightPool) return rightPool - leftPool
+      const leftRank = ctx.inPoolRankById.get(left) ?? 0
+      const rightRank = ctx.inPoolRankById.get(right) ?? 0
+      if (leftRank !== rightRank) return rightRank - leftRank
     }
     if (power(left) !== power(right)) return power(right) - power(left)
     return left < right ? -1 : left > right ? 1 : 0
@@ -370,9 +377,13 @@ export function buildTeamRecommendations(
   }))
 
   const poolRankById = new Map<UnitId, number>()
+  const inPoolRankById = new Map<UnitId, number>()
   for (const id of rosterIds) {
     const index = pools.findIndex((pool) => pool.unitIds.has(id))
-    if (index !== -1) poolRankById.set(id, pools.length - index)
+    if (index !== -1) {
+      poolRankById.set(id, pools.length - index)
+      inPoolRankById.set(id, pools[index]!.rankOf?.(id) ?? 0)
+    }
   }
 
   const ctx: BuildContext = {
@@ -382,6 +393,8 @@ export function buildTeamRecommendations(
     characterById: new Map(input.roster.map((c) => [c.unitId, c])),
     pools,
     poolRankById,
+    inPoolRankById,
+    leadWithPools: input.leadWithPools ?? false,
     cappedById: new Map(input.roster.map((c) => [c.unitId, isXpCapped(c)])),
     combatPowerById: new Map(
       input.roster.map((c) => [c.unitId, combatPowerOf(c, input.unitPower)])

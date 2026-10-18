@@ -6,6 +6,16 @@ import {
 } from "./dataset-keys"
 import type {
   datasetEnvelopeMetaSchema,
+  hseConfigSchema,
+  hseMilestoneSchema,
+  hseRepeatSchema,
+  hseRestrictionSchema,
+  hseStatBoostModifierSchema,
+  hseTierSchema,
+  hseTrackerSchema,
+  hseUnitFilterSchema,
+  hseUnitXpModifierSchema,
+  hseVariantSchema,
   manifestDatasetSchema,
   manifestSchema,
 } from "./schemas"
@@ -42,6 +52,25 @@ export type GameCatalogManifestDataset = z.infer<typeof manifestDatasetSchema>
 export type GameCatalogDatasetEnvelope = z.infer<
   typeof datasetEnvelopeMetaSchema
 >
+
+// Home Screen Event scoring served under a HomeScreenEvent definition's `config.hse`.
+export type GameCatalogHseConfig = z.infer<typeof hseConfigSchema>
+export type GameCatalogHseVariant = z.infer<typeof hseVariantSchema>
+export type GameCatalogHseTier = z.infer<typeof hseTierSchema>
+export type GameCatalogHseTierKey = GameCatalogHseTier["tier"]
+export type GameCatalogHseMilestone = z.infer<typeof hseMilestoneSchema>
+export type GameCatalogHseRepeat = z.infer<typeof hseRepeatSchema>
+export type GameCatalogHseTracker = z.infer<typeof hseTrackerSchema>
+export type GameCatalogHseUnitFilter = z.infer<typeof hseUnitFilterSchema>
+export type GameCatalogHseRestriction = z.infer<typeof hseRestrictionSchema>
+export type GameCatalogHseUnitXpModifier = z.infer<
+  typeof hseUnitXpModifierSchema
+>
+export type GameCatalogHseStatBoostModifier = z.infer<
+  typeof hseStatBoostModifierSchema
+>
+export type GameCatalogHseModifier =
+  GameCatalogHseUnitXpModifier | GameCatalogHseStatBoostModifier
 
 // Internal IndexedDB metadata (not an API shape): per-dataset rows + the manifest sync-metadata row.
 export type GameCatalogDatasetMetadata = {

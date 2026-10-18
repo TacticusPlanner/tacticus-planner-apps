@@ -48,6 +48,8 @@
     "goal": "Tienes un objetivo activo para este personaje.",
     "projectGoal": "En tu proyecto seleccionado.",
     "onslaughtGoal": "Objetivo de una meta de Ascensión de Onslaught.",
+    "eventUnit": "Puntúa en el evento ({{match}}).",
+    "eventUnitAny": "Puntúa en el evento.",
     "strength": "Elegido por potencia de combate ({{power}}).",
     "minimumSize": "Añadido para completar el equipo.",
     "random": "Elegido al azar."
