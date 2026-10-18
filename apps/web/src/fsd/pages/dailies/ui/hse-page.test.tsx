@@ -24,6 +24,7 @@ const { mocks } = vi.hoisted(() => ({
     raids: undefined as unknown,
     locations: undefined as unknown,
     raidsArgs: [] as unknown[][],
+    hseReads: {} as import("@/test/fixtures/hse-event-points").HseFixtureReads,
   },
 }))
 
@@ -55,6 +56,18 @@ vi.mock("@/features/daily-raids/model/use-daily-raids", () => ({
 vi.mock("@/features/daily-raids/model/use-home-screen-event-locations", () => ({
   useHomeScreenEventLocations: () => mocks.locations,
 }))
+vi.mock(
+  "@/features/home-screen-event-points/model/use-hse-projection",
+  async () => {
+    const { useFixtureHseProjection } =
+      await import("@/test/fixtures/hse-event-points")
+    return {
+      useHseProjection: (
+        instance: Parameters<typeof useFixtureHseProjection>[0]
+      ) => useFixtureHseProjection(instance, mocks.hseReads),
+    }
+  }
+)
 vi.mock("@/entities/planning-setting", () => ({
   PlanningSettingsTrigger: ({
     onClick,
@@ -240,6 +253,7 @@ beforeEach(() => {
   mocks.raids = withFarm(farmRows())
   mocks.locations = readyLocations()
   mocks.raidsArgs.length = 0
+  mocks.hseReads = {}
   act(() => {})
 })
 
@@ -989,4 +1003,201 @@ describe("HSE selected instance states", () => {
   function location() {
     return screen.getByTestId("location").textContent
   }
+})
+
+describe("HSE event details and projection", () => {
+  const now = Date.now()
+  const below = (first: HTMLElement, second: HTMLElement) =>
+    Boolean(
+      first.compareDocumentPosition(second) & Node.DOCUMENT_POSITION_FOLLOWING
+    )
+
+  it("previews the next event without a rule: name, start, countdown, details and projection, no lists or controls", () => {
+    mocks.event = readyAt(
+      [entryOf("hse-trait-boost-psyker", now + 43 * HOUR, now + 139 * HOUR)],
+      now
+    )
+    renderHse()
+
+    const status = screen.getByTestId("hse-status-upcoming")
+    expect(status).toHaveTextContent("hse-trait-boost-psyker")
+    expect(status).toHaveTextContent("hse.status.startsIn")
+    expect(screen.getByTestId("hse-event-details")).toBeInTheDocument()
+    expect(screen.getByTestId("hse-milestones")).toBeInTheDocument()
+    expect(screen.getByTestId("hse-projection")).toBeInTheDocument()
+    // Upcoming: no points-so-far input, tokens assume full buckets.
+    expect(
+      screen.queryByTestId("hse-projection-points-so-far-input")
+    ).not.toBeInTheDocument()
+    expect(screen.getByTestId("hse-projection-note-sync")).toHaveTextContent(
+      "hse.projection.notes.upcoming"
+    )
+    expect(screen.queryByTestId("hse-raids")).not.toBeInTheDocument()
+    expect(screen.queryByTestId("hse-top-overall")).not.toBeInTheDocument()
+    expect(screen.queryByTestId("hse-preview-banner")).not.toBeInTheDocument()
+    expect(screen.queryByTestId("hse-header-controls")).not.toBeInTheDocument()
+  })
+
+  it("shows an active event without raid points with its details and projection, and no raid lists", () => {
+    mocks.event = readyAt(
+      [entryOf("hse-trait-boost-psyker", now - 2 * DAY, now + 2 * DAY)],
+      now
+    )
+    renderHse()
+
+    expect(screen.getByTestId("hse-status-active")).toHaveTextContent(
+      "hse.status.noRaidPoints"
+    )
+    expect(screen.getByTestId("hse-event-details")).toBeInTheDocument()
+    expect(screen.getByTestId("hse-projection")).toBeInTheDocument()
+    expect(
+      screen.getByTestId("hse-projection-points-so-far-input")
+    ).toBeInTheDocument()
+    expect(screen.queryByTestId("hse-raids")).not.toBeInTheDocument()
+    expect(screen.queryByTestId("hse-top-lists")).not.toBeInTheDocument()
+  })
+
+  it("keeps a past event's details, without the projection or lists", () => {
+    mocks.event = readyAt(
+      [
+        entryOf("hse-machine-hunt", now - 15 * DAY, now - 11 * DAY, "occ-past"),
+        entryOf("hse-machine-hunt", now - DAY, now + DAY, "occ-now"),
+      ],
+      now
+    )
+    renderHse(undefined, "/?event=occ-past")
+
+    expect(screen.getByTestId("hse-status-past")).toBeInTheDocument()
+    expect(
+      screen.getByTestId("hse-event-details-description")
+    ).toBeInTheDocument()
+    expect(screen.getByTestId("hse-milestones")).toBeInTheDocument()
+    expect(screen.queryByTestId("hse-projection")).not.toBeInTheDocument()
+    expect(screen.queryByTestId("hse-raids")).not.toBeInTheDocument()
+    expect(screen.queryByTestId("hse-header-controls")).not.toBeInTheDocument()
+  })
+
+  it("shows no details when nothing is scheduled or the calendar fails", () => {
+    mocks.event = readyAt([], now)
+    const { unmount } = renderHse()
+    expect(screen.getByTestId("hse-status-none")).toBeInTheDocument()
+    expect(screen.queryByTestId("hse-event-details")).not.toBeInTheDocument()
+    unmount()
+
+    mocks.event = { status: "error" }
+    renderHse()
+    expect(screen.getByTestId("hse-status-error")).toBeInTheDocument()
+    expect(screen.queryByTestId("hse-event-details")).not.toBeInTheDocument()
+    expect(screen.queryByTestId("hse-projection")).not.toBeInTheDocument()
+  })
+
+  it("says milestone data is not available for Against the Tide", () => {
+    mocks.event = readyAt(
+      [entryOf("hse-against-the-tide", now - DAY, now + DAY)],
+      now
+    )
+    renderHse()
+
+    expect(screen.getByTestId("hse-event-details-no-data")).toHaveTextContent(
+      "hse.details.noData"
+    )
+    expect(screen.queryByTestId("hse-projection")).not.toBeInTheDocument()
+  })
+
+  it("labels a Global event as a community event, without a projection", () => {
+    mocks.event = readyAt(
+      [entryOf("hse-global-operation-imperator", now - DAY, now + DAY)],
+      now
+    )
+    renderHse()
+
+    expect(screen.getByTestId("hse-event-details-global")).toBeInTheDocument()
+    expect(screen.getAllByTestId("hse-milestone")).toHaveLength(5)
+    expect(
+      screen.queryByTestId("hse-event-details-tier")
+    ).not.toBeInTheDocument()
+    expect(screen.queryByTestId("hse-projection")).not.toBeInTheDocument()
+  })
+
+  it("shows a guild event's details and no projection (Arsenal of War)", () => {
+    mocks.event = readyAt(
+      [entryOf("hse-arsenal-of-war", now - DAY, now + DAY)],
+      now
+    )
+    renderHse()
+
+    expect(
+      screen.getByTestId("hse-event-details-description")
+    ).toBeInTheDocument()
+    expect(screen.queryByTestId("hse-projection")).not.toBeInTheDocument()
+  })
+
+  it("keeps the details and the raid lists when the player data cannot be read", () => {
+    mocks.event = activeEvent("hse-warp-surge")
+    mocks.hseReads = { player: () => ({ status: "error" }) }
+    renderHse()
+
+    expect(screen.getByTestId("hse-event-details")).toBeInTheDocument()
+    expect(screen.getByTestId("hse-projection-error")).toBeInTheDocument()
+    expect(screen.getByTestId("hse-raids")).toBeInTheDocument()
+  })
+
+  it("shows a loading state while the event data loads", () => {
+    mocks.event = activeEvent("hse-warp-surge")
+    mocks.hseReads = { player: () => undefined }
+    renderHse()
+
+    expect(screen.getByTestId("hse-event-details")).toBeInTheDocument()
+    expect(screen.getByTestId("hse-projection-loading")).toBeInTheDocument()
+  })
+
+  it.each([false, true])(
+    "orders Warp Surge's status, details, projection, farm list and top 10 (mobile: %s)",
+    (isMobile) => {
+      mocks.isMobile = isMobile
+      mocks.event = activeEvent("hse-warp-surge")
+      renderHse()
+
+      const sections = [
+        "hse-status",
+        "hse-event-details",
+        "hse-projection",
+        "hse-raids",
+        "hse-top-overall",
+      ].map((testId) => screen.getByTestId(testId))
+      for (let index = 1; index < sections.length; index++)
+        expect(below(sections[index - 1]!, sections[index]!)).toBe(true)
+      // Desktop: details and projection share a row above the raid lists.
+      expect(screen.getByTestId("hse-event-row").className).toContain(
+        "md:grid-cols-2"
+      )
+      // Arena only, with the campaign hint pointing at the farm list below.
+      expect(
+        screen.getByTestId("hse-projection-mode-Arena")
+      ).toBeInTheDocument()
+      expect(
+        screen.queryByTestId("hse-projection-mode-Onslaught")
+      ).not.toBeInTheDocument()
+      expect(
+        screen.getByTestId("hse-projection-note-campaign")
+      ).toBeInTheDocument()
+      expect(
+        screen.queryByTestId(
+          isMobile ? "hse-projection-table" : "hse-projection-rows"
+        )
+      ).not.toBeInTheDocument()
+    }
+  )
+
+  it("lets the details span the row when there is no projection", () => {
+    mocks.event = readyAt(
+      [entryOf("hse-global-operation-imperator", now - DAY, now + DAY)],
+      now
+    )
+    renderHse()
+
+    expect(screen.getByTestId("hse-event-row").className).not.toContain(
+      "md:grid-cols-2"
+    )
+  })
 })

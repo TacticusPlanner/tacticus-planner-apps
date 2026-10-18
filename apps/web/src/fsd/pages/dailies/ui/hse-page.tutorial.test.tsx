@@ -37,6 +37,14 @@ vi.mock("@/features/daily-raids", async (importOriginal) => ({
   EventFarmSection: () => <section data-testid="hse-raids" />,
   EventTopLocations: () => <section data-testid="hse-top-overall" />,
 }))
+vi.mock(
+  "@/features/home-screen-event-points/model/use-hse-projection",
+  async () => {
+    const { useFixtureHseProjection } =
+      await import("@/test/fixtures/hse-event-points")
+    return { useHseProjection: useFixtureHseProjection }
+  }
+)
 vi.mock("@/entities/planning-setting", () => ({
   PlanningSettingsTrigger: () => <button type="button" />,
   PlanningSettingsDialog: () => null,
@@ -85,14 +93,32 @@ beforeEach(() => register.mockClear())
 afterEach(() => vi.unstubAllGlobals())
 
 describe("useHseTutorial", () => {
-  it("registers localized switcher, status, farm list and top-10 steps on desktop and mobile", () => {
-    renderHook(() => useHseTutorial({ hasSwitcher: true, hasLists: true }))
+  const all = {
+    hasSwitcher: true,
+    hasDetails: true,
+    hasMilestones: true,
+    hasProjection: true,
+    hasLists: true,
+  }
+  const none = {
+    hasSwitcher: false,
+    hasDetails: false,
+    hasMilestones: false,
+    hasProjection: false,
+    hasLists: false,
+  }
+
+  it("registers localized switcher, status, details, milestones, projection, farm list and top-10 steps on desktop and mobile", () => {
+    renderHook(() => useHseTutorial(all))
     const steps = lastSteps()
 
     expect(steps.mobile).toEqual(steps.desktop)
     expect(steps.desktop.map((step) => step.target)).toEqual([
       '[data-testid="hse-event-switcher"]',
       '[data-testid="hse-status"]',
+      '[data-testid="hse-event-details"]',
+      '[data-testid="hse-milestones"]',
+      '[data-testid="hse-projection"]',
       '[data-testid="hse-raids"]',
       '[data-testid="hse-top-lists"]',
     ])
@@ -102,14 +128,26 @@ describe("useHseTutorial", () => {
     }
   })
 
-  it("drops the list steps when no lists are shown and the switcher step while it is absent", () => {
-    renderHook(() => useHseTutorial({ hasSwitcher: true, hasLists: false }))
+  it("drops the steps whose sections are not shown", () => {
+    renderHook(() => useHseTutorial({ ...all, hasLists: false }))
     expect(lastSteps().desktop.map((step) => step.target)).toEqual([
       '[data-testid="hse-event-switcher"]',
       '[data-testid="hse-status"]',
+      '[data-testid="hse-event-details"]',
+      '[data-testid="hse-milestones"]',
+      '[data-testid="hse-projection"]',
     ])
 
-    renderHook(() => useHseTutorial({ hasSwitcher: false, hasLists: false }))
+    renderHook(() =>
+      useHseTutorial({ ...none, hasSwitcher: true, hasDetails: true })
+    )
+    expect(lastSteps().desktop.map((step) => step.target)).toEqual([
+      '[data-testid="hse-event-switcher"]',
+      '[data-testid="hse-status"]',
+      '[data-testid="hse-event-details"]',
+    ])
+
+    renderHook(() => useHseTutorial(none))
     expect(lastSteps().desktop.map((step) => step.target)).toEqual([
       '[data-testid="hse-status"]',
     ])
@@ -133,7 +171,8 @@ describe("HSE tour targets", () => {
 
       const steps = stepsForViewport()
       expect(steps[0]?.target).toBe('[data-testid="hse-event-switcher"]')
-      expect(steps).toHaveLength(4)
+      // Machine Hunt also scores in Arena and Salvage Run, so it gets a projection.
+      expect(steps).toHaveLength(7)
       for (const step of steps) {
         expect(container.querySelector(step.target)).not.toBeNull()
       }
@@ -144,18 +183,46 @@ describe("HSE tour targets", () => {
     ["mobile", 420],
     ["desktop", 1024],
   ])(
-    "only targets rendered elements for an event without lists (%s, %ipx)",
+    "targets the details, milestones and projection of an event without lists (%s, %ipx)",
     (_viewport, width) => {
       setViewportWidth(width)
       mocks.event = readyWith(
-        "hse-faction-boost",
+        "hse-trait-boost-psyker",
         Date.now() - HOUR,
         Date.now() + 10 * HOUR
       )
       const { container } = renderPage()
 
       const steps = stepsForViewport()
-      expect(steps).toHaveLength(2)
+      expect(steps.map((step) => step.target)).toEqual([
+        '[data-testid="hse-event-switcher"]',
+        '[data-testid="hse-status"]',
+        '[data-testid="hse-event-details"]',
+        '[data-testid="hse-milestones"]',
+        '[data-testid="hse-projection"]',
+      ])
+      for (const step of steps) {
+        expect(container.querySelector(step.target)).not.toBeNull()
+      }
+    }
+  )
+
+  it.each([
+    ["mobile", 420],
+    ["desktop", 1024],
+  ])(
+    "only targets rendered elements for an event without scoring data (%s, %ipx)",
+    (_viewport, width) => {
+      setViewportWidth(width)
+      mocks.event = readyWith(
+        "hse-against-the-tide",
+        Date.now() - HOUR,
+        Date.now() + 10 * HOUR
+      )
+      const { container } = renderPage()
+
+      const steps = stepsForViewport()
+      expect(steps).toHaveLength(3)
       for (const step of steps) {
         expect(container.querySelector(step.target)).not.toBeNull()
       }

@@ -17,6 +17,7 @@ export {
   selectListTarget,
 } from "./model/select-active-home-screen-event"
 export { EventSwitcher } from "./ui/home-screen-event/event-switcher"
+export { useHomeScreenEventName } from "./ui/home-screen-event/use-home-screen-event-name"
 export { EventPreviewBanner } from "./ui/home-screen-event/event-preview-banner"
 export { EventStatusLine } from "./ui/home-screen-event/event-status-line"
 export { EventFarmSection } from "./ui/home-screen-event/event-farm-section"

@@ -15,6 +15,12 @@ const homeScreenEventDefinitions = new Map(
     "hse-trait-boost-psyker",
     "hse-faction-focus",
     "hse-global-operation-imperator",
+    "hse-arsenal-of-war",
+    "hse-defeat-waves",
+    "hse-squig-smash",
+    "hse-for-the-emperor",
+    "hse-training-rush",
+    "hse-trait-boost-flying",
   ].map((id) => [id, { type: "HomeScreenEvent" }])
 )
 

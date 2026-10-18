@@ -4,20 +4,34 @@ import type { Step } from "react-joyride"
 
 import { useTourPageSteps, type TourPageSteps } from "@/shared/tour"
 
-type StepKey = "switcher" | "status" | "farm" | "top"
+type StepKey =
+  | "switcher"
+  | "status"
+  | "details"
+  | "milestones"
+  | "projection"
+  | "farm"
+  | "top"
 
 /**
  * Joyride tour for Dailies > HSE: the event switcher, the status line and, when the shown instance
- * has them, the farm list and the top-10 lists. `hasSwitcher` and `hasLists` gate steps whose
- * targets are not rendered (calendar loading or failed; a past or rule-less event), since
- * react-joyride cannot recover from a target that never appears. Desktop and mobile share the same
- * targets: the switcher only moves to its own row below 768px.
+ * has them, the event details, the milestone grid, the points projection, the farm list and the
+ * top-10 lists. The `has*` flags gate steps whose targets are not rendered (calendar loading or
+ * failed; no scoring data; a past, Global or rule-less event), since react-joyride cannot recover
+ * from a target that never appears. Desktop and mobile share the same targets: below 768px the
+ * switcher moves to its own row and the sections stack, in the same order.
  */
 export function useHseTutorial({
   hasSwitcher,
+  hasDetails,
+  hasMilestones,
+  hasProjection,
   hasLists,
 }: {
   hasSwitcher: boolean
+  hasDetails: boolean
+  hasMilestones: boolean
+  hasProjection: boolean
   hasLists: boolean
 }) {
   const { t } = useTranslation("dailies")
@@ -32,13 +46,16 @@ export function useHseTutorial({
     const shared: Step[] = [
       ...(hasSwitcher ? [step("hse-event-switcher", "switcher")] : []),
       step("hse-status", "status"),
+      ...(hasDetails ? [step("hse-event-details", "details")] : []),
+      ...(hasMilestones ? [step("hse-milestones", "milestones")] : []),
+      ...(hasProjection ? [step("hse-projection", "projection")] : []),
       ...(hasLists
         ? [step("hse-raids", "farm"), step("hse-top-lists", "top")]
         : []),
     ]
 
     return { desktop: shared, mobile: shared }
-  }, [t, hasSwitcher, hasLists])
+  }, [t, hasSwitcher, hasDetails, hasMilestones, hasProjection, hasLists])
 
   useTourPageSteps(steps)
 }

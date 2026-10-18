@@ -12,7 +12,14 @@ import {
   resolveHomeScreenEventSelection,
   selectListTarget,
   useActiveHomeScreenEvent,
+  useHomeScreenEventName,
 } from "@/features/daily-raids"
+import {
+  EventDetails,
+  hseSectionsShown,
+  PointsProjection,
+  useHseProjection,
+} from "@/features/home-screen-event-points"
 import {
   PlanningSettingsDialog,
   PlanningSettingsTrigger,
@@ -28,11 +35,14 @@ const EVENT_PARAM = "event"
 /**
  * Dailies > HSE: one Home Screen Event instance at a time. By default the running event (or, with
  * none running, the next one as a labelled preview); the switcher opens any other upcoming or past
- * instance, held in the `event` URL parameter so it survives a reload. Only a running or upcoming
- * rule-bearing instance gets the farm list, the top-10 lists and the header controls (project
+ * instance, held in the `event` URL parameter so it survives a reload. Every instance with scoring
+ * data gets its event details (tier, description, milestones) and, when running or upcoming and
+ * personal, its points projection for Arena, Onslaught and Salvage Run. Only a running or upcoming
+ * rule-bearing instance also gets the farm list, the top-10 lists and the header controls (project
  * selector, Raids Filters, Planning Settings, as on Today); the lists honor the persisted Raids
- * Filters shared with Today. Stacked on mobile in the order farm list, overall top 10,
- * event-campaign top 10; on desktop the farm list sits beside a column holding both top-10 lists.
+ * Filters shared with Today. Order: status line, details, projection, then the raid lists. Stacked
+ * on mobile (farm list, overall top 10, event-campaign top 10); on desktop details and projection
+ * share a row above the farm list, which sits beside a column holding both top-10 lists.
  */
 export function HsePage() {
   const context = useOutletContext<DailiesOutletContext>()
@@ -51,8 +61,17 @@ export function HsePage() {
   const target = selectListTarget(instance)
   const ruleEventId = target?.entry.definitionId ?? null
   const stale = selection?.stale ?? false
+  const eventName = useHomeScreenEventName()
+  const points = useHseProjection(instance)
+  const shown = hseSectionsShown(points)
 
-  useHseTutorial({ hasSwitcher: state.status === "ready", hasLists: !!target })
+  useHseTutorial({
+    hasSwitcher: state.status === "ready",
+    hasDetails: shown.details,
+    hasMilestones: shown.milestones,
+    hasProjection: shown.projection,
+    hasLists: !!target,
+  })
 
   // A key that no longer resolves falls back to the default and leaves the URL, replacing the entry
   // so Back does not loop through it.
@@ -118,6 +137,21 @@ export function HsePage() {
           <EventStatusLine instance={instance} state={state} />
         </div>
       </div>
+      {instance && shown.details ? (
+        <div
+          className={
+            shown.projection
+              ? "space-y-5 md:grid md:grid-cols-2 md:items-start md:gap-6 md:space-y-0"
+              : undefined
+          }
+          data-testid="hse-event-row"
+        >
+          <EventDetails eventName={eventName(instance.entry)} state={points} />
+          <PointsProjection hasRaidLists={!!ruleEventId} state={points} />
+        </div>
+      ) : null}
+      {/* add-hse-team-suggestions: the event team suggestions section goes here, below the
+          details and projection and above the raid lists. */}
       {target && !target.live ? (
         <EventPreviewBanner entry={target.entry} />
       ) : null}
