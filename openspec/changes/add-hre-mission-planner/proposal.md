@@ -10,6 +10,10 @@ Hero Release Events (HREs, the catalog's `new-character-event`) run for 14 days,
 - **Mission tracker**: the 21 missions (20 plus the bonus), which are the same in every HRE. They ship with the app, and only the alliance-dependent objectives and the featured-hero objectives change per event. The player picks their current mission and enters the progress on each of its two objectives. This is stored per event instance in local storage. Earlier missions show as done and later ones as locked.
 - **Campaign raid suggestions** while the current mission has a campaign objective ("Win N" or "Raid N campaign battles"). Today's remaining planned raids count first, and their energy and attempts are reserved. The suggestions then fill only the leftover energy (daily energy, minus energy spent, minus Today's planned energy) and leftover attempts per node. The list shows where to raid to finish the objective with the least energy. Nodes are ordered by energy cost, cheapest first. Among nodes with the same cost, those that drop something an in-scope goal still needs come first. The list fills up to the attempts left, the energy left today and the battles still needed. It honours the Dailies project selection, the persisted Raids Filters and Planning Settings, like the HSE farm list. It also shows the battles and minimum energy still needed across all remaining campaign missions.
 - **Mission guidance**: a short tip per objective type, drawn from community guides. Examples: Indomitus 3-energy nodes for the battle counts; saving 7 to 8 Arena tokens for day 1 and 2 Guild Raid tokens for mission 8; Onslaught and Arena for featured-hero damage. Also a "tokens needed" line comparing the synced Arena, Guild Raid, Onslaught and Salvage Run tokens with what the current and remaining missions need.
+- **Event pace**: the player enters event points and leaderboard rank, stored locally. The tab projects the chain from points to currency (milestones, missions, daily payouts, weekly crates), then chest tier, then shards, then rarity and stars. For a target the player picks, it shows the chest tier, currency, points and points per day needed, using the wiki's reward tables shipped with the app.
+- **Mission teams**: a 5-unit team from the synced roster for all-alliance, summon-free and featured-hero objectives, built with the shared team engine.
+- **Live indicator**: the HRE tab and the Dailies entry show the shared "event live" dot while an HRE runs.
+- **Legendary-character events**: these are in scope, but they wait on their wiki data (structure, missions and tables), which this environment cannot fetch. Their requirements will be added to this change once the data is in the thread.
 - Calendar data fix in `tacticus-planner-api` (data only, no OpenSpec change): add the running Zapspitta HRE (`orksWeirdboy`, 2026-10-18 to 2026-11-01), correct Sekhetar Robot's `featuredCharacterId` to `thousSekhetar`, and set the daily attempt cap of Indomitus I03 to I15 to 3. That cap is to be confirmed in game, and it also affects Today's planning.
 
 ## Capabilities
@@ -19,10 +23,13 @@ Hero Release Events (HREs, the catalog's `new-character-event`) run for 14 days,
 - `hre-mission-tracker`: which HRE instance the tab shows, the fixed mission list worded by alliance and the player's locally stored mission progress.
 - `hre-campaign-raids`: the least-energy raid suggestions for the current mission's campaign objective, and the remaining-campaign-battles summary.
 - `hre-mission-guidance`: tips per objective type and the tokens-needed comparison against synced tokens.
+- `hre-event-pace`: the points-to-shards projection and the target needs.
+- `hre-mission-teams`: team suggestions for lineup-restricted and featured-hero objectives.
 
 ### Modified Capabilities
 
-- `dailies-navigation`: adds the HRE tab after HSE, so the primary tabs become Raids, HSE, HRE, Shops, Guild Raids.
+- `dailies-navigation`: adds the HRE tab after HSE, so the primary tabs become Raids, HSE, HRE, Shops, Guild Raids, and gives the tab its live indicator.
+- `app-navigation`: the live indicator on the HRE entry, and on Dailies while an HSE or an HRE runs.
 
 ## Impact
 

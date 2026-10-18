@@ -19,10 +19,8 @@
 - A new HRE needs only a calendar occurrence (featured hero and window), with no mission edits.
 
 **Non-Goals:**
-- Event points, currency, chest-tier or leaderboard pace (for example, the 30,000-point target for Epic). This is a possible follow-up change.
-- Team suggestions for the all-alliance or summon-free missions.
-- Legendary-character events, which have a different structure.
-- A live nav indicator or an instance switcher for past HREs.
+- An instance switcher for past HREs.
+- Legendary-character events, until their data is provided. They are in scope, but they get their own requirements and decisions once the wiki data is pasted.
 - Syncing progress across devices.
 
 ## Decisions
@@ -64,8 +62,8 @@ The key is `tp.dailies.hre.progress.v1`. The value is `{ [occurrenceId]: { missi
 
 - **Desktop (≥768px):** the header row (hero, window, countdown, project select, Raids Filters, Planning Settings) sits above a two-column grid.
   - Left column: the mission tracker (current mission card with progress inputs, tips and the "Mission complete" action, then a compact list of all 21 missions).
-  - Right column: the raid suggestions, the remaining-campaign summary and the tokens-needed card.
-- **Mobile (<768px):** one column in the order current mission card, raid suggestions, tokens needed, then all missions. The full list is collapsed behind "All missions". The header controls collapse to icons, as on the HSE tab.
+  - Right column: the raid suggestions or the mission team (whichever the current mission needs), the remaining-campaign summary, the tokens-needed card and the pace card.
+- **Mobile (<768px):** one column in this order: current mission card, then raid suggestions or the mission team, then tokens needed, then pace, then all missions. The full list is collapsed behind "All missions". The header controls collapse to icons, as on the HSE tab.
 
 The tour targets differ only for the collapsed mission list. The mobile steps point at the "All missions" toggle instead of the list.
 
@@ -73,12 +71,32 @@ The tour targets differ only for the collapsed mission list. The mobile steps po
 
 The Zapspitta occurrence uses the unit id `orksWeirdboy`, which is the unit named Zapspitta in `units-orks.json`. The API data fix corrects the existing Sekhetar Robot occurrence from `sekhetar-robot` to its unit id `thousSekhetar`. Any id that still does not resolve falls back as the spec describes.
 
+### D7. Pace tables are app constants, and the chain is one pure function
+
+The milestone, daily-payout, weekly-crate, chest and shard tables live in `features/hre-missions/model/hre-reward-tables.ts`. `projectHrePace(input)` returns one result with every intermediate value: projected points, currency by source, chest tier, shards by source, the step reached, and the target needs. The UI only reads that result, so the summary and the detail can never disagree. The inverse (target to points) walks the same tables. Points and rank share the D4 storage, in the same entry as mission progress.
+
+### D8. Mission teams in `pages/dailies/model`, next to the HSE teams
+
+`useHreTeamRecommendations` mirrors `useHseTeamRecommendations`. It reads the roster and the character catalog, and calls `buildTeamRecommendations` in Power mode with size 5:
+- **All-alliance:** the roster is filtered by alliance.
+- **Featured hero:** a priority pool holding only the featured hero, with `leadWithPools`.
+- **Summon-free:** excludes the summoner set. That set is built once from the `npcAbilityText` English descriptions of each unit's active and passive abilities, where the text opens a `<style="Summon">` span after the verb "summon". The verb check skips abilities that only buff existing summons.
+
+This stays in the page slice because only the Dailies page composes teams, as with HSE.
+
+### D9. One running-HRE hook feeds the tab and the live dot
+
+`useIsHreLive` lives in `features/hre-missions` and uses the same selection as the tab. `nav-live-dot.tsx` gains `liveIndicator: "hre"`, and the Dailies parent entry is live when either signal is.
+
 ## Risks / Trade-offs
 
 - [Snowprint changes the mission list in a future event] → the change is one constant and its i18n keys. Every objective renders from kind and target, so the edit is small.
 - [The "raids count as wins" assumption is wrong for some objective] → it is stated as a spec assumption, and the tip for `campaignWins` says manual wins also count.
 - [Progress is only in this browser] → this is accepted, as Severyn asked. Entering progress takes two numbers.
 - [The cheapest nodes may be hidden by Raids Filters] → this is respected on purpose. The empty state offers to open the filters.
+
+- [The reward tables change in a game patch] → they are one constants file, and the wiki page is the source. The page labels the projection as an estimate.
+- [The summon text heuristic misses or over-includes a unit] → a unit test pins known summoners (Hollan) and known non-summoners, and the exclusion only affects the summon-free mission's team.
 
 ## Migration Plan
 
