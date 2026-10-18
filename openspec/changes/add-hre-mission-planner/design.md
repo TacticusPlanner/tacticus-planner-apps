@@ -20,7 +20,7 @@
 
 **Non-Goals:**
 - An instance switcher for past HREs.
-- Legendary-character events, until their data is provided. They are in scope, but they get their own requirements and decisions once the wiki data is pasted.
+- Legendary-character events, which have a different structure. They are left out, as Severyn decided.
 - Syncing progress across devices.
 
 ## Decisions

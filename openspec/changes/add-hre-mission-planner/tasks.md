@@ -55,10 +55,6 @@ Companion data fix in `tacticus-planner-api` (no OpenSpec change): the Zapspitta
 
 - [ ] 10.1 Run `pnpm test:run`, `pnpm typecheck`, `pnpm lint`, `pnpm lint:fsd` and `git diff --check`, all clean
 
-## Deferred / out-of-session
-
-- Legendary-character events: requirements, design and tasks get added once their wiki data is in the thread (the wiki host is blocked from this environment).
-
 ## Workflow follow-up
 
 - Archive this change in the PR before merge.
