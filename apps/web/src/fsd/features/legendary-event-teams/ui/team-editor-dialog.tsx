@@ -294,7 +294,6 @@ export function TeamEditorDialog({
                             toggleObjective(current, objective.index)
                           )
                         }
-                        title={clearedLabel}
                         type="button"
                       >
                         <ObjectiveIcon icon={icon} muted={!isChecked} />
@@ -305,11 +304,13 @@ export function TeamEditorDialog({
                           {number.format(objective.points)}
                         </span>
                         {cleared ? (
-                          <Check
-                            aria-hidden
-                            className="size-3.5 shrink-0 text-muted-foreground"
-                            data-testid="team-editor-objective-cleared"
-                          />
+                          <span aria-hidden title={clearedLabel}>
+                            <Check
+                              aria-hidden
+                              className="size-3.5 shrink-0 text-muted-foreground"
+                              data-testid="team-editor-objective-cleared"
+                            />
+                          </span>
                         ) : null}
                         {clearedLabel ? (
                           <span className="sr-only">{clearedLabel}</span>

@@ -129,7 +129,7 @@ Assumptions:
 
 #### Scenario: Incomplete team
 
-- **GIVEN** a team with fewer than five members
+- **GIVEN** a team with fewer than three members
 - **WHEN** its card renders
 - **THEN** the points figure shows a plain "—" without the "Set depth" reason
 

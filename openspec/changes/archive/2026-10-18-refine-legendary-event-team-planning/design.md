@@ -30,9 +30,9 @@ See proposal.md for the three feedback points. What the code does today:
 
 `teamPointsLeft(model, progress, { depth, coveredObjectiveIndexes })` = `laneReachablePoints(model, progress, [reach]).total`, with the derived, stored objectives as coverage and `displayedDepth` as depth. It lives in `entities/legendary-event/lib/team-points.ts`, next to `teamPointsPerBattle`, which stays for the picker fallback and tests until no consumer is left, then it is removed.
 
-*Alternative:* keep "per battle" but average the remaining points over the depth (880 / 11 = 80). Rejected: an average hides that some battles still pay much more than others, and the run forecast and token plan already speak in totals.
+_Alternative:_ keep "per battle" but average the remaining points over the depth (880 / 11 = 80). Rejected: an average hides that some battles still pay much more than others, and the run forecast and token plan already speak in totals.
 
-*Alternative:* deduct points the lane's other teams already reach. Rejected for the card: two cards would then each depend on the other's order, and the user reads a card as "what this team earns". The suggestion dialog keeps the "over your teams" gain.
+_Alternative:_ deduct points the lane's other teams already reach. Rejected for the card: two cards would then each depend on the other's order, and the user reads a card as "what this team earns". The suggestion dialog keeps the "over your teams" gain.
 
 ### D2. "Cleared through depth" is one entity helper
 
