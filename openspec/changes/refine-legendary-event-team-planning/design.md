@@ -69,6 +69,6 @@ Move the Covered objectives and Clear depth `<section>`s above the Members secti
 
 Front-end only. Ship behind no flag; rollback is a revert.
 
-## Open Questions
+## Resolved
 
-- Feedback 3 has alternatives (ability levels on tiles, a V1-style list view). The user picks. Adding ability levels would add one requirement and one task without changing D1–D7.
+- Feedback 3: the user chose strength + sort (D5, D6). Ability levels and a V1-style list view stay out of scope.
