@@ -13,6 +13,8 @@ import type { i18n as I18n } from "i18next"
 import { TooltipProvider } from "@workspace/ui/components/tooltip"
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
 
+import type { ReadState } from "@/shared/lib"
+import type { UnitPowerContext } from "@/shared/unit-power"
 import { createTestI18n } from "@/test/i18n"
 
 import enAbilities from "../../../../../../public/locales/en/abilities.json"
@@ -33,6 +35,10 @@ const env = vi.hoisted(() => ({
   roster: undefined as unknown[] | undefined,
   rosterPending: false,
   shards: undefined as { amount: number } | undefined,
+  power: {
+    status: "loading",
+    retry: () => {},
+  } as ReadState<UnitPowerContext | null>,
 }))
 
 vi.mock("@workspace/ui/hooks/use-mobile", () => ({
@@ -46,6 +52,10 @@ vi.mock("@/shared/tour", () => ({
 vi.mock("@azure/msal-react", () => ({
   useIsAuthenticated: () => env.authenticated,
   useMsal: () => ({ instance: { loginRedirect: vi.fn() } }),
+}))
+vi.mock("@/shared/unit-power", async (importOriginal) => ({
+  ...(await importOriginal<object>()),
+  useUnitPowerContext: () => env.power,
 }))
 // The calculator tab has its own tests; here it only has to be the thing the tab shows.
 vi.mock("../character/character-rank-up-tab", () => ({
@@ -231,7 +241,45 @@ vi.mock("@workspace/player-data/queries", () => ({
   getInventoryShard: () => Promise.resolve(env.shards),
 }))
 
+import { buildUnitPowerContext, characterPowerAt } from "@/shared/unit-power"
+import { unitPowerCatalog } from "@/test/fixtures/unit-power"
+
 import { CharacterUnitPage } from "./character-unit-page"
+
+// The real power data, plus a stand-in for the page's Tigurius relic (a relic the fixture holds,
+// under the page catalog's id) so an owned unit wearing it has a power figure.
+const boltPistol = unitPowerCatalog.equipment.find(
+  (item) => item.id === "R_Crit_RelicBoltPistol"
+)!
+const powerContext = buildUnitPowerContext({
+  ...unitPowerCatalog,
+  equipment: [
+    ...unitPowerCatalog.equipment,
+    { ...boltPistol, id: "R_Tigurius" as typeof boltPistol.id },
+  ],
+})!
+const powerReady: ReadState<UnitPowerContext | null> = {
+  status: "ready",
+  data: powerContext,
+  retry: () => {},
+}
+
+// The spec's Gold I Tigurius: Epic 1 red star, slots 0 to 2, abilities 20/15, a Combat Knife at 3.
+const goldTigurius = {
+  unitId: "ultraTigurius",
+  progressionIndex: "Epic:RedOneStar",
+  rank: "Gold1",
+  xp: 0,
+  xpLevel: 30,
+  shards: 0,
+  mythicShards: 0,
+  abilities: [
+    { abilityId: "StormOfWrath", level: 20 },
+    { abilityId: "PsychicFortress", level: 15 },
+  ],
+  appliedUpgradeSlots: [0, 1, 2],
+  equippedItems: [{ slotId: "crit", equipmentId: "I_Crit_C001", level: 3 }],
+}
 
 const ownedTigurius = {
   unitId: "ultraTigurius",
@@ -310,6 +358,7 @@ describe("CharacterUnitPage", () => {
     env.roster = undefined
     env.rosterPending = false
     env.shards = undefined
+    env.power = powerReady
   })
 
   it("shows the not-found state for an id that isn't a character", async () => {
@@ -330,7 +379,7 @@ describe("CharacterUnitPage", () => {
       "Your unit: Mythic · Two Blue Stars · Adamantine II · abilities 58 / 46 · relic level 3"
     )
     expect(
-      within(screen.getByTestId("unit-glance-health")).getByText("8,032")
+      within(screen.getByTestId("unit-glance-health")).getByText("7,955")
     ).toBeInTheDocument()
     expect(
       screen.getByTestId("unit-ability-active-stepper-value")
@@ -363,6 +412,24 @@ describe("CharacterUnitPage", () => {
     expect(progress).toHaveAttribute("aria-valuemax", "80")
     expect(screen.getByText("30 / 80 shards")).toBeInTheDocument()
     expect(screen.getByTestId("unit-values-base")).toHaveTextContent("Starting")
+    // Power at Uncommon, 2 stars, Stone I, abilities 1/1, no slots and no items.
+    const expected = characterPowerAt(
+      "ultraTigurius",
+      {
+        rank: "Stone1",
+        progression: "Uncommon:TwoStars",
+        appliedUpgradeSlots: [],
+        activeAbilityLevel: 1,
+        passiveAbilityLevel: 1,
+      },
+      powerContext
+    )!
+    expect(screen.getByTestId("unit-power-value")).toHaveTextContent(
+      expected.toLocaleString("en")
+    )
+    expect(screen.getByTestId("unit-power-note")).toHaveTextContent(
+      "Without equipment"
+    )
   })
 
   it("changes the stats with Custom values but not the radar, and restores the player's values", async () => {
@@ -378,9 +445,9 @@ describe("CharacterUnitPage", () => {
     fireEvent.click(rankSelect)
     fireEvent.click(screen.getByRole("option", { name: /Diamond I$/ }))
 
-    // Diamond I is below Adamantine II, so Health drops from 8,032.
+    // Diamond I is below Adamantine II, so Health drops from 7,955.
     expect(
-      within(screen.getByTestId("unit-glance-health")).queryByText("8,032")
+      within(screen.getByTestId("unit-glance-health")).queryByText("7,955")
     ).not.toBeInTheDocument()
     expect(screen.getByTestId("unit-radar-health").textContent).toBe(
       radarHealth
@@ -388,8 +455,103 @@ describe("CharacterUnitPage", () => {
 
     fireEvent.click(screen.getByTestId("unit-values-base"))
     expect(
-      within(screen.getByTestId("unit-glance-health")).getByText("8,032")
+      within(screen.getByTestId("unit-glance-health")).getByText("7,955")
     ).toBeInTheDocument()
+  })
+
+  it("shows the power with the equipped items in the header and updates it with the stepper", async () => {
+    env.authenticated = true
+    env.roster = [goldTigurius]
+    await renderUnit("/library/characters/ultraTigurius")
+
+    const power = within(screen.getByTestId("unit-values"))
+    expect(power.getByTestId("unit-power-value")).toHaveTextContent("16,809")
+    expect(power.getByTestId("unit-power-note")).toHaveTextContent(
+      "Includes your equipped items"
+    )
+    expect(
+      within(screen.getByTestId("unit-glance-health")).getByText("1,786")
+    ).toBeInTheDocument()
+
+    fireEvent.click(
+      within(screen.getByTestId("unit-ability-passive-stepper")).getByRole(
+        "button",
+        { name: "Raise level" }
+      )
+    )
+    expect(
+      screen.getByTestId("unit-ability-passive-stepper-value")
+    ).toHaveTextContent("Lv 16")
+    expect(screen.getByTestId("unit-power-value")).not.toHaveTextContent(
+      "16,809"
+    )
+    expect(
+      within(screen.getByTestId("unit-glance-health")).getByText("1,786")
+    ).toBeInTheDocument()
+  })
+
+  it("drops the applied slots at a Custom rank, keeping the equipped item", async () => {
+    env.authenticated = true
+    env.roster = [goldTigurius]
+    await renderUnit("/library/characters/ultraTigurius")
+
+    // Epic stars cap the rank at Gold I, so the Custom rank that differs is a lower one.
+    fireEvent.click(screen.getByTestId("unit-values-custom"))
+    const [, rankSelect] = within(
+      screen.getByTestId("unit-values")
+    ).getAllByRole("combobox")
+    fireEvent.click(rankSelect)
+    fireEvent.click(screen.getByRole("option", { name: /Silver III$/ }))
+
+    const expected = characterPowerAt(
+      "ultraTigurius",
+      {
+        rank: "Silver3",
+        progression: "Epic:RedOneStar",
+        appliedUpgradeSlots: [],
+        activeAbilityLevel: 20,
+        passiveAbilityLevel: 15,
+        items: [{ equipmentId: "I_Crit_C001", level: 3 }],
+      },
+      powerContext
+    )!
+    expect(screen.getByTestId("unit-power-value")).toHaveTextContent(
+      expected.toLocaleString("en")
+    )
+    expect(screen.getByTestId("unit-power-note")).toHaveTextContent(
+      "Includes your equipped items"
+    )
+  })
+
+  it("shows the power without equipment signed out", async () => {
+    await renderUnit("/library/characters/ultraTigurius")
+    expect(screen.getByTestId("unit-power-value")).toHaveTextContent(/^\d/)
+    expect(screen.getByTestId("unit-power-note")).toHaveTextContent(
+      "Without equipment"
+    )
+  })
+
+  it("shows a placeholder while the power data loads", async () => {
+    env.power = { status: "loading", retry: () => {} }
+    await renderUnit("/library/characters/ultraTigurius")
+    expect(screen.getByTestId("unit-power-loading")).toBeInTheDocument()
+  })
+
+  it("shows the power as unavailable and keeps the rest of the page when the data failed", async () => {
+    env.power = { status: "error", retry: () => {} }
+    env.authenticated = true
+    env.roster = [goldTigurius]
+    await renderUnit("/library/characters/ultraTigurius")
+
+    expect(screen.getByTestId("unit-power-value")).toHaveTextContent("—")
+    expect(screen.getByTestId("unit-power-note")).toHaveTextContent(
+      "Power data unavailable"
+    )
+    expect(screen.getByTestId("unit-your-line")).toBeInTheDocument()
+    expect(screen.getByTestId("unit-glance-health")).toHaveTextContent("—")
+    expect(screen.getByTestId("unit-attack-melee")).toBeInTheDocument()
+    expect(screen.getByTestId("unit-relic")).toBeInTheDocument()
+    expect(screen.getByTestId("unit-radar-health")).toBeInTheDocument()
   })
 
   it("offers sign-in to a signed-out visitor and shows the starting values", async () => {

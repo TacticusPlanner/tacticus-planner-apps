@@ -11,6 +11,7 @@ import {
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
 import { mapCharacterStorageToDomain } from "@/features/rank-lookup"
+import { useUnitPowerContext } from "@/shared/unit-power"
 
 import { CharacterLookupDesktopPage } from "./desktop/character-lookup-desktop-page"
 import { CharacterLookupMobilePage } from "./mobile/character-lookup-mobile-page"
@@ -39,6 +40,7 @@ export function CharacterRankUpTab({
   const { t } = useTranslation()
   const isMobile = useIsMobile()
   const isAuthenticated = useIsAuthenticated()
+  const powerContext = useUnitPowerContext()
 
   const {
     charactersById,
@@ -154,6 +156,7 @@ export function CharacterRankUpTab({
       effectiveIncludeOwned,
       playerCharacter,
       inventoryUpgrades,
+      powerContext: powerContext.status === "ready" ? powerContext.data : null,
     })
 
   const sharedProps = {

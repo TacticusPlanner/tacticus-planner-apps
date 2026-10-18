@@ -381,7 +381,7 @@ export function buildTeamRecommendations(
     poolRankById,
     cappedById: new Map(input.roster.map((c) => [c.unitId, isXpCapped(c)])),
     combatPowerById: new Map(
-      input.roster.map((c) => [c.unitId, combatPowerOf(c)])
+      input.roster.map((c) => [c.unitId, combatPowerOf(c, input.unitPower)])
     ),
     preferences: narrowPreferences(input.roster, input.preferences),
   }

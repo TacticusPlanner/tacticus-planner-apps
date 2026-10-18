@@ -19,7 +19,11 @@ import { createTestI18n, i18nWrapper } from "@/test/i18n"
 import { act, fireEvent, render, screen, within } from "@/test/render"
 
 import { TeamCard } from "./team-card"
-import { buildTeamCardViewModel, moveTargets } from "./teams.view-model"
+import {
+  buildTeamCardViewModel,
+  moveTargets,
+  type TeamCardViewModel,
+} from "./teams.view-model"
 
 vi.mock("dexie-react-hooks", () => ({
   useLiveQuery: <T,>(querier: () => Promise<T>) => {
@@ -467,6 +471,53 @@ describe("TeamCard", () => {
       "title",
       "Not covered by the current members"
     )
+  })
+
+  describe("Team power (spec: legendary-event-teams)", () => {
+    const renderPower = (power: Partial<TeamCardViewModel>) => {
+      const card = {
+        ...buildTeamCardViewModel(team(), teamLane, teamUnitList, undefined, 1),
+        ...power,
+      }
+      render(
+        <ul>
+          <TeamCard actions={actions()} card={card} lane={teamLane} />
+        </ul>,
+        { wrapper: i18nWrapper(i18n) }
+      )
+      return screen.getByTestId("team-card-power")
+    }
+
+    it("shows the plain sum with digit grouping on the points-per-battle line", () => {
+      const power = renderPower({ teamPower: 98895, teamPowerPending: false })
+      expect(power).toHaveTextContent("Team power 98,895")
+      expect(power).toHaveAttribute("data-state", "ready")
+      // One line on both forms: beside points per battle, which never wraps away from it.
+      const points = screen.getByTestId("team-card-points")
+      expect(power.parentElement).toBe(points.parentElement)
+      expect(power.parentElement).toHaveClass("whitespace-nowrap")
+    })
+
+    it("shows a placeholder dash while the power data loads", () => {
+      const power = renderPower({ teamPower: null, teamPowerPending: true })
+      expect(power).toHaveTextContent("Team power —")
+      expect(power).toHaveAttribute("data-state", "pending")
+      expect(power).not.toHaveTextContent("Power data unavailable")
+    })
+
+    it("shows — with the reason for screen readers when power data is unavailable", () => {
+      const power = renderPower({ teamPower: null, teamPowerPending: false })
+      expect(power).toHaveAttribute("data-state", "unavailable")
+      expect(power).toHaveAttribute("title", "Power data unavailable")
+      expect(within(power).getByText("—")).toHaveAttribute("aria-hidden")
+      expect(within(power).getByText("Power data unavailable")).toHaveClass(
+        "sr-only"
+      )
+      // The rest of the card is unchanged.
+      expect(screen.getByTestId("team-card-points")).toHaveTextContent(
+        "75 points per battle"
+      )
+    })
   })
 
   describe("last run line (spec: legendary-event-teams)", () => {

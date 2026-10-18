@@ -7,6 +7,13 @@ import { MemoryRouter, Route, Routes, useLocation } from "react-router"
 import { render } from "@/test/render"
 
 import type { NpcRecord, NpcStatRow } from "@/entities/npc"
+import type { ReadState } from "@/shared/lib"
+import {
+  buildUnitPowerContext,
+  npcPowerAt,
+  type UnitPowerContext,
+} from "@/shared/unit-power"
+import { unitPowerCatalog } from "@/test/fixtures/unit-power"
 
 const { isMobileMock, useIsMobileMock } = vi.hoisted(() => {
   const isMobileMock = { value: false }
@@ -18,6 +25,14 @@ vi.mock("@workspace/ui/hooks/use-mobile", () => ({
   useIsMobile: useIsMobileMock,
 }))
 vi.mock("@/shared/tour", () => ({ useTourPageSteps: () => {} }))
+
+const powerMock = vi.hoisted(() => ({
+  state: { status: "loading" } as { status: string },
+}))
+vi.mock("@/shared/unit-power", async (importOriginal) => ({
+  ...(await importOriginal<object>()),
+  useUnitPowerContext: () => powerMock.state,
+}))
 
 // Minimal stand-in for dexie-react-hooks' useLiveQuery (see raid-bosses-page.test.tsx).
 vi.mock("dexie-react-hooks", () => ({
@@ -206,6 +221,44 @@ const dataset = [
 
 const location = () => screen.getByTestId("location").textContent
 
+// The catalog's Dark Angels Infiltrator (the spec's worked example) and a unit with no attacks.
+const infiltratorNpc = unitPowerCatalog.npcs.find(
+  (npc) => npc.id === "darkaNpc1Infiltrator"
+)!
+const infiltrator = npcRecord("darkaNpc1Infiltrator", "Infiltrator", {
+  factionId: "DarkAngels",
+  alliance: "Imperial",
+  meleeDamage: infiltratorNpc.meleeDamage,
+  meleeHits: infiltratorNpc.meleeHits,
+  rangedDamage: infiltratorNpc.rangedDamage,
+  rangedHits: infiltratorNpc.rangedHits,
+  distance: infiltratorNpc.distance,
+  traits: [...infiltratorNpc.traits],
+  stats: infiltratorNpc.stats as NpcStatRow[],
+})
+const watcher = npcRecord("tyranNpcWatcher", "Watcher", {
+  factionId: "Tyranids",
+  meleeDamage: "",
+  meleeHits: 0,
+  traits: ["Swarm"],
+  activeAbilities: ["WatcherGaze"],
+  stats: [{ ...statRow(1, 1, 50), abilityLevel: 3, progressionIndex: 1 }],
+})
+const powerContext = buildUnitPowerContext({
+  ...unitPowerCatalog,
+  npcs: [
+    ...unitPowerCatalog.npcs,
+    watcher as unknown as (typeof unitPowerCatalog.npcs)[number],
+  ],
+})!
+const powerReady = {
+  status: "ready",
+  data: powerContext,
+  retry: () => {},
+} satisfies ReadState<UnitPowerContext | null>
+const powerCard = () => screen.getByTestId("npc-stat-power")
+const powerValue = () => screen.getByTestId("npc-stat-power-value")
+
 /** Filters are collapsed behind a toggle on both platforms; open them before driving a control. */
 const openFilters = (user: ReturnType<typeof userEvent.setup>) =>
   user.click(screen.getByTestId("npcs-filters-toggle"))
@@ -223,6 +276,7 @@ describe("NpcsPage", () => {
     getNpcsMock.mockResolvedValue(dataset)
     metadataMock.mockReset()
     metadataMock.mockResolvedValue(syncedMetadata)
+    powerMock.state = powerReady
   })
 
   it("shows the loading state and does not redirect while the dataset loads", () => {
@@ -694,5 +748,99 @@ describe("NpcsPage desktop layout and filters", () => {
       within(screen.getByTestId("npcs-list")).getAllByRole("button")
     ).toHaveLength(4)
     expect(screen.getByTestId("npcs-clear-filters")).toBeDisabled()
+  })
+})
+
+describe("NpcsPage power card", () => {
+  beforeEach(() => {
+    isMobileMock.value = false
+    getNpcsMock.mockReset()
+    metadataMock.mockReset()
+    metadataMock.mockResolvedValue(syncedMetadata)
+    getNpcsMock.mockResolvedValue([...dataset, infiltrator, watcher])
+    powerMock.state = powerReady
+  })
+
+  it("shows the selected level row's power and follows the level", async () => {
+    const user = userEvent.setup()
+    renderPage("/library/npcs/infiltrator?level=2")
+    await screen.findByTestId("npc-name")
+    // Third served row: health 76, damage 34, armour 22 → 45.
+    expect(screen.getByTestId("npc-stat-health")).toHaveTextContent("76")
+    expect(powerValue()).toHaveTextContent(/^45$/)
+    expect(powerCard()).toHaveTextContent("npcs.stats.power")
+
+    await user.click(screen.getByTestId("npcs-level-select"))
+    const options = await screen.findAllByRole("option")
+    await user.click(options[5])
+    await waitFor(() => expect(location()).not.toMatch(/level=2$/))
+    const level = Number(
+      new URLSearchParams(location()!.split("?")[1]).get("level")
+    )
+    const expected = npcPowerAt(
+      "darkaNpc1Infiltrator",
+      infiltratorNpc.stats[level],
+      powerContext
+    )!
+    expect(expected).not.toBe(45)
+    expect(powerValue()).toHaveTextContent(numberText(expected))
+  })
+
+  it("shows a unit with no attacks at 10 plus its ability power, not an error", async () => {
+    renderPage("/library/npcs/watcher")
+    await screen.findByTestId("npc-name")
+    const expected = npcPowerAt(
+      "tyranNpcWatcher",
+      watcher.stats[0],
+      powerContext
+    )!
+    expect(expected).toBeGreaterThan(10)
+    expect(powerValue()).toHaveTextContent(numberText(expected))
+  })
+
+  it("opens the estimate note on focus", async () => {
+    renderPage("/library/npcs/infiltrator")
+    await screen.findByTestId("npc-name")
+    screen.getByTestId("npc-stat-power-note").focus()
+    expect(
+      await screen.findByTestId("npc-stat-power-note-content")
+    ).toHaveTextContent("npcs.power.estimate")
+  })
+
+  it("opens the estimate note on tap", async () => {
+    const user = userEvent.setup()
+    renderPage("/library/npcs/infiltrator")
+    await screen.findByTestId("npc-name")
+    await user.click(screen.getByTestId("npc-stat-power-note"))
+    expect(
+      await screen.findByTestId("npc-stat-power-note-content")
+    ).toBeVisible()
+  })
+
+  it("shows a placeholder while the power data loads", async () => {
+    powerMock.state = { status: "loading" }
+    renderPage("/library/npcs/infiltrator")
+    await screen.findByTestId("npc-name")
+    expect(screen.getByTestId("npc-stat-power-loading")).toBeInTheDocument()
+  })
+
+  it("shows the power as unavailable and keeps the other stats when the data failed", async () => {
+    powerMock.state = { status: "error" }
+    renderPage("/library/npcs/infiltrator?level=2")
+    await screen.findByTestId("npc-name")
+    expect(powerValue()).toHaveTextContent("—")
+    expect(powerCard()).toHaveTextContent("npcs.power.unavailable")
+    expect(screen.getByTestId("npc-stat-health")).toHaveTextContent("76")
+    expect(screen.getByTestId("npc-stat-armour")).toHaveTextContent("22")
+    expect(screen.getByTestId("npc-stat-damage")).toHaveTextContent("34")
+  })
+
+  it("is in the compact mobile stat grid", async () => {
+    isMobileMock.value = true
+    renderPage("/library/npcs/infiltrator?level=2")
+    await screen.findByTestId("npc-name")
+    expect(
+      within(screen.getByTestId("npcs-stats")).getByTestId("npc-stat-power")
+    ).toHaveTextContent(/45/)
   })
 })

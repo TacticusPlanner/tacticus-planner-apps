@@ -4,7 +4,6 @@ import {
   rarityRank,
   rankOrder,
   startingProgression,
-  statAtRank,
   type Progression,
   type Rank,
 } from "@workspace/game-domain"
@@ -13,6 +12,16 @@ import type {
   EquipmentStorageModel,
 } from "@workspace/game-catalog"
 import type { PlayerDataChunkDto } from "@workspace/player-data"
+
+import type { ReadState } from "@/shared/lib"
+import {
+  characterPowerAt,
+  characterStatsAt,
+  type CharacterPowerValues,
+  type UnitPowerContext,
+} from "@/shared/unit-power"
+
+import { powerFigure, type PowerFigure } from "../unit/unit-power.model"
 
 export type PlayerCharacter = PlayerDataChunkDto<"characters">[number]
 
@@ -33,29 +42,104 @@ export function playerValues(player: PlayerCharacter): ShownValues {
   return { progression: player.progressionIndex, rank: player.rank }
 }
 
-export type UnitStats = { health: number; damage: number; armour: number }
-
-export function statsAt(
-  character: CharacterStorageModel,
-  values: ShownValues
-): UnitStats {
-  return {
-    health: statAtRank(character.health, values.rank, values.progression),
-    damage: statAtRank(character.damage, values.rank, values.progression),
-    armour: statAtRank(character.armour, values.rank, values.progression),
-  }
-}
+type UnitStats = { health: number; damage: number; armour: number }
 
 /** Every rank of the game's ladder, Stone I to the highest, for Stats by rank. */
 export const ladderRanks: readonly Rank[] = rankOrder.filter(
   (rank) => rankIndex(rank) <= rankIndex(lastRank)
 )
 
-export function statsByRank(
-  character: CharacterStorageModel,
-  progression: Progression
-): UnitStats[] {
-  return ladderRanks.map((rank) => statsAt(character, { progression, rank }))
+/**
+ * What the page's power and stats are computed at (design D6): the shown values and the ability
+ * panel levels; the player's applied current-rank slots only while the shown rank is the player's
+ * rank; the player's equipped items when the unit is owned, with the equipped relic at the Relic
+ * panel's level.
+ */
+export function characterPowerValues({
+  shown,
+  player,
+  activeLevel,
+  passiveLevel,
+  equippedRelic,
+}: {
+  shown: ShownValues
+  /** The player's record; undefined for a unit that isn't owned (or no roster). */
+  player: PlayerCharacter | undefined
+  activeLevel: number
+  passiveLevel: number
+  /** The equipped relic's id and the Relic panel's level, which it counts at. */
+  equippedRelic?: { id: string; level: number }
+}): CharacterPowerValues {
+  return {
+    rank: shown.rank,
+    progression: shown.progression,
+    appliedUpgradeSlots:
+      player && player.rank === shown.rank
+        ? (player.appliedUpgradeSlots ?? [])
+        : [],
+    activeAbilityLevel: activeLevel,
+    passiveAbilityLevel: passiveLevel,
+    items: (player?.equippedItems ?? []).map(({ equipmentId, level }) => ({
+      equipmentId,
+      level: equipmentId === equippedRelic?.id ? equippedRelic.level : level,
+    })),
+  }
+}
+
+/** At a glance and Stats by rank: the stats before equipment, or why there are none yet. */
+export type StatsFigure =
+  | { status: "loading" }
+  | { status: "unavailable" }
+  | { status: "ready"; stats: UnitStats; byRank: readonly UnitStats[] }
+
+export type CharacterPowerView = {
+  stats: StatsFigure
+  power: PowerFigure
+  /** Whether the player's equipped items count in the power ("Includes your equipped items"). */
+  includesItems: boolean
+}
+
+/**
+ * The page's stats and power from one set of values, so the two never disagree: the stats are the
+ * power calculation's stat step (no items); each Stats by rank rank counts every slot of the ranks
+ * below it and none of its own, except the shown rank, which counts the slots the power counts.
+ */
+export function characterPowerView(
+  characterId: string,
+  values: CharacterPowerValues,
+  context: ReadState<UnitPowerContext | null>
+): CharacterPowerView {
+  const power = powerFigure(context, (ready) =>
+    characterPowerAt(characterId, values, ready)
+  )
+  const includesItems = (values.items ?? []).length > 0
+  if (context.status === "loading") {
+    return { stats: { status: "loading" }, power, includesItems }
+  }
+  const ready = context.status === "ready" ? context.data : null
+  const statsAt = (rank: Rank) =>
+    ready
+      ? characterStatsAt(
+          characterId,
+          {
+            ...values,
+            rank,
+            appliedUpgradeSlots:
+              rank === values.rank ? values.appliedUpgradeSlots : [],
+          },
+          ready
+        )
+      : null
+  const stats = statsAt(values.rank)
+  const byRank = ladderRanks.map((rank) => statsAt(rank))
+  if (!stats || byRank.some((entry) => entry === null)) {
+    return { stats: { status: "unavailable" }, power, includesItems }
+  }
+  return {
+    stats: { status: "ready", stats, byRank: byRank as UnitStats[] },
+    power,
+    includesItems,
+  }
 }
 
 /** The player's level for each of the unit's abilities, by ability id. */

@@ -30,6 +30,9 @@ const store = vi.hoisted(() => ({
   catalogSynced: true,
   metadata: new Map<string, { updatedAt: string }>(),
   hordeModeTiers: null as null | Record<string, unknown>,
+  unitPower: { status: "ready", data: null, retry: () => {} } as
+    | { status: "loading" | "error"; retry: () => void }
+    | { status: "ready"; data: unknown; retry: () => void },
   battleReads: [] as string[][],
 }))
 const lysander = {
@@ -71,6 +74,9 @@ vi.mock("@workspace/game-catalog/queries", () => ({
   getHordeModeTiers: () => read(store.hordeModeTiers),
   hasLegendaryEventsSynced: async () => store.catalogSynced,
 }))
+vi.mock("@/shared/unit-power", () => ({
+  useUnitPowerContext: () => store.unitPower,
+}))
 vi.mock("@workspace/player-data/queries", () => ({
   getLegendaryEventsProgress: () => read(undefined),
   getLegendaryEventProgress: (id: string) =>
@@ -90,6 +96,7 @@ describe("Legendary Event read hooks", () => {
     store.catalogSynced = true
     store.metadata = new Map()
     store.hordeModeTiers = null
+    store.unitPower = { status: "ready", data: null, retry: () => {} }
     vi.useFakeTimers({ toFake: ["Date"] })
     vi.setSystemTime(new Date("2026-09-02T12:00:00Z"))
   })
@@ -180,6 +187,11 @@ describe("Legendary Event read hooks", () => {
     const untieredState = untiered.result.current
     if (untieredState.status !== "ready") throw new Error("not ready")
     expect(untieredState.config.hordeMultipliers.size).toBe(0)
+    // No unit-power dataset: the config is ready, with no power context (no estimate shows).
+    expect(untieredState.config.unitPower).toBeNull()
+
+    const context = { tables: "unit-power" }
+    store.unitPower = { status: "ready", data: context, retry: () => {} }
 
     store.hordeModeTiers = {
       id: "horde-mode-tiers",
@@ -197,10 +209,27 @@ describe("Legendary Event read hooks", () => {
     expect(state.config.calibrated).toBe(false)
     expect(state.config.hordeMultipliers.get("ultraTigurius")).toBe(1.55)
     expect(state.config.hordeMultipliers.get("ultraCalgar")).toBe(1.65)
+    expect(state.config.unitPower).toBe(context)
 
     store.fail = true
     const failed = renderHook(() => useClearEstimateConfig())
     await waitFor(() => expect(failed.result.current.status).toBe("failed"))
+  })
+
+  it("waits for the power context and fails when it cannot be read", async () => {
+    store.unitPower = { status: "loading", retry: () => {} }
+    const loading = renderHook(() => useClearEstimateConfig())
+    await waitFor(() => expect(store.calls).toBeGreaterThan(0))
+    expect(loading.result.current.status).toBe("loading")
+
+    const retry = vi.fn()
+    store.unitPower = { status: "error", retry }
+    const failed = renderHook(() => useClearEstimateConfig())
+    await waitFor(() => expect(failed.result.current.status).toBe("failed"))
+    const state = failed.result.current
+    if (state.status !== "failed") throw new Error("not failed")
+    act(() => state.retry())
+    expect(retry).toHaveBeenCalledOnce()
   })
 
   it("reports a progress read failure", async () => {

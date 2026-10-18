@@ -2,7 +2,13 @@ import { describe, expect, it } from "vitest"
 
 import { unitIdSchema, type UnitId } from "@workspace/game-domain"
 
-import { expandCandidatePool, isXpCapped } from "./team-eligibility"
+import { unitPowerContextFixture } from "@/test/fixtures/unit-power"
+
+import {
+  combatPowerOf,
+  expandCandidatePool,
+  isXpCapped,
+} from "./team-eligibility"
 import type {
   TeamPoolSpec,
   TeamRosterCharacter,
@@ -18,9 +24,10 @@ const character = (
   rank: "Stone1",
   progression: "Common:None",
   xpLevel: 3,
-  appliedUpgradeCount: 0,
+  appliedUpgradeSlots: [],
   activeAbilityLevel: 1,
   passiveAbilityLevel: 1,
+  equippedItems: [],
   traits: [],
   damageTypes: [],
   ...over,
@@ -60,6 +67,41 @@ describe("isXpCapped", () => {
         character("b", { progression: "Legendary:RedThreeStars", xpLevel: 49 })
       )
     ).toBe(false)
+  })
+})
+
+describe("combatPowerOf", () => {
+  const unitPower = unitPowerContextFixture()
+  const tigurius = character("ultraTigurius", {
+    rank: "Gold1",
+    progression: "Epic:RedOneStar",
+    appliedUpgradeSlots: [0, 1, 2],
+    activeAbilityLevel: 20,
+    passiveAbilityLevel: 15,
+  })
+
+  it("is the in-game power, equipped items included", () => {
+    expect(combatPowerOf(tigurius, unitPower)).toBe(16672)
+    expect(
+      combatPowerOf(
+        {
+          ...tigurius,
+          equippedItems: [{ equipmentId: "I_Crit_C001", level: 3 }],
+        },
+        unitPower
+      )
+    ).toBe(16809)
+  })
+
+  it("is 0 when power data is unavailable", () => {
+    expect(combatPowerOf(tigurius, null)).toBe(0)
+    expect(combatPowerOf(character("zzUnknown"), unitPower)).toBe(0)
+    expect(
+      combatPowerOf(
+        { ...tigurius, equippedItems: [{ equipmentId: "nope", level: 1 }] },
+        unitPower
+      )
+    ).toBe(0)
   })
 })
 

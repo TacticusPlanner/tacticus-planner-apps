@@ -14,8 +14,9 @@ import {
   teamUnitList,
   teamUnits,
 } from "@/test/fixtures/legendary-event-teams"
+import { unitPowerContextFixture } from "@/test/fixtures/unit-power"
 import { createTestI18n, i18nWrapper } from "@/test/i18n"
-import { render, screen, waitFor, within } from "@/test/render"
+import { cleanup, render, screen, waitFor, within } from "@/test/render"
 
 import type { ClearEstimatesViewModel } from "../legendary-event-page.view-model"
 
@@ -76,7 +77,7 @@ vi.mock("@/shared/analytics", () => ({
   useAnalyticsActions: () => ({ captureEvent: vi.fn() }),
 }))
 
-// Gold1 / Epic:RedOneStar / 3 upgrades / 20 / 15: combat power 8,792 each.
+// Gold1 / Epic:RedOneStar / slots 0–2 / 20 / 15: power 21,675 each (Calgar's game data).
 const rosterUnit = (unitId: string) =>
   ({
     unitId,
@@ -88,6 +89,18 @@ const rosterUnit = (unitId: string) =>
       { abilityId: "passive", level: 15 },
     ],
   }) as LegendaryEventRosterUnit
+/** The real power context where the synthetic team units read Calgar's game data. */
+function syntheticUnitPower() {
+  const context = unitPowerContextFixture()
+  const calgar = context.characters.get("ultraCalgar")!
+  return {
+    ...context,
+    characters: new Map([
+      ...context.characters,
+      ...Object.values(teamUnits).map((unit) => [unit.id, calgar] as const),
+    ]),
+  }
+}
 const estimator = {
   team: () => null,
   unit: () => null,
@@ -98,7 +111,12 @@ const estimator = {
         (unitId) => [unitId, rosterUnit(unitId)]
       )
     ),
-    config: { powerRatio: 0.5, calibrated: true, hordeMultipliers: new Map() },
+    config: {
+      powerRatio: 0.5,
+      calibrated: true,
+      hordeMultipliers: new Map(),
+      unitPower: syntheticUnitPower(),
+    },
   },
 }
 const readyEstimates: ClearEstimatesViewModel = {
@@ -150,8 +168,10 @@ function renderSection(
     estimates = { kind: "hidden" },
     lastRunClears,
     run = 1,
+    unitPower = null,
   }: {
     run?: TeamsViewModel["run"]
+    unitPower?: TeamsViewModel["unitPower"]
     isMobile?: boolean
     laneId?: "alpha" | "beta" | "gamma"
     estimates?: ClearEstimatesViewModel
@@ -172,6 +192,7 @@ function renderSection(
     run,
     actions,
     estimates,
+    unitPower,
     progressByLane: undefined,
     lastRunClears,
     goals: {
@@ -220,6 +241,29 @@ describe("TeamsSection", () => {
     expect(screen.getByTestId("legendary-event-add-team")).toHaveTextContent(
       "Add team"
     )
+  })
+
+  it("shows each card's Team power from the power data, and — when it is unavailable", () => {
+    const roster = [teamUnits.a.id, teamUnits.b.id, teamUnits.c.id].map(
+      rosterUnit
+    )
+    const withRoster: TeamsSectionState = {
+      kind: "ready",
+      plan,
+      units: teamUnitList,
+      roster,
+    }
+    renderSection(withRoster, { unitPower: syntheticUnitPower() })
+    // 3 × 21,675.
+    expect(
+      screen.getAllByTestId("team-card-power").map((power) => power.textContent)
+    ).toEqual(["Team power 65,025", "Team power 65,025"])
+    cleanup()
+
+    renderSection(withRoster, { unitPower: null })
+    for (const power of screen.getAllByTestId("team-card-power")) {
+      expect(power).toHaveAttribute("data-state", "unavailable")
+    }
   })
 
   it("shows the last-run line only on teams of the previous run on the same lane", () => {

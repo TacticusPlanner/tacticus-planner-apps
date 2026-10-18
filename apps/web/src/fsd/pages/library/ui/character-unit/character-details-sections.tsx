@@ -13,6 +13,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@workspace/ui/components/tooltip"
+import { Skeleton } from "@workspace/ui/components/skeleton"
 import { cn } from "@workspace/ui/lib/utils"
 
 import {
@@ -22,7 +23,7 @@ import {
 } from "@/shared/ability-text"
 import { describeSeries, EntityIcon, LevelChart } from "@/shared/ui"
 
-import { ladderRanks, type UnitStats } from "./character-unit.view-model"
+import { ladderRanks, type StatsFigure } from "./character-unit.view-model"
 import { EquipmentSlots } from "./equipment-slots"
 
 /** The cards every Details section sits in on desktop. */
@@ -141,7 +142,8 @@ export function AtAGlance({
   compact,
 }: {
   character: CharacterStorageModel
-  stats: UnitStats
+  /** The stats before equipment; "—" while the power data loads or when it is unavailable. */
+  stats: StatsFigure
   /** The slot the character's relic goes in (the relic's equipment type) and the relic's name. */
   relicSlot?: { slot: string; name: string }
   /** The items each slot can take (see `equippableItems`). */
@@ -153,13 +155,14 @@ export function AtAGlance({
   const { t, i18n } = useTranslation("library")
   const format = new Intl.NumberFormat(i18n.language)
   // No percentile lines: the radar's percentiles are at its fixed reference, not at these values.
+  const shown = stats.status === "ready" ? stats.stats : undefined
   const boxes: {
     key: "health" | "damage" | "armour" | "movement"
-    value: number
+    value: number | undefined
   }[] = [
-    { key: "health", value: stats.health },
-    { key: "damage", value: stats.damage },
-    { key: "armour", value: stats.armour },
+    { key: "health", value: shown?.health },
+    { key: "damage", value: shown?.damage },
+    { key: "armour", value: shown?.armour },
     { key: "movement", value: character.movement },
   ]
 
@@ -190,11 +193,19 @@ export function AtAGlance({
                 compact ? "text-lg" : "text-[22px]"
               )}
             >
-              {format.format(box.value)}
+              {box.value === undefined ? "—" : format.format(box.value)}
             </dd>
           </div>
         ))}
       </dl>
+      {stats.status === "unavailable" ? (
+        <p
+          className="text-xs text-muted-foreground"
+          data-testid="unit-glance-stats-unavailable"
+        >
+          {t("characterUnit.glance.statsUnavailable")}
+        </p>
+      ) : null}
       <dl className="flex flex-col text-sm">
         <AttackRow
           kind="melee"
@@ -269,13 +280,13 @@ const statKeys = ["health", "damage", "armour"] as const
  * (one axis each, so Armour isn't flattened under Health), a table on mobile.
  */
 export function StatsByRank({
-  byRank,
+  stats,
   shownRank,
   rankCap,
   owned,
   isMobile,
 }: {
-  byRank: readonly UnitStats[]
+  stats: StatsFigure
   shownRank: Rank
   /** The highest rank the shown rarity and stars allow; later ranks are faded. */
   rankCap: Rank
@@ -297,6 +308,21 @@ export function StatsByRank({
     .filter(({ rank }) => rank.endsWith("1"))
     .map(({ index }) => index)
   const format = new Intl.NumberFormat(locale)
+
+  if (stats.status === "loading") {
+    return <Skeleton className="h-32 w-full rounded-lg" />
+  }
+  if (stats.status === "unavailable") {
+    return (
+      <p
+        className="text-sm text-muted-foreground"
+        data-testid="unit-stats-unavailable"
+      >
+        {t("characterUnit.glance.statsUnavailable")}
+      </p>
+    )
+  }
+  const { byRank } = stats
 
   if (isMobile) {
     return (

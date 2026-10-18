@@ -219,6 +219,10 @@
     "reserve": "Réserve",
     "members": "Membres",
     "pointsPerBattle": "{{points}} points par combat",
+    "power": {
+      "label": "Puissance de l'équipe",
+      "unavailable": "Données de puissance indisponibles"
+    },
     "notCovered": "Non couvert par les membres actuels",
     "dragHandle": "Faire glisser pour réordonner {{name}}",
     "depth": {
@@ -416,7 +420,7 @@
   "estimates": {
     "estimated": "estimé",
     "uncalibrated": "Non calibré : le rapport de puissance de l'estimation n'a pas encore été ajusté sur de vrais résultats, considérez-la comme une indication approximative.",
-    "howItWorks": "Estimé à partir de la puissance de combat de votre effectif synchronisé comparée à la puissance de chaque combat. L'équipement, les synergies et les objectifs difficiles ne sont pas pris en compte ; définissez une profondeur pour la remplacer.",
+    "howItWorks": "Estimé à partir de la puissance de votre effectif synchronisé, équipement compris, comparée à la puissance de chaque combat. Les synergies et les objectifs difficiles ne sont pas pris en compte ; définissez une profondeur pour la remplacer.",
     "marginAbove": "{{percent}} % au-dessus du combat {{battle}}",
     "shortfallNext": "{{percent}} % en dessous du combat {{battle}}",
     "notEnough": "Pas encore assez pour le combat 1",

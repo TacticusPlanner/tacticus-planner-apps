@@ -2,9 +2,14 @@ import type {
   NpcFilters,
   NpcGroup,
   NpcLevelOption,
+  NpcStatRow,
   NpcVariation,
   NpcVariationMode,
 } from "@/entities/npc"
+import type { ReadState } from "@/shared/lib"
+import { npcPowerAt, type UnitPowerContext } from "@/shared/unit-power"
+
+import { powerFigure, type PowerFigure } from "../unit/unit-power.model"
 
 /** One NPC as listed in the desktop tile grid / mobile picker. */
 export interface NpcListItem {
@@ -54,4 +59,16 @@ export interface NpcsPageViewProps {
   levels: NpcLevelOption[]
   selectedLevel: NpcLevelOption | undefined
   onLevelChange: (servedIndex: number) => void
+  /** The selected variation's power at the selected level row (an estimate). */
+  power: PowerFigure
+}
+
+/** The estimated power of an NPC variation at one of its level rows. */
+export function npcPowerFigure(
+  variationId: string | undefined,
+  row: NpcStatRow | undefined,
+  context: ReadState<UnitPowerContext | null>
+): PowerFigure {
+  if (!variationId || !row) return { status: "unavailable" }
+  return powerFigure(context, (ready) => npcPowerAt(variationId, row, ready))
 }

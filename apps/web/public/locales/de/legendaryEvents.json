@@ -219,6 +219,10 @@
     "reserve": "Reserve",
     "members": "Mitglieder",
     "pointsPerBattle": "{{points}} Punkte pro Kampf",
+    "power": {
+      "label": "Team-Kampfkraft",
+      "unavailable": "Kampfkraftdaten nicht verfügbar"
+    },
     "notCovered": "Von den aktuellen Mitgliedern nicht abgedeckt",
     "dragHandle": "{{name}} zum Umsortieren ziehen",
     "depth": {
@@ -416,7 +420,7 @@
   "estimates": {
     "estimated": "geschätzt",
     "uncalibrated": "Unkalibriert: Das Leistungsverhältnis der Schätzung wurde noch nicht an echten Ergebnissen ausgerichtet, nimm sie also nur als grobe Orientierung.",
-    "howItWorks": "Geschätzt aus der Kampfkraft deines synchronisierten Kaders im Vergleich zur Stärke jedes Kampfes. Ausrüstung, Synergien und schwere Ziele werden nicht berücksichtigt; lege eine Tiefe fest, um sie zu überschreiben.",
+    "howItWorks": "Geschätzt aus der Kampfkraft deines synchronisierten Kaders, Ausrüstung eingeschlossen, im Vergleich zur Stärke jedes Kampfes. Synergien und schwere Ziele werden nicht berücksichtigt; lege eine Tiefe fest, um sie zu überschreiben.",
     "marginAbove": "{{percent}} % über Kampf {{battle}}",
     "shortfallNext": "{{percent}} % unter Kampf {{battle}}",
     "notEnough": "Reicht noch nicht für Kampf 1",

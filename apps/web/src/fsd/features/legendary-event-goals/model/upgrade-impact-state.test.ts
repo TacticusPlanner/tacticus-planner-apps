@@ -7,6 +7,7 @@ import {
 } from "@/entities/legendary-event"
 import { legendaryEventCharacters } from "@/test/fixtures/legendary-event-characters"
 import { utharEvent } from "@/test/fixtures/legendary-events"
+import { unitPowerContextFixture } from "@/test/fixtures/unit-power"
 
 import { buildUpgradeImpactState } from "./upgrade-impact-state"
 
@@ -39,6 +40,7 @@ const state = (teams: LegendaryEventTeam[]) =>
         powerRatio: 0.5,
         calibrated: true,
         hordeMultipliers: new Map(),
+        unitPower: unitPowerContextFixture(),
       },
     },
     lane: utharEvent.alpha,

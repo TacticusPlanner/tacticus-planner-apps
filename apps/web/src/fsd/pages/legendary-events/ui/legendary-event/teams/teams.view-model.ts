@@ -4,6 +4,7 @@ import {
   teamDepthForRun,
   teamEffectiveDepth,
   teamPointsPerBattle,
+  teamPower,
   type ClearEstimate,
   type LegendaryEventLane,
   type LegendaryEventLaneId,
@@ -15,6 +16,7 @@ import {
 } from "@/entities/legendary-event"
 
 import type { PickerGoalsPreview } from "@/features/legendary-event-teams"
+import type { UnitPowerContext } from "@/shared/unit-power"
 
 import type {
   ClearEstimatesViewModel,
@@ -58,8 +60,18 @@ export interface TeamCardViewModel {
   displayedDepth: number | null
   /** Members (reserve excluded) the roster does not hold; 0 when ownership is unknown. */
   lockedMemberCount: number
+  /** The non-reserve members' in-game power summed, items included and without horde-mode
+   *  multipliers (a locked member adds 0); null when the roster could not be read or any owned
+   *  member's power data is unavailable, never a partial sum. */
+  teamPower: number | null
+  /** The power data is still loading (the card shows a placeholder dash, not "unavailable"). */
+  teamPowerPending: boolean
   sortOrder: number
 }
+
+/** The power data the card total reads: the context (null when the `unit-power` dataset is
+ *  absent), or its read state. */
+export type TeamPowerSource = ReadValue<UnitPowerContext | null>
 
 /** A lane's team estimator: the estimate for a set of non-reserve members. */
 export type TeamEstimator = (
@@ -84,7 +96,8 @@ export function buildTeamCardViewModel(
   units: readonly LegendaryEventUnit[],
   roster: readonly LegendaryEventRosterUnit[] | undefined,
   currentRun: LegendaryEventRun,
-  estimateTeam?: TeamEstimator
+  estimateTeam?: TeamEstimator,
+  powerSource: TeamPowerSource = null
 ): TeamCardViewModel {
   const owned = roster
     ? new Set(roster.map((entry) => entry.unitId as string))
@@ -129,8 +142,25 @@ export function buildTeamCardViewModel(
       ? null
       : teamEffectiveDepth(expectedBattleClears, estimate),
     lockedMemberCount: members.filter((entry) => entry.owned === false).length,
+    teamPower: cardTeamPower(team.memberUnitIds, roster, powerSource),
+    teamPowerPending: powerSource === "loading",
     sortOrder: team.sortOrder,
   }
+}
+
+function cardTeamPower(
+  memberUnitIds: readonly string[],
+  roster: readonly LegendaryEventRosterUnit[] | undefined,
+  powerSource: TeamPowerSource
+): number | null {
+  if (!roster || powerSource === "loading" || powerSource === "error") {
+    return null
+  }
+  return teamPower(
+    memberUnitIds,
+    new Map(roster.map((unit) => [unit.unitId as string, unit])),
+    powerSource
+  )
 }
 
 /** The Teams section body (design D5): hidden when signed out, a skeleton while the plan, the

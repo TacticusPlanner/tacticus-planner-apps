@@ -1,5 +1,7 @@
 import type { Alliance, Rank, Rarity, UnitId } from "@workspace/game-domain"
 
+import type { UnitPowerContext } from "@/shared/unit-power"
+
 import type {
   ArenaGoalContribution,
   ArenaMode,
@@ -59,6 +61,8 @@ export type BuildSalvageRecommendationsInput = {
   preferences?: TeamPreferences
   /** Required here (unlike Arena) — the alliance field drives the track restriction. */
   rosterCatalog: SalvageRosterCatalog
+  /** The power formula's game data for the strength ordering; null when it is unavailable. */
+  unitPower: UnitPowerContext | null
 }
 
 /** What `useSalvageRecommendations` exposes to the Salvage Run page. */

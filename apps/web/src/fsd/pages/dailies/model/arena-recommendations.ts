@@ -26,9 +26,12 @@ export function mapRosterCharacter(
     rank: record.rank,
     progression: record.progressionIndex,
     xpLevel: record.xpLevel,
-    appliedUpgradeCount: new Set(record.appliedUpgradeSlots).size,
+    appliedUpgradeSlots: [...new Set(record.appliedUpgradeSlots)],
     activeAbilityLevel: record.abilities[0]?.level ?? 1,
     passiveAbilityLevel: record.abilities[1]?.level ?? 1,
+    equippedItems: (record.equippedItems ?? []).map(
+      ({ equipmentId, level }) => ({ equipmentId, level })
+    ),
   }
 }
 
@@ -123,5 +126,6 @@ export function buildArenaRecommendations(
     preferences: input.preferences ?? {},
     lockedRandomUnitIds: input.lockedRandomUnitIds,
     randomSeed: input.randomSeed,
+    unitPower: input.unitPower,
   })
 }

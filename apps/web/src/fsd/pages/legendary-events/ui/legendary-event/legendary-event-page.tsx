@@ -22,6 +22,7 @@ import { useTokenPlan } from "@/features/legendary-event-tokens"
 import { useAnalyticsActions } from "@/shared/analytics"
 import { useTourPageSteps } from "@/shared/tour"
 import { useUnitName } from "@/shared/unit-name"
+import { useUnitPowerContext } from "@/shared/unit-power"
 
 import { LegendaryEventPageView } from "./legendary-event-page-view"
 import {
@@ -83,6 +84,7 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
   const roster = readValue(useLegendaryEventRoster())
   const progressValue = readValue(progress)
   const clearEstimateConfig = useClearEstimateConfig()
+  const unitPower = readValue(useUnitPowerContext())
   const battles = readValue(useLegendaryEventBattles(eventId))
   const syncedEntry =
     typeof progressValue === "object" ? progressValue : undefined
@@ -372,6 +374,7 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
       run: runs.run,
       actions: plan,
       estimates: clearEstimates,
+      unitPower,
       eventId,
       lastRunClears: runHistory.lastRunClears,
       progressByLane:

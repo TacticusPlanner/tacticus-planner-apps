@@ -31,6 +31,7 @@ import { useCharacterListItems } from "../characters/use-character-list-items"
 import { useCharactersCatalog } from "../characters/use-characters-catalog"
 import { AbilityPanel } from "../unit/ability-panel"
 import { UnitNavBar } from "../unit/unit-nav-bar"
+import { UnitPowerValue } from "../unit/unit-power-value"
 import {
   readUnitOrigin,
   unitNeighbours,
@@ -43,6 +44,7 @@ import { CharacterUnitDetails } from "./character-unit-details"
 import { CharacterUnitHeader, type ValuesMode } from "./character-unit-header"
 import { MythicQuestsList } from "./mythic-quests-card"
 import { RelicPanel } from "./relic-panel"
+import { useCharacterPowerView } from "./use-character-power-view"
 import { useMythicQuests } from "./use-mythic-quests"
 import {
   playerAbilityLevels,
@@ -50,8 +52,6 @@ import {
   equippableItems,
   relicFor,
   startingValues,
-  statsAt,
-  statsByRank,
   unitOwnership,
   type ShownValues,
 } from "./character-unit.view-model"
@@ -178,8 +178,18 @@ function CharacterUnit({
     [catalog.characters]
   )
   const radar = buildStatRadar(character, population)
-  const stats = statsAt(character, shown)
-  const byRank = statsByRank(character, shown.progression)
+  const shownRelicLevel = relicLevel ?? relic?.equippedLevel ?? 1
+  const powerView = useCharacterPowerView({
+    characterId: unitId,
+    shown,
+    player,
+    activeLevel: levelOf(activeId ?? ""),
+    passiveLevel: levelOf(passiveId ?? ""),
+    equippedRelic:
+      relic?.equippedLevel === undefined
+        ? undefined
+        : { id: relic.relic.id, level: shownRelicLevel },
+  })
 
   // --- Navigation -------------------------------------------------------------------------------
   const listItems = useCharacterListItems(catalog.characters)
@@ -260,7 +270,7 @@ function CharacterUnit({
       unitName={name}
       factionId={character.faction}
       text={relic ? abilityText(relic.relic.abilityId) : undefined}
-      level={relicLevel ?? relic?.equippedLevel ?? 1}
+      level={shownRelicLevel}
       playerLevel={relic?.equippedLevel}
       onLevelChange={setRelicLevel}
       nameOf={nameOf}
@@ -310,6 +320,19 @@ function CharacterUnit({
           }}
           onCustomChange={setCustom}
           yourUnitLine={yourUnitLine}
+          power={
+            <UnitPowerValue
+              label={t("characterUnit.power.label")}
+              figure={powerView.power}
+              note={
+                powerView.includesItems
+                  ? t("characterUnit.power.withItems")
+                  : t("characterUnit.power.withoutItems")
+              }
+              unavailableText={t("characterUnit.power.unavailable")}
+              isMobile={isMobile}
+            />
+          }
           shards={
             ownership === "notOwned"
               ? {
@@ -346,9 +369,8 @@ function CharacterUnit({
             <CharacterUnitDetails
               character={character}
               name={name}
-              stats={stats}
+              stats={powerView.stats}
               radar={radar}
-              byRank={byRank}
               shownRank={shown.rank}
               rankCap={maxRankForProgression(shown.progression)}
               owned={ownership === "owned" && mode === "base"}
@@ -384,9 +406,7 @@ function CharacterUnit({
                 ) : null
               }
               mythicQuestCount={mythic.quests?.length ?? 0}
-              relicLevel={
-                relic ? (relicLevel ?? relic.equippedLevel ?? 1) : undefined
-              }
+              relicLevel={relic ? shownRelicLevel : undefined}
               isMobile={isMobile}
             />
           ) : (

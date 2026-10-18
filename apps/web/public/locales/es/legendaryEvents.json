@@ -219,6 +219,10 @@
     "reserve": "Reserva",
     "members": "Miembros",
     "pointsPerBattle": "{{points}} puntos por batalla",
+    "power": {
+      "label": "Poder del equipo",
+      "unavailable": "Datos de poder no disponibles"
+    },
     "notCovered": "Los miembros actuales no lo cubren",
     "dragHandle": "Arrastra para reordenar {{name}}",
     "depth": {
@@ -416,7 +420,7 @@
   "estimates": {
     "estimated": "estimado",
     "uncalibrated": "Sin calibrar: la proporción de poder de la estimación aún no se ha ajustado con resultados reales, así que tómala como una guía aproximada.",
-    "howItWorks": "Estimado a partir del poder de combate de tu plantilla sincronizada frente al poder de cada batalla. No se tienen en cuenta el equipo, las sinergias ni los objetivos difíciles; fija una profundidad para sustituirla.",
+    "howItWorks": "Estimado a partir del poder de tu plantilla sincronizada, con el equipo incluido, frente al poder de cada batalla. No se tienen en cuenta las sinergias ni los objetivos difíciles; fija una profundidad para sustituirla.",
     "marginAbove": "{{percent}} % por encima de la batalla {{battle}}",
     "shortfallNext": "{{percent}} % por debajo de la batalla {{battle}}",
     "notEnough": "Aún no basta para la batalla 1",
