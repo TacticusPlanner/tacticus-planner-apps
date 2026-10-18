@@ -322,7 +322,8 @@
       "sortPointsLeft": "Points restants",
       "sortPower": "Puissance",
       "estimating": "Estimation…",
-      "pointsScope": "Points restants sur toute la voie, tous les combats"
+      "pointsScope": "Points restants sur toute la voie, tous les combats",
+      "tier": "Tier {{tier}}"
     },
     "toasts": {
       "reloaded": "Ton plan a été modifié sur un autre appareil et a été rechargé. Réessaie.",

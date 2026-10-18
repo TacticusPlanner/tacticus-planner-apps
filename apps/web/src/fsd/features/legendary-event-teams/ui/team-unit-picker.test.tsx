@@ -48,8 +48,10 @@ function Harness({
   goalsPreview,
   goalLines,
   estimates,
+  units = teamUnitList,
 }: {
   roster?: { unitId: string }[]
+  units?: typeof teamUnitList
   goalsPreview?: PickerGoalsPreview
   goalLines?: (unitId: string) => readonly string[]
   estimates?: PickerEstimates
@@ -75,7 +77,7 @@ function Harness({
       onlyUnlockedDefault={false}
       reserveUnitId={draft.reserveUnitId}
       roster={roster as never}
-      units={teamUnitList}
+      units={units}
     />
   )
 }
@@ -371,6 +373,90 @@ describe("TeamUnitPicker", () => {
       fireEvent.click(screen.getByTestId("team-picker-only-unlocked"))
       expect(chip("Melee")).toHaveAttribute("data-count", "1")
       expect(listed()).toEqual([teamUnits.a.id, teamUnits.r.id])
+    })
+  })
+
+  describe("tier and support markers (spec: picker tiles mark tier and support traits)", () => {
+    const withTrait = (id: string, ...traits: string[]) =>
+      ({
+        ...teamUnitList.find((unit) => unit.id === id)!,
+        traits,
+      }) as (typeof teamUnitList)[number]
+    // Aleph: S-tier healer; He: untiered mechanic; Dalet: A-tier healer the roster lacks.
+    const units = teamUnitList.map((unit) => {
+      if (unit.id === teamUnits.a.id) return withTrait(unit.id, "Healer")
+      if (unit.id === teamUnits.e.id) return withTrait(unit.id, "Mechanic")
+      if (unit.id === teamUnits.d.id) return withTrait(unit.id, "Healer")
+      return unit
+    })
+    const estimates: PickerEstimates = {
+      clearsOf: () => null,
+      config: {
+        hordeTiers: new Map([
+          [teamUnits.a.id, "S"],
+          [teamUnits.d.id, "A"],
+        ]),
+      } as never,
+    }
+    const markers = (unitId: string) =>
+      within(tile(unitId)).queryByTestId("team-picker-markers")
+
+    it("stacks the tier badge over the healer icon", () => {
+      render(<Harness estimates={estimates} units={units} />, {
+        wrapper: i18nWrapper(i18n),
+      })
+      const column = markers(teamUnits.a.id)!
+      const tier = within(column).getByTestId("team-picker-tier")
+      expect(tier).toHaveAttribute("data-tier", "S")
+      expect(tier).toHaveTextContent("Tier S")
+      const trait = within(column).getByTestId("team-picker-trait")
+      expect(trait).toHaveAttribute("data-trait", "Healer")
+      expect(
+        Boolean(
+          tier.compareDocumentPosition(trait) & Node.DOCUMENT_POSITION_FOLLOWING
+        )
+      ).toBe(true)
+    })
+
+    it("shows only the trait for an untiered mechanic, and nothing for a plain unit", () => {
+      render(<Harness estimates={estimates} units={units} />, {
+        wrapper: i18nWrapper(i18n),
+      })
+      const column = markers(teamUnits.e.id)!
+      expect(within(column).queryByTestId("team-picker-tier")).toBeNull()
+      expect(within(column).getByTestId("team-picker-trait")).toHaveAttribute(
+        "data-trait",
+        "Mechanic"
+      )
+      expect(markers(teamUnits.c.id)).toBeNull()
+    })
+
+    it("marks a locked unit too", async () => {
+      render(
+        <Harness
+          estimates={estimates}
+          roster={[owned(teamUnits.a.id)]}
+          units={units}
+        />,
+        { wrapper: i18nWrapper(i18n) }
+      )
+      await screen.findByText("Beth")
+      expect(tile(teamUnits.d.id)).toHaveAttribute("data-locked", "true")
+      const column = markers(teamUnits.d.id)!
+      expect(within(column).getByTestId("team-picker-tier")).toHaveAttribute(
+        "data-tier",
+        "A"
+      )
+      expect(
+        within(column).getByTestId("team-picker-trait")
+      ).toBeInTheDocument()
+    })
+
+    it("shows no tier badge without estimates", () => {
+      render(<Harness units={units} />, { wrapper: i18nWrapper(i18n) })
+      expect(
+        within(markers(teamUnits.a.id)!).queryByTestId("team-picker-tier")
+      ).toBeNull()
     })
   })
 })
