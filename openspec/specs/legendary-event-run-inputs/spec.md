@@ -8,34 +8,37 @@ Defines the run inputs drawer on a Legendary Event page: the per-run economy inp
 
 ### Requirement: The Run status card opens a run inputs drawer
 
-The Run status card SHALL carry an **Inputs** button (`data-testid="legendary-event-run-inputs"`) for signed-in users. It SHALL open a drawer listing runs 1, 2 and 3 in order, each labelled "Done" (before the current run), "Now" (the current run) or "Planned" (after it), where the current run is the synced `currentEventRun` clamped to 1..3, or 1 when the account has no synced entry for the event. Each run SHALL show **Regular missions** (0..the event's catalog regular mission count). When **Show paid options** is on, each run SHALL also show **Premium missions** (0..the catalog premium mission count), **Bought the 300 currency bundle** (on/off) and **Oh So Close shards** (0..75). The drawer SHALL carry the **Show paid options** switch, reflecting the plan's `showPaidOptions`. A run with no stored inputs SHALL show zeros and off. Every run SHALL be editable at any time.
+The Run status card SHALL carry an **Inputs** button (`data-testid="legendary-event-run-inputs"`) for signed-in users. It SHALL open a drawer listing runs 1, 2 and 3 in order, each labelled "Done" (before the current run), "Now" (the current run) or "Planned" (after it), where the current run is the synced `currentEventRun` clamped to 1..3, or 1 when the account has no synced entry for the event. Each run SHALL show **Regular missions** as a checklist of the event's regular missions, each with a **Done** tick, and a **Plan to complete** count (0..the catalog regular mission count) that is never below the ticked count. When **Show paid options** is on, each run SHALL also show **Premium missions** as the same checklist with its own Plan to complete count, **Bought the 300 currency bundle** (on/off) and **Oh So Close shards** (0..75). Ticking a mission when the count equals the ticked count SHALL raise the count by one; unticking SHALL leave the count. The drawer SHALL carry the **Show paid options** switch, reflecting the plan's `showPaidOptions`. A run with no stored inputs SHALL show nothing ticked, zeros and off. Every run SHALL be editable at any time; the Now run's checklist SHALL be expanded and the others collapsed.
 
 Assumptions:
 
 - Each run has its own set of missions and its own bundle offer; the mission list is the same for all three runs.
 - "Oh So Close" shards are at most three chest-sized (25-shard) awards per run.
+- The game does not sync mission progress; ticks are the user's record.
 
 #### Scenario: Drawer for a run-2 account
 
-- **GIVEN** Uthar's synced entry says run 2 and the plan stores run 1 as 10 regular missions
+- **GIVEN** Uthar's synced entry says run 2 and the plan stores run 1 as 10 regular missions planned with all 10 ticked
 - **WHEN** the user opens Inputs
-- **THEN** run 1 shows "Done" with 10 regular missions, run 2 "Now" with 0, run 3 "Planned" with 0
+- **THEN** run 1 shows "Done" with 10 of 10 ticked, run 2 "Now" expanded with nothing ticked and 0 planned, run 3 "Planned" collapsed with 0
+
+#### Scenario: Tick raises the plan
+
+- **GIVEN** run 2 plans 0 regular missions with none ticked
+- **WHEN** the user ticks "Defeat 30 Necrons"
+- **THEN** run 2 shows 1 ticked and Plan to complete 1, and one write saves both once changes settle
+
+#### Scenario: Plan cannot drop below ticks
+
+- **GIVEN** run 2 has 3 missions ticked and plans 5
+- **WHEN** the user presses − three times
+- **THEN** the count stops at 3 and − is disabled
 
 #### Scenario: Paid fields hidden
 
 - **GIVEN** the plan's `showPaidOptions` is false
 - **WHEN** the drawer opens
-- **THEN** each run shows only Regular missions, and the Show paid options switch is off
-
-#### Scenario: Paid fields shown
-
-- **WHEN** the user turns Show paid options on
-- **THEN** every run shows Premium missions, the bundle switch and Oh So Close shards, and the plan is saved with `showPaidOptions` true and its notes unchanged
-
-#### Scenario: Bounds
-
-- **WHEN** the user tries to raise Regular missions above 10 on a 10-mission event, or Oh So Close shards above 75
-- **THEN** the value stays at the bound and the + control is disabled
+- **THEN** each run shows only the regular missions checklist and count, and the Show paid options switch is off
 
 #### Scenario: Desktop drawer
 
@@ -45,7 +48,7 @@ Assumptions:
 #### Scenario: Mobile drawer
 
 - **WHEN** the drawer opens below 768px
-- **THEN** it is a bottom sheet covering most of the screen with touch-sized − / + controls, and swiping it down or tapping Close dismisses it
+- **THEN** it is a bottom sheet covering most of the screen with touch-sized ticks and − / + controls, and swiping it down or tapping Close dismisses it
 
 ### Requirement: Run inputs save per run through the plan revision
 

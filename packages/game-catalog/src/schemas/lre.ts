@@ -14,6 +14,19 @@ const lreRestrictionSchema = z.looseObject({
   filter: lreFilterSchema,
 })
 
+// One event mission as a typed requirement, parsed server side from its raw text (`text`). Parameters
+// the kind does not use are null; "Defeat N Daemon enemies" is `defeatFaction` with a `trait`.
+const lreMissionSchema = z.looseObject({
+  index: z.number(),
+  kind: z.string(),
+  count: z.number(),
+  faction: z.string().nullable(),
+  alliance: z.string().nullable(),
+  damageType: z.string().nullable(),
+  trait: z.string().nullable(),
+  text: z.string(),
+})
+
 const lreTrackEnemiesSchema = z.looseObject({
   label: z.string(),
   link: z.string(),
@@ -98,8 +111,8 @@ export const lreViewSchema = z.looseObject({
   eventStageStartDatesUtc: z.array(z.string()),
   battlesCount: z.number(),
   constraintsCount: z.number(),
-  regularMissions: z.array(z.string()),
-  premiumMissions: z.array(z.string()),
+  regularMissions: z.array(lreMissionSchema),
+  premiumMissions: z.array(lreMissionSchema),
   rewards: lreRewardsSchema,
   alpha: lreTrackViewSchema,
   beta: lreTrackViewSchema,

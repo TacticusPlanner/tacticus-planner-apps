@@ -62,7 +62,10 @@
     "unavailable": "Your plan could not be loaded.",
     "toasts": {
       "error": "Your run inputs could not be saved."
-    }
+    },
+    "ticked": "{{done}} of {{total}} done",
+    "planToComplete": "{{field}} to complete",
+    "planToCompleteShort": "Plan to complete"
   },
   "outlook": {
     "title": "Reward outlook",
@@ -113,7 +116,8 @@
     "noLane": "No progress in this lane",
     "unavailable": "Synced data unavailable",
     "objectives": "Objectives cleared",
-    "objectiveCleared": "{{objective}}: {{cleared}} / {{total}} cleared"
+    "objectiveCleared": "{{objective}}: {{cleared}} / {{total}} cleared",
+    "rosterReaches": "Roster reaches battle {{battle}}"
   },
   "laneOverview": {
     "title": "Lane overview",
@@ -121,11 +125,26 @@
     "killPoints": "{{points}} kill points per battle",
     "battles": "{{count}} battles",
     "objectives": "Objectives",
-    "ladder": "Points per battle",
-    "battlePoints": "Battle {{battle}}: {{points}} points",
     "howPoints": {
       "title": "How points work",
       "body": "Each battle you win scores its kill points. Every objective your team meets in that battle adds its score, and clearing all enemies adds the defeat-all bonus. A battle only counts once at its best: replaying it scores only the points above your previous high score."
+    },
+    "potential": {
+      "title": "Roster potential",
+      "reaches": "Roster reaches battle {{battle}} · {{points}} of {{total}} points left",
+      "cantWin": "Roster can't win battle 1",
+      "fallsBehind": "Falls behind at battle {{battle}}",
+      "noUnitFor": " · no unit for {{objectives}}",
+      "reachesAll": "Roster can reach every battle",
+      "needsEstimates": "Roster potential needs clear estimates",
+      "column": "Battle {{battle}} · {{points}} points",
+      "cellLabel": "{{row}}: {{state}}",
+      "states": {
+        "cleared": "Cleared",
+        "teams": "Teams reach",
+        "roster": "Roster can reach",
+        "out": "Out of reach"
+      }
     }
   },
   "leaderboard": {
@@ -384,7 +403,7 @@
         },
         "runInputs": {
           "title": "Run inputs",
-          "content": "Enter the missions and packs the game does not report for each run. They feed the reward outlook on this card."
+          "content": "Tick the missions you finish in each run and set how many you plan to complete, plus the packs the game does not report. They feed the reward outlook on this card, and open missions point the Next token at battles that progress them."
         },
         "tokenPlan": {
           "title": "Token plan",
@@ -400,7 +419,7 @@
         },
         "laneOverview": {
           "title": "Lane overview",
-          "content": "The lane's allowed units, kill points, five objectives with their scores and the points every battle is worth."
+          "content": "The lane's allowed units, kill points and five objectives with their scores, then a map of how far your roster can get: each battle's defeat-all and objectives as cleared, reached by your teams, within your roster's reach, or out of reach."
         },
         "teams": {
           "title": "Teams",
@@ -572,7 +591,13 @@
       "allCleared": "Every battle is cleared",
       "noTeams": "Add a team on {{lane}} to get a plan",
       "noDepth": "Set how far {{team}} clears",
-      "nothingLeft": "Your teams have nothing left to clear · {{points}} points left in {{lane}}"
+      "nothingLeft": "Your teams have nothing left to clear · {{points}} points left in {{lane}}",
+      "missions": {
+        "title": "For missions",
+        "progresses": "Progresses:",
+        "premium": "{{mission}} (premium)",
+        "points": "+{{points}} points ({{difference}})"
+      }
     },
     "plan": {
       "title": "Token plan",
@@ -586,7 +611,19 @@
       "step": "{{step}} reached",
       "fullClear_one": "{{lane}}: a full clear takes {{count}} token a battle",
       "fullClear_other": "{{lane}}: a full clear takes {{count}} tokens a battle",
-      "uncovered": "{{lane}}: no team covers {{objectives}}"
+      "uncovered": "{{lane}}: no team covers {{objectives}}",
+      "byRun": {
+        "title": "Run {{run}} · {{state}}",
+        "titleUnknown": "Next run · {{state}}",
+        "figures_one": "{{used}} of {{available}} token · +{{points}} points · ends at {{ending}}",
+        "figures_other": "{{used}} of {{available}} tokens · +{{points}} points · ends at {{ending}}",
+        "empty_one": "No tokens planned · {{count}} token available",
+        "empty_other": "No tokens planned · {{count}} tokens available",
+        "overflow_one": "{{count}} token beyond run {{run}}'s supply",
+        "overflow_other": "{{count}} tokens beyond run {{run}}'s supply",
+        "overflow_unknown_one": "{{count}} token beyond the next run's supply",
+        "overflow_unknown_other": "{{count}} tokens beyond the next run's supply"
+      }
     },
     "forecast": {
       "title": "Run forecast",
@@ -760,6 +797,21 @@
       "notUnlocked": "Not unlocked",
       "rosterUnknown": "Sync your roster",
       "openInLibrary": "Open in Library"
+    }
+  },
+  "missions": {
+    "kinds": {
+      "anyBattle": "Defeat {{count}} waves in any battle",
+      "defeatFaction": "Defeat {{count}} {{faction}}",
+      "defeatTrait": "Defeat {{count}} {{trait}} enemies",
+      "useAbilitiesWithAlliance": "Use abilities {{count}} times with {{alliance}} units",
+      "damageType": "Deal {{damageType}} damage over {{count}} waves",
+      "defeatWithAlliance": "Defeat {{count}} enemies with {{alliance}} units",
+      "winWithoutTrait_one": "Win {{count}} battle without deploying any {{trait}} characters",
+      "winWithoutTrait_other": "Win {{count}} battles without deploying any {{trait}} characters",
+      "winWithoutSummon_one": "Win {{count}} battle without summoning any units",
+      "winWithoutSummon_other": "Win {{count}} battles without summoning any units",
+      "defeatWithDamageType": "Defeat {{count}} enemies with {{damageType}} damage"
     }
   }
 }

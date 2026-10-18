@@ -1,6 +1,10 @@
-# Spec Delta
+# legendary-event-roster-potential Specification
 
-## ADDED Requirements
+## Purpose
+
+Defines a lane's roster potential on a Legendary Event page: how far the synced roster can get on each lane from the clear estimates, the potential mini map on the lane overview, and the roster reach line in the Overview lane summary.
+
+## Requirements
 
 ### Requirement: Roster potential per lane
 
@@ -21,12 +25,12 @@ Assumptions:
 
 #### Scenario: Worked example on Uthar Alpha
 
-- **GIVEN** `votanUthar` Alpha (18 battles, `battlesPoints` 29, 31, 35, 39, 41, 43, 45, 47, 47, 49, 47, 53, 51, 59, 59, 57, 61, 59; `defeatAll` 30; objectives Ultramarines 75, Resilient 95, Max 2 Hits 50, Melee 65, Piercing 90), the synced Alpha progress of the token plan's worked example (battle 1 defeat-all, Ultramarines and Resilient cleared, battle 2 defeat-all and Ultramarines cleared, both at full kill and high score), `powerRatio` 1.2
-- **AND** the roster owns only `ultraCalgar`, `ultraTigurius`, `ultraTitus`, `ultraApothecary` and `ultraEliminatorSgt` as in the clear estimates' worked example (E = 102,229.4), all Ultramarines; Calgar, Titus and the Apothecary satisfy Melee (E = 68,311); none satisfies Resilient, Max 2 Hits or Piercing
+- **GIVEN** `votanUthar` Alpha (18 battles, `battlesPoints` 29, 31, 35, 39, 41, 43, 45, 47, 47, 49, 47, 53, 51, 59, 59, 57, 61, 59; `defeatAll` 30; objectives Ultramarines 75, Resilient 95, Max 2 Hits 50, Melee 65, Piercing 90; 8,994 points at most), synced Alpha progress with battle 1's defeat-all and Ultramarines cleared at kill and high score 29 and battle 2's defeat-all cleared at 31 (249 points earned), `powerRatio` 1.2
+- **AND** the roster owns only `ultraCalgar`, `ultraTigurius`, `ultraTitus`, `ultraApothecary` and `ultraEliminatorSgt` as in the clear estimates' worked example (E = 102,229.4), all Ultramarines; the Apothecary, Calgar, Tigurius and the Eliminator satisfy Max 2 Hits (E = 80,346.4); Calgar, Titus and the Apothecary satisfy Melee (E = 68,311); none satisfies Resilient or Piercing
 - **WHEN** the potential is computed
-- **THEN** the defeat-all and Ultramarines potential depths are 6, Melee's is 5, and Resilient, Max 2 Hits and Piercing are 0
-- **AND** the potential points left are 65 + 140 + 240 + 248 + 252 + 191 = 1,136 (battles 1 to 6), of 8,569 points left on the lane (8,994 maximum minus 425 earned)
-- **AND** the falls-behind battle is 7 and the uncovered objectives are Resilient, Max 2 Hits and Piercing
+- **THEN** the defeat-all and Ultramarines potential depths are 6, Max 2 Hits' and Melee's are 5, and Resilient's and Piercing's are 0
+- **AND** the potential points left are 1,386 (battles 1 to 6), of 8,745 points left on the lane
+- **AND** the falls-behind battle is 7 and the uncovered objectives are Resilient and Piercing
 
 #### Scenario: Too few units for an objective
 
@@ -63,8 +67,8 @@ While the roster or estimates load the map SHALL show a skeleton of its grid; wh
 
 - **GIVEN** the worked example and one saved Alpha team Melee (Calgar, Titus, Apothecary, covering Ultramarines and Melee, depth 5)
 - **WHEN** the Alpha Lane overview renders
-- **THEN** the lines read "Roster reaches battle 6 · 1,136 of 8,569 points left" and "Falls behind at battle 7 · no unit for Resilient, Max 2 Hits, Piercing"
-- **AND** battle 1's defeat-all, Ultramarines and Resilient cells are Cleared and its Melee cell is Teams reach; battles 3 to 5 have defeat-all, Ultramarines and Melee as Teams reach; battle 6 has defeat-all and Ultramarines as Roster can reach and Melee as Out of reach; every cell from battle 7 on, and every Resilient, Max 2 Hits and Piercing cell not cleared, is Out of reach
+- **THEN** the lines read "Roster reaches battle 6 · 1,386 of 8,745 points left" and "Falls behind at battle 7 · no unit for Resilient, Piercing"
+- **AND** battle 1's defeat-all and Ultramarines cells are Cleared and its Melee cell is Teams reach; battles 2 to 5 have Ultramarines and Melee as Teams reach and Max 2 Hits as Roster can reach; battle 6 has defeat-all and Ultramarines as Roster can reach and Melee as Out of reach; every cell from battle 7 on, and every Resilient and Piercing cell, is Out of reach
 
 #### Scenario: Desktop layout
 

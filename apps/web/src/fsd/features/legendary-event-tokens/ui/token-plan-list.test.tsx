@@ -7,6 +7,8 @@ import { fireEvent, render, screen } from "@/test/render"
 
 import { buildTokenPlanView, type TokenPlanView } from "../lib/token-plan-view"
 import { workedPlan, workedViewInput } from "../lib/token-plan-view.fixtures"
+import { splitPlanByRun } from "../lib/token-runs"
+import type { RunSupply } from "../lib/token-supply"
 import { TokenPlanList } from "./token-plan-list"
 
 const capture = vi.hoisted(() => vi.fn())
@@ -124,5 +126,88 @@ describe("TokenPlanList", () => {
     )
 
     expect(screen.queryByTestId("legendary-event-token-plan")).toBeNull()
+  })
+
+  describe("run sections", () => {
+    const supplyOf = (now: number, planned: number): RunSupply[] => [
+      {
+        run: 1,
+        state: "done",
+        unknownRun: false,
+        free: 0,
+        ad: 0,
+        bonusDelivery: 0,
+        total: 0,
+      },
+      {
+        run: 2,
+        state: "now",
+        unknownRun: false,
+        free: now,
+        ad: 0,
+        bonusDelivery: 0,
+        total: now,
+      },
+      {
+        run: 3,
+        state: "planned",
+        unknownRun: false,
+        free: planned,
+        ad: 0,
+        bonusDelivery: 0,
+        total: planned,
+      },
+    ]
+    const withSupply = (supply: RunSupply[]): TokenPlanView => {
+      const view = buildTokenPlanView(workedViewInput())
+      if (view.kind !== "ready") throw new Error("worked view is not ready")
+      return { ...view, byRun: splitPlanByRun(view.plan.tokens.length, supply) }
+    }
+    const headers = () =>
+      [
+        ...screen.queryAllByTestId("token-plan-run-section"),
+        ...screen.queryAllByTestId("token-plan-overflow"),
+      ].map((section) => section.querySelector("h3")?.textContent)
+
+    it("puts the worked plan in run 2 and shows run 3 with nothing planned", () => {
+      renderList(withSupply(supplyOf(32, 68)))
+      expand()
+
+      expect(headers()).toEqual([
+        "Run 2 · Now6 of 32 tokens · +1,136 points · ends at 6,136",
+        "Run 3 · Planned",
+      ])
+      expect(screen.getByTestId("token-plan-run-empty")).toHaveTextContent(
+        "No tokens planned · 68 tokens available"
+      )
+    })
+
+    it("carries the tokens a run cannot fit into the next and restarts team groups", () => {
+      renderList(withSupply(supplyOf(2, 68)))
+      expand()
+
+      const [run2, run3] = screen.getAllByTestId("token-plan-run-section")
+      expect(run2!.querySelectorAll("li[data-index]")).toHaveLength(2)
+      // Melee holds tokens 1–3: token 3 opens a new Melee group in run 3, numbered plan-wide.
+      expect(
+        run3!.querySelector("[data-testid='token-plan-group']")
+      ).toHaveAttribute("data-team", "melee")
+      expect(run3!.querySelector("li[data-index]")).toHaveAttribute(
+        "data-index",
+        "2"
+      )
+    })
+
+    it("lists the tokens beyond every run's supply", () => {
+      renderList(withSupply(supplyOf(2, 2)))
+      expand()
+
+      expect(headers().at(-1)).toBe("2 tokens beyond run 3's supply")
+      expect(
+        screen
+          .getByTestId("token-plan-overflow")
+          .querySelectorAll("li[data-index]")
+      ).toHaveLength(2)
+    })
   })
 })

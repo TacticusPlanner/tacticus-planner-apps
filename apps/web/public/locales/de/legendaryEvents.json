@@ -62,7 +62,10 @@
     "unavailable": "Dein Plan konnte nicht geladen werden.",
     "toasts": {
       "error": "Deine Eingaben pro Durchlauf konnten nicht gespeichert werden."
-    }
+    },
+    "ticked": "{{done}} von {{total}} erledigt",
+    "planToComplete": "{{field}} zu erledigen",
+    "planToCompleteShort": "Geplant zu erledigen"
   },
   "outlook": {
     "title": "Belohnungsaussicht",
@@ -113,7 +116,8 @@
     "noLane": "Kein Fortschritt in dieser Lane",
     "unavailable": "Synchronisierte Daten nicht verfügbar",
     "objectives": "Erfüllte Ziele",
-    "objectiveCleared": "{{objective}}: {{cleared}} / {{total}} erfüllt"
+    "objectiveCleared": "{{objective}}: {{cleared}} / {{total}} erfüllt",
+    "rosterReaches": "Roster schafft Kampf {{battle}}"
   },
   "laneOverview": {
     "title": "Bahnübersicht",
@@ -121,11 +125,26 @@
     "killPoints": "{{points}} Kill-Punkte pro Kampf",
     "battles": "{{count}} Kämpfe",
     "objectives": "Ziele",
-    "ladder": "Punkte pro Kampf",
-    "battlePoints": "Kampf {{battle}}: {{points}} Punkte",
     "howPoints": {
       "title": "So funktionieren Punkte",
       "body": "Jeder gewonnene Kampf bringt seine Kill-Punkte. Jedes Ziel, das dein Team in diesem Kampf erfüllt, fügt seine Punktzahl hinzu, und wer alle Gegner besiegt, erhält den Bonus für „Alle besiegen“. Ein Kampf zählt nur einmal mit seinem besten Ergebnis: Eine Wiederholung bringt nur die Punkte über deinem bisherigen Highscore."
+    },
+    "potential": {
+      "title": "Roster-Potenzial",
+      "reaches": "Roster schafft Kampf {{battle}} · {{points}} von {{total}} offenen Punkten",
+      "cantWin": "Roster gewinnt Kampf 1 nicht",
+      "fallsBehind": "Fällt ab Kampf {{battle}} zurück",
+      "noUnitFor": " · keine Einheit für {{objectives}}",
+      "reachesAll": "Roster schafft jeden Kampf",
+      "needsEstimates": "Roster-Potenzial braucht Clear-Schätzungen",
+      "column": "Kampf {{battle}} · {{points}} Punkte",
+      "cellLabel": "{{row}}: {{state}}",
+      "states": {
+        "cleared": "Geschafft",
+        "teams": "Teams erreichen",
+        "roster": "Roster kann erreichen",
+        "out": "Außer Reichweite"
+      }
     }
   },
   "leaderboard": {
@@ -384,7 +403,7 @@
         },
         "runInputs": {
           "title": "Eingaben pro Durchlauf",
-          "content": "Trage für jeden Durchlauf die Missionen und Pakete ein, die das Spiel nicht meldet. Sie fließen in die Belohnungsaussicht dieser Karte ein."
+          "content": "Hake in jedem Durchlauf die erledigten Missionen ab und lege fest, wie viele du erledigen willst, dazu die Pakete, die das Spiel nicht meldet. Sie fließen in die Belohnungsaussicht dieser Karte ein, und offene Missionen lenken den nächsten Token auf Kämpfe, die sie voranbringen."
         },
         "tokenPlan": {
           "title": "Token-Plan",
@@ -400,7 +419,7 @@
         },
         "laneOverview": {
           "title": "Lane-Übersicht",
-          "content": "Die erlaubten Einheiten der Lane, Kill-Punkte, fünf Ziele mit ihren Punkten und der Wert jedes Kampfes."
+          "content": "Die erlaubten Einheiten der Lane, Kill-Punkte und die fünf Ziele mit ihren Punkten, dann eine Karte, wie weit dein Roster kommt: Besiege-alle und Ziele jedes Kampfes als geschafft, von deinen Teams erreicht, für dein Roster erreichbar oder außer Reichweite."
         },
         "teams": {
           "title": "Teams",
@@ -572,7 +591,13 @@
       "allCleared": "Alle Kämpfe sind abgeschlossen",
       "noTeams": "Füge auf {{lane}} ein Team hinzu, um einen Plan zu erhalten",
       "noDepth": "Lege fest, wie weit {{team}} kommt",
-      "nothingLeft": "Deine Teams können nichts mehr abschließen · {{points}} Punkte offen auf {{lane}}"
+      "nothingLeft": "Deine Teams können nichts mehr abschließen · {{points}} Punkte offen auf {{lane}}",
+      "missions": {
+        "title": "Für Missionen",
+        "progresses": "Bringt voran:",
+        "premium": "{{mission}} (Premium)",
+        "points": "+{{points}} Punkte ({{difference}})"
+      }
     },
     "plan": {
       "title": "Token-Plan",
@@ -586,7 +611,19 @@
       "step": "{{step}} erreicht",
       "fullClear_one": "{{lane}}: Ein vollständiger Abschluss braucht {{count}} Token pro Kampf",
       "fullClear_other": "{{lane}}: Ein vollständiger Abschluss braucht {{count}} Tokens pro Kampf",
-      "uncovered": "{{lane}}: Kein Team deckt {{objectives}} ab"
+      "uncovered": "{{lane}}: Kein Team deckt {{objectives}} ab",
+      "byRun": {
+        "title": "Durchlauf {{run}} · {{state}}",
+        "titleUnknown": "Nächster Durchlauf · {{state}}",
+        "figures_one": "{{used}} von {{available}} Token · +{{points}} Punkte · endet bei {{ending}}",
+        "figures_other": "{{used}} von {{available}} Tokens · +{{points}} Punkte · endet bei {{ending}}",
+        "empty_one": "Keine Tokens geplant · {{count}} Token verfügbar",
+        "empty_other": "Keine Tokens geplant · {{count}} Tokens verfügbar",
+        "overflow_one": "{{count}} Token über das Kontingent von Durchlauf {{run}} hinaus",
+        "overflow_other": "{{count}} Tokens über das Kontingent von Durchlauf {{run}} hinaus",
+        "overflow_unknown_one": "{{count}} Token über das Kontingent des nächsten Durchlaufs hinaus",
+        "overflow_unknown_other": "{{count}} Tokens über das Kontingent des nächsten Durchlaufs hinaus"
+      }
     },
     "forecast": {
       "title": "Durchlaufprognose",
@@ -760,6 +797,21 @@
       "notUnlocked": "Nicht freigeschaltet",
       "rosterUnknown": "Synchronisiere deinen Kader",
       "openInLibrary": "In der Bibliothek öffnen"
+    }
+  },
+  "missions": {
+    "kinds": {
+      "anyBattle": "Besiege {{count}} Wellen in einem beliebigen Kampf",
+      "defeatFaction": "Besiege {{count}} {{faction}}",
+      "defeatTrait": "Besiege {{count}} Gegner mit {{trait}}",
+      "useAbilitiesWithAlliance": "Setze {{count}}-mal Fähigkeiten mit {{alliance}}-Einheiten ein",
+      "damageType": "Verursache {{damageType}}-Schaden über {{count}} Wellen",
+      "defeatWithAlliance": "Besiege {{count}} Gegner mit {{alliance}}-Einheiten",
+      "winWithoutTrait_one": "Gewinne {{count}} Kampf, ohne {{trait}}-Charaktere einzusetzen",
+      "winWithoutTrait_other": "Gewinne {{count}} Kämpfe, ohne {{trait}}-Charaktere einzusetzen",
+      "winWithoutSummon_one": "Gewinne {{count}} Kampf, ohne Einheiten zu beschwören",
+      "winWithoutSummon_other": "Gewinne {{count}} Kämpfe, ohne Einheiten zu beschwören",
+      "defeatWithDamageType": "Besiege {{count}} Gegner mit {{damageType}}-Schaden"
     }
   }
 }

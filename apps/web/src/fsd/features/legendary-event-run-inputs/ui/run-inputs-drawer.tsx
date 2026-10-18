@@ -25,14 +25,16 @@ import { Switch } from "@workspace/ui/components/switch"
 
 import {
   MAX_CLOSE_SHARDS,
+  eventMissions,
   type LegendaryEvent,
   type LegendaryEventRun,
   type LegendaryEventRunResolution,
 } from "@/entities/legendary-event"
 import { NumberStepper } from "@/shared/ui"
 
-import { runInputsPhase } from "../model/run-inputs-patches"
+import { missionTickPatch, runInputsPhase } from "../model/run-inputs-patches"
 import { useRunInputs, type RunInputsActions } from "../model/use-run-inputs"
+import { MissionChecklist } from "./mission-checklist"
 
 const RUNS: readonly LegendaryEventRun[] = [1, 2, 3]
 const CLOSE_SHARDS_STEP = 25
@@ -148,6 +150,8 @@ function RunInputsBody({
     )
   }
   const paid = inputs.showPaidOptions
+  const regular = eventMissions(event, "regular")
+  const premium = eventMissions(event, "premium")
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-6 pb-6">
       <div className="flex items-center justify-between gap-3 rounded-xl border p-3">
@@ -192,34 +196,46 @@ function RunInputsBody({
                 {t("runInputs.nowHint")}
               </p>
             ) : null}
-            <Field label={t("runInputs.regularMissions")}>
-              <NumberStepper
-                data-testid="run-inputs-regular"
-                labels={stepperLabels(t("runInputs.regularMissions"), run)}
-                max={event.regularMissions.length}
-                min={0}
-                onChange={(value) =>
-                  inputs.change(run, { regularMissions: value ?? 0 })
-                }
-                touch={touch}
-                value={values.regularMissions}
-              />
-            </Field>
+            <MissionChecklist
+              completed={values.completedRegularMissions}
+              count={values.regularMissions}
+              defaultOpen={phase === "now"}
+              field={t("runInputs.regularMissions")}
+              missions={regular}
+              onCountChange={(count) =>
+                inputs.change(run, { regularMissions: count })
+              }
+              onTick={(index, done) =>
+                inputs.change(
+                  run,
+                  missionTickPatch(values, "regular", index, done)
+                )
+              }
+              run={run}
+              testId="run-inputs-regular"
+              touch={touch}
+            />
             {paid ? (
               <>
-                <Field label={t("runInputs.premiumMissions")}>
-                  <NumberStepper
-                    data-testid="run-inputs-premium"
-                    labels={stepperLabels(t("runInputs.premiumMissions"), run)}
-                    max={event.premiumMissions.length}
-                    min={0}
-                    onChange={(value) =>
-                      inputs.change(run, { premiumMissions: value ?? 0 })
-                    }
-                    touch={touch}
-                    value={values.premiumMissions}
-                  />
-                </Field>
+                <MissionChecklist
+                  completed={values.completedPremiumMissions}
+                  count={values.premiumMissions}
+                  defaultOpen={phase === "now"}
+                  field={t("runInputs.premiumMissions")}
+                  missions={premium}
+                  onCountChange={(count) =>
+                    inputs.change(run, { premiumMissions: count })
+                  }
+                  onTick={(index, done) =>
+                    inputs.change(
+                      run,
+                      missionTickPatch(values, "premium", index, done)
+                    )
+                  }
+                  run={run}
+                  testId="run-inputs-premium"
+                  touch={touch}
+                />
                 <BundleSwitch
                   checked={values.bundlePurchased}
                   onChange={(on) => inputs.change(run, { bundlePurchased: on })}

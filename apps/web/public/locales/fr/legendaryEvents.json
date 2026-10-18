@@ -62,7 +62,10 @@
     "unavailable": "Impossible de charger ton plan.",
     "toasts": {
       "error": "Impossible d'enregistrer tes saisies par manche."
-    }
+    },
+    "ticked": "{{done}} sur {{total}} faites",
+    "planToComplete": "{{field}} à accomplir",
+    "planToCompleteShort": "Prévu à accomplir"
   },
   "outlook": {
     "title": "Prévisions de récompenses",
@@ -113,7 +116,8 @@
     "noLane": "Aucune progression dans cette voie",
     "unavailable": "Données synchronisées indisponibles",
     "objectives": "Objectifs remplis",
-    "objectiveCleared": "{{objective}} : {{cleared}} / {{total}} remplis"
+    "objectiveCleared": "{{objective}} : {{cleared}} / {{total}} remplis",
+    "rosterReaches": "L'effectif atteint le combat {{battle}}"
   },
   "laneOverview": {
     "title": "Aperçu des voies",
@@ -121,11 +125,26 @@
     "killPoints": "{{points}} points d'élimination par combat",
     "battles": "{{count}} combats",
     "objectives": "Objectifs",
-    "ladder": "Points par combat",
-    "battlePoints": "Combat {{battle}} : {{points}} points",
     "howPoints": {
       "title": "Comment fonctionnent les points",
       "body": "Chaque combat gagné rapporte ses points d'élimination. Chaque objectif rempli par votre équipe dans ce combat ajoute son score, et vaincre tous les ennemis ajoute le bonus « Tout vaincre ». Un combat ne compte qu'une fois, avec son meilleur résultat : le rejouer ne rapporte que les points au-delà de votre meilleur score précédent."
+    },
+    "potential": {
+      "title": "Potentiel de l'effectif",
+      "reaches": "L'effectif atteint le combat {{battle}} · {{points}} sur {{total}} points restants",
+      "cantWin": "L'effectif ne gagne pas le combat 1",
+      "fallsBehind": "Décroche au combat {{battle}}",
+      "noUnitFor": " · aucune unité pour {{objectives}}",
+      "reachesAll": "L'effectif peut atteindre tous les combats",
+      "needsEstimates": "Le potentiel de l'effectif nécessite les estimations de progression",
+      "column": "Combat {{battle}} · {{points}} points",
+      "cellLabel": "{{row}} : {{state}}",
+      "states": {
+        "cleared": "Réussi",
+        "teams": "Vos équipes atteignent",
+        "roster": "L'effectif peut atteindre",
+        "out": "Hors de portée"
+      }
     }
   },
   "leaderboard": {
@@ -384,7 +403,7 @@
         },
         "runInputs": {
           "title": "Saisies par manche",
-          "content": "Indiquez pour chaque manche les missions et packs que le jeu ne communique pas. Ils alimentent les prévisions de récompenses de cette carte."
+          "content": "Cochez les missions terminées à chaque manche et indiquez combien vous prévoyez d'en accomplir, ainsi que les packs que le jeu ne communique pas. Elles alimentent les prévisions de récompenses de cette carte, et les missions ouvertes orientent le prochain jeton vers les batailles qui les font avancer."
         },
         "tokenPlan": {
           "title": "Plan de jetons",
@@ -400,7 +419,7 @@
         },
         "laneOverview": {
           "title": "Aperçu de la voie",
-          "content": "Les unités autorisées de la voie, les points d'éliminations, les cinq objectifs avec leurs scores et la valeur de chaque combat."
+          "content": "Les unités autorisées de la voie, les points d'élimination et les cinq objectifs avec leurs scores, puis une carte de jusqu'où va votre effectif : le « tout vaincre » et les objectifs de chaque combat comme réussis, atteints par vos équipes, à portée de votre effectif ou hors de portée."
         },
         "teams": {
           "title": "Équipes",
@@ -572,7 +591,13 @@
       "allCleared": "Tous les combats sont réussis",
       "noTeams": "Ajoutez une équipe sur {{lane}} pour obtenir un plan",
       "noDepth": "Indiquez jusqu'où {{team}} progresse",
-      "nothingLeft": "Vos équipes n'ont plus rien à réussir · {{points}} points restants sur {{lane}}"
+      "nothingLeft": "Vos équipes n'ont plus rien à réussir · {{points}} points restants sur {{lane}}",
+      "missions": {
+        "title": "Pour les missions",
+        "progresses": "Fait avancer :",
+        "premium": "{{mission}} (premium)",
+        "points": "+{{points}} points ({{difference}})"
+      }
     },
     "plan": {
       "title": "Plan de jetons",
@@ -586,7 +611,19 @@
       "step": "{{step}} atteint",
       "fullClear_one": "{{lane}} : réussir entièrement un combat demande {{count}} jeton",
       "fullClear_other": "{{lane}} : réussir entièrement un combat demande {{count}} jetons",
-      "uncovered": "{{lane}} : aucune équipe ne couvre {{objectives}}"
+      "uncovered": "{{lane}} : aucune équipe ne couvre {{objectives}}",
+      "byRun": {
+        "title": "Manche {{run}} · {{state}}",
+        "titleUnknown": "Prochaine manche · {{state}}",
+        "figures_one": "{{used}} sur {{available}} jeton · +{{points}} points · termine à {{ending}}",
+        "figures_other": "{{used}} sur {{available}} jetons · +{{points}} points · termine à {{ending}}",
+        "empty_one": "Aucun jeton prévu · {{count}} jeton disponible",
+        "empty_other": "Aucun jeton prévu · {{count}} jetons disponibles",
+        "overflow_one": "{{count}} jeton au-delà de la réserve de la manche {{run}}",
+        "overflow_other": "{{count}} jetons au-delà de la réserve de la manche {{run}}",
+        "overflow_unknown_one": "{{count}} jeton au-delà de la réserve de la prochaine manche",
+        "overflow_unknown_other": "{{count}} jetons au-delà de la réserve de la prochaine manche"
+      }
     },
     "forecast": {
       "title": "Prévision par manche",
@@ -760,6 +797,21 @@
       "notUnlocked": "Non débloqué",
       "rosterUnknown": "Synchronisez votre effectif",
       "openInLibrary": "Ouvrir dans la Bibliothèque"
+    }
+  },
+  "missions": {
+    "kinds": {
+      "anyBattle": "Vaincre {{count}} vagues dans n'importe quelle bataille",
+      "defeatFaction": "Vaincre {{count}} {{faction}}",
+      "defeatTrait": "Vaincre {{count}} ennemis {{trait}}",
+      "useAbilitiesWithAlliance": "Utiliser des capacités {{count}} fois avec des unités {{alliance}}",
+      "damageType": "Infliger des dégâts {{damageType}} sur {{count}} vagues",
+      "defeatWithAlliance": "Vaincre {{count}} ennemis avec des unités {{alliance}}",
+      "winWithoutTrait_one": "Gagner {{count}} bataille sans déployer de personnages {{trait}}",
+      "winWithoutTrait_other": "Gagner {{count}} batailles sans déployer de personnages {{trait}}",
+      "winWithoutSummon_one": "Gagner {{count}} bataille sans invoquer d'unités",
+      "winWithoutSummon_other": "Gagner {{count}} batailles sans invoquer d'unités",
+      "defeatWithDamageType": "Vaincre {{count}} ennemis avec des dégâts {{damageType}}"
     }
   }
 }

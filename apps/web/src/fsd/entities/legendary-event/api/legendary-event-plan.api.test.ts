@@ -114,6 +114,8 @@ describe("legendary event plan API", () => {
       premiumMissions: 0,
       bundlePurchased: true,
       closeShards: 25,
+      completedRegularMissions: [0, 3],
+      completedPremiumMissions: [],
     }
     updateLegendaryEventRunInputs("astarLysander", 3, body)
     expect(api.put).toHaveBeenCalledWith(`${BASE}/runs/3`, { body })

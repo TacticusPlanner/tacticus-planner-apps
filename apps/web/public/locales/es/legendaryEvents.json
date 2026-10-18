@@ -62,7 +62,10 @@
     "unavailable": "No se pudo cargar tu plan.",
     "toasts": {
       "error": "No se pudieron guardar tus datos por ronda."
-    }
+    },
+    "ticked": "{{done}} de {{total}} hechas",
+    "planToComplete": "{{field}} por completar",
+    "planToCompleteShort": "Plan a completar"
   },
   "outlook": {
     "title": "Previsión de recompensas",
@@ -113,7 +116,8 @@
     "noLane": "Sin progreso en este carril",
     "unavailable": "Datos sincronizados no disponibles",
     "objectives": "Objetivos cumplidos",
-    "objectiveCleared": "{{objective}}: {{cleared}} / {{total}} cumplidos"
+    "objectiveCleared": "{{objective}}: {{cleared}} / {{total}} cumplidos",
+    "rosterReaches": "La plantilla llega a la batalla {{battle}}"
   },
   "laneOverview": {
     "title": "Resumen de carriles",
@@ -121,11 +125,26 @@
     "killPoints": "{{points}} puntos por bajas por batalla",
     "battles": "{{count}} batallas",
     "objectives": "Objetivos",
-    "ladder": "Puntos por batalla",
-    "battlePoints": "Batalla {{battle}}: {{points}} puntos",
     "howPoints": {
       "title": "Cómo funcionan los puntos",
       "body": "Cada batalla que ganas suma sus puntos por bajas. Cada objetivo que cumple tu equipo en esa batalla añade su puntuación, y derrotar a todos los enemigos añade la bonificación de «derrotar a todos». Una batalla solo cuenta una vez con su mejor resultado: repetirla solo suma los puntos que superen tu mejor puntuación anterior."
+    },
+    "potential": {
+      "title": "Potencial de la plantilla",
+      "reaches": "La plantilla llega a la batalla {{battle}} · {{points}} de {{total}} puntos restantes",
+      "cantWin": "La plantilla no gana la batalla 1",
+      "fallsBehind": "Se queda atrás en la batalla {{battle}}",
+      "noUnitFor": " · ninguna unidad para {{objectives}}",
+      "reachesAll": "La plantilla llega a todas las batallas",
+      "needsEstimates": "El potencial de la plantilla necesita estimaciones de avance",
+      "column": "Batalla {{battle}} · {{points}} puntos",
+      "cellLabel": "{{row}}: {{state}}",
+      "states": {
+        "cleared": "Superado",
+        "teams": "Tus equipos llegan",
+        "roster": "La plantilla puede llegar",
+        "out": "Fuera de alcance"
+      }
     }
   },
   "leaderboard": {
@@ -384,7 +403,7 @@
         },
         "runInputs": {
           "title": "Datos por ronda",
-          "content": "Introduce para cada ronda las misiones y los packs que el juego no informa. Alimentan la previsión de recompensas de esta tarjeta."
+          "content": "Marca las misiones que completes en cada ronda e indica cuántas piensas completar, además de los packs que el juego no informa. Alimentan la previsión de recompensas de esta tarjeta, y las misiones abiertas orientan el siguiente token hacia batallas que las hacen avanzar."
         },
         "tokenPlan": {
           "title": "Plan de fichas",
@@ -400,7 +419,7 @@
         },
         "laneOverview": {
           "title": "Resumen del carril",
-          "content": "Las unidades permitidas del carril, los puntos por bajas, los cinco objetivos con sus puntuaciones y lo que vale cada batalla."
+          "content": "Las unidades permitidas del carril, los puntos por baja y los cinco objetivos con su puntuación, y después un mapa de hasta dónde llega tu plantilla: el derrotar a todos y los objetivos de cada batalla como superados, alcanzados por tus equipos, al alcance de tu plantilla o fuera de alcance."
         },
         "teams": {
           "title": "Equipos",
@@ -572,7 +591,13 @@
       "allCleared": "Todas las batallas están superadas",
       "noTeams": "Añade un equipo en {{lane}} para obtener un plan",
       "noDepth": "Indica hasta dónde llega {{team}}",
-      "nothingLeft": "A tus equipos no les queda nada por superar · quedan {{points}} puntos en {{lane}}"
+      "nothingLeft": "A tus equipos no les queda nada por superar · quedan {{points}} puntos en {{lane}}",
+      "missions": {
+        "title": "Para misiones",
+        "progresses": "Avanza:",
+        "premium": "{{mission}} (premium)",
+        "points": "+{{points}} puntos ({{difference}})"
+      }
     },
     "plan": {
       "title": "Plan de fichas",
@@ -586,7 +611,19 @@
       "step": "{{step}} alcanzado",
       "fullClear_one": "{{lane}}: superar una batalla por completo cuesta {{count}} ficha",
       "fullClear_other": "{{lane}}: superar una batalla por completo cuesta {{count}} fichas",
-      "uncovered": "{{lane}}: ningún equipo cubre {{objectives}}"
+      "uncovered": "{{lane}}: ningún equipo cubre {{objectives}}",
+      "byRun": {
+        "title": "Ronda {{run}} · {{state}}",
+        "titleUnknown": "Próxima ronda · {{state}}",
+        "figures_one": "{{used}} de {{available}} ficha · +{{points}} puntos · termina en {{ending}}",
+        "figures_other": "{{used}} de {{available}} fichas · +{{points}} puntos · termina en {{ending}}",
+        "empty_one": "Ninguna ficha planificada · {{count}} ficha disponible",
+        "empty_other": "Ninguna ficha planificada · {{count}} fichas disponibles",
+        "overflow_one": "{{count}} ficha más allá de las disponibles en la ronda {{run}}",
+        "overflow_other": "{{count}} fichas más allá de las disponibles en la ronda {{run}}",
+        "overflow_unknown_one": "{{count}} ficha más allá de las disponibles en la próxima ronda",
+        "overflow_unknown_other": "{{count}} fichas más allá de las disponibles en la próxima ronda"
+      }
     },
     "forecast": {
       "title": "Previsión por ronda",
@@ -760,6 +797,21 @@
       "notUnlocked": "No desbloqueado",
       "rosterUnknown": "Sincroniza tu plantilla",
       "openInLibrary": "Abrir en la Biblioteca"
+    }
+  },
+  "missions": {
+    "kinds": {
+      "anyBattle": "Derrota {{count}} oleadas en cualquier batalla",
+      "defeatFaction": "Derrota a {{count}} {{faction}}",
+      "defeatTrait": "Derrota a {{count}} enemigos {{trait}}",
+      "useAbilitiesWithAlliance": "Usa habilidades {{count}} veces con unidades {{alliance}}",
+      "damageType": "Inflige daño {{damageType}} durante {{count}} oleadas",
+      "defeatWithAlliance": "Derrota a {{count}} enemigos con unidades {{alliance}}",
+      "winWithoutTrait_one": "Gana {{count}} batalla sin desplegar personajes {{trait}}",
+      "winWithoutTrait_other": "Gana {{count}} batallas sin desplegar personajes {{trait}}",
+      "winWithoutSummon_one": "Gana {{count}} batalla sin invocar unidades",
+      "winWithoutSummon_other": "Gana {{count}} batallas sin invocar unidades",
+      "defeatWithDamageType": "Derrota a {{count}} enemigos con daño {{damageType}}"
     }
   }
 }

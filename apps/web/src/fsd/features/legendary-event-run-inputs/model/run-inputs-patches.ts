@@ -1,4 +1,5 @@
 import type {
+  LegendaryEventMissionTrack,
   LegendaryEventPlan,
   LegendaryEventRun,
   LegendaryEventRunInputValues,
@@ -30,8 +31,16 @@ export function sameRunInputValues(
     a.regularMissions === b.regularMissions &&
     a.premiumMissions === b.premiumMissions &&
     a.bundlePurchased === b.bundlePurchased &&
-    a.closeShards === b.closeShards
+    a.closeShards === b.closeShards &&
+    sameIndexes(a.completedRegularMissions, b.completedRegularMissions) &&
+    sameIndexes(a.completedPremiumMissions, b.completedPremiumMissions)
   )
+}
+
+function sameIndexes(a: readonly number[], b: readonly number[]): boolean {
+  if (a.length !== b.length) return false
+  const sorted = [...b].sort((x, y) => x - y)
+  return [...a].sort((x, y) => x - y).every((value, i) => value === sorted[i])
 }
 
 /** The plan with `run`'s inputs replaced (or added, keeping `runs` ascending), the way the server
@@ -48,5 +57,32 @@ export function withRunInputs(
     runs: [...others, { run, ...values, updatedAt }].sort(
       (a, b) => a.run - b.run
     ),
+  }
+}
+
+const TRACK_FIELDS = {
+  regular: { ticks: "completedRegularMissions", count: "regularMissions" },
+  premium: { ticks: "completedPremiumMissions", count: "premiumMissions" },
+} as const
+
+/**
+ * Ticking or unticking one mission Done (spec: tick raises the plan): the ticks stay ascending
+ * and unique, and the track's Plan to complete count is raised to the ticked count when a tick
+ * would pass it; unticking leaves the count.
+ */
+export function missionTickPatch(
+  values: LegendaryEventRunInputValues,
+  track: LegendaryEventMissionTrack,
+  index: number,
+  done: boolean
+): Partial<LegendaryEventRunInputValues> {
+  const fields = TRACK_FIELDS[track]
+  const current = values[fields.ticks]
+  const ticks = done
+    ? [...new Set([...current, index])].sort((a, b) => a - b)
+    : current.filter((entry) => entry !== index)
+  return {
+    [fields.ticks]: ticks,
+    [fields.count]: Math.max(values[fields.count], ticks.length),
   }
 }
