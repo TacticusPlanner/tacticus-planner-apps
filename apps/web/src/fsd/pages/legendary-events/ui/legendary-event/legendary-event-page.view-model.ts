@@ -39,6 +39,7 @@ import type {
   TokenPlanView,
 } from "@/features/legendary-event-tokens"
 
+import type { BattlesViewModel } from "./battles/battles.view-model"
 import type { LastRunViewModel } from "./overview/last-run.view-model"
 import type { ProgressMarksViewModel } from "./progress/progress-marks"
 import type { TeamEditorLauncher } from "./teams/team-editor-launcher"
@@ -112,6 +113,8 @@ export interface LegendaryEventPageViewModel {
   teamEditor: TeamEditorLauncher
   /** The selected lane's Upgrade impact (Stage 6); null on Overview or signed out. */
   upgradeImpact: UpgradeImpactViewModel | null
+  /** The selected lane's Battles section (battle preview); null on Overview. */
+  battles: BattlesViewModel | null
   /** The Overview's Next token card, Token plan and Run forecast (Stage 4). */
   tokens: TokensViewModel
   /** The Overview's Last run card (run history). */

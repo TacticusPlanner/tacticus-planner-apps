@@ -157,6 +157,7 @@ export {
   characterIcon,
   mowIcon,
   npcPortrait,
+  legendaryEventMap,
   factionIcon,
   abilityIcon,
   raidBossPortrait,
