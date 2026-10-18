@@ -175,15 +175,8 @@ describe("tokenProgressesMission", () => {
     ).toBe(true)
   })
 
-  it("wins without summoning only when no member summons", () => {
-    const summoner = {
-      ...fixtureCharacter("astarCyrus"),
-      traits: ["Summon"],
-    }
+  it("cannot tell summoners apart, so a summon-free mission always progresses", () => {
     expect(tokenProgressesMission(premium(0), imperial, undefined)).toBe(true)
-    expect(tokenProgressesMission(premium(0), [summoner], undefined)).toBe(
-      false
-    )
   })
 
   it("always progresses an any-battle mission and never an unknown kind", () => {

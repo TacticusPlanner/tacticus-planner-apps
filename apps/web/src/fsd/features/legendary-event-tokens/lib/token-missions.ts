@@ -1,4 +1,5 @@
 import {
+  UNTRACKED_MISSION_KINDS,
   tokenProgressesMission,
   type BattleEnemies,
   type LegendaryEventLaneId,
@@ -38,7 +39,7 @@ export interface MissionAlternative {
 }
 
 export interface NextTokenMissions {
-  /** The open missions the Next token progresses, `anyBattle` ones left out. */
+  /** The open missions the Next token progresses, untracked kinds left out. */
   progressed: LegendaryEventMissionRef[]
   /** A playable planned token progressing more open missions, or null. */
   alternative: MissionAlternative | null
@@ -48,13 +49,13 @@ export interface NextTokenMissions {
  * The Next token card's missions (spec: Next token card shows missions it progresses and a For
  * missions alternative; design D4): the open missions the Next token progresses, and the eligible
  * planned token progressing the most of them when that is more, ties broken by points then plan
- * order. `anyBattle` missions progress every token, so they never pick one. The plan order stays.
+ * order. Untracked kinds (`anyBattle`, `winWithoutSummon`) progress every token, so they never pick one. The plan order stays.
  */
 export function nextTokenMissions(
   input: TokenMissionsInput
 ): NextTokenMissions {
   const counted = input.open.filter(
-    (entry) => entry.mission.kind !== "anyBattle"
+    (entry) => !UNTRACKED_MISSION_KINDS.has(entry.mission.kind)
   )
   const progressedBy = (token: PlannedToken) => {
     const members = input.membersOf(token.teamId)

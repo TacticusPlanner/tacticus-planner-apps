@@ -53,12 +53,20 @@ export function laneRosterPotential(
   const allowed = new Set(lane.availableUnitIds)
   const owned = input.units
     .filter((unit) => allowed.has(unit.id) && roster.has(unit.id))
-    .map((unit) => ({
-      id: unit.id,
-      satisfied: new Set(objectivesSatisfied(unit, lane)),
-      // A unit without power data adds nothing (its estimate would be unavailable).
-      power: unitEffectivePower(unit.id, roster, config) ?? 0,
-    }))
+    .flatMap((unit) => {
+      // A unit without power data is left out: one in a team makes the whole team's estimate
+      // unavailable.
+      const power = unitEffectivePower(unit.id, roster, config)
+      return power === null
+        ? []
+        : [
+            {
+              id: unit.id,
+              satisfied: new Set(objectivesSatisfied(unit, lane)),
+              power,
+            },
+          ]
+    })
     .sort((a, b) => b.power - a.power || a.id.localeCompare(b.id))
 
   const depthOf = (candidates: typeof owned) => {

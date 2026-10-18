@@ -71,6 +71,24 @@ describe("laneRosterPotential (spec worked example)", () => {
     })
   })
 
+  it("leaves out an owned unit without power data", () => {
+    // A copy of Calgar the power tables do not know, like a newly released character.
+    const newcomer = {
+      ...units.find((unit) => unit.id === "ultraCalgar")!,
+      id: "ultraNewcomer",
+    }
+    const potential = potentialOf({
+      lane: {
+        ...utharEvent.alpha,
+        availableUnitIds: [...utharEvent.alpha.availableUnitIds, newcomer.id],
+      },
+      units: [...units, newcomer],
+      roster: new Map([...roster, ...rosterOf([newcomer.id])]),
+    })
+    expect(potential.objectiveDepths).toEqual([6, 0, 5, 5, 0])
+    expect(potential.uncoveredObjectiveIndexes).toEqual([RESILIENT, PIERCING])
+  })
+
   it("reaches no battle without power data", () => {
     const potential = potentialOf({
       config: { ...WORKED_CONFIG, unitPower: null },

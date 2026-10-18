@@ -29,8 +29,8 @@ A planned token SHALL progress an open mission when:
 - `defeatFaction`: an enemy in any wave of the token's battle belongs to the mission's faction;
 - `defeatWithAlliance` or `useAbilitiesWithAlliance`: a non-reserve member of the token's team belongs to the alliance;
 - `damageType` or `defeatWithDamageType`: a non-reserve member deals that damage type (the shared damage-type exclusions apply);
-- `winWithoutTrait`: no non-reserve member has the trait; `winWithoutSummon`: no non-reserve member has the Summon trait;
-- `anyBattle`: always.
+- `winWithoutTrait`: no non-reserve member has the trait;
+- `anyBattle` and `winWithoutSummon`: always. The catalog tags summoned NPCs, not the characters that summon them, so a summoner cannot be told apart; both kinds are **untracked**.
 
 #### Scenario: Faction from battle enemies
 

@@ -21,8 +21,15 @@ export interface LegendaryEventMissionRef {
   mission: LegendaryEventMission
 }
 
-/** The trait a unit carries when it summons other units (`winWithoutSummon`). */
-const SUMMON_TRAIT = "Summon"
+/**
+ * Mission kinds every token progresses as far as the planner can tell, so they never pick a token:
+ * `anyBattle` (waves and plain damage), and `winWithoutSummon`, because the catalog marks summoned
+ * NPCs rather than the characters that summon them, so a summoner cannot be told apart.
+ */
+export const UNTRACKED_MISSION_KINDS: ReadonlySet<string> = new Set([
+  "anyBattle",
+  "winWithoutSummon",
+])
 
 /** A track's missions, dropping entries a catalog cached before typed missions still holds as
  *  plain strings (they cannot be matched or ticked). */
@@ -109,7 +116,8 @@ export function tokenProgressesMission(
   enemies: BattleEnemies | undefined
 ): boolean {
   switch (mission.kind) {
-    case "anyBattle": {
+    case "anyBattle":
+    case "winWithoutSummon": {
       return true
     }
     case "defeatFaction": {
@@ -136,9 +144,6 @@ export function tokenProgressesMission(
         mission.trait !== null &&
         !members.some((unit) => unit.traits.includes(mission.trait!))
       )
-    }
-    case "winWithoutSummon": {
-      return !members.some((unit) => unit.traits.includes(SUMMON_TRAIT))
     }
     default: {
       // A kind this client does not know progresses nothing rather than everything.

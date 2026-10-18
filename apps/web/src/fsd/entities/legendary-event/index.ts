@@ -151,6 +151,7 @@ export {
   runInputValues,
 } from "./lib/run-inputs"
 export {
+  UNTRACKED_MISSION_KINDS,
   battleEnemies,
   eventMissions,
   openMissions,

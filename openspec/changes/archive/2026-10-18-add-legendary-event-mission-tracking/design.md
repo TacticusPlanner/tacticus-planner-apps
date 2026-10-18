@@ -19,14 +19,14 @@ The raw files keep their text; the denormalizer maps each line through a closed 
 - `defeatFaction`: the battle has an enemy of that faction (from the battle's waves and the `npcs` dataset), not the lane's label.
 - `defeatWithAlliance`, `useAbilitiesWithAlliance`: at least one non-reserve member of that alliance.
 - `damageType`, `defeatWithDamageType`: a member deals that type, through `characterDealsDamageType`-style exclusions.
-- `winWithoutTrait`: no non-reserve member has the trait; `winWithoutSummon`: no member has the Summon trait.
+- `winWithoutTrait`: no non-reserve member has the trait. `winWithoutSummon` is treated like `anyBattle`: the catalog's `Summon` trait tags summoned NPCs, not the characters that summon them.
 - `anyBattle` (waves and plain damage): every token progresses it; such missions are listed as "any battle" and never pick a token.
 
 A token progresses a mission; how much (enemies defeated, damage dealt) is not modelled.
 
 ### D4. Points stay first; missions offer an alternative
 
-Missions pay currency, not points, and the exchange is not linear (milestones and chests are stepped), so the plan order stays points-optimal. The For missions alternative is the playable planned token (same eligibility as the Next token) progressing the most open, non-`anyBattle` missions, ties broken by points then plan order, shown only when it progresses more than the Next token does.
+Missions pay currency, not points, and the exchange is not linear (milestones and chests are stepped), so the plan order stays points-optimal. The For missions alternative is the playable planned token (same eligibility as the Next token) progressing the most open missions other than `anyBattle` and `winWithoutSummon`, ties broken by points then plan order, shown only when it progresses more than the Next token does.
 
 ## Risks / Trade-offs
 
