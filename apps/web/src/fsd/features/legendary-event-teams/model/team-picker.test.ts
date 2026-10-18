@@ -1,14 +1,19 @@
 import { describe, expect, it } from "vitest"
 
-import type {
-  LegendaryEventRosterUnit,
-  LegendaryEventUnit,
+import {
+  buildLanePointsModel,
+  buildSyncedLaneProgress,
+  type LegendaryEventRosterUnit,
+  type LegendaryEventUnit,
 } from "@/entities/legendary-event"
 import {
   fixtureCharacter,
   legendaryEventCharacters,
 } from "@/test/fixtures/legendary-event-characters"
-import { lysanderEvent } from "@/test/fixtures/legendary-events"
+import {
+  lysanderAlphaProgressRecord,
+  lysanderEvent,
+} from "@/test/fixtures/legendary-events"
 
 import {
   buildPickerTiles,
@@ -59,7 +64,7 @@ describe("buildPickerTiles with objective chips", () => {
     expect(plain.every((tile) => tile.matches)).toBe(true)
     const sorted = [...plain].sort(
       (a, b) =>
-        b.pointsPerBattle - a.pointsPerBattle ||
+        b.remainingPoints - a.remainingPoints ||
         b.satisfied.length - a.satisfied.length ||
         a.unit.name.localeCompare(b.unit.name)
     )
@@ -72,7 +77,11 @@ describe("buildPickerTiles with objective chips", () => {
       NO_RESILIENT,
     ])
     const dante = tiles.findIndex((tile) => tile.unit.id === "bloodDante")
-    expect(tiles[dante]).toMatchObject({ pointsPerBattle: 152, matches: true })
+    // No progress: 152 per battle over 18 battles.
+    expect(tiles[dante]).toMatchObject({
+      remainingPoints: 152 * 18,
+      matches: true,
+    })
     expect(ids(flyingOnly)).toContain(flyer.id)
     // Without a chip the flyer (197) is listed before Dante.
     expect(ids(plain).indexOf(flyer.id)).toBeLessThan(
@@ -132,6 +141,56 @@ describe("buildPickerTiles with objective chips", () => {
       flying.length - 3
     )
     expect(unlocked).toHaveLength(flying.length - 3)
+  })
+})
+
+describe("buildPickerTiles remaining points and sort", () => {
+  const progress = buildSyncedLaneProgress(
+    buildLanePointsModel(alpha),
+    lysanderAlphaProgressRecord
+  )
+
+  it("deducts cleared objectives: Dante has 13 × 80 + 5 × 152 = 1,800 left", () => {
+    const tiles = buildPickerTiles(alpha, units, undefined, nameOf, [], {
+      progress,
+    })
+    const dante = tiles.find((tile) => tile.unit.id === "bloodDante")
+    expect(dante?.remainingPoints).toBe(1800)
+    const sorted = [...tiles].sort(
+      (a, b) =>
+        b.remainingPoints - a.remainingPoints ||
+        b.satisfied.length - a.satisfied.length ||
+        a.unit.name.localeCompare(b.unit.name)
+    )
+    expect(ids(tiles)).toEqual(ids(sorted))
+  })
+
+  it("orders by effective power under Power, chips first", () => {
+    const power: Record<string, number> = {
+      bloodDante: 13_912,
+      [flyer.id]: 24_753,
+    }
+    const powerOf = (unitId: string) => power[unitId] ?? 0
+    const byPower = buildPickerTiles(alpha, units, undefined, nameOf, [], {
+      progress,
+      sort: "power",
+      powerOf,
+    })
+    expect(ids(byPower).slice(0, 2)).toEqual([flyer.id, "bloodDante"])
+    expect(byPower[0]!.effectivePower).toBe(24_753)
+
+    const withChip = buildPickerTiles(
+      alpha,
+      units,
+      undefined,
+      nameOf,
+      [NO_RESILIENT],
+      { progress, sort: "power", powerOf }
+    )
+    // The Resilient flyer does not satisfy No Resilient: Dante leads, the flyer heads the rest.
+    expect(withChip[0]!.unit.id).toBe("bloodDante")
+    const firstOther = withChip.findIndex((tile) => !tile.matches)
+    expect(withChip[firstOther]!.unit.id).toBe(flyer.id)
   })
 })
 

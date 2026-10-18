@@ -256,7 +256,6 @@
     "incomplete": "Needs at least {{min}} characters",
     "reserve": "Reserve",
     "members": "Members",
-    "pointsPerBattle": "{{points}} points per battle",
     "power": {
       "label": "Team power",
       "unavailable": "Power data unavailable",
@@ -317,11 +316,16 @@
       "setReserve": "Set {{name}} as reserve",
       "unsetReserve": "Remove {{name}} as reserve",
       "full": "A team has at most five members. Remove one to add another.",
-      "points": "{{points}} pts",
+      "points": "{{points}} pts left",
       "objectives": "Rank by objective",
       "objectiveChip_one": "{{objective}}: {{count}} unit satisfies it",
       "objectiveChip_other": "{{objective}}: {{count}} units satisfy it",
-      "doesNotSatisfy": "Does not satisfy {{objectives}}"
+      "doesNotSatisfy": "Does not satisfy {{objectives}}",
+      "sort": "Sort",
+      "sortPointsLeft": "Points left",
+      "sortPower": "Power",
+      "estimating": "Estimating…",
+      "pointsScope": "Points left on the whole lane, all battles"
     },
     "toasts": {
       "reloaded": "Your plan changed on another device and was reloaded. Try again.",
@@ -335,7 +339,11 @@
       "cancel": "Cancel"
     },
     "lastRun": "Last run: cleared up to battle {{battle}}",
-    "lastRunNone": "Last run: no battle cleared"
+    "lastRunNone": "Last run: no battle cleared",
+    "pointsLeft": "{{points}} points left · battles 1–{{depth}}",
+    "pointsLeftNeedsDepth": "Set depth to see points left",
+    "clearedThrough": "Already cleared through battle {{battle}}",
+    "pointsLeftCannotClear": "Can't clear battle 1 yet"
   },
   "objective": {
     "minHits_one": "Min {{count}} hit",
@@ -399,7 +407,7 @@
         },
         "teams": {
           "title": "Teams",
-          "content": "Build the teams you plan to play on this lane. Each card shows its members, the objectives they cover, its points per battle and how deep it should clear: an estimate from your synced roster until you set a depth yourself. Use Add team to start one. Suggest teams proposes teams from your roster, ranked by the points they add."
+          "content": "Build the teams you plan to play on this lane. Each card shows its members, the objectives they cover, how deep it should clear and the points it has left up to that battle: an estimate from your synced roster until you set a depth yourself. Use Add team to start one. Suggest teams proposes teams from your roster, ranked by the points they add."
         },
         "upgradeImpact": {
           "title": "Upgrade impact",
@@ -539,7 +547,8 @@
     "empty": "No team adds points over your current teams",
     "needsEstimates": "Needs clear estimates",
     "loading": "Loading suggestions…",
-    "rank": "Suggestion {{rank}}"
+    "rank": "Suggestion {{rank}}",
+    "reasonNoObjectives": "Clears ~{{depth}} · +{{points}} points over your teams"
   },
   "tokenPlan": {
     "nextToken": {

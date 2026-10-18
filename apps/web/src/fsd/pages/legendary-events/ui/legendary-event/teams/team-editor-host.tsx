@@ -5,7 +5,11 @@ import {
   type LegendaryEvent,
   type LegendaryEventLaneId,
 } from "@/entities/legendary-event"
-import { TeamEditorDialog, laneTeams } from "@/features/legendary-event-teams"
+import {
+  TeamEditorDialog,
+  laneTeams,
+  type PickerEstimates,
+} from "@/features/legendary-event-teams"
 
 import type { TeamEditorLauncher } from "./team-editor-launcher"
 import type { TeamsViewModel } from "./teams-section"
@@ -34,13 +38,22 @@ export function TeamEditorHost({
   const { state, run, actions, estimates } = teams
   if (state.kind !== "ready" || !editor) return null
   const { laneId } = editor
-  const estimateTeam =
-    estimates.kind === "ready" ? estimates.byLane[laneId].team : undefined
+  const estimator =
+    estimates.kind === "ready" ? estimates.byLane[laneId] : undefined
+  const estimateTeam = estimator?.team
+  const pickerEstimates: PickerEstimates | undefined =
+    estimates.kind === "pending"
+      ? "pending"
+      : estimator && {
+          clearsOf: (unitId) => estimator.unit(unitId)?.depth ?? null,
+          config: estimator.inputs?.config,
+        }
   const savedTeams = laneTeams(state.plan, laneId)
 
   return (
     <TeamEditorDialog
       estimateTeam={estimateTeam}
+      estimates={pickerEstimates}
       goalLines={teams.goals.goalLines}
       goalsPreview={teams.goals.pickerPreview(laneId)}
       initialMemberUnitIds={editor.memberUnitIds}
@@ -69,6 +82,7 @@ export function TeamEditorHost({
       }}
       onlyUnlockedDefault={onlyUnlocked}
       open
+      progress={teams.progressByLane?.[laneId]}
       roster={state.roster}
       run={run}
       team={editor.team}

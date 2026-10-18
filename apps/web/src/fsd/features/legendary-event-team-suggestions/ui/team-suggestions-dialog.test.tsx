@@ -179,6 +179,37 @@ describe("TeamSuggestionsDialog", () => {
     ).toHaveTextContent("+945 points over your teams")
   })
 
+  it("marks a covered objective already cleared through the proposal depth and leaves it out of the reason", async () => {
+    // Ultramarines (objective id 1) cleared in battles 1–5.
+    renderDialog({
+      progress: buildSyncedLaneProgress(model, {
+        encounters: Array.from({ length: 5 }, () => ({
+          objectivesCleared: [1],
+          highScore: 0,
+          encounterPoints: 0,
+        })),
+      } as Parameters<typeof buildSyncedLaneProgress>[1]),
+    })
+    await screen.findAllByText("Incisus")
+    const melee = cards().find(
+      (card) =>
+        members(card).join() === "ultraApothecary,ultraTitus,ultraCalgar"
+    )!
+    const [ultramarines, meleeChip] = within(melee).getAllByTestId(
+      "team-suggestion-objective"
+    )
+    expect(ultramarines).toHaveAttribute("data-cleared", "true")
+    expect(
+      within(ultramarines!).getByText("Already cleared through battle 5")
+    ).toHaveClass("sr-only")
+    expect(meleeChip).not.toHaveAttribute("data-cleared")
+    expect(
+      within(melee).getByTestId("team-suggestion-reason")
+    ).toHaveTextContent(
+      /^Covers Melee · clears ~5 · \+[\d,]+ points over your teams$/
+    )
+  })
+
   it("hands a proposal and its rank to Use this team", async () => {
     const { onUseSuggestion } = renderDialog()
     await screen.findAllByText("Incisus")

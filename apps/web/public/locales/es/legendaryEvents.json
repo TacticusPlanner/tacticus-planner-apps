@@ -256,7 +256,6 @@
     "incomplete": "Necesita al menos {{min}} personajes",
     "reserve": "Reserva",
     "members": "Miembros",
-    "pointsPerBattle": "{{points}} puntos por batalla",
     "power": {
       "label": "Poder del equipo",
       "unavailable": "Datos de poder no disponibles",
@@ -317,11 +316,16 @@
       "setReserve": "Poner a {{name}} como reserva",
       "unsetReserve": "Quitar a {{name}} como reserva",
       "full": "Un equipo tiene como máximo cinco miembros. Quita uno para añadir otro.",
-      "points": "{{points}} pts",
+      "points": "Quedan {{points}} pts",
       "objectives": "Ordenar por objetivo",
       "objectiveChip_one": "{{objective}}: {{count}} unidad lo cumple",
       "objectiveChip_other": "{{objective}}: {{count}} unidades lo cumplen",
-      "doesNotSatisfy": "No cumple: {{objectives}}"
+      "doesNotSatisfy": "No cumple: {{objectives}}",
+      "sort": "Ordenar",
+      "sortPointsLeft": "Puntos restantes",
+      "sortPower": "Poder",
+      "estimating": "Estimando…",
+      "pointsScope": "Puntos restantes en todo el carril, todas las batallas"
     },
     "toasts": {
       "reloaded": "Tu plan cambió en otro dispositivo y se ha recargado. Inténtalo de nuevo.",
@@ -335,7 +339,11 @@
       "cancel": "Cancelar"
     },
     "lastRun": "Última ronda: superó hasta la batalla {{battle}}",
-    "lastRunNone": "Última ronda: ninguna batalla superada"
+    "lastRunNone": "Última ronda: ninguna batalla superada",
+    "pointsLeft": "Quedan {{points}} puntos · batallas 1–{{depth}}",
+    "pointsLeftNeedsDepth": "Fija la profundidad para ver los puntos restantes",
+    "clearedThrough": "Ya completado hasta la batalla {{battle}}",
+    "pointsLeftCannotClear": "Aún no supera la batalla 1"
   },
   "objective": {
     "minHits_one": "Mín. {{count}} golpe",
@@ -399,7 +407,7 @@
         },
         "teams": {
           "title": "Equipos",
-          "content": "Crea los equipos que piensas jugar en este carril. Cada tarjeta muestra sus miembros, los objetivos que cubren, sus puntos por batalla y hasta dónde debería llegar: una estimación a partir de tu plantilla sincronizada hasta que fijes tú una profundidad. Usa Añadir equipo para empezar uno. Sugerir equipos propone equipos de tu plantilla, ordenados por los puntos que suman."
+          "content": "Crea los equipos que piensas jugar en este carril. Cada tarjeta muestra sus miembros, los objetivos que cubren, hasta dónde debería llegar y los puntos que le quedan hasta esa batalla: una estimación a partir de tu plantilla sincronizada hasta que fijes tú una profundidad. Usa Añadir equipo para empezar uno. Sugerir equipos propone equipos de tu plantilla, ordenados por los puntos que suman."
         },
         "upgradeImpact": {
           "title": "Impacto de las mejoras",
@@ -539,7 +547,8 @@
     "empty": "Ningún equipo suma puntos a tus equipos actuales",
     "needsEstimates": "Necesita estimaciones de superación",
     "loading": "Cargando sugerencias…",
-    "rank": "Sugerencia {{rank}}"
+    "rank": "Sugerencia {{rank}}",
+    "reasonNoObjectives": "Supera ~{{depth}} · +{{points}} puntos sobre tus equipos"
   },
   "tokenPlan": {
     "nextToken": {

@@ -1,15 +1,16 @@
-import type { LegendaryEventLane } from "../model/types"
+import type { LanePointsModel } from "./lane-points-model"
+import { laneReachablePoints, type LaneReach } from "./reachable-points"
+import type { LaneProgressView } from "./synced-lane-progress"
 
 /**
- * A team's points per battle (design D4): the lane's kill points plus the points of each covered
- * objective — the figure the leaderboard shows per unit for the same objectives.
+ * The points a team alone can still earn over battles 1..its depth (spec: a team card shows the
+ * points it has left within its depth): the lane reachable points of that one reach, net of the
+ * synced progress. Other teams are not deducted.
  */
-export function teamPointsPerBattle(
-  lane: Pick<LegendaryEventLane, "killPoints" | "unitsRestrictions">,
-  objectiveIndexes: readonly number[]
+export function teamPointsLeft(
+  model: LanePointsModel,
+  progress: LaneProgressView | undefined,
+  reach: LaneReach
 ): number {
-  const covered = new Set(objectiveIndexes)
-  return lane.unitsRestrictions
-    .filter((objective) => covered.has(objective.index))
-    .reduce((sum, objective) => sum + objective.points, lane.killPoints)
+  return laneReachablePoints(model, progress, [reach]).total
 }

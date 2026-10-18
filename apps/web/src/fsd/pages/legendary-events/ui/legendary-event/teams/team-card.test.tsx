@@ -3,10 +3,12 @@ import userEvent from "@testing-library/user-event"
 import type { i18n as I18n } from "i18next"
 import { beforeAll, describe, expect, it, vi } from "vitest"
 
-import type {
-  ClearEstimate,
-  LegendaryEventRosterUnit,
-  LegendaryEventTeam,
+import {
+  buildLanePointsModel,
+  buildSyncedLaneProgress,
+  type ClearEstimate,
+  type LegendaryEventRosterUnit,
+  type LegendaryEventTeam,
 } from "@/entities/legendary-event"
 import { legendaryEventCharacters } from "@/test/fixtures/legendary-event-characters"
 import {
@@ -148,7 +150,7 @@ function renderCard(
 }
 
 describe("buildTeamCardViewModel", () => {
-  it("adds the covered objectives to the kill points: 30 + 20 + 25 = 75", () => {
+  it("counts the points left over its depth without progress: 7 × (100 + 100 + 30 + 20 + 25) = 1,925", () => {
     const card = buildTeamCardViewModel(
       team(),
       teamLane,
@@ -156,7 +158,7 @@ describe("buildTeamCardViewModel", () => {
       undefined,
       1
     )
-    expect(card.pointsPerBattle).toBe(75)
+    expect(card.pointsLeft).toBe(1925)
     expect(card.memberCount).toBe(3)
     expect(card.expectedBattleClears).toBe(7)
   })
@@ -223,10 +225,52 @@ describe("buildTeamCardViewModel", () => {
       1
     )
     expect(card.coverage).toEqual([
-      { index: 0, derived: true, points: 20 },
-      { index: 2, derived: false, points: 15 },
+      { index: 0, derived: true, points: 20, clearedThrough: false },
+      { index: 2, derived: false, points: 15, clearedThrough: false },
     ])
-    expect(card.pointsPerBattle).toBe(50)
+    // 7 × (100 + 100 + 30 + 20)
+    expect(card.pointsLeft).toBe(1750)
+  })
+
+  it("marks an objective cleared through the depth and leaves it out of the points left", () => {
+    const model = buildLanePointsModel(teamLane)
+    // Melee (id 1) and defeat-all (id 0) cleared at full scores in battles 1–7.
+    const progress = buildSyncedLaneProgress(model, {
+      encounters: Array.from({ length: 7 }, () => ({
+        objectivesCleared: [0, 1],
+        highScore: 100,
+        encounterPoints: 100,
+      })),
+    })
+    const card = buildTeamCardViewModel(
+      team(),
+      teamLane,
+      teamUnitList,
+      undefined,
+      1,
+      undefined,
+      null,
+      undefined,
+      progress,
+      model
+    )
+    expect(card.coverage.map((entry) => entry.clearedThrough)).toEqual([
+      true,
+      false,
+    ])
+    // Min 5 Hits alone: 7 × 25
+    expect(card.pointsLeft).toBe(175)
+  })
+
+  it("has no points left without a displayed depth", () => {
+    const card = buildTeamCardViewModel(
+      team(),
+      teamLane,
+      teamUnitList,
+      ownedRoster(team().memberUnitIds),
+      2
+    )
+    expect(card.pointsLeft).toBeNull()
   })
 
   it("shows only the current run's depth", () => {
@@ -277,8 +321,69 @@ describe("TeamCard", () => {
     expect(members[3]).toHaveAttribute("data-reserve", "true")
     expect(screen.getAllByTestId("team-card-objective")).toHaveLength(2)
     expect(screen.getByTestId("team-card-points")).toHaveTextContent(
-      "75 points per battle"
+      "1,925 points left · battles 1–7"
     )
+  })
+
+  it("marks a covered objective already cleared through the depth", () => {
+    const model = buildLanePointsModel(teamLane)
+    const progress = buildSyncedLaneProgress(model, {
+      encounters: Array.from({ length: 7 }, () => ({
+        objectivesCleared: [0, 1],
+        highScore: 100,
+        encounterPoints: 100,
+      })),
+    })
+    const card = buildTeamCardViewModel(
+      team(),
+      teamLane,
+      teamUnitList,
+      undefined,
+      1,
+      undefined,
+      null,
+      undefined,
+      progress,
+      model
+    )
+    render(
+      <ul>
+        <TeamCard actions={actions()} card={card} lane={teamLane} />
+      </ul>,
+      { wrapper: i18nWrapper(i18n) }
+    )
+    const [melee, minHits] = screen.getAllByTestId("team-card-objective")
+    expect(melee).toHaveAttribute("data-cleared", "true")
+    expect(
+      within(melee!).getByText("Already cleared through battle 7")
+    ).toHaveClass("sr-only")
+    expect(minHits).not.toHaveAttribute("data-cleared")
+    expect(screen.getByTestId("team-card-points")).toHaveTextContent(
+      "175 points left · battles 1–7"
+    )
+  })
+
+  it("says the team cannot clear battle 1 at depth 0", () => {
+    renderEstimatedCard(team(), estimateOf({ depth: 0 }), { run: 2 })
+    expect(screen.getByTestId("team-card-points")).toHaveTextContent(
+      "Can't clear battle 1 yet"
+    )
+  })
+
+  it("shows a plain dash for an incomplete team", () => {
+    renderCard(team({ memberUnitIds: [teamUnits.a.id, teamUnits.b.id] }))
+    const points = screen.getByTestId("team-card-points")
+    expect(points).toHaveTextContent("—")
+    expect(points).not.toHaveTextContent("Set depth")
+  })
+
+  it("shows a dash with the reason when the team has no depth", () => {
+    renderCard(team(), 2)
+    const points = screen.getByTestId("team-card-points")
+    expect(points).toHaveTextContent("—")
+    expect(
+      within(points).getByText("Set depth to see points left")
+    ).toHaveClass("sr-only")
   })
 
   it("hides the count badge for a full team", () => {
@@ -488,11 +593,11 @@ describe("TeamCard", () => {
       return screen.getByTestId("team-card-power")
     }
 
-    it("shows the plain sum with digit grouping on the points-per-battle line", () => {
+    it("shows the plain sum with digit grouping on the points-left line", () => {
       const power = renderPower({ teamPower: 98895, teamPowerStatus: "ready" })
       expect(power).toHaveTextContent("Team power 98,895")
       expect(power).toHaveAttribute("data-state", "ready")
-      // Beside points per battle; the line wraps between the two, never inside either (French at
+      // Beside the points left; the line wraps between the two, never inside either (French at
       // 375px).
       const points = screen.getByTestId("team-card-points")
       expect(power.parentElement).toBe(points.parentElement)
@@ -525,7 +630,7 @@ describe("TeamCard", () => {
       )
       // The rest of the card is unchanged.
       expect(screen.getByTestId("team-card-points")).toHaveTextContent(
-        "75 points per battle"
+        "1,925 points left · battles 1–7"
       )
     })
 

@@ -113,3 +113,26 @@ export function objectiveClearedCounts(
     )
   )
 }
+
+/**
+ * Whether the objective with catalog `index` `objectiveIndex` is cleared in every battle 1..`depth`
+ * (spec: covered objectives already cleared through the depth are marked). False for a depth below
+ * 1, an objective the lane lacks, or no progress (loading or failed: nothing counts as cleared).
+ */
+export function objectiveClearedThrough(
+  model: Pick<LanePointsModel, "objectives">,
+  progress: Pick<LaneProgressView, "battles"> | undefined,
+  objectiveIndex: number,
+  depth: number
+): boolean {
+  const column =
+    model.objectives.findIndex(
+      (objective) => objective.index === objectiveIndex
+    ) + 1
+  if (!progress || column === 0 || depth < 1) return false
+  const battles = progress.battles.slice(0, depth)
+  return (
+    battles.length === depth &&
+    battles.every((battle) => battle.cleared[column] === true)
+  )
+}

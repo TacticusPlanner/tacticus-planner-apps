@@ -140,7 +140,9 @@ export function TeamsSection({
               run,
               estimateTeam,
               unitPower,
-              rosterById
+              rosterById,
+              teams.progressByLane?.[laneId],
+              model
             ),
             // Display only (spec: a team shows a readable name): the stored name stays as is.
             name: displayName(team, lane, savedTeams),
@@ -154,6 +156,9 @@ export function TeamsSection({
       estimateTeam,
       unitPower,
       rosterById,
+      teams.progressByLane,
+      laneId,
+      model,
       displayName,
     ]
   )

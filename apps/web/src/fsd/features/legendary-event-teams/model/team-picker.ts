@@ -1,5 +1,8 @@
 import {
+  remainingLanePoints,
   unitLanePotential,
+  type ClearEstimateConfig,
+  type LaneProgressView,
   type LegendaryEventLane,
   type LegendaryEventRosterUnit,
   type LegendaryEventUnit,
@@ -18,12 +21,27 @@ export interface PickerTile {
   unit: LegendaryEventUnit
   /** `undefined` when the roster could not be read (ownership unknown). */
   owned: boolean | undefined
-  pointsPerBattle: number
+  /** The points the unit can still score on the lane, net of the synced progress (spec: picker
+   *  tiles show remaining points). */
+  remainingPoints: number
+  /** Effective power on the shown roster; 0 when not held, null when power data is unavailable. */
+  effectivePower: number | null
   /** Catalog `index` of each lane objective the unit satisfies. */
   satisfied: number[]
   /** Whether the unit satisfies every selected objective chip (true while none is selected);
    *  a non-matching tile is listed after the matching ones, dimmed. */
   matches: boolean
+}
+
+/** The picker's order (spec: the picker has a Points left / Power sort). */
+export type PickerSort = "pointsLeft" | "power"
+
+export interface PickerTileOptions {
+  /** The lane's synced progress; undefined while it loads or failed (nothing is cleared). */
+  progress?: LaneProgressView
+  sort?: PickerSort
+  /** A unit's effective power on the shown roster (0 when not held, null when unavailable). */
+  powerOf?: (unitId: string) => number | null
 }
 
 /** Whether a unit satisfying `satisfied` meets every selected objective. */
@@ -36,17 +54,19 @@ function matchesObjectives(
 
 /**
  * One tile per unit the lane allows (`lane.availableUnitIds`, the list the API validates members
- * against), with its points per battle and satisfied objectives, ordered by points per battle then
- * objectives count descending, then name. With objective chips selected (design D1) the units
- * satisfying every selected objective come first in that order and the others follow, marked as
- * not matching; no unit is removed.
+ * against), with its remaining points, effective power and satisfied objectives. Points left
+ * orders by remaining points then objectives count descending, then name; Power by effective power
+ * descending (unavailable reads 0), then remaining points, then name. With objective chips
+ * selected (design D1) the units satisfying every selected objective come first in that order and
+ * the others follow, marked as not matching; no unit is removed.
  */
 export function buildPickerTiles(
   lane: PickerLane,
   units: readonly LegendaryEventUnit[],
   roster: readonly LegendaryEventRosterUnit[] | undefined,
   nameOf: (unit: LegendaryEventUnit) => string,
-  selectedObjectives: readonly number[] = []
+  selectedObjectives: readonly number[] = [],
+  { progress, sort = "pointsLeft", powerOf }: PickerTileOptions = {}
 ): PickerTile[] {
   const allowed = new Set(lane.availableUnitIds)
   const owned = roster
@@ -59,7 +79,8 @@ export function buildPickerTiles(
       return {
         unit,
         owned: owned ? owned.has(unit.id) : undefined,
-        pointsPerBattle: potential.pointsPerBattle,
+        remainingPoints: remainingLanePoints(potential, progress, lane),
+        effectivePower: powerOf?.(unit.id) ?? null,
         satisfied: potential.satisfied,
         matches: matchesObjectives(potential.satisfied, selectedObjectives),
       }
@@ -67,8 +88,11 @@ export function buildPickerTiles(
     .sort(
       (a, b) =>
         Number(b.matches) - Number(a.matches) ||
-        b.pointsPerBattle - a.pointsPerBattle ||
-        b.satisfied.length - a.satisfied.length ||
+        (sort === "power"
+          ? (b.effectivePower ?? 0) - (a.effectivePower ?? 0) ||
+            b.remainingPoints - a.remainingPoints
+          : b.remainingPoints - a.remainingPoints ||
+            b.satisfied.length - a.satisfied.length) ||
         nameOf(a.unit).localeCompare(nameOf(b.unit))
     )
 }
@@ -137,3 +161,14 @@ export interface PickerGoalsPreview {
   /** Called when the picker's own switch changes (analytics). */
   onToggle?: (enabled: boolean) => void
 }
+
+/** The lane's clear estimates as the picker reads them (spec: picker tiles show each owned unit's
+ *  strength): "pending" while they load, absent when unavailable. */
+export type PickerEstimates =
+  | "pending"
+  | {
+      /** A unit's estimated clears on the synced roster. */
+      clearsOf: (unitId: string) => number | null
+      /** The power formula's inputs; absent without power data (Power sort unavailable). */
+      config?: ClearEstimateConfig
+    }

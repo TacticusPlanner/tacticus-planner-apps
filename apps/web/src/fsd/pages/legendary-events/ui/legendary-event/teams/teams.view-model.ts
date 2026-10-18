@@ -1,12 +1,16 @@
 import {
+  buildLanePointsModel,
   derivedTeamCoverage,
   isCompleteTeam,
+  objectiveClearedThrough,
   teamDepthForRun,
   teamEffectiveDepth,
-  teamPointsPerBattle,
+  teamPointsLeft,
   teamPower,
   type ClearEstimate,
   type ClearEstimateRoster,
+  type LanePointsModel,
+  type LaneProgressView,
   type LegendaryEventLane,
   type LegendaryEventLaneId,
   type LegendaryEventPlan,
@@ -36,6 +40,9 @@ interface TeamCardCoverage {
    *  change): a derived one counts in points, one no longer derived shows muted. */
   derived: boolean
   points: number
+  /** Cleared in every battle 1..the displayed depth (spec: covered objectives already cleared
+   *  through the depth are marked): shown with the cleared mark, earning nothing. */
+  clearedThrough: boolean
 }
 
 /** The canonical team card (design D4). */
@@ -50,7 +57,10 @@ export interface TeamCardViewModel {
    *  card warns, shows no depth and no calculation plays the team. */
   incomplete: boolean
   coverage: TeamCardCoverage[]
-  pointsPerBattle: number
+  /** The points this team alone can still earn over battles 1..`displayedDepth`, net of the synced
+   *  progress (spec: a team card shows the points it has left within its depth); null without a
+   *  displayed depth. */
+  pointsLeft: number | null
   /** The current run's manual depth; null when that run has none. */
   expectedBattleClears: number | null
   /** The team's clear estimate on the lane; null when estimates are unavailable, no member is
@@ -85,7 +95,12 @@ export type TeamEstimator = (
 
 type CardLane = Pick<
   LegendaryEventLane,
-  "allowedUnitsFilter" | "unitsRestrictions" | "killPoints"
+  | "allowedUnitsFilter"
+  | "unitsRestrictions"
+  | "killPoints"
+  | "battleIds"
+  | "battlesPoints"
+  | "defeatAll"
 >
 
 /**
@@ -104,7 +119,11 @@ export function buildTeamCardViewModel(
   estimateTeam?: TeamEstimator,
   powerSource: TeamPowerSource = null,
   /** `roster` keyed by unit id; the section builds it once for all its cards. */
-  rosterById: ClearEstimateRoster | undefined = roster && rosterMap(roster)
+  rosterById: ClearEstimateRoster | undefined = roster && rosterMap(roster),
+  /** The lane's synced progress; undefined while it loads or failed (nothing counts as cleared). */
+  progress: LaneProgressView | undefined = undefined,
+  /** The lane's points model; the section builds it once for all its cards. */
+  model: LanePointsModel = buildLanePointsModel(lane)
 ): TeamCardViewModel {
   const member = (unitId: string): TeamCardMember => ({
     unitId,
@@ -112,14 +131,6 @@ export function buildTeamCardViewModel(
   })
   const derived = new Set(derivedTeamCoverage(team.memberUnitIds, lane, units))
   const stored = new Set(team.objectiveIndexes)
-  const coverage = [...lane.unitsRestrictions]
-    .sort((a, b) => a.index - b.index)
-    .filter((objective) => stored.has(objective.index))
-    .map((objective) => ({
-      index: objective.index,
-      derived: derived.has(objective.index),
-      points: objective.points,
-    }))
   const members = team.memberUnitIds.map(member)
   const expectedBattleClears =
     teamDepthForRun(team, currentRun)?.expectedBattleClears ?? null
@@ -127,6 +138,25 @@ export function buildTeamCardViewModel(
   const estimate = incomplete
     ? null
     : (estimateTeam?.(team.memberUnitIds) ?? null)
+  const displayedDepth = incomplete
+    ? null
+    : teamEffectiveDepth(expectedBattleClears, estimate)
+  const coverage = [...lane.unitsRestrictions]
+    .sort((a, b) => a.index - b.index)
+    .filter((objective) => stored.has(objective.index))
+    .map((objective) => ({
+      index: objective.index,
+      derived: derived.has(objective.index),
+      points: objective.points,
+      clearedThrough:
+        displayedDepth !== null &&
+        objectiveClearedThrough(
+          model,
+          progress,
+          objective.index,
+          displayedDepth
+        ),
+    }))
   return {
     id: team.id,
     name: team.name,
@@ -136,15 +166,18 @@ export function buildTeamCardViewModel(
     memberCount: team.memberUnitIds.length,
     incomplete,
     coverage,
-    pointsPerBattle: teamPointsPerBattle(
-      lane,
-      coverage.filter((entry) => entry.derived).map((entry) => entry.index)
-    ),
+    pointsLeft:
+      displayedDepth === null
+        ? null
+        : teamPointsLeft(model, progress, {
+            depth: displayedDepth,
+            coveredObjectiveIndexes: coverage
+              .filter((entry) => entry.derived)
+              .map((entry) => entry.index),
+          }),
     expectedBattleClears,
     estimate,
-    displayedDepth: incomplete
-      ? null
-      : teamEffectiveDepth(expectedBattleClears, estimate),
+    displayedDepth,
     lockedMemberCount: members.filter((entry) => entry.owned === false).length,
     ...cardTeamPower(team.memberUnitIds, rosterById, powerSource),
     sortOrder: team.sortOrder,
