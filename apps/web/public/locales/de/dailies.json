@@ -309,6 +309,42 @@
           "content": "Jede Tageskarte listet die zu farmenden Verbesserungen als Raster. Fahre mit der Maus über eine Verbesserung oder tippe darauf, um Einheiten und Knoten zu sehen; erledigte Verbesserungen stehen unter „Geraidet“, geplante Shop-Käufe unter „Shops“ und Onslaught-Läufe unter „Onslaught“. Ziehe oder wische, um durch die Tage zu scrollen."
         }
       }
+    },
+    "hse": {
+      "steps": {
+        "switcher": {
+          "title": "Event auswählen",
+          "content": "Standardmäßig wird das aktuelle Event angezeigt. Hier kannst du jedes andere kommende oder vergangene Startbildschirm-Event öffnen oder mit den Pfeilen durchblättern. Deine Auswahl bleibt in der Seitenadresse, sodass du neu laden oder sie teilen kannst."
+        },
+        "status": {
+          "title": "Event-Status",
+          "content": "Name des angezeigten Events, wann es endet, beginnt oder geendet hat und ob es Punkte durch Kampagnen-Raids bringt."
+        },
+        "details": {
+          "title": "Event-Details",
+          "content": "Was das Event belohnt und verstärkt, aus den Spieldaten gelesen, und die Belohnungsstufe, in die dich deine Machtstufe und dein Kader einordnen."
+        },
+        "milestones": {
+          "title": "Meilensteine",
+          "content": "Punkte und Belohnung jedes Meilensteins. Das letzte Feld wiederholt sich nach dem letzten Meilenstein endlos."
+        },
+        "projection": {
+          "title": "Punkteprognose",
+          "content": "Die Arena-, Onslaught- und Plünderungslauf-Marken, die du bis zum Event-Ende noch nutzen kannst, welchen Schnitt jede für den letzten Meilenstein braucht und wo deine eigenen Schnitte landen. Bearbeite die Schnitte; sie werden für dieses Event gespeichert."
+        },
+        "teams": {
+          "title": "Event-Teams",
+          "content": "Teams für die Dauer des Events, aus deinen stärksten Charakteren gebaut, die punktenden zuerst. Onslaught und Plünderungslauf bekommen ein Team pro Allianz; auf dem Handy wählst du den Modus über den Teams. Regeln, welche Feinde zählen, stehen hier."
+        },
+        "farm": {
+          "title": "Farm-Liste für Event-Punkte",
+          "content": "Wo du heute raiden solltest, um Event-Punkte zu sammeln und gleichzeitig deine Ziele voranzubringen, aufgefüllt bis zu deiner heute verbleibenden Energie."
+        },
+        "top": {
+          "title": "Beste Orte",
+          "content": "Die Orte mit den meisten Event-Punkten pro Raid und pro Energie, unabhängig von deinen Zielen."
+        }
+      }
     }
   },
   "blockers": {
@@ -377,6 +413,19 @@
   },
   "hse": {
     "title": "Startbildschirm-Event",
+    "switcher": {
+      "label": "Startbildschirm-Event auswählen",
+      "placeholder": "Event auswählen",
+      "empty": "Keine Events im Kalender",
+      "previous": "Vorheriges Event",
+      "next": "Nächstes Event",
+      "option": "{{name}} · {{dates}}",
+      "groups": {
+        "running": "Läuft",
+        "upcoming": "Demnächst",
+        "past": "Vergangen"
+      }
+    },
     "status": {
       "endsIn": "Endet {{when}}",
       "earnsPoints": "Bringt Event-Punkte durch Kampagnen-Raids: 3 pro passendem Gegner, 5 auf Elite-Knoten.",
@@ -384,6 +433,7 @@
       "noneRunning": "Aktuell läuft kein Startbildschirm-Event.",
       "next": "Nächstes Event: {{name}}",
       "startsIn": "Beginnt {{when}} ({{date}})",
+      "endedOn": "Beendet am {{date}}",
       "noneScheduled": "Es ist kein Startbildschirm-Event geplant.",
       "error": "Eventdaten konnten nicht geladen werden. Der Rest der Dailies ist nicht betroffen."
     },
@@ -416,6 +466,194 @@
       "filteredEmpty": "Kein Ort entspricht deinen Raid-Filtern.",
       "perRaid": "{{points}} Pkt. pro Raid",
       "perEnergy": "{{value}} Pkt. pro Energie"
+    },
+    "details": {
+      "title": "Event-Details",
+      "powerLevel": "Machtstufe: {{value}}",
+      "tier": "Deine Stufe: {{tier}}",
+      "tierRulesLabel": "Wie deine Stufe bestimmt wird",
+      "tierRules": {
+        "low": "Niedrig: Machtstufe unter {{threshold}}",
+        "mid": "Mittel: Machtstufe {{threshold}} oder mehr, ohne Einheit mit einem blauen Stern",
+        "high": "Hoch: Machtstufe {{threshold}} oder mehr, mit einem Charakter oder einer Kriegsmaschine ab Legendär mit einem blauen Stern"
+      },
+      "tiers": {
+        "High": "Hoch",
+        "Mid": "Mittel",
+        "Low": "Niedrig",
+        "Default": "Standard"
+      },
+      "global": "Gemeinschafts-Event: Die Meilensteine zählen die Punkte aller Spieler zusammen.",
+      "noData": "Für dieses Event gibt es noch keine Meilenstein-Daten.",
+      "error": "Die Event-Details konnten nicht geladen werden.",
+      "showMore": "Mehr anzeigen",
+      "showLess": "Weniger anzeigen",
+      "milestones": "Meilensteine",
+      "milestonePoints": "{{points}} Pkt.",
+      "milestoneTooltip": "{{reward}} ×{{quantity}} bei {{points}} Punkten",
+      "endless": "Endlos",
+      "endlessTooltip": "{{reward}} ×{{quantity}} alle {{points}} Punkte nach dem letzten Meilenstein",
+      "endlessCap_one": "bis zu {{count}}-mal",
+      "endlessCap_other": "bis zu {{count}}-mal",
+      "rewards": {
+        "summoningToken": "Anforderungsbefehl",
+        "specialSummoningToken": "Gesegneter Anforderungsbefehl"
+      },
+      "modes": {
+        "Arena": "Arena",
+        "TournamentArena": "Turnier-Arena",
+        "Onslaught": "Onslaught",
+        "SalvageRun": "Plünderungslauf",
+        "Campaign": "Kampagnen",
+        "MirrorCampaign": "Spiegelkampagnen",
+        "EliteCampaign": "Elite-Kampagnen",
+        "MirrorEliteCampaign": "Elite-Spiegelkampagnen",
+        "CampaignEvent": "Kampagnen-Events",
+        "Survival": "Überleben",
+        "LegendaryEvent": "Legendären Events",
+        "MachinesOfWarEvent": "Kriegsmaschinen-Events",
+        "GuildWars": "Gildenkriegen",
+        "LinearHeroEvent": "Helden-Events"
+      },
+      "tags": {
+        "MachineOfWar": "Kriegsmaschinen",
+        "Steppable": "betretbare Einheiten",
+        "Summon": "Beschwörungen"
+      },
+      "rarities": {
+        "Common": "Gewöhnlich",
+        "Uncommon": "Ungewöhnlich",
+        "Rare": "Selten",
+        "Epic": "Episch",
+        "Legendary": "Legendär",
+        "Mythic": "Mythisch"
+      },
+      "phrase": {
+        "modesIn": "in {{modes}}",
+        "modesExcept": "in jedem Modus außer {{modes}}",
+        "modesAll": "in jedem Modus",
+        "group": "{{items}}",
+        "excluding": "{{noun}} (ohne {{excluded}})",
+        "allCharacters": "Alle Charaktere",
+        "charactersOf": "{{filter}}-Charaktere",
+        "unitsOf": "{{filter}}-Einheiten",
+        "characters": "Charaktere",
+        "units": "Einheiten",
+        "named": "{{names}}",
+        "enemy": "feindliche Einheit",
+        "enemyOf": "feindliche {{filter}}-Einheit",
+        "rateXp": "{{rarity}} {{value}}x",
+        "ratePoints": "{{rarity}} {{value}}"
+      },
+      "lines": {
+        "xp": "{{units}} erhalten {{multiplier}}x XP {{modes}}",
+        "xpTeam": "{{units}} erhalten {{multiplier}}x XP {{modes}}, wenn das ganze Team aus einer Fraktion stammt",
+        "xpByRarity": "{{units}} erhalten Bonus-XP nach Seltenheit ({{rates}}) {{modes}}",
+        "xpByRarityTeam": "{{units}} erhalten Bonus-XP nach Seltenheit ({{rates}}) {{modes}}, wenn das ganze Team aus einer Fraktion stammt",
+        "stat": "{{units}} haben +{{health}} % Lebenspunkte, +{{damage}} % Schaden und +{{armour}} % Rüstung {{modes}}",
+        "kill_one": "Du erhältst {{count}} Punkt für jede {{enemy}}, die du {{modes}} besiegst",
+        "kill_other": "Du erhältst {{count}} Punkte für jede {{enemy}}, die du {{modes}} besiegst",
+        "killWith_one": "Du erhältst {{count}} Punkt für jede {{enemy}}, die du mit {{player}} {{modes}} besiegst",
+        "killWith_other": "Du erhältst {{count}} Punkte für jede {{enemy}}, die du mit {{player}} {{modes}} besiegst",
+        "waves_one": "Du erhältst {{count}} Punkt für jede Welle, die du {{modes}} besiegst",
+        "waves_other": "Du erhältst {{count}} Punkte für jede Welle, die du {{modes}} besiegst",
+        "factionMajority_one": "Du erhältst {{count}} Punkt für jeden Kampf {{modes}}, in dem die meisten eingesetzten Einheiten aus einer Fraktion stammen",
+        "factionMajority_other": "Du erhältst {{count}} Punkte für jeden Kampf {{modes}}, in dem die meisten eingesetzten Einheiten aus einer Fraktion stammen",
+        "fullLineUp_one": "Du erhältst {{count}} Punkt für jeden Kampf {{modes}}, in dem deine ganze Aufstellung aus einer Fraktion stammt",
+        "fullLineUp_other": "Du erhältst {{count}} Punkte für jeden Kampf {{modes}}, in dem deine ganze Aufstellung aus einer Fraktion stammt",
+        "donateUpgrade_one": "Du erhältst {{count}} Punkt für jede Verbesserung, die du einem Gildenmitglied spendest",
+        "donateUpgrade_other": "Du erhältst {{count}} Punkte für jede Verbesserung, die du einem Gildenmitglied spendest",
+        "donateUpgradeByRarity": "Du erhältst Punkte für jede Verbesserung, die du einem Gildenmitglied spendest: {{rates}}",
+        "donateIntel_one": "Du erhältst {{count}} Punkt für jede Information, die du einem Gildenprojekt spendest",
+        "donateIntel_other": "Du erhältst {{count}} Punkte für jede Information, die du einem Gildenprojekt spendest",
+        "dispatchExpedition_one": "Du erhältst {{count}} Punkt für jede Expedition, die du entsendest",
+        "dispatchExpedition_other": "Du erhältst {{count}} Punkte für jede Expedition, die du entsendest"
+      }
+    },
+    "projection": {
+      "title": "Punkteprognose",
+      "loading": "Deine synchronisierten Marken werden gelesen…",
+      "error": "Deine synchronisierten Marken konnten nicht gelesen werden. Die Event-Details sind nicht betroffen.",
+      "allLocked": "Keiner der Modi, in denen dieses Event Punkte bringt, ist schon freigeschaltet: {{modes}}.",
+      "target": "Letzter Meilenstein",
+      "pointsSoFar": "Bisherige Punkte",
+      "pointsSoFarHint": "Übernimm sie aus dem Event im Spiel; deine Synchronisierung enthält sie nicht.",
+      "remaining": "Noch benötigt",
+      "unitsToFinal": "Zu besiegen",
+      "required": "Benötigt pro Marke",
+      "points": "{{value}} Pkt.",
+      "units": {
+        "kills_one": "{{count}} Abschuss",
+        "kills_other": "{{count}} Abschüsse",
+        "waves_one": "{{count}} Welle",
+        "waves_other": "{{count}} Wellen"
+      },
+      "perToken": {
+        "kills": "{{value}} Abschüsse pro Marke",
+        "waves": "{{value}} Wellen pro Marke",
+        "points": "{{value}} Event-Punkte pro Marke"
+      },
+      "finalReached": "Letzter Meilenstein erreicht",
+      "repeatsSoFar_one": "{{count}} Endlos-Belohnung bisher",
+      "repeatsSoFar_other": "{{count}} Endlos-Belohnungen bisher",
+      "columns": {
+        "mode": "Modus",
+        "tokens": "Marken",
+        "average": "Schnitt pro Marke",
+        "perUnit": "Punkte pro Einheit",
+        "points": "Punkte"
+      },
+      "unit": {
+        "kills": "Abschüsse",
+        "waves": "Wellen",
+        "battles": "Kämpfe"
+      },
+      "perUnit": {
+        "kills_one": "{{count}} pro Abschuss",
+        "kills_other": "{{count}} pro Abschuss",
+        "waves_one": "{{count}} pro Welle",
+        "waves_other": "{{count}} pro Welle",
+        "battles_one": "{{count}} pro Kampf",
+        "battles_other": "{{count}} pro Kampf"
+      },
+      "averageLabel": "Durchschnittliche {{unit}} pro Marke in {{mode}}",
+      "averageFixed": "1 Kampf",
+      "averageNeeded": "Schnitt eingeben",
+      "tokensValue_one": "{{count}} Marke",
+      "tokensValue_other": "{{count}} Marken",
+      "projected": "Prognostizierte Punkte",
+      "projectedValue": "{{points}} Pkt.",
+      "needAverage": "Gib für jeden Modus einen Schnitt ein, um die prognostizierten Punkte zu sehen.",
+      "milestonesReached": "{{reached}} von {{total}} Meilensteinen ({{points}} Pkt.)",
+      "milestonesNone": "0 von {{total}} Meilensteinen",
+      "toNext": "{{points}} Pkt. bis zum nächsten Meilenstein",
+      "toNextRepeat": "{{points}} Pkt. bis zur nächsten Endlos-Belohnung",
+      "repeats_one": "{{count}} Endlos-Belohnung nach dem letzten Meilenstein",
+      "repeats_other": "{{count}} Endlos-Belohnungen nach dem letzten Meilenstein",
+      "notes": {
+        "summed": "{{mode}}: Es gelten {{count}} Punkteregeln, daher setzt „{{perUnit}}“ voraus, dass jede alle davon erfüllt.",
+        "locked": "Noch nicht freigeschaltet, ausgelassen: {{modes}}.",
+        "enemyRestricted": "Nur manche Feinde zählen (siehe Event-Details), gib daher deinen Schnitt an zählenden Abschüssen ein.",
+        "battles": "Kampf-Modi zählen einmal pro Marke: ein Kampf pro Marke.",
+        "campaign": "Kampagnen-Raids bringen in diesem Event ebenfalls Punkte; sie werden in der Farmliste unten geplant.",
+        "syncedAt": "Marken aus deiner Synchronisierung {{when}}, vorausgesetzt du verbrauchst sie, bevor deine Speicher voll sind.",
+        "upcoming": "Die Marken setzen volle Speicher zu Event-Beginn voraus und dass du sie verbrauchst, bevor sie voll sind."
+      }
+    },
+    "teams": {
+      "title": "Event-Teams",
+      "description": "Stärkste Teams für die Modi, in denen dieses Event punktet, angeführt von den Charakteren, die punkten. Onslaught und Plünderungslauf bekommen ein Team pro Allianz.",
+      "modeLabel": "Spielmodus",
+      "anyUnit": "Jede Einheit punktet, daher ist das dein stärkstes Team.",
+      "faction": "Deine stärkste Fraktion hier: {{faction}}.",
+      "broadened": "Weniger als fünf dieser Charaktere punkten im Event, daher füllen deine stärksten anderen das Team auf.",
+      "broadenedNone": "Keiner dieser Charaktere punktet im Event, daher ist das dein stärkstes Team.",
+      "hints": {
+        "allowed": "Nur Abschüsse von {{enemies}}-Feinden zählen.",
+        "excluded": "Nur Abschüsse von Feinden, die nicht {{enemies}} sind, zählen.",
+        "allowedExcluded": "Nur Abschüsse von {{enemies}}-Feinden, die nicht {{excluded}} sind, zählen.",
+        "units": "Nur Abschüsse von {{units}} zählen."
+      }
     }
   }
 }

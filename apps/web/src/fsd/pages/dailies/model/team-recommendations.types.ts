@@ -11,13 +11,23 @@ export const MIN_TEAM_SIZE = 3
 /** The team sizes the page-level "Team size" control offers (also the max team size). */
 export const TEAM_SIZES: readonly number[] = [3, 4, 5]
 
+/** What makes a character score for a Home Screen Event: the trait, alliance or faction its player
+ * filter matched (Psyker during Psyker Boost, Dark Angels during Faction Boost). */
+export type EventUnitMatch = {
+  via: "trait" | "alliance" | "faction"
+  id: string
+}
+
 /** Why a character ended up in a recommended team. `goal` is the generic "a configured priority
  * pool claimed this character" rationale — the pool supplies its own `goalId`/`projectId`.
  * `onslaught-goal` is the same, narrowed to an active Onslaught-farming Ascension goal (the
- * Onslaught page's highest-priority pool) so the row can name that distinct reason. */
+ * Onslaught page's highest-priority pool) so the row can name that distinct reason. `event-unit`
+ * marks a character that scores for the selected Home Screen Event (the HSE page's event-unit
+ * pool), naming what matched when the event's filter names it. */
 export type TeamMemberRationale =
   | { kind: "goal"; goalId: string; projectId?: string }
   | { kind: "onslaught-goal"; goalId: string; projectId?: string }
+  | { kind: "event-unit"; match?: EventUnitMatch }
   | { kind: "strength"; combatPower: number }
   | { kind: "minimum-size" }
   | { kind: "random" }
@@ -91,6 +101,10 @@ export type TeamPoolSpec = {
   id: string
   unitIds: ReadonlySet<UnitId>
   rationaleFor: (unitId: UnitId) => TeamMemberRationale | undefined
+  /** Optional rank inside the pool (higher first), applied before combat power when pools lead the
+   * order (XP Mode, or `leadWithPools`). The HSE page ranks characters matching more of the
+   * event's trackers first. */
+  rankOf?: (unitId: UnitId) => number
 }
 
 /** Soft candidate filters. An unset field matches every character. Applied as an extra AND term on
@@ -116,4 +130,9 @@ export type BuildTeamRecommendationsInput = {
   lockedRandomUnitIds: readonly UnitId[]
   /** Reshuffle token for the Random Team — starts at 0, +1 per Regenerate, resets to 0 on reload. */
   randomSeed: number
+  /** Power Mode only: order the Plan Team by pool priority (and each pool's `rankOf`) before combat
+   * power, as XP Mode always does, so a priority pool's members lead the team and the strongest
+   * others only fill it. Off for the Arena, Onslaught and Salvage Run pages, whose Power Mode
+   * fields the strongest team regardless of pools; on for the HSE event teams. */
+  leadWithPools?: boolean
 }

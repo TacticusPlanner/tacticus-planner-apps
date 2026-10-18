@@ -309,6 +309,42 @@
           "content": "Chaque carte de jour liste les améliorations à farmer sous forme de grille. Survolez ou touchez une amélioration pour voir ses unités et ses nœuds ; les améliorations terminées sont sous « Attaqués », les achats en boutique prévus sous « Boutiques » et les parties d'Onslaught sous « Onslaught ». Faites glisser ou balayez pour parcourir les jours."
         }
       }
+    },
+    "hse": {
+      "steps": {
+        "switcher": {
+          "title": "Choisir un événement",
+          "content": "L'événement en cours est affiché par défaut. Ouvrez ici n'importe quel autre événement d'écran d'accueil à venir ou passé, ou parcourez-les avec les flèches. Votre choix reste dans l'adresse de la page : vous pouvez la recharger ou la partager."
+        },
+        "status": {
+          "title": "Statut de l'événement",
+          "content": "Le nom de l'événement affiché, quand il se termine, commence ou s'est terminé, et s'il rapporte des points avec les raids de campagne."
+        },
+        "details": {
+          "title": "Détails de l'événement",
+          "content": "Ce que l'événement récompense et renforce, lu dans les données du jeu, et le palier de récompenses que vous donnent votre niveau de puissance et votre effectif."
+        },
+        "milestones": {
+          "title": "Paliers",
+          "content": "Les points et la récompense de chaque palier. La dernière case se répète sans fin après le dernier palier."
+        },
+        "projection": {
+          "title": "Projection des points",
+          "content": "Les jetons d'Arène, d'Onslaught et de Course au pillage que vous pouvez encore utiliser avant la fin de l'événement, la moyenne qu'il faut à chacun pour atteindre le dernier palier et où mènent vos propres moyennes. Modifiez les moyennes ; elles sont mémorisées pour cet événement."
+        },
+        "teams": {
+          "title": "Équipes de l'événement",
+          "content": "Les équipes à jouer pendant l'événement, composées de vos personnages les plus forts, ceux qui rapportent des points en premier. Onslaught et la Course au pillage ont une équipe par alliance ; sur mobile, choisissez le mode au-dessus des équipes. Toute règle sur les ennemis qui comptent est indiquée ici."
+        },
+        "farm": {
+          "title": "Liste de farm pour les points d'événement",
+          "content": "Où raider aujourd'hui pour gagner des points d'événement tout en faisant avancer vos objectifs, dans la limite de l'énergie qu'il vous reste aujourd'hui."
+        },
+        "top": {
+          "title": "Meilleurs emplacements",
+          "content": "Les emplacements qui rapportent le plus de points d'événement par raid et par énergie, indépendamment de vos objectifs."
+        }
+      }
     }
   },
   "blockers": {
@@ -377,6 +413,19 @@
   },
   "hse": {
     "title": "Événement d'écran d'accueil",
+    "switcher": {
+      "label": "Choisir un événement d'écran d'accueil",
+      "placeholder": "Choisir un événement",
+      "empty": "Aucun événement dans le calendrier",
+      "previous": "Événement précédent",
+      "next": "Événement suivant",
+      "option": "{{name}} · {{dates}}",
+      "groups": {
+        "running": "En cours",
+        "upcoming": "À venir",
+        "past": "Passés"
+      }
+    },
     "status": {
       "endsIn": "Se termine {{when}}",
       "earnsPoints": "Rapporte des points d'événement avec les raids de campagne : 3 par ennemi concerné, 5 sur les nœuds Élite.",
@@ -384,6 +433,7 @@
       "noneRunning": "Aucun événement d'écran d'accueil n'est en cours actuellement.",
       "next": "Prochain événement : {{name}}",
       "startsIn": "Commence {{when}} ({{date}})",
+      "endedOn": "Terminé le {{date}}",
       "noneScheduled": "Aucun événement d'écran d'accueil n'est prévu.",
       "error": "Les données de l'événement n'ont pas pu être chargées. Le reste des quotidiennes n'est pas affecté."
     },
@@ -416,6 +466,194 @@
       "filteredEmpty": "Aucun lieu ne correspond à vos filtres de raids.",
       "perRaid": "{{points}} pts par raid",
       "perEnergy": "{{value}} pts par énergie"
+    },
+    "details": {
+      "title": "Détails de l'événement",
+      "powerLevel": "Niveau de puissance : {{value}}",
+      "tier": "Votre palier : {{tier}}",
+      "tierRulesLabel": "Comment votre palier est choisi",
+      "tierRules": {
+        "low": "Bas : niveau de puissance inférieur à {{threshold}}",
+        "mid": "Moyen : niveau de puissance {{threshold}} ou plus, sans unité à une étoile bleue",
+        "high": "Haut : niveau de puissance {{threshold}} ou plus, avec un personnage ou une machine de guerre Légendaire à une étoile bleue ou plus"
+      },
+      "tiers": {
+        "High": "Haut",
+        "Mid": "Moyen",
+        "Low": "Bas",
+        "Default": "Standard"
+      },
+      "global": "Événement communautaire : les paliers comptent les points de tous les joueurs ensemble.",
+      "noData": "Les données des paliers ne sont pas encore disponibles pour cet événement.",
+      "error": "Les détails de l'événement n'ont pas pu être chargés.",
+      "showMore": "Afficher plus",
+      "showLess": "Afficher moins",
+      "milestones": "Paliers",
+      "milestonePoints": "{{points}} pts",
+      "milestoneTooltip": "{{reward}} ×{{quantity}} à {{points}} points",
+      "endless": "Sans fin",
+      "endlessTooltip": "{{reward}} ×{{quantity}} tous les {{points}} points après le dernier palier",
+      "endlessCap_one": "jusqu'à {{count}} fois",
+      "endlessCap_other": "jusqu'à {{count}} fois",
+      "rewards": {
+        "summoningToken": "Ordre de réquisition",
+        "specialSummoningToken": "Ordre de réquisition béni"
+      },
+      "modes": {
+        "Arena": "Arène",
+        "TournamentArena": "Arène de tournoi",
+        "Onslaught": "Onslaught",
+        "SalvageRun": "Course au pillage",
+        "Campaign": "campagnes",
+        "MirrorCampaign": "campagnes miroir",
+        "EliteCampaign": "campagnes d'élite",
+        "MirrorEliteCampaign": "campagnes miroir d'élite",
+        "CampaignEvent": "événements de campagne",
+        "Survival": "Survie",
+        "LegendaryEvent": "Événements Légendaires",
+        "MachinesOfWarEvent": "événements de machines de guerre",
+        "GuildWars": "Guerres de guilde",
+        "LinearHeroEvent": "événements de héros"
+      },
+      "tags": {
+        "MachineOfWar": "machines de guerre",
+        "Steppable": "unités franchissables",
+        "Summon": "invocations"
+      },
+      "rarities": {
+        "Common": "Commun",
+        "Uncommon": "Peu commun",
+        "Rare": "Rare",
+        "Epic": "Épique",
+        "Legendary": "Légendaire",
+        "Mythic": "Mythique"
+      },
+      "phrase": {
+        "modesIn": "en {{modes}}",
+        "modesExcept": "dans tous les modes sauf {{modes}}",
+        "modesAll": "dans tous les modes",
+        "group": "{{items}}",
+        "excluding": "{{noun}} (hors {{excluded}})",
+        "allCharacters": "Tous les personnages",
+        "charactersOf": "Les personnages {{filter}}",
+        "unitsOf": "des unités {{filter}}",
+        "characters": "des personnages",
+        "units": "des unités",
+        "named": "{{names}}",
+        "enemy": "unité ennemie",
+        "enemyOf": "unité ennemie {{filter}}",
+        "rateXp": "{{rarity}} {{value}}x",
+        "ratePoints": "{{rarity}} {{value}}"
+      },
+      "lines": {
+        "xp": "{{units}} gagnent {{multiplier}}x d'XP {{modes}}",
+        "xpTeam": "{{units}} gagnent {{multiplier}}x d'XP {{modes}} quand toute l'équipe est d'une seule faction",
+        "xpByRarity": "{{units}} gagnent de l'XP bonus selon la rareté ({{rates}}) {{modes}}",
+        "xpByRarityTeam": "{{units}} gagnent de l'XP bonus selon la rareté ({{rates}}) {{modes}} quand toute l'équipe est d'une seule faction",
+        "stat": "{{units}} ont +{{health}} % de santé, +{{damage}} % de dégâts et +{{armour}} % d'armure {{modes}}",
+        "kill_one": "Vous gagnez {{count}} point pour chaque {{enemy}} vaincue {{modes}}",
+        "kill_other": "Vous gagnez {{count}} points pour chaque {{enemy}} vaincue {{modes}}",
+        "killWith_one": "Vous gagnez {{count}} point pour chaque {{enemy}} vaincue avec {{player}} {{modes}}",
+        "killWith_other": "Vous gagnez {{count}} points pour chaque {{enemy}} vaincue avec {{player}} {{modes}}",
+        "waves_one": "Vous gagnez {{count}} point pour chaque vague vaincue {{modes}}",
+        "waves_other": "Vous gagnez {{count}} points pour chaque vague vaincue {{modes}}",
+        "factionMajority_one": "Vous gagnez {{count}} point pour chaque combat {{modes}} où la plupart des unités déployées sont d'une seule faction",
+        "factionMajority_other": "Vous gagnez {{count}} points pour chaque combat {{modes}} où la plupart des unités déployées sont d'une seule faction",
+        "fullLineUp_one": "Vous gagnez {{count}} point pour chaque combat {{modes}} où toute votre formation est d'une seule faction",
+        "fullLineUp_other": "Vous gagnez {{count}} points pour chaque combat {{modes}} où toute votre formation est d'une seule faction",
+        "donateUpgrade_one": "Vous gagnez {{count}} point pour chaque amélioration donnée à un membre de la guilde",
+        "donateUpgrade_other": "Vous gagnez {{count}} points pour chaque amélioration donnée à un membre de la guilde",
+        "donateUpgradeByRarity": "Vous gagnez des points pour chaque amélioration donnée à un membre de la guilde : {{rates}}",
+        "donateIntel_one": "Vous gagnez {{count}} point pour chaque renseignement donné à un projet de guilde",
+        "donateIntel_other": "Vous gagnez {{count}} points pour chaque renseignement donné à un projet de guilde",
+        "dispatchExpedition_one": "Vous gagnez {{count}} point pour chaque expédition envoyée",
+        "dispatchExpedition_other": "Vous gagnez {{count}} points pour chaque expédition envoyée"
+      }
+    },
+    "projection": {
+      "title": "Projection des points",
+      "loading": "Lecture de vos jetons synchronisés…",
+      "error": "Vos jetons synchronisés n'ont pas pu être lus. Les détails de l'événement ne sont pas affectés.",
+      "allLocked": "Aucun des modes où cet événement rapporte des points n'est encore débloqué : {{modes}}.",
+      "target": "Dernier palier",
+      "pointsSoFar": "Points actuels",
+      "pointsSoFarHint": "Recopiez-les depuis l'événement dans le jeu ; votre synchronisation ne les inclut pas.",
+      "remaining": "Restant",
+      "unitsToFinal": "À vaincre",
+      "required": "Nécessaire par jeton",
+      "points": "{{value}} pts",
+      "units": {
+        "kills_one": "{{count}} élimination",
+        "kills_other": "{{count}} éliminations",
+        "waves_one": "{{count}} vague",
+        "waves_other": "{{count}} vagues"
+      },
+      "perToken": {
+        "kills": "{{value}} éliminations par jeton",
+        "waves": "{{value}} vagues par jeton",
+        "points": "{{value}} points d'événement par jeton"
+      },
+      "finalReached": "Dernier palier atteint",
+      "repeatsSoFar_one": "{{count}} récompense sans fin pour l'instant",
+      "repeatsSoFar_other": "{{count}} récompenses sans fin pour l'instant",
+      "columns": {
+        "mode": "Mode",
+        "tokens": "Jetons",
+        "average": "Moyenne par jeton",
+        "perUnit": "Points par unité",
+        "points": "Points"
+      },
+      "unit": {
+        "kills": "éliminations",
+        "waves": "vagues",
+        "battles": "combats"
+      },
+      "perUnit": {
+        "kills_one": "{{count}} par élimination",
+        "kills_other": "{{count}} par élimination",
+        "waves_one": "{{count}} par vague",
+        "waves_other": "{{count}} par vague",
+        "battles_one": "{{count}} par combat",
+        "battles_other": "{{count}} par combat"
+      },
+      "averageLabel": "Moyenne de {{unit}} par jeton en {{mode}}",
+      "averageFixed": "1 combat",
+      "averageNeeded": "Saisissez une moyenne",
+      "tokensValue_one": "{{count}} jeton",
+      "tokensValue_other": "{{count}} jetons",
+      "projected": "Points projetés",
+      "projectedValue": "{{points}} pts",
+      "needAverage": "Saisissez une moyenne pour chaque mode pour voir les points projetés.",
+      "milestonesReached": "{{reached}} paliers sur {{total}} ({{points}} pts)",
+      "milestonesNone": "0 palier sur {{total}}",
+      "toNext": "{{points}} pts avant le prochain palier",
+      "toNextRepeat": "{{points}} pts avant la prochaine récompense sans fin",
+      "repeats_one": "{{count}} récompense sans fin après le dernier palier",
+      "repeats_other": "{{count}} récompenses sans fin après le dernier palier",
+      "notes": {
+        "summed": "{{mode}} : {{count}} règles de points s'appliquent, donc « {{perUnit}} » suppose que chacune les remplit toutes.",
+        "locked": "Pas encore débloqué, ignoré : {{modes}}.",
+        "enemyRestricted": "Seuls certains ennemis comptent (voir les détails de l'événement) : saisissez votre moyenne d'éliminations qui comptent.",
+        "battles": "Les modes de combat rapportent une fois par jeton : un combat par jeton.",
+        "campaign": "Les raids de campagne rapportent aussi des points dans cet événement ; ils sont planifiés dans la liste de farm ci-dessous.",
+        "syncedAt": "Jetons issus de votre synchronisation {{when}}, en supposant que vous les dépensez avant que vos réserves soient pleines.",
+        "upcoming": "Les jetons supposent des réserves pleines au début de l'événement et que vous les dépensez avant qu'elles soient pleines."
+      }
+    },
+    "teams": {
+      "title": "Équipes de l'événement",
+      "description": "Équipes les plus fortes pour les modes où cet événement rapporte des points, menées par les personnages qui en rapportent. Onslaught et la Course au pillage ont une équipe par alliance.",
+      "modeLabel": "Mode de jeu",
+      "anyUnit": "Toute unité rapporte des points, voici donc votre équipe la plus forte.",
+      "faction": "Votre faction la plus forte ici : {{faction}}.",
+      "broadened": "Moins de cinq de ces personnages rapportent des points pour l'événement, vos autres personnages les plus forts complètent donc l'équipe.",
+      "broadenedNone": "Aucun de ces personnages ne rapporte de points pour l'événement, voici donc votre équipe la plus forte.",
+      "hints": {
+        "allowed": "Seules les éliminations d'ennemis {{enemies}} comptent.",
+        "excluded": "Seules les éliminations d'ennemis qui ne sont pas {{enemies}} comptent.",
+        "allowedExcluded": "Seules les éliminations d'ennemis {{enemies}} qui ne sont pas {{excluded}} comptent.",
+        "units": "Seules les éliminations de {{units}} comptent."
+      }
     }
   }
 }

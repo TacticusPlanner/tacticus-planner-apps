@@ -65,3 +65,111 @@ export const eventsCalendarRowSchema = eventsCalendarEntryObjectSchema
   .refine(hasPositiveTimeWindow, {
     message: "startUtc must be strictly before endUtc",
   })
+
+// --- Home Screen Event scoring (`config.hse` on a HomeScreenEvent definition) --------------------
+// Served by the API's add-hse-points-projection change: variants with reward tiers, point trackers and
+// bonus modifiers, all data and no display text (the client builds its own copy from these values).
+// `config` itself stays `unknown` on the definition so a scoring shape change can never fail the whole
+// catalog sync; consumers read it through `parseHseConfig` (hse-scoring.ts).
+
+/** Passes a value when it is not in `disallowed` and, if `allowed` is set, is in `allowed`. */
+export const hseRestrictionSchema = z.looseObject({
+  allowed: z.array(z.string()).nullable(),
+  disallowed: z.array(z.string()).nullable(),
+})
+
+/** `tags` match a unit's traits or its alliance; `factionIds` its faction; `unitIds` the unit itself. */
+export const hseUnitFilterSchema = z.looseObject({
+  tags: hseRestrictionSchema.nullable(),
+  factionIds: hseRestrictionSchema.nullable(),
+  unitIds: z.array(z.string()).nullable(),
+})
+
+export const hseMilestoneSchema = z.looseObject({
+  requiredPoints: z.number().int().positive(),
+  rewardId: z.string().min(1),
+  quantity: z.number().int().positive(),
+})
+
+/** The endless step after the last milestone: `points` per repeat, at most `cap` repeats (null: no cap). */
+export const hseRepeatSchema = z.looseObject({
+  points: z.number().int().positive(),
+  rewardId: z.string().min(1),
+  quantity: z.number().int().positive(),
+  cap: z.number().int().positive().nullable(),
+})
+
+const hseTierKeys = ["High", "Mid", "Low", "Default"] as const
+
+export const hseTierSchema = z.looseObject({
+  tier: z.enum(hseTierKeys),
+  /** Cumulative and strictly increasing (the server validates it). */
+  milestones: z.array(hseMilestoneSchema).min(1),
+  repeat: hseRepeatSchema.nullable(),
+})
+
+/** `kind` stays an open string: a tracker kind this client does not know is kept and simply ignored. */
+export const hseTrackerSchema = z.looseObject({
+  kind: z.string().min(1),
+  points: z.number().int().positive(),
+  pointsByRarity: z.record(z.string(), z.number()).nullable(),
+  gameModes: hseRestrictionSchema.nullable(),
+  enemy: hseUnitFilterSchema.nullable(),
+  player: hseUnitFilterSchema.nullable(),
+})
+
+const hseModifierTargetShape = {
+  gameModes: hseRestrictionSchema.nullable(),
+  player: hseUnitFilterSchema.nullable(),
+}
+
+/** Exactly one of `multiplier` (flat) and `multiplierByRarity` is set; the other is null or omitted. */
+export const hseUnitXpModifierSchema = z.looseObject({
+  kind: z.literal("UnitXp"),
+  multiplier: z.number().positive().nullish(),
+  multiplierByRarity: z.record(z.string(), z.number().positive()).nullish(),
+  sameFactionTeam: z.boolean(),
+  ...hseModifierTargetShape,
+})
+
+export const hseStatBoostModifierSchema = z.looseObject({
+  kind: z.literal("StatBoost"),
+  healthPct: z.number().int(),
+  damagePct: z.number().int(),
+  armourPct: z.number().int(),
+  ...hseModifierTargetShape,
+})
+
+const hseModifierKinds = new Set(["UnitXp", "StatBoost"])
+
+/** Known modifier kinds are validated; a kind this client does not know is dropped, not a failure. */
+const hseModifiersSchema = z.preprocess(
+  (value) =>
+    Array.isArray(value)
+      ? value.filter(
+          (item: unknown) =>
+            typeof item === "object" &&
+            item !== null &&
+            hseModifierKinds.has(String((item as { kind?: unknown }).kind))
+        )
+      : value,
+  z.array(
+    z.discriminatedUnion("kind", [
+      hseUnitXpModifierSchema,
+      hseStatBoostModifierSchema,
+    ])
+  )
+)
+
+export const hseVariantSchema = z.looseObject({
+  variantKey: z.string().min(1),
+  /** `Global`: the milestones count every player's points (a community event). */
+  scope: z.enum(["Personal", "Global"]),
+  tiers: z.array(hseTierSchema).min(1),
+  trackers: z.array(hseTrackerSchema),
+  modifiers: hseModifiersSchema,
+})
+
+export const hseConfigSchema = z.looseObject({
+  variants: z.array(hseVariantSchema).min(1),
+})

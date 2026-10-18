@@ -48,6 +48,8 @@
     "goal": "You have an active goal for this character.",
     "projectGoal": "In your selected project.",
     "onslaughtGoal": "Targeted by an Onslaught Ascend goal.",
+    "eventUnit": "Scores for the event ({{match}}).",
+    "eventUnitAny": "Scores for the event.",
     "strength": "Chosen for combat strength ({{power}}).",
     "minimumSize": "Added to complete the team.",
     "random": "Drawn at random."

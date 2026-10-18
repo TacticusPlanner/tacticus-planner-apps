@@ -17,6 +17,7 @@ import { cn } from "@workspace/ui/lib/utils"
 import { EntityIcon, RankBadge, RarityIcon } from "@/shared/ui"
 
 import type {
+  EventUnitMatch,
   TeamMember,
   TeamMemberPreferenceMatch,
   TeamMemberRationale,
@@ -40,7 +41,21 @@ export function TeamList({
     "characters",
     "traits",
     "damageTypes",
+    "factions",
+    "common",
   ])
+
+  // What an event unit matched: a trait, an alliance or a faction, from the namespace naming it.
+  const eventUnitMatchName = (match: EventUnitMatch): string => {
+    switch (match.via) {
+      case "trait":
+        return t(`traits:${match.id}`, { defaultValue: match.id })
+      case "alliance":
+        return t(`common:alliances.${match.id}`, { defaultValue: match.id })
+      case "faction":
+        return t(`factions:${match.id}`, { defaultValue: match.id })
+    }
+  }
 
   const preferenceMarker = (
     preference: TeamMemberPreferenceMatch | undefined,
@@ -80,6 +95,12 @@ export function TeamList({
           : t("rationale.goal")
       case "onslaught-goal":
         return t("rationale.onslaughtGoal")
+      case "event-unit":
+        return rationale.match
+          ? t("rationale.eventUnit", {
+              match: eventUnitMatchName(rationale.match),
+            })
+          : t("rationale.eventUnitAny")
       case "strength":
         return t("rationale.strength", {
           power: rationale.combatPower.toLocaleString(),

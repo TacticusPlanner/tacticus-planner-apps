@@ -46,4 +46,27 @@ describe("Dailies translations", () => {
       )
     }
   )
+
+  it.each([
+    ["en", en],
+    ["de", de],
+    ["es", es],
+    ["fr", fr],
+  ])("provides the HSE event teams copy and tour step in %s", (_locale, r) => {
+    const teams = r.hse.teams
+    expect(teams.title).toBeTruthy()
+    expect(teams.description).toBeTruthy()
+    expect(teams.modeLabel).toBeTruthy()
+    expect(teams.anyUnit).toBeTruthy()
+    expect(teams.broadened).toBeTruthy()
+    expect(teams.broadenedNone).toBeTruthy()
+    expect(teams.faction).toContain("{{faction}}")
+    expect(teams.hints.allowed).toContain("{{enemies}}")
+    expect(teams.hints.excluded).toContain("{{enemies}}")
+    expect(teams.hints.allowedExcluded).toContain("{{enemies}}")
+    expect(teams.hints.allowedExcluded).toContain("{{excluded}}")
+    expect(teams.hints.units).toContain("{{units}}")
+    expect(r.tour.hse.steps.teams.title).toBeTruthy()
+    expect(r.tour.hse.steps.teams.content).toBeTruthy()
+  })
 })

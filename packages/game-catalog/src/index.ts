@@ -23,7 +23,25 @@ export {
   type GameCatalogEventRecurrence,
   type GameCatalogEventsCalendarEntry,
   type GameCatalogGuildRaidMeta,
+  type GameCatalogHseConfig,
+  type GameCatalogHseVariant,
+  type GameCatalogHseTier,
+  type GameCatalogHseTierKey,
+  type GameCatalogHseMilestone,
+  type GameCatalogHseRepeat,
+  type GameCatalogHseTracker,
+  type GameCatalogHseUnitFilter,
+  type GameCatalogHseRestriction,
+  type GameCatalogHseModifier,
+  type GameCatalogHseUnitXpModifier,
+  type GameCatalogHseStatBoostModifier,
 } from "./types"
+
+export {
+  parseHseConfig,
+  resolveHseVariant,
+  hseRestrictionPasses,
+} from "./hse-scoring"
 
 export type {
   GameCatalogCampaignBattleView,
