@@ -323,7 +323,9 @@
       "doesNotSatisfy": "Ne remplit pas : {{objectives}}",
       "sort": "Trier",
       "sortPointsLeft": "Points restants",
-      "sortPower": "Puissance"
+      "sortPower": "Puissance",
+      "estimating": "Estimation…",
+      "pointsScope": "Points restants sur toute la voie, tous les combats"
     },
     "toasts": {
       "reloaded": "Ton plan a été modifié sur un autre appareil et a été rechargé. Réessaie.",
@@ -340,7 +342,8 @@
     "lastRunNone": "Dernière manche : aucun combat réussi",
     "pointsLeft": "{{points}} points restants · combats 1–{{depth}}",
     "pointsLeftNeedsDepth": "Définissez la profondeur pour voir les points restants",
-    "clearedThrough": "Déjà validé jusqu'au combat {{battle}}"
+    "clearedThrough": "Déjà validé jusqu'au combat {{battle}}",
+    "pointsLeftCannotClear": "Ne franchit pas encore le combat 1"
   },
   "objective": {
     "minHits_one": "Min. {{count}} coup",

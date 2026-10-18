@@ -27,7 +27,7 @@ The team editor's picker SHALL show the lane's five objectives as multi-select c
 
 ### Requirement: Picker tiles show remaining points
 
-Each picker tile's points figure SHALL be the unit's **remaining points** on the lane as the eligibility leaderboard defines them (`legendary-event-eligibility`), from the synced progress, read as "N pts left". Goals Preview never changes it.
+Each picker tile's points figure SHALL be the unit's **remaining points** on the lane as the eligibility leaderboard defines them (`legendary-event-eligibility`), from the synced progress, read as "N pts left", with a tooltip saying it covers the whole lane, all battles (unlike a card's points left, which stops at its depth). Goals Preview never changes it.
 
 Assumptions:
 
@@ -49,7 +49,7 @@ Assumptions:
 
 ### Requirement: Picker tiles show each owned unit's strength
 
-Every tile of a unit the shown roster holds SHALL show its rarity icon and rank badge and, when clear estimates are available, its estimated clears on the lane as "~n" (a team of five like this unit, `legendary-event-clear-estimates`), whether or not Goals Preview is on. With Goals Preview on, these read the preview roster and the tile keeps its preview marker. A locked unit, or one whose ownership is unknown, shows none of the three. While estimates load the clears show a placeholder dash.
+Every tile of a unit the shown roster holds SHALL show its rarity icon and rank badge and, when clear estimates are available, its estimated clears on the lane as "~n" (a team of five like this unit, `legendary-event-clear-estimates`), whether or not Goals Preview is on. With Goals Preview on, these read the preview roster and the tile keeps its preview marker. Locked or unknown units show none of the three. While estimates load the clears show a dash, announced as "Estimating…".
 
 #### Scenario: Owned unit at a glance
 

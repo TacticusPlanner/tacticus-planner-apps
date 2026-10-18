@@ -29,8 +29,9 @@ export function TeamPickerUnitState({
       />
       <RankBadge iconClassName="size-4" rank={unit.rank} showLabel={false} />
       {clears === "pending" ? (
-        <span aria-hidden data-testid="team-picker-clears">
-          –
+        <span data-testid="team-picker-clears">
+          <span aria-hidden>–</span>
+          <span className="sr-only">{t("teams.picker.estimating")}</span>
         </span>
       ) : clears === null ? null : (
         <span data-testid="team-picker-clears">

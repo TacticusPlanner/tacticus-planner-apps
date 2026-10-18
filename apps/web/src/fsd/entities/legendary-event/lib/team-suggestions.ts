@@ -121,12 +121,12 @@ export function suggestLaneTeams(
     if (members.length < MIN_TEAM_MEMBERS) continue
     const key = memberKey(members)
     if (seen.has(key) || existingKeys.has(key)) continue
-    seen.add(key)
     const covered = derivedTeamCoverage(members, lane, input.units)
     const depth =
       teamClearEstimate(members, battlePowers, roster, config)?.depth ?? 0
     // A subset objective already cleared through the depth narrowed the candidates for nothing
-    // (spec: suggestions do not rely on objectives already cleared).
+    // (spec: suggestions do not rely on objectives already cleared). The drop does not claim the
+    // member set, so a later subset picking the same members still proposes it.
     if (
       subset.some((index) =>
         objectiveClearedThrough(model, progress, index, depth)
@@ -134,6 +134,7 @@ export function suggestLaneTeams(
     ) {
       continue
     }
+    seen.add(key)
     const gainPoints =
       laneReachablePoints(model, progress, [
         ...input.existingTeams,

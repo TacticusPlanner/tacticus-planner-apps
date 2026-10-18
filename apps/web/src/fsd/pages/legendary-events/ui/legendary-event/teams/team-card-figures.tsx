@@ -2,16 +2,38 @@ import { useTranslation } from "react-i18next"
 
 import type { TeamCardViewModel } from "./teams.view-model"
 
-/** The points the team has left over its depth, or "—" with "Set depth to see points left" when
- *  it has no depth (spec: a team card shows the points it has left within its depth). */
+/** The points the team has left over its depth (spec: a team card shows the points it has left
+ *  within its depth): plain "—" for an incomplete team (the card already warns about it), "Can't
+ *  clear battle 1 yet" at depth 0, and "—" with "Set depth to see points left" without a depth. */
 export function PointsLeft({
   card,
   format,
 }: {
-  card: Pick<TeamCardViewModel, "pointsLeft" | "displayedDepth">
+  card: Pick<TeamCardViewModel, "pointsLeft" | "displayedDepth" | "incomplete">
   format: (value: number) => string
 }) {
   const { t } = useTranslation("legendaryEvents")
+  if (card.incomplete) {
+    return (
+      <span
+        aria-hidden
+        className="whitespace-nowrap text-muted-foreground"
+        data-testid="team-card-points"
+      >
+        —
+      </span>
+    )
+  }
+  if (card.displayedDepth === 0) {
+    return (
+      <span
+        className="whitespace-nowrap text-muted-foreground"
+        data-testid="team-card-points"
+      >
+        {t("teams.pointsLeftCannotClear")}
+      </span>
+    )
+  }
   if (card.pointsLeft === null || card.displayedDepth === null) {
     return (
       <span

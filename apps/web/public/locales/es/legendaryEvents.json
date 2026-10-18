@@ -323,7 +323,9 @@
       "doesNotSatisfy": "No cumple: {{objectives}}",
       "sort": "Ordenar",
       "sortPointsLeft": "Puntos restantes",
-      "sortPower": "Poder"
+      "sortPower": "Poder",
+      "estimating": "Estimando…",
+      "pointsScope": "Puntos restantes en todo el carril, todas las batallas"
     },
     "toasts": {
       "reloaded": "Tu plan cambió en otro dispositivo y se ha recargado. Inténtalo de nuevo.",
@@ -340,7 +342,8 @@
     "lastRunNone": "Última ronda: ninguna batalla superada",
     "pointsLeft": "Quedan {{points}} puntos · batallas 1–{{depth}}",
     "pointsLeftNeedsDepth": "Fija la profundidad para ver los puntos restantes",
-    "clearedThrough": "Ya completado hasta la batalla {{battle}}"
+    "clearedThrough": "Ya completado hasta la batalla {{battle}}",
+    "pointsLeftCannotClear": "Aún no supera la batalla 1"
   },
   "objective": {
     "minHits_one": "Mín. {{count}} golpe",

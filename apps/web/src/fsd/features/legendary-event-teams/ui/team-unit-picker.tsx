@@ -388,6 +388,7 @@ export function TeamUnitPicker({
                   <span
                     className="text-xs text-muted-foreground tabular-nums"
                     data-testid="team-picker-points"
+                    title={t("teams.picker.pointsScope")}
                   >
                     {t("teams.picker.points", {
                       points: number.format(tile.remainingPoints),

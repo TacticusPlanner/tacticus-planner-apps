@@ -363,6 +363,20 @@ describe("TeamCard", () => {
     )
   })
 
+  it("says the team cannot clear battle 1 at depth 0", () => {
+    renderEstimatedCard(team(), estimateOf({ depth: 0 }), { run: 2 })
+    expect(screen.getByTestId("team-card-points")).toHaveTextContent(
+      "Can't clear battle 1 yet"
+    )
+  })
+
+  it("shows a plain dash for an incomplete team", () => {
+    renderCard(team({ memberUnitIds: [teamUnits.a.id, teamUnits.b.id] }))
+    const points = screen.getByTestId("team-card-points")
+    expect(points).toHaveTextContent("—")
+    expect(points).not.toHaveTextContent("Set depth")
+  })
+
   it("shows a dash with the reason when the team has no depth", () => {
     renderCard(team(), 2)
     const points = screen.getByTestId("team-card-points")

@@ -323,7 +323,9 @@
       "doesNotSatisfy": "Does not satisfy {{objectives}}",
       "sort": "Sort",
       "sortPointsLeft": "Points left",
-      "sortPower": "Power"
+      "sortPower": "Power",
+      "estimating": "Estimating…",
+      "pointsScope": "Points left on the whole lane, all battles"
     },
     "toasts": {
       "reloaded": "Your plan changed on another device and was reloaded. Try again.",
@@ -340,7 +342,8 @@
     "lastRunNone": "Last run: no battle cleared",
     "pointsLeft": "{{points}} points left · battles 1–{{depth}}",
     "pointsLeftNeedsDepth": "Set depth to see points left",
-    "clearedThrough": "Already cleared through battle {{battle}}"
+    "clearedThrough": "Already cleared through battle {{battle}}",
+    "pointsLeftCannotClear": "Can't clear battle 1 yet"
   },
   "objective": {
     "minHits_one": "Min {{count}} hit",

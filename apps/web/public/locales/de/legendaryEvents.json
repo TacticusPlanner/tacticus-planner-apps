@@ -323,7 +323,9 @@
       "doesNotSatisfy": "Erfüllt nicht: {{objectives}}",
       "sort": "Sortieren",
       "sortPointsLeft": "Verbleibende Punkte",
-      "sortPower": "Stärke"
+      "sortPower": "Stärke",
+      "estimating": "Wird geschätzt…",
+      "pointsScope": "Verbleibende Punkte auf der ganzen Bahn, alle Kämpfe"
     },
     "toasts": {
       "reloaded": "Dein Plan wurde auf einem anderen Gerät geändert und neu geladen. Versuche es erneut.",
@@ -340,7 +342,8 @@
     "lastRunNone": "Letzter Durchlauf: kein Kampf geschafft",
     "pointsLeft": "Noch {{points}} Punkte · Kämpfe 1–{{depth}}",
     "pointsLeftNeedsDepth": "Tiefe festlegen, um die verbleibenden Punkte zu sehen",
-    "clearedThrough": "Bereits bis Kampf {{battle}} erfüllt"
+    "clearedThrough": "Bereits bis Kampf {{battle}} erfüllt",
+    "pointsLeftCannotClear": "Schafft Kampf 1 noch nicht"
   },
   "objective": {
     "minHits_one": "Mind. {{count}} Treffer",

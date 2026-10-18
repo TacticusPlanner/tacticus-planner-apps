@@ -87,7 +87,7 @@ The team editor SHALL open from Add team (empty) or Edit (prefilled) as a dialog
 
 ### Requirement: A team card shows the points it has left within its depth
 
-A card's points figure SHALL be the lane reachable points (`legendary-event-upgrade-impact`) of that team alone over battles 1..its displayed depth on the synced progress, in event points, read as "N points left · battles 1–D". Other teams are not deducted. With no displayed depth it SHALL show "—" with "Set depth to see points left".
+A card's points figure SHALL be the lane reachable points (`legendary-event-upgrade-impact`) of that team alone over battles 1..its displayed depth on the synced progress, read as "N points left · battles 1–D". Other teams are not deducted. Without a usable depth it SHALL show "—" with a reason, or "Can't clear battle 1 yet" at depth 0 (see scenarios).
 
 Assumptions:
 
@@ -117,9 +117,21 @@ Assumptions:
 
 #### Scenario: No depth
 
-- **GIVEN** an incomplete team, or a complete team with no manual depth and no estimate
+- **GIVEN** a complete team with no manual depth and no estimate
 - **WHEN** its card renders
 - **THEN** the points figure shows "—" with "Set depth to see points left"
+
+#### Scenario: Depth 0
+
+- **GIVEN** a complete team whose estimate is 0 clears
+- **WHEN** its card renders
+- **THEN** the points figure reads "Can't clear battle 1 yet", not "0 points left · battles 1–0"
+
+#### Scenario: Incomplete team
+
+- **GIVEN** a team with fewer than five members
+- **WHEN** its card renders
+- **THEN** the points figure shows a plain "—" without the "Set depth" reason
 
 ### Requirement: Covered objectives already cleared through the depth are marked
 

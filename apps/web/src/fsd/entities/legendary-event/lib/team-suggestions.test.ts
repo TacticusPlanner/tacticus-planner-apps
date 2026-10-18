@@ -199,4 +199,20 @@ describe("suggestLaneTeams (objectives already cleared)", () => {
     )
     expect(subsets).toContainEqual([ULTRAMARINES])
   })
+
+  it("keeps the member set free when a subset is dropped, so {Melee} with the same members is proposed", () => {
+    const four = new Set([
+      "ultraApothecary",
+      "ultraTitus",
+      "ultraCalgar",
+      "ultraInceptorSgt",
+    ])
+    const subsets = suggest({
+      units: units.filter((unit) => four.has(unit.id)),
+      onlyUnlocked: false,
+      progress: ultramarinesClearedThrough(UTHAR_ALPHA_PROGRESS.battles.length),
+    }).map((suggestion) => suggestion.objectiveIndexes)
+    expect(subsets).not.toContainEqual([ULTRAMARINES])
+    expect(subsets).toContainEqual([MELEE])
+  })
 })
