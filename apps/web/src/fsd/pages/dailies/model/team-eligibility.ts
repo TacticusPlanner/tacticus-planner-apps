@@ -1,8 +1,9 @@
+import { levelCapForProgression, type UnitId } from "@workspace/game-domain"
+
 import {
-  characterCombatPower,
-  levelCapForProgression,
-  type UnitId,
-} from "@workspace/game-domain"
+  rosterCharacterPower,
+  type UnitPowerContext,
+} from "@/shared/unit-power"
 
 import {
   MIN_TEAM_SIZE,
@@ -19,17 +20,30 @@ export function isXpCapped(character: TeamRosterCharacter): boolean {
   return character.xpLevel >= levelCapForProgression(character.progression)
 }
 
-/** This character's combat-power estimate (see `@workspace/game-domain`). Roster characters are
- * always owned, so `unlocked` is always true here. */
-export function combatPowerOf(character: TeamRosterCharacter): number {
-  return characterCombatPower({
-    unlocked: true,
-    rank: character.rank,
-    progression: character.progression,
-    appliedUpgradeCount: character.appliedUpgradeCount,
-    activeAbilityLevel: character.activeAbilityLevel,
-    passiveAbilityLevel: character.passiveAbilityLevel,
-  })
+/** This character's in-game power, equipped items included (see `@/shared/unit-power`). A
+ * character whose power data is unavailable (no context, or a unit or item it does not know) counts
+ * as 0, so it sorts last instead of breaking the ordering. */
+export function combatPowerOf(
+  character: TeamRosterCharacter,
+  unitPower: UnitPowerContext | null
+): number {
+  if (!unitPower) return 0
+  return (
+    rosterCharacterPower(
+      {
+        unitId: character.unitId,
+        rank: character.rank,
+        progressionIndex: character.progression,
+        appliedUpgradeSlots: character.appliedUpgradeSlots,
+        abilities: [
+          { level: character.activeAbilityLevel },
+          { level: character.passiveAbilityLevel },
+        ],
+        equippedItems: character.equippedItems,
+      },
+      unitPower
+    ) ?? 0
+  )
 }
 
 export type ExpandedPool = {

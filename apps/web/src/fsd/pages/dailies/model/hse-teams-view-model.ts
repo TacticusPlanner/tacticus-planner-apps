@@ -4,6 +4,7 @@ import type {
   HseEventPointsState,
   HseInstance,
 } from "@/features/home-screen-event-points"
+import type { UnitPowerContext } from "@/shared/unit-power"
 
 import { mapRosterCharacter } from "./arena-recommendations"
 import type { RawRosterCharacter } from "./arena-recommendations.types"
@@ -51,11 +52,14 @@ export function buildHseTeamsViewModel(input: {
   instance: HseInstance | null
   points: HseEventPointsState
   read: HseTeamsRead | undefined
+  /** The power formula's game data; "loading" until it is read, null when it is unavailable. */
+  unitPower: UnitPowerContext | null | "loading"
   retry: () => void
 }): HseTeamsViewModel {
   const scoring = teamScoring(input.instance, input.points)
   if (scoring === null) return { status: "hidden" }
-  if (scoring === "loading" || !input.read) return { status: "loading" }
+  if (scoring === "loading" || !input.read || input.unitPower === "loading")
+    return { status: "loading" }
   if (input.read.status === "error")
     return { status: "error", retry: input.retry }
   const catalog = new Map<
@@ -77,6 +81,7 @@ export function buildHseTeamsViewModel(input: {
       trackers: scoring.details.trackers,
       roster: input.read.roster.map(mapRosterCharacter),
       catalog: catalog as HseTeamCatalog,
+      unitPower: input.unitPower,
     }),
   }
 }

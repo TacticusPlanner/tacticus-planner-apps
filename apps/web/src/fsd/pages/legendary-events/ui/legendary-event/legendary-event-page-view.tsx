@@ -10,6 +10,7 @@ import {
 } from "@/features/legendary-event-tokens"
 import { useUnitName } from "@/shared/unit-name"
 
+import { BattlesSection } from "./battles/battles-section"
 import { LaneOverview } from "./lane-overview"
 import { LeaderboardSection } from "./leaderboard/leaderboard-section"
 import { LegendaryEventHeader } from "./legendary-event-header"
@@ -26,7 +27,7 @@ import { TeamsSection } from "./teams/teams-section"
 /**
  * The event page on both forms (design D3): header, the tab strip, then the Overview tab (Next
  * token, Run status, Last run, Token plan, Run forecast, lane summary, cross-lane leaderboard) or a lane tab
- * (lane overview, Teams, Upgrade impact, synced progress, then the lane's leaderboard). The forms
+ * (lane overview, Teams, Upgrade impact, synced progress, Battles, then the lane's leaderboard). The forms
  * differ only in the strip's stickiness and in the table-versus-cards rendering of the leaderboard
  * and grid. The team editor is mounted once here (design D4), so the Teams section and both
  * leaderboards open the same instance.
@@ -144,6 +145,13 @@ export function LegendaryEventPageView({
             marks={props.marks}
             progressGrid={props.progressGrid}
           />
+          {props.battles ? (
+            <BattlesSection
+              battles={props.battles}
+              isMobile={isMobile}
+              laneId={selectedTab}
+            />
+          ) : null}
           <LeaderboardSection
             event={props.event}
             laneId={selectedTab}

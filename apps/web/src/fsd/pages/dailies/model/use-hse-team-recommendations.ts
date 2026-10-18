@@ -13,6 +13,7 @@ import {
   buildHseTeamsViewModel,
   type HseTeamsRead,
 } from "./hse-teams-view-model"
+import { useTeamUnitPower } from "./use-team-unit-power"
 
 // `useLiveQuery` has no error channel (a rejected querier throws to the error boundary), so the
 // querier resolves a tagged result instead.
@@ -40,5 +41,12 @@ export function useHseTeamRecommendations(
   const [retryNonce, setRetryNonce] = useState(0)
   const read = useLiveQuery(readTeams, [retryNonce])
   const retry = useCallback(() => setRetryNonce((nonce) => nonce + 1), [])
-  return buildHseTeamsViewModel({ instance, points, read, retry })
+  const { loading: unitPowerLoading, unitPower } = useTeamUnitPower()
+  return buildHseTeamsViewModel({
+    instance,
+    points,
+    read,
+    unitPower: unitPowerLoading ? "loading" : unitPower,
+    retry,
+  })
 }

@@ -2,7 +2,10 @@ import { describe, expect, it } from "vitest"
 
 import { unitIdSchema, type Rank, type UnitId } from "@workspace/game-domain"
 
-import { buildArenaRecommendations } from "./arena-recommendations"
+import {
+  buildArenaRecommendations,
+  mapRosterCharacter,
+} from "./arena-recommendations"
 import type {
   ArenaCategoryId,
   ArenaGoalContribution,
@@ -10,6 +13,9 @@ import type {
   ArenaRosterCharacter,
   BuildArenaRecommendationsInput,
 } from "./arena-recommendations.types"
+import { anyUnitPowerFixture } from "./team-power.fixtures"
+
+const TEAM_POWER = anyUnitPowerFixture()
 
 const id = (value: string): UnitId => unitIdSchema.parse(value)
 
@@ -21,9 +27,10 @@ const character = (
   rank: "Stone1",
   progression: "Common:None",
   xpLevel: 3,
-  appliedUpgradeCount: 0,
+  appliedUpgradeSlots: [],
   activeAbilityLevel: 1,
   passiveAbilityLevel: 1,
+  equippedItems: [],
   ...over,
 })
 
@@ -49,6 +56,7 @@ const build = (
     teamSize: 3,
     lockedRandomUnitIds: [],
     randomSeed: 0,
+    unitPower: TEAM_POWER,
     ...over,
   })
 
@@ -557,6 +565,35 @@ describe("buildArenaRecommendations", () => {
       const withOmitted = categoryOf(build(args), "plan")
       const withEmpty = categoryOf(build({ ...args, leadingPools: [] }), "plan")
       expect(unitIds(withEmpty.members)).toEqual(unitIds(withOmitted.members))
+    })
+  })
+})
+
+describe("mapRosterCharacter", () => {
+  it("keeps distinct applied slots and the equipped items for the power ordering", () => {
+    // The synced record also carries the slot each item sits in.
+    const syncedItems = [
+      { slotId: "slot1", equipmentId: "I_Crit_C001", level: 3 },
+    ]
+    expect(
+      mapRosterCharacter({
+        unitId: id("ultraTigurius"),
+        rank: "Gold1",
+        progressionIndex: "Epic:RedOneStar",
+        xpLevel: 30,
+        appliedUpgradeSlots: [0, 0, 1, 2],
+        abilities: [{ level: 20 }, { level: 15 }],
+        equippedItems: syncedItems,
+      })
+    ).toEqual({
+      unitId: "ultraTigurius",
+      rank: "Gold1",
+      progression: "Epic:RedOneStar",
+      xpLevel: 30,
+      appliedUpgradeSlots: [0, 1, 2],
+      activeAbilityLevel: 20,
+      passiveAbilityLevel: 15,
+      equippedItems: [{ equipmentId: "I_Crit_C001", level: 3 }],
     })
   })
 })

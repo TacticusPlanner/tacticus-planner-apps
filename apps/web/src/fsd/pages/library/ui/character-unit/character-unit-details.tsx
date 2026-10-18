@@ -19,7 +19,7 @@ import {
   StatsByRank,
   TraitsList,
 } from "./character-details-sections"
-import type { UnitStats } from "./character-unit.view-model"
+import type { StatsFigure } from "./character-unit.view-model"
 import { StatRadarCard } from "./stat-radar-card"
 
 /**
@@ -32,7 +32,6 @@ export function CharacterUnitDetails({
   name,
   stats,
   radar,
-  byRank,
   shownRank,
   rankCap,
   owned,
@@ -50,9 +49,9 @@ export function CharacterUnitDetails({
 }: {
   character: CharacterStorageModel
   name: string
-  stats: UnitStats
+  /** The stats before equipment at the shown values, and by rank (see `characterPowerView`). */
+  stats: StatsFigure
   radar: readonly RadarAxisResult[]
-  byRank: readonly UnitStats[]
   shownRank: Rank
   /** The highest rank the shown rarity and stars allow. */
   rankCap: Rank
@@ -111,7 +110,7 @@ export function CharacterUnitDetails({
   )
   const statsByRank = (
     <StatsByRank
-      byRank={byRank}
+      stats={stats}
       shownRank={shownRank}
       rankCap={rankCap}
       owned={owned}

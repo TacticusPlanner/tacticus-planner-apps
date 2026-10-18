@@ -1,4 +1,5 @@
-export type UnitStatPair = { current: number; target: number }
+/** A stat at the range's start and end; null when the power data is unavailable. */
+export type UnitStatPair = { current: number | null; target: number | null }
 
 export type UnitProfileViewModel = {
   id: UnitId

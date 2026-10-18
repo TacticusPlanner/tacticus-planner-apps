@@ -31,6 +31,9 @@ vi.mock("@workspace/game-catalog/queries", () => ({
 vi.mock("@workspace/player-data/queries", () => ({
   getPlayerCharacters: vi.fn(),
 }))
+vi.mock("./use-team-unit-power", () => ({
+  useTeamUnitPower: () => ({ loading: false, unitPower: null }),
+}))
 
 function renderTeams(
   instance: HseInstance | null,

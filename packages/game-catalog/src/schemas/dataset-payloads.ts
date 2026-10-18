@@ -20,6 +20,7 @@ import { onslaughtRewardSchema } from "./onslaught"
 import { ascensionCostSchema, unlockShardCostSchema } from "./progression-costs"
 import { raidBossesPayloadSchema } from "./raid-bosses"
 import { shopSchema } from "./shops"
+import { unitPowerSchema } from "./unit-power"
 import { upgradeViewSchema } from "./upgrade"
 
 // ---- dataset payloads (the envelope `data`) --------------------------------------------------
@@ -50,6 +51,7 @@ export const datasetPayloadSchemas = {
   // The third non-array payload — another complete object stored as one row.
   "guild-raid-meta": guildRaidMetaPayloadSchema,
   "mythic-quests": z.array(mythicQuestsSchema),
+  "unit-power": z.array(unitPowerSchema),
 } satisfies Record<GameCatalogDatasetKey, z.ZodType>
 
 // Record (per-item) type for each dataset. Every dataset is a plain array, so the record type is the
@@ -79,4 +81,5 @@ export type GameCatalogRecordByKey = {
   "raid-bosses": z.infer<typeof raidBossesPayloadSchema>
   "guild-raid-meta": z.infer<typeof guildRaidMetaPayloadSchema>
   "mythic-quests": z.infer<typeof mythicQuestsSchema>
+  "unit-power": z.infer<typeof unitPowerSchema>
 }

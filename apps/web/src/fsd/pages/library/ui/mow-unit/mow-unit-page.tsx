@@ -16,12 +16,14 @@ import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 import { useAbilityText } from "@/shared/ability-text"
 import { useTourPageSteps } from "@/shared/tour"
 import { ProgressionSelect } from "@/shared/ui"
+import { useUnitPowerContext } from "@/shared/unit-power"
 
 import { MOWS_PATH } from "../mows/mows-list-page"
 import { useMowListItems, useMowsCatalog } from "../mows/use-mows-catalog"
 import { AbilityPanel } from "../unit/ability-panel"
 import { UnitHeader, type ValuesMode } from "../unit/unit-header"
 import { UnitNavBar } from "../unit/unit-nav-bar"
+import { UnitPowerValue } from "../unit/unit-power-value"
 import {
   readUnitOrigin,
   unitNeighbours,
@@ -39,6 +41,7 @@ import {
   costsByLevel,
   mowAbilityLevels,
   mowMaxAbilityLevel,
+  mowPowerFigure,
   mythicLevel,
 } from "./mow-unit.view-model"
 import {
@@ -139,6 +142,7 @@ function MowUnit({
     inventoryUpgrades,
     upgradesById,
   } = useMowPlayerData(unitId, isAuthenticated)
+  const powerContext = useUnitPowerContext()
   const baseProgression = player?.progressionIndex ?? MOW_STARTING_PROGRESSION
   const [mode, setMode] = useState<ValuesMode>("base")
   const [custom, setCustom] = useState<Progression | undefined>()
@@ -181,6 +185,13 @@ function MowUnit({
     ? t(`abilities:${mythicKey}`, { defaultValue: mythicKey })
     : t("mowUnit.mythic.unnamed")
   const mythic = mythicLevel(shown)
+  const power = mowPowerFigure(
+    unitId,
+    shown,
+    levels,
+    powerContext,
+    ownership === "loading"
+  )
 
   // --- Ability upgrades --------------------------------------------------------------------------
   const { ranges, setFrom, setTo } = useMowUpgradeRanges(playerLevels, maxLevel)
@@ -329,6 +340,14 @@ function MowUnit({
             setMode(next)
             if (next === "custom" && !custom) setCustom(baseProgression)
           }}
+          power={
+            <UnitPowerValue
+              label={t("mowUnit.power.label")}
+              figure={power}
+              unavailableText={t("mowUnit.power.unavailable")}
+              isMobile={isMobile}
+            />
+          }
           customControls={
             <div className="w-56">
               <ProgressionSelect

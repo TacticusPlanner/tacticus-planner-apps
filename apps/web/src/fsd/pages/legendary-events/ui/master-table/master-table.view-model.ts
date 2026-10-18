@@ -194,7 +194,8 @@ export function nextMasterTableParams(
   return next
 }
 
-/** Estimated availability from the reads it needs. */
+/** Estimated availability from the reads it needs: unavailable without power data (the
+ *  `unit-power` dataset absent) as when a read failed. */
 export function estimatedAvailability({
   config,
   battles,
@@ -215,6 +216,7 @@ export function estimatedAvailability({
   ) {
     return "loading"
   }
+  if (!config.config.unitPower) return "unavailable"
   const allPowers = events.every((event) =>
     LEGENDARY_EVENT_LANE_IDS.every(
       (laneId) =>

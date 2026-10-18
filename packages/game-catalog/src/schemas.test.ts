@@ -82,7 +82,13 @@ const lreBattle = {
   power: 1000,
   tier: 1,
   disallowedFactions: [],
-  waves: [{ round: 1, power: 500, enemies: [] }],
+  waves: [
+    {
+      round: 1,
+      power: 500,
+      enemies: [{ id: "orksNpc1Grot", ladderIndex: 4, count: 7 }],
+    },
+  ],
 }
 
 const validNpc = {
@@ -390,6 +396,25 @@ describe("catalog schemas", () => {
     ).toBe(true)
   })
 
+  it("reads a wave enemy's ladderIndex and rejects the old stars field", () => {
+    const parsed = datasetPayloadSchemas["lre-battles"].parse([lreBattle])
+    expect(parsed[0]?.waves[0]?.enemies[0]?.ladderIndex).toBe(4)
+
+    const legacy = {
+      ...lreBattle,
+      waves: [
+        {
+          round: 1,
+          power: 500,
+          enemies: [{ id: "orksNpc1Grot", stars: 4, count: 7 }],
+        },
+      ],
+    }
+    expect(
+      datasetPayloadSchemas["lre-battles"].safeParse([legacy]).success
+    ).toBe(false)
+  })
+
   it("accepts run starts indexed by run, from none announced to all three", () => {
     for (const eventStageStartDatesUtc of [
       [],
@@ -654,5 +679,46 @@ describe("catalog schemas", () => {
     })
 
     expect(result.success).toBe(true)
+  })
+})
+
+describe("unit-power schema", () => {
+  const record = {
+    id: "unit-power",
+    heroProgressionSteps: [
+      { step: 9, unitStatMultiplierPct: 160, abilityPowerMultiplier: 5 },
+    ],
+    mowProgressionSteps: [
+      { step: 19, abilityPowerMultiplier: 29, mythicAbilityPower: 150000 },
+    ],
+    damageProfileModifiers: [{ damageType: "Psychic", modifier: 191 }],
+    traitPowerModifiers: [{ traitId: "Psyker", modifier: 125 }],
+    abilityPowerModifiers: [{ abilityId: "StormOfWrath", modifier: 120 }],
+    abilityPowerCurves: { active: [3, 4], passive: [2, 3], relic: [42000] },
+    units: [
+      {
+        unitId: "ultraTigurius",
+        powerMultiplier: 100,
+        rankUpStatIncreases: [[122, 122, 56, 56, 26, 26]],
+      },
+      { unitId: "tyranBiovore", powerMultiplier: 100, rankUpStatIncreases: [] },
+    ],
+  }
+
+  it("parses the served record", () => {
+    expect(datasetPayloadSchemas["unit-power"].parse([record])).toEqual([
+      record,
+    ])
+  })
+
+  it("rejects a negative modifier", () => {
+    expect(() =>
+      datasetPayloadSchemas["unit-power"].parse([
+        {
+          ...record,
+          traitPowerModifiers: [{ traitId: "Psyker", modifier: -1 }],
+        },
+      ])
+    ).toThrow()
   })
 })

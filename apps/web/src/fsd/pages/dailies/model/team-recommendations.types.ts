@@ -1,5 +1,7 @@
 import type { Progression, Rank, Rarity, UnitId } from "@workspace/game-domain"
 
+import type { UnitPowerContext } from "@/shared/unit-power"
+
 /** Team-generation mode. XP Mode is the default (see the Dailies team hooks). */
 export type TeamMode = "xp" | "power"
 
@@ -80,16 +82,18 @@ export type TeamRecommendations = {
 }
 
 /** One owned character with the fields the engine needs. `progression` is the synced progression
- * step (player-data `progressionIndex`). `traits` / `damageTypes` come from the game catalog and
- * are `[]` when the catalog has no row for the unit; they drive the preference filters only. */
+ * step (player-data `progressionIndex`); `appliedUpgradeSlots` (distinct) and `equippedItems` feed
+ * its in-game power. `traits` / `damageTypes` come from the game catalog and are `[]` when the
+ * catalog has no row for the unit; they drive the preference filters only. */
 export type TeamRosterCharacter = {
   unitId: UnitId
   rank: Rank
   progression: Progression
   xpLevel: number
-  appliedUpgradeCount: number
+  appliedUpgradeSlots: readonly number[]
   activeAbilityLevel: number
   passiveAbilityLevel: number
+  equippedItems: readonly { equipmentId: string; level: number }[]
   traits: readonly string[]
   damageTypes: readonly string[]
 }
@@ -135,4 +139,7 @@ export type BuildTeamRecommendationsInput = {
    * others only fill it. Off for the Arena, Onslaught and Salvage Run pages, whose Power Mode
    * fields the strongest team regardless of pools; on for the HSE event teams. */
   leadWithPools?: boolean
+  /** The power formula's game data for the strength ordering; null when it is unavailable (every
+   * character then counts as power 0). */
+  unitPower: UnitPowerContext | null
 }

@@ -184,6 +184,44 @@
       "body": "Die erzielten Punkte eines Kampfes sind seine Kill-Punkte plus sein Highscore, dazu der Bonus für „Alle besiegen“ und die Punkte jedes Ziels, das du darin erfüllt hast. Das Maximum eines Kampfes addiert die vollen Kill-Punkte, den vollen Highscore, den Bonus für „Alle besiegen“ und alle Zielpunkte; das Lane-Maximum addiert alle Kämpfe."
     }
   },
+  "battles": {
+    "title": "Kämpfe",
+    "loading": "Kämpfe werden geladen…",
+    "error": "Die Kampfdaten konnten nicht geladen werden.",
+    "empty": "Für diese Bahn gibt es noch keine Kampfdaten",
+    "battleTitle": "Kampf {{number}}",
+    "enemyPower": "Feindstärke",
+    "enemyCount_one": "{{formatted}} Gegner",
+    "enemyCount_other": "{{formatted}} Gegner",
+    "wave": "Welle {{number}}",
+    "round": "Runde {{round}}",
+    "wavePower": "Stärke {{power}}",
+    "noEnemies": "Keine Gegner in dieser Welle",
+    "npcsError": "Gegnerstufen und -werte konnten nicht geladen werden.",
+    "selector": {
+      "label": "Kampf",
+      "complete": "abgeschlossen",
+      "itemComplete": "{{number}} abgeschlossen",
+      "previous": "Vorheriger Kampf",
+      "next": "Nächster Kampf",
+      "position": "Kampf {{number}} von {{total}}"
+    },
+    "enemy": {
+      "levelUnknown": "Stufe unbekannt",
+      "levelStars_one": "{{rank}} {{count}} Stern",
+      "levelStars_other": "{{rank}} {{count}} Sterne",
+      "levelWings": "{{rank}} mit Flügeln",
+      "npcsLoading": "Die Gegnerdetails werden noch geladen.",
+      "npcsError": "Die Gegnerdetails konnten nicht geladen werden.",
+      "openInLibrary": "In der Bibliothek öffnen",
+      "detailDescription": "Die Werte dieses Gegners auf seiner Stufe in diesem Kampf."
+    },
+    "map": {
+      "toggle": "Karte",
+      "alt": "Karte von {{lane}} Kampf {{number}}",
+      "unavailable": "Karte nicht verfügbar"
+    }
+  },
   "annotations": {
     "maybeClear": "Vielleicht schaffbar",
     "stopHere": "Hier aufhören",
@@ -219,6 +257,11 @@
     "reserve": "Reserve",
     "members": "Mitglieder",
     "pointsPerBattle": "{{points}} Punkte pro Kampf",
+    "power": {
+      "label": "Team-Stärke",
+      "unavailable": "Stärkedaten nicht verfügbar",
+      "noRoster": "Synchronisiere deinen Kader, um die Team-Stärke zu sehen"
+    },
     "notCovered": "Von den aktuellen Mitgliedern nicht abgedeckt",
     "dragHandle": "{{name}} zum Umsortieren ziehen",
     "depth": {
@@ -366,6 +409,10 @@
           "title": "Synchronisierter Fortschritt",
           "content": "Deine erfüllten Ziele und Punkte pro Kampf aus der letzten Synchronisierung, mit den erzielten Punkten der Lane im Verhältnis zum Maximum. Markiere ein nicht erledigtes Ziel als „Vielleicht schaffbar“ oder „Hier aufhören“ oder einen ganzen Kampf über die Aktion seiner Zeile."
         },
+        "battles": {
+          "title": "Kämpfe",
+          "content": "Sieh dir jeden Kampf der Bahn an, bevor du ihn spielst: die Karte, die Wellen Runde für Runde und jeden Gegner mit seiner Stufe. Tippe auf einen Gegner, um seine Werte zu sehen. Geöffnet wird dein nächster zu spielender Kampf."
+        },
         "leaderboard": {
           "title": "Lane-Rangliste",
           "content": "Jede Einheit, die diese Lane erlaubt, ob du sie besitzt, welche Ziele sie erfüllt und welche Punkte sie hier noch erzielen kann. Schalte die Zielvorschau ein, um Einheiten so zu sehen, als hättest du deine aktiven Ziele erreicht, und nutze das Menü einer Zeile für „Ziel erstellen“ oder „Zu neuem Team hinzufügen“."
@@ -415,8 +462,8 @@
   },
   "estimates": {
     "estimated": "geschätzt",
-    "uncalibrated": "Unkalibriert: Das Leistungsverhältnis der Schätzung wurde noch nicht an echten Ergebnissen ausgerichtet, nimm sie also nur als grobe Orientierung.",
-    "howItWorks": "Geschätzt aus der Kampfkraft deines synchronisierten Kaders im Vergleich zur Stärke jedes Kampfes. Ausrüstung, Synergien und schwere Ziele werden nicht berücksichtigt; lege eine Tiefe fest, um sie zu überschreiben.",
+    "uncalibrated": "Unkalibriert: Das Stärkeverhältnis der Schätzung wurde noch nicht an echten Ergebnissen ausgerichtet, nimm sie also nur als grobe Orientierung.",
+    "howItWorks": "Geschätzt aus der Stärke deines synchronisierten Kaders, Ausrüstung eingeschlossen, im Vergleich zur Stärke jedes Kampfes. Synergien und schwere Ziele werden nicht berücksichtigt; lege eine Tiefe fest, um sie zu überschreiben.",
     "marginAbove": "{{percent}} % über Kampf {{battle}}",
     "shortfallNext": "{{percent}} % unter Kampf {{battle}}",
     "notEnough": "Reicht noch nicht für Kampf 1",
@@ -676,7 +723,7 @@
   "tierList": {
     "intro": "Die Horde-Modus-Tiers aller Charaktere mit dem Multiplikator, den jeder erhält.",
     "whatThisMeans": "Was bedeutet das?",
-    "explainer": "Der Multiplikator eines Charakters skaliert seine Kampfkraft in den Abschlussschätzungen der Legendären Events. Charaktere mit Tier nutzen ihren eigenen Multiplikator, falls sie einen haben, sonst den ihres Tiers; Charaktere ohne Tier nutzen 1,0.",
+    "explainer": "Der Multiplikator eines Charakters skaliert seine Stärke in den Abschlussschätzungen der Legendären Events. Charaktere mit Tier nutzen ihren eigenen Multiplikator, falls sie einen haben, sonst den ihres Tiers; Charaktere ohne Tier nutzen 1,0.",
     "search": "Charaktere suchen",
     "onlyOwned": "Nur eigene",
     "syncRoster": "Synchronisiere deinen Kader",

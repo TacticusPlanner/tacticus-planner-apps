@@ -8,6 +8,7 @@ import {
   buildHseTeamsViewModel,
   type HseTeamsRead,
 } from "@/pages/dailies/model/hse-teams-view-model"
+import { anyUnitPowerFixture } from "@/pages/dailies/model/team-power.fixtures"
 
 // A synced roster for the HSE event teams: Psykers in every alliance (four Imperial among other
 // Imperial characters, five Chaos, one Xenos) and only two Xenos characters, so the Xenos teams
@@ -87,5 +88,11 @@ export function fixtureHseTeams(
   points: HseEventPointsState,
   read: HseTeamsRead | undefined
 ) {
-  return buildHseTeamsViewModel({ instance, points, read, retry: () => {} })
+  return buildHseTeamsViewModel({
+    instance,
+    points,
+    read,
+    unitPower: anyUnitPowerFixture(),
+    retry: () => {},
+  })
 }

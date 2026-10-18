@@ -1,9 +1,11 @@
 import Dexie from "dexie"
 import { beforeEach, describe, expect, it } from "vitest"
 
+import { catalogManifestMetadataKey } from "./dataset-keys"
 import {
   catalogDbName,
   replaceGameCatalogDataset,
+  saveManifestMetadata,
 } from "./game-catalog-storage"
 import {
   getAscensionCosts,
@@ -24,7 +26,9 @@ import {
   getShopsMap,
   getUnlockShardCosts,
   getUnlockShardCostsMap,
+  getUnitPower,
   getUpgrades,
+  hasGameCatalogSynced,
 } from "./queries"
 
 function resetDb() {
@@ -202,5 +206,20 @@ describe("named dataset queries", () => {
     const active = await getEventsActiveNow()
     expect(active).toHaveLength(1)
     expect(active[0]?.occurrenceId).toBe("occ-now")
+  })
+
+  it("tells a not-yet-synced catalog from a synced one without unit-power", async () => {
+    expect(await getUnitPower()).toBeNull()
+    expect(await hasGameCatalogSynced()).toBe(false)
+    // A dataset stored mid-sync does not count: only the manifest row, written last, does.
+    await replaceGameCatalogDataset(
+      "characters",
+      [{ id: "emperLucius", name: "Lucius" }],
+      metadata("characters")
+    )
+    expect(await hasGameCatalogSynced()).toBe(false)
+    await saveManifestMetadata(metadata(catalogManifestMetadataKey))
+    expect(await hasGameCatalogSynced()).toBe(true)
+    expect(await getUnitPower()).toBeNull()
   })
 })

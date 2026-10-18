@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest"
 
 import { unitIdSchema, type UnitId } from "@workspace/game-domain"
 
+import { unitPowerContextFixture } from "@/test/fixtures/unit-power"
+
 import { buildTeamRecommendations } from "./team-recommendations"
 import type {
   BuildTeamRecommendationsInput,
@@ -19,9 +21,10 @@ const character = (
   rank: "Stone1",
   progression: "Common:None",
   xpLevel: 3,
-  appliedUpgradeCount: 0,
+  appliedUpgradeSlots: [],
   activeAbilityLevel: 1,
   passiveAbilityLevel: 1,
+  equippedItems: [],
   traits: [],
   damageTypes: [],
   ...over,
@@ -47,6 +50,7 @@ const build = (
   preferences: {},
   lockedRandomUnitIds: [],
   randomSeed: 0,
+  unitPower: unitPowerContextFixture(),
   ...over,
 })
 
@@ -209,19 +213,90 @@ describe("buildTeamRecommendations — XP mode", () => {
 })
 
 describe("buildTeamRecommendations — Power mode", () => {
-  it("orders by combat power then unit id", () => {
-    const roster = [
-      character("a", { rank: "Stone1" }),
-      character("b", { rank: "Iron3" }),
-      character("c", { rank: "Bronze3" }),
-    ]
-    const plan = planOf(build({ roster, mode: "power", teamSize: 3 }))
-    // Bronze3 > Iron3 > Stone1 by combat power.
-    expect(plan.members.map((m) => m.unitId)).toEqual([
-      id("c"),
-      id("b"),
-      id("a"),
+  // Gold1 / Epic:RedOneStar / slots 0–2 / 20 / 15: in-game power Calgar 21,675, Titus 21,883,
+  // Tigurius 16,672, Certus 13,912.
+  const worked = (
+    unitId: string,
+    over: Partial<TeamRosterCharacter> = {}
+  ): TeamRosterCharacter =>
+    character(unitId, {
+      rank: "Gold1",
+      progression: "Epic:RedOneStar",
+      appliedUpgradeSlots: [0, 1, 2],
+      activeAbilityLevel: 20,
+      passiveAbilityLevel: 15,
+      ...over,
+    })
+  const strengths = (input: BuildTeamRecommendationsInput) =>
+    planOf(input).members.map((member) => [
+      member.unitId,
+      member.rationale.kind === "strength"
+        ? member.rationale.combatPower
+        : null,
     ])
+
+  it("orders by in-game power then unit id", () => {
+    const roster = [
+      worked("ultraTigurius"),
+      worked("ultraCalgar"),
+      worked("ultraTitus"),
+    ]
+    expect(strengths(build({ roster, mode: "power", teamSize: 3 }))).toEqual([
+      ["ultraTitus", 21883],
+      ["ultraCalgar", 21675],
+      ["ultraTigurius", 16672],
+    ])
+  })
+
+  it("counts equipped items: Tigurius with I_Crit_C001 at level 3 is 16,809", () => {
+    const roster = [
+      worked("ultraEliminatorSgt"),
+      worked("ultraTigurius", {
+        equippedItems: [{ equipmentId: "I_Crit_C001", level: 3 }],
+      }),
+      worked("ultraCalgar"),
+    ]
+    expect(strengths(build({ roster, mode: "power", teamSize: 3 }))).toEqual([
+      ["ultraCalgar", 21675],
+      ["ultraTigurius", 16809],
+      ["ultraEliminatorSgt", 13912],
+    ])
+  })
+
+  it("sorts a unit without power data as 0, and everything as 0 without the dataset", () => {
+    const roster = [
+      character("zzUnknown"),
+      worked("ultraTigurius"),
+      worked("ultraCalgar", {
+        equippedItems: [{ equipmentId: "I_Unknown", level: 1 }],
+      }),
+    ]
+    expect(strengths(build({ roster, mode: "power", teamSize: 3 }))).toEqual([
+      ["ultraTigurius", 16672],
+      ["ultraCalgar", 0],
+      ["zzUnknown", 0],
+    ])
+    const unavailable = build({
+      roster,
+      mode: "power",
+      teamSize: 3,
+      unitPower: null,
+    })
+    // Ordered as 0 (then unit id), but no member cites a strength figure: the minimum-size
+    // rationale stands in rather than "Chosen for combat strength (0)".
+    expect(planOf(unavailable).members.map((member) => member.unitId)).toEqual([
+      "ultraCalgar",
+      "ultraTigurius",
+      "zzUnknown",
+    ])
+    expect(
+      planOf(unavailable).members.map((member) => member.rationale)
+    ).toEqual([
+      { kind: "minimum-size" },
+      { kind: "minimum-size" },
+      { kind: "minimum-size" },
+    ])
+    expect(randomOf(unavailable).members).toHaveLength(3)
   })
 })
 

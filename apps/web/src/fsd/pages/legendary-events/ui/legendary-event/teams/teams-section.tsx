@@ -37,7 +37,9 @@ import { TeamsEmptyState } from "./teams-empty-state"
 import {
   buildTeamCardViewModel,
   moveTargets,
+  rosterMap,
   type TeamCardViewModel,
+  type TeamPowerSource,
   type TeamsSectionState,
 } from "./teams.view-model"
 
@@ -67,6 +69,8 @@ export interface TeamsViewModel {
   run: LegendaryEventRun
   actions: TeamsActions
   estimates: ClearEstimatesViewModel
+  /** The power data the cards' Team power reads. */
+  unitPower: TeamPowerSource
   /** Synced progress per lane; undefined while it loads or failed (nothing counts as cleared). */
   progressByLane:
     Partial<Record<LegendaryEventLaneId, LaneProgressView>> | undefined
@@ -104,7 +108,7 @@ export function TeamsSection({
   // The open Suggest teams dialog's mount key (null when closed): a fresh mount resets its toggles.
   const [suggesting, setSuggesting] = useState<number | null>(null)
   const suggestReasonId = useId()
-  const { state, run, actions, estimates } = teams
+  const { state, run, actions, estimates, unitPower } = teams
   const estimateTeam =
     estimates.kind === "ready" ? estimates.byLane[laneId].team : undefined
   const estimateInputs = laneEstimateInputs(estimates, laneId)
@@ -117,6 +121,13 @@ export function TeamsSection({
   const displayName = useTeamDisplayName()
   const nameOf = (team: LegendaryEventTeam) =>
     displayName(team, lane, savedTeams)
+  const rosterById = useMemo(
+    () =>
+      state.kind === "ready" && state.roster
+        ? rosterMap(state.roster)
+        : undefined,
+    [state]
+  )
   const cards = useMemo(
     () =>
       state.kind === "ready"
@@ -127,13 +138,24 @@ export function TeamsSection({
               state.units,
               state.roster,
               run,
-              estimateTeam
+              estimateTeam,
+              unitPower,
+              rosterById
             ),
             // Display only (spec: a team shows a readable name): the stored name stays as is.
             name: displayName(team, lane, savedTeams),
           }))
         : [],
-    [state, savedTeams, lane, run, estimateTeam, displayName]
+    [
+      state,
+      savedTeams,
+      lane,
+      run,
+      estimateTeam,
+      unitPower,
+      rosterById,
+      displayName,
+    ]
   )
 
   if (state.kind === "hidden") return null

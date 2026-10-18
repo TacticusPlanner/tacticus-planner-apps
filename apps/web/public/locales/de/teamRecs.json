@@ -50,7 +50,7 @@
     "onslaughtGoal": "Ziel eines Onslaught-Aufstiegsziels.",
     "eventUnit": "Punktet für das Event ({{match}}).",
     "eventUnitAny": "Punktet für das Event.",
-    "strength": "Wegen Kampfstärke ausgewählt ({{power}}).",
+    "strength": "Aufgrund der Stärke ausgewählt ({{power}}).",
     "minimumSize": "Hinzugefügt, um das Team zu vervollständigen.",
     "random": "Zufällig ausgewählt."
   }

@@ -11,6 +11,7 @@ import {
 
 import { mapRosterCharacter } from "./arena-recommendations"
 import { buildHseTeamRecommendations } from "./hse-team-recommendations"
+import { anyUnitPowerFixture } from "./team-power.fixtures"
 import type {
   HseModeTeams,
   HseTeam,
@@ -31,6 +32,7 @@ function build(
     trackers: hseVariant(definitionId, options.variantKey).trackers,
     roster: read.roster.map(mapRosterCharacter),
     catalog: read.catalog as unknown as HseTeamCatalog,
+    unitPower: anyUnitPowerFixture(),
   })
 }
 
@@ -332,7 +334,7 @@ describe("buildHseTeamRecommendations — Faction Focus", () => {
     const result = build("hse-faction-focus", {
       characters: [...hseTeamsFixtureCharacters, ...weakNecrons],
     })
-    // Thousand Sons (three owned, the strongest sum) cannot field a full line-up; Necrons (five) can.
+    // Ultramarines (two owned, the strongest sum) cannot field a full line-up; Necrons (five) can.
     const team = ready(teamOf(modeOf(result, "Arena"), null))
     expect(team.pick).toEqual({ kind: "faction", factionId: "Necrons" })
     expect(new Set(ids(team))).toEqual(
@@ -345,7 +347,8 @@ describe("buildHseTeamRecommendations — Faction Focus", () => {
     const team = ready(
       teamOf(modeOf(build("hse-faction-focus"), "Arena"), null)
     )
-    expect(team.pick).toEqual({ kind: "faction", factionId: "ThousandSons" })
+    // Under the in-game power formula Calgar (Diamond 3) and Tigurius outweigh Thousand Sons' three.
+    expect(team.pick).toEqual({ kind: "faction", factionId: "Ultramarines" })
     expect(team.team.broadened).toBe(true)
   })
 

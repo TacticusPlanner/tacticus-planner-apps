@@ -17,6 +17,7 @@ import enTeamRecs from "../../../../../../public/locales/en/teamRecs.json"
 
 import { mapRosterCharacter } from "../../model/arena-recommendations"
 import { buildHseTeamRecommendations } from "../../model/hse-team-recommendations"
+import { anyUnitPowerFixture } from "../../model/team-power.fixtures"
 import type {
   HseTeamCatalog,
   HseTeamsViewModel,
@@ -48,6 +49,7 @@ function readyView(
       trackers: hseVariant(definitionId, variantKey).trackers,
       roster: read.roster.map(mapRosterCharacter),
       catalog: read.catalog as unknown as HseTeamCatalog,
+      unitPower: anyUnitPowerFixture(),
     }),
   }
 }
@@ -141,7 +143,7 @@ describe("HseTeamsSection on desktop", () => {
 
     const broadened = screen.getByTestId("hse-team-arena-broadened")
     expect(broadened).toHaveTextContent("Line-up points need a full team")
-    expect(broadened).toHaveTextContent("fewer than five Thousand Sons")
+    expect(broadened).toHaveTextContent("fewer than five Ultramarines")
     expect(broadened).not.toHaveTextContent("Fewer than five of these")
   })
 })

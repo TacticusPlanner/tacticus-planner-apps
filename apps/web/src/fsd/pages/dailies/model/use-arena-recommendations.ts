@@ -20,6 +20,7 @@ import {
   usePersistedPreferences,
   usePersistedTeamSize as usePersistedTeamSizeForKey,
 } from "./team-recommendation-prefs"
+import { useTeamUnitPower } from "./use-team-unit-power"
 import {
   ARENA_MIN_TEAM_SIZE,
   ARENA_TEAM_SIZES,
@@ -128,6 +129,7 @@ export function useArenaRecommendations(
   const catalogRaw = useLiveQuery(() => safeReadCatalog(), [retryNonce])
   const catalogFailed = catalogRaw === LIVE_QUERY_ERROR
   const catalog = catalogFailed ? undefined : catalogRaw
+  const { loading: unitPowerLoading, unitPower } = useTeamUnitPower()
 
   // When the set of owned character ids changes, drop the locks — reconciled during render (the
   // documented "adjust state on prop change" pattern) rather than in an effect.
@@ -195,6 +197,7 @@ export function useArenaRecommendations(
       randomSeed,
       preferences,
       rosterCatalog,
+      unitPower,
     })
   }, [
     roster,
@@ -207,6 +210,7 @@ export function useArenaRecommendations(
     randomSeed,
     preferences,
     rosterCatalog,
+    unitPower,
   ])
 
   const availableSizes = useMemo(
@@ -252,7 +256,13 @@ export function useArenaRecommendations(
     return { status: "error", retry }
   }
 
-  if (goalsQuery.isPending || waitingForProjectGoals || !roster || !catalog) {
+  if (
+    goalsQuery.isPending ||
+    waitingForProjectGoals ||
+    unitPowerLoading ||
+    !roster ||
+    !catalog
+  ) {
     return { status: "loading" }
   }
 

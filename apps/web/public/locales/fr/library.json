@@ -254,7 +254,8 @@
       "health": "Points de vie",
       "armour": "Armure",
       "damage": "Dégâts",
-      "movement": "Mouvement"
+      "movement": "Mouvement",
+      "power": "Puissance"
     },
     "attacks": {
       "title": "Attaques",
@@ -296,8 +297,8 @@
           "content": "Parcourez les niveaux auxquels l’unité apparaît pour voir ses statistiques à chaque rang et nombre d’étoiles."
         },
         "stats": {
-          "title": "Statistiques, attaques et traits",
-          "content": "Points de vie, armure, dégâts et mouvement au niveau sélectionné, ainsi que les attaques et traits de l’unité."
+          "title": "Statistiques, puissance, attaques et traits",
+          "content": "Points de vie, armure, dégâts, mouvement et puissance estimée au niveau sélectionné, ainsi que les attaques et traits de l’unité."
         }
       }
     },
@@ -318,7 +319,12 @@
     "anyAttack": "Toute attaque",
     "meleeOnly": "Corps à corps uniquement",
     "hasRanged": "Avec attaque à distance",
-    "clearOne": "Effacer {{name}}"
+    "clearOne": "Effacer {{name}}",
+    "power": {
+      "unavailable": "Données de puissance indisponibles",
+      "estimateLabel": "À propos de cette estimation",
+      "estimate": "Estimée à partir des statistiques affichées. Elle peut différer du chiffre du jeu pour les unités dotées de capacités supplémentaires, de critique ou de blocage."
+    }
   },
   "unit": {
     "nav": {
@@ -440,7 +446,8 @@
         "blockDamageBonus": "Dégâts bloqués",
         "armor": "Armure",
         "hp": "Santé"
-      }
+      },
+      "statsUnavailable": "Statistiques indisponibles"
     },
     "traits": {
       "title": "Traits"
@@ -495,7 +502,7 @@
       "steps": {
         "header": {
           "title": "L'unité",
-          "content": "Son portrait, sa faction et les valeurs affichées par la page. Connecté et synchronisé, elles partent de votre propre unité ; choisissez « Personnalisées » pour essayer d'autres valeurs."
+          "content": "Son portrait, sa faction et les valeurs affichées par la page. Connecté et synchronisé, elles partent de votre propre unité ; choisissez « Personnalisées » pour essayer d'autres valeurs. L’en-tête affiche aussi la puissance de l’unité à ces valeurs."
         },
         "tabs": {
           "title": "Détails et rang",
@@ -528,6 +535,12 @@
         "xp": "Livre d'XP mythique",
         "gold": "Or"
       }
+    },
+    "power": {
+      "label": "Puissance",
+      "withItems": "Inclut votre équipement porté",
+      "withoutItems": "Sans équipement",
+      "unavailable": "Données de puissance indisponibles"
     }
   },
   "mowUnit": {
@@ -583,7 +596,7 @@
       "steps": {
         "header": {
           "title": "Machine de guerre",
-          "content": "La rareté et les niveaux de capacité de votre Machine de guerre. Passez à Personnalisées pour voir d’autres raretés."
+          "content": "La rareté et les niveaux de capacité de votre Machine de guerre. Passez à Personnalisées pour voir d’autres raretés. L’en-tête affiche aussi sa puissance aux valeurs affichées."
         },
         "tabs": {
           "title": "Détails et améliorations",
@@ -606,6 +619,10 @@
           "content": "Or, récupération, composants et insignes pour les niveaux choisis, par rareté."
         }
       }
+    },
+    "power": {
+      "label": "Puissance",
+      "unavailable": "Données de puissance indisponibles"
     }
   }
 }

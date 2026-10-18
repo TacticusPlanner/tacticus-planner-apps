@@ -17,17 +17,19 @@ import {
   type NpcFilters,
 } from "@/entities/npc"
 import { useTourPageSteps } from "@/shared/tour"
+import { useUnitPowerContext } from "@/shared/unit-power"
 
 import { useLibraryRouteSelection } from "../../model/use-library-route-selection"
 import { NpcsDesktopPage } from "./desktop/npcs-desktop-page"
 import { useNpcsCatalog } from "./hooks/use-npcs-catalog"
 import { NpcsMobilePage } from "./mobile/npcs-mobile-page"
 import { useNpcsTutorial } from "./npcs.tutorial"
-import type {
-  NpcFilterOptions,
-  NpcListItem,
-  NpcsPageViewProps,
-  NpcVariationOption,
+import {
+  npcPowerFigure,
+  type NpcFilterOptions,
+  type NpcListItem,
+  type NpcsPageViewProps,
+  type NpcVariationOption,
 } from "./npcs-page.view-model"
 
 const COLLECTION_PATH = "/library/npcs"
@@ -229,6 +231,7 @@ export function NpcsPage() {
   const onClearFilters = useCallback(() => setFilters(emptyNpcFilters), [])
 
   useTourPageSteps(useNpcsTutorial())
+  const powerContext = useUnitPowerContext()
 
   if (catalog.status === "loading") {
     return (
@@ -283,6 +286,11 @@ export function NpcsPage() {
     levels,
     selectedLevel,
     onLevelChange,
+    power: npcPowerFigure(
+      selectedVariation?.id,
+      selectedLevel?.row,
+      powerContext
+    ),
   }
 
   return (

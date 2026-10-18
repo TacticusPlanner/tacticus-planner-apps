@@ -47,7 +47,7 @@ export interface TeamCardActions {
 /**
  * One team on a lane (design D4): name with the "N/5" badge for a partial team, member portraits
  * in position order and the reserve, the covered objectives as chips (muted when the members no
- * longer derive one), points per battle, the current run's depth stepper with its estimate
+ * longer derive one), points per battle and the summed Team power, the current run's depth stepper with its estimate
  * (manual depth wins; "Set depth" when there is neither) with what the same team cleared last run
  * (beside it on desktop, wrapped under it on mobile), and the actions menu. On desktop the grip
  * is the drag handle. Stepper clicks show at once and are sent as one write once they settle. An
@@ -235,13 +235,15 @@ export function TeamCard({
       ) : null}
 
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <span
-          className="text-sm font-medium tabular-nums"
-          data-testid="team-card-points"
-        >
-          {t("teams.pointsPerBattle", {
-            points: number.format(card.pointsPerBattle),
-          })}
+        {/* Points per battle and Team power share one line when it fits, and wrap between the
+            two (never inside either) when it does not (French at 375px). */}
+        <span className="flex min-w-0 flex-wrap items-baseline gap-x-3 text-sm font-medium tabular-nums">
+          <span className="whitespace-nowrap" data-testid="team-card-points">
+            {t("teams.pointsPerBattle", {
+              points: number.format(card.pointsPerBattle),
+            })}
+          </span>
+          <TeamPower card={card} format={number.format} />
         </span>
         <div className="flex min-w-0 flex-wrap items-start justify-end gap-2">
           {card.incomplete ? (
@@ -288,6 +290,46 @@ export function TeamCard({
         </div>
       </div>
     </li>
+  )
+}
+
+/** The team's summed power beside points per battle: a placeholder dash while the power data
+ *  loads, "—" with the reason for screen readers when the roster is not synced or the power data
+ *  is unavailable. */
+function TeamPower({
+  card,
+  format,
+}: {
+  card: Pick<TeamCardViewModel, "teamPower" | "teamPowerStatus">
+  format: (value: number) => string
+}) {
+  const { t } = useTranslation("legendaryEvents")
+  const state = card.teamPowerStatus
+  const reason =
+    state === "noRoster"
+      ? t("teams.power.noRoster")
+      : state === "unavailable"
+        ? t("teams.power.unavailable")
+        : undefined
+  return (
+    <span
+      className="whitespace-nowrap text-muted-foreground"
+      data-state={state}
+      data-testid="team-card-power"
+      title={reason}
+    >
+      {t("teams.power.label")}{" "}
+      {card.teamPower === null ? (
+        <>
+          <span aria-hidden className="text-foreground">
+            —
+          </span>
+          {reason ? <span className="sr-only">{reason}</span> : null}
+        </>
+      ) : (
+        <span className="text-foreground">{format(card.teamPower)}</span>
+      )}
+    </span>
   )
 }
 

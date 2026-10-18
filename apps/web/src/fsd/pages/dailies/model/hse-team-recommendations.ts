@@ -9,6 +9,7 @@ import {
   HSE_TOKEN_MODES,
   hseModeScoring,
 } from "@/features/home-screen-event-points"
+import type { UnitPowerContext } from "@/shared/unit-power"
 
 import { combatPowerOf } from "./team-eligibility"
 import { buildTeamRecommendations } from "./team-recommendations"
@@ -196,14 +197,15 @@ function modeHints(trackers: readonly GameCatalogHseTracker[]): HseEnemyHint[] {
  */
 function strongestFaction(
   roster: readonly TeamRosterCharacter[],
-  catalog: HseTeamCatalog
+  catalog: HseTeamCatalog,
+  unitPower: UnitPowerContext | null
 ): string | null {
   const powersByFaction = new Map<string, number[]>()
   for (const character of roster) {
     const faction = catalog.get(character.unitId)?.faction
     if (!faction) continue
     const powers = powersByFaction.get(faction) ?? []
-    powers.push(combatPowerOf(character))
+    powers.push(combatPowerOf(character, unitPower))
     powersByFaction.set(faction, powers)
   }
   let best: { faction: string; full: boolean; power: number } | null = null
@@ -228,10 +230,11 @@ function strongestFaction(
 function eventPool(
   trackers: readonly GameCatalogHseTracker[],
   roster: readonly TeamRosterCharacter[],
-  catalog: HseTeamCatalog
+  catalog: HseTeamCatalog,
+  unitPower: UnitPowerContext | null
 ): { pick: HseTeamPick; pools: TeamPoolSpec[] } {
   if (trackers.some((tracker) => LINE_UP_KINDS.has(tracker.kind))) {
-    const factionId = strongestFaction(roster, catalog)
+    const factionId = strongestFaction(roster, catalog, unitPower)
     if (!factionId) return { pick: { kind: "any-unit" }, pools: [] }
     const unitIds = new Set(
       roster
@@ -307,7 +310,8 @@ function buildTeam(
   trackers: readonly GameCatalogHseTracker[],
   roster: readonly TeamRosterCharacter[],
   catalog: HseTeamCatalog,
-  alliance: SalvageTrack | null
+  alliance: SalvageTrack | null,
+  unitPower: UnitPowerContext | null
 ): HseTeam {
   if (roster.length < MIN_TEAM_SIZE) {
     return {
@@ -322,7 +326,7 @@ function buildTeam(
       })),
     }
   }
-  const { pick, pools } = eventPool(trackers, roster, catalog)
+  const { pick, pools } = eventPool(trackers, roster, catalog, unitPower)
   const recommendations = buildTeamRecommendations({
     mode: "power",
     teamSize: HSE_TEAM_SIZE,
@@ -332,6 +336,7 @@ function buildTeam(
     lockedRandomUnitIds: [],
     randomSeed: 0,
     leadWithPools: true,
+    unitPower,
   })
   const team = recommendations.categories.find((c) => c.id === "plan")!
   return { status: "ready", alliance, pick, team }
@@ -363,7 +368,7 @@ export function buildHseTeamRecommendations(
     const trackers = modeTrackers(input.trackers, mode)
     const teams =
       mode === "Arena"
-        ? [buildTeam(trackers, roster, input.catalog, null)]
+        ? [buildTeam(trackers, roster, input.catalog, null, input.unitPower)]
         : SALVAGE_TRACKS.map((alliance) =>
             buildTeam(
               trackers,
@@ -371,7 +376,8 @@ export function buildHseTeamRecommendations(
                 (c) => input.catalog.get(c.unitId)?.alliance === alliance
               ),
               input.catalog,
-              alliance
+              alliance,
+              input.unitPower
             )
           )
     return { mode, hints: modeHints(trackers), teams }

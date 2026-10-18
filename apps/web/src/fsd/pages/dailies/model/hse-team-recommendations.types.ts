@@ -2,6 +2,7 @@ import type { Alliance, UnitId } from "@workspace/game-domain"
 import type { GameCatalogHseTracker } from "@workspace/game-catalog"
 
 import type { HseTokenMode } from "@/features/home-screen-event-points"
+import type { UnitPowerContext } from "@/shared/unit-power"
 
 import type { ArenaRosterCharacter } from "./arena-recommendations.types"
 import type {
@@ -84,6 +85,9 @@ export type BuildHseTeamRecommendationsInput = {
   roster: readonly ArenaRosterCharacter[]
   /** Catalog attributes per owned character; a character without a row is left out. */
   catalog: HseTeamCatalog
+  /** The power formula's game data for the strength ordering; null when it is unavailable (every
+   * character then counts as power 0). */
+  unitPower: UnitPowerContext | null
 }
 
 /** What `useHseTeamRecommendations` exposes to the HSE page. */

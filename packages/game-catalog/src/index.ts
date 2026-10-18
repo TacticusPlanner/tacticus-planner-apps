@@ -151,6 +151,7 @@ export {
   type LegendaryEventStorageModel,
   type LegendaryEventBattleStorageModel,
   type HordeModeTiersStorageModel,
+  type UnitPowerStorageModel,
 } from "./game-catalog.storage"
 
 export {
@@ -175,6 +176,7 @@ export {
   characterIcon,
   mowIcon,
   npcPortrait,
+  legendaryEventMap,
   factionIcon,
   abilityIcon,
   raidBossPortrait,

@@ -1,5 +1,7 @@
 import type { UnitId } from "@workspace/game-domain"
 
+import type { UnitPowerContext } from "@/shared/unit-power"
+
 import type {
   ArenaGoalContribution,
   ArenaMode,
@@ -47,6 +49,8 @@ export type BuildOnslaughtRecommendationsInput = {
   randomSeed: number
   preferences?: TeamPreferences
   rosterCatalog: SalvageRosterCatalog
+  /** The power formula's game data for the strength ordering; null when it is unavailable. */
+  unitPower: UnitPowerContext | null
 }
 
 /** What `useOnslaughtRecommendations` exposes to the Onslaught page — the Salvage Run view model plus
