@@ -321,16 +321,46 @@ vi.mock("@workspace/game-catalog/queries", () => ({
 }))
 
 import type { UnitId } from "@workspace/game-domain"
+import {
+  buildUnitPowerContext,
+  type UnitPowerCatalog,
+} from "@/shared/unit-power"
+import { unitPowerCatalog } from "@/test/fixtures/unit-power"
 
 import { CharacterRankUpTab } from "./character-rank-up-tab"
 
+// The unit profile's stats are the power calculation's stat step: the real tables, with stat
+// increases for the fixture characters' upgrade rows (Stone I's two Health slots add 10 and 12).
+// The unit page reads the context once and passes it in.
+const lookupPowerContext = buildUnitPowerContext({
+  unitPower: {
+    ...unitPowerCatalog.unitPower,
+    units: [
+      {
+        unitId: "hero1",
+        powerMultiplier: 100,
+        rankUpStatIncreases: [[10, 12, 1, 1, 1, 1, 1], [5]],
+      },
+      { unitId: "hero2", powerMultiplier: 100, rankUpStatIncreases: [] },
+    ],
+  },
+  characters: records.characters as UnitPowerCatalog["characters"],
+  mows: [],
+  npcs: [],
+  equipment: [],
+  upgrades: records.upgrades as UnitPowerCatalog["upgrades"],
+})
 // The unit page remounts the tab per character (keyed by the route id); this stands in for it.
 function TabForRoute() {
   const { entityId } = useParams()
   return (
     <>
       <Link to="/library/characters/hero2">Go to Hero Two</Link>
-      <CharacterRankUpTab key={entityId} characterId={entityId as UnitId} />
+      <CharacterRankUpTab
+        key={entityId}
+        characterId={entityId as UnitId}
+        powerContext={lookupPowerContext}
+      />
     </>
   )
 }
@@ -389,9 +419,10 @@ describe("CharacterRankUpTab", () => {
     expect(profile.getByText("Hero One")).toBeInTheDocument()
     expect(profile.getByText("4")).toBeInTheDocument() // movement
     expect(profile.getByText("3")).toBeInTheDocument() // melee hits
-    // Health at Stone1 (current, 100 * 1.25205^0) and Stone2 (target, with one progression step).
+    // Health at Stone1 (current: base 100 × 100%) and Stone2 (target: 100 + Stone I's Health slots
+    // 10 + 12, × 110% at one star, truncated).
     expect(profile.getByText("100")).toBeInTheDocument()
-    expect(profile.getByText("137")).toBeInTheDocument()
+    expect(profile.getByText("134")).toBeInTheDocument()
   })
 
   it("computes current/target Health from independent from/to progression values", () => {
@@ -402,10 +433,10 @@ describe("CharacterRankUpTab", () => {
     const profile = within(screen.getByTestId("unit-profile"))
     // Current: Stone1 at "None" progression → 100 (unchanged).
     expect(profile.getByText("100")).toBeInTheDocument()
-    // Target: Stone2 at "OneStar" progression → floor(100 * 1.25205 * 1.1) = 137, not the 125
-    // it would be if both ends shared a single progression value.
-    expect(profile.getByText("137")).toBeInTheDocument()
-    expect(profile.queryByText("125")).not.toBeInTheDocument()
+    // Target: Stone2 at "OneStar" progression → trunc((100 + 22) × 110%) = 134, not the 122 it
+    // would be if both ends shared a single progression value.
+    expect(profile.getByText("134")).toBeInTheDocument()
+    expect(profile.queryByText("122")).not.toBeInTheDocument()
   })
 
   it("clamps a rank down when its progression is lowered below what the rank requires", () => {

@@ -74,6 +74,7 @@ export function buildOnslaughtRecommendations(
     randomSeed: input.randomSeed,
     preferences: input.preferences,
     rosterCatalog: input.rosterCatalog,
+    unitPower: input.unitPower,
     leadingPools,
   })
 }

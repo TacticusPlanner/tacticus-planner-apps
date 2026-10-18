@@ -91,6 +91,7 @@ export const datasetToStorageModels: Record<
   "raid-bosses": (data) => asSingleRow("raid-bosses", data),
   "guild-raid-meta": (data) => asSingleRow("guild-raid-meta", data),
   "mythic-quests": byUnitId,
+  "unit-power": asArray,
 }
 
 export function mapDatasetRowToStorageModel<T extends Record<string, unknown>>(

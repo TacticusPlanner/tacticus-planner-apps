@@ -21,8 +21,8 @@ export type ValuesMode = "base" | "custom"
 /**
  * The unit header shared by character and Machine of War pages: portrait, name, faction and kind
  * line, a line describing the values shown (the player's unit, its starting values, or why the page
- * can't use the player's), and the "Show values at" control, whose Custom selects come from the
- * caller. In header state (c) a banner offers to sign in; signed in but not yet synced, it points at
+ * can't use the player's), the unit's power at those values, and the "Show values at" control, whose
+ * Custom selects come from the caller. In header state (c) a banner offers to sign in; signed in but not yet synced, it points at
  * the app header's Sync with Tacticus control.
  */
 export function UnitHeader({
@@ -40,6 +40,7 @@ export function UnitHeader({
   mode,
   onModeChange,
   customControls,
+  power,
   isMobile,
 }: {
   portraitSrc: string
@@ -62,6 +63,8 @@ export function UnitHeader({
   onModeChange: (mode: ValuesMode) => void
   /** The selects Custom reveals (rarity and stars, plus rank for characters). */
   customControls: ReactNode
+  /** The unit's power at the shown values (`UnitPowerValue`), first in the values area. */
+  power?: ReactNode
   isMobile: boolean
 }) {
   const { t } = useTranslation(["library", "factions"])
@@ -150,6 +153,7 @@ export function UnitHeader({
           )}
           data-testid="unit-values"
         >
+          {power}
           <ToggleGroup
             aria-label={t("unit.values.label")}
             type="single"

@@ -134,6 +134,18 @@ const datasetData: Record<string, unknown> = {
       ],
     },
   ],
+  "unit-power": [
+    {
+      id: "unit-power",
+      heroProgressionSteps: [],
+      mowProgressionSteps: [],
+      damageProfileModifiers: [],
+      traitPowerModifiers: [],
+      abilityPowerModifiers: [],
+      abilityPowerCurves: { active: [], passive: [], relic: [] },
+      units: [],
+    },
+  ],
 }
 
 function createManifest(
@@ -374,6 +386,26 @@ describe("syncGameCatalog", () => {
     expect(await getDatasetRecords("horde-mode-tiers")).toEqual([
       expect.objectContaining({ id: "horde-mode-tiers" }),
     ])
+  })
+
+  it("syncs unit-power as its single record, and is ready without it", async () => {
+    await syncGameCatalog(new FakeGameCatalogClient(createManifest()))
+    expect(await getDatasetRecords("unit-power")).toEqual([
+      expect.objectContaining({ id: "unit-power" }),
+    ])
+
+    await resetDb()
+    const manifest = createManifest()
+    const result = await syncGameCatalog(
+      new FakeGameCatalogClient({
+        ...manifest,
+        datasets: manifest.datasets.filter(
+          (dataset) => dataset.key !== "unit-power"
+        ),
+      })
+    )
+    expect(result.status).toBe("ready")
+    expect(await getDatasetRecords("unit-power")).toEqual([])
   })
 
   it("is ready when the manifest does not list the optional horde-mode-tiers dataset", async () => {

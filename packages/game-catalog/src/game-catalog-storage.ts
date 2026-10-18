@@ -22,7 +22,8 @@ export const catalogDbName = "tacticus-planner-game-catalog"
 // v10: drop the `lre-common` store (each `lres` record now carries its own `rewards` ladder) and its
 // stale metadata row.
 // v11: add the `mythic-quests` store (same additive cascade).
-export const catalogDbVersion = 11
+// v12: add the `unit-power` store (same additive cascade).
+export const catalogDbVersion = 12
 
 // One EntityTable per served dataset, keyed by "id" — computed from the same union that builds the
 // stores below (GameCatalogDatasetKey === typeof servedDatasetKeys[number]), so every dataset store is
@@ -157,6 +158,15 @@ export async function hasDatasetSynced(
   datasetKey: GameCatalogDatasetKey
 ): Promise<boolean> {
   return (await catalogDb.metadata.get(datasetKey)) !== undefined
+}
+
+/** Whether a full catalog sync has completed in this client at least once: the manifest metadata
+ *  row is written only after every changed dataset stored. Before it, an optional dataset with no
+ *  records is "not synced yet" rather than "not served". */
+export async function hasCatalogSynced(): Promise<boolean> {
+  return (
+    (await catalogDb.metadata.get(catalogManifestMetadataKey)) !== undefined
+  )
 }
 
 export async function clearGameCatalogDb() {

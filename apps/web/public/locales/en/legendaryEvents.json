@@ -219,6 +219,11 @@
     "reserve": "Reserve",
     "members": "Members",
     "pointsPerBattle": "{{points}} points per battle",
+    "power": {
+      "label": "Team power",
+      "unavailable": "Power data unavailable",
+      "noRoster": "Sync your roster to see team power"
+    },
     "notCovered": "Not covered by the current members",
     "dragHandle": "Drag to reorder {{name}}",
     "depth": {
@@ -416,7 +421,7 @@
   "estimates": {
     "estimated": "estimated",
     "uncalibrated": "Uncalibrated: the estimate's power ratio has not been fitted to real clears yet, so treat it as a rough guide.",
-    "howItWorks": "Estimated from your synced roster's combat power against each battle's power. Equipment, synergy and hard objectives aren't modelled; set a depth to override it.",
+    "howItWorks": "Estimated from your synced roster's power, equipment included, against each battle's power. Synergy and hard objectives aren't modelled; set a depth to override it.",
     "marginAbove": "{{percent}}% above battle {{battle}}",
     "shortfallNext": "{{percent}}% short of battle {{battle}}",
     "notEnough": "Not enough for battle 1 yet",

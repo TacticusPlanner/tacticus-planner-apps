@@ -5,6 +5,7 @@ import {
   legendaryEventCharacters,
 } from "@/test/fixtures/legendary-event-characters"
 import { lysanderEvent, utharEvent } from "@/test/fixtures/legendary-events"
+import { unitPowerContextFixture } from "@/test/fixtures/unit-power"
 
 import type { LegendaryEventTeam } from "../model/plan.types"
 import type {
@@ -30,7 +31,16 @@ const roster: LegendaryEventRosterUnit[] = [
     progressionIndex: "Legendary:RedThreeStars",
   },
 ] as LegendaryEventRosterUnit[]
-const config = clearEstimateConfig(null)
+// The power fixture holds no Blood Angels: Dante reads Calgar's game data (any non-null power
+// works, the battle powers below are 0 or out of reach).
+const unitPower = unitPowerContextFixture()
+const config = clearEstimateConfig(null, {
+  ...unitPower,
+  characters: new Map([
+    ...unitPower.characters,
+    ["bloodDante", unitPower.characters.get("ultraCalgar")!],
+  ]),
+})
 
 /** Battle powers that make any owned unit clear exactly `depth` battles of 18. */
 const powersFor = (depth: number) =>
@@ -160,6 +170,21 @@ describe("buildMasterTable", () => {
     expect(uthar.lanes.gamma?.points).toBe(837)
     expect(uthar.points).toBe(1947)
     expect(row.total).toBe(3095)
+  })
+
+  it("estimates nothing when power data is unavailable: every Estimated cell is 0", () => {
+    const row = danteRow(
+      table([{ event: lysanderEvent, battlePowers: { alpha: powersFor(7) } }], {
+        pointsMode: "estimated",
+        config: clearEstimateConfig(null, null),
+      })
+    )!
+    expect(row.owned).toBe(true)
+    expect(row.cells.astarLysander!.lanes.alpha).toEqual({
+      points: 0,
+      depth: null,
+    })
+    expect(row.total).toBe(0)
   })
 
   it("gives a locked unit 0 in every Estimated cell and keeps it in the All set", () => {

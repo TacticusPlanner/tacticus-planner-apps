@@ -254,7 +254,8 @@
       "health": "Health",
       "armour": "Armour",
       "damage": "Damage",
-      "movement": "Movement"
+      "movement": "Movement",
+      "power": "Power"
     },
     "attacks": {
       "title": "Attacks",
@@ -296,8 +297,8 @@
           "content": "Step through the levels the unit appears at to see its stats at each rank and star count."
         },
         "stats": {
-          "title": "Stats, attacks, and traits",
-          "content": "Health, armour, damage, and movement at the selected level, plus the unit’s attacks and traits."
+          "title": "Stats, power, attacks, and traits",
+          "content": "Health, armour, damage, movement, and estimated power at the selected level, plus the unit’s attacks and traits."
         }
       }
     },
@@ -318,7 +319,12 @@
     "anyAttack": "Any attack",
     "meleeOnly": "Melee only",
     "hasRanged": "Has ranged",
-    "clearOne": "Clear {{name}}"
+    "clearOne": "Clear {{name}}",
+    "power": {
+      "unavailable": "Power data unavailable",
+      "estimateLabel": "About this estimate",
+      "estimate": "Estimated from the listed stats. It can differ from the game's figure for units with extra abilities, crit or block."
+    }
   },
   "unit": {
     "nav": {
@@ -439,7 +445,8 @@
         "blockDamageBonus": "Block damage",
         "armor": "Armour",
         "hp": "Health"
-      }
+      },
+      "statsUnavailable": "Stats data unavailable"
     },
     "traits": {
       "title": "Traits"
@@ -494,7 +501,7 @@
       "steps": {
         "header": {
           "title": "The unit",
-          "content": "Its portrait, faction and the values the page shows. Signed in and synced, they start at your own unit; choose Custom to try other values."
+          "content": "Its portrait, faction and the values the page shows. Signed in and synced, they start at your own unit; choose Custom to try other values. The header also shows the unit's power at those values."
         },
         "tabs": {
           "title": "Details and rank-up",
@@ -526,6 +533,12 @@
         "xp": "Mythic XP book",
         "gold": "Gold"
       }
+    },
+    "power": {
+      "label": "Power",
+      "withItems": "Includes your equipped items",
+      "withoutItems": "Without equipment",
+      "unavailable": "Power data unavailable"
     }
   },
   "mowUnit": {
@@ -581,7 +594,7 @@
       "steps": {
         "header": {
           "title": "Machine of War",
-          "content": "Your Machine of War's rarity and ability levels. Switch to Custom to look at other rarities."
+          "content": "Your Machine of War's rarity and ability levels. Switch to Custom to look at other rarities. The header also shows its power at the values shown."
         },
         "tabs": {
           "title": "Details and upgrades",
@@ -604,6 +617,10 @@
           "content": "Gold, salvage, components and badges for the chosen levels, by rarity."
         }
       }
+    },
+    "power": {
+      "label": "Power",
+      "unavailable": "Power data unavailable"
     }
   }
 }

@@ -1,9 +1,13 @@
+import {
+  rosterCharacterPower,
+  type UnitPowerContext,
+} from "@/shared/unit-power"
+
 import type { LegendaryEventRosterUnit } from "../model/types"
 import {
   effectiveHordeMultiplier,
   type HordeModeTierList,
 } from "./horde-tier-list"
-import { unitCombatPower } from "./unit-combat-power"
 
 /**
  * Effective power ≥ this × a battle's catalog power clears it. A web constant, not catalog data:
@@ -14,7 +18,8 @@ export const CLEAR_ESTIMATE_POWER_RATIO = 1
 /** False until `CLEAR_ESTIMATE_POWER_RATIO` is calibrated from observed clears ("uncalibrated"). */
 export const CLEAR_ESTIMATE_CALIBRATED = false
 
-/** The power ratio and the catalog `horde-mode-tiers` list in the shape the calculation reads. */
+/** The power ratio, the catalog `horde-mode-tiers` list and the unit power formula's inputs in the
+ *  shape the calculation reads. */
 export interface ClearEstimateConfig {
   /** A battle is cleared when effective power ≥ `powerRatio` × its catalog power. */
   powerRatio: number
@@ -22,7 +27,12 @@ export interface ClearEstimateConfig {
   calibrated: boolean
   /** Each tiered character's horde-mode multiplier; an untiered character has 1.0. */
   hordeMultipliers: ReadonlyMap<string, number>
+  /** The power formula's game data; null when the `unit-power` dataset is absent (no estimate). */
+  unitPower: UnitPowerContext | null
 }
+
+/** The config fields a power figure reads. */
+type PowerConfig = Pick<ClearEstimateConfig, "hordeMultipliers" | "unitPower">
 
 /** How far a team (or a single unit) is estimated to clear on a lane (design D3). */
 export interface ClearEstimate {
@@ -40,14 +50,17 @@ export interface ClearEstimate {
 export type ClearEstimateRoster = ReadonlyMap<string, LegendaryEventRosterUnit>
 
 /**
- * The config from the power-ratio constants and the catalog `horde-mode-tiers` list (null when that
- * dataset is absent: every character is then untiered). A character's own `multiplier` overrides its
- * tier's.
+ * The config from the power-ratio constants, the catalog `horde-mode-tiers` list (null when that
+ * dataset is absent: every character is then untiered) and the power context (null when the
+ * `unit-power` dataset is absent: nothing is estimated). A character's own `multiplier` overrides
+ * its tier's.
  */
 export function clearEstimateConfig(
-  hordeModeTiers: HordeModeTierList | null
+  hordeModeTiers: HordeModeTierList | null,
+  unitPower: UnitPowerContext | null
 ): ClearEstimateConfig {
   return {
+    unitPower,
     powerRatio: CLEAR_ESTIMATE_POWER_RATIO,
     calibrated: CLEAR_ESTIMATE_CALIBRATED,
     hordeMultipliers: new Map(
@@ -67,26 +80,63 @@ export function unitHordeMultiplier(
   return config.hordeMultipliers.get(unitId) ?? 1
 }
 
-/** Combat power × the unit's horde-mode multiplier; 0 when the roster does not hold it. */
+/** A synced unit's in-game power, items included: 0 when the roster does not hold it, null when
+ *  its power data is unavailable (no `unit-power` dataset, or a unit or item it does not know). */
+export function unitPower(
+  unitId: string,
+  roster: ClearEstimateRoster,
+  context: UnitPowerContext | null
+): number | null {
+  return context ? rosterCharacterPower(roster.get(unitId), context) : null
+}
+
+/** The sum of the members' power without horde-mode multipliers (a locked member adds 0); null
+ *  when any member's power is unavailable, never a partial sum. */
+export function teamPower(
+  memberUnitIds: readonly string[],
+  roster: ClearEstimateRoster,
+  context: UnitPowerContext | null
+): number | null {
+  return sumUnlessUnavailable(memberUnitIds, (unitId) =>
+    unitPower(unitId, roster, context)
+  )
+}
+
+/** Power × the unit's horde-mode multiplier; 0 when the roster does not hold it, null when its
+ *  power is unavailable. */
 export function unitEffectivePower(
   unitId: string,
   roster: ClearEstimateRoster,
-  config: Pick<ClearEstimateConfig, "hordeMultipliers">
-): number {
-  const power = unitCombatPower(roster.get(unitId))
+  config: PowerConfig
+): number | null {
+  const power = unitPower(unitId, roster, config.unitPower)
+  if (power === null) return null
   return power === 0 ? 0 : power * unitHordeMultiplier(config, unitId)
 }
 
-/** The sum of the non-reserve members' effective power (a locked member adds 0). */
+/** The sum of the non-reserve members' effective power (a locked member adds 0); null when any
+ *  member's power is unavailable. */
 export function teamEffectivePower(
   memberUnitIds: readonly string[],
   roster: ClearEstimateRoster,
-  config: Pick<ClearEstimateConfig, "hordeMultipliers">
-): number {
-  return memberUnitIds.reduce(
-    (sum, unitId) => sum + unitEffectivePower(unitId, roster, config),
-    0
+  config: PowerConfig
+): number | null {
+  return sumUnlessUnavailable(memberUnitIds, (unitId) =>
+    unitEffectivePower(unitId, roster, config)
   )
+}
+
+function sumUnlessUnavailable(
+  unitIds: readonly string[],
+  powerOf: (unitId: string) => number | null
+): number | null {
+  let sum = 0
+  for (const unitId of unitIds) {
+    const power = powerOf(unitId)
+    if (power === null) return null
+    sum += power
+  }
+  return sum
 }
 
 /**
@@ -127,7 +177,8 @@ export function lockedMemberCount(
   return memberUnitIds.filter((unitId) => !roster.has(unitId)).length
 }
 
-/** A team's estimate on a lane; null when no member is owned (nothing to estimate from). */
+/** A team's estimate on a lane; null when no member is owned (nothing to estimate from) or any
+ *  member's power is unavailable. */
 export function teamClearEstimate(
   memberUnitIds: readonly string[],
   battlePowers: readonly number[],
@@ -137,14 +188,12 @@ export function teamClearEstimate(
   if (lockedMemberCount(memberUnitIds, roster) === memberUnitIds.length) {
     return null
   }
-  return estimateClearDepth(
-    teamEffectivePower(memberUnitIds, roster, config),
-    battlePowers,
-    config
-  )
+  const power = teamEffectivePower(memberUnitIds, roster, config)
+  return power === null ? null : estimateClearDepth(power, battlePowers, config)
 }
 
-/** A team of five like this unit; null when the roster does not hold it. */
+/** A team of five like this unit; null when the roster does not hold it or its power is
+ *  unavailable. */
 export function unitClearEstimate(
   unitId: string,
   battlePowers: readonly number[],
@@ -152,11 +201,10 @@ export function unitClearEstimate(
   config: ClearEstimateConfig
 ): ClearEstimate | null {
   if (!roster.has(unitId)) return null
-  return estimateClearDepth(
-    5 * unitEffectivePower(unitId, roster, config),
-    battlePowers,
-    config
-  )
+  const power = unitEffectivePower(unitId, roster, config)
+  return power === null
+    ? null
+    : estimateClearDepth(5 * power, battlePowers, config)
 }
 
 /** The depth to show and plan with (design D2): the run's manual depth, else the estimate. */

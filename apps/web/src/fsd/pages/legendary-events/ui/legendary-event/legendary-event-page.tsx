@@ -22,6 +22,7 @@ import { useTokenPlan } from "@/features/legendary-event-tokens"
 import { useAnalyticsActions } from "@/shared/analytics"
 import { useTourPageSteps } from "@/shared/tour"
 import { useUnitName } from "@/shared/unit-name"
+import { useUnitPowerContext } from "@/shared/unit-power"
 
 import { LegendaryEventPageView } from "./legendary-event-page-view"
 import {
@@ -82,7 +83,10 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
   const units = readValue(unitsRead)
   const roster = readValue(useLegendaryEventRoster())
   const progressValue = readValue(progress)
-  const clearEstimateConfig = useClearEstimateConfig()
+  // Read once: the clear estimates and the team cards share it, so its tables are built once.
+  const unitPowerRead = useUnitPowerContext()
+  const clearEstimateConfig = useClearEstimateConfig(unitPowerRead)
+  const unitPower = readValue(unitPowerRead)
   const battles = readValue(useLegendaryEventBattles(eventId))
   const syncedEntry =
     typeof progressValue === "object" ? progressValue : undefined
@@ -372,6 +376,7 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
       run: runs.run,
       actions: plan,
       estimates: clearEstimates,
+      unitPower,
       eventId,
       lastRunClears: runHistory.lastRunClears,
       progressByLane:

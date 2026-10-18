@@ -68,13 +68,19 @@ export type LegendaryEventUnit = Pick<
 type PlayerCharacterRecord = PlayerDataChunkDto<"characters">[number]
 
 /** The roster fields the leaderboard and clear estimates read (one synced `characters` record).
- *  Abilities and applied upgrades feed combat power; they are optional so a caller that only
- *  needs ownership can pass a narrower record (combat power then uses level 1 and no upgrades). */
+ *  Abilities, applied upgrades and equipped items feed unit power; they are optional so a caller
+ *  that only needs ownership can pass a narrower record (power then uses level 1, no upgrades and
+ *  no items). */
 export type LegendaryEventRosterUnit = Pick<
   PlayerCharacterRecord,
   "unitId" | "rank" | "progressionIndex"
 > &
-  Partial<Pick<PlayerCharacterRecord, "abilities" | "appliedUpgradeSlots">>
+  Partial<
+    Pick<
+      PlayerCharacterRecord,
+      "abilities" | "appliedUpgradeSlots" | "equippedItems"
+    >
+  >
 
 export type LegendaryEventLifecycleState = "active" | "upcoming" | "archived"
 

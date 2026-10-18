@@ -5,9 +5,9 @@ import type { CharacterStorageModel } from "@workspace/game-catalog"
 import {
   rankIndex,
   rarityRank,
-  statAtRank,
   type BattleId,
   type CampaignId,
+  type Progression,
   type Rank,
   type UpgradeId,
 } from "@workspace/game-domain"
@@ -29,6 +29,7 @@ import {
   type Battle,
 } from "@/shared/lib"
 import { computeCampaignInsights } from "@/features/campaign-insights"
+import { characterStatsAt, type UnitPowerContext } from "@/shared/unit-power"
 
 import type { LookupSelection } from "./use-lookup-selection"
 import type {
@@ -58,6 +59,7 @@ export function useCharacterLookupCalc({
   effectiveIncludeOwned,
   playerCharacter,
   inventoryUpgrades,
+  powerContext,
 }: {
   character: CharacterStorageModel | undefined
   characterForCalc: Character | undefined
@@ -68,6 +70,9 @@ export function useCharacterLookupCalc({
   effectiveIncludeOwned: boolean
   playerCharacter: PlayerCharacter | undefined
   inventoryUpgrades: PlayerDataChunkDto<"inventory-upgrades"> | undefined
+  /** The power calculation's inputs, whose stat step gives the profile's stats; null while loading
+   *  or when unavailable (the stats then show as missing). */
+  powerContext: UnitPowerContext | null
 }) {
   const { t } = useTranslation(["characters", "factions", "upgrades"])
   const {
@@ -341,9 +346,26 @@ export function useCharacterLookupCalc({
 
     const damageTypes = characterDamageTypes(character)
 
-    const statPair = (base: number) => ({
-      current: statAtRank(base, applied.rankStart, applied.progressionStart),
-      target: statAtRank(base, applied.rankEnd, applied.progressionEnd),
+    // The game's stats before equipment at each end, with no current-rank slots applied.
+    const statsAt = (rank: Rank, progression: Progression) =>
+      powerContext
+        ? characterStatsAt(
+            character.id,
+            {
+              rank,
+              progression,
+              appliedUpgradeSlots: [],
+              activeAbilityLevel: 1,
+              passiveAbilityLevel: 1,
+            },
+            powerContext
+          )
+        : null
+    const current = statsAt(applied.rankStart, applied.progressionStart)
+    const target = statsAt(applied.rankEnd, applied.progressionEnd)
+    const statPair = (key: "health" | "damage" | "armour") => ({
+      current: current?.[key] ?? null,
+      target: target?.[key] ?? null,
     })
 
     return {
@@ -361,9 +383,9 @@ export function useCharacterLookupCalc({
       damageTypes,
       equipmentSlots: character.equipmentSlots,
       traits: character.traits,
-      health: statPair(character.health),
-      damage: statPair(character.damage),
-      armour: statPair(character.armour),
+      health: statPair("health"),
+      damage: statPair("damage"),
+      armour: statPair("armour"),
     }
   }, [
     character,
@@ -371,6 +393,7 @@ export function useCharacterLookupCalc({
     applied.rankEnd,
     applied.progressionStart,
     applied.progressionEnd,
+    powerContext,
     t,
   ])
 

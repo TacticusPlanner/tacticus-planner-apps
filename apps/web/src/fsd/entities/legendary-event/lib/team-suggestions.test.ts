@@ -44,7 +44,9 @@ const suggest = (overrides: Partial<TeamSuggestionsInput> = {}) =>
     ...overrides,
   })
 
-const MELEE_TEAM = ["ultraApothecary", "ultraCalgar", "ultraTitus"]
+// Candidates in effective-power order: Incisus 24,753, Titus 21,883, Calgar 21,675, Tigurius
+// 16,672 × 1.2 = 20,006.4, Certus 13,912.
+const MELEE_TEAM = ["ultraApothecary", "ultraTitus", "ultraCalgar"]
 
 describe("suggestLaneTeams (spec worked examples)", () => {
   it("ranks the worked Uthar Alpha proposals: 945, 870, 811", () => {
@@ -58,32 +60,32 @@ describe("suggestLaneTeams (spec worked examples)", () => {
         })
       )
     ).toEqual([
-      // 65 + 140 + 240 + 248 + 252
+      // E 68,311: 65 + 140 + 240 + 248 + 252
       {
         memberUnitIds: MELEE_TEAM,
         coveredObjectiveIndexes: [ULTRAMARINES, MELEE],
         depth: 5,
         gainPoints: 945,
       },
-      // 50 + 125 + 225 + 233 + 237
+      // E 80,346.4: 50 + 125 + 225 + 233 + 237
       {
         memberUnitIds: [
-          "ultraTigurius",
           "ultraApothecary",
           "ultraCalgar",
+          "ultraTigurius",
           "ultraEliminatorSgt",
         ],
         coveredObjectiveIndexes: [ULTRAMARINES, MAX_2_HITS],
         depth: 5,
         gainPoints: 870,
       },
-      // 0 + 75 + 175 + 183 + 187 + 191
+      // E 102,229.4: 0 + 75 + 175 + 183 + 187 + 191
       {
         memberUnitIds: [
-          "ultraTigurius",
           "ultraApothecary",
-          "ultraCalgar",
           "ultraTitus",
+          "ultraCalgar",
+          "ultraTigurius",
           "ultraEliminatorSgt",
         ],
         coveredObjectiveIndexes: [ULTRAMARINES],
@@ -140,9 +142,9 @@ describe("suggestLaneTeams (spec worked examples)", () => {
     expect(ultramarines?.memberUnitIds).toEqual([
       "ultraTitus",
       "ultraEliminatorSgt",
-      "ultraTigurius",
       "ultraApothecary",
       "ultraCalgar",
+      "ultraTigurius",
     ])
   })
 
@@ -158,5 +160,11 @@ describe("suggestLaneTeams (spec worked examples)", () => {
         suggestion.memberUnitIds.includes("ultraInceptorSgt")
       )
     ).toBe(false)
+  })
+
+  it("proposes nothing when power data is unavailable (every depth reads 0)", () => {
+    expect(suggest({ config: { ...WORKED_CONFIG, unitPower: null } })).toEqual(
+      []
+    )
   })
 })

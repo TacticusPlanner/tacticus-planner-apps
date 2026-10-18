@@ -9,6 +9,7 @@ import {
 } from "@/entities/legendary-event"
 import { legendaryEventCharacters } from "@/test/fixtures/legendary-event-characters"
 import { utharEvent } from "@/test/fixtures/legendary-events"
+import { unitPowerContextFixture } from "@/test/fixtures/unit-power"
 import { createTestI18n, i18nWrapper } from "@/test/i18n"
 import { fireEvent, render, screen, within } from "@/test/render"
 import { setViewportWidth } from "@/test/viewport"
@@ -45,7 +46,8 @@ const OWNED = [
   "ultraApothecary",
   "ultraEliminatorSgt",
 ]
-// Gold1 / Epic:RedOneStar / 3 upgrades / 20 / 15: combat power 8,792.
+// Gold1 / Epic:RedOneStar / slots 0–2 / 20 / 15: power Incisus 24,753, Titus 21,883, Calgar 21,675,
+// Tigurius 16,672 (× 1.2), Certus 13,912.
 const rosterUnit = (unitId: string): LegendaryEventRosterUnit =>
   ({
     unitId,
@@ -76,9 +78,10 @@ const source: TeamSuggestionsSource = {
     battlePowers: [1018, 3055, 8199, 20703, 40586, 75787, 134603],
     roster: new Map(OWNED.map((unitId) => [unitId, rosterUnit(unitId)])),
     config: {
-      powerRatio: 0.5,
+      powerRatio: 1.2,
       calibrated: true,
       hordeMultipliers: new Map([["ultraTigurius", 1.2]]),
+      unitPower: unitPowerContextFixture(),
     },
   },
   goalUnitIds: new Set(),
@@ -122,8 +125,8 @@ describe("TeamSuggestionsDialog", () => {
     expect(cards()).toHaveLength(3)
     expect(members(cards()[0]!)).toEqual([
       "ultraApothecary",
-      "ultraCalgar",
       "ultraTitus",
+      "ultraCalgar",
     ])
     expect(
       within(cards()[0]!).getByTestId("team-suggestion-reason")
@@ -131,9 +134,9 @@ describe("TeamSuggestionsDialog", () => {
       "Covers Ultramarines and Melee · clears ~5 · +945 points over your teams"
     )
     expect(members(cards()[1]!)).toEqual([
-      "ultraTigurius",
       "ultraApothecary",
       "ultraCalgar",
+      "ultraTigurius",
       "ultraEliminatorSgt",
     ])
     expect(members(cards()[2]!)).toHaveLength(5)
@@ -186,7 +189,7 @@ describe("TeamSuggestionsDialog", () => {
     fireEvent.click(use)
     expect(onUseSuggestion).toHaveBeenCalledWith(
       expect.objectContaining({
-        memberUnitIds: ["ultraApothecary", "ultraCalgar", "ultraTitus"],
+        memberUnitIds: ["ultraApothecary", "ultraTitus", "ultraCalgar"],
         coveredObjectiveIndexes: [0, 3],
         gainPoints: 945,
       }),

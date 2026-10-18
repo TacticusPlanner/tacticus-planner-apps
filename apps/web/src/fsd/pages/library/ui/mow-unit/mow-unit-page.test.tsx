@@ -13,7 +13,10 @@ import type { i18n as I18n } from "i18next"
 import { TooltipProvider } from "@workspace/ui/components/tooltip"
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
 
+import type { ReadState } from "@/shared/lib"
+import type { UnitPowerContext } from "@/shared/unit-power"
 import { createTestI18n } from "@/test/i18n"
+import { unitPowerContextFixture } from "@/test/fixtures/unit-power"
 
 import enAbilities from "../../../../../../public/locales/en/abilities.json"
 import enLibrary from "../../../../../../public/locales/en/library.json"
@@ -35,6 +38,10 @@ const env = vi.hoisted(() => ({
   inventory: undefined as unknown,
   inventoryUpgrades: undefined as unknown[] | undefined,
   abilityText: {} as Record<string, unknown>,
+  power: {
+    status: "loading",
+    retry: () => {},
+  } as ReadState<UnitPowerContext | null>,
 }))
 
 vi.mock("@workspace/ui/hooks/use-mobile", () => ({
@@ -48,6 +55,10 @@ vi.mock("@/shared/tour", () => ({
 vi.mock("@azure/msal-react", () => ({
   useIsAuthenticated: () => env.authenticated,
   useMsal: () => ({ instance: { loginRedirect: vi.fn() } }),
+}))
+vi.mock("@/shared/unit-power", async (importOriginal) => ({
+  ...(await importOriginal<object>()),
+  useUnitPowerContext: () => env.power,
 }))
 vi.mock("@/shared/ability-text", async (importOriginal) => ({
   ...(await importOriginal<object>()),
@@ -284,6 +295,11 @@ describe("MowUnitPage", () => {
     env.inventory = undefined
     env.inventoryUpgrades = undefined
     env.abilityText = {}
+    env.power = {
+      status: "ready",
+      data: unitPowerContextFixture(),
+      retry: () => {},
+    }
   })
 
   it("shows the MoW's details, not the placeholder", async () => {
@@ -394,6 +410,65 @@ describe("MowUnitPage", () => {
     )
   })
 
+  describe("Power", () => {
+    const maxedBiovore = {
+      ...ownedGalatian,
+      unitId: "tyranBiovore",
+      progressionIndex: "Mythic:MythicWings",
+      abilities: [
+        { abilityId: "raw1", level: 60 },
+        { abilityId: "raw2", level: 60 },
+      ],
+    }
+
+    it("shows a maxed MoW's power in the header and follows Custom stars", async () => {
+      env.authenticated = true
+      env.roster = [maxedBiovore]
+      await renderUnit("/library/machines-of-war/tyranBiovore")
+      const values = within(screen.getByTestId("unit-values"))
+      expect(values.getByTestId("unit-power")).toHaveTextContent("Power")
+      expect(values.getByTestId("unit-power-value")).toHaveTextContent(
+        "1,040,687"
+      )
+
+      fireEvent.click(screen.getByTestId("unit-values-custom"))
+      fireEvent.click(values.getByRole("combobox"))
+      fireEvent.click(
+        // Legendary and Mythic both have a one-blue-star step; Mythic's comes last.
+        (await screen.findAllByRole("option", { name: /One Blue Star/ })).at(
+          -1
+        )!
+      )
+      expect(screen.getByTestId("unit-power-value")).toHaveTextContent(
+        "873,548"
+      )
+      expect(screen.getByTestId("unit-ability-primary")).toHaveTextContent(
+        "Yours: level 60"
+      )
+    })
+
+    it("shows a placeholder while the power data loads", async () => {
+      env.power = { status: "loading", retry: () => {} }
+      await renderUnit("/library/machines-of-war/tyranBiovore")
+      expect(screen.getByTestId("unit-power-loading")).toBeInTheDocument()
+    })
+
+    it("shows the power as unavailable and keeps the panels and tabs when the data failed", async () => {
+      env.power = { status: "error", retry: () => {} }
+      env.authenticated = true
+      env.roster = [maxedBiovore]
+      await renderUnit("/library/machines-of-war/tyranBiovore")
+      expect(screen.getByTestId("unit-power-value")).toHaveTextContent("—")
+      expect(screen.getByTestId("unit-power-note")).toHaveTextContent(
+        "Power data unavailable"
+      )
+      expect(screen.getByTestId("unit-ability-primary")).toBeInTheDocument()
+      expect(screen.getByTestId("unit-ability-secondary")).toBeInTheDocument()
+      fireEvent.click(screen.getByTestId("unit-tab-upgrades"))
+      expect(screen.getByTestId("mow-total-gold")).toBeInTheDocument()
+    })
+  })
+
   it("offers only rarity and stars in Custom", async () => {
     env.authenticated = true
     env.roster = [ownedGalatian]
@@ -437,6 +512,16 @@ describe("MowUnitPage", () => {
       screen.queryByTestId("unit-showing-starting")
     ).not.toBeInTheDocument()
     expect(screen.queryByTestId("unit-not-unlocked")).not.toBeInTheDocument()
+  })
+
+  it("keeps the power loading while a signed-in player's record is still read", async () => {
+    env.authenticated = true
+    env.rosterPending = true
+    await renderUnit("/library/machines-of-war/ultraDreadnought")
+    // Not the starting values' power, shown as ready before the player's own arrive.
+    expect(env.power.status).toBe("ready")
+    expect(screen.getByTestId("unit-power-loading")).toBeInTheDocument()
+    expect(screen.queryByTestId("unit-power-value")).not.toBeInTheDocument()
   })
 
   it("on mobile, shows Primary expanded and Secondary collapsed with their levels", async () => {

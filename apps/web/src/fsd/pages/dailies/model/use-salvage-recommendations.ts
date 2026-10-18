@@ -2,17 +2,12 @@ import { useCallback, useMemo, useState } from "react"
 import { useQuery } from "@tanstack/react-query"
 import { useIsAuthenticated } from "@azure/msal-react"
 import { useLiveQuery } from "dexie-react-hooks"
-import {
-  progressionRarity,
-  type Alliance,
-  type UnitId,
-} from "@workspace/game-domain"
+import { progressionRarity, type UnitId } from "@workspace/game-domain"
 import { getCharactersMap } from "@workspace/game-catalog/queries"
 import { getPlayerCharacters } from "@workspace/player-data/queries"
 
 import { goalQueries } from "@/entities/goal"
 import { projectQueries } from "@/entities/project"
-import { characterDamageTypes } from "@/shared/lib"
 
 import {
   buildSalvageRecommendations,
@@ -24,7 +19,6 @@ import {
   SALVAGE_TRACKS,
   type SalvageRecommendations,
   type SalvageRecommendationsViewModel,
-  type SalvageRosterCatalog,
   type SalvageTrack,
 } from "./salvage-recommendations.types"
 import {
@@ -33,6 +27,8 @@ import {
   usePersistedTeamSize,
   usePersistedTrack,
 } from "./team-recommendation-prefs"
+import { buildTrackRoster } from "./track-roster"
+import { useTeamUnitPower } from "./use-team-unit-power"
 import { MIN_TEAM_SIZE, TEAM_SIZES } from "./team-recommendations.types"
 import type { TeamPreferences } from "./team-recommendations.types"
 
@@ -127,47 +123,14 @@ export function useSalvageRecommendations(
   const catalogRaw = useLiveQuery(() => safeReadCatalog(), [retryNonce])
   const catalogFailed = catalogRaw === LIVE_QUERY_ERROR
   const catalog = catalogFailed ? undefined : catalogRaw
+  const { loading: unitPowerLoading, unitPower } = useTeamUnitPower()
 
-  // The owned characters of the selected track's alliance, plus the catalog map (traits / damage
-  // types / alliance) and the trait / damage-type unions the preference controls offer — all
-  // computed over the track roster only, so a control never offers a value the track cannot field.
+  // The track roster, its catalog map and the preference-control options (see `buildTrackRoster`).
   const { trackRoster, rosterCatalog, availableTraits, availableDamageTypes } =
-    useMemo(() => {
-      const map: Map<
-        UnitId,
-        {
-          traits: readonly string[]
-          damageTypes: readonly string[]
-          alliance: Alliance
-        }
-      > = new Map()
-      const traits = new Set<string>()
-      const damageTypes = new Set<string>()
-      const inTrack: NonNullable<typeof roster> = []
-      if (roster && catalog) {
-        for (const character of roster) {
-          const view = catalog.get(character.unitId)
-          if (!view) continue
-          const characterTraits = view.traits ?? []
-          const characterDamage = characterDamageTypes(view)
-          map.set(character.unitId as UnitId, {
-            traits: characterTraits,
-            damageTypes: characterDamage,
-            alliance: view.alliance,
-          })
-          if (view.alliance !== track) continue
-          inTrack.push(character)
-          for (const trait of characterTraits) traits.add(trait)
-          for (const damage of characterDamage) damageTypes.add(damage)
-        }
-      }
-      return {
-        trackRoster: inTrack,
-        rosterCatalog: map as SalvageRosterCatalog,
-        availableTraits: [...traits].sort(),
-        availableDamageTypes: [...damageTypes].sort(),
-      }
-    }, [roster, catalog, track])
+    useMemo(
+      () => buildTrackRoster(roster, catalog, track),
+      [roster, catalog, track]
+    )
 
   // When the set of owned track-character ids changes (roster edit or track switch), drop the
   // locks — reconciled during render rather than in an effect.
@@ -203,6 +166,7 @@ export function useSalvageRecommendations(
       randomSeed,
       preferences,
       rosterCatalog,
+      unitPower,
     })
   }, [
     trackRoster,
@@ -216,6 +180,7 @@ export function useSalvageRecommendations(
     randomSeed,
     preferences,
     rosterCatalog,
+    unitPower,
   ])
 
   const availableSizes = useMemo(
@@ -261,7 +226,13 @@ export function useSalvageRecommendations(
     return { status: "error", retry }
   }
 
-  if (goalsQuery.isPending || waitingForProjectGoals || !roster || !catalog) {
+  if (
+    goalsQuery.isPending ||
+    waitingForProjectGoals ||
+    unitPowerLoading ||
+    !roster ||
+    !catalog
+  ) {
     return { status: "loading" }
   }
 

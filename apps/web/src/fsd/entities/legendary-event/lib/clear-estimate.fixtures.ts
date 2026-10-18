@@ -1,6 +1,7 @@
 import type { Progression, Rarity } from "@workspace/game-domain"
 
 import { utharEvent } from "@/test/fixtures/legendary-events"
+import { unitPowerContextFixture } from "@/test/fixtures/unit-power"
 
 import type { LegendaryEventRosterUnit } from "../model/types"
 import type { ClearEstimateConfig } from "./clear-estimate"
@@ -15,8 +16,10 @@ export const UTHAR_ALPHA_POWERS = [
 /** Uthar Alpha battle 8's power: Goals Preview's Tigurius example stops before it (Stage 6). */
 export const UTHAR_ALPHA_BATTLE_8_POWER = 225385
 
-/** Gold1 / Epic:RedOneStar / 3 upgrades / active 20 / passive 15 → combat power 8,792
- *  (Epic:RedTwoStars → 9,299; Epic:RedThreeStars → 9,806). */
+/** Gold1 / Epic:RedOneStar / slots 0–2 / active 20 / passive 15 / no items. In-game power
+ *  (Epic:RedOneStar → RedTwoStars → RedThreeStars): Calgar 21,675 → 24,155 → 26,785, Tigurius
+ *  16,672 → 18,557 → 20,569, Titus 21,883 → 24,419 → 27,074, Incisus (`ultraApothecary`) 24,753 →
+ *  27,662 → 30,680, Certus (`ultraEliminatorSgt`) 13,912 → 15,476 → 17,121. */
 export function rosterUnit(
   unitId: string,
   progressionIndex: Progression = "Epic:RedOneStar"
@@ -47,10 +50,19 @@ export const WORKED_TEAM = [
   "ultraEliminatorSgt",
 ] as const
 
+/** The spec worked examples' config: power ratio 1.2, Tigurius in a 1.2 horde-mode tier, and the
+ *  real power formula over the fixture catalog. */
 export const WORKED_CONFIG: ClearEstimateConfig = {
-  powerRatio: 0.5,
+  powerRatio: 1.2,
   calibrated: true,
   hordeMultipliers: new Map([["ultraTigurius", 1.2]]),
+  unitPower: unitPowerContextFixture(),
+}
+
+/** The worked config with the `unit-power` dataset absent (power data unavailable). */
+export const UNAVAILABLE_CONFIG: ClearEstimateConfig = {
+  ...WORKED_CONFIG,
+  unitPower: null,
 }
 
 /** The catalog `initialRarity` of the worked units (Stage 6 unlock step and Goals Preview). */

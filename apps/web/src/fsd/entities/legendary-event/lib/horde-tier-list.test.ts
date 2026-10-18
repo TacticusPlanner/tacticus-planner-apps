@@ -130,7 +130,7 @@ describe("buildHordeTierList", () => {
 
 describe("effectiveHordeMultiplier", () => {
   it("is the same rule the clear-estimate config reads", () => {
-    const config = clearEstimateConfig(hordeModeTiers)
+    const config = clearEstimateConfig(hordeModeTiers, null)
     for (const { unitId } of hordeModeTiers.characters) {
       expect(unitHordeMultiplier(config, unitId)).toBe(
         effectiveHordeMultiplier(hordeModeTiers, unitId)
@@ -165,7 +165,7 @@ describe("Tier List and estimates on malformed data", () => {
     NO_FILTERS,
     nameOf
   )!
-  const config = clearEstimateConfig(malformed)
+  const config = clearEstimateConfig(malformed, null)
   const rowOf = (unitId: string) =>
     list.rows.find((row) => row.units.some((tile) => tile.unitId === unitId))
   const isUntiered = (unitId: string) =>

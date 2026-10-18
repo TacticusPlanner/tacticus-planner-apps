@@ -254,7 +254,8 @@
       "health": "Salud",
       "armour": "Armadura",
       "damage": "Daño",
-      "movement": "Movimiento"
+      "movement": "Movimiento",
+      "power": "Poder"
     },
     "attacks": {
       "title": "Ataques",
@@ -296,8 +297,8 @@
           "content": "Recorre los niveles en los que aparece la unidad para ver sus estadísticas en cada rango y número de estrellas."
         },
         "stats": {
-          "title": "Estadísticas, ataques y rasgos",
-          "content": "Salud, armadura, daño y movimiento en el nivel seleccionado, además de los ataques y rasgos de la unidad."
+          "title": "Estadísticas, poder, ataques y rasgos",
+          "content": "Salud, armadura, daño, movimiento y poder estimado en el nivel seleccionado, además de los ataques y rasgos de la unidad."
         }
       }
     },
@@ -318,7 +319,12 @@
     "anyAttack": "Cualquier ataque",
     "meleeOnly": "Solo cuerpo a cuerpo",
     "hasRanged": "Con ataque a distancia",
-    "clearOne": "Borrar {{name}}"
+    "clearOne": "Borrar {{name}}",
+    "power": {
+      "unavailable": "Datos de poder no disponibles",
+      "estimateLabel": "Sobre esta estimación",
+      "estimate": "Estimado a partir de las estadísticas mostradas. Puede diferir de la cifra del juego en unidades con habilidades adicionales, crítico o bloqueo."
+    }
   },
   "unit": {
     "nav": {
@@ -439,7 +445,8 @@
         "blockDamageBonus": "Daño bloqueado",
         "armor": "Armadura",
         "hp": "Salud"
-      }
+      },
+      "statsUnavailable": "Estadísticas no disponibles"
     },
     "traits": {
       "title": "Rasgos"
@@ -494,7 +501,7 @@
       "steps": {
         "header": {
           "title": "La unidad",
-          "content": "Su retrato, facción y los valores que muestra la página. Con la sesión iniciada y sincronizada, empiezan en tu propia unidad; elige «Personalizados» para probar otros valores."
+          "content": "Su retrato, facción y los valores que muestra la página. Con la sesión iniciada y sincronizada, empiezan en tu propia unidad; elige «Personalizados» para probar otros valores. La cabecera también muestra el poder de la unidad con esos valores."
         },
         "tabs": {
           "title": "Detalles y rango",
@@ -526,6 +533,12 @@
         "xp": "Libro de XP mítico",
         "gold": "Oro"
       }
+    },
+    "power": {
+      "label": "Poder",
+      "withItems": "Incluye tu equipo equipado",
+      "withoutItems": "Sin equipo",
+      "unavailable": "Datos de poder no disponibles"
     }
   },
   "mowUnit": {
@@ -581,7 +594,7 @@
       "steps": {
         "header": {
           "title": "Máquina de Guerra",
-          "content": "La rareza y los niveles de habilidad de tu Máquina de Guerra. Cambia a Personalizados para ver otras rarezas."
+          "content": "La rareza y los niveles de habilidad de tu Máquina de Guerra. Cambia a Personalizados para ver otras rarezas. La cabecera también muestra su poder con los valores mostrados."
         },
         "tabs": {
           "title": "Detalles y mejoras",
@@ -604,6 +617,10 @@
           "content": "Oro, chatarra, componentes e insignias para los niveles elegidos, por rareza."
         }
       }
+    },
+    "power": {
+      "label": "Poder",
+      "unavailable": "Datos de poder no disponibles"
     }
   }
 }

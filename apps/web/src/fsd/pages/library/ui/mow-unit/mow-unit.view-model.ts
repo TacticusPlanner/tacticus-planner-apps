@@ -7,6 +7,10 @@ import {
 import type { PlayerDataChunkDto } from "@workspace/player-data"
 
 import { mowAbilityTrackLevel } from "@/features/goal-farming"
+import type { ReadState } from "@/shared/lib"
+import { mowPowerAt, type UnitPowerContext } from "@/shared/unit-power"
+
+import { powerFigure, type PowerFigure } from "../unit/unit-power.model"
 
 import type { MowAbility, MowCostRung } from "./mow-upgrades.model"
 
@@ -57,4 +61,28 @@ export function costsByLevel(
   costs: readonly MowCostRung[]
 ): Map<number, MowCostRung> {
   return new Map(costs.map((rung) => [rung.level, rung]))
+}
+
+/** The header power at the shown rarity and stars and the Primary and Secondary panel levels;
+ *  loading while the player record is still read (`playerLoading`), since the shown values are the
+ *  starting ones until it arrives. */
+export function mowPowerFigure(
+  mowId: string,
+  progression: Progression,
+  levels: Record<MowAbility, number>,
+  context: ReadState<UnitPowerContext | null>,
+  playerLoading = false
+): PowerFigure {
+  if (playerLoading) return { status: "loading" }
+  return powerFigure(context, (ready) =>
+    mowPowerAt(
+      mowId,
+      {
+        progression,
+        primaryAbilityLevel: levels.primary,
+        secondaryAbilityLevel: levels.secondary,
+      },
+      ready
+    )
+  )
 }

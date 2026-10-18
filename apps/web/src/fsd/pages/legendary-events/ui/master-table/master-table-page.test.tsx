@@ -101,6 +101,36 @@ vi.mock("@workspace/game-catalog/queries", () => ({
     ),
   getHordeModeTiers: async () => null,
 }))
+// Power data for every unit the table lists (any non-null power: the battles are out of reach).
+vi.mock("@/shared/unit-power", async (importOriginal) => {
+  const original = await importOriginal<typeof import("@/shared/unit-power")>()
+  // The catalog JSON, not the fixture module: that one imports this mocked module.
+  const catalog = await import("@/test/fixtures/unit-power-catalog.json")
+  const context = original.buildUnitPowerContext(
+    catalog.default as unknown as Parameters<
+      typeof original.buildUnitPowerContext
+    >[0]
+  )!
+  const calgar = context.characters.get("ultraCalgar")!
+  const units = [
+    "bloodDante",
+    "ultraCalgar",
+    "bloodMephiston",
+    "tauFarsight",
+    "bloodDeathCompany",
+    "bloodTerminator",
+  ]
+  // One stable read state, as the real hook returns across renders.
+  const state = {
+    status: "ready",
+    data: {
+      ...context,
+      characters: new Map(units.map((id) => [id, calgar])),
+    },
+    retry: () => {},
+  }
+  return { ...original, useUnitPowerContext: () => state }
+})
 vi.mock("@workspace/player-data/queries", () => ({
   getPlayerCharacters: () =>
     data.rosterGate
