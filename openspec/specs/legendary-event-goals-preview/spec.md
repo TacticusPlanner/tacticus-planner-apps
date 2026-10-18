@@ -21,22 +21,22 @@ Assumptions:
 
 - Unlocking a character gives it rank Stone1, ability levels 1 and its initial rarity with that rarity's lowest star count.
 - Which objectives a unit satisfies depends only on static catalog data (faction, alliance, traits, damage types, hits, attack type), so a preview never changes objective matching or points.
-- Combat power and the horde-mode multiplier are computed exactly as Stage 5 specifies, from the preview state.
+- Power (the `character-combat-power` estimate) and the horde-mode multiplier are computed exactly as `legendary-event-clear-estimates` specifies, from the preview state. Equipped items are the synced ones (none for a unit the roster lacks): goals do not change equipment.
 
 #### Scenario: Worked example, rank and ascension goals
 
-- **GIVEN** `powerRatio` 0.5, `ultraTigurius` in a horde-mode tier with multiplier 1.2, and Tigurius owned at Gold1, Epic:RedOneStar, 3 upgrades applied, active 20, passive 15 (combat power 8,792, effective 10,550.4, estimated clears on Uthar Alpha 6: 5 × 10,550.4 = 52,752 reaches battle 6's threshold 37,893.5 and not battle 7's 67,301.5)
+- **GIVEN** `powerRatio` 1.2, `ultraTigurius` in a horde-mode tier with multiplier 1.2, and Tigurius owned at Gold1, Epic:RedOneStar, slots 0 to 2 applied, active 20, passive 15, no items (power 16,672, effective 20,006.4, estimated clears on Uthar Alpha 6: 5 × 20,006.4 = 100,032 reaches battle 6's threshold 90,944.4 and not battle 7's 161,523.6)
 - **AND** Tigurius has two Active goals: Ascension to Legendary:RedThreeStars and Rank to Gold2 with 0 applied upgrades
 - **WHEN** the preview state is derived
-- **THEN** it is Gold2, Legendary:RedThreeStars, 0 upgrades, active 20, passive 15, with combat power 11,295 and effective power 11,295 × 1.2 = 13,554
-- **AND** its estimated clears on Uthar Alpha are 7: 5 × 13,554 = 67,770 reaches battle 7's threshold 0.5 × 134,603 = 67,301.5 and not battle 8's 0.5 × 225,385 = 112,692.5
+- **THEN** it is Gold2, Legendary:RedThreeStars, 0 upgrades, active 20, passive 15, with power 28,224 and effective power 28,224 × 1.2 = 33,868.8
+- **AND** its estimated clears on Uthar Alpha are 7: 5 × 33,868.8 = 169,344 reaches battle 7's threshold 1.2 × 134,603 = 161,523.6 and not battle 8's 1.2 × 225,385 = 270,462
 
 #### Scenario: Worked example, unlock goal
 
-- **GIVEN** `ultraEliminatorSgt` (Certus, initial rarity Common) is not in the roster and has an Active Unlock goal
+- **GIVEN** `powerRatio` 1.2 and `ultraEliminatorSgt` (Certus, initial rarity Common) is not in the roster and has an Active Unlock goal
 - **WHEN** the preview state is derived
-- **THEN** Certus is owned at Stone1, Common:None, 0 upgrades, abilities 1/1, with combat power 346
-- **AND** its estimated clears on Uthar Alpha are 2: 5 × 346 = 1,730 reaches battle 2's threshold 1,527.5 and not battle 3's 4,099.5
+- **THEN** Certus is owned at Stone1, Common:None, 0 upgrades, abilities 1/1, no items, with power 45
+- **AND** its estimated clears on Uthar Alpha are 0: 5 × 45 = 225 is below battle 1's threshold 1.2 × 1,018 = 1,221.6
 
 #### Scenario: A goal below the current state changes nothing
 

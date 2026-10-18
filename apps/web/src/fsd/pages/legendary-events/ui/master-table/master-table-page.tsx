@@ -24,6 +24,7 @@ import {
 import { useAnalyticsActions } from "@/shared/analytics"
 import { useTourPageSteps } from "@/shared/tour"
 import { useUnitName } from "@/shared/unit-name"
+import { useUnitPowerContext } from "@/shared/unit-power"
 
 import { MasterTableControls } from "./master-table-controls"
 import { MasterTableList } from "./master-table-list"
@@ -59,7 +60,7 @@ export function MasterTablePage() {
   const roster = useLegendaryEventRoster()
   const progress = useLegendaryEventsProgress()
   const plans = useLegendaryEventPlans()
-  const config = useClearEstimateConfig()
+  const config = useClearEstimateConfig(useUnitPowerContext())
 
   const nameOf = useCallback(
     (unitId: string) => unitName("Character", unitId),

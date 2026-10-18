@@ -35,3 +35,4 @@ export type MythicQuestsStorageModel = StorageModel<"mythic-quests">
 export type LegendaryEventStorageModel = StorageModel<"lres">
 export type LegendaryEventBattleStorageModel = StorageModel<"lre-battles">
 export type HordeModeTiersStorageModel = StorageModel<"horde-mode-tiers">
+export type UnitPowerStorageModel = StorageModel<"unit-power">

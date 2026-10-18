@@ -14,6 +14,9 @@ import type {
   SalvageTrack,
 } from "./salvage-recommendations.types"
 import type { ArenaGoalContribution } from "./arena-recommendations.types"
+import { anyUnitPowerFixture } from "./team-power.fixtures"
+
+const TEAM_POWER = anyUnitPowerFixture()
 
 const id = (value: string): UnitId => unitIdSchema.parse(value)
 
@@ -22,9 +25,10 @@ const character = (value: string) => ({
   rank: "Stone1" as const,
   progression: "Common:None" as const,
   xpLevel: 3,
-  appliedUpgradeCount: 0,
+  appliedUpgradeSlots: [],
   activeAbilityLevel: 1,
   passiveAbilityLevel: 1,
+  equippedItems: [],
 })
 
 const goal = (
@@ -67,6 +71,7 @@ const build = (
     teamSize: 5,
     lockedRandomUnitIds: [],
     randomSeed: 0,
+    unitPower: TEAM_POWER,
     ...over,
   })
 

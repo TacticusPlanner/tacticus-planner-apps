@@ -133,6 +133,7 @@ export {
   type LegendaryEventStorageModel,
   type LegendaryEventBattleStorageModel,
   type HordeModeTiersStorageModel,
+  type UnitPowerStorageModel,
 } from "./game-catalog.storage"
 
 export {

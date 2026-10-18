@@ -21,6 +21,7 @@ type NpcDetailProps = Pick<
   | "selectedLevel"
   | "onLevelChange"
   | "onClearFilters"
+  | "power"
 > & { compact?: boolean }
 
 /**
@@ -38,6 +39,7 @@ export function NpcDetail({
   selectedLevel,
   onLevelChange,
   onClearFilters,
+  power,
   compact = false,
 }: NpcDetailProps) {
   const { t } = useTranslation("library")
@@ -76,6 +78,7 @@ export function NpcDetail({
       <NpcStatCards
         row={selectedLevel.row}
         movement={selectedVariation.movement}
+        power={power}
         compact={compact}
       />
       <NpcAttacks variation={selectedVariation} compact={compact} />

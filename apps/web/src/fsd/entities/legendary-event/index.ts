@@ -1,7 +1,7 @@
 // Public API of the Legendary Event entity: lifecycle, the next-milestone lookup, objective labels,
 // objective matching, the points model, synced progress, the read hooks, the persisted plan
 // (teams per lane, run inputs and marks: DTOs, API, query options, the shared write queue,
-// coverage, points and run helpers), the reward projection, and clear-depth estimates (combat
+// coverage, points and run helpers), the reward projection, and clear-depth estimates (unit
 // power, the estimate calculation, calibration). Pages and features consume it only through
 // this file.
 export {
@@ -189,9 +189,11 @@ export {
   teamClearEstimate,
   teamEffectiveDepth,
   teamEffectivePower,
+  teamPower,
   unitClearEstimate,
   unitHordeMultiplier,
   unitEffectivePower,
+  unitPower,
   type ClearEstimate,
   type ClearEstimateConfig,
   type ClearEstimateRoster,
@@ -203,7 +205,6 @@ export {
   type CalibrationSample,
   type PowerRatioCalibration,
 } from "./lib/calibrate-power-ratio"
-export { unitCombatPower, unitCombatPowerInput } from "./lib/unit-combat-power"
 export {
   previewRoster,
   type LegendaryEventGoalRef,

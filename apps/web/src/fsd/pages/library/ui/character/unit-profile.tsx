@@ -196,10 +196,10 @@ function HdaCell({
       </span>
       <span className="flex items-baseline gap-1 text-sm tabular-nums">
         <span title={t("unitLookup.current")} className="font-semibold">
-          {pair.current}
+          {pair.current ?? "—"}
         </span>
         <span className="text-muted-foreground">→</span>
-        <span title={t("unitLookup.target")}>{pair.target}</span>
+        <span title={t("unitLookup.target")}>{pair.target ?? "—"}</span>
       </span>
     </div>
   )

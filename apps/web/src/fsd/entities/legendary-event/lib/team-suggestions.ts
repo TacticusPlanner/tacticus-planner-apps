@@ -80,7 +80,8 @@ export function suggestLaneTeams(
     .map((unit) => ({
       unit,
       satisfied: new Set(objectivesSatisfied(unit, lane)),
-      power: unitEffectivePower(unit.id, roster, config),
+      // A unit without power data sorts as 0 (its teams have no estimate).
+      power: unitEffectivePower(unit.id, roster, config) ?? 0,
       perBattle: unitLanePotential(unit, lane).pointsPerBattle,
       hasGoal: input.goalUnitIds.has(unit.id),
       name: input.nameOf(unit),

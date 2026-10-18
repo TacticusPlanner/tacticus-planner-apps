@@ -36,5 +36,6 @@ export function buildSalvageRecommendations(
     randomSeed: input.randomSeed,
     preferences: input.preferences,
     rosterCatalog: input.rosterCatalog,
+    unitPower: input.unitPower,
   })
 }

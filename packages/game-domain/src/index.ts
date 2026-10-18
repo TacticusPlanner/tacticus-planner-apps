@@ -52,12 +52,24 @@ export {
 export { pierceRatio } from "./pierce-ratio"
 
 export {
-  characterCombatPower,
-  characterAttributePower,
-  characterAbilityPower,
-  abilityCoeff,
-  type CharacterCombatPowerInput,
-} from "./combat-power"
+  unitPowerTables,
+  characterStats,
+  characterPower,
+  mowPower,
+  npcPower,
+  UnitPowerDataError,
+  type UnitPowerRecord,
+  type UnitPowerTables,
+  type UpgradeStat,
+  type PowerCharacter,
+  type PowerItem,
+  type CharacterPowerState,
+  type CharacterStats,
+  type PowerMow,
+  type MowPowerState,
+  type PowerNpc,
+  type PowerNpcRow,
+} from "./unit-power"
 export {
   factionOrder,
   factionRank,

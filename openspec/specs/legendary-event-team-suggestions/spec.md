@@ -27,19 +27,19 @@ Assumptions:
 
 #### Scenario: Worked example on Uthar Alpha
 
-- **GIVEN** `powerRatio` 0.5, `ultraTigurius` in a horde-mode tier with multiplier 1.2, the reachable-points worked example's Alpha lane and synced progress, no teams on Alpha, and a roster whose only units Alpha allows are Calgar, Titus, Incisus (`ultraApothecary`) and Certus (`ultraEliminatorSgt`), each at combat power 8,792, and Tigurius at effective power 10,550.4
+- **GIVEN** `powerRatio` 1.2, `ultraTigurius` in a horde-mode tier with multiplier 1.2, the reachable-points worked example's Alpha lane and synced progress, no teams on Alpha, and a roster whose only units Alpha allows are Calgar, Titus, Incisus (`ultraApothecary`), Tigurius and Certus (`ultraEliminatorSgt`) as in the `legendary-event-clear-estimates` worked example, at powers 21,675, 21,883, 24,753, 16,672 and 13,912, so Tigurius's effective power is 20,006.4
 - **AND** on Alpha, Calgar satisfies Ultramarines, Max 2 Hits and Melee (224 points per battle); Titus satisfies Ultramarines and Melee (174); Incisus satisfies Ultramarines, Max 2 Hits, Melee and Piercing (314); Tigurius and Certus satisfy Ultramarines and Max 2 Hits (159); nobody satisfies Resilient
 - **WHEN** suggestions are built
-- **THEN** {Ultramarines} proposes Tigurius, Incisus, Calgar, Titus, Certus, covering Ultramarines, effective power 45,718.4, depth 6, gain 0 + 75 + 175 + 183 + 187 + 191 = 811
-- **AND** {Max 2 Hits} proposes Tigurius, Incisus, Calgar, Certus, covering Ultramarines and Max 2 Hits, effective power 36,926.4, depth 5, gain 50 + 125 + 225 + 233 + 237 = 870
-- **AND** {Melee} proposes Incisus, Calgar, Titus, covering Ultramarines and Melee, effective power 26,376, depth 5, gain 65 + 140 + 240 + 248 + 252 = 945
+- **THEN** {Ultramarines} proposes Incisus, Titus, Calgar, Tigurius, Certus, covering Ultramarines, effective power 102,229.4, depth 6, gain 0 + 75 + 175 + 183 + 187 + 191 = 811
+- **AND** {Max 2 Hits} proposes Incisus, Calgar, Tigurius, Certus, covering Ultramarines and Max 2 Hits, effective power 80,346.4, depth 5, gain 50 + 125 + 225 + 233 + 237 = 870
+- **AND** {Melee} proposes Incisus, Titus, Calgar, covering Ultramarines and Melee, effective power 68,311, depth 5, gain 65 + 140 + 240 + 248 + 252 = 945
 - **AND** {Piercing} has one candidate (Incisus) and {Max 2 Hits, Melee} has two (Incisus and Calgar), so neither proposes a team
 - **AND** every other subset has no candidate (Resilient), fewer than three, or the same members as a proposal above
 - **AND** the ranking is Melee team (+945, depth 5), Max 2 Hits team (+870), Ultramarines team (+811)
 
 #### Scenario: Gains re-rank after a team is saved
 
-- **GIVEN** the worked example and the user has saved the Melee proposal (Incisus, Calgar, Titus) as a team with no stored depth
+- **GIVEN** the worked example and the user has saved the Melee proposal (Incisus, Titus, Calgar) as a team with no stored depth
 - **WHEN** suggestions are rebuilt
 - **THEN** the Melee proposal is gone (same members as a team); the Max 2 Hits team adds Max 2 Hits in battles 1 to 5, +250; the Ultramarines team adds battle 6, 43 + 43 + 30 + 75 = +191
 - **AND** the ranking is +250, +191

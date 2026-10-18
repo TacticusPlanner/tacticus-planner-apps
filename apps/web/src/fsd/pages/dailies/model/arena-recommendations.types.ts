@@ -1,5 +1,7 @@
 import type { Progression, Rank, UnitId } from "@workspace/game-domain"
 
+import type { UnitPowerContext } from "@/shared/unit-power"
+
 import type {
   TeamCategory,
   TeamMode,
@@ -29,9 +31,11 @@ export type ArenaRosterCharacter = {
   rank: Rank
   progression: Progression
   xpLevel: number
-  appliedUpgradeCount: number
+  /** Distinct applied current-rank upgrade slots. */
+  appliedUpgradeSlots: readonly number[]
   activeAbilityLevel: number
   passiveAbilityLevel: number
+  equippedItems: readonly { equipmentId: string; level: number }[]
 }
 
 /** Catalog-sourced attributes the preference controls filter on, keyed by unit id. */
@@ -57,6 +61,7 @@ export type RawRosterCharacter = {
   xpLevel: number
   appliedUpgradeSlots: readonly number[]
   abilities: readonly { level: number }[]
+  equippedItems?: readonly { equipmentId: string; level: number }[]
 }
 
 /** A goal summary, narrowed to the fields that decide whether it is an active character goal. */
@@ -98,6 +103,8 @@ export type BuildArenaRecommendationsInput = {
   /** Extra priority pools ranked ABOVE the active-project and overall-goals pools — the Onslaught
    * page's Ascension-goal pool. Empty / omitted for Arena and Salvage Run. */
   leadingPools?: readonly TeamPoolSpec[]
+  /** The power formula's game data for the strength ordering; null when it is unavailable. */
+  unitPower: UnitPowerContext | null
 }
 
 /** What `useArenaRecommendations` exposes to the Arena page. */

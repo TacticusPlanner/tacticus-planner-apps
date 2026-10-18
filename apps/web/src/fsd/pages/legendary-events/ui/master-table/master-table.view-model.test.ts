@@ -178,7 +178,7 @@ describe("estimatedAvailability", () => {
       ),
     ],
   ]) as never
-  const config = { status: "ready", config: {} } as never
+  const config = { status: "ready", config: { unitPower: {} } } as never
 
   it("is ready with config, battles and a roster", () => {
     expect(
@@ -231,6 +231,17 @@ describe("estimatedAvailability", () => {
       estimatedAvailability({
         config,
         battles: {},
+        roster: "ready",
+        events: [utharEvent],
+      })
+    ).toBe("unavailable")
+  })
+
+  it("is unavailable without power data (no unit-power dataset)", () => {
+    expect(
+      estimatedAvailability({
+        config: { status: "ready", config: { unitPower: null } } as never,
+        battles,
         roster: "ready",
         events: [utharEvent],
       })

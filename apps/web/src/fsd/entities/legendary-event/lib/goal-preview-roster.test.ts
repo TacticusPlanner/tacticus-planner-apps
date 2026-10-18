@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest"
 
-import { unitClearEstimate, unitEffectivePower } from "./clear-estimate"
+import {
+  unitClearEstimate,
+  unitEffectivePower,
+  unitPower,
+} from "./clear-estimate"
 import {
   UTHAR_ALPHA_BATTLE_8_POWER,
   UTHAR_ALPHA_POWERS,
@@ -9,7 +13,6 @@ import {
   workedInitialRarity,
 } from "./clear-estimate.fixtures"
 import { previewRoster, previewUnit } from "./goal-preview-roster"
-import { unitCombatPower } from "./unit-combat-power"
 
 const EIGHT_BATTLES = [...UTHAR_ALPHA_POWERS, UTHAR_ALPHA_BATTLE_8_POWER]
 
@@ -31,7 +34,7 @@ const tiguriusGoals = {
 }
 
 describe("previewRoster (spec worked examples)", () => {
-  it("previews Tigurius at Gold2, Legendary:RedThreeStars: 11,295, effective 13,554, clears 7", () => {
+  it("previews Tigurius at Gold2, Legendary:RedThreeStars: 28,224, effective 33,868.8, clears 7", () => {
     const synced = [rosterUnit("ultraTigurius")]
     const before = new Map([["ultraTigurius", synced[0]!]])
     expect(
@@ -51,18 +54,20 @@ describe("previewRoster (spec worked examples)", () => {
       ],
     })
     expect(preview?.previewed).toEqual(new Set(["ultraTigurius"]))
-    expect(unitCombatPower(unit)).toBe(11295)
     const after = new Map([["ultraTigurius", unit!]])
+    expect(unitPower("ultraTigurius", after, WORKED_CONFIG.unitPower)).toBe(
+      28224
+    )
     expect(
       unitEffectivePower("ultraTigurius", after, WORKED_CONFIG)
-    ).toBeCloseTo(13554, 6)
-    // 67,770 reaches battle 7's 67,301.5 and not battle 8's 112,692.5.
+    ).toBeCloseTo(33868.8, 6)
+    // 169,344 reaches battle 7's 161,523.6 and not battle 8's 270,462.
     expect(
       unitClearEstimate("ultraTigurius", EIGHT_BATTLES, after, WORKED_CONFIG)
     ).toMatchObject({ depth: 7, battleCount: 8 })
   })
 
-  it("previews an Unlock goal as the base unit: Certus 346, clears 2", () => {
+  it("previews an Unlock goal as the base unit: Certus 45, clears 0", () => {
     const preview = previewRoster(
       [],
       [
@@ -80,15 +85,19 @@ describe("previewRoster (spec worked examples)", () => {
       progressionIndex: "Common:None",
       appliedUpgradeSlots: [],
     })
-    expect(unitCombatPower(unit)).toBe(346)
+    const unlocked = new Map([["ultraEliminatorSgt", unit!]])
+    expect(
+      unitPower("ultraEliminatorSgt", unlocked, WORKED_CONFIG.unitPower)
+    ).toBe(45)
+    // 5 × 45 = 225 is below battle 1's 1,221.6.
     expect(
       unitClearEstimate(
         "ultraEliminatorSgt",
         EIGHT_BATTLES,
-        new Map([["ultraEliminatorSgt", unit!]]),
+        unlocked,
         WORKED_CONFIG
       )?.depth
-    ).toBe(2)
+    ).toBe(0)
   })
 
   it("never lowers a value", () => {
@@ -139,6 +148,29 @@ describe("previewRoster (spec worked examples)", () => {
     )
     expect(unit.appliedUpgradeSlots).toEqual([0, 1, 2, 3, 4])
     expect(unit.abilities?.map((ability) => ability.level)).toEqual([30, 15])
+  })
+
+  it("keeps the applied slots on an equal-rank goal and fills the lowest missing ones", () => {
+    const unit = previewUnit(
+      {
+        ...rosterUnit("ultraCalgar"),
+        rank: "Gold1",
+        appliedUpgradeSlots: [0, 2, 4],
+      },
+      {
+        unitId: "ultraCalgar",
+        goals: [
+          {
+            goalId: "r",
+            kind: "Rank",
+            rankEnd: "Gold1",
+            appliedUpgradesEnd: 4,
+          },
+        ],
+      },
+      "Legendary"
+    )
+    expect(unit.appliedUpgradeSlots).toEqual([0, 1, 2, 4])
   })
 
   it("leaves a unit without goals as synced, and an unsynced roster unknown", () => {

@@ -254,7 +254,8 @@
       "health": "Leben",
       "armour": "Rüstung",
       "damage": "Schaden",
-      "movement": "Bewegung"
+      "movement": "Bewegung",
+      "power": "Stärke"
     },
     "attacks": {
       "title": "Angriffe",
@@ -296,8 +297,8 @@
           "content": "Gehe die Stufen durch, auf denen die Einheit erscheint, um ihre Werte je Rang und Sternanzahl zu sehen."
         },
         "stats": {
-          "title": "Werte, Angriffe und Eigenschaften",
-          "content": "Leben, Rüstung, Schaden und Bewegung auf der gewählten Stufe sowie die Angriffe und Eigenschaften der Einheit."
+          "title": "Werte, Stärke, Angriffe und Eigenschaften",
+          "content": "Leben, Rüstung, Schaden, Bewegung und geschätzte Stärke auf der gewählten Stufe sowie die Angriffe und Eigenschaften der Einheit."
         }
       }
     },
@@ -318,7 +319,12 @@
     "anyAttack": "Beliebiger Angriff",
     "meleeOnly": "Nur Nahkampf",
     "hasRanged": "Mit Fernkampf",
-    "clearOne": "{{name}} zurücksetzen"
+    "clearOne": "{{name}} zurücksetzen",
+    "power": {
+      "unavailable": "Stärkedaten nicht verfügbar",
+      "estimateLabel": "Über diese Schätzung",
+      "estimate": "Aus den angezeigten Werten geschätzt. Bei Einheiten mit zusätzlichen Fähigkeiten, Krit oder Block kann sie vom Wert im Spiel abweichen."
+    }
   },
   "unit": {
     "nav": {
@@ -439,7 +445,8 @@
         "blockDamageBonus": "Blockschaden",
         "armor": "Rüstung",
         "hp": "Lebenspunkte"
-      }
+      },
+      "statsUnavailable": "Werte nicht verfügbar"
     },
     "traits": {
       "title": "Eigenschaften"
@@ -494,7 +501,7 @@
       "steps": {
         "header": {
           "title": "Die Einheit",
-          "content": "Porträt, Fraktion und die Werte, die die Seite zeigt. Angemeldet und synchronisiert beginnen sie bei deiner eigenen Einheit; wähle „Eigene“, um andere Werte auszuprobieren."
+          "content": "Porträt, Fraktion und die Werte, die die Seite zeigt. Angemeldet und synchronisiert beginnen sie bei deiner eigenen Einheit; wähle „Eigene“, um andere Werte auszuprobieren. Der Kopfbereich zeigt außerdem die Stärke der Einheit bei diesen Werten."
         },
         "tabs": {
           "title": "Details und Rangaufstieg",
@@ -526,6 +533,12 @@
         "xp": "Mythisches EP-Buch",
         "gold": "Gold"
       }
+    },
+    "power": {
+      "label": "Stärke",
+      "withItems": "Inklusive deiner angelegten Ausrüstung",
+      "withoutItems": "Ohne Ausrüstung",
+      "unavailable": "Stärkedaten nicht verfügbar"
     }
   },
   "mowUnit": {
@@ -581,7 +594,7 @@
       "steps": {
         "header": {
           "title": "Kriegsmaschine",
-          "content": "Seltenheit und Fähigkeitsstufen deiner Kriegsmaschine. Wechsle zu Eigene, um andere Seltenheiten anzusehen."
+          "content": "Seltenheit und Fähigkeitsstufen deiner Kriegsmaschine. Wechsle zu Eigene, um andere Seltenheiten anzusehen. Der Kopfbereich zeigt außerdem ihre Stärke bei den gezeigten Werten."
         },
         "tabs": {
           "title": "Details und Upgrades",
@@ -604,6 +617,10 @@
           "content": "Gold, Bergungsgut, Komponenten und Abzeichen für die gewählten Stufen, nach Seltenheit."
         }
       }
+    },
+    "power": {
+      "label": "Stärke",
+      "unavailable": "Stärkedaten nicht verfügbar"
     }
   }
 }

@@ -5,6 +5,7 @@
 import {
   getDatasetRecord,
   getDatasetRecords,
+  hasCatalogSynced,
   hasDatasetSynced,
 } from "./game-catalog-storage"
 import type {
@@ -20,6 +21,7 @@ import type {
   EventsCalendarStorageModel,
   LegendaryEventBattleStorageModel,
   HordeModeTiersStorageModel,
+  UnitPowerStorageModel,
   LegendaryEventStorageModel,
   MowStorageModel,
   MythicQuestsStorageModel,
@@ -336,4 +338,18 @@ export async function getLegendaryEventsBattles(
 export async function getHordeModeTiers(): Promise<HordeModeTiersStorageModel | null> {
   const rows = await getDatasetRecords("horde-mode-tiers")
   return rows[0] ?? null
+}
+
+// The game's power tables — a single record — or `null` when the dataset is absent (not served by the
+// API, or not synced yet).
+export async function getUnitPower(): Promise<UnitPowerStorageModel | null> {
+  const rows = await getDatasetRecords("unit-power")
+  return rows[0] ?? null
+}
+
+// Whether the catalog has fully synced at least once on this client, so a caller can tell an absent
+// optional dataset (`getUnitPower()` null after a sync: not served) from one not synced yet (a fresh
+// device before its first sync completes).
+export function hasGameCatalogSynced(): Promise<boolean> {
+  return hasCatalogSynced()
 }

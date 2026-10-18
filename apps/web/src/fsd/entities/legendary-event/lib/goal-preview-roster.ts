@@ -100,7 +100,10 @@ export function previewUnit(
         appliedUpgradeSlots: slots(endApplied),
       }
     } else if (end === current && endApplied > currentApplied) {
-      unit = { ...unit, appliedUpgradeSlots: slots(endApplied) }
+      unit = {
+        ...unit,
+        appliedUpgradeSlots: fillSlots(unit.appliedUpgradeSlots, endApplied),
+      }
     }
   }
 
@@ -126,6 +129,17 @@ export function previewUnit(
 
 function slots(count: number): number[] {
   return Array.from({ length: Math.max(0, count) }, (_, index) => index)
+}
+
+/** Keeps the applied slots (each adds its own stat increase) and fills the lowest missing indices up
+ *  to `count`. */
+function fillSlots(
+  applied: readonly number[] | undefined,
+  count: number
+): number[] {
+  const filled = new Set(applied ?? [])
+  for (let index = 0; filled.size < count; index++) filled.add(index)
+  return [...filled].toSorted((a, b) => a - b)
 }
 
 export interface PreviewRoster {

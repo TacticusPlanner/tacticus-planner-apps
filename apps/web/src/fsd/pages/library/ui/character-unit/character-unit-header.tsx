@@ -1,3 +1,4 @@
+import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import { characterIcon } from "@workspace/game-catalog"
 import {
@@ -32,6 +33,7 @@ export function CharacterUnitHeader({
   onModeChange,
   onCustomChange,
   yourUnitLine,
+  power,
   shards,
   isMobile,
 }: {
@@ -49,6 +51,8 @@ export function CharacterUnitHeader({
   onCustomChange: (values: ShownValues) => void
   /** "Your unit: …" details, for an owned unit. */
   yourUnitLine?: string
+  /** The unit's power at the shown values, in the values area. */
+  power: ReactNode
   /** Shard progress towards unlocking, for a unit the player doesn't own. */
   shards?: { owned: number; needed: number }
   isMobile: boolean
@@ -102,6 +106,7 @@ export function CharacterUnitHeader({
       shards={shards}
       mode={mode}
       onModeChange={onModeChange}
+      power={power}
       isMobile={isMobile}
       customControls={
         <>
