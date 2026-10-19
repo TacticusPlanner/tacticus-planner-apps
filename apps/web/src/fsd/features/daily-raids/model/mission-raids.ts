@@ -50,22 +50,30 @@ export type MissionRaidPlan = {
   battlesLeft: number
   /** Daily energy minus energy spent minus Today's remaining planned energy, never below 0. */
   energyBudget: number
+  /** Suggestions over nodes that drop something. */
   rows: MissionRaidRow[]
   totalRaids: number
   totalEnergy: number
   /** Battles still left once today's suggestions are done. */
   remainingAfter: number
   empty: MissionRaidsEmptyReason | null
-  /** The cheapest raidable energy cost, ignoring today's attempts and plan and the lightning
-   * restriction (null: no node). */
-  cheapestEnergyCost: number | null
-  /** Daily raid capacity of the nodes at that cheapest cost, from their caps. */
-  cheapestDailyCapacity: number
+  /** The same fill over the nodes that drop nothing (Indomitus 6 to 14): an alternative some players
+   * use first, since each of these raids replaces one of `rows` for less energy. */
+  noDropRows: MissionRaidRow[]
+  /** Every raidable node (unlock state and Raids Filters applied, the lightning restriction not),
+   * cheapest first, for the event-bounded campaign outlook. */
+  outlookNodes: Pick<Battle, "energyCost" | "dailyAttempts">[]
+  /** The Planning Settings daily energy, for the outlook. */
+  dailyEnergy: number
 }
 
 export type MissionRaidBattle = Pick<Battle, "energyCost" | "dailyAttempts"> & {
   id: BattleId
   isEvent: boolean
+  /** Average guaranteed gold of one win (0 when it guarantees none). */
+  expectedGold: number
+  /** Drop rate per resource the node can drop; empty for a node that drops nothing. */
+  dropRates: ReadonlyMap<string, number>
 }
 
 export type PlanMissionRaidsInput = MissionRaidsRequest & {
@@ -82,13 +90,41 @@ export type PlanMissionRaidsInput = MissionRaidsRequest & {
 }
 
 const compareIds = (a: string, b: string) => (a < b ? -1 : a > b ? 1 : 0)
+const descending = (a: number, b: number) => b - a
+
+/**
+ * Suggestion order: energy cost; then a node feeding an in-scope goal; among those, the higher drop
+ * rate of the goal's resource (common and uncommon drop more often), then more gold, then the
+ * goal's priority; other nodes by gold; then battle id.
+ */
+function compareCandidates(
+  goalNodes: ReadonlyMap<BattleId, MissionGoalNode>
+): (a: MissionRaidBattle, b: MissionRaidBattle) => number {
+  const rate = (
+    battle: MissionRaidBattle,
+    goal: MissionGoalNode | undefined
+  ) => (goal ? (battle.dropRates.get(goal.resourceId) ?? 0) : 0)
+  return (a, b) => {
+    const goalA = goalNodes.get(a.id)
+    const goalB = goalNodes.get(b.id)
+    return (
+      a.energyCost - b.energyCost ||
+      Number(!goalA) - Number(!goalB) ||
+      descending(rate(a, goalA), rate(b, goalB)) ||
+      descending(a.expectedGold, b.expectedGold) ||
+      (goalA?.priority ?? 0) - (goalB?.priority ?? 0) ||
+      compareIds(a.id, b.id)
+    )
+  }
+}
 
 /**
  * Where to raid today so the current HRE mission's campaign objective finishes with the least
  * energy. Today's remaining planned raids count first and keep their energy and attempts; the rest
- * is filled over the eligible nodes in order of energy cost, then goal priority (a node feeding a
- * goal first), then battle id, each getting as many raids as its attempts, the budget and the
- * battles left allow. A node that does not fit is skipped, not a stop.
+ * is filled over the eligible nodes that drop something, in `compareCandidates` order, each getting
+ * as many raids as its attempts, the budget and the battles left allow. A node that does not fit is
+ * skipped, not a stop. The nodes that drop nothing get the same fill on their own, as an
+ * alternative.
  */
 export function planMissionRaids(
   input: PlanMissionRaidsInput
@@ -113,27 +149,28 @@ export function planMissionRaids(
     input.dailyEnergy - input.realEnergyUsedToday - plannedEnergy
   )
 
-  const pool = input.battles.filter(
-    (battle) =>
-      battle.energyCost > 0 &&
-      (!input.eventOnly || battle.isEvent) &&
-      input.passesFilter(battle.id)
+  const raidable = (battle: MissionRaidBattle) =>
+    battle.energyCost > 0 && (!input.eventOnly || battle.isEvent)
+  const filtered = input.battles.filter(
+    (battle) => raidable(battle) && input.passesFilter(battle.id)
   )
+  const pool = filtered.filter((battle) => battle.dropRates.size > 0)
+  const noDropPool = filtered.filter((battle) => battle.dropRates.size === 0)
   const unfiltered = input.battles.some(
-    (battle) => battle.energyCost > 0 && (!input.eventOnly || battle.isEvent)
+    (battle) => raidable(battle) && battle.dropRates.size > 0
   )
-  // The remaining-campaign summary counts campaign battles, which any node serves, so its cheapest
-  // cost ignores the lightning restriction (but keeps unlock state and the Raids Filters).
-  const summaryPool = input.battles.filter(
-    (battle) => battle.energyCost > 0 && input.passesFilter(battle.id)
-  )
-  const cheapestEnergyCost =
-    summaryPool.length > 0
-      ? Math.min(...summaryPool.map((battle) => battle.energyCost))
-      : null
-  const cheapestDailyCapacity = summaryPool
-    .filter((battle) => battle.energyCost === cheapestEnergyCost)
-    .reduce((total, battle) => total + battle.dailyAttempts, 0)
+  // The outlook counts campaign battles, which any node serves, so it ignores the lightning
+  // restriction (but keeps unlock state and the Raids Filters).
+  const outlookNodes = input.battles
+    .filter((battle) => battle.energyCost > 0 && input.passesFilter(battle.id))
+    .sort((a, b) => a.energyCost - b.energyCost)
+    .map(({ energyCost, dailyAttempts }) => ({ energyCost, dailyAttempts }))
+
+  const sort = compareCandidates(input.goalNodesByBattle)
+  const fillFrom = (candidates: readonly MissionRaidBattle[]) =>
+    fill([...candidates].sort(sort), energyBudget, battlesLeft, input)
+  const noDropRows =
+    battlesLeft > 0 && energyBudget > 0 ? fillFrom(noDropPool).rows : []
 
   const done = (
     rows: MissionRaidRow[],
@@ -149,8 +186,9 @@ export function planMissionRaids(
       totalEnergy: rows.reduce((total, row) => total + row.energy, 0),
       remainingAfter: Math.max(0, battlesLeft - totalRaids),
       empty: rows.length > 0 ? null : empty,
-      cheapestEnergyCost,
-      cheapestDailyCapacity,
+      noDropRows,
+      outlookNodes,
+      dailyEnergy: input.dailyEnergy,
     }
   }
 
@@ -163,16 +201,17 @@ export function planMissionRaids(
   }
   if (energyBudget <= 0) return done([], "no-energy")
 
-  const candidates = [...pool].sort((a, b) => {
-    const goalA = input.goalNodesByBattle.get(a.id)?.priority ?? Infinity
-    const goalB = input.goalNodesByBattle.get(b.id)?.priority ?? Infinity
-    return (
-      a.energyCost - b.energyCost ||
-      (goalA === goalB ? 0 : goalA < goalB ? -1 : 1) ||
-      compareIds(a.id, b.id)
-    )
-  })
+  const { rows, attemptsBlocked } = fillFrom(pool)
+  return done(rows, attemptsBlocked ? "no-attempts" : "no-energy")
+}
 
+/** Gives each sorted candidate as many raids as its attempts, the budget and the battles allow. */
+function fill(
+  candidates: readonly MissionRaidBattle[],
+  energyBudget: number,
+  battlesLeft: number,
+  input: PlanMissionRaidsInput
+): { rows: MissionRaidRow[]; attemptsBlocked: boolean } {
   let budget = energyBudget
   let left = battlesLeft
   // An affordable node with no attempts left: an empty fill then means attempts ran out, not energy.
@@ -201,7 +240,7 @@ export function planMissionRaids(
       goal: input.goalNodesByBattle.get(battle.id) ?? null,
     })
   }
-  return done(rows, attemptsBlocked ? "no-attempts" : "no-energy")
+  return { rows, attemptsBlocked }
 }
 
 /**
