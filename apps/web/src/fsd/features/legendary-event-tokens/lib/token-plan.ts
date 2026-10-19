@@ -301,6 +301,27 @@ export interface NextTokenChoice {
   reason: NextTokenReason
 }
 
+/** The planned token at `index` could be played next: not flagged Maybe, playable now and no
+ *  earlier planned token on its battle. */
+export function playableNext(
+  tokens: readonly PlannedToken[],
+  index: number
+): boolean {
+  const token = tokens[index]
+  return (
+    token !== undefined &&
+    !token.maybe &&
+    token.playableNow &&
+    !tokens
+      .slice(0, index)
+      .some(
+        (earlier) =>
+          earlier.laneId === token.laneId &&
+          earlier.battleIndex === token.battleIndex
+      )
+  )
+}
+
 /**
  * The token the Next token card shows (design D4): the first planned token that is not flagged
  * Maybe, is playable now and has no earlier planned token on its battle, else the plan's first
@@ -312,18 +333,7 @@ export function nextToken(
 ): NextTokenChoice | null {
   const { tokens } = plan
   if (tokens.length === 0) return null
-  const found = tokens.findIndex(
-    (token, index) =>
-      !token.maybe &&
-      token.playableNow &&
-      !tokens
-        .slice(0, index)
-        .some(
-          (earlier) =>
-            earlier.laneId === token.laneId &&
-            earlier.battleIndex === token.battleIndex
-        )
-  )
+  const found = tokens.findIndex((_, index) => playableNext(tokens, index))
   const index = found === -1 ? 0 : found
   const token = tokens[index]!
   return {

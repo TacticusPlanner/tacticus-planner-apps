@@ -151,6 +151,18 @@ export {
   runInputValues,
 } from "./lib/run-inputs"
 export {
+  UNTRACKED_MISSION_KINDS,
+  battleEnemies,
+  eventMissions,
+  openMissions,
+  tokenProgressesMission,
+  type BattleEnemies,
+  type LegendaryEventMission,
+  type LegendaryEventMissionRef,
+  type LegendaryEventMissionTrack,
+} from "./lib/missions"
+export { useMissionLabel } from "./model/use-mission-label"
+export {
   ASCENSION_STEP_PROGRESSION,
   ASCENSION_STEPS,
   BATTLE_POINTS_AVERAGE,
@@ -231,6 +243,13 @@ export {
   type TeamSuggestion,
   type TeamSuggestionsInput,
 } from "./lib/team-suggestions"
+export {
+  laneRosterPotential,
+  potentialCellStates,
+  type LaneRosterPotential,
+  type PotentialCellState,
+  type RosterPotentialInput,
+} from "./lib/roster-potential"
 export {
   impactTeams,
   teamReaches,

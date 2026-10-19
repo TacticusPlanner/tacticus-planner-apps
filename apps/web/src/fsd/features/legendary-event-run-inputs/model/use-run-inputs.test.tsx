@@ -127,6 +127,8 @@ describe("useRunInputs", () => {
       premiumMissions: 0,
       bundlePurchased: false,
       closeShards: 0,
+      completedRegularMissions: [],
+      completedPremiumMissions: [],
     })
     expect(cached()).toEqual(saved)
     expect(result.current.values(3).regularMissions).toBe(10)

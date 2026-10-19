@@ -16,6 +16,7 @@ import {
   type LegendaryEventObjective,
 } from "@/entities/legendary-event"
 
+import type { LanePotentialsViewModel } from "../lane-potential.view-model"
 import type { ProgressGridViewModel } from "../legendary-event-page.view-model"
 
 /**
@@ -27,10 +28,13 @@ import type { ProgressGridViewModel } from "../legendary-event-page.view-model"
 export function LaneSummary({
   event,
   progressGrid,
+  potentials,
   onJumpToLane,
 }: {
   event: LegendaryEvent
   progressGrid: ProgressGridViewModel
+  /** Each lane's roster potential; its reach line is left out while absent or not ready. */
+  potentials?: LanePotentialsViewModel
   onJumpToLane: (lane: LegendaryEventLaneId) => void
 }) {
   const { t } = useTranslation("legendaryEvents")
@@ -60,6 +64,7 @@ export function LaneSummary({
                 laneId={laneId}
                 objectives={event[laneId].unitsRestrictions}
                 onJumpToLane={onJumpToLane}
+                potential={potentials?.[laneId]}
                 progress={
                   progressGrid.kind === "ready"
                     ? progressGrid.lanes[laneId]
@@ -78,10 +83,12 @@ function LaneSummaryRow({
   laneId,
   objectives,
   progress,
+  potential,
   onJumpToLane,
 }: {
   laneId: LegendaryEventLaneId
   objectives: readonly LegendaryEventObjective[]
+  potential: LanePotentialsViewModel[LegendaryEventLaneId] | undefined
   /** `undefined` when the progress read failed. */
   progress: LaneProgressView | undefined
   onJumpToLane: (lane: LegendaryEventLaneId) => void
@@ -140,6 +147,18 @@ function LaneSummaryRow({
               value={percent}
             />
             <LaneObjectivesLine objectives={objectives} progress={progress} />
+            {potential?.kind === "ready" ? (
+              <span
+                className="text-xs text-muted-foreground"
+                data-testid="lane-summary-roster-reach"
+              >
+                {potential.potential.defeatAllDepth === 0
+                  ? t("laneOverview.potential.cantWin")
+                  : t("laneSummary.rosterReaches", {
+                      battle: potential.potential.defeatAllDepth,
+                    })}
+              </span>
+            ) : null}
           </>
         ) : (
           <span

@@ -78,7 +78,10 @@ export function useRunInputs(eventId: string) {
           type: "legendary_event_run_inputs_saved",
           eventId,
           run,
-          ...values,
+          regularMissions: values.regularMissions,
+          premiumMissions: values.premiumMissions,
+          bundlePurchased: values.bundlePurchased,
+          closeShards: values.closeShards,
         }),
       errorMessage: t("runInputs.toasts.error"),
     })

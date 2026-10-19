@@ -14,6 +14,8 @@ export const EMPTY_RUN_INPUT_VALUES: LegendaryEventRunInputValues = {
   premiumMissions: 0,
   bundlePurchased: false,
   closeShards: 0,
+  completedRegularMissions: [],
+  completedPremiumMissions: [],
 }
 
 /** The stored values of `run` among a plan's `runs`, or zeros when that run was never written. */
@@ -28,6 +30,8 @@ export function runInputValues(
         premiumMissions: stored.premiumMissions,
         bundlePurchased: stored.bundlePurchased,
         closeShards: stored.closeShards,
+        completedRegularMissions: stored.completedRegularMissions ?? [],
+        completedPremiumMissions: stored.completedPremiumMissions ?? [],
       }
     : EMPTY_RUN_INPUT_VALUES
 }

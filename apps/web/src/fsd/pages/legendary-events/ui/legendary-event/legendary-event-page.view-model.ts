@@ -40,6 +40,7 @@ import type {
 } from "@/features/legendary-event-tokens"
 
 import type { BattlesViewModel } from "./battles/battles.view-model"
+import type { LanePotentialsViewModel } from "./lane-potential.view-model"
 import type { LastRunViewModel } from "./overview/last-run.view-model"
 import type { ProgressMarksViewModel } from "./progress/progress-marks"
 import type { TeamEditorLauncher } from "./teams/team-editor-launcher"
@@ -119,6 +120,8 @@ export interface LegendaryEventPageViewModel {
   tokens: TokensViewModel
   /** The Overview's Last run card (run history). */
   lastRun: LastRunSectionViewModel
+  /** Every lane's roster potential map (lane overview) and reach line (Overview lane summary). */
+  potentials: LanePotentialsViewModel
 }
 
 /** The Last run card's state and its analytics callbacks (design D9). */

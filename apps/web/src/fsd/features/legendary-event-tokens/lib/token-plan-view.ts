@@ -4,6 +4,7 @@ import {
   buildLanePointsModel,
   currentLegendaryEventRun,
   isCompleteTeam,
+  openMissions,
   teamDepthForRun,
   teamEffectiveDepth,
   unitNextAscensionStep,
@@ -17,6 +18,7 @@ import {
   type LegendaryEventRun,
   type LegendaryEventRunResolution,
   type LegendaryEventTeam,
+  type LegendaryEventUnit,
 } from "@/entities/legendary-event"
 
 import {
@@ -32,6 +34,12 @@ import {
   type TokenPlanLane,
 } from "./token-plan"
 import { runTokenSupply } from "./token-supply"
+import {
+  nextTokenMissions,
+  type NextTokenMissions,
+  type TokenMissionsInput,
+} from "./token-missions"
+import { splitPlanByRun, type PlanByRun } from "./token-runs"
 
 /** A lane's team estimator, as the page builds it from the Stage 5 clear estimates. */
 type LaneTeamEstimator = {
@@ -45,6 +53,13 @@ type TokenPlanEstimates =
   | { kind: "hidden" }
   | { kind: "pending" }
   | { kind: "ready"; byLane: Record<LegendaryEventLaneId, LaneTeamEstimator> }
+
+/** What matching tokens with missions reads; without it the card shows no mission lines. */
+export interface TokenPlanMissionsSource {
+  event: Pick<LegendaryEvent, "regularMissions" | "premiumMissions">
+  unitsById: ReadonlyMap<string, LegendaryEventUnit>
+  enemiesOf: TokenMissionsInput["enemiesOf"]
+}
 
 export interface TokenPlanViewInput {
   event: Pick<LegendaryEvent, "alpha" | "beta" | "gamma" | "rewards">
@@ -67,6 +82,7 @@ export interface TokenPlanViewInput {
   estimates: TokenPlanEstimates
   /** The name a team is shown by (its display name); the stored name when absent. */
   teamName?: (team: LegendaryEventTeam) => string
+  missions?: TokenPlanMissionsSource
 }
 
 /** Why there is no next token (spec: Next token card), checked in this order. */
@@ -90,6 +106,9 @@ export interface TokenPlanReady {
   kind: "ready"
   plan: TokenPlan
   next: NextTokenChoice | null
+  /** The Next token's open missions and its For missions alternative; null without a next token
+   *  or a missions source. */
+  missions: NextTokenMissions | null
   empty: NextTokenEmpty | null
   /** Non-reserve members by team id, for the card's portraits. */
   membersByTeam: ReadonlyMap<string, readonly string[]>
@@ -97,6 +116,8 @@ export interface TokenPlanReady {
   fullClear: LaneFullClear[]
   /** Null when the event's reward ladder is missing (a record cached before rewards were served). */
   forecast: Forecast | null
+  /** The plan's tokens by run, as the forecast spends them; null without a token supply. */
+  byRun: PlanByRun | null
   /** The run an upcoming event starts next (`run` null when the run is unknown); null when the
    *  event is active. */
   upcoming: { run: LegendaryEventRun | null } | null
@@ -197,12 +218,38 @@ export function buildTokenPlanView(input: TokenPlanViewInput): TokenPlanView {
     ? forecast.runs.reduce((sum, entry) => sum + entry.tokensLeftOver, 0)
     : 0
 
+  const next = nextToken(tokenPlan)
+  const membersByTeam = new Map(
+    teams.map((team) => [team.id, team.memberUnitIds])
+  )
+  const source = input.missions
+  const missions =
+    next && source
+      ? nextTokenMissions({
+          plan: tokenPlan,
+          next,
+          open: openMissions({
+            event: source.event,
+            runs: plan.data.runs,
+            currentRun: resolution.currentRun,
+            showPaidOptions: plan.data.showPaidOptions,
+          }),
+          membersOf: (teamId) =>
+            (membersByTeam.get(teamId) ?? []).flatMap((id) => {
+              const unit = source.unitsById.get(id)
+              return unit ? [unit] : []
+            }),
+          enemiesOf: source.enemiesOf,
+        })
+      : null
+
   return {
     kind: "ready",
     plan: tokenPlan,
-    next: nextToken(tokenPlan),
+    next,
+    missions,
     empty: tokenPlan.tokens.length > 0 ? null : emptyReason(tokenPlan, lanes),
-    membersByTeam: new Map(teams.map((team) => [team.id, team.memberUnitIds])),
+    membersByTeam,
     fullClear: lanes.flatMap((lane) => {
       const figure = fewestTokensForFullClear(
         lane.teams,
@@ -211,6 +258,7 @@ export function buildTokenPlanView(input: TokenPlanViewInput): TokenPlanView {
       return figure ? [{ laneId: lane.laneId, figure }] : []
     }),
     forecast,
+    byRun: supply ? splitPlanByRun(tokenPlan.tokens.length, supply) : null,
     upcoming:
       lifecycle.state !== "upcoming" ? null : { run: resolution.nextRun },
     leftover:

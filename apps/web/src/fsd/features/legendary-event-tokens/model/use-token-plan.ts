@@ -27,6 +27,7 @@ export function useTokenPlan({
   resolution,
   eventUnit,
   estimates,
+  missions,
 }: Omit<TokenPlanViewInput, "event" | "lifecycle" | "teamName"> & {
   event: TokenPlanViewInput["event"] | undefined
   lifecycle: LegendaryEventLifecycle | undefined
@@ -66,6 +67,7 @@ export function useTokenPlan({
             eventUnit,
             estimates,
             teamName,
+            missions,
           })
         : { kind: "loading" },
     [
@@ -81,6 +83,7 @@ export function useTokenPlan({
       eventUnit,
       estimates,
       teamName,
+      missions,
     ]
   )
 }

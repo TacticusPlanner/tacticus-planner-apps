@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { useMemo, useState } from "react"
 import { Navigate, useParams } from "react-router"
 import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
@@ -7,7 +7,6 @@ import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
 import {
   type LegendaryEvent,
-  type LegendaryEventLaneId,
   useClearEstimateConfig,
   useLegendaryEvent,
   useLegendaryEventBattles,
@@ -18,7 +17,10 @@ import {
 } from "@/entities/legendary-event"
 import { useAnnotations } from "@/features/legendary-event-annotations"
 import { useLegendaryEventPlan } from "@/features/legendary-event-teams"
-import { useTokenPlan } from "@/features/legendary-event-tokens"
+import {
+  useTokenMissionsSource,
+  useTokenPlan,
+} from "@/features/legendary-event-tokens"
 import { useAnalyticsActions } from "@/shared/analytics"
 import { useTourPageSteps } from "@/shared/tour"
 import { useUnitName } from "@/shared/unit-name"
@@ -38,11 +40,12 @@ import {
 } from "./legendary-event-page.view-model"
 import { useLegendaryEventTutorial } from "./legendary-event.tutorial"
 import { useLastRun } from "./overview/use-last-run"
+import { useLaneJump } from "./use-lane-jump"
+import { useLanePotentials } from "./use-lane-potentials"
 import { useCreateGoalFromRow } from "./use-create-goal-from-row"
 import { useEventGoals } from "./use-event-goals"
 import { useEventRuns } from "./use-event-runs"
 import { useImpactTeamName, useUpgradeImpact } from "./use-upgrade-impact"
-import { progressHeadingId } from "./progress/progress-heading"
 import { buildMarksByLane } from "./progress/progress-marks"
 import { useTeamEditorLauncher } from "./teams/team-editor-launcher"
 import {
@@ -67,13 +70,6 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
   const unitName = useUnitName()
   const syncTimes = useLegendaryEventSyncTimes()
   const [selectedTab, setSelectedTab] = useState<LegendaryEventTab>("overview")
-  // The lane section the Overview asked to show (the lane summary's progress grid, or a token
-  // section's Teams section or team card); consumed by the effect below once that lane's tab has
-  // mounted. A ref, not state: it drives a DOM scroll, never a render.
-  const jumpTarget = useRef<{
-    lane: LegendaryEventLaneId
-    find: () => Element | null
-  } | null>(null)
   // Shared by the three lanes' leaderboards and the Overview one; discarded when the page unmounts.
   const [onlyUnlocked, setOnlyUnlocked] = useState(false)
   const [deductScored, setDeductScored] = useState(true)
@@ -213,6 +209,11 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
   })
   const progressObservedAtMs =
     syncTimes.status === "ready" ? syncTimes.data.progressObservedAtMs : null
+  const missionsSource = useTokenMissionsSource(
+    eventData,
+    Array.isArray(units) ? units : undefined,
+    Array.isArray(battles) ? battles : undefined
+  )
   const tokenPlan = useTokenPlan({
     event: eventData,
     lifecycle: event.lifecycle,
@@ -227,40 +228,17 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
     resolution: runs.resolution,
     eventUnit: runs.ownedEventUnit,
     estimates: clearEstimates,
+    missions: missionsSource,
   })
-  const selectTab = useCallback((tab: LegendaryEventTab) => {
-    setSelectedTab(tab)
-  }, [])
-  const jumpToLane = useCallback((lane: LegendaryEventLaneId) => {
-    // The heading carries the sticky-strip offset as scroll-margin (see progress-parts.tsx).
-    jumpTarget.current = {
-      lane,
-      find: () => document.getElementById(progressHeadingId(lane)),
-    }
-    setSelectedTab(lane)
-  }, [])
-  const openTeams = useCallback(
-    (lane: LegendaryEventLaneId, teamId?: string) => {
-      jumpTarget.current = {
-        lane,
-        find: () =>
-          (teamId
-            ? document.querySelector(
-                `[data-testid="legendary-event-team-card"][data-team="${CSS.escape(teamId)}"]`
-              )
-            : null) ??
-          document.querySelector('[data-testid="legendary-event-teams"]'),
-      }
-      setSelectedTab(lane)
-    },
-    []
+  const potentials = useLanePotentials(eventData, units, progressGrid, {
+    clearEstimates,
+    plan: plan.query.data,
+    run: runs.run,
+  })
+  const { selectTab, jumpToLane, openTeams } = useLaneJump(
+    selectedTab,
+    setSelectedTab
   )
-  useEffect(() => {
-    const target = jumpTarget.current
-    if (!target || target.lane !== selectedTab) return
-    jumpTarget.current = null
-    target.find()?.scrollIntoView({ block: "start" })
-  }, [selectedTab])
   useTourPageSteps(useLegendaryEventTutorial(selectTab, runHistory.hasLastRun))
 
   // Until `lres` has synced an absent event may just not have arrived yet (the catalog init gate
@@ -412,6 +390,7 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
         }
       : null,
     battles: battlesSection,
+    potentials,
   }
 
   return <LegendaryEventPageView {...viewModel} isMobile={isMobile} />

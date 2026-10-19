@@ -6,28 +6,208 @@
     "battlesCount": 18,
     "constraintsCount": 7,
     "regularMissions": [
-      "Defeat 5 waves of enemies in any wave-based game mode, Deal 1000 damage",
-      "Defeat 30 Orks",
-      "Defeat 75 Black Templars",
-      "Defeat 100 Black Legion",
-      "Use abilities 15 times with Chaos units, Deal 10k damage with Abilities",
-      "Use abilities 20 times with Xenos units, Deal 15k damage with Abilities",
-      "Use abilities 25 times with Imperial units, Deal 20k damage with Abilities",
-      "Defeat 15 waves of enemies in any wave-based game mode, Deal 25k Eviscerate damage",
-      "Defeat 15 waves of enemies in any wave-based game mode, Deal 25k Physical damage",
-      "Defeat 15 waves of enemies in any wave-based game mode, Deal 25k Plasma damage"
+      {
+        "index": 0,
+        "kind": "anyBattle",
+        "count": 5,
+        "faction": null,
+        "alliance": null,
+        "damageType": null,
+        "trait": null,
+        "text": "Defeat 5 waves of enemies in any wave-based game mode, Deal 1000 damage"
+      },
+      {
+        "index": 1,
+        "kind": "defeatFaction",
+        "count": 30,
+        "faction": "Orks",
+        "alliance": null,
+        "damageType": null,
+        "trait": null,
+        "text": "Defeat 30 Orks"
+      },
+      {
+        "index": 2,
+        "kind": "defeatFaction",
+        "count": 75,
+        "faction": "BlackTemplars",
+        "alliance": null,
+        "damageType": null,
+        "trait": null,
+        "text": "Defeat 75 Black Templars"
+      },
+      {
+        "index": 3,
+        "kind": "defeatFaction",
+        "count": 100,
+        "faction": "BlackLegion",
+        "alliance": null,
+        "damageType": null,
+        "trait": null,
+        "text": "Defeat 100 Black Legion"
+      },
+      {
+        "index": 4,
+        "kind": "useAbilitiesWithAlliance",
+        "count": 15,
+        "faction": null,
+        "alliance": "Chaos",
+        "damageType": null,
+        "trait": null,
+        "text": "Use abilities 15 times with Chaos units, Deal 10k damage with Abilities"
+      },
+      {
+        "index": 5,
+        "kind": "useAbilitiesWithAlliance",
+        "count": 20,
+        "faction": null,
+        "alliance": "Xenos",
+        "damageType": null,
+        "trait": null,
+        "text": "Use abilities 20 times with Xenos units, Deal 15k damage with Abilities"
+      },
+      {
+        "index": 6,
+        "kind": "useAbilitiesWithAlliance",
+        "count": 25,
+        "faction": null,
+        "alliance": "Imperial",
+        "damageType": null,
+        "trait": null,
+        "text": "Use abilities 25 times with Imperial units, Deal 20k damage with Abilities"
+      },
+      {
+        "index": 7,
+        "kind": "damageType",
+        "count": 15,
+        "faction": null,
+        "alliance": null,
+        "damageType": "Eviscerate",
+        "trait": null,
+        "text": "Defeat 15 waves of enemies in any wave-based game mode, Deal 25k Eviscerate damage"
+      },
+      {
+        "index": 8,
+        "kind": "damageType",
+        "count": 15,
+        "faction": null,
+        "alliance": null,
+        "damageType": "Physical",
+        "trait": null,
+        "text": "Defeat 15 waves of enemies in any wave-based game mode, Deal 25k Physical damage"
+      },
+      {
+        "index": 9,
+        "kind": "damageType",
+        "count": 15,
+        "faction": null,
+        "alliance": null,
+        "damageType": "Plasma",
+        "trait": null,
+        "text": "Defeat 15 waves of enemies in any wave-based game mode, Deal 25k Plasma damage"
+      }
     ],
     "premiumMissions": [
-      "Win 1 battle without Summoning any units",
-      "Defeat 30 enemies with Chaos units",
-      "Defeat 75 enemies with Xenos units",
-      "Defeat 100 enemies with Imperial units",
-      "Win 5 battles without deploying any Flying characters",
-      "Win 5 battles without deploying any Psyker characters",
-      "Win 5 battles without deploying any Rapid Assault characters",
-      "Defeat 75 enemies with Eviscerate Damage",
-      "Defeat 75 enemies with Physical Damage",
-      "Defeat 75 enemies with Plasma Damage"
+      {
+        "index": 0,
+        "kind": "winWithoutSummon",
+        "count": 1,
+        "faction": null,
+        "alliance": null,
+        "damageType": null,
+        "trait": null,
+        "text": "Win 1 battle without Summoning any units"
+      },
+      {
+        "index": 1,
+        "kind": "defeatWithAlliance",
+        "count": 30,
+        "faction": null,
+        "alliance": "Chaos",
+        "damageType": null,
+        "trait": null,
+        "text": "Defeat 30 enemies with Chaos units"
+      },
+      {
+        "index": 2,
+        "kind": "defeatWithAlliance",
+        "count": 75,
+        "faction": null,
+        "alliance": "Xenos",
+        "damageType": null,
+        "trait": null,
+        "text": "Defeat 75 enemies with Xenos units"
+      },
+      {
+        "index": 3,
+        "kind": "defeatWithAlliance",
+        "count": 100,
+        "faction": null,
+        "alliance": "Imperial",
+        "damageType": null,
+        "trait": null,
+        "text": "Defeat 100 enemies with Imperial units"
+      },
+      {
+        "index": 4,
+        "kind": "winWithoutTrait",
+        "count": 5,
+        "faction": null,
+        "alliance": null,
+        "damageType": null,
+        "trait": "Flying",
+        "text": "Win 5 battles without deploying any Flying characters"
+      },
+      {
+        "index": 5,
+        "kind": "winWithoutTrait",
+        "count": 5,
+        "faction": null,
+        "alliance": null,
+        "damageType": null,
+        "trait": "Psyker",
+        "text": "Win 5 battles without deploying any Psyker characters"
+      },
+      {
+        "index": 6,
+        "kind": "winWithoutTrait",
+        "count": 5,
+        "faction": null,
+        "alliance": null,
+        "damageType": null,
+        "trait": "RapidAssault",
+        "text": "Win 5 battles without deploying any Rapid Assault characters"
+      },
+      {
+        "index": 7,
+        "kind": "defeatWithDamageType",
+        "count": 75,
+        "faction": null,
+        "alliance": null,
+        "damageType": "Eviscerate",
+        "trait": null,
+        "text": "Defeat 75 enemies with Eviscerate Damage"
+      },
+      {
+        "index": 8,
+        "kind": "defeatWithDamageType",
+        "count": 75,
+        "faction": null,
+        "alliance": null,
+        "damageType": "Physical",
+        "trait": null,
+        "text": "Defeat 75 enemies with Physical Damage"
+      },
+      {
+        "index": 9,
+        "kind": "defeatWithDamageType",
+        "count": 75,
+        "faction": null,
+        "alliance": null,
+        "damageType": "Plasma",
+        "trait": null,
+        "text": "Defeat 75 enemies with Plasma Damage"
+      }
     ],
     "rewards": {
       "pointsMilestones": [
@@ -1223,28 +1403,208 @@
     "battlesCount": 18,
     "constraintsCount": 7,
     "regularMissions": [
-      "Defeat 5 waves of enemies in any wave-based game mode, Deal 1000 damage",
-      "Defeat 30 Necrons",
-      "Defeat 75 AdMechs",
-      "Defeat 100 Death Guard",
-      "Use abilities 15 times with Imperial units, Deal 10k damage with Abilities",
-      "Use abilities 20 times with Chaos units, Deal 15k damage with Abilities",
-      "Use abilities 25 times with Xenos units, Deal 20k damage with Abilities",
-      "Defeat 15 waves of enemies in any wave-based game mode, Deal 25k Piercing damage",
-      "Defeat 15 waves of enemies in any wave-based game mode, Deal 25k Psychic damage",
-      "Defeat 15 waves of enemies in any wave-based game mode, Deal 25k Bolter damage"
+      {
+        "index": 0,
+        "kind": "anyBattle",
+        "count": 5,
+        "faction": null,
+        "alliance": null,
+        "damageType": null,
+        "trait": null,
+        "text": "Defeat 5 waves of enemies in any wave-based game mode, Deal 1000 damage"
+      },
+      {
+        "index": 1,
+        "kind": "defeatFaction",
+        "count": 30,
+        "faction": "Necrons",
+        "alliance": null,
+        "damageType": null,
+        "trait": null,
+        "text": "Defeat 30 Necrons"
+      },
+      {
+        "index": 2,
+        "kind": "defeatFaction",
+        "count": 75,
+        "faction": "AdeptusMechanicus",
+        "alliance": null,
+        "damageType": null,
+        "trait": null,
+        "text": "Defeat 75 AdMechs"
+      },
+      {
+        "index": 3,
+        "kind": "defeatFaction",
+        "count": 100,
+        "faction": "DeathGuard",
+        "alliance": null,
+        "damageType": null,
+        "trait": null,
+        "text": "Defeat 100 Death Guard"
+      },
+      {
+        "index": 4,
+        "kind": "useAbilitiesWithAlliance",
+        "count": 15,
+        "faction": null,
+        "alliance": "Imperial",
+        "damageType": null,
+        "trait": null,
+        "text": "Use abilities 15 times with Imperial units, Deal 10k damage with Abilities"
+      },
+      {
+        "index": 5,
+        "kind": "useAbilitiesWithAlliance",
+        "count": 20,
+        "faction": null,
+        "alliance": "Chaos",
+        "damageType": null,
+        "trait": null,
+        "text": "Use abilities 20 times with Chaos units, Deal 15k damage with Abilities"
+      },
+      {
+        "index": 6,
+        "kind": "useAbilitiesWithAlliance",
+        "count": 25,
+        "faction": null,
+        "alliance": "Xenos",
+        "damageType": null,
+        "trait": null,
+        "text": "Use abilities 25 times with Xenos units, Deal 20k damage with Abilities"
+      },
+      {
+        "index": 7,
+        "kind": "damageType",
+        "count": 15,
+        "faction": null,
+        "alliance": null,
+        "damageType": "Piercing",
+        "trait": null,
+        "text": "Defeat 15 waves of enemies in any wave-based game mode, Deal 25k Piercing damage"
+      },
+      {
+        "index": 8,
+        "kind": "damageType",
+        "count": 15,
+        "faction": null,
+        "alliance": null,
+        "damageType": "Psychic",
+        "trait": null,
+        "text": "Defeat 15 waves of enemies in any wave-based game mode, Deal 25k Psychic damage"
+      },
+      {
+        "index": 9,
+        "kind": "damageType",
+        "count": 15,
+        "faction": null,
+        "alliance": null,
+        "damageType": "Bolter",
+        "trait": null,
+        "text": "Defeat 15 waves of enemies in any wave-based game mode, Deal 25k Bolter damage"
+      }
     ],
     "premiumMissions": [
-      "Win 1 battle without Summoning any units",
-      "Defeat 30 enemies with Chaos units",
-      "Defeat 75 enemies with Imperial units",
-      "Defeat 100 enemies with Xenos units",
-      "Win 5 battles without deploying any Big Target characters",
-      "Win 5 battles without deploying any Resilient characters",
-      "Win 5 battles without deploying any Ambush characters",
-      "Defeat 75 enemies with Bolter Damage",
-      "Defeat 75 enemies with Power Damage",
-      "Defeat 75 enemies with Piercing Damage"
+      {
+        "index": 0,
+        "kind": "winWithoutSummon",
+        "count": 1,
+        "faction": null,
+        "alliance": null,
+        "damageType": null,
+        "trait": null,
+        "text": "Win 1 battle without Summoning any units"
+      },
+      {
+        "index": 1,
+        "kind": "defeatWithAlliance",
+        "count": 30,
+        "faction": null,
+        "alliance": "Chaos",
+        "damageType": null,
+        "trait": null,
+        "text": "Defeat 30 enemies with Chaos units"
+      },
+      {
+        "index": 2,
+        "kind": "defeatWithAlliance",
+        "count": 75,
+        "faction": null,
+        "alliance": "Imperial",
+        "damageType": null,
+        "trait": null,
+        "text": "Defeat 75 enemies with Imperial units"
+      },
+      {
+        "index": 3,
+        "kind": "defeatWithAlliance",
+        "count": 100,
+        "faction": null,
+        "alliance": "Xenos",
+        "damageType": null,
+        "trait": null,
+        "text": "Defeat 100 enemies with Xenos units"
+      },
+      {
+        "index": 4,
+        "kind": "winWithoutTrait",
+        "count": 5,
+        "faction": null,
+        "alliance": null,
+        "damageType": null,
+        "trait": "BigTarget",
+        "text": "Win 5 battles without deploying any Big Target characters"
+      },
+      {
+        "index": 5,
+        "kind": "winWithoutTrait",
+        "count": 5,
+        "faction": null,
+        "alliance": null,
+        "damageType": null,
+        "trait": "Resilient",
+        "text": "Win 5 battles without deploying any Resilient characters"
+      },
+      {
+        "index": 6,
+        "kind": "winWithoutTrait",
+        "count": 5,
+        "faction": null,
+        "alliance": null,
+        "damageType": null,
+        "trait": "Ambush",
+        "text": "Win 5 battles without deploying any Ambush characters"
+      },
+      {
+        "index": 7,
+        "kind": "defeatWithDamageType",
+        "count": 75,
+        "faction": null,
+        "alliance": null,
+        "damageType": "Bolter",
+        "trait": null,
+        "text": "Defeat 75 enemies with Bolter Damage"
+      },
+      {
+        "index": 8,
+        "kind": "defeatWithDamageType",
+        "count": 75,
+        "faction": null,
+        "alliance": null,
+        "damageType": "Power",
+        "trait": null,
+        "text": "Defeat 75 enemies with Power Damage"
+      },
+      {
+        "index": 9,
+        "kind": "defeatWithDamageType",
+        "count": 75,
+        "faction": null,
+        "alliance": null,
+        "damageType": "Piercing",
+        "trait": null,
+        "text": "Defeat 75 enemies with Piercing Damage"
+      }
     ],
     "rewards": {
       "pointsMilestones": [
@@ -2416,28 +2776,208 @@
     "battlesCount": 18,
     "constraintsCount": 7,
     "regularMissions": [
-      "Defeat 5 waves of enemies in any wave-based game mode, Deal 1000 damage",
-      "Defeat 30 AdMechs",
-      "Defeat 75 T'au",
-      "Defeat 100 Orks",
-      "Use abilities 15 times with Xenos units, Deal 10k damage with Abilities",
-      "Use abilities 20 times with Imperial units, Deal 15k damage with Abilities",
-      "Use abilities 25 times with Chaos units, Deal 20k damage with Abilities",
-      "Defeat 15 waves of enemies in any wave-based game mode, Deal 25k Power damage",
-      "Defeat 15 waves of enemies in any wave-based game mode, Deal 25k Bolter damage",
-      "Defeat 15 waves of enemies in any wave-based game mode, Deal 25k Piercing damage"
+      {
+        "index": 0,
+        "kind": "anyBattle",
+        "count": 5,
+        "faction": null,
+        "alliance": null,
+        "damageType": null,
+        "trait": null,
+        "text": "Defeat 5 waves of enemies in any wave-based game mode, Deal 1000 damage"
+      },
+      {
+        "index": 1,
+        "kind": "defeatFaction",
+        "count": 30,
+        "faction": "AdeptusMechanicus",
+        "alliance": null,
+        "damageType": null,
+        "trait": null,
+        "text": "Defeat 30 AdMechs"
+      },
+      {
+        "index": 2,
+        "kind": "defeatFaction",
+        "count": 75,
+        "faction": "Tau",
+        "alliance": null,
+        "damageType": null,
+        "trait": null,
+        "text": "Defeat 75 T'au"
+      },
+      {
+        "index": 3,
+        "kind": "defeatFaction",
+        "count": 100,
+        "faction": "Orks",
+        "alliance": null,
+        "damageType": null,
+        "trait": null,
+        "text": "Defeat 100 Orks"
+      },
+      {
+        "index": 4,
+        "kind": "useAbilitiesWithAlliance",
+        "count": 15,
+        "faction": null,
+        "alliance": "Xenos",
+        "damageType": null,
+        "trait": null,
+        "text": "Use abilities 15 times with Xenos units, Deal 10k damage with Abilities"
+      },
+      {
+        "index": 5,
+        "kind": "useAbilitiesWithAlliance",
+        "count": 20,
+        "faction": null,
+        "alliance": "Imperial",
+        "damageType": null,
+        "trait": null,
+        "text": "Use abilities 20 times with Imperial units, Deal 15k damage with Abilities"
+      },
+      {
+        "index": 6,
+        "kind": "useAbilitiesWithAlliance",
+        "count": 25,
+        "faction": null,
+        "alliance": "Chaos",
+        "damageType": null,
+        "trait": null,
+        "text": "Use abilities 25 times with Chaos units, Deal 20k damage with Abilities"
+      },
+      {
+        "index": 7,
+        "kind": "damageType",
+        "count": 15,
+        "faction": null,
+        "alliance": null,
+        "damageType": "Power",
+        "trait": null,
+        "text": "Defeat 15 waves of enemies in any wave-based game mode, Deal 25k Power damage"
+      },
+      {
+        "index": 8,
+        "kind": "damageType",
+        "count": 15,
+        "faction": null,
+        "alliance": null,
+        "damageType": "Bolter",
+        "trait": null,
+        "text": "Defeat 15 waves of enemies in any wave-based game mode, Deal 25k Bolter damage"
+      },
+      {
+        "index": 9,
+        "kind": "damageType",
+        "count": 15,
+        "faction": null,
+        "alliance": null,
+        "damageType": "Piercing",
+        "trait": null,
+        "text": "Defeat 15 waves of enemies in any wave-based game mode, Deal 25k Piercing damage"
+      }
     ],
     "premiumMissions": [
-      "Win 1 battle without Summoning any units",
-      "Defeat 30 enemies with Chaos units",
-      "Defeat 75 enemies with Imperial units",
-      "Defeat 100 enemies with Xenos units",
-      "Win 5 battles without deploying any Big Target characters",
-      "Win 5 battles without deploying any Resilient characters",
-      "Win 5 battles without deploying any Ambush characters",
-      "Defeat 75 enemies with Bolter Damage",
-      "Defeat 75 enemies with Power Damage",
-      "Defeat 75 enemies with Piercing Damage"
+      {
+        "index": 0,
+        "kind": "winWithoutSummon",
+        "count": 1,
+        "faction": null,
+        "alliance": null,
+        "damageType": null,
+        "trait": null,
+        "text": "Win 1 battle without Summoning any units"
+      },
+      {
+        "index": 1,
+        "kind": "defeatWithAlliance",
+        "count": 30,
+        "faction": null,
+        "alliance": "Chaos",
+        "damageType": null,
+        "trait": null,
+        "text": "Defeat 30 enemies with Chaos units"
+      },
+      {
+        "index": 2,
+        "kind": "defeatWithAlliance",
+        "count": 75,
+        "faction": null,
+        "alliance": "Imperial",
+        "damageType": null,
+        "trait": null,
+        "text": "Defeat 75 enemies with Imperial units"
+      },
+      {
+        "index": 3,
+        "kind": "defeatWithAlliance",
+        "count": 100,
+        "faction": null,
+        "alliance": "Xenos",
+        "damageType": null,
+        "trait": null,
+        "text": "Defeat 100 enemies with Xenos units"
+      },
+      {
+        "index": 4,
+        "kind": "winWithoutTrait",
+        "count": 5,
+        "faction": null,
+        "alliance": null,
+        "damageType": null,
+        "trait": "BigTarget",
+        "text": "Win 5 battles without deploying any Big Target characters"
+      },
+      {
+        "index": 5,
+        "kind": "winWithoutTrait",
+        "count": 5,
+        "faction": null,
+        "alliance": null,
+        "damageType": null,
+        "trait": "Resilient",
+        "text": "Win 5 battles without deploying any Resilient characters"
+      },
+      {
+        "index": 6,
+        "kind": "winWithoutTrait",
+        "count": 5,
+        "faction": null,
+        "alliance": null,
+        "damageType": null,
+        "trait": "Ambush",
+        "text": "Win 5 battles without deploying any Ambush characters"
+      },
+      {
+        "index": 7,
+        "kind": "defeatWithDamageType",
+        "count": 75,
+        "faction": null,
+        "alliance": null,
+        "damageType": "Bolter",
+        "trait": null,
+        "text": "Defeat 75 enemies with Bolter Damage"
+      },
+      {
+        "index": 8,
+        "kind": "defeatWithDamageType",
+        "count": 75,
+        "faction": null,
+        "alliance": null,
+        "damageType": "Power",
+        "trait": null,
+        "text": "Defeat 75 enemies with Power Damage"
+      },
+      {
+        "index": 9,
+        "kind": "defeatWithDamageType",
+        "count": 75,
+        "faction": null,
+        "alliance": null,
+        "damageType": "Piercing",
+        "trait": null,
+        "text": "Defeat 75 enemies with Piercing Damage"
+      }
     ],
     "rewards": {
       "pointsMilestones": [

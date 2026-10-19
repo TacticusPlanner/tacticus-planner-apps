@@ -47,15 +47,24 @@ export interface LegendaryEventRunInputs {
   bundlePurchased: boolean
   /** "Oh So Close" shards, 0..75. */
   closeShards: number
+  /** Catalog indexes of the regular missions ticked Done this run, ascending. Optional: a plan
+   *  served before mission tracking (or built by an older test) has none. */
+  completedRegularMissions?: number[]
+  /** Catalog indexes of the premium missions ticked Done this run, ascending. */
+  completedPremiumMissions?: number[]
   /** ISO 8601 UTC: the last write of this run. */
   updatedAt: string
 }
 
-/** The editable values of one run (what the drawer edits and the run write sends). */
+/** The editable values of one run (what the drawer edits and the run write sends). The counts
+ *  are the missions the run will complete (the forecast reads them), never below the ticks. */
 export type LegendaryEventRunInputValues = Pick<
   LegendaryEventRunInputs,
   "regularMissions" | "premiumMissions" | "bundlePurchased" | "closeShards"
->
+> & {
+  completedRegularMissions: number[]
+  completedPremiumMissions: number[]
+}
 
 /** A Maybe clear / Stop here reminder on one objective cell of a battle. */
 export type LegendaryEventAnnotationStatus = "maybeClear" | "stopHere"

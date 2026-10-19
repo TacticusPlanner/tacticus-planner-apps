@@ -9,18 +9,16 @@ import {
 } from "@/entities/legendary-event"
 import { useAnalyticsActions } from "@/shared/analytics"
 
-import type { TokenMarker } from "../lib/run-forecast"
-import { groupTokensByTeam } from "../lib/token-groups"
 import type { LaneFullClear, TokenPlanView } from "../lib/token-plan-view"
 import { useStoredOpen } from "../model/use-stored-open"
-import { TokenObjectives } from "./token-objectives"
+import { RunSection, RunSectionHeader, TokenGroups } from "./token-plan-rows"
 
 const OPEN_KEY = "legendaryEvents.tokenPlan.open"
 const REGION_ID = "legendary-event-token-plan-list"
 
 /**
- * The Overview's collapsible Token plan (spec: Token plan list): every planned token grouped by
- * consecutive team, with running points, milestone and step markers and the Maybe flag, then one
+ * The Overview's collapsible Token plan (spec: Token plan list): every planned token in run
+ * sections (as the forecast spends them, then the tokens no run covers), grouped by consecutive team, with running points, milestone and step markers and the Maybe flag, then one
  * fewest-tokens line per lane. Hidden while the plan is empty or not ready.
  */
 export function TokenPlanList({
@@ -94,33 +92,73 @@ export function TokenPlanList({
       </h2>
       {open ? (
         <div className="flex min-w-0 flex-col gap-3" id={REGION_ID}>
-          <ol className="flex min-w-0 flex-col gap-3">
-            {groupTokensByTeam(plan.tokens).map((group) => (
-              <li
-                className="flex min-w-0 flex-col gap-1"
-                data-team={group.teamId}
-                data-testid="token-plan-group"
-                key={group.start}
-              >
-                <h3 className="text-sm font-semibold">{group.teamName}</h3>
-                <ol className="flex min-w-0 flex-col divide-y">
-                  {group.tokens.map((token, offset) => {
-                    const index = group.start + offset
-                    return (
-                      <TokenRow
-                        event={event}
-                        index={index}
-                        isMobile={isMobile}
-                        key={index}
-                        marker={markers[index]}
-                        token={token}
-                      />
-                    )
-                  })}
-                </ol>
-              </li>
-            ))}
-          </ol>
+          {view.byRun ? (
+            <ol className="flex min-w-0 flex-col gap-4">
+              {view.byRun.sections.map((section) => (
+                <RunSection
+                  header={<RunSectionHeader plan={plan} section={section} />}
+                  key={`run${section.run}`}
+                  testId="token-plan-run-section"
+                >
+                  {section.count === 0 ? (
+                    <p
+                      className="text-sm text-muted-foreground"
+                      data-testid="token-plan-run-empty"
+                    >
+                      {t("tokenPlan.plan.byRun.empty", {
+                        count: section.available,
+                      })}
+                    </p>
+                  ) : (
+                    <TokenGroups
+                      count={section.count}
+                      event={event}
+                      isMobile={isMobile}
+                      markers={markers}
+                      start={section.start}
+                      tokens={plan.tokens}
+                    />
+                  )}
+                </RunSection>
+              ))}
+              {view.byRun.overflow ? (
+                <RunSection
+                  header={
+                    <h3 className="text-sm font-semibold">
+                      {t("tokenPlan.plan.byRun.overflow", {
+                        count: view.byRun.overflow.count,
+                        run: view.byRun.sections.at(-1)?.unknownRun
+                          ? undefined
+                          : view.byRun.sections.at(-1)?.run,
+                        context: view.byRun.sections.at(-1)?.unknownRun
+                          ? "unknown"
+                          : undefined,
+                      })}
+                    </h3>
+                  }
+                  testId="token-plan-overflow"
+                >
+                  <TokenGroups
+                    count={view.byRun.overflow.count}
+                    event={event}
+                    isMobile={isMobile}
+                    markers={markers}
+                    start={view.byRun.overflow.start}
+                    tokens={plan.tokens}
+                  />
+                </RunSection>
+              ) : null}
+            </ol>
+          ) : (
+            <TokenGroups
+              count={plan.tokens.length}
+              event={event}
+              isMobile={isMobile}
+              markers={markers}
+              start={0}
+              tokens={plan.tokens}
+            />
+          )}
           {view.fullClear.length > 0 ? (
             <ul className="flex flex-col gap-0.5 text-xs text-muted-foreground">
               {view.fullClear.map((entry) => (
@@ -131,115 +169,6 @@ export function TokenPlanList({
         </div>
       ) : null}
     </section>
-  )
-}
-
-function TokenRow({
-  event,
-  token,
-  index,
-  marker,
-  isMobile,
-}: {
-  event: Pick<LegendaryEvent, "alpha" | "beta" | "gamma">
-  token: Extract<TokenPlanView, { kind: "ready" }>["plan"]["tokens"][number]
-  index: number
-  marker: TokenMarker | undefined
-  isMobile: boolean
-}) {
-  const { t, i18n } = useTranslation("legendaryEvents")
-  const number = new Intl.NumberFormat(i18n.language)
-  const lane = t(`lanes.${token.laneId}`)
-  const battle = t("tokenPlan.plan.battle", { battle: token.battleIndex + 1 })
-  const points = (
-    <span className="font-medium tabular-nums">
-      {t("tokenPlan.plan.points", { points: number.format(token.points) })}
-    </span>
-  )
-  const running = (
-    <span className="text-muted-foreground tabular-nums">
-      {t("tokenPlan.plan.running", {
-        points: number.format(token.runningPoints),
-      })}
-    </span>
-  )
-  const objectives = (
-    <TokenObjectives
-      clearedIds={token.clearedIds}
-      compact
-      lane={event[token.laneId]}
-    />
-  )
-  const maybe = token.maybe ? (
-    <span
-      className="text-xs text-amber-700 dark:text-amber-400"
-      data-testid="token-plan-maybe"
-    >
-      {t("tokenPlan.plan.maybe")}
-    </span>
-  ) : null
-
-  return (
-    <li
-      className="flex min-w-0 flex-col gap-1 py-1.5 text-sm"
-      data-index={index}
-      data-testid="token-plan-row"
-    >
-      {isMobile ? (
-        <>
-          <div className="flex min-w-0 items-baseline justify-between gap-2">
-            <span className="min-w-0 truncate">
-              <span className="text-muted-foreground tabular-nums">
-                {index + 1}.
-              </span>{" "}
-              {lane} · {battle}
-            </span>
-            {points}
-          </div>
-          <div className="flex min-w-0 items-center justify-between gap-2">
-            <span className="flex min-w-0 items-center gap-2">
-              {objectives}
-              {maybe}
-            </span>
-            {running}
-          </div>
-        </>
-      ) : (
-        <div className="grid min-w-0 grid-cols-[2rem_4.5rem_5.5rem_minmax(0,1fr)_4rem_6.5rem] items-center gap-2">
-          <span className="text-muted-foreground tabular-nums">
-            {index + 1}
-          </span>
-          <span>{lane}</span>
-          <span>{battle}</span>
-          <span className="flex min-w-0 items-center gap-2">
-            {objectives}
-            {maybe}
-          </span>
-          <span className="text-right">{points}</span>
-          <span className="text-right">{running}</span>
-        </div>
-      )}
-      {marker && (marker.milestones.length > 0 || marker.steps.length > 0) ? (
-        <ul
-          className="flex flex-wrap gap-x-3 text-xs font-medium text-primary"
-          data-testid="token-plan-marker"
-        >
-          {marker.milestones.map((entry) => (
-            <li key={`m${entry.milestone}`}>
-              {t("tokenPlan.plan.milestone", {
-                milestone: entry.milestone,
-                currency: number.format(entry.payout),
-              })}
-            </li>
-          ))}
-          {marker.steps.map((step) => (
-            <li key={step}>
-              {t("tokenPlan.plan.step", { step: t(`outlook.steps.${step}`) })}
-            </li>
-          ))}
-        </ul>
-      ) : null}
-    </li>
   )
 }
 
