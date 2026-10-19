@@ -11,12 +11,17 @@ vi.mock("react-i18next", () => ({
     i18n: { language: "en" },
   }),
 }))
-vi.mock("../model/event-target-options", () => ({
-  useEventTargetOptions: () => [
+vi.mock("../model/event-target-options", () => {
+  const options = [
     { eventId: "votanUthar", name: "Uthar" },
     { eventId: "astarLysander", name: "Lysander" },
-  ],
-}))
+  ]
+  return {
+    useEventTargetOptions: () => options,
+    useEventTargetName: (eventId: string) =>
+      options.find((option) => option.eventId === eventId)?.name ?? null,
+  }
+})
 
 import { ManageProjectsSheet } from "./manage-projects-sheet"
 import { ProjectTargetChip } from "./project-target-chip"

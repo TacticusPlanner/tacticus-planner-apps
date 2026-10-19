@@ -37,7 +37,7 @@ A project card with a target SHALL show the chip "LE · <unit name>" linking to 
 
 ### Requirement: The event Overview lists linked projects
 
-The Legendary Event Overview SHALL show, for signed-in users, a **Projects** line listing the active projects targeting the event ("Project: Uthar run 3 · 7 goals", each linking to that project on Goals), "+N archived" when archived ones exist, or "No project for this event" with a link to the Projects page. While projects load it SHALL show a one-line skeleton; when the read fails it SHALL be hidden.
+The Legendary Event Overview SHALL show, for signed-in users, a **Projects** line listing the unarchived (active or paused) projects targeting the event ("Project: Uthar run 3 · 7 goals", each linking to that project on Goals), "+N archived" when archived ones exist, or "No project for this event" with a link to the Projects page. While projects load it SHALL show a one-line skeleton; when the read fails it SHALL be hidden.
 
 #### Scenario: One linked project
 

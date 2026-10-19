@@ -44,3 +44,14 @@ export function useEventTargetOptions(): EventTargetOption[] {
     i18n.language
   )
 }
+
+/** The localized name of a served event, or null when the catalog does not serve it (or is still
+ *  loading). Unlike `useEventTargetOptions` it does not order the events, so each card can call it. */
+export function useEventTargetName(eventId: string): string | null {
+  const events = useLegendaryEvents()
+  const unitName = useUnitName()
+  if (events.status !== "ready") return null
+  return events.data.some((event) => event.id === eventId)
+    ? unitName("Character", eventId)
+    : null
+}
