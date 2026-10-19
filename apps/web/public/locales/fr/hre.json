@@ -121,7 +121,10 @@
     "noDrop": {
       "title": "Ou les batailles d'Indomitus sans butin (6 à 14)",
       "note": "Elles coûtent 3 d'énergie chacune mais ne donnent rien et peu d'or. Chaque raid ici remplace un raid ci-dessus."
-    }
+    },
+    "titleBattles": "Combats pour {{mission}}",
+    "noteBattles": "Les utilisations de capacités ne comptent que dans les combats joués, donc jouez ces nœuds à {{slots}} emplacements à la main avec une équipe {{alliance}} complète. Les moins chers d'abord, comme pour les raids.",
+    "noteAlliance": "Gagnez-les avec une équipe entièrement {{alliance}}."
   },
   "tokens": {
     "title": "Jetons nécessaires",
@@ -193,6 +196,15 @@
     "featured": "{{hero}} mène, avec vos unités les plus fortes.",
     "fewAlliance": "Seulement {{count}} unités {{alliance}} : le jeu n'exige une équipe 100 % {{alliance}} que si chaque place est occupée.",
     "lockedHero": "Débloquez d'abord {{hero}} pour utiliser ce héros dans cette mission.",
-    "tooFew": "Vous avez trop peu d'unités pour former une équipe."
+    "tooFew": "Vous avez trop peu d'unités pour former une équipe.",
+    "titleMode": "Équipe {{mode}}",
+    "ranged": "Vos 5 unités à distance les plus fortes.",
+    "rangedTrack": "Vos {{size}} unités à distance {{alliance}} les plus fortes : 5 commencent, les autres remplacent celles qui tombent.",
+    "supportIncluded": "Votre Soigneur ou Mécanicien le plus fort est inclus, pour l'objectif de soin.",
+    "supportMissing": "Vous n'avez aucun Soigneur ni Mécanicien pour l'objectif de soin.",
+    "psychic": "Les unités à dégâts psychiques passent d'abord, pour l'objectif de dégâts psychiques.",
+    "reserve_one": "Gardez {{count}} jeton {{mode}} pour {{mission}}.",
+    "reserve_other": "Gardez {{count}} jetons {{mode}} pour {{mission}}.",
+    "reservePlay": "Avec {{have}} maintenant, jouez jusqu'à {{play}}."
   }
 }

@@ -18,7 +18,8 @@ import type {
  * `useDailyRaids`' HRE suggestions: the mission request applied to the hook's eligible battles,
  * synced attempts, energy left today and filters; Today's plan is not counted. The campaign-type Raids
  * Filter does not apply: every campaign battle counts as a win, so a type picked for farming drops
- * must not hide the cheapest nodes (the other filters still apply).
+ * must not hide the cheapest nodes (the other filters still apply). A request's `slots` replaces the
+ * slots filter.
  */
 export function planHookMissionRaids(input: {
   request: MissionRaidsRequest
@@ -46,6 +47,11 @@ export function planHookMissionRaids(input: {
       .filter((definition) => definition.releaseType === "event")
       .map((definition) => definition.groupId)
   )
+  const filters: RaidsFilters = {
+    ...input.raidsFilters,
+    campaignTypes: [],
+    ...(input.request.slots ? { slots: [input.request.slots] } : {}),
+  }
   return planMissionRaids({
     ...input.request,
     battles: input.availableBattles.map((battle) => ({
@@ -67,10 +73,7 @@ export function planHookMissionRaids(input: {
     goalNodesByBattle: input.calculation?.missionGoalNodes ?? new Map(),
     passesFilter: (battleId) => {
       const battle = input.filterBattlesById.get(battleId)
-      return (
-        !battle ||
-        passLocationFilter(battle, { ...input.raidsFilters, campaignTypes: [] })
-      )
+      return !battle || passLocationFilter(battle, filters)
     },
   })
 }

@@ -10,10 +10,13 @@ export {
   nextCampaignMission,
   remainingCampaignBattles,
   selectRaidObjective,
-  selectTeamObjective,
   tokenNeedRows,
-  type HreTeamRule,
 } from "./model/hre-objectives"
+export {
+  selectTeamPlan,
+  type HreTeamPlan,
+  type HreTeamRule,
+} from "./model/hre-team-plan"
 export { hreDaysLeft, hrePaceFor } from "./model/hre-pace"
 export { HreEventHeader } from "./ui/hre-event-header"
 export { AllMissions, MissionTracker } from "./ui/mission-tracker"

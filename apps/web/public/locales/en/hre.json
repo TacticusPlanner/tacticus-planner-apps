@@ -121,7 +121,10 @@
     "noDrop": {
       "title": "Or the no-drop Indomitus battles (6 to 14)",
       "note": "They cost 3 energy each but drop nothing and give little gold. Each raid here replaces one above."
-    }
+    },
+    "titleBattles": "Battles for {{mission}}",
+    "noteBattles": "Ability uses only count in battles you fight, so fight these {{slots}}-slot nodes by hand with a full {{alliance}} team. Cheapest first, as for raids.",
+    "noteAlliance": "Win them with an all-{{alliance}} team."
   },
   "tokens": {
     "title": "Tokens needed",
@@ -193,6 +196,15 @@
     "featured": "{{hero}} leads, with your strongest units.",
     "fewAlliance": "Only {{count}} {{alliance}} units: the game needs a full all-{{alliance}} team only if every slot is used.",
     "lockedHero": "Unlock {{hero}} first to use them in this mission.",
-    "tooFew": "You own too few units for a team."
+    "tooFew": "You own too few units for a team.",
+    "titleMode": "{{mode}} team",
+    "ranged": "Your 5 strongest ranged units.",
+    "rangedTrack": "Your {{size}} strongest ranged {{alliance}} units: 5 start, the rest replace those who fall.",
+    "supportIncluded": "Your strongest Healer or Mechanic is in, for the heal objective.",
+    "supportMissing": "You own no Healer or Mechanic for the heal objective.",
+    "psychic": "Psychic damage dealers come first, for the Psychic damage objective.",
+    "reserve_one": "Keep {{count}} {{mode}} token for {{mission}}.",
+    "reserve_other": "Keep {{count}} {{mode}} tokens for {{mission}}.",
+    "reservePlay": "With {{have}} now, play up to {{play}}."
   }
 }

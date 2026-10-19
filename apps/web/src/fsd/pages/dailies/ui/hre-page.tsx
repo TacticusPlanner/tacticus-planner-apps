@@ -17,7 +17,7 @@ import {
   PaceCard,
   remainingCampaignBattles,
   selectRaidObjective,
-  selectTeamObjective,
+  selectTeamPlan,
   tokenNeedRows,
   TokensNeededCard,
   useHreInstance,
@@ -39,7 +39,8 @@ import { useHreTutorial } from "./hre-page.tutorial"
 /**
  * Dailies > HRE: the running Hero Release Event (or the next one as a read-only preview). On a
  * running event: the current mission with its progress inputs and tips, campaign raid suggestions
- * for its campaign objective (or a mission team for a lineup objective), the tokens the remaining
+ * for its campaign, all-alliance or alliance-ability objective, a mission team (Arena, Salvage Run,
+ * Onslaught or battle) for a lineup objective, the tokens the remaining
  * missions need and the event pace. Every event lists all missions and the remaining-campaign
  * summary. Desktop: missions on the left, the rest on the right. Mobile: one column with the
  * mission list last, collapsed behind "All missions".
@@ -71,9 +72,9 @@ export function HrePage() {
       }) as string)
     : null
   const raidObjective = running ? selectRaidObjective(progress) : null
-  const teamObjective = running ? selectTeamObjective(progress) : null
+  const teamPlan = running ? selectTeamPlan(progress) : null
   const team = useHreTeamRecommendations({
-    rule: teamObjective?.rule ?? null,
+    plan: teamPlan,
     alliance: hero?.alliance ?? null,
     featuredCharacterId: instance?.featuredCharacterId ?? null,
   })
@@ -140,6 +141,9 @@ export function HrePage() {
           ? {
               battlesToGo: raidObjective.battlesToGo,
               eventOnly: raidObjective.eventOnly,
+              slots: raidObjective.slots,
+              kind: raidObjective.kind,
+              allianceTeam: raidObjective.allianceTeam ? allianceName : null,
               missionLabel: missionName(t, raidObjective.missionNumber),
             }
           : null
@@ -147,7 +151,17 @@ export function HrePage() {
     />
   ) : null
   const teamCard = (
-    <HreTeamCard alliance={allianceName} hero={heroName} view={team} />
+    <HreTeamCard
+      alliance={allianceName}
+      hero={heroName}
+      plan={teamPlan}
+      tokens={
+        teamPlan && teamPlan.mode !== "battle"
+          ? (tokens?.[teamPlan.mode] ?? null)
+          : null
+      }
+      view={team}
+    />
   )
   const tokensCard =
     tokenRows.length > 0 ? (
