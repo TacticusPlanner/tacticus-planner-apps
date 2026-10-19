@@ -87,10 +87,8 @@ function TierTileDetailsList({ details }: { details: TierTileDetails }) {
         {details.relics.map((relic) => (
           <DetailRow
             key={relic.equipmentId}
-            label={t("tierList.details.relic", {
-              name: t(`equipmentItems:${relic.equipmentId}`, {
-                defaultValue: relic.equipmentId,
-              }),
+            label={t(`equipmentItems:${relic.equipmentId}`, {
+              defaultValue: relic.equipmentId,
             })}
             testId="tier-detail-relic"
           >

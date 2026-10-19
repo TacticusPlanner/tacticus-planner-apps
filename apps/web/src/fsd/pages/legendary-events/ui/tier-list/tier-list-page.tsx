@@ -45,7 +45,11 @@ type TierRef = { tier: string; multiplier: number } | null
  *  ownership and alliance (kept in the URL query). */
 export function TierListPage() {
   // `hordeStrategy` loads with the page so opening a tile's Strategy section never suspends.
-  const { t, i18n } = useTranslation(["legendaryEvents", "hordeStrategy"])
+  const { t, i18n } = useTranslation([
+    "legendaryEvents",
+    "hordeStrategy",
+    "equipmentItems",
+  ])
   const isMobile = useIsMobile()
   const units = useLegendaryEventUnits()
   const roster = useLegendaryEventRoster()

@@ -798,7 +798,6 @@
       "owned": "Owned",
       "notUnlocked": "Not unlocked",
       "rosterUnknown": "Sync your roster",
-      "relic": "{{name}}",
       "relicEquipped": "Equipped",
       "relicNotEquipped": "Not equipped",
       "openInLibrary": "Open in Library"
