@@ -293,7 +293,7 @@ describe("NextTokenCard", () => {
     expect(
       screen
         .getAllByTestId("token-plan-group")
-        .map((group) => group.querySelector("h3")?.textContent)
+        .map((group) => group.querySelector("h4")?.textContent)
     ).toEqual(["Max 2 hits · Melee"])
   })
 

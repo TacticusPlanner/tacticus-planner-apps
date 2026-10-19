@@ -104,6 +104,7 @@ export function LegendaryEventPageView({
           <LaneSummary
             event={props.event}
             onJumpToLane={props.onJumpToLane}
+            potentials={props.potentials}
             progressGrid={props.progressGrid}
           />
           <CrossLaneLeaderboard
@@ -119,7 +120,12 @@ export function LegendaryEventPageView({
           data-lane={selectedTab}
           data-testid="legendary-event-lane"
         >
-          <LaneOverview event={props.event} laneIds={[selectedTab]} />
+          <LaneOverview
+            event={props.event}
+            isMobile={isMobile}
+            laneIds={[selectedTab]}
+            potentials={props.potentials}
+          />
           <TeamsSection
             editor={props.teamEditor}
             isMobile={isMobile}

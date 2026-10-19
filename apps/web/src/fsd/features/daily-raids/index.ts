@@ -46,3 +46,5 @@ export { buildPlanDayCells, buildPlanUnitRanges } from "./model/plan-day-cells"
 export { PLAN_DAY_LIMIT, PlanDayStrip } from "./ui/plan/plan-day-strip"
 export { PlanUnitFilter } from "./ui/plan/plan-unit-filter"
 export { PlanBlockers } from "./ui/plan-blockers"
+// Dailies > HRE: where to raid today for the current mission's campaign objective.
+export { HreRaidsSection } from "./ui/hre-missions/hre-raids-section"

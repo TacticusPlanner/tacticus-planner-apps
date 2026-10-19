@@ -15,15 +15,25 @@ import {
   type LegendaryEventLaneId,
 } from "@/entities/legendary-event"
 
+import type {
+  LanePotentialViewModel,
+  LanePotentialsViewModel,
+} from "./lane-potential.view-model"
+import { RosterPotentialMap } from "./roster-potential-map"
+
 /** Per lane: label with its allowed-units rule, kill points, the five objectives with their
- *  scores, the battle count and the per-battle points ladder; one "how points work" disclosure
+ *  scores, the battle count and the roster potential map; one "how points work" disclosure
  *  closes the section. Renders the lanes it is given (three on desktop, one on mobile). */
 export function LaneOverview({
   event,
   laneIds,
+  potentials,
+  isMobile,
 }: {
   event: LegendaryEvent
   laneIds: readonly LegendaryEventLaneId[]
+  potentials: LanePotentialsViewModel
+  isMobile: boolean
 }) {
   const { t } = useTranslation("legendaryEvents")
   return (
@@ -45,7 +55,13 @@ export function LaneOverview({
         )}
       >
         {laneIds.map((laneId) => (
-          <LanePanel event={event} key={laneId} laneId={laneId} />
+          <LanePanel
+            event={event}
+            isMobile={isMobile}
+            key={laneId}
+            laneId={laneId}
+            potential={potentials[laneId]}
+          />
         ))}
       </div>
       <details
@@ -66,9 +82,13 @@ export function LaneOverview({
 function LanePanel({
   event,
   laneId,
+  potential,
+  isMobile,
 }: {
   event: LegendaryEvent
   laneId: LegendaryEventLaneId
+  potential: LanePotentialViewModel
+  isMobile: boolean
 }) {
   const { t, i18n } = useTranslation("legendaryEvents")
   const objectiveLabel = useObjectiveLabel()
@@ -77,8 +97,6 @@ function LanePanel({
   const lane = event[laneId]
   const laneName = t(`lanes.${laneId}`)
   const rule = allowedRule(lane)
-  const ladder = lane.battlesPoints
-  const ladderMax = Math.max(1, ...ladder)
 
   return (
     <Card
@@ -128,40 +146,20 @@ function LanePanel({
             })}
           </ul>
         </div>
-        <div className="flex min-w-0 flex-col gap-1">
+        <div className="flex min-w-0 flex-col gap-2">
           <p className="flex justify-between gap-2 text-sm">
             <span className="text-muted-foreground">
-              {t("laneOverview.ladder")}
+              {t("laneOverview.potential.title")}
             </span>
             <span data-testid="legendary-event-lane-battles">
-              {t("laneOverview.battles", { count: ladder.length })}
+              {t("laneOverview.battles", { count: lane.battlesPoints.length })}
             </span>
           </p>
-          <ol
-            aria-label={t("laneOverview.ladder")}
-            className="flex h-12 min-w-0 items-end gap-px"
-            data-testid="legendary-event-ladder"
-          >
-            {ladder.map((points, index) => {
-              const label = t("laneOverview.battlePoints", {
-                battle: index + 1,
-                points: number.format(points),
-              })
-              return (
-                <li
-                  aria-label={label}
-                  className="min-w-0 flex-1 rounded-t-sm bg-(--event-legendary)"
-                  data-points={points}
-                  data-testid="legendary-event-ladder-bar"
-                  key={index}
-                  style={{
-                    height: `${Math.max(8, (points / ladderMax) * 100)}%`,
-                  }}
-                  title={label}
-                />
-              )
-            })}
-          </ol>
+          <RosterPotentialMap
+            isMobile={isMobile}
+            lane={lane}
+            view={potential}
+          />
         </div>
       </CardContent>
     </Card>

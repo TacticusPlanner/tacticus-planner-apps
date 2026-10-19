@@ -3,11 +3,15 @@ import { MemoryRouter } from "react-router"
 import { TooltipProvider } from "@workspace/ui/components/tooltip"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
-const { hseState } = vi.hoisted(() => ({
+const { hseState, hreLive } = vi.hoisted(() => ({
   hseState: { current: { status: "loading" } as unknown },
+  hreLive: { current: false },
 }))
 vi.mock("@/features/daily-raids", () => ({
   useActiveHomeScreenEvent: () => hseState.current,
+}))
+vi.mock("@/features/hre-missions", () => ({
+  useIsHreLive: () => hreLive.current,
 }))
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({
@@ -107,6 +111,7 @@ describe.each([
 ])("nav live indicator: %s", (_name, state, expected) => {
   beforeEach(() => {
     hseState.current = state
+    hreLive.current = false
   })
 
   it("desktop side menu (expanded) marks only Dailies, with text beside the label", () => {
@@ -190,6 +195,34 @@ describe.each([
       target: { value: "hse" },
     })
     expect(dots(dialog)).toHaveLength(0)
+  })
+})
+
+describe.each([
+  ["only an HRE running", false, true, { hse: 0, hre: 1, dailies: 1 }],
+  ["an HSE and an HRE running", true, true, { hse: 1, hre: 1, dailies: 1 }],
+  ["neither running", false, false, { hse: 0, hre: 0, dailies: 0 }],
+])("nav live indicator with %s", (_name, hse, hre, expected) => {
+  beforeEach(() => {
+    hseState.current = ready(hse ? hunt : null)
+    hreLive.current = hre
+  })
+
+  it("marks the HRE and HSE tabs by their own event", () => {
+    shell(<SectionTabs item={dailies} />)
+    expect(dots(screen.getByTestId("section-tab-dailies-hse"))).toHaveLength(
+      expected.hse
+    )
+    expect(dots(screen.getByTestId("section-tab-dailies-hre"))).toHaveLength(
+      expected.hre
+    )
+  })
+
+  it("marks Dailies when either event runs", () => {
+    shell(desktop(true))
+    expect(dots(screen.getByTestId("desktop-nav-dailies"))).toHaveLength(
+      expected.dailies
+    )
   })
 })
 

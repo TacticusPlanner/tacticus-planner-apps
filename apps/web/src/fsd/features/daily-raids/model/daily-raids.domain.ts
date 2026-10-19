@@ -20,6 +20,7 @@ import type {
 
 import type { TodaysAttempt } from "./daily-raids-energy"
 import type { EventFarm } from "./home-screen-event-farm"
+import type { MissionGoalNode, MissionRaidPlan } from "./mission-raids"
 
 export type DailyRaidGoalViewModel = {
   goalId: string
@@ -175,6 +176,10 @@ export type DailyRaidsReadyViewModel = {
   todaysAttempts: TodaysAttempt[]
   /** The Dailies > HSE farm list; set only when the run was given the event inputs. */
   eventFarm?: EventFarm
+  /** The Dailies > HRE tab: per node, the best-priority goal it feeds. */
+  missionGoalNodes?: ReadonlyMap<BattleId, MissionGoalNode>
+  /** The Dailies > HRE raid suggestions; set only when the run was given a mission request. */
+  missionRaids?: MissionRaidPlan
 }
 
 export type DailyRaidsCalculationViewModel = Omit<
@@ -186,9 +191,15 @@ export type DailyRaidsCalculationViewModel = Omit<
   | "todaysAttempts"
 >
 
+/** The HRE raid suggestions without a goal plan, with the labels their rows need. */
+type MissionRaidsOnly = {
+  missionRaids?: MissionRaidPlan
+  locationsByBattleId?: ReadonlyMap<BattleId, DailyRaidLocationViewModel>
+}
+
 export type DailyRaidsViewModel =
-  | { status: "no-goals" }
+  | ({ status: "no-goals" } & MissionRaidsOnly)
   | { status: "loading" }
   | { status: "error" }
-  | { status: "no-farmable" }
+  | ({ status: "no-farmable" } & MissionRaidsOnly)
   | DailyRaidsReadyViewModel

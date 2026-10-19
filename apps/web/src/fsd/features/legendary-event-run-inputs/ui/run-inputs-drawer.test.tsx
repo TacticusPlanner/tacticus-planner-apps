@@ -217,6 +217,90 @@ describe("RunInputsDrawer", () => {
     ).toBe("25")
   })
 
+  it("ticks missions per run with the Now run expanded and the others collapsed", async () => {
+    api.plan = plan({
+      runs: [
+        stored(1, {
+          regularMissions: 10,
+          completedRegularMissions: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+        }),
+      ],
+    })
+    await openDrawer()
+
+    const ticked = [1, 2, 3].map(
+      (run) =>
+        within(runBlock(run)).getByTestId("run-inputs-regular-ticked")
+          .textContent
+    )
+    expect(ticked).toEqual(["10 of 10 done", "0 of 10 done", "0 of 10 done"])
+    expect(
+      [1, 2, 3].map(
+        (run) =>
+          within(runBlock(run)).queryAllByTestId("run-inputs-regular-mission")
+            .length
+      )
+    ).toEqual([0, 10, 0])
+    fireEvent.click(
+      within(runBlock(1)).getByTestId("run-inputs-regular-toggle")
+    )
+    expect(
+      within(runBlock(1))
+        .getAllByTestId("run-inputs-regular-mission")
+        .every((row) => row.dataset.done === "true")
+    ).toBe(true)
+  })
+
+  it("raises Plan to complete when a tick passes it and saves both in one write", async () => {
+    api.put.mockResolvedValue(plan({ revision: 3 }))
+    await openDrawer()
+    const now = runBlock(2)
+
+    fireEvent.click(
+      within(now).getByRole("checkbox", { name: "Defeat 30 Necrons" })
+    )
+
+    expect(
+      within(now).getByTestId("run-inputs-regular-ticked").textContent
+    ).toBe("1 of 10 done")
+    const count = stepperIn(now, "run-inputs-regular-count")
+    expect(
+      count.getByTestId("number-stepper-input").getAttribute("value")
+    ).toBe("1")
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 700))
+    })
+    expect(api.put).toHaveBeenCalledTimes(1)
+    expect(api.put).toHaveBeenCalledWith(
+      "/api/v1/me/legendary-event-plans/votanUthar/runs/2",
+      {
+        body: expect.objectContaining({
+          regularMissions: 1,
+          completedRegularMissions: [1],
+        }),
+      }
+    )
+  })
+
+  it("never lets Plan to complete drop below the ticked missions", async () => {
+    api.plan = plan({
+      runs: [
+        stored(2, { regularMissions: 5, completedRegularMissions: [1, 2, 3] }),
+      ],
+    })
+    await openDrawer()
+    const count = stepperIn(runBlock(2), "run-inputs-regular-count")
+
+    for (let press = 0; press < 3; press += 1) {
+      fireEvent.click(count.getByTestId("number-stepper-decrease"))
+    }
+
+    expect(
+      count.getByTestId("number-stepper-input").getAttribute("value")
+    ).toBe("3")
+    expect(count.getByTestId("number-stepper-decrease")).toBeDisabled()
+  })
+
   it("returns focus to the Inputs button when it closes", async () => {
     const drawer = await openDrawer()
 

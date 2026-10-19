@@ -10,7 +10,6 @@ import {
   CardTitle,
 } from "@workspace/ui/components/card"
 import { Skeleton } from "@workspace/ui/components/skeleton"
-import { cn } from "@workspace/ui/lib/utils"
 
 import type {
   LegendaryEvent,
@@ -20,9 +19,13 @@ import type {
 import { EntityIcon } from "@/shared/ui"
 import { useUnitName } from "@/shared/unit-name"
 
-import { tokenMarkIds } from "../lib/token-marks"
 import type { NextTokenEmpty, TokenPlanView } from "../lib/token-plan-view"
 import { useNextTokenShown } from "../model/use-next-token-shown"
+import {
+  MissionAlternativeView,
+  MissionsProgressed,
+} from "./next-token-missions"
+import { TokenMarkButtons } from "./token-mark-buttons"
 import { TokenObjectives } from "./token-objectives"
 
 export type MarkTokenHandler = (
@@ -89,12 +92,22 @@ export function NextTokenCard({
           <EmptyState empty={view.empty} onOpenTeams={onOpenTeams} />
         ) : null}
         {view.kind === "ready" && view.next ? (
-          <TokenView
-            event={event}
-            isMobile={isMobile}
-            onMarkToken={onMarkToken}
-            view={view}
-          />
+          <div className="flex flex-col gap-3">
+            <TokenView
+              event={event}
+              isMobile={isMobile}
+              onMarkToken={onMarkToken}
+              view={view}
+            />
+            {view.missions?.alternative ? (
+              <MissionAlternativeView
+                alternative={view.missions.alternative}
+                event={event}
+                isMobile={isMobile}
+                onMarkToken={view.upcoming === null ? onMarkToken : undefined}
+              />
+            ) : null}
+          </div>
         ) : null}
       </CardContent>
     </Card>
@@ -131,14 +144,6 @@ function TokenView({
           })
   const canMark =
     onMarkToken !== undefined && view.upcoming === null && token.playableNow
-  const mark = (status: LegendaryEventAnnotationStatus) =>
-    onMarkToken?.(
-      token.laneId,
-      token.battleIndex,
-      tokenMarkIds(token.clearedIds, status),
-      status
-    )
-  const labels = { team: token.teamName, lane, battle }
 
   return (
     <div
@@ -203,35 +208,18 @@ function TokenView({
         >
           {reasonLine}
         </p>
+        <MissionsProgressed
+          missions={view.missions?.progressed ?? []}
+          testId="next-token-progresses"
+        />
       </div>
-      {canMark ? (
-        <div
-          className={cn(
-            "flex gap-2",
-            isMobile ? "flex-col" : "shrink-0 flex-row"
-          )}
-        >
-          <Button
-            aria-label={t("tokenPlan.nextToken.actions.partlyLabel", labels)}
-            className={cn(isMobile && "h-11 w-full")}
-            data-testid="next-token-partly"
-            onClick={() => mark("maybeClear")}
-            type="button"
-            variant="outline"
-          >
-            {t("tokenPlan.nextToken.actions.partly")}
-          </Button>
-          <Button
-            aria-label={t("tokenPlan.nextToken.actions.couldNotLabel", labels)}
-            className={cn(isMobile && "h-11 w-full")}
-            data-testid="next-token-could-not"
-            onClick={() => mark("stopHere")}
-            type="button"
-            variant="outline"
-          >
-            {t("tokenPlan.nextToken.actions.couldNot")}
-          </Button>
-        </div>
+      {canMark && onMarkToken ? (
+        <TokenMarkButtons
+          isMobile={isMobile}
+          onMarkToken={onMarkToken}
+          testIdPrefix="next-token"
+          token={token}
+        />
       ) : null}
     </div>
   )

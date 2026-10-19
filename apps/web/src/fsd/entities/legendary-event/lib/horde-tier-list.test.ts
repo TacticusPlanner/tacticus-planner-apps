@@ -38,10 +38,10 @@ const tileNames = (row: { units: { unitId: string }[] }) =>
   row.units.map((tile) => nameOf(tile.unitId))
 
 describe("buildHordeTierList", () => {
-  it("reproduces tier S: 1.85, six tiles in multiplier order, all but Bellator overridden", () => {
+  it("reproduces tier S: 1.9, ten tiles in multiplier order, all but Maladus overridden", () => {
     const s = build().rows[0]!
     expect(s.tier).toBe("S")
-    expect(s.multiplier).toBe(1.85)
+    expect(s.multiplier).toBe(1.9)
     expect(
       s.units.map((tile) => [
         nameOf(tile.unitId),
@@ -50,16 +50,42 @@ describe("buildHordeTierList", () => {
       ])
     ).toEqual([
       ["Kariyan", 2, true],
-      ["Isabella", 1.95, true],
-      ["Sho'syl", 1.9, true],
-      ["Bellator", 1.85, false],
-      ["Aleph-Null", 1.8, true],
-      ["Tan Gi'da", 1.75, true],
+      ["Isabella", 1.98, true],
+      ["Nauseous", 1.96, true],
+      ["Aleph-Null", 1.94, true],
+      ["Re'vas", 1.92, true],
+      ["Maladus", 1.9, false],
+      ["Tyrant Guard", 1.88, true],
+      ["Tan Gi'da", 1.86, true],
+      ["Snotflogga", 1.83, true],
+      ["Jaeger", 1.81, true],
+    ])
+  })
+
+  it("lists tier D after C: Thutmose overridden at 1.05, then Certus at the tier's 1.0", () => {
+    const d = build().rows[4]!
+    expect(d.tier).toBe("D")
+    expect(d.multiplier).toBe(1)
+    expect(
+      d.units.map((tile) => [
+        nameOf(tile.unitId),
+        tile.multiplier,
+        tile.overridden,
+      ])
+    ).toEqual([
+      ["Thutmose", 1.05, true],
+      ["Certus", 1, false],
     ])
   })
 
   it("keeps the catalog tier order", () => {
-    expect(build().rows.map((row) => row.tier)).toEqual(["S", "A", "B", "C"])
+    expect(build().rows.map((row) => row.tier)).toEqual([
+      "S",
+      "A",
+      "B",
+      "C",
+      "D",
+    ])
   })
 
   it("uses the tier's multiplier for a character without one, with no override mark", () => {
@@ -85,8 +111,8 @@ describe("buildHordeTierList", () => {
 
   it("lists every other catalog character as untiered, by name", () => {
     const { untiered } = build()
-    // 21 of the catalog's characters are tiered (fixture: 118 characters).
-    expect(untiered).toHaveLength(legendaryEventCharacters.length - 21)
+    // 47 of the catalog's characters are tiered.
+    expect(untiered).toHaveLength(legendaryEventCharacters.length - 47)
     const sorted = [...untiered].sort((a, b) =>
       nameOf(a.unitId).localeCompare(nameOf(b.unitId), "en")
     )
@@ -102,13 +128,18 @@ describe("buildHordeTierList", () => {
 
   it("ignores Only owned while the roster is unknown", () => {
     const list = build({ onlyOwned: true }, null)
-    expect(list.rows[0]!.units).toHaveLength(6)
+    expect(list.rows[0]!.units).toHaveLength(10)
     expect(list.rows[0]!.units[0]!.owned).toBeUndefined()
   })
 
-  it("filters by alliance: Xenos leaves Sho'syl and Aleph-Null in S", () => {
+  it("filters by alliance: Xenos leaves Aleph-Null, Re'vas, Tyrant Guard and Snotflogga in S", () => {
     const list = build({ alliance: "Xenos" })
-    expect(tileNames(list.rows[0]!)).toEqual(["Sho'syl", "Aleph-Null"])
+    expect(tileNames(list.rows[0]!)).toEqual([
+      "Aleph-Null",
+      "Re'vas",
+      "Tyrant Guard",
+      "Snotflogga",
+    ])
   })
 
   it("filters by name", () => {

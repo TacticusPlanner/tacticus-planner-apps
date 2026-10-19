@@ -16,6 +16,7 @@ import {
 } from "@/entities/legendary-event"
 
 import type { PlannedToken } from "./token-plan"
+import { splitPlanByRun } from "./token-runs"
 import type { RunSupply, RunSupplyState } from "./token-supply"
 
 // Ported from V1 `LeRoundOutcomeForecastService.computeLeRoundForecasts` and the per-token
@@ -164,6 +165,13 @@ export function forecastRuns({
     )
   }
 
+  const tokensByRun = new Map(
+    splitPlanByRun(tokens.length, supply).sections.map((section) => [
+      section.run,
+      section.count,
+    ])
+  )
+
   const results = supply.map((runSupply): RunForecast => {
     const startPoints = points
     const startCurrency = currency
@@ -204,7 +212,7 @@ export function forecastRuns({
       // Synced currency can already cover a chest the game has not opened yet.
       openChests()
 
-      used = Math.min(runSupply.total, tokens.length - tokenIndex)
+      used = tokensByRun.get(runSupply.run) ?? 0
       for (let index = tokenIndex; index < tokenIndex + used; index++) {
         const before = points
         points += tokens[index]!.points
