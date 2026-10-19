@@ -13,6 +13,8 @@
     "raidsDescription": "Dépensez l'énergie du jour pour vos objectifs actifs par ordre de priorité.",
     "hse": "ÉÉA",
     "hseDescription": "Événement d'écran d'accueil : raidez là où l'événement en cours rapporte des points",
+    "hre": "ÉSH",
+    "hreDescription": "Événement de sortie de héros : suivez vos missions et raidez pour elles avec le moins d'énergie possible",
     "shops": "Boutiques",
     "shopsDescription": "Suivez les rotations et achats en boutique",
     "guild-raids": "Raids de guilde",
@@ -343,6 +345,38 @@
         "top": {
           "title": "Meilleurs emplacements",
           "content": "Les emplacements qui rapportent le plus de points d'événement par raid et par énergie, indépendamment de vos objectifs."
+        }
+      }
+    },
+    "hre": {
+      "steps": {
+        "header": {
+          "title": "L'événement",
+          "content": "Le héros de l'événement, son alliance et la fin de l'événement. Avant le début, l'onglet présente un aperçu du prochain événement."
+        },
+        "tracker": {
+          "title": "Vos missions",
+          "content": "Choisissez la mission en cours et saisissez la progression de ses deux objectifs. La progression est enregistrée dans ce navigateur, pour cet événement uniquement."
+        },
+        "allMissions": {
+          "title": "Toutes les missions",
+          "content": "Ouvrez la liste complète des missions. Chacune se déplie sur ses conseils."
+        },
+        "raids": {
+          "title": "Raids de campagne",
+          "content": "Où raider aujourd'hui pour l'objectif de campagne de la mission en cours, l'énergie la moins chère d'abord, après les raids déjà prévus dans le plan du jour. Le résumé dessous compte les batailles de campagne restantes sur tout l'événement."
+        },
+        "team": {
+          "title": "Équipe de mission",
+          "content": "Une équipe tirée de votre effectif pour les missions qui limitent la composition ou demandent le héros de l'événement."
+        },
+        "tokens": {
+          "title": "Jetons nécessaires",
+          "content": "Les combats d'Arène, de raid de guilde, d'Onslaught et de Course au pillage dont les missions restantes ont besoin, face à vos jetons actuels."
+        },
+        "pace": {
+          "title": "Rythme de l'événement",
+          "content": "Saisissez vos points d'événement et votre rang pour estimer la monnaie, le niveau de coffre et les fragments, et choisissez un objectif pour voir les points par jour nécessaires."
         }
       }
     }

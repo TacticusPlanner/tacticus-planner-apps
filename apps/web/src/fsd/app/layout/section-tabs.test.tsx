@@ -112,7 +112,7 @@ describe("SectionTabs", () => {
     )
   })
 
-  it("shows the four Dailies tabs in order: Raids, HSE, Shops, Guild Raids", () => {
+  it("shows the five Dailies tabs in order: Raids, HSE, HRE, Shops, Guild Raids", () => {
     renderTabs(section("/dailies"), "/dailies/raids")
 
     expect(
@@ -120,6 +120,7 @@ describe("SectionTabs", () => {
     ).toEqual([
       "section-tab-dailies-raids",
       "section-tab-dailies-hse",
+      "section-tab-dailies-hre",
       "section-tab-dailies-shops",
       "section-tab-dailies-guild-raids",
     ])
