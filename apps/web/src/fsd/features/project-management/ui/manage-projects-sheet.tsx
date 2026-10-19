@@ -13,8 +13,10 @@ import {
 } from "@workspace/ui/components/sheet"
 
 import { isProjectNameValid, type ProjectSummary } from "@/entities/project"
+import { useEventTargetOptions } from "../model/event-target-options"
 import type { useProjectActions } from "../model/use-project-actions"
 import { ProjectColorPicker } from ".//project-color-picker"
+import { ProjectTargetField } from "./project-target-field"
 
 /**
  * The create/edit form for a project (project-management spec: "Creating and editing a project
@@ -96,6 +98,10 @@ function ProjectForm({
   const [name, setName] = useState(project?.name ?? "")
   const [description, setDescription] = useState(project?.description ?? "")
   const [color, setColor] = useState(project?.color ?? "")
+  const [targetEventId, setTargetEventId] = useState(
+    project?.target?.eventId ?? null
+  )
+  const targetOptions = useEventTargetOptions()
 
   const submit = (event: FormEvent) => {
     event.preventDefault()
@@ -103,6 +109,10 @@ function ProjectForm({
     const trimmedName = name.trim()
     const trimmedDescription = description.trim() || null
     const trimmedColor = color.trim() || null
+    const target =
+      targetEventId === null || project?.isDefault
+        ? null
+        : { kind: "legendaryEvent" as const, eventId: targetEventId }
 
     if (project) {
       void actions
@@ -111,12 +121,13 @@ function ProjectForm({
           name: trimmedName,
           description: trimmedDescription,
           color: trimmedColor,
+          target,
         })
         .then((ok) => ok && onSaved(null))
       return
     }
     void actions
-      .create(trimmedName, trimmedDescription, trimmedColor)
+      .create(trimmedName, trimmedDescription, trimmedColor, target)
       .then((created) => created && onSaved(created))
   }
 
@@ -160,6 +171,13 @@ function ProjectForm({
             onChange={(event) => setColor(event.target.value)}
           />
         </Field>
+        {project?.isDefault ? null : (
+          <ProjectTargetField
+            onChange={setTargetEventId}
+            options={targetOptions}
+            value={targetEventId}
+          />
+        )}
       </form>
 
       <SheetFooter>

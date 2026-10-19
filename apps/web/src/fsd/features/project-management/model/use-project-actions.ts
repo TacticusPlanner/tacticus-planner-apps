@@ -9,12 +9,13 @@ import {
   updateProject,
   projectQueries,
   type ProjectSummary,
+  type ProjectTarget,
 } from "@/entities/project"
 import { goalQueries } from "@/entities/goal"
 import { ApiError } from "@/shared/api"
 
 /**
- * Project-level mutations: create and save (name/description/color/status). Reordering goals is a
+ * Project-level mutations: create and save (name/description/color/status/target). Reordering goals is a
  * move on the account-wide order and lives in `features/goal-order`; there is no bulk pause/resume
  * (project-management: "No bulk pause/resume on Projects").
  */
@@ -67,12 +68,13 @@ export function useProjectActions(_onChanged?: () => void) {
   const create = async (
     name: string,
     description: string | null,
-    color: string | null
+    color: string | null,
+    target: ProjectTarget | null = null
   ) => {
     if (!isAuthenticated) return null
     let created: ProjectSummary | null = null
     const ok = await run(async () => {
-      created = await createProject({ name, description, color })
+      created = await createProject({ name, description, color, target })
       return created
     })
     if (ok) toast.success(t("goals.toasts.projectCreated"))
@@ -81,12 +83,20 @@ export function useProjectActions(_onChanged?: () => void) {
 
   const save = async (
     project: ProjectSummary,
-    changes: Pick<ProjectSummary, "name" | "description" | "color" | "status">
+    changes: Pick<
+      ProjectSummary,
+      "name" | "description" | "color" | "status" | "target"
+    >
   ) => {
     if (!isAuthenticated) return false
     const ok = await run(() =>
       updateProject(project.projectId, {
-        ...changes,
+        name: changes.name,
+        description: changes.description,
+        color: changes.color,
+        status: changes.status,
+        // The server clears an absent target, so archive and restore resend the current one.
+        target: changes.target ?? null,
         revision: project.revision,
       })
     )

@@ -43,6 +43,7 @@ vi.mock("react-i18next", () => ({
   useTranslation: () => ({
     t: (key: string, opts?: { defaultValue?: string }) =>
       opts?.defaultValue ?? key,
+    i18n: { language: "en" },
   }),
 }))
 
@@ -133,6 +134,7 @@ const characters = new Map([
 ])
 
 vi.mock("@workspace/game-catalog/queries", () => ({
+  getLegendaryEvents: () => Promise.resolve([]),
   getCharactersMap: () => characters,
   getMowsMap: () => new Map(),
   getUpgrades: () => [],

@@ -19,6 +19,7 @@ import { Skeleton } from "@workspace/ui/components/skeleton"
 import { formatEstimateDate } from "@/shared/lib"
 import { ProjectColorDot, type ProjectSummary } from "@/entities/project"
 import type { useProjectActions } from "../model/use-project-actions"
+import { ProjectTargetChip } from "./project-target-chip"
 
 type Props = {
   project: ProjectSummary
@@ -137,6 +138,12 @@ export function ProjectRow({
         ) : (
           <div className="flex min-w-0 items-start gap-3">{projectContent}</div>
         )}
+        {/* Outside the select button: a link cannot sit inside a button. */}
+        {project.target ? (
+          <div className="mt-2 ml-7">
+            <ProjectTargetChip target={project.target} />
+          </div>
+        ) : null}
         {summary?.status === "error" ? (
           <button
             className="mt-2 ml-7 text-sm text-destructive underline"

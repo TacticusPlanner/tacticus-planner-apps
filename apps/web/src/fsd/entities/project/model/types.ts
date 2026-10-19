@@ -1,3 +1,6 @@
+/** What a project relates to (project-event-target); `eventId` is a catalog `lres` id. */
+export type ProjectTarget = { kind: "legendaryEvent"; eventId: string }
+
 export type ProjectSummary = {
   projectId: string
   name: string
@@ -5,6 +8,8 @@ export type ProjectSummary = {
   color: string | null
   status: "Active" | "Paused" | "Archived"
   isDefault: boolean
+  /** Null or absent when the project relates to nothing. */
+  target?: ProjectTarget | null
   revision: number
   createdAt: string
   updatedAt: string
@@ -14,6 +19,7 @@ export type CreateProjectRequest = {
   name: string
   description?: string | null
   color?: string | null
+  target?: ProjectTarget | null
 }
 
 export type UpdateProjectRequest = {
@@ -22,6 +28,8 @@ export type UpdateProjectRequest = {
   color: string | null
   status: "Active" | "Paused" | "Archived"
   revision: number
+  /** Absent or null clears the target; archiving and restoring must resend it. */
+  target: ProjectTarget | null
 }
 
 /** A membership-replacement request (`updateProjectGoals`) sends only the goal id — membership never

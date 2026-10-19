@@ -30,7 +30,7 @@ describe("QuickCreateProjectSheet", () => {
     })
     fireEvent.submit(document.querySelector("#manage-project-form")!)
 
-    expect(actions.create).toHaveBeenCalledWith("Plan", null, null)
+    expect(actions.create).toHaveBeenCalledWith("Plan", null, null, null)
     await vi.waitFor(() => expect(onOpenChange).toHaveBeenCalledWith(false))
   })
 

@@ -59,7 +59,8 @@ describe("ManageProjectsSheet", () => {
     expect(actions.create).toHaveBeenCalledWith(
       "New plan",
       "Description",
-      "#abcdef"
+      "#abcdef",
+      null
     )
     await vi.waitFor(() => expect(onOpenChange).toHaveBeenCalledWith(false))
   })
