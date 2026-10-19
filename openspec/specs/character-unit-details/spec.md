@@ -342,6 +342,12 @@ that can equip it ("Also equippable by …"). Characters without a relic SHALL s
 naming the character ("<name> has no relic.") with no stepper or chart; on mobile its section starts
 collapsed with the summary "None".
 
+Assumptions:
+
+- All 35 catalog relics have rules text (see the `ability-rules-text` capability); the missing-text state
+  stays for a relic a later catalog adds before its text exists.
+- Relic rules-text values are not scaled by rarity unless V1 marks them as rarity-affected.
+
 #### Scenario: Relic slot is marked
 
 - **WHEN** a visitor opens Maugan Ra, whose relic Maugetar is a Crit relic
@@ -375,18 +381,40 @@ collapsed with the summary "None".
 - **THEN** the Relic card shows "<name> has no relic.", e.g. "Lhykhis has no relic."
 - **AND** on mobile the Relic section is collapsed with the summary "None"
 
+#### Scenario: Relic rules text at a level
+
+- **GIVEN** Hollan, who can equip Amulet of the Voidwyrm (ability `AmuletOfTheVoidwyrm`,
+  `critDmgReduction` = 390, 411, 432 … 579 for levels 1–10, not rarity-affected)
+- **WHEN** a visitor opens Hollan's Details tab with the Relic stepper at level 1
+- **THEN** the panel reads "The relic bearer takes -390 Crit Damage for each friendly adjacent Summon or
+  Decoy.", the next-level line shows 411, and the chart plots `critDmgReduction` over levels 1–10
+- **AND** stepping to level 2 shows -411 and a next-level value of 432
+
+#### Scenario: Relic with no source text
+
+- **GIVEN** a relic whose ability has no entry in the rules-text namespace
+- **WHEN** a visitor opens a character that can equip it
+- **THEN** the Relic panel shows the relic's icon and name with the missing-text note, no stepper and no chart
+
 ### Requirement: Mythic quests
 
 For a character with mythic quest data, the Details tab SHALL show a Mythic quests card listing its
-quests in order (up to five). Each quest SHALL show its number, the task text with the task's values
-filled in (character name, amounts, trait and damage type names), and its rewards as chips with icon,
-quantity and name (mythic shards, ascension orbs, ability badges, XP books, gold, equipment). On
-mobile the card is a collapsible section whose header shows the quest count. A character without
-quest data SHALL have no Mythic quests card.
+quests in order (up to five). Quest data (tasks, targets, parameters, rewards) SHALL come from the game
+catalog's `mythic-quests` dataset; task text SHALL come from the `mythicQuestTasks` game-text namespace by the
+task's `locaKey`. Each quest SHALL show its number, the task text with the task's values filled in (character
+name, amounts, trait and damage type names), and its rewards as chips with icon, quantity and name (mythic
+shards, ascension orbs, ability badges, XP books, gold, equipment), read from the dataset's structured reward
+records. On mobile the card is a collapsible section whose header shows the quest count. A character without
+quest data SHALL have no Mythic quests card: no record for the character in the dataset, or the dataset absent
+from the client's catalog (a client synced against an API without it), both count as no quest data. While the
+catalog loads, and when it fails to load, the page SHALL show its existing loading and load-failure states; the
+card adds none of its own. A task whose `locaKey` has no template SHALL show the quest's number and rewards
+without task text rather than a raw key.
 
 Assumptions:
 
-- Quest data and task wording are V1's (117 characters), in English; other languages show English.
+- Quest data is V1's (117 characters), served by the catalog.
+- Task wording is V1's, in English only; other languages show English (no de/es/fr source exists).
 
 #### Scenario: Character with quests
 
@@ -397,8 +425,32 @@ Assumptions:
 
 #### Scenario: Character without quest data
 
-- **WHEN** a visitor opens a character V1's quest data doesn't cover (for example Weirdboy)
+- **WHEN** a visitor opens a character the dataset has no record for (for example Weirdboy)
 - **THEN** no Mythic quests card is shown
+
+#### Scenario: Dataset not in the client's catalog
+
+- **GIVEN** a client whose synced catalog has no `mythic-quests` dataset
+- **WHEN** a visitor opens Abaddon's unit page
+- **THEN** no Mythic quests card is shown and the rest of the page renders normally
+
+#### Scenario: Singular task text keeps "in one battle"
+
+- **WHEN** a visitor opens Calgar's unit page
+- **THEN** quest 4 reads "Defeat 1 enemy that has the Immune trait with Calgar in one battle"
+
+#### Scenario: Lucius's Armour of Shrieking Souls task names the hero
+
+- **WHEN** a visitor opens Lucius's unit page
+- **THEN** quest 1's task text names Lucius once and the Armour of Shrieking Souls effect once, and ends with
+  "in one battle"
+
+#### Scenario: German falls back to English task text
+
+- **GIVEN** the language is German
+- **WHEN** a visitor opens Abaddon's unit page
+- **THEN** quest 1's task text is the English template with Abaddon's values, and the card's own labels and
+  reward names are German
 
 ### Requirement: Rank-up materials tab
 
@@ -478,8 +530,10 @@ The unit page SHALL show the unit's **power** (the `character-combat-power` esti
 with a muted line saying what it counts ("Includes your equipped items" when owned items count,
 "Without equipment" otherwise). It SHALL update as soon as any of those inputs changes and SHALL NOT be
 stored or put in the URL. While the `unit-power` dataset is loading it SHALL show a placeholder;
-when it failed to load or has no entry for the unit it SHALL show "—" with the text "Power data
-unavailable", and the rest of the page SHALL be unaffected. Desktop and mobile show it in the same
+when it is absent, failed to load or has no entry for the unit, the header SHALL NOT show power at
+all. At a glance and Stats by rank, which come from the same dataset (see `unit-power`, "Character
+stats come from the power calculation"), SHALL then show "—" and "Stats data unavailable"; the rest of
+the page SHALL be unaffected. Desktop and mobile show it in the same
 place in the header, so the existing header tour step covers it.
 
 #### Scenario: Owned unit at Your unit
@@ -510,6 +564,7 @@ place in the header, so the existing header tour step covers it.
 
 #### Scenario: Power data unavailable
 
-- **GIVEN** the `unit-power` dataset failed to load
+- **GIVEN** the `unit-power` dataset is absent or failed to load
 - **WHEN** a unit page renders
-- **THEN** the header power shows "—" and "Power data unavailable", and every other section renders as usual
+- **THEN** the header has no Power figure, At a glance shows "—" for Health, Damage and Armour with
+  "Stats data unavailable", and every other section renders as usual
