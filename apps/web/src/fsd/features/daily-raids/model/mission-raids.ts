@@ -61,7 +61,7 @@ export type MissionRaidPlan = {
    * use first, since each of these raids replaces one of `rows` for less energy. */
   noDropRows: MissionRaidRow[]
   /** Every raidable node (unlock state and Raids Filters applied, the lightning restriction not),
-   * cheapest first, for the event-bounded campaign outlook. */
+   * for the event-bounded campaign outlook, which sorts them itself. */
   outlookNodes: Pick<Battle, "energyCost" | "dailyAttempts">[]
   /** The Planning Settings daily energy, for the outlook. */
   dailyEnergy: number
@@ -163,7 +163,6 @@ export function planMissionRaids(
   // restriction (but keeps unlock state and the Raids Filters).
   const outlookNodes = input.battles
     .filter((battle) => battle.energyCost > 0 && input.passesFilter(battle.id))
-    .sort((a, b) => a.energyCost - b.energyCost)
     .map(({ energyCost, dailyAttempts }) => ({ energyCost, dailyAttempts }))
 
   const sort = compareCandidates(input.goalNodesByBattle)

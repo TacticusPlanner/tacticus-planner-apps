@@ -217,7 +217,18 @@ describe("planMissionRaids", () => {
     expect(planMissionRaids(base({ battles: [] })).empty).toBe("no-candidates")
   })
 
-  it("hands the outlook every raidable node, cheapest first", () => {
+  it("keeps the empty reason to the nodes that drop something", () => {
+    const onlyNoDrop = planMissionRaids(base({ battles: noDrop }))
+    expect(onlyNoDrop.empty).toBe("no-candidates")
+    expect(onlyNoDrop.noDropRows).toHaveLength(9)
+    const dropsFiltered = planMissionRaids(
+      base({ passesFilter: (battleId) => battleId < "I15" })
+    )
+    expect(dropsFiltered.empty).toBe("filtered")
+    expect(dropsFiltered.noDropRows).toHaveLength(9)
+  })
+
+  it("hands the outlook every raidable node", () => {
     const plan = planMissionRaids(base())
     expect(plan.outlookNodes).toHaveLength(24)
     expect(plan.outlookNodes[0]).toEqual({ energyCost: 3, dailyAttempts: 3 })

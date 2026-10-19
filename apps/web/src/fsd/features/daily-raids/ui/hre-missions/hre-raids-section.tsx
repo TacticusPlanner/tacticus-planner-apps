@@ -18,7 +18,7 @@ import {
   type RaidRowsView,
 } from "./hre-raids-extras"
 
-/** With no open objective the plan still runs, for the summary's cheapest cost only. */
+/** With no open objective the plan still runs, for the outlook nodes and daily energy only. */
 const SUMMARY_ONLY: MissionRaidsRequest = { battlesToGo: 0, eventOnly: false }
 
 type HreRaidsRequest = MissionRaidsRequest & {
