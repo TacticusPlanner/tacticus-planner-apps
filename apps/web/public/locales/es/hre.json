@@ -123,8 +123,8 @@
       "note": "Cuestan 3 de energía cada una, pero no sueltan nada y dan poco oro. Cada incursión aquí sustituye a una de arriba."
     },
     "titleBattles": "Batallas para {{mission}}",
-    "noteBattles": "Los usos de habilidades solo cuentan en batallas que juegas, así que juega a mano estos nodos de {{slots}} huecos con un equipo completo de {{alliance}}. Primero los más baratos, como en las incursiones.",
-    "noteAlliance": "Gánalas con un equipo solo de {{alliance}}."
+    "noteBattles": "Los usos de habilidades solo cuentan en batallas que juegas, así que juega a mano estos nodos de {{slots}} huecos con un equipo completo de {{alliance}}. Los usos en Carreras de Saqueo y otros modos también cuentan, así que actualiza tu progreso después. Primero los más baratos, como en las incursiones.",
+    "noteLineupBattles": "Las incursiones no tienen alineación, así que no cuentan: gana estas a mano con un equipo solo de {{alliance}}. Las victorias en la Arena con ese equipo también cuentan. Primero los más baratos, como en las incursiones."
   },
   "tokens": {
     "title": "Fichas necesarias",
@@ -205,6 +205,7 @@
     "psychic": "Las unidades con daño psíquico van primero, para el objetivo de daño psíquico.",
     "reserve_one": "Guarda {{count}} ficha de {{mode}} para {{mission}}.",
     "reserve_other": "Guarda {{count}} fichas de {{mode}} para {{mission}}.",
-    "reservePlay": "Con {{have}} ahora, juega hasta {{play}}."
+    "reservePlay": "Con {{have}} ahora, juega hasta {{play}}.",
+    "rangedTrackFew": "Tus {{size}} unidades a distancia de {{alliance}}: menos de 5, así que no hay reservas."
   }
 }

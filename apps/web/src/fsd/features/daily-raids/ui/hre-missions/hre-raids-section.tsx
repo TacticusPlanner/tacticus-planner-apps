@@ -24,7 +24,7 @@ const SUMMARY_ONLY: MissionRaidsRequest = { battlesToGo: 0, eventOnly: false }
 type HreRaidsRequest = MissionRaidsRequest & {
   /** "Mission 5", for the title. */
   missionLabel: string
-  /** "battles": nodes to fight by hand (mission 7's alliance ability uses), not raids. */
+  /** "battles": nodes to fight by hand (all-alliance wins, alliance ability uses), not raids. */
   kind: "raids" | "battles"
   /** The localized alliance an all-alliance team must use, when the objective asks for one. */
   allianceTeam: string | null
@@ -98,16 +98,17 @@ export function HreRaidsSection({
             data-testid="hre-raids-note"
           >
             {request.kind === "battles"
-              ? t("raids.noteBattles", {
-                  slots: request.slots,
-                  alliance: request.allianceTeam ?? "",
-                })
+              ? request.slots
+                ? t("raids.noteBattles", {
+                    slots: request.slots,
+                    alliance: request.allianceTeam ?? "",
+                  })
+                : t("raids.noteLineupBattles", {
+                    alliance: request.allianceTeam ?? "",
+                  })
               : request.eventOnly
                 ? t("raids.noteLightning")
                 : t("raids.note")}
-            {request.kind === "raids" && request.allianceTeam
-              ? ` ${t("raids.noteAlliance", { alliance: request.allianceTeam })}`
-              : null}
             {` ${t("raids.budget", { energy: plan.energyBudget })}`}
           </p>
           {plan.rows.length > 0 ? (

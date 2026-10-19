@@ -178,14 +178,17 @@ describe("objectives", () => {
     expect(selectRaidObjective(progress({ mission: 4 }))).toBeNull()
   })
 
-  it("serves mission 10's all-alliance wins as raids", () => {
+  it("serves mission 10's all-alliance wins as battles fought by hand", () => {
     expect(
       selectRaidObjective(progress({ mission: 10, progress: [0, 5] }))
     ).toMatchObject({
       battlesToGo: 10,
-      kind: "raids",
+      kind: "battles",
       allianceTeam: true,
     })
+    expect(
+      selectRaidObjective(progress({ mission: 10, progress: [0, 5] }))?.slots
+    ).toBeUndefined()
   })
 
   it("serves mission 7's alliance ability uses as 2 battles on 5-slot nodes", () => {

@@ -123,8 +123,8 @@
       "note": "Elles coûtent 3 d'énergie chacune mais ne donnent rien et peu d'or. Chaque raid ici remplace un raid ci-dessus."
     },
     "titleBattles": "Combats pour {{mission}}",
-    "noteBattles": "Les utilisations de capacités ne comptent que dans les combats joués, donc jouez ces nœuds à {{slots}} emplacements à la main avec une équipe {{alliance}} complète. Les moins chers d'abord, comme pour les raids.",
-    "noteAlliance": "Gagnez-les avec une équipe entièrement {{alliance}}."
+    "noteBattles": "Les utilisations de capacités ne comptent que dans les combats joués, donc jouez ces nœuds à {{slots}} emplacements à la main avec une équipe {{alliance}} complète. Les utilisations en Courses au pillage et dans les autres modes comptent aussi, donc mettez votre progression à jour ensuite. Les moins chers d'abord, comme pour les raids.",
+    "noteLineupBattles": "Les raids n'ont pas de composition, donc ils ne comptent pas : gagnez ces combats à la main avec une équipe entièrement {{alliance}}. Les victoires d'Arène avec cette équipe comptent aussi. Les moins chers d'abord, comme pour les raids."
   },
   "tokens": {
     "title": "Jetons nécessaires",
@@ -205,6 +205,7 @@
     "psychic": "Les unités à dégâts psychiques passent d'abord, pour l'objectif de dégâts psychiques.",
     "reserve_one": "Gardez {{count}} jeton {{mode}} pour {{mission}}.",
     "reserve_other": "Gardez {{count}} jetons {{mode}} pour {{mission}}.",
-    "reservePlay": "Avec {{have}} maintenant, jouez jusqu'à {{play}}."
+    "reservePlay": "Avec {{have}} maintenant, jouez jusqu'à {{play}}.",
+    "rangedTrackFew": "Vos {{size}} unités à distance {{alliance}} : moins de 5, donc aucune réserve."
   }
 }

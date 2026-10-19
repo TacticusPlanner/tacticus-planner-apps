@@ -123,8 +123,8 @@
       "note": "Sie kosten je 3 Energie, droppen aber nichts und geben wenig Gold. Jeder Raid hier ersetzt einen oben."
     },
     "titleBattles": "Kämpfe für {{mission}}",
-    "noteBattles": "Fähigkeitseinsätze zählen nur in selbst geführten Kämpfen, also kämpfe diese Knoten mit {{slots}} Plätzen von Hand mit einem vollen {{alliance}}-Team. Günstigste zuerst, wie bei Raids.",
-    "noteAlliance": "Gewinne sie mit einem reinen {{alliance}}-Team."
+    "noteBattles": "Fähigkeitseinsätze zählen nur in selbst geführten Kämpfen, also kämpfe diese Knoten mit {{slots}} Plätzen von Hand mit einem vollen {{alliance}}-Team. Einsätze in Plünderungsläufen und anderen Modi zählen auch, also aktualisiere danach deinen Fortschritt. Günstigste zuerst, wie bei Raids.",
+    "noteLineupBattles": "Raids haben keine Aufstellung und zählen daher nicht: gewinne diese von Hand mit einem reinen {{alliance}}-Team. Arena-Siege mit diesem Team zählen auch. Günstigste zuerst, wie bei Raids."
   },
   "tokens": {
     "title": "Benötigte Marken",
@@ -205,6 +205,7 @@
     "psychic": "Einheiten mit psychischem Schaden kommen zuerst, für das Ziel mit psychischem Schaden.",
     "reserve_one": "Behalte {{count}} {{mode}}-Token für {{mission}}.",
     "reserve_other": "Behalte {{count}} {{mode}}-Token für {{mission}}.",
-    "reservePlay": "Mit {{have}} jetzt spiele bis zu {{play}}."
+    "reservePlay": "Mit {{have}} jetzt spiele bis zu {{play}}.",
+    "rangedTrackFew": "Deine {{size}} {{alliance}}-Fernkampf-Einheiten: weniger als 5, also keine Ersatzeinheiten."
   }
 }

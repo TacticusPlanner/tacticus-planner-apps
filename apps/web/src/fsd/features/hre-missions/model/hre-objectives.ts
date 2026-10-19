@@ -35,8 +35,8 @@ const FULL_TEAM_SLOTS = 5
 /**
  * The objective the raid suggestions fill. A lightning-victory objective comes first, because its
  * event-campaign raids also count as campaign wins; then the campaign objective; then an
- * all-alliance lineup's wins (raids); then the alliance ability uses, as battles fought by hand on
- * 5-slot nodes.
+ * all-alliance lineup's wins, as battles fought by hand (raids have no lineup, so they cannot count);
+ * then the alliance ability uses, as battles fought by hand on 5-slot nodes.
  */
 export function selectRaidObjective(
   state: HreProgress
@@ -73,7 +73,7 @@ export function selectRaidObjective(
       objective: lineup.objective,
       battlesToGo: lineup.battlesToGo,
       eventOnly: false,
-      kind: "raids",
+      kind: "battles",
       allianceTeam: true,
     }
   }
