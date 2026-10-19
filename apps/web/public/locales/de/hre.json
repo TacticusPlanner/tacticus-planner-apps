@@ -121,7 +121,10 @@
     "noDrop": {
       "title": "Oder die Indomitus-Schlachten ohne Drops (6 bis 14)",
       "note": "Sie kosten je 3 Energie, droppen aber nichts und geben wenig Gold. Jeder Raid hier ersetzt einen oben."
-    }
+    },
+    "titleBattles": "Kämpfe für {{mission}}",
+    "noteBattles": "Fähigkeitseinsätze zählen nur in selbst geführten Kämpfen, also kämpfe diese Knoten mit {{slots}} Plätzen von Hand mit einem vollen {{alliance}}-Team. Günstigste zuerst, wie bei Raids.",
+    "noteAlliance": "Gewinne sie mit einem reinen {{alliance}}-Team."
   },
   "tokens": {
     "title": "Benötigte Marken",
@@ -193,6 +196,15 @@
     "featured": "{{hero}} führt an, mit deinen stärksten Einheiten.",
     "fewAlliance": "Nur {{count}} {{alliance}}-Einheiten: Das Spiel verlangt ein volles {{alliance}}-Team nur, wenn jeder Platz belegt ist.",
     "lockedHero": "Schalte zuerst {{hero}} frei, um diesen Helden in dieser Mission einzusetzen.",
-    "tooFew": "Du besitzt zu wenige Einheiten für ein Team."
+    "tooFew": "Du besitzt zu wenige Einheiten für ein Team.",
+    "titleMode": "{{mode}}-Team",
+    "ranged": "Deine 5 stärksten Fernkampf-Einheiten.",
+    "rangedTrack": "Deine {{size}} stärksten {{alliance}}-Fernkampf-Einheiten: 5 starten, der Rest ersetzt gefallene.",
+    "supportIncluded": "Dein stärkster Heiler oder Mechaniker ist dabei, für das Heilungsziel.",
+    "supportMissing": "Du besitzt keinen Heiler oder Mechaniker für das Heilungsziel.",
+    "psychic": "Einheiten mit psychischem Schaden kommen zuerst, für das Ziel mit psychischem Schaden.",
+    "reserve_one": "Behalte {{count}} {{mode}}-Token für {{mission}}.",
+    "reserve_other": "Behalte {{count}} {{mode}}-Token für {{mission}}.",
+    "reservePlay": "Mit {{have}} jetzt spiele bis zu {{play}}."
   }
 }

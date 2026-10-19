@@ -101,4 +101,19 @@ describe("planHookMissionRaids", () => {
     })
     expect(result.empty).toBe("filtered")
   })
+
+  it("keeps only nodes with the requested deployment slots", () => {
+    const result = plan({
+      request: { battlesToGo: 2, eventOnly: false, slots: 5 },
+      filterBattlesById: new Map([
+        ["I06", filterBattle(null)],
+        ["I15", { ...filterBattle("Standard"), slots: 4 }],
+      ]),
+      raidsFilters: { ...emptyRaidsFilters, slots: [4] },
+    })
+    expect(result.rows).toEqual([])
+    expect(result.noDropRows).toEqual([
+      expect.objectContaining({ battleId: "I06", raids: 2 }),
+    ])
+  })
 })

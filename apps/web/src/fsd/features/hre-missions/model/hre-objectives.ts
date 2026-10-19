@@ -11,18 +11,32 @@ const CAMPAIGN_KINDS: ReadonlySet<HreObjectiveKind> = new Set([
   "campaignRaids",
 ])
 
-/** The current mission's open campaign or lightning objective the raid list serves, if any. */
+/** The current mission's open objective the raid list serves, if any. */
 export type HreRaidObjective = {
   missionNumber: number
   objective: HreObjective
   battlesToGo: number
   /** Lightning victories count event-campaign raids only. */
   eventOnly: boolean
+  /** "battles" lists nodes to battle by hand (abilities only count in a fought battle). */
+  kind: "raids" | "battles"
+  /** Only nodes with this many deployment slots, when set. */
+  slots?: number
+  /** The objective needs an all-alliance team (the featured hero's alliance). */
+  allianceTeam: boolean
 }
+
+/** Ability uses a fought battle with five units yields, for `useAbilitiesAlliance` (assumption: two
+ * each). Mission 7's 20 uses are then two battles, as Severyn suggested. */
+const ABILITY_USES_PER_BATTLE = 10
+/** A full all-alliance team, so every slot's abilities count. */
+const FULL_TEAM_SLOTS = 5
 
 /**
  * The objective the raid suggestions fill. A lightning-victory objective comes first, because its
- * event-campaign raids also count as campaign wins; otherwise the campaign objective.
+ * event-campaign raids also count as campaign wins; then the campaign objective; then an
+ * all-alliance lineup's wins (raids); then the alliance ability uses, as battles fought by hand on
+ * 5-slot nodes.
  */
 export function selectRaidObjective(
   state: HreProgress
@@ -39,13 +53,42 @@ export function selectRaidObjective(
     (item) => item.objective.kind === "lightningVictories"
   )
   const campaign = open.find((item) => CAMPAIGN_KINDS.has(item.objective.kind))
-  const pick = lightning ?? campaign
-  if (!pick) return null
+  const raidPick = lightning ?? campaign
+  if (raidPick) {
+    return {
+      missionNumber: mission.number,
+      objective: raidPick.objective,
+      battlesToGo: raidPick.battlesToGo,
+      eventOnly: raidPick === lightning,
+      kind: "raids",
+      allianceTeam: false,
+    }
+  }
+  const lineup = open.find(
+    (item) => item.objective.kind === "winWithAllianceLineup"
+  )
+  if (lineup) {
+    return {
+      missionNumber: mission.number,
+      objective: lineup.objective,
+      battlesToGo: lineup.battlesToGo,
+      eventOnly: false,
+      kind: "raids",
+      allianceTeam: true,
+    }
+  }
+  const abilities = open.find(
+    (item) => item.objective.kind === "useAbilitiesAlliance"
+  )
+  if (!abilities) return null
   return {
     missionNumber: mission.number,
-    objective: pick.objective,
-    battlesToGo: pick.battlesToGo,
-    eventOnly: pick === lightning,
+    objective: abilities.objective,
+    battlesToGo: Math.ceil(abilities.battlesToGo / ABILITY_USES_PER_BATTLE),
+    eventOnly: false,
+    kind: "battles",
+    slots: FULL_TEAM_SLOTS,
+    allianceTeam: true,
   }
 }
 
@@ -147,29 +190,4 @@ export function tokenNeedRows(
       short: have !== null && needs[mode] > have,
     }
   })
-}
-
-/** The lineup an objective restricts or asks for (hre-mission-teams). */
-export type HreTeamRule = "alliance" | "summonFree" | "featured"
-
-const TEAM_RULES: Partial<Record<HreObjectiveKind, HreTeamRule>> = {
-  winWithAllianceLineup: "alliance",
-  winWithoutSummons: "summonFree",
-  useAbilitiesFeatured: "featured",
-  featuredDamage: "featured",
-}
-
-/** The current mission's open objective that gets a team suggestion, with its rule, if any. */
-export function selectTeamObjective(
-  state: HreProgress
-): { objective: HreObjective; rule: HreTeamRule } | null {
-  if (state.mission >= HRE_ALL_DONE) return null
-  const objectives = hreMission(state.mission).objectives
-  for (const [index, objective] of objectives.entries()) {
-    const rule = TEAM_RULES[objective.kind]
-    if (rule && state.progress[index]! < objective.target) {
-      return { objective, rule }
-    }
-  }
-  return null
 }

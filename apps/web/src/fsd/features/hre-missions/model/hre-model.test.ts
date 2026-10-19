@@ -5,10 +5,10 @@ import { HRE_MISSIONS, hreMission } from "./hre-missions"
 import {
   remainingCampaignBattles,
   selectRaidObjective,
-  selectTeamObjective,
   tokenNeedRows,
   tokenNeeds,
 } from "./hre-objectives"
+import { selectTeamPlan } from "./hre-team-plan"
 import { bracketForRank, bracketRange, projectHrePace } from "./hre-pace"
 import {
   advanceMission,
@@ -178,6 +178,29 @@ describe("objectives", () => {
     expect(selectRaidObjective(progress({ mission: 4 }))).toBeNull()
   })
 
+  it("serves mission 10's all-alliance wins as raids", () => {
+    expect(
+      selectRaidObjective(progress({ mission: 10, progress: [0, 5] }))
+    ).toMatchObject({
+      battlesToGo: 10,
+      kind: "raids",
+      allianceTeam: true,
+    })
+  })
+
+  it("serves mission 7's alliance ability uses as 2 battles on 5-slot nodes", () => {
+    expect(selectRaidObjective(progress({ mission: 7 }))).toMatchObject({
+      battlesToGo: 2,
+      kind: "battles",
+      slots: 5,
+      allianceTeam: true,
+    })
+    expect(
+      selectRaidObjective(progress({ mission: 7, progress: [0, 15] }))
+        ?.battlesToGo
+    ).toBe(1)
+  })
+
   it("counts the 663 campaign battles left from mission 5 at 37/100", () => {
     expect(
       remainingCampaignBattles(progress({ mission: 5, progress: [0, 37] }))
@@ -315,24 +338,54 @@ describe("projectHrePace", () => {
   })
 })
 
-describe("selectTeamObjective", () => {
+describe("selectTeamPlan", () => {
   it("names the lineup rule of the current mission's open objective", () => {
-    expect(selectTeamObjective(progress({ mission: 14 }))?.rule).toBe(
-      "alliance"
-    )
-    expect(selectTeamObjective(progress({ mission: 6 }))?.rule).toBe(
-      "summonFree"
-    )
-    expect(selectTeamObjective(progress({ mission: 20 }))?.rule).toBe(
-      "featured"
-    )
-    expect(selectTeamObjective(progress({ mission: 21 }))?.rule).toBe(
-      "featured"
-    )
+    expect(selectTeamPlan(progress({ mission: 14 }))?.rule).toBe("alliance")
+    expect(selectTeamPlan(progress({ mission: 20 }))?.rule).toBe("featured")
+    expect(selectTeamPlan(progress({ mission: 21 }))?.rule).toBe("featured")
     expect(
-      selectTeamObjective(progress({ mission: 6, progress: [0, 10] }))
+      selectTeamPlan(progress({ mission: 6, progress: [0, 10] }))
     ).toBeNull()
-    expect(selectTeamObjective(progress({ mission: 5 }))).toBeNull()
+    expect(selectTeamPlan(progress({ mission: 5 }))).toBeNull()
+  })
+
+  it("plays mission 6 in Arena with a healer, keeping 4 tokens for mission 10", () => {
+    expect(selectTeamPlan(progress({ mission: 6 }))).toMatchObject({
+      rule: "summonFree",
+      mode: "arena",
+      size: 5,
+      support: true,
+      reserve: { tokens: 4, missionNumber: 10 },
+    })
+    expect(
+      selectTeamPlan(progress({ mission: 6, progress: [2500, 0] }))?.support
+    ).toBe(false)
+  })
+
+  it("makes mission 7 an alliance Salvage Run team, then a battle team", () => {
+    expect(selectTeamPlan(progress({ mission: 7 }))).toMatchObject({
+      rule: "alliance",
+      mode: "salvageRun",
+      reserve: null,
+    })
+    expect(
+      selectTeamPlan(progress({ mission: 7, progress: [2, 0] }))?.mode
+    ).toBe("battle")
+  })
+
+  it("makes mission 9 an Onslaught pool of 8 ranged units, Psychic first while open", () => {
+    expect(selectTeamPlan(progress({ mission: 9 }))).toMatchObject({
+      rule: "ranged",
+      mode: "onslaught",
+      size: 8,
+      preferPsychic: true,
+      reserve: { tokens: 1, missionNumber: 12 },
+    })
+    expect(
+      selectTeamPlan(progress({ mission: 9, progress: [0, 7500] }))
+        ?.preferPsychic
+    ).toBe(false)
+    expect(selectTeamPlan(progress({ mission: 4 }))?.mode).toBe("arena")
   })
 })
 

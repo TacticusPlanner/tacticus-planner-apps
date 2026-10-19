@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next"
 import { getCharactersMap } from "@workspace/game-catalog/queries"
 import { getPlayerCharacters } from "@workspace/player-data/queries"
 
-import type { HreTeamRule } from "@/features/hre-missions"
+import type { HreTeamPlan } from "@/features/hre-missions"
 
 import type { RawRosterCharacter } from "./arena-recommendations.types"
 import { buildSummonerIds } from "./hre-summoners"
@@ -47,11 +47,11 @@ async function readTeams(): Promise<HreTeamsRead> {
 }
 
 /**
- * The HRE mission team for the current mission's lineup objective (`rule`), or hidden without
+ * The HRE mission team for the current mission's team plan (`selectTeamPlan`), or hidden without
  * one. Summoners come from the English ability rules text (`npcAbilityText`).
  */
 export function useHreTeamRecommendations(input: {
-  rule: HreTeamRule | null
+  plan: HreTeamPlan | null
   alliance: string | null
   featuredCharacterId: string | null
 }): HreTeamViewModel {
@@ -70,11 +70,11 @@ export function useHreTeamRecommendations(input: {
     })
   }, [read, i18n])
 
-  if (!input.rule) return { status: "hidden" }
+  if (!input.plan) return { status: "hidden" }
   if (!read || unitPowerLoading) return { status: "loading" }
   if (read.status === "error") return { status: "error", retry }
   const team = buildHreTeam({
-    rule: input.rule,
+    plan: input.plan,
     alliance: input.alliance,
     featuredCharacterId: input.featuredCharacterId,
     roster: read.roster,

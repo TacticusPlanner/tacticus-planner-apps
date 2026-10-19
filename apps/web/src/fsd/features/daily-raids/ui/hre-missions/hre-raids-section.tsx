@@ -24,11 +24,15 @@ const SUMMARY_ONLY: MissionRaidsRequest = { battlesToGo: 0, eventOnly: false }
 type HreRaidsRequest = MissionRaidsRequest & {
   /** "Mission 5", for the title. */
   missionLabel: string
+  /** "battles": nodes to fight by hand (mission 7's alliance ability uses), not raids. */
+  kind: "raids" | "battles"
+  /** The localized alliance an all-alliance team must use, when the objective asks for one. */
+  allianceTeam: string | null
 }
 
 /**
- * Dailies > HRE campaign raids: for the current mission's open campaign (or lightning) objective,
- * where to raid with the least of today's energy left, Today's plan aside (`planMissionRaids`),
+ * Dailies > HRE campaign raids: for the current mission's open campaign, lightning, all-alliance
+ * lineup or alliance-ability objective, where to raid (or battle by hand, on full-team nodes) with the least of today's energy left, Today's plan aside (`planMissionRaids`),
  * with its totals and empty states, then the no-drop Indomitus alternative. Without one, `notice`
  * says why. Always ends with the campaign outlook: battles left over the remaining missions against
  * the days the event has left.
@@ -49,7 +53,11 @@ export function HreRaidsSection({
   const { t } = useTranslation("hre")
   const raids = useDailyRaids(projectId, {
     missionRaids: request
-      ? { battlesToGo: request.battlesToGo, eventOnly: request.eventOnly }
+      ? {
+          battlesToGo: request.battlesToGo,
+          eventOnly: request.eventOnly,
+          slots: request.slots,
+        }
       : SUMMARY_ONLY,
   })
   const loaded = raids.status !== "loading" && raids.status !== "error"
@@ -63,7 +71,9 @@ export function HreRaidsSection({
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h2 className="text-lg font-semibold">
           {request
-            ? t("raids.title", { mission: request.missionLabel })
+            ? request.kind === "battles"
+              ? t("raids.titleBattles", { mission: request.missionLabel })
+              : t("raids.title", { mission: request.missionLabel })
             : t("raids.titleNone")}
         </h2>
         {request ? (
@@ -87,7 +97,17 @@ export function HreRaidsSection({
             className="text-sm text-muted-foreground"
             data-testid="hre-raids-note"
           >
-            {request.eventOnly ? t("raids.noteLightning") : t("raids.note")}
+            {request.kind === "battles"
+              ? t("raids.noteBattles", {
+                  slots: request.slots,
+                  alliance: request.allianceTeam ?? "",
+                })
+              : request.eventOnly
+                ? t("raids.noteLightning")
+                : t("raids.note")}
+            {request.kind === "raids" && request.allianceTeam
+              ? ` ${t("raids.noteAlliance", { alliance: request.allianceTeam })}`
+              : null}
             {` ${t("raids.budget", { energy: plan.energyBudget })}`}
           </p>
           {plan.rows.length > 0 ? (

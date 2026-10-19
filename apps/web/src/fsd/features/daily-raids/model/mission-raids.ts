@@ -16,6 +16,8 @@ export type MissionRaidsRequest = {
   battlesToGo: number
   /** Lightning victories: only event-campaign nodes count, so only they are suggested. */
   eventOnly: boolean
+  /** Only nodes with this many deployment slots (a full team), when set. */
+  slots?: number
 }
 
 /** The best-priority goal a node feeds, for the tie-break among equal energy costs. */

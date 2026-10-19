@@ -121,7 +121,10 @@
     "noDrop": {
       "title": "O las batallas de Indomitus sin botín (6 a 14)",
       "note": "Cuestan 3 de energía cada una, pero no sueltan nada y dan poco oro. Cada incursión aquí sustituye a una de arriba."
-    }
+    },
+    "titleBattles": "Batallas para {{mission}}",
+    "noteBattles": "Los usos de habilidades solo cuentan en batallas que juegas, así que juega a mano estos nodos de {{slots}} huecos con un equipo completo de {{alliance}}. Primero los más baratos, como en las incursiones.",
+    "noteAlliance": "Gánalas con un equipo solo de {{alliance}}."
   },
   "tokens": {
     "title": "Fichas necesarias",
@@ -193,6 +196,15 @@
     "featured": "{{hero}} lidera, junto a tus unidades más fuertes.",
     "fewAlliance": "Solo {{count}} unidades {{alliance}}: el juego exige un equipo completo de {{alliance}} solo si se usan todas las casillas.",
     "lockedHero": "Desbloquea primero a {{hero}} para usar a este héroe en esta misión.",
-    "tooFew": "Tienes muy pocas unidades para formar un equipo."
+    "tooFew": "Tienes muy pocas unidades para formar un equipo.",
+    "titleMode": "Equipo de {{mode}}",
+    "ranged": "Tus 5 unidades a distancia más fuertes.",
+    "rangedTrack": "Tus {{size}} unidades a distancia de {{alliance}} más fuertes: 5 empiezan y el resto sustituye a las que caigan.",
+    "supportIncluded": "Tu Sanador o Mecánico más fuerte está incluido, para el objetivo de curación.",
+    "supportMissing": "No tienes ningún Sanador ni Mecánico para el objetivo de curación.",
+    "psychic": "Las unidades con daño psíquico van primero, para el objetivo de daño psíquico.",
+    "reserve_one": "Guarda {{count}} ficha de {{mode}} para {{mission}}.",
+    "reserve_other": "Guarda {{count}} fichas de {{mode}} para {{mission}}.",
+    "reservePlay": "Con {{have}} ahora, juega hasta {{play}}."
   }
 }

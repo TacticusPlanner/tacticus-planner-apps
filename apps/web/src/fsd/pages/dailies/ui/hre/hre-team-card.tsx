@@ -7,46 +7,78 @@ import {
   CardTitle,
 } from "@workspace/ui/components/card"
 
-import { HRE_TEAM_SIZE } from "../../model/hre-team-recommendations"
+import { missionName, type HreTeamPlan } from "@/features/hre-missions"
+
+import {
+  HRE_TEAM_SIZE,
+  type HreTeam,
+} from "../../model/hre-team-recommendations"
 import type { HreTeamViewModel } from "../../model/use-hre-team-recommendations"
 import { TeamList } from "../team-recs/team-list"
 import { TeamRecsState } from "../team-recs/team-recs-state"
 
+type RuledTeam = Exclude<HreTeam, { status: "locked-hero" }>
+
 /**
- * The HRE mission team for the current mission's lineup objective: the strongest all-alliance,
- * summon-free or featured-hero-led team, with a note when the alliance has fewer than five units,
- * or why there is no team (too few units, the featured hero still locked).
+ * The HRE mission team for the current mission's team plan: the strongest all-alliance,
+ * summon-free, ranged or featured-hero-led team, titled by where it plays (Arena, Salvage Run,
+ * Onslaught), with notes on the healer, Psychic damage dealers and the tokens to keep for a later
+ * mission, or why there is no team (too few units, the featured hero still locked).
  */
 export function HreTeamCard({
   view,
+  plan,
+  tokens,
   alliance,
   hero,
 }: {
   view: HreTeamViewModel
+  plan: Pick<HreTeamPlan, "mode" | "reserve" | "preferPsychic"> | null
+  /** Synced tokens of the plan's mode, or null when unknown. */
+  tokens: number | null
   /** The featured hero's localized alliance, or null when the hero does not resolve. */
   alliance: string | null
   hero: string
 }) {
-  const { t } = useTranslation(["hre", "teamRecs"])
+  const { t } = useTranslation(["hre", "teamRecs", "common"])
   if (view.status === "hidden") return null
+  const mode = plan && plan.mode !== "battle" ? plan.mode : null
+  const modeName = mode ? t(`hre:tokens.modes.${mode}`) : ""
+  const reserve = mode ? plan?.reserve : null
 
   return (
     <Card data-testid="hre-team">
       <CardHeader>
-        <CardTitle>{t("hre:teams.title")}</CardTitle>
+        <CardTitle>
+          {mode
+            ? t("hre:teams.titleMode", { mode: modeName })
+            : t("hre:teams.title")}
+        </CardTitle>
         {view.status === "ready" && view.team.status !== "locked-hero" ? (
           <CardDescription data-testid="hre-team-rule">
-            {view.team.rule === "alliance"
-              ? alliance
-                ? t("hre:teams.alliance", { alliance })
-                : t("hre:teams.allianceGeneric")
-              : view.team.rule === "summonFree"
-                ? t("hre:teams.summonFree")
-                : t("hre:teams.featured", { hero })}
+            <RuleText alliance={alliance} hero={hero} team={view.team} />
           </CardDescription>
         ) : null}
       </CardHeader>
       <CardContent className="space-y-3">
+        {reserve ? (
+          <p
+            className="text-xs text-muted-foreground"
+            data-testid="hre-team-reserve"
+          >
+            {t("hre:teams.reserve", {
+              count: reserve.tokens,
+              mode: modeName,
+              mission: missionName(t, reserve.missionNumber),
+            })}
+            {tokens === null
+              ? null
+              : ` ${t("hre:teams.reservePlay", {
+                  have: tokens,
+                  play: Math.max(0, tokens - reserve.tokens),
+                })}`}
+          </p>
+        ) : null}
         {view.status === "loading" ? (
           <TeamRecsState state="loading" testIdPrefix="hre-team" />
         ) : view.status === "error" ? (
@@ -83,6 +115,24 @@ export function HreTeamCard({
                 })}
               </p>
             ) : null}
+            {view.team.support ? (
+              <p
+                className="text-xs text-muted-foreground"
+                data-testid={`hre-team-support-${view.team.support}`}
+              >
+                {view.team.support === "included"
+                  ? t("hre:teams.supportIncluded")
+                  : t("hre:teams.supportMissing")}
+              </p>
+            ) : null}
+            {plan?.preferPsychic ? (
+              <p
+                className="text-xs text-muted-foreground"
+                data-testid="hre-team-psychic"
+              >
+                {t("hre:teams.psychic")}
+              </p>
+            ) : null}
             <TeamList
               members={view.team.team.members}
               testId="hre-team-members"
@@ -93,4 +143,42 @@ export function HreTeamCard({
       </CardContent>
     </Card>
   )
+}
+
+/** What the team is: its rule, with the alliance it was drawn from and its size. */
+function RuleText({
+  team,
+  alliance,
+  hero,
+}: {
+  team: RuledTeam
+  alliance: string | null
+  hero: string
+}) {
+  const { t } = useTranslation(["hre", "common"])
+  const ready = team.status === "ready" ? team : null
+  const trackAlliance = ready?.alliance
+    ? (t(`common:alliances.${ready.alliance}` as never, {
+        defaultValue: ready.alliance,
+      }) as string)
+    : null
+  const size = ready?.team.requestedSize ?? 0
+  switch (team.rule) {
+    case "alliance": {
+      return alliance
+        ? t("hre:teams.alliance", { alliance })
+        : t("hre:teams.allianceGeneric")
+    }
+    case "summonFree": {
+      return t("hre:teams.summonFree")
+    }
+    case "ranged": {
+      return trackAlliance
+        ? t("hre:teams.rangedTrack", { size, alliance: trackAlliance })
+        : t("hre:teams.ranged")
+    }
+    case "featured": {
+      return t("hre:teams.featured", { hero })
+    }
+  }
 }
