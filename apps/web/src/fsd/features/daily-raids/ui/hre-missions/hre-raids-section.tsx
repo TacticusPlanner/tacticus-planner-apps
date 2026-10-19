@@ -13,6 +13,7 @@ import { useDailyRaids } from "../../model/use-daily-raids"
 import { RaidState } from "../raid-state"
 import {
   HreCampaignOutlook,
+  HreFactionRaids,
   HreNoDropRaids,
   RaidRows,
   type RaidRowsView,
@@ -28,6 +29,10 @@ type HreRaidsRequest = MissionRaidsRequest & {
   kind: "raids" | "battles"
   /** The localized alliance an all-alliance team must use, when the objective asks for one. */
   allianceTeam: string | null
+  /** The localized alliance the nodes are kept to, when the mission's objectives restrict them. */
+  allianceNodes: string | null
+  /** The localized faction of `enemyFaction`, for its separate node list. */
+  enemyFactionName: string | null
 }
 
 /**
@@ -58,6 +63,7 @@ export function HreRaidsSection({
           eventOnly: request.eventOnly,
           slots: request.slots,
           alliance: request.alliance,
+          enemyFaction: request.enemyFaction,
         }
       : SUMMARY_ONLY,
   })
@@ -111,6 +117,9 @@ export function HreRaidsSection({
               : request.eventOnly
                 ? t("raids.noteLightning")
                 : t("raids.note")}
+            {request.kind === "raids" && request.allianceNodes
+              ? ` ${t("raids.noteAllianceNodes", { alliance: request.allianceNodes })}`
+              : null}
             {` ${t(battles ? "raids.budgetBattles" : "raids.budget", { energy: plan.energyBudget })}`}
           </p>
           {plan.rows.length > 0 ? (
@@ -145,6 +154,14 @@ export function HreRaidsSection({
           ) : (
             <EmptyState plan={plan} battlesToGo={request.battlesToGo} />
           )}
+          {request.enemyFaction && request.enemyFactionName ? (
+            <HreFactionRaids
+              faction={request.enemyFactionName}
+              killsToGo={request.enemyFaction.killsToGo}
+              rows={plan.factionRows}
+              view={rowsView}
+            />
+          ) : null}
           {plan.noDropRows.length > 0 ? (
             <HreNoDropRaids
               battles={battles}

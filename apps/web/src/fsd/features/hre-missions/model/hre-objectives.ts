@@ -24,7 +24,19 @@ export type HreRaidObjective = {
   slots?: number
   /** The objective needs an all-alliance team (the featured hero's alliance). */
   allianceTeam: boolean
+  /** Only nodes where the featured hero's alliance can deploy: an all-alliance team, or the
+   * mission's other open objective needs alliance units or the featured hero. */
+  allianceNodes: boolean
+  /** The mission's open faction-kill objective, for a separate list of nodes with those enemies. */
+  enemyFaction: { faction: string; killsToGo: number } | null
 }
+
+/** Open objectives that only progress on nodes where the featured hero's alliance can deploy. */
+const ALLIANCE_NODE_KINDS: ReadonlySet<HreObjectiveKind> = new Set([
+  "killWithAlliance",
+  "useAbilitiesFeatured",
+  "featuredDamage",
+])
 
 /** Ability uses a fought battle with five units yields, for `useAbilitiesAlliance`: one each, as
  * Severyn confirmed (mission 7 at 12 / 20 still needs 2 battles). */
@@ -36,7 +48,9 @@ const FULL_TEAM_SLOTS = 5
  * The objective the raid suggestions fill. A lightning-victory objective comes first, because its
  * event-campaign raids also count as campaign wins; then the campaign objective; then an
  * all-alliance lineup's wins, as battles fought by hand (raids have no lineup, so they cannot count);
- * then the alliance ability uses, as battles fought by hand on 5-slot nodes.
+ * then the alliance ability uses, as battles fought by hand on 5-slot nodes. The mission's other
+ * objective restricts the nodes too: alliance kills or the featured hero keep them to where the
+ * alliance deploys, and faction kills add a list of nodes with that faction's enemies.
  */
 export function selectRaidObjective(
   state: HreProgress
@@ -49,6 +63,15 @@ export function selectRaidObjective(
       battlesToGo: objective.target - state.progress[index]!,
     }))
     .filter((item) => item.battlesToGo > 0)
+  const factionKills = open.find(
+    (item) => item.objective.kind === "killFaction"
+  )
+  const enemyFaction = factionKills?.objective.qualifier
+    ? {
+        faction: factionKills.objective.qualifier,
+        killsToGo: factionKills.battlesToGo,
+      }
+    : null
   const lightning = open.find(
     (item) => item.objective.kind === "lightningVictories"
   )
@@ -62,6 +85,10 @@ export function selectRaidObjective(
       eventOnly: raidPick === lightning,
       kind: "raids",
       allianceTeam: false,
+      allianceNodes: open.some((item) =>
+        ALLIANCE_NODE_KINDS.has(item.objective.kind)
+      ),
+      enemyFaction,
     }
   }
   const lineup = open.find(
@@ -75,6 +102,8 @@ export function selectRaidObjective(
       eventOnly: false,
       kind: "battles",
       allianceTeam: true,
+      allianceNodes: true,
+      enemyFaction,
     }
   }
   const abilities = open.find(
@@ -89,6 +118,8 @@ export function selectRaidObjective(
     kind: "battles",
     slots: FULL_TEAM_SLOTS,
     allianceTeam: true,
+    allianceNodes: true,
+    enemyFaction,
   }
 }
 

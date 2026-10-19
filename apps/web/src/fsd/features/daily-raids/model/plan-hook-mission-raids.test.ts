@@ -130,4 +130,46 @@ describe("planHookMissionRaids", () => {
       expect.objectContaining({ battleId: "I06", raids: 2 }),
     ])
   })
+
+  it("lists nodes with the faction's enemies apart, until their enemies cover the kills", () => {
+    const necrons = (nodeId: string, energyCost: number) => ({
+      id: nodeId,
+      energyCost,
+      dailyAttempts: 10,
+      campaignGroupId: "campaign1",
+      rewards: rewards(7, ["shards_necroWarden"]),
+    })
+    const result = plan({
+      request: {
+        battlesToGo: 2,
+        eventOnly: false,
+        enemyFaction: { faction: "Necrons", killsToGo: 12 },
+      },
+      availableBattles: [...battles, necrons("N01", 6), necrons("N02", 4)],
+      filterBattlesById: new Map([
+        ["I06", filterBattle(null)],
+        ["I15", filterBattle("Standard")],
+        ["N01", { ...filterBattle("Standard"), enemiesFactions: ["Necrons"] }],
+        [
+          "N02",
+          {
+            ...filterBattle("Standard"),
+            enemiesFactions: ["Necrons", "Orks"],
+            enemiesTotal: 4,
+          },
+        ],
+      ]),
+    })
+    expect(result.rows.map((row) => [row.battleId, row.raids])).toEqual([
+      ["N02", 2],
+    ])
+    // N02 is in the main list; N01 (5 enemies a raid) covers the 12 kills in 3 raids.
+    expect(result.factionRows.map((row) => [row.battleId, row.raids])).toEqual([
+      ["N01", 3],
+    ])
+  })
+
+  it("has no faction list without a faction-kill objective", () => {
+    expect(plan().factionRows).toEqual([])
+  })
 })

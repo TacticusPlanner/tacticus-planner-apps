@@ -124,6 +124,7 @@ const plan = (overrides = {}) => ({
     ...Array.from({ length: 15 }, () => ({ energyCost: 5, dailyAttempts: 10 })),
   ],
   dailyEnergy: 538,
+  factionRows: [],
   ...overrides,
 })
 
@@ -296,6 +297,47 @@ describe("HRE tab", () => {
     )
     expect(screen.getByTestId("hre-raids-no-drop-totals")).toHaveTextContent(
       "raids.battleCount|count=27"
+    )
+  })
+
+  it("keeps mission 16's raids to the alliance's nodes while its alliance kills are open", () => {
+    seed({ mission: 16, progress: [0, 0] })
+    renderHre()
+    expect(mocks.raidsArgs.at(-1)?.[1]).toEqual({
+      missionRaids: { battlesToGo: 25, eventOnly: false, alliance: "Xenos" },
+    })
+    expect(screen.getByTestId("hre-raids-note")).toHaveTextContent(
+      "raids.noteAllianceNodes"
+    )
+  })
+
+  it("lists Necron nodes apart from mission 11's lightning victories", () => {
+    mocks.raids = {
+      status: "no-goals",
+      missionRaids: plan({ factionRows: [row("N05", 6, 4)] }),
+      locationsByBattleId: new Map(),
+    }
+    seed({ mission: 11, progress: [0, 40] })
+    renderHre()
+    expect(mocks.raidsArgs.at(-1)?.[1]).toEqual({
+      missionRaids: {
+        battlesToGo: 25,
+        eventOnly: true,
+        enemyFaction: { faction: "Necrons", killsToGo: 60 },
+      },
+    })
+    const faction = screen.getByTestId("hre-raids-faction")
+    expect(faction).toHaveTextContent(
+      "raids.faction.title|faction=factions:Necrons"
+    )
+    expect(faction).toHaveTextContent(/raids\.faction\.note\|.*count=60/)
+    expect(
+      within(screen.getByTestId("hre-raids-faction-list")).getAllByRole(
+        "listitem"
+      )
+    ).toHaveLength(1)
+    expect(screen.getByTestId("hre-raids-faction-totals")).toHaveTextContent(
+      "count=4"
     )
   })
 

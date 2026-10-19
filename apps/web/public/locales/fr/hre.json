@@ -129,7 +129,14 @@
     "noteLineupBattles": "Les raids n'ont pas de composition, donc ils ne comptent pas : gagnez ces combats à la main avec une équipe entièrement {{alliance}}. Les victoires d'Arène avec cette équipe comptent aussi. Les moins chers d'abord, comme pour les raids.",
     "budgetBattles": "Énergie disponible pour ces combats : {{energy}}.",
     "battleCount_one": "{{count}} combat",
-    "battleCount_other": "{{count}} combats"
+    "battleCount_other": "{{count}} combats",
+    "noteAllianceNodes": "Seulement les nœuds où les unités {{alliance}} peuvent être déployées, pour faire avancer aussi l'autre objectif de la mission.",
+    "faction": {
+      "title": "Nœuds avec des ennemis {{faction}}",
+      "note_one": "Pour la dernière élimination {{faction}} restante : les nœuds les moins chers avec des ennemis {{faction}}, avec l'énergie laissée par les raids ci-dessus. Chaque raid compte les ennemis du nœud.",
+      "note_other": "Pour les {{count}} éliminations {{faction}} restantes : les nœuds les moins chers avec des ennemis {{faction}}, avec l'énergie laissée par les raids ci-dessus. Chaque raid compte les ennemis du nœud.",
+      "none": "Aucun nœud avec des ennemis {{faction}} ne rentre dans l'énergie restante aujourd'hui."
+    }
   },
   "tokens": {
     "title": "Jetons nécessaires",

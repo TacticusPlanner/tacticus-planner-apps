@@ -19,7 +19,8 @@ import type {
  * synced attempts, energy left today and filters; Today's plan is not counted. The campaign-type Raids
  * Filter does not apply: every campaign battle counts as a win, so a type picked for farming drops
  * must not hide the cheapest nodes (the other filters still apply). A request's `slots` replaces the
- * slots filter and its `alliance` the allies-alliance filter.
+ * slots filter and its `alliance` the allies-alliance filter; its `enemyFaction` adds the nodes
+ * with that faction's enemies, each raid counting the node's enemies as kills.
  */
 export function planHookMissionRaids(input: {
   request: MissionRaidsRequest
@@ -47,6 +48,7 @@ export function planHookMissionRaids(input: {
       .filter((definition) => definition.releaseType === "event")
       .map((definition) => definition.groupId)
   )
+  const { enemyFaction } = input.request
   const filters: RaidsFilters = {
     ...input.raidsFilters,
     campaignTypes: [],
@@ -78,6 +80,14 @@ export function planHookMissionRaids(input: {
       const battle = input.filterBattlesById.get(battleId)
       return !battle || passLocationFilter(battle, filters)
     },
+    factionKillsPerRaid: enemyFaction
+      ? (battleId) => {
+          const battle = input.filterBattlesById.get(battleId)
+          return battle?.enemiesFactions.includes(enemyFaction.faction)
+            ? battle.enemiesTotal
+            : 0
+        }
+      : undefined,
   })
 }
 

@@ -20,6 +20,8 @@ export type MissionRaidsRequest = {
   slots?: number
   /** Only nodes where this alliance can deploy (an all-alliance objective), when set. */
   alliance?: string
+  /** A faction-kill objective: a separate list of nodes with that faction's enemies, when set. */
+  enemyFaction?: { faction: string; killsToGo: number }
 }
 
 /** The best-priority goal a node feeds, for the tie-break among equal energy costs. */
@@ -61,6 +63,9 @@ export type MissionRaidPlan = {
   outlookNodes: Pick<Battle, "energyCost" | "dailyAttempts">[]
   /** The Planning Settings daily energy, for the outlook. */
   dailyEnergy: number
+  /** For a faction-kill objective: the cheapest nodes with that faction's enemies, any campaign,
+   * filled until their enemies cover the kills still needed, with the energy `rows` leave. */
+  factionRows: MissionRaidRow[]
 }
 
 export type MissionRaidBattle = Pick<Battle, "energyCost" | "dailyAttempts"> & {
@@ -81,6 +86,9 @@ export type PlanMissionRaidsInput = MissionRaidsRequest & {
   realEnergyUsedToday: number
   goalNodesByBattle: ReadonlyMap<BattleId, MissionGoalNode>
   passesFilter: (battleId: BattleId) => boolean
+  /** Kills one raid of a node yields toward `enemyFaction`: its enemy count when that faction is
+   * among its enemies, else 0. */
+  factionKillsPerRaid?: (battleId: BattleId) => number
 }
 
 const compareIds = (a: string, b: string) => (a < b ? -1 : a > b ? 1 : 0)
@@ -151,6 +159,27 @@ export function planMissionRaids(
   const noDropRows =
     battlesLeft > 0 && energyBudget > 0 ? fillFrom(noDropPool).rows : []
 
+  // Nodes with the faction's enemies, outside the main list, with the energy it leaves; each raid
+  // counts the node's enemies toward the kills still needed.
+  const factionFill = (rows: readonly MissionRaidRow[]): MissionRaidRow[] => {
+    const killsOf = input.factionKillsPerRaid
+    const killsToGo = input.enemyFaction?.killsToGo ?? 0
+    if (!killsOf || killsToGo <= 0) return []
+    const used = new Set(rows.map((row) => row.battleId))
+    const spent = rows.reduce((total, row) => total + row.energy, 0)
+    const candidates = input.battles
+      .filter(
+        (battle) =>
+          battle.energyCost > 0 &&
+          !used.has(battle.id) &&
+          input.passesFilter(battle.id) &&
+          killsOf(battle.id) > 0
+      )
+      .sort(sort)
+    return fill(candidates, energyBudget - spent, killsToGo, input, killsOf)
+      .rows
+  }
+
   const done = (
     rows: MissionRaidRow[],
     empty: MissionRaidsEmptyReason | null
@@ -167,6 +196,7 @@ export function planMissionRaids(
       noDropRows,
       outlookNodes,
       dailyEnergy: input.dailyEnergy,
+      factionRows: factionFill(rows),
     }
   }
 
@@ -182,12 +212,14 @@ export function planMissionRaids(
   return done(rows, attemptsBlocked ? "no-attempts" : "no-energy")
 }
 
-/** Gives each sorted candidate as many raids as its attempts, the budget and the battles allow. */
+/** Gives each sorted candidate as many raids as its attempts, the budget and the battles allow;
+ * with `weightOf`, each raid counts that many toward `battlesLeft` (kills, for faction nodes). */
 function fill(
   candidates: readonly MissionRaidBattle[],
   energyBudget: number,
   battlesLeft: number,
-  input: PlanMissionRaidsInput
+  input: PlanMissionRaidsInput,
+  weightOf: (battleId: BattleId) => number = () => 1
 ): { rows: MissionRaidRow[]; attemptsBlocked: boolean } {
   let budget = energyBudget
   let left = battlesLeft
@@ -201,14 +233,15 @@ function fill(
       (battle.dailyAttempts > 0 ? battle.dailyAttempts : Infinity)
     const attempts = cap
     if (attempts <= 0 && budget >= battle.energyCost) attemptsBlocked = true
+    const weight = weightOf(battle.id)
     const raids = Math.min(
       attempts,
       Math.floor(budget / battle.energyCost),
-      left
+      Math.ceil(left / weight)
     )
     if (raids <= 0) continue
     budget -= raids * battle.energyCost
-    left -= raids
+    left -= raids * weight
     rows.push({
       battleId: battle.id,
       energyCost: battle.energyCost,

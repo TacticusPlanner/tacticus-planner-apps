@@ -77,6 +77,52 @@ export function RaidRows({
 }
 
 /**
+ * For a faction-kill objective (mission 11's Necrons): the cheapest nodes with that faction's
+ * enemies, apart from the main list, filled with the energy it leaves until their enemies cover the
+ * kills still needed.
+ */
+export function HreFactionRaids({
+  rows,
+  faction,
+  killsToGo,
+  view,
+}: {
+  rows: MissionRaidPlan["factionRows"]
+  /** The localized faction. */
+  faction: string
+  killsToGo: number
+  view: RaidRowsView
+}) {
+  const { t } = useTranslation("hre")
+  const raids = rows.reduce((total, row) => total + row.raids, 0)
+  const energy = rows.reduce((total, row) => total + row.energy, 0)
+  return (
+    <div className="space-y-2 border-t pt-3" data-testid="hre-raids-faction">
+      <h3 className="font-medium">{t("raids.faction.title", { faction })}</h3>
+      <p className="text-sm text-muted-foreground">
+        {rows.length > 0
+          ? t("raids.faction.note", { faction, count: killsToGo })
+          : t("raids.faction.none", { faction })}
+      </p>
+      {rows.length > 0 ? (
+        <>
+          <RaidRows rows={rows} testId="hre-raids-faction-list" view={view} />
+          <div
+            className="flex flex-wrap gap-2"
+            data-testid="hre-raids-faction-totals"
+          >
+            <Badge variant="secondary">
+              {t("raids.raidCount", { count: raids })}
+            </Badge>
+            <Badge variant="outline">{t("raids.energy", { energy })}</Badge>
+          </div>
+        </>
+      ) : null}
+    </div>
+  )
+}
+
+/**
  * The nodes that drop nothing (Indomitus 6 to 14), kept apart because some players skip them for
  * their missing drops and low gold: each raid here replaces one above for less energy.
  */
