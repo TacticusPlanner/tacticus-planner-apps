@@ -619,3 +619,44 @@ describe("nextAscensionStep", () => {
     })
   })
 })
+
+describe("projectRewards: a chosen target step", () => {
+  it("reproduces the next-step projection for Unlock", () => {
+    expect(projectRewards({ ...utharExample, targetStep: "unlock" })).toEqual(
+      projectRewards(utharExample)
+    )
+  })
+
+  it("counts every step up to the target from the unit's next step", () => {
+    const projection = projectRewards({
+      ...utharExample,
+      targetStep: "fourStars",
+    })
+    expect(projection.goal).toMatchObject({
+      step: "fourStars",
+      threshold: 400 + uthar.progression.fourStars,
+    })
+  })
+
+  it("reads a target before the unit's next step as reached", () => {
+    const projection = projectRewards({
+      ...utharExample,
+      unit: { progressionIndex: ASCENSION_STEP_PROGRESSION.fourStars },
+      targetStep: "unlock",
+    })
+    expect(projection.goal).toEqual({ step: "fullyAscended" })
+    expect(projection.points).toBeNull()
+  })
+
+  it("reports a step past the chest ladder", () => {
+    const projection = projectRewards({
+      ...utharExample,
+      rewards: {
+        ...uthar,
+        chestsMilestones: uthar.chestsMilestones.slice(0, 20),
+      },
+      targetStep: "fourStars",
+    })
+    expect(projection.chests).toMatchObject({ beyondChestLadder: true })
+  })
+})

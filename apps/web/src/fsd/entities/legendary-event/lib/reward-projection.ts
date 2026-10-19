@@ -108,6 +108,35 @@ export function nextAscensionStep(
   return { step: "fullyAscended" }
 }
 
+/**
+ * `target`'s cumulative threshold counted from `fromStep` (spec: points target for a chosen
+ * ascension step), with the shards held toward it; every step reached when `target` comes before
+ * `fromStep` or the shards already cover it.
+ */
+export function targetAscensionStep(
+  shards: number,
+  progression: LegendaryEventRewards["progression"],
+  fromStep: AscensionStep | "fullyAscended",
+  target: AscensionStep
+): AscensionGoal {
+  if (fromStep === "fullyAscended") return { step: "fullyAscended" }
+  const from = ASCENSION_STEPS.indexOf(fromStep)
+  const to = ASCENSION_STEPS.indexOf(target)
+  if (to < from) return { step: "fullyAscended" }
+  let previous = 0
+  for (const step of ASCENSION_STEPS.slice(from, to)) {
+    previous += progression[step]
+  }
+  const threshold = previous + progression[target]
+  if (threshold <= shards) return { step: "fullyAscended" }
+  return {
+    step: target,
+    threshold,
+    shardsTowardStep: Math.max(0, shards - previous),
+    stepSize: threshold - previous,
+  }
+}
+
 export interface RewardProjectionInput {
   rewards: LegendaryEventRewards
   /** The account's synced entry for the event; `undefined` when it has none (the base is zero). */
@@ -128,6 +157,9 @@ export interface RewardProjectionInput {
   /** The plan's stored run inputs (absent runs read as zeros). */
   runs: readonly LegendaryEventRunInputs[] | undefined
   showPaidOptions: boolean
+  /** The step to project instead of the next one (the 1-click plan's target); a step at or before
+   *  the unit's synced progression reads as every step reached. */
+  targetStep?: AscensionStep
 }
 
 /** One future run's contribution (runs already started are counted through sync). */
@@ -228,6 +260,7 @@ export function projectRewards({
   unit,
   runs,
   showPaidOptions,
+  targetStep,
 }: RewardProjectionInput): RewardProjection {
   // 1. Base from sync.
   const base = {
@@ -298,7 +331,9 @@ export function projectRewards({
   // 4. The first cumulative threshold above the shards held plus future close shards, counted from
   // the unit's next step.
   const shards = base.shards + futureCloseShards
-  projection.goal = nextAscensionStep(shards, rewards.progression, fromStep)
+  projection.goal = targetStep
+    ? targetAscensionStep(shards, rewards.progression, fromStep, targetStep)
+    : nextAscensionStep(shards, rewards.progression, fromStep)
   if (projection.goal.step === "fullyAscended") return projection
 
   // 5. Chests: shards held count whatever their source, so to-go is never negative.

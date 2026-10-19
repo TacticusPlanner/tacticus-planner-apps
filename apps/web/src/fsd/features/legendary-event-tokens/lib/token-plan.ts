@@ -4,6 +4,7 @@ import {
   type LegendaryEventAnnotation,
   type LegendaryEventLaneId,
   type LegendaryEventLaneRecord,
+  type LegendaryEventRun,
 } from "@/entities/legendary-event"
 
 // Ported from V1 `TokenEstimationService` (`computeNextToken`, `computeAllTokenUsage`,
@@ -18,6 +19,9 @@ export interface TokenPlanTeam {
   objectiveIndexes: readonly number[]
   /** Battles the team reaches this run (manual depth, else the estimate); null plans nothing. */
   depth: number | null
+  /** Per-run depths (the 1-click plan's projected rosters); a token spent in a listed run reads
+   *  that run's depth instead of `depth` (see `runSlots`). */
+  depthByRun?: Partial<Record<LegendaryEventRun, number | null>>
 }
 
 export interface TokenPlanLane {
@@ -36,6 +40,17 @@ export interface TokenPlanInput {
   lanes: readonly TokenPlanLane[]
   /** Synced `currentPoints` (0 without an entry). */
   startingPoints: number
+  /** The token slots each run supplies, in order (the 1-click plan): with them each token is
+   *  valued at its run's `depthByRun`, and a run with nothing left to play leaves its remaining
+   *  slots unused, so later runs' deeper teams still get their tokens. */
+  runSlots?: readonly RunSlots[]
+}
+
+/** Slots `start`..`end − 1` are spent in `run`. */
+export interface RunSlots {
+  run: LegendaryEventRun
+  start: number
+  end: number
 }
 
 export interface PlannedToken {
@@ -54,6 +69,8 @@ export interface PlannedToken {
   /** Its battle is playable from synced progress alone (first battle, or the previous battle's
    *  defeat-all already cleared in sync). */
   playableNow: boolean
+  /** The supply slot it is spent in, with `runSlots` only (slots a run left unused are skipped). */
+  slot?: number
 }
 
 interface TokenPlanLaneResult {
@@ -121,9 +138,14 @@ const isAvailable = (state: LaneState, battleIndex: number) =>
 function tokenOn(
   state: LaneState,
   battleIndex: number,
-  team: TokenPlanTeam
+  team: TokenPlanTeam,
+  run: LegendaryEventRun | null
 ): Pick<Candidate, "clearedIds" | "points"> | null {
-  if ((team.depth ?? 0) <= battleIndex) return null
+  const depth =
+    run !== null && team.depthByRun && run in team.depthByRun
+      ? team.depthByRun[run]
+      : team.depth
+  if ((depth ?? 0) <= battleIndex) return null
   const cells = state.cleared[battleIndex]
   const battle = state.lane.model.battles[battleIndex]
   if (!cells || !battle) return null
@@ -155,13 +177,17 @@ function tokenOn(
 
 /** The lane's best token: highest value over its available battles, earlier battle then earlier
  *  team on a tie (V1 `computeNextBestTokenInTrack`). */
-function bestInLane(state: LaneState, laneOrder: number): Candidate | null {
+function bestInLane(
+  state: LaneState,
+  laneOrder: number,
+  run: LegendaryEventRun | null
+): Candidate | null {
   let best: Candidate | null = null
   for (const [battleIndex, cells] of state.cleared.entries()) {
     if (isComplete(cells) || !isAvailable(state, battleIndex)) continue
     if (!cells[0] && state.stopHere.has(cellKey(battleIndex, 0))) continue
     for (const team of state.lane.teams) {
-      const token = tokenOn(state, battleIndex, team)
+      const token = tokenOn(state, battleIndex, team, run)
       if (token && (!best || token.points > best.points)) {
         best = {
           laneId: state.lane.laneId,
@@ -238,6 +264,7 @@ function earnedPoints(state: LaneState): number {
 export function planTokens({
   lanes,
   startingPoints,
+  runSlots,
 }: TokenPlanInput): TokenPlan {
   const states = lanes.map(initialLaneState)
   const syncedAvailable = states.map((state) =>
@@ -246,14 +273,22 @@ export function planTokens({
   const completeInSync = states.map((state) => state.cleared.every(isComplete))
   const tokens: PlannedToken[] = []
   let runningPoints = startingPoints
+  let slot = 0
 
   for (;;) {
+    const runSlot = runSlots?.find((entry) => slot < entry.end)
+    const run = runSlot?.run ?? null
     const candidates = states.flatMap((state, laneOrder) => {
-      const best = bestInLane(state, laneOrder)
+      const best = bestInLane(state, laneOrder, run)
       return best ? [best] : []
     })
     const chosen = chooseAcrossLanes(candidates, tokens.at(-1))
-    if (!chosen) break
+    if (!chosen) {
+      // Nothing left at this run's depths: the next run may reach further.
+      if (!runSlot) break
+      slot = runSlot.end
+      continue
+    }
     const state = states[chosen.laneOrder]!
     for (const id of chosen.clearedIds) {
       state.cleared[chosen.battleIndex]![id] = true
@@ -275,7 +310,9 @@ export function planTokens({
       ),
       playableNow:
         syncedAvailable[chosen.laneOrder]?.[chosen.battleIndex] === true,
+      ...(runSlots ? { slot } : {}),
     })
+    slot += 1
   }
 
   return {

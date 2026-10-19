@@ -171,12 +171,19 @@ export {
   PREMIUM_BONUS_CURRENCY,
   nextAscensionStep,
   projectRewards,
+  targetAscensionStep,
   unitNextAscensionStep,
   type AscensionGoal,
   type AscensionStep,
   type RewardProjection,
   type RewardProjectionInput,
 } from "./lib/reward-projection"
+export {
+  legendaryEventRunDates,
+  legendaryEventRunGapDays,
+  type LegendaryEventRunDates,
+  type LegendaryEventRunStart,
+} from "./lib/run-dates"
 export {
   applicableAnnotations,
   annotationCellKey,
@@ -229,7 +236,7 @@ export {
   type LaneReach,
   type LaneReachablePoints,
 } from "./lib/reachable-points"
-export { type UpgradeStep } from "./lib/upgrade-steps"
+export { nextUpgradeSteps, type UpgradeStep } from "./lib/upgrade-steps"
 export {
   laneUpgradeImpact,
   type ImpactTeam,

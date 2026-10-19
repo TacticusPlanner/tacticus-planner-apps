@@ -26,13 +26,21 @@ export interface PlanByRun {
  */
 export function splitPlanByRun(
   tokenCount: number,
-  supply: readonly RunSupply[]
+  supply: readonly RunSupply[],
+  /** Each token's supply slot (`PlannedToken.slot`), when runs may leave slots unused. */
+  slots?: readonly (number | undefined)[]
 ): PlanByRun {
   let next = 0
+  let slotStart = 0
   const sections: RunTokenSection[] = []
   for (const run of supply) {
     if (run.state === "done") continue
-    const count = Math.min(run.total, tokenCount - next)
+    const slotEnd = slotStart + run.total
+    const count = slots
+      ? slots.slice(next).filter((slot) => slot !== undefined && slot < slotEnd)
+          .length
+      : Math.min(run.total, tokenCount - next)
+    slotStart = slotEnd
     sections.push({
       run: run.run,
       state: run.state,

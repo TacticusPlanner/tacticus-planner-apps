@@ -50,6 +50,31 @@ describe("planTokens", () => {
     ])
   })
 
+  it("reads each token's run depth when the plan has run slots", () => {
+    // Melee reaches battle 2 in run 2 and battle 5 in run 3; run 2 supplies three slots but has
+    // only two battles to play, so its last slot stays unused.
+    const plan = planTokens({
+      lanes: workedLanes({
+        teams: [{ ...meleeTeam, depth: 2, depthByRun: { 2: 2, 3: 5 } }],
+      }),
+      startingPoints: 5000,
+      runSlots: [
+        { run: 2, start: 0, end: 3 },
+        { run: 3, start: 3, end: 10 },
+      ],
+    })
+
+    expect(
+      plan.tokens.map((token) => [token.battleIndex + 1, token.slot])
+    ).toEqual([
+      [2, 0],
+      [1, 1],
+      [3, 3],
+      [4, 4],
+      [5, 5],
+    ])
+  })
+
   it("flags a token that clears a Maybe clear cell but keeps it", () => {
     const plan = planTokens({
       lanes: workedLanes({ annotations: [mark(2, 4, "maybeClear")] }),
