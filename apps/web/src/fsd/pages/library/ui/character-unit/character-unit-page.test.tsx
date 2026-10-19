@@ -39,6 +39,7 @@ const env = vi.hoisted(() => ({
   extraCharacters: [] as unknown[],
   extraEquipment: [] as unknown[],
   mythicQuestsSynced: true,
+  mythicQuestRecords: undefined as unknown[] | undefined,
   power: {
     status: "loading",
     retry: () => {},
@@ -242,7 +243,9 @@ vi.mock("@workspace/game-catalog/queries", () => ({
     Promise.resolve(
       new Map(
         env.mythicQuestsSynced
-          ? mythicQuestsFixture.records.map((record) => [record.unitId, record])
+          ? (env.mythicQuestRecords ?? mythicQuestsFixture.records).map(
+              (record) => [(record as { unitId: string }).unitId, record]
+            )
           : []
       )
     ),
@@ -390,6 +393,7 @@ describe("CharacterUnitPage", () => {
     env.extraCharacters = []
     env.extraEquipment = []
     env.mythicQuestsSynced = true
+    env.mythicQuestRecords = undefined
     env.power = powerReady
   })
 
@@ -816,6 +820,30 @@ describe("CharacterUnitPage", () => {
       expect(screen.getByTestId("unit-details")).toBeInTheDocument()
       expect(screen.getByTestId("unit-relic")).toBeInTheDocument()
       expect(screen.queryByTestId("unit-mythic")).not.toBeInTheDocument()
+    })
+
+    it("shows a quest's number and rewards without text when its task has no template", async () => {
+      const [first, ...rest] = mythicQuestsFixture.records.find(
+        (record) => record.unitId === "ultraCalgar"
+      )!.quests
+      env.mythicQuestRecords = [
+        {
+          unitId: "ultraCalgar",
+          quests: [
+            {
+              ...first,
+              tasks: [{ ...first.tasks[0], locaKey: "NotATaskTemplate" }],
+            },
+            ...rest,
+          ],
+        },
+      ]
+      await renderUnit("/library/characters/ultraCalgar")
+      const quest = screen.getByTestId("unit-mythic-quest-1")
+      expect(quest).toHaveTextContent(/^1/)
+      expect(within(quest).queryByRole("paragraph")).not.toBeInTheDocument()
+      expect(quest).not.toHaveTextContent("NotATaskTemplate")
+      expect(within(quest).getAllByRole("listitem")).toHaveLength(3)
     })
 
     it('keeps "in one battle" in the singular task text', async () => {

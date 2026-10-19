@@ -106,7 +106,7 @@ function PowerCard({
   power,
   className,
 }: {
-  power: PowerFigure
+  power: Exclude<PowerFigure, { status: "unavailable" }>
   className?: string
 }) {
   const { t, i18n } = useTranslation("library")
@@ -130,7 +130,7 @@ function PowerCard({
         <span className="flex items-center gap-2">
           <Zap aria-hidden className="size-5 text-muted-foreground" />
           <span className={valueClass} data-testid="npc-stat-power-value">
-            {power.status === "ready" ? format.format(power.value) : null}
+            {format.format(power.value)}
           </span>
         </span>
       )}
@@ -153,7 +153,6 @@ export function NpcStatCards({
   compact?: boolean
 }) {
   const { t } = useTranslation("library")
-  const showPower = power.status !== "unavailable"
 
   return (
     <div
@@ -161,9 +160,9 @@ export function NpcStatCards({
         "grid gap-3",
         compact
           ? "grid-cols-2"
-          : showPower
-            ? "grid-cols-2 md:grid-cols-5"
-            : "grid-cols-2 md:grid-cols-4"
+          : power.status === "unavailable"
+            ? "grid-cols-2 md:grid-cols-4"
+            : "grid-cols-2 md:grid-cols-5"
       )}
       data-testid="npcs-stats"
     >
@@ -187,12 +186,12 @@ export function NpcStatCards({
         label={t("npcs.stats.movement")}
         value={movement}
       />
-      {showPower ? (
+      {power.status === "unavailable" ? null : (
         <PowerCard
           power={power}
           className={compact ? "col-span-2" : "col-span-2 md:col-span-1"}
         />
-      ) : null}
+      )}
     </div>
   )
 }
