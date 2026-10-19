@@ -13,6 +13,8 @@
     "raidsDescription": "Nutze die heutige Energie für deine aktiven Ziele in Prioritätsreihenfolge.",
     "hse": "SBE",
     "hseDescription": "Startbildschirm-Event: Raide dort, wo das aktuelle Event Punkte bringt",
+    "hre": "HRE",
+    "hreDescription": "Helden-Release-Event: Verfolge deine Missionen und raide dafür mit möglichst wenig Energie",
     "shops": "Läden",
     "shopsDescription": "Ladenrotationen und Käufe verfolgen",
     "guild-raids": "Gilden-Raids",
@@ -343,6 +345,38 @@
         "top": {
           "title": "Beste Orte",
           "content": "Die Orte mit den meisten Event-Punkten pro Raid und pro Energie, unabhängig von deinen Zielen."
+        }
+      }
+    },
+    "hre": {
+      "steps": {
+        "header": {
+          "title": "Das Event",
+          "content": "Der Event-Held, seine Allianz und wann das Event endet. Vor dem Start zeigt der Tab das nächste Event als Vorschau."
+        },
+        "tracker": {
+          "title": "Deine Missionen",
+          "content": "Wähle deine aktuelle Mission und gib den Fortschritt ihrer beiden Ziele ein. Der Fortschritt wird nur in diesem Browser und nur für dieses Event gespeichert."
+        },
+        "allMissions": {
+          "title": "Alle Missionen",
+          "content": "Öffne die vollständige Missionsliste. Jede Mission klappt zu ihren Tipps auf."
+        },
+        "raids": {
+          "title": "Kampagnenraids",
+          "content": "Wo du heute für das Kampagnenziel der aktuellen Mission raidest, günstigste Energie zuerst, nach den Raids, die schon im heutigen Plan stehen. Die Zusammenfassung darunter zählt die Kampagnenschlachten, die im ganzen Event übrig sind."
+        },
+        "team": {
+          "title": "Missionsteam",
+          "content": "Ein Team aus deinem Kader für Missionen, die die Aufstellung einschränken oder den Event-Helden brauchen."
+        },
+        "tokens": {
+          "title": "Benötigte Marken",
+          "content": "Arena-, Gilden-Raid-, Onslaught- und Plünderungslauf-Kämpfe, die die restlichen Missionen brauchen, verglichen mit deinen aktuellen Marken."
+        },
+        "pace": {
+          "title": "Event-Tempo",
+          "content": "Gib deine Eventpunkte und deinen Rang ein, um Währung, Truhenstufe und Splitter zu schätzen, und wähle ein Ziel, um die nötigen Punkte pro Tag zu sehen."
         }
       }
     }

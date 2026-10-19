@@ -54,8 +54,11 @@ import { useScopedGoalPlan } from "./use-scoped-goal-plan"
 import { buildLocationsByBattleId } from "./daily-raid-locations"
 import type {
   DailyRaidResourceLabels,
+  DailyRaidsCalculationViewModel,
   DailyRaidsViewModel,
 } from "./daily-raids.domain"
+import type { MissionRaidPlan, MissionRaidsRequest } from "./mission-raids"
+import { planHookMissionRaids } from "./plan-hook-mission-raids"
 
 /**
  * Today, Bonus Raids and Raids Plan: one run over every Active goal in global order
@@ -67,12 +70,20 @@ import type {
  * schedule-wide, energy-capped list of point-earning locations that feed the goals (see
  * `planEventFarm`). It changes nothing else in the result; Today, Bonus Raids, Home and the Plan
  * never pass it.
+ *
+ * `options.missionRaids` (the Dailies > HRE tab only) additionally returns `missionRaids`: where to
+ * raid to finish the current HRE mission's campaign objective with the least energy, after Today's
+ * remaining plan (see `planMissionRaids`). It is returned with or without goals.
  */
 export function useDailyRaids(
   projectId?: string,
-  options?: { homeScreenEventId?: string }
+  options?: {
+    homeScreenEventId?: string
+    missionRaids?: MissionRaidsRequest
+  }
 ): DailyRaidsViewModel {
   const homeScreenEventId = options?.homeScreenEventId
+  const missionRequest = options?.missionRaids
   const { t } = useTranslation(["dailies", "characters", "upgrades"])
   const {
     name: campaignDisplayName,
@@ -296,7 +307,30 @@ export function useDailyRaids(
     playerState &&
     !settingsLoading
   if (!ready) return { status: "loading" }
-  if (activeMembers.length === 0) return { status: "no-goals" }
+  const planMission = (
+    calculation: DailyRaidsCalculationViewModel | null
+  ): MissionRaidPlan | undefined =>
+    missionRequest
+      ? planHookMissionRaids({
+          request: missionRequest,
+          calculation,
+          availableBattles,
+          campaignDefinitions,
+          allBattlesById,
+          attemptsLeftByBattle,
+          dailyEnergy: settings.dailyEnergy,
+          realEnergyUsedToday,
+          filterBattlesById,
+          raidsFilters,
+        })
+      : undefined
+  if (activeMembers.length === 0) {
+    return {
+      status: "no-goals",
+      missionRaids: planMission(null),
+      locationsByBattleId,
+    }
+  }
 
   const result = calculateDailyRaids({
     members: globalPlan.entries,
@@ -367,17 +401,23 @@ export function useDailyRaids(
           energyBudget: Math.max(0, settings.dailyEnergy - realEnergyUsedToday),
         }
       : undefined,
+    missionGoalNodes: !!missionRequest,
   })
   return result
     ? {
         ...result,
+        missionRaids: planMission(result),
         locationsByBattleId,
         resourceByBattleId,
         realEnergyUsedToday,
         attemptsLeftByBattle,
         todaysAttempts,
       }
-    : { status: "no-farmable" }
+    : {
+        status: "no-farmable",
+        missionRaids: planMission(null),
+        locationsByBattleId,
+      }
 }
 
 export function playerUnitIds(

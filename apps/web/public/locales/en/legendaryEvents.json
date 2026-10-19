@@ -341,7 +341,8 @@
       "sortPointsLeft": "Points left",
       "sortPower": "Power",
       "estimating": "Estimating…",
-      "pointsScope": "Points left on the whole lane, all battles"
+      "pointsScope": "Points left on the whole lane, all battles",
+      "tier": "Tier {{tier}}"
     },
     "toasts": {
       "reloaded": "Your plan changed on another device and was reloaded. Try again.",

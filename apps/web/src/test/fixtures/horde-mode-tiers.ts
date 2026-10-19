@@ -1,23 +1,27 @@
 // The served `horde-mode-tiers` record, copied from the real catalog source (tacticus-planner-api
-// GameCatalog Data/horde-mode-tiers.json): tiers S, A, B, C and the 21 tiered characters.
+// GameCatalog Data/horde-mode-tiers.json): tiers S, A, B, C, D and the 47 tiered characters.
 export const hordeModeTiers = {
   id: "horde-mode-tiers",
   tiers: [
     {
       tier: "S",
-      multiplier: 1.85,
+      multiplier: 1.9,
     },
     {
       tier: "A",
-      multiplier: 1.55,
+      multiplier: 1.7,
     },
     {
       tier: "B",
-      multiplier: 1.25,
+      multiplier: 1.45,
     },
     {
       tier: "C",
-      multiplier: 1.05,
+      multiplier: 1.2,
+    },
+    {
+      tier: "D",
+      multiplier: 1.0,
     },
   ],
   characters: [
@@ -29,101 +33,231 @@ export const hordeModeTiers = {
     {
       unitId: "adeptHospitaller",
       tier: "S",
-      multiplier: 1.95,
+      multiplier: 1.98,
     },
     {
-      unitId: "tauMarksman",
+      unitId: "deathRotbone",
       tier: "S",
-      multiplier: 1.9,
-    },
-    {
-      unitId: "ultraInceptorSgt",
-      tier: "S",
-      multiplier: 1.85,
+      multiplier: 1.96,
     },
     {
       unitId: "necroSpyder",
       tier: "S",
-      multiplier: 1.8,
+      multiplier: 1.94,
+    },
+    {
+      unitId: "tauCrisis",
+      tier: "S",
+      multiplier: 1.92,
+    },
+    {
+      unitId: "deathBlightlord",
+      tier: "S",
+      multiplier: 1.9,
+    },
+    {
+      unitId: "tyranTyrantGuard",
+      tier: "S",
+      multiplier: 1.88,
     },
     {
       unitId: "admecMarshall",
       tier: "S",
+      multiplier: 1.86,
+    },
+    {
+      unitId: "orksRuntherd",
+      tier: "S",
+      multiplier: 1.83,
+    },
+    {
+      unitId: "templChampion",
+      tier: "S",
+      multiplier: 1.81,
+    },
+    {
+      unitId: "orksWarboss",
+      tier: "A",
+      multiplier: 1.79,
+    },
+    {
+      unitId: "blackTerminator",
+      tier: "A",
+      multiplier: 1.76,
+    },
+    {
+      unitId: "tauMarksman",
+      tier: "A",
       multiplier: 1.75,
     },
     {
+      unitId: "ultraInceptorSgt",
+      tier: "A",
+      multiplier: 1.74,
+    },
+    {
       unitId: "ultraCalgar",
+      tier: "A",
+      multiplier: 1.72,
+    },
+    {
+      unitId: "admecManipulus",
+      tier: "A",
+      multiplier: 1.71,
+    },
+    {
+      unitId: "custoKyrus",
+      tier: "A",
+      multiplier: 1.7,
+    },
+    {
+      unitId: "bloodSanguinary",
+      tier: "A",
+      multiplier: 1.69,
+    },
+    {
+      unitId: "templAggressor",
+      tier: "A",
+      multiplier: 1.68,
+    },
+    {
+      unitId: "worldTerminator",
+      tier: "A",
+      multiplier: 1.67,
+    },
+    {
+      unitId: "necroOverlord",
+      tier: "A",
+      multiplier: 1.66,
+    },
+    {
+      unitId: "ultraTitus",
       tier: "A",
       multiplier: 1.65,
     },
     {
       unitId: "adeptRetributor",
       tier: "A",
-      multiplier: 1.6,
+      multiplier: 1.64,
     },
     {
-      unitId: "worldTerminator",
+      unitId: "deathTyphus",
       tier: "A",
-      multiplier: 1.55,
+      multiplier: 1.63,
     },
     {
       unitId: "thousInfernalMaster",
       tier: "A",
-      multiplier: 1.5,
+      multiplier: 1.62,
     },
     {
-      unitId: "deathRotbone",
+      unitId: "bloodTerminator",
       tier: "A",
+      multiplier: 1.6,
+    },
+    {
+      unitId: "orksBigMek",
+      tier: "B",
+      multiplier: 1.59,
+    },
+    {
+      unitId: "blackPossession",
+      tier: "B",
+      multiplier: 1.57,
+    },
+    {
+      unitId: "custoVexilusPraetor",
+      tier: "B",
+      multiplier: 1.55,
+    },
+    {
+      unitId: "ultraApothecary",
+      tier: "B",
+      multiplier: 1.53,
+    },
+    {
+      unitId: "necroDestroyer",
+      tier: "B",
+      multiplier: 1.51,
+    },
+    {
+      unitId: "emperLucius",
+      tier: "B",
+      multiplier: 1.49,
+    },
+    {
+      unitId: "thousTerminator",
+      tier: "B",
+      multiplier: 1.47,
+    },
+    {
+      unitId: "deathBlightbringer",
+      tier: "B",
       multiplier: 1.45,
     },
     {
-      unitId: "tauCrisis",
-      tier: "A",
+      unitId: "genesMagus",
+      tier: "B",
+      multiplier: 1.43,
+    },
+    {
+      unitId: "bloodIntercessor",
+      tier: "B",
+      multiplier: 1.42,
+    },
+    {
+      unitId: "blackAbaddon",
+      tier: "B",
       multiplier: 1.4,
     },
     {
       unitId: "eldarFarseer",
       tier: "B",
+      multiplier: 1.39,
+    },
+    {
+      unitId: "tauFarsight",
+      tier: "B",
+      multiplier: 1.37,
+    },
+    {
+      unitId: "necroWarden",
+      tier: "B",
       multiplier: 1.35,
     },
     {
-      unitId: "orksWarboss",
-      tier: "B",
-      multiplier: 1.3,
-    },
-    {
-      unitId: "blackPossession",
-      tier: "B",
-      multiplier: 1.25,
-    },
-    {
-      unitId: "templAggressor",
-      tier: "B",
-      multiplier: 1.2,
-    },
-    {
-      unitId: "orksBigMek",
-      tier: "B",
-      multiplier: 1.15,
-    },
-    {
-      unitId: "deathBlightlord",
+      unitId: "astraOrdnance",
       tier: "C",
-      multiplier: 1.1,
+      multiplier: 1.32,
     },
     {
-      unitId: "blackTerminator",
+      unitId: "blackHaarken",
       tier: "C",
-      multiplier: 1.05,
+      multiplier: 1.27,
     },
     {
       unitId: "ultraTigurius",
       tier: "C",
-      multiplier: 1.0,
+      multiplier: 1.22,
+    },
+    {
+      unitId: "astraPrimarisPsy",
+      tier: "C",
+      multiplier: 1.16,
+    },
+    {
+      unitId: "adeptCanoness",
+      tier: "C",
+      multiplier: 1.12,
+    },
+    {
+      unitId: "necroPlasmancer",
+      tier: "D",
+      multiplier: 1.05,
     },
     {
       unitId: "ultraEliminatorSgt",
-      tier: "C",
+      tier: "D",
       multiplier: 1.0,
     },
   ],

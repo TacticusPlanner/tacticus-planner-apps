@@ -3,14 +3,7 @@ import { useTranslation } from "react-i18next"
 import { ChevronDown } from "lucide-react"
 import { cn } from "@workspace/ui/lib/utils"
 
-/** Tier cell colours, from the chart design tokens (never raw Tailwind colours). */
-const TIER_TONES: Readonly<Record<string, string>> = {
-  S: "border-chart-4 bg-chart-4/20",
-  A: "border-chart-2 bg-chart-2/20",
-  B: "border-chart-1 bg-chart-1/20",
-  C: "border-chart-3 bg-chart-3/20",
-}
-const UNTIERED_TONE = "border-border bg-muted"
+import { tierToneClass } from "@/entities/legendary-event"
 
 /** "S · 1.85×": the tier name stands out, the separator is read but not shown. */
 function TierLabel({
@@ -69,7 +62,7 @@ export function TierRow({
   children?: ReactNode
 }) {
   const { t } = useTranslation("legendaryEvents")
-  const toneClass = (tone && TIER_TONES[tone]) ?? UNTIERED_TONE
+  const toneClass = tierToneClass(tone)
   const label = (
     <TierLabel isMobile={isMobile} multiplier={multiplier} name={name} />
   )

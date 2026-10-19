@@ -165,31 +165,57 @@ describe("TierListPage", () => {
       expect(
         screen
           .getAllByTestId("tier-list-row-label")
-          .slice(0, 4)
+          .slice(0, 5)
           .map((node) => node.textContent)
-      ).toEqual(["S · 1.85×", "A · 1.55×", "B · 1.25×", "C · 1.05×"])
+      ).toEqual(["S · 1.9×", "A · 1.7×", "B · 1.45×", "C · 1.2×", "D · 1.0×"])
       const s = row("S")
       expect(s).toHaveAttribute("data-layout", isMobile ? "section" : "band")
       expect(tileNames(s)).toEqual([
         "Kariyan",
         "Isabella",
-        "Sho'syl",
-        "Bellator",
+        "Nauseous",
         "Aleph-Null",
+        "Re'vas",
+        "Maladus",
+        "Tyrant Guard",
         "Tan Gi'da",
+        "Snotflogga",
+        "Jaeger",
       ])
       expect(
         within(s)
           .getAllByTestId("tier-tile-multiplier")
           .map((node) => node.textContent)
-      ).toEqual(["2.0×", "1.95×", "1.9×", "1.85×", "1.8×", "1.75×"])
+      ).toEqual([
+        "2.0×",
+        "1.98×",
+        "1.96×",
+        "1.94×",
+        "1.92×",
+        "1.9×",
+        "1.88×",
+        "1.86×",
+        "1.83×",
+        "1.81×",
+      ])
       expect(
         within(s)
           .getAllByTestId("tier-list-tile")
           .map((node) => node.dataset.overridden)
-      ).toEqual(["true", "true", "true", "false", "true", "true"])
+      ).toEqual([
+        "true",
+        "true",
+        "true",
+        "true",
+        "true",
+        "false",
+        "true",
+        "true",
+        "true",
+        "true",
+      ])
       expect(
-        within(tileOf(s, "Bellator")).queryByTestId("tier-tile-override")
+        within(tileOf(s, "Maladus")).queryByTestId("tier-tile-override")
       ).toBeNull()
       expect(
         within(tileOf(s, "Kariyan")).getByTestId("tier-tile-override")
@@ -213,7 +239,7 @@ describe("TierListPage", () => {
         .find((node) => node.dataset.unitId === "blackPossession")!
       expect(
         within(tile).getByTestId("tier-tile-multiplier")
-      ).toHaveTextContent(/^1\.25×$/)
+      ).toHaveTextContent(/^1\.45×$/)
       expect(tile).toHaveAttribute("data-overridden", "false")
       expect(within(tile).queryByTestId("tier-tile-override")).toBeNull()
     })
@@ -226,10 +252,10 @@ describe("TierListPage", () => {
       const toggle = within(untiered).getByTestId("tier-list-untiered-toggle")
       expect(toggle).toHaveAttribute("aria-expanded", "false")
       expect(toggle).toHaveTextContent("Untiered · 1.0×")
-      // The fixture catalog has 118 characters, 21 of them tiered.
+      // The fixture catalog has 118 characters, 47 of them tiered.
       expect(
         within(untiered).getByTestId("tier-list-untiered-count")
-      ).toHaveTextContent("97")
+      ).toHaveTextContent("71")
       expect(within(untiered).queryAllByTestId("tier-list-tile")).toHaveLength(
         0
       )
@@ -237,7 +263,7 @@ describe("TierListPage", () => {
       fireEvent.click(toggle)
       expect(toggle).toHaveAttribute("aria-expanded", "true")
       const names = tileNames(untiered) as string[]
-      expect(names).toHaveLength(97)
+      expect(names).toHaveLength(71)
       expect(names).toEqual(names.toSorted((a, b) => a.localeCompare(b, "en")))
       for (const tile of within(untiered).getAllByTestId("tier-list-tile")) {
         expect(
@@ -336,7 +362,12 @@ describe("TierListPage", () => {
       await waitFor(() =>
         expect(screen.getByTestId("search")).toHaveTextContent("alliance=xenos")
       )
-      expect(tileNames(row("S"))).toEqual(["Sho'syl", "Aleph-Null"])
+      expect(tileNames(row("S"))).toEqual([
+        "Aleph-Null",
+        "Re'vas",
+        "Tyrant Guard",
+        "Snotflogga",
+      ])
       expect(
         within(row("C")).getByTestId("tier-list-row-empty")
       ).toHaveTextContent("No character")
@@ -360,7 +391,7 @@ describe("TierListPage", () => {
         "2.0×"
       )
       expect(details.getByTestId("tier-detail-tier-default")).toHaveTextContent(
-        "1.85×"
+        "1.9×"
       )
       expect(details.getByTestId("tier-detail-owned")).toHaveTextContent(
         "Not unlocked"
@@ -383,7 +414,7 @@ describe("TierListPage", () => {
       data.roster = [
         calgar,
         {
-          unitId: "ultraInceptorSgt",
+          unitId: "deathBlightlord",
           rank: "Diamond1",
           progressionIndex: "Legendary:RedFiveStars",
         },
@@ -391,7 +422,7 @@ describe("TierListPage", () => {
       renderPage()
       await ready()
 
-      fireEvent.click(tileOf(row("S"), "Bellator"))
+      fireEvent.click(tileOf(row("S"), "Maladus"))
 
       const details = within(await screen.findByTestId("tier-tile-details"))
       expect(details.queryByTestId("tier-detail-tier-default")).toBeNull()
@@ -449,7 +480,7 @@ describe("TierListPage", () => {
       expect(onlyOwned).toBeDisabled()
       expect(onlyOwned).not.toBeChecked()
       // owned=1 is ignored while ownership is unknown.
-      expect(tileNames(row("S"))).toHaveLength(6)
+      expect(tileNames(row("S"))).toHaveLength(10)
       for (const tile of screen.getAllByTestId("tier-list-tile")) {
         expect(tile).toHaveAttribute("data-muted", "false")
       }
@@ -500,7 +531,7 @@ describe("TierListPage", () => {
 
       await ready()
       expect(screen.getByTestId("search")).toHaveTextContent(/^$/)
-      expect(tileNames(row("S"))).toHaveLength(6)
+      expect(tileNames(row("S"))).toHaveLength(10)
     })
 
     it("filters every row by name, Untiered included", async () => {

@@ -8,6 +8,9 @@ const TodayPage = lazy(() =>
 const HsePage = lazy(() =>
   import("./ui/hse-page").then((module) => ({ default: module.HsePage }))
 )
+const HrePage = lazy(() =>
+  import("./ui/hre-page").then((module) => ({ default: module.HrePage }))
+)
 const GuildRaidsPage = lazy(() =>
   import("./ui/guild-raids/guild-raids-page").then((module) => ({
     default: module.GuildRaidsPage,
@@ -22,6 +25,7 @@ export const routes: RouteObject[] = [
   // Raids is the Today page itself: the multi-day plan lives at Plan > Schedule.
   { path: "raids", element: <TodayPage /> },
   { path: "hse", element: <HsePage /> },
+  { path: "hre", element: <HrePage /> },
   { path: "shops", element: <ShopsPage /> },
   { path: "guild-raids", element: <GuildRaidsPage /> },
 ]

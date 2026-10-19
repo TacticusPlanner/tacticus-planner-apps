@@ -6,6 +6,7 @@ import {
 import type { LegendaryEventRosterUnit } from "../model/types"
 import {
   effectiveHordeMultiplier,
+  hordeTierName,
   type HordeModeTierList,
 } from "./horde-tier-list"
 
@@ -27,6 +28,8 @@ export interface ClearEstimateConfig {
   calibrated: boolean
   /** Each tiered character's horde-mode multiplier; an untiered character has 1.0. */
   hordeMultipliers: ReadonlyMap<string, number>
+  /** Each tiered character's tier name (S, A…), for display; absent in hand-built configs. */
+  hordeTiers?: ReadonlyMap<string, string>
   /** The power formula's game data; null when the `unit-power` dataset is absent (no estimate). */
   unitPower: UnitPowerContext | null
 }
@@ -67,6 +70,12 @@ export function clearEstimateConfig(
       (hordeModeTiers?.characters ?? []).flatMap(({ unitId }) => {
         const effective = effectiveHordeMultiplier(hordeModeTiers, unitId)
         return effective === null ? [] : [[unitId, effective] as const]
+      })
+    ),
+    hordeTiers: new Map(
+      (hordeModeTiers?.characters ?? []).flatMap(({ unitId }) => {
+        const tier = hordeTierName(hordeModeTiers, unitId)
+        return tier === null ? [] : [[unitId, tier] as const]
       })
     ),
   }

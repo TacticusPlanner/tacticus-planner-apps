@@ -180,7 +180,7 @@ export function TierListPage() {
     content = (
       <div className="flex flex-col gap-3" data-testid="tier-list-loading">
         <span className="sr-only">{t("tierList.loading")}</span>
-        {["S", "A", "B", "C"].map((key) => (
+        {["S", "A", "B", "C", "D"].map((key) => (
           <Skeleton className="h-20 w-full rounded-xl" key={key} />
         ))}
       </div>

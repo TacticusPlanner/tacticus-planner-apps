@@ -232,6 +232,11 @@ describe("clear estimate (spec worked examples)", () => {
     // A tier the list does not define leaves the character untiered, unless it has its own value.
     expect(unitHordeMultiplier(config, "ultraCalgar")).toBe(1)
     expect(unitHordeMultiplier(config, "bloodDante")).toBe(1.4)
+    // The tier names the picker shows: an undefined tier is no tier, even with its own value.
+    expect(config.hordeTiers?.get("ultraTigurius")).toBe("A")
+    expect(config.hordeTiers?.get("custoBladeChampion")).toBe("S")
+    expect(config.hordeTiers?.has("ultraCalgar")).toBe(false)
+    expect(config.hordeTiers?.has("bloodDante")).toBe(false)
     expect(estimateClearDepth(5000, [1000], config).calibrated).toBe(
       CLEAR_ESTIMATE_CALIBRATED
     )
@@ -240,6 +245,7 @@ describe("clear estimate (spec worked examples)", () => {
   it("treats every unit as untiered without a horde-mode tier list", () => {
     const config = clearEstimateConfig(null, WORKED_CONFIG.unitPower)
     expect(config.hordeMultipliers.size).toBe(0)
+    expect(config.hordeTiers?.size).toBe(0)
     expect(config.unitPower).toBe(WORKED_CONFIG.unitPower)
     expect(clearEstimateConfig(null, null).unitPower).toBeNull()
   })

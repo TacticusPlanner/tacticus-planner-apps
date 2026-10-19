@@ -72,6 +72,16 @@ export function effectiveHordeMultiplier(
   return hordeTierLookup(tierList).get(unitId)?.multiplier ?? null
 }
 
+/** A character's tier name (see `hordeTierLookup` for the rules); null when it is untiered,
+ *  including when its tier is missing from the record. */
+export function hordeTierName(
+  tierList: HordeModeTierList | null,
+  unitId: string
+): string | null {
+  if (!tierList) return null
+  return hordeTierLookup(tierList).get(unitId)?.tier ?? null
+}
+
 export type HordeTierAlliance = "all" | "Imperial" | "Chaos" | "Xenos"
 
 export interface HordeTierListFilters {

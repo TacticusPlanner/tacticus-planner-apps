@@ -341,7 +341,8 @@
       "sortPointsLeft": "Verbleibende Punkte",
       "sortPower": "Stärke",
       "estimating": "Wird geschätzt…",
-      "pointsScope": "Verbleibende Punkte auf der ganzen Bahn, alle Kämpfe"
+      "pointsScope": "Verbleibende Punkte auf der ganzen Bahn, alle Kämpfe",
+      "tier": "Tier {{tier}}"
     },
     "toasts": {
       "reloaded": "Dein Plan wurde auf einem anderen Gerät geändert und neu geladen. Versuche es erneut.",

@@ -33,6 +33,7 @@ import {
 import { TeamPickerObjectiveChips } from "./team-picker-objective-chips"
 import { SelectedChip } from "./team-picker-selected-chip"
 import { TeamPickerSort } from "./team-picker-sort"
+import { TeamPickerTileMarkers } from "./team-picker-tile-markers"
 import { TeamPickerUnitState } from "./team-picker-unit-state"
 
 /**
@@ -49,7 +50,8 @@ import { TeamPickerUnitState } from "./team-picker-unit-state"
  * satisfy it together with the selected ones: units
  * satisfying every selected objective come first, the others follow dimmed (still selectable, with
  * an accessible "does not satisfy" description); the selection lives as long as the picker, so it
- * resets when the editor closes and survives Save and add another.
+ * resets when the editor closes and survives Save and add another. A tile's top-left corner marks
+ * its horde-mode tier and Healer / Mechanic traits.
  */
 export function TeamUnitPicker({
   lane,
@@ -115,6 +117,8 @@ export function TeamUnitPicker({
   // Power reads the shown roster (synced or Goals Preview); without power data the sort falls back
   // to Points left (spec: the picker has a Points left / Power sort).
   const shownSort: PickerSort = powerConfig ? sort : "pointsLeft"
+  const hordeTiers =
+    estimates === "pending" ? undefined : estimates?.config?.hordeTiers
   const tiles = useMemo(
     () =>
       buildPickerTiles(
@@ -374,6 +378,10 @@ export function TeamUnitPicker({
                     })}
                   </span>
                 </button>
+                <TeamPickerTileMarkers
+                  tier={hordeTiers?.get(id) ?? null}
+                  traits={tile.unit.traits}
+                />
                 <Button
                   aria-label={t(
                     isReserve
