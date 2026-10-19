@@ -1,0 +1,164 @@
+import userEvent from "@testing-library/user-event"
+import type { i18n as I18n } from "i18next"
+import { createMemoryRouter, RouterProvider } from "react-router"
+import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
+
+import { utharEvent } from "@/test/fixtures/legendary-events"
+import { createTestI18n, i18nWrapper } from "@/test/i18n"
+import { render, screen, waitFor, within } from "@/test/render"
+
+import { PlanWizard } from "./plan-wizard"
+import { RUN_3_START_MS, planInputs } from "./plan.fixtures"
+import type { PlanSource } from "./use-plan-source"
+
+const FARMING = {
+  status: "ready" as const,
+  estimate: () => ({ days: 10, date: "2026-10-16" }),
+}
+vi.mock("./use-upgrade-farming-days", () => ({
+  useUpgradeFarmingDays: () => FARMING,
+}))
+
+const run = vi.fn()
+vi.mock("./use-plan-create", () => ({
+  usePlanCreate: () => ({ items: [], running: false, run }),
+}))
+
+let tourSteps: unknown
+vi.mock("@/shared/tour", () => ({
+  useTourPageSteps: (steps: unknown) => {
+    tourSteps = steps
+  },
+}))
+
+const capture = vi.fn()
+vi.mock("@/shared/analytics", () => ({
+  useAnalyticsActions: () => ({ captureEvent: capture }),
+}))
+
+vi.mock("@/entities/project", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/entities/project")>()),
+  useProjects: () => ({ projects: [], loading: false }),
+}))
+
+const SOURCE: Extract<PlanSource, { status: "ready" }> = {
+  status: "ready",
+  event: utharEvent,
+  inputs: planInputs(),
+  runDates: {
+    starts: [],
+    deadlineMs: RUN_3_START_MS + 7 * 24 * 60 * 60 * 1000,
+    deadlineEstimated: true,
+  },
+  masterTotal: () => 0,
+  hordeMultiplier: () => 1,
+  goalTargets: new Map(),
+}
+
+let i18n: I18n
+
+beforeAll(async () => {
+  i18n = await createTestI18n("en")
+})
+
+beforeEach(() => {
+  run.mockReset()
+  capture.mockReset()
+  run.mockResolvedValue({ ok: true, projectId: "project-1" })
+})
+
+function renderWizard() {
+  const router = createMemoryRouter(
+    [
+      {
+        path: "/legendary-events/:eventId/plan",
+        element: <PlanWizard initialTarget={null} source={SOURCE} />,
+      },
+      {
+        path: "/legendary-events/:eventId",
+        element: <div data-testid="event-page" />,
+      },
+    ],
+    { initialEntries: [`/legendary-events/${utharEvent.id}/plan`] }
+  )
+  render(<RouterProvider router={router} />, { wrapper: i18nWrapper(i18n) })
+  return router
+}
+
+const next = () => userEvent.click(screen.getByTestId("plan-wizard-next"))
+
+describe("PlanWizard", () => {
+  it("shows the estimated deadline and a verdict per step", async () => {
+    renderWizard()
+    expect(capture).toHaveBeenCalledWith({
+      type: "legendary_event_plan_wizard_opened",
+      eventId: utharEvent.id,
+      source: "link",
+    })
+    expect(tourSteps).toMatchObject({ desktop: expect.any(Array) })
+    expect(screen.getByTestId("plan-wizard-deadline")).toHaveTextContent(
+      "Deadline: about Apr 22, 2027 (estimated)"
+    )
+    const options = screen.getAllByTestId("plan-wizard-target-option")
+    expect(options[0]).toHaveAttribute("data-step", "unlock")
+    expect(within(options[0]!).getByRole("radio")).toBeChecked()
+    await waitFor(() =>
+      expect(screen.getByTestId("plan-wizard-best-step")).not.toHaveTextContent(
+        "Checking"
+      )
+    )
+  })
+
+  it("walks the five steps and creates the plan in a new project", async () => {
+    const router = renderWizard()
+    await next()
+    expect(
+      await screen.findByTestId("plan-wizard-upgrades")
+    ).toBeInTheDocument()
+    await next()
+    expect(screen.getByTestId("plan-wizard-teams")).toBeInTheDocument()
+    expect(
+      within(
+        screen
+          .getAllByTestId("plan-wizard-lane")
+          .find((lane) => lane.dataset.lane === "alpha")!
+      ).getAllByTestId("plan-wizard-team").length
+    ).toBeGreaterThan(0)
+    await next()
+    expect(screen.getByTestId("plan-wizard-runs")).toBeInTheDocument()
+    await next()
+    expect(screen.getByTestId("plan-wizard-review")).toBeInTheDocument()
+    expect(screen.getByTestId("plan-wizard-project-name")).toHaveValue(
+      "votanUthar · Unlock"
+    )
+
+    await userEvent.click(screen.getByTestId("plan-wizard-create"))
+    expect(run).toHaveBeenCalledTimes(1)
+    const call = run.mock.calls[0]![0]
+    expect(call.destination).toEqual({
+      kind: "new",
+      name: "votanUthar · Unlock",
+    })
+    expect(call.targetEventId).toBe(utharEvent.id)
+    expect(call.writes.lanes.length).toBeGreaterThan(0)
+    expect(capture).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: "legendary_event_plan_created",
+        ok: true,
+      })
+    )
+    await waitFor(() =>
+      expect(router.state.location.pathname).toBe(
+        `/legendary-events/${utharEvent.id}`
+      )
+    )
+  })
+
+  it("asks before leaving once the draft changed", async () => {
+    const router = renderWizard()
+    const options = screen.getAllByTestId("plan-wizard-target-option")
+    await userEvent.click(within(options[1]!).getByRole("radio"))
+    void router.navigate(`/legendary-events/${utharEvent.id}`)
+    expect(await screen.findByText("Leave the plan?")).toBeInTheDocument()
+  })
+})

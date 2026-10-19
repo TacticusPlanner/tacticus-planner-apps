@@ -16,7 +16,7 @@ import type { PlanEconomy, PlanInputs } from "./plan-inputs"
 import type { DraftTeam } from "./plan-teams"
 
 /** The draft as a plan the token plan and forecast read: every team with a depth per plan run. */
-export function draftPlan(
+function draftPlan(
   inputs: Pick<PlanInputs, "plan">,
   teams: readonly DraftTeam[],
   economy: PlanEconomy

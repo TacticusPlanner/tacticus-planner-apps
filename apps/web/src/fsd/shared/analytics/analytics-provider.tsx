@@ -143,6 +143,27 @@ export function useAnalyticsActions() {
         case "legendary_event_paid_options_toggled":
           client.capture(event.type, { event_id: event.eventId, on: event.on })
           break
+        case "legendary_event_plan_wizard_opened":
+          client.capture(event.type, {
+            event_id: event.eventId,
+            source: event.source,
+          })
+          break
+        case "legendary_event_plan_target_chosen":
+          client.capture(event.type, {
+            event_id: event.eventId,
+            step: event.step,
+            verdict: event.verdict,
+          })
+          break
+        case "legendary_event_plan_created":
+          client.capture(event.type, {
+            event_id: event.eventId,
+            goals: event.goals,
+            teams: event.teams,
+            ok: event.ok,
+          })
+          break
         case "legendary_event_annotation_set":
           client.capture(event.type, {
             event_id: event.eventId,

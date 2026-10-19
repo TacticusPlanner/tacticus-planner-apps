@@ -131,16 +131,4 @@ export function projectedRosters(
   return result
 }
 
-/** The lane ids allowing a unit. */
-export function lanesAllowing(
-  inputs: Pick<PlanInputs, "lanes">,
-  unitId: string
-): LegendaryEventLaneId[] {
-  return inputs.lanes
-    .filter((lane) =>
-      (lane.lane.availableUnitIds as readonly string[]).includes(unitId)
-    )
-    .map((lane) => lane.laneId)
-}
-
 export const PLAN_LANE_IDS = LEGENDARY_EVENT_LANE_IDS

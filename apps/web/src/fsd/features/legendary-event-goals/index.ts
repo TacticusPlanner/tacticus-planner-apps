@@ -2,6 +2,7 @@ export { useLegendaryEventGoalTargets } from "./model/use-legendary-event-goal-t
 export {
   leaderboardRowPrefill,
   prefillGoalType,
+  stepInGoals,
 } from "./model/create-goal-prefill"
 export { useGoalLabels } from "./model/use-goal-labels"
 export {

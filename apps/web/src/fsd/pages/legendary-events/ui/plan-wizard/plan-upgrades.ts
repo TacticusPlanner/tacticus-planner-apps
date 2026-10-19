@@ -14,7 +14,7 @@ import { planRuns, type ChosenUpgrade, type PlanInputs } from "./plan-inputs"
 const DAY_MS = 24 * 60 * 60 * 1000
 
 /** Upgrade goals one plan recommends at most (design D4). */
-export const MAX_PLAN_UPGRADES = 12
+const MAX_PLAN_UPGRADES = 12
 /** Steps one recommendation chains at most (one step alone rarely moves a team a battle). */
 const MAX_CHAIN_STEPS = 3
 /** Steps all of a unit's recommendations hold at most. */

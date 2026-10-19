@@ -19,6 +19,11 @@ const TierListPage = lazy(() =>
     default: m.TierListPage,
   }))
 )
+const PlanWizardPage = lazy(() =>
+  import("./ui/plan-wizard/plan-wizard-page").then((m) => ({
+    default: m.PlanWizardPage,
+  }))
+)
 const LegendaryEventPage = lazy(() =>
   import("./ui/legendary-event/legendary-event-page").then((m) => ({
     default: m.LegendaryEventPage,
@@ -34,4 +39,5 @@ export const routes: RouteObject[] = [
   { path: "master-table", element: <MasterTablePage /> },
   { path: "tier-list", element: <TierListPage /> },
   { path: ":eventId", element: <LegendaryEventPage /> },
+  { path: ":eventId/plan", element: <PlanWizardPage /> },
 ]

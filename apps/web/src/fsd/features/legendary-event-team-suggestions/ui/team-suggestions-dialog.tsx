@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef, useState } from "react"
+import { useEffect, useId, useRef, useState, type ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import { Check, Lock } from "lucide-react"
 import { characterIcon } from "@workspace/game-catalog"
@@ -45,6 +45,7 @@ export function TeamSuggestionsDialog({
   source,
   goalLines,
   onUseSuggestion,
+  footer,
 }: {
   open: boolean
   onClose: () => void
@@ -52,6 +53,8 @@ export function TeamSuggestionsDialog({
   goalLines?: (unitId: string) => readonly string[]
   /** `rank` is the proposal's 1-based position in the list. */
   onUseSuggestion: (suggestion: TeamSuggestion, rank: number) => void
+  /** Below the proposals: the lane's link to the 1-click plan. */
+  footer?: ReactNode
 }) {
   const { t, i18n } = useTranslation("legendaryEvents")
   const unitName = useUnitName()
@@ -318,6 +321,7 @@ export function TeamSuggestionsDialog({
             {t("suggestions.showMore")}
           </Button>
         ) : null}
+        {footer}
       </ResponsiveDialogBody>
     </ResponsiveDialog>
   )

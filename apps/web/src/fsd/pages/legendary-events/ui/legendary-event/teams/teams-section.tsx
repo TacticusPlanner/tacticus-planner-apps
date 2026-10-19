@@ -1,4 +1,5 @@
 import { useId, useMemo, useState } from "react"
+import { Link } from "react-router"
 import { useTranslation } from "react-i18next"
 import { Plus, Sparkles } from "lucide-react"
 import { Button } from "@workspace/ui/components/button"
@@ -311,6 +312,15 @@ export function TeamsSection({
 
       {state.kind === "ready" && suggesting !== null ? (
         <TeamSuggestionsDialog
+          footer={
+            <Link
+              className="self-start text-sm text-primary underline-offset-4 hover:underline"
+              data-testid="team-suggestions-plan-wizard"
+              to={`/legendary-events/${teams.eventId}/plan?from=suggestions`}
+            >
+              {t("planWizard.openFromSuggestions")}
+            </Link>
+          }
           goalLines={teams.goals.goalLines}
           key={suggesting}
           onClose={() => setSuggesting(null)}

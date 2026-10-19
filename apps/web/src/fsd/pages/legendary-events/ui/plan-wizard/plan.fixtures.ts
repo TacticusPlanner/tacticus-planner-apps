@@ -18,19 +18,19 @@ import type { PlanInputs, PlanLane } from "./plan-inputs"
 const DAY_MS = 24 * 60 * 60 * 1000
 
 /** Uthar Alpha battles 1–7 (catalog `lre-battles` power). */
-export const ALPHA_POWERS = [1018, 3055, 8199, 20703, 40586, 75787, 134603]
+const ALPHA_POWERS = [1018, 3055, 8199, 20703, 40586, 75787, 134603]
 
 export const NOW_MS = Date.parse("2026-10-06T00:00:00Z")
 export const RUN_3_START_MS = Date.parse("2027-04-15T00:00:00Z")
 
-export const PLAN_CONFIG: ClearEstimateConfig = {
+const PLAN_CONFIG: ClearEstimateConfig = {
   powerRatio: 1.2,
   calibrated: true,
   hordeMultipliers: new Map(),
   unitPower: unitPowerContextFixture(),
 }
 
-export function planRosterUnit(
+function planRosterUnit(
   unitId: string,
   progressionIndex: Progression = "Epic:RedOneStar",
   rank: LegendaryEventRosterUnit["rank"] = "Gold1"
@@ -47,7 +47,7 @@ export function planRosterUnit(
   }
 }
 
-export const PLAN_ROSTER = [
+const PLAN_ROSTER = [
   "ultraCalgar",
   "ultraTigurius",
   "ultraTitus",

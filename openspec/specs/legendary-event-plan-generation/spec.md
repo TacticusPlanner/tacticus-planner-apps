@@ -1,6 +1,10 @@
-# Spec Delta
+# legendary-event-plan-generation Specification
 
-## ADDED Requirements
+## Purpose
+
+Defines the 1-click plan's model: the points target for any ascension step, the ceiling a roster can reach within the token supply, the verdict per step, the greedy upgrade recommendations and the teams generated per lane for each run's projected roster.
+
+## Requirements
 
 ### Requirement: Points target for a chosen ascension step
 
@@ -20,10 +24,10 @@ For a chosen step of the event unit (any step after its synced progression: `unl
 
 ### Requirement: Ceiling and verdict per step
 
-The planner SHALL compute a roster's **ceiling** as the run forecast's ending points for the last run (`legendary-event-run-forecast`) when the token plan is built from the teams generated for that roster (see team generation). Each offered step SHALL get a verdict:
+The planner SHALL compute a roster's **ceiling** as the run forecast's ending points for the last run (`legendary-event-run-forecast`) when the token plan is built from the teams generated for that roster (see team generation), each token played at the depth its team has in the run the token falls in. A run in which no team can play leaves the rest of that run's tokens unplanned; planning carries on with the next run's tokens. Each offered step SHALL get a verdict:
 
 - **Reachable now** when its points target ≤ the ceiling of the synced roster (or "enough currency now");
-- **Needs upgrades** when it is not, and its points target ≤ the ceiling of the synced roster plus the full recommended upgrade set;
+- **Needs upgrades** when it is not, and its points target ≤ the ceiling with every recommended upgrade;
 - **Too ambitious** otherwise, or when not reachable this event.
 
 Each verdict SHALL carry the points short ("3,864 points short with your roster") and a Too ambitious step SHALL name the highest step that is not Too ambitious.
@@ -43,14 +47,14 @@ Each verdict SHALL carry the points short ("3,864 points short with your roster"
 
 ### Requirement: Upgrade recommendations close the shortfall
 
-For a step that is not Reachable now, the planner SHALL recommend upgrade goals by repeating, until the step's target is at or below the ceiling, nothing adds ceiling, or 12 goals are chosen:
+The planner SHALL recommend upgrade goals greedily, once per draft economy, until nothing adds ceiling or 12 recommendations are chosen:
 
-1. candidates are the next steps (`legendary-event-upgrade-impact`: Unlock, Rank, Ascension) of every unit any lane allows, applied on top of the goals already chosen, up to three steps per unit;
-2. a candidate is dropped when its estimated completion date (goal farming estimates, the candidate appended after the account's existing goals) is after the start (announced or estimated) of the last run it would raise the ceiling in;
-3. each candidate's score is the ceiling gain over the current selection, counting only runs starting after its completion date, divided by its estimated farming days (at least 1);
+1. candidates are chains of one to three consecutive next steps (`legendary-event-upgrade-impact`: Unlock, Rank, Ascension) of a unit, applied on top of the unit's recommendations already chosen, for the lanes' current team members, the four strongest owned units per objective and the two locked units per objective with the most points per battle (a single step rarely moves a team a battle, so chains are needed);
+2. a candidate's farming days are the goal farming estimate of the unit's chain from its synced state; its ready date is the previous recommendation's ready date plus those days (recommendations are farmed in order), and it counts only for runs starting after that date. A candidate that helps no run is dropped;
+3. each candidate's score is the ceiling gain over the current selection divided by its farming days (at least 1);
 4. the highest score is chosen; ties prefer the higher master table total across all served events, then the higher horde-mode multiplier, then the localized name.
 
-A unit's Active goal that already covers a candidate SHALL be reused (shown as "already planned") instead of recommending a new one. Each recommendation SHALL report its unit, goal type and target, the ceiling gain, its estimated completion date and the first run it helps.
+A step's recommendations SHALL be the list's prefix up to the first one whose ceiling reaches the step's target (all of them when none does; none when Reachable now). A unit's Active goal that already covers a candidate SHALL be reused (shown as "already planned") instead of creating a new one. Each recommendation SHALL report its unit, steps, the ceiling gain, its ready date and the first run it helps.
 
 #### Scenario: Goal ready too late is dropped
 

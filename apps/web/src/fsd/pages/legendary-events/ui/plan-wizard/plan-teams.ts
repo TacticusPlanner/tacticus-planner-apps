@@ -43,7 +43,7 @@ export interface DraftTeam {
 export const memberKey = (memberUnitIds: readonly string[]) =>
   [...memberUnitIds].sort().join("|")
 
-export const generatedTeamKey = (
+const generatedTeamKey = (
   laneId: LegendaryEventLaneId,
   memberUnitIds: readonly string[]
 ) => `${laneId}:${memberKey(memberUnitIds)}`
