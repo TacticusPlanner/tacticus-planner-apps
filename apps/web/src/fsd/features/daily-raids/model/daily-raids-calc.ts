@@ -48,6 +48,7 @@ import {
   totalResourceProgress,
 } from "./daily-raids-progress"
 import { planEventFarm } from "./home-screen-event-farm"
+import { buildMissionGoalNodes } from "./mission-raids"
 import { buildFarmNodeFilter } from "./raids-filters/build-farm-node-filter"
 import type {
   RaidsFilterBattle,
@@ -97,6 +98,8 @@ export type DailyRaidsCalculationInput = {
     attemptsLeftByBattle: ReadonlyMap<BattleId, number>
     energyBudget: number
   }
+  /** The Dailies > HRE tab only: also return, per node, the best-priority goal it feeds. */
+  missionGoalNodes?: boolean
   referenceDate?: Date
   onslaughtProgress?: OnslaughtProgress
   onslaughtRewards?: readonly OnslaughtRewardStorageModel[]
@@ -321,6 +324,9 @@ export function calculateDailyRaids(
         ...params.eventFarm,
       })
     : undefined
+  const missionGoalNodes = params.missionGoalNodes
+    ? buildMissionGoalNodes(goals, inventory, upgradesById, params.battlesById)
+    : undefined
   const blockedGoals = blockedGoalsOf(goals, plan.outcomes)
   // Nothing to raid and nothing to explain: no plan. A goal blocked outright still gets a plan view
   // so its blockers are reported rather than silently dropped, and so does a filter that removed
@@ -343,6 +349,7 @@ export function calculateDailyRaids(
     blockedGoals,
     filteredOut,
     eventFarm,
+    missionGoalNodes,
     dailyEnergy: params.dailyEnergy,
     goalsById,
     shopOffersById,
