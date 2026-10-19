@@ -38,6 +38,7 @@ const env = vi.hoisted(() => ({
   inventory: undefined as unknown,
   inventoryUpgrades: undefined as unknown[] | undefined,
   abilityText: {} as Record<string, unknown>,
+  galatianMythic: true,
   power: {
     status: "loading",
     retry: () => {},
@@ -112,6 +113,7 @@ const galatian = {
     name: "MacroPlasmaIncinerator",
     recipes: recipes([["upgHpC002", "upgDmgC013", "upgArmC001"]]),
   },
+  mythicAbility: { name: "WisdomOfTheAncients" },
 }
 const biovore = {
   ...galatian,
@@ -121,8 +123,20 @@ const biovore = {
   alliance: "Xenos",
   primaryAbility: { ...galatian.primaryAbility, name: "SporeMine" },
   secondaryAbility: { ...galatian.secondaryAbility, name: "Biomorph" },
-  // As the catalog will serve it once #204 lands.
   mythicAbility: { name: "HyperCorrosiveAcid" },
+}
+const reanimator = {
+  ...galatian,
+  id: "necroReanimator",
+  name: "Reanimator",
+  faction: "Necrons",
+  alliance: "Xenos",
+  primaryAbility: { ...galatian.primaryAbility, name: "ReanimationBeam" },
+  secondaryAbility: {
+    ...galatian.secondaryAbility,
+    name: "ReanimationProtocols",
+  },
+  mythicAbility: undefined,
 }
 
 // Rungs 2 and 3 are the catalog's; the rest only have to exist up to level 60.
@@ -150,7 +164,12 @@ const upgrade = (id: string) => ({
 })
 
 vi.mock("@workspace/game-catalog/queries", () => ({
-  getMows: () => Promise.resolve([galatian, biovore]),
+  getMows: () =>
+    Promise.resolve([
+      env.galatianMythic ? galatian : { ...galatian, mythicAbility: undefined },
+      biovore,
+      reanimator,
+    ]),
   getMowUpgradeCosts: () => Promise.resolve(costs),
   getUpgrades: () =>
     Promise.resolve(
@@ -294,7 +313,8 @@ describe("MowUnitPage", () => {
     env.shards = undefined
     env.inventory = undefined
     env.inventoryUpgrades = undefined
-    env.abilityText = {}
+    env.abilityText = enNpcAbilityText as Record<string, unknown>
+    env.galatianMythic = true
     env.power = {
       status: "ready",
       data: unitPowerContextFixture(),
@@ -347,15 +367,48 @@ describe("MowUnitPage", () => {
     expect(
       screen.getByRole("link", { name: /Machines of War/ })
     ).toHaveAttribute("href", "/library/machines-of-war")
-    // Imperial before Xenos: Galatian, then Biovore.
-    fireEvent.click(screen.getByRole("link", { name: /Next unit: Biovore/ }))
+    // Imperial before Xenos, then by faction: Galatian, Reanimator, Biovore.
+    fireEvent.click(screen.getByRole("link", { name: /Next unit: Reanimator/ }))
     await act(async () => {})
     expect(screen.getByTestId("where")).toHaveTextContent(
-      "/library/machines-of-war/tyranBiovore?tab=upgrades"
+      "/library/machines-of-war/necroReanimator?tab=upgrades"
     )
   })
 
+  it("shows rules text, a stepper, the next level and a chart for both abilities", async () => {
+    await renderUnit("/library/machines-of-war/ultraDreadnought")
+    for (const [ability, name, text] of [
+      ["primary", "Duty Eternal", "200 Health"],
+      ["secondary", "Macro Plasma Incinerator", "30-"],
+    ] as const) {
+      const panel = screen.getByTestId(`unit-ability-${ability}`)
+      expect(panel).toHaveTextContent(name)
+      expect(panel).toHaveTextContent(text)
+      expect(
+        screen.getByTestId(`unit-ability-${ability}-stepper`)
+      ).toBeInTheDocument()
+      expect(
+        screen.getByTestId(`unit-ability-${ability}-next`)
+      ).toBeInTheDocument()
+      expect(within(panel).getAllByRole("figure").length).toBeGreaterThan(0)
+      expect(
+        screen.queryByTestId(`unit-ability-${ability}-missing-text`)
+      ).not.toBeInTheDocument()
+    }
+  })
+
+  it("resolves cooldown and munition constants keyed with a trailing space", async () => {
+    await renderUnit("/library/machines-of-war/necroReanimator")
+    const panel = screen.getByTestId("unit-ability-primary")
+    expect(panel).toHaveTextContent("Reanimation Beam")
+    expect(panel).toHaveTextContent("Initial cooldown: 1 round")
+    expect(panel).toHaveTextContent("Cost: 1 munition")
+    expect(panel).not.toHaveTextContent("initialCooldownTurns")
+    expect(panel).not.toHaveTextContent("munitionsCost")
+  })
+
   it("shows both abilities without rules text in the missing-text state", async () => {
+    env.abilityText = {}
     await renderUnit("/library/machines-of-war/ultraDreadnought")
     for (const [ability, name] of [
       ["primary", "Duty Eternal"],
@@ -375,7 +428,7 @@ describe("MowUnitPage", () => {
 
   it("turns the panel on when rules text exists, up to the ladder's top level", async () => {
     env.abilityText = {
-      DutyEternal: (enNpcAbilityText as Record<string, unknown>).StormOfWrath,
+      DutyEternal: (enNpcAbilityText as Record<string, unknown>).DutyEternal,
     }
     await renderUnit("/library/machines-of-war/ultraDreadnought")
     expect(
@@ -385,7 +438,7 @@ describe("MowUnitPage", () => {
       screen.getByTestId("unit-ability-secondary-missing-text")
     ).toBeInTheDocument()
     fireEvent.click(
-      screen.getByTestId("unit-ability-primary-chart-minDmg-column-59")
+      screen.getByTestId("unit-ability-primary-chart-summonHp-column-59")
     )
     expect(
       screen.getByTestId("unit-ability-primary-stepper-value")
@@ -453,15 +506,12 @@ describe("MowUnitPage", () => {
       expect(screen.getByTestId("unit-power-loading")).toBeInTheDocument()
     })
 
-    it("shows the power as unavailable and keeps the panels and tabs when the data failed", async () => {
+    it("hides the power and keeps the panels and tabs when the data failed", async () => {
       env.power = { status: "error", retry: () => {} }
       env.authenticated = true
       env.roster = [maxedBiovore]
       await renderUnit("/library/machines-of-war/tyranBiovore")
-      expect(screen.getByTestId("unit-power-value")).toHaveTextContent("—")
-      expect(screen.getByTestId("unit-power-note")).toHaveTextContent(
-        "Power data unavailable"
-      )
+      expect(screen.queryByTestId("unit-power")).not.toBeInTheDocument()
       expect(screen.getByTestId("unit-ability-primary")).toBeInTheDocument()
       expect(screen.getByTestId("unit-ability-secondary")).toBeInTheDocument()
       fireEvent.click(screen.getByTestId("unit-tab-upgrades"))
@@ -543,20 +593,50 @@ describe("MowUnitPage", () => {
       env.roster = [{ ...ownedGalatian, progressionIndex }]
     }
 
-    it("follows the blue stars, without a stepper, and has no data yet", async () => {
+    it("follows the blue stars, without a stepper, and shows the table value unscaled", async () => {
       owned("Mythic:TwoBlueStars")
       await renderUnit("/library/machines-of-war/ultraDreadnought")
       const panel = screen.getByTestId("unit-ability-mythic")
-      expect(panel).toHaveTextContent("Mythic ability")
+      expect(panel).toHaveTextContent("Wisdom of the Ancients")
       expect(screen.getByTestId("unit-ability-mythic-level")).toHaveTextContent(
         "Level 2 · from blue stars"
+      )
+      // Level 2 of 10/13/16/20; the Mythic rarity factor would make it -26%.
+      expect(panel).toHaveTextContent("-13% Damage")
+      expect(panel).not.toHaveTextContent("-26%")
+      expect(
+        screen.queryByTestId("unit-ability-mythic-missing-text")
+      ).not.toBeInTheDocument()
+      expect(
+        screen.queryByTestId("unit-ability-mythic-stepper")
+      ).not.toBeInTheDocument()
+    })
+
+    it("is titled Mythic ability with the missing-text note when the catalog names none", async () => {
+      env.galatianMythic = false
+      owned("Mythic:TwoBlueStars")
+      await renderUnit("/library/machines-of-war/ultraDreadnought")
+      expect(screen.getByTestId("unit-ability-mythic")).toHaveTextContent(
+        "Mythic ability"
+      )
+      expect(
+        screen.getByTestId("unit-ability-mythic-missing-text")
+      ).toHaveTextContent("Rules text isn't in the planner yet.")
+      expect(
+        screen.queryByTestId("unit-ability-mythic-stepper")
+      ).not.toBeInTheDocument()
+    })
+
+    it("shows the ability's name with the missing-text note when its rules text is missing", async () => {
+      env.abilityText = {}
+      owned("Mythic:TwoBlueStars")
+      await renderUnit("/library/machines-of-war/ultraDreadnought")
+      expect(screen.getByTestId("unit-ability-mythic")).toHaveTextContent(
+        "Wisdom of the Ancients"
       )
       expect(
         screen.getByTestId("unit-ability-mythic-missing-text")
       ).toBeInTheDocument()
-      expect(
-        screen.queryByTestId("unit-ability-mythic-stepper")
-      ).not.toBeInTheDocument()
     })
 
     it("says it unlocks at Mythic below Mythic", async () => {
@@ -580,6 +660,9 @@ describe("MowUnitPage", () => {
       fireEvent.click(await screen.findByRole("option", { name: /Wings/ }))
       expect(screen.getByTestId("unit-ability-mythic-level")).toHaveTextContent(
         "Level 4"
+      )
+      expect(screen.getByTestId("unit-ability-mythic")).toHaveTextContent(
+        "-20% Damage"
       )
     })
 
@@ -686,7 +769,7 @@ describe("MowUnitPage", () => {
       }
     }
 
-    it("covers the header, tabs, Primary panel and the upgrades tab on desktop, for a MoW without rules text", async () => {
+    it("covers the header, tabs, Primary panel and the upgrades tab on desktop, for a MoW with rules text", async () => {
       await renderUnit("/library/machines-of-war/ultraDreadnought")
       targetsPresent(env.tour?.desktop)
       expect(env.tour?.desktop.map((step) => step.target)).toEqual([

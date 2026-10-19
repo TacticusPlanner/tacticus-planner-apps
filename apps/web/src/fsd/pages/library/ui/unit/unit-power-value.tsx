@@ -7,25 +7,25 @@ import { powerNote, type PowerFigure } from "./unit-power.model"
 /**
  * The unit's power in the header's values area (character and MoW pages, desktop and mobile alike):
  * the label, the whole number with locale grouping, and a muted line saying what it counts. While
- * the dataset loads it is a placeholder; unavailable, "—" with the reason in place of the note.
+ * the dataset loads it is a placeholder; without power data (the `unit-power` dataset absent, or no
+ * entry for the unit) it is not shown.
  */
 export function UnitPowerValue({
   label,
   figure,
   note,
-  unavailableText,
   isMobile,
 }: {
   label: string
   figure: PowerFigure
   /** What the figure counts, e.g. "Without equipment". */
   note?: string
-  unavailableText: string
   isMobile: boolean
 }) {
   const { i18n } = useTranslation()
   const format = new Intl.NumberFormat(i18n.language)
-  const noteText = powerNote(figure, note, unavailableText)
+  if (figure.status === "unavailable") return null
+  const noteText = powerNote(figure, note)
 
   return (
     <div
@@ -49,7 +49,7 @@ export function UnitPowerValue({
           )}
           data-testid="unit-power-value"
         >
-          {figure.status === "ready" ? format.format(figure.value) : "—"}
+          {format.format(figure.value)}
         </span>
       )}
       {noteText ? (

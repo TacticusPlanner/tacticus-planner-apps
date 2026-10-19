@@ -1,3 +1,4 @@
+import { useMemo } from "react"
 import { useTranslation } from "react-i18next"
 import { abilityIcon } from "@workspace/game-catalog"
 import type { Rarity } from "@workspace/game-domain"
@@ -9,8 +10,11 @@ import { MYTHIC_MAX_LEVEL } from "./mow-unit.view-model"
 
 /**
  * The Mythic ability panel: the ability panel at the level the blue stars give (no stepper), or an
- * "Unlocks at Mythic" pill below Mythic. Until the catalog names the ability (#204), it is titled
+ * "Unlocks at Mythic" pill below Mythic. When the catalog names no mythic ability, it is titled
  * "Mythic ability" and shows the missing-text note.
+ *
+ * Its values are not scaled by rarity: V1 renders this panel with `disableScaling`, and the game's
+ * table values are what the level shows (Wisdom of the Ancients 10/13/16/20%).
  */
 export function MowMythicPanel({
   name,
@@ -31,12 +35,16 @@ export function MowMythicPanel({
   factionId: string
 }) {
   const { t } = useTranslation("library")
+  const unscaledText = useMemo(
+    () => (text ? { ...text, scaled: [] } : undefined),
+    [text]
+  )
   return (
     <AbilityPanel
       kind={t("mowUnit.abilities.mythic")}
       name={name}
       iconSrc={abilityKey ? abilityIcon(abilityKey) : undefined}
-      text={text}
+      text={unscaledText}
       rarity={rarity}
       unitName={unitName}
       factionId={factionId}

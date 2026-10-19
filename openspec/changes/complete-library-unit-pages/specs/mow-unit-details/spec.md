@@ -16,8 +16,9 @@ Assumptions:
 - Primary and secondary values marked rarity-affected are scaled by the shown rarity, as on character pages
   and in V1.
 
-#### Scenario: MoW rules text
+#### Scenario: Rules text arrives
 
+- **GIVEN** the game text has complete rules text for all 22 MoW abilities
 - **WHEN** a visitor opens Galatian's Details tab
 - **THEN** the Primary panel "Duty Eternal" and the Secondary panel "Macro Plasma Incinerator" each show a
   stepper, rules text at the stepper's level, a next-level line and a growth chart, and neither shows the
@@ -30,7 +31,7 @@ Assumptions:
   the ability's constants (keyed `"initialCooldownTurns "` and `"munitionsCost "` in V1, with a trailing
   space), not raw tokens
 
-#### Scenario: Rules text missing for an ability
+#### Scenario: No MoW rules text in the data
 
 - **GIVEN** the game text has no complete rules text for a MoW ability
 - **WHEN** a visitor opens that MoW's Details tab
@@ -78,8 +79,36 @@ Assumptions:
 - **WHEN** the user selects Custom and picks Mythic Wings
 - **THEN** the Mythic panel shows level 4 and its rules text reads "-20% Damage"
 
+#### Scenario: The catalog names the mythic ability
+
+- **GIVEN** the catalog gives Galatian the mythic ability WisdomOfTheAncients
+- **WHEN** a visitor opens its Details tab
+- **THEN** the Mythic panel is titled "Wisdom of the Ancients"
+
 #### Scenario: The catalog does not name the mythic ability
 
 - **GIVEN** a client whose synced `mows` record for Galatian has no `mythicAbility`
 - **WHEN** a visitor opens its Details tab at Mythic
 - **THEN** the Mythic panel reads "Mythic ability" with the missing-text note and no stepper
+
+### Requirement: Power on the MoW unit page
+
+The MoW unit page SHALL show the Machine of War's **power** (see `unit-power`, "Machine of War power"), labelled "Power", in the page header's values area. It is computed at the shown rarity and stars (Your unit, Starting or Custom) and at the levels set on the Primary and Secondary ability panels. It SHALL update as soon as any of those changes and SHALL NOT be stored or put in the URL. While the `unit-power` dataset is loading it SHALL show a placeholder. When the dataset is absent, failed to load or has no entry for the MoW, the header SHALL NOT show power at all, and the rest of the page SHALL be unaffected. Desktop and mobile show the same value in the header.
+
+#### Scenario: Maxed MoW
+
+- **GIVEN** a synced player whose Biovore is Mythic with mythic wings (progression index 19), primary 60, secondary 60
+- **WHEN** they open Biovore's unit page
+- **THEN** the header shows "Power 1,040,687"
+
+#### Scenario: Custom stars change power
+
+- **GIVEN** that page
+- **WHEN** the user selects Custom and picks Mythic, 1 blue star (progression index 16: `abilityPowerMultiplier` 26, `mythicAbilityPower` 75,000)
+- **THEN** power drops to round(10 + (17,781 + 12,932) × 26 + 75,000) = 873,548, and the ability levels are unchanged
+
+#### Scenario: Power data unavailable
+
+- **GIVEN** the `unit-power` dataset failed to load
+- **WHEN** a MoW page renders
+- **THEN** the header has no Power figure, and the ability panels and Ability upgrades tab work as usual

@@ -43,6 +43,13 @@ battle`. Armour of Shrieking Souls is Lucius's own ability, so "enemies that hav
 **D4: Archive order.** This change modifies `mow-unit-details` and `character-unit-details`, which exist in
 `openspec/specs/` only after `add-mow-library-details` and `add-character-unit-details` are archived on `main`.
 
+**D5: Power hides without power data; stats stay on the stat step.** (User decision during live
+verification.) `UnitPowerValue` renders nothing when the figure is unavailable (character and MoW pages),
+and the NPC page leaves its Power card out (4-column desktop row). Character stats keep the in-game stat
+step from `unit-power`, which matches the game exactly (a player's Kariyan: 12,155 Health, 3,070 Armour).
+_Alternative:_ V1's base-stat formula, so stats never depend on `unit-power`. Rejected: it scales all
+stats alike and was clearly off (Kariyan's Damage 2,713 against 2,686).
+
 ## Risks / Trade-offs
 
 - [The fixed Lucius text is our wording, not the game's] → Recorded in D3; re-check when the game fixes it.

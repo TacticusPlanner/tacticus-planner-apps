@@ -13,8 +13,8 @@ import { AbilityText } from "@/shared/ability-text"
 import { EntityIcon } from "@/shared/ui"
 
 import {
+  mythicQuestReward,
   mythicTaskVariables,
-  parseMythicQuestReward,
   type MythicQuestData,
   type MythicQuestReward,
 } from "../../model/mythic-quests"
@@ -72,16 +72,12 @@ function RewardChip({
       })
       break
     }
-    default:
-      label = reward.raw
   }
   const format = new Intl.NumberFormat(i18n.language)
   return (
     <li className="inline-flex h-6 items-center gap-1 rounded-full border px-2 text-xs font-semibold">
       {icon ? <EntityIcon src={icon} alt="" className="size-4" /> : null}
-      {reward.quantity !== undefined
-        ? `${format.format(reward.quantity)} × ${label}`
-        : label}
+      {`${format.format(reward.quantity)} × ${label}`}
     </li>
   )
 }
@@ -103,11 +99,15 @@ export function MythicQuestsList({
   nameOf: (unitId: string) => string
   equipment: readonly EquipmentStorageModel[]
 }) {
-  const { t } = useTranslation(["traits", "damageTypes"])
+  const { t } = useTranslation(["traits", "damageTypes", "abilities"])
   const labelOf = (key: string, value: string) => {
     if (key === "trait") return t(`traits:${value}`, { defaultValue: value })
     if (key === "damageProfileType")
       return t(`damageTypes:${value}`, { defaultValue: value })
+    // A unit effect named after an ability (Armour of Shrieking Souls) reads as that ability;
+    // other effect ids have no localized name yet and show as served.
+    if (key === "unitEffect")
+      return t(`abilities:${value}`, { defaultValue: value })
     return value
   }
 
@@ -141,10 +141,10 @@ export function MythicQuestsList({
               ) : null
             })}
             <ul className="flex flex-wrap gap-1.5">
-              {quest.rewards.map((reward) => (
+              {quest.rewards.map((reward, index) => (
                 <RewardChip
-                  key={reward}
-                  reward={parseMythicQuestReward(reward)}
+                  key={index}
+                  reward={mythicQuestReward(reward)}
                   equipment={equipment}
                 />
               ))}

@@ -20,11 +20,12 @@ import { createTestI18n } from "@/test/i18n"
 import enAbilities from "../../../../../../public/locales/en/abilities.json"
 import enEquipment from "../../../../../../public/locales/en/equipment.json"
 import enLibrary from "../../../../../../public/locales/en/library.json"
-import enMythicQuests from "../../../../../../public/locales/en/mythicQuests.json"
 import enMythicQuestTasks from "../../../../../../public/locales/en/mythicQuestTasks.json"
 import enNpcAbilityText from "../../../../../../public/locales/en/npcAbilityText.json"
 import enNpcTraitText from "../../../../../../public/locales/en/npcTraitText.json"
 import enProgression from "../../../../../../public/locales/en/progression.json"
+import deLibrary from "../../../../../../public/locales/de/library.json"
+import mythicQuestsFixture from "../../model/mythic-quests.fixture.json"
 
 const env = vi.hoisted(() => ({
   tour: undefined as
@@ -35,6 +36,9 @@ const env = vi.hoisted(() => ({
   roster: undefined as unknown[] | undefined,
   rosterPending: false,
   shards: undefined as { amount: number } | undefined,
+  extraCharacters: [] as unknown[],
+  extraEquipment: [] as unknown[],
+  mythicQuestsSynced: true,
   power: {
     status: "loading",
     retry: () => {},
@@ -155,6 +159,20 @@ const relic = {
   levels: [],
   upgradeLevels: [],
 }
+// Hollan and his relic, added to the catalog only by the tests that need them.
+const hollan = {
+  ...lhykhis,
+  id: "genesBiophagus",
+  name: "Hollan",
+  faction: "GenestealerCults",
+}
+const voidwyrm = {
+  ...relic,
+  id: "R_Hollan",
+  name: "Amulet of the Voidwyrm",
+  abilityId: "AmuletOfTheVoidwyrm",
+  allowedUnits: ["genesBiophagus"],
+}
 const sharedRelic = {
   ...relic,
   id: "R_Shared",
@@ -215,8 +233,19 @@ const critItems = [
 ]
 
 vi.mock("@workspace/game-catalog/queries", () => ({
-  getCharacters: () => Promise.resolve([tigurius, lhykhis, calgar]),
-  getEquipment: () => Promise.resolve([relic, sharedRelic, ...critItems]),
+  getCharacters: () =>
+    Promise.resolve([tigurius, lhykhis, calgar, ...env.extraCharacters]),
+  getEquipment: () =>
+    Promise.resolve([relic, sharedRelic, ...critItems, ...env.extraEquipment]),
+  // Served records for Abaddon, Calgar, Lucius and Tigurius; none when the dataset isn't synced.
+  getMythicQuestsByUnitId: () =>
+    Promise.resolve(
+      new Map(
+        env.mythicQuestsSynced
+          ? mythicQuestsFixture.records.map((record) => [record.unitId, record])
+          : []
+      )
+    ),
   getUnlockShardCostsMap: () =>
     Promise.resolve(
       new Map([
@@ -307,9 +336,9 @@ beforeAll(async () => {
       progression: enProgression,
       npcAbilityText: enNpcAbilityText,
       npcTraitText: enNpcTraitText,
-      mythicQuests: enMythicQuests,
       mythicQuestTasks: enMythicQuestTasks,
     },
+    de: { library: deLibrary },
   })
 })
 
@@ -358,6 +387,9 @@ describe("CharacterUnitPage", () => {
     env.roster = undefined
     env.rosterPending = false
     env.shards = undefined
+    env.extraCharacters = []
+    env.extraEquipment = []
+    env.mythicQuestsSynced = true
     env.power = powerReady
   })
 
@@ -537,18 +569,18 @@ describe("CharacterUnitPage", () => {
     expect(screen.getByTestId("unit-power-loading")).toBeInTheDocument()
   })
 
-  it("shows the power as unavailable and keeps the rest of the page when the data failed", async () => {
+  it("hides the power, marks the stats unavailable and keeps the rest of the page when the data failed", async () => {
     env.power = { status: "error", retry: () => {} }
     env.authenticated = true
     env.roster = [goldTigurius]
     await renderUnit("/library/characters/ultraTigurius")
 
-    expect(screen.getByTestId("unit-power-value")).toHaveTextContent("—")
-    expect(screen.getByTestId("unit-power-note")).toHaveTextContent(
-      "Power data unavailable"
-    )
+    expect(screen.queryByTestId("unit-power")).not.toBeInTheDocument()
     expect(screen.getByTestId("unit-your-line")).toBeInTheDocument()
     expect(screen.getByTestId("unit-glance-health")).toHaveTextContent("—")
+    expect(
+      screen.getByTestId("unit-glance-stats-unavailable")
+    ).toHaveTextContent("Stats data unavailable")
     expect(screen.getByTestId("unit-attack-melee")).toBeInTheDocument()
     expect(screen.getByTestId("unit-relic")).toBeInTheDocument()
     expect(screen.getByTestId("unit-radar-health")).toBeInTheDocument()
@@ -622,6 +654,40 @@ describe("CharacterUnitPage", () => {
     expect(screen.getByTestId("unit-relic-missing-text")).toBeInTheDocument()
   })
 
+  it("shows a relic's rules text at the stepper's level with the next level and a chart", async () => {
+    env.extraCharacters = [hollan]
+    env.extraEquipment = [voidwyrm]
+    await renderUnit("/library/characters/genesBiophagus")
+    const panel = screen.getByTestId("unit-relic")
+    expect(panel).toHaveTextContent(
+      "The relic bearer takes -390 Crit Damage for each friendly adjacent Summon or Decoy."
+    )
+    expect(screen.getByTestId("unit-relic-next")).toHaveTextContent("390 → 411")
+    expect(
+      screen.getByTestId("unit-relic-chart-critDmgReduction")
+    ).toBeInTheDocument()
+    expect(
+      screen.queryByTestId("unit-relic-missing-text")
+    ).not.toBeInTheDocument()
+
+    fireEvent.click(within(panel).getByRole("button", { name: "Raise level" }))
+    expect(panel).toHaveTextContent("-411 Crit Damage")
+    expect(screen.getByTestId("unit-relic-next")).toHaveTextContent("411 → 432")
+  })
+
+  it("shows the missing-text note for a relic with no rules text", async () => {
+    await renderUnit("/library/characters/ultraTigurius")
+    // The fixture's Psychic Hood points at an ability with no rules-text entry.
+    expect(screen.getByTestId("unit-relic")).toHaveTextContent("Psychic Hood")
+    expect(screen.getByTestId("unit-relic-missing-text")).toHaveTextContent(
+      "Rules text isn't in the planner yet."
+    )
+    expect(screen.queryByTestId("unit-relic-stepper")).not.toBeInTheDocument()
+    expect(
+      within(screen.getByTestId("unit-relic")).queryByRole("figure")
+    ).not.toBeInTheDocument()
+  })
+
   it("marks the equipment slot the relic goes in", async () => {
     await renderUnit("/library/characters/ultraTigurius")
     expect(
@@ -689,31 +755,101 @@ describe("CharacterUnitPage", () => {
     )
   })
 
-  it("lists a character's mythic quests with their tasks and rewards", async () => {
-    await renderUnit("/library/characters/ultraTigurius")
-    const card = screen.getByTestId("unit-mythic")
-    expect(card).toHaveTextContent("Mythic quests")
-    expect(card).toHaveTextContent("5 quests")
-    const first = within(screen.getByTestId("unit-mythic-quest-1"))
-    expect(first.getAllByRole("listitem").length).toBeGreaterThan(0)
-    expect(first.getByText(/Tigurius mythic shards/)).toBeInTheDocument()
-  })
+  describe("Mythic quests", () => {
+    const abaddon = {
+      ...tigurius,
+      id: "blackAbaddon",
+      name: "Abaddon",
+      faction: "BlackLegion",
+      alliance: "Chaos",
+    }
+    const lucius = {
+      ...abaddon,
+      id: "emperLucius",
+      name: "Lucius",
+      faction: "EmperorsChildren",
+    }
+    const weirdboy = {
+      ...lhykhis,
+      id: "orksWeirdboy",
+      name: "Weirdboy",
+      faction: "Orks",
+    }
+    const questText = (number: number) =>
+      within(screen.getByTestId(`unit-mythic-quest-${number}`))
+        .getAllByRole("paragraph")
+        .map((node) => node.textContent)
+        .join(" ")
 
-  it("has no mythic quest card for a character without quest data", async () => {
-    // Every fixture character has quests in the ported data; drop Calgar's for this case.
-    const bundle = i18n.getResourceBundle("en", "mythicQuests") as Record<
-      string,
-      unknown
-    >
-    const calgarQuests = bundle.ultraCalgar
-    delete bundle.ultraCalgar
-    try {
-      await renderUnit("/library/characters/ultraCalgar")
+    it("lists a character's quests from the catalog with their tasks and rewards", async () => {
+      env.extraCharacters = [abaddon]
+      await renderUnit("/library/characters/blackAbaddon")
+      const card = screen.getByTestId("unit-mythic")
+      expect(card).toHaveTextContent("Mythic quests")
+      expect(card).toHaveTextContent("5 quests")
+      const first = screen.getByTestId("unit-mythic-quest-1")
+      expect(first).toHaveTextContent(
+        "Defeat 8 enemies that have the Emplacement trait with Abaddon in one battle"
+      )
+      expect(
+        within(first)
+          .getAllByRole("listitem")
+          .map((chip) => chip.textContent)
+      ).toEqual([
+        "4 × Abaddon mythic shards",
+        "2 × Mythic Chaos ascension orb",
+        "1 × Mythic XP book",
+      ])
+    })
+
+    it("has no card for a character the dataset has no record for", async () => {
+      env.extraCharacters = [weirdboy]
+      await renderUnit("/library/characters/orksWeirdboy")
       expect(screen.getByTestId("unit-details")).toBeInTheDocument()
       expect(screen.queryByTestId("unit-mythic")).not.toBeInTheDocument()
-    } finally {
-      bundle.ultraCalgar = calgarQuests
-    }
+    })
+
+    it("has no card when the dataset isn't in the client's catalog", async () => {
+      env.extraCharacters = [abaddon]
+      env.mythicQuestsSynced = false
+      await renderUnit("/library/characters/blackAbaddon")
+      expect(screen.getByTestId("unit-details")).toBeInTheDocument()
+      expect(screen.getByTestId("unit-relic")).toBeInTheDocument()
+      expect(screen.queryByTestId("unit-mythic")).not.toBeInTheDocument()
+    })
+
+    it('keeps "in one battle" in the singular task text', async () => {
+      await renderUnit("/library/characters/ultraCalgar")
+      expect(screen.getByTestId("unit-mythic-quest-4")).toHaveTextContent(
+        "Defeat 1 enemy that has the Immune trait with Calgar in one battle"
+      )
+    })
+
+    it("names Lucius and the Armour of Shrieking Souls effect once each", async () => {
+      env.extraCharacters = [lucius]
+      await renderUnit("/library/characters/emperLucius")
+      const text = questText(1)
+      expect(text.match(/Lucius/g)).toHaveLength(1)
+      expect(text.match(/Armour of Shrieking Souls/g)).toHaveLength(1)
+      expect(text).toMatch(/in one battle$/)
+    })
+
+    it("shows the English task text with German labels in German", async () => {
+      env.extraCharacters = [abaddon]
+      await i18n.changeLanguage("de")
+      try {
+        await renderUnit("/library/characters/blackAbaddon")
+        const card = screen.getByTestId("unit-mythic")
+        expect(card).toHaveTextContent("Mythische Quests")
+        const first = screen.getByTestId("unit-mythic-quest-1")
+        expect(first).toHaveTextContent(
+          "Defeat 8 enemies that have the Emplacement trait with Abaddon in one battle"
+        )
+        expect(first).toHaveTextContent("Mythische Splitter von Abaddon")
+      } finally {
+        await i18n.changeLanguage("en")
+      }
+    })
   })
 
   it("shows each headline stat with its stat icon", async () => {

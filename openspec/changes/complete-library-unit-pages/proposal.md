@@ -17,6 +17,11 @@ PRs then, so the page-level changes are this separate change, applied on `main` 
   rewards. Task texts stay in the English `mythicQuestTasks` namespace, with de/es/fr falling back to English.
   Two English task texts copied from V1 are fixed (#206 review).
 
+- Power without power data (user decision, found in live verification): the character, MoW and NPC pages
+  hide power instead of showing "—" / "Power data unavailable" when the `unit-power` dataset is absent or
+  has no entry. Character stats keep coming from the in-game stat step in `unit-power` (exact, checked
+  against a player's Kariyan), so without it they still show "Stats data unavailable".
+
 Deliberate exception (user decision): the mythic quest task templates are game text with no de/es/fr source
 (V1 ships them English-only). They follow the existing English-only game-text namespaces (`npcTraitText`,
 `raidBossTraitText`) instead of the "real de/es/fr translations" rule for UI copy. Issue #204's "all supported
@@ -36,7 +41,9 @@ change of its own.
 - `character-unit-details`: Relic panel gains rules text for 32 relics (worked example and remaining gaps);
   Mythic quests read from the catalog dataset, with the fixed task texts and their absence states.
 - `mow-unit-details`: MoW ability panels show rules text for all 22 abilities; the Mythic panel names the
-  catalog's mythic ability and shows its text unscaled.
+  catalog's mythic ability and shows its text unscaled; power is hidden without power data.
+- `character-unit-details` (also): power is hidden without power data.
+- `npc-library`: the Power card is left out without power data.
 
 ## Impact
 
@@ -45,3 +52,5 @@ change of its own.
 - Removed: `apps/web/public/locales/en/mythicQuests.json` and its `i18next.d.ts` entry.
 - `apps/web/public/locales/en/mythicQuestTasks.json`: two template fixes.
 - `KNOWN_ISSUES.md`: `mythicQuestTasks` is English-only.
+- `ui/unit/unit-power-value.tsx`, `ui/unit/unit-power.model.ts`, `ui/npcs/npc-stat-cards.tsx`; the three
+  `power.unavailable` keys are removed from en/de/es/fr `library.json`.

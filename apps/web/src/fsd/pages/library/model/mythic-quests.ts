@@ -1,53 +1,61 @@
-/**
- * A character's mythic quests, ported from V1 (`4-entities/mythic_quests`). The data ships as the
- * English game-text namespaces `mythicQuests` (character id -> quests) and `mythicQuestTasks` (task
- * loca key -> template with `{[VAR]}` tokens and i2p plurals, rendered by the ability-text renderer).
- */
-export type MythicQuestTaskData = {
-  locaKey: string
-  target: number
-  taskParameters: Record<string, string>
-}
+import type {
+  GameCatalogMythicQuest,
+  GameCatalogMythicQuestReward,
+} from "@workspace/game-catalog"
 
-export type MythicQuestData = {
-  number: number
-  rewards: string[]
-  tasks: MythicQuestTaskData[]
-}
+/**
+ * A character's mythic quests, served by the game catalog's `mythic-quests` dataset (ported from V1's
+ * `4-entities/mythic_quests`). Task text comes from the English game-text namespace `mythicQuestTasks`
+ * (task loca key -> template with `{[VAR]}` tokens and i2p plurals, rendered by the ability-text renderer).
+ */
+export type MythicQuestData = GameCatalogMythicQuest
+
+export type MythicQuestTaskData = MythicQuestData["tasks"][number]
 
 export type MythicQuestReward =
-  | { kind: "mythicShards"; unitId: string; quantity?: number }
+  | { kind: "mythicShards"; unitId: string; quantity: number }
   | {
       kind: "ascensionOrb" | "abilityBadge"
       alliance: string
-      quantity?: number
+      quantity: number
     }
-  | { kind: "xp" | "gold"; quantity?: number }
-  | { kind: "equipment"; equipmentId: string; quantity?: number }
-  | { kind: "unknown"; raw: string; quantity?: number }
+  | { kind: "xp" | "gold"; quantity: number }
+  | { kind: "equipment"; equipmentId: string; quantity: number }
 
-const ALLIANCE = "(Imperial|Chaos|Xenos)"
-
-/** Parses "mythicShards_blackAbaddon:4", "gold:250000", a bare equipment id "I_Crit_M006", … (V1's
- *  `parseMythicQuestReward`, without the display strings, which the page localizes). */
-export function parseMythicQuestReward(reward: string): MythicQuestReward {
-  const colon = reward.indexOf(":")
-  const type = colon === -1 ? reward : reward.slice(0, colon)
-  const quantity =
-    colon === -1 ? undefined : Number.parseInt(reward.slice(colon + 1), 10)
-
-  const shard = /^mythicShards_(.+)$/.exec(type)
-  if (shard) return { kind: "mythicShards", unitId: shard[1], quantity }
-  const orb = new RegExp(`^heroAscensionOrbMythic_${ALLIANCE}$`).exec(type)
-  if (orb) return { kind: "ascensionOrb", alliance: orb[1], quantity }
-  const badge = new RegExp(`^abilityTokenMythic_${ALLIANCE}$`).exec(type)
-  if (badge) return { kind: "abilityBadge", alliance: badge[1], quantity }
-  if (type === "xpMythic") return { kind: "xp", quantity }
-  if (type === "gold") return { kind: "gold", quantity }
-  if (type.startsWith("I_") || type.startsWith("R_")) {
-    return { kind: "equipment", equipmentId: type, quantity }
+/** The reward chip's view of a served reward record (the catalog's set of reward types is closed). */
+export function mythicQuestReward(
+  reward: GameCatalogMythicQuestReward
+): MythicQuestReward {
+  switch (reward.type) {
+    case "MythicShards":
+      return {
+        kind: "mythicShards",
+        unitId: reward.unitId,
+        quantity: reward.amount,
+      }
+    case "AscensionOrb":
+      return {
+        kind: "ascensionOrb",
+        alliance: reward.alliance,
+        quantity: reward.amount,
+      }
+    case "AbilityBadge":
+      return {
+        kind: "abilityBadge",
+        alliance: reward.alliance,
+        quantity: reward.amount,
+      }
+    case "XpBook":
+      return { kind: "xp", quantity: reward.amount }
+    case "Gold":
+      return { kind: "gold", quantity: reward.amount }
+    case "Equipment":
+      return {
+        kind: "equipment",
+        equipmentId: reward.equipmentId,
+        quantity: reward.amount,
+      }
   }
-  return { kind: "unknown", raw: type, quantity }
 }
 
 /** `damageProfileType` -> `DAMAGE_PROFILE_TYPE`, the template's placeholder form. */
@@ -69,7 +77,7 @@ export function mythicTaskVariables(
   const variables: Record<string, (string | number)[]> = {
     TARGET_AMOUNT: [task.target],
   }
-  for (const [key, value] of Object.entries(task.taskParameters)) {
+  for (const [key, value] of Object.entries(task.parameters)) {
     if (key === "heroId") variables.HERO_NAME = [nameOf(value)]
     else variables[toPlaceholder(key)] = [labelOf(key, value)]
   }

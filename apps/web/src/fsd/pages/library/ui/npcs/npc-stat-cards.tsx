@@ -101,7 +101,7 @@ function EstimateNote() {
   )
 }
 
-/** The selected level row's estimated power, with its note; "—" when the data is unavailable. */
+/** The selected level row's estimated power, with its note; not shown without power data. */
 function PowerCard({
   power,
   className,
@@ -130,21 +130,16 @@ function PowerCard({
         <span className="flex items-center gap-2">
           <Zap aria-hidden className="size-5 text-muted-foreground" />
           <span className={valueClass} data-testid="npc-stat-power-value">
-            {power.status === "ready" ? format.format(power.value) : "—"}
+            {power.status === "ready" ? format.format(power.value) : null}
           </span>
         </span>
       )}
-      {power.status === "unavailable" ? (
-        <span className="text-xs text-muted-foreground">
-          {t("npcs.power.unavailable")}
-        </span>
-      ) : null}
     </div>
   )
 }
 
 /** Health / Armour / Damage from the selected level row; Movement from the variation; the row's
- *  estimated Power. */
+ *  estimated Power, left out without power data. */
 export function NpcStatCards({
   row,
   movement,
@@ -158,12 +153,17 @@ export function NpcStatCards({
   compact?: boolean
 }) {
   const { t } = useTranslation("library")
+  const showPower = power.status !== "unavailable"
 
   return (
     <div
       className={cn(
         "grid gap-3",
-        compact ? "grid-cols-2" : "grid-cols-2 md:grid-cols-5"
+        compact
+          ? "grid-cols-2"
+          : showPower
+            ? "grid-cols-2 md:grid-cols-5"
+            : "grid-cols-2 md:grid-cols-4"
       )}
       data-testid="npcs-stats"
     >
@@ -187,10 +187,12 @@ export function NpcStatCards({
         label={t("npcs.stats.movement")}
         value={movement}
       />
-      <PowerCard
-        power={power}
-        className={compact ? "col-span-2" : "col-span-2 md:col-span-1"}
-      />
+      {showPower ? (
+        <PowerCard
+          power={power}
+          className={compact ? "col-span-2" : "col-span-2 md:col-span-1"}
+        />
+      ) : null}
     </div>
   )
 }

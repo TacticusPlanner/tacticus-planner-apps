@@ -1,0 +1,705 @@
+{
+  "records": [
+    {
+      "unitId": "blackAbaddon",
+      "quests": [
+        {
+          "number": 1,
+          "tasks": [
+            {
+              "locaKey": "SlayEnemiesWithHeroToTraitInOneBattle_description",
+              "target": 1,
+              "parameters": {
+                "trait": "Emplacement",
+                "heroId": "blackAbaddon",
+                "killAmount": "8"
+              }
+            }
+          ],
+          "rewards": [
+            {
+              "type": "MythicShards",
+              "amount": 4,
+              "unitId": "blackAbaddon"
+            },
+            {
+              "type": "AscensionOrb",
+              "amount": 2,
+              "rarity": "Mythic",
+              "alliance": "Chaos"
+            },
+            {
+              "type": "XpBook",
+              "amount": 1,
+              "rarity": "Mythic"
+            }
+          ]
+        },
+        {
+          "number": 2,
+          "tasks": [
+            {
+              "locaKey": "DealDamageWithHeroInOneTurn_description",
+              "target": 1,
+              "parameters": {
+                "heroId": "blackAbaddon",
+                "damageAmount": "12000"
+              }
+            }
+          ],
+          "rewards": [
+            {
+              "type": "MythicShards",
+              "amount": 4,
+              "unitId": "blackAbaddon"
+            },
+            {
+              "type": "AscensionOrb",
+              "amount": 2,
+              "rarity": "Mythic",
+              "alliance": "Chaos"
+            },
+            {
+              "type": "Gold",
+              "amount": 250000
+            }
+          ]
+        },
+        {
+          "number": 3,
+          "tasks": [
+            {
+              "locaKey": "OverkillWithHero_description",
+              "target": 100,
+              "parameters": {
+                "heroId": "blackAbaddon"
+              }
+            }
+          ],
+          "rewards": [
+            {
+              "type": "MythicShards",
+              "amount": 4,
+              "unitId": "blackAbaddon"
+            },
+            {
+              "type": "AscensionOrb",
+              "amount": 2,
+              "rarity": "Mythic",
+              "alliance": "Chaos"
+            },
+            {
+              "type": "AbilityBadge",
+              "amount": 5,
+              "rarity": "Mythic",
+              "alliance": "Chaos"
+            }
+          ]
+        },
+        {
+          "number": 4,
+          "tasks": [
+            {
+              "locaKey": "ScoreHitsWithHeroInOneTurn_description",
+              "target": 1,
+              "parameters": {
+                "heroId": "blackAbaddon",
+                "hitAmount": "10"
+              }
+            }
+          ],
+          "rewards": [
+            {
+              "type": "MythicShards",
+              "amount": 4,
+              "unitId": "blackAbaddon"
+            },
+            {
+              "type": "AscensionOrb",
+              "amount": 2,
+              "rarity": "Mythic",
+              "alliance": "Chaos"
+            },
+            {
+              "type": "Gold",
+              "amount": 250000
+            }
+          ]
+        },
+        {
+          "number": 5,
+          "tasks": [
+            {
+              "locaKey": "DealDamageOfProfileTypeWithHero_description",
+              "target": 100000,
+              "parameters": {
+                "damageProfileType": "Power",
+                "heroId": "blackAbaddon"
+              }
+            },
+            {
+              "locaKey": "DealDamageOfProfileTypeWithHero_description",
+              "target": 10000,
+              "parameters": {
+                "damageProfileType": "Piercing",
+                "heroId": "blackAbaddon"
+              }
+            },
+            {
+              "locaKey": "DealDamageOfProfileTypeWithHero_description",
+              "target": 20000,
+              "parameters": {
+                "damageProfileType": "Bolter",
+                "heroId": "blackAbaddon"
+              }
+            }
+          ],
+          "rewards": [
+            {
+              "type": "MythicShards",
+              "amount": 4,
+              "unitId": "blackAbaddon"
+            },
+            {
+              "type": "AscensionOrb",
+              "amount": 2,
+              "rarity": "Mythic",
+              "alliance": "Chaos"
+            },
+            {
+              "type": "Equipment",
+              "amount": 1,
+              "equipmentId": "I_Crit_M006"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "unitId": "ultraCalgar",
+      "quests": [
+        {
+          "number": 1,
+          "tasks": [
+            {
+              "locaKey": "SlayEnemiesWithHeroInOneTurn_description",
+              "target": 1,
+              "parameters": {
+                "heroId": "ultraCalgar",
+                "killAmount": "18"
+              }
+            }
+          ],
+          "rewards": [
+            {
+              "type": "MythicShards",
+              "amount": 4,
+              "unitId": "ultraCalgar"
+            },
+            {
+              "type": "AscensionOrb",
+              "amount": 2,
+              "rarity": "Mythic",
+              "alliance": "Imperial"
+            },
+            {
+              "type": "XpBook",
+              "amount": 1,
+              "rarity": "Mythic"
+            }
+          ]
+        },
+        {
+          "number": 2,
+          "tasks": [
+            {
+              "locaKey": "DealDamageWithHeroInOneTurn_description",
+              "target": 1,
+              "parameters": {
+                "heroId": "ultraCalgar",
+                "damageAmount": "50000"
+              }
+            }
+          ],
+          "rewards": [
+            {
+              "type": "MythicShards",
+              "amount": 4,
+              "unitId": "ultraCalgar"
+            },
+            {
+              "type": "AscensionOrb",
+              "amount": 2,
+              "rarity": "Mythic",
+              "alliance": "Imperial"
+            },
+            {
+              "type": "Gold",
+              "amount": 250000
+            }
+          ]
+        },
+        {
+          "number": 3,
+          "tasks": [
+            {
+              "locaKey": "OverkillWithHero_description",
+              "target": 100,
+              "parameters": {
+                "heroId": "ultraCalgar"
+              }
+            }
+          ],
+          "rewards": [
+            {
+              "type": "MythicShards",
+              "amount": 4,
+              "unitId": "ultraCalgar"
+            },
+            {
+              "type": "AscensionOrb",
+              "amount": 2,
+              "rarity": "Mythic",
+              "alliance": "Imperial"
+            },
+            {
+              "type": "AbilityBadge",
+              "amount": 5,
+              "rarity": "Mythic",
+              "alliance": "Imperial"
+            }
+          ]
+        },
+        {
+          "number": 4,
+          "tasks": [
+            {
+              "locaKey": "SlayEnemiesWithHeroToTraitInOneBattle_description",
+              "target": 1,
+              "parameters": {
+                "trait": "Immune",
+                "heroId": "ultraCalgar",
+                "killAmount": "1"
+              }
+            }
+          ],
+          "rewards": [
+            {
+              "type": "MythicShards",
+              "amount": 4,
+              "unitId": "ultraCalgar"
+            },
+            {
+              "type": "AscensionOrb",
+              "amount": 2,
+              "rarity": "Mythic",
+              "alliance": "Imperial"
+            },
+            {
+              "type": "Gold",
+              "amount": 250000
+            }
+          ]
+        },
+        {
+          "number": 5,
+          "tasks": [
+            {
+              "locaKey": "DealDamageWithHero_description",
+              "target": 100000,
+              "parameters": {
+                "heroId": "ultraCalgar"
+              }
+            }
+          ],
+          "rewards": [
+            {
+              "type": "MythicShards",
+              "amount": 4,
+              "unitId": "ultraCalgar"
+            },
+            {
+              "type": "AscensionOrb",
+              "amount": 2,
+              "rarity": "Mythic",
+              "alliance": "Imperial"
+            },
+            {
+              "type": "Equipment",
+              "amount": 1,
+              "equipmentId": "I_Crit_M002"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "unitId": "emperLucius",
+      "quests": [
+        {
+          "number": 1,
+          "tasks": [
+            {
+              "locaKey": "SlayEnemiesWithHeroToUnitEffectInOneBattle_UnitEffect_ArmourOfShriekingSouls_description",
+              "target": 1,
+              "parameters": {
+                "unitEffect": "ArmourOfShriekingSouls",
+                "heroId": "emperLucius",
+                "killAmount": "6"
+              }
+            }
+          ],
+          "rewards": [
+            {
+              "type": "MythicShards",
+              "amount": 4,
+              "unitId": "emperLucius"
+            },
+            {
+              "type": "AscensionOrb",
+              "amount": 2,
+              "rarity": "Mythic",
+              "alliance": "Chaos"
+            },
+            {
+              "type": "XpBook",
+              "amount": 1,
+              "rarity": "Mythic"
+            }
+          ]
+        },
+        {
+          "number": 2,
+          "tasks": [
+            {
+              "locaKey": "DealDamageWithHeroWithUnitEffectInOneTurn_UnitEffect_description",
+              "target": 1,
+              "parameters": {
+                "unitEffect": "ThrillSeekers",
+                "heroId": "emperLucius",
+                "damageAmount": "9000"
+              }
+            }
+          ],
+          "rewards": [
+            {
+              "type": "MythicShards",
+              "amount": 4,
+              "unitId": "emperLucius"
+            },
+            {
+              "type": "AscensionOrb",
+              "amount": 2,
+              "rarity": "Mythic",
+              "alliance": "Chaos"
+            },
+            {
+              "type": "Gold",
+              "amount": 250000
+            }
+          ]
+        },
+        {
+          "number": 3,
+          "tasks": [
+            {
+              "locaKey": "OverkillWithHero_description",
+              "target": 100,
+              "parameters": {
+                "heroId": "emperLucius"
+              }
+            }
+          ],
+          "rewards": [
+            {
+              "type": "MythicShards",
+              "amount": 4,
+              "unitId": "emperLucius"
+            },
+            {
+              "type": "AscensionOrb",
+              "amount": 2,
+              "rarity": "Mythic",
+              "alliance": "Chaos"
+            },
+            {
+              "type": "AbilityBadge",
+              "amount": 5,
+              "rarity": "Mythic",
+              "alliance": "Chaos"
+            }
+          ]
+        },
+        {
+          "number": 4,
+          "tasks": [
+            {
+              "locaKey": "SlayEnemiesWithHeroToUnitEffectInOneTurn_UnitEffect_description",
+              "target": 1,
+              "parameters": {
+                "unitEffect": "Concealed",
+                "heroId": "emperLucius",
+                "killAmount": "2"
+              }
+            }
+          ],
+          "rewards": [
+            {
+              "type": "MythicShards",
+              "amount": 4,
+              "unitId": "emperLucius"
+            },
+            {
+              "type": "AscensionOrb",
+              "amount": 2,
+              "rarity": "Mythic",
+              "alliance": "Chaos"
+            },
+            {
+              "type": "Gold",
+              "amount": 250000
+            }
+          ]
+        },
+        {
+          "number": 5,
+          "tasks": [
+            {
+              "locaKey": "DealDamageWithHero_description",
+              "target": 100000,
+              "parameters": {
+                "heroId": "emperLucius"
+              }
+            }
+          ],
+          "rewards": [
+            {
+              "type": "MythicShards",
+              "amount": 4,
+              "unitId": "emperLucius"
+            },
+            {
+              "type": "AscensionOrb",
+              "amount": 2,
+              "rarity": "Mythic",
+              "alliance": "Chaos"
+            },
+            {
+              "type": "Equipment",
+              "amount": 1,
+              "equipmentId": "I_Crit_M006"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "unitId": "ultraTigurius",
+      "quests": [
+        {
+          "number": 1,
+          "tasks": [
+            {
+              "locaKey": "ScoreHitsWithHeroInOneTurn_description",
+              "target": 1,
+              "parameters": {
+                "heroId": "ultraTigurius",
+                "hitAmount": "6"
+              }
+            }
+          ],
+          "rewards": [
+            {
+              "type": "MythicShards",
+              "amount": 4,
+              "unitId": "ultraTigurius"
+            },
+            {
+              "type": "AscensionOrb",
+              "amount": 2,
+              "rarity": "Mythic",
+              "alliance": "Imperial"
+            },
+            {
+              "type": "XpBook",
+              "amount": 1,
+              "rarity": "Mythic"
+            }
+          ]
+        },
+        {
+          "number": 2,
+          "tasks": [
+            {
+              "locaKey": "DealDamageWithHeroWithUnitEffectInOneTurn_UnitEffect_description",
+              "target": 1,
+              "parameters": {
+                "unitEffect": "Pinned",
+                "heroId": "ultraTigurius",
+                "damageAmount": "12000"
+              }
+            }
+          ],
+          "rewards": [
+            {
+              "type": "MythicShards",
+              "amount": 4,
+              "unitId": "ultraTigurius"
+            },
+            {
+              "type": "AscensionOrb",
+              "amount": 2,
+              "rarity": "Mythic",
+              "alliance": "Imperial"
+            },
+            {
+              "type": "Gold",
+              "amount": 250000
+            }
+          ]
+        },
+        {
+          "number": 3,
+          "tasks": [
+            {
+              "locaKey": "OverkillWithHero_description",
+              "target": 80,
+              "parameters": {
+                "heroId": "ultraTigurius"
+              }
+            }
+          ],
+          "rewards": [
+            {
+              "type": "MythicShards",
+              "amount": 4,
+              "unitId": "ultraTigurius"
+            },
+            {
+              "type": "AscensionOrb",
+              "amount": 2,
+              "rarity": "Mythic",
+              "alliance": "Imperial"
+            },
+            {
+              "type": "AbilityBadge",
+              "amount": 5,
+              "rarity": "Mythic",
+              "alliance": "Imperial"
+            }
+          ]
+        },
+        {
+          "number": 4,
+          "tasks": [
+            {
+              "locaKey": "OverkillWithHeroInOneBattle_description",
+              "target": 1,
+              "parameters": {
+                "heroId": "ultraTigurius",
+                "killAmount": "10"
+              }
+            }
+          ],
+          "rewards": [
+            {
+              "type": "MythicShards",
+              "amount": 4,
+              "unitId": "ultraTigurius"
+            },
+            {
+              "type": "AscensionOrb",
+              "amount": 2,
+              "rarity": "Mythic",
+              "alliance": "Imperial"
+            },
+            {
+              "type": "Gold",
+              "amount": 250000
+            }
+          ]
+        },
+        {
+          "number": 5,
+          "tasks": [
+            {
+              "locaKey": "DealDamageWithHeroToUnitEffect_TileEffect_description",
+              "target": 70000,
+              "parameters": {
+                "unitEffect": "Fire",
+                "heroId": "ultraTigurius"
+              }
+            }
+          ],
+          "rewards": [
+            {
+              "type": "MythicShards",
+              "amount": 4,
+              "unitId": "ultraTigurius"
+            },
+            {
+              "type": "AscensionOrb",
+              "amount": 2,
+              "rarity": "Mythic",
+              "alliance": "Imperial"
+            },
+            {
+              "type": "Equipment",
+              "amount": 1,
+              "equipmentId": "I_Crit_M002"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "locaKeys": [
+    "DealDamageOfProfileTypeWithHero_description",
+    "DealDamageWithHeroInOneBattle_description",
+    "DealDamageWithHeroInOneTurn_description",
+    "DealDamageWithHeroToUnitEffectInOneBattle_UnitEffect_Overwatch_description",
+    "DealDamageWithHeroToUnitEffectInOneBattle_UnitEffect_description",
+    "DealDamageWithHeroToUnitEffectInOneTurn_TileEffect_description",
+    "DealDamageWithHeroToUnitEffectInOneTurn_UnitEffect_description",
+    "DealDamageWithHeroToUnitEffect_TileEffect_description",
+    "DealDamageWithHeroToUnitEffect_UnitEffect_Overwatch_description",
+    "DealDamageWithHeroToUnitEffect_UnitEffect_Taunted_description",
+    "DealDamageWithHeroToUnitEffect_UnitEffect_description",
+    "DealDamageWithHeroWithUnitEffectInOneBattle_UnitEffect_description",
+    "DealDamageWithHeroWithUnitEffectInOneTurn_TileEffect_description",
+    "DealDamageWithHeroWithUnitEffectInOneTurn_UnitEffect_Overwatch_description",
+    "DealDamageWithHeroWithUnitEffectInOneTurn_UnitEffect_description",
+    "DealDamageWithHeroWithUnitEffect_TileEffect_description",
+    "DealDamageWithHeroWithUnitEffect_UnitEffect_Overwatch_description",
+    "DealDamageWithHeroWithUnitEffect_UnitEffect_description",
+    "DealDamageWithHero_description",
+    "HealHealthWithHeroInOneTurn_description",
+    "OverkillWithHeroInOneBattle_description",
+    "OverkillWithHero_description",
+    "ScoreHitsWithHeroInOneBattle_description",
+    "ScoreHitsWithHeroInOneTurn_description",
+    "SlayEnemiesToUnitEffectInOneBattle_description",
+    "SlayEnemiesWithHeroInOneTurn_description",
+    "SlayEnemiesWithHeroToTraitInOneBattle_description",
+    "SlayEnemiesWithHeroToUnitEffectInOneBattle_TileEffect_description",
+    "SlayEnemiesWithHeroToUnitEffectInOneBattle_UnitEffect_ArmourOfShriekingSouls_description",
+    "SlayEnemiesWithHeroToUnitEffectInOneBattle_UnitEffect_Overwatch_description",
+    "SlayEnemiesWithHeroToUnitEffectInOneBattle_UnitEffect_description",
+    "SlayEnemiesWithHeroToUnitEffectInOneTurn_TileEffect_description",
+    "SlayEnemiesWithHeroToUnitEffectInOneTurn_UnitEffect_Overwatch_description",
+    "SlayEnemiesWithHeroToUnitEffectInOneTurn_UnitEffect_Taunted_description",
+    "SlayEnemiesWithHeroToUnitEffectInOneTurn_UnitEffect_description",
+    "SlayEnemiesWithHeroToUnitEffect_UnitEffect_Overwatch_description",
+    "SlayEnemiesWithHeroToUnitEffect_UnitEffect_description",
+    "SlayEnemiesWithHeroWithUnitEffectInOneBattle_TileEffect_description",
+    "SlayEnemiesWithHeroWithUnitEffectInOneBattle_UnitEffect_Taunted_description",
+    "SlayEnemiesWithHeroWithUnitEffectInOneBattle_UnitEffect_description",
+    "SlayEnemiesWithHeroWithUnitEffect_UnitEffect_Overwatch_description",
+    "SlayEnemiesWithHeroWithUnitEffect_UnitEffect_Taunted_description",
+    "SlayEnemiesWithHeroWithUnitEffect_UnitEffect_description",
+    "SlayEnemiesWithHero_description",
+    "SummonWithHeroInOneBattle_description",
+    "SummonWithHero_description",
+    "UseAbilityWithHero_description"
+  ]
+}
