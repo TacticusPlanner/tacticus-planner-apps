@@ -8,7 +8,7 @@ Makes Projects a list/detail pair of routes: `/goals/projects` for browsing, cre
 
 ### Requirement: Creating and editing a project uses a form Sheet
 
-The list route SHALL provide a "New project" affordance and, on each project row, an "Edit" action. Both SHALL open the same form (name, description, color) in a Sheet — "New project" with empty fields, "Edit" pre-filled with that row's project. Submitting the form SHALL save the change and close the Sheet without navigating away from the current route. The Projects page SHALL be the only surface offering New project.
+The list route SHALL provide a "New project" affordance and, on each project row, an "Edit" action. Both SHALL open the same form (name, description, color and, for a non-Default project, Related to — see `project-event-target`) in a Sheet — "New project" with empty fields, "Edit" pre-filled with that row's project. Submitting the form SHALL save the change and close the Sheet without navigating away from the current route. The Projects page SHALL be the only surface offering a New project action; the Legendary Event plan wizard MAY create a project with an event target as part of the plan it creates.
 
 #### Scenario: Creating a project
 

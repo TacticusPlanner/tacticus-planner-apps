@@ -825,7 +825,17 @@
       "moveToProjectTitle": "In Projekt verschieben",
       "moveToProjectDescription": "Dies ist das einzige Projekt dieses Ziels. Wähle ein Projekt, in das es verschoben werden soll, oder erstelle ein neues.",
       "moveSelectionDescription_one": "{{project}} ist das einzige Projekt für {{count}} der ausgewählten Ziele. Wähle ein Projekt, in das es verschoben werden soll, oder erstelle ein neues. Die übrigen ausgewählten Ziele werden nur aus {{project}} entfernt.",
-      "moveSelectionDescription_other": "{{project}} ist das einzige Projekt für {{count}} der ausgewählten Ziele. Wähle ein Projekt, in das sie verschoben werden sollen, oder erstelle ein neues. Die übrigen ausgewählten Ziele werden nur aus {{project}} entfernt."
+      "moveSelectionDescription_other": "{{project}} ist das einzige Projekt für {{count}} der ausgewählten Ziele. Wähle ein Projekt, in das sie verschoben werden sollen, oder erstelle ein neues. Die übrigen ausgewählten Ziele werden nur aus {{project}} entfernt.",
+      "relatedTo": "Bezogen auf",
+      "relatedToNone": "Nichts",
+      "targetChip": "LE · {{name}}",
+      "eventProject": "Projekt: {{name}}",
+      "eventProjectGoals_one": "Projekt: {{name}} · {{count}} Ziel",
+      "eventProjectGoals_other": "Projekt: {{name}} · {{count}} Ziele",
+      "eventArchived_one": "+{{count}} archiviert",
+      "eventArchived_other": "+{{count}} archiviert",
+      "eventNoProject": "Kein Projekt für dieses Event",
+      "eventOpenProjects": "Zu den Projekten"
     },
     "toasts": {
       "statusChangedPartial": "{{succeeded}} von {{total}} Zielen aktualisiert.",

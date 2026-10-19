@@ -29,4 +29,4 @@ No **BREAKING** changes: a project without a target behaves exactly as today.
 - `entities/project`: model, API mapping, target chip.
 - `features/project-management`: form field and validation.
 - `pages/legendary-events` Overview: linked-projects line.
-- `projects` and `legendaryEvents` i18n in en/de/es/fr.
+- `common` (`goals.project.*`) i18n in en/de/es/fr.

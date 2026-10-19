@@ -825,7 +825,17 @@
       "moveToProjectTitle": "Déplacer vers un projet",
       "moveToProjectDescription": "C'est le seul projet de cet objectif. Choisissez un projet où le déplacer, ou créez-en un nouveau.",
       "moveSelectionDescription_one": "{{project}} est le seul projet de {{count}} des objectifs sélectionnés. Choisissez un projet où le déplacer, ou créez-en un nouveau. Les autres objectifs sélectionnés sont simplement retirés de {{project}}.",
-      "moveSelectionDescription_other": "{{project}} est le seul projet de {{count}} des objectifs sélectionnés. Choisissez un projet où les déplacer, ou créez-en un nouveau. Les autres objectifs sélectionnés sont simplement retirés de {{project}}."
+      "moveSelectionDescription_other": "{{project}} est le seul projet de {{count}} des objectifs sélectionnés. Choisissez un projet où les déplacer, ou créez-en un nouveau. Les autres objectifs sélectionnés sont simplement retirés de {{project}}.",
+      "relatedTo": "Lié à",
+      "relatedToNone": "Rien",
+      "targetChip": "LE · {{name}}",
+      "eventProject": "Projet : {{name}}",
+      "eventProjectGoals_one": "Projet : {{name}} · {{count}} objectif",
+      "eventProjectGoals_other": "Projet : {{name}} · {{count}} objectifs",
+      "eventArchived_one": "+{{count}} archivé",
+      "eventArchived_other": "+{{count}} archivés",
+      "eventNoProject": "Aucun projet pour cet événement",
+      "eventOpenProjects": "Aller aux projets"
     },
     "toasts": {
       "statusChangedPartial": "{{succeeded}} objectifs mis à jour sur {{total}}.",
