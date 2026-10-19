@@ -11,10 +11,12 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@workspace/ui/components/sheet"
+import { cn } from "@workspace/ui/lib/utils"
 
 import { EntityIcon, RankBadge, RarityIcon } from "@/shared/ui"
 
 import { formatMultiplier, type TierTileDetails } from "./tier-list.view-model"
+import { TierTileStrategy } from "./tier-tile-strategy"
 
 function DetailRow({
   label,
@@ -39,9 +41,10 @@ function DetailRow({
 }
 
 /** The details list shared by the desktop popover and the mobile sheet: tier, effective
- *  multiplier, the tier default when overridden, the owned state and the Library link. */
+ *  multiplier, the tier default when overridden, the owned state, each relic rating (with its
+ *  equipped state when the roster is known), the Strategy section and the Library link. */
 function TierTileDetailsList({ details }: { details: TierTileDetails }) {
-  const { t, i18n } = useTranslation("legendaryEvents")
+  const { t, i18n } = useTranslation(["legendaryEvents", "equipmentItems"])
   const format = (value: number) => formatMultiplier(value, i18n.language)
   const { ownership } = details
   return (
@@ -81,7 +84,35 @@ function TierTileDetailsList({ details }: { details: TierTileDetails }) {
             ? t("tierList.details.rosterUnknown")
             : null}
         </DetailRow>
+        {details.relics.map((relic) => (
+          <DetailRow
+            key={relic.equipmentId}
+            label={t(`equipmentItems:${relic.equipmentId}`, {
+              defaultValue: relic.equipmentId,
+            })}
+            testId="tier-detail-relic"
+          >
+            {format(relic.multiplier)}
+            {relic.equipped === undefined ? null : (
+              <span
+                className={cn(
+                  "text-xs font-normal",
+                  relic.equipped ? "text-primary" : "text-muted-foreground"
+                )}
+                data-testid="tier-detail-relic-equipped"
+                data-equipped={relic.equipped}
+              >
+                {t(
+                  relic.equipped
+                    ? "tierList.details.relicEquipped"
+                    : "tierList.details.relicNotEquipped"
+                )}
+              </span>
+            )}
+          </DetailRow>
+        ))}
       </dl>
+      <TierTileStrategy unitId={details.unitId} />
       <Button asChild size="sm" variant="outline">
         <Link
           data-testid="tier-detail-library-link"
@@ -154,7 +185,7 @@ export function TierTileDetailsSheet({
                 {t("tierList.details.description")}
               </SheetDescription>
             </SheetHeader>
-            <div className="px-4 pb-4">
+            <div className="min-h-0 flex-1 overflow-y-auto px-4 pb-4">
               <TierTileDetailsList details={details} />
             </div>
           </>

@@ -6,7 +6,21 @@ import type {
 /** The catalog horde-mode tier list (the `horde-mode-tiers` record), as the client reads it. */
 export interface HordeModeTierList {
   tiers: readonly { tier: string; multiplier: number }[]
-  characters: readonly { unitId: string; tier: string; multiplier?: number }[]
+  characters: readonly {
+    unitId: string
+    tier: string
+    multiplier?: number
+    /** Recommended teammates (character ids), best first. */
+    synergies?: readonly string[]
+    /** Relic-conditional multipliers, each applied while that relic is equipped. */
+    relics?: readonly HordeRelicRating[]
+  }[]
+}
+
+/** A relic-conditional rating: the multiplier a character gets while `equipmentId` is equipped. */
+export interface HordeRelicRating {
+  equipmentId: string
+  multiplier: number
 }
 
 /** The multiplier an untiered character uses. */
@@ -82,6 +96,17 @@ export function hordeTierName(
   return hordeTierLookup(tierList).get(unitId)?.tier ?? null
 }
 
+/** A character's relic ratings (see `hordeTierLookup`'s first-entry rule); empty without any. */
+export function hordeRelics(
+  tierList: HordeModeTierList | null,
+  unitId: string
+): readonly HordeRelicRating[] {
+  return (
+    tierList?.characters.find((character) => character.unitId === unitId)
+      ?.relics ?? []
+  )
+}
+
 export type HordeTierAlliance = "all" | "Imperial" | "Chaos" | "Xenos"
 
 export interface HordeTierListFilters {
@@ -99,6 +124,8 @@ export interface HordeTierTile {
   overridden: boolean
   /** Undefined when the roster could not be read. */
   owned: boolean | undefined
+  /** Its relic ratings (details and the relic mark); the tile's multiplier stays the base one. */
+  relics: readonly HordeRelicRating[]
 }
 
 export interface HordeTierRow {
@@ -159,6 +186,7 @@ export function buildHordeTierList(
           multiplier,
           overridden: multiplier !== tier.multiplier,
           owned: ownedOf(character.id),
+          relics: hordeRelics(tierList, character.id),
         }
       })
       .sort((a, b) => b.multiplier - a.multiplier || byName(a, b)),
@@ -173,6 +201,7 @@ export function buildHordeTierList(
         multiplier,
         overridden: multiplier !== UNTIERED_MULTIPLIER,
         owned: ownedOf(character.id),
+        relics: [],
       }
     })
     .sort(byName)

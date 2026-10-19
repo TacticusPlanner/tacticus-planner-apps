@@ -7,6 +7,7 @@ import enCommon from "../../public/locales/en/common.json"
 import enDamageTypes from "../../public/locales/en/damageTypes.json"
 import enEvents from "../../public/locales/en/events.json"
 import enFactions from "../../public/locales/en/factions.json"
+import enHordeStrategy from "../../public/locales/en/hordeStrategy.json"
 import enLegendaryEvents from "../../public/locales/en/legendaryEvents.json"
 import enMows from "../../public/locales/en/mows.json"
 import enProgression from "../../public/locales/en/progression.json"
@@ -35,6 +36,7 @@ export async function createTestI18n(
         damageTypes: enDamageTypes,
         events: enEvents,
         factions: enFactions,
+        hordeStrategy: enHordeStrategy,
         legendaryEvents: enLegendaryEvents,
         mows: enMows,
         progression: enProgression,

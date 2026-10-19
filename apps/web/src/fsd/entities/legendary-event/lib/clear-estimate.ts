@@ -6,6 +6,7 @@ import {
 import type { LegendaryEventRosterUnit } from "../model/types"
 import {
   effectiveHordeMultiplier,
+  hordeRelics,
   hordeTierName,
   type HordeModeTierList,
 } from "./horde-tier-list"
@@ -28,6 +29,9 @@ export interface ClearEstimateConfig {
   calibrated: boolean
   /** Each tiered character's horde-mode multiplier; an untiered character has 1.0. */
   hordeMultipliers: ReadonlyMap<string, number>
+  /** Each character's relic multipliers by relic id, used in place of its base multiplier while
+   *  the roster has that relic equipped; absent in hand-built configs (no relic ratings). */
+  hordeRelicMultipliers?: ReadonlyMap<string, ReadonlyMap<string, number>>
   /** Each tiered character's tier name (S, A…), for display; absent in hand-built configs. */
   hordeTiers?: ReadonlyMap<string, string>
   /** The power formula's game data; null when the `unit-power` dataset is absent (no estimate). */
@@ -35,7 +39,10 @@ export interface ClearEstimateConfig {
 }
 
 /** The config fields a power figure reads. */
-type PowerConfig = Pick<ClearEstimateConfig, "hordeMultipliers" | "unitPower">
+type PowerConfig = Pick<
+  ClearEstimateConfig,
+  "hordeMultipliers" | "hordeRelicMultipliers" | "unitPower"
+>
 
 /** How far a team (or a single unit) is estimated to clear on a lane (design D3). */
 export interface ClearEstimate {
@@ -78,15 +85,42 @@ export function clearEstimateConfig(
         return tier === null ? [] : [[unitId, tier] as const]
       })
     ),
+    hordeRelicMultipliers: new Map(
+      (hordeModeTiers?.characters ?? []).flatMap(({ unitId }) => {
+        const relics = hordeRelics(hordeModeTiers, unitId)
+        return relics.length === 0
+          ? []
+          : [
+              [
+                unitId,
+                new Map(
+                  relics.map((relic) => [relic.equipmentId, relic.multiplier])
+                ),
+              ] as const,
+            ]
+      })
+    ),
   }
 }
 
-/** A unit's horde-mode multiplier, 1.0 when it is untiered. */
+/** A unit's horde-mode multiplier: the highest relic multiplier among the relics `rosterUnit` has
+ *  equipped (any level), else its base multiplier, 1.0 when it is untiered. */
 export function unitHordeMultiplier(
-  config: Pick<ClearEstimateConfig, "hordeMultipliers">,
-  unitId: string
+  config: Pick<
+    ClearEstimateConfig,
+    "hordeMultipliers" | "hordeRelicMultipliers"
+  >,
+  unitId: string,
+  rosterUnit?: { equippedItems?: readonly { equipmentId: string }[] }
 ): number {
-  return config.hordeMultipliers.get(unitId) ?? 1
+  const base = config.hordeMultipliers.get(unitId) ?? 1
+  const relics = config.hordeRelicMultipliers?.get(unitId)
+  if (!relics || !rosterUnit?.equippedItems) return base
+  const equipped = rosterUnit.equippedItems.flatMap(({ equipmentId }) => {
+    const multiplier = relics.get(equipmentId)
+    return multiplier === undefined ? [] : [multiplier]
+  })
+  return equipped.length === 0 ? base : Math.max(...equipped)
 }
 
 /** A synced unit's in-game power, items included: 0 when the roster does not hold it, null when
@@ -120,7 +154,9 @@ export function unitEffectivePower(
 ): number | null {
   const power = unitPower(unitId, roster, config.unitPower)
   if (power === null) return null
-  return power === 0 ? 0 : power * unitHordeMultiplier(config, unitId)
+  return power === 0
+    ? 0
+    : power * unitHordeMultiplier(config, unitId, roster.get(unitId))
 }
 
 /** The sum of the non-reserve members' effective power (a locked member adds 0); null when any

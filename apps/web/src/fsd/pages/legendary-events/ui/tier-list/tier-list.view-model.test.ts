@@ -17,6 +17,7 @@ const untieredTile = {
   multiplier: 1,
   overridden: false,
   owned: undefined,
+  relics: [],
 }
 
 const parse = (query: string) =>
