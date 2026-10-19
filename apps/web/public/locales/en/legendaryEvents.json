@@ -798,6 +798,13 @@
       "notUnlocked": "Not unlocked",
       "rosterUnknown": "Sync your roster",
       "openInLibrary": "Open in Library"
+    },
+    "strategy": {
+      "title": "Strategy",
+      "strengths": "Strengths",
+      "howToUse": "How to use",
+      "teammates": "Recommended teammates",
+      "relicAdvice": "Relic"
     }
   },
   "missions": {

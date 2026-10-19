@@ -433,6 +433,50 @@ describe("TierListPage", () => {
       expect(owned).toHaveTextContent("Diamond I")
     })
 
+    it("expands a tile's Strategy section with its text, teammates in order and relic advice", async () => {
+      renderPage()
+      await ready()
+
+      fireEvent.click(tileOf(row("A"), "Angrax"))
+
+      const details = within(await screen.findByTestId("tier-tile-details"))
+      expect(details.queryByTestId("tier-strategy-content")).toBeNull()
+      fireEvent.click(details.getByTestId("tier-strategy-toggle"))
+
+      expect(details.getByTestId("tier-strategy-strengths")).toHaveTextContent(
+        "clearing entire waves automatically"
+      )
+      expect(details.getByTestId("tier-strategy-how-to-use")).toHaveTextContent(
+        "Deep Strike near enemy spawn points."
+      )
+      const teammates = details.getAllByTestId("tier-strategy-teammate")
+      expect(teammates.map((link) => link.textContent)).toEqual([
+        "Nauseous",
+        "Wrask",
+        "Abaddon",
+      ])
+      expect(teammates[0]).toHaveAttribute(
+        "href",
+        "/library/characters/deathRotbone"
+      )
+      expect(details.getByTestId("tier-strategy-relic")).toHaveTextContent(
+        "Daemonflesh Plate"
+      )
+    })
+
+    it("shows text without teammates for a character with no synergies", async () => {
+      renderPage()
+      await ready()
+
+      fireEvent.click(tileOf(row("S"), "Kariyan"))
+
+      const details = within(await screen.findByTestId("tier-tile-details"))
+      fireEvent.click(details.getByTestId("tier-strategy-toggle"))
+      expect(details.getByTestId("tier-strategy-strengths")).toBeVisible()
+      expect(details.queryByTestId("tier-strategy-teammates")).toBeNull()
+      expect(details.queryByTestId("tier-strategy-relic")).toBeNull()
+    })
+
     it("records an untiered tile's opening as untiered", async () => {
       renderPage()
       await ready()
@@ -447,6 +491,7 @@ describe("TierListPage", () => {
         "Untiered"
       )
       expect(details.queryByTestId("tier-detail-tier-default")).toBeNull()
+      expect(details.queryByTestId("tier-strategy")).toBeNull()
       expect(analytics.captureEvent).toHaveBeenCalledWith({
         type: "legendary_event_tier_list_unit_opened",
         unitId: first!.dataset.unitId,

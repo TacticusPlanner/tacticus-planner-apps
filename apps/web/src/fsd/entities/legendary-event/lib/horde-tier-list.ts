@@ -6,7 +6,13 @@ import type {
 /** The catalog horde-mode tier list (the `horde-mode-tiers` record), as the client reads it. */
 export interface HordeModeTierList {
   tiers: readonly { tier: string; multiplier: number }[]
-  characters: readonly { unitId: string; tier: string; multiplier?: number }[]
+  characters: readonly {
+    unitId: string
+    tier: string
+    multiplier?: number
+    /** Recommended teammates (character ids), best first. */
+    synergies?: readonly string[]
+  }[]
 }
 
 /** The multiplier an untiered character uses. */

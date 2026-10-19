@@ -798,6 +798,13 @@
       "notUnlocked": "Nicht freigeschaltet",
       "rosterUnknown": "Synchronisiere deinen Kader",
       "openInLibrary": "In der Bibliothek öffnen"
+    },
+    "strategy": {
+      "title": "Strategie",
+      "strengths": "Stärken",
+      "howToUse": "Einsatz",
+      "teammates": "Empfohlene Teammitglieder",
+      "relicAdvice": "Relikt"
     }
   },
   "missions": {

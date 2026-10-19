@@ -63,6 +63,10 @@ declare module "i18next" {
       // trait id. Read via `i18n.getResource`, not `t()` — see `entities/raid-boss` use-raid-boss-text.
       raidBossAbilityText: Record<string, unknown>
       raidBossTraitText: Record<string, unknown>
+      // Horde-mode strategy text (character id -> strengths / howToUse / relicAdvice), curated
+      // content for the Tier List. Read via `i18n.getResource` — see `entities/legendary-event`
+      // use-horde-strategy-text.
+      hordeStrategy: Record<string, unknown>
     }
   }
 }

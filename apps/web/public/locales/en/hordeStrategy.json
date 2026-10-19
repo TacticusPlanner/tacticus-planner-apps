@@ -1,0 +1,197 @@
+{
+  "custoBladeChampion": {
+    "strengths": "Area melee damage that grows with every adjacent enemy, and a reusable active that gets stronger over a long battle.",
+    "howToUse": "Position him adjacent to multiple enemies to maximize Legacy of Combat. Avoid adjacency to Big Targets when you want the area attack rather than the single-target Piercing attack."
+  },
+  "adeptHospitaller": {
+    "strengths": "Keeps a compact formation alive through repeated attacks and can resurrect fallen Imperial allies.",
+    "howToUse": "Place her behind a compact formation of non-Mechanical allies. Use her active to resurrect fallen Imperial allies when necessary."
+  },
+  "deathRotbone": {
+    "strengths": "His passive can save Chaos allies from lethal damage, including overkills.",
+    "howToUse": "Keep him adjacent to frontline Chaos characters, particularly Maladus or Angrax."
+  },
+  "necroSpyder": {
+    "strengths": "Anchors Mechanical teams with repairs, and his Scarabs absorb attacks and occupy enemies.",
+    "howToUse": "Repair Re'vas or other valuable Mechanical units, and use Scarabs to absorb attacks and occupy enemies."
+  },
+  "tauCrisis": {
+    "strengths": "Overwatch punishes every enemy that enters her range, and Shield Drones protect her.",
+    "howToUse": "Position her where multiple enemies must enter her Overwatch range. Deploy Shield Drones and pair her with Aleph-Null. Survival summons keep the rarity they were created at, so drones summoned early can be underpowered in later waves.",
+    "relicAdvice": "DW-02 Advanced Burst Cannon allows repeated use of her active after enough attacks."
+  },
+  "deathBlightlord": {
+    "strengths": "Haze of Corruption can chain kills into adjacent enemies, and he is very durable.",
+    "howToUse": "Position him at narrow passages, where his kills can chain into adjacent enemies. Pair him with Nauseous Rotbone for longevity.",
+    "relicAdvice": "Daemonflesh Plate greatly improves his late-game endurance."
+  },
+  "tyranTyrantGuard": {
+    "strengths": "Guardian Organism reduces the damage taken by fragile allies beside him; particularly effective in defensive formations.",
+    "howToUse": "Keep him beside fragile allies and avoid unnecessary movement so Guardian Organism keeps providing damage reduction."
+  },
+  "admecMarshall": {
+    "strengths": "Builds a Skitarii army and switches between defensive and offensive Imperatives.",
+    "howToUse": "Maintain Protector Imperative while building a Skitarii army, and switch to Conqueror Imperative when additional attacks are more valuable. Pair him with Actus and other Mechanical characters. Survival summons keep the rarity they were created at, so Skitarii summoned early can be underpowered in later waves."
+  },
+  "orksRuntherd": {
+    "strengths": "Produces Grots that distract enemies and multiply.",
+    "howToUse": "Attack consistently to produce Grots, then use his active when enemies surround him. Survival summons keep the rarity they were created at, so Grots summoned early can be underpowered in later waves.",
+    "relicAdvice": "Supa-Cybork Body makes him repairable."
+  },
+  "templChampion": {
+    "strengths": "Martial Superiority strikes melee attackers before their attacks resolve.",
+    "howToUse": "Place him in melee chokepoints so attackers trigger Martial Superiority. Increase his passive ability level and protect him against ranged enemies."
+  },
+  "orksWarboss": {
+    "strengths": "WAAAGH! summons Ork Boyz and improves allied melee attacks, and his follow-up attack provides consistent extra damage.",
+    "howToUse": "Use WAAAGH! to summon Ork Boyz, improve allied melee attacks and charge into enemies."
+  },
+  "blackTerminator": {
+    "strengths": "His passive attacks enemies moving from adjacent hexes, potentially clearing entire waves automatically.",
+    "howToUse": "Deep Strike near enemy spawn points. His passive triggers when an enemy moves from an adjacent hex, not simply when it spawns; this works because enemies often move out of the hexes beside a spawn point. Prioritize passive upgrades and support him with Nauseous Rotbone, Wrask or Abaddon. At higher difficulties his damage can fall short without upgrades and Chaos buffs.",
+    "relicAdvice": "Daemonflesh Plate grants armour from attacks and eventually refreshes his active ability."
+  },
+  "tauMarksman": {
+    "strengths": "Continuously deploys Sniper Drones and marks dangerous enemies with Markerlights.",
+    "howToUse": "Keep him behind the frontline and use Markerlights to focus dangerous enemies. Protect him, because losing him removes your ability to replenish drones. Survival summons keep the rarity they were created at, so drones summoned early can be underpowered in later waves."
+  },
+  "ultraInceptorSgt": {
+    "strengths": "His Inceptors add damage and bodies that distract enemies.",
+    "howToUse": "Wait for later turns when practical to improve the number of summons, and avoid trapping your team with summons. Survival summons keep the rarity they were created at, so summoning later also keeps them stronger."
+  },
+  "ultraCalgar": {
+    "strengths": "Rites of Battle buffs adjacent damage dealers, his active hits dense formations, and Gravis armour keeps him alive.",
+    "howToUse": "Position him adjacent to damage dealers to benefit from Rites of Battle, and use his active against dense enemy formations."
+  },
+  "admecManipulus": {
+    "strengths": "Repairs Mechanical allies, supporting them and generating additional attacks.",
+    "howToUse": "Particularly effective with Tan Gi'da, Re'vas and Mechanical summons."
+  },
+  "custoKyrus": {
+    "strengths": "Counterattacks the enemies that attack her, with a reusable active for positioning.",
+    "howToUse": "Use her reusable active for positioning, then let her counterattack enemies. Pair her with Isabella. Her passive needs enemies to attack her, so she is less effective when ignored or overwhelmed."
+  },
+  "bloodSanguinary": {
+    "strengths": "Regenerates nearby non-Mechanical allies.",
+    "howToUse": "Keep him close to non-Mechanical allies for regeneration.",
+    "relicAdvice": "With Chalice of Baal, nearby deaths trigger significant additional healing and melee damage buffs."
+  },
+  "templAggressor": {
+    "strengths": "Excellent defensive character: Boltstorm spreads damage and Suppression, and Gravis armour keeps him alive.",
+    "howToUse": "Use ranged attacks against clustered enemies to spread Boltstorm damage and Suppression."
+  },
+  "worldTerminator": {
+    "strengths": "Kills in melee repeatedly generate shields for nearby Chaos allies.",
+    "howToUse": "Deep Strike alongside other Chaos frontline units and keep killing enemies in melee."
+  },
+  "necroOverlord": {
+    "strengths": "Resurrection Orb can generate multiple Necron Warriors.",
+    "howToUse": "Delay Resurrection Orb until it can generate multiple Necron Warriors. Survival summons keep the rarity they were created at, so warriors summoned early can be underpowered in later waves.",
+    "relicAdvice": "Phasal Subjugator provides additional summon and attack opportunities."
+  },
+  "ultraTitus": {
+    "strengths": "Durable frontline character whose passive can prevent his defeat.",
+    "howToUse": "Prioritize opportunities to secure kills and maintain his survivability."
+  },
+  "adeptRetributor": {
+    "strengths": "Excellent area damage with her Flame attacks and active.",
+    "howToUse": "Target dense groups, but avoid blocking allied movement with Burning hexes."
+  },
+  "deathTyphus": {
+    "strengths": "Durable Psyker with effective area damage.",
+    "relicAdvice": "Lakrimae substantially improves his horde performance by generating Poxwalkers."
+  },
+  "thousInfernalMaster": {
+    "strengths": "Psychic attacks under Malefic Maelstrom turn into additional Screamer summons.",
+    "howToUse": "Activate Malefic Maelstrom, then coordinate Psychic attacks. Keep adjacent hexes free for summons. Survival summons keep the rarity they were created at, so Screamers summoned early can be underpowered in later waves."
+  },
+  "bloodTerminator": {
+    "strengths": "Effective frontline wave clearer with repeated melee damage and self-sustain.",
+    "howToUse": "Engage enemy clusters to maximize his repeated melee damage, especially with healing support."
+  },
+  "orksBigMek": {
+    "strengths": "Repairs Mechanical allies, has a defensive aura, and his Grot Tank absorbs damage and provides ranged attacks.",
+    "howToUse": "Support Mechanical allies and deploy the Grot Tank to absorb damage."
+  },
+  "blackPossession": {
+    "strengths": "Produces Bloodletters that overwhelm enemies and divert incoming attacks.",
+    "howToUse": "Works well in Chaos or Psyker teams, but protect him: he is vulnerable on his own. Survival summons keep the rarity they were created at, so Bloodletters summoned early can be underpowered in later waves."
+  },
+  "custoVexilusPraetor": {
+    "strengths": "Defensive support whose armour bonuses and damage mitigation help nearby allies.",
+    "howToUse": "Best in formations that need extra survival rather than damage."
+  },
+  "ultraApothecary": {
+    "strengths": "Heals and revives non-Mechanical units.",
+    "howToUse": "Particularly valuable when stronger faction healers are unavailable or restrictions require Piercing damage."
+  },
+  "necroDestroyer": {
+    "strengths": "Overwatch can be effective against incoming waves.",
+    "howToUse": "Use Overwatch against predictable enemy movement and defend him with Mechanical support; he needs protection."
+  },
+  "emperLucius": {
+    "strengths": "Durable frontline survivor with revival-related utility.",
+    "howToUse": "Use his durability to occupy enemies and preserve more fragile allies."
+  },
+  "thousTerminator": {
+    "strengths": "Self-sustaining Chaos character that can survive prolonged battles.",
+    "howToUse": "Works well in defensive positions with environmental effects and Chaos support."
+  },
+  "deathBlightbringer": {
+    "strengths": "Supports Chaos teams through summons and attrition.",
+    "relicAdvice": "Orbs of Decay can considerably improve his effectiveness against clustered enemies."
+  },
+  "genesMagus": {
+    "strengths": "Repeated summons distract enemies and gradually overwhelm less durable waves.",
+    "howToUse": "Keep her protected while her summons do the work. Survival summons keep the rarity they were created at, so summons created early can be underpowered in later waves."
+  },
+  "bloodIntercessor": {
+    "strengths": "Repeated charges produce temporary summons that absorb enemy attacks.",
+    "howToUse": "More effective as mobile disruption than as a stationary tank."
+  },
+  "blackAbaddon": {
+    "strengths": "Buffs Chaos damage dealers such as Angrax and Wrask.",
+    "howToUse": "Place him within buffing range of Chaos damage dealers.",
+    "relicAdvice": "Talon of Horus adds significant wave-clearing potential."
+  },
+  "eldarFarseer": {
+    "strengths": "A strong amplifier: Doom makes allied attacks deal additional damage.",
+    "howToUse": "Keep enemies inside the range of Doom. He lacks the sustain to carry waves alone."
+  },
+  "tauFarsight": {
+    "strengths": "Mobile ranged damage dealer.",
+    "relicAdvice": "With Dawn Blade, securing kills also supports his survivability."
+  },
+  "necroWarden": {
+    "strengths": "Supports Necron and Mechanical formations with sustain and activation utility.",
+    "howToUse": "Most effective when other Mechanical allies provide the damage."
+  },
+  "astraOrdnance": {
+    "strengths": "Strong initial control: suppresses dangerous ranged enemies and shells groups with artillery.",
+    "howToUse": "Use his control early; he has limited long-term sustain."
+  },
+  "blackHaarken": {
+    "strengths": "Mobile damage dealer who can accumulate power from kills.",
+    "howToUse": "Protect him, particularly against high-damage waves."
+  },
+  "ultraTigurius": {
+    "strengths": "Useful early area Psychic damage and defensive utility.",
+    "howToUse": "Lean on him early; he is less reliable against prolonged high-level waves."
+  },
+  "astraPrimarisPsy": {
+    "strengths": "Protects against ranged attacks and adds Psychic damage.",
+    "howToUse": "Primarily a niche support selection."
+  },
+  "adeptCanoness": {
+    "strengths": "Stronger against particular enemy types and targets.",
+    "howToUse": "Pick her for favorable matchups; her sustained wave clearing is limited outside them."
+  },
+  "necroPlasmancer": {
+    "strengths": "Can provide damage in specific situations.",
+    "howToUse": "He lacks the defensive tools and reliable wave control needed for extended fights. Tier D means limited in horde modes, not useless across the game."
+  },
+  "ultraEliminatorSgt": {
+    "strengths": "Long-range single-target damage and occasional control.",
+    "howToUse": "Low attack frequency and limited endurance make him a poor general horde investment. Tier D means limited in horde modes, not useless across the game."
+  }
+}

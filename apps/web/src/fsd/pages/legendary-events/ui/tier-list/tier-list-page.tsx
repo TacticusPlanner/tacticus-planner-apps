@@ -44,7 +44,8 @@ type TierRef = { tier: string; multiplier: number } | null
  *  with each character's effective multiplier, then the collapsed Untiered row, filtered by name,
  *  ownership and alliance (kept in the URL query). */
 export function TierListPage() {
-  const { t, i18n } = useTranslation("legendaryEvents")
+  // `hordeStrategy` loads with the page so opening a tile's Strategy section never suspends.
+  const { t, i18n } = useTranslation(["legendaryEvents", "hordeStrategy"])
   const isMobile = useIsMobile()
   const units = useLegendaryEventUnits()
   const roster = useLegendaryEventRoster()

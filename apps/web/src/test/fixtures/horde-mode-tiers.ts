@@ -1,5 +1,6 @@
 // The served `horde-mode-tiers` record, copied from the real catalog source (tacticus-planner-api
-// GameCatalog Data/horde-mode-tiers.json): tiers S, A, B, C, D and the 47 tiered characters.
+// GameCatalog Data/horde-mode-tiers.json): tiers S, A, B, C, D and the 47 tiered characters, with
+// the seeded synergies.
 export const hordeModeTiers = {
   id: "horde-mode-tiers",
   tiers: [
@@ -39,21 +40,25 @@ export const hordeModeTiers = {
       unitId: "deathRotbone",
       tier: "S",
       multiplier: 1.96,
+      synergies: ["deathBlightlord", "blackTerminator"],
     },
     {
       unitId: "necroSpyder",
       tier: "S",
       multiplier: 1.94,
+      synergies: ["tauCrisis"],
     },
     {
       unitId: "tauCrisis",
       tier: "S",
       multiplier: 1.92,
+      synergies: ["necroSpyder"],
     },
     {
       unitId: "deathBlightlord",
       tier: "S",
       multiplier: 1.9,
+      synergies: ["deathRotbone"],
     },
     {
       unitId: "tyranTyrantGuard",
@@ -64,6 +69,7 @@ export const hordeModeTiers = {
       unitId: "admecMarshall",
       tier: "S",
       multiplier: 1.86,
+      synergies: ["admecManipulus"],
     },
     {
       unitId: "orksRuntherd",
@@ -84,6 +90,7 @@ export const hordeModeTiers = {
       unitId: "blackTerminator",
       tier: "A",
       multiplier: 1.76,
+      synergies: ["deathRotbone", "worldTerminator", "blackAbaddon"],
     },
     {
       unitId: "tauMarksman",
@@ -104,11 +111,13 @@ export const hordeModeTiers = {
       unitId: "admecManipulus",
       tier: "A",
       multiplier: 1.71,
+      synergies: ["admecMarshall", "tauCrisis"],
     },
     {
       unitId: "custoKyrus",
       tier: "A",
       multiplier: 1.7,
+      synergies: ["adeptHospitaller"],
     },
     {
       unitId: "bloodSanguinary",
@@ -209,6 +218,7 @@ export const hordeModeTiers = {
       unitId: "blackAbaddon",
       tier: "B",
       multiplier: 1.4,
+      synergies: ["blackTerminator", "worldTerminator"],
     },
     {
       unitId: "eldarFarseer",

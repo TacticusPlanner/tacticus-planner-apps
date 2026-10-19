@@ -317,4 +317,11 @@ export {
   sortedWaves,
 } from "./lib/battle-preview"
 export { useHordeModeTiers } from "./model/use-horde-mode-tiers"
+export {
+  hordeStrategy,
+  hordeSynergies,
+  type HordeStrategy,
+  type HordeStrategyText,
+} from "./lib/horde-strategy"
+export { useHordeStrategyText } from "./model/use-horde-strategy-text"
 export { tierToneClass } from "./lib/tier-tone"

@@ -15,6 +15,7 @@ import {
 import { EntityIcon, RankBadge, RarityIcon } from "@/shared/ui"
 
 import { formatMultiplier, type TierTileDetails } from "./tier-list.view-model"
+import { TierTileStrategy } from "./tier-tile-strategy"
 
 function DetailRow({
   label,
@@ -39,7 +40,8 @@ function DetailRow({
 }
 
 /** The details list shared by the desktop popover and the mobile sheet: tier, effective
- *  multiplier, the tier default when overridden, the owned state and the Library link. */
+ *  multiplier, the tier default when overridden, the owned state, the Strategy section and the
+ *  Library link. */
 function TierTileDetailsList({ details }: { details: TierTileDetails }) {
   const { t, i18n } = useTranslation("legendaryEvents")
   const format = (value: number) => formatMultiplier(value, i18n.language)
@@ -82,6 +84,7 @@ function TierTileDetailsList({ details }: { details: TierTileDetails }) {
             : null}
         </DetailRow>
       </dl>
+      <TierTileStrategy unitId={details.unitId} />
       <Button asChild size="sm" variant="outline">
         <Link
           data-testid="tier-detail-library-link"

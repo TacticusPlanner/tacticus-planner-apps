@@ -451,6 +451,36 @@ describe("catalog schemas", () => {
     ).toBe(false)
   })
 
+  it("keeps a horde-mode character's synergies in order and rejects a non-string one", () => {
+    const record = {
+      id: "horde-mode-tiers",
+      tiers: [{ tier: "A", multiplier: 1.7 }],
+      characters: [
+        {
+          unitId: "blackTerminator",
+          tier: "A",
+          synergies: ["deathRotbone", "worldTerminator"],
+        },
+      ],
+    }
+    const schema = datasetPayloadSchemas["horde-mode-tiers"]
+
+    expect(schema.parse([record])[0]?.characters[0]?.synergies).toEqual([
+      "deathRotbone",
+      "worldTerminator",
+    ])
+    expect(
+      schema.safeParse([
+        {
+          ...record,
+          characters: [
+            { unitId: "blackTerminator", tier: "A", synergies: [1] },
+          ],
+        },
+      ]).success
+    ).toBe(false)
+  })
+
   it("keeps each event's own reward ladder", () => {
     const result = datasetPayloadSchemas.lres.parse([
       baseLre,

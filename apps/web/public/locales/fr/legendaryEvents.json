@@ -798,6 +798,13 @@
       "notUnlocked": "Non débloqué",
       "rosterUnknown": "Synchronisez votre effectif",
       "openInLibrary": "Ouvrir dans la Bibliothèque"
+    },
+    "strategy": {
+      "title": "Stratégie",
+      "strengths": "Points forts",
+      "howToUse": "Utilisation",
+      "teammates": "Coéquipiers recommandés",
+      "relicAdvice": "Relique"
     }
   },
   "missions": {

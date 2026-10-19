@@ -798,6 +798,13 @@
       "notUnlocked": "No desbloqueado",
       "rosterUnknown": "Sincroniza tu plantilla",
       "openInLibrary": "Abrir en la Biblioteca"
+    },
+    "strategy": {
+      "title": "Estrategia",
+      "strengths": "Puntos fuertes",
+      "howToUse": "Cómo usarlo",
+      "teammates": "Compañeros recomendados",
+      "relicAdvice": "Reliquia"
     }
   },
   "missions": {
