@@ -85,9 +85,12 @@ export function HreFactionRaids({
   rows,
   faction,
   killsToGo,
+  lightning,
   view,
 }: {
   rows: MissionRaidPlan["factionRows"]
+  /** Lightning victories are open too, so only nodes with a lightning condition are listed. */
+  lightning: boolean
   /** The localized faction. */
   faction: string
   killsToGo: number
@@ -103,6 +106,7 @@ export function HreFactionRaids({
         {rows.length > 0
           ? t("raids.faction.note", { faction, count: killsToGo })
           : t("raids.faction.none", { faction })}
+        {lightning ? ` ${t("raids.faction.lightning")}` : null}
       </p>
       {rows.length > 0 ? (
         <>

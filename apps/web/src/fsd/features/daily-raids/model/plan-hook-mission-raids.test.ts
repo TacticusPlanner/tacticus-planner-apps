@@ -20,6 +20,8 @@ const battles = [
     energyCost: 3,
     dailyAttempts: 3,
     campaignGroupId: "campaign1",
+    type: "Standard",
+    nodeNumber: 6,
     rewards: rewards(7, []),
   },
   {
@@ -27,6 +29,8 @@ const battles = [
     energyCost: 5,
     dailyAttempts: 10,
     campaignGroupId: "campaign1",
+    type: "Standard",
+    nodeNumber: 15,
     rewards: rewards(12, ["shards_necroWarden"]),
   },
 ]
@@ -137,6 +141,8 @@ describe("planHookMissionRaids", () => {
       energyCost,
       dailyAttempts: 10,
       campaignGroupId: "campaign1",
+      type: "Standard",
+      nodeNumber: 30,
       rewards: rewards(7, ["shards_necroWarden"]),
     })
     const result = plan({
@@ -167,6 +173,70 @@ describe("planHookMissionRaids", () => {
     expect(result.factionRows.map((row) => [row.battleId, row.raids])).toEqual([
       ["N01", 3],
     ])
+  })
+
+  it("puts faction nodes with the most enemies first, so the kills take the fewest raids", () => {
+    const node = (nodeId: string, energyCost: number) => ({
+      id: nodeId,
+      energyCost,
+      dailyAttempts: 10,
+      campaignGroupId: "campaign1",
+      type: "Standard",
+      nodeNumber: 30,
+      rewards: rewards(7, []),
+    })
+    const necrons = (enemiesTotal: number): RaidsFilterBattle => ({
+      ...filterBattle("Standard"),
+      enemiesFactions: ["Necrons"],
+      enemiesTotal,
+    })
+    const result = plan({
+      request: {
+        battlesToGo: 0,
+        eventOnly: false,
+        enemyFaction: { faction: "Necrons", killsToGo: 20 },
+      },
+      availableBattles: [node("N03", 3), node("N09", 6)],
+      filterBattlesById: new Map([
+        ["N03", necrons(3)],
+        ["N09", necrons(9)],
+      ]),
+    })
+    // 9 enemies a raid at N09 first: 3 raids cover the 20 kills, before the cheaper N03.
+    expect(result.factionRows.map((row) => [row.battleId, row.raids])).toEqual([
+      ["N09", 3],
+    ])
+  })
+
+  it("keeps faction nodes to lightning-condition nodes while lightning victories are open", () => {
+    const indomitus = (nodeNumber: number) => ({
+      id: `I${nodeNumber}`,
+      energyCost: 5,
+      dailyAttempts: 10,
+      campaignGroupId: "campaign1",
+      type: "Standard",
+      nodeNumber,
+      rewards: rewards(7, []),
+    })
+    const necrons: RaidsFilterBattle = {
+      ...filterBattle("Standard"),
+      enemiesFactions: ["Necrons"],
+      enemiesTotal: 5,
+    }
+    const result = plan({
+      request: {
+        battlesToGo: 0,
+        eventOnly: true,
+        enemyFaction: { faction: "Necrons", killsToGo: 10 },
+      },
+      availableBattles: [indomitus(18), indomitus(19)],
+      filterBattlesById: new Map([
+        ["I18", necrons],
+        ["I19", necrons],
+      ]),
+    })
+    // Indomitus 18 has no lightning condition, so a raid there would not count as both.
+    expect(result.factionRows.map((row) => row.battleId)).toEqual(["I19"])
   })
 
   it("has no faction list without a faction-kill objective", () => {

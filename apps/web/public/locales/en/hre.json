@@ -133,9 +133,10 @@
     "noteAllianceNodes": "Only nodes where {{alliance}} units can deploy, so the mission's other objective progresses too.",
     "faction": {
       "title": "Nodes with {{faction}} enemies",
-      "note_one": "For the {{count}} {{faction}} kill still needed: the cheapest nodes with {{faction}} enemies, from the energy left after the raids above. Each raid counts the node's enemies.",
-      "note_other": "For the {{count}} {{faction}} kills still needed: the cheapest nodes with {{faction}} enemies, from the energy left after the raids above. Each raid counts the node's enemies.",
-      "none": "No raidable node with {{faction}} enemies fits the energy left today."
+      "note_one": "For the {{count}} {{faction}} kill still needed: the nodes with the most {{faction}} enemies first, so it takes the fewest raids, from the energy left after the raids above. Each raid counts the node's enemies.",
+      "note_other": "For the {{count}} {{faction}} kills still needed: the nodes with the most {{faction}} enemies first, so it takes the fewest raids, from the energy left after the raids above. Each raid counts the node's enemies.",
+      "none": "No raidable node with {{faction}} enemies fits the energy left today.",
+      "lightning": "Only nodes with a lightning-victory condition, so each raid counts for both objectives."
     }
   },
   "tokens": {

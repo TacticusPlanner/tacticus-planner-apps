@@ -28,6 +28,8 @@ export function planHookMissionRaids(input: {
   availableBattles: readonly (Pick<Battle, "energyCost" | "dailyAttempts"> & {
     id: string
     campaignGroupId: string
+    type: string
+    nodeNumber: number
     rewards: {
       guaranteed: readonly { id: string; min: number; max: number }[]
       potential: readonly { id: string; effectiveRate: number | null }[]
@@ -65,6 +67,7 @@ export function planHookMissionRaids(input: {
       dailyAttempts: battle.dailyAttempts,
       isEvent: eventCampaignIds.has(battle.campaignGroupId),
       expectedGold: expectedGold(battle.rewards.guaranteed),
+      lightningCondition: hasLightningCondition(battle),
       dropRates: new Map(
         battle.rewards.potential.map((reward) => [
           reward.id,
@@ -90,6 +93,17 @@ export function planHookMissionRaids(input: {
       : undefined,
   })
 }
+
+/** Indomitus, whose nodes below 19 have no lightning-victory condition (Severyn, 2026-10). */
+const INDOMITUS_GROUP_ID = "campaign1"
+const FIRST_LIGHTNING_INDOMITUS_NODE = 19
+
+const hasLightningCondition = (battle: {
+  campaignGroupId: string
+  nodeNumber: number
+}) =>
+  battle.campaignGroupId !== INDOMITUS_GROUP_ID ||
+  battle.nodeNumber >= FIRST_LIGHTNING_INDOMITUS_NODE
 
 const expectedGold = (
   guaranteed: readonly { id: string; min: number; max: number }[]

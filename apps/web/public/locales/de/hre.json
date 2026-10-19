@@ -133,9 +133,10 @@
     "noteAllianceNodes": "Nur Knoten, auf denen {{alliance}}-Einheiten eingesetzt werden können, damit das andere Ziel der Mission auch vorankommt.",
     "faction": {
       "title": "Knoten mit {{faction}}-Gegnern",
-      "note_one": "Für den letzten fehlenden {{faction}}-Kill: die günstigsten Knoten mit {{faction}}-Gegnern, mit der Energie, die nach den Raids oben übrig bleibt. Jeder Raid zählt die Gegner des Knotens.",
-      "note_other": "Für die noch fehlenden {{count}} {{faction}}-Kills: die günstigsten Knoten mit {{faction}}-Gegnern, mit der Energie, die nach den Raids oben übrig bleibt. Jeder Raid zählt die Gegner des Knotens.",
-      "none": "Kein raidbarer Knoten mit {{faction}}-Gegnern passt in die heute übrige Energie."
+      "note_one": "Für den letzten fehlenden {{faction}}-Kill: zuerst die Knoten mit den meisten {{faction}}-Gegnern, damit es die wenigsten Raids braucht, mit der Energie, die nach den Raids oben übrig bleibt. Jeder Raid zählt die Gegner des Knotens.",
+      "note_other": "Für die noch fehlenden {{count}} {{faction}}-Kills: zuerst die Knoten mit den meisten {{faction}}-Gegnern, damit es die wenigsten Raids braucht, mit der Energie, die nach den Raids oben übrig bleibt. Jeder Raid zählt die Gegner des Knotens.",
+      "none": "Kein raidbarer Knoten mit {{faction}}-Gegnern passt in die heute übrige Energie.",
+      "lightning": "Nur Knoten mit Blitzsieg-Bedingung, damit jeder Raid für beide Ziele zählt."
     }
   },
   "tokens": {
