@@ -1,0 +1,197 @@
+{
+  "custoBladeChampion": {
+    "strengths": "Dégâts de mêlée de zone qui augmentent avec chaque ennemi adjacent, et une capacité active réutilisable qui se renforce au fil d'un long combat.",
+    "howToUse": "Placez-le adjacent à plusieurs ennemis pour tirer le meilleur parti d'Héritage martial. Évitez d'être adjacent à des Cibles de grande taille si vous voulez l'attaque de zone plutôt que l'attaque perforante sur cible unique."
+  },
+  "adeptHospitaller": {
+    "strengths": "Maintient en vie une formation compacte face aux attaques répétées et peut ressusciter les alliés impériaux tombés.",
+    "howToUse": "Placez-la derrière une formation compacte d'alliés non mécaniques. Utilisez sa capacité active pour ressusciter les alliés impériaux tombés si nécessaire."
+  },
+  "deathRotbone": {
+    "strengths": "Sa capacité passive peut sauver les alliés du Chaos de dégâts mortels, y compris en cas de dégâts excédentaires.",
+    "howToUse": "Gardez-le adjacent aux personnages du Chaos en première ligne, en particulier Maladus ou Angrax."
+  },
+  "necroSpyder": {
+    "strengths": "Soutient les équipes mécaniques grâce à ses réparations, et ses Scarabées absorbent les attaques et occupent les ennemis.",
+    "howToUse": "Réparez Re'vas ou d'autres unités mécaniques précieuses, et utilisez les Scarabées pour absorber les attaques et occuper les ennemis."
+  },
+  "tauCrisis": {
+    "strengths": "Sentinelle punit chaque ennemi qui entre dans sa portée, et les Drones Boucliers la protègent.",
+    "howToUse": "Placez-la là où plusieurs ennemis doivent entrer dans sa portée de Sentinelle. Déployez des Drones Boucliers et associez-la à Aleph-Null. Les invocations du mode Survie conservent la rareté avec laquelle elles ont été créées, donc les drones invoqués tôt peuvent être trop faibles lors des vagues suivantes.",
+    "relicAdvice": "Canon à induction Avancé DW-02 permet de réutiliser sa capacité active après suffisamment d'attaques."
+  },
+  "deathBlightlord": {
+    "strengths": "Brume de Corruption peut enchaîner les éliminations sur les ennemis adjacents, et il est très résistant.",
+    "howToUse": "Placez-le dans les passages étroits, où ses éliminations peuvent s'enchaîner sur les ennemis adjacents. Associez-le à Nauseous Rotbone pour plus de longévité.",
+    "relicAdvice": "Plate de Chair Démoniaque améliore grandement son endurance en fin de combat."
+  },
+  "tyranTyrantGuard": {
+    "strengths": "Organisme de Gardien réduit les dégâts subis par les alliés fragiles à ses côtés ; particulièrement efficace dans les formations défensives.",
+    "howToUse": "Gardez-le à côté des alliés fragiles et évitez les déplacements inutiles pour qu'Organisme de Gardien continue de réduire les dégâts."
+  },
+  "admecMarshall": {
+    "strengths": "Constitue une armée de Skitarii et alterne entre des Impératifs défensifs et offensifs.",
+    "howToUse": "Maintenez Impératif protecteur pendant que vous constituez une armée de Skitarii, puis passez à Impératif conquérant lorsque les attaques supplémentaires sont plus utiles. Associez-le à Actus et à d'autres personnages mécaniques. Les invocations du mode Survie conservent la rareté avec laquelle elles ont été créées, donc les Skitarii invoqués tôt peuvent être trop faibles lors des vagues suivantes."
+  },
+  "orksRuntherd": {
+    "strengths": "Produit des Grots qui distraient les ennemis et se multiplient.",
+    "howToUse": "Attaquez régulièrement pour produire des Grots, puis utilisez sa capacité active quand les ennemis l'encerclent. Les invocations du mode Survie conservent la rareté avec laquelle elles ont été créées, donc les Grots invoqués tôt peuvent être trop faibles lors des vagues suivantes.",
+    "relicAdvice": "Corps de Supa-Cybork le rend réparable."
+  },
+  "templChampion": {
+    "strengths": "Supériorité martiale frappe les attaquants de mêlée avant que leurs attaques ne soient résolues.",
+    "howToUse": "Placez-le dans les goulets d'étranglement de mêlée pour que les attaquants déclenchent Supériorité martiale. Augmentez le niveau de sa capacité passive et protégez-le des ennemis à distance."
+  },
+  "orksWarboss": {
+    "strengths": "Waaagh ! invoque des Boyz orks et renforce les attaques de mêlée alliées, et son attaque de suivi apporte des dégâts supplémentaires réguliers.",
+    "howToUse": "Utilisez Waaagh ! pour invoquer des Boyz orks, renforcer les attaques de mêlée alliées et charger les ennemis."
+  },
+  "blackTerminator": {
+    "strengths": "Sa capacité passive attaque les ennemis qui quittent des hexagones adjacents, et peut nettoyer des vagues entières automatiquement.",
+    "howToUse": "Utilisez Assaut en Profondeur près des points d'apparition ennemis. Sa capacité passive se déclenche lorsqu'un ennemi quitte un hexagone adjacent, et pas simplement lorsqu'il apparaît ; cela fonctionne car les ennemis quittent souvent les hexagones voisins d'un point d'apparition. Donnez la priorité aux améliorations de sa capacité passive et soutenez-le avec Nauseous Rotbone, Wrask ou Abaddon. Aux difficultés élevées, ses dégâts peuvent être insuffisants sans améliorations ni buffs du Chaos.",
+    "relicAdvice": "Plate de Chair Démoniaque octroie de l'armure grâce aux attaques et finit par recharger sa capacité active."
+  },
+  "tauMarksman": {
+    "strengths": "Déploie continuellement des Drones Snipers et marque les ennemis dangereux avec des pointeurs lumineux.",
+    "howToUse": "Gardez-le derrière la première ligne et utilisez les pointeurs lumineux pour cibler les ennemis dangereux. Protégez-le, car le perdre vous empêche de renouveler vos drones. Les invocations du mode Survie conservent la rareté avec laquelle elles ont été créées, donc les drones invoqués tôt peuvent être trop faibles lors des vagues suivantes."
+  },
+  "ultraInceptorSgt": {
+    "strengths": "Ses Inceptors ajoutent des dégâts et des corps qui distraient les ennemis.",
+    "howToUse": "Attendez les tours suivants lorsque c'est possible pour augmenter le nombre d'invocations, et évitez d'enfermer votre équipe avec les invocations. Les invocations du mode Survie conservent la rareté avec laquelle elles ont été créées, donc invoquer plus tard les rend aussi plus puissantes."
+  },
+  "ultraCalgar": {
+    "strengths": "Rites du combat renforce les attaquants adjacents, sa capacité active frappe les formations denses et son armure Gravis le maintient en vie.",
+    "howToUse": "Placez-le adjacent aux attaquants pour qu'ils profitent de Rites du combat, et utilisez sa capacité active contre les formations ennemies denses."
+  },
+  "admecManipulus": {
+    "strengths": "Répare les alliés mécaniques, les soutient et génère des attaques supplémentaires.",
+    "howToUse": "Particulièrement efficace avec Tan Gi'da, Re'vas et les invocations mécaniques."
+  },
+  "custoKyrus": {
+    "strengths": "Contre-attaque les ennemis qui l'attaquent, avec une capacité active réutilisable pour se positionner.",
+    "howToUse": "Utilisez sa capacité active réutilisable pour la positionner, puis laissez-la contre-attaquer les ennemis. Associez-la à Isabella. Sa capacité passive a besoin que les ennemis l'attaquent, elle est donc moins efficace lorsqu'elle est ignorée ou submergée."
+  },
+  "bloodSanguinary": {
+    "strengths": "Régénère les alliés non mécaniques proches.",
+    "howToUse": "Gardez-le près des alliés non mécaniques pour la régénération.",
+    "relicAdvice": "Avec Calice de Baal, les morts à proximité déclenchent d'importants soins supplémentaires et des buffs de dégâts de mêlée."
+  },
+  "templAggressor": {
+    "strengths": "Excellent personnage défensif : Tempête de carreaux répartit les dégâts et la neutralisation, et son armure Gravis le maintient en vie.",
+    "howToUse": "Utilisez les attaques à distance contre les ennemis regroupés pour répartir les dégâts et la neutralisation de Tempête de carreaux."
+  },
+  "worldTerminator": {
+    "strengths": "Ses éliminations en mêlée génèrent régulièrement des boucliers pour les alliés du Chaos proches.",
+    "howToUse": "Utilisez Assaut en Profondeur aux côtés d'autres unités du Chaos de première ligne et continuez à éliminer des ennemis en mêlée."
+  },
+  "necroOverlord": {
+    "strengths": "Orbe de Résurrection peut générer plusieurs Guerriers Nécrons.",
+    "howToUse": "Retardez Orbe de Résurrection jusqu'à ce qu'il puisse générer plusieurs Guerriers Nécrons. Les invocations du mode Survie conservent la rareté avec laquelle elles ont été créées, donc les guerriers invoqués tôt peuvent être trop faibles lors des vagues suivantes.",
+    "relicAdvice": "Subjugateur de Phase offre des occasions supplémentaires d'invoquer et d'attaquer."
+  },
+  "ultraTitus": {
+    "strengths": "Personnage de première ligne résistant dont la capacité passive peut empêcher sa défaite.",
+    "howToUse": "Privilégiez les occasions d'obtenir des éliminations et préservez sa survie."
+  },
+  "adeptRetributor": {
+    "strengths": "Excellents dégâts de zone grâce à ses attaques de feu et à sa capacité active.",
+    "howToUse": "Ciblez les groupes denses, mais évitez de bloquer les déplacements alliés avec des hexagones en feu."
+  },
+  "deathTyphus": {
+    "strengths": "Psyker résistant, doté de dégâts de zone efficaces.",
+    "relicAdvice": "Lakrimae améliore nettement ses performances en mode horde en générant des Véroleux."
+  },
+  "thousInfernalMaster": {
+    "strengths": "Les attaques psychiques sous Maelström maléfique se transforment en invocations supplémentaires de Hurleurs.",
+    "howToUse": "Activez Maelström maléfique, puis coordonnez les attaques psychiques. Laissez les hexagones adjacents libres pour les invocations. Les invocations du mode Survie conservent la rareté avec laquelle elles ont été créées, donc les Hurleurs invoqués tôt peuvent être trop faibles lors des vagues suivantes."
+  },
+  "bloodTerminator": {
+    "strengths": "Nettoyeur de vagues efficace en première ligne, avec des dégâts de mêlée répétés et une capacité d'auto-soutien.",
+    "howToUse": "Engagez les groupes d'ennemis pour maximiser ses dégâts de mêlée répétés, surtout avec un soutien de soins."
+  },
+  "orksBigMek": {
+    "strengths": "Répare les alliés mécaniques, possède une aura défensive, et son Char grot absorbe les dégâts et fournit des attaques à distance.",
+    "howToUse": "Soutenez les alliés mécaniques et déployez le Char grot pour absorber les dégâts."
+  },
+  "blackPossession": {
+    "strengths": "Produit des Sanguinaires qui submergent les ennemis et détournent les attaques.",
+    "howToUse": "Fonctionne bien dans les équipes du Chaos ou de psykers, mais protégez-le : il est vulnérable seul. Les invocations du mode Survie conservent la rareté avec laquelle elles ont été créées, donc les Sanguinaires invoqués tôt peuvent être trop faibles lors des vagues suivantes."
+  },
+  "custoVexilusPraetor": {
+    "strengths": "Soutien défensif dont les bonus d'armure et la réduction des dégâts aident les alliés proches.",
+    "howToUse": "Idéal dans les formations qui ont besoin de survie plutôt que de dégâts."
+  },
+  "ultraApothecary": {
+    "strengths": "Soigne et ranime les unités non mécaniques.",
+    "howToUse": "Particulièrement utile lorsque des soigneurs de faction plus puissants ne sont pas disponibles ou que les restrictions exigent des dégâts perforants."
+  },
+  "necroDestroyer": {
+    "strengths": "Sentinelle peut être efficace contre les vagues qui arrivent.",
+    "howToUse": "Utilisez Sentinelle contre les déplacements ennemis prévisibles et défendez-le avec un soutien mécanique ; il a besoin de protection."
+  },
+  "emperLucius": {
+    "strengths": "Survivant résistant en première ligne, avec une utilité liée à la réanimation.",
+    "howToUse": "Utilisez sa résistance pour occuper les ennemis et préserver les alliés plus fragiles."
+  },
+  "thousTerminator": {
+    "strengths": "Personnage du Chaos autonome capable de survivre à des combats prolongés.",
+    "howToUse": "Fonctionne bien en position défensive avec des effets environnementaux et le soutien du Chaos."
+  },
+  "deathBlightbringer": {
+    "strengths": "Soutient les équipes du Chaos grâce aux invocations et à l'usure.",
+    "relicAdvice": "Orbes de décrépitude peut considérablement améliorer son efficacité contre les ennemis regroupés."
+  },
+  "genesMagus": {
+    "strengths": "Ses invocations répétées distraient les ennemis et submergent peu à peu les vagues moins résistantes.",
+    "howToUse": "Protégez-la pendant que ses invocations font le travail. Les invocations du mode Survie conservent la rareté avec laquelle elles ont été créées, donc les invocations créées tôt peuvent être trop faibles lors des vagues suivantes."
+  },
+  "bloodIntercessor": {
+    "strengths": "Ses charges répétées produisent des invocations temporaires qui absorbent les attaques ennemies.",
+    "howToUse": "Plus efficace comme perturbateur mobile que comme tank immobile."
+  },
+  "blackAbaddon": {
+    "strengths": "Renforce les attaquants du Chaos comme Angrax et Wrask.",
+    "howToUse": "Placez-le à portée de buff des attaquants du Chaos.",
+    "relicAdvice": "Serre d'Horus ajoute un fort potentiel de nettoyage de vagues."
+  },
+  "eldarFarseer": {
+    "strengths": "Un puissant amplificateur : Ruine fait infliger des dégâts supplémentaires aux attaques alliées.",
+    "howToUse": "Gardez les ennemis à portée de Ruine. Il manque d'endurance pour tenir les vagues seul."
+  },
+  "tauFarsight": {
+    "strengths": "Attaquant à distance mobile.",
+    "relicAdvice": "Avec Lame de l'Aube, obtenir des éliminations renforce aussi sa survie."
+  },
+  "necroWarden": {
+    "strengths": "Soutient les formations nécrons et mécaniques avec de l'endurance et une utilité d'activation.",
+    "howToUse": "Plus efficace lorsque d'autres alliés mécaniques fournissent les dégâts."
+  },
+  "astraOrdnance": {
+    "strengths": "Fort contrôle en début de combat : neutralise les ennemis à distance dangereux et pilonne les groupes à l'artillerie.",
+    "howToUse": "Utilisez son contrôle tôt ; il manque d'endurance sur la durée."
+  },
+  "blackHaarken": {
+    "strengths": "Attaquant mobile qui peut accumuler de la puissance grâce aux éliminations.",
+    "howToUse": "Protégez-le, en particulier contre les vagues à forts dégâts."
+  },
+  "ultraTigurius": {
+    "strengths": "Dégâts psychiques de zone utiles en début de combat et utilité défensive.",
+    "howToUse": "Comptez sur lui en début de combat ; il est moins fiable face à des vagues prolongées de haut niveau."
+  },
+  "astraPrimarisPsy": {
+    "strengths": "Protège contre les attaques à distance et ajoute des dégâts psychiques.",
+    "howToUse": "Avant tout un choix de soutien de niche."
+  },
+  "adeptCanoness": {
+    "strengths": "Plus forte contre certains types d'ennemis et de cibles.",
+    "howToUse": "Choisissez-la pour les affrontements favorables ; en dehors, sa capacité à nettoyer les vagues dans la durée est limitée."
+  },
+  "necroPlasmancer": {
+    "strengths": "Peut fournir des dégâts dans certaines situations.",
+    "howToUse": "Il manque des outils défensifs et du contrôle de vagues fiable nécessaires aux combats prolongés. Tier D signifie limité dans les modes horde, pas inutile dans tout le jeu."
+  },
+  "ultraEliminatorSgt": {
+    "strengths": "Dégâts à longue portée sur cible unique et contrôle occasionnel.",
+    "howToUse": "Sa faible fréquence d'attaque et son endurance limitée en font un mauvais investissement général pour les modes horde. Tier D signifie limité dans les modes horde, pas inutile dans tout le jeu."
+  }
+}

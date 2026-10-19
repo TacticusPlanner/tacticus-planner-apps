@@ -1,0 +1,197 @@
+{
+  "custoBladeChampion": {
+    "strengths": "Flächen-Nahkampfschaden, der mit jedem angrenzenden Gegner wächst, und eine wiederverwendbare aktive Fähigkeit, die im Laufe eines langen Kampfes stärker wird.",
+    "howToUse": "Stelle ihn neben möglichst viele Gegner, um Vermächtnis der Schlacht voll auszunutzen. Vermeide es, neben Großen Zielen zu stehen, wenn du den Flächenangriff statt des Einzelziel-Durchschlagsangriffs willst."
+  },
+  "adeptHospitaller": {
+    "strengths": "Hält eine kompakte Formation durch wiederholte Angriffe am Leben und kann gefallene imperiale Verbündete wiederbeleben.",
+    "howToUse": "Stelle sie hinter eine kompakte Formation aus nicht-mechanischen Verbündeten. Nutze ihre aktive Fähigkeit, um bei Bedarf gefallene imperiale Verbündete wiederzubeleben."
+  },
+  "deathRotbone": {
+    "strengths": "Seine passive Fähigkeit kann Chaos-Verbündete vor tödlichem Schaden retten, auch bei Overkill.",
+    "howToUse": "Halte ihn neben Chaos-Charakteren an der Front, besonders neben Maladus oder Angrax."
+  },
+  "necroSpyder": {
+    "strengths": "Stützt mechanische Teams mit Reparaturen, und seine Skarabäen fangen Angriffe ab und beschäftigen Gegner.",
+    "howToUse": "Repariere Re’vas oder andere wertvolle mechanische Einheiten und nutze die Skarabäen, um Angriffe abzufangen und Gegner zu beschäftigen."
+  },
+  "tauCrisis": {
+    "strengths": "Aufklärung bestraft jeden Gegner, der ihre Reichweite betritt, und Schilddrohnen schützen sie.",
+    "howToUse": "Stelle sie so auf, dass mehrere Gegner ihre Aufklärungsreichweite betreten müssen. Setze Schilddrohnen ein und kombiniere sie mit Aleph-Null. Beschwörungen im Überleben-Modus behalten die Seltenheit, mit der sie erschaffen wurden, daher können früh beschworene Drohnen in späteren Wellen zu schwach sein.",
+    "relicAdvice": "Weiterentwickelte DW-02-Bündelkanone ermöglicht nach genügend Angriffen den wiederholten Einsatz ihrer aktiven Fähigkeit."
+  },
+  "deathBlightlord": {
+    "strengths": "Schleier der Korruption kann Kills auf angrenzende Gegner übertragen, und er ist sehr widerstandsfähig.",
+    "howToUse": "Stelle ihn an Engstellen, wo sich seine Kills auf angrenzende Gegner fortsetzen können. Kombiniere ihn für mehr Ausdauer mit Nauseous Rotbone.",
+    "relicAdvice": "Dämonenfleischrüstung verbessert seine Ausdauer im späten Kampfverlauf erheblich."
+  },
+  "tyranTyrantGuard": {
+    "strengths": "Gardistenorganismus verringert den Schaden, den zerbrechliche Verbündete neben ihm erleiden; besonders effektiv in defensiven Formationen.",
+    "howToUse": "Halte ihn neben zerbrechlichen Verbündeten und vermeide unnötige Bewegung, damit Gardistenorganismus weiterhin Schaden reduziert."
+  },
+  "admecMarshall": {
+    "strengths": "Baut eine Skitarii-Armee auf und wechselt zwischen defensiven und offensiven Imperativen.",
+    "howToUse": "Halte den Protektor-Imperativ aufrecht, während du eine Skitarii-Armee aufbaust, und wechsle zum Eroberer-Imperativ, wenn zusätzliche Angriffe wertvoller sind. Kombiniere ihn mit Actus und anderen mechanischen Charakteren. Beschwörungen im Überleben-Modus behalten die Seltenheit, mit der sie erschaffen wurden, daher können früh beschworene Skitarii in späteren Wellen zu schwach sein."
+  },
+  "orksRuntherd": {
+    "strengths": "Erzeugt Grots, die Gegner ablenken und sich vermehren.",
+    "howToUse": "Greife durchgehend an, um Grots zu erzeugen, und setze seine aktive Fähigkeit ein, wenn Gegner ihn umzingeln. Beschwörungen im Überleben-Modus behalten die Seltenheit, mit der sie erschaffen wurden, daher können früh beschworene Grots in späteren Wellen zu schwach sein.",
+    "relicAdvice": "Supa-Cybork-Körper macht ihn reparierbar."
+  },
+  "templChampion": {
+    "strengths": "Martialische Überlegenheit trifft Nahkampfangreifer, bevor ihre Angriffe ausgeführt werden.",
+    "howToUse": "Stelle ihn an Nahkampf-Engstellen, damit Angreifer Martialische Überlegenheit auslösen. Erhöhe die Stufe seiner passiven Fähigkeit und schütze ihn vor Fernkampfgegnern."
+  },
+  "orksWarboss": {
+    "strengths": "Waaagh! beschwört Orkboys und verstärkt verbündete Nahkampfangriffe, und sein Folgeangriff liefert verlässlich zusätzlichen Schaden.",
+    "howToUse": "Nutze Waaagh!, um Orkboys zu beschwören, verbündete Nahkampfangriffe zu verstärken und in die Gegner zu stürmen."
+  },
+  "blackTerminator": {
+    "strengths": "Seine passive Fähigkeit greift Gegner an, die sich von angrenzenden Feldern wegbewegen, und kann so ganze Wellen automatisch beseitigen.",
+    "howToUse": "Setze Tiefschlag nahe gegnerischer Spawnpunkte ein. Seine passive Fähigkeit löst aus, wenn sich ein Gegner von einem angrenzenden Feld wegbewegt, nicht schon beim Erscheinen; das funktioniert, weil Gegner die Felder neben einem Spawnpunkt oft verlassen. Priorisiere Verbesserungen der passiven Fähigkeit und unterstütze ihn mit Nauseous Rotbone, Wrask oder Abaddon. Auf höheren Schwierigkeitsgraden kann sein Schaden ohne Verbesserungen und Chaos-Buffs nicht ausreichen.",
+    "relicAdvice": "Dämonenfleischrüstung gewährt Rüstung durch Angriffe und frischt schließlich seine aktive Fähigkeit auf."
+  },
+  "tauMarksman": {
+    "strengths": "Setzt fortlaufend Jagddrohnen ein und markiert gefährliche Gegner mit Markierungslichtern.",
+    "howToUse": "Halte ihn hinter der Frontlinie und nutze Markierungslichter, um gefährliche Gegner zu fokussieren. Schütze ihn, denn ohne ihn kannst du keine Drohnen mehr nachliefern. Beschwörungen im Überleben-Modus behalten die Seltenheit, mit der sie erschaffen wurden, daher können früh beschworene Drohnen in späteren Wellen zu schwach sein."
+  },
+  "ultraInceptorSgt": {
+    "strengths": "Seine Inceptoren bringen zusätzlichen Schaden und Körper, die Gegner ablenken.",
+    "howToUse": "Warte nach Möglichkeit auf spätere Züge, um mehr Beschwörungen zu erhalten, und vermeide es, dein Team mit Beschwörungen einzusperren. Beschwörungen im Überleben-Modus behalten die Seltenheit, mit der sie erschaffen wurden, daher bleiben später beschworene Einheiten auch stärker."
+  },
+  "ultraCalgar": {
+    "strengths": "Riten des Kampfes verstärkt angrenzende Schadensverursacher, seine aktive Fähigkeit trifft dichte Formationen, und seine Gravis-Rüstung hält ihn am Leben.",
+    "howToUse": "Stelle ihn neben Schadensverursacher, damit sie von Riten des Kampfes profitieren, und setze seine aktive Fähigkeit gegen dichte gegnerische Formationen ein."
+  },
+  "admecManipulus": {
+    "strengths": "Repariert mechanische Verbündete, unterstützt sie und erzeugt zusätzliche Angriffe.",
+    "howToUse": "Besonders effektiv mit Tan Gi’da, Re’vas und mechanischen Beschwörungen."
+  },
+  "custoKyrus": {
+    "strengths": "Kontert Gegner, die sie angreifen, und hat eine wiederverwendbare aktive Fähigkeit zur Positionierung.",
+    "howToUse": "Nutze ihre wiederverwendbare aktive Fähigkeit zur Positionierung und lass sie dann Gegner kontern. Kombiniere sie mit Isabella. Ihre passive Fähigkeit braucht Gegner, die sie angreifen, daher ist sie weniger effektiv, wenn sie ignoriert oder überrannt wird."
+  },
+  "bloodSanguinary": {
+    "strengths": "Regeneriert nahe nicht-mechanische Verbündete.",
+    "howToUse": "Halte ihn für die Regeneration nahe bei nicht-mechanischen Verbündeten.",
+    "relicAdvice": "Mit Kelch von Baal lösen Tode in der Nähe erhebliche zusätzliche Heilung und Nahkampfschaden-Buffs aus."
+  },
+  "templAggressor": {
+    "strengths": "Hervorragender defensiver Charakter: Bolzensturm verteilt Schaden und Unterdrückung, und seine Gravis-Rüstung hält ihn am Leben.",
+    "howToUse": "Setze Fernkampfangriffe gegen gruppierte Gegner ein, um den Schaden und die Unterdrückung von Bolzensturm zu verteilen."
+  },
+  "worldTerminator": {
+    "strengths": "Kills im Nahkampf erzeugen wiederholt Schilde für nahe Chaos-Verbündete.",
+    "howToUse": "Setze Tiefschlag zusammen mit anderen Chaos-Fronteinheiten ein und besiege weiter Gegner im Nahkampf."
+  },
+  "necroOverlord": {
+    "strengths": "Kugel der Auferstehung kann mehrere Necronkrieger erzeugen.",
+    "howToUse": "Zögere Kugel der Auferstehung hinaus, bis sie mehrere Necronkrieger erzeugen kann. Beschwörungen im Überleben-Modus behalten die Seltenheit, mit der sie erschaffen wurden, daher können früh beschworene Krieger in späteren Wellen zu schwach sein.",
+    "relicAdvice": "Phasensubjugator bietet zusätzliche Gelegenheiten für Beschwörungen und Angriffe."
+  },
+  "ultraTitus": {
+    "strengths": "Widerstandsfähiger Frontcharakter, dessen passive Fähigkeit seine Niederlage verhindern kann.",
+    "howToUse": "Nutze bevorzugt Gelegenheiten für sichere Kills und erhalte seine Überlebensfähigkeit."
+  },
+  "adeptRetributor": {
+    "strengths": "Hervorragender Flächenschaden durch ihre Flammenangriffe und ihre aktive Fähigkeit.",
+    "howToUse": "Ziele auf dichte Gruppen, aber blockiere mit Brandfeldern nicht die Bewegung deiner Verbündeten."
+  },
+  "deathTyphus": {
+    "strengths": "Widerstandsfähiger Psioniker mit effektivem Flächenschaden.",
+    "relicAdvice": "Lakrimae verbessert seine Leistung im Horde-Modus erheblich, indem es Seuchenwandler erzeugt."
+  },
+  "thousInfernalMaster": {
+    "strengths": "Psi-Angriffe unter Unheilvoller Mahlstrom werden zu zusätzlichen Kreischer-Beschwörungen.",
+    "howToUse": "Aktiviere Unheilvoller Mahlstrom und koordiniere dann Psi-Angriffe. Halte angrenzende Felder für Beschwörungen frei. Beschwörungen im Überleben-Modus behalten die Seltenheit, mit der sie erschaffen wurden, daher können früh beschworene Kreischer in späteren Wellen zu schwach sein."
+  },
+  "bloodTerminator": {
+    "strengths": "Effektiver Wellenbrecher an der Front mit wiederholtem Nahkampfschaden und Selbstheilung.",
+    "howToUse": "Greife gegnerische Gruppen an, um seinen wiederholten Nahkampfschaden zu maximieren, besonders mit Heilungsunterstützung."
+  },
+  "orksBigMek": {
+    "strengths": "Repariert mechanische Verbündete, hat eine defensive Aura, und sein Grot-Panzer fängt Schaden ab und liefert Fernkampfangriffe.",
+    "howToUse": "Unterstütze mechanische Verbündete und setze den Grot-Panzer ein, um Schaden abzufangen."
+  },
+  "blackPossession": {
+    "strengths": "Erzeugt Zerfleischer, die Gegner überrennen und eingehende Angriffe ablenken.",
+    "howToUse": "Funktioniert gut in Chaos- oder Psioniker-Teams, aber schütze ihn: Allein ist er verwundbar. Beschwörungen im Überleben-Modus behalten die Seltenheit, mit der sie erschaffen wurden, daher können früh beschworene Zerfleischer in späteren Wellen zu schwach sein."
+  },
+  "custoVexilusPraetor": {
+    "strengths": "Defensive Unterstützung, deren Rüstungsboni und Schadensminderung nahen Verbündeten helfen.",
+    "howToUse": "Am besten in Formationen, die mehr Überlebensfähigkeit statt Schaden brauchen."
+  },
+  "ultraApothecary": {
+    "strengths": "Heilt und belebt nicht-mechanische Einheiten wieder.",
+    "howToUse": "Besonders wertvoll, wenn stärkere Fraktionsheiler nicht verfügbar sind oder Einschränkungen Durchschlagschaden verlangen."
+  },
+  "necroDestroyer": {
+    "strengths": "Aufklärung kann gegen anrückende Wellen effektiv sein.",
+    "howToUse": "Setze Aufklärung gegen vorhersehbare Gegnerbewegungen ein und verteidige ihn mit mechanischer Unterstützung; er braucht Schutz."
+  },
+  "emperLucius": {
+    "strengths": "Widerstandsfähiger Überlebender an der Front mit Nutzen rund um Wiederbelebung.",
+    "howToUse": "Nutze seine Widerstandsfähigkeit, um Gegner zu beschäftigen und zerbrechlichere Verbündete zu schonen."
+  },
+  "thousTerminator": {
+    "strengths": "Sich selbst erhaltender Chaos-Charakter, der lange Kämpfe überstehen kann.",
+    "howToUse": "Funktioniert gut in defensiven Positionen mit Umgebungseffekten und Chaos-Unterstützung."
+  },
+  "deathBlightbringer": {
+    "strengths": "Unterstützt Chaos-Teams durch Beschwörungen und Zermürbung.",
+    "relicAdvice": "Kugeln des Verfalls können seine Effektivität gegen gruppierte Gegner deutlich steigern."
+  },
+  "genesMagus": {
+    "strengths": "Wiederholte Beschwörungen lenken Gegner ab und überrennen nach und nach weniger widerstandsfähige Wellen.",
+    "howToUse": "Halte sie geschützt, während ihre Beschwörungen die Arbeit erledigen. Beschwörungen im Überleben-Modus behalten die Seltenheit, mit der sie erschaffen wurden, daher können früh erschaffene Beschwörungen in späteren Wellen zu schwach sein."
+  },
+  "bloodIntercessor": {
+    "strengths": "Wiederholte Sturmangriffe erzeugen temporäre Beschwörungen, die gegnerische Angriffe abfangen.",
+    "howToUse": "Effektiver als mobiler Störer denn als stationärer Tank."
+  },
+  "blackAbaddon": {
+    "strengths": "Verstärkt Chaos-Schadensverursacher wie Angrax und Wrask.",
+    "howToUse": "Stelle ihn in Buff-Reichweite von Chaos-Schadensverursachern.",
+    "relicAdvice": "Klaue des Horus bringt erhebliches Potenzial zum Beseitigen von Wellen."
+  },
+  "eldarFarseer": {
+    "strengths": "Ein starker Verstärker: Untergang lässt verbündete Angriffe zusätzlichen Schaden verursachen.",
+    "howToUse": "Halte Gegner in der Reichweite von Untergang. Ihm fehlt die Ausdauer, um Wellen allein zu tragen."
+  },
+  "tauFarsight": {
+    "strengths": "Mobiler Fernkampf-Schadensverursacher.",
+    "relicAdvice": "Mit Die Klinge Morgengrauen stärken sichere Kills auch seine Überlebensfähigkeit."
+  },
+  "necroWarden": {
+    "strengths": "Unterstützt Necron- und mechanische Formationen mit Ausdauer und Aktivierungsnutzen.",
+    "howToUse": "Am effektivsten, wenn andere mechanische Verbündete den Schaden liefern."
+  },
+  "astraOrdnance": {
+    "strengths": "Starke Kontrolle zu Beginn: unterdrückt gefährliche Fernkampfgegner und beschießt Gruppen mit Artillerie.",
+    "howToUse": "Setze seine Kontrolle früh ein; auf lange Sicht hat er wenig Ausdauer."
+  },
+  "blackHaarken": {
+    "strengths": "Mobiler Schadensverursacher, der durch Kills Stärke ansammeln kann.",
+    "howToUse": "Schütze ihn, besonders gegen Wellen mit hohem Schaden."
+  },
+  "ultraTigurius": {
+    "strengths": "Nützlicher früher Psi-Flächenschaden und defensiver Nutzen.",
+    "howToUse": "Verlass dich früh auf ihn; gegen lange, hochstufige Wellen ist er weniger zuverlässig."
+  },
+  "astraPrimarisPsy": {
+    "strengths": "Schützt vor Fernkampfangriffen und fügt Psi-Schaden hinzu.",
+    "howToUse": "Vor allem eine Nischen-Unterstützungswahl."
+  },
+  "adeptCanoness": {
+    "strengths": "Stärker gegen bestimmte Gegnertypen und Ziele.",
+    "howToUse": "Wähle sie für günstige Matchups; außerhalb davon ist ihr anhaltendes Wellenbeseitigen begrenzt."
+  },
+  "necroPlasmancer": {
+    "strengths": "Kann in bestimmten Situationen Schaden liefern.",
+    "howToUse": "Ihm fehlen die defensiven Mittel und die verlässliche Wellenkontrolle für lange Kämpfe. Tier D bedeutet eingeschränkt in Horde-Modi, nicht nutzlos im gesamten Spiel."
+  },
+  "ultraEliminatorSgt": {
+    "strengths": "Einzelzielschaden auf große Distanz und gelegentliche Kontrolle.",
+    "howToUse": "Niedrige Angriffsfrequenz und begrenzte Ausdauer machen ihn zu einer schwachen allgemeinen Investition für Horde-Modi. Tier D bedeutet eingeschränkt in Horde-Modi, nicht nutzlos im gesamten Spiel."
+  }
+}

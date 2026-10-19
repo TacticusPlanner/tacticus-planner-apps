@@ -1,0 +1,197 @@
+{
+  "custoBladeChampion": {
+    "strengths": "Daño cuerpo a cuerpo en área que crece con cada enemigo adyacente, y una habilidad activa reutilizable que se fortalece a lo largo de una batalla larga.",
+    "howToUse": "Colócalo adyacente a varios enemigos para sacar el máximo partido a Legado de combate. Evita estar junto a Grandes objetivos si quieres el ataque en área en lugar del ataque perforante a un solo objetivo."
+  },
+  "adeptHospitaller": {
+    "strengths": "Mantiene con vida una formación compacta frente a ataques repetidos y puede resucitar a aliados imperiales caídos.",
+    "howToUse": "Colócala detrás de una formación compacta de aliados no mecánicos. Usa su habilidad activa para resucitar a aliados imperiales caídos cuando sea necesario."
+  },
+  "deathRotbone": {
+    "strengths": "Su habilidad pasiva puede salvar a aliados del Caos de daño letal, incluso del daño excesivo.",
+    "howToUse": "Mantenlo adyacente a personajes del Caos de primera línea, sobre todo Maladus o Angrax."
+  },
+  "necroSpyder": {
+    "strengths": "Sostiene a los equipos mecánicos con reparaciones, y sus escarabajos absorben ataques y mantienen ocupados a los enemigos.",
+    "howToUse": "Repara a Re'vas u otras unidades mecánicas valiosas y usa los escarabajos para absorber ataques y mantener ocupados a los enemigos."
+  },
+  "tauCrisis": {
+    "strengths": "Vigilancia castiga a cada enemigo que entra en su alcance, y los drones de defensa la protegen.",
+    "howToUse": "Colócala donde varios enemigos tengan que entrar en su alcance de Vigilancia. Despliega drones de defensa y combínala con Aleph-Null. Las invocaciones del modo Supervivencia conservan la rareza con la que se crearon, así que los drones invocados pronto pueden quedarse cortos en oleadas posteriores.",
+    "relicAdvice": "Cañón rotativo avanzado DW-02 permite usar su habilidad activa repetidamente tras suficientes ataques."
+  },
+  "deathBlightlord": {
+    "strengths": "Bruma de corrupción puede encadenar muertes a enemigos adyacentes, y es muy resistente.",
+    "howToUse": "Colócalo en pasos estrechos, donde sus muertes puedan encadenarse a enemigos adyacentes. Combínalo con Nauseous Rotbone para mayor longevidad.",
+    "relicAdvice": "Peto de piel de daemon mejora enormemente su resistencia en la fase final del combate."
+  },
+  "tyranTyrantGuard": {
+    "strengths": "Organismo guardián reduce el daño que reciben los aliados frágiles a su lado; especialmente eficaz en formaciones defensivas.",
+    "howToUse": "Mantenlo junto a aliados frágiles y evita movimientos innecesarios para que Organismo guardián siga reduciendo el daño."
+  },
+  "admecMarshall": {
+    "strengths": "Forma un ejército Skitarii y alterna entre Imperativos defensivos y ofensivos.",
+    "howToUse": "Mantén el Imperativo Protector mientras formas un ejército Skitarii y cambia al Imperativo Conquistador cuando los ataques adicionales sean más valiosos. Combínalo con Actus y otros personajes mecánicos. Las invocaciones del modo Supervivencia conservan la rareza con la que se crearon, así que los Skitarii invocados pronto pueden quedarse cortos en oleadas posteriores."
+  },
+  "orksRuntherd": {
+    "strengths": "Genera Grots que distraen a los enemigos y se multiplican.",
+    "howToUse": "Ataca de forma constante para generar Grots y usa su habilidad activa cuando los enemigos lo rodeen. Las invocaciones del modo Supervivencia conservan la rareza con la que se crearon, así que los Grots invocados pronto pueden quedarse cortos en oleadas posteriores.",
+    "relicAdvice": "Cuerpo de superciberorko permite repararlo."
+  },
+  "templChampion": {
+    "strengths": "Superioridad marcial golpea a los atacantes cuerpo a cuerpo antes de que se resuelvan sus ataques.",
+    "howToUse": "Colócalo en cuellos de botella cuerpo a cuerpo para que los atacantes activen Superioridad marcial. Sube el nivel de su habilidad pasiva y protégelo de los enemigos a distancia."
+  },
+  "orksWarboss": {
+    "strengths": "¡Waaagh! invoca Chikoz Orkoz y mejora los ataques cuerpo a cuerpo aliados, y su ataque de seguimiento aporta daño extra constante.",
+    "howToUse": "Usa ¡Waaagh! para invocar Chikoz Orkoz, mejorar los ataques cuerpo a cuerpo aliados y cargar contra los enemigos."
+  },
+  "blackTerminator": {
+    "strengths": "Su habilidad pasiva ataca a los enemigos que salen de hexágonos adyacentes, y puede llegar a despejar oleadas enteras automáticamente.",
+    "howToUse": "Usa Ataque profundo cerca de los puntos de aparición enemigos. Su pasiva se activa cuando un enemigo sale de un hexágono adyacente, no simplemente al aparecer; funciona porque los enemigos suelen salir de los hexágonos junto a un punto de aparición. Prioriza las mejoras de su pasiva y apóyalo con Nauseous Rotbone, Wrask o Abaddon. En dificultades altas, su daño puede quedarse corto sin mejoras ni potenciadores del Caos.",
+    "relicAdvice": "Peto de piel de daemon otorga armadura con los ataques y acaba recargando su habilidad activa."
+  },
+  "tauMarksman": {
+    "strengths": "Despliega drones francotiradores continuamente y marca a los enemigos peligrosos con Luces de señalización.",
+    "howToUse": "Mantenlo detrás de la primera línea y usa las Luces de señalización para concentrarte en los enemigos peligrosos. Protégelo, porque si lo pierdes ya no podrás reponer drones. Las invocaciones del modo Supervivencia conservan la rareza con la que se crearon, así que los drones invocados pronto pueden quedarse cortos en oleadas posteriores."
+  },
+  "ultraInceptorSgt": {
+    "strengths": "Sus Inceptors añaden daño y cuerpos que distraen a los enemigos.",
+    "howToUse": "Espera a turnos posteriores cuando sea práctico para aumentar el número de invocaciones, y evita encerrar a tu equipo con ellas. Las invocaciones del modo Supervivencia conservan la rareza con la que se crearon, así que invocar más tarde también las mantiene más fuertes."
+  },
+  "ultraCalgar": {
+    "strengths": "Ritos de batalla potencia a los atacantes adyacentes, su habilidad activa golpea formaciones densas y la armadura Gravis lo mantiene con vida.",
+    "howToUse": "Colócalo adyacente a los atacantes para que se beneficien de Ritos de batalla y usa su habilidad activa contra formaciones enemigas densas."
+  },
+  "admecManipulus": {
+    "strengths": "Repara a los aliados mecánicos, los apoya y genera ataques adicionales.",
+    "howToUse": "Especialmente eficaz con Tan Gi'da, Re'vas e invocaciones mecánicas."
+  },
+  "custoKyrus": {
+    "strengths": "Contraataca a los enemigos que la atacan y tiene una habilidad activa reutilizable para posicionarse.",
+    "howToUse": "Usa su habilidad activa reutilizable para posicionarla y deja que contraataque a los enemigos. Combínala con Isabella. Su pasiva necesita que los enemigos la ataquen, así que es menos eficaz cuando la ignoran o la abruman."
+  },
+  "bloodSanguinary": {
+    "strengths": "Regenera a los aliados no mecánicos cercanos.",
+    "howToUse": "Mantenlo cerca de aliados no mecánicos para que se regeneren.",
+    "relicAdvice": "Con Cáliz de Baal, las muertes cercanas activan una curación adicional considerable y potenciadores de daño cuerpo a cuerpo."
+  },
+  "templAggressor": {
+    "strengths": "Excelente personaje defensivo: Tormenta de rayos reparte daño y Supresión, y la armadura Gravis lo mantiene con vida.",
+    "howToUse": "Usa ataques a distancia contra enemigos agrupados para repartir el daño y la Supresión de Tormenta de rayos."
+  },
+  "worldTerminator": {
+    "strengths": "Sus muertes cuerpo a cuerpo generan escudos repetidamente para los aliados del Caos cercanos.",
+    "howToUse": "Usa Ataque profundo junto a otras unidades del Caos de primera línea y sigue matando enemigos cuerpo a cuerpo."
+  },
+  "necroOverlord": {
+    "strengths": "Orbe de resurrección puede generar varios Guerreros Necrones.",
+    "howToUse": "Retrasa Orbe de resurrección hasta que pueda generar varios Guerreros Necrones. Las invocaciones del modo Supervivencia conservan la rareza con la que se crearon, así que los guerreros invocados pronto pueden quedarse cortos en oleadas posteriores.",
+    "relicAdvice": "Subyugador Fásico ofrece oportunidades adicionales de invocar y atacar."
+  },
+  "ultraTitus": {
+    "strengths": "Personaje de primera línea resistente cuya pasiva puede evitar su derrota.",
+    "howToUse": "Prioriza las oportunidades de asegurar muertes y mantén su supervivencia."
+  },
+  "adeptRetributor": {
+    "strengths": "Excelente daño en área con sus ataques de llama y su habilidad activa.",
+    "howToUse": "Apunta a grupos densos, pero evita bloquear el movimiento aliado con hexágonos en llamas."
+  },
+  "deathTyphus": {
+    "strengths": "Psíquico resistente con daño en área eficaz.",
+    "relicAdvice": "Lakrimae mejora sustancialmente su rendimiento en el modo horda al generar Plagabundos."
+  },
+  "thousInfernalMaster": {
+    "strengths": "Los ataques psíquicos bajo Vorágine maléfica se convierten en invocaciones adicionales de Aulladores.",
+    "howToUse": "Activa Vorágine maléfica y luego coordina los ataques psíquicos. Deja libres los hexágonos adyacentes para las invocaciones. Las invocaciones del modo Supervivencia conservan la rareza con la que se crearon, así que los Aulladores invocados pronto pueden quedarse cortos en oleadas posteriores."
+  },
+  "bloodTerminator": {
+    "strengths": "Eficaz limpiador de oleadas en primera línea con daño cuerpo a cuerpo repetido y autosostenimiento.",
+    "howToUse": "Enfréntate a grupos de enemigos para maximizar su daño cuerpo a cuerpo repetido, sobre todo con apoyo de curación."
+  },
+  "orksBigMek": {
+    "strengths": "Repara a los aliados mecánicos, tiene un aura defensiva y su Tanque Grot absorbe daño y aporta ataques a distancia.",
+    "howToUse": "Apoya a los aliados mecánicos y despliega el Tanque Grot para absorber daño."
+  },
+  "blackPossession": {
+    "strengths": "Genera Desangradores que abruman a los enemigos y desvían los ataques entrantes.",
+    "howToUse": "Funciona bien en equipos del Caos o de psíquicos, pero protégelo: solo es vulnerable. Las invocaciones del modo Supervivencia conservan la rareza con la que se crearon, así que los Desangradores invocados pronto pueden quedarse cortos en oleadas posteriores."
+  },
+  "custoVexilusPraetor": {
+    "strengths": "Apoyo defensivo cuyas bonificaciones de armadura y mitigación de daño ayudan a los aliados cercanos.",
+    "howToUse": "Ideal en formaciones que necesitan más supervivencia que daño."
+  },
+  "ultraApothecary": {
+    "strengths": "Cura y revive a unidades no mecánicas.",
+    "howToUse": "Especialmente valioso cuando no hay sanadores de facción más fuertes disponibles o las restricciones exigen daño de perforación."
+  },
+  "necroDestroyer": {
+    "strengths": "Vigilancia puede ser eficaz contra las oleadas entrantes.",
+    "howToUse": "Usa Vigilancia contra movimientos enemigos predecibles y defiéndelo con apoyo mecánico; necesita protección."
+  },
+  "emperLucius": {
+    "strengths": "Superviviente resistente de primera línea con utilidad relacionada con la reanimación.",
+    "howToUse": "Aprovecha su resistencia para mantener ocupados a los enemigos y proteger a aliados más frágiles."
+  },
+  "thousTerminator": {
+    "strengths": "Personaje del Caos autosuficiente que puede sobrevivir a batallas prolongadas.",
+    "howToUse": "Funciona bien en posiciones defensivas con efectos del entorno y apoyo del Caos."
+  },
+  "deathBlightbringer": {
+    "strengths": "Apoya a los equipos del Caos mediante invocaciones y desgaste.",
+    "relicAdvice": "Orbes de decadencia pueden mejorar considerablemente su eficacia contra enemigos agrupados."
+  },
+  "genesMagus": {
+    "strengths": "Las invocaciones repetidas distraen a los enemigos y abruman poco a poco a las oleadas menos resistentes.",
+    "howToUse": "Mantenla protegida mientras sus invocaciones hacen el trabajo. Las invocaciones del modo Supervivencia conservan la rareza con la que se crearon, así que las invocaciones creadas pronto pueden quedarse cortas en oleadas posteriores."
+  },
+  "bloodIntercessor": {
+    "strengths": "Las cargas repetidas producen invocaciones temporales que absorben los ataques enemigos.",
+    "howToUse": "Más eficaz como perturbador móvil que como tanque estático."
+  },
+  "blackAbaddon": {
+    "strengths": "Potencia a los atacantes del Caos como Angrax y Wrask.",
+    "howToUse": "Colócalo dentro del alcance de potenciación de los atacantes del Caos.",
+    "relicAdvice": "Garra de Horus añade un gran potencial para despejar oleadas."
+  },
+  "eldarFarseer": {
+    "strengths": "Un gran amplificador: Maldición hace que los ataques aliados inflijan daño adicional.",
+    "howToUse": "Mantén a los enemigos dentro del alcance de Maldición. Le falta aguante para sostener las oleadas en solitario."
+  },
+  "tauFarsight": {
+    "strengths": "Atacante a distancia móvil.",
+    "relicAdvice": "Con Hoja del amanecer, asegurar muertes también refuerza su supervivencia."
+  },
+  "necroWarden": {
+    "strengths": "Apoya a las formaciones necronas y mecánicas con aguante y utilidad de activación.",
+    "howToUse": "Más eficaz cuando otros aliados mecánicos aportan el daño."
+  },
+  "astraOrdnance": {
+    "strengths": "Fuerte control inicial: suprime a los enemigos peligrosos a distancia y bombardea grupos con artillería.",
+    "howToUse": "Usa su control pronto; tiene poco aguante a largo plazo."
+  },
+  "blackHaarken": {
+    "strengths": "Atacante móvil que puede acumular poder con las muertes.",
+    "howToUse": "Protégelo, sobre todo frente a oleadas de mucho daño."
+  },
+  "ultraTigurius": {
+    "strengths": "Útil daño psíquico en área al principio y utilidad defensiva.",
+    "howToUse": "Apóyate en él al principio; es menos fiable contra oleadas prolongadas de alto nivel."
+  },
+  "astraPrimarisPsy": {
+    "strengths": "Protege contra ataques a distancia y añade daño psíquico.",
+    "howToUse": "Principalmente una opción de apoyo de nicho."
+  },
+  "adeptCanoness": {
+    "strengths": "Más fuerte contra ciertos tipos de enemigos y objetivos.",
+    "howToUse": "Elígela para enfrentamientos favorables; fuera de ellos, su capacidad sostenida de despejar oleadas es limitada."
+  },
+  "necroPlasmancer": {
+    "strengths": "Puede aportar daño en situaciones concretas.",
+    "howToUse": "Le faltan herramientas defensivas y un control fiable de oleadas para combates largos. Nivel D significa limitado en los modos horda, no inútil en todo el juego."
+  },
+  "ultraEliminatorSgt": {
+    "strengths": "Daño de largo alcance a un solo objetivo y control ocasional.",
+    "howToUse": "Su baja frecuencia de ataque y su aguante limitado lo convierten en una mala inversión general para los modos horda. Nivel D significa limitado en los modos horda, no inútil en todo el juego."
+  }
+}
