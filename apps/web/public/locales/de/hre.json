@@ -107,7 +107,8 @@
       "met": "Das Kampagnenziel dieser Mission ist erreicht.",
       "next": "Nächste Kampagnenmission: {{mission}}, {{objective}}.",
       "noneLeft": "Es sind keine Kampagnenmissionen mehr übrig.",
-      "preview": "Raids werden vorgeschlagen, sobald das Event läuft."
+      "preview": "Raids werden vorgeschlagen, sobald das Event läuft.",
+      "noHero": "Kampfvorschläge brauchen die Allianz des vorgestellten Helden, die noch nicht bekannt ist."
     },
     "summary": {
       "none": "In den Missionen dieses Events sind keine Kampagnenschlachten mehr übrig.",
@@ -120,11 +121,15 @@
     },
     "noDrop": {
       "title": "Oder die Indomitus-Schlachten ohne Drops (6 bis 14)",
-      "note": "Sie kosten je 3 Energie, droppen aber nichts und geben wenig Gold. Jeder Raid hier ersetzt einen oben."
+      "note": "Sie kosten je 3 Energie, droppen aber nichts und geben wenig Gold. Jeder Raid hier ersetzt einen oben.",
+      "noteBattles": "Sie kosten je 3 Energie, droppen aber nichts und geben wenig Gold. Jeder Kampf hier ersetzt einen oben."
     },
     "titleBattles": "Kämpfe für {{mission}}",
-    "noteBattles": "Fähigkeitseinsätze zählen nur in selbst geführten Kämpfen, also kämpfe diese Knoten mit {{slots}} Plätzen von Hand mit einem vollen {{alliance}}-Team. Günstigste zuerst, wie bei Raids.",
-    "noteAlliance": "Gewinne sie mit einem reinen {{alliance}}-Team."
+    "noteBattles": "Fähigkeitseinsätze zählen nur in selbst geführten Kämpfen, also kämpfe diese Knoten mit {{slots}} Plätzen von Hand mit einem vollen {{alliance}}-Team. Einsätze in Plünderungsläufen und anderen Modi zählen auch, also aktualisiere danach deinen Fortschritt. Günstigste zuerst, wie bei Raids.",
+    "noteLineupBattles": "Raids haben keine Aufstellung und zählen daher nicht: gewinne diese von Hand mit einem reinen {{alliance}}-Team. Arena-Siege mit diesem Team zählen auch. Günstigste zuerst, wie bei Raids.",
+    "budgetBattles": "Energie übrig für diese Kämpfe: {{energy}}.",
+    "battleCount_one": "{{count}} Kampf",
+    "battleCount_other": "{{count}} Kämpfe"
   },
   "tokens": {
     "title": "Benötigte Marken",
@@ -205,6 +210,7 @@
     "psychic": "Einheiten mit psychischem Schaden kommen zuerst, für das Ziel mit psychischem Schaden.",
     "reserve_one": "Behalte {{count}} {{mode}}-Token für {{mission}}.",
     "reserve_other": "Behalte {{count}} {{mode}}-Token für {{mission}}.",
-    "reservePlay": "Mit {{have}} jetzt spiele bis zu {{play}}."
+    "reservePlay": "Mit {{have}} jetzt spiele bis zu {{play}}.",
+    "rangedTrackFew": "Deine {{size}} {{alliance}}-Fernkampf-Einheiten: weniger als 5, also keine Ersatzeinheiten."
   }
 }

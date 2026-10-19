@@ -24,7 +24,7 @@ const SUMMARY_ONLY: MissionRaidsRequest = { battlesToGo: 0, eventOnly: false }
 type HreRaidsRequest = MissionRaidsRequest & {
   /** "Mission 5", for the title. */
   missionLabel: string
-  /** "battles": nodes to fight by hand (mission 7's alliance ability uses), not raids. */
+  /** "battles": nodes to fight by hand (all-alliance wins, alliance ability uses), not raids. */
   kind: "raids" | "battles"
   /** The localized alliance an all-alliance team must use, when the objective asks for one. */
   allianceTeam: string | null
@@ -57,6 +57,7 @@ export function HreRaidsSection({
           battlesToGo: request.battlesToGo,
           eventOnly: request.eventOnly,
           slots: request.slots,
+          alliance: request.alliance,
         }
       : SUMMARY_ONLY,
   })
@@ -65,6 +66,7 @@ export function HreRaidsSection({
   const locations = loaded ? raids.locationsByBattleId : undefined
   const view = raids.status === "ready" ? raids : null
   const rowsView: RaidRowsView = { locations, view }
+  const battles = request?.kind === "battles"
 
   return (
     <section className="space-y-3" data-testid="hre-raids">
@@ -98,17 +100,18 @@ export function HreRaidsSection({
             data-testid="hre-raids-note"
           >
             {request.kind === "battles"
-              ? t("raids.noteBattles", {
-                  slots: request.slots,
-                  alliance: request.allianceTeam ?? "",
-                })
+              ? request.slots
+                ? t("raids.noteBattles", {
+                    slots: request.slots,
+                    alliance: request.allianceTeam ?? "",
+                  })
+                : t("raids.noteLineupBattles", {
+                    alliance: request.allianceTeam ?? "",
+                  })
               : request.eventOnly
                 ? t("raids.noteLightning")
                 : t("raids.note")}
-            {request.kind === "raids" && request.allianceTeam
-              ? ` ${t("raids.noteAlliance", { alliance: request.allianceTeam })}`
-              : null}
-            {` ${t("raids.budget", { energy: plan.energyBudget })}`}
+            {` ${t(battles ? "raids.budgetBattles" : "raids.budget", { energy: plan.energyBudget })}`}
           </p>
           {plan.rows.length > 0 ? (
             <>
@@ -122,7 +125,9 @@ export function HreRaidsSection({
                 data-testid="hre-raids-totals"
               >
                 <Badge variant="secondary">
-                  {t("raids.raidCount", { count: plan.totalRaids })}
+                  {t(battles ? "raids.battleCount" : "raids.raidCount", {
+                    count: plan.totalRaids,
+                  })}
                 </Badge>
                 <Badge variant="outline">
                   {t("raids.energy", { energy: plan.totalEnergy })}
@@ -141,7 +146,11 @@ export function HreRaidsSection({
             <EmptyState plan={plan} battlesToGo={request.battlesToGo} />
           )}
           {plan.noDropRows.length > 0 ? (
-            <HreNoDropRaids rows={plan.noDropRows} view={rowsView} />
+            <HreNoDropRaids
+              battles={battles}
+              rows={plan.noDropRows}
+              view={rowsView}
+            />
           ) : null}
         </>
       ) : null}

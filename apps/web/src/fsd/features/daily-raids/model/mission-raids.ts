@@ -18,6 +18,8 @@ export type MissionRaidsRequest = {
   eventOnly: boolean
   /** Only nodes with this many deployment slots (a full team), when set. */
   slots?: number
+  /** Only nodes where this alliance can deploy (an all-alliance objective), when set. */
+  alliance?: string
 }
 
 /** The best-priority goal a node feeds, for the tie-break among equal energy costs. */

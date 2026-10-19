@@ -8,7 +8,7 @@ Tells the player where to raid today so that the current HRE mission's campaign-
 
 ### Requirement: Raid suggestions appear only for a current campaign objective
 
-The raid suggestions section SHALL be shown on a running HRE when the current mission has an objective of kind `campaignWins` ("Win N campaign battles"), `campaignRaids` ("Raid N campaign battles"), `lightningVictories` ("Win N lightning victories"), `winWithAllianceLineup` ("Win N battles with an all-alliance team") or `useAbilitiesAlliance` ("Use N abilities with alliance units") whose progress is below its target. A lightning objective comes first, then a campaign one, then the all-alliance wins, then the ability uses. The battles still needed SHALL be the target minus the recorded progress; for ability uses, one battle per 10 uses still needed (two uses for each of five units). Otherwise, the section SHALL name the next mission that has a campaign objective and its target, or say that no campaign missions are left. It SHALL NOT list raids for a later mission.
+The raid suggestions section SHALL be shown on a running HRE when the current mission has an objective of kind `campaignWins` ("Win N campaign battles"), `campaignRaids` ("Raid N campaign battles"), `lightningVictories` ("Win N lightning victories"), `winWithAllianceLineup` ("Win N battles with an all-alliance team") or `useAbilitiesAlliance` ("Use N abilities with alliance units") whose progress is below its target. A lightning objective comes first, then a campaign one, then the all-alliance wins, then the ability uses. The battles still needed SHALL be the target minus the recorded progress; for ability uses, one battle per 5 uses still needed (one use for each of five units). Otherwise, the section SHALL name the next mission that has a campaign objective and its target, or say that no campaign missions are left. It SHALL NOT list raids for a later mission.
 
 Assumptions:
 
@@ -200,17 +200,22 @@ Assumptions:
 
 ### Requirement: Alliance objectives get raids or battles
 
-For `winWithAllianceLineup` the suggestions SHALL be raids, with the note to win them with an all-alliance team of the featured hero's alliance. For `useAbilitiesAlliance` the section SHALL be titled "Battles for mission N" and list only nodes with 5 deployment slots (replacing the Raids Filters' slot choice), to fight by hand with a full alliance team, ordered and filled as raids are.
+For `winWithAllianceLineup` the section SHALL be titled "Battles for mission N" and list nodes of any slot count where that alliance can deploy, to fight by hand with an all-alliance team of the featured hero's alliance, because raids have no lineup and do not count; the note SHALL add that Arena wins with that team count too. For `useAbilitiesAlliance` the section SHALL be titled "Battles for mission N" and list only nodes with 5 deployment slots where that alliance can deploy (replacing the Raids Filters' slot and allies-alliance choices), to fight by hand with a full alliance team; its note SHALL add that ability uses in Salvage Runs and other modes count too. Both are ordered and filled as raids are.
 
 #### Scenario: Mission 10
 
 - **GIVEN** mission 10 with 5 / 15 all-Xenos wins
-- **THEN** the section is titled "Raids for mission 10", shows "10 battles to go" and notes an all-Xenos team
+- **THEN** the section is titled "Battles for mission 10", shows "10 battles to go", says raids do not count and lists nodes of every slot count where Xenos can deploy
 
 #### Scenario: Mission 7
 
 - **GIVEN** mission 7 with 0 / 20 alliance ability uses
-- **THEN** the section is titled "Battles for mission 7", shows "2 battles to go" and lists only 5-slot nodes
+- **THEN** the section is titled "Battles for mission 7", shows "4 battles to go", lists only 5-slot nodes where Xenos can deploy and says Salvage Run ability uses count too
+
+#### Scenario: Mission 7 part done
+
+- **GIVEN** mission 7 with 12 / 20 alliance ability uses
+- **THEN** the section shows "2 battles to go"
 
 ### Requirement: Rows show the goals a node feeds
 
@@ -220,3 +225,21 @@ Each suggested node SHALL show the characters of the in-scope goals it feeds, as
 
 - **GIVEN** a suggested node that drops a material two goals still need
 - **THEN** its row shows both goals' character icons
+
+### Requirement: Battle suggestions are labeled as battles
+
+When the section suggests battles to fight by hand, its totals, energy budget and no-drop note SHALL say battles, not raids.
+
+#### Scenario: Mission 7 totals
+
+- **GIVEN** mission 7 with 12 / 20 alliance ability uses
+- **THEN** the totals and the no-drop totals count battles, and the budget reads "Energy left for these battles"
+
+### Requirement: All-alliance suggestions wait for the featured hero
+
+While the featured hero does not resolve, the section SHALL NOT list nodes for an all-alliance objective, and SHALL say that the suggestions need the featured hero's alliance.
+
+#### Scenario: Featured hero unresolved
+
+- **GIVEN** mission 7 with alliance ability uses open and the featured hero not resolved
+- **THEN** no node is listed and the section says it needs the featured hero's alliance

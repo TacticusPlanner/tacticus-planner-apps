@@ -107,7 +107,8 @@
       "met": "L'objectif de campagne de cette mission est terminé.",
       "next": "Prochaine mission de campagne : {{mission}}, {{objective}}.",
       "noneLeft": "Il ne reste aucune mission de campagne.",
-      "preview": "Les raids sont proposés dès que l'événement est en cours."
+      "preview": "Les raids sont proposés dès que l'événement est en cours.",
+      "noHero": "Les suggestions de combats ont besoin de l'alliance du héros mis en avant, encore inconnue."
     },
     "summary": {
       "none": "Il ne reste aucune bataille de campagne dans les missions de cet événement.",
@@ -120,11 +121,15 @@
     },
     "noDrop": {
       "title": "Ou les batailles d'Indomitus sans butin (6 à 14)",
-      "note": "Elles coûtent 3 d'énergie chacune mais ne donnent rien et peu d'or. Chaque raid ici remplace un raid ci-dessus."
+      "note": "Elles coûtent 3 d'énergie chacune mais ne donnent rien et peu d'or. Chaque raid ici remplace un raid ci-dessus.",
+      "noteBattles": "Elles coûtent 3 d'énergie chacune mais ne donnent rien et peu d'or. Chaque combat ici remplace un combat ci-dessus."
     },
     "titleBattles": "Combats pour {{mission}}",
-    "noteBattles": "Les utilisations de capacités ne comptent que dans les combats joués, donc jouez ces nœuds à {{slots}} emplacements à la main avec une équipe {{alliance}} complète. Les moins chers d'abord, comme pour les raids.",
-    "noteAlliance": "Gagnez-les avec une équipe entièrement {{alliance}}."
+    "noteBattles": "Les utilisations de capacités ne comptent que dans les combats joués, donc jouez ces nœuds à {{slots}} emplacements à la main avec une équipe {{alliance}} complète. Les utilisations en Courses au pillage et dans les autres modes comptent aussi, donc mettez votre progression à jour ensuite. Les moins chers d'abord, comme pour les raids.",
+    "noteLineupBattles": "Les raids n'ont pas de composition, donc ils ne comptent pas : gagnez ces combats à la main avec une équipe entièrement {{alliance}}. Les victoires d'Arène avec cette équipe comptent aussi. Les moins chers d'abord, comme pour les raids.",
+    "budgetBattles": "Énergie disponible pour ces combats : {{energy}}.",
+    "battleCount_one": "{{count}} combat",
+    "battleCount_other": "{{count}} combats"
   },
   "tokens": {
     "title": "Jetons nécessaires",
@@ -205,6 +210,7 @@
     "psychic": "Les unités à dégâts psychiques passent d'abord, pour l'objectif de dégâts psychiques.",
     "reserve_one": "Gardez {{count}} jeton {{mode}} pour {{mission}}.",
     "reserve_other": "Gardez {{count}} jetons {{mode}} pour {{mission}}.",
-    "reservePlay": "Avec {{have}} maintenant, jouez jusqu'à {{play}}."
+    "reservePlay": "Avec {{have}} maintenant, jouez jusqu'à {{play}}.",
+    "rangedTrackFew": "Vos {{size}} unités à distance {{alliance}} : moins de 5, donc aucune réserve."
   }
 }

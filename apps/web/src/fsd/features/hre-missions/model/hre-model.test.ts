@@ -178,27 +178,30 @@ describe("objectives", () => {
     expect(selectRaidObjective(progress({ mission: 4 }))).toBeNull()
   })
 
-  it("serves mission 10's all-alliance wins as raids", () => {
+  it("serves mission 10's all-alliance wins as battles fought by hand", () => {
     expect(
       selectRaidObjective(progress({ mission: 10, progress: [0, 5] }))
     ).toMatchObject({
       battlesToGo: 10,
-      kind: "raids",
+      kind: "battles",
       allianceTeam: true,
     })
+    expect(
+      selectRaidObjective(progress({ mission: 10, progress: [0, 5] }))?.slots
+    ).toBeUndefined()
   })
 
-  it("serves mission 7's alliance ability uses as 2 battles on 5-slot nodes", () => {
+  it("serves mission 7's alliance ability uses as battles on 5-slot nodes, 5 uses each", () => {
     expect(selectRaidObjective(progress({ mission: 7 }))).toMatchObject({
-      battlesToGo: 2,
+      battlesToGo: 4,
       kind: "battles",
       slots: 5,
       allianceTeam: true,
     })
     expect(
-      selectRaidObjective(progress({ mission: 7, progress: [0, 15] }))
+      selectRaidObjective(progress({ mission: 7, progress: [0, 12] }))
         ?.battlesToGo
-    ).toBe(1)
+    ).toBe(2)
   })
 
   it("counts the 663 campaign battles left from mission 5 at 37/100", () => {

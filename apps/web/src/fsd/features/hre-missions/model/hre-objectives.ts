@@ -26,17 +26,17 @@ export type HreRaidObjective = {
   allianceTeam: boolean
 }
 
-/** Ability uses a fought battle with five units yields, for `useAbilitiesAlliance` (assumption: two
- * each). Mission 7's 20 uses are then two battles, as Severyn suggested. */
-const ABILITY_USES_PER_BATTLE = 10
+/** Ability uses a fought battle with five units yields, for `useAbilitiesAlliance`: one each, as
+ * Severyn confirmed (mission 7 at 12 / 20 still needs 2 battles). */
+const ABILITY_USES_PER_BATTLE = 5
 /** A full all-alliance team, so every slot's abilities count. */
 const FULL_TEAM_SLOTS = 5
 
 /**
  * The objective the raid suggestions fill. A lightning-victory objective comes first, because its
  * event-campaign raids also count as campaign wins; then the campaign objective; then an
- * all-alliance lineup's wins (raids); then the alliance ability uses, as battles fought by hand on
- * 5-slot nodes.
+ * all-alliance lineup's wins, as battles fought by hand (raids have no lineup, so they cannot count);
+ * then the alliance ability uses, as battles fought by hand on 5-slot nodes.
  */
 export function selectRaidObjective(
   state: HreProgress
@@ -73,7 +73,7 @@ export function selectRaidObjective(
       objective: lineup.objective,
       battlesToGo: lineup.battlesToGo,
       eventOnly: false,
-      kind: "raids",
+      kind: "battles",
       allianceTeam: true,
     }
   }

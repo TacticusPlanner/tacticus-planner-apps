@@ -162,7 +162,7 @@ function RuleText({
         defaultValue: ready.alliance,
       }) as string)
     : null
-  const size = ready?.team.requestedSize ?? 0
+  const size = ready?.team.deliveredSize ?? 0
   switch (team.rule) {
     case "alliance": {
       return alliance
@@ -174,7 +174,12 @@ function RuleText({
     }
     case "ranged": {
       return trackAlliance
-        ? t("hre:teams.rangedTrack", { size, alliance: trackAlliance })
+        ? t(
+            size < HRE_TEAM_SIZE
+              ? "hre:teams.rangedTrackFew"
+              : "hre:teams.rangedTrack",
+            { size, alliance: trackAlliance }
+          )
         : t("hre:teams.ranged")
     }
     case "featured": {

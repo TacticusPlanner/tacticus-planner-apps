@@ -116,4 +116,18 @@ describe("planHookMissionRaids", () => {
       expect.objectContaining({ battleId: "I06", raids: 2 }),
     ])
   })
+
+  it("keeps only nodes where the requested alliance can deploy", () => {
+    const result = plan({
+      request: { battlesToGo: 2, eventOnly: false, alliance: "Xenos" },
+      filterBattlesById: new Map([
+        ["I06", { ...filterBattle(null), alliesAlliance: "Xenos" }],
+        ["I15", filterBattle("Standard")],
+      ]),
+    })
+    expect(result.rows).toEqual([])
+    expect(result.noDropRows).toEqual([
+      expect.objectContaining({ battleId: "I06", raids: 2 }),
+    ])
+  })
 })
