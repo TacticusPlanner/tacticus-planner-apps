@@ -79,14 +79,16 @@
     "allDone": "Toutes les missions sont terminées",
     "allMissions": "Toutes les missions",
     "done": "Terminée",
-    "locked": "Verrouillée"
+    "locked": "Verrouillée",
+    "markDone": "Terminé",
+    "markDoneLabel": "Terminé : {{objective}}"
   },
   "raids": {
     "title": "Raids : {{mission}}",
     "titleNone": "Raids de campagne",
     "toGo_one": "Encore {{count}} bataille",
     "toGo_other": "Encore {{count}} batailles",
-    "note": "Les nœuds de campagne les moins chers d'abord ; à coût égal, ceux qui donnent quelque chose dont vos objectifs ont besoin.",
+    "note": "Les nœuds de campagne les moins chers qui donnent quelque chose. À coût égal, d'abord ceux qui donnent un objet utile à vos objectifs, par taux de drop, puis par or.",
     "noteLightning": "Les raids sur les nœuds de l'événement de campagne en cours comptent comme des victoires éclair, donc seuls ces nœuds sont listés.",
     "planned_one": "{{count}} bataille du plan du jour.",
     "planned_other": "{{count}} batailles du plan du jour.",
@@ -113,10 +115,16 @@
     },
     "summary": {
       "none": "Il ne reste aucune bataille de campagne dans les missions de cet événement.",
-      "battles_one": "Il reste {{count}} bataille de campagne dans les missions de cet événement.",
-      "battles_other": "Il reste {{count}} batailles de campagne dans les missions de cet événement.",
-      "full_one": "Il reste {{battles}} bataille de campagne dans les missions de cet événement : au moins {{energy}} d'énergie, environ {{days}} jours de raids sur les nœuds les moins chers.",
-      "full_other": "Il reste {{battles}} batailles de campagne dans les missions de cet événement : au moins {{energy}} d'énergie, environ {{days}} jours de raids sur les nœuds les moins chers."
+      "fits_one": "Batailles de campagne restantes dans les missions de cet événement : {{battles}}. Avec {{count}} jour restant, cela fait environ {{perDay}} par jour, {{energy}} d'énergie par jour sur les nœuds les moins chers.",
+      "fits_other": "Batailles de campagne restantes dans les missions de cet événement : {{battles}}. Avec {{count}} jours restants, cela fait environ {{perDay}} par jour, {{energy}} d'énergie par jour sur les nœuds les moins chers.",
+      "perDay_one": "Batailles de campagne restantes dans les missions de cet événement : {{battles}}. Avec {{count}} jour restant, cela fait environ {{perDay}} par jour.",
+      "perDay_other": "Batailles de campagne restantes dans les missions de cet événement : {{battles}}. Avec {{count}} jours restants, cela fait environ {{perDay}} par jour.",
+      "short_one": "Batailles de campagne restantes dans les missions de cet événement : {{battles}}. Avec {{count}} jour restant, votre énergie quotidienne couvre au plus {{max}} par jour sur les nœuds les moins chers, donc environ {{short}} ne tiendront pas avant la fin de l'événement.",
+      "short_other": "Batailles de campagne restantes dans les missions de cet événement : {{battles}}. Avec {{count}} jours restants, votre énergie quotidienne couvre au plus {{max}} par jour sur les nœuds les moins chers, donc environ {{short}} ne tiendront pas avant la fin de l'événement."
+    },
+    "noDrop": {
+      "title": "Ou les batailles d'Indomitus sans butin (6 à 14)",
+      "note": "Elles coûtent 3 d'énergie chacune mais ne donnent rien et peu d'or. Chaque raid ici remplace un raid ci-dessus."
     }
   },
   "tokens": {

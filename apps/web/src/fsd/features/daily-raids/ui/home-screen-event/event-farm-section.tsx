@@ -2,16 +2,14 @@ import { useTranslation } from "react-i18next"
 import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
 
-import type {
-  DailyRaidGoalViewModel,
-  DailyRaidResourceProgress,
-} from "../../model/daily-raids.domain"
+import type { DailyRaidGoalViewModel } from "../../model/daily-raids.domain"
 import type { EventFarmEmptyReason } from "../../model/home-screen-event-farm"
 import { emptyRaidsFilters } from "../../model/raids-filters/raids-filters.domain"
 import { useRaidsFilters } from "../../model/raids-filters/use-raids-filters"
 import { useDailyRaids } from "../../model/use-daily-raids"
 import { RaidState } from "../raid-state"
 import { ResourceIconWithTooltip } from "../resource-icon"
+import { ResourceStock } from "../resource-stock"
 import { EventGoalIcons } from "./event-goal-icons"
 import { EventLocationRow } from "./event-location-row"
 
@@ -116,29 +114,6 @@ export function EventFarmSection({
         <EmptyState reason={emptyReason} />
       ) : null}
     </section>
-  )
-}
-
-/** "X/Y" beside the drop icon: what the player holds of the item and its total target over the goals
- * in scope (the Today/Raids have/need figure, aggregated). Nothing when no goal targets the item. */
-function ResourceStock({
-  progress,
-  testId,
-}: {
-  progress: DailyRaidResourceProgress | undefined
-  testId: string
-}) {
-  const { t } = useTranslation("dailies")
-  if (!progress || progress.target <= 0) return null
-  return (
-    <span
-      aria-label={t("schedule.progress", progress)}
-      className="text-xs font-medium whitespace-nowrap text-muted-foreground tabular-nums"
-      data-testid={testId}
-      role="img"
-    >
-      {progress.owned}/{progress.target}
-    </span>
   )
 }
 

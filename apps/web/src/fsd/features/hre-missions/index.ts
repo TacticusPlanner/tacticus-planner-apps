@@ -14,7 +14,7 @@ export {
   tokenNeedRows,
   type HreTeamRule,
 } from "./model/hre-objectives"
-export { hrePaceFor } from "./model/hre-pace"
+export { hreDaysLeft, hrePaceFor } from "./model/hre-pace"
 export { HreEventHeader } from "./ui/hre-event-header"
 export { AllMissions, MissionTracker } from "./ui/mission-tracker"
 export { TokensNeededCard } from "./ui/tokens-needed-card"

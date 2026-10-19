@@ -79,14 +79,16 @@
     "allDone": "Todas las misiones completadas",
     "allMissions": "Todas las misiones",
     "done": "Hecha",
-    "locked": "Bloqueada"
+    "locked": "Bloqueada",
+    "markDone": "Hecho",
+    "markDoneLabel": "Hecho: {{objective}}"
   },
   "raids": {
     "title": "Incursiones: {{mission}}",
     "titleNone": "Incursiones de campaña",
     "toGo_one": "Falta {{count}} batalla",
     "toGo_other": "Faltan {{count}} batallas",
-    "note": "Primero los nodos de campaña más baratos; a igual coste, los que sueltan algo que tus objetivos necesitan.",
+    "note": "Los nodos de campaña más baratos que sueltan algo. A igual coste, primero los que sueltan algo que tus objetivos necesitan, por probabilidad de botín y luego por oro.",
     "noteLightning": "Las incursiones en los nodos del evento de campaña en curso cuentan como victorias relámpago, así que solo se muestran esos nodos.",
     "planned_one": "{{count}} batalla del plan de hoy.",
     "planned_other": "{{count}} batallas del plan de hoy.",
@@ -113,10 +115,16 @@
     },
     "summary": {
       "none": "No quedan batallas de campaña en las misiones de este evento.",
-      "battles_one": "Queda {{count}} batalla de campaña en las misiones de este evento.",
-      "battles_other": "Quedan {{count}} batallas de campaña en las misiones de este evento.",
-      "full_one": "Queda {{battles}} batalla de campaña en las misiones de este evento: al menos {{energy}} de energía, unos {{days}} días de incursiones en los nodos más baratos.",
-      "full_other": "Quedan {{battles}} batallas de campaña en las misiones de este evento: al menos {{energy}} de energía, unos {{days}} días de incursiones en los nodos más baratos."
+      "fits_one": "Batallas de campaña restantes en las misiones de este evento: {{battles}}. Con {{count}} día restante, son unas {{perDay}} al día, {{energy}} de energía al día en los nodos más baratos.",
+      "fits_other": "Batallas de campaña restantes en las misiones de este evento: {{battles}}. Con {{count}} días restantes, son unas {{perDay}} al día, {{energy}} de energía al día en los nodos más baratos.",
+      "perDay_one": "Batallas de campaña restantes en las misiones de este evento: {{battles}}. Con {{count}} día restante, son unas {{perDay}} al día.",
+      "perDay_other": "Batallas de campaña restantes en las misiones de este evento: {{battles}}. Con {{count}} días restantes, son unas {{perDay}} al día.",
+      "short_one": "Batallas de campaña restantes en las misiones de este evento: {{battles}}. Con {{count}} día restante, tu energía diaria cubre como mucho {{max}} al día en los nodos más baratos, así que unas {{short}} no caben antes de que termine el evento.",
+      "short_other": "Batallas de campaña restantes en las misiones de este evento: {{battles}}. Con {{count}} días restantes, tu energía diaria cubre como mucho {{max}} al día en los nodos más baratos, así que unas {{short}} no caben antes de que termine el evento."
+    },
+    "noDrop": {
+      "title": "O las batallas de Indomitus sin botín (6 a 14)",
+      "note": "Cuestan 3 de energía cada una, pero no sueltan nada y dan poco oro. Cada incursión aquí sustituye a una de arriba."
     }
   },
   "tokens": {

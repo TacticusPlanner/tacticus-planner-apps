@@ -10,9 +10,25 @@ import {
 
 const id = (value: string) => value as BattleId
 
+const rewards = (gold: number, drops: string[]) => ({
+  guaranteed: [{ id: "gold", min: gold, max: gold }],
+  potential: drops.map((drop) => ({ id: drop, effectiveRate: 0.2 })),
+})
 const battles = [
-  { id: "I06", energyCost: 3, dailyAttempts: 3, campaignGroupId: "campaign1" },
-  { id: "I15", energyCost: 5, dailyAttempts: 10, campaignGroupId: "campaign1" },
+  {
+    id: "I06",
+    energyCost: 3,
+    dailyAttempts: 3,
+    campaignGroupId: "campaign1",
+    rewards: rewards(7, []),
+  },
+  {
+    id: "I15",
+    energyCost: 5,
+    dailyAttempts: 10,
+    campaignGroupId: "campaign1",
+    rewards: rewards(12, ["shards_necroWarden"]),
+  },
 ]
 
 const filterBattle = (
@@ -67,18 +83,25 @@ describe("planHookMissionRaids", () => {
     expect(result.empty).toBe("no-energy")
   })
 
-  it("keeps nodes with no campaign type under a campaign-type filter", () => {
-    const result = plan({
-      raidsFilters: { ...emptyRaidsFilters, campaignTypes: ["Standard"] },
-    })
-    expect(result.cheapestEnergyCost).toBe(3)
-    expect(result.rows[0]?.battleId).toBe("I06")
+  it("splits the no-drop nodes from the nodes that drop something", () => {
+    const result = plan({ calculation: null })
+    expect(result.rows.map((row) => row.battleId)).toEqual(["I15"])
+    expect(result.noDropRows.map((row) => row.battleId)).toEqual(["I06"])
   })
 
-  it("still filters typed nodes by campaign type", () => {
+  it("ignores the campaign-type Raids Filter", () => {
     const result = plan({
+      calculation: null,
       raidsFilters: { ...emptyRaidsFilters, campaignTypes: ["Elite"] },
     })
-    expect(result.rows.map((row) => row.battleId)).toEqual(["I06"])
+    expect(result.outlookNodes).toHaveLength(2)
+    expect(result.rows.map((row) => row.battleId)).toEqual(["I15"])
+  })
+
+  it("keeps the other Raids Filters", () => {
+    const result = plan({
+      raidsFilters: { ...emptyRaidsFilters, enemiesTypes: ["Ork Boy"] },
+    })
+    expect(result.empty).toBe("filtered")
   })
 })
