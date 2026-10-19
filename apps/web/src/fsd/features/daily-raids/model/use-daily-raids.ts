@@ -316,7 +316,6 @@ export function useDailyRaids(
           calculation,
           availableBattles,
           campaignDefinitions,
-          allBattlesById,
           attemptsLeftByBattle,
           dailyEnergy: settings.dailyEnergy,
           realEnergyUsedToday,

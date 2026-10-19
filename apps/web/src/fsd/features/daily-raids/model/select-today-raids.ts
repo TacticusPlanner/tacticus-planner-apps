@@ -25,7 +25,7 @@ export type TodayRaidsSelection = {
 }
 
 /** Today's real energy spend has reached the daily energy limit (a limit of 0 or less is none). */
-export const isEnergyLimitReached = (
+const isEnergyLimitReached = (
   dailyEnergy: number,
   realEnergyUsedToday: number
 ) => dailyEnergy > 0 && realEnergyUsedToday >= dailyEnergy

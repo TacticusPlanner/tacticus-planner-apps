@@ -59,7 +59,6 @@ const plan = (
     calculation,
     availableBattles: battles,
     campaignDefinitions: [],
-    allBattlesById: new Map(battles.map((battle) => [id(battle.id), battle])),
     attemptsLeftByBattle: new Map(),
     dailyEnergy: 100,
     realEnergyUsedToday: 0,
@@ -72,15 +71,13 @@ const plan = (
   })
 
 describe("planHookMissionRaids", () => {
-  it("counts Today's remaining plan first", () => {
-    expect(plan().plannedCount).toBe(10)
-  })
-
-  it("drops Today's plan once the daily energy limit is reached", () => {
-    const result = plan({ realEnergyUsedToday: 100 })
-    expect(result.plannedCount).toBe(0)
+  it("ignores Today's plan and uses the energy left today", () => {
+    const result = plan({ realEnergyUsedToday: 40 })
     expect(result.battlesLeft).toBe(20)
-    expect(result.empty).toBe("no-energy")
+    expect(result.energyBudget).toBe(60)
+    expect(result.rows).toEqual([
+      expect.objectContaining({ battleId: "I15", raids: 10 }),
+    ])
   })
 
   it("splits the no-drop nodes from the nodes that drop something", () => {

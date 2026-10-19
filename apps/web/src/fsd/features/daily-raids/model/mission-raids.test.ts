@@ -3,7 +3,6 @@ import type { BattleId } from "@workspace/game-domain"
 
 import {
   planMissionRaids,
-  remainingPlannedRaids,
   type MissionGoalNode,
   type MissionRaidBattle,
   type PlanMissionRaidsInput,
@@ -54,7 +53,6 @@ const base = (
   eventOnly: false,
   battles: indomitus,
   attemptsLeftByBattle: new Map(),
-  plannedByBattle: new Map(),
   dailyEnergy: 538,
   realEnergyUsedToday: 0,
   goalNodesByBattle: new Map(),
@@ -62,37 +60,18 @@ const base = (
   ...overrides,
 })
 
-// Today still plans 25 raids at a 6-energy node (150 energy).
-const withToday = (overrides: Partial<PlanMissionRaidsInput> = {}) =>
-  base({
-    battles: [
-      ...indomitus,
-      node("SH01", 6, 10),
-      node("SH02", 6, 10),
-      node("SH03", 6, 10),
-    ],
-    plannedByBattle: new Map([
-      [id("SH01"), 10],
-      [id("SH02"), 10],
-      [id("SH03"), 5],
-    ]),
-    realEnergyUsedToday: 200,
-    ...overrides,
-  })
+// 38 battles to go with 350 of 538 energy spent: a budget of 188.
+const mission5 = (overrides: Partial<PlanMissionRaidsInput> = {}) =>
+  base({ battlesToGo: 38, realEnergyUsedToday: 350, ...overrides })
 
 const raidsOf = (rows: readonly { battleId: string; raids: number }[]) =>
   Object.fromEntries(rows.map((row) => [row.battleId, row.raids]))
 
 describe("planMissionRaids", () => {
-  it("counts Today's plan first and reserves its energy", () => {
-    const plan = planMissionRaids(withToday())
-    expect(plan.plannedCount).toBe(25)
-    expect(plan.battlesLeft).toBe(38)
-    expect(plan.energyBudget).toBe(538 - 200 - 150)
-  })
-
   it("fills the nodes that drop something, cheapest first", () => {
-    const plan = planMissionRaids(withToday())
+    const plan = planMissionRaids(mission5())
+    expect(plan.battlesLeft).toBe(38)
+    expect(plan.energyBudget).toBe(188)
     expect(raidsOf(plan.rows)).toEqual({ I15: 10, I16: 10, I17: 10, I18: 7 })
     expect(plan.totalRaids).toBe(37)
     expect(plan.totalEnergy).toBe(185)
@@ -100,27 +79,18 @@ describe("planMissionRaids", () => {
   })
 
   it("fills the no-drop Indomitus nodes on their own, as an alternative", () => {
-    const plan = planMissionRaids(withToday())
+    const plan = planMissionRaids(mission5())
     expect(plan.noDropRows.map((row) => row.battleId)).toEqual(
       noDrop.map((battle) => battle.id)
     )
     expect(plan.noDropRows.every((row) => row.raids === 3)).toBe(true)
   })
 
-  it("says Today's plan completes the objective", () => {
-    const plan = planMissionRaids(withToday({ battlesToGo: 20 }))
-    expect(plan.rows).toEqual([])
-    expect(plan.noDropRows).toEqual([])
-    expect(plan.empty).toBe("plan-completes")
-  })
-
-  it("suggests nothing when planned energy uses the whole budget", () => {
-    const plan = planMissionRaids(
-      withToday({ realEnergyUsedToday: 300, dailyEnergy: 450 })
-    )
+  it("suggests nothing once today's energy is spent", () => {
+    const plan = planMissionRaids(base({ realEnergyUsedToday: 538 }))
     expect(plan.energyBudget).toBe(0)
+    expect(plan.rows).toEqual([])
     expect(plan.empty).toBe("no-energy")
-    expect(plan.plannedCount).toBe(25)
   })
 
   it("says attempts ran out when energy is still left", () => {
@@ -136,16 +106,15 @@ describe("planMissionRaids", () => {
     expect(plan.empty).toBe("no-attempts")
   })
 
-  it("leaves a node's attempts to Today's plan and synced usage", () => {
+  it("uses the synced attempts left on a node", () => {
     const plan = planMissionRaids(
       base({
         battles: [node("I30", 6, 10)],
         battlesToGo: 50,
         attemptsLeftByBattle: new Map([[id("I30"), 6]]),
-        plannedByBattle: new Map([[id("I30"), 3]]),
       })
     )
-    expect(plan.rows[0]?.raids).toBe(3)
+    expect(plan.rows[0]?.raids).toBe(6)
   })
 
   it("puts goal drops first, by drop rate, then by gold", () => {
@@ -254,42 +223,9 @@ describe("planMissionRaids", () => {
       expect(plan.noDropRows).toEqual([])
     })
 
-    it("counts only event raids from Today's plan", () => {
-      const plan = planMissionRaids(
-        base({
-          battles: [...indomitus, ...event],
-          eventOnly: true,
-          battlesToGo: 15,
-          plannedByBattle: new Map([
-            [id("I06"), 3],
-            [id("AMS1"), 4],
-          ]),
-        })
-      )
-      expect(plan.plannedCount).toBe(4)
-      expect(plan.battlesLeft).toBe(11)
-    })
-
     it("says no campaign event is running", () => {
       const plan = planMissionRaids(base({ eventOnly: true, battlesToGo: 2 }))
       expect(plan.empty).toBe("no-event")
     })
-  })
-})
-
-describe("remainingPlannedRaids", () => {
-  it("subtracts the attempts already used today", () => {
-    const remaining = remainingPlannedRaids(
-      [
-        { battleId: id("I06"), raidsPerformed: 3 },
-        { battleId: id("I07"), raidsPerformed: 2 },
-        { battleId: id("I07"), raidsPerformed: 1 },
-      ],
-      new Map([
-        [id("I06"), 3],
-        [id("I07"), 1],
-      ])
-    )
-    expect([...remaining]).toEqual([[id("I07"), 2]])
   })
 })

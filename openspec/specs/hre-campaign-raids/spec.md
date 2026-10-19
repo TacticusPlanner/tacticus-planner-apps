@@ -35,42 +35,13 @@ Assumptions:
 - **GIVEN** the tab previews an upcoming HRE
 - **THEN** no raid list is shown; only the remaining-campaign summary (see below) is shown, from mission 1
 
-### Requirement: Today's planned raids count first and reserve their energy and attempts
-
-The raids still planned on Today SHALL count toward the battles to go before any HRE suggestion is made. They are Today's plan entries for the same Dailies project selection that have not been done yet. Their energy and attempts SHALL be reserved. The HRE energy budget SHALL be: Planning Settings daily energy, minus energy really spent today, minus the energy of Today's remaining planned raids, never below 0. The attempts left on a node SHALL be reduced by Today's planned raids on it.
-
-Assumptions:
-
-- Every raid on Today's plan is a campaign battle won, so it advances the objective by one.
-- Energy per raid is the battle's `energyCost`. Indomitus I06 to I14 cost 3, I15 to I29 cost 5, other campaign nodes cost 6 and Elite nodes cost 10.
-
-#### Scenario: Today's plan covers part of the mission
-
-- **GIVEN** 63 battles to go, Planning Settings daily energy 538, 200 energy spent today, and Today still planning 25 raids at 6 energy (150 energy)
-- **THEN** the section shows "25 battles from today's plan", 38 battles left for suggestions, and a budget of 538 - 200 - 150 = 188 energy
-
-#### Scenario: Today's plan finishes the objective
-
-- **GIVEN** 20 battles to go and Today still planning 24 raids
-- **THEN** no extra raids are suggested and the section says "Today's plan completes this objective"
-
-#### Scenario: Planned energy uses the whole budget
-
-- **GIVEN** daily energy 538, 300 spent and 238 still planned on Today
-- **THEN** the budget is 0, no extra raids are suggested, and the section says how many battles today's plan covers
-
-#### Scenario: Daily energy limit reached
-
-- **GIVEN** the real energy spent today has reached the daily energy limit, so Today drops its plan
-- **THEN** Today's plan counts for nothing here: no battles are taken off the objective and no extra raids are suggested
-
 ### Requirement: Candidate locations follow raid eligibility and today's limits
 
 A campaign battle SHALL be a candidate only if all of these hold:
 
 1. The player's campaign progress unlocks it, which includes event-campaign nodes only while their event runs.
 2. Its energy cost is above 0.
-3. It has attempts left today after Today's planned raids on it.
+3. It has attempts left today.
 4. It passes the persisted Raids Filters, except the campaign-type filter. Every campaign battle counts as a win, so a type picked for farming drops does not hide the cheapest nodes.
 
 Attempts left SHALL be the synced attempts left for that node, or the catalog's daily cap for the node when that is not known.
@@ -87,8 +58,8 @@ Assumptions:
 
 #### Scenario: Today's plan uses a node's attempts
 
-- **GIVEN** I30 has a cap of 10, 4 attempts used today, and 3 more raids planned on Today
-- **THEN** I30 has 3 attempts left for suggestions
+- **GIVEN** I30 has a cap of 10 and 4 attempts used today, and Today plans 3 more raids on it
+- **THEN** I30 has 6 attempts left for suggestions
 
 #### Scenario: Raids Filters respected
 
@@ -118,7 +89,7 @@ Each node, in order, SHALL get as many raids as its attempts left, the remaining
 
 #### Scenario: Worked example, mission 5
 
-- **GIVEN** the "Today's plan covers part of the mission" case (38 battles left, 188 energy budget), with Indomitus unlocked, none of it used or planned today, and no goals
+- **GIVEN** the "Energy spent today" case (38 battles to go, 188 energy budget), with Indomitus unlocked, none of it used today, and no goals
 - **THEN** I15, I16 and I17 (5 energy, cap 10) get 10 raids each and I18 gets 7
 - **AND** the totals read 37 raids and 185 energy, and the section notes "1 battle left after today's energy"
 
@@ -159,17 +130,16 @@ Each node, in order, SHALL get as many raids as its attempts left, the remaining
 
 ### Requirement: Lightning-victory objectives suggest event-campaign raids
 
-When the current mission has a `lightningVictories` objective below its target, the section SHALL suggest raids on event-campaign nodes only, because a raid there counts as a lightning victory. It SHALL use the same budget, Today's-plan reservation, attempts, filters, ordering (energy, then goals, then id) and fill as campaign objectives. The battles to go are the lightning victories still needed. When no campaign event is running, the section SHALL say so and suggest winning battles manually.
+When the current mission has a `lightningVictories` objective below its target, the section SHALL suggest raids on event-campaign nodes only, because a raid there counts as a lightning victory. It SHALL use the same budget, attempts, filters, ordering (energy, then goals, then id) and fill as campaign objectives. The battles to go are the lightning victories still needed. When no campaign event is running, the section SHALL say so and suggest winning battles manually.
 
 Assumptions:
 
 - A raid on an event-campaign node counts as a lightning victory. A raid on a standing campaign node does not.
 - Event-campaign nodes are raidable only while their campaign event runs (the existing eligibility rule).
-- A planned raid on Today counts toward the objective only when it is on an event-campaign node.
 
 #### Scenario: Mission 11 during a campaign event
 
-- **GIVEN** mission 11 at 10 / 25 lightning victories, the campaign event of 2026-10-15 to 2026-10-29 running, no event nodes on Today's plan, and enough energy
+- **GIVEN** mission 11 at 10 / 25 lightning victories, the campaign event of 2026-10-15 to 2026-10-29 running, and enough energy
 - **THEN** 15 raids are suggested, all on that event campaign's nodes, cheapest first, and no standing-campaign node is listed
 
 #### Scenario: No campaign event running
@@ -204,3 +174,26 @@ Candidates that drop nothing (Indomitus I06 to I14) SHALL be listed in their own
 
 - **GIVEN** a lightning-victory objective
 - **THEN** the section is not shown, because these nodes are not event-campaign nodes
+
+### Requirement: Suggestions use today's energy left and ignore Today's plan
+
+The battles to go SHALL be the objective's target minus its progress; raids still planned on Today SHALL NOT count toward them, and their energy and attempts SHALL NOT be reserved. Severyn chose this so the section always says where to raid for the mission. The HRE energy budget SHALL be the Planning Settings daily energy minus the energy really spent today, never below 0.
+
+Assumptions:
+
+- Energy per raid is the battle's `energyCost`. Indomitus I06 to I14 cost 3, I15 to I29 cost 5, other campaign nodes cost 6 and Elite nodes cost 10.
+
+#### Scenario: Energy spent today
+
+- **GIVEN** 38 battles to go, Planning Settings daily energy 538 and 350 energy spent today
+- **THEN** 38 battles are left for suggestions with a budget of 538 - 350 = 188 energy
+
+#### Scenario: Today's plan does not hide suggestions
+
+- **GIVEN** 20 battles to go and Today still planning 94 raids
+- **THEN** raids for all 20 battles are still suggested, within today's energy left
+
+#### Scenario: Today's energy spent
+
+- **GIVEN** daily energy 538 and 538 spent today
+- **THEN** the budget is 0, no raids are suggested, and the section says no energy is left today
