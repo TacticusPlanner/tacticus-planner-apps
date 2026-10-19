@@ -157,7 +157,7 @@ export function TierTileDetailsSheet({
                 {t("tierList.details.description")}
               </SheetDescription>
             </SheetHeader>
-            <div className="px-4 pb-4">
+            <div className="min-h-0 flex-1 overflow-y-auto px-4 pb-4">
               <TierTileDetailsList details={details} />
             </div>
           </>

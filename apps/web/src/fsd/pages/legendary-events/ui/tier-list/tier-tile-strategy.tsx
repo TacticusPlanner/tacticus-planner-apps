@@ -66,7 +66,7 @@ export function TierTileStrategy({ unitId }: { unitId: string }) {
       </button>
       {open ? (
         <div
-          className="flex max-h-72 flex-col gap-3 overflow-y-auto"
+          className="flex flex-col gap-3 md:max-h-72 md:overflow-y-auto"
           data-testid="tier-strategy-content"
           id={contentId}
         >
