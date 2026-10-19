@@ -63,7 +63,8 @@ export type MissionRaidPlan = {
   outlookNodes: Pick<Battle, "energyCost" | "dailyAttempts">[]
   /** The Planning Settings daily energy, for the outlook. */
   dailyEnergy: number
-  /** For a faction-kill objective: the cheapest nodes with that faction's enemies, any campaign,
+  /** For a faction-kill objective: nodes with that faction's enemies, most enemies first, any campaign
+   * (only nodes with a lightning condition while lightning victories are open),
    * filled until their enemies cover the kills still needed, with the energy `rows` leave. */
   factionRows: MissionRaidRow[]
 }
@@ -75,6 +76,9 @@ export type MissionRaidBattle = Pick<Battle, "energyCost" | "dailyAttempts"> & {
   expectedGold: number
   /** Drop rate per resource the node can drop; empty for a node that drops nothing. */
   dropRates: ReadonlyMap<string, number>
+  /** False for a node with no lightning-victory condition (Indomitus below node 19); absent means
+   * it has one. */
+  lightningCondition?: boolean
 }
 
 export type PlanMissionRaidsInput = MissionRaidsRequest & {
@@ -160,7 +164,8 @@ export function planMissionRaids(
     battlesLeft > 0 && energyBudget > 0 ? fillFrom(noDropPool).rows : []
 
   // Nodes with the faction's enemies, outside the main list, with the energy it leaves; each raid
-  // counts the node's enemies toward the kills still needed.
+  // counts the node's enemies toward the kills still needed, so the most enemies come first (the
+  // fewest raids), then the usual order.
   const factionFill = (rows: readonly MissionRaidRow[]): MissionRaidRow[] => {
     const killsOf = input.factionKillsPerRaid
     const killsToGo = input.enemyFaction?.killsToGo ?? 0
@@ -173,9 +178,11 @@ export function planMissionRaids(
           battle.energyCost > 0 &&
           !used.has(battle.id) &&
           input.passesFilter(battle.id) &&
-          killsOf(battle.id) > 0
+          killsOf(battle.id) > 0 &&
+          // With lightning victories open, each raid should serve both objectives.
+          (!input.eventOnly || battle.lightningCondition !== false)
       )
-      .sort(sort)
+      .sort((a, b) => killsOf(b.id) - killsOf(a.id) || sort(a, b))
     return fill(candidates, energyBudget - spent, killsToGo, input, killsOf)
       .rows
   }

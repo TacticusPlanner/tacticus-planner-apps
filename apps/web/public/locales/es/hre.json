@@ -133,9 +133,10 @@
     "noteAllianceNodes": "Solo nodos donde pueden desplegarse unidades {{alliance}}, para que el otro objetivo de la misión también avance.",
     "faction": {
       "title": "Nodos con enemigos {{faction}}",
-      "note_one": "Para la última baja {{faction}} que falta: los nodos más baratos con enemigos {{faction}}, con la energía que queda tras las incursiones de arriba. Cada incursión cuenta los enemigos del nodo.",
-      "note_other": "Para las {{count}} bajas {{faction}} que faltan: los nodos más baratos con enemigos {{faction}}, con la energía que queda tras las incursiones de arriba. Cada incursión cuenta los enemigos del nodo.",
-      "none": "Ningún nodo con enemigos {{faction}} cabe en la energía que queda hoy."
+      "note_one": "Para la última baja {{faction}} que falta: primero los nodos con más enemigos {{faction}}, para usar las menos incursiones, con la energía que queda tras las incursiones de arriba. Cada incursión cuenta los enemigos del nodo.",
+      "note_other": "Para las {{count}} bajas {{faction}} que faltan: primero los nodos con más enemigos {{faction}}, para usar las menos incursiones, con la energía que queda tras las incursiones de arriba. Cada incursión cuenta los enemigos del nodo.",
+      "none": "Ningún nodo con enemigos {{faction}} cabe en la energía que queda hoy.",
+      "lightning": "Solo nodos con condición de victoria relámpago, para que cada incursión cuente para ambos objetivos."
     }
   },
   "tokens": {

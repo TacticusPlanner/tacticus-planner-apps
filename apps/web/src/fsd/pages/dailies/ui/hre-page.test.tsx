@@ -331,6 +331,7 @@ describe("HRE tab", () => {
       "raids.faction.title|faction=factions:Necrons"
     )
     expect(faction).toHaveTextContent(/raids\.faction\.note\|.*count=60/)
+    expect(faction).toHaveTextContent("raids.faction.lightning")
     expect(
       within(screen.getByTestId("hre-raids-faction-list")).getAllByRole(
         "listitem"

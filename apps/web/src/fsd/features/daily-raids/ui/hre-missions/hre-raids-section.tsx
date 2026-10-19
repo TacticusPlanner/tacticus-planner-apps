@@ -158,6 +158,7 @@ export function HreRaidsSection({
             <HreFactionRaids
               faction={request.enemyFactionName}
               killsToGo={request.enemyFaction.killsToGo}
+              lightning={request.eventOnly}
               rows={plan.factionRows}
               view={rowsView}
             />
