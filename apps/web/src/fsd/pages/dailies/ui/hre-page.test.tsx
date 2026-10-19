@@ -277,6 +277,38 @@ describe("HRE tab", () => {
     )
   })
 
+  it("labels hand-fought alliance battles as battles, on the alliance's nodes", () => {
+    seed({ mission: 7, progress: [2, 12] })
+    renderHre()
+    expect(mocks.raidsArgs.at(-1)?.[1]).toEqual({
+      missionRaids: {
+        battlesToGo: 2,
+        eventOnly: false,
+        slots: 5,
+        alliance: "Xenos",
+      },
+    })
+    expect(screen.getByTestId("hre-raids-note")).toHaveTextContent(
+      "raids.budgetBattles|energy=188"
+    )
+    expect(screen.getByTestId("hre-raids-totals")).toHaveTextContent(
+      "raids.battleCount|count=37"
+    )
+    expect(screen.getByTestId("hre-raids-no-drop-totals")).toHaveTextContent(
+      "raids.battleCount|count=27"
+    )
+  })
+
+  it("waits for the featured hero before suggesting all-alliance battles", () => {
+    mocks.instance = { ...running(), hero: null }
+    seed({ mission: 7, progress: [2, 12] })
+    renderHre()
+    expect(screen.queryByTestId("hre-raids-list")).toBeNull()
+    expect(screen.getByTestId("hre-raids-notice")).toHaveTextContent(
+      "hre:raids.notice.noHero"
+    )
+  })
+
   it("clamps an entry to the target and completes the mission", async () => {
     seed({ mission: 5, progress: [10_000, 37] })
     renderHre()

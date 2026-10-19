@@ -66,6 +66,7 @@ export function HreRaidsSection({
   const locations = loaded ? raids.locationsByBattleId : undefined
   const view = raids.status === "ready" ? raids : null
   const rowsView: RaidRowsView = { locations, view }
+  const battles = request?.kind === "battles"
 
   return (
     <section className="space-y-3" data-testid="hre-raids">
@@ -110,7 +111,7 @@ export function HreRaidsSection({
               : request.eventOnly
                 ? t("raids.noteLightning")
                 : t("raids.note")}
-            {` ${t("raids.budget", { energy: plan.energyBudget })}`}
+            {` ${t(battles ? "raids.budgetBattles" : "raids.budget", { energy: plan.energyBudget })}`}
           </p>
           {plan.rows.length > 0 ? (
             <>
@@ -124,7 +125,9 @@ export function HreRaidsSection({
                 data-testid="hre-raids-totals"
               >
                 <Badge variant="secondary">
-                  {t("raids.raidCount", { count: plan.totalRaids })}
+                  {t(battles ? "raids.battleCount" : "raids.raidCount", {
+                    count: plan.totalRaids,
+                  })}
                 </Badge>
                 <Badge variant="outline">
                   {t("raids.energy", { energy: plan.totalEnergy })}
@@ -143,7 +146,11 @@ export function HreRaidsSection({
             <EmptyState plan={plan} battlesToGo={request.battlesToGo} />
           )}
           {plan.noDropRows.length > 0 ? (
-            <HreNoDropRaids rows={plan.noDropRows} view={rowsView} />
+            <HreNoDropRaids
+              battles={battles}
+              rows={plan.noDropRows}
+              view={rowsView}
+            />
           ) : null}
         </>
       ) : null}

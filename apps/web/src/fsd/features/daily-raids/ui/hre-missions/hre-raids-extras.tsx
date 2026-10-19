@@ -83,9 +83,12 @@ export function RaidRows({
 export function HreNoDropRaids({
   rows,
   view,
+  battles,
 }: {
   rows: MissionRaidPlan["noDropRows"]
   view: RaidRowsView
+  /** Nodes to fight by hand rather than raid. */
+  battles: boolean
 }) {
   const { t } = useTranslation("hre")
   const raids = rows.reduce((total, row) => total + row.raids, 0)
@@ -93,14 +96,18 @@ export function HreNoDropRaids({
   return (
     <div className="space-y-2 border-t pt-3" data-testid="hre-raids-no-drop">
       <h3 className="font-medium">{t("raids.noDrop.title")}</h3>
-      <p className="text-sm text-muted-foreground">{t("raids.noDrop.note")}</p>
+      <p className="text-sm text-muted-foreground">
+        {t(battles ? "raids.noDrop.noteBattles" : "raids.noDrop.note")}
+      </p>
       <RaidRows rows={rows} testId="hre-raids-no-drop-list" view={view} />
       <div
         className="flex flex-wrap gap-2"
         data-testid="hre-raids-no-drop-totals"
       >
         <Badge variant="secondary">
-          {t("raids.raidCount", { count: raids })}
+          {t(battles ? "raids.battleCount" : "raids.raidCount", {
+            count: raids,
+          })}
         </Badge>
         <Badge variant="outline">{t("raids.energy", { energy })}</Badge>
       </div>

@@ -107,7 +107,8 @@
       "met": "El objetivo de campaña de esta misión está completado.",
       "next": "Próxima misión de campaña: {{mission}}, {{objective}}.",
       "noneLeft": "No quedan misiones de campaña.",
-      "preview": "Las incursiones se sugieren cuando el evento esté en curso."
+      "preview": "Las incursiones se sugieren cuando el evento esté en curso.",
+      "noHero": "Las sugerencias de batallas necesitan la alianza del héroe destacado, que aún no se conoce."
     },
     "summary": {
       "none": "No quedan batallas de campaña en las misiones de este evento.",
@@ -120,11 +121,15 @@
     },
     "noDrop": {
       "title": "O las batallas de Indomitus sin botín (6 a 14)",
-      "note": "Cuestan 3 de energía cada una, pero no sueltan nada y dan poco oro. Cada incursión aquí sustituye a una de arriba."
+      "note": "Cuestan 3 de energía cada una, pero no sueltan nada y dan poco oro. Cada incursión aquí sustituye a una de arriba.",
+      "noteBattles": "Cuestan 3 de energía cada una, pero no sueltan nada y dan poco oro. Cada batalla aquí sustituye a una de arriba."
     },
     "titleBattles": "Batallas para {{mission}}",
     "noteBattles": "Los usos de habilidades solo cuentan en batallas que juegas, así que juega a mano estos nodos de {{slots}} huecos con un equipo completo de {{alliance}}. Los usos en Carreras de Saqueo y otros modos también cuentan, así que actualiza tu progreso después. Primero los más baratos, como en las incursiones.",
-    "noteLineupBattles": "Las incursiones no tienen alineación, así que no cuentan: gana estas a mano con un equipo solo de {{alliance}}. Las victorias en la Arena con ese equipo también cuentan. Primero los más baratos, como en las incursiones."
+    "noteLineupBattles": "Las incursiones no tienen alineación, así que no cuentan: gana estas a mano con un equipo solo de {{alliance}}. Las victorias en la Arena con ese equipo también cuentan. Primero los más baratos, como en las incursiones.",
+    "budgetBattles": "Energía disponible para estas batallas: {{energy}}.",
+    "battleCount_one": "{{count}} batalla",
+    "battleCount_other": "{{count}} batallas"
   },
   "tokens": {
     "title": "Fichas necesarias",

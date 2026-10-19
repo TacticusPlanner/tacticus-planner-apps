@@ -110,6 +110,8 @@ export function HrePage() {
 
   const notice = (() => {
     if (!running) return t("hre:raids.notice.preview")
+    if (raidObjective?.allianceTeam && !hero)
+      return t("hre:raids.notice.noHero")
     if (campaignObjectiveState(progress) === "met")
       return t("hre:raids.notice.met")
     const next = nextCampaignMission(progress)
@@ -137,7 +139,9 @@ export function HrePage() {
       }
       remainingBattles={remainingCampaignBattles(shown)}
       request={
-        raidObjective
+        // An all-alliance objective waits for the featured hero's alliance, so its nodes can be
+        // filtered to where that alliance deploys.
+        raidObjective && (!raidObjective.allianceTeam || hero)
           ? {
               battlesToGo: raidObjective.battlesToGo,
               eventOnly: raidObjective.eventOnly,
