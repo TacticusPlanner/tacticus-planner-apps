@@ -42,7 +42,9 @@ As built:
 
 Per lane and per run roster: start from the user's teams (or none when "Replace my teams" is chosen), repeatedly add the suggestion with the highest gain until no suggestion gains or the lane has 6 teams. Each new team's depth per run is its clear estimate on that run's projected roster.
 
-As built: a lane's teams are cached by the roster changes of the units that lane allows, so evaluating one unit's upgrade regenerates only its lanes. A removed team's members are excluded, so the next best suggestion takes its place. On Create a new team is saved with its first plan run's depth unset (live estimate) and a stored "estimate" depth only for later runs where it differs; it is named by its display name (60 characters at most).
+As built: a lane's teams are cached by the roster changes of the units that lane allows, so evaluating one unit's upgrade regenerates only its lanes. A removed team's members are excluded, so the next best suggestion takes its place. On Create a new team is saved with no recorded depth, so every run reads the live clear estimate; projected later-run depths are not stored, because they assume the upgrades finish on time and would outlive goals that slip. It is named by its display name (60 characters at most).
+
+Create freezes the writes on its first press (goals, teams, run inputs, destination and team names), because creating them refreshes the reads the draft is built from; Retry failed resends from that snapshot, and the draft is locked once Create has run. Create waits until the recommendations are fully explored. Ticks are kept by recommendation (unit and step targets), so a re-exploration that finds the same recommendations keeps them. A unit's leading steps that an Active goal already covers are dropped and its chain starts from the state they reach, so no created goal overlaps an existing one.
 
 ### D6. Creation order and partial failure
 

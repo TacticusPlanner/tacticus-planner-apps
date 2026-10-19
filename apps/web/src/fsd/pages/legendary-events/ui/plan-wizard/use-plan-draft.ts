@@ -14,6 +14,7 @@ import { draftTokenView, stepTargets } from "./plan-ceiling"
 import {
   chainRequest,
   goalChains,
+  recommendationKey,
   recommendationsFor,
   targetOptions,
   toggleRecommendation,
@@ -51,13 +52,12 @@ export type RecommendationsState =
     }
 
 /** Upgrade recommendations explored to the cap on the draft's economy, one round per task so the
- *  page stays responsive (design: worker-friendly batch). `job` changes whenever the exploration
- *  restarts, so ticks made on an earlier list are dropped. */
+ *  page stays responsive (design: worker-friendly batch). */
 function useRecommendations(
   source: ReadySource,
   economy: PlanEconomy,
   syncedCeiling: number | null
-): { state: RecommendationsState; job: object | null } {
+): RecommendationsState {
   const farming = useUpgradeFarmingDays()
   const { inputs, goalTargets, masterTotal, hordeMultiplier } = source
   const job = useMemo(() => {
@@ -128,23 +128,17 @@ function useRecommendations(
 
   const farmingStatus = farming.status
   // Memoised so the draft's derived values only recompute when the exploration advances.
-  return useMemo(() => {
+  return useMemo((): RecommendationsState => {
     if (!job) {
       return {
-        job: null,
-        state: {
-          status: farmingStatus === "loading" ? "estimating" : "unavailable",
-        },
+        status: farmingStatus === "loading" ? "estimating" : "unavailable",
       }
     }
-    if (progress?.job === job) return { job, state: progress.state }
+    if (progress?.job === job) return progress.state
     return {
-      job,
-      state: {
-        status: "running",
-        recommendations: [],
-        upgradedCeiling: job.syncedCeiling,
-      },
+      status: "running",
+      recommendations: [],
+      upgradedCeiling: job.syncedCeiling,
     }
   }, [job, progress, farmingStatus])
 }
@@ -191,11 +185,9 @@ export function usePlanDraft(
   const { inputs } = source
   const [economy, setEconomy] = useState(() => initialEconomy(source))
   const [target, setTarget] = useState<AscensionStep | null>(initialTarget)
-  // The user's ticks on one exploration's list; null until they tick something.
-  const [userTicks, setTicked] = useState<{
-    job: object | null
-    set: ReadonlySet<number>
-  } | null>(null)
+  // The user's ticks by recommendation key, so they survive a re-exploration that finds the same
+  // recommendations; null until they tick something.
+  const [userTicks, setTicked] = useState<ReadonlySet<string> | null>(null)
   const [adjustments, setAdjustments] =
     useState<TeamAdjustments>(NO_TEAM_ADJUSTMENTS)
   const [dirty, setDirty] = useState(false)
@@ -204,11 +196,7 @@ export function usePlanDraft(
     () => createPlanEvaluator(inputs, economy).evaluate([]).ceiling,
     [inputs, economy]
   )
-  const { state: recommendations, job } = useRecommendations(
-    source,
-    economy,
-    syncedCeiling
-  )
+  const recommendations = useRecommendations(source, economy, syncedCeiling)
   const targets = useMemo(() => stepTargets(inputs, economy), [inputs, economy])
   const upgradedCeiling =
     "upgradedCeiling" in recommendations
@@ -228,7 +216,7 @@ export function usePlanDraft(
         : [],
     [recommendations]
   )
-  const ticked = userTicks?.job === job ? userTicks.set : null
+  const keys = useMemo(() => list.map(recommendationKey), [list])
   // Until the user ticks something, the target's prefix is ticked.
   const defaultCount = recommendationsFor(
     list,
@@ -236,8 +224,13 @@ export function usePlanDraft(
     syncedCeiling ?? 0
   )
   const tickedSet = useMemo(
-    () => ticked ?? new Set(Array.from({ length: defaultCount }, (_, i) => i)),
-    [ticked, defaultCount]
+    () =>
+      userTicks
+        ? new Set(
+            keys.flatMap((key, index) => (userTicks.has(key) ? [index] : []))
+          )
+        : new Set(Array.from({ length: defaultCount }, (_, i) => i)),
+    [userTicks, keys, defaultCount]
   )
   const tickedRecommendations = useMemo(
     () => list.filter((_, index) => tickedSet.has(index)),
@@ -259,8 +252,11 @@ export function usePlanDraft(
     [inputs, evaluation, economy, teamName]
   )
   const chains = useMemo(
-    () => goalChains(list, tickedSet, inputs.roster),
-    [list, tickedSet, inputs.roster]
+    () =>
+      goalChains(list, tickedSet, inputs.roster, (unitId, step) =>
+        stepInGoals(step, source.goalTargets.get(unitId))
+      ),
+    [list, tickedSet, inputs.roster, source.goalTargets]
   )
 
   const markDirty = useCallback(() => setDirty(true), [])
@@ -288,7 +284,8 @@ export function usePlanDraft(
       markDirty()
     },
     toggle: (index: number) => {
-      setTicked({ job, set: toggleRecommendation(list, tickedSet, index) })
+      const next = toggleRecommendation(list, tickedSet, index)
+      setTicked(new Set([...next].map((entry) => keys[entry]!)))
       markDirty()
     },
     adjustTeams: (change: (current: TeamAdjustments) => TeamAdjustments) => {

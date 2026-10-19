@@ -5,7 +5,7 @@ import {
   type LegendaryEventPlan,
 } from "@/entities/legendary-event"
 
-import { laterRunDepths, planWrites } from "./plan-create"
+import { planWrites } from "./plan-create"
 import type { UnitGoalChain } from "./plan-draft"
 import type { DraftTeam } from "./plan-teams"
 import { EMPTY_PLAN } from "./plan.fixtures"
@@ -114,14 +114,5 @@ describe("planWrites", () => {
       { run: 3, values: { ...EMPTY_RUN_INPUT_VALUES, regularMissions: 5 } },
     ])
     expect(writes.showPaidOptions).toBe(true)
-  })
-})
-
-describe("laterRunDepths", () => {
-  it("stores a later run's depth only when it differs from the first run's", () => {
-    expect(laterRunDepths(draftTeam({}), [2, 3])).toEqual([])
-    expect(
-      laterRunDepths(draftTeam({ depthByRun: { 2: 4, 3: 6 } }), [2, 3])
-    ).toEqual([{ run: 3, depth: 6 }])
   })
 })

@@ -25,9 +25,15 @@ export function ReviewStep({
   writes,
   destination,
   create,
+  exploring,
+  locked,
 }: {
   draft: PlanDraft
   writes: PlanWrites
+  /** Recommendations are still being explored: Create waits. */
+  exploring: boolean
+  /** Create has run: the destination is fixed. */
+  locked: boolean
   destination: PlanDestinationState
   create: ReturnType<typeof usePlanCreate>
 }) {
@@ -65,7 +71,7 @@ export function ReviewStep({
         <select
           className="h-10 rounded-md border bg-background px-3 text-sm"
           data-testid="plan-wizard-destination"
-          disabled={destination.loading || create.running}
+          disabled={destination.loading || locked}
           id={selectId}
           onChange={(event) => destination.select(event.target.value)}
           value={destination.selected}
@@ -86,7 +92,7 @@ export function ReviewStep({
             </Label>
             <Input
               data-testid="plan-wizard-project-name"
-              disabled={create.running}
+              disabled={locked}
               id={nameId}
               onChange={(event) => destination.rename(event.target.value)}
               value={destination.newName}
@@ -160,6 +166,16 @@ export function ReviewStep({
                 step: t(`outlook.steps.${chosenTarget.step}`),
                 points: number.format(chosenTarget.points - ceiling),
               })}
+        </p>
+      ) : null}
+
+      {exploring ? (
+        <p
+          className="text-sm text-muted-foreground"
+          data-testid="plan-wizard-review-exploring"
+          role="status"
+        >
+          {t("planWizard.upgrades.running")}
         </p>
       ) : null}
 

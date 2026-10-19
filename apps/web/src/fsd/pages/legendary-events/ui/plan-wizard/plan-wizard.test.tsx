@@ -20,8 +20,11 @@ vi.mock("./use-upgrade-farming-days", () => ({
 }))
 
 const run = vi.fn()
+const createState: { items: { key: string; status: string }[] } = {
+  items: [],
+}
 vi.mock("./use-plan-create", () => ({
-  usePlanCreate: () => ({ items: [], running: false, run }),
+  usePlanCreate: () => ({ items: createState.items, running: false, run }),
 }))
 
 let tourSteps: unknown
@@ -63,6 +66,7 @@ beforeAll(async () => {
 
 beforeEach(() => {
   run.mockReset()
+  createState.items = []
   capture.mockReset()
   run.mockResolvedValue({ ok: true, projectId: "project-1" })
 })
@@ -132,6 +136,10 @@ describe("PlanWizard", () => {
       "votanUthar · Unlock"
     )
 
+    // Create waits for the recommendations to be explored.
+    await waitFor(() =>
+      expect(screen.getByTestId("plan-wizard-create")).toBeEnabled()
+    )
     await userEvent.click(screen.getByTestId("plan-wizard-create"))
     expect(run).toHaveBeenCalledTimes(1)
     const call = run.mock.calls[0]![0]
@@ -160,5 +168,28 @@ describe("PlanWizard", () => {
     await userEvent.click(within(options[1]!).getByRole("radio"))
     void router.navigate(`/legendary-events/${utharEvent.id}`)
     expect(await screen.findByText("Leave the plan?")).toBeInTheDocument()
+  })
+
+  it("retries the first attempt's items, not a re-derived draft", async () => {
+    renderWizard()
+    for (let step = 0; step < 4; step += 1) await next()
+    await waitFor(() =>
+      expect(screen.getByTestId("plan-wizard-create")).toBeEnabled()
+    )
+    run.mockImplementationOnce(async () => {
+      createState.items = [{ key: "project", status: "failed" }]
+      return { ok: false, projectId: null }
+    })
+    await userEvent.click(screen.getByTestId("plan-wizard-create"))
+    expect(screen.getByTestId("plan-wizard-create")).toHaveTextContent(
+      "Retry failed"
+    )
+    expect(screen.getByTestId("plan-wizard-destination")).toBeDisabled()
+    await userEvent.click(screen.getByTestId("plan-wizard-create"))
+    expect(run).toHaveBeenCalledTimes(2)
+    const [first, second] = run.mock.calls.map((call) => call[0])
+    expect(second.writes).toBe(first.writes)
+    expect(second.destination).toBe(first.destination)
+    expect(second.onlyFailed).toBe(true)
   })
 })

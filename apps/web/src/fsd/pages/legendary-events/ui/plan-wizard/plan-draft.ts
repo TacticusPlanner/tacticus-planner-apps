@@ -115,11 +115,28 @@ export function chainRequest(
   }
 }
 
-/** The ticked recommendations grouped by unit, in first-recommended order. */
+const stepTarget = (step: UpgradeStep) =>
+  step.kind === "rank"
+    ? step.rank
+    : step.kind === "ascension"
+      ? step.progression
+      : "unlock"
+
+/** A recommendation's identity across explorations: its unit and the targets of its steps (a
+ *  unit's later recommendation continues from its earlier one, so this is unique). */
+export const recommendationKey = (recommendation: UpgradeRecommendation) =>
+  `${recommendation.unitId}:${recommendation.steps.map(stepTarget).join(">")}`
+
+/**
+ * The ticked recommendations grouped by unit, in first-recommended order. Leading steps an Active
+ * goal already covers are dropped and the chain starts from the state they reach, so no created
+ * goal overlaps an existing one; a chain with nothing left is already planned.
+ */
 export function goalChains(
   recommendations: readonly UpgradeRecommendation[],
   ticked: ReadonlySet<number>,
-  roster: readonly LegendaryEventRosterUnit[]
+  roster: readonly LegendaryEventRosterUnit[],
+  isPlanned: (unitId: string, step: UpgradeStep) => boolean
 ): UnitGoalChain[] {
   const byUnit = new Map<string, UpgradeRecommendation[]>()
   recommendations.forEach((recommendation, index) => {
@@ -130,14 +147,18 @@ export function goalChains(
     ])
   })
   return [...byUnit].map(([unitId, entries]) => {
-    const from = roster.find((unit) => unit.unitId === unitId)
-    const steps = entries.flatMap((entry) => entry.steps)
+    const all = entries.flatMap((entry) => entry.steps)
+    const planned = all.findIndex((step) => !isPlanned(unitId, step))
+    const done = planned === -1 ? all.length : planned
+    const from =
+      all[done - 1]?.unit ?? roster.find((unit) => unit.unitId === unitId)
+    const steps = all.slice(done)
     return {
       unitId,
       from,
       steps,
       request: chainRequest(unitId, from, steps),
-      alreadyPlanned: entries.every((entry) => entry.alreadyPlanned),
+      alreadyPlanned: steps.length === 0,
     }
   })
 }

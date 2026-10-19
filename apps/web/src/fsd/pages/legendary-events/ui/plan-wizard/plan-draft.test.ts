@@ -8,6 +8,7 @@ import type {
 import type { StepTarget } from "./plan-ceiling"
 import {
   goalChains,
+  recommendationKey,
   recommendationsFor,
   targetOptions,
   toggleRecommendation,
@@ -52,6 +53,8 @@ const points = (value: number): StepTarget => ({
   points: value,
 })
 
+const never = () => false
+
 const LIST = [
   recommendation("calgar", 1100),
   recommendation("dante", 1300),
@@ -87,7 +90,7 @@ describe("toggleRecommendation", () => {
 
 describe("goalChains", () => {
   it("groups the ticked recommendations by unit with the end rank", () => {
-    const chains = goalChains(LIST, new Set([0, 1, 2]), [unit("calgar")])
+    const chains = goalChains(LIST, new Set([0, 1, 2]), [unit("calgar")], never)
     expect(chains.map((chain) => chain.unitId)).toEqual(["calgar", "dante"])
     expect(chains[0]!.steps).toHaveLength(2)
     expect(chains[0]!.request).toMatchObject({
@@ -98,13 +101,32 @@ describe("goalChains", () => {
     expect(chains[1]!.from).toBeUndefined()
   })
 
-  it("marks a chain planned only when every step is already in goals", () => {
-    const list = [
-      recommendation("calgar", 1100, undefined, true),
-      recommendation("calgar", 1500, [rankStep("calgar", "Gold3")], false),
-    ]
-    expect(goalChains(list, new Set([0]), [])[0]!.alreadyPlanned).toBe(true)
-    expect(goalChains(list, new Set([0, 1]), [])[0]!.alreadyPlanned).toBe(false)
+  it("starts a chain after the steps an Active goal already covers", () => {
+    const covered = (_unitId: string, step: UpgradeStep) =>
+      step.kind === "rank" && step.rank === "Gold2"
+    const [calgar] = goalChains(
+      LIST,
+      new Set([0, 2]),
+      [unit("calgar")],
+      covered
+    )
+    expect(calgar!.steps).toHaveLength(1)
+    expect(calgar!.from?.rank).toBe("Gold2")
+    expect(calgar!.request).toMatchObject({ rankEnd: "Gold3" })
+    expect(calgar!.alreadyPlanned).toBe(false)
+    expect(goalChains(LIST, new Set([0]), [], covered)[0]!.alreadyPlanned).toBe(
+      true
+    )
+  })
+})
+
+describe("recommendationKey", () => {
+  it("names a recommendation by its unit and step targets", () => {
+    expect(LIST.map(recommendationKey)).toEqual([
+      "calgar:Gold2",
+      "dante:Gold2",
+      "calgar:Gold3",
+    ])
   })
 })
 

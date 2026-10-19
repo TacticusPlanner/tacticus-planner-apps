@@ -83,18 +83,3 @@ export function planWrites({
         : economy.showPaidOptions,
   }
 }
-
-/** The depths a new team stores beyond the first plan run: only the runs where the projected
- *  roster changes its depth (the first run reads the live estimate). */
-export function laterRunDepths(
-  team: DraftTeam,
-  runs: readonly LegendaryEventRun[]
-): { run: LegendaryEventRun; depth: number }[] {
-  const [first, ...later] = runs
-  if (first === undefined) return []
-  const base = team.depthByRun[first] ?? 0
-  return later.flatMap((run) => {
-    const depth = team.depthByRun[run]
-    return depth === undefined || depth === base ? [] : [{ run, depth }]
-  })
-}

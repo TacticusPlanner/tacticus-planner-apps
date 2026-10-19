@@ -6,13 +6,21 @@ import { ArrowLeft } from "lucide-react"
 import { Button } from "@workspace/ui/components/button"
 import { cn } from "@workspace/ui/lib/utils"
 
-import type { AscensionStep } from "@/entities/legendary-event"
+import type {
+  AscensionStep,
+  LegendaryEventRun,
+} from "@/entities/legendary-event"
 import { useAnalyticsActions } from "@/shared/analytics"
 import { useTourPageSteps } from "@/shared/tour"
 import { UnsavedChangesGuard } from "@/shared/ui"
 
 import { PLAN_WIZARD_STEPS, type PlanWizardStep } from "./plan-draft"
-import { planWrites } from "./plan-create"
+import {
+  planWrites,
+  type PlanDestination,
+  type PlanWrites,
+} from "./plan-create"
+import type { DraftTeam } from "./plan-teams"
 import { usePlanWizardTutorial } from "./plan-wizard.tutorial"
 import { ReviewStep } from "./review-step"
 import { RunsStep } from "./runs-step"
@@ -23,6 +31,13 @@ import { usePlanCreate } from "./use-plan-create"
 import { usePlanDestination } from "./use-plan-destination"
 import { usePlanDraft } from "./use-plan-draft"
 import type { PlanSource } from "./use-plan-source"
+
+interface CreateSnapshot {
+  writes: PlanWrites
+  destination: PlanDestination
+  runs: readonly LegendaryEventRun[]
+  teamName: (team: DraftTeam) => string
+}
 
 export type PlanWizardEntry = "overview" | "suggestions" | "link"
 
@@ -50,7 +65,12 @@ export function PlanWizard({
   const draft = usePlanDraft(source, initialTarget)
   const create = usePlanCreate(source.event.id)
   const destination = usePlanDestination(source, draft.target)
-  const [step, setStep] = useState<PlanWizardStep>("target")
+  const [step, setStepState] = useState<PlanWizardStep>("target")
+  const [visited, setVisited] = useState(0)
+  const setStep = (next: PlanWizardStep) => {
+    setStepState(next)
+    setVisited((current) => Math.max(current, PLAN_WIZARD_STEPS.indexOf(next)))
+  }
   const [created, setCreated] = useState(false)
   useTourPageSteps(usePlanWizardTutorial())
   const { captureEvent } = useAnalyticsActions()
@@ -91,32 +111,48 @@ export function PlanWizard({
     if (created) void navigate(eventPath)
   }, [created, navigate, eventPath])
 
-  const runCreate = async (onlyFailed: boolean) => {
-    if (!destination.value) return
+  // The first Create freezes what is sent: creating goals and teams refreshes the reads the draft is
+  // built from, so Retry failed resends exactly the first attempt's items.
+  const [snapshot, setSnapshot] = useState<CreateSnapshot | null>(null)
+  const runCreate = async () => {
+    let frozen = snapshot
+    if (!frozen) {
+      if (!destination.value) return
+      const names = new Map(
+        writes.lanes.flatMap((lane) =>
+          lane.create.map((team) => [
+            team.key,
+            draft.teamName(team.key).slice(0, TEAM_NAME_MAX_LENGTH),
+          ])
+        )
+      )
+      frozen = {
+        writes,
+        destination: destination.value,
+        runs: draft.runs,
+        teamName: (team) => names.get(team.key) ?? "",
+      }
+      setSnapshot(frozen)
+    }
+    const { writes: sent, ...rest } = frozen
     const result = await create.run({
-      writes,
-      destination: destination.value,
+      ...rest,
+      writes: sent,
       targetEventId: source.event.id,
-      runs: draft.runs,
-      teamName: (team) =>
-        draft.teamName(team.key).slice(0, TEAM_NAME_MAX_LENGTH),
-      onlyFailed,
+      onlyFailed: create.items.length > 0,
     })
-    const teams = writes.lanes.reduce(
-      (sum, lane) => sum + lane.create.length,
-      0
-    )
+    const teams = sent.lanes.reduce((sum, lane) => sum + lane.create.length, 0)
     captureEvent({
       type: "legendary_event_plan_created",
       eventId: source.event.id,
-      goals: writes.goals.length,
+      goals: sent.goals.length,
       teams,
       ok: result.ok,
     })
     if (!result.ok) return
     const projectId = result.projectId
     toast.success(
-      t("planWizard.toast.created", { goals: writes.goals.length, teams }),
+      t("planWizard.toast.created", { goals: sent.goals.length, teams }),
       projectId
         ? {
             action: {
@@ -130,6 +166,10 @@ export function PlanWizard({
   }
 
   const failed = create.items.some((item) => item.status === "failed")
+  // Once Create has run, the draft is frozen: only Retry failed is left.
+  const locked = create.running || snapshot !== null
+  // Create waits for the exploration, or it would file a partial list.
+  const exploring = draft.recommendations.status === "running"
   const last = index === PLAN_WIZARD_STEPS.length - 1
   const tooAmbitious =
     draft.options.options.find((option) => option.target.step === draft.target)
@@ -185,10 +225,10 @@ export function PlanWizard({
                     entry === step
                       ? "bg-muted font-medium"
                       : "text-muted-foreground hover:bg-muted/60",
-                    position > index && "opacity-60"
+                    position > visited && "opacity-60"
                   )}
                   data-testid={`plan-wizard-step-${entry}`}
-                  disabled={create.running || position > index}
+                  disabled={locked || position > visited}
                   onClick={() => setStep(entry)}
                   type="button"
                 >
@@ -220,6 +260,7 @@ export function PlanWizard({
               </span>
               <Button
                 className="h-auto px-0"
+                disabled={locked}
                 onClick={() => setStep("target")}
                 variant="link"
               >
@@ -238,7 +279,9 @@ export function PlanWizard({
               create={create}
               destination={destination}
               draft={draft}
-              writes={writes}
+              exploring={exploring}
+              locked={locked}
+              writes={snapshot?.writes ?? writes}
             />
           ) : null}
         </div>
@@ -248,7 +291,7 @@ export function PlanWizard({
         data-testid="plan-wizard-footer"
       >
         <Button
-          disabled={index === 0 || create.running}
+          disabled={index === 0 || locked}
           onClick={() => setStep(PLAN_WIZARD_STEPS[index - 1]!)}
           variant="outline"
         >
@@ -257,8 +300,13 @@ export function PlanWizard({
         {last ? (
           <Button
             data-testid="plan-wizard-create"
-            disabled={create.running || !destination.value || created}
-            onClick={() => void runCreate(failed)}
+            disabled={
+              create.running ||
+              exploring ||
+              (!snapshot && !destination.value) ||
+              created
+            }
+            onClick={() => void runCreate()}
           >
             {create.running
               ? t("planWizard.creating")

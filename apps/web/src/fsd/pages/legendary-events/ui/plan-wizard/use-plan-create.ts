@@ -7,7 +7,6 @@ import {
   deleteLegendaryEventTeam,
   updateLegendaryEventPlan,
   updateLegendaryEventRunInputs,
-  updateLegendaryEventTeam,
   usePlanWriteQueue,
   type LegendaryEventPlan,
   type LegendaryEventRun,
@@ -16,11 +15,7 @@ import { createProject, projectQueries } from "@/entities/project"
 import { ApiError } from "@/shared/api"
 
 import { upgradeChainGoalSpecs } from "./farming-days"
-import {
-  laterRunDepths,
-  type PlanDestination,
-  type PlanWrites,
-} from "./plan-create"
+import { type PlanDestination, type PlanWrites } from "./plan-create"
 import { memberKey, type DraftTeam } from "./plan-teams"
 
 export type CreateItemStatus = "pending" | "done" | "failed"
@@ -63,32 +58,19 @@ async function writeLane(
     ) {
       continue
     }
-    const before = new Set(plan.teams.map((entry) => entry.id))
-    const fields = {
+    // The first plan run reads the live estimate; later runs are left unrecorded too, so a projected
+    // depth that assumed upgrades never outlives goals that slipped (design D5).
+    plan = await createLegendaryEventTeam(eventId, {
       name: teamName(team),
       memberUnitIds: team.memberUnitIds,
       reserveUnitId: team.reserveUnitId,
       objectiveIndexes: [...team.objectiveIndexes].sort((a, b) => a - b),
-    }
-    plan = await createLegendaryEventTeam(eventId, {
-      ...fields,
       expectedRevision: plan.revision,
       laneId: lane.laneId,
       run: runs[0] ?? 1,
       expectedBattleClears: null,
       expectedBattleClearsSource: null,
     })
-    const created = plan.teams.find((entry) => !before.has(entry.id))
-    if (!created) continue
-    for (const { run, depth } of laterRunDepths(team, runs)) {
-      plan = await updateLegendaryEventTeam(eventId, created.id, {
-        ...fields,
-        expectedRevision: plan.revision,
-        run,
-        expectedBattleClears: depth,
-        expectedBattleClearsSource: "estimate",
-      })
-    }
   }
   return plan
 }
