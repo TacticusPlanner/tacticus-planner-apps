@@ -111,6 +111,36 @@ describe("clear estimate (spec worked examples)", () => {
     ).toBeNull()
   })
 
+  it("uses an equipped relic's multiplier in place of the base one", () => {
+    const relicConfig = {
+      ...WORKED_CONFIG,
+      hordeRelicMultipliers: new Map([
+        ["ultraTigurius", new Map([["I_Crit_C001", 1.5]])],
+      ]),
+    }
+    const equipped = new Map([
+      [
+        "ultraTigurius",
+        {
+          ...rosterUnit("ultraTigurius"),
+          equippedItems: [
+            { slotId: "slot1", equipmentId: "I_Crit_C001", level: 3 },
+          ],
+        } as ReturnType<typeof rosterUnit>,
+      ],
+    ])
+    expect(unitEffectivePower("ultraTigurius", equipped, relicConfig)).toBe(
+      16809 * 1.5
+    )
+    // Without the item: the base 1.2.
+    expect(
+      unitEffectivePower("ultraTigurius", roster, relicConfig)
+    ).toBeCloseTo(
+      unitPower("ultraTigurius", roster, relicConfig.unitPower)! * 1.2,
+      6
+    )
+  })
+
   it("counts equipped items: Tigurius with I_Crit_C001 at level 3 is 16,809, still 6 with 11% above", () => {
     const equipped = new Map([
       [

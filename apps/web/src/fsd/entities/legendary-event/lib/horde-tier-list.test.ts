@@ -7,6 +7,7 @@ import { clearEstimateConfig, unitHordeMultiplier } from "./clear-estimate"
 import {
   buildHordeTierList,
   effectiveHordeMultiplier,
+  hordeRelics,
   type HordeTierListFilters,
 } from "./horde-tier-list"
 
@@ -105,6 +106,7 @@ describe("buildHordeTierList", () => {
         multiplier: 1.25,
         overridden: false,
         owned: undefined,
+        relics: [],
       },
     ])
   })
@@ -172,6 +174,80 @@ describe("effectiveHordeMultiplier", () => {
   })
 })
 
+describe("relic ratings (spec worked example)", () => {
+  const config = clearEstimateConfig(hordeModeTiers, null)
+  const withRelic = {
+    equippedItems: [
+      {
+        slotId: "slot1",
+        equipmentId: "R_Crit_Dw02AdvancedBurstCannon",
+        level: 1,
+      },
+    ],
+  }
+
+  it("rates Re'vas 1.98 with her relic equipped and 1.92 without", () => {
+    expect(unitHordeMultiplier(config, "tauCrisis", withRelic)).toBe(1.98)
+    expect(20_000 * unitHordeMultiplier(config, "tauCrisis", withRelic)).toBe(
+      39_600
+    )
+    expect(
+      unitHordeMultiplier(config, "tauCrisis", { equippedItems: [] })
+    ).toBe(1.92)
+    expect(unitHordeMultiplier(config, "tauCrisis")).toBe(1.92)
+  })
+
+  it("ignores a relic listed for another character", () => {
+    expect(unitHordeMultiplier(config, "ultraCalgar", withRelic)).toBe(
+      unitHordeMultiplier(config, "ultraCalgar")
+    )
+  })
+
+  it("takes the highest of several equipped relic ratings", () => {
+    const several = clearEstimateConfig(
+      {
+        tiers: [{ tier: "S", multiplier: 1.5 }],
+        characters: [
+          {
+            unitId: "ultraCalgar",
+            tier: "S",
+            relics: [
+              { equipmentId: "R_A", multiplier: 1.6 },
+              { equipmentId: "R_B", multiplier: 1.8 },
+            ],
+          },
+        ],
+      },
+      null
+    )
+    expect(
+      unitHordeMultiplier(several, "ultraCalgar", {
+        equippedItems: [{ equipmentId: "R_A" }, { equipmentId: "R_B" }],
+      })
+    ).toBe(1.8)
+  })
+
+  it("puts each character's relic ratings on its tile", () => {
+    const list = buildHordeTierList(
+      hordeModeTiers,
+      legendaryEventCharacters,
+      undefined,
+      NO_FILTERS,
+      nameOf
+    )!
+    const tile = list.rows
+      .flatMap((row) => row.units)
+      .find((unit) => unit.unitId === "tauCrisis")
+    expect(tile).toMatchObject({
+      multiplier: 1.92,
+      relics: [
+        { equipmentId: "R_Crit_Dw02AdvancedBurstCannon", multiplier: 1.98 },
+      ],
+    })
+    expect(hordeRelics(hordeModeTiers, "ultraCalgar")).toEqual([])
+  })
+})
+
 describe("Tier List and estimates on malformed data", () => {
   const malformed = {
     tiers: [
@@ -209,6 +285,7 @@ describe("Tier List and estimates on malformed data", () => {
         multiplier: 3,
         overridden: true,
         owned: undefined,
+        relics: [],
       }
     )
     expect(effectiveHordeMultiplier(malformed, "ultraCalgar")).toBe(3)

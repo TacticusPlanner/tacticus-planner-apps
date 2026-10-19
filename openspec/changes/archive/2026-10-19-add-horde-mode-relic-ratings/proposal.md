@@ -8,9 +8,9 @@ The `horde-mode-tiers` dataset gains relic-conditional multipliers (companion AP
 - A unit's horde-mode multiplier becomes roster-aware: its relic multiplier while that relic is in its synced `equippedItems`, else its base multiplier. Clear estimates, goals preview, team suggestions and upgrade impact all read it through the one shared lookup.
 - Goals preview keeps synced items, so a relic counts there exactly as it does in clear estimates.
 - Tier List: a tile with relic ratings gets a relic mark; tile details list each relic (localized name), its multiplier, and whether the synced roster has it equipped. The tile's main multiplier stays the base one, so the ranking does not depend on the viewer's roster.
-- New strings `tierList.details.relic`, `tierList.details.relicEquipped`, `tierList.details.relicNotEquipped`, `tierList.relicMark` in en, de, es and fr.
+- New strings `tierList.details.relic`, `tierList.details.relicEquipped`, `tierList.details.relicNotEquipped`, `tierList.relicMark` in en, de, es and fr. The relic mark is added to the tile's accessible name.
 
-Depends on **`revise-horde-mode-tier-list`** (applies first).
+Depends on **`revise-horde-mode-tier-list`** (archived). Built in the same PR as **`add-horde-mode-strategy-notes`** (Severyn, 2026-10-19), after it; the relic advice text stays in that change's Strategy section.
 
 ## Capabilities
 

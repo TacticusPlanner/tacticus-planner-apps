@@ -1,6 +1,6 @@
 // The served `horde-mode-tiers` record, copied from the real catalog source (tacticus-planner-api
 // GameCatalog Data/horde-mode-tiers.json): tiers S, A, B, C, D and the 47 tiered characters, with
-// the seeded synergies.
+// the seeded synergies and relic ratings.
 export const hordeModeTiers = {
   id: "horde-mode-tiers",
   tiers: [
@@ -53,12 +53,16 @@ export const hordeModeTiers = {
       tier: "S",
       multiplier: 1.92,
       synergies: ["necroSpyder"],
+      relics: [
+        { equipmentId: "R_Crit_Dw02AdvancedBurstCannon", multiplier: 1.98 },
+      ],
     },
     {
       unitId: "deathBlightlord",
       tier: "S",
       multiplier: 1.9,
       synergies: ["deathRotbone"],
+      relics: [{ equipmentId: "R_Block_DaemonfleshPlate", multiplier: 1.96 }],
     },
     {
       unitId: "tyranTyrantGuard",
@@ -75,6 +79,7 @@ export const hordeModeTiers = {
       unitId: "orksRuntherd",
       tier: "S",
       multiplier: 1.83,
+      relics: [{ equipmentId: "R_Defensive_SupaCyborkBody", multiplier: 1.92 }],
     },
     {
       unitId: "templChampion",
@@ -91,6 +96,7 @@ export const hordeModeTiers = {
       tier: "A",
       multiplier: 1.76,
       synergies: ["deathRotbone", "worldTerminator", "blackAbaddon"],
+      relics: [{ equipmentId: "R_Block_DaemonfleshPlate", multiplier: 1.82 }],
     },
     {
       unitId: "tauMarksman",
@@ -123,6 +129,9 @@ export const hordeModeTiers = {
       unitId: "bloodSanguinary",
       tier: "A",
       multiplier: 1.69,
+      relics: [
+        { equipmentId: "R_Booster_Crit_ChaliceOfBaal", multiplier: 1.8 },
+      ],
     },
     {
       unitId: "templAggressor",
@@ -138,6 +147,9 @@ export const hordeModeTiers = {
       unitId: "necroOverlord",
       tier: "A",
       multiplier: 1.66,
+      relics: [
+        { equipmentId: "R_Booster_Crit_PhasalSubjugator", multiplier: 1.8 },
+      ],
     },
     {
       unitId: "ultraTitus",
@@ -153,6 +165,7 @@ export const hordeModeTiers = {
       unitId: "deathTyphus",
       tier: "A",
       multiplier: 1.63,
+      relics: [{ equipmentId: "R_Crit_Lakrimae", multiplier: 1.8 }],
     },
     {
       unitId: "thousInfernalMaster",
@@ -219,6 +232,7 @@ export const hordeModeTiers = {
       tier: "B",
       multiplier: 1.4,
       synergies: ["blackTerminator", "worldTerminator"],
+      relics: [{ equipmentId: "R_Crit_TalonOfHorus", multiplier: 1.6 }],
     },
     {
       unitId: "eldarFarseer",

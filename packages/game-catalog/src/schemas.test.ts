@@ -481,6 +481,41 @@ describe("catalog schemas", () => {
     ).toBe(false)
   })
 
+  it("parses a horde-mode character's relic ratings and rejects a non-positive one", () => {
+    const record = {
+      id: "horde-mode-tiers",
+      tiers: [{ tier: "S", multiplier: 1.9 }],
+      characters: [
+        {
+          unitId: "tauCrisis",
+          tier: "S",
+          relics: [
+            { equipmentId: "R_Crit_Dw02AdvancedBurstCannon", multiplier: 1.98 },
+          ],
+        },
+      ],
+    }
+    const schema = datasetPayloadSchemas["horde-mode-tiers"]
+
+    expect(schema.parse([record])[0]?.characters[0]?.relics).toEqual([
+      { equipmentId: "R_Crit_Dw02AdvancedBurstCannon", multiplier: 1.98 },
+    ])
+    expect(
+      schema.safeParse([
+        {
+          ...record,
+          characters: [
+            {
+              unitId: "tauCrisis",
+              tier: "S",
+              relics: [{ equipmentId: "R_Crit_Lakrimae", multiplier: 0 }],
+            },
+          ],
+        },
+      ]).success
+    ).toBe(false)
+  })
+
   it("keeps each event's own reward ladder", () => {
     const result = datasetPayloadSchemas.lres.parse([
       baseLre,

@@ -776,6 +776,7 @@
     "filters": "Filters",
     "filtersDescription": "Show only owned characters or one alliance.",
     "override": "Own multiplier",
+    "relicMark": "Relic rating",
     "tileLabel": "{{name}}, {{multiplier}}",
     "tileLabelOverride": "{{name}}, {{multiplier}} (own multiplier)",
     "untiered": "Untiered",
@@ -797,6 +798,9 @@
       "owned": "Owned",
       "notUnlocked": "Not unlocked",
       "rosterUnknown": "Sync your roster",
+      "relic": "{{name}}",
+      "relicEquipped": "Equipped",
+      "relicNotEquipped": "Not equipped",
       "openInLibrary": "Open in Library"
     },
     "strategy": {

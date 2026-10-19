@@ -776,6 +776,7 @@
     "filters": "Filtres",
     "filtersDescription": "Afficher uniquement vos personnages ou une alliance.",
     "override": "Multiplicateur propre",
+    "relicMark": "Note avec relique",
     "tileLabel": "{{name}}, {{multiplier}}",
     "tileLabelOverride": "{{name}}, {{multiplier}} (multiplicateur propre)",
     "untiered": "Non classés",
@@ -797,6 +798,9 @@
       "owned": "Possédé",
       "notUnlocked": "Non débloqué",
       "rosterUnknown": "Synchronisez votre effectif",
+      "relic": "{{name}}",
+      "relicEquipped": "Équipée",
+      "relicNotEquipped": "Non équipée",
       "openInLibrary": "Ouvrir dans la Bibliothèque"
     },
     "strategy": {

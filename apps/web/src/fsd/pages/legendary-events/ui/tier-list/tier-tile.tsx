@@ -1,5 +1,6 @@
 import type { ComponentProps } from "react"
 import { useTranslation } from "react-i18next"
+import { Gem } from "lucide-react"
 import { characterIcon } from "@workspace/game-catalog"
 import type { UnitId } from "@workspace/game-domain"
 import {
@@ -9,18 +10,23 @@ import {
 } from "@workspace/ui/components/popover"
 import { cn } from "@workspace/ui/lib/utils"
 
-import type { LegendaryEventRosterUnit } from "@/entities/legendary-event"
+import type {
+  HordeRelicRating,
+  LegendaryEventRosterUnit,
+} from "@/entities/legendary-event"
 import { EntityIcon } from "@/shared/ui"
 
 import { TierTileDetailsBody } from "./tier-tile-details"
 import { formatMultiplier, tierTileDetails } from "./tier-list.view-model"
 
-/** One tile as the page renders it; untiered tiles carry the 1.0 multiplier, never an override. */
+/** One tile as the page renders it; untiered tiles carry the 1.0 multiplier, never an override.
+ *  `relics` (its relic ratings) adds the relic mark; the multiplier stays the base one. */
 export interface TierTileView {
   unitId: string
   multiplier: number
   overridden: boolean
   owned: boolean | undefined
+  relics?: readonly HordeRelicRating[]
 }
 
 /** The tile's face: portrait, name and effective multiplier (with the override mark). Desktop lays
@@ -39,6 +45,7 @@ function TierTileButton({
   isMobile: boolean
 }) {
   const { t, i18n } = useTranslation("legendaryEvents")
+  const hasRelics = (tile.relics?.length ?? 0) > 0
   const multiplier = (
     <span
       className={cn(
@@ -55,17 +62,24 @@ function TierTileButton({
           <span className="sr-only">{t("tierList.override")}</span>
         </span>
       ) : null}
+      {hasRelics ? (
+        <span data-testid="tier-tile-relic" title={t("tierList.relicMark")}>
+          <Gem aria-hidden="true" className="size-3" />
+          <span className="sr-only">{t("tierList.relicMark")}</span>
+        </span>
+      ) : null}
     </span>
+  )
+  const label = t(
+    tile.overridden ? "tierList.tileLabelOverride" : "tierList.tileLabel",
+    {
+      name,
+      multiplier: formatMultiplier(tile.multiplier, i18n.language),
+    }
   )
   return (
     <button
-      aria-label={t(
-        tile.overridden ? "tierList.tileLabelOverride" : "tierList.tileLabel",
-        {
-          name,
-          multiplier: formatMultiplier(tile.multiplier, i18n.language),
-        }
-      )}
+      aria-label={hasRelics ? `${label}, ${t("tierList.relicMark")}` : label}
       className={cn(
         "rounded-lg border bg-card text-left transition-colors hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/30 focus-visible:outline-none",
         isMobile
@@ -75,6 +89,7 @@ function TierTileButton({
       )}
       data-muted={muted}
       data-overridden={tile.overridden}
+      data-relic={hasRelics}
       data-owned={tile.owned === undefined ? "unknown" : tile.owned}
       data-testid="tier-list-tile"
       data-unit-id={tile.unitId}

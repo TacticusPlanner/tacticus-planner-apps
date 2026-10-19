@@ -5,6 +5,7 @@ import {
 } from "@workspace/game-domain"
 
 import type {
+  HordeRelicRating,
   HordeTierAlliance,
   HordeTierList,
   LegendaryEventRosterUnit,
@@ -144,10 +145,24 @@ export interface TierTileDetails {
   /** The tier's multiplier, only when the character's own one overrides it. */
   tierMultiplier: number | null
   ownership: TierTileOwnership
+  /** Each relic rating; `equipped` is undefined when the roster is unknown, false when the
+   *  character is not owned or lacks the relic. */
+  relics: readonly TierTileRelic[]
+}
+
+interface TierTileRelic {
+  equipmentId: string
+  multiplier: number
+  equipped: boolean | undefined
 }
 
 export function tierTileDetails(
-  tile: { unitId: string; multiplier: number; overridden: boolean },
+  tile: {
+    unitId: string
+    multiplier: number
+    overridden: boolean
+    relics?: readonly HordeRelicRating[]
+  },
   row: { tier: string; multiplier: number } | null,
   roster: readonly LegendaryEventRosterUnit[] | undefined
 ): TierTileDetails {
@@ -168,5 +183,15 @@ export function tierTileDetails(
     multiplier: tile.multiplier,
     tierMultiplier: row && tile.overridden ? row.multiplier : null,
     ownership,
+    relics: (tile.relics ?? []).map((relic) => ({
+      ...relic,
+      equipped: roster
+        ? Boolean(
+            owned?.equippedItems?.some(
+              (item) => item.equipmentId === relic.equipmentId
+            )
+          )
+        : undefined,
+    })),
   }
 }

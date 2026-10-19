@@ -11,6 +11,7 @@ import {
   vi,
 } from "vitest"
 
+import enEquipmentItems from "../../../../../../public/locales/en/equipmentItems.json"
 import { hordeModeTiers } from "@/test/fixtures/horde-mode-tiers"
 import { legendaryEventCharacters } from "@/test/fixtures/legendary-event-characters"
 import { createTestI18n, i18nWrapper } from "@/test/i18n"
@@ -128,7 +129,9 @@ const FORMS = [
 
 describe("TierListPage", () => {
   beforeAll(async () => {
-    i18n = await createTestI18n("en")
+    i18n = await createTestI18n("en", {
+      en: { equipmentItems: enEquipmentItems },
+    })
   })
   beforeEach(() => {
     Object.assign(data, {
@@ -431,6 +434,60 @@ describe("TierListPage", () => {
         within(owned).getByRole("img", { name: "Legendary" })
       ).toBeVisible()
       expect(owned).toHaveTextContent("Diamond I")
+    })
+
+    it("marks a relic-rated tile and lists the relic as equipped in its details", async () => {
+      data.roster = [
+        calgar,
+        {
+          unitId: "tauCrisis",
+          rank: "Diamond1",
+          progressionIndex: "Legendary:RedFiveStars",
+          equippedItems: [
+            {
+              slotId: "relic",
+              equipmentId: "R_Crit_Dw02AdvancedBurstCannon",
+              level: 1,
+            },
+          ],
+        },
+      ]
+      renderPage()
+      await ready()
+
+      const revas = tileOf(row("S"), "Re'vas")
+      expect(
+        within(revas).getByTestId("tier-tile-multiplier")
+      ).toHaveTextContent("1.92×")
+      expect(within(revas).getByTestId("tier-tile-relic")).toBeInTheDocument()
+      expect(revas).toHaveAccessibleName(/Relic rating/)
+      expect(
+        within(tileOf(row("S"), "Kariyan")).queryByTestId("tier-tile-relic")
+      ).toBeNull()
+
+      fireEvent.click(revas)
+      const details = within(await screen.findByTestId("tier-tile-details"))
+      const relic = details.getByTestId("tier-detail-relic")
+      expect(relic.parentElement).toHaveTextContent(
+        "DW-02 Advanced Burst Cannon"
+      )
+      expect(relic).toHaveTextContent("1.98×")
+      expect(
+        within(relic).getByTestId("tier-detail-relic-equipped")
+      ).toHaveTextContent("Equipped")
+    })
+
+    it("lists a relic without an equipped state when the roster is unknown", async () => {
+      data.rosterFail = true
+      renderPage()
+      await ready()
+
+      fireEvent.click(tileOf(row("S"), "Re'vas"))
+      const details = within(await screen.findByTestId("tier-tile-details"))
+      expect(details.getByTestId("tier-detail-relic")).toHaveTextContent(
+        "1.98×"
+      )
+      expect(details.queryByTestId("tier-detail-relic-equipped")).toBeNull()
     })
 
     it("expands a tile's Strategy section with its text, teammates in order and relic advice", async () => {

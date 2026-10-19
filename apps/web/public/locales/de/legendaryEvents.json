@@ -776,6 +776,7 @@
     "filters": "Filter",
     "filtersDescription": "Nur eigene Charaktere oder eine Allianz anzeigen.",
     "override": "Eigener Multiplikator",
+    "relicMark": "Relikt-Wertung",
     "tileLabel": "{{name}}, {{multiplier}}",
     "tileLabelOverride": "{{name}}, {{multiplier}} (eigener Multiplikator)",
     "untiered": "Ohne Tier",
@@ -797,6 +798,9 @@
       "owned": "Besitz",
       "notUnlocked": "Nicht freigeschaltet",
       "rosterUnknown": "Synchronisiere deinen Kader",
+      "relic": "{{name}}",
+      "relicEquipped": "Ausgerüstet",
+      "relicNotEquipped": "Nicht ausgerüstet",
       "openInLibrary": "In der Bibliothek öffnen"
     },
     "strategy": {
