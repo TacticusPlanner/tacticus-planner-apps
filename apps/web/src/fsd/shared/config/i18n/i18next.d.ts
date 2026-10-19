@@ -50,9 +50,8 @@ declare module "i18next" {
       // `i18n.getResource` — see `shared/ability-text` use-ability-text.
       npcAbilityText: Record<string, unknown>
       npcTraitText: Record<string, unknown>
-      // Mythic quests ported from V1 (character id -> quests) and their English task templates.
-      // English-only; read via `i18n.getResource` — see the library character unit page.
-      mythicQuests: Record<string, unknown>
+      // Mythic quest task templates (loca key -> template), ported from V1. English-only; read via
+      // `i18n.getResource` — see the library character unit page.
       mythicQuestTasks: Record<string, string>
       // Raid-boss game-data namespaces (unitSet / ability / trait ids as keys). English-only; other
       // locales fall back to English (see the raid-bosses-library change).

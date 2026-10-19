@@ -179,7 +179,7 @@ function MowUnit({
     secondary: levelOverrides.secondary ?? playerLevels.secondary,
   }
 
-  // The mythic ability (not in the catalog yet, #204) follows the blue stars of the values shown.
+  // The mythic ability follows the blue stars of the values shown.
   const mythicKey = mow.mythicAbility?.name
   const mythicName = mythicKey
     ? t(`abilities:${mythicKey}`, { defaultValue: mythicKey })
@@ -344,7 +344,6 @@ function MowUnit({
             <UnitPowerValue
               label={t("mowUnit.power.label")}
               figure={power}
-              unavailableText={t("mowUnit.power.unavailable")}
               isMobile={isMobile}
             />
           }

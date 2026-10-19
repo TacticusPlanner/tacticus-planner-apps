@@ -321,7 +321,6 @@
     "hasRanged": "Avec attaque à distance",
     "clearOne": "Effacer {{name}}",
     "power": {
-      "unavailable": "Données de puissance indisponibles",
       "estimateLabel": "À propos de cette estimation",
       "estimate": "Estimée à partir des statistiques affichées. Elle peut différer du chiffre du jeu pour les unités dotées de capacités supplémentaires, de critique ou de blocage."
     }
@@ -539,8 +538,7 @@
     "power": {
       "label": "Puissance",
       "withItems": "Inclut votre équipement porté",
-      "withoutItems": "Sans équipement",
-      "unavailable": "Données de puissance indisponibles"
+      "withoutItems": "Sans équipement"
     }
   },
   "mowUnit": {
@@ -621,8 +619,7 @@
       }
     },
     "power": {
-      "label": "Puissance",
-      "unavailable": "Données de puissance indisponibles"
+      "label": "Puissance"
     }
   }
 }

@@ -143,40 +143,62 @@ the ability, the panel SHALL show icon, kind, name, the player's level when owne
 isn't in the planner yet.", with no stepper, no next-level line and no chart. The Details tab SHALL NOT show
 stats, a comparison radar, stats by rank, a relic or mythic quests.
 
-#### Scenario: No MoW rules text in the data
+Assumptions:
 
-- **GIVEN** the game text has no rules text for any MoW ability (0 of 22 today)
-- **WHEN** a visitor opens Galatian's Details tab
-- **THEN** the Primary panel shows "Duty Eternal" and the Secondary panel "Macro Plasma Incinerator", each
-  with the missing-text note and no stepper, next-level line or chart
+- All 22 MoW primary and secondary abilities have rules text (see the `ability-rules-text` capability).
+- Primary and secondary values marked rarity-affected are scaled by the shown rarity, as on character pages
+  and in V1.
 
 #### Scenario: Rules text arrives
 
-- **GIVEN** the game text gains complete rules text for a MoW ability
+- **GIVEN** the game text has complete rules text for all 22 MoW abilities
+- **WHEN** a visitor opens Galatian's Details tab
+- **THEN** the Primary panel "Duty Eternal" and the Secondary panel "Macro Plasma Incinerator" each show a
+  stepper, rules text at the stepper's level, a next-level line and a growth chart, and neither shows the
+  missing-text note
+
+#### Scenario: Cooldown and munition cost resolve
+
+- **WHEN** a visitor opens the Reanimator's Details tab
+- **THEN** the Primary panel "Reanimation Beam" reads "Initial cooldown: 1 round" and "Cost: 1 munition" from
+  the ability's constants (keyed `"initialCooldownTurns "` and `"munitionsCost "` in V1, with a trailing
+  space), not raw tokens
+
+#### Scenario: No MoW rules text in the data
+
+- **GIVEN** the game text has no complete rules text for a MoW ability
 - **WHEN** a visitor opens that MoW's Details tab
-- **THEN** that panel shows the stepper, rules text, next-level line and growth chart with no UI change
+- **THEN** that panel shows its icon, kind and name with the missing-text note and no stepper, next-level line
+  or chart
 
 ### Requirement: MoW Mythic ability panel
 
 The Details tab SHALL show a third panel, **Mythic**, after Primary and Secondary. Its level SHALL follow the
 blue stars of the values shown, with no stepper: 1 blue star is level 1, 2 blue stars level 2, 3 blue stars
 level 3 and Mythic Wings level 4. Below Mythic rarity the level SHALL be 1 and the panel SHALL show "Unlocks at
-Mythic" in place of the level. When the catalog names the MoW's mythic ability, the panel SHALL show its
-localized name and resolve its rules text like the other panels, without a stepper; otherwise it SHALL be
-titled "Mythic ability" and show the missing-text note. On mobile it SHALL be a third collapsible section,
-collapsed, whose header shows the level ("Lv 2") or "Unlocks at Mythic".
+Mythic" in place of the level. When the catalog names the MoW's mythic ability (`mythicAbility.name` on the
+`mows` record), the panel SHALL show its localized name and resolve its rules text like the other panels,
+without a stepper and **without rarity scaling** (values are shown as the game table lists them for the level);
+otherwise it SHALL be titled "Mythic ability" and show the missing-text note. When the catalog names the
+ability but the game text has no rules text for it, the panel SHALL show the ability's name with the
+missing-text note. On mobile it SHALL be a third collapsible section, collapsed, whose header shows the level
+("Lv 2") or "Unlocks at Mythic".
 
 Assumptions:
 
-- The catalog has no MoW mythic ability today (#204); V1 holds one per MoW.
+- The catalog names one mythic ability per MoW (all 11), served by the companion API change.
 - The mythic level comes from blue stars, as in V1's unit details page.
+- V1 renders the mythic ability with scaling disabled (`disableScaling`), although its table marks
+  `dmgReductionPct` as rarity-affected; at Mythic the rarity factor would double the value.
 
 #### Scenario: Mythic MoW
 
-- **GIVEN** a Galatian shown at Mythic, 2 blue stars
+- **GIVEN** a Galatian shown at Mythic, 2 blue stars, and Wisdom of the Ancients' `dmgReductionPct` table
+  10, 13, 16, 20 for levels 1–4
 - **WHEN** a visitor opens its Details tab
-- **THEN** the Mythic panel reads "Mythic ability", shows level 2 from blue stars and the missing-text note,
-  and has no stepper
+- **THEN** the Mythic panel is titled "Wisdom of the Ancients", shows level 2 from blue stars, and its rules
+  text reads "-13% Damage" (level 2 value, rarity factor not applied; with the Mythic factor 2 it would read
+  -26%), and has no stepper
 
 #### Scenario: Below Mythic
 
@@ -188,13 +210,19 @@ Assumptions:
 
 - **GIVEN** the Mythic panel at level 2
 - **WHEN** the user selects Custom and picks Mythic Wings
-- **THEN** the Mythic panel shows level 4
+- **THEN** the Mythic panel shows level 4 and its rules text reads "-20% Damage"
 
 #### Scenario: The catalog names the mythic ability
 
 - **GIVEN** the catalog gives Galatian the mythic ability WisdomOfTheAncients
 - **WHEN** a visitor opens its Details tab
 - **THEN** the Mythic panel is titled "Wisdom of the Ancients"
+
+#### Scenario: The catalog does not name the mythic ability
+
+- **GIVEN** a client whose synced `mows` record for Galatian has no `mythicAbility`
+- **WHEN** a visitor opens its Details tab at Mythic
+- **THEN** the Mythic panel reads "Mythic ability" with the missing-text note and no stepper
 
 ### Requirement: Ability upgrades calculator
 
@@ -335,7 +363,7 @@ SHALL come from the game-text namespaces, falling back to English when a languag
 
 ### Requirement: Power on the MoW unit page
 
-The MoW unit page SHALL show the Machine of War's **power** (see `unit-power`, "Machine of War power"), labelled "Power", in the page header's values area. It is computed at the shown rarity and stars (Your unit, Starting or Custom) and at the levels set on the Primary and Secondary ability panels. It SHALL update as soon as any of those changes and SHALL NOT be stored or put in the URL. While the `unit-power` dataset is loading it SHALL show a placeholder. When the dataset failed to load or has no entry for the MoW, it SHALL show "—" with the text "Power data unavailable", and the rest of the page SHALL be unaffected. Desktop and mobile show the same value in the header.
+The MoW unit page SHALL show the Machine of War's **power** (see `unit-power`, "Machine of War power"), labelled "Power", in the page header's values area. It is computed at the shown rarity and stars (Your unit, Starting or Custom) and at the levels set on the Primary and Secondary ability panels. It SHALL update as soon as any of those changes and SHALL NOT be stored or put in the URL. While the `unit-power` dataset is loading it SHALL show a placeholder. When the dataset is absent, failed to load or has no entry for the MoW, the header SHALL NOT show power at all, and the rest of the page SHALL be unaffected. Desktop and mobile show the same value in the header.
 
 #### Scenario: Maxed MoW
 
@@ -353,4 +381,4 @@ The MoW unit page SHALL show the Machine of War's **power** (see `unit-power`, "
 
 - **GIVEN** the `unit-power` dataset failed to load
 - **WHEN** a MoW page renders
-- **THEN** the power shows "—" and "Power data unavailable", and the ability panels and Ability upgrades tab work as usual
+- **THEN** the header has no Power figure, and the ability panels and Ability upgrades tab work as usual

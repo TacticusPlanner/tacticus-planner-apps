@@ -321,7 +321,6 @@
     "hasRanged": "Mit Fernkampf",
     "clearOne": "{{name}} zurücksetzen",
     "power": {
-      "unavailable": "Stärkedaten nicht verfügbar",
       "estimateLabel": "Über diese Schätzung",
       "estimate": "Aus den angezeigten Werten geschätzt. Bei Einheiten mit zusätzlichen Fähigkeiten, Krit oder Block kann sie vom Wert im Spiel abweichen."
     }
@@ -537,8 +536,7 @@
     "power": {
       "label": "Stärke",
       "withItems": "Inklusive deiner angelegten Ausrüstung",
-      "withoutItems": "Ohne Ausrüstung",
-      "unavailable": "Stärkedaten nicht verfügbar"
+      "withoutItems": "Ohne Ausrüstung"
     }
   },
   "mowUnit": {
@@ -619,8 +617,7 @@
       }
     },
     "power": {
-      "label": "Stärke",
-      "unavailable": "Stärkedaten nicht verfügbar"
+      "label": "Stärke"
     }
   }
 }

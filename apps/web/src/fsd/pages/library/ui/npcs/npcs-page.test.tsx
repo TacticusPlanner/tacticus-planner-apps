@@ -858,12 +858,11 @@ describe("NpcsPage power card", () => {
     expect(screen.getByTestId("npc-stat-power-loading")).toBeInTheDocument()
   })
 
-  it("shows the power as unavailable and keeps the other stats when the data failed", async () => {
+  it("leaves out the power card and keeps the other stats when the data failed", async () => {
     powerMock.state = { status: "error" }
     renderPage("/library/npcs/infiltrator?level=2")
     await screen.findByTestId("npc-name")
-    expect(powerValue()).toHaveTextContent("—")
-    expect(powerCard()).toHaveTextContent("npcs.power.unavailable")
+    expect(screen.queryByTestId("npc-stat-power")).not.toBeInTheDocument()
     expect(screen.getByTestId("npc-stat-health")).toHaveTextContent("76")
     expect(screen.getByTestId("npc-stat-armour")).toHaveTextContent("22")
     expect(screen.getByTestId("npc-stat-damage")).toHaveTextContent("34")

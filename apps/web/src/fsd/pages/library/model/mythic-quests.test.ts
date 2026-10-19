@@ -1,64 +1,77 @@
+import {
+  datasetPayloadSchemas,
+  type GameCatalogMythicQuestReward,
+} from "@workspace/game-catalog"
 import { describe, expect, it } from "vitest"
 
-import mythicQuests from "../../../../../public/locales/en/mythicQuests.json"
 import mythicQuestTasks from "../../../../../public/locales/en/mythicQuestTasks.json"
-import {
-  mythicTaskVariables,
-  parseMythicQuestReward,
-  type MythicQuestData,
-} from "./mythic-quests"
+import fixture from "./mythic-quests.fixture.json"
+import { mythicQuestReward, mythicTaskVariables } from "./mythic-quests"
 
-const quests = mythicQuests as unknown as Record<string, MythicQuestData[]>
+// Served `mythic-quests` records for a few characters, and every task loca key the API serves
+// (generated from tacticus-planner-api's GameCatalog/Data/mythic-quests.json).
+const records = datasetPayloadSchemas["mythic-quests"].parse(fixture.records)
+const quests = new Map<string, (typeof records)[number]["quests"]>(
+  records.map((record) => [record.unitId, record.quests])
+)
+// A reward as the catalog serves it (ids are branded once parsed).
+const served = (reward: object) => reward as GameCatalogMythicQuestReward
 
-describe("parseMythicQuestReward", () => {
-  it("parses each reward kind V1's data uses", () => {
-    expect(parseMythicQuestReward("mythicShards_blackAbaddon:4")).toEqual({
-      kind: "mythicShards",
-      unitId: "blackAbaddon",
-      quantity: 4,
-    })
-    expect(parseMythicQuestReward("heroAscensionOrbMythic_Chaos:2")).toEqual({
-      kind: "ascensionOrb",
-      alliance: "Chaos",
-      quantity: 2,
-    })
-    expect(parseMythicQuestReward("abilityTokenMythic_Xenos:5")).toEqual({
-      kind: "abilityBadge",
-      alliance: "Xenos",
-      quantity: 5,
-    })
-    expect(parseMythicQuestReward("xpMythic:1")).toEqual({
-      kind: "xp",
-      quantity: 1,
-    })
-    expect(parseMythicQuestReward("gold:250000")).toEqual({
+describe("mythicQuestReward", () => {
+  it("maps each served reward type to a chip", () => {
+    expect(
+      mythicQuestReward(
+        served({
+          type: "MythicShards",
+          amount: 4,
+          unitId: "blackAbaddon",
+        })
+      )
+    ).toEqual({ kind: "mythicShards", unitId: "blackAbaddon", quantity: 4 })
+    expect(
+      mythicQuestReward(
+        served({
+          type: "AscensionOrb",
+          amount: 2,
+          rarity: "Mythic",
+          alliance: "Chaos",
+        })
+      )
+    ).toEqual({ kind: "ascensionOrb", alliance: "Chaos", quantity: 2 })
+    expect(
+      mythicQuestReward(
+        served({
+          type: "AbilityBadge",
+          amount: 5,
+          rarity: "Mythic",
+          alliance: "Xenos",
+        })
+      )
+    ).toEqual({ kind: "abilityBadge", alliance: "Xenos", quantity: 5 })
+    expect(
+      mythicQuestReward(served({ type: "XpBook", amount: 1, rarity: "Mythic" }))
+    ).toEqual({ kind: "xp", quantity: 1 })
+    expect(
+      mythicQuestReward(served({ type: "Gold", amount: 250_000 }))
+    ).toEqual({
       kind: "gold",
       quantity: 250_000,
     })
-    expect(parseMythicQuestReward("I_Crit_M006")).toEqual({
-      kind: "equipment",
-      equipmentId: "I_Crit_M006",
-      quantity: undefined,
-    })
-    expect(parseMythicQuestReward("somethingNew:3")).toEqual({
-      kind: "unknown",
-      raw: "somethingNew",
-      quantity: 3,
-    })
-  })
-
-  it("recognises every reward in the ported data", () => {
-    const unknown = Object.values(quests)
-      .flat()
-      .flatMap((quest) => quest.rewards)
-      .filter((reward) => parseMythicQuestReward(reward).kind === "unknown")
-    expect(unknown).toEqual([])
+    expect(
+      mythicQuestReward(
+        served({
+          type: "Equipment",
+          amount: 1,
+          equipmentId: "I_Crit_M006",
+        })
+      )
+    ).toEqual({ kind: "equipment", equipmentId: "I_Crit_M006", quantity: 1 })
   })
 })
 
 describe("mythicTaskVariables", () => {
   it("builds V1's template variables for Abaddon's first quest", () => {
-    const [task] = quests.blackAbaddon[0].tasks
+    const [task] = quests.get("blackAbaddon")![0].tasks
     expect(
       mythicTaskVariables(
         task,
@@ -73,12 +86,8 @@ describe("mythicTaskVariables", () => {
     })
   })
 
-  it("has a template for every task in the ported data", () => {
+  it("has a template for every task the catalog serves", () => {
     const templates = mythicQuestTasks as Record<string, string>
-    const missing = Object.values(quests)
-      .flat()
-      .flatMap((quest) => quest.tasks)
-      .filter((task) => !templates[task.locaKey])
-    expect(missing).toEqual([])
+    expect(fixture.locaKeys.filter((key) => !templates[key])).toEqual([])
   })
 })

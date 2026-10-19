@@ -1,8 +1,8 @@
 import type { ReadState } from "@/shared/lib"
 import type { UnitPowerContext } from "@/shared/unit-power"
 
-/** A power figure as a page shows it: a placeholder while the `unit-power` dataset loads, "—" when
- *  it failed to load or has no entry for the unit, else the whole number. */
+/** A power figure as a page shows it: a placeholder while the `unit-power` dataset loads, nothing
+ *  when it failed to load or has no entry for the unit, else the whole number. */
 export type PowerFigure =
   | { status: "loading" }
   | { status: "unavailable" }
@@ -21,13 +21,11 @@ export function powerFigure(
   return value === null ? { status: "unavailable" } : { status: "ready", value }
 }
 
-/** The muted line under a figure: the reason when unavailable, what it counts when ready. */
+/** The muted line under a figure: what it counts when ready. */
 export function powerNote(
   figure: PowerFigure,
-  note: string | undefined,
-  unavailableText: string
+  note: string | undefined
 ): string | undefined {
-  if (figure.status === "unavailable") return unavailableText
   if (figure.status === "ready") return note
   return undefined
 }

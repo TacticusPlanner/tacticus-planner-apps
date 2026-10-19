@@ -122,3 +122,57 @@ Assumptions:
 - **WHEN** a visitor opens Abaddon's unit page
 - **THEN** quest 1's task text is the English template with Abaddon's values, and the card's own labels and
   reward names are German
+
+### Requirement: Power on the unit page
+
+The unit page SHALL show the unit's **power** (the `character-combat-power` estimate), labelled
+"Power", in the page header's values area (as the MoW page does), at:
+
+- the shown rarity, stars and rank (Your unit, Starting or Custom);
+- applied current-rank slots: the player's, while the shown rank is the player's rank; none otherwise
+  (Starting, a not-owned unit, or a Custom rank that differs);
+- the active and passive levels set on the ability panels;
+- equipped items: the player's synced equipped items with their levels when the unit is owned, none
+  otherwise; the equipped relic counts at the level set on the Relic panel;
+
+with a muted line saying what it counts ("Includes your equipped items" when owned items count,
+"Without equipment" otherwise). It SHALL update as soon as any of those inputs changes and SHALL NOT be
+stored or put in the URL. While the `unit-power` dataset is loading it SHALL show a placeholder;
+when it is absent, failed to load or has no entry for the unit, the header SHALL NOT show power at
+all. At a glance and Stats by rank, which come from the same dataset (see `unit-power`, "Character
+stats come from the power calculation"), SHALL then show "—" and "Stats data unavailable"; the rest of
+the page SHALL be unaffected. Desktop and mobile show it in the same
+place in the header, so the existing header tour step covers it.
+
+#### Scenario: Owned unit at Your unit
+
+- **GIVEN** a synced player whose Tigurius is Gold I, Epic 1 red star, slots 0 to 2 applied, abilities
+  20/15, wearing `I_Crit_C001` at level 3 and no relic
+- **WHEN** they open Tigurius's page
+- **THEN** the header shows "Power 16,809" with "Includes your equipped items"
+
+#### Scenario: Ability stepper changes power
+
+- **GIVEN** that page
+- **WHEN** the user raises the passive ability to 16
+- **THEN** power becomes the estimate at passive 16 without a reload, and the stats are unchanged
+
+#### Scenario: Custom rank drops the applied slots
+
+- **GIVEN** that page
+- **WHEN** the user selects Custom and changes Rank to Gold II
+- **THEN** power and stats use Gold II with no Gold II slots applied, still including the equipped item
+
+#### Scenario: Not owned
+
+- **GIVEN** a signed-in, synced player without Tigurius
+- **WHEN** they open the page
+- **THEN** power is computed at Uncommon, 2 stars, Stone I, abilities 1/1, no slots and no items, with
+  "Without equipment"
+
+#### Scenario: Power data unavailable
+
+- **GIVEN** the `unit-power` dataset is absent or failed to load
+- **WHEN** a unit page renders
+- **THEN** the header has no Power figure, At a glance shows "—" for Health, Damage and Armour with
+  "Stats data unavailable", and every other section renders as usual

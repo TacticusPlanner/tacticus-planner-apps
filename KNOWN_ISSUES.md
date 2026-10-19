@@ -6,5 +6,6 @@ Things to expect while using Tacticus Planner during alpha testing. Most of thes
 - **You might briefly appear signed in and then get asked to sign in again.** This can happen if your saved session has expired since your last visit.
 - **Machines of War and NPCs library pages are minimal for now** — they show basic stats without the fuller detail views that Characters, Guild Raid Bosses, and Shops already have. More detail is coming.
 - **Character, item, and upgrade names are shown in English for everyone**, regardless of your chosen language. Everything else in the app is translated.
+- **Mythic quest tasks are written in English for everyone.** The game data has no translated wording for them; the rest of the Mythic quests card, such as its title and reward names, follows your language.
 - **Four NPC abilities have no rules text yet** (Repair Enthusiast, Runs Around, Runs Away and a boss's end-of-fight ability): the game data only has a placeholder for them. Their panels show the name with a short note instead.
 - **Master-Crafted Power Field and Artificer Power Field show a placeholder icon**, because the game data has no artwork for them.

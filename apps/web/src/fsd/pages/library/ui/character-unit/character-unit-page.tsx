@@ -330,7 +330,6 @@ function CharacterUnit({
                   ? t("characterUnit.power.withItems")
                   : t("characterUnit.power.withoutItems")
               }
-              unavailableText={t("characterUnit.power.unavailable")}
               isMobile={isMobile}
             />
           }

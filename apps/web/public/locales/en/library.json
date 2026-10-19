@@ -321,7 +321,6 @@
     "hasRanged": "Has ranged",
     "clearOne": "Clear {{name}}",
     "power": {
-      "unavailable": "Power data unavailable",
       "estimateLabel": "About this estimate",
       "estimate": "Estimated from the listed stats. It can differ from the game's figure for units with extra abilities, crit or block."
     }
@@ -537,8 +536,7 @@
     "power": {
       "label": "Power",
       "withItems": "Includes your equipped items",
-      "withoutItems": "Without equipment",
-      "unavailable": "Power data unavailable"
+      "withoutItems": "Without equipment"
     }
   },
   "mowUnit": {
@@ -619,8 +617,7 @@
       }
     },
     "power": {
-      "label": "Power",
-      "unavailable": "Power data unavailable"
+      "label": "Power"
     }
   }
 }

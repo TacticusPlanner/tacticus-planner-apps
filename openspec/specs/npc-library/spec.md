@@ -304,7 +304,7 @@ The NPC display name SHALL be resolved from a variation id through an id-keyed `
 
 ### Requirement: The detail view shows the selected level's power
 
-The NPC detail view SHALL show a **Power** stat card next to Health, Armour and Damage. It holds the NPC power (see `unit-power`, "NPC power") of the selected variation's selected level row, and changing the level SHALL update it. The card SHALL carry a short note, revealed on hover, focus or tap, saying the value is estimated from the listed stats and can differ from the game's figure for units with extra abilities, crit or block. While the `unit-power` dataset is loading it SHALL show a placeholder. When the dataset failed to load, the card SHALL show "—" with the text "Power data unavailable", and the other stat cards SHALL be unaffected. Desktop and mobile show the same card in their stat card rows.
+The NPC detail view SHALL show a **Power** stat card next to Health, Armour and Damage. It holds the NPC power (see `unit-power`, "NPC power") of the selected variation's selected level row, and changing the level SHALL update it. The card SHALL carry a short note, revealed on hover, focus or tap, saying the value is estimated from the listed stats and can differ from the game's figure for units with extra abilities, crit or block. While the `unit-power` dataset is loading it SHALL show a placeholder. When the dataset is absent or failed to load, the Power card SHALL NOT be shown, and the other stat cards SHALL be unaffected. Desktop and mobile show the same card in their stat card rows.
 
 #### Scenario: Power follows the selected level
 
@@ -320,4 +320,4 @@ The NPC detail view SHALL show a **Power** stat card next to Health, Armour and 
 
 - **GIVEN** the `unit-power` dataset failed to load
 - **WHEN** an NPC detail renders
-- **THEN** the Power card shows "—" and "Power data unavailable", and Health, Armour and Damage show as usual
+- **THEN** there is no Power card, and Health, Armour and Damage show as usual
