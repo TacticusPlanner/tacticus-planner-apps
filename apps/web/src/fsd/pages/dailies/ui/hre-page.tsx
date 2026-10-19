@@ -144,6 +144,7 @@ export function HrePage() {
               slots: raidObjective.slots,
               kind: raidObjective.kind,
               allianceTeam: raidObjective.allianceTeam ? allianceName : null,
+              alliance: raidObjective.allianceTeam ? hero?.alliance : undefined,
               missionLabel: missionName(t, raidObjective.missionNumber),
             }
           : null

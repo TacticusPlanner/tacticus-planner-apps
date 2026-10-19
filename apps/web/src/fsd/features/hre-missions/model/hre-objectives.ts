@@ -26,9 +26,9 @@ export type HreRaidObjective = {
   allianceTeam: boolean
 }
 
-/** Ability uses a fought battle with five units yields, for `useAbilitiesAlliance` (assumption: two
- * each). Mission 7's 20 uses are then two battles, as Severyn suggested. */
-const ABILITY_USES_PER_BATTLE = 10
+/** Ability uses a fought battle with five units yields, for `useAbilitiesAlliance`: one each, as
+ * Severyn confirmed (mission 7 at 12 / 20 still needs 2 battles). */
+const ABILITY_USES_PER_BATTLE = 5
 /** A full all-alliance team, so every slot's abilities count. */
 const FULL_TEAM_SLOTS = 5
 

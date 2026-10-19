@@ -57,6 +57,7 @@ export function HreRaidsSection({
           battlesToGo: request.battlesToGo,
           eventOnly: request.eventOnly,
           slots: request.slots,
+          alliance: request.alliance,
         }
       : SUMMARY_ONLY,
   })
