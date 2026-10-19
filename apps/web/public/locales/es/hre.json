@@ -129,7 +129,14 @@
     "noteLineupBattles": "Las incursiones no tienen alineación, así que no cuentan: gana estas a mano con un equipo solo de {{alliance}}. Las victorias en la Arena con ese equipo también cuentan. Primero los más baratos, como en las incursiones.",
     "budgetBattles": "Energía disponible para estas batallas: {{energy}}.",
     "battleCount_one": "{{count}} batalla",
-    "battleCount_other": "{{count}} batallas"
+    "battleCount_other": "{{count}} batallas",
+    "noteAllianceNodes": "Solo nodos donde pueden desplegarse unidades {{alliance}}, para que el otro objetivo de la misión también avance.",
+    "faction": {
+      "title": "Nodos con enemigos {{faction}}",
+      "note_one": "Para la última baja {{faction}} que falta: los nodos más baratos con enemigos {{faction}}, con la energía que queda tras las incursiones de arriba. Cada incursión cuenta los enemigos del nodo.",
+      "note_other": "Para las {{count}} bajas {{faction}} que faltan: los nodos más baratos con enemigos {{faction}}, con la energía que queda tras las incursiones de arriba. Cada incursión cuenta los enemigos del nodo.",
+      "none": "Ningún nodo con enemigos {{faction}} cabe en la energía que queda hoy."
+    }
   },
   "tokens": {
     "title": "Fichas necesarias",

@@ -47,7 +47,13 @@ import { useHreTutorial } from "./hre-page.tutorial"
  */
 export function HrePage() {
   const context = useOutletContext<DailiesOutletContext>()
-  const { t } = useTranslation(["hre", "common", "characters", "dailies"])
+  const { t } = useTranslation([
+    "hre",
+    "common",
+    "characters",
+    "dailies",
+    "factions",
+  ])
   const isMobile = useIsMobile()
   const [settingsOpen, setSettingsOpen] = useState(false)
   const state = useHreInstance()
@@ -110,7 +116,7 @@ export function HrePage() {
 
   const notice = (() => {
     if (!running) return t("hre:raids.notice.preview")
-    if (raidObjective?.allianceTeam && !hero)
+    if (raidObjective?.allianceNodes && !hero)
       return t("hre:raids.notice.noHero")
     if (campaignObjectiveState(progress) === "met")
       return t("hre:raids.notice.met")
@@ -139,16 +145,26 @@ export function HrePage() {
       }
       remainingBattles={remainingCampaignBattles(shown)}
       request={
-        // An all-alliance objective waits for the featured hero's alliance, so its nodes can be
-        // filtered to where that alliance deploys.
-        raidObjective && (!raidObjective.allianceTeam || hero)
+        // Alliance-restricted nodes wait for the featured hero's alliance, so they can be filtered
+        // to where that alliance deploys.
+        raidObjective && (!raidObjective.allianceNodes || hero)
           ? {
               battlesToGo: raidObjective.battlesToGo,
               eventOnly: raidObjective.eventOnly,
               slots: raidObjective.slots,
               kind: raidObjective.kind,
               allianceTeam: raidObjective.allianceTeam ? allianceName : null,
-              alliance: raidObjective.allianceTeam ? hero?.alliance : undefined,
+              alliance: raidObjective.allianceNodes
+                ? hero?.alliance
+                : undefined,
+              allianceNodes: raidObjective.allianceNodes ? allianceName : null,
+              enemyFaction: raidObjective.enemyFaction ?? undefined,
+              enemyFactionName: raidObjective.enemyFaction
+                ? (t(
+                    `factions:${raidObjective.enemyFaction.faction}` as never,
+                    { defaultValue: raidObjective.enemyFaction.faction }
+                  ) as string)
+                : null,
               missionLabel: missionName(t, raidObjective.missionNumber),
             }
           : null

@@ -129,7 +129,14 @@
     "noteLineupBattles": "Raids have no lineup, so they don't count: win these by hand with an all-{{alliance}} team. Arena wins with that team count too. Cheapest first, as for raids.",
     "budgetBattles": "Energy left for these battles: {{energy}}.",
     "battleCount_one": "{{count}} battle",
-    "battleCount_other": "{{count}} battles"
+    "battleCount_other": "{{count}} battles",
+    "noteAllianceNodes": "Only nodes where {{alliance}} units can deploy, so the mission's other objective progresses too.",
+    "faction": {
+      "title": "Nodes with {{faction}} enemies",
+      "note_one": "For the {{count}} {{faction}} kill still needed: the cheapest nodes with {{faction}} enemies, from the energy left after the raids above. Each raid counts the node's enemies.",
+      "note_other": "For the {{count}} {{faction}} kills still needed: the cheapest nodes with {{faction}} enemies, from the energy left after the raids above. Each raid counts the node's enemies.",
+      "none": "No raidable node with {{faction}} enemies fits the energy left today."
+    }
   },
   "tokens": {
     "title": "Tokens needed",

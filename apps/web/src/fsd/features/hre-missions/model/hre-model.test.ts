@@ -204,6 +204,36 @@ describe("objectives", () => {
     ).toBe(2)
   })
 
+  it("keeps raids to the alliance's nodes while alliance kills or the featured hero are open", () => {
+    for (const mission of [2, 16, 20, 21]) {
+      expect(selectRaidObjective(progress({ mission }))).toMatchObject({
+        kind: "raids",
+        allianceTeam: false,
+        allianceNodes: true,
+      })
+    }
+    expect(
+      selectRaidObjective(progress({ mission: 16, progress: [100, 0] }))
+        ?.allianceNodes
+    ).toBe(false)
+    expect(selectRaidObjective(progress({ mission: 5 }))?.allianceNodes).toBe(
+      false
+    )
+  })
+
+  it("asks for Necron nodes while mission 11's Necron kills are open", () => {
+    expect(
+      selectRaidObjective(progress({ mission: 11, progress: [0, 40] }))
+    ).toMatchObject({
+      eventOnly: true,
+      enemyFaction: { faction: "Necrons", killsToGo: 60 },
+    })
+    expect(
+      selectRaidObjective(progress({ mission: 11, progress: [0, 100] }))
+        ?.enemyFaction
+    ).toBeNull()
+  })
+
   it("counts the 663 campaign battles left from mission 5 at 37/100", () => {
     expect(
       remainingCampaignBattles(progress({ mission: 5, progress: [0, 37] }))

@@ -129,7 +129,14 @@
     "noteLineupBattles": "Raids haben keine Aufstellung und zählen daher nicht: gewinne diese von Hand mit einem reinen {{alliance}}-Team. Arena-Siege mit diesem Team zählen auch. Günstigste zuerst, wie bei Raids.",
     "budgetBattles": "Energie übrig für diese Kämpfe: {{energy}}.",
     "battleCount_one": "{{count}} Kampf",
-    "battleCount_other": "{{count}} Kämpfe"
+    "battleCount_other": "{{count}} Kämpfe",
+    "noteAllianceNodes": "Nur Knoten, auf denen {{alliance}}-Einheiten eingesetzt werden können, damit das andere Ziel der Mission auch vorankommt.",
+    "faction": {
+      "title": "Knoten mit {{faction}}-Gegnern",
+      "note_one": "Für den letzten fehlenden {{faction}}-Kill: die günstigsten Knoten mit {{faction}}-Gegnern, mit der Energie, die nach den Raids oben übrig bleibt. Jeder Raid zählt die Gegner des Knotens.",
+      "note_other": "Für die noch fehlenden {{count}} {{faction}}-Kills: die günstigsten Knoten mit {{faction}}-Gegnern, mit der Energie, die nach den Raids oben übrig bleibt. Jeder Raid zählt die Gegner des Knotens.",
+      "none": "Kein raidbarer Knoten mit {{faction}}-Gegnern passt in die heute übrige Energie."
+    }
   },
   "tokens": {
     "title": "Benötigte Marken",
