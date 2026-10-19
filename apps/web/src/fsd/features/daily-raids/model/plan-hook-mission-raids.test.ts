@@ -10,9 +10,25 @@ import {
 
 const id = (value: string) => value as BattleId
 
+const rewards = (gold: number, drops: string[]) => ({
+  guaranteed: [{ id: "gold", min: gold, max: gold }],
+  potential: drops.map((drop) => ({ id: drop, effectiveRate: 0.2 })),
+})
 const battles = [
-  { id: "I06", energyCost: 3, dailyAttempts: 3, campaignGroupId: "campaign1" },
-  { id: "I15", energyCost: 5, dailyAttempts: 10, campaignGroupId: "campaign1" },
+  {
+    id: "I06",
+    energyCost: 3,
+    dailyAttempts: 3,
+    campaignGroupId: "campaign1",
+    rewards: rewards(7, []),
+  },
+  {
+    id: "I15",
+    energyCost: 5,
+    dailyAttempts: 10,
+    campaignGroupId: "campaign1",
+    rewards: rewards(12, ["shards_necroWarden"]),
+  },
 ]
 
 const filterBattle = (
@@ -43,7 +59,6 @@ const plan = (
     calculation,
     availableBattles: battles,
     campaignDefinitions: [],
-    allBattlesById: new Map(battles.map((battle) => [id(battle.id), battle])),
     attemptsLeftByBattle: new Map(),
     dailyEnergy: 100,
     realEnergyUsedToday: 0,
@@ -56,29 +71,34 @@ const plan = (
   })
 
 describe("planHookMissionRaids", () => {
-  it("counts Today's remaining plan first", () => {
-    expect(plan().plannedCount).toBe(10)
-  })
-
-  it("drops Today's plan once the daily energy limit is reached", () => {
-    const result = plan({ realEnergyUsedToday: 100 })
-    expect(result.plannedCount).toBe(0)
+  it("ignores Today's plan and uses the energy left today", () => {
+    const result = plan({ realEnergyUsedToday: 40 })
     expect(result.battlesLeft).toBe(20)
-    expect(result.empty).toBe("no-energy")
+    expect(result.energyBudget).toBe(60)
+    expect(result.rows).toEqual([
+      expect.objectContaining({ battleId: "I15", raids: 10 }),
+    ])
   })
 
-  it("keeps nodes with no campaign type under a campaign-type filter", () => {
-    const result = plan({
-      raidsFilters: { ...emptyRaidsFilters, campaignTypes: ["Standard"] },
-    })
-    expect(result.cheapestEnergyCost).toBe(3)
-    expect(result.rows[0]?.battleId).toBe("I06")
+  it("splits the no-drop nodes from the nodes that drop something", () => {
+    const result = plan({ calculation: null })
+    expect(result.rows.map((row) => row.battleId)).toEqual(["I15"])
+    expect(result.noDropRows.map((row) => row.battleId)).toEqual(["I06"])
   })
 
-  it("still filters typed nodes by campaign type", () => {
+  it("ignores the campaign-type Raids Filter", () => {
     const result = plan({
+      calculation: null,
       raidsFilters: { ...emptyRaidsFilters, campaignTypes: ["Elite"] },
     })
-    expect(result.rows.map((row) => row.battleId)).toEqual(["I06"])
+    expect(result.outlookNodes).toHaveLength(2)
+    expect(result.rows.map((row) => row.battleId)).toEqual(["I15"])
+  })
+
+  it("keeps the other Raids Filters", () => {
+    const result = plan({
+      raidsFilters: { ...emptyRaidsFilters, enemiesTypes: ["Ork Boy"] },
+    })
+    expect(result.empty).toBe("filtered")
   })
 })

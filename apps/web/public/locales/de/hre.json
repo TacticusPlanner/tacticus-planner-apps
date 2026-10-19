@@ -79,17 +79,17 @@
     "allDone": "Alle Missionen abgeschlossen",
     "allMissions": "Alle Missionen",
     "done": "Erledigt",
-    "locked": "Gesperrt"
+    "locked": "Gesperrt",
+    "markDone": "Erledigt",
+    "markDoneLabel": "Erledigt: {{objective}}"
   },
   "raids": {
     "title": "Raids für {{mission}}",
     "titleNone": "Kampagnenraids",
     "toGo_one": "Noch {{count}} Schlacht",
     "toGo_other": "Noch {{count}} Schlachten",
-    "note": "Die günstigsten Kampagnenknoten zuerst; bei gleichen Kosten zuerst Knoten, die etwas für deine Ziele droppen.",
+    "note": "Die günstigsten Kampagnenknoten, die etwas droppen. Bei gleichen Kosten zuerst Knoten mit einem Drop für deine Ziele, nach Droprate, dann nach Gold.",
     "noteLightning": "Raids auf den Knoten des laufenden Kampagnenevents zählen als Blitzsiege, daher werden nur diese Knoten gezeigt.",
-    "planned_one": "{{count}} Schlacht aus dem heutigen Plan.",
-    "planned_other": "{{count}} Schlachten aus dem heutigen Plan.",
     "budget": "Energie übrig für diese Raids: {{energy}}.",
     "raidCount_one": "{{count}} Raid",
     "raidCount_other": "{{count}} Raids",
@@ -97,9 +97,7 @@
     "leftAfter_one": "Nach der heutigen Energie bleibt {{count}} Schlacht",
     "leftAfter_other": "Nach der heutigen Energie bleiben {{count}} Schlachten",
     "empty": {
-      "planCompletes": "Der heutige Plan schließt dieses Ziel ab.",
-      "noEnergy_one": "Heute ist keine Energie für weitere Raids übrig. Der heutige Plan deckt {{count}} Schlacht ab.",
-      "noEnergy_other": "Heute ist keine Energie für weitere Raids übrig. Der heutige Plan deckt {{count}} Schlachten ab.",
+      "noEnergy": "Heute ist keine Energie für weitere Raids übrig.",
       "noAttempts": "Alle Schlachten, für die die heutige Energie reicht, haben ihre Versuche für heute verbraucht.",
       "noEvent_one": "Es läuft kein Kampagnenevent: Gewinne {{count}} Schlacht manuell mit einem Blitzsieg.",
       "noEvent_other": "Es läuft kein Kampagnenevent: Gewinne {{count}} Schlachten manuell mit einem Blitzsieg.",
@@ -113,10 +111,16 @@
     },
     "summary": {
       "none": "In den Missionen dieses Events sind keine Kampagnenschlachten mehr übrig.",
-      "battles_one": "In den Missionen dieses Events ist noch {{count}} Kampagnenschlacht übrig.",
-      "battles_other": "In den Missionen dieses Events sind noch {{count}} Kampagnenschlachten übrig.",
-      "full_one": "In den Missionen dieses Events ist noch {{battles}} Kampagnenschlacht übrig: mindestens {{energy}} Energie, etwa {{days}} Tage Raids auf den günstigsten Knoten.",
-      "full_other": "In den Missionen dieses Events sind noch {{battles}} Kampagnenschlachten übrig: mindestens {{energy}} Energie, etwa {{days}} Tage Raids auf den günstigsten Knoten."
+      "fits_one": "Übrige Kampagnenschlachten in den Missionen dieses Events: {{battles}}. Bei {{count}} verbleibendem Tag sind das etwa {{perDay}} pro Tag, {{energy}} Energie pro Tag auf den günstigsten Knoten.",
+      "fits_other": "Übrige Kampagnenschlachten in den Missionen dieses Events: {{battles}}. Bei {{count}} verbleibenden Tagen sind das etwa {{perDay}} pro Tag, {{energy}} Energie pro Tag auf den günstigsten Knoten.",
+      "perDay_one": "Übrige Kampagnenschlachten in den Missionen dieses Events: {{battles}}. Bei {{count}} verbleibendem Tag sind das etwa {{perDay}} pro Tag.",
+      "perDay_other": "Übrige Kampagnenschlachten in den Missionen dieses Events: {{battles}}. Bei {{count}} verbleibenden Tagen sind das etwa {{perDay}} pro Tag.",
+      "short_one": "Übrige Kampagnenschlachten in den Missionen dieses Events: {{battles}}. Bei {{count}} verbleibendem Tag reicht deine tägliche Energie für höchstens {{max}} pro Tag auf den günstigsten Knoten, also passen etwa {{short}} nicht mehr vor Eventende.",
+      "short_other": "Übrige Kampagnenschlachten in den Missionen dieses Events: {{battles}}. Bei {{count}} verbleibenden Tagen reicht deine tägliche Energie für höchstens {{max}} pro Tag auf den günstigsten Knoten, also passen etwa {{short}} nicht mehr vor Eventende."
+    },
+    "noDrop": {
+      "title": "Oder die Indomitus-Schlachten ohne Drops (6 bis 14)",
+      "note": "Sie kosten je 3 Energie, droppen aber nichts und geben wenig Gold. Jeder Raid hier ersetzt einen oben."
     }
   },
   "tokens": {

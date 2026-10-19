@@ -251,3 +251,16 @@ export function hrePaceFor(input: {
     target: known ? (input.target as HreRarityStepId) : null,
   })
 }
+
+/** Days the event has left: from now while it runs, its whole length for a preview. */
+export function hreDaysLeft(input: {
+  running: boolean
+  startUtc: string
+  endUtc: string
+  nowMs: number
+}): number {
+  const startMs = Date.parse(input.startUtc)
+  const endMs = Date.parse(input.endUtc)
+  const from = input.running ? input.nowMs : startMs
+  return Math.max(0, (endMs - from) / DAY_MS)
+}

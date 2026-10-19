@@ -9,6 +9,7 @@ import {
   campaignObjectiveState,
   DEFAULT_HRE_PROGRESS,
   HreEventHeader,
+  hreDaysLeft,
   hrePaceFor,
   MissionTracker,
   missionName,
@@ -123,6 +124,16 @@ export function HrePage() {
     <HreRaidsSection
       notice={notice}
       projectId={context.projectId}
+      daysLeft={
+        ready
+          ? hreDaysLeft({
+              running,
+              startUtc: instance.entry.startUtc,
+              endUtc: instance.entry.endUtc,
+              nowMs: ready.nowMs,
+            })
+          : 0
+      }
       remainingBattles={remainingCampaignBattles(shown)}
       request={
         raidObjective

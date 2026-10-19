@@ -10,11 +10,15 @@ import type {
 import { emptyRaidsFilters } from "../../model/raids-filters/raids-filters.domain"
 import { useRaidsFilters } from "../../model/raids-filters/use-raids-filters"
 import { useDailyRaids } from "../../model/use-daily-raids"
-import { EventLocationRow } from "../home-screen-event/event-location-row"
 import { RaidState } from "../raid-state"
-import { ResourceIconWithTooltip } from "../resource-icon"
+import {
+  HreCampaignOutlook,
+  HreNoDropRaids,
+  RaidRows,
+  type RaidRowsView,
+} from "./hre-raids-extras"
 
-/** With no open objective the plan still runs, for the summary's cheapest cost only. */
+/** With no open objective the plan still runs, for the outlook nodes and daily energy only. */
 const SUMMARY_ONLY: MissionRaidsRequest = { battlesToGo: 0, eventOnly: false }
 
 type HreRaidsRequest = MissionRaidsRequest & {
@@ -24,21 +28,23 @@ type HreRaidsRequest = MissionRaidsRequest & {
 
 /**
  * Dailies > HRE campaign raids: for the current mission's open campaign (or lightning) objective,
- * where to raid today with the least energy after Today's remaining plan (`planMissionRaids`),
- * with its totals and empty states. Without one, `notice` says why. Always ends with the
- * remaining-campaign summary: battles left over the remaining missions, the minimum energy and
- * the days at the cheapest nodes' daily capacity.
+ * where to raid with the least of today's energy left, Today's plan aside (`planMissionRaids`),
+ * with its totals and empty states, then the no-drop Indomitus alternative. Without one, `notice`
+ * says why. Always ends with the campaign outlook: battles left over the remaining missions against
+ * the days the event has left.
  */
 export function HreRaidsSection({
   projectId,
   request,
   notice,
   remainingBattles,
+  daysLeft,
 }: {
   projectId?: string
   request: HreRaidsRequest | null
   notice: ReactNode
   remainingBattles: number
+  daysLeft: number
 }) {
   const { t } = useTranslation("hre")
   const raids = useDailyRaids(projectId, {
@@ -50,6 +56,7 @@ export function HreRaidsSection({
   const plan = loaded ? raids.missionRaids : undefined
   const locations = loaded ? raids.locationsByBattleId : undefined
   const view = raids.status === "ready" ? raids : null
+  const rowsView: RaidRowsView = { locations, view }
 
   return (
     <section className="space-y-3" data-testid="hre-raids">
@@ -81,40 +88,15 @@ export function HreRaidsSection({
             data-testid="hre-raids-note"
           >
             {request.eventOnly ? t("raids.noteLightning") : t("raids.note")}
-            {plan.plannedCount > 0
-              ? ` ${t("raids.planned", { count: plan.plannedCount })}`
-              : ""}
             {` ${t("raids.budget", { energy: plan.energyBudget })}`}
           </p>
           {plan.rows.length > 0 ? (
             <>
-              <ul className="grid gap-2" data-testid="hre-raids-list">
-                {plan.rows.map((row) => (
-                  <EventLocationRow
-                    key={row.battleId}
-                    fallbackLabel={row.battleId}
-                    location={locations?.get(row.battleId)}
-                    testId={`hre-raid-${row.battleId}`}
-                  >
-                    {row.goal && view ? (
-                      <ResourceIconWithTooltip
-                        className="size-6"
-                        label={
-                          view.resourceLabels.get(row.goal.resourceId) ??
-                          row.goal.resourceId
-                        }
-                        visual={view.resourceVisuals.get(row.goal.resourceId)}
-                      />
-                    ) : null}
-                    <Badge className="tabular-nums" variant="outline">
-                      {t("raids.raidCount", { count: row.raids })}
-                    </Badge>
-                    <Badge className="tabular-nums" variant="secondary">
-                      {t("raids.energy", { energy: row.energy })}
-                    </Badge>
-                  </EventLocationRow>
-                ))}
-              </ul>
+              <RaidRows
+                rows={plan.rows}
+                testId="hre-raids-list"
+                view={rowsView}
+              />
               <div
                 className="flex flex-wrap items-center gap-2"
                 data-testid="hre-raids-totals"
@@ -138,10 +120,17 @@ export function HreRaidsSection({
           ) : (
             <EmptyState plan={plan} battlesToGo={request.battlesToGo} />
           )}
+          {plan.noDropRows.length > 0 ? (
+            <HreNoDropRaids rows={plan.noDropRows} view={rowsView} />
+          ) : null}
         </>
       ) : null}
       {loaded ? (
-        <CampaignSummary plan={plan} remainingBattles={remainingBattles} />
+        <HreCampaignOutlook
+          daysLeft={daysLeft}
+          plan={plan}
+          remainingBattles={remainingBattles}
+        />
       ) : null}
     </section>
   )
@@ -163,15 +152,13 @@ function EmptyState({
       data-testid={`hre-raids-empty-${reason}`}
     >
       <p>
-        {reason === "plan-completes"
-          ? t("hre:raids.empty.planCompletes")
-          : reason === "no-energy"
-            ? t("hre:raids.empty.noEnergy", { count: plan.plannedCount })
-            : reason === "no-attempts"
-              ? t("hre:raids.empty.noAttempts")
-              : reason === "no-event"
-                ? t("hre:raids.empty.noEvent", { count: battlesToGo })
-                : t("hre:raids.empty.noCandidates")}
+        {reason === "no-energy"
+          ? t("hre:raids.empty.noEnergy")
+          : reason === "no-attempts"
+            ? t("hre:raids.empty.noAttempts")
+            : reason === "no-event"
+              ? t("hre:raids.empty.noEvent", { count: battlesToGo })
+              : t("hre:raids.empty.noCandidates")}
       </p>
       {reason === "filtered" ? (
         <Button
@@ -184,35 +171,5 @@ function EmptyState({
         </Button>
       ) : null}
     </div>
-  )
-}
-
-function CampaignSummary({
-  plan,
-  remainingBattles,
-}: {
-  plan: MissionRaidPlan | undefined
-  remainingBattles: number
-}) {
-  const { t, i18n } = useTranslation("hre")
-  const n = (value: number) => value.toLocaleString(i18n.language)
-  const cost = plan?.cheapestEnergyCost ?? null
-  const capacity = plan?.cheapestDailyCapacity ?? 0
-  return (
-    <p
-      className="rounded-lg border px-3 py-2 text-sm"
-      data-testid="hre-campaign-summary"
-    >
-      {remainingBattles === 0
-        ? t("raids.summary.none")
-        : cost === null || capacity === 0
-          ? t("raids.summary.battles", { count: remainingBattles })
-          : t("raids.summary.full", {
-              count: remainingBattles,
-              battles: n(remainingBattles),
-              energy: n(remainingBattles * cost),
-              days: n(Math.ceil(remainingBattles / capacity)),
-            })}
-    </p>
   )
 }

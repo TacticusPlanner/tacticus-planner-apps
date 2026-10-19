@@ -29,7 +29,8 @@ import { ObjectiveTips } from "./objective-tips"
 
 /**
  * The current mission: the mission picker, each objective with its progress input (clamped to the
- * target) and bar, the objectives' tips, and "Mission complete" once both are at target.
+ * target, empty rather than a leading 0 so typing never reads "033"), a one-click "Mark done" and
+ * its bar, the objectives' tips, and "Mission complete" once both are at target.
  */
 export function CurrentMissionCard({
   state,
@@ -104,14 +105,35 @@ export function CurrentMissionCard({
                       Number.parseInt(event.target.value, 10) || 0
                     )
                   }
+                  onFocus={(event) => event.target.select()}
+                  placeholder="0"
                   type="number"
-                  value={value}
+                  value={value > 0 ? value : ""}
                 />
                 <span className="text-sm whitespace-nowrap text-muted-foreground tabular-nums">
                   {t("tracker.ofTarget", {
                     target: objective.target.toLocaleString(i18n.language),
                   })}
                 </span>
+                {done ? null : (
+                  <Button
+                    aria-label={t("tracker.markDoneLabel", {
+                      objective: objectiveText(objective),
+                    })}
+                    className="ml-auto"
+                    data-testid={`${testId}-mark-done`}
+                    onClick={() =>
+                      actions.setObjectiveProgress(
+                        index as 0 | 1,
+                        objective.target
+                      )
+                    }
+                    size="sm"
+                    variant="outline"
+                  >
+                    {t("tracker.markDone")}
+                  </Button>
+                )}
               </div>
               <Progress value={(value / objective.target) * 100} />
             </div>

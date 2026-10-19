@@ -33,4 +33,5 @@ export type {
   ProjectGoalSummary,
   ProjectMemberGoal,
   ProjectSummary,
+  ProjectTarget,
 } from "./model/types"

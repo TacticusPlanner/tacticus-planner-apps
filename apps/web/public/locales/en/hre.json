@@ -79,17 +79,17 @@
     "allDone": "All missions complete",
     "allMissions": "All missions",
     "done": "Done",
-    "locked": "Locked"
+    "locked": "Locked",
+    "markDone": "Mark done",
+    "markDoneLabel": "Mark done: {{objective}}"
   },
   "raids": {
     "title": "Raids for {{mission}}",
     "titleNone": "Campaign raids",
     "toGo_one": "{{count}} battle to go",
     "toGo_other": "{{count}} battles to go",
-    "note": "The cheapest campaign nodes first; among equal costs, nodes that drop something your goals need.",
+    "note": "The cheapest campaign nodes that drop something. Among equal costs, nodes with a drop your goals need come first, by drop rate, then by gold.",
     "noteLightning": "Raids on the running campaign event's nodes count as lightning victories, so only those nodes are listed.",
-    "planned_one": "{{count}} battle from today's plan.",
-    "planned_other": "{{count}} battles from today's plan.",
     "budget": "Energy left for these raids: {{energy}}.",
     "raidCount_one": "{{count}} raid",
     "raidCount_other": "{{count}} raids",
@@ -97,9 +97,7 @@
     "leftAfter_one": "{{count}} battle left after today's energy",
     "leftAfter_other": "{{count}} battles left after today's energy",
     "empty": {
-      "planCompletes": "Today's plan completes this objective.",
-      "noEnergy_one": "No energy is left today for more raids. Today's plan covers {{count}} battle.",
-      "noEnergy_other": "No energy is left today for more raids. Today's plan covers {{count}} battles.",
+      "noEnergy": "No energy is left today for more raids.",
       "noAttempts": "Every battle that fits today's energy has used its attempts today.",
       "noEvent_one": "No campaign event is running: win {{count}} battle manually with a lightning victory.",
       "noEvent_other": "No campaign event is running: win {{count}} battles manually with a lightning victory.",
@@ -113,10 +111,16 @@
     },
     "summary": {
       "none": "No campaign battles are left in this event's missions.",
-      "battles_one": "{{count}} campaign battle is left in this event's missions.",
-      "battles_other": "{{count}} campaign battles are left in this event's missions.",
-      "full_one": "{{battles}} campaign battle is left in this event's missions: at least {{energy}} energy, about {{days}} days of cheapest-node raids.",
-      "full_other": "{{battles}} campaign battles are left in this event's missions: at least {{energy}} energy, about {{days}} days of cheapest-node raids."
+      "fits_one": "Campaign battles left in this event's missions: {{battles}}. With {{count}} day left, that is about {{perDay}} a day, {{energy}} energy a day at the cheapest nodes.",
+      "fits_other": "Campaign battles left in this event's missions: {{battles}}. With {{count}} days left, that is about {{perDay}} a day, {{energy}} energy a day at the cheapest nodes.",
+      "perDay_one": "Campaign battles left in this event's missions: {{battles}}. With {{count}} day left, that is about {{perDay}} a day.",
+      "perDay_other": "Campaign battles left in this event's missions: {{battles}}. With {{count}} days left, that is about {{perDay}} a day.",
+      "short_one": "Campaign battles left in this event's missions: {{battles}}. With {{count}} day left, your daily energy covers at most {{max}} a day at the cheapest nodes, so about {{short}} won't fit before the event ends.",
+      "short_other": "Campaign battles left in this event's missions: {{battles}}. With {{count}} days left, your daily energy covers at most {{max}} a day at the cheapest nodes, so about {{short}} won't fit before the event ends."
+    },
+    "noDrop": {
+      "title": "Or the no-drop Indomitus battles (6 to 14)",
+      "note": "They cost 3 energy each but drop nothing and give little gold. Each raid here replaces one above."
     }
   },
   "tokens": {

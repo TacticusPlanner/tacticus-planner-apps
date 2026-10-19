@@ -825,7 +825,17 @@
       "moveToProjectTitle": "Move to project",
       "moveToProjectDescription": "This is the goal's only project. Choose a project to move it into, or create a new one.",
       "moveSelectionDescription_one": "{{project}} is the only project for {{count}} of the selected goals. Choose a project to move it into, or create a new one. The other selected goals are just removed from {{project}}.",
-      "moveSelectionDescription_other": "{{project}} is the only project for {{count}} of the selected goals. Choose a project to move them into, or create a new one. The other selected goals are just removed from {{project}}."
+      "moveSelectionDescription_other": "{{project}} is the only project for {{count}} of the selected goals. Choose a project to move them into, or create a new one. The other selected goals are just removed from {{project}}.",
+      "relatedTo": "Related to",
+      "relatedToNone": "None",
+      "targetChip": "LE · {{name}}",
+      "eventProject": "Project: {{name}}",
+      "eventProjectGoals_one": "Project: {{name}} · {{count}} goal",
+      "eventProjectGoals_other": "Project: {{name}} · {{count}} goals",
+      "eventArchived_one": "+{{count}} archived",
+      "eventArchived_other": "+{{count}} archived",
+      "eventNoProject": "No project for this event",
+      "eventOpenProjects": "Go to Projects"
     },
     "toasts": {
       "statusChangedPartial": "Updated {{succeeded}} of {{total}} goals.",

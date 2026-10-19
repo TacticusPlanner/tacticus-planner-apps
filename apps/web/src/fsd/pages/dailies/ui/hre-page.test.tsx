@@ -96,27 +96,34 @@ const preview = () => ({
 })
 
 const indomitus = (node: number) => `I${String(node).padStart(2, "0")}`
+const row = (battleId: string, energyCost: number, raids: number) => ({
+  battleId,
+  energyCost,
+  raids,
+  energy: raids * energyCost,
+  goal: null,
+})
 const plan = (overrides = {}) => ({
-  plannedCount: 25,
   battlesLeft: 38,
   energyBudget: 188,
   rows: [
-    ...Array.from({ length: 9 }, (_, index) => ({
-      battleId: indomitus(index + 6),
-      energyCost: 3,
-      raids: 3,
-      energy: 9,
-      goal: null,
-    })),
-    { battleId: "I15", energyCost: 5, raids: 10, energy: 50, goal: null },
-    { battleId: "I16", energyCost: 5, raids: 1, energy: 5, goal: null },
+    row("I15", 5, 10),
+    row("I16", 5, 10),
+    row("I17", 5, 10),
+    row("I18", 5, 7),
   ],
-  totalRaids: 38,
-  totalEnergy: 136,
-  remainingAfter: 0,
+  totalRaids: 37,
+  totalEnergy: 185,
+  remainingAfter: 1,
   empty: null,
-  cheapestEnergyCost: 3,
-  cheapestDailyCapacity: 27,
+  noDropRows: Array.from({ length: 9 }, (_, index) =>
+    row(indomitus(index + 6), 3, 3)
+  ),
+  outlookNodes: [
+    ...Array.from({ length: 9 }, () => ({ energyCost: 3, dailyAttempts: 3 })),
+    ...Array.from({ length: 15 }, () => ({ energyCost: 5, dailyAttempts: 10 })),
+  ],
+  dailyEnergy: 538,
   ...overrides,
 })
 
@@ -209,8 +216,9 @@ describe("HRE tab", () => {
     expect(screen.getByTestId("hre-raids-notice")).toHaveTextContent(
       "hre:raids.notice.preview"
     )
+    // The whole 14 days of a preview: 725 battles, 52 a day (27 at 3 energy, 25 at 5).
     expect(screen.getByTestId("hre-campaign-summary")).toHaveTextContent(
-      "count=725"
+      "raids.summary.fits|count=14,battles=725,perDay=52,energy=206"
     )
     expect(screen.queryByTestId("hre-pace")).toBeNull()
   })
@@ -240,21 +248,32 @@ describe("HRE tab", () => {
       missionRaids: { battlesToGo: 63, eventOnly: false },
     })
     const raids = screen.getByTestId("hre-raids")
-    expect(within(raids).getByRole("heading")).toHaveTextContent(
+    expect(within(raids).getByRole("heading", { level: 2 })).toHaveTextContent(
       "raids.title|mission=missions.number|number=5"
     )
     expect(screen.getByTestId("hre-raids-to-go")).toHaveTextContent("count=63")
-    expect(screen.getByTestId("hre-raids-note")).toHaveTextContent("count=25")
+    expect(screen.getByTestId("hre-raids-note")).not.toHaveTextContent(
+      "raids.planned"
+    )
     expect(screen.getByTestId("hre-raids-note")).toHaveTextContent("energy=188")
     expect(
       within(screen.getByTestId("hre-raids-list")).getAllByRole("listitem")
-    ).toHaveLength(11)
-    expect(screen.getByTestId("hre-raids-totals")).toHaveTextContent("count=38")
+    ).toHaveLength(4)
+    expect(screen.getByTestId("hre-raids-totals")).toHaveTextContent("count=37")
     expect(screen.getByTestId("hre-raids-totals")).toHaveTextContent(
-      "energy=136"
+      "energy=185"
     )
+    expect(
+      within(screen.getByTestId("hre-raids-no-drop-list")).getAllByRole(
+        "listitem"
+      )
+    ).toHaveLength(9)
+    expect(screen.getByTestId("hre-raids-no-drop-totals")).toHaveTextContent(
+      "count=27"
+    )
+    // 20 hours into the 14 days: 14 days left, 48 a day (27 at 3 energy, 21 at 5).
     expect(screen.getByTestId("hre-campaign-summary")).toHaveTextContent(
-      "battles=663,energy=1,989,days=25"
+      "raids.summary.fits|count=14,battles=663,perDay=48,energy=186"
     )
   })
 
@@ -271,7 +290,26 @@ describe("HRE tab", () => {
       "data-status",
       "current"
     )
-    expect(screen.getByTestId("hre-objective-1-input")).toHaveValue(0)
+    expect(screen.getByTestId("hre-objective-1-input")).toHaveValue(null)
+  })
+
+  it("types into an empty input without a leading zero", async () => {
+    seed({ mission: 5, progress: [0, 0] })
+    renderHre()
+    const input = screen.getByTestId("hre-objective-1-input")
+    expect(input).toHaveValue(null)
+    await userEvent.type(input, "33")
+    expect(input).toHaveValue(33)
+    expect(input).toHaveDisplayValue("33")
+  })
+
+  it("completes one objective in one click", async () => {
+    seed({ mission: 5, progress: [0, 37] })
+    renderHre()
+    await userEvent.click(screen.getByTestId("hre-objective-1-mark-done"))
+    expect(screen.getByTestId("hre-objective-1-input")).toHaveValue(100)
+    expect(screen.getByTestId("hre-objective-1-done")).toBeInTheDocument()
+    expect(screen.queryByTestId("hre-objective-1-mark-done")).toBeNull()
   })
 
   it("names the next campaign mission when the current one has none", () => {
@@ -304,7 +342,7 @@ describe("HRE tab", () => {
   it("asks to win lightning victories manually without a campaign event", () => {
     mocks.raids = {
       status: "no-goals",
-      missionRaids: plan({ rows: [], plannedCount: 0, empty: "no-event" }),
+      missionRaids: plan({ rows: [], empty: "no-event" }),
       locationsByBattleId: new Map(),
     }
     renderHre()
@@ -320,7 +358,7 @@ describe("HRE tab", () => {
     seed({ mission: 5, progress: [0, 37] })
     mocks.raids = {
       status: "no-goals",
-      missionRaids: plan({ rows: [], plannedCount: 0, empty: "filtered" }),
+      missionRaids: plan({ rows: [], empty: "filtered" }),
       locationsByBattleId: new Map(),
     }
     renderHre()
