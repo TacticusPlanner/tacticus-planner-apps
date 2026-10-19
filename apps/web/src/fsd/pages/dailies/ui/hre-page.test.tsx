@@ -104,7 +104,6 @@ const row = (battleId: string, energyCost: number, raids: number) => ({
   goal: null,
 })
 const plan = (overrides = {}) => ({
-  plannedCount: 25,
   battlesLeft: 38,
   energyBudget: 188,
   rows: [
@@ -253,7 +252,9 @@ describe("HRE tab", () => {
       "raids.title|mission=missions.number|number=5"
     )
     expect(screen.getByTestId("hre-raids-to-go")).toHaveTextContent("count=63")
-    expect(screen.getByTestId("hre-raids-note")).toHaveTextContent("count=25")
+    expect(screen.getByTestId("hre-raids-note")).not.toHaveTextContent(
+      "raids.planned"
+    )
     expect(screen.getByTestId("hre-raids-note")).toHaveTextContent("energy=188")
     expect(
       within(screen.getByTestId("hre-raids-list")).getAllByRole("listitem")
@@ -341,7 +342,7 @@ describe("HRE tab", () => {
   it("asks to win lightning victories manually without a campaign event", () => {
     mocks.raids = {
       status: "no-goals",
-      missionRaids: plan({ rows: [], plannedCount: 0, empty: "no-event" }),
+      missionRaids: plan({ rows: [], empty: "no-event" }),
       locationsByBattleId: new Map(),
     }
     renderHre()
@@ -357,7 +358,7 @@ describe("HRE tab", () => {
     seed({ mission: 5, progress: [0, 37] })
     mocks.raids = {
       status: "no-goals",
-      missionRaids: plan({ rows: [], plannedCount: 0, empty: "filtered" }),
+      missionRaids: plan({ rows: [], empty: "filtered" }),
       locationsByBattleId: new Map(),
     }
     renderHre()

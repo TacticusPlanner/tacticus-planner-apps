@@ -28,7 +28,7 @@ type HreRaidsRequest = MissionRaidsRequest & {
 
 /**
  * Dailies > HRE campaign raids: for the current mission's open campaign (or lightning) objective,
- * where to raid today with the least energy after Today's remaining plan (`planMissionRaids`),
+ * where to raid with the least of today's energy left, Today's plan aside (`planMissionRaids`),
  * with its totals and empty states, then the no-drop Indomitus alternative. Without one, `notice`
  * says why. Always ends with the campaign outlook: battles left over the remaining missions against
  * the days the event has left.
@@ -88,9 +88,6 @@ export function HreRaidsSection({
             data-testid="hre-raids-note"
           >
             {request.eventOnly ? t("raids.noteLightning") : t("raids.note")}
-            {plan.plannedCount > 0
-              ? ` ${t("raids.planned", { count: plan.plannedCount })}`
-              : ""}
             {` ${t("raids.budget", { energy: plan.energyBudget })}`}
           </p>
           {plan.rows.length > 0 ? (
@@ -155,15 +152,13 @@ function EmptyState({
       data-testid={`hre-raids-empty-${reason}`}
     >
       <p>
-        {reason === "plan-completes"
-          ? t("hre:raids.empty.planCompletes")
-          : reason === "no-energy"
-            ? t("hre:raids.empty.noEnergy", { count: plan.plannedCount })
-            : reason === "no-attempts"
-              ? t("hre:raids.empty.noAttempts")
-              : reason === "no-event"
-                ? t("hre:raids.empty.noEvent", { count: battlesToGo })
-                : t("hre:raids.empty.noCandidates")}
+        {reason === "no-energy"
+          ? t("hre:raids.empty.noEnergy")
+          : reason === "no-attempts"
+            ? t("hre:raids.empty.noAttempts")
+            : reason === "no-event"
+              ? t("hre:raids.empty.noEvent", { count: battlesToGo })
+              : t("hre:raids.empty.noCandidates")}
       </p>
       {reason === "filtered" ? (
         <Button

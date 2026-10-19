@@ -7,7 +7,6 @@ import {
   type EstimateResourceId,
   type EstimateUpgrade,
   type GoalNeed,
-  type RaidBreakdownEntry,
 } from "@/features/goal-farming/@x/daily-raids"
 import type { Battle } from "@/shared/lib"
 
@@ -36,19 +35,12 @@ type MissionRaidRow = {
 }
 
 type MissionRaidsEmptyReason =
-  | "plan-completes"
-  | "no-energy"
-  | "no-attempts"
-  | "no-candidates"
-  | "filtered"
-  | "no-event"
+  "no-energy" | "no-attempts" | "no-candidates" | "filtered" | "no-event"
 
 export type MissionRaidPlan = {
-  /** Remaining raids on Today's plan that count toward the objective. */
-  plannedCount: number
-  /** Battles left for suggestions after Today's plan. */
+  /** Battles still needed for the objective. */
   battlesLeft: number
-  /** Daily energy minus energy spent minus Today's remaining planned energy, never below 0. */
+  /** Daily energy minus the energy really spent today, never below 0. */
   energyBudget: number
   /** Suggestions over nodes that drop something. */
   rows: MissionRaidRow[]
@@ -81,8 +73,6 @@ export type PlanMissionRaidsInput = MissionRaidsRequest & {
   battles: readonly MissionRaidBattle[]
   /** Synced attempts left today; a node absent here has its full daily cap. */
   attemptsLeftByBattle: ReadonlyMap<BattleId, number>
-  /** Raids Today still plans (not done yet) per node. */
-  plannedByBattle: ReadonlyMap<BattleId, number>
   dailyEnergy: number
   realEnergyUsedToday: number
   goalNodesByBattle: ReadonlyMap<BattleId, MissionGoalNode>
@@ -120,33 +110,19 @@ function compareCandidates(
 
 /**
  * Where to raid today so the current HRE mission's campaign objective finishes with the least
- * energy. Today's remaining planned raids count first and keep their energy and attempts; the rest
- * is filled over the eligible nodes that drop something, in `compareCandidates` order, each getting
- * as many raids as its attempts, the budget and the battles left allow. A node that does not fit is
+ * energy left today. Today's plan is not counted: the battles still needed are filled over the
+ * eligible nodes that drop something, in `compareCandidates` order, each getting as many raids as
+ * its attempts, the budget and the battles left allow. A node that does not fit is
  * skipped, not a stop. The nodes that drop nothing get the same fill on their own, as an
  * alternative.
  */
 export function planMissionRaids(
   input: PlanMissionRaidsInput
 ): MissionRaidPlan {
-  const byId = new Map(input.battles.map((battle) => [battle.id, battle]))
-  const counts = (battleId: BattleId) =>
-    !input.eventOnly || byId.get(battleId)?.isEvent === true
-
-  let plannedCount = 0
-  let plannedEnergy = 0
-  for (const [battleId, raids] of input.plannedByBattle) {
-    const battle = byId.get(battleId)
-    if (!battle || raids <= 0) continue
-    plannedEnergy += raids * battle.energyCost
-    if (counts(battleId)) plannedCount += raids
-  }
-
-  const battlesToGo = Math.max(0, Math.floor(input.battlesToGo))
-  const battlesLeft = Math.max(0, battlesToGo - plannedCount)
+  const battlesLeft = Math.max(0, Math.floor(input.battlesToGo))
   const energyBudget = Math.max(
     0,
-    input.dailyEnergy - input.realEnergyUsedToday - plannedEnergy
+    input.dailyEnergy - input.realEnergyUsedToday
   )
 
   const raidable = (battle: MissionRaidBattle) =>
@@ -177,7 +153,6 @@ export function planMissionRaids(
   ): MissionRaidPlan => {
     const totalRaids = rows.reduce((total, row) => total + row.raids, 0)
     return {
-      plannedCount,
       battlesLeft,
       energyBudget,
       rows,
@@ -191,7 +166,6 @@ export function planMissionRaids(
     }
   }
 
-  if (battlesLeft === 0) return done([], "plan-completes")
   if (input.eventOnly && !input.battles.some((battle) => battle.isEvent)) {
     return done([], "no-event")
   }
@@ -221,7 +195,7 @@ function fill(
     const cap =
       input.attemptsLeftByBattle.get(battle.id) ??
       (battle.dailyAttempts > 0 ? battle.dailyAttempts : Infinity)
-    const attempts = cap - (input.plannedByBattle.get(battle.id) ?? 0)
+    const attempts = cap
     if (attempts <= 0 && budget >= battle.energyCost) attemptsBlocked = true
     const raids = Math.min(
       attempts,
@@ -240,29 +214,6 @@ function fill(
     })
   }
   return { rows, attemptsBlocked }
-}
-
-/**
- * The raids Today still plans per node: the planned raids less the attempts already used there
- * today, never below 0 (Today's plan is the whole day's run, not what remains).
- */
-export function remainingPlannedRaids(
-  entries: readonly Pick<RaidBreakdownEntry, "battleId" | "raidsPerformed">[],
-  attemptsUsedByBattle: ReadonlyMap<BattleId, number>
-): Map<BattleId, number> {
-  const planned = new Map<BattleId, number>()
-  for (const entry of entries) {
-    planned.set(
-      entry.battleId,
-      (planned.get(entry.battleId) ?? 0) + entry.raidsPerformed
-    )
-  }
-  const remaining = new Map<BattleId, number>()
-  for (const [battleId, raids] of planned) {
-    const left = raids - (attemptsUsedByBattle.get(battleId) ?? 0)
-    if (left > 0) remaining.set(battleId, left)
-  }
-  return remaining
 }
 
 /**
