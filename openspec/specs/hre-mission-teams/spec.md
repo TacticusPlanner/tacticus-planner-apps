@@ -14,11 +14,11 @@ When the current mission has open objectives that only progress in battles playe
 2. **Alliance** (`winWithAllianceLineup`, `useAbilitiesAlliance`, `killWithAlliance`): only units of the featured hero's alliance.
 3. **Summon-free** (`winWithoutSummons`): excludes every unit with an ability that summons units, according to the ability rules text.
 4. **Ranged** (`killWithRanged`): only units with a ranged attack.
-5. **Melee** (`killWithMelee`): only units without a ranged attack.
+5. **Melee** (`killWithMelee`): only units without a ranged attack, so every kill is a melee one; this is stricter than the objective, since ranged units can also attack in melee.
 6. **Abilities** (`useAbilities`): the strongest units, and the card says every ability use counts.
 7. **Strongest** (kills, damage, ability damage, a damage type, healing): the strongest units.
 
-Severyn chose one combined team (2026-10): no mission's two objectives ask for teams that cannot be one, so the teams split only if a future mission's pair is incompatible. Machines of War are not part of any team, because they count for no objective.
+Severyn chose one combined team (2026-10): no mission's two objectives ask for teams that cannot be one, so the teams split only if a future mission's pair is incompatible. Teams hold characters only: Machines of War don't count toward ability uses.
 
 #### Scenario: All-Xenos mission
 

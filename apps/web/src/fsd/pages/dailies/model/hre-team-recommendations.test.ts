@@ -290,4 +290,17 @@ describe("buildHreTeam with a running HSE", () => {
     expect(team).toMatchObject({ status: "ready", hseUnits: 5 })
     expect(ids(team).every((id) => psykerIds.has(id))).toBe(true)
   })
+
+  it("counts an event that scores only in Elite campaigns for a campaign battle team", () => {
+    const elite = psykers.map((tracker) => ({
+      ...tracker,
+      gameModes: { allowed: ["EliteCampaign"], disallowed: null },
+    }))
+    expect(
+      build({
+        plan: { rule: "strongest", mode: "battle" },
+        hseTrackers: elite,
+      })
+    ).toMatchObject({ status: "ready", hseUnits: 5 })
+  })
 })

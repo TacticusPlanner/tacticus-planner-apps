@@ -3,6 +3,7 @@
 // which also reads the scoring modes and trackers for its event team suggestions.
 export { useHseProjection } from "./model/use-hse-projection"
 export {
+  HSE_CAMPAIGN_MODES,
   hseSectionsShown,
   type HseEventPointsState,
   type HseInstance,
