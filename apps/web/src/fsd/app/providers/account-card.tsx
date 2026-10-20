@@ -5,6 +5,7 @@ import {
   LogOut,
   MapIcon,
   MessageSquareText,
+  Newspaper,
   User,
 } from "lucide-react"
 import { useTranslation } from "react-i18next"
@@ -22,7 +23,7 @@ import {
 } from "./account-menu-parts"
 import { CatalogSyncStatusBadge } from "./catalog-sync-status-badge"
 import { EditDisplayNameButton } from "./edit-display-name-button"
-import { USERJOT_ROADMAP_URL } from "./userjot-provider"
+import { USERJOT_CHANGELOG_URL, USERJOT_ROADMAP_URL } from "./userjot-provider"
 
 /** Signed-in account card, shared by the desktop popover and the mobile drawer: identity header, preferences, account/import/feedback rows,
  *  sign out, and the game catalog status as a quiet footer. Language opens an
@@ -38,7 +39,7 @@ export function AccountCard({
   onFeedback,
   onImportV1,
   onOpenAccountSettings,
-  onRoadmap,
+  onExternalLink,
   onSignOut,
   signOutDisabled,
   tourRow,
@@ -54,7 +55,7 @@ export function AccountCard({
   onFeedback: () => void
   onImportV1: () => void
   onOpenAccountSettings: () => void
-  onRoadmap?: () => void
+  onExternalLink?: () => void
   onSignOut: () => void
   signOutDisabled: boolean
   /** Extra row after Send feedback (the mobile drawer has no rail, so it adds the tour here). */
@@ -133,10 +134,17 @@ export function AccountCard({
         {tourRow}
         <MenuLinkRow
           data-testid="auth-roadmap"
-          onClick={onRoadmap}
+          onClick={onExternalLink}
           href={USERJOT_ROADMAP_URL}
           icon={MapIcon}
           label={t("feedback.roadmap")}
+        />
+        <MenuLinkRow
+          data-testid="auth-changelog"
+          onClick={onExternalLink}
+          href={USERJOT_CHANGELOG_URL}
+          icon={Newspaper}
+          label={t("feedback.changelog")}
         />
       </div>
       <Separator />

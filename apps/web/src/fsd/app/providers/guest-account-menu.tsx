@@ -1,5 +1,5 @@
 import { useState, type ReactNode } from "react"
-import { LogIn, MapIcon, Settings } from "lucide-react"
+import { LogIn, MapIcon, Newspaper, Settings } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
 import {
@@ -9,7 +9,7 @@ import {
   PopoverTrigger,
 } from "@workspace/ui/components/popover"
 import { Separator } from "@workspace/ui/components/separator"
-import { USERJOT_ROADMAP_URL } from "./userjot-provider"
+import { USERJOT_CHANGELOG_URL, USERJOT_ROADMAP_URL } from "./userjot-provider"
 
 import {
   LanguagePickerView,
@@ -19,7 +19,7 @@ import {
 } from "./account-menu-parts"
 
 /** Signed-out desktop preferences: theme selection plus the existing sign-in action. */
-/** Guest Preferences (theme, language), the Roadmap row, and caller-supplied extra content
+/** Guest Preferences (theme, language), the Roadmap and Changelog rows, and caller-supplied extra content
  *  (sign-in on desktop, the tour on mobile). Language opens an in-card picker; the view resets
  *  because popover content unmounts on close. */
 export function GuestPreferencesCard({ children }: { children?: ReactNode }) {
@@ -38,6 +38,12 @@ export function GuestPreferencesCard({ children }: { children?: ReactNode }) {
         href={USERJOT_ROADMAP_URL}
         icon={MapIcon}
         label={t("feedback.roadmap")}
+      />
+      <MenuLinkRow
+        data-testid="auth-changelog"
+        href={USERJOT_CHANGELOG_URL}
+        icon={Newspaper}
+        label={t("feedback.changelog")}
       />
       {children}
     </>
