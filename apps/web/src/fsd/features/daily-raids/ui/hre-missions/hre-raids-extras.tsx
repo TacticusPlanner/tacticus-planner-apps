@@ -21,7 +21,7 @@ export type RaidRowsView = {
 }
 
 /** One row per suggested node: its location, the goals it feeds (as on the HSE farm list), the goal
- * drop with "owned/target", raids and energy. */
+ * drop with "owned/target", the running Home Screen Event's points, raids and energy. */
 export function RaidRows({
   rows,
   testId,
@@ -62,6 +62,15 @@ export function RaidRows({
                   testId={`hre-raid-${row.battleId}-stock`}
                 />
               </span>
+            ) : null}
+            {row.eventPoints > 0 ? (
+              <Badge
+                className="tabular-nums"
+                data-testid={`hre-raid-${row.battleId}-event-points`}
+                variant="outline"
+              >
+                {t("raids.eventPoints", { points: row.eventPoints })}
+              </Badge>
             ) : null}
             <Badge className="tabular-nums" variant="outline">
               {t("raids.raidCount", { count: row.raids })}

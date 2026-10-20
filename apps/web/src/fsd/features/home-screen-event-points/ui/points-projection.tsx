@@ -20,14 +20,15 @@ import type {
   HseEventPointsState,
   HseProjectionView,
 } from "../model/hse-event-points"
-import { AverageInput, PointsSoFarInput } from "./points-projection-inputs"
+import { AverageInput, ProgressInput } from "./points-projection-inputs"
 import { useModeName } from "./use-mode-name"
 
 type ReadyProjection = Extract<HseProjectionView, { status: "ready" }>
 
 /**
- * The points projection of a running or upcoming personal event: the final milestone, points so far
- * (running only) and what remains, the units to defeat, the average needed per token, and the points
+ * The points projection of a running or upcoming personal event: the final milestone, the progress
+ * (running only: milestones done and points in the current one, as the game shows them, and their
+ * total) and what remains, the units to defeat, the average needed per token, and the points
  * the player's own averages project. Desktop lays the modes out as a table; mobile stacks one row per
  * mode under the totals.
  */
@@ -110,18 +111,62 @@ function ReadyProjectionBody({
         {pts(projection.target)}
       </Total>
       {view.instanceStatus === "running" ? (
-        <Total label={t("hse.projection.pointsSoFar")} testId="points-so-far">
-          <PointsSoFarInput
-            onChange={inputs.setPointsSoFar}
-            value={inputs.pointsSoFar}
-          />
-          <span
-            className="mt-0.5 block text-xs text-muted-foreground"
-            id="hse-points-so-far-hint"
-          >
-            {t("hse.projection.pointsSoFarHint")}
-          </span>
-        </Total>
+        <>
+          <Total label={t("hse.projection.progress")} testId="progress">
+            <span className="flex flex-col gap-1.5">
+              <span className="flex flex-wrap items-center gap-1.5">
+                <ProgressInput
+                  label={t("hse.projection.milestonesDoneLabel")}
+                  max={view.milestones.max ?? undefined}
+                  onChange={(milestonesDone) =>
+                    inputs.setProgress({ milestonesDone })
+                  }
+                  testId="hse-projection-milestones-done-input"
+                  value={inputs.progress.milestonesDone}
+                />
+                <span className="text-xs text-muted-foreground">
+                  {t("hse.projection.milestonesDone", {
+                    total: view.milestones.count,
+                  })}
+                </span>
+              </span>
+              {view.milestones.currentPoints === null ? (
+                <span
+                  className="text-xs text-muted-foreground"
+                  data-testid="hse-projection-all-milestones-done"
+                >
+                  {t("hse.projection.allMilestonesDone")}
+                </span>
+              ) : (
+                <span className="flex flex-wrap items-center gap-1.5">
+                  <ProgressInput
+                    label={t("hse.projection.pointsInMilestoneLabel")}
+                    max={view.milestones.currentPoints}
+                    onChange={(pointsInMilestone) =>
+                      inputs.setProgress({ pointsInMilestone })
+                    }
+                    testId="hse-projection-points-in-milestone-input"
+                    value={inputs.progress.pointsInMilestone}
+                  />
+                  <span className="text-xs text-muted-foreground">
+                    {t("hse.projection.pointsInMilestone", {
+                      points: numbers.format(view.milestones.currentPoints),
+                    })}
+                  </span>
+                </span>
+              )}
+            </span>
+            <span
+              className="mt-0.5 block text-xs text-muted-foreground"
+              id="hse-progress-hint"
+            >
+              {t("hse.projection.progressHint")}
+            </span>
+          </Total>
+          <Total label={t("hse.projection.pointsSoFar")} testId="points-so-far">
+            {pts(projection.pointsSoFar)}
+          </Total>
+        </>
       ) : null}
       <Total label={t("hse.projection.remaining")} testId="remaining">
         {projection.finalReached

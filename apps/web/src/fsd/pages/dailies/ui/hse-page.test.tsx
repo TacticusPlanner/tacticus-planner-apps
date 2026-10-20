@@ -79,17 +79,6 @@ vi.mock("../model/use-hse-team-recommendations", async () => {
     ) => fixtureHseTeams(instance, points, mocks.teamsRead),
   }
 })
-vi.mock("@/entities/planning-setting", () => ({
-  PlanningSettingsTrigger: ({
-    onClick,
-    testId,
-  }: {
-    onClick: () => void
-    testId: string
-  }) => <button data-testid={testId} onClick={onClick} type="button" />,
-  PlanningSettingsDialog: ({ open }: { open: boolean }) =>
-    open ? <div data-testid="planning-settings-dialog" /> : null,
-}))
 
 const HOUR = 3_600_000
 const DAY = 24 * HOUR
@@ -298,7 +287,6 @@ describe("HSE tab states", () => {
     expect(screen.getByTestId("hse-raids-note")).toHaveTextContent(
       "hse.raids.budget|energy=100"
     )
-    expect(screen.getByTestId("raids-filters")).toBeInTheDocument()
   })
 
   it("lists the farm rows in the order the plan gives them, with the drop icon", () => {
@@ -338,7 +326,7 @@ describe("HSE tab states", () => {
     ).toBeInTheDocument()
   })
 
-  it("previews the next event: countdown status, a not-live banner, the lists and every control", () => {
+  it("previews the next event: countdown status, a not-live banner and the lists", () => {
     mocks.event = readyAt([
       entryOf("hse-warp-surge", Date.now() + 30 * HOUR, Date.now() + 80 * HOUR),
     ])
@@ -354,9 +342,6 @@ describe("HSE tab states", () => {
     expect(banner).toHaveTextContent("dailies:hse.preview.body")
     expect(screen.getByTestId("hse-raids")).toBeInTheDocument()
     expect(screen.getByTestId("hse-top-overall")).toBeInTheDocument()
-    expect(screen.getByTestId("raids-filters")).toBeInTheDocument()
-    expect(screen.getByTestId("hse-planning-settings")).toBeInTheDocument()
-    expect(screen.getByTestId("hse-project-select")).toBeInTheDocument()
     // The lists are computed for the upcoming event's rule.
     expect(mocks.raidsArgs.at(-1)).toEqual([
       undefined,
@@ -384,8 +369,6 @@ describe("HSE tab states", () => {
     expect(screen.queryByTestId("hse-preview-banner")).toBeNull()
     expect(screen.queryByTestId("hse-raids")).not.toBeInTheDocument()
     expect(screen.queryByTestId("hse-top-overall")).not.toBeInTheDocument()
-    expect(screen.queryByTestId("raids-filters")).not.toBeInTheDocument()
-    expect(screen.queryByTestId("hse-planning-settings")).toBeNull()
   })
 
   it("says nothing is scheduled when no event is active or upcoming", () => {
@@ -402,7 +385,7 @@ describe("HSE tab states", () => {
     expect(screen.getByTestId("hse-event-next")).toBeDisabled()
   })
 
-  it("explains an active event without raid points and shows no lists or controls", () => {
+  it("explains an active event without raid points and shows no lists", () => {
     mocks.event = activeEvent("hse-faction-boost")
     renderHse()
 
@@ -411,8 +394,6 @@ describe("HSE tab states", () => {
     )
     expect(screen.queryByTestId("hse-raids")).not.toBeInTheDocument()
     expect(screen.queryByTestId("hse-top-overall")).not.toBeInTheDocument()
-    expect(screen.queryByTestId("raids-filters")).not.toBeInTheDocument()
-    expect(screen.queryByTestId("hse-planning-settings")).toBeNull()
   })
 
   it("shows an inline error when the calendar cannot be read", () => {
@@ -432,10 +413,17 @@ describe("HSE tab states", () => {
 })
 
 describe("HSE tab header", () => {
+  it("shows no project, Raids Filters or Planning Settings controls", () => {
+    renderHse()
+
+    expect(screen.queryByTestId("hse-project-select")).toBeNull()
+    expect(screen.queryByTestId("raids-filters")).toBeNull()
+    expect(screen.queryByTestId("hse-planning-settings")).toBeNull()
+  })
+
   it("passes the Dailies project selection to the farm list and the event id", () => {
     renderHse("project-1")
 
-    expect(screen.getByTestId("hse-project-select")).toBeInTheDocument()
     expect(mocks.raidsArgs.at(-1)).toEqual([
       "project-1",
       { homeScreenEventId: "hse-machine-hunt" },
@@ -446,16 +434,6 @@ describe("HSE tab header", () => {
     renderHse()
 
     expect(mocks.raidsArgs.at(-1)?.[0]).toBeUndefined()
-  })
-
-  it("opens the planning settings dialog from the header trigger", async () => {
-    const user = userEvent.setup()
-    renderHse()
-
-    expect(screen.queryByTestId("planning-settings-dialog")).toBeNull()
-    await user.click(screen.getByTestId("hse-planning-settings"))
-
-    expect(screen.getByTestId("planning-settings-dialog")).toBeInTheDocument()
   })
 })
 
@@ -608,19 +586,6 @@ describe("HSE tab layout", () => {
       )
     }
   )
-
-  it("collapses the filters trigger to an icon on mobile", () => {
-    mocks.isMobile = true
-    renderHse()
-
-    expect(screen.getByTestId("raids-filters")).not.toHaveTextContent(
-      "raidsFilters.trigger"
-    )
-    expect(screen.getByTestId("raids-filters")).toHaveAttribute(
-      "aria-label",
-      "raidsFilters.trigger"
-    )
-  })
 })
 
 describe("HSE tab Raids Filters", () => {
@@ -632,14 +597,13 @@ describe("HSE tab Raids Filters", () => {
       )
       window.dispatchEvent(new StorageEvent("storage"))
     })
-  it("shows no filtered-out notice (the list is filter-then-pick) and the shared badge", () => {
+  it("shows no filtered-out notice (the list is filter-then-pick)", () => {
     renderHse()
     applyFilter()
 
     expect(
       screen.queryByTestId("raids-filters-filtered-out")
     ).not.toBeInTheDocument()
-    expect(screen.getByTestId("raids-filters-badge")).toHaveTextContent("1")
   })
 
   it("offers Reset in the filtered-empty farm list and clears the filter", async () => {
@@ -651,7 +615,9 @@ describe("HSE tab Raids Filters", () => {
     expect(screen.getByTestId("hse-raids-empty-filtered")).toBeInTheDocument()
     await user.click(screen.getByTestId("hse-raids-reset"))
 
-    expect(screen.queryByTestId("raids-filters-badge")).not.toBeInTheDocument()
+    expect(
+      JSON.parse(window.localStorage.getItem("raids-filters.v1") ?? "{}")
+    ).not.toMatchObject({ slots: [3] })
   })
 
   it("shows the filtered-empty message with Reset in each empty top-10 list", async () => {
@@ -667,7 +633,6 @@ describe("HSE tab Raids Filters", () => {
     }
     await user.click(screen.getAllByTestId("hse-top-overall-reset")[0]!)
 
-    expect(screen.queryByTestId("raids-filters-badge")).not.toBeInTheDocument()
     expect(screen.getByTestId("hse-top-overall-empty")).toHaveTextContent(
       "hse.top.empty"
     )
@@ -894,27 +859,6 @@ describe("HSE instance switcher", () => {
     expect(switcher.className).toContain("md:w-auto")
     expect(row.className).toContain("flex-wrap")
   })
-
-  it("keeps the header controls after the switcher on desktop and moves the switcher below on mobile", () => {
-    const running = entryOf(
-      "hse-machine-hunt",
-      now - DAY,
-      now + DAY,
-      "occ-running-hunt"
-    )
-    mocks.event = readyAt([running], now)
-    renderHse()
-
-    const switcher = screen.getByTestId("hse-event-switcher")
-    const controls = screen.getByTestId("hse-header-controls")
-    // DOM (and desktop) order: title, switcher, controls.
-    expect(
-      switcher.compareDocumentPosition(controls) &
-        Node.DOCUMENT_POSITION_FOLLOWING
-    ).toBeTruthy()
-    expect(switcher.className).toContain("order-last")
-    expect(switcher.className).toContain("md:order-none")
-  })
 })
 
 describe("HSE selected instance states", () => {
@@ -944,7 +888,7 @@ describe("HSE selected instance states", () => {
     "occ-boost"
   )
 
-  it("shows a past rule-bearing event without lists, banner or header controls", () => {
+  it("shows a past rule-bearing event without lists or banner", () => {
     mocks.event = readyAt([pastHunt, runningHunt], now)
     renderHse(undefined, "/?event=occ-past-hunt")
 
@@ -954,8 +898,6 @@ describe("HSE selected instance states", () => {
     expect(screen.queryByTestId("hse-raids")).not.toBeInTheDocument()
     expect(screen.queryByTestId("hse-top-overall")).not.toBeInTheDocument()
     expect(screen.queryByTestId("hse-preview-banner")).not.toBeInTheDocument()
-    expect(screen.queryByTestId("hse-header-controls")).not.toBeInTheDocument()
-    expect(screen.queryByTestId("raids-filters")).not.toBeInTheDocument()
   })
 
   it("says nothing is scheduled with only past instances, keeping the switcher", async () => {
@@ -985,7 +927,6 @@ describe("HSE selected instance states", () => {
       undefined,
       { homeScreenEventId: "hse-warp-surge" },
     ])
-    expect(screen.getByTestId("hse-header-controls")).toBeInTheDocument()
 
     await user.click(screen.getByTestId("hse-event-previous"))
     expect(location()).toBe("/")
@@ -1037,9 +978,9 @@ describe("HSE event details and projection", () => {
     expect(screen.getByTestId("hse-event-details")).toBeInTheDocument()
     expect(screen.getByTestId("hse-milestones")).toBeInTheDocument()
     expect(screen.getByTestId("hse-projection")).toBeInTheDocument()
-    // Upcoming: no points-so-far input, tokens assume full buckets.
+    // Upcoming: no progress inputs, tokens assume full buckets.
     expect(
-      screen.queryByTestId("hse-projection-points-so-far-input")
+      screen.queryByTestId("hse-projection-milestones-done-input")
     ).not.toBeInTheDocument()
     expect(screen.getByTestId("hse-projection-note-sync")).toHaveTextContent(
       "hse.projection.notes.upcoming"
@@ -1047,7 +988,6 @@ describe("HSE event details and projection", () => {
     expect(screen.queryByTestId("hse-raids")).not.toBeInTheDocument()
     expect(screen.queryByTestId("hse-top-overall")).not.toBeInTheDocument()
     expect(screen.queryByTestId("hse-preview-banner")).not.toBeInTheDocument()
-    expect(screen.queryByTestId("hse-header-controls")).not.toBeInTheDocument()
   })
 
   it("shows an active event without raid points with its details and projection, and no raid lists", () => {
@@ -1063,7 +1003,7 @@ describe("HSE event details and projection", () => {
     expect(screen.getByTestId("hse-event-details")).toBeInTheDocument()
     expect(screen.getByTestId("hse-projection")).toBeInTheDocument()
     expect(
-      screen.getByTestId("hse-projection-points-so-far-input")
+      screen.getByTestId("hse-projection-milestones-done-input")
     ).toBeInTheDocument()
     expect(screen.queryByTestId("hse-raids")).not.toBeInTheDocument()
     expect(screen.queryByTestId("hse-top-lists")).not.toBeInTheDocument()
@@ -1086,7 +1026,6 @@ describe("HSE event details and projection", () => {
     expect(screen.getByTestId("hse-milestones")).toBeInTheDocument()
     expect(screen.queryByTestId("hse-projection")).not.toBeInTheDocument()
     expect(screen.queryByTestId("hse-raids")).not.toBeInTheDocument()
-    expect(screen.queryByTestId("hse-header-controls")).not.toBeInTheDocument()
   })
 
   it("shows no details when nothing is scheduled or the calendar fails", () => {

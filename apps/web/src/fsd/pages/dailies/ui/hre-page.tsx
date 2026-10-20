@@ -1,9 +1,8 @@
-import { useState } from "react"
 import { useOutletContext } from "react-router"
 import { useTranslation } from "react-i18next"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
-import { HreRaidsSection, RaidsFiltersTrigger } from "@/features/daily-raids"
+import { HreRaidsSection } from "@/features/daily-raids"
 import {
   AllMissions,
   campaignObjectiveState,
@@ -25,11 +24,6 @@ import {
   useHreTokens,
   useObjectiveText,
 } from "@/features/hre-missions"
-import {
-  PlanningSettingsDialog,
-  PlanningSettingsTrigger,
-} from "@/entities/planning-setting"
-import { ProjectSelect } from "@/entities/project"
 
 import { useHreTeamRecommendations } from "../model/use-hre-team-recommendations"
 import type { DailiesOutletContext } from "./dailies-layout"
@@ -55,7 +49,6 @@ export function HrePage() {
     "factions",
   ])
   const isMobile = useIsMobile()
-  const [settingsOpen, setSettingsOpen] = useState(false)
   const state = useHreInstance()
   const ready = state.status === "ready" ? state : null
   const instance = ready?.instance ?? null
@@ -221,26 +214,6 @@ export function HrePage() {
           data-testid="hre-title-row"
         >
           <h1 className="text-lg font-semibold">{t("hre:title")}</h1>
-          {running ? (
-            <div
-              className="ml-auto flex items-center gap-2"
-              data-testid="hre-header-controls"
-            >
-              <ProjectSelect
-                allowAll
-                onProjectIdChange={context.setProjectId}
-                placeholder={t("dailies:project.placeholder")}
-                projectId={context.projectId}
-                projects={context.projects}
-                testId="hre-project-select"
-              />
-              <RaidsFiltersTrigger />
-              <PlanningSettingsTrigger
-                onClick={() => setSettingsOpen(true)}
-                testId="hre-planning-settings"
-              />
-            </div>
-          ) : null}
         </div>
         <div data-testid="hre-status">
           <HreEventHeader state={state} />
@@ -281,12 +254,6 @@ export function HrePage() {
             </div>
           </div>
         )
-      ) : null}
-      {settingsOpen ? (
-        <PlanningSettingsDialog
-          onOpenChange={setSettingsOpen}
-          open={settingsOpen}
-        />
       ) : null}
     </section>
   )

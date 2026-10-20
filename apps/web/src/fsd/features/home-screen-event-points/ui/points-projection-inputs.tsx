@@ -14,17 +14,23 @@ function parseAverage(raw: string): number | null {
 }
 
 /**
- * Points so far, as raw text so it can be cleared and retyped (an empty field means 0, shown as the
- * placeholder). The text follows the stored value when it changes from elsewhere (another instance).
+ * A whole-number progress input (milestones done, points in the current milestone), as raw text so it
+ * can be cleared and retyped (an empty field means 0, shown as the placeholder). The text follows the
+ * stored value when it changes from elsewhere (another instance).
  */
-export function PointsSoFarInput({
+export function ProgressInput({
   value,
   onChange,
+  label,
+  testId,
+  max,
 }: {
   value: number
   onChange: (value: number) => void
+  label: string
+  testId: string
+  max?: number
 }) {
-  const { t } = useTranslation("dailies")
   const [raw, setRaw] = useState(() => (value === 0 ? "" : String(value)))
   const [seen, setSeen] = useState(value)
   if (value !== seen) {
@@ -34,11 +40,12 @@ export function PointsSoFarInput({
   }
   return (
     <Input
-      aria-describedby="hse-points-so-far-hint"
-      aria-label={t("hse.projection.pointsSoFar")}
-      className="h-7 w-28"
-      data-testid="hse-projection-points-so-far-input"
+      aria-describedby="hse-progress-hint"
+      aria-label={label}
+      className="h-7 w-20"
+      data-testid={testId}
       inputMode="numeric"
+      max={max}
       min={0}
       onChange={(event) => {
         setRaw(event.target.value)

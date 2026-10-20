@@ -16,6 +16,7 @@ const { mocks } = vi.hoisted(() => ({
     tokens: null as unknown,
     team: { status: "hidden" } as unknown,
     tourSteps: undefined as unknown,
+    homeScreenEvent: { status: "loading" } as unknown,
   },
 }))
 
@@ -53,14 +54,11 @@ vi.mock("@/features/daily-raids/model/use-daily-raids", () => ({
     return mocks.raids
   },
 }))
+vi.mock("@/features/daily-raids/model/use-active-home-screen-event", () => ({
+  useActiveHomeScreenEvent: () => mocks.homeScreenEvent,
+}))
 vi.mock("../model/use-hre-team-recommendations", () => ({
   useHreTeamRecommendations: () => mocks.team,
-}))
-vi.mock("@/entities/planning-setting", () => ({
-  PlanningSettingsTrigger: ({ testId }: { testId: string }) => (
-    <button data-testid={testId} type="button" />
-  ),
-  PlanningSettingsDialog: () => null,
 }))
 
 const DAY = 86_400_000
@@ -165,6 +163,7 @@ beforeEach(() => {
   mocks.raidsArgs.length = 0
   mocks.tokens = null
   mocks.team = { status: "hidden" }
+  mocks.homeScreenEvent = { status: "loading" }
   act(() => {})
 })
 
@@ -178,7 +177,37 @@ describe("HRE tab", () => {
       "hre:status.endsIn"
     )
     expect(screen.queryByTestId("hre-header-preview")).toBeNull()
-    expect(screen.getByTestId("hre-header-controls")).toBeInTheDocument()
+    expect(screen.queryByTestId("hre-header-controls")).toBeNull()
+    expect(screen.queryByTestId("raids-filters")).toBeNull()
+  })
+
+  it("ranks the raids by a running HSE's points too, and says so", () => {
+    mocks.homeScreenEvent = {
+      status: "ready",
+      active: { definitionId: "hse-machine-hunt" },
+    }
+    renderHre()
+    expect(mocks.raidsArgs.at(-1)?.[1]).toMatchObject({
+      homeScreenEventId: "hse-machine-hunt",
+    })
+    expect(screen.getByTestId("hre-raids-note")).toHaveTextContent(
+      "raids.noteHomeScreenEvent|event=events:definitions.hse-machine-hunt"
+    )
+  })
+
+  it("ignores a running HSE that earns no raid points", () => {
+    mocks.homeScreenEvent = {
+      status: "ready",
+      active: { definitionId: "hse-faction-boost" },
+    }
+    renderHre()
+    expect(mocks.raidsArgs.at(-1)?.[1]).not.toHaveProperty(
+      "homeScreenEventId",
+      "hse-faction-boost"
+    )
+    expect(screen.getByTestId("hre-raids-note")).not.toHaveTextContent(
+      "raids.noteHomeScreenEvent"
+    )
   })
 
   it("shows the empty state with no HRE running or scheduled", () => {

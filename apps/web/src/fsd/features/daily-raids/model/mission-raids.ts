@@ -38,6 +38,8 @@ type MissionRaidRow = {
   energy: number
   /** Set when the node drops a resource an in-scope goal still needs. */
   goal: MissionGoalNode | null
+  /** Points these raids earn in the running Home Screen Event; 0 without one. */
+  eventPoints: number
 }
 
 type MissionRaidsEmptyReason =
@@ -90,6 +92,9 @@ export type PlanMissionRaidsInput = MissionRaidsRequest & {
   realEnergyUsedToday: number
   goalNodesByBattle: ReadonlyMap<BattleId, MissionGoalNode>
   passesFilter: (battleId: BattleId) => boolean
+  /** Points one raid of a node earns in the running Home Screen Event, when one with a raid rule
+   * runs: among equal energy costs, nodes earning more come first, so both events progress. */
+  eventPointsByBattle?: ReadonlyMap<BattleId, number>
   /** Kills one raid of a node yields toward `enemyFaction`: its enemy count when that faction is
    * among its enemies, else 0. */
   factionKillsPerRaid?: (battleId: BattleId) => number
@@ -99,13 +104,15 @@ const compareIds = (a: string, b: string) => (a < b ? -1 : a > b ? 1 : 0)
 const descending = (a: number, b: number) => b - a
 
 /**
- * Suggestion order: energy cost; then a node feeding an in-scope goal; among those, the higher drop
+ * Suggestion order: energy cost; then more points in a running Home Screen Event; then a node feeding an in-scope goal; among those, the higher drop
  * rate of the goal's resource (common and uncommon drop more often), then more gold, then the
  * goal's priority; other nodes by gold; then battle id.
  */
 function compareCandidates(
-  goalNodes: ReadonlyMap<BattleId, MissionGoalNode>
+  goalNodes: ReadonlyMap<BattleId, MissionGoalNode>,
+  eventPoints: ReadonlyMap<BattleId, number> | undefined
 ): (a: MissionRaidBattle, b: MissionRaidBattle) => number {
+  const points = (battle: MissionRaidBattle) => eventPoints?.get(battle.id) ?? 0
   const rate = (
     battle: MissionRaidBattle,
     goal: MissionGoalNode | undefined
@@ -115,6 +122,7 @@ function compareCandidates(
     const goalB = goalNodes.get(b.id)
     return (
       a.energyCost - b.energyCost ||
+      descending(points(a), points(b)) ||
       Number(!goalA) - Number(!goalB) ||
       descending(rate(a, goalA), rate(b, goalB)) ||
       descending(a.expectedGold, b.expectedGold) ||
@@ -157,7 +165,10 @@ export function planMissionRaids(
     .filter((battle) => battle.energyCost > 0 && input.passesFilter(battle.id))
     .map(({ energyCost, dailyAttempts }) => ({ energyCost, dailyAttempts }))
 
-  const sort = compareCandidates(input.goalNodesByBattle)
+  const sort = compareCandidates(
+    input.goalNodesByBattle,
+    input.eventPointsByBattle
+  )
   const fillFrom = (candidates: readonly MissionRaidBattle[]) =>
     fill([...candidates].sort(sort), energyBudget, battlesLeft, input)
   const noDropRows =
@@ -255,6 +266,7 @@ function fill(
       raids,
       energy: raids * battle.energyCost,
       goal: input.goalNodesByBattle.get(battle.id) ?? null,
+      eventPoints: raids * (input.eventPointsByBattle?.get(battle.id) ?? 0),
     })
   }
   return { rows, attemptsBlocked }
