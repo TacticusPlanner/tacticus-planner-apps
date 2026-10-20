@@ -137,12 +137,14 @@
       "noUnitFor": " · ninguna unidad para {{objectives}}",
       "reachesAll": "La plantilla llega a todas las batallas",
       "needsEstimates": "El potencial de la plantilla necesita estimaciones de avance",
+      "withGoals": "Con los objetivos planificados: batalla {{battle}}, +{{points}} puntos",
       "column": "Batalla {{battle}} · {{points}} puntos",
       "cellLabel": "{{row}}: {{state}}",
       "states": {
         "cleared": "Superado",
         "teams": "Tus equipos llegan",
         "roster": "La plantilla puede llegar",
+        "goals": "Con objetivos planificados",
         "out": "Fuera de alcance"
       }
     }
@@ -930,7 +932,11 @@
       "removeTeam": "Quitar {{name}}",
       "removed_one": "{{count}} equipo quitado",
       "removed_other": "{{count}} equipos quitados",
-      "restore": "Restaurar"
+      "restore": "Restaurar",
+      "swap": "Un equipo más fuerte podría ocupar este puesto: +{{points}} puntos",
+      "swapSame": "Estas unidades pueden cumplir más objetivos como un equipo nuevo: +{{points}} puntos",
+      "swapAccept": "Cambiar",
+      "swapSkip": "Mantener el mío"
     },
     "runs": {
       "heading": "Datos de las rondas",

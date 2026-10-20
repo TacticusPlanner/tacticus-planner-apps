@@ -1,10 +1,14 @@
+import { useMemo } from "react"
 import { useTranslation } from "react-i18next"
+import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 import { Badge } from "@workspace/ui/components/badge"
 import { cn } from "@workspace/ui/lib/utils"
 
 import { useAnalyticsActions } from "@/shared/analytics"
 
+import { RosterPotentialMap } from "../legendary-event/roster-potential-map"
 import type { StepVerdict } from "./plan-ceiling"
+import { planPotentials } from "./plan-potential"
 import type { PlanDraft } from "./use-plan-draft"
 import type { PlanSource } from "./use-plan-source"
 
@@ -15,7 +19,8 @@ const VERDICT_CLASS: Record<StepVerdict["kind"], string> = {
 }
 
 /** Step 1 (spec: choose the target with a verdict per step): the deadline, then every step after
- *  the unit's progression with its points and verdict, and the highest step within reach. */
+ *  the unit's progression with its points and verdict, the highest step within reach, and every
+ *  lane's roster potential with the battles the target's goals add. */
 export function TargetStep({
   draft,
   source,
@@ -33,6 +38,12 @@ export function TargetStep({
   const exploring =
     draft.recommendations.status === "estimating" ||
     draft.recommendations.status === "running"
+  const isMobile = useIsMobile()
+  const { inputs, evaluation, runs } = draft
+  const potentials = useMemo(
+    () => planPotentials(inputs, evaluation, runs),
+    [inputs, evaluation, runs]
+  )
 
   let deadline: string
   if (runDates.deadlineMs === null) {
@@ -143,6 +154,21 @@ export function TargetStep({
               })
             : t("planWizard.target.noStep")}
       </p>
+      <div className="flex flex-col gap-3" data-testid="plan-wizard-potential">
+        <h3 className="font-semibold">{t("laneOverview.potential.title")}</h3>
+        <div className="grid min-w-0 gap-4 md:grid-cols-3">
+          {inputs.lanes.map(({ laneId, lane }) => (
+            <div className="flex min-w-0 flex-col gap-1" key={laneId}>
+              <h4 className="text-sm font-medium">{t(`lanes.${laneId}`)}</h4>
+              <RosterPotentialMap
+                isMobile={isMobile}
+                lane={lane}
+                view={potentials[laneId]}
+              />
+            </div>
+          ))}
+        </div>
+      </div>
     </section>
   )
 }

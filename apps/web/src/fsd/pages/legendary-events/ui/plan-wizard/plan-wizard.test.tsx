@@ -8,11 +8,11 @@ import { createTestI18n, i18nWrapper } from "@/test/i18n"
 import { render, screen, waitFor, within } from "@/test/render"
 
 import { PlanWizard } from "./plan-wizard"
-import { RUN_3_START_MS, planInputs } from "./plan.fixtures"
+import { EMPTY_PLAN, RUN_3_START_MS, planInputs } from "./plan.fixtures"
 import type { PlanSource } from "./use-plan-source"
 
-const FARMING = {
-  status: "ready" as const,
+const FARMING: { status: string; estimate: () => unknown } = {
+  status: "ready",
   estimate: () => ({ days: 10, date: "2026-10-16" }),
 }
 vi.mock("./use-upgrade-farming-days", () => ({
@@ -66,17 +66,18 @@ beforeAll(async () => {
 
 beforeEach(() => {
   run.mockReset()
+  FARMING.status = "ready"
   createState.items = []
   capture.mockReset()
   run.mockResolvedValue({ ok: true, projectId: "project-1" })
 })
 
-function renderWizard() {
+function renderWizard(source = SOURCE) {
   const router = createMemoryRouter(
     [
       {
         path: "/legendary-events/:eventId/plan",
-        element: <PlanWizard initialTarget={null} source={SOURCE} />,
+        element: <PlanWizard initialTarget={null} source={source} />,
       },
       {
         path: "/legendary-events/:eventId",
@@ -106,11 +107,58 @@ describe("PlanWizard", () => {
     const options = screen.getAllByTestId("plan-wizard-target-option")
     expect(options[0]).toHaveAttribute("data-step", "unlock")
     expect(within(options[0]!).getByRole("radio")).toBeChecked()
-    await waitFor(() =>
-      expect(screen.getByTestId("plan-wizard-best-step")).not.toHaveTextContent(
-        "Checking"
-      )
+    // The exploration runs in chunks; give it room on a busy runner.
+    await waitFor(
+      () =>
+        expect(
+          screen.getByTestId("plan-wizard-best-step")
+        ).not.toHaveTextContent("Checking"),
+      { timeout: 5000 }
     )
+  })
+
+  it("shows every lane's roster potential on the Target step", () => {
+    renderWizard()
+    const potential = screen.getByTestId("plan-wizard-potential")
+    expect(within(potential).getByText("Roster potential")).toBeInTheDocument()
+    expect(within(potential).getAllByTestId("roster-potential")).toHaveLength(3)
+  })
+
+  it("offers to swap a saved team a generated one beats", async () => {
+    // No upgrades: on the synced roster only the saved units can score Melee.
+    FARMING.status = "unavailable"
+    renderWizard({
+      ...SOURCE,
+      inputs: planInputs({
+        plan: {
+          ...EMPTY_PLAN,
+          teams: [
+            {
+              id: "mine",
+              laneId: "alpha",
+              name: "Mine",
+              sortOrder: 0,
+              memberUnitIds: ["ultraCalgar", "ultraTitus", "ultraApothecary"],
+              reserveUnitId: null,
+              objectiveIndexes: [0],
+              runDepths: [],
+            },
+          ],
+        },
+      }),
+    })
+    await next()
+    await next()
+    const swap = await screen.findByTestId("plan-wizard-swap")
+    expect(swap).toHaveTextContent("These units can score more objectives")
+    await userEvent.click(within(swap).getByTestId("plan-wizard-swap-accept"))
+    expect(screen.queryByTestId("plan-wizard-swap")).not.toBeInTheDocument()
+    expect(screen.getByText("1 team removed")).toBeInTheDocument()
+    expect(
+      screen
+        .getAllByTestId("plan-wizard-team")
+        .some((team) => team.dataset.stored === "true")
+    ).toBe(false)
   })
 
   it("walks the five steps and creates the plan in a new project", async () => {

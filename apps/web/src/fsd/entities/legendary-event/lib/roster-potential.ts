@@ -101,18 +101,25 @@ export function laneRosterPotential(
   }
 }
 
-export type PotentialCellState = "cleared" | "teams" | "roster" | "out"
+export type PotentialCellState =
+  "cleared" | "teams" | "roster" | "goals" | "out"
+
+type PotentialDepths = Pick<
+  LaneRosterPotential,
+  "defeatAllDepth" | "objectiveDepths"
+>
 
 /**
  * Each map cell's state (spec: potential mini map; design D3): per battle, defeat-all first then
  * one cell per objective in model order. Cleared beats a saved team's reach, which beats the
- * roster's potential.
+ * roster's potential, which beats the potential once planned goals finish (`upgraded`).
  */
 export function potentialCellStates(
   model: LanePointsModel,
   progress: LaneProgressView | undefined,
-  potential: Pick<LaneRosterPotential, "defeatAllDepth" | "objectiveDepths">,
-  teams: readonly LaneReach[]
+  potential: PotentialDepths,
+  teams: readonly LaneReach[],
+  upgraded?: PotentialDepths
 ): PotentialCellState[][] {
   return model.battles.map((battle) => {
     const cleared = progress?.battles[battle.index]?.cleared ?? []
@@ -120,10 +127,12 @@ export function potentialCellStates(
     const rows = [
       {
         potentialDepth: potential.defeatAllDepth,
+        upgradedDepth: upgraded?.defeatAllDepth ?? 0,
         teamReaches: reaching.length > 0,
       },
       ...model.objectives.map((objective, column) => ({
         potentialDepth: potential.objectiveDepths[column] ?? 0,
+        upgradedDepth: upgraded?.objectiveDepths[column] ?? 0,
         teamReaches: reaching.some((team) =>
           team.coveredObjectiveIndexes.includes(objective.index)
         ),
@@ -133,6 +142,7 @@ export function potentialCellStates(
       if (cleared[position]) return "cleared"
       if (row.teamReaches) return "teams"
       if (row.potentialDepth > battle.index) return "roster"
+      if (row.upgradedDepth > battle.index) return "goals"
       return "out"
     })
   })

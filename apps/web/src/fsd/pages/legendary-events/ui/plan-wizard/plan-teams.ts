@@ -33,7 +33,7 @@ export interface DraftTeam {
   memberUnitIds: string[]
   reserveUnitId: string | null
   objectiveIndexes: number[]
-  /** The depth each plan run reaches (stored, else the estimate on that run's roster). */
+  /** The depth each plan run reaches (the estimate on that run's roster, or a deeper stored one). */
   depthByRun: Partial<Record<LegendaryEventRun, number>>
   /** The members, reserve or name differ from the stored team. */
   edited: boolean
@@ -80,7 +80,8 @@ export function storedDrafts(
     })
 }
 
-/** A team's depth on one run: the stored depth of an unedited stored team, else its estimate. */
+/** A team's depth on one run: its estimate on that run's roster, or the stored depth of an unedited
+ *  stored team when that is deeper (the planned upgrades can only help a kept team). */
 function depthOn(
   team: DraftTeam,
   run: LegendaryEventRun,
@@ -91,17 +92,18 @@ function depthOn(
 ): number {
   const storedTeam =
     team.storedId && !team.edited ? stored.get(team.storedId) : undefined
-  const storedDepth = storedTeam ? teamDepthForRun(storedTeam, run) : null
-  if (storedDepth) return storedDepth.expectedBattleClears
-  if (planLane.battlePowers.length === 0) return 0
-  return (
+  const storedDepth = storedTeam
+    ? (teamDepthForRun(storedTeam, run)?.expectedBattleClears ?? 0)
+    : 0
+  if (planLane.battlePowers.length === 0) return storedDepth
+  const estimate =
     teamClearEstimate(
       team.memberUnitIds,
       planLane.battlePowers,
       roster,
       inputs.config
     )?.depth ?? 0
-  )
+  return Math.max(storedDepth, estimate)
 }
 
 export interface LaneGenerationInput {
@@ -156,8 +158,8 @@ function bestSuggestion(
  * A lane's team set across the plan runs (spec: teams are generated per lane for each run's
  * roster): for each run in order, the kept and earlier generated teams are re-estimated on that
  * run's roster, then the suggestion adding the most reachable points is added until none gains or
- * the lane holds `cap` teams. Every team's depth per run is its estimate on that run's roster (a
- * stored depth for a kept, unedited team).
+ * the lane holds `cap` teams. Every team's depth per run is its estimate on that run's roster (or a
+ * kept, unedited team's stored depth when deeper).
  */
 export function generateLaneTeams(input: LaneGenerationInput): DraftTeam[] {
   const { planLane, rosters, runs } = input

@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { X } from "lucide-react"
 import { characterIcon } from "@workspace/game-catalog"
@@ -10,19 +10,31 @@ import { cn } from "@workspace/ui/lib/utils"
 import type { LegendaryEventLaneId } from "@/entities/legendary-event"
 import { EntityIcon } from "@/shared/ui"
 
+import { teamSwaps, type TeamSwap } from "./plan-evaluator"
 import { PLAN_LANE_IDS } from "./plan-inputs"
-import type { DraftTeam } from "./plan-teams"
+import { memberKey, type DraftTeam } from "./plan-teams"
 import type { PlanDraft } from "./use-plan-draft"
 
 /**
  * Step 3 (spec: review the generated teams): Keep my teams or Replace my teams, then each lane's
  * teams with their depth per run. Removing a team lets the next best suggestion take its place;
- * Restore brings removed teams back. Lanes are tabs below 768px and stacked above it.
+ * Restore brings removed teams back. A kept team of the user's that a generated one beats offers a
+ * swap (accepting removes it; Keep hides the offer). Lanes are tabs below 768px and stacked above it.
  */
 export function TeamsStep({ draft }: { draft: PlanDraft }) {
   const { t } = useTranslation("legendaryEvents")
   const [lane, setLane] = useState<LegendaryEventLaneId>("alpha")
-  const { adjustments, evaluation } = draft
+  const { adjustments, evaluation, economy, inputs } = draft
+  const swaps = useMemo(
+    () =>
+      new Map(
+        teamSwaps(inputs, economy, adjustments, evaluation).map((swap) => [
+          swap.teamKey,
+          swap,
+        ])
+      ),
+    [inputs, economy, adjustments, evaluation]
+  )
   const hasStored = draft.inputs.plan.teams.some(
     (team) => team.memberUnitIds.length > 0
   )
@@ -112,6 +124,11 @@ export function TeamsStep({ draft }: { draft: PlanDraft }) {
                     draft={draft}
                     key={team.key}
                     onRemove={() => remove(team.key)}
+                    swap={
+                      draft.skippedSwaps.has(team.key)
+                        ? undefined
+                        : swaps.get(team.key)
+                    }
                     team={team}
                   />
                 ))}
@@ -127,13 +144,15 @@ export function TeamsStep({ draft }: { draft: PlanDraft }) {
 function TeamRow({
   draft,
   team,
+  swap,
   onRemove,
 }: {
   draft: PlanDraft
   team: DraftTeam
+  swap: TeamSwap | undefined
   onRemove: () => void
 }) {
-  const { t } = useTranslation("legendaryEvents")
+  const { t, i18n } = useTranslation("legendaryEvents")
   const name = draft.teamName(team.key)
   return (
     <li
@@ -175,6 +194,59 @@ function TeamRow({
           })
           .join(" · ")}
       </p>
+      {swap ? (
+        <div
+          className="flex flex-col gap-2 rounded-lg bg-muted/60 p-2 text-sm"
+          data-testid="plan-wizard-swap"
+        >
+          <p>
+            {t(
+              // The same units credited with more objectives, or other units.
+              swap.replacements.some(
+                (replacement) =>
+                  memberKey(replacement.memberUnitIds) ===
+                  memberKey(team.memberUnitIds)
+              )
+                ? "planWizard.teams.swapSame"
+                : "planWizard.teams.swap",
+              {
+                points: new Intl.NumberFormat(i18n.language).format(
+                  Math.round(swap.gain)
+                ),
+              }
+            )}
+          </p>
+          {swap.replacements.map((replacement) => (
+            <div className="flex flex-wrap gap-1" key={replacement.key}>
+              {replacement.memberUnitIds.map((unitId) => (
+                <EntityIcon
+                  alt={draft.inputs.nameOf(unitId)}
+                  className="size-7 rounded-full"
+                  key={unitId}
+                  src={characterIcon(unitId as UnitId)}
+                />
+              ))}
+            </div>
+          ))}
+          <div className="flex gap-2">
+            <Button
+              data-testid="plan-wizard-swap-accept"
+              onClick={onRemove}
+              size="sm"
+            >
+              {t("planWizard.teams.swapAccept")}
+            </Button>
+            <Button
+              data-testid="plan-wizard-swap-skip"
+              onClick={() => draft.skipSwap(team.key)}
+              size="sm"
+              variant="outline"
+            >
+              {t("planWizard.teams.swapSkip")}
+            </Button>
+          </div>
+        </div>
+      ) : null}
     </li>
   )
 }

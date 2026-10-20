@@ -191,6 +191,10 @@ export function usePlanDraft(
   const [adjustments, setAdjustments] =
     useState<TeamAdjustments>(NO_TEAM_ADJUSTMENTS)
   const [dirty, setDirty] = useState(false)
+  // Kept teams whose swap offer the user declined (Keep).
+  const [skippedSwaps, setSkippedSwaps] = useState<ReadonlySet<string>>(
+    () => new Set()
+  )
 
   const syncedCeiling = useMemo(
     () => createPlanEvaluator(inputs, economy).evaluate([]).ceiling,
@@ -259,11 +263,12 @@ export function usePlanDraft(
     [list, tickedSet, inputs.roster, source.goalTargets]
   )
 
+  const runs = useMemo(() => planRuns(inputs.resolution), [inputs.resolution])
   const markDirty = useCallback(() => setDirty(true), [])
 
   return {
     inputs,
-    runs: planRuns(inputs.resolution),
+    runs,
     economy,
     target: chosenTarget?.step ?? null,
     targets,
@@ -288,6 +293,9 @@ export function usePlanDraft(
       setTicked(new Set([...next].map((entry) => keys[entry]!)))
       markDirty()
     },
+    skippedSwaps,
+    skipSwap: (key: string) =>
+      setSkippedSwaps((current) => new Set([...current, key])),
     adjustTeams: (change: (current: TeamAdjustments) => TeamAdjustments) => {
       setAdjustments(change)
       markDirty()

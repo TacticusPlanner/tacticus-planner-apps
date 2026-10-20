@@ -124,3 +124,54 @@ export function createPlanEvaluator(
   }
   return { evaluate }
 }
+
+/** A kept team a generated set beats (spec: swap suggestions): removing it lets the lane add
+ *  `replacements`, and the plan ceiling rises by `gain`. */
+export interface TeamSwap {
+  laneId: LegendaryEventLaneId
+  /** The kept team's draft key. */
+  teamKey: string
+  replacements: DraftTeam[]
+  gain: number
+}
+
+/**
+ * The swaps worth suggesting on an evaluation: for each kept, unedited team of the user's, the
+ * lane is regenerated without it on the same rosters, and the swap is offered when the new teams
+ * raise the ceiling. Accepting one is removing the team.
+ */
+export function teamSwaps(
+  inputs: PlanInputs,
+  economy: PlanEconomy,
+  adjustments: TeamAdjustments,
+  evaluation: PlanEvaluation
+): TeamSwap[] {
+  const { ceiling } = evaluation
+  if (ceiling === null) return []
+  const runs = planRuns(inputs.resolution)
+  const present = new Set(evaluation.teams.map((team) => team.key))
+  return evaluation.teams.flatMap((team) => {
+    if (team.storedId === null || team.edited) return []
+    const planLane = inputs.lanes.find((lane) => lane.laneId === team.laneId)!
+    const removed = new Set([...adjustments.removed, team.key])
+    const laneTeams = generateLaneTeams({
+      inputs,
+      planLane,
+      start: laneStart(inputs, team.laneId, { ...adjustments, removed }),
+      rosters: evaluation.rosters,
+      runs,
+      excluded: removed,
+    })
+    const replacements = laneTeams.filter((entry) => !present.has(entry.key))
+    if (replacements.length === 0) return []
+    const teams = [
+      ...evaluation.teams.filter((entry) => entry.laneId !== team.laneId),
+      ...laneTeams,
+    ]
+    const gain =
+      (ceilingOf(draftTokenView(inputs, teams, economy)) ?? 0) - ceiling
+    return gain > 0
+      ? [{ laneId: team.laneId, teamKey: team.key, replacements, gain }]
+      : []
+  })
+}

@@ -137,12 +137,14 @@
       "noUnitFor": " · no unit for {{objectives}}",
       "reachesAll": "Roster can reach every battle",
       "needsEstimates": "Roster potential needs clear estimates",
+      "withGoals": "With the planned goals: battle {{battle}}, +{{points}} points",
       "column": "Battle {{battle}} · {{points}} points",
       "cellLabel": "{{row}}: {{state}}",
       "states": {
         "cleared": "Cleared",
         "teams": "Teams reach",
         "roster": "Roster can reach",
+        "goals": "With planned goals",
         "out": "Out of reach"
       }
     }
@@ -930,7 +932,11 @@
       "removeTeam": "Remove {{name}}",
       "removed_one": "{{count}} team removed",
       "removed_other": "{{count}} teams removed",
-      "restore": "Restore"
+      "restore": "Restore",
+      "swap": "A stronger team could take this slot: +{{points}} points",
+      "swapSame": "These units can score more objectives as a new team: +{{points}} points",
+      "swapAccept": "Swap",
+      "swapSkip": "Keep mine"
     },
     "runs": {
       "heading": "Run inputs",

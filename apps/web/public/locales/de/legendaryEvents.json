@@ -137,12 +137,14 @@
       "noUnitFor": " · keine Einheit für {{objectives}}",
       "reachesAll": "Roster schafft jeden Kampf",
       "needsEstimates": "Roster-Potenzial braucht Clear-Schätzungen",
+      "withGoals": "Mit den geplanten Zielen: Kampf {{battle}}, +{{points}} Punkte",
       "column": "Kampf {{battle}} · {{points}} Punkte",
       "cellLabel": "{{row}}: {{state}}",
       "states": {
         "cleared": "Geschafft",
         "teams": "Teams erreichen",
         "roster": "Roster kann erreichen",
+        "goals": "Mit geplanten Zielen",
         "out": "Außer Reichweite"
       }
     }
@@ -930,7 +932,11 @@
       "removeTeam": "{{name}} entfernen",
       "removed_one": "{{count}} Team entfernt",
       "removed_other": "{{count}} Teams entfernt",
-      "restore": "Wiederherstellen"
+      "restore": "Wiederherstellen",
+      "swap": "Ein stärkeres Team könnte diesen Platz übernehmen: +{{points}} Punkte",
+      "swapSame": "Diese Einheiten können als neues Team mehr Ziele erfüllen: +{{points}} Punkte",
+      "swapAccept": "Tauschen",
+      "swapSkip": "Meins behalten"
     },
     "runs": {
       "heading": "Durchlauf-Eingaben",

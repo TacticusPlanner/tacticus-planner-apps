@@ -137,12 +137,14 @@
       "noUnitFor": " · aucune unité pour {{objectives}}",
       "reachesAll": "L'effectif peut atteindre tous les combats",
       "needsEstimates": "Le potentiel de l'effectif nécessite les estimations de progression",
+      "withGoals": "Avec les objectifs prévus : combat {{battle}}, +{{points}} points",
       "column": "Combat {{battle}} · {{points}} points",
       "cellLabel": "{{row}} : {{state}}",
       "states": {
         "cleared": "Réussi",
         "teams": "Vos équipes atteignent",
         "roster": "L'effectif peut atteindre",
+        "goals": "Avec les objectifs prévus",
         "out": "Hors de portée"
       }
     }
@@ -930,7 +932,11 @@
       "removeTeam": "Retirer {{name}}",
       "removed_one": "{{count}} équipe retirée",
       "removed_other": "{{count}} équipes retirées",
-      "restore": "Restaurer"
+      "restore": "Restaurer",
+      "swap": "Une équipe plus forte pourrait prendre cette place : +{{points}} points",
+      "swapSame": "Ces unités peuvent remplir plus d’objectifs dans une nouvelle équipe : +{{points}} points",
+      "swapAccept": "Échanger",
+      "swapSkip": "Garder la mienne"
     },
     "runs": {
       "heading": "Données des manches",

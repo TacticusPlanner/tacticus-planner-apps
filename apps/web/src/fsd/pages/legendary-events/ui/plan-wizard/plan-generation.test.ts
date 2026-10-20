@@ -6,10 +6,15 @@ import {
   stepVerdict,
   type StepTarget,
 } from "./plan-ceiling"
-import { createPlanEvaluator } from "./plan-evaluator"
+import {
+  NO_TEAM_ADJUSTMENTS,
+  createPlanEvaluator,
+  teamSwaps,
+} from "./plan-evaluator"
 import { MAX_PLAN_TEAMS_PER_LANE, storedDrafts } from "./plan-teams"
 import { chosenFrom, recommendUpgradesNow } from "./plan-upgrades"
 import { EMPTY_PLAN, NOW_MS, RUN_3_START_MS, planInputs } from "./plan.fixtures"
+import type { LegendaryEventTeam } from "@/entities/legendary-event"
 
 const economy = { runs: [], showPaidOptions: false }
 const DAY_MS = 24 * 60 * 60 * 1000
@@ -78,6 +83,82 @@ describe("team generation", () => {
     const upgraded = after.teams.find((team) => team.key === calgar.key)
     expect(upgraded?.depthByRun[2]).toBe(calgar.depthByRun[2])
     expect(upgraded?.depthByRun[3]).toBeGreaterThan(calgar.depthByRun[3]!)
+  })
+})
+
+const storedTeam = (
+  memberUnitIds: string[],
+  depth: number | null
+): LegendaryEventTeam => ({
+  id: "mine",
+  laneId: "alpha",
+  name: "Mine",
+  sortOrder: 0,
+  memberUnitIds,
+  reserveUnitId: null,
+  objectiveIndexes: [],
+  runDepths:
+    depth === null
+      ? []
+      : ([2, 3] as const).map((run) => ({
+          run,
+          expectedBattleClears: depth,
+          expectedBattleClearsSource: "manual" as const,
+          recordedAt: "",
+        })),
+})
+
+const withTeam = (team: LegendaryEventTeam) =>
+  planInputs({ plan: { ...EMPTY_PLAN, teams: [team] } })
+
+describe("kept teams", () => {
+  const STRONG = ["ultraCalgar", "ultraTitus", "ultraApothecary"]
+
+  it("uses the estimate when it beats a kept team's saved depth", () => {
+    const estimate = createPlanEvaluator(
+      withTeam(storedTeam(STRONG, null)),
+      economy
+    )
+      .evaluate([])
+      .teams.find((team) => team.key === "mine")!.depthByRun[2]!
+    expect(estimate).toBeGreaterThan(1)
+    const stale = createPlanEvaluator(withTeam(storedTeam(STRONG, 1)), economy)
+      .evaluate([])
+      .teams.find((team) => team.key === "mine")!
+    expect(stale.depthByRun[2]).toBe(estimate)
+    const deeper = createPlanEvaluator(
+      withTeam(storedTeam(STRONG, estimate + 3)),
+      economy
+    )
+      .evaluate([])
+      .teams.find((team) => team.key === "mine")!
+    expect(deeper.depthByRun[2]).toBe(estimate + 3)
+  })
+
+  it("offers to swap a kept team a generated one beats", () => {
+    // Saved with one objective, the same units are generated scoring two.
+    const inputs = withTeam({
+      ...storedTeam(STRONG, null),
+      objectiveIndexes: [0],
+    })
+    const evaluation = createPlanEvaluator(inputs, economy).evaluate([])
+    const [swap] = teamSwaps(inputs, economy, NO_TEAM_ADJUSTMENTS, evaluation)
+    expect(swap).toMatchObject({ laneId: "alpha", teamKey: "mine" })
+    expect(swap!.gain).toBeGreaterThan(0)
+    expect(swap!.replacements.map((team) => team.objectiveIndexes)).toEqual([
+      [0, 3],
+    ])
+  })
+
+  it("offers no swap for a kept team nothing beats", () => {
+    const inputs = withTeam({
+      ...storedTeam(STRONG, null),
+      objectiveIndexes: [0, 3],
+    })
+    const evaluation = createPlanEvaluator(inputs, economy).evaluate([])
+    expect(teamSwaps(inputs, economy, NO_TEAM_ADJUSTMENTS, evaluation)).toEqual(
+      []
+    )
   })
 })
 

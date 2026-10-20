@@ -76,7 +76,7 @@ A step's recommendations SHALL be the list's prefix up to the first one whose ce
 
 ### Requirement: Teams are generated per lane for each run's roster
 
-For each lane and each run that is not Done, the planner SHALL build a team set on that run's **projected roster** (the synced roster plus every chosen goal estimated to finish before the run's start, applied as Goals Preview does): starting from the lane's existing teams (none when the user chose Replace my teams), repeatedly add the team suggestion (`legendary-event-team-suggestions`, Only unlocked on, on the projected roster) with the highest gain until none gains or the lane holds 6 teams. A generated team's depth for each run SHALL be its clear estimate on that run's projected roster.
+For each lane and each run that is not Done, the planner SHALL build a team set on that run's **projected roster** (the synced roster plus every chosen goal estimated to finish before the run's start, applied as Goals Preview does): starting from the lane's existing teams (none when the user chose Replace my teams), repeatedly add the team suggestion (`legendary-event-team-suggestions`, Only unlocked on, on the projected roster) with the highest gain until none gains or the lane holds 6 teams. A generated team's depth for each run SHALL be its clear estimate on that run's projected roster; a kept, unedited team's depth SHALL be the higher of its saved depth for that run and that estimate.
 
 #### Scenario: Keep existing teams
 
