@@ -91,8 +91,22 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      # PRs run only tests related to files changed since the base (vitest --changed; package.json and
+      # vite/vitest config changes still force a full run). Partial coverage would trip the global
+      # thresholds, so they are enforced only by the full run on push to main.
       - name: Run tests with coverage
+        if: github.event_name != 'pull_request'
         run: pnpm test:coverage
+
+      - name: Run changed tests with coverage
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          git fetch --no-tags --depth=1 origin "$BASE_SHA"
+          pnpm exec turbo run test:coverage -- --changed="$BASE_SHA" \
+            --coverage.thresholds.statements=0 --coverage.thresholds.branches=0 \
+            --coverage.thresholds.functions=0 --coverage.thresholds.lines=0
 
       - name: Upload web coverage
         uses: actions/upload-code-coverage@v1
