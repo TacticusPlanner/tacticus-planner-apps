@@ -137,12 +137,14 @@
       "noUnitFor": " · keine Einheit für {{objectives}}",
       "reachesAll": "Roster schafft jeden Kampf",
       "needsEstimates": "Roster-Potenzial braucht Clear-Schätzungen",
+      "withGoals": "Mit den geplanten Zielen: Kampf {{battle}}, +{{points}} Punkte",
       "column": "Kampf {{battle}} · {{points}} Punkte",
       "cellLabel": "{{row}}: {{state}}",
       "states": {
         "cleared": "Geschafft",
         "teams": "Teams erreichen",
         "roster": "Roster kann erreichen",
+        "goals": "Mit geplanten Zielen",
         "out": "Außer Reichweite"
       }
     }
@@ -481,6 +483,30 @@
         "filters": {
           "title": "Filter",
           "content": "Suche nach Namen, zeige nur deine eigenen Charaktere oder wähle eine Allianz. Die Filter gelten für jede Zeile, auch für „Ohne Tier“."
+        }
+      }
+    },
+    "planWizard": {
+      "steps": {
+        "stepper": {
+          "title": "Fünf Schritte",
+          "content": "Ziel, Verbesserungen, Teams, Durchläufe und Tokens, dann Prüfen und erstellen. Gespeichert wird erst beim Erstellen."
+        },
+        "progress": {
+          "title": "Fünf Schritte",
+          "content": "Ziel, Verbesserungen, Teams, Durchläufe und Tokens, dann Prüfen und erstellen. Gespeichert wird erst beim Erstellen."
+        },
+        "target": {
+          "title": "Ziel wählen",
+          "content": "Jede Stufe zeigt die nötigen Punkte und ob dein Kader sie jetzt erreicht, Verbesserungen braucht oder für dieses Event zu ehrgeizig ist."
+        },
+        "bestStep": {
+          "title": "Höchste erreichbare Stufe",
+          "content": "Sobald die Verbesserungen geprüft sind, steht hier die höchste Stufe, die dein Kader damit erreicht."
+        },
+        "footer": {
+          "title": "Zurück und Weiter",
+          "content": "Hier wechselst du zwischen den Schritten. Der letzte Schritt erstellt Ziele, Projekt und Teams auf einmal."
         }
       }
     }
@@ -824,5 +850,132 @@
       "winWithoutSummon_other": "Gewinne {{count}} Kämpfe, ohne Einheiten zu beschwören",
       "defeatWithDamageType": "Besiege {{count}} Gegner mit {{damageType}}-Schaden"
     }
+  },
+  "planWizard": {
+    "open": "Dieses Event planen",
+    "openFromSuggestions": "Alle Lanes für ein Ziel planen",
+    "title": "{{name}} planen",
+    "back": "Zurück",
+    "next": "Weiter",
+    "create": "Erstellen",
+    "creating": "Wird erstellt…",
+    "retryFailed": "Fehlgeschlagene wiederholen",
+    "progress": "Schritt {{step}} von {{count}} · {{name}}",
+    "steps": {
+      "target": "Ziel",
+      "upgrades": "Verbesserungen",
+      "teams": "Teams",
+      "runs": "Durchläufe und Tokens",
+      "review": "Prüfen und erstellen"
+    },
+    "states": {
+      "loading": "Plan wird geladen…",
+      "error": "Das Event konnte nicht geladen werden.",
+      "retry": "Erneut versuchen",
+      "signedOut": "Melde dich an, um dieses Event zu planen.",
+      "finished": "Dieses Event ist vorbei, es gibt nichts mehr zu planen.",
+      "noEstimates": "Der 1-Klick-Plan braucht Clear-Schätzungen, die gerade nicht verfügbar sind.",
+      "backToEvent": "Zurück zum Event",
+      "missing": "Dieses Event wurde nicht gefunden.",
+      "backToEvents": "Alle Legendären Events"
+    },
+    "leave": {
+      "title": "Plan verlassen?",
+      "description": "Es wurde noch nichts erstellt. Deine Auswahl in diesem Plan geht verloren.",
+      "stay": "Bleiben",
+      "leave": "Verlassen"
+    },
+    "target": {
+      "heading": "Was soll {{name}} bis zum Ende des Events erreichen?",
+      "deadline": "Frist: {{date}}",
+      "deadlineEstimated": "Frist: etwa {{date}} (geschätzt)",
+      "deadlineUnknown": "Durchlauftermine unbekannt: es werden nur die angekündigten Durchläufe geplant",
+      "shards": "{{name}} hat {{shards}} Splitter",
+      "points": "{{points}} Punkte",
+      "unreachable": "In diesem Event nicht erreichbar",
+      "verdicts": {
+        "reachableNow": "Jetzt erreichbar",
+        "needsUpgrades": "Braucht Verbesserungen",
+        "tooAmbitious": "Zu ehrgeizig"
+      },
+      "spare": "{{points}} Punkte Reserve mit deinem Kader",
+      "short": "{{points}} Punkte fehlen mit deinem Kader",
+      "estimating": "Prüfe, was Verbesserungen bringen…",
+      "bestStep": "{{step}} ist die höchste erreichbare Stufe",
+      "noStep": "Keine Stufe ist erreichbar",
+      "noTargets": "In diesem Event ist keine Stufe mehr zu erreichen."
+    },
+    "banner": "{{step}} scheint außer Reichweite: {{best}}",
+    "bannerLink": "Ziel ändern",
+    "upgrades": {
+      "heading": "Empfohlene Verbesserungen",
+      "description": "Ausgewählt nach Punkten pro Farmtag, bereit vor dem Durchlauf, dem sie helfen. Die Termine gehen davon aus, dass diese Ziele in dieser Reihenfolge gefarmt werden.",
+      "estimating": "Farmzeit wird geschätzt…",
+      "unavailable": "Die Farmzeit kann nicht geschätzt werden, daher werden keine Verbesserungen empfohlen.",
+      "none": "Keine Verbesserung bringt vor der Frist Punkte.",
+      "running": "Suche weiter nach Verbesserungen…",
+      "gain": "+{{points}} Punkte",
+      "ready": "Bereit etwa {{date}}",
+      "helps": "Hilft ab Durchlauf {{run}}",
+      "alreadyPlanned": "Bereits geplant",
+      "verdictReachable": "Mit diesen Verbesserungen: erreichbar · {{points}} Punkte Reserve",
+      "verdictShort": "Mit diesen Verbesserungen: {{points}} Punkte fehlen",
+      "notNeeded": "Dein Kader erreicht das Ziel bereits: keine Verbesserungen nötig."
+    },
+    "teams": {
+      "keep": "Meine Teams behalten",
+      "replace": "Meine Teams ersetzen",
+      "yours": "Deins",
+      "empty": "Kein Team für diese Lane",
+      "depth": "Durchlauf {{run}}: Kampf {{depth}}",
+      "depthNone": "Durchlauf {{run}}: keiner",
+      "removeTeam": "{{name}} entfernen",
+      "removed_one": "{{count}} Team entfernt",
+      "removed_other": "{{count}} Teams entfernt",
+      "restore": "Wiederherstellen",
+      "swap": "Ein stärkeres Team könnte diesen Platz übernehmen: +{{points}} Punkte",
+      "swapSame": "Diese Einheiten können als neues Team mehr Ziele erfüllen: +{{points}} Punkte",
+      "swapAccept": "Tauschen",
+      "swapSkip": "Meins behalten"
+    },
+    "runs": {
+      "heading": "Durchlauf-Eingaben",
+      "description": "Werden beim Erstellen mit dem Plan gespeichert."
+    },
+    "review": {
+      "project": "Projekt",
+      "newProject": "Neues Projekt",
+      "newProjectName": "{{name}} · {{step}}",
+      "goals": "Zu erstellende Ziele",
+      "noGoals": "Keine neuen Ziele",
+      "teams": "Teams",
+      "createTeams_one": "{{lane}}: {{count}} Team erstellen",
+      "createTeams_other": "{{lane}}: {{count}} Teams erstellen",
+      "removeTeams_one": "{{lane}}: {{count}} Team entfernen",
+      "removeTeams_other": "{{lane}}: {{count}} Teams entfernen",
+      "noTeams": "Keine Teamänderungen",
+      "runs": "Durchlauf-Eingaben",
+      "runsChanged": "Geänderte Durchlauf-Eingaben speichern",
+      "noRuns": "Keine Änderungen an den Durchlauf-Eingaben",
+      "final": "Am Ende von Durchlauf {{run}}: {{step}} erreicht · {{points}} Punkte Reserve",
+      "finalShort": "Am Ende von Durchlauf {{run}}: für {{step}} fehlen {{points}} Punkte",
+      "items": {
+        "project": "Projekt erstellen",
+        "goals": "Ziele für {{name}}",
+        "teams": "{{lane}}-Teams",
+        "runs": "Durchlauf-Eingaben"
+      },
+      "status": {
+        "pending": "Ausstehend",
+        "done": "Erledigt",
+        "failed": "Fehlgeschlagen"
+      },
+      "newProjectNameLabel": "Name des neuen Projekts"
+    },
+    "toast": {
+      "created": "Plan erstellt: {{goals}} Ziele, {{teams}} Teams",
+      "openProject": "Projekt öffnen"
+    },
+    "stepsLabel": "Planschritte"
   }
 }

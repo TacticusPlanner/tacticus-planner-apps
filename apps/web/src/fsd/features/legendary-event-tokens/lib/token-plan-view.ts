@@ -31,9 +31,10 @@ import {
   planTokens,
   type NextTokenChoice,
   type TokenPlan,
+  type RunSlots,
   type TokenPlanLane,
 } from "./token-plan"
-import { runTokenSupply } from "./token-supply"
+import { runTokenSupply, type RunSupply } from "./token-supply"
 import {
   nextTokenMissions,
   type NextTokenMissions,
@@ -83,6 +84,9 @@ export interface TokenPlanViewInput {
   /** The name a team is shown by (its display name); the stored name when absent. */
   teamName?: (team: LegendaryEventTeam) => string
   missions?: TokenPlanMissionsSource
+  /** Plan each token with its run's stored depth (the 1-click plan's draft, whose teams carry a
+   *  depth per run), instead of the current run's depth for every token. */
+  perRunDepths?: boolean
 }
 
 /** Why there is no next token (spec: Next token card), checked in this order. */
@@ -177,6 +181,16 @@ export function buildTokenPlanView(input: TokenPlanViewInput): TokenPlanView {
             teamDepthForRun(team, run)?.expectedBattleClears ?? null,
             estimator?.team(team.memberUnitIds) ?? null
           ),
+          ...(input.perRunDepths
+            ? {
+                depthByRun: Object.fromEntries(
+                  team.runDepths.map((entry) => [
+                    entry.run,
+                    entry.expectedBattleClears,
+                  ])
+                ),
+              }
+            : {}),
         })),
       annotations: applicableAnnotations(
         plan.data!.annotations,
@@ -186,10 +200,6 @@ export function buildTokenPlanView(input: TokenPlanViewInput): TokenPlanView {
     }
   })
 
-  const tokenPlan = planTokens({
-    lanes,
-    startingPoints: entry?.currentPoints ?? 0,
-  })
   const supply = runTokenSupply({
     lifecycle,
     resolution,
@@ -198,6 +208,11 @@ export function buildTokenPlanView(input: TokenPlanViewInput): TokenPlanView {
     nowMs: input.nowMs,
     runs: plan.data.runs,
     showPaidOptions: plan.data.showPaidOptions,
+  })
+  const tokenPlan = planTokens({
+    lanes,
+    startingPoints: entry?.currentPoints ?? 0,
+    runSlots: input.perRunDepths && supply ? supplySlots(supply) : undefined,
   })
   const forecast =
     supply && event.rewards
@@ -258,7 +273,15 @@ export function buildTokenPlanView(input: TokenPlanViewInput): TokenPlanView {
       return figure ? [{ laneId: lane.laneId, figure }] : []
     }),
     forecast,
-    byRun: supply ? splitPlanByRun(tokenPlan.tokens.length, supply) : null,
+    byRun: supply
+      ? splitPlanByRun(
+          tokenPlan.tokens.length,
+          supply,
+          input.perRunDepths
+            ? tokenPlan.tokens.map((token) => token.slot)
+            : undefined
+        )
+      : null,
     upcoming:
       lifecycle.state !== "upcoming" ? null : { run: resolution.nextRun },
     leftover:
@@ -266,6 +289,18 @@ export function buildTokenPlanView(input: TokenPlanViewInput): TokenPlanView {
         ? { tokens: tokensLeftOver, laneId: firstLaneWithPoints }
         : null,
   }
+}
+
+/** The supply slots of each run that is not Done, in order. */
+function supplySlots(supply: readonly RunSupply[]): RunSlots[] {
+  const slots: RunSlots[] = []
+  let start = 0
+  for (const entry of supply) {
+    if (entry.state === "done") continue
+    slots.push({ run: entry.run, start, end: start + entry.total })
+    start += entry.total
+  }
+  return slots
 }
 
 function emptyReason(

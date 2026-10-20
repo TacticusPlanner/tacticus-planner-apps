@@ -1,4 +1,6 @@
+import { Link } from "react-router"
 import { useTranslation } from "react-i18next"
+import { Sparkles } from "lucide-react"
 import { Button } from "@workspace/ui/components/button"
 
 import { UpgradeImpactSection } from "@/features/legendary-event-goals"
@@ -56,6 +58,21 @@ export function LegendaryEventPageView({
           className="flex min-w-0 flex-col gap-6"
           data-testid="legendary-event-overview"
         >
+          {props.runInputs.enabled && props.lifecycle.state !== "archived" ? (
+            <Button
+              asChild
+              className="self-start"
+              data-testid="legendary-event-plan-wizard"
+              variant="outline"
+            >
+              <Link
+                to={`/legendary-events/${props.event.id}/plan?from=overview`}
+              >
+                <Sparkles aria-hidden="true" />
+                {t("planWizard.open")}
+              </Link>
+            </Button>
+          ) : null}
           <NextTokenCard
             event={props.event}
             eventId={props.event.id}

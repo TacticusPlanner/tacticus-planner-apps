@@ -137,12 +137,14 @@
       "noUnitFor": " · no unit for {{objectives}}",
       "reachesAll": "Roster can reach every battle",
       "needsEstimates": "Roster potential needs clear estimates",
+      "withGoals": "With the planned goals: battle {{battle}}, +{{points}} points",
       "column": "Battle {{battle}} · {{points}} points",
       "cellLabel": "{{row}}: {{state}}",
       "states": {
         "cleared": "Cleared",
         "teams": "Teams reach",
         "roster": "Roster can reach",
+        "goals": "With planned goals",
         "out": "Out of reach"
       }
     }
@@ -481,6 +483,30 @@
         "filters": {
           "title": "Filters",
           "content": "Search by name, show only the characters you own, or pick an alliance. The filters apply to every row, Untiered included."
+        }
+      }
+    },
+    "planWizard": {
+      "steps": {
+        "stepper": {
+          "title": "Five steps",
+          "content": "Target, Upgrades, Teams, Runs and tokens, then Review and create. Nothing is saved until you press Create."
+        },
+        "progress": {
+          "title": "Five steps",
+          "content": "Target, Upgrades, Teams, Runs and tokens, then Review and create. Nothing is saved until you press Create."
+        },
+        "target": {
+          "title": "Pick a target",
+          "content": "Each step shows the points it needs and whether your roster reaches it now, needs upgrades, or is too ambitious for this event."
+        },
+        "bestStep": {
+          "title": "Highest step within reach",
+          "content": "Once the upgrades are explored, this names the highest step your roster can reach with them."
+        },
+        "footer": {
+          "title": "Back and Next",
+          "content": "Move between the steps here. The last step creates the goals, the project and the teams in one go."
         }
       }
     }
@@ -824,5 +850,132 @@
       "winWithoutSummon_other": "Win {{count}} battles without summoning any units",
       "defeatWithDamageType": "Defeat {{count}} enemies with {{damageType}} damage"
     }
+  },
+  "planWizard": {
+    "open": "Plan this event",
+    "openFromSuggestions": "Plan all lanes for a goal",
+    "title": "Plan {{name}}",
+    "back": "Back",
+    "next": "Next",
+    "create": "Create",
+    "creating": "Creating…",
+    "retryFailed": "Retry failed",
+    "progress": "Step {{step}} of {{count}} · {{name}}",
+    "steps": {
+      "target": "Target",
+      "upgrades": "Upgrades",
+      "teams": "Teams",
+      "runs": "Runs and tokens",
+      "review": "Review and create"
+    },
+    "states": {
+      "loading": "Loading the plan…",
+      "error": "The event could not be loaded.",
+      "retry": "Retry",
+      "signedOut": "Sign in to plan this event.",
+      "finished": "This event is over, so there is nothing left to plan.",
+      "noEstimates": "The 1-click plan needs clear estimates, which are not available right now.",
+      "backToEvent": "Back to the event",
+      "missing": "This event was not found.",
+      "backToEvents": "All legendary events"
+    },
+    "leave": {
+      "title": "Leave the plan?",
+      "description": "Nothing has been created yet. Your choices in this plan will be lost.",
+      "stay": "Stay",
+      "leave": "Leave"
+    },
+    "target": {
+      "heading": "What should {{name}} reach by the end of the event?",
+      "deadline": "Deadline: {{date}}",
+      "deadlineEstimated": "Deadline: about {{date}} (estimated)",
+      "deadlineUnknown": "Run dates are unknown: planning only the announced runs",
+      "shards": "{{name}} has {{shards}} shards",
+      "points": "{{points}} points",
+      "unreachable": "Not reachable this event",
+      "verdicts": {
+        "reachableNow": "Reachable now",
+        "needsUpgrades": "Needs upgrades",
+        "tooAmbitious": "Too ambitious"
+      },
+      "spare": "{{points}} points spare with your roster",
+      "short": "{{points}} points short with your roster",
+      "estimating": "Checking what upgrades can add…",
+      "bestStep": "{{step}} is the highest step within reach",
+      "noStep": "No step is within reach",
+      "noTargets": "There is no step left to reach in this event."
+    },
+    "banner": "{{step}} looks out of reach: {{best}}",
+    "bannerLink": "Change target",
+    "upgrades": {
+      "heading": "Recommended upgrades",
+      "description": "Picked by points gained per farming day, ready before the run they help. Ready dates assume these goals are farmed in this order.",
+      "estimating": "Estimating farming time…",
+      "unavailable": "Farming time can't be estimated, so no upgrades are recommended.",
+      "none": "No upgrade adds points before the deadline.",
+      "running": "Still looking for upgrades…",
+      "gain": "+{{points}} points",
+      "ready": "Ready about {{date}}",
+      "helps": "Helps from run {{run}}",
+      "alreadyPlanned": "Already planned",
+      "verdictReachable": "With these upgrades: reachable · {{points}} points spare",
+      "verdictShort": "With these upgrades: {{points}} points short",
+      "notNeeded": "Your roster already reaches the target: no upgrades needed."
+    },
+    "teams": {
+      "keep": "Keep my teams",
+      "replace": "Replace my teams",
+      "yours": "Yours",
+      "empty": "No team for this lane",
+      "depth": "Run {{run}}: battle {{depth}}",
+      "depthNone": "Run {{run}}: none",
+      "removeTeam": "Remove {{name}}",
+      "removed_one": "{{count}} team removed",
+      "removed_other": "{{count}} teams removed",
+      "restore": "Restore",
+      "swap": "A stronger team could take this slot: +{{points}} points",
+      "swapSame": "These units can score more objectives as a new team: +{{points}} points",
+      "swapAccept": "Swap",
+      "swapSkip": "Keep mine"
+    },
+    "runs": {
+      "heading": "Run inputs",
+      "description": "Saved with the plan when you press Create."
+    },
+    "review": {
+      "project": "Project",
+      "newProject": "New project",
+      "newProjectName": "{{name}} · {{step}}",
+      "goals": "Goals to create",
+      "noGoals": "No new goals",
+      "teams": "Teams",
+      "createTeams_one": "{{lane}}: create {{count}} team",
+      "createTeams_other": "{{lane}}: create {{count}} teams",
+      "removeTeams_one": "{{lane}}: remove {{count}} team",
+      "removeTeams_other": "{{lane}}: remove {{count}} teams",
+      "noTeams": "No team changes",
+      "runs": "Run inputs",
+      "runsChanged": "Save the edited run inputs",
+      "noRuns": "No run input changes",
+      "final": "By the end of run {{run}}: {{step}} reached · {{points}} points spare",
+      "finalShort": "By the end of run {{run}}: {{step}} is {{points}} points short",
+      "items": {
+        "project": "Create the project",
+        "goals": "Goals for {{name}}",
+        "teams": "{{lane}} teams",
+        "runs": "Run inputs"
+      },
+      "status": {
+        "pending": "Pending",
+        "done": "Done",
+        "failed": "Failed"
+      },
+      "newProjectNameLabel": "New project name"
+    },
+    "toast": {
+      "created": "Plan created: {{goals}} goals, {{teams}} teams",
+      "openProject": "Open project"
+    },
+    "stepsLabel": "Plan steps"
   }
 }

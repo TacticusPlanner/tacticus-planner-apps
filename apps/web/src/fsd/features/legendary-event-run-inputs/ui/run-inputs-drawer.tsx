@@ -72,7 +72,7 @@ export function RunInputsDrawer({
     </Button>
   )
   const body = (
-    <RunInputsBody event={event} runs={runs} inputs={inputs} touch={isMobile} />
+    <RunInputsForm event={event} runs={runs} inputs={inputs} touch={isMobile} />
   )
 
   if (isMobile) {
@@ -110,7 +110,15 @@ export function RunInputsDrawer({
   )
 }
 
-function RunInputsBody({
+/** What the run inputs form reads and edits: the stored plan (the drawer) or a draft (the 1-click
+ *  plan wizard, which saves nothing until Create). */
+export type RunInputsFormSource = Pick<
+  RunInputsActions,
+  "loading" | "failed" | "showPaidOptions" | "values" | "change"
+> & { setShowPaidOptions: (on: boolean) => unknown }
+
+/** Runs 1–3 with each run's missions, and the paid fields while Show paid options is on. */
+export function RunInputsForm({
   event,
   runs,
   inputs,
@@ -118,7 +126,7 @@ function RunInputsBody({
 }: {
   event: Pick<LegendaryEvent, "regularMissions" | "premiumMissions">
   runs: LegendaryEventRunResolution
-  inputs: RunInputsActions
+  inputs: RunInputsFormSource
   touch: boolean
 }) {
   const { t } = useTranslation("legendaryEvents")

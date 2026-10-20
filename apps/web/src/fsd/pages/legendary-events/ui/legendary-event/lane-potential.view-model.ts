@@ -27,6 +27,8 @@ export type LanePotentialViewModel =
   | {
       kind: "ready"
       potential: LaneRosterPotential
+      /** The potential once the planned goals finish (the plan wizard only). */
+      upgraded?: LaneRosterPotential
       cells: PotentialCellState[][]
     }
 

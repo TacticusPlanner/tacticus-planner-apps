@@ -287,6 +287,13 @@ describe("useAnalyticsActions", () => {
       on: true,
     })
     result.current.captureEvent({
+      type: "legendary_event_plan_created",
+      eventId: "votanUthar",
+      goals: 4,
+      teams: 3,
+      ok: true,
+    })
+    result.current.captureEvent({
       type: "legendary_event_annotation_set",
       eventId: "astarLysander",
       laneId: "alpha",
@@ -308,6 +315,12 @@ describe("useAnalyticsActions", () => {
       "legendary_event_paid_options_toggled",
       { event_id: "votanUthar", on: true }
     )
+    expect(capture).toHaveBeenCalledWith("legendary_event_plan_created", {
+      event_id: "votanUthar",
+      goals: 4,
+      teams: 3,
+      ok: true,
+    })
     expect(capture).toHaveBeenCalledWith("legendary_event_annotation_set", {
       event_id: "astarLysander",
       lane_id: "alpha",

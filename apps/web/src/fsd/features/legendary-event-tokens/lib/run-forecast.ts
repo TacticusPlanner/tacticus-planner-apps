@@ -45,7 +45,7 @@ export interface ForecastInput {
   /** The event unit's next step (`unitNextAscensionStep`), shared with the reward projection so
    *  both count the shards from the same step. */
   fromStep: AscensionStep | "fullyAscended"
-  tokens: readonly Pick<PlannedToken, "points">[]
+  tokens: readonly Pick<PlannedToken, "points" | "slot">[]
   runs: readonly LegendaryEventRunInputs[] | undefined
   showPaidOptions: boolean
 }
@@ -166,10 +166,13 @@ export function forecastRuns({
   }
 
   const tokensByRun = new Map(
-    splitPlanByRun(tokens.length, supply).sections.map((section) => [
-      section.run,
-      section.count,
-    ])
+    splitPlanByRun(
+      tokens.length,
+      supply,
+      tokens.some((token) => token.slot !== undefined)
+        ? tokens.map((token) => token.slot)
+        : undefined
+    ).sections.map((section) => [section.run, section.count])
   )
 
   const results = supply.map((runSupply): RunForecast => {

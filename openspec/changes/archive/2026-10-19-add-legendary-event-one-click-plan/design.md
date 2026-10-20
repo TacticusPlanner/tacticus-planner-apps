@@ -25,13 +25,26 @@ Generalise the reward projection: replace "next step" with the chosen step's cum
 
 The **ceiling** for a roster is the run forecast's ending points when the token plan is built from that roster's generated teams (D5) with their per-run depths. Comparing the target with the ceiling for the synced roster gives Reachable now; with the full recommended upgrade set gives Needs upgrades; otherwise Too ambitious, and the wizard names the highest step whose target is at or below the best ceiling.
 
+As built: the token plan gained run slots (`runSlots`), so each token is valued at its run's depth (`perRunDepths`) and a run in which no team can play leaves its remaining tokens unplanned instead of ending the plan. Without this, a roster that only gets deep enough in run 3 was never credited for it.
+
 ### D4. Greedy upgrades by points per farming day
 
 Candidates: the next steps (`legendary-event-upgrade-impact`) of every unit any lane allows, repeated up to three steps per unit. Each round scores a candidate by the ceiling gain it adds over the current selection divided by its estimated farming days (goal farming estimates on the account's current plan, added at the end of the goal order), dropping candidates whose estimated completion is after the start of the last run they could improve. Pick the best, repeat until the target is met or nothing gains. Ties: master table total across all served events (value beyond this event), then horde-mode multiplier, then name. Upgrades are capped at 12 goals per plan to keep the step reviewable.
 
+As built:
+
+- Candidates are chains of one to three steps per unit; a single step rarely moves a team one battle, so single steps found nothing.
+- Candidates are limited to team members, the top 4 owned units per objective by power and the top 2 locked units per objective by points per battle, which keeps exploration fast.
+- Farming days are the unit's chain on its own (not appended to the account's goal order); ready dates queue the recommendations one after another.
+- The greedy runs once with no target (to the cap) and each step's recommendations are the prefix that reaches it, so changing the target does not re-run the search. It runs in `setTimeout` chunks so the page stays responsive.
+
 ### D5. Team generation reuses suggestions
 
 Per lane and per run roster: start from the user's teams (or none when "Replace my teams" is chosen), repeatedly add the suggestion with the highest gain until no suggestion gains or the lane has 6 teams. Each new team's depth per run is its clear estimate on that run's projected roster.
+
+As built: a lane's teams are cached by the roster changes of the units that lane allows, so evaluating one unit's upgrade regenerates only its lanes. A removed team's members are excluded, so the next best suggestion takes its place. On Create a new team is saved with no recorded depth, so every run reads the live clear estimate; projected later-run depths are not stored, because they assume the upgrades finish on time and would outlive goals that slip. It is named by its display name (60 characters at most).
+
+Create freezes the writes on its first press (goals, teams, run inputs, destination and team names), because creating them refreshes the reads the draft is built from; Retry failed resends from that snapshot, and the draft is locked once Create has run. Create waits until the recommendations are fully explored. Ticks are kept by recommendation (unit and step targets), so a re-exploration that finds the same recommendations keeps them. A unit's leading steps that an Active goal already covers are dropped and its chain starts from the state they reach, so no created goal overlaps an existing one.
 
 ### D6. Creation order and partial failure
 
@@ -46,6 +59,13 @@ Median gap, in whole days rounded up, over every pair of consecutive announced r
 - Farming estimates run the account's whole plan; the wizard computes them in a worker-friendly batch and shows a skeleton per candidate while they run.
 - Greedy picks can miss a cheaper combination; the Upgrades step lets the user swap a goal and see the verdict update.
 - Estimated dates can move when the game announces runs; the plan only uses them to filter upgrades, and the dates are labelled estimated.
+
+## Deferred from v1
+
+- Editing a team in the draft (the team editor saving into the draft) and an explicit Add suggestion action. Remove lets the next suggestion in, which covers the common case.
+- Changing a recommendation's target step on the Upgrades step.
+- A tour that walks every step (later steps are not mounted while the tour runs).
+- Running the farming estimates in a worker.
 
 ## Open questions
 

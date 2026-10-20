@@ -9,4 +9,4 @@ export {
 } from "./ui/next-token-card"
 export { TokenPlanList } from "./ui/token-plan-list"
 export { RunForecastSection } from "./ui/run-forecast"
-export type { TokenPlanView } from "./lib/token-plan-view"
+export { buildTokenPlanView, type TokenPlanView } from "./lib/token-plan-view"

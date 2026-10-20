@@ -53,6 +53,11 @@ describe("legendary events routes", () => {
     expect(screen.getByTestId("event-page")).toBeInTheDocument()
   })
 
+  it("routes an event's plan wizard", () => {
+    renderLegendaryEventsRoutes(["/legendary-events/astarLysander/plan"])
+    expect(screen.getByTestId(":eventId/plan")).toBeInTheDocument()
+  })
+
   it("routes the master table and the tier list, never as event ids", () => {
     renderLegendaryEventsRoutes(["/legendary-events/master-table"])
     expect(screen.getByTestId("master-table")).toBeInTheDocument()

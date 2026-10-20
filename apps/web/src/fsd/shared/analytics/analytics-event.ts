@@ -98,6 +98,30 @@ type LegendaryEventRunInputsSavedEvent = {
   closeShards: number
 }
 
+/** The 1-click plan wizard opened, from the Overview button, the Suggest teams link or a link. */
+type LegendaryEventPlanWizardOpenedEvent = {
+  type: "legendary_event_plan_wizard_opened"
+  eventId: string
+  source: "overview" | "suggestions" | "link"
+}
+
+/** A target step was chosen in the 1-click plan wizard, with its verdict at that moment. */
+type LegendaryEventPlanTargetChosenEvent = {
+  type: "legendary_event_plan_target_chosen"
+  eventId: string
+  step: string
+  verdict: "reachableNow" | "needsUpgrades" | "tooAmbitious"
+}
+
+/** The 1-click plan wizard's Create finished (`ok` false when an item failed). */
+type LegendaryEventPlanCreatedEvent = {
+  type: "legendary_event_plan_created"
+  eventId: string
+  goals: number
+  teams: number
+  ok: boolean
+}
+
 /** The plan's Show paid options switch was turned on or off. */
 type LegendaryEventPaidOptionsToggledEvent = {
   type: "legendary_event_paid_options_toggled"
@@ -204,6 +228,9 @@ export type AnalyticsEvent =
   | LegendaryEventDepthSetEvent
   | LegendaryEventRunInputsSavedEvent
   | LegendaryEventPaidOptionsToggledEvent
+  | LegendaryEventPlanWizardOpenedEvent
+  | LegendaryEventPlanTargetChosenEvent
+  | LegendaryEventPlanCreatedEvent
   | LegendaryEventAnnotationSetEvent
   | LegendaryEventDepthEstimateRestoredEvent
   | LegendaryEventNextTokenShownEvent

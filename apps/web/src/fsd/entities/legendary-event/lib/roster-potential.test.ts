@@ -123,4 +123,21 @@ describe("potentialCellStates", () => {
     expect(cells[2]![1 + RESILIENT]).toBe("out")
     expect(cells[2]![1 + PIERCING]).toBe("out")
   })
+
+  it("marks what only the planned goals reach", () => {
+    const potential = potentialOf()
+    const upgraded = potentialCellStates(
+      UTHAR_ALPHA_MODEL,
+      UTHAR_ALPHA_PROGRESS,
+      potential,
+      [melee],
+      {
+        defeatAllDepth: potential.defeatAllDepth + 1,
+        objectiveDepths: potential.objectiveDepths,
+      }
+    )
+    expect(upgraded[6]![0]).toBe("goals")
+    expect(upgraded[6]![1 + MELEE]).toBe("out")
+    expect(upgraded[5]!.slice(0, 2)).toEqual(["roster", "roster"])
+  })
 })

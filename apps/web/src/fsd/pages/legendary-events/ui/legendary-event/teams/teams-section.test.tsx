@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState, type ReactNode } from "react"
+import { MemoryRouter } from "react-router"
 import userEvent from "@testing-library/user-event"
 import type { i18n as I18n } from "i18next"
 import { beforeAll, describe, expect, it, vi } from "vitest"
@@ -160,6 +161,18 @@ function SectionWithEditor({
   )
 }
 
+// The Suggest teams dialog links to the 1-click plan.
+function routerWrapper() {
+  const I18nWrapper = i18nWrapper(i18n)
+  return function RouterWrapper({ children }: { children: ReactNode }) {
+    return (
+      <MemoryRouter>
+        <I18nWrapper>{children}</I18nWrapper>
+      </MemoryRouter>
+    )
+  }
+}
+
 function renderSection(
   state: TeamsSectionState,
   {
@@ -208,7 +221,7 @@ function renderSection(
   }
   const view = render(
     <SectionWithEditor isMobile={isMobile} laneId={laneId} teams={teams} />,
-    { wrapper: i18nWrapper(i18n) }
+    { wrapper: routerWrapper() }
   )
   const rerender = (next: TeamsSectionState) =>
     view.rerender(

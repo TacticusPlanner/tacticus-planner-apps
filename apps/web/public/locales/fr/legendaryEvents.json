@@ -137,12 +137,14 @@
       "noUnitFor": " · aucune unité pour {{objectives}}",
       "reachesAll": "L'effectif peut atteindre tous les combats",
       "needsEstimates": "Le potentiel de l'effectif nécessite les estimations de progression",
+      "withGoals": "Avec les objectifs prévus : combat {{battle}}, +{{points}} points",
       "column": "Combat {{battle}} · {{points}} points",
       "cellLabel": "{{row}} : {{state}}",
       "states": {
         "cleared": "Réussi",
         "teams": "Vos équipes atteignent",
         "roster": "L'effectif peut atteindre",
+        "goals": "Avec les objectifs prévus",
         "out": "Hors de portée"
       }
     }
@@ -481,6 +483,30 @@
         "filters": {
           "title": "Filtres",
           "content": "Recherchez par nom, affichez uniquement vos personnages ou choisissez une alliance. Les filtres s'appliquent à toutes les lignes, Non classés compris."
+        }
+      }
+    },
+    "planWizard": {
+      "steps": {
+        "stepper": {
+          "title": "Cinq étapes",
+          "content": "Objectif, Améliorations, Équipes, Manches et jetons, puis Vérifier et créer. Rien n'est enregistré avant d'appuyer sur Créer."
+        },
+        "progress": {
+          "title": "Cinq étapes",
+          "content": "Objectif, Améliorations, Équipes, Manches et jetons, puis Vérifier et créer. Rien n'est enregistré avant d'appuyer sur Créer."
+        },
+        "target": {
+          "title": "Choisir un objectif",
+          "content": "Chaque palier indique les points nécessaires et si votre effectif l'atteint déjà, a besoin d'améliorations ou est trop ambitieux pour cet événement."
+        },
+        "bestStep": {
+          "title": "Palier le plus haut à votre portée",
+          "content": "Une fois les améliorations explorées, ce palier est le plus haut que votre effectif peut atteindre avec elles."
+        },
+        "footer": {
+          "title": "Retour et Suivant",
+          "content": "Passez d'une étape à l'autre ici. La dernière étape crée les objectifs, le projet et les équipes en une fois."
         }
       }
     }
@@ -824,5 +850,132 @@
       "winWithoutSummon_other": "Gagner {{count}} batailles sans invoquer d'unités",
       "defeatWithDamageType": "Vaincre {{count}} ennemis avec des dégâts {{damageType}}"
     }
+  },
+  "planWizard": {
+    "open": "Planifier cet événement",
+    "openFromSuggestions": "Planifier toutes les voies pour un objectif",
+    "title": "Planifier {{name}}",
+    "back": "Retour",
+    "next": "Suivant",
+    "create": "Créer",
+    "creating": "Création…",
+    "retryFailed": "Réessayer les échecs",
+    "progress": "Étape {{step}} sur {{count}} · {{name}}",
+    "steps": {
+      "target": "Objectif",
+      "upgrades": "Améliorations",
+      "teams": "Équipes",
+      "runs": "Manches et jetons",
+      "review": "Vérifier et créer"
+    },
+    "states": {
+      "loading": "Chargement du plan…",
+      "error": "L'événement n'a pas pu être chargé.",
+      "retry": "Réessayer",
+      "signedOut": "Connectez-vous pour planifier cet événement.",
+      "finished": "Cet événement est terminé, il n'y a plus rien à planifier.",
+      "noEstimates": "Le plan en 1 clic a besoin des estimations de combats, indisponibles pour le moment.",
+      "backToEvent": "Retour à l'événement",
+      "missing": "Cet événement est introuvable.",
+      "backToEvents": "Tous les événements légendaires"
+    },
+    "leave": {
+      "title": "Quitter le plan ?",
+      "description": "Rien n'a encore été créé. Vos choix dans ce plan seront perdus.",
+      "stay": "Rester",
+      "leave": "Quitter"
+    },
+    "target": {
+      "heading": "Que doit atteindre {{name}} d'ici la fin de l'événement ?",
+      "deadline": "Échéance : {{date}}",
+      "deadlineEstimated": "Échéance : vers le {{date}} (estimée)",
+      "deadlineUnknown": "Dates des manches inconnues : seules les manches annoncées sont planifiées",
+      "shards": "{{name}} a {{shards}} fragments",
+      "points": "{{points}} points",
+      "unreachable": "Inatteignable lors de cet événement",
+      "verdicts": {
+        "reachableNow": "Atteignable maintenant",
+        "needsUpgrades": "Améliorations nécessaires",
+        "tooAmbitious": "Trop ambitieux"
+      },
+      "spare": "{{points}} points de marge avec votre effectif",
+      "short": "Il manque {{points}} points avec votre effectif",
+      "estimating": "Vérification de l'apport des améliorations…",
+      "bestStep": "{{step}} est le palier le plus haut à votre portée",
+      "noStep": "Aucun palier n'est à votre portée",
+      "noTargets": "Il ne reste aucun palier à atteindre lors de cet événement."
+    },
+    "banner": "{{step}} semble hors de portée : {{best}}",
+    "bannerLink": "Changer d'objectif",
+    "upgrades": {
+      "heading": "Améliorations recommandées",
+      "description": "Choisies selon les points gagnés par jour de farm, prêtes avant la manche qu'elles aident. Les dates supposent que ces objectifs sont farmés dans cet ordre.",
+      "estimating": "Estimation du temps de farm…",
+      "unavailable": "Le temps de farm ne peut pas être estimé, aucune amélioration n'est donc recommandée.",
+      "none": "Aucune amélioration n'apporte de points avant l'échéance.",
+      "running": "Recherche d'améliorations en cours…",
+      "gain": "+{{points}} points",
+      "ready": "Prête vers le {{date}}",
+      "helps": "Aide dès la manche {{run}}",
+      "alreadyPlanned": "Déjà planifiée",
+      "verdictReachable": "Avec ces améliorations : atteignable · {{points}} points de marge",
+      "verdictShort": "Avec ces améliorations : il manque {{points}} points",
+      "notNeeded": "Votre effectif atteint déjà l'objectif : aucune amélioration nécessaire."
+    },
+    "teams": {
+      "keep": "Garder mes équipes",
+      "replace": "Remplacer mes équipes",
+      "yours": "La vôtre",
+      "empty": "Aucune équipe pour cette voie",
+      "depth": "Manche {{run}} : combat {{depth}}",
+      "depthNone": "Manche {{run}} : aucun",
+      "removeTeam": "Retirer {{name}}",
+      "removed_one": "{{count}} équipe retirée",
+      "removed_other": "{{count}} équipes retirées",
+      "restore": "Restaurer",
+      "swap": "Une équipe plus forte pourrait prendre cette place : +{{points}} points",
+      "swapSame": "Ces unités peuvent remplir plus d’objectifs dans une nouvelle équipe : +{{points}} points",
+      "swapAccept": "Échanger",
+      "swapSkip": "Garder la mienne"
+    },
+    "runs": {
+      "heading": "Données des manches",
+      "description": "Enregistrées avec le plan quand vous appuyez sur Créer."
+    },
+    "review": {
+      "project": "Projet",
+      "newProject": "Nouveau projet",
+      "newProjectName": "{{name}} · {{step}}",
+      "goals": "Objectifs à créer",
+      "noGoals": "Aucun nouvel objectif",
+      "teams": "Équipes",
+      "createTeams_one": "{{lane}} : créer {{count}} équipe",
+      "createTeams_other": "{{lane}} : créer {{count}} équipes",
+      "removeTeams_one": "{{lane}} : retirer {{count}} équipe",
+      "removeTeams_other": "{{lane}} : retirer {{count}} équipes",
+      "noTeams": "Aucun changement d'équipe",
+      "runs": "Données des manches",
+      "runsChanged": "Enregistrer les données des manches modifiées",
+      "noRuns": "Aucun changement des données des manches",
+      "final": "À la fin de la manche {{run}} : {{step}} atteint · {{points}} points de marge",
+      "finalShort": "À la fin de la manche {{run}} : il manque {{points}} points pour {{step}}",
+      "items": {
+        "project": "Créer le projet",
+        "goals": "Objectifs pour {{name}}",
+        "teams": "Équipes {{lane}}",
+        "runs": "Données des manches"
+      },
+      "status": {
+        "pending": "En attente",
+        "done": "Terminé",
+        "failed": "Échec"
+      },
+      "newProjectNameLabel": "Nom du nouveau projet"
+    },
+    "toast": {
+      "created": "Plan créé : {{goals}} objectifs, {{teams}} équipes",
+      "openProject": "Ouvrir le projet"
+    },
+    "stepsLabel": "Étapes du plan"
   }
 }

@@ -26,15 +26,17 @@ const STATES: readonly PotentialCellState[] = [
   "cleared",
   "teams",
   "roster",
+  "goals",
   "out",
 ]
 
-/** Filled, outlined, hatched, empty (design D3): the states never rely on colour alone. */
+/** Filled, outlined, hatched, dashed, empty (design D3): the states never rely on colour alone. */
 const CELL_CLASS: Record<PotentialCellState, string> = {
   cleared: "bg-(--event-legendary)",
   teams: "border-2 border-(--event-legendary) bg-background",
   roster:
     "border border-(--event-legendary)/60 bg-[repeating-linear-gradient(135deg,var(--event-legendary)_0_1.5px,transparent_1.5px_4px)]",
+  goals: "border border-dashed border-(--chart-3) bg-(--chart-3)/30",
   out: "border border-border bg-muted/40",
 }
 
@@ -142,7 +144,12 @@ export function RosterPotentialMap({
         className="flex flex-wrap gap-x-3 gap-y-1 text-xs text-muted-foreground"
         data-testid="roster-potential-legend"
       >
-        {STATES.map((state) => (
+        {STATES.filter(
+          // Only the plan wizard's map has planned goals to show.
+          (state) =>
+            state !== "goals" ||
+            view.cells.some((cells) => cells.includes(state))
+        ).map((state) => (
           <li className="flex items-center gap-1" key={state}>
             <span
               aria-hidden
@@ -210,6 +217,16 @@ function PotentialSummary({
               battle: potential.fallsBehindBattle,
             }) + uncoveredText}
       </p>
+      {view.upgraded && view.upgraded.pointsLeft > potential.pointsLeft ? (
+        <p data-testid="roster-potential-goals">
+          {t("laneOverview.potential.withGoals", {
+            battle: view.upgraded.defeatAllDepth,
+            points: number.format(
+              view.upgraded.pointsLeft - potential.pointsLeft
+            ),
+          })}
+        </p>
+      ) : null}
     </div>
   )
 }

@@ -137,12 +137,14 @@
       "noUnitFor": " · ninguna unidad para {{objectives}}",
       "reachesAll": "La plantilla llega a todas las batallas",
       "needsEstimates": "El potencial de la plantilla necesita estimaciones de avance",
+      "withGoals": "Con los objetivos planificados: batalla {{battle}}, +{{points}} puntos",
       "column": "Batalla {{battle}} · {{points}} puntos",
       "cellLabel": "{{row}}: {{state}}",
       "states": {
         "cleared": "Superado",
         "teams": "Tus equipos llegan",
         "roster": "La plantilla puede llegar",
+        "goals": "Con objetivos planificados",
         "out": "Fuera de alcance"
       }
     }
@@ -481,6 +483,30 @@
         "filters": {
           "title": "Filtros",
           "content": "Busca por nombre, muestra solo los personajes que tienes o elige una alianza. Los filtros se aplican a todas las filas, también a Sin nivel."
+        }
+      }
+    },
+    "planWizard": {
+      "steps": {
+        "stepper": {
+          "title": "Cinco pasos",
+          "content": "Objetivo, Mejoras, Equipos, Rondas y fichas, y luego Revisar y crear. No se guarda nada hasta que pulses Crear."
+        },
+        "progress": {
+          "title": "Cinco pasos",
+          "content": "Objetivo, Mejoras, Equipos, Rondas y fichas, y luego Revisar y crear. No se guarda nada hasta que pulses Crear."
+        },
+        "target": {
+          "title": "Elige un objetivo",
+          "content": "Cada paso muestra los puntos que necesita y si tu plantilla lo alcanza ya, necesita mejoras o es demasiado ambicioso para este evento."
+        },
+        "bestStep": {
+          "title": "Paso más alto a tu alcance",
+          "content": "Cuando se exploran las mejoras, aquí aparece el paso más alto que tu plantilla puede alcanzar con ellas."
+        },
+        "footer": {
+          "title": "Atrás y Siguiente",
+          "content": "Muévete entre los pasos desde aquí. El último paso crea los objetivos, el proyecto y los equipos de una vez."
         }
       }
     }
@@ -824,5 +850,132 @@
       "winWithoutSummon_other": "Gana {{count}} batallas sin invocar unidades",
       "defeatWithDamageType": "Derrota a {{count}} enemigos con daño {{damageType}}"
     }
+  },
+  "planWizard": {
+    "open": "Planificar este evento",
+    "openFromSuggestions": "Planificar todas las líneas para un objetivo",
+    "title": "Planificar {{name}}",
+    "back": "Atrás",
+    "next": "Siguiente",
+    "create": "Crear",
+    "creating": "Creando…",
+    "retryFailed": "Reintentar los fallidos",
+    "progress": "Paso {{step}} de {{count}} · {{name}}",
+    "steps": {
+      "target": "Objetivo",
+      "upgrades": "Mejoras",
+      "teams": "Equipos",
+      "runs": "Rondas y fichas",
+      "review": "Revisar y crear"
+    },
+    "states": {
+      "loading": "Cargando el plan…",
+      "error": "No se pudo cargar el evento.",
+      "retry": "Reintentar",
+      "signedOut": "Inicia sesión para planificar este evento.",
+      "finished": "Este evento ha terminado, no queda nada por planificar.",
+      "noEstimates": "El plan en 1 clic necesita estimaciones de batallas, que no están disponibles ahora.",
+      "backToEvent": "Volver al evento",
+      "missing": "No se encontró este evento.",
+      "backToEvents": "Todos los eventos legendarios"
+    },
+    "leave": {
+      "title": "¿Salir del plan?",
+      "description": "Todavía no se ha creado nada. Perderás tus elecciones en este plan.",
+      "stay": "Quedarse",
+      "leave": "Salir"
+    },
+    "target": {
+      "heading": "¿Qué debería alcanzar {{name}} al final del evento?",
+      "deadline": "Fecha límite: {{date}}",
+      "deadlineEstimated": "Fecha límite: hacia el {{date}} (estimada)",
+      "deadlineUnknown": "Fechas de las rondas desconocidas: solo se planifican las rondas anunciadas",
+      "shards": "{{name}} tiene {{shards}} fragmentos",
+      "points": "{{points}} puntos",
+      "unreachable": "No alcanzable en este evento",
+      "verdicts": {
+        "reachableNow": "Alcanzable ya",
+        "needsUpgrades": "Necesita mejoras",
+        "tooAmbitious": "Demasiado ambicioso"
+      },
+      "spare": "{{points}} puntos de margen con tu plantilla",
+      "short": "Faltan {{points}} puntos con tu plantilla",
+      "estimating": "Comprobando lo que pueden aportar las mejoras…",
+      "bestStep": "{{step}} es el paso más alto a tu alcance",
+      "noStep": "Ningún paso está a tu alcance",
+      "noTargets": "No queda ningún paso por alcanzar en este evento."
+    },
+    "banner": "{{step}} parece fuera de alcance: {{best}}",
+    "bannerLink": "Cambiar objetivo",
+    "upgrades": {
+      "heading": "Mejoras recomendadas",
+      "description": "Elegidas por puntos ganados por día de farmeo, listas antes de la ronda en la que ayudan. Las fechas suponen que estos objetivos se farmean en este orden.",
+      "estimating": "Estimando el tiempo de farmeo…",
+      "unavailable": "No se puede estimar el tiempo de farmeo, así que no se recomiendan mejoras.",
+      "none": "Ninguna mejora suma puntos antes de la fecha límite.",
+      "running": "Sigue buscando mejoras…",
+      "gain": "+{{points}} puntos",
+      "ready": "Lista hacia el {{date}}",
+      "helps": "Ayuda desde la ronda {{run}}",
+      "alreadyPlanned": "Ya planificada",
+      "verdictReachable": "Con estas mejoras: alcanzable · {{points}} puntos de margen",
+      "verdictShort": "Con estas mejoras: faltan {{points}} puntos",
+      "notNeeded": "Tu plantilla ya alcanza el objetivo: no hacen falta mejoras."
+    },
+    "teams": {
+      "keep": "Mantener mis equipos",
+      "replace": "Reemplazar mis equipos",
+      "yours": "Tuyo",
+      "empty": "Ningún equipo para esta línea",
+      "depth": "Ronda {{run}}: batalla {{depth}}",
+      "depthNone": "Ronda {{run}}: ninguna",
+      "removeTeam": "Quitar {{name}}",
+      "removed_one": "{{count}} equipo quitado",
+      "removed_other": "{{count}} equipos quitados",
+      "restore": "Restaurar",
+      "swap": "Un equipo más fuerte podría ocupar este puesto: +{{points}} puntos",
+      "swapSame": "Estas unidades pueden cumplir más objetivos como un equipo nuevo: +{{points}} puntos",
+      "swapAccept": "Cambiar",
+      "swapSkip": "Mantener el mío"
+    },
+    "runs": {
+      "heading": "Datos de las rondas",
+      "description": "Se guardan con el plan al pulsar Crear."
+    },
+    "review": {
+      "project": "Proyecto",
+      "newProject": "Proyecto nuevo",
+      "newProjectName": "{{name}} · {{step}}",
+      "goals": "Objetivos a crear",
+      "noGoals": "Ningún objetivo nuevo",
+      "teams": "Equipos",
+      "createTeams_one": "{{lane}}: crear {{count}} equipo",
+      "createTeams_other": "{{lane}}: crear {{count}} equipos",
+      "removeTeams_one": "{{lane}}: quitar {{count}} equipo",
+      "removeTeams_other": "{{lane}}: quitar {{count}} equipos",
+      "noTeams": "Sin cambios en los equipos",
+      "runs": "Datos de las rondas",
+      "runsChanged": "Guardar los datos de las rondas editados",
+      "noRuns": "Sin cambios en los datos de las rondas",
+      "final": "Al final de la ronda {{run}}: {{step}} alcanzado · {{points}} puntos de margen",
+      "finalShort": "Al final de la ronda {{run}}: a {{step}} le faltan {{points}} puntos",
+      "items": {
+        "project": "Crear el proyecto",
+        "goals": "Objetivos de {{name}}",
+        "teams": "Equipos de {{lane}}",
+        "runs": "Datos de las rondas"
+      },
+      "status": {
+        "pending": "Pendiente",
+        "done": "Hecho",
+        "failed": "Fallido"
+      },
+      "newProjectNameLabel": "Nombre del proyecto nuevo"
+    },
+    "toast": {
+      "created": "Plan creado: {{goals}} objetivos, {{teams}} equipos",
+      "openProject": "Abrir proyecto"
+    },
+    "stepsLabel": "Pasos del plan"
   }
 }
