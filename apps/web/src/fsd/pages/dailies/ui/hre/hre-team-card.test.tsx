@@ -74,6 +74,22 @@ describe("HreTeamCard", () => {
     )
   })
 
+  it("says an ability-use pool has spares only beyond 5 units", () => {
+    const abilities = (size: number): HreTeam => {
+      const team = ready(size)
+      return team.status === "ready" ? { ...team, rule: "abilities" } : team
+    }
+    const { unmount } = renderCard(abilities(8))
+    expect(screen.getByTestId("hre-team-rule")).toHaveTextContent(
+      "hre:teams.abilitiesTrack|size=8"
+    )
+    unmount()
+    renderCard(abilities(5))
+    expect(screen.getByTestId("hre-team-rule")).toHaveTextContent(
+      "hre:teams.abilitiesTrackFew|size=5"
+    )
+  })
+
   it("notes the tokens to keep and how many can be played now", () => {
     renderCard(ready(6), 3)
     expect(screen.getByTestId("hre-team-reserve")).toHaveTextContent(

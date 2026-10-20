@@ -74,6 +74,7 @@ export function HrePage() {
     alliance: hero?.alliance ?? null,
     featuredCharacterId: instance?.featuredCharacterId ?? null,
   })
+  const firstTeam = teams.findIndex((view) => view.status !== "hidden")
   const pace =
     instance && ready
       ? hrePaceFor({
@@ -100,7 +101,7 @@ export function HrePage() {
   useHreTutorial({
     hasEvent: !!instance,
     running,
-    hasTeam: teams[0] !== undefined && teams[0].status !== "hidden",
+    hasTeam: firstTeam >= 0,
     hasTokens: tokenRows.length > 0,
   })
 
@@ -161,6 +162,7 @@ export function HrePage() {
     />
   ) : null
   const teamCard = teams.map((view, index) => {
+    // The first shown card keeps the `hre-team` id the tutorial points at.
     const plan = teamPlans[index] ?? null
     return (
       <HreTeamCard
@@ -168,7 +170,9 @@ export function HrePage() {
         hero={heroName}
         key={plan?.mode ?? index}
         plan={plan}
-        testId={index === 0 ? "hre-team" : `hre-team-${plan?.mode ?? index}`}
+        testId={
+          index === firstTeam ? "hre-team" : `hre-team-${plan?.mode ?? index}`
+        }
         tokens={
           plan && plan.mode !== "battle" ? (tokens?.[plan.mode] ?? null) : null
         }

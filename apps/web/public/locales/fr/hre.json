@@ -224,6 +224,7 @@
     "reservePlay": "Avec {{have}} maintenant, jouez jusqu'à {{play}}.",
     "rangedTrackFew": "Vos {{size}} unités à distance {{alliance}} : moins de 5, donc aucune réserve.",
     "abilities": "Vos 5 unités les plus fortes : chaque utilisation de capacité compte pour la mission.",
-    "abilitiesTrack": "Vos {{size}} unités {{alliance}} les plus fortes : chaque utilisation de capacité compte, et les autres remplacent celles qui tombent."
+    "abilitiesTrack": "Vos {{size}} unités {{alliance}} les plus fortes : chaque utilisation de capacité compte, et les autres remplacent celles qui tombent.",
+    "abilitiesTrackFew": "Vos {{size}} unités {{alliance}} les plus fortes : chaque utilisation de capacité compte, sans remplaçants pour celles qui tombent."
   }
 }

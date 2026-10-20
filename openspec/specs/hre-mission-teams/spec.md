@@ -105,7 +105,7 @@ While the current mission's `heal` objective is open, the team SHALL include the
 
 ### Requirement: Any-unit ability uses get Arena and Onslaught teams
 
-When the current mission has no open lineup-restricted objective but has an open ability-use objective for any units (mission 15), the HRE tab SHALL suggest an Arena team of the player's 5 strongest units while the mission's Arena battles are open, and an Onslaught pool of 8 kept to one alliance track, each in its own card. Each card SHALL say that every ability use counts, and SHALL keep the tokens a later mission needs, as other team cards do.
+When the current mission has no open lineup-restricted objective but has an open ability-use objective for any units (missions 3 and 15), the HRE tab SHALL suggest an Arena team of the player's 5 strongest units while the mission's Arena battles are open, and an Onslaught pool of up to 8 kept to the alliance track with the most units, each in its own card. Each card SHALL say that every ability use counts, and an Onslaught pool of 5 or fewer SHALL say it has no spares, and SHALL keep the tokens a later mission needs, as other team cards do.
 
 #### Scenario: Mission 15 with Arena battles open
 

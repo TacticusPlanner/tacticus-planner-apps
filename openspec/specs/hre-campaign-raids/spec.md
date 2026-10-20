@@ -325,7 +325,7 @@ The HRE tab SHALL NOT show the project selector, the Raids Filters action or the
 
 ### Requirement: Any-unit ability uses get 5-slot raids
 
-When the current mission has no open campaign, lightning, all-alliance lineup or alliance-ability objective but has an open ability-use objective for any units (mission 15), the raid suggestions SHALL serve it as raids on 5-slot nodes, counting 5 ability uses per raid, so the raids to go are `ceil(uses to go / 5)`. The note SHALL say that each raid counts about 5 uses and that uses in Arena and Onslaught count too. A running Home Screen Event SHALL rank these raids as it ranks any HRE raids.
+When the current mission has no open campaign, lightning, all-alliance lineup or alliance-ability objective but has an open ability-use objective for any units (mission 15, and mission 3 once its campaign wins are done), the raid suggestions SHALL serve it as raids on 5-slot nodes, counting 5 ability uses per raid, so the raids to go are `ceil(uses to go / 5)`. The note SHALL say that each raid counts about 5 uses and that uses in Arena and Onslaught count too. A running Home Screen Event SHALL rank these raids as it ranks any HRE raids.
 
 #### Scenario: Mission 15
 

@@ -224,6 +224,7 @@
     "reservePlay": "With {{have}} now, play up to {{play}}.",
     "rangedTrackFew": "Your {{size}} ranged {{alliance}} units: fewer than 5, so there are no spares.",
     "abilities": "Your 5 strongest units: every ability use counts toward the mission.",
-    "abilitiesTrack": "Your {{size}} strongest {{alliance}} units: every ability use counts, and the rest replace those who fall."
+    "abilitiesTrack": "Your {{size}} strongest {{alliance}} units: every ability use counts, and the rest replace those who fall.",
+    "abilitiesTrackFew": "Your {{size}} strongest {{alliance}} units: every ability use counts, with no spares for those who fall."
   }
 }

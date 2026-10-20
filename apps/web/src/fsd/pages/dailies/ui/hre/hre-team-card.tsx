@@ -190,7 +190,12 @@ function RuleText({
     }
     case "abilities": {
       return trackAlliance
-        ? t("hre:teams.abilitiesTrack", { size, alliance: trackAlliance })
+        ? t(
+            size <= HRE_TEAM_SIZE
+              ? "hre:teams.abilitiesTrackFew"
+              : "hre:teams.abilitiesTrack",
+            { size, alliance: trackAlliance }
+          )
         : t("hre:teams.abilities")
     }
   }

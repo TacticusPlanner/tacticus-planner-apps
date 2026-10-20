@@ -224,6 +224,7 @@
     "reservePlay": "Mit {{have}} jetzt spiele bis zu {{play}}.",
     "rangedTrackFew": "Deine {{size}} {{alliance}}-Fernkampf-Einheiten: weniger als 5, also keine Ersatzeinheiten.",
     "abilities": "Deine 5 stärksten Einheiten: Jeder Fähigkeitseinsatz zählt für die Mission.",
-    "abilitiesTrack": "Deine {{size}} stärksten {{alliance}}-Einheiten: Jeder Fähigkeitseinsatz zählt, und die übrigen ersetzen gefallene."
+    "abilitiesTrack": "Deine {{size}} stärksten {{alliance}}-Einheiten: Jeder Fähigkeitseinsatz zählt, und die übrigen ersetzen gefallene.",
+    "abilitiesTrackFew": "Deine {{size}} stärksten {{alliance}}-Einheiten: Jeder Fähigkeitseinsatz zählt, ohne Ersatz für gefallene."
   }
 }
