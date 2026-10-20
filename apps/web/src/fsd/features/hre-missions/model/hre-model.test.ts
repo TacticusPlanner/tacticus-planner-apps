@@ -9,9 +9,6 @@ import {
   tokenNeeds,
 } from "./hre-objectives"
 import { selectTeamPlans } from "./hre-team-plan"
-
-const selectTeamPlan = (state: Parameters<typeof selectTeamPlans>[0]) =>
-  selectTeamPlans(state)[0] ?? null
 import { bracketForRank, bracketRange, projectHrePace } from "./hre-pace"
 import {
   advanceMission,
@@ -388,6 +385,9 @@ describe("projectHrePace", () => {
   })
 })
 
+const selectTeamPlan = (state: Parameters<typeof selectTeamPlans>[0]) =>
+  selectTeamPlans(state)[0] ?? null
+
 describe("selectTeamPlan", () => {
   it("names the lineup rule of the current mission's open objective", () => {
     expect(selectTeamPlan(progress({ mission: 14 }))?.rule).toBe("alliance")
@@ -436,6 +436,16 @@ describe("selectTeamPlan", () => {
         ?.preferPsychic
     ).toBe(false)
     expect(selectTeamPlan(progress({ mission: 4 }))?.mode).toBe("arena")
+  })
+
+  it("gives mission 3 an Onslaught pool for its ability uses, and 5-slot raids once its wins are done", () => {
+    expect(selectTeamPlans(progress({ mission: 3 }))).toMatchObject([
+      { rule: "abilities", mode: "onslaught" },
+    ])
+    expect(selectRaidObjective(progress({ mission: 3 }))?.kind).toBe("raids")
+    expect(
+      selectRaidObjective(progress({ mission: 3, progress: [20, 0] }))
+    ).toMatchObject({ battlesToGo: 6, slots: 5 })
   })
 
   it("gives mission 15 an Arena team and an Onslaught pool for its ability uses", () => {

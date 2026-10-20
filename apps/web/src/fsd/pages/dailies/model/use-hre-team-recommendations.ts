@@ -1,6 +1,7 @@
 import { useCallback, useMemo, useState } from "react"
 import { useLiveQuery } from "dexie-react-hooks"
 import { useTranslation } from "react-i18next"
+import type { GameCatalogHseTracker } from "@workspace/game-catalog"
 import { getCharactersMap } from "@workspace/game-catalog/queries"
 import { getPlayerCharacters } from "@workspace/player-data/queries"
 
@@ -48,12 +49,14 @@ async function readTeams(): Promise<HreTeamsRead> {
 
 /**
  * One HRE mission team per team plan of the current mission (`selectTeamPlans`), in plan order.
- * Summoners come from the English ability rules text (`npcAbilityText`).
+ * Summoners come from the English ability rules text (`npcAbilityText`). A running HSE's
+ * `hseTrackers` put its scoring units first in the token-mode teams.
  */
 export function useHreTeamRecommendations(input: {
   plans: readonly HreTeamPlan[]
   alliance: string | null
   featuredCharacterId: string | null
+  hseTrackers?: readonly GameCatalogHseTracker[] | null
 }): HreTeamViewModel[] {
   const [retryNonce, setRetryNonce] = useState(0)
   const read = useLiveQuery(readTeams, [retryNonce])
@@ -81,6 +84,7 @@ export function useHreTeamRecommendations(input: {
       catalog: read.catalog,
       summoners,
       unitPower,
+      hseTrackers: input.hseTrackers,
     })
     return team ? { status: "ready", team } : { status: "hidden" }
   })

@@ -342,6 +342,22 @@ function buildTeam(
   return { status: "ready", alliance, pick, team }
 }
 
+/**
+ * A running HSE's event-unit pools for another event's team in `mode` (an HRE mission team), so its
+ * units lead and both events progress: empty when the event does not score in `mode`.
+ */
+export function hseEventUnitPools(
+  trackers: readonly GameCatalogHseTracker[],
+  mode: HseTeamMode,
+  roster: readonly TeamRosterCharacter[],
+  catalog: HseTeamCatalog,
+  unitPower: UnitPowerContext | null
+): TeamPoolSpec[] {
+  const scoring = modeTrackers(trackers, mode)
+  if (scoring.length === 0) return []
+  return eventPool(scoring, roster, catalog, unitPower).pools
+}
+
 /** The token modes the trackers score in, in display order. */
 export function hseTeamModes(
   trackers: readonly GameCatalogHseTracker[]

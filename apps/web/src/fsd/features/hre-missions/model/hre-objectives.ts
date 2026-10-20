@@ -49,7 +49,7 @@ const FULL_TEAM_SLOTS = 5
  * event-campaign raids also count as campaign wins; then the campaign objective; then an
  * all-alliance lineup's wins, as battles fought by hand (raids have no lineup, so they cannot count);
  * then the alliance ability uses, as battles fought by hand on 5-slot nodes; then any units' ability
- * uses, as raids on 5-slot nodes, five uses a raid (mission 15). The mission's other
+ * uses, as raids on 5-slot nodes, five uses a raid (mission 15, and mission 3 once its wins are done). The mission's other
  * objective restricts the nodes too: alliance kills or the featured hero keep them to where the
  * alliance deploys, and faction kills add a list of nodes with that faction's enemies.
  */

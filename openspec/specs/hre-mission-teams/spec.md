@@ -105,7 +105,7 @@ While the current mission's `heal` objective is open, the team SHALL include the
 
 ### Requirement: Any-unit ability uses get Arena and Onslaught teams
 
-When the current mission has no open lineup-restricted objective but has an open ability-use objective for any units (mission 15), the HRE tab SHALL suggest an Arena team of the player's 5 strongest units while the mission's Arena battles are open, and an Onslaught pool of 8 kept to one alliance track, each in its own card. Each card SHALL say that every ability use counts, and SHALL keep the tokens a later mission needs, as other team cards do.
+When the current mission has no open lineup-restricted objective but has an open ability-use objective for any units (missions 3 and 15), the HRE tab SHALL suggest an Arena team of the player's 5 strongest units while the mission's Arena battles are open, and an Onslaught pool of up to 8 kept to the alliance track with the most units, each in its own card. Each card SHALL say that every ability use counts, and an Onslaught pool of 5 or fewer SHALL say it has no spares, and SHALL keep the tokens a later mission needs, as other team cards do.
 
 #### Scenario: Mission 15 with Arena battles open
 
@@ -116,3 +116,27 @@ When the current mission has no open lineup-restricted objective but has an open
 
 - **GIVEN** mission 15 with 4 of 4 Arena battles and ability uses still open
 - **THEN** only the Onslaught team card is shown
+
+### Requirement: HRE teams take a running HSE into account
+
+While a personal Home Screen Event runs and scores in a team's token mode, the HRE mission team SHALL rank the units that score for it first, after the mission's own rule and preferences, and the card SHALL say how many of its units also score for it.
+
+#### Scenario: Psyker Boost during mission 15
+
+- **GIVEN** mission 15 and a running Psyker Boost
+- **THEN** the Arena team is led by the player's Psykers
+- **AND** the card says how many of its units score for Psyker Boost
+
+#### Scenario: No HSE running
+
+- **GIVEN** no Home Screen Event runs, or a Global one
+- **THEN** the teams are the strongest units allowed by the mission's rule, with no HSE note
+
+### Requirement: Onslaught tracks follow a running HSE
+
+An Onslaught or Salvage Run team not already kept to one alliance SHALL keep to the alliance with the most of the running HSE's scoring units, then the most units.
+
+#### Scenario: More Chaos Psykers than Imperial ones
+
+- **GIVEN** a running Psyker Boost, 6 Imperial units with 4 Psykers and 5 Chaos Psykers
+- **THEN** the Onslaught pool keeps to Chaos

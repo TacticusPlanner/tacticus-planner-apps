@@ -30,6 +30,7 @@ const ready = (deliveredSize: number): HreTeam => ({
   eligibleCount: deliveredSize,
   alliance: "Chaos",
   support: null,
+  hseUnits: null,
   team: {
     id: "plan",
     poolUsed: "full-roster",
@@ -41,11 +42,16 @@ const ready = (deliveredSize: number): HreTeam => ({
   },
 })
 
-const renderCard = (team: HreTeam, tokens: number | null = null) =>
+const renderCard = (
+  team: HreTeam,
+  tokens: number | null = null,
+  hseEvent: string | null = null
+) =>
   render(
     <HreTeamCard
       alliance="Xenos"
       hero="Zapspitta"
+      hseEvent={hseEvent}
       plan={{
         mode: "onslaught",
         preferPsychic: false,
@@ -74,10 +80,47 @@ describe("HreTeamCard", () => {
     )
   })
 
+  it("says an ability-use pool has spares only beyond 5 units", () => {
+    const abilities = (size: number): HreTeam => {
+      const team = ready(size)
+      return team.status === "ready" ? { ...team, rule: "abilities" } : team
+    }
+    const { unmount } = renderCard(abilities(8))
+    expect(screen.getByTestId("hre-team-rule")).toHaveTextContent(
+      "hre:teams.abilitiesTrack|size=8"
+    )
+    unmount()
+    renderCard(abilities(5))
+    expect(screen.getByTestId("hre-team-rule")).toHaveTextContent(
+      "hre:teams.abilitiesTrackFew|size=5"
+    )
+  })
+
   it("notes the tokens to keep and how many can be played now", () => {
     renderCard(ready(6), 3)
     expect(screen.getByTestId("hre-team-reserve")).toHaveTextContent(
       "hre:teams.reservePlay|have=3,play=2"
     )
+  })
+
+  it("notes how many units also score for a running HSE", () => {
+    const withHse = (hseUnits: number): HreTeam => {
+      const team = ready(8)
+      return team.status === "ready" ? { ...team, hseUnits } : team
+    }
+    const { unmount } = renderCard(withHse(3), null, "Psyker Boost")
+    expect(screen.getByTestId("hre-team-hse")).toHaveTextContent(
+      "hre:teams.hse|count=3,event=Psyker Boost"
+    )
+    unmount()
+    renderCard(withHse(0), null, "Psyker Boost")
+    expect(screen.getByTestId("hre-team-hse")).toHaveTextContent(
+      "hre:teams.hseNone|event=Psyker Boost"
+    )
+  })
+
+  it("has no HSE note when the event does not score in the mode", () => {
+    renderCard(ready(8), null, "Psyker Boost")
+    expect(screen.queryByTestId("hre-team-hse")).not.toBeInTheDocument()
   })
 })

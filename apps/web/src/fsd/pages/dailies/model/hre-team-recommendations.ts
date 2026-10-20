@@ -1,4 +1,5 @@
-import type { UnitId } from "@workspace/game-domain"
+import type { GameCatalogHseTracker } from "@workspace/game-catalog"
+import type { Alliance, UnitId } from "@workspace/game-domain"
 
 import type { HreTeamPlan, HreTeamRule } from "@/features/hre-missions"
 import { characterDamageTypes } from "@/shared/lib"
@@ -6,6 +7,11 @@ import type { UnitPowerContext } from "@/shared/unit-power"
 
 import { mapRosterCharacter } from "./arena-recommendations"
 import type { RawRosterCharacter } from "./arena-recommendations.types"
+import { hseEventUnitPools } from "./hse-team-recommendations"
+import type {
+  HseTeamCatalog,
+  HseTeamMode,
+} from "./hse-team-recommendations.types"
 import { combatPowerOf } from "./team-eligibility"
 import { buildTeamRecommendations } from "./team-recommendations"
 import {
@@ -19,6 +25,12 @@ export const HRE_TEAM_SIZE = 5
 
 const SUPPORT_TRAITS: ReadonlySet<string> = new Set(["Healer", "Mechanic"])
 const PSYCHIC = "Psychic"
+/** The running HSE's name for each HRE token mode; campaign battles have none. */
+const HSE_MODE: Record<string, HseTeamMode> = {
+  arena: "Arena",
+  onslaught: "Onslaught",
+  salvageRun: "SalvageRun",
+}
 
 export type HreTeam =
   | {
@@ -32,6 +44,8 @@ export type HreTeam =
       alliance: string | null
       /** Whether a Healer or Mechanic was fielded for the heal objective; null when not asked. */
       support: "included" | "missing" | null
+      /** Team members that also score for the running HSE; null when it does not score here. */
+      hseUnits: number | null
     }
   | { status: "insufficient"; rule: HreTeamRule; eligibleCount: number }
   /** The featured-hero objective while the player has not unlocked the hero. */
@@ -40,6 +54,7 @@ export type HreTeam =
 type HreCatalogUnit = {
   traits?: readonly string[]
   alliance: string
+  faction?: string
   meleeDamage?: string
   rangedDamage?: string | null
   activeAbilityDamage?: readonly string[]
@@ -58,6 +73,8 @@ export type BuildHreTeamInput = {
   catalog: ReadonlyMap<string, HreCatalogUnit>
   summoners: ReadonlySet<UnitId>
   unitPower: UnitPowerContext | null
+  /** The running Home Screen Event's point trackers; null when none runs. */
+  hseTrackers?: readonly GameCatalogHseTracker[] | null
 }
 
 const damageTypesOf = (view: HreCatalogUnit) =>
@@ -81,8 +98,9 @@ const pool = (id: string, unitIds: Iterable<UnitId>): TeamPoolSpec => ({
  * featured-hero objective. An
  * Onslaught or Salvage Run team keeps to one alliance track. The strongest Healer or Mechanic
  * leads while a heal objective is open, then Psychic damage dealers while a Psychic damage
- * objective is open. Null when the rule cannot be applied (an all-alliance lineup without a
- * resolved alliance).
+ * objective is open, then units that score for a running HSE in the team's mode (its own event
+ * units, so both events progress; for a track, the alliance with the most of them). Null when the
+ * rule cannot be applied (an all-alliance lineup without a resolved alliance).
  */
 export function buildHreTeam(input: BuildHreTeamInput): HreTeam | null {
   const { plan } = input
@@ -122,11 +140,18 @@ export function buildHreTeam(input: BuildHreTeamInput): HreTeam | null {
     }
     pools.push(pool("featured-hero", [featured]))
   }
+  const hsePools = (units: readonly TeamRosterCharacter[]) =>
+    hsePoolsFor(input, units)
   if (
     alliance === null &&
     (plan.mode === "onslaught" || plan.mode === "salvageRun")
   ) {
-    alliance = largestAlliance(roster, allianceOf, input.alliance)
+    alliance = largestAlliance(
+      roster,
+      allianceOf,
+      input.alliance,
+      hseUnitIds(hsePools(roster))
+    )
     roster = roster.filter((character) => allianceOf(character) === alliance)
   }
 
@@ -158,6 +183,8 @@ export function buildHreTeam(input: BuildHreTeamInput): HreTeam | null {
       )
     )
   }
+  const hse = hsePools(roster)
+  pools.push(...hse)
   const recommendations = buildTeamRecommendations({
     mode: "power",
     teamSize: plan.size,
@@ -169,33 +196,86 @@ export function buildHreTeam(input: BuildHreTeamInput): HreTeam | null {
     leadWithPools: pools.length > 0,
     unitPower: input.unitPower,
   })
+  const team = recommendations.categories.find(
+    (category) => category.id === "plan"
+  )!
+  const hseIds = hseUnitIds(hse)
   return {
     status: "ready",
     rule: plan.rule,
-    team: recommendations.categories.find(
-      (category) => category.id === "plan"
-    )!,
+    team,
     eligibleCount: roster.length,
     alliance,
     support,
+    hseUnits:
+      hse.length > 0
+        ? team.members.filter((member) => hseIds.has(member.unitId)).length
+        : null,
   }
 }
 
-/** The alliance with the most of `roster`; a tie goes to `preferred` (the featured hero's). */
+/** The running HSE's event-unit pools among `units` in the plan's mode. */
+function hsePoolsFor(
+  input: BuildHreTeamInput,
+  units: readonly TeamRosterCharacter[]
+): TeamPoolSpec[] {
+  const mode = HSE_MODE[input.plan.mode]
+  if (!mode || !input.hseTrackers?.length) return []
+  const catalog = new Map<
+    UnitId,
+    { traits: readonly string[]; alliance: Alliance; faction: string }
+  >()
+  for (const unit of units) {
+    const view = input.catalog.get(unit.unitId)
+    if (!view) continue
+    catalog.set(unit.unitId, {
+      traits: view.traits ?? [],
+      alliance: view.alliance as Alliance,
+      faction: view.faction ?? "",
+    })
+  }
+  return hseEventUnitPools(
+    input.hseTrackers,
+    mode,
+    units,
+    catalog as HseTeamCatalog,
+    input.unitPower
+  )
+}
+
+/** Units that score for the HSE: a pool's members, but only those its trackers rank when some
+ * tracker counts any unit (the pool is then the whole roster). */
+function hseUnitIds(pools: readonly TeamPoolSpec[]): Set<UnitId> {
+  const ids = new Set<UnitId>()
+  for (const spec of pools) {
+    for (const id of spec.unitIds) {
+      if (!spec.rankOf || spec.rankOf(id) > 0) ids.add(id)
+    }
+  }
+  return ids
+}
+
+/** The alliance with the most of `preferredUnits` (the running HSE's units), then the most of
+ * `roster`; a tie goes to `preferred` (the featured hero's). */
 function largestAlliance(
   roster: readonly TeamRosterCharacter[],
   allianceOf: (character: TeamRosterCharacter) => string | undefined,
-  preferred: string | null
+  preferred: string | null,
+  preferredUnits: ReadonlySet<UnitId>
 ): string | null {
-  const counts = new Map<string, number>()
+  // Event units weigh more than the whole roster can, so they decide first.
+  const weight = roster.length + 1
+  const scores = new Map<string, number>()
   for (const character of roster) {
     const alliance = allianceOf(character)
-    if (alliance) counts.set(alliance, (counts.get(alliance) ?? 0) + 1)
+    if (!alliance) continue
+    const score = preferredUnits.has(character.unitId) ? weight + 1 : 1
+    scores.set(alliance, (scores.get(alliance) ?? 0) + score)
   }
   let best: string | null = null
-  for (const [alliance, count] of counts) {
-    const bestCount = best === null ? -1 : counts.get(best)!
-    if (count > bestCount || (count === bestCount && alliance === preferred)) {
+  for (const [alliance, score] of scores) {
+    const bestScore = best === null ? -1 : scores.get(best)!
+    if (score > bestScore || (score === bestScore && alliance === preferred)) {
       best = alliance
     }
   }

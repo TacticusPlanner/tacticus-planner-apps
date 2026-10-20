@@ -17,6 +17,8 @@ const { mocks } = vi.hoisted(() => ({
     team: { status: "hidden" } as unknown,
     tourSteps: undefined as unknown,
     homeScreenEvent: { status: "loading" } as unknown,
+    hse: null as unknown,
+    teamArgs: [] as unknown[],
   },
 }))
 
@@ -58,8 +60,15 @@ vi.mock("@/features/daily-raids/model/use-active-home-screen-event", () => ({
   useActiveHomeScreenEvent: () => mocks.homeScreenEvent,
 }))
 vi.mock("../model/use-hre-team-recommendations", () => ({
-  useHreTeamRecommendations: ({ plans }: { plans: readonly unknown[] }) =>
-    plans.length > 0 ? plans.map(() => mocks.team) : [mocks.team],
+  useHreTeamRecommendations: (input: { plans: readonly unknown[] }) => {
+    mocks.teamArgs.push(input)
+    return input.plans.length > 0
+      ? input.plans.map(() => mocks.team)
+      : [mocks.team]
+  },
+}))
+vi.mock("../model/use-running-hse", () => ({
+  useRunningHse: () => mocks.hse,
 }))
 
 const DAY = 86_400_000
@@ -171,6 +180,8 @@ beforeEach(() => {
   mocks.tokens = null
   mocks.team = { status: "hidden" }
   mocks.homeScreenEvent = { status: "loading" }
+  mocks.hse = null
+  mocks.teamArgs = []
   act(() => {})
 })
 
@@ -391,6 +402,29 @@ describe("HRE tab", () => {
     )
     expect(screen.getByTestId("hre-team-onslaught")).toHaveTextContent(
       "hre:teams.titleMode|mode=hre:tokens.modes.onslaught"
+    )
+  })
+
+  it("hands a running HSE's trackers to the mission teams and names it on them", () => {
+    const trackers = [{ kind: "KillUnits" }]
+    mocks.hse = { name: "Psyker Boost", trackers }
+    mocks.team = {
+      status: "ready",
+      team: {
+        status: "ready",
+        rule: "abilities",
+        eligibleCount: 20,
+        alliance: null,
+        support: null,
+        hseUnits: 5,
+        team: { deliveredSize: 5, members: [] },
+      },
+    }
+    seed({ mission: 15, progress: [0, 0] })
+    renderHre()
+    expect(mocks.teamArgs.at(-1)).toMatchObject({ hseTrackers: trackers })
+    expect(screen.getByTestId("hre-team")).toHaveTextContent(
+      "hre:teams.hse|count=5,event=Psyker Boost"
     )
   })
 

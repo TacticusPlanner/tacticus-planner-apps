@@ -25,6 +25,7 @@ import {
 } from "@/features/hre-missions"
 
 import { useHreTeamRecommendations } from "../model/use-hre-team-recommendations"
+import { useRunningHse } from "../model/use-running-hse"
 import { HreTeamCard } from "./hre/hre-team-card"
 import { useHreTutorial } from "./hre-page.tutorial"
 
@@ -32,7 +33,7 @@ import { useHreTutorial } from "./hre-page.tutorial"
  * Dailies > HRE: the running Hero Release Event (or the next one as a read-only preview). On a
  * running event: the current mission with its progress inputs and tips, campaign raid suggestions
  * for its campaign, all-alliance or alliance-ability objective, a mission team (Arena, Salvage Run,
- * Onslaught or battle) for a lineup objective, the tokens the remaining
+ * Onslaught or battle) for a lineup objective (led by a running HSE's scoring units), the tokens the remaining
  * missions need and the event pace. Every event lists all missions and the remaining-campaign
  * summary. Desktop: missions on the left, the rest on the right. Mobile: one column with the
  * mission list last, collapsed behind "All missions".
@@ -69,11 +70,14 @@ export function HrePage() {
     : null
   const raidObjective = running ? selectRaidObjective(progress) : null
   const teamPlans = running ? selectTeamPlans(progress) : []
+  const hse = useRunningHse()
   const teams = useHreTeamRecommendations({
     plans: teamPlans,
     alliance: hero?.alliance ?? null,
     featuredCharacterId: instance?.featuredCharacterId ?? null,
+    hseTrackers: hse?.trackers ?? null,
   })
+  const firstTeam = teams.findIndex((view) => view.status !== "hidden")
   const pace =
     instance && ready
       ? hrePaceFor({
@@ -100,7 +104,7 @@ export function HrePage() {
   useHreTutorial({
     hasEvent: !!instance,
     running,
-    hasTeam: teams[0] !== undefined && teams[0].status !== "hidden",
+    hasTeam: firstTeam >= 0,
     hasTokens: tokenRows.length > 0,
   })
 
@@ -161,14 +165,18 @@ export function HrePage() {
     />
   ) : null
   const teamCard = teams.map((view, index) => {
+    // The first shown card keeps the `hre-team` id the tutorial points at.
     const plan = teamPlans[index] ?? null
     return (
       <HreTeamCard
         alliance={allianceName}
         hero={heroName}
+        hseEvent={hse?.name ?? null}
         key={plan?.mode ?? index}
         plan={plan}
-        testId={index === 0 ? "hre-team" : `hre-team-${plan?.mode ?? index}`}
+        testId={
+          index === firstTeam ? "hre-team" : `hre-team-${plan?.mode ?? index}`
+        }
         tokens={
           plan && plan.mode !== "battle" ? (tokens?.[plan.mode] ?? null) : null
         }

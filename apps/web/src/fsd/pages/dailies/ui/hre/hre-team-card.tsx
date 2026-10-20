@@ -22,7 +22,7 @@ type RuledTeam = Exclude<HreTeam, { status: "locked-hero" }>
 /**
  * An HRE mission team for one of the current mission's team plans: the strongest all-alliance,
  * summon-free, ranged, featured-hero-led or any-unit team, titled by where it plays (Arena, Salvage Run,
- * Onslaught), with notes on the healer, Psychic damage dealers and the tokens to keep for a later
+ * Onslaught), with notes on the healer, Psychic damage dealers, a running HSE's units and the tokens to keep for a later
  * mission, or why there is no team (too few units, the featured hero still locked).
  */
 export function HreTeamCard({
@@ -31,6 +31,7 @@ export function HreTeamCard({
   tokens,
   alliance,
   hero,
+  hseEvent = null,
   testId = "hre-team",
 }: {
   view: HreTeamViewModel
@@ -40,6 +41,8 @@ export function HreTeamCard({
   /** The featured hero's localized alliance, or null when the hero does not resolve. */
   alliance: string | null
   hero: string
+  /** The running Home Screen Event's name, for the note on its units in the team. */
+  hseEvent?: string | null
   /** Distinguishes the cards when a mission has more than one team (mission 15). */
   testId?: string
 }) {
@@ -136,6 +139,19 @@ export function HreTeamCard({
                 {t("hre:teams.psychic")}
               </p>
             ) : null}
+            {view.team.hseUnits !== null && hseEvent ? (
+              <p
+                className="text-xs text-muted-foreground"
+                data-testid="hre-team-hse"
+              >
+                {view.team.hseUnits > 0
+                  ? t("hre:teams.hse", {
+                      count: view.team.hseUnits,
+                      event: hseEvent,
+                    })
+                  : t("hre:teams.hseNone", { event: hseEvent })}
+              </p>
+            ) : null}
             <TeamList
               members={view.team.team.members}
               testId="hre-team-members"
@@ -190,7 +206,12 @@ function RuleText({
     }
     case "abilities": {
       return trackAlliance
-        ? t("hre:teams.abilitiesTrack", { size, alliance: trackAlliance })
+        ? t(
+            size <= HRE_TEAM_SIZE
+              ? "hre:teams.abilitiesTrackFew"
+              : "hre:teams.abilitiesTrack",
+            { size, alliance: trackAlliance }
+          )
         : t("hre:teams.abilities")
     }
   }

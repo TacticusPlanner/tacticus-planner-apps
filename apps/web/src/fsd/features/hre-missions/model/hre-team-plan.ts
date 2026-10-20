@@ -12,7 +12,7 @@ export type HreTeamRule =
   | "summonFree"
   | "featured"
   | "ranged"
-  /** Any units: every ability use counts (mission 15). */
+  /** Any units: every ability use counts (missions 3 and 15). */
   | "abilities"
 
 /** Where the team plays: campaign battles, or the token mode the mission's objectives point to. */
@@ -57,7 +57,7 @@ const ONSLAUGHT_POOL_SIZE = 8
  * summon-free win is played in Arena (mission 6). Ranged kills are played in Onslaught (mission 9)
  * unless the mission also asks for Arena battles. Without a lineup rule, an open ability-use
  * objective gets an Arena team while Arena battles are open and an Onslaught pool, where every
- * ability use counts (mission 15).
+ * ability use counts (missions 3 and 15).
  */
 export function selectTeamPlans(state: HreProgress): HreTeamPlan[] {
   if (state.mission >= HRE_ALL_DONE) return []
