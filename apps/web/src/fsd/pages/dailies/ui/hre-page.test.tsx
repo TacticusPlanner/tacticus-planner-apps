@@ -94,12 +94,18 @@ const preview = () => ({
 })
 
 const indomitus = (node: number) => `I${String(node).padStart(2, "0")}`
-const row = (battleId: string, energyCost: number, raids: number) => ({
+const row = (
+  battleId: string,
+  energyCost: number,
+  raids: number,
+  eventPoints = 0
+) => ({
   battleId,
   energyCost,
   raids,
   energy: raids * energyCost,
   goal: null,
+  eventPoints,
 })
 const plan = (overrides = {}) => ({
   battlesLeft: 38,
@@ -126,10 +132,10 @@ const plan = (overrides = {}) => ({
   ...overrides,
 })
 
-function renderHre() {
+function renderHre(projectId?: string) {
   const context: DailiesOutletContext = {
     projects: [],
-    projectId: undefined,
+    projectId,
     setProjectId: vi.fn(),
     projectsUnavailable: false,
     projectsError: false,
@@ -186,13 +192,38 @@ describe("HRE tab", () => {
       status: "ready",
       active: { definitionId: "hse-machine-hunt" },
     }
+    mocks.raids = {
+      status: "no-goals",
+      missionRaids: plan({ rows: [row("I22", 5, 1, 15)] }),
+      locationsByBattleId: new Map(),
+    }
     renderHre()
     expect(mocks.raidsArgs.at(-1)?.[1]).toMatchObject({
       homeScreenEventId: "hse-machine-hunt",
+      eventFarm: false,
     })
     expect(screen.getByTestId("hre-raids-note")).toHaveTextContent(
       "raids.noteHomeScreenEvent|event=events:definitions.hse-machine-hunt"
     )
+    expect(screen.getByTestId("hre-raid-I22-event-points")).toHaveTextContent(
+      "raids.eventPoints|points=15"
+    )
+  })
+
+  it("leaves the HSE out of the note when no suggested row earns its points", () => {
+    mocks.homeScreenEvent = {
+      status: "ready",
+      active: { definitionId: "hse-machine-hunt" },
+    }
+    renderHre()
+    expect(screen.getByTestId("hre-raids-note")).not.toHaveTextContent(
+      "raids.noteHomeScreenEvent"
+    )
+  })
+
+  it("plans for every active goal, whatever project Today has selected", () => {
+    renderHre("project-1")
+    expect(mocks.raidsArgs.at(-1)?.[0]).toBeUndefined()
   })
 
   it("ignores a running HSE that earns no raid points", () => {
@@ -275,6 +306,7 @@ describe("HRE tab", () => {
     expect(screen.getByTestId("hre-mission-complete")).toBeDisabled()
 
     expect(mocks.raidsArgs.at(-1)?.[1]).toEqual({
+      eventFarm: false,
       missionRaids: { battlesToGo: 63, eventOnly: false },
     })
     const raids = screen.getByTestId("hre-raids")
@@ -311,6 +343,7 @@ describe("HRE tab", () => {
     seed({ mission: 7, progress: [2, 12] })
     renderHre()
     expect(mocks.raidsArgs.at(-1)?.[1]).toEqual({
+      eventFarm: false,
       missionRaids: {
         battlesToGo: 2,
         eventOnly: false,
@@ -333,6 +366,7 @@ describe("HRE tab", () => {
     seed({ mission: 16, progress: [0, 0] })
     renderHre()
     expect(mocks.raidsArgs.at(-1)?.[1]).toEqual({
+      eventFarm: false,
       missionRaids: { battlesToGo: 25, eventOnly: false, alliance: "Xenos" },
     })
     expect(screen.getByTestId("hre-raids-note")).toHaveTextContent(
@@ -349,6 +383,7 @@ describe("HRE tab", () => {
     seed({ mission: 11, progress: [0, 40] })
     renderHre()
     expect(mocks.raidsArgs.at(-1)?.[1]).toEqual({
+      eventFarm: false,
       missionRaids: {
         battlesToGo: 25,
         eventOnly: true,
@@ -451,6 +486,7 @@ describe("HRE tab", () => {
     }
     renderHre()
     expect(mocks.raidsArgs.at(-1)?.[1]).toEqual({
+      eventFarm: false,
       missionRaids: { battlesToGo: 2, eventOnly: true },
     })
     expect(screen.getByTestId("hre-raids-empty-no-event")).toHaveTextContent(

@@ -119,9 +119,13 @@ export function useHseProjectionInputs(
   const setProgress = useCallback(
     (change: Partial<HseMilestoneProgress>) =>
       setProgressByInstance((previous) => {
+        // A new milestone count restarts the points, as the game does after each milestone.
         const merged = {
           ...NO_HSE_MILESTONE_PROGRESS,
           ...previous[instanceKey],
+          ...(change.milestonesDone === undefined
+            ? {}
+            : { pointsInMilestone: 0 }),
           ...change,
         }
         const next = {

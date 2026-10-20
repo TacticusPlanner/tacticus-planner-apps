@@ -46,13 +46,11 @@ type HreRaidsRequest = MissionRaidsRequest & {
  * the days the event has left.
  */
 export function HreRaidsSection({
-  projectId,
   request,
   notice,
   remainingBattles,
   daysLeft,
 }: {
-  projectId?: string
   request: HreRaidsRequest | null
   notice: ReactNode
   remainingBattles: number
@@ -68,8 +66,9 @@ export function HreRaidsSection({
     hasHomeScreenEventRule(homeScreenEvent.active.definitionId)
       ? homeScreenEvent.active
       : null
-  const raids = useDailyRaids(projectId, {
+  const raids = useDailyRaids(undefined, {
     homeScreenEventId: runningEvent?.definitionId,
+    eventFarm: false,
     missionRaids: request
       ? {
           battlesToGo: request.battlesToGo,
@@ -133,7 +132,10 @@ export function HreRaidsSection({
             {request.kind === "raids" && request.allianceNodes
               ? ` ${t("raids.noteAllianceNodes", { alliance: request.allianceNodes })}`
               : null}
-            {runningEvent
+            {runningEvent &&
+            [...plan.rows, ...plan.noDropRows].some(
+              (row) => row.eventPoints > 0
+            )
               ? ` ${t("raids.noteHomeScreenEvent", { event: eventName(runningEvent) })}`
               : null}
             {` ${t(battles ? "raids.budgetBattles" : "raids.budget", { energy: plan.energyBudget })}`}

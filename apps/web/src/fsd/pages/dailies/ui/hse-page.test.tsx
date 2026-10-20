@@ -421,11 +421,11 @@ describe("HSE tab header", () => {
     expect(screen.queryByTestId("hse-planning-settings")).toBeNull()
   })
 
-  it("passes the Dailies project selection to the farm list and the event id", () => {
+  it("lists for every active goal, whatever project Today has selected", () => {
     renderHse("project-1")
 
     expect(mocks.raidsArgs.at(-1)).toEqual([
-      "project-1",
+      undefined,
       { homeScreenEventId: "hse-machine-hunt" },
     ])
   })

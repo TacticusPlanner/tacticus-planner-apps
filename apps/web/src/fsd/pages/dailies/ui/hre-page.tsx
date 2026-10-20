@@ -1,4 +1,3 @@
-import { useOutletContext } from "react-router"
 import { useTranslation } from "react-i18next"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
@@ -26,7 +25,6 @@ import {
 } from "@/features/hre-missions"
 
 import { useHreTeamRecommendations } from "../model/use-hre-team-recommendations"
-import type { DailiesOutletContext } from "./dailies-layout"
 import { HreTeamCard } from "./hre/hre-team-card"
 import { useHreTutorial } from "./hre-page.tutorial"
 
@@ -40,7 +38,6 @@ import { useHreTutorial } from "./hre-page.tutorial"
  * mission list last, collapsed behind "All missions".
  */
 export function HrePage() {
-  const context = useOutletContext<DailiesOutletContext>()
   const { t } = useTranslation([
     "hre",
     "common",
@@ -125,7 +122,6 @@ export function HrePage() {
   const raids = instance ? (
     <HreRaidsSection
       notice={notice}
-      projectId={context.projectId}
       daysLeft={
         ready
           ? hreDaysLeft({

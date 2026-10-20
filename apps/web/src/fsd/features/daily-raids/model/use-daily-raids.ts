@@ -68,9 +68,9 @@ import { planHookMissionRaids } from "./plan-hook-mission-raids"
  *
  * `options.homeScreenEventId` (the Dailies > HSE tab, and the HRE tab while an HSE runs)
  * additionally returns `eventFarm`: the schedule-wide, energy-capped list of point-earning locations
- * that feed the goals (see `planEventFarm`), and with `missionRaids` ranks the HRE suggestions by
- * its points among equal energy costs. It changes nothing else in the result; Today, Bonus Raids,
- * Home and the Plan never pass it.
+ * that feed the goals (see `planEventFarm`), unless `options.eventFarm` is false, and with
+ * `missionRaids` ranks the HRE suggestions by its points among equal energy costs. It changes
+ * nothing else in the result; Today, Bonus Raids, Home and the Plan never pass it.
  *
  * `options.missionRaids` (the Dailies > HRE tab only) additionally returns `missionRaids`: where to
  * raid to finish the current HRE mission's campaign objective with the least energy, after Today's
@@ -80,6 +80,7 @@ export function useDailyRaids(
   projectId?: string,
   options?: {
     homeScreenEventId?: string
+    eventFarm?: boolean
     missionRaids?: MissionRaidsRequest
   }
 ): DailyRaidsViewModel {
@@ -333,6 +334,7 @@ export function useDailyRaids(
     }
   }
 
+  const farm = options?.eventFarm === false ? undefined : eventPointsByBattleId
   const result = calculateDailyRaids({
     members: globalPlan.entries,
     details,
@@ -395,9 +397,9 @@ export function useDailyRaids(
     dailyEnergy: settings.dailyEnergy,
     raidsFilters,
     filterBattlesById,
-    eventFarm: eventPointsByBattleId
+    eventFarm: farm
       ? {
-          pointsByBattleId: eventPointsByBattleId,
+          pointsByBattleId: farm,
           attemptsLeftByBattle,
           energyBudget: Math.max(0, settings.dailyEnergy - realEnergyUsedToday),
         }

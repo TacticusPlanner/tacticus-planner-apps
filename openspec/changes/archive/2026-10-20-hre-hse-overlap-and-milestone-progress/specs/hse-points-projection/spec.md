@@ -4,7 +4,7 @@
 
 The projection SHALL show: the target (the resolved tier's final cumulative milestone); points so far (running events only) and the remaining points `max(0, target - pointsSoFar)`; per mode its tokens, its unit (kills for `KillUnits`, waves for `DefeatWaves`, battles for `DeployedUnitsOfFactionMajority` and `FullLineUpOfFaction`) and its points per unit (the sum of the points of every tracker whose `gameModes` pass the mode, stated as assuming each unit matches all of them); the units to defeat to reach the final milestone, `ceil(remaining / pointsPerUnit)`, when every shown mode has the same unit and points per unit; and the required average per token, `remaining / sum(tokens x pointsPerUnit)` rounded up to one decimal, expressed in that shared unit or otherwise in event points per token.
 
-Points so far SHALL come from two inputs that match how the game shows progress, which restarts at 0 after each milestone: the milestones completed (default 0; each repeat past the final milestone counts as one, up to the repeat `cap`) and the points in the current milestone (default 0), shown against that milestone's points (its cumulative points minus the previous milestone's, or the repeat step). Points so far SHALL be the cumulative points of the completed milestones (plus one repeat step per repeat) plus the points in the current milestone, capped at that milestone's points. Once every milestone and capped repeat is done, the points input SHALL be replaced by a note that every milestone is done. The total SHALL be shown beside the inputs.
+Points so far SHALL come from two inputs that match how the game shows progress, which restarts at 0 after each milestone: the milestones completed (default 0; each repeat past the final milestone counts as one, up to the repeat `cap`) and the points in the current milestone (default 0), shown against that milestone's points (its cumulative points minus the previous milestone's, or the repeat step). Changing the milestones completed SHALL reset the points in the current milestone to 0, as the game does. Points so far SHALL be the cumulative points of the completed milestones (plus one repeat step per repeat) plus the points in the current milestone, capped at that milestone's points. Once every milestone and capped repeat is done, the points input SHALL be replaced by a note that every milestone is done. The total SHALL be shown beside the inputs.
 
 Assumptions:
 
@@ -40,6 +40,12 @@ Assumptions:
 
 - **GIVEN** Psyker Boost High, 0 milestones done and 35 entered for the 20-point first milestone
 - **THEN** points so far are 20
+
+#### Scenario: A new milestone restarts the points
+
+- **GIVEN** 3 milestones done and 15 points in the fourth
+- **WHEN** the player changes the milestones done to 4
+- **THEN** the points in the current milestone are 0
 
 ### Requirement: Average per token projects the milestone reached
 

@@ -104,9 +104,10 @@ const compareIds = (a: string, b: string) => (a < b ? -1 : a > b ? 1 : 0)
 const descending = (a: number, b: number) => b - a
 
 /**
- * Suggestion order: energy cost; then more points in a running Home Screen Event; then a node feeding an in-scope goal; among those, the higher drop
- * rate of the goal's resource (common and uncommon drop more often), then more gold, then the
- * goal's priority; other nodes by gold; then battle id.
+ * Suggestion order: energy cost; then more points in a running Home Screen Event; then a node
+ * feeding an in-scope goal; among those, the higher drop rate of the goal's resource (common and
+ * uncommon drop more often), then more gold, then the goal's priority; other nodes by gold; then
+ * battle id.
  */
 function compareCandidates(
   goalNodes: ReadonlyMap<BattleId, MissionGoalNode>,

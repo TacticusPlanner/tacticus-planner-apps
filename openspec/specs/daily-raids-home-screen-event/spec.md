@@ -79,7 +79,7 @@ Event points SHALL NOT change Today, Bonus Raids, the Home raids widget or the R
 
 ### Requirement: The farm list covers the whole schedule and is filled to the energy budget
 
-The HSE tab's main list, titled "Farm list for event points", SHALL be computed over the whole schedule, not from Today's picks. The scope SHALL be the active goals of the Dailies project selection (no selection: every Active goal in global priority order; Paused goals do not plan; a goal in several projects counts once), and the need SHALL be each goal's remaining need over all of its stages after the Plan's priority-ordered inventory allocation, summed per resource.
+The HSE tab's main list, titled "Farm list for event points", SHALL be computed over the whole schedule, not from Today's picks. The scope SHALL be every Active goal in global priority order, whatever project Today has selected (Paused goals do not plan; a goal in several projects counts once), and the need SHALL be each goal's remaining need over all of its stages after the Plan's priority-ordered inventory allocation, summed per resource.
 
 A location SHALL be a candidate only when all of these hold: (1) it earns event points for the active rule (points per raid greater than 0); (2) it is unlocked by the player's campaign progress, has an energy cost above 0 and has attempts left today (the synced attempts left when known, otherwise the node's daily cap, where a cap of 0 means unlimited); (3) it drops a resource that an in-scope goal still needs somewhere in the schedule, where a goal that pins its farm locations is served only by the pinned ones; (4) it passes the persisted Raids Filters, evaluated with the resource it drops.
 
@@ -251,7 +251,7 @@ When the farm list has no rows it SHALL say why: no active goals in scope; no en
 
 #### Scenario: No active goals
 
-- **GIVEN** the project selection has no Active goal
+- **GIVEN** there is no Active goal
 - **THEN** the farm list says there are no active goals
 
 #### Scenario: No energy

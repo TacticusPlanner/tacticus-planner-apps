@@ -74,6 +74,18 @@ describe("useHseProjectionInputs", () => {
     expect(result.current.progress.milestonesDone).toBe(10)
   })
 
+  it("restarts the points in the milestone when the milestones done change", () => {
+    const { result } = renderHook(() => useHseProjectionInputs("a", "occ"))
+    act(() =>
+      result.current.setProgress({ milestonesDone: 3, pointsInMilestone: 15 })
+    )
+    act(() => result.current.setProgress({ milestonesDone: 4 }))
+    expect(result.current.progress).toEqual({
+      milestonesDone: 4,
+      pointsInMilestone: 0,
+    })
+  })
+
   it("ignores malformed stored values", () => {
     window.localStorage.setItem(
       HSE_AVERAGES_STORAGE_KEY,
