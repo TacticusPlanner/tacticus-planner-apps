@@ -20,8 +20,8 @@ import { TeamRecsState } from "../team-recs/team-recs-state"
 type RuledTeam = Exclude<HreTeam, { status: "locked-hero" }>
 
 /**
- * The HRE mission team for the current mission's team plan: the strongest all-alliance,
- * summon-free, ranged or featured-hero-led team, titled by where it plays (Arena, Salvage Run,
+ * An HRE mission team for one of the current mission's team plans: the strongest all-alliance,
+ * summon-free, ranged, featured-hero-led or any-unit team, titled by where it plays (Arena, Salvage Run,
  * Onslaught), with notes on the healer, Psychic damage dealers and the tokens to keep for a later
  * mission, or why there is no team (too few units, the featured hero still locked).
  */
@@ -31,6 +31,7 @@ export function HreTeamCard({
   tokens,
   alliance,
   hero,
+  testId = "hre-team",
 }: {
   view: HreTeamViewModel
   plan: Pick<HreTeamPlan, "mode" | "reserve" | "preferPsychic"> | null
@@ -39,6 +40,8 @@ export function HreTeamCard({
   /** The featured hero's localized alliance, or null when the hero does not resolve. */
   alliance: string | null
   hero: string
+  /** Distinguishes the cards when a mission has more than one team (mission 15). */
+  testId?: string
 }) {
   const { t } = useTranslation(["hre", "teamRecs", "common"])
   if (view.status === "hidden") return null
@@ -47,7 +50,7 @@ export function HreTeamCard({
   const reserve = mode ? plan?.reserve : null
 
   return (
-    <Card data-testid="hre-team">
+    <Card data-testid={testId}>
       <CardHeader>
         <CardTitle>
           {mode
@@ -184,6 +187,11 @@ function RuleText({
     }
     case "featured": {
       return t("hre:teams.featured", { hero })
+    }
+    case "abilities": {
+      return trackAlliance
+        ? t("hre:teams.abilitiesTrack", { size, alliance: trackAlliance })
+        : t("hre:teams.abilities")
     }
   }
 }

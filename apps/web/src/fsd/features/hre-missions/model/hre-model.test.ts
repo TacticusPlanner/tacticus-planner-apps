@@ -8,7 +8,10 @@ import {
   tokenNeedRows,
   tokenNeeds,
 } from "./hre-objectives"
-import { selectTeamPlan } from "./hre-team-plan"
+import { selectTeamPlans } from "./hre-team-plan"
+
+const selectTeamPlan = (state: Parameters<typeof selectTeamPlans>[0]) =>
+  selectTeamPlans(state)[0] ?? null
 import { bracketForRank, bracketRange, projectHrePace } from "./hre-pace"
 import {
   advanceMission,
@@ -202,6 +205,20 @@ describe("objectives", () => {
       selectRaidObjective(progress({ mission: 7, progress: [0, 12] }))
         ?.battlesToGo
     ).toBe(2)
+  })
+
+  it("serves mission 15's ability uses as raids on 5-slot nodes, 5 uses each", () => {
+    expect(selectRaidObjective(progress({ mission: 15 }))).toMatchObject({
+      battlesToGo: 30,
+      kind: "raids",
+      slots: 5,
+      allianceTeam: false,
+      allianceNodes: false,
+    })
+    expect(
+      selectRaidObjective(progress({ mission: 15, progress: [0, 148] }))
+        ?.battlesToGo
+    ).toBe(1)
   })
 
   it("keeps raids to the alliance's nodes while alliance kills or the featured hero are open", () => {
@@ -419,6 +436,21 @@ describe("selectTeamPlan", () => {
         ?.preferPsychic
     ).toBe(false)
     expect(selectTeamPlan(progress({ mission: 4 }))?.mode).toBe("arena")
+  })
+
+  it("gives mission 15 an Arena team and an Onslaught pool for its ability uses", () => {
+    expect(selectTeamPlans(progress({ mission: 15 }))).toMatchObject([
+      { rule: "abilities", mode: "arena", size: 5 },
+      { rule: "abilities", mode: "onslaught", size: 8 },
+    ])
+    expect(
+      selectTeamPlans(progress({ mission: 15, progress: [4, 0] })).map(
+        (plan) => plan.mode
+      )
+    ).toEqual(["onslaught"])
+    expect(
+      selectTeamPlans(progress({ mission: 15, progress: [4, 150] }))
+    ).toEqual([])
   })
 })
 

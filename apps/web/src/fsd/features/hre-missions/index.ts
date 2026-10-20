@@ -13,7 +13,7 @@ export {
   tokenNeedRows,
 } from "./model/hre-objectives"
 export {
-  selectTeamPlan,
+  selectTeamPlans,
   type HreTeamPlan,
   type HreTeamRule,
 } from "./model/hre-team-plan"

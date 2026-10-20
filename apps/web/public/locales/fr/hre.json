@@ -127,6 +127,7 @@
     "titleBattles": "Combats pour {{mission}}",
     "noteBattles": "Les utilisations de capacités ne comptent que dans les combats joués, donc jouez ces nœuds à {{slots}} emplacements à la main avec une équipe {{alliance}} complète. Les utilisations en Courses au pillage et dans les autres modes comptent aussi, donc mettez votre progression à jour ensuite. Les moins chers d'abord, comme pour les raids.",
     "noteLineupBattles": "Les raids n'ont pas de composition, donc ils ne comptent pas : gagnez ces combats à la main avec une équipe entièrement {{alliance}}. Les victoires d'Arène avec cette équipe comptent aussi. Les moins chers d'abord, comme pour les raids.",
+    "noteAbilityRaids": "Chaque raid sur un nœud à {{slots}} places compte environ {{slots}} utilisations de capacité, une par unité, donc seuls les nœuds à {{slots}} places sont listés. Les utilisations en Arène et en Onslaught comptent aussi, alors mettez à jour votre progression après.",
     "budgetBattles": "Énergie disponible pour ces combats : {{energy}}.",
     "battleCount_one": "{{count}} combat",
     "battleCount_other": "{{count}} combats",
@@ -221,6 +222,8 @@
     "reserve_one": "Gardez {{count}} jeton {{mode}} pour {{mission}}.",
     "reserve_other": "Gardez {{count}} jetons {{mode}} pour {{mission}}.",
     "reservePlay": "Avec {{have}} maintenant, jouez jusqu'à {{play}}.",
-    "rangedTrackFew": "Vos {{size}} unités à distance {{alliance}} : moins de 5, donc aucune réserve."
+    "rangedTrackFew": "Vos {{size}} unités à distance {{alliance}} : moins de 5, donc aucune réserve.",
+    "abilities": "Vos 5 unités les plus fortes : chaque utilisation de capacité compte pour la mission.",
+    "abilitiesTrack": "Vos {{size}} unités {{alliance}} les plus fortes : chaque utilisation de capacité compte, et les autres remplacent celles qui tombent."
   }
 }

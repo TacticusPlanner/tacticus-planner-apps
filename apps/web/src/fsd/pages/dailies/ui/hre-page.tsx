@@ -15,7 +15,7 @@ import {
   PaceCard,
   remainingCampaignBattles,
   selectRaidObjective,
-  selectTeamPlan,
+  selectTeamPlans,
   tokenNeedRows,
   TokensNeededCard,
   useHreInstance,
@@ -68,9 +68,9 @@ export function HrePage() {
       }) as string)
     : null
   const raidObjective = running ? selectRaidObjective(progress) : null
-  const teamPlan = running ? selectTeamPlan(progress) : null
-  const team = useHreTeamRecommendations({
-    plan: teamPlan,
+  const teamPlans = running ? selectTeamPlans(progress) : []
+  const teams = useHreTeamRecommendations({
+    plans: teamPlans,
     alliance: hero?.alliance ?? null,
     featuredCharacterId: instance?.featuredCharacterId ?? null,
   })
@@ -100,7 +100,7 @@ export function HrePage() {
   useHreTutorial({
     hasEvent: !!instance,
     running,
-    hasTeam: team.status !== "hidden",
+    hasTeam: teams[0] !== undefined && teams[0].status !== "hidden",
     hasTokens: tokenRows.length > 0,
   })
 
@@ -160,19 +160,22 @@ export function HrePage() {
       }
     />
   ) : null
-  const teamCard = (
-    <HreTeamCard
-      alliance={allianceName}
-      hero={heroName}
-      plan={teamPlan}
-      tokens={
-        teamPlan && teamPlan.mode !== "battle"
-          ? (tokens?.[teamPlan.mode] ?? null)
-          : null
-      }
-      view={team}
-    />
-  )
+  const teamCard = teams.map((view, index) => {
+    const plan = teamPlans[index] ?? null
+    return (
+      <HreTeamCard
+        alliance={allianceName}
+        hero={heroName}
+        key={plan?.mode ?? index}
+        plan={plan}
+        testId={index === 0 ? "hre-team" : `hre-team-${plan?.mode ?? index}`}
+        tokens={
+          plan && plan.mode !== "battle" ? (tokens?.[plan.mode] ?? null) : null
+        }
+        view={view}
+      />
+    )
+  })
   const tokensCard =
     tokenRows.length > 0 ? (
       <TokensNeededCard rows={tokenRows} synced={!!tokens} />

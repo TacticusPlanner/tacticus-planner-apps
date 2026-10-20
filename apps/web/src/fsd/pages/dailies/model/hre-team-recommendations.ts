@@ -77,7 +77,8 @@ const pool = (id: string, unitIds: Iterable<UnitId>): TeamPoolSpec => ({
 /**
  * One Power-mode team for an HRE mission (design D8): only the featured hero's alliance for an
  * all-alliance lineup (never filled with other alliances), no summoner for a summon-free win, only
- * ranged units for ranged kills, or the featured hero leading for a featured-hero objective. An
+ * ranged units for ranged kills, any units for ability uses, or the featured hero leading for a
+ * featured-hero objective. An
  * Onslaught or Salvage Run team keeps to one alliance track. The strongest Healer or Mechanic
  * leads while a heal objective is open, then Psychic damage dealers while a Psychic damage
  * objective is open. Null when the rule cannot be applied (an all-alliance lineup without a
@@ -109,6 +110,8 @@ export function buildHreTeam(input: BuildHreTeamInput): HreTeam | null {
     roster = all.filter((character) => allianceOf(character) === alliance)
   } else if (plan.rule === "summonFree") {
     roster = all.filter((character) => !input.summoners.has(character.unitId))
+  } else if (plan.rule === "abilities") {
+    // Any units: every ability use counts.
   } else if (plan.rule === "ranged") {
     roster = all.filter(
       (character) => !!input.catalog.get(character.unitId)?.rangedDamage
