@@ -496,6 +496,10 @@
           "title": "Five steps",
           "content": "Target, Upgrades, Teams, Runs and tokens, then Review and create. Nothing is saved until you press Create."
         },
+        "runInputs": {
+          "title": "Run inputs first",
+          "content": "Missions and paid options change the points you can reach. Set them here so every verdict and recommendation follows them."
+        },
         "target": {
           "title": "Pick a target",
           "content": "Each step shows the points it needs and whether your roster reaches it now, needs upgrades, or is too ambitious for this event."
@@ -896,7 +900,8 @@
       "verdicts": {
         "reachableNow": "Reachable now",
         "needsUpgrades": "Needs upgrades",
-        "tooAmbitious": "Too ambitious"
+        "tooAmbitious": "Too ambitious",
+        "checking": "Checking…"
       },
       "spare": "{{points}} points spare with your roster",
       "short": "{{points}} points short with your roster",
@@ -940,7 +945,7 @@
     },
     "runs": {
       "heading": "Run inputs",
-      "description": "Saved with the plan when you press Create."
+      "description": "Missions and paid options change the points you can reach, so the verdicts below follow them. Saved with the plan when you press Create."
     },
     "review": {
       "project": "Project",

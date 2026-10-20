@@ -7,6 +7,7 @@ import type { TourPageSteps } from "@/shared/tour"
 const PLAN_TOUR_TARGETS = {
   stepper: '[data-testid="plan-wizard-stepper"]',
   progress: '[data-testid="plan-wizard-progress"]',
+  runInputs: '[data-testid="plan-wizard-run-inputs"]',
   target: '[data-testid="plan-wizard-target"]',
   bestStep: '[data-testid="plan-wizard-best-step"]',
   footer: '[data-testid="plan-wizard-footer"]',
@@ -14,7 +15,7 @@ const PLAN_TOUR_TARGETS = {
 
 /**
  * The 1-click plan tour (spec: every page has a tour): the steps (a stepper on desktop, the
- * "Step N of 5" header on mobile), the target choice with its verdicts, the best step within
+ * "Step N of 5" header on mobile), the run inputs, the target choice with its verdicts, the best step within
  * reach, then Back / Next.
  */
 export function usePlanWizardTutorial(): TourPageSteps {
@@ -30,6 +31,7 @@ export function usePlanWizardTutorial(): TourPageSteps {
       content: t(`tour.planWizard.steps.${key}.content`),
     })
     const shared = [
+      step("runInputs", "bottom"),
       step("target", "bottom"),
       step("bestStep", "top"),
       step("footer", "top"),

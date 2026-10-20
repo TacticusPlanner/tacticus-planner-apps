@@ -496,6 +496,10 @@
           "title": "Cinq étapes",
           "content": "Objectif, Améliorations, Équipes, Manches et jetons, puis Vérifier et créer. Rien n'est enregistré avant d'appuyer sur Créer."
         },
+        "runInputs": {
+          "title": "D’abord les données des manches",
+          "content": "Les missions et les options payantes changent les points atteignables. Réglez-les ici pour que chaque verdict et chaque recommandation en tiennent compte."
+        },
         "target": {
           "title": "Choisir un objectif",
           "content": "Chaque palier indique les points nécessaires et si votre effectif l'atteint déjà, a besoin d'améliorations ou est trop ambitieux pour cet événement."
@@ -896,7 +900,8 @@
       "verdicts": {
         "reachableNow": "Atteignable maintenant",
         "needsUpgrades": "Améliorations nécessaires",
-        "tooAmbitious": "Trop ambitieux"
+        "tooAmbitious": "Trop ambitieux",
+        "checking": "Vérification…"
       },
       "spare": "{{points}} points de marge avec votre effectif",
       "short": "Il manque {{points}} points avec votre effectif",
@@ -940,7 +945,7 @@
     },
     "runs": {
       "heading": "Données des manches",
-      "description": "Enregistrées avec le plan quand vous appuyez sur Créer."
+      "description": "Les missions et les options payantes changent les points atteignables, donc les verdicts ci-dessous en dépendent. Enregistrées avec le plan quand vous appuyez sur Créer."
     },
     "review": {
       "project": "Projet",

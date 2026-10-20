@@ -8,7 +8,6 @@ import {
   buildSyncedLaneProgress,
   laneBattlePowers,
   legendaryEventRunDates,
-  legendaryEventRunGapDays,
   resolveLegendaryEventRunsAt,
   unitHordeMultiplier,
   useClearEstimateConfig,
@@ -21,6 +20,7 @@ import {
   useLegendaryEvents,
   usePlanWriteQueue,
   type LegendaryEvent,
+  type LegendaryEventLifecycle,
   type LegendaryEventRunDates,
   type LegendaryEventGoalTarget,
 } from "@/entities/legendary-event"
@@ -29,6 +29,17 @@ import { useUnitName } from "@/shared/unit-name"
 import { useUnitPowerContext } from "@/shared/unit-power"
 
 import type { PlanInputs } from "./plan-inputs"
+
+// One instance: the draft keys its upgrade exploration on the goal targets.
+const NO_GOAL_TARGETS: ReadonlyMap<string, LegendaryEventGoalTarget> = new Map()
+
+const sameLifecycle = (
+  a: LegendaryEventLifecycle | undefined,
+  b: LegendaryEventLifecycle | undefined
+) =>
+  a?.state === b?.state &&
+  a?.runStartMs === b?.runStartMs &&
+  a?.runEndMs === b?.runEndMs
 
 /** What the wizard plans from, by data state (spec: wizard data states are distinct). */
 export type PlanSource =
@@ -94,28 +105,38 @@ export function usePlanSource(eventId: string): PlanSource {
     plan.status !== "pending" &&
     goalTargets.status !== "loading"
 
+  // The reads hand out a new state object every render; the memo keys on their data, which only
+  // changes when the underlying query does.
+  const eventsData = events.status === "ready" ? events.data : undefined
+  const unitsData = units.status === "ready" ? units.data : undefined
+  const rosterData = roster.status === "ready" ? roster.data : undefined
+  const battlesData = battles.status === "ready" ? battles.data : undefined
+  const progressData = progress.status === "ready" ? progress.data : undefined
+  const progressObservedAtMs =
+    syncTimes.status === "ready" ? syncTimes.data.progressObservedAtMs : null
+  // Re-derived every minute; kept while its window is unchanged so the draft does not restart.
+  const [lifecycle, setLifecycle] = useState(event.lifecycle)
+  if (!sameLifecycle(lifecycle, event.lifecycle)) setLifecycle(event.lifecycle)
   const ready = useMemo(() => {
     if (
       !settled ||
       !eventData ||
-      events.status !== "ready" ||
-      units.status !== "ready" ||
-      roster.status !== "ready" ||
-      battles.status !== "ready" ||
-      progress.status !== "ready" ||
+      !lifecycle ||
+      !eventsData ||
+      !unitsData ||
+      battlesData === undefined ||
+      progressData === undefined ||
+      rosterData === undefined ||
       config.status !== "ready" ||
       !plan.data
     ) {
       return null
     }
-    const synced = typeof progress.data === "object" ? progress.data : undefined
-    const rosterUnits = roster.data ?? []
+    const synced = typeof progressData === "object" ? progressData : undefined
+    const rosterUnits = rosterData ?? []
     const resolution = resolveLegendaryEventRunsAt(eventData, synced, nowMs)
-    const runDates = legendaryEventRunDates(
-      eventData,
-      legendaryEventRunGapDays(events.data)
-    )
-    const unitsById = new Map(units.data.map((unit) => [unit.id, unit]))
+    const runDates = legendaryEventRunDates(eventData)
+    const unitsById = new Map(unitsData.map((unit) => [unit.id, unit]))
     const inputs: PlanInputs = {
       event: eventData,
       lanes: LEGENDARY_EVENT_LANE_IDS.map((laneId) => {
@@ -126,20 +147,17 @@ export function usePlanSource(eventId: string): PlanSource {
           model,
           progress: buildSyncedLaneProgress(model, synced?.[laneId]),
           battlePowers:
-            laneBattlePowers(eventData[laneId].battleIds, battles.data) ?? [],
+            laneBattlePowers(eventData[laneId].battleIds, battlesData) ?? [],
         }
       }),
-      units: units.data,
+      units: unitsData,
       roster: rosterUnits,
       config: config.config,
-      lifecycle: event.lifecycle!,
+      lifecycle,
       resolution,
       nowMs,
       progress: synced,
-      progressObservedAtMs:
-        syncTimes.status === "ready"
-          ? syncTimes.data.progressObservedAtMs
-          : null,
+      progressObservedAtMs,
       eventUnit: rosterUnits.find((unit) => unit.unitId === eventData.id),
       plan: plan.data,
       runStarts: runDates.starts,
@@ -148,8 +166,8 @@ export function usePlanSource(eventId: string): PlanSource {
       nameOf: (unitId) => unitName("Character", unitId),
     }
     const masterTable = buildMasterTable({
-      events: events.data.map((entry) => ({ event: entry })),
-      units: units.data,
+      events: eventsData.map((entry) => ({ event: entry })),
+      units: unitsData,
       roster: rosterUnits,
       unitSet: "all",
       pointsMode: "all",
@@ -169,14 +187,15 @@ export function usePlanSource(eventId: string): PlanSource {
   }, [
     settled,
     eventData,
-    events,
-    units,
-    roster,
-    battles,
-    progress,
+    lifecycle,
+    eventsData,
+    unitsData,
+    rosterData,
+    battlesData,
+    progressData,
     config,
     plan.data,
-    syncTimes,
+    progressObservedAtMs,
     nowMs,
   ])
 
@@ -210,7 +229,7 @@ export function usePlanSource(eventId: string): PlanSource {
         status: "ready",
         event: eventData,
         ...ready,
-        goalTargets: new Map(),
+        goalTargets: NO_GOAL_TARGETS,
       }
     }
     return { status: "loading" }

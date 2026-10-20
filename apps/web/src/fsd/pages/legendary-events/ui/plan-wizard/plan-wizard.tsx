@@ -172,6 +172,8 @@ export function PlanWizard({
   const exploring = draft.recommendations.status === "running"
   const last = index === PLAN_WIZARD_STEPS.length - 1
   const tooAmbitious =
+    draft.recommendations.status !== "running" &&
+    draft.recommendations.status !== "estimating" &&
     draft.options.options.find((option) => option.target.step === draft.target)
       ?.verdict.kind === "tooAmbitious"
 

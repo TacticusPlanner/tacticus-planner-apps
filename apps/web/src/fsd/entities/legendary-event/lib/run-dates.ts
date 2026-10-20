@@ -32,36 +32,24 @@ function announcedStarts(event: LegendaryEventSchedule): (number | null)[] {
 }
 
 /**
- * The run gap (spec: unannounced runs get an estimated start): the median, rounded up to whole
- * days, of the days between consecutive announced run starts across every served event; null when
- * no event has two consecutive announced runs.
+ * The earliest the next run starts after the previous one, from the LRE history since Kharn: run 2
+ * came 105–175 days after run 1 (140 or more in all but one event) and run 3 140–245 days after
+ * run 2.
  */
-export function legendaryEventRunGapDays(
-  events: readonly LegendaryEventSchedule[]
-): number | null {
-  const gaps = events.flatMap((event) => {
-    const starts = announcedStarts(event)
-    return starts.slice(1).flatMap((start, index) => {
-      const previous = starts[index]
-      return start === null || previous === null || previous === undefined
-        ? []
-        : [(start - previous) / DAY_MS]
-    })
-  })
-  if (gaps.length === 0) return null
-  const sorted = gaps.toSorted((a, b) => a - b)
-  const middle = Math.floor(sorted.length / 2)
-  const median =
-    sorted.length % 2 === 1
-      ? sorted[middle]!
-      : (sorted[middle - 1]! + sorted[middle]!) / 2
-  return Math.ceil(median)
-}
+const LEGENDARY_EVENT_MIN_RUN_GAP_DAYS = 140
 
-/** Each run's start, announced or the previous run's start plus the gap, and the deadline. */
+/** The shortest run-1-to-run-3 cycle since Kharn (Kharn and Mephiston); the most recent cycles took
+ *  350 days. */
+const LEGENDARY_EVENT_MIN_CYCLE_DAYS = 315
+
+/**
+ * Each run's start and the deadline (spec: unannounced runs get an estimated start). An unannounced
+ * run starts at the earliest the history allows: the previous run's start plus the minimum gap,
+ * and run 3 no sooner than the minimum cycle after run 1. Planning to the earliest plausible
+ * deadline keeps the goals in time if the runs come early.
+ */
 export function legendaryEventRunDates(
-  event: LegendaryEventSchedule,
-  gapDays: number | null
+  event: LegendaryEventSchedule
 ): LegendaryEventRunDates {
   const announced = announcedStarts(event)
   const starts: LegendaryEventRunStart[] = []
@@ -71,11 +59,18 @@ export function legendaryEventRunDates(
       starts.push({ run, startMs: start, estimated: false })
       continue
     }
-    const previous = starts[index - 1]
-    const startMs =
-      previous?.startMs != null && gapDays !== null
-        ? previous.startMs + gapDays * DAY_MS
-        : null
+    const previous = starts[index - 1]?.startMs ?? null
+    const first = starts[0]?.startMs ?? null
+    let startMs =
+      previous === null
+        ? null
+        : previous + LEGENDARY_EVENT_MIN_RUN_GAP_DAYS * DAY_MS
+    if (startMs !== null && first !== null && run === 3) {
+      startMs = Math.max(
+        startMs,
+        first + LEGENDARY_EVENT_MIN_CYCLE_DAYS * DAY_MS
+      )
+    }
     starts.push({ run, startMs, estimated: startMs !== null })
   }
   const last = starts[LEGENDARY_EVENT_RUN_COUNT - 1]!
