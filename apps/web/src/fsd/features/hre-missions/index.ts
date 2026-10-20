@@ -9,10 +9,11 @@ export {
   campaignObjectiveState,
   nextCampaignMission,
   remainingCampaignBattles,
-  selectRaidObjective,
+  selectCampaignPlan,
   tokenNeedRows,
 } from "./model/hre-objectives"
 export {
+  arenaSurplus,
   selectTeamPlans,
   type HreTeamPlan,
   type HreTeamRule,

@@ -39,7 +39,7 @@ import {
 import { useCampaignDisplay } from "@/shared/lib"
 
 import { buildResourceByBattle } from "./daily-raid-battle-resources"
-import { battleEventPoints } from "./home-screen-event-rules"
+import { useBattleMaps } from "./use-battle-maps"
 import { useEligibleCampaignBattles } from "./use-eligible-campaign-battles"
 import { activeProjectMembers, calculateDailyRaids } from "./daily-raids-calc"
 import {
@@ -166,15 +166,12 @@ export function useDailyRaids(
     [battles, campaignDefinitions, npcsById]
   )
 
-  const eventPointsByBattleId = useMemo(() => {
-    if (!homeScreenEventId || !npcsById) return undefined
-    return new Map(
-      (battles ?? []).map((battle) => [
-        battle.id as BattleId,
-        battleEventPoints(homeScreenEventId, battle, npcsById),
-      ])
-    )
-  }, [homeScreenEventId, npcsById, battles])
+  const { eventPointsByBattleId, enemyStatsByBattleId } = useBattleMaps({
+    homeScreenEventId,
+    enemyStats: !!missionRequest?.manual,
+    battles,
+    npcsById,
+  })
 
   const upgradesById = useMemo(
     () =>
@@ -324,6 +321,7 @@ export function useDailyRaids(
           filterBattlesById,
           raidsFilters,
           eventPointsByBattleId,
+          enemyStatsByBattleId,
         })
       : undefined
   if (activeMembers.length === 0) {

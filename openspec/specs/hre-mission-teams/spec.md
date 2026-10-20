@@ -2,18 +2,23 @@
 
 ## Purpose
 
-Suggests a team from the player's synced roster for HRE mission objectives that restrict the lineup or need the featured hero.
+Suggests teams from the player's synced roster for the current HRE mission: one Campaign team for the objectives played by hand, and one team for each token mode the mission spends.
 
 ## Requirements
 
-### Requirement: Lineup-restricted objectives get a team suggestion
+### Requirement: The mission's manual objectives share one campaign team
 
-When the current mission has a `winWithAllianceLineup`, `useAbilitiesAlliance`, `winWithoutSummons`, `killWithRanged`, `useAbilitiesFeatured` or `featuredDamage` objective below its target, the tab SHALL suggest one team from the synced roster for the first such objective, built in Power mode with the shared team engine. The rules are:
+When the current mission has open objectives that only progress in battles played by hand, the tab SHALL suggest one "Campaign team" from the synced roster for all of them, built in Power mode with the shared team engine, to fight the list of battles by hand. The team SHALL follow the strictest rule among those objectives, in this order:
 
-- **All-alliance lineup or alliance ability uses:** only units of the featured hero's alliance.
-- **Summon-free:** excludes every unit with an ability that summons units, according to the ability rules text.
-- **Ranged kills:** only units with a ranged attack.
-- **Featured-hero objective:** the featured hero leads the team when the player has unlocked them.
+1. **Featured hero** (`useAbilitiesFeatured`, `featuredDamage`): the featured hero leads the team when the player has unlocked them.
+2. **Alliance** (`winWithAllianceLineup`, `useAbilitiesAlliance`, `killWithAlliance`): only units of the featured hero's alliance.
+3. **Summon-free** (`winWithoutSummons`): excludes every unit with an ability that summons units, according to the ability rules text.
+4. **Ranged** (`killWithRanged`): only units with a ranged attack.
+5. **Melee** (`killWithMelee`): only units without a ranged attack.
+6. **Abilities** (`useAbilities`): the strongest units, and the card says every ability use counts.
+7. **Strongest** (kills, damage, ability damage, a damage type, healing): the strongest units.
+
+Severyn chose one combined team (2026-10): no mission's two objectives ask for teams that cannot be one, so the teams split only if a future mission's pair is incompatible. Machines of War are not part of any team, because they count for no objective.
 
 #### Scenario: All-Xenos mission
 
@@ -30,6 +35,11 @@ When the current mission has a `winWithAllianceLineup`, `useAbilitiesAlliance`, 
 - **GIVEN** mission 6, and Hollan in the roster (his Aberrant Hypermorph ability summons a unit)
 - **THEN** Hollan is not in the team
 
+#### Scenario: Melee kills
+
+- **GIVEN** mission 19 with its melee kills open
+- **THEN** the Campaign team holds the 5 strongest units without a ranged attack
+
 #### Scenario: Featured hero locked
 
 - **GIVEN** mission 20 and Zapspitta not unlocked yet
@@ -42,34 +52,55 @@ When the current mission has a `winWithAllianceLineup`, `useAbilitiesAlliance`, 
 - **WHEN** reading the roster fails
 - **THEN** the team card shows a retry action
 
-### Requirement: The team is suggested for the mode the mission points to
+### Requirement: Every token objective gets a team for its mode
 
-The team card SHALL be titled by where the team plays:
+Every open `arenaBattles`, `salvageRuns`, `onslaught` or `guildRaids` objective SHALL get its own team card titled by its mode (Arena, Salvage Run, Onslaught, Guild Raid), following the rule of the mission's other open objective when that one is manual, so its battles count for both. A token objective open alone SHALL get the player's strongest units. An Onslaught team SHALL hold up to 8 units from one alliance, so fallen units can be replaced; the card SHALL count the units it holds and say there are no spares when fewer than 5 qualify.
 
-- **Salvage Run** while the mission's `salvageRuns` objective is open (mission 7), with the featured hero's alliance.
-- **Arena** for a summon-free objective (mission 6), and for ranged kills while the mission's `arenaBattles` objective is open (mission 4).
-- **Onslaught** for ranged kills otherwise (missions 9 and 18): up to 8 units from one alliance, so fallen units can be replaced. The card SHALL count the units it holds, and say there are no spares when fewer than 5 qualify.
-- **Mission team** (campaign battles) otherwise.
+Besides those cards:
 
-#### Scenario: Mission 6
+- **Ranged kills** SHALL also get an Onslaught pool while the mission has no open Arena objective (missions 9 and 18).
+- **Any-unit ability uses** SHALL also get an Onslaught pool (missions 3 and 15).
+- **Summon-free wins** (mission 6) SHALL get an Arena team only while the player's Arena tokens exceed what the next Arena mission needs; the wins those extra tokens can play SHALL be left out of the campaign list, and the rest SHALL be fought in the campaign.
 
-- **GIVEN** mission 6 with both objectives open
-- **THEN** the card is titled "Arena team" and holds no summoner
+#### Scenario: Mission 7
+
+- **GIVEN** mission 7 with 0 / 2 Salvage Runs and 0 / 20 alliance ability uses
+- **THEN** a Campaign team and a Salvage Run team are shown, both of the featured hero's alliance
 
 #### Scenario: Mission 7 after the Salvage Runs
 
 - **GIVEN** mission 7 with 2 / 2 Salvage Runs and the ability uses open
-- **THEN** the card is titled "Mission team" with the featured hero's alliance
+- **THEN** only the Campaign team is shown, with the featured hero's alliance
+
+#### Scenario: Mission 8
+
+- **GIVEN** mission 8 with both objectives open
+- **THEN** a Campaign team and a Guild Raid team of the player's strongest units are shown
 
 #### Scenario: Mission 9
 
 - **GIVEN** mission 9, a featured Xenos hero, and 4 ranged Chaos, 3 ranged Imperial and 1 ranged Xenos units owned
-- **THEN** the card is titled "Onslaught team" and holds the 4 Chaos units, noting there are no spares
+- **THEN** the Onslaught card holds the 4 Chaos units, noting there are no spares
 
 #### Scenario: Mission 4
 
 - **GIVEN** mission 4 with its Arena battles and ranged kills open
-- **THEN** the card is titled "Arena team" and holds the 5 strongest ranged units of any alliance
+- **THEN** the Arena card holds the 5 strongest ranged units of any alliance, and no Onslaught pool is shown
+
+#### Scenario: Mission 15 with Arena battles open
+
+- **GIVEN** mission 15 with 0 of 4 Arena battles and 0 of 150 ability uses
+- **THEN** a Campaign team, an Arena team and an Onslaught pool are shown
+
+#### Scenario: Mission 6 Arena surplus
+
+- **GIVEN** mission 6 with 0 / 10 summon-free wins and 7 Arena tokens, mission 10 needing 4
+- **THEN** an Arena team without summoners is shown, and the campaign list covers the other 7 wins
+
+#### Scenario: Mission 6 without surplus
+
+- **GIVEN** mission 6 with 4 Arena tokens
+- **THEN** no Arena team is shown, and the campaign list covers all 10 wins
 
 ### Requirement: Onslaught pools keep to one alliance
 
@@ -82,7 +113,7 @@ An Onslaught team SHALL hold up to 8 units, 5 to start and the rest to replace u
 
 ### Requirement: Tokens are kept for later missions
 
-For an Arena, Salvage Run or Onslaught team, the card SHALL say how many tokens of that mode the next later mission needs, and with synced tokens how many can be played now.
+For an Arena, Salvage Run, Onslaught or Guild Raid team, the card SHALL say how many tokens of that mode the next later mission needs, and with synced tokens how many can be played now.
 
 #### Scenario: Mission 6 Arena tokens
 
@@ -103,23 +134,9 @@ While the current mission's `heal` objective is open, the team SHALL include the
 - **GIVEN** mission 9 with 7,500 / 7,500 Psychic damage
 - **THEN** the ranged team is ordered by power only
 
-### Requirement: Any-unit ability uses get Arena and Onslaught teams
-
-When the current mission has no open lineup-restricted objective but has an open ability-use objective for any units (missions 3 and 15), the HRE tab SHALL suggest an Arena team of the player's 5 strongest units while the mission's Arena battles are open, and an Onslaught pool of up to 8 kept to the alliance track with the most units, each in its own card. Each card SHALL say that every ability use counts, and an Onslaught pool of 5 or fewer SHALL say it has no spares, and SHALL keep the tokens a later mission needs, as other team cards do.
-
-#### Scenario: Mission 15 with Arena battles open
-
-- **GIVEN** mission 15 with 0 of 4 Arena battles and 0 of 150 ability uses
-- **THEN** an Arena team card and an Onslaught team card are shown
-
-#### Scenario: Arena battles done
-
-- **GIVEN** mission 15 with 4 of 4 Arena battles and ability uses still open
-- **THEN** only the Onslaught team card is shown
-
 ### Requirement: HRE teams take a running HSE into account
 
-While a personal Home Screen Event runs and scores in a team's token mode, the HRE mission team SHALL rank the units that score for it first, after the mission's own rule and preferences, and the card SHALL say how many of its units also score for it.
+While a personal Home Screen Event runs and scores in a team's mode (the campaign for the Campaign team), the HRE mission team SHALL rank the units that score for it first, after the mission's own rule and preferences, and the card SHALL say how many of its units also score for it.
 
 #### Scenario: Psyker Boost during mission 15
 

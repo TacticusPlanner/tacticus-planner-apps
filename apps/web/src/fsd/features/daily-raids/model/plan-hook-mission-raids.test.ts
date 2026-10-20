@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest"
 import type { BattleId } from "@workspace/game-domain"
 
 import type { DailyRaidsCalculationViewModel } from "./daily-raids.domain"
+import type { MissionRaidsRequest } from "./mission-raids"
 import { planHookMissionRaids } from "./plan-hook-mission-raids"
 import {
   emptyRaidsFilters,
@@ -106,35 +107,6 @@ describe("planHookMissionRaids", () => {
     expect(result.empty).toBe("filtered")
   })
 
-  it("keeps only nodes with the requested deployment slots", () => {
-    const result = plan({
-      request: { battlesToGo: 2, eventOnly: false, slots: 5 },
-      filterBattlesById: new Map([
-        ["I06", filterBattle(null)],
-        ["I15", { ...filterBattle("Standard"), slots: 4 }],
-      ]),
-      raidsFilters: { ...emptyRaidsFilters, slots: [4] },
-    })
-    expect(result.rows).toEqual([])
-    expect(result.noDropRows).toEqual([
-      expect.objectContaining({ battleId: "I06", raids: 2 }),
-    ])
-  })
-
-  it("keeps only nodes where the requested alliance can deploy", () => {
-    const result = plan({
-      request: { battlesToGo: 2, eventOnly: false, alliance: "Xenos" },
-      filterBattlesById: new Map([
-        ["I06", { ...filterBattle(null), alliesAlliance: "Xenos" }],
-        ["I15", filterBattle("Standard")],
-      ]),
-    })
-    expect(result.rows).toEqual([])
-    expect(result.noDropRows).toEqual([
-      expect.objectContaining({ battleId: "I06", raids: 2 }),
-    ])
-  })
-
   it("puts nodes earning more of a running HSE's points first among nodes of equal cost", () => {
     const node = (nodeId: string, nodeNumber: number) => ({
       id: nodeId,
@@ -190,111 +162,222 @@ describe("planHookMissionRaids", () => {
     ])
   })
 
-  it("lists nodes with the faction's enemies apart, until their enemies cover the kills", () => {
-    const necrons = (nodeId: string, energyCost: number) => ({
+  it("puts nodes worth more HRE points first among equal costs: a lightning condition, then enemy power", () => {
+    const node = (nodeId: string, nodeNumber: number, enemyPower: number) => ({
       id: nodeId,
-      energyCost,
-      dailyAttempts: 10,
-      campaignGroupId: "campaign1",
-      type: "Standard",
-      nodeNumber: 30,
-      rewards: rewards(7, ["shards_necroWarden"]),
-    })
-    const result = plan({
-      request: {
-        battlesToGo: 2,
-        eventOnly: false,
-        enemyFaction: { faction: "Necrons", killsToGo: 12 },
-      },
-      availableBattles: [...battles, necrons("N01", 6), necrons("N02", 4)],
-      filterBattlesById: new Map([
-        ["I06", filterBattle(null)],
-        ["I15", filterBattle("Standard")],
-        ["N01", { ...filterBattle("Standard"), enemiesFactions: ["Necrons"] }],
-        [
-          "N02",
-          {
-            ...filterBattle("Standard"),
-            enemiesFactions: ["Necrons", "Orks"],
-            enemiesTotal: 4,
-          },
-        ],
-      ]),
-    })
-    expect(result.rows.map((row) => [row.battleId, row.raids])).toEqual([
-      ["N02", 2],
-    ])
-    // N02 is in the main list; N01 (5 enemies a raid) covers the 12 kills in 3 raids.
-    expect(result.factionRows.map((row) => [row.battleId, row.raids])).toEqual([
-      ["N01", 3],
-    ])
-  })
-
-  it("puts faction nodes with the most enemies first, so the kills take the fewest raids", () => {
-    const node = (nodeId: string, energyCost: number) => ({
-      id: nodeId,
-      energyCost,
-      dailyAttempts: 10,
-      campaignGroupId: "campaign1",
-      type: "Standard",
-      nodeNumber: 30,
-      rewards: rewards(7, []),
-    })
-    const necrons = (enemiesTotal: number): RaidsFilterBattle => ({
-      ...filterBattle("Standard"),
-      enemiesFactions: ["Necrons"],
-      enemiesTotal,
-    })
-    const result = plan({
-      request: {
-        battlesToGo: 0,
-        eventOnly: false,
-        enemyFaction: { faction: "Necrons", killsToGo: 20 },
-      },
-      availableBattles: [node("N03", 3), node("N09", 6)],
-      filterBattlesById: new Map([
-        ["N03", necrons(3)],
-        ["N09", necrons(9)],
-      ]),
-    })
-    // 9 enemies a raid at N09 first: 3 raids cover the 20 kills, before the cheaper N03.
-    expect(result.factionRows.map((row) => [row.battleId, row.raids])).toEqual([
-      ["N09", 3],
-    ])
-  })
-
-  it("keeps faction nodes to lightning-condition nodes while lightning victories are open", () => {
-    const indomitus = (nodeNumber: number) => ({
-      id: `I${nodeNumber}`,
       energyCost: 5,
-      dailyAttempts: 10,
+      dailyAttempts: 1,
       campaignGroupId: "campaign1",
       type: "Standard",
       nodeNumber,
-      rewards: rewards(7, []),
+      enemyPower,
+      rewards: rewards(12, ["shards_necroWarden"]),
     })
-    const necrons: RaidsFilterBattle = {
-      ...filterBattle("Standard"),
-      enemiesFactions: ["Necrons"],
-      enemiesTotal: 5,
-    }
     const result = plan({
+      calculation: null,
+      request: { battlesToGo: 3, eventOnly: false },
+      // Indomitus 18 has no lightning condition, so it comes last despite its power.
+      availableBattles: [
+        node("I18", 18, 900),
+        node("I19", 19, 100),
+        node("I20", 20, 300),
+      ],
+      filterBattlesById: new Map([
+        ["I18", filterBattle("Standard")],
+        ["I19", filterBattle("Standard")],
+        ["I20", filterBattle("Standard")],
+      ]),
+    })
+    expect(result.rows.map((row) => row.battleId)).toEqual([
+      "I20",
+      "I19",
+      "I18",
+    ])
+  })
+})
+
+const node = (
+  nodeId: string,
+  energyCost: number,
+  nodeNumber = 30,
+  dailyAttempts = 10
+) => ({
+  id: nodeId,
+  energyCost,
+  dailyAttempts,
+  campaignGroupId: "campaign1",
+  type: "Standard",
+  nodeNumber,
+  rewards: rewards(7, ["shards_necroWarden"]),
+})
+const manual = (
+  overrides: Partial<NonNullable<MissionRaidsRequest["manual"]>> = {}
+): NonNullable<MissionRaidsRequest["manual"]> => ({
+  needs: [{ toGo: 10, per: "enemies" }],
+  preferLightning: false,
+  countsAsRaids: false,
+  ...overrides,
+})
+const stats = (health: number, byFaction: Record<string, number> = {}) => ({
+  health,
+  byFaction: new Map(Object.entries(byFaction)),
+})
+
+describe("planHookMissionRaids: battles fought by hand", () => {
+  it("keeps the battles to the requested slots and alliance, but never the raids", () => {
+    const result = plan({
+      calculation: null,
+      request: {
+        battlesToGo: 2,
+        eventOnly: false,
+        manual: manual({
+          needs: [{ toGo: 5, per: "abilityUses" }],
+          slots: 5,
+          alliance: "Xenos",
+        }),
+      },
+      availableBattles: [node("X5", 5), node("X4", 4), node("I5", 5)],
+      filterBattlesById: new Map([
+        ["X5", { ...filterBattle("Standard"), alliesAlliance: "Xenos" }],
+        [
+          "X4",
+          { ...filterBattle("Standard"), alliesAlliance: "Xenos", slots: 4 },
+        ],
+        ["I5", filterBattle("Standard")],
+      ]),
+    })
+    expect(
+      result.battles?.rows.map((row) => [row.battleId, row.raids])
+    ).toEqual([["X5", 1]])
+    // The raids take the cheapest node, wherever it is and whatever its slots.
+    expect(result.rows.map((row) => [row.battleId, row.raids])).toEqual([
+      ["X4", 2],
+    ])
+  })
+
+  it("counts each faction's own enemies, most per energy first, so the kills take the fewest battles", () => {
+    const result = plan({
+      calculation: null,
+      request: {
+        battlesToGo: 0,
+        eventOnly: false,
+        manual: manual({
+          needs: [{ toGo: 20, per: "factionEnemies" }],
+          faction: "Necrons",
+        }),
+      },
+      availableBattles: [node("N03", 3), node("N09", 6), node("O10", 3)],
+      filterBattlesById: new Map([
+        ["N03", { ...filterBattle("Standard"), enemiesFactions: ["Necrons"] }],
+        ["N09", { ...filterBattle("Standard"), enemiesFactions: ["Necrons"] }],
+        ["O10", { ...filterBattle("Standard"), enemiesFactions: ["Orks"] }],
+      ]),
+      enemyStatsByBattleId: new Map([
+        [id("N03"), stats(1000, { Necrons: 3 })],
+        [id("N09"), stats(1000, { Necrons: 9, Orks: 2 })],
+        [id("O10"), stats(1000, { Orks: 10 })],
+      ]),
+    })
+    // 9 Necrons for 6 energy (1.5 a point) before 3 for 3 (1 a point): 3 battles cover 20 kills.
+    expect(
+      result.battles?.rows.map((row) => [row.battleId, row.raids])
+    ).toEqual([["N09", 3]])
+    expect(result.battles?.moreNeeded).toBe(false)
+  })
+
+  it("puts lightning-condition nodes first while lightning victories are open", () => {
+    const result = plan({
+      calculation: null,
       request: {
         battlesToGo: 0,
         eventOnly: true,
-        enemyFaction: { faction: "Necrons", killsToGo: 10 },
+        manual: manual({ preferLightning: true }),
       },
-      availableBattles: [indomitus(18), indomitus(19)],
+      availableBattles: [node("I18", 3, 18), node("I19", 5, 19)],
       filterBattlesById: new Map([
-        ["I18", necrons],
-        ["I19", necrons],
+        ["I18", filterBattle("Standard")],
+        ["I19", filterBattle("Standard")],
       ]),
     })
-    // Indomitus 18 has no lightning condition, so a raid there would not count as both.
-    expect(result.factionRows.map((row) => row.battleId)).toEqual(["I19"])
+    expect(result.battles?.rows.map((row) => row.battleId)).toEqual(["I19"])
   })
 
-  it("has no faction list without a faction-kill objective", () => {
-    expect(plan().factionRows).toEqual([])
+  it("takes campaign wins won by hand off the raids, sharing the node's attempts and today's energy", () => {
+    const result = plan({
+      calculation: null,
+      request: {
+        battlesToGo: 10,
+        eventOnly: false,
+        manual: manual({
+          needs: [{ toGo: 4, per: "battle" }],
+          countsAsRaids: true,
+        }),
+      },
+      availableBattles: [node("A", 3, 30, 5)],
+      filterBattlesById: new Map([["A", filterBattle("Standard")]]),
+      dailyEnergy: 60,
+    })
+    expect(
+      result.battles?.rows.map((row) => [row.battleId, row.raids])
+    ).toEqual([["A", 4]])
+    expect(result.battlesLeft).toBe(6)
+    // 1 attempt left at A after the 4 battles.
+    expect(result.rows.map((row) => [row.battleId, row.raids])).toEqual([
+      ["A", 1],
+    ])
+  })
+
+  it("fills until every estimated objective is covered", () => {
+    const result = plan({
+      calculation: null,
+      request: {
+        battlesToGo: 0,
+        eventOnly: false,
+        manual: manual({
+          needs: [
+            { toGo: 10, per: "enemies" },
+            { toGo: 20, per: "abilityUses" },
+          ],
+        }),
+      },
+      availableBattles: [node("A", 3)],
+      filterBattlesById: new Map([["A", filterBattle("Standard")]]),
+    })
+    // 5 enemies a battle covers the kills in 2, but the 20 ability uses need 4.
+    expect(
+      result.battles?.rows.map((row) => [row.battleId, row.raids])
+    ).toEqual([["A", 4]])
+  })
+
+  it("lists the best few nodes open-ended when no objective has an estimate", () => {
+    const nodes = ["A", "B", "C", "D"]
+    const result = plan({
+      calculation: null,
+      request: {
+        battlesToGo: 0,
+        eventOnly: false,
+        manual: manual({ needs: [{ toGo: 5000, per: null }] }),
+      },
+      availableBattles: nodes.map((nodeId) => node(nodeId, 5)),
+      filterBattlesById: new Map(
+        nodes.map((nodeId) => [nodeId, filterBattle("Standard")])
+      ),
+      enemyStatsByBattleId: new Map([
+        [id("A"), stats(100)],
+        [id("B"), stats(400)],
+        [id("C"), stats(300)],
+        [id("D"), stats(200)],
+      ]),
+    })
+    expect(result.battles).toMatchObject({ openEnded: true, totalEnergy: 0 })
+    expect(result.battles?.rows.map((row) => row.battleId)).toEqual([
+      "B",
+      "C",
+      "D",
+    ])
+  })
+
+  it("has no battles without a manual objective", () => {
+    expect(plan().battles).toBeNull()
   })
 })

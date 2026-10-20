@@ -4,6 +4,7 @@ import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 import { HreRaidsSection } from "@/features/daily-raids"
 import {
   AllMissions,
+  arenaSurplus,
   campaignObjectiveState,
   DEFAULT_HRE_PROGRESS,
   HreEventHeader,
@@ -14,7 +15,7 @@ import {
   nextCampaignMission,
   PaceCard,
   remainingCampaignBattles,
-  selectRaidObjective,
+  selectCampaignPlan,
   selectTeamPlans,
   tokenNeedRows,
   TokensNeededCard,
@@ -31,10 +32,10 @@ import { useHreTutorial } from "./hre-page.tutorial"
 
 /**
  * Dailies > HRE: the running Hero Release Event (or the next one as a read-only preview). On a
- * running event: the current mission with its progress inputs and tips, campaign raid suggestions
- * for its campaign, all-alliance or alliance-ability objective, a mission team (Arena, Salvage Run,
- * Onslaught or battle) for a lineup objective (led by a running HSE's scoring units), the tokens the remaining
- * missions need and the event pace. Every event lists all missions and the remaining-campaign
+ * running event: the current mission with its progress inputs and tips, the campaign battles to
+ * fight by hand for its manual objectives and the raids for its campaign objective, the mission's
+ * teams (a campaign team, and one per token mode it plays; each led by a running HSE's scoring
+ * units), the tokens the remaining missions need and the event pace. Every event lists all missions and the remaining-campaign
  * summary. Desktop: missions on the left, the rest on the right. Mobile: one column with the
  * mission list last, collapsed behind "All missions".
  */
@@ -68,8 +69,9 @@ export function HrePage() {
         defaultValue: hero.alliance,
       }) as string)
     : null
-  const raidObjective = running ? selectRaidObjective(progress) : null
-  const teamPlans = running ? selectTeamPlans(progress) : []
+  const surplus = running ? arenaSurplus(progress, tokens?.arena ?? null) : 0
+  const campaignPlan = running ? selectCampaignPlan(progress, surplus) : null
+  const teamPlans = running ? selectTeamPlans(progress, surplus) : []
   const hse = useRunningHse()
   const teams = useHreTeamRecommendations({
     plans: teamPlans,
@@ -110,8 +112,6 @@ export function HrePage() {
 
   const notice = (() => {
     if (!running) return t("hre:raids.notice.preview")
-    if (raidObjective?.allianceNodes && !hero)
-      return t("hre:raids.notice.noHero")
     if (campaignObjectiveState(progress) === "met")
       return t("hre:raids.notice.met")
     const next = nextCampaignMission(progress)
@@ -138,27 +138,37 @@ export function HrePage() {
       }
       remainingBattles={remainingCampaignBattles(shown)}
       request={
-        // Alliance-restricted nodes wait for the featured hero's alliance, so they can be filtered
-        // to where that alliance deploys.
-        raidObjective && (!raidObjective.allianceNodes || hero)
+        campaignPlan
           ? {
-              battlesToGo: raidObjective.battlesToGo,
-              eventOnly: raidObjective.eventOnly,
-              slots: raidObjective.slots,
-              kind: raidObjective.kind,
-              allianceTeam: raidObjective.allianceTeam ? allianceName : null,
-              alliance: raidObjective.allianceNodes
-                ? hero?.alliance
-                : undefined,
-              allianceNodes: raidObjective.allianceNodes ? allianceName : null,
-              enemyFaction: raidObjective.enemyFaction ?? undefined,
-              enemyFactionName: raidObjective.enemyFaction
-                ? (t(
-                    `factions:${raidObjective.enemyFaction.faction}` as never,
-                    { defaultValue: raidObjective.enemyFaction.faction }
-                  ) as string)
-                : null,
-              missionLabel: missionName(t, raidObjective.missionNumber),
+              missionLabel: missionName(t, campaignPlan.missionNumber),
+              raids: campaignPlan.raids,
+              // Alliance-restricted nodes wait for the featured hero's alliance.
+              manual:
+                campaignPlan.battles && (!campaignPlan.battles.alliance || hero)
+                  ? {
+                      needs: campaignPlan.battles.needs,
+                      slots: campaignPlan.battles.slots,
+                      alliance: campaignPlan.battles.alliance
+                        ? hero?.alliance
+                        : undefined,
+                      faction: campaignPlan.battles.faction ?? undefined,
+                      preferLightning: campaignPlan.battles.preferLightning,
+                      countsAsRaids: campaignPlan.battles.countsAsWins,
+                      allianceName: campaignPlan.battles.alliance
+                        ? allianceName
+                        : null,
+                      factionName: campaignPlan.battles.faction
+                        ? (t(
+                            `factions:${campaignPlan.battles.faction}` as never,
+                            { defaultValue: campaignPlan.battles.faction }
+                          ) as string)
+                        : null,
+                    }
+                  : null,
+              manualNotice:
+                campaignPlan.battles?.alliance && !hero
+                  ? t("hre:raids.notice.noHero")
+                  : null,
             }
           : null
       }

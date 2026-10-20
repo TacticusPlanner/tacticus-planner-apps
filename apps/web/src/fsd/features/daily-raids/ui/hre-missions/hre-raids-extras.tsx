@@ -21,15 +21,22 @@ export type RaidRowsView = {
 }
 
 /** One row per suggested node: its location, the goals it feeds (as on the HSE farm list), the goal
- * drop with "owned/target", the running Home Screen Event's points, raids and energy. */
+ * drop with "owned/target", the running Home Screen Event's points, raids (or battles) and energy;
+ * an open-ended row shows only its energy per battle. */
 export function RaidRows({
   rows,
   testId,
   view: { locations, view },
+  battles = false,
+  openEnded = false,
 }: {
   rows: MissionRaidPlan["rows"]
   testId: string
   view: RaidRowsView
+  /** Rows of battles fought by hand, counted as battles rather than raids. */
+  battles?: boolean
+  /** No count to show: the rows are the best nodes to fight until the objective is done. */
+  openEnded?: boolean
 }) {
   const { t } = useTranslation("hre")
   return (
@@ -72,66 +79,26 @@ export function RaidRows({
                 {t("raids.eventPoints", { points: row.eventPoints })}
               </Badge>
             ) : null}
-            <Badge className="tabular-nums" variant="outline">
-              {t("raids.raidCount", { count: row.raids })}
-            </Badge>
-            <Badge className="tabular-nums" variant="secondary">
-              {t("raids.energy", { energy: row.energy })}
-            </Badge>
+            {openEnded ? (
+              <Badge className="tabular-nums" variant="secondary">
+                {t("raids.energyPerBattle", { energy: row.energyCost })}
+              </Badge>
+            ) : (
+              <>
+                <Badge className="tabular-nums" variant="outline">
+                  {t(battles ? "raids.battleCount" : "raids.raidCount", {
+                    count: row.raids,
+                  })}
+                </Badge>
+                <Badge className="tabular-nums" variant="secondary">
+                  {t("raids.energy", { energy: row.energy })}
+                </Badge>
+              </>
+            )}
           </EventLocationRow>
         )
       })}
     </ul>
-  )
-}
-
-/**
- * For a faction-kill objective (mission 11's Necrons): the cheapest nodes with that faction's
- * enemies, apart from the main list, filled with the energy it leaves until their enemies cover the
- * kills still needed.
- */
-export function HreFactionRaids({
-  rows,
-  faction,
-  killsToGo,
-  lightning,
-  view,
-}: {
-  rows: MissionRaidPlan["factionRows"]
-  /** Lightning victories are open too, so only nodes with a lightning condition are listed. */
-  lightning: boolean
-  /** The localized faction. */
-  faction: string
-  killsToGo: number
-  view: RaidRowsView
-}) {
-  const { t } = useTranslation("hre")
-  const raids = rows.reduce((total, row) => total + row.raids, 0)
-  const energy = rows.reduce((total, row) => total + row.energy, 0)
-  return (
-    <div className="space-y-2 border-t pt-3" data-testid="hre-raids-faction">
-      <h3 className="font-medium">{t("raids.faction.title", { faction })}</h3>
-      <p className="text-sm text-muted-foreground">
-        {rows.length > 0
-          ? t("raids.faction.note", { faction, count: killsToGo })
-          : t("raids.faction.none", { faction })}
-        {lightning ? ` ${t("raids.faction.lightning")}` : null}
-      </p>
-      {rows.length > 0 ? (
-        <>
-          <RaidRows rows={rows} testId="hre-raids-faction-list" view={view} />
-          <div
-            className="flex flex-wrap gap-2"
-            data-testid="hre-raids-faction-totals"
-          >
-            <Badge variant="secondary">
-              {t("raids.raidCount", { count: raids })}
-            </Badge>
-            <Badge variant="outline">{t("raids.energy", { energy })}</Badge>
-          </div>
-        </>
-      ) : null}
-    </div>
   )
 }
 
@@ -142,12 +109,9 @@ export function HreFactionRaids({
 export function HreNoDropRaids({
   rows,
   view,
-  battles,
 }: {
   rows: MissionRaidPlan["noDropRows"]
   view: RaidRowsView
-  /** Nodes to fight by hand rather than raid. */
-  battles: boolean
 }) {
   const { t } = useTranslation("hre")
   const raids = rows.reduce((total, row) => total + row.raids, 0)
@@ -155,18 +119,14 @@ export function HreNoDropRaids({
   return (
     <div className="space-y-2 border-t pt-3" data-testid="hre-raids-no-drop">
       <h3 className="font-medium">{t("raids.noDrop.title")}</h3>
-      <p className="text-sm text-muted-foreground">
-        {t(battles ? "raids.noDrop.noteBattles" : "raids.noDrop.note")}
-      </p>
+      <p className="text-sm text-muted-foreground">{t("raids.noDrop.note")}</p>
       <RaidRows rows={rows} testId="hre-raids-no-drop-list" view={view} />
       <div
         className="flex flex-wrap gap-2"
         data-testid="hre-raids-no-drop-totals"
       >
         <Badge variant="secondary">
-          {t(battles ? "raids.battleCount" : "raids.raidCount", {
-            count: raids,
-          })}
+          {t("raids.raidCount", { count: raids })}
         </Badge>
         <Badge variant="outline">{t("raids.energy", { energy })}</Badge>
       </div>

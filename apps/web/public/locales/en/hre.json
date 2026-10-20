@@ -46,28 +46,26 @@
     }
   },
   "tips": {
-    "campaignWins": "Raid the 3-energy Indomitus nodes (6 to 14) first; raids count as wins. Aim to reach mission 19 in week 1.",
-    "campaignRaids": "Raid the 3-energy Indomitus nodes (6 to 14) first, then the 5-energy ones from 15.",
-    "arenaBattles": "Save 7 to 8 Arena tokens before day 1 so missions 4, 10 and 15 clear quickly.",
-    "guildRaids": "Keep 2 Guild Raid tokens for mission 8.",
-    "onslaught": "Keep an Onslaught token for mission 12.",
-    "salvageRuns": "Keep 2 Salvage Run tokens for mission 7.",
+    "campaignWins": "Raids count as wins, and so does every battle you win by hand.",
+    "campaignRaids": "Every raid counts, so raid the cheapest nodes.",
     "lightningVictories": "Raids on a running campaign event's nodes count as lightning victories.",
-    "killEnemies": "Use area-of-effect units on easy campaign nodes.",
-    "killWithMelee": "Use melee units with area attacks on easy campaign nodes.",
-    "killWithRanged": "Use ranged units with many hits on easy campaign nodes.",
-    "killWithAlliance": "Use area-of-effect units of the event's alliance on easy nodes.",
-    "killFaction": "Replay early campaign nodes where this faction is the enemy.",
-    "damage": "Arena and Onslaught battles deal lots of damage quickly.",
-    "abilityDamage": "Use units whose active abilities hit several enemies.",
+    "killEnemies": "Units with area attacks defeat several enemies a turn.",
+    "killWithMelee": "Melee units with area or multi-hit attacks defeat enemies fastest.",
+    "killWithRanged": "Ranged units with many hits defeat enemies fastest.",
+    "killWithAlliance": "Area attacks from the event's alliance defeat several enemies a turn.",
+    "killFaction": "Nodes with many of this faction's enemies take the fewest battles.",
+    "damage": "Strong units with many hits deal the most damage.",
+    "abilityDamage": "Units whose active abilities hit several enemies add up fastest.",
     "damageType": "Field units that deal this damage type and use their abilities every turn.",
-    "featuredDamage": "Use the featured hero in Arena and Onslaught.",
-    "useAbilities": "Easy campaign nodes let you use every ability each battle.",
-    "useAbilitiesAlliance": "Field a team of the event's alliance and use every ability each battle.",
-    "useAbilitiesFeatured": "Bring the featured hero and use their active ability every battle.",
-    "heal": "Bring a healer or repairer to easy campaign nodes.",
+    "featuredDamage": "Keep the featured hero in every battle and use their active ability.",
+    "useAbilities": "Use every unit's active ability each battle. Machines of War don't count.",
+    "useAbilitiesAlliance": "Use every alliance unit's active ability each battle.",
+    "useAbilitiesFeatured": "Use the featured hero's active ability every battle.",
+    "heal": "Bring a Healer or Mechanic and let them heal every turn.",
     "winWithoutSummons": "Leave summoners out of the team.",
-    "winWithAllianceLineup": "Use your strongest team of the event's alliance on easy nodes."
+    "winWithAllianceLineup": "Field only units of the event's alliance.",
+    "reserve_one": "Keep {{count}} {{mode}} token for {{mission}}.",
+    "reserve_other": "Keep {{count}} {{mode}} tokens for {{mission}}."
   },
   "tracker": {
     "current": "Current mission",
@@ -84,13 +82,13 @@
     "markDoneLabel": "Mark done: {{objective}}"
   },
   "raids": {
-    "title": "Raids for {{mission}}",
-    "titleNone": "Campaign raids",
+    "title": "Campaign for {{mission}}",
+    "titleNone": "Campaign battles",
     "toGo_one": "{{count}} battle to go",
     "toGo_other": "{{count}} battles to go",
-    "note": "The cheapest campaign nodes that drop something. Among equal costs, nodes with a drop your goals need come first, by drop rate, then by gold.",
+    "note": "Raids for the campaign objective: the cheapest campaign nodes that drop something. Among equal costs, nodes worth more event points come first, then nodes with a drop your goals need, by drop rate, then by gold.",
     "noteLightning": "Raids on the running campaign event's nodes count as lightning victories, so only those nodes are listed.",
-    "budget": "Energy left for these raids: {{energy}}.",
+    "budget": "Energy left today: {{energy}}.",
     "raidCount_one": "{{count}} raid",
     "raidCount_other": "{{count}} raids",
     "energy": "{{energy}} energy",
@@ -121,26 +119,29 @@
     },
     "noDrop": {
       "title": "Or the no-drop Indomitus battles (6 to 14)",
-      "note": "They cost 3 energy each but drop nothing and give little gold. Each raid here replaces one above.",
-      "noteBattles": "They cost 3 energy each but drop nothing and give little gold. Each battle here replaces one above."
+      "note": "They cost 3 energy each but drop nothing and give little gold. Each raid here replaces one above."
     },
-    "titleBattles": "Battles for {{mission}}",
-    "noteBattles": "Ability uses only count in battles you fight, so fight these {{slots}}-slot nodes by hand with a full {{alliance}} team. Uses in Salvage Runs and other modes count too, so update your progress after them. Cheapest first, as for raids.",
-    "noteLineupBattles": "Raids have no lineup, so they don't count: win these by hand with an all-{{alliance}} team. Arena wins with that team count too. Cheapest first, as for raids.",
-    "noteAbilityRaids": "Each raid on a {{slots}}-slot node counts about {{slots}} ability uses, one per unit, so only {{slots}}-slot nodes are listed. Uses in Arena and Onslaught count too, so update your progress after them.",
-    "budgetBattles": "Energy left for these battles: {{energy}}.",
     "battleCount_one": "{{count}} battle",
     "battleCount_other": "{{count}} battles",
-    "noteAllianceNodes": "Only nodes where {{alliance}} units can deploy, so the mission's other objective progresses too.",
-    "faction": {
-      "title": "Nodes with {{faction}} enemies",
-      "note_one": "For the {{count}} {{faction}} kill still needed: the nodes with the most {{faction}} enemies first, so it takes the fewest raids, from the energy left after the raids above. Each raid counts the node's enemies.",
-      "note_other": "For the {{count}} {{faction}} kills still needed: the nodes with the most {{faction}} enemies first, so it takes the fewest raids, from the energy left after the raids above. Each raid counts the node's enemies.",
-      "none": "No raidable node with {{faction}} enemies fits the energy left today.",
-      "lightning": "Only nodes with a lightning-victory condition, so each raid counts for both objectives."
-    },
     "eventPoints": "{{points}} event pts",
-    "noteHomeScreenEvent": "{{event}} is running too: among nodes of equal cost, those earning more of its points come first."
+    "noteHomeScreenEvent": "{{event}} is running too: among nodes of equal cost, those earning more of its points come first.",
+    "raidsTitle": "Raids",
+    "coveredByBattles": "The battles above cover the wins still needed today.",
+    "energyPerBattle": "{{energy}} energy a battle",
+    "battles": {
+      "title": "Fight by hand",
+      "note": "Raids don't count kills, damage, healing, ability uses or lineup wins, so fight these battles yourself.",
+      "slots": "Only {{slots}}-slot nodes, so every unit's abilities count.",
+      "alliance": "Only nodes where {{alliance}} units can deploy.",
+      "faction": "Only nodes with {{faction}} enemies, the most per energy first.",
+      "lightning": "Nodes with a lightning-victory condition come first, so a quick win also counts as a lightning victory.",
+      "countsAsWins": "Each win here also counts as a campaign win, so fewer raids are needed below.",
+      "estimate": "The counts are estimates from each node's enemies.",
+      "openEnded": "The page can't estimate how many battles this takes, so play these until it's done.",
+      "modes": "Arena and Onslaught battles count too, so update your progress after them.",
+      "more": "More battles are needed after today's energy.",
+      "none": "No campaign node fits this mission's objectives."
+    }
   },
   "tokens": {
     "title": "Tokens needed",
@@ -228,6 +229,11 @@
     "abilitiesTrackFew": "Your {{size}} strongest {{alliance}} units: every ability use counts, with no spares for those who fall.",
     "hse_one": "{{count}} unit here also scores for {{event}}, so both events progress.",
     "hse_other": "{{count}} units here also score for {{event}}, so both events progress.",
-    "hseNone": "None of these units score for {{event}}."
+    "hseNone": "None of these units score for {{event}}.",
+    "melee": "Your 5 strongest melee units.",
+    "strongest": "Your 5 strongest units.",
+    "strongestTrack": "Your {{size}} strongest {{alliance}} units: 5 start, the rest replace those who fall.",
+    "strongestTrackFew": "Your {{size}} {{alliance}} units: fewer than 5, so there are no spares.",
+    "titleBattle": "Campaign team"
   }
 }

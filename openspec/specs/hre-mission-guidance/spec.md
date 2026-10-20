@@ -2,31 +2,32 @@
 
 ## Purpose
 
-Helps the player clear HRE missions quickly. It gives a short, community-guide tip for each objective type, and compares the tokens the remaining missions need with the tokens the player has now.
+Helps the player clear HRE missions quickly. It gives a short strategy tip for each objective type and the tokens to keep for the next token mission, and compares the tokens the remaining missions need with the tokens the player has now.
 
 ## Requirements
 
-### Requirement: Each objective type has a localized tip
+### Requirement: Each objective type has a localized strategy tip
 
-Every objective kind the app knows SHALL have one short localized tip. Tips SHALL be shown under the current mission's objectives. On any other mission, they SHALL be shown on demand by expanding that mission. An unknown objective kind SHALL show no tip. The tips are static copy, not computed. They SHALL include at least:
+Every objective kind the app knows, except the token kinds (`arenaBattles`, `guildRaids`, `onslaught`, `salvageRuns`), SHALL have one short localized tip. A tip SHALL say which units or play help with the objective, never where to play it: the campaign list and the team cards say that. Tips SHALL be shown under the current mission's objectives. On any other mission, they SHALL be shown on demand by expanding that mission. An unknown objective kind SHALL show no tip. The tips are static copy, not computed. They SHALL include at least:
 
-- campaign wins and raids: use the 3-energy Indomitus nodes, and try to reach mission 19 in week 1
-- Arena: save 7 to 8 tokens before day 1
-- Guild Raid: keep 2 tokens for mission 8
-- featured-hero damage: Arena and Onslaught
-- kill counts: use area-of-effect units on easy nodes
+- campaign wins: raids count as wins, and so does every battle won by hand
+- campaign raids: every raid counts, so raid the cheapest nodes
+- kill counts: units with area attacks
 - summon-free wins: leave summoners out of the team
-- all-alliance lineups: use your strongest team of the event's alliance on easy nodes
+- all-alliance lineups: field only units of the event's alliance
+- any-unit ability uses: use every unit's active ability each battle; Machines of War don't count
+
+After the tips, each mission SHALL show one reserve tip naming the tokens the first later mission with a token objective needs ("Keep 4 Arena tokens for mission 10"). A mission after the last token mission SHALL show none, and a token mission SHALL NOT tell the player to keep the tokens it spends itself. Severyn chose strategy-only tips (2026-10).
 
 #### Scenario: Tip on the current mission
 
 - **GIVEN** the current mission is 20 ("Use abilities 10 times with Zapspitta" and "Win 250 campaign battles")
-- **THEN** the featured-hero ability tip and the campaign-battle tip are shown under its objectives
+- **THEN** the featured-hero ability tip and the campaign-win tip are shown under its objectives, with no reserve tip
 
 #### Scenario: Tip on another mission
 
 - **WHEN** the player expands locked mission 8
-- **THEN** the Guild Raid tip and the damage tip are shown
+- **THEN** the damage tip is shown, then "Keep 4 Arena tokens for mission 10"; the Guild Raid objective has no tip
 
 ### Requirement: Tokens needed by remaining missions are compared with synced tokens
 

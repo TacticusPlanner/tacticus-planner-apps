@@ -49,12 +49,12 @@ The event header SHALL show the featured hero's icon and localized name, resolve
 
 ### Requirement: Every HRE uses the same mission list, worded for the featured hero's alliance
 
-The tab SHALL show the one fixed list of 21 missions (1 to 20, then "Bonus"), each with its two objectives, for every HRE. Only the alliance-dependent objectives SHALL change, using the featured hero's alliance (for example "Defeat 10 enemies with Xenos units"), along with the featured-hero objectives of mission 20 and Bonus, which use the hero's name. The list SHALL be shipped with the app, not loaded from the catalog.
+The tab SHALL show the one fixed list of 21 missions (1 to 20, then "Bonus"), each with its two objectives in the game's order (the Tacticus wiki's New Character Events page), for every HRE. Only the alliance-dependent objectives SHALL change, using the featured hero's alliance (for example "Defeat 10 enemies with Xenos units"), along with the featured-hero objectives of mission 20 and Bonus, which use the hero's name. The list SHALL be shipped with the app, not loaded from the catalog.
 
 #### Scenario: Zapspitta mission 10
 
 - **GIVEN** Zapspitta (Xenos)
-- **THEN** mission 10 reads "Play 4 Arena battles" and "Win 15 battles with an all-Xenos team"
+- **THEN** mission 10 reads "Win 15 battles with an all-Xenos team", then "Play 4 Arena battles"
 
 #### Scenario: Same list for an Imperial hero
 
@@ -64,7 +64,7 @@ The tab SHALL show the one fixed list of 21 missions (1 to 20, then "Bonus"), ea
 #### Scenario: Featured hero in mission 20
 
 - **GIVEN** Zapspitta
-- **THEN** mission 20 reads "Win 250 campaign battles" and "Use abilities 10 times with Zapspitta"
+- **THEN** mission 20 reads "Use abilities 10 times with Zapspitta", then "Win 250 campaign battles"
 
 ### Requirement: The player records their current mission and its progress
 
@@ -129,3 +129,17 @@ Mission progress SHALL be stored in the browser's local storage, keyed by the ca
 
 - **GIVEN** local storage throws on access
 - **THEN** the tab still lets the player set progress for the session, with no error shown
+
+### Requirement: Progress stored in the old objective order is migrated
+
+Missions 7, 9, 10, 12, 13, 15, 17, 19, 20 and Bonus swapped their two objectives when the list moved to the game's order (2026-10). Progress stored before that SHALL be read with those missions' two values swapped, so each value stays with its objective, and progress SHALL be saved with a marker of the new order so it is not swapped again.
+
+#### Scenario: Mission 7 stored in the old order
+
+- **GIVEN** stored progress without the new-order marker for mission 7 at 2 Salvage Runs and 8 alliance ability uses (old order: Salvage Runs first)
+- **THEN** the tab shows 8 / 20 alliance ability uses and 2 / 2 Salvage Runs
+
+#### Scenario: Unchanged mission
+
+- **GIVEN** stored progress without the marker for mission 16
+- **THEN** its values are read as stored

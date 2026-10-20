@@ -132,6 +132,22 @@ describe("buildHreTeam", () => {
     })
   })
 
+  it("fields only units without a ranged attack for melee kills", () => {
+    const team = build({
+      plan: { rule: "melee" },
+      ranged: { ultraCalgar: "Bolter", thousAhriman: "Psychic" },
+    })
+    expect(ids(team)).toHaveLength(5)
+    expect(ids(team)).not.toContain("ultraCalgar")
+    expect(ids(team)).not.toContain("thousAhriman")
+  })
+
+  it("fields the strongest units of any alliance for kills and damage", () => {
+    const team = build({ plan: { rule: "strongest" } })
+    expect(team).toMatchObject({ status: "ready", alliance: null })
+    expect(ids(team)).toContain("ultraCalgar")
+  })
+
   it("fields the strongest units of any alliance for ability uses in Arena", () => {
     const team = build({ plan: { rule: "abilities", mode: "arena", size: 5 } })
     expect(team).toMatchObject({ status: "ready", alliance: null })
@@ -253,12 +269,25 @@ describe("buildHreTeam with a running HSE", () => {
     expect(team).toMatchObject({ hseUnits: 4 })
   })
 
-  it("leaves campaign battle teams alone", () => {
+  it("leaves campaign battle teams alone when the event does not score there", () => {
     expect(
       build({
         plan: { rule: "summonFree", mode: "battle" },
         hseTrackers: psykers,
       })
     ).toMatchObject({ status: "ready", hseUnits: null })
+  })
+
+  it("leads a campaign battle team with the event's units when it scores in every mode", () => {
+    const everywhere = psykers.map((tracker) => ({
+      ...tracker,
+      gameModes: null,
+    }))
+    const team = build({
+      plan: { rule: "strongest", mode: "battle" },
+      hseTrackers: everywhere,
+    })
+    expect(team).toMatchObject({ status: "ready", hseUnits: 5 })
+    expect(ids(team).every((id) => psykerIds.has(id))).toBe(true)
   })
 })

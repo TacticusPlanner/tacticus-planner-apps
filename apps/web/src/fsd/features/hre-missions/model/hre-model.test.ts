@@ -3,12 +3,13 @@ import { describe, expect, it } from "vitest"
 import { selectHreInstance } from "./hre-instance"
 import { HRE_MISSIONS, hreMission } from "./hre-missions"
 import {
+  nextTokenReserve,
   remainingCampaignBattles,
-  selectRaidObjective,
+  selectCampaignPlan,
   tokenNeedRows,
   tokenNeeds,
 } from "./hre-objectives"
-import { selectTeamPlans } from "./hre-team-plan"
+import { arenaSurplus, selectTeamPlans } from "./hre-team-plan"
 import { bracketForRank, bracketRange, projectHrePace } from "./hre-pace"
 import {
   advanceMission,
@@ -125,6 +126,19 @@ describe("progress", () => {
     ).toEqual([0, 100])
   })
 
+  it("swaps progress stored before the objectives moved to the game's order", () => {
+    // Mission 7 was Salvage Runs then alliance ability uses; it is now the reverse.
+    expect(
+      parseHreProgress({ mission: 7, progress: [2, 12] })?.progress
+    ).toEqual([12, 2])
+    expect(
+      parseHreProgress({ mission: 7, progress: [12, 2], order: 2 })?.progress
+    ).toEqual([12, 2])
+    expect(
+      parseHreProgress({ mission: 5, progress: [0, 37] })?.progress
+    ).toEqual([0, 37])
+  })
+
   it("keeps points, rank and target", () => {
     expect(
       parseHreProgress({
@@ -152,99 +166,130 @@ describe("progress", () => {
 })
 
 describe("objectives", () => {
-  it("selects mission 5's campaign wins with 63 to go", () => {
+  it("selects mission 5's campaign wins with 63 to go, and its ability damage open-ended", () => {
     expect(
-      selectRaidObjective(progress({ mission: 5, progress: [0, 37] }))
+      selectCampaignPlan(progress({ mission: 5, progress: [0, 37] }))
     ).toMatchObject({
       missionNumber: 5,
-      battlesToGo: 63,
-      eventOnly: false,
+      raids: { battlesToGo: 63, eventOnly: false },
+      battles: {
+        needs: [{ objective: { kind: "abilityDamage" }, per: null }],
+        countsAsWins: true,
+      },
     })
   })
 
   it("serves lightning victories from event nodes only", () => {
     expect(
-      selectRaidObjective(progress({ mission: 11, progress: [5, 0] }))
+      selectCampaignPlan(progress({ mission: 11, progress: [5, 100] }))
     ).toMatchObject({
-      battlesToGo: 20,
-      eventOnly: true,
+      raids: { battlesToGo: 20, eventOnly: true },
+      battles: null,
     })
   })
 
-  it("has no raid objective once it is met or the mission has none", () => {
+  it("has no plan once nothing campaign-related is open", () => {
     expect(
-      selectRaidObjective(progress({ mission: 5, progress: [0, 100] }))
+      selectCampaignPlan(progress({ mission: 5, progress: [10_000, 100] }))
     ).toBeNull()
-    expect(selectRaidObjective(progress({ mission: 4 }))).toBeNull()
+    expect(
+      selectCampaignPlan(progress({ mission: 8, progress: [0, 20_000] }))
+    ).toBeNull()
   })
 
-  it("serves mission 10's all-alliance wins as battles fought by hand", () => {
+  it("never keeps raids to the alliance's nodes: raids count no kills or ability uses", () => {
+    for (const mission of [2, 16, 20, 21]) {
+      const plan = selectCampaignPlan(progress({ mission }))
+      expect(plan?.raids).not.toHaveProperty("alliance")
+      expect(plan?.battles?.alliance).toBe(true)
+    }
+    expect(selectCampaignPlan(progress({ mission: 2 }))?.battles).toMatchObject(
+      { countsAsWins: false, needs: [{ toGo: 10, per: "enemies" }] }
+    )
     expect(
-      selectRaidObjective(progress({ mission: 10, progress: [0, 5] }))
+      selectCampaignPlan(progress({ mission: 20 }))?.battles
     ).toMatchObject({
-      battlesToGo: 10,
-      kind: "battles",
-      allianceTeam: true,
+      countsAsWins: true,
+      needs: [{ toGo: 10, per: "battle" }],
+    })
+  })
+
+  it("serves all-alliance wins as battles fought by hand on the alliance's nodes", () => {
+    expect(
+      selectCampaignPlan(progress({ mission: 10, progress: [5, 0] }))
+    ).toMatchObject({
+      raids: null,
+      battles: {
+        needs: [{ toGo: 10, per: "battle" }],
+        alliance: true,
+        countsAsWins: false,
+      },
     })
     expect(
-      selectRaidObjective(progress({ mission: 10, progress: [0, 5] }))?.slots
+      selectCampaignPlan(progress({ mission: 10 }))?.battles?.slots
     ).toBeUndefined()
   })
 
-  it("serves mission 7's alliance ability uses as battles on 5-slot nodes, 5 uses each", () => {
-    expect(selectRaidObjective(progress({ mission: 7 }))).toMatchObject({
-      battlesToGo: 4,
-      kind: "battles",
-      slots: 5,
-      allianceTeam: true,
-    })
-    expect(
-      selectRaidObjective(progress({ mission: 7, progress: [0, 12] }))
-        ?.battlesToGo
-    ).toBe(2)
-  })
-
-  it("serves mission 15's ability uses as raids on 5-slot nodes, 5 uses each", () => {
-    expect(selectRaidObjective(progress({ mission: 15 }))).toMatchObject({
-      battlesToGo: 30,
-      kind: "raids",
-      slots: 5,
-      allianceTeam: false,
-      allianceNodes: false,
-    })
-    expect(
-      selectRaidObjective(progress({ mission: 15, progress: [0, 148] }))
-        ?.battlesToGo
-    ).toBe(1)
-  })
-
-  it("keeps raids to the alliance's nodes while alliance kills or the featured hero are open", () => {
-    for (const mission of [2, 16, 20, 21]) {
-      expect(selectRaidObjective(progress({ mission }))).toMatchObject({
-        kind: "raids",
-        allianceTeam: false,
-        allianceNodes: true,
+  it("serves ability uses as battles fought by hand on 5-slot nodes", () => {
+    for (const mission of [3, 7, 13, 15]) {
+      expect(selectCampaignPlan(progress({ mission }))?.battles).toMatchObject({
+        slots: 5,
       })
     }
-    expect(
-      selectRaidObjective(progress({ mission: 16, progress: [100, 0] }))
-        ?.allianceNodes
-    ).toBe(false)
-    expect(selectRaidObjective(progress({ mission: 5 }))?.allianceNodes).toBe(
-      false
-    )
+    expect(selectCampaignPlan(progress({ mission: 15 }))).toMatchObject({
+      raids: null,
+      battles: { needs: [{ toGo: 150, per: "abilityUses" }], alliance: false },
+    })
+    expect(selectCampaignPlan(progress({ mission: 3 }))).toMatchObject({
+      raids: { battlesToGo: 20 },
+      battles: {
+        needs: [{ toGo: 30, per: "abilityUses" }],
+        countsAsWins: true,
+      },
+    })
   })
 
-  it("asks for Necron nodes while mission 11's Necron kills are open", () => {
+  it("combines mission 13's kills and alliance ability uses in one list", () => {
     expect(
-      selectRaidObjective(progress({ mission: 11, progress: [0, 40] }))
+      selectCampaignPlan(progress({ mission: 13 }))?.battles
     ).toMatchObject({
-      eventOnly: true,
-      enemyFaction: { faction: "Necrons", killsToGo: 60 },
+      needs: [
+        { toGo: 75, per: "enemies" },
+        { toGo: 50, per: "abilityUses" },
+      ],
+      slots: 5,
+      alliance: true,
+    })
+  })
+
+  it("lists Necron nodes while mission 11's Necron kills are open, lightning nodes first", () => {
+    expect(
+      selectCampaignPlan(progress({ mission: 11, progress: [0, 40] }))
+    ).toMatchObject({
+      raids: { eventOnly: true },
+      battles: {
+        needs: [{ toGo: 60, per: "factionEnemies" }],
+        faction: "Necrons",
+        preferLightning: true,
+      },
     })
     expect(
-      selectRaidObjective(progress({ mission: 11, progress: [0, 100] }))
-        ?.enemyFaction
+      selectCampaignPlan(progress({ mission: 11, progress: [25, 40] }))
+    ).toMatchObject({
+      raids: null,
+      battles: { faction: "Necrons", preferLightning: false },
+    })
+  })
+
+  it("leaves mission 6's summon-free wins the Arena surplus can play", () => {
+    expect(
+      selectCampaignPlan(progress({ mission: 6 }), 3)?.battles?.needs
+    ).toMatchObject([
+      { objective: { kind: "heal" }, per: null },
+      { objective: { kind: "winWithoutSummons" }, toGo: 7 },
+    ])
+    expect(
+      selectCampaignPlan(progress({ mission: 6, progress: [2500, 0] }), 12)
     ).toBeNull()
   })
 
@@ -385,82 +430,104 @@ describe("projectHrePace", () => {
   })
 })
 
-const selectTeamPlan = (state: Parameters<typeof selectTeamPlans>[0]) =>
-  selectTeamPlans(state)[0] ?? null
+describe("selectTeamPlans", () => {
+  const modes = (state: HreProgress, surplus = 0) =>
+    selectTeamPlans(state, surplus).map((plan) => `${plan.mode}:${plan.rule}`)
 
-describe("selectTeamPlan", () => {
-  it("names the lineup rule of the current mission's open objective", () => {
-    expect(selectTeamPlan(progress({ mission: 14 }))?.rule).toBe("alliance")
-    expect(selectTeamPlan(progress({ mission: 20 }))?.rule).toBe("featured")
-    expect(selectTeamPlan(progress({ mission: 21 }))?.rule).toBe("featured")
-    expect(
-      selectTeamPlan(progress({ mission: 6, progress: [0, 10] }))
-    ).toBeNull()
-    expect(selectTeamPlan(progress({ mission: 5 }))).toBeNull()
+  it("gives the manual objectives one campaign team with the strictest rule", () => {
+    expect(modes(progress({ mission: 14 }))).toEqual(["battle:alliance"])
+    expect(modes(progress({ mission: 20 }))).toEqual(["battle:featured"])
+    expect(modes(progress({ mission: 21 }))).toEqual(["battle:featured"])
+    expect(modes(progress({ mission: 13 }))).toEqual(["battle:alliance"])
+    expect(modes(progress({ mission: 17 }))).toEqual(["battle:strongest"])
+    expect(modes(progress({ mission: 19 }))).toEqual(["battle:melee"])
+    expect(modes(progress({ mission: 5, progress: [10_000, 0] }))).toEqual([])
   })
 
-  it("plays mission 6 in Arena with a healer, keeping 4 tokens for mission 10", () => {
-    expect(selectTeamPlan(progress({ mission: 6 }))).toMatchObject({
-      rule: "summonFree",
-      mode: "arena",
-      size: 5,
-      support: true,
-      reserve: { tokens: 4, missionNumber: 10 },
-    })
+  it("gives every open token objective a team in its mode with the partner's rule", () => {
+    expect(modes(progress({ mission: 4 }))).toEqual([
+      "battle:ranged",
+      "arena:ranged",
+    ])
+    expect(modes(progress({ mission: 7 }))).toEqual([
+      "battle:alliance",
+      "salvageRun:alliance",
+    ])
+    expect(modes(progress({ mission: 8 }))).toEqual([
+      "battle:strongest",
+      "guildRaid:strongest",
+    ])
+    expect(modes(progress({ mission: 10 }))).toEqual([
+      "battle:alliance",
+      "arena:alliance",
+    ])
+    expect(modes(progress({ mission: 12 }))).toEqual([
+      "battle:strongest",
+      "onslaught:strongest",
+    ])
     expect(
-      selectTeamPlan(progress({ mission: 6, progress: [2500, 0] }))?.support
-    ).toBe(false)
+      selectTeamPlans(progress({ mission: 12 })).every((plan) => plan.support)
+    ).toBe(true)
+    expect(modes(progress({ mission: 8, progress: [0, 20_000] }))).toEqual([
+      "guildRaid:strongest",
+    ])
   })
 
-  it("makes mission 7 an alliance Salvage Run team, then a battle team", () => {
-    expect(selectTeamPlan(progress({ mission: 7 }))).toMatchObject({
-      rule: "alliance",
-      mode: "salvageRun",
-      reserve: null,
-    })
-    expect(
-      selectTeamPlan(progress({ mission: 7, progress: [2, 0] }))?.mode
-    ).toBe("battle")
-  })
-
-  it("makes mission 9 an Onslaught pool of 8 ranged units, Psychic first while open", () => {
-    expect(selectTeamPlan(progress({ mission: 9 }))).toMatchObject({
-      rule: "ranged",
+  it("keeps the Onslaught pool for ranged kills without Arena and for any-unit ability uses", () => {
+    expect(modes(progress({ mission: 4, progress: [4, 0] }))).toEqual([
+      "battle:ranged",
+      "onslaught:ranged",
+    ])
+    expect(modes(progress({ mission: 3 }))).toEqual([
+      "battle:abilities",
+      "onslaught:abilities",
+    ])
+    expect(modes(progress({ mission: 15 }))).toEqual([
+      "battle:abilities",
+      "arena:abilities",
+      "onslaught:abilities",
+    ])
+    expect(selectTeamPlans(progress({ mission: 9 }))[1]).toMatchObject({
       mode: "onslaught",
       size: 8,
       preferPsychic: true,
       reserve: { tokens: 1, missionNumber: 12 },
     })
     expect(
-      selectTeamPlan(progress({ mission: 9, progress: [0, 7500] }))
+      selectTeamPlans(progress({ mission: 9, progress: [7500, 0] }))[0]
         ?.preferPsychic
     ).toBe(false)
-    expect(selectTeamPlan(progress({ mission: 4 }))?.mode).toBe("arena")
   })
 
-  it("gives mission 3 an Onslaught pool for its ability uses, and 5-slot raids once its wins are done", () => {
-    expect(selectTeamPlans(progress({ mission: 3 }))).toMatchObject([
-      { rule: "abilities", mode: "onslaught" },
+  it("plays mission 6 in Arena only with tokens above mission 10's reserve", () => {
+    expect(modes(progress({ mission: 6 }))).toEqual(["battle:summonFree"])
+    expect(modes(progress({ mission: 6 }), 2)).toEqual([
+      "battle:summonFree",
+      "arena:summonFree",
     ])
-    expect(selectRaidObjective(progress({ mission: 3 }))?.kind).toBe("raids")
-    expect(
-      selectRaidObjective(progress({ mission: 3, progress: [20, 0] }))
-    ).toMatchObject({ battlesToGo: 6, slots: 5 })
+    expect(selectTeamPlans(progress({ mission: 6 }), 2)[1]).toMatchObject({
+      support: true,
+      reserve: { tokens: 4, missionNumber: 10 },
+    })
+    expect(arenaSurplus(progress({ mission: 6 }), 7)).toBe(3)
+    expect(arenaSurplus(progress({ mission: 6 }), 3)).toBe(0)
+    expect(arenaSurplus(progress({ mission: 6 }), null)).toBe(0)
   })
+})
 
-  it("gives mission 15 an Arena team and an Onslaught pool for its ability uses", () => {
-    expect(selectTeamPlans(progress({ mission: 15 }))).toMatchObject([
-      { rule: "abilities", mode: "arena", size: 5 },
-      { rule: "abilities", mode: "onslaught", size: 8 },
-    ])
-    expect(
-      selectTeamPlans(progress({ mission: 15, progress: [4, 0] })).map(
-        (plan) => plan.mode
-      )
-    ).toEqual(["onslaught"])
-    expect(
-      selectTeamPlans(progress({ mission: 15, progress: [4, 150] }))
-    ).toEqual([])
+describe("tips", () => {
+  it("names the next token mission's reserve, never the current one's", () => {
+    expect(nextTokenReserve(1)).toEqual({
+      mode: "arena",
+      tokens: 4,
+      missionNumber: 4,
+    })
+    expect(nextTokenReserve(7)).toEqual({
+      mode: "guildRaid",
+      tokens: 2,
+      missionNumber: 8,
+    })
+    expect(nextTokenReserve(15)).toBeNull()
   })
 })
 

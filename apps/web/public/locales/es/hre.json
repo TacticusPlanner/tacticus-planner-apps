@@ -46,28 +46,26 @@
     }
   },
   "tips": {
-    "campaignWins": "Haz primero incursiones en los nodos 6 a 14 de Indomitus, de 3 de energía; las incursiones cuentan como victorias. Intenta llegar a la misión 19 en la semana 1.",
-    "campaignRaids": "Haz primero incursiones en los nodos 6 a 14 de Indomitus, de 3 de energía, y luego en los de 5 de energía desde el 15.",
-    "arenaBattles": "Guarda de 7 a 8 fichas de Arena antes del día 1 para completar rápido las misiones 4, 10 y 15.",
-    "guildRaids": "Guarda 2 fichas de incursión de gremio para la misión 8.",
-    "onslaught": "Guarda una ficha de Onslaught para la misión 12.",
-    "salvageRuns": "Guarda 2 fichas de Carrera de Saqueo para la misión 7.",
-    "lightningVictories": "Las incursiones en los nodos de un evento de campaña en curso cuentan como victorias relámpago.",
-    "killEnemies": "Usa unidades con daño en área en nodos de campaña fáciles.",
-    "killWithMelee": "Usa unidades cuerpo a cuerpo con ataques en área en nodos de campaña fáciles.",
-    "killWithRanged": "Usa unidades a distancia con muchos golpes en nodos de campaña fáciles.",
-    "killWithAlliance": "Usa unidades de la alianza del evento con daño en área en nodos fáciles.",
-    "killFaction": "Repite nodos de campaña iniciales en los que esta facción es el enemigo.",
-    "damage": "Las batallas de Arena y Onslaught infligen mucho daño rápido.",
-    "abilityDamage": "Usa unidades cuyas habilidades activas golpeen a varios enemigos.",
+    "campaignWins": "Las incursiones cuentan como victorias, y también cada batalla que ganas a mano.",
+    "campaignRaids": "Cada incursión cuenta, así que incursiona los nodos más baratos.",
+    "lightningVictories": "Las incursiones en nodos de un evento de campaña activo cuentan como victorias relámpago.",
+    "killEnemies": "Las unidades con ataques de área derrotan a varios enemigos por turno.",
+    "killWithMelee": "Las unidades cuerpo a cuerpo con ataques de área o de varios golpes derrotan enemigos más rápido.",
+    "killWithRanged": "Las unidades a distancia con muchos golpes derrotan enemigos más rápido.",
+    "killWithAlliance": "Los ataques de área de la alianza del evento derrotan a varios enemigos por turno.",
+    "killFaction": "Los nodos con muchos enemigos de esta facción requieren menos batallas.",
+    "damage": "Las unidades fuertes con muchos golpes hacen más daño.",
+    "abilityDamage": "Las unidades cuyas habilidades activas golpean a varios enemigos suman más rápido.",
     "damageType": "Usa unidades que inflijan este tipo de daño y usa sus habilidades cada turno.",
-    "featuredDamage": "Usa al héroe del evento en Arena y Onslaught.",
-    "useAbilities": "En los nodos de campaña fáciles puedes usar todas las habilidades en cada batalla.",
-    "useAbilitiesAlliance": "Forma un equipo de la alianza del evento y usa todas las habilidades en cada batalla.",
-    "useAbilitiesFeatured": "Lleva al héroe del evento y usa su habilidad activa en cada batalla.",
-    "heal": "Lleva un sanador o reparador a nodos de campaña fáciles.",
+    "featuredDamage": "Lleva al héroe destacado a cada batalla y usa su habilidad activa.",
+    "useAbilities": "Usa la habilidad activa de cada unidad en cada batalla. Las Máquinas de Guerra no cuentan.",
+    "useAbilitiesAlliance": "Usa la habilidad activa de cada unidad de la alianza en cada batalla.",
+    "useAbilitiesFeatured": "Usa la habilidad activa del héroe destacado en cada batalla.",
+    "heal": "Lleva un sanador o mecánico y déjalo curar cada turno.",
     "winWithoutSummons": "Deja a los invocadores fuera del equipo.",
-    "winWithAllianceLineup": "Usa tu equipo más fuerte de la alianza del evento en nodos fáciles."
+    "winWithAllianceLineup": "Despliega solo unidades de la alianza del evento.",
+    "reserve_one": "Guarda {{count}} ficha de {{mode}} para {{mission}}.",
+    "reserve_other": "Guarda {{count}} fichas de {{mode}} para {{mission}}."
   },
   "tracker": {
     "current": "Misión actual",
@@ -84,13 +82,13 @@
     "markDoneLabel": "Hecho: {{objective}}"
   },
   "raids": {
-    "title": "Incursiones: {{mission}}",
-    "titleNone": "Incursiones de campaña",
+    "title": "Campaña: {{mission}}",
+    "titleNone": "Batallas de campaña",
     "toGo_one": "Falta {{count}} batalla",
     "toGo_other": "Faltan {{count}} batallas",
-    "note": "Los nodos de campaña más baratos que sueltan algo. A igual coste, primero los que sueltan algo que tus objetivos necesitan, por probabilidad de botín y luego por oro.",
+    "note": "Incursiones para el objetivo de campaña: los nodos de campaña más baratos que sueltan algo. A igual coste, primero los que dan más puntos del evento, luego los que sueltan algo que tus objetivos necesitan, por probabilidad de botín y luego por oro.",
     "noteLightning": "Las incursiones en los nodos del evento de campaña en curso cuentan como victorias relámpago, así que solo se muestran esos nodos.",
-    "budget": "Energía disponible para estas incursiones: {{energy}}.",
+    "budget": "Energía restante hoy: {{energy}}.",
     "raidCount_one": "{{count}} incursión",
     "raidCount_other": "{{count}} incursiones",
     "energy": "{{energy}} de energía",
@@ -121,26 +119,29 @@
     },
     "noDrop": {
       "title": "O las batallas de Indomitus sin botín (6 a 14)",
-      "note": "Cuestan 3 de energía cada una, pero no sueltan nada y dan poco oro. Cada incursión aquí sustituye a una de arriba.",
-      "noteBattles": "Cuestan 3 de energía cada una, pero no sueltan nada y dan poco oro. Cada batalla aquí sustituye a una de arriba."
+      "note": "Cuestan 3 de energía cada una, pero no sueltan nada y dan poco oro. Cada incursión aquí sustituye a una de arriba."
     },
-    "titleBattles": "Batallas para {{mission}}",
-    "noteBattles": "Los usos de habilidades solo cuentan en batallas que juegas, así que juega a mano estos nodos de {{slots}} huecos con un equipo completo de {{alliance}}. Los usos en Carreras de Saqueo y otros modos también cuentan, así que actualiza tu progreso después. Primero los más baratos, como en las incursiones.",
-    "noteLineupBattles": "Las incursiones no tienen alineación, así que no cuentan: gana estas a mano con un equipo solo de {{alliance}}. Las victorias en la Arena con ese equipo también cuentan. Primero los más baratos, como en las incursiones.",
-    "noteAbilityRaids": "Cada asalto en un nodo de {{slots}} huecos cuenta unos {{slots}} usos de habilidad, uno por unidad, así que solo se listan nodos de {{slots}} huecos. Los usos en Arena y Onslaught también cuentan, así que actualiza tu progreso después.",
-    "budgetBattles": "Energía disponible para estas batallas: {{energy}}.",
     "battleCount_one": "{{count}} batalla",
     "battleCount_other": "{{count}} batallas",
-    "noteAllianceNodes": "Solo nodos donde pueden desplegarse unidades {{alliance}}, para que el otro objetivo de la misión también avance.",
-    "faction": {
-      "title": "Nodos con enemigos {{faction}}",
-      "note_one": "Para la última baja {{faction}} que falta: primero los nodos con más enemigos {{faction}}, para usar las menos incursiones, con la energía que queda tras las incursiones de arriba. Cada incursión cuenta los enemigos del nodo.",
-      "note_other": "Para las {{count}} bajas {{faction}} que faltan: primero los nodos con más enemigos {{faction}}, para usar las menos incursiones, con la energía que queda tras las incursiones de arriba. Cada incursión cuenta los enemigos del nodo.",
-      "none": "Ningún nodo con enemigos {{faction}} cabe en la energía que queda hoy.",
-      "lightning": "Solo nodos con condición de victoria relámpago, para que cada incursión cuente para ambos objetivos."
-    },
     "eventPoints": "{{points}} pts de evento",
-    "noteHomeScreenEvent": "{{event}} también está activo: entre nodos del mismo coste, primero los que dan más de sus puntos."
+    "noteHomeScreenEvent": "{{event}} también está activo: entre nodos del mismo coste, primero los que dan más de sus puntos.",
+    "raidsTitle": "Incursiones",
+    "coveredByBattles": "Las batallas de arriba cubren las victorias que faltan hoy.",
+    "energyPerBattle": "{{energy}} de energía por batalla",
+    "battles": {
+      "title": "Lucha a mano",
+      "note": "Las incursiones no cuentan bajas, daño, curación, usos de habilidad ni victorias con alineación, así que juega estas batallas tú mismo.",
+      "slots": "Solo nodos de {{slots}} huecos, para que cuenten las habilidades de todas las unidades.",
+      "alliance": "Solo nodos donde pueden desplegarse unidades {{alliance}}.",
+      "faction": "Solo nodos con enemigos {{faction}}, primero los que más tienen por energía.",
+      "lightning": "Primero los nodos con condición de victoria relámpago, para que una victoria rápida cuente también como victoria relámpago.",
+      "countsAsWins": "Cada victoria aquí cuenta también como victoria de campaña, así que abajo hacen falta menos incursiones.",
+      "estimate": "Las cantidades son estimaciones según los enemigos de cada nodo.",
+      "openEnded": "No se puede estimar cuántas batallas hacen falta, así que juega estas hasta completarlo.",
+      "modes": "Las batallas de Arena y Onslaught también cuentan, así que actualiza tu progreso después.",
+      "more": "Hacen falta más batallas después de la energía de hoy.",
+      "none": "Ningún nodo de campaña encaja con los objetivos de esta misión."
+    }
   },
   "tokens": {
     "title": "Fichas necesarias",
@@ -228,6 +229,11 @@
     "abilitiesTrackFew": "Tus {{size}} unidades {{alliance}} más fuertes: cada uso de habilidad cuenta, sin repuestos para las que caen.",
     "hse_one": "{{count}} unidad de aquí también puntúa para {{event}}, así avanzan ambos eventos.",
     "hse_other": "{{count}} unidades de aquí también puntúan para {{event}}, así avanzan ambos eventos.",
-    "hseNone": "Ninguna de estas unidades puntúa para {{event}}."
+    "hseNone": "Ninguna de estas unidades puntúa para {{event}}.",
+    "melee": "Tus 5 unidades cuerpo a cuerpo más fuertes.",
+    "strongest": "Tus 5 unidades más fuertes.",
+    "strongestTrack": "Tus {{size}} unidades {{alliance}} más fuertes: 5 empiezan y el resto sustituye a las que caen.",
+    "strongestTrackFew": "Tus {{size}} unidades {{alliance}}: menos de 5, así que no hay reservas.",
+    "titleBattle": "Equipo de campaña"
   }
 }

@@ -135,7 +135,7 @@ function bestMatch(
 /** The scoring trackers of one mode. */
 function modeTrackers(
   trackers: readonly GameCatalogHseTracker[],
-  mode: HseTeamMode
+  mode: HseTeamMode | "Campaign"
 ): GameCatalogHseTracker[] {
   return trackers.filter(
     (tracker) =>
@@ -348,7 +348,7 @@ function buildTeam(
  */
 export function hseEventUnitPools(
   trackers: readonly GameCatalogHseTracker[],
-  mode: HseTeamMode,
+  mode: HseTeamMode | "Campaign",
   roster: readonly TeamRosterCharacter[],
   catalog: HseTeamCatalog,
   unitPower: UnitPowerContext | null

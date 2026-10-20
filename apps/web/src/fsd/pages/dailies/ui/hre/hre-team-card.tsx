@@ -21,8 +21,8 @@ type RuledTeam = Exclude<HreTeam, { status: "locked-hero" }>
 
 /**
  * An HRE mission team for one of the current mission's team plans: the strongest all-alliance,
- * summon-free, ranged, featured-hero-led or any-unit team, titled by where it plays (Arena, Salvage Run,
- * Onslaught), with notes on the healer, Psychic damage dealers, a running HSE's units and the tokens to keep for a later
+ * summon-free, ranged, melee, featured-hero-led or any-unit team, titled by where it plays (campaign
+ * battles by hand, Arena, Salvage Run, Onslaught, Guild Raid), with notes on the healer, Psychic damage dealers, a running HSE's units and the tokens to keep for a later
  * mission, or why there is no team (too few units, the featured hero still locked).
  */
 export function HreTeamCard({
@@ -43,7 +43,7 @@ export function HreTeamCard({
   hero: string
   /** The running Home Screen Event's name, for the note on its units in the team. */
   hseEvent?: string | null
-  /** Distinguishes the cards when a mission has more than one team (mission 15). */
+  /** Distinguishes the cards when a mission has more than one team. */
   testId?: string
 }) {
   const { t } = useTranslation(["hre", "teamRecs", "common"])
@@ -58,7 +58,9 @@ export function HreTeamCard({
         <CardTitle>
           {mode
             ? t("hre:teams.titleMode", { mode: modeName })
-            : t("hre:teams.title")}
+            : plan
+              ? t("hre:teams.titleBattle")
+              : t("hre:teams.title")}
         </CardTitle>
         {view.status === "ready" && view.team.status !== "locked-hero" ? (
           <CardDescription data-testid="hre-team-rule">
@@ -213,6 +215,19 @@ function RuleText({
             { size, alliance: trackAlliance }
           )
         : t("hre:teams.abilities")
+    }
+    case "melee": {
+      return t("hre:teams.melee")
+    }
+    case "strongest": {
+      return trackAlliance
+        ? t(
+            size < HRE_TEAM_SIZE
+              ? "hre:teams.strongestTrackFew"
+              : "hre:teams.strongestTrack",
+            { size, alliance: trackAlliance }
+          )
+        : t("hre:teams.strongest")
     }
   }
 }
