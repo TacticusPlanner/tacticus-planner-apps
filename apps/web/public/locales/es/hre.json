@@ -225,6 +225,9 @@
     "rangedTrackFew": "Tus {{size}} unidades a distancia de {{alliance}}: menos de 5, así que no hay reservas.",
     "abilities": "Tus 5 unidades más fuertes: cada uso de habilidad cuenta para la misión.",
     "abilitiesTrack": "Tus {{size}} unidades {{alliance}} más fuertes: cada uso de habilidad cuenta, y el resto sustituye a las que caen.",
-    "abilitiesTrackFew": "Tus {{size}} unidades {{alliance}} más fuertes: cada uso de habilidad cuenta, sin repuestos para las que caen."
+    "abilitiesTrackFew": "Tus {{size}} unidades {{alliance}} más fuertes: cada uso de habilidad cuenta, sin repuestos para las que caen.",
+    "hse_one": "{{count}} unidad de aquí también puntúa para {{event}}, así avanzan ambos eventos.",
+    "hse_other": "{{count}} unidades de aquí también puntúan para {{event}}, así avanzan ambos eventos.",
+    "hseNone": "Ninguna de estas unidades puntúa para {{event}}."
   }
 }

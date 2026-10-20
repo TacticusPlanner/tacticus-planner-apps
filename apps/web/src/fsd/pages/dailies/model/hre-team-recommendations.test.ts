@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest"
 import type { UnitId } from "@workspace/game-domain"
 
+import { hseVariant } from "@/test/fixtures/home-screen-event-scoring"
 import {
   hseTeamsFixtureCharacters,
   hseTeamsFixtureRead,
@@ -208,5 +209,56 @@ describe("buildHreTeam", () => {
     expect(
       build({ plan: { rule: "summonFree", mode: "arena", support: true } })
     ).toMatchObject({ support: "missing" })
+  })
+})
+
+describe("buildHreTeam with a running HSE", () => {
+  const psykers = hseVariant("hse-trait-boost-psyker").trackers
+  const psykerIds = new Set(
+    hseTeamsFixtureCharacters
+      .filter((character) => character.traits.includes("Psyker"))
+      .map((character) => character.unitId)
+  )
+
+  it("leads the Arena team with the event's Psykers over stronger units", () => {
+    const plan = { rule: "abilities", mode: "arena" } as const
+    const team = build({ plan, hseTrackers: psykers })
+    expect(team).toMatchObject({ status: "ready", hseUnits: 5 })
+    expect(ids(team).every((id) => psykerIds.has(id))).toBe(true)
+    const plain = build({ plan })
+    expect(plain).toMatchObject({ status: "ready", hseUnits: null })
+    expect(ids(plain)).toContain("ultraCalgar")
+  })
+
+  it("picks the Onslaught track with the most Psykers, not the most units", () => {
+    const plan = { rule: "abilities", mode: "onslaught", size: 8 } as const
+    expect(build({ plan, hseTrackers: psykers })).toMatchObject({
+      status: "ready",
+      alliance: "Chaos",
+      hseUnits: 5,
+    })
+    expect(build({ plan })).toMatchObject({ alliance: "Imperial" })
+  })
+
+  it("ranks the event's units after the mission's own rule", () => {
+    const team = build({
+      plan: { rule: "featured", mode: "arena" },
+      characters: [
+        ...hseTeamsFixtureCharacters,
+        xenos("orksWeirdboy", "Stone1"),
+      ],
+      hseTrackers: psykers,
+    })
+    expect(ids(team)[0]).toBe("orksWeirdboy")
+    expect(team).toMatchObject({ hseUnits: 4 })
+  })
+
+  it("leaves campaign battle teams alone", () => {
+    expect(
+      build({
+        plan: { rule: "summonFree", mode: "battle" },
+        hseTrackers: psykers,
+      })
+    ).toMatchObject({ status: "ready", hseUnits: null })
   })
 })
