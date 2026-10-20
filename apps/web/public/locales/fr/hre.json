@@ -127,7 +127,7 @@
     "noteHomeScreenEvent": "{{event}} est aussi en cours : à coût égal, les nœuds qui rapportent le plus de ses points passent en premier.",
     "raidsTitle": "Raids",
     "coveredByBattles": "Les batailles ci-dessus couvrent les victoires encore nécessaires aujourd'hui.",
-    "energyPerBattle": "{{energy}} énergie par bataille",
+    "energyPerBattle": "{{energy}} d'énergie par bataille",
     "battles": {
       "title": "À jouer vous-même",
       "note": "Les raids ne comptent ni les éliminations, ni les dégâts, ni les soins, ni les utilisations de capacité, ni les victoires avec une composition imposée : jouez ces batailles vous-même.",
