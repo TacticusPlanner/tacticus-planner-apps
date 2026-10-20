@@ -1,18 +1,24 @@
 import { useCallback, useState } from "react"
 
+import {
+  NO_HSE_MILESTONE_PROGRESS,
+  type HseMilestoneProgress,
+} from "../lib/hse-milestones"
 import { HSE_TOKEN_MODES, type HseTokenMode } from "../lib/hse-token-supply"
 
-// Design D5: averages persist per browser by (definition, mode), points so far by instance. Both are
+// Design D5: averages persist per browser by (definition, mode), milestone progress by instance. Both are
 // this tab's own keys (no other Dailies tab reads them) and every storage access is guarded, so a
 // private window or blocked site data degrades to in-memory values.
 export const HSE_AVERAGES_STORAGE_KEY = "tp.dailies.hse.averages.v1"
-export const HSE_POINTS_SO_FAR_STORAGE_KEY = "tp.dailies.hse.pointsSoFar.v1"
+// v2 holds milestones done and points in the current one (the game restarts at 0 per milestone);
+// v1's cumulative totals are no longer read.
+export const HSE_PROGRESS_STORAGE_KEY = "tp.dailies.hse.progress.v2"
 
 /** Edited averages of one definition: a number, or null for an input the player cleared. */
 type HseAverages = Partial<Record<HseTokenMode, number | null>>
 
 type StoredAverages = Record<string, HseAverages>
-type StoredPointsSoFar = Record<string, number>
+type StoredProgress = Record<string, HseMilestoneProgress>
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === "object" && value !== null && !Array.isArray(value)
@@ -54,13 +60,23 @@ function readAverages(): StoredAverages {
   return stored
 }
 
-function readPointsSoFar(): StoredPointsSoFar {
-  const stored: StoredPointsSoFar = {}
-  for (const [instanceKey, points] of Object.entries(
-    readJson(HSE_POINTS_SO_FAR_STORAGE_KEY)
+const isCount = (value: unknown): value is number =>
+  typeof value === "number" && Number.isFinite(value) && value >= 0
+
+function readProgress(): StoredProgress {
+  const stored: StoredProgress = {}
+  for (const [instanceKey, progress] of Object.entries(
+    readJson(HSE_PROGRESS_STORAGE_KEY)
   )) {
-    if (typeof points === "number" && Number.isFinite(points) && points >= 0)
-      stored[instanceKey] = points
+    if (
+      isRecord(progress) &&
+      isCount(progress.milestonesDone) &&
+      isCount(progress.pointsInMilestone)
+    )
+      stored[instanceKey] = {
+        milestonesDone: progress.milestonesDone,
+        pointsInMilestone: progress.pointsInMilestone,
+      }
   }
   return stored
 }
@@ -70,13 +86,13 @@ const NO_AVERAGES: HseAverages = {}
 export type HseProjectionInputs = {
   averages: HseAverages
   setAverage: (mode: HseTokenMode, value: number | null) => void
-  pointsSoFar: number
-  setPointsSoFar: (points: number) => void
+  progress: HseMilestoneProgress
+  setProgress: (progress: Partial<HseMilestoneProgress>) => void
 }
 
 /**
  * The projection's editable inputs for one definition and instance: the per-mode averages (absent
- * means the default) and the points so far (0 by default).
+ * means the default) and the milestone progress (none by default).
  */
 export function useHseProjectionInputs(
   definitionId: string,
@@ -84,8 +100,8 @@ export function useHseProjectionInputs(
 ): HseProjectionInputs {
   const [averagesByDefinition, setAveragesByDefinition] =
     useState<StoredAverages>(readAverages)
-  const [pointsByInstance, setPointsByInstance] =
-    useState<StoredPointsSoFar>(readPointsSoFar)
+  const [progressByInstance, setProgressByInstance] =
+    useState<StoredProgress>(readProgress)
 
   const setAverage = useCallback(
     (mode: HseTokenMode, value: number | null) =>
@@ -100,11 +116,26 @@ export function useHseProjectionInputs(
     [definitionId]
   )
 
-  const setPointsSoFar = useCallback(
-    (points: number) =>
-      setPointsByInstance((previous) => {
-        const next = { ...previous, [instanceKey]: Math.max(0, points) }
-        writeJson(HSE_POINTS_SO_FAR_STORAGE_KEY, next)
+  const setProgress = useCallback(
+    (change: Partial<HseMilestoneProgress>) =>
+      setProgressByInstance((previous) => {
+        // A new milestone count restarts the points, as the game does after each milestone.
+        const merged = {
+          ...NO_HSE_MILESTONE_PROGRESS,
+          ...previous[instanceKey],
+          ...(change.milestonesDone === undefined
+            ? {}
+            : { pointsInMilestone: 0 }),
+          ...change,
+        }
+        const next = {
+          ...previous,
+          [instanceKey]: {
+            milestonesDone: Math.max(0, Math.floor(merged.milestonesDone)),
+            pointsInMilestone: Math.max(0, merged.pointsInMilestone),
+          },
+        }
+        writeJson(HSE_PROGRESS_STORAGE_KEY, next)
         return next
       }),
     [instanceKey]
@@ -113,7 +144,7 @@ export function useHseProjectionInputs(
   return {
     averages: averagesByDefinition[definitionId] ?? NO_AVERAGES,
     setAverage,
-    pointsSoFar: pointsByInstance[instanceKey] ?? 0,
-    setPointsSoFar,
+    progress: progressByInstance[instanceKey] ?? NO_HSE_MILESTONE_PROGRESS,
+    setProgress,
   }
 }

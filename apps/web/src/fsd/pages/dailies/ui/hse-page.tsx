@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react"
-import { useOutletContext, useSearchParams } from "react-router"
+import { useEffect } from "react"
+import { useSearchParams } from "react-router"
 import { useTranslation } from "react-i18next"
 
 import {
@@ -8,7 +8,6 @@ import {
   EventStatusLine,
   EventSwitcher,
   EventTopLocations,
-  RaidsFiltersTrigger,
   resolveHomeScreenEventSelection,
   selectListTarget,
   useActiveHomeScreenEvent,
@@ -20,14 +19,8 @@ import {
   PointsProjection,
   useHseProjection,
 } from "@/features/home-screen-event-points"
-import {
-  PlanningSettingsDialog,
-  PlanningSettingsTrigger,
-} from "@/entities/planning-setting"
-import { ProjectSelect } from "@/entities/project"
 
 import { useHseTeamRecommendations } from "../model/use-hse-team-recommendations"
-import type { DailiesOutletContext } from "./dailies-layout"
 import { useHseTutorial } from "./hse-page.tutorial"
 import { HseTeamsSection } from "./hse-teams/hse-teams-section"
 
@@ -40,17 +33,14 @@ const EVENT_PARAM = "event"
  * instance, held in the `event` URL parameter so it survives a reload. Every instance with scoring
  * data gets its event details (tier, description, milestones) and, when running or upcoming and
  * personal, its points projection and event teams for Arena, Onslaught and Salvage Run. Only a
- * running or upcoming rule-bearing instance also gets the farm list, the top-10 lists and the
- * header controls (project selector, Raids Filters, Planning Settings, as on Today); the lists honor
- * the persisted Raids Filters shared with Today. Order: status line, details, projection, event
- * teams, then the raid lists. Stacked on mobile (farm list, overall top 10, event-campaign top 10);
- * on desktop details and projection share a row above the teams and the farm list, which sits
- * beside a column holding both top-10 lists.
+ * running or upcoming rule-bearing instance also gets the farm list and the top-10 lists, which
+ * cover every active goal and honor the Raids Filters and Planning Settings chosen on Today.
+ * Order: status line, details, projection, event teams, then the raid lists. Stacked on mobile
+ * (farm list, overall top 10, event-campaign top 10); on desktop details and projection share a
+ * row above the teams and the farm list, which sits beside a column holding both top-10 lists.
  */
 export function HsePage() {
-  const context = useOutletContext<DailiesOutletContext>()
   const { t } = useTranslation("dailies")
-  const [settingsOpen, setSettingsOpen] = useState(false)
   const [searchParams, setSearchParams] = useSearchParams()
   const state = useActiveHomeScreenEvent()
 
@@ -117,26 +107,6 @@ export function HsePage() {
               selectedKey={instance?.key ?? null}
             />
           ) : null}
-          {ruleEventId ? (
-            <div
-              className="ml-auto flex items-center gap-2 md:ml-0"
-              data-testid="hse-header-controls"
-            >
-              <ProjectSelect
-                allowAll
-                onProjectIdChange={context.setProjectId}
-                placeholder={t("project.placeholder")}
-                projectId={context.projectId}
-                projects={context.projects}
-                testId="hse-project-select"
-              />
-              <RaidsFiltersTrigger />
-              <PlanningSettingsTrigger
-                onClick={() => setSettingsOpen(true)}
-                testId="hse-planning-settings"
-              />
-            </div>
-          ) : null}
         </div>
         <div data-testid="hse-status">
           <EventStatusLine instance={instance} state={state} />
@@ -164,20 +134,11 @@ export function HsePage() {
           className="space-y-5 md:grid md:grid-cols-2 md:items-start md:gap-6 md:space-y-0"
           data-testid="hse-sections"
         >
-          <EventFarmSection
-            definitionId={ruleEventId}
-            projectId={context.projectId}
-          />
+          <EventFarmSection definitionId={ruleEventId} />
           <div data-testid="hse-top-lists">
             <EventTopLocations definitionId={ruleEventId} />
           </div>
         </div>
-      ) : null}
-      {settingsOpen ? (
-        <PlanningSettingsDialog
-          onOpenChange={setSettingsOpen}
-          open={settingsOpen}
-        />
       ) : null}
     </section>
   )

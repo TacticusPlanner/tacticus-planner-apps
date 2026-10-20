@@ -137,7 +137,9 @@
       "note_other": "Para las {{count}} bajas {{faction}} que faltan: primero los nodos con más enemigos {{faction}}, para usar las menos incursiones, con la energía que queda tras las incursiones de arriba. Cada incursión cuenta los enemigos del nodo.",
       "none": "Ningún nodo con enemigos {{faction}} cabe en la energía que queda hoy.",
       "lightning": "Solo nodos con condición de victoria relámpago, para que cada incursión cuente para ambos objetivos."
-    }
+    },
+    "eventPoints": "{{points}} pts de evento",
+    "noteHomeScreenEvent": "{{event}} también está activo: entre nodos del mismo coste, primero los que dan más de sus puntos."
   },
   "tokens": {
     "title": "Fichas necesarias",

@@ -137,7 +137,9 @@
       "note_other": "Für die noch fehlenden {{count}} {{faction}}-Kills: zuerst die Knoten mit den meisten {{faction}}-Gegnern, damit es die wenigsten Raids braucht, mit der Energie, die nach den Raids oben übrig bleibt. Jeder Raid zählt die Gegner des Knotens.",
       "none": "Kein raidbarer Knoten mit {{faction}}-Gegnern passt in die heute übrige Energie.",
       "lightning": "Nur Knoten mit Blitzsieg-Bedingung, damit jeder Raid für beide Ziele zählt."
-    }
+    },
+    "eventPoints": "{{points}} Eventpunkte",
+    "noteHomeScreenEvent": "{{event}} läuft auch: Bei gleichen Kosten kommen Knoten mit mehr Punkten dafür zuerst."
   },
   "tokens": {
     "title": "Benötigte Marken",

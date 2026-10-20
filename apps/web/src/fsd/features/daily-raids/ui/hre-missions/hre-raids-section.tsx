@@ -9,7 +9,10 @@ import type {
 } from "../../model/mission-raids"
 import { emptyRaidsFilters } from "../../model/raids-filters/raids-filters.domain"
 import { useRaidsFilters } from "../../model/raids-filters/use-raids-filters"
+import { hasHomeScreenEventRule } from "../../model/home-screen-event-rules"
+import { useActiveHomeScreenEvent } from "../../model/use-active-home-screen-event"
 import { useDailyRaids } from "../../model/use-daily-raids"
+import { useHomeScreenEventName } from "../home-screen-event/use-home-screen-event-name"
 import { RaidState } from "../raid-state"
 import {
   HreCampaignOutlook,
@@ -43,20 +46,29 @@ type HreRaidsRequest = MissionRaidsRequest & {
  * the days the event has left.
  */
 export function HreRaidsSection({
-  projectId,
   request,
   notice,
   remainingBattles,
   daysLeft,
 }: {
-  projectId?: string
   request: HreRaidsRequest | null
   notice: ReactNode
   remainingBattles: number
   daysLeft: number
 }) {
   const { t } = useTranslation("hre")
-  const raids = useDailyRaids(projectId, {
+  // A running Home Screen Event with a raid rule ranks the nodes too, so both events progress.
+  const homeScreenEvent = useActiveHomeScreenEvent()
+  const eventName = useHomeScreenEventName()
+  const runningEvent =
+    homeScreenEvent.status === "ready" &&
+    homeScreenEvent.active &&
+    hasHomeScreenEventRule(homeScreenEvent.active.definitionId)
+      ? homeScreenEvent.active
+      : null
+  const raids = useDailyRaids(undefined, {
+    homeScreenEventId: runningEvent?.definitionId,
+    eventFarm: false,
     missionRaids: request
       ? {
           battlesToGo: request.battlesToGo,
@@ -119,6 +131,12 @@ export function HreRaidsSection({
                 : t("raids.note")}
             {request.kind === "raids" && request.allianceNodes
               ? ` ${t("raids.noteAllianceNodes", { alliance: request.allianceNodes })}`
+              : null}
+            {runningEvent &&
+            [...plan.rows, ...plan.noDropRows].some(
+              (row) => row.eventPoints > 0
+            )
+              ? ` ${t("raids.noteHomeScreenEvent", { event: eventName(runningEvent) })}`
               : null}
             {` ${t(battles ? "raids.budgetBattles" : "raids.budget", { energy: plan.energyBudget })}`}
           </p>

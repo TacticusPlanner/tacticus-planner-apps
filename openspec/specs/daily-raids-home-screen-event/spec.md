@@ -1,6 +1,6 @@
 ## Purpose
 
-Defines the Dailies HSE tab: how the single active (or next upcoming) Home Screen Event is derived from the game events calendar, how raid points per event are computed, and the event-optimised farm list, best locations, header controls, previews and empty states. Today and Plan stay event-agnostic.
+Defines the Dailies HSE tab: how the single active (or next upcoming) Home Screen Event is derived from the game events calendar, how raid points per event are computed, and the event-optimised farm list, best locations, previews and empty states. Today and Plan stay event-agnostic.
 
 ## Requirements
 
@@ -79,7 +79,7 @@ Event points SHALL NOT change Today, Bonus Raids, the Home raids widget or the R
 
 ### Requirement: The farm list covers the whole schedule and is filled to the energy budget
 
-The HSE tab's main list, titled "Farm list for event points", SHALL be computed over the whole schedule, not from Today's picks. The scope SHALL be the active goals of the Dailies project selection (no selection: every Active goal in global priority order; Paused goals do not plan; a goal in several projects counts once), and the need SHALL be each goal's remaining need over all of its stages after the Plan's priority-ordered inventory allocation, summed per resource.
+The HSE tab's main list, titled "Farm list for event points", SHALL be computed over the whole schedule, not from Today's picks. The scope SHALL be every Active goal in global priority order, whatever project Today has selected (Paused goals do not plan; a goal in several projects counts once), and the need SHALL be each goal's remaining need over all of its stages after the Plan's priority-ordered inventory allocation, summed per resource.
 
 A location SHALL be a candidate only when all of these hold: (1) it earns event points for the active rule (points per raid greater than 0); (2) it is unlocked by the player's campaign progress, has an energy cost above 0 and has attempts left today (the synced attempts left when known, otherwise the node's daily cap, where a cap of 0 means unlimited); (3) it drops a resource that an in-scope goal still needs somewhere in the schedule, where a goal that pins its farm locations is served only by the pinned ones; (4) it passes the persisted Raids Filters, evaluated with the resource it drops.
 
@@ -176,12 +176,12 @@ When a rule-bearing HSE is active (or previewed, see "The HSE tab previews the n
 
 ### Requirement: The HSE tab handles states with no usable event
 
-The HSE tab SHALL always be reachable. It SHALL render the selected instance (see "The HSE tab switches between Home Screen Event instances") as follows. Every instance with scoring data SHALL show its event details (`hse-event-details`) and, when running or upcoming and personal, its points projection (`hse-points-projection`). An upcoming instance SHALL show the event's name, its start date and a "starts in ..." countdown (and, when that event has a raid-point rule, the preview of "The HSE tab previews the next event"). A running instance without a raid-point rule SHALL show the event name and remaining time, its details and projection, without the farm list or any top-10 list. A past instance SHALL show the event name and "Ended on" with its end date and its details, and SHALL NOT show the projection, the farm list, any top-10 list, the preview banner or the raid header controls. With no running, upcoming or past instance it SHALL say no event is scheduled; with only past instances and no selection it SHALL say no event is scheduled and keep the switcher available. While the calendar loads it SHALL show a loading state; on a calendar read failure it SHALL show an inline message that event data could not be loaded and SHALL NOT block the page. A selected upcoming or past event SHALL NOT change Today, Bonus Raids, the Home raids widget or the Raids Plan.
+The HSE tab SHALL always be reachable. It SHALL render the selected instance (see "The HSE tab switches between Home Screen Event instances") as follows. Every instance with scoring data SHALL show its event details (`hse-event-details`) and, when running or upcoming and personal, its points projection (`hse-points-projection`). An upcoming instance SHALL show the event's name, its start date and a "starts in ..." countdown (and, when that event has a raid-point rule, the preview of "The HSE tab previews the next event"). A running instance without a raid-point rule SHALL show the event name and remaining time, its details and projection, without the farm list or any top-10 list. A past instance SHALL show the event name and "Ended on" with its end date and its details, and SHALL NOT show the projection, the farm list, any top-10 list, or the preview banner. With no running, upcoming or past instance it SHALL say no event is scheduled; with only past instances and no selection it SHALL say no event is scheduled and keep the switcher available. While the calendar loads it SHALL show a loading state; on a calendar read failure it SHALL show an inline message that event data could not be loaded and SHALL NOT block the page. A selected upcoming or past event SHALL NOT change Today, Bonus Raids, the Home raids widget or the Raids Plan.
 
 #### Scenario: No event, next one known without a rule
 
 - **GIVEN** no HSE is active and Psyker Boost (no raid-point rule) starts in 43 hours
-- **THEN** the tab shows "Psyker Boost", its start date, the countdown, its details and its projection, and no farm list, top-10 lists, preview banner or raid header controls
+- **THEN** the tab shows "Psyker Boost", its start date, the countdown, its details and its projection, and no farm list, top-10 lists or preview banner
 
 #### Scenario: Nothing scheduled
 
@@ -196,7 +196,7 @@ The HSE tab SHALL always be reachable. It SHALL render the selected instance (se
 #### Scenario: Past event with a rule
 
 - **GIVEN** the player selects Machine Hunt of 2026-10-02 to 2026-10-06
-- **THEN** the tab shows "Machine Hunt", "Ended on" 6 October 2026 and its details, and no projection, farm list, top-10 lists or raid header controls
+- **THEN** the tab shows "Machine Hunt", "Ended on" 6 October 2026 and its details, and no projection, farm list or top-10 lists
 
 #### Scenario: Active event without raid points
 
@@ -251,7 +251,7 @@ When the farm list has no rows it SHALL say why: no active goals in scope; no en
 
 #### Scenario: No active goals
 
-- **GIVEN** the project selection has no Active goal
+- **GIVEN** there is no Active goal
 - **THEN** the farm list says there are no active goals
 
 #### Scenario: No energy
@@ -268,25 +268,6 @@ When the farm list has no rows it SHALL say why: no active goals in scope; no en
 
 - **GIVEN** a Raids Filter leaves no candidate that would exist without it
 - **THEN** the farm list says no location matches the Raids Filters and offers Reset
-
-### Requirement: The HSE tab header offers project, filters and planning settings
-
-While a rule-bearing HSE is active or previewed, the HSE tab header SHALL show the Dailies project selector (the same selection as Raids and Shops, "all goals" by default), the Raids Filters action and the Planning Settings action opening the same dialog as Today. They SHALL be hidden when there is no event to list for (none running or upcoming with a rule, or an event without a rule).
-
-#### Scenario: Project selection narrows the farm list
-
-- **GIVEN** a project is selected
-- **THEN** the farm list considers only that project's active goals
-
-#### Scenario: Planning settings from the HSE tab
-
-- **WHEN** the player activates the Planning Settings action
-- **THEN** the planning settings dialog opens, and saved changes apply to the farm list
-
-#### Scenario: Hidden without a rule-bearing event
-
-- **GIVEN** no HSE is active and the next one has no raid-point rule, or nothing is scheduled
-- **THEN** none of the three header controls is shown
 
 ### Requirement: Farm rows show the item's stock against its total target
 
@@ -314,12 +295,12 @@ Beside the drop icon of each farm row the list SHALL show "X/Y": X is the number
 
 ### Requirement: The HSE tab previews the next event
 
-When the shown instance is upcoming and has a raid-point rule, whether it is the default (no event running) or one the player selected, the HSE tab SHALL show the farm list and the top-10 lists (and the project selector, Raids Filters and Planning Settings actions) computed with that event's rule, SHALL label them as a preview (the event's name, that it is not live, when it starts, and that the lists use the energy left today), and SHALL keep the status line's countdown. With no selection a running event always wins over a preview. A preview SHALL NOT be shown for an upcoming event without a rule, nor when nothing is scheduled; those keep their existing states. The energy budget SHALL keep its meaning (planning-settings daily energy minus energy really spent today). A preview SHALL NOT change Today, Bonus Raids, Home or the Plan.
+When the shown instance is upcoming and has a raid-point rule, whether it is the default (no event running) or one the player selected, the HSE tab SHALL show the farm list and the top-10 lists computed with that event's rule, SHALL label them as a preview (the event's name, that it is not live, when it starts, and that the lists use the energy left today), and SHALL keep the status line's countdown. With no selection a running event always wins over a preview. A preview SHALL NOT be shown for an upcoming event without a rule, nor when nothing is scheduled; those keep their existing states. The energy budget SHALL keep its meaning (planning-settings daily energy minus energy really spent today). A preview SHALL NOT change Today, Bonus Raids, Home or the Plan.
 
 #### Scenario: Preview of the next event
 
 - **GIVEN** no HSE is running and Warp Surge starts in 30 hours
-- **THEN** the tab shows the status line countdown for Warp Surge, a banner saying it is a preview and not live, the farm list and both top-10 lists computed for Warp Surge's rule, and the header actions
+- **THEN** the tab shows the status line countdown for Warp Surge, a banner saying it is a preview and not live, the farm list and both top-10 lists computed for Warp Surge's rule
 
 #### Scenario: Preview of a later event while one runs
 

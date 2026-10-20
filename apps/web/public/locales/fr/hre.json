@@ -137,7 +137,9 @@
       "note_other": "Pour les {{count}} éliminations {{faction}} restantes : d'abord les nœuds avec le plus d'ennemis {{faction}}, pour le moins de raids possible, avec l'énergie laissée par les raids ci-dessus. Chaque raid compte les ennemis du nœud.",
       "none": "Aucun nœud avec des ennemis {{faction}} ne rentre dans l'énergie restante aujourd'hui.",
       "lightning": "Seulement les nœuds avec une condition de victoire éclair, pour que chaque raid compte pour les deux objectifs."
-    }
+    },
+    "eventPoints": "{{points}} pts d'événement",
+    "noteHomeScreenEvent": "{{event}} est aussi en cours : à coût égal, les nœuds qui rapportent le plus de ses points passent en premier."
   },
   "tokens": {
     "title": "Jetons nécessaires",

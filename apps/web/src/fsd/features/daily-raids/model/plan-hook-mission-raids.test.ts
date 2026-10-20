@@ -135,6 +135,61 @@ describe("planHookMissionRaids", () => {
     ])
   })
 
+  it("puts nodes earning more of a running HSE's points first among nodes of equal cost", () => {
+    const node = (nodeId: string, nodeNumber: number) => ({
+      id: nodeId,
+      energyCost: 5,
+      dailyAttempts: 1,
+      campaignGroupId: "campaign1",
+      type: "Standard",
+      nodeNumber,
+      rewards: rewards(12, ["shards_necroWarden"]),
+    })
+    const result = plan({
+      calculation: null,
+      request: { battlesToGo: 2, eventOnly: false },
+      availableBattles: [node("I20", 20), node("I21", 21), node("I22", 22)],
+      filterBattlesById: new Map([
+        ["I20", filterBattle("Standard")],
+        ["I21", filterBattle("Standard")],
+        ["I22", filterBattle("Standard")],
+      ]),
+      eventPointsByBattleId: new Map([
+        [id("I21"), 9],
+        [id("I22"), 15],
+      ]),
+    })
+    expect(result.rows.map((row) => [row.battleId, row.eventPoints])).toEqual([
+      ["I22", 15],
+      ["I21", 9],
+    ])
+  })
+
+  it("never trades energy for HSE points", () => {
+    const node = (nodeId: string, energyCost: number) => ({
+      id: nodeId,
+      energyCost,
+      dailyAttempts: 1,
+      campaignGroupId: "campaign1",
+      type: "Standard",
+      nodeNumber: 20,
+      rewards: rewards(12, ["shards_necroWarden"]),
+    })
+    const result = plan({
+      calculation: null,
+      request: { battlesToGo: 1, eventOnly: false },
+      availableBattles: [node("I20", 3), node("I21", 5)],
+      filterBattlesById: new Map([
+        ["I20", filterBattle("Standard")],
+        ["I21", filterBattle("Standard")],
+      ]),
+      eventPointsByBattleId: new Map([[id("I21"), 15]]),
+    })
+    expect(result.rows).toEqual([
+      expect.objectContaining({ battleId: "I20", eventPoints: 0 }),
+    ])
+  })
+
   it("lists nodes with the faction's enemies apart, until their enemies cover the kills", () => {
     const necrons = (nodeId: string, energyCost: number) => ({
       id: nodeId,

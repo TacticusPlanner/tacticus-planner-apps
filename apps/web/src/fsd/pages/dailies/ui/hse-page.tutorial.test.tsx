@@ -54,10 +54,6 @@ vi.mock("../model/use-hse-team-recommendations", async () => {
     ) => fixtureHseTeams(instance, points, hseTeamsFixtureRead()),
   }
 })
-vi.mock("@/entities/planning-setting", () => ({
-  PlanningSettingsTrigger: () => <button type="button" />,
-  PlanningSettingsDialog: () => null,
-}))
 
 const lastSteps = () => register.mock.lastCall?.[0] as Steps
 /** The steps the tour provider runs at the current viewport (mobile falls back to desktop). */

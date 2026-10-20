@@ -34,6 +34,18 @@ const syncedRunning = {
     hseFixturePlayer({ observedAtMs: Date.parse("2026-10-21T08:00:00Z") }),
 }
 
+const milestonesInput = () =>
+  screen.getByTestId("hse-projection-milestones-done-input")
+const pointsInput = () =>
+  screen.getByTestId("hse-projection-points-in-milestone-input")
+/** Types the game's progress: milestones done, then points in the current milestone. */
+async function enterProgress(milestones: number, points: number) {
+  await userEvent.clear(milestonesInput())
+  await userEvent.type(milestonesInput(), String(milestones))
+  await userEvent.clear(pointsInput())
+  await userEvent.type(pointsInput(), String(points))
+}
+
 const total = (id: string) => screen.getByTestId(`hse-projection-${id}`)
 const row = (mode: string) => screen.getByTestId(`hse-projection-mode-${mode}`)
 const cellsOf = (mode: string) =>
@@ -83,13 +95,16 @@ describe("PointsProjection: Psyker Boost worked examples", () => {
       "18 of 19 milestones (705 pts)"
     )
     expect(total("projected")).toHaveTextContent("7 pts to the next milestone")
-    // Upcoming: no points-so-far input.
+    // Upcoming: no progress inputs.
     expect(
-      screen.queryByTestId("hse-projection-points-so-far-input")
+      screen.queryByTestId("hse-projection-milestones-done-input")
+    ).not.toBeInTheDocument()
+    expect(
+      screen.queryByTestId("hse-projection-points-in-milestone-input")
     ).not.toBeInTheDocument()
   })
 
-  it("running: 28 / 7 / 8 tokens; with 300 points so far, 10.9 kills per token and 676 projected", async () => {
+  it("running: 28 / 7 / 8 tokens; 10 milestones (270) plus 30 is 300 so far, 10.9 kills per token and 676 projected", async () => {
     renderHse(i18n, hseInstance("hse-trait-boost-psyker", "running"), {
       reads: syncedRunning,
     })
@@ -98,10 +113,12 @@ describe("PointsProjection: Psyker Boost worked examples", () => {
     expect(cellsOf("Onslaught")[1]).toBe("7")
     expect(cellsOf("SalvageRun")[1]).toBe("8")
 
-    const pointsSoFar = screen.getByTestId("hse-projection-points-so-far-input")
-    await userEvent.clear(pointsSoFar)
-    await userEvent.type(pointsSoFar, "300")
+    await enterProgress(10, 30)
 
+    expect(total("progress")).toHaveTextContent(
+      "/ 50 pts in the current milestone"
+    )
+    expect(total("points-so-far")).toHaveTextContent("300 pts")
     expect(total("remaining")).toHaveTextContent("465 pts")
     expect(total("units")).toHaveTextContent("465 kills")
     expect(total("required")).toHaveTextContent("10.9 kills per token")
@@ -118,13 +135,14 @@ describe("PointsProjection: Psyker Boost worked examples", () => {
     )
   })
 
-  it("says the final milestone is reached once points so far pass it", async () => {
+  it("says the final milestone is reached once every milestone is done", async () => {
     renderHse(i18n, hseInstance("hse-trait-boost-psyker", "running"), {
       reads: syncedRunning,
     })
-    const pointsSoFar = screen.getByTestId("hse-projection-points-so-far-input")
-    await userEvent.clear(pointsSoFar)
-    await userEvent.type(pointsSoFar, "800")
+    // 19 milestones (765) plus 35 toward the first 50-point repeat.
+    await enterProgress(19, 35)
+
+    expect(total("points-so-far")).toHaveTextContent("800 pts")
 
     expect(total("remaining")).toHaveTextContent(
       "Final milestone reached · 0 endless rewards so far"
@@ -156,21 +174,32 @@ describe("PointsProjection: Psyker Boost worked examples", () => {
 })
 
 describe("PointsProjection: inputs", () => {
-  it("lets points so far be cleared and retyped without a leading zero", async () => {
+  it("lets the progress inputs be cleared and retyped without a leading zero", async () => {
     renderHse(i18n, hseInstance("hse-trait-boost-psyker", "running"), {
       reads: syncedRunning,
     })
-    const pointsSoFar = screen.getByTestId("hse-projection-points-so-far-input")
-    await userEvent.type(pointsSoFar, "300")
-    expect(total("remaining")).toHaveTextContent("465 pts")
+    await userEvent.type(milestonesInput(), "10")
+    expect(total("remaining")).toHaveTextContent("495 pts")
 
-    await userEvent.clear(pointsSoFar)
-    expect(pointsSoFar).toHaveDisplayValue("")
+    await userEvent.clear(milestonesInput())
+    expect(milestonesInput()).toHaveDisplayValue("")
     expect(total("remaining")).toHaveTextContent("765 pts")
 
-    await userEvent.type(pointsSoFar, "3")
-    expect(pointsSoFar).toHaveDisplayValue("3")
+    await userEvent.type(pointsInput(), "3")
+    expect(pointsInput()).toHaveDisplayValue("3")
     expect(total("remaining")).toHaveTextContent("762 pts")
+  })
+
+  it("counts points in a milestone only up to that milestone's points", async () => {
+    renderHse(i18n, hseInstance("hse-trait-boost-psyker", "running"), {
+      reads: syncedRunning,
+    })
+    // The first milestone is 20 points: 35 counts as 20.
+    await userEvent.type(pointsInput(), "35")
+    expect(total("progress")).toHaveTextContent(
+      "/ 20 pts in the current milestone"
+    )
+    expect(total("points-so-far")).toHaveTextContent("20 pts")
   })
 
   it("says the sync time is unknown instead of an empty time", () => {

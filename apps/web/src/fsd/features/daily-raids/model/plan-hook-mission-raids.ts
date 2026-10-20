@@ -44,6 +44,8 @@ export function planHookMissionRaids(input: {
   realEnergyUsedToday: number
   filterBattlesById: ReadonlyMap<string, RaidsFilterBattle>
   raidsFilters: RaidsFilters
+  /** Points per raid in the running Home Screen Event, when one with a raid rule runs. */
+  eventPointsByBattleId?: ReadonlyMap<BattleId, number>
 }): MissionRaidPlan {
   const eventCampaignIds = new Set(
     input.campaignDefinitions
@@ -79,6 +81,7 @@ export function planHookMissionRaids(input: {
     dailyEnergy: input.dailyEnergy,
     realEnergyUsedToday: input.realEnergyUsedToday,
     goalNodesByBattle: input.calculation?.missionGoalNodes ?? new Map(),
+    eventPointsByBattle: input.eventPointsByBattleId,
     passesFilter: (battleId) => {
       const battle = input.filterBattlesById.get(battleId)
       return !battle || passLocationFilter(battle, filters)

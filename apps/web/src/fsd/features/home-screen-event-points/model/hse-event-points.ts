@@ -8,6 +8,12 @@ import {
 
 import { hseDescriptionLines, type HseText } from "../lib/hse-description"
 import {
+  hseCurrentMilestoneCell,
+  hseMilestoneCells,
+  hseMilestonesMax,
+  hseProgressPoints,
+} from "../lib/hse-milestones"
+import {
   hseModeScoring,
   projectHsePoints,
   type HseProjection,
@@ -78,6 +84,15 @@ export type HseProjectionView =
       enemyRestricted: boolean
       /** True when the variant also scores in campaign battles (Warp Surge, Machine Hunt). */
       scoresInCampaign: boolean
+      /** Bounds of the milestone-progress inputs (running only). */
+      milestones: {
+        /** The tier's milestones, repeats aside. */
+        count: number
+        /** Most milestones the player can complete, repeats included; null without a cap. */
+        max: number | null
+        /** Points of the milestone being worked on; null once every one is done. */
+        currentPoints: number | null
+      }
       inputs: HseProjectionInputs
     }
 
@@ -139,12 +154,16 @@ function projectionView(
         }
       : { status: "upcoming", startMs, endMs }
   )
+  const cells = hseMilestoneCells(tier)
   const projection = projectHsePoints({
     tier,
     trackers: variant.trackers,
     tokens,
     averages: inputs.averages,
-    pointsSoFar: instance.status === "running" ? inputs.pointsSoFar : 0,
+    pointsSoFar:
+      instance.status === "running"
+        ? hseProgressPoints(cells, inputs.progress)
+        : 0,
   })
   if (!projection) return { status: "hidden" }
   return {
@@ -163,6 +182,13 @@ function projectionView(
         hseRestrictionPasses(tracker.gameModes, mode)
       )
     ),
+    milestones: {
+      count: tier.milestones.length,
+      max: hseMilestonesMax(cells),
+      currentPoints:
+        hseCurrentMilestoneCell(cells, inputs.progress.milestonesDone)
+          ?.points ?? null,
+    },
     inputs,
   }
 }

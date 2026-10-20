@@ -137,7 +137,9 @@
       "note_other": "For the {{count}} {{faction}} kills still needed: the nodes with the most {{faction}} enemies first, so it takes the fewest raids, from the energy left after the raids above. Each raid counts the node's enemies.",
       "none": "No raidable node with {{faction}} enemies fits the energy left today.",
       "lightning": "Only nodes with a lightning-victory condition, so each raid counts for both objectives."
-    }
+    },
+    "eventPoints": "{{points}} event pts",
+    "noteHomeScreenEvent": "{{event}} is running too: among nodes of equal cost, those earning more of its points come first."
   },
   "tokens": {
     "title": "Tokens needed",
