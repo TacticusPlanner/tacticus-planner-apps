@@ -496,6 +496,10 @@
           "title": "Fünf Schritte",
           "content": "Ziel, Verbesserungen, Teams, Durchläufe und Tokens, dann Prüfen und erstellen. Gespeichert wird erst beim Erstellen."
         },
+        "runInputs": {
+          "title": "Zuerst die Durchlauf-Eingaben",
+          "content": "Missionen und kostenpflichtige Optionen ändern die erreichbaren Punkte. Lege sie hier fest, damit alle Bewertungen und Empfehlungen ihnen folgen."
+        },
         "target": {
           "title": "Ziel wählen",
           "content": "Jede Stufe zeigt die nötigen Punkte und ob dein Kader sie jetzt erreicht, Verbesserungen braucht oder für dieses Event zu ehrgeizig ist."

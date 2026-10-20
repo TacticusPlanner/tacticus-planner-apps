@@ -21,7 +21,7 @@ const DAY_MS = 24 * 60 * 60 * 1000
 const ALPHA_POWERS = [1018, 3055, 8199, 20703, 40586, 75787, 134603]
 
 export const NOW_MS = Date.parse("2026-10-06T00:00:00Z")
-export const RUN_3_START_MS = Date.parse("2027-04-15T00:00:00Z")
+export const RUN_3_START_MS = Date.parse("2027-02-21T00:00:00Z")
 
 const PLAN_CONFIG: ClearEstimateConfig = {
   powerRatio: 1.2,
@@ -93,7 +93,7 @@ function planLane(laneId: PlanLane["laneId"]): PlanLane {
   }
 }
 
-/** Uthar in run 2 with no points yet, run 3 starting 15 April 2027 (estimated). */
+/** Uthar in run 2 with no points yet, run 3 starting 21 February 2027 (estimated). */
 export function planInputs(overrides: Partial<PlanInputs> = {}): PlanInputs {
   return {
     event: utharEvent,

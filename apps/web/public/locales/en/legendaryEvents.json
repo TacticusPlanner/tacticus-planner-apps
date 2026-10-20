@@ -496,6 +496,10 @@
           "title": "Five steps",
           "content": "Target, Upgrades, Teams, Runs and tokens, then Review and create. Nothing is saved until you press Create."
         },
+        "runInputs": {
+          "title": "Run inputs first",
+          "content": "Missions and paid options change the points you can reach. Set them here so every verdict and recommendation follows them."
+        },
         "target": {
           "title": "Pick a target",
           "content": "Each step shows the points it needs and whether your roster reaches it now, needs upgrades, or is too ambitious for this event."

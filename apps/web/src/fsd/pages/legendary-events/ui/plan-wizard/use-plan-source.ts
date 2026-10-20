@@ -30,6 +30,17 @@ import { useUnitPowerContext } from "@/shared/unit-power"
 
 import type { PlanInputs } from "./plan-inputs"
 
+// One instance: the draft keys its upgrade exploration on the goal targets.
+const NO_GOAL_TARGETS: ReadonlyMap<string, LegendaryEventGoalTarget> = new Map()
+
+const sameLifecycle = (
+  a: LegendaryEventLifecycle | undefined,
+  b: LegendaryEventLifecycle | undefined
+) =>
+  a?.state === b?.state &&
+  a?.runStartMs === b?.runStartMs &&
+  a?.runEndMs === b?.runEndMs
+
 /** What the wizard plans from, by data state (spec: wizard data states are distinct). */
 export type PlanSource =
   | { status: "loading" }
@@ -104,20 +115,8 @@ export function usePlanSource(eventId: string): PlanSource {
   const progressObservedAtMs =
     syncTimes.status === "ready" ? syncTimes.data.progressObservedAtMs : null
   // Re-derived every minute; kept while its window is unchanged so the draft does not restart.
-  const lifecycleState = event.lifecycle?.state
-  const runStartMs = event.lifecycle?.runStartMs
-  const runEndMs = event.lifecycle?.runEndMs
-  const lifecycle = useMemo(
-    () =>
-      lifecycleState === undefined
-        ? undefined
-        : ({
-            state: lifecycleState,
-            runStartMs,
-            runEndMs,
-          } as LegendaryEventLifecycle),
-    [lifecycleState, runStartMs, runEndMs]
-  )
+  const [lifecycle, setLifecycle] = useState(event.lifecycle)
+  if (!sameLifecycle(lifecycle, event.lifecycle)) setLifecycle(event.lifecycle)
   const ready = useMemo(() => {
     if (
       !settled ||
@@ -230,7 +229,7 @@ export function usePlanSource(eventId: string): PlanSource {
         status: "ready",
         event: eventData,
         ...ready,
-        goalTargets: new Map(),
+        goalTargets: NO_GOAL_TARGETS,
       }
     }
     return { status: "loading" }

@@ -103,7 +103,7 @@ describe("PlanWizard", () => {
     expect(tourSteps).toMatchObject({ desktop: expect.any(Array) })
     expect(screen.getByTestId("plan-wizard-run-inputs")).toBeInTheDocument()
     expect(screen.getByTestId("plan-wizard-deadline")).toHaveTextContent(
-      "Deadline: about Apr 22, 2027 (estimated)"
+      "Deadline: about Feb 28, 2027 (estimated)"
     )
     const options = screen.getAllByTestId("plan-wizard-target-option")
     expect(options[0]).toHaveAttribute("data-step", "unlock")

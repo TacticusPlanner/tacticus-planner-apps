@@ -496,6 +496,10 @@
           "title": "Cinq étapes",
           "content": "Objectif, Améliorations, Équipes, Manches et jetons, puis Vérifier et créer. Rien n'est enregistré avant d'appuyer sur Créer."
         },
+        "runInputs": {
+          "title": "D’abord les données des manches",
+          "content": "Les missions et les options payantes changent les points atteignables. Réglez-les ici pour que chaque verdict et chaque recommandation en tiennent compte."
+        },
         "target": {
           "title": "Choisir un objectif",
           "content": "Chaque palier indique les points nécessaires et si votre effectif l'atteint déjà, a besoin d'améliorations ou est trop ambitieux pour cet événement."

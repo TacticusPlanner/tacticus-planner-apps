@@ -496,6 +496,10 @@
           "title": "Cinco pasos",
           "content": "Objetivo, Mejoras, Equipos, Rondas y fichas, y luego Revisar y crear. No se guarda nada hasta que pulses Crear."
         },
+        "runInputs": {
+          "title": "Primero, los datos de las rondas",
+          "content": "Las misiones y las opciones de pago cambian los puntos alcanzables. Configúralas aquí para que todas las valoraciones y recomendaciones las sigan."
+        },
         "target": {
           "title": "Elige un objetivo",
           "content": "Cada paso muestra los puntos que necesita y si tu plantilla lo alcanza ya, necesita mejoras o es demasiado ambicioso para este evento."

@@ -38,8 +38,8 @@ function announcedStarts(event: LegendaryEventSchedule): (number | null)[] {
  */
 const LEGENDARY_EVENT_MIN_RUN_GAP_DAYS = 140
 
-/** The shortest run-1-to-run-3 cycle since Kharn (Aun'Shi, Shadowsun, Kharn, Mephiston); the most
- *  recent cycles took 350 days. */
+/** The shortest run-1-to-run-3 cycle since Kharn (Kharn and Mephiston); the most recent cycles took
+ *  350 days. */
 const LEGENDARY_EVENT_MIN_CYCLE_DAYS = 315
 
 /**
