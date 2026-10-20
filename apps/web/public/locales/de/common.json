@@ -1252,7 +1252,8 @@
   "feedback": {
     "button": "Feedback",
     "send": "Feedback senden",
-    "roadmap": "Roadmap"
+    "roadmap": "Roadmap",
+    "changelog": "Änderungsprotokoll"
   },
   "theme": {
     "dark": "Dunkel",

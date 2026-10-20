@@ -172,7 +172,7 @@ export function AuthControl() {
       }}
       onImportV1={goToV1Import}
       onOpenAccountSettings={() => openManageAccount("integration")}
-      onRoadmap={() => setMenuOpen(false)}
+      onExternalLink={() => setMenuOpen(false)}
       onSignOut={handleSignOut}
       signOutDisabled={isInteractionInProgress}
       tourRow={tourRow}

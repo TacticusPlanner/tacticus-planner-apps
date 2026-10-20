@@ -1252,7 +1252,8 @@
   "feedback": {
     "button": "Commentaires",
     "send": "Envoyer un commentaire",
-    "roadmap": "Feuille de route"
+    "roadmap": "Feuille de route",
+    "changelog": "Nouveautés"
   },
   "theme": {
     "dark": "Sombre",

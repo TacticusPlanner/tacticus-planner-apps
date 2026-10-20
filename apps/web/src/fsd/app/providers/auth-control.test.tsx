@@ -118,6 +118,7 @@ const openUserJot = vi.fn()
 vi.mock("./userjot-provider", () => ({
   USERJOT_BOARD_URL: "https://tacticusplanner.userjot.com",
   USERJOT_ROADMAP_URL: "https://tacticusplanner.userjot.com/roadmap",
+  USERJOT_CHANGELOG_URL: "https://tacticusplanner.userjot.com/updates",
   useUserJot: () => ({ open: openUserJot, unreadCount: 0 }),
 }))
 vi.mock("@/shared/tour", () => ({
@@ -228,6 +229,7 @@ describe("AuthControl", () => {
       "auth-v1-import",
       "auth-feedback",
       "auth-roadmap",
+      "auth-changelog",
       "auth-sign-out",
       "catalog-sync-status-badge",
     ]
@@ -254,6 +256,10 @@ describe("AuthControl", () => {
     )
     expect(roadmap).toHaveAttribute("target", "_blank")
     expect(roadmap).toHaveAttribute("rel", "noopener noreferrer")
+    expect(screen.getByTestId("auth-changelog")).toHaveAttribute(
+      "href",
+      "https://tacticusplanner.userjot.com/updates"
+    )
     expect(roadmap).toHaveTextContent("feedback.roadmap")
   })
 
@@ -442,6 +448,7 @@ describe("AuthControl", () => {
       "auth-feedback",
       "tour-button",
       "auth-roadmap",
+      "auth-changelog",
       "auth-sign-out",
       "catalog-sync-status-badge",
     ]
