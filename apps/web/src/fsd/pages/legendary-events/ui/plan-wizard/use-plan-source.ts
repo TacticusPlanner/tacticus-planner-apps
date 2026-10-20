@@ -106,7 +106,8 @@ export function usePlanSource(eventId: string): PlanSource {
     goalTargets.status !== "loading"
 
   // The reads hand out a new state object every render; the memo keys on their data, which only
-  // changes when the underlying query does.
+  // changes when the underlying query does. `settled` says the reads are ready: progress and the
+  // roster read as undefined until synced (an upcoming event has no progress yet).
   const eventsData = events.status === "ready" ? events.data : undefined
   const unitsData = units.status === "ready" ? units.data : undefined
   const rosterData = roster.status === "ready" ? roster.data : undefined
@@ -124,9 +125,7 @@ export function usePlanSource(eventId: string): PlanSource {
       !lifecycle ||
       !eventsData ||
       !unitsData ||
-      battlesData === undefined ||
-      progressData === undefined ||
-      rosterData === undefined ||
+      !battlesData ||
       config.status !== "ready" ||
       !plan.data
     ) {

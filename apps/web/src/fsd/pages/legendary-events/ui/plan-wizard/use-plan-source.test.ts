@@ -1,5 +1,5 @@
 import { renderHook } from "@testing-library/react"
-import { describe, expect, it, vi } from "vitest"
+import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import type { ClearEstimateConfig } from "@/entities/legendary-event"
 import { legendaryEventCharacters } from "@/test/fixtures/legendary-event-characters"
@@ -21,6 +21,8 @@ const EVENTS = [utharEvent]
 const ROSTER: never[] = []
 const BATTLES: never[] = []
 const PROGRESS = { currentEventRun: 2 }
+let progress: unknown = PROGRESS
+let roster: unknown = ROSTER
 const SYNC_TIMES = { progressObservedAtMs: null }
 const FAILED_GOALS = { status: "failed" }
 
@@ -48,9 +50,9 @@ vi.mock("@/entities/legendary-event", async (importOriginal) => ({
     catalogSynced: true,
   }),
   useLegendaryEvents: () => read(EVENTS),
-  useLegendaryEventProgress: () => read(PROGRESS),
+  useLegendaryEventProgress: () => read(progress),
   useLegendaryEventUnits: () => read(legendaryEventCharacters),
-  useLegendaryEventRoster: () => read(ROSTER),
+  useLegendaryEventRoster: () => read(roster),
   useLegendaryEventBattles: () => read(BATTLES),
   useLegendaryEventSyncTimes: () => read(SYNC_TIMES),
   useClearEstimateConfig: () => CONFIG_STATE,
@@ -58,6 +60,19 @@ vi.mock("@/entities/legendary-event", async (importOriginal) => ({
 }))
 
 describe("usePlanSource", () => {
+  beforeEach(() => {
+    progress = PROGRESS
+    roster = ROSTER
+  })
+
+  it("is ready for an event with no synced progress or roster", () => {
+    // An upcoming event (Lost a Bile) has no progress record: the read is ready with no data.
+    progress = undefined
+    roster = undefined
+    const { result } = renderHook(() => usePlanSource(utharEvent.id))
+    expect(result.current.status).toBe("ready")
+  })
+
   it("keeps the same inputs and goal targets across renders", () => {
     // A failed goal read still plans, without reusing goals.
     const { result, rerender } = renderHook(() => usePlanSource(utharEvent.id))
