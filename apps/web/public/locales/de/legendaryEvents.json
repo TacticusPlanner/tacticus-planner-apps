@@ -896,7 +896,8 @@
       "verdicts": {
         "reachableNow": "Jetzt erreichbar",
         "needsUpgrades": "Braucht Verbesserungen",
-        "tooAmbitious": "Zu ehrgeizig"
+        "tooAmbitious": "Zu ehrgeizig",
+        "checking": "Wird geprüft…"
       },
       "spare": "{{points}} Punkte Reserve mit deinem Kader",
       "short": "{{points}} Punkte fehlen mit deinem Kader",
@@ -940,7 +941,7 @@
     },
     "runs": {
       "heading": "Durchlauf-Eingaben",
-      "description": "Werden beim Erstellen mit dem Plan gespeichert."
+      "description": "Missionen und kostenpflichtige Optionen ändern die erreichbaren Punkte, daher folgen die Bewertungen unten ihnen. Werden beim Erstellen mit dem Plan gespeichert."
     },
     "review": {
       "project": "Projekt",

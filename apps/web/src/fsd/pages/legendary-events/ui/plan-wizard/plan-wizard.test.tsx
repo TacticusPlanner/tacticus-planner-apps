@@ -101,6 +101,7 @@ describe("PlanWizard", () => {
       source: "link",
     })
     expect(tourSteps).toMatchObject({ desktop: expect.any(Array) })
+    expect(screen.getByTestId("plan-wizard-run-inputs")).toBeInTheDocument()
     expect(screen.getByTestId("plan-wizard-deadline")).toHaveTextContent(
       "Deadline: about Apr 22, 2027 (estimated)"
     )
@@ -115,6 +116,11 @@ describe("PlanWizard", () => {
         ).not.toHaveTextContent("Checking"),
       { timeout: 5000 }
     )
+    expect(
+      screen
+        .getAllByTestId("plan-wizard-verdict")
+        .map((badge) => badge.textContent)
+    ).not.toContain("Checking…")
   })
 
   it("shows every lane's roster potential on the Target step", () => {
@@ -178,6 +184,9 @@ describe("PlanWizard", () => {
     ).toBeGreaterThan(0)
     await next()
     expect(screen.getByTestId("plan-wizard-runs")).toBeInTheDocument()
+    expect(
+      screen.queryByTestId("plan-wizard-run-inputs")
+    ).not.toBeInTheDocument()
     await next()
     expect(screen.getByTestId("plan-wizard-review")).toBeInTheDocument()
     expect(screen.getByTestId("plan-wizard-project-name")).toHaveValue(

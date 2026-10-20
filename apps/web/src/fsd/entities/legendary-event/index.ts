@@ -180,7 +180,6 @@ export {
 } from "./lib/reward-projection"
 export {
   legendaryEventRunDates,
-  legendaryEventRunGapDays,
   type LegendaryEventRunDates,
   type LegendaryEventRunStart,
 } from "./lib/run-dates"

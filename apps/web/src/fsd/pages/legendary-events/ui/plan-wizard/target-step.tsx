@@ -4,6 +4,7 @@ import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 import { Badge } from "@workspace/ui/components/badge"
 import { cn } from "@workspace/ui/lib/utils"
 
+import { RunInputsForm } from "@/features/legendary-event-run-inputs"
 import { useAnalyticsActions } from "@/shared/analytics"
 
 import { RosterPotentialMap } from "../legendary-event/roster-potential-map"
@@ -19,7 +20,8 @@ const VERDICT_CLASS: Record<StepVerdict["kind"], string> = {
 }
 
 /** Step 1 (spec: choose the target with a verdict per step): the deadline, then every step after
- *  the unit's progression with its points and verdict, the highest step within reach, and every
+ *  the unit's progression with its points and verdict, the highest step within reach, the run
+ *  inputs (missions and paid options change the points, so the verdicts follow them), and every
  *  lane's roster potential with the battles the target's goals add. */
 export function TargetStep({
   draft,
@@ -78,6 +80,32 @@ export function TargetStep({
           </p>
         ) : null}
       </div>
+      <div
+        className="flex flex-col gap-2 rounded-xl border p-3"
+        data-testid="plan-wizard-run-inputs"
+      >
+        <div className="flex flex-col gap-1">
+          <h3 className="font-semibold">{t("planWizard.runs.heading")}</h3>
+          <p className="text-sm text-muted-foreground">
+            {t("planWizard.runs.description")}
+          </p>
+        </div>
+        <div className="flex flex-col [&>div]:px-0">
+          <RunInputsForm
+            event={source.event}
+            inputs={{
+              loading: false,
+              failed: false,
+              showPaidOptions: draft.economy.showPaidOptions,
+              values: draft.runValues,
+              change: draft.changeRun,
+              setShowPaidOptions: draft.setShowPaidOptions,
+            }}
+            runs={source.inputs.resolution}
+            touch={isMobile}
+          />
+        </div>
+      </div>
       {draft.options.options.length === 0 ? (
         <p className="text-sm text-muted-foreground">
           {t("planWizard.target.noTargets")}
@@ -134,12 +162,21 @@ export function TargetStep({
                       : null}
                   </span>
                 </span>
-                <Badge
-                  className={VERDICT_CLASS[verdict.kind]}
-                  variant="outline"
-                >
-                  {t(`planWizard.target.verdicts.${verdict.kind}`)}
-                </Badge>
+                {/* Upgrades only raise the ceiling: until they are explored, a step not
+                    reachable now has no settled verdict. */}
+                {exploring && verdict.kind !== "reachableNow" ? (
+                  <Badge data-testid="plan-wizard-verdict" variant="outline">
+                    {t("planWizard.target.verdicts.checking")}
+                  </Badge>
+                ) : (
+                  <Badge
+                    className={VERDICT_CLASS[verdict.kind]}
+                    data-testid="plan-wizard-verdict"
+                    variant="outline"
+                  >
+                    {t(`planWizard.target.verdicts.${verdict.kind}`)}
+                  </Badge>
+                )}
               </label>
             )
           })}

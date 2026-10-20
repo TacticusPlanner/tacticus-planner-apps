@@ -1,7 +1,6 @@
 import { useTranslation } from "react-i18next"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
-import { RunInputsForm } from "@/features/legendary-event-run-inputs"
 import {
   RunForecastSection,
   TokenPlanList,
@@ -11,9 +10,8 @@ import type { PlanDraft } from "./use-plan-draft"
 import type { PlanSource } from "./use-plan-source"
 
 /**
- * Step 4 (spec: review the token plan): the draft's run inputs (missions with their ticks, and the
- * paid options), then the token plan and run forecast of the draft teams on those inputs. Edits
- * stay in the draft until Create.
+ * Step 4 (spec: review the token plan): the token plan and run forecast of the draft teams on the
+ * run inputs chosen on the Target step.
  */
 export function RunsStep({
   draft,
@@ -27,31 +25,7 @@ export function RunsStep({
   const { event } = source
   return (
     <section className="flex flex-col gap-6" data-testid="plan-wizard-runs">
-      <div className="flex flex-col gap-3">
-        <div className="flex flex-col gap-1">
-          <h2 className="text-lg font-semibold">
-            {t("planWizard.runs.heading")}
-          </h2>
-          <p className="text-sm text-muted-foreground">
-            {t("planWizard.runs.description")}
-          </p>
-        </div>
-        <div className="flex flex-col [&>div]:px-0">
-          <RunInputsForm
-            event={event}
-            inputs={{
-              loading: false,
-              failed: false,
-              showPaidOptions: draft.economy.showPaidOptions,
-              values: draft.runValues,
-              change: draft.changeRun,
-              setShowPaidOptions: draft.setShowPaidOptions,
-            }}
-            runs={source.inputs.resolution}
-            touch={isMobile}
-          />
-        </div>
-      </div>
+      <h2 className="text-lg font-semibold">{t("planWizard.steps.runs")}</h2>
       <TokenPlanList
         event={event}
         eventId={event.id}

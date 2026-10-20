@@ -896,7 +896,8 @@
       "verdicts": {
         "reachableNow": "Alcanzable ya",
         "needsUpgrades": "Necesita mejoras",
-        "tooAmbitious": "Demasiado ambicioso"
+        "tooAmbitious": "Demasiado ambicioso",
+        "checking": "Comprobando…"
       },
       "spare": "{{points}} puntos de margen con tu plantilla",
       "short": "Faltan {{points}} puntos con tu plantilla",
@@ -940,7 +941,7 @@
     },
     "runs": {
       "heading": "Datos de las rondas",
-      "description": "Se guardan con el plan al pulsar Crear."
+      "description": "Las misiones y las opciones de pago cambian los puntos alcanzables, así que las valoraciones de abajo los siguen. Se guardan con el plan al pulsar Crear."
     },
     "review": {
       "project": "Proyecto",

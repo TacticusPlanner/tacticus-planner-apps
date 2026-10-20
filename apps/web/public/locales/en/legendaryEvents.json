@@ -896,7 +896,8 @@
       "verdicts": {
         "reachableNow": "Reachable now",
         "needsUpgrades": "Needs upgrades",
-        "tooAmbitious": "Too ambitious"
+        "tooAmbitious": "Too ambitious",
+        "checking": "Checking…"
       },
       "spare": "{{points}} points spare with your roster",
       "short": "{{points}} points short with your roster",
@@ -940,7 +941,7 @@
     },
     "runs": {
       "heading": "Run inputs",
-      "description": "Saved with the plan when you press Create."
+      "description": "Missions and paid options change the points you can reach, so the verdicts below follow them. Saved with the plan when you press Create."
     },
     "review": {
       "project": "Project",
