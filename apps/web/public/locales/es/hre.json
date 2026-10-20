@@ -127,6 +127,7 @@
     "titleBattles": "Batallas para {{mission}}",
     "noteBattles": "Los usos de habilidades solo cuentan en batallas que juegas, así que juega a mano estos nodos de {{slots}} huecos con un equipo completo de {{alliance}}. Los usos en Carreras de Saqueo y otros modos también cuentan, así que actualiza tu progreso después. Primero los más baratos, como en las incursiones.",
     "noteLineupBattles": "Las incursiones no tienen alineación, así que no cuentan: gana estas a mano con un equipo solo de {{alliance}}. Las victorias en la Arena con ese equipo también cuentan. Primero los más baratos, como en las incursiones.",
+    "noteAbilityRaids": "Cada asalto en un nodo de {{slots}} huecos cuenta unos {{slots}} usos de habilidad, uno por unidad, así que solo se listan nodos de {{slots}} huecos. Los usos en Arena y Onslaught también cuentan, así que actualiza tu progreso después.",
     "budgetBattles": "Energía disponible para estas batallas: {{energy}}.",
     "battleCount_one": "{{count}} batalla",
     "battleCount_other": "{{count}} batallas",
@@ -221,6 +222,8 @@
     "reserve_one": "Guarda {{count}} ficha de {{mode}} para {{mission}}.",
     "reserve_other": "Guarda {{count}} fichas de {{mode}} para {{mission}}.",
     "reservePlay": "Con {{have}} ahora, juega hasta {{play}}.",
-    "rangedTrackFew": "Tus {{size}} unidades a distancia de {{alliance}}: menos de 5, así que no hay reservas."
+    "rangedTrackFew": "Tus {{size}} unidades a distancia de {{alliance}}: menos de 5, así que no hay reservas.",
+    "abilities": "Tus 5 unidades más fuertes: cada uso de habilidad cuenta para la misión.",
+    "abilitiesTrack": "Tus {{size}} unidades {{alliance}} más fuertes: cada uso de habilidad cuenta, y el resto sustituye a las que caen."
   }
 }

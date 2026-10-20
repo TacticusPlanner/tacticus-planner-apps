@@ -127,6 +127,7 @@
     "titleBattles": "Battles for {{mission}}",
     "noteBattles": "Ability uses only count in battles you fight, so fight these {{slots}}-slot nodes by hand with a full {{alliance}} team. Uses in Salvage Runs and other modes count too, so update your progress after them. Cheapest first, as for raids.",
     "noteLineupBattles": "Raids have no lineup, so they don't count: win these by hand with an all-{{alliance}} team. Arena wins with that team count too. Cheapest first, as for raids.",
+    "noteAbilityRaids": "Each raid on a {{slots}}-slot node counts about {{slots}} ability uses, one per unit, so only {{slots}}-slot nodes are listed. Uses in Arena and Onslaught count too, so update your progress after them.",
     "budgetBattles": "Energy left for these battles: {{energy}}.",
     "battleCount_one": "{{count}} battle",
     "battleCount_other": "{{count}} battles",
@@ -221,6 +222,8 @@
     "reserve_one": "Keep {{count}} {{mode}} token for {{mission}}.",
     "reserve_other": "Keep {{count}} {{mode}} tokens for {{mission}}.",
     "reservePlay": "With {{have}} now, play up to {{play}}.",
-    "rangedTrackFew": "Your {{size}} ranged {{alliance}} units: fewer than 5, so there are no spares."
+    "rangedTrackFew": "Your {{size}} ranged {{alliance}} units: fewer than 5, so there are no spares.",
+    "abilities": "Your 5 strongest units: every ability use counts toward the mission.",
+    "abilitiesTrack": "Your {{size}} strongest {{alliance}} units: every ability use counts, and the rest replace those who fall."
   }
 }

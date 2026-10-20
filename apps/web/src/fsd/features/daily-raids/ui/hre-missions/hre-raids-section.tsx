@@ -128,7 +128,9 @@ export function HreRaidsSection({
                   })
               : request.eventOnly
                 ? t("raids.noteLightning")
-                : t("raids.note")}
+                : request.slots
+                  ? `${t("raids.note")} ${t("raids.noteAbilityRaids", { slots: request.slots })}`
+                  : t("raids.note")}
             {request.kind === "raids" && request.allianceNodes
               ? ` ${t("raids.noteAllianceNodes", { alliance: request.allianceNodes })}`
               : null}

@@ -58,7 +58,8 @@ vi.mock("@/features/daily-raids/model/use-active-home-screen-event", () => ({
   useActiveHomeScreenEvent: () => mocks.homeScreenEvent,
 }))
 vi.mock("../model/use-hre-team-recommendations", () => ({
-  useHreTeamRecommendations: () => mocks.team,
+  useHreTeamRecommendations: ({ plans }: { plans: readonly unknown[] }) =>
+    plans.length > 0 ? plans.map(() => mocks.team) : [mocks.team],
 }))
 
 const DAY = 86_400_000
@@ -371,6 +372,25 @@ describe("HRE tab", () => {
     })
     expect(screen.getByTestId("hre-raids-note")).toHaveTextContent(
       "raids.noteAllianceNodes"
+    )
+  })
+
+  it("suggests 5-slot raids, an Arena team and an Onslaught pool for mission 15's ability uses", () => {
+    mocks.team = { status: "loading" }
+    seed({ mission: 15, progress: [0, 0] })
+    renderHre()
+    expect(mocks.raidsArgs.at(-1)?.[1]).toEqual({
+      eventFarm: false,
+      missionRaids: { battlesToGo: 30, eventOnly: false, slots: 5 },
+    })
+    expect(screen.getByTestId("hre-raids-note")).toHaveTextContent(
+      "raids.noteAbilityRaids|slots=5"
+    )
+    expect(screen.getByTestId("hre-team")).toHaveTextContent(
+      "hre:teams.titleMode|mode=hre:tokens.modes.arena"
+    )
+    expect(screen.getByTestId("hre-team-onslaught")).toHaveTextContent(
+      "hre:teams.titleMode|mode=hre:tokens.modes.onslaught"
     )
   })
 

@@ -131,6 +131,23 @@ describe("buildHreTeam", () => {
     })
   })
 
+  it("fields the strongest units of any alliance for ability uses in Arena", () => {
+    const team = build({ plan: { rule: "abilities", mode: "arena", size: 5 } })
+    expect(team).toMatchObject({ status: "ready", alliance: null })
+    expect(ids(team)).toHaveLength(5)
+    expect(team?.status === "ready" ? team.eligibleCount : 0).toBe(
+      hseTeamsFixtureCharacters.length
+    )
+  })
+
+  it("keeps an ability-use Onslaught pool to the largest alliance", () => {
+    const team = build({
+      plan: { rule: "abilities", mode: "onslaught", size: 8 },
+    })
+    expect(team?.status).toBe("ready")
+    expect(team?.status === "ready" ? team.alliance : null).not.toBeNull()
+  })
+
   it("fields an Onslaught pool of the alliance with the most ranged units", () => {
     const team = build({
       plan: { rule: "ranged", mode: "onslaught", size: 8 },

@@ -41,14 +41,15 @@ const ALLIANCE_NODE_KINDS: ReadonlySet<HreObjectiveKind> = new Set([
 /** Ability uses a fought battle with five units yields, for `useAbilitiesAlliance`: one each, as
  * Severyn confirmed (mission 7 at 12 / 20 still needs 2 battles). */
 const ABILITY_USES_PER_BATTLE = 5
-/** A full all-alliance team, so every slot's abilities count. */
+/** A full all-alliance team, so every slot's abilities count; for any units, a full raid team. */
 const FULL_TEAM_SLOTS = 5
 
 /**
  * The objective the raid suggestions fill. A lightning-victory objective comes first, because its
  * event-campaign raids also count as campaign wins; then the campaign objective; then an
  * all-alliance lineup's wins, as battles fought by hand (raids have no lineup, so they cannot count);
- * then the alliance ability uses, as battles fought by hand on 5-slot nodes. The mission's other
+ * then the alliance ability uses, as battles fought by hand on 5-slot nodes; then any units' ability
+ * uses, as raids on 5-slot nodes, five uses a raid (mission 15). The mission's other
  * objective restricts the nodes too: alliance kills or the featured hero keep them to where the
  * alliance deploys, and faction kills add a list of nodes with that faction's enemies.
  */
@@ -109,7 +110,27 @@ export function selectRaidObjective(
   const abilities = open.find(
     (item) => item.objective.kind === "useAbilitiesAlliance"
   )
-  if (!abilities) return null
+  if (!abilities) {
+    const anyAbilities = open.find(
+      (item) => item.objective.kind === "useAbilities"
+    )
+    if (!anyAbilities) return null
+    return {
+      missionNumber: mission.number,
+      objective: anyAbilities.objective,
+      battlesToGo: Math.ceil(
+        anyAbilities.battlesToGo / ABILITY_USES_PER_BATTLE
+      ),
+      eventOnly: false,
+      kind: "raids",
+      slots: FULL_TEAM_SLOTS,
+      allianceTeam: false,
+      allianceNodes: open.some((item) =>
+        ALLIANCE_NODE_KINDS.has(item.objective.kind)
+      ),
+      enemyFaction,
+    }
+  }
   return {
     missionNumber: mission.number,
     objective: abilities.objective,

@@ -47,14 +47,14 @@ async function readTeams(): Promise<HreTeamsRead> {
 }
 
 /**
- * The HRE mission team for the current mission's team plan (`selectTeamPlan`), or hidden without
- * one. Summoners come from the English ability rules text (`npcAbilityText`).
+ * One HRE mission team per team plan of the current mission (`selectTeamPlans`), in plan order.
+ * Summoners come from the English ability rules text (`npcAbilityText`).
  */
 export function useHreTeamRecommendations(input: {
-  plan: HreTeamPlan | null
+  plans: readonly HreTeamPlan[]
   alliance: string | null
   featuredCharacterId: string | null
-}): HreTeamViewModel {
+}): HreTeamViewModel[] {
   const [retryNonce, setRetryNonce] = useState(0)
   const read = useLiveQuery(readTeams, [retryNonce])
   const retry = useCallback(() => setRetryNonce((nonce) => nonce + 1), [])
@@ -70,17 +70,18 @@ export function useHreTeamRecommendations(input: {
     })
   }, [read, i18n])
 
-  if (!input.plan) return { status: "hidden" }
-  if (!read || unitPowerLoading) return { status: "loading" }
-  if (read.status === "error") return { status: "error", retry }
-  const team = buildHreTeam({
-    plan: input.plan,
-    alliance: input.alliance,
-    featuredCharacterId: input.featuredCharacterId,
-    roster: read.roster,
-    catalog: read.catalog,
-    summoners,
-    unitPower,
+  return input.plans.map((plan): HreTeamViewModel => {
+    if (!read || unitPowerLoading) return { status: "loading" }
+    if (read.status === "error") return { status: "error", retry }
+    const team = buildHreTeam({
+      plan,
+      alliance: input.alliance,
+      featuredCharacterId: input.featuredCharacterId,
+      roster: read.roster,
+      catalog: read.catalog,
+      summoners,
+      unitPower,
+    })
+    return team ? { status: "ready", team } : { status: "hidden" }
   })
-  return team ? { status: "ready", team } : { status: "hidden" }
 }
