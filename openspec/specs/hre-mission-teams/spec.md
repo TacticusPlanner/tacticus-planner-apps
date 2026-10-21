@@ -2,13 +2,13 @@
 
 ## Purpose
 
-Suggests teams from the player's synced roster for the current HRE mission: one Campaign team for the objectives played by hand, and one team for each token mode the mission spends.
+Suggests teams from the player's synced roster for the current HRE mission: a team per campaign for the objectives played by hand, and one team for each token mode the mission spends.
 
 ## Requirements
 
-### Requirement: The mission's manual objectives share one campaign team
+### Requirement: The mission's manual objectives share a team per campaign
 
-When the current mission has open objectives that only progress in battles played by hand, the tab SHALL suggest one "Campaign team" from the synced roster for all of them, built in Power mode with the shared team engine, to fight the list of battles by hand. The team SHALL follow the strictest rule among those objectives, in this order:
+When the current mission has open objectives that only progress in battles played by hand, the tab SHALL suggest, under the list of battles to fight by hand, one team for all of them per group of listed nodes whose campaigns allow the same allied factions, titled "Team for" and the group's campaigns. Each team SHALL hold only units of those factions, at most the group's largest deployment slot count, built in Power mode with the shared team engine, so it can deploy on every node of its group (Severyn, 2026-10). The team SHALL follow the strictest rule among those objectives, in this order:
 
 1. **Featured hero** (`useAbilitiesFeatured`, `featuredDamage`): the featured hero leads the team when the player has unlocked them.
 2. **Alliance** (`winWithAllianceLineup`, `useAbilitiesAlliance`, `killWithAlliance`): only units of the featured hero's alliance.
@@ -19,6 +19,11 @@ When the current mission has open objectives that only progress in battles playe
 7. **Strongest** (kills, damage, ability damage, a damage type, healing): the strongest units.
 
 Severyn chose one combined team (2026-10): no mission's two objectives ask for teams that cannot be one, so the teams split only if a future mission's pair is incompatible. Teams hold characters only: Machines of War don't count toward ability uses.
+
+#### Scenario: Nodes from two campaigns
+
+- **GIVEN** the list holds Indomitus nodes (Imperial factions, 5 slots) and Octarius nodes (Orks, 4 slots)
+- **THEN** a "Team for Indomitus" card holds only units of Indomitus's allied factions, and a "Team for Octarius" card holds up to 4 Orks
 
 #### Scenario: All-Xenos mission
 
@@ -38,7 +43,7 @@ Severyn chose one combined team (2026-10): no mission's two objectives ask for t
 #### Scenario: Melee kills
 
 - **GIVEN** mission 19 with its melee kills open
-- **THEN** the Campaign team holds the 5 strongest units without a ranged attack
+- **THEN** each campaign team holds the strongest deployable units without a ranged attack
 
 #### Scenario: Featured hero locked
 
@@ -65,17 +70,17 @@ Besides those cards:
 #### Scenario: Mission 7
 
 - **GIVEN** mission 7 with 0 / 2 Salvage Runs and 0 / 20 alliance ability uses
-- **THEN** a Campaign team and a Salvage Run team are shown, both of the featured hero's alliance
+- **THEN** campaign teams and a Salvage Run team are shown, both of the featured hero's alliance
 
 #### Scenario: Mission 7 after the Salvage Runs
 
 - **GIVEN** mission 7 with 2 / 2 Salvage Runs and the ability uses open
-- **THEN** only the Campaign team is shown, with the featured hero's alliance
+- **THEN** only the campaign teams are shown, with the featured hero's alliance
 
 #### Scenario: Mission 8
 
 - **GIVEN** mission 8 with both objectives open
-- **THEN** a Campaign team and a Guild Raid team of the player's strongest units are shown
+- **THEN** campaign teams and a Guild Raid team of the player's strongest units are shown
 
 #### Scenario: Mission 9
 
@@ -90,7 +95,7 @@ Besides those cards:
 #### Scenario: Mission 15 with Arena battles open
 
 - **GIVEN** mission 15 with 0 of 4 Arena battles and 0 of 150 ability uses
-- **THEN** a Campaign team, an Arena team and an Onslaught pool are shown
+- **THEN** campaign teams, an Arena team and an Onslaught pool are shown
 
 #### Scenario: Mission 6 Arena surplus
 
@@ -136,7 +141,7 @@ While the current mission's `heal` objective is open, the team SHALL include the
 
 ### Requirement: HRE teams take a running HSE into account
 
-While a personal Home Screen Event runs and scores in a team's mode (the campaign for the Campaign team), the HRE mission team SHALL rank the units that score for it first, after the mission's own rule and preferences, and the card SHALL say how many of its units also score for it.
+While a personal Home Screen Event runs and scores in a team's mode (the campaign for the campaign teams), the HRE mission team SHALL rank the units that score for it first, after the mission's own rule and preferences, and the card SHALL say how many of its units also score for it.
 
 #### Scenario: Psyker Boost during mission 15
 

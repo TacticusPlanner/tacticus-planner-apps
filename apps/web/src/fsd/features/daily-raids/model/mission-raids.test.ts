@@ -158,7 +158,7 @@ describe("planMissionRaids", () => {
     expect(plan.rows[0]?.goal?.resourceId).toBe("upgArmC003")
   })
 
-  it("prefers a cheaper node over a goal node", () => {
+  it("puts a goal node first, even over a cheaper node", () => {
     const plan = planMissionRaids(
       base({
         battles: [
@@ -169,7 +169,7 @@ describe("planMissionRaids", () => {
         goalNodesByBattle: new Map([[id("FoCM09"), goal("upgArmC003")]]),
       })
     )
-    expect(plan.rows.map((row) => row.battleId)).toEqual(["I28"])
+    expect(plan.rows.map((row) => row.battleId)).toEqual(["FoCM09"])
   })
 
   it("skips a node that no longer fits the budget", () => {

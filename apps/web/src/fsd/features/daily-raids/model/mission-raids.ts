@@ -58,6 +58,14 @@ type MissionRaidRow = {
   goal: MissionGoalNode | null
   /** Points these raids earn in the running Home Screen Event; 0 without one. */
   eventPoints: number
+  /** Who may deploy there, for the team that fights it by hand. */
+  deploy?: MissionDeploy
+}
+
+/** A node's deployment rules: the allied factions its campaign lets you field and its slots. */
+export type MissionDeploy = {
+  factions: readonly string[]
+  slots: number
 }
 
 type MissionRaidsEmptyReason =
@@ -111,6 +119,7 @@ export type MissionRaidBattle = Pick<Battle, "energyCost" | "dailyAttempts"> & {
   lightningCondition?: boolean
   /** The node's enemy power: HRE campaign points grow with it (the wiki's points formula). */
   enemyPower?: number
+  deploy?: MissionDeploy
 }
 
 export type PlanMissionRaidsInput = MissionRaidsRequest & {
@@ -153,13 +162,14 @@ function compareCandidates(
   return (a, b) => {
     const goalA = goalNodes.get(a.id)
     const goalB = goalNodes.get(b.id)
+    // Nodes that feed a goal come first of all (Severyn, 2026-10), then the cheapest.
     return (
+      Number(!goalA) - Number(!goalB) ||
       a.energyCost - b.energyCost ||
       descending(points(a), points(b)) ||
       Number(a.lightningCondition === false) -
         Number(b.lightningCondition === false) ||
       descending(a.enemyPower ?? 0, b.enemyPower ?? 0) ||
-      Number(!goalA) - Number(!goalB) ||
       descending(rate(a, goalA), rate(b, goalB)) ||
       descending(a.expectedGold, b.expectedGold) ||
       (goalA?.priority ?? 0) - (goalB?.priority ?? 0) ||
@@ -298,6 +308,8 @@ function planMissionBattles(
     )
     .sort(
       (a, b) =>
+        Number(!input.goalNodesByBattle.has(a.id)) -
+          Number(!input.goalNodesByBattle.has(b.id)) ||
         (request.preferLightning
           ? Number(a.lightningCondition === false) -
             Number(b.lightningCondition === false)
@@ -366,6 +378,7 @@ const row = (
   energy: raids * battle.energyCost,
   goal: input.goalNodesByBattle.get(battle.id) ?? null,
   eventPoints: raids * (input.eventPointsByBattle?.get(battle.id) ?? 0),
+  ...(battle.deploy ? { deploy: battle.deploy } : {}),
 })
 
 /** Gives each sorted candidate as many battles as its attempts left (less `usedAttempts`), the

@@ -36,6 +36,7 @@ export type {
   DailyRaidsReadyViewModel,
 } from "./model/daily-raids.domain"
 export type { TodaysAttempt } from "./model/daily-raids-energy"
+export type { MissionDeployGroup } from "./model/mission-deploy-groups"
 export { ResourceIconWithTooltip } from "./ui/resource-icon"
 export { LocationRow } from "./ui/location-row"
 // Shared by Dailies > Raids (Today) and Plan > Schedule, which live in different page slices.

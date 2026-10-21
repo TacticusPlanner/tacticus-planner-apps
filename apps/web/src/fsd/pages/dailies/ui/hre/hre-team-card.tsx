@@ -33,6 +33,7 @@ export function HreTeamCard({
   hero,
   hseEvent = null,
   testId = "hre-team",
+  title,
 }: {
   view: HreTeamViewModel
   plan: Pick<HreTeamPlan, "mode" | "reserve" | "preferPsychic"> | null
@@ -45,6 +46,8 @@ export function HreTeamCard({
   hseEvent?: string | null
   /** Distinguishes the cards when a mission has more than one team. */
   testId?: string
+  /** Replaces the title by mode (the campaigns a by-hand team can play). */
+  title?: string
 }) {
   const { t } = useTranslation(["hre", "teamRecs", "common"])
   if (view.status === "hidden") return null
@@ -56,11 +59,12 @@ export function HreTeamCard({
     <Card data-testid={testId}>
       <CardHeader>
         <CardTitle>
-          {mode
-            ? t("hre:teams.titleMode", { mode: modeName })
-            : plan
-              ? t("hre:teams.titleBattle")
-              : t("hre:teams.title")}
+          {title ??
+            (mode
+              ? t("hre:teams.titleMode", { mode: modeName })
+              : plan
+                ? t("hre:teams.titleBattle")
+                : t("hre:teams.title"))}
         </CardTitle>
         {view.status === "ready" && view.team.status !== "locked-hero" ? (
           <CardDescription data-testid="hre-team-rule">

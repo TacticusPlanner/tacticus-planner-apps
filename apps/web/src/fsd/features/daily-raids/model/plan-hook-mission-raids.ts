@@ -35,6 +35,8 @@ export function planHookMissionRaids(input: {
     type: string
     nodeNumber: number
     enemyPower?: number
+    alliesFactions?: readonly string[]
+    slots?: number
     rewards: {
       guaranteed: readonly { id: string; min: number; max: number }[]
       potential: readonly { id: string; effectiveRate: number | null }[]
@@ -76,6 +78,9 @@ export function planHookMissionRaids(input: {
       expectedGold: expectedGold(battle.rewards.guaranteed),
       lightningCondition: hasLightningCondition(battle),
       enemyPower: battle.enemyPower ?? 0,
+      ...(battle.alliesFactions && battle.slots
+        ? { deploy: { factions: battle.alliesFactions, slots: battle.slots } }
+        : {}),
       dropRates: new Map(
         battle.rewards.potential.map((reward) => [
           reward.id,

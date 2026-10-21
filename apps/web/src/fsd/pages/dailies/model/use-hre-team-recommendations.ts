@@ -53,7 +53,7 @@ async function readTeams(): Promise<HreTeamsRead> {
  * `hseTrackers` put its scoring units first in the token-mode teams.
  */
 export function useHreTeamRecommendations(input: {
-  plans: readonly HreTeamPlan[]
+  plans: readonly (HreTeamPlan & { factions?: readonly string[] })[]
   alliance: string | null
   featuredCharacterId: string | null
   hseTrackers?: readonly GameCatalogHseTracker[] | null

@@ -434,7 +434,7 @@ describe("HRE tab", () => {
     })
   })
 
-  it("suggests 5-slot battles, then a campaign team, an Arena team and an Onslaught pool for mission 15", () => {
+  it("suggests 5-slot battles, then an Arena team and an Onslaught pool for mission 15", () => {
     mocks.team = { status: "loading" }
     seed({ mission: 15, progress: [0, 0], order: 2 })
     renderHre()
@@ -445,9 +445,6 @@ describe("HRE tab", () => {
       },
     })
     expect(screen.getByTestId("hre-team")).toHaveTextContent(
-      "hre:teams.titleBattle"
-    )
-    expect(screen.getByTestId("hre-team-arena")).toHaveTextContent(
       "hre:teams.titleMode|mode=hre:tokens.modes.arena"
     )
     expect(screen.getByTestId("hre-team-onslaught")).toHaveTextContent(
@@ -464,10 +461,46 @@ describe("HRE tab", () => {
       missionRaids: { manual: { needs: [{ toGo: 7, per: "battle" }] } },
     })
     expect(
-      within(screen.getByTestId("hre-team-arena")).getByTestId(
-        "hre-team-reserve"
-      )
+      within(screen.getByTestId("hre-team")).getByTestId("hre-team-reserve")
     ).toHaveTextContent("hre:teams.reservePlay|have=7,play=3")
+  })
+
+  it("builds one campaign team per group of by-hand nodes, from only the factions they allow", () => {
+    mocks.team = { status: "loading" }
+    mocks.raids = {
+      status: "no-goals",
+      missionRaids: plan({
+        rows: [],
+        battlesLeft: 0,
+        battles: battles({
+          rows: [
+            {
+              ...row("I30", 6, 3),
+              deploy: { factions: ["Ultramarines"], slots: 5 },
+            },
+            { ...row("O10", 6, 2), deploy: { factions: ["Orks"], slots: 4 } },
+          ],
+        }),
+      }),
+      locationsByBattleId: new Map([
+        ["I30", { campaignName: "Indomitus" }],
+        ["O10", { campaignName: "Octarius" }],
+      ]),
+    }
+    seed({ mission: 17, progress: [0, 0] })
+    renderHre()
+    expect(mocks.teamArgs.at(-1)).toMatchObject({
+      plans: [
+        { mode: "battle", factions: ["Ultramarines"], size: 5 },
+        { mode: "battle", factions: ["Orks"], size: 4 },
+      ],
+    })
+    expect(screen.getByTestId("hre-campaign-team-0")).toHaveTextContent(
+      "hre:teams.titleCampaigns|campaigns=Indomitus"
+    )
+    expect(screen.getByTestId("hre-campaign-team-1")).toHaveTextContent(
+      "hre:teams.titleCampaigns|campaigns=Octarius"
+    )
   })
 
   it("hands a running HSE's trackers to the mission teams and names it on them", () => {

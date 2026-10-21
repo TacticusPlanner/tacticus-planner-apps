@@ -81,14 +81,15 @@ Assumptions:
 - **GIVEN** a campaign-type Raids Filter of Mirror only
 - **THEN** the 5-energy Indomitus nodes I15 to I29 and the no-drop I06 to I14 stay candidates
 
-### Requirement: Suggestions minimise energy, then serve goals, and fill to the limits
+### Requirement: Suggestions serve goals first, then minimise energy, and fill to the limits
 
-The suggestions SHALL use only candidates that drop something. Candidates SHALL be ordered by energy cost ascending. Within the same cost:
+The suggestions SHALL use only candidates that drop something. Candidates SHALL be ordered as follows:
 
-1. A node that drops a resource an in-scope goal still needs SHALL come first.
-2. Among those, a higher drop rate for the goal's resource SHALL come first, because common and uncommon materials drop more often. A higher average guaranteed gold comes next, then the goal's best priority.
-3. Other nodes SHALL be ordered by average guaranteed gold, descending.
-4. Battle id breaks any remaining tie.
+1. A node that drops a resource an in-scope goal still needs SHALL come first, whatever its energy cost (Severyn, 2026-10).
+2. Then energy cost ascending, then the event-point tie-breaks (see "Event points break ties among equal costs").
+3. Among goal nodes, a higher drop rate for the goal's resource SHALL come next, because common and uncommon materials drop more often. A higher average guaranteed gold comes next, then the goal's best priority.
+4. Other nodes SHALL be ordered by average guaranteed gold, descending.
+5. Battle id breaks any remaining tie.
 
 Each node, in order, SHALL get as many raids as its attempts left, the remaining budget and the battles left for suggestions allow. A node that does not fit SHALL be skipped. Rows with 0 raids SHALL NOT be shown. A row whose node feeds a goal SHALL show the goal resource's icon with the player's "owned/target" for it, as on the HSE tab. The totals of raids and energy SHALL be shown, and the energy total SHALL NOT exceed the budget.
 
@@ -113,10 +114,15 @@ Each node, in order, SHALL get as many raids as its attempts left, the remaining
 - **GIVEN** goals need a common material dropped by Fall of Cadia Mirror 9 and a legendary material dropped by Fall of Cadia Mirror 71, both 6 energy
 - **THEN** Mirror 9 is listed first, because the common material drops more often
 
-#### Scenario: Cheaper node first
+#### Scenario: Cheaper node first among goal nodes
 
-- **GIVEN** Indomitus 28 (5 energy) and Fall of Cadia Mirror 9 (6 energy) both drop `upgArmC003`
+- **GIVEN** Indomitus 28 (5 energy) and Fall of Cadia Mirror 9 (6 energy) both drop `upgArmC003`, which a goal needs
 - **THEN** Indomitus 28 is filled before Mirror 9
+
+#### Scenario: Goal node before a cheaper node
+
+- **GIVEN** a goal needs `upgArmC003`, dropped by Fall of Cadia Mirror 9 (6 energy), and Indomitus 20 (3 energy) drops nothing a goal needs
+- **THEN** Mirror 9 is filled first
 
 #### Scenario: Budget runs out first
 
@@ -211,7 +217,7 @@ Every open objective that only progresses in battles played by hand (kills, dama
 - **Alliance kills, alliance ability uses, all-alliance wins, the featured hero's ability uses or damage:** only nodes where the featured hero's alliance can deploy.
 - **Faction kills:** only nodes with that faction's enemies (see "Faction kills get their own list of battles").
 
-These limits replace the Raids Filters' slot and allies-alliance choices for this list; the other Raids Filters still apply. The list SHALL estimate what one battle counts toward each objective: the node's enemy total for kills, its enemies of the faction for faction kills, its enemies' total health for damage, 5 uses for ability uses, and 1 for the featured hero's ability uses and for wins. Nodes that count nothing toward an estimated objective SHALL be left out. Nodes SHALL be ordered by what they count per energy for the first estimated objective, so the fewest battles are needed, then as raids are (including the event-point tie-breaks), and filled until every estimated objective is covered, within the attempts left and today's energy left; the raids get the energy and attempts the list leaves. When no objective can be estimated (ability damage, a damage type, the featured hero's damage, healing), the list SHALL show the 3 best nodes by enemy health per energy with their energy per battle, and say to play them until the objective is done. The list's note SHALL say that raids don't count these objectives, name the limits that apply, say whether the counts are estimates, and say that Arena and Onslaught battles count too. When more battles are needed than today's energy allows, the list SHALL say so.
+These limits replace the Raids Filters' slot and allies-alliance choices for this list; the other Raids Filters still apply. The list SHALL estimate what one battle counts toward each objective: the node's enemy total for kills, its enemies of the faction for faction kills, its enemies' total health for damage, 5 uses for ability uses, and 1 for the featured hero's ability uses and for wins. Nodes that count nothing toward an estimated objective SHALL be left out. Nodes that drop a resource an in-scope goal still needs SHALL come first; then nodes SHALL be ordered by what they count per energy for the first estimated objective, so the fewest battles are needed, then as raids are (including the event-point tie-breaks), and filled until every estimated objective is covered, within the attempts left and today's energy left; the raids get the energy and attempts the list leaves. When no objective can be estimated (ability damage, a damage type, the featured hero's damage, healing), the list SHALL show the 3 best nodes by enemy health per energy with their energy per battle, and say to play them until the objective is done. The list's note SHALL say that raids don't count these objectives, name the limits that apply, say whether the counts are estimates, and say that Arena and Onslaught battles count too. When more battles are needed than today's energy allows, the list SHALL say so.
 
 While the mission's `campaignWins` objective is also open, each battle won by hand SHALL also count as a campaign win, so the raids to go SHALL drop by the battles in the list, and the note SHALL say so; when they cover every win still needed, the raids SHALL say the battles above cover them.
 
@@ -290,7 +296,7 @@ Assumptions:
 
 ### Requirement: Event points break ties among equal costs
 
-Among nodes of the same energy cost, the HRE suggestions SHALL put first, in order: the running Home Screen Event's points per raid, descending, when one with a raid-point rule runs; then nodes with a lightning-victory condition; then higher enemy power, because the HRE scores both; and then the goal, drop-rate and gold order. Energy cost SHALL stay the first key. Severyn approved the lightning and enemy-power keys after the wiki check (2026-10).
+Among nodes that equally feed goals or not, and of the same energy cost, the HRE suggestions SHALL put first, in order: the running Home Screen Event's points per raid, descending, when one with a raid-point rule runs; then nodes with a lightning-victory condition; then higher enemy power, because the HRE scores both; and then the drop-rate and gold order. Feeding a goal, then energy cost, SHALL stay the first keys. Severyn approved the lightning and enemy-power keys after the wiki check (2026-10).
 
 Assumptions:
 
