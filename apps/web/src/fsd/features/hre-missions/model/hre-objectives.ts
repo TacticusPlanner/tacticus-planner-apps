@@ -11,136 +11,152 @@ const CAMPAIGN_KINDS: ReadonlySet<HreObjectiveKind> = new Set([
   "campaignRaids",
 ])
 
-/** The current mission's open objective the raid list serves, if any. */
-export type HreRaidObjective = {
-  missionNumber: number
+/** What one battle fought by hand counts toward a manual objective, or null when the page cannot
+ * estimate it (ability damage, a damage type, the featured hero's damage, healing). */
+type HreBattleYield =
+  "battle" | "abilityUses" | "enemies" | "factionEnemies" | "enemyHealth"
+
+/** An open objective that only progresses in battles played by hand (raids count no kills, damage
+ * or ability uses: Severyn, 2026-10). */
+type HreManualNeed = {
   objective: HreObjective
-  battlesToGo: number
-  /** Lightning victories count event-campaign raids only. */
-  eventOnly: boolean
-  /** "battles" lists nodes to battle by hand (abilities only count in a fought battle). */
-  kind: "raids" | "battles"
-  /** Only nodes with this many deployment slots, when set. */
-  slots?: number
-  /** The objective needs an all-alliance team (the featured hero's alliance). */
-  allianceTeam: boolean
-  /** Only nodes where the featured hero's alliance can deploy: an all-alliance team, or the
-   * mission's other open objective needs alliance units or the featured hero. */
-  allianceNodes: boolean
-  /** The mission's open faction-kill objective, for a separate list of nodes with those enemies. */
-  enemyFaction: { faction: string; killsToGo: number } | null
+  /** Left to go, in the objective's own unit (kills, uses, wins, damage). */
+  toGo: number
+  per: HreBattleYield | null
 }
 
-/** Open objectives that only progress on nodes where the featured hero's alliance can deploy. */
+/** The current mission's campaign suggestions: raids for its raid objective and battles to fight by
+ * hand for its manual objectives (hre-campaign-raids). */
+export type HreCampaignPlan = {
+  missionNumber: number
+  /** The open campaign-win, campaign-raid or lightning objective, served by raids. */
+  raids: {
+    objective: HreObjective
+    battlesToGo: number
+    /** Lightning victories count event-campaign raids only. */
+    eventOnly: boolean
+  } | null
+  /** One list for every open manual objective: the mission's pairs all fit one team (design D9). */
+  battles: {
+    needs: HreManualNeed[]
+    /** Only nodes with this many deployment slots: every ability use counts with a full team. */
+    slots?: number
+    /** Only nodes where the featured hero's alliance can deploy (alliance or featured-hero
+     * objectives). */
+    alliance: boolean
+    /** Only nodes with this faction's enemies (faction kills). */
+    faction: string | null
+    /** Lightning victories are open: nodes with a lightning condition come first. */
+    preferLightning: boolean
+    /** Campaign wins are open: each battle won by hand counts as one, so fewer raids are needed. */
+    countsAsWins: boolean
+  } | null
+}
+
+const RAID_KINDS: ReadonlySet<HreObjectiveKind> = new Set([
+  "campaignWins",
+  "campaignRaids",
+  "lightningVictories",
+])
+
+/** What one hand-fought battle yields per manual kind; absent kinds are raid or token objectives. */
+const MANUAL_YIELD: Partial<Record<HreObjectiveKind, HreBattleYield | null>> = {
+  killEnemies: "enemies",
+  killWithMelee: "enemies",
+  killWithRanged: "enemies",
+  killWithAlliance: "enemies",
+  killFaction: "factionEnemies",
+  damage: "enemyHealth",
+  abilityDamage: null,
+  damageType: null,
+  featuredDamage: null,
+  heal: null,
+  useAbilities: "abilityUses",
+  useAbilitiesAlliance: "abilityUses",
+  useAbilitiesFeatured: "battle",
+  winWithoutSummons: "battle",
+  winWithAllianceLineup: "battle",
+}
+
+/** Manual objectives that only progress where the featured hero's alliance (or the hero) deploys. */
 const ALLIANCE_NODE_KINDS: ReadonlySet<HreObjectiveKind> = new Set([
   "killWithAlliance",
+  "useAbilitiesAlliance",
+  "winWithAllianceLineup",
   "useAbilitiesFeatured",
   "featuredDamage",
 ])
 
-/** Ability uses a fought battle with five units yields, for `useAbilitiesAlliance`: one each, as
- * Severyn confirmed (mission 7 at 12 / 20 still needs 2 battles). */
-const ABILITY_USES_PER_BATTLE = 5
-/** A full all-alliance team, so every slot's abilities count; for any units, a full raid team. */
 const FULL_TEAM_SLOTS = 5
 
-/**
- * The objective the raid suggestions fill. A lightning-victory objective comes first, because its
- * event-campaign raids also count as campaign wins; then the campaign objective; then an
- * all-alliance lineup's wins, as battles fought by hand (raids have no lineup, so they cannot count);
- * then the alliance ability uses, as battles fought by hand on 5-slot nodes; then any units' ability
- * uses, as raids on 5-slot nodes, five uses a raid (mission 15, and mission 3 once its wins are done). The mission's other
- * objective restricts the nodes too: alliance kills or the featured hero keep them to where the
- * alliance deploys, and faction kills add a list of nodes with that faction's enemies.
- */
-export function selectRaidObjective(
-  state: HreProgress
-): HreRaidObjective | null {
-  if (state.mission >= HRE_ALL_DONE) return null
-  const mission = hreMission(state.mission)
-  const open = mission.objectives
-    .map((objective, index) => ({
+/** Whether an objective only progresses in battles played by hand. */
+export const isManualObjective = (kind: HreObjectiveKind) =>
+  kind in MANUAL_YIELD
+
+/** The current mission's open objectives with what is left of each. */
+function openObjectives(state: HreProgress) {
+  return hreMission(state.mission)
+    .objectives.map((objective, index) => ({
       objective,
-      battlesToGo: objective.target - state.progress[index]!,
+      toGo: objective.target - state.progress[index]!,
     }))
-    .filter((item) => item.battlesToGo > 0)
-  const factionKills = open.find(
-    (item) => item.objective.kind === "killFaction"
-  )
-  const enemyFaction = factionKills?.objective.qualifier
-    ? {
-        faction: factionKills.objective.qualifier,
-        killsToGo: factionKills.battlesToGo,
-      }
-    : null
-  const lightning = open.find(
-    (item) => item.objective.kind === "lightningVictories"
-  )
-  const campaign = open.find((item) => CAMPAIGN_KINDS.has(item.objective.kind))
-  const raidPick = lightning ?? campaign
-  if (raidPick) {
-    return {
-      missionNumber: mission.number,
-      objective: raidPick.objective,
-      battlesToGo: raidPick.battlesToGo,
-      eventOnly: raidPick === lightning,
-      kind: "raids",
-      allianceTeam: false,
-      allianceNodes: open.some((item) =>
-        ALLIANCE_NODE_KINDS.has(item.objective.kind)
-      ),
-      enemyFaction,
-    }
-  }
-  const lineup = open.find(
-    (item) => item.objective.kind === "winWithAllianceLineup"
-  )
-  if (lineup) {
-    return {
-      missionNumber: mission.number,
-      objective: lineup.objective,
-      battlesToGo: lineup.battlesToGo,
-      eventOnly: false,
-      kind: "battles",
-      allianceTeam: true,
-      allianceNodes: true,
-      enemyFaction,
-    }
-  }
-  const abilities = open.find(
-    (item) => item.objective.kind === "useAbilitiesAlliance"
-  )
-  if (!abilities) {
-    const anyAbilities = open.find(
-      (item) => item.objective.kind === "useAbilities"
-    )
-    if (!anyAbilities) return null
-    return {
-      missionNumber: mission.number,
-      objective: anyAbilities.objective,
-      battlesToGo: Math.ceil(
-        anyAbilities.battlesToGo / ABILITY_USES_PER_BATTLE
-      ),
-      eventOnly: false,
-      kind: "raids",
-      slots: FULL_TEAM_SLOTS,
-      allianceTeam: false,
-      allianceNodes: open.some((item) =>
-        ALLIANCE_NODE_KINDS.has(item.objective.kind)
-      ),
-      enemyFaction,
-    }
-  }
+    .filter((item) => item.toGo > 0)
+}
+
+/**
+ * The campaign suggestions for the current mission. Its campaign-win, campaign-raid or lightning
+ * objective gets raids (any node: raids count only battles, never kills or ability uses). Its open
+ * manual objectives get one list of battles to fight by hand, kept to the nodes they need: full
+ * 5-slot teams for ability uses, the featured hero's alliance for alliance and featured-hero
+ * objectives, the faction for faction kills. Summon-free wins (mission 6) leave out the wins the
+ * Arena tokens above a later mission's reserve can play (`arenaSurplus`).
+ */
+export function selectCampaignPlan(
+  state: HreProgress,
+  arenaSurplus = 0
+): HreCampaignPlan | null {
+  if (state.mission >= HRE_ALL_DONE) return null
+  const open = openObjectives(state)
+  const raid = open.find((item) => RAID_KINDS.has(item.objective.kind))
+  const needs = open.flatMap((item): HreManualNeed[] => {
+    const kind = item.objective.kind
+    if (!isManualObjective(kind)) return []
+    const toGo =
+      kind === "winWithoutSummons"
+        ? item.toGo - Math.max(0, arenaSurplus)
+        : item.toGo
+    return toGo > 0
+      ? [{ objective: item.objective, toGo, per: MANUAL_YIELD[kind] ?? null }]
+      : []
+  })
+  if (!raid && needs.length === 0) return null
+  const has = (kinds: readonly HreObjectiveKind[]) =>
+    needs.some((need) => kinds.includes(need.objective.kind))
+  const faction = needs.find((need) => need.objective.kind === "killFaction")
   return {
-    missionNumber: mission.number,
-    objective: abilities.objective,
-    battlesToGo: Math.ceil(abilities.battlesToGo / ABILITY_USES_PER_BATTLE),
-    eventOnly: false,
-    kind: "battles",
-    slots: FULL_TEAM_SLOTS,
-    allianceTeam: true,
-    allianceNodes: true,
-    enemyFaction,
+    missionNumber: state.mission,
+    raids: raid
+      ? {
+          objective: raid.objective,
+          battlesToGo: raid.toGo,
+          eventOnly: raid.objective.kind === "lightningVictories",
+        }
+      : null,
+    battles:
+      needs.length > 0
+        ? {
+            needs,
+            ...(has(["useAbilities", "useAbilitiesAlliance"])
+              ? { slots: FULL_TEAM_SLOTS }
+              : {}),
+            alliance: needs.some((need) =>
+              ALLIANCE_NODE_KINDS.has(need.objective.kind)
+            ),
+            faction: faction?.objective.qualifier ?? null,
+            preferLightning: raid?.objective.kind === "lightningVictories",
+            countsAsWins: raid?.objective.kind === "campaignWins",
+          }
+        : null,
   }
 }
 
@@ -217,6 +233,29 @@ export function tokenNeeds(state: HreProgress): Record<HreTokenMode, number> {
     })
   }
   return needs
+}
+
+/** Whether an objective spends a token mode's tokens. */
+export const isTokenObjective = (kind: HreObjectiveKind) =>
+  HRE_TOKEN_MODES.some((mode) => TOKEN_KIND[mode] === kind)
+
+/** The first token mission after `missionNumber`, with the tokens it needs, for the reserve tip shown
+ * on the missions before it (a token mission's own tip would tell you to keep what it spends). */
+export function nextTokenReserve(
+  missionNumber: number
+): { mode: HreTokenMode; tokens: number; missionNumber: number } | null {
+  for (const mission of HRE_MISSIONS) {
+    if (mission.number <= missionNumber) continue
+    for (const objective of mission.objectives) {
+      const mode = HRE_TOKEN_MODES.find(
+        (item) => TOKEN_KIND[item] === objective.kind
+      )
+      if (mode) {
+        return { mode, tokens: objective.target, missionNumber: mission.number }
+      }
+    }
+  }
+  return null
 }
 
 export type HreTokenNeedRow = {

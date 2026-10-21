@@ -105,7 +105,8 @@ export type HseEventPointsState =
   | { status: "no-data" }
   | { status: "ready"; details: HseDetailsView; projection: HseProjectionView }
 
-const CAMPAIGN_MODES = [
+/** Every campaign game mode an HSE tracker can restrict itself to. */
+export const HSE_CAMPAIGN_MODES = [
   "Campaign",
   "MirrorCampaign",
   "EliteCampaign",
@@ -178,7 +179,7 @@ function projectionView(
         ) && restrictsEnemies(tracker.enemy)
     ),
     scoresInCampaign: variant.trackers.some((tracker) =>
-      CAMPAIGN_MODES.some((mode) =>
+      HSE_CAMPAIGN_MODES.some((mode) =>
         hseRestrictionPasses(tracker.gameModes, mode)
       )
     ),

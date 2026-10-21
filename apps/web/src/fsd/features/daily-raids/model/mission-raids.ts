@@ -10,18 +10,36 @@ import {
 } from "@/features/goal-farming/@x/daily-raids"
 import type { Battle } from "@/shared/lib"
 
-/** What a campaign mission objective asks of the raid list (see hre-campaign-raids). */
+/** What one battle fought by hand counts toward a manual objective (see hre-campaign-raids). */
+type MissionBattleYield =
+  "battle" | "abilityUses" | "enemies" | "factionEnemies" | "enemyHealth"
+
+/** The current HRE mission's manual objectives: battles to fight by hand, since raids count no kills,
+ * damage or ability uses. */
+export type MissionBattlesRequest = {
+  /** Each open manual objective: what is left, and what one battle yields toward it (null: the page
+   * cannot estimate it, so the list is open-ended unless another objective is quantified). */
+  needs: readonly { toGo: number; per: MissionBattleYield | null }[]
+  /** Only nodes with this many deployment slots (a full team), when set. */
+  slots?: number
+  /** Only nodes where this alliance can deploy, when set. */
+  alliance?: string
+  /** Only nodes with this faction's enemies, when set. */
+  faction?: string
+  /** Nodes with a lightning-victory condition first (lightning victories are open). */
+  preferLightning: boolean
+  /** Each battle won by hand also counts toward the raid objective (campaign wins). */
+  countsAsRaids: boolean
+}
+
+/** What a campaign mission's objectives ask of the HRE lists (see hre-campaign-raids). */
 export type MissionRaidsRequest = {
-  /** Battles still needed for the current mission's objective. */
+  /** Raids still needed for the current mission's campaign or lightning objective (0: none). */
   battlesToGo: number
   /** Lightning victories: only event-campaign nodes count, so only they are suggested. */
   eventOnly: boolean
-  /** Only nodes with this many deployment slots (a full team), when set. */
-  slots?: number
-  /** Only nodes where this alliance can deploy (an all-alliance objective), when set. */
-  alliance?: string
-  /** A faction-kill objective: a separate list of nodes with that faction's enemies, when set. */
-  enemyFaction?: { faction: string; killsToGo: number }
+  /** The mission's manual objectives, when any is open. */
+  manual?: MissionBattlesRequest
 }
 
 /** The best-priority goal a node feeds, for the tie-break among equal energy costs. */
@@ -65,10 +83,20 @@ export type MissionRaidPlan = {
   outlookNodes: Pick<Battle, "energyCost" | "dailyAttempts">[]
   /** The Planning Settings daily energy, for the outlook. */
   dailyEnergy: number
-  /** For a faction-kill objective: nodes with that faction's enemies, most enemies first, any campaign
-   * (only nodes with a lightning condition while lightning victories are open),
-   * filled until their enemies cover the kills still needed, with the energy `rows` leave. */
-  factionRows: MissionRaidRow[]
+  /** The battles to fight by hand for the manual objectives, filled first; null without any. */
+  battles: MissionBattlesPlan | null
+}
+
+export type MissionBattlesPlan = {
+  /** Nodes to fight by hand, in suggestion order. Open-ended rows (no estimate) have 0 battles. */
+  rows: MissionRaidRow[]
+  totalBattles: number
+  totalEnergy: number
+  /** No objective has an estimate per battle: the rows are the best nodes, fought until done. */
+  openEnded: boolean
+  /** Some objective still needs battles once today's suggestions are done. */
+  moreNeeded: boolean
+  empty: MissionRaidsEmptyReason | null
 }
 
 export type MissionRaidBattle = Pick<Battle, "energyCost" | "dailyAttempts"> & {
@@ -81,6 +109,8 @@ export type MissionRaidBattle = Pick<Battle, "energyCost" | "dailyAttempts"> & {
   /** False for a node with no lightning-victory condition (Indomitus below node 19); absent means
    * it has one. */
   lightningCondition?: boolean
+  /** The node's enemy power: HRE campaign points grow with it (the wiki's points formula). */
+  enemyPower?: number
 }
 
 export type PlanMissionRaidsInput = MissionRaidsRequest & {
@@ -95,17 +125,19 @@ export type PlanMissionRaidsInput = MissionRaidsRequest & {
   /** Points one raid of a node earns in the running Home Screen Event, when one with a raid rule
    * runs: among equal energy costs, nodes earning more come first, so both events progress. */
   eventPointsByBattle?: ReadonlyMap<BattleId, number>
-  /** Kills one raid of a node yields toward `enemyFaction`: its enemy count when that faction is
-   * among its enemies, else 0. */
-  factionKillsPerRaid?: (battleId: BattleId) => number
+  /** Whether a node may be fought by hand for `battles` (the Raids Filters plus its slots, alliance
+   * and faction). */
+  passesBattlesFilter?: (battleId: BattleId) => boolean
+  /** What one battle of a node fought by hand yields toward a manual objective. */
+  battleYield?: (battleId: BattleId, per: MissionBattleYield) => number
 }
 
 const compareIds = (a: string, b: string) => (a < b ? -1 : a > b ? 1 : 0)
 const descending = (a: number, b: number) => b - a
 
 /**
- * Suggestion order: energy cost; then more points in a running Home Screen Event; then a node
- * feeding an in-scope goal; among those, the higher drop rate of the goal's resource (common and
+ * Suggestion order: energy cost; then more points in a running Home Screen Event; then more HRE
+ * points (a lightning-victory condition, then more enemy power); then a node feeding an in-scope goal; among those, the higher drop rate of the goal's resource (common and
  * uncommon drop more often), then more gold, then the goal's priority; other nodes by gold; then
  * battle id.
  */
@@ -124,6 +156,9 @@ function compareCandidates(
     return (
       a.energyCost - b.energyCost ||
       descending(points(a), points(b)) ||
+      Number(a.lightningCondition === false) -
+        Number(b.lightningCondition === false) ||
+      descending(a.enemyPower ?? 0, b.enemyPower ?? 0) ||
       Number(!goalA) - Number(!goalB) ||
       descending(rate(a, goalA), rate(b, goalB)) ||
       descending(a.expectedGold, b.expectedGold) ||
@@ -133,21 +168,41 @@ function compareCandidates(
   }
 }
 
+/** Open-ended lists (no estimate per battle) show this many of the best nodes. */
+const OPEN_ENDED_NODES = 3
+
 /**
- * Where to raid today so the current HRE mission's campaign objective finishes with the least
- * energy left today. Today's plan is not counted: the battles still needed are filled over the
- * eligible nodes that drop something, in `compareCandidates` order, each getting as many raids as
- * its attempts, the budget and the battles left allow. A node that does not fit is
- * skipped, not a stop. The nodes that drop nothing get the same fill on their own, as an
- * alternative.
+ * Where to fight and raid today for the current HRE mission, with the least of today's energy.
+ * Today's plan is not counted. The manual objectives' battles to fight by hand come first
+ * (`planMissionBattles`); then the raid objective's battles still needed (less the battles won by
+ * hand, for campaign wins) are filled over the eligible nodes that drop something, in
+ * `compareCandidates` order, each getting as many raids as its attempts left, the budget left and
+ * the battles left allow. A node that does not fit is skipped, not a stop. The nodes that drop
+ * nothing get the same fill on their own, as an alternative.
  */
 export function planMissionRaids(
   input: PlanMissionRaidsInput
 ): MissionRaidPlan {
-  const battlesLeft = Math.max(0, Math.floor(input.battlesToGo))
   const energyBudget = Math.max(
     0,
     input.dailyEnergy - input.realEnergyUsedToday
+  )
+  const sort = compareCandidates(
+    input.goalNodesByBattle,
+    input.eventPointsByBattle
+  )
+  const battles = input.manual
+    ? planMissionBattles(input, input.manual, energyBudget, sort)
+    : null
+  const spent = battles?.totalEnergy ?? 0
+  const raidBudget = energyBudget - spent
+  const usedAttempts = new Map(
+    (battles?.rows ?? []).map((row) => [row.battleId, row.raids])
+  )
+  const battlesLeft = Math.max(
+    0,
+    Math.floor(input.battlesToGo) -
+      (input.manual?.countsAsRaids ? (battles?.totalBattles ?? 0) : 0)
   )
 
   const raidable = (battle: MissionRaidBattle) =>
@@ -166,38 +221,16 @@ export function planMissionRaids(
     .filter((battle) => battle.energyCost > 0 && input.passesFilter(battle.id))
     .map(({ energyCost, dailyAttempts }) => ({ energyCost, dailyAttempts }))
 
-  const sort = compareCandidates(
-    input.goalNodesByBattle,
-    input.eventPointsByBattle
-  )
   const fillFrom = (candidates: readonly MissionRaidBattle[]) =>
-    fill([...candidates].sort(sort), energyBudget, battlesLeft, input)
+    fill(
+      [...candidates].sort(sort),
+      raidBudget,
+      [{ left: battlesLeft, weightOf: () => 1 }],
+      input,
+      usedAttempts
+    )
   const noDropRows =
-    battlesLeft > 0 && energyBudget > 0 ? fillFrom(noDropPool).rows : []
-
-  // Nodes with the faction's enemies, outside the main list, with the energy it leaves; each raid
-  // counts the node's enemies toward the kills still needed, so the most enemies come first (the
-  // fewest raids), then the usual order.
-  const factionFill = (rows: readonly MissionRaidRow[]): MissionRaidRow[] => {
-    const killsOf = input.factionKillsPerRaid
-    const killsToGo = input.enemyFaction?.killsToGo ?? 0
-    if (!killsOf || killsToGo <= 0) return []
-    const used = new Set(rows.map((row) => row.battleId))
-    const spent = rows.reduce((total, row) => total + row.energy, 0)
-    const candidates = input.battles
-      .filter(
-        (battle) =>
-          battle.energyCost > 0 &&
-          !used.has(battle.id) &&
-          input.passesFilter(battle.id) &&
-          killsOf(battle.id) > 0 &&
-          // With lightning victories open, each raid should serve both objectives.
-          (!input.eventOnly || battle.lightningCondition !== false)
-      )
-      .sort((a, b) => killsOf(b.id) - killsOf(a.id) || sort(a, b))
-    return fill(candidates, energyBudget - spent, killsToGo, input, killsOf)
-      .rows
-  }
+    battlesLeft > 0 && raidBudget > 0 ? fillFrom(noDropPool).rows : []
 
   const done = (
     rows: MissionRaidRow[],
@@ -215,62 +248,173 @@ export function planMissionRaids(
       noDropRows,
       outlookNodes,
       dailyEnergy: input.dailyEnergy,
-      factionRows: factionFill(rows),
+      battles,
     }
   }
 
+  if (battlesLeft <= 0) return done([], null)
   if (input.eventOnly && !input.battles.some((battle) => battle.isEvent)) {
     return done([], "no-event")
   }
   if (pool.length === 0) {
     return done([], unfiltered ? "filtered" : "no-candidates")
   }
-  if (energyBudget <= 0) return done([], "no-energy")
+  if (raidBudget <= 0) return done([], "no-energy")
 
   const { rows, attemptsBlocked } = fillFrom(pool)
   return done(rows, attemptsBlocked ? "no-attempts" : "no-energy")
 }
 
-/** Gives each sorted candidate as many raids as its attempts, the budget and the battles allow;
- * with `weightOf`, each raid counts that many toward `battlesLeft` (kills, for faction nodes). */
+/**
+ * The battles to fight by hand for the mission's manual objectives, over every node that passes
+ * `passesBattlesFilter` (drops or not: a kill counts anywhere). Nodes with a lightning condition
+ * come first while lightning victories are open; then the most of the first estimated objective
+ * per energy (the most enemies, enemy health or ability uses; for wins, the cheapest); then
+ * `compareCandidates`. Each node gets as many battles as its attempts, the budget and the
+ * objective still needing the most battles allow. Without any estimate, the best few nodes are
+ * listed open-ended, ranked by enemy health.
+ */
+function planMissionBattles(
+  input: PlanMissionRaidsInput,
+  request: MissionBattlesRequest,
+  energyBudget: number,
+  sort: (a: MissionRaidBattle, b: MissionRaidBattle) => number
+): MissionBattlesPlan {
+  const yieldOf = (battleId: BattleId, per: MissionBattleYield) =>
+    input.battleYield?.(battleId, per) ?? (per === "battle" ? 1 : 0)
+  const passes = input.passesBattlesFilter ?? input.passesFilter
+  const quantified = request.needs.flatMap((need) =>
+    need.per && need.toGo > 0 ? [{ toGo: need.toGo, per: need.per }] : []
+  )
+  const primary = quantified[0]?.per ?? "enemyHealth"
+  const efficiency = (battle: MissionRaidBattle) =>
+    yieldOf(battle.id, primary) / battle.energyCost
+  const candidates = input.battles
+    .filter(
+      (battle) =>
+        battle.energyCost > 0 &&
+        passes(battle.id) &&
+        quantified.every((need) => yieldOf(battle.id, need.per) > 0)
+    )
+    .sort(
+      (a, b) =>
+        (request.preferLightning
+          ? Number(a.lightningCondition === false) -
+            Number(b.lightningCondition === false)
+          : 0) ||
+        efficiency(b) - efficiency(a) ||
+        sort(a, b)
+    )
+  const plan = (
+    rows: MissionRaidRow[],
+    openEnded: boolean,
+    moreNeeded: boolean,
+    empty: MissionRaidsEmptyReason | null
+  ): MissionBattlesPlan => ({
+    rows,
+    totalBattles: rows.reduce((total, row) => total + row.raids, 0),
+    totalEnergy: rows.reduce((total, row) => total + row.energy, 0),
+    openEnded,
+    moreNeeded,
+    empty: rows.length > 0 ? null : empty,
+  })
+
+  if (quantified.length === 0) {
+    const rows = candidates
+      .filter(
+        (battle) =>
+          (input.attemptsLeftByBattle.get(battle.id) ?? 1) > 0 &&
+          battle.energyCost <= energyBudget
+      )
+      .slice(0, OPEN_ENDED_NODES)
+      .map((battle) => row(battle, 0, input))
+    return plan(
+      rows,
+      true,
+      false,
+      candidates.length === 0 ? "no-candidates" : "no-energy"
+    )
+  }
+  if (candidates.length === 0) return plan([], false, true, "no-candidates")
+  if (energyBudget <= 0) return plan([], false, true, "no-energy")
+  const needs = quantified.map((need) => ({
+    left: need.toGo,
+    weightOf: (battleId: BattleId) => yieldOf(battleId, need.per),
+  }))
+  const { rows, attemptsBlocked, left } = fill(
+    candidates,
+    energyBudget,
+    needs,
+    input
+  )
+  return plan(
+    rows,
+    false,
+    left.some((value) => value > 0),
+    attemptsBlocked ? "no-attempts" : "no-energy"
+  )
+}
+
+const row = (
+  battle: MissionRaidBattle,
+  raids: number,
+  input: PlanMissionRaidsInput
+): MissionRaidRow => ({
+  battleId: battle.id,
+  energyCost: battle.energyCost,
+  raids,
+  energy: raids * battle.energyCost,
+  goal: input.goalNodesByBattle.get(battle.id) ?? null,
+  eventPoints: raids * (input.eventPointsByBattle?.get(battle.id) ?? 0),
+})
+
+/** Gives each sorted candidate as many battles as its attempts left (less `usedAttempts`), the
+ * budget and the need still wanting the most battles allow; each battle counts `weightOf` toward
+ * its need (1 for raids; kills, uses or damage for battles by hand). */
 function fill(
   candidates: readonly MissionRaidBattle[],
   energyBudget: number,
-  battlesLeft: number,
+  needs: readonly {
+    left: number
+    weightOf: (battleId: BattleId) => number
+  }[],
   input: PlanMissionRaidsInput,
-  weightOf: (battleId: BattleId) => number = () => 1
-): { rows: MissionRaidRow[]; attemptsBlocked: boolean } {
+  usedAttempts: ReadonlyMap<BattleId, number> = new Map()
+): { rows: MissionRaidRow[]; attemptsBlocked: boolean; left: number[] } {
   let budget = energyBudget
-  let left = battlesLeft
+  const left = needs.map((need) => need.left)
   // An affordable node with no attempts left: an empty fill then means attempts ran out, not energy.
   let attemptsBlocked = false
   const rows: MissionRaidRow[] = []
   for (const battle of candidates) {
-    if (left <= 0) break
+    if (left.every((value) => value <= 0)) break
     const cap =
       input.attemptsLeftByBattle.get(battle.id) ??
       (battle.dailyAttempts > 0 ? battle.dailyAttempts : Infinity)
-    const attempts = cap
+    const attempts = cap - (usedAttempts.get(battle.id) ?? 0)
     if (attempts <= 0 && budget >= battle.energyCost) attemptsBlocked = true
-    const weight = weightOf(battle.id)
+    const wanted = Math.max(
+      0,
+      ...needs.map((need, index) => {
+        const weight = need.weightOf(battle.id)
+        return left[index]! > 0 && weight > 0
+          ? Math.ceil(left[index]! / weight)
+          : 0
+      })
+    )
     const raids = Math.min(
       attempts,
       Math.floor(budget / battle.energyCost),
-      Math.ceil(left / weight)
+      wanted
     )
     if (raids <= 0) continue
     budget -= raids * battle.energyCost
-    left -= raids * weight
-    rows.push({
-      battleId: battle.id,
-      energyCost: battle.energyCost,
-      raids,
-      energy: raids * battle.energyCost,
-      goal: input.goalNodesByBattle.get(battle.id) ?? null,
-      eventPoints: raids * (input.eventPointsByBattle?.get(battle.id) ?? 0),
+    needs.forEach((need, index) => {
+      left[index] = left[index]! - raids * need.weightOf(battle.id)
     })
+    rows.push(row(battle, raids, input))
   }
-  return { rows, attemptsBlocked }
+  return { rows, attemptsBlocked, left }
 }
 
 /**

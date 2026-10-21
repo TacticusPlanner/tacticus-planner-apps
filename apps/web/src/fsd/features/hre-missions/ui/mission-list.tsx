@@ -60,6 +60,7 @@ export function MissionList({
               </summary>
               <div className="mt-2 pl-24">
                 <ObjectiveTips
+                  missionNumber={mission.number}
                   objectives={mission.objectives}
                   testId={`${testId}-tips`}
                 />

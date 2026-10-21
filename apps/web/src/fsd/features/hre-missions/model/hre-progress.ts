@@ -1,4 +1,8 @@
-import { HRE_MISSIONS, hreMission } from "./hre-missions"
+import {
+  HRE_MISSIONS,
+  HRE_REORDERED_MISSIONS,
+  hreMission,
+} from "./hre-missions"
 
 /** The player's own record of one HRE instance, kept in this browser only. */
 export type HreProgress = {
@@ -15,6 +19,10 @@ export type HreProgress = {
 }
 
 export const HRE_ALL_DONE = HRE_MISSIONS.length + 1
+
+/** The objective order a stored entry's progress follows: 2 is the game's order; entries without it
+ * predate the reorder (`HRE_REORDERED_MISSIONS`). */
+export const HRE_PROGRESS_ORDER = 2
 
 export const DEFAULT_HRE_PROGRESS: HreProgress = {
   mission: 1,
@@ -49,10 +57,14 @@ export function parseHreProgress(value: unknown): HreProgress | null {
   if (!isRecord(value)) return null
   const mission = wholeAtLeast(value.mission, 1)
   if (mission === null || mission > HRE_ALL_DONE) return null
-  const raw = Array.isArray(value.progress) ? value.progress : []
+  const raw = (Array.isArray(value.progress) ? value.progress : []).map(
+    (item: unknown) => wholeAtLeast(item, 0) ?? 0
+  )
+  const oldOrder =
+    value.order !== HRE_PROGRESS_ORDER && HRE_REORDERED_MISSIONS.has(mission)
   const progress = clampProgress(
     mission,
-    raw.map((item) => wholeAtLeast(item, 0) ?? 0)
+    oldOrder ? [raw[1] ?? 0, raw[0] ?? 0] : raw
   )
   return {
     mission,

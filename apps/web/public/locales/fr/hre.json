@@ -46,28 +46,26 @@
     }
   },
   "tips": {
-    "campaignWins": "Raidez d'abord les nœuds 6 à 14 d'Indomitus à 3 d'énergie ; les raids comptent comme des victoires. Visez la mission 19 en semaine 1.",
-    "campaignRaids": "Raidez d'abord les nœuds 6 à 14 d'Indomitus à 3 d'énergie, puis ceux à 5 d'énergie à partir du 15.",
-    "arenaBattles": "Gardez 7 à 8 jetons d'Arène avant le jour 1 pour boucler vite les missions 4, 10 et 15.",
-    "guildRaids": "Gardez 2 jetons de raid de guilde pour la mission 8.",
-    "onslaught": "Gardez un jeton d'Onslaught pour la mission 12.",
-    "salvageRuns": "Gardez 2 jetons de Course au pillage pour la mission 7.",
-    "lightningVictories": "Les raids sur les nœuds d'un événement de campagne en cours comptent comme des victoires éclair.",
-    "killEnemies": "Utilisez des unités à dégâts de zone sur des nœuds de campagne faciles.",
-    "killWithMelee": "Utilisez des unités de corps à corps avec des attaques de zone sur des nœuds de campagne faciles.",
-    "killWithRanged": "Utilisez des unités à distance qui frappent souvent sur des nœuds de campagne faciles.",
-    "killWithAlliance": "Utilisez des unités de l'alliance de l'événement à dégâts de zone sur des nœuds faciles.",
-    "killFaction": "Rejouez les premiers nœuds de campagne où cette faction est l'ennemi.",
-    "damage": "Les combats d'Arène et d'Onslaught infligent vite beaucoup de dégâts.",
-    "abilityDamage": "Utilisez des unités dont les capacités actives touchent plusieurs ennemis.",
+    "campaignWins": "Les raids comptent comme des victoires, tout comme chaque bataille gagnée vous-même.",
+    "campaignRaids": "Chaque raid compte : raidez les nœuds les moins chers.",
+    "lightningVictories": "Les raids sur les nœuds d'un événement de campagne en cours comptent comme victoires éclair.",
+    "killEnemies": "Les unités à attaques de zone éliminent plusieurs ennemis par tour.",
+    "killWithMelee": "Les unités de mêlée à attaques de zone ou multiples éliminent les ennemis le plus vite.",
+    "killWithRanged": "Les unités à distance avec beaucoup de coups éliminent les ennemis le plus vite.",
+    "killWithAlliance": "Les attaques de zone de l'alliance de l'événement éliminent plusieurs ennemis par tour.",
+    "killFaction": "Les nœuds avec beaucoup d'ennemis de cette faction demandent le moins de batailles.",
+    "damage": "Les unités fortes avec beaucoup de coups infligent le plus de dégâts.",
+    "abilityDamage": "Les unités dont les capacités actives touchent plusieurs ennemis progressent le plus vite.",
     "damageType": "Alignez des unités qui infligent ce type de dégâts et utilisez leurs capacités à chaque tour.",
-    "featuredDamage": "Utilisez le héros de l'événement en Arène et en Onslaught.",
-    "useAbilities": "Sur les nœuds de campagne faciles, vous pouvez utiliser toutes les capacités à chaque combat.",
-    "useAbilitiesAlliance": "Alignez une équipe de l'alliance de l'événement et utilisez toutes les capacités à chaque combat.",
-    "useAbilitiesFeatured": "Emmenez le héros de l'événement et utilisez sa capacité active à chaque combat.",
-    "heal": "Emmenez un soigneur ou un réparateur sur des nœuds de campagne faciles.",
+    "featuredDamage": "Gardez le héros mis en avant dans chaque bataille et utilisez sa capacité active.",
+    "useAbilities": "Utilisez la capacité active de chaque unité à chaque bataille. Les Machines de guerre ne comptent pas.",
+    "useAbilitiesAlliance": "Utilisez la capacité active de chaque unité de l'alliance à chaque bataille.",
+    "useAbilitiesFeatured": "Utilisez la capacité active du héros mis en avant à chaque bataille.",
+    "heal": "Emmenez un soigneur ou un mécanicien et laissez-le soigner à chaque tour.",
     "winWithoutSummons": "Laissez les invocateurs hors de l'équipe.",
-    "winWithAllianceLineup": "Utilisez votre meilleure équipe de l'alliance de l'événement sur des nœuds faciles."
+    "winWithAllianceLineup": "Ne déployez que des unités de l'alliance de l'événement.",
+    "reserve_one": "Gardez {{count}} jeton {{mode}} pour {{mission}}.",
+    "reserve_other": "Gardez {{count}} jetons {{mode}} pour {{mission}}."
   },
   "tracker": {
     "current": "Mission en cours",
@@ -84,13 +82,13 @@
     "markDoneLabel": "Terminé : {{objective}}"
   },
   "raids": {
-    "title": "Raids : {{mission}}",
-    "titleNone": "Raids de campagne",
+    "title": "Campagne : {{mission}}",
+    "titleNone": "Batailles de campagne",
     "toGo_one": "Encore {{count}} bataille",
     "toGo_other": "Encore {{count}} batailles",
-    "note": "Les nœuds de campagne les moins chers qui donnent quelque chose. À coût égal, d'abord ceux qui donnent un objet utile à vos objectifs, par taux de drop, puis par or.",
+    "note": "Raids pour l'objectif de campagne : les nœuds de campagne les moins chers qui donnent quelque chose. À coût égal, d'abord ceux qui rapportent le plus de points d'événement, puis ceux qui donnent un objet utile à vos objectifs, par taux de drop, puis par or.",
     "noteLightning": "Les raids sur les nœuds de l'événement de campagne en cours comptent comme des victoires éclair, donc seuls ces nœuds sont listés.",
-    "budget": "Énergie disponible pour ces raids : {{energy}}.",
+    "budget": "Énergie restante aujourd'hui : {{energy}}.",
     "raidCount_one": "{{count}} raid",
     "raidCount_other": "{{count}} raids",
     "energy": "{{energy}} d'énergie",
@@ -121,26 +119,29 @@
     },
     "noDrop": {
       "title": "Ou les batailles d'Indomitus sans butin (6 à 14)",
-      "note": "Elles coûtent 3 d'énergie chacune mais ne donnent rien et peu d'or. Chaque raid ici remplace un raid ci-dessus.",
-      "noteBattles": "Elles coûtent 3 d'énergie chacune mais ne donnent rien et peu d'or. Chaque combat ici remplace un combat ci-dessus."
+      "note": "Elles coûtent 3 d'énergie chacune mais ne donnent rien et peu d'or. Chaque raid ici remplace un raid ci-dessus."
     },
-    "titleBattles": "Combats pour {{mission}}",
-    "noteBattles": "Les utilisations de capacités ne comptent que dans les combats joués, donc jouez ces nœuds à {{slots}} emplacements à la main avec une équipe {{alliance}} complète. Les utilisations en Courses au pillage et dans les autres modes comptent aussi, donc mettez votre progression à jour ensuite. Les moins chers d'abord, comme pour les raids.",
-    "noteLineupBattles": "Les raids n'ont pas de composition, donc ils ne comptent pas : gagnez ces combats à la main avec une équipe entièrement {{alliance}}. Les victoires d'Arène avec cette équipe comptent aussi. Les moins chers d'abord, comme pour les raids.",
-    "noteAbilityRaids": "Chaque raid sur un nœud à {{slots}} places compte environ {{slots}} utilisations de capacité, une par unité, donc seuls les nœuds à {{slots}} places sont listés. Les utilisations en Arène et en Onslaught comptent aussi, alors mettez à jour votre progression après.",
-    "budgetBattles": "Énergie disponible pour ces combats : {{energy}}.",
     "battleCount_one": "{{count}} combat",
     "battleCount_other": "{{count}} combats",
-    "noteAllianceNodes": "Seulement les nœuds où les unités {{alliance}} peuvent être déployées, pour faire avancer aussi l'autre objectif de la mission.",
-    "faction": {
-      "title": "Nœuds avec des ennemis {{faction}}",
-      "note_one": "Pour la dernière élimination {{faction}} restante : d'abord les nœuds avec le plus d'ennemis {{faction}}, pour le moins de raids possible, avec l'énergie laissée par les raids ci-dessus. Chaque raid compte les ennemis du nœud.",
-      "note_other": "Pour les {{count}} éliminations {{faction}} restantes : d'abord les nœuds avec le plus d'ennemis {{faction}}, pour le moins de raids possible, avec l'énergie laissée par les raids ci-dessus. Chaque raid compte les ennemis du nœud.",
-      "none": "Aucun nœud avec des ennemis {{faction}} ne rentre dans l'énergie restante aujourd'hui.",
-      "lightning": "Seulement les nœuds avec une condition de victoire éclair, pour que chaque raid compte pour les deux objectifs."
-    },
     "eventPoints": "{{points}} pts d'événement",
-    "noteHomeScreenEvent": "{{event}} est aussi en cours : à coût égal, les nœuds qui rapportent le plus de ses points passent en premier."
+    "noteHomeScreenEvent": "{{event}} est aussi en cours : à coût égal, les nœuds qui rapportent le plus de ses points passent en premier.",
+    "raidsTitle": "Raids",
+    "coveredByBattles": "Les batailles ci-dessus couvrent les victoires encore nécessaires aujourd'hui.",
+    "energyPerBattle": "{{energy}} d'énergie par bataille",
+    "battles": {
+      "title": "À jouer vous-même",
+      "note": "Les raids ne comptent ni les éliminations, ni les dégâts, ni les soins, ni les utilisations de capacité, ni les victoires avec une composition imposée : jouez ces batailles vous-même.",
+      "slots": "Seulement des nœuds à {{slots}} places, pour que les capacités de chaque unité comptent.",
+      "alliance": "Seulement des nœuds où les unités {{alliance}} peuvent être déployées.",
+      "faction": "Seulement des nœuds avec des ennemis {{faction}}, le plus par énergie d'abord.",
+      "lightning": "Les nœuds avec une condition de victoire éclair passent d'abord, pour qu'une victoire rapide compte aussi comme victoire éclair.",
+      "countsAsWins": "Chaque victoire ici compte aussi comme victoire de campagne, il faut donc moins de raids ci-dessous.",
+      "estimate": "Les nombres sont des estimations d'après les ennemis de chaque nœud.",
+      "openEnded": "Impossible d'estimer le nombre de batailles nécessaires : jouez celles-ci jusqu'à ce que ce soit fait.",
+      "modes": "Les batailles d'Arène et d'Onslaught comptent aussi : mettez votre progression à jour ensuite.",
+      "more": "D'autres batailles seront nécessaires après l'énergie du jour.",
+      "none": "Aucun nœud de campagne ne convient aux objectifs de cette mission."
+    }
   },
   "tokens": {
     "title": "Jetons nécessaires",
@@ -228,6 +229,11 @@
     "abilitiesTrackFew": "Vos {{size}} unités {{alliance}} les plus fortes : chaque utilisation de capacité compte, sans remplaçants pour celles qui tombent.",
     "hse_one": "{{count}} unité ici rapporte aussi des points pour {{event}} : les deux événements avancent.",
     "hse_other": "{{count}} unités ici rapportent aussi des points pour {{event}} : les deux événements avancent.",
-    "hseNone": "Aucune de ces unités ne rapporte de points pour {{event}}."
+    "hseNone": "Aucune de ces unités ne rapporte de points pour {{event}}.",
+    "melee": "Vos 5 unités de mêlée les plus fortes.",
+    "strongest": "Vos 5 unités les plus fortes.",
+    "strongestTrack": "Vos {{size}} unités {{alliance}} les plus fortes : 5 commencent, les autres remplacent celles qui tombent.",
+    "strongestTrackFew": "Vos {{size}} unités {{alliance}} : moins de 5, donc pas de remplaçantes.",
+    "titleBattle": "Équipe de campagne"
   }
 }

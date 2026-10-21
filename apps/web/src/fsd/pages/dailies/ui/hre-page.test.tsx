@@ -117,6 +117,15 @@ const row = (
   goal: null,
   eventPoints,
 })
+const battles = (overrides = {}) => ({
+  rows: [row("X30", 6, 4)],
+  totalBattles: 4,
+  totalEnergy: 24,
+  openEnded: false,
+  moreNeeded: false,
+  empty: null,
+  ...overrides,
+})
 const plan = (overrides = {}) => ({
   battlesLeft: 38,
   energyBudget: 188,
@@ -138,7 +147,7 @@ const plan = (overrides = {}) => ({
     ...Array.from({ length: 15 }, () => ({ energyCost: 5, dailyAttempts: 10 })),
   ],
   dailyEnergy: 538,
-  factionRows: [],
+  battles: null,
   ...overrides,
 })
 
@@ -214,7 +223,7 @@ describe("HRE tab", () => {
       homeScreenEventId: "hse-machine-hunt",
       eventFarm: false,
     })
-    expect(screen.getByTestId("hre-raids-note")).toHaveTextContent(
+    expect(screen.getByTestId("hre-raids-budget")).toHaveTextContent(
       "raids.noteHomeScreenEvent|event=events:definitions.hse-machine-hunt"
     )
     expect(screen.getByTestId("hre-raid-I22-event-points")).toHaveTextContent(
@@ -228,7 +237,7 @@ describe("HRE tab", () => {
       active: { definitionId: "hse-machine-hunt" },
     }
     renderHre()
-    expect(screen.getByTestId("hre-raids-note")).not.toHaveTextContent(
+    expect(screen.getByTestId("hre-raids-budget")).not.toHaveTextContent(
       "raids.noteHomeScreenEvent"
     )
   })
@@ -248,7 +257,7 @@ describe("HRE tab", () => {
       "homeScreenEventId",
       "hse-faction-boost"
     )
-    expect(screen.getByTestId("hre-raids-note")).not.toHaveTextContent(
+    expect(screen.getByTestId("hre-raids-budget")).not.toHaveTextContent(
       "raids.noteHomeScreenEvent"
     )
   })
@@ -296,7 +305,7 @@ describe("HRE tab", () => {
     expect(screen.queryByTestId("hre-pace")).toBeNull()
   })
 
-  it("tracks mission 5 at 37 / 100 and suggests its raids", () => {
+  it("tracks mission 5 at 37 / 100 and suggests its raids and open-ended ability-damage battles", () => {
     seed({ mission: 5, progress: [6000, 37] })
     renderHre()
     expect(screen.getByTestId("hre-objective-0-input")).toHaveValue(6000)
@@ -319,7 +328,21 @@ describe("HRE tab", () => {
 
     expect(mocks.raidsArgs.at(-1)?.[1]).toEqual({
       eventFarm: false,
-      missionRaids: { battlesToGo: 63, eventOnly: false },
+      missionRaids: {
+        battlesToGo: 63,
+        eventOnly: false,
+        manual: {
+          needs: [
+            {
+              objective: { kind: "abilityDamage", target: 10_000 },
+              toGo: 4000,
+              per: null,
+            },
+          ],
+          preferLightning: false,
+          countsAsRaids: true,
+        },
+      },
     })
     const raids = screen.getByTestId("hre-raids")
     expect(within(raids).getByRole("heading", { level: 2 })).toHaveTextContent(
@@ -329,7 +352,9 @@ describe("HRE tab", () => {
     expect(screen.getByTestId("hre-raids-note")).not.toHaveTextContent(
       "raids.planned"
     )
-    expect(screen.getByTestId("hre-raids-note")).toHaveTextContent("energy=188")
+    expect(screen.getByTestId("hre-raids-budget")).toHaveTextContent(
+      "energy=188"
+    )
     expect(
       within(screen.getByTestId("hre-raids-list")).getAllByRole("listitem")
     ).toHaveLength(4)
@@ -351,58 +376,98 @@ describe("HRE tab", () => {
     )
   })
 
-  it("labels hand-fought alliance battles as battles, on the alliance's nodes", () => {
+  it("suggests alliance ability uses as 5-slot battles by hand, from progress saved in the old order", () => {
+    mocks.raids = {
+      status: "no-goals",
+      missionRaids: plan({ rows: [], battlesLeft: 0, battles: battles() }),
+      locationsByBattleId: new Map(),
+    }
+    // Saved before mission 7 became ability uses, then Salvage Runs.
     seed({ mission: 7, progress: [2, 12] })
     renderHre()
+    expect(screen.getByTestId("hre-objective-0-input")).toHaveValue(12)
     expect(mocks.raidsArgs.at(-1)?.[1]).toEqual({
       eventFarm: false,
       missionRaids: {
-        battlesToGo: 2,
+        battlesToGo: 0,
         eventOnly: false,
-        slots: 5,
-        alliance: "Xenos",
+        manual: {
+          needs: [
+            {
+              objective: { kind: "useAbilitiesAlliance", target: 20 },
+              toGo: 8,
+              per: "abilityUses",
+            },
+          ],
+          slots: 5,
+          alliance: "Xenos",
+          preferLightning: false,
+          countsAsRaids: false,
+        },
       },
     })
-    expect(screen.getByTestId("hre-raids-note")).toHaveTextContent(
-      "raids.budgetBattles|energy=188"
+    const note = screen.getByTestId("hre-battles-note")
+    expect(note).toHaveTextContent("raids.battles.slots|slots=5")
+    expect(note).toHaveTextContent(
+      "raids.battles.alliance|alliance=common:alliances.Xenos"
     )
-    expect(screen.getByTestId("hre-raids-totals")).toHaveTextContent(
-      "raids.battleCount|count=37"
+    expect(note).toHaveTextContent("raids.battles.estimate")
+    expect(note).toHaveTextContent("raids.battles.modes")
+    expect(screen.getByTestId("hre-battles-totals")).toHaveTextContent(
+      "raids.battleCount|count=4"
     )
-    expect(screen.getByTestId("hre-raids-no-drop-totals")).toHaveTextContent(
-      "raids.battleCount|count=27"
-    )
+    expect(screen.queryByTestId("hre-raids-main")).toBeNull()
   })
 
-  it("keeps mission 16's raids to the alliance's nodes while its alliance kills are open", () => {
+  it("keeps mission 16's raids off the alliance filter and fights its alliance kills by hand", () => {
     seed({ mission: 16, progress: [0, 0] })
     renderHre()
-    expect(mocks.raidsArgs.at(-1)?.[1]).toEqual({
-      eventFarm: false,
-      missionRaids: { battlesToGo: 25, eventOnly: false, alliance: "Xenos" },
+    expect(mocks.raidsArgs.at(-1)?.[1]).toMatchObject({
+      missionRaids: {
+        battlesToGo: 25,
+        manual: {
+          needs: [{ toGo: 100, per: "enemies" }],
+          alliance: "Xenos",
+          countsAsRaids: false,
+        },
+      },
     })
-    expect(screen.getByTestId("hre-raids-note")).toHaveTextContent(
-      "raids.noteAllianceNodes"
-    )
   })
 
-  it("suggests 5-slot raids, an Arena team and an Onslaught pool for mission 15's ability uses", () => {
+  it("suggests 5-slot battles, then a campaign team, an Arena team and an Onslaught pool for mission 15", () => {
     mocks.team = { status: "loading" }
-    seed({ mission: 15, progress: [0, 0] })
+    seed({ mission: 15, progress: [0, 0], order: 2 })
     renderHre()
-    expect(mocks.raidsArgs.at(-1)?.[1]).toEqual({
-      eventFarm: false,
-      missionRaids: { battlesToGo: 30, eventOnly: false, slots: 5 },
+    expect(mocks.raidsArgs.at(-1)?.[1]).toMatchObject({
+      missionRaids: {
+        battlesToGo: 0,
+        manual: { needs: [{ toGo: 150, per: "abilityUses" }], slots: 5 },
+      },
     })
-    expect(screen.getByTestId("hre-raids-note")).toHaveTextContent(
-      "raids.noteAbilityRaids|slots=5"
-    )
     expect(screen.getByTestId("hre-team")).toHaveTextContent(
+      "hre:teams.titleBattle"
+    )
+    expect(screen.getByTestId("hre-team-arena")).toHaveTextContent(
       "hre:teams.titleMode|mode=hre:tokens.modes.arena"
     )
     expect(screen.getByTestId("hre-team-onslaught")).toHaveTextContent(
       "hre:teams.titleMode|mode=hre:tokens.modes.onslaught"
     )
+  })
+
+  it("plays mission 6's summon-free wins in Arena only with tokens above mission 10's reserve", () => {
+    mocks.team = { status: "loading" }
+    mocks.tokens = { arena: 7, guildRaid: 2, onslaught: 3, salvageRun: 1 }
+    seed({ mission: 6, progress: [2500, 0] })
+    renderHre()
+    expect(mocks.raidsArgs.at(-1)?.[1]).toMatchObject({
+      missionRaids: { manual: { needs: [{ toGo: 7, per: "battle" }] } },
+    })
+    expect(
+      within(screen.getByTestId("hre-team-arena")).getByTestId(
+        "hre-team-reserve"
+      )
+    ).toHaveTextContent("hre:teams.reservePlay|have=7,play=3")
   })
 
   it("hands a running HSE's trackers to the mission teams and names it on them", () => {
@@ -428,44 +493,63 @@ describe("HRE tab", () => {
     )
   })
 
-  it("lists Necron nodes apart from mission 11's lightning victories", () => {
+  it("fights mission 11's Necrons by hand, lightning nodes first, beside its lightning raids", () => {
     mocks.raids = {
       status: "no-goals",
-      missionRaids: plan({ factionRows: [row("N05", 6, 4)] }),
+      missionRaids: plan({ battles: battles({ rows: [row("N05", 6, 4)] }) }),
       locationsByBattleId: new Map(),
     }
     seed({ mission: 11, progress: [0, 40] })
     renderHre()
-    expect(mocks.raidsArgs.at(-1)?.[1]).toEqual({
-      eventFarm: false,
+    expect(mocks.raidsArgs.at(-1)?.[1]).toMatchObject({
       missionRaids: {
         battlesToGo: 25,
         eventOnly: true,
-        enemyFaction: { faction: "Necrons", killsToGo: 60 },
+        manual: {
+          needs: [{ toGo: 60, per: "factionEnemies" }],
+          faction: "Necrons",
+          preferLightning: true,
+        },
       },
     })
-    const faction = screen.getByTestId("hre-raids-faction")
-    expect(faction).toHaveTextContent(
-      "raids.faction.title|faction=factions:Necrons"
+    const note = screen.getByTestId("hre-battles-note")
+    expect(note).toHaveTextContent(
+      "raids.battles.faction|faction=factions:Necrons"
     )
-    expect(faction).toHaveTextContent(/raids\.faction\.note\|.*count=60/)
-    expect(faction).toHaveTextContent("raids.faction.lightning")
+    expect(note).toHaveTextContent("raids.battles.lightning")
     expect(
-      within(screen.getByTestId("hre-raids-faction-list")).getAllByRole(
-        "listitem"
-      )
+      within(screen.getByTestId("hre-battles-list")).getAllByRole("listitem")
     ).toHaveLength(1)
-    expect(screen.getByTestId("hre-raids-faction-totals")).toHaveTextContent(
-      "count=4"
+    expect(screen.getByTestId("hre-raids-main")).toHaveTextContent(
+      "raids.raidsTitle"
     )
+  })
+
+  it("lists open-ended battles with their energy per battle", () => {
+    mocks.raids = {
+      status: "no-goals",
+      missionRaids: plan({
+        battles: battles({ openEnded: true, rows: [row("X30", 6, 0)] }),
+      }),
+      locationsByBattleId: new Map(),
+    }
+    seed({ mission: 8, progress: [2, 0] })
+    renderHre()
+    expect(screen.getByTestId("hre-battles-note")).toHaveTextContent(
+      "raids.battles.openEnded"
+    )
+    expect(screen.getByTestId("hre-raid-X30")).toHaveTextContent(
+      "raids.energyPerBattle|energy=6"
+    )
+    expect(screen.queryByTestId("hre-battles-totals")).toBeNull()
   })
 
   it("waits for the featured hero before suggesting all-alliance battles", () => {
     mocks.instance = { ...running(), hero: null }
-    seed({ mission: 7, progress: [2, 12] })
+    seed({ mission: 7, progress: [12, 0], order: 2 })
     renderHre()
-    expect(screen.queryByTestId("hre-raids-list")).toBeNull()
-    expect(screen.getByTestId("hre-raids-notice")).toHaveTextContent(
+    expect(screen.queryByTestId("hre-battles")).toBeNull()
+    expect(screen.getByTestId("hre-battles-notice")).toHaveTextContent(
       "hre:raids.notice.noHero"
     )
   })
@@ -506,7 +590,7 @@ describe("HRE tab", () => {
   })
 
   it("names the next campaign mission when the current one has none", () => {
-    seed({ mission: 6, progress: [0, 0] })
+    seed({ mission: 8, progress: [0, 20_000] })
     renderHre()
     expect(screen.queryByTestId("hre-raids-list")).toBeNull()
     expect(screen.getByTestId("hre-raids-notice")).toHaveTextContent(
@@ -515,7 +599,7 @@ describe("HRE tab", () => {
   })
 
   it("says the campaign objective is met", () => {
-    seed({ mission: 5, progress: [0, 100] })
+    seed({ mission: 5, progress: [10_000, 100] })
     renderHre()
     expect(screen.getByTestId("hre-raids-notice")).toHaveTextContent(
       "hre:raids.notice.met"
@@ -535,13 +619,17 @@ describe("HRE tab", () => {
   it("asks to win lightning victories manually without a campaign event", () => {
     mocks.raids = {
       status: "no-goals",
-      missionRaids: plan({ rows: [], empty: "no-event" }),
+      missionRaids: plan({ rows: [], empty: "no-event", battlesLeft: 2 }),
       locationsByBattleId: new Map(),
     }
     renderHre()
-    expect(mocks.raidsArgs.at(-1)?.[1]).toEqual({
+    expect(mocks.raidsArgs.at(-1)?.[1]).toMatchObject({
       eventFarm: false,
-      missionRaids: { battlesToGo: 2, eventOnly: true },
+      missionRaids: {
+        battlesToGo: 2,
+        eventOnly: true,
+        manual: { needs: [{ toGo: 5, per: "enemies" }], preferLightning: true },
+      },
     })
     expect(screen.getByTestId("hre-raids-empty-no-event")).toHaveTextContent(
       "count=2"

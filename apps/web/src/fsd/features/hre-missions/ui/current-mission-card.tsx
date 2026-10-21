@@ -140,6 +140,7 @@ export function CurrentMissionCard({
           )
         })}
         <ObjectiveTips
+          missionNumber={mission.number}
           objectives={mission.objectives}
           testId="hre-current-tips"
         />

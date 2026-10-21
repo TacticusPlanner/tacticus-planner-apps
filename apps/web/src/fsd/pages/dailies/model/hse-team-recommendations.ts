@@ -6,6 +6,7 @@ import {
 import { progressionRarity, type UnitId } from "@workspace/game-domain"
 
 import {
+  HSE_CAMPAIGN_MODES,
   HSE_TOKEN_MODES,
   hseModeScoring,
 } from "@/features/home-screen-event-points"
@@ -132,15 +133,17 @@ function bestMatch(
   return best
 }
 
-/** The scoring trackers of one mode. */
+/** The scoring trackers of one mode. "Campaign" stands for every campaign mode (Elite, Mirror and
+ * event campaigns too), as an HRE campaign list spans them all. */
 function modeTrackers(
   trackers: readonly GameCatalogHseTracker[],
-  mode: HseTeamMode
+  mode: HseTeamMode | "Campaign"
 ): GameCatalogHseTracker[] {
+  const modes = mode === "Campaign" ? HSE_CAMPAIGN_MODES : [mode]
   return trackers.filter(
     (tracker) =>
       SCORING_KINDS.has(tracker.kind) &&
-      hseRestrictionPasses(tracker.gameModes, mode)
+      modes.some((item) => hseRestrictionPasses(tracker.gameModes, item))
   )
 }
 
@@ -348,7 +351,7 @@ function buildTeam(
  */
 export function hseEventUnitPools(
   trackers: readonly GameCatalogHseTracker[],
-  mode: HseTeamMode,
+  mode: HseTeamMode | "Campaign",
   roster: readonly TeamRosterCharacter[],
   catalog: HseTeamCatalog,
   unitPower: UnitPowerContext | null

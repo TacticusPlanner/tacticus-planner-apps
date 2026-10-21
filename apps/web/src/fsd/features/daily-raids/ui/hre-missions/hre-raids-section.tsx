@@ -4,6 +4,7 @@ import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
 
 import type {
+  MissionBattlesRequest,
   MissionRaidPlan,
   MissionRaidsRequest,
 } from "../../model/mission-raids"
@@ -14,9 +15,9 @@ import { useActiveHomeScreenEvent } from "../../model/use-active-home-screen-eve
 import { useDailyRaids } from "../../model/use-daily-raids"
 import { useHomeScreenEventName } from "../home-screen-event/use-home-screen-event-name"
 import { RaidState } from "../raid-state"
+import { HreHandBattles } from "./hre-hand-battles"
 import {
   HreCampaignOutlook,
-  HreFactionRaids,
   HreNoDropRaids,
   RaidRows,
   type RaidRowsView,
@@ -25,25 +26,30 @@ import {
 /** With no open objective the plan still runs, for the outlook nodes and daily energy only. */
 const SUMMARY_ONLY: MissionRaidsRequest = { battlesToGo: 0, eventOnly: false }
 
-type HreRaidsRequest = MissionRaidsRequest & {
+type HreRaidsRequest = {
   /** "Mission 5", for the title. */
   missionLabel: string
-  /** "battles": nodes to fight by hand (all-alliance wins, alliance ability uses), not raids. */
-  kind: "raids" | "battles"
-  /** The localized alliance an all-alliance team must use, when the objective asks for one. */
-  allianceTeam: string | null
-  /** The localized alliance the nodes are kept to, when the mission's objectives restrict them. */
-  allianceNodes: string | null
-  /** The localized faction of `enemyFaction`, for its separate node list. */
-  enemyFactionName: string | null
+  /** The open campaign-win, campaign-raid or lightning objective's raids. */
+  raids: { battlesToGo: number; eventOnly: boolean } | null
+  /** The open manual objectives' battles to fight by hand, with their localized node limits. */
+  manual:
+    | (MissionBattlesRequest & {
+        allianceName: string | null
+        factionName: string | null
+      })
+    | null
+  /** Why the manual objectives get no list (the featured hero's alliance is not known yet). */
+  manualNotice: string | null
 }
 
 /**
- * Dailies > HRE campaign raids: for the current mission's open campaign, lightning, all-alliance
- * lineup or alliance-ability objective, where to raid (or battle by hand, on full-team nodes) with the least of today's energy left, Today's plan aside (`planMissionRaids`),
- * with its totals and empty states, then the no-drop Indomitus alternative. Without one, `notice`
- * says why. Always ends with the campaign outlook: battles left over the remaining missions against
- * the days the event has left.
+ * Dailies > HRE campaign suggestions for the current mission, with the least of today's energy
+ * left, Today's plan aside (`planMissionRaids`): the battles to fight by hand for its manual
+ * objectives (kills, damage, healing, ability uses, lineup wins: raids count none of them), then
+ * the raids for its campaign-win, campaign-raid or lightning objective, with their totals and empty
+ * states and the no-drop Indomitus alternative. Without either, `notice` says why. Always ends
+ * with the campaign outlook: battles left over the remaining missions against the days the event
+ * has left.
  */
 export function HreRaidsSection({
   request,
@@ -66,16 +72,26 @@ export function HreRaidsSection({
     hasHomeScreenEventRule(homeScreenEvent.active.definitionId)
       ? homeScreenEvent.active
       : null
+  const manual = request?.manual ?? null
   const raids = useDailyRaids(undefined, {
     homeScreenEventId: runningEvent?.definitionId,
     eventFarm: false,
     missionRaids: request
       ? {
-          battlesToGo: request.battlesToGo,
-          eventOnly: request.eventOnly,
-          slots: request.slots,
-          alliance: request.alliance,
-          enemyFaction: request.enemyFaction,
+          battlesToGo: request.raids?.battlesToGo ?? 0,
+          eventOnly: request.raids?.eventOnly ?? false,
+          ...(manual
+            ? {
+                manual: {
+                  needs: manual.needs,
+                  slots: manual.slots,
+                  alliance: manual.alliance,
+                  faction: manual.faction,
+                  preferLightning: manual.preferLightning,
+                  countsAsRaids: manual.countsAsRaids,
+                },
+              }
+            : {}),
         }
       : SUMMARY_ONLY,
   })
@@ -84,27 +100,33 @@ export function HreRaidsSection({
   const locations = loaded ? raids.locationsByBattleId : undefined
   const view = raids.status === "ready" ? raids : null
   const rowsView: RaidRowsView = { locations, view }
-  const battles = request?.kind === "battles"
+  const shown = request && (request.raids || manual || request.manualNotice)
+  const hseNote =
+    runningEvent &&
+    plan &&
+    [...plan.rows, ...plan.noDropRows, ...(plan.battles?.rows ?? [])].some(
+      (row) => row.eventPoints > 0
+    )
+      ? t("raids.noteHomeScreenEvent", { event: eventName(runningEvent) })
+      : null
 
   return (
     <section className="space-y-3" data-testid="hre-raids">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h2 className="text-lg font-semibold">
-          {request
-            ? request.kind === "battles"
-              ? t("raids.titleBattles", { mission: request.missionLabel })
-              : t("raids.title", { mission: request.missionLabel })
+          {shown
+            ? t("raids.title", { mission: request.missionLabel })
             : t("raids.titleNone")}
         </h2>
-        {request ? (
+        {request?.raids ? (
           <Badge data-testid="hre-raids-to-go" variant="secondary">
-            {t("raids.toGo", { count: request.battlesToGo })}
+            {t("raids.toGo", { count: request.raids.battlesToGo })}
           </Badge>
         ) : null}
       </div>
       {raids.status === "loading" || raids.status === "error" ? (
         <RaidState state={raids.status} />
-      ) : !request ? (
+      ) : !shown ? (
         <div
           className="text-sm text-muted-foreground"
           data-testid="hre-raids-notice"
@@ -115,79 +137,38 @@ export function HreRaidsSection({
         <>
           <p
             className="text-sm text-muted-foreground"
-            data-testid="hre-raids-note"
+            data-testid="hre-raids-budget"
           >
-            {request.kind === "battles"
-              ? request.slots
-                ? t("raids.noteBattles", {
-                    slots: request.slots,
-                    alliance: request.allianceTeam ?? "",
-                  })
-                : t("raids.noteLineupBattles", {
-                    alliance: request.allianceTeam ?? "",
-                  })
-              : request.eventOnly
-                ? t("raids.noteLightning")
-                : request.slots
-                  ? `${t("raids.note")} ${t("raids.noteAbilityRaids", { slots: request.slots })}`
-                  : t("raids.note")}
-            {request.kind === "raids" && request.allianceNodes
-              ? ` ${t("raids.noteAllianceNodes", { alliance: request.allianceNodes })}`
-              : null}
-            {runningEvent &&
-            [...plan.rows, ...plan.noDropRows].some(
-              (row) => row.eventPoints > 0
-            )
-              ? ` ${t("raids.noteHomeScreenEvent", { event: eventName(runningEvent) })}`
-              : null}
-            {` ${t(battles ? "raids.budgetBattles" : "raids.budget", { energy: plan.energyBudget })}`}
+            {t("raids.budget", { energy: plan.energyBudget })}
+            {hseNote ? ` ${hseNote}` : null}
           </p>
-          {plan.rows.length > 0 ? (
-            <>
-              <RaidRows
-                rows={plan.rows}
-                testId="hre-raids-list"
-                view={rowsView}
-              />
-              <div
-                className="flex flex-wrap items-center gap-2"
-                data-testid="hre-raids-totals"
-              >
-                <Badge variant="secondary">
-                  {t(battles ? "raids.battleCount" : "raids.raidCount", {
-                    count: plan.totalRaids,
-                  })}
-                </Badge>
-                <Badge variant="outline">
-                  {t("raids.energy", { energy: plan.totalEnergy })}
-                </Badge>
-                {plan.remainingAfter > 0 ? (
-                  <span
-                    className="text-sm text-muted-foreground"
-                    data-testid="hre-raids-left-after"
-                  >
-                    {t("raids.leftAfter", { count: plan.remainingAfter })}
-                  </span>
-                ) : null}
-              </div>
-            </>
-          ) : (
-            <EmptyState plan={plan} battlesToGo={request.battlesToGo} />
-          )}
-          {request.enemyFaction && request.enemyFactionName ? (
-            <HreFactionRaids
-              faction={request.enemyFactionName}
-              killsToGo={request.enemyFaction.killsToGo}
-              lightning={request.eventOnly}
-              rows={plan.factionRows}
+          {request.manualNotice ? (
+            <p
+              className="text-sm text-muted-foreground"
+              data-testid="hre-battles-notice"
+            >
+              {request.manualNotice}
+            </p>
+          ) : null}
+          {manual && plan.battles ? (
+            <HreHandBattles
+              notes={{
+                slots: manual.slots,
+                alliance: manual.allianceName,
+                faction: manual.factionName,
+                preferLightning: manual.preferLightning,
+                countsAsWins: manual.countsAsRaids,
+              }}
+              plan={plan.battles}
               view={rowsView}
             />
           ) : null}
-          {plan.noDropRows.length > 0 ? (
-            <HreNoDropRaids
-              battles={battles}
-              rows={plan.noDropRows}
-              view={rowsView}
+          {request.raids ? (
+            <RaidsList
+              eventOnly={request.raids.eventOnly}
+              plan={plan}
+              rowsView={rowsView}
+              titled={!!manual}
             />
           ) : null}
         </>
@@ -200,6 +181,67 @@ export function HreRaidsSection({
         />
       ) : null}
     </section>
+  )
+}
+
+/** The raid objective's raids: the note, the rows with their totals or why there are none, and the
+ * no-drop alternative. */
+function RaidsList({
+  plan,
+  eventOnly,
+  rowsView,
+  titled,
+}: {
+  plan: MissionRaidPlan
+  eventOnly: boolean
+  rowsView: RaidRowsView
+  /** Battles by hand come first, so the raids get their own heading. */
+  titled: boolean
+}) {
+  const { t } = useTranslation("hre")
+  return (
+    <div className="space-y-2" data-testid="hre-raids-main">
+      {titled ? <h3 className="font-medium">{t("raids.raidsTitle")}</h3> : null}
+      <p className="text-sm text-muted-foreground" data-testid="hre-raids-note">
+        {eventOnly ? t("raids.noteLightning") : t("raids.note")}
+      </p>
+      {plan.battlesLeft <= 0 ? (
+        <p
+          className="text-sm text-muted-foreground"
+          data-testid="hre-raids-covered"
+        >
+          {t("raids.coveredByBattles")}
+        </p>
+      ) : plan.rows.length > 0 ? (
+        <>
+          <RaidRows rows={plan.rows} testId="hre-raids-list" view={rowsView} />
+          <div
+            className="flex flex-wrap items-center gap-2"
+            data-testid="hre-raids-totals"
+          >
+            <Badge variant="secondary">
+              {t("raids.raidCount", { count: plan.totalRaids })}
+            </Badge>
+            <Badge variant="outline">
+              {t("raids.energy", { energy: plan.totalEnergy })}
+            </Badge>
+            {plan.remainingAfter > 0 ? (
+              <span
+                className="text-sm text-muted-foreground"
+                data-testid="hre-raids-left-after"
+              >
+                {t("raids.leftAfter", { count: plan.remainingAfter })}
+              </span>
+            ) : null}
+          </div>
+        </>
+      ) : (
+        <EmptyState battlesToGo={plan.battlesLeft} plan={plan} />
+      )}
+      {plan.noDropRows.length > 0 ? (
+        <HreNoDropRaids rows={plan.noDropRows} view={rowsView} />
+      ) : null}
+    </div>
   )
 }
 

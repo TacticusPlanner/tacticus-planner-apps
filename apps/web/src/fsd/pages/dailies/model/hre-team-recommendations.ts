@@ -25,8 +25,9 @@ export const HRE_TEAM_SIZE = 5
 
 const SUPPORT_TRAITS: ReadonlySet<string> = new Set(["Healer", "Mechanic"])
 const PSYCHIC = "Psychic"
-/** The running HSE's name for each HRE token mode; campaign battles have none. */
-const HSE_MODE: Record<string, HseTeamMode> = {
+/** The running HSE's game mode for each HRE team mode; Guild Raid has none. */
+const HSE_MODE: Record<string, HseTeamMode | "Campaign"> = {
+  battle: "Campaign",
   arena: "Arena",
   onslaught: "Onslaught",
   salvageRun: "SalvageRun",
@@ -93,13 +94,14 @@ const pool = (id: string, unitIds: Iterable<UnitId>): TeamPoolSpec => ({
 
 /**
  * One Power-mode team for an HRE mission (design D8): only the featured hero's alliance for an
- * all-alliance lineup (never filled with other alliances), no summoner for a summon-free win, only
- * ranged units for ranged kills, any units for ability uses, or the featured hero leading for a
- * featured-hero objective. An
+ * all-alliance lineup, alliance ability uses or alliance kills (never filled with other alliances),
+ * no summoner for a summon-free win, only ranged units for ranged kills, only units without a
+ * ranged attack for melee kills, any units for ability uses and other objectives, or the featured
+ * hero leading for a featured-hero objective. An
  * Onslaught or Salvage Run team keeps to one alliance track. The strongest Healer or Mechanic
  * leads while a heal objective is open, then Psychic damage dealers while a Psychic damage
- * objective is open, then units that score for a running HSE in the team's mode (its own event
- * units, so both events progress; for a track, the alliance with the most of them). Null when the
+ * objective is open, then units that score for a running HSE in the team's mode (campaign battles,
+ * Arena, Onslaught or Salvage Run: its own event units, so both events progress; for a track, the alliance with the most of them). Null when the
  * rule cannot be applied (an all-alliance lineup without a resolved alliance).
  */
 export function buildHreTeam(input: BuildHreTeamInput): HreTeam | null {
@@ -128,11 +130,16 @@ export function buildHreTeam(input: BuildHreTeamInput): HreTeam | null {
     roster = all.filter((character) => allianceOf(character) === alliance)
   } else if (plan.rule === "summonFree") {
     roster = all.filter((character) => !input.summoners.has(character.unitId))
-  } else if (plan.rule === "abilities") {
-    // Any units: every ability use counts.
+  } else if (plan.rule === "abilities" || plan.rule === "strongest") {
+    // Any units: every ability use, kill, hit or heal counts.
   } else if (plan.rule === "ranged") {
     roster = all.filter(
       (character) => !!input.catalog.get(character.unitId)?.rangedDamage
+    )
+  } else if (plan.rule === "melee") {
+    // Units without a ranged attack always strike in melee.
+    roster = all.filter(
+      (character) => !input.catalog.get(character.unitId)?.rangedDamage
     )
   } else {
     if (!featured || !all.some((character) => character.unitId === featured)) {

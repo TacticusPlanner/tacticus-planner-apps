@@ -8,7 +8,7 @@ Tells the player where to raid today so that the current HRE mission's campaign-
 
 ### Requirement: Raid suggestions appear only for a current campaign objective
 
-The raid suggestions section SHALL be shown on a running HRE when the current mission has an objective of kind `campaignWins` ("Win N campaign battles"), `campaignRaids` ("Raid N campaign battles"), `lightningVictories` ("Win N lightning victories"), `winWithAllianceLineup` ("Win N battles with an all-alliance team") or `useAbilitiesAlliance` ("Use N abilities with alliance units") whose progress is below its target. A lightning objective comes first, then a campaign one, then the all-alliance wins, then the ability uses. The battles still needed SHALL be the target minus the recorded progress; for ability uses, one battle per 5 uses still needed (one use for each of five units). Otherwise, the section SHALL name the next mission that has a campaign objective and its target, or say that no campaign missions are left. It SHALL NOT list raids for a later mission.
+The section SHALL be titled "Campaign for mission N" on a running HRE when the current mission has an open objective that raids serve, or one that only battles fought by hand serve (see "Manual objectives get a list of battles to fight by hand"). Raids SHALL serve only `campaignWins` ("Win N campaign battles"), `campaignRaids` ("Raid N campaign battles") and `lightningVictories` ("Win N lightning victories") objectives below their target; the battles still needed SHALL be the target minus the recorded progress. Raids SHALL NOT be suggested for any other objective, because a raid counts no kills, damage, healing, ability uses or lineup wins (Severyn, 2026-10). When the current mission has neither, the section SHALL say its campaign objective is complete when it has one, or else name the next mission that has a campaign objective and its target, or say that no campaign missions are left. It SHALL NOT list raids for a later mission.
 
 Assumptions:
 
@@ -18,17 +18,22 @@ Assumptions:
 #### Scenario: Mission 5 in progress
 
 - **GIVEN** the current mission is 5 with 37 / 100 campaign wins
-- **THEN** the section is titled "Raids for mission 5" and shows "63 battles to go"
+- **THEN** the section is titled "Campaign for mission 5" and its raids show "63 battles to go"
 
 #### Scenario: Current mission has no campaign objective
 
-- **GIVEN** the current mission is 6 ("Heal or repair 2,500 health" and "Win 10 battles without summoning")
-- **THEN** no raid list is shown, and the section reads "Next campaign mission: 16, Raid 25 campaign battles"
+- **GIVEN** the current mission is 8 with 20,000 / 20,000 damage and its Guild Raid tokens still open
+- **THEN** no list is shown, and the section reads "Next campaign mission: 16, Raid 25 campaign battles"
 
 #### Scenario: Campaign objective already met
 
-- **GIVEN** mission 5 at 100 / 100 campaign wins, with its other objective still open
-- **THEN** no raid list is shown, and the section says the campaign objective is complete
+- **GIVEN** mission 5 at 100 / 100 campaign wins, with its ability damage still open
+- **THEN** no raid list is shown, only the battles to fight by hand for the ability damage
+
+#### Scenario: Every objective that needs the campaign is met
+
+- **GIVEN** mission 19 at 75 / 75 campaign wins and 100 / 100 melee kills
+- **THEN** no list is shown, and the section says the campaign objective is complete
 
 #### Scenario: Preview event
 
@@ -130,7 +135,7 @@ Each node, in order, SHALL get as many raids as its attempts left, the remaining
 
 ### Requirement: Lightning-victory objectives suggest event-campaign raids
 
-When the current mission has a `lightningVictories` objective below its target, the section SHALL suggest raids on event-campaign nodes only, because a raid there counts as a lightning victory. It SHALL use the same budget, attempts, filters, ordering (energy, then goals, then id) and fill as campaign objectives. The battles to go are the lightning victories still needed. When no campaign event is running, the section SHALL say so and suggest winning battles manually.
+When the current mission has a `lightningVictories` objective below its target, the section SHALL suggest raids on event-campaign nodes only, because a raid there counts as a lightning victory. It SHALL use the same budget, attempts, filters, ordering (energy, then the tie-breaks of "Event points break ties among equal costs", then goals, then id) and fill as campaign objectives. The battles to go are the lightning victories still needed. When no campaign event is running, the section SHALL say so and suggest winning battles manually.
 
 Assumptions:
 
@@ -198,24 +203,54 @@ Assumptions:
 - **GIVEN** daily energy 538 and 538 spent today
 - **THEN** the budget is 0, no raids are suggested, and the section says no energy is left today
 
-### Requirement: Alliance objectives get raids or battles
+### Requirement: Manual objectives get a list of battles to fight by hand
 
-For `winWithAllianceLineup` the section SHALL be titled "Battles for mission N" and list nodes of any slot count where that alliance can deploy, to fight by hand with an all-alliance team of the featured hero's alliance, because raids have no lineup and do not count; the note SHALL add that Arena wins with that team count too. For `useAbilitiesAlliance` the section SHALL be titled "Battles for mission N" and list only nodes with 5 deployment slots where that alliance can deploy (replacing the Raids Filters' slot and allies-alliance choices), to fight by hand with a full alliance team; its note SHALL add that ability uses in Salvage Runs and other modes count too. Both are ordered and filled as raids are.
+Every open objective that only progresses in battles played by hand (kills, damage, ability damage, a damage type, the featured hero's damage, healing, ability uses, summon-free wins and all-alliance wins) SHALL be served by one list titled "Fight by hand", shown above the raids, for all of the current mission's open manual objectives together. Its nodes SHALL be kept to what the objectives need:
 
-#### Scenario: Mission 10
+- **Ability uses (any units or alliance):** only nodes with 5 deployment slots, so every unit's abilities count.
+- **Alliance kills, alliance ability uses, all-alliance wins, the featured hero's ability uses or damage:** only nodes where the featured hero's alliance can deploy.
+- **Faction kills:** only nodes with that faction's enemies (see "Faction kills get their own list of battles").
 
-- **GIVEN** mission 10 with 5 / 15 all-Xenos wins
-- **THEN** the section is titled "Battles for mission 10", shows "10 battles to go", says raids do not count and lists nodes of every slot count where Xenos can deploy
+These limits replace the Raids Filters' slot and allies-alliance choices for this list; the other Raids Filters still apply. The list SHALL estimate what one battle counts toward each objective: the node's enemy total for kills, its enemies of the faction for faction kills, its enemies' total health for damage, 5 uses for ability uses, and 1 for the featured hero's ability uses and for wins. Nodes that count nothing toward an estimated objective SHALL be left out. Nodes SHALL be ordered by what they count per energy for the first estimated objective, so the fewest battles are needed, then as raids are (including the event-point tie-breaks), and filled until every estimated objective is covered, within the attempts left and today's energy left; the raids get the energy and attempts the list leaves. When no objective can be estimated (ability damage, a damage type, the featured hero's damage, healing), the list SHALL show the 3 best nodes by enemy health per energy with their energy per battle, and say to play them until the objective is done. The list's note SHALL say that raids don't count these objectives, name the limits that apply, say whether the counts are estimates, and say that Arena and Onslaught battles count too. When more battles are needed than today's energy allows, the list SHALL say so.
+
+While the mission's `campaignWins` objective is also open, each battle won by hand SHALL also count as a campaign win, so the raids to go SHALL drop by the battles in the list, and the note SHALL say so; when they cover every win still needed, the raids SHALL say the battles above cover them.
+
+Severyn chose this (2026-10) over suggesting raids for these objectives, because raids count no kills or ability uses.
+
+#### Scenario: Mission 2
+
+- **GIVEN** mission 2 with 0 / 5 campaign raids and 0 / 10 Xenos kills
+- **THEN** a "Fight by hand" list of nodes where Xenos can deploy covers the 10 kills
+- **AND** the raids for the 5 campaign raids are listed below it on any node
 
 #### Scenario: Mission 7
 
 - **GIVEN** mission 7 with 0 / 20 alliance ability uses
-- **THEN** the section is titled "Battles for mission 7", shows "4 battles to go", lists only 5-slot nodes where Xenos can deploy and says Salvage Run ability uses count too
+- **THEN** the list holds only 5-slot nodes where Xenos can deploy, for 4 battles
 
-#### Scenario: Mission 7 part done
+#### Scenario: Mission 15
 
-- **GIVEN** mission 7 with 12 / 20 alliance ability uses
-- **THEN** the section shows "2 battles to go"
+- **GIVEN** mission 15 with 0 / 150 ability uses
+- **THEN** the list holds 5-slot nodes of any alliance, for 30 battles, and says Arena and Onslaught battles count too
+
+#### Scenario: Mission 20
+
+- **GIVEN** mission 20 with 0 / 10 featured-hero ability uses and 0 / 250 campaign wins
+- **THEN** the list holds 10 battles on nodes where Xenos can deploy, and the raids to go drop to 240
+
+#### Scenario: Mission 5 ability damage
+
+- **GIVEN** mission 5 with its ability damage and campaign wins open
+- **THEN** the list shows 3 nodes with their energy per battle and says to play them until the objective is done
+
+### Requirement: Raids are never kept to an alliance
+
+Raid suggestions SHALL use every candidate node whatever the mission's other objective, because raids count no alliance kills or featured-hero ability uses. Those objectives get their own list of battles to fight by hand instead.
+
+#### Scenario: Mission 16
+
+- **GIVEN** mission 16 with its Xenos kills and campaign raids open
+- **THEN** the raids are suggested on every candidate node, and the Xenos kills get a "Fight by hand" list of nodes where Xenos can deploy
 
 ### Requirement: Rows show the goals a node feeds
 
@@ -226,41 +261,18 @@ Each suggested node SHALL show the characters of the in-scope goals it feeds, as
 - **GIVEN** a suggested node that drops a material two goals still need
 - **THEN** its row shows both goals' character icons
 
-### Requirement: Battle suggestions are labeled as battles
-
-When the section suggests battles to fight by hand, its totals, energy budget and no-drop note SHALL say battles, not raids.
-
-#### Scenario: Mission 7 totals
-
-- **GIVEN** mission 7 with 12 / 20 alliance ability uses
-- **THEN** the totals and the no-drop totals count battles, and the budget reads "Energy left for these battles"
-
 ### Requirement: All-alliance suggestions wait for the featured hero
 
-While the featured hero does not resolve, the section SHALL NOT list nodes for an all-alliance objective, and SHALL say that the suggestions need the featured hero's alliance.
+While the featured hero does not resolve, the section SHALL NOT list battles for an objective kept to the featured hero's alliance, and SHALL say that the suggestions need the featured hero's alliance. Raids for the mission's campaign objective SHALL still be listed.
 
 #### Scenario: Featured hero unresolved
 
 - **GIVEN** mission 7 with alliance ability uses open and the featured hero not resolved
-- **THEN** no node is listed and the section says it needs the featured hero's alliance
+- **THEN** no battle is listed and the section says it needs the featured hero's alliance
 
-### Requirement: Raids keep to the alliance for the mission's other objective
+### Requirement: Faction kills get their own list of battles
 
-While the current mission's other open objective is `killWithAlliance`, `useAbilitiesFeatured` or `featuredDamage`, raid suggestions SHALL list only nodes where the featured hero's alliance can deploy, and the note SHALL say so. They SHALL wait for the featured hero to resolve, as all-alliance battles do.
-
-#### Scenario: Mission 16
-
-- **GIVEN** mission 16 with its Xenos kills and campaign raids open
-- **THEN** only nodes where Xenos can deploy are suggested
-
-#### Scenario: Alliance kills done
-
-- **GIVEN** mission 16 with its Xenos kills complete
-- **THEN** raid suggestions are not kept to Xenos nodes
-
-### Requirement: Faction kills get their own node list
-
-While the current mission has an open `killFaction` objective, the section SHALL show, apart from the main list, the nodes with that faction's enemies from any campaign, not repeating the main list's nodes, filled with the energy the main list leaves. Nodes with the most enemies SHALL come first, then they are ordered as raids are. Each raid SHALL count the node's enemy total toward the kills still needed. While lightning victories are also open, only nodes with a lightning-victory condition SHALL be listed.
+While the current mission has an open `killFaction` objective, its list of battles to fight by hand SHALL hold only nodes with that faction's enemies, from any campaign, and each battle SHALL count the node's enemies of that faction toward the kills still needed. Nodes with the most of them per energy SHALL come first, then they are ordered as raids are. While the mission's lightning victories are also open, nodes with a lightning-victory condition SHALL come first, so a quick win counts for both. These battles SHALL NOT reduce the lightning raids still needed, because a win by hand is not always a lightning victory.
 
 Assumptions:
 
@@ -269,16 +281,20 @@ Assumptions:
 #### Scenario: Mission 11
 
 - **GIVEN** mission 11 with 0 / 25 lightning victories and 40 / 100 Necron kills
-- **THEN** the event raids are listed, and a separate "Nodes with Necrons enemies" list covers the 60 kills still needed, without Indomitus nodes below 19
+- **THEN** the event raids are listed, and a "Fight by hand" list of nodes with Necron enemies covers the 60 kills still needed, nodes with a lightning-victory condition first
 
-#### Scenario: Most enemies first
+#### Scenario: Most enemies per energy first
 
-- **GIVEN** 20 Necron kills still needed, a 3-energy node with 3 enemies and a 6-energy node with 9 enemies
-- **THEN** the 9-enemy node comes first, with 3 raids
+- **GIVEN** 20 Necron kills still needed, a 3-energy node with 3 Necrons and a 6-energy node with 9 Necrons
+- **THEN** the 6-energy node comes first, with 3 battles
 
-### Requirement: A running Home Screen Event breaks ties among equal costs
+### Requirement: Event points break ties among equal costs
 
-While a Home Screen Event with a raid-point rule runs, the HRE suggestions SHALL rank nodes of the same energy cost by that event's points per raid, descending, before the goal, drop-rate and gold order. Energy cost SHALL stay the first key. With no rule-bearing event running, the order SHALL be unchanged.
+Among nodes of the same energy cost, the HRE suggestions SHALL put first, in order: the running Home Screen Event's points per raid, descending, when one with a raid-point rule runs; then nodes with a lightning-victory condition; then higher enemy power, because the HRE scores both; and then the goal, drop-rate and gold order. Energy cost SHALL stay the first key. Severyn approved the lightning and enemy-power keys after the wiki check (2026-10).
+
+Assumptions:
+
+- The wiki's HRE campaign points are 3 per energy, plus 1 per difficulty skull, plus 1 per skull for a lightning victory, plus some for enemy power.
 
 #### Scenario: Equal cost, more event points first
 
@@ -290,10 +306,15 @@ While a Home Screen Event with a raid-point rule runs, the HRE suggestions SHALL
 - **GIVEN** a running event gives I21 (5 energy) 15 points per raid and I20 (3 energy) none
 - **THEN** I20 is listed first
 
+#### Scenario: Lightning condition next
+
+- **GIVEN** no Home Screen Event runs, and I18 (no lightning condition) and I19 both cost 5 energy
+- **THEN** I19 is listed before I18
+
 #### Scenario: Event without raid points
 
 - **GIVEN** Faction Boost (no raid-point rule) runs
-- **THEN** the suggestions are as with no event running
+- **THEN** the event adds no key, and the lightning and enemy-power keys still apply
 
 ### Requirement: HRE suggestions show the running event's points
 
@@ -322,17 +343,3 @@ The HRE tab SHALL NOT show the project selector, the Raids Filters action or the
 
 - **GIVEN** a project is selected on Today
 - **THEN** the HRE suggestions still rank nodes by every active goal
-
-### Requirement: Any-unit ability uses get 5-slot raids
-
-When the current mission has no open campaign, lightning, all-alliance lineup or alliance-ability objective but has an open ability-use objective for any units (mission 15, and mission 3 once its campaign wins are done), the raid suggestions SHALL serve it as raids on 5-slot nodes, counting 5 ability uses per raid, so the raids to go are `ceil(uses to go / 5)`. The note SHALL say that each raid counts about 5 uses and that uses in Arena and Onslaught count too. A running Home Screen Event SHALL rank these raids as it ranks any HRE raids.
-
-#### Scenario: Mission 15
-
-- **GIVEN** mission 15 with 0 of 150 ability uses
-- **THEN** 30 raids on 5-slot nodes are suggested
-
-#### Scenario: Almost done
-
-- **GIVEN** mission 15 with 148 of 150 ability uses
-- **THEN** 1 raid is suggested

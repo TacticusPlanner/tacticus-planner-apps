@@ -24,7 +24,9 @@ vi.mock("../team-recs/team-list", () => ({
   ),
 }))
 
-const ready = (deliveredSize: number): HreTeam => ({
+const ready = (
+  deliveredSize: number
+): Extract<HreTeam, { status: "ready" }> => ({
   status: "ready",
   rule: "ranged",
   eligibleCount: deliveredSize,
@@ -93,6 +95,32 @@ describe("HreTeamCard", () => {
     renderCard(abilities(5))
     expect(screen.getByTestId("hre-team-rule")).toHaveTextContent(
       "hre:teams.abilitiesTrackFew|size=5"
+    )
+  })
+
+  it("titles a campaign team", () => {
+    render(
+      <HreTeamCard
+        alliance="Xenos"
+        hero="Zapspitta"
+        plan={{ mode: "battle", preferPsychic: false, reserve: null }}
+        tokens={null}
+        view={{
+          status: "ready",
+          team: { ...ready(5), rule: "strongest", alliance: null },
+        }}
+      />
+    )
+    expect(screen.getByText("hre:teams.titleBattle")).toBeInTheDocument()
+    expect(screen.getByTestId("hre-team-rule")).toHaveTextContent(
+      "hre:teams.strongest"
+    )
+  })
+
+  it("words a strongest-units Onslaught pool by its track", () => {
+    renderCard({ ...ready(8), rule: "strongest" })
+    expect(screen.getByTestId("hre-team-rule")).toHaveTextContent(
+      "hre:teams.strongestTrack|size=8,alliance=common:alliances.Chaos"
     )
   })
 

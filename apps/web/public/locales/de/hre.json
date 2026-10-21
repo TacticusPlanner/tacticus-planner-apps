@@ -46,28 +46,26 @@
     }
   },
   "tips": {
-    "campaignWins": "Raide zuerst die Indomitus-Knoten 6 bis 14 für 3 Energie; Raids zählen als Siege. Versuche, Mission 19 in Woche 1 zu erreichen.",
-    "campaignRaids": "Raide zuerst die Indomitus-Knoten 6 bis 14 für 3 Energie, danach die Knoten ab 15 für 5 Energie.",
-    "arenaBattles": "Spare vor Tag 1 7 bis 8 Arenamarken, damit die Missionen 4, 10 und 15 schnell erledigt sind.",
-    "guildRaids": "Behalte 2 Gilden-Raid-Marken für Mission 8.",
-    "onslaught": "Behalte eine Onslaught-Marke für Mission 12.",
-    "salvageRuns": "Behalte 2 Plünderungslauf-Marken für Mission 7.",
-    "lightningVictories": "Raids auf den Knoten eines laufenden Kampagnenevents zählen als Blitzsiege.",
-    "killEnemies": "Setze Einheiten mit Flächenschaden auf leichten Kampagnenknoten ein.",
-    "killWithMelee": "Setze Nahkampfeinheiten mit Flächenangriffen auf leichten Kampagnenknoten ein.",
-    "killWithRanged": "Setze Fernkampfeinheiten mit vielen Treffern auf leichten Kampagnenknoten ein.",
-    "killWithAlliance": "Setze Einheiten der Event-Allianz mit Flächenschaden auf leichten Knoten ein.",
-    "killFaction": "Spiele frühe Kampagnenknoten erneut, auf denen diese Fraktion der Gegner ist.",
-    "damage": "Arena- und Onslaught-Kämpfe verursachen schnell viel Schaden.",
-    "abilityDamage": "Setze Einheiten ein, deren aktive Fähigkeiten mehrere Gegner treffen.",
+    "campaignWins": "Raids zählen als Siege, ebenso jede selbst gewonnene Schlacht.",
+    "campaignRaids": "Jeder Raid zählt, also raide die günstigsten Knoten.",
+    "lightningVictories": "Raids auf Knoten eines laufenden Kampagnen-Events zählen als Blitzsiege.",
+    "killEnemies": "Einheiten mit Flächenangriffen besiegen mehrere Gegner pro Zug.",
+    "killWithMelee": "Nahkampfeinheiten mit Flächen- oder Mehrfachangriffen besiegen Gegner am schnellsten.",
+    "killWithRanged": "Fernkampfeinheiten mit vielen Treffern besiegen Gegner am schnellsten.",
+    "killWithAlliance": "Flächenangriffe der Event-Allianz besiegen mehrere Gegner pro Zug.",
+    "killFaction": "Knoten mit vielen Gegnern dieser Fraktion brauchen die wenigsten Schlachten.",
+    "damage": "Starke Einheiten mit vielen Treffern verursachen den meisten Schaden.",
+    "abilityDamage": "Einheiten, deren aktive Fähigkeiten mehrere Gegner treffen, kommen am schnellsten voran.",
     "damageType": "Setze Einheiten mit diesem Schadenstyp ein und nutze ihre Fähigkeiten jede Runde.",
-    "featuredDamage": "Setze den Event-Helden in Arena und Onslaught ein.",
-    "useAbilities": "Auf leichten Kampagnenknoten kannst du in jedem Kampf alle Fähigkeiten einsetzen.",
-    "useAbilitiesAlliance": "Stelle ein Team der Event-Allianz auf und setze in jedem Kampf alle Fähigkeiten ein.",
-    "useAbilitiesFeatured": "Nimm den Event-Helden mit und setze in jedem Kampf seine aktive Fähigkeit ein.",
-    "heal": "Nimm einen Heiler oder Reparierer auf leichte Kampagnenknoten mit.",
+    "featuredDamage": "Setze den vorgestellten Helden in jeder Schlacht ein und nutze seine aktive Fähigkeit.",
+    "useAbilities": "Nutze in jeder Schlacht die aktive Fähigkeit jeder Einheit. Kriegsmaschinen zählen nicht.",
+    "useAbilitiesAlliance": "Nutze in jeder Schlacht die aktive Fähigkeit jeder Allianz-Einheit.",
+    "useAbilitiesFeatured": "Nutze in jeder Schlacht die aktive Fähigkeit des vorgestellten Helden.",
+    "heal": "Nimm einen Heiler oder Mechaniker mit und lass ihn jeden Zug heilen.",
     "winWithoutSummons": "Lass Beschwörer aus dem Team.",
-    "winWithAllianceLineup": "Setze dein stärkstes Team der Event-Allianz auf leichten Knoten ein."
+    "winWithAllianceLineup": "Setze nur Einheiten der Event-Allianz ein.",
+    "reserve_one": "Behalte {{count}} {{mode}}-Token für {{mission}}.",
+    "reserve_other": "Behalte {{count}} {{mode}}-Token für {{mission}}."
   },
   "tracker": {
     "current": "Aktuelle Mission",
@@ -84,13 +82,13 @@
     "markDoneLabel": "Erledigt: {{objective}}"
   },
   "raids": {
-    "title": "Raids für {{mission}}",
-    "titleNone": "Kampagnenraids",
+    "title": "Kampagne für {{mission}}",
+    "titleNone": "Kampagnenschlachten",
     "toGo_one": "Noch {{count}} Schlacht",
     "toGo_other": "Noch {{count}} Schlachten",
-    "note": "Die günstigsten Kampagnenknoten, die etwas droppen. Bei gleichen Kosten zuerst Knoten mit einem Drop für deine Ziele, nach Droprate, dann nach Gold.",
+    "note": "Raids für das Kampagnenziel: die günstigsten Kampagnenknoten, die etwas droppen. Bei gleichen Kosten zuerst Knoten mit mehr Eventpunkten, dann Knoten mit einem Drop für deine Ziele, nach Droprate, dann nach Gold.",
     "noteLightning": "Raids auf den Knoten des laufenden Kampagnenevents zählen als Blitzsiege, daher werden nur diese Knoten gezeigt.",
-    "budget": "Energie übrig für diese Raids: {{energy}}.",
+    "budget": "Heute übrige Energie: {{energy}}.",
     "raidCount_one": "{{count}} Raid",
     "raidCount_other": "{{count}} Raids",
     "energy": "{{energy}} Energie",
@@ -121,26 +119,29 @@
     },
     "noDrop": {
       "title": "Oder die Indomitus-Schlachten ohne Drops (6 bis 14)",
-      "note": "Sie kosten je 3 Energie, droppen aber nichts und geben wenig Gold. Jeder Raid hier ersetzt einen oben.",
-      "noteBattles": "Sie kosten je 3 Energie, droppen aber nichts und geben wenig Gold. Jeder Kampf hier ersetzt einen oben."
+      "note": "Sie kosten je 3 Energie, droppen aber nichts und geben wenig Gold. Jeder Raid hier ersetzt einen oben."
     },
-    "titleBattles": "Kämpfe für {{mission}}",
-    "noteBattles": "Fähigkeitseinsätze zählen nur in selbst geführten Kämpfen, also kämpfe diese Knoten mit {{slots}} Plätzen von Hand mit einem vollen {{alliance}}-Team. Einsätze in Plünderungsläufen und anderen Modi zählen auch, also aktualisiere danach deinen Fortschritt. Günstigste zuerst, wie bei Raids.",
-    "noteLineupBattles": "Raids haben keine Aufstellung und zählen daher nicht: gewinne diese von Hand mit einem reinen {{alliance}}-Team. Arena-Siege mit diesem Team zählen auch. Günstigste zuerst, wie bei Raids.",
-    "noteAbilityRaids": "Jeder Raid auf einem Knoten mit {{slots}} Plätzen zählt etwa {{slots}} Fähigkeitseinsätze, einen pro Einheit, daher werden nur Knoten mit {{slots}} Plätzen gelistet. Einsätze in Arena und Onslaught zählen auch, also aktualisiere danach deinen Fortschritt.",
-    "budgetBattles": "Energie übrig für diese Kämpfe: {{energy}}.",
     "battleCount_one": "{{count}} Kampf",
     "battleCount_other": "{{count}} Kämpfe",
-    "noteAllianceNodes": "Nur Knoten, auf denen {{alliance}}-Einheiten eingesetzt werden können, damit das andere Ziel der Mission auch vorankommt.",
-    "faction": {
-      "title": "Knoten mit {{faction}}-Gegnern",
-      "note_one": "Für den letzten fehlenden {{faction}}-Kill: zuerst die Knoten mit den meisten {{faction}}-Gegnern, damit es die wenigsten Raids braucht, mit der Energie, die nach den Raids oben übrig bleibt. Jeder Raid zählt die Gegner des Knotens.",
-      "note_other": "Für die noch fehlenden {{count}} {{faction}}-Kills: zuerst die Knoten mit den meisten {{faction}}-Gegnern, damit es die wenigsten Raids braucht, mit der Energie, die nach den Raids oben übrig bleibt. Jeder Raid zählt die Gegner des Knotens.",
-      "none": "Kein raidbarer Knoten mit {{faction}}-Gegnern passt in die heute übrige Energie.",
-      "lightning": "Nur Knoten mit Blitzsieg-Bedingung, damit jeder Raid für beide Ziele zählt."
-    },
     "eventPoints": "{{points}} Eventpunkte",
-    "noteHomeScreenEvent": "{{event}} läuft auch: Bei gleichen Kosten kommen Knoten mit mehr Punkten dafür zuerst."
+    "noteHomeScreenEvent": "{{event}} läuft auch: Bei gleichen Kosten kommen Knoten mit mehr Punkten dafür zuerst.",
+    "raidsTitle": "Raids",
+    "coveredByBattles": "Die Schlachten oben decken die heute noch nötigen Siege ab.",
+    "energyPerBattle": "{{energy}} Energie pro Schlacht",
+    "battles": {
+      "title": "Selbst kämpfen",
+      "note": "Raids zählen keine Kills, keinen Schaden, keine Heilung, keine Fähigkeitseinsätze und keine Siege mit Aufstellung, also kämpfe diese Schlachten selbst.",
+      "slots": "Nur Knoten mit {{slots}} Plätzen, damit die Fähigkeiten jeder Einheit zählen.",
+      "alliance": "Nur Knoten, auf denen {{alliance}}-Einheiten eingesetzt werden können.",
+      "faction": "Nur Knoten mit {{faction}}-Gegnern, die meisten pro Energie zuerst.",
+      "lightning": "Knoten mit Blitzsieg-Bedingung kommen zuerst, damit ein schneller Sieg auch als Blitzsieg zählt.",
+      "countsAsWins": "Jeder Sieg hier zählt auch als Kampagnensieg, unten sind also weniger Raids nötig.",
+      "estimate": "Die Anzahlen sind Schätzungen anhand der Gegner jedes Knotens.",
+      "openEnded": "Wie viele Schlachten das braucht, lässt sich nicht schätzen, also spiele diese, bis es geschafft ist.",
+      "modes": "Arena- und Onslaught-Schlachten zählen auch, also aktualisiere danach deinen Fortschritt.",
+      "more": "Nach der heutigen Energie sind weitere Schlachten nötig.",
+      "none": "Kein Kampagnenknoten passt zu den Zielen dieser Mission."
+    }
   },
   "tokens": {
     "title": "Benötigte Marken",
@@ -228,6 +229,11 @@
     "abilitiesTrackFew": "Deine {{size}} stärksten {{alliance}}-Einheiten: Jeder Fähigkeitseinsatz zählt, ohne Ersatz für gefallene.",
     "hse_one": "{{count}} Einheit hier punktet auch für {{event}}, so kommen beide Events voran.",
     "hse_other": "{{count}} Einheiten hier punkten auch für {{event}}, so kommen beide Events voran.",
-    "hseNone": "Keine dieser Einheiten punktet für {{event}}."
+    "hseNone": "Keine dieser Einheiten punktet für {{event}}.",
+    "melee": "Deine 5 stärksten Nahkampfeinheiten.",
+    "strongest": "Deine 5 stärksten Einheiten.",
+    "strongestTrack": "Deine {{size}} stärksten {{alliance}}-Einheiten: 5 starten, die übrigen ersetzen gefallene.",
+    "strongestTrackFew": "Deine {{size}} {{alliance}}-Einheiten: weniger als 5, also keine Reserve.",
+    "titleBattle": "Kampagnenteam"
   }
 }

@@ -4,6 +4,7 @@ import {
   advanceMission,
   clampProgress,
   DEFAULT_HRE_PROGRESS,
+  HRE_PROGRESS_ORDER,
   parseHreProgress,
   type HreProgress,
 } from "./hre-progress"
@@ -32,7 +33,14 @@ function writeAll(entries: Record<string, HreProgress>) {
   try {
     window.localStorage.setItem(
       HRE_PROGRESS_STORAGE_KEY,
-      JSON.stringify(entries)
+      JSON.stringify(
+        Object.fromEntries(
+          Object.entries(entries).map(([key, entry]) => [
+            key,
+            { ...entry, order: HRE_PROGRESS_ORDER },
+          ])
+        )
+      )
     )
   } catch {
     // Best-effort: the in-memory value still updates.

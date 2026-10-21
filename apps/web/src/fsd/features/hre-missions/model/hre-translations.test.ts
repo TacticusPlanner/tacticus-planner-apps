@@ -6,6 +6,7 @@ import en from "../../../../../public/locales/en/hre.json"
 import es from "../../../../../public/locales/es/hre.json"
 import fr from "../../../../../public/locales/fr/hre.json"
 import { HRE_OBJECTIVE_KINDS, hreMission } from "./hre-missions"
+import { isTokenObjective } from "./hre-objectives"
 import { objectiveTextKey } from "./hre-objective-text"
 
 function leafKeys(value: unknown, prefix = ""): string[] {
@@ -45,21 +46,23 @@ describe("HRE translations", () => {
     expect(leafKeys(resource).sort()).toEqual(leafKeys(en).sort())
   })
 
-  it("words every objective kind and gives it a tip", () => {
+  it("words every objective kind and gives every non-token kind a tip", () => {
     for (const kind of HRE_OBJECTIVE_KINDS) {
       const objectives = en.objectives as Record<string, unknown>
       expect(objectives[kind] ?? objectives[`${kind}_other`], kind).toBeTruthy()
-      expect((en.tips as Record<string, string>)[kind], kind).toBeTruthy()
+      const tip = (en.tips as Record<string, string>)[kind]
+      if (isTokenObjective(kind)) expect(tip, kind).toBeUndefined()
+      else expect(tip, kind).toBeTruthy()
     }
   })
 
   it("words Zapspitta's mission 10 for the Xenos alliance", () => {
     const zapspitta = { alliance: "Xenos", hero: "Zapspitta" }
-    expect(word(10, 0, zapspitta)).toBe("Play 4 Arena battles")
-    expect(word(10, 1, zapspitta)).toBe("Win 15 battles with an all-Xenos team")
-    expect(word(20, 0, zapspitta)).toBe("Win 250 campaign battles")
-    expect(word(20, 1, zapspitta)).toBe("Use abilities 10 times with Zapspitta")
-    expect(word(12, 0, zapspitta)).toBe("Play 1 Onslaught battle")
+    expect(word(10, 0, zapspitta)).toBe("Win 15 battles with an all-Xenos team")
+    expect(word(10, 1, zapspitta)).toBe("Play 4 Arena battles")
+    expect(word(20, 0, zapspitta)).toBe("Use abilities 10 times with Zapspitta")
+    expect(word(20, 1, zapspitta)).toBe("Win 250 campaign battles")
+    expect(word(12, 1, zapspitta)).toBe("Play 1 Onslaught battle")
     expect(word(5, 0, zapspitta)).toBe("Deal 10,000 damage with abilities")
   })
 
