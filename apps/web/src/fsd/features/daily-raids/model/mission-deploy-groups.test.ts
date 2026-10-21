@@ -31,9 +31,15 @@ describe("missionDeployGroups", () => {
       {
         factions: ["AstraMilitarum", "Ultramarines"],
         slots: 5,
+        fewestSlots: 4,
         campaigns: ["Indomitus", "Indomitus Elite"],
       },
-      { factions: ["Orks"], slots: 5, campaigns: ["Octarius"] },
+      {
+        factions: ["Orks"],
+        slots: 5,
+        fewestSlots: 5,
+        campaigns: ["Octarius"],
+      },
     ])
   })
 })

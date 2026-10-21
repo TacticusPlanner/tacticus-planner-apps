@@ -10,6 +10,8 @@ export type HreHandBattlesNotes = {
   slots?: number
   /** The localized alliance the nodes are kept to. */
   alliance: string | null
+  /** The localized faction the nodes are kept to (the featured hero's). */
+  heroFaction?: string | null
   /** The localized faction whose enemies the nodes must have. */
   faction: string | null
   preferLightning: boolean
@@ -36,6 +38,9 @@ export function HreHandBattles({
     notes.slots ? t("raids.battles.slots", { slots: notes.slots }) : null,
     notes.alliance
       ? t("raids.battles.alliance", { alliance: notes.alliance })
+      : null,
+    notes.heroFaction
+      ? t("raids.battles.heroFaction", { faction: notes.heroFaction })
       : null,
     notes.faction
       ? t("raids.battles.faction", { faction: notes.faction })

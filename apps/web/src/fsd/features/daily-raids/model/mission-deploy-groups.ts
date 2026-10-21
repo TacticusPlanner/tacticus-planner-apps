@@ -7,6 +7,8 @@ export type MissionDeployGroup = {
   factions: readonly string[]
   /** The most deployment slots among the group's nodes: the team's size. */
   slots: number
+  /** The fewest deployment slots among the group's nodes: those take the team's first units. */
+  fewestSlots: number
   /** The campaign names of the group's nodes, in list order. */
   campaigns: string[]
 }
@@ -25,8 +27,14 @@ export function missionDeployGroups(
     if (!row.deploy) continue
     const factions = [...row.deploy.factions].sort()
     const key = factions.join("|")
-    const group = groups.get(key) ?? { factions, slots: 0, campaigns: [] }
+    const group = groups.get(key) ?? {
+      factions,
+      slots: 0,
+      fewestSlots: row.deploy.slots,
+      campaigns: [],
+    }
     group.slots = Math.max(group.slots, row.deploy.slots)
+    group.fewestSlots = Math.min(group.fewestSlots, row.deploy.slots)
     const name = campaignName(row.battleId)
     if (name && !group.campaigns.includes(name)) group.campaigns.push(name)
     groups.set(key, group)

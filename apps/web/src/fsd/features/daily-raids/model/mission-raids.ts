@@ -24,6 +24,8 @@ export type MissionBattlesRequest = {
   slots?: number
   /** Only nodes where this alliance can deploy, when set. */
   alliance?: string
+  /** Only nodes where this faction can deploy (the featured hero's), when set. */
+  heroFaction?: string
   /** Only nodes with this faction's enemies, when set. */
   faction?: string
   /** Nodes with a lightning-victory condition first (lightning victories are open). */
@@ -278,7 +280,7 @@ export function planMissionRaids(
 /**
  * The battles to fight by hand for the mission's manual objectives, over every node that passes
  * `passesBattlesFilter` (drops or not: a kill counts anywhere). Nodes with a lightning condition
- * come first while lightning victories are open; then the most of the first estimated objective
+ * come first while lightning victories are open; then the nodes that feed a goal; then the most of the first estimated objective
  * per energy (the most enemies, enemy health or ability uses; for wins, the cheapest); then
  * `compareCandidates`. Each node gets as many battles as its attempts, the budget and the
  * objective still needing the most battles allow. Without any estimate, the best few nodes are
@@ -308,12 +310,12 @@ function planMissionBattles(
     )
     .sort(
       (a, b) =>
-        Number(!input.goalNodesByBattle.has(a.id)) -
-          Number(!input.goalNodesByBattle.has(b.id)) ||
         (request.preferLightning
           ? Number(a.lightningCondition === false) -
             Number(b.lightningCondition === false)
           : 0) ||
+        Number(!input.goalNodesByBattle.has(a.id)) -
+          Number(!input.goalNodesByBattle.has(b.id)) ||
         efficiency(b) - efficiency(a) ||
         sort(a, b)
     )

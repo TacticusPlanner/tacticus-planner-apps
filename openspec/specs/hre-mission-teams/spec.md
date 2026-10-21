@@ -8,7 +8,7 @@ Suggests teams from the player's synced roster for the current HRE mission: a te
 
 ### Requirement: The mission's manual objectives share a team per campaign
 
-When the current mission has open objectives that only progress in battles played by hand, the tab SHALL suggest, under the list of battles to fight by hand, one team for all of them per group of listed nodes whose campaigns allow the same allied factions, titled "Team for" and the group's campaigns. Each team SHALL hold only units of those factions, at most the group's largest deployment slot count, built in Power mode with the shared team engine, so it can deploy on every node of its group (Severyn, 2026-10). The team SHALL follow the strictest rule among those objectives, in this order:
+When the current mission has open objectives that only progress in battles played by hand, the tab SHALL suggest, under the list of battles to fight by hand, one team for all of them per group of listed nodes whose campaigns allow the same allied factions, titled "Team for" and the group's campaigns. Each team SHALL hold only units of those factions, at most the group's largest deployment slot count (a node without a slot count takes 5), built in Power mode with the shared team engine, so it can deploy on every node of its group (Severyn, 2026-10). When some of the group's nodes take fewer units, the card SHALL say to field its first units there, since the team is listed strongest first. The teams SHALL follow the listed nodes only: when no battle is listed (no energy left, or none passes the limits), no campaign team is shown. The team SHALL follow the strictest rule among those objectives, in this order:
 
 1. **Featured hero** (`useAbilitiesFeatured`, `featuredDamage`): the featured hero leads the team when the player has unlocked them.
 2. **Alliance** (`winWithAllianceLineup`, `useAbilitiesAlliance`, `killWithAlliance`): only units of the featured hero's alliance.
@@ -24,6 +24,11 @@ Severyn chose one combined team (2026-10): no mission's two objectives ask for t
 
 - **GIVEN** the list holds Indomitus nodes (Imperial factions, 5 slots) and Octarius nodes (Orks, 4 slots)
 - **THEN** a "Team for Indomitus" card holds only units of Indomitus's allied factions, and a "Team for Octarius" card holds up to 4 Orks
+
+#### Scenario: Group with fewer slots on some nodes
+
+- **GIVEN** a group of Indomitus nodes with 5 slots and one with 4
+- **THEN** its card holds 5 units and says some battles deploy only 4 units, so field the first 4
 
 #### Scenario: All-Xenos mission
 
