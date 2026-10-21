@@ -8,6 +8,10 @@ import type {
   MissionRaidPlan,
   MissionRaidsRequest,
 } from "../../model/mission-raids"
+import {
+  missionDeployGroups,
+  type MissionDeployGroup,
+} from "../../model/mission-deploy-groups"
 import { emptyRaidsFilters } from "../../model/raids-filters/raids-filters.domain"
 import { useRaidsFilters } from "../../model/raids-filters/use-raids-filters"
 import { hasHomeScreenEventRule } from "../../model/home-screen-event-rules"
@@ -56,11 +60,15 @@ export function HreRaidsSection({
   notice,
   remainingBattles,
   daysLeft,
+  renderTeams,
 }: {
   request: HreRaidsRequest | null
   notice: ReactNode
   remainingBattles: number
   daysLeft: number
+  /** The teams for the battles to fight by hand: one per group of nodes that allow the same
+   * factions, shown under the list. */
+  renderTeams?: (groups: readonly MissionDeployGroup[]) => ReactNode
 }) {
   const { t } = useTranslation("hre")
   // A running Home Screen Event with a raid rule ranks the nodes too, so both events progress.
@@ -163,6 +171,14 @@ export function HreRaidsSection({
               view={rowsView}
             />
           ) : null}
+          {manual && plan.battles && renderTeams
+            ? renderTeams(
+                missionDeployGroups(
+                  plan.battles.rows,
+                  (battleId) => locations?.get(battleId)?.campaignName
+                )
+              )
+            : null}
           {request.raids ? (
             <RaidsList
               eventOnly={request.raids.eventOnly}

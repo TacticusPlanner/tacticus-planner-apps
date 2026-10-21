@@ -66,7 +66,10 @@ export type BuildHreTeamInput = {
   plan: Pick<
     HreTeamPlan,
     "rule" | "mode" | "size" | "support" | "preferPsychic"
-  >
+  > & {
+    /** Only units of these factions: the allied factions a campaign lets you deploy. */
+    factions?: readonly string[]
+  }
   /** The featured hero's alliance; null when the hero does not resolve. */
   alliance: string | null
   featuredCharacterId: string | null
@@ -121,24 +124,35 @@ export function buildHreTeam(input: BuildHreTeamInput): HreTeam | null {
   const allianceOf = (character: TeamRosterCharacter) =>
     input.catalog.get(character.unitId)?.alliance
   const featured = input.featuredCharacterId as UnitId | null
-  let roster = all
+  const deployable = plan.factions
+    ? all.filter((character) =>
+        plan.factions!.includes(
+          input.catalog.get(character.unitId)?.faction ?? ""
+        )
+      )
+    : all
+  let roster = deployable
   let alliance: string | null = null
   const pools: TeamPoolSpec[] = []
   if (plan.rule === "alliance") {
     if (!input.alliance) return null
     alliance = input.alliance
-    roster = all.filter((character) => allianceOf(character) === alliance)
+    roster = deployable.filter(
+      (character) => allianceOf(character) === alliance
+    )
   } else if (plan.rule === "summonFree") {
-    roster = all.filter((character) => !input.summoners.has(character.unitId))
+    roster = deployable.filter(
+      (character) => !input.summoners.has(character.unitId)
+    )
   } else if (plan.rule === "abilities" || plan.rule === "strongest") {
     // Any units: every ability use, kill, hit or heal counts.
   } else if (plan.rule === "ranged") {
-    roster = all.filter(
+    roster = deployable.filter(
       (character) => !!input.catalog.get(character.unitId)?.rangedDamage
     )
   } else if (plan.rule === "melee") {
     // Units without a ranged attack always strike in melee.
-    roster = all.filter(
+    roster = deployable.filter(
       (character) => !input.catalog.get(character.unitId)?.rangedDamage
     )
   } else {

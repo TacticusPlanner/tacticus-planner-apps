@@ -148,6 +148,20 @@ describe("buildHreTeam", () => {
     expect(ids(team)).toContain("ultraCalgar")
   })
 
+  it("fields only the factions a campaign allows, sized to its slots", () => {
+    const team = build({
+      plan: {
+        rule: "strongest",
+        factions: ["Ultramarines", "BloodAngels", "SpaceWolves", "DarkAngels"],
+        size: 4,
+      },
+    })
+    expect(team).toMatchObject({ status: "ready", eligibleCount: 5 })
+    expect(ids(team)).toHaveLength(4)
+    expect(ids(team)).not.toContain("astraPrimarisPsy")
+    expect(ids(team)).not.toContain("thousAhriman")
+  })
+
   it("fields the strongest units of any alliance for ability uses in Arena", () => {
     const team = build({ plan: { rule: "abilities", mode: "arena", size: 5 } })
     expect(team).toMatchObject({ status: "ready", alliance: null })

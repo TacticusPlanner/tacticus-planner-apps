@@ -234,6 +234,7 @@
     "strongest": "Your 5 strongest units.",
     "strongestTrack": "Your {{size}} strongest {{alliance}} units: 5 start, the rest replace those who fall.",
     "strongestTrackFew": "Your {{size}} {{alliance}} units: fewer than 5, so there are no spares.",
-    "titleBattle": "Campaign team"
+    "titleBattle": "Campaign team",
+    "titleCampaigns": "Team for {{campaigns}}"
   }
 }

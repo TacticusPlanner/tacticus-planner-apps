@@ -27,6 +27,7 @@ import {
 
 import { useHreTeamRecommendations } from "../model/use-hre-team-recommendations"
 import { useRunningHse } from "../model/use-running-hse"
+import { HreCampaignTeams } from "./hre/hre-campaign-teams"
 import { HreTeamCard } from "./hre/hre-team-card"
 import { useHreTutorial } from "./hre-page.tutorial"
 
@@ -34,7 +35,7 @@ import { useHreTutorial } from "./hre-page.tutorial"
  * Dailies > HRE: the running Hero Release Event (or the next one as a read-only preview). On a
  * running event: the current mission with its progress inputs and tips, the campaign battles to
  * fight by hand for its manual objectives and the raids for its campaign objective, the mission's
- * teams (a campaign team, and one per token mode it plays; each led by a running HSE's scoring
+ * teams (one per campaign of the battles to fight by hand, and one per token mode it plays; each led by a running HSE's scoring
  * units), the tokens the remaining missions need and the event pace. Every event lists all missions and the remaining-campaign
  * summary. Desktop: missions on the left, the rest on the right. Mobile: one column with the
  * mission list last, collapsed behind "All missions".
@@ -71,7 +72,10 @@ export function HrePage() {
     : null
   const surplus = running ? arenaSurplus(progress, tokens?.arena ?? null) : 0
   const campaignPlan = running ? selectCampaignPlan(progress, surplus) : null
-  const teamPlans = running ? selectTeamPlans(progress, surplus) : []
+  const allTeamPlans = running ? selectTeamPlans(progress, surplus) : []
+  // The campaign team plays the battles to fight by hand: it is built per campaign under that list.
+  const battlePlan = allTeamPlans.find((plan) => plan.mode === "battle") ?? null
+  const teamPlans = allTeamPlans.filter((plan) => plan.mode !== "battle")
   const hse = useRunningHse()
   const teams = useHreTeamRecommendations({
     plans: teamPlans,
@@ -137,6 +141,21 @@ export function HrePage() {
           : 0
       }
       remainingBattles={remainingCampaignBattles(shown)}
+      renderTeams={
+        battlePlan
+          ? (groups) => (
+              <HreCampaignTeams
+                alliance={hero?.alliance ?? null}
+                allianceName={allianceName}
+                featuredCharacterId={instance?.featuredCharacterId ?? null}
+                groups={groups}
+                hero={heroName}
+                hse={hse}
+                plan={battlePlan}
+              />
+            )
+          : undefined
+      }
       request={
         campaignPlan
           ? {

@@ -255,6 +255,40 @@ describe("planHookMissionRaids: battles fought by hand", () => {
     ])
   })
 
+  it("puts a node that feeds a goal first and carries each node's deployment rules", () => {
+    const result = plan({
+      calculation: {
+        today: { entries: [] },
+        missionGoalNodes: new Map([
+          [
+            id("G6"),
+            { priority: 1, goalIds: ["g1"], resourceId: "shards_necroWarden" },
+          ],
+        ]),
+      } as unknown as DailyRaidsCalculationViewModel,
+      request: {
+        battlesToGo: 0,
+        eventOnly: false,
+        manual: manual({ needs: [{ toGo: 1, per: "battle" }] }),
+      },
+      availableBattles: [
+        { ...node("C3", 3), alliesFactions: ["Orks"], slots: 4 },
+        { ...node("G6", 6), alliesFactions: ["Ultramarines"], slots: 5 },
+      ],
+      filterBattlesById: new Map([
+        ["C3", filterBattle("Standard")],
+        ["G6", filterBattle("Standard")],
+      ]),
+    })
+    expect(result.battles?.rows).toEqual([
+      expect.objectContaining({
+        battleId: "G6",
+        raids: 1,
+        deploy: { factions: ["Ultramarines"], slots: 5 },
+      }),
+    ])
+  })
+
   it("counts each faction's own enemies, most per energy first, so the kills take the fewest battles", () => {
     const result = plan({
       calculation: null,
