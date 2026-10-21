@@ -134,6 +134,7 @@
       "slots": "Solo nodos de {{slots}} huecos, para que cuenten las habilidades de todas las unidades.",
       "alliance": "Solo nodos donde pueden desplegarse unidades {{alliance}}.",
       "faction": "Solo nodos con enemigos {{faction}}, primero los que más tienen por energía.",
+      "heroFaction": "Solo nodos donde pueden desplegarse unidades {{faction}}, para que el héroe destacado pueda jugarlos.",
       "lightning": "Primero los nodos con condición de victoria relámpago, para que una victoria rápida cuente también como victoria relámpago.",
       "countsAsWins": "Cada victoria aquí cuenta también como victoria de campaña, así que abajo hacen falta menos incursiones.",
       "estimate": "Las cantidades son estimaciones según los enemigos de cada nodo.",

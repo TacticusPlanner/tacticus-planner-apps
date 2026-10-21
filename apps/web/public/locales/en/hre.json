@@ -134,6 +134,7 @@
       "slots": "Only {{slots}}-slot nodes, so every unit's abilities count.",
       "alliance": "Only nodes where {{alliance}} units can deploy.",
       "faction": "Only nodes with {{faction}} enemies, the most per energy first.",
+      "heroFaction": "Only nodes where {{faction}} units can deploy, so the featured hero can play them.",
       "lightning": "Nodes with a lightning-victory condition come first, so a quick win also counts as a lightning victory.",
       "countsAsWins": "Each win here also counts as a campaign win, so fewer raids are needed below.",
       "estimate": "The counts are estimates from each node's enemies.",

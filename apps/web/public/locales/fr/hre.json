@@ -134,6 +134,7 @@
       "slots": "Seulement des nœuds à {{slots}} places, pour que les capacités de chaque unité comptent.",
       "alliance": "Seulement des nœuds où les unités {{alliance}} peuvent être déployées.",
       "faction": "Seulement des nœuds avec des ennemis {{faction}}, le plus par énergie d'abord.",
+      "heroFaction": "Seulement des nœuds où les unités {{faction}} peuvent être déployées, pour que le héros vedette puisse les jouer.",
       "lightning": "Les nœuds avec une condition de victoire éclair passent d'abord, pour qu'une victoire rapide compte aussi comme victoire éclair.",
       "countsAsWins": "Chaque victoire ici compte aussi comme victoire de campagne, il faut donc moins de raids ci-dessous.",
       "estimate": "Les nombres sont des estimations d'après les ennemis de chaque nœud.",

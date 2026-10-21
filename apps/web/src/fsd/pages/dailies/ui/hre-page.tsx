@@ -179,6 +179,12 @@ export function HrePage() {
                       allianceName: campaignPlan.battles.alliance
                         ? allianceName
                         : null,
+                      heroFactionName:
+                        campaignPlan.battles.featured && hero
+                          ? (t(`factions:${hero.faction}` as never, {
+                              defaultValue: hero.faction,
+                            }) as string)
+                          : null,
                       factionName: campaignPlan.battles.faction
                         ? (t(
                             `factions:${campaignPlan.battles.faction}` as never,
