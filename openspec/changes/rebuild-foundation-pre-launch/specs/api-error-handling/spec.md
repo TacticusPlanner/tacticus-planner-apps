@@ -18,7 +18,7 @@ A non-2xx API response SHALL be read as one error carrying the HTTP status, the 
 #### Scenario: Non-problem body
 
 - **WHEN** a request is answered with 502 and an HTML body
-- **THEN** the error exposes status 502, no issue code and the generic "request failed" text, and the caller's generic error path runs
+- **THEN** the error exposes status 502, no issue code and the generic "request failed with status 502" text, and the caller's generic error path runs
 
 #### Scenario: Validation failure names its fields
 
@@ -41,7 +41,7 @@ A feature that reacts to a specific failure (a stale revision, a stale order, an
 
 ### Requirement: A conflict's current state is adopted without discarding the draft
 
-When a 409 carries `current`, the surface SHALL adopt that state as the new base (the cached resource is replaced by it, so the next save carries its revision) and SHALL keep the user's unsaved draft where the surface has one, as the Edit goal dialog, the campaign-events overrides page and the Legendary Event plan already do.
+When a 409 carries `current`, the cached resource SHALL be replaced by it at once. A surface without a draft (the campaign-events overrides page, the Legendary Event plan) SHALL then save against that revision. A surface holding an unsaved draft (the Edit goal dialog) SHALL keep the draft and its own base until the user chooses to refresh; refreshing rebases the draft on the cached current state, so the next save carries its revision and never an unspecified one.
 
 #### Scenario: Stale goal revision in the Edit goal dialog
 

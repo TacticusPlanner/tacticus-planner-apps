@@ -11,7 +11,6 @@ Evidence (audit 2026-10-20): `apps/web/src/fsd/app/providers/query-provider.tsx:
 - Default query freshness: server-owned per-user data is treated as fresh for a bounded window after fetch and is **not** refetched on remount; the only writer is this user, through this client, so cache updates come from mutation responses, not refetches. `GET /me` keeps a short window during the setup/onboarding flow.
 - Mutations apply their response to the cache (`setQueryData`) and invalidate only the keys whose data the mutation can have changed (the affected goal, the affected project's membership, the order revision), never `goals.all` / `projects.all` wholesale.
 - Mutation responses that are currently discarded (guild register/sync, Tacticus integration update, V1 import) are applied instead of triggering a refetch; V1 import issues one `GET /me`, not two.
-- Game-catalog datasets and player-data chunks download with bounded concurrency instead of strictly one after another.
 - The onslaught-override query key is scoped so invalidating it no longer invalidates the campaign-events override.
 - No change to which endpoints are called or to their shapes. The goal-detail fan-out and the per-project goal fetches remain (they need the API changes in `rebuild-foundation-pre-launch`).
 

@@ -67,7 +67,7 @@ Every mutation whose response carries the updated resource SHALL write that resp
 #### Scenario: Completing or deleting a goal refetches only the lists its position affects
 
 - **WHEN** the user completes, archives or deletes an in-flight goal
-- **THEN** the goal's rows leave the in-flight lists at once, the goal lists and the member lists of that goal's projects are refetched once, and no other goal's detail is refetched
+- **THEN** the goal's rows leave the in-flight lists at once, the goal lists and every cached project member list are refetched once (completion renumbers goals in other projects too), and no other goal's detail is refetched
 
 #### Scenario: Saving a project updates the project list from the response
 

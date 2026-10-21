@@ -4,7 +4,7 @@
 
 ### Requirement: One Save submits every change
 
-The dialog SHALL have one Save button and a Cancel. Save SHALL be enabled only when at least one field differs from the loaded goal and all validation passes (a valid target per `goal-target-editing`, at least one project, and valid location/source choices). Save SHALL submit every changed section (target, goal fields, project memberships, priority) in one atomic request, so either all changes are saved or none are. When it succeeds the dialog SHALL close and the list SHALL reflect the changes from the response without a full reload. If the request fails, the dialog SHALL stay open, keep the whole draft, and name what failed; nothing SHALL be shown as saved.
+The dialog SHALL have one Save button and a Cancel. Save SHALL be enabled only when at least one field differs from the loaded goal and all validation passes (a valid target per `goal-target-editing` when the target section changed, at least one project, and valid location/source choices). Save SHALL submit every changed section (target, goal fields, project memberships, priority) in one atomic request, so either all changes are saved or none are. When it succeeds the dialog SHALL close and the list SHALL reflect the changes from the response without a full reload. If the request fails, the dialog SHALL stay open, keep the whole draft, and name what failed; nothing SHALL be shown as saved.
 
 #### Scenario: Several fields at once
 

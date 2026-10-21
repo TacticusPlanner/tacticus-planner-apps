@@ -37,7 +37,7 @@ Assumptions:
 
 ### Requirement: Roster changes since the previous run
 
-For the distinct members and reserves of the previous record's teams, the system SHALL read that record's roster on demand — once, when the Last run card (or an expanded Earlier runs entry) is shown — and compare the unit in it with the current synced roster, listing per unit: **unlocked** when absent from the record and owned now; **stars** from → to when the current progression is later; **rank** from → to when the current rank is later (applied upgrades ignored); and each **ability** whose level rose, from → to. Units with no change, and units owned neither then nor now, SHALL be omitted. Values that went down SHALL be ignored. A record with no teams SHALL not have its roster read.
+For the distinct members and reserves of a shown record's teams (the previous run, or an expanded Earlier runs entry), the system SHALL read that record's roster on demand — once, when the card or entry is shown — and compare the unit in it with the current synced roster (every record is compared with the current roster, never with a newer record), listing per unit: **unlocked** when absent from the record and owned now; **stars** from → to when the current progression is later; **rank** from → to when the current rank is later (applied upgrades ignored); and each **ability** whose level rose, from → to. Units with no change, and units owned neither then nor now, SHALL be omitted. Values that went down SHALL be ignored. A record with no teams SHALL not have its roster read.
 
 #### Scenario: Worked example, Calgar progressed
 
@@ -65,7 +65,7 @@ For the distinct members and reserves of the previous record's teams, the system
 
 ### Requirement: Last run card on the Overview tab
 
-The Overview tab SHALL show a **Last run** card for the previous run when one exists, after the Run status card. It SHALL show "Run N of 3", the local date of the record's last progress, the event points recorded, and per lane its cleared battle and points ("Alpha: battle 4 · 1,139 points"); the teams used per lane with portraits and "cleared up to battle N" (and their planned depth for that run when stored); and a **Since last run** list of roster changes. On an archived or upcoming event the card SHALL be followed by a collapsed **Earlier runs** list with one expandable entry per earlier record read so far, carrying the same content, and, when the last page read was full, a "Load more" control that reads the next page and appends its records; an active event SHALL show only the Last run card.
+The Overview tab SHALL show a **Last run** card for the previous run when one exists, after the Run status card. It SHALL show "Run N of 3", the local date of the record's last progress, the event points recorded, and per lane its cleared battle and points ("Alpha: battle 4 · 1,139 points"); the teams used per lane with portraits and "cleared up to battle N" (and their planned depth for that run when stored); and a **Since last run** list of roster changes. On an archived or upcoming event the card SHALL be followed by a collapsed **Earlier runs** list with one expandable entry per earlier record read so far, carrying the same content, and, while the last page read returned a `nextAfter` cursor, a "Load more" control that reads the next page with that cursor as `after` and appends its records; an active event SHALL show only the Last run card.
 
 #### Scenario: Desktop card
 
@@ -85,9 +85,9 @@ The Overview tab SHALL show a **Last run** card for the previous run when one ex
 
 #### Scenario: Load more earlier runs
 
-- **GIVEN** an archived event whose first page of records was full
+- **GIVEN** an archived event whose first page of records returned a non-null `nextAfter`
 - **WHEN** the user opens Earlier runs and activates Load more
-- **THEN** one request reads the next page and its records are appended as further entries; when the returned page is not full, Load more is no longer shown
+- **THEN** one request carrying that cursor as `after` reads the next page and its records are appended as further entries; when the returned `nextAfter` is null, Load more is no longer shown
 
 ### Requirement: Run history data states are distinct
 
