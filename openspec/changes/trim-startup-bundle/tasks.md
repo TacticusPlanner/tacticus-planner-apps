@@ -3,7 +3,7 @@
 ## 1. Baseline and measurement tooling
 
 - [ ] 1.1 Record the baseline in this file's notes: run `pnpm --filter web build:production`, count `modulepreload` links in `dist/index.html`, list the ten largest `dist/assets/*.js` files, and run Lighthouse (mobile, simulated throttling) on signed-out `/library/characters` and signed-in `/home` noting LCP, TBT and transferred JS bytes; verify the note holds all six figures.
-- [ ] 1.2 Enable `build.manifest: true` in `apps/web/vite.config.ts` and add `apps/web/scripts/bundle-budget.mjs` that sums the `index.html` entry's static import graph from `dist/.vite/manifest.json`, counts preloads in `dist/index.html`, and exits non-zero when bytes exceed `BUNDLE_BUDGET_KB` or preloads exceed 20; verify it passes on the baseline with the budget set to the baseline and fails when the budget is set lower.
+- [ ] 1.2 Enable `build.manifest: true` in `apps/web/vite.config.ts` and add `apps/web/scripts/bundle-budget.mjs` that sums the `index.html` entry's static import graph from `dist/.vite/manifest.json` plus, per budgeted route (`/`, `/home`, `/library/characters`), the static graph of that route's page module reached through `dynamicImports`, counts preloads in `dist/index.html`, and exits non-zero when the shared bytes exceed `BUNDLE_BUDGET_KB`, any route exceeds its entry in the script's route table, or preloads exceed 20; verify it passes on the baseline with the budgets set to the baseline and fails when any one budget is set lower.
 - [ ] 1.3 Check whether `rollup-plugin-visualizer` runs under Vite 8 (Rolldown): if yes, add it as a dev dependency gated by `ANALYZE=1` and verify `ANALYZE=1 pnpm --filter web build` writes `dist/stats.html`; if no, document `vite build --sourcemap` plus `npx source-map-explorer` in the script's header comment instead and add no dependency.
 - [ ] 1.4 Add a "Bundle budget" step after Build in `.github/workflows/_build-web.yml` running `node apps/web/scripts/bundle-budget.mjs`, and upload `dist/stats.html` (or the source-map report) as a CI artifact; verify by pushing a branch and checking the workflow run shows the step and the artifact.
 
@@ -54,7 +54,7 @@ Moved to `catalog-read-layer` task 2.6: that change replaces both providers and 
 
 ## 10. Final measurement and gates
 
-- [ ] 10.1 Repeat 1.1 on the finished branch, record the figures next to the baseline, set `BUNDLE_BUDGET_KB` to the measured entry bytes plus 5%, and verify the entry graph is at least 40% smaller than baseline and preloads are at most 20.
+- [ ] 10.1 Repeat 1.1 on the finished branch, record the figures next to the baseline, set `BUNDLE_BUDGET_KB` and the per-route budgets to the measured bytes plus 5%, and verify the entry graph is at least 40% smaller than baseline, each budgeted route's startup bytes are below its baseline, and preloads are at most 20.
 - [ ] 10.2 Run `pnpm test:run`, `pnpm typecheck`, `pnpm lint`, `pnpm lint:fsd`, `git diff --check` and `pnpm --filter web build` and verify all pass.
 - [ ] 10.3 Desktop verification (>=768px) in the built app: sign in, visit `/home`, `/plan/goals`, `/dailies/raids`, `/legendary-events`, open navigation search, run the general tour, drag a goal row; verify no console errors and each lazy boundary resolves.
 - [ ] 10.4 Mobile verification (<768px, same-origin iframe per `tp-manual-ui-verification`): visit `/home`, `/my-game/collection`, `/library/characters`, open the menu drawer and search, run the general tour; verify portraits render as WebP with no layout shift and no console errors.

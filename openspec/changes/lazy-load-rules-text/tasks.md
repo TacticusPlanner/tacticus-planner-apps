@@ -9,7 +9,7 @@
 
 ## 2. Non-suspending hooks
 
-- [ ] 2.1 Rework `shared/ability-text/use-ability-text.ts`: `useAbilityText(abilityIds)` and `useTraitText()` use `useTranslation(ns, { useSuspense: false })`, track `failedLoading` for their namespaces, and return `{ ready, failed, retry, text }`; update `i18next.d.ts` per design decision 5; verify with unit tests covering ready, failed, retry and the English fallback.
+- [ ] 2.1 Rework `shared/ability-text/use-ability-text.ts`: `useAbilityText(abilityIds)` and `useTraitText()` use `useTranslation(ns, { useSuspense: false })`, exclude ids listed in the generated `*Gaps.json` lists before requesting namespaces, track `failedLoading` for the namespaces they did request, and return `{ ready, failed, retry, text }`; update `i18next.d.ts` per design decision 5; verify with unit tests covering ready, failed, retry, the English fallback, and a known-gap id that triggers no request and reads as missing text (separate from the failed-download test).
 - [ ] 2.2 Rework `entities/raid-boss/lib/use-raid-boss-text.ts` the same way (`useRaidBossText({ abilityIds })`), keeping `raidBossTraitText` whole; verify with the same unit-test matrix.
 - [ ] 2.3 Replace `descriptionOf` in `pages/dailies/model/hre-summoners.ts` / `use-hre-team-recommendations.ts` with an `isSummoning(abilityId)` predicate backed by the `npcAbilitySummoners` namespace; verify `hre-summoners.test.ts` and the HRE team tests still exclude Hollan for the summon-free objective.
 

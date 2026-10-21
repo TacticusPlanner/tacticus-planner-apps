@@ -26,12 +26,12 @@ The rank and progression select controls SHALL associate their visible label wit
 
 ### Requirement: Operable tile grids are one tab stop
 
-A grid of operable unit tiles (tiles that are buttons or links) SHALL expose one tab stop per grid and SHALL move focus between tiles with the arrow keys. Grids whose tiles are not operable (the Collection) SHALL NOT add tab stops.
+A grid of operable unit tiles (tiles that are buttons or links) SHALL expose one tab stop per row (a roving `tabIndex` remembering the row's last focused tile) and SHALL move focus with the arrow keys: Left/Right within the row, stopping at its ends; Up/Down to the same index in the adjacent row, clamped; Home/End to the row's first and last tile; Tab leaves the row. Grids whose tiles are not operable (the Collection) SHALL NOT add tab stops.
 
 #### Scenario: Tier List keyboard traversal
 
-- **WHEN** a keyboard user tabs into a Tier List row and presses Right or Down
-- **THEN** focus moves to the next tile in the row without leaving the grid, and Tab leaves the grid in one press
+- **WHEN** a keyboard user tabs into a Tier List row and presses Right, then Down, then Left at the row's start
+- **THEN** Right moves to the next tile in the row, Down moves to the same index in the row below, Left at the first tile stays put, and Tab leaves that row in one press
 
 #### Scenario: Collection stays non-interactive
 

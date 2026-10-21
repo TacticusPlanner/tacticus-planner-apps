@@ -43,6 +43,10 @@ abilities.
    `useRaidBossText({ abilityIds })` call `useTranslation(namespaces, { useSuspense: false })` and return
    `{ ready, failed, retry, text(id) }`. `ready` comes from react-i18next; `failed` tracks the i18next
    `failedLoading` event for those namespaces, and `retry` calls `i18n.reloadResources(lng, namespaces)`.
+   Known gaps never reach the backend: the generator also writes `locales/en/npcAbilityTextGaps.json` and
+   `raidBossAbilityTextGaps.json` (sorted id arrays, same shape and loading as the summoners list), the hooks
+   drop those ids from the namespaces they request, and `text(id)` returns undefined for them, so the panel
+   shows the missing-text note without a 404 ever being counted as a failure.
    Page-level callers (character and MoW pages, which also feed `hasAbilityText` to the tutorial) pass
    the unit's ability ids; panel-level callers (NPC abilities, raid-boss panel) pass their own.
    Alternative: keep Suspense and wrap each panel in `<Suspense>` - rejected because the page-level

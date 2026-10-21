@@ -128,9 +128,9 @@ that text again. Trait text SHALL load the same way, with the trait chips.
 
 #### Scenario: Ability without text after a successful load
 
-- **GIVEN** the text request succeeds but there is no file for the ability
+- **GIVEN** the ability is in the generated known-gap list, so no file exists for it
 - **WHEN** the panel settles
-- **THEN** it shows the missing-text note, as before
+- **THEN** no request is made for that ability's file and it shows the missing-text note, as before
 
 ### Requirement: Summoning abilities are listed with the rules text
 

@@ -7,7 +7,7 @@
 ## 2. Goals page URL state
 
 - [ ] 2.1 Replace the `tab` and `goalType` `useState` in `goals-page.tsx` with `useSearchParamState("status", ...)` / `("type", ...)` (replace history, defaults `toReach` / `all`, validated against the entity select value lists); verify `goals-page.test.tsx` passes and a new test covers reload-with-params, unknown value fallback and no history entry per the `goals-navigation` scenarios.
-- [ ] 2.2 Replace `editGoalId` with the `goal` param (push history; validated against the loaded list, kept while loading; dropped with replace when unknown); close via `onOpenChange` so the unsaved-changes confirmation still runs on Back; verify new tests for the four `goal-edit-dialog` scenarios (Back closes, reload reopens, unknown id, dirty Back asks first).
+- [ ] 2.2 Replace `editGoalId` with the `goal` param (push history; validated against the loaded list, kept while loading; dropped with replace when unknown); the dialog's close control navigates (replace) rather than clearing local state, and a dirty dialog registers the existing `shared/ui/unsaved-changes-guard.tsx` (`useBlocker`) so Back, forward and in-app navigation that would drop the `goal` param ask first, proceed on discard and reset the blocked navigation on keep; verify new tests for the four `goal-edit-dialog` scenarios (Back closes, reload reopens, unknown id, dirty Back asks first).
 - [ ] 2.3 Keep `use-goals-project-scope.ts` as the async variant and add a doc comment pointing at the shared hook; verify `use-goals-project-scope.test.tsx` and `goals-project-scope.test.tsx` still pass unchanged.
 - [ ] 2.4 Check `goals-page.tutorial.tsx` targets: no step targets the filter state itself, so only confirm the tour still runs with `goals-page.tutorial.test.tsx`.
 
