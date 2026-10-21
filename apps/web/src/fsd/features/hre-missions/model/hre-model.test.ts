@@ -249,6 +249,15 @@ describe("objectives", () => {
     })
   })
 
+  it("keeps featured-hero battles to the hero's faction's nodes, and only those", () => {
+    expect(
+      selectCampaignPlan(progress({ mission: 20 }))?.battles
+    ).toMatchObject({ alliance: true, featured: true })
+    expect(
+      selectCampaignPlan(progress({ mission: 13 }))?.battles
+    ).toMatchObject({ featured: false })
+  })
+
   it("combines mission 13's kills and alliance ability uses in one list", () => {
     expect(
       selectCampaignPlan(progress({ mission: 13 }))?.battles

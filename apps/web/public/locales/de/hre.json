@@ -134,6 +134,7 @@
       "slots": "Nur Knoten mit {{slots}} Plätzen, damit die Fähigkeiten jeder Einheit zählen.",
       "alliance": "Nur Knoten, auf denen {{alliance}}-Einheiten eingesetzt werden können.",
       "faction": "Nur Knoten mit {{faction}}-Gegnern, die meisten pro Energie zuerst.",
+      "heroFaction": "Nur Knoten, auf denen {{faction}}-Einheiten eingesetzt werden können, damit der Event-Held sie spielen kann.",
       "lightning": "Knoten mit Blitzsieg-Bedingung kommen zuerst, damit ein schneller Sieg auch als Blitzsieg zählt.",
       "countsAsWins": "Jeder Sieg hier zählt auch als Kampagnensieg, unten sind also weniger Raids nötig.",
       "estimate": "Die Anzahlen sind Schätzungen anhand der Gegner jedes Knotens.",
@@ -235,6 +236,7 @@
     "strongestTrack": "Deine {{size}} stärksten {{alliance}}-Einheiten: 5 starten, die übrigen ersetzen gefallene.",
     "strongestTrackFew": "Deine {{size}} {{alliance}}-Einheiten: weniger als 5, also keine Reserve.",
     "titleBattle": "Kampagnenteam",
-    "titleCampaigns": "Team für {{campaigns}}"
+    "titleCampaigns": "Team für {{campaigns}}",
+    "fewerSlots": "Einige dieser Kämpfe erlauben nur {{slots}} Einheiten: setze die ersten {{slots}} ein."
   }
 }

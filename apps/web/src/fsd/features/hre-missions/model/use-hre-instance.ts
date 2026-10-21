@@ -22,6 +22,7 @@ export type HreFeaturedHero = {
   id: string
   name: string
   alliance: (typeof Alliance)[keyof typeof Alliance]
+  faction: string
   /** The rarity the hero unlocks at, which decides the first pace step. */
   initialRarity: string
 }
@@ -64,6 +65,7 @@ async function load(nowMs: number): Promise<LoadedState> {
           id: character.id,
           name: character.name,
           alliance: character.alliance,
+          faction: character.faction,
           initialRarity: character.initialRarity,
         }
       : null

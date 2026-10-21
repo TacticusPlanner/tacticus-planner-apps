@@ -2,7 +2,8 @@ import type { Rarity } from "@workspace/game-domain"
 
 import type { RaidsFilterBattle, RaidsFilters } from "./raids-filters.domain"
 
-const DEFAULT_SLOTS = 5
+/** A node without a slot count deploys a full team. */
+export const DEFAULT_SLOTS = 5
 
 const anyOf = (selected: readonly string[], values: readonly string[]) =>
   selected.length === 0 || values.some((value) => selected.includes(value))

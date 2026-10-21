@@ -336,6 +336,65 @@ describe("planHookMissionRaids: battles fought by hand", () => {
     expect(result.battles?.rows.map((row) => row.battleId)).toEqual(["I19"])
   })
 
+  it("keeps lightning-condition nodes ahead of goal nodes while lightning victories are open", () => {
+    const result = plan({
+      calculation: {
+        today: { entries: [] },
+        missionGoalNodes: new Map([
+          [
+            id("I18"),
+            { priority: 1, goalIds: ["g1"], resourceId: "shards_necroWarden" },
+          ],
+        ]),
+      } as unknown as DailyRaidsCalculationViewModel,
+      request: {
+        battlesToGo: 0,
+        eventOnly: true,
+        manual: manual({ preferLightning: true }),
+      },
+      availableBattles: [node("I18", 3, 18), node("I19", 5, 19)],
+      filterBattlesById: new Map([
+        ["I18", filterBattle("Standard")],
+        ["I19", filterBattle("Standard")],
+      ]),
+    })
+    expect(result.battles?.rows.map((row) => row.battleId)).toEqual(["I19"])
+  })
+
+  it("keeps featured-hero battles to nodes where the hero's faction deploys, a full team where slots are unknown", () => {
+    const result = plan({
+      calculation: null,
+      request: {
+        battlesToGo: 0,
+        eventOnly: false,
+        manual: manual({
+          needs: [{ toGo: 2, per: "battle" }],
+          heroFaction: "Orks",
+        }),
+      },
+      availableBattles: [
+        { ...node("U3", 3), alliesFactions: ["Ultramarines"], slots: 5 },
+        { ...node("O5", 5), alliesFactions: ["Orks", "Necrons"], slots: 0 },
+      ],
+      filterBattlesById: new Map([
+        [
+          "U3",
+          { ...filterBattle("Standard"), alliesFactions: ["Ultramarines"] },
+        ],
+        [
+          "O5",
+          { ...filterBattle("Standard"), alliesFactions: ["Orks", "Necrons"] },
+        ],
+      ]),
+    })
+    expect(result.battles?.rows).toEqual([
+      expect.objectContaining({
+        battleId: "O5",
+        deploy: { factions: ["Orks", "Necrons"], slots: 5 },
+      }),
+    ])
+  })
+
   it("takes campaign wins won by hand off the raids, sharing the node's attempts and today's energy", () => {
     const result = plan({
       calculation: null,

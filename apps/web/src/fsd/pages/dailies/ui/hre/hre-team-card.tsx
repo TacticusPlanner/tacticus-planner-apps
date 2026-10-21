@@ -34,6 +34,7 @@ export function HreTeamCard({
   hseEvent = null,
   testId = "hre-team",
   title,
+  note,
 }: {
   view: HreTeamViewModel
   plan: Pick<HreTeamPlan, "mode" | "reserve" | "preferPsychic"> | null
@@ -48,6 +49,8 @@ export function HreTeamCard({
   testId?: string
   /** Replaces the title by mode (the campaigns a by-hand team can play). */
   title?: string
+  /** A hint over the members (some of a by-hand team's nodes deploy fewer units). */
+  note?: string | null
 }) {
   const { t } = useTranslation(["hre", "teamRecs", "common"])
   if (view.status === "hidden") return null
@@ -89,6 +92,14 @@ export function HreTeamCard({
                   have: tokens,
                   play: Math.max(0, tokens - reserve.tokens),
                 })}`}
+          </p>
+        ) : null}
+        {note ? (
+          <p
+            className="text-xs text-muted-foreground"
+            data-testid="hre-team-note"
+          >
+            {note}
           </p>
         ) : null}
         {view.status === "loading" ? (

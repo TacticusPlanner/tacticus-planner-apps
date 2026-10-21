@@ -88,6 +88,7 @@ const hero = {
   id: "orksWeirdboy",
   name: "Zapspitta",
   alliance: "Xenos",
+  faction: "Orks",
   initialRarity: "Common",
 }
 const running = () => ({
@@ -555,6 +556,22 @@ describe("HRE tab", () => {
     ).toHaveLength(1)
     expect(screen.getByTestId("hre-raids-main")).toHaveTextContent(
       "raids.raidsTitle"
+    )
+  })
+
+  it("keeps the featured hero's battles to nodes where the hero's faction deploys", () => {
+    mocks.raids = {
+      status: "no-goals",
+      missionRaids: plan({ rows: [], battlesLeft: 0, battles: battles() }),
+      locationsByBattleId: new Map(),
+    }
+    seed({ mission: 20 })
+    renderHre()
+    expect(mocks.raidsArgs.at(-1)?.[1]).toMatchObject({
+      missionRaids: { manual: { alliance: "Xenos", heroFaction: "Orks" } },
+    })
+    expect(screen.getByTestId("hre-battles-note")).toHaveTextContent(
+      "raids.battles.heroFaction|faction=factions:Orks"
     )
   })
 

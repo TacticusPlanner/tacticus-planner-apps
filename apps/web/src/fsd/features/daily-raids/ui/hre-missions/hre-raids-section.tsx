@@ -39,6 +39,7 @@ type HreRaidsRequest = {
   manual:
     | (MissionBattlesRequest & {
         allianceName: string | null
+        heroFactionName?: string | null
         factionName: string | null
       })
     | null
@@ -94,6 +95,7 @@ export function HreRaidsSection({
                   needs: manual.needs,
                   slots: manual.slots,
                   alliance: manual.alliance,
+                  heroFaction: manual.heroFaction,
                   faction: manual.faction,
                   preferLightning: manual.preferLightning,
                   countsAsRaids: manual.countsAsRaids,
@@ -163,6 +165,7 @@ export function HreRaidsSection({
               notes={{
                 slots: manual.slots,
                 alliance: manual.allianceName,
+                heroFaction: manual.heroFactionName ?? null,
                 faction: manual.factionName,
                 preferLightning: manual.preferLightning,
                 countsAsWins: manual.countsAsRaids,
