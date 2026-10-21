@@ -44,6 +44,10 @@ export function HreCampaignTeams({
     <div className="space-y-3" data-testid="hre-campaign-teams">
       {groups.map((group, index) => {
         const view = teams[index]
+        const fielded =
+          view?.status === "ready" && view.team.status === "ready"
+            ? view.team.team.members.length
+            : 0
         return view ? (
           <HreTeamCard
             alliance={allianceName}
@@ -51,7 +55,7 @@ export function HreCampaignTeams({
             hseEvent={hse?.name ?? null}
             key={group.factions.join("|")}
             note={
-              group.fewestSlots < Math.min(plan.size, group.slots)
+              group.fewestSlots < fielded
                 ? t("hre:teams.fewerSlots", { slots: group.fewestSlots })
                 : null
             }
