@@ -44,6 +44,8 @@ export type HreCampaignPlan = {
     /** Only nodes where the featured hero's alliance can deploy (alliance or featured-hero
      * objectives). */
     alliance: boolean
+    /** Only nodes where the featured hero's faction can deploy (featured-hero objectives). */
+    featured: boolean
     /** Only nodes with this faction's enemies (faction kills). */
     faction: string | null
     /** Lightning victories are open: nodes with a lightning condition come first. */
@@ -83,6 +85,12 @@ const ALLIANCE_NODE_KINDS: ReadonlySet<HreObjectiveKind> = new Set([
   "killWithAlliance",
   "useAbilitiesAlliance",
   "winWithAllianceLineup",
+  "useAbilitiesFeatured",
+  "featuredDamage",
+])
+
+/** Objectives the featured hero must fight: only nodes where its faction can deploy. */
+const FEATURED_NODE_KINDS: ReadonlySet<HreObjectiveKind> = new Set([
   "useAbilitiesFeatured",
   "featuredDamage",
 ])
@@ -151,6 +159,9 @@ export function selectCampaignPlan(
               : {}),
             alliance: needs.some((need) =>
               ALLIANCE_NODE_KINDS.has(need.objective.kind)
+            ),
+            featured: needs.some((need) =>
+              FEATURED_NODE_KINDS.has(need.objective.kind)
             ),
             faction: faction?.objective.qualifier ?? null,
             preferLightning: raid?.objective.kind === "lightningVictories",

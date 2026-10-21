@@ -94,6 +94,7 @@ export function HreRaidsSection({
                   needs: manual.needs,
                   slots: manual.slots,
                   alliance: manual.alliance,
+                  heroFaction: manual.heroFaction,
                   faction: manual.faction,
                   preferLightning: manual.preferLightning,
                   countsAsRaids: manual.countsAsRaids,

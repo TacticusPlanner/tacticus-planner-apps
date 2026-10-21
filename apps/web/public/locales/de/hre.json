@@ -235,6 +235,7 @@
     "strongestTrack": "Deine {{size}} stärksten {{alliance}}-Einheiten: 5 starten, die übrigen ersetzen gefallene.",
     "strongestTrackFew": "Deine {{size}} {{alliance}}-Einheiten: weniger als 5, also keine Reserve.",
     "titleBattle": "Kampagnenteam",
-    "titleCampaigns": "Team für {{campaigns}}"
+    "titleCampaigns": "Team für {{campaigns}}",
+    "fewerSlots": "Einige dieser Kämpfe erlauben nur {{slots}} Einheiten: setze die ersten {{slots}} ein."
   }
 }

@@ -170,6 +170,9 @@ export function HrePage() {
                       alliance: campaignPlan.battles.alliance
                         ? hero?.alliance
                         : undefined,
+                      heroFaction: campaignPlan.battles.featured
+                        ? hero?.faction
+                        : undefined,
                       faction: campaignPlan.battles.faction ?? undefined,
                       preferLightning: campaignPlan.battles.preferLightning,
                       countsAsRaids: campaignPlan.battles.countsAsWins,

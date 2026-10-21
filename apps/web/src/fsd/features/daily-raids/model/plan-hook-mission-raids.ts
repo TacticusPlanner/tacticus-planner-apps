@@ -9,7 +9,10 @@ import {
   type MissionRaidPlan,
   type MissionRaidsRequest,
 } from "./mission-raids"
-import { passLocationFilter } from "./raids-filters/pass-location-filter"
+import {
+  DEFAULT_SLOTS,
+  passLocationFilter,
+} from "./raids-filters/pass-location-filter"
 import type {
   RaidsFilterBattle,
   RaidsFilters,
@@ -67,6 +70,7 @@ export function planHookMissionRaids(input: {
     ...raidFilters,
     ...(manual?.slots ? { slots: [manual.slots] } : {}),
     ...(manual?.alliance ? { alliesAlliances: [manual.alliance] } : {}),
+    ...(manual?.heroFaction ? { alliesFactions: [manual.heroFaction] } : {}),
   }
   return planMissionRaids({
     ...input.request,
@@ -78,8 +82,13 @@ export function planHookMissionRaids(input: {
       expectedGold: expectedGold(battle.rewards.guaranteed),
       lightningCondition: hasLightningCondition(battle),
       enemyPower: battle.enemyPower ?? 0,
-      ...(battle.alliesFactions && battle.slots
-        ? { deploy: { factions: battle.alliesFactions, slots: battle.slots } }
+      ...(battle.alliesFactions
+        ? {
+            deploy: {
+              factions: battle.alliesFactions,
+              slots: battle.slots || DEFAULT_SLOTS,
+            },
+          }
         : {}),
       dropRates: new Map(
         battle.rewards.potential.map((reward) => [

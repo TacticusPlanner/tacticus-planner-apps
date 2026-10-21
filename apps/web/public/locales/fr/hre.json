@@ -235,6 +235,7 @@
     "strongestTrack": "Vos {{size}} unités {{alliance}} les plus fortes : 5 commencent, les autres remplacent celles qui tombent.",
     "strongestTrackFew": "Vos {{size}} unités {{alliance}} : moins de 5, donc pas de remplaçantes.",
     "titleBattle": "Équipe de campagne",
-    "titleCampaigns": "Équipe pour {{campaigns}}"
+    "titleCampaigns": "Équipe pour {{campaigns}}",
+    "fewerSlots": "Certaines de ces batailles n'acceptent que {{slots}} unités : déployez les {{slots}} premières."
   }
 }

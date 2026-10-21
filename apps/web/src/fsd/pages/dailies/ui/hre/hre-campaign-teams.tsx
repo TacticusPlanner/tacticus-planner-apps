@@ -50,6 +50,11 @@ export function HreCampaignTeams({
             hero={hero}
             hseEvent={hse?.name ?? null}
             key={group.factions.join("|")}
+            note={
+              group.fewestSlots < Math.min(plan.size, group.slots)
+                ? t("hre:teams.fewerSlots", { slots: group.fewestSlots })
+                : null
+            }
             plan={plan}
             testId={`hre-campaign-team-${index}`}
             title={t("hre:teams.titleCampaigns", {
