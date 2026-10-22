@@ -1,49 +1,14 @@
-import { useEffect, useState } from "react"
-import { act, renderHook, waitFor } from "@testing-library/react"
 import i18next from "i18next"
 import { I18nextProvider, initReactI18next } from "react-i18next"
-import { beforeAll, describe, expect, it, vi } from "vitest"
+import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
+
+import { act, renderHook, waitFor } from "@/test/render"
+import { seedGameCatalog, seedPlayerData } from "@/test/seed"
 
 import { useShopRecommendations } from "./use-shop-recommendations"
 
-// Everything upstream of reward display is stubbed; only the equipment-name path is under test.
-vi.mock("@azure/msal-react", () => ({ useIsAuthenticated: () => true }))
-vi.mock("@tanstack/react-query", () => ({
-  useQuery: () => ({ isSuccess: true, isError: false, data: { goals: [] } }),
-  useQueries: () => [],
-}))
-vi.mock("dexie-react-hooks", () => ({
-  useLiveQuery: <T,>(querier: () => Promise<T>, deps: unknown[]) => {
-    const [value, setValue] = useState<T>()
-    useEffect(() => {
-      void querier().then(setValue)
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, deps)
-    return value
-  },
-}))
-vi.mock("@workspace/game-catalog/queries", () => ({
-  getAscensionCostsMap: async () => new Map(),
-  getCharactersMap: async () => new Map(),
-  getMowsMap: async () => new Map(),
-  getShops: async () => [{ id: "guild" }],
-  getUnlockShardCostsMap: async () => new Map(),
-  getUpgrades: async () => [],
-  getEquipmentMap: async () =>
-    new Map([
-      ["I_Crit_C001", { name: "Combat Knife" }],
-      ["I_Crit_U001", { name: "Balanced Combat Knife" }],
-    ]),
-}))
-vi.mock("@workspace/player-data/queries", () => ({
-  getInventoryShard: async () => undefined,
-  getInventoryUpgrades: async () => [],
-  getPlayerCharacter: async () => undefined,
-  getPlayerCharacters: async () => [],
-  getPlayerDetails: async () => ({ powerLevel: 0 }),
-  getPlayerMow: async () => undefined,
-  getPlayerMows: async () => [],
-}))
+// The catalog and player data are seeded; the goal plan and the needs/offer builders are stubbed, so
+// only the equipment-name path is under test.
 const state = vi.hoisted(() => ({
   active: [{ goal: { goalId: "goal-1" } }] as unknown[],
   members: undefined as unknown,
@@ -83,6 +48,8 @@ vi.mock("./shop-recommendations", () => ({
   ],
 }))
 
+// A two-locale instance (the shared test one is English only) whose English bundle names one of
+// the two knives, so the other falls back to its catalog name.
 const i18n = i18next.createInstance()
 
 beforeAll(async () => {
@@ -100,6 +67,20 @@ beforeAll(async () => {
         equipmentItems: { I_Crit_C001: "Kampfmesser" },
       },
     },
+  })
+})
+
+beforeEach(async () => {
+  await seedGameCatalog({
+    shops: [{ id: "guild" }],
+    equipment: [
+      { id: "I_Crit_C001", name: "Combat Knife" },
+      { id: "I_Crit_U001", name: "Balanced Combat Knife" },
+    ],
+  })
+  await seedPlayerData({
+    "inventory-upgrades": [],
+    "player-details": { powerLevel: 0 },
   })
 })
 

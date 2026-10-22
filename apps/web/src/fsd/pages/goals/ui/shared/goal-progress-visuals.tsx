@@ -308,10 +308,7 @@ export function GoalProgressDisplay({
             <>
               {" "}
               {t("goals.overview.actualSlotsRemaining", {
-                count: formatNumber(
-                  i18n?.resolvedLanguage,
-                  remaining.upgradeSlotsRemaining
-                ),
+                count: remaining.upgradeSlotsRemaining,
               })}
             </>
           ) : null}
@@ -320,10 +317,7 @@ export function GoalProgressDisplay({
             <>
               {" "}
               {t("goals.overview.actualLevelsRemaining", {
-                count: formatNumber(
-                  i18n?.resolvedLanguage,
-                  progress.target - progress.current
-                ),
+                count: progress.target - progress.current,
               })}
             </>
           ) : null}

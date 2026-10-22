@@ -1,52 +1,19 @@
-import { useEffect, useState } from "react"
-import { beforeEach, describe, expect, it, vi } from "vitest"
-import { act, fireEvent, render, screen, within } from "@testing-library/react"
-import { Link, MemoryRouter, Route, Routes, useParams } from "react-router"
-import { TooltipProvider } from "@workspace/ui/components/tooltip"
+import { describe, expect, it, vi } from "vitest"
+import { Link, useParams } from "react-router"
+
+import { act, fireEvent, render, screen, waitFor, within } from "@/test/render"
+import { seedGameCatalog, seedPlayerData } from "@/test/seed"
 
 // The page must work for unauthenticated users with no user data — it reads only the public catalog
 // by default. Synced player data only ever *adds* a rank/progression prefill on character select
-// (see "prefills from synced player data" below); every other test exercises the unauthenticated /
-// no-data default path via these mocks' default return values.
+// (see "prefills from synced player data" below); every other test exercises the signed-out /
+// no-data default path.
 vi.mock("@workspace/ui/hooks/use-mobile", () => ({ useIsMobile: () => false }))
-
-// A minimal stand-in for dexie-react-hooks' real `useLiveQuery`: runs `querier()` on mount/deps
-// change, returns `defaultResult` until it settles, and re-renders once it does — same contract as
-// the real hook, just without any actual Dexie/IndexedDB involved. The page's own query fns below are
-// mocked directly, so this only needs to handle "querier returns a plain value" (synchronous, no
-// re-render needed) and "querier returns a promise" (one microtask later).
-vi.mock("dexie-react-hooks", () => ({
-  useLiveQuery: (
-    querier: () => unknown,
-    deps: unknown[] = [],
-    defaultResult?: unknown
-  ) => {
-    const [value, setValue] = useState<unknown>(defaultResult)
-    useEffect(() => {
-      const result = querier()
-      if (result instanceof Promise) {
-        let active = true
-        void result.then((resolved) => {
-          if (active) setValue(resolved)
-        })
-        return () => {
-          active = false
-        }
-      }
-      setValue(result)
-      return undefined
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, deps)
-    return value
-  },
-}))
 
 // rank/progressionIndex are already the catalog's own Rank/Progression string values on the
 // synced chunk (see @workspace/player-data's schemas) — no numeric-index fixtures needed.
-// appliedUpgradeSlots is optional here since only the "include my upgrades" tests need it —
-// every other test never triggers that code path, so leaving it undefined is harmless. Unlike
-// appliedUpgradeSlots, progressionIndex is NOT optional: the prefill effect always reads it
-// (unconditionally, whenever playerCharacter is truthy) to seed progressionStart.
+// appliedUpgradeSlots is optional here since only the "include my upgrades" tests need it.
+// progressionIndex is NOT optional: the prefill effect always reads it to seed progressionStart.
 type PlayerUnitFixture = {
   unitId: string
   rank: string
@@ -54,55 +21,6 @@ type PlayerUnitFixture = {
   appliedUpgradeSlots?: number[]
 }
 type InventoryUpgradeFixture = { upgradeId: string; amount: number }
-
-const { useIsAuthenticatedMock, playerChunkMocks, playerChunksMocks } =
-  vi.hoisted(() => ({
-    useIsAuthenticatedMock: vi.fn(() => false),
-    playerChunkMocks: {
-      // Always resolves via a real promise, matching `getPlayerCharacter`'s async signature — the
-      // page's own code chains `.then()` on it, so this can't be a synchronous stand-in.
-      characters: vi.fn<(id: string) => Promise<PlayerUnitFixture | undefined>>(
-        () => Promise.resolve(undefined)
-      ),
-    },
-    playerChunksMocks: {
-      "inventory-upgrades": vi.fn<() => InventoryUpgradeFixture[] | undefined>(
-        () => undefined
-      ),
-    },
-  }))
-
-vi.mock("@azure/msal-react", () => ({
-  useIsAuthenticated: () => useIsAuthenticatedMock(),
-}))
-
-vi.mock("@workspace/player-data/queries", () => ({
-  getPlayerCharacter: (id: string) => playerChunkMocks.characters(id),
-  getInventoryUpgrades: () => playerChunksMocks["inventory-upgrades"](),
-}))
-
-// Exact-match overrides for keys the code looks up without a `defaultValue` (campaign name/
-// difficulty display text now lives only in i18n JSON — see public/locales/en/campaigns.json —
-// so this small in-test dictionary stands in for that file, kept in sync with its content for
-// the fixtures used below).
-const translations: Record<string, string> = {
-  "campaigns:names.indomitus": "Indomitus",
-  "campaigns:names.death-guard-vs-admech": "Adeptus Mechanicus",
-  "campaigns:difficulties.standard": "Standard",
-  "campaigns:difficulties.elite": "Elite",
-  "campaigns:codes.standard": "S",
-  "campaigns:codes.elite": "E",
-  "campaigns:codes.eventStandard": "S",
-  "campaigns:codes.eventExtremis": "Ext",
-  "campaigns:codes.mirror": "M",
-}
-
-vi.mock("react-i18next", () => ({
-  useTranslation: () => ({
-    t: (key: string, opts?: { defaultValue?: string }) =>
-      translations[key] ?? opts?.defaultValue ?? key,
-  }),
-}))
 
 const records: Record<string, unknown[]> = {
   characters: [
@@ -309,17 +227,6 @@ const records: Record<string, unknown[]> = {
   ],
 }
 
-vi.mock("@workspace/game-catalog/queries", () => ({
-  getCharacters: () => records.characters ?? [],
-  getCharactersMap: () =>
-    new Map(
-      (records.characters ?? []).map((c) => [(c as { id: string }).id, c])
-    ),
-  getUpgrades: () => records.upgrades ?? [],
-  getCampaignBattles: () => records["campaign-battles"] ?? [],
-  getCampaignDefinitions: () => records["campaign-definitions"] ?? [],
-}))
-
 import type { UnitId } from "@workspace/game-domain"
 import {
   buildUnitPowerContext,
@@ -365,30 +272,40 @@ function TabForRoute() {
   )
 }
 
-function renderPage(initialEntries = ["/library/characters/hero1"]) {
-  return render(
-    <MemoryRouter initialEntries={initialEntries}>
-      <TooltipProvider>
-        <Routes>
-          <Route
-            path="/library/characters/:entityId"
-            element={<TabForRoute />}
-          />
-        </Routes>
-      </TooltipProvider>
-    </MemoryRouter>
-  )
+async function renderPage(
+  initialEntries = ["/library/characters/hero1"],
+  {
+    authenticated = false,
+    playerCharacters,
+    inventoryUpgrades,
+  }: {
+    authenticated?: boolean
+    playerCharacters?: PlayerUnitFixture[]
+    inventoryUpgrades?: InventoryUpgradeFixture[]
+  } = {}
+) {
+  await seedGameCatalog(records)
+  await seedPlayerData({
+    ...(playerCharacters && { characters: playerCharacters }),
+    ...(inventoryUpgrades && { "inventory-upgrades": inventoryUpgrades }),
+  })
+  render(<TabForRoute />, {
+    route: "/library/characters/:entityId",
+    initialEntries,
+    auth: { authenticated },
+  })
+  await screen.findByTestId("unit-profile")
+  // Each catalog dataset resolves on its own; Hero One's insights need the battles and campaign
+  // definitions too (the event one only classifies as an event once definitions are in).
+  if (initialEntries[0]?.includes("/hero1")) {
+    await screen.findByText("Indomitus Standard")
+    await screen.findByText("Adeptus Mechanicus")
+  }
 }
 
 describe("CharacterRankUpTab", () => {
-  beforeEach(() => {
-    useIsAuthenticatedMock.mockReturnValue(false)
-    playerChunkMocks.characters.mockResolvedValue(undefined)
-    playerChunksMocks["inventory-upgrades"].mockReturnValue(undefined)
-  })
-
-  it("renders publicly and lists the required base upgrades for the default range", () => {
-    renderPage()
+  it("renders publicly and lists the required base upgrades for the default range", async () => {
+    await renderPage()
 
     expect(screen.getByTestId("character-rank-up-tab")).toBeInTheDocument()
     // Default character + the Stone1 → Stone2 range surfaces that rank's upgrades as base
@@ -399,21 +316,21 @@ describe("CharacterRankUpTab", () => {
     expect(table.getByText("Armour Base")).toBeInTheDocument()
   })
 
-  it("takes its character from the unit page and offers no character picker", () => {
-    renderPage(["/library/characters/hero2?rankStart=Bronze1"])
+  it("takes its character from the unit page and offers no character picker", async () => {
+    await renderPage(["/library/characters/hero2?rankStart=Bronze1"])
 
     expect(
       within(screen.getByTestId("unit-profile")).getByText("Hero Two")
     ).toBeInTheDocument()
     expect(
       screen.queryByRole("combobox", {
-        name: "unitLookup.characterPlaceholder",
+        name: /character/i,
       })
     ).not.toBeInTheDocument()
   })
 
-  it("renders the unit profile with movement, melee hits, and current/target Health for the default character", () => {
-    renderPage()
+  it("renders the unit profile with movement, melee hits, and current/target Health for the default character", async () => {
+    await renderPage()
 
     const profile = within(screen.getByTestId("unit-profile"))
     expect(profile.getByText("Hero One")).toBeInTheDocument()
@@ -425,8 +342,8 @@ describe("CharacterRankUpTab", () => {
     expect(profile.getByText("134")).toBeInTheDocument()
   })
 
-  it("computes current/target Health from independent from/to progression values", () => {
-    renderPage([
+  it("computes current/target Health from independent from/to progression values", async () => {
+    await renderPage([
       "/library/characters/hero1?progressionStart=Common:None&progressionEnd=Common:OneStar",
     ])
 
@@ -439,13 +356,13 @@ describe("CharacterRankUpTab", () => {
     expect(profile.queryByText("122")).not.toBeInTheDocument()
   })
 
-  it("clamps a rank down when its progression is lowered below what the rank requires", () => {
+  it("clamps a rank down when its progression is lowered below what the rank requires", async () => {
     // Diamond1 needs at least Legendary rarity; Mythic:MythicWings covers it, so it loads as-is
     // (selectionFromParams doesn't itself clamp — only the interactive setters do).
-    renderPage([
+    await renderPage([
       "/library/characters/hero1?rankStart=Stone1&rankEnd=Diamond1&progressionStart=Common:None&progressionEnd=Mythic:MythicWings",
     ])
-    expect(screen.getByText("Diamond1")).toBeInTheDocument()
+    expect(screen.getByText("Diamond I")).toBeInTheDocument()
 
     // Selects, in DOM order: progression "From", progression "To".
     const [, progressionToTrigger] = screen.getAllByRole("combobox")
@@ -454,93 +371,81 @@ describe("CharacterRankUpTab", () => {
 
     // "To" progression is now Common:None, which only unlocks up to Iron1 — rankEnd is pulled
     // back down to it rather than staying at an unreachable Diamond1.
-    expect(screen.queryByText("Diamond1")).not.toBeInTheDocument()
-    expect(screen.getByText("Iron1")).toBeInTheDocument()
+    expect(screen.queryByText("Diamond I")).not.toBeInTheDocument()
+    expect(screen.getByText("Iron I")).toBeInTheDocument()
   })
 
   it("prefills an advancing range from synced player data when authenticated", async () => {
-    useIsAuthenticatedMock.mockReturnValue(true)
-    playerChunkMocks.characters.mockImplementation((id) =>
-      Promise.resolve(
-        id === "hero2"
-          ? {
-              unitId: "hero2",
-              rank: "Iron3",
-              progressionIndex: "Rare:RedOneStar",
-            }
-          : undefined
-      )
-    )
+    await renderPage(["/library/characters/hero2"], {
+      authenticated: true,
+      playerCharacters: [
+        { unitId: "hero2", rank: "Iron3", progressionIndex: "Rare:RedOneStar" },
+      ],
+    })
 
-    renderPage(["/library/characters/hero2"])
-    await act(async () => {})
-
-    // "Iron3" is the synced unit's rank, not the firstRank ("Stone1") default. Its target now
-    // advances to Bronze1 rather than collapsing both controls to the synced rank.
-    expect(screen.getAllByText("Iron3").length).toBeGreaterThan(0)
-    expect(screen.getAllByText("Bronze1").length).toBeGreaterThan(0)
-    expect(screen.queryByText("Stone1")).not.toBeInTheDocument()
-    expect(screen.queryByText("Stone2")).not.toBeInTheDocument()
+    // "Iron III" is the synced unit's rank, not the firstRank ("Stone I") default. Its target now
+    // advances to Bronze I rather than collapsing both controls to the synced rank.
+    expect((await screen.findAllByText("Iron III")).length).toBeGreaterThan(0)
+    expect(screen.getAllByText("Bronze I").length).toBeGreaterThan(0)
+    expect(screen.queryByText("Stone I")).not.toBeInTheDocument()
+    expect(screen.queryByText("Stone II")).not.toBeInTheDocument()
   })
 
   it("ignores a stale player prefill after moving to another character", async () => {
-    useIsAuthenticatedMock.mockReturnValue(true)
-    let resolveHeroOne: (value: PlayerUnitFixture | undefined) => void
-    const heroOne = new Promise<PlayerUnitFixture | undefined>((resolve) => {
-      resolveHeroOne = resolve
+    const heroTwo: PlayerUnitFixture = {
+      unitId: "hero2",
+      rank: "Bronze1",
+      progressionIndex: "Uncommon:FourStars",
+    }
+    await renderPage(["/library/characters/hero1"], {
+      authenticated: true,
+      playerCharacters: [heroTwo],
     })
-    playerChunkMocks.characters.mockImplementation((id) =>
-      id === "hero1"
-        ? heroOne
-        : Promise.resolve({
-            unitId: "hero2",
-            rank: "Bronze1",
-            progressionIndex: "Uncommon:FourStars",
-          })
-    )
-
-    renderPage(["/library/characters/hero1"])
 
     fireEvent.click(screen.getByRole("link", { name: "Go to Hero Two" }))
-    await act(async () => {})
 
-    expect(screen.getAllByText("Bronze1").length).toBeGreaterThan(0)
-    expect(screen.getAllByText("Bronze2").length).toBeGreaterThan(0)
+    expect((await screen.findAllByText("Bronze I")).length).toBeGreaterThan(0)
+    expect(screen.getAllByText("Bronze II").length).toBeGreaterThan(0)
 
-    resolveHeroOne!({
-      unitId: "hero1",
-      rank: "Gold1",
-      progressionIndex: "Epic:RedOneStar",
+    // Hero One's record arrives only after the move; the live query re-runs for the new unit and
+    // must not apply the previous unit's rank.
+    await seedPlayerData({
+      characters: [
+        { unitId: "hero1", rank: "Gold1", progressionIndex: "Epic:RedOneStar" },
+        heroTwo,
+      ],
     })
-    await act(async () => {})
+    await act(() => new Promise((resolve) => setTimeout(resolve, 50)))
 
-    expect(screen.queryByText("Gold1")).not.toBeInTheDocument()
-    expect(screen.queryByText("Gold2")).not.toBeInTheDocument()
+    expect(screen.queryByText("Gold I")).not.toBeInTheDocument()
+    expect(screen.queryByText("Gold II")).not.toBeInTheDocument()
+    expect(screen.getAllByText("Bronze I").length).toBeGreaterThan(0)
   })
 
   it("keeps the default 'from' rank when authenticated but the selected unit has no synced data", async () => {
-    useIsAuthenticatedMock.mockReturnValue(true)
-    // The synced chunk simply has no record for "hero2" — this is the single-record read's normal
-    // "not found" outcome (`undefined`), the same shape the default mock already returns.
-    playerChunkMocks.characters.mockResolvedValue(undefined)
+    // The synced chunk simply has no record for "hero2" — the single-record read's normal
+    // "not found" outcome (`undefined`).
+    await renderPage(["/library/characters/hero2"], {
+      authenticated: true,
+      playerCharacters: [
+        { unitId: "hero1", rank: "Gold1", progressionIndex: "Epic:RedOneStar" },
+      ],
+    })
 
-    renderPage(["/library/characters/hero2"])
-    await act(async () => {})
-
-    expect(screen.getByText("Stone1")).toBeInTheDocument()
+    expect(await screen.findByText("Stone I")).toBeInTheDocument()
   })
 
-  it("gates recomputation behind the Apply button", () => {
-    renderPage()
+  it("gates recomputation behind the Apply button", async () => {
+    await renderPage()
 
     // Stone2's upgrade only surfaces via the point-five toggle, which starts off.
     expect(screen.queryByText("Point Five Upgrade")).not.toBeInTheDocument()
 
-    const applyButton = screen.getByRole("button", { name: "unitLookup.apply" })
+    const applyButton = screen.getByRole("button", { name: "Apply" })
     expect(applyButton).toBeDisabled()
 
     fireEvent.click(
-      screen.getByRole("switch", { name: "unitLookup.pointFive" })
+      screen.getByRole("switch", { name: "Include point-five upgrades" })
     )
 
     // Toggling the switch only edits the draft — results must not change yet.
@@ -557,8 +462,8 @@ describe("CharacterRankUpTab", () => {
     expect(applyButton).toBeDisabled()
   })
 
-  it("renders a top-upgrade-by-rarity chip and ranked useful-campaign insights", () => {
-    renderPage()
+  it("renders a top-upgrade-by-rarity chip and ranked useful-campaign insights", async () => {
+    await renderPage()
 
     // a1 (Rare) is the only base upgrade at that rarity for the default range, so its name shows
     // once in the insights chip and again in the base-upgrades table row.
@@ -571,18 +476,18 @@ describe("CharacterRankUpTab", () => {
     expect(screen.getByText("Adeptus Mechanicus")).toBeInTheDocument()
   })
 
-  it("shows separate Standard/Extremis scores for an event insight merging both tiers", () => {
-    renderPage()
+  it("shows separate Standard/Extremis scores for an event insight merging both tiers", async () => {
+    await renderPage()
 
     // a1 (Armour Base) drops from both EVT01 (eventStandard) and EVT02 (eventExtremis), so the
     // "Adeptus Mechanicus" event chip merges both tiers and should display two scores.
     const trigger = screen.getByRole("button", { name: /Adeptus Mechanicus/ })
     expect(within(trigger).getByText(/^S /)).toBeInTheDocument()
-    expect(within(trigger).getByText(/^Ext /)).toBeInTheDocument()
+    expect(within(trigger).getByText(/^E /)).toBeInTheDocument()
   })
 
-  it("lists multiple distinct locations for an upgrade without duplicating any", () => {
-    renderPage()
+  it("lists multiple distinct locations for an upgrade without duplicating any", async () => {
+    await renderPage()
 
     fireEvent.click(screen.getByRole("button", { name: /Adeptus Mechanicus/ }))
 
@@ -598,12 +503,12 @@ describe("CharacterRankUpTab", () => {
       within(item as HTMLElement).getByText("Adeptus Mechanicus S 5")
     ).toBeInTheDocument()
     expect(
-      within(item as HTMLElement).getByText("Adeptus Mechanicus Ext 6")
+      within(item as HTMLElement).getByText("Adeptus Mechanicus E 6")
     ).toBeInTheDocument()
   })
 
-  it("expands a campaign insight row to show the contributing upgrades and locations", () => {
-    renderPage()
+  it("expands a campaign insight row to show the contributing upgrades and locations", async () => {
+    await renderPage()
 
     fireEvent.click(screen.getByRole("button", { name: /Indomitus Standard/ }))
 
@@ -635,8 +540,8 @@ describe("CharacterRankUpTab", () => {
     expect(within(item as HTMLElement).queryByText(/%/)).not.toBeInTheDocument()
   })
 
-  it("scrolls to and highlights the matching base-upgrade row when a top-rarity chip is clicked", () => {
-    renderPage()
+  it("scrolls to and highlights the matching base-upgrade row when a top-rarity chip is clicked", async () => {
+    await renderPage()
     const scrollIntoView = window.HTMLElement.prototype
       .scrollIntoView as ReturnType<typeof vi.fn>
     scrollIntoView.mockClear()
@@ -653,8 +558,8 @@ describe("CharacterRankUpTab", () => {
     expect(scrollIntoView.mock.instances[0]).toBe(targetRow)
   })
 
-  it("splits farm locations into campaign and campaign-event columns, labeled by campaign + short code + node numbers", () => {
-    renderPage()
+  it("splits farm locations into campaign and campaign-event columns, labeled by campaign + short code + node numbers", async () => {
+    await renderPage()
 
     // h1 farms from two nodes (3 and 7) on "indomitus"/"standard", a "standard"
     // campaign-definition, so it must land in the campaign column as a single chip listing both
@@ -675,11 +580,11 @@ describe("CharacterRankUpTab", () => {
   })
 
   describe("include my upgrades toggle", () => {
-    it("is visible but disabled, and hides the Owned/Missing columns entirely, for unauthenticated users", () => {
-      renderPage()
+    it("is visible but disabled, and hides the Owned/Missing columns entirely, for unauthenticated users", async () => {
+      await renderPage()
 
       const toggle = screen.getByRole("switch", {
-        name: "unitLookup.includeOwnedUpgrades",
+        name: "Include my upgrades",
       })
       expect(toggle).toBeInTheDocument()
       expect(toggle).toBeDisabled()
@@ -693,40 +598,41 @@ describe("CharacterRankUpTab", () => {
       const cells = within(row as HTMLElement).getAllByRole("cell")
       expect(cells).toHaveLength(6)
       expect(cells[2].textContent).toBe("1") // count
-      expect(screen.queryByText("unitLookup.owned")).not.toBeInTheDocument()
-      expect(screen.queryByText("unitLookup.missing")).not.toBeInTheDocument()
+      expect(screen.queryByText("Owned")).not.toBeInTheDocument()
+      expect(screen.queryByText("Missing")).not.toBeInTheDocument()
     })
 
     it("nets an owned inventory upgrade out of the owned/missing columns once enabled", async () => {
-      useIsAuthenticatedMock.mockReturnValue(true)
-      playerChunkMocks.characters.mockResolvedValue({
-        unitId: "hero1",
-        rank: "Stone1",
-        progressionIndex: "Common:None",
-        appliedUpgradeSlots: [],
+      await renderPage(undefined, {
+        authenticated: true,
+        playerCharacters: [
+          {
+            unitId: "hero1",
+            rank: "Stone1",
+            progressionIndex: "Common:None",
+            appliedUpgradeSlots: [],
+          },
+        ],
+        inventoryUpgrades: [{ upgradeId: "h1", amount: 1 }],
       })
-      playerChunksMocks["inventory-upgrades"].mockReturnValue([
-        { upgradeId: "h1", amount: 1 },
-      ])
-
-      renderPage()
-      await act(async () => {})
 
       const toggle = screen.getByRole("switch", {
-        name: "unitLookup.includeOwnedUpgrades",
+        name: "Include my upgrades",
       })
       expect(toggle).not.toBeDisabled()
 
       fireEvent.click(toggle)
 
       const table = within(screen.getByRole("table"))
+      const healthCells = () =>
+        within(
+          table.getByText("Health Base").closest("tr") as HTMLElement
+        ).getAllByRole("cell")
 
-      // Health Base (h1): 1 needed, 1 owned in inventory → fully covered.
-      const healthCells = within(
-        table.getByText("Health Base").closest("tr") as HTMLElement
-      ).getAllByRole("cell")
-      expect(healthCells[3].textContent).toBe("1") // owned
-      expect(healthCells[4].textContent).toBe("0") // missing
+      // Health Base (h1): 1 needed, 1 owned in inventory → fully covered. The inventory's live
+      // query may land after the toggle.
+      await waitFor(() => expect(healthCells()[3].textContent).toBe("1")) // owned
+      expect(healthCells()[4].textContent).toBe("0") // missing
 
       // Damage Base (d1) has no owned inventory — unaffected.
       const damageCells = within(
@@ -737,21 +643,20 @@ describe("CharacterRankUpTab", () => {
     })
 
     it("feeds owned-deducted counts into campaign insight contributions once enabled", async () => {
-      useIsAuthenticatedMock.mockReturnValue(true)
-      playerChunkMocks.characters.mockResolvedValue({
-        unitId: "hero1",
-        rank: "Stone1",
-        progressionIndex: "Common:None",
-        appliedUpgradeSlots: [],
+      await renderPage(undefined, {
+        authenticated: true,
+        playerCharacters: [
+          {
+            unitId: "hero1",
+            rank: "Stone1",
+            progressionIndex: "Common:None",
+            appliedUpgradeSlots: [],
+          },
+        ],
+        inventoryUpgrades: [{ upgradeId: "h1", amount: 1 }],
       })
-      playerChunksMocks["inventory-upgrades"].mockReturnValue([
-        { upgradeId: "h1", amount: 1 },
-      ])
-
-      renderPage()
-      await act(async () => {})
       fireEvent.click(
-        screen.getByRole("switch", { name: "unitLookup.includeOwnedUpgrades" })
+        screen.getByRole("switch", { name: "Include my upgrades" })
       )
 
       fireEvent.click(
@@ -764,33 +669,37 @@ describe("CharacterRankUpTab", () => {
 
       // Health Base (h1) is fully owned now — its contribution count is 0, not the raw 1 it'd
       // show with the toggle off.
-      const healthRow = within(item as HTMLElement)
-        .getByText(/Health Base/)
-        .closest("span")
-      expect(healthRow?.textContent).toContain("×0")
+      await waitFor(() =>
+        expect(
+          within(item as HTMLElement)
+            .getByText(/Health Base/)
+            .closest("span")?.textContent
+        ).toContain("×0")
+      )
     })
 
     it("marks upgrades already applied to the character in the per-rank breakdown", async () => {
-      useIsAuthenticatedMock.mockReturnValue(true)
       // hero1's rank matches the default range's start (Stone1) unchanged by the prefill, with
       // slot 0 of Stone1's own upgrades (h1 — index 0 of
       // ["h1","h2","d1","d2","a1","a2","l1"]) already applied in preparation for Stone2.
-      playerChunkMocks.characters.mockResolvedValue({
-        unitId: "hero1",
-        rank: "Stone1",
-        progressionIndex: "Common:None",
-        appliedUpgradeSlots: [0],
+      await renderPage(undefined, {
+        authenticated: true,
+        playerCharacters: [
+          {
+            unitId: "hero1",
+            rank: "Stone1",
+            progressionIndex: "Common:None",
+            appliedUpgradeSlots: [0],
+          },
+        ],
       })
-
-      renderPage()
-      await act(async () => {})
       fireEvent.click(
-        screen.getByRole("switch", { name: "unitLookup.includeOwnedUpgrades" })
+        screen.getByRole("switch", { name: "Include my upgrades" })
       )
 
       expect(
-        screen.getByRole("button", {
-          name: "Health Base (unitLookup.alreadyApplied)",
+        await screen.findByRole("button", {
+          name: "Health Base (Already applied)",
         })
       ).toBeInTheDocument()
       // Damage Base (index 2) isn't one of the applied slots, so it stays unmarked.

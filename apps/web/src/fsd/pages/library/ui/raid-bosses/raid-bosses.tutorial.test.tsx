@@ -1,11 +1,17 @@
-import { renderHook } from "@testing-library/react"
+import { renderHook } from "@/test/render"
 import { describe, expect, it, vi } from "vitest"
+
+import enLibrary from "../../../../../../public/locales/en/library.json"
 
 import { useRaidBossesTutorial } from "./raid-bosses.tutorial"
 
-vi.mock("react-i18next", () => ({
-  useTranslation: () => ({ t: (key: string) => `localized:${key}` }),
-}))
+const tourSteps = enLibrary.raidBosses.tour.steps
+const copy = (...keys: (keyof typeof tourSteps)[]) =>
+  keys.map((key) => ({
+    title: tourSteps[key].title,
+    content: tourSteps[key].content,
+  }))
+
 vi.mock("@/shared/tour", () => ({}))
 
 describe("useRaidBossesTutorial", () => {
@@ -20,10 +26,18 @@ describe("useRaidBossesTutorial", () => {
       '[data-testid="raid-boss-prime-modifiers"]',
       '[data-testid="raid-boss-adjusted-stats"]',
     ])
-    for (const step of result.current.desktop) {
-      expect(step.title).toContain("localized:raidBosses.tour.steps")
-      expect(step.content).toContain("localized:raidBosses.tour.steps")
-    }
+    expect(
+      result.current.desktop.map(({ title, content }) => ({ title, content }))
+    ).toEqual(
+      copy(
+        "tabs",
+        "bosses",
+        "primes",
+        "progression",
+        "primeModifiers",
+        "adjustedStats"
+      )
+    )
   })
 
   it("covers the detail view on mobile with the single collapsed picker step", () => {
@@ -36,10 +50,20 @@ describe("useRaidBossesTutorial", () => {
       '[data-testid="raid-boss-prime-modifiers"]',
       '[data-testid="raid-boss-adjusted-stats"]',
     ])
-    for (const step of result.current.mobile ?? []) {
-      expect(step.title).toContain("localized:raidBosses.tour.steps")
-      expect(step.content).toContain("localized:raidBosses.tour.steps")
-    }
+    expect(
+      (result.current.mobile ?? []).map(({ title, content }) => ({
+        title,
+        content,
+      }))
+    ).toEqual(
+      copy(
+        "tabs",
+        "mobilePicker",
+        "progression",
+        "primeModifiers",
+        "adjustedStats"
+      )
+    )
   })
 
   it("guides the season-reference landing page", () => {

@@ -13,6 +13,7 @@ import {
   type LegendaryEventTeam,
 } from "@/entities/legendary-event"
 import { ApiError } from "@/shared/api"
+import { setTestAuth } from "@/test/auth"
 
 import type { TeamDraft } from "./plan-patches"
 import { useLegendaryEventPlan } from "./use-legendary-event-plan"
@@ -26,11 +27,6 @@ const api = vi.hoisted(() => ({
   capture: vi.fn(),
 }))
 
-vi.mock("@azure/msal-react", () => ({ useIsAuthenticated: () => true }))
-vi.mock("react-i18next", () => ({
-  useTranslation: () => ({ t: (key: string) => key }),
-  initReactI18next: { type: "3rdParty", init: vi.fn() },
-}))
 vi.mock("sonner", () => ({
   toast: Object.assign(vi.fn(), { error: vi.fn(), success: vi.fn() }),
 }))
@@ -124,6 +120,7 @@ const order = (current: LegendaryEventPlan) =>
 
 describe("useLegendaryEventPlan", () => {
   beforeEach(() => {
+    setTestAuth({ authenticated: true })
     for (const mock of Object.values(api)) mock.mockReset()
     vi.mocked(toast).mockReset()
     vi.mocked(toast.error).mockReset()
@@ -214,7 +211,7 @@ describe("useLegendaryEventPlan", () => {
       expect(await pending).toBe("error")
     })
     expect(order(cached())).toEqual(["a", "b", "c"])
-    expect(toast.error).toHaveBeenCalledWith("teams.toasts.error")
+    expect(toast.error).toHaveBeenCalledWith("Your teams could not be saved.")
   })
 
   it("sends a second write with the revision the first one returned", async () => {
@@ -251,7 +248,9 @@ describe("useLegendaryEventPlan", () => {
       expect(outcome).toBe("conflict")
       expect(cached()).toEqual(current)
       expect(toast).toHaveBeenCalledTimes(1)
-      expect(toast).toHaveBeenCalledWith("teams.toasts.reloaded")
+      expect(toast).toHaveBeenCalledWith(
+        "Your plan changed on another device and was reloaded. Try again."
+      )
       expect(toast.error).not.toHaveBeenCalled()
       expect(api.update).toHaveBeenCalledTimes(1)
     }

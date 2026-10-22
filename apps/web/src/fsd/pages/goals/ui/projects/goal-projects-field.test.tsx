@@ -2,11 +2,6 @@ import { render, screen } from "@/test/render"
 import userEvent from "@testing-library/user-event"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
-vi.mock("react-i18next", () => ({
-  initReactI18next: { init: () => undefined, type: "3rdParty" },
-  useTranslation: () => ({ t: (key: string) => key }),
-}))
-
 const createProject = vi.fn()
 vi.mock("@/entities/project", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/entities/project")>()),
@@ -38,9 +33,7 @@ const project = (
 const home = project("home", { isDefault: true })
 
 function removeChip(user: ReturnType<typeof userEvent.setup>) {
-  return user.click(
-    screen.getByRole("button", { name: "goals.project.removeMembership" })
-  )
+  return user.click(screen.getByRole("button", { name: /^Remove / }))
 }
 
 describe("GoalProjectsField", () => {
@@ -60,7 +53,9 @@ describe("GoalProjectsField", () => {
 
     expect(onSelectionChange).toHaveBeenCalledWith(["home"])
     expect(
-      screen.queryByText("goals.project.removeLastMembership")
+      screen.queryByText(
+        "This is the goal's only project, and it has nowhere else to go. Add it to another project first."
+      )
     ).not.toBeInTheDocument()
   })
 
@@ -78,7 +73,7 @@ describe("GoalProjectsField", () => {
 
     await user.click(
       screen.getAllByRole("button", {
-        name: "goals.project.removeMembership",
+        name: "Remove a",
       })[0]!
     )
 
@@ -101,7 +96,9 @@ describe("GoalProjectsField", () => {
 
     expect(onSelectionChange).not.toHaveBeenCalled()
     expect(
-      screen.getByText("goals.project.removeLastMembership")
+      screen.getByText(
+        "This is the goal's only project, and it has nowhere else to go. Add it to another project first."
+      )
     ).toBeInTheDocument()
   })
 
@@ -121,7 +118,9 @@ describe("GoalProjectsField", () => {
 
     expect(onSelectionChange).not.toHaveBeenCalled()
     expect(
-      screen.getByText("goals.project.removeDestinationUnknown")
+      screen.getByText(
+        "Your projects aren't loaded yet, so this goal has no destination. Try again in a moment."
+      )
     ).toBeInTheDocument()
   })
 
@@ -136,7 +135,7 @@ describe("GoalProjectsField", () => {
     )
 
     expect(screen.getByText("archived")).toBeInTheDocument()
-    expect(screen.getByText("goals.status.Archived")).toBeInTheDocument()
+    expect(screen.getByText("Archived")).toBeInTheDocument()
   })
 
   it("relocates an archived-only membership to the Default project", async () => {
@@ -174,10 +173,7 @@ describe("GoalProjectsField", () => {
 
     await user.click(screen.getByTestId("goal-edit-add-project"))
     expect(screen.queryByText("archived")).not.toBeInTheDocument()
-    await user.type(
-      screen.getByPlaceholderText("goals.project.searchProjects"),
-      "Event"
-    )
+    await user.type(screen.getByPlaceholderText("Search projects"), "Event")
     await user.click(screen.getByText("Event plan"))
     expect(onSelectionChange).toHaveBeenCalledWith(["selected", "Event plan"])
   })
@@ -199,7 +195,7 @@ describe("GoalProjectsField", () => {
 
     await user.click(screen.getByTestId("goal-edit-add-project"))
     expect(portalContainer).toContainElement(
-      screen.getByPlaceholderText("goals.project.searchProjects")
+      screen.getByPlaceholderText("Search projects")
     )
     portalContainer.remove()
   })
@@ -215,9 +211,7 @@ describe("GoalProjectsField", () => {
     )
 
     expect(screen.queryByText("goals.project.currentPlan")).toBeNull()
-    expect(
-      screen.getByText("goals.create.projectDefaultMarker")
-    ).toBeInTheDocument()
+    expect(screen.getByText("default")).toBeInTheDocument()
   })
 
   describe("inline project creation", () => {
@@ -228,10 +222,7 @@ describe("GoalProjectsField", () => {
       text: string
     ) {
       await user.click(screen.getByTestId("goal-edit-add-project"))
-      await user.type(
-        screen.getByPlaceholderText("goals.project.searchProjects"),
-        text
-      )
+      await user.type(screen.getByPlaceholderText("Search projects"), text)
     }
 
     const renderField = (onSelectionChange = vi.fn()) => {
@@ -260,9 +251,9 @@ describe("GoalProjectsField", () => {
 
       await openAndType(user, "  Brand new  ")
 
-      expect(createRow()).toHaveTextContent("goals.project.createInline")
+      expect(createRow()).toHaveTextContent('Create "Brand new"')
       expect(
-        screen.queryByText("goals.project.noAddableProjects")
+        screen.queryByText("No available projects found.")
       ).not.toBeInTheDocument()
       expect(createProject).not.toHaveBeenCalled()
 
@@ -326,12 +317,8 @@ describe("GoalProjectsField", () => {
       await openAndType(user, "   ")
       expect(createRow()).not.toBeInTheDocument()
 
-      await user.clear(
-        screen.getByPlaceholderText("goals.project.searchProjects")
-      )
-      await user.click(
-        screen.getByPlaceholderText("goals.project.searchProjects")
-      )
+      await user.clear(screen.getByPlaceholderText("Search projects"))
+      await user.click(screen.getByPlaceholderText("Search projects"))
       await user.paste("x".repeat(121))
       expect(createRow()).not.toBeInTheDocument()
     })
@@ -347,9 +334,9 @@ describe("GoalProjectsField", () => {
       expect(
         await screen.findByTestId("goal-edit-create-project-error")
       ).toHaveTextContent("Server down")
-      expect(
-        screen.getByPlaceholderText("goals.project.searchProjects")
-      ).toHaveValue("Brand new")
+      expect(screen.getByPlaceholderText("Search projects")).toHaveValue(
+        "Brand new"
+      )
       expect(onSelectionChange).not.toHaveBeenCalled()
 
       await user.click(createRow()!)
@@ -369,7 +356,9 @@ describe("GoalProjectsField", () => {
       await user.click(createRow()!)
 
       expect(
-        await screen.findByText("goals.project.createFailed")
+        await screen.findByText(
+          "Couldn't create the project. Check your connection and try again."
+        )
       ).toBeInTheDocument()
     })
 
@@ -388,7 +377,7 @@ describe("GoalProjectsField", () => {
       await user.click(createRow()!)
 
       expect(createProject).toHaveBeenCalledTimes(1)
-      expect(createRow()).toHaveTextContent("goals.project.creatingInline")
+      expect(createRow()).toHaveTextContent('Creating "Brand new"…')
       resolve(project("new-id"))
       await vi.waitFor(() => expect(createRow()).not.toBeInTheDocument())
     })

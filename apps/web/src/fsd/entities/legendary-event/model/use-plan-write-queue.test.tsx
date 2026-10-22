@@ -1,17 +1,15 @@
 import type { ReactNode } from "react"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { act, renderHook } from "@testing-library/react"
-import { describe, expect, it, vi } from "vitest"
+import { beforeEach, describe, expect, it, vi } from "vitest"
+
+import { setTestAuth } from "@/test/auth"
 
 import { legendaryEventPlanQueries } from "../api/legendary-event-plan.queries"
 import type { LegendaryEventPlan } from "./plan.types"
 import { usePlanWriteQueue } from "./use-plan-write-queue"
 
-vi.mock("@azure/msal-react", () => ({ useIsAuthenticated: () => true }))
-vi.mock("react-i18next", () => ({
-  useTranslation: () => ({ t: (key: string) => key }),
-  initReactI18next: { type: "3rdParty", init: vi.fn() },
-}))
+beforeEach(() => setTestAuth({ authenticated: true }))
 vi.mock("sonner", () => ({
   toast: Object.assign(vi.fn(), { error: vi.fn(), success: vi.fn() }),
 }))

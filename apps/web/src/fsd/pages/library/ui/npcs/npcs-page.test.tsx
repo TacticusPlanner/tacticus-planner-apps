@@ -1,10 +1,9 @@
-import { useEffect, useState } from "react"
-import { beforeEach, describe, expect, it, vi } from "vitest"
-import { screen, waitFor, within } from "@testing-library/react"
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import userEvent from "@testing-library/user-event"
-import { MemoryRouter, Route, Routes, useLocation } from "react-router"
+import { useLocation } from "react-router"
 
-import { render } from "@/test/render"
+import { render, screen, waitFor, within } from "@/test/render"
+import { seedGameCatalog } from "@/test/seed"
 
 import type { NpcRecord, NpcStatRow } from "@/entities/npc"
 import type { ReadState } from "@/shared/lib"
@@ -34,60 +33,6 @@ vi.mock("@/shared/unit-power", async (importOriginal) => ({
   useUnitPowerContext: () => powerMock.state,
 }))
 
-// Minimal stand-in for dexie-react-hooks' useLiveQuery (see raid-bosses-page.test.tsx).
-vi.mock("dexie-react-hooks", () => ({
-  useLiveQuery: (
-    querier: () => unknown,
-    deps: unknown[] = [],
-    defaultResult?: unknown
-  ) => {
-    const [value, setValue] = useState<unknown>(defaultResult)
-    useEffect(() => {
-      const result = querier()
-      if (result instanceof Promise) {
-        let active = true
-        void result.then((resolved) => {
-          if (active) setValue(resolved)
-        })
-        return () => {
-          active = false
-        }
-      }
-      setValue(result)
-      return undefined
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, deps)
-    return value
-  },
-}))
-
-const { getNpcsMock, metadataMock } = vi.hoisted(() => ({
-  getNpcsMock: vi.fn(),
-  metadataMock: vi.fn(),
-}))
-vi.mock("@workspace/game-catalog/queries", () => ({ getNpcs: getNpcsMock }))
-vi.mock("@workspace/game-catalog", async (importOriginal) => ({
-  ...(await importOriginal<typeof import("@workspace/game-catalog")>()),
-  getGameCatalogMetadata: metadataMock,
-}))
-const syncedMetadata = new Map([["npcs", { key: "npcs" }]])
-
-// Resolve i18n keys to the key itself (or the defaultValue) so assertions can match on keys.
-vi.mock("react-i18next", () => ({
-  useTranslation: () => ({
-    t: (key: string, opts?: Record<string, unknown>) =>
-      opts && Object.keys(opts).filter((k) => k !== "defaultValue").length
-        ? `${key} ${JSON.stringify(opts)}`
-        : ((opts?.defaultValue as string) ?? key),
-    i18n: {
-      exists: (key: string) => key.startsWith("abilities:"),
-      language: "en",
-      // No rules text in this fixture: every ability renders as a plain chip.
-      getResource: () => undefined,
-    },
-  }),
-}))
-
 import { NpcsPage } from "./npcs-page"
 
 function Location() {
@@ -97,24 +42,25 @@ function Location() {
   )
 }
 
-function renderPage(entry: string) {
+// The catalog rows `renderPage` seeds; `null` leaves the dataset unsynced.
+let seededNpcs: unknown[] | null = null
+
+async function renderPage(entry: string) {
+  if (seededNpcs) {
+    await seedGameCatalog({ npcs: seededNpcs })
+  }
   return render(
-    <MemoryRouter initialEntries={[entry]}>
-      <Routes>
-        <Route
-          path="/library/npcs/:entityId?"
-          element={
-            <>
-              <NpcsPage />
-              <Location />
-            </>
-          }
-        />
-        <Route path="/library/characters" element={<p>characters</p>} />
-      </Routes>
-    </MemoryRouter>
+    <>
+      <NpcsPage />
+      <Location />
+    </>,
+    { route: "/library/npcs/:entityId?", initialEntries: [entry] }
   )
 }
+
+afterEach(() => {
+  vi.restoreAllMocks()
+})
 
 // Page-local builders (the entity keeps its own fixtures behind its public API).
 const statRow = (rank: number, stars: number, health = 100): NpcStatRow => ({
@@ -272,81 +218,91 @@ const numberText = (value: number) =>
 describe("NpcsPage", () => {
   beforeEach(() => {
     isMobileMock.value = false
-    getNpcsMock.mockReset()
-    getNpcsMock.mockResolvedValue(dataset)
-    metadataMock.mockReset()
-    metadataMock.mockResolvedValue(syncedMetadata)
+    seededNpcs = dataset
     powerMock.state = powerReady
   })
 
-  it("shows the loading state and does not redirect while the dataset loads", () => {
-    getNpcsMock.mockReturnValue(new Promise(() => {}))
-    renderPage("/library/npcs")
+  it("shows the loading state and does not redirect while the dataset loads", async () => {
+    await renderPage("/library/npcs")
 
-    expect(screen.getByText("library:loading")).toBeVisible()
+    expect(screen.getByText("Loading Library records…")).toBeVisible()
     expect(location()).toBe("/library/npcs")
   })
 
   it("keeps a direct link while the first catalog sync is still running", async () => {
     // Cold catalog: the table is empty and no npcs metadata exists yet.
-    getNpcsMock.mockResolvedValue([])
-    metadataMock.mockResolvedValue(new Map())
-    renderPage("/library/npcs/makhotep")
+    seededNpcs = null
+    await renderPage("/library/npcs/makhotep")
 
-    expect(await screen.findByText("library:loading")).toBeVisible()
+    expect(await screen.findByText("Loading Library records…")).toBeVisible()
     await new Promise((resolve) => setTimeout(resolve, 50))
     expect(location()).toBe("/library/npcs/makhotep")
-    expect(screen.queryByText("library:collections.noRecords")).toBeNull()
+    expect(
+      screen.queryByText("No selectable entities are available.")
+    ).toBeNull()
   })
 
   it("shows the no-records state only once the dataset has synced empty", async () => {
-    getNpcsMock.mockResolvedValue([])
-    renderPage("/library/npcs")
+    seededNpcs = []
+    await renderPage("/library/npcs")
 
     expect(
-      await screen.findByText("library:collections.noRecords")
+      await screen.findByText("No selectable entities are available.")
     ).toBeVisible()
     expect(location()).toBe("/library/npcs")
   })
 
   it("shows a retry-able failure state when the dataset read throws", async () => {
-    getNpcsMock.mockRejectedValueOnce(new Error("boom"))
-    renderPage("/library/npcs")
+    vi.spyOn(IDBObjectStore.prototype, "getAll").mockImplementation(() => {
+      throw new Error("boom")
+    })
+    await renderPage("/library/npcs")
 
     expect(await screen.findByTestId("npcs-load-failed")).toBeVisible()
     expect(location()).toBe("/library/npcs")
   })
 
   it("redirects the collection URL to the first listed NPC", async () => {
-    renderPage("/library/npcs")
+    await renderPage("/library/npcs")
 
-    await waitFor(() => expect(location()).toBe("/library/npcs/makhotep"))
-    expect(screen.getByTestId("npc-name")).toHaveTextContent("Makhotep")
+    // The catalog store returns rows by id, so `blackNpc4HavocSurv` lists first.
+    await waitFor(() => expect(location()).toBe("/library/npcs/havoc"))
+    expect(screen.getByTestId("npc-name")).toHaveTextContent("Havoc")
   })
 
   it("replaces an unknown group id with the first listed NPC", async () => {
-    renderPage("/library/npcs/not-a-real-npc?variation=x")
+    await renderPage("/library/npcs/not-a-real-npc?variation=x")
 
     await waitFor(() =>
-      expect(location()).toBe("/library/npcs/makhotep?variation=x")
+      expect(location()).toBe("/library/npcs/havoc?variation=x")
     )
   })
 
   it("excludes Machines of War and loot objects from the list", async () => {
-    renderPage("/library/npcs/makhotep")
+    await renderPage("/library/npcs/makhotep")
 
     const list = await screen.findByTestId("npcs-list")
     const names = within(list)
       .getAllByRole("button")
       .map((tile) => tile.textContent)
-    expect(names).toEqual(["Makhotep", "Imospekh", "Termagant", "Havoc"])
+    // Store order (by id) and localized names from the `npcs` namespace.
+    expect(names).toEqual([
+      "Havoc",
+      "Royal Warden Makhotep",
+      "Hexmark Destroyer Imospekh",
+      "Termagant",
+    ])
   })
 
   it("restores NPC, variation, and level from a direct link", async () => {
-    renderPage("/library/npcs/makhotep?variation=necroBossWardenLHE&level=1")
+    await renderPage(
+      "/library/npcs/makhotep?variation=necroBossWardenLHE&level=1"
+    )
 
     expect(await screen.findByTestId("npc-name")).toHaveTextContent("Makhotep")
-    expect(screen.getByTestId("npcs-variation-select")).toHaveTextContent("lhe")
+    expect(screen.getByTestId("npcs-variation-select")).toHaveTextContent(
+      "Legendary Hero Event"
+    )
     // served index 1 of the LHE ladder is rank 18 / 13 stars, health 8000
     expect(screen.getByTestId("npc-stat-health")).toHaveTextContent(
       numberText(8000)
@@ -357,11 +313,11 @@ describe("NpcsPage", () => {
   })
 
   it("selects the default variation and first level without writing them back to the URL", async () => {
-    renderPage("/library/npcs/makhotep")
+    await renderPage("/library/npcs/makhotep")
 
     expect(await screen.findByTestId("npc-name")).toHaveTextContent("Makhotep")
     expect(screen.getByTestId("npcs-variation-select")).toHaveTextContent(
-      "standard"
+      "Standard"
     )
     // necroNpcWarden's first row in display order: rank 1 / 1 star, health 117
     expect(screen.getByTestId("npc-stat-health")).toHaveTextContent("117")
@@ -369,7 +325,7 @@ describe("NpcsPage", () => {
   })
 
   it("falls back to the default for an unknown variation, leaving the URL unchanged", async () => {
-    renderPage("/library/npcs/makhotep?variation=doesNotExist")
+    await renderPage("/library/npcs/makhotep?variation=doesNotExist")
 
     expect(await screen.findByTestId("npc-name")).toHaveTextContent("Makhotep")
     expect(screen.getByTestId("npc-stat-health")).toHaveTextContent("117")
@@ -377,7 +333,7 @@ describe("NpcsPage", () => {
   })
 
   it("falls back to the first level in display order for an out-of-range level", async () => {
-    renderPage("/library/npcs/makhotep?variation=necroBossWarden&level=9")
+    await renderPage("/library/npcs/makhotep?variation=necroBossWarden&level=9")
 
     expect(await screen.findByTestId("npc-name")).toHaveTextContent("Makhotep")
     // necroBossWarden serves rank 2 first, but display order puts rank 1 / 2 stars (health 140) first
@@ -386,7 +342,9 @@ describe("NpcsPage", () => {
 
   it("selecting another NPC drops variation and level", async () => {
     const user = userEvent.setup()
-    renderPage("/library/npcs/makhotep?variation=necroBossWardenLHE&level=1")
+    await renderPage(
+      "/library/npcs/makhotep?variation=necroBossWardenLHE&level=1"
+    )
     await screen.findByTestId("npc-name")
 
     await user.click(screen.getByTestId("npc-tile-imospekh"))
@@ -397,7 +355,9 @@ describe("NpcsPage", () => {
 
   it("changing the variation replaces `variation` and drops `level`", async () => {
     const user = userEvent.setup()
-    renderPage("/library/npcs/makhotep?variation=necroBossWardenLHE&level=1")
+    await renderPage(
+      "/library/npcs/makhotep?variation=necroBossWardenLHE&level=1"
+    )
     await screen.findByTestId("npc-name")
 
     await user.click(screen.getByTestId("npcs-variation-select"))
@@ -419,13 +379,13 @@ describe("NpcsPage", () => {
 
   it("changing the level writes the served index, and ties show health in the options", async () => {
     const user = userEvent.setup()
-    renderPage("/library/npcs/havoc")
+    await renderPage("/library/npcs/havoc")
     await screen.findByTestId("npc-name")
 
     await user.click(screen.getByTestId("npcs-level-select"))
     const options = await screen.findAllByRole("option")
     expect(options).toHaveLength(3)
-    expect(options[2]).toHaveTextContent(/library:npcs.healthAtLevel/)
+    expect(options[2]).toHaveTextContent(/ HP$/)
     expect(options[2]).toHaveTextContent(numberText(1_729_700))
     await user.click(options[2])
 
@@ -436,25 +396,23 @@ describe("NpcsPage", () => {
   })
 
   it("disables the variation selector for a single-variation NPC", async () => {
-    renderPage("/library/npcs/termagant")
+    await renderPage("/library/npcs/termagant")
 
     expect(await screen.findByTestId("npc-name")).toHaveTextContent("Termagant")
     expect(screen.getByTestId("npcs-variation-select")).toBeDisabled()
-    expect(screen.getByTestId("npc-attack-ranged")).toHaveTextContent(
-      'library:npcs.attacks.range {"range":2}'
-    )
+    expect(screen.getByTestId("npc-attack-ranged")).toHaveTextContent("Range 2")
   })
 
   it("lists the variation's abilities, unchanged by the selected level", async () => {
     const user = userEvent.setup()
-    renderPage("/library/npcs/makhotep?variation=necroBossWarden")
+    await renderPage("/library/npcs/makhotep?variation=necroBossWarden")
     await screen.findByTestId("npc-name")
 
     expect(screen.getByTestId("npc-abilities-active")).toHaveTextContent(
-      "AdaptiveStrategy"
+      "Adaptive Strategy"
     )
     expect(screen.getByTestId("npc-abilities-passive")).toHaveTextContent(
-      "RelentlessMarch"
+      "Relentless March"
     )
 
     await user.click(screen.getByTestId("npcs-level-select"))
@@ -463,19 +421,19 @@ describe("NpcsPage", () => {
 
     await waitFor(() => expect(location()).toContain("level="))
     expect(screen.getByTestId("npc-abilities-active")).toHaveTextContent(
-      "AdaptiveStrategy"
+      "Adaptive Strategy"
     )
   })
 
   it("renders no abilities section for a variation with none", async () => {
-    renderPage("/library/npcs/havoc")
+    await renderPage("/library/npcs/havoc")
     await screen.findByTestId("npc-name")
 
     expect(screen.queryByTestId("npc-abilities")).toBeNull()
   })
 
   it("shows the empty-traits state and only a melee row for a plain unit", async () => {
-    renderPage("/library/npcs/havoc")
+    await renderPage("/library/npcs/havoc")
 
     expect(await screen.findByTestId("npc-traits-empty")).toBeVisible()
     expect(screen.getByTestId("npc-attack-melee")).toBeVisible()
@@ -484,7 +442,7 @@ describe("NpcsPage", () => {
 
   it("filters the list by search without touching the selected URL", async () => {
     const user = userEvent.setup()
-    renderPage("/library/npcs/makhotep")
+    await renderPage("/library/npcs/makhotep")
     await screen.findByTestId("npc-name")
 
     await openFilters(user)
@@ -498,7 +456,7 @@ describe("NpcsPage", () => {
 
   it("shows the no-matching-NPCs state with a clear control", async () => {
     const user = userEvent.setup()
-    renderPage("/library/npcs/makhotep")
+    await renderPage("/library/npcs/makhotep")
     await screen.findByTestId("npc-name")
 
     await openFilters(user)
@@ -517,15 +475,17 @@ describe("NpcsPage", () => {
     const user = userEvent.setup()
     // Only necroNpcWarden has rank 1 / 1 star... use faction filter: every Makhotep variation is
     // Necrons, so filter by trait instead — give the LHE variation a unique trait via the fixture.
-    getNpcsMock.mockResolvedValue([
+    seededNpcs = [
       ...makhotepRecords.map((r) =>
         r.id === "necroNpcWarden"
           ? { ...r, traits: ["LivingMetal", "Mechanical", "Boss"] }
           : r
       ),
       imospekh,
-    ])
-    renderPage("/library/npcs/makhotep?variation=necroBossWardenLHE&level=1")
+    ]
+    await renderPage(
+      "/library/npcs/makhotep?variation=necroBossWardenLHE&level=1"
+    )
     await screen.findByTestId("npc-name")
 
     await openFilters(user)
@@ -539,7 +499,7 @@ describe("NpcsPage", () => {
 
   it("shows the no-matching-variation state when filters exclude every variation of the selected NPC", async () => {
     const user = userEvent.setup()
-    renderPage("/library/npcs/makhotep")
+    await renderPage("/library/npcs/makhotep")
     await screen.findByTestId("npc-name")
 
     await openFilters(user)
@@ -554,7 +514,7 @@ describe("NpcsPage", () => {
 
   it("resets filters when the user leaves and returns", async () => {
     const user = userEvent.setup()
-    const view = renderPage("/library/npcs/makhotep")
+    const view = await renderPage("/library/npcs/makhotep")
     await screen.findByTestId("npc-name")
     await openFilters(user)
     await user.type(screen.getByTestId("npcs-search"), "term")
@@ -563,7 +523,7 @@ describe("NpcsPage", () => {
     ).toHaveLength(1)
 
     view.unmount()
-    renderPage("/library/npcs/makhotep")
+    await renderPage("/library/npcs/makhotep")
     await screen.findByTestId("npc-name")
 
     expect(
@@ -578,7 +538,7 @@ describe("NpcsPage", () => {
 
     it("renders the combobox instead of the tile list and navigates on pick", async () => {
       const user = userEvent.setup()
-      renderPage("/library/npcs/makhotep")
+      await renderPage("/library/npcs/makhotep")
       await screen.findByTestId("npc-name")
 
       expect(screen.queryByTestId("npcs-list")).not.toBeInTheDocument()
@@ -588,7 +548,7 @@ describe("NpcsPage", () => {
       expect(combobox).toHaveTextContent("Makhotep")
 
       await user.click(combobox)
-      await user.type(screen.getByPlaceholderText("npcs.selectNpc"), "makh")
+      await user.type(screen.getByPlaceholderText("Select an NPC"), "makh")
       const options = await screen.findAllByRole("option")
       expect(options).toHaveLength(1)
       await user.click(options[0])
@@ -597,7 +557,7 @@ describe("NpcsPage", () => {
     })
 
     it("stacks the detail with the compact stat grid and full-width selectors", async () => {
-      renderPage("/library/npcs/makhotep")
+      await renderPage("/library/npcs/makhotep")
 
       expect(await screen.findByTestId("npcs-mobile-page")).toBeVisible()
       expect(screen.getByTestId("npcs-stats")).toHaveClass("grid-cols-2")
@@ -610,14 +570,11 @@ describe("NpcsPage", () => {
 describe("NpcsPage desktop layout and filters", () => {
   beforeEach(() => {
     isMobileMock.value = false
-    getNpcsMock.mockReset()
-    getNpcsMock.mockResolvedValue(dataset)
-    metadataMock.mockReset()
-    metadataMock.mockResolvedValue(syncedMetadata)
+    seededNpcs = dataset
   })
 
   it("marks the selected tile pressed and renders the list beside the detail", async () => {
-    renderPage("/library/npcs/imospekh")
+    await renderPage("/library/npcs/imospekh")
     await screen.findByTestId("npc-name")
 
     expect(screen.getByTestId("npc-tile-imospekh")).toHaveAttribute(
@@ -636,7 +593,7 @@ describe("NpcsPage desktop layout and filters", () => {
 
   it("keeps name search outside the collapsible filters", async () => {
     const user = userEvent.setup()
-    renderPage("/library/npcs/makhotep")
+    await renderPage("/library/npcs/makhotep")
     await screen.findByTestId("npc-name")
 
     // Search is usable without opening the panel, and is not counted as a filter.
@@ -647,13 +604,13 @@ describe("NpcsPage desktop layout and filters", () => {
       within(screen.getByTestId("npcs-list")).getAllByRole("button")
     ).toHaveLength(1)
     expect(screen.getByTestId("npcs-filters-toggle")).toHaveTextContent(
-      "npcs.filters"
+      "Filters"
     )
   })
 
   it("narrows by alliance and by attack type", async () => {
     const user = userEvent.setup()
-    renderPage("/library/npcs/makhotep")
+    await renderPage("/library/npcs/makhotep")
     await screen.findByTestId("npc-name")
     await openFilters(user)
 
@@ -665,33 +622,33 @@ describe("NpcsPage desktop layout and filters", () => {
     expect(afterAlliance).toBeGreaterThan(0)
 
     await user.click(screen.getByTestId("npcs-attack-filter"))
-    await user.click(
-      await screen.findByRole("option", { name: /meleeOnly|Melee/ })
-    )
+    await user.click(await screen.findByRole("option", { name: "Melee only" }))
     expect(screen.getByTestId("npcs-filters-toggle")).toHaveTextContent(
-      '{"count":2}'
+      "Filters (2)"
     )
   })
 
   it("clears one multi-select without touching the others", async () => {
     const user = userEvent.setup()
-    renderPage("/library/npcs/makhotep")
+    await renderPage("/library/npcs/makhotep")
     await screen.findByTestId("npc-name")
     await openFilters(user)
 
     await user.click(screen.getByTestId("npcs-damage-type-filter"))
     await user.click(await screen.findByRole("option", { name: "Gauss" }))
     await user.click(screen.getByTestId("npcs-trait-filter"))
-    await user.click(await screen.findByRole("option", { name: "LivingMetal" }))
+    await user.click(
+      await screen.findByRole("option", { name: "Living Metal" })
+    )
     expect(screen.getByTestId("npcs-filters-toggle")).toHaveTextContent(
-      '{"count":2}'
+      "Filters (2)"
     )
 
     await user.click(screen.getByTestId("npcs-damage-type-filter-clear"))
 
     // Only the damage-type facet is reset; the trait facet survives.
     expect(screen.getByTestId("npcs-filters-toggle")).toHaveTextContent(
-      '{"count":1}'
+      "Filters (1)"
     )
     expect(screen.queryByTestId("npcs-damage-type-filter-clear")).toBeNull()
     expect(screen.getByTestId("npcs-trait-filter-clear")).toBeVisible()
@@ -699,7 +656,7 @@ describe("NpcsPage desktop layout and filters", () => {
 
   it("offers no blank damage-type option for a unit served without a damage profile", async () => {
     const user = userEvent.setup()
-    getNpcsMock.mockResolvedValue([
+    seededNpcs = [
       ...dataset,
       npcRecord("darkaNpc4Watcher", "Watcher", {
         factionId: "DarkAngels",
@@ -708,8 +665,8 @@ describe("NpcsPage desktop layout and filters", () => {
         traits: ["Immune"],
         stats: [statRow(0, 0, 50)],
       }),
-    ])
-    renderPage("/library/npcs/watcher")
+    ]
+    await renderPage("/library/npcs/watcher")
     await screen.findByTestId("npc-name")
 
     // No attacks at all rather than a phantom melee chip.
@@ -724,7 +681,7 @@ describe("NpcsPage desktop layout and filters", () => {
 
   it("narrows by faction and by damage type, and the clear button reports the active count", async () => {
     const user = userEvent.setup()
-    renderPage("/library/npcs/makhotep")
+    await renderPage("/library/npcs/makhotep")
     await screen.findByTestId("npc-name")
 
     await openFilters(user)
@@ -734,13 +691,13 @@ describe("NpcsPage desktop layout and filters", () => {
       within(screen.getByTestId("npcs-list")).getAllByRole("button")
     ).toHaveLength(1)
     expect(screen.getByTestId("npcs-filters-toggle")).toHaveTextContent(
-      '{"count":1}'
+      "Filters (1)"
     )
 
     await user.click(screen.getByTestId("npcs-damage-type-filter"))
     await user.click(await screen.findByRole("option", { name: "Piercing" }))
     expect(screen.getByTestId("npcs-filters-toggle")).toHaveTextContent(
-      '{"count":2}'
+      "Filters (2)"
     )
 
     await user.click(screen.getByTestId("npcs-clear-filters"))
@@ -754,21 +711,18 @@ describe("NpcsPage desktop layout and filters", () => {
 describe("NpcsPage power card", () => {
   beforeEach(() => {
     isMobileMock.value = false
-    getNpcsMock.mockReset()
-    metadataMock.mockReset()
-    metadataMock.mockResolvedValue(syncedMetadata)
-    getNpcsMock.mockResolvedValue([...dataset, infiltrator, watcher])
+    seededNpcs = [...dataset, infiltrator, watcher]
     powerMock.state = powerReady
   })
 
   it("shows the selected level row's power and follows the level", async () => {
     const user = userEvent.setup()
-    renderPage("/library/npcs/infiltrator?level=2")
+    await renderPage("/library/npcs/infiltrator?level=2")
     await screen.findByTestId("npc-name")
     // Third served row: health 76, damage 34, armour 22 → 45.
     expect(screen.getByTestId("npc-stat-health")).toHaveTextContent("76")
     expect(powerValue()).toHaveTextContent(/^45$/)
-    expect(powerCard()).toHaveTextContent("npcs.stats.power")
+    expect(powerCard()).toHaveTextContent("Power")
 
     await user.click(screen.getByTestId("npcs-level-select"))
     const options = await screen.findAllByRole("option")
@@ -787,7 +741,7 @@ describe("NpcsPage power card", () => {
   })
 
   it("shows a unit with no attacks at 10 plus its ability power, not an error", async () => {
-    renderPage("/library/npcs/watcher")
+    await renderPage("/library/npcs/watcher")
     await screen.findByTestId("npc-name")
     const expected = npcPowerAt(
       "tyranNpcWatcher",
@@ -799,17 +753,17 @@ describe("NpcsPage power card", () => {
   })
 
   it("opens the estimate note on focus", async () => {
-    renderPage("/library/npcs/infiltrator")
+    await renderPage("/library/npcs/infiltrator")
     await screen.findByTestId("npc-name")
     screen.getByTestId("npc-stat-power-note").focus()
     expect(
       await screen.findByTestId("npc-stat-power-note-content")
-    ).toHaveTextContent("npcs.power.estimate")
+    ).toHaveTextContent("Estimated from the listed stats.")
   })
 
   it("closes the estimate note with Escape and keeps it closed", async () => {
     const user = userEvent.setup()
-    renderPage("/library/npcs/infiltrator")
+    await renderPage("/library/npcs/infiltrator")
     await screen.findByTestId("npc-name")
     const trigger = screen.getByTestId("npc-stat-power-note")
     trigger.focus()
@@ -825,7 +779,7 @@ describe("NpcsPage power card", () => {
 
   it("opens the estimate note on hover without moving focus, and closes it on leave", async () => {
     const user = userEvent.setup()
-    renderPage("/library/npcs/infiltrator")
+    await renderPage("/library/npcs/infiltrator")
     await screen.findByTestId("npc-name")
     const trigger = screen.getByTestId("npc-stat-power-note")
     await user.hover(trigger)
@@ -843,7 +797,7 @@ describe("NpcsPage power card", () => {
 
   it("opens the estimate note on tap", async () => {
     const user = userEvent.setup()
-    renderPage("/library/npcs/infiltrator")
+    await renderPage("/library/npcs/infiltrator")
     await screen.findByTestId("npc-name")
     await user.click(screen.getByTestId("npc-stat-power-note"))
     expect(
@@ -853,14 +807,14 @@ describe("NpcsPage power card", () => {
 
   it("shows a placeholder while the power data loads", async () => {
     powerMock.state = { status: "loading" }
-    renderPage("/library/npcs/infiltrator")
+    await renderPage("/library/npcs/infiltrator")
     await screen.findByTestId("npc-name")
     expect(screen.getByTestId("npc-stat-power-loading")).toBeInTheDocument()
   })
 
   it("leaves out the power card and keeps the other stats when the data failed", async () => {
     powerMock.state = { status: "error" }
-    renderPage("/library/npcs/infiltrator?level=2")
+    await renderPage("/library/npcs/infiltrator?level=2")
     await screen.findByTestId("npc-name")
     expect(screen.queryByTestId("npc-stat-power")).not.toBeInTheDocument()
     expect(screen.getByTestId("npc-stat-health")).toHaveTextContent("76")
@@ -870,7 +824,7 @@ describe("NpcsPage power card", () => {
 
   it("is in the compact mobile stat grid", async () => {
     isMobileMock.value = true
-    renderPage("/library/npcs/infiltrator?level=2")
+    await renderPage("/library/npcs/infiltrator?level=2")
     await screen.findByTestId("npc-name")
     expect(
       within(screen.getByTestId("npcs-stats")).getByTestId("npc-stat-power")

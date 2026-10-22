@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import type { i18n as I18n } from "i18next"
-import { beforeAll, describe, expect, it, vi } from "vitest"
+import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
 
 import {
   teamLane,
@@ -9,6 +9,7 @@ import {
 } from "@/test/fixtures/legendary-event-teams"
 import { createTestI18n, i18nWrapper } from "@/test/i18n"
 import { fireEvent, render, screen, within } from "@/test/render"
+import { seedGameCatalog } from "@/test/seed"
 
 import {
   initialEditorDraft,
@@ -18,27 +19,16 @@ import {
 import type { PickerEstimates, PickerGoalsPreview } from "../model/team-picker"
 import { TeamUnitPicker } from "./team-unit-picker"
 
-vi.mock("dexie-react-hooks", () => ({
-  useLiveQuery: <T,>(querier: () => Promise<T>) => {
-    const [value, setValue] = useState<T>()
-    useEffect(() => {
-      void querier().then(setValue)
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
-    return value
-  },
-}))
 // Effective power by unit for the Power sort; the real formula needs the unit-power dataset.
 const POWER: Record<string, number> = { unitA: 10_000, unitR: 30_000 }
 vi.mock("@/entities/legendary-event", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/entities/legendary-event")>()),
   unitEffectivePower: (unitId: string) => POWER[unitId] ?? 0,
 }))
-vi.mock("@workspace/game-catalog/queries", () => ({
-  getCharactersMap: async () =>
-    new Map(Object.values(teamUnits).map((unit) => [unit.id, unit])),
-  getMowsMap: async () => new Map(),
-}))
+
+beforeEach(async () => {
+  await seedGameCatalog({ characters: Object.values(teamUnits) })
+})
 
 let i18n: I18n
 const context = { lane: teamLane, units: teamUnitList }

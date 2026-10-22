@@ -1,13 +1,5 @@
 import { render, screen } from "@/test/render"
-import { describe, expect, it, vi } from "vitest"
-
-vi.mock("react-i18next", () => ({
-  useTranslation: () => ({
-    t: (key: string, opts?: Record<string, unknown>) =>
-      opts ? `${key}:${JSON.stringify(opts)}` : key,
-    i18n: { resolvedLanguage: "en" },
-  }),
-}))
+import { describe, expect, it } from "vitest"
 
 import { LevelRequirementNote } from "./level-requirement-note"
 
@@ -23,7 +15,7 @@ describe("LevelRequirementNote", () => {
     render(<LevelRequirementNote preview={preview} />)
 
     expect(screen.getByTestId("create-goal-level-cost")).toHaveTextContent(
-      'goals.create.level.booksNeeded:{"count":1,"rarity":"progression:rarities.Legendary:{\\"defaultValue\\":\\"Legendary\\"}"}'
+      "≈ 1 Legendary XP Book"
     )
   })
 
@@ -36,7 +28,7 @@ describe("LevelRequirementNote", () => {
     )
 
     expect(screen.getByTestId("create-goal-level-cost")).toHaveTextContent(
-      'goals.create.level.booksNeeded:{"count":5,"rarity":"progression:rarities.Epic:{\\"defaultValue\\":\\"Epic\\"}"}'
+      "≈ 5 Epic XP Books"
     )
   })
 

@@ -1,7 +1,6 @@
-import { useEffect, useState } from "react"
 import userEvent from "@testing-library/user-event"
 import type { i18n as I18n } from "i18next"
-import { beforeAll, describe, expect, it, vi } from "vitest"
+import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
 
 import {
   buildLanePointsModel,
@@ -19,6 +18,7 @@ import {
 import { utharEvent } from "@/test/fixtures/legendary-events"
 import { createTestI18n, i18nWrapper } from "@/test/i18n"
 import { act, fireEvent, render, screen, within } from "@/test/render"
+import { seedGameCatalog } from "@/test/seed"
 
 import { TeamCard } from "./team-card"
 import {
@@ -27,21 +27,9 @@ import {
   type TeamCardViewModel,
 } from "./teams.view-model"
 
-vi.mock("dexie-react-hooks", () => ({
-  useLiveQuery: <T,>(querier: () => Promise<T>) => {
-    const [value, setValue] = useState<T>()
-    useEffect(() => {
-      void querier().then(setValue)
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
-    return value
-  },
-}))
-vi.mock("@workspace/game-catalog/queries", () => ({
-  getCharactersMap: async () =>
-    new Map(Object.values(teamUnits).map((unit) => [unit.id, unit])),
-  getMowsMap: async () => new Map(),
-}))
+beforeEach(async () => {
+  await seedGameCatalog({ characters: Object.values(teamUnits) })
+})
 
 let i18n: I18n
 

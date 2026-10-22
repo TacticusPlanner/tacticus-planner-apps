@@ -1,10 +1,6 @@
-import { fireEvent, render, screen } from "@testing-library/react"
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import { TooltipProvider } from "@workspace/ui/components/tooltip"
 
-vi.mock("react-i18next", () => ({
-  useTranslation: () => ({ t: (key: string) => key }),
-}))
+import { fireEvent, render, screen } from "@/test/render"
 
 const toastSuccess = vi.fn()
 const toastError = vi.fn()
@@ -23,11 +19,7 @@ vi.mock("./character-lookup-share", () => ({
 import { CharacterLookupControls } from "./character-lookup-controls"
 
 function renderControls(props: Parameters<typeof CharacterLookupControls>[0]) {
-  return render(
-    <TooltipProvider>
-      <CharacterLookupControls {...props} />
-    </TooltipProvider>
-  )
+  return render(<CharacterLookupControls {...props} />)
 }
 
 function baseProps() {
@@ -64,7 +56,7 @@ describe("CharacterLookupControls", () => {
     expect(screen.getAllByRole("slider")).toHaveLength(2)
     expect(screen.queryAllByRole("combobox")).toHaveLength(2) // 2 progression selects (no picker)
 
-    fireEvent.click(screen.getByTestId("lookup-apply-button"))
+    fireEvent.click(screen.getByRole("button", { name: "Apply" }))
     expect(props.onApply).toHaveBeenCalledTimes(1)
   })
 
@@ -94,8 +86,8 @@ describe("CharacterLookupControls", () => {
     const values = screen
       .getAllByRole("option")
       .map((option) => option.textContent)
-    expect(values).toContain("ranks.Iron1")
-    expect(values).toContain("ranks.Bronze1")
+    expect(values).toContain("Iron I")
+    expect(values).toContain("Bronze I")
   })
 
   it("offers the end select every rank down to and including the current start (LIB-02/LIB-03)", () => {
@@ -112,7 +104,7 @@ describe("CharacterLookupControls", () => {
     const values = screen
       .getAllByRole("option")
       .map((option) => option.textContent)
-    expect(values).toContain("ranks.Stone1")
+    expect(values).toContain("Stone I")
   })
 
   it("never offers either rank select a value beyond the ladder's maximum rank", () => {
@@ -129,24 +121,26 @@ describe("CharacterLookupControls", () => {
     const startValues = screen
       .getAllByRole("option")
       .map((option) => option.textContent)
-    expect(startValues.at(-1)).toBe("ranks.Adamantine2")
+    expect(startValues.at(-1)).toBe("Adamantine II")
 
     fireEvent.click(startCombobox!) // close
     fireEvent.click(endCombobox!)
     const endValues = screen
       .getAllByRole("option")
       .map((option) => option.textContent)
-    expect(endValues.at(-1)).toBe("ranks.Adamantine2")
+    expect(endValues.at(-1)).toBe("Adamantine II")
   })
 
   it("toggles the point-five and include-owned switches", () => {
     const props = baseProps()
     renderControls(props)
 
-    fireEvent.click(screen.getAllByRole("switch")[0]!)
+    fireEvent.click(
+      screen.getByRole("switch", { name: "Include point-five upgrades" })
+    )
     expect(props.onPointFiveChange).toHaveBeenCalledWith(true)
 
-    fireEvent.click(screen.getAllByRole("switch")[1]!)
+    fireEvent.click(screen.getByRole("switch", { name: "Include my upgrades" }))
     expect(props.onIncludeOwnedChange).toHaveBeenCalledWith(true)
   })
 
@@ -154,10 +148,10 @@ describe("CharacterLookupControls", () => {
     shareCurrentLookupUrl.mockResolvedValue("copied")
     renderControls(baseProps())
 
-    fireEvent.click(screen.getByTestId("lookup-share-button"))
+    fireEvent.click(screen.getByRole("button", { name: "Share" }))
 
     await vi.waitFor(() => {
-      expect(toastSuccess).toHaveBeenCalledWith("unitLookup.share.copied")
+      expect(toastSuccess).toHaveBeenCalledWith("Link copied to clipboard.")
     })
     expect(toastError).not.toHaveBeenCalled()
   })
@@ -166,10 +160,12 @@ describe("CharacterLookupControls", () => {
     shareCurrentLookupUrl.mockResolvedValue("error")
     renderControls(baseProps())
 
-    fireEvent.click(screen.getByTestId("lookup-share-button"))
+    fireEvent.click(screen.getByRole("button", { name: "Share" }))
 
     await vi.waitFor(() => {
-      expect(toastError).toHaveBeenCalledWith("unitLookup.share.error")
+      expect(toastError).toHaveBeenCalledWith(
+        "Couldn't share or copy the link."
+      )
     })
   })
 
@@ -177,7 +173,7 @@ describe("CharacterLookupControls", () => {
     shareCurrentLookupUrl.mockResolvedValue("shared")
     renderControls(baseProps())
 
-    fireEvent.click(screen.getByTestId("lookup-share-button"))
+    fireEvent.click(screen.getByRole("button", { name: "Share" }))
 
     await vi.waitFor(() => {
       expect(shareCurrentLookupUrl).toHaveBeenCalledWith(false)

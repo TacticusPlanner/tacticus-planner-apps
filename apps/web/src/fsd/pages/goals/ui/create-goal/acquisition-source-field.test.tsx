@@ -19,11 +19,6 @@ function render(ui: ReactElement) {
   return testingLibraryRender(<MemoryRouter>{ui}</MemoryRouter>)
 }
 
-vi.mock("react-i18next", () => ({
-  initReactI18next: { type: "3rdParty", init: vi.fn() },
-  useTranslation: () => ({ t: (key: string) => key }),
-}))
-
 const { useIsMobileMock } = vi.hoisted(() => ({
   useIsMobileMock: vi.fn(() => false),
 }))
@@ -199,9 +194,7 @@ describe("AcquisitionSourceField", () => {
     const yieldNote = screen.getByTestId(
       "create-goal-acquisition-yield-onslaught"
     )
-    expect(yieldNote).toHaveTextContent(
-      "goals.create.acquisitionSources.shardsPerDay"
-    )
+    expect(yieldNote).toHaveTextContent("≈6.8 shards/day")
     expect(
       screen.getByTestId("create-goal-acquisition-group-onslaught-toggle")
     ).not.toBeChecked()
@@ -220,7 +213,7 @@ describe("AcquisitionSourceField", () => {
 
     expect(
       screen.getByTestId("create-goal-acquisition-yield-onslaught")
-    ).toHaveTextContent("goals.create.acquisitionSources.shardsPerDayMythic")
+    ).toHaveTextContent("≈3.0 mythic shards/day")
   })
 
   it("labels a mythic shop offer's row yield as mythic shards/day", () => {
@@ -230,7 +223,7 @@ describe("AcquisitionSourceField", () => {
 
     expect(
       screen.getByTestId(`create-goal-shop-offer-yield-${mythicOffer.offerId}`)
-    ).toHaveTextContent("goals.create.acquisitionSources.shardsPerDayMythic")
+    ).toHaveTextContent("≈10.0 mythic shards/day")
   })
 
   it("shows the set-progress prompt when no progress is saved", () => {
@@ -244,7 +237,7 @@ describe("AcquisitionSourceField", () => {
 
     expect(
       screen.getByTestId("create-goal-acquisition-yield-onslaught")
-    ).toHaveTextContent("goals.create.acquisitionSources.onslaughtNoProgress")
+    ).toHaveTextContent("Set your Onslaught progress to see its yield.")
   })
 
   it("links Edit Onslaught progress to the progress page and closes the sheet via onNavigateAway", async () => {
@@ -260,7 +253,7 @@ describe("AcquisitionSourceField", () => {
     )
 
     const link = screen.getByRole("link", {
-      name: "goals.create.acquisitionSources.editOnslaughtProgress",
+      name: "Edit Onslaught progress",
     })
     expect(link).toHaveAttribute("href", "/my-game/onslaught")
     await userEvent.click(link)
@@ -283,15 +276,15 @@ describe("AcquisitionSourceField", () => {
 
     expect(
       screen.getByTestId("create-goal-acquisition-yield-campaigns")
-    ).toHaveTextContent("goals.create.acquisitionSources.shardsPerDay")
+    ).toHaveTextContent("≈6.2 shards/day")
     expect(
       screen.getByTestId("create-goal-acquisition-yield-onslaught")
-    ).toHaveTextContent("goals.create.acquisitionSources.shardsPerDay")
+    ).toHaveTextContent("≈6.8 shards/day")
     expect(
       screen.getByTestId(
         `create-goal-shop-offer-yield-${guaranteedOffer.offerId}`
       )
-    ).toHaveTextContent("goals.create.acquisitionSources.shardsPerDay")
+    ).toHaveTextContent("≈10.0 shards/day")
   })
 
   it("marks a rotating-slot offer as a possible reward but not a guaranteed one", () => {

@@ -15,6 +15,7 @@ import type {
   LegendaryEventRunInputs,
   LegendaryEventRunResolution,
 } from "@/entities/legendary-event"
+import { setTestAuth } from "@/test/auth"
 import { lysanderEvent, utharEvent } from "@/test/fixtures/legendary-events"
 import { createTestI18n, i18nWrapper } from "@/test/i18n"
 import { fireEvent, render, screen, within } from "@/test/render"
@@ -28,7 +29,6 @@ import {
 } from "./legendary-event-page.view-model"
 import { RunStatusCard } from "./run-status-card"
 
-vi.mock("@azure/msal-react", () => ({ useIsAuthenticated: () => true }))
 vi.mock("@/shared/api", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/shared/api")>()),
   apiClient: (await import("@/test/fake-api-client")).fakeApiClient(() => ({
@@ -210,6 +210,7 @@ describe("RunStatusCard", () => {
     i18n = await createTestI18n("en")
   })
   beforeEach(() => {
+    setTestAuth({ authenticated: true })
     vi.useFakeTimers({ toFake: ["Date"] })
     vi.setSystemTime(NOW)
   })

@@ -1,10 +1,6 @@
-import { renderHook } from "@testing-library/react"
 import { describe, expect, it, vi } from "vitest"
 
-vi.mock("react-i18next", async (importOriginal) => ({
-  ...(await importOriginal<object>()),
-  useTranslation: () => ({ t: (key: string) => `localized:${key}` }),
-}))
+import { renderHook } from "@/test/render"
 
 const register = vi.fn()
 vi.mock("@/shared/tour", () => ({
@@ -29,14 +25,24 @@ describe("useGoalEditDialogTutorial", () => {
         '[data-testid="goal-edit-projects"]',
         '[data-testid="goal-mythic-material-sources"]',
       ])
-      expect(steps.map((step) => [step.title, step.content])).toEqual(
-        ["target", "priority", "projects", "mythicMaterialSources"].map(
-          (name) => [
-            `localized:tour.editGoal.steps.${name}.title`,
-            `localized:tour.editGoal.steps.${name}.content`,
-          ]
-        )
-      )
+      expect(steps.map((step) => [step.title, step.content])).toEqual([
+        [
+          "Target",
+          "Change where this goal ends without recreating it. It keeps its history, and your plan recalculates when you save.",
+        ],
+        [
+          "Priority",
+          "Pick this goal's position in your priority order. It moves there when you save, and the goals in between shift by one place.",
+        ],
+        [
+          "Projects",
+          "Add this goal to a project, or create a new one from the picker. The new project is saved right away; the goal itself only changes when you save.",
+        ],
+        [
+          "Mythic materials",
+          "Choose which shop offers supply this goal's Mythic materials. Unchecking every offer stops counting on shops for them.",
+        ],
+      ])
     }
   )
 

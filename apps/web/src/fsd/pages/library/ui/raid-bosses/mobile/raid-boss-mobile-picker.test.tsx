@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react"
+import { fireEvent, render, screen } from "@/test/render"
 import { describe, expect, it, vi } from "vitest"
 
 import type { RaidBossListItem } from "@/entities/raid-boss"
@@ -7,16 +7,6 @@ import {
   RaidBossMobilePicker,
   type RaidBossMobilePickerGroup,
 } from "./raid-boss-mobile-picker"
-
-vi.mock("react-i18next", () => ({
-  useTranslation: () => ({
-    t: (key: string) =>
-      ({
-        "raidBosses.pickerPlaceholder": "Search bosses and primes…",
-        "raidBosses.pickerEmpty": "No boss or prime found.",
-      })[key] ?? key,
-  }),
-}))
 
 function item(unitSetId: string, name: string): RaidBossListItem {
   return {

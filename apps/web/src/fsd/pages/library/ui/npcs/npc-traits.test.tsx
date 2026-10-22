@@ -14,14 +14,6 @@ vi.mock("@/entities/npc", () => ({
   useNpcTraitText: () => (id: string) => traitText[id],
 }))
 
-vi.mock("react-i18next", () => ({
-  useTranslation: () => ({
-    t: (key: string, opts?: { defaultValue?: string }) =>
-      opts?.defaultValue ?? key,
-    i18n: { exists: () => true, language: "en" },
-  }),
-}))
-
 import { NpcTraits } from "./npc-traits"
 
 describe("NpcTraits", () => {
@@ -29,7 +21,7 @@ describe("NpcTraits", () => {
     render(<NpcTraits traits={["LivingMetal", "Mechanical"]} rarity="Common" />)
 
     expect(screen.getByTestId("npc-trait-LivingMetal")).toHaveTextContent(
-      "LivingMetal"
+      "Living Metal"
     )
     expect(screen.getByTestId("npc-trait-Mechanical")).toHaveTextContent(
       "Mechanical"
@@ -42,7 +34,7 @@ describe("NpcTraits", () => {
 
     expect(screen.queryByText(/Regenerates/)).toBeNull()
 
-    await user.click(screen.getByRole("button", { name: "LivingMetal" }))
+    await user.click(screen.getByRole("button", { name: "Living Metal" }))
 
     // The constant resolves through the shared renderer at level 1; assert on the whole popover,
     // since the renderer splits the styled description across sibling spans.

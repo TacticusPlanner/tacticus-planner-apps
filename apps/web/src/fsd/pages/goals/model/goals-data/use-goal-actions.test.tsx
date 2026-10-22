@@ -5,15 +5,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { renderHook, act } from "@/test/render"
 
 import { ApiError } from "@/shared/api"
+import { setTestAuth } from "@/test/auth"
 
-vi.mock("react-i18next", () => ({
-  useTranslation: () => ({
-    t: (key: string, opts?: Record<string, unknown>) =>
-      opts ? `${key}:${JSON.stringify(opts)}` : key,
-  }),
-  initReactI18next: { type: "3rdParty", init: vi.fn() },
-}))
-vi.mock("@azure/msal-react", () => ({ useIsAuthenticated: () => true }))
 vi.mock("sonner", () => ({ toast: { success: vi.fn(), error: vi.fn() } }))
 
 const api = vi.hoisted(() => ({
@@ -86,6 +79,7 @@ const listGoal = (goalId: string) =>
 
 describe("useGoalActions", () => {
   beforeEach(() => {
+    setTestAuth({ authenticated: true })
     client = new QueryClient()
     client.setQueryData(listKey, {
       orderRevision: 7,
@@ -175,9 +169,11 @@ describe("useGoalActions", () => {
       expect(listGoal("b")?.status).toBe("Paused")
       expect(toast.error).toHaveBeenCalledTimes(1)
       const message = String(vi.mocked(toast.error).mock.calls[0]![0])
-      expect(message).toContain("goals.toasts.statusConflict")
+      expect(message).toBe(
+        "Unit a · Rank could not change: Unit z already has an active or paused Rank goal."
+      )
       expect(message).toContain("Unit z")
-      expect(message).not.toContain('"project"')
+      expect(message).not.toContain("Proj")
     })
 
     it("offers a reload when the order went stale", async () => {
@@ -234,7 +230,7 @@ describe("useGoalActions", () => {
       expect(listGoal("b")?.projectIds).toEqual(["p1", "p2"])
       expect(invalidated).toEqual([["projects", "list"]])
       expect(toast.success).toHaveBeenCalledExactlyOnceWith(
-        'goals.toasts.goalsAddedToProject:{"project":"Two","count":2}'
+        "Added 2 goals to Two."
       )
     })
 
@@ -259,7 +255,7 @@ describe("useGoalActions", () => {
       expect(members.get("p1")).toEqual(["c"])
       expect(listGoal("a")?.projectIds).toEqual(["p3"])
       expect(toast.success).toHaveBeenCalledExactlyOnceWith(
-        'goals.toasts.goalsRemovedAndMoved:{"count":2,"project":"Proj","moved":1,"destination":"Dest"}'
+        "Removed 2 goals from Proj; 1 moved to Dest."
       )
     })
 
@@ -280,7 +276,7 @@ describe("useGoalActions", () => {
       })
       expect(ok).toBe(false)
       expect(toast.error).toHaveBeenCalledExactlyOnceWith(
-        'goals.toasts.movedButNotRemoved:{"count":1,"project":"Proj","destination":"Dest","error":"goals.toasts.actionError"}'
+        "Added 1 goal to Dest, but couldn't remove it from Proj: Something went wrong. Please try again."
       )
     })
   })

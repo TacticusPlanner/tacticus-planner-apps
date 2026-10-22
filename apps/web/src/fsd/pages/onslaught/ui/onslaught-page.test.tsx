@@ -1,11 +1,11 @@
-import { beforeEach, describe, expect, it, vi } from "vitest"
-import { render, screen, waitFor } from "@/test/render"
 import userEvent from "@testing-library/user-event"
-import { MemoryRouter } from "react-router"
+import { beforeEach, describe, expect, it, vi } from "vitest"
+
+import { render, screen, waitFor } from "@/test/render"
+import { seedGameCatalog } from "@/test/seed"
 
 const getProgress = vi.fn()
 const saveProgress = vi.fn()
-const account = { homeAccountId: "account-1" }
 const apiErrors = vi.hoisted(() => ({
   ApiError: class ApiError extends Error {
     status: number
@@ -16,41 +16,7 @@ const apiErrors = vi.hoisted(() => ({
   },
 }))
 
-vi.mock("@azure/msal-react", () => ({
-  useMsal: () => ({
-    accounts: [account],
-    instance: { getActiveAccount: () => account },
-  }),
-  useIsAuthenticated: () => true,
-}))
-
-const strings: Record<string, string> = {
-  "onslaught.position": "{{sector}} · Tier {{tier}}",
-  "onslaught.positionComplete": "{{sector}} · Sector complete",
-  "onslaught.tierNumber": "Tier {{tier}}",
-}
-vi.mock("react-i18next", () => ({
-  useTranslation: () => ({
-    t: (key: string, options?: Record<string, unknown>) => {
-      let text =
-        strings[key] ??
-        key.replace(/^onslaught\.sectors\./, "").replace(/^alliances\./, "")
-      for (const [name, value] of Object.entries(options ?? {})) {
-        text = text.replace(`{{${name}}}`, String(value))
-      }
-      return text
-    },
-  }),
-}))
-
 vi.mock("@/shared/api", () => ({ ApiError: apiErrors.ApiError }))
-
-vi.mock("dexie-react-hooks", () => ({
-  useLiveQuery: (query: () => unknown) => query(),
-}))
-vi.mock("@workspace/game-catalog/queries", () => ({
-  getOnslaughtRewards: () => [{ id: "Stone-1" }],
-}))
 
 vi.mock("@/entities/player-data-override", () => ({
   getOnslaughtProgress: (...args: unknown[]) => getProgress(...args),
@@ -94,8 +60,16 @@ const progress = {
   revision: 4,
 }
 
+function renderPage() {
+  return render(<OnslaughtPage />, {
+    route: "/",
+    auth: { authenticated: true },
+  })
+}
+
 describe("OnslaughtPage", () => {
-  beforeEach(() => {
+  beforeEach(async () => {
+    await seedGameCatalog({ "onslaught-rewards": [{ id: "Stone-1" }] })
     getProgress.mockReset().mockResolvedValue(progress)
     saveProgress
       .mockReset()
@@ -106,11 +80,7 @@ describe("OnslaughtPage", () => {
 
   it("loads alliance progress, renders the reward reference, and saves the revisioned values", async () => {
     const user = userEvent.setup()
-    render(
-      <MemoryRouter>
-        <OnslaughtPage />
-      </MemoryRouter>
-    )
+    renderPage()
 
     expect(await screen.findByTestId("onslaught-page")).toBeInTheDocument()
     expect(screen.getByTestId("imperial-onslaught-sector")).toHaveTextContent(
@@ -121,13 +91,13 @@ describe("OnslaughtPage", () => {
       "Tier 2"
     )
     expect(screen.getByTestId("imperial-onslaught-yield")).toHaveTextContent(
-      "onslaught.yieldPerRun"
+      "Shards per run at this position"
     )
     expect(screen.getByTestId("imperial-onslaught-yield")).toHaveTextContent(
       "2-3"
     )
     expect(screen.getByTestId("onslaught-progress-help")).toHaveTextContent(
-      "onslaught.help"
+      /^Pick the sector and tier you are currently farming/
     )
     expect(screen.queryByTestId("imperial-onslaught-not-set")).toBeNull()
 
@@ -159,7 +129,9 @@ describe("OnslaughtPage", () => {
       ...progress,
       imperial: { sector: "Iron", tier: 4, isSet: true },
     })
-    expect(await screen.findByText("onslaught.saved")).toBeInTheDocument()
+    expect(
+      await screen.findByText("Onslaught progress saved.")
+    ).toBeInTheDocument()
 
     await user.click(screen.getByTestId("save-onslaught-progress"))
     await waitFor(() => expect(saveProgress).toHaveBeenCalledTimes(2))
@@ -168,11 +140,7 @@ describe("OnslaughtPage", () => {
 
   it("resets the tier when the sector changes", async () => {
     const user = userEvent.setup()
-    render(
-      <MemoryRouter>
-        <OnslaughtPage />
-      </MemoryRouter>
-    )
+    renderPage()
     await screen.findByTestId("onslaught-page")
 
     await user.click(screen.getByTestId("imperial-onslaught-sector"))
@@ -217,16 +185,16 @@ describe("OnslaughtPage", () => {
     saveProgress.mockRejectedValueOnce(
       new apiErrors.ApiError(409, "stale revision")
     )
-    render(
-      <MemoryRouter>
-        <OnslaughtPage />
-      </MemoryRouter>
-    )
+    renderPage()
 
     expect(await screen.findByTestId("onslaught-page")).toBeInTheDocument()
     await user.click(screen.getByTestId("save-onslaught-progress"))
 
-    expect(await screen.findByText("onslaught.conflict")).toBeInTheDocument()
+    expect(
+      await screen.findByText(
+        "Onslaught progress changed elsewhere. Latest values loaded; apply your change again."
+      )
+    ).toBeInTheDocument()
     expect(screen.getByTestId("imperial-onslaught-sector")).toHaveTextContent(
       "Adamantine"
     )
@@ -241,23 +209,19 @@ describe("OnslaughtPage", () => {
       chaos: unset,
       revision: 0,
     })
-    render(
-      <MemoryRouter>
-        <OnslaughtPage />
-      </MemoryRouter>
-    )
+    renderPage()
 
     expect(await screen.findByTestId("onslaught-page")).toBeInTheDocument()
     expect(screen.getByTestId("imperial-onslaught-not-set")).toHaveTextContent(
-      "onslaught.notSet"
+      "Not set"
     )
     expect(screen.getByTestId("imperial-onslaught-sector")).toHaveTextContent(
-      "onslaught.notSet"
+      "Not set"
     )
     expect(screen.getByTestId("imperial-onslaught-tier")).toBeDisabled()
     expect(screen.getByTestId("imperial-onslaught-complete")).toBeDisabled()
     expect(screen.getByTestId("imperial-onslaught-yield")).toHaveTextContent(
-      "onslaught.notSetHint"
+      "Choose the sector this alliance is in to see its shards per run."
     )
     // An unset alliance is never highlighted as being at Stone 1 in the reference table.
     expect(screen.queryByRole("img", { name: "Imperial" })).toBeNull()

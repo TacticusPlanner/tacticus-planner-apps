@@ -3,14 +3,6 @@ import { describe, expect, it, vi } from "vitest"
 
 import { render, screen } from "@/test/render"
 
-vi.mock("react-i18next", () => ({
-  initReactI18next: { type: "3rdParty", init: vi.fn() },
-  useTranslation: () => ({
-    t: (key: string, opts?: Record<string, unknown>) =>
-      opts ? `${key} ${JSON.stringify(opts)}` : key,
-  }),
-}))
-
 vi.mock("@/features/shop-rewards", () => ({
   shopCurrencyIcon: () => "/icon.png",
 }))
@@ -69,12 +61,12 @@ describe("ProgressionPreview acquisition-source contribution lines", () => {
 
     expect(
       screen.getByTestId("create-goal-preview-onslaught-tokens")
-    ).toHaveTextContent("3")
+    ).toHaveTextContent("3 Onslaught tokens")
     expect(
       screen.getByTestId("create-goal-preview-currency-guildCredits")
-    ).toHaveTextContent("2100")
+    ).toHaveTextContent("2100 Guild Credits")
     expect(
       screen.getByTestId("create-goal-preview-currency-rogueTraderCurrency")
-    ).toHaveTextContent("40")
+    ).toHaveTextContent("40 rogueTraderCurrency")
   })
 })

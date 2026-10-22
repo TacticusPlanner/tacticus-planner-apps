@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 import { MemoryRouter, Route, Routes, useLocation } from "react-router"
 import { useQuery } from "@tanstack/react-query"
 import { useIsAuthenticated } from "@azure/msal-react"
+import { setTestAuth } from "@/test/auth"
 import { render, screen } from "@/test/render"
 import userEvent from "@testing-library/user-event"
 
@@ -9,26 +10,8 @@ vi.mock("@/shared/tour", () => ({
   useTourPageSteps: () => undefined,
 }))
 
-vi.mock("react-i18next", () => ({
-  useTranslation: () => ({
-    t: (key: string, opts?: { defaultValue?: string }) =>
-      opts?.defaultValue ?? key,
-    i18n: { language: "en" },
-  }),
-}))
-
 vi.mock("sonner", () => ({
   toast: { success: vi.fn(), error: vi.fn() },
-}))
-
-const account = { homeAccountId: "acc-1", username: "test@example.com" }
-
-vi.mock("@azure/msal-react", () => ({
-  useMsal: () => ({
-    accounts: [account],
-    instance: { getActiveAccount: () => account },
-  }),
-  useIsAuthenticated: () => true,
 }))
 
 const listProjects = vi.fn()
@@ -136,6 +119,7 @@ function project(overrides: Partial<Record<string, unknown>> = {}) {
 
 describe("ProjectsListPage", () => {
   beforeEach(() => {
+    setTestAuth({ authenticated: true })
     listProjects.mockReset()
     onLaunch.mockReset()
   })
@@ -157,7 +141,9 @@ describe("ProjectsListPage", () => {
 
     const intro = await screen.findByTestId("projects-page-intro")
     expect(intro).toBeVisible()
-    expect(intro).toHaveTextContent("goals.project.dashboardIntro")
+    expect(intro).toHaveTextContent(
+      "A project is a named selection of your goals. Keep several to group different things — a roster push, an event, a long-term build — and browse each on its own. Priority is one order for all goals, managed on the Goals page."
+    )
 
     // It sits inside no tooltip/popover wrapper or collapsed <details>.
     expect(intro.closest("[role='tooltip']")).toBeNull()
@@ -173,7 +159,7 @@ describe("ProjectsListPage", () => {
     renderPage()
 
     expect(await screen.findByTestId("projects-page-empty")).toHaveTextContent(
-      "goals.project.noProjectDescription"
+      "A project is a named selection of your goals. Create one to group a roster push, an event, or a long-term build and browse it separately from the rest."
     )
     expect(screen.queryByTestId("projects-page-intro")).not.toBeInTheDocument()
   })
@@ -193,7 +179,7 @@ describe("ProjectsListPage", () => {
       expect.stringContaining("proj-1"),
       expect.stringContaining("proj-custom"),
     ])
-    expect(screen.getByText("goals.project.defaultBadge")).toBeInTheDocument()
+    expect(screen.getByText("Default")).toBeInTheDocument()
     expect(screen.queryByText("goals.project.currentPlan")).toBeNull()
     expect(screen.queryByText("goals.project.makeCurrent")).toBeNull()
   })
@@ -211,9 +197,7 @@ describe("ProjectsListPage", () => {
 
     expect(await screen.findByText("Project A")).toBeInTheDocument()
     expect(screen.getByText("Old plan")).toBeInTheDocument()
-    expect(
-      screen.queryByRole("heading", { name: /goals\.project\.listTitle/ })
-    ).not.toBeInTheDocument()
+    expect(screen.queryByRole("heading")).not.toBeInTheDocument()
   })
 
   it("opens a blank Sheet from the FAB and a pre-filled Sheet from a row's Edit icon", async () => {
@@ -225,9 +209,9 @@ describe("ProjectsListPage", () => {
     await screen.findByText("Project A")
     await user.click(screen.getByTestId("projects-new-project"))
     expect(
-      await screen.findByText("goals.project.newProjectTitle")
+      await screen.findByRole("heading", { name: "New project" })
     ).toBeInTheDocument()
-    expect(screen.getByLabelText("goals.project.name")).toHaveValue("")
+    expect(screen.getByLabelText("Name")).toHaveValue("")
     await user.keyboard("{Escape}")
 
     await user.click(
@@ -237,9 +221,9 @@ describe("ProjectsListPage", () => {
       screen.getByTestId(`project-row-edit-${projectA.projectId}`)
     )
     expect(
-      await screen.findByText("goals.project.editTitle")
+      await screen.findByRole("heading", { name: "Edit project" })
     ).toBeInTheDocument()
-    expect(screen.getByLabelText("goals.project.name")).toHaveValue("Project A")
+    expect(screen.getByLabelText("Name")).toHaveValue("Project A")
   })
 
   it("opens the project on the Goals page when a row is clicked outside its icons", async () => {

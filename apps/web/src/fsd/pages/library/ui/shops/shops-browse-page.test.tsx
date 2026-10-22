@@ -12,13 +12,6 @@ const { useIsMobileMock } = vi.hoisted(() => ({
   useIsMobileMock: vi.fn(() => false),
 }))
 
-vi.mock("react-i18next", () => ({
-  initReactI18next: { type: "3rdParty", init: vi.fn() },
-  useTranslation: () => ({
-    t: (key: string, values?: Record<string, unknown>) =>
-      values ? `${key}:${JSON.stringify(values)}` : key,
-  }),
-}))
 vi.mock("./hooks/use-library-shops", () => ({
   useLibraryShops: () => useLibraryShops(),
   LIBRARY_SHOP_IDS: ["guild", "war", "rogue-trader", "crusade"],
@@ -127,7 +120,7 @@ describe("ShopsBrowsePage", () => {
     )
     const random = screen.getByTestId("shop-slot-1")
     expect(random).toHaveAttribute("data-random", "true")
-    expect(random).toHaveTextContent('shops.randomSlot:{"count":2}')
+    expect(random).toHaveTextContent("2 possible rewards")
     // both possibilities are listed under the one card, not as separate slots
     expect(random).toHaveTextContent("A shards")
     expect(random).toHaveTextContent("B shards")

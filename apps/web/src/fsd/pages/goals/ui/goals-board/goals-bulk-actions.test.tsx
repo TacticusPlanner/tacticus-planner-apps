@@ -2,14 +2,6 @@ import { describe, expect, it, vi } from "vitest"
 import userEvent from "@testing-library/user-event"
 import { render, screen } from "@/test/render"
 
-vi.mock("react-i18next", () => ({
-  initReactI18next: { type: "3rdParty", init: vi.fn() },
-  useTranslation: () => ({
-    t: (key: string, opts?: { count?: number }) =>
-      opts?.count === undefined ? key : `${key}:${opts.count}`,
-  }),
-}))
-
 import type { GoalRow } from "../../model/shared/types"
 import { GoalsBulkActions } from ".//goals-bulk-actions"
 
@@ -50,23 +42,28 @@ function setup(
 describe("GoalsBulkActions", () => {
   it("disables every action with no count when nothing is selected", () => {
     setup([])
-    for (const key of ["pause", "resume", "addToProject", "delete"]) {
+    for (const [key, label] of [
+      ["pause", "Pause"],
+      ["resume", "Resume"],
+      ["addToProject", "Add to project"],
+      ["delete", "Delete"],
+    ]) {
       const button = screen.getByTestId(`goals-bulk-${key}`)
       expect(button).toBeDisabled()
-      expect(button).toHaveTextContent(`goals.bulk.${key}`)
-      expect(button).not.toHaveTextContent(":")
+      expect(button).toHaveTextContent(label)
+      expect(button).not.toHaveTextContent("(")
     }
   })
 
   it("enables Resume with the paused count and leaves Pause disabled for two Paused goals", () => {
     setup([row("a", "Paused"), row("b", "Paused")])
     expect(screen.getByTestId("goals-bulk-resume")).toHaveTextContent(
-      "goals.bulk.resumeCount:2"
+      "Resume (2)"
     )
     expect(screen.getByTestId("goals-bulk-resume")).toBeEnabled()
     expect(screen.getByTestId("goals-bulk-pause")).toBeDisabled()
     expect(screen.getByTestId("goals-bulk-delete")).toHaveTextContent(
-      "goals.bulk.deleteCount:2"
+      "Delete (2)"
     )
   })
 
@@ -125,7 +122,7 @@ describe("GoalsBulkActions", () => {
         />
       )
       const button = screen.getByTestId("goals-bulk-removeFromProject")
-      expect(button).toHaveTextContent("goals.bulk.removeFromProjectCount:2")
+      expect(button).toHaveTextContent("Remove from project (2)")
       await userEvent.setup().click(button)
       expect(onRemoveFromProject).toHaveBeenCalledWith([rows[0], rows[1]])
     })

@@ -1,13 +1,11 @@
-import { renderHook } from "@testing-library/react"
 import { describe, expect, it, vi } from "vitest"
+
+import { renderHook } from "@/test/render"
 
 import { useShopsBrowseTutorial } from "./shops-browse-page.tutorial"
 
 const register = vi.fn()
 
-vi.mock("react-i18next", () => ({
-  useTranslation: () => ({ t: (key: string) => `localized:${key}` }),
-}))
 vi.mock("@/shared/tour", () => ({
   useTourPageSteps: (steps: unknown) => register(steps),
 }))
@@ -25,9 +23,19 @@ describe("useShopsBrowseTutorial", () => {
 
     for (const step of [...steps.desktop, ...steps.mobile]) {
       expect(step.target).toMatch(/^\[data-testid="[a-z0-9-]+"\]$/)
-      expect(step.title).toContain("localized:shops.tour.libraryShops.steps")
-      expect(step.content).toContain("localized:shops.tour.libraryShops.steps")
+      expect(step.title).not.toContain("shops.tour.libraryShops.steps")
+      expect(step.content).not.toContain("shops.tour.libraryShops.steps")
     }
+    expect(steps.desktop.map((step) => step.title)).toEqual([
+      "Pick a day",
+      "Pick a shop",
+      "Random slots",
+    ])
+    expect(steps.desktop.map((step) => step.content)).toEqual([
+      "Choose any day of the week to see what the shops rotate in that day.",
+      "Switch between the Guild, Guild War, Crusade, and Rogue Trader shops.",
+      "A “N possible rewards” card means the slot is randomized — only one of the listed rewards is actually offered that day.",
+    ])
 
     // The controls differ per viewport (segmented toggles vs. dropdowns); the copy is shared.
     expect(steps.desktop.map((step) => step.target)).toEqual([

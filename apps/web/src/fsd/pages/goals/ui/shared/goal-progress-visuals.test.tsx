@@ -2,15 +2,6 @@ import { fireEvent, render, screen } from "@/test/render"
 import userEvent from "@testing-library/user-event"
 import { describe, expect, it, vi } from "vitest"
 
-vi.mock("react-i18next", () => ({
-  initReactI18next: { type: "3rdParty", init: vi.fn() },
-  useTranslation: () => ({
-    t: (key: string, opts?: Record<string, unknown>) =>
-      opts ? `${key}:${JSON.stringify(opts)}` : key,
-    i18n: { resolvedLanguage: "en" },
-  }),
-}))
-
 const { useIsMobileMock } = vi.hoisted(() => ({
   useIsMobileMock: vi.fn(() => false),
 }))
@@ -82,7 +73,7 @@ describe("GoalProgressDisplay", () => {
     expect(
       screen.getByTestId("goal-progress-bar-potential-fill")
     ).toBeInTheDocument()
-    expect(screen.getByText(/potentialIndicator/)).toBeInTheDocument()
+    expect(screen.getByText("↗ 47%")).toBeInTheDocument()
   })
 
   it("shows only the solid fill when potential is at or below actual", () => {
@@ -190,12 +181,8 @@ describe("GoalProgressDisplay", () => {
     const trigger = screen.getByTestId("goal-progress-info-trigger")
     fireEvent.click(trigger)
     const explanation = screen.getByTestId("goal-progress-explanation")
-    expect(explanation).toHaveTextContent(
-      "goals.overview.actualLevelsRemaining"
-    )
-    expect(explanation).toHaveTextContent('"count":"6"')
-    expect(explanation).toHaveTextContent("goals.overview.potentialXpRemaining")
-    expect(explanation).toHaveTextContent('"xp":"12,674"')
+    expect(explanation).toHaveTextContent("6 levels remaining.")
+    expect(explanation).toHaveTextContent("12,674 XP remaining.")
   })
 
   it("renders a ceiling marker naming the reachable rank, for a Rank goal with a currently-reachable ratio", async () => {
@@ -221,9 +208,9 @@ describe("GoalProgressDisplay", () => {
     const tooltip = await screen.findByTestId(
       "goal-progress-bar-ceiling-tooltip"
     )
-    expect(tooltip).toHaveTextContent("reachableCeilingLabel")
-    expect(tooltip).toHaveTextContent("ranks.Silver1")
-    expect(tooltip).toHaveTextContent("reachableCeilingReasonRarity")
+    expect(tooltip).toHaveTextContent("Currently reachable:")
+    expect(tooltip).toHaveTextContent("Silver I")
+    expect(tooltip).toHaveTextContent("capped by rarity")
   })
 
   it("renders a ceiling marker naming the reachable level, for a level requirement with a currently-reachable ratio", async () => {
@@ -248,10 +235,8 @@ describe("GoalProgressDisplay", () => {
     const tooltip = await screen.findByTestId(
       "goal-progress-bar-ceiling-tooltip"
     )
-    expect(tooltip).toHaveTextContent(
-      'goals.overview.reachableCeilingLevelLabel:{"level":26}'
-    )
-    expect(tooltip).toHaveTextContent("reachableCeilingReasonRarity")
+    expect(tooltip).toHaveTextContent("Currently reachable: Level 26")
+    expect(tooltip).toHaveTextContent("capped by rarity")
   })
 
   it("renders no ceiling marker when the goal is not currently restricted", () => {
@@ -336,14 +321,14 @@ describe("GoalTargetDisplay for Rank milestones", () => {
     const { unmount } = render(
       <GoalTargetDisplay progress={rank("Silver3", 0)} />
     )
-    expect(screen.getByAltText(/ranks\.Silver3/)).toBeInTheDocument()
-    expect(screen.getByAltText(/ranks\.Silver2/)).toBeInTheDocument()
-    expect(screen.queryByText(/ranks\./)).not.toBeInTheDocument()
+    expect(screen.getByAltText("Silver III")).toBeInTheDocument()
+    expect(screen.getByAltText("Silver II")).toBeInTheDocument()
+    expect(screen.queryByText(/Silver I/)).not.toBeInTheDocument()
     unmount()
 
     render(<GoalTargetDisplay progress={rank("Gold1", 0)} />)
-    expect(screen.getByAltText(/ranks\.Gold1/)).toBeInTheDocument()
-    expect(screen.queryByAltText(/ranks\.Silver3/)).not.toBeInTheDocument()
+    expect(screen.getByAltText("Gold I")).toBeInTheDocument()
+    expect(screen.queryByAltText("Silver III")).not.toBeInTheDocument()
   })
 
   it("adds the applied slots for a partial target and nothing for a clean one", () => {
@@ -379,12 +364,8 @@ describe("GoalTargetDisplay for Ability goals", () => {
     render(
       <GoalTargetDisplay entityType="Mow" progress={ability(47, 50, 12, 15)} />
     )
-    expect(pill("primary")).toHaveTextContent(
-      "goals.overview.abilityTrack.primary4750"
-    )
-    expect(pill("secondary")).toHaveTextContent(
-      "goals.overview.abilityTrack.secondary1215"
-    )
+    expect(pill("primary")).toHaveTextContent("Primary4750")
+    expect(pill("secondary")).toHaveTextContent("Secondary1215")
     expect(pill("active")).toBeNull()
     expect(pill("passive")).toBeNull()
   })
@@ -396,12 +377,8 @@ describe("GoalTargetDisplay for Ability goals", () => {
         progress={ability(8, 10, 5, 7)}
       />
     )
-    expect(pill("active")).toHaveTextContent(
-      "goals.overview.abilityTrack.active810"
-    )
-    expect(pill("passive")).toHaveTextContent(
-      "goals.overview.abilityTrack.passive57"
-    )
+    expect(pill("active")).toHaveTextContent("Active810")
+    expect(pill("passive")).toHaveTextContent("Passive57")
     expect(pill("primary")).toBeNull()
     expect(pill("secondary")).toBeNull()
   })
@@ -437,7 +414,7 @@ describe("Goal kind without a type label", () => {
         }
       />
     )
-    expect(screen.queryByText(/goalTypes/)).not.toBeInTheDocument()
+    expect(screen.queryByText("Ascension")).not.toBeInTheDocument()
   })
 
   it("shows the word Unlock in the Goal cell and the shard count beside the bar", () => {
@@ -453,11 +430,9 @@ describe("Goal kind without a type label", () => {
         <GoalProgressDisplay progress={unlock} />
       </>
     )
-    expect(
-      screen.getByText("goals.create.goalTypes.Unlock")
-    ).toBeInTheDocument()
+    expect(screen.getByText("Unlock")).toBeInTheDocument()
     expect(screen.getByTestId("goal-unlock-count")).toHaveTextContent(
-      'goals.overview.ownedOfRequired:{"owned":329,"required":500}'
+      "329 / 500"
     )
     expect(container).not.toHaveTextContent("ownedOfTotal")
   })

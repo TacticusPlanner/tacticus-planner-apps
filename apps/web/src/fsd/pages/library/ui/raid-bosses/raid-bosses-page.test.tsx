@@ -1,14 +1,23 @@
-import { useEffect, useState } from "react"
-import { beforeEach, describe, expect, it, vi } from "vitest"
 import {
-  fireEvent,
-  render,
-  screen,
-  waitFor,
-  within,
-} from "@testing-library/react"
+  afterAll,
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from "vitest"
 import userEvent from "@testing-library/user-event"
-import { MemoryRouter, Route, Routes, useLocation } from "react-router"
+import { useLocation } from "react-router"
+
+import { i18n } from "@/test/i18n-instance"
+import { act, fireEvent, render, screen, waitFor, within } from "@/test/render"
+import { seedGameCatalog } from "@/test/seed"
+
+import enRaidBossAbilityText from "../../../../../../public/locales/en/raidBossAbilityText.json"
+
+import { RaidBossesPage } from "./raid-bosses-page"
 
 const { isMobileMock, useIsMobileMock } = vi.hoisted(() => {
   const isMobileMock = { value: false }
@@ -21,58 +30,8 @@ vi.mock("@workspace/ui/hooks/use-mobile", () => ({
 }))
 vi.mock("@/shared/tour", () => ({ useTourPageSteps: () => {} }))
 
-// Minimal stand-in for dexie-react-hooks' useLiveQuery — runs the querier, resolves its promise, and
-// re-renders, honoring the `defaultResult` sentinel while pending.
-vi.mock("dexie-react-hooks", () => ({
-  useLiveQuery: (
-    querier: () => unknown,
-    deps: unknown[] = [],
-    defaultResult?: unknown
-  ) => {
-    const [value, setValue] = useState<unknown>(defaultResult)
-    useEffect(() => {
-      const result = querier()
-      if (result instanceof Promise) {
-        let active = true
-        void result.then((resolved) => {
-          if (active) setValue(resolved)
-        })
-        return () => {
-          active = false
-        }
-      }
-      setValue(result)
-      return undefined
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, deps)
-    return value
-  },
-}))
-
-const { getRaidBossesMock, getGuildRaidMetaMock } = vi.hoisted(() => ({
-  getRaidBossesMock: vi.fn(),
-  getGuildRaidMetaMock: vi.fn(),
-}))
-
-vi.mock("@workspace/game-catalog/queries", () => ({
-  getRaidBosses: getRaidBossesMock,
-  getGuildRaidMeta: getGuildRaidMetaMock,
-  getCharactersMap: () =>
-    Promise.resolve(
-      new Map([
-        ["heroA", { id: "heroA", name: "Hero A" }],
-        ["heroB", { id: "heroB", name: "Hero B" }],
-        ["heroC", { id: "heroC", name: "Hero C" }],
-        ["heroD", { id: "heroD", name: "Hero D" }],
-      ])
-    ),
-  getMowsMap: () =>
-    Promise.resolve(new Map([["mowA", { id: "mowA", name: "MoW A" }]])),
-  getNpcs: () => Promise.resolve([]),
-}))
-
-// Resolve i18n keys to the key itself (plus interpolated values) so assertions can match on keys.
-const abilityTextFixture: Record<string, unknown> = {
+// The page reads the real catalog; the boss's fixture ability text joins the real English resources.
+const abilityTextFixture = {
   AbilityX: {
     description: "Deals {[dmg]} damage",
     variables: { dmg: [10, 20, 30] },
@@ -81,20 +40,11 @@ const abilityTextFixture: Record<string, unknown> = {
   },
 }
 
-vi.mock("react-i18next", () => ({
-  useTranslation: () => ({
-    t: (key: string, opts?: Record<string, unknown>) =>
-      opts && Object.keys(opts).filter((k) => k !== "defaultValue").length
-        ? `${key} ${JSON.stringify(opts)}`
-        : ((opts?.defaultValue as string) ?? key),
-    i18n: {
-      exists: () => true,
-      language: "en",
-      getResource: (_lng: string, ns: string, key: string) =>
-        ns === "raidBossAbilityText" ? abilityTextFixture[key] : undefined,
-    },
-  }),
+const characters = ["A", "B", "C", "D"].map((letter) => ({
+  id: `hero${letter}`,
+  name: `Hero ${letter}`,
 }))
+const mows = [{ id: "mowA", name: "MoW A" }]
 
 const step = (progressionIndex: number) => ({
   health: 1000 * (progressionIndex + 1),
@@ -122,7 +72,6 @@ const unit = (
 })
 
 const payload = {
-  id: "raid-bosses",
   seasonConfigRotation: ["s1", "s2"],
   bosses: [
     unit("GuildBoss1Boss1Tervigon", "boss", {
@@ -275,58 +224,80 @@ function Location() {
   )
 }
 
-function renderPage(entry = "/library/raid-bosses") {
+async function renderPage(
+  entry = "/library/raid-bosses",
+  { raidBosses = payload, meta }: { raidBosses?: unknown; meta?: unknown } = {}
+) {
+  await seedGameCatalog({
+    characters,
+    mows,
+    ...(raidBosses ? { "raid-bosses": raidBosses } : {}),
+    ...(meta ? { "guild-raid-meta": meta } : {}),
+  })
   return render(
-    <MemoryRouter initialEntries={[entry]}>
-      <Routes>
-        <Route
-          path="/library/raid-bosses/:entityId?"
-          element={
-            <>
-              <RaidBossesPage />
-              <Location />
-            </>
-          }
-        />
-      </Routes>
-    </MemoryRouter>
+    <>
+      <RaidBossesPage />
+      <Location />
+    </>,
+    { route: "/library/raid-bosses/:entityId?", initialEntries: [entry] }
   )
 }
 
-// Imported after the mocks above are registered.
-const { RaidBossesPage } = await import("./raid-bosses-page")
+/** Fails the next IndexedDB read of one catalog store, then reads it normally again. */
+function failNextRead(store: string) {
+  const getAll = IDBObjectStore.prototype.getAll
+  let failed = false
+  vi.spyOn(IDBObjectStore.prototype, "getAll").mockImplementation(function (
+    this: IDBObjectStore,
+    ...args: Parameters<IDBObjectStore["getAll"]>
+  ) {
+    if (this.name === store && !failed) {
+      failed = true
+      throw new Error("boom")
+    }
+    return getAll.apply(this, args)
+  })
+}
+
+beforeAll(() => {
+  i18n.addResourceBundle("en", "raidBossAbilityText", abilityTextFixture, true)
+})
+afterAll(() => {
+  i18n.removeResourceBundle("en", "raidBossAbilityText")
+  i18n.addResourceBundle("en", "raidBossAbilityText", enRaidBossAbilityText)
+})
+afterEach(() => {
+  vi.restoreAllMocks()
+})
 
 describe("RaidBossesPage", () => {
   beforeEach(() => {
     isMobileMock.value = false
-    getRaidBossesMock.mockReset()
-    getGuildRaidMetaMock.mockReset()
-    getGuildRaidMetaMock.mockResolvedValue(null)
     useIsMobileMock.mockImplementation(() => isMobileMock.value)
     useIsMobileMock.mockClear()
   })
 
   it("shows the feature-unavailable state when the dataset has not synced", async () => {
-    getRaidBossesMock.mockResolvedValue(null)
-    renderPage()
+    await renderPage(undefined, { raidBosses: null })
 
     await waitFor(() =>
       expect(screen.getByTestId("raid-bosses-library-page")).toHaveTextContent(
-        "raidBosses.unavailable"
+        "Guild Raid Boss data is not available in the catalog yet."
       )
     )
   })
 
   it("shows a retry-able failure state when the dataset read throws, and recovers on retry", async () => {
     const user = userEvent.setup()
-    getRaidBossesMock.mockRejectedValueOnce(new Error("boom"))
-    getRaidBossesMock.mockResolvedValue(payload)
-    renderPage()
+    failNextRead("raid-bosses")
+    await renderPage()
 
     const failure = await screen.findByTestId("raid-bosses-sync-failed")
-    expect(failure).toHaveTextContent("raidBosses.syncFailed")
+    expect(failure).toHaveTextContent(
+      "Couldn't load Guild Raid Bosses. The catalog may still be syncing."
+    )
 
-    await user.click(screen.getByRole("button", { name: "raidBosses.retry" }))
+    await user.click(screen.getByRole("button", { name: "Retry" }))
 
     await waitFor(() =>
       expect(screen.getByTestId("location")).toHaveTextContent(
@@ -338,8 +309,7 @@ describe("RaidBossesPage", () => {
 
   it("renders the season reference and opens a contextual encounter detail", async () => {
     const user = userEvent.setup()
-    getRaidBossesMock.mockResolvedValue(payload)
-    renderPage()
+    await renderPage()
 
     await screen.findByTestId("raid-boss-season-reference")
     expect(screen.getByTestId("location")).toHaveTextContent(
@@ -367,8 +337,7 @@ describe("RaidBossesPage", () => {
 
   it("returns a contextual detail to its selected season reference", async () => {
     const user = userEvent.setup()
-    getRaidBossesMock.mockResolvedValue(payload)
-    renderPage(
+    await renderPage(
       "/library/raid-bosses/GuildBoss1Boss1Tervigon?season=s2&tier=5&set=1&encounter=0"
     )
 
@@ -386,8 +355,7 @@ describe("RaidBossesPage", () => {
   it("returns a direct mobile detail to the default season reference", async () => {
     const user = userEvent.setup()
     useIsMobileMock.mockReturnValue(true)
-    getRaidBossesMock.mockResolvedValue(payload)
-    renderPage("/library/raid-bosses/GuildBoss1Boss1Tervigon")
+    await renderPage("/library/raid-bosses/GuildBoss1Boss1Tervigon")
 
     await screen.findByTestId("raid-boss-detail")
     await user.click(screen.getByTestId("raid-boss-view-season-reference"))
@@ -401,8 +369,7 @@ describe("RaidBossesPage", () => {
   })
 
   it("restores and shares a non-default season without dropping unrelated query parameters", async () => {
-    getRaidBossesMock.mockResolvedValue(payload)
-    renderPage("/library/raid-bosses?season=s2&view=compact")
+    await renderPage("/library/raid-bosses?season=s2&view=compact")
 
     await screen.findByTestId("raid-boss-season-reference")
     expect(screen.getByTestId("location")).toHaveTextContent(
@@ -413,14 +380,13 @@ describe("RaidBossesPage", () => {
 
   it("records a changed season while preserving unrelated query parameters", async () => {
     const user = userEvent.setup()
-    getRaidBossesMock.mockResolvedValue(payload)
-    renderPage("/library/raid-bosses?view=compact")
+    await renderPage("/library/raid-bosses?view=compact")
 
     await screen.findByTestId("raid-boss-season-reference")
     await user.click(screen.getByRole("combobox"))
     await user.click(
       screen.getByRole("option", {
-        name: 'raidBosses.seasonLabel {"season":2}',
+        name: "Season 2",
       })
     )
 
@@ -432,8 +398,7 @@ describe("RaidBossesPage", () => {
   })
 
   it("canonicalizes an invalid season to the default selection", async () => {
-    getRaidBossesMock.mockResolvedValue(payload)
-    renderPage("/library/raid-bosses?season=missing&view=compact")
+    await renderPage("/library/raid-bosses?season=missing&view=compact")
 
     await waitFor(() =>
       expect(screen.getByTestId("location")).toHaveTextContent(
@@ -445,8 +410,7 @@ describe("RaidBossesPage", () => {
 
   it("keeps every season-board card reachable on the mobile form", async () => {
     useIsMobileMock.mockReturnValue(true)
-    getRaidBossesMock.mockResolvedValue(payload)
-    renderPage()
+    await renderPage()
 
     await screen.findByTestId("raid-boss-season-reference")
     expect(
@@ -459,8 +423,7 @@ describe("RaidBossesPage", () => {
 
   it("retains the compact mobile entity detail form", async () => {
     useIsMobileMock.mockReturnValue(true)
-    getRaidBossesMock.mockResolvedValue(payload)
-    renderPage("/library/raid-bosses/GuildBoss1Boss1Tervigon")
+    await renderPage("/library/raid-bosses/GuildBoss1Boss1Tervigon")
 
     await screen.findByTestId("raid-boss-detail")
     expect(screen.getByTestId("raid-boss-mobile-picker")).toBeInTheDocument()
@@ -468,15 +431,13 @@ describe("RaidBossesPage", () => {
 
   it("selects an entity from the mobile picker and shows its detail", async () => {
     useIsMobileMock.mockReturnValue(true)
-    getRaidBossesMock.mockResolvedValue(payload)
-    renderPage("/library/raid-bosses/GuildBoss1Boss1Tervigon")
+    await renderPage("/library/raid-bosses/GuildBoss1Boss1Tervigon")
 
     await screen.findByTestId("raid-boss-detail")
     fireEvent.click(screen.getByTestId("raid-boss-mobile-picker"))
-    fireEvent.change(
-      screen.getByPlaceholderText("raidBosses.pickerPlaceholder"),
-      { target: { value: "Warrior" } }
-    )
+    fireEvent.change(screen.getByPlaceholderText("Search bosses and primes…"), {
+      target: { value: "Warrior" },
+    })
     fireEvent.click(await screen.findByRole("option"))
 
     await waitFor(() =>
@@ -489,13 +450,10 @@ describe("RaidBossesPage", () => {
 
   it("switches to Season Config and keeps its selected season in the shareable URL", async () => {
     const user = userEvent.setup()
-    getRaidBossesMock.mockResolvedValue(payload)
-    renderPage()
+    await renderPage()
 
     await screen.findByTestId("raid-boss-tabs")
-    await user.click(
-      screen.getByRole("tab", { name: "raidBosses.tabs.seasons" })
-    )
+    await user.click(screen.getByRole("tab", { name: "Seasons Config" }))
 
     await waitFor(() =>
       expect(screen.getByTestId("location")).toHaveTextContent(
@@ -510,8 +468,7 @@ describe("RaidBossesPage", () => {
 
   it("uses the expandable mobile Season Config layout below the breakpoint", async () => {
     isMobileMock.value = true
-    getRaidBossesMock.mockResolvedValue(payload)
-    renderPage("/library/raid-bosses/GuildBoss1Boss1Tervigon?tab=seasons")
+    await renderPage("/library/raid-bosses/GuildBoss1Boss1Tervigon?tab=seasons")
 
     await screen.findByTestId("raid-boss-seasons")
     expect(
@@ -547,8 +504,10 @@ describe("RaidBossesPage", () => {
         },
       },
     }
-    getRaidBossesMock.mockResolvedValue(unresolvedPayload)
-    renderPage("/library/raid-bosses/GuildBoss1Boss1Tervigon?tab=seasons")
+    await renderPage(
+      "/library/raid-bosses/GuildBoss1Boss1Tervigon?tab=seasons",
+      { raidBosses: unresolvedPayload }
+    )
 
     expect(await screen.findByText("Unknown Encounter")).toBeInTheDocument()
     expect(
@@ -558,9 +517,9 @@ describe("RaidBossesPage", () => {
 
   it("renders Meta recommendations and persists its Comp filter in the URL", async () => {
     const user = userEvent.setup()
-    getRaidBossesMock.mockResolvedValue(payload)
-    getGuildRaidMetaMock.mockResolvedValue(metaPayload)
-    renderPage("/library/raid-bosses/GuildBoss1Boss1Tervigon?tab=meta")
+    await renderPage("/library/raid-bosses/GuildBoss1Boss1Tervigon?tab=meta", {
+      meta: metaPayload,
+    })
 
     const recommendations = await screen.findByTestId(
       "raid-boss-meta-recommendations"
@@ -580,7 +539,7 @@ describe("RaidBossesPage", () => {
     )
 
     await user.selectOptions(
-      screen.getByRole("combobox", { name: "raidBosses.meta.compFilter" }),
+      screen.getByRole("combobox", { name: "Filter by Comp" }),
       "admech"
     )
 
@@ -601,9 +560,9 @@ describe("RaidBossesPage", () => {
 
   it("uses stacked touch-friendly Meta cards below the breakpoint", async () => {
     isMobileMock.value = true
-    getRaidBossesMock.mockResolvedValue(payload)
-    getGuildRaidMetaMock.mockResolvedValue(metaPayload)
-    renderPage("/library/raid-bosses/GuildBoss1Boss1Tervigon?tab=meta")
+    await renderPage("/library/raid-bosses/GuildBoss1Boss1Tervigon?tab=meta", {
+      meta: metaPayload,
+    })
 
     expect(
       await screen.findByTestId("raid-boss-meta-recommendations")
@@ -612,26 +571,23 @@ describe("RaidBossesPage", () => {
   })
 
   it("keeps Details usable when Meta is absent and shows a Meta-only unavailable state", async () => {
-    getRaidBossesMock.mockResolvedValue(payload)
-    renderPage("/library/raid-bosses/GuildBoss1Boss1Tervigon?tab=meta")
+    await renderPage("/library/raid-bosses/GuildBoss1Boss1Tervigon?tab=meta")
 
     expect(
       await screen.findByTestId("raid-boss-meta-unavailable")
-    ).toHaveTextContent("raidBosses.meta.unavailable")
+    ).toHaveTextContent("Guild Raid Boss Meta is not available yet.")
     expect(screen.queryByTestId("raid-boss-detail")).not.toBeInTheDocument()
   })
 
   it("retries a failed Meta read without blocking the tab", async () => {
     const user = userEvent.setup()
-    getRaidBossesMock.mockResolvedValue(payload)
-    getGuildRaidMetaMock.mockRejectedValueOnce(new Error("meta unavailable"))
-    getGuildRaidMetaMock.mockResolvedValue(metaPayload)
-    renderPage("/library/raid-bosses/GuildBoss1Boss1Tervigon?tab=meta")
+    failNextRead("guild-raid-meta")
+    await renderPage("/library/raid-bosses/GuildBoss1Boss1Tervigon?tab=meta", {
+      meta: metaPayload,
+    })
 
     const failure = await screen.findByTestId("raid-boss-meta-failed")
-    await user.click(
-      within(failure).getByRole("button", { name: "raidBosses.retry" })
-    )
+    await user.click(within(failure).getByRole("button", { name: "Retry" }))
 
     expect(
       await screen.findByTestId("raid-boss-meta-recommendations")
@@ -639,21 +595,28 @@ describe("RaidBossesPage", () => {
   })
 
   it("renders an empty Meta result when valid data has no recommendations", async () => {
-    getRaidBossesMock.mockResolvedValue(payload)
-    getGuildRaidMetaMock.mockResolvedValue({ ...metaPayload, bosses: [] })
-    renderPage("/library/raid-bosses/GuildBoss1Boss1Tervigon?tab=meta")
+    await renderPage("/library/raid-bosses/GuildBoss1Boss1Tervigon?tab=meta", {
+      meta: { ...metaPayload, bosses: [] },
+    })
 
     expect(await screen.findByTestId("raid-boss-meta-empty")).toHaveTextContent(
-      "raidBosses.meta.noResults"
+      "No recommendations match this Comp."
     )
   })
 
   it("repairs invalid tab, season, and Comp parameters without losing unrelated query state", async () => {
-    getRaidBossesMock.mockResolvedValue(payload)
-    getGuildRaidMetaMock.mockResolvedValue(metaPayload)
-    renderPage(
-      "/library/raid-bosses/not-real?tab=invalid&season=invalid&comp=invalid&source=shared"
+    // The Meta dataset lands first and the boss roster after it, as a sync delivers them. The page's
+    // two URL-repair effects race when both arrive in separate commits in the other order (the
+    // roster's repair drops the season before the Meta-aware repair can keep it).
+    await renderPage(
+      "/library/raid-bosses/not-real?tab=invalid&season=invalid&comp=invalid&source=shared",
+      { raidBosses: null, meta: metaPayload }
     )
+    await screen.findByText(
+      "Guild Raid Boss data is not available in the catalog yet."
+    )
+    await act(() => new Promise((resolve) => setTimeout(resolve, 50)))
+    await seedGameCatalog({ "raid-bosses": payload })
 
     await waitFor(() =>
       expect(screen.getByTestId("location")).toHaveTextContent(
@@ -664,12 +627,11 @@ describe("RaidBossesPage", () => {
 
   it("recomputes the boss's stats when a prime HP-lost point is chosen", async () => {
     const user = userEvent.setup()
-    getRaidBossesMock.mockResolvedValue(payload)
-    renderPage("/library/raid-bosses/GuildBoss1Boss1Tervigon")
+    await renderPage("/library/raid-bosses/GuildBoss1Boss1Tervigon")
 
     const adjusted = await screen.findByTestId("raid-boss-adjusted-stats")
     // Full HP by default -> no modifiers active.
-    expect(adjusted).toHaveTextContent("raidBosses.noActiveModifiers")
+    expect(adjusted).toHaveTextContent("No modifiers active at this point.")
 
     // One prime panel, one HP-lost select; choose its threshold.
     const [primeSelect] = within(adjusted).getAllByRole("combobox")
@@ -685,8 +647,7 @@ describe("RaidBossesPage", () => {
   })
 
   it("selecting a prime navigates to its detail route", async () => {
-    getRaidBossesMock.mockResolvedValue(payload)
-    renderPage("/library/raid-bosses/GuildBoss1Boss1Tervigon")
+    await renderPage("/library/raid-bosses/GuildBoss1Boss1Tervigon")
 
     const primes = await screen.findByTestId("raid-boss-list-primes")
     fireEvent.click(within(primes).getByText("GuildBoss1MiniBoss1Warrior"))
@@ -699,8 +660,7 @@ describe("RaidBossesPage", () => {
   })
 
   it("returns an unknown detail id to the season reference", async () => {
-    getRaidBossesMock.mockResolvedValue(payload)
-    renderPage("/library/raid-bosses/not-a-real-id?season=s2")
+    await renderPage("/library/raid-bosses/not-a-real-id?season=s2")
 
     await waitFor(() =>
       expect(screen.getByTestId("location")).toHaveTextContent(
@@ -711,8 +671,7 @@ describe("RaidBossesPage", () => {
   })
 
   it("drops tampered encounter context as a group and retains direct-detail fallback", async () => {
-    getRaidBossesMock.mockResolvedValue(payload)
-    renderPage(
+    await renderPage(
       "/library/raid-bosses/GuildBoss1Boss1Tervigon?season=s1&tier=6&set=0&encounter=1&view=compact"
     )
 
@@ -728,8 +687,7 @@ describe("RaidBossesPage", () => {
 
   it("renders ability rules-text scaled to the selected progression step", async () => {
     const user = userEvent.setup()
-    getRaidBossesMock.mockResolvedValue(payload)
-    renderPage("/library/raid-bosses/GuildBoss1Boss1Tervigon")
+    await renderPage("/library/raid-bosses/GuildBoss1Boss1Tervigon")
 
     // Default step is the highest known (encounter progressionIndex 3 -> ability level 3 -> dmg[2]).
     const abilities = await screen.findByTestId("raid-boss-abilities")
@@ -744,18 +702,17 @@ describe("RaidBossesPage", () => {
 
   it("changes the progression step via the dropdown", async () => {
     const user = userEvent.setup()
-    getRaidBossesMock.mockResolvedValue(payload)
-    renderPage("/library/raid-bosses/GuildBoss4Boss1Ghazghkull")
+    await renderPage("/library/raid-bosses/GuildBoss4Boss1Ghazghkull")
 
     // Ghazghkull is never in an encounter -> defaults to the first step (rank 0 in the fixture).
     const stats = await screen.findByTestId("raid-boss-stats")
-    expect(stats).toHaveTextContent("raidBosses.rank0")
+    expect(stats).toHaveTextContent("Rank0")
 
     await user.click(screen.getByTestId("raid-boss-progression-select"))
     const options = await screen.findAllByRole("option")
     expect(options).toHaveLength(3)
     await user.click(options[1])
 
-    await waitFor(() => expect(stats).toHaveTextContent("raidBosses.rank1"))
+    await waitFor(() => expect(stats).toHaveTextContent("Rank1"))
   })
 })

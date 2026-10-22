@@ -1,16 +1,8 @@
-import { describe, expect, it, vi } from "vitest"
+import { describe, expect, it } from "vitest"
 import userEvent from "@testing-library/user-event"
 import { battleIdSchema } from "@workspace/game-domain"
 
 import { render, screen } from "@/test/render"
-
-vi.mock("react-i18next", () => ({
-  initReactI18next: { type: "3rdParty", init: vi.fn() },
-  useTranslation: () => ({
-    t: (key: string, values?: Record<string, unknown>) =>
-      values ? `${key}:${JSON.stringify(values)}` : key,
-  }),
-}))
 
 import { RaidSchedule } from "./raid-schedule"
 
@@ -332,8 +324,8 @@ describe("RaidSchedule location emphasis", () => {
     )
 
     const row = screen.getByTestId(`raid-location-${b1}`)
-    expect(row).not.toHaveTextContent("schedule.upgradesLeft")
-    expect(row).not.toHaveTextContent("schedule.raids")
+    expect(row).not.toHaveTextContent(/upgrades? left/)
+    expect(row).not.toHaveTextContent(/attempts? used/)
   })
 
   it("shows the upgrades still needed when the plan stops below the node's daily cap", () => {
@@ -355,8 +347,8 @@ describe("RaidSchedule location emphasis", () => {
     )
 
     const row = screen.getByTestId(`raid-location-${b1}`)
-    expect(row).toHaveTextContent('schedule.upgradesLeft:{"count":3}')
-    expect(row).not.toHaveTextContent("schedule.raids")
+    expect(row).toHaveTextContent("3 upgrades left")
+    expect(row).not.toHaveTextContent(/attempts? used/)
   })
 
   it("excludes a fully-raided location from the card but keeps the card for its other locations", () => {

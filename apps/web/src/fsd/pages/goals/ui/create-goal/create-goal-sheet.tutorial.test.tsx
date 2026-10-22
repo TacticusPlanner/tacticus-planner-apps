@@ -1,10 +1,5 @@
-import { renderHook } from "@testing-library/react"
+import { renderHook } from "@/test/render"
 import { describe, expect, it, vi } from "vitest"
-
-vi.mock("react-i18next", async (importOriginal) => ({
-  ...(await importOriginal<object>()),
-  useTranslation: () => ({ t: (key: string) => `localized:${key}` }),
-}))
 
 const register = vi.fn()
 vi.mock("@/shared/tour", () => ({
@@ -27,27 +22,21 @@ describe("useCreateGoalSheetTutorial", () => {
       expect(step.target).toBe(
         '[data-testid="create-goal-acquisition-sources"]'
       )
-      expect(step.title).toBe(
-        "localized:tour.createGoal.steps.acquisitionSources.title"
-      )
+      expect(step.title).toBe("Acquisition sources")
       expect(step.content).toBe(
-        "localized:tour.createGoal.steps.acquisitionSources.content"
+        "Combine campaign farming, Onslaught, and daily shops — select any mix to lower this goal's estimated time."
       )
       expect(mythicStep.target).toBe(
         '[data-testid="goal-mythic-material-sources"]'
       )
-      expect(mythicStep.title).toBe(
-        "localized:tour.createGoal.steps.mythicMaterialSources.title"
-      )
+      expect(mythicStep.title).toBe("Mythic materials")
       expect(mythicStep.content).toBe(
-        "localized:tour.createGoal.steps.mythicMaterialSources.content"
+        "Shop offers for the Mythic materials this goal needs. Every available offer is counted by default; uncheck any you won't buy."
       )
       expect(projectStep.target).toBe('[data-testid="create-goal-projects"]')
-      expect(projectStep.title).toBe(
-        "localized:tour.createGoal.steps.projects.title"
-      )
+      expect(projectStep.title).toBe("Projects")
       expect(projectStep.content).toBe(
-        "localized:tour.createGoal.steps.projects.content"
+        "Search for a project name that doesn't exist yet and choose Create to add it here without leaving this form. Which projects hold the goal never changes its status or priority."
       )
     }
   )

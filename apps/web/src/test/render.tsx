@@ -14,7 +14,11 @@ import {
   type RenderOptions,
 } from "@testing-library/react"
 import { TooltipProvider } from "@workspace/ui/components/tooltip"
-import { createMemoryRouter, RouterProvider } from "react-router"
+import {
+  createMemoryRouter,
+  RouterProvider,
+  type InitialEntry,
+} from "react-router"
 
 import { ThemeProvider } from "@/shared/theme"
 
@@ -42,7 +46,7 @@ export type TestRenderOptions = RenderOptions & {
   /** Mounts the UI as this route's element in a memory data router (e.g. `/plan/goals/:goalId`). */
   route?: string
   /** Router history; defaults to `[route]`. */
-  initialEntries?: string[]
+  initialEntries?: InitialEntry[]
   /** Wraps the UI in the app's real `ThemeProvider`. */
   theme?: boolean
   /** Signed-in state for the MSAL test stub, applied before rendering. */
@@ -56,7 +60,10 @@ function RouteElement() {
   return useContext(RouteChildren)
 }
 
-function createTestRouter(route: string, initialEntries = [route]) {
+function createTestRouter(
+  route: string,
+  initialEntries: InitialEntry[] = [route]
+) {
   return createMemoryRouter([{ path: route, element: <RouteElement /> }], {
     initialEntries,
   })

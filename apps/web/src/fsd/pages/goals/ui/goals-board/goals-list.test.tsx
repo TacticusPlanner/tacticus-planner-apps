@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { fireEvent, render, screen, within } from "@/test/render"
+import { seedGameCatalog } from "@/test/seed"
 import userEvent from "@testing-library/user-event"
 
 const { useIsMobileMock } = vi.hoisted(() => ({
@@ -11,67 +11,17 @@ vi.mock("@workspace/ui/hooks/use-mobile", () => ({
   useIsMobile: () => useIsMobileMock(),
 }))
 
-vi.mock("dexie-react-hooks", () => ({
-  useLiveQuery: (
-    querier: () => unknown,
-    deps: unknown[] = [],
-    defaultResult?: unknown
-  ) => {
-    const [value, setValue] = useState<unknown>(defaultResult)
-    useEffect(() => {
-      const result = querier()
-      if (result instanceof Promise) {
-        let active = true
-        void result.then((resolved) => {
-          if (active) setValue(resolved)
-        })
-        return () => {
-          active = false
-        }
-      }
-      setValue(result)
-      return undefined
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, deps)
-    return value
-  },
-}))
+const characters = [
+  { id: "hero1", name: "Hero One", faction: "Ultramarines" },
+  { id: "hero2", name: "Hero Two", faction: "Ultramarines" },
+]
 
-vi.mock("react-i18next", () => ({
-  initReactI18next: { type: "3rdParty", init: vi.fn() },
-  useTranslation: () => ({
-    t: (key: string, opts?: { defaultValue?: string }) =>
-      opts?.defaultValue ?? key,
-    i18n: { resolvedLanguage: "en" },
-  }),
-}))
+const mows = [{ id: "mow1", name: "Stormbird", faction: "Ultramarines" }]
 
-const characters = new Map([
-  ["hero1", { id: "hero1", name: "Hero One", faction: "Ultramarines" }],
-  ["hero2", { id: "hero2", name: "Hero Two", faction: "Ultramarines" }],
-])
-
-const mows = new Map([
-  ["mow1", { id: "mow1", name: "Stormbird", faction: "Ultramarines" }],
-])
-
-vi.mock("@workspace/player-data/queries", () => ({
-  getCampaignEventProgress: async () => [],
-  getLiveProgress: async () => undefined,
-  getCampaignProgress: () => [],
-}))
-
-vi.mock("@workspace/game-catalog/queries", () => ({
-  getCharactersMap: () => characters,
-  getMowsMap: () => mows,
-  getUpgrades: () => [],
-  getCampaignBattles: () => [],
-  getCampaignDefinitions: () => [],
-  getAscensionCostsMap: () => new Map(),
-  getUnlockShardCostsMap: () => new Map(),
-  getMowUpgradeCosts: () => [],
-  getCharacterAbilityCosts: () => [],
-}))
+// Every test reads the units' display names from the real catalog store.
+beforeEach(async () => {
+  await seedGameCatalog({ characters, mows })
+})
 
 import type { GoalRow } from "../../model/shared/types"
 import type { useGoalActions } from "../../model/goals-data/use-goal-actions"
@@ -164,7 +114,7 @@ describe("GoalsList", () => {
     await screen.findByText("Hero One")
     const desktopCell = screen.getAllByTestId("goal-row-estimate")[0]!
     expect(desktopCell).toHaveTextContent("Sep 28")
-    expect(desktopCell).toHaveTextContent("goals.estimate.days")
+    expect(desktopCell).toHaveTextContent("in 12 days")
     desktop.unmount()
 
     useIsMobileMock.mockReturnValue(true)
@@ -179,7 +129,7 @@ describe("GoalsList", () => {
     await screen.findByText("Hero One")
     const mobileCell = screen.getAllByTestId("goal-row-estimate")[0]!
     expect(mobileCell).toHaveTextContent("Sep 28")
-    expect(mobileCell).toHaveTextContent("goals.estimate.days")
+    expect(mobileCell).toHaveTextContent("in 12 days")
     expect(mobileCell.innerHTML).toBe(desktopCell.innerHTML)
   })
 
@@ -283,17 +233,17 @@ describe("GoalsList", () => {
     expect(remainingColumn).not.toHaveTextContent("slots")
     expect(
       within(remainingColumn).getByRole("img", {
-        name: /goals.resourceChips.chipLabel/,
+        name: /: 50$/,
       })
     ).toBeInTheDocument()
 
     fireEvent.click(screen.getByTestId("goal-progress-info-trigger"))
     const explanation = screen.getByTestId("goal-progress-explanation")
     expect(explanation).toHaveTextContent(
-      "goals.overview.actualProgressDescription"
+      "Actual progress reflects your account's currently synced, owned state."
     )
     expect(explanation).toHaveTextContent(
-      "goals.overview.potentialProgressDescription"
+      "Potential progress applies the resources you already own after higher-priority goals in your priority order reserve their share. It does not change the goal's actual status."
     )
   })
 
@@ -350,15 +300,15 @@ describe("GoalsList", () => {
       )
       // The level target and the book figure (100,000 XP pool / 12,500 per Legendary book = 8
       // available, 12,200 charged XP = 1 needed) share the one line, once each.
-      expect(lines[0]).toHaveTextContent("goals.overview.levelProgress")
+      expect(lines[0]).toHaveTextContent("Lv 31 → 32")
       expect(screen.getAllByTestId("level-requirement-books")).toHaveLength(1)
-      expect(lines[0]).toHaveTextContent("goals.resourceChips.xpBooksValue")
+      expect(lines[0]).toHaveTextContent("8 of 1")
       // Nothing about the requirement in the Remaining chips or Goal cell.
       expect(
         screen.queryAllByTestId("level-requirement-remaining")
       ).toHaveLength(0)
       expect(screen.queryAllByTestId("goal-resource-chip")).toHaveLength(0)
-      expect(lines[0]).not.toHaveTextContent("remainingText.levels")
+      expect(lines[0]).not.toHaveTextContent(/\d+ levels/)
       expect(screen.queryAllByTestId("level-goal-sub-target")).toHaveLength(0)
       // Ordinary progress, never a restriction.
       expect(screen.queryAllByTestId("goal-restricted-indicator")).toHaveLength(
@@ -482,11 +432,7 @@ describe("GoalsList", () => {
       render(<GoalsList actions={stubActions} reorderEnabled rows={view} />)
       await screen.findByText("Hero One")
 
-      expect(numbers()).toEqual([
-        "goals.columns.priority 1",
-        "goals.columns.priority 3",
-        "goals.columns.priority 5",
-      ])
+      expect(numbers()).toEqual(["Priority 1", "Priority 3", "Priority 5"])
       // The number sits in the same leading cell as the drag handle, not in a data column (Character, Projects, Goal, Progress, Status, Remaining).
       const cell = screen.getAllByTestId("goal-row-priority")[0]!.closest("td")!
       expect(cell).toContainElement(
@@ -505,7 +451,7 @@ describe("GoalsList", () => {
       render(<GoalsList actions={stubActions} reorderEnabled rows={view} />)
       await screen.findAllByText("Hero One")
 
-      expect(numbers()).toEqual(["goals.columns.priority 2"])
+      expect(numbers()).toEqual(["Priority 2"])
       expect(screen.getAllByTestId("goal-row-drag-handle")).toHaveLength(2)
     })
 
@@ -522,7 +468,7 @@ describe("GoalsList", () => {
       render(<GoalsList actions={stubActions} rows={[rows[0]!]} />)
       await screen.findByText("Hero One")
 
-      expect(numbers()).toEqual(["goals.columns.priority 10"])
+      expect(numbers()).toEqual(["Priority 10"])
       expect(screen.queryByTestId("goal-row-drag-handle")).toBeNull()
     })
 
@@ -536,7 +482,7 @@ describe("GoalsList", () => {
         <GoalsList actions={stubActions} reorderEnabled rows={view} />
       )
       await screen.findByText("Hero One")
-      expect(numbers()).toEqual(["goals.columns.priority 10"])
+      expect(numbers()).toEqual(["Priority 10"])
       unmount()
 
       render(
@@ -548,7 +494,7 @@ describe("GoalsList", () => {
         />
       )
       await screen.findByText("Hero One")
-      expect(numbers()).toEqual(["goals.columns.priority 10"])
+      expect(numbers()).toEqual(["Priority 10"])
       expect(screen.getAllByTestId("goal-row-reorder-card")).toHaveLength(1)
     })
 
@@ -561,10 +507,10 @@ describe("GoalsList", () => {
       )
       await screen.findByText("Hero One")
       expect(screen.getByTestId("goal-status-badge")).toHaveTextContent(
-        "goals.status.Paused"
+        "Paused"
       )
       expect(screen.getByTestId("goal-row-drag-handle")).toHaveAccessibleName(
-        "goals.columns.reorderHandle"
+        "Drag Hero One to reorder"
       )
       unmount()
 
@@ -581,9 +527,9 @@ describe("GoalsList", () => {
       // The reorder card shows only in-flight rows, so without its own badge a Paused card would be
       // indistinguishable from an Active one.
       const card = screen.getByTestId("goal-row-reorder-card")
-      expect(card).toHaveTextContent("goals.status.Paused")
+      expect(card).toHaveTextContent("Paused")
       expect(screen.getByTestId("goal-row-drag-handle")).toHaveAccessibleName(
-        "goals.columns.reorderHandle"
+        "Drag Hero One to reorder"
       )
     })
 
@@ -670,9 +616,9 @@ describe("GoalsList reached rows and column layout", () => {
       const row = await screen.findByTestId("goal-row")
       expect(row).toHaveClass("bg-success")
       expect(screen.getByTestId("goal-status-badge")).toHaveTextContent(
-        "goals.status.Reached"
+        "Reached"
       )
-      expect(screen.queryByText("goals.status.Paused")).toBeNull()
+      expect(screen.queryByText("Paused")).toBeNull()
       expect(screen.queryByTestId("goal-progress")).toBeNull()
       expect(screen.queryByTestId("goal-row-estimate")).toBeNull()
       expect(screen.queryByTestId("goal-remaining-column")).toBeNull()
@@ -682,7 +628,7 @@ describe("GoalsList reached rows and column layout", () => {
       expect(screen.queryByTestId("goal-row-resume-goal-1")).toBeNull()
       expect(stubActions.setStatus).not.toHaveBeenCalled()
       // The Goal cell/line renders as for any other goal.
-      expect(screen.getByAltText("Iron1")).toBeInTheDocument()
+      expect(await screen.findByAltText("Iron I")).toBeInTheDocument()
     }
   )
 
@@ -713,9 +659,7 @@ describe("GoalsList reached rows and column layout", () => {
     )
     const row = await screen.findByTestId("goal-row")
     expect(row).not.toHaveClass("bg-success")
-    expect(screen.getByTestId("goal-status-badge")).toHaveTextContent(
-      "goals.status.Active"
-    )
+    expect(screen.getByTestId("goal-status-badge")).toHaveTextContent("Active")
     expect(screen.queryByTestId("goal-reached-dash")).toBeNull()
   })
 
@@ -724,7 +668,7 @@ describe("GoalsList reached rows and column layout", () => {
       <GoalsList actions={stubActions} reorderEnabled={false} rows={rows} />
     )
     await screen.findByText("Hero One")
-    expect(screen.queryByText("goals.create.goalTypes.Rank")).toBeNull()
+    expect(screen.queryByText("Rank")).toBeNull()
     const [first] = screen.getAllByTestId("goal-row")
     const characterCell = first!.querySelectorAll("td")[1]!
     expect(characterCell).toContainElement(
@@ -762,12 +706,12 @@ describe("GoalsList reached rows and column layout", () => {
         .slice(1)
         .map((h) => h.textContent)
     ).toEqual([
-      "goals.columns.entity",
-      "goals.columns.projects",
-      "goals.columns.goal",
-      "goals.columns.progress",
-      "goals.columns.status",
-      "goals.columns.remaining",
+      "Character",
+      "Projects",
+      "Goal",
+      "Progress",
+      "Status · Done by",
+      "Remaining",
     ])
     const [first, second] = screen.getAllByTestId("goal-row")
     const cells = first!.querySelectorAll("td")
@@ -796,7 +740,7 @@ describe("GoalsList reached rows and column layout", () => {
     expect(notes).toHaveAttribute("title", long)
     // Directly beneath the name, in the same block.
     expect(notes.previousElementSibling).toContainElement(
-      screen.getByText("Hero One")
+      await screen.findByText("Hero One")
     )
   })
 
@@ -836,9 +780,9 @@ describe("GoalsList reached rows and column layout", () => {
     const card = await screen.findByTestId("goal-row")
     expect(card).toHaveTextContent("card note")
     expect(card).toHaveTextContent("My Goals")
-    expect(screen.getAllByText("goals.create.goalTypes.Unlock")).toHaveLength(1)
+    expect(screen.getAllByText("Unlock")).toHaveLength(1)
     expect(screen.getByTestId("goal-unlock-count")).toHaveTextContent(
-      "goals.overview.ownedOfRequired"
+      "329 / 500"
     )
   })
 })

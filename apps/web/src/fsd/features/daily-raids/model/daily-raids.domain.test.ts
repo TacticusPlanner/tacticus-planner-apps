@@ -1,31 +1,13 @@
-import { renderHook } from "@testing-library/react"
-import { describe, expect, it, vi } from "vitest"
+import { describe, expect, it } from "vitest"
 import type { BattleId } from "@workspace/game-domain"
 import type { CampaignDescriptor } from "@workspace/game-catalog"
 
-const words: Record<string, string> = {
-  "campaigns:difficulties.standard": "Standard",
-  "campaigns:difficulties.elite": "Elite",
-  "campaigns:difficulties.mirror": "Mirror",
-  "campaigns:difficulties.eventStandard": "Standard",
-  "campaigns:difficulties.eventExtremis": "Extremis",
-  "campaigns:names.fall-of-cadia": "Fall of Cadia",
-  "campaigns:names.indomitus": "Indomitus",
-  "campaigns:names.saim-hann": "Saim-Hann",
-  "campaigns:names.adepta-sororitas-vs-death-guard": "Death Guard",
-}
-
-vi.mock("react-i18next", () => ({
-  useTranslation: () => ({
-    t: (key: string, opts?: { defaultValue?: string }) =>
-      words[key] ?? opts?.defaultValue ?? key,
-  }),
-}))
-
+import { renderHook } from "@/test/render"
 import { useCampaignDisplay } from "@/shared/lib"
 
 import { campaignLocationLabels } from "./daily-raids.domain"
 
+// Real English copy: campaigns.json supplies the names and difficulty tiers.
 function descriptor(
   overrides: Partial<CampaignDescriptor>
 ): CampaignDescriptor {

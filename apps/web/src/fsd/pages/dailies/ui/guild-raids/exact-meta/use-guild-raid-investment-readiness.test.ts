@@ -1,33 +1,7 @@
-import { renderHook } from "@testing-library/react"
-import { describe, expect, it, vi } from "vitest"
+import { describe, expect, it } from "vitest"
 
-let catalogState: unknown
-let raidBossesState: unknown
-let rosterState: unknown
-
-vi.mock("dexie-react-hooks", () => ({
-  useLiveQuery: (querier: () => unknown) =>
-    querier.toString().includes("getRaidBosses")
-      ? raidBossesState
-      : querier.toString().includes("readOwnedRoster")
-        ? rosterState
-        : undefined,
-}))
-vi.mock("@workspace/game-catalog/queries", () => ({
-  getRaidBosses: vi.fn(),
-}))
-vi.mock("@workspace/player-data/queries", () => ({
-  getPlayerCharacters: vi.fn(),
-  getPlayerMows: vi.fn(),
-}))
-vi.mock("@/entities/guild-raid-meta", async (importOriginal) => {
-  const actual =
-    await importOriginal<typeof import("@/entities/guild-raid-meta")>()
-  return {
-    ...actual,
-    useGuildRaidMetaCatalog: () => catalogState,
-  }
-})
+import { act, renderHook } from "@/test/render"
+import { seedGameCatalog, seedPlayerData } from "@/test/seed"
 
 import { useGuildRaidInvestmentReadiness } from "./use-guild-raid-investment-readiness"
 
@@ -42,33 +16,28 @@ function heroSlots(heroIds: string[]) {
 
 const bossUnitSetId = "Boss1"
 
-const readyMeta = {
-  status: "ready" as const,
-  meta: {
-    sourceId: "source",
-    updatedOn: "2026-07-01",
-    comps: [],
-    bosses: [
-      {
-        bossUnitSetId,
-        primeUnitSetIds: [],
-        recommendations: [
-          {
-            id: "Boss1-meta",
-            kind: "meta",
-            heroSlots: heroSlots(["heroA", "heroB", "heroC", "heroD", "heroE"]),
-            mowId: "mowX",
-            mowReplacementIds: [],
-            compIds: [],
-            efficiency: 1,
-          },
-        ],
-      },
-    ],
-    primes: [],
-  },
-  presentation: {} as never,
-  retry: vi.fn(),
+const meta = {
+  sourceId: "source",
+  updatedOn: "2026-07-01",
+  comps: [],
+  bosses: [
+    {
+      bossUnitSetId,
+      primeUnitSetIds: [],
+      recommendations: [
+        {
+          id: "Boss1-meta",
+          kind: "meta",
+          heroSlots: heroSlots(["heroA", "heroB", "heroC", "heroD", "heroE"]),
+          mowId: "mowX",
+          mowReplacementIds: [],
+          compIds: [],
+          efficiency: 1,
+        },
+      ],
+    },
+  ],
+  primes: [],
 }
 
 const catalogBoss = {
@@ -91,12 +60,22 @@ const catalogBoss = {
   ],
 }
 
+/** Renders the hook and lets its live reads settle, so "unavailable" is never the loading render. */
+async function renderReadiness(isObservationActive = true) {
+  const rendered = renderHook(() =>
+    useGuildRaidInvestmentReadiness({
+      bossUnitSetId,
+      isObservationActive,
+      liveProgressionIndex: 1,
+    })
+  )
+  await act(() => new Promise((resolve) => setTimeout(resolve, 50)))
+  return rendered
+}
+
 describe("useGuildRaidInvestmentReadiness", () => {
   it("is unavailable while the catalog is still loading", () => {
-    catalogState = { status: "loading" }
-    raidBossesState = undefined
-    rosterState = undefined
-
+    // Nothing is seeded and the first render precedes every live read.
     const { result } = renderHook(() =>
       useGuildRaidInvestmentReadiness({
         bossUnitSetId,
@@ -108,42 +87,36 @@ describe("useGuildRaidInvestmentReadiness", () => {
     expect(result.current).toEqual({ status: "unavailable" })
   })
 
-  it("is unavailable when the guild has no active observation, even with all data synced", () => {
-    catalogState = readyMeta
-    raidBossesState = { bosses: [catalogBoss], primes: [] }
-    rosterState = { characters: [], mows: [] }
+  it("is unavailable when the guild has no active observation, even with all data synced", async () => {
+    await seedGameCatalog({
+      "guild-raid-meta": meta,
+      "raid-bosses": { bosses: [catalogBoss], primes: [] },
+    })
+    await seedPlayerData({ characters: [], mows: [] })
 
-    const { result } = renderHook(() =>
-      useGuildRaidInvestmentReadiness({
-        bossUnitSetId,
-        isObservationActive: false,
-        liveProgressionIndex: 1,
-      })
-    )
+    const { result } = await renderReadiness(false)
 
     expect(result.current).toEqual({ status: "unavailable" })
   })
 
-  it("is unavailable when the boss has no catalog raid-boss record", () => {
-    catalogState = readyMeta
-    raidBossesState = { bosses: [], primes: [] }
-    rosterState = { characters: [], mows: [] }
+  it("is unavailable when the boss has no catalog raid-boss record", async () => {
+    await seedGameCatalog({
+      "guild-raid-meta": meta,
+      "raid-bosses": { bosses: [], primes: [] },
+    })
+    await seedPlayerData({ characters: [], mows: [] })
 
-    const { result } = renderHook(() =>
-      useGuildRaidInvestmentReadiness({
-        bossUnitSetId,
-        isObservationActive: true,
-        liveProgressionIndex: 1,
-      })
-    )
+    const { result } = await renderReadiness()
 
     expect(result.current).toEqual({ status: "unavailable" })
   })
 
-  it("resolves a ready result keyed by recommendation id when every input is present", () => {
-    catalogState = readyMeta
-    raidBossesState = { bosses: [catalogBoss], primes: [] }
-    rosterState = {
+  it("resolves a ready result keyed by recommendation id when every input is present", async () => {
+    await seedGameCatalog({
+      "guild-raid-meta": meta,
+      "raid-bosses": { bosses: [catalogBoss], primes: [] },
+    })
+    await seedPlayerData({
       characters: [
         {
           unitId: "heroA",
@@ -154,15 +127,9 @@ describe("useGuildRaidInvestmentReadiness", () => {
         },
       ],
       mows: [],
-    }
+    })
 
-    const { result } = renderHook(() =>
-      useGuildRaidInvestmentReadiness({
-        bossUnitSetId,
-        isObservationActive: true,
-        liveProgressionIndex: 1,
-      })
-    )
+    const { result } = await renderReadiness()
 
     expect(result.current.status).toBe("ready")
     if (result.current.status !== "ready") return

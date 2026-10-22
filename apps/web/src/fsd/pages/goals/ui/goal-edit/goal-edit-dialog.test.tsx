@@ -1,9 +1,11 @@
-import { useEffect, useState } from "react"
 import { act, fireEvent, render, screen, within } from "@/test/render"
 import userEvent from "@testing-library/user-event"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { MemoryRouter } from "react-router"
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
+import { beforeEach, describe, expect, it, vi } from "vitest"
+
+import { setTestAuth } from "@/test/auth"
+import { seedGameCatalog, seedPlayerData } from "@/test/seed"
 
 const getGoal = vi.fn()
 const editGoal = vi.fn()
@@ -17,63 +19,6 @@ const mobile = vi.hoisted(() => ({ value: false }))
 
 vi.mock("@workspace/ui/hooks/use-mobile", () => ({
   useIsMobile: () => mobile.value,
-}))
-
-vi.mock("react-i18next", () => ({
-  useTranslation: () => ({
-    t: (key: string, options?: Record<string, unknown>) =>
-      options && "defaultValue" in options
-        ? String(options.defaultValue)
-        : options
-          ? `${key}:${JSON.stringify(options)}`
-          : key,
-    i18n: { resolvedLanguage: "en" },
-  }),
-}))
-
-const account = { homeAccountId: "account-1" }
-vi.mock("@azure/msal-react", () => ({
-  useMsal: () => ({
-    accounts: [account],
-    instance: { getActiveAccount: () => account },
-  }),
-  useIsAuthenticated: () => true,
-}))
-
-vi.mock("dexie-react-hooks", () => ({
-  useLiveQuery: (
-    querier: () => unknown,
-    deps: unknown[] = [],
-    defaultResult?: unknown
-  ) => {
-    const [value, setValue] = useState<unknown>(defaultResult)
-    useEffect(() => {
-      const result = querier()
-      if (result instanceof Promise) {
-        let active = true
-        void result.then((resolved) => {
-          if (active) setValue(resolved)
-        })
-        return () => {
-          active = false
-        }
-      }
-      setValue(result)
-      return undefined
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, deps)
-    return value
-  },
-}))
-
-vi.mock("@workspace/player-data/queries", () => ({
-  getPlayerCharacters: () => [],
-  getPlayerMows: () => [],
-  getInventoryUpgrades: () => [],
-  getPlayerInventoryItems: () => [],
-  getInventoryAbilityMaterials: () => Promise.resolve(undefined),
-  getInventoryShard: () => Promise.resolve(undefined),
-  getPlayerCharacter: () => Promise.resolve(undefined),
 }))
 
 // The saved Onslaught position the Edit dialog's yield note reads; `null` means none saved.
@@ -130,25 +75,9 @@ vi.mock("@/entities/planning-setting", () => ({
   }),
 }))
 
-// Empty unless a test sells a Mythic material (add-mythic-material-shop-sources).
-let shopsFixture: unknown[] = []
 vi.mock("@/shared/unit-name", () => ({
   useUnitName: () => (_type: string, id: string) => id,
 }))
-vi.mock("@workspace/game-catalog/queries", () => ({
-  getShops: () => Promise.resolve(shopsFixture),
-  getOnslaughtRewards: () =>
-    Promise.resolve([
-      {
-        id: "Gold-3",
-        sector: "Gold",
-        tier: 3,
-        regular: Array(5).fill({ min: 2, max: 4 }),
-        mythic: { min: 1, max: 1 },
-      },
-    ]),
-}))
-
 vi.mock("../../model/shared/use-goal-catalog", () => ({
   useGoalCatalog: () => ({
     getEntityName: (_type: string, id: string) => `Entity ${id}`,
@@ -331,11 +260,29 @@ async function chooseOption(triggerTestId: string, optionText: string) {
   )
 }
 
-const position = (n: number, total = 5) =>
-  `goals.edit.priority.option:${JSON.stringify({ position: n, total })}`
+const position = (n: number, total = 5) => `${n} of ${total}`
+
+// The Onslaught reward the Edit dialog's yield note reads for a Gold 3 position.
+const onslaughtRewards = [
+  {
+    id: "Gold-3",
+    sector: "Gold",
+    tier: 3,
+    regular: Array(5).fill({ min: 2, max: 4 }),
+    mythic: { min: 1, max: 1 },
+  },
+]
 
 describe("GoalEditDialog", () => {
-  beforeEach(() => {
+  beforeEach(async () => {
+    setTestAuth({ authenticated: true })
+    await seedGameCatalog({ "onslaught-rewards": onslaughtRewards })
+    await seedPlayerData({
+      characters: [],
+      mows: [],
+      "inventory-upgrades": [],
+      "inventory-items": [],
+    })
     mobile.value = false
     plan.inFlight = ["a", "b", "c", "d", "e"].map((goalId) => ({
       goalId,
@@ -368,12 +315,10 @@ describe("GoalEditDialog", () => {
       expect(screen.getByTestId("goal-edit-unit")).toHaveTextContent(
         "Entity hero-1"
       )
-      expect(screen.getByTestId("goal-edit-kind")).toHaveTextContent(
-        "goals.create.goalTypes.Rank"
-      )
+      expect(screen.getByTestId("goal-edit-kind")).toHaveTextContent("Rank")
       expect(screen.getByTestId("goal-edit-target")).toBeInTheDocument()
       expect(screen.getByTestId("goal-edit-priority")).toBeInTheDocument()
-      expect(screen.getByLabelText("goals.detail.notes")).toBeInTheDocument()
+      expect(screen.getByLabelText("Notes")).toBeInTheDocument()
       expect(screen.getByTestId("goal-edit-projects")).toBeInTheDocument()
       expect(
         screen.getByTestId("create-goal-farming-strategy")
@@ -407,7 +352,7 @@ describe("GoalEditDialog", () => {
 
       expect(screen.queryByTestId("goal-edit-target")).toBeNull()
       expect(screen.getByTestId("goal-edit-priority")).toBeInTheDocument()
-      expect(screen.getByLabelText("goals.detail.notes")).toBeInTheDocument()
+      expect(screen.getByLabelText("Notes")).toBeInTheDocument()
       expect(screen.getByTestId("goal-edit-projects")).toBeInTheDocument()
       expect(
         screen.getByTestId("create-goal-acquisition-sources")
@@ -458,13 +403,16 @@ describe("GoalEditDialog", () => {
         expect(screen.queryByText(removed)).not.toBeInTheDocument()
       }
       // Moved into an accessible tooltip instead of a visible line.
-      expect(screen.queryByText("goals.edit.priority.hint")).toBeNull()
-      expect(screen.getByTitle("goals.edit.priority.hint")).toHaveAttribute(
+      const priorityHint = "1 is the highest priority."
+      const reachedNote =
+        "An already-reached target is fine: it needs nothing more, and the goal keeps its status until you complete it."
+      expect(screen.queryByText(priorityHint)).toBeNull()
+      expect(screen.getByTitle(priorityHint)).toHaveAttribute(
         "aria-label",
-        "goals.edit.priority.hint"
+        priorityHint
       )
-      expect(screen.queryByText("goals.target.reachedNote")).toBeNull()
-      expect(screen.getByTitle("goals.target.reachedNote")).toBeInTheDocument()
+      expect(screen.queryByText(reachedNote)).toBeNull()
+      expect(screen.getByTitle(reachedNote)).toBeInTheDocument()
     })
 
     it("renders the same form in the bottom sheet below 768px", async () => {
@@ -487,7 +435,7 @@ describe("GoalEditDialog", () => {
       await loaded()
 
       expect(screen.getByTestId("goal-target-rank-end")).toHaveTextContent(
-        "Diamond1"
+        "Diamond I"
       )
       expect(screen.getByTestId("goal-edit-save")).toBeDisabled()
     })
@@ -542,7 +490,7 @@ describe("GoalEditDialog", () => {
         expect(
           screen.getByTestId("goal-target-ability-passiveEnd")
         ).toHaveTextContent("26")
-        fireEvent.change(screen.getByLabelText("goals.detail.notes"), {
+        fireEvent.change(screen.getByLabelText("Notes"), {
           target: { value: "New note" },
         })
         expect(screen.getByTestId("goal-edit-save")).toBeEnabled()
@@ -596,7 +544,7 @@ describe("GoalEditDialog", () => {
         ).toHaveTextContent("5")
         expect(
           screen.getByTestId("goal-target-upgrade-range-secondary-start")
-        ).toHaveTextContent("goals.create.upgrade.range.unset")
+        ).toHaveTextContent("Not set")
       })
 
       it("clearing the range saves the target without one", async () => {
@@ -604,10 +552,7 @@ describe("GoalEditDialog", () => {
         renderDialog()
         await loaded()
 
-        await chooseOption(
-          "goal-target-upgrade-range-primary-start",
-          "goals.create.upgrade.range.unset"
-        )
+        await chooseOption("goal-target-upgrade-range-primary-start", "Not set")
         fireEvent.click(screen.getByTestId("goal-edit-save"))
 
         await vi.waitFor(() => expect(editGoal).toHaveBeenCalled())
@@ -654,7 +599,7 @@ describe("GoalEditDialog", () => {
       })
 
       expect(screen.getByTestId("goal-target-issue")).toHaveTextContent(
-        "goals.target.issues.upgradeQuantity"
+        "Every quantity must be a whole number from 1 to 10,000."
       )
       expect(screen.getByTestId("goal-edit-save")).toBeDisabled()
     })
@@ -675,27 +620,26 @@ describe("GoalEditDialog", () => {
       }) as unknown as GoalDetail
     const guildOffer = "create-goal-shop-offer-checkbox-guild:upgHpM004"
 
-    beforeEach(() => {
-      shopsFixture = [
-        {
-          id: "guild",
-          slots: [
-            {
-              variants: [
-                {
-                  reward: { type: "upgHpM004", qty: 1 },
-                  cost: { currency: "guildCredits", amount: 900 },
-                  maxPurchasesPerDay: 2,
-                  days: ["TUE"],
-                },
-              ],
-            },
-          ],
-        },
-      ]
-    })
-    afterEach(() => {
-      shopsFixture = []
+    beforeEach(async () => {
+      await seedGameCatalog({
+        shops: [
+          {
+            id: "guild",
+            slots: [
+              {
+                variants: [
+                  {
+                    reward: { type: "upgHpM004", qty: 1 },
+                    cost: { currency: "guildCredits", amount: 900 },
+                    maxPurchasesPerDay: 2,
+                    days: ["TUE"],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      })
     })
 
     it("shows every offer checked for a goal with no saved choice, and saves an explicit opt-out", async () => {
@@ -786,7 +730,7 @@ describe("GoalEditDialog", () => {
       renderDialog({ goalId: "c" })
       await loaded()
 
-      fireEvent.change(screen.getByLabelText("goals.detail.notes"), {
+      fireEvent.change(screen.getByLabelText("Notes"), {
         target: { value: "Changed" },
       })
       fireEvent.click(screen.getByTestId("goal-edit-save"))
@@ -823,7 +767,7 @@ describe("GoalEditDialog", () => {
       fireEvent.click(screen.getByTestId("goal-edit-save"))
 
       expect(await screen.findByTestId("goal-edit-error")).toHaveTextContent(
-        "goals.edit.errors.order"
+        "The order of your goals changed and nothing was saved. Reload the current order, check the position, then save again."
       )
       expect(screen.getByTestId("goal-edit-priority-select")).toHaveTextContent(
         position(3)
@@ -852,8 +796,8 @@ describe("GoalEditDialog", () => {
       renderDialog({ goalId: "e", onOpenChange }, queryClient)
       await loaded()
 
-      await chooseOption("goal-target-rank-end", "Gold2")
-      fireEvent.change(screen.getByLabelText("goals.detail.notes"), {
+      await chooseOption("goal-target-rank-end", "Gold II")
+      fireEvent.change(screen.getByLabelText("Notes"), {
         target: { value: " Updated " },
       })
       await chooseOption("goal-edit-priority-select", position(3))
@@ -925,12 +869,10 @@ describe("GoalEditDialog", () => {
 
       const note = screen.getByTestId("create-goal-acquisition-yield-onslaught")
       await vi.waitFor(() =>
-        expect(note).toHaveTextContent(
-          "goals.create.acquisitionSources.shardsPerDay"
-        )
+        expect(note).toHaveTextContent(/≈\d+(\.\d+)? shards\/day/)
       )
       expect(note).not.toHaveTextContent(
-        "goals.create.acquisitionSources.onslaughtNoProgress"
+        "Set your Onslaught progress to see its yield."
       )
     })
 
@@ -941,7 +883,7 @@ describe("GoalEditDialog", () => {
 
       expect(
         screen.getByTestId("create-goal-acquisition-yield-onslaught")
-      ).toHaveTextContent("goals.create.acquisitionSources.onslaughtNoProgress")
+      ).toHaveTextContent("Set your Onslaught progress to see its yield.")
     })
 
     it("asks for Onslaught progress when the goal's alliance was never saved", async () => {
@@ -960,12 +902,10 @@ describe("GoalEditDialog", () => {
       const note = screen.getByTestId("create-goal-acquisition-yield-onslaught")
       await vi.waitFor(() =>
         expect(note).toHaveTextContent(
-          "goals.create.acquisitionSources.onslaughtNoProgress"
+          "Set your Onslaught progress to see its yield."
         )
       )
-      expect(note).not.toHaveTextContent(
-        "goals.create.acquisitionSources.shardsPerDay"
-      )
+      expect(note).not.toHaveTextContent(/≈\d+(\.\d+)? shards\/day/)
     })
 
     it("keeps Save disabled when nothing changed", async () => {
@@ -987,17 +927,17 @@ describe("GoalEditDialog", () => {
       renderDialog({ onOpenChange })
       await loaded()
 
-      await chooseOption("goal-target-rank-end", "Gold2")
+      await chooseOption("goal-target-rank-end", "Gold II")
       await user.click(screen.getByTestId("goal-edit-add-project"))
       await user.click(await screen.findByText("Event Prep"))
       fireEvent.click(screen.getByTestId("goal-edit-save"))
 
       expect(await screen.findByTestId("goal-edit-error")).toHaveTextContent(
-        "goals.project.membershipConflict"
+        /already has an active or paused Rank goal/
       )
       expect(onOpenChange).not.toHaveBeenCalled()
       expect(screen.getByTestId("goal-target-rank-end")).toHaveTextContent(
-        "Gold2"
+        "Gold II"
       )
       expect(
         screen.getByTestId("goal-edit-project-chip-project-2")
@@ -1017,15 +957,15 @@ describe("GoalEditDialog", () => {
       renderDialog({ onOpenChange })
       await loaded()
 
-      await chooseOption("goal-target-rank-end", "Gold2")
+      await chooseOption("goal-target-rank-end", "Gold II")
       fireEvent.click(screen.getByTestId("goal-edit-save"))
 
       expect(await screen.findByTestId("goal-edit-error")).toHaveTextContent(
-        "goals.edit.errors.stale"
+        "This goal was changed elsewhere and nothing was saved. Refresh the goal (your edits are kept), then save again."
       )
       expect(onOpenChange).not.toHaveBeenCalled()
       expect(screen.getByTestId("goal-target-rank-end")).toHaveTextContent(
-        "Gold2"
+        "Gold II"
       )
 
       getGoal.mockResolvedValue(current)
@@ -1034,7 +974,7 @@ describe("GoalEditDialog", () => {
         expect(screen.queryByTestId("goal-edit-error")).toBeNull()
       )
       expect(screen.getByTestId("goal-target-rank-end")).toHaveTextContent(
-        "Gold2"
+        "Gold II"
       )
       // Let the refetch of the refreshed goal settle before retrying.
       await act(() => new Promise((resolve) => setTimeout(resolve, 20)))
@@ -1054,13 +994,13 @@ describe("GoalEditDialog", () => {
       renderDialog({ onOpenChange })
       await loaded()
 
-      fireEvent.change(screen.getByLabelText("goals.detail.notes"), {
+      fireEvent.change(screen.getByLabelText("Notes"), {
         target: { value: "x" },
       })
       fireEvent.click(screen.getByTestId("goal-edit-save"))
 
       expect(await screen.findByTestId("goal-edit-error")).toHaveTextContent(
-        "goals.edit.errors.invalid"
+        /^Not valid: .+\. Nothing was saved\. Priority is out of range$/
       )
       expect(onOpenChange).not.toHaveBeenCalled()
     })
@@ -1073,7 +1013,7 @@ describe("GoalEditDialog", () => {
       renderDialog({ onOpenChange })
       await loaded()
 
-      fireEvent.change(screen.getByLabelText("goals.detail.notes"), {
+      fireEvent.change(screen.getByLabelText("Notes"), {
         target: { value: "Changed" },
       })
       await user.keyboard("{Escape}")
@@ -1093,16 +1033,16 @@ describe("GoalEditDialog", () => {
       renderDialog({ onOpenChange })
       await loaded()
 
-      fireEvent.change(screen.getByLabelText("goals.detail.notes"), {
+      fireEvent.change(screen.getByLabelText("Notes"), {
         target: { value: "Changed" },
       })
       await user.click(screen.getByTestId("goal-edit-cancel"))
       await user.click(
-        await screen.findByRole("button", { name: "goals.edit.unsaved.keep" })
+        await screen.findByRole("button", { name: "Keep editing" })
       )
 
       expect(onOpenChange).not.toHaveBeenCalled()
-      expect(screen.getByLabelText("goals.detail.notes")).toHaveValue("Changed")
+      expect(screen.getByLabelText("Notes")).toHaveValue("Changed")
     })
 
     it("closes immediately on Cancel or Escape when nothing changed", async () => {
@@ -1169,7 +1109,7 @@ describe("GoalEditDialog", () => {
 
       expect(
         await screen.findByTestId("goal-edit-load-error")
-      ).toHaveTextContent("goals.edit.loadError")
+      ).toHaveTextContent("Couldn't load this goal. It may no longer exist.")
       expect(screen.queryByTestId("goal-edit-save")).toBeNull()
       fireEvent.click(screen.getByTestId("goal-edit-cancel"))
       expect(onOpenChange).toHaveBeenCalledWith(false)

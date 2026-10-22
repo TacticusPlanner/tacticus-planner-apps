@@ -5,9 +5,6 @@ import { useProjectsListTutorial } from "./projects-list-page.tutorial"
 
 const register = vi.fn()
 
-vi.mock("react-i18next", () => ({
-  useTranslation: () => ({ t: (key: string) => `localized:${key}` }),
-}))
 vi.mock("@/shared/tour", () => ({
   useTourPageSteps: (steps: unknown) => register(steps),
 }))
@@ -23,9 +20,13 @@ describe("useProjectsListTutorial", () => {
     expect(steps.desktop).toEqual(steps.mobile)
     for (const step of steps.desktop) {
       expect(step.target).toMatch(/^\[data-testid="[a-z-]+"\]$/)
-      expect(step.title).toContain("localized:tour.projectsList.steps")
-      expect(step.content).toContain("localized:tour.projectsList.steps")
+      expect(step.title).not.toMatch(/tour\.projectsList/)
+      expect(step.content).not.toMatch(/tour\.projectsList/)
     }
+    expect(steps.desktop.map((step) => step.title)).toEqual([
+      "What a project is",
+      "Create a project",
+    ])
     expect(steps.desktop.map((step) => step.target)).toEqual([
       '[data-testid="project-list"]',
       '[data-testid="projects-new-project"]',
@@ -41,8 +42,9 @@ describe("useProjectsListTutorial", () => {
     }
 
     expect(steps.desktop[0]).toMatchObject({
-      title: "localized:tour.projectsList.steps.list.title",
-      content: "localized:tour.projectsList.steps.list.content",
+      title: "What a project is",
+      content:
+        "A project is a named selection of your goals — keep several to group different things. The Default project is listed first; a project does not pause or resume anything or change your priorities.",
     })
   })
 })
