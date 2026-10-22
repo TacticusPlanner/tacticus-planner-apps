@@ -33,15 +33,15 @@ vi.mock("@workspace/player-data/queries", () => ({
   getPlayerInventoryItems: () => Promise.resolve(undefined),
 }))
 
-const getGoalDetail = vi.fn<(goalId: string) => Promise<unknown>>()
+// The goals list read, controlled per test.
+const goalsList = vi.hoisted(() => ({
+  goalsById: new Map<string, unknown>(),
+  loading: true,
+  isError: false,
+}))
 
 vi.mock("@/entities/goal", () => ({
-  goalQueries: {
-    detail: (goalId: string) => ({
-      queryKey: ["goals", "detail", goalId],
-      queryFn: () => getGoalDetail(goalId),
-    }),
-  },
+  useGoalsById: () => ({ ...goalsList, retry: () => {} }),
 }))
 
 import { useGoalAttainmentState } from "./use-goal-attainment"
@@ -59,52 +59,51 @@ function Probe({ goalIds }: { goalIds: string[] }) {
 
 describe("useGoalAttainmentState", () => {
   beforeEach(() => {
-    getGoalDetail.mockReset()
+    goalsList.goalsById = new Map()
+    goalsList.loading = true
+    goalsList.isError = false
     characters.promise = Promise.resolve(undefined)
   })
 
-  it("is pending until each goal's detail has loaded", async () => {
-    let resolveDetail!: (value: unknown) => void
-    getGoalDetail.mockReturnValue(
-      new Promise((resolve) => {
-        resolveDetail = resolve
-      })
-    )
-    render(<Probe goalIds={["goal-1"]} />)
-
-    await waitFor(() => expect(getGoalDetail).toHaveBeenCalled())
+  it("lets the goals list alone decide loading, then reads each goal from it", async () => {
+    const view = render(<Probe goalIds={["goal-1"]} />)
     expect(screen.getByTestId("state")).toHaveTextContent("pending:unknown")
 
-    await act(async () => {
-      resolveDetail({
-        goalId: "goal-1",
-        entityId: "hero1",
-        goalType: "Rank",
-        config: { rank: { end: 1 } },
-      })
-      await Promise.resolve()
-    })
+    goalsList.loading = false
+    goalsList.goalsById = new Map([
+      [
+        "goal-1",
+        {
+          goalId: "goal-1",
+          entityId: "hero1",
+          goalType: "Rank",
+          config: { rank: { end: 1 } },
+        },
+      ],
+    ])
+    view.rerender(<Probe goalIds={["goal-1"]} />)
+
     await waitFor(() =>
       expect(screen.getByTestId("state")).toHaveTextContent(/^settled:/)
     )
   })
 
   it("is pending while a player-data table is still loading, then settled even if it was never synced", async () => {
-    getGoalDetail.mockRejectedValue(new Error("boom"))
+    goalsList.loading = false
+    goalsList.isError = true
     let resolveCharacters!: (value: unknown) => void
     characters.promise = new Promise((resolve) => {
       resolveCharacters = resolve
     })
     render(<Probe goalIds={["goal-1"]} />)
 
-    await waitFor(() => expect(getGoalDetail).toHaveBeenCalled())
     expect(screen.getByTestId("state")).toHaveTextContent(/^pending:/)
 
     await act(async () => {
       resolveCharacters(undefined)
       await Promise.resolve()
     })
-    // A failed detail and an unsynced table both settle: the goal stays `unknown`, not loading.
+    // A failed list read and an unsynced table both settle: the goal stays `unknown`, not loading.
     await waitFor(() =>
       expect(screen.getByTestId("state")).toHaveTextContent("settled:unknown")
     )

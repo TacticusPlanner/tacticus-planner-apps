@@ -127,8 +127,16 @@ export function UnitGoalFormFields({
               ) : null}
             </div>
 
+            {form.slotConflictMessage ? (
+              <p
+                className="text-sm text-destructive"
+                data-testid="create-goal-slot-conflict"
+                role="alert"
+              >
+                {form.slotConflictMessage}
+              </p>
+            ) : null}
             <GoalProjectsField
-              conflicts={form.projectConflicts}
               onSelectionChange={form.selectProjects}
               portalContainer={portalContainer}
               projects={form.projects}

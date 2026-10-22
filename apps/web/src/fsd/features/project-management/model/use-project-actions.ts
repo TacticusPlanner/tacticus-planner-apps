@@ -11,7 +11,7 @@ import {
   type ProjectSummary,
   type ProjectTarget,
 } from "@/entities/project"
-import { ApiError } from "@/shared/api"
+import { ApiError, apiIssue } from "@/shared/api"
 
 /**
  * Project-level mutations: create and save (name/description/color/status/target). Reordering goals is a
@@ -58,7 +58,15 @@ export function useProjectActions(_onChanged?: () => void) {
       writeProject((await mutation.mutateAsync(action)) as ProjectSummary)
       return true
     } catch (error) {
-      if (error instanceof ApiError && error.status === 409) {
+      // A stale project revision carries the project as it stands: adopt it; refetch otherwise.
+      const stale = apiIssue(
+        error,
+        "projectRevisionStale",
+        "defaultProjectCannotBeArchived"
+      )
+      if (stale?.current && typeof stale.current === "object") {
+        writeProject(stale.current as ProjectSummary)
+      } else if (error instanceof ApiError && error.status === 409) {
         void queryClient.invalidateQueries({
           queryKey: projectQueries.list().queryKey,
         })

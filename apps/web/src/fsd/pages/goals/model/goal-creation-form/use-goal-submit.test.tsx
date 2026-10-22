@@ -14,18 +14,7 @@ vi.mock("react-i18next", () => ({
           ? `${key}:${JSON.stringify(options)}`
           : key,
   }),
-}))
-vi.mock("@/shared/api", () => ({
-  ApiError: class ApiError extends Error {
-    readonly status: number
-    readonly details: unknown
-
-    constructor(status: number, message: string, details?: unknown) {
-      super(message)
-      this.status = status
-      this.details = details
-    }
-  },
+  initReactI18next: { type: "3rdParty", init: vi.fn() },
 }))
 vi.mock("@/entities/goal", () => ({
   buildCreateGoalSnapshot: () => null,
@@ -34,10 +23,20 @@ vi.mock("@/entities/goal", () => ({
     lists: () => ["goals", "list"],
     detail: (id: string) => ({ queryKey: ["goals", "detail", id] }),
   },
+  goalRankTargetKey: (goal: {
+    goalType: string
+    config: { rank?: { end: number } | null }
+  }) =>
+    goal.goalType === "Rank" && goal.config.rank
+      ? `${goal.config.rank.end}:0`
+      : null,
   describeRankTargetKey: (key: string) => {
     const [end, slots] = key.split(":").map(Number)
     return { rank: `Rank${end}`, slots }
   },
+}))
+vi.mock("@/shared/unit-name", () => ({
+  useUnitName: () => (_type: string, id: string) => `Unit ${id}`,
 }))
 vi.mock("../estimate/goal-spec-builder", () => ({
   buildCombinedGoalSpecs: () => [
@@ -61,15 +60,16 @@ describe("useGoalSubmit conflicts", () => {
   it("keeps the form open and names the occupied Rank target when another session took it first", async () => {
     createCombinedGoals.mockRejectedValue(
       new ApiError(409, "occupied", {
-        issueCode: "projectGoalSlotOccupied",
-        message: "occupied",
-        projectId: "project-1",
-        projectName: "Plan A",
-        entityType: "Character",
-        entityId: "bellator",
-        goalType: "Rank",
-        existingGoalId: "goal-existing",
-        normalizedTarget: "11:0",
+        issueCode: "slotOccupied",
+        current: {
+          goalId: "goal-existing",
+          entityType: "Character",
+          entityId: "bellator",
+          goalType: "Rank",
+          config: {
+            rank: { end: 11, endPointFive: false, endAppliedUpgrades: 0 },
+          },
+        },
       })
     )
     const onOpenChange = vi.fn()
@@ -99,7 +99,7 @@ describe("useGoalSubmit conflicts", () => {
     // The error state is read from the mutation, which reports it on its next notification.
     await vi.waitFor(() => expect(result.current.status).toBe("error"))
     expect(result.current.errorMessage).toBe(
-      'goals.project.membershipConflictRank:{"project":"Plan A","target":"Rank11"}'
+      'goals.project.membershipConflictRank:{"unit":"Unit bellator","target":"Rank11"}'
     )
     // Nothing was closed or reset, so the user's draft is still on screen.
     expect(onOpenChange).not.toHaveBeenCalled()
@@ -110,7 +110,7 @@ describe("useGoalSubmit conflicts", () => {
 describe("useGoalSubmit cache updates", () => {
   beforeEach(() => vi.clearAllMocks())
 
-  it("writes each created goal and refetches only the goal lists and the joined projects' members", async () => {
+  it("writes each created goal and refetches only the goal lists and the project list", async () => {
     const created = [
       { goalId: "g1", projectIds: ["p1"] },
       { goalId: "g2", projectIds: ["p1", "p2"] },
@@ -149,8 +149,7 @@ describe("useGoalSubmit cache updates", () => {
     expect(invalidate.mock.calls.map(([filters]) => filters?.queryKey)).toEqual(
       [
         ["goals", "list"],
-        ["projects", "detail", "p1", "goals"],
-        ["projects", "detail", "p2", "goals"],
+        ["projects", "list"],
       ]
     )
     expect(onOpenChange).toHaveBeenCalledWith(false)

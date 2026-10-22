@@ -1,3 +1,5 @@
+import { apiIssue } from "@/shared/api"
+
 import type { LegendaryEventLaneId } from "./types"
 
 // Hand-written types for `/api/v1/me/legendary-event-plans/{eventId}` (companion API changes
@@ -150,32 +152,24 @@ export interface UpdateTeamOrderRequestDto {
 export type LegendaryEventPlanConflictCode =
   "legendaryEventPlanStale" | "legendaryEventOrderSetMismatch"
 
-/** The 409 body of every plan mutation: the current plan to adopt. */
-export interface LegendaryEventPlanConflictDto {
+/** The plan as it now stands when `error` is a plan 409 (stale revision, or a reorder whose ids are not
+ *  the lane's team set), else null (a goal conflict, a validation failure, a body without a plan). */
+export function legendaryEventPlanConflict(error: unknown): {
   issueCode: LegendaryEventPlanConflictCode
-  message: string
-  plan: LegendaryEventPlan
-}
-
-const CONFLICT_CODES: readonly string[] = [
-  "legendaryEventPlanStale",
-  "legendaryEventOrderSetMismatch",
-] satisfies LegendaryEventPlanConflictCode[]
-
-/** Narrows an `ApiError.details` body to a plan 409, or null for any other error (a goal conflict,
- *  a validation failure, a body without a plan). */
-export function legendaryEventPlanConflictDetails(
-  details: unknown
-): LegendaryEventPlanConflictDto | null {
-  if (!details || typeof details !== "object") return null
-  const value = details as Partial<LegendaryEventPlanConflictDto>
-  return typeof value.issueCode === "string" &&
-    CONFLICT_CODES.includes(value.issueCode) &&
-    typeof value.message === "string" &&
-    !!value.plan &&
-    typeof value.plan === "object" &&
-    Array.isArray(value.plan.teams) &&
-    typeof value.plan.revision === "number"
-    ? (value as LegendaryEventPlanConflictDto)
+  current: LegendaryEventPlan
+} | null {
+  const issue = apiIssue(
+    error,
+    "legendaryEventPlanStale",
+    "legendaryEventOrderSetMismatch"
+  )
+  const plan = issue?.current as Partial<LegendaryEventPlan> | undefined
+  return issue &&
+    Array.isArray(plan?.teams) &&
+    typeof plan.revision === "number"
+    ? {
+        issueCode: issue.issueCode as LegendaryEventPlanConflictCode,
+        current: plan as LegendaryEventPlan,
+      }
     : null
 }

@@ -46,24 +46,29 @@ vi.mock("@workspace/player-data/queries", () => ({
 }))
 const state = vi.hoisted(() => ({
   active: [{ goal: { goalId: "goal-1" } }] as unknown[],
+  members: undefined as unknown,
   globalPlan: {
     loading: false,
     isError: false,
-    entries: [{ goal: { goalId: "goal-1" } }],
+    entries: [
+      { goal: { goalId: "goal-1", projectIds: ["p1"] } },
+      { goal: { goalId: "goal-2", projectIds: ["p2"] } },
+    ],
     retry: () => undefined,
   },
 }))
 vi.mock("@/entities/goal", () => ({
-  goalQueries: { detail: () => ({}) },
   useGlobalGoalPlan: () => state.globalPlan,
 }))
-vi.mock("@/entities/project", () => ({ projectQueries: { goals: () => ({}) } }))
 vi.mock("@/features/rank-lookup", () => ({
   mapCharacterStorageToDomain: (record: unknown) => record,
   mapUpgradeStorageToDomain: (record: unknown) => record,
 }))
 vi.mock("@/features/daily-raids", () => ({
-  activeProjectMembers: () => state.active,
+  activeProjectMembers: (members: unknown) => {
+    state.members = members
+    return state.active
+  },
 }))
 vi.mock("./shop-needs", () => ({ aggregateShopNeeds: () => ({}) }))
 vi.mock("./shop-recommendations", () => ({
@@ -133,6 +138,19 @@ describe("useShopRecommendations equipment names", () => {
     })
 
     await waitFor(() => expect(result.current.status).toBe("ready"))
+  })
+
+  it("scopes to a project by the goals' projectIds, without a membership read", async () => {
+    const { result } = renderHook(() => useShopRecommendations("p2"), {
+      wrapper: ({ children }) => (
+        <I18nextProvider i18n={i18n}>{children}</I18nextProvider>
+      ),
+    })
+
+    await waitFor(() => expect(result.current.status).toBe("ready"))
+    expect(state.members).toEqual([
+      { goal: { goalId: "goal-2", projectIds: ["p2"] } },
+    ])
   })
 
   it("reports no Active goals instead of an empty shop list when the scope has none", async () => {

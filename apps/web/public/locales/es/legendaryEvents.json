@@ -792,7 +792,9 @@
     "earlier": {
       "title": "Rondas anteriores ({{runs}})",
       "entry": "{{run}} · {{date}}"
-    }
+    },
+    "loadMore": "Cargar más",
+    "rosterRetry": "Reintentar"
   },
   "tierList": {
     "intro": "Los niveles del modo horda de cada personaje, con el multiplicador que recibe.",

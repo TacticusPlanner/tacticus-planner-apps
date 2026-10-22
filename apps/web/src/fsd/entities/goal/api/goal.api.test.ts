@@ -16,14 +16,11 @@ vi.mock("@/shared/api", () => ({
 
 import {
   createCombinedGoals,
-  createGoal,
   deleteGoal,
   editGoal,
   getGoal,
   listGoals,
-  updateGoal,
-  updateGoalStatus,
-  updateGoalTarget,
+  updateGoalsStatus,
 } from "./goal.api"
 
 describe("goal API", () => {
@@ -50,53 +47,46 @@ describe("goal API", () => {
   })
 
   it("maps goal writes to their endpoints", () => {
-    const create = { entityId: "hero", entityType: "Character" } as never
     const combined = { entityId: "hero", goals: [] } as never
-    const update = { notes: "note" } as never
 
-    createGoal(create)
     createCombinedGoals(combined)
-    updateGoal("goal-1", update)
-    updateGoalStatus("goal-1", "Paused")
+    updateGoalsStatus({
+      goalIds: ["goal-1", "goal-2"],
+      status: "Completed",
+      expectedOrderRevision: 4,
+    })
     deleteGoal("goal-1")
 
     expect(api.post).toHaveBeenNthCalledWith(1, "/api/v1/me/goals", {
-      body: create,
-    })
-    expect(api.post).toHaveBeenNthCalledWith(2, "/api/v1/me/goals/combined", {
       body: combined,
     })
-    expect(api.put).toHaveBeenCalledWith("/api/v1/me/goals/goal-1", {
-      body: update,
+    expect(api.post).toHaveBeenNthCalledWith(2, "/api/v1/me/goals/status", {
+      body: {
+        goalIds: ["goal-1", "goal-2"],
+        status: "Completed",
+        expectedOrderRevision: 4,
+      },
     })
-    expect(api.post).toHaveBeenNthCalledWith(
-      3,
-      "/api/v1/me/goals/goal-1/status",
-      { body: { status: "Paused" } }
-    )
     expect(api.delete).toHaveBeenCalledWith("/api/v1/me/goals/goal-1", {})
   })
 
-  it.each([
-    ["Rank", { rank: { end: 7, endPointFive: true, endAppliedUpgrades: 0 } }],
-    ["Ascension", { progression: { end: "Common:TwoStars" } }],
-    ["Ability", { ability: { activeEnd: 5, passiveEnd: 3 } }],
-    [
-      "Upgrade",
-      { upgrade: { targets: [{ upgradeId: "upgHpC014", quantity: 4 }] } },
-    ],
-  ])("sends a %s target edit with the loaded revision", (_kind, target) => {
-    updateGoalTarget("goal-1", { expectedRevision: 7, target })
+  it("sends a target edit as the target section of the single edit route", () => {
+    const target = {
+      expectedRevision: 7,
+      target: { rank: { end: 7, endPointFive: true, endAppliedUpgrades: 0 } },
+    }
 
-    expect(api.put).toHaveBeenCalledWith("/api/v1/me/goals/goal-1/target", {
-      body: { expectedRevision: 7, target },
+    editGoal("goal-1", { target })
+
+    expect(api.put).toHaveBeenCalledWith("/api/v1/me/goals/goal-1", {
+      body: { target },
     })
   })
 
   it("sends only the present sections of a goal edit", () => {
     editGoal("goal-1", { priority: { position: 2, expectedOrderRevision: 7 } })
 
-    expect(api.put).toHaveBeenCalledWith("/api/v1/me/goals/goal-1/edit", {
+    expect(api.put).toHaveBeenCalledWith("/api/v1/me/goals/goal-1", {
       body: { priority: { position: 2, expectedOrderRevision: 7 } },
     })
     expect(Object.keys(api.put.mock.calls[0][1].body)).toEqual(["priority"])

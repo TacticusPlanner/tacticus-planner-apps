@@ -106,14 +106,13 @@ export {
 } from "./model/use-objective-label"
 export { ObjectiveIcon } from "./ui/objective-icon"
 export {
-  legendaryEventPlanConflictDetails,
+  legendaryEventPlanConflict,
   type CreateTeamRequestDto,
   type LegendaryEventAnnotation,
   type LegendaryEventAnnotationStatus,
   type LegendaryEventDepthSource,
   type LegendaryEventPlan,
   type LegendaryEventPlanConflictCode,
-  type LegendaryEventPlanConflictDto,
   type LegendaryEventRun,
   type LegendaryEventRunInputs,
   type LegendaryEventRunInputValues,
@@ -275,6 +274,7 @@ export {
 } from "./model/run-record.types"
 export { useLegendaryEventPlans } from "./model/use-legendary-event-plans"
 export { useLegendaryEventRunRecords } from "./model/use-legendary-event-run-records"
+export { useLegendaryEventRunRecordRosters } from "./model/use-legendary-event-run-record-roster"
 export {
   buildMasterTable,
   filterMasterTableRows,

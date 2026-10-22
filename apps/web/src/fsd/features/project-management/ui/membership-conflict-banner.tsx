@@ -68,9 +68,7 @@ export function MembershipConflictBanner({
       role="alert"
     >
       <p className="font-medium">
-        {conflict.kind === "lastMembership"
-          ? t("goals.project.assemblyLastMembershipTitle")
-          : t("goals.project.assemblySlotConflictTitle")}
+        {t("goals.project.assemblyLastMembershipTitle")}
       </p>
       <ul className="list-disc pl-5">
         {conflict.goalIds.map((goalId) => (

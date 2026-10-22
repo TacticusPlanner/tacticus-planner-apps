@@ -6,18 +6,15 @@ import { useIsAuthenticated } from "@azure/msal-react"
 
 import {
   applyPositionMove,
-  goalOrderConflictDetails,
+  goalOrderConflict,
   goalQueries,
   inFlightInGlobalOrder,
   moveOntoDisplaced,
   updateGoalOrder,
   type GoalListResponse,
+  type GoalOrderResponse,
 } from "@/entities/goal"
-import {
-  moveProjectGoal,
-  projectQueries,
-  type ProjectGoalsResponse,
-} from "@/entities/project"
+import { moveProjectGoal } from "@/entities/project"
 import { ApiError } from "@/shared/api"
 
 /** One reorder gesture: `goalId` takes the global position `displacedGoalId` holds. With a
@@ -35,21 +32,16 @@ export type GoalOrderConflict = { move: GoalOrderMove; message: string }
 
 type Snapshot = { queryKey: readonly unknown[]; data: unknown }
 
-const isProjectGoalsKey = (queryKey: readonly unknown[]) =>
-  queryKey[0] === "projects" &&
-  queryKey[1] === "detail" &&
-  queryKey[3] === "goals"
-
-/** Rewrites every cached view of the order the way the server will persist the move: the global list
- * and each project projection, so all of them agree before the round trip completes. Returns the
- * previous data so a failure can roll back. */
+/** Rewrites every cached goal list the way the server will persist the move, so every view (they all
+ * read the goals list; a project's view is a filter of it) agrees before the round trip completes.
+ * Returns the previous data so a failure can roll back. */
 function applyOptimisticMove(
   queryClient: QueryClient,
   move: GoalOrderMove
 ): Snapshot[] {
   const snapshots: Snapshot[] = []
-  // Where the two goals sit in the account-wide order, from whichever cached view knows them: a project
-  // that holds only one of the pair (or neither) still has its members shifted correctly.
+  // Where the two goals sit in the account-wide order: a project that holds only one of the pair (or
+  // neither) still has its members shifted correctly.
   const positionOf = (goalId: string) => {
     for (const [, data] of queryClient.getQueriesData<GoalListResponse>({
       queryKey: goalQueries.lists(),
@@ -57,73 +49,29 @@ function applyOptimisticMove(
       const found = data?.goals.find((goal) => goal.goalId === goalId)
       if (found?.globalPriority != null) return found.globalPriority
     }
-    for (const [
-      queryKey,
-      data,
-    ] of queryClient.getQueriesData<ProjectGoalsResponse>({
-      queryKey: projectQueries.all(),
-    })) {
-      if (!isProjectGoalsKey(queryKey)) continue
-      const found = data?.goals.find((entry) => entry.goal.goalId === goalId)
-      if (found?.goal.globalPriority != null) return found.goal.globalPriority
-    }
     return null
   }
   const from = positionOf(move.goalId)
   const to = positionOf(move.displacedGoalId)
   const positions = from !== null && to !== null ? { from, to } : undefined
-  const revise = <
-    T extends { goals: { goalId: string; globalPriority: number | null }[] },
-  >(
-    data: T
-  ): T => ({
-    ...data,
-    goals: applyPositionMove(
-      data.goals,
-      move.goalId,
-      move.displacedGoalId,
-      positions
-    ),
-  })
 
   for (const [queryKey, data] of queryClient.getQueriesData<GoalListResponse>({
     queryKey: goalQueries.lists(),
   })) {
     if (!data) continue
     snapshots.push({ queryKey, data })
-    const moved = revise(data)
-    queryClient.setQueryData<GoalListResponse>(queryKey, {
-      ...moved,
-      goals: [
-        ...inFlightInGlobalOrder(moved.goals),
-        ...moved.goals.filter((goal) => goal.globalPriority === null),
-      ],
-      orderRevision: data.orderRevision + 1,
-    })
-  }
-
-  for (const [
-    queryKey,
-    data,
-  ] of queryClient.getQueriesData<ProjectGoalsResponse>({
-    queryKey: projectQueries.all(),
-  })) {
-    if (!data || !isProjectGoalsKey(queryKey)) continue
-    snapshots.push({ queryKey, data })
     const moved = applyPositionMove(
-      data.goals.map((entry) => entry.goal),
+      data.goals,
       move.goalId,
       move.displacedGoalId,
       positions
     )
-    const byId = new Map(moved.map((goal) => [goal.goalId, goal]))
-    const ordered = [
-      ...inFlightInGlobalOrder(moved),
-      ...moved.filter((goal) => goal.globalPriority === null),
-    ]
-    queryClient.setQueryData<ProjectGoalsResponse>(queryKey, {
+    queryClient.setQueryData<GoalListResponse>(queryKey, {
       ...data,
-      goals: ordered.map((goal) => ({ goal: byId.get(goal.goalId)! })),
+      goals: [
+        ...inFlightInGlobalOrder(moved),
+        ...moved.filter((goal) => goal.globalPriority === null),
+      ],
       orderRevision: data.orderRevision + 1,
     })
   }
@@ -131,17 +79,38 @@ function applyOptimisticMove(
   return snapshots
 }
 
-/** The freshest cached order for the view a gesture was made on, if any. Read synchronously so a
+/** Adopts the order a 409 reports as current into every cached goal list (spec: api-error-handling:
+ * a conflict's current state is adopted at once). */
+function adoptOrder(queryClient: QueryClient, order: GoalOrderResponse) {
+  const position = new Map(order.goalIds.map((id, index) => [id, index + 1]))
+  queryClient.setQueriesData<GoalListResponse>(
+    { queryKey: goalQueries.lists() },
+    (list) => {
+      if (!list) return list
+      const goals = list.goals.map((goal) =>
+        position.has(goal.goalId)
+          ? { ...goal, globalPriority: position.get(goal.goalId)! }
+          : goal
+      )
+      return {
+        ...list,
+        orderRevision: order.revision,
+        goals: [
+          ...inFlightInGlobalOrder(goals),
+          ...goals.filter((goal) => goal.globalPriority === null),
+        ],
+      }
+    }
+  )
+}
+
+/** The freshest cached order, if any — the goals list, for a project move too. Read synchronously so a
  * gesture reads and applies its optimistic write with nothing in between: a second gesture then always
  * starts from the first one's result. */
-function cachedOrder(queryClient: QueryClient, move: GoalOrderMove) {
-  return move.projectId
-    ? queryClient.getQueryData<ProjectGoalsResponse>(
-        projectQueries.goals(move.projectId).queryKey
-      )
-    : queryClient.getQueryData<GoalListResponse>(
-        goalQueries.list(false).queryKey
-      )
+function cachedOrder(queryClient: QueryClient) {
+  return queryClient.getQueryData<GoalListResponse>(
+    goalQueries.list(false).queryKey
+  )
 }
 
 /**
@@ -163,13 +132,11 @@ export function useGoalOrderActions() {
   // earlier response's refetch would otherwise overwrite a later gesture's optimistic state.
   const outstanding = useRef(0)
 
-  // The order lives in the goal lists and the per-project member lists, so only those refetch (not the
-  // project list itself); a goal's detail
-  // (config, events) is unaffected by a move and is only marked stale rather than refetched per drop.
+  // The order lives in the goal lists, so only those refetch; a goal's detail is unaffected by a move
+  // and is only marked stale rather than refetched per drop.
   const refresh = () =>
     Promise.all([
       queryClient.invalidateQueries({ queryKey: goalQueries.lists() }),
-      queryClient.invalidateQueries({ queryKey: projectQueries.details() }),
       queryClient.invalidateQueries({
         queryKey: goalQueries.details(),
         refetchType: "none",
@@ -197,14 +164,9 @@ export function useGoalOrderActions() {
     if (!isAuthenticated || move.goalId === move.displacedGoalId) return false
 
     const before =
-      cachedOrder(queryClient, move) ??
-      (move.projectId
-        ? await queryClient.fetchQuery(projectQueries.goals(move.projectId))
-        : await queryClient.fetchQuery(goalQueries.list(false)))
-    const goals = "orderRevision" in before ? before.goals : []
-    const ids = inFlightInGlobalOrder(
-      goals.map((entry) => ("goal" in entry ? entry.goal : entry))
-    ).map((goal) => goal.goalId)
+      cachedOrder(queryClient) ??
+      (await queryClient.fetchQuery(goalQueries.list(false)))
+    const ids = inFlightInGlobalOrder(before.goals).map((goal) => goal.goalId)
     // The complete order this gesture produces, captured now: a later gesture's optimistic write must
     // not leak into what this request submits.
     const movedIds = moveOntoDisplaced(ids, move.goalId, move.displacedGoalId)
@@ -229,13 +191,11 @@ export function useGoalOrderActions() {
         for (const snapshot of snapshots) {
           queryClient.setQueryData(snapshot.queryKey, snapshot.data)
         }
-        const details =
-          error instanceof ApiError
-            ? goalOrderConflictDetails(error.details)
-            : null
-        if (details) {
-          setConflict({ move, message: details.message })
-          await refresh()
+        const stale = goalOrderConflict(error)
+        if (stale) {
+          // Adopt the order as it stands; the attempted move waits for an explicit retry.
+          adoptOrder(queryClient, stale.current)
+          setConflict({ move, message: (error as ApiError).message })
         } else {
           toast.error(
             error instanceof ApiError

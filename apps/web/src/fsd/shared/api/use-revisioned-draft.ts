@@ -105,6 +105,16 @@ export function useRevisionedDraft<
       return "saved"
     } catch (error) {
       if (error instanceof ApiError && error.status === 409) {
+        // The 409 carries the state as it stands: adopt it at once; read it only when it is absent.
+        if (error.current !== undefined) {
+          queryClient.setQueryData<TSaved>(
+            queryOptions.queryKey,
+            error.current as TSaved
+          )
+          setEdited(null)
+          mutation.reset()
+          return "conflict"
+        }
         try {
           await queryClient.fetchQuery({ ...queryOptions, staleTime: 0 })
           setEdited(null)

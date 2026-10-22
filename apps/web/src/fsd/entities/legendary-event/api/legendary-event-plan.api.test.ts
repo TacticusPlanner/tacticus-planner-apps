@@ -33,6 +33,7 @@ import {
   createLegendaryEventTeam,
   deleteLegendaryEventTeam,
   getLegendaryEventPlan,
+  getLegendaryEventRunRecordRoster,
   getLegendaryEventRunRecords,
   listLegendaryEventPlans,
   updateLegendaryEventAnnotations,
@@ -176,30 +177,70 @@ describe("legendary event plan API", () => {
     })
   })
 
-  it("reads one event's run records", () => {
+  it("reads one page of an event's run records, with the cursor of the previous page", () => {
     const signal = new AbortController().signal
-    getLegendaryEventRunRecords("astarLysander", signal)
-    expect(api.get).toHaveBeenCalledWith(`${BASE}/run-records`, { signal })
+    getLegendaryEventRunRecords("astarLysander", { signal })
+    getLegendaryEventRunRecords("astarLysander", {
+      after: "v1|cursor",
+      limit: 10,
+      signal,
+    })
+    expect(api.get).toHaveBeenNthCalledWith(1, `${BASE}/run-records`, {
+      signal,
+    })
+    expect(api.get).toHaveBeenNthCalledWith(
+      2,
+      `${BASE}/run-records?limit=10&after=v1%7Ccursor`,
+      { signal }
+    )
   })
 
-  it("reads run records newest first, and a 404 as no records", async () => {
+  it("reads one record's roster on its own route", () => {
+    const signal = new AbortController().signal
+    getLegendaryEventRunRecordRoster("astarLysander", "r1", signal)
+    expect(api.get).toHaveBeenCalledWith(`${BASE}/run-records/r1/roster`, {
+      signal,
+    })
+  })
+
+  it("pages run records by the previous page's cursor, a 404 as no records, and keys rosters under the records", async () => {
     const client = new QueryClient()
     const options = legendaryEventPlanQueries.runRecords("astarLysander")
-    api.get.mockResolvedValueOnce({
-      eventId: "astarLysander",
-      records: [{ id: "r2" }, { id: "r1" }],
-    })
+    api.get
+      .mockResolvedValueOnce({
+        eventId: "astarLysander",
+        records: [{ id: "r3" }, { id: "r2" }],
+        nextAfter: "v1|r2",
+      })
+      .mockResolvedValueOnce({
+        eventId: "astarLysander",
+        records: [{ id: "r1" }],
+        nextAfter: null,
+      })
+    const pages = await client.fetchInfiniteQuery({ ...options, pages: 2 })
     expect(
-      (await client.fetchQuery(options)).map((record) => record.id)
-    ).toEqual(["r2", "r1"])
+      pages.pages.flatMap((page) => page.records.map((record) => record.id))
+    ).toEqual(["r3", "r2", "r1"])
+    expect(api.get).toHaveBeenLastCalledWith(
+      `${BASE}/run-records?after=v1%7Cr2`,
+      expect.anything()
+    )
 
     api.get.mockRejectedValueOnce(new ApiError(404, "not found"))
-    expect(await client.fetchQuery({ ...options, staleTime: 0 })).toEqual([])
+    expect(
+      (await client.fetchInfiniteQuery({ ...options, staleTime: 0 })).pages
+    ).toEqual([{ eventId: "astarLysander", records: [], nextAfter: null }])
 
     api.get.mockRejectedValueOnce(new ApiError(500, "boom"))
     await expect(
-      client.fetchQuery({ ...options, staleTime: 0, retry: false })
+      client.fetchInfiniteQuery({ ...options, staleTime: 0, retry: false })
     ).rejects.toThrow("boom")
+
+    expect(
+      legendaryEventPlanQueries
+        .runRecordRoster("astarLysander", "r1")
+        .queryKey.slice(0, 2)
+    ).toEqual(options.queryKey)
   })
 
   it("keeps the list under the plans root and seeds uncached plans from it", async () => {

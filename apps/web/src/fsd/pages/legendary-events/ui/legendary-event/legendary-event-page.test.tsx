@@ -19,7 +19,10 @@ import {
 
 import { CreateGoalLauncherContext } from "@/entities/goal"
 import { legendaryEventCharacters } from "@/test/fixtures/legendary-event-characters"
-import { utharRun1Record } from "@/test/fixtures/legendary-event-run-records"
+import {
+  utharRun1Record,
+  utharRun1Snapshot,
+} from "@/test/fixtures/legendary-event-run-records"
 import { lysanderEvent, utharEvent } from "@/test/fixtures/legendary-events"
 import {
   lysanderBattleNpcs,
@@ -142,8 +145,13 @@ vi.mock("@/shared/api", async (importOriginal) => ({
       return goals.details.get(path.split("/").at(-1)!)
     if (path.endsWith("/run-records")) {
       if (history.failRecords) throw new Error("run records unavailable")
-      return { eventId: path.split("/").at(-2), records: history.records }
+      return {
+        eventId: path.split("/").at(-2),
+        records: history.records,
+        nextAfter: null,
+      }
     }
+    if (path.endsWith("/roster")) return utharRun1Snapshot
     return {
       eventId: path.split("/").at(-1),
       revision: 0,

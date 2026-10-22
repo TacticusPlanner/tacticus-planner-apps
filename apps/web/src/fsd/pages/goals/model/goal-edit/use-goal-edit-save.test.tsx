@@ -13,7 +13,6 @@ vi.mock("@/entities/goal", async (importOriginal) => ({
 import { useGoalEditSave } from "./use-goal-edit-save"
 
 const listKey = ["goals", "list", { archived: false }]
-const memberKey = ["projects", "detail", "p1", "goals"]
 const goal = (overrides: object = {}) => ({
   goalId: "a",
   status: "Active",
@@ -38,7 +37,6 @@ describe("useGoalEditSave cache updates", () => {
       orderRevision: 3,
       goals: [goal(), goal({ goalId: "b", globalPriority: 2 })],
     })
-    client.setQueryData(memberKey, { goals: [{ goal: goal() }] })
     invalidated = []
     vi.spyOn(client, "invalidateQueries").mockImplementation(
       async (filters?: {
@@ -72,7 +70,7 @@ describe("useGoalEditSave cache updates", () => {
       }
     ).goals.find((entry) => entry.goalId === goalId)
 
-  it("a notes-only save patches the response into every cached copy and refetches nothing", async () => {
+  it("a notes-only save writes the response into the detail and the goal lists and refetches nothing", async () => {
     const saved = goal({
       notes: "farm later",
       updatedAt: "2026-10-02T00:00:00Z",
@@ -83,22 +81,16 @@ describe("useGoalEditSave cache updates", () => {
 
     expect(client.getQueryData(["goals", "detail", "a"])).toEqual(saved)
     expect(listGoal("a")?.notes).toBe("farm later")
-    expect(
-      (
-        client.getQueryData(memberKey) as {
-          goals: { goal: { notes: string } }[]
-        }
-      ).goals[0].goal.notes
-    ).toBe("farm later")
     expect(invalidated).toEqual([])
   })
 
-  it("a projects save refetches the project member lists only", async () => {
+  it("a projects save refetches the project list only (its goalIds changed)", async () => {
     editGoal.mockResolvedValue({ goal: goal({ projectIds: ["p2"] }) })
 
     await save({ projectIds: ["p2"] })
 
-    expect(invalidated).toEqual([{ queryKey: ["projects", "detail"] }])
+    expect(invalidated).toEqual([{ queryKey: ["projects", "list"] }])
+    expect(listGoal("a")).toMatchObject({ projectIds: ["p2"] })
   })
 
   it("a priority save applies the returned order and only marks the lists stale", async () => {

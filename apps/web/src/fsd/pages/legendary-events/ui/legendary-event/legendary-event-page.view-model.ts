@@ -131,6 +131,10 @@ export interface LastRunSectionViewModel {
   onViewed: (history: RunHistory) => void
   /** Records `legendary_event_earlier_runs_expanded`. */
   onEarlierExpanded: (recordCount: number) => void
+  /** An earlier run was opened or closed: its roster at the time is read while it is open. */
+  onEarlierEntryToggled: (recordId: string, open: boolean) => void
+  /** The next (older) page of records; undefined when every record has loaded. */
+  loadMore?: { onLoadMore: () => void; loading: boolean }
 }
 
 interface UpgradeImpactViewModel {

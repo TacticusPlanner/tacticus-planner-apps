@@ -195,11 +195,10 @@ export function usePlanCreate(eventId: string) {
       ok = false
     }
     void queryClient.invalidateQueries({ queryKey: goalQueries.lists() })
-    if (projectId.current) {
-      void queryClient.invalidateQueries({
-        queryKey: projectQueries.goals(projectId.current).queryKey,
-      })
-    }
+    // The wizard's project gained the new goals (its `goalIds`).
+    void queryClient.invalidateQueries({
+      queryKey: projectQueries.list().queryKey,
+    })
 
     for (const lane of writes.lanes) {
       await attempt(`teams:${lane.laneId}`, async () => {

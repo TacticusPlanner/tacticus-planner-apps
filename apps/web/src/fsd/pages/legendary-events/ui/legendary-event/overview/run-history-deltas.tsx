@@ -1,4 +1,6 @@
 import { useTranslation } from "react-i18next"
+import { Button } from "@workspace/ui/components/button"
+import { Skeleton } from "@workspace/ui/components/skeleton"
 import { characterIcon } from "@workspace/game-catalog"
 import type { UnitId } from "@workspace/game-domain"
 
@@ -30,13 +32,24 @@ export function RunHistoryDeltas({
           ? t("history.since.title")
           : t("history.since.titleThen")}
       </h3>
-      {deltas.kind === "noSnapshot" ? (
-        <p
-          className="text-sm text-muted-foreground"
+      {deltas.kind === "snapshotLoading" ? (
+        <Skeleton
+          className="h-16 w-full rounded-lg"
+          data-testid="last-run-snapshot-loading"
+        />
+      ) : null}
+      {deltas.kind === "snapshotFailed" ? (
+        <div
+          className="flex flex-wrap items-center gap-3"
           data-testid="last-run-no-snapshot"
         >
-          {t("history.since.noSnapshot")}
-        </p>
+          <p className="text-sm text-muted-foreground">
+            {t("history.since.noSnapshot")}
+          </p>
+          <Button onClick={deltas.retry} size="sm" variant="outline">
+            {t("history.rosterRetry")}
+          </Button>
+        </div>
       ) : null}
       {deltas.kind === "noRoster" ? (
         <p

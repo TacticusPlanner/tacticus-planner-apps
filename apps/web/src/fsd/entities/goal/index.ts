@@ -1,17 +1,15 @@
 export {
   createCombinedGoals,
-  createGoal,
   deleteGoal,
   editGoal,
   getGoal,
   listGoals,
-  updateGoal,
   updateGoalOrder,
-  updateGoalStatus,
-  updateGoalTarget,
+  updateGoalsStatus,
 } from "./api/goal.api"
 export { goalQueries } from "./api/goal.queries"
 export { useGlobalGoalPlan } from "./model/use-global-goal-plan"
+export { useGoalsById } from "./model/use-goals-by-id"
 export {
   CreateGoalLauncherContext,
   useCreateGoalLauncher,
@@ -31,10 +29,10 @@ export type {
 export { GoalFilters } from "./ui/goal-filters"
 export type { GoalGroupValue, GoalTypeFilterValue } from "./ui/goal-filters"
 export { isGoalGroupValue } from "./model/types"
-export { goalRevisionConflictDetails } from "./model/goal-target-conflict"
+export { goalRevisionConflict } from "./model/goal-target-conflict"
 export {
   applyPositionMove,
-  goalOrderConflictDetails,
+  goalOrderConflict,
   holdsGlobalPosition,
   inFlightInGlobalOrder,
   moveOntoDisplaced,
@@ -50,26 +48,19 @@ export type {
   CombinedGoalSpec,
   CreateCombinedGoalsRequest,
   CreateGoalConfigRequest,
-  CreateGoalRequest,
   CreateGoalSnapshotRequest,
   EditGoalRequest,
   EditGoalResponse,
   GoalConfig,
   GoalDetail,
   GoalEntityType,
-  GoalEvent,
-  GoalEventType,
   GoalKind,
   GoalSnapshot,
   GoalSnapshotResource,
   GoalListResponse,
-  GoalOrderConflictDto,
   GoalOrderResponse,
-  GoalRevisionConflictDto,
   GoalStatus,
-  GoalSummary,
   GoalTargetEdit,
-  GoalTargetSnapshot,
   ProgressionTarget,
   ProjectMembership,
   RankTarget,
@@ -80,4 +71,6 @@ export type {
   FarmingStrategy,
   UpdateGoalRequest,
   UpdateGoalTargetRequest,
+  UpdateGoalsStatusRequest,
+  UpdateGoalsStatusResponse,
 } from "./model/types"

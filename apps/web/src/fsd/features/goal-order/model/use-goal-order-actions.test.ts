@@ -6,10 +6,9 @@ import { toast } from "sonner"
 
 import {
   goalQueries,
+  type GoalDetail,
   type GoalListResponse,
-  type GoalSummary,
 } from "@/entities/goal"
-import { projectQueries, type ProjectGoalsResponse } from "@/entities/project"
 import { ApiError } from "@/shared/api"
 import { useGoalOrderActions } from "./use-goal-order-actions"
 
@@ -35,7 +34,7 @@ vi.mock("@/entities/project", async (importOriginal) => ({
 
 const IDS = ["a", "b", "c", "d", "e"]
 
-function summary(goalId: string, globalPriority: number): GoalSummary {
+function summary(goalId: string, globalPriority: number): GoalDetail {
   return {
     goalId,
     entityType: "Character",
@@ -47,6 +46,10 @@ function summary(goalId: string, globalPriority: number): GoalSummary {
     createdAt: "2026-01-01T00:00:00Z",
     updatedAt: "2026-01-01T00:00:00Z",
     globalPriority,
+    config: {} as GoalDetail["config"],
+    snapshot: null,
+    projectIds: ["a", "c", "e"].includes(goalId) ? ["p1"] : [],
+    revision: 1,
   }
 }
 
@@ -55,20 +58,11 @@ const globalList = (): GoalListResponse => ({
   orderRevision: 4,
 })
 
-// The project holds A, C and E of the global order A,B,C,D,E.
-const projectList = (): ProjectGoalsResponse => ({
-  goals: ["a", "c", "e"].map((id) => ({
-    goal: summary(id, IDS.indexOf(id) + 1),
-  })),
-  orderRevision: 4,
-})
-
 function setup() {
   const queryClient = new QueryClient({
     defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
   })
   queryClient.setQueryData(goalQueries.list(false).queryKey, globalList())
-  queryClient.setQueryData(projectQueries.goals("p1").queryKey, projectList())
   const wrapper = ({ children }: { children: ReactNode }) =>
     createElement(QueryClientProvider, { client: queryClient }, children)
   return {
@@ -79,10 +73,11 @@ function setup() {
 
 const cachedGlobal = (queryClient: QueryClient) =>
   queryClient.getQueryData<GoalListResponse>(goalQueries.list(false).queryKey)!
-const cachedProject = (queryClient: QueryClient) =>
-  queryClient.getQueryData<ProjectGoalsResponse>(
-    projectQueries.goals("p1").queryKey
-  )!
+// A project's view is the goals list filtered by `projectIds`; p1 holds A, C and E of A,B,C,D,E.
+const cachedProject = (queryClient: QueryClient, projectId = "p1") =>
+  cachedGlobal(queryClient).goals.filter((goal) =>
+    goal.projectIds.includes(projectId)
+  )
 
 describe("useGoalOrderActions", () => {
   beforeEach(() => {
@@ -110,7 +105,7 @@ describe("useGoalOrderActions", () => {
     )
   })
 
-  it("moves a project goal, rewriting the global list and the projection before the request resolves", async () => {
+  it("moves a project goal, rewriting the goals list (and so the project's view) before the request resolves", async () => {
     let resolveRequest!: () => void
     moveProjectGoalMock.mockReturnValue(
       new Promise<void>((resolve) => {
@@ -133,9 +128,11 @@ describe("useGoalOrderActions", () => {
         cachedGlobal(queryClient).goals.map((goal) => goal.goalId)
       ).toEqual(["a", "b", "e", "c", "d"])
     )
-    expect(
-      cachedProject(queryClient).goals.map((entry) => entry.goal.goalId)
-    ).toEqual(["a", "e", "c"])
+    expect(cachedProject(queryClient).map((goal) => goal.goalId)).toEqual([
+      "a",
+      "e",
+      "c",
+    ])
     expect(cachedGlobal(queryClient).orderRevision).toBe(5)
     expect(moveProjectGoalMock).toHaveBeenCalledWith("p1", {
       goalId: "e",
@@ -161,8 +158,8 @@ describe("useGoalOrderActions", () => {
       global: cachedGlobal(queryClient).goals.map(
         (goal) => `${goal.goalId}${goal.globalPriority}`
       ),
-      project: cachedProject(queryClient).goals.map(
-        (entry) => `${entry.goal.goalId}${entry.goal.globalPriority}`
+      project: cachedProject(queryClient).map(
+        (goal) => `${goal.goalId}${goal.globalPriority}`
       ),
     })
 
@@ -213,13 +210,11 @@ describe("useGoalOrderActions", () => {
     )
   })
 
-  it("rolls back and keeps the attempted move when the order changed under the user", async () => {
+  it("adopts the current order and keeps the attempted move when the order changed under the user", async () => {
     moveProjectGoalMock.mockRejectedValueOnce(
       new ApiError(409, "The goal order changed since it was loaded.", {
         issueCode: "goalOrderStale",
-        message: "The goal order changed since it was loaded.",
-        revision: 6,
-        goalIds: IDS,
+        current: { revision: 6, goalIds: IDS },
       })
     )
     const { result, queryClient } = setup()
@@ -235,6 +230,7 @@ describe("useGoalOrderActions", () => {
     expect(cachedGlobal(queryClient).goals.map((goal) => goal.goalId)).toEqual(
       IDS
     )
+    expect(cachedGlobal(queryClient).orderRevision).toBe(6)
     expect(result.current.conflict?.move).toEqual({
       goalId: "e",
       displacedGoalId: "c",
@@ -247,9 +243,7 @@ describe("useGoalOrderActions", () => {
     moveProjectGoalMock.mockRejectedValueOnce(
       new ApiError(409, "stale", {
         issueCode: "goalOrderStale",
-        message: "stale",
-        revision: 6,
-        goalIds: IDS,
+        current: { revision: 6, goalIds: IDS },
       })
     )
     const { result, queryClient } = setup()
@@ -262,11 +256,8 @@ describe("useGoalOrderActions", () => {
     })
     expect(moveProjectGoalMock).toHaveBeenCalledTimes(1)
 
-    // The refreshed caches carry the newer revision.
-    queryClient.setQueryData(projectQueries.goals("p1").queryKey, {
-      ...projectList(),
-      orderRevision: 6,
-    })
+    // The adopted order carries the newer revision.
+    expect(cachedGlobal(queryClient).orderRevision).toBe(6)
     await act(async () => {
       await result.current.retry()
     })
@@ -333,26 +324,27 @@ describe("useGoalOrderActions", () => {
   it("shifts the members of a project that holds only one of the moved pair", async () => {
     const { result, queryClient } = setup()
     // Project p2 holds B, D and E of the global order A,B,C,D,E - not C, the goal E displaces.
-    queryClient.setQueryData(projectQueries.goals("p2").queryKey, {
-      goals: ["b", "d", "e"].map((id) => ({
-        goal: summary(id, IDS.indexOf(id) + 1),
-      })),
-      orderRevision: 4,
-    } satisfies ProjectGoalsResponse)
+    queryClient.setQueryData<GoalListResponse>(
+      goalQueries.list(false).queryKey,
+      (list) =>
+        list && {
+          ...list,
+          goals: list.goals.map((goal) => ({
+            ...goal,
+            projectIds: ["b", "d", "e"].includes(goal.goalId) ? ["p2"] : [],
+          })),
+        }
+    )
     updateGoalOrderMock.mockReturnValue(new Promise(() => undefined))
 
     act(() => {
       void result.current.moveGoal({ goalId: "e", displacedGoalId: "c" })
     })
 
-    const p2 = queryClient.getQueryData<ProjectGoalsResponse>(
-      projectQueries.goals("p2").queryKey
-    )!
+    const p2 = cachedProject(queryClient, "p2")
     // The global order becomes A,B,E,C,D: E takes C's position 3 and D moves to 5; B is above the move.
-    expect(p2.goals.map((entry) => entry.goal.goalId)).toEqual(["b", "e", "d"])
-    expect(p2.goals.map((entry) => entry.goal.globalPriority)).toEqual([
-      2, 3, 5,
-    ])
+    expect(p2.map((goal) => goal.goalId)).toEqual(["b", "e", "d"])
+    expect(p2.map((goal) => goal.globalPriority)).toEqual([2, 3, 5])
   })
 
   it("refetches the order once, after the last overlapping gesture, and never refetches goal details", async () => {
@@ -372,12 +364,9 @@ describe("useGoalOrderActions", () => {
     })
 
     const keys = invalidate.mock.calls.map((call) => call[0])
-    // One refresh: the order lists, the per-project member lists (never the project list), and
-    // details only marked stale.
-    expect(keys).toHaveLength(3)
+    // One refresh: the goal lists, and details only marked stale; no project read.
+    expect(keys).toHaveLength(2)
     expect(keys).toContainEqual({ queryKey: goalQueries.lists() })
-    expect(keys).toContainEqual({ queryKey: projectQueries.details() })
-    expect(keys).not.toContainEqual({ queryKey: projectQueries.all() })
     expect(keys).toContainEqual({
       queryKey: goalQueries.details(),
       refetchType: "none",

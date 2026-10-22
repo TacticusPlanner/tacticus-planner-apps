@@ -11,6 +11,7 @@ import { Skeleton } from "@workspace/ui/components/skeleton"
 
 import type { RunHistory } from "@/entities/legendary-event"
 
+import type { LastRunSectionViewModel } from "../legendary-event-page.view-model"
 import { RUN_COUNT, type LastRunViewModel } from "./last-run.view-model"
 import { RunHistoryBody, ToggleButton } from "./run-history-body"
 import { useRunDate } from "./use-run-date"
@@ -28,12 +29,12 @@ export function LastRunCard({
   isMobile,
   onViewed,
   onEarlierExpanded,
+  onEarlierEntryToggled,
+  loadMore,
 }: {
   lastRun: LastRunViewModel
   isMobile: boolean
-  onViewed: (history: RunHistory) => void
-  onEarlierExpanded: (recordCount: number) => void
-}) {
+} & Omit<LastRunSectionViewModel, "state">) {
   const { t } = useTranslation("legendaryEvents")
 
   if (lastRun.kind === "hidden") return null
@@ -90,6 +91,8 @@ export function LastRunCard({
     <ReadyCard
       earlier={lastRun.earlier}
       isMobile={isMobile}
+      loadMore={loadMore}
+      onEarlierEntryToggled={onEarlierEntryToggled}
       onEarlierExpanded={onEarlierExpanded}
       onViewed={onViewed}
       previous={lastRun.previous}
@@ -103,13 +106,13 @@ function ReadyCard({
   isMobile,
   onViewed,
   onEarlierExpanded,
+  onEarlierEntryToggled,
+  loadMore,
 }: {
   previous: RunHistory
   earlier: RunHistory[]
   isMobile: boolean
-  onViewed: (history: RunHistory) => void
-  onEarlierExpanded: (recordCount: number) => void
-}) {
+} & Omit<LastRunSectionViewModel, "state">) {
   const { t } = useTranslation("legendaryEvents")
   const root = useRef<HTMLDivElement>(null)
   const viewed = useRef({ onViewed, previous })
@@ -146,6 +149,8 @@ function ReadyCard({
           <EarlierRuns
             histories={earlier}
             isMobile={isMobile}
+            loadMore={loadMore}
+            onEntryToggled={onEarlierEntryToggled}
             onExpanded={onEarlierExpanded}
           />
         ) : null}
@@ -158,10 +163,14 @@ function EarlierRuns({
   histories,
   isMobile,
   onExpanded,
+  onEntryToggled,
+  loadMore,
 }: {
   histories: RunHistory[]
   isMobile: boolean
   onExpanded: (recordCount: number) => void
+  onEntryToggled: LastRunSectionViewModel["onEarlierEntryToggled"]
+  loadMore: LastRunSectionViewModel["loadMore"]
 }) {
   const { t } = useTranslation("legendaryEvents")
   const [open, setOpen] = useState(false)
@@ -193,8 +202,22 @@ function EarlierRuns({
               history={history}
               isMobile={isMobile}
               key={history.recordId}
+              onToggled={(open) => onEntryToggled(history.recordId, open)}
             />
           ))}
+          {loadMore ? (
+            <li>
+              <Button
+                data-testid="last-run-load-more"
+                disabled={loadMore.loading}
+                onClick={loadMore.onLoadMore}
+                size="sm"
+                variant="outline"
+              >
+                {t("history.loadMore")}
+              </Button>
+            </li>
+          ) : null}
         </ul>
       ) : null}
     </section>
@@ -204,9 +227,11 @@ function EarlierRuns({
 function EarlierRunEntry({
   history,
   isMobile,
+  onToggled,
 }: {
   history: RunHistory
   isMobile: boolean
+  onToggled: (open: boolean) => void
 }) {
   const { t } = useTranslation("legendaryEvents")
   const [open, setOpen] = useState(false)
@@ -224,7 +249,10 @@ function EarlierRunEntry({
           run: t("history.run", { run: history.run, total: RUN_COUNT }),
           date,
         })}
-        onToggle={() => setOpen(!open)}
+        onToggle={() => {
+          onToggled(!open)
+          setOpen(!open)
+        }}
         open={open}
         testId="last-run-earlier-entry-toggle"
       />

@@ -20,8 +20,6 @@ import type { ProjectSummary } from "@/entities/project"
 import { isProjectNameValid, ProjectColorDot } from "@/entities/project"
 import { ApiError } from "@/shared/api"
 import { useInlineProjectCreate } from "../../model/projects/use-inline-project-create"
-import { projectConflictText } from "../../model/projects/project-conflict-copy"
-import type { ProjectMembershipConflict } from "../../model/projects/project-membership"
 import type { ProjectRemovalUnavailableReason } from "../../model/projects/project-removal"
 
 /** Selected project chips plus a searchable, non-archived add picker shared by goal creation/editing.
@@ -31,7 +29,6 @@ export function GoalProjectsField({
   projects,
   selectedProjectIds,
   projectsValid,
-  conflicts = [],
   onSelectionChange,
   portalContainer,
   testIdPrefix = "goal-edit",
@@ -39,7 +36,6 @@ export function GoalProjectsField({
   projects: ProjectSummary[]
   selectedProjectIds: string[]
   projectsValid: boolean
-  conflicts?: ProjectMembershipConflict[]
   onSelectionChange: (projectIds: string[]) => void
   portalContainer?: HTMLElement | null
   testIdPrefix?: string
@@ -123,9 +119,6 @@ export function GoalProjectsField({
       <h3 className="font-semibold">{t("goals.detail.projectsTitle")}</h3>
       <div className="flex flex-wrap items-start gap-1.5">
         {selected.map((project) => {
-          const conflict = conflicts.find(
-            (candidate) => candidate.projectId === project.projectId
-          )
           return (
             <div
               className="grid gap-1"
@@ -152,16 +145,6 @@ export function GoalProjectsField({
                   <X className="size-3" />
                 </button>
               </Badge>
-              {conflict ? (
-                <p className="max-w-64 text-xs text-destructive" role="alert">
-                  {projectConflictText(
-                    t,
-                    project.name,
-                    conflict.goalTypes,
-                    conflict.rankTargetKey
-                  )}
-                </p>
-              ) : null}
             </div>
           )
         })}

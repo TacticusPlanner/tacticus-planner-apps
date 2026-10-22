@@ -17,15 +17,16 @@ import {
 import { Spinner } from "@workspace/ui/components/spinner"
 
 import {
+  describeRankTargetKey,
   goalQueries,
+  goalRankTargetKey,
+  type GoalDetail,
   type GoalGroupValue,
-  type GoalKind,
 } from "@/entities/goal"
 import {
-  projectLastMembershipDetails,
-  projectMembershipStaleDetails,
+  projectLastMembership,
+  projectMembershipConflict,
   projectQueries,
-  projectSlotConflictGoalIds,
   updateProjectGoals,
   type ProjectSummary,
 } from "@/entities/project"
@@ -41,15 +42,9 @@ import {
   type MembershipDraft,
 } from "../model/membership-draft"
 import type { MembershipConflict } from "../model/membership-conflict"
-import {
-  useMembershipSlots,
-  type SlotGoal,
-} from "../model/use-membership-slots"
 import { MembershipConflictBanner } from "./membership-conflict-banner"
 import { MembershipGoalRow } from "./membership-goal-row"
 import { MembershipReview } from "./membership-review"
-
-type RowGoal = SlotGoal & { globalPriority: number | null }
 
 type SaveInput = {
   desired: string[]
@@ -69,7 +64,9 @@ const GROUP_OPTIONS: readonly GoalGroupValue[] = ["none", "unit", "type"]
  * never suggest another order) and may be grouped by unit or goal type. The draft is kept apart from the
  * reviewed baseline membership, so search and grouping only change what is visible. One explicit Save
  * replaces the whole membership atomically, sending the baseline as `expectedGoalIds`; membership never
- * changes any goal's priority, status or target.
+ * changes any goal's priority, status or target, and is never slot-checked (the in-flight slot is per
+ * account), so every goal can be ticked. The baseline is the project's `goalIds` plus its archived members
+ * (from the archived goals list), because the server compares the whole membership.
  */
 export function AddGoalsToProjectSheet({
   open,
@@ -123,15 +120,15 @@ export function AddGoalsToProjectSheet({
     ...goalQueries.list(false),
     enabled: isAuthenticated && open,
   })
-  const membersQuery = useQuery({
-    ...projectQueries.goals(project.projectId),
+  const archivedQuery = useQuery({
+    ...goalQueries.list(true),
     enabled: isAuthenticated && open,
   })
 
-  const goals: RowGoal[] = goalsQuery.data?.goals ?? []
-  const memberGoals: RowGoal[] = (membersQuery.data?.goals ?? []).map(
-    (entry) => entry.goal
-  )
+  const goals: GoalDetail[] = goalsQuery.data?.goals ?? []
+  const archivedMembers: GoalDetail[] = (
+    archivedQuery.data?.goals ?? []
+  ).filter((goal) => goal.projectIds.includes(project.projectId))
 
   // Read the baseline once per draft, after any refetch triggered by opening has settled, and never again
   // on background refetches: it is what the user reviewed, so a later change surfaces as a stale conflict
@@ -139,10 +136,13 @@ export function AddGoalsToProjectSheet({
   if (
     open &&
     baseline === null &&
-    membersQuery.isSuccess &&
-    !membersQuery.isFetching
+    archivedQuery.isSuccess &&
+    !archivedQuery.isFetching
   ) {
-    const ids = memberGoals.map((goal) => goal.goalId)
+    const ids = [
+      ...project.goalIds,
+      ...archivedMembers.map((goal) => goal.goalId),
+    ]
     setBaseline(ids)
     setDraft((current) => reconcileDraft(current, ids))
   }
@@ -150,25 +150,27 @@ export function AddGoalsToProjectSheet({
   const baselineIds = baseline ?? []
   const baselineSet = new Set(baselineIds)
   // Archived members are not listed but stay in the baseline, so a save never drops them.
-  const goalById = new Map<string, RowGoal>()
-  for (const goal of [...memberGoals, ...goals]) goalById.set(goal.goalId, goal)
-  const resolve = (ids: readonly string[]) =>
-    ids.flatMap((id) => goalById.get(id) ?? [])
+  const goalById = new Map<string, GoalDetail>()
+  for (const goal of [...archivedMembers, ...goals]) {
+    goalById.set(goal.goalId, goal)
+  }
   const desiredIds = desiredGoalIds(baselineIds, draft)
 
-  const { rankKeysPending, rankTargetLabel, blockedReason } =
-    useMembershipSlots({
-      enabled: isAuthenticated && open,
-      candidates: goals,
-      members: resolve(baselineIds),
-      desired: resolve(desiredIds),
+  // "Silver3 (3/6)" — the target a Rank row stands for, so two milestones for one unit read apart.
+  const rankTargetLabel = (goal: GoalDetail) => {
+    const target = describeRankTargetKey(goalRankTargetKey(goal) ?? "")
+    if (!target) return null
+    const rankName = t(`ranks.${target.rank}`, {
+      ns: "progression",
+      defaultValue: target.rank,
     })
-
-  const goalTypeLabel = (goal: SlotGoal) =>
-    t(`goals.create.goalTypes.${goal.goalType as GoalKind}`)
-  const goalLabel = (goal: SlotGoal) =>
+    return target.slots > 0 ? `${rankName} (${target.slots}/6)` : rankName
+  }
+  const goalTypeLabel = (goal: GoalDetail) =>
+    t(`goals.create.goalTypes.${goal.goalType}`)
+  const goalLabel = (goal: GoalDetail) =>
     getUnitName(goal.entityType, goal.entityId)
-  const goalTitle = (goal: SlotGoal) =>
+  const goalTitle = (goal: GoalDetail) =>
     [
       goalLabel(goal),
       goalTypeLabel(goal),
@@ -188,7 +190,7 @@ export function AddGoalsToProjectSheet({
       `${goalLabel(goal)} ${goalTypeLabel(goal)}`.toLowerCase().includes(query)
   )
   // Groups keep first-appearance order and each keeps the incoming (global-priority) order.
-  const groupKey = (goal: RowGoal) =>
+  const groupKey = (goal: GoalDetail) =>
     group === "unit"
       ? `${goal.entityType}:${goal.entityId}`
       : group === "type"
@@ -208,11 +210,14 @@ export function AddGoalsToProjectSheet({
     }
   })
 
-  // A membership save changes only this project's member list (spec: client-data-freshness).
+  // A membership save changes the project's `goalIds` and the goals' `projectIds`.
   const refreshMembers = () =>
-    queryClient.invalidateQueries({
-      queryKey: projectQueries.goals(project.projectId).queryKey,
-    })
+    Promise.all([
+      queryClient.invalidateQueries({
+        queryKey: projectQueries.list().queryKey,
+      }),
+      queryClient.invalidateQueries({ queryKey: goalQueries.lists() }),
+    ])
 
   const save = useMutation({
     mutationFn: (input: SaveInput) =>
@@ -235,15 +240,13 @@ export function AddGoalsToProjectSheet({
       onOpenChange(false)
     },
     onError: (error) => {
-      const details = error instanceof ApiError ? error.details : undefined
-      const stale = projectMembershipStaleDetails(details)
-      const lastMembership = projectLastMembershipDetails(details)
-      const slotGoalIds = projectSlotConflictGoalIds(details)
+      const stale = projectMembershipConflict(error)
+      const lastMembership = projectLastMembership(error)
       if (stale) {
         setConflict({
           kind: "stale",
           message: stale.message,
-          currentGoalIds: stale.currentGoalIds,
+          currentGoalIds: stale.current.goalIds,
         })
         // Names of goals added elsewhere resolve from the refreshed goal list.
         void queryClient.invalidateQueries({ queryKey: goalQueries.lists() })
@@ -252,12 +255,6 @@ export function AddGoalsToProjectSheet({
           kind: "lastMembership",
           message: lastMembership.message,
           goalIds: lastMembership.blockedGoalIds,
-        })
-      } else if (slotGoalIds) {
-        setConflict({
-          kind: "slot",
-          message: (error as ApiError).message,
-          goalIds: slotGoalIds,
         })
       } else {
         toast.error(
@@ -285,23 +282,16 @@ export function AddGoalsToProjectSheet({
   )
   const pendingCount = draft.adds.length + draft.removes.length
 
-  const renderRow = (goal: RowGoal) => {
+  const renderRow = (goal: GoalDetail) => {
     const isMember = baselineSet.has(goal.goalId)
     const inDesiredSet = isInDesiredSet(baselineSet, draft, goal.goalId)
     const marked =
       conflict?.kind !== "stale" && conflictGoalIds.has(goal.goalId)
     return (
       <MembershipGoalRow
-        blockedReason={blockedReason(goal, inDesiredSet)}
         checked={inDesiredSet}
         conflictMessage={
-          !marked
-            ? null
-            : conflict?.kind === "lastMembership"
-              ? t("goals.project.assemblyLastMembership")
-              : t("goals.project.assemblySlotConflict", {
-                  project: project.name,
-                })
+          marked ? t("goals.project.assemblyLastMembership") : null
         }
         disabled={baseline === null}
         globalPriority={goal.globalPriority}
@@ -425,7 +415,6 @@ export function AddGoalsToProjectSheet({
               baseline === null ||
               pendingCount === 0 ||
               save.isPending ||
-              rankKeysPending ||
               conflict?.kind === "stale"
             }
             onClick={() =>

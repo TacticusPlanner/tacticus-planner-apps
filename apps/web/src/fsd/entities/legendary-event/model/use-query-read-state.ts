@@ -5,8 +5,8 @@ import type { ReadState } from "./use-read-state"
 
 type QueryReadInput<T> = Pick<
   UseQueryResult<T>,
-  "data" | "isError" | "isFetching" | "refetch"
->
+  "data" | "isError" | "isFetching"
+> & { refetch: () => unknown }
 
 /** `loading` while pending (or disabled before its first result) and while a retry refetches after
  *  a failure (TanStack keeps `isError` during it), `error` once it failed with no data, `ready`

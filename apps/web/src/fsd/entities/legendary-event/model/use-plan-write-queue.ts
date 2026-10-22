@@ -8,11 +8,9 @@ import {
 } from "@tanstack/react-query"
 import { useIsAuthenticated } from "@azure/msal-react"
 
-import { ApiError } from "@/shared/api"
-
 import { legendaryEventPlanQueries } from "../api/legendary-event-plan.queries"
 import {
-  legendaryEventPlanConflictDetails,
+  legendaryEventPlanConflict,
   type LegendaryEventPlan,
 } from "./plan.types"
 
@@ -159,15 +157,13 @@ export function usePlanWriteQueue(eventId: string) {
         return "saved"
       } catch (error) {
         dropPatch()
-        const conflict =
-          error instanceof ApiError
-            ? legendaryEventPlanConflictDetails(error.details)
-            : null
+        // A plan 409 carries the plan as it stands: adopt it at once (no reload request).
+        const conflict = legendaryEventPlanConflict(error)
         if (conflict) {
           state.generation += 1
           state.patches = []
-          state.confirmed = conflict.plan
-          show(conflict.plan)
+          state.confirmed = conflict.current
+          show(conflict.current)
           invalidateList()
           toast(t("teams.toasts.reloaded"))
           return "conflict"

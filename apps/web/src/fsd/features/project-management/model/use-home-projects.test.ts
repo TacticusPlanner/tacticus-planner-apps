@@ -9,33 +9,31 @@ const { useProjectsMock } = vi.hoisted(() => ({
   useProjectsMock: vi.fn(),
 }))
 
-vi.mock("@/entities/project", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("@/entities/project")>()
-  return {
-    ...actual,
-    useProjects: () => useProjectsMock(),
-    projectQueries: {
-      ...actual.projectQueries,
-      goals: (projectId: string) => ({
-        queryKey: ["projects", projectId, "goals"],
-        queryFn: () =>
-          Promise.resolve({
-            goals: [
-              {
-                goal: {
-                  goalId: `${projectId}-g1`,
-                  entityType: "Character",
-                  entityId: "unit-1",
-                  status: "Active",
-                },
-                priority: 0,
-              },
-            ],
-          }),
-      }),
-    },
-  }
-})
+vi.mock("@/entities/project", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/entities/project")>()),
+  useProjects: () => useProjectsMock(),
+}))
+
+// Each project holds one Active goal, `<projectId>-g1`.
+vi.mock("@/entities/goal", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/entities/goal")>()),
+  useGoalsById: () => ({
+    goalsById: new Map(
+      ["p1", "p2", "p3", "p4", "p5"].map((projectId) => [
+        `${projectId}-g1`,
+        {
+          goalId: `${projectId}-g1`,
+          entityType: "Character",
+          entityId: "unit-1",
+          status: "Active",
+        },
+      ])
+    ),
+    loading: false,
+    isError: false,
+    retry: vi.fn(),
+  }),
+}))
 
 function project(overrides: Record<string, unknown>) {
   return {
@@ -49,6 +47,7 @@ function project(overrides: Record<string, unknown>) {
     createdAt: "2026-01-01T00:00:00Z",
     updatedAt: "2026-01-01T00:00:00Z",
     ...overrides,
+    goalIds: [`${overrides.projectId ?? "p1"}-g1`],
   }
 }
 
@@ -83,6 +82,11 @@ describe("useHomeProjects", () => {
       ["p1", "p2"]
     )
     expect(result.current.remainingCount).toBe(0)
+    expect(result.current.summaries.get("p2")).toEqual({
+      status: "success",
+      units: 1,
+      goals: 1,
+    })
   })
 
   it("caps to 3 projects (Default first) and reports the remaining count", async () => {

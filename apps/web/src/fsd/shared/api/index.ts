@@ -1,5 +1,6 @@
 export {
   ApiError,
+  apiIssue,
   apiDelete,
   apiGet,
   apiPost,

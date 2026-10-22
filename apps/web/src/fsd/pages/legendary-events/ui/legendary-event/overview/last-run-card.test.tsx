@@ -9,11 +9,14 @@ import {
   type LegendaryEventRosterUnit,
   type LegendaryEventRunRecord,
   type LegendaryEventLifecycleState,
+  type ReadState,
+  type RosterSnapshot,
   type RunHistory,
 } from "@/entities/legendary-event"
 import {
   rosterAfterRun1,
   utharRun1Record,
+  utharRun1Snapshot,
   utharRun2Record,
 } from "@/test/fixtures/legendary-event-run-records"
 import { utharEvent } from "@/test/fixtures/legendary-events"
@@ -21,6 +24,7 @@ import { createTestI18n, i18nWrapper } from "@/test/i18n"
 import { act, fireEvent, render, screen, within } from "@/test/render"
 import { setViewportWidth } from "@/test/viewport"
 
+import type { LastRunSectionViewModel } from "../legendary-event-page.view-model"
 import { LastRunCard } from "./last-run-card"
 import {
   buildLastRunViewModel,
@@ -51,14 +55,25 @@ const run3Record: LegendaryEventRunRecord = {
   run: 3,
 }
 
+// Every record's roster at the time, read.
+const snapshots = (records: readonly LegendaryEventRunRecord[]) =>
+  new Map(
+    records.map((record): [string, ReadState<RosterSnapshot>] => [
+      record.id,
+      { status: "ready", data: utharRun1Snapshot, retry: () => {} },
+    ])
+  )
+
 function readyView(
   records: LegendaryEventRunRecord[],
   {
     lifecycle = "archived",
     currentRoster = roster,
+    rosters = snapshots(records),
   }: {
     lifecycle?: LegendaryEventLifecycleState
     currentRoster?: LegendaryEventRosterUnit[] | "error"
+    rosters?: ReadonlyMap<string, ReadState<RosterSnapshot>>
   } = {}
 ): LastRunViewModel {
   return buildLastRunViewModel({
@@ -71,6 +86,7 @@ function readyView(
         ? ({ currentEventRun: 2 } as unknown as LegendaryEventProgress)
         : undefined,
     roster: currentRoster,
+    rosters,
     event: utharEvent,
   })
 }
@@ -79,35 +95,48 @@ function Harness({
   lastRun,
   onViewed,
   onEarlierExpanded,
+  onEarlierEntryToggled = () => {},
+  loadMore,
 }: {
   lastRun: LastRunViewModel
   onViewed: (history: RunHistory) => void
   onEarlierExpanded: (recordCount: number) => void
-}) {
+} & Partial<
+  Pick<LastRunSectionViewModel, "onEarlierEntryToggled" | "loadMore">
+>) {
   const isMobile = useIsMobile()
   return (
     <LastRunCard
       isMobile={isMobile}
       lastRun={lastRun}
+      loadMore={loadMore}
+      onEarlierEntryToggled={onEarlierEntryToggled}
       onEarlierExpanded={onEarlierExpanded}
       onViewed={onViewed}
     />
   )
 }
 
-function renderCard(lastRun: LastRunViewModel, width = 1280) {
+function renderCard(
+  lastRun: LastRunViewModel,
+  width = 1280,
+  loadMore?: LastRunSectionViewModel["loadMore"]
+) {
   setViewportWidth(width)
   const onViewed = vi.fn()
   const onEarlierExpanded = vi.fn()
+  const onEarlierEntryToggled = vi.fn()
   const view = render(
     <Harness
       lastRun={lastRun}
+      loadMore={loadMore}
+      onEarlierEntryToggled={onEarlierEntryToggled}
       onEarlierExpanded={onEarlierExpanded}
       onViewed={onViewed}
     />,
     { wrapper: i18nWrapper(i18n) }
   )
-  return { onViewed, onEarlierExpanded, view }
+  return { onViewed, onEarlierExpanded, onEarlierEntryToggled, view }
 }
 
 const card = () => screen.getByTestId("legendary-event-last-run")
@@ -297,15 +326,27 @@ describe("LastRunCard", () => {
       )
     })
 
-    it("replaces the list when the record has no roster snapshot", () => {
+    it("shows a skeleton while the roster at the time loads", () => {
+      renderCard(readyView([utharRun1Record], { rosters: new Map() }), width)
+      expect(
+        screen.getByTestId("last-run-snapshot-loading")
+      ).toBeInTheDocument()
+      expect(screen.queryByTestId("last-run-deltas")).toBeNull()
+    })
+
+    it("replaces the list with a retry when the roster at the time cannot be read", () => {
+      const retry = vi.fn()
       renderCard(
-        readyView([{ ...utharRun1Record, rosterSnapshot: null }]),
+        readyView([utharRun1Record], {
+          rosters: new Map([["record-run-1", { status: "error", retry }]]),
+        }),
         width
       )
-      expect(screen.getByTestId("last-run-no-snapshot")).toHaveTextContent(
-        "Roster at the time is unavailable"
-      )
+      const failed = screen.getByTestId("last-run-no-snapshot")
+      expect(failed).toHaveTextContent("Roster at the time is unavailable")
       expect(screen.queryByTestId("last-run-deltas")).toBeNull()
+      fireEvent.click(within(failed).getByRole("button", { name: "Retry" }))
+      expect(retry).toHaveBeenCalledOnce()
     })
 
     it("asks for a roster sync when the roster cannot be read", () => {
@@ -337,7 +378,7 @@ describe("LastRunCard", () => {
     })
 
     it("lists earlier runs collapsed on an archived event, each expandable", () => {
-      const { onEarlierExpanded } = renderCard(
+      const { onEarlierExpanded, onEarlierEntryToggled } = renderCard(
         readyView([run3Record, utharRun2Record, utharRun1Record]),
         width
       )
@@ -365,6 +406,11 @@ describe("LastRunCard", () => {
       const entryToggle = entry.getByTestId("last-run-earlier-entry-toggle")
       expect(entryToggle).not.toHaveAttribute("aria-controls")
       fireEvent.click(entryToggle)
+      // Opening an entry asks for that run's roster at the time.
+      expect(onEarlierEntryToggled).toHaveBeenLastCalledWith(
+        "record-run-1",
+        true
+      )
       expect(entry.getByTestId("last-run-body")).toBeInTheDocument()
       expect(controlledRegion(entryToggle)).toContainElement(
         entry.getByTestId("last-run-body")
@@ -378,11 +424,48 @@ describe("LastRunCard", () => {
           .map((summary) => summary.textContent)[0]
       ).toBe("Alpha: battle 4 · 1,139 points")
 
+      fireEvent.click(entryToggle)
+      expect(onEarlierEntryToggled).toHaveBeenLastCalledWith(
+        "record-run-1",
+        false
+      )
+
       // Closing and reopening records the expansion only once.
       fireEvent.click(toggle)
       fireEvent.click(toggle)
       expect(onEarlierExpanded).toHaveBeenCalledOnce()
     })
+  })
+
+  it("offers the next older page under Earlier runs while there is one", () => {
+    const onLoadMore = vi.fn()
+    const records = [run3Record, utharRun2Record, utharRun1Record]
+    const { view } = renderCard(readyView(records), 1280, {
+      onLoadMore,
+      loading: false,
+    })
+    fireEvent.click(screen.getByTestId("last-run-earlier-toggle"))
+    fireEvent.click(screen.getByTestId("last-run-load-more"))
+    expect(onLoadMore).toHaveBeenCalledOnce()
+
+    view.rerender(
+      <Harness
+        lastRun={readyView(records)}
+        loadMore={{ onLoadMore, loading: true }}
+        onEarlierExpanded={vi.fn()}
+        onViewed={vi.fn()}
+      />
+    )
+    expect(screen.getByTestId("last-run-load-more")).toBeDisabled()
+
+    view.rerender(
+      <Harness
+        lastRun={readyView(records)}
+        onEarlierExpanded={vi.fn()}
+        onViewed={vi.fn()}
+      />
+    )
+    expect(screen.queryByTestId("last-run-load-more")).toBeNull()
   })
 
   describe("legendary_event_last_run_viewed", () => {
@@ -460,9 +543,11 @@ describe("LastRunCard", () => {
             lifecycle: "archived",
             progress: undefined,
             roster,
+            rosters: snapshots([record]),
             event: utharEvent,
             teamName,
           })}
+          onEarlierEntryToggled={vi.fn()}
           onEarlierExpanded={vi.fn()}
           onViewed={vi.fn()}
         />

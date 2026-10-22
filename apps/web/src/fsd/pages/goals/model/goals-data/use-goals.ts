@@ -2,13 +2,13 @@ import { useTranslation } from "react-i18next"
 import { useQuery } from "@tanstack/react-query"
 import { useIsAuthenticated } from "@azure/msal-react"
 
-import { goalQueries, type GoalSummary } from "@/entities/goal"
+import { goalQueries, type GoalDetail } from "@/entities/goal"
 import { ApiError } from "@/shared/api"
 
-type FetchState =
+export type GoalsFetchState =
   | { status: "idle" }
   | { status: "error"; message: string }
-  | { status: "success"; goals: GoalSummary[] }
+  | { status: "success"; goals: GoalDetail[] }
 
 export function useGoals(options?: { archived?: boolean }) {
   const { t } = useTranslation()
@@ -19,7 +19,7 @@ export function useGoals(options?: { archived?: boolean }) {
     enabled: isAuthenticated,
   })
 
-  let fetchState: FetchState
+  let fetchState: GoalsFetchState
   if (query.isError) {
     fetchState = {
       status: "error",

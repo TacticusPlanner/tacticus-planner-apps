@@ -2,15 +2,13 @@ import { apiDelete, apiGet, apiPost, apiPut } from "@/shared/api"
 
 import type {
   CreateCombinedGoalsRequest,
-  CreateGoalRequest,
   EditGoalRequest,
   EditGoalResponse,
   GoalDetail,
   GoalListResponse,
   GoalOrderResponse,
-  GoalStatus,
-  UpdateGoalRequest,
-  UpdateGoalTargetRequest,
+  UpdateGoalsStatusRequest,
+  UpdateGoalsStatusResponse,
 } from "../model/types"
 
 export function listGoals(options?: {
@@ -27,46 +25,28 @@ export function getGoal(goalId: string, signal?: AbortSignal) {
   return apiGet<GoalDetail>(`/api/v1/me/goals/${goalId}`, { signal })
 }
 
-export function createGoal(request: CreateGoalRequest) {
-  return apiPost<GoalDetail>("/api/v1/me/goals", { body: request })
-}
-
+/** Creates one goal, or several linked goals of one unit (`dependsOnIndex`), in one request. */
 export function createCombinedGoals(request: CreateCombinedGoalsRequest) {
-  return apiPost<{ goals: GoalDetail[] }>("/api/v1/me/goals/combined", {
+  return apiPost<{ goals: GoalDetail[] }>("/api/v1/me/goals", {
     body: request,
   })
-}
-
-export function updateGoal(goalId: string, request: UpdateGoalRequest) {
-  return apiPut<GoalDetail>(`/api/v1/me/goals/${goalId}`, { body: request })
 }
 
 /** Applies every present section of `request` (target, details, projects, priority) to the goal in one
  * atomic call; absent sections are unchanged. Failures change nothing: 400 (`errors` map keyed by
- * section), 404, or 409 � `goalRevisionStale` (see `goalRevisionConflictDetails`), `goalOrderStale` (see
- * `goalOrderConflictDetails`) or `projectGoalSlotOccupied`. */
+ * section), 404, or a 409 problem: `goalRevisionStale` or `slotOccupied` (`current` is the goal),
+ * `goalOrderStale` (`current` is the order). */
 export function editGoal(goalId: string, request: EditGoalRequest) {
-  return apiPut<EditGoalResponse>(`/api/v1/me/goals/${goalId}/edit`, {
+  return apiPut<EditGoalResponse>(`/api/v1/me/goals/${goalId}`, {
     body: request,
   })
 }
 
-/** Changes an Active/Paused goal's end target in place (Rank, Ascension, Ability, Upgrade).
- * Revision-checked: a stale `expectedRevision` is a 409 (`goalRevisionStale`, see
- * `goalRevisionConflictDetails`); a Rank target already held in a shared project is a 409
- * `projectGoalSlotOccupied`. Submitting the target the goal already has is a no-op. */
-export function updateGoalTarget(
-  goalId: string,
-  request: UpdateGoalTargetRequest
-) {
-  return apiPut<GoalDetail>(`/api/v1/me/goals/${goalId}/target`, {
+/** Transitions every listed goal to `status` atomically: a rejection (`slotOccupied`, `goalOrderStale`)
+ * changes none of them. */
+export function updateGoalsStatus(request: UpdateGoalsStatusRequest) {
+  return apiPost<UpdateGoalsStatusResponse>("/api/v1/me/goals/status", {
     body: request,
-  })
-}
-
-export function updateGoalStatus(goalId: string, status: GoalStatus) {
-  return apiPost<GoalDetail>(`/api/v1/me/goals/${goalId}/status`, {
-    body: { status },
   })
 }
 

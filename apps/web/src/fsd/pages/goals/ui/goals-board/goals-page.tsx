@@ -23,6 +23,7 @@ import { usePlanInsights } from "../../model/insights/use-plan-insights"
 import { orderRowsByGlobalPriority } from "../../model/shared/goal-row-order"
 import { groupRows } from "../../model/shared/row-groups"
 import { goalRowFromSummary, type GoalRow } from "../../model/shared/types"
+import { useProjectsByGoalId } from "../../model/projects/use-projects-by-goal-id"
 import { useStableMap } from "../../model/shared/use-stable-map"
 import { useGoalActions } from "../../model/goals-data/use-goal-actions"
 import { useGoalsMobileModes } from "../../model/goals-data/use-goals-mobile-modes"
@@ -33,7 +34,6 @@ import { GoalsPageStates } from "./goals-page-states"
 import { useGoalsPageReorder } from "../../model/goals-data/use-goals-page-reorder"
 import { isGoalsListLoading } from "../../model/goals-data/goals-list-loading"
 import { useProjects } from "@/entities/project"
-import { useGoalProjects } from "../../model/projects/use-goal-projects"
 import { useGoalCatalog } from "../../model/shared/use-goal-catalog"
 import { GoalsList } from ".//goals-list"
 import { GoalsBulkControls } from "./goals-bulk-controls"
@@ -92,10 +92,13 @@ export function GoalsPage() {
     projects.fetchState.status === "success"
   )
   const { projectId: scopeId, setProjectId: setScopeId } = scope
-  const goalProjects = useGoalProjects(projects.projects)
-  const { byGoalId: projectsByGoalId, loadedProjectIds } = goalProjects
   const nonArchivedGoals = useGoals()
   const archivedGoals = useGoals({ archived: true })
+  const projectsByGoalId = useProjectsByGoalId(
+    projects.projects,
+    nonArchivedGoals.fetchState,
+    archivedGoals.fetchState
+  )
   // The archived query stays for prerequisite cascades only; there is no Archived view any more.
   const selectedGoals = nonArchivedGoals
   const refreshCurrentView = selectedGoals.retry
@@ -134,13 +137,11 @@ export function GoalsPage() {
       project: projects.projects.find(
         (project) => project.projectId === scopeId
       ),
-      // A goal's memberships are only complete once every project's member list has loaded; before
-      // that, a goal in two projects would look like it is only in the scoped one.
+      // A goal's memberships are known once the goals list (its `projectIds`) and the project list
+      // (their names) have loaded.
       available:
         projects.fetchState.status === "success" &&
-        projects.projects.every((project) =>
-          loadedProjectIds.has(project.projectId)
-        ),
+        nonArchivedGoals.fetchState.status === "success",
     })
 
   const nonArchivedRows = useMemo(
@@ -261,8 +262,6 @@ export function GoalsPage() {
     tab,
     requestedProjectId: scope.requestedProjectId,
     projectsLoading: projects.loading,
-    scopeId,
-    pendingProjectIds: goalProjects.pendingProjectIds,
     attainmentPending,
     hasCandidateGoals: filteredNonArchivedRows.length > 0,
   })
@@ -287,7 +286,6 @@ export function GoalsPage() {
     !isLoading &&
     !fetchError &&
     nonArchivedGoals.fetchState.status === "success" &&
-    loadedProjectIds.has(scopeId) &&
     (scopeCounts.get(scopeId) ?? 0) === 0
 
   // Always rendered on mobile (disabled when unavailable) so the control row keeps its shape while

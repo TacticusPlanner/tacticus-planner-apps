@@ -86,6 +86,8 @@ export function LegendaryEventPageView({
           <LastRunCard
             isMobile={isMobile}
             lastRun={props.lastRun.state}
+            loadMore={props.lastRun.loadMore}
+            onEarlierEntryToggled={props.lastRun.onEarlierEntryToggled}
             onEarlierExpanded={props.lastRun.onEarlierExpanded}
             onViewed={props.lastRun.onViewed}
           />

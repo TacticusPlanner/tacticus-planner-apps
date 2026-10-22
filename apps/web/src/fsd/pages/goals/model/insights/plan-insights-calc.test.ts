@@ -53,7 +53,6 @@ function goalDetail(overrides: Partial<GoalDetail>): GoalDetail {
       upgrade: null,
     },
     snapshot: null,
-    events: [],
     dependsOn: [],
     projectIds: [],
     revision: 1,

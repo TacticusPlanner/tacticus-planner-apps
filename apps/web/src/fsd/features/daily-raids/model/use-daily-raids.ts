@@ -1,6 +1,6 @@
 import { useMemo } from "react"
 import { useTranslation } from "react-i18next"
-import { useQueries, useQuery } from "@tanstack/react-query"
+import { useQuery } from "@tanstack/react-query"
 import { useIsAuthenticated } from "@azure/msal-react"
 import { useLiveQuery } from "dexie-react-hooks"
 import {
@@ -28,7 +28,7 @@ import {
   getPlayerMow,
 } from "@workspace/player-data/queries"
 
-import { goalQueries, type GoalDetail } from "@/entities/goal"
+import type { GoalDetail } from "@/entities/goal"
 import { onslaughtProgressQueries } from "@/entities/player-data-override"
 import { usePlanningSettings } from "@/entities/planning-setting"
 import {
@@ -95,14 +95,8 @@ export function useDailyRaids(
   const isAuthenticated = useIsAuthenticated()
   const globalPlan = useScopedGoalPlan(projectId)
   const activeMembers = activeProjectMembers(globalPlan.entries)
-  const detailQueries = useQueries({
-    queries: activeMembers.map((member) =>
-      goalQueries.detail(member.goal.goalId)
-    ),
-  })
-  const details = detailQueries.flatMap((query) =>
-    query.data ? [query.data] : []
-  )
+  // The goals list carries every goal in full, so no goal's detail is read separately.
+  const details = activeMembers.map((member) => member.goal)
   const detailKey = details
     .map((detail) => `${detail.goalId}:${detail.entityType}:${detail.entityId}`)
     .join(",")
@@ -276,7 +270,6 @@ export function useDailyRaids(
 
   if (
     globalPlan.isError ||
-    detailQueries.some((query) => query.isError) ||
     onslaughtProgressQuery.isError ||
     campaignEventProgressError
   ) {
@@ -284,7 +277,6 @@ export function useDailyRaids(
   }
   const ready =
     !globalPlan.loading &&
-    detailQueries.every((query) => query.isSuccess) &&
     charactersById &&
     mowsById &&
     upgrades &&

@@ -1,5 +1,4 @@
-import type { GoalKind, GoalStatus, GoalSummary } from "@/entities/goal"
-import type { ProjectGoalSummary } from "@/entities/project"
+import type { GoalDetail, GoalKind, GoalStatus } from "@/entities/goal"
 
 export type GoalProject = {
   projectId: string
@@ -8,9 +7,8 @@ export type GoalProject = {
 }
 
 /**
- * Unified row shape the list/grid/actions components render, regardless of whether the data came from
- * `useGoals` (flat, no project scope) or `useProjectGoals` (a project's projection); `priority` is the
- * goal's position in the account-wide order.
+ * The row shape the list/grid/actions components render, built from a goals-list entry and its projects
+ * (from the goal's `projectIds`); `priority` is the goal's position in the account-wide order.
  */
 export type GoalRow = {
   goalId: string
@@ -26,7 +24,7 @@ export type GoalRow = {
 }
 
 export function goalRowFromSummary(
-  goal: GoalSummary,
+  goal: GoalDetail,
   projects: GoalProject[] = []
 ): GoalRow {
   return {
@@ -39,24 +37,6 @@ export function goalRowFromSummary(
     updatedAt: goal.updatedAt,
     dependsOn: goal.dependsOn,
     priority: goal.globalPriority ?? undefined,
-    ...(projects.length > 0 ? { projects } : {}),
-  }
-}
-
-export function goalRowFromProjectMember(
-  entry: ProjectGoalSummary,
-  projects: GoalProject[] = []
-): GoalRow {
-  return {
-    goalId: entry.goal.goalId,
-    entityType: entry.goal.entityType,
-    entityId: entry.goal.entityId,
-    goalType: entry.goal.goalType as GoalKind,
-    status: entry.goal.status as GoalStatus,
-    notes: entry.goal.notes,
-    updatedAt: entry.goal.updatedAt,
-    dependsOn: entry.goal.dependsOn,
-    priority: entry.goal.globalPriority ?? undefined,
     ...(projects.length > 0 ? { projects } : {}),
   }
 }

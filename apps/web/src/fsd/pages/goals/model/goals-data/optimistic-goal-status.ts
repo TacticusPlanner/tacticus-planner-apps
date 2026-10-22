@@ -1,11 +1,11 @@
-import type { GoalStatus, GoalSummary } from "@/entities/goal"
+import type { GoalDetail, GoalStatus } from "@/entities/goal"
 
 type WithStatus = { status: GoalStatus }
 
 /** Summary fields a server response writes into every cached copy of a goal; omitted keys stay. */
 export type GoalFieldPatch = Partial<
   Pick<
-    GoalSummary,
+    GoalDetail,
     "status" | "globalPriority" | "notes" | "dependsOn" | "updatedAt"
   >
 >
@@ -13,8 +13,7 @@ export type GoalFieldPatch = Partial<
 /**
  * Patches `goalId`'s status in place within one cached query's data, handling every shape
  * `useGoalActions` needs to keep optimistically in sync: a single cached `GoalDetail`
- * (`goalQueries.detail`), the flat `{ goals: GoalSummary[] }` list (`goalQueries.list`), and the
- * project-membership-wrapped `{ goals: ProjectGoalSummary[] }` list (`projectQueries.goals`).
+ * (`goalQueries.detail`) and the flat `{ goals: GoalDetail[] }` list (`goalQueries.list`).
  * Returns the same reference when nothing changes, so an unrelated cache entry doesn't re-render.
  *
  * Scoped to the Active/Paused pause-resume toggle only (see `use-goal-actions.ts`) — neither shape
@@ -51,14 +50,6 @@ export function applyOptimisticGoalStatus(
     let changed = false
     const nextGoals = goals.map((entry) => {
       if (!entry || typeof entry !== "object") return entry
-      if ("goal" in entry) {
-        const inner = (entry as { goal: { goalId: string } & WithStatus }).goal
-        if (inner.goalId !== goalId) return entry
-        const next = apply(inner)
-        if (next === inner) return entry
-        changed = true
-        return { ...entry, goal: next }
-      }
       const flat = entry as { goalId: string } & WithStatus
       if (flat.goalId !== goalId) return entry
       const next = apply(flat)

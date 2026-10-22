@@ -1,7 +1,6 @@
 export {
   createProject,
   updateProject,
-  listProjectGoals,
   listProjects,
   moveProjectGoal,
   updateProjectGoals,
@@ -12,10 +11,10 @@ export {
   type ProjectMembershipChange,
 } from "./model/change-project-membership"
 export {
-  projectLastMembershipDetails,
-  projectMembershipStaleDetails,
-  projectSlotConflictGoalIds,
+  projectLastMembership,
+  projectMembershipConflict,
 } from "./model/project-membership-conflict"
+export { projectGoals } from "./model/project-goals"
 export { projectMarkerSuffix } from "./model/project-marker"
 export { isProjectNameValid } from "./model/project-name"
 export { useProjects } from "./model/use-projects"
@@ -26,12 +25,7 @@ export type {
   UpdateProjectRequest,
   MoveProjectGoalRequest,
   ProjectGoalEntry,
-  ProjectLastMembershipDto,
-  ProjectMembershipStaleDto,
   UpdateProjectGoalsRequest,
-  ProjectGoalsResponse,
-  ProjectGoalSummary,
-  ProjectMemberGoal,
   ProjectSummary,
   ProjectTarget,
 } from "./model/types"

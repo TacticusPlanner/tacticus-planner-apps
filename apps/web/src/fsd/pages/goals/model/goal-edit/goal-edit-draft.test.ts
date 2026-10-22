@@ -39,7 +39,6 @@ function goal(
     globalPriority: 3,
     config: { ...emptyConfig, ...config },
     snapshot: null,
-    events: [],
     projectIds: ["project-1"],
     revision: 7,
   }

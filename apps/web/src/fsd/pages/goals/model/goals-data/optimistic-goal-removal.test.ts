@@ -14,19 +14,6 @@ describe("applyOptimisticGoalRemoval", () => {
     expect(list.goals).toHaveLength(2)
   })
 
-  it("removes a project membership by its nested goal id", () => {
-    const list = {
-      goals: [
-        { priority: 1, goal: { goalId: "g1" } },
-        { priority: 2, goal: { goalId: "g2" } },
-      ],
-    }
-    const result = applyOptimisticGoalRemoval(list, "g1") as typeof list
-    expect(result.goals).toEqual([list.goals[1]])
-    expect(result.goals[0]).toBe(list.goals[1])
-    expect(list.goals).toHaveLength(2)
-  })
-
   it.each(["g1", "other"])(
     "leaves a cached detail for %s untouched",
     (goalId) => {
@@ -35,13 +22,12 @@ describe("applyOptimisticGoalRemoval", () => {
     }
   )
 
-  it.each([
-    { goals: [] },
-    { goals: [{ goalId: "g2" }] },
-    { goals: [{ priority: 1, goal: { goalId: "g2" } }] },
-  ])("preserves a list with no matching entry: %j", (list) => {
-    expect(applyOptimisticGoalRemoval(list, "g1")).toBe(list)
-  })
+  it.each([{ goals: [] }, { goals: [{ goalId: "g2" }] }])(
+    "preserves a list with no matching entry: %j",
+    (list) => {
+      expect(applyOptimisticGoalRemoval(list, "g1")).toBe(list)
+    }
+  )
 
   it("removes the final entry", () => {
     expect(
