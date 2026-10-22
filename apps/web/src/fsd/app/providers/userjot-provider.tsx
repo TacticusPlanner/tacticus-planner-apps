@@ -44,7 +44,7 @@ declare global {
   }
 }
 
-// v3 is the only pin the vendor offers (accepted vendor risk; CSP limits the host).
+// v3 is the only pin the vendor offers (accepted vendor risk).
 const USERJOT_SDK_URL = "https://cdn.userjot.com/sdk/v3/uj.js"
 
 // The vendor's queueing stub: every call made before the SDK loads is recorded and replayed by it.
