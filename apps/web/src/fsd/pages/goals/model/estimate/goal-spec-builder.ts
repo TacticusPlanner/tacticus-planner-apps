@@ -156,9 +156,8 @@ export function characterRelevantUpgradeQuantities(
 
 /** An Upgrade goal's progression range(s): a Character's rank range, or a Mow's per-track ability level
  * ranges (each track optional). */
-export type UpgradeRanges = Pick<
-  UpgradeTarget,
-  "rankRange" | "activeRange" | "passiveRange"
+export type UpgradeRanges = Partial<
+  Pick<UpgradeTarget, "rankRange" | "activeRange" | "passiveRange">
 >
 
 /** Same shape as `characterRelevantUpgradeQuantities`, but for a Mow: the transitions of each ability

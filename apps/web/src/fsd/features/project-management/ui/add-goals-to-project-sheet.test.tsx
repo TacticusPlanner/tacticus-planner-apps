@@ -77,6 +77,7 @@ const project = {
   status: "Active" as const,
   isDefault: false,
   goalIds: [] as string[],
+  target: null,
   revision: 0,
   createdAt: "2026-01-01T00:00:00Z",
   updatedAt: "2026-01-01T00:00:00Z",

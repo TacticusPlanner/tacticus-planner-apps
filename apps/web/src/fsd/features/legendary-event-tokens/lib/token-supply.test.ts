@@ -22,6 +22,8 @@ const premiumRun = (
   premiumMissions,
   bundlePurchased: false,
   closeShards: 0,
+  completedRegularMissions: [],
+  completedPremiumMissions: [],
   updatedAt: "2026-10-15T00:00:00Z",
 })
 

@@ -1,23 +1,15 @@
-import { apiGet, apiPut } from "@/shared/api"
+import { apiClient, unwrap, type ApiSchemas } from "@/shared/api"
 
-import type {
-  OnslaughtAllianceProgress,
-  OnslaughtProgress,
+import {
+  onslaughtTiers,
+  type OnslaughtAllianceProgress,
+  type OnslaughtProgress,
 } from "../model/types"
 
-const path = "/api/v1/me/player-data-overrides/onslaught-progress"
+type S = ApiSchemas
 
-type OnslaughtAllianceProgressRequestDto = Pick<
-  OnslaughtAllianceProgress,
-  "sector" | "tier"
-> | null
-
-export type UpdateOnslaughtProgressRequestDto = {
-  imperial: OnslaughtAllianceProgressRequestDto
-  xenos: OnslaughtAllianceProgressRequestDto
-  chaos: OnslaughtAllianceProgressRequestDto
-  revision: number
-}
+export type UpdateOnslaughtProgressRequestDto =
+  S["UpdateOnslaughtProgressRequest"]
 
 /** An unset alliance is sent as `null` so saving never turns its placeholder into real progress. */
 export function mapOnslaughtProgressToRequestDto(
@@ -33,12 +25,41 @@ export function mapOnslaughtProgressToRequestDto(
   }
 }
 
-export function getOnslaughtProgress(signal?: AbortSignal) {
-  return apiGet<OnslaughtProgress>(path, { signal })
+/** Narrows the wire's numeric `tier` to 1–4; any other value breaks the API contract and throws. */
+function mapOnslaughtProgressResponse(
+  response: S["OnslaughtProgressResponse"]
+): OnslaughtProgress {
+  const alliance = (
+    value: S["OnslaughtAllianceProgressResponse"]
+  ): OnslaughtAllianceProgress => {
+    const tier = onslaughtTiers.find((candidate) => candidate === value.tier)
+    if (tier === undefined) {
+      throw new Error(`Unexpected Onslaught tier ${value.tier}`)
+    }
+    return { ...value, tier }
+  }
+  return {
+    imperial: alliance(response.imperial),
+    xenos: alliance(response.xenos),
+    chaos: alliance(response.chaos),
+    revision: response.revision,
+  }
+}
+
+const path = "/api/v1/player-data-overrides/onslaught-progress"
+
+export async function getOnslaughtProgress(signal?: AbortSignal) {
+  return mapOnslaughtProgressResponse(
+    await unwrap(apiClient().GET(path, { signal }))
+  )
 }
 
 export async function updateOnslaughtProgress(progress: OnslaughtProgress) {
-  return apiPut<OnslaughtProgress>(path, {
-    body: mapOnslaughtProgressToRequestDto(progress),
-  })
+  return mapOnslaughtProgressResponse(
+    await unwrap(
+      apiClient().PUT(path, {
+        body: mapOnslaughtProgressToRequestDto(progress),
+      })
+    )
+  )
 }

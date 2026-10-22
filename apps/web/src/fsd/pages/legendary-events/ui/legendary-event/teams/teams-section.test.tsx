@@ -66,6 +66,8 @@ const plan: LegendaryEventPlan = {
   catalogVersion: "1",
   notes: null,
   showPaidOptions: false,
+  runs: [],
+  annotations: [],
   // Stored order: Flyers sorts after Melee on Alpha whatever the array order.
   teams: [
     team("flyers", "Flyers", "alpha", 1),

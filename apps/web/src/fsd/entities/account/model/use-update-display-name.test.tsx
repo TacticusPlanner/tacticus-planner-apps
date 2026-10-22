@@ -26,7 +26,7 @@ function setup() {
   const wrapper = ({ children }: { children: ReactNode }) => (
     <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
   )
-  // The `/me` query must be active for invalidation to refetch it, as it is in the real app.
+  // The `/account` query must be active for invalidation to refetch it, as it is in the real app.
   const hook = renderHook(
     () => {
       useQuery(accountQueries.current())
@@ -43,7 +43,7 @@ describe("useUpdateDisplayName", () => {
     updateDisplayName.mockReset().mockResolvedValue({ displayName: "Ada" })
   })
 
-  it("resolves only after /me has been refetched", async () => {
+  it("resolves only after /account has been refetched", async () => {
     const { result } = setup()
     await waitFor(() => expect(getCurrentUser).toHaveBeenCalledTimes(1))
     getCurrentUser.mockResolvedValue({ displayName: "Ada" })
@@ -54,7 +54,7 @@ describe("useUpdateDisplayName", () => {
     expect(getCurrentUser).toHaveBeenCalledTimes(2)
   })
 
-  it("rejects when the /me refresh fails, so a save is never reported as complete", async () => {
+  it("rejects when the /account refresh fails, so a save is never reported as complete", async () => {
     const { result } = setup()
     await waitFor(() => expect(getCurrentUser).toHaveBeenCalledTimes(1))
     getCurrentUser.mockRejectedValue(new Error("offline"))

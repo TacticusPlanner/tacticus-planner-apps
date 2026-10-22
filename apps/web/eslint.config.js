@@ -6,7 +6,8 @@ import tseslint from "typescript-eslint"
 import { defineConfig, globalIgnores } from "eslint/config"
 
 export default defineConfig([
-  globalIgnores(["dist", "coverage"]),
+  // schema.d.ts is generated from the API's OpenAPI document (pnpm api:types).
+  globalIgnores(["dist", "coverage", "src/fsd/shared/api/schema.d.ts"]),
   {
     files: ["**/*.{ts,tsx}"],
     extends: [

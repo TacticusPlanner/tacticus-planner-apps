@@ -11,21 +11,11 @@
     "rangedHits": 3,
     "distance": 2,
     "movement": 3,
-    "traits": [
-      "LetTheGalaxyBurn",
-      "Resilient",
-      "TerminatorArmour"
-    ],
-    "activeAbilityDamage": [
-      "Piercing"
-    ],
-    "activeAbilities": [
-      "Drachnyen"
-    ],
+    "traits": ["LetTheGalaxyBurn", "Resilient", "TerminatorArmour"],
+    "activeAbilityDamage": ["Piercing"],
+    "activeAbilities": ["Drachnyen"],
     "passiveAbilityDamage": [],
-    "passiveAbilities": [
-      "FirstAmongTraitors"
-    ],
+    "passiveAbilities": ["FirstAmongTraitors"],
     "stats": [
       {
         "abilityLevel": 44,
@@ -50,21 +40,11 @@
     "rangedHits": null,
     "distance": null,
     "movement": 4,
-    "traits": [
-      "LetTheGalaxyBurn",
-      "Flying",
-      "Terrifying"
-    ],
-    "activeAbilityDamage": [
-      "Piercing"
-    ],
-    "activeAbilities": [
-      "HeraldOfTheApocalypse"
-    ],
+    "traits": ["LetTheGalaxyBurn", "Flying", "Terrifying"],
+    "activeAbilityDamage": ["Piercing"],
+    "activeAbilities": ["HeraldOfTheApocalypse"],
     "passiveAbilityDamage": [],
-    "passiveAbilities": [
-      "HeadClaimer"
-    ],
+    "passiveAbilities": ["HeadClaimer"],
     "stats": [
       {
         "abilityLevel": 44,
@@ -96,20 +76,10 @@
       "HeavyWeapon",
       "SuppressiveFire"
     ],
-    "activeAbilityDamage": [
-      "HeavyRound"
-    ],
-    "activeAbilities": [
-      "FrenziedFiring"
-    ],
-    "passiveAbilityDamage": [
-      "Flame",
-      "HeavyRound",
-      "Melta"
-    ],
-    "passiveAbilities": [
-      "FleshmetalGuns"
-    ],
+    "activeAbilityDamage": ["HeavyRound"],
+    "activeAbilities": ["FrenziedFiring"],
+    "passiveAbilityDamage": ["Flame", "HeavyRound", "Melta"],
+    "passiveAbilities": ["FleshmetalGuns"],
     "stats": [
       {
         "abilityLevel": 44,
@@ -134,18 +104,11 @@
     "rangedHits": 1,
     "distance": 2,
     "movement": 3,
-    "traits": [
-      "LetTheGalaxyBurn",
-      "Psyker"
-    ],
+    "traits": ["LetTheGalaxyBurn", "Psyker"],
     "activeAbilityDamage": [],
-    "activeAbilities": [
-      "Incursion"
-    ],
+    "activeAbilities": ["Incursion"],
     "passiveAbilityDamage": [],
-    "passiveAbilities": [
-      "Possession"
-    ],
+    "passiveAbilities": ["Possession"],
     "stats": [
       {
         "abilityLevel": 14,
@@ -215,21 +178,11 @@
     "rangedHits": null,
     "distance": null,
     "movement": 2,
-    "traits": [
-      "LetTheGalaxyBurn",
-      "TeleportStrike",
-      "TerminatorArmour"
-    ],
-    "activeAbilityDamage": [
-      "Power"
-    ],
-    "activeAbilities": [
-      "BringerOfDespair"
-    ],
+    "traits": ["LetTheGalaxyBurn", "TeleportStrike", "TerminatorArmour"],
+    "activeAbilityDamage": ["Power"],
+    "activeAbilities": ["BringerOfDespair"],
     "passiveAbilityDamage": [],
-    "passiveAbilities": [
-      "HatefulAssault"
-    ],
+    "passiveAbilities": ["HatefulAssault"],
     "stats": [
       {
         "abilityLevel": 44,
@@ -254,15 +207,11 @@
     "rangedHits": null,
     "distance": null,
     "movement": 3,
-    "traits": [
-      "Daemon"
-    ],
+    "traits": ["Daemon"],
     "activeAbilityDamage": [],
     "activeAbilities": [],
     "passiveAbilityDamage": [],
-    "passiveAbilities": [
-      "UnstoppableFerocity"
-    ],
+    "passiveAbilities": ["UnstoppableFerocity"],
     "stats": [
       {
         "abilityLevel": 1,
@@ -683,17 +632,11 @@
     "rangedHits": 4,
     "distance": 2,
     "movement": 2,
-    "traits": [
-      "LetTheGalaxyBurn",
-      "TeleportStrike",
-      "TerminatorArmour"
-    ],
+    "traits": ["LetTheGalaxyBurn", "TeleportStrike", "TerminatorArmour"],
     "activeAbilityDamage": [],
     "activeAbilities": [],
     "passiveAbilityDamage": [],
-    "passiveAbilities": [
-      "DrawFire"
-    ],
+    "passiveAbilities": ["DrawFire"],
     "stats": [
       {
         "abilityLevel": 1,
@@ -1114,15 +1057,11 @@
     "rangedHits": 2,
     "distance": 2,
     "movement": 3,
-    "traits": [
-      "BattleFatigue"
-    ],
+    "traits": ["BattleFatigue"],
     "activeAbilityDamage": [],
     "activeAbilities": [],
     "passiveAbilityDamage": [],
-    "passiveAbilities": [
-      "CrazedFocus"
-    ],
+    "passiveAbilities": ["CrazedFocus"],
     "stats": [
       {
         "abilityLevel": 1,
@@ -1552,9 +1491,7 @@
     "activeAbilityDamage": [],
     "activeAbilities": [],
     "passiveAbilityDamage": [],
-    "passiveAbilities": [
-      "FiringPosition"
-    ],
+    "passiveAbilities": ["FiringPosition"],
     "stats": [
       {
         "abilityLevel": 1,
@@ -1975,23 +1912,11 @@
     "rangedHits": 3,
     "distance": 2,
     "movement": 2,
-    "traits": [
-      "CrushingStrike",
-      "MkXGravis",
-      "SuppressiveFire"
-    ],
-    "activeAbilityDamage": [
-      "Blast"
-    ],
-    "activeAbilities": [
-      "FragstormGrenadeLauncher"
-    ],
-    "passiveAbilityDamage": [
-      "Bolter"
-    ],
-    "passiveAbilities": [
-      "Boltstorm"
-    ],
+    "traits": ["CrushingStrike", "MkXGravis", "SuppressiveFire"],
+    "activeAbilityDamage": ["Blast"],
+    "activeAbilities": ["FragstormGrenadeLauncher"],
+    "passiveAbilityDamage": ["Bolter"],
+    "passiveAbilities": ["Boltstorm"],
     "stats": [
       {
         "abilityLevel": 41,
@@ -2016,18 +1941,11 @@
     "rangedHits": null,
     "distance": null,
     "movement": 3,
-    "traits": [
-      "FinalJustice",
-      "Parry"
-    ],
+    "traits": ["FinalJustice", "Parry"],
     "activeAbilityDamage": [],
-    "activeAbilities": [
-      "UnbreakableDuty"
-    ],
+    "activeAbilities": ["UnbreakableDuty"],
     "passiveAbilityDamage": [],
-    "passiveAbilities": [
-      "AstartesBanner"
-    ],
+    "passiveAbilities": ["AstartesBanner"],
     "stats": [
       {
         "abilityLevel": 14,
@@ -2070,21 +1988,11 @@
     "rangedHits": null,
     "distance": null,
     "movement": 3,
-    "traits": [
-      "FinalJustice",
-      "Parry",
-      "RapidAssault"
-    ],
+    "traits": ["FinalJustice", "Parry", "RapidAssault"],
     "activeAbilityDamage": [],
-    "activeAbilities": [
-      "HolyDuel"
-    ],
-    "passiveAbilityDamage": [
-      "Power"
-    ],
-    "passiveAbilities": [
-      "MartialSuperiority"
-    ],
+    "activeAbilities": ["HolyDuel"],
+    "passiveAbilityDamage": ["Power"],
+    "passiveAbilities": ["MartialSuperiority"],
     "stats": [
       {
         "abilityLevel": 41,
@@ -2109,18 +2017,11 @@
     "rangedHits": 3,
     "distance": 2,
     "movement": 3,
-    "traits": [
-      "FinalJustice",
-      "Parry"
-    ],
+    "traits": ["FinalJustice", "Parry"],
     "activeAbilityDamage": [],
-    "activeAbilities": [
-      "CrusadeOfWrath"
-    ],
+    "activeAbilities": ["CrusadeOfWrath"],
     "passiveAbilityDamage": [],
-    "passiveAbilities": [
-      "DestroyTheWitch"
-    ],
+    "passiveAbilities": ["DestroyTheWitch"],
     "stats": [
       {
         "abilityLevel": 23,
@@ -2154,22 +2055,11 @@
     "rangedHits": null,
     "distance": null,
     "movement": 3,
-    "traits": [
-      "Parry",
-      "RapidAssault"
-    ],
-    "activeAbilityDamage": [
-      "Power"
-    ],
-    "activeAbilities": [
-      "ThunderousAssault"
-    ],
-    "passiveAbilityDamage": [
-      "Power"
-    ],
-    "passiveAbilities": [
-      "ChampionOfTheFeast"
-    ],
+    "traits": ["Parry", "RapidAssault"],
+    "activeAbilityDamage": ["Power"],
+    "activeAbilities": ["ThunderousAssault"],
+    "passiveAbilityDamage": ["Power"],
+    "passiveAbilities": ["ChampionOfTheFeast"],
     "stats": [
       {
         "abilityLevel": 1,
@@ -2232,15 +2122,9 @@
     "movement": 3,
     "traits": [],
     "activeAbilityDamage": [],
-    "activeAbilities": [
-      "DevoutPush"
-    ],
-    "passiveAbilityDamage": [
-      "Bolter"
-    ],
-    "passiveAbilities": [
-      "HeavyBoltPistol"
-    ],
+    "activeAbilities": ["DevoutPush"],
+    "passiveAbilityDamage": ["Bolter"],
+    "passiveAbilities": ["HeavyBoltPistol"],
     "stats": [
       {
         "abilityLevel": 1,
@@ -2662,12 +2546,8 @@
     "distance": 2,
     "movement": 3,
     "traits": [],
-    "activeAbilityDamage": [
-      "Flame"
-    ],
-    "activeAbilities": [
-      "IncendiaryShells"
-    ],
+    "activeAbilityDamage": ["Flame"],
+    "activeAbilities": ["IncendiaryShells"],
     "passiveAbilityDamage": [],
     "passiveAbilities": [],
     "stats": [
@@ -3093,12 +2973,8 @@
     "traits": [],
     "activeAbilityDamage": [],
     "activeAbilities": [],
-    "passiveAbilityDamage": [
-      "Flame"
-    ],
-    "passiveAbilities": [
-      "Pyreblaster"
-    ],
+    "passiveAbilityDamage": ["Flame"],
+    "passiveAbilities": ["Pyreblaster"],
     "stats": [
       {
         "abilityLevel": 1,
@@ -3519,16 +3395,9 @@
     "rangedHits": 6,
     "distance": 2,
     "movement": 2,
-    "traits": [
-      "MkXGravis",
-      "SuppressiveFire"
-    ],
-    "activeAbilityDamage": [
-      "Blast"
-    ],
-    "activeAbilities": [
-      "Fragstorm"
-    ],
+    "traits": ["MkXGravis", "SuppressiveFire"],
+    "activeAbilityDamage": ["Blast"],
+    "activeAbilities": ["Fragstorm"],
     "passiveAbilityDamage": [],
     "passiveAbilities": [],
     "stats": [
@@ -3951,18 +3820,11 @@
     "rangedHits": null,
     "distance": null,
     "movement": 3,
-    "traits": [
-      "GetStuckIn",
-      "Mechanic"
-    ],
+    "traits": ["GetStuckIn", "Mechanic"],
     "activeAbilityDamage": [],
-    "activeAbilities": [
-      "GrotTank"
-    ],
+    "activeAbilities": ["GrotTank"],
     "passiveAbilityDamage": [],
-    "passiveAbilities": [
-      "KustomForceFieldReworked"
-    ],
+    "passiveAbilities": ["KustomForceFieldReworked"],
     "stats": [
       {
         "abilityLevel": 38,
@@ -3987,22 +3849,11 @@
     "rangedHits": 3,
     "distance": 3,
     "movement": 3,
-    "traits": [
-      "GetStuckIn",
-      "BigTarget",
-      "Explodes",
-      "Mechanical"
-    ],
-    "activeAbilityDamage": [
-      "Projectile"
-    ],
-    "activeAbilities": [
-      "DakkaDakkaDakka"
-    ],
+    "traits": ["GetStuckIn", "BigTarget", "Explodes", "Mechanical"],
+    "activeAbilityDamage": ["Projectile"],
+    "activeAbilities": ["DakkaDakkaDakka"],
     "passiveAbilityDamage": [],
-    "passiveAbilities": [
-      "PowerTrip"
-    ],
+    "passiveAbilities": ["PowerTrip"],
     "stats": [
       {
         "abilityLevel": 38,
@@ -4027,21 +3878,11 @@
     "rangedHits": null,
     "distance": null,
     "movement": 4,
-    "traits": [
-      "GetStuckIn",
-      "BeastSlayer",
-      "Unstoppable"
-    ],
-    "activeAbilityDamage": [
-      "DirectDamage"
-    ],
-    "activeAbilities": [
-      "UnstoppableMomentumReworked"
-    ],
+    "traits": ["GetStuckIn", "BeastSlayer", "Unstoppable"],
+    "activeAbilityDamage": ["DirectDamage"],
+    "activeAbilities": ["UnstoppableMomentumReworked"],
     "passiveAbilityDamage": [],
-    "passiveAbilities": [
-      "SmashaEad"
-    ],
+    "passiveAbilities": ["SmashaEad"],
     "stats": [
       {
         "abilityLevel": 41,
@@ -4066,20 +3907,11 @@
     "rangedHits": null,
     "distance": null,
     "movement": 3,
-    "traits": [
-      "GetStuckIn",
-      "BeastSlayer"
-    ],
+    "traits": ["GetStuckIn", "BeastSlayer"],
     "activeAbilityDamage": [],
-    "activeAbilities": [
-      "GetEmRuntz"
-    ],
-    "passiveAbilityDamage": [
-      "Physical"
-    ],
-    "passiveAbilities": [
-      "SquigHound"
-    ],
+    "activeAbilities": ["GetEmRuntz"],
+    "passiveAbilityDamage": ["Physical"],
+    "passiveAbilities": ["SquigHound"],
     "stats": [
       {
         "abilityLevel": 44,
@@ -4112,15 +3944,9 @@
       "Mechanical"
     ],
     "activeAbilityDamage": [],
-    "activeAbilities": [
-      "Waaagh"
-    ],
-    "passiveAbilityDamage": [
-      "Projectile"
-    ],
-    "passiveAbilities": [
-      "LightImUp"
-    ],
+    "activeAbilities": ["Waaagh"],
+    "passiveAbilityDamage": ["Projectile"],
+    "passiveAbilities": ["LightImUp"],
     "stats": [
       {
         "abilityLevel": 26,
@@ -4172,16 +3998,11 @@
     "rangedHits": null,
     "distance": null,
     "movement": 2,
-    "traits": [
-      "Diminutive",
-      "BattleFatigue"
-    ],
+    "traits": ["Diminutive", "BattleFatigue"],
     "activeAbilityDamage": [],
     "activeAbilities": [],
     "passiveAbilityDamage": [],
-    "passiveAbilities": [
-      "PileIn"
-    ],
+    "passiveAbilities": ["PileIn"],
     "stats": [
       {
         "abilityLevel": 1,
@@ -4701,15 +4522,9 @@
     "rangedHits": 2,
     "distance": 2,
     "movement": 3,
-    "traits": [
-      "BattleFatigue"
-    ],
-    "activeAbilityDamage": [
-      "Blast"
-    ],
-    "activeAbilities": [
-      "Stikkbomb"
-    ],
+    "traits": ["BattleFatigue"],
+    "activeAbilityDamage": ["Blast"],
+    "activeAbilities": ["Stikkbomb"],
     "passiveAbilityDamage": [],
     "passiveAbilities": [],
     "stats": [
@@ -5231,17 +5046,11 @@
     "rangedHits": 3,
     "distance": 3,
     "movement": 2,
-    "traits": [
-      "Mechanical",
-      "BattleFatigue",
-      "Vehicle"
-    ],
+    "traits": ["Mechanical", "BattleFatigue", "Vehicle"],
     "activeAbilityDamage": [],
     "activeAbilities": [],
     "passiveAbilityDamage": [],
-    "passiveAbilities": [
-      "Ramshackle"
-    ],
+    "passiveAbilities": ["Ramshackle"],
     "stats": [
       {
         "abilityLevel": 1,
@@ -5761,16 +5570,11 @@
     "rangedHits": null,
     "distance": null,
     "movement": 4,
-    "traits": [
-      "Flying"
-    ],
+    "traits": ["Flying"],
     "activeAbilityDamage": [],
     "activeAbilities": [],
     "passiveAbilityDamage": [],
-    "passiveAbilities": [
-      "FullThrottle",
-      "StormboyzStrike"
-    ],
+    "passiveAbilities": ["FullThrottle", "StormboyzStrike"],
     "stats": [
       {
         "abilityLevel": 1,
@@ -6293,12 +6097,8 @@
     "traits": [],
     "activeAbilityDamage": [],
     "activeAbilities": [],
-    "passiveAbilityDamage": [
-      "Physical"
-    ],
-    "passiveAbilities": [
-      "Bounce"
-    ],
+    "passiveAbilityDamage": ["Physical"],
+    "passiveAbilities": ["Bounce"],
     "stats": [
       {
         "abilityLevel": 1,

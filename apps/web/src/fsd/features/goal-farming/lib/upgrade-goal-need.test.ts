@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest"
 import { unitIdSchema, upgradeIdSchema } from "@workspace/game-domain"
 import type { MowStorageModel } from "@workspace/game-catalog"
 
-import type { GoalDetail } from "@/entities/goal"
+import type { GoalDetail, UpgradeTarget } from "@/entities/goal"
 
 import type { FarmingCharacter, FarmingUpgrade } from "../model/estimate.domain"
 import {
@@ -65,13 +65,21 @@ const rankGoal = (end: number) =>
 
 const upgradeGoal = (
   entityType: "Character" | "Mow",
-  upgrade: NonNullable<GoalDetail["config"]["upgrade"]>
+  upgrade: Pick<UpgradeTarget, "targets"> & Partial<UpgradeTarget>
 ) =>
   ({
     goalType: "Upgrade",
     entityType,
     entityId: entityType === "Mow" ? "astraOrdnanceBattery" : "ultraApothecary",
-    config: { farmingStrategy: "TotalUpgrades", upgrade },
+    config: {
+      farmingStrategy: "TotalUpgrades",
+      upgrade: {
+        rankRange: null,
+        activeRange: null,
+        passiveRange: null,
+        ...upgrade,
+      },
+    },
   }) as GoalDetail
 
 const abilityGoal = (activeEnd: number) =>
@@ -180,7 +188,7 @@ describe("Upgrade goal need", () => {
     const mowUpgrade = (range?: { start: number; end: number }) =>
       upgradeGoal("Mow", {
         targets: [{ upgradeId: damage, quantity: 3 }],
-        activeRange: range,
+        activeRange: range ?? null,
       })
 
     it("de-duplicates per track (3)", () => {

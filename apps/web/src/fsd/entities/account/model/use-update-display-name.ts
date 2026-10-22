@@ -4,7 +4,7 @@ import { updateDisplayName } from "../api/account.api"
 import { accountQueries } from "../api/account.queries"
 
 /**
- * Saves the name and resolves only after `/me` has been refetched, so callers awaiting
+ * Saves the name and resolves only after `/account` has been refetched, so callers awaiting
  * `mutateAsync` see the canonical state — the public name is never promoted optimistically. A failed
  * refetch rejects (throwOnError), so it is never reported as a completed save; retrying re-sends the
  * same name, which is idempotent.

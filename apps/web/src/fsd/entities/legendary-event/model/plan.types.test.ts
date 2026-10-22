@@ -11,6 +11,8 @@ const plan = {
   notes: null,
   showPaidOptions: false,
   teams: [],
+  runs: [],
+  annotations: [],
 }
 
 describe("legendaryEventPlanConflict", () => {

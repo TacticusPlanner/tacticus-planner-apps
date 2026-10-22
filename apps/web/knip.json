@@ -7,5 +7,6 @@
     "scripts/*.mjs",
     "e2e/**/*.ts"
   ],
-  "tags": ["-knipignore"]
+  "tags": ["-knipignore"],
+  "ignore": ["src/fsd/shared/api/schema.d.ts"]
 }

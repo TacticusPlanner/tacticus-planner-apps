@@ -78,6 +78,8 @@ function plan(
     catalogVersion: "1",
     notes: null,
     showPaidOptions: false,
+    runs: [],
+    annotations: [],
     teams,
   }
 }

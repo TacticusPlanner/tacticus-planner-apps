@@ -6,7 +6,7 @@ import type { CurrentUser } from "./current-user"
 
 /**
  * Writes a Tacticus integration update into the cached current user, so the configured-key and
- * user-id state follow the response without another `GET /me` (spec: client-data-freshness).
+ * user-id state follow the response without another `GET /account` (spec: client-data-freshness).
  */
 export function applyTacticusIntegrationResult(
   queryClient: QueryClient,

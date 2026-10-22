@@ -66,7 +66,7 @@ export function useGoalSubmit({
       return createCombinedGoals({
         entityType,
         entityId: unitId,
-        projects: selectedProjects.length > 0 ? selectedProjects : undefined,
+        projects: selectedProjects.length > 0 ? selectedProjects : null,
         goals: specs.map((spec) => ({
           ...spec,
           snapshot: buildCreateGoalSnapshot({ ...snapshotContext, spec }),

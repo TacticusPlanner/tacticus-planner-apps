@@ -1,3 +1,5 @@
+import type { ApiSchemas } from "@/shared/api"
+
 import type { GoalGroupValue } from "../ui/goal-filters"
 
 /** Type guard for a value read back from persisted storage (`usePersistedSelection`) — callers
@@ -6,219 +8,49 @@ export function isGoalGroupValue(value: unknown): value is GoalGroupValue {
   return value === "none" || value === "unit" || value === "type"
 }
 
-// Mirrors the backend's GoalEntityType/GoalType/GoalStatus enums,
-// serialized by their C# names (System.Text.Json's default camelCase policy only affects property names,
-// not enum values).
-export type GoalEntityType = "Character" | "Mow"
-export type GoalKind = "Rank" | "Ascension" | "Ability" | "Unlock" | "Upgrade"
-export type FarmingStrategy =
-  "TotalUpgrades" | "EveryStep" | "Milestones" | "MajorMilestones"
-export type GoalStatus = "Active" | "Paused" | "Completed" | "Archived"
+// Wire shapes, generated from the API's OpenAPI document (spec: api-contract-sync); never hand-written.
+type S = ApiSchemas
 
-export type RankTarget = {
-  start: number
-  startPointFive: boolean
-  startAppliedUpgrades: number
-  end: number
-  endPointFive: boolean
-  endAppliedUpgrades: number
-}
+export type GoalEntityType = S["GoalEntityType"]
+export type GoalKind = S["GoalType"]
+export type FarmingStrategy = S["FarmingStrategy"]
+export type GoalStatus = S["GoalStatus"]
 
-export type ProgressionTarget = {
-  start: string
-  end: string
-}
+export type RankTarget = S["RankTargetResponse"]
+export type ProgressionTarget = S["ProgressionTargetResponse"]
+export type AbilityTarget = S["AbilityTargetResponse"]
+/** `ids` holds campaign battle ids for "Campaign", shop-offer ids (`<shopId>:<rewardType>`) for "Shop",
+ *  and is empty for run-based kinds ("Onslaught"). */
+export type AcquisitionSource = S["AcquisitionSourceResponse"]
+export type UpgradeMaterialTarget = S["UpgradeMaterialTargetResponse"]
+/** Rank indices for a Character, ability levels for one Machine of War track; `null` means no range. */
+export type UpgradeRange = S["UpgradeRangeResponse"]
+export type UpgradeTarget = S["UpgradeTargetResponse"]
+/** `acquisitionSources` null means unrestricted campaign farming; `farmingLocationIds` null means auto
+ *  lowest-energy selection. */
+export type GoalConfig = S["GoalConfigResponse"]
+export type GoalSnapshot = S["GoalSnapshotResponse"]
+export type GoalSnapshotResource = S["GoalSnapshotResourceResponse"]
+export type CreateGoalSnapshotRequest = S["CreateGoalSnapshotRequest"]
 
-export type AbilityTarget = {
-  activeStart: number
-  activeEnd: number
-  passiveStart: number
-  passiveEnd: number
-}
-
-// The server's growable acquisition-source allow-list — kept as `string` rather than a union so
-// adding a value there (e.g. a future "Incursion", tacticus-planner-apps#106) needs no client type
-// change. `ids` holds campaign battle ids for "Campaign", shop-offer ids (`<shopId>:<rewardType>`)
-// for "Shop", and is empty for run-based kinds ("Onslaught").
-export type AcquisitionSource = {
-  kind: string
-  ids: string[]
-}
-
-export type UpgradeMaterialTarget = {
-  upgradeId: string
-  quantity: number
-}
-
-/** A progression range an Upgrade goal was created against: rank indices for a Character, ability
- * levels for one Machine of War track. Absent/`null` means no range (additive planning). */
-export type UpgradeRange = {
-  start: number
-  end: number
-}
-
-export type UpgradeTarget = {
-  targets: UpgradeMaterialTarget[]
-  /** Character only. */
-  rankRange?: UpgradeRange | null
-  /** Machine of War primary ability track only. */
-  activeRange?: UpgradeRange | null
-  /** Machine of War secondary ability track only. */
-  passiveRange?: UpgradeRange | null
-}
-
-export type GoalConfig = {
-  rank: RankTarget | null
-  progression: ProgressionTarget | null
-  ability: AbilityTarget | null
-  farmingStrategy: FarmingStrategy
-  // Unlock/Ascension shard-source selection (Campaigns/Onslaught/Shops picker). Null/absent means
-  // unrestricted campaign farming — the pre-picker default.
-  acquisitionSources: AcquisitionSource[] | null
-  // Campaign battle ids (opaque string codes) a Rank/Ability goal farms its upgrade materials from;
-  // empty/null means auto lowest-energy selection. Unlock/Ascension's shard-node role moved to
-  // `acquisitionSources`.
-  farmingLocationIds: string[] | null
-  upgrade: UpgradeTarget | null
-}
-
-export type GoalSnapshot = {
-  initialRank: string | null
-  initialProgression: string | null
-  initialActiveAbilityLevel: number | null
-  initialPassiveAbilityLevel: number | null
-  initialRequirement: GoalSnapshotResource[]
-  initialInventoryContribution: GoalSnapshotResource[]
-}
-
-export type GoalSnapshotResource = {
-  resourceId: string
-  count: number
-}
-
-export type CreateGoalSnapshotRequest = GoalSnapshot
-
-/** `GET /me/goals` entry and `GET /me/goals/{id}`: a goal in full (the list carries every field, so no
- *  read fetches a goal's detail separately). */
-export type GoalDetail = {
-  goalId: string
-  entityType: GoalEntityType
-  entityId: string
-  goalType: GoalKind
-  status: GoalStatus
-  notes: string | null
-  dependsOn: string[]
-  createdAt: string
-  updatedAt: string
-  /** Position (1 = first) in the account-wide order of in-flight goals; null for Completed/Archived. */
-  globalPriority: number | null
-  config: GoalConfig
-  snapshot: GoalSnapshot | null
-  /** Every project the goal belongs to (a goal may belong to several at once). */
-  projectIds: string[]
-  /** Monotonically increasing; an edit echoes the revision it was loaded with so the server can refuse
-   *  to overwrite a newer edit. */
-  revision: number
-}
-
-/** `GET /me/goals`: in-flight goals first in global order, then the rest. `orderRevision` is the token
- * the reorder operations echo back. */
-export type GoalListResponse = {
-  goals: GoalDetail[]
-  orderRevision: number
-}
-
-/** `POST /me/goals/status`: one atomic transition of every listed goal. `expectedOrderRevision` is
- *  required when the transition enters or leaves the in-flight set (to/from Completed or Archived). */
-export type UpdateGoalsStatusRequest = {
-  goalIds: string[]
-  status: GoalStatus
-  expectedOrderRevision?: number
-}
-
-/** 200 body of `POST /me/goals/status`: every transitioned goal and the order revision after it. A
- *  conflict is a 409 problem (`slotOccupied`, `goalOrderStale`), never a field here. */
-export type UpdateGoalsStatusResponse = {
-  goals: GoalDetail[]
-  orderRevision: number
-}
-
-/** The outcome of a reorder/move: the new revision and the canonical in-flight order. */
-export type GoalOrderResponse = {
-  revision: number
-  goalIds: string[]
-}
-
-export type CreateGoalConfigRequest = {
-  rank?: RankTarget | null
-  progression?: ProgressionTarget | null
-  ability?: AbilityTarget | null
-  farmingStrategy?: FarmingStrategy
-  acquisitionSources?: AcquisitionSource[] | null
-  farmingLocationIds?: string[] | null
-  upgrade?: UpgradeTarget | null
-}
-
-/** One project membership for a newly created goal. Unit placement is assigned automatically. */
-export type ProjectMembership = {
-  projectId: string
-}
-
-/** The end-target group of a target edit — exactly the one matching the goal's kind is set; the
- * start/baseline is not editable and is never sent. */
-export type GoalTargetEdit = {
-  rank?: { end: number; endPointFive: boolean; endAppliedUpgrades: number }
-  progression?: { end: string }
-  ability?: { activeEnd: number; passiveEnd: number }
-  upgrade?: UpgradeTarget
-}
-
-export type UpdateGoalTargetRequest = {
-  expectedRevision: number
-  target: GoalTargetEdit
-}
-
-export type UpdateGoalRequest = {
-  notes: string | null
-  farmingLocationIds: string[] | null
-  farmingStrategy?: FarmingStrategy
-  acquisitionSources?: AcquisitionSource[] | null
-}
-
-/** Body of `PUT /me/goals/{id}/edit`. Every section is optional and an absent one is left unchanged; the
- * server applies the present sections all-or-nothing. `target` and `details` are the bodies of the
- * dedicated target / details endpoints; `priority.position` is the 1-based target position among the
- * account's in-flight goals. */
-export type EditGoalRequest = {
-  target?: UpdateGoalTargetRequest
-  details?: UpdateGoalRequest
-  projectIds?: string[]
-  priority?: { position: number; expectedOrderRevision: number }
-}
-
-/** 200 body of `PUT /me/goals/{id}/edit`: the updated goal, plus the new order when `priority` was sent. */
-export type EditGoalResponse = {
-  goal: GoalDetail
-  order?: GoalOrderResponse | null
-}
-
-/** One goal within a combined-creation request (plan §6/§16 phase 5). `dependsOnIndex` holds indices
- * into the parent request's `goals` array — each must reference a strictly earlier position; the server
- * resolves them into real goal ids. */
-export type CombinedGoalSpec = {
-  goalType: string
-  config: CreateGoalConfigRequest
-  dependsOnIndex: number[]
-  snapshot?: CreateGoalSnapshotRequest | null
-}
-
-export type CreateCombinedGoalsRequest = {
-  entityType: string
-  entityId: string
-  // Omitted/empty falls back to the caller's default project; otherwise every goal is added to every
-  // listed project (a goal may belong to several projects at once).
-  projects?: ProjectMembership[] | null
-  goals: CombinedGoalSpec[]
-  // Applies to every goal the request creates, prerequisites included — it is not settable per spec.
-  startPaused?: boolean
-}
+/** A goal in full, as the list and every mutation serve it. `globalPriority` is its 1-based position in
+ *  the account-wide in-flight order (null for Completed/Archived); an edit echoes `revision`. */
+export type GoalDetail = S["GoalDetailResponse"]
+/** In-flight goals first in global order, then the rest; reorders echo `orderRevision`. */
+export type GoalListResponse = S["ListGoalsResponse"]
+/** One atomic transition; `expectedOrderRevision` is required when entering or leaving the in-flight set. */
+export type UpdateGoalsStatusRequest = S["UpdateGoalsStatusRequest"]
+export type UpdateGoalsStatusResponse = S["UpdateGoalsStatusResponse"]
+export type GoalOrderResponse = S["GoalOrderResponse"]
+export type CreateGoalConfigRequest = S["CreateGoalConfigRequest"]
+export type ProjectMembership = S["ProjectPriorityRequest"]
+/** Exactly the group matching the goal's kind is set; only end values are editable. */
+export type GoalTargetEdit = S["GoalTargetEditRequest"]
+export type UpdateGoalTargetRequest = S["UpdateGoalTargetRequest"]
+export type UpdateGoalRequest = S["UpdateGoalRequest"]
+/** Every section is optional; present sections apply all-or-nothing. */
+export type EditGoalRequest = S["EditGoalRequest"]
+export type EditGoalResponse = S["EditGoalResponse"]
+/** `dependsOnIndex` holds indices of strictly earlier specs in the same request. */
+export type CombinedGoalSpec = S["CombinedGoalSpec"]
+export type CreateCombinedGoalsRequest = S["CreateCombinedGoalsRequest"]

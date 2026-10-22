@@ -74,7 +74,7 @@ describe("ApiKeyForm", () => {
     )
   })
 
-  it("omits the user id when the field is left empty, so a stored one is not cleared", async () => {
+  it("sends a null user id when the field is left empty, so a stored one is not cleared", async () => {
     updateTacticusIntegration.mockResolvedValue({})
     const user = userEvent.setup()
 
@@ -86,7 +86,7 @@ describe("ApiKeyForm", () => {
     // react-query passes a mutation context as a second argument; only the payload matters here.
     expect(updateTacticusIntegration.mock.calls[0][0]).toEqual({
       tacticusApiKey: "key-1",
-      tacticusUserId: undefined,
+      tacticusUserId: null,
     })
   })
 

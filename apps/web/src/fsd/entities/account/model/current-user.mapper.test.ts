@@ -8,6 +8,8 @@ import {
 
 const base: CurrentUserDto = {
   applicationUserId: "user-1",
+  displayName: null,
+  suggestedDisplayName: null,
   hasCompletedOnboarding: true,
   tacticusApiKeyMasked: "abcd****",
   tacticusUserIdMasked: null,
@@ -39,7 +41,7 @@ describe("mapCurrentUserDtoToDomain", () => {
     expect(isAccountSetupComplete(user)).toBe(false)
   })
 
-  it.each([null, undefined, "   "])(
+  it.each([null, "   "])(
     "maps a missing suggestion (%s) to null",
     (suggestion) => {
       const user = mapCurrentUserDtoToDomain({
@@ -52,7 +54,7 @@ describe("mapCurrentUserDtoToDomain", () => {
     }
   )
 
-  it.each([undefined, null, "", "   "])(
+  it.each([null, "", "   "])(
     "treats a blank name (%j) as no name",
     (displayName) => {
       const user = mapCurrentUserDtoToDomain({ ...base, displayName })

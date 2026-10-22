@@ -18,7 +18,7 @@ installGlobalErrorCapture()
 
 async function bootstrap() {
   const msalInstance = await initializeAuthentication()
-  // Before the first render, so the first API call (GET /me) finds the restore already in flight
+  // Before the first render, so the first API call (GET /account) finds the restore already in flight
   // and waits on it instead of racing a second hidden sign-in frame against it.
   startSilentSignInOnce(msalInstance)
 

@@ -306,7 +306,7 @@ describe("PostHogProvider error reporting", () => {
     })
     renderProvider("/plan")
     const error = new Error(
-      "Failed to fetch https://api.example.test/api/v1/me/goals?token=secret"
+      "Failed to fetch https://api.example.test/api/v1/goals?token=secret"
     )
     error.stack = "Error: at https://app.example.test/assets/main.js?v=1:2:3"
 
@@ -314,7 +314,7 @@ describe("PostHogProvider error reporting", () => {
 
     expect(captureEvent).toHaveBeenCalledExactlyOnceWith({
       type: "client_error",
-      message: "Failed to fetch https://api.example.test/api/v1/me/goals",
+      message: "Failed to fetch https://api.example.test/api/v1/goals",
       stack: "Error: at https://app.example.test/assets/main.js",
       context: "sync",
       routeGroup: "/plan",

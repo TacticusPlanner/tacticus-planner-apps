@@ -39,6 +39,7 @@ const uthar = {
   status: "Active" as const,
   isDefault: false,
   goalIds: [] as string[],
+  target: null,
   revision: 0,
   createdAt: "",
   updatedAt: "",

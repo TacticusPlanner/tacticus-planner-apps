@@ -13,6 +13,7 @@ function project(overrides: Record<string, unknown>) {
     status: "Active",
     isDefault: false,
     goalIds: [],
+    target: null,
     revision: 1,
     createdAt: "2026-01-01T00:00:00Z",
     updatedAt: "2026-01-01T00:00:00Z",

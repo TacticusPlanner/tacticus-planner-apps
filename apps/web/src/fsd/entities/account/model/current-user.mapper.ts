@@ -1,14 +1,8 @@
+import type { ApiSchemas } from "@/shared/api"
+
 import type { CurrentUser } from "./current-user"
 
-export type CurrentUserDto = {
-  applicationUserId: string
-  displayName?: string | null
-  suggestedDisplayName?: string | null
-  hasCompletedOnboarding: boolean
-  tacticusApiKeyMasked: string | null
-  tacticusUserIdMasked: string | null
-  analyticsId: string
-}
+export type CurrentUserDto = ApiSchemas["CurrentUserResponse"]
 
 export function mapCurrentUserDtoToDomain(dto: CurrentUserDto): CurrentUser {
   return {

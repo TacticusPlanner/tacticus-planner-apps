@@ -15,7 +15,7 @@ import {
 import { SETUP_STEP_PATHS } from "./account-setup-routes"
 import { useDelayedFlag } from "./use-delayed-flag"
 
-// A healthy /me answers in well under a second; past this, say so rather than look frozen.
+// A healthy /account answers in well under a second; past this, say so rather than look frozen.
 export const ACCOUNT_GATE_SLOW_MS = 5000
 
 function logApiAccessError(error: unknown) {
@@ -25,7 +25,7 @@ function logApiAccessError(error: unknown) {
 /**
  * Blocks protected routes until the signed-in user has a configured Tacticus API key and a confirmed
  * display name, sending them to `/setup` (or straight to its name step) and remembering where they were headed. Protected content waits for the current-user request
- * because GET /api/v1/me provisions a first-time caller's Account/Profile; mounting child routes before it
+ * because GET /api/v1/account provisions a first-time caller's Account/Profile; mounting child routes before it
  * succeeds can race their profile-scoped requests and produce misleading 404 responses.
  *
  * Only a definitive answer redirects. The loading branch renders a spinner, and the error branch blocks

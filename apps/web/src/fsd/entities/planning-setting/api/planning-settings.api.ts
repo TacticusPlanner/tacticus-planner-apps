@@ -1,13 +1,11 @@
-import { apiGet, apiPut } from "@/shared/api"
+import { apiClient, unwrap } from "@/shared/api"
 
 import type { PlanningSettings } from "../model/types"
 
 export function getPlanningSettings(signal?: AbortSignal) {
-  return apiGet<PlanningSettings>("/api/v1/me/user-settings", { signal })
+  return unwrap(apiClient().GET("/api/v1/settings", { signal }))
 }
 
-export async function updatePlanningSettings(settings: PlanningSettings) {
-  return apiPut<PlanningSettings>("/api/v1/me/user-settings", {
-    body: settings,
-  })
+export function updatePlanningSettings(settings: PlanningSettings) {
+  return unwrap(apiClient().PUT("/api/v1/settings", { body: settings }))
 }

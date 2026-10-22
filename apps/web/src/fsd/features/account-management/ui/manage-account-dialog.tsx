@@ -119,7 +119,7 @@ export function ManageAccountDialog({
   )
 }
 
-/** Saving writes the response's masked key/user id into the cached current user (no `GET /me`). */
+/** Saving writes the response's masked key/user id into the cached current user (no `GET /account`). */
 function TacticusIntegrationTab({ user }: { user: CurrentUser }) {
   const { t } = useTranslation()
   const queryClient = useQueryClient()
@@ -145,8 +145,8 @@ function TacticusIntegrationTab({ user }: { user: CurrentUser }) {
     event.preventDefault()
     updateIntegration.mutate({
       clearTacticusUserId: removeUserId,
-      tacticusApiKey: apiKey.trim() || undefined,
-      tacticusUserId: removeUserId ? undefined : userId.trim() || undefined,
+      tacticusApiKey: apiKey.trim() || null,
+      tacticusUserId: removeUserId ? null : userId.trim() || null,
     })
   }
 

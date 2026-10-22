@@ -25,6 +25,8 @@ const emptyConfig: GoalConfig = {
   upgrade: null,
 }
 
+const noRanges = { rankRange: null, activeRange: null, passiveRange: null }
+
 function goal(
   goalType: GoalDetail["goalType"],
   config: Partial<GoalConfig>,
@@ -122,7 +124,10 @@ describe("goalTargetDraftFromDetail", () => {
     expect(
       goalTargetDraftFromDetail(
         goal("Upgrade", {
-          upgrade: { targets: [{ upgradeId: "upgHpC014", quantity: 3 }] },
+          upgrade: {
+            ...noRanges,
+            targets: [{ upgradeId: "upgHpC014", quantity: 3 }],
+          },
         })
       )
     ).toEqual({
@@ -139,6 +144,7 @@ describe("goalTargetDraftFromDetail", () => {
       goalTargetDraftFromDetail(
         goal("Upgrade", {
           upgrade: {
+            ...noRanges,
             targets: [{ upgradeId: "upgHpC014", quantity: 3 }],
             rankRange: { start: 1, end: 4 },
           },
@@ -266,7 +272,10 @@ describe("getGoalTargetIssue", () => {
 
   it("requires every Upgrade quantity to be a positive whole number", () => {
     const detail = goal("Upgrade", {
-      upgrade: { targets: [{ upgradeId: "upgHpC014", quantity: 3 }] },
+      upgrade: {
+        ...noRanges,
+        targets: [{ upgradeId: "upgHpC014", quantity: 3 }],
+      },
     })
     const withQuantity = (quantity: number): GoalTargetDraft => ({
       kind: "Upgrade",
@@ -298,7 +307,10 @@ describe("getGoalTargetIssue", () => {
 
   it("rejects an Upgrade range that does not end above its start", () => {
     const detail = goal("Upgrade", {
-      upgrade: { targets: [{ upgradeId: "upgHpC014", quantity: 3 }] },
+      upgrade: {
+        ...noRanges,
+        targets: [{ upgradeId: "upgHpC014", quantity: 3 }],
+      },
     })
     const draft = (rankRange: { start: number; end: number } | null) =>
       ({
