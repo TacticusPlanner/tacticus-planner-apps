@@ -4,7 +4,6 @@ import {
   rankTargetSlots,
   type GoalDetail,
   type GoalKind,
-  type GoalSummary,
 } from "@/entities/goal"
 import type {
   LegendaryEventGoalRef,
@@ -21,9 +20,9 @@ const PREVIEW_KINDS: ReadonlySet<GoalKind> = new Set([
 /** The Active goals Goals Preview reads (design D3): Character goals of kinds Unlock, Ascension,
  *  Rank and Ability whose unit the event allows. Paused goals never reach this list. */
 export function eventGoalSummaries(
-  active: readonly GoalSummary[],
+  active: readonly GoalDetail[],
   allowedUnitIds: ReadonlySet<string>
-): GoalSummary[] {
+): GoalDetail[] {
   return active.filter(
     (goal) =>
       goal.status === "Active" &&

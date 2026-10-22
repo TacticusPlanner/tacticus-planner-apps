@@ -31,7 +31,6 @@ vi.mock("@azure/msal-react", () => ({
 }))
 
 const listProjects = vi.fn()
-const listProjectGoals = vi.fn()
 
 type MockProjectSummary = {
   projectId: string
@@ -46,10 +45,6 @@ vi.mock("@/entities/project", async (importOriginal) => {
     listProjects: (...args: unknown[]) => listProjects(...args),
     projectQueries: {
       all: () => ["projects"],
-      goals: (projectId: string) => ({
-        queryKey: ["projects", projectId, "goals"],
-        queryFn: () => listProjectGoals(projectId),
-      }),
       list: () => ({
         queryKey: ["projects", "list"],
         queryFn: () => listProjects(),
@@ -130,6 +125,7 @@ function project(overrides: Partial<Record<string, unknown>> = {}) {
     color: null,
     status: "Active",
     isDefault: true,
+    goalIds: [],
     revision: 0,
     createdAt: "2026-01-01T00:00:00Z",
     updatedAt: "2026-01-01T00:00:00Z",
@@ -140,7 +136,6 @@ function project(overrides: Partial<Record<string, unknown>> = {}) {
 describe("ProjectsListPage", () => {
   beforeEach(() => {
     listProjects.mockReset()
-    listProjectGoals.mockReset().mockResolvedValue({ goals: [] })
     onLaunch.mockReset()
   })
 
@@ -218,8 +213,6 @@ describe("ProjectsListPage", () => {
     expect(
       screen.queryByRole("heading", { name: /goals\.project\.listTitle/ })
     ).not.toBeInTheDocument()
-    expect(listProjectGoals).toHaveBeenCalledWith(projectA.projectId)
-    expect(listProjectGoals).not.toHaveBeenCalledWith(archived.projectId)
   })
 
   it("opens a blank Sheet from the FAB and a pre-filled Sheet from a row's Edit icon", async () => {
@@ -279,9 +272,6 @@ describe("ProjectsListPage", () => {
     expect(sheet).toBeInTheDocument()
     expect(screen.getByTestId("projects-page")).toBeInTheDocument()
     expect(screen.queryByTestId("landed-on-goals")).not.toBeInTheDocument()
-    await vi.waitFor(() =>
-      expect(listProjectGoals).toHaveBeenCalledWith("proj-2")
-    )
 
     await user.click(screen.getByTestId("add-goals-create-new"))
     expect(onLaunch).toHaveBeenCalledWith({ projectIds: ["proj-2"] })

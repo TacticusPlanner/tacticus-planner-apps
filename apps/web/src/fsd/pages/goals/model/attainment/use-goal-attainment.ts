@@ -1,6 +1,4 @@
 import { useMemo } from "react"
-import { useQueries } from "@tanstack/react-query"
-import { useIsAuthenticated } from "@azure/msal-react"
 import { useLiveQuery } from "dexie-react-hooks"
 import type { UnitId } from "@workspace/game-domain"
 import {
@@ -10,18 +8,17 @@ import {
   getPlayerMows,
 } from "@workspace/player-data/queries"
 
-import { goalQueries } from "@/entities/goal"
-
 import {
   computeGoalAttainment,
   UNKNOWN,
   type GoalAttainment,
 } from "./goal-attainment"
+import { useGoalsFor } from "./use-goals-for"
 
 export type GoalAttainmentState = {
   byGoalId: ReadonlyMap<string, GoalAttainment>
-  /** True while a goal's detail or a player-data table is still loading, so `byGoalId` may hold
-   *  placeholder `unknown` entries that will change once it settles. A failed detail query or an
+  /** True while the goals list or a player-data table is still loading, so `byGoalId` may hold
+   *  placeholder `unknown` entries that will change once it settles. A failed list read or an
    *  empty/unsynced player-data table is settled, not pending. */
   pending: boolean
 }
@@ -34,22 +31,15 @@ async function settled<T>(query: () => Promise<T>): Promise<{ value: T }> {
 
 /**
  * Batch attainment for every goal id in `goalIds` — the data source for the overview's
- * "Unfulfilled" / "Reached" grouping (plan §3). Fetches each goal's full `GoalDetail` (attainment
- * needs `config`'s numeric targets, which the list endpoint's `GoalSummary` doesn't carry) via
- * `useQueries`, and re-evaluates
+ * "Unfulfilled" / "Reached" grouping (plan §3). Reads each goal in full from the goals list (attainment
+ * needs `config`'s numeric targets; no per-goal read), and re-evaluates
  * automatically whenever the underlying live-queried player-data tables change (a goal update, or a
  * fresh player-data sync) since `useLiveQuery` re-renders this hook's caller on any such change.
  */
 export function useGoalAttainmentState(
   goalIds: readonly string[]
 ): GoalAttainmentState {
-  const isAuthenticated = useIsAuthenticated()
-  const detailQueries = useQueries({
-    queries: goalIds.map((goalId) => ({
-      ...goalQueries.detail(goalId),
-      enabled: isAuthenticated,
-    })),
-  })
+  const goals = useGoalsFor(goalIds)
   const charactersResult = useLiveQuery(() => settled(getPlayerCharacters), [])
   const mowsResult = useLiveQuery(() => settled(getPlayerMows), [])
   const upgradesResult = useLiveQuery(() => settled(getInventoryUpgrades), [])
@@ -75,10 +65,8 @@ export function useGoalAttainmentState(
   )
 
   const result = new Map<string, GoalAttainment>()
-  detailQueries.forEach((query, index) => {
-    const goalId = goalIds[index]
-    if (!goalId) return
-    const detail = query.data
+  goalIds.forEach((goalId) => {
+    const detail = goals.goalsById.get(goalId)
     if (!detail) {
       result.set(goalId, UNKNOWN)
       return
@@ -96,7 +84,7 @@ export function useGoalAttainmentState(
     )
   })
   const pending =
-    detailQueries.some((query) => query.isLoading) ||
+    goals.loading ||
     !charactersResult ||
     !mowsResult ||
     !upgradesResult ||

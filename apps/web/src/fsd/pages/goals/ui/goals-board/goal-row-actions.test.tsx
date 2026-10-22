@@ -5,6 +5,7 @@ import userEvent from "@testing-library/user-event"
 import { toast } from "sonner"
 
 vi.mock("react-i18next", () => ({
+  initReactI18next: { type: "3rdParty", init: () => undefined },
   useTranslation: () => ({
     t: (key: string, opts?: Record<string, unknown>) =>
       opts ? `${key}:${JSON.stringify(opts)}` : key,
@@ -35,57 +36,18 @@ vi.mock("@workspace/ui/hooks/use-mobile", () => ({
   useIsMobile: () => isMobileRef.current,
 }))
 
-const updateGoalStatus = vi.fn()
+const updateGoalsStatus = vi.fn()
 const onEdit = vi.fn()
 const deleteGoal = vi.fn()
-const getGoalDetail = vi.fn<(goalId: string) => Promise<unknown>>()
-const listProjectGoals = vi.fn<(projectId: string) => Promise<unknown>>()
 
-vi.mock("@/entities/goal", () => ({
-  updateGoalStatus: (...args: unknown[]) => updateGoalStatus(...args),
+vi.mock("@/entities/goal", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/entities/goal")>()),
+  updateGoalsStatus: (...args: unknown[]) => updateGoalsStatus(...args),
   deleteGoal: (...args: unknown[]) => deleteGoal(...args),
-  // The Rank end target a goal detail carries (its `config.rank.end`; 12 when unspecified).
-  goalRankTargetKey: (goal: {
-    goalType?: string
-    config?: { rank?: { end: number } }
-  }) => (goal.goalType === "Rank" ? `${goal.config?.rank?.end ?? 12}:0` : null),
-  describeRankTargetKey: (key: string) => {
-    const [end, slots] = key.split(":").map(Number)
-    return { rank: `Rank${end}`, slots }
-  },
-  goalQueries: {
-    all: () => ["goals"],
-    lists: () => ["goals", "list"],
-    detail: (goalId: string) => ({
-      queryKey: ["goals", "detail", goalId],
-      queryFn: () => getGoalDetail(goalId),
-    }),
-  },
 }))
 
-vi.mock("@/entities/project", async (importOriginal) => ({
-  ...(await importOriginal<typeof import("@/entities/project")>()),
-  projectQueries: {
-    all: () => ["projects"],
-    details: () => ["projects", "detail"],
-    goals: (projectId: string) => ({
-      queryKey: ["projects", "detail", projectId, "goals"],
-      queryFn: () => listProjectGoals(projectId),
-    }),
-  },
-}))
-
-vi.mock("@/shared/api", () => ({
-  ApiError: class ApiError extends Error {
-    status: number
-    details: unknown
-    constructor(status: number, message: string, details?: unknown) {
-      super(message)
-      this.status = status
-      this.details = details
-    }
-  },
-}))
+/** A status change answers with the changed goals and the order revision. */
+const statusResponse = { goals: [], orderRevision: 0 }
 
 import { useGoalActions } from "../../model/goals-data/use-goal-actions"
 import type { GoalRow } from "../../model/shared/types"
@@ -142,22 +104,17 @@ async function pickItem(
   await user.click(await screen.findByTestId(`goal-row-${item}-${goalId}`))
 }
 
-/** Subscribe to both cache shapes so the tests exercise rendered removal and refetch recovery. */
+/** Renders the goals list twice, as Overview and as a project's view (the same list filtered by
+ *  `projectIds`), so the tests exercise rendered removal and refetch recovery in both. */
 function CachedListsHarness({
   loadGoals,
-  loadProjectGoals,
 }: {
-  loadGoals: () => Promise<{ goals: GoalRow[] }>
-  loadProjectGoals: () => Promise<{ goals: { goal: GoalRow }[] }>
+  loadGoals: () => Promise<{ goals: (GoalRow & { projectIds: string[] })[] }>
 }) {
   const actions = useGoalActions()
   const goals = useQuery({
     queryKey: ["goals", "list", { archived: false }],
     queryFn: loadGoals,
-  })
-  const projectGoals = useQuery({
-    queryKey: ["projects", "detail", "proj-a", "goals"],
-    queryFn: loadProjectGoals,
   })
   return (
     <>
@@ -170,12 +127,14 @@ function CachedListsHarness({
         ))}
       </section>
       <section aria-label="Project">
-        {projectGoals.data?.goals.map(({ goal }) => (
-          <div key={goal.goalId}>
-            <span>{goal.goalId}</span>
-            <GoalRowActions row={goal} actions={actions} onEdit={onEdit} />
-          </div>
-        ))}
+        {goals.data?.goals
+          .filter((goal) => goal.projectIds.includes("proj-a"))
+          .map((goal) => (
+            <div key={goal.goalId}>
+              <span>{goal.goalId}</span>
+              <GoalRowActions row={goal} actions={actions} onEdit={onEdit} />
+            </div>
+          ))}
       </section>
     </>
   )
@@ -183,11 +142,9 @@ function CachedListsHarness({
 
 describe("GoalRowActions", () => {
   beforeEach(() => {
-    updateGoalStatus.mockReset()
+    updateGoalsStatus.mockReset()
     onEdit.mockReset()
     deleteGoal.mockReset()
-    getGoalDetail.mockReset()
-    listProjectGoals.mockReset().mockResolvedValue({ goals: [] })
     vi.mocked(toast.success).mockReset()
     vi.mocked(toast.error).mockReset()
   })
@@ -224,7 +181,7 @@ describe("GoalRowActions", () => {
 
     render(<Harness goalRow={row({ status: "Paused" })} reached />)
     expect(await menuItems(user)).toEqual(["edit", "delete"])
-    expect(updateGoalStatus).not.toHaveBeenCalled()
+    expect(updateGoalsStatus).not.toHaveBeenCalled()
   })
 
   it.each(["Completed", "Archived"] as const)(
@@ -245,19 +202,22 @@ describe("GoalRowActions", () => {
   })
 
   it("pauses an active goal from the menu", async () => {
-    updateGoalStatus.mockResolvedValue({})
+    updateGoalsStatus.mockResolvedValue(statusResponse)
     const user = userEvent.setup()
     render(<Harness />)
 
     await pickItem(user, "pause")
 
     await vi.waitFor(() => {
-      expect(updateGoalStatus).toHaveBeenCalledWith("goal-1", "Paused")
+      expect(updateGoalsStatus).toHaveBeenCalledExactlyOnceWith({
+        goalIds: ["goal-1"],
+        status: "Paused",
+      })
     })
   })
 
-  it("cascades pause to a sole-dependent prerequisite", async () => {
-    updateGoalStatus.mockResolvedValue({})
+  it("cascades pause to a sole-dependent prerequisite in the same request", async () => {
+    updateGoalsStatus.mockResolvedValue(statusResponse)
     const user = userEvent.setup()
     render(
       <Harness
@@ -272,24 +232,19 @@ describe("GoalRowActions", () => {
     await pickItem(user, "pause")
 
     await vi.waitFor(() => {
-      expect(updateGoalStatus).toHaveBeenCalledWith("goal-1", "Paused")
-    })
-    await vi.waitFor(() => {
-      expect(updateGoalStatus).toHaveBeenCalledWith("goal-a", "Paused")
+      expect(updateGoalsStatus).toHaveBeenCalledExactlyOnceWith({
+        goalIds: ["goal-1", "goal-a"],
+        status: "Paused",
+      })
     })
   })
 
-  it("keeps the acting goal's control disabled until the whole cascade finishes, not just its own call", async () => {
-    let resolveActing!: (value: unknown) => void
-    let resolveCascade!: (value: unknown) => void
-    updateGoalStatus.mockImplementation((goalId: string) =>
-      goalId === "goal-1"
-        ? new Promise((resolve) => {
-            resolveActing = resolve
-          })
-        : new Promise((resolve) => {
-            resolveCascade = resolve
-          })
+  it("keeps the acting goal's control disabled until the cascade request resolves", async () => {
+    let resolve!: (value: unknown) => void
+    updateGoalsStatus.mockReturnValue(
+      new Promise((done) => {
+        resolve = done
+      })
     )
     const user = userEvent.setup()
     render(
@@ -311,18 +266,7 @@ describe("GoalRowActions", () => {
       )
     )
 
-    // The acting goal's own call resolves, but the cascade call to goal-a is still pending — the
-    // control must stay disabled through this window (the exact race the fix closes).
-    resolveActing({})
-    await vi.waitFor(() => {
-      expect(updateGoalStatus).toHaveBeenCalledWith("goal-a", "Paused")
-    })
-    expect(screen.getByTestId("goal-row-pause-goal-1")).toHaveAttribute(
-      "aria-disabled",
-      "true"
-    )
-
-    resolveCascade({})
+    await act(async () => resolve(statusResponse))
     await vi.waitFor(() =>
       expect(screen.getByTestId("goal-row-pause-goal-1")).not.toHaveAttribute(
         "aria-disabled"
@@ -331,7 +275,7 @@ describe("GoalRowActions", () => {
   })
 
   it("does not cascade pause to a prerequisite shared by another active goal", async () => {
-    updateGoalStatus.mockResolvedValue({})
+    updateGoalsStatus.mockResolvedValue(statusResponse)
     const user = userEvent.setup()
     render(
       <Harness
@@ -346,13 +290,15 @@ describe("GoalRowActions", () => {
     await pickItem(user, "pause")
 
     await vi.waitFor(() => {
-      expect(updateGoalStatus).toHaveBeenCalledWith("goal-1", "Paused")
+      expect(updateGoalsStatus).toHaveBeenCalledExactlyOnceWith({
+        goalIds: ["goal-1"],
+        status: "Paused",
+      })
     })
-    expect(updateGoalStatus).not.toHaveBeenCalledWith("goal-a", "Paused")
   })
 
   it("never cascades to a Completed or Archived prerequisite", async () => {
-    updateGoalStatus.mockResolvedValue({})
+    updateGoalsStatus.mockResolvedValue(statusResponse)
     const user = userEvent.setup()
     render(
       <Harness
@@ -373,18 +319,15 @@ describe("GoalRowActions", () => {
     await pickItem(user, "pause")
 
     await vi.waitFor(() => {
-      expect(updateGoalStatus).toHaveBeenCalledWith("goal-1", "Paused")
+      expect(updateGoalsStatus).toHaveBeenCalledExactlyOnceWith({
+        goalIds: ["goal-1"],
+        status: "Paused",
+      })
     })
-    expect(updateGoalStatus).not.toHaveBeenCalledWith("goal-a", "Paused")
-    expect(updateGoalStatus).not.toHaveBeenCalledWith("goal-b", "Paused")
   })
 
-  it("reports partial success with one aggregate toast when a cascade target fails", async () => {
-    updateGoalStatus.mockImplementation((goalId: string) =>
-      goalId === "goal-a"
-        ? Promise.reject(new Error("boom"))
-        : Promise.resolve({})
-    )
+  it("reports a rejected cascade once; the request is atomic, so there is no partial success", async () => {
+    updateGoalsStatus.mockRejectedValue(new Error("boom"))
     const user = userEvent.setup()
     render(
       <Harness
@@ -398,16 +341,8 @@ describe("GoalRowActions", () => {
 
     await pickItem(user, "pause")
 
-    await vi.waitFor(() => {
-      expect(updateGoalStatus).toHaveBeenCalledWith("goal-a", "Paused")
-    })
-    await vi.waitFor(() => {
-      expect(toast.error).toHaveBeenCalled()
-    })
-    const message = String(vi.mocked(toast.error).mock.calls[0]?.[0])
-    expect(message).toContain("statusChangedPartial")
-    expect(message).toContain('"succeeded":1')
-    expect(message).toContain('"total":2')
+    await vi.waitFor(() => expect(toast.error).toHaveBeenCalledOnce())
+    expect(updateGoalsStatus).toHaveBeenCalledOnce()
     expect(toast.success).not.toHaveBeenCalled()
   })
 
@@ -418,19 +353,11 @@ describe("GoalRowActions", () => {
         resolveDelete = resolve
       })
       deleteGoal.mockReturnValue(request)
-      const first = row()
-      const sibling = row({ goalId: "goal-2" })
+      const first = { ...row(), projectIds: ["proj-a"] }
+      const sibling = { ...row({ goalId: "goal-2" }), projectIds: ["proj-a"] }
       const loadGoals = vi.fn().mockResolvedValue({ goals: [first, sibling] })
-      const loadProjectGoals = vi
-        .fn()
-        .mockResolvedValue({ goals: [{ goal: first }, { goal: sibling }] })
       const user = userEvent.setup()
-      render(
-        <CachedListsHarness
-          loadGoals={loadGoals}
-          loadProjectGoals={loadProjectGoals}
-        />
-      )
+      render(<CachedListsHarness loadGoals={loadGoals} />)
       const overview = within(screen.getByRole("region", { name: "Overview" }))
       await overview.findByText("goal-1")
       await within(screen.getByRole("region", { name: "Project" })).findByText(
@@ -449,15 +376,11 @@ describe("GoalRowActions", () => {
       expect(screen.queryByTestId("delete-goal-dialog")).not.toBeInTheDocument()
 
       loadGoals.mockResolvedValue({ goals: [sibling] })
-      loadProjectGoals.mockResolvedValue({ goals: [{ goal: sibling }] })
       await act(async () => {
         resolveDelete()
         await request
       })
-      await vi.waitFor(() => {
-        expect(loadGoals).toHaveBeenCalledTimes(2)
-        expect(loadProjectGoals).toHaveBeenCalledTimes(2)
-      })
+      await vi.waitFor(() => expect(loadGoals).toHaveBeenCalledTimes(2))
       expect(screen.queryAllByText("goal-1")).toHaveLength(0)
       expect(toast.success).not.toHaveBeenCalled()
       expect(toast.error).not.toHaveBeenCalled()
@@ -472,18 +395,10 @@ describe("GoalRowActions", () => {
           rejectDelete = reject
         })
       )
-      const first = row()
+      const first = { ...row(), projectIds: ["proj-a"] }
       const loadGoals = vi.fn().mockResolvedValue({ goals: [first] })
-      const loadProjectGoals = vi
-        .fn()
-        .mockResolvedValue({ goals: [{ goal: first }] })
       const user = userEvent.setup()
-      render(
-        <CachedListsHarness
-          loadGoals={loadGoals}
-          loadProjectGoals={loadProjectGoals}
-        />
-      )
+      render(<CachedListsHarness loadGoals={loadGoals} />)
       const project = within(screen.getByRole("region", { name: "Project" }))
       await project.findByText("goal-1")
       await within(screen.getByRole("region", { name: "Overview" })).findByText(
@@ -503,15 +418,13 @@ describe("GoalRowActions", () => {
         expect(screen.getAllByText("goal-1")).toHaveLength(2)
       )
       expect(loadGoals).toHaveBeenCalledTimes(2)
-      expect(loadProjectGoals).toHaveBeenCalledTimes(2)
       expect(toast.error).toHaveBeenCalledWith("goals.toasts.actionError")
       expect(toast.success).not.toHaveBeenCalled()
 
       deleteGoal.mockResolvedValueOnce(undefined)
       loadGoals.mockResolvedValue({ goals: [] })
-      loadProjectGoals.mockResolvedValue({ goals: [] })
       await confirmFromProject()
-      await vi.waitFor(() => expect(loadProjectGoals).toHaveBeenCalledTimes(3))
+      await vi.waitFor(() => expect(loadGoals).toHaveBeenCalledTimes(3))
       expect(deleteGoal).toHaveBeenCalledTimes(2)
       expect(screen.queryAllByText("goal-1")).toHaveLength(0)
       expect(toast.success).not.toHaveBeenCalled()
@@ -519,14 +432,17 @@ describe("GoalRowActions", () => {
   })
 
   it("surfaces an error toast when the mutation fails", async () => {
-    updateGoalStatus.mockRejectedValue(new Error("boom"))
+    updateGoalsStatus.mockRejectedValue(new Error("boom"))
     const user = userEvent.setup()
     render(<Harness />)
 
     await pickItem(user, "pause")
 
     await vi.waitFor(() => {
-      expect(toast.error).toHaveBeenCalledWith("goals.toasts.actionError")
+      expect(toast.error).toHaveBeenCalledWith(
+        "goals.toasts.actionError",
+        undefined
+      )
     })
   })
 })

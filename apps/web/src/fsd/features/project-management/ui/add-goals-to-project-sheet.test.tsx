@@ -6,6 +6,7 @@ import { toast } from "sonner"
 import { ApiError } from "@/shared/api"
 
 vi.mock("react-i18next", () => ({
+  initReactI18next: { init: () => undefined, type: "3rdParty" },
   useTranslation: () => ({
     t: (key: string, opts?: Record<string, unknown>) =>
       opts ? `${key}:${JSON.stringify(opts)}` : key,
@@ -31,27 +32,12 @@ vi.mock("@/shared/unit-name", () => ({
     entityId ?? "",
 }))
 
-vi.mock("@/shared/api", () => ({
-  ApiError: class ApiError extends Error {
-    readonly status: number
-    readonly details: unknown
-
-    constructor(status: number, message: string, details?: unknown) {
-      super(message)
-      this.status = status
-      this.details = details
-    }
-  },
-}))
-
 const listGoals = vi.fn<() => Promise<unknown>>()
-const listProjectGoals = vi.fn<() => Promise<unknown>>()
+const listArchivedGoals = vi.fn<() => Promise<unknown>>()
 const updateProjectGoals = vi.fn()
 
-// Each Rank goal's end target (its `config.rank.end`); 12 unless a test says otherwise.
-const rankEndByGoal = new Map<string, number>()
-// Every goal whose detail was requested, to check the sheet only reads the ones that can collide.
-const detailFetches: string[] = []
+// The project's non-archived members (its `goalIds`), as the project list reports them.
+let members: string[] = []
 
 vi.mock("@/entities/goal", () => ({
   goalRankTargetKey: (goal: {
@@ -65,20 +51,9 @@ vi.mock("@/entities/goal", () => ({
   goalQueries: {
     all: () => ["goals"],
     lists: () => ["goals", "list"],
-    detail: (goalId: string) => ({
-      queryKey: ["goals", "detail", goalId],
-      queryFn: () => {
-        detailFetches.push(goalId)
-        return Promise.resolve({
-          goalId,
-          goalType: "Rank",
-          config: { rank: { end: rankEndByGoal.get(goalId) ?? 12 } },
-        })
-      },
-    }),
     list: (archived: boolean) => ({
       queryKey: ["goals", "list", { archived }],
-      queryFn: () => listGoals(),
+      queryFn: () => (archived ? listArchivedGoals() : listGoals()),
     }),
   },
 }))
@@ -87,10 +62,7 @@ vi.mock("@/entities/project", async () => ({
   ...(await vi.importActual<object>("@/entities/project")),
   projectQueries: {
     all: () => ["projects"],
-    goals: (projectId: string) => ({
-      queryKey: ["projects", projectId, "goals"],
-      queryFn: () => listProjectGoals(),
-    }),
+    list: () => ({ queryKey: ["projects", "list"] }),
   },
   updateProjectGoals: (...args: unknown[]) => updateProjectGoals(...args),
 }))
@@ -104,6 +76,7 @@ const project = {
   color: null,
   status: "Active" as const,
   isDefault: false,
+  goalIds: [] as string[],
   revision: 0,
   createdAt: "2026-01-01T00:00:00Z",
   updatedAt: "2026-01-01T00:00:00Z",
@@ -132,25 +105,23 @@ function renderSheet() {
       onCreateGoal={vi.fn()}
       onOpenChange={vi.fn()}
       open
-      project={project}
+      project={{ ...project, goalIds: members }}
     />
   )
 }
 
-const staleBody = (currentGoalIds: string[]) => ({
-  issueCode: "projectMembershipStale",
-  message: "The project's goals changed after they were reviewed.",
-  projectId: "proj-a",
-  currentGoalIds,
-})
+const stale = (goalIds: string[]) =>
+  new ApiError(409, "The project's goals changed after they were reviewed.", {
+    issueCode: "membershipStale",
+    current: { projectId: "proj-a", goalIds },
+  })
 
 describe("AddGoalsToProjectSheet", () => {
   beforeEach(() => {
     nextPosition = 1
     listGoals.mockReset()
-    listProjectGoals.mockReset()
-    rankEndByGoal.clear()
-    detailFetches.length = 0
+    listArchivedGoals.mockReset().mockResolvedValue({ goals: [] })
+    members = []
     updateProjectGoals.mockReset().mockResolvedValue({ goals: [] })
     vi.mocked(toast.success).mockReset()
     vi.mocked(toast.error).mockReset()
@@ -163,9 +134,7 @@ describe("AddGoalsToProjectSheet", () => {
         goal({ goalId: "goal-a", entityId: "hero1" }),
       ],
     })
-    listProjectGoals.mockResolvedValue({
-      goals: [{ goal: goal({ goalId: "goal-a" }) }],
-    })
+    members = ["goal-a"]
     renderSheet()
 
     expect(await screen.findByTestId("add-goals-row-goal-b")).toHaveTextContent(
@@ -188,7 +157,7 @@ describe("AddGoalsToProjectSheet", () => {
     listGoals.mockResolvedValue({
       goals: [goal(), goal({ goalId: "goal-2", entityId: "hero2" })],
     })
-    listProjectGoals.mockResolvedValue({ goals: [] })
+    members = []
     const user = userEvent.setup()
     renderSheet()
 
@@ -207,7 +176,7 @@ describe("AddGoalsToProjectSheet", () => {
         goal({ goalId: "goal-3", entityId: "hero1", goalType: "Ascension" }),
       ],
     })
-    listProjectGoals.mockResolvedValue({ goals: [] })
+    members = []
     const user = userEvent.setup()
     renderSheet()
 
@@ -259,12 +228,7 @@ describe("AddGoalsToProjectSheet", () => {
         goal({ goalId: "goal-member", entityId: "hero1" }),
       ],
     })
-    listProjectGoals.mockResolvedValue({
-      goals: [
-        { goal: goal({ goalId: "goal-member" }) },
-        { goal: goal({ goalId: "goal-member-2", entityId: "hero2" }) },
-      ],
-    })
+    members = ["goal-member", "goal-member-2"]
     const user = userEvent.setup()
     renderSheet()
 
@@ -287,9 +251,8 @@ describe("AddGoalsToProjectSheet", () => {
         'goals.toasts.projectMembershipSaved:{"project":"Project A","added":1,"removed":0}'
       )
     )
-    // Only this project's member list refetches; the goal list is untouched by a membership save.
-    expect(listProjectGoals).toHaveBeenCalledTimes(2)
-    expect(listGoals).toHaveBeenCalledTimes(1)
+    // The goal lists refetch: the saved goals' `projectIds` changed.
+    expect(listGoals).toHaveBeenCalledTimes(2)
   })
 
   it("removes a member the user unticks, including one that is not listed, and keeps the rest", async () => {
@@ -299,19 +262,17 @@ describe("AddGoalsToProjectSheet", () => {
         goal({ goalId: "goal-drop", entityId: "hero2" }),
       ],
     })
-    listProjectGoals.mockResolvedValue({
+    members = ["goal-keep", "goal-drop"]
+    // An archived member is not listed but must survive the save.
+    listArchivedGoals.mockResolvedValue({
       goals: [
-        { goal: goal({ goalId: "goal-keep" }) },
-        { goal: goal({ goalId: "goal-drop", entityId: "hero2" }) },
-        // An archived member is not listed but must survive the save.
-        {
-          goal: goal({
-            goalId: "goal-archived",
-            entityId: "hero3",
-            status: "Archived",
-            globalPriority: null,
-          }),
-        },
+        goal({
+          goalId: "goal-archived",
+          entityId: "hero3",
+          status: "Archived",
+          globalPriority: null,
+          projectIds: ["proj-a"],
+        }),
       ],
     })
     const user = userEvent.setup()
@@ -346,12 +307,7 @@ describe("AddGoalsToProjectSheet", () => {
         goal({ goalId: "goal-n3", entityId: "hero5" }),
       ],
     })
-    listProjectGoals.mockResolvedValue({
-      goals: [
-        { goal: goal({ goalId: "goal-m1" }) },
-        { goal: goal({ goalId: "goal-m2", entityId: "hero2" }) },
-      ],
-    })
+    members = ["goal-m1", "goal-m2"]
     const user = userEvent.setup()
     renderSheet()
 
@@ -386,7 +342,7 @@ describe("AddGoalsToProjectSheet", () => {
     listGoals.mockResolvedValue({
       goals: [goal(), goal({ goalId: "goal-2", entityId: "hero2" })],
     })
-    listProjectGoals.mockResolvedValue({ goals: [{ goal: goal() }] })
+    members = ["goal-1"]
     const user = userEvent.setup()
     renderSheet()
 
@@ -403,103 +359,14 @@ describe("AddGoalsToProjectSheet", () => {
     expect(updateProjectGoals).not.toHaveBeenCalled()
   })
 
-  it("blocks a selection whose goal-type slot is held by a member, and states why", async () => {
-    listGoals.mockResolvedValue({
-      goals: [goal({ goalId: "goal-conflicting" })],
-    })
-    listProjectGoals.mockResolvedValue({
-      goals: [{ goal: goal({ goalId: "goal-member" }) }],
-    })
-    renderSheet()
-
-    expect(
-      await screen.findByTestId("add-goals-check-goal-conflicting")
-    ).toBeDisabled()
-    expect(
-      screen.getByTestId("add-goals-blocked-goal-conflicting")
-    ).toHaveTextContent("goals.project.assemblyRankTargetTaken")
-  })
-
-  it("frees a slot when its member is marked for removal, so its replacement can be added in the same save", async () => {
-    listGoals.mockResolvedValue({
-      goals: [
-        goal({ goalId: "goal-member" }),
-        goal({ goalId: "goal-conflicting" }),
-      ],
-    })
-    listProjectGoals.mockResolvedValue({
-      goals: [{ goal: goal({ goalId: "goal-member" }) }],
-    })
-    const user = userEvent.setup()
-    renderSheet()
-
-    const candidate = await screen.findByTestId(
-      "add-goals-check-goal-conflicting"
-    )
-    await vi.waitFor(() => expect(candidate).toBeDisabled())
-    await user.click(screen.getByTestId("add-goals-check-goal-member"))
-    await vi.waitFor(() => expect(candidate).toBeEnabled())
-    await user.click(candidate)
-    // The removed member can no longer be re-ticked while its replacement holds the slot.
-    expect(screen.getByTestId("add-goals-check-goal-member")).toBeDisabled()
-    await user.click(screen.getByTestId("add-goals-save"))
-
-    await vi.waitFor(() =>
-      expect(updateProjectGoals).toHaveBeenCalledWith("proj-a", {
-        goals: [{ goalId: "goal-conflicting" }],
-        expectedGoalIds: ["goal-member"],
-      })
-    )
-  })
-
-  it("only reads the Rank details of units that already have a member or a selection", async () => {
-    listGoals.mockResolvedValue({
-      goals: [
-        goal({ goalId: "goal-same-unit" }),
-        goal({ goalId: "goal-other-unit", entityId: "hero2" }),
-      ],
-    })
-    listProjectGoals.mockResolvedValue({
-      goals: [{ goal: goal({ goalId: "goal-member" }) }],
-    })
-    renderSheet()
-
-    await screen.findByTestId("add-goals-blocked-goal-same-unit")
-    expect(detailFetches).toContain("goal-same-unit")
-    expect(detailFetches).not.toContain("goal-other-unit")
-  })
-
-  it("names the exact Rank target that blocks a duplicate", async () => {
-    rankEndByGoal.set("goal-member", 12)
-    rankEndByGoal.set("goal-conflicting", 12)
-    listGoals.mockResolvedValue({
-      goals: [goal({ goalId: "goal-conflicting" })],
-    })
-    listProjectGoals.mockResolvedValue({
-      goals: [{ goal: goal({ goalId: "goal-member" }) }],
-    })
-    renderSheet()
-
-    expect(
-      await screen.findByTestId("add-goals-blocked-goal-conflicting")
-    ).toHaveTextContent("Rank12")
-  })
-
-  it("lets a different Rank target for the same unit be selected and saved", async () => {
-    rankEndByGoal.set("goal-member", 12)
-    rankEndByGoal.set("goal-gold", 15)
+  it("lets another goal for a member's unit be selected and saved: membership is never slot-checked", async () => {
     listGoals.mockResolvedValue({ goals: [goal({ goalId: "goal-gold" })] })
-    listProjectGoals.mockResolvedValue({
-      goals: [{ goal: goal({ goalId: "goal-member" }) }],
-    })
+    members = ["goal-member"]
     const user = userEvent.setup()
     renderSheet()
 
     const check = await screen.findByTestId("add-goals-check-goal-gold")
     await vi.waitFor(() => expect(check).not.toBeDisabled())
-    expect(
-      screen.queryByTestId("add-goals-blocked-goal-gold")
-    ).not.toBeInTheDocument()
     await user.click(check)
     await user.click(screen.getByTestId("add-goals-save"))
 
@@ -511,24 +378,7 @@ describe("AddGoalsToProjectSheet", () => {
     )
   })
 
-  it("does not block a selection whose slot is only held by a historical goal", async () => {
-    listGoals.mockResolvedValue({
-      goals: [goal({ goalId: "goal-candidate" })],
-    })
-    listProjectGoals.mockResolvedValue({
-      goals: [{ goal: goal({ goalId: "goal-member", status: "Completed" }) }],
-    })
-    renderSheet()
-
-    expect(
-      await screen.findByTestId("add-goals-check-goal-candidate")
-    ).not.toBeDisabled()
-    expect(
-      screen.queryByTestId("add-goals-blocked-goal-candidate")
-    ).not.toBeInTheDocument()
-  })
-
-  it("blocks only the conflicting pick and still saves the rest of the batch", async () => {
+  it("saves two picks for the same unit and Rank target in one batch", async () => {
     listGoals.mockResolvedValue({
       goals: [
         goal({ goalId: "goal-a" }),
@@ -536,22 +386,18 @@ describe("AddGoalsToProjectSheet", () => {
         goal({ goalId: "goal-c", entityId: "hero3" }),
       ],
     })
-    listProjectGoals.mockResolvedValue({ goals: [] })
+    members = []
     const user = userEvent.setup()
     renderSheet()
 
     await user.click(await screen.findByTestId("add-goals-check-goal-a"))
+    await user.click(screen.getByTestId("add-goals-check-goal-b"))
     await user.click(screen.getByTestId("add-goals-check-goal-c"))
-
-    // goal-b shares goal-a's unit-and-Rank-target slot (both default to the same end target), so picking it
-    // would have the endpoint reject the whole save — it becomes unselectable instead.
-    expect(screen.getByTestId("add-goals-check-goal-b")).toBeDisabled()
-
     await user.click(screen.getByTestId("add-goals-save"))
 
     await vi.waitFor(() => expect(updateProjectGoals).toHaveBeenCalled())
     expect(updateProjectGoals).toHaveBeenCalledWith("proj-a", {
-      goals: [{ goalId: "goal-a" }, { goalId: "goal-c" }],
+      goals: [{ goalId: "goal-a" }, { goalId: "goal-b" }, { goalId: "goal-c" }],
       expectedGoalIds: [],
     })
   })
@@ -565,13 +411,9 @@ describe("AddGoalsToProjectSheet", () => {
           goal({ goalId: "goal-c", entityId: "hero3" }),
         ],
       })
-      listProjectGoals.mockResolvedValue({
-        goals: [{ goal: goal({ goalId: "goal-a" }) }],
-      })
+      members = ["goal-a"]
       // Elsewhere: goal-a stays, goal-c joined.
-      updateProjectGoals.mockRejectedValueOnce(
-        new ApiError(409, "stale", staleBody(["goal-a", "goal-c"]))
-      )
+      updateProjectGoals.mockRejectedValueOnce(stale(["goal-a", "goal-c"]))
       const user = userEvent.setup()
       renderSheet()
 
@@ -615,13 +457,9 @@ describe("AddGoalsToProjectSheet", () => {
           goal({ goalId: "goal-b", entityId: "hero2" }),
         ],
       })
-      listProjectGoals.mockResolvedValue({
-        goals: [{ goal: goal({ goalId: "goal-a" }) }],
-      })
+      members = ["goal-a"]
       // Elsewhere: goal-a left and goal-b joined — both of this draft's intents are already true.
-      updateProjectGoals.mockRejectedValueOnce(
-        new ApiError(409, "stale", staleBody(["goal-b"]))
-      )
+      updateProjectGoals.mockRejectedValueOnce(stale(["goal-b"]))
       const user = userEvent.setup()
       renderSheet()
 
@@ -642,20 +480,14 @@ describe("AddGoalsToProjectSheet", () => {
           goal({ goalId: "goal-b", entityId: "hero2" }),
         ],
       })
-      listProjectGoals.mockResolvedValue({
-        goals: [
-          { goal: goal({ goalId: "goal-a" }) },
-          { goal: goal({ goalId: "goal-b", entityId: "hero2" }) },
-        ],
-      })
+      members = ["goal-a", "goal-b"]
       updateProjectGoals.mockRejectedValueOnce(
         new ApiError(
           400,
           "Cannot remove a goal from its only remaining project.",
           {
             issueCode: "lastProjectMembership",
-            message: "Cannot remove a goal from its only remaining project.",
-            blockedGoalIds: ["goal-a"],
+            extensions: { blockedGoalIds: ["goal-a"] },
           }
         )
       )
@@ -680,46 +512,9 @@ describe("AddGoalsToProjectSheet", () => {
       expect(screen.queryByTestId("add-goals-conflict")).toBeNull()
     })
 
-    it("marks the goals a slot rejection names and keeps the whole draft", async () => {
-      // Two Rank targets for one unit are picked; another session took one of them meanwhile, so the
-      // server rejects the entire batch — nothing is added and the picks stay.
-      rankEndByGoal.set("goal-silver", 11)
-      rankEndByGoal.set("goal-gold", 15)
-      listGoals.mockResolvedValue({
-        goals: [goal({ goalId: "goal-silver" }), goal({ goalId: "goal-gold" })],
-      })
-      listProjectGoals.mockResolvedValue({ goals: [] })
-      updateProjectGoals.mockRejectedValue(
-        new ApiError(409, "Project A already contains that Rank target.", {
-          issueCode: "projectGoalSlotOccupied",
-          message: "Project A already contains that Rank target.",
-          projectId: "proj-a",
-          projectName: "Project A",
-          entityType: "Character",
-          entityId: "hero1",
-          goalType: "Rank",
-          existingGoalId: "goal-silver",
-        })
-      )
-      const user = userEvent.setup()
-      renderSheet()
-
-      await user.click(await screen.findByTestId("add-goals-check-goal-silver"))
-      await user.click(screen.getByTestId("add-goals-check-goal-gold"))
-      await user.click(screen.getByTestId("add-goals-save"))
-
-      expect(
-        await screen.findByTestId("add-goals-conflict-goal-silver")
-      ).toHaveTextContent("goals.project.assemblySlotConflict")
-      expect(screen.getByTestId("add-goals-check-goal-silver")).toBeChecked()
-      expect(screen.getByTestId("add-goals-check-goal-gold")).toBeChecked()
-      expect(screen.getByTestId("add-goals-save")).not.toBeDisabled()
-      expect(toast.success).not.toHaveBeenCalled()
-    })
-
     it("toasts any other failure and keeps the draft", async () => {
       listGoals.mockResolvedValue({ goals: [goal()] })
-      listProjectGoals.mockResolvedValue({ goals: [] })
+      members = []
       updateProjectGoals.mockRejectedValue(new ApiError(500, "Boom"))
       const user = userEvent.setup()
       renderSheet()
@@ -740,7 +535,7 @@ describe("AddGoalsToProjectSheet", () => {
         goal({ goalId: "goal-c", entityId: "hero3" }),
       ],
     })
-    listProjectGoals.mockResolvedValue({ goals: [] })
+    members = []
     const user = userEvent.setup()
     const { rerender } = render(
       <AddGoalsToProjectSheet
@@ -807,7 +602,7 @@ describe("AddGoalsToProjectSheet", () => {
             onCreateGoal={onCreateGoal}
             onOpenChange={setOpen}
             open={open}
-            project={{ ...project, projectId }}
+            project={{ ...project, projectId, goalIds: members }}
           />
         </>
       )
@@ -815,7 +610,7 @@ describe("AddGoalsToProjectSheet", () => {
 
     it("stays available when the search has no matches", async () => {
       listGoals.mockResolvedValue({ goals: [goal()] })
-      listProjectGoals.mockResolvedValue({ goals: [] })
+      members = []
       const user = userEvent.setup()
       render(<Harness onCreateGoal={vi.fn()} />)
 
@@ -829,7 +624,7 @@ describe("AddGoalsToProjectSheet", () => {
 
     it("launches creation and closes the sheet without saving pending selections", async () => {
       listGoals.mockResolvedValue({ goals: [goal()] })
-      listProjectGoals.mockResolvedValue({ goals: [] })
+      members = []
       const onCreateGoal = vi.fn()
       const user = userEvent.setup()
       render(<Harness onCreateGoal={onCreateGoal} />)
@@ -850,7 +645,7 @@ describe("AddGoalsToProjectSheet", () => {
       listGoals.mockResolvedValue({
         goals: [goal(), goal({ goalId: "goal-2", entityId: "hero2" })],
       })
-      listProjectGoals.mockResolvedValue({ goals: [] })
+      members = []
       const user = userEvent.setup()
       render(<Harness onCreateGoal={vi.fn()} />)
 
@@ -868,7 +663,7 @@ describe("AddGoalsToProjectSheet", () => {
       listGoals.mockResolvedValue({
         goals: [goal(), goal({ goalId: "goal-2", entityId: "hero2" }), created],
       })
-      listProjectGoals.mockResolvedValue({ goals: [{ goal: created }] })
+      members = ["goal-new"]
       await user.click(screen.getByTestId("reopen"))
 
       expect(await screen.findByTestId("add-goals-search")).toHaveValue("hero1")
@@ -888,7 +683,7 @@ describe("AddGoalsToProjectSheet", () => {
 
     it("restores the draft after creation is cancelled, but drops it after a normal dismiss", async () => {
       listGoals.mockResolvedValue({ goals: [goal()] })
-      listProjectGoals.mockResolvedValue({ goals: [] })
+      members = []
       const user = userEvent.setup()
       render(<Harness onCreateGoal={vi.fn()} />)
 

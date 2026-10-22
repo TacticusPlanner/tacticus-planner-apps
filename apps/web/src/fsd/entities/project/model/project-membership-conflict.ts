@@ -1,56 +1,28 @@
-import type {
-  ProjectLastMembershipDto,
-  ProjectMembershipStaleDto,
-} from "./types"
+import { apiIssue } from "@/shared/api"
 
 const isStringArray = (value: unknown): value is string[] =>
   Array.isArray(value) && value.every((entry) => typeof entry === "string")
 
-/** Narrows an `ApiError.details` body to the stale-membership 409 of `updateProjectGoals`, or null for any
- * other error (including the slot-conflict 409 the same endpoint can return — distinguish by `issueCode`). */
-export function projectMembershipStaleDetails(
-  details: unknown
-): ProjectMembershipStaleDto | null {
-  if (!details || typeof details !== "object") return null
-  const value = details as Partial<ProjectMembershipStaleDto>
-  return value.issueCode === "projectMembershipStale" &&
-    typeof value.message === "string" &&
-    isStringArray(value.currentGoalIds)
-    ? (value as ProjectMembershipStaleDto)
+/** The project's membership as it now stands when `error` is a `membershipStale` 409 of
+ *  `updateProjectGoals`, else null. */
+export function projectMembershipConflict(
+  error: unknown
+): { message: string; current: { goalIds: string[] } } | null {
+  const issue = apiIssue(error, "membershipStale")
+  const goalIds = (issue?.current as { goalIds?: unknown } | undefined)?.goalIds
+  return issue && isStringArray(goalIds)
+    ? { message: issue.message, current: { goalIds } }
     : null
 }
 
-/** Narrows an `ApiError.details` body to the last-membership 400 of `updateProjectGoals`, or null. */
-export function projectLastMembershipDetails(
-  details: unknown
-): ProjectLastMembershipDto | null {
-  if (!details || typeof details !== "object") return null
-  const value = details as Partial<ProjectLastMembershipDto>
-  return value.issueCode === "lastProjectMembership" &&
-    typeof value.message === "string" &&
-    isStringArray(value.blockedGoalIds)
-    ? (value as ProjectLastMembershipDto)
+/** The goals blocking a removal when `error` is the `lastProjectMembership` 400 of
+ *  `updateProjectGoals` (a removal would leave them in no project), else null. */
+export function projectLastMembership(
+  error: unknown
+): { message: string; blockedGoalIds: string[] } | null {
+  const issue = apiIssue(error, "lastProjectMembership")
+  const blockedGoalIds = issue?.extensions.blockedGoalIds
+  return issue && isStringArray(blockedGoalIds)
+    ? { message: issue.message, blockedGoalIds }
     : null
-}
-
-/** The goal ids a `projectGoalSlotOccupied` 409 names as holding the contested slot, or null for any other
- * error. */
-export function projectSlotConflictGoalIds(details: unknown): string[] | null {
-  if (!details || typeof details !== "object") return null
-  const value = details as {
-    issueCode?: unknown
-    existingGoalId?: unknown
-    conflicts?: { existingGoalId?: unknown }[] | null
-  }
-  if (
-    value.issueCode !== "projectGoalSlotOccupied" ||
-    typeof value.existingGoalId !== "string"
-  ) {
-    return null
-  }
-  const ids = [value.existingGoalId]
-  for (const entry of value.conflicts ?? []) {
-    if (typeof entry.existingGoalId === "string") ids.push(entry.existingGoalId)
-  }
-  return [...new Set(ids)]
 }

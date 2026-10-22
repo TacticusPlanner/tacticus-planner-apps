@@ -8,15 +8,15 @@ import {
   buildCreateGoalSnapshot,
   createCombinedGoals,
   goalQueries,
-  type GoalKind,
   type ProjectMembership,
 } from "@/entities/goal"
 import { projectQueries } from "@/entities/project"
 import { ApiError } from "@/shared/api"
+import { useUnitName } from "@/shared/unit-name"
 
 import { buildCombinedGoalSpecs } from "../estimate/goal-spec-builder"
 import { projectConflictText } from "../projects/project-conflict-copy"
-import { projectGoalSlotConflictDetails } from "../projects/project-membership"
+import { goalSlotConflict } from "../projects/project-membership"
 import type { EntityType } from ".//use-create-goal-form"
 
 type SpecParams = Parameters<typeof buildCombinedGoalSpecs>[0]
@@ -57,6 +57,7 @@ export function useGoalSubmit({
 }) {
   const { t } = useTranslation()
   const queryClient = useQueryClient()
+  const getUnitName = useUnitName()
   const [createAnother, setCreateAnother] = useState(false)
   const createGoals = useMutation({
     // Builds the request inside the mutation so a builder failure reports like a rejected request.
@@ -79,14 +80,11 @@ export function useGoalSubmit({
       for (const goal of goals) {
         queryClient.setQueryData(goalQueries.detail(goal.goalId).queryKey, goal)
       }
+      // The new goals join the goals lists and their projects' `goalIds`.
       void queryClient.invalidateQueries({ queryKey: goalQueries.lists() })
-      for (const projectId of new Set(
-        goals.flatMap((goal) => goal.projectIds)
-      )) {
-        void queryClient.invalidateQueries({
-          queryKey: projectQueries.goals(projectId).queryKey,
-        })
-      }
+      void queryClient.invalidateQueries({
+        queryKey: projectQueries.list().queryKey,
+      })
 
       // Success clears the form either way (remembering the project/type choice for the next one), so
       // a reopened sheet never shows the finished goal's unit-specific targets.
@@ -102,21 +100,17 @@ export function useGoalSubmit({
       ? "error"
       : "idle"
   // The form stays open with its draft intact on an error (only the message shown changes). A slot
-  // conflict raised after the pre-check (another session took the same Rank target first) names the
-  // occupied target and project rather than the server's generic sentence.
+  // conflict raised after the pre-check (another session took the same slot first) names the existing
+  // goal holding it rather than the server's generic sentence.
   const error = createGoals.error
-  const conflict =
-    error instanceof ApiError
-      ? projectGoalSlotConflictDetails(error.details)
-      : null
+  const conflict = goalSlotConflict(error)
   const errorMessage = !error
     ? null
     : conflict
       ? projectConflictText(
           t,
-          conflict.projectName,
-          [conflict.goalType as GoalKind],
-          conflict.normalizedTarget
+          conflict.current,
+          getUnitName(conflict.current.entityType, conflict.current.entityId)
         )
       : error instanceof ApiError
         ? error.message

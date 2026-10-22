@@ -14,7 +14,6 @@ vi.mock("@/shared/api", () => ({
 
 import {
   createProject,
-  listProjectGoals,
   listProjects,
   moveProjectGoal,
   updateProject,
@@ -28,16 +27,10 @@ describe("project API", () => {
     const signal = new AbortController().signal
 
     listProjects(signal)
-    listProjectGoals("project-1", signal)
 
-    expect(api.get).toHaveBeenNthCalledWith(1, "/api/v1/me/projects", {
+    expect(api.get).toHaveBeenCalledExactlyOnceWith("/api/v1/me/projects", {
       signal,
     })
-    expect(api.get).toHaveBeenNthCalledWith(
-      2,
-      "/api/v1/me/projects/project-1/goals",
-      { signal }
-    )
   })
 
   it("maps project writes to their endpoints", () => {

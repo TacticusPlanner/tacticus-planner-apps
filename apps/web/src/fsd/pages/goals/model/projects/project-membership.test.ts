@@ -1,29 +1,26 @@
 import { describe, expect, it } from "vitest"
 
-import { projectGoalSlotConflictDetails } from "./project-membership"
+import { ApiError } from "@/shared/api"
 
-const conflict = {
-  issueCode: "projectGoalSlotOccupied",
-  message: "Occupied",
-  projectId: "project-1",
-  projectName: "Default project",
-  entityType: "Character",
-  entityId: "ragnar",
-  goalType: "Rank",
-  existingGoalId: "goal-1",
-}
+import { goalSlotConflict } from "./project-membership"
 
-describe("projectGoalSlotConflictDetails", () => {
-  it("returns a fully validated conflict DTO", () => {
-    expect(projectGoalSlotConflictDetails(conflict)).toEqual(conflict)
+describe("goalSlotConflict", () => {
+  it("exposes the existing goal of a slotOccupied 409", () => {
+    const existing = { goalId: "goal-1", entityId: "ragnar", goalType: "Rank" }
+    const error = new ApiError(409, "Occupied", {
+      issueCode: "slotOccupied",
+      current: existing,
+    })
+
+    expect(goalSlotConflict(error)?.current).toBe(existing)
   })
 
-  it.each(["entityType", "entityId", "goalType"] as const)(
-    "rejects a conflict without %s",
-    (field) => {
-      expect(
-        projectGoalSlotConflictDetails({ ...conflict, [field]: undefined })
-      ).toBeNull()
-    }
-  )
+  it("rejects other errors", () => {
+    expect(goalSlotConflict(new Error("x"))).toBeNull()
+    expect(
+      goalSlotConflict(
+        new ApiError(409, "x", { issueCode: "goalRevisionStale", current: {} })
+      )
+    ).toBeNull()
+  })
 })

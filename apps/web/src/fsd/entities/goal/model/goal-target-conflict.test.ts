@@ -1,24 +1,26 @@
 import { describe, expect, it } from "vitest"
 
-import { goalRevisionConflictDetails } from "./goal-target-conflict"
+import { ApiError } from "@/shared/api"
 
-describe("goalRevisionConflictDetails", () => {
-  it("narrows the stale-revision body and exposes the current goal", () => {
-    const body = {
+import { goalRevisionConflict } from "./goal-target-conflict"
+
+describe("goalRevisionConflict", () => {
+  it("exposes the current goal of a goalRevisionStale 409", () => {
+    const current = { goalId: "goal-1", revision: 8 }
+    const error = new ApiError(409, "The goal changed", {
       issueCode: "goalRevisionStale",
-      message: "The goal changed",
-      goal: { goalId: "goal-1", revision: 8 },
-    }
+      current,
+    })
 
-    expect(goalRevisionConflictDetails(body)?.goal.revision).toBe(8)
+    expect(goalRevisionConflict(error)?.current).toBe(current)
   })
 
   it.each([
     null,
-    "text",
-    { issueCode: "projectGoalSlotOccupied", message: "x" },
-    { issueCode: "goalRevisionStale", message: "x" },
-  ])("rejects anything else: %j", (body) => {
-    expect(goalRevisionConflictDetails(body)).toBeNull()
+    new Error("network"),
+    new ApiError(409, "x", { issueCode: "slotOccupied", current: {} }),
+    new ApiError(409, "x", { issueCode: "goalRevisionStale" }),
+  ])("rejects anything else: %s", (error) => {
+    expect(goalRevisionConflict(error)).toBeNull()
   })
 })

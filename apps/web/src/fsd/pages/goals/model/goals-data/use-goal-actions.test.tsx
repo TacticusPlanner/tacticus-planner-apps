@@ -4,31 +4,33 @@ import type { ReactNode } from "react"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { renderHook, act } from "@/test/render"
 
+import { ApiError } from "@/shared/api"
+
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({
     t: (key: string, opts?: Record<string, unknown>) =>
       opts ? `${key}:${JSON.stringify(opts)}` : key,
   }),
+  initReactI18next: { type: "3rdParty", init: vi.fn() },
 }))
 vi.mock("@azure/msal-react", () => ({ useIsAuthenticated: () => true }))
 vi.mock("sonner", () => ({ toast: { success: vi.fn(), error: vi.fn() } }))
 
-const updateGoalStatus = vi.fn()
-const deleteGoal = vi.fn()
-vi.mock("@/entities/goal", () => ({
-  updateGoalStatus: (...a: unknown[]) => updateGoalStatus(...a),
-  deleteGoal: (...a: unknown[]) => deleteGoal(...a),
-  goalQueries: {
-    all: () => ["goals"],
-    lists: () => ["goals", "list"],
-    detail: (id: string) => ({ queryKey: ["goals", "detail", id] }),
-  },
+const api = vi.hoisted(() => ({
+  updateGoalsStatus: vi.fn(),
+  deleteGoal: vi.fn(),
+}))
+vi.mock("@/entities/goal", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/entities/goal")>()),
+  updateGoalsStatus: api.updateGoalsStatus,
+  deleteGoal: api.deleteGoal,
 }))
 // Each project's membership, changed in place the way the single PUT would.
 const members = new Map<string, string[]>()
 const changeProjectMembership = vi.fn(
   async (
     projectId: string,
+    _current: readonly string[],
     change: (current: readonly string[]) => string[]
   ) => {
     const before = members.get(projectId) ?? []
@@ -37,31 +39,37 @@ const changeProjectMembership = vi.fn(
     return { before, after }
   }
 )
-vi.mock("@/entities/project", () => ({
-  projectQueries: {
-    all: () => ["projects"],
-    details: () => ["projects", "detail"],
-    goals: (id: string) => ({ queryKey: ["projects", "detail", id, "goals"] }),
-  },
+vi.mock("@/entities/project", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/entities/project")>()),
   changeProjectMembership: (...a: Parameters<typeof changeProjectMembership>) =>
     changeProjectMembership(...a),
 }))
-vi.mock("@/shared/api", () => ({ ApiError: class extends Error {} }))
 vi.mock("@/shared/unit-name", () => ({
   useUnitName: () => (_type: string, id: string) => `Unit ${id}`,
-}))
-vi.mock("../projects/project-conflict-copy", () => ({
-  membershipErrorText: () => "membership-error",
 }))
 
 import { useGoalActions } from "./use-goal-actions"
 
-let client = new QueryClient()
+const listKey = ["goals", "list", { archived: false }]
+const goal = (goalId: string, status = "Active", globalPriority = 1) => ({
+  goalId,
+  entityType: "Character",
+  entityId: goalId,
+  goalType: "Rank",
+  status,
+  globalPriority,
+  projectIds: ["p1"],
+  updatedAt: "2026-10-01T00:00:00Z",
+  config: { rank: null },
+})
+
+let client: QueryClient
+let invalidated: unknown[][]
 function wrapper({ children }: { children: ReactNode }) {
   return <QueryClientProvider client={client}>{children}</QueryClientProvider>
 }
-const project = { projectId: "p1", name: "Proj" } as never
-const destination = { projectId: "p3", name: "Dest" } as never
+const project = { projectId: "p1", name: "Proj", goalIds: ["a"] } as never
+const destination = { projectId: "p3", name: "Dest", goalIds: [] } as never
 const row = (goalId: string, projectIds: string[]) =>
   ({
     goalId,
@@ -71,318 +79,209 @@ const row = (goalId: string, projectIds: string[]) =>
     projects: projectIds.map((projectId) => ({ projectId })),
   }) as never
 
-describe("useGoalActions bulk", () => {
-  beforeEach(() => {
-    updateGoalStatus.mockReset().mockResolvedValue({})
-    deleteGoal.mockReset().mockResolvedValue({})
-    changeProjectMembership.mockClear()
-    members.clear()
-    vi.mocked(toast.success).mockReset()
-    vi.mocked(toast.error).mockReset()
-    client = new QueryClient()
-  })
+const listGoal = (goalId: string) =>
+  (
+    client.getQueryData(listKey) as { goals: ReturnType<typeof goal>[] }
+  ).goals.find((entry) => entry.goalId === goalId)
 
-  it("setStatusMany: all succeed -> no toast", async () => {
-    const { result } = renderHook(() => useGoalActions(), { wrapper })
-    await act(() =>
-      result.current.setStatusMany(
-        [
-          { goalId: "a", previousStatus: "Active" },
-          { goalId: "b", previousStatus: "Active" },
-        ],
-        "Paused"
-      )
-    )
-    expect(updateGoalStatus).toHaveBeenCalledTimes(2)
-    expect(toast.error).not.toHaveBeenCalled()
-    expect(result.current.pendingIds.size).toBe(0)
-  })
-
-  it("setStatusMany: one fails -> one aggregate toast", async () => {
-    updateGoalStatus.mockImplementation((id: string) =>
-      id === "b" ? Promise.reject(new Error("x")) : Promise.resolve({})
-    )
-    const { result } = renderHook(() => useGoalActions(), { wrapper })
-    await act(() =>
-      result.current.setStatusMany(
-        [
-          { goalId: "a", previousStatus: "Active" },
-          { goalId: "b", previousStatus: "Active" },
-        ],
-        "Paused"
-      )
-    )
-    expect(toast.error).toHaveBeenCalledExactlyOnceWith(
-      'goals.toasts.statusChangedPartial:{"succeeded":1,"total":2}'
-    )
-  })
-
-  it("removeMany: failure -> one toast", async () => {
-    deleteGoal.mockImplementation((id: string) =>
-      id === "b" ? Promise.reject(new Error("x")) : Promise.resolve({})
-    )
-    const { result } = renderHook(() => useGoalActions(), { wrapper })
-    await act(() => result.current.removeMany(["a", "b"]))
-    expect(deleteGoal).toHaveBeenCalledTimes(2)
-    expect(toast.error).toHaveBeenCalledTimes(1)
-    expect(toast.success).not.toHaveBeenCalled()
-  })
-
-  it("addToProject: one membership request for the whole selection, toasts the added count", async () => {
-    members.set("p1", ["a"])
-    const { result } = renderHook(() => useGoalActions(), { wrapper })
-    await act(() =>
-      result.current.addToProject(
-        [{ goalId: "a" }, { goalId: "b" }, { goalId: "c" }],
-        project
-      )
-    )
-    expect(changeProjectMembership).toHaveBeenCalledTimes(1)
-    expect(members.get("p1")).toEqual(["a", "b", "c"])
-    expect(toast.success).toHaveBeenCalledExactlyOnceWith(
-      'goals.toasts.goalsAddedToProject:{"project":"Proj","count":2}'
-    )
-    expect(result.current.pendingIds.size).toBe(0)
-  })
-
-  it("addToProject: a rejected request adds nothing and reports once", async () => {
-    changeProjectMembership.mockRejectedValueOnce(new Error("slot"))
-    const { result } = renderHook(() => useGoalActions(), { wrapper })
-    await act(() =>
-      result.current.addToProject([{ goalId: "a" }, { goalId: "b" }], project)
-    )
-    expect(toast.success).not.toHaveBeenCalled()
-    expect(toast.error).toHaveBeenCalledExactlyOnceWith("membership-error")
-  })
-
-  it("removeFromProject: removes the rows in one request and names the goal for a single row", async () => {
-    members.set("p1", ["a", "b"])
-    const { result } = renderHook(() => useGoalActions(), { wrapper })
-    let ok = false
-    await act(async () => {
-      ok = await result.current.removeFromProject(
-        [row("a", ["p1", "p2"])],
-        project
-      )
-    })
-    expect(ok).toBe(true)
-    expect(members.get("p1")).toEqual(["b"])
-    expect(toast.success).toHaveBeenCalledExactlyOnceWith(
-      'goals.toasts.goalRemovedFromProject:{"goal":"Unit a · goals.create.goalTypes.Rank","project":"Proj"}'
-    )
-  })
-
-  it("removeFromProject: moves last-membership rows to the destination before removing", async () => {
-    members.set("p1", ["a", "b", "c"])
-    members.set("p3", ["x"])
-    const { result } = renderHook(() => useGoalActions(), { wrapper })
-    await act(() =>
-      result.current.removeFromProject(
-        [row("a", ["p1"]), row("b", ["p1", "p2"])],
-        project,
-        destination
-      )
-    )
-    expect(changeProjectMembership.mock.calls.map(([id]) => id)).toEqual([
-      "p3",
-      "p1",
-    ])
-    expect(members.get("p3")).toEqual(["x", "a"])
-    expect(members.get("p1")).toEqual(["c"])
-    expect(toast.success).toHaveBeenCalledExactlyOnceWith(
-      'goals.toasts.goalsRemovedAndMoved:{"count":2,"project":"Proj","moved":1,"destination":"Dest"}'
-    )
-  })
-
-  it("removeFromProject: a destination conflict stops before anything is removed", async () => {
-    members.set("p1", ["a"])
-    changeProjectMembership.mockRejectedValueOnce(new Error("slot"))
-    const { result } = renderHook(() => useGoalActions(), { wrapper })
-    let ok = true
-    await act(async () => {
-      ok = await result.current.removeFromProject(
-        [row("a", ["p1"])],
-        project,
-        destination
-      )
-    })
-    expect(ok).toBe(false)
-    expect(changeProjectMembership).toHaveBeenCalledTimes(1)
-    expect(members.get("p1")).toEqual(["a"])
-    expect(toast.error).toHaveBeenCalledExactlyOnceWith("membership-error")
-  })
-
-  it("removeFromProject: says the goals were moved when only the removal fails", async () => {
-    members.set("p1", ["a"])
-    const apply = changeProjectMembership.getMockImplementation()!
-    changeProjectMembership
-      .mockImplementationOnce(apply)
-      .mockRejectedValueOnce(new Error("network"))
-    const { result } = renderHook(() => useGoalActions(), { wrapper })
-    let ok = true
-    await act(async () => {
-      ok = await result.current.removeFromProject(
-        [row("a", ["p1"])],
-        project,
-        destination
-      )
-    })
-    expect(ok).toBe(false)
-    expect(members.get("p3")).toEqual(["a"])
-    expect(members.get("p1")).toEqual(["a"])
-    expect(toast.success).not.toHaveBeenCalled()
-    expect(toast.error).toHaveBeenCalledExactlyOnceWith(
-      'goals.toasts.movedButNotRemoved:{"count":1,"project":"Proj","destination":"Dest","error":"membership-error"}'
-    )
-  })
-})
-
-describe("useGoalActions cache updates", () => {
-  const listKey = ["goals", "list", { archived: false }]
-  const memberKey = ["projects", "detail", "p1", "goals"]
-  const detail = (goalId: string, status: string, globalPriority: number) => ({
-    goalId,
-    status,
-    globalPriority,
-    projectIds: ["p1"],
-  })
-  let invalidated: unknown[][]
-
+describe("useGoalActions", () => {
   beforeEach(() => {
     client = new QueryClient()
     client.setQueryData(listKey, {
-      goals: [
-        { goalId: "a", status: "Active", globalPriority: 1 },
-        { goalId: "b", status: "Active", globalPriority: 2 },
-      ],
+      orderRevision: 7,
+      goals: [goal("a", "Active", 1), goal("b", "Paused", 2)],
     })
-    client.setQueryData(memberKey, {
-      goals: [{ goal: { goalId: "a", status: "Active", globalPriority: 1 } }],
-    })
-    client.setQueryData(["projects", "list"], { projects: [] })
     invalidated = []
     vi.spyOn(client, "invalidateQueries").mockImplementation(
       async (filters?: { queryKey?: readonly unknown[] }) => {
         invalidated.push([...(filters?.queryKey ?? [])])
       }
     )
-    updateGoalStatus
-      .mockReset()
-      .mockImplementation(async (id: string, status: string) =>
-        detail(id, status, status === "Completed" ? 0 : 1)
-      )
-    deleteGoal.mockReset().mockResolvedValue({})
+    api.updateGoalsStatus.mockReset()
+    api.deleteGoal.mockReset().mockResolvedValue(undefined)
     changeProjectMembership.mockClear()
     members.clear()
+    vi.mocked(toast.success).mockReset()
+    vi.mocked(toast.error).mockReset()
   })
 
-  const listGoal = (goalId: string) =>
-    (
-      client.getQueryData(listKey) as {
-        goals: { goalId: string; status: string; globalPriority: number }[]
-      }
-    ).goals.find((goal) => goal.goalId === goalId)
+  describe("status", () => {
+    it("sends a cascade as one request without an order revision for pause/resume, and writes every response", async () => {
+      api.updateGoalsStatus.mockResolvedValue({
+        goals: [goal("a", "Active", 1), goal("b", "Active", 2)],
+        orderRevision: 7,
+      })
+      const { result } = renderHook(() => useGoalActions(), { wrapper })
 
-  it("pausing writes the response into the detail and every list and refetches nothing", async () => {
-    const { result } = renderHook(() => useGoalActions(), { wrapper })
-    await act(() => result.current.setStatus("a", "Paused", "Active"))
-
-    expect(client.getQueryData(["goals", "detail", "a"])).toEqual(
-      detail("a", "Paused", 1)
-    )
-    expect(listGoal("a")?.status).toBe("Paused")
-    expect(
-      (
-        client.getQueryData(memberKey) as {
-          goals: { goal: { status: string } }[]
-        }
-      ).goals[0].goal.status
-    ).toBe("Paused")
-    expect(invalidated).toEqual([])
-  })
-
-  it("completing refetches the goal lists and member lists once, never everything", async () => {
-    const { result } = renderHook(() => useGoalActions(), { wrapper })
-    await act(() =>
-      result.current.setStatus("a", "Completed", "Active", [
-        { goalId: "b", previousStatus: "Active" },
-      ])
-    )
-
-    expect(listGoal("a")).toMatchObject({
-      status: "Completed",
-      globalPriority: 0,
-    })
-    expect(invalidated).toEqual([
-      ["goals", "list"],
-      ["projects", "detail"],
-    ])
-  })
-
-  it("bulk pause writes every response and refetches nothing", async () => {
-    const { result } = renderHook(() => useGoalActions(), { wrapper })
-    await act(() =>
-      result.current.setStatusMany(
-        [
-          { goalId: "a", previousStatus: "Active" },
-          { goalId: "b", previousStatus: "Active" },
-        ],
-        "Paused"
+      await act(() =>
+        result.current.setStatus("a", "Active", "Paused", [
+          { goalId: "b", previousStatus: "Paused" },
+        ])
       )
-    )
 
-    expect(listGoal("a")?.status).toBe("Paused")
-    expect(listGoal("b")?.status).toBe("Paused")
-    expect(invalidated).toEqual([])
-  })
-
-  it("deleting drops the row and refetches the order reads once", async () => {
-    const { result } = renderHook(() => useGoalActions(), { wrapper })
-    await act(() => result.current.removeMany(["a", "b"]))
-
-    expect(listGoal("a")).toBeUndefined()
-    expect(invalidated).toEqual([
-      ["goals", "list"],
-      ["projects", "detail"],
-    ])
-  })
-
-  it("adding to a project patches the cached detail and refetches only that project's members", async () => {
-    client.setQueryData(["goals", "detail", "b"], {
-      ...detail("b", "Active", 2),
-      projectIds: [],
+      expect(api.updateGoalsStatus).toHaveBeenCalledExactlyOnceWith({
+        goalIds: ["a", "b"],
+        status: "Active",
+      })
+      expect(listGoal("b")?.status).toBe("Active")
+      expect(client.getQueryData(["goals", "detail", "b"])).toMatchObject({
+        status: "Active",
+      })
+      expect(invalidated).toEqual([])
     })
-    const { result } = renderHook(() => useGoalActions(), { wrapper })
-    await act(() => result.current.addToProject([{ goalId: "b" }], project))
 
-    expect(
-      (
-        client.getQueryData(["goals", "detail", "b"]) as {
-          projectIds: string[]
-        }
-      ).projectIds
-    ).toEqual(["p1"])
-    expect(invalidated).toEqual([memberKey])
+    it("carries the list's order revision when completing, then refetches the goal lists once", async () => {
+      api.updateGoalsStatus.mockResolvedValue({
+        goals: [goal("a", "Completed", 0)],
+        orderRevision: 8,
+      })
+      const { result } = renderHook(() => useGoalActions(), { wrapper })
+
+      await act(() => result.current.setStatus("a", "Completed", "Active"))
+
+      expect(api.updateGoalsStatus).toHaveBeenCalledExactlyOnceWith({
+        goalIds: ["a"],
+        status: "Completed",
+        expectedOrderRevision: 7,
+      })
+      expect(
+        (client.getQueryData(listKey) as { orderRevision: number })
+          .orderRevision
+      ).toBe(8)
+      expect(invalidated).toEqual([["goals", "list"]])
+    })
+
+    it("reverts every optimistic row of a rejected bulk change and names the goal holding the slot once", async () => {
+      api.updateGoalsStatus.mockRejectedValue(
+        new ApiError(409, "Occupied", {
+          issueCode: "slotOccupied",
+          current: goal("z", "Active", 3),
+        })
+      )
+      const { result } = renderHook(() => useGoalActions(), { wrapper })
+
+      await act(() =>
+        result.current.setStatusMany(
+          [
+            { goalId: "a", previousStatus: "Active" },
+            { goalId: "b", previousStatus: "Paused" },
+          ],
+          "Paused"
+        )
+      )
+
+      expect(api.updateGoalsStatus).toHaveBeenCalledTimes(1)
+      expect(listGoal("a")?.status).toBe("Active")
+      expect(listGoal("b")?.status).toBe("Paused")
+      expect(toast.error).toHaveBeenCalledTimes(1)
+      const message = String(vi.mocked(toast.error).mock.calls[0]![0])
+      expect(message).toContain("goals.toasts.statusConflict")
+      expect(message).toContain("Unit z")
+      expect(message).not.toContain('"project"')
+    })
+
+    it("offers a reload when the order went stale", async () => {
+      api.updateGoalsStatus.mockRejectedValue(
+        new ApiError(409, "Stale", {
+          issueCode: "goalOrderStale",
+          current: { revision: 9, goalIds: ["a"] },
+        })
+      )
+      const { result } = renderHook(() => useGoalActions(), { wrapper })
+
+      await act(() => result.current.setStatus("a", "Archived", "Active"))
+
+      const options = vi.mocked(toast.error).mock.calls[0]![1] as unknown as {
+        action: { onClick: () => void }
+      }
+      options.action.onClick()
+      expect(invalidated).toEqual([["goals", "list"]])
+    })
   })
 
-  it("removing from a project refetches the named projects' members only", async () => {
-    members.set("p1", ["a"])
-    client.setQueryData(["goals", "detail", "a"], detail("a", "Active", 1))
-    const { result } = renderHook(() => useGoalActions(), { wrapper })
-    await act(() =>
-      result.current.removeFromProject([row("a", ["p1"])], project, destination)
-    )
+  describe("delete", () => {
+    it("drops the rows and refetches the goal lists once; a failure reports once", async () => {
+      api.deleteGoal.mockImplementation((id: string) =>
+        id === "b" ? Promise.reject(new Error("x")) : Promise.resolve()
+      )
+      const { result } = renderHook(() => useGoalActions(), { wrapper })
 
-    expect(
-      (
-        client.getQueryData(["goals", "detail", "a"]) as {
-          projectIds: string[]
-        }
-      ).projectIds
-    ).toEqual(["p3"])
-    expect(invalidated).toEqual([
-      memberKey,
-      ["projects", "detail", "p3", "goals"],
-    ])
+      await act(() => result.current.removeMany(["a", "b"]))
+
+      expect(api.deleteGoal).toHaveBeenCalledTimes(2)
+      expect(listGoal("a")).toBeUndefined()
+      expect(invalidated).toEqual([["goals", "list"]])
+      expect(toast.error).toHaveBeenCalledTimes(1)
+      expect(toast.success).not.toHaveBeenCalled()
+    })
+  })
+
+  describe("membership", () => {
+    it("adds the selection in one request from the project's goalIds and patches the goals' projectIds", async () => {
+      members.set("p1", ["a"])
+      const { result } = renderHook(() => useGoalActions(), { wrapper })
+
+      await act(() =>
+        result.current.addToProject([{ goalId: "a" }, { goalId: "b" }], {
+          projectId: "p2",
+          name: "Two",
+          goalIds: [],
+        } as never)
+      )
+
+      expect(changeProjectMembership).toHaveBeenCalledTimes(1)
+      expect(changeProjectMembership.mock.calls[0]![1]).toEqual([])
+      expect(listGoal("b")?.projectIds).toEqual(["p1", "p2"])
+      expect(invalidated).toEqual([["projects", "list"]])
+      expect(toast.success).toHaveBeenCalledExactlyOnceWith(
+        'goals.toasts.goalsAddedToProject:{"project":"Two","count":2}'
+      )
+    })
+
+    it("moves last-membership rows to the destination before removing", async () => {
+      members.set("p1", ["a", "b", "c"])
+      members.set("p3", ["x"])
+      const { result } = renderHook(() => useGoalActions(), { wrapper })
+
+      await act(() =>
+        result.current.removeFromProject(
+          [row("a", ["p1"]), row("b", ["p1", "p2"])],
+          project,
+          destination
+        )
+      )
+
+      expect(changeProjectMembership.mock.calls.map(([id]) => id)).toEqual([
+        "p3",
+        "p1",
+      ])
+      expect(members.get("p3")).toEqual(["x", "a"])
+      expect(members.get("p1")).toEqual(["c"])
+      expect(listGoal("a")?.projectIds).toEqual(["p3"])
+      expect(toast.success).toHaveBeenCalledExactlyOnceWith(
+        'goals.toasts.goalsRemovedAndMoved:{"count":2,"project":"Proj","moved":1,"destination":"Dest"}'
+      )
+    })
+
+    it("says the goals were moved when only the removal fails", async () => {
+      members.set("p1", ["a"])
+      const apply = changeProjectMembership.getMockImplementation()!
+      changeProjectMembership
+        .mockImplementationOnce(apply)
+        .mockRejectedValueOnce(new Error("network"))
+      const { result } = renderHook(() => useGoalActions(), { wrapper })
+      let ok = true
+      await act(async () => {
+        ok = await result.current.removeFromProject(
+          [row("a", ["p1"])],
+          project,
+          destination
+        )
+      })
+      expect(ok).toBe(false)
+      expect(toast.error).toHaveBeenCalledExactlyOnceWith(
+        'goals.toasts.movedButNotRemoved:{"count":1,"project":"Proj","destination":"Dest","error":"goals.toasts.actionError"}'
+      )
+    })
   })
 })

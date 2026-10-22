@@ -8,7 +8,6 @@ import type { UnitId, UpgradeId } from "@workspace/game-domain"
 import type { PlayerDataChunkDto } from "@workspace/player-data"
 
 import type { GoalDetail } from "@/entities/goal"
-import type { ProjectGoalSummary } from "@/entities/project"
 import {
   calculateGoalFarmingStages,
   calculateGoalResourceNeed,
@@ -61,7 +60,7 @@ interface ShopResourceNeed {
 export type ShopNeedAggregate = ReadonlyMap<string, ShopResourceNeed>
 
 export interface AggregateShopNeedsParams {
-  members: ProjectGoalSummary[]
+  members: { goal: GoalDetail }[]
   details: GoalDetail[]
   playerCharacterById: ReadonlyMap<string, PlayerCharacter | undefined>
   playerMowById: ReadonlyMap<string, PlayerMow | undefined>

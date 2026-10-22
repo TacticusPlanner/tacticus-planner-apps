@@ -17,7 +17,6 @@ import type { PlayerDataChunkDto } from "@workspace/player-data"
 
 import type { GoalDetail } from "@/entities/goal"
 import type { OnslaughtProgress } from "@/entities/player-data-override"
-import type { ProjectGoalSummary } from "@/entities/project"
 import {
   allocatePlanInventory,
   calculateGoalFarmingStages,
@@ -69,7 +68,7 @@ type PlayerMow = PlayerDataChunkDto<"mows">[number]
 type InventoryShard = PlayerDataChunkDto<"inventory-shards">[number]
 
 export type DailyRaidsCalculationInput = {
-  members: ProjectGoalSummary[]
+  members: GoalPlanEntry[]
   details: GoalDetail[]
   playerCharacterById: ReadonlyMap<string, PlayerCharacter | undefined>
   playerMowById: ReadonlyMap<string, PlayerMow | undefined>
@@ -106,13 +105,16 @@ export type DailyRaidsCalculationInput = {
   shops?: readonly GameCatalogShop[]
 }
 
+/** One goal of the plan, as `useGlobalGoalPlan` entries carry it. */
+type GoalPlanEntry = { goal: GoalDetail }
+
 /** The goal's position in the account-wide order; the weight every planning calculation sorts by. */
-function globalPriorityOf(member: ProjectGoalSummary) {
+function globalPriorityOf(member: GoalPlanEntry) {
   return member.goal.globalPriority ?? Number.MAX_SAFE_INTEGER
 }
 
 /** Active goals of `members` in global order (Paused goals keep their position but do not plan). */
-export function activeProjectMembers(members: ProjectGoalSummary[]) {
+export function activeProjectMembers(members: GoalPlanEntry[]) {
   return members
     .filter((member) => member.goal.status === "Active")
     .sort((left, right) => globalPriorityOf(left) - globalPriorityOf(right))

@@ -57,9 +57,12 @@ function GoalEditDialogContent({
   const [portalContainer, setPortalContainer] = useState<HTMLElement | null>(
     null
   )
+  // Always re-read on open (spec: goal-edit-dialog): the edit must start from the server's revision,
+  // whatever the list cached.
   const detailQuery = useQuery({
     ...goalQueries.detail(goalId),
     enabled: isAuthenticated,
+    staleTime: 0,
   })
   const detail = detailQuery.data
 

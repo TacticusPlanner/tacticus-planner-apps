@@ -4,7 +4,6 @@ import type {
   CreateProjectRequest,
   MoveProjectGoalRequest,
   ProjectGoalEntry,
-  ProjectGoalsResponse,
   ProjectSummary,
   UpdateProjectGoalsRequest,
   UpdateProjectRequest,
@@ -51,12 +50,5 @@ export function moveProjectGoal(
   return apiPut<{ revision: number; goalIds: string[] }>(
     `/api/v1/me/projects/${projectId}/goal-order`,
     { body: request }
-  )
-}
-
-export function listProjectGoals(projectId: string, signal?: AbortSignal) {
-  return apiGet<ProjectGoalsResponse>(
-    `/api/v1/me/projects/${projectId}/goals`,
-    { signal }
   )
 }

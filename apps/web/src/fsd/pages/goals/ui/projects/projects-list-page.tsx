@@ -1,7 +1,6 @@
 import { useState } from "react"
 import { useNavigate } from "react-router"
 import { useTranslation } from "react-i18next"
-import { useQueries } from "@tanstack/react-query"
 import {
   Card,
   CardContent,
@@ -17,12 +16,9 @@ import {
   type ProjectCardSummary,
   orderDefaultFirst,
   useProjectActions,
+  useProjectsWithGoals,
 } from "@/features/project-management"
-import {
-  projectQueries,
-  useProjects,
-  type ProjectSummary,
-} from "@/entities/project"
+import type { ProjectSummary } from "@/entities/project"
 
 import { useCreateGoalLauncher } from "../../model/goal-creation-form/create-goal-launcher-context"
 import { useGoalAttainment } from "../../model/attainment/use-goal-attainment"
@@ -42,7 +38,8 @@ export function ProjectsListPage() {
   const { t } = useTranslation()
   useProjectsListTutorial()
   const navigate = useNavigate()
-  const projects = useProjects()
+  const projectsWithGoals = useProjectsWithGoals()
+  const { projectsRead: projects, goalsRead } = projectsWithGoals
   const hasProjects = projects.projects.length > 0
   const [sheetOpen, setSheetOpen] = useState(false)
   const [archivedOpen, setArchivedOpen] = useState(false)
@@ -62,22 +59,14 @@ export function ProjectsListPage() {
   const archived = projects.projects.filter(
     (project) => project.status === "Archived"
   )
-  const summaryProjects = projects.projects.filter(
+  // Counts come from the goals list joined by each project's `goalIds` (no per-project read); one
+  // goals-list failure makes every summary unavailable with one retry.
+  const summaryProjects = projectsWithGoals.projects.filter(
     (project) => project.status !== "Archived" || archivedOpen
   )
-  const summaryQueries = useQueries({
-    queries: summaryProjects.map((project) =>
-      projectQueries.goals(project.projectId)
-    ),
-  })
-  const defaultIndex = defaultProject
-    ? summaryProjects.findIndex(
-        (project) => project.projectId === defaultProject.projectId
-      )
-    : -1
-  const defaultGoals =
-    defaultIndex >= 0 ? (summaryQueries[defaultIndex]?.data?.goals ?? []) : []
-  const defaultGoalIds = defaultGoals.map((entry) => entry.goal.goalId)
+  const defaultGoalIds = (
+    projectsWithGoals.projects.find((project) => project.isDefault)?.goals ?? []
+  ).map((goal) => goal.goalId)
   const defaultAttainment = useGoalAttainment(defaultGoalIds)
   // The Default project's numbers are its goals' outcomes from the one global run, not a project-only plan.
   // An empty scope (no Default project, or its goals not loaded yet) skips the run's fan-out.
@@ -89,27 +78,23 @@ export function ProjectsListPage() {
     defaultInsights.estimates
   )
   const summaries = new Map<string, ProjectCardSummary>()
-  summaryProjects.forEach((project, index) => {
-    const query = summaryQueries[index]
-    if (!query || query.isPending) {
+  for (const project of summaryProjects) {
+    if (goalsRead.loading) {
       summaries.set(project.projectId, { status: "loading" })
-      return
+      continue
     }
-    if (query.isError) {
+    if (goalsRead.isError) {
       summaries.set(project.projectId, {
         status: "error",
-        retry: () => void query.refetch(),
+        retry: goalsRead.retry,
       })
-      return
+      continue
     }
-    const members = query.data.goals
+    const members = project.goals
     const units = new Set(
       members
-        .filter(
-          (entry) =>
-            entry.goal.status === "Active" || entry.goal.status === "Paused"
-        )
-        .map((entry) => `${entry.goal.entityType}:${entry.goal.entityId}`)
+        .filter((goal) => goal.status === "Active" || goal.status === "Paused")
+        .map((goal) => `${goal.entityType}:${goal.entityId}`)
     ).size
     summaries.set(project.projectId, {
       status: "success",
@@ -118,18 +103,17 @@ export function ProjectsListPage() {
       ...(project.isDefault
         ? {
             reached: members.filter(
-              (entry) => defaultAttainment.get(entry.goal.goalId)?.reached
+              (goal) => defaultAttainment.get(goal.goalId)?.reached
             ).length,
             blocked: members.filter(
-              (entry) =>
-                defaultMetrics.get(entry.goal.goalId)?.blockers.isBlocked
+              (goal) => defaultMetrics.get(goal.goalId)?.blockers.isBlocked
             ).length,
             completionDate: defaultInsights.completionDate,
             unestimatedGoalCount: defaultInsights.unestimatedGoalCount,
           }
         : {}),
     })
-  })
+  }
 
   const openNewProject = () => {
     setSheetProject(undefined)

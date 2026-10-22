@@ -7,8 +7,6 @@ const settled = {
   tab: "toReach" as const,
   requestedProjectId: undefined,
   projectsLoading: false,
-  scopeId: undefined,
-  pendingProjectIds: new Set<string>(),
   attainmentPending: false,
   hasCandidateGoals: true,
 }
@@ -33,16 +31,6 @@ describe("isGoalsListLoading", () => {
     expect(isGoalsListLoading({ ...settled, projectsLoading: true })).toBe(
       false
     )
-  })
-
-  it("waits for the scoped project's member list only", () => {
-    const pendingProjectIds = new Set(["p"])
-    expect(
-      isGoalsListLoading({ ...settled, scopeId: "p", pendingProjectIds })
-    ).toBe(true)
-    expect(
-      isGoalsListLoading({ ...settled, scopeId: "q", pendingProjectIds })
-    ).toBe(false)
   })
 
   it.each([

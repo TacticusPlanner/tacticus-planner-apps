@@ -17,7 +17,6 @@ import {
 } from "@workspace/game-domain"
 
 import type { GoalDetail } from "@/entities/goal"
-import type { ProjectGoalSummary } from "@/entities/project"
 import type {
   FarmingCharacter,
   FarmingUpgrade,
@@ -126,7 +125,6 @@ function goalDetail(overrides: Partial<GoalDetail>): GoalDetail {
       upgrade: null,
     },
     snapshot: null,
-    events: [],
     dependsOn: [],
     projectIds: ["project-1"],
     revision: 1,
@@ -135,9 +133,12 @@ function goalDetail(overrides: Partial<GoalDetail>): GoalDetail {
   }
 }
 
-function member(status: string, priority: number): ProjectGoalSummary {
+function member(
+  status: GoalDetail["status"],
+  priority: number
+): { goal: GoalDetail } {
   return {
-    goal: {
+    goal: goalDetail({
       globalPriority: priority,
       goalId: `${status}-${priority}`,
       entityType: "Character",
@@ -148,7 +149,7 @@ function member(status: string, priority: number): ProjectGoalSummary {
       dependsOn: [],
       createdAt: "2026-01-01T00:00:00.000Z",
       updatedAt: "2026-01-01T00:00:00.000Z",
-    },
+    }),
   }
 }
 
@@ -565,10 +566,10 @@ describe("daily raid derivation", () => {
   it("orders interleaved Character and Machine-of-War goals by global priority alone (RAID-004)", () => {
     const entry = (
       goalId: string,
-      entityType: string,
+      entityType: GoalDetail["entityType"],
       globalPriority: number,
-      status = "Active"
-    ): ProjectGoalSummary => ({
+      status: GoalDetail["status"] = "Active"
+    ): { goal: GoalDetail } => ({
       goal: {
         ...member("Active", 1).goal,
         goalId,

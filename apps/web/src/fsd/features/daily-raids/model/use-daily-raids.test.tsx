@@ -29,9 +29,18 @@ vi.mock("@/entities/planning-setting", () => ({
   usePlanningSettings: () => ({ settings: {}, loading: false }),
 }))
 
-vi.mock("./use-scoped-goal-plan", () => ({
-  useScopedGoalPlan: () => ({ entries: [], loading: false, isError: false }),
+const scoped = vi.hoisted(() => ({
+  entries: [] as { goal: Record<string, unknown> }[],
 }))
+vi.mock("./use-scoped-goal-plan", () => ({
+  useScopedGoalPlan: () => ({
+    entries: scoped.entries,
+    loading: false,
+    isError: false,
+  }),
+}))
+const getGoal = vi.hoisted(() => vi.fn())
+vi.mock("@/entities/goal/api/goal.api", () => ({ getGoal, listGoals: vi.fn() }))
 
 vi.mock("@/entities/player-data-override", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/entities/player-data-override")>()),
@@ -62,6 +71,28 @@ function wrapper({ children }: { children: ReactNode }) {
 describe("useDailyRaids campaign-event override gates", () => {
   beforeEach(() => {
     overrides.fail = false
+    scoped.entries = []
+  })
+
+  it("reads every planned goal from the list entries, never a goal detail", async () => {
+    scoped.entries = [
+      {
+        goal: {
+          goalId: "g1",
+          status: "Active",
+          entityType: "Character",
+          entityId: "ragnar",
+          globalPriority: 1,
+          projectIds: ["project-1"],
+        },
+      },
+    ]
+    const { result } = renderHook(() => useDailyRaids("project-1"), {
+      wrapper,
+    })
+    await waitFor(() => expect(result.current.status).toBe("loading"))
+    await new Promise((resolve) => setTimeout(resolve, 20))
+    expect(getGoal).not.toHaveBeenCalled()
   })
 
   it("reports an error when the campaign-event overrides fail to load", async () => {

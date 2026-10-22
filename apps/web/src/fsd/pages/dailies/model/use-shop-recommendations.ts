@@ -1,7 +1,5 @@
 import { useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
-import { useQueries, useQuery } from "@tanstack/react-query"
-import { useIsAuthenticated } from "@azure/msal-react"
 import { useLiveQuery } from "dexie-react-hooks"
 import {
   computeShopLockContext,
@@ -32,12 +30,7 @@ import {
   getPlayerMows,
 } from "@workspace/player-data/queries"
 
-import {
-  goalQueries,
-  useGlobalGoalPlan,
-  type GoalDetail,
-} from "@/entities/goal"
-import { projectQueries, type ProjectGoalSummary } from "@/entities/project"
+import { useGlobalGoalPlan, type GoalDetail } from "@/entities/goal"
 import {
   mapCharacterStorageToDomain,
   mapUpgradeStorageToDomain,
@@ -118,28 +111,21 @@ export function useShopRecommendations(
     "upgrades",
     "equipmentItems",
   ])
-  const isAuthenticated = useIsAuthenticated()
   const [retryNonce, setRetryNonce] = useState(0)
 
-  const membersQuery = useQuery({
-    ...projectQueries.goals(projectId ?? "unselected"),
-    enabled: Boolean(isAuthenticated && projectId),
-  })
+  // The goals list carries every goal in full and its `projectIds`, so a project scope is a filter of
+  // the global plan — no membership or per-goal read.
   const globalPlan = useGlobalGoalPlan()
-  const members: ProjectGoalSummary[] | undefined = projectId
-    ? membersQuery.data?.goals
-    : globalPlan.loading || globalPlan.isError
+  const members =
+    globalPlan.loading || globalPlan.isError
       ? undefined
-      : globalPlan.entries
+      : projectId
+        ? globalPlan.entries.filter((entry) =>
+            entry.goal.projectIds.includes(projectId)
+          )
+        : globalPlan.entries
   const activeMembers = activeProjectMembers(members ?? [])
-  const detailQueries = useQueries({
-    queries: activeMembers.map((member) =>
-      goalQueries.detail(member.goal.goalId)
-    ),
-  })
-  const details = detailQueries.flatMap((query) =>
-    query.data ? [query.data] : []
-  )
+  const details = activeMembers.map((member) => member.goal)
   const detailKey = details
     .map((detail) => `${detail.goalId}:${detail.entityType}:${detail.entityId}`)
     .join(",")
@@ -240,7 +226,6 @@ export function useShopRecommendations(
 
   const isReady =
     members !== undefined &&
-    detailQueries.every((query) => query.isSuccess) &&
     charactersById &&
     mowsById &&
     equipmentById &&
@@ -349,17 +334,11 @@ export function useShopRecommendations(
   ])
 
   const retry = () => {
-    if (projectId) void membersQuery.refetch()
-    else globalPlan.retry()
-    for (const query of detailQueries) void query.refetch()
+    globalPlan.retry()
     setRetryNonce((nonce) => nonce + 1)
   }
 
-  if (
-    (projectId ? membersQuery.isError : globalPlan.isError) ||
-    detailQueries.some((query) => query.isError) ||
-    liveQueryFailed
-  ) {
+  if (globalPlan.isError || liveQueryFailed) {
     return { status: "error", retry }
   }
   if (!sections) return { status: "loading" }

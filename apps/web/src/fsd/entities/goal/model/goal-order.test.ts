@@ -1,8 +1,10 @@
 import { describe, expect, it } from "vitest"
 
+import { ApiError } from "@/shared/api"
+
 import {
   applyPositionMove,
-  goalOrderConflictDetails,
+  goalOrderConflict,
   inFlightInGlobalOrder,
   moveOntoDisplaced,
 } from "./goal-order"
@@ -111,25 +113,29 @@ describe("applyPositionMove", () => {
   })
 })
 
-describe("goalOrderConflictDetails", () => {
-  it("narrows the structured reorder conflict", () => {
-    const body = {
+describe("goalOrderConflict", () => {
+  it("exposes the order as it stands from a goalOrderStale 409", () => {
+    const current = { revision: 7, goalIds: ["a", "b"] }
+    const error = new ApiError(409, "The goal order changed.", {
       issueCode: "goalOrderStale",
-      message: "The goal order changed since it was loaded.",
-      revision: 7,
-      goalIds: ["a", "b"],
-    }
+      current,
+    })
 
-    expect(goalOrderConflictDetails(body)).toEqual(body)
+    expect(goalOrderConflict(error)).toEqual({
+      issueCode: "goalOrderStale",
+      current,
+    })
   })
 
   it("rejects other errors", () => {
-    expect(goalOrderConflictDetails(null)).toBeNull()
+    expect(goalOrderConflict(null)).toBeNull()
     expect(
-      goalOrderConflictDetails({ issueCode: "goalRevisionStale" })
+      goalOrderConflict(
+        new ApiError(409, "x", { issueCode: "goalRevisionStale", current: {} })
+      )
     ).toBeNull()
     expect(
-      goalOrderConflictDetails({ issueCode: "goalOrderStale", message: "x" })
+      goalOrderConflict(new ApiError(409, "x", { issueCode: "goalOrderStale" }))
     ).toBeNull()
   })
 })

@@ -75,10 +75,9 @@ export interface RosterSnapshotMow {
   appliedUpgradeSlots: number[]
 }
 
-/** A whole owned roster at one moment (the API's general `roster_snapshots` row); kept generic so
- *  the later roster snapshots port reads the same shape. */
+/** `GET …/run-records/{recordId}/roster`: the whole owned roster as it was at the record's last
+ *  progress, read on demand (records never carry it). */
 export interface RosterSnapshot {
-  id: string
   /** ISO 8601 UTC. */
   takenAt: string
   catalogVersion: string
@@ -100,12 +99,12 @@ export interface LegendaryEventRunRecord {
   lanes: LegendaryEventRunRecordLanes
   /** Lane then `sortOrder` order; empty when no team was planned. */
   teams: LegendaryEventRunRecordTeam[]
-  /** Null when the snapshot has been removed. */
-  rosterSnapshot: RosterSnapshot | null
 }
 
-/** `GET /me/legendary-event-plans/{eventId}/run-records`: newest `startedAt` first. */
+/** `GET /me/legendary-event-plans/{eventId}/run-records`: one page, newest `startedAt` first.
+ *  `nextAfter` is the cursor of the next (older) page, null on the last one. */
 export interface LegendaryEventRunRecords {
   eventId: string
   records: LegendaryEventRunRecord[]
+  nextAfter: string | null
 }

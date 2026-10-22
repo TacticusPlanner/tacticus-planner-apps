@@ -6,6 +6,7 @@ import {
 } from "@workspace/game-domain"
 
 import type { LegendaryEventRun } from "../model/plan.types"
+import type { ReadState } from "../model/use-read-state"
 import type {
   LegendaryEventRunRecord,
   LegendaryEventRunRecordEncounter,
@@ -219,10 +220,12 @@ export interface RunHistoryLane extends RecordLaneSummary {
   teams: RunHistoryTeam[]
 }
 
-/** Why a record has no roster changes list, or the list itself. */
+/** Why a record has no roster changes list (yet), or the list itself. The record's roster is read on
+ *  demand, so it can still be loading or have failed (with a retry). */
 export type RunHistoryDeltas =
   | { kind: "noTeams" }
-  | { kind: "noSnapshot" }
+  | { kind: "snapshotLoading" }
+  | { kind: "snapshotFailed"; retry: () => void }
   | { kind: "noRoster" }
   | { kind: "ready"; deltas: RosterDelta[] }
 
@@ -241,12 +244,14 @@ export interface RunHistory {
 /**
  * The one structure the history UI renders for a record (design D7): per lane its cleared battle,
  * points and teams with their cleared battle, and the roster changes of the teams' members and
- * reserves. `roster` is undefined when it could not be read.
+ * reserves. `roster` (the current one) is undefined when it could not be read; `snapshot` is the
+ * record's own roster as read on demand (undefined while not requested, which reads as loading).
  */
 export function recordHistory(
   record: LegendaryEventRunRecord,
   event: Pick<LegendaryEvent, LegendaryEventLaneId>,
-  roster: readonly LegendaryEventRosterUnit[] | undefined
+  roster: readonly LegendaryEventRosterUnit[] | undefined,
+  snapshot: ReadState<RosterSnapshot> | undefined
 ): RunHistory {
   const lanes = LEGENDARY_EVENT_LANE_IDS.map((laneId): RunHistoryLane => {
     const encounters = record.lanes[laneId]
@@ -269,14 +274,16 @@ export function recordHistory(
   const deltas: RunHistoryDeltas =
     record.teams.length === 0
       ? { kind: "noTeams" }
-      : !record.rosterSnapshot
-        ? { kind: "noSnapshot" }
-        : !roster
-          ? { kind: "noRoster" }
-          : {
-              kind: "ready",
-              deltas: rosterDeltas(record.rosterSnapshot, roster, unitIds),
-            }
+      : !snapshot || snapshot.status === "loading"
+        ? { kind: "snapshotLoading" }
+        : snapshot.status === "error"
+          ? { kind: "snapshotFailed", retry: snapshot.retry }
+          : !roster
+            ? { kind: "noRoster" }
+            : {
+                kind: "ready",
+                deltas: rosterDeltas(snapshot.data, roster, unitIds),
+              }
   return {
     recordId: record.id,
     run: record.run,

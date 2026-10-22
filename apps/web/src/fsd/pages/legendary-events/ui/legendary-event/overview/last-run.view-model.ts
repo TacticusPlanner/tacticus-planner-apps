@@ -13,6 +13,7 @@ import {
   type LegendaryEventRunRecord,
   type NamedTeam,
   type ReadState,
+  type RosterSnapshot,
   type RunHistory,
 } from "@/entities/legendary-event"
 
@@ -43,6 +44,8 @@ export interface LastRunInput {
   lifecycle: LegendaryEventLifecycleState
   progress: ReadValue<LegendaryEventProgress | undefined>
   roster: ReadValue<LegendaryEventRosterUnit[] | undefined>
+  /** Each record's roster at the time, read on demand (the previous run and expanded earlier runs). */
+  rosters: ReadonlyMap<string, ReadState<RosterSnapshot>>
   event: Pick<LegendaryEvent, LegendaryEventLaneId>
   /** The name a team is shown by (`useTeamDisplayName`); the recorded name when absent. */
   teamName?: (
@@ -90,12 +93,25 @@ function selectKnownRunRecords(
   return selectRunRecords(records, lifecycle, known)
 }
 
+/** The previous run's record, once the records and the synced progress are known: the record whose
+ *  roster at the time is read up front. */
+export function previousRunRecord({
+  enabled,
+  records,
+  lifecycle,
+  progress,
+}: Pick<LastRunInput, "enabled" | "records" | "lifecycle" | "progress">) {
+  if (!enabled || records.status !== "ready" || progress === "loading") return
+  return selectKnownRunRecords(records.data, lifecycle, progress)?.previous
+}
+
 export function buildLastRunViewModel({
   enabled,
   records,
   lifecycle,
   progress,
   roster,
+  rosters,
   event,
   teamName,
 }: LastRunInput): LastRunViewModel {
@@ -116,7 +132,11 @@ export function buildLastRunViewModel({
   if (!selection.previous) return { kind: "hidden" }
   const currentRoster = roster === "error" ? undefined : roster
   const history = (record: LegendaryEventRunRecord) =>
-    withTeamNames(recordHistory(record, event, currentRoster), event, teamName)
+    withTeamNames(
+      recordHistory(record, event, currentRoster, rosters.get(record.id)),
+      event,
+      teamName
+    )
   return {
     kind: "ready",
     previous: history(selection.previous),

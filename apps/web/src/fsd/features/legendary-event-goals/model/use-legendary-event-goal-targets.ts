@@ -1,11 +1,6 @@
-import { useMemo, useState } from "react"
-import { useQueries, type UseQueryResult } from "@tanstack/react-query"
+import { useMemo } from "react"
 
-import {
-  goalQueries,
-  useGlobalGoalPlan,
-  type GoalDetail,
-} from "@/entities/goal"
+import { useGlobalGoalPlan } from "@/entities/goal"
 import type { LegendaryEventGoalTarget } from "@/entities/legendary-event"
 
 import { eventGoalSummaries, goalTargetsFromDetails } from "./goal-targets"
@@ -21,49 +16,25 @@ export type LegendaryEventGoalTargets =
       byUnit: ReadonlyMap<string, LegendaryEventGoalTarget>
     }
 
-type DetailsState =
-  { status: "loading" | "failed" } | { status: "ready"; details: GoalDetail[] }
-
-// Module-level so TanStack Query keeps the combined result stable between renders.
-function combineDetails(results: UseQueryResult<GoalDetail>[]): DetailsState {
-  if (results.some((result) => result.isError)) return { status: "failed" }
-  if (results.some((result) => result.isPending)) return { status: "loading" }
-  return {
-    status: "ready",
-    details: results.flatMap((result) => (result.data ? [result.data] : [])),
-  }
-}
-
 /**
  * Active Character goals of kinds Unlock, Ascension, Rank and Ability for the event's allowed units,
- * read from the global plan and the goal details (spec: goal targets map onto a previewed unit). A
- * created goal refreshes through the shell's goal-query invalidation.
+ * read from the global plan, which carries every goal in full (spec: goal targets map onto a
+ * previewed unit). A created goal refreshes through the goals-list refresh.
  */
 export function useLegendaryEventGoalTargets(
   allowedUnitIds: ReadonlySet<string>
 ): LegendaryEventGoalTargets {
   const plan = useGlobalGoalPlan()
-  const summaries = useMemo(
-    () => eventGoalSummaries(plan.active, allowedUnitIds),
-    [plan.active, allowedUnitIds]
-  )
-  const details = useQueries({
-    queries: summaries.map((goal) => goalQueries.detail(goal.goalId)),
-    combine: combineDetails,
-  })
-  const current = useMemo((): LegendaryEventGoalTargets => {
-    if (plan.isError || details.status === "failed") return { status: "failed" }
-    if (plan.loading || details.status !== "ready") return { status: "loading" }
-    const targets = goalTargetsFromDetails(details.details)
+  return useMemo((): LegendaryEventGoalTargets => {
+    if (plan.isError) return { status: "failed" }
+    if (plan.loading) return { status: "loading" }
+    const targets = goalTargetsFromDetails(
+      eventGoalSummaries(plan.active, allowedUnitIds)
+    )
     return {
       status: "ready",
       targets,
       byUnit: new Map(targets.map((target) => [target.unitId, target])),
     }
-  }, [plan.isError, plan.loading, details])
-  // Only the first load reads as loading: after a goal is created its detail loads while the
-  // previous targets stay shown, so badges and the preview don't blink out.
-  const [lastReady, setLastReady] = useState<LegendaryEventGoalTargets>()
-  if (current.status === "ready" && current !== lastReady) setLastReady(current)
-  return current.status === "loading" && lastReady ? lastReady : current
+  }, [plan.isError, plan.loading, plan.active, allowedUnitIds])
 }

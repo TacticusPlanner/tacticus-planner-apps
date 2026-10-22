@@ -792,7 +792,9 @@
     "earlier": {
       "title": "Manches précédentes ({{runs}})",
       "entry": "{{run}} · {{date}}"
-    }
+    },
+    "loadMore": "Charger plus",
+    "rosterRetry": "Réessayer"
   },
   "tierList": {
     "intro": "Les tiers du mode horde de chaque personnage, avec le multiplicateur qu'il reçoit.",

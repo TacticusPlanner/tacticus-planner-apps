@@ -159,8 +159,7 @@ describe("useRunInputs", () => {
     api.runs.mockRejectedValue(
       new ApiError(409, "Stale.", {
         issueCode: "legendaryEventPlanStale",
-        message: "Stale.",
-        plan: theirs,
+        current: theirs,
       })
     )
     const { result, cached } = setup(plan(3))

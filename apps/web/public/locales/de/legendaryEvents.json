@@ -792,7 +792,9 @@
     "earlier": {
       "title": "Frühere Durchläufe ({{runs}})",
       "entry": "{{run}} · {{date}}"
-    }
+    },
+    "loadMore": "Mehr laden",
+    "rosterRetry": "Erneut versuchen"
   },
   "tierList": {
     "intro": "Die Horde-Modus-Tiers aller Charaktere mit dem Multiplikator, den jeder erhält.",

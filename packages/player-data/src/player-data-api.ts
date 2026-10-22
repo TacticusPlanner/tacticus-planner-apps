@@ -16,7 +16,7 @@ export type PlayerDataClient = {
   getChunk: (chunk: PlayerDataManifestChunk) => Promise<PlayerDataChunkEnvelope>
 }
 
-const syncPath = "/api/v1/tacticus-integration/player-sync"
+const syncPath = "/api/v1/me/player-data/sync"
 
 /**
  * Authenticated HTTP client for the per-profile player-data API. Unlike the anonymous game-catalog

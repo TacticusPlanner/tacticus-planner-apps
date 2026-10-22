@@ -427,7 +427,6 @@ vi.mock("@workspace/player-data/queries", () => ({
 }))
 
 const createCombinedGoals = vi.fn()
-const createGoal = vi.fn()
 const listProjects = vi.fn()
 const createProject = vi.fn()
 const listGoals = vi.fn(() => Promise.resolve({ goals: [] }))
@@ -435,7 +434,6 @@ const listGoals = vi.fn(() => Promise.resolve({ goals: [] }))
 vi.mock("@/entities/goal", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/entities/goal")>()),
   createCombinedGoals: (...args: unknown[]) => createCombinedGoals(...args),
-  createGoal: (...args: unknown[]) => createGoal(...args),
   // The account's Active goals in global order, which the new goal's duration estimate folds in
   // behind — empty by default (the per-goal engine itself is covered by per-project-estimate.test.ts).
   useGlobalGoalPlan: () => ({
@@ -456,8 +454,7 @@ vi.mock("@/entities/goal", async (importOriginal) => ({
       queryKey: ["goals", "list", { archived }],
       queryFn: () => listGoals(),
     }),
-    // Backs use-per-project-estimates.ts's per-goal detail fetch — never actually called while
-    // projectQueries.goals (above) returns no members, but stubbed defensively all the same.
+    // Stubbed defensively: no test here reads a goal detail.
     detail: (goalId: string) => ({
       queryKey: ["goals", "detail", goalId],
       queryFn: () => Promise.reject(new Error("not stubbed")),
@@ -471,11 +468,6 @@ vi.mock("@/entities/project", async (importOriginal) => ({
   createProject: (...args: unknown[]) => createProject(...args),
   projectQueries: {
     all: () => ["projects"],
-    // Backs the goal-projects lookup — empty by default.
-    goals: (projectId: string) => ({
-      queryKey: ["projects", "detail", projectId, "goals"],
-      queryFn: () => Promise.resolve({ goals: [] }),
-    }),
     list: () => ({
       queryKey: ["projects", "list"],
       queryFn: () => listProjects(),
@@ -483,7 +475,10 @@ vi.mock("@/entities/project", async (importOriginal) => ({
   },
 }))
 
-vi.mock("@/shared/api", () => ({ ApiError: class ApiError extends Error {} }))
+vi.mock("@/shared/api", () => ({
+  ApiError: class ApiError extends Error {},
+  apiIssue: () => null,
+}))
 
 import { CreateGoalSheet } from ".//create-goal-sheet"
 

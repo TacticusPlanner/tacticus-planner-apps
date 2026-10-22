@@ -5,10 +5,12 @@ import type {
   LegendaryEventRosterUnit,
   LegendaryEventRunRecord,
   ReadState,
+  RosterSnapshot,
 } from "@/entities/legendary-event"
 import {
   rosterAfterRun1,
   utharRun1Record,
+  utharRun1Snapshot,
   utharRun2Record,
 } from "@/test/fixtures/legendary-event-run-records"
 import { utharEvent } from "@/test/fixtures/legendary-events"
@@ -17,6 +19,7 @@ import {
   buildLastRunClears,
   buildLastRunViewModel,
   historyDeltaCount,
+  previousRunRecord,
   progressionStarsKey,
   teamLastRunClearedBattle,
   type LastRunInput,
@@ -29,6 +32,14 @@ const run3Record: LegendaryEventRunRecord = {
   run: 3,
 }
 const retry = vi.fn()
+// Every record's roster at the time, read.
+const snapshots = (records: readonly LegendaryEventRunRecord[]) =>
+  new Map(
+    records.map((record): [string, ReadState<RosterSnapshot>] => [
+      record.id,
+      { status: "ready", data: utharRun1Snapshot, retry: () => {} },
+    ])
+  )
 const ready = (
   records: LegendaryEventRunRecord[]
 ): ReadState<LegendaryEventRunRecord[]> => ({
@@ -46,6 +57,7 @@ const build = (overrides: Partial<LastRunInput>) =>
     lifecycle: "active",
     progress: undefined,
     roster,
+    rosters: snapshots([utharRun1Record, utharRun2Record, run3Record]),
     event: utharEvent,
     ...overrides,
   })
@@ -139,6 +151,33 @@ describe("buildLastRunViewModel", () => {
         kind: "noRoster",
       })
     }
+  })
+
+  it("reads the previous run's deltas from its roster at the time, as it loads or fails", () => {
+    const records = ready([utharRun1Record])
+    const deltasWith = (rosters: LastRunInput["rosters"]) => {
+      const view = build({ records, progress: progressIn(2), rosters })
+      return view.kind === "ready" ? view.previous.deltas : view.kind
+    }
+    expect(deltasWith(new Map())).toEqual({ kind: "snapshotLoading" })
+    expect(
+      deltasWith(new Map([["record-run-1", { status: "error", retry }]]))
+    ).toEqual({ kind: "snapshotFailed", retry })
+    expect(deltasWith(snapshots([utharRun1Record]))).toMatchObject({
+      kind: "ready",
+    })
+  })
+
+  it("names the previous run's record once the records and the progress are known", () => {
+    const records = ready([utharRun2Record, utharRun1Record])
+    const input = { enabled: true, records, lifecycle: "active" } as const
+    expect(previousRunRecord({ ...input, progress: progressIn(2) })).toBe(
+      utharRun1Record
+    )
+    expect(previousRunRecord({ ...input, progress: "loading" })).toBeUndefined()
+    expect(
+      previousRunRecord({ ...input, enabled: false, progress: progressIn(2) })
+    ).toBeUndefined()
   })
 
   it("active event with failed or missing progress: hidden, since the newest record may be the current run", () => {

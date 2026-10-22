@@ -13,6 +13,7 @@ import type {
 import type {
   LegendaryEventPlanList,
   LegendaryEventRunRecords,
+  RosterSnapshot,
 } from "../model/run-record.types"
 
 const PLANS_PATH = "/api/v1/me/legendary-event-plans"
@@ -34,20 +35,37 @@ export function listLegendaryEventPlans(signal?: AbortSignal) {
   return apiGet<LegendaryEventPlanList>(PLANS_PATH, { signal })
 }
 
-/** The caller's run records of one event, newest first; 404 when the id is neither a catalog event
- *  nor has any record. */
+/** One page of the caller's run records of one event, newest first (`after` is the previous page's
+ *  `nextAfter`); 404 when the id is neither a catalog event nor has any record. */
 export function getLegendaryEventRunRecords(
   eventId: string,
+  options: { after?: string | null; limit?: number; signal?: AbortSignal } = {}
+) {
+  const query = new URLSearchParams()
+  if (options.limit !== undefined) query.set("limit", String(options.limit))
+  if (options.after) query.set("after", options.after)
+  const search = query.size > 0 ? `?${query}` : ""
+  return apiGet<LegendaryEventRunRecords>(
+    `${planPath(eventId)}/run-records${search}`,
+    { signal: options.signal }
+  )
+}
+
+/** The roster as it was at one record's last progress (ETag-cached by the API). */
+export function getLegendaryEventRunRecordRoster(
+  eventId: string,
+  recordId: string,
   signal?: AbortSignal
 ) {
-  return apiGet<LegendaryEventRunRecords>(`${planPath(eventId)}/run-records`, {
-    signal,
-  })
+  return apiGet<RosterSnapshot>(
+    `${planPath(eventId)}/run-records/${recordId}/roster`,
+    { signal }
+  )
 }
 
 // Every mutation carries `expectedRevision` and answers with the whole plan. A stale revision (or,
 // for the order, a team id set that differs from the lane's) is a 409 whose body carries the
-// current plan — see `legendaryEventPlanConflictDetails`.
+// current plan — see `legendaryEventPlanConflict`.
 
 export function updateLegendaryEventPlan(
   eventId: string,

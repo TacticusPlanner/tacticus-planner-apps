@@ -4,7 +4,7 @@ import { useIsAuthenticated } from "@azure/msal-react"
 
 import { goalQueries } from "../api/goal.queries"
 import { inFlightInGlobalOrder } from "./goal-order"
-import type { GoalSummary } from "./types"
+import type { GoalDetail } from "./types"
 
 /**
  * The account's one ordered plan (spec: `global-goal-priority`): every Active and Paused goal exactly
@@ -21,7 +21,7 @@ export function useGlobalGoalPlan() {
   })
 
   const { goals, inFlight, active, entries } = useMemo(() => {
-    const goals: GoalSummary[] = query.data?.goals ?? []
+    const goals: GoalDetail[] = query.data?.goals ?? []
     const inFlight = inFlightInGlobalOrder(goals)
     const active = inFlight.filter((goal) => goal.status === "Active")
     return {

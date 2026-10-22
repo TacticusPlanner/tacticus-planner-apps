@@ -34,75 +34,75 @@ describe("rankTargetKeyLabel", () => {
   })
 })
 
+const rankGoal = {
+  goalType: "Rank",
+  config: {
+    rank: {
+      start: 0,
+      startPointFive: false,
+      startAppliedUpgrades: 0,
+      end: 11,
+      endPointFive: false,
+      endAppliedUpgrades: 0,
+    },
+  },
+} as never
+
 describe("projectConflictText", () => {
-  it("names the exact Rank target for a Rank conflict", () => {
-    expect(projectConflictText(t, "Plan B", ["Rank"], "11:0")).toBe(
-      'goals.project.membershipConflictRank:{"project":"Plan B","target":"Silver3"}'
+  it("names the existing goal's unit and exact Rank target, never a project", () => {
+    expect(projectConflictText(t, rankGoal, "Ragnar")).toBe(
+      'goals.project.membershipConflictRank:{"unit":"Ragnar","target":"Silver3"}'
     )
   })
 
-  it("keeps the goal-type wording for every other goal type", () => {
-    expect(projectConflictText(t, "Plan B", ["Ascension"])).toContain(
-      "goals.project.membershipConflict:"
-    )
-    expect(projectConflictText(t, "Plan B", ["Ascension"])).not.toContain(
-      "Rank"
+  it("names the unit and goal kind for every other goal type", () => {
+    expect(
+      projectConflictText(
+        t,
+        { goalType: "Ascension", config: {} } as never,
+        "Ragnar"
+      )
+    ).toBe(
+      'goals.project.membershipConflict:{"unit":"Ragnar","type":"goals.create.goalTypes.Ascension"}'
     )
   })
 })
 
-describe("Rank milestone copy in every locale", () => {
+describe("goal-naming conflict copy in every locale", () => {
   it.each([
     ["de", de],
     ["es", es],
     ["fr", fr],
-  ])(
-    "%s translates the target-specific conflict and tour copy",
-    (_, locale) => {
-      for (const key of [
-        "assemblyRankTargetTaken",
-        "membershipConflictRank",
-      ] as const) {
-        expect(locale.goals.project[key]).toBeTruthy()
-        expect(locale.goals.project[key]).not.toBe(en.goals.project[key])
-      }
-      expect(locale.goals.project.membershipConflictRank).toContain(
-        "{{target}}"
-      )
-      expect(locale.tour.overview.steps.projectScope.content).not.toBe(
-        en.tour.overview.steps.projectScope.content
-      )
+  ])("%s translates the conflict and status-conflict copy", (_, locale) => {
+    for (const key of [
+      "membershipConflict",
+      "membershipConflictRank",
+    ] as const) {
+      expect(locale.goals.project[key]).toContain("{{unit}}")
+      expect(locale.goals.project[key]).not.toBe(en.goals.project[key])
     }
-  )
+    expect(locale.goals.project.membershipConflictRank).toContain("{{target}}")
+    expect(locale.goals.toasts.statusConflict).toContain("{{goal}}")
+    expect(locale.goals.toasts.statusConflict).toContain("{{reason}}")
+    expect(locale.goals.toasts.statusConflict).not.toBe(
+      en.goals.toasts.statusConflict
+    )
+    expect(locale.tour.overview.steps.projectScope.content).not.toBe(
+      en.tour.overview.steps.projectScope.content
+    )
+  })
 
-  it("names the target in the English conflict copy", () => {
-    expect(en.goals.project.assemblyRankTargetTaken).toContain("{{target}}")
+  it("no longer names a project in the English conflict copy", () => {
+    expect(en.goals.project.membershipConflict).not.toContain("{{project}}")
     expect(en.tour.overview.steps.list.content).toMatch(/Rank goals/)
   })
 })
 
 describe("membershipErrorText", () => {
-  it("names the project and goal type for an occupied slot", () => {
-    const error = new ApiError(409, "Occupied", {
-      issueCode: "projectGoalSlotOccupied",
-      message: "Occupied",
-      projectId: "p1",
-      projectName: "Event Prep",
-      entityType: "Character",
-      entityId: "hero1",
-      goalType: "Ascension",
-      existingGoalId: "goal-9",
-    })
-    expect(membershipErrorText(t, error)).toBe(
-      'goals.project.membershipConflict:{"project":"Event Prep","types":"goals.create.goalTypes.Ascension"}'
-    )
-  })
-
   it("explains a removal that would leave a goal in no project", () => {
     const error = new ApiError(400, "Only project", {
       issueCode: "lastProjectMembership",
-      message: "Only project",
-      blockedGoalIds: ["goal-1"],
+      extensions: { blockedGoalIds: ["goal-1"] },
     })
     expect(membershipErrorText(t, error)).toBe(
       "goals.project.removeLastMembership"

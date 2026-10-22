@@ -1,17 +1,13 @@
-import type { GoalRevisionConflictDto } from "./types"
+import { apiIssue } from "@/shared/api"
 
-/** Narrows an `ApiError.details` body to the stale-revision 409 of `PUT /me/goals/{id}/target`, or
- * null for any other error (including the `projectGoalSlotOccupied` 409 the same endpoint can return —
- * distinguish the two by `issueCode`). */
-export function goalRevisionConflictDetails(
-  details: unknown
-): GoalRevisionConflictDto | null {
-  if (!details || typeof details !== "object") return null
-  const value = details as Partial<GoalRevisionConflictDto>
-  return value.issueCode === "goalRevisionStale" &&
-    typeof value.message === "string" &&
-    !!value.goal &&
-    typeof value.goal === "object"
-    ? (value as GoalRevisionConflictDto)
+import type { GoalDetail } from "./types"
+
+/** The goal as it stands now when `error` is a `goalRevisionStale` 409 (from the edit route), else null. */
+export function goalRevisionConflict(
+  error: unknown
+): { current: GoalDetail } | null {
+  const issue = apiIssue(error, "goalRevisionStale")
+  return issue?.current && typeof issue.current === "object"
+    ? { current: issue.current as GoalDetail }
     : null
 }

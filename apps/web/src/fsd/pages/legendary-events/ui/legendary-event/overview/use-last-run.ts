@@ -1,6 +1,7 @@
-import { useCallback, useMemo, useRef } from "react"
+import { useCallback, useMemo, useRef, useState } from "react"
 
 import {
+  useLegendaryEventRunRecordRosters,
   useLegendaryEventRunRecords,
   useTeamDisplayName,
   type LegendaryEventState,
@@ -18,6 +19,7 @@ import {
   buildLastRunClears,
   buildLastRunViewModel,
   historyDeltaCount,
+  previousRunRecord,
   type LastRunClears,
 } from "./last-run.view-model"
 
@@ -46,7 +48,20 @@ export function useLastRun(
 } {
   const event = eventState.status === "ready" ? eventState.data : undefined
   const lifecycle = eventState.lifecycle?.state
-  const records = useLegendaryEventRunRecords(eventId)
+  const { records, hasNextPage, isFetchingNextPage, fetchNextPage } =
+    useLegendaryEventRunRecords(eventId)
+  // Rosters at the time are read for the previous run up front and for each earlier run while open.
+  const [expanded, setExpanded] = useState<ReadonlySet<string>>(new Set())
+  const previous = lifecycle
+    ? previousRunRecord({ enabled, records, lifecycle, progress })
+    : undefined
+  const wanted =
+    records.status === "ready"
+      ? records.data.filter(
+          (record) => record === previous || expanded.has(record.id)
+        )
+      : []
+  const rosters = useLegendaryEventRunRecordRosters(eventId, wanted)
   const { captureEvent } = useAnalyticsActions()
   const teamName = useTeamDisplayName()
   const state = useMemo(
@@ -58,11 +73,12 @@ export function useLastRun(
             lifecycle,
             progress,
             roster,
+            rosters,
             event,
             teamName,
           })
         : ({ kind: "loading" } as const),
-    [event, lifecycle, enabled, records, progress, roster, teamName]
+    [event, lifecycle, enabled, records, progress, roster, rosters, teamName]
   )
   const lastRunClears = useMemo(
     () =>
@@ -95,8 +111,26 @@ export function useLastRun(
       }),
     [captureEvent, eventId]
   )
+  const onEarlierEntryToggled = useCallback(
+    (recordId: string, open: boolean) =>
+      setExpanded((current) => {
+        const next = new Set(current)
+        if (open) next.add(recordId)
+        else next.delete(recordId)
+        return next
+      }),
+    []
+  )
   return {
-    lastRun: { state, onViewed, onEarlierExpanded },
+    lastRun: {
+      state,
+      onViewed,
+      onEarlierExpanded,
+      onEarlierEntryToggled,
+      loadMore: hasNextPage
+        ? { onLoadMore: fetchNextPage, loading: isFetchingNextPage }
+        : undefined,
+    },
     lastRunClears,
     hasLastRun: state.kind === "ready",
   }

@@ -79,37 +79,79 @@ describe("API client", () => {
     await expect(apiDelete("/items/1", {})).resolves.toBeUndefined()
   })
 
-  it("surfaces the first validation error", async () => {
-    const details = {
-      code: "project_goal_slot_conflict",
-      conflicts: [{ projectId: "project-1", existingGoalId: "goal-1" }],
-      errors: { name: ["Name is required"] },
-      message: "Validation failed",
-    }
+  const problem = (status: number, body: object) =>
+    new Response(JSON.stringify(body), {
+      status,
+      headers: { "Content-Type": "application/problem+json" },
+    })
+
+  it("reads a problem body's issue code, detail and current state", async () => {
+    const current = { goalId: "goal-1", revision: 8 }
     vi.spyOn(globalThis, "fetch").mockResolvedValue(
-      new Response(JSON.stringify(details), { status: 400 })
+      problem(409, {
+        title: "Conflict",
+        detail: "The goal changed since it was loaded.",
+        issueCode: "goalRevisionStale",
+        current,
+      })
     )
 
-    const request = apiGet("/items", {})
-    await expect(request).rejects.toMatchObject({
-      status: 400,
-      message: "Name is required",
-      details,
+    await expect(apiPut("/goals/goal-1", { body: {} })).rejects.toMatchObject({
+      status: 409,
+      issueCode: "goalRevisionStale",
+      message: "The goal changed since it was loaded.",
+      current,
     })
   })
 
-  it("uses response or status fallbacks for other failures", async () => {
-    const fetchMock = vi.spyOn(globalThis, "fetch")
-    fetchMock.mockResolvedValueOnce(
-      new Response(JSON.stringify({ message: "Forbidden" }), { status: 403 })
+  it("names a validation failure's fields and uses the first field message", async () => {
+    const errors = { "target.rank.end": ["Rank must be above the start."] }
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      problem(400, {
+        title: "One or more validation errors occurred.",
+        issueCode: "validation",
+        errors,
+      })
     )
-    fetchMock.mockResolvedValueOnce(new Response("not-json", { status: 500 }))
+
+    await expect(apiPut("/goals/goal-1", { body: {} })).rejects.toMatchObject({
+      status: 400,
+      issueCode: "validation",
+      message: "Rank must be above the start.",
+      errors,
+    })
+  })
+
+  it("keeps a route's documented extension members", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      problem(400, {
+        title: "Bad Request",
+        issueCode: "lastProjectMembership",
+        blockedGoalIds: ["goal-1"],
+        traceId: "trace",
+      })
+    )
+
+    await expect(
+      apiPut("/projects/p/goals", { body: {} })
+    ).rejects.toMatchObject({ extensions: { blockedGoalIds: ["goal-1"] } })
+  })
+
+  it("falls back to the title, then to a generic text for a non-problem body", async () => {
+    const fetchMock = vi.spyOn(globalThis, "fetch")
+    fetchMock.mockResolvedValueOnce(problem(403, { title: "Forbidden" }))
+    fetchMock.mockResolvedValueOnce(
+      new Response("<html>Bad gateway</html>", { status: 502 })
+    )
 
     await expect(apiGet("/forbidden", {})).rejects.toEqual(
-      new ApiError(403, "Forbidden", { message: "Forbidden" })
+      new ApiError(403, "Forbidden")
     )
-    await expect(apiGet("/broken", {})).rejects.toEqual(
-      new ApiError(500, "API request failed: 500")
-    )
+    const failure = apiGet("/broken", {})
+    await expect(failure).rejects.toMatchObject({
+      status: 502,
+      issueCode: undefined,
+      message: "API request failed with status 502",
+    })
   })
 })

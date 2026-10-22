@@ -6,7 +6,7 @@ export function isGoalGroupValue(value: unknown): value is GoalGroupValue {
   return value === "none" || value === "unit" || value === "type"
 }
 
-// Mirrors the backend's persistence-local GoalEntityType/GoalType/GoalStatus/GoalEventType enums,
+// Mirrors the backend's GoalEntityType/GoalType/GoalStatus enums,
 // serialized by their C# names (System.Text.Json's default camelCase policy only affects property names,
 // not enum values).
 export type GoalEntityType = "Character" | "Mow"
@@ -14,14 +14,6 @@ export type GoalKind = "Rank" | "Ascension" | "Ability" | "Unlock" | "Upgrade"
 export type FarmingStrategy =
   "TotalUpgrades" | "EveryStep" | "Milestones" | "MajorMilestones"
 export type GoalStatus = "Active" | "Paused" | "Completed" | "Archived"
-export type GoalEventType =
-  | "Created"
-  | "Paused"
-  | "Resumed"
-  | "PriorityChanged"
-  | "Completed"
-  | "Archived"
-  | "TargetChanged"
 
 export type RankTarget = {
   start: number
@@ -106,28 +98,9 @@ export type GoalSnapshotResource = {
 
 export type CreateGoalSnapshotRequest = GoalSnapshot
 
-/** A goal's *end* target at one moment — only the fields of the goal's own kind are non-null. The
- * server records one before and one after on a `TargetChanged` event. */
-export type GoalTargetSnapshot = {
-  rankEnd: number | null
-  rankEndPointFive: boolean | null
-  rankEndAppliedUpgrades: number | null
-  progressionEnd: string | null
-  activeAbilityEnd: number | null
-  passiveAbilityEnd: number | null
-  upgradeTargets: UpgradeMaterialTarget[] | null
-}
-
-export type GoalEvent = {
-  at: string
-  type: GoalEventType
-  // Set only on a `TargetChanged` event (absent on every other event and on events recorded before
-  // target editing existed).
-  previousTarget?: GoalTargetSnapshot | null
-  newTarget?: GoalTargetSnapshot | null
-}
-
-export type GoalSummary = {
+/** `GET /me/goals` entry and `GET /me/goals/{id}`: a goal in full (the list carries every field, so no
+ *  read fetches a goal's detail separately). */
+export type GoalDetail = {
   goalId: string
   entityType: GoalEntityType
   entityId: string
@@ -139,12 +112,34 @@ export type GoalSummary = {
   updatedAt: string
   /** Position (1 = first) in the account-wide order of in-flight goals; null for Completed/Archived. */
   globalPriority: number | null
+  config: GoalConfig
+  snapshot: GoalSnapshot | null
+  /** Every project the goal belongs to (a goal may belong to several at once). */
+  projectIds: string[]
+  /** Monotonically increasing; an edit echoes the revision it was loaded with so the server can refuse
+   *  to overwrite a newer edit. */
+  revision: number
 }
 
 /** `GET /me/goals`: in-flight goals first in global order, then the rest. `orderRevision` is the token
  * the reorder operations echo back. */
 export type GoalListResponse = {
-  goals: GoalSummary[]
+  goals: GoalDetail[]
+  orderRevision: number
+}
+
+/** `POST /me/goals/status`: one atomic transition of every listed goal. `expectedOrderRevision` is
+ *  required when the transition enters or leaves the in-flight set (to/from Completed or Archived). */
+export type UpdateGoalsStatusRequest = {
+  goalIds: string[]
+  status: GoalStatus
+  expectedOrderRevision?: number
+}
+
+/** 200 body of `POST /me/goals/status`: every transitioned goal and the order revision after it. A
+ *  conflict is a 409 problem (`slotOccupied`, `goalOrderStale`), never a field here. */
+export type UpdateGoalsStatusResponse = {
+  goals: GoalDetail[]
   orderRevision: number
 }
 
@@ -152,31 +147,6 @@ export type GoalListResponse = {
 export type GoalOrderResponse = {
   revision: number
   goalIds: string[]
-}
-
-/** The 409 body of a rejected reorder/move; `revision`/`goalIds` are the order as it now stands. */
-export type GoalOrderConflictDto = {
-  issueCode:
-    | "goalOrderStale"
-    | "goalOrderSetMismatch"
-    | "goalOrderDuplicate"
-    | "goalOrderSameGoal"
-  message: string
-  revision: number
-  goalIds: string[]
-}
-
-export type GoalDetail = GoalSummary & {
-  config: GoalConfig
-  snapshot: GoalSnapshot | null
-  events: GoalEvent[]
-  dependsOn: string[]
-  // The ids of every project this goal currently belongs to (a goal may belong to several projects at
-  // once) — populated by the backend's GoalMapper.ToDetail.
-  projectIds: string[]
-  // Monotonically increasing; a target edit echoes the revision it was loaded with so the server can
-  // refuse to overwrite a newer edit.
-  revision: number
 }
 
 export type CreateGoalConfigRequest = {
@@ -194,20 +164,6 @@ export type ProjectMembership = {
   projectId: string
 }
 
-export type CreateGoalRequest = {
-  entityType: string
-  entityId: string
-  goalType: string
-  config: CreateGoalConfigRequest
-  // Omitted/empty falls back to the caller's default project; otherwise the goal is added to every
-  // listed project (a goal may belong to several projects at once).
-  projects?: ProjectMembership[] | null
-  snapshot?: CreateGoalSnapshotRequest | null
-  // Creates the goal Paused instead of Active. Omitted means Active — membership decides nothing about
-  // status, so the goal is Active whichever projects it is filed into.
-  startPaused?: boolean
-}
-
 /** The end-target group of a target edit — exactly the one matching the goal's kind is set; the
  * start/baseline is not editable and is never sent. */
 export type GoalTargetEdit = {
@@ -220,13 +176,6 @@ export type GoalTargetEdit = {
 export type UpdateGoalTargetRequest = {
   expectedRevision: number
   target: GoalTargetEdit
-}
-
-/** 409 body of `PUT /me/goals/{id}/target` when `expectedRevision` is stale: the goal as it is now. */
-export type GoalRevisionConflictDto = {
-  issueCode: "goalRevisionStale"
-  message: string
-  goal: GoalDetail
 }
 
 export type UpdateGoalRequest = {
@@ -266,7 +215,8 @@ export type CombinedGoalSpec = {
 export type CreateCombinedGoalsRequest = {
   entityType: string
   entityId: string
-  // Same fallback and multi-project semantics as CreateGoalRequest.projects.
+  // Omitted/empty falls back to the caller's default project; otherwise every goal is added to every
+  // listed project (a goal may belong to several projects at once).
   projects?: ProjectMembership[] | null
   goals: CombinedGoalSpec[]
   // Applies to every goal the request creates, prerequisites included — it is not settable per spec.
