@@ -177,7 +177,7 @@ describe("ManageAccountDialog", () => {
         {
           clearTacticusUserId: false,
           tacticusApiKey: "new-key",
-          tacticusUserId: undefined,
+          tacticusUserId: null,
         },
         expect.anything()
       )
@@ -223,8 +223,8 @@ describe("ManageAccountDialog", () => {
       expect(updateTacticusIntegration).toHaveBeenCalledWith(
         {
           clearTacticusUserId: true,
-          tacticusApiKey: undefined,
-          tacticusUserId: undefined,
+          tacticusApiKey: null,
+          tacticusUserId: null,
         },
         expect.anything()
       )

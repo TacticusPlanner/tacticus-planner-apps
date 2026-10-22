@@ -50,9 +50,9 @@ export function ApiKeyForm({ onCompleted }: { onCompleted: () => void }) {
 
     updateIntegration.mutate({
       tacticusApiKey: trimmedApiKey,
-      // Omitted rather than sent empty: the API preserves an already-stored user id when the
-      // field is absent, and only clears it on an explicit clearTacticusUserId.
-      tacticusUserId: userId.trim() || undefined,
+      // Null rather than empty: the API preserves an already-stored user id when the field is null,
+      // and only clears it on an explicit clearTacticusUserId.
+      tacticusUserId: userId.trim() || null,
     })
   }
 

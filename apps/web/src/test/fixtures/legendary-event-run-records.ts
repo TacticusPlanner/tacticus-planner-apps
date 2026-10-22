@@ -1,4 +1,4 @@
-// Run records for Uthar shaped like `GET /me/legendary-event-plans/votanUthar/run-records`
+// Run records for Uthar shaped like `GET /legendary-event-plans/votanUthar/run-records`
 // (spec: legendary-event-run-history worked examples): run 1 with Alpha teams "Ultras" (objectives
 // Ultramarines and Melee) and "Melee" (Melee), Calgar at Diamond 1 / 5 red stars and Tigurius not
 // yet owned; run 2 started a week later with one Alpha battle.

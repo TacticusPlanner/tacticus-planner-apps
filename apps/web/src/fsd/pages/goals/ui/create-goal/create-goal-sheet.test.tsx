@@ -605,7 +605,7 @@ describe("CreateGoalSheet", () => {
     expect(request).toMatchObject({
       entityType: "Character",
       entityId: "hero1",
-      projects: undefined,
+      projects: null,
     })
     expect(request.goals).toHaveLength(1)
     expect(request.goals[0]).toMatchObject({
@@ -2021,7 +2021,7 @@ describe("CreateGoalSheet", () => {
     expect(request).toMatchObject({
       entityType: "Mow",
       entityId: "mow1",
-      projects: undefined,
+      projects: null,
     })
     expect(request.goals).toHaveLength(1)
     expect(request.goals[0]).toMatchObject({

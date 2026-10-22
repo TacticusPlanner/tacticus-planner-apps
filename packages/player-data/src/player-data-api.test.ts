@@ -17,9 +17,7 @@ describe("PlayerDataHttpClient", () => {
     await expect(client.triggerSync()).rejects.toThrow("status 503")
 
     const [url, init] = fetchMock.mock.calls[0]!
-    expect(String(url)).toBe(
-      "https://api.example.test/api/v1/me/player-data/sync"
-    )
+    expect(String(url)).toBe("https://api.example.test/api/v1/player-data/sync")
     expect(init?.method).toBe("POST")
     expect(new Headers(init?.headers).get("Authorization")).toBe("Bearer token")
   })

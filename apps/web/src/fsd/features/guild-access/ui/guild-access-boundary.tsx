@@ -44,7 +44,7 @@ export function GuildAccessBoundary({
     void query.refetch()
   }
   // Register and sync answer with the guild itself, so it becomes the shared current-guild state
-  // without another `GET guilds/me` (spec: client-data-freshness).
+  // without another `GET guild` (spec: client-data-freshness).
   const applyGuild = (guild: RegisteredGuild) =>
     queryClient.setQueryData(guildQueries.current().queryKey, {
       state: "registered",

@@ -8,11 +8,11 @@ Provides a deliberate, editable application name during setup and account manage
 
 ### Requirement: Setup asks the user to choose an editable name
 
-After either key-entry or V1-import setup path, the app SHALL present an editable display-name step before setup completes. It SHALL prefill a private suggestion when available (the `/me` provider suggestion, or after V1 import the suggestion returned by the import), allow replacement, and require a valid 1–80-character trimmed value before saving. A saved name SHALL survive reload. A failed save SHALL keep the draft and show a retryable error.
+After either key-entry or V1-import setup path, the app SHALL present an editable display-name step before setup completes. It SHALL prefill a private suggestion when available (the `/account` provider suggestion, or after V1 import the suggestion returned by the import), allow replacement, and require a valid 1–80-character trimmed value before saving. A saved name SHALL survive reload. A failed save SHALL keep the draft and show a retryable error.
 
 #### Scenario: Normal setup with provider suggestion
 
-- **GIVEN** `/me` provides a provider-derived suggestion and no name
+- **GIVEN** `/account` provides a provider-derived suggestion and no name
 - **WHEN** the user reaches the name step after configuring a key
 - **THEN** the suggestion is editable and the app does not complete setup until the user submits it or another valid name
 
@@ -20,7 +20,7 @@ After either key-entry or V1-import setup path, the app SHALL present an editabl
 
 - **GIVEN** a successful V1 import returned a username suggestion
 - **WHEN** the name step opens
-- **THEN** the field is prefilled with that suggestion (falling back to the `/me` suggestion after a reload) but is not saved until the user submits it
+- **THEN** the field is prefilled with that suggestion (falling back to the `/account` suggestion after a reload) but is not saved until the user submits it
 
 #### Scenario: Existing key but no name
 
@@ -63,12 +63,12 @@ The shell SHALL NOT display a provider/email-like suggestion as the account's pu
 
 #### Scenario: Provider username resembles email
 
-- **GIVEN** `/me` reports an email-like suggestion and no name
+- **GIVEN** `/account` reports an email-like suggestion and no name
 - **WHEN** the shell or account menu renders
 - **THEN** it shows neutral account identity rather than that suggestion
 
 #### Scenario: Name not yet known
 
-- **GIVEN** `/me` has not answered yet for a user who has a confirmed name
+- **GIVEN** `/account` has not answered yet for a user who has a confirmed name
 - **WHEN** the shell or account menu renders
 - **THEN** it shows a loading identity, neither the neutral label nor the provider email, until the confirmed name arrives

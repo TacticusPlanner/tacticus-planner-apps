@@ -146,7 +146,7 @@ describe("GuildAccessBoundary", () => {
 
     expect(await screen.findByTestId("guild-unregistered")).toBeInTheDocument()
     expect(updateTacticusIntegration).toHaveBeenCalledWith(
-      { tacticusUserId: "user-123" },
+      { tacticusApiKey: null, tacticusUserId: "user-123" },
       expect.anything()
     )
     // The current user is patched from the response, not refetched; the guild state is refetched.

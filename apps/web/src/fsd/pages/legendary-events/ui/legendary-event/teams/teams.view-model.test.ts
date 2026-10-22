@@ -23,6 +23,8 @@ const plan: LegendaryEventPlan = {
   catalogVersion: "1",
   notes: null,
   showPaidOptions: false,
+  runs: [],
+  annotations: [],
   teams: [],
 }
 

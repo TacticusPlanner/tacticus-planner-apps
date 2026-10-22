@@ -1,5 +1,12 @@
+import createClient, { type Client, type Middleware } from "openapi-fetch"
+
 import { getRequiredEnvironmentValue } from "@/shared/config"
 import { acquireAccessToken } from "@/shared/auth"
+
+import type { components, paths } from "./schema"
+
+/** The API's request/response schemas, generated from its OpenAPI document (`pnpm api:types`). */
+export type ApiSchemas = components["schemas"]
 
 /** The parts of an RFC 7807 problem body the client acts on (spec: api-error-handling). */
 export type ApiProblem = {
@@ -57,14 +64,6 @@ export function isTransientApiError(error: unknown) {
   return error instanceof TypeError
 }
 
-type ApiRequestOptions = {
-  signal?: AbortSignal
-}
-
-type ApiWriteOptions = ApiRequestOptions & {
-  body?: unknown
-}
-
 // RFC 7807 members plus the ones every API problem carries; the rest are route-specific extensions.
 const PROBLEM_MEMBERS = new Set([
   "type",
@@ -120,52 +119,40 @@ async function readError(response: Response): Promise<ApiError> {
   )
 }
 
-async function request<T>(
-  method: string,
-  path: string,
-  options: ApiWriteOptions
-): Promise<T> {
-  const hasBody = options.body !== undefined
-  const accessToken = await acquireAccessToken()
+// Bearer token on the way out; any non-2xx becomes the same ApiError as above, so callers never see
+// openapi-fetch's `{ error }` branch.
+const authAndErrors: Middleware = {
+  async onRequest({ request }) {
+    request.headers.set("Authorization", `Bearer ${await acquireAccessToken()}`)
+    return request
+  },
+  async onResponse({ response }) {
+    if (!response.ok) {
+      throw await readError(response)
+    }
+    return response
+  },
+}
 
-  const apiBaseUrl = getRequiredEnvironmentValue("VITE_API_BASE_URL").replace(
-    /\/$/,
-    ""
-  )
-  const response = await fetch(`${apiBaseUrl}${path}`, {
-    method,
-    headers: {
-      Accept: "application/json",
-      Authorization: `Bearer ${accessToken}`,
-      ...(hasBody ? { "Content-Type": "application/json" } : {}),
-    },
-    body: hasBody ? JSON.stringify(options.body) : undefined,
-    signal: options.signal,
+/**
+ * The typed client for `/api/v1` routes (spec: api-contract-sync): paths, params, bodies and responses
+ * come from the generated `schema.d.ts`. Built per call: the base URL is read at call time like the
+ * rest of the config, and `fetch` is looked up per request so a test's stubbed `fetch` is the one used.
+ */
+export function apiClient(): Client<paths> {
+  const client = createClient<paths>({
+    baseUrl: getRequiredEnvironmentValue("VITE_API_BASE_URL").replace(
+      /\/$/,
+      ""
+    ),
+    headers: { Accept: "application/json" },
+    fetch: (request) => globalThis.fetch(request),
   })
-
-  if (!response.ok) {
-    throw await readError(response)
-  }
-
-  if (response.status === 204) {
-    return undefined as T
-  }
-
-  return (await response.json()) as T
+  client.use(authAndErrors)
+  return client
 }
 
-export function apiGet<T>(path: string, options: ApiRequestOptions) {
-  return request<T>("GET", path, options)
-}
-
-export function apiPost<T>(path: string, options: ApiWriteOptions) {
-  return request<T>("POST", path, options)
-}
-
-export function apiPut<T>(path: string, options: ApiWriteOptions) {
-  return request<T>("PUT", path, options)
-}
-
-export function apiDelete<T = void>(path: string, options: ApiRequestOptions) {
-  return request<T>("DELETE", path, options)
+/** The response body of a typed call; failures already threw `ApiError` (204 resolves `undefined`). */
+export async function unwrap<T>(call: Promise<{ data?: T }>): Promise<T> {
+  return (await call).data as T
 }

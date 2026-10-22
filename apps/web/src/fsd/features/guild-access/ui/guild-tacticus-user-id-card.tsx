@@ -48,7 +48,7 @@ export function GuildTacticusUserIdCard({ onSaved }: { onSaved: () => void }) {
     event.preventDefault()
     const trimmed = userId.trim()
     if (!trimmed) return
-    updateIntegration.mutate({ tacticusUserId: trimmed })
+    updateIntegration.mutate({ tacticusApiKey: null, tacticusUserId: trimmed })
   }
 
   return (

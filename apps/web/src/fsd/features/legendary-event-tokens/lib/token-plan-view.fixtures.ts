@@ -116,6 +116,8 @@ export const workedPlan = (
       premiumMissions: 0,
       bundlePurchased: true,
       closeShards: 0,
+      completedRegularMissions: [],
+      completedPremiumMissions: [],
       updatedAt: "2026-10-15T00:00:00Z",
     },
   ],

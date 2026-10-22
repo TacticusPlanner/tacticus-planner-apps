@@ -1407,7 +1407,12 @@ describe("Upgrade goals in the plan", () => {
         farmingStrategy: "TotalUpgrades",
         acquisitionSources: null,
         farmingLocationIds: null,
-        upgrade: { targets: [{ upgradeId, quantity }] },
+        upgrade: {
+          targets: [{ upgradeId, quantity }],
+          rankRange: null,
+          activeRange: null,
+          passiveRange: null,
+        },
       },
     })
     return { ...detail, globalPriority: priority }
@@ -1551,6 +1556,9 @@ describe("Upgrade goals in the plan", () => {
               { upgradeId: venerable, quantity: 2 },
               { upgradeId: baseA, quantity: 1 },
             ],
+            rankRange: null,
+            activeRange: null,
+            passiveRange: null,
           },
         },
       }

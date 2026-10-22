@@ -229,16 +229,20 @@ vi.mock("@/entities/project", async (importOriginal) => ({
   },
 }))
 
-// Every read goes through `apiGet`: the goals lists and the project list.
-vi.mock("@/shared/api", async (importOriginal) => ({
-  ...(await importOriginal<typeof import("@/shared/api")>()),
-  apiGet: (path: string) =>
-    path === "/api/v1/me/projects"
-      ? readProjects()
-      : path.startsWith("/api/v1/me/goals")
-        ? readGoals(path.includes("archived=true"))
-        : Promise.resolve({ goals: [] }),
-}))
+// Reads: the goals and project lists through the typed client.
+vi.mock("@/shared/api", async (importOriginal) => {
+  const { fakeApiClient } = await import("@/test/fake-api-client")
+  return {
+    ...(await importOriginal<typeof import("@/shared/api")>()),
+    apiClient: fakeApiClient(({ path, params }) =>
+      path === "/api/v1/goals"
+        ? readGoals(params?.query?.archived === true)
+        : path === "/api/v1/projects"
+          ? readProjects()
+          : { goals: [] }
+    ),
+  }
+})
 
 // The plan run behind estimates is exercised by its own tests; the page only consumes its result.
 // A mutable `.value` (not a static object) so a test that needs non-empty level-requirement maps
@@ -352,6 +356,7 @@ const otherProject = {
   color: null,
   status: "Active",
   isDefault: false,
+  target: null,
   revision: 0,
   createdAt: "2026-01-01T00:00:00Z",
   updatedAt: "2026-01-01T00:00:00Z",
@@ -364,6 +369,7 @@ const overviewProject = {
   color: null,
   status: "Active",
   isDefault: true,
+  target: null,
   revision: 0,
   createdAt: "2026-01-01T00:00:00Z",
   updatedAt: "2026-01-01T00:00:00Z",

@@ -1,3 +1,5 @@
+import type { ApiSchemas } from "@/shared/api"
+
 export const onslaughtAlliances = ["Imperial", "Xenos", "Chaos"] as const
 export const onslaughtSectors = [
   "Stone",
@@ -7,10 +9,10 @@ export const onslaughtSectors = [
   "Gold",
   "Diamond",
   "Adamantine",
-] as const
+] as const satisfies readonly ApiSchemas["OnslaughtSector"][]
 
 export type OnslaughtAlliance = (typeof onslaughtAlliances)[number]
-export type OnslaughtSector = (typeof onslaughtSectors)[number]
+export type OnslaughtSector = ApiSchemas["OnslaughtSector"]
 export const onslaughtTiers = [1, 2, 3, 4] as const
 export type OnslaughtTier = (typeof onslaughtTiers)[number]
 
@@ -23,6 +25,7 @@ export type OnslaughtAllianceProgress = {
   isSet: boolean
 }
 
+/** The domain shape: the wire's `tier` is a plain number, narrowed by the API mapper. */
 export type OnslaughtProgress = {
   imperial: OnslaughtAllianceProgress
   xenos: OnslaughtAllianceProgress
@@ -30,17 +33,13 @@ export type OnslaughtProgress = {
   revision: number
 }
 
-export type CampaignEventProgressOverride = {
-  campaignGroupId: string
-  type: "Standard" | "Extremis"
-  completedBattleCount: number | null
-  completedChallengeBattlesIds: string[] | null
-}
+/** `type` is a catalog battle type of the event (e.g. "Standard", "Extremis"), checked by the API
+ *  against the campaign group. */
+export type CampaignEventProgressOverride =
+  ApiSchemas["CampaignEventProgressOverrideResponse"]
 
-export type CampaignEventProgressOverrides = {
-  progress: CampaignEventProgressOverride[]
-  revision: number
-}
+export type CampaignEventProgressOverrides =
+  ApiSchemas["CampaignEventProgressOverridesResponse"]
 
 /** The alliance's saved position, or `undefined` when the player has not set it — callers treat an
  *  unset alliance as "Onslaught supplies nothing" instead of falling back to Stone 1. */

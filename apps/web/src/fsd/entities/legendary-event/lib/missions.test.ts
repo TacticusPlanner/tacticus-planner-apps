@@ -54,6 +54,8 @@ const runInputs = (
   premiumMissions: 0,
   bundlePurchased: false,
   closeShards: 0,
+  completedRegularMissions: [],
+  completedPremiumMissions: [],
   updatedAt: "2026-10-18T00:00:00Z",
   ...fields,
 })

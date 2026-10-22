@@ -1,31 +1,30 @@
-import { apiGet, apiPost, apiPut } from "@/shared/api"
+import { apiClient, unwrap } from "@/shared/api"
 
 import type {
   CreateProjectRequest,
   MoveProjectGoalRequest,
-  ProjectGoalEntry,
-  ProjectSummary,
   UpdateProjectGoalsRequest,
   UpdateProjectRequest,
 } from "../model/types"
 
 export function listProjects(signal?: AbortSignal) {
-  return apiGet<{ projects: ProjectSummary[] }>("/api/v1/me/projects", {
-    signal,
-  })
+  return unwrap(apiClient().GET("/api/v1/projects", { signal }))
 }
 
 export function createProject(request: CreateProjectRequest) {
-  return apiPost<ProjectSummary>("/api/v1/me/projects", { body: request })
+  return unwrap(apiClient().POST("/api/v1/projects", { body: request }))
 }
 
 export function updateProject(
   projectId: string,
   request: UpdateProjectRequest
 ) {
-  return apiPut<ProjectSummary>(`/api/v1/me/projects/${projectId}`, {
-    body: request,
-  })
+  return unwrap(
+    apiClient().PUT("/api/v1/projects/{projectId}", {
+      params: { path: { projectId } },
+      body: request,
+    })
+  )
 }
 
 /** Atomically replaces a project's membership. `request.expectedGoalIds` is the membership the user
@@ -35,9 +34,11 @@ export function updateProjectGoals(
   projectId: string,
   request: UpdateProjectGoalsRequest
 ) {
-  return apiPut<{ goals: ProjectGoalEntry[] }>(
-    `/api/v1/me/projects/${projectId}/goals`,
-    { body: request }
+  return unwrap(
+    apiClient().PUT("/api/v1/projects/{projectId}/goals", {
+      params: { path: { projectId } },
+      body: request,
+    })
   )
 }
 
@@ -47,8 +48,10 @@ export function moveProjectGoal(
   projectId: string,
   request: MoveProjectGoalRequest
 ) {
-  return apiPut<{ revision: number; goalIds: string[] }>(
-    `/api/v1/me/projects/${projectId}/goal-order`,
-    { body: request }
+  return unwrap(
+    apiClient().PUT("/api/v1/projects/{projectId}/goal-order", {
+      params: { path: { projectId } },
+      body: request,
+    })
   )
 }

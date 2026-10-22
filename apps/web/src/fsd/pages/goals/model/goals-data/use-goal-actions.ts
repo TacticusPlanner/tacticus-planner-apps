@@ -46,7 +46,7 @@ const movesOrder = (status: GoalStatus) =>
 /**
  * Per-goal lifecycle mutations (pause/resume/complete/archive/unarchive/delete) and membership changes
  * shared by the list, grid and row-actions menu. A status change of any number of goals is one atomic
- * `POST me/goals/status` (spec: goal-status-actions): its response is written into the cached details
+ * `POST goals/status` (spec: goal-status-actions): its response is written into the cached details
  * and lists, a rejection reverts every optimistic row and is reported once. `pendingIds` disables every
  * row whose action is in flight; `onChanged` is the caller's list `retry`.
  */

@@ -50,7 +50,7 @@ export function AccountCard({
   applicationAccountId: string | null
   canEditName: boolean
   className?: string
-  /** /me has not answered yet: show a loading identity instead of the neutral label and email. */
+  /** /account has not answered yet: show a loading identity instead of the neutral label and email. */
   identityPending?: boolean
   onEditName: () => void
   onFeedback: () => void

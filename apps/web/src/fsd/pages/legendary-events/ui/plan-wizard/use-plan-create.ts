@@ -167,6 +167,8 @@ export function usePlanCreate(eventId: string) {
     const projectOk = await attempt("project", async () => {
       const project = await createProject({
         name: destination.kind === "new" ? destination.name : "",
+        description: null,
+        color: null,
         target: { kind: "legendaryEvent", eventId: targetEventId },
       })
       projectId.current = project.projectId

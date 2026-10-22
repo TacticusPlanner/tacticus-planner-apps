@@ -98,6 +98,12 @@ function result(
     outcomes: [],
     legendaryEventPlans: part,
     legendaryEventOutcomes,
+    profileId: "profile-1",
+    playerName: null,
+    powerLevel: 0,
+    tacticusApiKeyMasked: null,
+    tacticusUserIdMasked: null,
+    suggestedDisplayName: null,
   }
 }
 

@@ -22,7 +22,7 @@ import {
  * field: nothing is confirmed until the user submits, and a draft they already typed is never
  * overwritten by a suggestion that arrives later. A failed save keeps the draft and can be retried.
  *
- * `onCompleted` only reports success; the route guard performs the navigation once `/me` confirms.
+ * `onCompleted` only reports success; the route guard performs the navigation once `/account` confirms.
  */
 export function DisplayNameForm({
   onCompleted,

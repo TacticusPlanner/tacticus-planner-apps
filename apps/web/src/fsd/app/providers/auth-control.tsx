@@ -113,7 +113,7 @@ export function AuthControl() {
     accountState.status === "error" ? accountState.error : undefined,
     onApiAccessError
   )
-  // Until /me answers (or while the re-authentication redirect it triggered is starting) the
+  // Until /account answers (or while the re-authentication redirect it triggered is starting) the
   // planner identity is unknown: show a loading identity, not the neutral label plus the provider
   // email, which reads like a different (wrong) account during a slow sign-in.
   const identityPending = accountState.status === "loading" || reauthenticating
