@@ -1561,5 +1561,9 @@
     "Imperial": "Impérial",
     "Chaos": "Chaos",
     "Xenos": "Xenos"
+  },
+  "localData": {
+    "readFailed": "Nous n'avons pas pu lire ces données sur votre appareil.",
+    "retry": "Réessayer"
   }
 }

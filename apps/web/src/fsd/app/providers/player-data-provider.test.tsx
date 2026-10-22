@@ -14,8 +14,8 @@ const sync = vi.hoisted(() => ({
 
 // Kept (targeted): these tests are about what the provider does around `syncPlayerData`, so the
 // sync itself (a network round-trip) is the one export replaced; the metadata reads stay real.
-vi.mock("@workspace/player-data", async (importOriginal) => ({
-  ...(await importOriginal<typeof import("@workspace/player-data")>()),
+vi.mock("@workspace/player-data/sync", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@workspace/player-data/sync")>()),
   syncPlayerData: sync.run,
 }))
 vi.mock("@/features/player-data-sync", () => ({
@@ -68,6 +68,37 @@ describe("PlayerDataProvider", () => {
       finish({ status: "ready", syncedAt: new Date().toISOString() })
     )
     await waitFor(() => expect(sync.refresh).toHaveBeenCalledOnce())
+  })
+
+  it("shares one in-flight sync between mounted providers and repeated clicks", async () => {
+    sync.run.mockClear()
+    let finish!: (value: unknown) => void
+    sync.run.mockReturnValueOnce(new Promise((done) => (finish = done)))
+    const queryClient = new QueryClient()
+    function sharedWrapper({ children }: { children: ReactNode }) {
+      return (
+        <QueryClientProvider client={queryClient}>
+          <PlayerDataProvider baseUrl="https://api.test">
+            <PlayerDataProvider baseUrl="https://api.test">
+              {children}
+            </PlayerDataProvider>
+          </PlayerDataProvider>
+        </QueryClientProvider>
+      )
+    }
+    const inner = renderHook(() => usePlayerDataStatus(), {
+      wrapper: sharedWrapper,
+    })
+    await waitFor(() => expect(inner.result.current.status).toBe("ready"))
+
+    act(() => inner.result.current.syncNow())
+    act(() => inner.result.current.syncNow())
+    await waitFor(() => expect(inner.result.current.status).toBe("syncing"))
+
+    expect(sync.run).toHaveBeenCalledOnce()
+    await act(async () =>
+      finish({ status: "ready", syncedAt: new Date().toISOString() })
+    )
   })
 
   it("does not refresh after a failed sync", async () => {

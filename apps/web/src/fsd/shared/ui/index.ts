@@ -16,6 +16,7 @@ export { ReadOnlyField } from "./read-only-field"
 /** @knipignore Retained as a shared placeholder for upcoming pages. */
 export { UnderConstruction } from "./under-construction"
 export { ConfirmationDialog } from "./confirmation-dialog"
+export { LocalReadFailure } from "./local-read-failure"
 export { UnsavedChangesBar } from "./unsaved-changes-bar"
 export { UnsavedChangesGuard } from "./unsaved-changes-guard"
 export {

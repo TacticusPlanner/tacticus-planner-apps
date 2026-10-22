@@ -511,9 +511,10 @@ describe("MasterTablePage", () => {
         screen.getByTestId("master-table-unit-set-unlocked")
       ).toBeDisabled()
     )
-    expect(screen.getByTestId("master-table-unit-set-hint")).toHaveTextContent(
-      "Sync your roster"
-    )
+    // A failed local read retries once before it reports the error.
+    expect(
+      await screen.findByTestId("master-table-unit-set-hint")
+    ).toHaveTextContent("Sync your roster")
     expect(screen.getByTestId("master-table-points-estimated")).toBeDisabled()
   })
 

@@ -3,6 +3,9 @@
 // chunk-key accessor. Components import from here, never from the main package barrel and never
 // touching the Dexie instance itself. Add a new named query here as new business needs arise.
 import { getChunkData, getChunkRecord } from "./player-data-storage"
+
+// The app's read layer (`apps/web/src/fsd/shared/local-data`) caches whole chunks read through this.
+export { getChunkData }
 import type { PlayerDataChunkDto } from "./player-data.dto"
 import type { UnitId } from "@workspace/game-domain"
 

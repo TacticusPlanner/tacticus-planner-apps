@@ -8,6 +8,9 @@ import {
   hasCatalogSynced,
   hasDatasetSynced,
 } from "./game-catalog-storage"
+// The app's read layer (`apps/web/src/fsd/shared/local-data`) caches whole datasets read through this.
+export { getDatasetRecords }
+
 import type {
   AscensionCostStorageModel,
   CharacterAbilityCostStorageModel,

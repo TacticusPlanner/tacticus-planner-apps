@@ -442,6 +442,7 @@ describe("syncGameCatalog", () => {
     const result = await syncGameCatalog(new FakeGameCatalogClient(withdrawn))
 
     expect(result.status).toBe("ready")
+    expect(result.removed).toEqual(["horde-mode-tiers"])
     expect(await getDatasetRecords("horde-mode-tiers")).toEqual([])
     expect(await getDatasetRecords("lre-battles")).toHaveLength(1)
     expect(await hasCompleteGameCatalogCache()).toBe(true)

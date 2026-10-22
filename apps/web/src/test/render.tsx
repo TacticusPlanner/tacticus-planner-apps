@@ -11,6 +11,8 @@ import {
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import {
   render as testingLibraryRender,
+  renderHook as testingLibraryRenderHook,
+  type RenderHookOptions,
   type RenderOptions,
 } from "@testing-library/react"
 import { TooltipProvider } from "@workspace/ui/components/tooltip"
@@ -71,10 +73,9 @@ function createTestRouter(
 
 function createWrapper(
   UserWrapper: TestWrapper | undefined,
-  { route, initialEntries, theme }: TestRenderOptions
+  { route, initialEntries, theme }: TestRenderOptions,
+  queryClient: QueryClient
 ): TestWrapper {
-  const queryClient = createTestQueryClient()
-
   return function TestQueryWrapper({ children }) {
     const [router] = useState(() =>
       route ? createTestRouter(route, initialEntries) : null
@@ -99,18 +100,52 @@ function createWrapper(
   }
 }
 
+/** `render` with the test providers; the result also carries the test's `queryClient` (e.g. to
+ *  refresh local reads after seeding a "sync" with `refreshLocalDataAfterSync`). */
 export function render(
   ui: ReactElement,
   options: TestRenderOptions = {}
-): ReturnType<typeof testingLibraryRender> {
+): ReturnType<typeof testingLibraryRender> & { queryClient: QueryClient } {
   const { route, initialEntries, theme, auth, wrapper, ...rest } = options
+  const queryClient = createTestQueryClient()
 
   if (auth) {
     setTestAuth(auth)
   }
 
-  return testingLibraryRender(ui, {
+  const result = testingLibraryRender(ui, {
     ...rest,
-    wrapper: createWrapper(wrapper, { route, initialEntries, theme }),
+    wrapper: createWrapper(
+      wrapper,
+      { route, initialEntries, theme },
+      queryClient
+    ),
   })
+  return Object.assign(result, { queryClient })
+}
+
+/** `renderHook` with the same providers and options as `render`. */
+export function renderHook<Result, Props>(
+  hook: (props: Props) => Result,
+  options: Omit<RenderHookOptions<Props>, "wrapper"> &
+    Omit<TestRenderOptions, keyof RenderOptions> & {
+      wrapper?: TestWrapper
+    } = {}
+) {
+  const { route, initialEntries, theme, auth, wrapper, ...rest } = options
+  const queryClient = createTestQueryClient()
+
+  if (auth) {
+    setTestAuth(auth)
+  }
+
+  const result = testingLibraryRenderHook(hook, {
+    ...rest,
+    wrapper: createWrapper(
+      wrapper,
+      { route, initialEntries, theme },
+      queryClient
+    ),
+  })
+  return Object.assign(result, { queryClient })
 }

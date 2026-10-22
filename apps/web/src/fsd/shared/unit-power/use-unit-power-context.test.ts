@@ -1,6 +1,8 @@
 import { replaceGameCatalogDataset } from "@workspace/game-catalog/testing"
 import { afterEach, describe, expect, it, vi } from "vitest"
 
+import { refreshLocalDataAfterSync } from "@/shared/local-data"
+import { spyOnIndexedDbReads } from "@/test/fixtures/indexeddb-failure"
 import { unitPowerCatalog } from "@/test/fixtures/unit-power"
 import { renderHook, waitFor } from "@/test/render"
 import { seedGameCatalog } from "@/test/seed"
@@ -55,15 +57,29 @@ describe("useUnitPowerContext", () => {
 
   it("stays loading while the catalog has not finished its first sync", async () => {
     await seedCatalog({ withUnitPower: false })
-    const { result } = renderHook(() => useUnitPowerContext())
+    const { result, queryClient } = renderHook(() => useUnitPowerContext())
     // Settled, but not synced yet: still loading, never "absent".
     await new Promise((resolve) => setTimeout(resolve, 50))
     expect(result.current.status).toBe("loading")
 
-    // The live query re-reads once the first sync writes its manifest row.
+    // The first sync writes its manifest row and refreshes the reads it touched.
     await markCatalogSyncedWithoutUnitPower()
+    refreshLocalDataAfterSync(queryClient, "catalog", ["characters"])
     await waitFor(() => expect(result.current.status).toBe("ready"))
     expect(result.current.status === "ready" && result.current.data).toBeNull()
+  })
+
+  it("shares one read per dataset between two mounted consumers", async () => {
+    await seedCatalog({ withUnitPower: true })
+    const reads = spyOnIndexedDbReads()
+    const { result } = renderHook(() => [
+      useUnitPowerContext(),
+      useUnitPowerContext(),
+    ])
+    await waitFor(() => expect(result.current[1]?.status).toBe("ready"))
+
+    // Six datasets plus the "catalog synced" metadata row, each read once.
+    expect(reads.calls()).toBe(7)
   })
 
   it("does not consult the sync state when the dataset is present", async () => {

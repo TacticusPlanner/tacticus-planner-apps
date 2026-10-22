@@ -5,18 +5,19 @@ import type { ReadState } from "./use-read-state"
 
 type QueryReadInput<T> = Pick<
   UseQueryResult<T>,
-  "data" | "isError" | "isFetching"
+  "data" | "isError" | "isFetching" | "isSuccess"
 > & { refetch: () => unknown }
 
 /** `loading` while pending (or disabled before its first result) and while a retry refetches after
  *  a failure (TanStack keeps `isError` during it), `error` once it failed with no data, `ready`
- *  otherwise. */
+ *  once it has data or succeeded (a `select` may legitimately derive `undefined`). */
 function readStatus<T>({
   data,
   isError,
   isFetching,
+  isSuccess,
 }: QueryReadInput<T>): ReadState<T>["status"] {
-  if (data !== undefined) return "ready"
+  if (data !== undefined || isSuccess) return "ready"
   // Fetching wins over a previous failure: a retry is in flight.
   return isError && !isFetching ? "error" : "loading"
 }
@@ -27,8 +28,8 @@ function toReadState<T>(
   refetch: QueryReadInput<T>["refetch"]
 ): ReadState<T> {
   const retry = () => void refetch()
-  return status === "ready" && data !== undefined
-    ? { status, data, retry }
+  return status === "ready"
+    ? { status, data: data as T, retry }
     : { status: status === "error" ? "error" : "loading", retry }
 }
 

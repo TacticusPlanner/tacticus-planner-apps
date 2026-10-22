@@ -1,7 +1,5 @@
-import {
-  datasetPayloadSchemas,
-  type GameCatalogMythicQuestReward,
-} from "@workspace/game-catalog"
+import type { GameCatalogMythicQuestReward } from "@workspace/game-catalog"
+import { datasetPayloadSchemas } from "@workspace/game-catalog/sync"
 import { describe, expect, it } from "vitest"
 
 import mythicQuestTasks from "../../../../../public/locales/en/mythicQuestTasks.json"
