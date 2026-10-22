@@ -1423,11 +1423,11 @@
         },
         "owned": {
           "title": "Una unidad que tienes",
-          "content": "El anillo muestra su rareza, con las estrellas arriba, el rango y los fragmentos sobre el retrato, y debajo los niveles de habilidad a ambos lados de su nivel de PX."
+          "content": "El anillo muestra su rareza, con las estrellas arriba, el rango y los fragmentos sobre el retrato, y debajo los niveles de habilidad a ambos lados de su nivel de PX. Selecciona una unidad para abrir sus detalles en la Biblioteca."
         },
         "unowned": {
           "title": "Aún no desbloqueada",
-          "content": "Las unidades en gris no están en tu plantilla. La barra muestra lo cerca que estás de desbloquearlas."
+          "content": "Las unidades en gris no están en tu plantilla. La barra muestra lo cerca que estás de desbloquearlas. Selecciona una unidad para abrir sus detalles en la Biblioteca."
         }
       }
     },

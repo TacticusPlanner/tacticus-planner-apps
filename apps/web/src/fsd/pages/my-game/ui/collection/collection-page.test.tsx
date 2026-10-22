@@ -9,10 +9,11 @@ import {
 } from "vitest"
 import type { i18n as I18n } from "i18next"
 import { I18nextProvider } from "react-i18next"
-import { MemoryRouter } from "react-router"
+import { MemoryRouter, Route, Routes, useLocation } from "react-router"
 import type { Rarity, UnitId } from "@workspace/game-domain"
 import type { PlayerDataChunkDto } from "@workspace/player-data"
 
+import { readUnitOrigin } from "@/entities/unit"
 import type { TourPageSteps } from "@/shared/tour"
 import { createTestI18n } from "@/test/i18n"
 import { fireEvent, render, screen, within } from "@/test/render"
@@ -148,15 +149,32 @@ afterEach(() => {
   vi.unstubAllGlobals()
 })
 
+function UnitPageProbe() {
+  const location = useLocation()
+  return (
+    <p data-testid="unit-page">
+      {location.pathname}|{JSON.stringify(readUnitOrigin(location.state))}
+    </p>
+  )
+}
+
 function renderPage(width: number) {
   setViewportWidth(width)
   return render(
     <I18nextProvider i18n={i18n}>
-      <MemoryRouter>
-        <CollectionPage />
+      <MemoryRouter initialEntries={["/my-game/collection"]}>
+        <Routes>
+          <Route path="/my-game/collection" element={<CollectionPage />} />
+          <Route path="/library/*" element={<UnitPageProbe />} />
+        </Routes>
       </MemoryRouter>
     </I18nextProvider>
   )
+}
+
+function openedUnit() {
+  const [path, origin] = screen.getByTestId("unit-page").textContent!.split("|")
+  return { path, origin: JSON.parse(origin!) as unknown }
 }
 
 function expectTourTargetsExist(form: "desktop" | "mobile") {
@@ -195,7 +213,7 @@ describe.each([
     ).toHaveTextContent("1/3")
     expect(
       ultramarines
-        .getAllByRole("group")
+        .getAllByRole("link")
         .map((tile) => [tile.getAttribute("title"), tile.dataset.state])
     ).toEqual([
       ["Titus", "owned"],
@@ -204,7 +222,7 @@ describe.each([
       ["Galatian", "unowned"],
     ])
     expect(
-      ultramarines.getByRole("group", { name: /^Marneus Calgar,/ })
+      ultramarines.getByRole("link", { name: /^Marneus Calgar,/ })
     ).toHaveTextContent("75/400")
     expect(
       screen.queryByTestId("collection-sync-prompt")
@@ -259,7 +277,7 @@ describe.each([
       "Sign in to see your collection"
     )
     expect(screen.queryByTestId("collection-summary")).not.toBeInTheDocument()
-    const tiles = screen.getAllByRole("group")
+    const tiles = screen.getAllByRole("link")
     expect(tiles).toHaveLength(4)
     expect(tiles.every((tile) => tile.dataset.state === "unowned")).toBe(true)
     expect(screen.queryByTestId("unit-tile-shards")).not.toBeInTheDocument()
@@ -276,6 +294,74 @@ describe.each([
       '[data-testid="collection-faction-group"]',
       '[data-testid="collection-unowned-tile"]',
     ])
+  })
+})
+
+describe("CollectionPage tile links", () => {
+  it("links each tile to its unit's Library page", () => {
+    ready(synced)
+    renderPage(1280)
+
+    expect(screen.getByRole("link", { name: /^Titus,/ })).toHaveAttribute(
+      "href",
+      "/library/characters/ultraTitus"
+    )
+    expect(
+      screen.getByRole("link", { name: /^Marneus Calgar,/ })
+    ).toHaveAttribute("href", "/library/characters/ultraCalgar")
+    expect(screen.getByRole("link", { name: /^Galatian,/ })).toHaveAttribute(
+      "href",
+      "/library/machines-of-war/ultraDreadnought"
+    )
+  })
+
+  it("opens a character with Collection's character order, without Machines of War", () => {
+    ready(synced)
+    renderPage(1280)
+
+    fireEvent.click(screen.getByRole("link", { name: /^Marneus Calgar,/ }))
+
+    expect(openedUnit()).toEqual({
+      path: "/library/characters/ultraCalgar",
+      origin: {
+        kind: "collection",
+        ids: ["ultraTitus", "ultraCalgar", "blackHaarken"],
+      },
+    })
+  })
+
+  it("opens a Machine of War with Collection's Machine of War order", () => {
+    ready(synced)
+    renderPage(1280)
+
+    fireEvent.click(screen.getByRole("link", { name: /^Galatian,/ }))
+
+    expect(openedUnit()).toEqual({
+      path: "/library/machines-of-war/ultraDreadnought",
+      origin: { kind: "collection", ids: ["ultraDreadnought"] },
+    })
+  })
+
+  it.each([
+    ["signed out", { state: "anonymous" } as CollectionRoster],
+    [
+      "not synced",
+      {
+        state: "signedIn",
+        characters: undefined,
+        mows: undefined,
+        shards: undefined,
+      } as CollectionRoster,
+    ],
+    ["roster read failure", { state: "error" } as CollectionRoster],
+  ])("still links every greyed-out tile when %s", (_, roster) => {
+    ready(roster)
+    renderPage(1280)
+
+    const links = screen.getAllByRole("link")
+    expect(links).toHaveLength(4)
+    fireEvent.click(screen.getByRole("link", { name: /^Haarken,/ }))
+    expect(openedUnit().path).toBe("/library/characters/blackHaarken")
   })
 })
 
@@ -298,7 +384,7 @@ describe("CollectionPage states", () => {
     expect(sync.syncNow).toHaveBeenCalledTimes(1)
     expect(
       screen
-        .getAllByRole("group")
+        .getAllByRole("link")
         .every((tile) => tile.dataset.state === "unowned")
     ).toBe(true)
   })
@@ -323,7 +409,7 @@ describe("CollectionPage states", () => {
     expect(screen.getByTestId("collection-loading")).toHaveTextContent(
       "Loading your collection"
     )
-    expect(screen.queryByRole("group")).not.toBeInTheDocument()
+    expect(screen.queryByRole("link")).not.toBeInTheDocument()
     expect(
       screen
         .getByTestId("collection-loading")
@@ -356,7 +442,7 @@ describe("CollectionPage states", () => {
     expect(
       screen.queryByTestId("collection-sync-prompt")
     ).not.toBeInTheDocument()
-    expect(screen.getAllByRole("group")).toHaveLength(4)
+    expect(screen.getAllByRole("link")).toHaveLength(4)
     fireEvent.click(within(alert).getByRole("button", { name: "Try again" }))
     expect(
       viewState.current.status === "ready" && viewState.current.retry
