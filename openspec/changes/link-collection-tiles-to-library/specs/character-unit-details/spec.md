@@ -3,8 +3,8 @@
 ### Requirement: Unit navigation follows where the user came from
 
 The unit page SHALL show a navigation bar with a back button, a breadcrumb
-`Library / Characters / <name>`, Previous and Next buttons, the unit's position, and the page tour
-button. Back, prev/next and the position SHALL follow the page the user came from: the characters
+`Library / Characters / <name>`, Previous and Next buttons, and the unit's position. The page tour
+button SHALL be in the app header, as on every page, not in the navigation bar. Back, prev/next and the position SHALL follow the page the user came from: the characters
 list (its current order and search) by default, or the Collection page when the unit was opened from a
 Collection tile. Opened from Collection, the back button SHALL be labelled "Collection" (its accessible
 name "Back to Collection") and return to `/my-game/collection`, and prev/next and the position SHALL
