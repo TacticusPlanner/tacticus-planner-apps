@@ -1,6 +1,4 @@
 import { useMemo } from "react"
-import { useQueries, useQuery } from "@tanstack/react-query"
-import { useIsAuthenticated } from "@azure/msal-react"
 import { useLiveQuery } from "dexie-react-hooks"
 import type { UnitId } from "@workspace/game-domain"
 import type { PlayerDataChunkDto } from "@workspace/player-data"
@@ -12,8 +10,6 @@ import {
   getPlayerInventoryItems,
   getPlayerMows,
 } from "@workspace/player-data/queries"
-
-import { goalQueries } from "@/entities/goal"
 
 import {
   computeGoalBlockers,
@@ -28,6 +24,7 @@ import type {
 import { calculateGoalResourceNeed } from "@/features/goal-farming"
 import type { AbilityMaterials, ResourceNeed } from "@/features/goal-farming"
 import { useStableMap } from "../shared/use-stable-map"
+import { useGoalsFor } from "./use-goals-for"
 import { withStandaloneAvailable } from "../insights/plan-ability-materials"
 import type { PlanNetResources } from "../insights/use-plan-insights.domain"
 import { useGoalCatalog } from "../shared/use-goal-catalog"
@@ -88,7 +85,6 @@ function useComputedGoalsOverviewMetrics(
    *  (`PlanInsightsResult.planNetByGoalId`); a goal without an entry (paused) keeps its standalone need. */
   planNetByGoalId?: ReadonlyMap<string, PlanNetResources>
 ): ReadonlyMap<string, GoalOverviewMetrics> {
-  const isAuthenticated = useIsAuthenticated()
   const {
     charactersById,
     mowsById,
@@ -101,48 +97,18 @@ function useComputedGoalsOverviewMetrics(
     getEntityName,
     loading: catalogLoading,
   } = useGoalCatalog()
-  const detailQueries = useQueries({
-    queries: goalIds.map((goalId) => ({
-      ...goalQueries.detail(goalId),
-      enabled: isAuthenticated,
-    })),
-  })
-  const details = detailQueries.map((query) => query.data)
-  const prerequisiteListQuery = useQuery({
-    ...goalQueries.list(false),
-    enabled: isAuthenticated,
-  })
-  const prerequisiteGoalIds =
-    prerequisiteListQuery.data?.goals
-      .filter(
-        (goal) => goal.goalType === "Ascension" || goal.goalType === "Unlock"
-      )
-      .map((goal) => goal.goalId) ?? []
-  const prerequisiteQueries = useQueries({
-    queries: prerequisiteGoalIds.map((goalId) => ({
-      ...goalQueries.detail(goalId),
-      enabled: isAuthenticated,
-    })),
-  })
-  const prerequisiteGoals = prerequisiteQueries.flatMap((query) =>
-    query.data ? [query.data] : []
+  // Every goal comes from the goals list (no per-goal read). Prerequisite goals (plan §4's "a
+  // prerequisite goal has not been reached") can be outside `goalIds` (a different tab, a different
+  // project) — they are in the same map, so their own attainment is known wherever they sit.
+  const goals = useGoalsFor(goalIds)
+  const details = goalIds.map((goalId) => goals.goalsById.get(goalId))
+  const prerequisiteGoals = [...goals.goalsById.values()].filter(
+    (goal) => goal.goalType === "Ascension" || goal.goalType === "Unlock"
   )
-  const prerequisiteGoalsReady =
-    prerequisiteListQuery.isSuccess &&
-    prerequisiteQueries.every((query) => query.isSuccess)
-
-  // Prerequisite goals (plan §4's "a prerequisite goal has not been reached") can be outside
-  // `goalIds` (a different tab, a different project) — fetched separately so their own attainment is
-  // known regardless of where they currently sit.
+  const prerequisiteGoalsReady = !goals.loading
   const dependencyGoalIds = [
     ...new Set(details.flatMap((detail) => detail?.dependsOn ?? [])),
   ]
-  const dependencyQueries = useQueries({
-    queries: dependencyGoalIds.map((goalId) => ({
-      ...goalQueries.detail(goalId),
-      enabled: isAuthenticated,
-    })),
-  })
 
   const playerCharacters = useLiveQuery(() => getPlayerCharacters(), [])
   const playerMows = useLiveQuery(() => getPlayerMows(), [])
@@ -209,10 +175,8 @@ function useComputedGoalsOverviewMetrics(
 
   const dependencyReachedById = new Map<string, boolean>()
   const dependencyLabelById = new Map<string, PrerequisiteGoalLabel>()
-  dependencyQueries.forEach((query, index) => {
-    const dependencyGoalId = dependencyGoalIds[index]
-    if (!dependencyGoalId) return
-    const dependencyDetail = query.data
+  dependencyGoalIds.forEach((dependencyGoalId) => {
+    const dependencyDetail = goals.goalsById.get(dependencyGoalId)
     if (!dependencyDetail) return
     const dependencyUnitId = dependencyDetail.entityId as UnitId
     dependencyLabelById.set(dependencyGoalId, {
@@ -235,10 +199,8 @@ function useComputedGoalsOverviewMetrics(
   })
 
   const result = new Map<string, GoalOverviewMetrics>()
-  detailQueries.forEach((query, index) => {
-    const goalId = goalIds[index]
-    if (!goalId) return
-    const detail = query.data
+  goalIds.forEach((goalId, index) => {
+    const detail = details[index]
     if (!detail) {
       result.set(goalId, UNKNOWN_METRICS)
       return

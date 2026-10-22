@@ -1,10 +1,16 @@
-import { queryOptions, type QueryClient } from "@tanstack/react-query"
+import {
+  infiniteQueryOptions,
+  queryOptions,
+  type QueryClient,
+} from "@tanstack/react-query"
 
 import { ApiError } from "@/shared/api"
 
 import type { LegendaryEventPlan } from "../model/plan.types"
+import type { LegendaryEventRunRecords } from "../model/run-record.types"
 import {
   getLegendaryEventPlan,
+  getLegendaryEventRunRecordRoster,
   getLegendaryEventRunRecords,
   listLegendaryEventPlans,
 } from "./legendary-event-plan.api"
@@ -58,20 +64,44 @@ export const legendaryEventPlanQueries = {
   // Its own root: below a detail key it would be cancelled by every plan write of that event.
   // Invalidating `runRecordsAll()` refreshes every event's records (a sync can create one).
   runRecordsAll: () => ["legendary-event-run-records"] as const,
+  // Pages of records, newest first; each page's `nextAfter` is the next (older) page's cursor.
   runRecords: (eventId: string) =>
-    queryOptions({
+    infiniteQueryOptions({
       queryKey: [
         ...legendaryEventPlanQueries.runRecordsAll(),
         eventId,
       ] as const,
-      queryFn: async ({ signal }) => {
+      initialPageParam: null as string | null,
+      getNextPageParam: (page: LegendaryEventRunRecords) =>
+        page.nextAfter ?? undefined,
+      queryFn: async ({
+        signal,
+        pageParam,
+      }): Promise<LegendaryEventRunRecords> => {
         try {
-          return (await getLegendaryEventRunRecords(eventId, signal)).records
+          return await getLegendaryEventRunRecords(eventId, {
+            after: pageParam,
+            signal,
+          })
         } catch (error) {
           // 404: neither a catalog event nor any record, so there is no history to show.
-          if (error instanceof ApiError && error.status === 404) return []
+          if (error instanceof ApiError && error.status === 404) {
+            return { eventId, records: [], nextAfter: null }
+          }
           throw error
         }
       },
+    }),
+  // Under the event's records key, so refreshing the records (a sync) refreshes the rosters too.
+  runRecordRoster: (eventId: string, recordId: string) =>
+    queryOptions({
+      queryKey: [
+        ...legendaryEventPlanQueries.runRecordsAll(),
+        eventId,
+        "roster",
+        recordId,
+      ] as const,
+      queryFn: ({ signal }) =>
+        getLegendaryEventRunRecordRoster(eventId, recordId, signal),
     }),
 }

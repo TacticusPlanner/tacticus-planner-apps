@@ -1,4 +1,4 @@
-// The player-data chunks served by GET /api/v1/me/player-data/{key} — the per-profile analogue of
+// The player-data chunks served by GET /api/v1/player-data/{key} — the per-profile analogue of
 // @workspace/game-catalog's served dataset keys. Split for client-side partial-update granularity: see
 // ADR 0007 (player-data snapshot and manifest) in the docs repo.
 export const playerDataChunkKeys = [

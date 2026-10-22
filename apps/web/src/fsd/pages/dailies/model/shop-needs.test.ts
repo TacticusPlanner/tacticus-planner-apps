@@ -2,7 +2,6 @@ import { describe, expect, it } from "vitest"
 import { unitIdSchema, upgradeIdSchema } from "@workspace/game-domain"
 
 import type { GoalDetail } from "@/entities/goal"
-import type { ProjectGoalSummary } from "@/entities/project"
 import type { FarmingCharacter, FarmingUpgrade } from "@/features/goal-farming"
 
 import { aggregateShopNeeds, type AggregateShopNeedsParams } from "./shop-needs"
@@ -42,10 +41,10 @@ const rankCharacter: FarmingCharacter = {
 function member(
   goalId: string,
   entityId: string,
-  goalType: string,
-  status: string,
+  goalType: GoalDetail["goalType"],
+  status: GoalDetail["status"],
   priority = 1
-): ProjectGoalSummary {
+): { goal: GoalDetail } {
   return {
     goal: {
       goalId,
@@ -58,6 +57,10 @@ function member(
       createdAt: "",
       updatedAt: "",
       globalPriority: priority,
+      config: {} as GoalDetail["config"],
+      snapshot: null,
+      projectIds: [],
+      revision: 1,
     },
   }
 }

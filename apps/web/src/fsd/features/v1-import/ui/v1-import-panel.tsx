@@ -15,7 +15,6 @@ import { Spinner } from "@workspace/ui/components/spinner"
 import {
   accountQueries,
   importV1Profile,
-  useCurrentUser,
   type ImportV1ProfileResult,
 } from "@/entities/account"
 import { ApiError } from "@/shared/api"
@@ -54,7 +53,7 @@ export function V1ImportPanel({
   lockedParts?: ReadonlyArray<keyof V1ImportSelection>
   onSuccess?: (result: ImportV1ProfileResult) => void
   /**
-   * Whether a successful import refetches the shared current-user query immediately. Defaults to
+   * Whether a successful import refetches the shared current-user query immediately (one read). Defaults to
    * true — the account-menu page wants its masked key/user id to update right away. The setup flow
    * passes false: `AccountSetupRoute`'s reverse guard also reads that same query and navigates away
    * the instant it reports the account provisioned, which would preempt `SetupV1Import`'s own
@@ -68,18 +67,28 @@ export function V1ImportPanel({
   actions?: ReactNode
 }) {
   const { t } = useTranslation()
-  const { refetch } = useCurrentUser()
   const queryClient = useQueryClient()
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
   const [selection, setSelection] =
     useState<V1ImportSelection>(defaultSelection)
-  const [status, setStatus] = useState<
-    "idle" | "submitting" | "error" | "success"
-  >("idle")
-  const [error, setError] = useState<string | null>(null)
   const [result, setResult] = useState<ImportV1ProfileResult | null>(null)
-  const importProfile = useMutation({ mutationFn: importV1Profile })
+  // The mutation stays pending until `onSuccess` settles, so `isSuccess` means the refreshes are done.
+  const importProfile = useMutation({
+    mutationFn: importV1Profile,
+    onSuccess: async (imported) => {
+      setResult(imported)
+      await refreshAfterImport()
+      setPassword("")
+      onSuccess?.(imported)
+    },
+  })
+  const submitting = importProfile.isPending
+  const error = importProfile.error
+    ? importProfile.error instanceof ApiError
+      ? importProfile.error.message
+      : t("goals.v1Import.error")
+    : null
 
   // Single source of truth for "can this be submitted" — drives both the submit control's disabled
   // state and the handler's guard, so the two can no longer drift the way they did before (the
@@ -89,68 +98,57 @@ export function V1ImportPanel({
     username.trim().length > 0 &&
     password.length > 0 &&
     Object.values(selection).some(Boolean) &&
-    status !== "submitting"
+    !submitting
 
-  const handleSubmit = async (event: FormEvent) => {
+  async function refreshAfterImport() {
+    if (refreshCurrentUserOnSuccess) {
+      await queryClient.invalidateQueries({ queryKey: accountQueries.all() })
+    }
+    if (selection.onslaughtProgress) {
+      await queryClient.invalidateQueries({
+        queryKey: onslaughtProgressQueries.all(),
+      })
+    }
+    if (selection.campaignEventProgress) {
+      await queryClient.invalidateQueries({
+        queryKey: campaignEventProgressQueries.all(),
+      })
+    }
+    if (selection.legendaryEventPlans) {
+      await queryClient.invalidateQueries({
+        queryKey: legendaryEventPlanQueries.all(),
+      })
+    }
+    // Unconditional: the import creates goals itself now (rewrite-v1-goal-import removed the
+    // client-side creation path), so this no longer depends on this panel's own knowledge of
+    // whether the goals part was selected or produced anything.
+    await Promise.all([
+      queryClient.invalidateQueries({ queryKey: goalQueries.all() }),
+      queryClient.invalidateQueries({ queryKey: projectQueries.all() }),
+    ])
+  }
+
+  const handleSubmit = (event: FormEvent) => {
     event.preventDefault()
     // Defensive only: the submit control is disabled whenever this doesn't hold, so a real click
     // can't reach here with `canSubmit` false.
     if (!canSubmit) return
-    setStatus("submitting")
-    setError(null)
     setResult(null)
-    try {
-      const imported = await importProfile.mutateAsync({
-        username: username.trim(),
-        password,
-        // Always on — matches the manual create-goal flow's own default (rewrite-v1-goal-import),
-        // and offering it as an option users could quietly clear only left goals blocked on missing
-        // prerequisites they didn't realize they'd opted out of.
-        import: { ...selection, automaticPrerequisites: true },
-      })
-      setResult(imported)
-      if (refreshCurrentUserOnSuccess) {
-        refetch()
-        await queryClient.invalidateQueries({ queryKey: accountQueries.all() })
-      }
-      if (selection.onslaughtProgress) {
-        await queryClient.invalidateQueries({
-          queryKey: onslaughtProgressQueries.all(),
-        })
-      }
-      if (selection.campaignEventProgress) {
-        await queryClient.invalidateQueries({
-          queryKey: campaignEventProgressQueries.all(),
-        })
-      }
-      if (selection.legendaryEventPlans) {
-        await queryClient.invalidateQueries({
-          queryKey: legendaryEventPlanQueries.all(),
-        })
-      }
-      // Unconditional: the import creates goals itself now (rewrite-v1-goal-import removed the
-      // client-side creation path), so this no longer depends on this panel's own knowledge of
-      // whether the goals part was selected or produced anything.
-      await Promise.all([
-        queryClient.invalidateQueries({ queryKey: goalQueries.all() }),
-        queryClient.invalidateQueries({ queryKey: projectQueries.all() }),
-      ])
-      setPassword("")
-      setStatus("success")
-      onSuccess?.(imported)
-    } catch (caught) {
-      setStatus("error")
-      setError(
-        caught instanceof ApiError ? caught.message : t("goals.v1Import.error")
-      )
-    }
+    importProfile.mutate({
+      username: username.trim(),
+      password,
+      // Always on — matches the manual create-goal flow's own default (rewrite-v1-goal-import),
+      // and offering it as an option users could quietly clear only left goals blocked on missing
+      // prerequisites they didn't realize they'd opted out of.
+      import: { ...selection, automaticPrerequisites: true },
+    })
   }
 
   return (
     <form
       className="flex flex-col gap-4"
       data-testid="v1-import-panel"
-      onSubmit={(event) => void handleSubmit(event)}
+      onSubmit={handleSubmit}
     >
       <Field>
         <FieldLabel htmlFor="v1-import-username">
@@ -221,7 +219,7 @@ export function V1ImportPanel({
       </fieldset>
       {error ? <FieldError role="alert">{error}</FieldError> : null}
       {result ? <ImportResult result={result} /> : null}
-      {status === "success" ? (
+      {importProfile.isSuccess ? (
         <p
           className="text-sm text-muted-foreground"
           data-testid="v1-import-rerun-hint"
@@ -235,7 +233,7 @@ export function V1ImportPanel({
           disabled={!canSubmit}
           type="submit"
         >
-          {status === "submitting" ? (
+          {submitting ? (
             <Spinner aria-label={t("goals.v1Import.submitting")} />
           ) : null}
           {t("goals.v1Import.submit")}

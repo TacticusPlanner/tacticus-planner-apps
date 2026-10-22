@@ -167,6 +167,8 @@ export function usePlanCreate(eventId: string) {
     const projectOk = await attempt("project", async () => {
       const project = await createProject({
         name: destination.kind === "new" ? destination.name : "",
+        description: null,
+        color: null,
         target: { kind: "legendaryEvent", eventId: targetEventId },
       })
       projectId.current = project.projectId
@@ -194,8 +196,11 @@ export function usePlanCreate(eventId: string) {
       }
       ok = false
     }
-    void queryClient.invalidateQueries({ queryKey: goalQueries.all() })
-    void queryClient.invalidateQueries({ queryKey: projectQueries.all() })
+    void queryClient.invalidateQueries({ queryKey: goalQueries.lists() })
+    // The wizard's project gained the new goals (its `goalIds`).
+    void queryClient.invalidateQueries({
+      queryKey: projectQueries.list().queryKey,
+    })
 
     for (const lane of writes.lanes) {
       await attempt(`teams:${lane.laneId}`, async () => {

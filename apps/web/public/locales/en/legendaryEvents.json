@@ -792,7 +792,9 @@
     "earlier": {
       "title": "Earlier runs ({{runs}})",
       "entry": "{{run}} · {{date}}"
-    }
+    },
+    "loadMore": "Load more",
+    "rosterRetry": "Retry"
   },
   "tierList": {
     "intro": "Horde-mode tiers for every character, with the multiplier each one gets.",

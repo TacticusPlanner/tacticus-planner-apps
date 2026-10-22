@@ -1,8 +1,13 @@
-import { describe, expect, it, vi } from "vitest"
+import { beforeEach, describe, expect, it, vi } from "vitest"
 
-const api = vi.hoisted(() => ({ get: vi.fn(), put: vi.fn() }))
+vi.mock("@/shared/auth", () => ({
+  acquireAccessToken: () => Promise.resolve("access-token"),
+}))
+vi.mock("@/shared/config", () => ({
+  getRequiredEnvironmentValue: () => "https://api.example",
+}))
 
-vi.mock("@/shared/api", () => ({ apiGet: api.get, apiPut: api.put }))
+import { lastRequest } from "@/test/last-request"
 
 import {
   getOnslaughtProgress,
@@ -17,20 +22,38 @@ const progress = {
   revision: 3,
 } as const
 
-describe("onslaught progress API", () => {
-  it("maps reads and writes to the override endpoint", () => {
-    const signal = new AbortController().signal
-
-    getOnslaughtProgress(signal)
-    updateOnslaughtProgress(progress)
-
-    expect(api.get).toHaveBeenCalledWith(
-      "/api/v1/me/player-data-overrides/onslaught-progress",
-      { signal }
+const respond = (body: unknown) =>
+  vi
+    .spyOn(globalThis, "fetch")
+    .mockImplementation(() =>
+      Promise.resolve(new Response(JSON.stringify(body), { status: 200 }))
     )
-    expect(api.put).toHaveBeenCalledWith(
-      "/api/v1/me/player-data-overrides/onslaught-progress",
-      { body: mapOnslaughtProgressToRequestDto(progress) }
+
+const url =
+  "https://api.example/api/v1/player-data-overrides/onslaught-progress"
+
+describe("onslaught progress API", () => {
+  beforeEach(() => vi.restoreAllMocks())
+
+  it("maps reads and writes to the override endpoint", async () => {
+    const fetch = respond(progress)
+
+    expect(await getOnslaughtProgress()).toEqual(progress)
+    expect(await lastRequest(fetch)).toMatchObject({ method: "GET", url })
+
+    expect(await updateOnslaughtProgress(progress)).toEqual(progress)
+    expect(await lastRequest(fetch)).toMatchObject({
+      method: "PUT",
+      url,
+      body: mapOnslaughtProgressToRequestDto(progress),
+    })
+  })
+
+  it("rejects a tier outside 1–4", async () => {
+    respond({ ...progress, chaos: { sector: "Iron", tier: 7, isSet: true } })
+
+    await expect(getOnslaughtProgress()).rejects.toThrow(
+      "Unexpected Onslaught tier 7"
     )
   })
 

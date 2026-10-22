@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from "react"
 import { useTranslation } from "react-i18next"
-import { useMutation } from "@tanstack/react-query"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { Button } from "@workspace/ui/components/button"
 import {
   Card,
@@ -19,35 +19,36 @@ import {
 import { Input } from "@workspace/ui/components/input"
 import { Spinner } from "@workspace/ui/components/spinner"
 
-import { updateTacticusIntegration, useCurrentUser } from "@/entities/account"
+import {
+  applyTacticusIntegrationResult,
+  updateTacticusIntegration,
+} from "@/entities/account"
 import { ApiError } from "@/shared/api"
 
 export function GuildTacticusUserIdCard({ onSaved }: { onSaved: () => void }) {
   const { t } = useTranslation()
-  const { refetch: refetchCurrentUser } = useCurrentUser()
+  const queryClient = useQueryClient()
   const [userId, setUserId] = useState("")
-  const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  // The response carries the account's new integration state, so the current user is patched from it
+  // rather than refetched; the guild state depends on the saved id, so the caller refetches that.
   const updateIntegration = useMutation({
     mutationFn: updateTacticusIntegration,
+    onSuccess: (result) => {
+      applyTacticusIntegrationResult(queryClient, result)
+      onSaved()
+    },
   })
+  const errorMessage = updateIntegration.error
+    ? updateIntegration.error instanceof ApiError
+      ? updateIntegration.error.message
+      : t("guild.tacticusUserIdRequired.genericError")
+    : null
 
-  const handleSubmit = async (event: FormEvent) => {
+  const handleSubmit = (event: FormEvent) => {
     event.preventDefault()
     const trimmed = userId.trim()
     if (!trimmed) return
-
-    setErrorMessage(null)
-    try {
-      await updateIntegration.mutateAsync({ tacticusUserId: trimmed })
-      refetchCurrentUser()
-      onSaved()
-    } catch (error) {
-      setErrorMessage(
-        error instanceof ApiError
-          ? error.message
-          : t("guild.tacticusUserIdRequired.genericError")
-      )
-    }
+    updateIntegration.mutate({ tacticusApiKey: null, tacticusUserId: trimmed })
   }
 
   return (
@@ -59,7 +60,7 @@ export function GuildTacticusUserIdCard({ onSaved }: { onSaved: () => void }) {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <form onSubmit={(event) => void handleSubmit(event)}>
+        <form onSubmit={handleSubmit}>
           <FieldGroup>
             <Field data-invalid={Boolean(errorMessage)}>
               <FieldLabel htmlFor="guild-tacticus-user-id">

@@ -11,13 +11,14 @@ import {
   type ProjectSummary,
   type ProjectTarget,
 } from "@/entities/project"
-import { goalQueries } from "@/entities/goal"
-import { ApiError } from "@/shared/api"
+import { ApiError, apiIssue } from "@/shared/api"
 
 /**
  * Project-level mutations: create and save (name/description/color/status/target). Reordering goals is a
  * move on the account-wide order and lives in `features/goal-order`; there is no bulk pause/resume
- * (project-management: "No bulk pause/resume on Projects").
+ * (project-management: "No bulk pause/resume on Projects"). Response-first (spec: client-data-freshness):
+ * the returned project is written into the cached project list; nothing about goals changes, so no goal
+ * read is refetched, and a 409 refetches the project list only.
  */
 export function useProjectActions(_onChanged?: () => void) {
   void _onChanged
@@ -28,30 +29,46 @@ export function useProjectActions(_onChanged?: () => void) {
   const pending = pendingCount > 0
   const mutation = useMutation({
     mutationFn: (action: () => Promise<unknown>) => action(),
-    onSuccess: async () => {
-      await Promise.all([
-        queryClient.invalidateQueries({ queryKey: projectQueries.all() }),
-        queryClient.invalidateQueries({ queryKey: goalQueries.all() }),
-      ])
-    },
   })
 
-  const run = async (action: () => Promise<unknown>) => {
+  /** Replaces the project in the cached list, or appends it when it is new. */
+  const writeProject = (project: ProjectSummary) =>
+    queryClient.setQueryData(
+      projectQueries.list().queryKey,
+      (current: { projects: ProjectSummary[] } | undefined) =>
+        current && {
+          ...current,
+          projects: current.projects.some(
+            (entry) => entry.projectId === project.projectId
+          )
+            ? current.projects.map((entry) =>
+                entry.projectId === project.projectId ? project : entry
+              )
+            : [...current.projects, project],
+        }
+    )
+
+  const run = async (action: () => Promise<ProjectSummary>) => {
     if (!isAuthenticated) {
       return false
     }
 
     setPendingCount((count) => count + 1)
     try {
-      await mutation.mutateAsync(action)
+      writeProject((await mutation.mutateAsync(action)) as ProjectSummary)
       return true
     } catch (error) {
-      if (error instanceof ApiError && error.status === 409) {
+      // A stale project revision carries the project as it stands: adopt it; refetch otherwise.
+      const stale = apiIssue(
+        error,
+        "projectRevisionStale",
+        "defaultProjectCannotBeArchived"
+      )
+      if (stale?.current && typeof stale.current === "object") {
+        writeProject(stale.current as ProjectSummary)
+      } else if (error instanceof ApiError && error.status === 409) {
         void queryClient.invalidateQueries({
-          queryKey: projectQueries.all(),
-        })
-        void queryClient.invalidateQueries({
-          queryKey: goalQueries.all(),
+          queryKey: projectQueries.list().queryKey,
         })
       }
       toast.error(

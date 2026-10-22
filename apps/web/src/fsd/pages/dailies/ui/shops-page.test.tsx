@@ -44,6 +44,8 @@ function renderPage() {
         color: null,
         status: "Active",
         isDefault: false,
+        goalIds: [] as string[],
+        target: null,
         revision: 1,
         createdAt: "",
         updatedAt: "",

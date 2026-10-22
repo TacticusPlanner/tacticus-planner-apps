@@ -1,8 +1,11 @@
-// Run records for Uthar shaped like `GET /me/legendary-event-plans/votanUthar/run-records`
+// Run records for Uthar shaped like `GET /legendary-event-plans/votanUthar/run-records`
 // (spec: legendary-event-run-history worked examples): run 1 with Alpha teams "Ultras" (objectives
 // Ultramarines and Melee) and "Melee" (Melee), Calgar at Diamond 1 / 5 red stars and Tigurius not
 // yet owned; run 2 started a week later with one Alpha battle.
-import type { LegendaryEventRunRecord } from "@/entities/legendary-event"
+import type {
+  LegendaryEventRunRecord,
+  RosterSnapshot,
+} from "@/entities/legendary-event"
 
 export const utharRun1Record: LegendaryEventRunRecord = {
   id: "record-run-1",
@@ -46,29 +49,30 @@ export const utharRun1Record: LegendaryEventRunRecord = {
       expectedBattleClearsSource: null,
     },
   ],
-  rosterSnapshot: {
-    id: "snapshot-1",
-    takenAt: "2026-10-06T19:30:00Z",
-    catalogVersion: "1",
-    characters: [
-      {
-        unitId: "ultraCalgar",
-        progressionIndex: "Legendary:RedFiveStars",
-        rank: "Diamond1",
-        xp: 0,
-        xpLevel: 45,
-        shards: 0,
-        mythicShards: 0,
-        abilities: [
-          { abilityId: "CalgarActive", level: 40 },
-          { abilityId: "CalgarPassive", level: 38 },
-        ],
-        appliedUpgradeSlots: [],
-        equippedItems: [],
-      },
-    ],
-    mows: [],
-  },
+}
+
+/** Run 1's roster at the time, as `GET …/run-records/record-run-1/roster` returns it. */
+export const utharRun1Snapshot: RosterSnapshot = {
+  takenAt: "2026-10-06T19:30:00Z",
+  catalogVersion: "1",
+  characters: [
+    {
+      unitId: "ultraCalgar",
+      progressionIndex: "Legendary:RedFiveStars",
+      rank: "Diamond1",
+      xp: 0,
+      xpLevel: 45,
+      shards: 0,
+      mythicShards: 0,
+      abilities: [
+        { abilityId: "CalgarActive", level: 40 },
+        { abilityId: "CalgarPassive", level: 38 },
+      ],
+      appliedUpgradeSlots: [],
+      equippedItems: [],
+    },
+  ],
+  mows: [],
 }
 
 export const utharRun2Record: LegendaryEventRunRecord = {

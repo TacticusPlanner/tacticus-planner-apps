@@ -1,4 +1,6 @@
-import type { GoalOrderConflictDto } from "./types"
+import { apiIssue } from "@/shared/api"
+
+import type { GoalOrderResponse } from "./types"
 
 /** Only an Active/Paused goal holds a position in the account-wide order. */
 export const holdsGlobalPosition = (goal: { status: string }) =>
@@ -80,19 +82,20 @@ export function applyPositionMove<
   })
 }
 
-/** Narrows an `ApiError.details` body to the structured 409 of the reorder/move operations
- * (`goalOrderStale`, `goalOrderSetMismatch`, `goalOrderDuplicate`, `goalOrderSameGoal`), or null for
- * any other error. It carries the order as it now stands, so the client can refresh without a read. */
-export function goalOrderConflictDetails(
-  details: unknown
-): GoalOrderConflictDto | null {
-  if (!details || typeof details !== "object") return null
-  const value = details as Partial<GoalOrderConflictDto>
-  return typeof value.issueCode === "string" &&
-    value.issueCode.startsWith("goalOrder") &&
-    typeof value.message === "string" &&
-    typeof value.revision === "number" &&
-    Array.isArray(value.goalIds)
-    ? (value as GoalOrderConflictDto)
+/** The order as it now stands when `error` is a reorder/move 409 (`goalOrderStale`,
+ * `goalOrderSetMismatch`), so the client can adopt it without a read; null for any other error. */
+export function goalOrderConflict(error: unknown): {
+  issueCode: "goalOrderStale" | "goalOrderSetMismatch"
+  current: GoalOrderResponse
+} | null {
+  const issue = apiIssue(error, "goalOrderStale", "goalOrderSetMismatch")
+  const current = issue?.current as Partial<GoalOrderResponse> | undefined
+  return issue &&
+    typeof current?.revision === "number" &&
+    Array.isArray(current.goalIds)
+    ? {
+        issueCode: issue.issueCode as "goalOrderStale" | "goalOrderSetMismatch",
+        current: current as GoalOrderResponse,
+      }
     : null
 }

@@ -78,6 +78,8 @@ function plan(
     catalogVersion: "1",
     notes: null,
     showPaidOptions: false,
+    runs: [],
+    annotations: [],
     teams,
   }
 }
@@ -91,7 +93,7 @@ const draft: TeamDraft = {
 }
 
 const conflict = (issueCode: string, current: LegendaryEventPlan) =>
-  new ApiError(409, "Stale.", { issueCode, message: "Stale.", plan: current })
+  new ApiError(409, "Stale.", { issueCode, current: current })
 
 function setup(initial: LegendaryEventPlan, run: 1 | 2 | 3 = 1) {
   const queryClient = new QueryClient({

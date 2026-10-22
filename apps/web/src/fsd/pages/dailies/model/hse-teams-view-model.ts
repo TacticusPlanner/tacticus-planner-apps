@@ -6,8 +6,8 @@ import type {
 } from "@/features/home-screen-event-points"
 import type { UnitPowerContext } from "@/shared/unit-power"
 
-import { mapRosterCharacter } from "./arena-recommendations"
-import type { RawRosterCharacter } from "./arena-recommendations.types"
+import { mapRosterCharacter } from "./roster-character"
+import type { RawRosterCharacter } from "./roster-character"
 import {
   buildHseTeamRecommendations,
   hseTeamModes,

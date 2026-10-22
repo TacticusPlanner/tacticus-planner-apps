@@ -9,7 +9,6 @@ import {
 import { Button } from "@workspace/ui/components/button"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 
-import { useProjectGoals } from "../../model/projects/use-project-goals"
 import { useGlobalGoalPlan } from "@/entities/goal"
 import { ProjectSelect, useProjects } from "@/entities/project"
 import { usePlanInsights } from "../../model/insights/use-plan-insights"
@@ -29,9 +28,13 @@ export function InsightsPage() {
   // No selection means the whole plan; a project only narrows what is reported.
   const [projectId, setProjectId] = useState<string | undefined>(undefined)
 
-  const projectGoals = useProjectGoals(projectId)
   const globalPlan = useGlobalGoalPlan()
-  const scopedGoals = projectId ? projectGoals.goals : globalPlan.entries
+  // A project only narrows the plan by the goals' `projectIds`; no membership read.
+  const scopedGoals = projectId
+    ? globalPlan.entries.filter((entry) =>
+        entry.goal.projectIds.includes(projectId)
+      )
+    : globalPlan.entries
   // The estimate itself is always the one global run.
   const {
     result,
@@ -39,7 +42,7 @@ export function InsightsPage() {
     isError: insightsError,
     retry: retryInsights,
   } = usePlanInsights(
-    projectId ? projectGoals.goals.map((entry) => entry.goal.goalId) : null
+    projectId ? scopedGoals.map((entry) => entry.goal.goalId) : null
   )
 
   const goalEntityById = new Map(

@@ -26,8 +26,8 @@ import {
   type HseTeamPick,
   type HseTeamRecommendations,
 } from "./hse-team-recommendations.types"
-import { SALVAGE_TRACKS } from "./salvage-recommendations.types"
-import type { SalvageTrack } from "./salvage-recommendations.types"
+import { ALLIANCE_TRACKS } from "./alliance-tracks"
+import type { AllianceTrack } from "./alliance-tracks"
 import {
   MIN_TEAM_SIZE,
   type EventUnitMatch,
@@ -313,7 +313,7 @@ function buildTeam(
   trackers: readonly GameCatalogHseTracker[],
   roster: readonly TeamRosterCharacter[],
   catalog: HseTeamCatalog,
-  alliance: SalvageTrack | null,
+  alliance: AllianceTrack | null,
   unitPower: UnitPowerContext | null
 ): HseTeam {
   if (roster.length < MIN_TEAM_SIZE) {
@@ -388,7 +388,7 @@ export function buildHseTeamRecommendations(
     const teams =
       mode === "Arena"
         ? [buildTeam(trackers, roster, input.catalog, null, input.unitPower)]
-        : SALVAGE_TRACKS.map((alliance) =>
+        : ALLIANCE_TRACKS.map((alliance) =>
             buildTeam(
               trackers,
               roster.filter(

@@ -1,7 +1,5 @@
-import { ApiError } from "@/shared/api"
-
-import { listProjectGoals, updateProjectGoals } from "../api/project.api"
-import { projectMembershipStaleDetails } from "./project-membership-conflict"
+import { updateProjectGoals } from "../api/project.api"
+import { projectMembershipConflict } from "./project-membership-conflict"
 
 /** What one membership change did: the members before and after (both complete id lists). */
 export type ProjectMembershipChange = {
@@ -10,28 +8,24 @@ export type ProjectMembershipChange = {
 }
 
 /**
- * Applies `change` to a project's membership as it stands now, in one `PUT me/projects/{id}/goals`
- * (atomic: any rejection changes nothing). The current membership is read first and sent as
- * `expectedGoalIds`; if another change lands in between (a `projectMembershipStale` 409), `change` is
- * re-applied once to the membership that 409 reports and resubmitted. When `change` leaves the set as
- * is, nothing is sent. Every other rejection (`lastProjectMembership`, `projectGoalSlotOccupied`, …)
- * is thrown unchanged for the caller to report.
+ * Applies `change` to a project's membership in one `PUT projects/{id}/goals` (atomic: any rejection
+ * changes nothing). `currentGoalIds` is the membership the caller holds (the project's `goalIds`) and is
+ * sent as `expectedGoalIds`; if the server's differs (a `membershipStale` 409 — another change landed, or
+ * the project also holds archived goals the caller's list leaves out), `change` is re-applied once to the
+ * membership that 409 reports and resubmitted. When `change` leaves the set as is, nothing is sent. Every
+ * other rejection (`lastProjectMembership`, …) is thrown unchanged for the caller to report.
  */
 export async function changeProjectMembership(
   projectId: string,
+  currentGoalIds: readonly string[],
   change: (current: readonly string[]) => string[]
 ): Promise<ProjectMembershipChange> {
-  const { goals } = await listProjectGoals(projectId)
-  const current = goals.map((entry) => entry.goal.goalId)
   try {
-    return await submit(projectId, current, change)
+    return await submit(projectId, [...currentGoalIds], change)
   } catch (error) {
-    const stale =
-      error instanceof ApiError
-        ? projectMembershipStaleDetails(error.details)
-        : null
+    const stale = projectMembershipConflict(error)
     if (!stale) throw error
-    return submit(projectId, stale.currentGoalIds, change)
+    return submit(projectId, stale.current.goalIds, change)
   }
 }
 

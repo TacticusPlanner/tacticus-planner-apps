@@ -38,7 +38,7 @@ type GuildRaidRosterUnit = {
  * plain owned-id sets `resolveGuildRaidExactReadiness` compares against, and the per-unit investment
  * facts `resolveGuildRaidHeroReadiness`/`resolveGuildRaidMowReadiness` compare against the boss's
  * threshold. `abilities[0]` is a unit's active-ability record and `abilities[1]` its passive, mirroring
- * the same ordering convention already used by the Dailies team engine (`arena-recommendations.ts`);
+ * the same ordering convention already used by the Dailies team engine (`team-recommendations.ts`);
  * a unit missing either defaults to level 1 rather than 0, matching that same convention.
  */
 export function buildGuildRaidRosterInvestment(roster: {

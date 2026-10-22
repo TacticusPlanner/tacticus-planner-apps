@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest"
 
-import { legendaryEventPlanConflictDetails } from "./plan.types"
+import { ApiError } from "@/shared/api"
+
+import { legendaryEventPlanConflict } from "./plan.types"
 
 const plan = {
   eventId: "astarLysander",
@@ -9,35 +11,33 @@ const plan = {
   notes: null,
   showPaidOptions: false,
   teams: [],
+  runs: [],
+  annotations: [],
 }
 
-describe("legendaryEventPlanConflictDetails", () => {
+describe("legendaryEventPlanConflict", () => {
   it.each(["legendaryEventPlanStale", "legendaryEventOrderSetMismatch"])(
-    "narrows a %s 409 body",
+    "exposes the current plan of a %s 409",
     (issueCode) => {
-      const body = { issueCode, message: "Stale.", plan }
-      expect(legendaryEventPlanConflictDetails(body)).toBe(body)
+      const error = new ApiError(409, "Stale.", { issueCode, current: plan })
+      expect(legendaryEventPlanConflict(error)).toEqual({
+        issueCode,
+        current: plan,
+      })
     }
   )
 
-  it("rejects a goal conflict body", () => {
+  it("rejects a goal conflict, a plan code without a plan, and non-API errors", () => {
     expect(
-      legendaryEventPlanConflictDetails({
-        issueCode: "goalRevisionStale",
-        message: "Stale.",
-        goal: { goalId: "g1" },
-      })
+      legendaryEventPlanConflict(
+        new ApiError(409, "x", { issueCode: "goalRevisionStale", current: {} })
+      )
     ).toBeNull()
-  })
-
-  it("rejects a plan code without a plan, and non-objects", () => {
     expect(
-      legendaryEventPlanConflictDetails({
-        issueCode: "legendaryEventPlanStale",
-        message: "Stale.",
-      })
+      legendaryEventPlanConflict(
+        new ApiError(409, "x", { issueCode: "legendaryEventPlanStale" })
+      )
     ).toBeNull()
-    expect(legendaryEventPlanConflictDetails(null)).toBeNull()
-    expect(legendaryEventPlanConflictDetails("409")).toBeNull()
+    expect(legendaryEventPlanConflict(new Error("409"))).toBeNull()
   })
 })

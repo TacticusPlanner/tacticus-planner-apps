@@ -31,21 +31,6 @@ describe("applyOptimisticGoalStatus", () => {
     expect(result.goals[1]).toBe(list.goals[1])
   })
 
-  it("patches a matching entry in a project-membership-wrapped list", () => {
-    const list = {
-      goals: [
-        { priority: 1, goal: { goalId: "g1", status: "Active" } },
-        { priority: 2, goal: { goalId: "g2", status: "Paused" } },
-      ],
-    }
-    const result = applyOptimisticGoalStatus(list, "g1", "Paused") as {
-      goals: { priority: number; goal: { goalId: string; status: string } }[]
-    }
-    expect(result.goals[0]?.goal).toEqual({ goalId: "g1", status: "Paused" })
-    expect(result.goals[0]?.priority).toBe(1)
-    expect(result.goals[1]).toBe(list.goals[1])
-  })
-
   it("returns the same reference when no entry in the list matches", () => {
     const list = { goals: [{ goalId: "g2", status: "Active" }] }
     const result = applyOptimisticGoalStatus(list, "g1", "Paused")

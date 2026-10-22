@@ -1,60 +1,17 @@
-import { ApiError, apiGet, apiPost } from "@/shared/api"
+import { ApiError, apiClient, unwrap, type ApiSchemas } from "@/shared/api"
 
-// Mirrors the API's id-only GuildRaidStatusResponse family (TacticusPlanner.Api.Features.Guilds).
+// Wire shapes, generated from the API's OpenAPI document (spec: api-contract-sync); never hand-written.
+type S = ApiSchemas
 
-export type GuildRaidObservationState = "active" | "noActiveSeason"
-export type GuildRaidFreshness = "fresh" | "stale"
-// Serialized PascalCase: the backend enum has no camelCase naming policy applied, unlike
-// GuildRaidFreshness/GuildRaidObservationState above.
-export type GuildRaidDifficulty =
-  "Common" | "Uncommon" | "Rare" | "Epic" | "Legendary" | "Mythic"
-
-export type GuildRaidModifierStatus = {
-  modifierId: string
-  type: string
-  target: string
-  subtarget: string | null
-  amount: number
-  activationRemainingHp: number | null
-  active: boolean | null
-}
-
-export type GuildRaidPrimeStatus = {
-  encounterIndex: number
-  unitSetId: string
-  progressionIndex: number
-  remainingHp: number | null
-  maximumHp: number | null
-  modifiers: GuildRaidModifierStatus[]
-}
-
-export type GuildRaidBossStatus = {
-  unitSetId: string
-  progressionIndex: number
-  remainingHp: number
-  maximumHp: number
-  isUpcoming: boolean
-}
-
-export type GuildRaidSeasonStatus = {
-  seasonNumber: number
-  seasonConfigId: string
-  endsAt: string | null
-  tierIndex: number
-  setIndex: number
-  setCount: number
-  difficulty: GuildRaidDifficulty
-  boss: GuildRaidBossStatus
-  primes: GuildRaidPrimeStatus[]
-}
-
-export type GuildRaidStatusResponse = {
-  state: GuildRaidObservationState
-  observedAt: string
-  freshness: GuildRaidFreshness
-  lastGuildSyncSucceededAt: string
-  season: GuildRaidSeasonStatus | null
-}
+export type GuildRaidObservationState = S["GuildRaidObservationState"]
+export type GuildRaidFreshness = S["GuildRaidFreshness"]
+/** Serialized PascalCase, unlike the camelCase freshness and observation state. */
+export type GuildRaidDifficulty = S["GuildRaidDifficulty"]
+export type GuildRaidModifierStatus = S["GuildRaidModifierStatusResponse"]
+export type GuildRaidPrimeStatus = S["GuildRaidPrimeStatusResponse"]
+export type GuildRaidBossStatus = S["GuildRaidBossStatusResponse"]
+export type GuildRaidSeasonStatus = S["GuildRaidSeasonStatusResponse"]
+export type GuildRaidStatusResponse = S["GuildRaidStatusResponse"]
 
 /**
  * The GET endpoint's outcome, including the API's "never observed" 409 conflict as a normal (non-error)
@@ -63,9 +20,6 @@ export type GuildRaidStatusResponse = {
 export type GuildRaidStatusResult =
   | { kind: "observed"; status: GuildRaidStatusResponse }
   | { kind: "neverObserved" }
-
-const statusPath = "/api/v1/guilds/me/raid-status"
-const refreshPath = "/api/v1/guilds/me/raid-status/refresh"
 
 // GetMyGuildRaidStatusEndpoint's exact message for its one "no observation yet" 409 (distinct from the
 // other 409 reasons ReadyGuildResolver reports — unregistered guild, never synchronized, no stored token —
@@ -78,7 +32,9 @@ export async function getGuildRaidStatus(
   signal?: AbortSignal
 ): Promise<GuildRaidStatusResult> {
   try {
-    const status = await apiGet<GuildRaidStatusResponse>(statusPath, { signal })
+    const status = await unwrap(
+      apiClient().GET("/api/v1/guild/raid-status", { signal })
+    )
     return { kind: "observed", status }
   } catch (error) {
     if (
@@ -101,5 +57,7 @@ export async function getGuildRaidStatus(
 export function refreshGuildRaidStatus(
   signal?: AbortSignal
 ): Promise<GuildRaidStatusResponse> {
-  return apiPost<GuildRaidStatusResponse>(refreshPath, { signal })
+  return unwrap(
+    apiClient().POST("/api/v1/guild/raid-status/refresh", { signal })
+  )
 }

@@ -22,8 +22,24 @@ function toGoalConfig(config: CreateGoalConfigRequest): GoalConfig {
     farmingStrategy: config.farmingStrategy ?? "TotalUpgrades",
     acquisitionSources: config.acquisitionSources ?? null,
     farmingLocationIds: config.farmingLocationIds ?? null,
-    upgrade: config.upgrade ?? null,
+    upgrade: config.upgrade
+      ? {
+          targets: config.upgrade.targets,
+          rankRange: toRange(config.upgrade.rankRange),
+          activeRange: toRange(config.upgrade.activeRange),
+          passiveRange: toRange(config.upgrade.passiveRange),
+        }
+      : null,
   }
+}
+
+/** A request range is stored only when whole (the API's `ToRange`). */
+function toRange(
+  range: { start: number | null; end: number | null } | null | undefined
+) {
+  return range?.start != null && range.end != null
+    ? { start: range.start, end: range.end }
+    : null
 }
 
 /**

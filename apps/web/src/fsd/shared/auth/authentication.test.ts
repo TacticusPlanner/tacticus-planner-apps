@@ -5,6 +5,7 @@ const mocks = vi.hoisted(() => {
     acquireTokenRedirect: vi.fn(),
     acquireTokenSilent: vi.fn(),
     addEventCallback: vi.fn(),
+    loginRedirect: vi.fn(),
     getActiveAccount: vi.fn(),
     getAllAccounts: vi.fn(),
     handleRedirectPromise: vi.fn(),
@@ -32,7 +33,8 @@ vi.mock("../config/environment", () => ({
   getRequiredEnvironmentValue: mocks.environment,
 }))
 
-vi.mock("@azure/msal-browser", () => {
+// Defined once so the module re-imported per test (see beforeEach) shares these classes.
+const errors = vi.hoisted(() => {
   class AuthError extends Error {
     errorCode: string
 
@@ -43,6 +45,11 @@ vi.mock("@azure/msal-browser", () => {
   }
   class InteractionRequiredAuthError extends AuthError {}
   class BrowserAuthError extends AuthError {}
+  return { AuthError, InteractionRequiredAuthError, BrowserAuthError }
+})
+
+vi.mock("@azure/msal-browser", () => {
+  const { AuthError, BrowserAuthError, InteractionRequiredAuthError } = errors
   class PublicClientApplication {
     constructor(configuration: unknown) {
       mocks.constructor(configuration)
@@ -54,7 +61,10 @@ vi.mock("@azure/msal-browser", () => {
     AuthError,
     BrowserAuthError,
     BrowserAuthErrorCodes: { timedOut: "timed_out" },
-    BrowserCacheLocation: { LocalStorage: "localStorage" },
+    BrowserCacheLocation: {
+      LocalStorage: "localStorage",
+      SessionStorage: "sessionStorage",
+    },
     CacheLookupPolicy: { AccessTokenAndRefreshToken: 1 },
     EventType: { LOGIN_SUCCESS: "login-success" },
     InteractionRequiredAuthError,
@@ -70,21 +80,13 @@ import {
   LogLevel,
 } from "@azure/msal-browser"
 
-import {
-  acquireAccessToken,
-  attemptSilentSignIn,
-  initializeAuthentication,
-  isInteractionRequired,
-  loginRequest,
-  requestApiAccess,
-  resetSilentRestoreForTesting,
-  SILENT_FRAME_TIMEOUT_MS,
-} from "./authentication"
+let auth: typeof import("./authentication")
 
 describe("authentication", () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     vi.clearAllMocks()
-    resetSilentRestoreForTesting()
+    vi.resetModules()
+    auth = await import("./authentication")
     mocks.instance.initialize.mockResolvedValue(undefined)
     mocks.instance.handleRedirectPromise.mockResolvedValue(null)
     mocks.instance.getActiveAccount.mockReturnValue(null)
@@ -92,7 +94,7 @@ describe("authentication", () => {
   })
 
   it("resolves the API scope only when it is accessed", () => {
-    expect(loginRequest.scopes).toEqual(["api://planner/access"])
+    expect(auth.loginRequest.scopes).toEqual(["api://planner/access"])
     expect(mocks.environment).toHaveBeenCalledWith("VITE_API_SCOPE")
   })
 
@@ -100,7 +102,7 @@ describe("authentication", () => {
     const cachedAccount = { homeAccountId: "cached" }
     mocks.instance.getAllAccounts.mockReturnValue([cachedAccount] as never)
 
-    await expect(initializeAuthentication()).resolves.toBe(mocks.instance)
+    await expect(auth.initializeAuthentication()).resolves.toBe(mocks.instance)
 
     expect(mocks.instance.initialize).toHaveBeenCalledOnce()
     expect(mocks.instance.handleRedirectPromise).toHaveBeenCalledWith()
@@ -124,7 +126,7 @@ describe("authentication", () => {
     })
     mocks.instance.getActiveAccount.mockReturnValue(redirectAccount as never)
 
-    await initializeAuthentication()
+    await auth.initializeAuthentication()
 
     expect(mocks.instance.setActiveAccount).toHaveBeenCalledWith(
       redirectAccount
@@ -166,48 +168,121 @@ describe("authentication", () => {
       accessToken: "token",
     })
 
-    await initializeAuthentication()
+    await auth.initializeAuthentication()
 
-    await expect(acquireAccessToken()).resolves.toBe("token")
+    await expect(auth.acquireAccessToken()).resolves.toBe("token")
     expect(mocks.instance.acquireTokenSilent).toHaveBeenCalledWith({
       account,
       scopes: ["api://planner/access"],
     })
 
-    requestApiAccess()
+    await auth.requestInteraction()
     expect(mocks.instance.acquireTokenRedirect).toHaveBeenCalledWith({
       account,
       scopes: ["api://planner/access"],
     })
   })
 
+  describe("token cache and account hint", () => {
+    it("keeps tokens in the tab and removes the pre-deploy localStorage cache once", async () => {
+      localStorage.setItem("msal.token.keys.client-id", "[]")
+      localStorage.setItem(
+        "home-id.tenant-login.windows.net-refreshtoken-client-id--",
+        "{}"
+      )
+      localStorage.setItem("theme", "dark")
+
+      await auth.initializeAuthentication()
+
+      const configuration = mocks.constructor.mock.calls.at(-1)?.[0] as {
+        cache: { cacheLocation: string }
+      }
+      expect(configuration.cache.cacheLocation).toBe("sessionStorage")
+      expect(Object.keys(localStorage)).toEqual(["theme"])
+    })
+
+    it("stores only the account hint on sign-in, never a token, and forgets it on demand", async () => {
+      const account = {
+        homeAccountId: "home-id",
+        username: "user@example.test",
+        idToken: "secret-id-token",
+      }
+      mocks.instance.handleRedirectPromise.mockResolvedValue({
+        account,
+        accessToken: "secret-access-token",
+      } as never)
+
+      await auth.initializeAuthentication()
+
+      expect(Object.keys(localStorage)).toEqual(["tp.auth.accountHint"])
+      expect(JSON.parse(localStorage.getItem("tp.auth.accountHint")!)).toEqual({
+        homeAccountId: "home-id",
+        username: "user@example.test",
+      })
+      expect(Object.values(localStorage).join()).not.toMatch(/secret/)
+
+      auth.forgetAccountHint()
+      expect(auth.readAccountHint()).toBeNull()
+    })
+  })
+
+  describe("requestInteraction", () => {
+    it("starts one sign-in redirect however many callers ask at once", async () => {
+      localStorage.setItem(
+        "tp.auth.accountHint",
+        JSON.stringify({ homeAccountId: "h", username: "user@example.test" })
+      )
+      mocks.instance.loginRedirect.mockResolvedValue(undefined)
+      await auth.initializeAuthentication()
+
+      await Promise.all([auth.requestInteraction(), auth.requestInteraction()])
+
+      expect(mocks.instance.loginRedirect).toHaveBeenCalledExactlyOnceWith({
+        scopes: ["api://planner/access"],
+        loginHint: "user@example.test",
+      })
+    })
+
+    it("lets a later caller retry when starting the redirect failed", async () => {
+      mocks.instance.loginRedirect
+        .mockRejectedValueOnce(new Error("popup blocked"))
+        .mockResolvedValue(undefined)
+      await auth.initializeAuthentication()
+
+      await expect(auth.requestInteraction()).rejects.toThrow("popup blocked")
+      await auth.requestInteraction()
+
+      expect(mocks.instance.loginRedirect).toHaveBeenCalledTimes(2)
+    })
+  })
+
   it("recognizes interaction-required errors", () => {
     expect(
-      isInteractionRequired(
+      auth.isInteractionRequired(
         new InteractionRequiredAuthError("interaction_required", "message")
       )
     ).toBe(true)
-    expect(isInteractionRequired(new Error("other"))).toBe(false)
+    expect(auth.isInteractionRequired(new Error("other"))).toBe(false)
   })
 
   it("caps the hidden sign-in frame wait below MSAL's 10s default", async () => {
-    await initializeAuthentication()
+    await auth.initializeAuthentication()
 
     const configuration = mocks.constructor.mock.calls.at(-1)?.[0] as {
       system: { iframeBridgeTimeout: number }
     }
     expect(configuration.system.iframeBridgeTimeout).toBe(
-      SILENT_FRAME_TIMEOUT_MS
+      auth.SILENT_FRAME_TIMEOUT_MS
     )
-    expect(SILENT_FRAME_TIMEOUT_MS).toBeLessThan(10_000)
+    expect(auth.SILENT_FRAME_TIMEOUT_MS).toBeLessThan(10_000)
   })
 
   it("treats a rejected refresh token (invalid_grant) as requiring interaction", () => {
     expect(
-      isInteractionRequired(new AuthError("invalid_grant", "message"))
+      auth.isInteractionRequired(new AuthError("invalid_grant", "message"))
     ).toBe(true)
     expect(
-      isInteractionRequired(new AuthError("network_error", "message"))
+      auth.isInteractionRequired(new AuthError("network_error", "message"))
     ).toBe(false)
   })
 
@@ -228,10 +303,10 @@ describe("authentication", () => {
             })
         )
         .mockResolvedValueOnce({ accessToken: "fresh" })
-      await initializeAuthentication()
+      await auth.initializeAuthentication()
 
-      const restore = attemptSilentSignIn(mocks.instance as never)
-      const token = acquireAccessToken()
+      const restore = auth.attemptSilentSignIn(mocks.instance as never)
+      const token = auth.acquireAccessToken()
       await Promise.resolve()
       expect(mocks.instance.acquireTokenSilent).toHaveBeenCalledTimes(1)
 
@@ -253,12 +328,12 @@ describe("authentication", () => {
       mocks.instance.ssoSilent.mockRejectedValue(
         new BrowserAuthError("timed_out", "correlation-id")
       )
-      await initializeAuthentication()
+      await auth.initializeAuthentication()
 
-      await expect(attemptSilentSignIn(mocks.instance as never)).resolves.toBe(
-        "failed"
-      )
-      await expect(acquireAccessToken()).rejects.toBe(expired)
+      await expect(
+        auth.attemptSilentSignIn(mocks.instance as never)
+      ).resolves.toBe("failed")
+      await expect(auth.acquireAccessToken()).rejects.toBe(expired)
       expect(mocks.instance.acquireTokenSilent).toHaveBeenLastCalledWith({
         account,
         cacheLookupPolicy: 1,
@@ -270,10 +345,12 @@ describe("authentication", () => {
 
   it("treats a silent-iframe timeout as requiring interaction", () => {
     expect(
-      isInteractionRequired(new BrowserAuthError("timed_out", "correlation-id"))
+      auth.isInteractionRequired(
+        new BrowserAuthError("timed_out", "correlation-id")
+      )
     ).toBe(true)
     expect(
-      isInteractionRequired(
+      auth.isInteractionRequired(
         new BrowserAuthError("popup_window_error", "correlation-id")
       )
     ).toBe(false)
@@ -294,9 +371,9 @@ describe("authentication", () => {
         account: cachedAccount,
       })
 
-      await expect(attemptSilentSignIn(mocks.instance as never)).resolves.toBe(
-        "success"
-      )
+      await expect(
+        auth.attemptSilentSignIn(mocks.instance as never)
+      ).resolves.toBe("success")
       expect(mocks.instance.acquireTokenSilent).toHaveBeenCalledWith({
         account: cachedAccount,
         cacheLookupPolicy: 1,
@@ -308,12 +385,31 @@ describe("authentication", () => {
       )
     })
 
-    it("does not call ssoSilent when there is no cached account", async () => {
+    it("runs one hidden check with the account hint when the tab holds no account", async () => {
+      localStorage.setItem(
+        "tp.auth.accountHint",
+        JSON.stringify({ homeAccountId: "h", username: "user@example.test" })
+      )
+      mocks.instance.getAllAccounts.mockReturnValue([])
+      const restored = { homeAccountId: "h", username: "user@example.test" }
+      mocks.instance.ssoSilent.mockResolvedValue({ account: restored })
+
+      await expect(
+        auth.attemptSilentSignIn(mocks.instance as never)
+      ).resolves.toBe("success")
+      expect(mocks.instance.ssoSilent).toHaveBeenCalledExactlyOnceWith({
+        scopes: ["api://planner/access"],
+        loginHint: "user@example.test",
+      })
+      expect(mocks.instance.setActiveAccount).toHaveBeenCalledWith(restored)
+    })
+
+    it("does not call ssoSilent when there is no cached account and no hint", async () => {
       mocks.instance.getAllAccounts.mockReturnValue([])
 
-      await expect(attemptSilentSignIn(mocks.instance as never)).resolves.toBe(
-        "no-cached-account"
-      )
+      await expect(
+        auth.attemptSilentSignIn(mocks.instance as never)
+      ).resolves.toBe("no-cached-account")
       expect(mocks.instance.ssoSilent).not.toHaveBeenCalled()
     })
 
@@ -323,9 +419,9 @@ describe("authentication", () => {
       mocks.instance.getAllAccounts.mockReturnValue([cachedAccount] as never)
       mocks.instance.ssoSilent.mockResolvedValue({ account: restoredAccount })
 
-      await expect(attemptSilentSignIn(mocks.instance as never)).resolves.toBe(
-        "success"
-      )
+      await expect(
+        auth.attemptSilentSignIn(mocks.instance as never)
+      ).resolves.toBe("success")
       expect(mocks.instance.ssoSilent).toHaveBeenCalledWith({
         account: cachedAccount,
         scopes: ["api://planner/access"],
@@ -346,9 +442,9 @@ describe("authentication", () => {
         .spyOn(console, "error")
         .mockImplementation(() => undefined)
 
-      await expect(attemptSilentSignIn(mocks.instance as never)).resolves.toBe(
-        "failed"
-      )
+      await expect(
+        auth.attemptSilentSignIn(mocks.instance as never)
+      ).resolves.toBe("failed")
       expect(error).not.toHaveBeenCalled()
     })
 
@@ -363,9 +459,9 @@ describe("authentication", () => {
         .spyOn(console, "error")
         .mockImplementation(() => undefined)
 
-      await expect(attemptSilentSignIn(mocks.instance as never)).resolves.toBe(
-        "failed"
-      )
+      await expect(
+        auth.attemptSilentSignIn(mocks.instance as never)
+      ).resolves.toBe("failed")
       expect(error).not.toHaveBeenCalled()
     })
 
@@ -378,9 +474,9 @@ describe("authentication", () => {
         .spyOn(console, "error")
         .mockImplementation(() => undefined)
 
-      await expect(attemptSilentSignIn(mocks.instance as never)).resolves.toBe(
-        "failed"
-      )
+      await expect(
+        auth.attemptSilentSignIn(mocks.instance as never)
+      ).resolves.toBe("failed")
       expect(error).toHaveBeenCalledWith(
         "[MSAL] silent sign-in failed unexpectedly",
         expect.any(Error)

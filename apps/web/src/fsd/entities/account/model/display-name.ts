@@ -2,7 +2,7 @@ export const DISPLAY_NAME_MAX_LENGTH = 80
 
 export type DisplayNameProblem = "empty" | "tooLong" | "controlCharacters"
 
-/** Mirrors the API's rule for `PUT /me/display-name`; returns null when the name is acceptable. */
+/** Mirrors the API's rule for `PUT /account/display-name`; returns null when the name is acceptable. */
 export function validateDisplayName(raw: string): DisplayNameProblem | null {
   const name = raw.trim()
 

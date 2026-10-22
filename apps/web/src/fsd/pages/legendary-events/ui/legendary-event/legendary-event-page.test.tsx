@@ -19,7 +19,10 @@ import {
 
 import { CreateGoalLauncherContext } from "@/entities/goal"
 import { legendaryEventCharacters } from "@/test/fixtures/legendary-event-characters"
-import { utharRun1Record } from "@/test/fixtures/legendary-event-run-records"
+import {
+  utharRun1Record,
+  utharRun1Snapshot,
+} from "@/test/fixtures/legendary-event-run-records"
 import { lysanderEvent, utharEvent } from "@/test/fixtures/legendary-events"
 import {
   lysanderBattleNpcs,
@@ -135,25 +138,33 @@ vi.mock("@/shared/analytics", () => ({
 vi.mock("@azure/msal-react", () => ({ useIsAuthenticated: () => true }))
 vi.mock("@/shared/api", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/shared/api")>()),
-  apiGet: async (path: string) => {
-    if (path === "/api/v1/me/goals")
-      return { goals: goals.summaries, orderRevision: 0 }
-    if (path.startsWith("/api/v1/me/goals/"))
-      return goals.details.get(path.split("/").at(-1)!)
-    if (path.endsWith("/run-records")) {
-      if (history.failRecords) throw new Error("run records unavailable")
-      return { eventId: path.split("/").at(-2), records: history.records }
+  apiClient: (await import("@/test/fake-api-client")).fakeApiClient(
+    ({ method, path, params, body }) => {
+      const eventId = params?.path?.eventId ?? ""
+      switch (path) {
+        case "/api/v1/goals":
+          return { goals: goals.summaries, orderRevision: 0 }
+        case "/api/v1/goals/{goalId}":
+          return goals.details.get(params?.path?.goalId ?? "")
+        case "/api/v1/legendary-event-plans/{eventId}/run-records":
+          if (history.failRecords) throw new Error("run records unavailable")
+          return { eventId, records: history.records, nextAfter: null }
+        case "/api/v1/legendary-event-plans/{eventId}/run-records/{recordId}/roster":
+          return utharRun1Snapshot
+      }
+      if (method === "PUT") return planApi.put({ path, params, body })
+      return {
+        eventId,
+        revision: 0,
+        catalogVersion: "1",
+        notes: null,
+        showPaidOptions: false,
+        teams: planApi.teams,
+        runs: [],
+        annotations: [],
+      }
     }
-    return {
-      eventId: path.split("/").at(-1),
-      revision: 0,
-      catalogVersion: "1",
-      notes: null,
-      showPaidOptions: false,
-      teams: planApi.teams,
-    }
-  },
-  apiPut: planApi.put,
+  ),
 }))
 // An Active Unlock goal for Cyrus, an Alpha unit the roster does not own.
 function giveCyrusUnlockGoal() {
@@ -912,18 +923,17 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
       act(() => fireEvent.click(screen.getByTestId("next-token-could-not")))
 
       await vi.waitFor(() => expect(planApi.put).toHaveBeenCalledTimes(1))
-      expect(planApi.put).toHaveBeenCalledWith(
-        "/api/v1/me/legendary-event-plans/astarLysander/annotations",
-        {
-          body: {
-            expectedRevision: 0,
-            laneId: "alpha",
-            battleIndex: 1,
-            objectiveIds: [0],
-            status: "stopHere",
-          },
-        }
-      )
+      expect(planApi.put).toHaveBeenCalledWith({
+        path: "/api/v1/legendary-event-plans/{eventId}/annotations",
+        params: { path: { eventId: "astarLysander" } },
+        body: {
+          expectedRevision: 0,
+          laneId: "alpha",
+          battleIndex: 1,
+          objectiveIds: [0],
+          status: "stopHere",
+        },
+      })
       // Battle 2's defeat-all is Stop here: Alpha stops there, leaving battle 1's kill score.
       const card = await screen.findByTestId("next-token-view")
       await vi.waitFor(() => expect(card).toHaveAttribute("data-battle", "0"))

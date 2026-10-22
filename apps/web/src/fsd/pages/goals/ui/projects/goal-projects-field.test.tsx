@@ -28,6 +28,8 @@ const project = (
   status: "Active",
   isDefault: false,
   revision: 1,
+  goalIds: [],
+  target: null,
   createdAt: "2026-01-01T00:00:00Z",
   updatedAt: "2026-01-01T00:00:00Z",
   ...overrides,
@@ -202,16 +204,9 @@ describe("GoalProjectsField", () => {
     portalContainer.remove()
   })
 
-  it("shows the Default marker (and no Current plan marker) with a project-specific conflict", () => {
+  it("shows the Default marker (and no Current plan marker)", () => {
     render(
       <GoalProjectsField
-        conflicts={[
-          {
-            projectId: "current",
-            existingGoalId: "existing-goal",
-            goalTypes: ["Rank"],
-          },
-        ]}
         onSelectionChange={vi.fn()}
         projects={[project("current", { isDefault: true })]}
         projectsValid={false}
@@ -222,9 +217,6 @@ describe("GoalProjectsField", () => {
     expect(screen.queryByText("goals.project.currentPlan")).toBeNull()
     expect(
       screen.getByText("goals.create.projectDefaultMarker")
-    ).toBeInTheDocument()
-    expect(
-      screen.getByText("goals.project.membershipConflict")
     ).toBeInTheDocument()
   })
 

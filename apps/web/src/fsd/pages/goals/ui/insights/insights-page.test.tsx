@@ -281,7 +281,6 @@ const rankGoalDetail = {
   },
   milestones: [],
   snapshot: null,
-  events: [],
   dependsOn: [],
 }
 
@@ -343,11 +342,10 @@ describe("InsightsPage", () => {
       },
     ]
     listProjects.mockResolvedValue({ projects: projectList })
-    planGoals = [{ ...rankGoal, globalPriority: 1 }]
-    listProjectGoals.mockResolvedValue({
-      goals: [{ goal: { ...rankGoal, globalPriority: 1 } }],
-    })
-    getGoal.mockResolvedValue(rankGoalDetail)
+    // The goals list carries every goal in full; Insights reads no goal detail.
+    planGoals = [
+      { ...rankGoalDetail, globalPriority: 1, projectIds: [], revision: 1 },
+    ]
 
     render(
       <TooltipProvider>
@@ -359,5 +357,6 @@ describe("InsightsPage", () => {
       expect(screen.getByTestId("insights-summary")).toBeInTheDocument()
     )
     expect((await screen.findAllByText("1")).length).toBeGreaterThan(0)
+    expect(getGoal).not.toHaveBeenCalled()
   })
 })

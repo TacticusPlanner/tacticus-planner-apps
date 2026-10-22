@@ -81,10 +81,10 @@ let onslaughtProgressFixture: unknown = null
 vi.mock("@/entities/player-data-override", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/entities/player-data-override")>()),
   onslaughtProgressQueries: {
-    all: () => ["player-data-overrides"],
+    all: () => ["player-data-overrides", "onslaught"],
     current: () => ({
       queryFn: () => Promise.resolve(onslaughtProgressFixture),
-      queryKey: ["player-data-overrides", "onslaught"],
+      queryKey: ["player-data-overrides", "onslaught", "current"],
     }),
   },
 }))
@@ -108,9 +108,10 @@ vi.mock("@/entities/goal", async (importOriginal) => {
 vi.mock("@/entities/project", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/entities/project")>()),
   projectQueries: {
+    details: () => ["projects", "detail"],
     goals: (projectId: string) => ({
       queryFn: () => Promise.resolve({ goals: [] }),
-      queryKey: ["projects", projectId, "goals"],
+      queryKey: ["projects", "detail", projectId, "goals"],
     }),
     list: () => ({
       queryFn: () => listProjects(),
@@ -131,6 +132,9 @@ vi.mock("@/entities/planning-setting", () => ({
 
 // Empty unless a test sells a Mythic material (add-mythic-material-shop-sources).
 let shopsFixture: unknown[] = []
+vi.mock("@/shared/unit-name", () => ({
+  useUnitName: () => (_type: string, id: string) => id,
+}))
 vi.mock("@workspace/game-catalog/queries", () => ({
   getShops: () => Promise.resolve(shopsFixture),
   getOnslaughtRewards: () =>
@@ -180,18 +184,37 @@ vi.mock("./goal-edit-dialog.tutorial", () => ({
   GoalEditDialogTourRegistration: () => null,
 }))
 
-vi.mock("@/shared/api", () => ({
-  ApiError: class ApiError extends Error {
+vi.mock("@/shared/api", () => {
+  class ApiError extends Error {
     readonly status: number
-    readonly details: unknown
+    readonly issueCode?: string
+    readonly current?: unknown
+    readonly errors?: Record<string, string[]>
 
-    constructor(status: number, message: string, details?: unknown) {
+    constructor(
+      status: number,
+      message: string,
+      problem: {
+        issueCode?: string
+        current?: unknown
+        errors?: Record<string, string[]>
+      } = {}
+    ) {
       super(message)
       this.status = status
-      this.details = details
+      this.issueCode = problem.issueCode
+      this.current = problem.current
+      this.errors = problem.errors
     }
-  },
-}))
+  }
+  return {
+    ApiError,
+    apiIssue: (error: unknown, ...codes: string[]) =>
+      error instanceof ApiError && codes.includes(error.issueCode ?? "")
+        ? error
+        : null,
+  }
+})
 
 import { ApiError } from "@/shared/api"
 import type { GoalDetail } from "@/entities/goal"
@@ -790,9 +813,7 @@ describe("GoalEditDialog", () => {
       editGoal.mockRejectedValueOnce(
         new ApiError(409, "order", {
           issueCode: "goalOrderStale",
-          message: "order",
-          revision: 9,
-          goalIds: ["a", "e"],
+          current: { revision: 9, goalIds: ["a", "e"] },
         })
       )
       renderDialog({ goalId: "e" })
@@ -852,8 +873,10 @@ describe("GoalEditDialog", () => {
         position: 3,
         expectedOrderRevision: 4,
       })
-      expect(invalidate).toHaveBeenCalledWith({ queryKey: ["goals"] })
-      expect(invalidate).toHaveBeenCalledWith({ queryKey: ["projects"] })
+      expect(invalidate).toHaveBeenCalledExactlyOnceWith({
+        queryKey: ["goals", "list"],
+        refetchType: "none",
+      })
     })
 
     it("sends only the projects section when only projects changed", async () => {
@@ -952,18 +975,12 @@ describe("GoalEditDialog", () => {
       expect(screen.getByTestId("goal-edit-save")).toBeDisabled()
     })
 
-    it("keeps the whole draft and saves nothing when the projects conflict", async () => {
+    it("keeps the whole draft and saves nothing when the goal's slot is taken", async () => {
       const onOpenChange = vi.fn()
       editGoal.mockRejectedValue(
         new ApiError(409, "occupied", {
-          issueCode: "projectGoalSlotOccupied",
-          message: "occupied",
-          projectId: "project-2",
-          projectName: "Event Prep",
-          entityType: "Character",
-          entityId: "hero-1",
-          goalType: "Rank",
-          existingGoalId: "goal-9",
+          issueCode: "slotOccupied",
+          current: { ...rankGoal, goalId: "goal-9" },
         })
       )
       const user = userEvent.setup()
@@ -976,7 +993,7 @@ describe("GoalEditDialog", () => {
       fireEvent.click(screen.getByTestId("goal-edit-save"))
 
       expect(await screen.findByTestId("goal-edit-error")).toHaveTextContent(
-        'goals.edit.errors.conflict:{"project":"Event Prep"}'
+        "goals.project.membershipConflict"
       )
       expect(onOpenChange).not.toHaveBeenCalled()
       expect(screen.getByTestId("goal-target-rank-end")).toHaveTextContent(
@@ -993,8 +1010,7 @@ describe("GoalEditDialog", () => {
       editGoal.mockRejectedValueOnce(
         new ApiError(409, "stale", {
           issueCode: "goalRevisionStale",
-          message: "stale",
-          goal: current,
+          current,
         })
       )
       const onOpenChange = vi.fn()
@@ -1113,6 +1129,25 @@ describe("GoalEditDialog", () => {
 
       expect(onOpenChange).not.toHaveBeenCalled()
       expect(screen.getByTestId("goal-edit-dialog")).toBeInTheDocument()
+    })
+  })
+
+  describe("opening", () => {
+    it("re-reads the goal once per open even when it is cached", async () => {
+      const queryClient = new QueryClient({
+        defaultOptions: { queries: { staleTime: 5 * 60 * 1000 } },
+      })
+      goalOnScreen(rankGoal)
+      queryClient.setQueryData(["goals", "detail", "goal-1"], rankGoal)
+
+      const first = renderDialog({}, queryClient)
+      await loaded()
+      await vi.waitFor(() => expect(getGoal).toHaveBeenCalledTimes(1))
+      first.unmount()
+
+      renderDialog({}, queryClient)
+      await loaded()
+      await vi.waitFor(() => expect(getGoal).toHaveBeenCalledTimes(2))
     })
   })
 

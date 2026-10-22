@@ -5,11 +5,7 @@ import { useIsAuthenticated } from "@azure/msal-react"
 import { Button } from "@workspace/ui/components/button"
 import { Spinner } from "@workspace/ui/components/spinner"
 
-import {
-  goalRankTargetKey,
-  useGlobalGoalPlan,
-  type GoalDetail,
-} from "@/entities/goal"
+import { useGlobalGoalPlan, type GoalDetail } from "@/entities/goal"
 import { usePlanningSettings } from "@/entities/planning-setting"
 import { projectQueries } from "@/entities/project"
 import { ResponsiveDialogBody, ResponsiveDialogFooter } from "@/shared/ui"
@@ -26,7 +22,6 @@ import { goalEditMaterialNeeds } from "../../model/goal-edit/goal-edit-material-
 import { useMythicMaterialSelection } from "../../model/goal-creation-form/use-mythic-material-selection"
 import { useGoalEditSave } from "../../model/goal-edit/use-goal-edit-save"
 import { useGoalLocationGroups } from "../../model/farming/use-goal-location-groups"
-import { useProjectGoalConflicts } from "../../model/projects/use-project-goal-conflicts"
 import { useGoalCatalog } from "../../model/shared/use-goal-catalog"
 import { getChangedGoalTargetIssue } from "../../model/target-edit/goal-target-edit"
 import { GoalProjectsField } from "../projects/goal-projects-field"
@@ -109,21 +104,7 @@ export function GoalEditForm({
   const edit = (patch: Partial<GoalEditDraft>) =>
     setEdits((current) => ({ ...current, ...patch }))
 
-  const membershipConflicts = useProjectGoalConflicts({
-    projects,
-    selectedProjectIds: draft.projectIds,
-    entityType: detail.entityType,
-    entityId: detail.entityId,
-    goalTypes: [detail.goalType],
-    excludeGoalId: detail.goalId,
-    // A Rank goal only conflicts with an exact same-target Rank goal in a selected project.
-    rankTargetKey: goalRankTargetKey(detail),
-    enabled: true,
-  })
-  const projectsValid =
-    draft.projectIds.length > 0 &&
-    !membershipConflicts.loading &&
-    membershipConflicts.conflicts.length === 0
+  const projectsValid = draft.projectIds.length > 0
   const { allLocations, overrideValid } = useGoalLocationGroups(
     detail,
     catalog.upgradesById,
@@ -197,7 +178,6 @@ export function GoalEditForm({
           />
 
           <GoalProjectsField
-            conflicts={membershipConflicts.conflicts}
             onSelectionChange={(projectIds) => edit({ projectIds })}
             portalContainer={portalContainer}
             projects={projects}

@@ -31,7 +31,7 @@ import { RunStatusCard } from "./run-status-card"
 vi.mock("@azure/msal-react", () => ({ useIsAuthenticated: () => true }))
 vi.mock("@/shared/api", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/shared/api")>()),
-  apiGet: async () => ({
+  apiClient: (await import("@/test/fake-api-client")).fakeApiClient(() => ({
     eventId: "votanUthar",
     revision: 1,
     catalogVersion: "1",
@@ -40,7 +40,7 @@ vi.mock("@/shared/api", async (importOriginal) => ({
     teams: [],
     runs: [],
     annotations: [],
-  }),
+  })),
 }))
 
 const NOW = Date.parse("2026-09-02T12:00:00Z")
@@ -144,6 +144,8 @@ const runInputs = (
   premiumMissions: 0,
   bundlePurchased,
   closeShards: 0,
+  completedRegularMissions: [],
+  completedPremiumMissions: [],
   updatedAt: "2026-10-10T00:00:00Z",
 })
 const utharPlan: LegendaryEventPlan = {

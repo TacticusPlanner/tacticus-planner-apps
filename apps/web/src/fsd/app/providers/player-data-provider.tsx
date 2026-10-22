@@ -20,10 +20,11 @@ import {
 } from "@workspace/player-data"
 
 import { refreshServerReadsAfterSync } from "@/features/player-data-sync"
+import { reportError } from "@/shared/lib"
 import {
   acquireAccessToken,
   isInteractionRequired,
-  requestApiAccess,
+  requestInteraction,
   useActiveAccountId,
 } from "@/shared/auth"
 import {
@@ -142,7 +143,7 @@ export function PlayerDataProvider({
         // same catch block again without a redirect having resolved anything in between.
         if (!hasRequestedApiAccess.current) {
           hasRequestedApiAccess.current = true
-          void requestApiAccess().catch((redirectError: unknown) => {
+          void requestInteraction().catch((redirectError: unknown) => {
             console.error(
               "[MSAL] player-data auto-reauth failed",
               redirectError
@@ -190,10 +191,16 @@ export function PlayerDataProvider({
       }
     }
 
-    void checkAndSyncIfDue()
+    // Expected sync failures are handled in runSync; this only catches what escapes (e.g. a failing
+    // metadata read), so one bad check never stops the interval.
+    const check = () =>
+      checkAndSyncIfDue().catch((error: unknown) =>
+        reportError(error, "player-data sync")
+      )
+    void check()
 
     const interval = setInterval(() => {
-      void checkAndSyncIfDue()
+      void check()
     }, staleCheckIntervalMs)
 
     return () => {
@@ -208,7 +215,9 @@ export function PlayerDataProvider({
       return
     }
 
-    void runSync(client, accountId)
+    runSync(client, accountId).catch((error: unknown) =>
+      reportError(error, "player-data sync")
+    )
   }, [client, accountId, runSync])
 
   const value = useMemo<PlayerDataContextValue>(

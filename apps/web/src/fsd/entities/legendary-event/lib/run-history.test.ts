@@ -4,6 +4,7 @@ import { utharEvent } from "@/test/fixtures/legendary-events"
 import {
   rosterAfterRun1,
   utharRun1Record,
+  utharRun1Snapshot,
   utharRun2Record,
 } from "@/test/fixtures/legendary-event-run-records"
 
@@ -20,6 +21,11 @@ import {
 
 const roster = rosterAfterRun1 as unknown as LegendaryEventRosterUnit[]
 const alphaEncounters = utharRun1Record.lanes.alpha
+const snapshotRead = {
+  status: "ready",
+  data: utharRun1Snapshot,
+  retry: () => undefined,
+} as const
 const run3: LegendaryEventRunRecord = { ...utharRun2Record, id: "r3", run: 3 }
 
 describe("selectRunRecords", () => {
@@ -138,7 +144,7 @@ describe("recordTeamClearedBattle", () => {
 })
 
 describe("rosterDeltas", () => {
-  const snapshot = utharRun1Record.rosterSnapshot!
+  const snapshot = utharRun1Snapshot
 
   it("lists Calgar's rank, stars and active ability, but no passive line", () => {
     expect(rosterDeltas(snapshot, roster, ["ultraCalgar"])).toEqual([
@@ -184,7 +190,12 @@ describe("rosterDeltas", () => {
 
 describe("recordHistory", () => {
   it("builds lanes, teams and deltas for the card", () => {
-    const history = recordHistory(utharRun1Record, utharEvent, roster)
+    const history = recordHistory(
+      utharRun1Record,
+      utharEvent,
+      roster,
+      snapshotRead
+    )
     expect(history.run).toBe(1)
     expect(history.teamCount).toBe(2)
     const alpha = history.lanes.find((lane) => lane.laneId === "alpha")!
@@ -206,22 +217,33 @@ describe("recordHistory", () => {
     ).toEqual(["ultraCalgar", "ultraTigurius"])
   })
 
-  it("says why there is no changes list", () => {
+  it("says why there is no changes list (yet)", () => {
+    const retry = () => undefined
+    expect(
+      recordHistory(utharRun1Record, utharEvent, roster, undefined).deltas
+    ).toEqual({ kind: "snapshotLoading" })
+    expect(
+      recordHistory(utharRun1Record, utharEvent, roster, {
+        status: "loading",
+        retry,
+      }).deltas
+    ).toEqual({ kind: "snapshotLoading" })
+    expect(
+      recordHistory(utharRun1Record, utharEvent, roster, {
+        status: "error",
+        retry,
+      }).deltas
+    ).toEqual({ kind: "snapshotFailed", retry })
+    expect(
+      recordHistory(utharRun1Record, utharEvent, undefined, snapshotRead).deltas
+    ).toEqual({ kind: "noRoster" })
     expect(
       recordHistory(
-        { ...utharRun1Record, rosterSnapshot: null },
+        { ...utharRun1Record, teams: [] },
         utharEvent,
-        roster
+        roster,
+        undefined
       ).deltas
-    ).toEqual({ kind: "noSnapshot" })
-    expect(
-      recordHistory(utharRun1Record, utharEvent, undefined).deltas
-    ).toEqual({
-      kind: "noRoster",
-    })
-    expect(
-      recordHistory({ ...utharRun1Record, teams: [] }, utharEvent, roster)
-        .deltas
     ).toEqual({ kind: "noTeams" })
   })
 })

@@ -4,11 +4,8 @@ import type { GameCatalogHseTracker } from "@workspace/game-catalog"
 import type { HseTokenMode } from "@/features/home-screen-event-points"
 import type { UnitPowerContext } from "@/shared/unit-power"
 
-import type { ArenaRosterCharacter } from "./arena-recommendations.types"
-import type {
-  SalvageEligibleCharacter,
-  SalvageTrack,
-} from "./salvage-recommendations.types"
+import type { RosterCharacter } from "./roster-character"
+import type { TrackEligibleCharacter, AllianceTrack } from "./alliance-tracks"
 import type { TeamCategory } from "./team-recommendations.types"
 
 /** The token game modes the HSE event teams cover, by their catalog names, in display order. */
@@ -51,7 +48,7 @@ export type HseTeam =
   | {
       status: "ready"
       /** The alliance the team is narrowed to; null for Arena (the whole roster). */
-      alliance: SalvageTrack | null
+      alliance: AllianceTrack | null
       pick: HseTeamPick
       /** The engine's Plan team; `broadened` when non-event units fill it. */
       team: TeamCategory
@@ -59,10 +56,10 @@ export type HseTeam =
   | {
       /** Fewer than three owned characters for this team: no team can be built. */
       status: "insufficient"
-      alliance: SalvageTrack | null
+      alliance: AllianceTrack | null
       ownedCount: number
       needed: number
-      eligible: SalvageEligibleCharacter[]
+      eligible: TrackEligibleCharacter[]
     }
 
 export type HseModeTeams = {
@@ -82,7 +79,7 @@ export type BuildHseTeamRecommendationsInput = {
   /** The resolved variant's point trackers. */
   trackers: readonly GameCatalogHseTracker[]
   /** Owned characters only, across every alliance. */
-  roster: readonly ArenaRosterCharacter[]
+  roster: readonly RosterCharacter[]
   /** Catalog attributes per owned character; a character without a row is left out. */
   catalog: HseTeamCatalog
   /** The power formula's game data for the strength ordering; null when it is unavailable (every

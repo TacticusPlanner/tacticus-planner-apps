@@ -1,21 +1,9 @@
 import { describe, expect, it } from "vitest"
 
-import arenaDe from "../../../../../public/locales/de/arena.json"
-import arenaEn from "../../../../../public/locales/en/arena.json"
-import arenaEs from "../../../../../public/locales/es/arena.json"
-import arenaFr from "../../../../../public/locales/fr/arena.json"
 import teamRecsDe from "../../../../../public/locales/de/teamRecs.json"
 import teamRecsEn from "../../../../../public/locales/en/teamRecs.json"
 import teamRecsEs from "../../../../../public/locales/es/teamRecs.json"
 import teamRecsFr from "../../../../../public/locales/fr/teamRecs.json"
-import salvageRunDe from "../../../../../public/locales/de/salvageRun.json"
-import salvageRunEn from "../../../../../public/locales/en/salvageRun.json"
-import salvageRunEs from "../../../../../public/locales/es/salvageRun.json"
-import salvageRunFr from "../../../../../public/locales/fr/salvageRun.json"
-import onslaughtDe from "../../../../../public/locales/de/onslaught.json"
-import onslaughtEn from "../../../../../public/locales/en/onslaught.json"
-import onslaughtEs from "../../../../../public/locales/es/onslaught.json"
-import onslaughtFr from "../../../../../public/locales/fr/onslaught.json"
 
 function leafKeys(value: unknown, prefix = ""): string[] {
   if (typeof value !== "object" || value === null) return [prefix]
@@ -26,21 +14,10 @@ function leafKeys(value: unknown, prefix = ""): string[] {
 
 describe("Dailies team-recommendation translations", () => {
   it.each([
-    ["arena", arenaEn, { de: arenaDe, es: arenaEs, fr: arenaFr }],
     [
       "teamRecs",
       teamRecsEn,
       { de: teamRecsDe, es: teamRecsEs, fr: teamRecsFr },
-    ],
-    [
-      "salvageRun",
-      salvageRunEn,
-      { de: salvageRunDe, es: salvageRunEs, fr: salvageRunFr },
-    ],
-    [
-      "onslaught",
-      onslaughtEn,
-      { de: onslaughtDe, es: onslaughtEs, fr: onslaughtFr },
     ],
   ] as const)(
     "keeps every locale of %s aligned with English",
@@ -78,84 +55,11 @@ describe("Dailies team-recommendation translations", () => {
     }
   })
 
-  it("provides the page title and the full tour in arena", () => {
-    for (const locale of [arenaEn, arenaDe, arenaEs, arenaFr]) {
-      expect(locale.title).toBeTruthy()
-      expect(locale.subtitle).toBeTruthy()
-      expect(Object.keys(locale.tour.arena.steps).sort()).toEqual([
-        "locks",
-        "mode",
-        "plan",
-        "preferences",
-        "project",
-        "purpose",
-        "regenerate",
-        "teamSize",
-      ])
-    }
-  })
-
-  it("provides the track copy and the full tour in salvageRun", () => {
-    for (const locale of [
-      salvageRunEn,
-      salvageRunDe,
-      salvageRunEs,
-      salvageRunFr,
-    ]) {
-      expect(locale.title).toBeTruthy()
-      expect(locale.subtitle).toBeTruthy()
-      expect(locale.track.label).toBeTruthy()
-      expect(locale.track.imperial).toBeTruthy()
-      expect(locale.track.chaos).toBeTruthy()
-      expect(locale.track.xenos).toBeTruthy()
+  it("provides the alliance-track shortfall copy in teamRecs", () => {
+    for (const locale of [teamRecsEn, teamRecsDe, teamRecsEs, teamRecsFr]) {
       expect(locale.track.shortfallTitle).toContain("{{track}}")
       expect(locale.track.shortfall).toContain("{{owned}}")
       expect(locale.track.shortfall).toContain("{{needed}}")
-      expect(Object.keys(locale.tour.salvageRun.steps).sort()).toEqual([
-        "locks",
-        "mode",
-        "plan",
-        "preferences",
-        "project",
-        "purpose",
-        "regenerate",
-        "teamSize",
-        "track",
-      ])
-    }
-  })
-
-  it("provides the track copy, the shard recipient copy, and the full tour in onslaught", () => {
-    for (const locale of [onslaughtEn, onslaughtDe, onslaughtEs, onslaughtFr]) {
-      expect(locale.title).toBeTruthy()
-      expect(locale.subtitle).toBeTruthy()
-      expect(locale.track.label).toBeTruthy()
-      expect(locale.track.imperial).toBeTruthy()
-      expect(locale.track.chaos).toBeTruthy()
-      expect(locale.track.xenos).toBeTruthy()
-      expect(locale.recipient.title).toBeTruthy()
-      expect(locale.recipient.none).toBeTruthy()
-      expect(locale.recipient.unitKind.character).toBeTruthy()
-      expect(locale.recipient.unitKind.mow).toBeTruthy()
-      expect(locale.recipient.ascendGoal).toContain("{{rarity}}")
-      expect(Object.keys(locale.recipient.reason).sort()).toEqual([
-        "fewestRemainingShards",
-        "inSelectedProject",
-        "onlyCandidate",
-        "overallGoalPriority",
-      ])
-      expect(Object.keys(locale.tour.onslaught.steps).sort()).toEqual([
-        "locks",
-        "mode",
-        "plan",
-        "preferences",
-        "project",
-        "purpose",
-        "regenerate",
-        "shardRecipient",
-        "teamSize",
-        "track",
-      ])
     }
   })
 })

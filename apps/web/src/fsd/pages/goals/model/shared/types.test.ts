@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest"
 
-import { goalRowFromProjectMember, goalRowFromSummary } from ".//types"
+import type { GoalDetail } from "@/entities/goal"
+
+import { goalRowFromSummary } from "./types"
 
 const goalRow = {
   goalId: "goal-1",
@@ -17,30 +19,20 @@ const goal = {
   ...goalRow,
   createdAt: "2026-07-15T12:00:00Z",
   globalPriority: 4,
-}
+  config: {} as GoalDetail["config"],
+  snapshot: null,
+  projectIds: ["proj-a"],
+  revision: 1,
+} satisfies GoalDetail
 
 describe("goal row mappings", () => {
-  it("maps a goal summary to a flat row", () => {
+  it("maps a goal to a flat row with its priority", () => {
     expect(goalRowFromSummary(goal)).toEqual({ ...goalRow, priority: 4 })
   })
 
-  it("maps a project member and preserves its priority", () => {
-    expect(goalRowFromProjectMember({ goal })).toEqual({
-      ...goalRow,
-      priority: 4,
-    })
-  })
-
-  it("carries the goal's project memberships onto a project member row", () => {
-    const projects = [
-      {
-        projectId: "proj-a",
-        name: "Project A",
-        color: null,
-      },
-    ]
-
-    expect(goalRowFromProjectMember({ goal }, projects)).toEqual({
+  it("carries the goal's projects onto the row", () => {
+    const projects = [{ projectId: "proj-a", name: "Project A", color: null }]
+    expect(goalRowFromSummary(goal, projects)).toEqual({
       ...goalRow,
       priority: 4,
       projects,

@@ -10,8 +10,6 @@ type TeamCategoryId = "plan" | "random"
 
 /** Every recommended team holds at least this many characters. */
 export const MIN_TEAM_SIZE = 3
-/** The team sizes the page-level "Team size" control offers (also the max team size). */
-export const TEAM_SIZES: readonly number[] = [3, 4, 5]
 
 /** What makes a character score for a Home Screen Event: the trait, alliance or faction its player
  * filter matched (Psyker during Psyker Boost, Dark Angels during Faction Boost). */

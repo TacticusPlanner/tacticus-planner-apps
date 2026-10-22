@@ -7,10 +7,7 @@ import type enDailies from "../../../../../public/locales/en/dailies.json"
 import type enEvents from "../../../../../public/locales/en/events.json"
 import type enLibrary from "../../../../../public/locales/en/library.json"
 import type enShops from "../../../../../public/locales/en/shops.json"
-import type enArena from "../../../../../public/locales/en/arena.json"
 import type enTeamRecs from "../../../../../public/locales/en/teamRecs.json"
-import type enSalvageRun from "../../../../../public/locales/en/salvageRun.json"
-import type enOnslaught from "../../../../../public/locales/en/onslaught.json"
 import type enLegendaryEvents from "../../../../../public/locales/en/legendaryEvents.json"
 import type enHre from "../../../../../public/locales/en/hre.json"
 
@@ -28,10 +25,7 @@ declare module "i18next" {
       events: typeof enEvents
       library: typeof enLibrary
       shops: typeof enShops
-      arena: typeof enArena
       teamRecs: typeof enTeamRecs
-      salvageRun: typeof enSalvageRun
-      onslaught: typeof enOnslaught
       legendaryEvents: typeof enLegendaryEvents
       hre: typeof enHre
       // Dynamic game-data namespaces (character/upgrade/faction/trait/etc ids as keys).

@@ -53,5 +53,9 @@
     "strength": "Chosen for combat strength ({{power}}).",
     "minimumSize": "Added to complete the team.",
     "random": "Drawn at random."
+  },
+  "track": {
+    "shortfallTitle": "Not enough {{track}} characters",
+    "shortfall": "You own {{owned}} {{track}} characters. A full team needs three, so {{needed}} more are required. Only {{track}} characters can be used on this track."
   }
 }

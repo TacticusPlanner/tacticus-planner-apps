@@ -198,8 +198,7 @@ describe("useAnnotations", () => {
     api.write.mockRejectedValue(
       new ApiError(409, "Stale.", {
         issueCode: "legendaryEventPlanStale",
-        message: "Stale.",
-        plan: theirs,
+        current: theirs,
       })
     )
     const { result, cached } = setup(plan(2))
@@ -230,8 +229,7 @@ describe("useAnnotations", () => {
     api.write.mockRejectedValue(
       new ApiError(409, "Stale.", {
         issueCode: "legendaryEventPlanStale",
-        message: "Stale.",
-        plan: theirs,
+        current: theirs,
       })
     )
     const { result, cached } = setup(plan(2))

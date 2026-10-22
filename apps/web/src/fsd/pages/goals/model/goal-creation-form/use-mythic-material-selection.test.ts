@@ -81,7 +81,7 @@ describe("useMythicMaterialSelection", () => {
   })
 
   it("seeds from a saved selection and resets when the unit changes", () => {
-    const seed = [{ kind: "Shop", ids: ["crusade:upgHpM004"] }]
+    const seed = [{ kind: "Shop" as const, ids: ["crusade:upgHpM004"] }]
     const { result, rerender } = renderHook(
       ({ resetKey }) => useMythicMaterialSelection({ needs, seed, resetKey }),
       { initialProps: { resetKey: "spaceRagnar" } }

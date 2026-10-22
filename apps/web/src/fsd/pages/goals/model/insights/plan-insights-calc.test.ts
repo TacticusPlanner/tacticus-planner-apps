@@ -22,7 +22,9 @@ import type {
   Character,
   UpgradeWithFarmLocations,
 } from "@/features/rank-lookup"
-import type { GoalDetail } from "@/entities/goal"
+import type { GoalDetail, ProgressionTarget } from "@/entities/goal"
+
+type Progression = ProgressionTarget["start"]
 
 import type { Battle } from "@/features/goal-farming"
 import { computePlanInsights } from ".//plan-insights-calc"
@@ -53,7 +55,6 @@ function goalDetail(overrides: Partial<GoalDetail>): GoalDetail {
       upgrade: null,
     },
     snapshot: null,
-    events: [],
     dependsOn: [],
     projectIds: [],
     revision: 1,
@@ -781,7 +782,7 @@ describe("computePlanInsights", () => {
   })
 
   describe("orbs and shards net of inventory (goal-remaining-resources)", () => {
-    const ascension = (goalId: string, start: string, end: string) =>
+    const ascension = (goalId: string, start: Progression, end: Progression) =>
       goalDetail({
         goalId,
         goalType: "Ascension",

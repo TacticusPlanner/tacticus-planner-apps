@@ -18,11 +18,17 @@ const api = vi.hoisted(() => ({
 }))
 
 vi.mock("@azure/msal-react", () => ({ useIsAuthenticated: () => true }))
-vi.mock("@/shared/api", async (importOriginal) => ({
-  ...(await importOriginal<typeof import("@/shared/api")>()),
-  apiGet: async () => api.plan,
-  apiPut: api.put,
-}))
+vi.mock("@/shared/api", async (importOriginal) => {
+  const { fakeApiClient } = await import("@/test/fake-api-client")
+  return {
+    ...(await importOriginal<typeof import("@/shared/api")>()),
+    apiClient: fakeApiClient((call) =>
+      call.method === "PUT"
+        ? api.put({ path: call.path, params: call.params, body: call.body })
+        : api.plan
+    ),
+  }
+})
 
 const stored = (
   run: 1 | 2 | 3,
@@ -33,6 +39,8 @@ const stored = (
   premiumMissions: 0,
   bundlePurchased: false,
   closeShards: 0,
+  completedRegularMissions: [],
+  completedPremiumMissions: [],
   updatedAt: "2026-10-10T00:00:00Z",
   ...fields,
 })
@@ -171,16 +179,15 @@ describe("RunInputsDrawer", () => {
       )
     })
 
-    expect(api.put).toHaveBeenCalledWith(
-      "/api/v1/me/legendary-event-plans/votanUthar",
-      {
-        body: {
-          expectedRevision: 2,
-          notes: "Beta last",
-          showPaidOptions: true,
-        },
-      }
-    )
+    expect(api.put).toHaveBeenCalledWith({
+      path: "/api/v1/legendary-event-plans/{eventId}",
+      params: { path: { eventId: "votanUthar" } },
+      body: {
+        expectedRevision: 2,
+        notes: "Beta last",
+        showPaidOptions: true,
+      },
+    })
     for (const run of [1, 2, 3]) {
       const block = runBlock(run)
       expect(
@@ -271,15 +278,14 @@ describe("RunInputsDrawer", () => {
       await new Promise((resolve) => setTimeout(resolve, 700))
     })
     expect(api.put).toHaveBeenCalledTimes(1)
-    expect(api.put).toHaveBeenCalledWith(
-      "/api/v1/me/legendary-event-plans/votanUthar/runs/2",
-      {
-        body: expect.objectContaining({
-          regularMissions: 1,
-          completedRegularMissions: [1],
-        }),
-      }
-    )
+    expect(api.put).toHaveBeenCalledWith({
+      path: "/api/v1/legendary-event-plans/{eventId}/runs/{run}",
+      params: { path: { eventId: "votanUthar", run: "2" } },
+      body: expect.objectContaining({
+        regularMissions: 1,
+        completedRegularMissions: [1],
+      }),
+    })
   })
 
   it("never lets Plan to complete drop below the ticked missions", async () => {

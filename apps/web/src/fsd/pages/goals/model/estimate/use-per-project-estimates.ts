@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { useQueries, useQuery } from "@tanstack/react-query"
+import { useQuery } from "@tanstack/react-query"
 import { useIsAuthenticated } from "@azure/msal-react"
 import { useLiveQuery } from "dexie-react-hooks"
 import { unitIdSchema, type UnitId } from "@workspace/game-domain"
@@ -10,11 +10,7 @@ import {
 } from "@workspace/player-data/queries"
 import { getOnslaughtRewards, getShops } from "@workspace/game-catalog/queries"
 
-import {
-  goalQueries,
-  useGlobalGoalPlan,
-  type GoalDetail,
-} from "@/entities/goal"
+import { useGlobalGoalPlan, type GoalDetail } from "@/entities/goal"
 import { onslaughtProgressQueries } from "@/entities/player-data-override"
 
 import { estimateNewGoalsForProject } from ".//per-project-estimate"
@@ -32,9 +28,8 @@ export type PerProjectEstimate =
  * every existing Active goal and its estimate is the same whichever projects it is filed into: the
  * hook folds `newDetails` in behind the account's Active goals (global order) and reuses the exact
  * engine the Insights view runs (`estimateNewGoalsForProject`/`computePlanInsights`), then returns that
- * one outcome under each selected project id. Batch-fetches the goals' full details (shared
- * react-query cache with Insights) and per-entity player/inventory data — the same three-stage shape
- * `use-plan-insights.ts` uses.
+ * one outcome under each selected project id. Reads the goals in full from the goals list (shared
+ * with Insights) and per-entity player/inventory data — the same shape `use-plan-insights.ts` uses.
  */
 export function usePerProjectEstimates({
   selectedProjectIds,
@@ -77,18 +72,10 @@ export function usePerProjectEstimates({
     goalId: goal.goalId,
     priority: goal.globalPriority ?? Number.MAX_SAFE_INTEGER,
   }))
-  const memberGoalIds = members.map((member) => member.goalId)
   const projectGoalsReady =
     !hasQuery || (!globalPlan.loading && !globalPlan.isError)
 
-  const goalDetailQueries = useQueries({
-    queries: projectGoalsReady
-      ? memberGoalIds.map((goalId) => goalQueries.detail(goalId))
-      : [],
-  })
-  const detailsReady =
-    goalDetailQueries.length === memberGoalIds.length &&
-    goalDetailQueries.every((query) => query.isSuccess)
+  const detailsReady = projectGoalsReady && !globalPlan.loading
 
   const catalogReady =
     !!charactersById &&
@@ -130,9 +117,7 @@ export function usePerProjectEstimates({
     }
 
     let active = true
-    const existingDetails = goalDetailQueries.flatMap((query) =>
-      query.data ? [query.data] : []
-    )
+    const existingDetails = globalPlan.active
     const entityIds = [
       ...new Set(
         [...existingDetails, ...newDetails].map((detail) => detail.entityId)

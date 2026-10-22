@@ -1,13 +1,12 @@
 import { rarityOrder, type Rarity } from "@workspace/game-domain"
 
-export type PlanningSettings = {
-  dailyEnergy: number
-  /** Required-level guidance's XP-book equivalent rarity (surface-goal-farming-guidance) — Common
-   *  through Mythic, default Legendary. The API normalizes a missing/unsupported stored value to
-   *  Legendary on read; consumers still fall back the same way (see `normalizeXpBookRarity`). */
-  xpBookRarity: Rarity
-  revision: number
-}
+import type { ApiSchemas } from "@/shared/api"
+
+/** Wire shape (spec: api-contract-sync). `xpBookRarity` is required-level guidance's XP-book
+ *  equivalent rarity (surface-goal-farming-guidance) — Common through Mythic, default Legendary. The
+ *  API normalizes a missing/unsupported stored value to Legendary on read; consumers still fall back
+ *  the same way (see `normalizeXpBookRarity`). */
+export type PlanningSettings = ApiSchemas["UserSettingsResponse"]
 
 export const defaultPlanningSettings: PlanningSettings = {
   dailyEnergy: 288,

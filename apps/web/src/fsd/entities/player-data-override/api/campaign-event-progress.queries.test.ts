@@ -7,13 +7,16 @@ vi.mock("./campaign-event-progress.api", () => ({
   getCampaignEventProgressOverrides: getOverrides,
 }))
 
+import { SERVER_DATA_STALE_TIME } from "@/shared/api"
+
 import { campaignEventProgressQueries } from "./campaign-event-progress.queries"
 
-// Same defaults as app/providers/query-provider.tsx: every query is stale immediately unless it
-// says otherwise.
+// Same defaults as app/providers/query-provider.tsx.
 const appClient = () =>
   new QueryClient({
-    defaultOptions: { queries: { staleTime: 0, retry: false } },
+    defaultOptions: {
+      queries: { staleTime: SERVER_DATA_STALE_TIME, retry: false },
+    },
   })
 
 describe("campaign event progress queries", () => {

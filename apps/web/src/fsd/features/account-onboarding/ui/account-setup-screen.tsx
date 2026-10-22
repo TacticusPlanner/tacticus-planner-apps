@@ -22,7 +22,7 @@ type ScreenProps = {
   onStepChange: (step: AccountSetupStep) => void
   /**
    * Prefill for the name step from the V1 import (which the API does not store). Falls back to the
-   * account's own `/me` suggestion; a draft the user already typed always wins over both.
+   * account's own `/account` suggestion; a draft the user already typed always wins over both.
    */
   suggestedDisplayName?: string
   /**

@@ -1,15 +1,21 @@
-import { apiGet, apiPut } from "@/shared/api"
+import { apiClient, unwrap } from "@/shared/api"
 
 import type { CampaignEventProgressOverrides } from "../model/types"
 
-const path = "/api/v1/me/player-data-overrides/campaign-events-progress"
-
 export function getCampaignEventProgressOverrides(signal?: AbortSignal) {
-  return apiGet<CampaignEventProgressOverrides>(path, { signal })
+  return unwrap(
+    apiClient().GET("/api/v1/player-data-overrides/campaign-events-progress", {
+      signal,
+    })
+  )
 }
 
 export function updateCampaignEventProgressOverrides(
   progress: CampaignEventProgressOverrides
 ) {
-  return apiPut<CampaignEventProgressOverrides>(path, { body: progress })
+  return unwrap(
+    apiClient().PUT("/api/v1/player-data-overrides/campaign-events-progress", {
+      body: progress,
+    })
+  )
 }

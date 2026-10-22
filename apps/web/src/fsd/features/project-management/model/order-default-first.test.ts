@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest"
 
+import type { ProjectSummary } from "@/entities/project"
+
 import { orderDefaultFirst } from "./order-default-first"
 
 function project(overrides: Record<string, unknown>) {
@@ -10,11 +12,13 @@ function project(overrides: Record<string, unknown>) {
     description: null,
     status: "Active",
     isDefault: false,
+    goalIds: [],
+    target: null,
     revision: 1,
     createdAt: "2026-01-01T00:00:00Z",
     updatedAt: "2026-01-01T00:00:00Z",
     ...overrides,
-  } as never
+  } as ProjectSummary
 }
 
 describe("orderDefaultFirst", () => {

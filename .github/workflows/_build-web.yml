@@ -112,6 +112,21 @@ jobs:
           set_if_present VITE_MSAL_CLIENT_ID "${{ inputs.vite-msal-client-id }}"
           set_if_present VITE_MSAL_TENANT_ID "${{ inputs.vite-msal-tenant-id }}"
 
+      # API types come from the committed copy of the API's OpenAPI document (spec: api-contract-sync).
+      - name: Check API types are current
+        if: ${{ inputs.run-validation }}
+        run: |
+          pnpm --filter web api:types
+          git diff --exit-code -- apps/web/src/fsd/shared/api/schema.d.ts
+
+      - name: Check the API spec is pinned to a commit
+        if: ${{ inputs.run-validation }}
+        run: |
+          if [ "$(cat apps/web/openapi/api.ref)" = "local" ]; then
+            echo "::error::apps/web/openapi/api.ref is 'local'. Run 'pnpm --filter web api:pull <api-commit-sha>' before merging."
+            exit 1
+          fi
+
       - name: Check formatting
         if: ${{ inputs.run-validation }}
         run: pnpm exec prettier --check "**/*.{ts,tsx}"

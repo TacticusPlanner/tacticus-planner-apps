@@ -1,13 +1,14 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
-const api = vi.hoisted(() => ({ get: vi.fn(), post: vi.fn() }))
-
-vi.mock("@/shared/api", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("@/shared/api")>()
-  return { ...actual, apiGet: api.get, apiPost: api.post }
-})
+vi.mock("@/shared/auth", () => ({
+  acquireAccessToken: () => Promise.resolve("access-token"),
+}))
+vi.mock("@/shared/config", () => ({
+  getRequiredEnvironmentValue: () => "https://api.example",
+}))
 
 import { ApiError } from "@/shared/api"
+import { lastRequest } from "@/test/last-request"
 
 import type { GuildRaidStatusResponse } from "./guild-raid-status.api"
 import {
@@ -25,26 +26,37 @@ function statusResponse(): GuildRaidStatusResponse {
   }
 }
 
+const respond = (status: number, body: unknown) =>
+  vi.spyOn(globalThis, "fetch").mockImplementation(() =>
+    Promise.resolve(
+      new Response(JSON.stringify(body), {
+        status,
+        headers: { "Content-Type": "application/problem+json" },
+      })
+    )
+  )
+
 describe("getGuildRaidStatus", () => {
-  beforeEach(() => vi.clearAllMocks())
+  beforeEach(() => vi.restoreAllMocks())
 
   it("returns the observed status on success", async () => {
     const status = statusResponse()
-    api.get.mockResolvedValue(status)
+    const fetch = respond(200, status)
 
     await expect(getGuildRaidStatus()).resolves.toEqual({
       kind: "observed",
       status,
     })
+    expect(await lastRequest(fetch)).toMatchObject({
+      method: "GET",
+      url: "https://api.example/api/v1/guild/raid-status",
+    })
   })
 
   it("maps the no-observation 409 to a neverObserved result", async () => {
-    api.get.mockRejectedValue(
-      new ApiError(
-        409,
-        "The linked guild has no Guild Raid status observation yet."
-      )
-    )
+    respond(409, {
+      detail: "The linked guild has no Guild Raid status observation yet.",
+    })
 
     await expect(getGuildRaidStatus()).resolves.toEqual({
       kind: "neverObserved",
@@ -52,38 +64,36 @@ describe("getGuildRaidStatus", () => {
   })
 
   it("propagates other 409 conflict reasons instead of treating them as never-observed", async () => {
-    const error = new ApiError(
-      409,
-      "The linked guild has never completed synchronization."
-    )
-    api.get.mockRejectedValue(error)
+    respond(409, {
+      detail: "The linked guild has never completed synchronization.",
+    })
 
-    await expect(getGuildRaidStatus()).rejects.toBe(error)
+    await expect(getGuildRaidStatus()).rejects.toMatchObject({
+      status: 409,
+      message: "The linked guild has never completed synchronization.",
+    })
   })
 
   it("propagates non-409 errors", async () => {
-    const error = new ApiError(
-      503,
-      "The Tacticus Guild Raid API is currently unavailable."
-    )
-    api.get.mockRejectedValue(error)
+    respond(503, {
+      detail: "The Tacticus Guild Raid API is currently unavailable.",
+    })
 
-    await expect(getGuildRaidStatus()).rejects.toBe(error)
+    await expect(getGuildRaidStatus()).rejects.toBeInstanceOf(ApiError)
   })
 })
 
 describe("refreshGuildRaidStatus", () => {
-  beforeEach(() => vi.clearAllMocks())
+  beforeEach(() => vi.restoreAllMocks())
 
-  it("posts to the refresh endpoint", () => {
+  it("posts to the refresh endpoint", async () => {
     const status = statusResponse()
-    api.post.mockResolvedValue(status)
+    const fetch = respond(200, status)
 
-    void refreshGuildRaidStatus()
-
-    expect(api.post).toHaveBeenCalledWith(
-      "/api/v1/guilds/me/raid-status/refresh",
-      { signal: undefined }
-    )
+    await expect(refreshGuildRaidStatus()).resolves.toEqual(status)
+    expect(await lastRequest(fetch)).toMatchObject({
+      method: "POST",
+      url: "https://api.example/api/v1/guild/raid-status/refresh",
+    })
   })
 })

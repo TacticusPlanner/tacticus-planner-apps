@@ -9,7 +9,7 @@ import {
   hseTeamsFixtureRead,
 } from "@/test/fixtures/hse-teams"
 
-import { mapRosterCharacter } from "./arena-recommendations"
+import { mapRosterCharacter } from "./roster-character"
 import { buildHseTeamRecommendations } from "./hse-team-recommendations"
 import { anyUnitPowerFixture } from "./team-power.fixtures"
 import type {

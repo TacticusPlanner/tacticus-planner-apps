@@ -35,7 +35,7 @@ export function useQuickActions({
   const { t } = useTranslation()
   const sync = usePlayerDataSyncStatus()
   const { hasPageTour, isRunning, startPageTour } = useTour()
-  const { open: openFeedback, isReady: feedbackReady } = useUserJot()
+  const { open: openFeedback, status: feedbackStatus } = useUserJot()
 
   const entries: { action: QuickAction; run: () => void }[] = []
   if (isAuthenticated) {
@@ -80,9 +80,10 @@ export function useQuickActions({
       label: t("nav.quickActions.feedbackLabel"),
       description: t("nav.quickActions.feedbackDescription"),
       keywords: [],
-      disabledReason: feedbackReady
-        ? undefined
-        : t("nav.quickActions.feedbackUnavailable"),
+      disabledReason:
+        feedbackStatus === "failed"
+          ? t("nav.quickActions.feedbackUnavailable")
+          : undefined,
     },
     run: () => openFeedback(),
   })

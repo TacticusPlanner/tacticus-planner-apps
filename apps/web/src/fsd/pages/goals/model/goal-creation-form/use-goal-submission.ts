@@ -3,7 +3,12 @@ import { rankIndex, type UnitId } from "@workspace/game-domain"
 import { rankTargetKey, type GoalKind } from "@/entities/goal"
 import type { ProjectSummary } from "@/entities/project"
 
-import { useProjectGoalConflicts } from "../projects/use-project-goal-conflicts"
+import { useTranslation } from "react-i18next"
+
+import { useUnitName } from "@/shared/unit-name"
+
+import { projectConflictText } from "../projects/project-conflict-copy"
+import { useGoalSlotConflict } from "../projects/use-project-goal-conflicts"
 import { buildCombinedGoalSpecs } from "../estimate/goal-spec-builder"
 import { useGoalCreationReview } from ".//use-goal-creation-review"
 import { useGoalSubmit } from ".//use-goal-submit"
@@ -32,7 +37,6 @@ export function useGoalSubmission({
   startPaused,
   snapshotContext,
   onOpenChange,
-  onCreated,
   resetForm,
 }: {
   entityId: UnitId | undefined
@@ -49,14 +53,14 @@ export function useGoalSubmission({
   startPaused: boolean
   snapshotContext: SnapshotContext
   onOpenChange: (open: boolean) => void
-  onCreated: () => void
   resetForm: () => void
 }) {
-  // A Rank goal only conflicts with an in-flight Rank goal at the same normalized end target — distinct
-  // targets coexist (rank-milestones), so the check needs the target being created.
-  const projectConflictState = useProjectGoalConflicts({
-    projects,
-    selectedProjectIds,
+  const { t } = useTranslation()
+  const getUnitName = useUnitName()
+  // The in-flight slot is per account, whatever projects the goal joins. A Rank goal only conflicts with
+  // an in-flight Rank goal at the same normalized end target — distinct targets coexist
+  // (rank-milestones), so the check needs the target being created.
+  const slotConflict = useGoalSlotConflict({
     entityType,
     entityId,
     goalTypes,
@@ -69,9 +73,7 @@ export function useGoalSubmission({
       : null,
   })
   const submissionAllowed =
-    canSubmit &&
-    !projectConflictState.loading &&
-    projectConflictState.conflicts.length === 0
+    canSubmit && !slotConflict.loading && !slotConflict.conflict
 
   const { selectedProjects, perProjectEstimates, estimatedProjectIds } =
     useGoalCreationReview({
@@ -95,14 +97,22 @@ export function useGoalSubmission({
     startPaused,
     snapshotContext,
     onOpenChange,
-    onCreated,
     resetForm,
   })
 
   return {
     ...submission,
     canSubmit: submissionAllowed,
-    projectConflicts: projectConflictState.conflicts,
+    slotConflictMessage: slotConflict.conflict
+      ? projectConflictText(
+          t,
+          slotConflict.conflict,
+          getUnitName(
+            slotConflict.conflict.entityType,
+            slotConflict.conflict.entityId
+          )
+        )
+      : null,
     perProjectEstimates,
     estimatedProjectIds,
   }

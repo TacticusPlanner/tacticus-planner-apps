@@ -53,5 +53,9 @@
     "strength": "Choisi pour sa puissance de combat ({{power}}).",
     "minimumSize": "Ajouté pour compléter l'équipe.",
     "random": "Tiré au hasard."
+  },
+  "track": {
+    "shortfallTitle": "Pas assez de personnages {{track}}",
+    "shortfall": "Vous possédez {{owned}} personnages {{track}}. Une équipe complète en demande trois, il en manque donc {{needed}}. Sur cette voie, seuls les personnages {{track}} peuvent être utilisés."
   }
 }

@@ -56,6 +56,23 @@ Use pnpm from the repository root.
 - `pnpm precommit`: run the lefthook pre-commit checks manually (format +
   lint on staged files).
 
+### API types
+
+API request/response types are generated from `tacticus-planner-api`'s OpenAPI
+document. Never hand-write a wire type; alias the generated schema instead.
+
+- `apps/web/openapi/api.json` is the committed copy of the document.
+  `apps/web/openapi/api.ref` records the API commit it came from.
+  `apps/web/src/fsd/shared/api/schema.d.ts` holds the generated types.
+- `pnpm --filter web api:pull --local` copies the document from the sibling
+  workspace checkout and sets the pin to `local`. Use it while pairing with an
+  API branch.
+- `pnpm --filter web api:pull <sha|branch>` downloads that API commit's document
+  and pins it, resolving a branch to its head SHA. Run it with the API PR's
+  merge SHA before merging: CI rejects a `local` pin and a stale `schema.d.ts`.
+- `pnpm --filter web api:types` regenerates `schema.d.ts` from the committed
+  copy, offline.
+
 ## Coding Style & Naming Conventions
 
 Use TypeScript and React function components. Follow the existing 2-space indentation, no semicolons, double quotes, LF line endings, and 80-column print width from `.prettierrc`. Prettier includes `prettier-plugin-tailwindcss`, so prefer letting formatting sort Tailwind classes.

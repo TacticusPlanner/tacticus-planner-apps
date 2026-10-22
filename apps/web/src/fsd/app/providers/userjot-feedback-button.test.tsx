@@ -41,4 +41,20 @@ describe("UserJotFeedbackButton", () => {
       screen.getByTestId("userjot-feedback-unread-indicator")
     ).toBeInTheDocument()
   })
+
+  it("is disabled with an explanation when the widget failed to load", () => {
+    useUserJotMock.mockReturnValue({
+      open: vi.fn(),
+      unreadCount: 0,
+      status: "failed",
+    })
+    render(<UserJotFeedbackButton />)
+
+    const button = screen.getByTestId("userjot-feedback-button")
+    expect(button).toBeDisabled()
+    expect(button).toHaveAttribute(
+      "title",
+      "nav.quickActions.feedbackUnavailable"
+    )
+  })
 })

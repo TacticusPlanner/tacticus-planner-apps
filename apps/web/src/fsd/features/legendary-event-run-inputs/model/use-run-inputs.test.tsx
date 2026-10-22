@@ -47,6 +47,8 @@ const stored = (
   premiumMissions: 0,
   bundlePurchased: false,
   closeShards: 0,
+  completedRegularMissions: [],
+  completedPremiumMissions: [],
   updatedAt: "2026-10-10T00:00:00Z",
   ...fields,
 })
@@ -159,8 +161,7 @@ describe("useRunInputs", () => {
     api.runs.mockRejectedValue(
       new ApiError(409, "Stale.", {
         issueCode: "legendaryEventPlanStale",
-        message: "Stale.",
-        plan: theirs,
+        current: theirs,
       })
     )
     const { result, cached } = setup(plan(3))

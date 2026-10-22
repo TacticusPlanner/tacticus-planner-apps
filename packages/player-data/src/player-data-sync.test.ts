@@ -75,7 +75,7 @@ function createManifest(
     chunks: playerDataChunkKeys.map((key) => ({
       key,
       hash: hashes[key] ?? `${key}-h1`,
-      url: `/api/v1/me/player-data/${key}`,
+      url: `/api/v1/player-data/${key}`,
     })),
   }
 }

@@ -1,104 +1,113 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
-const api = vi.hoisted(() => ({
-  delete: vi.fn(),
-  get: vi.fn(),
-  post: vi.fn(),
-  put: vi.fn(),
+vi.mock("@/shared/auth", () => ({
+  acquireAccessToken: () => Promise.resolve("access-token"),
+}))
+vi.mock("@/shared/config", () => ({
+  getRequiredEnvironmentValue: () => "https://api.example",
 }))
 
-vi.mock("@/shared/api", () => ({
-  apiDelete: api.delete,
-  apiGet: api.get,
-  apiPost: api.post,
-  apiPut: api.put,
-}))
+import { lastRequest } from "@/test/last-request"
 
 import {
   createCombinedGoals,
-  createGoal,
   deleteGoal,
   editGoal,
   getGoal,
   listGoals,
-  updateGoal,
-  updateGoalStatus,
-  updateGoalTarget,
+  updateGoalsStatus,
 } from "./goal.api"
 
-describe("goal API", () => {
-  beforeEach(() => vi.clearAllMocks())
-
-  it("maps goal reads to their endpoints", () => {
-    const signal = new AbortController().signal
-
-    listGoals({ signal })
-    listGoals({ archived: true, signal })
-    getGoal("goal-1", signal)
-
-    expect(api.get).toHaveBeenNthCalledWith(1, "/api/v1/me/goals", {
-      signal,
-    })
-    expect(api.get).toHaveBeenNthCalledWith(
-      2,
-      "/api/v1/me/goals?archived=true",
-      { signal }
+const fetchMock = () =>
+  vi
+    .spyOn(globalThis, "fetch")
+    .mockImplementation(() =>
+      Promise.resolve(new Response("{}", { status: 200 }))
     )
-    expect(api.get).toHaveBeenNthCalledWith(3, "/api/v1/me/goals/goal-1", {
-      signal,
-    })
+
+describe("goal API", () => {
+  beforeEach(() => vi.restoreAllMocks())
+
+  it("maps goal reads to their endpoints", async () => {
+    const fetch = fetchMock()
+
+    await listGoals()
+    expect((await lastRequest(fetch)).url).toBe(
+      "https://api.example/api/v1/goals"
+    )
+    await listGoals({ archived: true })
+    expect((await lastRequest(fetch)).url).toBe(
+      "https://api.example/api/v1/goals?archived=true"
+    )
+    await getGoal("goal-1")
+    expect((await lastRequest(fetch)).url).toBe(
+      "https://api.example/api/v1/goals/goal-1"
+    )
   })
 
-  it("maps goal writes to their endpoints", () => {
-    const create = { entityId: "hero", entityType: "Character" } as never
-    const combined = { entityId: "hero", goals: [] } as never
-    const update = { notes: "note" } as never
+  it("maps goal writes to their endpoints", async () => {
+    const fetch = fetchMock()
+    const combined = {
+      entityType: "Character" as const,
+      entityId: "hero",
+      projects: null,
+      goals: [],
+    }
 
-    createGoal(create)
-    createCombinedGoals(combined)
-    updateGoal("goal-1", update)
-    updateGoalStatus("goal-1", "Paused")
-    deleteGoal("goal-1")
-
-    expect(api.post).toHaveBeenNthCalledWith(1, "/api/v1/me/goals", {
-      body: create,
-    })
-    expect(api.post).toHaveBeenNthCalledWith(2, "/api/v1/me/goals/combined", {
+    await createCombinedGoals(combined)
+    expect(await lastRequest(fetch)).toMatchObject({
+      method: "POST",
+      url: "https://api.example/api/v1/goals",
       body: combined,
     })
-    expect(api.put).toHaveBeenCalledWith("/api/v1/me/goals/goal-1", {
-      body: update,
+
+    await updateGoalsStatus({
+      goalIds: ["goal-1", "goal-2"],
+      status: "Completed",
+      expectedOrderRevision: 4,
     })
-    expect(api.post).toHaveBeenNthCalledWith(
-      3,
-      "/api/v1/me/goals/goal-1/status",
-      { body: { status: "Paused" } }
-    )
-    expect(api.delete).toHaveBeenCalledWith("/api/v1/me/goals/goal-1", {})
-  })
+    expect(await lastRequest(fetch)).toMatchObject({
+      method: "POST",
+      url: "https://api.example/api/v1/goals/status",
+      body: {
+        goalIds: ["goal-1", "goal-2"],
+        status: "Completed",
+        expectedOrderRevision: 4,
+      },
+    })
 
-  it.each([
-    ["Rank", { rank: { end: 7, endPointFive: true, endAppliedUpgrades: 0 } }],
-    ["Ascension", { progression: { end: "Common:TwoStars" } }],
-    ["Ability", { ability: { activeEnd: 5, passiveEnd: 3 } }],
-    [
-      "Upgrade",
-      { upgrade: { targets: [{ upgradeId: "upgHpC014", quantity: 4 }] } },
-    ],
-  ])("sends a %s target edit with the loaded revision", (_kind, target) => {
-    updateGoalTarget("goal-1", { expectedRevision: 7, target })
-
-    expect(api.put).toHaveBeenCalledWith("/api/v1/me/goals/goal-1/target", {
-      body: { expectedRevision: 7, target },
+    await deleteGoal("goal-1")
+    expect(await lastRequest(fetch)).toMatchObject({
+      method: "DELETE",
+      url: "https://api.example/api/v1/goals/goal-1",
     })
   })
 
-  it("sends only the present sections of a goal edit", () => {
-    editGoal("goal-1", { priority: { position: 2, expectedOrderRevision: 7 } })
+  it("sends a target edit as the target section of the single edit route", async () => {
+    const fetch = fetchMock()
+    const target = {
+      expectedRevision: 7,
+      target: { rank: { end: 7, endPointFive: true, endAppliedUpgrades: 0 } },
+    }
 
-    expect(api.put).toHaveBeenCalledWith("/api/v1/me/goals/goal-1/edit", {
-      body: { priority: { position: 2, expectedOrderRevision: 7 } },
+    await editGoal("goal-1", { target })
+
+    expect(await lastRequest(fetch)).toMatchObject({
+      method: "PUT",
+      url: "https://api.example/api/v1/goals/goal-1",
+      body: { target },
     })
-    expect(Object.keys(api.put.mock.calls[0][1].body)).toEqual(["priority"])
+  })
+
+  it("sends only the present sections of a goal edit", async () => {
+    const fetch = fetchMock()
+
+    await editGoal("goal-1", {
+      priority: { position: 2, expectedOrderRevision: 7 },
+    })
+
+    expect((await lastRequest(fetch)).body).toEqual({
+      priority: { position: 2, expectedOrderRevision: 7 },
+    })
   })
 })

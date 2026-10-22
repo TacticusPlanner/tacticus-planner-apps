@@ -57,7 +57,7 @@ vi.mock("@/entities/player-data-override", () => ({
   updateOnslaughtProgress: (...args: unknown[]) => saveProgress(...args),
   onslaughtProgressQueries: {
     current: () => ({
-      queryKey: ["player-data-overrides", "onslaught"],
+      queryKey: ["player-data-overrides", "onslaught", "current"],
       queryFn: () => getProgress(),
     }),
   },

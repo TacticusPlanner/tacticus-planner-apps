@@ -55,13 +55,6 @@ vi.mock("../../model/attainment/use-goals-overview-metrics", () => ({
 vi.mock("../../model/goals-data/use-goal-actions", () => ({
   useGoalActions: () => ({}),
 }))
-vi.mock("../../model/projects/use-goal-projects", () => ({
-  useGoalProjects: () => ({
-    byGoalId: new Map(),
-    loadedProjectIds: new Set(),
-    pendingProjectIds: new Set(),
-  }),
-}))
 vi.mock("../../model/shared/use-goal-catalog", () => ({
   useGoalCatalog: () => ({ getEntityName: (_type: string, id: string) => id }),
 }))
@@ -159,6 +152,10 @@ function goal(
     status: "Active",
     notes: null,
     dependsOn: [],
+    projectIds: [],
+    config: {},
+    snapshot: null,
+    revision: 1,
     createdAt: "",
     updatedAt: "2026-01-01T00:00:00Z",
     globalPriority,

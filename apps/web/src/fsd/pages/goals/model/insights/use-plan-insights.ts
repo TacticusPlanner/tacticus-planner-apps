@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { useQueries, useQuery } from "@tanstack/react-query"
+import { useQuery } from "@tanstack/react-query"
 import { useIsAuthenticated } from "@azure/msal-react"
 import { useLiveQuery } from "dexie-react-hooks"
 import { unitIdSchema, type UnitId } from "@workspace/game-domain"
@@ -15,7 +15,7 @@ import {
   getPlayerMow,
 } from "@workspace/player-data/queries"
 
-import { goalQueries, useGlobalGoalPlan } from "@/entities/goal"
+import { useGlobalGoalPlan } from "@/entities/goal"
 import { onslaughtProgressQueries } from "@/entities/player-data-override"
 import { usePlanningSettings } from "@/entities/planning-setting"
 import { useCampaignDisplay } from "@/shared/lib"
@@ -112,32 +112,22 @@ export function usePlanInsights(scopeGoalIds?: readonly string[] | null) {
     (!scopeIds ||
       activeMembers.some((member) => scopeIds.has(member.goal.goalId)))
   )
-  const goalDetailQueries = useQueries({
-    queries: hasQuery
-      ? activeMembers.map((member) => goalQueries.detail(member.goal.goalId))
-      : [],
-  })
   const onslaughtProgressQuery = useQuery({
     ...onslaughtProgressQueries.current(),
     enabled: hasQuery,
   })
+  // The goals list carries every goal in full (no per-goal read); a goal's revision marks its changes.
   const serverDataVersion = [
-    ...goalDetailQueries.map((query) => query.dataUpdatedAt),
+    ...activeMembers.map((member) => member.goal.revision),
     onslaughtProgressQuery.dataUpdatedAt,
   ].join(",")
   const serverDataReady =
-    goalDetailQueries.length === activeMembers.length &&
-    goalDetailQueries.every((query) => query.isSuccess) &&
-    onslaughtProgressQuery.isSuccess
-  // A failed detail/progress fetch would otherwise leave `loading` true forever.
+    !globalPlan.loading && onslaughtProgressQuery.isSuccess
+  // A failed goals/progress read would otherwise leave `loading` true forever.
   const isError =
-    hasQuery &&
-    (goalDetailQueries.some((query) => query.isError) ||
-      onslaughtProgressQuery.isError)
+    hasQuery && (globalPlan.isError || onslaughtProgressQuery.isError)
   const retry = () => {
-    goalDetailQueries.forEach((query) => {
-      if (query.isError) void query.refetch()
-    })
+    if (globalPlan.isError) globalPlan.retry()
     if (onslaughtProgressQuery.isError) void onslaughtProgressQuery.refetch()
   }
   const catalogReady =
@@ -154,9 +144,7 @@ export function usePlanInsights(scopeGoalIds?: readonly string[] | null) {
     }
 
     let active = true
-    const details = goalDetailQueries.flatMap((query) =>
-      query.data ? [query.data] : []
-    )
+    const details = activeMembers.map((member) => member.goal)
     const onslaughtProgress = onslaughtProgressQuery.data
 
     void Promise.resolve()

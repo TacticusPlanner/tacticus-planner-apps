@@ -114,7 +114,7 @@ export function goalTargetDraftFromDetail(
   }
 }
 
-/** The wire body for `PUT /me/goals/{id}/target` — only the end values of the draft's own kind. */
+/** The wire body for `PUT /goals/{id}/target` — only the end values of the draft's own kind. */
 export function goalTargetEditFromDraft(
   draft: GoalTargetDraft
 ): GoalTargetEdit {

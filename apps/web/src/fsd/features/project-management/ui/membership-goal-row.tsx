@@ -2,8 +2,8 @@ import { useTranslation } from "react-i18next"
 import { Badge } from "@workspace/ui/components/badge"
 import { Checkbox } from "@workspace/ui/components/checkbox"
 
-/** One goal in the membership editor: its current membership, any pending add/remove, and the reasons it
- * cannot be ticked (a client-side slot pre-check) or was named by a rejected save. */
+/** One goal in the membership editor: its current membership, any pending add/remove, and the message of
+ * a rejected save that named it. */
 export function MembershipGoalRow({
   goalId,
   title,
@@ -11,7 +11,6 @@ export function MembershipGoalRow({
   isMember,
   checked,
   pending,
-  blockedReason,
   conflictMessage,
   disabled,
   onToggle,
@@ -23,7 +22,6 @@ export function MembershipGoalRow({
   isMember: boolean
   checked: boolean
   pending: "add" | "remove" | null
-  blockedReason: string | null
   conflictMessage: string | null
   disabled: boolean
   onToggle: () => void
@@ -39,7 +37,7 @@ export function MembershipGoalRow({
         <Checkbox
           checked={checked}
           data-testid={`add-goals-check-${goalId}`}
-          disabled={disabled || blockedReason !== null}
+          disabled={disabled}
           onCheckedChange={onToggle}
         />
         <span className="min-w-0 flex-1 truncate">
@@ -69,14 +67,6 @@ export function MembershipGoalRow({
           </Badge>
         ) : null}
       </label>
-      {blockedReason ? (
-        <p
-          className="text-xs text-destructive"
-          data-testid={`add-goals-blocked-${goalId}`}
-        >
-          {blockedReason}
-        </p>
-      ) : null}
       {conflictMessage ? (
         <p
           className="text-xs text-destructive"

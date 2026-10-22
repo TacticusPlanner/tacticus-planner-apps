@@ -1,66 +1,59 @@
 import { describe, expect, it } from "vitest"
 
+import { ApiError } from "@/shared/api"
+
 import {
-  projectLastMembershipDetails,
-  projectMembershipStaleDetails,
-  projectSlotConflictGoalIds,
+  projectLastMembership,
+  projectMembershipConflict,
 } from "./project-membership-conflict"
 
-describe("projectMembershipStaleDetails", () => {
-  const stale = {
-    issueCode: "projectMembershipStale",
-    message: "changed",
-    projectId: "p",
-    currentGoalIds: ["a", "b"],
-  }
+describe("projectMembershipConflict", () => {
+  it("exposes the current membership of a membershipStale 409", () => {
+    const error = new ApiError(409, "changed", {
+      issueCode: "membershipStale",
+      current: { projectId: "p", goalIds: ["a", "b"] },
+    })
 
-  it("accepts the stale-membership body", () => {
-    expect(projectMembershipStaleDetails(stale)).toEqual(stale)
+    expect(projectMembershipConflict(error)).toEqual({
+      message: "changed",
+      current: { goalIds: ["a", "b"] },
+    })
   })
 
-  it("rejects other bodies", () => {
-    expect(projectMembershipStaleDetails(null)).toBeNull()
+  it("rejects other errors", () => {
+    expect(projectMembershipConflict(null)).toBeNull()
     expect(
-      projectMembershipStaleDetails({ ...stale, issueCode: "other" })
+      projectMembershipConflict(
+        new ApiError(409, "x", { issueCode: "slotOccupied", current: {} })
+      )
     ).toBeNull()
     expect(
-      projectMembershipStaleDetails({ ...stale, currentGoalIds: [1] })
-    ).toBeNull()
-  })
-})
-
-describe("projectLastMembershipDetails", () => {
-  const blocked = {
-    issueCode: "lastProjectMembership",
-    message: "nope",
-    blockedGoalIds: ["a"],
-  }
-
-  it("accepts the last-membership body", () => {
-    expect(projectLastMembershipDetails(blocked)).toEqual(blocked)
-  })
-
-  it("rejects other bodies", () => {
-    expect(projectLastMembershipDetails(undefined)).toBeNull()
-    expect(
-      projectLastMembershipDetails({ ...blocked, blockedGoalIds: "a" })
+      projectMembershipConflict(
+        new ApiError(409, "x", {
+          issueCode: "membershipStale",
+          current: { goalIds: [1] },
+        })
+      )
     ).toBeNull()
   })
 })
 
-describe("projectSlotConflictGoalIds", () => {
-  it("collects the existing goal and every conflicting project's goal once", () => {
-    expect(
-      projectSlotConflictGoalIds({
-        issueCode: "projectGoalSlotOccupied",
-        existingGoalId: "a",
-        conflicts: [{ existingGoalId: "a" }, { existingGoalId: "b" }],
-      })
-    ).toEqual(["a", "b"])
+describe("projectLastMembership", () => {
+  it("names the blocked goals of a lastProjectMembership 400", () => {
+    const error = new ApiError(400, "blocked", {
+      issueCode: "lastProjectMembership",
+      extensions: { blockedGoalIds: ["a"] },
+    })
+
+    expect(projectLastMembership(error)).toEqual({
+      message: "blocked",
+      blockedGoalIds: ["a"],
+    })
   })
 
-  it("is null for any other error", () => {
-    expect(projectSlotConflictGoalIds({ issueCode: "x" })).toBeNull()
-    expect(projectSlotConflictGoalIds(undefined)).toBeNull()
+  it("rejects other errors", () => {
+    expect(
+      projectLastMembership(new ApiError(400, "x", { issueCode: "validation" }))
+    ).toBeNull()
   })
 })

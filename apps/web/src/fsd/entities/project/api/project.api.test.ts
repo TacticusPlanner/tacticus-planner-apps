@@ -1,80 +1,87 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
-const api = vi.hoisted(() => ({
-  get: vi.fn(),
-  post: vi.fn(),
-  put: vi.fn(),
+vi.mock("@/shared/auth", () => ({
+  acquireAccessToken: () => Promise.resolve("access-token"),
+}))
+vi.mock("@/shared/config", () => ({
+  getRequiredEnvironmentValue: () => "https://api.example",
 }))
 
-vi.mock("@/shared/api", () => ({
-  apiGet: api.get,
-  apiPost: api.post,
-  apiPut: api.put,
-}))
+import { lastRequest } from "@/test/last-request"
 
 import {
   createProject,
-  listProjectGoals,
   listProjects,
   moveProjectGoal,
   updateProject,
   updateProjectGoals,
 } from "./project.api"
 
-describe("project API", () => {
-  beforeEach(() => vi.clearAllMocks())
-
-  it("maps project reads to their endpoints", () => {
-    const signal = new AbortController().signal
-
-    listProjects(signal)
-    listProjectGoals("project-1", signal)
-
-    expect(api.get).toHaveBeenNthCalledWith(1, "/api/v1/me/projects", {
-      signal,
-    })
-    expect(api.get).toHaveBeenNthCalledWith(
-      2,
-      "/api/v1/me/projects/project-1/goals",
-      { signal }
+const fetchMock = () =>
+  vi
+    .spyOn(globalThis, "fetch")
+    .mockImplementation(() =>
+      Promise.resolve(new Response("{}", { status: 200 }))
     )
+
+describe("project API", () => {
+  beforeEach(() => vi.restoreAllMocks())
+
+  it("maps project reads to their endpoints", async () => {
+    const fetch = fetchMock()
+
+    await listProjects(new AbortController().signal)
+
+    expect(await lastRequest(fetch)).toMatchObject({
+      method: "GET",
+      url: "https://api.example/api/v1/projects",
+    })
   })
 
-  it("maps project writes to their endpoints", () => {
-    const create = { name: "Plan" }
-    const update = { name: "Updated" } as never
+  it("maps project writes to their endpoints", async () => {
+    const fetch = fetchMock()
+    const create = { name: "Plan", description: null, color: null }
+    const update = {
+      name: "Updated",
+      description: null,
+      color: null,
+      status: "Active" as const,
+      revision: 2,
+      target: null,
+    }
     const goals = {
       goals: [{ goalId: "goal-1" }],
       expectedGoalIds: ["goal-2"],
     }
-
-    createProject(create)
-    updateProject("project-1", update)
-    updateProjectGoals("project-1", goals)
     const move = {
       goalId: "goal-1",
       displacedGoalId: "goal-2",
       expectedRevision: 4,
     }
-    moveProjectGoal("project-1", move)
 
-    expect(api.post).toHaveBeenNthCalledWith(1, "/api/v1/me/projects", {
+    await createProject(create)
+    expect(await lastRequest(fetch)).toMatchObject({
+      method: "POST",
+      url: "https://api.example/api/v1/projects",
       body: create,
     })
-    expect(api.put).toHaveBeenNthCalledWith(
-      1,
-      "/api/v1/me/projects/project-1",
-      { body: update }
-    )
-    expect(api.put).toHaveBeenNthCalledWith(
-      2,
-      "/api/v1/me/projects/project-1/goals",
-      { body: goals }
-    )
-    expect(api.put).toHaveBeenNthCalledWith(
-      3,
-      "/api/v1/me/projects/project-1/goal-order",
-      { body: move }
-    )
+    await updateProject("project-1", update)
+    expect(await lastRequest(fetch)).toMatchObject({
+      method: "PUT",
+      url: "https://api.example/api/v1/projects/project-1",
+      body: update,
+    })
+    await updateProjectGoals("project-1", goals)
+    expect(await lastRequest(fetch)).toMatchObject({
+      method: "PUT",
+      url: "https://api.example/api/v1/projects/project-1/goals",
+      body: goals,
+    })
+    await moveProjectGoal("project-1", move)
+    expect(await lastRequest(fetch)).toMatchObject({
+      method: "PUT",
+      url: "https://api.example/api/v1/projects/project-1/goal-order",
+      body: move,
+    })
   })
 })

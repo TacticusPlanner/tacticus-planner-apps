@@ -10,8 +10,7 @@ export const campaignEventProgressQueries = {
       queryFn: ({ signal }) => getCampaignEventProgressOverrides(signal),
       // Read on every planning surface (Today, Schedule, Home, Goals, Insights) through the shared
       // eligibility hook, but changed only by saving on the Progress page, which writes the saved
-      // value into this cache. A stale copy from another device can't overwrite anything: saves
-      // carry the base revision and get a 409.
-      staleTime: 5 * 60 * 1000,
+      // value into this cache, so the client-wide freshness window covers it. A stale copy from
+      // another device can't overwrite anything: saves carry the base revision and get a 409.
     }),
 }

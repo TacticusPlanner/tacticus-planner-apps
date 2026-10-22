@@ -37,6 +37,7 @@ export function AccountCard({
   identityPending = false,
   onEditName,
   onFeedback,
+  feedbackUnavailable,
   onImportV1,
   onOpenAccountSettings,
   onExternalLink,
@@ -49,10 +50,12 @@ export function AccountCard({
   applicationAccountId: string | null
   canEditName: boolean
   className?: string
-  /** /me has not answered yet: show a loading identity instead of the neutral label and email. */
+  /** /account has not answered yet: show a loading identity instead of the neutral label and email. */
   identityPending?: boolean
   onEditName: () => void
   onFeedback: () => void
+  /** Why the feedback row is disabled (the widget failed to load), or undefined when it works. */
+  feedbackUnavailable?: string
   onImportV1: () => void
   onOpenAccountSettings: () => void
   onExternalLink?: () => void
@@ -127,9 +130,11 @@ export function AccountCard({
         />
         <MenuRow
           data-testid="auth-feedback"
+          disabled={Boolean(feedbackUnavailable)}
           icon={MessageSquareText}
           label={t("feedback.send")}
           onClick={onFeedback}
+          title={feedbackUnavailable}
         />
         {tourRow}
         <MenuLinkRow

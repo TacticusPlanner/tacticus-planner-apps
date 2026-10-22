@@ -53,5 +53,9 @@
     "strength": "Aufgrund der Stärke ausgewählt ({{power}}).",
     "minimumSize": "Hinzugefügt, um das Team zu vervollständigen.",
     "random": "Zufällig ausgewählt."
+  },
+  "track": {
+    "shortfallTitle": "Nicht genug {{track}}-Charaktere",
+    "shortfall": "Du besitzt {{owned}} {{track}}-Charaktere. Ein volles Team braucht drei, also werden {{needed}} weitere benötigt. Auf diesem Strang können nur {{track}}-Charaktere eingesetzt werden."
   }
 }
