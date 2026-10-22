@@ -7,7 +7,6 @@ export {
   formatRelativeTime,
 } from "./format-time"
 export { useCampaignDisplay } from "./use-campaign-display"
-export { usePersistedSelection } from "./use-persisted-selection"
 export { useDebouncedCommit } from "./use-debounced-commit"
 export { isStaleBuildError, reloadOnceForStaleBuild } from "./stale-build"
 export {
@@ -18,3 +17,10 @@ export {
   type EventColorKey,
 } from "./event-colors"
 export { useReadState, type ReadState } from "./use-read-state"
+export {
+  installGlobalErrorCapture,
+  reportError,
+  safeStorage,
+  setErrorReporter,
+  usePersistedSelection,
+} from "./browser"

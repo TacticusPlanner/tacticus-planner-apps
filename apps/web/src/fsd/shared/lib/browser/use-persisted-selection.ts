@@ -1,4 +1,5 @@
 import { useCallback, useState } from "react"
+import { safeStorage } from "./safe-storage"
 
 /**
  * A string-union preference persisted per browser under `storageKey`, so it survives navigating
@@ -13,23 +14,16 @@ export function usePersistedSelection<T extends string>(
   fallback: T
 ): [T, (next: T) => void] {
   const read = useCallback((): T => {
-    try {
-      const raw = window.localStorage.getItem(storageKey)
-      return isValid(raw) ? raw : fallback
-    } catch {
-      return fallback
-    }
+    const raw = safeStorage.get(storageKey)
+    return isValid(raw) ? raw : fallback
   }, [storageKey, isValid, fallback])
 
   const [value, setValueState] = useState<T>(read)
   const setValue = useCallback(
     (next: T) => {
       setValueState(next)
-      try {
-        window.localStorage.setItem(storageKey, next)
-      } catch {
-        // Best-effort — the in-memory value still updates.
-      }
+      // Best-effort — the in-memory value still updates.
+      safeStorage.set(storageKey, next)
     },
     [storageKey]
   )

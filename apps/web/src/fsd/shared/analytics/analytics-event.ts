@@ -212,6 +212,17 @@ type LegendaryEventTierListUnitOpenedEvent = {
   tier: string
 }
 
+/** An error nothing else handled (spec: client-error-reporting). Message and stack have URL query
+ *  strings removed; the route is reported as its nav section, never the URL. */
+type ClientErrorEvent = {
+  type: "client_error"
+  message: string
+  stack: string | null
+  context: string | null
+  routeGroup: string
+  appVersion: string | null
+}
+
 /**
  * Every event the product may report to the analytics destination. A discriminated union rather
  * than a free-form property bag, so declaring a new event is a type change here rather than an
@@ -242,3 +253,4 @@ export type AnalyticsEvent =
   | LegendaryEventEarlierRunsExpandedEvent
   | LegendaryEventTierListViewedEvent
   | LegendaryEventTierListUnitOpenedEvent
+  | ClientErrorEvent

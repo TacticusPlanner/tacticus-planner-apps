@@ -12,10 +12,9 @@ import {
 import { hseTeamsFixtureRead } from "@/test/fixtures/hse-teams"
 import enDailies from "../../../../../../public/locales/en/dailies.json"
 import enNpcs from "../../../../../../public/locales/en/npcs.json"
-import enSalvageRun from "../../../../../../public/locales/en/salvageRun.json"
 import enTeamRecs from "../../../../../../public/locales/en/teamRecs.json"
 
-import { mapRosterCharacter } from "../../model/arena-recommendations"
+import { mapRosterCharacter } from "../../model/roster-character"
 import { buildHseTeamRecommendations } from "../../model/hse-team-recommendations"
 import { anyUnitPowerFixture } from "../../model/team-power.fixtures"
 import type {
@@ -30,7 +29,6 @@ beforeAll(async () => {
     en: {
       dailies: enDailies,
       npcs: enNpcs,
-      salvageRun: enSalvageRun,
       teamRecs: enTeamRecs,
     },
   })

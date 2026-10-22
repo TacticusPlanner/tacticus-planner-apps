@@ -5,8 +5,8 @@ import type { HreTeamPlan, HreTeamRule } from "@/features/hre-missions"
 import { characterDamageTypes } from "@/shared/lib"
 import type { UnitPowerContext } from "@/shared/unit-power"
 
-import { mapRosterCharacter } from "./arena-recommendations"
-import type { RawRosterCharacter } from "./arena-recommendations.types"
+import { mapRosterCharacter } from "./roster-character"
+import type { RawRosterCharacter } from "./roster-character"
 import { hseEventUnitPools } from "./hse-team-recommendations"
 import type {
   HseTeamCatalog,

@@ -1,26 +1,27 @@
 import type { ReactNode } from "react"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { act, renderHook, waitFor } from "@testing-library/react"
-import { describe, expect, it, vi } from "vitest"
+import { afterEach, describe, expect, it, vi } from "vitest"
 
 import { usePlayerDataStatus } from "@/shared/player-data-status"
 
 const sync = vi.hoisted(() => ({
   run: vi.fn(),
   refresh: vi.fn(async () => {}),
+  metadata: vi.fn(async () => ({})),
 }))
 
 vi.mock("@azure/msal-react", () => ({ useIsAuthenticated: () => true }))
 vi.mock("@/shared/auth", () => ({
   acquireAccessToken: vi.fn(),
   isInteractionRequired: () => false,
-  requestApiAccess: vi.fn(),
+  requestInteraction: vi.fn(),
   useActiveAccountId: () => "account-1",
 }))
 vi.mock("@workspace/player-data", () => ({
   PlayerDataHttpClient: class {},
   // Synced a minute ago: no background sync on mount.
-  getPlayerDataMetadata: async () => ({}),
+  getPlayerDataMetadata: () => sync.metadata(),
   getManifestMetadata: () => ({
     updatedAt: new Date(Date.now() - 60_000).toISOString(),
   }),
@@ -69,5 +70,29 @@ describe("PlayerDataProvider", () => {
     act(() => result.current.syncNow())
     await waitFor(() => expect(result.current.status).toBe("error"))
     expect(sync.refresh).not.toHaveBeenCalled()
+  })
+
+  describe("when a background check fails outside the sync", () => {
+    afterEach(() => vi.useRealTimers())
+
+    it("reports it and keeps checking on the interval", async () => {
+      vi.useFakeTimers({ shouldAdvanceTime: true })
+      const log = vi.spyOn(console, "error").mockImplementation(() => {})
+      sync.metadata.mockReset()
+      sync.metadata
+        .mockRejectedValueOnce(new Error("indexeddb closed"))
+        .mockResolvedValue({})
+      renderHook(() => usePlayerDataStatus(), { wrapper })
+
+      await waitFor(() =>
+        expect(log).toHaveBeenCalledWith(
+          "Unhandled error (player-data sync)",
+          expect.objectContaining({ message: "indexeddb closed" })
+        )
+      )
+      await act(() => vi.advanceTimersByTimeAsync(10 * 60 * 1000))
+
+      expect(sync.metadata.mock.calls.length).toBeGreaterThan(1)
+    })
   })
 })

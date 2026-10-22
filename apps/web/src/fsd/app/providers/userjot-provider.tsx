@@ -7,6 +7,7 @@ import {
   useMemo,
   useRef,
   useState,
+  useSyncExternalStore,
   type ReactNode,
 } from "react"
 import { useTranslation } from "react-i18next"
@@ -38,9 +39,68 @@ type UserJotSdk = {
 declare global {
   interface Window {
     uj?: UserJotSdk
-    /** Set by index.html once the real SDK script has loaded (the inline stub only queues calls). */
-    __ujLoaded?: boolean
+    /** Calls made before the SDK loaded; the SDK replays them once it runs. */
+    $ujq?: unknown[][]
   }
+}
+
+// v3 is the only pin the vendor offers (accepted vendor risk).
+const USERJOT_SDK_URL = "https://cdn.userjot.com/sdk/v3/uj.js"
+
+// The vendor's queueing stub: every call made before the SDK loads is recorded and replayed by it.
+// Installed at import (before any render), so the provider can call the SDK unconditionally.
+if (!window.uj) {
+  window.uj = new Proxy({} as UserJotSdk, {
+    get: (_, method) =>
+      method === "then"
+        ? 0
+        : (...args: unknown[]) => {
+            ;(window.$ujq ||= []).push([method, ...args])
+          },
+  })
+  ;(window.uj as unknown as { init: (...args: unknown[]) => void }).init(
+    import.meta.env.VITE_USERJOT_PROJECT_ID,
+    {
+      widget: {
+        launcher: false,
+        whispers: false,
+        notifications: { updates: "none" },
+      },
+    }
+  )
+}
+
+type UserJotStatus = "idle" | "loading" | "ready" | "failed"
+
+// Page-wide load state: one SDK script per page, shared by every consumer.
+let sdkStatus: UserJotStatus = "idle"
+const sdkListeners = new Set<() => void>()
+
+function setSdkStatus(next: UserJotStatus) {
+  sdkStatus = next
+  sdkListeners.forEach((listener) => listener())
+}
+
+function subscribeSdkStatus(listener: () => void) {
+  sdkListeners.add(listener)
+  return () => {
+    sdkListeners.delete(listener)
+  }
+}
+
+/** Starts loading the SDK unless it is loading or loaded; a failed load is retried. */
+function loadSdk() {
+  if (sdkStatus === "loading" || sdkStatus === "ready") return
+  setSdkStatus("loading")
+  const script = document.createElement("script")
+  script.type = "module"
+  script.src = USERJOT_SDK_URL
+  script.addEventListener("load", () => setSdkStatus("ready"))
+  script.addEventListener("error", () => {
+    script.remove()
+    setSdkStatus("failed")
+  })
+  document.head.append(script)
 }
 
 const themeToUserJot: Record<Theme, "auto" | "light" | "dark"> = {
@@ -50,10 +110,11 @@ const themeToUserJot: Record<Theme, "auto" | "light" | "dark"> = {
 }
 
 type UserJotContextValue = {
+  /** Loads the SDK if needed; the widget opens once it has loaded. */
   open: (target?: UserJotOpenTarget) => void
   unreadCount: number
-  /** False until the real SDK script has loaded; before that (or if blocked) `open` silently queues. */
-  isReady: boolean
+  /** `failed` when the SDK could not load: entry points disable with an explanation. */
+  status: UserJotStatus
 }
 
 const UserJotContext = createContext<UserJotContextValue | undefined>(undefined)
@@ -67,7 +128,7 @@ export function UserJotProvider({ children }: { children: ReactNode }) {
   } = useTranslation()
   const queryClient = useQueryClient()
   const [unreadCount, setUnreadCount] = useState(0)
-  const [isReady, setIsReady] = useState(() => !!window.__ujLoaded)
+  const status = useSyncExternalStore(subscribeSdkStatus, () => sdkStatus)
   // Bumped at the start of every identify() call and rechecked after each await, so a slow call
   // superseded by a newer one (sign-out or a different user, mid-fetch) becomes a no-op instead of
   // applying a stale identity after the newer call already ran.
@@ -135,20 +196,22 @@ export function UserJotProvider({ children }: { children: ReactNode }) {
     })
   }, [])
 
+  // Signed-in users load it in the background after first paint (effects run after paint);
+  // anonymous visitors only when they first open it.
   useEffect(() => {
-    const markReady = () => setIsReady(true)
-    window.addEventListener("uj-loaded", markReady)
-    if (window.__ujLoaded) markReady()
-    return () => window.removeEventListener("uj-loaded", markReady)
-  }, [])
+    if (isAuthenticated) loadSdk()
+  }, [isAuthenticated])
 
   const value = useMemo<UserJotContextValue>(
     () => ({
-      open: (target) => window.uj?.open(target),
+      open: (target) => {
+        loadSdk()
+        window.uj?.open(target)
+      },
       unreadCount,
-      isReady,
+      status,
     }),
-    [unreadCount, isReady]
+    [unreadCount, status]
   )
 
   return (

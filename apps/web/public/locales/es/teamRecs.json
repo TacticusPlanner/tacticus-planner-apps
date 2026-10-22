@@ -53,5 +53,9 @@
     "strength": "Elegido por potencia de combate ({{power}}).",
     "minimumSize": "Añadido para completar el equipo.",
     "random": "Elegido al azar."
+  },
+  "track": {
+    "shortfallTitle": "No hay suficientes personajes de {{track}}",
+    "shortfall": "Tienes {{owned}} personajes de {{track}}. Un equipo completo necesita tres, así que faltan {{needed}} más. En esta vía solo se pueden usar personajes de {{track}}."
   }
 }

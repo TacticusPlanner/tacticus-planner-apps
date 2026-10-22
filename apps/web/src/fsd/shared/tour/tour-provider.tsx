@@ -20,6 +20,7 @@ import {
   withoutMissingOptionalSteps,
   useMobileTutorialSteps,
 } from "./general.tutorial"
+import { safeStorage } from "@/shared/lib"
 
 /** Steps a page registers for its own tour, split by platform since the same target selectors
  *  don't always exist (or make sense) on both - `mobile` falls back to `desktop` when omitted. */
@@ -230,8 +231,8 @@ export function TourProvider({ children }: { children: ReactNode }) {
     setRun(true)
   }, [])
   const maybeAutoStartTour = React.useCallback(() => {
-    if (window.localStorage.getItem(AUTO_STARTED_STORAGE_KEY)) return
-    window.localStorage.setItem(AUTO_STARTED_STORAGE_KEY, "1")
+    if (safeStorage.get(AUTO_STARTED_STORAGE_KEY)) return
+    safeStorage.set(AUTO_STARTED_STORAGE_KEY, "1")
     setTourKind("general")
     setRun(true)
   }, [])

@@ -6,6 +6,7 @@ import { useIsAuthenticated } from "@azure/msal-react"
 
 import { useCurrentUser } from "@/entities/account"
 import { AnalyticsProvider, useAnalyticsActions } from "@/shared/analytics"
+import { setErrorReporter } from "@/shared/lib"
 
 // The matched route's concrete pathname with each param's value swapped back for its param name
 // (e.g. "/library/characters/abc-123" + { entityId: "abc-123" } -> "/library/characters/:entityId")
@@ -27,6 +28,11 @@ function toRoutePattern(pathname: string, params: Params): string {
     const placeholder = name === "*" ? "*" : `:${name}`
     return pattern.split(value).join(placeholder)
   }, pathname)
+}
+
+// Error text can carry request URLs; their query strings may hold ids or tokens, so they are cut.
+function withoutQueryStrings(text: string): string {
+  return text.replace(/(https?:\/\/[^\s?#)]+)[?#][^\s)]*/g, "$1")
 }
 
 export function PostHogProvider({
@@ -69,6 +75,23 @@ function PostHogIdentity({
       clearIdentity()
     }
   }, [isAuthenticated, analyticsId, identifyUser, clearIdentity])
+
+  // Errors are reported only while identified, tagged with the current nav section.
+  useEffect(() => {
+    if (!isIdentified) return
+    setErrorReporter((error, context) => {
+      const asError = error instanceof Error ? error : null
+      captureEvent({
+        type: "client_error",
+        message: withoutQueryStrings(asError?.message ?? String(error)),
+        stack: asError?.stack ? withoutQueryStrings(asError.stack) : null,
+        context: context ?? null,
+        routeGroup: routeGroup ?? "unknown",
+        appVersion: import.meta.env.VITE_APP_VERSION ?? null,
+      })
+    })
+    return () => setErrorReporter(null)
+  }, [isIdentified, captureEvent, routeGroup])
 
   const leafMatch = matches.at(-1)
   const routePattern = leafMatch

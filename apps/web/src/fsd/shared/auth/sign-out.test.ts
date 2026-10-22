@@ -11,12 +11,18 @@ vi.mock("@workspace/player-data", () => ({
   deletePlayerDataDb: () => deletePlayerDataDb(),
 }))
 
+const forgetAccountHint = vi.fn()
+vi.mock("./authentication", () => ({
+  forgetAccountHint: () => forgetAccountHint(),
+}))
+
 import { signOut } from "./sign-out"
 
 describe("signOut", () => {
   beforeEach(() => {
     deleteGameCatalogDb.mockClear()
     deletePlayerDataDb.mockClear()
+    forgetAccountHint.mockClear()
   })
 
   it("deletes both IndexedDB databases before redirecting", async () => {
@@ -33,6 +39,18 @@ describe("signOut", () => {
       logoutRedirect.mock.invocationCallOrder[0]
     )
     expect(deletePlayerDataDb.mock.invocationCallOrder[0]).toBeLessThan(
+      logoutRedirect.mock.invocationCallOrder[0]
+    )
+  })
+
+  it("removes the device's account hint before redirecting", async () => {
+    const logoutRedirect = vi.fn().mockResolvedValue(undefined)
+    const instance = { getAllAccounts: () => [], logoutRedirect }
+
+    await signOut(instance as never, "account-1")
+
+    expect(forgetAccountHint).toHaveBeenCalledOnce()
+    expect(forgetAccountHint.mock.invocationCallOrder[0]).toBeLessThan(
       logoutRedirect.mock.invocationCallOrder[0]
     )
   })

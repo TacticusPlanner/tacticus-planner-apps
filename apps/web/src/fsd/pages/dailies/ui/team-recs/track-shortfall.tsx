@@ -10,11 +10,11 @@ import {
 
 import { EntityIcon, RankBadge, RarityIcon } from "@/shared/ui"
 
-import type { SalvageEligibleCharacter } from "../../model/salvage-recommendations.types"
+import type { TrackEligibleCharacter } from "../../model/alliance-tracks"
 
 /**
- * The per-track "not enough characters" state for the alliance-locked Dailies pages (Salvage Run
- * now, Onslaught next): the owned characters of the track's alliance are listed, with a line
+ * The per-track "not enough characters" state for an alliance-locked Home Screen Event team: the
+ * owned characters of the track's alliance are listed, with a line
  * stating a full team cannot be built for the track and how many more of that alliance are needed.
  * It never pads from another alliance.
  */
@@ -28,10 +28,10 @@ export function TrackShortfall({
   trackLabel: string
   ownedCount: number
   needed: number
-  eligible: readonly SalvageEligibleCharacter[]
+  eligible: readonly TrackEligibleCharacter[]
   testIdPrefix?: string
 }) {
-  const { t } = useTranslation(["salvageRun", "characters"])
+  const { t } = useTranslation(["teamRecs", "characters"])
 
   return (
     <Card data-testid={`${testIdPrefix}-insufficient-track`}>

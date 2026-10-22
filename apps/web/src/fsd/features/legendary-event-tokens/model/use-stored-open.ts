@@ -1,11 +1,8 @@
 import { useCallback, useState } from "react"
+import { safeStorage } from "@/shared/lib"
 
 function readOpen(key: string): boolean {
-  try {
-    return globalThis.localStorage.getItem(key) === "true"
-  } catch {
-    return false
-  }
+  return safeStorage.get(key) === "true"
 }
 
 /** A section's open state, remembered per device in `localStorage` (design D7); collapsed by
@@ -17,11 +14,8 @@ export function useStoredOpen(
   const setOpen = useCallback(
     (next: boolean) => {
       setOpenState(next)
-      try {
-        globalThis.localStorage.setItem(key, String(next))
-      } catch {
-        // Private mode or blocked storage: the section still toggles for this visit.
-      }
+      // Private mode or blocked storage: the section still toggles for this visit.
+      safeStorage.set(key, String(next))
     },
     [key]
   )

@@ -5,6 +5,7 @@ import {
   type HseMilestoneProgress,
 } from "../lib/hse-milestones"
 import { HSE_TOKEN_MODES, type HseTokenMode } from "../lib/hse-token-supply"
+import { safeStorage } from "@/shared/lib"
 
 // Design D5: averages persist per browser by (definition, mode), milestone progress by instance. Both are
 // this tab's own keys (no other Dailies tab reads them) and every storage access is guarded, so a
@@ -29,7 +30,7 @@ const isAverage = (value: unknown): value is number | null =>
 
 function readJson(key: string): Record<string, unknown> {
   try {
-    const raw = window.localStorage.getItem(key)
+    const raw = safeStorage.get(key)
     const parsed: unknown = raw ? JSON.parse(raw) : {}
     return isRecord(parsed) ? parsed : {}
   } catch {
@@ -38,11 +39,8 @@ function readJson(key: string): Record<string, unknown> {
 }
 
 function writeJson(key: string, value: unknown) {
-  try {
-    window.localStorage.setItem(key, JSON.stringify(value))
-  } catch {
-    // Best-effort — the in-memory value still updates.
-  }
+  // Best-effort — the in-memory value still updates.
+  safeStorage.set(key, JSON.stringify(value))
 }
 
 function readAverages(): StoredAverages {

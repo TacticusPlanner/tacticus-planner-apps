@@ -21,7 +21,10 @@ vi.mock("@/features/player-data-sync", () => ({
   usePlayerDataSyncStatus: () => sync,
 }))
 
-const userJot = vi.hoisted(() => ({ open: vi.fn(), isReady: true }))
+const userJot = vi.hoisted(() => ({
+  open: vi.fn(),
+  status: "ready" as "idle" | "loading" | "ready" | "failed",
+}))
 vi.mock("../providers/userjot-provider", () => ({
   useUserJot: () => userJot,
 }))
@@ -81,7 +84,7 @@ describe("useQuickActions", () => {
     vi.clearAllMocks()
     Object.assign(tour, { hasPageTour: true, isRunning: false })
     Object.assign(sync, { isSyncing: false })
-    Object.assign(userJot, { isReady: true })
+    Object.assign(userJot, { status: "ready" })
   })
 
   it("lists the five actions in order for a signed-in user on a page with a tour", () => {
@@ -116,8 +119,17 @@ describe("useQuickActions", () => {
     expect(sync.syncNow).not.toHaveBeenCalled()
   })
 
-  it("disables feedback until the widget is ready and the tour while one runs", () => {
-    userJot.isReady = false
+  it("keeps feedback available while the widget has not loaded yet (opening loads it)", () => {
+    userJot.status = "idle"
+    const { result } = setup()
+
+    expect(
+      result.current.actions.find((a) => a.id === "feedback")?.disabledReason
+    ).toBeUndefined()
+  })
+
+  it("disables feedback when the widget failed to load and the tour while one runs", () => {
+    userJot.status = "failed"
     tour.isRunning = true
     const { result } = setup()
     const byId = (id: string) => result.current.actions.find((a) => a.id === id)

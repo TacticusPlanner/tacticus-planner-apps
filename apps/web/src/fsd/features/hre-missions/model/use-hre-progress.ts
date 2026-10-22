@@ -8,6 +8,7 @@ import {
   parseHreProgress,
   type HreProgress,
 } from "./hre-progress"
+import { safeStorage } from "@/shared/lib"
 
 // Design D4: one entry per HRE instance (occurrence id), per browser. Every storage access is
 // guarded, so a private window or blocked site data degrades to in-memory progress.
@@ -15,7 +16,7 @@ export const HRE_PROGRESS_STORAGE_KEY = "tp.dailies.hre.progress.v1"
 
 function readAll(): Record<string, HreProgress> {
   try {
-    const raw = window.localStorage.getItem(HRE_PROGRESS_STORAGE_KEY)
+    const raw = safeStorage.get(HRE_PROGRESS_STORAGE_KEY)
     const parsed: unknown = raw ? JSON.parse(raw) : {}
     if (typeof parsed !== "object" || parsed === null) return {}
     const entries: Record<string, HreProgress> = {}
@@ -30,21 +31,18 @@ function readAll(): Record<string, HreProgress> {
 }
 
 function writeAll(entries: Record<string, HreProgress>) {
-  try {
-    window.localStorage.setItem(
-      HRE_PROGRESS_STORAGE_KEY,
-      JSON.stringify(
-        Object.fromEntries(
-          Object.entries(entries).map(([key, entry]) => [
-            key,
-            { ...entry, order: HRE_PROGRESS_ORDER },
-          ])
-        )
+  // Best-effort: the in-memory value still updates.
+  safeStorage.set(
+    HRE_PROGRESS_STORAGE_KEY,
+    JSON.stringify(
+      Object.fromEntries(
+        Object.entries(entries).map(([key, entry]) => [
+          key,
+          { ...entry, order: HRE_PROGRESS_ORDER },
+        ])
       )
     )
-  } catch {
-    // Best-effort: the in-memory value still updates.
-  }
+  )
 }
 
 export type HreProgressActions = {

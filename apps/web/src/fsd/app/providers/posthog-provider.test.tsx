@@ -35,6 +35,8 @@ vi.mock("@/shared/analytics", () => ({
   useAnalyticsActions: () => ({ identifyUser, clearIdentity, captureEvent }),
 }))
 
+import { reportError } from "@/shared/lib"
+
 import { PostHogProvider } from "./posthog-provider"
 
 function successState(analyticsId: string | undefined): CurrentUserState {
@@ -63,6 +65,7 @@ function renderProvider(routeGroup: string | undefined = "/library") {
 
 afterEach(() => {
   vi.clearAllMocks()
+  vi.unstubAllEnvs()
   isAuthenticated.mockReturnValue(true)
   isMobile.mockReturnValue(false)
   matches.mockReturnValue([])
@@ -281,5 +284,41 @@ describe("PostHogProvider page-view capture", () => {
       </PostHogProvider>
     )
     expect(captureEvent).toHaveBeenCalledTimes(1)
+  })
+})
+
+describe("PostHogProvider error reporting", () => {
+  it("reports nothing for an unidentified user", () => {
+    vi.spyOn(console, "error").mockImplementation(() => {})
+    useCurrentUserMock.mockReturnValue({ state: { status: "idle" } })
+    renderProvider()
+
+    reportError(new Error("boom"))
+
+    expect(captureEvent).not.toHaveBeenCalled()
+  })
+
+  it("reports one client_error with no query string for an identified user", () => {
+    vi.spyOn(console, "error").mockImplementation(() => {})
+    vi.stubEnv("VITE_APP_VERSION", "1.2.3")
+    useCurrentUserMock.mockReturnValue({
+      state: successState("analytics-id-1"),
+    })
+    renderProvider("/plan")
+    const error = new Error(
+      "Failed to fetch https://api.example.test/api/v1/me/goals?token=secret"
+    )
+    error.stack = "Error: at https://app.example.test/assets/main.js?v=1:2:3"
+
+    reportError(error, "sync")
+
+    expect(captureEvent).toHaveBeenCalledExactlyOnceWith({
+      type: "client_error",
+      message: "Failed to fetch https://api.example.test/api/v1/me/goals",
+      stack: "Error: at https://app.example.test/assets/main.js",
+      context: "sync",
+      routeGroup: "/plan",
+      appVersion: "1.2.3",
+    })
   })
 })
