@@ -57,3 +57,36 @@ describe("accountQueries.current retry policy", () => {
     expect(getCurrentUser).toHaveBeenCalledTimes(1)
   })
 })
+
+describe("accountQueries.current freshness", () => {
+  const user = (overrides: object) => ({
+    applicationUserId: "u1",
+    displayName: "Ana",
+    hasCompletedOnboarding: true,
+    ...overrides,
+  })
+
+  async function readTwice(first: object) {
+    const client = new QueryClient()
+    getCurrentUser.mockReset().mockResolvedValue(first)
+    await client.fetchQuery(accountQueries.current())
+    await client.fetchQuery(accountQueries.current())
+    return getCurrentUser.mock.calls.length
+  }
+
+  it("reads the server again while setup is unresolved", async () => {
+    expect(await readTwice(user({ hasCompletedOnboarding: false }))).toBe(2)
+    expect(await readTwice(user({ displayName: null }))).toBe(2)
+  })
+
+  it("serves a completed account from the cache within the window", async () => {
+    expect(await readTwice(user({}))).toBe(1)
+  })
+
+  it("never serves the feedback-widget token from the cache", () => {
+    expect(accountQueries.userJotToken()).toMatchObject({
+      staleTime: 0,
+      gcTime: 0,
+    })
+  })
+})

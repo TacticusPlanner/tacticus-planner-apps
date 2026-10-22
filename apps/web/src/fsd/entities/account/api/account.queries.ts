@@ -1,6 +1,8 @@
 import { queryOptions } from "@tanstack/react-query"
 
-import { isTransientApiError } from "@/shared/api"
+import { isTransientApiError, SERVER_DATA_STALE_TIME } from "@/shared/api"
+
+import { isAccountSetupComplete } from "../model/current-user"
 
 import { getCurrentUser, getUserJotToken } from "./account.api"
 
@@ -18,6 +20,12 @@ export const accountQueries = {
       retry: (failureCount, error) =>
         failureCount < CURRENT_USER_RETRY_LIMIT && isTransientApiError(error),
       retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 8000),
+      // Always read fresh while setup is unresolved: the setup flow changes the account from
+      // another route and the gate must see it (spec: client-data-freshness).
+      staleTime: (query) =>
+        query.state.data && isAccountSetupComplete(query.state.data)
+          ? SERVER_DATA_STALE_TIME
+          : 0,
     }),
   // Never served from cache: the backend mints a fresh, short-lived token on every call, so a
   // stale one here would just hand the widget a token closer to expiry for no benefit.

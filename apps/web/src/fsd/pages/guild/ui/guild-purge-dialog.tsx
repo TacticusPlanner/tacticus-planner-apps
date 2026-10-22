@@ -43,41 +43,32 @@ type Props = {
 export function GuildPurgeDialog({ open, onOpenChange, onPurged }: Props) {
   const { t } = useTranslation()
   const [confirmation, setConfirmation] = useState("")
-  const [status, setStatus] = useState<"idle" | "submitting" | "error">("idle")
-  const [errorMessage, setErrorMessage] = useState<string | null>(null)
-  const purge = useMutation({ mutationFn: purgeGuild })
+  const purge = useMutation({
+    mutationFn: purgeGuild,
+    onSuccess: () => {
+      setConfirmation("")
+      onOpenChange(false)
+      onPurged()
+    },
+  })
+  const submitting = purge.isPending
+  const errorMessage = purge.error
+    ? purge.error instanceof ApiError
+      ? purge.error.message
+      : t("guild.purge.genericError")
+    : null
 
   const canPurge = confirmation === PURGE_CONFIRMATION_WORD
 
-  const handlePurge = async () => {
-    if (!canPurge) {
-      return
-    }
-
-    setStatus("submitting")
-    setErrorMessage(null)
-
-    try {
-      await purge.mutateAsync()
-      setConfirmation("")
-      setStatus("idle")
-      onOpenChange(false)
-      onPurged()
-    } catch (error) {
-      setStatus("error")
-      setErrorMessage(
-        error instanceof ApiError
-          ? error.message
-          : t("guild.purge.genericError")
-      )
-    }
+  const handlePurge = () => {
+    if (canPurge) purge.mutate()
   }
 
   return (
     <Dialog
       open={open}
       onOpenChange={(next) => {
-        if (status !== "submitting") {
+        if (!submitting) {
           onOpenChange(next)
         }
       }}
@@ -99,7 +90,7 @@ export function GuildPurgeDialog({ open, onOpenChange, onPurged }: Props) {
             </p>
           </div>
 
-          <Field data-invalid={status === "error"}>
+          <Field data-invalid={Boolean(errorMessage)}>
             <FieldLabel htmlFor="guild-purge-confirmation">
               {t("guild.purge.confirmLabel", { word: PURGE_CONFIRMATION_WORD })}
             </FieldLabel>
@@ -114,7 +105,7 @@ export function GuildPurgeDialog({ open, onOpenChange, onPurged }: Props) {
             </FieldContent>
           </Field>
 
-          {status === "error" && errorMessage ? (
+          {errorMessage ? (
             <FieldError data-testid="guild-purge-error">
               {errorMessage}
             </FieldError>
@@ -122,11 +113,11 @@ export function GuildPurgeDialog({ open, onOpenChange, onPurged }: Props) {
 
           <Button
             data-testid="guild-purge-submit"
-            disabled={!canPurge || status === "submitting"}
+            disabled={!canPurge || submitting}
             variant="destructive"
-            onClick={() => void handlePurge()}
+            onClick={handlePurge}
           >
-            {status === "submitting" ? <Spinner /> : null}
+            {submitting ? <Spinner /> : null}
             {t("guild.purge.submit")}
           </Button>
         </div>

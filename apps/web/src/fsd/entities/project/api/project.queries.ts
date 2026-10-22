@@ -9,14 +9,12 @@ export const projectQueries = {
       queryKey: [...projectQueries.all(), "list"] as const,
       queryFn: ({ signal }) => listProjects(signal),
     }),
+  // Prefix of every per-project member list: what an order change or a completion invalidates,
+  // without refetching the project list itself.
+  details: () => [...projectQueries.all(), "detail"] as const,
   goals: (projectId: string) =>
     queryOptions({
-      queryKey: [
-        ...projectQueries.all(),
-        "detail",
-        projectId,
-        "goals",
-      ] as const,
+      queryKey: [...projectQueries.details(), projectId, "goals"] as const,
       queryFn: ({ signal }) => listProjectGoals(projectId, signal),
     }),
 }

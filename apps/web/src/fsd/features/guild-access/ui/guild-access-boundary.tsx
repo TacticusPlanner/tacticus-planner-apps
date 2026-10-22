@@ -1,7 +1,7 @@
 import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import { useIsAuthenticated } from "@azure/msal-react"
-import { useQuery } from "@tanstack/react-query"
+import { useQuery, useQueryClient } from "@tanstack/react-query"
 import {
   Alert,
   AlertDescription,
@@ -19,7 +19,12 @@ import { GuildSynchronizationCard } from "./guild-synchronization-card"
 import { GuildTacticusUserIdCard } from "./guild-tacticus-user-id-card"
 
 type Props = {
-  children: (guild: RegisteredGuild, refresh: () => void) => ReactNode
+  /** `applyGuild` writes a register/sync response as the current guild (no refetch); `refresh` refetches. */
+  children: (
+    guild: RegisteredGuild,
+    refresh: () => void,
+    applyGuild: (guild: RegisteredGuild) => void
+  ) => ReactNode
   showGuildManagementLink?: boolean
 }
 
@@ -33,10 +38,18 @@ export function GuildAccessBoundary({
     ...guildQueries.current(),
     enabled: isAuthenticated,
   })
+  const queryClient = useQueryClient()
   const state = resolveGuildAccess(query)
   const refresh = () => {
     void query.refetch()
   }
+  // Register and sync answer with the guild itself, so it becomes the shared current-guild state
+  // without another `GET guilds/me` (spec: client-data-freshness).
+  const applyGuild = (guild: RegisteredGuild) =>
+    queryClient.setQueryData(guildQueries.current().queryKey, {
+      state: "registered",
+      guild,
+    })
 
   if (state.status === "loading") {
     return (
@@ -72,7 +85,7 @@ export function GuildAccessBoundary({
   if (state.status === "unregistered") {
     return (
       <GuildRegistrationForm
-        onRegistered={refresh}
+        onRegistered={applyGuild}
         showGuildManagementLink={showGuildManagementLink}
       />
     )
@@ -82,11 +95,11 @@ export function GuildAccessBoundary({
     return (
       <GuildSynchronizationCard
         guild={state.guild}
-        onSynchronized={refresh}
+        onSynchronized={applyGuild}
         showGuildManagementLink={showGuildManagementLink}
       />
     )
   }
 
-  return children(state.guild, refresh)
+  return children(state.guild, refresh, applyGuild)
 }

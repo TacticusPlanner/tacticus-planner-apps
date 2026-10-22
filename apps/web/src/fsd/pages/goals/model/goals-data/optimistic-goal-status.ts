@@ -1,6 +1,14 @@
-import type { GoalStatus } from "@/entities/goal"
+import type { GoalStatus, GoalSummary } from "@/entities/goal"
 
 type WithStatus = { status: GoalStatus }
+
+/** Summary fields a server response writes into every cached copy of a goal; omitted keys stay. */
+export type GoalFieldPatch = Partial<
+  Pick<
+    GoalSummary,
+    "status" | "globalPriority" | "notes" | "dependsOn" | "updatedAt"
+  >
+>
 
 /**
  * Patches `goalId`'s status in place within one cached query's data, handling every shape
@@ -13,17 +21,29 @@ type WithStatus = { status: GoalStatus }
  * needs an entry to move between different cached arrays for that transition, unlike archiving
  * (Overview caches Archived and non-Archived goals as two separate queries) or completing, so a
  * plain in-place field patch is correct here in a way it wouldn't be for every status transition.
+ * After the server answers, the response's summary fields are written the same way for any change;
+ * a change that moves entries between lists then refetches those lists.
  */
 export function applyOptimisticGoalStatus(
   data: unknown,
   goalId: string,
-  status: GoalStatus
+  status: GoalStatus | GoalFieldPatch
 ): unknown {
   if (!data || typeof data !== "object") return data
+  const patch = Object.fromEntries(
+    Object.entries(typeof status === "string" ? { status } : status).filter(
+      ([, value]) => value !== undefined
+    )
+  )
+  const apply = <T extends WithStatus>(goal: T): T =>
+    Object.entries(patch).every(
+      ([key, value]) => (goal as Record<string, unknown>)[key] === value
+    )
+      ? goal
+      : { ...goal, ...patch }
 
   if ("goalId" in data && (data as { goalId: unknown }).goalId === goalId) {
-    const current = data as { goalId: string } & WithStatus
-    return current.status === status ? data : { ...current, status }
+    return apply(data as { goalId: string } & WithStatus)
   }
 
   if ("goals" in data && Array.isArray((data as { goals: unknown }).goals)) {
@@ -33,14 +53,17 @@ export function applyOptimisticGoalStatus(
       if (!entry || typeof entry !== "object") return entry
       if ("goal" in entry) {
         const inner = (entry as { goal: { goalId: string } & WithStatus }).goal
-        if (inner.goalId !== goalId || inner.status === status) return entry
+        if (inner.goalId !== goalId) return entry
+        const next = apply(inner)
+        if (next === inner) return entry
         changed = true
-        return { ...entry, goal: { ...inner, status } }
+        return { ...entry, goal: next }
       }
       const flat = entry as { goalId: string } & WithStatus
-      if (flat.goalId !== goalId || flat.status === status) return entry
-      changed = true
-      return { ...flat, status }
+      if (flat.goalId !== goalId) return entry
+      const next = apply(flat)
+      if (next !== flat) changed = true
+      return next
     })
     return changed ? { ...data, goals: nextGoals } : data
   }

@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from "react"
 import { useTranslation } from "react-i18next"
 import { ExternalLink } from "lucide-react"
-import { useMutation } from "@tanstack/react-query"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { Button } from "@workspace/ui/components/button"
 import { Checkbox } from "@workspace/ui/components/checkbox"
 import {
@@ -30,6 +30,7 @@ import type { AccountInfo, IPublicClientApplication } from "@azure/msal-browser"
 import { useMsal } from "@azure/msal-react"
 
 import {
+  applyTacticusIntegrationResult,
   purgeAccount,
   updateTacticusIntegration,
   useCurrentUser,
@@ -63,7 +64,7 @@ export function ManageAccountDialog({
   const { t } = useTranslation()
   const { instance, accounts } = useMsal()
   const account = instance.getActiveAccount() ?? accounts[0]
-  const { refetch, state } = useCurrentUser()
+  const { state } = useCurrentUser()
 
   if (!account || state.status !== "success") {
     return null
@@ -100,7 +101,7 @@ export function ManageAccountDialog({
             </TabsTrigger>
           </TabsList>
           <TabsContent value="integration">
-            <TacticusIntegrationTab onSaved={refetch} user={state.user} />
+            <TacticusIntegrationTab user={state.user} />
           </TabsContent>
           <TabsContent value="profile">
             <ProfileTab user={state.user} />
@@ -118,57 +119,39 @@ export function ManageAccountDialog({
   )
 }
 
-function TacticusIntegrationTab({
-  onSaved,
-  user,
-}: {
-  onSaved: () => void
-  user: CurrentUser
-}) {
+/** Saving writes the response's masked key/user id into the cached current user (no `GET /me`). */
+function TacticusIntegrationTab({ user }: { user: CurrentUser }) {
   const { t } = useTranslation()
+  const queryClient = useQueryClient()
   const [apiKey, setApiKey] = useState("")
   const [userId, setUserId] = useState("")
   const [removeUserId, setRemoveUserId] = useState(false)
-  const [status, setStatus] = useState<
-    "idle" | "submitting" | "error" | "success"
-  >("idle")
-  const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const updateIntegration = useMutation({
     mutationFn: updateTacticusIntegration,
-  })
-
-  const handleSubmit = async (event: FormEvent) => {
-    event.preventDefault()
-
-    setStatus("submitting")
-    setErrorMessage(null)
-
-    try {
-      await updateIntegration.mutateAsync({
-        clearTacticusUserId: removeUserId,
-        tacticusApiKey: apiKey.trim() || undefined,
-        tacticusUserId: removeUserId ? undefined : userId.trim() || undefined,
-      })
+    onSuccess: (result) => {
       setApiKey("")
       setUserId("")
       setRemoveUserId(false)
-      setStatus("success")
-      onSaved()
-    } catch (error) {
-      setStatus("error")
-      setErrorMessage(
-        error instanceof ApiError
-          ? error.message
-          : t("manageAccount.integration.genericError")
-      )
-    }
+      applyTacticusIntegrationResult(queryClient, result)
+    },
+  })
+  const errorMessage = updateIntegration.error
+    ? updateIntegration.error instanceof ApiError
+      ? updateIntegration.error.message
+      : t("manageAccount.integration.genericError")
+    : null
+
+  const handleSubmit = (event: FormEvent) => {
+    event.preventDefault()
+    updateIntegration.mutate({
+      clearTacticusUserId: removeUserId,
+      tacticusApiKey: apiKey.trim() || undefined,
+      tacticusUserId: removeUserId ? undefined : userId.trim() || undefined,
+    })
   }
 
   return (
-    <form
-      className="flex flex-col gap-4 pt-4"
-      onSubmit={(event) => void handleSubmit(event)}
-    >
+    <form className="flex flex-col gap-4 pt-4" onSubmit={handleSubmit}>
       <div className="grid gap-2 rounded-2xl border p-3 text-sm">
         <div className="flex items-center justify-between gap-2">
           <span className="text-muted-foreground">
@@ -190,7 +173,7 @@ function TacticusIntegrationTab({
         </div>
       </div>
 
-      <Field data-invalid={status === "error"}>
+      <Field data-invalid={Boolean(errorMessage)}>
         <FieldLabel htmlFor="manage-account-api-key">
           {t("manageAccount.integration.apiKeyLabel")}
         </FieldLabel>
@@ -252,12 +235,12 @@ function TacticusIntegrationTab({
         </FieldLabel>
       </Field>
 
-      {status === "error" && errorMessage ? (
+      {errorMessage ? (
         <FieldError data-testid="manage-account-integration-error">
           {errorMessage}
         </FieldError>
       ) : null}
-      {status === "success" ? (
+      {updateIntegration.isSuccess ? (
         <p
           className="text-sm text-primary"
           data-testid="manage-account-integration-success"
@@ -268,10 +251,10 @@ function TacticusIntegrationTab({
 
       <Button
         data-testid="manage-account-integration-submit"
-        disabled={status === "submitting"}
+        disabled={updateIntegration.isPending}
         type="submit"
       >
-        {status === "submitting" ? <Spinner /> : null}
+        {updateIntegration.isPending ? <Spinner /> : null}
         {t("manageAccount.integration.save")}
       </Button>
     </form>
@@ -289,32 +272,23 @@ function AccountTab({
 }) {
   const { t } = useTranslation()
   const [confirmation, setConfirmation] = useState("")
-  const [status, setStatus] = useState<"idle" | "submitting" | "error">("idle")
-  const [errorMessage, setErrorMessage] = useState<string | null>(null)
-  const purge = useMutation({ mutationFn: purgeAccount })
+  const purge = useMutation({
+    mutationFn: async () => {
+      await purgeAccount()
+      onPurged()
+      await signOut(instance, account.homeAccountId)
+    },
+  })
+  const errorMessage = purge.error
+    ? purge.error instanceof ApiError
+      ? purge.error.message
+      : t("manageAccount.account.purgeGenericError")
+    : null
 
   const canPurge = confirmation === PURGE_CONFIRMATION_WORD
 
-  const handlePurge = async () => {
-    if (!canPurge) {
-      return
-    }
-
-    setStatus("submitting")
-    setErrorMessage(null)
-
-    try {
-      await purge.mutateAsync()
-      onPurged()
-      await signOut(instance, account.homeAccountId)
-    } catch (error) {
-      setStatus("error")
-      setErrorMessage(
-        error instanceof ApiError
-          ? error.message
-          : t("manageAccount.account.purgeGenericError")
-      )
-    }
+  const handlePurge = () => {
+    if (canPurge) purge.mutate()
   }
 
   return (
@@ -348,7 +322,7 @@ function AccountTab({
         </FieldContent>
       </Field>
 
-      {status === "error" && errorMessage ? (
+      {errorMessage ? (
         <FieldError data-testid="manage-account-purge-error">
           {errorMessage}
         </FieldError>
@@ -356,11 +330,11 @@ function AccountTab({
 
       <Button
         data-testid="manage-account-purge-submit"
-        disabled={!canPurge || status === "submitting"}
+        disabled={!canPurge || purge.isPending}
         variant="destructive"
-        onClick={() => void handlePurge()}
+        onClick={handlePurge}
       >
-        {status === "submitting" ? <Spinner /> : null}
+        {purge.isPending ? <Spinner /> : null}
         {t("manageAccount.account.purgeSubmit")}
       </Button>
     </div>

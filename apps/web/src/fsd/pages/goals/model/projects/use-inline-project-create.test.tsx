@@ -19,11 +19,10 @@ vi.mock("@/entities/project", () => ({
 import { useInlineProjectCreate } from "./use-inline-project-create"
 
 describe("useInlineProjectCreate", () => {
-  it("creates an unstyled custom project and seeds the cached list before the refetch lands", async () => {
+  it("creates an unstyled custom project and writes it into the cached list without a refetch", async () => {
     const existing = { projectId: "home", name: "Home", isDefault: true }
     const created = { projectId: "new", name: "Event", isDefault: false }
     createProject.mockResolvedValue(created)
-    listProjects.mockReturnValue(new Promise(() => undefined)) // refetch never settles
     const queryClient = new QueryClient()
     queryClient.setQueryData(["projects", "list"], { projects: [existing] })
     const wrapper = ({ children }: { children: ReactNode }) => (
@@ -45,5 +44,6 @@ describe("useInlineProjectCreate", () => {
     expect(queryClient.getQueryData(["projects", "list"])).toEqual({
       projects: [existing, created],
     })
+    expect(listProjects).not.toHaveBeenCalled()
   })
 })

@@ -30,6 +30,10 @@ vi.mock("@/shared/api", () => ({
 vi.mock("@/entities/goal", () => ({
   buildCreateGoalSnapshot: () => null,
   createCombinedGoals: (...args: unknown[]) => createCombinedGoals(...args),
+  goalQueries: {
+    lists: () => ["goals", "list"],
+    detail: (id: string) => ({ queryKey: ["goals", "detail", id] }),
+  },
   describeRankTargetKey: (key: string) => {
     const [end, slots] = key.split(":").map(Number)
     return { rank: `Rank${end}`, slots }
@@ -69,7 +73,6 @@ describe("useGoalSubmit conflicts", () => {
       })
     )
     const onOpenChange = vi.fn()
-    const onCreated = vi.fn()
     const resetForm = vi.fn()
     const { result } = renderHook(
       () =>
@@ -82,7 +85,6 @@ describe("useGoalSubmit conflicts", () => {
           startPaused: false,
           snapshotContext: {} as never,
           onOpenChange,
-          onCreated,
           resetForm,
         }),
       { wrapper }
@@ -94,13 +96,63 @@ describe("useGoalSubmit conflicts", () => {
       } as never)
     })
 
-    expect(result.current.status).toBe("error")
+    // The error state is read from the mutation, which reports it on its next notification.
+    await vi.waitFor(() => expect(result.current.status).toBe("error"))
     expect(result.current.errorMessage).toBe(
       'goals.project.membershipConflictRank:{"project":"Plan A","target":"Rank11"}'
     )
     // Nothing was closed or reset, so the user's draft is still on screen.
     expect(onOpenChange).not.toHaveBeenCalled()
-    expect(onCreated).not.toHaveBeenCalled()
     expect(resetForm).not.toHaveBeenCalled()
+  })
+})
+
+describe("useGoalSubmit cache updates", () => {
+  beforeEach(() => vi.clearAllMocks())
+
+  it("writes each created goal and refetches only the goal lists and the joined projects' members", async () => {
+    const created = [
+      { goalId: "g1", projectIds: ["p1"] },
+      { goalId: "g2", projectIds: ["p1", "p2"] },
+    ]
+    createCombinedGoals.mockResolvedValue({ goals: created })
+    const client = new QueryClient()
+    const invalidate = vi
+      .spyOn(client, "invalidateQueries")
+      .mockResolvedValue(undefined)
+    const onOpenChange = vi.fn()
+    const { result } = renderHook(
+      () =>
+        useGoalSubmit({
+          entityId: "bellator" as never,
+          entityType: "Character",
+          canSubmit: true,
+          selectedProjects: [{ projectId: "p1" }],
+          specParams: {} as never,
+          startPaused: false,
+          snapshotContext: {} as never,
+          onOpenChange,
+          resetForm: vi.fn(),
+        }),
+      {
+        wrapper: ({ children }: { children: ReactNode }) => (
+          <QueryClientProvider client={client}>{children}</QueryClientProvider>
+        ),
+      }
+    )
+
+    await act(async () => {
+      await result.current.handleSubmit({ preventDefault: () => {} } as never)
+    })
+
+    expect(client.getQueryData(["goals", "detail", "g2"])).toEqual(created[1])
+    expect(invalidate.mock.calls.map(([filters]) => filters?.queryKey)).toEqual(
+      [
+        ["goals", "list"],
+        ["projects", "detail", "p1", "goals"],
+        ["projects", "detail", "p2", "goals"],
+      ]
+    )
+    expect(onOpenChange).toHaveBeenCalledWith(false)
   })
 })

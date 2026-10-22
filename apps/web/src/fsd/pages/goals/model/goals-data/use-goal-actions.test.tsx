@@ -18,7 +18,11 @@ const deleteGoal = vi.fn()
 vi.mock("@/entities/goal", () => ({
   updateGoalStatus: (...a: unknown[]) => updateGoalStatus(...a),
   deleteGoal: (...a: unknown[]) => deleteGoal(...a),
-  goalQueries: { all: () => ["goals"] },
+  goalQueries: {
+    all: () => ["goals"],
+    lists: () => ["goals", "list"],
+    detail: (id: string) => ({ queryKey: ["goals", "detail", id] }),
+  },
 }))
 // Each project's membership, changed in place the way the single PUT would.
 const members = new Map<string, string[]>()
@@ -34,7 +38,11 @@ const changeProjectMembership = vi.fn(
   }
 )
 vi.mock("@/entities/project", () => ({
-  projectQueries: { all: () => ["projects"] },
+  projectQueries: {
+    all: () => ["projects"],
+    details: () => ["projects", "detail"],
+    goals: (id: string) => ({ queryKey: ["projects", "detail", id, "goals"] }),
+  },
   changeProjectMembership: (...a: Parameters<typeof changeProjectMembership>) =>
     changeProjectMembership(...a),
 }))
@@ -48,8 +56,8 @@ vi.mock("../projects/project-conflict-copy", () => ({
 
 import { useGoalActions } from "./use-goal-actions"
 
+let client = new QueryClient()
 function wrapper({ children }: { children: ReactNode }) {
-  const client = new QueryClient()
   return <QueryClientProvider client={client}>{children}</QueryClientProvider>
 }
 const project = { projectId: "p1", name: "Proj" } as never
@@ -71,6 +79,7 @@ describe("useGoalActions bulk", () => {
     members.clear()
     vi.mocked(toast.success).mockReset()
     vi.mocked(toast.error).mockReset()
+    client = new QueryClient()
   })
 
   it("setStatusMany: all succeed -> no toast", async () => {
@@ -225,5 +234,155 @@ describe("useGoalActions bulk", () => {
     expect(toast.error).toHaveBeenCalledExactlyOnceWith(
       'goals.toasts.movedButNotRemoved:{"count":1,"project":"Proj","destination":"Dest","error":"membership-error"}'
     )
+  })
+})
+
+describe("useGoalActions cache updates", () => {
+  const listKey = ["goals", "list", { archived: false }]
+  const memberKey = ["projects", "detail", "p1", "goals"]
+  const detail = (goalId: string, status: string, globalPriority: number) => ({
+    goalId,
+    status,
+    globalPriority,
+    projectIds: ["p1"],
+  })
+  let invalidated: unknown[][]
+
+  beforeEach(() => {
+    client = new QueryClient()
+    client.setQueryData(listKey, {
+      goals: [
+        { goalId: "a", status: "Active", globalPriority: 1 },
+        { goalId: "b", status: "Active", globalPriority: 2 },
+      ],
+    })
+    client.setQueryData(memberKey, {
+      goals: [{ goal: { goalId: "a", status: "Active", globalPriority: 1 } }],
+    })
+    client.setQueryData(["projects", "list"], { projects: [] })
+    invalidated = []
+    vi.spyOn(client, "invalidateQueries").mockImplementation(
+      async (filters?: { queryKey?: readonly unknown[] }) => {
+        invalidated.push([...(filters?.queryKey ?? [])])
+      }
+    )
+    updateGoalStatus
+      .mockReset()
+      .mockImplementation(async (id: string, status: string) =>
+        detail(id, status, status === "Completed" ? 0 : 1)
+      )
+    deleteGoal.mockReset().mockResolvedValue({})
+    changeProjectMembership.mockClear()
+    members.clear()
+  })
+
+  const listGoal = (goalId: string) =>
+    (
+      client.getQueryData(listKey) as {
+        goals: { goalId: string; status: string; globalPriority: number }[]
+      }
+    ).goals.find((goal) => goal.goalId === goalId)
+
+  it("pausing writes the response into the detail and every list and refetches nothing", async () => {
+    const { result } = renderHook(() => useGoalActions(), { wrapper })
+    await act(() => result.current.setStatus("a", "Paused", "Active"))
+
+    expect(client.getQueryData(["goals", "detail", "a"])).toEqual(
+      detail("a", "Paused", 1)
+    )
+    expect(listGoal("a")?.status).toBe("Paused")
+    expect(
+      (
+        client.getQueryData(memberKey) as {
+          goals: { goal: { status: string } }[]
+        }
+      ).goals[0].goal.status
+    ).toBe("Paused")
+    expect(invalidated).toEqual([])
+  })
+
+  it("completing refetches the goal lists and member lists once, never everything", async () => {
+    const { result } = renderHook(() => useGoalActions(), { wrapper })
+    await act(() =>
+      result.current.setStatus("a", "Completed", "Active", [
+        { goalId: "b", previousStatus: "Active" },
+      ])
+    )
+
+    expect(listGoal("a")).toMatchObject({
+      status: "Completed",
+      globalPriority: 0,
+    })
+    expect(invalidated).toEqual([
+      ["goals", "list"],
+      ["projects", "detail"],
+    ])
+  })
+
+  it("bulk pause writes every response and refetches nothing", async () => {
+    const { result } = renderHook(() => useGoalActions(), { wrapper })
+    await act(() =>
+      result.current.setStatusMany(
+        [
+          { goalId: "a", previousStatus: "Active" },
+          { goalId: "b", previousStatus: "Active" },
+        ],
+        "Paused"
+      )
+    )
+
+    expect(listGoal("a")?.status).toBe("Paused")
+    expect(listGoal("b")?.status).toBe("Paused")
+    expect(invalidated).toEqual([])
+  })
+
+  it("deleting drops the row and refetches the order reads once", async () => {
+    const { result } = renderHook(() => useGoalActions(), { wrapper })
+    await act(() => result.current.removeMany(["a", "b"]))
+
+    expect(listGoal("a")).toBeUndefined()
+    expect(invalidated).toEqual([
+      ["goals", "list"],
+      ["projects", "detail"],
+    ])
+  })
+
+  it("adding to a project patches the cached detail and refetches only that project's members", async () => {
+    client.setQueryData(["goals", "detail", "b"], {
+      ...detail("b", "Active", 2),
+      projectIds: [],
+    })
+    const { result } = renderHook(() => useGoalActions(), { wrapper })
+    await act(() => result.current.addToProject([{ goalId: "b" }], project))
+
+    expect(
+      (
+        client.getQueryData(["goals", "detail", "b"]) as {
+          projectIds: string[]
+        }
+      ).projectIds
+    ).toEqual(["p1"])
+    expect(invalidated).toEqual([memberKey])
+  })
+
+  it("removing from a project refetches the named projects' members only", async () => {
+    members.set("p1", ["a"])
+    client.setQueryData(["goals", "detail", "a"], detail("a", "Active", 1))
+    const { result } = renderHook(() => useGoalActions(), { wrapper })
+    await act(() =>
+      result.current.removeFromProject([row("a", ["p1"])], project, destination)
+    )
+
+    expect(
+      (
+        client.getQueryData(["goals", "detail", "a"]) as {
+          projectIds: string[]
+        }
+      ).projectIds
+    ).toEqual(["p3"])
+    expect(invalidated).toEqual([
+      memberKey,
+      ["projects", "detail", "p3", "goals"],
+    ])
   })
 })

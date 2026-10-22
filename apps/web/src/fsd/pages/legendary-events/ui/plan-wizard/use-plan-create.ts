@@ -194,8 +194,12 @@ export function usePlanCreate(eventId: string) {
       }
       ok = false
     }
-    void queryClient.invalidateQueries({ queryKey: goalQueries.all() })
-    void queryClient.invalidateQueries({ queryKey: projectQueries.all() })
+    void queryClient.invalidateQueries({ queryKey: goalQueries.lists() })
+    if (projectId.current) {
+      void queryClient.invalidateQueries({
+        queryKey: projectQueries.goals(projectId.current).queryKey,
+      })
+    }
 
     for (const lane of writes.lanes) {
       await attempt(`teams:${lane.laneId}`, async () => {

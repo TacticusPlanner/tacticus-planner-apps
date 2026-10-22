@@ -10,6 +10,7 @@ const updateDisplayName = vi.fn()
 const logoutRedirect = vi.fn().mockResolvedValue(undefined)
 const signOut = vi.fn().mockResolvedValue(undefined)
 const refetch = vi.fn()
+const applyTacticusIntegrationResult = vi.fn()
 const currentUserState = vi.fn<() => CurrentUserState>()
 
 const successState: CurrentUserState = {
@@ -58,6 +59,8 @@ vi.mock("@/entities/account", async (importOriginal) => ({
   purgeAccount: (...args: unknown[]) => purgeAccount(...args),
   updateTacticusIntegration: (...args: unknown[]) =>
     updateTacticusIntegration(...args),
+  applyTacticusIntegrationResult: (...args: unknown[]) =>
+    applyTacticusIntegrationResult(...args),
   useCurrentUser: () => ({ refetch, state: currentUserState() }),
 }))
 
@@ -74,6 +77,7 @@ describe("ManageAccountDialog", () => {
     logoutRedirect.mockClear()
     signOut.mockClear()
     refetch.mockClear()
+    applyTacticusIntegrationResult.mockClear()
   })
 
   it("renders nothing when there is no account or the current user hasn't loaded yet", () => {
@@ -156,8 +160,9 @@ describe("ManageAccountDialog", () => {
     })
   })
 
-  it("saves the Tacticus integration and calls onSaved on success", async () => {
-    updateTacticusIntegration.mockResolvedValue(undefined)
+  it("saves the Tacticus integration and patches the current user from the response", async () => {
+    const saved = { tacticusApiKeyConfigured: true }
+    updateTacticusIntegration.mockResolvedValue(saved)
     const user = userEvent.setup()
     render(<ManageAccountDialog onOpenChange={vi.fn()} open />)
 
@@ -177,7 +182,11 @@ describe("ManageAccountDialog", () => {
         expect.anything()
       )
     })
-    expect(refetch).toHaveBeenCalledTimes(1)
+    expect(applyTacticusIntegrationResult).toHaveBeenCalledExactlyOnceWith(
+      expect.anything(),
+      saved
+    )
+    expect(refetch).not.toHaveBeenCalled()
     expect(
       screen.getByTestId("manage-account-integration-success")
     ).toBeVisible()
@@ -196,6 +205,7 @@ describe("ManageAccountDialog", () => {
       ).toHaveTextContent("manageAccount.integration.genericError")
     })
     expect(refetch).not.toHaveBeenCalled()
+    expect(applyTacticusIntegrationResult).not.toHaveBeenCalled()
   })
 
   it("disables and clears the user id field when 'remove user id' is checked, and sends clearTacticusUserId", async () => {

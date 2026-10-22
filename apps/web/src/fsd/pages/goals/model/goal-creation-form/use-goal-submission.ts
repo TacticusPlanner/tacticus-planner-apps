@@ -32,7 +32,6 @@ export function useGoalSubmission({
   startPaused,
   snapshotContext,
   onOpenChange,
-  onCreated,
   resetForm,
 }: {
   entityId: UnitId | undefined
@@ -49,7 +48,6 @@ export function useGoalSubmission({
   startPaused: boolean
   snapshotContext: SnapshotContext
   onOpenChange: (open: boolean) => void
-  onCreated: () => void
   resetForm: () => void
 }) {
   // A Rank goal only conflicts with an in-flight Rank goal at the same normalized end target — distinct
@@ -95,7 +93,6 @@ export function useGoalSubmission({
     startPaused,
     snapshotContext,
     onOpenChange,
-    onCreated,
     resetForm,
   })
 

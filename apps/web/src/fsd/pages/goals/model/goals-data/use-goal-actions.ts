@@ -8,6 +8,7 @@ import {
   deleteGoal,
   goalQueries,
   updateGoalStatus,
+  type GoalDetail,
   type GoalStatus,
 } from "@/entities/goal"
 import {
@@ -22,17 +23,26 @@ import { membershipErrorText } from "../projects/project-conflict-copy"
 import { isOnlyMemberOf } from "../projects/project-removal"
 import type { GoalRow } from "../shared/types"
 import { applyOptimisticGoalRemoval } from "./optimistic-goal-removal"
-import { applyOptimisticGoalStatus } from "./optimistic-goal-status"
+import {
+  applyOptimisticGoalStatus,
+  type GoalFieldPatch,
+} from "./optimistic-goal-status"
 
 /** A prerequisite cascade target: the id to also transition, and its status immediately before the
  *  transition, needed to revert just that goal if its own call fails without disturbing whichever
  *  cascade members already succeeded. */
 export type CascadeTarget = { goalId: string; previousStatus: GoalStatus }
 
+/** Leaving or entering the in-flight set renumbers other goals server-side, which no single response
+ *  describes, so those transitions refetch the order reads once. */
+const movesOrder = (status: GoalStatus) =>
+  status === "Completed" || status === "Archived"
+
 /**
  * Per-goal lifecycle mutations (pause/resume/complete/archive/unarchive/delete) shared by the list, grid,
- * and row-actions menu. Mirrors `guild-purge-dialog.tsx`'s mutate-then-refresh shape, but as a hook (many
- * call sites, one goal each) rather than a single dialog's local state. `pendingIds` disables every row
+ * and row-actions menu. Response-first (spec: client-data-freshness): each response is written into the
+ * cached detail and every cached list holding the goal, and only reads the response cannot describe
+ * (goal lists and per-project member lists after an order change or a membership change) are refetched. `pendingIds` disables every row
  * whose action is currently in flight — a set, not a single id, since a prerequisite cascade (see
  * `setStatus`'s `cascade`) can have several goals in flight from one user action at once; `onChanged`
  * is the caller's list `retry`.
@@ -48,19 +58,16 @@ export function useGoalActions(_onChanged?: () => void) {
   )
   const mutation = useMutation({
     mutationFn: (action: () => Promise<unknown>) => action(),
-    // Refresh in the background: awaiting the refetch held the row pending (and the UI stale) for
-    // the whole round trip after the PATCH had already succeeded.
-    onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: goalQueries.all() })
-      void queryClient.invalidateQueries({ queryKey: projectQueries.all() })
-    },
   })
 
   /** Patches every cached query under both slices' prefixes in place — a goal can be cached by
    *  Goals Overview's flat list, any number of Project Detail's per-project lists, and its own
    *  cached detail simultaneously, and all of them need to agree instantly for the pause/resume
    *  toggle to feel immediate rather than waiting on the round trip + refetch. */
-  const patchStatusCache = (goalId: string, status: GoalStatus) => {
+  const patchStatusCache = (
+    goalId: string,
+    status: GoalStatus | GoalFieldPatch
+  ) => {
     queryClient.setQueriesData({ queryKey: goalQueries.all() }, (old) =>
       applyOptimisticGoalStatus(old, goalId, status)
     )
@@ -68,6 +75,50 @@ export function useGoalActions(_onChanged?: () => void) {
       applyOptimisticGoalStatus(old, goalId, status)
     )
   }
+
+  /** Writes a status response: the detail as returned, and its status and priority into every list. */
+  const writeGoal = (goal: GoalDetail) => {
+    queryClient.setQueryData(goalQueries.detail(goal.goalId).queryKey, goal)
+    patchStatusCache(goal.goalId, {
+      status: goal.status,
+      globalPriority: goal.globalPriority,
+    })
+  }
+
+  /** Refetches the reads an order change affects; in the background so rows don't wait on it. */
+  const refreshOrderReads = () =>
+    Promise.all([
+      queryClient.invalidateQueries({ queryKey: goalQueries.lists() }),
+      queryClient.invalidateQueries({ queryKey: projectQueries.details() }),
+    ])
+
+  /** Adds or removes `projectId` on the cached details of `goalIds` (lists carry no membership). */
+  const patchDetailProjects = (
+    goalIds: readonly string[],
+    projectId: string,
+    member: boolean
+  ) =>
+    goalIds.forEach((goalId) =>
+      queryClient.setQueryData(
+        goalQueries.detail(goalId).queryKey,
+        (goal: GoalDetail | undefined) =>
+          goal && {
+            ...goal,
+            projectIds: member
+              ? [...new Set([...goal.projectIds, projectId])]
+              : goal.projectIds.filter((id) => id !== projectId),
+          }
+      )
+    )
+
+  const refreshMembers = (...projectIds: string[]) =>
+    Promise.all(
+      projectIds.map((projectId) =>
+        queryClient.invalidateQueries({
+          queryKey: projectQueries.goals(projectId).queryKey,
+        })
+      )
+    )
 
   const patchRemovalCache = (goalId: string) => {
     queryClient.setQueriesData({ queryKey: goalQueries.all() }, (old) =>
@@ -88,26 +139,26 @@ export function useGoalActions(_onChanged?: () => void) {
       return next
     })
 
-  /** `silent` skips the per-call error toast — used for a cascade target beyond the acting goal
+  /** Returns the action's result, or `undefined` when it failed (already reported unless `silent`).
+   *  `silent` skips the per-call error toast — used for a cascade target beyond the acting goal
    *  itself, so a partial cascade failure surfaces as one aggregate toast (see `setStatus`) rather
    *  than one toast per failed prerequisite. `trackPending: false` skips this call's own add/remove
    *  because the caller is already holding `goalId` pending for a longer span (see `setStatus`) —
    *  without it, a cascade's acting goal would re-enable its row between its own call finishing and
    *  the last prerequisite call finishing, letting a second click start an overlapping cascade. */
-  const run = async (
+  const run = async <T>(
     goalId: string,
-    action: () => Promise<unknown>,
+    action: () => Promise<T>,
     options: { silent?: boolean; trackPending?: boolean } = {}
-  ) => {
+  ): Promise<{ value: T } | undefined> => {
     if (!isAuthenticated) {
-      return false
+      return undefined
     }
 
     const trackPending = options.trackPending ?? true
     if (trackPending) addPending(goalId)
     try {
-      await mutation.mutateAsync(action)
-      return true
+      return { value: (await mutation.mutateAsync(action)) as T }
     } catch (error) {
       if (!options.silent) {
         toast.error(
@@ -116,7 +167,7 @@ export function useGoalActions(_onChanged?: () => void) {
             : t("goals.toasts.actionError")
         )
       }
-      return false
+      return undefined
     } finally {
       if (trackPending) removePending(goalId)
     }
@@ -157,27 +208,31 @@ export function useGoalActions(_onChanged?: () => void) {
       patchStatusCache(goalId, status)
       cascade.forEach((entry) => patchStatusCache(entry.goalId, status))
     }
+    let changed = false
     try {
-      const ok = await run(goalId, () => updateGoalStatus(goalId, status), {
+      const own = await run(goalId, () => updateGoalStatus(goalId, status), {
         trackPending: false,
       })
-      if (!ok) {
+      if (!own) {
         if (optimistic) patchStatusCache(goalId, previousStatus)
         return
       }
+      changed = true
+      writeGoal(own.value)
       if (cascade.length === 0) {
         return
       }
 
       let cascadeSucceeded = 0
       for (const entry of cascade) {
-        const cascadeOk = await run(
+        const result = await run(
           entry.goalId,
           () => updateGoalStatus(entry.goalId, status),
           { silent: true, trackPending: false }
         )
-        if (cascadeOk) {
+        if (result) {
           cascadeSucceeded++
+          writeGoal(result.value)
         } else if (optimistic) {
           patchStatusCache(entry.goalId, entry.previousStatus)
         }
@@ -192,9 +247,14 @@ export function useGoalActions(_onChanged?: () => void) {
       }
     } finally {
       allIds.forEach(removePending)
+      if (changed && (movesOrder(status) || movesOrder(previousStatus))) {
+        void refreshOrderReads()
+      }
     }
   }
 
+  /** Deleting renumbers the remaining in-flight goals, and a failure must restore the row, so both
+   *  outcomes refetch the order reads once. */
   const remove = async (goalId: string) => {
     if (!isAuthenticated) {
       return false
@@ -202,20 +262,9 @@ export function useGoalActions(_onChanged?: () => void) {
 
     patchRemovalCache(goalId)
     const ok = await run(goalId, () => deleteGoal(goalId))
-    if (!ok) {
-      await Promise.all([
-        queryClient.invalidateQueries({ queryKey: goalQueries.all() }),
-        queryClient.invalidateQueries({ queryKey: projectQueries.all() }),
-      ])
-    }
+    void refreshOrderReads()
     return Boolean(ok)
   }
-
-  const invalidateAll = () =>
-    Promise.all([
-      queryClient.invalidateQueries({ queryKey: goalQueries.all() }),
-      queryClient.invalidateQueries({ queryKey: projectQueries.all() }),
-    ])
 
   /** Bulk pause/resume over an explicit selection (no prerequisite cascade). Every id stays pending for
    *  the whole loop, rows patch optimistically up front, and each failed id reverts on its own; one
@@ -232,13 +281,15 @@ export function useGoalActions(_onChanged?: () => void) {
     let succeeded = 0
     try {
       for (const entry of targets) {
-        const ok = await run(
+        const result = await run(
           entry.goalId,
           () => updateGoalStatus(entry.goalId, status),
           { silent: true, trackPending: false }
         )
-        if (ok) succeeded++
-        else patchStatusCache(entry.goalId, entry.previousStatus)
+        if (result) {
+          succeeded++
+          writeGoal(result.value)
+        } else patchStatusCache(entry.goalId, entry.previousStatus)
       }
       if (succeeded < targets.length) {
         toast.error(
@@ -254,8 +305,8 @@ export function useGoalActions(_onChanged?: () => void) {
   }
 
   /** Bulk delete: every row leaves the caches immediately, then one delete per goal runs
-   *  sequentially. A failure refetches once after the loop (restoring only the failed ids) and one
-   *  aggregate error toast is shown; success shows no toast. */
+   *  sequentially. The order reads refetch once after the loop (renumbering, and restoring only the
+   *  failed ids); a failure shows one aggregate error toast, success shows none. */
   const removeMany = async (goalIds: readonly string[]) => {
     if (!isAuthenticated || goalIds.length === 0) return
     goalIds.forEach(addPending)
@@ -269,8 +320,8 @@ export function useGoalActions(_onChanged?: () => void) {
         })
         if (ok) succeeded++
       }
+      void refreshOrderReads()
       if (succeeded < goalIds.length) {
-        await invalidateAll()
         toast.error(
           t("goals.toasts.bulkPartial", {
             succeeded,
@@ -303,7 +354,8 @@ export function useGoalActions(_onChanged?: () => void) {
       )
       const added = after.length - before.length
       if (added > 0) {
-        void invalidateAll()
+        patchDetailProjects(goalIds, project.projectId, true)
+        void refreshMembers(project.projectId)
         toast.success(
           t("goals.toasts.goalsAddedToProject", {
             project: project.name,
@@ -312,7 +364,7 @@ export function useGoalActions(_onChanged?: () => void) {
         )
       }
     } catch (error) {
-      void invalidateAll()
+      void refreshMembers(project.projectId)
       toast.error(membershipErrorText(t, error))
     } finally {
       goalIds.forEach(removePending)
@@ -348,11 +400,13 @@ export function useGoalActions(_onChanged?: () => void) {
           ...relocating,
         ])
         movedToDestination = true
+        patchDetailProjects(relocating, destination.projectId, true)
       }
       const { before, after } = await changeProjectMembership(
         project.projectId,
         (current) => current.filter((goalId) => !goalIds.includes(goalId))
       )
+      patchDetailProjects(goalIds, project.projectId, false)
       const removed = before.length - after.length
       const single = rows.length === 1 ? rows[0] : undefined
       if (single && destination && relocating.length > 0) {
@@ -402,7 +456,10 @@ export function useGoalActions(_onChanged?: () => void) {
       )
       return false
     } finally {
-      void invalidateAll()
+      void refreshMembers(
+        project.projectId,
+        ...(destination ? [destination.projectId] : [])
+      )
       goalIds.forEach(removePending)
     }
   }

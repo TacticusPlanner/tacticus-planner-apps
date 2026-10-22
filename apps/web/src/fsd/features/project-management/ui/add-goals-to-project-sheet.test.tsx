@@ -64,6 +64,7 @@ vi.mock("@/entities/goal", () => ({
   },
   goalQueries: {
     all: () => ["goals"],
+    lists: () => ["goals", "list"],
     detail: (goalId: string) => ({
       queryKey: ["goals", "detail", goalId],
       queryFn: () => {
@@ -286,6 +287,9 @@ describe("AddGoalsToProjectSheet", () => {
         'goals.toasts.projectMembershipSaved:{"project":"Project A","added":1,"removed":0}'
       )
     )
+    // Only this project's member list refetches; the goal list is untouched by a membership save.
+    expect(listProjectGoals).toHaveBeenCalledTimes(2)
+    expect(listGoals).toHaveBeenCalledTimes(1)
   })
 
   it("removes a member the user unticks, including one that is not listed, and keeps the rest", async () => {

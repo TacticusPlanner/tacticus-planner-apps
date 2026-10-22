@@ -372,9 +372,12 @@ describe("useGoalOrderActions", () => {
     })
 
     const keys = invalidate.mock.calls.map((call) => call[0])
-    // One refresh: the order lists, the project projections, and details only marked stale.
+    // One refresh: the order lists, the per-project member lists (never the project list), and
+    // details only marked stale.
     expect(keys).toHaveLength(3)
     expect(keys).toContainEqual({ queryKey: goalQueries.lists() })
+    expect(keys).toContainEqual({ queryKey: projectQueries.details() })
+    expect(keys).not.toContainEqual({ queryKey: projectQueries.all() })
     expect(keys).toContainEqual({
       queryKey: goalQueries.details(),
       refetchType: "none",

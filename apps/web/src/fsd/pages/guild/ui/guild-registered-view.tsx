@@ -21,7 +21,7 @@ import { GuildPurgeDialog } from "./guild-purge-dialog"
 
 type Props = {
   guild: RegisteredGuild
-  onSynced: () => void
+  onSynced: (guild: RegisteredGuild) => void
   onPurged: () => void
 }
 
@@ -33,35 +33,27 @@ type Props = {
  */
 export function GuildRegisteredView({ guild, onSynced, onPurged }: Props) {
   const { t, i18n } = useTranslation()
-  const [status, setStatus] = useState<"idle" | "syncing" | "error">("idle")
-  const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [isPurgeDialogOpen, setIsPurgeDialogOpen] = useState(false)
-  const synchronize = useMutation({ mutationFn: syncMyGuild })
+  const synchronize = useMutation({
+    mutationFn: syncMyGuild,
+    onSuccess: onSynced,
+  })
+  const syncing = synchronize.isPending
+  const errorMessage = synchronize.error
+    ? synchronize.error instanceof ApiError
+      ? synchronize.error.message
+      : t("guild.summary.syncError")
+    : null
 
   const lastSynced = guild.lastSyncSucceededAt
     ? formatRelativeTime(Date.parse(guild.lastSyncSucceededAt), i18n.language)
     : null
 
-  const handleSync = async () => {
+  const handleSync = () => {
     // Guards against overlapping requests — the button is also disabled while syncing, but this covers
     // any path that could otherwise re-trigger the handler mid-flight.
-    if (status === "syncing") {
-      return
-    }
-
-    setStatus("syncing")
-    setErrorMessage(null)
-
-    try {
-      await synchronize.mutateAsync()
-      setStatus("idle")
-      onSynced()
-    } catch (error) {
-      setStatus("error")
-      setErrorMessage(
-        error instanceof ApiError ? error.message : t("guild.summary.syncError")
-      )
-    }
+    if (syncing) return
+    synchronize.mutate()
   }
 
   return (
@@ -86,19 +78,13 @@ export function GuildRegisteredView({ guild, onSynced, onPurged }: Props) {
             <div className="flex items-center gap-2">
               <Button
                 data-testid="guild-sync-button"
-                disabled={status === "syncing"}
+                disabled={syncing}
                 size="sm"
                 variant="outline"
-                onClick={() => void handleSync()}
+                onClick={handleSync}
               >
-                {status === "syncing" ? (
-                  <Spinner />
-                ) : (
-                  <RefreshCw data-icon="inline-start" />
-                )}
-                {status === "syncing"
-                  ? t("guild.summary.syncing")
-                  : t("guild.summary.sync")}
+                {syncing ? <Spinner /> : <RefreshCw data-icon="inline-start" />}
+                {syncing ? t("guild.summary.syncing") : t("guild.summary.sync")}
               </Button>
               <Button
                 data-testid="guild-purge-open"
@@ -113,7 +99,7 @@ export function GuildRegisteredView({ guild, onSynced, onPurged }: Props) {
             </div>
           ) : null}
         </CardHeader>
-        {status === "error" && errorMessage ? (
+        {errorMessage ? (
           <CardContent>
             <p
               className="text-sm text-destructive"
