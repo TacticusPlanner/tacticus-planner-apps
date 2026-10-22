@@ -4,7 +4,10 @@ import { describe, expect, it, vi } from "vitest"
 
 vi.mock("react-i18next", () => ({
   initReactI18next: { init: () => undefined, type: "3rdParty" },
-  useTranslation: () => ({ t: (key: string) => key }),
+  useTranslation: () => ({
+    t: (key: string) => key,
+    i18n: { language: "en" },
+  }),
 }))
 
 import { ManageProjectsSheet } from ".//manage-projects-sheet"
