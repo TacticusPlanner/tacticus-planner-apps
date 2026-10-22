@@ -13,6 +13,7 @@ import type { i18n as I18n } from "i18next"
 import { TooltipProvider } from "@workspace/ui/components/tooltip"
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
 
+import { unitOriginState } from "@/entities/unit"
 import type { ReadState } from "@/shared/lib"
 import type { UnitPowerContext } from "@/shared/unit-power"
 import { createTestI18n } from "@/test/i18n"
@@ -266,11 +267,19 @@ function Where() {
   )
 }
 
-async function renderUnit(url: string) {
+async function renderUnit(url: string, state?: unknown) {
   render(
     <I18nextProvider i18n={i18n}>
       <TooltipProvider>
-        <MemoryRouter initialEntries={[url]}>
+        <MemoryRouter
+          initialEntries={[
+            {
+              pathname: url.split("?")[0],
+              search: url.includes("?") ? `?${url.split("?")[1]}` : "",
+              state,
+            },
+          ]}
+        >
           <Routes>
             <Route
               path="/library/machines-of-war/:entityId"
@@ -372,6 +381,47 @@ describe("MowUnitPage", () => {
     await act(async () => {})
     expect(screen.getByTestId("where")).toHaveTextContent(
       "/library/machines-of-war/necroReanimator?tab=upgrades"
+    )
+  })
+
+  it("returns to Collection and walks Collection's Machine of War order when opened from Collection", async () => {
+    // Collection order (Biovore, Galatian, Reanimator) differs from the list's default order.
+    await renderUnit(
+      "/library/machines-of-war/ultraDreadnought?tab=upgrades",
+      unitOriginState({
+        kind: "collection",
+        ids: ["tyranBiovore", "ultraDreadnought", "necroReanimator"],
+      })
+    )
+
+    const back = screen.getByTestId("unit-nav-back")
+    expect(back).toHaveAttribute("href", "/my-game/collection")
+    expect(back).toHaveTextContent("Collection")
+    expect(back).toHaveAccessibleName("Back to Collection")
+    expect(screen.getByTestId("unit-nav-position")).toHaveTextContent("2 of 3")
+    expect(
+      screen.getByRole("link", { name: /Previous unit: Biovore/ })
+    ).toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole("link", { name: /Next unit: Reanimator/ }))
+    await act(async () => {})
+
+    expect(screen.getByTestId("where")).toHaveTextContent(
+      "/library/machines-of-war/necroReanimator?tab=upgrades"
+    )
+    expect(screen.getByTestId("unit-nav-position")).toHaveTextContent("3 of 3")
+    expect(screen.getByTestId("unit-nav-next")).toBeDisabled()
+    expect(screen.getByTestId("unit-nav-back")).toHaveAttribute(
+      "href",
+      "/my-game/collection"
+    )
+  })
+
+  it("keeps the Machines of War list as the back target without an origin", async () => {
+    await renderUnit("/library/machines-of-war/ultraDreadnought")
+
+    expect(screen.getByTestId("unit-nav-back")).toHaveAccessibleName(
+      "Back to Machines of War"
     )
   })
 

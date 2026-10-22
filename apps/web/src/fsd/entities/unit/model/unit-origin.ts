@@ -1,3 +1,5 @@
+import type { UnitKind } from "./types"
+
 /**
  * Where a unit page was opened from, carried in router history state so it survives reload and
  * back/forward but never appears in a shared URL. It decides the back button's target and label and
@@ -6,8 +8,18 @@
  */
 export type UnitOrigin = {
   kind: "list" | "collection"
-  /** The units in the order the origin showed them. */
+  /** The units in the order the origin showed them - only units of the opened unit's kind. */
   ids: readonly string[]
+}
+
+/** Where a unit page's back button goes when the unit was opened from My Game's Collection. */
+export const COLLECTION_ORIGIN_PATH = "/my-game/collection"
+
+/** The unit's Library page: the characters or Machines of War section by its kind. */
+export function unitLibraryPath(kind: UnitKind, unitId: string): string {
+  return kind === "character"
+    ? `/library/characters/${unitId}`
+    : `/library/machines-of-war/${unitId}`
 }
 
 type OriginState = { unitOrigin?: UnitOrigin }

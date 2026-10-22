@@ -1,3 +1,4 @@
+import { useMemo } from "react"
 import { AlertTriangle, LogIn, RefreshCw } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
@@ -12,7 +13,12 @@ import {
 import { Button } from "@workspace/ui/components/button"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 
-import { UnitTile } from "@/entities/unit"
+import {
+  unitLibraryPath,
+  unitOriginState,
+  UnitTile,
+  type UnitKind,
+} from "@/entities/unit"
 import { usePlayerDataSyncStatus } from "@/features/player-data-sync"
 import { loginRequest } from "@/shared/auth"
 import { useTourPageSteps } from "@/shared/tour"
@@ -48,6 +54,8 @@ export function CollectionPage() {
   const hasUnowned =
     state.status === "ready" && state.view.owned < state.view.total
   useTourPageSteps(useCollectionTutorial({ hasSummary, hasOwned, hasUnowned }))
+  const groups = state.status === "ready" ? state.view.groups : undefined
+  const origins = useMemo(() => collectionOrigins(groups ?? []), [groups])
 
   if (state.status === "loading") {
     return <CollectionSkeleton />
@@ -91,6 +99,7 @@ export function CollectionPage() {
             key={group.factionId}
             group={group}
             showOwned={view.rosterState === "available"}
+            origins={origins}
           />
         ))}
       </div>
@@ -98,12 +107,33 @@ export function CollectionPage() {
   )
 }
 
+/**
+ * The history state each tile hands its unit page: Collection's order of the units of that kind, so
+ * the page's prev/next walk Collection without stepping a character page onto a Machine of War.
+ */
+function collectionOrigins(
+  groups: readonly CollectionFactionGroup[]
+): Record<UnitKind, unknown> {
+  const ids = (kind: UnitKind) =>
+    groups.flatMap((group) =>
+      group.units
+        .filter((unit) => unit.kind === kind)
+        .map((unit) => unit.unitId)
+    )
+  return {
+    character: unitOriginState({ kind: "collection", ids: ids("character") }),
+    mow: unitOriginState({ kind: "collection", ids: ids("mow") }),
+  }
+}
+
 function FactionGroupCard({
   group,
   showOwned,
+  origins,
 }: {
   group: CollectionFactionGroup
   showOwned: boolean
+  origins: Record<UnitKind, unknown>
 }) {
   const { t } = useTranslation("common")
   const total = group.units.length
@@ -148,6 +178,10 @@ function FactionGroupCard({
           <li key={unit.unitId} className="min-w-0">
             <UnitTile
               unit={unit}
+              link={{
+                to: unitLibraryPath(unit.kind, unit.unitId),
+                state: origins[unit.kind],
+              }}
               testId={
                 unit.data.state === "owned"
                   ? "collection-owned-tile"

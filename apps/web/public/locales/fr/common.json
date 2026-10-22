@@ -1428,11 +1428,11 @@
         },
         "owned": {
           "title": "Une unité possédée",
-          "content": "L'anneau indique sa rareté, avec les étoiles en haut, le rang et les éclats sur le portrait, et en dessous les niveaux de capacité de part et d'autre de son niveau d'XP."
+          "content": "L'anneau indique sa rareté, avec les étoiles en haut, le rang et les éclats sur le portrait, et en dessous les niveaux de capacité de part et d'autre de son niveau d'XP. Sélectionnez une unité pour ouvrir ses détails dans la Bibliothèque."
         },
         "unowned": {
           "title": "Pas encore débloquée",
-          "content": "Les unités en grisé ne font pas partie de votre effectif. La barre montre à quel point vous êtes proche de les débloquer."
+          "content": "Les unités en grisé ne font pas partie de votre effectif. La barre montre à quel point vous êtes proche de les débloquer. Sélectionnez une unité pour ouvrir ses détails dans la Bibliothèque."
         }
       }
     },

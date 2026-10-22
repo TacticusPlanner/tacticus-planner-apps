@@ -20,7 +20,10 @@ function CurrentPath() {
   return <p data-testid="path">{useLocation().pathname}</p>
 }
 
-function renderTile(unit: UnitTileUnit) {
+function renderTile(
+  unit: UnitTileUnit,
+  link?: { to: string; state?: unknown }
+) {
   return render(
     <I18nextProvider i18n={i18n}>
       <MemoryRouter initialEntries={["/my-game/collection"]}>
@@ -29,7 +32,7 @@ function renderTile(unit: UnitTileUnit) {
             path="*"
             element={
               <>
-                <UnitTile unit={unit} testId="tile" />
+                <UnitTile unit={unit} link={link} testId="tile" />
                 <CurrentPath />
               </>
             }
@@ -143,13 +146,57 @@ describe("UnitTile", () => {
     )
   })
 
-  it("does nothing when clicked (click-through to Library is Stage 4)", () => {
+  it("is a static group that navigates nowhere without a link", () => {
     renderTile(titus)
 
     fireEvent.click(screen.getByRole("group"))
 
     expect(screen.getByTestId("path")).toHaveTextContent("/my-game/collection")
     expect(screen.queryByRole("link")).not.toBeInTheDocument()
+  })
+
+  it("is one focusable link named by its progression when given a link", () => {
+    renderTile(titus, { to: "/library/characters/ultraTitus" })
+    const link = screen.getByRole("link")
+
+    expect(screen.queryByRole("group")).not.toBeInTheDocument()
+    expect(link).toBe(screen.getByTestId("tile"))
+    expect(link).toHaveAttribute("href", "/library/characters/ultraTitus")
+    expect(link).toHaveAccessibleName(
+      "Titus, Legendary, Red Four Stars, Gold I, level 45, Active ability level 40, passive ability level 38, 120 shards"
+    )
+    link.focus()
+    expect(link).toHaveFocus()
+  })
+
+  it("opens its link when clicked", () => {
+    renderTile(titus, { to: "/library/characters/ultraTitus" })
+
+    fireEvent.click(screen.getByRole("link"))
+
+    expect(screen.getByTestId("path")).toHaveTextContent(
+      "/library/characters/ultraTitus"
+    )
+  })
+
+  it.each([
+    ["an owned character", () => titus],
+    [
+      "an unowned character with shards",
+      () => calgar({ shards: 75, mythicShards: 0, unlockShards: 400 }),
+    ],
+    ["a character with no shard data", () => calgar({})],
+    ["an owned Machine of War", () => ownedMow],
+  ])("keeps %s's content and accessible name as a link", (_, unit) => {
+    const { unmount } = renderTile(unit())
+    const name = screen.getByRole("group").getAttribute("aria-label")
+    const text = screen.getByTestId("tile").textContent
+    unmount()
+
+    renderTile(unit(), { to: "/library/x" })
+
+    expect(screen.getByRole("link")).toHaveAccessibleName(name!)
+    expect(screen.getByTestId("tile").textContent).toBe(text)
   })
 
   it("shows a Machine of War's abilities and shards but no rank, XP level or equipment", () => {

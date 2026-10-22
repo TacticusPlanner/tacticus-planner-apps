@@ -1,4 +1,5 @@
 import type { CSSProperties } from "react"
+import { Link, type To } from "react-router"
 import { Lock } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import {
@@ -9,12 +10,7 @@ import {
   rankIcon,
   shardIcon,
 } from "@workspace/game-catalog"
-import {
-  progressionRarity,
-  progressionStarsIndex,
-  type Progression,
-  type Rarity,
-} from "@workspace/game-domain"
+import { progressionRarity, type Rarity } from "@workspace/game-domain"
 import { cn } from "@workspace/ui/lib/utils"
 
 import { EntityIcon } from "@/shared/ui"
@@ -26,6 +22,7 @@ import type {
   UnitTileUnit,
   UnownedUnitTileData,
 } from "../model/types"
+import { usesMythicShards, useUnitTileLabel } from "./unit-tile-label"
 
 const rarityColor = (rarity: Rarity) => `var(--rarity-${rarity.toLowerCase()})`
 
@@ -38,16 +35,20 @@ const outlinedText =
  * colour with stars, rank and shards overlaid, then its name, a row of number boxes (XP level and
  * ability levels) and its equipment. Unowned units render greyed out with a lock and their unlock
  * progress, or the rarity they start at when no shard data is known. Every variant reserves the
- * same rows, so tiles in a grid share one height. Presentational only - it never fetches and is not
- * interactive (Stage 4 makes it open the unit's Library page). It is a group whose accessible name
- * spells the progression out; every image inside is decorative.
+ * same rows, so tiles in a grid share one height. Presentational only - it never fetches. Given a
+ * `link` the whole tile is that link (Collection opens the unit's Library page); otherwise it is a
+ * static group. Either way its accessible name spells the progression out and every image inside is
+ * decorative.
  */
 export function UnitTile({
   unit,
+  link,
   className,
   testId,
 }: {
   unit: UnitTileUnit
+  /** Makes the tile a link; `state` goes into router history state, never the URL. */
+  link?: { to: To; state?: unknown }
   className?: string
   testId?: string
 }) {
@@ -59,18 +60,8 @@ export function UnitTile({
       : mowIcon(unit.unitId)
   const owned = data.state === "owned" ? data : undefined
 
-  return (
-    <div
-      role="group"
-      aria-label={label}
-      title={unit.name}
-      data-testid={testId}
-      data-state={data.state}
-      className={cn(
-        "flex min-w-0 flex-col items-center px-0.5 pt-2.5 pb-1",
-        className
-      )}
-    >
+  const content = (
+    <>
       <div className="relative aspect-square w-full max-w-18">
         <div
           className={cn(
@@ -120,6 +111,32 @@ export function UnitTile({
           <UnownedDetails data={data as UnownedUnitTileData} />
         )}
       </div>
+    </>
+  )
+  const rootProps = {
+    "aria-label": label,
+    title: unit.name,
+    "data-testid": testId,
+    "data-state": data.state,
+  }
+  const layout = "flex min-w-0 flex-col items-center px-0.5 pt-2.5 pb-1"
+
+  return link ? (
+    <Link
+      to={link.to}
+      state={link.state}
+      {...rootProps}
+      className={cn(
+        layout,
+        "rounded-lg transition-colors hover:bg-accent/10 focus-visible:outline-2 focus-visible:outline-primary",
+        className
+      )}
+    >
+      {content}
+    </Link>
+  ) : (
+    <div role="group" {...rootProps} className={cn(layout, className)}>
+      {content}
     </div>
   )
 }
@@ -179,15 +196,6 @@ function PortraitOverlays({
     </>
   )
 }
-
-/**
- * From the first blue star on, every further ascension costs mythic shards, so an owned unit's tile
- * shows only the shard count that still matters: regular below a blue star, mythic from it.
- */
-function usesMythicShards(progression: Progression): boolean {
-  return progressionStarsIndex(progression) >= firstBlueStarIndex
-}
-const firstBlueStarIndex = 11
 
 function ShardCrystal({
   kind,
@@ -363,70 +371,4 @@ function UnownedDetails({ data }: { data: UnownedUnitTileData }) {
       )}
     </div>
   )
-}
-
-/** "Titus, Legendary, Red Four Stars, Gold I, level 45, active ability level 40, ...". */
-function useUnitTileLabel(unit: UnitTileUnit): string {
-  const { t } = useTranslation(["common", "progression"])
-  const { data } = unit
-  const parts = [unit.name]
-
-  if (data.state === "owned") {
-    parts.push(...progressionParts(data.progression, t))
-    if (data.rank) parts.push(t(`progression:ranks.${data.rank}`))
-    if (data.xpLevel !== undefined) {
-      parts.push(t("unitTile.level", { level: data.xpLevel }))
-    }
-    const [first, second] = data.abilityLevels
-    parts.push(
-      t(
-        unit.kind === "character"
-          ? "unitTile.characterAbilities"
-          : "unitTile.mowAbilities",
-        { first, second }
-      )
-    )
-    parts.push(
-      usesMythicShards(data.progression)
-        ? t("unitTile.mythicShards", { count: data.mythicShards })
-        : t("unitTile.shards", { count: data.shards })
-    )
-    return parts.join(", ")
-  }
-
-  parts.push(t("unitTile.notOwned"))
-  if (data.shards === undefined) {
-    if (data.rarity) {
-      parts.push(
-        t("unitTile.startsAt", {
-          rarity: t(`progression:rarities.${data.rarity}`),
-        })
-      )
-    }
-  } else {
-    parts.push(
-      data.unlockShards === undefined
-        ? t("unitTile.shards", { count: data.shards })
-        : t("unitTile.shardsToUnlock", {
-            count: data.shards,
-            required: data.unlockShards,
-          })
-    )
-    if (data.mythicShards) {
-      parts.push(t("unitTile.mythicShards", { count: data.mythicShards }))
-    }
-  }
-  return parts.join(", ")
-}
-
-type StarsKey = Progression extends `${string}:${infer Stars}` ? Stars : never
-
-function progressionParts(
-  progression: Progression,
-  t: ReturnType<typeof useTranslation<["common", "progression"]>>["t"]
-): string[] {
-  const [rarity, stars] = progression.split(":") as [Rarity, StarsKey]
-  const parts = [t(`progression:rarities.${rarity}`)]
-  if (stars !== "None") parts.push(t(`progression:stars.${stars}`))
-  return parts
 }

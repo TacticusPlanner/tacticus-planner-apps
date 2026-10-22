@@ -13,6 +13,11 @@ import {
 import { Button } from "@workspace/ui/components/button"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
+import {
+  readUnitOrigin,
+  unitNeighbours,
+  unitOriginState,
+} from "@/entities/unit"
 import { useAbilityText } from "@/shared/ability-text"
 import { useTourPageSteps } from "@/shared/tour"
 import { ProgressionSelect } from "@/shared/ui"
@@ -24,11 +29,6 @@ import { AbilityPanel } from "../unit/ability-panel"
 import { UnitHeader, type ValuesMode } from "../unit/unit-header"
 import { UnitNavBar } from "../unit/unit-nav-bar"
 import { UnitPowerValue } from "../unit/unit-power-value"
-import {
-  readUnitOrigin,
-  unitNeighbours,
-  unitOriginState,
-} from "../unit/unit-origin"
 import { UnitTabs } from "../unit/unit-tabs"
 import { useCatalogDataset } from "../unit/use-catalog-dataset"
 import { useUnitTab } from "../unit/use-unit-tab"
@@ -286,6 +286,7 @@ function MowUnit({
     <div className="-mx-4 flex flex-col md:-mx-6" data-testid="mow-unit-page">
       <UnitNavBar
         back={{ to: MOWS_PATH, label: t("mowsList.title") }}
+        origin={origin}
         breadcrumb={[
           t("characterUnit.breadcrumbLibrary"),
           t("mowsList.title"),

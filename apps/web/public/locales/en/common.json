@@ -1428,11 +1428,11 @@
         },
         "owned": {
           "title": "An owned unit",
-          "content": "The ring shows its rarity, with stars on top, rank and shards on the portrait, and ability levels either side of its XP level below."
+          "content": "The ring shows its rarity, with stars on top, rank and shards on the portrait, and ability levels either side of its XP level below. Select a unit to open its details in the Library."
         },
         "unowned": {
           "title": "Not unlocked yet",
-          "content": "Greyed-out units aren't in your roster. The bar shows how close you are to unlocking them."
+          "content": "Greyed-out units aren't in your roster. The bar shows how close you are to unlocking them. Select a unit to open its details in the Library."
         }
       }
     },

@@ -2,32 +2,8 @@ import { fireEvent, render, screen } from "@testing-library/react"
 import { MemoryRouter, Route, Routes, useLocation } from "react-router"
 import { describe, expect, it } from "vitest"
 
-import { readUnitOrigin, unitNeighbours, unitOriginState } from "./unit-origin"
 import { UnitTabs } from "./unit-tabs"
 import { useUnitTab } from "./use-unit-tab"
-
-describe("unit origin", () => {
-  it("reads an origin from history state and ignores anything else", () => {
-    const origin = { kind: "list" as const, ids: ["a", "b"] }
-    expect(readUnitOrigin(unitOriginState(origin))).toEqual(origin)
-    expect(readUnitOrigin(null)).toBeUndefined()
-    expect(readUnitOrigin({ unitOrigin: { kind: "elsewhere", ids: [] } })).toBe(
-      undefined
-    )
-  })
-
-  it("finds the neighbours and position in the origin's order", () => {
-    expect(unitNeighbours(["a", "b", "c"], "b")).toEqual({
-      index: 1,
-      total: 3,
-      previousId: "a",
-      nextId: "c",
-    })
-    expect(unitNeighbours(["a", "b", "c"], "a").previousId).toBeUndefined()
-    expect(unitNeighbours(["a", "b", "c"], "c").nextId).toBeUndefined()
-    expect(unitNeighbours(["a", "b"], "z")).toEqual({ index: -1, total: 2 })
-  })
-})
 
 function TabsHarness() {
   const [tab, select] = useUnitTab(["details", "rankup"] as const)

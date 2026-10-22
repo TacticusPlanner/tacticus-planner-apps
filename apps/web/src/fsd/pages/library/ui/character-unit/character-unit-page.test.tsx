@@ -13,6 +13,7 @@ import type { i18n as I18n } from "i18next"
 import { TooltipProvider } from "@workspace/ui/components/tooltip"
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
 
+import { unitOriginState } from "@/entities/unit"
 import type { ReadState } from "@/shared/lib"
 import type { UnitPowerContext } from "@/shared/unit-power"
 import { createTestI18n } from "@/test/i18n"
@@ -355,11 +356,19 @@ function Where() {
   )
 }
 
-async function renderUnit(url: string) {
+async function renderUnit(url: string, state?: unknown) {
   render(
     <I18nextProvider i18n={i18n}>
       <TooltipProvider>
-        <MemoryRouter initialEntries={[url]}>
+        <MemoryRouter
+          initialEntries={[
+            {
+              pathname: url.split("?")[0],
+              search: url.includes("?") ? `?${url.split("?")[1]}` : "",
+              state,
+            },
+          ]}
+        >
           <Routes>
             <Route
               path="/library/characters/:entityId"
@@ -1018,6 +1027,61 @@ describe("CharacterUnitPage", () => {
     expect(
       screen.getByRole("link", { name: "Previous unit: Calgar" })
     ).toHaveAttribute("href", "/library/characters/ultraCalgar?tab=rankup")
+  })
+
+  it("returns to Collection and walks Collection's character order when opened from Collection", async () => {
+    // Collection order (Lhykhis, Calgar, Tigurius) differs from the list's default order.
+    await renderUnit(
+      "/library/characters/ultraCalgar?tab=rankup",
+      unitOriginState({
+        kind: "collection",
+        ids: ["eldarLhykhis", "ultraCalgar", "ultraTigurius"],
+      })
+    )
+
+    const back = screen.getByTestId("unit-nav-back")
+    expect(back).toHaveAttribute("href", "/my-game/collection")
+    expect(back).toHaveTextContent("Collection")
+    expect(back).toHaveAccessibleName("Back to Collection")
+    expect(screen.getByTestId("unit-nav-position")).toHaveTextContent("2 of 3")
+    expect(
+      screen.getByRole("link", { name: "Previous unit: Lhykhis" })
+    ).toHaveAttribute("href", "/library/characters/eldarLhykhis?tab=rankup")
+
+    fireEvent.click(screen.getByRole("link", { name: "Next unit: Tigurius" }))
+    await act(async () => {})
+
+    // The origin carries over: still Collection's order and back to Collection.
+    expect(screen.getByTestId("where")).toHaveTextContent(
+      "/library/characters/ultraTigurius?tab=rankup"
+    )
+    expect(screen.getByTestId("unit-nav-position")).toHaveTextContent("3 of 3")
+    expect(screen.getByTestId("unit-nav-next")).toBeDisabled()
+    expect(screen.getByTestId("unit-nav-back")).toHaveAttribute(
+      "href",
+      "/my-game/collection"
+    )
+  })
+
+  it("keeps the characters list as the back target without an origin", async () => {
+    await renderUnit("/library/characters/ultraCalgar")
+
+    const back = screen.getByTestId("unit-nav-back")
+    expect(back).toHaveAttribute("href", "/library/characters")
+    expect(back).toHaveAccessibleName("Back to Characters")
+  })
+
+  it("on mobile, names the icon-only back button Back to Collection when opened from Collection", async () => {
+    env.isMobile = true
+    await renderUnit(
+      "/library/characters/ultraCalgar",
+      unitOriginState({ kind: "collection", ids: ["ultraCalgar"] })
+    )
+
+    const back = screen.getByTestId("unit-nav-back")
+    expect(back).not.toHaveTextContent("Collection")
+    expect(back).toHaveAccessibleName("Back to Collection")
+    expect(back).toHaveAttribute("href", "/my-game/collection")
   })
 
   it.each([

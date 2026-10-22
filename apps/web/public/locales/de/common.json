@@ -1428,11 +1428,11 @@
         },
         "owned": {
           "title": "Eine Einheit in deinem Besitz",
-          "content": "Der Ring zeigt die Seltenheit, oben die Sterne, auf dem Porträt Rang und Scherben, darunter die Fähigkeitsstufen links und rechts der EP-Stufe."
+          "content": "Der Ring zeigt die Seltenheit, oben die Sterne, auf dem Porträt Rang und Scherben, darunter die Fähigkeitsstufen links und rechts der EP-Stufe. Wähle eine Einheit aus, um ihre Details in der Bibliothek zu öffnen."
         },
         "unowned": {
           "title": "Noch nicht freigeschaltet",
-          "content": "Ausgegraute Einheiten sind nicht in deinem Kader. Der Balken zeigt, wie nah du an der Freischaltung bist."
+          "content": "Ausgegraute Einheiten sind nicht in deinem Kader. Der Balken zeigt, wie nah du an der Freischaltung bist. Wähle eine Einheit aus, um ihre Details in der Bibliothek zu öffnen."
         }
       }
     },

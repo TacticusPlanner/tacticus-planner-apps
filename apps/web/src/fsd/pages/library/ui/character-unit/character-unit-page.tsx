@@ -22,6 +22,11 @@ import {
 import { Button } from "@workspace/ui/components/button"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
+import {
+  readUnitOrigin,
+  unitNeighbours,
+  unitOriginState,
+} from "@/entities/unit"
 import { useAbilityText } from "@/shared/ability-text"
 import { useTourPageSteps } from "@/shared/tour"
 
@@ -32,11 +37,6 @@ import { useCharactersCatalog } from "../characters/use-characters-catalog"
 import { AbilityPanel } from "../unit/ability-panel"
 import { UnitNavBar } from "../unit/unit-nav-bar"
 import { UnitPowerValue } from "../unit/unit-power-value"
-import {
-  readUnitOrigin,
-  unitNeighbours,
-  unitOriginState,
-} from "../unit/unit-origin"
 import { UnitTabs } from "../unit/unit-tabs"
 import { useUnitTab } from "../unit/use-unit-tab"
 import { useCharacterUnitTutorial } from "./character-unit.tutorial"
@@ -56,7 +56,7 @@ import {
   type ShownValues,
 } from "./character-unit.view-model"
 
-const COLLECTION_PATH = "/library/characters"
+const CHARACTERS_PATH = "/library/characters"
 const TABS = ["details", "rankup"] as const
 
 // Distinguishes "still reading" from a resolved `undefined` (no record), as Dexie's useLiveQuery
@@ -95,7 +95,7 @@ export function CharacterUnitPage() {
       >
         <p>{t("unit.notFound")}</p>
         <Button asChild variant="outline">
-          <Link to={COLLECTION_PATH}>{t("charactersList.title")}</Link>
+          <Link to={CHARACTERS_PATH}>{t("charactersList.title")}</Link>
         </Button>
       </div>
     )
@@ -207,7 +207,7 @@ function CharacterUnit({
     id
       ? {
           to: {
-            pathname: `${COLLECTION_PATH}/${id}`,
+            pathname: `${CHARACTERS_PATH}/${id}`,
             search: tabParam
               ? `?${new URLSearchParams({ tab: tabParam })}`
               : "",
@@ -284,7 +284,8 @@ function CharacterUnit({
       data-testid="character-unit-page"
     >
       <UnitNavBar
-        back={{ to: COLLECTION_PATH, label: t("charactersList.title") }}
+        back={{ to: CHARACTERS_PATH, label: t("charactersList.title") }}
+        origin={origin}
         breadcrumb={[
           t("characterUnit.breadcrumbLibrary"),
           t("collections.characters.label"),
