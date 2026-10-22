@@ -17,7 +17,10 @@ import { resolveNextPath } from "./resolve-next-path"
 // protected deep link (e.g. /guild/members) to bounce to "/" before MSAL had a chance to catch up.
 export function AuthResolving() {
   return (
-    <div className="flex min-h-svh items-center justify-center">
+    <div
+      className="flex min-h-svh items-center justify-center"
+      data-testid="app-loading"
+    >
       <Spinner className="size-8 text-primary" />
     </div>
   )

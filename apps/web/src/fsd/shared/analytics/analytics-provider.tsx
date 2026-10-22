@@ -257,6 +257,15 @@ export function useAnalyticsActions() {
             tier: event.tier,
           })
           break
+        case "client_error":
+          client.capture(event.type, {
+            message: event.message,
+            stack: event.stack,
+            context: event.context,
+            route_group: event.routeGroup,
+            app_version: event.appVersion,
+          })
+          break
       }
     },
     [client]

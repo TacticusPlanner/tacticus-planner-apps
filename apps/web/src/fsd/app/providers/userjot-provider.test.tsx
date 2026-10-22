@@ -29,20 +29,27 @@ vi.mock("@/entities/account", () => ({
 }))
 
 const fetchQueryMock = vi.fn()
+// Stable like the real client, so identify() is not recreated on every render.
+const queryClient = { fetchQuery: fetchQueryMock }
 vi.mock("@tanstack/react-query", () => ({
-  useQueryClient: () => ({ fetchQuery: fetchQueryMock }),
+  useQueryClient: () => queryClient,
 }))
 
 import { UserJotProvider, useUserJot } from "./userjot-provider"
 
-function Consumer() {
-  const { open, unreadCount, isReady } = useUserJot()
+function Consumer({ use = useUserJot }: { use?: typeof useUserJot }) {
+  const { open, unreadCount, status } = use()
   return (
-    <button data-testid="consumer" data-ready={isReady} onClick={() => open()}>
+    <button data-testid="consumer" data-status={status} onClick={() => open()}>
       {unreadCount}
     </button>
   )
 }
+
+const sdkScript = () =>
+  document.head.querySelector<HTMLScriptElement>(
+    'script[src="https://cdn.userjot.com/sdk/v3/uj.js"]'
+  )
 
 function renderProvider() {
   return render(
@@ -102,27 +109,64 @@ describe("UserJotProvider", () => {
 
   afterEach(() => {
     delete window.uj
-    delete window.__ujLoaded
+    document.head
+      .querySelectorAll('script[src*="userjot"]')
+      .forEach((script) => script.remove())
   })
 
-  it("reports the widget ready only once the SDK script has loaded", async () => {
-    renderProvider()
-    expect(screen.getByTestId("consumer")).toHaveAttribute(
-      "data-ready",
-      "false"
-    )
+  describe("SDK loading", () => {
+    // The SDK load is page-wide; each test starts from a fresh module (a fresh page).
+    async function freshProvider() {
+      vi.resetModules()
+      const module = await import("./userjot-provider")
+      return render(
+        <module.UserJotProvider>
+          <Consumer use={module.useUserJot} />
+        </module.UserJotProvider>
+      )
+    }
 
-    act(() => {
-      window.__ujLoaded = true
-      window.dispatchEvent(new Event("uj-loaded"))
+    it("loads the SDK in the background for a signed-in user and reports it ready", async () => {
+      await freshProvider()
+
+      expect(sdkScript()).not.toBeNull()
+      expect(screen.getByTestId("consumer")).toHaveAttribute(
+        "data-status",
+        "loading"
+      )
+      act(() => sdkScript()!.dispatchEvent(new Event("load")))
+      await waitFor(() =>
+        expect(screen.getByTestId("consumer")).toHaveAttribute(
+          "data-status",
+          "ready"
+        )
+      )
     })
 
-    await waitFor(() =>
-      expect(screen.getByTestId("consumer")).toHaveAttribute(
-        "data-ready",
-        "true"
+    it("loads nothing for an anonymous visitor until they open the widget", async () => {
+      isAuthenticated.mockReturnValue(false)
+      useCurrentUserMock.mockReturnValue({ state: { status: "idle" } })
+      await freshProvider()
+      expect(sdkScript()).toBeNull()
+
+      act(() => screen.getByTestId("consumer").click())
+
+      expect(sdkScript()).not.toBeNull()
+      expect(open).toHaveBeenCalledOnce()
+    })
+
+    it("reports failed without throwing when the SDK cannot load", async () => {
+      await freshProvider()
+
+      act(() => sdkScript()!.dispatchEvent(new Event("error")))
+
+      await waitFor(() =>
+        expect(screen.getByTestId("consumer")).toHaveAttribute(
+          "data-status",
+          "failed"
+        )
       )
-    )
+    })
   })
 
   it("identifies the signed-in user with a token from the API", async () => {

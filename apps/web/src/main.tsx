@@ -7,11 +7,14 @@ import { App } from "@/app"
 import { AuthProvider, I18nProvider, QueryProvider } from "@/app/providers"
 import { installPreloadErrorRecovery } from "@/app/stale-build-recovery"
 import { initializeAuthentication, startSilentSignInOnce } from "@/shared/auth"
+import { installGlobalErrorCapture } from "@/shared/lib"
 import { ThemeProvider } from "@/shared/theme"
 import { TourProvider } from "@/shared/tour"
 
 // Before anything else: a chunk deleted by a newer deploy must trigger a reload, not a blank page.
 installPreloadErrorRecovery()
+// Every error nothing else caught is logged once and reported (spec: client-error-reporting).
+installGlobalErrorCapture()
 
 async function bootstrap() {
   const msalInstance = await initializeAuthentication()

@@ -2,7 +2,7 @@ import { useSyncExternalStore } from "react"
 
 import type { IPublicClientApplication } from "@azure/msal-browser"
 
-import { attemptSilentSignIn } from "./authentication"
+import { attemptSilentSignIn, readAccountHint } from "./authentication"
 
 export type SilentSignInStatus = "idle" | "checking" | "failed"
 
@@ -43,7 +43,8 @@ export function startSilentSignInOnce(instance: IPublicClientApplication) {
 
   hasStarted = true
 
-  if (instance.getAllAccounts().length === 0) {
+  // No tokens in this tab and no account hint on the device: nobody to restore.
+  if (instance.getAllAccounts().length === 0 && !readAccountHint()) {
     return
   }
 
@@ -56,12 +57,4 @@ export function startSilentSignInOnce(instance: IPublicClientApplication) {
 
 export function useSilentSignInStatus() {
   return useSyncExternalStore(subscribe, getSnapshot)
-}
-
-// Test-only: resets the module-level singleton between test cases, since it otherwise persists
-// for the lifetime of the module (i.e. the whole test file) once startSilentSignInOnce runs.
-export function resetSilentSignInForTesting() {
-  status = "idle"
-  hasStarted = false
-  listeners.clear()
 }

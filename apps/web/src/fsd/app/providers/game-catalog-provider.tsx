@@ -16,6 +16,8 @@ import {
   type GameCatalogSyncResult,
 } from "@workspace/game-catalog"
 
+import { reportError } from "@/shared/lib"
+
 // StrictMode double-invokes effects, and auth-driven route remounts can mount the provider several times
 // in quick succession — without this guard each mount would issue its own manifest request (the source of
 // the "manifest fetched four times on refresh" behaviour). Coalesce overlapping syncs for the same
@@ -116,7 +118,8 @@ export function GameCatalogProvider({
       }
     }
 
-    void runSync()
+    // Expected failures are handled inside; this only catches what escapes (e.g. a failing cache read).
+    runSync().catch((error: unknown) => reportError(error, "catalog sync"))
 
     return () => {
       active = false

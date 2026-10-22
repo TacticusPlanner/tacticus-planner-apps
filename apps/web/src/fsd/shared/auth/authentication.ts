@@ -8,6 +8,7 @@ import {
   InteractionRequiredAuthError,
   LogLevel,
   PublicClientApplication,
+  type AccountInfo,
   type AuthenticationResult,
   type Configuration,
   type EventMessage,
@@ -16,6 +17,7 @@ import {
 } from "@azure/msal-browser"
 
 import { getRequiredEnvironmentValue } from "../config/environment"
+import { safeStorage } from "@/shared/lib"
 
 let authentication: PublicClientApplication | undefined
 
@@ -26,6 +28,64 @@ let authentication: PublicClientApplication | undefined
 // healthy Entra External ID round trip answers in 1-3s; 6s keeps 2x headroom, and a rare false
 // timeout costs one seamless redirect rather than a broken session.
 export const SILENT_FRAME_TIMEOUT_MS = 6000
+
+// The one thing about the session kept on the device (spec: silent-sign-in): which account to
+// restore, never a token. Tokens live in the tab's sessionStorage.
+const ACCOUNT_HINT_KEY = "tp.auth.accountHint"
+
+type AccountHint = { homeAccountId: string; username: string }
+
+export function readAccountHint(): AccountHint | null {
+  try {
+    const hint: unknown = JSON.parse(
+      safeStorage.get(ACCOUNT_HINT_KEY) ?? "null"
+    )
+    return hint &&
+      typeof hint === "object" &&
+      typeof (hint as AccountHint).homeAccountId === "string" &&
+      typeof (hint as AccountHint).username === "string"
+      ? (hint as AccountHint)
+      : null
+  } catch {
+    return null
+  }
+}
+
+export function forgetAccountHint() {
+  safeStorage.remove(ACCOUNT_HINT_KEY)
+}
+
+function activateAccount(
+  instance: IPublicClientApplication,
+  account: AccountInfo | null
+) {
+  instance.setActiveAccount(account)
+  if (account) {
+    const hint: AccountHint = {
+      homeAccountId: account.homeAccountId,
+      username: account.username,
+    }
+    safeStorage.set(ACCOUNT_HINT_KEY, JSON.stringify(hint))
+  }
+}
+
+// Tokens used to be cached in localStorage. Once, before MSAL starts, drop that cache: every key MSAL
+// owned there starts with `msal.` or contains the client id (`<homeAccountId>-<env>-<type>-<clientId>-…`).
+function removeLegacyTokenCache(clientId: string) {
+  try {
+    const storage = window.localStorage
+    const legacy: string[] = []
+    for (let index = 0; index < storage.length; index++) {
+      const key = storage.key(index)
+      if (key && (key.startsWith("msal.") || key.includes(clientId))) {
+        legacy.push(key)
+      }
+    }
+    legacy.forEach((key) => storage.removeItem(key))
+  } catch {
+    // Storage blocked: there is no legacy cache to remove either.
+  }
+}
 
 function createMsalConfig(): Configuration {
   const authority = getRequiredEnvironmentValue("VITE_MSAL_AUTHORITY")
@@ -48,7 +108,8 @@ function createMsalConfig(): Configuration {
       redirectUri: new URL("/redirect.html", window.location.origin).href,
     },
     cache: {
-      cacheLocation: BrowserCacheLocation.LocalStorage,
+      // Tab-scoped (spec: redirect-authentication); new tabs restore through the account hint.
+      cacheLocation: BrowserCacheLocation.SessionStorage,
     },
     system: {
       iframeBridgeTimeout: SILENT_FRAME_TIMEOUT_MS,
@@ -89,6 +150,7 @@ export const loginRequest: RedirectRequest = {
 }
 
 export async function initializeAuthentication() {
+  removeLegacyTokenCache(getRequiredEnvironmentValue("VITE_MSAL_CLIENT_ID"))
   const msalInstance = new PublicClientApplication(createMsalConfig())
 
   await msalInstance.initialize()
@@ -97,7 +159,7 @@ export async function initializeAuthentication() {
     if (event.eventType === EventType.LOGIN_SUCCESS && event.payload) {
       const result = event.payload as AuthenticationResult
 
-      msalInstance.setActiveAccount(result.account)
+      activateAccount(msalInstance, result.account)
     }
   })
 
@@ -107,14 +169,14 @@ export async function initializeAuthentication() {
   const redirectResult = await msalInstance.handleRedirectPromise()
 
   if (redirectResult) {
-    msalInstance.setActiveAccount(redirectResult.account)
+    activateAccount(msalInstance, redirectResult.account)
   }
 
   if (!msalInstance.getActiveAccount()) {
     const [cachedAccount] = msalInstance.getAllAccounts()
 
     if (cachedAccount) {
-      msalInstance.setActiveAccount(cachedAccount)
+      activateAccount(msalInstance, cachedAccount)
     }
   }
 
@@ -191,12 +253,34 @@ export function isInteractionRequired(error: unknown) {
   return error instanceof AuthError && error.errorCode === "invalid_grant"
 }
 
-export function requestApiAccess() {
-  const { account, instance } = getActiveAccount()
+// One interactive redirect per page load (spec: redirect-authentication): the API request handler,
+// the player-data sync and any other caller join the first one. Cleared only when starting it failed,
+// so a caller can retry; a started redirect is leaving the page.
+let interaction: Promise<void> | null = null
 
-  return instance.acquireTokenRedirect({
-    account,
+export function requestInteraction(): Promise<void> {
+  if (interaction) return interaction
+  const request = Promise.resolve().then(startInteraction)
+  interaction = request
+  request.catch(() => {
+    if (interaction === request) interaction = null
+  })
+  return request
+}
+
+function startInteraction() {
+  const instance = getAuthentication()
+  const account = instance.getActiveAccount() ?? instance.getAllAccounts()[0]
+  if (account) {
+    return instance.acquireTokenRedirect({
+      account,
+      scopes: loginRequest.scopes,
+    })
+  }
+  const hint = readAccountHint()
+  return instance.loginRedirect({
     scopes: loginRequest.scopes,
+    ...(hint ? { loginHint: hint.username } : {}),
   })
 }
 
@@ -220,7 +304,12 @@ async function restoreSession(
     instance.getActiveAccount() ?? instance.getAllAccounts()[0]
 
   if (!cachedAccount) {
-    return "no-cached-account"
+    // A new tab or a restarted browser holds no tokens; the account hint says whose IdP session
+    // to check.
+    const hint = readAccountHint()
+    return hint
+      ? checkIdentityProviderSession(instance, { loginHint: hint.username })
+      : "no-cached-account"
   }
 
   // Cached tokens first: a valid access token or refresh token restores the session with no
@@ -233,23 +322,28 @@ async function restoreSession(
       cacheLookupPolicy: CacheLookupPolicy.AccessTokenAndRefreshToken,
     })
 
-    instance.setActiveAccount(result.account)
+    activateAccount(instance, result.account)
 
     return "success"
   } catch {
     // Expected once the refresh token has expired; fall through to the IdP session check.
   }
 
-  try {
-    // Without an account/sid/loginHint, ssoSilent can't tell which session to restore once more
-    // than one account is cached, and fails with an ambiguity error even though a valid session
-    // exists for one of them.
-    const result = await instance.ssoSilent({
-      ...loginRequest,
-      account: cachedAccount,
-    })
+  // Without an account/sid/loginHint, ssoSilent can't tell which session to restore once more
+  // than one account is cached, and fails with an ambiguity error even though a valid session
+  // exists for one of them.
+  return checkIdentityProviderSession(instance, { account: cachedAccount })
+}
 
-    instance.setActiveAccount(result.account)
+/** One hidden IdP session check (bounded by SILENT_FRAME_TIMEOUT_MS). */
+async function checkIdentityProviderSession(
+  instance: IPublicClientApplication,
+  who: { account: AccountInfo } | { loginHint: string }
+): Promise<SilentSignInOutcome> {
+  try {
+    const result = await instance.ssoSilent({ ...loginRequest, ...who })
+
+    activateAccount(instance, result.account)
 
     return "success"
   } catch (error) {
@@ -262,9 +356,4 @@ async function restoreSession(
 
     return "failed"
   }
-}
-
-// Test-only: forgets the app-load restore so each test starts from a fresh page load.
-export function resetSilentRestoreForTesting() {
-  silentRestore = undefined
 }

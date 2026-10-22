@@ -128,6 +128,11 @@ jobs:
         if: ${{ inputs.run-validation }}
         run: pnpm typecheck
 
+      # The only gate that runs every unit test (coverage.yml runs `vitest --changed`).
+      - name: Test
+        if: ${{ inputs.run-validation }}
+        run: pnpm test:run
+
       - name: Build
         run: pnpm build:${{ inputs.vite-mode }}
 

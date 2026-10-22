@@ -3,7 +3,7 @@ export {
   initializeAuthentication,
   isInteractionRequired,
   loginRequest,
-  requestApiAccess,
+  requestInteraction,
 } from "./authentication"
 export { useActiveAccountId } from "./use-active-account-id"
 export { useRequestApiAccessOnce } from "./use-request-api-access-once"

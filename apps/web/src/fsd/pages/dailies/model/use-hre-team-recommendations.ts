@@ -7,7 +7,7 @@ import { getPlayerCharacters } from "@workspace/player-data/queries"
 
 import type { HreTeamPlan } from "@/features/hre-missions"
 
-import type { RawRosterCharacter } from "./arena-recommendations.types"
+import type { RawRosterCharacter } from "./roster-character"
 import { buildSummonerIds } from "./hre-summoners"
 import { buildHreTeam, type HreTeam } from "./hre-team-recommendations"
 import { useTeamUnitPower } from "./use-team-unit-power"

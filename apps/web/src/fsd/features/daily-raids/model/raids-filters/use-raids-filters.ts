@@ -7,6 +7,7 @@ import {
   RAIDS_CAMPAIGN_TYPES,
   type RaidsFilters,
 } from "./raids-filters.domain"
+import { safeStorage } from "@/shared/lib"
 
 const STORAGE_KEY = "raids-filters.v1"
 
@@ -26,11 +27,7 @@ const storedFiltersSchema = z.object({
 })
 
 function readRaw(): string | null {
-  try {
-    return window.localStorage.getItem(STORAGE_KEY)
-  } catch {
-    return null
-  }
+  return safeStorage.get(STORAGE_KEY)
 }
 
 function parse(raw: string | null): RaidsFilters {
@@ -72,11 +69,8 @@ function subscribe(listener: () => void) {
 }
 
 function setRaidsFilters(next: RaidsFilters) {
-  try {
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next))
-  } catch {
-    // Best-effort: the in-memory value below still updates for this tab.
-  }
+  // Best-effort: the in-memory value below still updates for this tab.
+  safeStorage.set(STORAGE_KEY, JSON.stringify(next))
   lastRaw = readRaw()
   lastValue = next
   listeners.forEach((listener) => listener())
