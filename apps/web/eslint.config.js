@@ -27,10 +27,11 @@ export default defineConfig([
     files: ["**/*.{ts,tsx}"],
     ignores: ["**/*.test.{ts,tsx}", "**/*.spec.{ts,tsx}"],
     rules: {
+      // A ceiling that stops runaway files without manufacturing split-out hooks.
       "max-lines": [
-        "error",
+        "warn",
         {
-          max: 400,
+          max: 800,
           skipBlankLines: true,
           skipComments: true,
         },
