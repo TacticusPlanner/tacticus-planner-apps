@@ -81,10 +81,10 @@ let onslaughtProgressFixture: unknown = null
 vi.mock("@/entities/player-data-override", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/entities/player-data-override")>()),
   onslaughtProgressQueries: {
-    all: () => ["player-data-overrides"],
+    all: () => ["player-data-overrides", "onslaught"],
     current: () => ({
       queryFn: () => Promise.resolve(onslaughtProgressFixture),
-      queryKey: ["player-data-overrides", "onslaught"],
+      queryKey: ["player-data-overrides", "onslaught", "current"],
     }),
   },
 }))
@@ -108,9 +108,10 @@ vi.mock("@/entities/goal", async (importOriginal) => {
 vi.mock("@/entities/project", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/entities/project")>()),
   projectQueries: {
+    details: () => ["projects", "detail"],
     goals: (projectId: string) => ({
       queryFn: () => Promise.resolve({ goals: [] }),
-      queryKey: ["projects", projectId, "goals"],
+      queryKey: ["projects", "detail", projectId, "goals"],
     }),
     list: () => ({
       queryFn: () => listProjects(),
@@ -852,8 +853,10 @@ describe("GoalEditDialog", () => {
         position: 3,
         expectedOrderRevision: 4,
       })
-      expect(invalidate).toHaveBeenCalledWith({ queryKey: ["goals"] })
-      expect(invalidate).toHaveBeenCalledWith({ queryKey: ["projects"] })
+      expect(invalidate).toHaveBeenCalledExactlyOnceWith({
+        queryKey: ["goals", "list"],
+        refetchType: "none",
+      })
     })
 
     it("sends only the projects section when only projects changed", async () => {

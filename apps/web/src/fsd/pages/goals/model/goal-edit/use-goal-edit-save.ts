@@ -14,6 +14,8 @@ import {
 import { projectQueries } from "@/entities/project"
 import { ApiError } from "@/shared/api"
 
+import { applyOptimisticGoalStatus } from "../goals-data/optimistic-goal-status"
+
 import { projectGoalSlotConflictDetails } from "../projects/project-membership"
 
 /** Why the last Save did not land. Every kind means nothing was saved and the draft is untouched.
@@ -48,8 +50,10 @@ function applyOrder(
 
 /**
  * The Edit goal dialog's single save: one `editGoal` call for every changed section, all-or-nothing.
- * On success the returned goal replaces the cached detail, the returned order (when priority was sent)
- * is applied to the cached lists, and the goal and project queries are invalidated once. A failure keeps
+ * On success the returned goal replaces the cached detail and its summary fields are patched into every
+ * cached goal list and project member list, the returned order (when priority was sent) is applied to the
+ * cached lists, and only what the response cannot describe is refetched: the project member lists when
+ * the projects changed (spec: client-data-freshness). A failure keeps
  * everything as it was and is mapped to a `GoalEditSaveError` for the dialog to show; the draft lives in
  * the caller and is never touched here.
  */
@@ -78,10 +82,28 @@ export function useGoalEditSave({
       const { goal, order } = await mutation.mutateAsync(request)
       queryClient.setQueryData(goalQueries.detail(goal.goalId).queryKey, goal)
       if (order) applyOrderToCache(order)
-      void Promise.all([
-        queryClient.invalidateQueries({ queryKey: goalQueries.all() }),
-        queryClient.invalidateQueries({ queryKey: projectQueries.all() }),
-      ])
+      const patch = (data: unknown) =>
+        applyOptimisticGoalStatus(data, goal.goalId, {
+          status: goal.status,
+          notes: goal.notes,
+          dependsOn: goal.dependsOn,
+          updatedAt: goal.updatedAt,
+          globalPriority: goal.globalPriority,
+        })
+      queryClient.setQueriesData({ queryKey: goalQueries.lists() }, patch)
+      queryClient.setQueriesData({ queryKey: projectQueries.details() }, patch)
+      if (request.projectIds) {
+        void queryClient.invalidateQueries({
+          queryKey: projectQueries.details(),
+        })
+      }
+      // The order is already applied; mark the lists stale for their next mount without refetching now.
+      if (order) {
+        void queryClient.invalidateQueries({
+          queryKey: goalQueries.lists(),
+          refetchType: "none",
+        })
+      }
       onSaved()
     } catch (reason) {
       setError(classify(reason))
@@ -96,7 +118,7 @@ export function useGoalEditSave({
       current
     )
     setError(null)
-    void queryClient.invalidateQueries({ queryKey: goalQueries.all() })
+    void queryClient.invalidateQueries({ queryKey: goalQueries.lists() })
   }
 
   /** Stale order: adopt the order as it now stands and keep the draft. */

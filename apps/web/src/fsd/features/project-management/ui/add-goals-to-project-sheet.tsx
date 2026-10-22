@@ -208,11 +208,11 @@ export function AddGoalsToProjectSheet({
     }
   })
 
-  const invalidate = () =>
-    Promise.all([
-      queryClient.invalidateQueries({ queryKey: projectQueries.all() }),
-      queryClient.invalidateQueries({ queryKey: goalQueries.all() }),
-    ])
+  // A membership save changes only this project's member list (spec: client-data-freshness).
+  const refreshMembers = () =>
+    queryClient.invalidateQueries({
+      queryKey: projectQueries.goals(project.projectId).queryKey,
+    })
 
   const save = useMutation({
     mutationFn: (input: SaveInput) =>
@@ -221,7 +221,7 @@ export function AddGoalsToProjectSheet({
         expectedGoalIds: input.expected,
       }),
     onSuccess: async (_response, input) => {
-      await invalidate()
+      await refreshMembers()
       toast.success(
         t("goals.toasts.projectMembershipSaved", {
           project: project.name,
@@ -246,7 +246,7 @@ export function AddGoalsToProjectSheet({
           currentGoalIds: stale.currentGoalIds,
         })
         // Names of goals added elsewhere resolve from the refreshed goal list.
-        void queryClient.invalidateQueries({ queryKey: goalQueries.all() })
+        void queryClient.invalidateQueries({ queryKey: goalQueries.lists() })
       } else if (lastMembership) {
         setConflict({
           kind: "lastMembership",
@@ -277,7 +277,7 @@ export function AddGoalsToProjectSheet({
     setBaseline(ids)
     setDraft((current) => reconcileDraft(current, ids))
     setConflict(null)
-    void invalidate()
+    void refreshMembers()
   }
 
   const conflictGoalIds = new Set(

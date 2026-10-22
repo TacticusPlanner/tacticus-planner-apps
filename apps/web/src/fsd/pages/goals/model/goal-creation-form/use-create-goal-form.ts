@@ -45,12 +45,10 @@ const defaultGoalTypes = (): Set<GoalKind> => new Set()
 export function useCreateGoalForm({
   open,
   onOpenChange,
-  onCreated,
   prefill,
 }: {
   open: boolean
   onOpenChange: (open: boolean) => void
-  onCreated: () => void
   prefill?: CreateGoalPrefill
 }) {
   const { settings: planningSettings } = usePlanningSettings()
@@ -364,7 +362,6 @@ export function useCreateGoalForm({
       missingUpgrades: snapshotUpgrades,
     },
     onOpenChange,
-    onCreated,
     resetForm,
   })
 

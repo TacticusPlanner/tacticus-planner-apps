@@ -12,7 +12,7 @@ type UpdateTacticusIntegrationRequest = {
   clearTacticusUserId?: boolean
 }
 
-type TacticusIntegrationResult = {
+export type TacticusIntegrationResult = {
   profileId: string
   tacticusUserIdConfigured: boolean
   tacticusApiKeyConfigured: boolean

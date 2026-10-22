@@ -7,10 +7,10 @@ export function GuildPage() {
   return (
     <PageContainer data-testid="guild-page">
       <GuildAccessBoundary>
-        {(guild, refresh) => (
+        {(guild, refresh, applyGuild) => (
           <GuildRegisteredView
             guild={guild}
-            onSynced={refresh}
+            onSynced={applyGuild}
             onPurged={refresh}
           />
         )}

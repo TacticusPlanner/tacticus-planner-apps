@@ -55,6 +55,7 @@ vi.mock("@/entities/goal", () => ({
   },
   goalQueries: {
     all: () => ["goals"],
+    lists: () => ["goals", "list"],
     detail: (goalId: string) => ({
       queryKey: ["goals", "detail", goalId],
       queryFn: () => getGoalDetail(goalId),
@@ -66,8 +67,9 @@ vi.mock("@/entities/project", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/entities/project")>()),
   projectQueries: {
     all: () => ["projects"],
+    details: () => ["projects", "detail"],
     goals: (projectId: string) => ({
-      queryKey: ["projects", projectId, "goals"],
+      queryKey: ["projects", "detail", projectId, "goals"],
       queryFn: () => listProjectGoals(projectId),
     }),
   },
@@ -154,7 +156,7 @@ function CachedListsHarness({
     queryFn: loadGoals,
   })
   const projectGoals = useQuery({
-    queryKey: ["projects", "proj-a", "goals"],
+    queryKey: ["projects", "detail", "proj-a", "goals"],
     queryFn: loadProjectGoals,
   })
   return (

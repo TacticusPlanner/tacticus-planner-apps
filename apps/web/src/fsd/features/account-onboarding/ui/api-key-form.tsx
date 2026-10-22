@@ -16,8 +16,6 @@ import { Spinner } from "@workspace/ui/components/spinner"
 import { updateTacticusIntegration } from "@/entities/account"
 import { ApiError } from "@/shared/api"
 
-type FormStatus = "idle" | "submitting" | "error"
-
 /**
  * Pastes a Tacticus API key straight into the account. The key is validated server-side against
  * Tacticus before it is stored, so a rejected key comes back as a 400 whose field message is
@@ -30,13 +28,19 @@ export function ApiKeyForm({ onCompleted }: { onCompleted: () => void }) {
   const { t } = useTranslation()
   const [apiKey, setApiKey] = useState("")
   const [userId, setUserId] = useState("")
-  const [status, setStatus] = useState<FormStatus>("idle")
-  const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const updateIntegration = useMutation({
     mutationFn: updateTacticusIntegration,
+    onSuccess: onCompleted,
   })
+  // Stays busy after success: the setup screen leaves once the refreshed account state arrives.
+  const submitting = updateIntegration.isPending || updateIntegration.isSuccess
+  const errorMessage = updateIntegration.error
+    ? updateIntegration.error instanceof ApiError
+      ? updateIntegration.error.message
+      : t("onboarding.genericError")
+    : null
 
-  const handleSubmit = async (event: FormEvent) => {
+  const handleSubmit = (event: FormEvent) => {
     event.preventDefault()
 
     const trimmedApiKey = apiKey.trim()
@@ -44,32 +48,21 @@ export function ApiKeyForm({ onCompleted }: { onCompleted: () => void }) {
       return
     }
 
-    setStatus("submitting")
-    setErrorMessage(null)
-
-    try {
-      await updateIntegration.mutateAsync({
-        tacticusApiKey: trimmedApiKey,
-        // Omitted rather than sent empty: the API preserves an already-stored user id when the
-        // field is absent, and only clears it on an explicit clearTacticusUserId.
-        tacticusUserId: userId.trim() || undefined,
-      })
-      onCompleted()
-    } catch (error) {
-      setStatus("error")
-      setErrorMessage(
-        error instanceof ApiError ? error.message : t("onboarding.genericError")
-      )
-    }
+    updateIntegration.mutate({
+      tacticusApiKey: trimmedApiKey,
+      // Omitted rather than sent empty: the API preserves an already-stored user id when the
+      // field is absent, and only clears it on an explicit clearTacticusUserId.
+      tacticusUserId: userId.trim() || undefined,
+    })
   }
 
   return (
     <form
       className="flex flex-col gap-4"
       data-testid="account-setup-api-key-form"
-      onSubmit={(event) => void handleSubmit(event)}
+      onSubmit={handleSubmit}
     >
-      <Field data-invalid={status === "error"}>
+      <Field data-invalid={Boolean(errorMessage)}>
         <FieldLabel htmlFor="account-setup-api-key">
           {t("onboarding.signUp.apiKeyLabel")}
         </FieldLabel>
@@ -117,7 +110,7 @@ export function ApiKeyForm({ onCompleted }: { onCompleted: () => void }) {
         </FieldContent>
       </Field>
 
-      {status === "error" && errorMessage ? (
+      {errorMessage ? (
         <FieldError data-testid="account-setup-api-key-error">
           {errorMessage}
         </FieldError>
@@ -125,10 +118,10 @@ export function ApiKeyForm({ onCompleted }: { onCompleted: () => void }) {
 
       <Button
         data-testid="account-setup-api-key-submit"
-        disabled={status === "submitting" || !apiKey.trim()}
+        disabled={submitting || !apiKey.trim()}
         type="submit"
       >
-        {status === "submitting" ? <Spinner /> : null}
+        {submitting ? <Spinner /> : null}
         {t("onboarding.signUp.submit")}
       </Button>
     </form>

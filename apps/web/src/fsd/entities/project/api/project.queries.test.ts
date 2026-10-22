@@ -20,7 +20,12 @@ describe("project queries", () => {
 
     expect(projectQueries.all()).toEqual(["projects"])
     expect(list.queryKey).toEqual(["projects", "list"])
-    expect(goals.queryKey).toEqual(["projects", "detail", "project-1", "goals"])
+    expect(projectQueries.details()).toEqual(["projects", "detail"])
+    expect(goals.queryKey).toEqual([
+      ...projectQueries.details(),
+      "project-1",
+      "goals",
+    ])
     expect(api.list).toHaveBeenCalledWith(signal)
     expect(api.goals).toHaveBeenCalledWith("project-1", signal)
   })

@@ -21,11 +21,11 @@ import {
 import { Input } from "@workspace/ui/components/input"
 import { Spinner } from "@workspace/ui/components/spinner"
 
-import { registerGuild } from "@/entities/guild"
+import { registerGuild, type RegisteredGuild } from "@/entities/guild"
 import { ApiError } from "@/shared/api"
 
 type Props = {
-  onRegistered: () => void
+  onRegistered: (guild: RegisteredGuild) => void
   showGuildManagementLink: boolean
 }
 
@@ -35,26 +35,27 @@ export function GuildRegistrationForm({
 }: Props) {
   const { t } = useTranslation()
   const [token, setToken] = useState("")
-  const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const registration = useMutation({ mutationFn: registerGuild })
+  const errorMessage = registration.error
+    ? registration.error instanceof ApiError
+      ? registration.error.message
+      : t("guild.unregistered.genericError")
+    : null
 
-  const handleSubmit = async (event: FormEvent) => {
+  const handleSubmit = (event: FormEvent) => {
     event.preventDefault()
     const trimmed = token.trim()
     if (!trimmed) return
 
-    setErrorMessage(null)
-    try {
-      await registration.mutateAsync({ guildApiToken: trimmed })
-      setToken("")
-      onRegistered()
-    } catch (error) {
-      setErrorMessage(
-        error instanceof ApiError
-          ? error.message
-          : t("guild.unregistered.genericError")
-      )
-    }
+    registration.mutate(
+      { guildApiToken: trimmed },
+      {
+        onSuccess: (guild) => {
+          setToken("")
+          onRegistered(guild)
+        },
+      }
+    )
   }
 
   return (
@@ -67,10 +68,7 @@ export function GuildRegistrationForm({
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <form
-          data-testid="guild-registration-form"
-          onSubmit={(event) => void handleSubmit(event)}
-        >
+        <form data-testid="guild-registration-form" onSubmit={handleSubmit}>
           <FieldGroup>
             <Field data-invalid={Boolean(errorMessage)}>
               <FieldLabel htmlFor="guild-api-token">

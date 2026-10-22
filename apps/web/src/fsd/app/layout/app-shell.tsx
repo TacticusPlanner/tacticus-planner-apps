@@ -1,7 +1,6 @@
 import { lazy, Suspense, useEffect, useState } from "react"
 import { useLocation } from "react-router"
 import { useTranslation } from "react-i18next"
-import { useQueryClient } from "@tanstack/react-query"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 import { useIsAuthenticated } from "@azure/msal-react"
 
@@ -11,8 +10,6 @@ import {
   PostHogProvider,
   UserJotProvider,
 } from "@/app/providers"
-import { goalQueries } from "@/entities/goal"
-import { projectQueries } from "@/entities/project"
 import {
   CreateGoalLauncherProvider,
   type CreateGoalPrefill,
@@ -145,13 +142,6 @@ function ShellContent({
   } = useDesktopMenuState()
   const { pathname, search } = useLocation()
   const { getEntryPath } = useSectionEntryPath(visibleItems, pathname)
-  const queryClient = useQueryClient()
-  const refreshGoals = () => {
-    void Promise.all([
-      queryClient.invalidateQueries({ queryKey: goalQueries.all() }),
-      queryClient.invalidateQueries({ queryKey: projectQueries.all() }),
-    ])
-  }
   const launchCreateGoal = (prefill?: CreateGoalPrefill) => {
     setCreatePrefill(prefill)
     setCreateOpen(true)
@@ -200,7 +190,6 @@ function ShellContent({
           <CreateGoalSheet
             open={createOpen}
             onOpenChange={handleCreateOpenChange}
-            onCreated={refreshGoals}
             prefill={createPrefill}
           />
           <QuickCreateProjectSheet

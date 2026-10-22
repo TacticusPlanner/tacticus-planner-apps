@@ -23,8 +23,6 @@ import { UnitGoalFormFields } from ".//unit-goal-form-fields"
 type CreateGoalSheetProps = {
   open: boolean
   onOpenChange: (open: boolean) => void
-  /** Called after a successful, non-"create another" save so the caller can refresh its list. */
-  onCreated: () => void
   prefill?: CreateGoalPrefill
 }
 
@@ -38,14 +36,13 @@ type CreateGoalSheetProps = {
 export function CreateGoalSheet({
   open,
   onOpenChange,
-  onCreated,
   prefill,
 }: CreateGoalSheetProps) {
   const { t } = useTranslation()
   const [portalContainer, setPortalContainer] = useState<HTMLDivElement | null>(
     null
   )
-  const form = useCreateGoalForm({ open, onOpenChange, onCreated, prefill })
+  const form = useCreateGoalForm({ open, onOpenChange, prefill })
 
   const unitIcon = (id: UnitId) =>
     form.charactersById?.has(id) ? characterIcon(id) : mowIcon(id)

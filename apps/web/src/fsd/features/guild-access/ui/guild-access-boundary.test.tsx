@@ -9,7 +9,7 @@ const getMyGuild = vi.fn()
 const registerGuild = vi.fn()
 const syncMyGuild = vi.fn()
 const updateTacticusIntegration = vi.fn()
-const refetchCurrentUser = vi.fn()
+const applyTacticusIntegrationResult = vi.fn()
 
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
@@ -26,7 +26,8 @@ vi.mock("@azure/msal-react", () => ({
 vi.mock("@/entities/account", () => ({
   updateTacticusIntegration: (...args: unknown[]) =>
     updateTacticusIntegration(...args),
-  useCurrentUser: () => ({ refetch: refetchCurrentUser }),
+  applyTacticusIntegrationResult: (...args: unknown[]) =>
+    applyTacticusIntegrationResult(...args),
 }))
 
 vi.mock("@/entities/guild", () => ({
@@ -99,7 +100,7 @@ describe("GuildAccessBoundary", () => {
     registerGuild.mockReset()
     syncMyGuild.mockReset()
     updateTacticusIntegration.mockReset()
-    refetchCurrentUser.mockReset()
+    applyTacticusIntegrationResult.mockReset()
   })
 
   it("withholds content while guild access is loading", () => {
@@ -130,7 +131,8 @@ describe("GuildAccessBoundary", () => {
     getMyGuild
       .mockResolvedValueOnce(response.userIdRequired)
       .mockResolvedValueOnce(response.unregistered)
-    updateTacticusIntegration.mockResolvedValue(undefined)
+    const integration = { tacticusUserIdConfigured: true }
+    updateTacticusIntegration.mockResolvedValue(integration)
     const user = userEvent.setup()
     renderBoundary()
 
@@ -147,7 +149,12 @@ describe("GuildAccessBoundary", () => {
       { tacticusUserId: "user-123" },
       expect.anything()
     )
-    expect(refetchCurrentUser).toHaveBeenCalledOnce()
+    // The current user is patched from the response, not refetched; the guild state is refetched.
+    expect(applyTacticusIntegrationResult).toHaveBeenCalledExactlyOnceWith(
+      expect.anything(),
+      integration
+    )
+    expect(getMyGuild).toHaveBeenCalledTimes(2)
   })
 
   it("offers the role-unknown registration form with eligibility guidance", async () => {
@@ -188,10 +195,8 @@ describe("GuildAccessBoundary", () => {
     expect(screen.queryByTestId("ready-slot")).not.toBeInTheDocument()
   })
 
-  it("refreshes the shared query after successful registration", async () => {
-    getMyGuild
-      .mockResolvedValueOnce(response.unregistered)
-      .mockResolvedValueOnce(response.ready)
+  it("shows the registered guild from the registration response without refetching", async () => {
+    getMyGuild.mockResolvedValueOnce(response.unregistered)
     registerGuild.mockResolvedValue(synchronizedGuild)
     const user = userEvent.setup()
     renderBoundary()
@@ -208,13 +213,11 @@ describe("GuildAccessBoundary", () => {
       { guildApiToken: "guild-token" },
       expect.anything()
     )
-    expect(getMyGuild).toHaveBeenCalledTimes(2)
+    expect(getMyGuild).toHaveBeenCalledTimes(1)
   })
 
-  it("lets an authorized manager perform the first synchronization", async () => {
-    getMyGuild
-      .mockResolvedValueOnce(response.neverSynchronized)
-      .mockResolvedValueOnce(response.ready)
+  it("lets an authorized manager perform the first synchronization and shows its response", async () => {
+    getMyGuild.mockResolvedValueOnce(response.neverSynchronized)
     syncMyGuild.mockResolvedValue(synchronizedGuild)
     const user = userEvent.setup()
     renderBoundary()
@@ -223,7 +226,7 @@ describe("GuildAccessBoundary", () => {
 
     expect(await screen.findByTestId("ready-slot")).toBeInTheDocument()
     expect(syncMyGuild).toHaveBeenCalledOnce()
-    expect(getMyGuild).toHaveBeenCalledTimes(2)
+    expect(getMyGuild).toHaveBeenCalledTimes(1)
   })
 
   it("gives a registered member Leader or Co-Leader guidance without a sync action", async () => {

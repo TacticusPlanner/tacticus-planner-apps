@@ -451,6 +451,7 @@ vi.mock("@/entities/goal", async (importOriginal) => ({
   // Backs useGoalTypeConflicts' active/paused-goal lookup — empty by default (no test here asserts
   // on the same-kind-goal-exists disable message, that's covered by use-goal-type-conflicts.test.ts).
   goalQueries: {
+    lists: () => ["goals", "list"],
     list: (archived: boolean) => ({
       queryKey: ["goals", "list", { archived }],
       queryFn: () => listGoals(),
@@ -544,7 +545,7 @@ describe("CreateGoalSheet", () => {
   })
 
   it("opens as a centered dialog at or above 768px with a scrolling body and a fixed footer", () => {
-    render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
+    render(<CreateGoalSheet open onOpenChange={vi.fn()} />)
 
     const shell = screen.getByTestId("create-goal-sheet")
     expect(shell).toHaveAttribute("data-slot", "dialog-content")
@@ -566,9 +567,7 @@ describe("CreateGoalSheet", () => {
       (query: string) => ({ ...original?.(query), matches: true }) as never
     )
     try {
-      render(
-        <CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />
-      )
+      render(<CreateGoalSheet open onOpenChange={vi.fn()} />)
 
       expect(screen.getByTestId("create-goal-sheet")).toHaveAttribute(
         "data-slot",
@@ -580,12 +579,11 @@ describe("CreateGoalSheet", () => {
   })
 
   it("creates a Rank goal for the selected character and closes on success", async () => {
-    createCombinedGoals.mockResolvedValue({ goals: [{ goalId: "goal-1" }] })
+    createCombinedGoals.mockResolvedValue({
+      goals: [{ goalId: "goal-1", projectIds: [] }],
+    })
     const onOpenChange = vi.fn()
-    const onCreated = vi.fn()
-    render(
-      <CreateGoalSheet open onOpenChange={onOpenChange} onCreated={onCreated} />
-    )
+    render(<CreateGoalSheet open onOpenChange={onOpenChange} />)
 
     await selectCharacter()
     // Wait for useGoalPrefill's getPlayerCharacter() to resolve (owned, per the beforeEach mock) —
@@ -622,15 +620,15 @@ describe("CreateGoalSheet", () => {
     expect(request.goals[0].config.rank).toMatchObject({ start: 0, end: 1 })
 
     expect(onOpenChange).toHaveBeenCalledWith(false)
-    expect(onCreated).toHaveBeenCalledTimes(1)
   })
 
   it("returns a persisted sheet to idle when reopening after a successful creation", async () => {
-    createCombinedGoals.mockResolvedValue({ goals: [{ goalId: "goal-1" }] })
+    createCombinedGoals.mockResolvedValue({
+      goals: [{ goalId: "goal-1", projectIds: [] }],
+    })
     const onOpenChange = vi.fn()
-    const onCreated = vi.fn()
     const { rerender } = render(
-      <CreateGoalSheet open onOpenChange={onOpenChange} onCreated={onCreated} />
+      <CreateGoalSheet open onOpenChange={onOpenChange} />
     )
 
     await selectCharacter()
@@ -650,16 +648,8 @@ describe("CreateGoalSheet", () => {
     })
 
     // AppShell keeps CreateGoalSheet mounted while its controlled `open` prop changes.
-    rerender(
-      <CreateGoalSheet
-        open={false}
-        onOpenChange={onOpenChange}
-        onCreated={onCreated}
-      />
-    )
-    rerender(
-      <CreateGoalSheet open onOpenChange={onOpenChange} onCreated={onCreated} />
-    )
+    rerender(<CreateGoalSheet open={false} onOpenChange={onOpenChange} />)
+    rerender(<CreateGoalSheet open onOpenChange={onOpenChange} />)
 
     // A finished goal's form is cleared (only project/type context is remembered) and the first
     // character is preselected again.
@@ -675,7 +665,9 @@ describe("CreateGoalSheet", () => {
   })
 
   it("shows a Rank target's required level, XP gap, and books/gold cost on the goal, and creates no Level goal", async () => {
-    createCombinedGoals.mockResolvedValue({ goals: [{ goalId: "goal-1" }] })
+    createCombinedGoals.mockResolvedValue({
+      goals: [{ goalId: "goal-1", projectIds: [] }],
+    })
     getPlayerCharacter.mockResolvedValue({
       rank: "Stone1",
       progressionIndex: "Common:None",
@@ -683,7 +675,7 @@ describe("CreateGoalSheet", () => {
       xpLevel: 1,
       xp: 0,
     })
-    render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
+    render(<CreateGoalSheet open onOpenChange={vi.fn()} />)
 
     await selectCharacter()
     await vi.waitFor(() => {
@@ -736,7 +728,7 @@ describe("CreateGoalSheet", () => {
     getInventoryXpBooks.mockReturnValue([
       { xpBookId: "xpLegendary", amount: 1 },
     ])
-    render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
+    render(<CreateGoalSheet open onOpenChange={vi.fn()} />)
 
     await selectCharacter()
     await vi.waitFor(() => {
@@ -757,11 +749,11 @@ describe("CreateGoalSheet", () => {
   })
 
   it("keeps the sheet open and resets the form when 'create another' is checked", async () => {
-    createCombinedGoals.mockResolvedValue({ goals: [{ goalId: "goal-1" }] })
+    createCombinedGoals.mockResolvedValue({
+      goals: [{ goalId: "goal-1", projectIds: [] }],
+    })
     const onOpenChange = vi.fn()
-    render(
-      <CreateGoalSheet open onOpenChange={onOpenChange} onCreated={vi.fn()} />
-    )
+    render(<CreateGoalSheet open onOpenChange={onOpenChange} />)
 
     await selectCharacter()
     fireEvent.click(screen.getByTestId("create-goal-type-toggle-Rank"))
@@ -792,7 +784,7 @@ describe("CreateGoalSheet", () => {
 
   it("shows the ApiError message when creation fails", async () => {
     createCombinedGoals.mockRejectedValue(new Error("boom"))
-    render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
+    render(<CreateGoalSheet open onOpenChange={vi.fn()} />)
 
     await selectCharacter()
     fireEvent.click(screen.getByTestId("create-goal-type-toggle-Rank"))
@@ -806,7 +798,7 @@ describe("CreateGoalSheet", () => {
   })
 
   it("no longer shows a combined duration estimate inside the Resources needed card", async () => {
-    render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
+    render(<CreateGoalSheet open onOpenChange={vi.fn()} />)
 
     await selectCharacter()
     fireEvent.click(screen.getByTestId("create-goal-type-toggle-Rank"))
@@ -828,7 +820,7 @@ describe("CreateGoalSheet", () => {
         },
       ],
     })
-    render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
+    render(<CreateGoalSheet open onOpenChange={vi.fn()} />)
 
     await selectCharacter()
     fireEvent.click(screen.getByTestId("create-goal-type-toggle-Rank"))
@@ -849,7 +841,7 @@ describe("CreateGoalSheet", () => {
         },
       ],
     })
-    render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
+    render(<CreateGoalSheet open onOpenChange={vi.fn()} />)
 
     await selectCharacter()
     fireEvent.click(screen.getByTestId("create-goal-type-toggle-Rank"))
@@ -867,7 +859,7 @@ describe("CreateGoalSheet", () => {
     // checkbox and a config card and the review on screen simultaneously (see the auto-suggests
     // test below) — reused here purely to compare their DOM positions.
     getPlayerCharacter.mockResolvedValue(undefined)
-    render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
+    render(<CreateGoalSheet open onOpenChange={vi.fn()} />)
 
     await selectCharacter()
     fireEvent.click(screen.getByTestId("create-goal-type-toggle-Rank"))
@@ -890,9 +882,11 @@ describe("CreateGoalSheet", () => {
 
   it("offers Unlock for a shop-only character, with the Shops group as its source and no Campaigns group", async () => {
     shopsFixture = [shopOnlyShop]
-    createCombinedGoals.mockResolvedValue({ goals: [{ goalId: "goal-1" }] })
+    createCombinedGoals.mockResolvedValue({
+      goals: [{ goalId: "goal-1", projectIds: [] }],
+    })
     getPlayerCharacter.mockResolvedValue(undefined) // locked, so Unlock is offered
-    render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
+    render(<CreateGoalSheet open onOpenChange={vi.fn()} />)
     await selectCharacter()
 
     fireEvent.click(
@@ -936,7 +930,7 @@ describe("CreateGoalSheet", () => {
 
   it("disables Unlock for a character with neither campaign nodes nor shop offers", async () => {
     getPlayerCharacter.mockResolvedValue(undefined)
-    render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
+    render(<CreateGoalSheet open onOpenChange={vi.fn()} />)
     await selectCharacter()
 
     fireEvent.click(
@@ -951,9 +945,11 @@ describe("CreateGoalSheet", () => {
   })
 
   it("shows the character's shard farm locations with an energy-per-shard figure on the Unlock card, defaulting farmingLocationIds to the lowest-energy node", async () => {
-    createCombinedGoals.mockResolvedValue({ goals: [{ goalId: "goal-1" }] })
+    createCombinedGoals.mockResolvedValue({
+      goals: [{ goalId: "goal-1", projectIds: [] }],
+    })
     getPlayerCharacter.mockResolvedValue(undefined) // locked, so Unlock is offered
-    render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
+    render(<CreateGoalSheet open onOpenChange={vi.fn()} />)
 
     await selectCharacter()
     await vi.waitFor(() => {
@@ -999,7 +995,7 @@ describe("CreateGoalSheet", () => {
   it('shows "{{owned}} / {{total}} shards" + "{{remaining}} remaining" and an energy/days line on the Unlock card by default, with no mythic shard row', async () => {
     getPlayerCharacter.mockResolvedValue(undefined) // locked, so Unlock is offered
     getInventoryShard.mockResolvedValue({ amount: 12 }) // X = 12 owned shards
-    render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
+    render(<CreateGoalSheet open onOpenChange={vi.fn()} />)
 
     await selectCharacter()
     await vi.waitFor(() => {
@@ -1047,7 +1043,7 @@ describe("CreateGoalSheet", () => {
 
   async function openAscensionOnslaughtGroup() {
     getPlayerCharacter.mockResolvedValue(undefined) // locked, so Ascension (and its Onslaught group) is offered
-    render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
+    render(<CreateGoalSheet open onOpenChange={vi.fn()} />)
     await selectCharacter()
     await vi.waitFor(() => {
       expect(
@@ -1090,7 +1086,7 @@ describe("CreateGoalSheet", () => {
     getPlayerCharacter.mockResolvedValue(undefined) // locked, so Ascension (and its Onslaught group) is offered
     const onOpenChange = vi.fn()
     const { rerender } = render(
-      <CreateGoalSheet open onOpenChange={onOpenChange} onCreated={vi.fn()} />
+      <CreateGoalSheet open onOpenChange={onOpenChange} />
     )
 
     await selectCharacter()
@@ -1116,16 +1112,8 @@ describe("CreateGoalSheet", () => {
     expect(onOpenChange).toHaveBeenCalledWith(false)
 
     // AppShell keeps the sheet mounted while `open` toggles — reopening shows the same goal.
-    rerender(
-      <CreateGoalSheet
-        open={false}
-        onOpenChange={onOpenChange}
-        onCreated={vi.fn()}
-      />
-    )
-    rerender(
-      <CreateGoalSheet open onOpenChange={onOpenChange} onCreated={vi.fn()} />
-    )
+    rerender(<CreateGoalSheet open={false} onOpenChange={onOpenChange} />)
+    rerender(<CreateGoalSheet open onOpenChange={onOpenChange} />)
 
     // The Ascension goal and its advanced target survived the close: the shard-location selector
     // only renders while Ascension is enabled AND its range needs regular shards (past the default
@@ -1135,7 +1123,7 @@ describe("CreateGoalSheet", () => {
 
   it("shows the shard-location selector on the Ascension card too, but only once when Unlock is also enabled", async () => {
     getPlayerCharacter.mockResolvedValue(undefined) // locked, so both Unlock and Ascension are offered
-    render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
+    render(<CreateGoalSheet open onOpenChange={vi.fn()} />)
 
     await selectCharacter()
     await vi.waitFor(() => {
@@ -1172,7 +1160,7 @@ describe("CreateGoalSheet", () => {
 
   it("never offers a mythic shard location on the Unlock card, even though the character has one in its catalog data", async () => {
     getPlayerCharacter.mockResolvedValue(undefined) // locked, so Unlock is offered
-    render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
+    render(<CreateGoalSheet open onOpenChange={vi.fn()} />)
 
     await selectCharacter()
     await vi.waitFor(() => {
@@ -1193,7 +1181,7 @@ describe("CreateGoalSheet", () => {
 
   it("offers the mythic shard-location group on the Ascension card once the target range needs mythic shards", async () => {
     getPlayerCharacter.mockResolvedValue(undefined) // locked, so Ascension is offered
-    render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
+    render(<CreateGoalSheet open onOpenChange={vi.fn()} />)
 
     await selectCharacter()
     await vi.waitFor(() => {
@@ -1226,7 +1214,7 @@ describe("CreateGoalSheet", () => {
 
   it("keeps Ascension-only mythic sources selectable once Unlock is also enabled (tacticus-planner-apps#103)", async () => {
     getPlayerCharacter.mockResolvedValue(undefined) // locked, so both Unlock and Ascension are offered
-    render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
+    render(<CreateGoalSheet open onOpenChange={vi.fn()} />)
 
     await selectCharacter()
     await vi.waitFor(() => {
@@ -1267,7 +1255,7 @@ describe("CreateGoalSheet", () => {
   })
 
   it("shows a checkpoint-chain preview and explanation that updates with the selected farming strategy", async () => {
-    render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
+    render(<CreateGoalSheet open onOpenChange={vi.fn()} />)
 
     await selectCharacter()
     fireEvent.click(screen.getByTestId("create-goal-type-toggle-Rank"))
@@ -1305,10 +1293,10 @@ describe("CreateGoalSheet", () => {
   describe("Mythic materials (add-mythic-material-shop-sources)", () => {
     async function rankGoalTo(rank: string) {
       shopsFixture = [mythicMaterialShop]
-      createCombinedGoals.mockResolvedValue({ goals: [{ goalId: "goal-1" }] })
-      render(
-        <CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />
-      )
+      createCombinedGoals.mockResolvedValue({
+        goals: [{ goalId: "goal-1", projectIds: [] }],
+      })
+      render(<CreateGoalSheet open onOpenChange={vi.fn()} />)
       await selectCharacter()
       await vi.waitFor(() => {
         expect(
@@ -1360,7 +1348,7 @@ describe("CreateGoalSheet", () => {
   })
 
   it("formats additional rank targets as the target rank plus applied slots", async () => {
-    render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
+    render(<CreateGoalSheet open onOpenChange={vi.fn()} />)
 
     await selectCharacter()
     fireEvent.click(screen.getByTestId("create-goal-type-toggle-Rank"))
@@ -1418,7 +1406,7 @@ describe("CreateGoalSheet", () => {
     // own default is what produces the Active goal.
     createCombinedGoals.mockResolvedValue({ goals: [] })
     getPlayerCharacter.mockResolvedValue(undefined) // locked, so Unlock is offered
-    render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
+    render(<CreateGoalSheet open onOpenChange={vi.fn()} />)
 
     await selectCharacter()
     fireEvent.click(screen.getByTestId("create-goal-type-toggle-Unlock"))
@@ -1434,7 +1422,7 @@ describe("CreateGoalSheet", () => {
   it("sends startPaused: true when the control is turned on", async () => {
     createCombinedGoals.mockResolvedValue({ goals: [] })
     getPlayerCharacter.mockResolvedValue(undefined) // locked, so Unlock is offered
-    render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
+    render(<CreateGoalSheet open onOpenChange={vi.fn()} />)
 
     await selectCharacter()
     fireEvent.click(screen.getByTestId("create-goal-type-toggle-Unlock"))
@@ -1453,7 +1441,7 @@ describe("CreateGoalSheet", () => {
     // flag is request-wide, so one field covers the whole chain rather than appearing per spec.
     createCombinedGoals.mockResolvedValue({ goals: [] })
     getPlayerCharacter.mockResolvedValue(undefined) // locked, so Unlock is auto-suggested
-    render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
+    render(<CreateGoalSheet open onOpenChange={vi.fn()} />)
 
     await selectCharacter()
     await vi.waitFor(() => {
@@ -1483,7 +1471,7 @@ describe("CreateGoalSheet", () => {
   })
 
   it("puts the Create paused checkbox in the footer beside 'Create another', with no helper paragraph", async () => {
-    render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
+    render(<CreateGoalSheet open onOpenChange={vi.fn()} />)
 
     await selectCharacter()
 
@@ -1505,7 +1493,7 @@ describe("CreateGoalSheet", () => {
   })
 
   it("lays out the footer as options on the left, then Close, then the primary Create goal button last", () => {
-    render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
+    render(<CreateGoalSheet open onOpenChange={vi.fn()} />)
 
     const footer = screen
       .getByTestId("create-goal-sheet")
@@ -1527,7 +1515,7 @@ describe("CreateGoalSheet", () => {
   })
 
   it("shows no helper paragraph in the Projects field", async () => {
-    render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
+    render(<CreateGoalSheet open onOpenChange={vi.fn()} />)
 
     await selectCharacter()
 
@@ -1541,7 +1529,7 @@ describe("CreateGoalSheet", () => {
   })
 
   it("preselects the first character when launched with no prefill and shows the status and goal-type sections side by side", async () => {
-    render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
+    render(<CreateGoalSheet open onOpenChange={vi.fn()} />)
 
     await selectCharacter()
 
@@ -1560,7 +1548,7 @@ describe("CreateGoalSheet", () => {
       <CreateGoalSheet
         open
         onOpenChange={vi.fn()}
-        onCreated={vi.fn()}
+
         prefill={{
           entityType: "Mow",
           entityId: "mow1" as never,
@@ -1578,7 +1566,7 @@ describe("CreateGoalSheet", () => {
   })
 
   it("does not override a unit the user picked once the list changes", async () => {
-    render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
+    render(<CreateGoalSheet open onOpenChange={vi.fn()} />)
     await selectCharacter()
 
     await selectMow()
@@ -1593,9 +1581,11 @@ describe("CreateGoalSheet", () => {
   it("clears start-paused on the reset that follows a create-another submission", async () => {
     // startPaused configures the goal, so a reset must clear it — unlike createAnother, which
     // configures the form and deliberately survives the same reset.
-    createCombinedGoals.mockResolvedValue({ goals: [{ goalId: "goal-1" }] })
+    createCombinedGoals.mockResolvedValue({
+      goals: [{ goalId: "goal-1", projectIds: [] }],
+    })
     getPlayerCharacter.mockResolvedValue(undefined) // locked, so Unlock is offered
-    render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
+    render(<CreateGoalSheet open onOpenChange={vi.fn()} />)
 
     await selectCharacter()
     fireEvent.click(screen.getByTestId("create-goal-type-toggle-Unlock"))
@@ -1624,7 +1614,7 @@ describe("CreateGoalSheet", () => {
   it("submits only the explicitly toggled types, with no rank/progression/ability target for Unlock", async () => {
     createCombinedGoals.mockResolvedValue({ goals: [] })
     getPlayerCharacter.mockResolvedValue(undefined) // locked, so Unlock is offered
-    render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
+    render(<CreateGoalSheet open onOpenChange={vi.fn()} />)
 
     await selectCharacter()
     // No goal type is preselected — turn Unlock on explicitly.
@@ -1648,7 +1638,7 @@ describe("CreateGoalSheet", () => {
 
   it("creates an Upgrade goal with one target selected from the relevant-upgrades picker", async () => {
     createCombinedGoals.mockResolvedValue({ goals: [] })
-    render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
+    render(<CreateGoalSheet open onOpenChange={vi.fn()} />)
 
     await selectCharacter()
     fireEvent.click(screen.getByTestId("create-goal-type-toggle-Upgrade"))
@@ -1689,7 +1679,7 @@ describe("CreateGoalSheet", () => {
 
   it("offers per-track range selectors for a Machine of War and sends no range while both are unset", async () => {
     createCombinedGoals.mockResolvedValue({ goals: [] })
-    render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
+    render(<CreateGoalSheet open onOpenChange={vi.fn()} />)
 
     await selectMow()
     await vi.waitFor(() => {
@@ -1726,7 +1716,7 @@ describe("CreateGoalSheet", () => {
   })
 
   it("shows the required quantity for each upgrade in the picker and prefills the selected quantity from it", async () => {
-    render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
+    render(<CreateGoalSheet open onOpenChange={vi.fn()} />)
 
     await selectCharacter()
     fireEvent.click(screen.getByTestId("create-goal-type-toggle-Upgrade"))
@@ -1756,7 +1746,7 @@ describe("CreateGoalSheet", () => {
   })
 
   it("states why submission is blocked while the Upgrade goal has no target, and clears it once one is picked", async () => {
-    render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
+    render(<CreateGoalSheet open onOpenChange={vi.fn()} />)
 
     await selectCharacter()
     fireEvent.click(screen.getByTestId("create-goal-type-toggle-Upgrade"))
@@ -1788,7 +1778,7 @@ describe("CreateGoalSheet", () => {
       abilities: [{ level: 60 }, { level: 60 }],
       xpLevel: 60,
     })
-    render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
+    render(<CreateGoalSheet open onOpenChange={vi.fn()} />)
 
     await selectCharacter()
 
@@ -1807,7 +1797,7 @@ describe("CreateGoalSheet", () => {
   })
 
   it("disables the Unlock toggle and shows an already-unlocked hint once the selected character resolves as owned", async () => {
-    render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
+    render(<CreateGoalSheet open onOpenChange={vi.fn()} />)
 
     await selectCharacter()
     // Wait for getPlayerCharacter() to resolve (owned, per the beforeEach mock) — the pre-resolution
@@ -1824,8 +1814,10 @@ describe("CreateGoalSheet", () => {
 
   it("preselects the first character again after 'create another' even when a Machine of War was submitted", async () => {
     getPlayerMow.mockResolvedValue(undefined)
-    createCombinedGoals.mockResolvedValue({ goals: [{ goalId: "goal-1" }] })
-    render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
+    createCombinedGoals.mockResolvedValue({
+      goals: [{ goalId: "goal-1", projectIds: [] }],
+    })
+    render(<CreateGoalSheet open onOpenChange={vi.fn()} />)
 
     await selectCharacter()
     await selectMow()
@@ -1848,7 +1840,7 @@ describe("CreateGoalSheet", () => {
   it("allows an Unlock goal for a locked Machine of War", async () => {
     getPlayerMow.mockResolvedValue(undefined)
     createCombinedGoals.mockResolvedValue({ goals: [] })
-    render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
+    render(<CreateGoalSheet open onOpenChange={vi.fn()} />)
 
     await selectMow()
     await vi.waitFor(() => {
@@ -1880,7 +1872,7 @@ describe("CreateGoalSheet", () => {
   it("auto-suggests Unlock for a locked character, with Rank depending on it, showing the level requirement instead of a Level goal", async () => {
     getPlayerCharacter.mockResolvedValue(undefined)
     createCombinedGoals.mockResolvedValue({ goals: [] })
-    render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
+    render(<CreateGoalSheet open onOpenChange={vi.fn()} />)
 
     await selectCharacter()
     // No goal type is preselected — turn Rank on explicitly, which is what triggers the auto-
@@ -1927,7 +1919,7 @@ describe("CreateGoalSheet", () => {
         { abilityId: "a2", level: 2 },
       ],
     })
-    render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
+    render(<CreateGoalSheet open onOpenChange={vi.fn()} />)
 
     await selectCharacter()
 
@@ -1952,7 +1944,7 @@ describe("CreateGoalSheet", () => {
       mythicShards: 12,
       abilities: [],
     })
-    render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
+    render(<CreateGoalSheet open onOpenChange={vi.fn()} />)
 
     await selectCharacter()
 
@@ -1969,7 +1961,7 @@ describe("CreateGoalSheet", () => {
       amount: 7,
       mythicAmount: 0,
     })
-    render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
+    render(<CreateGoalSheet open onOpenChange={vi.fn()} />)
 
     await selectCharacter()
 
@@ -1989,8 +1981,10 @@ describe("CreateGoalSheet", () => {
       abilities: [],
       appliedUpgradeSlots: [],
     })
-    createCombinedGoals.mockResolvedValue({ goals: [{ goalId: "goal-1" }] })
-    render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
+    createCombinedGoals.mockResolvedValue({
+      goals: [{ goalId: "goal-1", projectIds: [] }],
+    })
+    render(<CreateGoalSheet open onOpenChange={vi.fn()} />)
 
     await selectMow()
     // Wait for useGoalPrefill's getPlayerMow() to resolve (owned) — before it resolves, isLocked
@@ -2053,7 +2047,7 @@ describe("CreateGoalSheet", () => {
       ],
     })
     createCombinedGoals.mockResolvedValue({ goals: [{ goalId: "g1" }] })
-    render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
+    render(<CreateGoalSheet open onOpenChange={vi.fn()} />)
 
     await selectCharacter()
     fireEvent.click(screen.getByTestId("create-goal-type-toggle-Ability"))
@@ -2111,7 +2105,7 @@ describe("CreateGoalSheet", () => {
       ],
     })
     createCombinedGoals.mockResolvedValue({ goals: [{ goalId: "g1" }] })
-    render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
+    render(<CreateGoalSheet open onOpenChange={vi.fn()} />)
 
     await selectCharacter()
     fireEvent.click(screen.getByTestId("create-goal-type-toggle-Ability"))
@@ -2165,8 +2159,10 @@ describe("CreateGoalSheet", () => {
         },
       ],
     })
-    createCombinedGoals.mockResolvedValue({ goals: [{ goalId: "goal-1" }] })
-    render(<CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />)
+    createCombinedGoals.mockResolvedValue({
+      goals: [{ goalId: "goal-1", projectIds: [] }],
+    })
+    render(<CreateGoalSheet open onOpenChange={vi.fn()} />)
 
     await selectCharacter()
     fireEvent.click(screen.getByTestId("create-goal-type-toggle-Rank"))
@@ -2231,13 +2227,13 @@ describe("CreateGoalSheet", () => {
 
     beforeEach(() => {
       listProjects.mockResolvedValue(twoProjects)
-      createCombinedGoals.mockResolvedValue({ goals: [{ goalId: "goal-1" }] })
+      createCombinedGoals.mockResolvedValue({
+        goals: [{ goalId: "goal-1", projectIds: [] }],
+      })
     })
 
     it("offers the last projects and goal type again after 'create another', without the old targets or start-paused", async () => {
-      render(
-        <CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />
-      )
+      render(<CreateGoalSheet open onOpenChange={vi.fn()} />)
       await createRankGoalInBothProjects(true)
       expect(createCombinedGoals.mock.calls[0][0].startPaused).toBe(true)
 
@@ -2287,23 +2283,15 @@ describe("CreateGoalSheet", () => {
     it("offers the last projects and goal type again when the sheet is reopened after a completed goal", async () => {
       const onOpenChange = vi.fn()
       const { rerender } = render(
-        <CreateGoalSheet open onOpenChange={onOpenChange} onCreated={vi.fn()} />
+        <CreateGoalSheet open onOpenChange={onOpenChange} />
       )
       await createRankGoalInBothProjects(false)
       await vi.waitFor(() => {
         expect(onOpenChange).toHaveBeenCalledWith(false)
       })
 
-      rerender(
-        <CreateGoalSheet
-          open={false}
-          onOpenChange={onOpenChange}
-          onCreated={vi.fn()}
-        />
-      )
-      rerender(
-        <CreateGoalSheet open onOpenChange={onOpenChange} onCreated={vi.fn()} />
-      )
+      rerender(<CreateGoalSheet open={false} onOpenChange={onOpenChange} />)
+      rerender(<CreateGoalSheet open onOpenChange={onOpenChange} />)
 
       await selectCharacter()
       await vi.waitFor(() => {
@@ -2320,25 +2308,19 @@ describe("CreateGoalSheet", () => {
     it("lets an explicit project-scoped prefill win over the remembered projects", async () => {
       const onOpenChange = vi.fn()
       const { rerender } = render(
-        <CreateGoalSheet open onOpenChange={onOpenChange} onCreated={vi.fn()} />
+        <CreateGoalSheet open onOpenChange={onOpenChange} />
       )
       await createRankGoalInBothProjects(false)
       await vi.waitFor(() => {
         expect(onOpenChange).toHaveBeenCalledWith(false)
       })
-      rerender(
-        <CreateGoalSheet
-          open={false}
-          onOpenChange={onOpenChange}
-          onCreated={vi.fn()}
-        />
-      )
+      rerender(<CreateGoalSheet open={false} onOpenChange={onOpenChange} />)
       // The launch from Project Detail (or a global entry point used on its route) sends this.
       rerender(
         <CreateGoalSheet
           open
           onOpenChange={onOpenChange}
-          onCreated={vi.fn()}
+
           prefill={{ projectIds: ["proj-2"] }}
         />
       )
@@ -2358,9 +2340,7 @@ describe("CreateGoalSheet", () => {
         abilities: [],
         appliedUpgradeSlots: [],
       })
-      render(
-        <CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />
-      )
+      render(<CreateGoalSheet open onOpenChange={vi.fn()} />)
       await createRankGoalInBothProjects(true)
       await vi.waitFor(() => {
         expect(
@@ -2388,9 +2368,7 @@ describe("CreateGoalSheet", () => {
 
     it("keeps the draft when creation fails", async () => {
       createCombinedGoals.mockRejectedValue(new Error("boom"))
-      render(
-        <CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />
-      )
+      render(<CreateGoalSheet open onOpenChange={vi.fn()} />)
       await selectCharacter()
       await vi.waitFor(() => {
         expect(
@@ -2447,10 +2425,10 @@ describe("CreateGoalSheet", () => {
         listProjects.mockResolvedValue({ projects: [...projects, created] })
         return Promise.resolve(created)
       })
-      createCombinedGoals.mockResolvedValue({ goals: [{ goalId: "goal-1" }] })
-      render(
-        <CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />
-      )
+      createCombinedGoals.mockResolvedValue({
+        goals: [{ goalId: "goal-1", projectIds: [] }],
+      })
+      render(<CreateGoalSheet open onOpenChange={vi.fn()} />)
 
       await selectCharacter()
       fireEvent.click(screen.getByTestId("create-goal-type-toggle-Rank"))
@@ -2488,9 +2466,7 @@ describe("CreateGoalSheet", () => {
     it("keeps the draft and typed name on failure and offers no Create for an existing name", async () => {
       listProjects.mockResolvedValue({ projects })
       createProject.mockRejectedValueOnce(new Error("offline"))
-      render(
-        <CreateGoalSheet open onOpenChange={vi.fn()} onCreated={vi.fn()} />
-      )
+      render(<CreateGoalSheet open onOpenChange={vi.fn()} />)
 
       await selectCharacter()
       fireEvent.click(screen.getByTestId("create-goal-type-toggle-Rank"))

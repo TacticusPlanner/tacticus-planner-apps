@@ -7,8 +7,9 @@ import { toast } from "sonner"
 
 import { useProjectActions } from "./use-project-actions"
 
-const { createProjectMock } = vi.hoisted(() => ({
+const { createProjectMock, updateProjectMock } = vi.hoisted(() => ({
   createProjectMock: vi.fn(),
+  updateProjectMock: vi.fn(),
 }))
 
 vi.mock("@azure/msal-react", () => ({ useIsAuthenticated: () => true }))
@@ -27,6 +28,7 @@ vi.mock("@/entities/project", async (importOriginal) => {
   return {
     ...actual,
     createProject: createProjectMock,
+    updateProject: updateProjectMock,
   }
 })
 
@@ -58,6 +60,7 @@ const created = {
 describe("useProjectActions", () => {
   beforeEach(() => {
     createProjectMock.mockReset()
+    updateProjectMock.mockReset()
     vi.mocked(toast.success).mockReset()
     vi.mocked(toast.error).mockReset()
   })
@@ -121,6 +124,78 @@ describe("useProjectActions", () => {
 
     expect(returned).toEqual(created)
     expect(toast.success).toHaveBeenCalled()
+  })
+
+  describe("cache updates", () => {
+    const listKey = ["projects", "list"]
+    const other = { ...created, projectId: "p-other", name: "Other" }
+
+    function setup() {
+      const { queryClient, wrapper } = createWrapper()
+      queryClient.setQueryData(listKey, { projects: [other] })
+      const invalidate = vi
+        .spyOn(queryClient, "invalidateQueries")
+        .mockResolvedValue(undefined)
+      const { result } = renderHook(() => useProjectActions(), { wrapper })
+      return { queryClient, invalidate, result }
+    }
+
+    it("appends a created project to the cached list and refetches nothing", async () => {
+      createProjectMock.mockResolvedValue(created)
+      const { queryClient, invalidate, result } = setup()
+
+      await act(() => result.current.create("New Project", null, null))
+
+      expect(queryClient.getQueryData(listKey)).toEqual({
+        projects: [other, created],
+      })
+      expect(invalidate).not.toHaveBeenCalled()
+    })
+
+    it("replaces a saved project in the cached list and refetches nothing", async () => {
+      const renamed = { ...other, name: "Renamed", revision: 1 }
+      updateProjectMock.mockResolvedValue(renamed)
+      const { queryClient, invalidate, result } = setup()
+
+      await act(() =>
+        result.current.save(
+          other as never,
+          {
+            name: "Renamed",
+            description: null,
+            color: null,
+            status: "Active",
+            target: null,
+          } as never
+        )
+      )
+
+      expect(queryClient.getQueryData(listKey)).toEqual({
+        projects: [renamed],
+      })
+      expect(invalidate).not.toHaveBeenCalled()
+    })
+
+    it("refetches only the project list after a 409", async () => {
+      const { ApiError } = await import("@/shared/api")
+      updateProjectMock.mockRejectedValue(new ApiError(409, "stale"))
+      const { invalidate, result } = setup()
+
+      await act(() =>
+        result.current.save(
+          other as never,
+          {
+            name: "Renamed",
+            description: null,
+            color: null,
+            status: "Active",
+            target: null,
+          } as never
+        )
+      )
+
+      expect(invalidate).toHaveBeenCalledExactlyOnceWith({ queryKey: listKey })
+    })
   })
 
   it("returns null when project creation fails", async () => {

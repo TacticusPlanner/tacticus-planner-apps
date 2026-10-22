@@ -44,7 +44,7 @@ vi.mock("@/entities/project", async (importOriginal) => ({
 
 vi.mock("@/entities/player-data-override", () => ({
   onslaughtProgressQueries: {
-    all: () => ["player-data-overrides"],
+    all: () => ["player-data-overrides", "onslaught"],
   },
   campaignEventProgressQueries: {
     all: () => ["player-data-overrides", "campaign-events"],
@@ -353,7 +353,7 @@ describe("V1ImportPanel", () => {
   })
 
   describe("refreshCurrentUserOnSuccess", () => {
-    it("refetches current-user by default after a successful submission", async () => {
+    it("reads current-user exactly once by default after a successful submission", async () => {
       const invalidateQueries = vi.spyOn(
         QueryClient.prototype,
         "invalidateQueries"
@@ -363,10 +363,12 @@ describe("V1ImportPanel", () => {
       fireEvent.click(screen.getByTestId("v1-import-submit"))
 
       await screen.findByTestId("v1-import-result")
-      expect(refetch).toHaveBeenCalled()
-      expect(invalidateQueries).toHaveBeenCalledWith({
-        queryKey: ["current-user"],
-      })
+      expect(refetch).not.toHaveBeenCalled()
+      expect(
+        invalidateQueries.mock.calls.filter(
+          ([filters]) => filters?.queryKey?.[0] === "current-user"
+        )
+      ).toEqual([[{ queryKey: ["current-user"] }]])
       invalidateQueries.mockRestore()
     })
 

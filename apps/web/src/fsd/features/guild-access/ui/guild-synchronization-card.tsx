@@ -1,4 +1,3 @@
-import { useState } from "react"
 import { Link } from "react-router"
 import { useTranslation } from "react-i18next"
 import { useMutation } from "@tanstack/react-query"
@@ -19,7 +18,7 @@ import { ApiError } from "@/shared/api"
 
 type Props = {
   guild: RegisteredGuild
-  onSynchronized: () => void
+  onSynchronized: (guild: RegisteredGuild) => void
   showGuildManagementLink: boolean
 }
 
@@ -29,20 +28,15 @@ export function GuildSynchronizationCard({
   showGuildManagementLink,
 }: Props) {
   const { t } = useTranslation()
-  const [errorMessage, setErrorMessage] = useState<string | null>(null)
-  const synchronization = useMutation({ mutationFn: syncMyGuild })
-
-  const handleSynchronize = async () => {
-    setErrorMessage(null)
-    try {
-      await synchronization.mutateAsync()
-      onSynchronized()
-    } catch (error) {
-      setErrorMessage(
-        error instanceof ApiError ? error.message : t("guild.summary.syncError")
-      )
-    }
-  }
+  const synchronization = useMutation({
+    mutationFn: syncMyGuild,
+    onSuccess: onSynchronized,
+  })
+  const errorMessage = synchronization.error
+    ? synchronization.error instanceof ApiError
+      ? synchronization.error.message
+      : t("guild.summary.syncError")
+    : null
 
   return (
     <Card data-testid="guild-never-synchronized">
@@ -66,7 +60,7 @@ export function GuildSynchronizationCard({
           <Button
             data-testid="guild-access-sync-button"
             disabled={synchronization.isPending}
-            onClick={() => void handleSynchronize()}
+            onClick={() => synchronization.mutate()}
           >
             {synchronization.isPending ? (
               <Spinner data-icon="inline-start" />
