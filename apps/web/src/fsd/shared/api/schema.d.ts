@@ -2871,9 +2871,11 @@ export interface components {
     IReadOnlyListOfLegendaryEventRunRecordTeamResponse: components["schemas"]["LegendaryEventRunRecordTeamResponse"][]
     IReadOnlyListOfLegendaryEventTeamResponse: components["schemas"]["LegendaryEventTeamResponse"][]
     IReadOnlyListOfLegendaryEventTeamRunDepthResponse: components["schemas"]["LegendaryEventTeamRunDepthResponse"][]
-    IReadOnlyListOfPlayerCharacterRecord: components["schemas"]["PlayerCharacterRecord"][]
     IReadOnlyListOfPlayerDataManifestChunk: components["schemas"]["PlayerDataManifestChunk"][]
-    IReadOnlyListOfPlayerMowRecord: components["schemas"]["PlayerMowRecord"][]
+    IReadOnlyListOfRosterAbilityResponse: components["schemas"]["RosterAbilityResponse"][]
+    IReadOnlyListOfRosterCharacterResponse: components["schemas"]["RosterCharacterResponse"][]
+    IReadOnlyListOfRosterEquipmentSlotResponse: components["schemas"]["RosterEquipmentSlotResponse"][]
+    IReadOnlyListOfRosterMowResponse: components["schemas"]["RosterMowResponse"][]
     IReadOnlyListOfString: string[]
     IReadOnlyListOfV1GoalOutcome: components["schemas"]["V1GoalOutcome"][]
     IReadOnlyListOfV1LegendaryEventIssue: components["schemas"]["V1LegendaryEventIssue"][]
@@ -3010,8 +3012,6 @@ export interface components {
     ListOfGuid: string[]
     ListOfGuid__op9477E6AA2E5A: string[]
     ListOfInt32: number[]
-    ListOfPlayerUnitAbilityRecord: components["schemas"]["PlayerUnitAbilityRecord"][]
-    ListOfPlayerUnitEquipmentSlotRecord: components["schemas"]["PlayerUnitEquipmentSlotRecord"][]
     ListOfProjectGoalEntryRequest: components["schemas"]["ProjectGoalEntryRequest"][]
     ListOfProjectGoalEntryResponse: components["schemas"]["ProjectGoalEntryResponse"][]
     ListOfProjectPriorityRequest: components["schemas"]["ProjectPriorityRequest"][]
@@ -3050,22 +3050,6 @@ export interface components {
     /** @enum {string} */
     OnslaughtSector:
       "Stone" | "Iron" | "Bronze" | "Silver" | "Gold" | "Diamond" | "Adamantine"
-    PlayerCharacterRecord: {
-      rank: components["schemas"]["UnitRank"]
-      equippedItems: components["schemas"]["ListOfPlayerUnitEquipmentSlotRecord"]
-      unitId: components["schemas"]["UnitId"]
-      progressionIndex: components["schemas"]["UnitProgression"]
-      /** Format: int64 */
-      xp: number
-      /** Format: int32 */
-      xpLevel: number
-      /** Format: int64 */
-      shards: number
-      /** Format: int64 */
-      mythicShards: number
-      abilities: components["schemas"]["ListOfPlayerUnitAbilityRecord"]
-      appliedUpgradeSlots: components["schemas"]["ListOfInt32"]
-    }
     PlayerDataChunkEnvelopeOfObject: {
       /** Format: int32 */
       schemaVersion: number
@@ -3088,31 +3072,6 @@ export interface components {
       key: string
       hash: string
       url: string
-    }
-    PlayerMowRecord: {
-      unitId: components["schemas"]["UnitId"]
-      progressionIndex: components["schemas"]["UnitProgression"]
-      /** Format: int64 */
-      xp: number
-      /** Format: int32 */
-      xpLevel: number
-      /** Format: int64 */
-      shards: number
-      /** Format: int64 */
-      mythicShards: number
-      abilities: components["schemas"]["ListOfPlayerUnitAbilityRecord"]
-      appliedUpgradeSlots: components["schemas"]["ListOfInt32"]
-    }
-    PlayerUnitAbilityRecord: {
-      abilityId: string
-      /** Format: int32 */
-      level: number
-    }
-    PlayerUnitEquipmentSlotRecord: {
-      slotId: string
-      equipmentId: string
-      /** Format: int32 */
-      level: number
     }
     ProgressionEndTargetRequest: {
       end: components["schemas"]["UnitProgression"]
@@ -3216,12 +3175,53 @@ export interface components {
     RegisterGuildRequest: {
       guildApiToken: string
     }
+    RosterAbilityResponse: {
+      abilityId: string
+      /** Format: int32 */
+      level: number
+    }
+    RosterCharacterResponse: {
+      unitId: components["schemas"]["UnitId"]
+      rank: components["schemas"]["UnitRank"]
+      progressionIndex: components["schemas"]["UnitProgression"]
+      /** Format: int64 */
+      xp: number
+      /** Format: int32 */
+      xpLevel: number
+      /** Format: int64 */
+      shards: number
+      /** Format: int64 */
+      mythicShards: number
+      abilities: components["schemas"]["IReadOnlyListOfRosterAbilityResponse"]
+      appliedUpgradeSlots: components["schemas"]["IReadOnlyListOfInt32"]
+      equippedItems: components["schemas"]["IReadOnlyListOfRosterEquipmentSlotResponse"]
+    }
+    RosterEquipmentSlotResponse: {
+      slotId: string
+      equipmentId: string
+      /** Format: int32 */
+      level: number
+    }
+    RosterMowResponse: {
+      unitId: components["schemas"]["UnitId"]
+      progressionIndex: components["schemas"]["UnitProgression"]
+      /** Format: int64 */
+      xp: number
+      /** Format: int32 */
+      xpLevel: number
+      /** Format: int64 */
+      shards: number
+      /** Format: int64 */
+      mythicShards: number
+      abilities: components["schemas"]["IReadOnlyListOfRosterAbilityResponse"]
+      appliedUpgradeSlots: components["schemas"]["IReadOnlyListOfInt32"]
+    }
     RosterSnapshotResponse: {
       /** Format: date-time */
       takenAt: string
       catalogVersion: string
-      characters: components["schemas"]["IReadOnlyListOfPlayerCharacterRecord"]
-      mows: components["schemas"]["IReadOnlyListOfPlayerMowRecord"]
+      characters: components["schemas"]["IReadOnlyListOfRosterCharacterResponse"]
+      mows: components["schemas"]["IReadOnlyListOfRosterMowResponse"]
     }
     UnitId: string
     /** @enum {string} */

@@ -25,13 +25,13 @@ export type LegendaryEventRunRecordLanes =
 export type LegendaryEventRunRecordTeam =
   S["LegendaryEventRunRecordTeamResponse"]
 
-export type RosterSnapshotAbility = S["PlayerUnitAbilityRecord"]
+export type RosterSnapshotAbility = S["RosterAbilityResponse"]
 
 /** One owned character as synced (the `characters` chunk record). */
-export type RosterSnapshotCharacter = S["PlayerCharacterRecord"]
+export type RosterSnapshotCharacter = S["RosterCharacterResponse"]
 
 /** One owned MoW as synced (the `mows` chunk record). */
-export type RosterSnapshotMow = S["PlayerMowRecord"]
+export type RosterSnapshotMow = S["RosterMowResponse"]
 
 /** `GET .../run-records/{recordId}/roster`: the whole owned roster as it was at the record's last
  *  progress, read on demand (records never carry it). */
