@@ -12,6 +12,9 @@ on:
       - ".agents/**"
       - ".design-sync/**"
       - LICENSE
+  # Redeploys main by hand when a push did not trigger this workflow.
+  workflow_dispatch:
+
 permissions:
   contents: read
 
