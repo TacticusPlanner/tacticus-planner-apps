@@ -1,5 +1,6 @@
-import { useState } from "react"
+import { useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
+import { useBlocker } from "react-router"
 import { useQuery } from "@tanstack/react-query"
 import { useIsAuthenticated } from "@azure/msal-react"
 import { Button } from "@workspace/ui/components/button"
@@ -23,7 +24,9 @@ import { GoalEditUnsavedDialog } from "./goal-edit-unsaved-dialog"
  * The Edit goal dialog (a bottom sheet below 768px): the goal's unit and kind read-only, then only the
  * editable fields, with one Save. Pages own which goal is being edited (`goalId`, `null` when closed).
  * Closing with unsaved changes (Cancel, the close control, Escape) asks to discard first; an outside
- * click never closes it.
+ * click never closes it. So does any navigation that would drop the dialog (Back, Forward, a link):
+ * it is blocked until the same confirmation resolves, so the page's `?goal=` stays while it asks.
+ * Requires a data router.
  */
 export function GoalEditDialog({
   goalId,
@@ -72,9 +75,24 @@ function GoalEditDialogContent({
     (detail.goalType === "Unlock" || detail.goalType === "Ascension")
   const ready = !!detail && (!needsCatalog || charactersById !== undefined)
 
+  // Set once this dialog closes itself, so the page's own close navigation is never blocked.
+  const closing = useRef(false)
+  const close = () => {
+    closing.current = true
+    onOpenChange(false)
+  }
+  const blocker = useBlocker(
+    ({ currentLocation, nextLocation }) =>
+      dirty &&
+      !closing.current &&
+      (currentLocation.pathname !== nextLocation.pathname ||
+        new URLSearchParams(nextLocation.search).get("goal") !== goalId)
+  )
+  const blocked = blocker.state === "blocked"
+
   const requestClose = () => {
     if (dirty) setConfirmingDiscard(true)
-    else onOpenChange(false)
+    else close()
   }
 
   return (
@@ -110,7 +128,7 @@ function GoalEditDialogContent({
             detail={detail}
             onDirtyChange={setDirty}
             onRequestClose={requestClose}
-            onSaved={() => onOpenChange(false)}
+            onSaved={close}
             portalContainer={portalContainer}
           />
         ) : (
@@ -138,7 +156,7 @@ function GoalEditDialogContent({
             <ResponsiveDialogFooter>
               <Button
                 data-testid="goal-edit-cancel"
-                onClick={() => onOpenChange(false)}
+                onClick={close}
                 variant="outline"
               >
                 {t("goals.edit.close")}
@@ -149,12 +167,18 @@ function GoalEditDialogContent({
       </ResponsiveDialog>
 
       <GoalEditUnsavedDialog
-        onCancel={() => setConfirmingDiscard(false)}
+        onCancel={() => {
+          setConfirmingDiscard(false)
+          blocker.reset?.()
+        }}
         onConfirm={() => {
           setConfirmingDiscard(false)
-          onOpenChange(false)
+          if (blocked) {
+            closing.current = true
+            blocker.proceed?.()
+          } else close()
         }}
-        open={confirmingDiscard}
+        open={confirmingDiscard || blocked}
       />
     </>
   )

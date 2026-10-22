@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from "react"
+import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { Button } from "@workspace/ui/components/button"
@@ -32,13 +32,26 @@ type ScreenProps = {
    * `app` layer, which already composes both features, supplies this instead.
    *
    * The second argument lets that content report "the account is provisioned now" before the whole
-   * screen finishes (`onCompleted`) — see `AccountSetupScreen`'s `keyImported` state for why Back needs to know
-   * this earlier.
+   * screen finishes (`onCompleted`) — see `keyImported` for why Back needs to know this earlier.
    */
   renderImportStep: (
     onCompleted: () => void,
     onKeyImported: () => void
   ) => ReactNode
+  /**
+   * Set once a submission has succeeded, so the screen can tell "still waiting for confirmation"
+   * apart from "idle" — the difference between showing progress and showing a retry. Controlled by
+   * the route (with the rest of the setup flow state), which `onSubmitted` tells.
+   */
+  submitted: boolean
+  onSubmitted: () => void
+  /**
+   * Sticky, and only ever set by the import step (the key step's own success hides the steps via
+   * `submitted` instead). Once true, the account already has a key, so a Back control offering to
+   * abandon setup no longer makes sense. Controlled by the route, which `onKeyImported` tells.
+   */
+  keyImported: boolean
+  onKeyImported: () => void
 }
 
 /**
@@ -59,21 +72,18 @@ export function AccountSetupScreen({
   onStepChange,
   renderImportStep,
   suggestedDisplayName,
+  submitted,
+  onSubmitted,
+  keyImported,
+  onKeyImported,
 }: ScreenProps) {
   const { t } = useTranslation()
   const { state, refetch } = useCurrentUser()
-  // Set once a submission has succeeded, so the screen can tell "still waiting for confirmation"
-  // apart from "idle" — the difference between showing progress and showing a retry.
-  const [submitted, setSubmitted] = useState(false)
-  // Sticky, and only ever set by the import step (the key step's own success unmounts the steps via
-  // `submitted` instead). Once true, the account already has a key, so a Back control offering to
-  // abandon setup no longer makes sense.
-  const [keyImported, setKeyImported] = useState(false)
   const showBack =
     (step === "key" || step === "import") && !keyImported && !submitted
 
   const handleCompleted = () => {
-    setSubmitted(true)
+    onSubmitted()
     refetch()
   }
 
@@ -131,7 +141,7 @@ export function AccountSetupScreen({
       ) : (
         <Steps
           onCompleted={handleCompleted}
-          onKeyImported={() => setKeyImported(true)}
+          onKeyImported={onKeyImported}
           onStepChange={onStepChange}
           renderImportStep={renderImportStep}
           step={step}
@@ -202,7 +212,14 @@ function Steps({
   onKeyImported,
   renderImportStep,
   suggestedDisplayName,
-}: ScreenProps & { onCompleted: () => void; onKeyImported: () => void }) {
+}: Pick<
+  ScreenProps,
+  | "step"
+  | "onStepChange"
+  | "renderImportStep"
+  | "suggestedDisplayName"
+  | "onKeyImported"
+> & { onCompleted: () => void }) {
   const { t } = useTranslation()
 
   if (step === "choose") {

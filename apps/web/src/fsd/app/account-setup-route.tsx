@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useReducer } from "react"
 import {
   Navigate,
   useLocation,
@@ -29,7 +29,8 @@ import { SetupV1Import } from "./setup-v1-import"
  * fire-and-forget current-user refetch and land on a route whose gate still reads the stale
  * `hasCompletedOnboarding: false`; waiting for the refreshed state here removes that race.
  *
- * The import step suppresses this guard until its own Continue is clicked (`importAwaitingContinue`).
+ * The import step suppresses this guard until its own Continue is clicked (`importAwaitingContinue`,
+ * one field of the `setupFlowReducer` state below).
  * `hasCompletedOnboarding` flips true server-side the moment the personal key alone is saved — the
  * *first* submit, well before Continue ever appears — and this guard's `useCurrentUser()` is one of
  * several concurrently-mounted subscribers to that same shared query (the screen itself, this route,
@@ -40,7 +41,7 @@ import { SetupV1Import } from "./setup-v1-import"
  * refetch source — is what actually closes that off.
  */
 export function AccountSetupRoute({ step }: { step: AccountSetupStep }) {
-  // Keyed by `step` so `importAwaitingContinue` below gets a fresh `useState` initializer on every
+  // Keyed by `step` so `importAwaitingContinue` below gets a fresh `useReducer` initializer on every
   // step transition. Each step maps to its own <Route>, but react-router matching sibling routes to
   // the *same* `AccountSetupRoute` element/component type at the *same* tree position does not force
   // a remount on its own — without this key, navigating choose -> import client-side (the ordinary
@@ -54,22 +55,74 @@ type SetupLocationState = {
   importProjectId?: string
 } | null
 
+// The whole setup flow's transient state, held here so the screen and the import step stay
+// controlled. All of it resets on a step change (the `key={step}` remount above).
+type SetupFlowState = {
+  importAwaitingContinue: boolean
+  // The V1 login username the import proposed as a name. The API does not store it, so it rides
+  // router state from here to the name step (surviving Back, not a reload).
+  v1Suggestion: string | null
+  // The project the setup import put its goals in, so setup can end on it.
+  importProjectId: string | null
+  // A submission succeeded — the screen shows progress (or a retry) instead of the forms.
+  submitted: boolean
+  // Sticky, only ever set by the import step: the account has a key, so Back is hidden.
+  keyImported: boolean
+}
+
+type SetupFlowAction =
+  | { type: "importCompleted" }
+  | { type: "keyImported" }
+  | { type: "suggestionReceived"; name: string | null }
+  | { type: "importProjectReceived"; projectId: string }
+  | { type: "submitted" }
+
+function setupFlowReducer(
+  state: SetupFlowState,
+  action: SetupFlowAction
+): SetupFlowState {
+  switch (action.type) {
+    case "importCompleted":
+      return { ...state, importAwaitingContinue: false }
+    case "keyImported":
+      return { ...state, keyImported: true }
+    case "suggestionReceived":
+      return { ...state, v1Suggestion: action.name }
+    case "importProjectReceived":
+      return { ...state, importProjectId: action.projectId }
+    case "submitted":
+      return { ...state, submitted: true }
+  }
+}
+
+function initSetupFlow({
+  step,
+  importProjectId,
+}: {
+  step: AccountSetupStep
+  importProjectId: string | null
+}): SetupFlowState {
+  return {
+    importAwaitingContinue: step === "import",
+    v1Suggestion: null,
+    importProjectId,
+    submitted: false,
+    keyImported: false,
+  }
+}
+
 function AccountSetupRouteForStep({ step }: { step: AccountSetupStep }) {
   const { state } = useCurrentUser()
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
   const location = useLocation()
   const next = searchParams.get("next")
-  const [importAwaitingContinue, setImportAwaitingContinue] = useState(
-    step === "import"
-  )
-  // The V1 login username the import proposed as a name. The API does not store it, so it rides
-  // router state from here to the name step (surviving Back, not a reload).
-  const [v1Suggestion, setV1Suggestion] = useState<string | null>(null)
   // The project the setup import put its goals in, carried the same way so setup can end on it.
   const locationState = location.state as SetupLocationState
-  const [importProjectId, setImportProjectId] = useState<string | null>(
-    locationState?.importProjectId ?? null
+  const [flow, dispatch] = useReducer(
+    setupFlowReducer,
+    { step, importProjectId: locationState?.importProjectId ?? null },
+    initSetupFlow
   )
 
   // Carried across step navigation so the remembered destination survives Back, the mobile
@@ -77,13 +130,13 @@ function AccountSetupRouteForStep({ step }: { step: AccountSetupStep }) {
   const search = next ? `?next=${encodeURIComponent(next)}` : ""
 
   if (
-    !(step === "import" && importAwaitingContinue) &&
+    !(step === "import" && flow.importAwaitingContinue) &&
     state.status === "success"
   ) {
     const { hasCompletedOnboarding, displayName } = state.user
 
     if (hasCompletedOnboarding && displayName !== null) {
-      return <Navigate replace to={arrivalPath(next, importProjectId)} />
+      return <Navigate replace to={arrivalPath(next, flow.importProjectId)} />
     }
     // A key without a confirmed name only owes the name step.
     if (hasCompletedOnboarding && step !== "name") {
@@ -91,8 +144,8 @@ function AccountSetupRouteForStep({ step }: { step: AccountSetupStep }) {
         <Navigate
           replace
           state={{
-            suggestedDisplayName: v1Suggestion ?? undefined,
-            importProjectId: importProjectId ?? undefined,
+            suggestedDisplayName: flow.v1Suggestion ?? undefined,
+            importProjectId: flow.importProjectId ?? undefined,
           }}
           to={`${SETUP_STEP_PATHS.name}${search}`}
         />
@@ -106,22 +159,31 @@ function AccountSetupRouteForStep({ step }: { step: AccountSetupStep }) {
 
   return (
     <AccountSetupScreen
+      keyImported={flow.keyImported}
+      onKeyImported={() => dispatch({ type: "keyImported" })}
       onStepChange={(nextStep) => {
         void navigate(`${SETUP_STEP_PATHS[nextStep]}${search}`)
       }}
+      onSubmitted={() => dispatch({ type: "submitted" })}
       renderImportStep={(onCompleted, onKeyImported) => (
         <SetupV1Import
+          keyImported={flow.keyImported}
           onCompleted={() => {
-            setImportAwaitingContinue(false)
+            dispatch({ type: "importCompleted" })
             onCompleted()
           }}
           onKeyImported={onKeyImported}
-          onImportProject={setImportProjectId}
-          onSuggestedDisplayName={setV1Suggestion}
+          onImportProject={(projectId) =>
+            dispatch({ type: "importProjectReceived", projectId })
+          }
+          onSuggestedDisplayName={(name) =>
+            dispatch({ type: "suggestionReceived", name })
+          }
           onUseApiKey={() => void navigate(`${SETUP_STEP_PATHS.key}${search}`)}
         />
       )}
       step={step}
+      submitted={flow.submitted}
       suggestedDisplayName={locationState?.suggestedDisplayName}
     />
   )

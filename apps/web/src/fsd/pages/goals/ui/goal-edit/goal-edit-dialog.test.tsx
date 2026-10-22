@@ -1,7 +1,7 @@
 import { act, fireEvent, render, screen, within } from "@/test/render"
 import userEvent from "@testing-library/user-event"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
-import { MemoryRouter } from "react-router"
+import { useLocation, useNavigate, useSearchParams } from "react-router"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { setTestAuth } from "@/test/auth"
@@ -236,16 +236,42 @@ function renderDialog(
   queryClient?: QueryClient
 ) {
   const dialog = (
-    <MemoryRouter>
-      <GoalEditDialog goalId="goal-1" onOpenChange={vi.fn()} {...props} />
-    </MemoryRouter>
+    <GoalEditDialog goalId="goal-1" onOpenChange={vi.fn()} {...props} />
   )
   return render(
     queryClient ? (
       <QueryClientProvider client={queryClient}>{dialog}</QueryClientProvider>
     ) : (
       dialog
-    )
+    ),
+    { route: "/plan/goals" }
+  )
+}
+
+// The page's wiring in miniature: the dialog follows `?goal=`, and a probe stands in for the
+// browser's Back button.
+function DialogAtGoalParam() {
+  const [params, setParams] = useSearchParams()
+  const navigate = useNavigate()
+  return (
+    <>
+      <button data-testid="history-back" onClick={() => navigate(-1)}>
+        Back
+      </button>
+      <span data-testid="location-search">{useLocation().search}</span>
+      <GoalEditDialog
+        goalId={params.get("goal")}
+        onOpenChange={() =>
+          setParams(
+            (previous) => {
+              previous.delete("goal")
+              return previous
+            },
+            { replace: true }
+          )
+        }
+      />
+    </>
   )
 }
 
@@ -1043,6 +1069,64 @@ describe("GoalEditDialog", () => {
 
       expect(onOpenChange).not.toHaveBeenCalled()
       expect(screen.getByLabelText("Notes")).toHaveValue("Changed")
+    })
+
+    it("asks before Back drops a dirty dialog: Keep editing keeps it and the param, Discard closes it", async () => {
+      const user = userEvent.setup()
+      render(<DialogAtGoalParam />, {
+        route: "/plan/goals",
+        initialEntries: [
+          "/plan/goals?status=paused",
+          "/plan/goals?status=paused&goal=goal-1",
+        ],
+      })
+      await loaded()
+
+      fireEvent.change(screen.getByLabelText("Notes"), {
+        target: { value: "Changed" },
+      })
+      fireEvent.click(screen.getByTestId("history-back"))
+      await user.click(
+        await screen.findByRole("button", { name: "Keep editing" })
+      )
+
+      expect(screen.getByLabelText("Notes")).toHaveValue("Changed")
+      expect(screen.getByTestId("location-search")).toHaveTextContent(
+        "?status=paused&goal=goal-1"
+      )
+
+      fireEvent.click(screen.getByTestId("history-back"))
+      await user.click(
+        await screen.findByRole("button", { name: "Discard changes" })
+      )
+
+      await vi.waitFor(() =>
+        expect(screen.queryByTestId("goal-edit-dialog")).toBeNull()
+      )
+      expect(screen.getByTestId("location-search")).toHaveTextContent(
+        /^\?status=paused$/
+      )
+    })
+
+    it("lets Back close a dialog without edits at once", async () => {
+      render(<DialogAtGoalParam />, {
+        route: "/plan/goals",
+        initialEntries: [
+          "/plan/goals?status=paused",
+          "/plan/goals?status=paused&goal=goal-1",
+        ],
+      })
+      await loaded()
+
+      fireEvent.click(screen.getByTestId("history-back"))
+
+      await vi.waitFor(() =>
+        expect(screen.queryByTestId("goal-edit-dialog")).toBeNull()
+      )
+      expect(screen.queryByTestId("confirmation-dialog")).toBeNull()
+      expect(screen.getByTestId("location-search")).toHaveTextContent(
+        /^\?status=paused$/
+      )
     })
 
     it("closes immediately on Cancel or Escape when nothing changed", async () => {

@@ -1,10 +1,8 @@
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { useIsAuthenticated } from "@azure/msal-react"
 import { onslaughtAllianceIcon } from "@workspace/game-catalog"
 import { Alert, AlertDescription } from "@workspace/ui/components/alert"
-import { Button } from "@workspace/ui/components/button"
 import { Spinner } from "@workspace/ui/components/spinner"
 
 import {
@@ -19,86 +17,83 @@ import {
   type OnslaughtSector,
   type OnslaughtTier,
 } from "@/entities/player-data-override"
-import { ApiError } from "@/shared/api"
+import { useRevisionedDraft } from "@/shared/api"
 import { useCatalogDataset } from "@/shared/local-data"
-import { EntityIcon, LocalReadFailure, ProgressionBadge } from "@/shared/ui"
+import {
+  EntityIcon,
+  LocalReadFailure,
+  ProgressionBadge,
+  UnsavedChangesBar,
+  UnsavedChangesGuard,
+} from "@/shared/ui"
 
 import { OnslaughtAllianceCard } from "./onslaught-alliance-card"
 import { OnslaughtEmblem } from "./onslaught-emblem"
+import { useOnslaughtTutorial } from "./onslaught-page.tutorial"
 import {
   formatReward,
   rewardProgression,
   useOnslaughtPositionLabel,
 } from "./onslaught-position"
 
+type Message = { tone: "success" | "info" | "error"; key: MessageKey }
+type MessageKey =
+  "onslaught.saved" | "onslaught.conflict" | "onslaught.saveError"
+
 const allianceKey = (alliance: OnslaughtAlliance) =>
   alliance.toLowerCase() as "imperial" | "xenos" | "chaos"
 
 const rewardTiers = [1, 2, 3] as const
 
+const toDraft = (saved: OnslaughtProgress) => saved
+const toPayload = (
+  draft: OnslaughtProgress,
+  saved: OnslaughtProgress
+): OnslaughtProgress => ({ ...draft, revision: saved.revision })
+
 export function OnslaughtPage() {
   const { t } = useTranslation()
   const positionLabel = useOnslaughtPositionLabel()
   const isAuthenticated = useIsAuthenticated()
-  const queryClient = useQueryClient()
   const rewardsRead = useCatalogDataset("onslaught-rewards")
-  const [draft, setDraft] = useState<OnslaughtProgress>()
-  const [message, setMessage] = useState<string | null>(null)
-  const progressQuery = useQuery({
-    ...onslaughtProgressQueries.current(),
+  const progressDraft = useRevisionedDraft({
+    query: onslaughtProgressQueries.current(),
     enabled: isAuthenticated,
+    toDraft,
+    toPayload,
+    save: updateOnslaughtProgress,
   })
-  const saveMutation = useMutation({
-    mutationFn: updateOnslaughtProgress,
-    onSuccess: (saved) => {
-      queryClient.setQueryData(
-        onslaughtProgressQueries.current().queryKey,
-        saved
-      )
-    },
-  })
+  const [message, setMessage] = useState<Message | null>(null)
+  const progressQuery = progressDraft.query
+  const progress = progressDraft.draft
 
-  const progress = draft ?? progressQuery.data
-  const displayMessage =
-    message ?? (progressQuery.isError ? t("onslaught.loadError") : null)
+  useOnslaughtTutorial()
 
+  // The sector-change tier rule (`tier-after-sector-change.ts`) is applied by the card, so `patch`
+  // already carries the resulting tier.
   const updateAlliance = (
     alliance: OnslaughtAlliance,
     patch: Partial<{ sector: OnslaughtSector; tier: OnslaughtTier }>
   ) => {
     const key = allianceKey(alliance)
-    setDraft((current) => {
-      const base = current ?? progressQuery.data
-      if (!base) return current
-      // Any edit makes the alliance a real position that Save will store.
-      return { ...base, [key]: { ...base[key], ...patch, isSet: true } }
-    })
+    // Any edit makes the alliance a real position that Save will store.
+    progressDraft.update((current) => ({
+      ...current,
+      [key]: { ...current[key], ...patch, isSet: true },
+    }))
     setMessage(null)
   }
 
   const save = async () => {
-    if (!isAuthenticated || !progress) return
     setMessage(null)
-    try {
-      const saved = await saveMutation.mutateAsync(progress)
-      setDraft(saved)
-      setMessage(t("onslaught.saved"))
-    } catch (error) {
-      if (error instanceof ApiError && error.status === 409) {
-        try {
-          const refreshed = await queryClient.fetchQuery(
-            onslaughtProgressQueries.current()
-          )
-          saveMutation.reset()
-          setDraft(refreshed)
-          setMessage(t("onslaught.conflict"))
-          return
-        } catch {
-          // Fall through to the general save error when the refresh also fails.
-        }
-      }
-      setMessage(t("onslaught.saveError"))
-    }
+    const outcome = await progressDraft.save()
+    setMessage(
+      outcome === "saved"
+        ? { tone: "success", key: "onslaught.saved" }
+        : outcome === "conflict"
+          ? { tone: "info", key: "onslaught.conflict" }
+          : { tone: "error", key: "onslaught.saveError" }
+    )
   }
 
   if (rewardsRead.status === "error") {
@@ -115,14 +110,26 @@ export function OnslaughtPage() {
   if (!progress) {
     return (
       <Alert variant="destructive">
-        <AlertDescription>{displayMessage}</AlertDescription>
+        <AlertDescription>{t("onslaught.loadError")}</AlertDescription>
       </Alert>
     )
   }
 
   return (
     <div className="space-y-8" data-testid="onslaught-page">
-      <div className="grid gap-4 md:grid-cols-3">
+      {message ? (
+        <Alert
+          variant={message.tone === "error" ? "destructive" : "default"}
+          data-testid="onslaught-message"
+        >
+          <AlertDescription>{t(message.key)}</AlertDescription>
+        </Alert>
+      ) : null}
+
+      <div
+        className="grid gap-4 md:grid-cols-3"
+        data-testid="onslaught-alliance-cards"
+      >
         {onslaughtAlliances.map((alliance) => {
           const value = progress[allianceKey(alliance)]
           return (
@@ -143,27 +150,6 @@ export function OnslaughtPage() {
       >
         {t("onslaught.help")}
       </p>
-
-      <div className="flex items-center gap-3">
-        <Button
-          disabled={saveMutation.isPending}
-          onClick={() => void save()}
-          data-testid="save-onslaught-progress"
-        >
-          {saveMutation.isPending ? t("onslaught.saving") : t("onslaught.save")}
-        </Button>
-        {displayMessage ? (
-          <span
-            className={
-              progressQuery.isError || saveMutation.isError
-                ? "text-sm text-destructive"
-                : "text-sm text-muted-foreground"
-            }
-          >
-            {displayMessage}
-          </span>
-        ) : null}
-      </div>
 
       <section className="space-y-3">
         <h2 className="text-xl font-semibold">{t("onslaught.rewardsTitle")}</h2>
@@ -268,6 +254,26 @@ export function OnslaughtPage() {
           </table>
         </div>
       </section>
+
+      <UnsavedChangesBar
+        open={progressDraft.isDirty}
+        isSaving={progressDraft.isSaving}
+        message={t("onslaught.unsaved.message")}
+        saveLabel={t("onslaught.unsaved.save")}
+        discardLabel={t("onslaught.unsaved.discard")}
+        onSave={() => void save()}
+        onDiscard={() => {
+          progressDraft.discard()
+          setMessage(null)
+        }}
+      />
+      <UnsavedChangesGuard
+        when={progressDraft.isDirty}
+        title={t("onslaught.leave.title")}
+        description={t("onslaught.leave.description")}
+        stayLabel={t("onslaught.leave.stay")}
+        leaveLabel={t("onslaught.leave.leave")}
+      />
     </div>
   )
 }

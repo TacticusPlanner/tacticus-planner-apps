@@ -1,22 +1,19 @@
 import userEvent from "@testing-library/user-event"
+import { createMemoryRouter, RouterProvider } from "react-router"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
+import { ApiError } from "@/shared/api"
 import { render, screen, waitFor } from "@/test/render"
 import { seedGameCatalog } from "@/test/seed"
 
 const getProgress = vi.fn()
 const saveProgress = vi.fn()
-const apiErrors = vi.hoisted(() => ({
-  ApiError: class ApiError extends Error {
-    status: number
-    constructor(status: number, message: string) {
-      super(message)
-      this.status = status
-    }
-  },
-}))
+const mobile = vi.hoisted(() => ({ value: false }))
 
-vi.mock("@/shared/api", () => ({ ApiError: apiErrors.ApiError }))
+vi.mock("@workspace/ui/hooks/use-mobile", () => ({
+  useIsMobile: () => mobile.value,
+}))
+vi.mock("@/shared/tour", () => ({ useTourPageSteps: vi.fn() }))
 
 vi.mock("@/entities/player-data-override", () => ({
   getOnslaughtProgress: (...args: unknown[]) => getProgress(...args),
@@ -51,6 +48,8 @@ vi.mock("@/entities/player-data-override", () => ({
   }),
 }))
 
+import { useTourPageSteps } from "@/shared/tour"
+
 import { OnslaughtPage } from "./onslaught-page"
 
 const progress = {
@@ -61,14 +60,27 @@ const progress = {
 }
 
 function renderPage() {
-  return render(<OnslaughtPage />, {
-    route: "/",
+  const router = createMemoryRouter(
+    [
+      { path: "/my-game/onslaught", element: <OnslaughtPage /> },
+      {
+        path: "/my-game/campaigns",
+        element: <div data-testid="campaigns-page" />,
+      },
+    ],
+    { initialEntries: ["/my-game/onslaught"] }
+  )
+  const view = render(<RouterProvider router={router} />, {
     auth: { authenticated: true },
   })
+  return { ...view, router }
 }
+
+const saveBar = () => screen.queryByTestId("unsaved-changes-bar")
 
 describe("OnslaughtPage", () => {
   beforeEach(async () => {
+    mobile.value = false
     await seedGameCatalog({ "onslaught-rewards": [{ id: "Stone-1" }] })
     getProgress.mockReset().mockResolvedValue(progress)
     saveProgress
@@ -123,7 +135,7 @@ describe("OnslaughtPage", () => {
       "Tier 3"
     )
 
-    await user.click(screen.getByTestId("save-onslaught-progress"))
+    await user.click(screen.getByTestId("unsaved-changes-save"))
     await waitFor(() => expect(saveProgress).toHaveBeenCalledTimes(1))
     expect(saveProgress.mock.calls[0]?.[0]).toEqual({
       ...progress,
@@ -132,8 +144,12 @@ describe("OnslaughtPage", () => {
     expect(
       await screen.findByText("Onslaught progress saved.")
     ).toBeInTheDocument()
+    // The saved values are the new baseline, and there is no Save button outside the bar.
+    expect(saveBar()).toBeNull()
+    expect(screen.queryByRole("button", { name: "Save" })).toBeNull()
 
-    await user.click(screen.getByTestId("save-onslaught-progress"))
+    await user.click(screen.getByTestId("imperial-onslaught-complete"))
+    await user.click(screen.getByTestId("unsaved-changes-save"))
     await waitFor(() => expect(saveProgress).toHaveBeenCalledTimes(2))
     expect(saveProgress.mock.calls[1]?.[0]).toMatchObject({ revision: 5 })
   }, 10_000)
@@ -182,13 +198,12 @@ describe("OnslaughtPage", () => {
       revision: 9,
     }
     getProgress.mockResolvedValueOnce(progress).mockResolvedValueOnce(refreshed)
-    saveProgress.mockRejectedValueOnce(
-      new apiErrors.ApiError(409, "stale revision")
-    )
+    saveProgress.mockRejectedValueOnce(new ApiError(409, "stale revision"))
     renderPage()
 
     expect(await screen.findByTestId("onslaught-page")).toBeInTheDocument()
-    await user.click(screen.getByTestId("save-onslaught-progress"))
+    await user.click(screen.getByTestId("xenos-onslaught-complete"))
+    await user.click(screen.getByTestId("unsaved-changes-save"))
 
     expect(
       await screen.findByText(
@@ -198,6 +213,8 @@ describe("OnslaughtPage", () => {
     expect(screen.getByTestId("imperial-onslaught-sector")).toHaveTextContent(
       "Adamantine"
     )
+    expect(screen.getByTestId("xenos-onslaught-complete")).not.toBeChecked()
+    expect(saveBar()).toBeNull()
   })
 
   it("shows unsaved alliances as not set and only marks an edited one as set", async () => {
@@ -233,7 +250,7 @@ describe("OnslaughtPage", () => {
       "Tier 1"
     )
 
-    await user.click(screen.getByTestId("save-onslaught-progress"))
+    await user.click(screen.getByTestId("unsaved-changes-save"))
     await waitFor(() => expect(saveProgress).toHaveBeenCalledTimes(1))
     expect(saveProgress.mock.calls[0]?.[0]).toEqual({
       imperial: { sector: "Silver", tier: 1, isSet: true },
@@ -241,5 +258,119 @@ describe("OnslaughtPage", () => {
       chaos: unset,
       revision: 0,
     })
+  })
+
+  it("shows the bar only while the draft differs from the saved progress", async () => {
+    const user = userEvent.setup()
+    renderPage()
+    await screen.findByTestId("onslaught-page")
+    expect(saveBar()).toBeNull()
+
+    await user.click(screen.getByTestId("imperial-onslaught-tier"))
+    await user.click(screen.getByRole("option", { name: /Gold · Tier 3/ }))
+    expect(saveBar()).toBeInTheDocument()
+
+    await user.click(screen.getByTestId("imperial-onslaught-tier"))
+    await user.click(screen.getByRole("option", { name: /Gold · Tier 2/ }))
+    expect(saveBar()).toBeNull()
+  })
+
+  it("discards every edit", async () => {
+    const user = userEvent.setup()
+    renderPage()
+    await screen.findByTestId("onslaught-page")
+    await user.click(screen.getByTestId("imperial-onslaught-tier"))
+    await user.click(screen.getByRole("option", { name: /Gold · Tier 3/ }))
+    await user.click(screen.getByTestId("xenos-onslaught-complete"))
+
+    await user.click(screen.getByTestId("unsaved-changes-discard"))
+    expect(screen.getByTestId("imperial-onslaught-tier")).toHaveTextContent(
+      "Tier 2"
+    )
+    expect(screen.getByTestId("xenos-onslaught-complete")).not.toBeChecked()
+    expect(saveBar()).toBeNull()
+    expect(saveProgress).not.toHaveBeenCalled()
+  })
+
+  it("disables both bar actions while saving", async () => {
+    const user = userEvent.setup()
+    saveProgress.mockReturnValueOnce(new Promise(() => {}))
+    renderPage()
+    await screen.findByTestId("onslaught-page")
+    await user.click(screen.getByTestId("xenos-onslaught-complete"))
+    await user.click(screen.getByTestId("unsaved-changes-save"))
+
+    await waitFor(() =>
+      expect(screen.getByTestId("unsaved-changes-save")).toBeDisabled()
+    )
+    expect(screen.getByTestId("unsaved-changes-discard")).toBeDisabled()
+  })
+
+  it("shows the translated error, never the API text, and keeps the edits", async () => {
+    const user = userEvent.setup()
+    saveProgress.mockRejectedValueOnce(
+      new ApiError(400, "Raw server validation text")
+    )
+    renderPage()
+    await screen.findByTestId("onslaught-page")
+    await user.click(screen.getByTestId("xenos-onslaught-complete"))
+    await user.click(screen.getByTestId("unsaved-changes-save"))
+
+    expect(
+      await screen.findByText(
+        "Couldn't save Onslaught progress. Your changes are still here; try again."
+      )
+    ).toBeInTheDocument()
+    expect(screen.queryByText("Raw server validation text")).toBeNull()
+    expect(screen.getByTestId("xenos-onslaught-complete")).toBeChecked()
+    expect(saveBar()).toBeInTheDocument()
+  })
+
+  it("asks before leaving with unsaved edits", async () => {
+    const user = userEvent.setup()
+    const { router } = renderPage()
+    await screen.findByTestId("onslaught-page")
+    await user.click(screen.getByTestId("xenos-onslaught-complete"))
+
+    void router.navigate("/my-game/campaigns")
+    expect(await screen.findByText("Leave without saving?")).toBeInTheDocument()
+    await user.click(screen.getByRole("button", { name: "Stay" }))
+    expect(screen.getByTestId("onslaught-page")).toBeInTheDocument()
+    expect(screen.getByTestId("xenos-onslaught-complete")).toBeChecked()
+
+    void router.navigate("/my-game/campaigns")
+    await user.click(await screen.findByRole("button", { name: "Leave" }))
+    expect(await screen.findByTestId("campaigns-page")).toBeInTheDocument()
+  })
+
+  it("navigates without asking when there are no edits", async () => {
+    const { router } = renderPage()
+    await screen.findByTestId("onslaught-page")
+    void router.navigate("/my-game/campaigns")
+    expect(await screen.findByTestId("campaigns-page")).toBeInTheDocument()
+  })
+
+  describe("tour", () => {
+    it.each([
+      ["desktop", false],
+      ["mobile", true],
+    ])(
+      "every %s step targets an element on the page",
+      async (_form, isMobile) => {
+        mobile.value = isMobile
+        renderPage()
+        await screen.findByTestId("onslaught-page")
+        const steps = vi.mocked(useTourPageSteps).mock.lastCall?.[0]
+        const formSteps =
+          (isMobile ? steps?.mobile : undefined) ?? steps?.desktop
+        expect(formSteps?.length).toBeGreaterThan(0)
+        for (const step of formSteps ?? []) {
+          expect(
+            document.querySelector(step.target as string),
+            String(step.target)
+          ).not.toBeNull()
+        }
+      }
+    )
   })
 })

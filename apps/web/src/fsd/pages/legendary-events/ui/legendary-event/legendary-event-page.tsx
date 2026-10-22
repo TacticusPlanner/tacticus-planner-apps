@@ -6,6 +6,7 @@ import { Skeleton } from "@workspace/ui/components/skeleton"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
 import {
+  LEGENDARY_EVENT_LANE_IDS,
   type LegendaryEvent,
   useClearEstimateConfig,
   useLegendaryEvent,
@@ -22,6 +23,7 @@ import {
   useTokenPlan,
 } from "@/features/legendary-event-tokens"
 import { useAnalyticsActions } from "@/shared/analytics"
+import { useSearchParamState } from "@/shared/lib"
 import { useTourPageSteps } from "@/shared/tour"
 import { useUnitName } from "@/shared/unit-name"
 import { useUnitPowerContext } from "@/shared/unit-power"
@@ -53,10 +55,15 @@ import {
   pickerGoalsPreview,
 } from "./teams/teams.view-model"
 
+const isEventTab = (value: string) =>
+  value === "overview" ||
+  (LEGENDARY_EVENT_LANE_IDS as readonly string[]).includes(value)
+
 /** `/legendary-events/:eventId`: computes the page's view model once and renders the tab-strip
- *  page (design D3). An unknown id replaces the route with the hub. The content is keyed by the
- *  event id, so the selected tab, the leaderboard's filters and toggles (and every read) start
- *  fresh on each event instead of carrying over. */
+ *  page (design D3). An unknown id replaces the route with the hub. The selected tab is the `tab`
+ *  query parameter (replace history), which navigation to another event does not carry. The
+ *  content is keyed by the event id, so the leaderboard's filters and toggles (and every read)
+ *  start fresh on each event instead of carrying over. */
 export function LegendaryEventPage() {
   const { eventId = "" } = useParams()
   return <LegendaryEventPageContent eventId={eventId} key={eventId} />
@@ -69,7 +76,11 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
   const progress = useLegendaryEventProgress(eventId)
   const unitName = useUnitName()
   const syncTimes = useLegendaryEventSyncTimes()
-  const [selectedTab, setSelectedTab] = useState<LegendaryEventTab>("overview")
+  const [selectedTab, setSelectedTab] = useSearchParamState<LegendaryEventTab>(
+    "tab",
+    isEventTab,
+    "overview"
+  )
   // Shared by the three lanes' leaderboards and the Overview one; discarded when the page unmounts.
   const [onlyUnlocked, setOnlyUnlocked] = useState(false)
   const [deductScored, setDeductScored] = useState(true)

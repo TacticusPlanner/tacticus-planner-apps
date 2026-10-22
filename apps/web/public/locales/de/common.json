@@ -287,7 +287,7 @@
     "saving": "Wird gespeichert…",
     "saved": "Onslaught-Fortschritt gespeichert.",
     "loadError": "Onslaught-Fortschritt konnte nicht geladen werden.",
-    "saveError": "Onslaught-Fortschritt konnte nicht gespeichert werden. Aktualisiere und versuche es erneut.",
+    "saveError": "Onslaught-Fortschritt konnte nicht gespeichert werden. Deine Änderungen sind noch da; versuche es erneut.",
     "conflict": "Der Onslaught-Fortschritt wurde anderswo geändert. Die neuesten Werte wurden geladen; wende deine Änderung erneut an.",
     "rewardsTitle": "Referenz für Scherben-Belohnungen",
     "sectorTier": "Sektor / Stufe",
@@ -300,6 +300,17 @@
       "Legendary": "Legendär",
       "LegendaryBlue": "Legendär 1★ blau",
       "Mythic": "Mythisch"
+    },
+    "unsaved": {
+      "message": "Du hast ungespeicherte Änderungen",
+      "save": "Speichern",
+      "discard": "Verwerfen"
+    },
+    "leave": {
+      "title": "Ohne Speichern verlassen?",
+      "description": "Deine Änderungen am Onslaught-Fortschritt wurden nicht gespeichert und gehen verloren.",
+      "stay": "Bleiben",
+      "leave": "Verlassen"
     }
   },
   "myGame": {
@@ -1510,6 +1521,18 @@
         "hideCompleted": {
           "title": "Abgeschlossene Events ausblenden",
           "content": "Unfertige Events stehen oben. Schalte dies ein, um abgeschlossene auszublenden; die Auswahl wird in diesem Browser gespeichert."
+        },
+        "save": {
+          "title": "Änderungen speichern",
+          "content": "Sobald du etwas änderst, erscheint unten eine Leiste mit Speichern und Verwerfen. Vor dem Verlassen mit ungespeicherten Änderungen wirst du gefragt."
+        }
+      }
+    },
+    "onslaught": {
+      "steps": {
+        "alliances": {
+          "title": "Fortschritt der Allianzen",
+          "content": "Lege für jede Allianz den Sektor und die Stufe fest, die sie farmt. Jede Karte zeigt die Scherben, die ein Lauf an dieser Position bringt."
         },
         "save": {
           "title": "Änderungen speichern",

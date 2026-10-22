@@ -6,8 +6,6 @@ import {
   GoalFilters,
   StatusFilterSelect,
   isGoalGroupValue,
-  type GoalStatusFilterValue,
-  type GoalTypeFilterValue,
 } from "@/entities/goal"
 import { MobileReorderBar, OrderConflictBanner } from "@/features/goal-order"
 import { PendingMaterialSteps } from "@/features/v1-import"
@@ -30,6 +28,10 @@ import { useGoalActions } from "../../model/goals-data/use-goal-actions"
 import { useGoalsMobileModes } from "../../model/goals-data/use-goals-mobile-modes"
 import { useGoalsSelection } from "../../model/goals-data/use-goals-selection"
 import { useGoals } from "../../model/goals-data/use-goals"
+import {
+  useGoalEditParam,
+  useGoalsListFilters,
+} from "../../model/goals-data/use-goals-url-state"
 import { GoalsLateNotices } from "./goals-estimates-error"
 import { GoalsPageStates } from "./goals-page-states"
 import { useGoalsPageReorder } from "../../model/goals-data/use-goals-page-reorder"
@@ -66,9 +68,7 @@ import { useGoalsOverviewTutorial } from "./goals-page.tutorial"
 export function GoalsPage() {
   const { t } = useTranslation()
   const isMobile = useIsMobile()
-  const [tab, setTab] = useState<GoalStatusFilterValue>("toReach")
-  const [editGoalId, setEditGoalId] = useState<string | null>(null)
-  const [goalType, setGoalType] = useState<GoalTypeFilterValue>("all")
+  const { tab, setTab, goalType, setGoalType } = useGoalsListFilters()
   // Persisted per browser (see project detail's own group state for the same reasoning) so it
   // survives navigating away and a reload instead of resetting to "none" every time.
   const [group, setGroup] = usePersistedSelection(
@@ -110,6 +110,10 @@ export function GoalsPage() {
         ? nonArchivedGoals.fetchState.goals.map((goal) => goal.goalId)
         : [],
     [nonArchivedGoals.fetchState]
+  )
+  const { editGoalId, openEditGoal, closeEditGoal } = useGoalEditParam(
+    nonArchivedGoalIds,
+    nonArchivedGoals.fetchState.status === "success"
   )
   // Drives the "Unfulfilled" / "Reached" split (plan §3) — computed from synced player
   // progression, not the goal's lifecycle `status`. Archived goals are excluded: attainment isn't
@@ -413,7 +417,7 @@ export function GoalsPage() {
                 metrics={overviewMetrics}
                 mobileReorderActive={reorderActive}
                 onReorder={handleReorder}
-                onEdit={setEditGoalId}
+                onEdit={openEditGoal}
                 onSelectAllVisible={selectAllVisible}
                 onToggleSelected={onToggleSelected}
                 potentialProgress={insights.potentialProgressByGoalId}
@@ -450,7 +454,7 @@ export function GoalsPage() {
       {projectRemovalDialogs}
       <GoalEditDialog
         goalId={editGoalId}
-        onOpenChange={(open) => !open && setEditGoalId(null)}
+        onOpenChange={(open) => !open && closeEditGoal()}
       />
       {settingsOpen ? (
         <PlanningSettingsDialog open onOpenChange={setSettingsOpen} />

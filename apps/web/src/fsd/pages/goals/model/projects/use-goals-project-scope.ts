@@ -12,6 +12,8 @@ const PARAM = "project"
  * dropped from the URL once the list is known; while it is loading or failed the param is kept.
  * `requestedProjectId` is the raw param, so the page can hold its loading state while the list that
  * validates it is still loading instead of briefly listing every goal.
+ * This is the async-list variant of `useSearchParamState` (`@/shared/lib`), which the page's other
+ * URL state (`status`, `type`, `goal`) uses; it stays separate because callers need that raw param.
  */
 export function useGoalsProjectScope(
   projects: ProjectSummary[],

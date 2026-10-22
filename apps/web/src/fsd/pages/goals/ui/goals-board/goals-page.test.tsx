@@ -9,10 +9,26 @@ vi.mock("@/shared/tour", () => ({
   useTourPageSteps: () => undefined,
 }))
 
-// The dialog has its own tests; here only which goal the page hands it matters.
+// The dialog has its own tests; here only which goal the page hands it and how it closes matter.
 vi.mock("../goal-edit/goal-edit-dialog", () => ({
-  GoalEditDialog: ({ goalId }: { goalId: string | null }) =>
-    goalId ? <div data-testid="goal-edit-dialog">{goalId}</div> : null,
+  GoalEditDialog: ({
+    goalId,
+    onOpenChange,
+  }: {
+    goalId: string | null
+    onOpenChange: (open: boolean) => void
+  }) =>
+    goalId ? (
+      <div data-testid="goal-edit-dialog">
+        {goalId}
+        <button
+          data-testid="goal-edit-close"
+          onClick={() => onOpenChange(false)}
+        >
+          Close
+        </button>
+      </div>
+    ) : null,
 }))
 
 vi.mock("@/entities/player-data-override", () => ({
@@ -230,22 +246,26 @@ vi.mock("@workspace/ui/hooks/use-mobile", () => ({
   useIsMobile: () => mobile.value,
 }))
 
-const navigateMock = vi.hoisted(() => vi.fn())
-
-vi.mock("react-router", async (importOriginal) => ({
-  ...(await importOriginal<typeof import("react-router")>()),
-  useNavigate: () => navigateMock,
-}))
-
-import { MemoryRouter, useLocation } from "react-router"
+import { MemoryRouter, useLocation, useNavigate } from "react-router"
 
 import { GoalsPage } from ".//goals-page"
 import { CreateGoalLauncherProvider } from "../../model/goal-creation-form/create-goal-launcher"
 
 const onLaunch = vi.fn()
 
+// Shows where the router is and stands in for the browser's Back button.
 function LocationProbe() {
-  return <span data-testid="location-search">{useLocation().search}</span>
+  const location = useLocation()
+  const navigate = useNavigate()
+  return (
+    <>
+      <span data-testid="location-path">{location.pathname}</span>
+      <span data-testid="location-search">{location.search}</span>
+      <button data-testid="history-back" onClick={() => navigate(-1)}>
+        Back
+      </button>
+    </>
+  )
 }
 
 // Seeded behind a `/home` entry so a test can tell a replaced scope from a pushed one.
@@ -327,7 +347,6 @@ describe("GoalsPage", () => {
     listGoals.mockReset()
     listProjects.mockReset()
     createProject.mockReset()
-    navigateMock.mockReset()
     membership = {}
     listProjects.mockResolvedValue({ projects: [] })
     setTestAuth({ authenticated: true })
@@ -1050,6 +1069,193 @@ describe("GoalsPage", () => {
       await screen.findByTestId("goals-page-filtered-empty")
     ).toBeInTheDocument()
     expect(screen.queryByTestId("goals-page-empty-project")).toBeNull()
+  })
+
+  describe("URL state", () => {
+    const search = () => screen.getByTestId("location-search").textContent
+    const back = () => fireEvent.click(screen.getByTestId("history-back"))
+
+    it("keeps the status and Type filters across a reload", async () => {
+      listGoals.mockResolvedValue({
+        goals: [activeGoal, { ...pausedGoal, goalType: "Ability" }],
+      })
+      const user = userEvent.setup()
+      const view = renderPage()
+      await screen.findByTestId("goals-list-table")
+
+      await user.click(screen.getByTestId("goals-status-filter"))
+      await user.click(await screen.findByRole("option", { name: /^Paused/ }))
+      await user.click(screen.getByTestId("goals-type-filter"))
+      await user.click(await screen.findByRole("option", { name: "Ability" }))
+      const params = new URLSearchParams(search() ?? "")
+      expect(params.get("status")).toBe("paused")
+      expect(params.get("type")).toBe("Ability")
+      view.unmount()
+
+      renderPage(`/plan/goals?${params}`)
+      await screen.findByTestId("goals-list-table")
+      expect(screen.getByTestId("goals-status-filter")).toHaveTextContent(
+        /^Paused/
+      )
+      expect(
+        document.getElementById("goals-type-filter-value")
+      ).toHaveTextContent("Ability")
+      expect(screen.getAllByTestId("goal-row")).toHaveLength(1)
+      expect(
+        screen.getByTestId(`goal-row-menu-${pausedGoal.goalId}`)
+      ).toBeInTheDocument()
+    })
+
+    it("opens a shared project and status link with both applied", async () => {
+      const pausedB = { ...pausedGoal, goalId: "goal-p2", entityId: "hero2" }
+      listGoals.mockResolvedValue({ goals: [activeGoal, goalB, pausedB] })
+      listProjects.mockResolvedValue({
+        projects: [overviewProject, otherProject],
+      })
+      membership = {
+        "proj-1": [activeGoal.goalId],
+        "proj-2": [goalB.goalId, pausedB.goalId],
+      }
+      renderPage("/plan/goals?project=proj-2&status=paused")
+
+      await vi.waitFor(() =>
+        expect(screen.getAllByTestId("goal-row")).toHaveLength(1)
+      )
+      expect(screen.getByTestId("goal-row")).toHaveAttribute(
+        "data-goal-id",
+        pausedB.goalId
+      )
+      expect(screen.getByTestId("goals-status-filter")).toHaveTextContent(
+        /^Paused/
+      )
+      expect(
+        screen.getByTestId("goals-project-scope-chip-proj-2")
+      ).toHaveAttribute("aria-pressed", "true")
+    })
+
+    it("adds no history entry per filter change, so Back leaves the page", async () => {
+      listGoals.mockResolvedValue({ goals: [activeGoal, pausedGoal] })
+      const user = userEvent.setup()
+      renderPage()
+      await screen.findByTestId("goals-list-table")
+
+      await user.click(screen.getByTestId("goals-status-filter"))
+      await user.click(await screen.findByRole("option", { name: /^Paused/ }))
+      await user.click(screen.getByTestId("goals-status-filter"))
+      await user.click(await screen.findByRole("option", { name: /^Active/ }))
+      expect(search()).toBe("?status=active")
+
+      back()
+      expect(screen.getByTestId("location-path")).toHaveTextContent("/home")
+    })
+
+    it("falls back to the defaults and drops unknown filter values from the URL", async () => {
+      listGoals.mockResolvedValue({ goals: [activeGoal, pausedGoal] })
+      renderPage("/plan/goals?status=nope&type=nope")
+
+      await screen.findByTestId("goals-list-table")
+      expect(screen.getByTestId("goals-status-filter")).toHaveTextContent(
+        /^Unfulfilled/
+      )
+      expect(
+        document.getElementById("goals-type-filter-value")
+      ).toHaveTextContent("All goal types")
+      expect(screen.getAllByTestId("goal-row")).toHaveLength(2)
+      await vi.waitFor(() => expect(search()).toBe(""))
+    })
+
+    it("uses the defaults on a fresh load without parameters", async () => {
+      listGoals.mockResolvedValue({ goals: [activeGoal] })
+      renderPage()
+
+      await screen.findByTestId("goals-list-table")
+      expect(screen.getByTestId("goals-status-filter")).toHaveTextContent(
+        /^Unfulfilled/
+      )
+      expect(
+        document.getElementById("goals-type-filter-value")
+      ).toHaveTextContent("All goal types")
+      expect(search()).toBe("")
+    })
+
+    async function openEdit(goalId: string) {
+      const user = userEvent.setup()
+      await user.click(
+        await screen.findByTestId(`goal-row-actions-trigger-${goalId}`)
+      )
+      await user.click(await screen.findByTestId(`goal-row-edit-${goalId}`))
+      await screen.findByTestId("goal-edit-dialog")
+    }
+
+    it.each([
+      ["Back", back],
+      [
+        "its close control",
+        () => fireEvent.click(screen.getByTestId("goal-edit-close")),
+      ],
+    ])(
+      "pushes ?goal= on Edit and %s closes the dialog keeping the other params",
+      async (_, close) => {
+        listGoals.mockResolvedValue({ goals: [activeGoal, pausedGoal] })
+        renderPage("/plan/goals?status=paused")
+
+        await openEdit(pausedGoal.goalId)
+        expect(search()).toBe(`?status=paused&goal=${pausedGoal.goalId}`)
+
+        close()
+        await vi.waitFor(() =>
+          expect(screen.queryByTestId("goal-edit-dialog")).toBeNull()
+        )
+        expect(screen.getByTestId("location-path")).toHaveTextContent(
+          "/plan/goals"
+        )
+        expect(search()).toBe("?status=paused")
+      }
+    )
+
+    it("reopens the dialog from ?goal= once the list has loaded, and its close control stays on the page", async () => {
+      // Both the list and the archived (cascade) read wait on the same release.
+      const pending: (() => void)[] = []
+      const releaseGoals = () => pending.forEach((release) => release())
+      listGoals.mockImplementation(
+        () =>
+          new Promise((resolve) => {
+            pending.push(() => resolve({ goals: [activeGoal] }))
+          })
+      )
+      renderPage(`/plan/goals?goal=${activeGoal.goalId}`)
+
+      await vi.waitFor(() => expect(listGoals).toHaveBeenCalled())
+      expect(screen.queryByTestId("goal-edit-dialog")).toBeNull()
+      expect(search()).toBe(`?goal=${activeGoal.goalId}`)
+
+      await act(async () => releaseGoals())
+      expect(await screen.findByTestId("goal-edit-dialog")).toHaveTextContent(
+        activeGoal.goalId
+      )
+
+      // Restored, not pushed by this page: closing replaces the param away instead of going Back.
+      fireEvent.click(screen.getByTestId("goal-edit-close"))
+      await vi.waitFor(() =>
+        expect(screen.queryByTestId("goal-edit-dialog")).toBeNull()
+      )
+      expect(screen.getByTestId("location-path")).toHaveTextContent(
+        "/plan/goals"
+      )
+      expect(search()).toBe("")
+      back()
+      expect(screen.getByTestId("location-path")).toHaveTextContent("/home")
+    })
+
+    it("opens nothing for an unknown ?goal= and drops it from the URL", async () => {
+      listGoals.mockResolvedValue({ goals: [activeGoal] })
+      renderPage("/plan/goals?goal=not-a-goal")
+
+      await screen.findByTestId("goals-list-table")
+      expect(screen.getAllByTestId("goal-row")).toHaveLength(1)
+      await vi.waitFor(() => expect(search()).toBe(""))
+      expect(screen.queryByTestId("goal-edit-dialog")).toBeNull()
+    })
   })
 })
 

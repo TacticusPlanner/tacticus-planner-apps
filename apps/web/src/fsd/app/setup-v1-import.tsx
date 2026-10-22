@@ -61,12 +61,15 @@ const LOCKED_PARTS: ReadonlyArray<keyof V1ImportSelection> = [
  * Continue points at the Goals page, where they stay (PendingMaterialSteps) until dismissed there.
  */
 export function SetupV1Import({
+  keyImported,
   onCompleted,
   onUseApiKey,
   onKeyImported,
   onSuggestedDisplayName,
   onImportProject,
 }: {
+  /** Whether the key part has imported — controlled by the host, which `onKeyImported` tells. */
+  keyImported: boolean
   onCompleted: () => void
   onUseApiKey: () => void
   onKeyImported: () => void
@@ -75,7 +78,6 @@ export function SetupV1Import({
   onImportProject?: (projectId: string) => void
 }) {
   const { t } = useTranslation()
-  const [keySucceeded, setKeySucceeded] = useState(false)
   // An import ran but its key part didn't come across (Skipped/Failed): setup can't finish without one.
   const [keyMissing, setKeyMissing] = useState(false)
   const [materialStepCount, setMaterialStepCount] = useState(0)
@@ -86,7 +88,6 @@ export function SetupV1Import({
     if (result.importProjectId) onImportProject?.(result.importProjectId)
     setMaterialStepCount(materialSteps(result.outcomes).length)
     if (result.personalTacticusApiKey.status === "Imported") {
-      setKeySucceeded(true)
       onKeyImported()
     }
     setKeyMissing(result.personalTacticusApiKey.status !== "Imported")
@@ -96,7 +97,7 @@ export function SetupV1Import({
     <V1ImportPanel
       actions={
         <>
-          {!keySucceeded && keyMissing ? (
+          {!keyImported && keyMissing ? (
             <>
               <Alert
                 className="basis-full"
@@ -118,7 +119,7 @@ export function SetupV1Import({
               </Button>
             </>
           ) : null}
-          {!keySucceeded && !keyMissing ? (
+          {!keyImported && !keyMissing ? (
             <Button
               data-testid="account-setup-v1-use-api-key"
               onClick={onUseApiKey}
@@ -128,7 +129,7 @@ export function SetupV1Import({
               {t("onboarding.import.useApiKey")}
             </Button>
           ) : null}
-          {keySucceeded && materialStepCount > 0 ? (
+          {keyImported && materialStepCount > 0 ? (
             <p
               className="basis-full text-sm text-muted-foreground"
               data-testid="account-setup-v1-material-steps-notice"
@@ -138,7 +139,7 @@ export function SetupV1Import({
               })}
             </p>
           ) : null}
-          {keySucceeded ? (
+          {keyImported ? (
             <Button
               data-testid="account-setup-v1-continue"
               onClick={onCompleted}

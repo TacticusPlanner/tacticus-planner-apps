@@ -28,7 +28,11 @@ export type {
 } from "./ui/status-filter-select"
 export { GoalFilters } from "./ui/goal-filters"
 export type { GoalGroupValue, GoalTypeFilterValue } from "./ui/goal-filters"
-export { isGoalGroupValue } from "./model/types"
+export {
+  isGoalGroupValue,
+  isGoalStatusFilterValue,
+  isGoalTypeFilterValue,
+} from "./model/types"
 export { goalRevisionConflict } from "./model/goal-target-conflict"
 export {
   applyPositionMove,
