@@ -1,11 +1,11 @@
 import { useMemo } from "react"
-import { useLiveQuery } from "dexie-react-hooks"
 
-import { getShops } from "@workspace/game-catalog/queries"
 import {
   resolveUnitShardShopOffers,
   type ShopShardOffer,
 } from "@workspace/game-catalog"
+
+import { useCatalogDataset } from "@/shared/local-data"
 
 /**
  * A unit's daily-shop character-shard offers (regular and mythic, across every shop and weekday) —
@@ -16,7 +16,8 @@ import {
 export function useUnitShopShardSupply(unitId: string | undefined): {
   offers: ShopShardOffer[] | undefined
 } {
-  const shops = useLiveQuery(() => getShops(), [])
+  const shopsRead = useCatalogDataset("shops")
+  const shops = shopsRead.status === "ready" ? shopsRead.data : undefined
 
   const offers = useMemo(() => {
     if (!unitId || !shops) return undefined

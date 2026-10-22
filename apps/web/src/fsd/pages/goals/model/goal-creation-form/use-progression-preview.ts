@@ -1,18 +1,16 @@
 import { useMemo } from "react"
 import { useQuery } from "@tanstack/react-query"
 import { useIsAuthenticated } from "@azure/msal-react"
-import { useLiveQuery } from "dexie-react-hooks"
-import { getOnslaughtRewards } from "@workspace/game-catalog/queries"
 import type {
   AscensionCostStorageModel,
   CharacterStorageModel,
   UnlockShardCostStorageModel,
 } from "@workspace/game-catalog"
 import type { Progression, UnitId } from "@workspace/game-domain"
-import { getInventoryShard } from "@workspace/player-data/queries"
 import type { PlayerDataChunkDto } from "@workspace/player-data"
 
 import { onslaughtProgressQueries } from "@/entities/player-data-override"
+import { useCatalogDataset, usePlayerChunk } from "@/shared/local-data"
 
 import { estimateGoal, selectFarmNodes } from "@/features/goal-farming"
 import { mythicShardResourceId, shardResourceId } from "@/features/goal-farming"
@@ -34,6 +32,7 @@ import {
   isOnslaughtProgressSaved,
   onslaughtShardsPerRun as onslaughtShardsPerRunFor,
 } from "./onslaught-yield"
+import { readyData, toByUnitId } from "../shared/read-data"
 
 type PlayerUnit =
   PlayerDataChunkDto<"characters">[number] | PlayerDataChunkDto<"mows">[number]
@@ -57,11 +56,13 @@ export function useProgressionPreview(params: {
   dailyEnergy: number
 }) {
   const isAuthenticated = useIsAuthenticated()
-  const inventoryShard = useLiveQuery(
-    () => (params.entityId ? getInventoryShard(params.entityId) : undefined),
-    [params.entityId]
+  const shardsByUnitId = readyData(
+    usePlayerChunk("inventory-shards", toByUnitId)
   )
-  const rewards = useLiveQuery(() => getOnslaughtRewards(), [])
+  const inventoryShard = params.entityId
+    ? shardsByUnitId?.get(params.entityId)
+    : undefined
+  const rewards = readyData(useCatalogDataset("onslaught-rewards"))
   const { data: onslaughtProgress } = useQuery({
     ...onslaughtProgressQueries.current(),
     enabled: isAuthenticated,

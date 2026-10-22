@@ -1,13 +1,10 @@
-import { useCallback, useEffect, useState } from "react"
-import { useLiveQuery } from "dexie-react-hooks"
+import { useEffect, useMemo, useState } from "react"
 import type { Alliance } from "@workspace/game-domain"
 import type { EventsCalendarStorageModel } from "@workspace/game-catalog"
-import {
-  getCharactersMap,
-  getEventDefinitions,
-  getUpcomingEvents,
-  hasEventsCalendarSynced,
-} from "@workspace/game-catalog/queries"
+import { hasEventsCalendarSynced } from "@workspace/game-catalog/queries"
+
+import { combineReadStates, useReadState } from "@/shared/lib"
+import { toById, useCatalogDataset } from "@/shared/local-data"
 
 import { selectHreInstance, type HreInstance } from "./hre-instance"
 
@@ -38,27 +35,53 @@ export type HreInstanceState =
       nowMs: number
     }
 
-type LoadedState =
-  Exclude<HreInstanceState, { status: "error" }> | { status: "error" }
+/** Calendar rows whose window overlaps the lookback / lookahead around `nowMs`. */
+function entriesAround(
+  entries: readonly EventsCalendarStorageModel[],
+  nowMs: number
+) {
+  const startMs = nowMs - LOOKBACK_DAYS * DAY_MS
+  const endMs = nowMs + LOOKAHEAD_DAYS * DAY_MS
+  return entries.filter(
+    (entry) =>
+      Date.parse(entry.startUtc) < endMs && Date.parse(entry.endUtc) > startMs
+  )
+}
 
-// `useLiveQuery` has no error channel, so the querier resolves a tagged result instead.
-async function load(nowMs: number): Promise<LoadedState> {
-  try {
-    if (!(await hasEventsCalendarSynced())) return { status: "loading" }
-    const [definitions, entries, characters] = await Promise.all([
-      getEventDefinitions(),
-      getUpcomingEvents(
-        new Date(nowMs - LOOKBACK_DAYS * DAY_MS),
-        new Date(nowMs + LOOKAHEAD_DAYS * DAY_MS)
-      ),
-      getCharactersMap(),
-    ])
-    const definitionsById = new Map(
-      definitions.map((definition) => [definition.id, definition])
+/** The running Hero Release Event, else the next one, with its featured hero. */
+export function useHreInstance(): HreInstanceState {
+  // A coarse tick re-selects from the cached calendar across an event boundary without a reload.
+  const [nowMs, setNowMs] = useState(() => Date.now())
+  useEffect(() => {
+    const timer = setInterval(() => setNowMs(Date.now()), TICK_MS)
+    return () => clearInterval(timer)
+  }, [])
+  const synced = useReadState(
+    "events-calendar-synced",
+    hasEventsCalendarSynced,
+    []
+  )
+  const definitions = useCatalogDataset("event-definitions", toById)
+  const calendar = useCatalogDataset("events-calendar")
+  const characters = useCatalogDataset("characters", toById)
+  // Each read is stable while unchanged, so the combination is too.
+  const read = useMemo(
+    () => combineReadStates(synced, definitions, calendar, characters),
+    [synced, definitions, calendar, characters]
+  )
+
+  return useMemo((): HreInstanceState => {
+    if (read.status === "error") return { status: "error", retry: read.retry }
+    if (read.status === "loading") return { status: "loading" }
+    const [isSynced, definitionsById, entries, charactersById] = read.data
+    if (!isSynced) return { status: "loading" }
+    const instance = selectHreInstance(
+      entriesAround(entries, nowMs),
+      definitionsById,
+      nowMs
     )
-    const instance = selectHreInstance(entries, definitionsById, nowMs)
     const character = instance?.featuredCharacterId
-      ? characters.get(instance.featuredCharacterId as never)
+      ? charactersById.get(instance.featuredCharacterId)
       : undefined
     const hero: HreFeaturedHero | null = character
       ? {
@@ -70,23 +93,7 @@ async function load(nowMs: number): Promise<LoadedState> {
         }
       : null
     return { status: "ready", instance, hero, nowMs }
-  } catch {
-    return { status: "error" }
-  }
-}
-
-/** The running Hero Release Event, else the next one, with its featured hero. */
-export function useHreInstance(): HreInstanceState {
-  // A coarse tick re-selects across an event boundary without a reload.
-  const [tick, setTick] = useState(0)
-  useEffect(() => {
-    const timer = setInterval(() => setTick((value) => value + 1), TICK_MS)
-    return () => clearInterval(timer)
-  }, [])
-  const result = useLiveQuery(() => load(Date.now()), [tick])
-  const retry = useCallback(() => setTick((value) => value + 1), [])
-  if (!result) return { status: "loading" }
-  return result.status === "error" ? { status: "error", retry } : result
+  }, [read, nowMs])
 }
 
 /** Whether an HRE is running now, for the navigation's live indicator (never true while loading). */

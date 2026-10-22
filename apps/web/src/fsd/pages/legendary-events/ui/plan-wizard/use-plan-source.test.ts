@@ -30,7 +30,9 @@ const FAILED_GOALS = { status: "failed" }
 // Like the real reads, every render hands out a new state object around the same data.
 const read = (data: unknown) => ({ status: "ready", data, retry: vi.fn() })
 
-vi.mock("@/shared/unit-name", () => ({ useUnitName: () => () => "" }))
+// Stable across renders, like the real resolver.
+const unitName = () => ""
+vi.mock("@/shared/unit-name", () => ({ useUnitName: () => unitName }))
 vi.mock("@/shared/unit-power", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/shared/unit-power")>()),
   useUnitPowerContext: () => ({}),

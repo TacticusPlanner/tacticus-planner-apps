@@ -1,8 +1,7 @@
 import { useMemo } from "react"
 import type { CharacterStorageModel } from "@workspace/game-catalog"
-import { getCharacters } from "@workspace/game-catalog/queries"
 
-import { useCatalogDataset } from "../unit/use-catalog-dataset"
+import { useSyncedCatalogDataset } from "../unit/use-catalog-dataset"
 
 export type CharactersCatalog = {
   status: "loading" | "failed" | "ready"
@@ -13,7 +12,7 @@ export type CharactersCatalog = {
 
 /** The synced `characters` dataset, with loading and failure states. */
 export function useCharactersCatalog(): CharactersCatalog {
-  const dataset = useCatalogDataset("characters", getCharacters)
+  const dataset = useSyncedCatalogDataset("characters")
   return useMemo(
     () => ({
       status: dataset.status,

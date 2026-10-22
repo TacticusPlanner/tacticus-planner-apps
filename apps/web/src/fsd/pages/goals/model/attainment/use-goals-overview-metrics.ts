@@ -1,15 +1,6 @@
-import { useMemo } from "react"
-import { useLiveQuery } from "dexie-react-hooks"
 import type { UnitId } from "@workspace/game-domain"
-import type { PlayerDataChunkDto } from "@workspace/player-data"
-import {
-  getInventoryAbilityMaterials,
-  getInventoryShard,
-  getInventoryUpgrades,
-  getPlayerCharacters,
-  getPlayerInventoryItems,
-  getPlayerMows,
-} from "@workspace/player-data/queries"
+
+import { usePlayerChunk } from "@/shared/local-data"
 
 import {
   computeGoalBlockers,
@@ -29,6 +20,12 @@ import { withStandaloneAvailable } from "../insights/plan-ability-materials"
 import type { PlanNetResources } from "../insights/use-plan-insights.domain"
 import { useGoalCatalog } from "../shared/use-goal-catalog"
 import {
+  chunkOrUndefined,
+  readyData,
+  toAbilityMaterials,
+  toByUnitId,
+} from "../shared/read-data"
+import {
   computeGoalAttainment,
   isPlayerDataUnavailable,
 } from "./goal-attainment"
@@ -38,8 +35,6 @@ import {
   computeLevelRequirementProgress,
   type LevelRequirementProgress,
 } from "./level-requirement-progress"
-
-type InventoryShard = PlayerDataChunkDto<"inventory-shards">[number]
 
 export type GoalOverviewMetrics = {
   progress: GoalProgress
@@ -110,61 +105,29 @@ function useComputedGoalsOverviewMetrics(
     ...new Set(details.flatMap((detail) => detail?.dependsOn ?? [])),
   ]
 
-  const playerCharacters = useLiveQuery(() => getPlayerCharacters(), [])
-  const playerMows = useLiveQuery(() => getPlayerMows(), [])
-  const inventoryUpgrades = useLiveQuery(() => getInventoryUpgrades(), [])
-  const inventoryItems = useLiveQuery(() => getPlayerInventoryItems(), [])
-  const abilityInventory = useLiveQuery(
-    () => getInventoryAbilityMaterials(),
-    []
+  const playerCharacters = readyData(
+    usePlayerChunk("characters", chunkOrUndefined)
+  )
+  const playerMows = readyData(usePlayerChunk("mows", chunkOrUndefined))
+  const inventoryUpgrades = readyData(
+    usePlayerChunk("inventory-upgrades", chunkOrUndefined)
+  )
+  const inventoryItems = readyData(
+    usePlayerChunk("inventory-items", chunkOrUndefined)
+  )
+  const abilityInventory = readyData(
+    usePlayerChunk("inventory", toAbilityMaterials)
   )
 
-  const playerCharacterById = useMemo(
-    () =>
-      new Map(
-        (playerCharacters ?? []).map((character) => [
-          character.unitId,
-          character,
-        ])
-      ),
-    [playerCharacters]
-  )
-  const playerMowById = useMemo(
-    () => new Map((playerMows ?? []).map((mow) => [mow.unitId, mow])),
-    [playerMows]
-  )
+  const playerCharacterById =
+    readyData(usePlayerChunk("characters", toByUnitId)) ?? emptyById
+  const playerMowById =
+    readyData(usePlayerChunk("mows", toByUnitId)) ?? emptyById
 
   // Unlock goals need the not-yet-unlocked unit's shard inventory — a separate chunk from
-  // `characters`/`mows` (see player-data.schema.ts) — fetched only for the entities that need it.
-  const unlockEntityIds = [
-    ...new Set(
-      details
-        .filter((detail) => detail?.goalType === "Unlock")
-        .map((detail) => detail!.entityId)
-    ),
-  ]
-  // `useLiveQuery` (not a one-shot effect) so this reacts to a fresh player-data sync the same way
-  // every other input here does, instead of only re-fetching when the set of Unlock goals changes.
+  // `characters`/`mows` (see player-data.schema.ts); empty until it has loaded.
   const inventoryShardByEntity =
-    useLiveQuery(
-      () =>
-        unlockEntityIds.length === 0
-          ? Promise.resolve(new Map<string, InventoryShard | undefined>())
-          : Promise.all(
-              unlockEntityIds.map((entityId) =>
-                getInventoryShard(entityId as UnitId)
-              )
-            ).then(
-              (results) =>
-                new Map(
-                  unlockEntityIds.map((entityId, index) => [
-                    entityId,
-                    results[index],
-                  ])
-                )
-            ),
-      [unlockEntityIds.join(",")]
-    ) ?? new Map<string, InventoryShard | undefined>()
+    readyData(usePlayerChunk("inventory-shards", toByUnitId)) ?? emptyById
 
   // `upgradesById` defaults to an empty Map before its own live query resolves (see
   // `use-goal-catalog.ts`), so it can't signal "not loaded yet" on its own — `catalogLoading` (which
@@ -338,6 +301,8 @@ function useComputedGoalsOverviewMetrics(
   })
   return result
 }
+
+const emptyById = new Map<string, never>()
 
 export function useGoalsOverviewMetrics(
   ...args: Parameters<typeof useComputedGoalsOverviewMetrics>

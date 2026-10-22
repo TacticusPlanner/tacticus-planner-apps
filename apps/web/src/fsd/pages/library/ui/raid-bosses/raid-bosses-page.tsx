@@ -2,9 +2,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useLocation, useNavigate, useParams } from "react-router"
 import { useTranslation } from "react-i18next"
-import { useLiveQuery } from "dexie-react-hooks"
 import { fieldNpcIcon } from "@workspace/game-catalog"
-import { getNpcs } from "@workspace/game-catalog/queries"
+import type { NpcStorageModel } from "@workspace/game-catalog"
 import { Button } from "@workspace/ui/components/button"
 import { Tabs, TabsList, TabsTrigger } from "@workspace/ui/components/tabs"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
@@ -24,6 +23,7 @@ import {
   unitDisplayName,
 } from "@/entities/raid-boss"
 import { useGuildRaidMetaCatalog } from "@/entities/guild-raid-meta"
+import { useCatalogDataset } from "@/shared/local-data"
 import { useTourPageSteps } from "@/shared/tour"
 
 import { RaidBossesDesktopPage } from "./desktop/raid-bosses-desktop-page"
@@ -35,6 +35,8 @@ import type { RaidBossesPageViewProps } from "./raid-bosses-page.view-model"
 import { RaidBossSeasonReference } from "./raid-boss-season-reference"
 import { buildRaidBossSeasonReferenceViewModel } from "./raid-boss-season-reference.view-model"
 
+const NO_NPCS: NpcStorageModel[] = []
+
 export function RaidBossesPage() {
   const { t } = useTranslation("library")
   const isMobile = useIsMobile()
@@ -44,7 +46,8 @@ export function RaidBossesPage() {
 
   const catalog = useRaidBossesCatalog()
   const metaCatalog = useGuildRaidMetaCatalog()
-  const npcs = useLiveQuery(() => getNpcs(), [], [])
+  const npcsRead = useCatalogDataset("npcs")
+  const npcs = npcsRead.status === "ready" ? npcsRead.data : NO_NPCS
 
   const search = useMemo(
     () => new URLSearchParams(location.search),

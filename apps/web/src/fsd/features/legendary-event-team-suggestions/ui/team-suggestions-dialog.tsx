@@ -1,4 +1,11 @@
-import { useEffect, useId, useRef, useState, type ReactNode } from "react"
+import {
+  useCallback,
+  useEffect,
+  useId,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react"
 import { useTranslation } from "react-i18next"
 import { Check, Lock } from "lucide-react"
 import { characterIcon } from "@workspace/game-catalog"
@@ -60,7 +67,10 @@ export function TeamSuggestionsDialog({
   const unitName = useUnitName()
   const objectiveLabel = useObjectiveLabel()
   const { captureEvent } = useAnalyticsActions()
-  const nameOf = (unit: { id: string }) => unitName("Character", unit.id)
+  const nameOf = useCallback(
+    (unit: { id: string }) => unitName("Character", unit.id),
+    [unitName]
+  )
   const { state, toggles, setOnlyUnlocked, setPreferGoals } =
     useTeamSuggestions(source, nameOf)
   const [showMore, setShowMore] = useState(false)

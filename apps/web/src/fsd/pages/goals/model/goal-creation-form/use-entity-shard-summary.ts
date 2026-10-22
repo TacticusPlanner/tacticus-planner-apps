@@ -1,11 +1,11 @@
-import { useLiveQuery } from "dexie-react-hooks"
-
 import type { Progression, UnitId } from "@workspace/game-domain"
 import type { ShopShardOffer } from "@workspace/game-catalog"
-import { getInventoryShard } from "@workspace/player-data/queries"
 
 import type { EntityType } from ".//use-create-goal-form"
 import { isMythicProgression } from "@/features/goal-farming"
+import { usePlayerChunk } from "@/shared/local-data"
+
+import { readyData, toByUnitId } from "../shared/read-data"
 
 /**
  * Whether the Unlock goal type is offered. A Character needs some way to farm regular shards: a
@@ -44,10 +44,10 @@ export function useEntityShardSummary(
   charactersById: Map<string, { shardLocations?: unknown[] }> | undefined,
   shopOffers: readonly ShopShardOffer[] | undefined
 ) {
-  const lockedShard = useLiveQuery(
-    () => (entityId ? getInventoryShard(entityId) : undefined),
-    [entityId]
+  const shardsByUnitId = readyData(
+    usePlayerChunk("inventory-shards", toByUnitId)
   )
+  const lockedShard = entityId ? shardsByUnitId?.get(entityId) : undefined
 
   // Mythic Shards only become the relevant currency once a unit's current progression has reached
   // that tier (see isMythicProgression) — a locked unit has no current progression yet, and

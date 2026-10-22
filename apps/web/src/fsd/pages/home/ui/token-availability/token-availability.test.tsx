@@ -1,6 +1,7 @@
 import { replacePlayerDataChunk } from "@workspace/player-data/testing"
 import { afterEach, describe, expect, it, vi } from "vitest"
 
+import { spyOnIndexedDbReads } from "@/test/fixtures/indexeddb-failure"
 import { render, screen } from "@/test/render"
 
 import { TokenAvailability } from "./token-availability"
@@ -47,10 +48,8 @@ describe("TokenAvailability", () => {
   })
 
   it("shows an empty state, not loading forever, when the account has never synced", async () => {
-    // getLiveProgress() resolves to `undefined` (no "live-progress" chunk at all) for an
-    // account that's never synced. The component maps that to `null` so it's distinguishable
-    // from useLiveQuery's own "still loading" `undefined` — this asserts the resolved-null case
-    // renders the empty state instead of getting stuck on the loading state forever.
+    // A never-synced account has no "live-progress" chunk at all (`usePlayerChunk` yields `null`);
+    // this asserts that resolved-null case renders the empty state instead of loading forever.
     render(<TokenAvailability />)
 
     expect(
@@ -59,6 +58,18 @@ describe("TokenAvailability", () => {
     expect(
       screen.queryByTestId("token-availability-loading")
     ).not.toBeInTheDocument()
+  })
+
+  it("shows the local read failure with Retry when player data cannot be read", async () => {
+    const reads = spyOnIndexedDbReads()
+    reads.fail("tacticus-planner-player-data")
+
+    render(<TokenAvailability />)
+
+    expect(await screen.findByRole("alert")).toHaveTextContent(
+      "We couldn't read this data from your device."
+    )
+    expect(screen.getByRole("button", { name: "Retry" })).toBeInTheDocument()
   })
 
   it("shows an empty state when no token type has data", async () => {

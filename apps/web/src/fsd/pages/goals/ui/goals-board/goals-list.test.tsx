@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import { fireEvent, render, screen, within } from "@/test/render"
+import { fireEvent, render, screen, waitFor, within } from "@/test/render"
 import { seedGameCatalog } from "@/test/seed"
 import userEvent from "@testing-library/user-event"
 
@@ -917,5 +917,62 @@ describe("GoalsList selection", () => {
     await user.click(await screen.findByTestId("goal-row-select-goal-1"))
     expect(onToggleSelected).toHaveBeenCalledExactlyOnceWith("goal-1")
     expect(screen.queryByTestId("goal-row-delete-goal-1")).toBeNull()
+  })
+})
+
+describe("GoalsList catalog reads", () => {
+  beforeEach(() => useIsMobileMock.mockReturnValue(false))
+
+  it("reads each catalog dataset from IndexedDB once for 20 rendered rows", async () => {
+    const manyCharacters = Array.from({ length: 20 }, (_, index) => ({
+      id: `hero${index + 1}`,
+      name: `Hero ${index + 1}`,
+      faction: "Ultramarines",
+    }))
+    await seedGameCatalog({
+      characters: manyCharacters,
+      mows,
+      upgrades: [],
+      "campaign-battles": [],
+      "campaign-definitions": [],
+      "ascension-costs": [],
+      "unlock-shard-costs": [],
+      "mow-upgrade-costs": [],
+      "character-ability-costs": [],
+    })
+    const manyRows: GoalRow[] = manyCharacters.map((character, index) => ({
+      ...rows[0]!,
+      goalId: `goal-${index + 1}`,
+      entityId: character.id,
+      priority: index + 1,
+    }))
+    // Dexie reads a whole table with `getAll` (or a cursor); `this` is the store read.
+    const spies = [
+      vi.spyOn(IDBObjectStore.prototype, "getAll"),
+      vi.spyOn(IDBObjectStore.prototype, "openCursor"),
+    ]
+
+    const { queryClient } = render(
+      <GoalsList actions={stubActions} reorderEnabled={false} rows={manyRows} />
+    )
+    await screen.findByText("Hero 20")
+    await waitFor(() => expect(queryClient.isFetching()).toBe(0))
+
+    const readsByStore = new Map<string, number>()
+    for (const spy of spies) {
+      for (const store of spy.mock.contexts as IDBObjectStore[]) {
+        if (store.transaction.db.name !== "tacticus-planner-game-catalog")
+          continue
+        readsByStore.set(store.name, (readsByStore.get(store.name) ?? 0) + 1)
+      }
+      spy.mockRestore()
+    }
+    expect(screen.getAllByText(/^Hero \d+$/)).toHaveLength(20)
+    expect([...readsByStore.keys()]).toEqual(
+      expect.arrayContaining(["characters", "mows", "upgrades"])
+    )
+    for (const [store, count] of readsByStore) {
+      expect({ store, count }).toEqual({ store, count: 1 })
+    }
   })
 })

@@ -1,7 +1,7 @@
-// Dedicated entry point for named, business-purpose read queries safe to pass directly to
-// `useLiveQuery` (dexie-react-hooks) — one function per thing a caller actually wants, not a generic
-// chunk-key accessor. Components import from here, never from the main package barrel and never
-// touching the Dexie instance itself. Add a new named query here as new business needs arise.
+// Named, business-purpose read queries over the local store. The app's read layer
+// (`apps/web/src/fsd/shared/local-data`) caches whole chunks read through `getChunkData` and derives
+// views with selectors; the named queries serve composite reads and non-React callers. Nothing
+// outside the package touches the Dexie instance itself.
 import { getChunkData, getChunkRecord } from "./player-data-storage"
 
 // The app's read layer (`apps/web/src/fsd/shared/local-data`) caches whole chunks read through this.

@@ -1,25 +1,18 @@
-import { useMemo } from "react"
-import { useLiveQuery } from "dexie-react-hooks"
-import {
-  getUnlockShardCostsMap,
-  getUpgrades,
-} from "@workspace/game-catalog/queries"
+import { useCallback, useMemo } from "react"
 import type { UnitId } from "@workspace/game-domain"
-import {
-  getInventoryAbilityMaterials,
-  getInventoryShard,
-  getInventoryUpgrades,
-  getPlayerMow,
-  getPlayerMows,
-} from "@workspace/player-data/queries"
+import type { PlayerDataChunkDto } from "@workspace/player-data"
 
 import { mapUpgradeStorageToDomain } from "@/features/rank-lookup"
+import { toById, useCatalogDataset, usePlayerChunk } from "@/shared/local-data"
 
 import { unitOwnership } from "../unit/unit-ownership"
 
-// Distinguishes "still reading" from a resolved `undefined` (no record), as Dexie's useLiveQuery
-// returns its default until the first resolution.
-const LOADING = Symbol("loading")
+/** The inventory's Ability upgrade materials, or undefined before the chunk has synced. */
+function abilityMaterials(inventory: PlayerDataChunkDto<"inventory"> | null) {
+  if (!inventory) return undefined
+  const { abilityBadges, forgeBadges, components } = inventory
+  return { abilityBadges, forgeBadges, components }
+}
 
 /**
  * What the MoW unit page reads besides the MoW itself: the player's MoW and ownership state, shard
@@ -27,30 +20,25 @@ const LOADING = Symbol("loading")
  * upgrades. Signed out, every player read is `undefined`.
  */
 export function useMowPlayerData(unitId: UnitId, isAuthenticated: boolean) {
-  const roster = useLiveQuery(
-    () => (isAuthenticated ? getPlayerMows() : undefined),
-    [isAuthenticated],
-    LOADING
+  const rosterRead = usePlayerChunk("mows")
+  const selectMow = useCallback(
+    (mows: PlayerDataChunkDto<"mows"> | null) =>
+      mows?.find((mow) => mow.unitId === unitId),
+    [unitId]
   )
-  const playerMow = useLiveQuery(
-    () => (isAuthenticated ? getPlayerMow(unitId) : undefined),
-    [isAuthenticated, unitId],
-    LOADING
+  const playerMowRead = usePlayerChunk("mows", selectMow)
+  const selectShard = useCallback(
+    (shards: PlayerDataChunkDto<"inventory-shards"> | null) =>
+      shards?.find((shard) => shard.unitId === unitId),
+    [unitId]
   )
-  const shardRecord = useLiveQuery(
-    () => (isAuthenticated ? getInventoryShard(unitId) : undefined),
-    [isAuthenticated, unitId]
-  )
-  const inventory = useLiveQuery(
-    () => (isAuthenticated ? getInventoryAbilityMaterials() : undefined),
-    [isAuthenticated]
-  )
-  const inventoryUpgrades = useLiveQuery(
-    () => (isAuthenticated ? getInventoryUpgrades() : undefined),
-    [isAuthenticated]
-  )
-  const unlockCosts = useLiveQuery(() => getUnlockShardCostsMap(), [])
-  const upgrades = useLiveQuery(() => getUpgrades(), [])
+  const shardRead = usePlayerChunk("inventory-shards", selectShard)
+  const inventoryRead = usePlayerChunk("inventory", abilityMaterials)
+  const inventoryUpgradesRead = usePlayerChunk("inventory-upgrades")
+  const unlockCostsRead = useCatalogDataset("unlock-shard-costs", toById)
+  const upgradesRead = useCatalogDataset("upgrades")
+  const upgrades =
+    upgradesRead.status === "ready" ? upgradesRead.data : undefined
   const upgradesById = useMemo(
     () =>
       new Map(
@@ -59,18 +47,24 @@ export function useMowPlayerData(unitId: UnitId, isAuthenticated: boolean) {
     [upgrades]
   )
 
-  const player = playerMow === LOADING ? undefined : (playerMow ?? undefined)
+  // Signed out, the player reads are ignored (sign-out deletes the player database anyway).
+  const playerData = <T>(read: { status: string; data?: T }) =>
+    isAuthenticated && read.status === "ready" ? read.data : undefined
+  const player = playerData(playerMowRead)
+  const loading =
+    rosterRead.status === "loading" || playerMowRead.status === "loading"
   return {
     player,
     ownership: unitOwnership(
-      roster !== LOADING && roster !== undefined,
+      playerData(rosterRead) != null,
       player,
-      isAuthenticated && (roster === LOADING || playerMow === LOADING)
+      isAuthenticated && loading
     ),
-    shardRecord,
-    unlockCosts,
-    inventory,
-    inventoryUpgrades,
+    shardRecord: playerData(shardRead),
+    unlockCosts:
+      unlockCostsRead.status === "ready" ? unlockCostsRead.data : undefined,
+    inventory: playerData(inventoryRead),
+    inventoryUpgrades: playerData(inventoryUpgradesRead) ?? undefined,
     upgradesById,
   }
 }

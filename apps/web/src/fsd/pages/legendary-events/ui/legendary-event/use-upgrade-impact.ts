@@ -65,8 +65,6 @@ export function useUpgradeImpact({
       initialRarityOf,
       nameOf: (unitId) => unitName("Character", unitId),
     })
-    // `unitName` reads the settled catalog; the rest are the page's memoised reads.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     eventData,
     laneId,
@@ -78,6 +76,7 @@ export function useUpgradeImpact({
     run,
     progressGrid,
     initialRarityOf,
+    unitName,
   ])
 }
 

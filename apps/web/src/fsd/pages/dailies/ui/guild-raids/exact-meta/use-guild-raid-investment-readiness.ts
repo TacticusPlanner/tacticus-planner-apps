@@ -1,10 +1,5 @@
 import { useMemo } from "react"
-import { useLiveQuery } from "dexie-react-hooks"
-import { getRaidBosses } from "@workspace/game-catalog/queries"
-import {
-  getPlayerCharacters,
-  getPlayerMows,
-} from "@workspace/player-data/queries"
+import type { RaidBossesStorageModel } from "@workspace/game-catalog"
 
 import {
   buildGuildRaidRosterInvestment,
@@ -13,6 +8,7 @@ import {
   useGuildRaidMetaCatalog,
   type GuildRaidRecommendationReadiness,
 } from "@/entities/guild-raid-meta"
+import { useCatalogDataset, usePlayerChunk } from "@/shared/local-data"
 
 export type GuildRaidInvestmentReadinessQuery =
   | { status: "unavailable" }
@@ -21,13 +17,7 @@ export type GuildRaidInvestmentReadinessQuery =
       byRecommendationId: ReadonlyMap<string, GuildRaidRecommendationReadiness>
     }
 
-async function readOwnedRoster() {
-  const [characters, mows] = await Promise.all([
-    getPlayerCharacters(),
-    getPlayerMows(),
-  ])
-  return { characters, mows }
-}
+const toBosses = (rows: RaidBossesStorageModel[]) => rows[0]?.bosses ?? null
 
 /**
  * Composes the three data sources the investment-readiness percentage needs — the curated Meta
@@ -45,19 +35,22 @@ export function useGuildRaidInvestmentReadiness(params: {
   const { bossUnitSetId, isObservationActive, liveProgressionIndex } = params
 
   const catalog = useGuildRaidMetaCatalog()
-  const raidBosses = useLiveQuery(() => getRaidBosses(), [])
-  const roster = useLiveQuery(readOwnedRoster, [])
+  const bossesRead = useCatalogDataset("raid-bosses", toBosses)
+  const charactersRead = usePlayerChunk("characters")
+  const mowsRead = usePlayerChunk("mows")
+  // A failed read is "unavailable" too: the card keeps its ownership-only display.
+  const bosses = bossesRead.status === "ready" ? bossesRead.data : null
+  const characters =
+    charactersRead.status === "ready" ? charactersRead.data : null
+  const mows = mowsRead.status === "ready" ? mowsRead.data : null
 
   return useMemo((): GuildRaidInvestmentReadinessQuery => {
-    if (catalog.status !== "ready" || !raidBosses || !roster) {
+    // An unsynced roster chunk reads as null, like one still loading.
+    if (catalog.status !== "ready" || !bosses || !characters || !mows) {
       return { status: "unavailable" }
     }
 
-    const isRosterSynced =
-      roster.characters !== undefined && roster.mows !== undefined
-    if (!isRosterSynced) return { status: "unavailable" }
-
-    const bossCatalogRecord = raidBosses.bosses.find(
+    const bossCatalogRecord = bosses.find(
       (boss) => boss.unitSetId === bossUnitSetId
     )
     if (!bossCatalogRecord) return { status: "unavailable" }
@@ -75,8 +68,8 @@ export function useGuildRaidInvestmentReadiness(params: {
     if (!bossMeta) return { status: "unavailable" }
 
     const roosterInvestment = buildGuildRaidRosterInvestment({
-      characters: roster.characters!,
-      mows: roster.mows!,
+      characters,
+      mows,
     })
 
     const results = resolveGuildRaidRecommendationsReadiness({
@@ -93,8 +86,9 @@ export function useGuildRaidInvestmentReadiness(params: {
     }
   }, [
     catalog,
-    raidBosses,
-    roster,
+    bosses,
+    characters,
+    mows,
     bossUnitSetId,
     isObservationActive,
     liveProgressionIndex,

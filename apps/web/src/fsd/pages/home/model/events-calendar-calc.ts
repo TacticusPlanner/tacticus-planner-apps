@@ -239,7 +239,7 @@ function collectVisibleEntries(
 }
 
 /**
- * Groups already-fetched, already-deduped calendar entries (see `getUpcomingEvents`) into one
+ * Groups already-fetched, already-deduped calendar entries (see `selectUpcomingEvents`) into one
  * day-bucket per visible date, mirroring the backend's own date-membership rule (start inclusive, end
  * exclusive) so a multi-day entry appears under every date it spans in this range, same as
  * `events-calendar`'s own server-side date expansion.

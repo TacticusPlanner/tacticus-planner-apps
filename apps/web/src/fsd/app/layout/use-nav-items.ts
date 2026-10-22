@@ -37,7 +37,8 @@ export function useNavItems(): NavItem[] {
           i18n.language
         )
       : { active: [], upcoming: [], archived: [] }
-  // `unitName` is a new function every render; the names it resolves are what matter.
+  // Re-derived on every minute tick from the cached `lres`, `characters` and `mows` reads; keyed
+  // by the serialized children below so the items keep their identity while nothing changed.
   const eventChildren: DynamicNavSubItem[] = [
     ...ordered.active,
     ...ordered.upcoming,

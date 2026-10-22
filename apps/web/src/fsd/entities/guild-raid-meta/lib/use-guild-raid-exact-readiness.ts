@@ -1,9 +1,7 @@
 import { useMemo } from "react"
-import { useLiveQuery } from "dexie-react-hooks"
-import {
-  getPlayerCharacters,
-  getPlayerMows,
-} from "@workspace/player-data/queries"
+
+import { combineReadStates } from "@/shared/lib"
+import { usePlayerChunk } from "@/shared/local-data"
 
 import {
   buildGuildRaidExactReadinessView,
@@ -18,20 +16,17 @@ export type GuildRaidExactReadinessQuery =
   | { status: "failed"; retry: () => void }
   | GuildRaidExactReadinessView
 
-async function readOwnedRoster() {
-  const [characters, mows] = await Promise.all([
-    getPlayerCharacters(),
-    getPlayerMows(),
-  ])
-  return { characters, mows }
-}
-
 /** Reactive public entity API for exact-Meta readiness against the current player's synced roster. */
 export function useGuildRaidExactReadiness(
   bossUnitSetId: string
 ): GuildRaidExactReadinessQuery {
   const catalog = useGuildRaidMetaCatalog()
-  const roster = useLiveQuery(readOwnedRoster, [])
+  const charactersRead = usePlayerChunk("characters")
+  const mowsRead = usePlayerChunk("mows")
+  const roster = useMemo(
+    () => combineReadStates(charactersRead, mowsRead),
+    [charactersRead, mowsRead]
+  )
 
   return useMemo((): GuildRaidExactReadinessQuery => {
     // Guarding on the single-literal "ready" case (rather than checking each of the other branch's
@@ -45,19 +40,17 @@ export function useGuildRaidExactReadiness(
         : { status: "loading" }
     }
 
-    if (roster === undefined) {
-      return { status: "loading" }
+    if (roster.status === "error") {
+      return { status: "failed", retry: roster.retry }
     }
+    if (roster.status === "loading") return { status: "loading" }
 
-    const isRosterSynced =
-      roster.characters !== undefined && roster.mows !== undefined
-
-    const investment = isRosterSynced
-      ? buildGuildRaidRosterInvestment({
-          characters: roster.characters!,
-          mows: roster.mows!,
-        })
-      : undefined
+    // An unsynced chunk reads as null: readiness is then resolved without a roster.
+    const [characters, mows] = roster.data
+    const investment =
+      characters && mows
+        ? buildGuildRaidRosterInvestment({ characters, mows })
+        : undefined
 
     const readinessRoster = investment
       ? {

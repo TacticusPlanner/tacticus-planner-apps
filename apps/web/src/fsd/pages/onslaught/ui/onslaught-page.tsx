@@ -2,9 +2,7 @@ import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { useIsAuthenticated } from "@azure/msal-react"
-import { useLiveQuery } from "dexie-react-hooks"
 import { onslaughtAllianceIcon } from "@workspace/game-catalog"
-import { getOnslaughtRewards } from "@workspace/game-catalog/queries"
 import { Alert, AlertDescription } from "@workspace/ui/components/alert"
 import { Button } from "@workspace/ui/components/button"
 import { Spinner } from "@workspace/ui/components/spinner"
@@ -22,7 +20,8 @@ import {
   type OnslaughtTier,
 } from "@/entities/player-data-override"
 import { ApiError } from "@/shared/api"
-import { EntityIcon, ProgressionBadge } from "@/shared/ui"
+import { useCatalogDataset } from "@/shared/local-data"
+import { EntityIcon, LocalReadFailure, ProgressionBadge } from "@/shared/ui"
 
 import { OnslaughtAllianceCard } from "./onslaught-alliance-card"
 import { OnslaughtEmblem } from "./onslaught-emblem"
@@ -42,7 +41,7 @@ export function OnslaughtPage() {
   const positionLabel = useOnslaughtPositionLabel()
   const isAuthenticated = useIsAuthenticated()
   const queryClient = useQueryClient()
-  const rewards = useLiveQuery(() => getOnslaughtRewards(), [])
+  const rewardsRead = useCatalogDataset("onslaught-rewards")
   const [draft, setDraft] = useState<OnslaughtProgress>()
   const [message, setMessage] = useState<string | null>(null)
   const progressQuery = useQuery({
@@ -102,13 +101,17 @@ export function OnslaughtPage() {
     }
   }
 
-  if (progressQuery.isPending || !rewards) {
+  if (rewardsRead.status === "error") {
+    return <LocalReadFailure retry={rewardsRead.retry} />
+  }
+  if (progressQuery.isPending || rewardsRead.status === "loading") {
     return (
       <div className="flex min-h-64 items-center justify-center">
         <Spinner className="size-8" />
       </div>
     )
   }
+  const rewards = rewardsRead.data
   if (!progress) {
     return (
       <Alert variant="destructive">

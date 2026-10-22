@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
+import { refreshLocalDataAfterSync } from "@/shared/local-data"
 import { setTestAuth } from "@/test/auth"
 import { act, renderHook, waitFor } from "@/test/render"
 import { seedGameCatalog, seedPlayerData } from "@/test/seed"
@@ -115,19 +116,24 @@ describe("useCollectionView", () => {
   })
 
   it("shows the roster once a sync lands, without remounting", async () => {
-    const { result } = renderCollectionView()
+    const { result, queryClient } = renderCollectionView()
     await waitFor(() => expect(result.current.status).toBe("ready"))
     expect(
       result.current.status === "ready" && result.current.view.rosterState
     ).toBe("notSynced")
 
-    await act(() =>
-      seedPlayerData({
+    await act(async () => {
+      await seedPlayerData({
         characters: [titusRecord],
         mows: [],
         "inventory-shards": [],
       })
-    )
+      refreshLocalDataAfterSync(queryClient, "player", [
+        "characters",
+        "mows",
+        "inventory-shards",
+      ])
+    })
 
     await waitFor(() =>
       expect(

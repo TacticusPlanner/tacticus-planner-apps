@@ -1,10 +1,4 @@
-export {
-  localDataKeys,
-  toById,
-  useCatalogDataset,
-  usePlayerChunk,
-  type LocalDataSource,
-} from "./use-local-data"
+export { toById, useCatalogDataset, usePlayerChunk } from "./use-local-data"
 export {
   clearLocalDataCache,
   listenForLocalDataRefresh,

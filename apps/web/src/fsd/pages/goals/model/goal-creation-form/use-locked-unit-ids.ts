@@ -1,11 +1,10 @@
 import { useMemo } from "react"
-import { useLiveQuery } from "dexie-react-hooks"
 
 import type { FactionGroup, UnitId } from "@workspace/game-domain"
-import {
-  getPlayerCharacters,
-  getPlayerMows,
-} from "@workspace/player-data/queries"
+
+import { usePlayerChunk } from "@/shared/local-data"
+
+import { chunkOrUndefined, readyData } from "../shared/read-data"
 
 /**
  * The merged Unit picker's locked-id set (plan: goal-creation combobox lock badge) — every
@@ -19,8 +18,10 @@ export function useLockedUnitIds(
   characterGroups: FactionGroup[],
   mowGroups: FactionGroup[]
 ): ReadonlySet<UnitId> | undefined {
-  const ownedCharacters = useLiveQuery(() => getPlayerCharacters(), [])
-  const ownedMows = useLiveQuery(() => getPlayerMows(), [])
+  const ownedCharacters = readyData(
+    usePlayerChunk("characters", chunkOrUndefined)
+  )
+  const ownedMows = readyData(usePlayerChunk("mows", chunkOrUndefined))
   // Built off characterGroups/mowGroups (not charactersById/mowsById directly) since those already
   // carry a properly branded `UnitId` per member — the raw catalog maps are keyed by plain `string`.
   const lockedCharacterIds = useMemo(() => {

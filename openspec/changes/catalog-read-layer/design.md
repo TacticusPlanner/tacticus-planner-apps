@@ -33,6 +33,13 @@ See proposal.md - Why. Local data lives in two Dexie databases written only by t
    - Alternative: `useMutation` for the sync. Rejected: mutations do not dedupe concurrent calls, which is the whole point of the singleton being replaced.
 7. **`dexie-react-hooks` is removed from `apps/web` once the last `useLiveQuery` is gone**; `dexie` stays in the packages.
 
+### Implementation notes (as built)
+
+- **D6, providers:** the two providers stay two components (`GameCatalogProvider`, `PlayerDataProvider`) rather than one `LocalDataSyncProvider`. Their state machines differ more than the source config could carry: the catalog blocks the init gate and falls back to a stale cache, while player data is auth-scoped, gated by an hourly staleness check and handles re-authentication. Both now run their sync through the query client (`["sync", "catalog", baseUrl]` with `staleTime: Infinity`, `["sync", "player", accountId]` with `staleTime: 0`), which replaces both `inFlightSync` singletons. Progress goes through a `useSyncExternalStore` store, and invalidation goes through the shared `refreshLocalDataAfterSync`. The public hooks and context shapes are unchanged.
+- **D6, engine:** `runManifestSync` takes the changed items plus `download`, `finalize` and `onProgress`. Loading metadata, fetching the manifest and selecting changed items stay in each package, because the catalog's ETag / not-modified recovery has no player-data equivalent.
+- **D1, retry:** a transient read failure retries once, but a timeout does not. Otherwise a stuck read would be reported after 30 s instead of 15 s.
+- **Sign-out:** `signOut` cannot reach the React query client (it is called from several components and from tests without a provider). The app's client therefore registers itself with `shared/local-data`, and `signOut` calls `clearLocalDataCache()`, which removes the `["local"]` and `["sync"]` queries.
+
 ## Risks / Trade-offs
 
 - [Memory: the largest datasets (`campaign-battles` ~2 MB JSON, `npcs` ~1.9 MB, `unit-power` ~0.7 MB) stay in heap for the session] → datasets load lazily per consumer and `gcTime: Infinity` only applies to entries that were requested; task 1.5 measures heap on the Characters page and the HSE page on a mid-range Android profile before merge; if a dataset exceeds ~10 MB in heap, give it a finite `gcTime`.

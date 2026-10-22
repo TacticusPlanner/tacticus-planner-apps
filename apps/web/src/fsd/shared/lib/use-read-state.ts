@@ -1,6 +1,5 @@
-import { useQuery } from "@tanstack/react-query"
-
-import { useQueryReadState } from "./use-query-read-state"
+import { useMemo } from "react"
+import { useQuery, type UseQueryResult } from "@tanstack/react-query"
 
 /** A local read's state: `loading` until the first result, then `ready` or `error`. */
 export type ReadState<T> =
@@ -8,10 +7,51 @@ export type ReadState<T> =
   | { status: "error"; retry: () => void }
   | { status: "ready"; data: T; retry: () => void }
 
+type QueryReadInput<T> = Pick<
+  UseQueryResult<T>,
+  "data" | "isError" | "isFetching" | "isSuccess"
+> & { refetch: () => unknown }
+
+/** `loading` while pending (or disabled before its first result) and while a retry refetches after
+ *  a failure (TanStack keeps `isError` during it), `error` once it failed with no data, `ready`
+ *  once it has data or succeeded (a `select` may legitimately derive `undefined`). */
+function readStatus<T>({
+  data,
+  isError,
+  isFetching,
+  isSuccess,
+}: QueryReadInput<T>): ReadState<T>["status"] {
+  if (data !== undefined || isSuccess) return "ready"
+  // Fetching wins over a previous failure: a retry is in flight.
+  return isError && !isFetching ? "error" : "loading"
+}
+
+function toReadState<T>(
+  status: ReadState<T>["status"],
+  data: T | undefined,
+  refetch: QueryReadInput<T>["refetch"]
+): ReadState<T> {
+  const retry = () => void refetch()
+  return status === "ready"
+    ? { status, data: data as T, retry }
+    : { status: status === "error" ? "error" : "loading", retry }
+}
+
+/** A server query as the shared `ReadState` (see `readStatus`); `retry` refetches. The value stays
+ *  referentially stable while the status and data stay the same, so consumers can memoise on it. */
+export function useQueryReadState<T>(query: QueryReadInput<T>): ReadState<T> {
+  const status = readStatus(query)
+  const { data, refetch } = query
+  return useMemo(
+    () => toReadState(status, data, refetch),
+    [status, data, refetch]
+  )
+}
+
 /** A local read that has not settled by then is reported as failed (and offered a retry). */
 export const localReadTimeoutMs = 15_000
 
-export class LocalReadTimeoutError extends Error {
+class LocalReadTimeoutError extends Error {
   constructor() {
     super(`Local read did not settle within ${localReadTimeoutMs} ms.`)
     this.name = "LocalReadTimeoutError"

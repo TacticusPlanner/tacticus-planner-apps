@@ -1,12 +1,12 @@
-import { useCallback, useState } from "react"
-import { useLiveQuery } from "dexie-react-hooks"
-import { getCharactersMap } from "@workspace/game-catalog/queries"
-import { getPlayerCharacters } from "@workspace/player-data/queries"
+import { useMemo } from "react"
+import type { PlayerDataChunkDto } from "@workspace/player-data"
 
 import type {
   HseEventPointsState,
   HseInstance,
 } from "@/features/home-screen-event-points"
+import { combineReadStates } from "@/shared/lib"
+import { toById, useCatalogDataset, usePlayerChunk } from "@/shared/local-data"
 
 import type { HseTeamsViewModel } from "./hse-team-recommendations.types"
 import {
@@ -15,19 +15,8 @@ import {
 } from "./hse-teams-view-model"
 import { useTeamUnitPower } from "./use-team-unit-power"
 
-// `useLiveQuery` has no error channel (a rejected querier throws to the error boundary), so the
-// querier resolves a tagged result instead.
-async function readTeams(): Promise<HseTeamsRead> {
-  try {
-    const [roster, catalog] = await Promise.all([
-      getPlayerCharacters(),
-      getCharactersMap(),
-    ])
-    return { status: "ready", roster: roster ?? [], catalog }
-  } catch {
-    return { status: "error" }
-  }
-}
+const toRoster = (roster: PlayerDataChunkDto<"characters"> | null) =>
+  roster ?? []
 
 /**
  * The selected HSE instance's event teams: reads the synced roster and the character catalog and
@@ -38,15 +27,23 @@ export function useHseTeamRecommendations(
   instance: HseInstance | null,
   points: HseEventPointsState
 ): HseTeamsViewModel {
-  const [retryNonce, setRetryNonce] = useState(0)
-  const read = useLiveQuery(readTeams, [retryNonce])
-  const retry = useCallback(() => setRetryNonce((nonce) => nonce + 1), [])
+  const roster = usePlayerChunk("characters", toRoster)
+  const catalog = useCatalogDataset("characters", toById)
+  const read = useMemo(
+    () => combineReadStates(roster, catalog),
+    [roster, catalog]
+  )
+  const teamsRead = useMemo((): HseTeamsRead | undefined => {
+    if (read.status === "loading") return undefined
+    if (read.status === "error") return { status: "error" }
+    return { status: "ready", roster: read.data[0], catalog: read.data[1] }
+  }, [read])
   const { loading: unitPowerLoading, unitPower } = useTeamUnitPower()
   return buildHseTeamsViewModel({
     instance,
     points,
-    read,
+    read: teamsRead,
     unitPower: unitPowerLoading ? "loading" : unitPower,
-    retry,
+    retry: read.retry,
   })
 }

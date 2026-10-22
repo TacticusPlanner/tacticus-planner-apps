@@ -11,6 +11,7 @@ import {
 import userEvent from "@testing-library/user-event"
 import { useLocation } from "react-router"
 
+import { refreshLocalDataAfterSync } from "@/shared/local-data"
 import { i18n } from "@/test/i18n-instance"
 import { act, fireEvent, render, screen, waitFor, within } from "@/test/render"
 import { seedGameCatalog } from "@/test/seed"
@@ -243,20 +244,19 @@ async function renderPage(
   )
 }
 
-/** Fails the next IndexedDB read of one catalog store, then reads it normally again. */
-function failNextRead(store: string) {
+/** Fails every IndexedDB read of one catalog store (the read's automatic retry included) until
+ *  the returned spy is restored. */
+function failReads(store: string) {
   const getAll = IDBObjectStore.prototype.getAll
-  let failed = false
-  vi.spyOn(IDBObjectStore.prototype, "getAll").mockImplementation(function (
-    this: IDBObjectStore,
-    ...args: Parameters<IDBObjectStore["getAll"]>
-  ) {
-    if (this.name === store && !failed) {
-      failed = true
-      throw new Error("boom")
-    }
-    return getAll.apply(this, args)
-  })
+  return vi
+    .spyOn(IDBObjectStore.prototype, "getAll")
+    .mockImplementation(function (
+      this: IDBObjectStore,
+      ...args: Parameters<IDBObjectStore["getAll"]>
+    ) {
+      if (this.name === store) throw new Error("boom")
+      return getAll.apply(this, args)
+    })
 }
 
 beforeAll(() => {
@@ -289,7 +289,7 @@ describe("RaidBossesPage", () => {
 
   it("shows a retry-able failure state when the dataset read throws, and recovers on retry", async () => {
     const user = userEvent.setup()
-    failNextRead("raid-bosses")
+    const failing = failReads("raid-bosses")
     await renderPage()
 
     const failure = await screen.findByTestId("raid-bosses-sync-failed")
@@ -297,6 +297,7 @@ describe("RaidBossesPage", () => {
       "Couldn't load Guild Raid Bosses. The catalog may still be syncing."
     )
 
+    failing.mockRestore()
     await user.click(screen.getByRole("button", { name: "Retry" }))
 
     await waitFor(() =>
@@ -581,12 +582,13 @@ describe("RaidBossesPage", () => {
 
   it("retries a failed Meta read without blocking the tab", async () => {
     const user = userEvent.setup()
-    failNextRead("guild-raid-meta")
+    const failing = failReads("guild-raid-meta")
     await renderPage("/library/raid-bosses/GuildBoss1Boss1Tervigon?tab=meta", {
       meta: metaPayload,
     })
 
     const failure = await screen.findByTestId("raid-boss-meta-failed")
+    failing.mockRestore()
     await user.click(within(failure).getByRole("button", { name: "Retry" }))
 
     expect(
@@ -604,26 +606,43 @@ describe("RaidBossesPage", () => {
     )
   })
 
-  it("repairs invalid tab, season, and Comp parameters without losing unrelated query state", async () => {
-    // The Meta dataset lands first and the boss roster after it, as a sync delivers them. The page's
-    // two URL-repair effects race when both arrive in separate commits in the other order (the
-    // roster's repair drops the season before the Meta-aware repair can keep it).
-    await renderPage(
-      "/library/raid-bosses/not-real?tab=invalid&season=invalid&comp=invalid&source=shared",
-      { raidBosses: null, meta: metaPayload }
-    )
-    await screen.findByText(
-      "Guild Raid Boss data is not available in the catalog yet."
-    )
-    await act(() => new Promise((resolve) => setTimeout(resolve, 50)))
-    await seedGameCatalog({ "raid-bosses": payload })
-
-    await waitFor(() =>
-      expect(screen.getByTestId("location")).toHaveTextContent(
-        "/library/raid-bosses/GuildBoss1Boss1Tervigon?tab=details&season=s1&source=shared"
+  // A sync delivers the roster and the Meta dataset in either order, each refreshing only its own
+  // read; the repaired URL must not depend on which one lands first.
+  it.each([
+    { first: "guild-raid-meta", second: "raid-bosses" },
+    { first: "raid-bosses", second: "guild-raid-meta" },
+  ] as const)(
+    "repairs invalid tab, season, and Comp parameters without losing unrelated query state ($first first)",
+    async ({ first, second }) => {
+      const datasets = {
+        "raid-bosses": payload,
+        "guild-raid-meta": metaPayload,
+      }
+      const { queryClient } = await renderPage(
+        "/library/raid-bosses/not-real?tab=invalid&season=invalid&comp=invalid&source=shared",
+        {
+          raidBosses: first === "raid-bosses" ? payload : null,
+          meta: first === "guild-raid-meta" ? metaPayload : undefined,
+        }
       )
-    )
-  })
+      if (first === "guild-raid-meta") {
+        await screen.findByText(
+          "Guild Raid Boss data is not available in the catalog yet."
+        )
+      } else {
+        await screen.findByTestId("raid-boss-tabs")
+      }
+      await act(() => new Promise((resolve) => setTimeout(resolve, 50)))
+      await seedGameCatalog({ [second]: datasets[second] })
+      act(() => refreshLocalDataAfterSync(queryClient, "catalog", [second]))
+
+      await waitFor(() =>
+        expect(screen.getByTestId("location")).toHaveTextContent(
+          "/library/raid-bosses/GuildBoss1Boss1Tervigon?tab=details&season=s1&source=shared"
+        )
+      )
+    }
+  )
 
   it("recomputes the boss's stats when a prime HP-lost point is chosen", async () => {
     const user = userEvent.setup()

@@ -17,20 +17,50 @@ export function useTeamSuggestions(
   const [toggles, setToggles] = useState<TeamSuggestionsToggles>(
     DEFAULT_SUGGESTION_TOGGLES
   )
+  // The page passes `source` inline, so the memo keys on its fields (each a memoised read).
+  const {
+    eventId,
+    laneId,
+    lane,
+    units,
+    teams,
+    run,
+    model,
+    progress,
+    estimates,
+    goalUnitIds,
+  } = source
   const state = useMemo(
-    () => buildTeamSuggestionsState(source, toggles, nameOf),
-    // `nameOf` reads the settled catalog; the source fields are the page's memoised reads.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    () =>
+      buildTeamSuggestionsState(
+        {
+          eventId,
+          laneId,
+          lane,
+          units,
+          teams,
+          run,
+          model,
+          progress,
+          estimates,
+          goalUnitIds,
+        },
+        toggles,
+        nameOf
+      ),
     [
-      source.lane,
-      source.units,
-      source.teams,
-      source.run,
-      source.model,
-      source.progress,
-      source.estimates,
-      source.goalUnitIds,
+      eventId,
+      laneId,
+      lane,
+      units,
+      teams,
+      run,
+      model,
+      progress,
+      estimates,
+      goalUnitIds,
       toggles,
+      nameOf,
     ]
   )
   return {

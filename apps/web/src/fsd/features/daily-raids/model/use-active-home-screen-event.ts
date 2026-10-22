@@ -1,11 +1,9 @@
-import { useEffect, useState } from "react"
-import { useLiveQuery } from "dexie-react-hooks"
+import { useEffect, useMemo, useState } from "react"
 import type { EventsCalendarStorageModel } from "@workspace/game-catalog"
-import {
-  getEventDefinitions,
-  getUpcomingEvents,
-  hasEventsCalendarSynced,
-} from "@workspace/game-catalog/queries"
+import { hasEventsCalendarSynced } from "@workspace/game-catalog/queries"
+
+import { useReadState } from "@/shared/lib"
+import { toById, useCatalogDataset } from "@/shared/local-data"
 
 import {
   listHomeScreenEventInstances,
@@ -33,49 +31,61 @@ type Ready = {
 export type ActiveHomeScreenEventState =
   { status: "loading" } | { status: "error" } | Ready
 
-// `useLiveQuery` has no error channel (a rejected querier throws to the error boundary), so the
-// querier resolves a tagged result instead, like `use-events-calendar.ts`.
-async function load(nowMs: number): Promise<ActiveHomeScreenEventState> {
-  try {
-    // Before the first calendar sync the tables are empty, not "no events": stay loading so a
-    // shared `?event=` key is not judged stale and stripped (the init gate renders pages meanwhile).
-    if (!(await hasEventsCalendarSynced())) return { status: "loading" }
-    const [definitions, entries] = await Promise.all([
-      getEventDefinitions(),
-      getUpcomingEvents(
-        new Date(nowMs - HORIZON_DAYS * DAY_MS),
-        new Date(nowMs + HORIZON_DAYS * DAY_MS)
-      ),
-    ])
-    const definitionsById = new Map(
-      definitions.map((definition) => [definition.id, definition])
-    )
-    const instances = listHomeScreenEventInstances(
-      entries,
-      definitionsById,
-      nowMs
-    )
-    // The default (running by the overlap rule, else next) is derived from the same instance list.
-    const selection = selectActiveHomeScreenEvent(
-      instances.map((instance) => instance.entry),
-      definitionsById,
-      nowMs
-    )
-    return { status: "ready", ...selection, instances, nowMs }
-  } catch {
-    return { status: "error" }
-  }
+/** Calendar rows whose window overlaps the horizon around `nowMs`; a multi-day entry repeats per
+ * date and is kept once by `listHomeScreenEventInstances`. */
+function entriesInHorizon(
+  entries: readonly EventsCalendarStorageModel[],
+  nowMs: number
+) {
+  const startMs = nowMs - HORIZON_DAYS * DAY_MS
+  const endMs = nowMs + HORIZON_DAYS * DAY_MS
+  return entries.filter(
+    (entry) =>
+      Date.parse(entry.startUtc) < endMs && Date.parse(entry.endUtc) > startMs
+  )
 }
 
 /** The single active Home Screen Event, the next one, and every HSE instance (past included) from the
  * game-events calendar. */
 export function useActiveHomeScreenEvent(): ActiveHomeScreenEventState {
-  // A coarse tick re-selects across an event boundary without a reload.
-  const [tick, setTick] = useState(0)
+  // A coarse tick re-selects from the cached calendar across an event boundary without a reload.
+  const [nowMs, setNowMs] = useState(() => Date.now())
   useEffect(() => {
-    const timer = setInterval(() => setTick((value) => value + 1), TICK_MS)
+    const timer = setInterval(() => setNowMs(Date.now()), TICK_MS)
     return () => clearInterval(timer)
   }, [])
-  const result = useLiveQuery(() => load(Date.now()), [tick])
-  return result ?? { status: "loading" }
+  const synced = useReadState(
+    "events-calendar-synced",
+    hasEventsCalendarSynced,
+    []
+  )
+  const definitions = useCatalogDataset("event-definitions", toById)
+  const calendar = useCatalogDataset("events-calendar")
+
+  return useMemo((): ActiveHomeScreenEventState => {
+    const reads = [synced, definitions, calendar]
+    if (reads.some((read) => read.status === "error"))
+      return { status: "error" }
+    // Before the first calendar sync the tables are empty, not "no events": stay loading so a
+    // shared `?event=` key is not judged stale and stripped (the init gate renders pages meanwhile).
+    if (
+      synced.status !== "ready" ||
+      !synced.data ||
+      definitions.status !== "ready" ||
+      calendar.status !== "ready"
+    )
+      return { status: "loading" }
+    const instances = listHomeScreenEventInstances(
+      entriesInHorizon(calendar.data, nowMs),
+      definitions.data,
+      nowMs
+    )
+    // The default (running by the overlap rule, else next) is derived from the same instance list.
+    const selection = selectActiveHomeScreenEvent(
+      instances.map((instance) => instance.entry),
+      definitions.data,
+      nowMs
+    )
+    return { status: "ready", ...selection, instances, nowMs }
+  }, [synced, definitions, calendar, nowMs])
 }

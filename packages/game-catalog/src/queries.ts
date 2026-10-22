@@ -1,7 +1,7 @@
-// Dedicated entry point for named, business-purpose read queries safe to pass directly to
-// `useLiveQuery` (dexie-react-hooks) — one function per thing a caller actually wants, not a generic
-// dataset-key accessor. Components import from here, never from the main package barrel and never
-// touching the Dexie instance itself. Add a new named query here as new business needs arise.
+// Named, business-purpose read queries over the local store. The app's read layer
+// (`apps/web/src/fsd/shared/local-data`) caches whole datasets read through `getDatasetRecords` and derives
+// views with selectors; the named queries serve composite reads and non-React callers. Nothing
+// outside the package touches the Dexie instance itself.
 import {
   getDatasetRecord,
   getDatasetRecords,
@@ -270,39 +270,57 @@ function dedupeCalendarEntries(
 
 /**
  * Events whose window contains `at` (start inclusive, end exclusive — see
- * specs/game-events-calendar in the integrate-game-events-calendar change).
+ * specs/game-events-calendar in the integrate-game-events-calendar change). A pure selector over the
+ * `events-calendar` dataset, for callers that already hold it (the web app's cached read layer).
  */
+export function selectEventsActiveAt(
+  rows: EventsCalendarStorageModel[],
+  at: Date
+): EventsCalendarStorageModel[] {
+  const atMs = at.getTime()
+  return dedupeCalendarEntries(
+    rows.filter(
+      (row) => Date.parse(row.startUtc) <= atMs && atMs < Date.parse(row.endUtc)
+    )
+  )
+}
+
 export async function getEventsActiveAt(
   at: Date
 ): Promise<EventsCalendarStorageModel[]> {
-  const atMs = at.getTime()
-  const rows = await getDatasetRecords("events-calendar")
-  const active = rows.filter(
-    (row) => Date.parse(row.startUtc) <= atMs && atMs < Date.parse(row.endUtc)
-  )
-
-  return dedupeCalendarEntries(active)
+  return selectEventsActiveAt(await getDatasetRecords("events-calendar"), at)
 }
 
 export function getEventsActiveNow(): Promise<EventsCalendarStorageModel[]> {
   return getEventsActiveAt(new Date())
 }
 
-/** Events whose window overlaps [rangeStart, rangeEnd). */
+/** Events whose window overlaps [rangeStart, rangeEnd); a pure selector like `selectEventsActiveAt`. */
+export function selectUpcomingEvents(
+  rows: EventsCalendarStorageModel[],
+  rangeStart: Date,
+  rangeEnd: Date
+): EventsCalendarStorageModel[] {
+  const rangeStartMs = rangeStart.getTime()
+  const rangeEndMs = rangeEnd.getTime()
+  return dedupeCalendarEntries(
+    rows.filter(
+      (row) =>
+        Date.parse(row.startUtc) < rangeEndMs &&
+        Date.parse(row.endUtc) > rangeStartMs
+    )
+  )
+}
+
 export async function getUpcomingEvents(
   rangeStart: Date,
   rangeEnd: Date
 ): Promise<EventsCalendarStorageModel[]> {
-  const rangeStartMs = rangeStart.getTime()
-  const rangeEndMs = rangeEnd.getTime()
-  const rows = await getDatasetRecords("events-calendar")
-  const inRange = rows.filter(
-    (row) =>
-      Date.parse(row.startUtc) < rangeEndMs &&
-      Date.parse(row.endUtc) > rangeStartMs
+  return selectUpcomingEvents(
+    await getDatasetRecords("events-calendar"),
+    rangeStart,
+    rangeEnd
   )
-
-  return dedupeCalendarEntries(inRange)
 }
 
 // Every Legendary Event in the catalog. Reads the `lres` store (pending rename to `legendary-events`).

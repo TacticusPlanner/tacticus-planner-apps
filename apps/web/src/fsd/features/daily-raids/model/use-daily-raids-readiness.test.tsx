@@ -32,10 +32,9 @@ vi.mock("./raids-filters/use-raids-filters", () => ({
 vi.mock("./use-eligible-campaign-battles", () => ({
   useEligibleCampaignBattles: () => ({
     availableBattles: [],
-    liveProgressResult: { value: { battleAttempts: [] } },
-    campaignEventProgressReady: true,
-    campaignEventProgressError: false,
-    campaignProgressResult: { value: null },
+    liveProgress: { battleAttempts: [] },
+    ready: true,
+    isError: false,
   }),
 }))
 
@@ -51,7 +50,7 @@ function renderDailyRaids() {
   return { result }
 }
 
-/** Gives every other live query time to settle, so only the rewards gate can hold the hook. */
+/** Gives every other local read time to settle, so only the rewards gate can hold the hook. */
 const settle = () => new Promise((resolve) => setTimeout(resolve, 50))
 
 describe("useDailyRaids readiness — Onslaught rewards dataset", () => {

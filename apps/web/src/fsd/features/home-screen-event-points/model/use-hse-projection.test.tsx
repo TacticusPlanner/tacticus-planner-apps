@@ -127,14 +127,17 @@ describe("useHseProjection", () => {
     })
   })
 
-  it("has nothing for no instance, without reading the catalog", async () => {
+  it("has nothing for no instance, reading the shared definitions at most once", async () => {
     const { result } = renderHook(() => useHseProjection(null))
     expect(result.current.status).toBe("none")
     await waitFor(() => expect(result.current.status).toBe("none"))
-    expect(idb.reads.get("game-catalog/event-definitions")).toBeUndefined()
+    // The definitions are one cached dataset the HSE tab reads anyway, not a per-event read.
+    expect(
+      idb.reads.get("game-catalog/event-definitions") ?? 0
+    ).toBeLessThanOrEqual(1)
   })
 
-  it("is loading, not the previous event's data, right after the selection changes", async () => {
+  it("shows the new event's data, never the previous event's, right after the selection changes", async () => {
     const hook = renderHook(
       ({ target }: { target: HseInstance }) => useHseProjection(target),
       {
@@ -148,8 +151,7 @@ describe("useHseProjection", () => {
     hook.rerender({
       target: instance("hse-global-operation-imperator", "running"),
     })
-    expect(hook.result.current.status).toBe("loading")
-    await waitFor(() => expect(hook.result.current.status).toBe("ready"))
+    // The new definition is selected from the cached dataset in the same render.
     const state = hook.result.current
     if (state.status !== "ready") throw new Error(state.status)
     expect(state.details.definitionId).toBe("hse-global-operation-imperator")

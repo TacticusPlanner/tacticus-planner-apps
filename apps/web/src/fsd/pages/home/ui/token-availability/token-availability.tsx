@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
-import { useLiveQuery } from "dexie-react-hooks"
-import { getPlayerDataMetadata } from "@workspace/player-data"
-import { getLiveProgress } from "@workspace/player-data/queries"
+import {
+  getPlayerDataMetadata,
+  type PlayerDataChunkDto,
+} from "@workspace/player-data"
 import {
   Card,
   CardContent,
@@ -11,7 +12,9 @@ import {
 } from "@workspace/ui/components/card"
 import { cn } from "@workspace/ui/lib/utils"
 
-import { EntityIcon } from "@/shared/ui"
+import { combineReadStates, useReadState } from "@/shared/lib"
+import { usePlayerChunk } from "@/shared/local-data"
+import { EntityIcon, LocalReadFailure } from "@/shared/ui"
 
 import arenaTokenIcon from "./assets/arena-token.png"
 import bombTokenIcon from "./assets/bomb-token.png"
@@ -23,9 +26,7 @@ import { tokenCountdown, type TokenBucketData } from "./token-countdown"
 
 const NOW_TICK_MS = 1000
 
-type GameModeTokens = NonNullable<
-  Awaited<ReturnType<typeof getLiveProgress>>
->["gameModeTokens"]
+type GameModeTokens = PlayerDataChunkDto<"live-progress">["gameModeTokens"]
 
 type TokenLabelKey =
   "arena" | "guildRaid" | "bombTokens" | "onslaught" | "salvageRun"
@@ -152,18 +153,14 @@ function TokenRow({
 
 export function TokenAvailability() {
   const { t } = useTranslation("common")
-  // `useLiveQuery` reports "still loading" as `undefined`, indistinguishable from a resolved
-  // `getLiveProgress()` returning `undefined` for "never synced, no chunk at all" — without this
-  // mapping, an account that's never synced would show the loading state forever. Map the
-  // resolved-but-empty case to `null` so `undefined` means loading, unambiguously.
-  const liveProgress = useLiveQuery(
-    () => getLiveProgress().then((value) => value ?? null),
-    []
-  )
   // `getPlayerDataMetadata` (not the app-shell's sync-status context, which `pages/home` can't
   // import per this repo's FSD layering) gives the same "live-progress" chunk observation time
-  // the Guild Raids page's token countdowns use — see guild-raid-status-view-model.ts.
-  const metadata = useLiveQuery(() => getPlayerDataMetadata(), [])
+  // the Guild Raids page's token countdowns use — see guild-raid-status-view-model.ts. It is a
+  // metadata read, so a composite one (every sync refreshes it).
+  const read = combineReadStates(
+    usePlayerChunk("live-progress"),
+    useReadState("player-data-metadata", getPlayerDataMetadata, [])
+  )
   const [nowMs, setNowMs] = useState(() => Date.now())
 
   useEffect(() => {
@@ -172,7 +169,8 @@ export function TokenAvailability() {
   }, [])
 
   const body = (() => {
-    if (liveProgress === undefined || metadata === undefined) {
+    if (read.status === "error") return <LocalReadFailure retry={read.retry} />
+    if (read.status === "loading") {
       return (
         <p
           className="text-sm text-muted-foreground"
@@ -183,6 +181,7 @@ export function TokenAvailability() {
       )
     }
 
+    const [liveProgress, metadata] = read.data
     const entries = liveProgress
       ? collectTokenEntries(liveProgress.gameModeTokens)
       : []

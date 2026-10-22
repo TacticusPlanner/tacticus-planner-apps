@@ -135,12 +135,11 @@ export function TeamUnitPicker({
             : undefined,
         }
       ),
-    // `unitName` is a fresh closure per render; the catalog read behind it settles once.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [
       lane,
       units,
       shownRoster,
+      unitName,
       rosterById,
       selectedObjectives,
       progress,

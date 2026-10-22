@@ -1,9 +1,10 @@
-import { getCharacters } from "@workspace/game-catalog/queries"
-import { useLiveQuery } from "dexie-react-hooks"
 import { useIsAuthenticated, useMsal } from "@azure/msal-react"
+import { getCharacters } from "@workspace/game-catalog/queries"
 import { useTranslation } from "react-i18next"
 import { useLocation, useParams } from "react-router"
 import { describe, expect, it } from "vitest"
+
+import { useCatalogDataset } from "@/shared/local-data"
 
 import { setTestAuth } from "./auth"
 import { render, renderHook, screen, waitFor } from "./render"
@@ -26,14 +27,19 @@ describe("test harness", () => {
     expect(await getCharacters()).toEqual([])
   })
 
-  it("resolves seeded data through a live query", async () => {
+  it("resolves seeded data through the read layer", async () => {
     await seedGameCatalog({
       characters: [{ id: "ultraCalgar", name: "Calgar" }],
     })
 
-    const { result } = renderHook(() => useLiveQuery(getCharacters))
+    const { result } = renderHook(() => useCatalogDataset("characters"))
 
-    await waitFor(() => expect(result.current?.[0]?.id).toBe("ultraCalgar"))
+    await waitFor(() =>
+      expect(result.current).toMatchObject({
+        status: "ready",
+        data: [{ id: "ultraCalgar" }],
+      })
+    )
   })
 
   it("translates with the real English resources", () => {
