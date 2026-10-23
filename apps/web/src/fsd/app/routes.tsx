@@ -7,16 +7,39 @@ import { Navigate, type RouteObject } from "react-router"
 import { InteractionStatus } from "@azure/msal-browser"
 import { useIsAuthenticated, useMsal } from "@azure/msal-react"
 
-import { routes as goalsRoutes } from "@/pages/goals"
-import { routes as guildRoutes } from "@/pages/guild"
-import { routes as libraryRoutes } from "@/pages/library"
 import {
+  routes as dailiesRoutes,
+  DailiesLayout,
+  preloadDailiesLayout,
+} from "@/pages/dailies"
+import {
+  routes as goalsRoutes,
+  GoalsLayout,
+  preloadGoalsLayout,
+} from "@/pages/goals"
+import {
+  routes as guildRoutes,
+  GuildPage,
+  preloadGuildPage,
+} from "@/pages/guild"
+import {
+  routes as legendaryEventsRoutes,
+  LegendaryEventsLayout,
+  preloadLegendaryEventsLayout,
+} from "@/pages/legendary-events"
+import {
+  routes as libraryRoutes,
+  LibraryPage,
+  preloadLibraryPage,
+} from "@/pages/library"
+import {
+  MyGameLayout,
+  preloadMyGameLayout,
   protectedRoutes as myGameProtectedRoutes,
   publicRoutes as myGamePublicRoutes,
 } from "@/pages/my-game"
-import { routes as dailiesRoutes } from "@/pages/dailies"
-import { routes as legendaryEventsRoutes } from "@/pages/legendary-events"
 import { isUiKitEnabled } from "@/shared/config"
+import { preloadOnMatch } from "@/shared/lib"
 
 import { AccountSetupRoute } from "./account-setup-route"
 import { accountSetupRoutes } from "./account-setup-routes"
@@ -31,45 +54,25 @@ import { OnboardingGate } from "./onboarding-gate"
 import { RouteErrorBoundary } from "./route-error-boundary"
 
 // Everything but the landing page (the one route an unauthenticated first-time visitor always
-// hits) is lazy-loaded вЂ” each becomes its own chunk, fetched only when its route is entered
+// hits) is lazy-loaded — each becomes its own chunk, fetched as soon as its route matches
 // (the layout's <Suspense fallback={<LoadingFill />}> around <Outlet /> covers the wait). Each
 // page owns its own nested `children` route config (see e.g. pages/goals/route.tsx) вЂ” this module
 // only lazy-loads each section's top-level layout/page element and splices the page's own
 // `routes` export in as `children`, keeping AppShell and ProtectedRoute central.
-const HomePage = lazy(() =>
+const loadHomePage = () =>
   import("@/pages/home").then((m) => ({ default: m.HomePage }))
-)
-const DailiesLayout = lazy(() =>
-  import("@/pages/dailies").then((m) => ({ default: m.DailiesLayout }))
-)
-const LibraryPage = lazy(() =>
-  import("@/pages/library").then((m) => ({ default: m.LibraryPage }))
-)
-const UiKitPage = lazy(() =>
+const HomePage = lazy(loadHomePage)
+const loadUiKitPage = () =>
   import("@/pages/ui-kit").then((m) => ({ default: m.UiKitPage }))
-)
-const GuildPage = lazy(() =>
-  import("@/pages/guild").then((m) => ({ default: m.GuildPage }))
-)
-const GoalsLayout = lazy(() =>
-  import("@/pages/goals").then((m) => ({ default: m.GoalsLayout }))
-)
-const MyGameLayout = lazy(() =>
-  import("@/pages/my-game").then((m) => ({ default: m.MyGameLayout }))
-)
-const LegendaryEventsLayout = lazy(() =>
-  import("@/pages/legendary-events").then((m) => ({
-    default: m.LegendaryEventsLayout,
-  }))
-)
-const V1ImportPage = lazy(() =>
+const UiKitPage = lazy(loadUiKitPage)
+const loadV1ImportPage = () =>
   import("@/pages/v1-import").then((m) => ({ default: m.V1ImportPage }))
-)
+const V1ImportPage = lazy(loadV1ImportPage)
 // A different page slice (pages/onslaught) nested under "/my-game" - kept here rather than in
 // pages/my-game/route.tsx since FSD forbids one page slice importing another's internals.
-const OnslaughtPage = lazy(() =>
+const loadOnslaughtPage = () =>
   import("@/pages/onslaught").then((m) => ({ default: m.OnslaughtPage }))
-)
+const OnslaughtPage = lazy(loadOnslaughtPage)
 
 function ProtectedRoute({ children }: { children: ReactNode }) {
   return (
@@ -91,7 +94,8 @@ function NotFoundRedirect() {
 }
 
 // React Router v8 data-mode route config (consumed by createBrowserRouter in app/index.tsx). Auth guards
-// are plain element wrappers вЂ” no loaders are needed yet. Post-redirect navigation (previously a
+// are plain element wrappers; the only loaders are `preloadOnMatch`, which start a lazy page chunk at
+// route match so it downloads while `OnboardingGate` waits for `GET /me`. Post-redirect navigation (previously a
 // dedicated /auth/callback route) is now owned by the MSAL redirect bridge (apps/web/redirect.html,
 // see shared/auth's redirectUri) вЂ” it navigates back to wherever the flow was initiated before the
 // SPA even loads, so no in-app callback route is needed.
@@ -128,6 +132,7 @@ const appRoutes: RouteObject[] = [
             <HomePage />
           </ProtectedRoute>
         ),
+        loader: preloadOnMatch(loadHomePage),
       },
       {
         path: "/account/v1-import",
@@ -136,6 +141,7 @@ const appRoutes: RouteObject[] = [
             <V1ImportPage />
           </ProtectedRoute>
         ),
+        loader: preloadOnMatch(loadV1ImportPage),
       },
       {
         path: "/dailies",
@@ -145,11 +151,13 @@ const appRoutes: RouteObject[] = [
           </ProtectedRoute>
         ),
         children: dailiesRoutes,
+        loader: preloadDailiesLayout,
       },
       {
         path: "/library",
         element: <LibraryPage />,
         children: libraryRoutes,
+        loader: preloadLibraryPage,
       },
       {
         path: "/plan",
@@ -159,6 +167,7 @@ const appRoutes: RouteObject[] = [
           </ProtectedRoute>
         ),
         children: goalsRoutes,
+        loader: preloadGoalsLayout,
       },
       // The only section mixing a public page (Collection) with sign-in-only ones, so the guard
       // sits on each protected child instead of on the layout.
@@ -169,12 +178,17 @@ const appRoutes: RouteObject[] = [
           ...myGamePublicRoutes,
           ...[
             ...myGameProtectedRoutes,
-            { path: "onslaught", element: <OnslaughtPage /> },
+            {
+              path: "onslaught",
+              element: <OnslaughtPage />,
+              loader: preloadOnMatch(loadOnslaughtPage),
+            },
           ].map((route) => ({
             ...route,
             element: <ProtectedRoute>{route.element}</ProtectedRoute>,
           })),
         ],
+        loader: preloadMyGameLayout,
       },
       {
         path: "/legendary-events",
@@ -184,6 +198,7 @@ const appRoutes: RouteObject[] = [
           </ProtectedRoute>
         ),
         children: legendaryEventsRoutes,
+        loader: preloadLegendaryEventsLayout,
       },
       {
         path: "/guild",
@@ -193,11 +208,20 @@ const appRoutes: RouteObject[] = [
           </ProtectedRoute>
         ),
         children: guildRoutes,
+        loader: preloadGuildPage,
       },
       // Public component showcase for local/QA use вЂ” never registered in production (see
       // shared/config's isUiKitEnabled), so it 404s (falls through to the "*" redirect below)
       // there regardless of how someone reaches the URL.
-      ...(isUiKitEnabled ? [{ path: "/ui-kit", element: <UiKitPage /> }] : []),
+      ...(isUiKitEnabled
+        ? [
+            {
+              path: "/ui-kit",
+              element: <UiKitPage />,
+              loader: preloadOnMatch(loadUiKitPage),
+            },
+          ]
+        : []),
       { path: "*", element: <NotFoundRedirect /> },
     ],
   },

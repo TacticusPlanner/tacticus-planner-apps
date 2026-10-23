@@ -59,7 +59,7 @@ describe("buildRaidBossSeasonReferenceViewModel", () => {
             isPrimarch: false,
             factionId: "Tyranids",
             name: "Tervigon",
-            portraitSrc: "/boss.png",
+            portraitSrc: "/boss.webp",
           },
         ],
       ])
@@ -71,7 +71,7 @@ describe("buildRaidBossSeasonReferenceViewModel", () => {
     expect(cards?.[0]?.item.portraitSrc).toBeUndefined()
     expect(cards?.[1]?.item).toMatchObject({
       name: "Tervigon",
-      portraitSrc: "/boss.png",
+      portraitSrc: "/boss.webp",
     })
   })
 })

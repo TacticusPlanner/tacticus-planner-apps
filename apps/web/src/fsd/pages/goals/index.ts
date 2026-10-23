@@ -1,5 +1,1 @@
-export { routes } from "./route"
-export { GoalsLayout } from "./ui/goals-board/goals-layout"
-export { GoalsPage } from "./ui/goals-board/goals-page"
-export { ProjectsListPage } from "./ui/projects/projects-list-page"
-export { InsightsPage } from "./ui/insights/insights-page"
+export { routes, GoalsLayout, preloadGoalsLayout } from "./route"

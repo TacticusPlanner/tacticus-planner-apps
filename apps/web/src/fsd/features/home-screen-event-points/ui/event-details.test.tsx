@@ -205,7 +205,7 @@ describe("MilestoneGrid", () => {
     )
     expect(cells()[0]!.querySelector("img")).toHaveAttribute(
       "src",
-      "/game_catalog/resources/ui_icon_droptable_draft_abilityTokensUncommon.png"
+      "/game_catalog/resources/ui_icon_droptable_draft_abilityTokensUncommon.webp"
     )
   })
 

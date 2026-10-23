@@ -1,5 +1,6 @@
 import { z } from "zod"
-import { Rarity, upgradeIdSchema, type UpgradeId } from "@workspace/game-domain"
+import { Rarity, type UpgradeId } from "@workspace/game-domain"
+import { upgradeIdSchema } from "@workspace/game-domain/schemas"
 import { farmLocationSchema } from "./shared"
 
 // A recipe ingredient. Craftable ingredients carry their own nested recipe (recursively); base materials

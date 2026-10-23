@@ -8,7 +8,11 @@ export {
 } from "./format-time"
 export { useCampaignDisplay } from "./use-campaign-display"
 export { useDebouncedCommit } from "./use-debounced-commit"
-export { isStaleBuildError, reloadOnceForStaleBuild } from "./stale-build"
+export {
+  isStaleBuildError,
+  preloadOnMatch,
+  reloadOnceForStaleBuild,
+} from "./stale-build"
 export {
   EVENT_COLOR_KEYS_IN_LEGEND_ORDER,
   eventAccentClass,

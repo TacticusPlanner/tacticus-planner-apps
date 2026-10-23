@@ -3,12 +3,16 @@
   "version": "0.0.1",
   "type": "module",
   "private": true,
+  "sideEffects": [
+    "*.css"
+  ],
   "scripts": {
     "dev": "vite",
     "dev:aspire": "vite",
     "build": "vite build",
     "build:staging": "vite build --mode staging",
     "build:production": "vite build --mode production",
+    "bundle:budget": "node scripts/bundle-budget.mjs",
     "api:pull": "node scripts/api-spec.mjs pull",
     "api:types": "node scripts/api-spec.mjs",
     "lint": "eslint && knip",
@@ -26,7 +30,6 @@
     "@dnd-kit/core": "^6.3.1",
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
-    "@posthog/react": "^1.11.3",
     "@tanstack/react-query": "^5.104.2",
     "@workspace/game-catalog": "workspace:*",
     "@workspace/game-domain": "workspace:*",
@@ -43,8 +46,7 @@
     "react-i18next": "^17.0.16",
     "react-joyride": "^3.2.0",
     "react-router": "^8.4.0",
-    "sonner": "^2.0.8",
-    "zod": "^4.6.7"
+    "sonner": "^2.0.8"
   },
   "devDependencies": {
     "@eslint/js": "catalog:",
@@ -71,10 +73,12 @@
     "knip": "catalog:",
     "openapi-typescript": "^7.13.0",
     "prettier": "catalog:",
+    "sharp": "^0.35.5",
     "steiger": "^0.5.13",
     "typescript": "catalog:",
     "typescript-eslint": "catalog:",
     "vite": "^8.3.4",
-    "vitest": "catalog:"
+    "vitest": "catalog:",
+    "vitest-axe": "^0.1.0"
   }
 }

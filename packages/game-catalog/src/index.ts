@@ -150,6 +150,7 @@ export {
 export {
   rarityClass,
   ASSET_BASE_PATH,
+  gameAssetUrl,
   UpgradeIcons,
   rarityIcon,
   rankIcon,

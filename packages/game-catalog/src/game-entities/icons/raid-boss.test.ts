@@ -11,13 +11,13 @@ const BASE = "/game_catalog/characters"
 describe("raidBossPortrait", () => {
   it("resolves a mapped boss id to its ported asset", () => {
     expect(raidBossPortrait("GuildBoss4Boss1OrksGhazghkull")).toBe(
-      `${BASE}/ui_image_RoundPortrait_guild_ghazghkull_01.png`
+      `${BASE}/ui_image_RoundPortrait_guild_ghazghkull_01.webp`
     )
   })
 
   it("resolves a mapped Tyranid warrior prime id", () => {
     expect(raidBossPortrait("GuildBoss1MiniBoss1TyranWarriorLeviathan")).toBe(
-      `${BASE}/ui_image_RoundPortrait_tyran_warrior_01.png`
+      `${BASE}/ui_image_RoundPortrait_tyran_warrior_01.webp`
     )
   })
 
@@ -25,7 +25,7 @@ describe("raidBossPortrait", () => {
     // Delegates to characterIcon, which applies its own id -> slug overrides.
     expect(
       raidBossPortrait("GuildBoss4MiniBoss1OrksBigMek", "orksBigMek")
-    ).toBe(`${BASE}/ui_image_RoundPortrait_orkss_mek_01.png`)
+    ).toBe(`${BASE}/ui_image_RoundPortrait_orkss_mek_01.webp`)
   })
 
   it("returns undefined for an unmapped id with no roster fallback", () => {
@@ -36,7 +36,7 @@ describe("raidBossPortrait", () => {
 describe("raidBossSplashPortrait", () => {
   it("resolves the full splash portrait by GuildBoss{N} prefix", () => {
     expect(raidBossSplashPortrait("GuildBoss4Boss1OrksGhazghkull")).toBe(
-      `${BASE}/ui_image_portrait_guild_ghazghkull_01.png`
+      `${BASE}/ui_image_portrait_guild_ghazghkull_01.webp`
     )
   })
 
@@ -48,7 +48,7 @@ describe("raidBossSplashPortrait", () => {
 describe("fieldNpcIcon", () => {
   it("resolves a mapped field-npc id to its ported asset", () => {
     expect(fieldNpcIcon({ id: "GuildBoss6Npc1TyranHormagaunt" })).toBe(
-      `${BASE}/ui_image_RoundPortrait_tyran_hormagaunt_01.png`
+      `${BASE}/ui_image_RoundPortrait_tyran_hormagaunt_01.webp`
     )
   })
 
@@ -58,7 +58,7 @@ describe("fieldNpcIcon", () => {
         id: "GuildBoss1Npc1TyranTermagant",
         questUnitId: "tyranNpc3Termagant",
       })
-    ).toBe(`${BASE}/ui_image_RoundPortrait_tyran_npc3_termagant_01.png`)
+    ).toBe(`${BASE}/ui_image_RoundPortrait_tyran_npc3_termagant_01.webp`)
   })
 
   it("returns undefined with no override and no questUnitId", () => {

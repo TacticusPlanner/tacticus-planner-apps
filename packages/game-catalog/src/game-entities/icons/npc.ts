@@ -1,5 +1,5 @@
 import { npcPortraitOverrides } from "../npc-portrait-overrides"
-import { ASSET_BASE_PATH } from "./asset-path"
+import { gameAssetUrl } from "./asset-path"
 
 /**
  * Full portrait URL for an NPC variation id, or `undefined` when no asset is mapped (the caller renders
@@ -7,5 +7,5 @@ import { ASSET_BASE_PATH } from "./asset-path"
  */
 export function npcPortrait(id: string): string | undefined {
   const file = npcPortraitOverrides[id]
-  return file ? `${ASSET_BASE_PATH}/characters/${file}` : undefined
+  return file ? gameAssetUrl(`characters/${file}`) : undefined
 }

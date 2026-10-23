@@ -15,7 +15,9 @@ const LE_MAPS_DIR = fileURLToPath(
 
 describe("legendaryEventMap", () => {
   it("resolves a shipped map id to its tactical image under le_maps/", () => {
-    expect(legendaryEventMap("LE1_26")).toBe("/game_catalog/le_maps/LE1_26.jpg")
+    expect(legendaryEventMap("LE1_26")).toBe(
+      "/game_catalog/le_maps/LE1_26.webp"
+    )
   })
 
   it("returns undefined for a map id with no shipped image", () => {
@@ -24,8 +26,10 @@ describe("legendaryEventMap", () => {
 
   it("lists exactly the tactical maps in the le_maps directory", () => {
     const shipped = readdirSync(LE_MAPS_DIR)
-      .filter((file) => file.endsWith(".jpg") && !file.endsWith("_Visual.jpg"))
-      .map((file) => file.slice(0, -".jpg".length))
+      .filter(
+        (file) => file.endsWith(".webp") && !file.endsWith("_Visual.webp")
+      )
+      .map((file) => file.slice(0, -".webp".length))
       .sort()
     expect([...LE_MAP_IDS].sort()).toEqual(shipped)
   })

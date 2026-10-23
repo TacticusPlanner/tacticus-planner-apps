@@ -1,5 +1,5 @@
 import { z } from "zod"
-import { factionIdSchema, unitIdSchema } from "@workspace/game-domain"
+import { factionIdSchema, unitIdSchema } from "@workspace/game-domain/schemas"
 
 const lreFilterSchema = z.looseObject({
   kind: z.string(),

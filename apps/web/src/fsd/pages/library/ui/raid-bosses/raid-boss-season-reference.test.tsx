@@ -43,7 +43,7 @@ const viewModel = {
                 isPrimarch: false,
                 factionId: "Tyranids",
                 name: "Tervigon",
-                portraitSrc: "/boss.png",
+                portraitSrc: "/boss.webp",
               },
             },
           ],

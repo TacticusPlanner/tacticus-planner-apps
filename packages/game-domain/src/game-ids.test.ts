@@ -13,6 +13,7 @@ import {
   type FactionId,
   type UnitId,
 } from "./game-ids"
+import * as zodSchemas from "./schemas"
 
 const schemas = [
   unitIdSchema,
@@ -22,6 +23,8 @@ const schemas = [
   abilityIdSchema,
   factionIdSchema,
   battleIdSchema,
+  // The zod schemas the sync schemas compose keep the same contract.
+  ...Object.values(zodSchemas),
 ]
 
 describe("game ID schemas", () => {
@@ -33,6 +36,16 @@ describe("game ID schemas", () => {
   it.each(schemas)("rejects non-string values", (schema) => {
     expect(schema.safeParse(42).success).toBe(false)
     expect(schema.safeParse(null).success).toBe(false)
+  })
+
+  it("brands ids parsed by the zod schemas with the same types", () => {
+    expectTypeOf(zodSchemas.unitIdSchema.parse("unit")).toEqualTypeOf<UnitId>()
+    expectTypeOf(
+      zodSchemas.campaignIdSchema.parse("campaign")
+    ).toEqualTypeOf<CampaignId>()
+    expectTypeOf(
+      zodSchemas.battleIdSchema.parse("battle")
+    ).toEqualTypeOf<BattleId>()
   })
 
   it("keeps brands mutually incompatible", () => {

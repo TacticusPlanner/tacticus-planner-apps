@@ -1,4 +1,4 @@
-import { ASSET_BASE_PATH } from "./asset-path"
+import { gameAssetUrl } from "./asset-path"
 
 export type OnslaughtSectorIcon =
   "Stone" | "Iron" | "Bronze" | "Silver" | "Gold" | "Diamond" | "Adamantine"
@@ -9,9 +9,11 @@ export function onslaughtTierIcon(
   sector: OnslaughtSectorIcon,
   tier: OnslaughtTierIcon
 ): string {
-  return `${ASSET_BASE_PATH}/onslaught/ui_onslaught_button_rank_${sector.toLowerCase()}_${tier}.png`
+  return gameAssetUrl(
+    `onslaught/ui_onslaught_button_rank_${sector.toLowerCase()}_${tier}.webp`
+  )
 }
 
 export function onslaughtAllianceIcon(alliance: OnslaughtAllianceIcon): string {
-  return `${ASSET_BASE_PATH}/onslaught/${alliance.toLowerCase()}.png`
+  return gameAssetUrl(`onslaught/${alliance.toLowerCase()}.webp`)
 }

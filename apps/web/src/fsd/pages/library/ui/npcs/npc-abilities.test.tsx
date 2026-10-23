@@ -117,7 +117,7 @@ describe("NpcAbilities", () => {
       screen.getByTestId("npc-ability-AdaptiveStrategy").querySelector("img")
     ).toHaveAttribute(
       "src",
-      "/game_catalog/abilities/ui_icon_ability2_AdaptiveStrategy.png"
+      "/game_catalog/abilities/ui_icon_ability2_AdaptiveStrategy.webp"
     )
 
     expect(screen.getByTestId("npc-abilities-passive")).toHaveTextContent(

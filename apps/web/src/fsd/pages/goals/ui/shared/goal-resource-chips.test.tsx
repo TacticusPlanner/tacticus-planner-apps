@@ -169,11 +169,11 @@ describe("GoalResourceChips", () => {
       img.getAttribute("src")
     )
     expect(sources).toEqual([
-      "/game_catalog/misc/energy.png",
-      "/game_catalog/misc/ui_icon_resource_coin.png",
-      "/game_catalog/badges/xenos-epic.png",
-      "/game_catalog/resources/ui_forge_badges_rare.png",
-      "/game_catalog/resources/ui_machines_of_war_tokens_xenos.png",
+      "/game_catalog/misc/energy.webp",
+      "/game_catalog/misc/ui_icon_resource_coin.webp",
+      "/game_catalog/badges/xenos-epic.webp",
+      "/game_catalog/resources/ui_forge_badges_rare.webp",
+      "/game_catalog/resources/ui_machines_of_war_tokens_xenos.webp",
     ])
     cleanup()
     const orbs = render(
@@ -189,8 +189,8 @@ describe("GoalResourceChips", () => {
         img.getAttribute("src")
       )
     ).toEqual([
-      "/game_catalog/resources/ui_hero_ascension_orbs_rare.png",
-      "/game_catalog/resources/ui_hero_ascension_orbs_chaos.png",
+      "/game_catalog/resources/ui_hero_ascension_orbs_rare.webp",
+      "/game_catalog/resources/ui_hero_ascension_orbs_chaos.webp",
     ])
   })
 

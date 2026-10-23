@@ -3,7 +3,7 @@ export function AppLogo({ className }: { className?: string }) {
     <img
       aria-hidden="true"
       className={className}
-      src="/favicon.svg"
+      src="/favicon-96x96.png"
       alt=""
       data-testid="app-header-logo"
     />

@@ -3,7 +3,7 @@ import { createMemoryRouter, RouterProvider } from "react-router"
 import userEvent from "@testing-library/user-event"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
-import { render, screen } from "@/test/render"
+import { render, screen, waitFor } from "@/test/render"
 
 import { routes } from "../route"
 import { DailiesLayout } from "./dailies-layout"
@@ -211,9 +211,11 @@ describe("Dailies navigation", () => {
 
     useIsMobileMock.mockReturnValue(true)
     renderDailies("/dailies/raids")
-    const [, mobileSelect] = await screen.findAllByTestId(
-      "raids-project-select"
+    // The route's preload loader resolves before the second router renders its first frame.
+    await waitFor(() =>
+      expect(screen.getAllByTestId("raids-project-select")).toHaveLength(2)
     )
+    const [, mobileSelect] = screen.getAllByTestId("raids-project-select")
     expect(mobileSelect).toHaveAccessibleName("project.placeholder")
     expect(mobileSelect).not.toHaveTextContent(/\S/)
   })
