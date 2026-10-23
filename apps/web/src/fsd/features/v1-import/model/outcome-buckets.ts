@@ -14,10 +14,13 @@ export type OutcomeBucketKey =
 const CODE_BUCKETS: Record<string, OutcomeBucketKey> = {
   goal_created: "imported",
   prerequisite_added: "imported",
+  // A V1 material goal placed on a suggested unit (it had none): created, but worth a look.
+  upgrade_goal_assigned: "imported",
   target_already_reached: "needsNoImport",
   goal_already_exists: "needsNoImport",
   duplicate_goal_merged: "needsNoImport",
-  // A V1 pre-farm goal: nothing was created, and the user has a step to take (see preFarmSteps).
+  // A V1 material goal the import couldn't place: nothing was created, and the user has a step to
+  // take (see materialSteps).
   manual_step_required: "needsAction",
   prerequisite_target_insufficient: "notImported",
   unknown_unit: "notImported",
@@ -53,6 +56,7 @@ export function bucketForCode(code: string): OutcomeBucketKey {
 type ReasonKey =
   | "goals.v1Import.reasons.goalCreated"
   | "goals.v1Import.reasons.prerequisiteAdded"
+  | "goals.v1Import.reasons.upgradeGoalAssigned"
   | "goals.v1Import.reasons.targetAlreadyReached"
   | "goals.v1Import.reasons.goalAlreadyExists"
   | "goals.v1Import.reasons.duplicateGoalMerged"
@@ -73,6 +77,7 @@ type ReasonKey =
 const REASON_KEYS: Record<string, ReasonKey> = {
   goal_created: "goals.v1Import.reasons.goalCreated",
   prerequisite_added: "goals.v1Import.reasons.prerequisiteAdded",
+  upgrade_goal_assigned: "goals.v1Import.reasons.upgradeGoalAssigned",
   target_already_reached: "goals.v1Import.reasons.targetAlreadyReached",
   goal_already_exists: "goals.v1Import.reasons.goalAlreadyExists",
   duplicate_goal_merged: "goals.v1Import.reasons.duplicateGoalMerged",

@@ -575,8 +575,8 @@
         "syncRequired": "Synchronisiere deine Spielerdaten und importiere die Ziele danach erneut."
       },
       "materialSteps": {
-        "title": "Materialziele brauchen noch einen Schritt",
-        "description": "Material- und Vorfarm-Ziele aus V1 haben keine Einheit, aber jedes V2-Ziel gehört zu einer. Deshalb wurden sie nicht importiert. Lege für jedes Material ein Upgrade-Ziel bei der Einheit an, die es bekommen soll. Ein Vorfarm-Ziel stellst du vor die anderen Ziele dieser Einheit.",
+        "title": "Einige Materialziele brauchen noch einen Schritt",
+        "description": "Diese V1-Materialziele konnten nicht automatisch zu Upgrade-Zielen werden: Die Einheit hat bereits ein Upgrade-Ziel für andere Materialien, oder die Ziele, für die vorgefarmt wurde, wurden nicht importiert. Füge jedes Material einem Upgrade-Ziel der angezeigten Einheit hinzu.",
         "preFarmedFor": "Vorgefarmt für {{units}}",
         "suggestedUnit": "Vorgeschlagene Einheit: {{unit}}",
         "createUpgradeGoal": "Upgrade-Ziel erstellen",
@@ -585,6 +585,7 @@
       "reasons": {
         "goalCreated": "Aus V1 importiert.",
         "prerequisiteAdded": "Automatisch hinzugefügt, da ein anderes importiertes Ziel dies benötigt.",
+        "upgradeGoalAssigned": "Auf einer vorgeschlagenen Einheit erstellt, da das V1-Ziel keine hatte. Verschiebe es, falls eine andere Einheit es halten soll.",
         "targetAlreadyReached": "Das Ziel ist bereits erreicht.",
         "goalAlreadyExists": "Das Konto hat bereits ein Ziel dieser Art für diese Einheit.",
         "duplicateGoalMerged": "Ein weiteres V1-Ziel dieser Art für diese Einheit wurde stattdessen importiert.",
@@ -599,7 +600,7 @@
         "prerequisiteRejected": "Diese automatisch hinzugefügte Voraussetzung ist für dieses Ziel ungültig.",
         "unknownUpgrade": "Dieses Upgrade-Material ist nicht im V2-Spielkatalog enthalten.",
         "noUpgradeOwner": "Keiner deiner Charaktere und keine deiner Kampfmaschinen verwendet dieses Upgrade-Material.",
-        "manualStepRequired": "V2-Ziele gehören immer zu einer Einheit. Lege für dieses Material ein Upgrade-Ziel bei der Einheit an, die es bekommen soll.",
+        "manualStepRequired": "Dieses Material konnte nicht automatisch zugeordnet werden. Füge es einem Upgrade-Ziel der angezeigten Einheit hinzu.",
         "generic": "Dieses Ziel konnte nicht importiert werden."
       },
       "legendaryEvents": {

@@ -575,8 +575,8 @@
         "syncRequired": "Synchronisez vos données de joueur, puis importez à nouveau les objectifs."
       },
       "materialSteps": {
-        "title": "Les objectifs de matériaux demandent une étape de plus",
-        "description": "Les objectifs de matériaux et de pré-farm de V1 n'ont pas d'unité, alors que chaque objectif V2 en a une : ils n'ont donc pas été importés. Ajoutez un objectif d'amélioration pour chaque matériau sur l'unité qui doit le recevoir. Pour un objectif de pré-farm, placez-le avant les autres objectifs de cette unité.",
+        "title": "Certains objectifs de matériau nécessitent une étape de plus",
+        "description": "Ces objectifs de matériau V1 n'ont pas pu devenir automatiquement des objectifs d'amélioration : l'unité a déjà un objectif d'amélioration pour d'autres matériaux, ou les objectifs pour lesquels ils étaient pré-farmés n'ont pas été importés. Ajoutez chaque matériau à un objectif d'amélioration de l'unité indiquée.",
         "preFarmedFor": "Pré-farmé pour {{units}}",
         "suggestedUnit": "Unité suggérée : {{unit}}",
         "createUpgradeGoal": "Créer un objectif d'amélioration",
@@ -585,6 +585,7 @@
       "reasons": {
         "goalCreated": "Importé depuis V1.",
         "prerequisiteAdded": "Ajouté automatiquement car un autre objectif importé en a besoin.",
+        "upgradeGoalAssigned": "Créé sur une unité suggérée, car l'objectif V1 n'en avait pas. Déplacez-le si une autre unité doit le porter.",
         "targetAlreadyReached": "L'objectif est déjà atteint.",
         "goalAlreadyExists": "Le compte possède déjà un objectif de ce type pour cette unité.",
         "duplicateGoalMerged": "Un autre objectif V1 de ce type pour cette unité a été importé à sa place.",
@@ -599,7 +600,7 @@
         "prerequisiteRejected": "Ce prérequis ajouté automatiquement n'est pas valide pour cet objectif.",
         "unknownUpgrade": "Ce matériau d'amélioration n'est pas dans le catalogue du jeu V2.",
         "noUpgradeOwner": "Aucun de vos personnages ni de vos Machines de guerre n'utilise ce matériau d'amélioration.",
-        "manualStepRequired": "Les objectifs V2 appartiennent toujours à une unité. Ajoutez un objectif d'amélioration pour ce matériau sur l'unité qui doit le recevoir.",
+        "manualStepRequired": "Ce matériau n'a pas pu être placé automatiquement. Ajoutez-le à un objectif d'amélioration de l'unité indiquée.",
         "generic": "Cet objectif n'a pas pu être importé."
       },
       "legendaryEvents": {

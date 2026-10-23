@@ -575,8 +575,8 @@
         "syncRequired": "Sync your player data, then import goals again to bring in your V1 goals."
       },
       "materialSteps": {
-        "title": "Material goals need one more step",
-        "description": "V1 material and pre-farm goals have no unit, and every V2 goal belongs to one, so these weren't imported. Add an Upgrade goal for each material on the unit that should hold it. For a pre-farm goal, place it ahead of that unit's other goals.",
+        "title": "Some material goals need one more step",
+        "description": "These V1 material goals couldn't become Upgrade goals automatically: the unit already has an Upgrade goal for other materials, or the goals they were pre-farmed for weren't imported. Add each material to an Upgrade goal on the unit shown.",
         "preFarmedFor": "Pre-farmed for {{units}}",
         "suggestedUnit": "Suggested unit: {{unit}}",
         "createUpgradeGoal": "Create Upgrade goal",
@@ -585,6 +585,7 @@
       "reasons": {
         "goalCreated": "Imported from V1.",
         "prerequisiteAdded": "Automatically added because another imported goal needs it.",
+        "upgradeGoalAssigned": "Created on a suggested unit, since the V1 goal had none. Move it if another unit should hold it.",
         "targetAlreadyReached": "The target is already reached.",
         "goalAlreadyExists": "The account already has a goal of this type for this unit.",
         "duplicateGoalMerged": "Another V1 goal of this type for this unit was imported in its place.",
@@ -599,7 +600,7 @@
         "prerequisiteRejected": "This automatically added prerequisite isn't valid for this goal.",
         "unknownUpgrade": "This upgrade material is not in the V2 Game Catalog.",
         "noUpgradeOwner": "None of your characters or Machines of War uses this upgrade material.",
-        "manualStepRequired": "V2 goals always belong to a unit. Add an Upgrade goal for this material on the unit that should hold it.",
+        "manualStepRequired": "This material couldn't be placed automatically. Add it to an Upgrade goal on the unit shown.",
         "generic": "This goal could not be imported."
       },
       "legendaryEvents": {

@@ -33,6 +33,7 @@ describe("bucketForCode", () => {
   it("maps every documented code to its bucket (4.1)", () => {
     expect(bucketForCode("goal_created")).toBe("imported")
     expect(bucketForCode("prerequisite_added")).toBe("imported")
+    expect(bucketForCode("upgrade_goal_assigned")).toBe("imported")
     expect(bucketForCode("target_already_reached")).toBe("needsNoImport")
     expect(bucketForCode("goal_already_exists")).toBe("needsNoImport")
     expect(bucketForCode("duplicate_goal_merged")).toBe("needsNoImport")
@@ -64,6 +65,9 @@ describe("reasonKeyForCode", () => {
     )
     expect(reasonKeyForCode("prerequisite_added")).toBe(
       "goals.v1Import.reasons.prerequisiteAdded"
+    )
+    expect(reasonKeyForCode("upgrade_goal_assigned")).toBe(
+      "goals.v1Import.reasons.upgradeGoalAssigned"
     )
     expect(reasonKeyForCode("target_already_reached")).toBe(
       "goals.v1Import.reasons.targetAlreadyReached"
