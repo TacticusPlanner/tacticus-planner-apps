@@ -123,3 +123,13 @@ export function orderLegendaryEventsForHub<
   )
   return groups
 }
+
+/** A string that changes exactly when an event's lifecycle at `nowMs` changes (state or run
+ *  window), so a minute-clock subscriber can skip ticks that flip nothing. */
+export function legendaryEventLifecycleSignature(
+  event: LegendaryEventSchedule,
+  nowMs: number
+): string {
+  const lifecycle = deriveLegendaryEventLifecycle(event, nowMs)
+  return `${lifecycle.state}:${lifecycle.runStartMs ?? ""}`
+}

@@ -3,9 +3,12 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { replacePlayerDataChunk } from "@workspace/player-data/testing"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
-import { usePlayerDataStatus } from "@/shared/player-data-status"
+import {
+  usePlayerDataProgress,
+  usePlayerDataStatus,
+} from "@/shared/player-data-status"
 import { setTestAuth } from "@/test/auth"
-import { act, renderHook, waitFor } from "@/test/render"
+import { act, render, renderHook, screen, waitFor } from "@/test/render"
 
 const sync = vi.hoisted(() => ({
   run: vi.fn(),
@@ -99,6 +102,54 @@ describe("PlayerDataProvider", () => {
     await act(async () =>
       finish({ status: "ready", syncedAt: new Date().toISOString() })
     )
+  })
+
+  it("re-renders a status-only reader on status changes, not on progress ticks", async () => {
+    let finish!: (value: unknown) => void
+    let report!: (progress: { downloaded: number; total: number }) => void
+    sync.run.mockImplementationOnce(
+      (_client: unknown, options: { onProgress: typeof report }) => {
+        report = options.onProgress
+        return new Promise((done) => (finish = done))
+      }
+    )
+    let statusRenders = 0
+    let status!: ReturnType<typeof usePlayerDataStatus>
+    function StatusReader() {
+      statusRenders++
+      status = usePlayerDataStatus()
+      return null
+    }
+    function ProgressReader() {
+      const progress = usePlayerDataProgress()
+      return <span data-testid="progress">{progress?.downloaded ?? "-"}</span>
+    }
+    render(
+      <>
+        <StatusReader />
+        <ProgressReader />
+      </>,
+      { wrapper }
+    )
+    await waitFor(() => expect(status.status).toBe("ready"))
+    act(() => status.syncNow())
+    await waitFor(() => expect(status.status).toBe("syncing"))
+    // The value is memoised, so this re-render count is stable once a status settles.
+    const before = statusRenders
+    const valueBefore = status
+
+    act(() => report({ downloaded: 1, total: 3 }))
+    act(() => report({ downloaded: 2, total: 3 }))
+
+    expect(screen.getByTestId("progress")).toHaveTextContent("2")
+    expect(statusRenders).toBe(before)
+    expect(status).toBe(valueBefore)
+
+    await act(async () =>
+      finish({ status: "ready", syncedAt: new Date().toISOString() })
+    )
+    await waitFor(() => expect(status.status).toBe("ready"))
+    expect(status).not.toBe(valueBefore)
   })
 
   it("does not refresh after a failed sync", async () => {

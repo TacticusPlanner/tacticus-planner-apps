@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react"
+import { createElement, useEffect, useRef } from "react"
 import {
   HelpCircle,
   MessageSquareText,
@@ -8,6 +8,7 @@ import {
 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
+import { usePlayerDataStatus } from "@/shared/player-data-status"
 import { useTour } from "@/shared/tour"
 
 import { usePlayerDataSyncStatus } from "@/features/player-data-sync"
@@ -33,7 +34,9 @@ export function useQuickActions({
   onCreateProject: () => void
 }): QuickActionsController {
   const { t } = useTranslation()
-  const sync = usePlayerDataSyncStatus()
+  // Status only: the shell hosts this hook, so it must not re-render on every sync progress tick.
+  // The disabled row's text reads progress itself through SyncStatusText.
+  const sync = usePlayerDataStatus()
   const { hasPageTour, isRunning, startPageTour } = useTour()
   const { open: openFeedback, status: feedbackStatus } = useUserJot()
 
@@ -67,7 +70,10 @@ export function useQuickActions({
           label: t("nav.syncWithTacticus"),
           description: t("nav.quickActions.syncDescription"),
           keywords: ["api"],
-          disabledReason: sync.isSyncing ? sync.statusText : undefined,
+          disabledReason:
+            sync.status === "syncing"
+              ? createElement(SyncStatusText)
+              : undefined,
         },
         run: () => void sync.syncNow(),
       }
@@ -126,4 +132,8 @@ export function useQuickActions({
       if (id) enabledEntry(id)?.run()
     },
   }
+}
+
+function SyncStatusText() {
+  return usePlayerDataSyncStatus().statusText
 }

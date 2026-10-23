@@ -19,8 +19,10 @@ function stabilize<V>(
  *  map when nothing changed). Per-goal maps are recomputed into fresh objects on each render or plan
  *  run, which would otherwise defeat the memoized goal rows of goals a status toggle didn't touch. */
 export function useStableMap<V>(next: ReadonlyMap<string, V>) {
-  const [stable, setStable] = useState(next)
-  const result = stabilize(stable, next)
-  if (result !== stable) setStable(result)
-  return result
+  const [stable, setStable] = useState({ input: next, output: next })
+  // A memoised input that has not changed needs no deep compare.
+  if (stable.input === next) return stable.output
+  const output = stabilize(stable.output, next)
+  setStable({ input: next, output })
+  return output
 }

@@ -1,4 +1,4 @@
-import { useMemo } from "react"
+import { useCallback, useMemo } from "react"
 import { useTranslation } from "react-i18next"
 import {
   factionRank,
@@ -106,12 +106,19 @@ export function useGoalCatalog() {
     [characterGroups, mowGroups]
   )
 
-  const getCharacter = (unitId: UnitId) => {
-    const record = charactersById?.get(unitId)
-    return record ? mapCharacterStorageToDomain(record) : undefined
-  }
+  // Stable while the catalog is, so the goals hooks can key their memos on them.
+  const getCharacter = useCallback(
+    (unitId: UnitId) => {
+      const record = charactersById?.get(unitId)
+      return record ? mapCharacterStorageToDomain(record) : undefined
+    },
+    [charactersById]
+  )
 
-  const getMow = (unitId: UnitId) => mowsById?.get(unitId)
+  const getMow = useCallback(
+    (unitId: UnitId) => mowsById?.get(unitId),
+    [mowsById]
+  )
 
   // The shared ascension-orb/shard cost ladder + per-rarity unlock-shard table (plan §16 phase 7) —
   // both single catalog-wide tables, not per-character, so no grouping/id-lookup helper beyond the

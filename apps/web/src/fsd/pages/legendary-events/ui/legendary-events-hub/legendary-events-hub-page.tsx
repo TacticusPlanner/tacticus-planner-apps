@@ -7,6 +7,7 @@ import { cn } from "@workspace/ui/lib/utils"
 import {
   useLegendaryEvents,
   useLegendaryEventsProgress,
+  useMinuteNow,
 } from "@/entities/legendary-event"
 import { useTourPageSteps } from "@/shared/tour"
 import { useUnitName } from "@/shared/unit-name"
@@ -27,6 +28,8 @@ export function LegendaryEventsHubPage() {
   const { t, i18n } = useTranslation("legendaryEvents")
   const isMobile = useIsMobile()
   const events = useLegendaryEvents()
+  // The cards count down, so the hub follows every minute, not only lifecycle flips.
+  const nowMs = useMinuteNow()
   const progress = useLegendaryEventsProgress()
   const unitName = useUnitName()
 
@@ -36,7 +39,7 @@ export function LegendaryEventsHubPage() {
       ? buildHubViewModel(
           events.data,
           progress,
-          events.nowMs,
+          nowMs,
           (id) => unitName("Character", id),
           i18n.language
         )
@@ -105,7 +108,7 @@ export function LegendaryEventsHubPage() {
             group={group}
             isMobile={isMobile}
             key={group}
-            nowMs={events.nowMs}
+            nowMs={nowMs}
             title={t(`hub.groups.${group}`)}
           />
         )

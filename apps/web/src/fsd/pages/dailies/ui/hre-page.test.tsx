@@ -22,9 +22,9 @@ const { mocks } = vi.hoisted(() => ({
   },
 }))
 
-vi.mock("react-i18next", () => ({
-  initReactI18next: { type: "3rdParty", init: vi.fn() },
-  useTranslation: () => ({
+vi.mock("react-i18next", () => {
+  // One `t` for every render, as react-i18next keeps it between language changes.
+  const translation = {
     i18n: { language: "en", getResource: () => undefined },
     t: (key: string, values?: Record<string, unknown>) =>
       values
@@ -33,8 +33,12 @@ vi.mock("react-i18next", () => ({
             .map(([name, value]) => `${name}=${String(value)}`)
             .join(",")}`
         : key,
-  }),
-}))
+  }
+  return {
+    initReactI18next: { type: "3rdParty", init: vi.fn() },
+    useTranslation: () => translation,
+  }
+})
 vi.mock("@/shared/tour", () => ({
   useTourPageSteps: (steps: unknown) => {
     mocks.tourSteps = steps
@@ -727,6 +731,21 @@ describe("HRE tab", () => {
     expect(screen.getByTestId("hre-pace-currency")).toHaveTextContent(
       "daily=826,crates=720"
     )
+  })
+
+  it("keeps the raids request while only points, rank or target change", async () => {
+    seed({ mission: 5, progress: [0, 37] })
+    renderHre()
+    const lastRequest = () =>
+      (mocks.raidsArgs.at(-1)?.[1] as { missionRaids: unknown }).missionRaids
+    const first = lastRequest()
+    const calls = mocks.raidsArgs.length
+    await userEvent.type(screen.getByTestId("hre-pace-points"), "3")
+    await userEvent.type(screen.getByTestId("hre-pace-rank"), "4")
+    expect(mocks.raidsArgs.length).toBeGreaterThan(calls)
+    expect(lastRequest()).toBe(first)
+    await userEvent.type(screen.getByTestId("hre-objective-1-input"), "1")
+    expect(lastRequest()).not.toBe(first)
   })
 
   it("lays out two columns on desktop and one column with collapsed missions on mobile", () => {

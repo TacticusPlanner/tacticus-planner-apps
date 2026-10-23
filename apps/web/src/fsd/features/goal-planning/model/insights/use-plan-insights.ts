@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { useQuery } from "@tanstack/react-query"
 import { useIsAuthenticated } from "@azure/msal-react"
 import { unitIdSchema, type UnitId } from "@workspace/game-domain"
@@ -101,13 +101,26 @@ export function usePlanInsights(scopeGoalIds?: readonly string[] | null) {
     .map((member) => member.goal.goalId)
     .sort()
     .join(",")}`
-  const calculationKey = `${scopeKey}:${memberKey}:${JSON.stringify({
-    inventoryUpgrades,
-    inventoryOrbs,
-    inventoryXpBooks,
-    abilityInventory,
-    xpBookRarity: planningSettings.xpBookRarity,
-  })}`
+  // By content, so a sync that rewrites identical inventory does not recompute the plan; memoised on
+  // the (memoised) reads so an unrelated re-render does not re-serialise the whole inventory.
+  const inventoryKey = useMemo(
+    () =>
+      JSON.stringify({
+        inventoryUpgrades,
+        inventoryOrbs,
+        inventoryXpBooks,
+        abilityInventory,
+        xpBookRarity: planningSettings.xpBookRarity,
+      }),
+    [
+      inventoryUpgrades,
+      inventoryOrbs,
+      inventoryXpBooks,
+      abilityInventory,
+      planningSettings.xpBookRarity,
+    ]
+  )
+  const calculationKey = `${scopeKey}:${memberKey}:${inventoryKey}`
   // A project scope that holds none of the plan's Active goals has nothing to report.
   const hasQuery = Boolean(
     isAuthenticated &&

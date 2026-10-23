@@ -27,6 +27,8 @@ import {
 } from "@/test/seed"
 import { setViewportWidth } from "@/test/viewport"
 
+import { sortMasterTable } from "@/entities/legendary-event"
+
 import { MasterTablePage } from "./master-table-page"
 
 const UNIT_IDS = [
@@ -136,6 +138,8 @@ vi.mock("@/entities/legendary-event", async (importOriginal) => {
     await importOriginal<typeof import("@/entities/legendary-event")>()
   return {
     ...actual,
+    // Counted to show the rows are not re-sorted on an unrelated render.
+    sortMasterTable: vi.fn(actual.sortMasterTable),
     useLegendaryEventPlans: () => ({ ...data.plans, retry: vi.fn() }),
     useLegendaryEventRoster: () => {
       const held = useSyncExternalStore(rosterHold.subscribe, rosterHold.held)
@@ -381,6 +385,47 @@ describe("MasterTablePage", () => {
     renderPage("?q=dan")
     await ready()
     await waitFor(() => expect(rowIds()).toEqual(["bloodDante"]))
+  })
+
+  it("filters as the search is typed and writes q to the URL after the pause, clearing at once", async () => {
+    renderPage()
+    await ready()
+    await waitFor(() => expect(rowIds()).toContain("bloodDante"))
+    vi.useFakeTimers({ toFake: ["Date", "setTimeout", "clearTimeout"] })
+    vi.setSystemTime(new Date("2026-10-06T12:00:00Z"))
+    const input = screen.getByTestId("master-table-search")
+
+    fireEvent.change(input, { target: { value: "da" } })
+    fireEvent.change(input, { target: { value: "dan" } })
+    expect(input).toHaveValue("dan")
+    expect(rowIds()).toEqual(["bloodDante"])
+    expect(search().get("q")).toBeNull()
+
+    act(() => vi.advanceTimersByTime(199))
+    expect(search().get("q")).toBeNull()
+    act(() => vi.advanceTimersByTime(1))
+    expect(search().get("q")).toBe("dan")
+    expect(input).toHaveValue("dan")
+
+    fireEvent.change(input, { target: { value: "" } })
+    expect(search().get("q")).toBeNull()
+    expect(rowIds()).toContain("bloodDante")
+    expect(rowIds().length).toBeGreaterThan(1)
+  })
+
+  it("keeps the sorted rows across an unrelated render and re-sorts on a new query", async () => {
+    const { rerenderPage } = renderPage()
+    await ready()
+    await waitFor(() => expect(rowIds()).toContain("bloodDante"))
+    const sorts = vi.mocked(sortMasterTable).mock.calls.length
+
+    rerenderPage()
+    expect(vi.mocked(sortMasterTable).mock.calls.length).toBe(sorts)
+
+    fireEvent.change(screen.getByTestId("master-table-search"), {
+      target: { value: "dan" },
+    })
+    expect(vi.mocked(sortMasterTable).mock.calls.length).toBeGreaterThan(sorts)
   })
 
   it("marks the selected chips with the thick primary border, tint and checked state", async () => {

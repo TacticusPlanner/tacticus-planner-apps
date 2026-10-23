@@ -77,9 +77,6 @@ export function useDailyRaids(
   } = useCampaignDisplay()
   const isAuthenticated = useIsAuthenticated()
   const globalPlan = useScopedGoalPlan(projectId)
-  const activeMembers = activeProjectMembers(globalPlan.entries)
-  // The goals list carries every goal in full, so no goal's detail is read separately.
-  const details = activeMembers.map((member) => member.goal)
 
   const charactersRead = useCatalogDataset("characters", toById)
   const mowsRead = useCatalogDataset("mows", toById)
@@ -248,153 +245,208 @@ export function useDailyRaids(
     [liveProgress, battleAttemptIndex]
   )
 
-  if (
+  const failed =
     globalPlan.isError ||
     onslaughtProgressQuery.isError ||
     eligibilityError ||
     localReadFailed
-  ) {
-    return { status: "error" }
-  }
-  const ready =
-    !globalPlan.loading &&
-    charactersById &&
-    mowsById &&
-    upgradesById &&
-    battles &&
-    campaignDefinitions &&
-    eligibilityReady &&
-    ascensionCostsById &&
-    unlockShardCostsById &&
-    // `[]` is a catalog still syncing (or evicted), not a loaded dataset — rendering with it would
-    // plan without Onslaught and, before this gate, threw on the first reward lookup.
-    onslaughtRewards &&
-    onslaughtRewards.length > 0 &&
-    shops &&
-    npcsById &&
-    onslaughtProgressQuery.isSuccess &&
-    inventoryUpgrades &&
-    playerCharacterById &&
-    playerMowById &&
-    inventoryShardById &&
-    !settingsLoading
-  if (!ready) return { status: "loading" }
-  const planMission = (
-    calculation: DailyRaidsCalculationViewModel | null
-  ): MissionRaidPlan | undefined =>
-    missionRequest
-      ? planHookMissionRaids({
-          request: missionRequest,
-          calculation,
-          availableBattles,
-          campaignDefinitions,
-          attemptsLeftByBattle,
-          dailyEnergy: settings.dailyEnergy,
-          realEnergyUsedToday,
-          filterBattlesById,
-          raidsFilters,
-          eventPointsByBattleId,
-          enemyStatsByBattleId,
-        })
-      : undefined
-  if (activeMembers.length === 0) {
-    return {
-      status: "no-goals",
-      missionRaids: planMission(null),
-      locationsByBattleId,
-    }
-  }
-
-  const farm = options?.eventFarm === false ? undefined : eventPointsByBattleId
-  const result = calculateDailyRaids({
-    members: globalPlan.entries,
-    details,
-    playerCharacterById,
-    playerMowById,
-    inventoryShardById,
-    inventoryUpgrades,
-    upgradesById,
-    battlesById,
-    charactersById,
-    mowsById,
-    ascensionCostsById,
-    unlockShardCostsById,
-    onslaughtProgress: onslaughtProgressQuery.data,
-    onslaughtRewards,
-    shops,
-    getCharacter: (id) => {
-      const record = charactersById.get(id)
-      return record ? mapCharacterStorageToDomain(record) : undefined
-    },
-    labelResource,
-    getUnitLabel: (detail) => {
-      if (detail.entityType === "Character") {
-        return t(`characters:${detail.entityId}`, {
-          defaultValue:
-            charactersById.get(detail.entityId as UnitId)?.name ??
-            detail.entityId,
-        })
-      }
-      return mowsById.get(detail.entityId)?.name ?? detail.entityId
-    },
-    getTargetLabel: (detail) => {
-      if (detail.goalType === "Rank" && detail.config.rank) {
-        return t("dailies:target.rank", {
-          value: rankAt(detail.config.rank.end),
-        })
-      }
-      if (detail.goalType === "Ability" && detail.config.ability) {
-        return t("dailies:target.ability", {
-          value: Math.max(
-            detail.config.ability.activeEnd,
-            detail.config.ability.passiveEnd
-          ),
-        })
-      }
-      if (detail.goalType === "Ascension" && detail.config.progression) {
-        return t("dailies:target.ascension", {
-          value: detail.config.progression.end,
-        })
-      }
-      if (detail.goalType === "Unlock") return t("dailies:target.unlock")
-      if (detail.goalType === "Upgrade" && detail.config.upgrade) {
-        return t("dailies:target.upgrade", {
-          value: detail.config.upgrade.targets.reduce(
-            (total, target) => total + target.quantity,
-            0
-          ),
-        })
-      }
-      return t("dailies:target.other", { value: detail.goalType })
-    },
-    dailyEnergy: settings.dailyEnergy,
-    raidsFilters,
-    filterBattlesById,
-    eventFarm: farm
-      ? {
-          pointsByBattleId: farm,
-          attemptsLeftByBattle,
-          energyBudget: Math.max(0, settings.dailyEnergy - realEnergyUsedToday),
-        }
-      : undefined,
-    missionGoalNodes: !!missionRequest,
-  })
-  return result
-    ? {
-        ...result,
-        missionRaids: planMission(result),
-        locationsByBattleId,
-        resourceByBattleId,
-        realEnergyUsedToday,
-        attemptsLeftByBattle,
-        todaysAttempts,
-      }
-    : {
-        status: "no-farmable",
+  const planLoading = globalPlan.loading
+  const goalEntries = globalPlan.entries
+  const onslaughtReady = onslaughtProgressQuery.isSuccess
+  const onslaughtProgress = onslaughtProgressQuery.data
+  const dailyEnergy = settings.dailyEnergy
+  const eventFarmOff = options?.eventFarm === false
+  // The engine runs once per change of its inputs, never on a mere re-render (a keystroke in the
+  // page above). It sits above the early returns, so every state calls the same Hooks.
+  const computed = useMemo((): DailyRaidsViewModel | null => {
+    const ready =
+      !failed &&
+      !planLoading &&
+      charactersById &&
+      mowsById &&
+      upgradesById &&
+      battles &&
+      campaignDefinitions &&
+      eligibilityReady &&
+      ascensionCostsById &&
+      unlockShardCostsById &&
+      // `[]` is a catalog still syncing (or evicted), not a loaded dataset — rendering with it would
+      // plan without Onslaught and, before this gate, threw on the first reward lookup.
+      onslaughtRewards &&
+      onslaughtRewards.length > 0 &&
+      shops &&
+      npcsById &&
+      onslaughtReady &&
+      inventoryUpgrades &&
+      playerCharacterById &&
+      playerMowById &&
+      inventoryShardById &&
+      !settingsLoading
+    if (!ready) return null
+    const planMission = (
+      calculation: DailyRaidsCalculationViewModel | null
+    ): MissionRaidPlan | undefined =>
+      missionRequest
+        ? planHookMissionRaids({
+            request: missionRequest,
+            calculation,
+            availableBattles,
+            campaignDefinitions,
+            attemptsLeftByBattle,
+            dailyEnergy,
+            realEnergyUsedToday,
+            filterBattlesById,
+            raidsFilters,
+            eventPointsByBattleId,
+            enemyStatsByBattleId,
+          })
+        : undefined
+    const details = activeProjectMembers(goalEntries).map(
+      // The goals list carries every goal in full, so no goal's detail is read separately.
+      (member) => member.goal
+    )
+    if (details.length === 0) {
+      return {
+        status: "no-goals",
         missionRaids: planMission(null),
         locationsByBattleId,
       }
+    }
+
+    const farm = eventFarmOff ? undefined : eventPointsByBattleId
+    const result = calculateDailyRaids({
+      members: goalEntries,
+      details,
+      playerCharacterById,
+      playerMowById,
+      inventoryShardById,
+      inventoryUpgrades,
+      upgradesById,
+      battlesById,
+      charactersById,
+      mowsById,
+      ascensionCostsById,
+      unlockShardCostsById,
+      onslaughtProgress,
+      onslaughtRewards,
+      shops,
+      getCharacter: (id) => {
+        const record = charactersById.get(id)
+        return record ? mapCharacterStorageToDomain(record) : undefined
+      },
+      labelResource,
+      getUnitLabel: (detail) => {
+        if (detail.entityType === "Character") {
+          return t(`characters:${detail.entityId}`, {
+            defaultValue:
+              charactersById.get(detail.entityId as UnitId)?.name ??
+              detail.entityId,
+          })
+        }
+        return mowsById.get(detail.entityId)?.name ?? detail.entityId
+      },
+      getTargetLabel: (detail) => {
+        if (detail.goalType === "Rank" && detail.config.rank) {
+          return t("dailies:target.rank", {
+            value: rankAt(detail.config.rank.end),
+          })
+        }
+        if (detail.goalType === "Ability" && detail.config.ability) {
+          return t("dailies:target.ability", {
+            value: Math.max(
+              detail.config.ability.activeEnd,
+              detail.config.ability.passiveEnd
+            ),
+          })
+        }
+        if (detail.goalType === "Ascension" && detail.config.progression) {
+          return t("dailies:target.ascension", {
+            value: detail.config.progression.end,
+          })
+        }
+        if (detail.goalType === "Unlock") return t("dailies:target.unlock")
+        if (detail.goalType === "Upgrade" && detail.config.upgrade) {
+          return t("dailies:target.upgrade", {
+            value: detail.config.upgrade.targets.reduce(
+              (total, target) => total + target.quantity,
+              0
+            ),
+          })
+        }
+        return t("dailies:target.other", { value: detail.goalType })
+      },
+      dailyEnergy,
+      raidsFilters,
+      filterBattlesById,
+      eventFarm: farm
+        ? {
+            pointsByBattleId: farm,
+            attemptsLeftByBattle,
+            energyBudget: Math.max(0, dailyEnergy - realEnergyUsedToday),
+          }
+        : undefined,
+      missionGoalNodes: !!missionRequest,
+    })
+    return result
+      ? {
+          ...result,
+          missionRaids: planMission(result),
+          locationsByBattleId,
+          resourceByBattleId,
+          realEnergyUsedToday,
+          attemptsLeftByBattle,
+          todaysAttempts,
+        }
+      : {
+          status: "no-farmable",
+          missionRaids: planMission(null),
+          locationsByBattleId,
+        }
+  }, [
+    ascensionCostsById,
+    attemptsLeftByBattle,
+    availableBattles,
+    battles,
+    battlesById,
+    campaignDefinitions,
+    charactersById,
+    dailyEnergy,
+    eligibilityReady,
+    enemyStatsByBattleId,
+    eventFarmOff,
+    eventPointsByBattleId,
+    failed,
+    filterBattlesById,
+    goalEntries,
+    inventoryShardById,
+    inventoryUpgrades,
+    labelResource,
+    locationsByBattleId,
+    missionRequest,
+    mowsById,
+    npcsById,
+    onslaughtProgress,
+    onslaughtReady,
+    onslaughtRewards,
+    planLoading,
+    playerCharacterById,
+    playerMowById,
+    raidsFilters,
+    realEnergyUsedToday,
+    resourceByBattleId,
+    settingsLoading,
+    shops,
+    t,
+    todaysAttempts,
+    unlockShardCostsById,
+    upgradesById,
+  ])
+  if (failed) return ERROR_STATE
+  return computed ?? LOADING_STATE
 }
+
+const ERROR_STATE: DailyRaidsViewModel = { status: "error" }
+const LOADING_STATE: DailyRaidsViewModel = { status: "loading" }
 
 function dataOf<T>(read: ReadState<T>): T | undefined {
   return read.status === "ready" ? read.data : undefined

@@ -1,4 +1,4 @@
-import type { ReactNode } from "react"
+import { useMemo, type ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
@@ -82,28 +82,37 @@ export function HreRaidsSection({
       ? homeScreenEvent.active
       : null
   const manual = request?.manual ?? null
+  // Built once per change of the request, so the raids engine does not rerun on a page re-render.
+  const battlesToGo = request?.raids?.battlesToGo ?? 0
+  const eventOnly = request?.raids?.eventOnly ?? false
+  const hasRequest = !!request
+  const missionRaids = useMemo(
+    (): MissionRaidsRequest =>
+      hasRequest
+        ? {
+            battlesToGo,
+            eventOnly,
+            ...(manual
+              ? {
+                  manual: {
+                    needs: manual.needs,
+                    slots: manual.slots,
+                    alliance: manual.alliance,
+                    heroFaction: manual.heroFaction,
+                    faction: manual.faction,
+                    preferLightning: manual.preferLightning,
+                    countsAsRaids: manual.countsAsRaids,
+                  },
+                }
+              : {}),
+          }
+        : SUMMARY_ONLY,
+    [hasRequest, battlesToGo, eventOnly, manual]
+  )
   const raids = useDailyRaids(undefined, {
     homeScreenEventId: runningEvent?.definitionId,
     eventFarm: false,
-    missionRaids: request
-      ? {
-          battlesToGo: request.raids?.battlesToGo ?? 0,
-          eventOnly: request.raids?.eventOnly ?? false,
-          ...(manual
-            ? {
-                manual: {
-                  needs: manual.needs,
-                  slots: manual.slots,
-                  alliance: manual.alliance,
-                  heroFaction: manual.heroFaction,
-                  faction: manual.faction,
-                  preferLightning: manual.preferLightning,
-                  countsAsRaids: manual.countsAsRaids,
-                },
-              }
-            : {}),
-        }
-      : SUMMARY_ONLY,
+    missionRaids,
   })
   const loaded = raids.status !== "loading" && raids.status !== "error"
   const plan = loaded ? raids.missionRaids : undefined

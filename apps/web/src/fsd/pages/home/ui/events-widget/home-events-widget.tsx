@@ -13,6 +13,7 @@ import { cn } from "@workspace/ui/lib/utils"
 import {
   useLegendaryEvents,
   useLegendaryEventsProgress,
+  useMinuteNow,
 } from "@/entities/legendary-event"
 import { useActiveHomeScreenEvent } from "@/features/daily-raids"
 import { eventBarClass, formatEventCountdown } from "@/shared/lib"
@@ -32,6 +33,8 @@ export function HomeEventsWidget() {
   const homeScreen = useActiveHomeScreenEvent()
   const legendary = useLegendaryEvents()
   const progress = useLegendaryEventsProgress()
+  // The rows count down; `legendary` re-renders only on a lifecycle flip.
+  const minuteNowMs = useMinuteNow()
 
   const body = (() => {
     if (homeScreen.status === "loading" || legendary.status === "loading") {
@@ -53,8 +56,7 @@ export function HomeEventsWidget() {
 
     // One instant for both choosing the rows and their countdowns, so a row is never labelled with
     // a clock it was not selected at.
-    const nowMs =
-      homeScreen.status === "ready" ? homeScreen.nowMs : legendary.nowMs
+    const nowMs = homeScreen.status === "ready" ? homeScreen.nowMs : minuteNowMs
     const rows = selectHomeEventRows({
       homeScreen: homeScreen.status === "ready" ? homeScreen : null,
       legendary:

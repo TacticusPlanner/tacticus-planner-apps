@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useState } from "react"
+import { lazy, Suspense, useCallback, useEffect, useState } from "react"
 import { useLocation } from "react-router"
 import { useTranslation } from "react-i18next"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
@@ -142,10 +142,11 @@ function ShellContent({
   } = useDesktopMenuState()
   const { pathname, search } = useLocation()
   const { getEntryPath } = useSectionEntryPath(visibleItems, pathname)
-  const launchCreateGoal = (prefill?: CreateGoalPrefill) => {
+  // Stable, so CreateGoalLauncherProvider's value does not change on every shell render.
+  const launchCreateGoal = useCallback((prefill?: CreateGoalPrefill) => {
     setCreatePrefill(prefill)
     setCreateOpen(true)
-  }
+  }, [])
   const handleCreateOpenChange = (open: boolean) => {
     setCreateOpen(open)
     if (!open) setCreatePrefill(undefined)

@@ -9,6 +9,7 @@ import {
   type GoalAttainment,
 } from "./goal-attainment"
 import { useGoalsFor } from "./use-goals-for"
+import { useStableIds } from "../shared/use-stable-ids"
 import { chunkOrUndefined, readyData } from "../shared/read-data"
 
 export type GoalAttainmentState = {
@@ -27,8 +28,9 @@ export type GoalAttainmentState = {
  * sync, which refreshes the shared read cache). A never-synced chunk is ready with `undefined`.
  */
 export function useGoalAttainmentState(
-  goalIds: readonly string[]
+  requestedGoalIds: readonly string[]
 ): GoalAttainmentState {
+  const goalIds = useStableIds(requestedGoalIds)
   const goals = useGoalsFor(goalIds)
   const charactersRead = usePlayerChunk("characters", chunkOrUndefined)
   const mowsRead = usePlayerChunk("mows", chunkOrUndefined)
@@ -54,32 +56,42 @@ export function useGoalAttainmentState(
     [playerMows]
   )
 
-  const result = new Map<string, GoalAttainment>()
-  goalIds.forEach((goalId) => {
-    const detail = goals.goalsById.get(goalId)
-    if (!detail) {
-      result.set(goalId, UNKNOWN)
-      return
-    }
-    const unitId = detail.entityId as UnitId
-    result.set(
-      goalId,
-      computeGoalAttainment({
-        detail,
-        playerCharacter: playerCharacterById.get(unitId),
-        playerMow: playerMowById.get(unitId),
-        inventoryUpgrades,
-        inventoryItems,
-      })
-    )
-  })
+  const byGoalId = useMemo(() => {
+    const result = new Map<string, GoalAttainment>()
+    goalIds.forEach((goalId) => {
+      const detail = goals.goalsById.get(goalId)
+      if (!detail) {
+        result.set(goalId, UNKNOWN)
+        return
+      }
+      const unitId = detail.entityId as UnitId
+      result.set(
+        goalId,
+        computeGoalAttainment({
+          detail,
+          playerCharacter: playerCharacterById.get(unitId),
+          playerMow: playerMowById.get(unitId),
+          inventoryUpgrades,
+          inventoryItems,
+        })
+      )
+    })
+    return result
+  }, [
+    goalIds,
+    goals.goalsById,
+    playerCharacterById,
+    playerMowById,
+    inventoryUpgrades,
+    inventoryItems,
+  ])
   // A failed read stays pending, as it did before reads reported errors.
   const pending =
     goals.loading ||
     [charactersRead, mowsRead, upgradesRead, itemsRead].some(
       (read) => read.status !== "ready"
     )
-  return { byGoalId: result, pending }
+  return { byGoalId, pending }
 }
 
 /** {@link useGoalAttainmentState}'s per-goal map alone, for callers that don't gate on loading. */

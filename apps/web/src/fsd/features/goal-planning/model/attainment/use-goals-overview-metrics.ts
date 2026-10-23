@@ -1,3 +1,4 @@
+import { useMemo } from "react"
 import type { UnitId } from "@workspace/game-domain"
 
 import { usePlayerChunk } from "@/shared/local-data"
@@ -17,6 +18,7 @@ import type {
   AbilityMaterials,
   ResourceNeed,
 } from "@/features/goal-farming/@x/goal-planning"
+import { useStableIds } from "../shared/use-stable-ids"
 import { useStableMap } from "../shared/use-stable-map"
 import { useGoalsFor } from "./use-goals-for"
 import { withStandaloneAvailable } from "../insights/plan-ability-materials"
@@ -68,7 +70,7 @@ const UNKNOWN_METRICS: GoalOverviewMetrics = {
  * call sites, some shared inputs re-fetched from the same TanStack Query cache (no extra network cost).
  */
 function useComputedGoalsOverviewMetrics(
-  goalIds: readonly string[],
+  requestedGoalIds: readonly string[],
   /** The per-goal plan estimates (`usePlanInsights`), when the caller has them — folded into
    *  `blockers` as an `EstimateBlocked` reason. Omitted where no plan run is available. */
   estimatesByGoalId?: ReadonlyMap<string, EstimateOutcome>,
@@ -98,15 +100,9 @@ function useComputedGoalsOverviewMetrics(
   // Every goal comes from the goals list (no per-goal read). Prerequisite goals (plan §4's "a
   // prerequisite goal has not been reached") can be outside `goalIds` (a different tab, a different
   // project) — they are in the same map, so their own attainment is known wherever they sit.
+  const goalIds = useStableIds(requestedGoalIds)
   const goals = useGoalsFor(goalIds)
-  const details = goalIds.map((goalId) => goals.goalsById.get(goalId))
-  const prerequisiteGoals = [...goals.goalsById.values()].filter(
-    (goal) => goal.goalType === "Ascension" || goal.goalType === "Unlock"
-  )
   const prerequisiteGoalsReady = !goals.loading
-  const dependencyGoalIds = [
-    ...new Set(details.flatMap((detail) => detail?.dependsOn ?? [])),
-  ]
 
   const playerCharacters = readyData(
     usePlayerChunk("characters", chunkOrUndefined)
@@ -139,170 +135,210 @@ function useComputedGoalsOverviewMetrics(
     !catalogLoading &&
     !!(mowsById && ascensionCostsById && unlockShardCostsById)
 
-  const dependencyReachedById = new Map<string, boolean>()
-  const dependencyLabelById = new Map<string, PrerequisiteGoalLabel>()
-  dependencyGoalIds.forEach((dependencyGoalId) => {
-    const dependencyDetail = goals.goalsById.get(dependencyGoalId)
-    if (!dependencyDetail) return
-    const dependencyUnitId = dependencyDetail.entityId as UnitId
-    dependencyLabelById.set(dependencyGoalId, {
-      unitName: getEntityName(
-        dependencyDetail.entityType,
-        dependencyDetail.entityId
-      ),
-      goalType: dependencyDetail.goalType,
+  // Everything below is pure in the reads above: memoised so a re-render that changes none of them
+  // (a toggle elsewhere on the page, a sync progress tick) skips the per-goal resource maths.
+  return useMemo(() => {
+    const details = goalIds.map((goalId) => goals.goalsById.get(goalId))
+    const prerequisiteGoals = [...goals.goalsById.values()].filter(
+      (goal) => goal.goalType === "Ascension" || goal.goalType === "Unlock"
+    )
+    const dependencyGoalIds = [
+      ...new Set(details.flatMap((detail) => detail?.dependsOn ?? [])),
+    ]
+    const dependencyReachedById = new Map<string, boolean>()
+    const dependencyLabelById = new Map<string, PrerequisiteGoalLabel>()
+    dependencyGoalIds.forEach((dependencyGoalId) => {
+      const dependencyDetail = goals.goalsById.get(dependencyGoalId)
+      if (!dependencyDetail) return
+      const dependencyUnitId = dependencyDetail.entityId as UnitId
+      dependencyLabelById.set(dependencyGoalId, {
+        unitName: getEntityName(
+          dependencyDetail.entityType,
+          dependencyDetail.entityId
+        ),
+        goalType: dependencyDetail.goalType,
+      })
+      dependencyReachedById.set(
+        dependencyGoalId,
+        computeGoalAttainment({
+          detail: dependencyDetail,
+          playerCharacter: playerCharacterById.get(dependencyUnitId),
+          playerMow: playerMowById.get(dependencyUnitId),
+          inventoryUpgrades,
+          inventoryItems,
+        }).reached
+      )
     })
-    dependencyReachedById.set(
-      dependencyGoalId,
-      computeGoalAttainment({
-        detail: dependencyDetail,
-        playerCharacter: playerCharacterById.get(dependencyUnitId),
-        playerMow: playerMowById.get(dependencyUnitId),
+
+    const result = new Map<string, GoalOverviewMetrics>()
+    goalIds.forEach((goalId, index) => {
+      const detail = details[index]
+      if (!detail) {
+        result.set(goalId, UNKNOWN_METRICS)
+        return
+      }
+      const unitId = detail.entityId as UnitId
+      const playerCharacter = playerCharacterById.get(unitId)
+      const playerMow = playerMowById.get(unitId)
+      const inventoryShard = inventoryShardByEntity.get(detail.entityId)
+      const playerUnit =
+        detail.entityType === "Mow" ? playerMow : playerCharacter
+      // Distinguishes "roster not loaded yet" from "loaded and this unit just isn't in it" — the split
+      // the missing-Unlock reason and the narrowed player-data-unavailable reason both need (see
+      // `implicit-prerequisite-blockers.ts` and `goal-attainment.ts#isPlayerDataUnavailable`).
+      const rosterLoaded =
+        detail.entityType === "Mow"
+          ? playerMows !== undefined
+          : playerCharacters !== undefined
+
+      const attainment = computeGoalAttainment({
+        detail,
+        playerCharacter,
+        playerMow,
         inventoryUpgrades,
         inventoryItems,
-      }).reached
-    )
-  })
+      })
 
-  const result = new Map<string, GoalOverviewMetrics>()
-  goalIds.forEach((goalId, index) => {
-    const detail = details[index]
-    if (!detail) {
-      result.set(goalId, UNKNOWN_METRICS)
-      return
-    }
-    const unitId = detail.entityId as UnitId
-    const playerCharacter = playerCharacterById.get(unitId)
-    const playerMow = playerMowById.get(unitId)
-    const inventoryShard = inventoryShardByEntity.get(detail.entityId)
-    const playerUnit = detail.entityType === "Mow" ? playerMow : playerCharacter
-    // Distinguishes "roster not loaded yet" from "loaded and this unit just isn't in it" — the split
-    // the missing-Unlock reason and the narrowed player-data-unavailable reason both need (see
-    // `implicit-prerequisite-blockers.ts` and `goal-attainment.ts#isPlayerDataUnavailable`).
-    const rosterLoaded =
-      detail.entityType === "Mow"
-        ? playerMows !== undefined
-        : playerCharacters !== undefined
+      const progress = computeGoalProgress({
+        detail,
+        playerCharacter,
+        playerMow,
+        inventoryUpgrades,
+        inventoryItems,
+        initialRarity: charactersById?.get(detail.entityId)?.initialRarity,
+        unlockShardCostsById: unlockShardCostsById ?? new Map(),
+        inventoryShard,
+        upgradesById,
+      })
 
-    const attainment = computeGoalAttainment({
-      detail,
-      playerCharacter,
-      playerMow,
-      inventoryUpgrades,
-      inventoryItems,
-    })
+      const remainingStandalone = catalogReady
+        ? calculateGoalResourceNeed({
+            detail,
+            character: getCharacter(unitId),
+            characterView: charactersById!.get(detail.entityId),
+            mow: mowsById!.get(detail.entityId),
+            playerCharacter,
+            playerMow,
+            inventoryShard,
+            upgradesById,
+            ascensionCostsById: ascensionCostsById!,
+            unlockShardCostsById: unlockShardCostsById!,
+            mowUpgradeCostsByLevel,
+            characterAbilityCostsByLevel,
+          })
+        : null
 
-    const progress = computeGoalProgress({
-      detail,
-      playerCharacter,
-      playerMow,
-      inventoryUpgrades,
-      inventoryItems,
-      initialRarity: charactersById?.get(detail.entityId)?.initialRarity,
-      unlockShardCostsById: unlockShardCostsById ?? new Map(),
-      inventoryShard,
-      upgradesById,
-    })
-
-    const remainingStandalone = catalogReady
-      ? calculateGoalResourceNeed({
-          detail,
-          character: getCharacter(unitId),
-          characterView: charactersById!.get(detail.entityId),
-          mow: mowsById!.get(detail.entityId),
-          playerCharacter,
-          playerMow,
-          inventoryShard,
-          upgradesById,
-          ascensionCostsById: ascensionCostsById!,
-          unlockShardCostsById: unlockShardCostsById!,
-          mowUpgradeCostsByLevel,
-          characterAbilityCostsByLevel,
-        })
-      : null
-
-    const slots = rankSlotsByGoalId?.get(goalId)
-    const withSlots =
-      remainingStandalone && slots
-        ? {
-            ...remainingStandalone,
-            upgradeSlotsRemaining: slots.allocated,
-            coveredByEarlierGoal: slots.allocated === 0 && slots.standalone > 0,
-          }
-        : remainingStandalone
-    // Plan-wide coverage overrides the standalone ability materials (`null` = fully covered/none left).
-    // A paused Machine of War goal is outside the plan run: its standalone need against the full stock.
-    const standaloneMaterials = withSlots?.abilityMaterials
-    const withMaterials: typeof withSlots =
-      withSlots && abilityMaterialsByGoalId?.has(goalId)
-        ? {
-            ...withSlots,
-            abilityMaterials: abilityMaterialsByGoalId.get(goalId) ?? undefined,
-          }
-        : withSlots &&
-            detail.entityType === "Mow" &&
-            standaloneMaterials &&
-            abilityInventory
+      const slots = rankSlotsByGoalId?.get(goalId)
+      const withSlots =
+        remainingStandalone && slots
+          ? {
+              ...remainingStandalone,
+              upgradeSlotsRemaining: slots.allocated,
+              coveredByEarlierGoal:
+                slots.allocated === 0 && slots.standalone > 0,
+            }
+          : remainingStandalone
+      // Plan-wide coverage overrides the standalone ability materials (`null` = fully covered/none left).
+      // A paused Machine of War goal is outside the plan run: its standalone need against the full stock.
+      const standaloneMaterials = withSlots?.abilityMaterials
+      const withMaterials: typeof withSlots =
+        withSlots && abilityMaterialsByGoalId?.has(goalId)
           ? {
               ...withSlots,
-              abilityMaterials: withStandaloneAvailable(
-                standaloneMaterials,
-                abilityInventory,
-                mowsById?.get(detail.entityId)?.alliance
-              ),
+              abilityMaterials:
+                abilityMaterialsByGoalId.get(goalId) ?? undefined,
             }
-          : withSlots
-    const planNet = planNetByGoalId?.get(goalId)
-    const alliance = (
-      detail.entityType === "Mow" ? mowsById : charactersById
-    )?.get(detail.entityId)?.alliance
-    const remaining = withMaterials
-      ? { ...withMaterials, ...planNet, alliance }
-      : withMaterials
+          : withSlots &&
+              detail.entityType === "Mow" &&
+              standaloneMaterials &&
+              abilityInventory
+            ? {
+                ...withSlots,
+                abilityMaterials: withStandaloneAvailable(
+                  standaloneMaterials,
+                  abilityInventory,
+                  mowsById?.get(detail.entityId)?.alliance
+                ),
+              }
+            : withSlots
+      const planNet = planNetByGoalId?.get(goalId)
+      const alliance = (
+        detail.entityType === "Mow" ? mowsById : charactersById
+      )?.get(detail.entityId)?.alliance
+      const remaining = withMaterials
+        ? { ...withMaterials, ...planNet, alliance }
+        : withMaterials
 
-    const estimateOutcome = estimatesByGoalId?.get(goalId)
-    const blockers = computeGoalBlockers({
-      estimatePartial:
-        estimateOutcome?.status === "Blocked" &&
-        (estimateOutcome.actionableResourceIds?.length ?? 0) > 0,
-      estimateReason:
-        estimateOutcome?.status === "Blocked"
-          ? estimateOutcome.reason
-          : undefined,
-      unreachedPrerequisites: detail.dependsOn
-        .filter(
-          (dependencyGoalId) =>
-            dependencyReachedById.get(dependencyGoalId) === false
-        )
-        .map((dependencyGoalId) => ({
-          goalId: dependencyGoalId,
-          prerequisite: dependencyLabelById.get(dependencyGoalId),
-        })),
-      playerDataUnavailable:
-        catalogReady &&
-        isPlayerDataUnavailable({ attainment, rosterLoaded, playerUnit }),
-      catalogDataUnavailable: !catalogReady,
-      implicitReasons: implicitPrerequisiteBlockers({
-        detail,
-        playerUnit,
-        prerequisiteGoals,
-        ready: prerequisiteGoalsReady && catalogReady && rosterLoaded,
-        unitName: getEntityName(detail.entityType, detail.entityId),
-      }),
-    })
+      const estimateOutcome = estimatesByGoalId?.get(goalId)
+      const blockers = computeGoalBlockers({
+        estimatePartial:
+          estimateOutcome?.status === "Blocked" &&
+          (estimateOutcome.actionableResourceIds?.length ?? 0) > 0,
+        estimateReason:
+          estimateOutcome?.status === "Blocked"
+            ? estimateOutcome.reason
+            : undefined,
+        unreachedPrerequisites: detail.dependsOn
+          .filter(
+            (dependencyGoalId) =>
+              dependencyReachedById.get(dependencyGoalId) === false
+          )
+          .map((dependencyGoalId) => ({
+            goalId: dependencyGoalId,
+            prerequisite: dependencyLabelById.get(dependencyGoalId),
+          })),
+        playerDataUnavailable:
+          catalogReady &&
+          isPlayerDataUnavailable({ attainment, rosterLoaded, playerUnit }),
+        catalogDataUnavailable: !catalogReady,
+        implicitReasons: implicitPrerequisiteBlockers({
+          detail,
+          playerUnit,
+          prerequisiteGoals,
+          ready: prerequisiteGoalsReady && catalogReady && rosterLoaded,
+          unitName: getEntityName(detail.entityType, detail.entityId),
+        }),
+      })
 
-    result.set(goalId, {
-      progress,
-      remaining,
-      blockers,
-      levelRequirement: computeLevelRequirementProgress({
-        detail,
-        playerUnit,
-        chainedFrom: planNet?.levelChainedFrom,
-      }),
+      result.set(goalId, {
+        progress,
+        remaining,
+        blockers,
+        levelRequirement: computeLevelRequirementProgress({
+          detail,
+          playerUnit,
+          chainedFrom: planNet?.levelChainedFrom,
+        }),
+      })
     })
-  })
-  return result
+    return result
+  }, [
+    goalIds,
+    goals.goalsById,
+    prerequisiteGoalsReady,
+    playerCharacters,
+    playerMows,
+    inventoryUpgrades,
+    inventoryItems,
+    abilityInventory,
+    playerCharacterById,
+    playerMowById,
+    inventoryShardByEntity,
+    catalogReady,
+    charactersById,
+    mowsById,
+    upgradesById,
+    ascensionCostsById,
+    unlockShardCostsById,
+    mowUpgradeCostsByLevel,
+    characterAbilityCostsByLevel,
+    getCharacter,
+    getEntityName,
+    estimatesByGoalId,
+    rankSlotsByGoalId,
+    abilityMaterialsByGoalId,
+    planNetByGoalId,
+  ])
 }
 
 const emptyById = new Map<string, never>()
