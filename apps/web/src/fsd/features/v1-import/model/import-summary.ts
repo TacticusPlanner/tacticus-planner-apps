@@ -12,7 +12,7 @@ const SUMMARY_PARTS = [
   "campaignEventProgress",
 ] as const
 
-export type SummaryPartKey = (typeof SUMMARY_PARTS)[number]
+type SummaryPartKey = (typeof SUMMARY_PARTS)[number]
 
 export type ImportSummary = {
   /** Goals created, prerequisites included. */
