@@ -1,7 +1,7 @@
 import type { ReactElement } from "react"
 import { createMemoryRouter, RouterProvider } from "react-router"
 import { describe, expect, it, vi } from "vitest"
-import { axe } from "vitest-axe"
+import axe from "axe-core"
 
 import { TourProvider } from "@/shared/tour"
 import { render, screen } from "@/test/render"
@@ -62,7 +62,7 @@ describe("shell accessibility", () => {
         visibleItems={navItems}
       />
     )
-    expect((await axe(container)).violations).toEqual([])
+    expect((await axe.run(container)).violations).toEqual([])
   })
 
   it("mobile shell has no axe violations", async () => {
@@ -77,6 +77,6 @@ describe("shell accessibility", () => {
         visibleItems={navItems}
       />
     )
-    expect((await axe(container)).violations).toEqual([])
+    expect((await axe.run(container)).violations).toEqual([])
   })
 })
