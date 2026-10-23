@@ -43,10 +43,10 @@ With none of these, it SHALL show the empty state "No Quest Event is running or 
 
 The tab SHALL read the `quest-events` record whose `featuredCharacterId` equals the occurrence's `featuredCharacterId`. When the dataset is loading the battle list SHALL show a skeleton; when it fails, an error with Retry; when no record matches, the header SHALL still render and the battle area SHALL say "No battle data for this quest yet".
 
-#### Scenario: Cezare has no data
+#### Scenario: Older quest without data
 
-- **GIVEN** the Cezare occurrence (`bloodTerminator`) is selected and `quest-events` has no `bloodTerminator` record
-- **THEN** the header shows Cezare, and the battle area says "No battle data for this quest yet"
+- **GIVEN** an occurrence for Sekhetar Robot (`thousSekhetar`) is selected and `quest-events` has no `thousSekhetar` record
+- **THEN** the header shows Sekhetar Robot, and the battle area says "No battle data for this quest yet"
 
 ### Requirement: A picker browses every quest in the catalog
 
