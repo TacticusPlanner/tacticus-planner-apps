@@ -39,7 +39,7 @@ export interface ShopRewardDisplay {
  * A `TFunction` scoped to the namespaces this helper reads. i18next's `TFunction<Ns>` is nominally
  * branded to the first namespace, so a consumer whose page `t` is scoped differently (e.g. the Library
  * browser, first-ns `library`) binds a second `useTranslation(["shops", "characters", "upgrades"])`
- * just for this call — the same pattern as `pages/goals/model/shared/use-goal-catalog.ts`.
+ * just for this call — the same pattern as `features/goal-planning/model/shared/use-goal-catalog.ts`.
  */
 type ShopRewardTranslate = TFunction<
   ["shops", "characters", "upgrades", "equipmentItems"]

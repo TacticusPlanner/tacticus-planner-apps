@@ -14,7 +14,7 @@ import {
   AnnotationMarkIcon,
   AnnotationMenu,
   BattleAnnotationMenu,
-} from "@/features/legendary-event-annotations"
+} from "@/features/legendary-event-plan"
 
 import type { ProgressColumn } from "./progress-columns"
 import { progressHeadingId } from "./progress-heading"

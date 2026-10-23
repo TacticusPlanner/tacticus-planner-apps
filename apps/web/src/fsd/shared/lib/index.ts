@@ -27,6 +27,7 @@ export {
 } from "./use-read-state"
 export {
   installGlobalErrorCapture,
+  isMacPlatform,
   reportError,
   safeStorage,
   setErrorReporter,

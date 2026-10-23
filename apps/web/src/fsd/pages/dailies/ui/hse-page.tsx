@@ -20,7 +20,7 @@ import {
   useHseProjection,
 } from "@/features/home-screen-event-points"
 
-import { useHseTeamRecommendations } from "../model/use-hse-team-recommendations"
+import { useHseTeamRecommendations } from "@/features/team-recommendations"
 import { useHseTutorial } from "./hse-page.tutorial"
 import { HseTeamsSection } from "./hse-teams/hse-teams-section"
 

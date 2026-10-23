@@ -28,11 +28,14 @@ vi.mock("@/entities/project", () => ({
     fetchState: { status: "success" },
   }),
 }))
-vi.mock("@/features/goal-order", async (importOriginal) => ({
-  ...(await importOriginal<typeof import("@/features/goal-order")>()),
-  useGoalOrderActions: () => state.order,
-}))
-vi.mock("../../model/goals-data/use-goals", () => ({
+vi.mock(
+  "@/features/goal-planning/model/goal-order/use-goal-order-actions",
+  async (importOriginal) => ({
+    ...(await importOriginal<typeof import("@/features/goal-planning")>()),
+    useGoalOrderActions: () => state.order,
+  })
+)
+vi.mock("@/features/goal-planning/model/goals-data/use-goals", () => ({
   useGoals: (options?: { archived?: boolean }) => ({
     fetchState: {
       status: "success",
@@ -42,22 +45,31 @@ vi.mock("../../model/goals-data/use-goals", () => ({
     retry: vi.fn(),
   }),
 }))
-vi.mock("../../model/attainment/use-goal-attainment", () => ({
-  useGoalAttainmentState: () => ({ byGoalId: new Map(), pending: false }),
-}))
-vi.mock("../../model/attainment/use-goals-overview-metrics", () => ({
-  useGoalsOverviewMetrics: () => new Map(),
-}))
-vi.mock("../../model/goals-data/use-goal-actions", () => ({
+vi.mock(
+  "@/features/goal-planning/model/attainment/use-goal-attainment",
+  () => ({
+    useGoalAttainmentState: () => ({ byGoalId: new Map(), pending: false }),
+  })
+)
+vi.mock(
+  "@/features/goal-planning/model/attainment/use-goals-overview-metrics",
+  () => ({
+    useGoalsOverviewMetrics: () => new Map(),
+  })
+)
+vi.mock("@/features/goal-planning/model/goals-data/use-goal-actions", () => ({
   useGoalActions: () => ({}),
 }))
-vi.mock("../../model/shared/use-goal-catalog", () => ({
+vi.mock("@/features/goal-planning/model/shared/use-goal-catalog", () => ({
   useGoalCatalog: () => ({ getEntityName: (_type: string, id: string) => id }),
 }))
-vi.mock("../../model/goal-creation-form/create-goal-launcher-context", () => ({
-  useCreateGoalLauncher: () => vi.fn(),
-}))
-vi.mock("../../model/insights/use-plan-insights", () => ({
+vi.mock(
+  "@/features/goal-create/model/goal-creation-form/create-goal-launcher-context",
+  () => ({
+    useCreateGoalLauncher: () => vi.fn(),
+  })
+)
+vi.mock("@/features/goal-planning/model/insights/use-plan-insights", () => ({
   usePlanInsights: () => ({
     loading: false,
     isError: state.insightsError,
@@ -79,10 +91,16 @@ vi.mock("@/features/project-management", () => ({
 vi.mock("./goals-project-scope", () => ({
   GoalsProjectScope: () => null,
 }))
-vi.mock("../../model/projects/use-goals-project-scope", () => ({
-  useGoalsProjectScope: () => ({ projectId: undefined, setProjectId: vi.fn() }),
-}))
-vi.mock("../goal-edit/goal-edit-dialog", () => ({
+vi.mock(
+  "@/features/goal-planning/model/projects/use-goals-project-scope",
+  () => ({
+    useGoalsProjectScope: () => ({
+      projectId: undefined,
+      setProjectId: vi.fn(),
+    }),
+  })
+)
+vi.mock("@/features/goal-create/ui/goal-edit/goal-edit-dialog", () => ({
   GoalEditDialog: () => null,
 }))
 vi.mock("@/entities/planning-setting", () => ({

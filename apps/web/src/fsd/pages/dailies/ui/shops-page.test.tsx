@@ -9,7 +9,7 @@ import { ShopsPage } from "./shops-page"
 import type {
   ShopRecommendationSectionView,
   ShopRecommendationsViewModel,
-} from "../model/use-shop-recommendations"
+} from "@/features/shop-recommendations"
 
 const useShopRecommendations = vi.fn<() => ShopRecommendationsViewModel>()
 const { useIsMobileMock } = vi.hoisted(() => ({
@@ -23,9 +23,12 @@ vi.mock("react-i18next", () => ({
       values ? `${key}:${JSON.stringify(values)}` : key,
   }),
 }))
-vi.mock("../model/use-shop-recommendations", () => ({
-  useShopRecommendations: () => useShopRecommendations(),
-}))
+vi.mock(
+  "@/features/shop-recommendations/model/use-shop-recommendations",
+  () => ({
+    useShopRecommendations: () => useShopRecommendations(),
+  })
+)
 vi.mock("@/shared/tour", () => ({ useTourPageSteps: () => {} }))
 vi.mock("@workspace/ui/hooks/use-mobile", () => ({
   useIsMobile: () => useIsMobileMock(),

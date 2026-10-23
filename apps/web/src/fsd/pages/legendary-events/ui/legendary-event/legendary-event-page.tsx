@@ -16,8 +16,10 @@ import {
   useLegendaryEventSyncTimes,
   useLegendaryEventUnits,
 } from "@/entities/legendary-event"
-import { useAnnotations } from "@/features/legendary-event-annotations"
-import { useLegendaryEventPlan } from "@/features/legendary-event-teams"
+import {
+  useAnnotations,
+  useLegendaryEventPlan,
+} from "@/features/legendary-event-plan"
 import {
   useTokenMissionsSource,
   useTokenPlan,

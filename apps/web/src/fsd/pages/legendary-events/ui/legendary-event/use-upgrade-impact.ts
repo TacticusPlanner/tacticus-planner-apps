@@ -9,7 +9,7 @@ import {
   type LegendaryEventUnit,
 } from "@/entities/legendary-event"
 import { buildUpgradeImpactState } from "@/features/legendary-event-goals"
-import { laneTeams } from "@/features/legendary-event-teams"
+import { laneTeams } from "@/features/legendary-event-plan"
 import { useUnitName } from "@/shared/unit-name"
 
 import {

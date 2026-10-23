@@ -45,15 +45,18 @@ vi.mock(
     return { useHseProjection: useFixtureHseProjection }
   }
 )
-vi.mock("../model/use-hse-team-recommendations", async () => {
-  const { fixtureHseTeams, hseTeamsFixtureRead } =
-    await import("@/test/fixtures/hse-teams")
-  return {
-    useHseTeamRecommendations: (
-      ...[instance, points]: Parameters<typeof fixtureHseTeams>
-    ) => fixtureHseTeams(instance, points, hseTeamsFixtureRead()),
+vi.mock(
+  "@/features/team-recommendations/model/use-hse-team-recommendations",
+  async () => {
+    const { fixtureHseTeams, hseTeamsFixtureRead } =
+      await import("@/test/fixtures/hse-teams")
+    return {
+      useHseTeamRecommendations: (
+        ...[instance, points]: Parameters<typeof fixtureHseTeams>
+      ) => fixtureHseTeams(instance, points, hseTeamsFixtureRead()),
+    }
   }
-})
+)
 
 const lastSteps = () => register.mock.lastCall?.[0] as Steps
 /** The steps the tour provider runs at the current viewport (mobile falls back to desktop). */

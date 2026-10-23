@@ -84,10 +84,13 @@ vi.mock("@/features/daily-raids", async (importOriginal) => {
     }),
   }
 })
-vi.mock("../model/use-shop-recommendations", () => ({
-  useShopRecommendations: (projectId: string | undefined) =>
-    useShopRecommendations(projectId),
-}))
+vi.mock(
+  "@/features/shop-recommendations/model/use-shop-recommendations",
+  () => ({
+    useShopRecommendations: (projectId: string | undefined) =>
+      useShopRecommendations(projectId),
+  })
+)
 vi.mock("@/shared/tour", () => ({ useTourPageSteps: vi.fn() }))
 vi.mock("@/features/guild-access", () => ({
   GuildAccessBoundary: () => <div data-testid="guild-unregistered" />,

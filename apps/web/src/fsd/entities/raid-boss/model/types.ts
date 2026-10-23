@@ -6,7 +6,7 @@ import type {
 
 // Structural re-exports so page/feature code depends on the entity slice, not the package directly.
 export type RaidBoss = GameCatalogRaidBoss
-export type RaidBossSeason = GameCatalogRaidBossSeason
+type RaidBossSeason = GameCatalogRaidBossSeason
 export type RaidBossesPayload = GameCatalogRaidBosses
 export type RaidBossStatStep = RaidBoss["statProgression"][number]
 export type RaidBossEncounter =
@@ -27,7 +27,7 @@ export type ResolvedRaidBossEncounterLocation = RaidBossEncounterLocation & {
   setEncounters: RaidBossEncounter[]
 }
 
-export type RaidBossKind = RaidBoss["kind"]
+type RaidBossKind = RaidBoss["kind"]
 
 /** A boss/prime with its resolved display label, ready for the list and detail views. */
 export type RaidBossListItem = {
@@ -41,7 +41,7 @@ export type RaidBossListItem = {
 }
 
 /** One prime a boss is fought alongside, with its label and scaled modifier list. */
-export type RaidBossPrimeModifiers = {
+type RaidBossPrimeModifiers = {
   unitSetId: string
   name: string
   modifiers: RaidBossEncounterModifier[]
@@ -57,7 +57,7 @@ export type ModifierContext =
   | { kind: "none" }
 
 /** One prime's panel in the adjusted-stats view: its modifier schedule rescaled to its own HP. */
-export type AdjustedPrimePanel = {
+type AdjustedPrimePanel = {
   /** Stable per-panel id — the containing set's `encounterIndex`; the two crystals of a set can
    *  reference the same prime unit-set id, so that cannot be the key. */
   id: string

@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from "vitest"
 import userEvent from "@testing-library/user-event"
 import { render, screen } from "@/test/render"
 
-import type { GoalRow } from "../../model/shared/types"
+import type { GoalRow } from "@/features/goal-planning"
 import { GoalsBulkActions } from ".//goals-bulk-actions"
 
 const row = (goalId: string, status: GoalRow["status"]): GoalRow => ({

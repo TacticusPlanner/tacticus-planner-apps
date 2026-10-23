@@ -5,7 +5,7 @@ import { Progress } from "@workspace/ui/components/progress"
 import { Spinner } from "@workspace/ui/components/spinner"
 import { useMsal } from "@azure/msal-react"
 
-import { useGameCatalogStatus } from "@/app/providers"
+import { useGameCatalogStatus } from "@/shared/game-catalog-status"
 import { signOut, useActiveAccountId } from "@/shared/auth"
 
 /**

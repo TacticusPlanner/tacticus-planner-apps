@@ -67,9 +67,3 @@ export function useGuildRaidMetaCatalog(): GuildRaidMetaCatalog {
     }
   }, [read, t])
 }
-
-/** Backwards-compatible presentation-only access for existing consumers. */
-export function useGuildRaidMetaPresentation() {
-  const catalog = useGuildRaidMetaCatalog()
-  return catalog.status === "ready" ? catalog.presentation : null
-}

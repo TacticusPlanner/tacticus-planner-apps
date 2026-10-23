@@ -33,8 +33,8 @@ vi.mock("@/entities/goal", async (importOriginal) => ({
 /** A status change answers with the changed goals and the order revision. */
 const statusResponse = { goals: [], orderRevision: 0 }
 
-import { useGoalActions } from "../../model/goals-data/use-goal-actions"
-import type { GoalRow } from "../../model/shared/types"
+import { useGoalActions } from "@/features/goal-planning"
+import type { GoalRow } from "@/features/goal-planning"
 import type { CascadeContext } from "./goal-row-utils"
 import { GoalRowActions } from ".//goal-row-actions"
 

@@ -14,13 +14,13 @@ import enDailies from "../../../../../../public/locales/en/dailies.json"
 import enNpcs from "../../../../../../public/locales/en/npcs.json"
 import enTeamRecs from "../../../../../../public/locales/en/teamRecs.json"
 
-import { mapRosterCharacter } from "../../model/roster-character"
-import { buildHseTeamRecommendations } from "../../model/hse-team-recommendations"
-import { anyUnitPowerFixture } from "../../model/team-power.fixtures"
-import type {
-  HseTeamCatalog,
-  HseTeamsViewModel,
-} from "../../model/hse-team-recommendations.types"
+import {
+  buildHseTeamRecommendations,
+  mapRosterCharacter,
+  type HseTeamCatalog,
+  type HseTeamsViewModel,
+} from "@/features/team-recommendations"
+import { anyUnitPowerFixture } from "@/test/fixtures/team-power"
 import { HseTeamsSection } from "./hse-teams-section"
 
 let i18n: I18n

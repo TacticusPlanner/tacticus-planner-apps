@@ -7,9 +7,6 @@ import { apiIssue, type ApiSchemas } from "@/shared/api"
 // `toLegendaryEventPlan` checks at runtime. Request and 409 bodies carry the `Dto` suffix.
 type S = ApiSchemas
 
-/** How a run's clear depth was set. This client only ever writes `manual` (Stage 2). */
-export type LegendaryEventDepthSource = S["LegendaryEventDepthSource"]
-
 /** An event run (1-3): the catalog has no run number, the client takes it from synced progress. */
 export type LegendaryEventRun = 1 | 2 | 3
 

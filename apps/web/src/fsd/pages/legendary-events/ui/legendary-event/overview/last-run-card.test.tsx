@@ -10,8 +10,8 @@ import {
   type LegendaryEventLifecycleState,
   type ReadState,
   type RosterSnapshot,
-  type RunHistory,
 } from "@/entities/legendary-event"
+import type { RunHistory } from "../../../lib/run-history"
 import {
   rosterAfterRun1,
   utharRun1Record,

@@ -18,7 +18,7 @@ import { cn } from "@workspace/ui/lib/utils"
 import { ProgressionBadge, RankBadge } from "@/shared/ui"
 
 import type { ResourceNeed } from "@/features/goal-farming"
-import type { GoalProgress } from "../../model/attainment/goal-progress"
+import type { GoalProgress } from "@/features/goal-planning"
 import { reachableCeilingLabel } from "./ceiling-marker"
 import {
   formatGenericRemainingText,

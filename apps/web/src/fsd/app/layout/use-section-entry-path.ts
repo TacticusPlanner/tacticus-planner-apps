@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 
-import { findActiveChild } from "./find-active-child"
+import { findActiveChild, matchesNavPath } from "./find-active-child"
 import type { NavItem } from "./nav-items"
 
 const STORAGE_KEY = "nav.lastVisitedChild"
@@ -27,9 +27,7 @@ function writeStoredEntries(entries: Record<string, string>) {
 }
 
 function findActiveSection(navItems: NavItem[], pathname: string) {
-  return navItems.find(
-    (item) => pathname === item.path || pathname.startsWith(item.path + "/")
-  )
+  return navItems.find((item) => matchesNavPath(pathname, item.path))
 }
 
 /**

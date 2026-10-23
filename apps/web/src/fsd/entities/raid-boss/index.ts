@@ -1,17 +1,11 @@
 export type {
   RaidBoss,
-  RaidBossSeason,
   RaidBossesPayload,
   RaidBossStatStep,
-  RaidBossEncounter,
   RaidBossEncounterModifier,
-  RaidBossEncounterLocation,
   ResolvedRaidBossEncounterLocation,
-  RaidBossKind,
   RaidBossListItem,
-  RaidBossPrimeModifiers,
   ModifierContext,
-  AdjustedPrimePanel,
   AdjustedStatsView,
 } from "./model/types"
 export {
@@ -23,11 +17,7 @@ export {
   type RaidBossSeasonBoard,
 } from "./lib/season-reference"
 export { useRaidBossLabels } from "./lib/use-raid-boss-labels"
-export {
-  useRaidBossText,
-  type RaidBossAbilityTextEntry,
-  type RaidBossTraitTextEntry,
-} from "./lib/use-raid-boss-text"
+export { useRaidBossText } from "./lib/use-raid-boss-text"
 export { RaidBossPortrait } from "./ui/raid-boss-portrait"
 export {
   describeModifier,
@@ -47,10 +37,7 @@ export {
   fieldNpcIdsForStep,
   maxKnownProgressionIndex,
 } from "./lib/encounters"
-export {
-  buildRaidBossRosterGroups,
-  type RaidBossRosterGroup,
-} from "./lib/roster-groups"
+export { buildRaidBossRosterGroups } from "./lib/roster-groups"
 export {
   computeAbilityAdjustments,
   applyAbilityVariableAdjustments,

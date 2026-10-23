@@ -10,7 +10,7 @@ vi.mock("@/shared/tour", () => ({
 }))
 
 // The dialog has its own tests; here only which goal the page hands it and how it closes matter.
-vi.mock("../goal-edit/goal-edit-dialog", () => ({
+vi.mock("@/features/goal-create/ui/goal-edit/goal-edit-dialog", () => ({
   GoalEditDialog: ({
     goalId,
     onOpenChange,
@@ -223,22 +223,25 @@ const insightsResult = vi.hoisted(() => ({
 }))
 insightsResult.value = insightsResult.emptyResult
 
-vi.mock("../../model/insights/use-plan-insights", () => ({
+vi.mock("@/features/goal-planning/model/insights/use-plan-insights", () => ({
   usePlanInsights: () => ({
     loading: false,
     result: insightsResult.value,
   }),
 }))
-vi.mock("@/features/goal-order", async (importOriginal) => ({
-  ...(await importOriginal<typeof import("@/features/goal-order")>()),
-  useGoalOrderActions: () => ({
-    moveGoal: vi.fn(),
-    pending: false,
-    conflict: null,
-    retry: vi.fn(),
-    dismissConflict: vi.fn(),
-  }),
-}))
+vi.mock(
+  "@/features/goal-planning/model/goal-order/use-goal-order-actions",
+  async (importOriginal) => ({
+    ...(await importOriginal<typeof import("@/features/goal-planning")>()),
+    useGoalOrderActions: () => ({
+      moveGoal: vi.fn(),
+      pending: false,
+      conflict: null,
+      retry: vi.fn(),
+      dismissConflict: vi.fn(),
+    }),
+  })
+)
 
 const mobile = vi.hoisted(() => ({ value: false }))
 
@@ -249,7 +252,7 @@ vi.mock("@workspace/ui/hooks/use-mobile", () => ({
 import { MemoryRouter, useLocation, useNavigate } from "react-router"
 
 import { GoalsPage } from ".//goals-page"
-import { CreateGoalLauncherProvider } from "../../model/goal-creation-form/create-goal-launcher"
+import { CreateGoalLauncherProvider } from "@/features/goal-create"
 
 const onLaunch = vi.fn()
 

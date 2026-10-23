@@ -1,8 +1,5 @@
-/* eslint-disable react-refresh/only-export-components */
 import {
-  createContext,
   useCallback,
-  useContext,
   useEffect,
   useState,
   useSyncExternalStore,
@@ -16,6 +13,10 @@ import {
   type GameCatalogSyncResult,
 } from "@workspace/game-catalog"
 
+import {
+  GameCatalogContext,
+  type GameCatalogStatus,
+} from "@/shared/game-catalog-status"
 import { reportError } from "@/shared/lib"
 import {
   createProgressStore,
@@ -65,21 +66,6 @@ function fetchCatalogSync(
     retry: false,
   })
 }
-
-export type GameCatalogStatus = "idle" | "syncing" | "ready" | "stale" | "error"
-
-export type GameCatalogContextValue = {
-  status: GameCatalogStatus
-  progress: GameCatalogSyncProgress | null
-  gameVersion: string | null
-  firstTime: boolean
-  error: string | null
-  retry: () => void
-}
-
-const GameCatalogContext = createContext<GameCatalogContextValue | undefined>(
-  undefined
-)
 
 export type GameCatalogProviderProps = {
   baseUrl: string
@@ -156,16 +142,4 @@ export function GameCatalogProvider({
       {children}
     </GameCatalogContext.Provider>
   )
-}
-
-export function useGameCatalogStatus() {
-  const context = useContext(GameCatalogContext)
-
-  if (!context) {
-    throw new Error(
-      "useGameCatalogStatus must be used within GameCatalogProvider."
-    )
-  }
-
-  return context
 }

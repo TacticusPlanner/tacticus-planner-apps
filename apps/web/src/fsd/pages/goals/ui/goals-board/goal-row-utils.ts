@@ -2,14 +2,14 @@ import type { SyntheticEvent } from "react"
 
 import type { GoalStatus } from "@/entities/goal"
 import { normalizeXpBookRarity } from "@/entities/planning-setting"
-import type { GoalOverviewMetrics } from "../../model/attainment/use-goals-overview-metrics"
+import type { GoalOverviewMetrics } from "@/features/goal-planning"
 import {
   levelBookAvailability,
   type EstimateOutcome,
 } from "@/features/goal-farming"
 import type { XpBookFigure } from "../shared/level-requirement-display"
-import type { GoalRow } from "../../model/shared/types"
-import type { useGoalActions } from "../../model/goals-data/use-goal-actions"
+import type { GoalRow } from "@/features/goal-planning"
+import type { useGoalActions } from "@/features/goal-planning"
 import type { ProjectRemoval } from "./project-removal-flow"
 
 /** The data a prerequisite pause/resume cascade needs about every goal currently in view, not just

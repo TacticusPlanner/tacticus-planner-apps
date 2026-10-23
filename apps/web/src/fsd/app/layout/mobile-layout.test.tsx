@@ -29,7 +29,9 @@ vi.mock("@/shared/auth", () => ({
 vi.mock("@/shared/config", () => ({ isUiKitEnabled: true }))
 
 vi.mock("../providers/auth-control", () => ({ AuthControl: () => null }))
-vi.mock("../providers/theme-switcher", () => ({ ThemeSwitcher: () => null }))
+vi.mock("@/widgets/account-menu/ui/theme-switcher", () => ({
+  ThemeSwitcher: () => null,
+}))
 const { startTour } = vi.hoisted(() => ({ startTour: vi.fn() }))
 vi.mock("@/shared/tour", () => ({
   TourButton: () => null,

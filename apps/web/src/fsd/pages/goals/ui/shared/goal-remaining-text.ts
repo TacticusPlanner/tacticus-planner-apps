@@ -1,7 +1,7 @@
 import type { TFunction } from "i18next"
 
 import type { ResourceNeed } from "@/features/goal-farming"
-import type { GoalProgress } from "../../model/attainment/goal-progress"
+import type { GoalProgress } from "@/features/goal-planning"
 
 /** The generic material/shard/orb/energy breakdown `formatGoalRemainingText` falls back to for a
  *  goal kind with no dedicated formatter (Ascension, Ability, Upgrade) — unchanged from the

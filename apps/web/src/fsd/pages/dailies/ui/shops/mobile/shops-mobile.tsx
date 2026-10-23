@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next"
 
-import type { ShopRecommendationSectionView } from "../../../model/use-shop-recommendations"
+import type { ShopRecommendationSectionView } from "@/features/shop-recommendations"
 import { ShopRecommendationCard } from "../shop-recommendation-card"
 
 /**

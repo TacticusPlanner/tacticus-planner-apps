@@ -25,7 +25,7 @@ vi.mock("@/shared/auth", () => ({
   loginRequest: { scopes: ["api"] },
   useSilentSignInStatus: () => "idle",
 }))
-vi.mock("../providers/player-data-sync-button", () => ({
+vi.mock("@/widgets/account-menu/ui/player-data-sync-button", () => ({
   PlayerDataSyncButton: () => null,
 }))
 vi.mock("@/features/player-data-sync", () => ({
@@ -37,7 +37,9 @@ vi.mock("@/features/player-data-sync", () => ({
   }),
 }))
 vi.mock("../providers/auth-control", () => ({ AuthControl: () => null }))
-vi.mock("../providers/theme-switcher", () => ({ ThemeSwitcher: () => null }))
+vi.mock("@/widgets/account-menu/ui/theme-switcher", () => ({
+  ThemeSwitcher: () => null,
+}))
 vi.mock("../providers/userjot-board-link", () => ({
   UserJotBoardLink: () => null,
 }))

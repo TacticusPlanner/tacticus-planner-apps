@@ -1,5 +1,4 @@
 export {
-  getMyGuild,
   purgeGuild,
   registerGuild,
   syncMyGuild,

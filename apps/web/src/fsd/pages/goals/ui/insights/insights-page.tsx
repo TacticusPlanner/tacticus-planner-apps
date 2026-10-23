@@ -11,7 +11,7 @@ import { Skeleton } from "@workspace/ui/components/skeleton"
 
 import { useGlobalGoalPlan } from "@/entities/goal"
 import { ProjectSelect, useProjects } from "@/entities/project"
-import { usePlanInsights } from "../../model/insights/use-plan-insights"
+import { usePlanInsights } from "@/features/goal-planning"
 import { InsightsEvents } from ".//insights-events"
 import { InsightsSummary } from ".//insights-summary"
 

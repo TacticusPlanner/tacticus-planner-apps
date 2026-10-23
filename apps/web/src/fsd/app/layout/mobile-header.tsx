@@ -8,6 +8,7 @@ import {
 } from "@workspace/ui/components/popover"
 import { useMsal } from "@azure/msal-react"
 
+import { GuestPreferencesCard } from "@/widgets/account-menu"
 import { loginRequest, useSilentSignInStatus } from "@/shared/auth"
 import {
   PageTourButton,
@@ -16,7 +17,6 @@ import {
 } from "@/shared/tour"
 
 import { AuthControl } from "../providers/auth-control"
-import { GuestPreferencesCard } from "../providers/guest-account-menu"
 import { AppLogo } from "./app-logo"
 import type { NavItem } from "./nav-items"
 import { SectionTabs } from "./section-tabs"

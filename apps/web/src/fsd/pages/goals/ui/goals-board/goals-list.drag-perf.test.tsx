@@ -39,20 +39,23 @@ vi.mock("../shared/goal-resource-chips", () => ({
   },
 }))
 
-vi.mock("../../model/shared/use-goal-catalog", async (importActual) => {
-  const actual =
-    await importActual<typeof import("../../model/shared/use-goal-catalog")>()
-  return {
-    ...actual,
-    useGoalCatalog: () => {
-      counts.catalog++
-      return actual.useGoalCatalog()
-    },
+vi.mock(
+  "@/features/goal-planning/model/shared/use-goal-catalog",
+  async (importActual) => {
+    const actual =
+      await importActual<typeof import("@/features/goal-planning")>()
+    return {
+      ...actual,
+      useGoalCatalog: () => {
+        counts.catalog++
+        return actual.useGoalCatalog()
+      },
+    }
   }
-})
+)
 
-import type { GoalRow } from "../../model/shared/types"
-import type { useGoalActions } from "../../model/goals-data/use-goal-actions"
+import type { GoalRow } from "@/features/goal-planning"
+import type { useGoalActions } from "@/features/goal-planning"
 import { GoalsList } from ".//goals-list"
 
 const ROWS = 30

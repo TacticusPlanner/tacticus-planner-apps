@@ -12,8 +12,8 @@ import {
 
 import type { GoalStatus } from "@/entities/goal"
 
-import type { useGoalActions } from "../../model/goals-data/use-goal-actions"
-import type { GoalRow } from "../../model/shared/types"
+import type { useGoalActions } from "@/features/goal-planning"
+import type { GoalRow } from "@/features/goal-planning"
 import { DeleteGoalDialog } from ".//delete-goal-dialog"
 import { toggleGoalStatus, type CascadeContext } from "./goal-row-utils"
 import {

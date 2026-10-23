@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from "vitest"
 
 vi.mock("@workspace/ui/hooks/use-mobile", () => ({ useIsMobile: () => false }))
 
-import type { LevelRequirementProgress } from "../../model/attainment/level-requirement-progress"
+import type { LevelRequirementProgress } from "@/features/goal-planning"
 import { LevelRequirementLine } from "./level-requirement-display"
 
 const requirement: LevelRequirementProgress = {

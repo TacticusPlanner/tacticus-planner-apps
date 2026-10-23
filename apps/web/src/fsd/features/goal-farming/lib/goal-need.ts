@@ -30,7 +30,7 @@ import {
 } from "./upgrade-recipe"
 
 // Rank/Ability raw material need-derivation for the Insights plan-wide aggregation
-// (plan-insights-calc.ts) — split out purely for that file's max-lines budget.
+// (plan-insights-calc.ts), shared with goal-requirements.ts and upgrade-goal-need.ts.
 
 type PlayerCharacter = PlayerDataChunkDto<"characters">[number]
 type PlayerMow = PlayerDataChunkDto<"mows">[number]

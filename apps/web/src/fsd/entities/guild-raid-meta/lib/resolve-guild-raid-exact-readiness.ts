@@ -3,8 +3,7 @@ import type {
   GameCatalogGuildRaidMetaRecommendation,
 } from "@workspace/game-catalog"
 
-export type GuildRaidExactReadinessClassification =
-  "ready" | "partial" | "unavailable"
+type GuildRaidExactReadinessClassification = "ready" | "partial" | "unavailable"
 
 type GuildRaidExactReadinessHero = {
   id: string

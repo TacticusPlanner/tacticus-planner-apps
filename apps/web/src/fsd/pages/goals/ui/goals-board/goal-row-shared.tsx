@@ -9,8 +9,8 @@ import {
 import { formatEstimateDate } from "@/shared/lib"
 
 import type { EstimateOutcome } from "@/features/goal-farming"
-import type { GoalRow } from "../../model/shared/types"
-import { useGoalCatalog } from "../../model/shared/use-goal-catalog"
+import type { GoalRow } from "@/features/goal-planning"
+import { useGoalCatalog } from "@/features/goal-planning"
 import { isInFlightStatus } from "./goal-row-utils"
 
 /** The formatted completion date + "in {{days}} days" caption for a computed estimate, nothing when
