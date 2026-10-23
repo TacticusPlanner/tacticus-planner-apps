@@ -60,7 +60,7 @@ describe("useGoalPrerequisites", () => {
     })
   })
 
-  it("uses the conservative firstProgression baseline for a locked character's Ascension suggestion", () => {
+  it("falls back to firstProgression for a locked character whose starting rarity is unknown", () => {
     const { result } = renderHook(() =>
       useGoalPrerequisites({
         ...baseParams,
@@ -73,6 +73,40 @@ describe("useGoalPrerequisites", () => {
 
     expect(result.current.needsAscension).toEqual({
       start: "Common:None",
+      end: "Epic:RedOneStar",
+    })
+  })
+
+  it("does not suggest Ascension alongside Unlock when unlocking already reaches the rank's rarity", () => {
+    const { result } = renderHook(() =>
+      useGoalPrerequisites({
+        ...baseParams,
+        isLocked: true,
+        currentProgression: undefined,
+        unlockProgression: "Epic:RedOneStar",
+        enabledTypes: types("Rank"),
+        rankEnd: "Gold1",
+      })
+    )
+
+    expect(result.current.needsUnlock).toBe(true)
+    expect(result.current.needsAscension).toBeNull()
+  })
+
+  it("starts a locked character's Ascension suggestion from its unlock progression", () => {
+    const { result } = renderHook(() =>
+      useGoalPrerequisites({
+        ...baseParams,
+        isLocked: true,
+        currentProgression: undefined,
+        unlockProgression: "Rare:FourStars",
+        enabledTypes: types("Rank"),
+        rankEnd: "Gold1",
+      })
+    )
+
+    expect(result.current.needsAscension).toEqual({
+      start: "Rare:FourStars",
       end: "Epic:RedOneStar",
     })
   })
