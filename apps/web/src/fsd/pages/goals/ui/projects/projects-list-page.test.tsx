@@ -80,7 +80,7 @@ vi.mock("@/entities/goal", async (importOriginal) => ({
 vi.mock("@/shared/api", () => ({ ApiError: class ApiError extends Error {} }))
 
 import { ProjectsListPage } from "./projects-list-page"
-import { CreateGoalLauncherProvider } from "../../model/goal-creation-form/create-goal-launcher"
+import { CreateGoalLauncherProvider } from "@/features/goal-create"
 
 const onLaunch = vi.fn()
 

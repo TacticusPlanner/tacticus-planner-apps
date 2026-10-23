@@ -12,8 +12,8 @@ import { missionName, type HreTeamPlan } from "@/features/hre-missions"
 import {
   HRE_TEAM_SIZE,
   type HreTeam,
-} from "../../model/hre-team-recommendations"
-import type { HreTeamViewModel } from "../../model/use-hre-team-recommendations"
+  type HreTeamViewModel,
+} from "@/features/team-recommendations"
 import { TeamList } from "../team-recs/team-list"
 import { TeamRecsState } from "../team-recs/team-recs-state"
 

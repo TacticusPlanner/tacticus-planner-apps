@@ -7,7 +7,6 @@ import {
   buildMasterTable,
   buildSyncedLaneProgress,
   laneBattlePowers,
-  legendaryEventRunDates,
   resolveLegendaryEventRunsAt,
   unitHordeMultiplier,
   useClearEstimateConfig,
@@ -21,9 +20,12 @@ import {
   usePlanWriteQueue,
   type LegendaryEvent,
   type LegendaryEventLifecycle,
-  type LegendaryEventRunDates,
   type LegendaryEventGoalTarget,
 } from "@/entities/legendary-event"
+import {
+  legendaryEventRunDates,
+  type LegendaryEventRunDates,
+} from "../../lib/run-dates"
 import { useLegendaryEventGoalTargets } from "@/features/legendary-event-goals"
 import { useUnitName } from "@/shared/unit-name"
 import { useUnitPowerContext } from "@/shared/unit-power"

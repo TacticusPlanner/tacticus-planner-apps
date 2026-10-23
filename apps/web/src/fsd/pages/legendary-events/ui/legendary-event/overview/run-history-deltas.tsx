@@ -4,7 +4,7 @@ import { Skeleton } from "@workspace/ui/components/skeleton"
 import { characterIcon } from "@workspace/game-catalog"
 import type { UnitId } from "@workspace/game-domain"
 
-import type { RosterDelta, RunHistory } from "@/entities/legendary-event"
+import type { RosterDelta, RunHistory } from "../../../lib/run-history"
 import { EntityIcon } from "@/shared/ui"
 import { useUnitName } from "@/shared/unit-name"
 

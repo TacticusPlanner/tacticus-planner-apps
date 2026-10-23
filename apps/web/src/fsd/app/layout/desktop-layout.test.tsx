@@ -17,7 +17,7 @@ vi.mock("react-i18next", () => ({
 // UI Kit entry.
 vi.mock("@/shared/config", () => ({ isUiKitEnabled: true }))
 
-vi.mock("../providers/player-data-sync-button", () => ({
+vi.mock("@/widgets/account-menu/ui/player-data-sync-button", () => ({
   PlayerDataSyncButton: () => null,
 }))
 vi.mock("../providers/auth-control", () => ({

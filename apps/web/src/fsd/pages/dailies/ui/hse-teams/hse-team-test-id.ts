@@ -1,7 +1,4 @@
-import type {
-  HseTeam,
-  HseTeamMode,
-} from "../../model/hse-team-recommendations.types"
+import type { HseTeam, HseTeamMode } from "@/features/team-recommendations"
 
 /** The test id of one event team: `hse-team-arena`, `hse-team-onslaught-imperial`, ... */
 export function hseTeamTestId(mode: HseTeamMode, team: HseTeam): string {

@@ -10,7 +10,7 @@ import {
 
 import { EntityIcon, RankBadge, RarityIcon } from "@/shared/ui"
 
-import type { TrackEligibleCharacter } from "../../model/alliance-tracks"
+import type { TrackEligibleCharacter } from "@/features/team-recommendations"
 
 /**
  * The per-track "not enough characters" state for an alliance-locked Home Screen Event team: the

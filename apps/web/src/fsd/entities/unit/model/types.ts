@@ -43,7 +43,7 @@ export interface UnownedUnitTileData {
   unlockShards?: number
 }
 
-export type UnitTileData = OwnedUnitTileData | UnownedUnitTileData
+type UnitTileData = OwnedUnitTileData | UnownedUnitTileData
 
 export interface UnitTileUnit {
   kind: UnitKind

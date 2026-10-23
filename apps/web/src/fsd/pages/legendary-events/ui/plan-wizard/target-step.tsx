@@ -4,7 +4,7 @@ import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 import { Badge } from "@workspace/ui/components/badge"
 import { cn } from "@workspace/ui/lib/utils"
 
-import { RunInputsForm } from "@/features/legendary-event-run-inputs"
+import { RunInputsForm } from "@/features/legendary-event-plan"
 import { useAnalyticsActions } from "@/shared/analytics"
 
 import { RosterPotentialMap } from "../legendary-event/roster-potential-map"

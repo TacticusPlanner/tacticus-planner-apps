@@ -12,9 +12,7 @@ export function isVariationAvailable(record: NpcRecord): boolean {
  * The base roster entry: every mode suffix (`LHE`, `Surv`, `C1`, …) lengthens the id, so the shortest
  * available id is the least-specialised variation; ties keep served order.
  */
-export function defaultVariationId(
-  variations: readonly NpcVariation[]
-): string {
+function defaultVariationId(variations: readonly NpcVariation[]): string {
   let best = variations[0]
   for (const variation of variations) {
     if (variation.id.length < best.id.length) best = variation

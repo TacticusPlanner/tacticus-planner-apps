@@ -12,6 +12,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 import { act, render, screen, within } from "@/test/render"
 import { battle, offPlanBattle, ready } from "@/test/fixtures/daily-raids"
 import { emptyRaidsFilters } from "@/features/daily-raids"
+import type { HseTeamsRead } from "@/features/team-recommendations"
 import { homeScreenEventReadyAt } from "@/test/fixtures/home-screen-event"
 import { hseTeamsFixtureRead } from "@/test/fixtures/hse-teams"
 
@@ -26,8 +27,7 @@ const { mocks } = vi.hoisted(() => ({
     locations: undefined as unknown,
     raidsArgs: [] as unknown[][],
     hseReads: {} as import("@/test/fixtures/hse-event-points").HseFixtureReads,
-    teamsRead: undefined as
-      import("../model/hse-teams-view-model").HseTeamsRead | undefined,
+    teamsRead: undefined as HseTeamsRead | undefined,
   },
 }))
 
@@ -71,14 +71,17 @@ vi.mock(
     }
   }
 )
-vi.mock("../model/use-hse-team-recommendations", async () => {
-  const { fixtureHseTeams } = await import("@/test/fixtures/hse-teams")
-  return {
-    useHseTeamRecommendations: (
-      ...[instance, points]: Parameters<typeof fixtureHseTeams>
-    ) => fixtureHseTeams(instance, points, mocks.teamsRead),
+vi.mock(
+  "@/features/team-recommendations/model/use-hse-team-recommendations",
+  async () => {
+    const { fixtureHseTeams } = await import("@/test/fixtures/hse-teams")
+    return {
+      useHseTeamRecommendations: (
+        ...[instance, points]: Parameters<typeof fixtureHseTeams>
+      ) => fixtureHseTeams(instance, points, mocks.teamsRead),
+    }
   }
-})
+)
 
 const HOUR = 3_600_000
 const DAY = 24 * HOUR

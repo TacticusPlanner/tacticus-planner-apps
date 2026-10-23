@@ -1,0 +1,132 @@
+import {
+  minProgressionForRank,
+  progressionIndex,
+  progressionOrder,
+  progressionRarity,
+  rankAt,
+  type Progression,
+} from "@workspace/game-domain"
+
+import type { GoalDetail } from "@/entities/goal"
+
+import { abilityLevelsByRarity } from "../shared/goal-validation"
+import type { BlockerReason } from "./goal-blockers"
+
+type PlayerUnit = {
+  xpLevel: number
+  progressionIndex: string
+}
+
+function minimumProgressionForAbilityLevel(level: number): Progression {
+  const rarity =
+    abilityLevelsByRarity.find((entry) => entry.level >= level)?.rarity ??
+    abilityLevelsByRarity.at(-1)!.rarity
+  return (
+    progressionOrder.find(
+      (progression) => progressionRarity(progression) === rarity
+    ) ?? progressionOrder.at(-1)!
+  )
+}
+
+function coveringAscensionGoal(
+  goals: readonly GoalDetail[],
+  entityId: string,
+  requiredProgression: Progression
+) {
+  const requiredIndex = progressionIndex(requiredProgression)
+  return goals.find(
+    (goal) =>
+      goal.entityId === entityId &&
+      goal.goalType === "Ascension" &&
+      goal.status !== "Archived" &&
+      progressionIndex(goal.config.progression?.end as Progression) >=
+        requiredIndex
+  )
+}
+
+function conflictingAscensionGoalId(
+  goals: readonly GoalDetail[],
+  entityId: string
+) {
+  return goals.find(
+    (goal) =>
+      goal.entityId === entityId &&
+      goal.goalType === "Ascension" &&
+      (goal.status === "Active" || goal.status === "Paused")
+  )?.goalId
+}
+
+function coveringUnlockGoal(goals: readonly GoalDetail[], entityId: string) {
+  return goals.find(
+    (goal) =>
+      goal.entityId === entityId &&
+      goal.goalType === "Unlock" &&
+      goal.status !== "Archived"
+  )
+}
+
+export function implicitPrerequisiteBlockers(params: {
+  detail: GoalDetail
+  playerUnit: PlayerUnit | undefined
+  prerequisiteGoals: readonly GoalDetail[]
+  /** Whether the data needed to tell "not loaded" apart from "loaded but absent" has loaded — the
+   *  static catalog, the prerequisite goal list, and (new) the player roster table this goal's
+   *  entity type lives in. `false` means genuinely unknown yet, so no reason is derived here at all
+   *  (the caller's own player-data-unavailable reason covers that state). */
+  ready: boolean
+  /** The target unit's display name, for the missing-Unlock reason's message. Unused when the unit
+   *  is present. */
+  unitName: string
+}): BlockerReason[] {
+  if (!params.ready) return []
+  const { detail, playerUnit, prerequisiteGoals, unitName } = params
+
+  if (!playerUnit) {
+    // Loaded roster, unit absent: every goal kind but Unlock itself needs the unit to exist first.
+    if (detail.goalType === "Unlock") return []
+    if (coveringUnlockGoal(prerequisiteGoals, detail.entityId)) return []
+    return [
+      {
+        kind: "MissingUnlockPrerequisite",
+        unitName,
+        existingGoalId: undefined,
+      },
+    ]
+  }
+
+  let requiredProgression: Progression | null = null
+
+  if (detail.goalType === "Rank" && detail.config.rank) {
+    const targetRank = rankAt(detail.config.rank.end)
+    requiredProgression = minProgressionForRank(targetRank)
+  } else if (detail.goalType === "Ability" && detail.config.ability) {
+    const targetLevel = Math.max(
+      detail.config.ability.activeEnd,
+      detail.config.ability.passiveEnd
+    )
+    requiredProgression = minimumProgressionForAbilityLevel(targetLevel)
+  }
+
+  const reasons: BlockerReason[] = []
+  if (
+    requiredProgression !== null &&
+    progressionIndex(playerUnit.progressionIndex as Progression) <
+      progressionIndex(requiredProgression) &&
+    !coveringAscensionGoal(
+      prerequisiteGoals,
+      detail.entityId,
+      requiredProgression
+    )
+  ) {
+    reasons.push({
+      kind: "MissingAscensionPrerequisite",
+      requiredProgression,
+      existingGoalId: conflictingAscensionGoalId(
+        prerequisiteGoals,
+        detail.entityId
+      ),
+    })
+  }
+
+  return reasons
+}

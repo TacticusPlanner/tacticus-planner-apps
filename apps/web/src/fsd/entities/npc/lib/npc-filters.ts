@@ -69,7 +69,7 @@ export function matchesNpcFilters(
   return true
 }
 
-export function matchesNpcSearch(displayName: string, search: string): boolean {
+function matchesNpcSearch(displayName: string, search: string): boolean {
   const needle = search.trim().toLowerCase()
   return needle === "" || displayName.toLowerCase().includes(needle)
 }

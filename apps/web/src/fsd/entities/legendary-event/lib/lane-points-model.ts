@@ -3,7 +3,7 @@ import type {
   LegendaryEventObjective,
 } from "../model/types"
 
-export interface LaneBattlePoints {
+interface LaneBattlePoints {
   /** 0-based battle index, in `battleIds` order. */
   index: number
   /** `battlesPoints[i]`: the cap of each of the battle's two awards, the kill score (synced

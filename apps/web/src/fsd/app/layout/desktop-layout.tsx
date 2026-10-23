@@ -16,13 +16,14 @@ import {
   useSidebar,
 } from "@workspace/ui/components/sidebar"
 import { Spinner } from "@workspace/ui/components/spinner"
+import { PlayerDataSyncButton } from "@/widgets/account-menu"
+import { isMacPlatform } from "@/shared/lib"
 import { PageTourButton, TourButton } from "@/shared/tour"
 
-import { PlayerDataSyncButton } from "../providers/player-data-sync-button"
 import { DesktopSectionHeader } from "./desktop-section-header"
 import { DesktopSectionNavigation } from "./desktop-section-navigation"
 import { DesktopTopBar } from "./desktop-top-bar"
-import { isMacPlatform } from "./is-mac-platform"
+import { matchesNavPath } from "./find-active-child"
 import { NavLiveDot } from "./nav-live-dot"
 import type { NavItem } from "./nav-items"
 import type { QuickActionsController } from "./quick-actions"
@@ -282,8 +283,7 @@ function NavMenuItem({
   const { t } = useTranslation(["common", "dailies", "library"])
   const { pathname } = useLocation()
   const compact = useSidebar().state === "collapsed"
-  const isActive =
-    pathname === item.path || pathname.startsWith(item.path + "/")
+  const isActive = matchesNavPath(pathname, item.path)
 
   return (
     <SidebarMenuItem>

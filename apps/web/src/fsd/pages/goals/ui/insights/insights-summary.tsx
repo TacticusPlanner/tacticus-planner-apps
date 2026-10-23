@@ -15,7 +15,7 @@ import { energyIconUrl, EntityIcon, RarityIcon } from "@/shared/ui"
 import type {
   PlanInsightsBottleneck,
   PlanInsightsTotals,
-} from "../../model/insights/use-plan-insights.domain"
+} from "@/features/goal-planning"
 
 /** Resource-totals cards + the combined energy/completion estimate + top bottlenecks — the "total
  *  missing resources, breakdown by rarity/type" and "total energy estimate, completion timeline,

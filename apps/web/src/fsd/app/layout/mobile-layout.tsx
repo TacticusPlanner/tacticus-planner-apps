@@ -27,6 +27,7 @@ import { Spinner } from "@workspace/ui/components/spinner"
 import { cn } from "@workspace/ui/lib/utils"
 
 import { usePlayerDataSyncStatus } from "@/features/player-data-sync"
+import { matchesNavPath } from "./find-active-child"
 import { MobileDrawerSubItem } from "./mobile-drawer-sub-item"
 import { MobileHeader } from "./mobile-header"
 import "./mobile-layout.css"
@@ -90,10 +91,6 @@ export function MobileShell({
       />
     </div>
   )
-}
-
-function isItemActive(pathname: string, path: string) {
-  return pathname === path || pathname.startsWith(path + "/")
 }
 
 function MobileNavActions({ onCreateGoal }: { onCreateGoal: () => void }) {
@@ -198,7 +195,7 @@ function MobileBottomNav({
   const isMenuItemActive = items.some(
     (item) =>
       !["/home", "/plan", "/dailies"].includes(item.path) &&
-      isItemActive(pathname, item.path)
+      matchesNavPath(pathname, item.path)
   )
 
   return (
@@ -278,7 +275,7 @@ function MobileBottomNav({
                 </h3>
                 <div className="space-y-1">
                   {filteredItems.map((item) => {
-                    const isActive = isItemActive(pathname, item.path)
+                    const isActive = matchesNavPath(pathname, item.path)
                     return (
                       <div key={item.path}>
                         <Link

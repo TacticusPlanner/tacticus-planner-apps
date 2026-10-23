@@ -7,8 +7,8 @@ import type {
 import {
   buildHseTeamsViewModel,
   type HseTeamsRead,
-} from "@/pages/dailies/model/hse-teams-view-model"
-import { anyUnitPowerFixture } from "@/pages/dailies/model/team-power.fixtures"
+} from "@/features/team-recommendations/model/hse-teams-view-model"
+import { anyUnitPowerFixture } from "./team-power"
 
 // A synced roster for the HSE event teams: Psykers in every alliance (four Imperial among other
 // Imperial characters, five Chaos, one Xenos) and only two Xenos characters, so the Xenos teams

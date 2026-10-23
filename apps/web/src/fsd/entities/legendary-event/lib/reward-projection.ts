@@ -24,7 +24,7 @@ export const PREMIUM_BONUS_CURRENCY = 15
 /** The 300-currency bundle. */
 export const BUNDLE_CURRENCY = 300
 /** V1's average points per battle for the "battles per lane" figure (three lanes are played). */
-export const BATTLE_POINTS_AVERAGE = 500
+const BATTLE_POINTS_AVERAGE = 500
 const LANE_COUNT = 3
 
 /** The event unit's ascension steps, in order; each adds its `progression` shards. */
@@ -113,7 +113,7 @@ export function nextAscensionStep(
  * ascension step), with the shards held toward it; every step reached when `target` comes before
  * `fromStep` or the shards already cover it.
  */
-export function targetAscensionStep(
+function targetAscensionStep(
   shards: number,
   progression: LegendaryEventRewards["progression"],
   fromStep: AscensionStep | "fullyAscended",

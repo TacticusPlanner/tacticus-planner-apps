@@ -4,7 +4,7 @@ import { Sparkles } from "lucide-react"
 import { Button } from "@workspace/ui/components/button"
 
 import { UpgradeImpactSection } from "@/features/legendary-event-goals"
-import { RunInputsDrawer } from "@/features/legendary-event-run-inputs"
+import { RunInputsDrawer } from "@/features/legendary-event-plan"
 import { EventProjectsLine } from "@/features/project-management"
 import {
   NextTokenCard,

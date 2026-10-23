@@ -25,7 +25,7 @@ import {
   useObjectiveText,
 } from "@/features/hre-missions"
 
-import { useHreTeamRecommendations } from "../model/use-hre-team-recommendations"
+import { useHreTeamRecommendations } from "@/features/team-recommendations"
 import { useRunningHse } from "../model/use-running-hse"
 import { HreCampaignTeams } from "./hre/hre-campaign-teams"
 import { HreTeamCard } from "./hre/hre-team-card"

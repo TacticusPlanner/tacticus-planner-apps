@@ -59,14 +59,17 @@ vi.mock("@/features/daily-raids/model/use-daily-raids", () => ({
 vi.mock("@/features/daily-raids/model/use-active-home-screen-event", () => ({
   useActiveHomeScreenEvent: () => mocks.homeScreenEvent,
 }))
-vi.mock("../model/use-hre-team-recommendations", () => ({
-  useHreTeamRecommendations: (input: { plans: readonly unknown[] }) => {
-    mocks.teamArgs.push(input)
-    return input.plans.length > 0
-      ? input.plans.map(() => mocks.team)
-      : [mocks.team]
-  },
-}))
+vi.mock(
+  "@/features/team-recommendations/model/use-hre-team-recommendations",
+  () => ({
+    useHreTeamRecommendations: (input: { plans: readonly unknown[] }) => {
+      mocks.teamArgs.push(input)
+      return input.plans.length > 0
+        ? input.plans.map(() => mocks.team)
+        : [mocks.team]
+    },
+  })
+)
 vi.mock("../model/use-running-hse", () => ({
   useRunningHse: () => mocks.hse,
 }))

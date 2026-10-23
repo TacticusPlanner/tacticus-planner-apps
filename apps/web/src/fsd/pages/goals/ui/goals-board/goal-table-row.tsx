@@ -4,11 +4,8 @@ import { GripVertical } from "lucide-react"
 import { Checkbox } from "@workspace/ui/components/checkbox"
 import { TableCell } from "@workspace/ui/components/table"
 
-import {
-  NO_BLOCKERS,
-  UNKNOWN_PROGRESS,
-} from "../../model/attainment/goal-overview-metrics-defaults"
-import { useGoalCatalog } from "../../model/shared/use-goal-catalog"
+import { NO_BLOCKERS, UNKNOWN_PROGRESS } from "@/features/goal-planning"
+import { useGoalCatalog } from "@/features/goal-planning"
 import { GoalRowActions } from ".//goal-row-actions"
 import { GoalResourceChips } from "../shared/goal-resource-chips"
 import { formatGoalRemainingText } from "../shared/goal-remaining-text"
@@ -16,7 +13,7 @@ import {
   GoalProgressDisplay,
   GoalTargetDisplay,
 } from "../shared/goal-progress-visuals"
-import { GoalProjectBadges, GoalUnitIcon } from "../shared/goal-visuals"
+import { GoalProjectBadges, GoalUnitIcon } from "@/features/goal-create"
 import { LevelRequirementLine } from "../shared/level-requirement-display"
 import type { SortableRenderProps } from "@/shared/ui"
 import { BlockedIndicator, StatusBadge } from "../shared/status-badge"

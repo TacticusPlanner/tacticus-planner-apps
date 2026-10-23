@@ -4,7 +4,7 @@ import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
 import { ProjectSelect } from "@/entities/project"
 
-import { useShopRecommendations } from "../model/use-shop-recommendations"
+import { useShopRecommendations } from "@/features/shop-recommendations"
 import type { DailiesOutletContext } from "./dailies-layout"
 import { ShopsDesktop } from "./shops/desktop/shops-desktop"
 import { ShopsMobile } from "./shops/mobile/shops-mobile"

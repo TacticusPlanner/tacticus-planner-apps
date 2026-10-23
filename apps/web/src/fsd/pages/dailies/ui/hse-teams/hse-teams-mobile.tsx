@@ -5,7 +5,7 @@ import { Tabs, TabsList, TabsTrigger } from "@workspace/ui/components/tabs"
 import type {
   HseTeamMode,
   HseTeamRecommendations,
-} from "../../model/hse-team-recommendations.types"
+} from "@/features/team-recommendations"
 import { HseEnemyHints } from "./hse-enemy-hints"
 import { HseTeamCard } from "./hse-team-card"
 import { hseTeamTestId } from "./hse-team-test-id"

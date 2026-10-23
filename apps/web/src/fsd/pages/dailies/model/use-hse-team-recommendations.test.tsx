@@ -19,7 +19,7 @@ import enTeamRecs from "../../../../../public/locales/en/teamRecs.json"
 
 import { HseTeamsSection } from "../ui/hse-teams/hse-teams-section"
 
-import { useHseTeamRecommendations } from "./use-hse-team-recommendations"
+import { useHseTeamRecommendations } from "@/features/team-recommendations"
 
 function renderTeams(
   instance: HseInstance | null,

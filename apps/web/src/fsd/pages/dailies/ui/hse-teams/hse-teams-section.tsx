@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
-import type { HseTeamsViewModel } from "../../model/hse-team-recommendations.types"
+import type { HseTeamsViewModel } from "@/features/team-recommendations"
 import { TeamRecsState } from "../team-recs/team-recs-state"
 import { HseTeamsDesktop } from "./hse-teams-desktop"
 import { HseTeamsMobile } from "./hse-teams-mobile"

@@ -2,7 +2,7 @@ import { render, screen } from "@/test/render"
 import userEvent from "@testing-library/user-event"
 import { describe, expect, it, vi } from "vitest"
 
-vi.mock("../../model/shared/use-goal-catalog", () => ({
+vi.mock("@/features/goal-planning/model/shared/use-goal-catalog", () => ({
   useGoalCatalog: () => ({
     upgradesById: new Map(),
     charactersById: new Map(),

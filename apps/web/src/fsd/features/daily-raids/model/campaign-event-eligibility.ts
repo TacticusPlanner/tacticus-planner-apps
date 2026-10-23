@@ -1,5 +1,5 @@
-// Split out of daily-raids-calc.ts (and, for the builder below, use-daily-raids.ts) to keep
-// those files under this repo's max-lines rule. Event-campaign progress maps come from
+// Event-campaign eligibility used by use-eligible-campaign-battles.ts and the slice index.
+// Event-campaign progress maps come from
 // `buildEffectiveCampaignEventProgress` (entities/player-data-override), which merges manual
 // overrides over synced progress; the key builder is the entity's own, so the two cannot drift.
 

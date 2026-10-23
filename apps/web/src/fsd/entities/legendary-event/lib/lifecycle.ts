@@ -74,7 +74,7 @@ export function deriveLegendaryEventLifecycle(
   return { state: "upcoming" }
 }
 
-export interface LegendaryEventHubEntry<TEvent> {
+interface LegendaryEventHubEntry<TEvent> {
   event: TEvent
   lifecycle: LegendaryEventLifecycle
 }

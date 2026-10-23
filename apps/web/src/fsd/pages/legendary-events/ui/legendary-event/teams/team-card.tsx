@@ -27,7 +27,7 @@ import {
   ClearDepthField,
   editStartsFromEstimate,
   type DepthEstimateContext,
-} from "@/features/legendary-event-teams"
+} from "@/features/legendary-event-plan"
 import { useDebouncedCommit } from "@/shared/lib"
 import { EntityIcon, type SortableRenderProps } from "@/shared/ui"
 import { useUnitName } from "@/shared/unit-name"
