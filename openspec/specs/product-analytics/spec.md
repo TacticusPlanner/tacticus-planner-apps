@@ -65,12 +65,12 @@ When a user signs out, the client SHALL clear the established analytics identity
 
 ### Requirement: Navigation is reported as declared page-view events
 
-While a user is identified, the client SHALL report a `page_view` event when the active route changes. The event SHALL carry the route group and the view mode in use, so V2 navigation can be compared against the equivalent V1 measurements. The event SHALL NOT carry route parameters, query strings, or fragments that may contain user-specific values.
+While a user is identified, the client SHALL report a page view (PostHog's `$pageview` event, so the built-in Web analytics dashboard works) when the active route changes. The event SHALL carry the route group and the view mode in use, so V2 navigation can be compared against the equivalent V1 measurements. The event SHALL NOT carry route parameters, query strings, or fragments that may contain user-specific values.
 
 #### Scenario: Navigating between sections
 
 - **WHEN** an identified user navigates from one route to another
-- **THEN** a single `page_view` event is reported for the destination route, carrying its route group and the current view mode
+- **THEN** a single `$pageview` event is reported for the destination route, carrying its route group and the current view mode
 
 #### Scenario: View mode reflects the layout in use
 
@@ -117,7 +117,7 @@ When a staging-specific analytics token is configured, the staging deployment SH
 #### Scenario: Page view on staging
 
 - **WHEN** an identified user navigates on the staging deployment
-- **THEN** the `page_view` event is recorded in the staging analytics project and not in production's
+- **THEN** the `$pageview` event is recorded in the staging analytics project and not in production's
 
 #### Scenario: Staging without its own configuration
 
