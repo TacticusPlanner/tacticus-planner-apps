@@ -1,8 +1,10 @@
-import { ASSET_BASE_PATH } from "@workspace/game-catalog"
+import { gameAssetUrl } from "@workspace/game-catalog"
 
 import type { GoalKind } from "./types"
 
-const genericUpgradeIcon = `${ASSET_BASE_PATH}/upgrade_materials/ui_icon_upgrade_generic.png`
+const genericUpgradeIcon = gameAssetUrl(
+  `upgrade_materials/ui_icon_upgrade_generic.webp`
+)
 
 /** The goal-type badge/card icon — a generic per-kind symbol representing the concept, not any one
  * specific unit/upgrade/item (see e.g. `EquipmentIcon` for the actual per-item icon used in the
@@ -17,12 +19,12 @@ export function goalTypeIcon(kind: GoalKind, entityType?: string): string {
       // Same theme — both are fundamentally "farm this upgrade" goals.
       return genericUpgradeIcon
     case "Ascension":
-      return `${ASSET_BASE_PATH}/misc/orbs_generic.png`
+      return gameAssetUrl(`misc/orbs_generic.webp`)
     case "Ability":
       return entityType === "Mow"
-        ? `${ASSET_BASE_PATH}/misc/components_generic.png`
-        : `${ASSET_BASE_PATH}/misc/ability_badges_generic.png`
+        ? gameAssetUrl(`misc/components_generic.webp`)
+        : gameAssetUrl(`misc/ability_badges_generic.webp`)
     case "Unlock":
-      return `${ASSET_BASE_PATH}/misc/ui_icon_character_shard_empty.png`
+      return gameAssetUrl(`misc/ui_icon_character_shard_empty.webp`)
   }
 }

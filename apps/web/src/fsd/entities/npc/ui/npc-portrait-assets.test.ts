@@ -9,18 +9,20 @@ import npcAbilityIds from "@/test/fixtures/npc-ability-ids.json"
 // Vite's glob lists the shipped assets at build time, so the audit runs without node's fs.
 const shippedPortraits = new Set(
   Object.keys(
-    import.meta.glob("/public/game_catalog/characters/*.png", { query: "?url" })
+    import.meta.glob("/public/game_catalog/characters/*.webp", {
+      query: "?url",
+    })
   ).map((path) => path.split("/").pop()!)
 )
 const shippedEmblems = new Set(
   Object.keys(
-    import.meta.glob("/public/game_catalog/factions/*.png", { query: "?url" })
+    import.meta.glob("/public/game_catalog/factions/*.webp", { query: "?url" })
   ).map((path) => path.split("/").pop()!)
 )
 
 const shippedAbilityIcons = new Set(
   Object.keys(
-    import.meta.glob("/public/game_catalog/abilities/*.png", { query: "?url" })
+    import.meta.glob("/public/game_catalog/abilities/*.webp", { query: "?url" })
   ).map((path) => path.split("/").pop()!)
 )
 

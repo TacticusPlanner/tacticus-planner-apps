@@ -5,7 +5,7 @@ import { equipmentSlotIcon } from "./equipment"
 describe("equipmentSlotIcon", () => {
   it("maps a known slot code to its icon path", () => {
     expect(equipmentSlotIcon("I_Crit")).toBe(
-      "/game_catalog/equipment/ui_icon_itemtype_crit.png"
+      "/game_catalog/equipment/ui_icon_itemtype_crit.webp"
     )
   })
 

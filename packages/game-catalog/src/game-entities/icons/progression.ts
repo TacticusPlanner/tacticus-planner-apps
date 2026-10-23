@@ -1,13 +1,13 @@
 import { progressionStarsIndex, type Progression } from "@workspace/game-domain"
 
-import { ASSET_BASE_PATH } from "./asset-path"
+import { gameAssetUrl } from "./asset-path"
 
 // Gold/red stars aren't Snowprint assets (V1 sources them from its own app icon set); the blue
 // star and mythic wings are (V1's `snowprintIcons.blueStar`/`.mythicWings`).
-const goldStarIcon = `${ASSET_BASE_PATH}/stars/gold.png`
-const redStarIcon = `${ASSET_BASE_PATH}/stars/red.png`
-const blueStarIcon = `${ASSET_BASE_PATH}/stars/ui_icon_star_legendary_large.png`
-const mythicWingsIcon = `${ASSET_BASE_PATH}/stars/ui_icon_star_mythic.png`
+const goldStarIcon = gameAssetUrl(`stars/gold.webp`)
+const redStarIcon = gameAssetUrl(`stars/red.webp`)
+const blueStarIcon = gameAssetUrl(`stars/ui_icon_star_legendary_large.webp`)
+const mythicWingsIcon = gameAssetUrl(`stars/ui_icon_star_mythic.webp`)
 
 export type ProgressionVisual =
   | { kind: "none" }

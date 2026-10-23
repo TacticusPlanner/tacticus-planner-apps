@@ -12,17 +12,17 @@ describe("describeUnitFilter", () => {
   it("labels traits, damage types and factions from their namespaces with their icons", () => {
     expect(describeUnitFilter(filter("Trait", "Flying"))).toEqual({
       label: { type: "entry", key: "traits:Flying", negate: false },
-      icon: { src: expect.stringContaining("ui_icon_trait_flying_01.png") },
+      icon: { src: expect.stringContaining("ui_icon_trait_flying_01.webp") },
     })
     expect(describeUnitFilter(filter("DamageType", "Eviscerate"))).toEqual({
       label: { type: "entry", key: "damageTypes:Eviscerate", negate: false },
       icon: {
-        src: expect.stringContaining("ui_icon_damage_profile2_Eviscerate.png"),
+        src: expect.stringContaining("ui_icon_damage_profile2_Eviscerate.webp"),
       },
     })
     expect(describeUnitFilter(filter("Faction", "Orks"))).toEqual({
       label: { type: "entry", key: "factions:Orks", negate: false },
-      icon: { src: expect.stringContaining("factions/Orks.png") },
+      icon: { src: expect.stringContaining("factions/Orks.webp") },
     })
   })
 
@@ -30,7 +30,7 @@ describe("describeUnitFilter", () => {
     expect(describeUnitFilter(filter("Trait", "Resilient", true))).toEqual({
       label: { type: "entry", key: "traits:Resilient", negate: true },
       icon: {
-        src: expect.stringContaining("ui_icon_trait_resilient_01.png"),
+        src: expect.stringContaining("ui_icon_trait_resilient_01.webp"),
         badge: "not",
       },
     })

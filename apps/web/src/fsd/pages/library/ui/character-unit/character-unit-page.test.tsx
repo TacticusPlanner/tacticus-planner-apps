@@ -865,10 +865,10 @@ describe("CharacterUnitPage", () => {
   it("shows each headline stat with its stat icon", async () => {
     await renderUnit("/library/characters/ultraTigurius")
     for (const [key, file] of [
-      ["health", "ui_icon_stat_health_01.png"],
-      ["damage", "ui_icon_stat_dmg_01.png"],
-      ["armour", "ui_icon_stat_armor_01.png"],
-      ["movement", "ui_icon_stat_move_01.png"],
+      ["health", "ui_icon_stat_health_01.webp"],
+      ["damage", "ui_icon_stat_dmg_01.webp"],
+      ["armour", "ui_icon_stat_armor_01.webp"],
+      ["movement", "ui_icon_stat_move_01.webp"],
     ]) {
       const icon = screen.getByTestId(`unit-glance-${key}`).querySelector("img")
       expect(icon?.getAttribute("src"), key).toContain(file)

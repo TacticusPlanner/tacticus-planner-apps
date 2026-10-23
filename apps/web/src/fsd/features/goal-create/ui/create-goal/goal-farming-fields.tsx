@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next"
-import { ASSET_BASE_PATH } from "@workspace/game-catalog"
+import { gameAssetUrl } from "@workspace/game-catalog"
 import type { Progression } from "@workspace/game-domain"
 
 import { shopCurrencyIcon } from "@/features/shop-rewards/@x/goal-create"
@@ -49,7 +49,7 @@ export function ProgressionPreview({
         <EntityIcon
           alt=""
           className="size-5"
-          src={`${ASSET_BASE_PATH}/misc/ui_icon_character_shard_empty.png`}
+          src={gameAssetUrl(`misc/ui_icon_character_shard_empty.webp`)}
         />
         {t("goals.create.ascension.shards", {
           regular: preview.regularShards,
@@ -61,7 +61,9 @@ export function ProgressionPreview({
           <EntityIcon
             alt=""
             className="size-6"
-            src={`${ASSET_BASE_PATH}/resources/ui_hero_ascension_orbs_${rarity.toLowerCase()}.png`}
+            src={gameAssetUrl(
+              `resources/ui_hero_ascension_orbs_${rarity.toLowerCase()}.webp`
+            )}
           />
           {rarity} {t("goals.create.ascension.orbs", { count })}
         </p>
@@ -77,7 +79,7 @@ export function ProgressionPreview({
           <EntityIcon
             alt=""
             className="size-5"
-            src={`${ASSET_BASE_PATH}/misc/ui_icon_character_shard_empty.png`}
+            src={gameAssetUrl(`misc/ui_icon_character_shard_empty.webp`)}
           />
           {t("goals.create.acquisitionSources.onslaughtTokens", {
             count: preview.onslaughtTokens,

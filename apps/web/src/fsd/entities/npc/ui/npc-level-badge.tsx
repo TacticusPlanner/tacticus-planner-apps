@@ -30,7 +30,13 @@ export function NpcLevelBadge({
     <span className={cn("inline-flex items-center gap-2", className)}>
       <EntityIcon src={rankIcon(rank)} alt={rankLabel} className="size-5" />
       {visual.kind === "none" ? null : visual.kind === "wings" ? (
-        <EntityIcon src={visual.icon} alt="" className="h-4 w-auto" />
+        <EntityIcon
+          src={visual.icon}
+          alt=""
+          className="h-4 w-auto"
+          width={512}
+          height={164}
+        />
       ) : (
         <span className="inline-flex items-center gap-0.5">
           {Array.from({ length: visual.count }, (_, index) => (

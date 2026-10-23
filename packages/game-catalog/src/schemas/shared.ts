@@ -1,11 +1,10 @@
 import { z } from "zod"
+import { Rank, Rarity } from "@workspace/game-domain"
 import {
   battleIdSchema,
   equipmentIdSchema,
-  Rank,
-  Rarity,
   upgradeIdSchema,
-} from "@workspace/game-domain"
+} from "@workspace/game-domain/schemas"
 
 // Loose objects preserve unknown (server-added) fields and only fail on genuine shape/type breaks.
 // `JsonElement` fields on the server are opaque here (stored as-is) → z.unknown().

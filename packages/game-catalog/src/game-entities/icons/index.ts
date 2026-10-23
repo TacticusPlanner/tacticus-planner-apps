@@ -1,4 +1,4 @@
-export { ASSET_BASE_PATH } from "./asset-path"
+export { ASSET_BASE_PATH, gameAssetUrl } from "./asset-path"
 export { UpgradeIcons } from "./upgrade"
 export { rarityIcon } from "./rarity"
 export { rankIcon } from "./rank"

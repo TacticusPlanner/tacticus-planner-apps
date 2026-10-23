@@ -1,10 +1,6 @@
 import { z } from "zod"
-import {
-  Alliance,
-  factionIdSchema,
-  Rarity,
-  unitIdSchema,
-} from "@workspace/game-domain"
+import { Alliance, Rarity } from "@workspace/game-domain"
+import { factionIdSchema, unitIdSchema } from "@workspace/game-domain/schemas"
 
 import {
   characterRankUpSchema,

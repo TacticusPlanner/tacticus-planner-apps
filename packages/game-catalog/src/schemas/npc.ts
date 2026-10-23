@@ -1,5 +1,6 @@
 import { z } from "zod"
-import { Alliance, factionIdSchema, unitIdSchema } from "@workspace/game-domain"
+import { Alliance } from "@workspace/game-domain"
+import { factionIdSchema, unitIdSchema } from "@workspace/game-domain/schemas"
 
 const npcStatSchema = z.looseObject({
   abilityLevel: z.number(),

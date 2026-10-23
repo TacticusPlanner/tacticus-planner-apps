@@ -2,7 +2,7 @@ import { Suspense, useEffect, useRef } from "react"
 import { Link, Outlet, useLocation } from "react-router"
 import { PanelLeftClose, PanelLeftOpen, PlusCircle } from "lucide-react"
 import { useTranslation } from "react-i18next"
-import { CommandShortcut } from "@workspace/ui/components/command"
+import { CommandShortcut } from "@workspace/ui/components/command-shortcut"
 import {
   Sidebar,
   SidebarContent,

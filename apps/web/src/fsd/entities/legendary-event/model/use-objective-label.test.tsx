@@ -116,7 +116,7 @@ describe("useObjectiveLabel", () => {
     )
     expect(noResilient.label).toBe("Ohne Widerstandsfähig")
     expect(noResilient.icon).toEqual({
-      src: expect.stringContaining("ui_icon_trait_resilient_01.png"),
+      src: expect.stringContaining("ui_icon_trait_resilient_01.webp"),
       badge: "not",
     })
     expect(label(objective("Min 5 Hits", "MinHits", "5")).label).toBe(

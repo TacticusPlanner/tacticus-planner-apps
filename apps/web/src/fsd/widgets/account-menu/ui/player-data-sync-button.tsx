@@ -8,7 +8,7 @@ import {
   RefreshCw,
 } from "lucide-react"
 import { useTranslation } from "react-i18next"
-import { CommandShortcut } from "@workspace/ui/components/command"
+import { CommandShortcut } from "@workspace/ui/components/command-shortcut"
 import { SidebarMenuButton } from "@workspace/ui/components/sidebar"
 import { cn } from "@workspace/ui/lib/utils"
 

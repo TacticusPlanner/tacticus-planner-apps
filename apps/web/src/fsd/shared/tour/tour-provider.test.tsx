@@ -1,6 +1,6 @@
 import type { Step } from "react-joyride"
-import { fireEvent } from "@testing-library/react"
-import { describe, expect, it, vi } from "vitest"
+import { fireEvent, waitFor } from "@testing-library/react"
+import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { render, screen } from "@/test/render"
 
@@ -11,11 +11,13 @@ import {
   useTourPageSteps,
 } from "./tour-provider"
 
-const { joyrideStepsRef, joyrideOptionsRef, viewport } = vi.hoisted(() => ({
-  joyrideStepsRef: { current: [] as Step[] },
-  joyrideOptionsRef: { current: {} as { scrollOffset?: number } },
-  viewport: { isMobile: false },
-}))
+const { joyrideStepsRef, joyrideOptionsRef, joyrideCalls, viewport } =
+  vi.hoisted(() => ({
+    joyrideCalls: vi.fn(),
+    joyrideStepsRef: { current: [] as Step[] },
+    joyrideOptionsRef: { current: {} as { scrollOffset?: number } },
+    viewport: { isMobile: false },
+  }))
 
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
@@ -29,6 +31,7 @@ vi.mock("react-joyride", () => ({
     steps: Step[]
     options: { scrollOffset?: number }
   }) => {
+    joyrideCalls()
     joyrideStepsRef.current = steps
     joyrideOptionsRef.current = options
     return { Tour: null }
@@ -98,19 +101,24 @@ function PageWithSheet({ sheetOpen }: { sheetOpen: boolean }) {
 
 const AUTO_STARTED_STORAGE_KEY = "tp.tour.autoStarted"
 
+beforeEach(() => {
+  joyrideCalls.mockClear()
+  joyrideStepsRef.current = []
+})
+
 function targets() {
   return joyrideStepsRef.current.map((step) => step.target)
 }
 
 describe("TourProvider page-step registrations", () => {
-  it("shows a sheet's steps while it is open and restores the page's when it closes", () => {
+  it("shows a sheet's steps while it is open and restores the page's when it closes", async () => {
     const { rerender } = render(
       <TourProvider>
         <PageWithSheet sheetOpen={false} />
       </TourProvider>
     )
     fireEvent.click(screen.getByTestId("start-page-2"))
-    expect(targets()).toEqual(["page-step"])
+    await waitFor(() => expect(targets()).toEqual(["page-step"]))
 
     rerender(
       <TourProvider>
@@ -183,7 +191,7 @@ describe("TourProvider", () => {
     expect(screen.getByTestId("has-page-tour")).toHaveTextContent("true")
   })
 
-  it("startTour runs the general tour even while a page has its own registered", () => {
+  it("startTour runs the general tour even while a page has its own registered", async () => {
     window.localStorage.setItem(AUTO_STARTED_STORAGE_KEY, "1")
 
     render(
@@ -194,10 +202,10 @@ describe("TourProvider", () => {
 
     fireEvent.click(screen.getByTestId("start-general"))
 
-    expect(targets()).toEqual(["general-step"])
+    await waitFor(() => expect(targets()).toEqual(["general-step"]))
   })
 
-  it("startPageTour runs the page's own steps", () => {
+  it("startPageTour runs the page's own steps", async () => {
     window.localStorage.setItem(AUTO_STARTED_STORAGE_KEY, "1")
 
     render(
@@ -208,10 +216,10 @@ describe("TourProvider", () => {
 
     fireEvent.click(screen.getByTestId("start-page"))
 
-    expect(targets()).toEqual(["page-step"])
+    await waitFor(() => expect(targets()).toEqual(["page-step"]))
   })
 
-  it("defaults to the general tour before either trigger is used", () => {
+  it("does not load the tour runtime until a tour is requested", async () => {
     window.localStorage.setItem(AUTO_STARTED_STORAGE_KEY, "1")
 
     render(
@@ -219,8 +227,21 @@ describe("TourProvider", () => {
         <PageTourProbe />
       </TourProvider>
     )
+    await new Promise((resolve) => setTimeout(resolve, 0))
 
-    expect(targets()).toEqual(["general-step"])
+    expect(joyrideCalls).not.toHaveBeenCalled()
+  })
+
+  it("loads the tour runtime for the first-run auto-start", async () => {
+    window.localStorage.removeItem(AUTO_STARTED_STORAGE_KEY)
+
+    render(
+      <TourProvider>
+        <AutoStartProbe />
+      </TourProvider>
+    )
+
+    await waitFor(() => expect(targets()).toEqual(["general-step"]))
   })
 })
 
@@ -230,15 +251,19 @@ describe("TourProvider scrolling", () => {
     [true, 140],
   ])(
     "scrolls targets clear of the sticky shell header (mobile: %s)",
-    (isMobile, offset) => {
+    async (isMobile, offset) => {
       viewport.isMobile = isMobile
+      window.localStorage.setItem(AUTO_STARTED_STORAGE_KEY, "1")
       render(
         <TourProvider>
-          <IsRunningProbe />
+          <PageTourProbe />
         </TourProvider>
       )
+      fireEvent.click(screen.getByTestId("start-general"))
 
-      expect(joyrideOptionsRef.current.scrollOffset).toBe(offset)
+      await waitFor(() =>
+        expect(joyrideOptionsRef.current.scrollOffset).toBe(offset)
+      )
       viewport.isMobile = false
     }
   )

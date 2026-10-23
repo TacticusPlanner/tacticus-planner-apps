@@ -1,6 +1,6 @@
 import type { CampaignId } from "@workspace/game-domain"
 
-import { ASSET_BASE_PATH } from "./asset-path"
+import { gameAssetUrl } from "./asset-path"
 
 // Storyline base names, indexed 1-4 — the asset/i18n-name-key stem shared by all four of a
 // storyline's tiers (`campaign1`/`mirror1`/`elite1`/`eliteMirror1` all name-key to "indomitus").
@@ -96,9 +96,9 @@ export function campaignDescriptor(
   return undefined
 }
 
-// Filenames follow "{nameKey}[-mirror]-{difficultyToken}.png" for storylines (e.g.
-// "indomitus-standard.png", "indomitus-mirror-elite.png") and "{nameKey}-{difficultyToken}.png"
-// for events (e.g. "death-guard-vs-admech-eventExtremis.png"); challenge tiers reuse their base
+// Filenames follow "{nameKey}[-mirror]-{difficultyToken}.webp" for storylines (e.g.
+// "indomitus-standard.webp", "indomitus-mirror-elite.webp") and "{nameKey}-{difficultyToken}.webp"
+// for events (e.g. "death-guard-vs-admech-eventExtremis.webp"); challenge tiers reuse their base
 // Standard/Extremis image (see `campaignDescriptor`'s `challenge` flag).
 export function campaignIcon(
   groupId: CampaignId,
@@ -112,5 +112,5 @@ export function campaignIcon(
     : descriptor.isMirror
       ? `${descriptor.nameKey}-mirror`
       : descriptor.nameKey
-  return `${ASSET_BASE_PATH}/campaigns/${stem}-${descriptor.difficultyToken}.png`
+  return gameAssetUrl(`campaigns/${stem}-${descriptor.difficultyToken}.webp`)
 }

@@ -1,16 +1,18 @@
 import { z } from "zod"
 import {
+  progressionOrder,
+  Rank,
+  Rarity,
+  type Progression,
+} from "@workspace/game-domain"
+import {
   abilityIdSchema,
   battleIdSchema,
   campaignIdSchema,
   equipmentIdSchema,
-  progressionOrder,
-  Rank,
-  Rarity,
   unitIdSchema,
   upgradeIdSchema,
-  type Progression,
-} from "@workspace/game-domain"
+} from "@workspace/game-domain/schemas"
 
 // Envelope/manifest shapes mirror @workspace/game-catalog's zod schemas: loose objects so additive
 // (server-added) fields don't break validation on older deployed clients.

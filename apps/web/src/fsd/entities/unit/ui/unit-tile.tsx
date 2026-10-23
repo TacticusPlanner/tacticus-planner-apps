@@ -168,7 +168,13 @@ function PortraitOverlays({
               />
             ))
           ) : (
-            <EntityIcon src={visual.icon} alt="" className="h-4 w-auto" />
+            <EntityIcon
+              src={visual.icon}
+              alt=""
+              className="h-4 w-auto"
+              width={512}
+              height={164}
+            />
           )}
         </span>
       )}

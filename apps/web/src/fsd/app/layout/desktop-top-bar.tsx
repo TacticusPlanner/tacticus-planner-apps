@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react"
 import { Search } from "lucide-react"
 import { useTranslation } from "react-i18next"
-import { CommandShortcut } from "@workspace/ui/components/command"
+import { CommandShortcut } from "@workspace/ui/components/command-shortcut"
 
 import { isMacPlatform } from "@/shared/lib"
 

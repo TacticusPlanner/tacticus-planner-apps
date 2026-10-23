@@ -39,6 +39,21 @@ describe("installPreloadErrorRecovery", () => {
     expect(second.defaultPrevented).toBe(true)
   })
 
+  it("never reloads for the optional analytics SDK chunk (blocked or deleted)", () => {
+    const event = Object.assign(
+      new Event("vite:preloadError", { cancelable: true }),
+      {
+        payload: new Error(
+          "Failed to fetch dynamically imported module: https://app.example.test/assets/posthog-Ab1_c.js"
+        ),
+      }
+    )
+    window.dispatchEvent(event)
+
+    expect(reload).not.toHaveBeenCalled()
+    expect(event.defaultPrevented).toBe(false)
+  })
+
   it("lets the failure propagate when an earlier document already used the reload", () => {
     window.sessionStorage.setItem("tp:stale-reload:/home", "previous-document")
 

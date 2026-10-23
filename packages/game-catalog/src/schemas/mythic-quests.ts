@@ -1,9 +1,6 @@
 import { z } from "zod"
-import {
-  Alliance,
-  equipmentIdSchema,
-  unitIdSchema,
-} from "@workspace/game-domain"
+import { Alliance } from "@workspace/game-domain"
+import { equipmentIdSchema, unitIdSchema } from "@workspace/game-domain/schemas"
 
 // A mythic quest reward, parsed server-side from V1's "type[:amount]" strings. The server's set of types is
 // closed (an unknown reward string fails catalog startup), so an unknown `type` here is a contract break.
