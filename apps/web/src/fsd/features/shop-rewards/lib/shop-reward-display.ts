@@ -5,6 +5,7 @@ import {
   equipmentSlotIcon,
   mowIcon,
   UpgradeIcons,
+  gameAssetUrl,
 } from "@workspace/game-catalog"
 import { unitIdSchema } from "@workspace/game-domain"
 
@@ -39,7 +40,7 @@ export interface ShopRewardDisplay {
  * A `TFunction` scoped to the namespaces this helper reads. i18next's `TFunction<Ns>` is nominally
  * branded to the first namespace, so a consumer whose page `t` is scoped differently (e.g. the Library
  * browser, first-ns `library`) binds a second `useTranslation(["shops", "characters", "upgrades"])`
- * just for this call — the same pattern as `pages/goals/model/shared/use-goal-catalog.ts`.
+ * just for this call — the same pattern as `features/goal-planning/model/shared/use-goal-catalog.ts`.
  */
 type ShopRewardTranslate = TFunction<
   ["shops", "characters", "upgrades", "equipmentItems"]
@@ -54,8 +55,6 @@ export interface ShopRewardDisplayContext {
   equipmentById: ReadonlyMap<string, { name: string }>
 }
 
-const ASSET_ROOT = "/game_catalog"
-
 const RARITY_SUFFIXES = [
   "Common",
   "Uncommon",
@@ -67,7 +66,7 @@ const RARITY_SUFFIXES = [
 
 type RaritySuffix = (typeof RARITY_SUFFIXES)[number]
 
-/** XP-book asset index by rarity (`ui_icon_consumable_xp_book_{0..5}.png`). */
+/** XP-book asset index by rarity (`ui_icon_consumable_xp_book_{0..5}.webp`). */
 const XP_BOOK_INDEX: Record<RaritySuffix, number> = {
   Common: 0,
   Uncommon: 1,
@@ -140,28 +139,28 @@ export function shopRewardDisplay(
   if (rewardType === "gold") {
     return {
       kind: "gold",
-      iconUrl: `${ASSET_ROOT}/misc/ui_icon_resource_coin.png`,
+      iconUrl: gameAssetUrl(`misc/ui_icon_resource_coin.webp`),
       label: t("shops:reward.gold"),
     }
   }
   if (rewardType === "dust") {
     return {
       kind: "dust",
-      iconUrl: `${ASSET_ROOT}/resources/ui_icon_resource_salvage.png`,
+      iconUrl: gameAssetUrl(`resources/ui_icon_resource_salvage.webp`),
       label: t("shops:reward.dust"),
     }
   }
   if (rewardType === "mythicDust") {
     return {
       kind: "dust",
-      iconUrl: `${ASSET_ROOT}/resources/ui_icon_resource_mythic_salvage.png`,
+      iconUrl: gameAssetUrl(`resources/ui_icon_resource_mythic_salvage.webp`),
       label: t("shops:reward.mythicDust"),
     }
   }
   if (rewardType === "expeditionSpeedUp") {
     return {
       kind: "other",
-      iconUrl: `${ASSET_ROOT}/resources/Resource_ExpeditionSpeedUp.png`,
+      iconUrl: gameAssetUrl(`resources/Resource_ExpeditionSpeedUp.webp`),
       label: t("shops:reward.expeditionSpeedUp"),
     }
   }
@@ -172,7 +171,9 @@ export function shopRewardDisplay(
   if (xpRarity) {
     return {
       kind: "xpBook",
-      iconUrl: `${ASSET_ROOT}/books/ui_icon_consumable_xp_book_${XP_BOOK_INDEX[xpRarity]}.png`,
+      iconUrl: gameAssetUrl(
+        `books/ui_icon_consumable_xp_book_${XP_BOOK_INDEX[xpRarity]}.webp`
+      ),
       label: t("shops:reward.xpBook", { rarity: xpRarity }),
     }
   }
@@ -192,8 +193,8 @@ export function shopRewardDisplay(
     return {
       kind: "forgeBadge",
       iconUrl: rarity
-        ? `${ASSET_ROOT}/resources/ui_forge_badges_${rarity.toLowerCase()}.png`
-        : `${ASSET_ROOT}/misc/forge_badges_generic.png`,
+        ? gameAssetUrl(`resources/ui_forge_badges_${rarity.toLowerCase()}.webp`)
+        : gameAssetUrl(`misc/forge_badges_generic.webp`),
       label: t("shops:reward.forgeBadge", {
         rarity: rarity ?? prettifyRewardType(rewardType),
       }),
@@ -205,7 +206,9 @@ export function shopRewardDisplay(
     return {
       kind: "abilityBadge",
       iconUrl: rarity
-        ? `${ASSET_ROOT}/resources/ui_icon_droptable_draft_abilityTokens${rarity}.png`
+        ? gameAssetUrl(
+            `resources/ui_icon_droptable_draft_abilityTokens${rarity}.webp`
+          )
         : undefined,
       label: t("shops:reward.abilityBadge", {
         rarity: rarity ?? prettifyRewardType(rewardType),
@@ -221,9 +224,13 @@ export function shopRewardDisplay(
       kind: "orb",
       iconUrl:
         rarity && rarity !== "Common"
-          ? `${ASSET_ROOT}/resources/ui_icon_droptable_draft_ascensionOrbs${rarity}.png`
+          ? gameAssetUrl(
+              `resources/ui_icon_droptable_draft_ascensionOrbs${rarity}.webp`
+            )
           : rarity
-            ? `${ASSET_ROOT}/resources/ui_hero_ascension_orbs_${rarity.toLowerCase()}.png`
+            ? gameAssetUrl(
+                `resources/ui_hero_ascension_orbs_${rarity.toLowerCase()}.webp`
+              )
             : undefined,
       label: t("shops:reward.orb", {
         rarity: rarity ?? prettifyRewardType(rewardType),
@@ -237,7 +244,9 @@ export function shopRewardDisplay(
   ) {
     return {
       kind: "mowToken",
-      iconUrl: `${ASSET_ROOT}/resources/ui_icon_droptable_draft_machinesOfWarToken.png`,
+      iconUrl: gameAssetUrl(
+        `resources/ui_icon_droptable_draft_machinesOfWarToken.webp`
+      ),
       label: t("shops:reward.mowToken", {
         alliance: rewardType.startsWith("mowComponent_")
           ? prettifyRewardType(rewardType)

@@ -323,7 +323,7 @@ function SyncButton() {
         />
         {t("nav.syncWithTacticus")}
       </Button>
-      <span className="text-xs text-muted-foreground" aria-live="polite">
+      <span className="text-xs text-muted-foreground" role="status">
         {statusText}
       </span>
     </div>

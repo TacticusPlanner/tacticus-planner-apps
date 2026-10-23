@@ -1,0 +1,12 @@
+{
+  "HyperCorrosiveAcid": {
+    "description": "Enemies that are damaged by a friendly <style=\"Faction_Tyranids\">Spore Mine</style> take <style=\"Stat_Damage\">+{[extraDmgPct]}% Damage</style> from attacks by <style=\"Rarity_Mythic\">Mythic</style> <style=\"Character\">characters</style> for {[nrOfRounds]} round.",
+    "variables": {
+      "extraDmgPct": [10, 13, 16, 20]
+    },
+    "constants": {
+      "nrOfRounds": "1"
+    },
+    "scaled": ["extraDmgPct"]
+  }
+}

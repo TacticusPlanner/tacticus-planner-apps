@@ -1,0 +1,11 @@
+{
+  "Helspear": {
+    "description": "<i>Herold der Apokalypse</i> verwandelt die Felder betroffener Gegner immer in <style=\"Tile_DespoiledGround\">verderbten Boden</style> und der nächste Angriff gegen betroffene Gegner ignoriert <style=\"Stat_Armor\">{[armorIgnored]} Rüstung</style>. Wenn <style=\"Faction_BlackLegion\">Haarken</style> nach dem Einsatz von <i>Herold der Apokalypse</i> <style=\"STAT\">{[nrOfUnits]}</style> gegnerische Einheiten besiegt, kann er die Fähigkeit erneut einsetzen.",
+    "variables": {
+      "armorIgnored": [685, 722, 759, 796, 833, 870, 907, 944, 981, 1018],
+      "nrOfUnits": [8, 8, 7, 7, 6, 6, 5, 5, 4, 4]
+    },
+    "constants": {},
+    "scaled": []
+  }
+}

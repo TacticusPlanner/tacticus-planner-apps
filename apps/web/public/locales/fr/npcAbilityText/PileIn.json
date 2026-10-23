@@ -1,0 +1,26 @@
+{
+  "PileIn": {
+    "description": "Si cette unité a 100 % de sa <style=\"Stat_Health\">santé</style> à la fin de son tour, elle a {[chance]} % de chances d'<style=\"Summon\">invoquer</style> un autre <style=\"Faction_Orks\">Grot</style> dans un hexagone adjacent libre, avec -{[chance_2]} % de chances par <style=\"Faction_Orks\">Grot</style> allié présent sur le plateau. Le <style=\"Faction_Orks\">Grot</style> invoqué agit normalement lors de son prochain tour.\n\nStats des Grots :\n<style=\"Stat_Health\">{[summonHp]} santé</style>\n<style=\"Stat_Damage\">{[summonDmg]} dégâts</style>",
+    "variables": {
+      "summonHp": [
+        40, 48, 56, 64, 72, 81, 90, 100, 109, 118, 127, 136, 146, 155, 164, 173,
+        182, 192, 201, 210, 222, 240, 276, 312, 349, 385, 422, 458, 494, 531,
+        567, 604, 640, 676, 713, 749, 786, 822, 858, 910, 982, 1057, 1139, 1229,
+        1394, 1558, 1722, 1887, 2051, 2216, 2240, 2270, 2300, 2340, 2380, 2420,
+        2460, 2510, 2560, 2610, 2670, 2730, 2790, 2850, 2910
+      ],
+      "summonDmg": [
+        20, 24, 28, 32, 36, 41, 45, 50, 54, 59, 64, 68, 73, 77, 82, 87, 91, 96,
+        100, 105, 111, 120, 138, 156, 174, 193, 211, 229, 247, 265, 284, 302,
+        320, 338, 356, 375, 393, 411, 429, 455, 491, 529, 569, 615, 697, 779,
+        861, 943, 1026, 1109, 1120, 1135, 1150, 1170, 1190, 1210, 1230, 1255,
+        1280, 1305, 1335, 1365, 1395, 1425, 1455
+      ]
+    },
+    "constants": {
+      "chance": "75",
+      "chance_2": "5"
+    },
+    "scaled": ["summonHp", "summonDmg"]
+  }
+}

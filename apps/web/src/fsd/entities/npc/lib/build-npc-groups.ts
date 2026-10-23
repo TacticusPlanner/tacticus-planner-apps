@@ -12,10 +12,11 @@ export function isVariationAvailable(record: NpcRecord): boolean {
  * The base roster entry: every mode suffix (`LHE`, `Surv`, `C1`, …) lengthens the id, so the shortest
  * available id is the least-specialised variation; ties keep served order.
  */
-export function defaultVariationId(
+function defaultVariationId(
+  first: NpcVariation,
   variations: readonly NpcVariation[]
 ): string {
-  let best = variations[0]
+  let best = first
   for (const variation of variations) {
     if (variation.id.length < best.id.length) best = variation
   }
@@ -39,6 +40,9 @@ export function buildNpcGroups(records: readonly NpcRecord[]): NpcGroup[] {
   const groups: NpcGroup[] = []
   const seenSlugs = new Set<string>()
   for (const [name, variations] of byName) {
+    // Buckets are created with their first record, so never empty.
+    const first = variations[0]
+    if (!first) continue
     const id = npcSlug(name)
     if (seenSlugs.has(id)) {
       throw new Error(`NPC group slug collision: "${id}" (${name})`)
@@ -47,9 +51,9 @@ export function buildNpcGroups(records: readonly NpcRecord[]): NpcGroup[] {
     groups.push({
       id,
       name,
-      factionId: variations[0].factionId,
-      alliance: variations[0].alliance,
-      defaultVariationId: defaultVariationId(variations),
+      factionId: first.factionId,
+      alliance: first.alliance,
+      defaultVariationId: defaultVariationId(first, variations),
       variations,
     })
   }

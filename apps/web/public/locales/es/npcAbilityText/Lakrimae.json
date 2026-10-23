@@ -1,0 +1,13 @@
+{
+  "Lakrimae": {
+    "description": "Los <style=\"NormalAttack\">ataques cuerpo a cuerpo normales</style> de <style=\"Faction_DeathGuard\">Typhus</style> añaden <style=\"Tile_Contamination\">Contaminación</style> al hexágono del objetivo. Durante su turno, cuando una unidad enemiga no mecánica dentro del aura de <style=\"ContagionsOfNurgle\">Contagio</style> de Typhus es eliminada, él invoca un <style=\"Summon\"><style=\"Faction_DeathGuard\">Plagabundo</style></style> en el hexágono de la unidad derrotada, siempre y cuando haya menos de {[nrOfUnits]} Plagabundos aliados en el campo de batalla. Los Plagabundos tienen <style=\"Stat_Health\">{[summonHp]} de Salud</style> y <style=\"Stat_Damage\">{[summonDmg]} de Daño</style>.",
+    "variables": {
+      "summonHp": [2940, 3099, 3257, 3416, 3575, 3733, 3892, 4051, 4210, 4368],
+      "summonDmg": [3425, 3610, 3795, 3980, 4165, 4349, 4534, 4719, 4904, 5089]
+    },
+    "constants": {
+      "nrOfUnits": "3"
+    },
+    "scaled": []
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "FragstormGrenadeLauncher": {
+    "description": "Inflige hasta <style=\"DMG_Blast\">{[minDmg]}-{[maxDmg]} de Daño de explosión</style> <style=\"Stat_Hits\">x{[nrOfHits]}</style> a un objetivo dentro de {[range]} hexágonos de distancia. Los <style=\"Stat_Hits\">impactos</style> sobrantes se distribuyen entre las unidades enemigas dentro de {[range]} hexágonos de distancia y priorizan las muertes.",
+    "variables": {
+      "minDmg": [
+        24, 29, 34, 38, 43, 49, 54, 60, 65, 71, 76, 82, 87, 93, 98, 104, 109,
+        115, 120, 126, 133, 144, 166, 187, 209, 231, 253, 275, 297, 318, 340,
+        362, 384, 406, 428, 450, 471, 493, 515, 546, 589, 634, 683, 738, 836,
+        935, 1033, 1132, 1231, 1330, 1344, 1362, 1380, 1404, 1428, 1452, 1476,
+        1506, 1536, 1566, 1602, 1638, 1674, 1710, 1746
+      ],
+      "maxDmg": [
+        30, 36, 42, 48, 54, 61, 68, 75, 82, 89, 95, 102, 109, 116, 123, 130,
+        137, 144, 151, 158, 167, 180, 207, 234, 262, 289, 316, 344, 371, 398,
+        425, 453, 480, 507, 535, 562, 589, 617, 644, 682, 736, 793, 854, 922,
+        1045, 1169, 1292, 1415, 1538, 1662, 1680, 1703, 1725, 1755, 1785, 1815,
+        1845, 1883, 1920, 1958, 2003, 2048, 2093, 2138, 2183
+      ]
+    },
+    "constants": {
+      "damageProfile": "Blast",
+      "nrOfHits": "6",
+      "range": "2"
+    },
+    "scaled": ["minDmg", "maxDmg"]
+  }
+}

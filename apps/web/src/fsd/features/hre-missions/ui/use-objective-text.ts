@@ -24,9 +24,9 @@ export function useObjectiveText(
         : (featuredCharacterId ?? "")
       const { key, values } = objectiveTextKey(objective, {
         alliance: hero
-          ? (t(`common:alliances.${hero.alliance}` as never, {
+          ? t(`common:alliances.${hero.alliance}` as never, {
               defaultValue: hero.alliance,
-            }) as string)
+            })
           : null,
         hero: heroName,
         formatNumber: (value) => value.toLocaleString(i18n.language),
@@ -41,7 +41,7 @@ export function useObjectiveText(
                 defaultValue: objective.qualifier,
               })
             : ""
-      return t(`hre:${key}` as never, { ...values, qualifier }) as string
+      return t(`hre:${key}` as never, { ...values, qualifier })
     },
     [hero, featuredCharacterId, t, i18n.language]
   )

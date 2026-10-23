@@ -1,0 +1,10 @@
+{
+  "ContemptuousDisregard": {
+    "description": "Verbündete <style=\"Rarity_Mythic\">Mythische</style> <style=\"Character\">Charaktere</style> erleiden <style=\"Stat_Damage\">–{[dmgReductionPct]} % Schaden</style>, wenn sie sich auf einem Feld mit einem <style=\"HexEffect\">Feldeffekt</style> befinden.",
+    "variables": {
+      "dmgReductionPct": [10, 13, 16, 20]
+    },
+    "constants": {},
+    "scaled": ["dmgReductionPct"]
+  }
+}

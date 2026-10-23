@@ -5,10 +5,10 @@ import { damageTypeIcon } from "./damage-type"
 describe("damageTypeIcon", () => {
   it("builds the icon path directly from the PascalCase damage type id", () => {
     expect(damageTypeIcon("Physical")).toBe(
-      "/game_catalog/damage_icons/ui_icon_damage_profile2_Physical.png"
+      "/game_catalog/damage_icons/ui_icon_damage_profile2_Physical.webp"
     )
     expect(damageTypeIcon("HeavyRound")).toBe(
-      "/game_catalog/damage_icons/ui_icon_damage_profile2_HeavyRound.png"
+      "/game_catalog/damage_icons/ui_icon_damage_profile2_HeavyRound.webp"
     )
   })
 })

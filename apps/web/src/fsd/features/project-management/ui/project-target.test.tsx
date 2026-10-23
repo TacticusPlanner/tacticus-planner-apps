@@ -49,7 +49,7 @@ function renderSheet(
 ) {
   render(
     <ManageProjectsSheet
-      actions={actions as never}
+      actions={actions}
       onOpenChange={vi.fn()}
       open
       project={edited as never}

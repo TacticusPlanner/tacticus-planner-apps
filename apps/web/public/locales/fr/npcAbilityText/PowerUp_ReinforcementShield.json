@@ -1,0 +1,10 @@
+{
+  "PowerUp_ReinforcementShield": {
+    "description": "Lorsqu'elle est choisie par cette unité, chaque personnage de cet événement est déployé avec un <style=\"Buff_Shield\">bouclier</style> équivalent à {[shieldPct]} % de sa <style=\"Stat_Health\">santé</style> maximum. La puissance du bouclier augmente à chaque amélioration de bouclier supplémentaire que vous récupérez.",
+    "variables": {},
+    "constants": {
+      "shieldPct": "10"
+    },
+    "scaled": []
+  }
+}

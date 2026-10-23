@@ -1,0 +1,11 @@
+{
+  "ChaliceOfBaal": {
+    "description": "The first time each turn that any unit adjacent to <style=\"Faction_BloodAngels\">Nicodemus</style> dies, he <style=\"Healing\">heals</style> himself and all friendly adjacent units for <style=\"Stat_Health\">{[hp]} Health</style>. All affected units deal <style=\"Stat_Damage\">+{[extraDmg]} Damage</style> with <style=\"NormalAttack\">normal melee attacks</style> until the end of this turn.",
+    "variables": {
+      "hp": [1765, 1860, 1956, 2051, 2146, 2241, 2337, 2432, 2527, 2622],
+      "extraDmg": [490, 516, 543, 569, 596, 622, 649, 675, 702, 728]
+    },
+    "constants": {},
+    "scaled": []
+  }
+}

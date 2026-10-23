@@ -91,7 +91,7 @@ function candidateUnits(
       matching
         .filter((entry) => roster.has(entry.unit.id))
         .map((entry) => ({
-          id: entry.unit.id as string,
+          id: entry.unit.id,
           power: unitEffectivePower(entry.unit.id, roster, inputs.config) ?? 0,
         }))
         .sort((a, b) => b.power - a.power)
@@ -100,7 +100,7 @@ function candidateUnits(
       matching
         .filter((entry) => !roster.has(entry.unit.id))
         .map((entry) => ({
-          id: entry.unit.id as string,
+          id: entry.unit.id,
           perBattle: unitLanePotential(entry.unit, planLane.lane)
             .pointsPerBattle,
         }))
@@ -218,7 +218,7 @@ export function* recommendUpgrades(
       gain: best.gain,
       ceilingAfter: best.evaluation.ceiling ?? 0,
       alreadyPlanned: best.steps.every((step) =>
-        input.alreadyPlanned(best!.unitId, step)
+        input.alreadyPlanned(best.unitId, step)
       ),
     })
     yield [...recommendations]

@@ -130,6 +130,15 @@ describe("Dailies raid pages", () => {
     })
   })
 
+  it("renders its title as an h2 under the shell h1", () => {
+    renderPage(<TodayPage />)
+    // The shell header owns the page h1; the tab starts its hierarchy at h2.
+    expect(screen.queryAllByRole("heading", { level: 1 })).toHaveLength(0)
+    expect(
+      screen.getByRole("heading", { level: 2, name: "today.title" })
+    ).toBeInTheDocument()
+  })
+
   it("shows the real energy-usage percentage next to the title, uncapped above 100%", () => {
     useDailyRaids.mockReturnValue(
       ready({ dailyEnergy: 100, realEnergyUsedToday: 150 })
@@ -223,8 +232,40 @@ describe("Dailies raid pages", () => {
 
     const lines = screen
       .getByTestId(`todays-attempt-${battle}`)
-      .querySelectorAll(".truncate")
+      .querySelectorAll(".break-words")
     expect([...lines].map((line) => line.textContent)).toEqual([battle])
+  })
+
+  it("wraps a long localized campaign name and node label in full instead of truncating them", () => {
+    const campaignName = "Adeptus Mechanicus – Kampagnenereignis"
+    const nodeLabel = "Extremis 12B (Herausforderungsknoten)"
+    useDailyRaids.mockReturnValue(
+      ready({
+        locationsByBattleId: new Map([
+          [
+            battle,
+            {
+              id: battle,
+              campaignName,
+              nodeLabel,
+              shortLabel: "AdMech EX 12B",
+              challenge: true,
+            },
+          ],
+        ]),
+        todaysAttempts: [
+          { battleId: battle, attemptsUsed: 2, attemptsLeft: 4 },
+        ],
+      })
+    )
+    renderPage(<TodayPage />)
+
+    const attempt = within(screen.getByTestId(`todays-attempt-${battle}`))
+    for (const label of [campaignName, nodeLabel]) {
+      const line = attempt.getByText(label)
+      expect(line).toHaveClass("break-words")
+      expect(line).not.toHaveClass("truncate")
+    }
   })
 
   it("shows a resource icon for an attempt at a node outside this project's plan", () => {

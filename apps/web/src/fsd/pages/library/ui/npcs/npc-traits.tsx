@@ -8,8 +8,10 @@ import {
 } from "@workspace/ui/components/popover"
 
 import { useNpcTraitText } from "@/entities/npc"
-import { AbilityText } from "@/shared/ability-text"
+import { AbilityText, rulesTextPending } from "@/shared/ability-text"
 import { EntityIcon } from "@/shared/ui"
+
+import { RulesTextNote } from "../unit/rules-text-note"
 
 /**
  * Trait chips: icon + localized name, always visible — an icon-only chip is unreadable on touch.
@@ -21,9 +23,10 @@ import { EntityIcon } from "@/shared/ui"
  */
 function TraitChip({ trait, rarity }: { trait: string; rarity: Rarity }) {
   const { t } = useTranslation(["library", "traits"])
-  const traitText = useNpcTraitText()
+  const rules = useNpcTraitText()
   const label = t(`traits:${trait}`, { defaultValue: trait })
-  const text = traitText(trait)
+  const text = rules.text(trait)
+  const pending = !text && rulesTextPending(rules)
 
   const chipClass =
     "flex items-center gap-1.5 rounded-lg border bg-card px-2 py-1.5 text-sm"
@@ -34,7 +37,7 @@ function TraitChip({ trait, rarity }: { trait: string; rarity: Rarity }) {
     </>
   )
 
-  if (!text) {
+  if (!text && !pending) {
     return (
       <li className={chipClass} data-testid={`npc-trait-${trait}`}>
         {chip}
@@ -56,12 +59,19 @@ function TraitChip({ trait, rarity }: { trait: string; rarity: Rarity }) {
         </PopoverTrigger>
         <PopoverContent align="start" className="w-72">
           <p className="mb-1 text-sm font-medium">{label}</p>
-          <AbilityText
-            text={text.description}
-            level={1}
-            variables={text.variables}
-            rarity={rarity}
-          />
+          {text ? (
+            <AbilityText
+              text={text.description}
+              level={1}
+              variables={text.variables}
+              rarity={rarity}
+            />
+          ) : (
+            <RulesTextNote
+              rules={rules}
+              data-testid={`npc-trait-${trait}-text`}
+            />
+          )}
         </PopoverContent>
       </Popover>
     </li>

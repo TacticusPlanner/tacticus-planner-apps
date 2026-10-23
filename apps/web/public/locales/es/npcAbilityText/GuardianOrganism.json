@@ -1,0 +1,22 @@
+{
+  "GuardianOrganism": {
+    "description": "Si la <style=\"Faction_Tyranids\">Guardia Tiránida</style> está al alcance de <style=\"Synapse\">Sinapsis</style> o no se movió durante el turno anterior, las unidades aliadas afectadas por su rasgo de <style=\"Big_Target\">Gran objetivo</style> reciben <style=\"Stat_Damage\">-{[dmgReductionPct]} % de Daño</style> durante el siguiente turno del enemigo, hasta un máximo de <style=\"Stat_Damage\">-{[dmgReduction]} de Daño</style> por impacto.",
+    "variables": {
+      "dmgReduction": [
+        20, 24, 28, 32, 36, 41, 45, 50, 54, 59, 64, 68, 73, 77, 82, 87, 91, 96,
+        100, 105, 111, 120, 138, 156, 174, 193, 211, 229, 247, 265, 284, 302,
+        320, 338, 356, 375, 393, 411, 429, 455, 491, 529, 569, 615, 697, 779,
+        861, 943, 1026, 1109, 1120, 1135, 1150, 1170, 1190, 1210, 1230, 1255,
+        1280, 1305, 1335, 1365, 1395, 1425, 1455
+      ],
+      "dmgReductionPct": [
+        25, 25, 25, 25, 25, 25, 25, 25, 27, 27, 27, 27, 27, 27, 27, 27, 27, 29,
+        29, 29, 29, 29, 29, 29, 29, 29, 31, 31, 31, 31, 31, 31, 31, 31, 31, 33,
+        33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33,
+        33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33
+      ]
+    },
+    "constants": {},
+    "scaled": ["dmgReduction"]
+  }
+}

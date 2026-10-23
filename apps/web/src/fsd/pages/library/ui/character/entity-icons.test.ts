@@ -16,52 +16,52 @@ import {
 
 describe("entity icon mapping", () => {
   it("maps rank ids to asset paths using lowercase Rank filenames", () => {
-    expect(rankIcon("Stone1")).toBe("/game_catalog/ranks/stone1.png")
-    expect(rankIcon("Diamond3")).toBe("/game_catalog/ranks/diamond3.png")
-    expect(rankIcon("Adamantine1")).toBe("/game_catalog/ranks/adamantine1.png")
-    expect(rankIcon("Adamantine2")).toBe("/game_catalog/ranks/adamantine2.png")
+    expect(rankIcon("Stone1")).toBe("/game_catalog/ranks/stone1.webp")
+    expect(rankIcon("Diamond3")).toBe("/game_catalog/ranks/diamond3.webp")
+    expect(rankIcon("Adamantine1")).toBe("/game_catalog/ranks/adamantine1.webp")
+    expect(rankIcon("Adamantine2")).toBe("/game_catalog/ranks/adamantine2.webp")
   })
 
   it("maps Onslaught progress and alliance markers to bundled assets", () => {
     expect(onslaughtTierIcon("Diamond", 4)).toBe(
-      "/game_catalog/onslaught/ui_onslaught_button_rank_diamond_4.png"
+      "/game_catalog/onslaught/ui_onslaught_button_rank_diamond_4.webp"
     )
     expect(onslaughtAllianceIcon("Xenos")).toBe(
-      "/game_catalog/onslaught/xenos.png"
+      "/game_catalog/onslaught/xenos.webp"
     )
   })
 
   it("derives the upgrade-material icon from the upgrade id", () => {
     expect(UpgradeIcons.icon(upgradeIdSchema.parse("upgArmC001"))).toBe(
-      "/game_catalog/upgrade_materials/ui_icon_upgrade_upgArmC001.png"
+      "/game_catalog/upgrade_materials/ui_icon_upgrade_upgArmC001.webp"
     )
   })
 
   it("maps storyline groups by groupId+type", () => {
     expect(campaignIcon(campaignIdSchema.parse("campaign1"), "Standard")).toBe(
-      "/game_catalog/campaigns/indomitus-standard.png"
+      "/game_catalog/campaigns/indomitus-standard.webp"
     )
     expect(campaignIcon(campaignIdSchema.parse("elite1"), "Elite")).toBe(
-      "/game_catalog/campaigns/indomitus-elite.png"
+      "/game_catalog/campaigns/indomitus-elite.webp"
     )
     expect(campaignIcon(campaignIdSchema.parse("mirror1"), "Mirror")).toBe(
-      "/game_catalog/campaigns/indomitus-mirror-standard.png"
+      "/game_catalog/campaigns/indomitus-mirror-standard.webp"
     )
     expect(
       campaignIcon(campaignIdSchema.parse("eliteMirror1"), "EliteMirror")
-    ).toBe("/game_catalog/campaigns/indomitus-mirror-elite.png")
+    ).toBe("/game_catalog/campaigns/indomitus-mirror-elite.webp")
   })
 
   it("maps event campaigns to the defending-faction asset, challenge tiers reuse the base image", () => {
     expect(
       campaignIcon(campaignIdSchema.parse("eventCampaign1"), "Standard")
-    ).toBe("/game_catalog/campaigns/death-guard-vs-admech-eventStandard.png")
+    ).toBe("/game_catalog/campaigns/death-guard-vs-admech-eventStandard.webp")
     expect(
       campaignIcon(campaignIdSchema.parse("eventCampaign1"), "Extremis")
-    ).toBe("/game_catalog/campaigns/death-guard-vs-admech-eventExtremis.png")
+    ).toBe("/game_catalog/campaigns/death-guard-vs-admech-eventExtremis.webp")
     expect(
       campaignIcon(campaignIdSchema.parse("eventCampaign1"), "Standard", true)
-    ).toBe("/game_catalog/campaigns/death-guard-vs-admech-eventStandard.png")
+    ).toBe("/game_catalog/campaigns/death-guard-vs-admech-eventStandard.webp")
     expect(
       campaignIcon(campaignIdSchema.parse("eventCampaign99"), "Standard")
     ).toBeUndefined()

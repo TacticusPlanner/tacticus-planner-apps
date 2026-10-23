@@ -1,0 +1,19 @@
+{
+  "CursedPlagueBell": {
+    "description": "Las unidades de <style=\"Aliance_Chaos\">Caos</style> aliadas que comienzan su turno en el aura de <style=\"Faction_DeathGuard\">Contagio</style> de <style=\"ContagionsOfNurgle\">Corrodius</style> obtienen <style=\"Stat_Movement\">+{[extraMovement]} de Movimiento</style> para este turno. Las unidades <style=\"Psyker\">Psíquicas</style> enemigas en el aura de <style=\"Faction_DeathGuard\">Contagio</style> de <style=\"ContagionsOfNurgle\">Corrodius</style> se autoinfligen <style=\"DMG_Psychic\">{[dmg]} de Daño psíquico</style> <style=\"Stat_Hits\">x{[nrOfHits]}</style> cada vez que uno de sus ataques inflige <style=\"DMG_Psychic\">Daño psíquico</style>.",
+    "variables": {
+      "dmg": [
+        18, 22, 25, 29, 32, 37, 41, 45, 49, 53, 57, 61, 66, 70, 74, 78, 82, 86,
+        90, 95, 100, 108, 124, 141, 157, 173, 190, 206, 222, 239, 255, 272, 288,
+        304, 321, 337, 354, 370, 386, 409, 442, 476, 512, 553, 627, 701, 775,
+        849, 923, 997, 1008, 1022, 1035, 1053, 1071, 1089, 1107, 1130, 1152,
+        1175, 1202, 1229, 1256, 1283, 1310
+      ]
+    },
+    "constants": {
+      "nrOfHits": "1",
+      "extraMovement": "1"
+    },
+    "scaled": ["dmg"]
+  }
+}

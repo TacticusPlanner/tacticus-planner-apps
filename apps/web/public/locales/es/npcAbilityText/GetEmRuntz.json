@@ -1,0 +1,23 @@
+{
+  "GetEmRuntz": {
+    "description": "Invoca 1 <style=\"Summon\"><style=\"Faction_Orks\">Grot</style></style> en cada hexágono adyacente que también tenga a una unidad enemiga adyacente. Los <style=\"Summon\"><style=\"Faction_Orks\">Grots</style></style> recién generados pueden atacar inmediatamente a un enemigo con ataques <style=\"Stat_Melee\">cuerpo a cuerpo</style>, pero no pueden moverse en este turno. Las unidades enemigas atacadas por un <style=\"Summon\"><style=\"Faction_Orks\">Grot</style></style> de esa forma son <style=\"Debuff_Taunted\">provocadas</style> por 1 ronda.\n\nAtributos de Grot:\n<style=\"Stat_Health\">{[summonHp]} de Salud</style>\n<style=\"Stat_Damage\">{[summonDmg]} de Daño</style>",
+    "variables": {
+      "summonHp": [
+        66, 79, 92, 106, 119, 134, 149, 164, 180, 195, 210, 225, 240, 255, 271,
+        286, 301, 316, 331, 347, 367, 395, 455, 515, 576, 636, 696, 756, 816,
+        876, 936, 996, 1056, 1116, 1176, 1236, 1296, 1356, 1416, 1501, 1620,
+        1744, 1879, 2028, 2299, 2571, 2842, 3113, 3384, 3656, 3696, 3746, 3795,
+        3861, 3927, 3993, 4059, 4142, 4224, 4307, 4406, 4505, 4604, 4703, 4802
+      ],
+      "summonDmg": [
+        33, 40, 46, 53, 59, 67, 75, 82, 90, 97, 105, 113, 120, 128, 135, 143,
+        150, 158, 166, 173, 183, 198, 228, 258, 288, 318, 348, 378, 408, 438,
+        468, 498, 528, 558, 588, 618, 648, 678, 708, 750, 810, 872, 940, 1014,
+        1150, 1285, 1421, 1557, 1692, 1828, 1848, 1873, 1898, 1931, 1964, 1997,
+        2030, 2071, 2112, 2153, 2203, 2252, 2302, 2351, 2401
+      ]
+    },
+    "constants": {},
+    "scaled": ["summonHp", "summonDmg"]
+  }
+}

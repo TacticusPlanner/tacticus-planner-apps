@@ -1,0 +1,10 @@
+{
+  "IntegratedCircuits": {
+    "description": "Any time a friendly unit is <style=\"Overkill\">Overkilled</style>, the <style=\"Faction_Necrons\">Menhir</style> also takes that same amount of Damage as <style=\"DMG_Direct\">Direct Damage</style>.",
+    "variables": {},
+    "constants": {
+      "damageProfile": "DirectDamage"
+    },
+    "scaled": []
+  }
+}

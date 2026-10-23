@@ -1,0 +1,10 @@
+{
+  "PowerUp_Health": {
+    "description": "When picked up by a unit, this power-up increases their <style=\"Stat_Health\">Health</style> by an amount equal to {[healthPct]}% of their max <style=\"Stat_Health\">Health</style>.",
+    "variables": {},
+    "constants": {
+      "healthPct": "200"
+    },
+    "scaled": []
+  }
+}

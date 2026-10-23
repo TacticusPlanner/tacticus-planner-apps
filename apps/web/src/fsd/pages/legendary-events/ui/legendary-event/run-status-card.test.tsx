@@ -15,6 +15,7 @@ import type {
   LegendaryEventRunInputs,
   LegendaryEventRunResolution,
 } from "@/entities/legendary-event"
+import { setTestAuth } from "@/test/auth"
 import { lysanderEvent, utharEvent } from "@/test/fixtures/legendary-events"
 import { createTestI18n, i18nWrapper } from "@/test/i18n"
 import { fireEvent, render, screen, within } from "@/test/render"
@@ -28,7 +29,6 @@ import {
 } from "./legendary-event-page.view-model"
 import { RunStatusCard } from "./run-status-card"
 
-vi.mock("@azure/msal-react", () => ({ useIsAuthenticated: () => true }))
 vi.mock("@/shared/api", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/shared/api")>()),
   apiClient: (await import("@/test/fake-api-client")).fakeApiClient(() => ({
@@ -210,6 +210,7 @@ describe("RunStatusCard", () => {
     i18n = await createTestI18n("en")
   })
   beforeEach(() => {
+    setTestAuth({ authenticated: true })
     vi.useFakeTimers({ toFake: ["Date"] })
     vi.setSystemTime(NOW)
   })
@@ -217,8 +218,8 @@ describe("RunStatusCard", () => {
 
   it("renders the populated example", () => {
     const view = build(
-      { status: "ready", data: lysanderProgress as never, retry },
-      ladder as never,
+      { status: "ready", data: lysanderProgress, retry },
+      ladder,
       NOW
     )
     renderCard(view)
@@ -291,10 +292,10 @@ describe("RunStatusCard", () => {
       build(
         {
           status: "ready",
-          data: { ...lysanderProgress, currentClaimedChestIndex: -1 } as never,
+          data: { ...lysanderProgress, currentClaimedChestIndex: -1 },
           retry,
         },
-        ladder as never
+        ladder
       )
     )
     expect(screen.getByTestId("run-status-chests")).toHaveTextContent(
@@ -304,7 +305,7 @@ describe("RunStatusCard", () => {
 
   it("shows a dash for the milestone without the reward ladder", () => {
     const view = build(
-      { status: "ready", data: lysanderProgress as never, retry },
+      { status: "ready", data: lysanderProgress, retry },
       undefined
     )
     renderCard(view)
@@ -325,10 +326,10 @@ describe("RunStatusCard", () => {
             ...lysanderProgress.currentEventTokens,
             current: 12,
           },
-        } as never,
+        },
         retry,
       },
-      ladder as never
+      ladder
     )
     renderCard(view)
 
@@ -339,10 +340,7 @@ describe("RunStatusCard", () => {
   })
 
   it("shows the run timing and the no-entry body for an event not in the chunk", () => {
-    const view = build(
-      { status: "ready", data: undefined, retry },
-      ladder as never
-    )
+    const view = build({ status: "ready", data: undefined, retry }, ladder)
     renderCard(view)
 
     expect(screen.getByTestId("run-status-no-entry")).toHaveTextContent(
@@ -353,7 +351,7 @@ describe("RunStatusCard", () => {
   })
 
   it("shows synced data unavailable in place of the values when player data fails", () => {
-    renderCard(build({ status: "error", retry }, ladder as never))
+    renderCard(build({ status: "error", retry }, ladder))
 
     expect(screen.getByTestId("run-status-unavailable")).toHaveTextContent(
       "Synced data unavailable"
@@ -620,7 +618,7 @@ describe("RunStatusCard", () => {
       const outlook = buildRewardOutlookViewModel({
         ...OUTLOOK_DEFAULTS,
         rewards: utharEvent.rewards,
-        progress: synced() as never,
+        progress: synced(),
         plan: { isPending: true, data: undefined },
         planEnabled: false,
       })

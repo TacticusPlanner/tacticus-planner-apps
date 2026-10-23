@@ -4,13 +4,16 @@ import type { Rarity } from "@workspace/game-domain"
 
 import {
   AbilityText,
+  rulesTextPending,
   buildAbilitySeries,
   chartedSeries,
   type AbilityTextEntry,
+  type RulesText,
 } from "@/shared/ability-text"
 import { describeSeries, EntityIcon, LevelChart } from "@/shared/ui"
 
 import { LevelStepper } from "./level-stepper"
+import { RulesTextNote } from "./rules-text-note"
 
 /** Labelled x ticks: levels 1, 10, 20 … for abilities; 1, 5, 10 for a 10-level relic. */
 function levelTicks(maxLevel: number): number[] {
@@ -29,6 +32,7 @@ function levelTicks(maxLevel: number): number[] {
  * level with level-dependent values highlighted, a next-level line, and a growth chart per changing
  * value. Stepper, text, next-level line and chart markers all read the same `level`. Without rules
  * text the panel says so and shows no stepper, next-level line or chart, never half-resolved text.
+ * While `rules` (the hook the text came from) is still loading, or failed, it says that instead.
  */
 export function AbilityPanel({
   kind,
@@ -47,12 +51,15 @@ export function AbilityPanel({
   headingLevel = "h3",
   note,
   levelControl,
+  rules,
   "data-testid": testId,
 }: {
   kind: string
   name: string
   iconSrc?: string
   text: AbilityTextEntry | undefined
+  /** The rules-text load `text` comes from; without it the text counts as loaded. */
+  rules?: RulesText<unknown>
   rarity: Rarity
   unitName: string
   factionId: string
@@ -87,7 +94,7 @@ export function AbilityPanel({
     [locale]
   )
   const formatAt = (values: number[][], index: number) =>
-    values[index].map((value) => format.format(value)).join("–")
+    (values[index] ?? []).map((value) => format.format(value)).join("–")
   const yours =
     playerLevel === undefined
       ? null
@@ -226,6 +233,8 @@ export function AbilityPanel({
             </div>
           ) : null}
         </>
+      ) : rules && rulesTextPending(rules) ? (
+        <RulesTextNote rules={rules} data-testid={`${testId}-text`} />
       ) : (
         <p
           className="rounded-md border border-dashed px-3 py-2 text-sm text-muted-foreground"

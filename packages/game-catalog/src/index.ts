@@ -100,24 +100,17 @@ export {
 } from "./shops/shop-resolve"
 export { bpSeasonStartMs } from "./shops/season-locks"
 
-export {
-  manifestSchema,
-  datasetEnvelopeMetaSchema,
-  datasetPayloadSchemas,
-} from "./schemas"
-
-export {
-  GameCatalogHttpClient,
-  type GameCatalogClient,
-  type GameCatalogManifestResult,
+// The HTTP client, sync loop and zod schemas live behind `@workspace/game-catalog/sync` so they load
+// only when a sync runs; the types stay here because they are erased.
+export type {
+  GameCatalogClient,
+  GameCatalogManifestResult,
 } from "./game-catalog-api"
 
-export {
-  syncGameCatalog,
-  selectChangedDatasets,
-  type GameCatalogSyncResult,
-  type GameCatalogSyncProgress,
-  type GameCatalogSyncOptions,
+export type {
+  GameCatalogSyncResult,
+  GameCatalogSyncProgress,
+  GameCatalogSyncOptions,
 } from "./game-catalog-sync"
 
 export {
@@ -157,6 +150,7 @@ export {
 export {
   rarityClass,
   ASSET_BASE_PATH,
+  gameAssetUrl,
   UpgradeIcons,
   rarityIcon,
   rankIcon,

@@ -1,0 +1,24 @@
+{
+  "AnvilShield": {
+    "description": "<style=\"Faction_SpaceWolves\">Arjac</style> blocks an additional <style=\"Stat_Damage\">{[blockDmg]} Damage</style> and when he <style=\"Stat_Block\">Blocks</style> he covers the attacker's hex in <style=\"Effect_Ice\">Ice</style>. If <style=\"Faction_SpaceWolves\">Arjac</style> is below <style=\"Stat_Health\">{[healthPct]}% Health</style>, or if his attacker is on a hex covered in <style=\"Effect_Ice\">Ice</style>, he gains <style=\"Stat\">+{[blockChance]}%</style> <style=\"Stat_Block\">Block</style> <style=\"Stat_Chance\">chance</style> and if he blocks a melee attack, the attacker is <style=\"Debuff_Stunned\">Stunned</style> until the end of the attacker's next turn.",
+    "variables": {
+      "blockDmg": [
+        10, 12, 14, 16, 18, 20, 23, 25, 27, 30, 32, 34, 36, 39, 41, 43, 46, 48,
+        50, 53, 56, 60, 69, 78, 87, 96, 105, 115, 124, 133, 142, 151, 160, 169,
+        178, 187, 196, 206, 215, 227, 245, 264, 285, 307, 348, 390, 431, 472,
+        513, 554, 560, 568, 575, 585, 595, 605, 615, 628, 640, 653, 668, 683,
+        698, 713, 728
+      ],
+      "blockChance": [
+        15, 15, 15, 15, 15, 15, 15, 15, 17, 17, 17, 17, 17, 17, 17, 17, 17, 18,
+        18, 18, 18, 18, 18, 18, 18, 18, 19, 19, 19, 19, 19, 19, 19, 19, 19, 20,
+        20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20,
+        20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20
+      ]
+    },
+    "constants": {
+      "healthPct": "35"
+    },
+    "scaled": ["blockDmg"]
+  }
+}

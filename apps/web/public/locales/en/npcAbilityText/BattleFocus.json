@@ -1,0 +1,8 @@
+{
+  "BattleFocus": {
+    "description": "After attacking or being attacked, moves <style=\"Stat_Movement\">1</style> hex in a direction as far away from enemies as possible.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

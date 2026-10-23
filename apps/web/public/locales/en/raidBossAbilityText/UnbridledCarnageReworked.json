@@ -1,0 +1,48 @@
+{
+  "UnbridledCarnageReworked": {
+    "description": "At the end of <style=\"Faction_Orks\">Tanksmasha's</style> turn, <style=\"Summon\"><style=\"Faction_Orks\">Grots</style></style> and <style=\"Object2\">Explosive Oil Drums</style> rain from the sky. If an Explosive Oil Drum gets destroyed, it explodes, damaging units on adjacent hexes. Tanksmasha loses <style=\"Stat_Health\">{[hp]} Health</style> from the explosion and all other characters take <style=\"Stat_Hits\">{[nrOfHits]} hit</style> that inflicts <style=\"DMG_Blast\">Blast Damage</style> equal to {[dmgPct]}% of the character's maximum <style=\"Stat_Health\">Health</style>. All affected <style=\"Summon\">Summons</style> are destroyed.",
+    "variables": {
+      "summonHp": [
+        40, 48, 56, 64, 72, 81, 90, 100, 109, 118, 127, 136, 146, 155, 164, 173,
+        182, 192, 201, 210, 222, 240, 276, 312, 349, 385, 422, 458, 494, 531,
+        567, 604, 640, 676, 713, 749, 786, 822, 858, 910, 982, 1057, 1139, 1229,
+        1394, 1558, 1722, 1887, 2051, 2216, 2397, 2474, 2553, 2644, 2737, 2831,
+        2927, 3037, 3149, 3263, 3391, 3522, 3655, 3791, 3929
+      ],
+      "summonDmg": [
+        20, 24, 28, 32, 36, 41, 45, 50, 54, 59, 64, 68, 73, 77, 82, 87, 91, 96,
+        100, 105, 111, 120, 138, 156, 174, 193, 211, 229, 247, 265, 284, 302,
+        320, 338, 356, 375, 393, 411, 429, 455, 491, 529, 569, 615, 697, 779,
+        861, 943, 1026, 1109, 1198, 1237, 1277, 1322, 1369, 1416, 1464, 1519,
+        1574, 1631, 1695, 1761, 1827, 1895, 1964
+      ],
+      "summonHp_2": [
+        30, 36, 42, 48, 54, 61, 68, 75, 82, 89, 95, 102, 109, 116, 123, 130,
+        137, 144, 151, 158, 167, 180, 207, 234, 262, 289, 316, 344, 371, 398,
+        425, 453, 480, 507, 535, 562, 589, 617, 644, 682, 736, 793, 854, 922,
+        1045, 1169, 1292, 1415, 1538, 1662, 1798, 1856, 1915, 1983, 2053, 2124,
+        2196, 2278, 2362, 2447, 2543, 2641, 2741, 2843, 2946
+      ],
+      "hp": [
+        72, 90, 108, 126, 144, 162, 180, 198, 360, 420, 480, 540, 600, 660, 720,
+        780, 840, 1440, 1620, 1800, 1980, 2160, 2340, 2520, 2700, 2880, 4800,
+        5400, 6000, 6600, 7200, 7800, 8400, 9000, 9984, 13320, 16656, 19992,
+        23328, 26664, 30000, 33336, 36672, 39984, 43344, 46680, 49920, 53352,
+        56688, 60000, 60000, 70000, 100000, 100000, 100000, 105000, 105001,
+        105002, 105003, 105004, 105005, 105006, 105007, 105008, 105009
+      ]
+    },
+    "constants": {
+      "minSummons": "2",
+      "maxSummons": "3",
+      "minSummons_2": "3",
+      "maxSummons_2": "4",
+      "unitId": "GuildBoss4Npc1OrksGrot",
+      "unitId_2": "GuildBoss4LootObjExplOilDrumReworked",
+      "damageProfile": "Blast",
+      "nrOfHits": "1",
+      "dmgPct": "20"
+    },
+    "scaled": ["summonHp", "summonDmg", "summonHp_2"]
+  }
+}

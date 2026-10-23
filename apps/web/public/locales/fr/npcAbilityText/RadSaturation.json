@@ -1,0 +1,8 @@
+{
+  "RadSaturation": {
+    "description": "Après le déplacement du <style=\"Faction_AdeptusMechanicus\">Patrouilleur Skitarii</style>, son hexagone est <style=\"Tile_Contamination\">contaminé</style>. S'il ne se déplace pas, cette capacité se déclenche à la fin de son tour.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

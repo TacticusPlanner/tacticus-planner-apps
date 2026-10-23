@@ -1,0 +1,10 @@
+{
+  "PowerUp_Damage": {
+    "description": "Cuando una unidad lo recolecta, este potenciador aumenta su <style=\"Stat_Damage\">Daño</style> un {[dmgPct]} %.",
+    "variables": {},
+    "constants": {
+      "dmgPct": "100"
+    },
+    "scaled": []
+  }
+}

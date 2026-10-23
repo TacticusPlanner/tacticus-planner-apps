@@ -1,0 +1,8 @@
+{
+  "PowerUp_ReactivateAbility": {
+    "description": "When picked up by a unit, this power-up allows them to use their active ability again during the ongoing battle.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

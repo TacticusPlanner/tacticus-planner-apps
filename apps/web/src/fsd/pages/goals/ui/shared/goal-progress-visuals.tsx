@@ -18,7 +18,7 @@ import { cn } from "@workspace/ui/lib/utils"
 import { ProgressionBadge, RankBadge } from "@/shared/ui"
 
 import type { ResourceNeed } from "@/features/goal-farming"
-import type { GoalProgress } from "../../model/attainment/goal-progress"
+import type { GoalProgress } from "@/features/goal-planning"
 import { reachableCeilingLabel } from "./ceiling-marker"
 import {
   formatGenericRemainingText,
@@ -58,12 +58,12 @@ function AbilityTargetPills({
   const mow = entityType === "Mow"
   const tracks = [
     {
-      key: (mow ? "primary" : "active") as "primary" | "active",
+      key: mow ? ("primary" as const) : ("active" as const),
       current: progress.currentActive,
       target: progress.targetActive,
     },
     {
-      key: (mow ? "secondary" : "passive") as "secondary" | "passive",
+      key: mow ? ("secondary" as const) : ("passive" as const),
       current: progress.currentPassive,
       target: progress.targetPassive,
     },
@@ -279,13 +279,13 @@ export function GoalProgressDisplay({
   const percentWithTooltip = remainingText ? (
     <Tooltip>
       <TooltipTrigger asChild>
-        <span
+        <button
           className="cursor-default"
           data-testid="goal-progress-percent"
-          tabIndex={0}
+          type="button"
         >
           {percentLabel}
-        </span>
+        </button>
       </TooltipTrigger>
       <TooltipContent data-testid="goal-remaining-text">
         {remainingText}
@@ -308,10 +308,7 @@ export function GoalProgressDisplay({
             <>
               {" "}
               {t("goals.overview.actualSlotsRemaining", {
-                count: formatNumber(
-                  i18n?.resolvedLanguage,
-                  remaining.upgradeSlotsRemaining
-                ),
+                count: remaining.upgradeSlotsRemaining,
               })}
             </>
           ) : null}
@@ -320,10 +317,7 @@ export function GoalProgressDisplay({
             <>
               {" "}
               {t("goals.overview.actualLevelsRemaining", {
-                count: formatNumber(
-                  i18n?.resolvedLanguage,
-                  progress.target - progress.current
-                ),
+                count: progress.target - progress.current,
               })}
             </>
           ) : null}

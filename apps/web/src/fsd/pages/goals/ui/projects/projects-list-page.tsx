@@ -20,10 +20,10 @@ import {
 } from "@/features/project-management"
 import type { ProjectSummary } from "@/entities/project"
 
-import { useCreateGoalLauncher } from "../../model/goal-creation-form/create-goal-launcher-context"
-import { useGoalAttainment } from "../../model/attainment/use-goal-attainment"
-import { useGoalsOverviewMetrics } from "../../model/attainment/use-goals-overview-metrics"
-import { usePlanInsights } from "../../model/insights/use-plan-insights"
+import { useCreateGoalLauncher } from "@/features/goal-create"
+import { useGoalAttainment } from "@/features/goal-planning"
+import { useGoalsOverviewMetrics } from "@/features/goal-planning"
+import { usePlanInsights } from "@/features/goal-planning"
 import { useProjectsListTutorial } from "./projects-list-page.tutorial"
 
 /**

@@ -88,6 +88,7 @@ export function resolvePrimeCharacterId(
   const match = PRIME_TOKEN_RE.exec(unitSetId)
   if (!match) return undefined
   const token = match[1]
+  if (!token) return undefined
   const characterId = token.charAt(0).toLowerCase() + token.slice(1)
   return charactersById.has(characterId) ? characterId : undefined
 }

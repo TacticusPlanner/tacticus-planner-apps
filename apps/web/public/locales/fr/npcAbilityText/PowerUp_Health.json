@@ -1,0 +1,10 @@
+{
+  "PowerUp_Health": {
+    "description": "Lorsqu'elle est choisie par cette unité, cette amélioration augmente sa <style=\"Stat_Health\">santé</style> à hauteur de {[healthPct]} % de sa <style=\"Stat_Health\">santé</style> maximum.",
+    "variables": {},
+    "constants": {
+      "healthPct": "200"
+    },
+    "scaled": []
+  }
+}

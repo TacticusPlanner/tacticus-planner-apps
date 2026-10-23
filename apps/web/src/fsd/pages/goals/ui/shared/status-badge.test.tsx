@@ -2,15 +2,7 @@ import { render, screen } from "@/test/render"
 import userEvent from "@testing-library/user-event"
 import { describe, expect, it, vi } from "vitest"
 
-vi.mock("react-i18next", () => ({
-  initReactI18next: { type: "3rdParty", init: vi.fn() },
-  useTranslation: () => ({
-    t: (key: string, options?: Record<string, unknown>) =>
-      options ? `${key}:${JSON.stringify(options)}` : key,
-  }),
-}))
-
-vi.mock("../../model/shared/use-goal-catalog", () => ({
+vi.mock("@/features/goal-planning/model/shared/use-goal-catalog", () => ({
   useGoalCatalog: () => ({
     upgradesById: new Map(),
     charactersById: new Map(),
@@ -131,7 +123,7 @@ describe("BlockedIndicator", () => {
     expect(badge).not.toHaveAttribute("title")
     await userEvent.hover(badge)
     expect(await screen.findByRole("tooltip")).toHaveTextContent(
-      "goals.blocked.reasons.PrerequisiteNotReached"
+      "Waiting on a prerequisite goal to be reached first."
     )
   })
 
@@ -148,7 +140,7 @@ describe("BlockedIndicator", () => {
     expect(badge).not.toHaveAttribute("title")
     await userEvent.hover(badge)
     expect(await screen.findByRole("tooltip")).toHaveTextContent(
-      "goals.blocked.reasons.PlayerDataUnavailable"
+      "Player data for this goal hasn't synced yet."
     )
   })
 
@@ -177,9 +169,11 @@ describe("BlockedIndicator", () => {
     await userEvent.hover(screen.getByTestId("goal-blocked-indicator"))
     const tooltip = await screen.findByRole("tooltip")
     expect(tooltip).toHaveTextContent(
-      "goals.blocked.reasons.PlayerDataUnavailable"
+      "Player data for this goal hasn't synced yet."
     )
-    expect(tooltip).toHaveTextContent("common:goals.estimate.unavailableRow")
+    expect(tooltip).toHaveTextContent(
+      "Venerable Battle Mark ×6: No accessible farming location provides a required resource."
+    )
   })
 
   it("shows a duplicate-text reason only once, when two different prerequisite goals produce the same generic sentence", async () => {
@@ -199,7 +193,7 @@ describe("BlockedIndicator", () => {
     const tooltip = await screen.findByTestId("goal-restricted-tooltip")
     const occurrences = (
       tooltip.textContent?.match(
-        /goals\.blocked\.reasons\.PrerequisiteNotReached\b/g
+        /Waiting on a prerequisite goal to be reached first\./g
       ) ?? []
     ).length
     expect(occurrences).toBe(1)
@@ -217,7 +211,7 @@ describe("BlockedIndicator", () => {
     await userEvent.hover(screen.getByTestId("goal-restricted-indicator"))
     const tooltip = await screen.findByTestId("goal-restricted-tooltip")
     expect(tooltip.textContent).toMatch(
-      /^goals\.blocked\.restrictedExplanation/
+      /^Restricted: this goal can only partly progress until the following is resolved\./
     )
   })
 
@@ -244,10 +238,10 @@ describe("BlockedIndicator", () => {
     await userEvent.hover(screen.getByTestId("goal-restricted-indicator"))
     const tooltip = await screen.findByTestId("goal-restricted-tooltip")
     expect(tooltip).toHaveTextContent(
-      'goals.blocked.reasons.PrerequisiteNotReachedNamed:{"unit":"Bellator","goalType":"goals.create.goalTypes.Unlock"}'
+      "Waiting on the Bellator Unlock goal to be reached first."
     )
     expect(tooltip).toHaveTextContent(
-      'goals.blocked.reasons.PrerequisiteNotReachedNamed:{"unit":"Calgar","goalType":"goals.create.goalTypes.Ascension"}'
+      "Waiting on the Calgar Ascension goal to be reached first."
     )
   })
 
@@ -262,7 +256,7 @@ describe("BlockedIndicator", () => {
     )
     await userEvent.hover(screen.getByTestId("goal-blocked-indicator"))
     expect(await screen.findByRole("tooltip")).not.toHaveTextContent(
-      "goals.blocked.restrictedExplanation"
+      "Restricted: this goal can only partly progress until the following is resolved."
     )
   })
 
@@ -290,11 +284,11 @@ describe("BlockedIndicator", () => {
     await userEvent.hover(badge)
     const tooltip = await screen.findByTestId("goal-restricted-tooltip")
     expect(tooltip).toHaveTextContent(
-      "goals.blocked.reasons.PrerequisiteNotReached"
+      "Waiting on a prerequisite goal to be reached first."
     )
-    expect(tooltip).toHaveTextContent("reachableCeilingLabel")
-    expect(tooltip).toHaveTextContent("ranks.Bronze1")
-    expect(tooltip).toHaveTextContent("reachableCeilingReasonLevel")
+    expect(tooltip).toHaveTextContent("Currently reachable:")
+    expect(tooltip).toHaveTextContent("Bronze I")
+    expect(tooltip).toHaveTextContent("capped by level")
   })
 
   it("renders both indicators as keyboard-focusable buttons, and Tab reaches and opens their tooltip", async () => {
@@ -356,7 +350,7 @@ describe("BlockedIndicator", () => {
     const badge = screen.getByTestId("goal-restricted-indicator")
     await userEvent.hover(badge)
     const tooltip = await screen.findByTestId("goal-restricted-tooltip")
-    expect(tooltip).not.toHaveTextContent("reachableCeilingLabel")
+    expect(tooltip).not.toHaveTextContent("Currently reachable:")
   })
 
   it.each([

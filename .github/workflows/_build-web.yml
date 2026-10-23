@@ -146,6 +146,10 @@ jobs:
       - name: Build
         run: pnpm build:${{ inputs.vite-mode }}
 
+      # Startup-JS budget (openspec change trim-startup-bundle): fails the build on a regression.
+      - name: Bundle budget
+        run: pnpm --filter web bundle:budget
+
       - name: Upload web artifact
         if: ${{ inputs.upload-artifact }}
         uses: actions/upload-artifact@v7

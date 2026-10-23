@@ -1,0 +1,11 @@
+{
+  "ChaliceOfBaal": {
+    "description": "Wenn eine beliebige, an <style=\"Faction_BloodAngels\">Nicodemus</style> angrenzende Einheit in einem Zug zum ersten Mal besiegt wird, <style=\"Healing\">heilt</style> er sich und alle verbündeten angrenzenden Einheiten um <style=\"Stat_Health\">{[hp]} Lebenspunkte</style>. Alle betroffenen Einheiten verursachen bis zum Ende dieses Zugs <style=\"Stat_Damage\">+{[extraDmg]} Schaden</style> mit <style=\"NormalAttack\">normalen Nahkampfangriffen</style>.",
+    "variables": {
+      "hp": [1765, 1860, 1956, 2051, 2146, 2241, 2337, 2432, 2527, 2622],
+      "extraDmg": [490, 516, 543, 569, 596, 622, 649, 675, 702, 728]
+    },
+    "constants": {},
+    "scaled": []
+  }
+}

@@ -1,13 +1,24 @@
-import { getLegendaryEventsBattles } from "@workspace/game-catalog/queries"
+import { useCallback } from "react"
+
+import { useCatalogDataset } from "@/shared/local-data"
 
 import type { LegendaryEventBattle } from "./types"
-import { useReadState, type ReadState } from "./use-read-state"
+import type { ReadState } from "./use-read-state"
 
 /** The catalog battles of several events, by event id (the master table's Estimated mode), from
- *  one read of the battle dataset grouped by event. */
+ *  the one cached battle dataset grouped by event. Every requested id is present. */
 export function useLegendaryEventsBattles(
   eventIds: readonly string[]
 ): ReadState<Record<string, LegendaryEventBattle[]>> {
   const key = eventIds.join(",")
-  return useReadState(() => getLegendaryEventsBattles(eventIds), [key])
+  const select = useCallback(
+    (rows: LegendaryEventBattle[]) => {
+      const grouped: Record<string, LegendaryEventBattle[]> =
+        Object.fromEntries((key ? key.split(",") : []).map((id) => [id, []]))
+      for (const row of rows) grouped[row.lreId]?.push(row)
+      return grouped
+    },
+    [key]
+  )
+  return useCatalogDataset("lre-battles", select)
 }

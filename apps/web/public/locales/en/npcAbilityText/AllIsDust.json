@@ -1,0 +1,10 @@
+{
+  "AllIsDust": {
+    "description": "Attacks against this unit with <style=\"Piercing_Ratio\">{[pierceRatio]}% pierce ratio</style> or less are treated as having a <style=\"Piercing_Ratio\">1% pierce ratio</style>.",
+    "variables": {},
+    "constants": {
+      "pierceRatio": "35"
+    },
+    "scaled": []
+  }
+}

@@ -49,28 +49,23 @@
       "dependsOn": ["^format"]
     },
     "typecheck": {
-      "dependsOn": ["^build", "^typecheck"]
+      "dependsOn": ["^typecheck"]
     },
     "test": {
-      "dependsOn": ["^build"],
       "cache": false,
       "persistent": true
     },
     "test:run": {
-      "dependsOn": ["^build"],
       "outputs": []
     },
     "test:coverage": {
-      "dependsOn": ["^build"],
       "outputs": ["coverage/**"]
     },
     "dev": {
-      "dependsOn": ["^build"],
       "cache": false,
       "persistent": true
     },
     "dev:aspire": {
-      "dependsOn": ["^build"],
       "cache": false,
       "persistent": true,
       "env": [

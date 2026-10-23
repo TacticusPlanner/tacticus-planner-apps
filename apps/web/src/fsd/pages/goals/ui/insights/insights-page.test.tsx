@@ -1,43 +1,8 @@
-import { useEffect, useState } from "react"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import userEvent from "@testing-library/user-event"
 import { render, screen, waitFor } from "@/test/render"
+import { seedGameCatalog, seedPlayerData } from "@/test/seed"
 import { TooltipProvider } from "@workspace/ui/components/tooltip"
-
-vi.mock("dexie-react-hooks", () => ({
-  useLiveQuery: (
-    querier: () => unknown,
-    deps: unknown[] = [],
-    defaultResult?: unknown
-  ) => {
-    const [value, setValue] = useState<unknown>(defaultResult)
-    useEffect(() => {
-      const result = querier()
-      if (result instanceof Promise) {
-        let active = true
-        void result.then((resolved) => {
-          if (active) setValue(resolved)
-        })
-        return () => {
-          active = false
-        }
-      }
-      setValue(result)
-      return undefined
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, deps)
-    return value
-  },
-}))
-
-vi.mock("react-i18next", () => ({
-  useTranslation: () => ({
-    t: (key: string, opts?: { defaultValue?: string }) =>
-      opts?.defaultValue ?? key,
-    // Read by `formatEstimateDate` for the plan's completion date.
-    i18n: { resolvedLanguage: "en" },
-  }),
-}))
 
 vi.mock("@/entities/planning-setting", () => ({
   usePlanningSettings: () => ({
@@ -85,29 +50,16 @@ vi.mock("@/entities/player-data-override", () => ({
   onslaughtReward: () => ({ min: 2, max: 3, mythic: false }),
 }))
 
-const account = { homeAccountId: "acc-1", username: "test@example.com" }
-
-vi.mock("@azure/msal-react", () => ({
-  useMsal: () => ({
-    accounts: [account],
-    instance: { getActiveAccount: () => account },
-  }),
-  useIsAuthenticated: () => true,
-}))
-
-const characters = new Map([
-  [
-    "hero1",
-    {
-      id: "hero1",
-      name: "Hero One",
-      faction: "Ultramarines",
-      initialRarity: "Common",
-      shardLocations: [],
-      rankUpUpgrades: [{ rank: "Stone1", upgradeIds: ["h1"] }],
-    },
-  ],
-])
+const characters = [
+  {
+    id: "hero1",
+    name: "Hero One",
+    faction: "Ultramarines",
+    initialRarity: "Common",
+    shardLocations: [],
+    rankUpUpgrades: [{ rank: "Stone1", upgradeIds: ["h1"] }],
+  },
+]
 
 const upgrades = [
   {
@@ -142,42 +94,6 @@ const battles = [
     energyCost: 10,
   },
 ]
-
-vi.mock("@workspace/game-catalog/queries", () => ({
-  getCharactersMap: () => characters,
-  getMowsMap: () => new Map(),
-  getUpgrades: () => upgrades,
-  getCampaignBattles: () => battles,
-  getCampaignDefinitions: () => [],
-  getAscensionCostsMap: () => new Map(),
-  getUnlockShardCostsMap: () => new Map(),
-  getMowUpgradeCosts: () => [],
-  getCharacterAbilityCosts: () => [],
-  // One row: an empty rewards dataset now reads as "catalog still loading" (daily-raids-today spec).
-  getOnslaughtRewards: () => [
-    {
-      id: "Stone-1",
-      sector: "Stone",
-      tier: 1,
-      regular: Array(5).fill({ min: 1, max: 1 }),
-      mythic: { min: 1, max: 1 },
-    },
-  ],
-  getShops: () => [],
-}))
-
-vi.mock("@workspace/player-data/queries", () => ({
-  getCampaignEventProgress: async () => [],
-  getCampaignProgress: vi.fn(async () => []),
-  getPlayerCharacter: () => Promise.resolve(undefined),
-  getPlayerMow: () => Promise.resolve(undefined),
-  getInventoryUpgrades: () => undefined,
-  getInventoryOrbs: () => undefined,
-  getInventoryAbilityMaterials: () => Promise.resolve(undefined),
-  getInventoryXpBooks: () => undefined,
-  getInventoryShard: () => Promise.resolve(undefined),
-  getLiveProgress: () => undefined,
-}))
 
 const listProjects = vi.fn()
 const listProjectGoals = vi.fn()
@@ -285,7 +201,26 @@ const rankGoalDetail = {
 }
 
 describe("InsightsPage", () => {
-  beforeEach(() => {
+  beforeEach(async () => {
+    await seedGameCatalog({
+      characters,
+      upgrades,
+      "campaign-battles": battles,
+      // One row: an empty rewards dataset now reads as "catalog still loading" (daily-raids-today spec).
+      "onslaught-rewards": [
+        {
+          id: "Stone-1",
+          sector: "Stone",
+          tier: 1,
+          regular: Array(5).fill({ min: 1, max: 1 }),
+          mythic: { min: 1, max: 1 },
+        },
+      ],
+    })
+    await seedPlayerData({
+      "campaign-events-progress": [],
+      "campaign-progress": [],
+    })
     projectList = []
     planGoals = []
     planIsError = false
@@ -302,7 +237,8 @@ describe("InsightsPage", () => {
     render(
       <TooltipProvider>
         <InsightsPage />
-      </TooltipProvider>
+      </TooltipProvider>,
+      { auth: { authenticated: true } }
     )
 
     expect(await screen.findByTestId("insights-page-empty")).toBeInTheDocument()
@@ -316,14 +252,13 @@ describe("InsightsPage", () => {
     render(
       <TooltipProvider>
         <InsightsPage />
-      </TooltipProvider>
+      </TooltipProvider>,
+      { auth: { authenticated: true } }
     )
 
     expect(await screen.findByTestId("insights-page-error")).toBeInTheDocument()
     expect(screen.queryByTestId("insights-page-empty")).not.toBeInTheDocument()
-    await userEvent.click(
-      screen.getByRole("button", { name: "goals.insights.retry" })
-    )
+    await userEvent.click(screen.getByRole("button", { name: "Retry" }))
     expect(retryPlan).toHaveBeenCalledOnce()
   })
 
@@ -350,7 +285,8 @@ describe("InsightsPage", () => {
     render(
       <TooltipProvider>
         <InsightsPage />
-      </TooltipProvider>
+      </TooltipProvider>,
+      { auth: { authenticated: true } }
     )
 
     await waitFor(() =>

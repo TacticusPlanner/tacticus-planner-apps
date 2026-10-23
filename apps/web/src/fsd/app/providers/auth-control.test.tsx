@@ -106,18 +106,16 @@ vi.mock("@/shared/auth", async () => {
 
 // Real switchers need a ThemeProvider/i18n config this test doesn't set up — only their presence
 // inside the menu (mobile vs. desktop) matters here, not their internals.
-vi.mock("./theme-switcher", () => ({
+vi.mock("@/widgets/account-menu/ui/theme-switcher", () => ({
   ThemeSwitcher: () => <div data-testid="theme-switcher" />,
 }))
 // Real badge needs a GameCatalogProvider this test doesn't set up — only its presence inside the
 // menu matters here, not its internals.
-vi.mock("./catalog-sync-status-badge", () => ({
+vi.mock("@/widgets/account-menu/ui/catalog-sync-status-badge", () => ({
   CatalogSyncStatusBadge: () => <div data-testid="catalog-sync-status-badge" />,
 }))
 const openUserJot = vi.fn()
 vi.mock("./userjot-provider", () => ({
-  USERJOT_BOARD_URL: "https://tacticusplanner.userjot.com",
-  USERJOT_ROADMAP_URL: "https://tacticusplanner.userjot.com/roadmap",
   useUserJot: () => ({ open: openUserJot, unreadCount: 0 }),
 }))
 vi.mock("@/shared/tour", () => ({
@@ -235,7 +233,7 @@ describe("AuthControl", () => {
     const nodes = ids.map((id) => screen.getByTestId(id))
     nodes.slice(1).forEach((node, index) => {
       expect(
-        nodes[index].compareDocumentPosition(node) &
+        (nodes[index]?.compareDocumentPosition(node) ?? 0) &
           Node.DOCUMENT_POSITION_FOLLOWING
       ).toBeTruthy()
     })
@@ -474,7 +472,7 @@ describe("AuthControl", () => {
     const nodes = ids.map((id) => screen.getByTestId(id))
     nodes.slice(1).forEach((node, index) => {
       expect(
-        nodes[index].compareDocumentPosition(node) &
+        (nodes[index]?.compareDocumentPosition(node) ?? 0) &
           Node.DOCUMENT_POSITION_FOLLOWING
       ).toBeTruthy()
     })

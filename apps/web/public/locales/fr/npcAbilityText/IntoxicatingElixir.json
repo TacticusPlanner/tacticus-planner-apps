@@ -1,0 +1,14 @@
+{
+  "IntoxicatingElixir": {
+    "description": "Le porteur de relique inflige <style=\"Stat_CritDamage\">+{[extraCritDmg]} dégâts critiques</style> pour chaque unité à portée de {[range]} hexagones avec l'état <style=\"Debuff_Pinned\">Neutralisation</style>, <style=\"Debuff_Stunned\">Étourdissement</style>, <style=\"Debuff_Taunted\">Provocation</style> ou <style=\"ThrillSeekers\">Exaltation</style>, jusqu'à un maximum de {[nrOfUnits]} fois. Ce bonus est doublé si le porteur de relique a <style=\"Stat_Health\">{[healthPct]} % de santé</style> ou moins.",
+    "variables": {
+      "extraCritDmg": [295, 311, 327, 343, 359, 375, 391, 406, 422, 438]
+    },
+    "constants": {
+      "range": "2",
+      "nrOfUnits": "6",
+      "healthPct": "50"
+    },
+    "scaled": []
+  }
+}

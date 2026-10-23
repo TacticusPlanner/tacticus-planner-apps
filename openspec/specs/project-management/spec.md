@@ -65,18 +65,18 @@ The list route SHALL NOT render its own "Projects" (or equivalent) page title â€
 
 ### Requirement: Project cards communicate planning value
 
-Every project card SHALL show color, name, description when present, and available goal/unit summary information. Where summary data is available a card SHALL also show reached, blocked, and estimate/progress information; the richer dashboard metrics (reached, blocked, completion date) belong to the Default project card only, as they belonged to the Current plan project before it was removed, and are computed from the one global run. Identity and actions SHALL remain usable while each summary independently loads or fails.
+Every project card SHALL show color, name, description when present, and a goal/unit summary derived from the project's `goalIds` joined with the loaded goals list â€” no per-project read. Where summary data is available, the Default project card only SHALL also show reached, blocked, and estimate/progress information (completion date and unestimated goals), as the Current plan project did before it was removed, computed from the one global run; other project cards show the goal/unit summary only. Identity and actions SHALL remain usable while the goals list or a summary calculation loads or fails.
 
 #### Scenario: Summary loads progressively
 
-- **GIVEN** project identity has loaded and summary calculation has not
+- **GIVEN** project identity has loaded and the goals list or the summary calculation has not
 - **WHEN** the card renders
 - **THEN** identity/actions render with a summary skeleton
 
 #### Scenario: One summary fails
 
-- **WHEN** one project's summary fails
-- **THEN** only that card shows unavailable/retry state
+- **WHEN** the goals list read fails
+- **THEN** every card shows its identity with an unavailable/retry summary state, and one retry re-reads the goals list
 
 ### Requirement: Goal order drives priority-sensitive calculations
 
@@ -87,34 +87,6 @@ The project-goal list SHALL be a filtered projection of the canonical global ord
 - **GIVEN** two Active goals in different projects need the same resource and owned inventory covers only the globally higher-priority goal
 - **WHEN** planning is calculated
 - **THEN** that goal receives the inventory first regardless of unit or project
-
-### Requirement: Assembly blocks a selection whose goal-type slot is occupied
-
-A project permits distinct Active/Paused Rank end targets but at most one in-flight goal per non-Rank unit/type slot or exact Rank unit/normalized-target slot. A save that would violate a slot SHALL be rejected in full. The assembly surface SHALL identify a listed goal whose exact slot is already held, prevent it from being selected, and state the reason. It SHALL permit a different Rank target for the same unit.
-
-#### Scenario: Conflicting goal cannot be selected
-
-- **GIVEN** the project contains an Active Bellator Silver3 Rank goal
-- **WHEN** assembly lists another active Bellator Silver3 goal
-- **THEN** that exact-target goal cannot be selected, with the existing milestone named
-
-#### Scenario: A conflict arising after the check rejects the whole save
-
-- **GIVEN** several goals are selected and one exact slot becomes occupied after preview
-- **WHEN** the user saves
-- **THEN** nothing is added, the conflict is explained, and the selection stays available to correct
-
-#### Scenario: Historical goal in the project does not block selection
-
-- **GIVEN** the project has only Completed/Archived Bellator Silver3 goals
-- **WHEN** assembly lists an active Bellator Silver3 goal
-- **THEN** it can be selected and saved
-
-#### Scenario: Different target is selectable
-
-- **GIVEN** the project contains Bellator Silver3
-- **WHEN** assembly lists Bellator Gold1
-- **THEN** Gold1 can be selected and saved
 
 ### Requirement: Project goal rows offer removal alongside deletion
 
@@ -283,7 +255,7 @@ Activating a project card outside its controls SHALL navigate to `/plan/goals?pr
 
 ### Requirement: Manage goals assembles membership in bulk
 
-The Projects page SHALL provide, from each non-archived project row's overflow menu, a Manage goals action that edits memberships for multiple existing goals of that project without visiting each goal individually. The surface SHALL list the profile's goals in account-wide priority order (`Goal.GlobalPriority`), with search and grouping by unit or goal type; it SHALL NOT offer a separate sort. It SHALL distinguish current membership from pending additions and removals and SHALL show a review summary before one explicit save. The save SHALL apply the complete reviewed set atomically. A stale-set, occupied-slot, or last-membership rejection SHALL identify the problem, preserve the draft, and allow the user to refresh/reconcile before retrying. Membership changes SHALL NOT change goal status, target, or canonical global priority.
+The Projects page SHALL provide, from each non-archived project row's overflow menu, a Manage goals action that edits memberships for multiple existing goals of that project without visiting each goal individually. The surface SHALL list the profile's goals in account-wide priority order (`Goal.GlobalPriority`), with search and grouping by unit or goal type; it SHALL NOT offer a separate sort. Current membership SHALL come from the project's `goalIds` in the loaded project list; no per-project member read SHALL be issued. It SHALL distinguish current membership from pending additions and removals and SHALL show a review summary before one explicit save. The save SHALL apply the complete reviewed set atomically. A stale-set or last-membership rejection SHALL identify the problem, preserve the draft, and allow the user to refresh/reconcile before retrying; membership is never rejected for an occupied slot (slots are per account, see `goal-project-membership`). Membership changes SHALL NOT change goal status, target, or canonical global priority.
 
 #### Scenario: Several goals join a project in one save
 
@@ -295,7 +267,7 @@ The Projects page SHALL provide, from each non-archived project row's overflow m
 
 - **GIVEN** the project already contains some listed goals
 - **WHEN** the surface renders
-- **THEN** current membership and any pending add/remove state are visibly distinguishable
+- **THEN** current membership and any pending add/remove state are visibly distinguishable, with no request beyond the goals and projects the page already holds
 
 #### Scenario: Search narrows the assembly list
 
@@ -307,6 +279,12 @@ The Projects page SHALL provide, from each non-archived project row's overflow m
 - **GIVEN** the project's membership changed elsewhere after the surface was opened
 - **WHEN** the user submits the reviewed set
 - **THEN** no replacement occurs; the user sees a stale-set conflict and can compare refreshed current membership with their preserved draft before retrying
+
+#### Scenario: Any in-flight goal can be selected
+
+- **GIVEN** the project contains an Active Bellator Silver3 Rank goal
+- **WHEN** assembly lists the account's other in-flight goals
+- **THEN** every one of them can be selected; no goal is blocked for a slot
 
 #### Scenario: Assembly does not remove members
 

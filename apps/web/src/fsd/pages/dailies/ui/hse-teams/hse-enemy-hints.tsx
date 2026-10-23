@@ -4,7 +4,7 @@ import type {
   HseEnemyHint,
   HseEnemyLabel,
   HseTeamMode,
-} from "../../model/hse-team-recommendations.types"
+} from "@/features/team-recommendations"
 
 /** The enemy-side rules of one mode's scoring (For the Emperor: only non-Imperial enemies count;
  * Squig Smash: only Large Squigs), one line each. Nothing when every enemy counts. */

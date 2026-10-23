@@ -1,0 +1,8 @@
+{
+  "TunnelingHorror": {
+    "description": "Diese Einheit kann sich unterirdisch bewegen. Sie wird dann vom Schlachtfeld entfernt, erscheint zu Beginn ihres nächsten Zugs auf ihrem Zielfeld und <style=\"Displacement\">stößt</style> jede Einheit, die sich darauf befindet, zur Seite. Dann kann sie einen beliebigen angrenzenden Gegner sofort im <style=\"Stat_Melee\">Nahkampf</style> angreifen.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

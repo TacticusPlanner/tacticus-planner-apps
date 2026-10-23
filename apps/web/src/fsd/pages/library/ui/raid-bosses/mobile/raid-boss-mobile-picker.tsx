@@ -17,7 +17,7 @@ import {
 } from "@workspace/ui/components/popover"
 import { cn } from "@workspace/ui/lib/utils"
 
-import { closestOverlayContent } from "@/shared/ui"
+import { closestOverlayContent, useCommandListId } from "@/shared/ui"
 import { RaidBossPortrait, type RaidBossListItem } from "@/entities/raid-boss"
 
 export type RaidBossMobilePickerGroup = {
@@ -43,6 +43,7 @@ export function RaidBossMobilePicker({
 }) {
   const { t } = useTranslation("library")
   const [open, setOpen] = useState(false)
+  const [listId, listRef] = useCommandListId()
   const [search, setSearch] = useState("")
   const triggerRef = useRef<HTMLButtonElement>(null)
   // See `unit-combobox.tsx` — portals into the enclosing Sheet's content node (when there is one) so
@@ -100,6 +101,7 @@ export function RaidBossMobilePicker({
           variant="outline"
           role="combobox"
           aria-expanded={open}
+          aria-controls={listId}
           aria-label={t("raidBosses.pickerPlaceholder")}
           data-testid="raid-boss-mobile-picker"
           className="w-full justify-between"
@@ -129,7 +131,7 @@ export function RaidBossMobilePicker({
             value={search}
             onValueChange={setSearch}
           />
-          <CommandList>
+          <CommandList ref={listRef}>
             <CommandEmpty>{t("raidBosses.pickerEmpty")}</CommandEmpty>
             {filteredGroups.map((group) => (
               <CommandGroup

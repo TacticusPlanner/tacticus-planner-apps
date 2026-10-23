@@ -21,9 +21,6 @@ type UserJotOpenTarget = {
   to?: "home" | "feedback" | "roadmap" | "updates"
 }
 
-const USERJOT_BOARD_URL = "https://tacticusplanner.userjot.com"
-export const USERJOT_ROADMAP_URL = `${USERJOT_BOARD_URL}/roadmap`
-
 type UserJotSdk = {
   open: (target?: UserJotOpenTarget) => void
   identify: (

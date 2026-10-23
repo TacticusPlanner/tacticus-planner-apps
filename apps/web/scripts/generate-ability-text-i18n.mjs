@@ -1,12 +1,16 @@
-// Generator for the ability rules-text game-data namespace, keyed by ability id, in every locale:
-//   public/locales/{en,de,es,fr}/npcAbilityText.json  abilityId -> { description, variables, constants, scaled }
+// Generator for the ability rules-text game data, one file (and i18next namespace) per ability id:
+//   public/locales/{en,de,es,fr}/npcAbilityText/<abilityId>.json
+//     { <abilityId>: { description, variables, constants, scaled } }
+//   public/locales/en/npcAbilitySummoners.json  sorted ids whose English text summons a unit
+//   public/locales/en/npcAbilityTextGaps.json   sorted referenced ids with no rules text (never fetched)
 //
 // Covers every ability id the game catalog references: NPC active/passive abilities (all npc records),
 // character active/passive abilities, relic abilities (`abilityId` of relic equipment) and each MoW's
 // primary, secondary and mythic ability. Source: the catalog's raw data in the sibling
 // `tacticus-planner-api` checkout and V1's ability table plus localized descriptions in the sibling
 // `tacticusplanner` checkout (develop). Re-run after every game-catalog refresh (see the api repo's
-// `game-catalog-data` skill) and commit the four locale files.
+// `game-catalog-data` skill) and commit the four locale directories and the two lists. Each locale
+// directory is emptied first, so a dropped ability's file disappears.
 //
 // An entry is written only when the English description resolves completely: every `{[token]}` is one of
 // the ability's variables or constants (keys compared trimmed — V1 has trailing-space keys), a
@@ -16,7 +20,13 @@
 //
 // The script prints every referenced id it could not cover and exits non-zero when that set differs from
 // KNOWN_GAPS, or when a relic ability icon is missing (exact filename case), so a refresh notices both.
-import { readFileSync, readdirSync, writeFileSync } from "node:fs"
+import {
+  mkdirSync,
+  readFileSync,
+  readdirSync,
+  rmSync,
+  writeFileSync,
+} from "node:fs"
 import { resolve, dirname } from "node:path"
 import { fileURLToPath } from "node:url"
 import { format, resolveConfig } from "prettier"
@@ -155,8 +165,8 @@ for (const id of [...referenced].sort()) {
     ability.constants,
     (key) => tokens.has(key) || key.startsWith("damageProfile")
   )
-  const scaled = (ability.variablesAffectedByRarityBonus ?? []).filter(
-    (name) => hasKey(variables, name.trim())
+  const scaled = (ability.variablesAffectedByRarityBonus ?? []).filter((name) =>
+    hasKey(variables, name.trim())
   )
   for (const locale of LOCALES) {
     const description =
@@ -170,24 +180,60 @@ for (const id of [...referenced].sort()) {
   }
 }
 
+// ---- summoners ---------------------------------------------------------------------------------------
+
+// Kept equal to `SUMMON_PATTERNS` in the app's `features/team-recommendations/model/hre-summoners.ts`
+// (this script cannot import TypeScript); the apps parity test checks the committed list against them.
+const SUMMON_SPAN = String.raw`<style="Summon">(?:<style=[^>]*>)?[^<]*(?:</style>)?</style>`
+const SUMMON_PATTERNS = [
+  /\bsummons?\b[^.]{0,60}?<style="Summon">/i,
+  new RegExp(`${SUMMON_SPAN}\\s+(?:is summoned|appears)`, "i"),
+  /\bcalls in an? <style="Summon">/i,
+]
+const summoners = Object.keys(text.en)
+  .filter((id) =>
+    SUMMON_PATTERNS.some((pattern) => pattern.test(text.en[id].description))
+  )
+  .sort()
+
 // ---- write -------------------------------------------------------------------------------------------
 
-const sortById = (record) =>
-  Object.fromEntries(
-    Object.keys(record)
-      .sort()
-      .map((key) => [key, record[key]])
+// Every id becomes a file name: keep them portable and collision-free on case-insensitive file systems.
+const SAFE_ID_RE = /^[A-Za-z0-9_-]+$/
+const lowerIds = new Map()
+for (const id of Object.keys(text.en)) {
+  if (!SAFE_ID_RE.test(id))
+    throw new Error(`ability id is not a safe file name: ${id}`)
+  const other = lowerIds.get(id.toLowerCase())
+  if (other) throw new Error(`ability ids differ only by case: ${other}, ${id}`)
+  lowerIds.set(id.toLowerCase(), id)
+}
+
+const prettierOptions = await resolveConfig(`${localesDir}/en/common.json`)
+// Indented input so Prettier keeps objects expanded, matching what the pre-commit hook produces.
+const writeJson = async (path, value) =>
+  writeFileSync(
+    path,
+    await format(JSON.stringify(value, null, 2), {
+      ...prettierOptions,
+      filepath: path,
+    })
   )
 
 for (const locale of LOCALES) {
-  const path = `${localesDir}/${locale}/npcAbilityText.json`
-  const options = { ...(await resolveConfig(path)), filepath: path }
-  // Indented input so Prettier keeps objects expanded, matching what the pre-commit hook produces.
-  writeFileSync(
-    path,
-    await format(JSON.stringify(sortById(text[locale]), null, 2), options)
-  )
+  rmSync(`${localesDir}/${locale}/npcAbilityText.json`, { force: true })
+  const dir = `${localesDir}/${locale}/npcAbilityText`
+  rmSync(dir, { recursive: true, force: true })
+  mkdirSync(dir)
+  for (const id of Object.keys(text[locale]).sort()) {
+    await writeJson(`${dir}/${id}.json`, { [id]: text[locale][id] })
+  }
 }
+await writeJson(`${localesDir}/en/npcAbilitySummoners.json`, summoners)
+await writeJson(
+  `${localesDir}/en/npcAbilityTextGaps.json`,
+  [...uncovered.keys()].sort()
+)
 
 // ---- report ------------------------------------------------------------------------------------------
 
@@ -200,7 +246,7 @@ const newGaps = [...uncovered.keys()].filter((id) => !KNOWN_GAPS.has(id))
 const closedGaps = [...KNOWN_GAPS].filter((id) => !uncovered.has(id))
 
 console.log(
-  `npcAbilityText: ${Object.keys(text.en).length} entries per locale from ${referenced.size} referenced ids`
+  `npcAbilityText: ${Object.keys(text.en).length} files per locale from ${referenced.size} referenced ids, ${summoners.length} summoners`
 )
 for (const [id, reason] of uncovered) {
   console.log(

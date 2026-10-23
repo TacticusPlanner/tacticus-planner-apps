@@ -1,10 +1,13 @@
-import { useLiveQuery } from "dexie-react-hooks"
 import type { CampaignId } from "@workspace/game-domain"
-import { campaignDescriptor, campaignIcon } from "@workspace/game-catalog"
-import { getEventsActiveAt } from "@workspace/game-catalog/queries"
-import { getLiveProgress } from "@workspace/player-data/queries"
+import {
+  campaignDescriptor,
+  campaignIcon,
+  type EventsCalendarStorageModel,
+} from "@workspace/game-catalog"
+import type { PlayerDataChunkDto } from "@workspace/player-data"
 
 import { useCampaignDisplay } from "@/shared/lib"
+import { useCatalogDataset, usePlayerChunk } from "@/shared/local-data"
 
 import { seasonEndCountdown } from "./guild-raids/guild-raid-countdowns"
 
@@ -86,19 +89,27 @@ export function buildCampaignEventStatus({
   }
 }
 
-async function readCampaignEventInputs() {
-  const [liveProgress, activeEvents] = await Promise.all([
-    getLiveProgress(),
-    getEventsActiveAt(new Date()),
-  ])
-  const campaignEvent = activeEvents.find(
-    (event) => event.definitionId === CAMPAIGN_EVENT_DEFINITION_ID
+const toActiveCampaignEventId = (
+  liveProgress: PlayerDataChunkDto<"live-progress"> | null
+) => liveProgress?.activeCampaignEventId ?? null
+
+/** The campaign-event window running now (start inclusive, end exclusive), if any, and that
+ * instant. Taken when the calendar is read rather than during render: the countdown is coarse ("in
+ * 3 days"), so recomputing it whenever the calendar changes is frequent enough, and render stays
+ * pure. */
+function toCampaignEventInputs(calendar: EventsCalendarStorageModel[]): {
+  nowMs: number
+  campaignEventWindow: CampaignEventWindow | null
+} {
+  const nowMs = Date.now()
+  const campaignEvent = calendar.find(
+    (event) =>
+      event.definitionId === CAMPAIGN_EVENT_DEFINITION_ID &&
+      Date.parse(event.startUtc) <= nowMs &&
+      nowMs < Date.parse(event.endUtc)
   )
   return {
-    // Read here rather than during render: the countdown is coarse ("in 3 days"), so recomputing
-    // it whenever the underlying Dexie tables change is frequent enough, and render stays pure.
-    nowMs: Date.now(),
-    activeCampaignEventId: liveProgress?.activeCampaignEventId ?? null,
+    nowMs,
     campaignEventWindow: campaignEvent
       ? { endUtc: campaignEvent.endUtc, confirmed: campaignEvent.confirmed }
       : null,
@@ -108,10 +119,15 @@ async function readCampaignEventInputs() {
 /** Page-local: only Today shows this, and `useDailyRaids` is shared with the Home widget. */
 export function useCampaignEventStatus(): CampaignEventStatus {
   const { name } = useCampaignDisplay()
-  const inputs = useLiveQuery(readCampaignEventInputs, [])
+  // A failed read shows as "no active event", like a read still loading.
+  const activeIdRead = usePlayerChunk("live-progress", toActiveCampaignEventId)
+  const inputsRead = useCatalogDataset("events-calendar", toCampaignEventInputs)
+  const activeCampaignEventId =
+    activeIdRead.status === "ready" ? activeIdRead.data : undefined
+  const inputs = inputsRead.status === "ready" ? inputsRead.data : undefined
 
   return buildCampaignEventStatus({
-    activeCampaignEventId: inputs?.activeCampaignEventId,
+    activeCampaignEventId,
     campaignEventWindow: inputs?.campaignEventWindow ?? null,
     nowMs: inputs?.nowMs ?? 0,
     campaignName: (groupId) => {

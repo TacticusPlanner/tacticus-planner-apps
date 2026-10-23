@@ -22,7 +22,7 @@ describe("QueryProvider", () => {
       </QueryProvider>
     )
 
-    const queries = JSON.parse(screen.getByText(/staleTime/).textContent!)
+    const queries = JSON.parse(screen.getByText(/staleTime/).textContent)
     expect(queries).toEqual({
       refetchOnReconnect: false,
       refetchOnWindowFocus: false,

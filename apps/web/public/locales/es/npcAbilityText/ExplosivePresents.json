@@ -1,0 +1,29 @@
+{
+  "ExplosivePresents": {
+    "description": "Inflige <style=\"DMG_Blast\">{[minDmg]}-{[maxDmg]} de Daño de explosión</style> <style=\"Stat_Hits\">x{[nrOfHits]}</style> a una unidad enemiga o a un <style=\"Faction_Orks\">Grot</style> aliado dentro de un alcance de {[range]} y a todas las unidades adyacentes al objetivo, excepto al mismo <style=\"Faction_Orks\">Gran Gretchin Rojo</style>. Esta habilidad se puede usar varias veces por batalla, pero tiene un <style=\"Cooldown\">tiempo de recuperación de {[cooldownTurns]} rondas</style>. Dicho tiempo de recuperación se reduce en {[cooldownReduction]} ronda cada vez que un Grot es derrotado.\n\n{[S/AbilityDamageExplanation]}",
+    "variables": {
+      "minDmg": [
+        66, 79, 92, 106, 119, 134, 149, 164, 180, 195, 210, 225, 240, 255, 271,
+        286, 301, 316, 331, 347, 367, 395, 455, 515, 576, 636, 696, 756, 816,
+        876, 936, 996, 1056, 1116, 1176, 1236, 1296, 1356, 1416, 1501, 1620,
+        1744, 1879, 2028, 2299, 2571, 2842, 3113, 3384, 3656, 3696, 3746, 3795,
+        3861, 3927, 3993, 4059, 4142, 4224, 4307, 4406, 4505, 4604, 4703, 4802
+      ],
+      "maxDmg": [
+        80, 96, 112, 128, 144, 162, 181, 199, 218, 236, 254, 273, 291, 310, 328,
+        346, 365, 383, 402, 420, 445, 479, 552, 625, 698, 770, 843, 916, 989,
+        1062, 1134, 1207, 1280, 1353, 1426, 1498, 1571, 1644, 1717, 1819, 1963,
+        2114, 2278, 2458, 2787, 3116, 3445, 3774, 4102, 4431, 4480, 4540, 4600,
+        4680, 4760, 4840, 4920, 5020, 5120, 5220, 5340, 5460, 5580, 5700, 5820
+      ]
+    },
+    "constants": {
+      "nrOfHits": "1",
+      "damageProfile": "Blast",
+      "cooldownTurns": "10",
+      "cooldownReduction": "1",
+      "range": "2"
+    },
+    "scaled": ["minDmg", "maxDmg"]
+  }
+}

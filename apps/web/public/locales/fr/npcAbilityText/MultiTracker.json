@@ -1,0 +1,8 @@
+{
+  "MultiTracker": {
+    "description": "Toutes les unités ennemies qui n'ont pas effectué de déplacement à leur tour sont affublées d'un <style=\"Debuff_Markerlight\">pointeur lumineux</style>.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

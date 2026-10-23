@@ -1,0 +1,17 @@
+{
+  "BeaconOfRage": {
+    "description": "Pour chaque attaque qu'il a subie au cours de ce combat, jusqu'à un maximum de <style=\"stat\">{[nrOfAttacks]} fois</style>, <style=\"Faction_WorldEaters\">Azkor</style> inflige <style=\"Stat_Damage\">+{[extraDmg]} dégâts</style>. Si <style=\"Faction_WorldEaters\">Azkor</style> a éliminé un ennemi au cours de ce combat, <style=\"stat\">50 %</style> des dégâts supplémentaires conférés par <i>Fanaux de Rage</i> sont ajoutés aux dégâts des attaques au corps à corps des unités du <style=\"Aliance_Chaos\">Chaos</style> alliées adjacentes.",
+    "variables": {
+      "extraDmg": [
+        1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30,
+        32, 34, 36, 38, 40, 43, 46, 50, 55, 60, 66, 72, 78, 84, 90, 96, 102,
+        110, 118, 124, 134, 144, 154, 166, 190, 212, 234, 256, 278, 300, 301,
+        302, 303, 304, 305, 306, 307, 308, 309, 310, 311, 312, 313, 314, 315
+      ]
+    },
+    "constants": {
+      "nrOfAttacks": "8"
+    },
+    "scaled": []
+  }
+}

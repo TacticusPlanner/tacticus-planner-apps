@@ -1,0 +1,17 @@
+{
+  "Skullsmasher": {
+    "description": "<style=\"Faction_WorldEaters\">Macer</style> deals <style=\"Stat_Damage\">+{[extraDmg]} Damage</style> for each <style=\"Stat\">{[hpPct]}%</style> of his maximum <style=\"Stat_Health\">Health</style> he is currently missing. In addition, if <style=\"Faction_WorldEaters\">Macer</style> has defeated an enemy this battle, all enemies he attacks become <style=\"Debuff_Stunned\">Stunned</style>.",
+    "variables": {
+      "extraDmg": [
+        1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+        21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 36, 37, 39, 41,
+        43, 45, 49, 53, 57, 61, 70, 78, 86, 94, 103, 111, 112, 113, 114, 115,
+        116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126
+      ]
+    },
+    "constants": {
+      "hpPct": "10"
+    },
+    "scaled": ["extraDmg"]
+  }
+}

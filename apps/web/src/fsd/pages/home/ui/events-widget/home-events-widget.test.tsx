@@ -111,6 +111,9 @@ const currentPath = () => screen.getByTestId("current-path").textContent
 
 describe("HomeEventsWidget", () => {
   beforeEach(() => {
+    // The minute clock the widget falls back to when the calendar read fails.
+    vi.useFakeTimers({ toFake: ["Date"] })
+    vi.setSystemTime(NOW)
     hseMock.mockReturnValue(hseReady(hunt, [rush]))
     legendaryMock.mockReturnValue(legendaryReady([lysander, uthar]))
     progressMock.mockReturnValue(
@@ -119,7 +122,10 @@ describe("HomeEventsWidget", () => {
       ])
     )
   })
-  afterEach(() => vi.unstubAllEnvs())
+  afterEach(() => {
+    vi.unstubAllEnvs()
+    vi.useRealTimers()
+  })
 
   it("lists the live HSE, the live Legendary Event with run and points, then the next upcoming event", () => {
     renderWidget()
@@ -219,6 +225,9 @@ describe("HomeEventsWidget", () => {
     )
     expect(screen.getAllByTestId("home-events-row")).toHaveLength(1)
     expect(screen.getByTestId("home-events-row")).toHaveTextContent("Uthar")
+    expect(screen.getByTestId("home-events-row")).toHaveTextContent(
+      "common:home.events.startsIn:8 days"
+    )
   })
 
   it("keeps Home Screen Event rows and notes the failed catalog read", () => {

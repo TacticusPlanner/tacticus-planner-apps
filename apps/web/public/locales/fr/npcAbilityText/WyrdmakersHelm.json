@@ -1,0 +1,10 @@
+{
+  "WyrdmakersHelm": {
+    "description": "Pendant son tour, chaque fois que <style=\"Faction_SpaceWolves\">Baldr</style> ou une unité alliée adjacente reçoit des <style=\"Healing\">soins</style> pour la première fois lors de ce tour, Baldr effectue immédiatement une <style=\"NormalAttack\">attaque au corps à corps normale</style>. Ces attaques infligent <style=\"Stat_Damage\">+{[extraDmg]} dégâts</style> et <style=\"Effect_Ice\">gèlent</style> l'hexagone de la cible.",
+    "variables": {
+      "extraDmg": [490, 516, 543, 569, 596, 622, 649, 675, 702, 728]
+    },
+    "constants": {},
+    "scaled": []
+  }
+}

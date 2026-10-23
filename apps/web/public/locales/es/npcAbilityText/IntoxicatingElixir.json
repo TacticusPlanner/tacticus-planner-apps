@@ -1,0 +1,14 @@
+{
+  "IntoxicatingElixir": {
+    "description": "El portador de la reliquia inflige <style=\"Stat_CritDamage\">+{[extraCritDmg]} de Daño Crítico</style> por cada unidad dentro de un alcance de {[range]} víctima de <style=\"Debuff_Pinned\">Supresión</style>, <style=\"Debuff_Stunned\">Aturdimiento</style>, <style=\"Debuff_Taunted\">Provocación</style> o <style=\"ThrillSeekers\">Emoción</style>, hasta un máximo de {[nrOfUnits]} unidades. Esta bonificación se duplica si el portador de la reliquia tiene un <style=\"Stat_Health\">{[healthPct]} % de Salud</style> o menos.",
+    "variables": {
+      "extraCritDmg": [295, 311, 327, 343, 359, 375, 391, 406, 422, 438]
+    },
+    "constants": {
+      "range": "2",
+      "nrOfUnits": "6",
+      "healthPct": "50"
+    },
+    "scaled": []
+  }
+}

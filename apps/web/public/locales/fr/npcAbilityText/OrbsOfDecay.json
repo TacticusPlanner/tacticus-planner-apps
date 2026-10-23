@@ -1,0 +1,15 @@
+{
+  "OrbsOfDecay": {
+    "description": "Les <style=\"NormalAttack\">attaques normales</style> du porteur de relique infligent <style=\"Stat_Hits\">{[nrOfHits]}x</style> <style=\"DMG_Toxic\">{[minDmg]}-{[maxDmg]} dégâts toxiques</style> supplémentaires aux unités ennemies dont l'<style=\"Stat_Armor\">armure</style> est réduite de {[armorReductionPct]} % minimum et qui sur l'hexagone cible ou qui lui sont adjacents. De plus, l'hexagone de la cible est <style=\"Tile_Contamination\">contaminé</style>.",
+    "variables": {
+      "minDmg": [685, 722, 759, 796, 833, 870, 907, 944, 981, 1018],
+      "maxDmg": [1370, 1444, 1518, 1592, 1666, 1740, 1814, 1888, 1962, 2036]
+    },
+    "constants": {
+      "nrOfHits": "2",
+      "damageProfile": "Toxic",
+      "armorReductionPct": "30"
+    },
+    "scaled": []
+  }
+}

@@ -246,7 +246,7 @@ export function resolveI2p(
   const variableMatch = /\{\[(\w+)\]\}/.exec(text)
   if (!variableMatch) return prefix + pluralContent
 
-  const variableName = variableMatch[1]
+  const variableName = variableMatch[1] ?? ""
   const values = variables[variableName]
   const valueAtLevel = Number(
     values?.[Math.min(level - 1, (values?.length ?? 1) - 1)] ?? 1
@@ -298,7 +298,7 @@ function parseToken(
   const openBare = /^<style=([^"{}<>]+)>\s*$/.exec(raw)
   if (openBare) return { open: openBare[1] }
   const variableMatch = /^\{([^}]+)\}$/.exec(raw)
-  if (variableMatch) return { variable: variableMatch[1] }
+  if (variableMatch) return { variable: variableMatch[1] ?? "" }
   return { variable: raw }
 }
 
@@ -309,12 +309,12 @@ function parseVariableContent(inner: string): VariableNode {
   if (splitMatch)
     return {
       type: "var",
-      name: splitMatch[1],
+      name: splitMatch[1] ?? "",
       splitIndex: Number(splitMatch[2]),
     }
   if (/^\[S\//.test(inner)) return { type: "var", name: "" }
   const nameMatch = /^\[([^\]]+)\]$/.exec(inner)
-  if (nameMatch) return { type: "var", name: nameMatch[1] }
+  if (nameMatch) return { type: "var", name: nameMatch[1] ?? "" }
   return { type: "var", name: inner }
 }
 
@@ -326,7 +326,7 @@ export function parseAbilityText(text: string): AstNode[] {
   for (const match of text.matchAll(TOKEN_RE)) {
     const before = text.slice(lastIndex, match.index)
     if (before) stack.at(-1)!.push({ type: "text", value: before })
-    lastIndex = match.index! + match[0].length
+    lastIndex = match.index + match[0].length
 
     const token = parseToken(match[0])
 
@@ -359,7 +359,7 @@ export function parseAbilityText(text: string): AstNode[] {
   const trailing = text.slice(lastIndex)
   if (trailing) stack.at(-1)!.push({ type: "text", value: trailing })
 
-  return stack[0]
+  return stack[0] ?? []
 }
 
 // ── Rarity scaling ────────────────────────────────────────────────────────────

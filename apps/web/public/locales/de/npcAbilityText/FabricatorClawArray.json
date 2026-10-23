@@ -1,0 +1,16 @@
+{
+  "FabricatorClawArray": {
+    "description": "Nach einer Bewegung <style=\"Repairing\">repariert</style> diese Einheit eine zufällige verbündete <style=\"Mechanical\">mechanische</style> Einheit auf einem angrenzenden Feld um <style=\"Stat_Health\">{[hpToRepair]} Lebenspunkte</style>.\nWenn <style=\"Faction_Necrons\">Aleph-Null</style> sich nicht bewegt, wird diese Fähigkeit am Ende seines Zugs ausgelöst.",
+    "variables": {
+      "hpToRepair": [
+        40, 48, 56, 64, 72, 81, 90, 100, 109, 118, 127, 136, 146, 155, 164, 173,
+        182, 192, 201, 210, 222, 240, 276, 312, 349, 385, 422, 458, 494, 531,
+        567, 604, 640, 676, 713, 749, 786, 822, 858, 910, 982, 1057, 1139, 1229,
+        1394, 1558, 1722, 1887, 2051, 2216, 2240, 2270, 2300, 2340, 2380, 2420,
+        2460, 2510, 2560, 2610, 2670, 2730, 2790, 2850, 2910
+      ]
+    },
+    "constants": {},
+    "scaled": ["hpToRepair"]
+  }
+}

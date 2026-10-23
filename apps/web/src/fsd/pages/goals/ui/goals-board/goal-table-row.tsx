@@ -4,11 +4,8 @@ import { GripVertical } from "lucide-react"
 import { Checkbox } from "@workspace/ui/components/checkbox"
 import { TableCell } from "@workspace/ui/components/table"
 
-import {
-  NO_BLOCKERS,
-  UNKNOWN_PROGRESS,
-} from "../../model/attainment/goal-overview-metrics-defaults"
-import { useGoalCatalog } from "../../model/shared/use-goal-catalog"
+import { NO_BLOCKERS, UNKNOWN_PROGRESS } from "@/features/goal-planning"
+import { useGoalCatalog } from "@/features/goal-planning"
 import { GoalRowActions } from ".//goal-row-actions"
 import { GoalResourceChips } from "../shared/goal-resource-chips"
 import { formatGoalRemainingText } from "../shared/goal-remaining-text"
@@ -16,7 +13,7 @@ import {
   GoalProgressDisplay,
   GoalTargetDisplay,
 } from "../shared/goal-progress-visuals"
-import { GoalProjectBadges, GoalUnitIcon } from "../shared/goal-visuals"
+import { GoalProjectBadges, GoalUnitIcon } from "@/features/goal-create"
 import { LevelRequirementLine } from "../shared/level-requirement-display"
 import type { SortableRenderProps } from "@/shared/ui"
 import { BlockedIndicator, StatusBadge } from "../shared/status-badge"
@@ -113,7 +110,9 @@ export const GoalRowCells = memo(function GoalRowCells({
 
   return (
     <>
-      <TableCell onClick={stopRowNavigation} onKeyDown={stopRowNavigation}>
+      {/* No onKeyDown stop here: dnd-kit's keyboard sensor reads the drag handle's arrow, drop and
+          Escape keys on the document, so they must bubble. */}
+      <TableCell onClick={stopRowNavigation}>
         <div className="flex items-center gap-2">
           <Checkbox
             aria-label={t("goals.bulk.selectRow", {
@@ -168,6 +167,7 @@ export const GoalRowCells = memo(function GoalRowCells({
           <div
             className="ml-auto"
             data-testid={`goal-row-menu-${row.goalId}`}
+            role="presentation"
             onClick={stopRowNavigation}
             onKeyDown={stopRowNavigation}
           >

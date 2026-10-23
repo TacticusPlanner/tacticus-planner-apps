@@ -95,7 +95,7 @@ describe("AuthenticatedRoute", () => {
       </MemoryRouter>
     )
 
-    expect(screen.getByRole("status")).toBeVisible()
+    expect(screen.getByRole("status", { name: "Loading…" })).toBeVisible()
     expect(screen.queryByTestId("protected-content")).not.toBeInTheDocument()
     expect(screen.queryByTestId("probe")).not.toBeInTheDocument()
 

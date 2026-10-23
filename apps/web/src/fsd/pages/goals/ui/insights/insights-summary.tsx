@@ -7,7 +7,7 @@ import {
 } from "@workspace/ui/components/card"
 
 import type { Rarity } from "@workspace/game-domain"
-import { ASSET_BASE_PATH } from "@workspace/game-catalog"
+import { gameAssetUrl } from "@workspace/game-catalog"
 
 import { formatEstimateDate } from "@/shared/lib"
 import { energyIconUrl, EntityIcon, RarityIcon } from "@/shared/ui"
@@ -15,7 +15,7 @@ import { energyIconUrl, EntityIcon, RarityIcon } from "@/shared/ui"
 import type {
   PlanInsightsBottleneck,
   PlanInsightsTotals,
-} from "../../model/insights/use-plan-insights.domain"
+} from "@/features/goal-planning"
 
 /** Resource-totals cards + the combined energy/completion estimate + top bottlenecks — the "total
  *  missing resources, breakdown by rarity/type" and "total energy estimate, completion timeline,
@@ -57,7 +57,7 @@ export function InsightsSummary({
             <EntityIcon
               alt=""
               className="size-6"
-              src={`${ASSET_BASE_PATH}/upgrade-crafted-badge.png`}
+              src={gameAssetUrl(`upgrade-crafted-badge.webp`)}
             />
             {t("goals.insights.upgradesTitle")}
           </CardTitle>
@@ -86,7 +86,7 @@ export function InsightsSummary({
             <EntityIcon
               alt=""
               className="size-6"
-              src={`${ASSET_BASE_PATH}/misc/ui_icon_character_shard_empty.png`}
+              src={gameAssetUrl(`misc/ui_icon_character_shard_empty.webp`)}
             />
             {t("goals.insights.shardsTitle")}
           </CardTitle>
@@ -123,7 +123,9 @@ export function InsightsSummary({
                   <EntityIcon
                     alt=""
                     className="size-7"
-                    src={`${ASSET_BASE_PATH}/resources/ui_hero_ascension_orbs_${rarity.toLowerCase()}.png`}
+                    src={gameAssetUrl(
+                      `resources/ui_hero_ascension_orbs_${rarity.toLowerCase()}.webp`
+                    )}
                   />
                   <span className="font-medium">{count}</span>
                 </div>

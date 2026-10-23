@@ -1,7 +1,6 @@
 import { damageTypeIcon, factionIcon, traitIcon } from "@workspace/game-catalog"
 
 import defeatAllSrc from "../assets/defeat-all.png"
-import scoreSrc from "../assets/score.png"
 import statHitSrc from "../assets/stat-hit.png"
 import statMeleeSrc from "../assets/stat-melee.png"
 import statRangedSrc from "../assets/stat-ranged.png"
@@ -9,7 +8,6 @@ import type { LegendaryEventUnitFilter } from "../model/types"
 
 /** The V1 icon set shipped with the entity (design D6). */
 export const defeatAllIcon = defeatAllSrc
-export const scoreIcon = scoreSrc
 
 /** An objective's icon: a game asset plus an optional badge (red X for a negated filter, "≥" / "≤"
  *  for a hits bound). */

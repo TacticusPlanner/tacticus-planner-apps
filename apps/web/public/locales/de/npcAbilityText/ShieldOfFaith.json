@@ -1,0 +1,10 @@
+{
+  "ShieldOfFaith": {
+    "description": "Wenn ein verbündeter <style=\"Rarity_Mythic\">Mythischer</style> <style=\"Character\">Charakter</style> <style=\"Stat_CritDamage\">Kritische Treffer</style> oder Angriffstreffer gegen einen Gegner landet, der sich auf einem <style=\"Effect_Fire\">brennenden</style> Feld befindet, erlangt er einen <style=\"Buff_Shield\">Schild</style>, der bis zum Beginn der nächsten Runde anhält – sofern er nicht schon einen besitzt. Die <style=\"Stat_Health\">Lebenspunkte</style> des Schilds betragen <style=\"STAT\">{[shieldPct]} %</style> der maximalen <style=\"Stat_Health\">Lebenspunkte</style> des betroffenen Charakters.",
+    "variables": {
+      "shieldPct": [25, 32.5, 40, 50]
+    },
+    "constants": {},
+    "scaled": ["shieldPct"]
+  }
+}

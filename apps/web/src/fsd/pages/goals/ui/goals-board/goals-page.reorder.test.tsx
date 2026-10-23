@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import { fireEvent, render, screen } from "@testing-library/react"
+import { fireEvent, render, screen } from "@/test/render"
 import userEvent from "@testing-library/user-event"
 
 // Reordering on the Goals page (spec: `global-goal-priority`, `goals-navigation`). Dragging under
@@ -12,16 +12,12 @@ const state = vi.hoisted(() => ({
   estimates: new Map<string, unknown>(),
   insightsError: false,
   retryInsights: vi.fn(),
-  order: {} as Record<string, unknown>,
+  order: {},
   moveGoal: vi.fn(),
   retryMove: vi.fn(),
   dismissConflict: vi.fn(),
 }))
 
-vi.mock("react-i18next", () => ({
-  useTranslation: () => ({ t: (key: string) => key }),
-  initReactI18next: { type: "3rdParty", init: vi.fn() },
-}))
 vi.mock("@workspace/ui/hooks/use-mobile", () => ({
   useIsMobile: () => state.isMobile,
 }))
@@ -32,11 +28,14 @@ vi.mock("@/entities/project", () => ({
     fetchState: { status: "success" },
   }),
 }))
-vi.mock("@/features/goal-order", async (importOriginal) => ({
-  ...(await importOriginal<typeof import("@/features/goal-order")>()),
-  useGoalOrderActions: () => state.order,
-}))
-vi.mock("../../model/goals-data/use-goals", () => ({
+vi.mock(
+  "@/features/goal-planning/model/goal-order/use-goal-order-actions",
+  async (importOriginal) => ({
+    ...(await importOriginal<typeof import("@/features/goal-planning")>()),
+    useGoalOrderActions: () => state.order,
+  })
+)
+vi.mock("@/features/goal-planning/model/goals-data/use-goals", () => ({
   useGoals: (options?: { archived?: boolean }) => ({
     fetchState: {
       status: "success",
@@ -46,22 +45,31 @@ vi.mock("../../model/goals-data/use-goals", () => ({
     retry: vi.fn(),
   }),
 }))
-vi.mock("../../model/attainment/use-goal-attainment", () => ({
-  useGoalAttainmentState: () => ({ byGoalId: new Map(), pending: false }),
-}))
-vi.mock("../../model/attainment/use-goals-overview-metrics", () => ({
-  useGoalsOverviewMetrics: () => new Map(),
-}))
-vi.mock("../../model/goals-data/use-goal-actions", () => ({
+vi.mock(
+  "@/features/goal-planning/model/attainment/use-goal-attainment",
+  () => ({
+    useGoalAttainmentState: () => ({ byGoalId: new Map(), pending: false }),
+  })
+)
+vi.mock(
+  "@/features/goal-planning/model/attainment/use-goals-overview-metrics",
+  () => ({
+    useGoalsOverviewMetrics: () => new Map(),
+  })
+)
+vi.mock("@/features/goal-planning/model/goals-data/use-goal-actions", () => ({
   useGoalActions: () => ({}),
 }))
-vi.mock("../../model/shared/use-goal-catalog", () => ({
+vi.mock("@/features/goal-planning/model/shared/use-goal-catalog", () => ({
   useGoalCatalog: () => ({ getEntityName: (_type: string, id: string) => id }),
 }))
-vi.mock("../../model/goal-creation-form/create-goal-launcher-context", () => ({
-  useCreateGoalLauncher: () => vi.fn(),
-}))
-vi.mock("../../model/insights/use-plan-insights", () => ({
+vi.mock(
+  "@/features/goal-create/model/goal-creation-form/create-goal-launcher-context",
+  () => ({
+    useCreateGoalLauncher: () => vi.fn(),
+  })
+)
+vi.mock("@/features/goal-planning/model/insights/use-plan-insights", () => ({
   usePlanInsights: () => ({
     loading: false,
     isError: state.insightsError,
@@ -83,10 +91,16 @@ vi.mock("@/features/project-management", () => ({
 vi.mock("./goals-project-scope", () => ({
   GoalsProjectScope: () => null,
 }))
-vi.mock("../../model/projects/use-goals-project-scope", () => ({
-  useGoalsProjectScope: () => ({ projectId: undefined, setProjectId: vi.fn() }),
-}))
-vi.mock("../goal-edit/goal-edit-dialog", () => ({
+vi.mock(
+  "@/features/goal-planning/model/projects/use-goals-project-scope",
+  () => ({
+    useGoalsProjectScope: () => ({
+      projectId: undefined,
+      setProjectId: vi.fn(),
+    }),
+  })
+)
+vi.mock("@/features/goal-create/ui/goal-edit/goal-edit-dialog", () => ({
   GoalEditDialog: () => null,
 }))
 vi.mock("@/entities/planning-setting", () => ({
@@ -194,7 +208,7 @@ describe("GoalsPage reordering", () => {
   })
 
   it("moves the dragged goal onto the goal that held its new place in the whole order", () => {
-    render(<GoalsPage />)
+    render(<GoalsPage />, { route: "/plan/goals" })
 
     // Unfiltered: e dropped above d takes d's global position.
     fireEvent.click(screen.getByTestId("move-up-e"))
@@ -207,11 +221,11 @@ describe("GoalsPage reordering", () => {
 
   it("resolves a drop on a filtered list against the hidden goals too (A,B,C,D,E; visible A,C,E; E above C gives A,B,E,C,D)", async () => {
     const user = userEvent.setup()
-    render(<GoalsPage />)
+    render(<GoalsPage />, { route: "/plan/goals" })
     await user.click(screen.getByTestId("goals-type-filter"))
     await user.click(
       await screen.findByRole("option", {
-        name: "goals.create.goalTypes.Rank",
+        name: "Rank",
       })
     )
     expect(rowIds()).toEqual(["a", "c", "e"])
@@ -226,10 +240,10 @@ describe("GoalsPage reordering", () => {
 
   it("keeps a grouped drop inside its own group section", async () => {
     const user = userEvent.setup()
-    render(<GoalsPage />)
+    render(<GoalsPage />, { route: "/plan/goals" })
     await user.click(screen.getByTestId("goals-group-by"))
     await user.click(
-      await screen.findByRole("option", { name: "goals.filters.groupByType" })
+      await screen.findByRole("option", { name: "Group by type" })
     )
 
     expect(screen.getAllByTestId("goals-list")).toHaveLength(2)
@@ -248,14 +262,14 @@ describe("GoalsPage reordering", () => {
       goal("b", 2, { status: "Paused" }),
       goal("a", 1),
     ]
-    render(<GoalsPage />)
+    render(<GoalsPage />, { route: "/plan/goals" })
 
     expect(rowIds()).toEqual(["a", "b", "c", "done"])
     expect(screen.queryByTestId("goals-sort")).not.toBeInTheDocument()
   })
 
   it("feeds the list plan-aware estimates from the same plan run Today uses", () => {
-    render(<GoalsPage />)
+    render(<GoalsPage />, { route: "/plan/goals" })
 
     expect(screen.getByTestId("goals-list")).toHaveAttribute(
       "data-estimates",
@@ -265,7 +279,7 @@ describe("GoalsPage reordering", () => {
 
   it("does not offer reordering for a single in-flight goal", async () => {
     state.goals = [goal("a", 1)]
-    render(<GoalsPage />)
+    render(<GoalsPage />, { route: "/plan/goals" })
     expect(screen.getByTestId("goals-list")).toHaveAttribute(
       "data-reorder",
       "false"
@@ -276,7 +290,7 @@ describe("GoalsPage reordering", () => {
   it("keeps the mobile reorder toggle in place but disabled when reordering is unavailable", () => {
     state.isMobile = true
     state.goals = [goal("a", 1)]
-    render(<GoalsPage />)
+    render(<GoalsPage />, { route: "/plan/goals" })
     expect(screen.getByTestId("goals-mobile-reorder-toggle")).toBeDisabled()
     expect(screen.getByTestId("goals-mobile-select-toggle")).toBeEnabled()
   })
@@ -286,7 +300,7 @@ describe("GoalsPage reordering", () => {
       ...state.order,
       conflict: { move: { goalId: "e", displacedGoalId: "d" }, message: "x" },
     }
-    render(<GoalsPage />)
+    render(<GoalsPage />, { route: "/plan/goals" })
 
     expect(screen.getByTestId("goal-order-conflict")).toBeInTheDocument()
     expect(state.retryMove).not.toHaveBeenCalled()
@@ -298,7 +312,7 @@ describe("GoalsPage reordering", () => {
 
   it("offers a dedicated reorder mode on mobile with an in-reach Done control", () => {
     state.isMobile = true
-    render(<GoalsPage />)
+    render(<GoalsPage />, { route: "/plan/goals" })
 
     expect(screen.queryByTestId("mobile-reorder-bar")).not.toBeInTheDocument()
     fireEvent.click(screen.getByTestId("goals-mobile-reorder-toggle"))
@@ -315,7 +329,7 @@ describe("GoalsPage reordering", () => {
     state.insightsError = true
     state.estimates = new Map()
     state.goals = [goal("a", 1)]
-    render(<GoalsPage />)
+    render(<GoalsPage />, { route: "/plan/goals" })
 
     expect(screen.getByTestId("goals-estimates-error")).toBeInTheDocument()
     // Below the list, so its late arrival doesn't push the rows down.
@@ -326,27 +340,25 @@ describe("GoalsPage reordering", () => {
         Node.DOCUMENT_POSITION_FOLLOWING
     ).toBeTruthy()
     expect(screen.queryByTestId("goals-no-farmable")).not.toBeInTheDocument()
-    fireEvent.click(
-      screen.getByRole("button", { name: "goals.order.estimatesRetry" })
-    )
+    fireEvent.click(screen.getByRole("button", { name: "Retry estimates" }))
     expect(state.retryInsights).toHaveBeenCalledOnce()
   })
 
   it("shows the save in flight next to the list while the mobile mode is on", () => {
     state.isMobile = true
     state.order = { ...state.order, pending: true }
-    render(<GoalsPage />)
+    render(<GoalsPage />, { route: "/plan/goals" })
     fireEvent.click(screen.getByTestId("goals-mobile-reorder-toggle"))
 
     expect(screen.getByTestId("mobile-reorder-status")).toHaveTextContent(
-      "goals.order.saving"
+      "Saving order…"
     )
   })
 
   it("says there is no farming to plan when the Active goals need nothing farmable, but not for Paused-only", () => {
     state.estimates = new Map()
     state.goals = [goal("a", 1)]
-    const { unmount } = render(<GoalsPage />)
+    const { unmount } = render(<GoalsPage />, { route: "/plan/goals" })
     expect(screen.getByTestId("goals-no-farmable")).toBeInTheDocument()
     expect(
       screen
@@ -357,7 +369,7 @@ describe("GoalsPage reordering", () => {
     unmount()
 
     state.goals = [goal("a", 1, { status: "Paused" })]
-    render(<GoalsPage />)
+    render(<GoalsPage />, { route: "/plan/goals" })
     expect(screen.queryByTestId("goals-no-farmable")).not.toBeInTheDocument()
   })
 })

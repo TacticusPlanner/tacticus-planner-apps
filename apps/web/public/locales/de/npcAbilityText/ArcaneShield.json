@@ -1,0 +1,18 @@
+{
+  "ArcaneShield": {
+    "description": "Nachdem sich <style=\"Faction_ThousandSons\">Thaumachus</style> bewegt hat, schützt er die nächste verbündete Einheit innerhalb von {[range]} Feldern mit einem <style=\"Buff_Shield\">Schild</style>. Dabei bevorzugt er zuerst Einheiten der <style=\"Faction_ThousandSons\">Thousand Sons</style>, dann andere <style=\"Aliance_Chaos\">Chaos</style>-Einheiten, dann andere verbündete Einheiten und zuletzt sich selbst, wenn kein anderes gültiges Ziel in der Nähe ist. Das Schild verfügt über <style=\"Stat_Health\">{[shieldHp]} Lebenspunkte</style> und hält eine Runde lang an.\n\nWenn <style=\"Faction_ThousandSons\">Thaumachus</style> sich nicht bewegt, wird diese Fähigkeit am Ende seines Zugs ausgelöst.",
+    "variables": {
+      "shieldHp": [
+        55, 66, 77, 88, 99, 112, 124, 137, 150, 162, 175, 188, 200, 213, 226,
+        238, 251, 263, 276, 289, 306, 329, 380, 430, 480, 530, 580, 630, 680,
+        730, 780, 830, 880, 930, 980, 1030, 1080, 1130, 1180, 1251, 1350, 1454,
+        1566, 1690, 1916, 2142, 2368, 2594, 2820, 3046, 3080, 3121, 3163, 3218,
+        3273, 3328, 3383, 3451, 3520, 3589, 3671, 3754, 3836, 3919, 4001
+      ]
+    },
+    "constants": {
+      "range": "2"
+    },
+    "scaled": ["shieldHp"]
+  }
+}

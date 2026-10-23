@@ -5,9 +5,9 @@ Profiler baseline procedure (used by every "baseline" task): run the full local 
 ## 1. Daily-raids engine (Dailies, HRE, HSE, Home)
 
 - [ ] 1.1 Record the baseline for: typing one digit in the HRE mission tracker on `/dailies/hre`, typing one digit in the HSE projection inputs on `/dailies/hse`, and opening `/dailies` Today; note which components committed and why.
-- [ ] 1.2 Wrap the `calculateDailyRaids` call and the `planMission` builder in `features/daily-raids/model/use-daily-raids.ts` in `useMemo` keyed on the resolved query data, live-query arrays, settings values and option fields, placed before the hook's error/loading early returns (the memo runs unconditionally and returns `null` while inputs are not ready; the early returns move below it) so the Hook call order never changes between the no-goals and goals states; convert its detail `useQueries` to `combine`; verify `use-daily-raids.test.tsx` passes and new tests assert that re-rendering the hook with identical inputs returns the same result reference, a changed input returns a new one, and a transition from zero to some active members and back renders without a Hook-order error.
-- [ ] 1.3 Build the HRE raids `request` in `pages/dailies/ui/hre-page.tsx` with `useMemo` over its primitive fields and the `missionRaids` option in `features/daily-raids/ui/hre-missions/hre-raids-section.tsx` the same way; verify `hre-page.test.tsx` passes and a test asserts the engine is not re-invoked when only `points`/`rank`/`target` change.
-- [ ] 1.4 Wrap `EventFarmSection` in `memo`; verify `hse-page.test.tsx` passes and a test asserts that updating a projection input does not re-render `EventFarmSection`.
+- [x] 1.2 Wrap the `calculateDailyRaids` call and the `planMission` builder in `features/daily-raids/model/use-daily-raids.ts` in `useMemo` keyed on the resolved query data, live-query arrays, settings values and option fields, placed before the hook's error/loading early returns (the memo runs unconditionally and returns `null` while inputs are not ready; the early returns move below it) so the Hook call order never changes between the no-goals and goals states; convert its detail `useQueries` to `combine`; verify `use-daily-raids.test.tsx` passes and new tests assert that re-rendering the hook with identical inputs returns the same result reference, a changed input returns a new one, and a transition from zero to some active members and back renders without a Hook-order error.
+- [x] 1.3 Build the HRE raids `request` in `pages/dailies/ui/hre-page.tsx` with `useMemo` over its primitive fields and the `missionRaids` option in `features/daily-raids/ui/hre-missions/hre-raids-section.tsx` the same way; verify `hre-page.test.tsx` passes and a test asserts the engine is not re-invoked when only `points`/`rank`/`target` change.
+- [x] 1.4 Wrap `EventFarmSection` in `memo`; verify `hse-page.test.tsx` passes and a test asserts that updating a projection input does not re-render `EventFarmSection`.
 - [ ] 1.5 Re-record the three interactions from 1.1 and confirm the engine does not run on a keystroke (no `useDailyRaids` host in the committed set) and the Today mount commit count did not grow.
 
 ## 2. Goals hooks
@@ -20,21 +20,21 @@ Former 2.2–2.5 (`useQueries({ combine })` on `use-goal-projects`, `combine` on
 ## 3. Minute clock and Legendary Events
 
 - [ ] 3.1 Record the baseline for: leaving `/legendary-events/<active event id>` open across one minute boundary, and leaving `/home` open across one minute boundary; note the committed components.
-- [ ] 3.2 Rewrite `entities/legendary-event/model/use-minute-now.ts` as a module-level ticker exposed through `useSyncExternalStore` with a selector argument; keep `useMinuteNow()` returning the raw instant; have `use-legendary-events.ts` and `use-legendary-event.ts` subscribe through a selector that returns the lifecycle signature so unchanged lifecycles cause no render; verify a new test with fake timers asserts a host re-renders on a lifecycle flip and not on a plain tick, and the existing `use-nav-items.test.tsx` passes.
-- [ ] 3.3 Move the `viewModel` construction and `build*ViewModel` calls in `pages/legendary-events/ui/legendary-event/legendary-event-page.tsx` under `useMemo`, and the inline handlers passed to child sections under `useCallback`; verify the page tests pass and the file stays under the max-lines limit (extract a `useLegendaryEventPageViewModel` hook next to the existing `.view-model.ts` only if needed).
-- [ ] 3.4 Memoize `rows` in `pages/legendary-events/ui/master-table/master-table-page.tsx` and add the local search state with a 200 ms debounced `update({ q }, true)` commit (immediate on clear); verify `master-table-page.test.tsx` passes with fake timers and a test asserts the URL carries `q` after the debounce and the rows filter before it.
+- [x] 3.2 Rewrite `entities/legendary-event/model/use-minute-now.ts` as a module-level ticker exposed through `useSyncExternalStore` with a selector argument; keep `useMinuteNow()` returning the raw instant; have `use-legendary-events.ts` and `use-legendary-event.ts` subscribe through a selector that returns the lifecycle signature so unchanged lifecycles cause no render; verify a new test with fake timers asserts a host re-renders on a lifecycle flip and not on a plain tick, and the existing `use-nav-items.test.tsx` passes.
+- [x] 3.3 Move the `viewModel` construction and `build*ViewModel` calls in `pages/legendary-events/ui/legendary-event/legendary-event-page.tsx` under `useMemo`, and the inline handlers passed to child sections under `useCallback`; verify the page tests pass and the file stays under the max-lines limit (extract a `useLegendaryEventPageViewModel` hook next to the existing `.view-model.ts` only if needed).
+- [x] 3.4 Memoize `rows` in `pages/legendary-events/ui/master-table/master-table-page.tsx` and add the local search state with a 200 ms debounced `update({ q }, true)` commit (immediate on clear); verify `master-table-page.test.tsx` passes with fake timers and a test asserts the URL carries `q` after the debounce and the rows filter before it.
 - [ ] 3.5 Re-record the two interactions from 3.1 and confirm that a minute tick without a lifecycle change commits only countdown components.
 
 ## 4. Shell contexts
 
 - [ ] 4.1 Record the baseline for: a manual player-data sync from the mobile layout (viewport below 768 px) on `/home`; note whether the sidebar/nav committed per progress tick.
-- [ ] 4.2 Split `PlayerDataContext` in `shared/player-data-status/player-data-status.ts` into a status context and a `PlayerDataProgressContext`, provide both from `app/providers/player-data-provider.tsx`, and read progress only where it is displayed; verify `player-data-provider.test.tsx` passes and a test asserts a status-only consumer does not re-render on a progress update.
-- [ ] 4.3 Memoize the `HseLiveProvider` context value in `app/layout/hse-live-provider.tsx` and wrap `launchCreateGoal` in `useCallback` in `app/layout/app-shell.tsx`; verify the app-shell tests pass and a test asserts `NavLiveDot` does not re-render when the provider re-renders with unchanged signals.
+- [x] 4.2 Split `PlayerDataContext` in `shared/player-data-status/player-data-status.ts` into a status context and a `PlayerDataProgressContext`, provide both from `app/providers/player-data-provider.tsx`, and read progress only where it is displayed; verify `player-data-provider.test.tsx` passes and a test asserts a status-only consumer does not re-render on a progress update.
+- [x] 4.3 Memoize the `HseLiveProvider` context value in `app/layout/hse-live-provider.tsx` and wrap `launchCreateGoal` in `useCallback` in `app/layout/app-shell.tsx`; verify the app-shell tests pass and a test asserts `NavLiveDot` does not re-render when the provider re-renders with unchanged signals.
 - [ ] 4.4 Re-record the interaction from 4.1 and confirm the nav does not commit per progress tick.
 
 ## 5. Integration
 
-- [ ] 5.1 Run `pnpm test:run`, `pnpm typecheck`, `pnpm lint`, `pnpm lint:fsd` and `git diff --check` from `tacticus-planner-apps`; all pass with no new `eslint-disable` for `react-hooks/exhaustive-deps`.
+- [x] 5.1 Run `pnpm test:run`, `pnpm typecheck`, `pnpm lint`, `pnpm lint:fsd` and `git diff --check` from `tacticus-planner-apps`; all pass with no new `eslint-disable` for `react-hooks/exhaustive-deps`.
 - [ ] 5.2 Desktop verification (viewport at or above 768 px): on `/dailies/hre`, `/dailies/hse`, `/plan/goals`, `/legendary-events/<active id>` and `/legendary-events/master-table`, confirm the rendered data matches the pre-change build for the reference account (same rows, totals, countdowns) and typing in the master-table search filters immediately and updates the URL; requires an account with at least one active goal and a running HRE or HSE.
 - [ ] 5.3 Mobile verification (viewport below 768 px, via a same-origin iframe on the app origin per the `tp-manual-ui-verification` skill): repeat 5.2 on the mobile layout and confirm the sync status pill still updates during a manual sync.
 - [ ] 5.4 Paste the before/after numbers from 1.1/1.5, 2.1/2.6, 3.1/3.5 and 4.1/4.4 into this file; every "after" commit count for a keystroke, progress tick or plain minute tick excludes the heavy hook hosts.
@@ -42,3 +42,18 @@ Former 2.2–2.5 (`useQueries({ combine })` on `use-goal-projects`, `combine` on
 ## Workflow follow-up
 
 - Archive the change after review; no spec sync is needed (`skip_specs: true`).
+
+## Notes (as built)
+
+- Paths moved after this change was written (`catalog-read-layer`, `rehome-feature-logic`); the work targets the current files.
+- 1.2: the hook had no `useQueries` left to `combine`. The engine memo sits above the early returns, and a test covers the no-goals → goals → no-goals transition.
+- 2.2: `use-goal-projects.ts` and every `useQueries` fan-out were already gone, but the goals hooks still recomputed on every render.
+  - `use-goals-overview-metrics` and `use-goal-attainment` are now memoised on content-stable goal ids (`model/shared/use-stable-ids.ts`), with stability tests.
+  - The plan-insights `JSON.stringify` key is memoised.
+  - `useStableMap` is kept, not deleted: it preserves unchanged rows' entries across a status toggle, which keeps those rows from re-rendering. It now skips its compare when its input is unchanged.
+  - Not touched: `use-per-project-estimates.ts` (goal creation only).
+- 3.2: the minute clock is one shared ticker. The Legendary Event page, the hub cards and the Home events widget subscribe to the raw instant for their countdowns, so they still commit each minute; the shell and other lifecycle-only hosts do not.
+- 3.3: the page view model is memoised, but it is still rebuilt each render, because `useLegendaryEventPlan`, `useAnnotations`, `useCreateGoalFromRow` and `useLastRun` return fresh objects. Stabilising those is a follow-up.
+- 4.2: the shell quick-action sync row renders its progress text through a small component (`QuickAction.disabledReason` is now a `ReactNode`), so `ShellContent` no longer reads progress.
+- 5.1: web 539 files / 5,123 tests. A v1-import test fixture gained `eventStageStartDatesUtc`, because lifecycles are now derived for every event.
+- Open: every Profiler recording (1.1, 1.5, 2.1, 2.2's recording, 3.1, 3.5, 4.1, 4.4, 5.4) and the desktop/mobile checks (5.2, 5.3).

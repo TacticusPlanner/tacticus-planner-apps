@@ -9,7 +9,7 @@ import {
   TeamEditorDialog,
   laneTeams,
   type PickerEstimates,
-} from "@/features/legendary-event-teams"
+} from "@/features/legendary-event-plan"
 
 import type { TeamEditorLauncher } from "./team-editor-launcher"
 import type { TeamsViewModel } from "./teams-section"

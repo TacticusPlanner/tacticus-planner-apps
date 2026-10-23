@@ -1,0 +1,8 @@
+{
+  "WarConstruct": {
+    "description": "Wenn sich kein Feind in der Nähe des <style=\"Faction_Aeldari\">Phantomwächters</style> befindet, schießt er für 1 Runde auf jeden Gegner in Reichweite, der ihn oder einen angrenzenden, verbündeten <style=\"Faction_Aeldari\">Aeldari</style> angreift.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

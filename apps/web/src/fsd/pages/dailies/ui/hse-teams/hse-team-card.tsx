@@ -10,10 +10,7 @@ import {
 
 import { EntityIcon } from "@/shared/ui"
 
-import type {
-  HseTeam,
-  HseTeamMode,
-} from "../../model/hse-team-recommendations.types"
+import type { HseTeam, HseTeamMode } from "@/features/team-recommendations"
 import { TeamList } from "../team-recs/team-list"
 import { TrackShortfall } from "../team-recs/track-shortfall"
 import { hseTeamTestId } from "./hse-team-test-id"

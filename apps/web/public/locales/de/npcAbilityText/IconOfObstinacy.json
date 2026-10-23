@@ -1,0 +1,27 @@
+{
+  "IconOfObstinacy": {
+    "description": "<style=\"Faction_AdeptusAstartes\">Lysander</style> und alle verbündeten angrenzenden Einheiten in <style=\"Terminator_Armor\">Terminatorrüstung</style> verursachen <style=\"Stat_Damage\">+{[extraDmg]} Schaden</style>. Wenn sie ihren Zug beenden, ohne anzugreifen, erhalten sie außerdem bis zu Beginn ihres nächsten Zugs <style=\"Stat_Armor\">+{[extraArmor]} Rüstung</style>. Der zusätzliche <style=\"Stat_Damage\">Schaden</style> und die zusätzliche <style=\"Stat_Armor\">Rüstung</style> werden des Weiteren um <style=\"STAT\">{[chance]} %</style> des aktuellen <style=\"Stat_Damage\">Block-Schadens</style> der betroffenen Einheit erhöht.",
+    "variables": {
+      "extraDmg": [
+        4, 5, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 15, 16, 17, 18, 19, 20, 21,
+        22, 24, 28, 31, 35, 39, 42, 46, 49, 53, 57, 60, 64, 68, 71, 75, 79, 82,
+        86, 91, 98, 106, 114, 123, 139, 156, 172, 189, 205, 222, 224, 227, 230,
+        234, 238, 242, 246, 251, 256, 261, 267, 273, 279, 285, 291
+      ],
+      "extraArmor": [
+        4, 5, 6, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 16, 17, 18, 19, 20, 21,
+        22, 24, 28, 31, 35, 39, 42, 46, 49, 53, 57, 60, 64, 68, 71, 75, 79, 82,
+        86, 91, 98, 106, 114, 123, 139, 156, 172, 189, 205, 222, 224, 227, 230,
+        234, 238, 242, 246, 251, 256, 261, 267, 273, 279, 285, 291
+      ],
+      "chance": [
+        20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 25,
+        25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 30,
+        30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
+        30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30
+      ]
+    },
+    "constants": {},
+    "scaled": ["extraDmg", "extraArmor"]
+  }
+}

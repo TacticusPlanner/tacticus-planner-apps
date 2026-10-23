@@ -1,0 +1,8 @@
+{
+  "HarlequinsPanoply": {
+    "description": "La primera vez en cada turno que esta unidad bloquea un impacto, todos los demás impactos del ataque se descartan y el <style=\"Faction_Aeldari\">jugador Arlequín</style> se mueve 1 hexágono más cerca del origen del ataque si es posible.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

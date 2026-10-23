@@ -1,0 +1,13 @@
+{
+  "ForwardObservers": {
+    "description": "Visiert eine gegnerische Einheit in Reichweite {[range]} an, die kein <style=\"Debuff_Markerlight\">Markierungslicht</style> besitzt. Das Ziel erhält {[nrOfRounds]} Runden lang ein <style=\"Debuff_Markerlight\">Markierungslicht</style>. Der <style=\"Faction_Tau\">Geist-Kampfanzug</style> erleidet dann {[nrOfRounds_2]} Runde lang <style=\"Stat_Damage\">-{[dmgPctReduction]} % Schaden</style> von Fernkampfangriffen.",
+    "variables": {},
+    "constants": {
+      "range": "3",
+      "dmgPctReduction": "50",
+      "nrOfRounds": "2",
+      "nrOfRounds_2": "1"
+    },
+    "scaled": []
+  }
+}

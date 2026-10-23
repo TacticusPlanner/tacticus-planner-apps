@@ -16,6 +16,7 @@ export { ReadOnlyField } from "./read-only-field"
 /** @knipignore Retained as a shared placeholder for upcoming pages. */
 export { UnderConstruction } from "./under-construction"
 export { ConfirmationDialog } from "./confirmation-dialog"
+export { LocalReadFailure } from "./local-read-failure"
 export { UnsavedChangesBar } from "./unsaved-changes-bar"
 export { UnsavedChangesGuard } from "./unsaved-changes-guard"
 export {
@@ -31,6 +32,7 @@ export {
   ResponsiveDialogTitle,
 } from "./responsive-dialog"
 export { closestOverlayContent } from "./overlay-content"
+export { useCommandListId } from "./command-list-id"
 export { EventTypeIcon } from "./event-type-icon"
 export { SortableList, type SortableRenderProps } from "./sortable-list"
 export { NumberStepper } from "./number-stepper"

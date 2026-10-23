@@ -1,0 +1,23 @@
+{
+  "PredictiveGuidance": {
+    "description": "Los enemigos en un radio de 2 hexágonos de <style=\"Faction_LeaguesOfVotann\">Âmmuk</style> se ven afectados por <i>Orientación Predictiva</i>. Si un enemigo afectado no se movió en su último turno, otras unidades aliadas <style=\"Faction_LeaguesOfVotann\">Ligas de los Votann</style> o <style=\"Mechanical\">Mecánicas</style> infligen <style=\"Stat_Damage\">+{[extraDmg]} de Daño</style> con ataques cuerpo a cuerpo contra él. Si un enemigo afectado se movió en su último turno, otras unidades aliadas <style=\"Faction_LeaguesOfVotann\">Ligas de los Votann</style> o <style=\"Mechanical\">Mecánicas</style> infligen <style=\"Stat_Damage\">+{[extraDmg_2]} de Daño</style> con ataques a distancia contra él. Otras unidades aliadas <style=\"Faction_LeaguesOfVotann\">Ligas de los Votann</style> también consiguen un <style=\"Stat_Hits\">impacto</style> adicional con todos los ataques contra los enemigos afectados.",
+    "variables": {
+      "extraDmg": [
+        9, 11, 13, 14, 16, 18, 20, 22, 24, 27, 29, 31, 33, 35, 37, 39, 41, 43,
+        45, 47, 50, 54, 62, 70, 78, 87, 95, 103, 111, 119, 128, 136, 144, 152,
+        160, 169, 177, 185, 193, 205, 221, 238, 256, 277, 314, 351, 388, 425,
+        462, 499, 504, 511, 518, 527, 536, 545, 554, 565, 576, 587, 601, 614,
+        628, 641, 655
+      ],
+      "extraDmg_2": [
+        9, 11, 13, 14, 16, 18, 20, 22, 24, 27, 29, 31, 33, 35, 37, 39, 41, 43,
+        45, 47, 50, 54, 62, 70, 78, 87, 95, 103, 111, 119, 128, 136, 144, 152,
+        160, 169, 177, 185, 193, 205, 221, 238, 256, 277, 314, 351, 388, 425,
+        462, 499, 504, 511, 518, 527, 536, 545, 554, 565, 576, 587, 601, 614,
+        628, 641, 655
+      ]
+    },
+    "constants": {},
+    "scaled": ["extraDmg", "extraDmg_2"]
+  }
+}

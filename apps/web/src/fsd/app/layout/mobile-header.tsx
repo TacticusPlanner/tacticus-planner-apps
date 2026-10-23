@@ -8,6 +8,7 @@ import {
 } from "@workspace/ui/components/popover"
 import { useMsal } from "@azure/msal-react"
 
+import { GuestPreferencesCard } from "@/widgets/account-menu"
 import { loginRequest, useSilentSignInStatus } from "@/shared/auth"
 import {
   PageTourButton,
@@ -16,10 +17,11 @@ import {
 } from "@/shared/tour"
 
 import { AuthControl } from "../providers/auth-control"
-import { GuestPreferencesCard } from "../providers/guest-account-menu"
+import { useUserJot } from "../providers/userjot-provider"
 import { AppLogo } from "./app-logo"
 import type { NavItem } from "./nav-items"
 import { SectionTabs } from "./section-tabs"
+import { PAGE_HEADING_ID } from "./use-focus-page-heading"
 
 export function MobileHeader({
   activeSection,
@@ -52,7 +54,11 @@ export function MobileHeader({
         <div className="flex min-w-0 items-center gap-3">
           <AppLogo className="size-10 shrink-0" />
           <div className="flex min-w-0 flex-col">
-            <h1 className="truncate text-xl font-semibold tracking-tight">
+            <h1
+              className="truncate text-xl font-semibold tracking-tight outline-hidden"
+              id={PAGE_HEADING_ID}
+              tabIndex={-1}
+            >
               {pageTitle ?? t("app.name")}
             </h1>
             {pageTitle && pageDescription ? (
@@ -91,6 +97,7 @@ export function MobileHeader({
 function MobileGuestSettings() {
   const { t } = useTranslation()
   const [open, setOpen] = useTourControlledPopoverOpen()
+  const { open: openUserJot, status: feedbackStatus } = useUserJot()
 
   return (
     <Popover onOpenChange={setOpen} open={open}>
@@ -109,7 +116,17 @@ function MobileGuestSettings() {
         className="w-72 gap-2"
         data-testid="mobile-guest-settings-content"
       >
-        <GuestPreferencesCard onOpenWidget={() => setOpen(false)}>
+        <GuestPreferencesCard
+          changelogUnavailable={
+            feedbackStatus === "failed"
+              ? t("nav.quickActions.feedbackUnavailable")
+              : undefined
+          }
+          onChangelog={() => {
+            setOpen(false)
+            openUserJot({ to: "updates" })
+          }}
+        >
           <TourButton
             className="h-8 w-full justify-start px-2 font-normal"
             variant="ghost"

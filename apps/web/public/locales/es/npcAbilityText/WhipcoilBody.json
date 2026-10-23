@@ -1,0 +1,16 @@
+{
+  "WhipcoilBody": {
+    "description": "Esta unidad recibe <style=\"Stat_Damage\">-{[dmgReduction]} de Daño</style> de ataques cuerpo a cuerpo.",
+    "variables": {
+      "dmgReduction": [
+        7, 8, 10, 11, 13, 14, 16, 17, 19, 21, 22, 24, 25, 27, 29, 30, 32, 34,
+        35, 37, 39, 42, 48, 55, 61, 67, 74, 80, 87, 93, 99, 106, 112, 118, 125,
+        131, 137, 144, 150, 159, 172, 185, 199, 215, 244, 273, 301, 330, 359,
+        388, 392, 397, 403, 410, 417, 424, 431, 439, 448, 457, 467, 478, 488,
+        499, 509
+      ]
+    },
+    "constants": {},
+    "scaled": ["dmgReduction"]
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "HostOfPlagues": {
+    "description": "Jedes Mal, wenn eine nicht-<style=\"Mechanical\">mechanische</style> gegnerische Einheit stirbt, besteht eine <style=\"Stat_Chance\">Chance von {[chance]} %</style>, dass ein <style=\"Summon\"><style=\"Faction_DeathGuard\">Seuchenwandler</style></style> auf dem Feld der verstorbenen Einheit erscheint.",
+    "variables": {},
+    "constants": {
+      "chance": "100"
+    },
+    "scaled": []
+  }
+}

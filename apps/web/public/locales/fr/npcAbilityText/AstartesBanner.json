@@ -1,0 +1,18 @@
+{
+  "AstartesBanner": {
+    "description": "Les autres unités alliées distantes de {[range]} hexagones infligent un <style=\"Stat_Hits\">coup</style> supplémentaire pour leurs attaques au corps à corps. Ce <style=\"Stat_Hits\">coup</style> supplémentaire peut infliger un maximum de <style=\"Stat_Damage\">{[maxDmg]} dégâts</style>.",
+    "variables": {
+      "maxDmg": [
+        75, 90, 105, 120, 135, 152, 170, 187, 204, 221, 239, 256, 273, 290, 308,
+        325, 342, 359, 377, 394, 417, 449, 518, 586, 654, 722, 791, 859, 927,
+        995, 1064, 1132, 1200, 1268, 1337, 1405, 1473, 1541, 1610, 1706, 1841,
+        1982, 2135, 2305, 2613, 2921, 3230, 3538, 3846, 4154, 4200, 4256, 4313,
+        4388, 4463, 4538, 4613, 4706, 4800, 4894, 5006, 5119, 5231, 5344, 5456
+      ]
+    },
+    "constants": {
+      "range": "2"
+    },
+    "scaled": ["maxDmg"]
+  }
+}

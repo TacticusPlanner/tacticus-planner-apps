@@ -1,13 +1,12 @@
 import { useMemo } from "react"
-import { useLiveQuery } from "dexie-react-hooks"
 import { raidBossPortrait } from "@workspace/game-catalog"
-import { getCharactersMap } from "@workspace/game-catalog/queries"
 
 import {
   resolvePrimeCharacterId,
   unitDisplayName,
   useRaidBossLabels,
 } from "@/entities/raid-boss"
+import { toById, useCatalogDataset } from "@/shared/local-data"
 
 import type { GuildRaidCatalogResolver } from "./guild-raid-status-view-model"
 
@@ -20,7 +19,10 @@ import type { GuildRaidCatalogResolver } from "./guild-raid-status-view-model"
  */
 export function useGuildRaidCatalog(): GuildRaidCatalogResolver {
   const { bossName, hasBossName } = useRaidBossLabels()
-  const charactersById = useLiveQuery(() => getCharactersMap(), [])
+  const charactersRead = useCatalogDataset("characters", toById)
+  // A failed read falls back to the initials badge, like a read still loading.
+  const charactersById =
+    charactersRead.status === "ready" ? charactersRead.data : undefined
 
   return useMemo<GuildRaidCatalogResolver>(
     () => ({

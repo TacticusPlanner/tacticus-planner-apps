@@ -1,0 +1,23 @@
+{
+  "GalvanicField": {
+    "description": "Whenever <style=\"Faction_AdeptusMechanicus\">Actus</style> <style=\"Repairing\">repairs</style> another unit, that unit immediately attacks a target in range, dealing <style=\"Stat\">{[dmgPct]}%</style> of its own <style=\"Stat_Damage\">Damage</style> to a maximum of <style=\"Stat_Damage\">{[maxDmg]} Damage</style> per <style=\"Stat_Hits\">hit</style>. <style=\"Faction_AdeptusMechanicus\">Actus</style> can <style=\"Repairing\">repair</style> other friendly units even if they are at full <style=\"Stat_Health\">Health</style>.",
+    "variables": {
+      "dmgPct": [
+        80, 80, 80, 80, 80, 80, 80, 80, 85, 85, 85, 85, 85, 85, 85, 85, 85, 90,
+        90, 90, 90, 90, 90, 90, 90, 90, 95, 95, 95, 95, 95, 95, 95, 95, 95, 100,
+        100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
+        100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
+        100
+      ],
+      "maxDmg": [
+        60, 72, 84, 96, 108, 122, 136, 149, 163, 177, 191, 205, 218, 232, 246,
+        260, 274, 287, 301, 315, 334, 359, 414, 469, 523, 578, 632, 687, 742,
+        796, 851, 905, 960, 1015, 1069, 1124, 1178, 1233, 1288, 1364, 1472,
+        1586, 1708, 1844, 2090, 2337, 2584, 2830, 3077, 3324, 3360, 3405, 3450,
+        3510, 3570, 3630, 3690, 3765, 3840, 3915, 4005, 4095, 4185, 4275, 4365
+      ]
+    },
+    "constants": {},
+    "scaled": ["maxDmg"]
+  }
+}

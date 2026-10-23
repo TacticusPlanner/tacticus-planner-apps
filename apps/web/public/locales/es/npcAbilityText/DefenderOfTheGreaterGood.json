@@ -1,0 +1,17 @@
+{
+  "DefenderOfTheGreaterGood": {
+    "description": "Las unidades aliadas adyacentes a <style=\"Faction_Tau\">Sombrasolar</style> o a su <style=\"Faction_Tau\">Dron de comando por enlace</style> infligen <style=\"Stat_Damage\">+{[extraDmg]} de Daño</style> con ataques a distancia, excepto los ataques que infligen <style=\"DMG_Psychic\">Daño psíquico</style>. Los ataques afectados también tienen una <style=\"Stat_Chance\">probabilidad</style> de asestar un <style=\"Stat_Hits\">impacto</style> adicional. Esta probabilidad es de un <style=\"Stat\">{[chance]} %</style> por cada ronda en la que Sombrasolar haya estado en el campo de batalla. Las unidades aliadas del <style=\"Faction_Tau\">Imperio T'au</style> dentro de 2 hexágonos de distancia de Sombrasolar o de su Dron de comando por enlace también se ven afectadas por esta habilidad.",
+    "variables": {
+      "extraDmg": [
+        5, 6, 7, 8, 9, 10, 11, 12, 14, 15, 16, 17, 18, 19, 21, 22, 23, 24, 25,
+        26, 28, 30, 35, 39, 44, 48, 53, 57, 62, 66, 71, 75, 80, 85, 89, 94, 98,
+        103, 107, 114, 123, 132, 142, 154, 174, 195, 215, 236, 256, 277, 280,
+        284, 288, 293, 298, 303, 308, 314, 320, 326, 334, 341, 349, 356, 364
+      ]
+    },
+    "constants": {
+      "chance": "25"
+    },
+    "scaled": ["extraDmg"]
+  }
+}

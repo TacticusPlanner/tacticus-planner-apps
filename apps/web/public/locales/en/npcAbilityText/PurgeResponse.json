@@ -1,0 +1,8 @@
+{
+  "PurgeResponse": {
+    "description": "At the end of their turn, if the <style=\"Faction_LeaguesOfVotann\">Ironkin Steeljack</style> is adjacent to a friendly <style=\"Faction_LeaguesOfVotann\">Leagues of Votann</style> <style=\"Character\">character</style>, they start <style=\"Buff_Overwatching\">Overwatching</style>, even if they attacked in their turn. While <style=\"Buff_Overwatching\">Overwatching</style>, the Ironkin Steeljack's attacks ignore hit reductions.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

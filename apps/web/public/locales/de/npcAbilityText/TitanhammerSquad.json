@@ -1,0 +1,26 @@
+{
+  "TitanhammerSquad": {
+    "description": "Markiert ein freies Feld auf dem Schlachtfeld, das nicht an eine gegnerische Einheit angrenzt. <style=\"Faction_AdeptusAstartes\">Lysander</style> und alle verbündeten Einheiten in <style=\"Terminator_Armor\">Terminatorrüstung</style>, die sich innerhalb von {[range]} Feldern von Lysander entfernt befinden, werden bis zu Beginn ihres nächsten Zugs um <style=\"Stat_Health\">{[hpToHeal]} Lebenspunkte</style> <style=\"Healing\">geheilt</style> und blocken zusätzlich <style=\"Stat_Block\">+{[blockDmg]} Schaden</style>. Wenn sie sich in diesem Zug noch nicht bewegt haben, können sie sich auch auf das markierte Feld oder ein daran angrenzendes Feld bewegen. Der Einsatz von <i>Titanhammer-Trupp</i> beendet Lysanders Zug nicht.\n\nAnfängliche <style=\"Cooldown\">Abklingzeit: {[initialCooldownTurns]} Runde</style>.",
+    "variables": {
+      "hpToHeal": [
+        75, 90, 105, 120, 135, 152, 170, 187, 204, 221, 239, 256, 273, 290, 308,
+        325, 342, 359, 377, 394, 417, 449, 518, 586, 654, 722, 791, 859, 927,
+        995, 1064, 1132, 1200, 1268, 1337, 1405, 1473, 1541, 1610, 1706, 1841,
+        1982, 2135, 2305, 2613, 2921, 3230, 3538, 3846, 4154, 4200, 4256, 4313,
+        4388, 4463, 4538, 4613, 4706, 4800, 4894, 5006, 5119, 5231, 5344, 5456
+      ],
+      "blockDmg": [
+        10, 12, 14, 16, 18, 20, 23, 25, 27, 30, 32, 34, 36, 39, 41, 43, 46, 48,
+        50, 53, 56, 60, 69, 78, 87, 96, 105, 115, 124, 133, 142, 151, 160, 169,
+        178, 187, 196, 206, 215, 227, 245, 264, 285, 307, 348, 390, 431, 472,
+        513, 554, 560, 568, 575, 585, 595, 605, 615, 628, 640, 653, 668, 683,
+        698, 713, 728
+      ]
+    },
+    "constants": {
+      "range": "2",
+      "initialCooldownTurns": "1"
+    },
+    "scaled": ["hpToHeal", "blockDmg"]
+  }
+}

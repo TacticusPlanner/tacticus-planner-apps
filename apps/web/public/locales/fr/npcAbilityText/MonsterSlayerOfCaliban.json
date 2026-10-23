@@ -1,0 +1,12 @@
+{
+  "MonsterSlayerOfCaliban": {
+    "description": "<style=\"Faction_DarkAngels\">Forcas</style> inflige <style=\"Stat_Damage\">+{[extraDmg]} de dégâts</style> aux <style=\"Big_Target\">cibles de grande taille</style> et aux <style=\"Vehicle\">véhicules</style>. Il a également <style=\"Stat_Chance\">{[blockChance]} % de chances</style> supplémentaires de <style=\"Stat_Block\">bloquer</style> <style=\"Stat_Damage\">{[blockDmg]} dégâts</style>.",
+    "variables": {
+      "extraDmg": [490, 516, 543, 569, 596, 622, 649, 675, 702, 728],
+      "blockChance": [10, 10, 10, 10, 10, 10, 10, 10, 10, 10],
+      "blockDmg": [1470, 1549, 1629, 1708, 1787, 1867, 1946, 2025, 2105, 2184]
+    },
+    "constants": {},
+    "scaled": []
+  }
+}

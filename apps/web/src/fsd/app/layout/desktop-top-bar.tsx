@@ -1,13 +1,14 @@
 import { useEffect, useRef, useState } from "react"
 import { Search } from "lucide-react"
 import { useTranslation } from "react-i18next"
-import { CommandShortcut } from "@workspace/ui/components/command"
+import { CommandShortcut } from "@workspace/ui/components/command-shortcut"
+
+import { isMacPlatform } from "@/shared/lib"
 
 import { AuthControl } from "../providers/auth-control"
 import { UserJotFeedbackButton } from "../providers/userjot-feedback-button"
 import { AppLogo } from "./app-logo"
 import { DesktopNavigationDialog } from "./desktop-navigation-dialog"
-import { isMacPlatform } from "./is-mac-platform"
 import type { NavItem } from "./nav-items"
 import type { QuickActionsController } from "./quick-actions"
 

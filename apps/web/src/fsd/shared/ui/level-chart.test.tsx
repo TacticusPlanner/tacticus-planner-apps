@@ -95,7 +95,7 @@ describe("LevelChart", () => {
     )
     const paths = container.querySelectorAll("path")
     expect(paths).toHaveLength(3)
-    expect(paths[0].getAttribute("fill")).toBe("var(--chart-1)")
+    expect(paths[0]?.getAttribute("fill")).toBe("var(--chart-1)")
   })
 
   it("marks the selected index and reads it out", () => {

@@ -1,9 +1,6 @@
 import type { Progression } from "@workspace/game-domain"
 
 import {
-  previousRunTeamClears,
-  recordHistory,
-  selectRunRecords,
   type LegendaryEvent,
   type LegendaryEventLane,
   type LegendaryEventLaneId,
@@ -14,8 +11,13 @@ import {
   type NamedTeam,
   type ReadState,
   type RosterSnapshot,
-  type RunHistory,
 } from "@/entities/legendary-event"
+import {
+  previousRunTeamClears,
+  recordHistory,
+  selectRunRecords,
+  type RunHistory,
+} from "../../../lib/run-history"
 
 import type { ReadValue } from "../legendary-event-page.view-model"
 

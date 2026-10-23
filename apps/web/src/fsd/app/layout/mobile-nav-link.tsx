@@ -2,6 +2,7 @@ import { Link } from "react-router"
 import { useTranslation } from "react-i18next"
 import { cn } from "@workspace/ui/lib/utils"
 
+import { matchesNavPath } from "./find-active-child"
 import { NavLiveDot } from "./nav-live-dot"
 import type { NavItem } from "./nav-items"
 
@@ -16,7 +17,7 @@ export function MobileNavLink({
   // of `common.json` (see nav-items.ts), and `t()` needs it declared to type-check the union key.
   const { t } = useTranslation(["common", "dailies", "library"])
   const isCurrent = pathname === item.path
-  const isActive = isCurrent || pathname.startsWith(item.path + "/")
+  const isActive = matchesNavPath(pathname, item.path)
 
   return (
     <Link

@@ -134,7 +134,9 @@ describe("UserJotProvider", () => {
         "data-status",
         "loading"
       )
-      act(() => sdkScript()!.dispatchEvent(new Event("load")))
+      act(() => {
+        sdkScript()!.dispatchEvent(new Event("load"))
+      })
       await waitFor(() =>
         expect(screen.getByTestId("consumer")).toHaveAttribute(
           "data-status",
@@ -158,7 +160,9 @@ describe("UserJotProvider", () => {
     it("reports failed without throwing when the SDK cannot load", async () => {
       await freshProvider()
 
-      act(() => sdkScript()!.dispatchEvent(new Event("error")))
+      act(() => {
+        sdkScript()!.dispatchEvent(new Event("error"))
+      })
 
       await waitFor(() =>
         expect(screen.getByTestId("consumer")).toHaveAttribute(

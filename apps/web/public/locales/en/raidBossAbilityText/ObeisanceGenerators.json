@@ -1,0 +1,11 @@
+{
+  "ObeisanceGenerators": {
+    "description": "Enemy units <style=\"Charging\">charging</style> <style=\"Faction_Necrons\">Szarekh</style> score <style=\"Stat_Hits\">-{[hitsReduction]}</style> hits, to a minimum of 1 hit.\n<style=\"Summon\">Summons</style> <style=\"Charging\">charging</style> <style=\"Faction_Necrons\">Szarekh</style> score <style=\"Stat_Hits\">-{[hitsReduction_2]}</style> hits, to a minimum of 1 hit.",
+    "variables": {},
+    "constants": {
+      "hitsReduction": "2",
+      "hitsReduction_2": "3"
+    },
+    "scaled": []
+  }
+}

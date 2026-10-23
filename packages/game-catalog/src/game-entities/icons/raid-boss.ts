@@ -5,11 +5,11 @@ import {
   raidBossPrefixPortraitOverrides,
   raidBossRoundPortraitOverrides,
 } from "../raid-boss-portrait-overrides"
-import { ASSET_BASE_PATH } from "./asset-path"
+import { gameAssetUrl } from "./asset-path"
 import { characterIcon } from "./character"
 
 const characterAsset = (file: string): string =>
-  `${ASSET_BASE_PATH}/characters/${file}`
+  gameAssetUrl(`characters/${file}`)
 
 /**
  * Full (non-round) splash portrait for a boss, resolved from its `GuildBoss{N}` prefix. Ported now for

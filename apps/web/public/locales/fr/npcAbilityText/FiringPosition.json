@@ -1,0 +1,10 @@
+{
+  "FiringPosition": {
+    "description": "Si une attaque activée par <style=\"Overwatch\">Sentinelle</style> vainc une unité, le <style=\"Faction_BlackLegion\">Ravageur</style> reste en mode <style=\"Overwatch\">Sentinelle</style>, avec -{[hitsReduction]} <style=\"Stat_Hits\">coups</style> par rapport à son attaque précédente.",
+    "variables": {},
+    "constants": {
+      "hitsReduction": "2"
+    },
+    "scaled": []
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "OnMyPosition": {
+    "description": "Les ennemis adjacent à un <style=\"Faction_AstraMilitarum\">Garde Impérial Cadien</style> allié ou à un <style=\"Character\">personnage</style> <style=\"Rarity_Mythic\">Mythique</style> allié subissent <style=\"Stat_Damage\">+{[extraDmgPct]} % de dégâts</style> en cas d'attaques à distance par des personnages Mythiques.",
+    "variables": {
+      "extraDmgPct": [10, 13, 16, 20]
+    },
+    "constants": {},
+    "scaled": ["extraDmgPct"]
+  }
+}

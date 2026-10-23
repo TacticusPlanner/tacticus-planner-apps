@@ -1,0 +1,8 @@
+{
+  "PowerUp_Resurrect": {
+    "description": "Cuando una unidad aliada lo recolecta, resucita a un <style=\"Character\">personaje</style> elegido que haya sido derrotado. El personaje resucitado aparece en un hexágono libre al azar y puede tomar un turno inmediatamente. \n\nSi no hay ningún personaje elegible, en su lugar añade 1 punto de refuerzos.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

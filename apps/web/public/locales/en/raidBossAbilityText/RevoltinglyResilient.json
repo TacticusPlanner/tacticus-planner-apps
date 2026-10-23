@@ -1,0 +1,11 @@
+{
+  "RevoltinglyResilient": {
+    "description": "When attacked, each <style=\"Stat_Hits\">hit</style> after the first <style=\"Stat_Hits\">{[nrOfHits]} hits</style> in that same attack deals <style=\"Stat_Damage\">{[dmgPctReduction]}% less Damage</style> than the previous hit. <i>The first {[nrOfHits]} hits of each attack deal normal damage, the next hit 50% damage, the next hit 25%, etc.</i>",
+    "variables": {},
+    "constants": {
+      "dmgPctReduction": "50",
+      "nrOfHits": "1"
+    },
+    "scaled": []
+  }
+}

@@ -4,7 +4,8 @@
   },
   "common": {
     "close": "Schließen",
-    "back": "Zurück"
+    "back": "Zurück",
+    "loading": "Wird geladen…"
   },
   "auth": {
     "account": "Angemeldetes Konto",
@@ -245,6 +246,7 @@
     "search": "Seiten und Aktionen durchsuchen",
     "sync": "Sync",
     "syncWithTacticus": "Mit Tacticus synchronisieren",
+    "skipToContent": "Zum Inhalt springen",
     "primaryNavigation": "Hauptnavigation",
     "sectionNavigation": "Seiten von {{section}}",
     "collapseSection": "Menü „{{section}}“ ausblenden",
@@ -287,7 +289,7 @@
     "saving": "Wird gespeichert…",
     "saved": "Onslaught-Fortschritt gespeichert.",
     "loadError": "Onslaught-Fortschritt konnte nicht geladen werden.",
-    "saveError": "Onslaught-Fortschritt konnte nicht gespeichert werden. Aktualisiere und versuche es erneut.",
+    "saveError": "Onslaught-Fortschritt konnte nicht gespeichert werden. Deine Änderungen sind noch da; versuche es erneut.",
     "conflict": "Der Onslaught-Fortschritt wurde anderswo geändert. Die neuesten Werte wurden geladen; wende deine Änderung erneut an.",
     "rewardsTitle": "Referenz für Scherben-Belohnungen",
     "sectorTier": "Sektor / Stufe",
@@ -300,6 +302,17 @@
       "Legendary": "Legendär",
       "LegendaryBlue": "Legendär 1★ blau",
       "Mythic": "Mythisch"
+    },
+    "unsaved": {
+      "message": "Du hast ungespeicherte Änderungen",
+      "save": "Speichern",
+      "discard": "Verwerfen"
+    },
+    "leave": {
+      "title": "Ohne Speichern verlassen?",
+      "description": "Deine Änderungen am Onslaught-Fortschritt wurden nicht gespeichert und gehen verloren.",
+      "stay": "Bleiben",
+      "leave": "Verlassen"
     }
   },
   "myGame": {
@@ -1298,6 +1311,13 @@
   "language": {
     "label": "Sprache"
   },
+  "reorder": {
+    "pickedUp": "{{name}} aufgenommen. Position {{position}} von {{total}}.",
+    "movedOver": "{{name}} auf Position {{position}} von {{total}} verschoben.",
+    "dropped": "{{name}} auf Position {{position}} von {{total}} abgelegt.",
+    "cancelled": "Neuordnung abgebrochen. {{name}} ist zurück auf Position {{position}} von {{total}}.",
+    "instructions": "Drücke Leertaste oder Eingabe, um einen Eintrag aufzunehmen. Verschiebe ihn mit den Pfeiltasten und drücke dann Leertaste oder Eingabe zum Ablegen oder Escape zum Abbrechen."
+  },
   "scrollToTop": "Nach oben scrollen",
   "settings": {
     "label": "Einstellungen"
@@ -1516,6 +1536,18 @@
           "content": "Sobald du etwas änderst, erscheint unten eine Leiste mit Speichern und Verwerfen. Vor dem Verlassen mit ungespeicherten Änderungen wirst du gefragt."
         }
       }
+    },
+    "onslaught": {
+      "steps": {
+        "alliances": {
+          "title": "Fortschritt der Allianzen",
+          "content": "Lege für jede Allianz den Sektor und die Stufe fest, die sie farmt. Jede Karte zeigt die Scherben, die ein Lauf an dieser Position bringt."
+        },
+        "save": {
+          "title": "Änderungen speichern",
+          "content": "Sobald du etwas änderst, erscheint unten eine Leiste mit Speichern und Verwerfen. Vor dem Verlassen mit ungespeicherten Änderungen wirst du gefragt."
+        }
+      }
     }
   },
   "uiKit": {
@@ -1561,5 +1593,9 @@
     "Imperial": "Imperium",
     "Chaos": "Chaos",
     "Xenos": "Xenos"
+  },
+  "localData": {
+    "readFailed": "Wir konnten diese Daten nicht von deinem Gerät lesen.",
+    "retry": "Erneut versuchen"
   }
 }

@@ -3,7 +3,6 @@ import { describe, expect, it } from "vitest"
 import {
   buildLanePointsModel,
   type LegendaryEventTeam,
-  type LegendaryEventUnit,
 } from "@/entities/legendary-event"
 import { legendaryEventCharacters } from "@/test/fixtures/legendary-event-characters"
 import { utharEvent } from "@/test/fixtures/legendary-events"
@@ -44,7 +43,7 @@ const state = (teams: LegendaryEventTeam[]) =>
       },
     },
     lane: utharEvent.alpha,
-    units: legendaryEventCharacters as unknown as LegendaryEventUnit[],
+    units: legendaryEventCharacters,
     run: 2,
     model: buildLanePointsModel(utharEvent.alpha),
     progress: undefined,

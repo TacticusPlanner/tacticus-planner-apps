@@ -6,10 +6,8 @@ import {
   GoalFilters,
   StatusFilterSelect,
   isGoalGroupValue,
-  type GoalStatusFilterValue,
-  type GoalTypeFilterValue,
 } from "@/entities/goal"
-import { MobileReorderBar, OrderConflictBanner } from "@/features/goal-order"
+import { MobileReorderBar, OrderConflictBanner } from "@/features/goal-planning"
 import { PendingMaterialSteps } from "@/features/v1-import"
 import {
   PlanningSettingsDialog,
@@ -18,24 +16,25 @@ import {
 } from "@/entities/planning-setting"
 import { usePersistedSelection } from "@/shared/lib"
 
-import { useGoalAttainmentState } from "../../model/attainment/use-goal-attainment"
-import { useGoalsOverviewMetrics } from "../../model/attainment/use-goals-overview-metrics"
-import { usePlanInsights } from "../../model/insights/use-plan-insights"
-import { orderRowsByGlobalPriority } from "../../model/shared/goal-row-order"
-import { groupRows } from "../../model/shared/row-groups"
-import { goalRowFromSummary, type GoalRow } from "../../model/shared/types"
-import { useProjectsByGoalId } from "../../model/projects/use-projects-by-goal-id"
-import { useStableMap } from "../../model/shared/use-stable-map"
-import { useGoalActions } from "../../model/goals-data/use-goal-actions"
-import { useGoalsMobileModes } from "../../model/goals-data/use-goals-mobile-modes"
-import { useGoalsSelection } from "../../model/goals-data/use-goals-selection"
-import { useGoals } from "../../model/goals-data/use-goals"
+import { useGoalAttainmentState } from "@/features/goal-planning"
+import { useGoalsOverviewMetrics } from "@/features/goal-planning"
+import { usePlanInsights } from "@/features/goal-planning"
+import { orderRowsByGlobalPriority } from "@/features/goal-planning"
+import { groupRows } from "@/features/goal-planning"
+import { goalRowFromSummary, type GoalRow } from "@/features/goal-planning"
+import { useProjectsByGoalId } from "@/features/goal-planning"
+import { useStableMap } from "@/features/goal-planning"
+import { useGoalActions } from "@/features/goal-planning"
+import { useGoalsMobileModes } from "@/features/goal-planning"
+import { useGoalsSelection } from "@/features/goal-planning"
+import { useGoals } from "@/features/goal-planning"
+import { useGoalEditParam, useGoalsListFilters } from "@/features/goal-planning"
 import { GoalsLateNotices } from "./goals-estimates-error"
 import { GoalsPageStates } from "./goals-page-states"
-import { useGoalsPageReorder } from "../../model/goals-data/use-goals-page-reorder"
-import { isGoalsListLoading } from "../../model/goals-data/goals-list-loading"
+import { useGoalsPageReorder } from "@/features/goal-planning"
+import { isGoalsListLoading } from "@/features/goal-planning"
 import { useProjects } from "@/entities/project"
-import { useGoalCatalog } from "../../model/shared/use-goal-catalog"
+import { useGoalCatalog } from "@/features/goal-planning"
 import { GoalsList } from ".//goals-list"
 import { GoalsBulkControls } from "./goals-bulk-controls"
 import { useProjectRemovalFlow } from "./project-removal-flow"
@@ -46,9 +45,9 @@ import { GoalsMobileSelectToggle } from "./goals-mobile-select-toggle"
 import { MobileSelectBar } from "./mobile-select-bar"
 import { GoalsOrderHint } from "./goals-order-hint"
 import { GoalsProjectScope } from "./goals-project-scope"
-import { useGoalsProjectScope } from "../../model/projects/use-goals-project-scope"
+import { useGoalsProjectScope } from "@/features/goal-planning"
 import { buildCascadeContext } from "./goal-row-utils"
-import { GoalEditDialog } from "../goal-edit/goal-edit-dialog"
+import { GoalEditDialog } from "@/features/goal-create"
 import { useGoalsOverviewTutorial } from "./goals-page.tutorial"
 
 /**
@@ -66,9 +65,7 @@ import { useGoalsOverviewTutorial } from "./goals-page.tutorial"
 export function GoalsPage() {
   const { t } = useTranslation()
   const isMobile = useIsMobile()
-  const [tab, setTab] = useState<GoalStatusFilterValue>("toReach")
-  const [editGoalId, setEditGoalId] = useState<string | null>(null)
-  const [goalType, setGoalType] = useState<GoalTypeFilterValue>("all")
+  const { tab, setTab, goalType, setGoalType } = useGoalsListFilters()
   // Persisted per browser (see project detail's own group state for the same reasoning) so it
   // survives navigating away and a reload instead of resetting to "none" every time.
   const [group, setGroup] = usePersistedSelection(
@@ -102,7 +99,6 @@ export function GoalsPage() {
   )
   // The archived query stays for prerequisite cascades only; there is no Archived view any more.
   const selectedGoals = nonArchivedGoals
-  const refreshCurrentView = selectedGoals.retry
 
   const nonArchivedGoalIds = useMemo(
     () =>
@@ -110,6 +106,10 @@ export function GoalsPage() {
         ? nonArchivedGoals.fetchState.goals.map((goal) => goal.goalId)
         : [],
     [nonArchivedGoals.fetchState]
+  )
+  const { editGoalId, openEditGoal, closeEditGoal } = useGoalEditParam(
+    nonArchivedGoalIds,
+    nonArchivedGoals.fetchState.status === "success"
   )
   // Drives the "Unfulfilled" / "Reached" split (plan §3) — computed from synced player
   // progression, not the goal's lifecycle `status`. Archived goals are excluded: attainment isn't
@@ -379,7 +379,7 @@ export function GoalsPage() {
       <GoalsPageStates
         fetchError={fetchError}
         isLoading={isLoading}
-        onRetry={refreshCurrentView}
+        onRetry={selectedGoals.retry}
         showEmptyProjectState={showEmptyProjectState}
         showFilteredEmpty={rows.length === 0}
         showPristineEmptyState={showPristineEmptyState}
@@ -413,7 +413,7 @@ export function GoalsPage() {
                 metrics={overviewMetrics}
                 mobileReorderActive={reorderActive}
                 onReorder={handleReorder}
-                onEdit={setEditGoalId}
+                onEdit={openEditGoal}
                 onSelectAllVisible={selectAllVisible}
                 onToggleSelected={onToggleSelected}
                 potentialProgress={insights.potentialProgressByGoalId}
@@ -450,7 +450,7 @@ export function GoalsPage() {
       {projectRemovalDialogs}
       <GoalEditDialog
         goalId={editGoalId}
-        onOpenChange={(open) => !open && setEditGoalId(null)}
+        onOpenChange={(open) => !open && closeEditGoal()}
       />
       {settingsOpen ? (
         <PlanningSettingsDialog open onOpenChange={setSettingsOpen} />

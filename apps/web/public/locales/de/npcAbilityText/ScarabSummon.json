@@ -1,0 +1,8 @@
+{
+  "ScarabSummon": {
+    "description": "Beschwört einen weiteren <style=\"Faction_Necrons\">Skarabäenschwarm</style> auf einem freien angrenzenden Feld, der sofort am Zug ist.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

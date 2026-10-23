@@ -1,0 +1,25 @@
+{
+  "FieldsOfFire": {
+    "description": "Friendly units with the <style=\"Emplacement\">Emplacement</style> trait deal <style=\"Stat_Damage\">+{[extraDmgPct]}% Damage</style> against units that are {[range]} or more hexes away from their own hex. Each time <style=\"Faction_AstraMilitarum\">Thaddeus Noble</style> is attacked in <style=\"Stat_Melee\">melee</style> or would get <style=\"Debuff_Stunned\">Stunned</style>, he loses <style=\"Stat_Health\">{[hp]} Health</style> in addition to the damage done. The first time each round he loses <style=\"Stat_Health\">Health</style> this way, all friendly <style=\"Emplacement\">Emplacement</style> units get <style=\"Debuff_Pinned\">Suppressed</style> for 1 round.",
+    "variables": {
+      "extraDmgPct": [
+        30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
+        30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
+        30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
+        30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30
+      ],
+      "hp": [
+        24, 30, 36, 42, 48, 54, 60, 90, 100, 117, 133, 150, 167, 183, 200, 250,
+        350, 345, 385, 430, 470, 515, 555, 600, 735, 1005, 1000, 1125, 1250,
+        1375, 1500, 1625, 1750, 1915, 2085, 2470, 3085, 3705, 4320, 4940, 5555,
+        6175, 6790, 7405, 8025, 8640, 9260, 9875, 10495, 11110, 12000, 14000,
+        20000, 20000, 20000, 21000, 21001, 21002, 21003, 21004, 21005, 21006,
+        21007, 21008, 21009
+      ]
+    },
+    "constants": {
+      "range": "4"
+    },
+    "scaled": ["hp"]
+  }
+}

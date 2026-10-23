@@ -1,5 +1,5 @@
-import { act, renderHook } from "@testing-library/react"
-import { beforeEach, describe, expect, it, vi } from "vitest"
+import userEvent from "@testing-library/user-event"
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
 import { hseInstance } from "@/test/fixtures/hse-render"
 import {
@@ -7,33 +7,19 @@ import {
   type HseFixtureReads,
 } from "@/test/fixtures/hse-event-points"
 import { hseTeamsFixtureRead } from "@/test/fixtures/hse-teams"
+import { unitPowerCatalog } from "@/test/fixtures/unit-power"
+import { spyOnIndexedDbReads } from "@/test/fixtures/indexeddb-failure"
+import { createTestI18n, i18nWrapper } from "@/test/i18n"
+import { act, render, renderHook, screen, waitFor } from "@/test/render"
+import { seedGameCatalog, seedPlayerData } from "@/test/seed"
 import type { HseInstance } from "@/features/home-screen-event-points"
+import enDailies from "../../../../../public/locales/en/dailies.json"
+import enNpcs from "../../../../../public/locales/en/npcs.json"
+import enTeamRecs from "../../../../../public/locales/en/teamRecs.json"
 
-import type { HseTeamsRead } from "./hse-teams-view-model"
-import { useHseTeamRecommendations } from "./use-hse-team-recommendations"
+import { HseTeamsSection } from "../ui/hse-teams/hse-teams-section"
 
-const { mocks } = vi.hoisted(() => ({
-  mocks: {
-    read: undefined as unknown,
-    deps: [] as unknown[][],
-  },
-}))
-
-vi.mock("dexie-react-hooks", () => ({
-  useLiveQuery: (_querier: unknown, deps: unknown[]) => {
-    mocks.deps.push(deps)
-    return mocks.read
-  },
-}))
-vi.mock("@workspace/game-catalog/queries", () => ({
-  getCharactersMap: vi.fn(),
-}))
-vi.mock("@workspace/player-data/queries", () => ({
-  getPlayerCharacters: vi.fn(),
-}))
-vi.mock("./use-team-unit-power", () => ({
-  useTeamUnitPower: () => ({ loading: false, unitPower: null }),
-}))
+import { useHseTeamRecommendations } from "@/features/team-recommendations"
 
 function renderTeams(
   instance: HseInstance | null,
@@ -47,61 +33,85 @@ function renderTeams(
   )
 }
 
-beforeEach(() => {
-  window.localStorage.clear()
-  mocks.read = hseTeamsFixtureRead()
-  mocks.deps.length = 0
+/** Seeds the fixture roster and its catalog characters. The `unit-power` record is seeded too:
+ * without it the power context waits for a catalog manifest the seed helpers do not write. */
+async function seedRoster() {
+  const read = hseTeamsFixtureRead()
+  if (read.status !== "ready") throw new Error("fixture read is not ready")
+  await seedPlayerData({ characters: read.roster })
+  await seedGameCatalog({
+    // No rank-up data: power is unavailable, as with the old unit-power stub.
+    characters: [...read.catalog].map(([id, view]) => ({
+      id,
+      ...view,
+      rankUpUpgrades: [],
+    })),
+    "unit-power": [unitPowerCatalog.unitPower],
+  })
+}
+
+beforeEach(async () => {
+  await seedRoster()
+})
+
+afterEach(() => {
+  vi.restoreAllMocks()
 })
 
 describe("useHseTeamRecommendations", () => {
-  it("builds the teams of an upcoming personal event from the roster", () => {
+  it("builds the teams of an upcoming personal event from the roster", async () => {
     const { result } = renderTeams(
       hseInstance("hse-trait-boost-psyker", "upcoming")
     )
 
-    expect(result.current.status).toBe("ready")
+    await waitFor(() => expect(result.current.status).toBe("ready"))
     if (result.current.status !== "ready") return
     expect(
       result.current.recommendations.modes.map((entry) => entry.teams.length)
     ).toEqual([1, 3, 3])
   })
 
-  it("builds them for a running event too", () => {
+  it("builds them for a running event too", async () => {
     const { result } = renderTeams(
       hseInstance("hse-for-the-emperor", "running")
     )
-    expect(result.current.status).toBe("ready")
+    await waitFor(() => expect(result.current.status).toBe("ready"))
   })
 
   it("is loading while the roster has not resolved", () => {
-    mocks.read = undefined
     const { result } = renderTeams(
       hseInstance("hse-trait-boost-psyker", "upcoming")
     )
     expect(result.current.status).toBe("loading")
   })
 
-  it("is loading while the event scoring loads", () => {
+  it("is loading while the event scoring loads", async () => {
     const { result } = renderTeams(
       hseInstance("hse-trait-boost-psyker", "upcoming"),
       { catalog: () => undefined }
     )
+    // Let the roster read resolve, so only the scoring keeps the teams loading.
+    await act(() => new Promise((resolve) => setTimeout(resolve, 50)))
     expect(result.current.status).toBe("loading")
   })
 
-  it("reports a failed roster read with a retry that reads again", () => {
-    mocks.read = { status: "error" } satisfies HseTeamsRead
+  it("reports a failed roster read with a retry that reads again", async () => {
+    // IndexedDB fails every store read until the retry.
+    const getAll = vi
+      .spyOn(IDBObjectStore.prototype, "getAll")
+      .mockImplementation(() => {
+        throw new DOMException("Read failed", "UnknownError")
+      })
     const { result } = renderTeams(
       hseInstance("hse-trait-boost-psyker", "upcoming")
     )
 
-    expect(result.current.status).toBe("error")
-    if (result.current.status !== "error") return
-    const before = mocks.deps.at(-1)
+    await waitFor(() => expect(result.current.status).toBe("error"))
+    getAll.mockRestore()
     act(() => {
       if (result.current.status === "error") result.current.retry()
     })
-    expect(mocks.deps.at(-1)).not.toEqual(before)
+    await waitFor(() => expect(result.current.status).toBe("ready"))
   })
 
   it("is hidden for a past event", () => {
@@ -141,7 +151,7 @@ describe("useHseTeamRecommendations", () => {
     expect(renderTeams(null).result.current.status).toBe("hidden")
   })
 
-  it("still builds teams when the synced token buckets are not unlocked", () => {
+  it("still builds teams when the synced token buckets are not unlocked", async () => {
     const { result } = renderTeams(
       hseInstance("hse-trait-boost-psyker", "upcoming"),
       {
@@ -153,6 +163,45 @@ describe("useHseTeamRecommendations", () => {
         }),
       }
     )
-    expect(result.current.status).toBe("ready")
+    await waitFor(() => expect(result.current.status).toBe("ready"))
+  })
+})
+
+describe("HseTeamsSection over the real reads", () => {
+  function Teams({ instance }: { instance: HseInstance }) {
+    const view = useHseTeamRecommendations(
+      instance,
+      useFixtureHseProjection(instance)
+    )
+    return <HseTeamsSection view={view} />
+  }
+
+  it("shows the failure copy with Retry when the local reads fail, and Retry recovers", async () => {
+    const user = userEvent.setup()
+    const i18n = await createTestI18n("en", {
+      en: { dailies: enDailies, npcs: enNpcs, teamRecs: enTeamRecs },
+    })
+    const reads = spyOnIndexedDbReads()
+    reads.fail()
+    render(
+      <Teams instance={hseInstance("hse-trait-boost-psyker", "upcoming")} />,
+      { wrapper: i18nWrapper(i18n) }
+    )
+
+    expect(
+      await screen.findByText(
+        "Couldn't load your roster, goals, or project. Try again.",
+        undefined,
+        { timeout: 5000 }
+      )
+    ).toBeInTheDocument()
+
+    reads.fail(false)
+    await user.click(screen.getByRole("button", { name: "Retry" }))
+    expect(
+      await screen.findByTestId("hse-team-arena", undefined, { timeout: 5000 })
+    ).toBeInTheDocument()
+    expect(screen.queryByRole("button", { name: "Retry" })).toBeNull()
+    reads.restore()
   })
 })

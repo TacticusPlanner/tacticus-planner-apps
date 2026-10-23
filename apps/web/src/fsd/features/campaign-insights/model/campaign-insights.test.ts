@@ -215,8 +215,8 @@ describe("computeCampaignInsights", () => {
       label: "indomitus:standard",
       score: 1,
     })
-    expect(campaignInsights[0].contributions).toHaveLength(2)
-    expect(campaignInsights[0].contributions[0]).toMatchObject({
+    expect(campaignInsights[0]?.contributions).toHaveLength(2)
+    expect(campaignInsights[0]?.contributions[0]).toMatchObject({
       battleId: "std-node-1",
       dropRate: 1,
       value: 3,
@@ -327,14 +327,14 @@ describe("computeCampaignInsights", () => {
       id: "eventCampaign1",
       score: 8 / 13,
     })
-    expect(eventInsights[0].contributions).toHaveLength(2)
-    expect(eventInsights[0].contributions.map((c) => c.type).sort()).toEqual([
+    expect(eventInsights[0]?.contributions).toHaveLength(2)
+    expect(eventInsights[0]?.contributions.map((c) => c.type).sort()).toEqual([
       "Extremis",
       "Standard",
     ])
     // Each tier keeps its own value-per-energy score: Standard = 4/5, Extremis = 4/8, independent
     // of the combined chip score above.
-    expect(eventInsights[0].tierScores).toEqual([
+    expect(eventInsights[0]?.tierScores).toEqual([
       { tier: "standard", score: 4 / 5 },
       { tier: "extremis", score: 4 / 8 },
     ])
@@ -361,7 +361,8 @@ describe("computeCampaignInsights", () => {
       resolveLabel
     )
 
-    expect(campaignInsights[0].tierScores).toBeUndefined()
+    expect(campaignInsights[0]).toBeDefined()
+    expect(campaignInsights[0]?.tierScores).toBeUndefined()
   })
 
   it("truncates to the requested top-N, sorted by score descending", () => {
@@ -402,7 +403,7 @@ describe("computeCampaignInsights", () => {
     )
 
     expect(campaignInsights).toHaveLength(1)
-    expect(campaignInsights[0].id).toBe("campaign1:Standard")
+    expect(campaignInsights[0]?.id).toBe("campaign1:Standard")
   })
 
   it("skips a location whose battle id isn't in the catalog", () => {

@@ -1,0 +1,10 @@
+{
+  "VengeanceForTheOmnissiah": {
+    "description": "Cuando una unidad adyacente aliada <style=\"Mechanical\">Mecánica</style> es derrotada, el <style=\"Faction_AdeptusMechanicus\">Tecnosacerdote Visioingeniero</style> obtiene <style=\"Stat\">{[effectLevel]}</style> nivel de <style=\"Buff_MachineVengeance\">Venganza de las máquinas</style>.",
+    "variables": {},
+    "constants": {
+      "effectLevel": "1"
+    },
+    "scaled": []
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "RadSaturation": {
+    "description": "Después de que <style=\"Faction_AdeptusMechanicus\">Vanguardia Skitarii</style> se mueva, añade <style=\"Tile_Contamination\">Contaminación</style> a este hexágono. Si no se mueve, entonces esta habilidad se activa al final de su turno.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

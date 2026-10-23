@@ -50,6 +50,37 @@ describe("ProjectSelect", () => {
     expect(screen.getByTestId("project-select")).toHaveTextContent("My Plan")
   })
 
+  it("sizes the desktop trigger to its content so a long localized name and placeholder show in full", () => {
+    const longName = "Gildenkriegsvorbereitung für Saison 34"
+    const { rerender } = render(
+      <ProjectSelect
+        onProjectIdChange={vi.fn()}
+        projectId="proj-long"
+        projects={[{ ...projects[0]!, projectId: "proj-long", name: longName }]}
+        testId="project-select"
+      />
+    )
+
+    const trigger = screen.getByTestId("project-select")
+    expect(trigger).toHaveTextContent(longName)
+    expect(trigger).toHaveClass("min-w-56")
+    expect(trigger).not.toHaveClass("w-56")
+    expect(trigger).not.toHaveClass("truncate")
+
+    rerender(
+      <ProjectSelect
+        onProjectIdChange={vi.fn()}
+        placeholder="Projekt auswählen"
+        projectId={undefined}
+        projects={projects}
+        testId="project-select"
+      />
+    )
+    expect(screen.getByTestId("project-select")).toHaveTextContent(
+      "Projekt auswählen"
+    )
+  })
+
   it("renders icon-only below the mobile breakpoint while keeping an accessible name", () => {
     useIsMobileMock.mockReturnValue(true)
     render(

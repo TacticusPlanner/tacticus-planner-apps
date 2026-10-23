@@ -1,18 +1,18 @@
 import type { Rarity, UpgradeId } from "@workspace/game-domain"
 
-import { ASSET_BASE_PATH } from "./asset-path"
+import { gameAssetUrl } from "./asset-path"
 
 export const UpgradeIcons = {
-  fallback: `${ASSET_BASE_PATH}/upgrade_materials/ui_icon_upgrade_unknown.png`,
+  fallback: gameAssetUrl(`upgrade_materials/ui_icon_upgrade_unknown.webp`),
   // Background plate rendered behind every upgrade material icon (see V1's upgrade-image.tsx).
-  underlay: `${ASSET_BASE_PATH}/frames/ui_underlay_upgrades.png`,
+  underlay: gameAssetUrl(`frames/ui_underlay_upgrades.webp`),
   // Badge overlaid on the bottom-left corner of a crafted (non-base) upgrade's icon.
-  craftedBadge: `${ASSET_BASE_PATH}/upgrade-crafted-badge.png`,
+  craftedBadge: gameAssetUrl(`upgrade-crafted-badge.webp`),
   icon(id: UpgradeId): string {
-    return `${ASSET_BASE_PATH}/upgrade_materials/ui_icon_upgrade_${id}.png`
+    return gameAssetUrl(`upgrade_materials/ui_icon_upgrade_${id}.webp`)
   },
   // Rarity-colored border rendered on top of the upgrade material icon.
   frame(rarity: Rarity): string {
-    return `${ASSET_BASE_PATH}/frames/ui_frame_upgrades_${rarity.toLowerCase()}.png`
+    return gameAssetUrl(`frames/ui_frame_upgrades_${rarity.toLowerCase()}.webp`)
   },
 } as const

@@ -7,8 +7,8 @@ import {
   type LegendaryEventState,
   type LegendaryEventProgress,
   type LegendaryEventRosterUnit,
-  type RunHistory,
 } from "@/entities/legendary-event"
+import type { RunHistory } from "../../../lib/run-history"
 import { useAnalyticsActions } from "@/shared/analytics"
 
 import type {

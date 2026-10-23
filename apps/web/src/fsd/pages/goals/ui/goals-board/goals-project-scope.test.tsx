@@ -1,13 +1,8 @@
 import { describe, expect, it, vi } from "vitest"
-import { render, screen, within } from "@testing-library/react"
+import { render, screen, within } from "@/test/render"
 import userEvent from "@testing-library/user-event"
 
 import type { ProjectSummary } from "@/entities/project"
-
-vi.mock("react-i18next", () => ({
-  initReactI18next: { type: "3rdParty", init: () => undefined },
-  useTranslation: () => ({ t: (key: string) => key }),
-}))
 
 import { GoalsProjectScope } from "./goals-project-scope"
 
@@ -66,7 +61,7 @@ describe("GoalsProjectScope", () => {
       screen.getByTestId("goals-project-scope")
     ).getAllByRole("button")
     expect(chips.map((chip) => chip.textContent)).toEqual([
-      "goals.project.scopeAll16",
+      "All goals16",
       "My Goals16",
       "Neuro5",
     ])

@@ -1,0 +1,10 @@
+{
+  "PhoenixGem": {
+    "description": "Lors de chaque combat, lorsqu'<style=\"Faction_Aeldari\">Aethana</style> est vaincue, elle est réanimée avec un maximum de <style=\"Stat_Health\">{[hp]} santé</style> restante, même si elle est <style=\"Overkill\">Exterminée</style>.",
+    "variables": {
+      "hp": [3915, 4126, 4338, 4549, 4760, 4972, 5183, 5394, 5606, 5817]
+    },
+    "constants": {},
+    "scaled": []
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "SquigMine": {
+    "description": "Marks a free hex on the battlefield and additionally <style=\"Stat\">{[nrOfTiles]}</style> random free hexes within range {[range]} of the target hex. Until the start of the <style=\"Faction_Orks\">Rukkatrukk</style>'s next turn, the first time a marked hex is occupied by an enemy, that enemy takes <style=\"Stat_Hits\">{[nrOfHits]}x</style> <style=\"DMG_Blast\">{[minDmg]}-{[maxDmg]} Blast Damage</style>, and the mark is removed. When a friendly unit occupies an affected hex, it does not take damage, and the mark is removed.\n\nInitial <style=\"Cooldown\">cooldown: {[initialCooldownTurns]} round</style>. \n\n{[S/AbilityDamageExplanation]}",
+    "variables": {
+      "minDmg": [
+        40, 48, 56, 64, 72, 81, 90, 100, 109, 118, 127, 136, 146, 155, 164, 173,
+        182, 192, 201, 210, 222, 240, 276, 312, 349, 385, 422, 458, 494, 531,
+        567, 604, 640, 676, 713, 749, 786, 822, 858, 910, 982, 1057, 1139, 1229,
+        1394, 1558, 1722, 1887, 2051, 2216, 2240, 2270, 2300, 2340, 2380, 2420,
+        2460, 2510, 2560, 2610, 2670, 2730, 2790, 2850, 2910
+      ],
+      "maxDmg": [
+        48, 58, 67, 77, 86, 97, 108, 120, 131, 142, 153, 164, 175, 186, 197,
+        208, 219, 230, 241, 252, 267, 288, 331, 375, 419, 462, 506, 550, 593,
+        637, 681, 724, 768, 812, 855, 899, 943, 986, 1030, 1092, 1178, 1269,
+        1367, 1475, 1672, 1870, 2067, 2264, 2461, 2659, 2688, 2724, 2760, 2808,
+        2856, 2904, 2952, 3012, 3072, 3132, 3204, 3276, 3348, 3420, 3492
+      ],
+      "nrOfTiles": [
+        2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3,
+        3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
+        4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4
+      ]
+    },
+    "constants": {
+      "damageProfile": "Blast",
+      "nrOfHits": "3",
+      "range": "2",
+      "initialCooldownTurns": "1"
+    },
+    "scaled": ["minDmg", "maxDmg"]
+  }
+}

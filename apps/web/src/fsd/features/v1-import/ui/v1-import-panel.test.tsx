@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react"
 import { fireEvent, render, screen, waitFor } from "@/test/render"
+import { seedGameCatalog } from "@/test/seed"
 import { QueryClient } from "@tanstack/react-query"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import type { ImportPartResult, V1GoalOutcome } from "@/entities/account"
@@ -16,7 +16,7 @@ vi.mock("react-i18next", () => ({
     t: (key: string, options?: Record<string, unknown>) =>
       options
         ? `${key} ${Object.entries(options)
-            .map(([k, v]) => `${k}=${v}`)
+            .map(([k, v]) => `${k}=${String(v)}`)
             .join(" ")}`
         : key,
   }),
@@ -68,39 +68,6 @@ vi.mock("@/shared/api", () => ({
       this.errors = problem.errors
     }
   },
-}))
-
-vi.mock("dexie-react-hooks", () => ({
-  useLiveQuery: (
-    querier: () => unknown,
-    deps: unknown[] = [],
-    defaultResult?: unknown
-  ) => {
-    const [value, setValue] = useState<unknown>(defaultResult)
-    useEffect(() => {
-      const result = querier()
-      if (result instanceof Promise) {
-        let active = true
-        void result.then((resolved) => {
-          if (active) setValue(resolved)
-        })
-        return () => {
-          active = false
-        }
-      }
-      setValue(result)
-      return undefined
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, deps)
-    return value
-  },
-}))
-
-vi.mock("@workspace/game-catalog/queries", () => ({
-  getCharactersMap: () =>
-    new Map([["hero1", { id: "hero1", name: "Hero One" }]]),
-  getMowsMap: () => new Map([["mow1", { id: "mow1", name: "Stormbird" }]]),
-  getUpgrades: async () => [],
 }))
 
 import { ApiError } from "@/shared/api"
@@ -175,7 +142,11 @@ function renderPanel(defaultSelection: V1ImportSelection = ALL_SELECTED) {
 }
 
 describe("V1ImportPanel", () => {
-  beforeEach(() => {
+  beforeEach(async () => {
+    await seedGameCatalog({
+      characters: [{ id: "hero1", name: "Hero One" }],
+      mows: [{ id: "mow1", name: "Stormbird" }],
+    })
     importV1Profile.mockReset().mockResolvedValue(response())
     refetch.mockReset()
   })

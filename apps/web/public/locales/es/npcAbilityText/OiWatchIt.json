@@ -1,0 +1,8 @@
+{
+  "OiWatchIt": {
+    "description": "Cuando esta unidad es atacada, un contenedor <style=\"Steppable\">escalable</style> de <style=\"Resource_Gold\">Monedas</style> aparece en un hexágono adyacente libre por cada impacto recibido.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

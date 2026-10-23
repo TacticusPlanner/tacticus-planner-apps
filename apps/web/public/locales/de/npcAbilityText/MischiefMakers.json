@@ -1,0 +1,11 @@
+{
+  "MischiefMakers": {
+    "description": "Ziele, die von den <style=\"NormalAttack\">normalen Angriffen</style> der <style=\"Faction_DeathGuard\">Nurglinge</style> getroffen wurden, können {[nrOfRounds]} Runde lang nicht wiederbelebt, <style=\"Healing\">geheilt</style> oder <style=\"Repairing\">repariert</style> werden oder auf andere Weise {[S/Health]} regenerieren. Diese Angriffe <style=\"Debuff_Pinned\">unterdrücken</style> das Ziel außerdem {[nrOfRounds]} Runde lang mit einer <style=\"Stat_Chance\">Wahrscheinlichkeit von {[chance]} %</style>.",
+    "variables": {},
+    "constants": {
+      "chance": "25",
+      "nrOfRounds": "1"
+    },
+    "scaled": []
+  }
+}

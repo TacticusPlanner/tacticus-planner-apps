@@ -1,4 +1,4 @@
-import { act, renderHook } from "@testing-library/react"
+import { act, render, renderHook } from "@testing-library/react"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 vi.mock("react-i18next", () => ({
@@ -20,10 +20,16 @@ const sync = vi.hoisted(() => ({
 vi.mock("@/features/player-data-sync", () => ({
   usePlayerDataSyncStatus: () => sync,
 }))
+vi.mock("@/shared/player-data-status", () => ({
+  usePlayerDataStatus: () => ({
+    status: sync.isSyncing ? "syncing" : "ready",
+    syncNow: sync.syncNow,
+  }),
+}))
 
 const userJot = vi.hoisted(() => ({
   open: vi.fn(),
-  status: "ready" as "idle" | "loading" | "ready" | "failed",
+  status: "ready",
 }))
 vi.mock("../providers/userjot-provider", () => ({
   useUserJot: () => userJot,
@@ -111,9 +117,10 @@ describe("useQuickActions", () => {
     sync.isSyncing = true
     const { result } = setup()
 
-    expect(result.current.actions.find((a) => a.id === "sync")).toMatchObject({
-      disabledReason: "Syncing 1/2",
-    })
+    const reason = result.current.actions.find(
+      (a) => a.id === "sync"
+    )?.disabledReason
+    expect(render(<>{reason}</>).container).toHaveTextContent("Syncing 1/2")
     expect(result.current.select("sync")).toBe(false)
     act(() => result.current.flush())
     expect(sync.syncNow).not.toHaveBeenCalled()

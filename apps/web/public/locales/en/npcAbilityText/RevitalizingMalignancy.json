@@ -1,0 +1,23 @@
+{
+  "RevitalizingMalignancy": {
+    "description": "<style=\"Healing\">Heals</style> himself and all adjacent friendly units for <style=\"Stat_Health\">{[hpToHeal]} Health</style>, and an additional <style=\"Stat_Health\">+{[hpToHeal_2]} Health</style> to <style=\"Aliance_Chaos\">Chaos</style> units. <style=\"Aliance_Imperial\">Imperial</style> units do not receive any <style=\"Healing\">healing</style>.",
+    "variables": {
+      "hpToHeal": [
+        35, 42, 49, 56, 63, 71, 79, 87, 95, 103, 111, 119, 127, 135, 144, 152,
+        160, 168, 176, 184, 195, 210, 242, 273, 305, 337, 369, 401, 433, 464,
+        496, 528, 560, 592, 624, 656, 687, 719, 751, 796, 859, 925, 996, 1076,
+        1219, 1363, 1507, 1651, 1795, 1939, 1960, 1986, 2013, 2048, 2083, 2118,
+        2153, 2196, 2240, 2284, 2336, 2389, 2441, 2494, 2546
+      ],
+      "hpToHeal_2": [
+        35, 42, 49, 56, 63, 71, 79, 87, 95, 103, 111, 119, 127, 135, 144, 152,
+        160, 168, 176, 184, 195, 210, 242, 273, 305, 337, 369, 401, 433, 464,
+        496, 528, 560, 592, 624, 656, 687, 719, 751, 796, 859, 925, 996, 1076,
+        1219, 1363, 1507, 1651, 1795, 1939, 1960, 1986, 2013, 2048, 2083, 2118,
+        2153, 2196, 2240, 2284, 2336, 2389, 2441, 2494, 2546
+      ]
+    },
+    "constants": {},
+    "scaled": ["hpToHeal", "hpToHeal_2"]
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "FiringPosition": {
+    "description": "When defeating a unit with an attack triggered by <style=\"Overwatch\">Overwatch</style>, the <style=\"Faction_BlackLegion\">Havoc</style> stays in <style=\"Overwatch\">Overwatch</style>, retaining {[hitsReduction]} fewer <style=\"Stat_Hits\">hits</style> compared to the previous attack.",
+    "variables": {},
+    "constants": {
+      "hitsReduction": "2"
+    },
+    "scaled": []
+  }
+}

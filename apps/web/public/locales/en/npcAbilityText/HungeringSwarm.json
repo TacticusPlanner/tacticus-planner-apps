@@ -1,0 +1,10 @@
+{
+  "HungeringSwarm": {
+    "description": "Whenever this unit performs a melee attack, it deals <style=\"Stat_Hits\">+{[extraHit]} hit</style> for each other friendly Hormagaunt or Ripper Swarm adjacent to the target.",
+    "variables": {},
+    "constants": {
+      "extraHit": "1"
+    },
+    "scaled": []
+  }
+}

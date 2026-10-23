@@ -1,20 +1,5 @@
 import { useMemo } from "react"
-import { useLiveQuery } from "dexie-react-hooks"
 import type { UnitId } from "@workspace/game-domain"
-import {
-  getAscensionCostsMap,
-  getCampaignBattles,
-  getCampaignDefinitions,
-  getCharactersMap,
-  getShops,
-  getUnlockShardCostsMap,
-  getUpgrades,
-} from "@workspace/game-catalog/queries"
-import {
-  getInventoryShards,
-  getInventoryUpgrades,
-  getPlayerCharacters,
-} from "@workspace/player-data/queries"
 
 import { useEligibleCampaignBattles } from "@/features/daily-raids"
 import type { FarmingCharacter } from "@/features/goal-farming"
@@ -24,6 +9,8 @@ import {
   mapUpgradeStorageToDomain,
 } from "@/features/rank-lookup"
 import { usePlanningSettings } from "@/entities/planning-setting"
+import { combineReadStates } from "@/shared/lib"
+import { toById, useCatalogDataset, usePlayerChunk } from "@/shared/local-data"
 
 import {
   createFarmingDaysEstimator,
@@ -34,16 +21,12 @@ import {
 export type UpgradeFarmingDaysState =
   | { status: "loading" }
   | { status: "unavailable" }
+  /** A local read failed; the wizard presents it like `unavailable`. */
+  | { status: "error"; retry: () => void }
   | {
       status: "ready"
       estimate: (request: UpgradeChainRequest) => FarmingDays
     }
-
-/** Wraps a player-data read so an unsynced chunk (`undefined`) reads as `null`, not as loading. */
-const settled =
-  <T>(read: () => Promise<T | undefined>) =>
-  async () =>
-    (await read()) ?? null
 
 /**
  * The wizard's farming-days estimator, built once its inputs load: the static catalog (characters,
@@ -53,38 +36,70 @@ const settled =
  * upgrades or farmable nodes to estimate against.
  */
 export function useUpgradeFarmingDays(): UpgradeFarmingDaysState {
-  const charactersById = useLiveQuery(() => getCharactersMap(), [])
-  const upgrades = useLiveQuery(() => getUpgrades(), [])
-  const campaignBattles = useLiveQuery(() => getCampaignBattles(), [])
-  const campaignDefinitions = useLiveQuery(() => getCampaignDefinitions(), [])
-  const ascensionCostsById = useLiveQuery(() => getAscensionCostsMap(), [])
-  const unlockShardCostsById = useLiveQuery(() => getUnlockShardCostsMap(), [])
-  const shops = useLiveQuery(() => getShops(), [])
-  const playerCharacters = useLiveQuery(settled(getPlayerCharacters), [])
-  const inventoryShards = useLiveQuery(settled(getInventoryShards), [])
-  const inventoryUpgrades = useLiveQuery(settled(getInventoryUpgrades), [])
+  const charactersRead = useCatalogDataset("characters", toById)
+  const upgradesRead = useCatalogDataset("upgrades")
+  const campaignBattlesRead = useCatalogDataset("campaign-battles")
+  const campaignDefinitionsRead = useCatalogDataset("campaign-definitions")
+  const ascensionCostsRead = useCatalogDataset("ascension-costs", toById)
+  const unlockShardCostsRead = useCatalogDataset("unlock-shard-costs", toById)
+  const shopsRead = useCatalogDataset("shops")
+  const playerCharactersRead = usePlayerChunk("characters")
+  const inventoryShardsRead = usePlayerChunk("inventory-shards")
+  const inventoryUpgradesRead = usePlayerChunk("inventory-upgrades")
   const { settings, loading: settingsLoading } = usePlanningSettings()
+  const campaignBattles =
+    campaignBattlesRead.status === "ready"
+      ? campaignBattlesRead.data
+      : undefined
+  const campaignDefinitions =
+    campaignDefinitionsRead.status === "ready"
+      ? campaignDefinitionsRead.data
+      : undefined
   const { availableBattles } = useEligibleCampaignBattles(
     campaignBattles,
     campaignDefinitions
   )
 
-  const loading =
-    charactersById === undefined ||
-    upgrades === undefined ||
-    campaignBattles === undefined ||
-    campaignDefinitions === undefined ||
-    ascensionCostsById === undefined ||
-    unlockShardCostsById === undefined ||
-    shops === undefined ||
-    playerCharacters === undefined ||
-    inventoryShards === undefined ||
-    inventoryUpgrades === undefined ||
-    settingsLoading
+  const read = combineReadStates(
+    charactersRead,
+    upgradesRead,
+    campaignBattlesRead,
+    campaignDefinitionsRead,
+    ascensionCostsRead,
+    unlockShardCostsRead,
+    shopsRead,
+    playerCharactersRead,
+    inventoryShardsRead,
+    inventoryUpgradesRead
+  )
+  // The tuple is new every render, so the memo below keys on each read's own data instead.
+  const data = read.status === "ready" ? read.data : undefined
+  const [
+    charactersById,
+    upgrades,
+    ,
+    ,
+    ascensionCostsById,
+    unlockShardCostsById,
+    shops,
+    playerCharacters,
+    inventoryShards,
+    inventoryUpgrades,
+  ] = data ?? []
+  const loading = read.status === "loading" || settingsLoading
 
   // Memoized whole, so `ready` hands out one estimator (and its cache) until an input changes.
-  return useMemo((): UpgradeFarmingDaysState => {
-    if (loading) return { status: "loading" }
+  const state = useMemo((): UpgradeFarmingDaysState => {
+    if (
+      loading ||
+      !charactersById ||
+      !upgrades ||
+      !ascensionCostsById ||
+      !unlockShardCostsById ||
+      !shops
+    ) {
+      return { status: "loading" }
+    }
     if (
       charactersById.size === 0 ||
       upgrades.length === 0 ||
@@ -144,4 +159,7 @@ export function useUpgradeFarmingDays(): UpgradeFarmingDaysState {
     inventoryUpgrades,
     settings.dailyEnergy,
   ])
+  return read.status === "error"
+    ? { status: "error", retry: read.retry }
+    : state
 }

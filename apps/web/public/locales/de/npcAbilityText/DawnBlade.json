@@ -1,0 +1,13 @@
+{
+  "DawnBlade": {
+    "description": "<style=\"Faction_Tau\">Commander Weitsichts</style> Nahkampfangriffe verursachen jedes Mal <style=\"Stat_Damage\">+{[extraDmg]} Schaden</style>, wenn ein anderer verbündeter <style=\"Character\">Charakter</style> innerhalb von {[range]} Feldern in diesem Zug einen Fernkampfangriff ausführt. Wenn Commander Weitsicht eine gegnerische Einheit mit einem Nahkampfangriff tötet, <style=\"Repairing\">repariert</style> er sich selbst um <style=\"Stat_Health\">{[hpToHeal]} Lebenspunkte</style>.",
+    "variables": {
+      "extraDmg": [390, 411, 432, 453, 474, 495, 516, 537, 558, 579],
+      "hpToHeal": [4895, 5159, 5423, 5688, 5952, 6216, 6480, 6745, 7009, 7273]
+    },
+    "constants": {
+      "range": "2"
+    },
+    "scaled": []
+  }
+}

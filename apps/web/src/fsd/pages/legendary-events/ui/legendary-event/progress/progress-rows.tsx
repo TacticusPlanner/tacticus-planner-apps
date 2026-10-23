@@ -3,7 +3,7 @@ import { cn } from "@workspace/ui/lib/utils"
 
 import type { LaneProgressView } from "@/entities/legendary-event"
 
-import { BattleAnnotationMenu } from "@/features/legendary-event-annotations"
+import { BattleAnnotationMenu } from "@/features/legendary-event-plan"
 
 import type { ProgressColumn } from "./progress-columns"
 import type { LaneMarks } from "./progress-marks"

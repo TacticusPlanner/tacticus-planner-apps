@@ -244,7 +244,7 @@ export function PlanWizard({
           </ol>
         </nav>
         <div className="flex min-w-0 flex-1 flex-col gap-4">
-          {tooAmbitious && step !== "target" ? (
+          {tooAmbitious && draft.target !== null && step !== "target" ? (
             <div
               className="flex flex-wrap items-center gap-x-3 gap-y-1 rounded-lg border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm"
               data-testid="plan-wizard-banner"

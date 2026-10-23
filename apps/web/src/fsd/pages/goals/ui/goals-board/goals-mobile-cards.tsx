@@ -4,11 +4,8 @@ import { GripVertical } from "lucide-react"
 import { cn } from "@workspace/ui/lib/utils"
 import { Checkbox } from "@workspace/ui/components/checkbox"
 
-import {
-  NO_BLOCKERS,
-  UNKNOWN_PROGRESS,
-} from "../../model/attainment/goal-overview-metrics-defaults"
-import { useGoalCatalog } from "../../model/shared/use-goal-catalog"
+import { NO_BLOCKERS, UNKNOWN_PROGRESS } from "@/features/goal-planning"
+import { useGoalCatalog } from "@/features/goal-planning"
 import { GoalRowActions } from ".//goal-row-actions"
 import { GoalResourceChips } from "../shared/goal-resource-chips"
 import { formatGoalRemainingText } from "../shared/goal-remaining-text"
@@ -16,7 +13,7 @@ import {
   GoalProgressDisplay,
   GoalTargetDisplay,
 } from "../shared/goal-progress-visuals"
-import { GoalProjectBadges, GoalUnitIcon } from "../shared/goal-visuals"
+import { GoalProjectBadges, GoalUnitIcon } from "@/features/goal-create"
 import { LevelRequirementLine } from "../shared/level-requirement-display"
 import { SortableList, type SortableRenderProps } from "@/shared/ui"
 import { BlockedIndicator, StatusBadge } from "../shared/status-badge"
@@ -126,6 +123,10 @@ export function GoalsMobileCards({
         <SortableList
           disabled={reorderPending}
           getId={(row) => row.goalId}
+          getLabel={(id) => {
+            const row = reorderableRows.find((item) => item.goalId === id)
+            return row ? getEntityName(row.entityType, row.entityId) : ""
+          }}
           items={reorderableRows}
           onReorder={(orderedIds, movedId) => onReorder?.(orderedIds, movedId)}
           renderItem={(row, sortable) => (
@@ -195,6 +196,7 @@ export function GoalsMobileCards({
                 <div className="flex min-w-0 items-center gap-2">
                   {selectActive ? (
                     <div
+                      role="presentation"
                       onClick={stopRowNavigation}
                       onKeyDown={stopRowNavigation}
                     >
@@ -240,6 +242,7 @@ export function GoalsMobileCards({
                   />
                   <div
                     data-testid="goal-row-actions"
+                    role="presentation"
                     onClick={stopRowNavigation}
                     onKeyDown={stopRowNavigation}
                   >
@@ -265,6 +268,7 @@ export function GoalsMobileCards({
               ) : (
                 <>
                   <div
+                    role="presentation"
                     onClick={stopRowNavigation}
                     onKeyDown={stopRowNavigation}
                   >

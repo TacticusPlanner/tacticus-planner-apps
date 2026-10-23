@@ -1,16 +1,16 @@
 import { describe, expect, it, vi } from "vitest"
-import { render, screen, within } from "@testing-library/react"
+import { render, screen, within } from "@/test/render"
 import userEvent from "@testing-library/user-event"
 
-vi.mock("react-i18next", () => ({
-  useTranslation: () => ({
-    t: (key: string, opts?: Record<string, unknown>) =>
-      opts ? `${key} ${JSON.stringify(opts)}` : key,
-  }),
-}))
-
-const { RaidBossAdjustedStats } = await import("./raid-boss-adjusted-stats")
 import type { AdjustedStatsView, RaidBoss } from "@/entities/raid-boss"
+
+import { RaidBossAdjustedStats } from "./raid-boss-adjusted-stats"
+
+function at<T>(xs: readonly T[] | undefined, index: number): T {
+  const value = xs?.[index]
+  if (value === undefined) throw new Error(`expected an item at index ${index}`)
+  return value
+}
 
 const unit = {
   unitSetId: "boss",
@@ -62,35 +62,37 @@ describe("RaidBossAdjustedStats", () => {
   it("shows base and adjusted stat columns on desktop", () => {
     render(<RaidBossAdjustedStats {...baseProps} />)
     const panel = screen.getByTestId("raid-boss-adjusted-stats")
-    expect(panel).toHaveTextContent("raidBosses.baseColumn")
-    expect(panel).toHaveTextContent("raidBosses.adjustedColumn")
+    expect(
+      within(panel).getByRole("columnheader", { name: "Base" })
+    ).toBeInTheDocument()
+    expect(
+      within(panel).getByRole("columnheader", { name: "Adjusted" })
+    ).toBeInTheDocument()
     // damage 100, -40% -> 60
     expect(within(panel).getByText("100")).toBeInTheDocument()
     expect(within(panel).getByText("60")).toBeInTheDocument()
     // removed-enemy note
-    expect(panel).toHaveTextContent(
-      'raidBosses.enemyRemoved {"count":2,"name":"Ripper Swarm"}'
-    )
+    expect(panel).toHaveTextContent("2× Ripper Swarm removed")
   })
 
   it("shows the full stat set (Health/Damage/Armor/Movement) with only Damage adjusted", () => {
     render(<RaidBossAdjustedStats {...baseProps} />)
 
     // Health (base 500, untouched by the dmg-only modifier) -> base === adjusted
-    const healthRow = screen.getByText("raidBosses.health").closest("tr")!
+    const healthRow = screen.getByText("Health").closest("tr")!
     expect(within(healthRow).getAllByText("500")).toHaveLength(2)
 
     // Damage (base 100, -40% modifier active) -> base !== adjusted
-    const damageRow = screen.getByText("raidBosses.damage").closest("tr")!
+    const damageRow = screen.getByText("Damage").closest("tr")!
     expect(within(damageRow).getByText("100")).toBeInTheDocument()
     expect(within(damageRow).getByText("60")).toBeInTheDocument()
 
     // Armor (base 20, untouched) -> base === adjusted
-    const armorRow = screen.getByText("raidBosses.armor").closest("tr")!
+    const armorRow = screen.getByText("Armor").closest("tr")!
     expect(within(armorRow).getAllByText("20")).toHaveLength(2)
 
     // Movement (base 4, untouched) -> base === adjusted
-    const movementRow = screen.getByText("raidBosses.movement").closest("tr")!
+    const movementRow = screen.getByText("Movement").closest("tr")!
     expect(within(movementRow).getAllByText("4")).toHaveLength(2)
   })
 
@@ -99,13 +101,17 @@ describe("RaidBossAdjustedStats", () => {
     render(<RaidBossAdjustedStats {...baseProps} compact />)
     const panel = screen.getByTestId("raid-boss-adjusted-stats")
 
-    expect(panel).not.toHaveTextContent("raidBosses.adjustedColumn")
+    expect(
+      within(panel).queryByRole("columnheader", { name: "Adjusted" })
+    ).not.toBeInTheDocument()
     expect(within(panel).queryByText("60")).not.toBeInTheDocument()
 
     await user.click(
-      within(panel).getByRole("button", { name: "raidBosses.showAdjusted" })
+      within(panel).getByRole("button", { name: "Show adjusted" })
     )
-    expect(panel).toHaveTextContent("raidBosses.adjustedColumn")
+    expect(
+      within(panel).getByRole("columnheader", { name: "Adjusted" })
+    ).toBeInTheDocument()
     expect(within(panel).getByText("60")).toBeInTheDocument()
   })
 
@@ -127,18 +133,16 @@ describe("RaidBossAdjustedStats", () => {
     }
     render(<RaidBossAdjustedStats {...baseProps} view={percentView} />)
 
-    await user.click(screen.getAllByRole("combobox")[0])
-    expect(
-      screen.getByRole("option", { name: "raidBosses.fullHp" })
-    ).toBeInTheDocument()
+    await user.click(at(screen.getAllByRole("combobox"), 0))
+    expect(screen.getByRole("option", { name: "Full HP" })).toBeInTheDocument()
     expect(
       screen.getByRole("option", {
-        name: 'raidBosses.hpLostPercent {"hpLost":13}',
+        name: "13% HP lost",
       })
     ).toBeInTheDocument()
     expect(
       screen.getByRole("option", {
-        name: 'raidBosses.hpLostPercent {"hpLost":100}',
+        name: "100% HP lost",
       })
     ).toBeInTheDocument()
   })
@@ -157,7 +161,7 @@ describe("RaidBossAdjustedStats", () => {
       />
     )
     expect(screen.getByTestId("raid-boss-adjusted-stats")).toHaveTextContent(
-      "raidBosses.noActiveModifiers"
+      "No modifiers active at this point."
     )
   })
 })

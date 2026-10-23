@@ -1,0 +1,8 @@
+{
+  "PowerUp_Resurrect": {
+    "description": "Lorsqu'elle est choisie par une unité alliée, ressuscite un <style=\"Character\">personnage</style> choisi qui a été vaincu. Le personnage ressuscité apparaît dans un hexagone aléatoire libre et peut prendre son tour immédiatement. \n\nSi aucun personnage n'est éligible, cette amélioration ajoute 1 point de renfort à la place.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "PowerUp_Bomb": {
+    "description": "Cuando una unidad aliada lo recolecta, activa una explosión que inflige <style=\"DMG_Blast\">{[minDmg]}-{[maxDmg]} de Daño de explosión</style> <style=\"Stat_Hits\">x{[nrOfHits]}</style> a todos los enemigos a {[range]} hexágonos de distancia del hexágono en el que se recolectó. El daño aumenta mientras más alto sea el nivel de rareza.",
+    "variables": {
+      "minDmg": [
+        70, 70, 70, 70, 70, 70, 70, 70, 160, 160, 160, 160, 160, 160, 160, 160,
+        160, 366, 366, 366, 366, 366, 366, 366, 366, 366, 815, 815, 815, 815,
+        815, 815, 815, 815, 815, 1800, 1800, 1800, 1800, 1800, 1800, 1800, 1800,
+        1800, 1800, 1800, 1800, 1800, 1800, 1800, 2700, 2700, 2700, 2700, 2700,
+        2700, 2700, 2700, 2700, 2700, 2700, 2700, 2700, 2700, 2700
+      ],
+      "maxDmg": [
+        150, 150, 150, 150, 150, 150, 150, 150, 475, 475, 475, 475, 475, 475,
+        475, 475, 475, 1100, 1100, 1100, 1100, 1100, 1100, 1100, 1100, 1100,
+        2433, 2433, 2433, 2433, 2433, 2433, 2433, 2433, 2433, 5600, 5600, 5600,
+        5600, 5600, 5600, 5600, 5600, 5600, 5600, 5600, 5600, 5600, 5600, 5600,
+        8400, 8400, 8400, 8400, 8400, 8400, 8400, 8400, 8400, 8400, 8400, 8400,
+        8400, 8400, 8400
+      ]
+    },
+    "constants": {
+      "damageProfile": "Blast",
+      "nrOfHits": "1",
+      "range": "4"
+    },
+    "scaled": []
+  }
+}

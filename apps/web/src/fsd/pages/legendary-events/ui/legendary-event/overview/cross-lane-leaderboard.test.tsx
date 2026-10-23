@@ -177,7 +177,9 @@ describe("CrossLaneLeaderboard", () => {
 
   it("re-orders by points per battle when Deduct scored points is off", () => {
     renderOverview()
-    act(() => fireEvent.click(screen.getByTestId("leaderboard-deduct-scored")))
+    act(() => {
+      fireEvent.click(screen.getByTestId("leaderboard-deduct-scored"))
+    })
     expect(units()).toEqual(["other", "bloodDante"])
     expect(laneFigures("bloodDante")).toEqual(["152", "100", "—"])
   })
@@ -270,15 +272,21 @@ describe("CrossLaneLeaderboard", () => {
     const chip = screen
       .getAllByTestId("leaderboard-objective-chip")
       .find((element) => element.dataset.objective === flying)!
-    act(() => fireEvent.click(chip))
+    act(() => {
+      fireEvent.click(chip)
+    })
     expect(units()).toEqual(["bloodDante"])
 
     const healer = screen
       .getAllByTestId("leaderboard-objective-chip")
       .find((element) => element.dataset.objective === "Trait:Healer:is")!
-    act(() => fireEvent.click(healer))
+    act(() => {
+      fireEvent.click(healer)
+    })
     expect(screen.getByTestId("leaderboard-none-match")).toBeInTheDocument()
-    act(() => fireEvent.click(screen.getByTestId("leaderboard-clear-filter")))
+    act(() => {
+      fireEvent.click(screen.getByTestId("leaderboard-clear-filter"))
+    })
     expect(units()).toEqual(["bloodDante", "other"])
   })
 

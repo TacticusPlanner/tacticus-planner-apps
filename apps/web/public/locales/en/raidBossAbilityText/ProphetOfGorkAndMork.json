@@ -1,0 +1,11 @@
+{
+  "ProphetOfGorkAndMork": {
+    "description": "After being attacked <style=\"Stat\">{[nrOfAttacks]}</style> times in a turn, <style=\"Faction_Orks\">Ghazghkull</style> takes <style=\"Stat_Damage\">-{[dmgPctReduction]}% Damage</style> until the end of that turn.",
+    "variables": {},
+    "constants": {
+      "dmgPctReduction": "90",
+      "nrOfAttacks": "4"
+    },
+    "scaled": []
+  }
+}

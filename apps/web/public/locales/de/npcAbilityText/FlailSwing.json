@@ -1,0 +1,26 @@
+{
+  "FlailSwing": {
+    "description": "Setzt einen <style=\"Stat_Melee\">Nahkampfangriff</style> ein, verursacht <style=\"Stat_Hits\">{[nrOfHits]}x</style> <style=\"DMG_Power\">{[minDmg]}–{[maxDmg]} Energieschaden</style> am Ziel und löst <i>Schleier der Korruption</i> aus, wenn das Ziel besiegt wird. Alle Einheiten, die von diesem Angriff oder dem Zusatzangriff durch <i>Schleier der Korruption</i> besiegt werden, erleiden <style=\"Obliterated\">immer einen Overkill</style>.",
+    "variables": {
+      "minDmg": [
+        45, 54, 63, 72, 81, 91, 102, 112, 122, 133, 143, 153, 164, 174, 185,
+        195, 205, 216, 226, 236, 250, 270, 311, 351, 392, 433, 474, 515, 556,
+        597, 638, 679, 720, 761, 802, 843, 884, 925, 966, 1023, 1104, 1189,
+        1281, 1383, 1568, 1753, 1938, 2123, 2308, 2493, 2520, 2554, 2588, 2633,
+        2678, 2723, 2768, 2824, 2880, 2936, 3004, 3071, 3139, 3206, 3274
+      ],
+      "maxDmg": [
+        51, 61, 71, 82, 92, 104, 115, 127, 139, 150, 162, 174, 186, 197, 209,
+        221, 233, 244, 256, 268, 284, 305, 352, 398, 445, 491, 538, 584, 630,
+        677, 723, 770, 816, 862, 909, 955, 1002, 1048, 1094, 1160, 1252, 1348,
+        1452, 1567, 1777, 1986, 2196, 2406, 2615, 2825, 2856, 2894, 2933, 2984,
+        3035, 3086, 3137, 3200, 3264, 3328, 3404, 3481, 3557, 3634, 3710
+      ]
+    },
+    "constants": {
+      "damageProfile": "Power",
+      "nrOfHits": "3"
+    },
+    "scaled": ["minDmg", "maxDmg"]
+  }
+}

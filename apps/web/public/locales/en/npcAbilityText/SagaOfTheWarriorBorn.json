@@ -1,0 +1,21 @@
+{
+  "SagaOfTheWarriorBorn": {
+    "description": "[i2p_Plural]When <style=\"Charging\">charging</style>, <style=\"Faction_SpaceWolves\">Ragnar</style> scores <style=\"Stat\">{[extraHits]}</style> additional <style=\"Stat_Hits\">hits</style> and his critical hits deal an additional <style=\"Stat_CritDamage\">+{[extraCritDmg]} Crit Damage</style>. \nIf Ragnar has defeated one or more enemy <style=\"Character\">Characters</style> this battle, friendly <style=\"Faction_SpaceWolves\">Space Wolves</style> also gain this ability.[i2p_One]When <style=\"Charging\">charging</style>, <style=\"Faction_SpaceWolves\">Ragnar</style> scores <style=\"Stat\">{[extraHits]}</style> additional <style=\"Stat_Hits\">hit</style> and his critical hits deal an additional <style=\"Stat_CritDamage\">+{[extraCritDmg]} Crit Damage</style>.\n\nIf Ragnar has defeated one or more enemy <style=\"Character\">Characters</style> this battle, friendly <style=\"Faction_SpaceWolves\">Space Wolves</style> also gain this ability.",
+    "variables": {
+      "extraHits": [
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2,
+        2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
+        3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3
+      ],
+      "extraCritDmg": [
+        8, 10, 11, 13, 14, 16, 18, 20, 22, 24, 25, 27, 29, 31, 33, 35, 36, 38,
+        40, 42, 44, 48, 55, 62, 70, 77, 84, 92, 99, 106, 113, 121, 128, 135,
+        143, 150, 157, 164, 172, 182, 196, 211, 228, 246, 279, 312, 344, 377,
+        410, 443, 448, 454, 460, 468, 476, 484, 492, 502, 512, 522, 534, 546,
+        558, 570, 582
+      ]
+    },
+    "constants": {},
+    "scaled": ["extraCritDmg"]
+  }
+}

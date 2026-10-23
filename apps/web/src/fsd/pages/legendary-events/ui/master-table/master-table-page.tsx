@@ -42,6 +42,9 @@ import {
   type UnitSetAvailability,
 } from "./master-table.view-model"
 
+/** How long the search box waits after a keystroke before writing `q` to the URL. */
+const SEARCH_COMMIT_MS = 200
+
 /**
  * `/legendary-events/master-table`: every unit's points across the selected events (design D2–D5,
  * D8, D9). The controls live in the URL query; the table (desktop) or card list (mobile) is built
@@ -175,14 +178,47 @@ export function MasterTablePage() {
       state.points,
     ]
   )
-  const rows = table
-    ? sortMasterTable(
-        filterMasterTableRows(table.rows, state.q, nameOf, i18n.language),
-        state.sort,
-        nameOf,
-        i18n.language
+  // The search box filters from its own state at once and writes the URL after a pause, so a
+  // keystroke does not wait on a navigation; `null` means it shows the URL's `q`.
+  const [searchDraft, setSearchDraft] = useState<string | null>(null)
+  const q = searchDraft ?? state.q
+  const searchTimer = useRef<number | undefined>(undefined)
+  useEffect(() => () => window.clearTimeout(searchTimer.current), [])
+  const commitQuery = useCallback(
+    (value: string) => {
+      window.clearTimeout(searchTimer.current)
+      setSearchDraft(null)
+      setSearchParams((params) => nextMasterTableParams(params, { q: value }), {
+        replace: true,
+      })
+    },
+    [setSearchParams]
+  )
+  const changeQuery = useCallback(
+    (value: string) => {
+      // Clearing writes at once.
+      if (!value) return commitQuery(value)
+      setSearchDraft(value)
+      window.clearTimeout(searchTimer.current)
+      searchTimer.current = window.setTimeout(
+        () => commitQuery(value),
+        SEARCH_COMMIT_MS
       )
-    : []
+    },
+    [commitQuery]
+  )
+  const rows = useMemo(
+    () =>
+      table
+        ? sortMasterTable(
+            filterMasterTableRows(table.rows, q, nameOf, i18n.language),
+            state.sort,
+            nameOf,
+            i18n.language
+          )
+        : [],
+    [table, q, state.sort, nameOf, i18n.language]
+  )
 
   // Recorded once every read the effective unit set and points mode depend on has settled, so
   // the event carries what the user actually sees rather than a transient fallback.
@@ -226,7 +262,7 @@ export function MasterTablePage() {
       eventCount,
     })
   const controls = {
-    state,
+    state: { ...state, q },
     pickerEvents,
     eventName: nameOf,
     unitSets,
@@ -254,7 +290,7 @@ export function MasterTablePage() {
       update({ sort: eventId })
       changed("sort", eventId ?? "total")
     },
-    onQueryChange: (q: string) => update({ q }, true),
+    onQueryChange: changeQuery,
   }
 
   if (events.status === "loading" || units.status === "loading") {
@@ -338,12 +374,8 @@ export function MasterTablePage() {
           <p className="text-sm text-muted-foreground">
             {t("masterTable.noRows")}
           </p>
-          {state.q ? (
-            <Button
-              onClick={() => update({ q: null }, true)}
-              size="sm"
-              variant="outline"
-            >
+          {q ? (
+            <Button onClick={() => commitQuery("")} size="sm" variant="outline">
               {t("masterTable.search.clear")}
             </Button>
           ) : null}

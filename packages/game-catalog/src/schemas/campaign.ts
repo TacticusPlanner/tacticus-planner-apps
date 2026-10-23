@@ -1,12 +1,11 @@
 import { z } from "zod"
+import { Alliance, Rank } from "@workspace/game-domain"
 import {
-  Alliance,
   battleIdSchema,
   campaignIdSchema,
   factionIdSchema,
-  Rank,
   unitIdSchema,
-} from "@workspace/game-domain"
+} from "@workspace/game-domain/schemas"
 
 const campaignGuaranteedRewardSchema = z.looseObject({
   id: z.string(),

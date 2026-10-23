@@ -1,0 +1,26 @@
+{
+  "ValkyrieStrike": {
+    "description": "Fordert einen Luftangriff auf ein beliebiges Zielfeld auf dem Schlachtfeld an, das mit rotem Rauch markiert wird. Nach einer Runde werden das Zielfeld und zwei zufällige umliegende Felder mit Donnerkeil-Raketen getroffen, die jeweils <style=\"Stat_Hits\">{[nrOfHits]}x</style> <style=\"DMG_Blast\">{[minDmg]}–{[maxDmg]} Explosionsschaden</style> verursachen.\n\n{[S/AbilityDamageExplanation]}",
+    "variables": {
+      "minDmg": [
+        30, 36, 42, 48, 54, 61, 68, 75, 82, 89, 95, 102, 109, 116, 123, 130,
+        137, 144, 151, 158, 167, 180, 207, 234, 262, 289, 316, 344, 371, 398,
+        425, 453, 480, 507, 535, 562, 589, 617, 644, 682, 736, 793, 854, 922,
+        1045, 1169, 1292, 1415, 1538, 1662, 1680, 1703, 1725, 1755, 1785, 1815,
+        1845, 1883, 1920, 1958, 2003, 2048, 2093, 2138, 2183
+      ],
+      "maxDmg": [
+        45, 54, 63, 72, 81, 91, 102, 112, 122, 133, 143, 153, 164, 174, 185,
+        195, 205, 216, 226, 236, 250, 270, 311, 351, 392, 433, 474, 515, 556,
+        597, 638, 679, 720, 761, 802, 843, 884, 925, 966, 1023, 1104, 1189,
+        1281, 1383, 1568, 1753, 1938, 2123, 2308, 2493, 2520, 2554, 2588, 2633,
+        2678, 2723, 2768, 2824, 2880, 2936, 3004, 3071, 3139, 3206, 3274
+      ]
+    },
+    "constants": {
+      "damageProfile": "Blast",
+      "nrOfHits": "1"
+    },
+    "scaled": ["minDmg", "maxDmg"]
+  }
+}

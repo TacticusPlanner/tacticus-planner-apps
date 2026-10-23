@@ -1,0 +1,8 @@
+{
+  "ReinforcedHiveNode": {
+    "description": "Cada dos rondas, empezando por la primera en la que <style=\"Faction_Tyranids\">Tyranid Warrior</style> entra en juego, <style=\"Faction_Tyranids\">Tyranid Warrior</style> tiene <style=\"Stat_Armor\">+100 % de armadura</style> y, si tiene <style=\"Stat_Block\">Bloqueo</style>, 100 % de <style=\"Stat_Block\">probabilidad <style=\"Stat_Chance\">de bloqueo</style></style>.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

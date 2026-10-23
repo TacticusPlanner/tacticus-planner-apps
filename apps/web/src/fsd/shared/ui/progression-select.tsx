@@ -1,3 +1,4 @@
+import { useId } from "react"
 import { useTranslation } from "react-i18next"
 import { Label } from "@workspace/ui/components/label"
 import {
@@ -29,11 +30,14 @@ export function ProgressionSelect({
   options?: readonly Progression[]
   onChange: (value: Progression) => void
 }) {
+  const id = useId()
   return (
     <div className="grid gap-1.5">
-      <Label className="text-xs text-muted-foreground">{label}</Label>
+      <Label htmlFor={id} className="text-xs text-muted-foreground">
+        {label}
+      </Label>
       <Select value={value} onValueChange={(v) => onChange(v as Progression)}>
-        <SelectTrigger className="w-full">
+        <SelectTrigger id={id} className="w-full">
           <SelectValue />
         </SelectTrigger>
         <SelectContent>

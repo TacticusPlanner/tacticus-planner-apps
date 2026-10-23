@@ -1,0 +1,8 @@
+{
+  "PowerUp_Resurrect": {
+    "description": "Wenn diese Verstärkung von einer verbündeten Einheit aufgesammelt wird, lässt sie einen ausgewählten, besiegten <style=\"Character\">Charakter</style> auferstehen. Der auferstandene Charakter erscheint auf einem zufälligen freien Feld und ist sofort am Zug. \n\nWenn es keinen geeigneten Charakter gibt, wird stattdessen 1 Truppenpunkt hinzugefügt.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

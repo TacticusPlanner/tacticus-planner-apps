@@ -1,14 +1,17 @@
-import { getLegendaryEventsProgress } from "@workspace/player-data/queries"
+import { usePlayerChunk } from "@/shared/local-data"
 
 import type { LegendaryEventProgress } from "./types"
-import { useReadState, type ReadState } from "./use-read-state"
+import type { ReadState } from "./use-read-state"
+
+function orEmpty(
+  chunk: LegendaryEventProgress[] | null
+): LegendaryEventProgress[] {
+  return chunk ?? []
+}
 
 /** The caller's synced progress for every event; a never-synced chunk reads as no entries. */
 export function useLegendaryEventsProgress(): ReadState<
   LegendaryEventProgress[]
 > {
-  return useReadState(
-    async () => (await getLegendaryEventsProgress()) ?? [],
-    []
-  )
+  return usePlayerChunk("lre-progress", orEmpty)
 }

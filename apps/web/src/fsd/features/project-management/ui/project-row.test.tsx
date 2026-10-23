@@ -64,7 +64,7 @@ describe("ProjectRow", () => {
     render(
       <ul>
         <ProjectRow
-          actions={actionsHarness() as never}
+          actions={actionsHarness()}
           onEdit={vi.fn()}
           project={otherProject}
         />
@@ -77,7 +77,7 @@ describe("ProjectRow", () => {
     render(
       <ul>
         <ProjectRow
-          actions={actionsHarness() as never}
+          actions={actionsHarness()}
           onEdit={vi.fn()}
           project={defaultProject}
           summary={{
@@ -110,7 +110,7 @@ describe("ProjectRow", () => {
     render(
       <ul>
         <ProjectRow
-          actions={actionsHarness() as never}
+          actions={actionsHarness()}
           onEdit={vi.fn()}
           project={defaultProject}
           summary={{
@@ -140,7 +140,7 @@ describe("ProjectRow", () => {
     render(
       <ul>
         <ProjectRow
-          actions={actionsHarness() as never}
+          actions={actionsHarness()}
           onEdit={vi.fn()}
           project={defaultProject}
           summary={{
@@ -170,7 +170,7 @@ describe("ProjectRow", () => {
     render(
       <ul>
         <ProjectRow
-          actions={actionsHarness() as never}
+          actions={actionsHarness()}
           onEdit={vi.fn()}
           project={otherProject}
           summary={{ status: "error", retry }}
@@ -188,7 +188,7 @@ describe("ProjectRow", () => {
     render(
       <ul>
         <ProjectRow
-          actions={actionsHarness() as never}
+          actions={actionsHarness()}
           onEdit={onEdit}
           project={otherProject}
         />
@@ -206,12 +206,12 @@ describe("ProjectRow", () => {
     render(
       <ul>
         <ProjectRow
-          actions={actionsHarness() as never}
+          actions={actionsHarness()}
           onEdit={vi.fn()}
           project={otherProject}
         />
         <ProjectRow
-          actions={actionsHarness() as never}
+          actions={actionsHarness()}
           onEdit={vi.fn()}
           project={defaultProject}
         />
@@ -233,7 +233,7 @@ describe("ProjectRow", () => {
     render(
       <ul>
         <ProjectRow
-          actions={actionsHarness({ save }) as never}
+          actions={actionsHarness({ save })}
           onEdit={vi.fn()}
           project={otherProject}
         />
@@ -255,7 +255,7 @@ describe("ProjectRow", () => {
     render(
       <ul>
         <ProjectRow
-          actions={actionsHarness() as never}
+          actions={actionsHarness()}
           onEdit={vi.fn()}
           project={defaultProject}
         />
@@ -273,7 +273,7 @@ describe("ProjectRow", () => {
     render(
       <ul>
         <ProjectRow
-          actions={actionsHarness({ save }) as never}
+          actions={actionsHarness({ save })}
           onEdit={vi.fn()}
           project={archivedProject}
         />
@@ -296,7 +296,7 @@ describe("ProjectRow", () => {
     render(
       <ul>
         <ProjectRow
-          actions={actionsHarness() as never}
+          actions={actionsHarness()}
           onEdit={vi.fn()}
           onSelect={onSelect}
           project={otherProject}
@@ -314,7 +314,7 @@ describe("ProjectRow", () => {
     render(
       <ul>
         <ProjectRow
-          actions={actionsHarness() as never}
+          actions={actionsHarness()}
           onEdit={vi.fn()}
           onSelect={onSelect}
           project={otherProject}
@@ -336,7 +336,7 @@ describe("ProjectRow", () => {
     render(
       <ul>
         <ProjectRow
-          actions={actionsHarness() as never}
+          actions={actionsHarness()}
           onEdit={onEdit}
           onSelect={onSelect}
           project={otherProject}
@@ -357,7 +357,7 @@ describe("ProjectRow", () => {
     render(
       <ul>
         <ProjectRow
-          actions={actionsHarness() as never}
+          actions={actionsHarness()}
           onEdit={vi.fn()}
           project={otherProject}
         />
@@ -377,7 +377,7 @@ describe("ProjectRow", () => {
     render(
       <ul>
         <ProjectRow
-          actions={actionsHarness() as never}
+          actions={actionsHarness()}
           onCreateGoal={onCreateGoal}
           onEdit={vi.fn()}
           onManageGoals={onManageGoals}
@@ -413,7 +413,7 @@ describe("ProjectRow", () => {
     render(
       <ul>
         <ProjectRow
-          actions={actionsHarness() as never}
+          actions={actionsHarness()}
           onCreateGoal={vi.fn()}
           onEdit={vi.fn()}
           onManageGoals={vi.fn()}

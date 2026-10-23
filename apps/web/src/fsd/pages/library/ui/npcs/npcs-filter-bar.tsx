@@ -26,7 +26,7 @@ import {
 import { cn } from "@workspace/ui/lib/utils"
 
 import type { NpcAttackFilter, NpcFilters } from "@/entities/npc"
-import { EntityIcon } from "@/shared/ui"
+import { EntityIcon, useCommandListId } from "@/shared/ui"
 
 import type { NpcFilterOptions } from "./npcs-page.view-model"
 
@@ -52,6 +52,7 @@ function MultiSelect({
 }) {
   const { t } = useTranslation("library")
   const [open, setOpen] = useState(false)
+  const [listId, listRef] = useCommandListId()
   const selectedNames = options
     .filter((option) => value.includes(option.id))
     .map((option) => option.name)
@@ -69,6 +70,7 @@ function MultiSelect({
             variant="outline"
             role="combobox"
             aria-expanded={open}
+            aria-controls={listId}
             aria-label={label}
             className="w-full justify-between font-normal"
             data-testid={testId}
@@ -102,7 +104,7 @@ function MultiSelect({
       <PopoverContent className="w-64 p-0" align="start">
         <Command>
           <CommandInput placeholder={label} />
-          <CommandList>
+          <CommandList ref={listRef}>
             {/* This list holds filter options, not NPCs — an empty search here means no option
                 matched, which is a different statement from "no NPCs match". */}
             <CommandEmpty>{t("npcs.noMatchingOptions")}</CommandEmpty>

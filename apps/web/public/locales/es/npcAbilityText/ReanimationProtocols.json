@@ -1,0 +1,11 @@
+{
+  "ReanimationProtocols": {
+    "description": "Si hay al menos otra unidad aliada del mismo tipo en el campo de batalla cuando esta unidad es derrotada, tiene un <style=\"Stat_Chance\">{[chance]} % de probabilidad</style> de ser revivida de inmediato con un <style=\"Stat\">{[hpPct]} %</style> de su Salud inicial en el mismo hexágono o en uno adyacente al azar. No aplica si es <style=\"Overkill\">Arrasada</style>.",
+    "variables": {},
+    "constants": {
+      "chance": "35",
+      "hpPct": "25"
+    },
+    "scaled": []
+  }
+}

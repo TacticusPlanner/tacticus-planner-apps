@@ -1,0 +1,10 @@
+{
+  "SupaCyborkBody": {
+    "description": "El portador de la reliquia puede ser <style=\"Healing\">curado</style> y <style=\"Repairing\">reparado</style> y además recibe <style=\"Stat_CritDamage\">-{[critDmgReduction]} de Daño Crítico</style> por cada unidad enemiga adyacente.",
+    "variables": {
+      "critDmgReduction": [390, 411, 432, 453, 474, 495, 516, 537, 558, 579]
+    },
+    "constants": {},
+    "scaled": []
+  }
+}

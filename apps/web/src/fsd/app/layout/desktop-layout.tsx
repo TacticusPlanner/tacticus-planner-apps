@@ -2,13 +2,12 @@ import { Suspense, useEffect, useRef } from "react"
 import { Link, Outlet, useLocation } from "react-router"
 import { PanelLeftClose, PanelLeftOpen, PlusCircle } from "lucide-react"
 import { useTranslation } from "react-i18next"
-import { CommandShortcut } from "@workspace/ui/components/command"
+import { CommandShortcut } from "@workspace/ui/components/command-shortcut"
 import {
   Sidebar,
   SidebarContent,
   SidebarGroup,
   SidebarHeader,
-  SidebarInset,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -16,21 +15,29 @@ import {
   useSidebar,
 } from "@workspace/ui/components/sidebar"
 import { Spinner } from "@workspace/ui/components/spinner"
+import { PlayerDataSyncButton } from "@/widgets/account-menu"
+import { isMacPlatform } from "@/shared/lib"
 import { PageTourButton, TourButton } from "@/shared/tour"
 
-import { PlayerDataSyncButton } from "../providers/player-data-sync-button"
 import { DesktopSectionHeader } from "./desktop-section-header"
 import { DesktopSectionNavigation } from "./desktop-section-navigation"
 import { DesktopTopBar } from "./desktop-top-bar"
-import { isMacPlatform } from "./is-mac-platform"
+import { matchesNavPath } from "./find-active-child"
 import { NavLiveDot } from "./nav-live-dot"
 import type { NavItem } from "./nav-items"
 import type { QuickActionsController } from "./quick-actions"
+import { SkipLink } from "./skip-link"
+import { useFocusPageHeadingOnNavigate } from "./use-focus-page-heading"
 
 function LoadingFill() {
+  const { t } = useTranslation()
   return (
-    <div className="flex flex-1 items-center justify-center">
-      <Spinner className="size-8 text-primary" />
+    <div
+      aria-label={t("common.loading")}
+      className="flex flex-1 items-center justify-center"
+      role="status"
+    >
+      <Spinner aria-hidden="true" className="size-8 text-primary" />
     </div>
   )
 }
@@ -62,6 +69,8 @@ export function DesktopShell({
   sectionExpanded: boolean
   onSectionExpandedChange: (expanded: boolean) => void
 }) {
+  useFocusPageHeadingOnNavigate()
+
   // The expand and collapse buttons are different elements (panel vs. page header), so hand
   // focus to whichever one replaces the clicked button.
   const moveFocusToToggle = useRef(false)
@@ -103,6 +112,7 @@ export function DesktopShell({
 
   return (
     <div className="flex min-h-svh flex-col">
+      <SkipLink />
       <DesktopTopBar
         getEntryPath={getEntryPath}
         quickActions={quickActions}
@@ -120,7 +130,12 @@ export function DesktopShell({
           onCreateGoal={onCreateGoal}
           getEntryPath={getEntryPath}
         />
-        <SidebarInset>
+        {/* The sidebar inset is a plain div, not shadcn's <main>, so the section menu stays outside
+            the page's main landmark. */}
+        <div
+          className="relative flex w-full min-w-0 flex-1 flex-col bg-background"
+          data-slot="sidebar-inset"
+        >
           <div className="flex min-h-0 flex-1">
             {activeSection?.children?.length ? (
               <DesktopSectionNavigation
@@ -150,12 +165,18 @@ export function DesktopShell({
                   </p>
                 ) : null}
               </header>
-              <Suspense fallback={<LoadingFill />}>
-                <Outlet />
-              </Suspense>
+              <main
+                className="flex flex-1 flex-col outline-hidden"
+                id="main"
+                tabIndex={-1}
+              >
+                <Suspense fallback={<LoadingFill />}>
+                  <Outlet />
+                </Suspense>
+              </main>
             </div>
           </div>
-        </SidebarInset>
+        </div>
       </SidebarProvider>
     </div>
   )
@@ -282,8 +303,7 @@ function NavMenuItem({
   const { t } = useTranslation(["common", "dailies", "library"])
   const { pathname } = useLocation()
   const compact = useSidebar().state === "collapsed"
-  const isActive =
-    pathname === item.path || pathname.startsWith(item.path + "/")
+  const isActive = matchesNavPath(pathname, item.path)
 
   return (
     <SidebarMenuItem>

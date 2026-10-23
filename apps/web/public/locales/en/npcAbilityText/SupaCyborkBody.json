@@ -1,0 +1,10 @@
+{
+  "SupaCyborkBody": {
+    "description": "The relic bearer can be <style=\"Healing\">healed</style> as well as <style=\"Repairing\">repaired</style> and additionally takes <style=\"Stat_CritDamage\">-{[critDmgReduction]} Crit Damage</style> for each adjacent enemy unit.",
+    "variables": {
+      "critDmgReduction": [390, 411, 432, 453, 474, 495, 516, 537, 558, 579]
+    },
+    "constants": {},
+    "scaled": []
+  }
+}

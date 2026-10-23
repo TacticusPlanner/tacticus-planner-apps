@@ -14,12 +14,9 @@ import {
   type EstimateResourceId,
 } from "@/features/goal-farming"
 
-import type { GoalProgress } from "../../model/attainment/goal-progress"
-import {
-  blockerReasonText,
-  type GoalBlockers,
-} from "../../model/blockers/goal-blockers"
-import { useGoalCatalog } from "../../model/shared/use-goal-catalog"
+import type { GoalProgress } from "@/features/goal-planning"
+import { blockerReasonText, type GoalBlockers } from "@/features/goal-planning"
+import { useGoalCatalog } from "@/features/goal-planning"
 import { reachableCeilingLabel } from "./ceiling-marker"
 
 const VARIANT_BY_STATUS: Record<

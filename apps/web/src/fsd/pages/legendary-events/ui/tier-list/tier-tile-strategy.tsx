@@ -6,12 +6,9 @@ import { characterIcon } from "@workspace/game-catalog"
 import type { UnitId } from "@workspace/game-domain"
 import { cn } from "@workspace/ui/lib/utils"
 
-import {
-  hordeStrategy,
-  hordeSynergies,
-  useHordeModeTiers,
-  useHordeStrategyText,
-} from "@/entities/legendary-event"
+import { useHordeModeTiers } from "@/entities/legendary-event"
+import { hordeStrategy, hordeSynergies } from "../../lib/horde-strategy"
+import { useHordeStrategyText } from "../../model/use-horde-strategy-text"
 import { EntityIcon } from "@/shared/ui"
 import { useUnitName } from "@/shared/unit-name"
 

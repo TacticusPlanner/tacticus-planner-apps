@@ -30,9 +30,15 @@ vi.mock("react-router", () => ({
 const identifyUser = vi.fn()
 const clearIdentity = vi.fn()
 const captureEvent = vi.fn()
+const isReady = vi.fn(() => true)
 vi.mock("@/shared/analytics", () => ({
   AnalyticsProvider: ({ children }: { children: React.ReactNode }) => children,
-  useAnalyticsActions: () => ({ identifyUser, clearIdentity, captureEvent }),
+  useAnalyticsActions: () => ({
+    isReady: isReady(),
+    identifyUser,
+    clearIdentity,
+    captureEvent,
+  }),
 }))
 
 import { reportError } from "@/shared/lib"
@@ -68,6 +74,7 @@ afterEach(() => {
   vi.unstubAllEnvs()
   isAuthenticated.mockReturnValue(true)
   isMobile.mockReturnValue(false)
+  isReady.mockReturnValue(true)
   matches.mockReturnValue([])
 })
 
@@ -284,6 +291,34 @@ describe("PostHogProvider page-view capture", () => {
       </PostHogProvider>
     )
     expect(captureEvent).toHaveBeenCalledTimes(1)
+  })
+})
+
+describe("PostHogProvider with the SDK loading on identification", () => {
+  it("reports the current route's page_view once, when the SDK becomes ready", () => {
+    isReady.mockReturnValue(false)
+    useCurrentUserMock.mockReturnValue({
+      state: successState("analytics-id-1"),
+    })
+    matches.mockReturnValue([{ pathname: "/home", params: {} }])
+    const { rerender } = renderProvider("/home")
+    expect(captureEvent).not.toHaveBeenCalled()
+
+    isReady.mockReturnValue(true)
+    rerender(
+      <PostHogProvider routeGroup="/home">
+        <div>content</div>
+      </PostHogProvider>
+    )
+    rerender(
+      <PostHogProvider routeGroup="/home">
+        <div>content</div>
+      </PostHogProvider>
+    )
+
+    expect(captureEvent).toHaveBeenCalledExactlyOnceWith(
+      expect.objectContaining({ type: "page_view", routePattern: "/home" })
+    )
   })
 })
 

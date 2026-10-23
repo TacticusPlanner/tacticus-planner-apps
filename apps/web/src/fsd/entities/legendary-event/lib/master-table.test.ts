@@ -406,10 +406,7 @@ describe("buildMasterTable", () => {
 describe("sortMasterTable and filterMasterTableRows", () => {
   const result = buildMasterTable({
     events: [{ event: lysanderEvent }, { event: utharEvent }],
-    units: [
-      dante,
-      fixtureCharacter("ultraCalgar") as unknown as LegendaryEventUnit,
-    ],
+    units: [dante, fixtureCharacter("ultraCalgar")],
     roster,
     unitSet: "all",
     pointsMode: "all",

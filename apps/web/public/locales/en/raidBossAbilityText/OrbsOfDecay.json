@@ -1,0 +1,15 @@
+{
+  "OrbsOfDecay": {
+    "description": "The relic bearer's <style=\"NormalAttack\">normal attacks</style> deal an additional <style=\"Stat_Hits\">{[nrOfHits]}x</style> <style=\"DMG_Toxic\">{[minDmg]}-{[maxDmg]} Toxic Damage</style> to enemy units that have their <style=\"Stat_Armor\">Armour</style> reduced by {[armorReductionPct]}% or more and are also on or adjacent to the target's hex. Additionally, the target's hex is <style=\"Tile_Contamination\">Contaminated</style>.",
+    "variables": {
+      "minDmg": [685, 722, 759, 796, 833, 870, 907, 944, 981, 1018],
+      "maxDmg": [1370, 1444, 1518, 1592, 1666, 1740, 1814, 1888, 1962, 2036]
+    },
+    "constants": {
+      "nrOfHits": "2",
+      "damageProfile": "Toxic",
+      "armorReductionPct": "30"
+    },
+    "scaled": []
+  }
+}

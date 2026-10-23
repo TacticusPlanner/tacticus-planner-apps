@@ -1,0 +1,10 @@
+{
+  "GuardianConstruct": {
+    "description": "Verbündete <style=\"Rarity_Mythic\">mythische</style> <style=\"Character\">Charaktere</style>, die von <i>Nanoskarabäus-Reparaturprotokollen</i> betroffen sind, verursachen <style=\"Stat_Damage\">+{[extraDmgPct]} % Schaden</style>.",
+    "variables": {
+      "extraDmgPct": [10, 13, 16, 20]
+    },
+    "constants": {},
+    "scaled": ["extraDmgPct"]
+  }
+}

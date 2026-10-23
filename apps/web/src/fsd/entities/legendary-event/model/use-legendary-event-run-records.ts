@@ -4,7 +4,7 @@ import { useIsAuthenticated } from "@azure/msal-react"
 
 import { legendaryEventPlanQueries } from "../api/legendary-event-plan.queries"
 import type { LegendaryEventRunRecord } from "./run-record.types"
-import { useQueryReadState } from "./use-query-read-state"
+import { useQueryReadState } from "@/shared/lib"
 import type { ReadState } from "./use-read-state"
 
 /** The event's run records loaded so far, newest first (read-only history; records carry no roster),
@@ -27,6 +27,7 @@ export function useLegendaryEventRunRecords(eventId: string): {
   const records = useQueryReadState({
     data,
     isError: query.isError,
+    isSuccess: query.isSuccess,
     isFetching: query.isFetching && !query.isFetchingNextPage,
     refetch: query.refetch,
   })

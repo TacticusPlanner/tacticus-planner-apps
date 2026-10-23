@@ -20,7 +20,7 @@ import {
  *  loaded or nothing changed). */
 export type PlanMutationOutcome = "saved" | "conflict" | "error" | "skipped"
 
-export type PlanPatch = (plan: LegendaryEventPlan) => LegendaryEventPlan
+type PlanPatch = (plan: LegendaryEventPlan) => LegendaryEventPlan
 
 export interface PlanWriteOperation {
   /** Applied to the cache at once (optimistic); none for writes that wait for the server (a team
@@ -182,5 +182,3 @@ export function usePlanWriteQueue(eventId: string) {
 
   return { query, enabled: isAuthenticated, pending, enqueue }
 }
-
-export type PlanWriteQueue = ReturnType<typeof usePlanWriteQueue>

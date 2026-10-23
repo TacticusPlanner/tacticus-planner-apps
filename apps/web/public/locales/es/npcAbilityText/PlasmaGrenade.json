@@ -1,0 +1,28 @@
+{
+  "PlasmaGrenade": {
+    "description": "Arroja una granada a un objetivo dentro de {[range]} hexágonos y le inflige <style=\"DMG_Plasma\">{[minDmg]}-{[maxDmg]} de Daño de plasma</style> <style=\"Stat_Hits\">x{[nrOfHits]}</style> y <style=\"DMG_Plasma\">{[minDmg]}-{[maxDmg]} de Daño de plasma</style> <style=\"Stat_Hits\">x{[nrOfHits_2]}</style> a las unidades enemigas en los hexágonos adyacentes. Esta habilidad se beneficia de <style=\"Indirect_Fire\">Fuego indirecto</style>.\n\n{[S/AbilityDamageExplanation]}",
+    "variables": {
+      "minDmg": [
+        7, 8, 10, 11, 13, 14, 16, 17, 19, 21, 22, 24, 25, 27, 29, 30, 32, 34,
+        35, 37, 39, 42, 48, 55, 61, 67, 74, 80, 87, 93, 99, 106, 112, 118, 125,
+        131, 137, 144, 150, 159, 172, 185, 199, 215, 244, 273, 301, 330, 359,
+        388, 392, 397, 403, 410, 417, 424, 431, 439, 448, 457, 467, 478, 488,
+        499, 509
+      ],
+      "maxDmg": [
+        10, 12, 14, 16, 18, 20, 23, 25, 27, 30, 32, 34, 36, 39, 41, 43, 46, 48,
+        50, 53, 56, 60, 69, 78, 87, 96, 105, 115, 124, 133, 142, 151, 160, 169,
+        178, 187, 196, 206, 215, 227, 245, 264, 285, 307, 348, 390, 431, 472,
+        513, 554, 560, 568, 575, 585, 595, 605, 615, 628, 640, 653, 668, 683,
+        698, 713, 728
+      ]
+    },
+    "constants": {
+      "damageProfile": "Plasma",
+      "range": "2",
+      "nrOfHits": "2",
+      "nrOfHits_2": "1"
+    },
+    "scaled": ["minDmg", "maxDmg"]
+  }
+}

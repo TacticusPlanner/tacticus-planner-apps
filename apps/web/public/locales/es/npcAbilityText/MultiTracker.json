@@ -1,0 +1,8 @@
+{
+  "MultiTracker": {
+    "description": "Todas las unidades enemigas que no se movieron durante su turno reciben una <style=\"Debuff_Markerlight\">Luz de señalización</style>.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

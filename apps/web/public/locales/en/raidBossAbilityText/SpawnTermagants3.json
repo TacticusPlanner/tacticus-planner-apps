@@ -1,0 +1,34 @@
+{
+  "SpawnTermagants3": {
+    "description": "Summons 1-{[maxSummons]} <style=\"Summon\">Termagants</style>, starting with the hex in front of the Tervigon and then propagating to free hexes from there.\n\nTermagant’s stats:\n<style=\"Stat_Health\">{[summonHp]} Health</style>\n<style=\"Stat_Damage\">{[summonDmg]} Damage</style>\n<style=\"Stat_Armor\">{[summonArmor]} Armour</style>",
+    "variables": {
+      "summonHp": [
+        35, 42, 49, 56, 63, 71, 79, 87, 95, 103, 111, 119, 127, 135, 144, 152,
+        160, 168, 176, 184, 195, 210, 242, 273, 305, 337, 369, 401, 433, 464,
+        496, 528, 560, 592, 624, 656, 687, 719, 751, 796, 859, 925, 996, 1076,
+        1219, 1363, 1507, 1651, 1795, 1939, 1960, 1986, 2013, 2048, 2083, 2118,
+        2153, 2196, 2240, 2284, 2336, 2389, 2441, 2494, 2546
+      ],
+      "summonDmg": [
+        20, 24, 28, 32, 36, 41, 45, 50, 54, 59, 64, 68, 73, 77, 82, 87, 91, 96,
+        100, 105, 111, 120, 138, 156, 174, 193, 211, 229, 247, 265, 284, 302,
+        320, 338, 356, 375, 393, 411, 429, 455, 491, 529, 569, 615, 697, 779,
+        861, 943, 1026, 1109, 1120, 1135, 1150, 1170, 1190, 1210, 1230, 1255,
+        1280, 1305, 1335, 1365, 1395, 1425, 1455
+      ],
+      "summonArmor": [
+        6, 7, 8, 10, 11, 12, 14, 15, 16, 18, 19, 20, 22, 23, 25, 26, 27, 29, 30,
+        32, 33, 36, 41, 47, 52, 58, 63, 69, 74, 80, 85, 91, 96, 101, 107, 112,
+        118, 123, 129, 136, 147, 159, 171, 184, 209, 234, 258, 283, 308, 333,
+        336, 341, 345, 351, 357, 363, 369, 377, 384, 392, 401, 410, 419, 428,
+        437
+      ]
+    },
+    "constants": {
+      "maxSummons": "6",
+      "unitId": "GuildBoss1Npc3TyranTermagantGorgon",
+      "cooldownTurns": "2"
+    },
+    "scaled": ["summonHp", "summonDmg", "summonArmor"]
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "ScarabSummon": {
+    "description": "Summons another <style=\"Faction_Necrons\">Scarab Swarm</style> in a free adjacent hex, which then immediately takes a turn.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

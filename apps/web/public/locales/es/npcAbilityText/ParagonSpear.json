@@ -1,0 +1,15 @@
+{
+  "ParagonSpear": {
+    "description": "Todos los impactos de <style=\"Faction_Custodes\">Tyrith</style> que sean <style=\"Stat_CritDamage\">Golpes Críticos</style> infligen el máximo posible de <style=\"Stat_Damage\">Daño</style>. Al inicio del turno de Tyrith, ataca a un enemigo al azar dentro de un alcance de {[range]} y le inflige <style=\"DMG_Bolter\">{[minDmg]}-{[maxDmg]} de Daño de bólter</style> <style=\"Stat_Hits\">x{[nrOfHits]}</style>. Si hay un enemigo adyacente a ella, este alcance se reduce a 1.",
+    "variables": {
+      "minDmg": [2155, 2271, 2388, 2504, 2620, 2737, 2853, 2969, 3086, 3202],
+      "maxDmg": [2940, 3099, 3257, 3416, 3575, 3733, 3892, 4051, 4210, 4368]
+    },
+    "constants": {
+      "nrOfHits": "2",
+      "damageProfile": "Bolter",
+      "range": "2"
+    },
+    "scaled": []
+  }
+}

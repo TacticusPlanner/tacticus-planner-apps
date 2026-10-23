@@ -1,0 +1,10 @@
+{
+  "HailOfLivingAmmunition": {
+    "description": "Fernkampfangriffe dieser Einheit verursachen für jeden angrenzenden Termaganten <style=\"Stat_Hits\">+{[extraHit]} Treffer</style>.",
+    "variables": {},
+    "constants": {
+      "extraHit": "1"
+    },
+    "scaled": []
+  }
+}

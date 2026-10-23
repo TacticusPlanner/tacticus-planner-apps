@@ -1,6 +1,5 @@
 import { useMemo, useState } from "react"
 import { useIsAuthenticated } from "@azure/msal-react"
-import { useLiveQuery } from "dexie-react-hooks"
 import { useTranslation } from "react-i18next"
 import { Accordion } from "@workspace/ui/components/accordion"
 import { Alert, AlertDescription } from "@workspace/ui/components/alert"
@@ -26,7 +25,7 @@ import {
   buildEvents,
   normalizeOverrides,
 } from "../model/campaign-events.model"
-import { loadCampaignEventsData } from "../model/load-campaign-events-data"
+import { useCampaignEventsData } from "../model/use-campaign-events-data"
 import { useCampaignEventsTutorial } from "./campaign-events-page.tutorial"
 import { CurrentEventCard, EventListItem } from "./event-card"
 import type { PatchTrack } from "./event-track-editor"
@@ -54,8 +53,8 @@ const toPayload = (
 export function CampaignEventsPage() {
   const { t } = useTranslation()
   const isAuthenticated = useIsAuthenticated()
-  const loaded = useLiveQuery(loadCampaignEventsData, [])
-  const catalogData = loaded?.status === "ready" ? loaded.data : undefined
+  const loaded = useCampaignEventsData()
+  const catalogData = loaded.status === "ready" ? loaded.data : undefined
   const overrides = useRevisionedDraft({
     query: campaignEventProgressQueries.current(),
     enabled: isAuthenticated,
@@ -103,7 +102,7 @@ export function CampaignEventsPage() {
   // after a 409 failing) keeps the editors and any unsaved draft; save() reports it inline.
   const overridesUnavailable =
     overrides.query.isError && overrides.query.data === undefined
-  if (overridesUnavailable || loaded?.status === "error") return <LoadError />
+  if (overridesUnavailable || loaded.status === "error") return <LoadError />
   if (!catalogData || overrides.draft === undefined) return <Loading />
 
   const patch: PatchTrack = (groupId, type, value) => {

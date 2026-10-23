@@ -97,47 +97,52 @@ An existing archived membership SHALL remain visible and marked Archived, but ar
 
 ### Requirement: In-flight goal-type uniqueness is scoped to a project
 
-Within one project, at most one Active/Paused non-Rank goal SHALL exist per `(entityType, entityId, goalType)`. For Rank, at most one Active/Paused goal SHALL exist per `(entityType, entityId, normalizedEndTarget)`; different Rank targets MAY coexist. Completed/Archived goals SHALL not occupy a slot. Different projects MAY contain different active instances.
+Across the account, at most one Active/Paused non-Rank goal SHALL exist per `(entityType, entityId, goalType)`. For Rank, at most one Active/Paused goal SHALL exist per `(entityType, entityId, normalizedEndTarget)`; different Rank targets MAY coexist. Completed/Archived goals SHALL not occupy a slot. Project membership SHALL NOT affect a slot: one in-flight goal MAY belong to any number of projects, and adding a goal to or removing it from a project SHALL never be rejected for a slot.
 
 #### Scenario: Different projects have different targets
 
-- **GIVEN** project A contains an Active Ragnar Rank goal
-- **WHEN** a different Ragnar Rank goal is created only in B
-- **THEN** creation succeeds
+- **GIVEN** project A contains an Active Ragnar Rank Gold1 goal
+- **WHEN** the user wants Ragnar Gold1 in project B
+- **THEN** the existing goal is added to B; creating another in-flight Ragnar Rank Gold1 goal only in B is rejected and identifies the existing goal
 
 #### Scenario: Same project rejects a second in-flight instance
 
-- **GIVEN** A contains an Active or Paused Ragnar Rank goal targeting Gold1
-- **WHEN** another in-flight Ragnar Rank goal with the same normalized Gold1 target is created in or added to A
-- **THEN** the operation is rejected and identifies A and its existing goal
+- **GIVEN** an Active or Paused Ragnar Rank goal targeting Gold1 exists in any project
+- **WHEN** another in-flight Ragnar Rank goal with the same normalized Gold1 target is created with any project selection
+- **THEN** the operation is rejected and the existing goal is identified
 
 #### Scenario: Historical instance does not conflict
 
-- **GIVEN** A contains only Completed/Archived Ragnar Rank Gold1 goals
-- **WHEN** a new Ragnar Rank Gold1 goal is created in A
+- **GIVEN** the account has only Completed/Archived Ragnar Rank Gold1 goals
+- **WHEN** a new Ragnar Rank Gold1 goal is created
 - **THEN** creation succeeds
 
 #### Scenario: Shared canonical goal occupies every selected project
 
 - **GIVEN** one Active Ragnar Rank Gold1 goal belongs to A and B
-- **WHEN** another Ragnar Rank Gold1 goal is added to B
-- **THEN** the operation is rejected for B
+- **WHEN** it is added to project C or removed from A
+- **THEN** the change is accepted without any slot check (subject only to the last-membership rule)
 
 #### Scenario: Distinct Rank target in one project
 
-- **GIVEN** A contains Ragnar Silver3
-- **WHEN** Ragnar Gold1 is added to A
-- **THEN** the membership is allowed
+- **GIVEN** an Active Ragnar Silver3 goal
+- **WHEN** a Ragnar Gold1 goal is created, in the same project or another
+- **THEN** both are accepted
 
 ### Requirement: Project conflicts are resolved in the membership context
 
-Goal creation/editing SHALL evaluate target-specific Rank conflicts and goal-type non-Rank conflicts against selected projects rather than globally disabling a goal type for the unit. It SHALL identify each conflicting project and the existing goal, and let the user remove that membership or use the existing goal.
+Goal creation/editing SHALL evaluate target-specific Rank conflicts and goal-type non-Rank conflicts against the account's in-flight goals, read from the goals list the page already holds, rather than globally disabling a goal type for the unit or fetching per-project member lists. It SHALL identify the existing goal, and let the user use the existing goal (add it to the selected projects) instead of creating a duplicate.
 
 #### Scenario: Only one selected project conflicts
 
-- **GIVEN** Rank Gold1 is occupied in A but available in B
-- **WHEN** both projects are selected for a new Ragnar Gold1 goal
-- **THEN** A and its existing Gold1 goal are identified as conflicting while B is available
+- **GIVEN** an in-flight Ragnar Gold1 goal exists in project A only
+- **WHEN** the user starts a new Ragnar Gold1 goal with projects A and B selected
+- **THEN** the existing goal is identified as conflicting for the whole draft (not per project) and the user can add it to B instead of creating another
+
+#### Scenario: No request is issued for the check
+
+- **WHEN** the conflict check runs for a goal draft
+- **THEN** no per-project member list is requested; the check uses the loaded goals list
 
 ### Requirement: Independent equipment goals are unsupported
 
@@ -184,7 +189,7 @@ Wherever a goal is presented as a member of a specific project, the system SHALL
 
 ### Requirement: The goal row's project-removal action offers a chosen destination when relocation is needed
 
-When a goal's viewed project is its only membership, the row's project-removal action ("Move to project") SHALL let the user choose the destination rather than relocating automatically: it SHALL list the account's other existing projects, and SHALL offer creating a new project as an additional option. Selecting an existing project SHALL move the goal there, subject to the occupied-slot conflict check described in "Relocation reports an occupied destination slot before removing". Choosing to create a new project SHALL open project creation; once the new project is saved, the goal SHALL move into it.
+When a goal's viewed project is its only membership, the row's project-removal action ("Move to project") SHALL let the user choose the destination rather than relocating automatically: it SHALL list the account's other existing projects, and SHALL offer creating a new project as an additional option. Selecting an existing project SHALL move the goal there; the move is never rejected for an occupied slot (see "In-flight goal-type uniqueness is scoped to a project"). Choosing to create a new project SHALL open project creation; once the new project is saved, the goal SHALL move into it.
 
 When the goal's viewed project is not its only membership, the row's project-removal action SHALL remain a plain removal with no destination to choose, leaving the goal a member of its other project(s) — unchanged from today's behavior.
 
@@ -217,34 +222,6 @@ When a goal's viewed project is its only membership and the account has no other
 - **GIVEN** the account's only project is the goal's only membership
 - **WHEN** the user activates "Move to project" on that row
 - **THEN** project creation opens directly, with no picker step, no disabled control, and no explanatory tooltip
-
-### Requirement: Relocation reports an occupied destination slot before removing
-
-Relocating an Active/Paused goal SHALL check the destination's non-Rank goal-type or Rank normalized-target slot before removing its last membership. A conflict SHALL name the destination and existing goal/target and leave memberships unchanged. The destination remains the Default project in the membership editor or the user's chosen project for the row action.
-
-#### Scenario: Occupied destination slot is explained
-
-- **GIVEN** a goal's only membership is A and the destination has an Active goal with the same non-Rank type or exact Rank target
-- **WHEN** moving it from A is attempted
-- **THEN** the conflict names the destination and existing goal/target, and the goal stays in A
-
-#### Scenario: Historical goal in the destination does not conflict
-
-- **GIVEN** the destination has only Completed/Archived goals for that slot
-- **WHEN** a goal's last membership is removed to it
-- **THEN** relocation succeeds
-
-#### Scenario: Conflict arising after the check is still reported
-
-- **GIVEN** the destination slot becomes occupied between preview and save
-- **WHEN** removal is submitted
-- **THEN** the same conflict is shown and memberships remain unchanged
-
-#### Scenario: A goal that occupies no slot relocates regardless of the destination
-
-- **GIVEN** a Completed/Archived goal in A whose destination has an Active goal in the same slot
-- **WHEN** removal from A is attempted
-- **THEN** relocation succeeds because the moved goal occupies no in-flight slot
 
 ### Requirement: Membership removal submits the goal's current memberships
 
@@ -379,7 +356,7 @@ Creating a goal SHALL produce a goal with the same status whichever projects are
 
 ### Requirement: The scoped Goals page's row menu hosts project removal
 
-When the Goals page is scoped to a project, each goal row's "⋯" menu, on desktop and mobile alike, SHALL offer that project's removal action between Pause/Resume and Delete: "Remove from this project" when the goal belongs to another project as well, and "Move to project" when the scoped project is its only one (see "The goal row's project-removal action offers a chosen destination when relocation is needed"). The item SHALL be disabled while the account's projects or the goal's memberships are not loaded; a goal's memberships count as loaded only once every project's member list has loaded. Without a project scope the menu SHALL offer no project-removal item. While scoped, the row's delete confirmation SHALL name removal from the scoped project as the alternative.
+When the Goals page is scoped to a project, each goal row's "⋯" menu, on desktop and mobile alike, SHALL offer that project's removal action between Pause/Resume and Delete: "Remove from this project" when the goal belongs to another project as well, and "Move to project" when the scoped project is its only one (see "The goal row's project-removal action offers a chosen destination when relocation is needed"). The goal's memberships are known from the goals list itself; the item SHALL be disabled only while the account's projects are not loaded. Without a project scope the menu SHALL offer no project-removal item. While scoped, the row's delete confirmation SHALL name removal from the scoped project as the alternative.
 
 #### Scenario: Scoped row menu offers removal
 
@@ -401,9 +378,9 @@ When the Goals page is scoped to a project, each goal row's "⋯" menu, on deskt
 
 #### Scenario: Partly loaded memberships keep removal disabled
 
-- **GIVEN** the Goals page is scoped to project A, a goal belongs to A and B, and B's member list is still loading
-- **WHEN** the goal's row menu is opened
-- **THEN** the project-removal item is disabled, so the goal is not offered a move it does not need
+- **GIVEN** the Goals page is scoped to project A, the goals have loaded and the project list is still loading
+- **WHEN** a goal's row menu is opened
+- **THEN** the project-removal item is disabled until the project list loads, and is then enabled at once; no member-list request is ever issued
 
 #### Scenario: Unscoped menu has no removal
 

@@ -1,7 +1,8 @@
-import { useState } from "react"
+import { Suspense, useState } from "react"
 import { Outlet } from "react-router"
 import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
+import { Spinner } from "@workspace/ui/components/spinner"
 
 import { useMsal } from "@azure/msal-react"
 
@@ -65,7 +66,19 @@ export function AccountSetupLayout() {
           </Button>
         </header>
         <main className="flex-1 pb-[env(safe-area-inset-bottom)]">
-          <Outlet />
+          <Suspense
+            fallback={
+              <div
+                aria-label={t("common.loading")}
+                className="flex justify-center py-12"
+                role="status"
+              >
+                <Spinner aria-hidden="true" className="size-8 text-primary" />
+              </div>
+            }
+          >
+            <Outlet />
+          </Suspense>
         </main>
       </div>
     </PostHogProvider>

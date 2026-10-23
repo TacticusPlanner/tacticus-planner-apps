@@ -25,6 +25,11 @@ import { AuthError, InteractionStatus } from "@azure/msal-browser"
 import { useIsAuthenticated, useMsal } from "@azure/msal-react"
 
 import {
+  AccountAvatar,
+  AccountCard,
+  GuestAccountMenu,
+} from "@/widgets/account-menu"
+import {
   ManageAccountDialog,
   type ManageAccountTab,
 } from "@/features/account-management"
@@ -37,9 +42,6 @@ import {
 } from "@/shared/auth"
 import { TourButton, useTourControlledPopoverOpen } from "@/shared/tour"
 
-import { AccountAvatar } from "./account-avatar"
-import { AccountCard } from "./account-card"
-import { GuestAccountMenu } from "./guest-account-menu"
 import { useUserJot } from "./userjot-provider"
 
 type AuthOperation = "api-access" | "sign-in" | "sign-out"
@@ -80,6 +82,10 @@ export function AuthControl() {
   const account = instance.getActiveAccount() ?? accounts[0]
   const { state: accountState } = useCurrentUser()
   const { open: openUserJot, status: feedbackStatus } = useUserJot()
+  const feedbackUnavailable =
+    feedbackStatus === "failed"
+      ? t("nav.quickActions.feedbackUnavailable")
+      : undefined
   const navigate = useNavigate()
   const [isManageAccountOpen, setIsManageAccountOpen] = useState(false)
   const [manageAccountTab, setManageAccountTab] =
@@ -96,6 +102,7 @@ export function AuthControl() {
   }
 
   const handleSignOut = () => {
+    if (!account) return
     void signOut(instance, account.homeAccountId).catch((error: unknown) => {
       logAuthenticationError("sign-out", error)
       toast.error(t("auth.error"))
@@ -121,8 +128,10 @@ export function AuthControl() {
   if (!isAuthenticated || !account) {
     return (
       <GuestAccountMenu
+        changelogUnavailable={feedbackUnavailable}
         checkingSignIn={isCheckingSilentSignIn}
         disabled={isInteractionInProgress}
+        onChangelog={() => openUserJot({ to: "updates" })}
         onOpenChange={setMenuOpen}
         onSignIn={handleSignIn}
         open={menuOpen}
@@ -174,11 +183,7 @@ export function AuthControl() {
         setMenuOpen(false)
         openUserJot({ to: "updates" })
       }}
-      feedbackUnavailable={
-        feedbackStatus === "failed"
-          ? t("nav.quickActions.feedbackUnavailable")
-          : undefined
-      }
+      feedbackUnavailable={feedbackUnavailable}
       onImportV1={goToV1Import}
       onOpenAccountSettings={() => openManageAccount("integration")}
       onExternalLink={() => setMenuOpen(false)}
@@ -266,6 +271,7 @@ export function AuthControl() {
                 <div
                   className="flex items-center gap-1 text-xs"
                   data-testid="auth-account-loading"
+                  role="status"
                 >
                   <LoaderCircle
                     className="size-3 animate-spin"

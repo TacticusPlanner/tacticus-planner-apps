@@ -1,7 +1,6 @@
-import { useEffect, useState } from "react"
 import userEvent from "@testing-library/user-event"
 import type { i18n as I18n } from "i18next"
-import { beforeAll, describe, expect, it, vi } from "vitest"
+import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
 
 import {
   buildLanePointsModel,
@@ -19,6 +18,7 @@ import {
 import { utharEvent } from "@/test/fixtures/legendary-events"
 import { createTestI18n, i18nWrapper } from "@/test/i18n"
 import { act, fireEvent, render, screen, within } from "@/test/render"
+import { seedGameCatalog } from "@/test/seed"
 
 import { TeamCard } from "./team-card"
 import {
@@ -27,21 +27,9 @@ import {
   type TeamCardViewModel,
 } from "./teams.view-model"
 
-vi.mock("dexie-react-hooks", () => ({
-  useLiveQuery: <T,>(querier: () => Promise<T>) => {
-    const [value, setValue] = useState<T>()
-    useEffect(() => {
-      void querier().then(setValue)
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
-    return value
-  },
-}))
-vi.mock("@workspace/game-catalog/queries", () => ({
-  getCharactersMap: async () =>
-    new Map(Object.values(teamUnits).map((unit) => [unit.id, unit])),
-  getMowsMap: async () => new Map(),
-}))
+beforeEach(async () => {
+  await seedGameCatalog({ characters: Object.values(teamUnits) })
+})
 
 let i18n: I18n
 
@@ -96,7 +84,7 @@ function renderEstimatedCard(
   value: LegendaryEventTeam,
   estimate: ClearEstimate,
   {
-    run = 1 as 1 | 2,
+    run = 1,
     roster = ownedRoster(value.memberUnitIds),
   }: { run?: 1 | 2; roster?: LegendaryEventRosterUnit[] } = {}
 ) {
@@ -421,7 +409,9 @@ describe("TeamCard", () => {
           "number-stepper-increase"
         )
       )
-      act(() => vi.advanceTimersByTime(400))
+      act(() => {
+        vi.advanceTimersByTime(400)
+      })
       expect(cardActions.onDepthChange).toHaveBeenCalledWith(1, NO_ESTIMATE)
     } finally {
       vi.useRealTimers()
@@ -440,9 +430,13 @@ describe("TeamCard", () => {
       expect(within(stepper).getByTestId("number-stepper-input")).toHaveValue(
         10
       )
-      act(() => vi.advanceTimersByTime(399))
+      act(() => {
+        vi.advanceTimersByTime(399)
+      })
       expect(cardActions.onDepthChange).not.toHaveBeenCalled()
-      act(() => vi.advanceTimersByTime(1))
+      act(() => {
+        vi.advanceTimersByTime(1)
+      })
       expect(cardActions.onDepthChange).toHaveBeenCalledTimes(1)
       expect(cardActions.onDepthChange).toHaveBeenCalledWith(10, NO_ESTIMATE)
     } finally {
@@ -483,7 +477,9 @@ describe("TeamCard", () => {
       )
       expect(stepperInput()).toHaveValue(7)
       expect(depthField()).not.toHaveAttribute("data-estimated")
-      act(() => vi.advanceTimersByTime(400))
+      act(() => {
+        vi.advanceTimersByTime(400)
+      })
       expect(cardActions.onDepthChange).toHaveBeenCalledWith(7, {
         estimate: 6,
         fromEstimate: true,
@@ -514,7 +510,9 @@ describe("TeamCard", () => {
       fireEvent.click(screen.getByTestId("team-card-depth-use-estimate"))
       expect(stepperInput()).toHaveValue(6)
       expect(depthField()).toHaveAttribute("data-estimated", "true")
-      act(() => vi.advanceTimersByTime(400))
+      act(() => {
+        vi.advanceTimersByTime(400)
+      })
       expect(cardActions.onUseEstimate).toHaveBeenCalledWith(6)
       expect(cardActions.onDepthChange).not.toHaveBeenCalled()
     } finally {

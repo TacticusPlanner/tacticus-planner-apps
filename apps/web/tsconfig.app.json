@@ -22,6 +22,7 @@
     "noUnusedParameters": true,
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true,
     "paths": {
       "@/app": ["./src/fsd/app/index.tsx"],
       "@/app/*": ["./src/fsd/app/*"],
@@ -30,7 +31,10 @@
       "@/features/*": ["./src/fsd/features/*"],
       "@/entities/*": ["./src/fsd/entities/*"],
       "@/shared/*": ["./src/fsd/shared/*"],
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@workspace/ui/components/*": ["../../packages/ui/src/components/*"],
+      "@workspace/ui/hooks/*": ["../../packages/ui/src/hooks/*"],
+      "@workspace/ui/lib/*": ["../../packages/ui/src/lib/*"]
     }
   },
   "include": ["src"]

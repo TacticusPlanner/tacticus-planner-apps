@@ -1,0 +1,26 @@
+{
+  "ThunderousAssault": {
+    "description": "Inflige <style=\"DMG_Power\">{[minDmg]}-{[maxDmg]} de Daño de poder</style> <style=\"Stat_Hits\">x{[nrOfHits]}</style> a un enemigo adyacente y lo <style=\"Displacement\">empuja</style> un hexágono hacia atrás. El objetivo queda <style=\"Debuff_Stunned\">Aturdido</style> por 1 ronda. Luego, el <style=\"Faction_BlackTemplars\">Hermano de Armas Godswyl</style> se mueve al hexágono desocupado si es posible. Los enemigos derrotados por este ataque siempre son <style=\"Obliterated\">Arrasados</style>.",
+    "variables": {
+      "minDmg": [
+        60, 72, 84, 96, 108, 122, 136, 149, 163, 177, 191, 205, 218, 232, 246,
+        260, 274, 287, 301, 315, 334, 359, 414, 469, 523, 578, 632, 687, 742,
+        796, 851, 905, 960, 1015, 1069, 1124, 1178, 1233, 1288, 1364, 1472,
+        1586, 1708, 1844, 2090, 2337, 2584, 2830, 3077, 3324, 3360, 3405, 3450,
+        3510, 3570, 3630, 3690, 3765, 3840, 3915, 4005, 4095, 4185, 4275, 4365
+      ],
+      "maxDmg": [
+        65, 78, 91, 104, 117, 132, 147, 162, 177, 192, 207, 222, 237, 252, 267,
+        281, 296, 311, 326, 341, 361, 389, 449, 508, 567, 626, 685, 744, 803,
+        863, 922, 981, 1040, 1099, 1158, 1217, 1277, 1336, 1395, 1478, 1595,
+        1718, 1851, 1997, 2265, 2532, 2799, 3066, 3333, 3600, 3640, 3689, 3738,
+        3803, 3868, 3933, 3998, 4079, 4160, 4241, 4339, 4436, 4534, 4631, 4729
+      ]
+    },
+    "constants": {
+      "damageProfile": "Power",
+      "nrOfHits": "1"
+    },
+    "scaled": ["minDmg", "maxDmg"]
+  }
+}

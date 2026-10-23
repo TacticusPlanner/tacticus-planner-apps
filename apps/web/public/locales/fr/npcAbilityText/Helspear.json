@@ -1,0 +1,11 @@
+{
+  "Helspear": {
+    "description": "<i>Héraut de l’Apocalypse</i> applique toujours <style=\"Tile_DespoiledGround\">Terrain Souillé</style> aux hexagones des ennemis affectés, et la prochaine attaque contre les ennemis affectés ignore également <style=\"Stat_Armor\">{[armorIgnored]} Armure</style>. Après que <i>Héraut de l’Apocalypse</i> a été utilisé et que <style=\"Faction_BlackLegion\">Haarken</style> a vaincu <style=\"STAT\">{[nrOfUnits]}</style> unités ennemies, il peut utiliser à nouveau la capacité.",
+    "variables": {
+      "armorIgnored": [685, 722, 759, 796, 833, 870, 907, 944, 981, 1018],
+      "nrOfUnits": [8, 8, 7, 7, 6, 6, 5, 5, 4, 4]
+    },
+    "constants": {},
+    "scaled": []
+  }
+}

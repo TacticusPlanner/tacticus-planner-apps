@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from "vitest"
 
 import { render, screen } from "@/test/render"
 
-import type { HreTeam } from "../../model/hre-team-recommendations"
+import type { HreTeam } from "@/features/team-recommendations"
 import { HreTeamCard } from "./hre-team-card"
 
 vi.mock("react-i18next", () => ({

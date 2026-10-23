@@ -1,0 +1,10 @@
+{
+  "MoreGitzOverEre": {
+    "description": "Enemies that are adjacent to a friendly <style=\"Faction_Orks\">Squig</style> or adjacent to two or more friendly <style=\"Rarity_Mythic\">Mythic</style> <style=\"Character\">characters</style> take <style=\"Stat_Damage\">+{[extraDmgPct]}% Damage</style> from <style=\"NormalAttack\">normal melee attacks</style> by <style=\"Rarity_Mythic\">Mythic</style> characters.",
+    "variables": {
+      "extraDmgPct": [10, 13, 16, 20]
+    },
+    "constants": {},
+    "scaled": ["extraDmgPct"]
+  }
+}

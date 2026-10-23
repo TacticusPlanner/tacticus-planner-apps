@@ -29,7 +29,7 @@ describe("Campaign Events translations", () => {
       ["es", es],
       ["fr", fr],
     ])("keeps %s aligned with English keys and placeholders", (_l, locale) => {
-      const translated = new Map(leaves(pick(locale as typeof en)))
+      const translated = new Map(leaves(pick(locale)))
       expect([...translated.keys()].sort()).toEqual([...english.keys()].sort())
       for (const [key, text] of translated) {
         expect(placeholders(text), key).toEqual(placeholders(english.get(key)!))
@@ -41,7 +41,7 @@ describe("Campaign Events translations", () => {
       ["es", es],
       ["fr", fr],
     ])("actually translates %s rather than copying English", (_l, locale) => {
-      const translated = leaves(pick(locale as typeof en))
+      const translated = leaves(pick(locale))
       const copied = translated.filter(
         ([key, text]) => english.get(key) === text
       )

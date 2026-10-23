@@ -1,0 +1,10 @@
+{
+  "TalismanOfRage": {
+    "description": "Chaque fois que le porteur de relique élimine un ennemi avec une attaque au corps à corps, celle-ci compte deux fois pour les <style=\"BlessingsOfKhorne\">bénédictions de Khorne</style>. Le porteur de relique subit <style=\"Stat_CritDamage\">-{[critDmgReduction]} dégâts critiques</style> pour chaque niveau de <style=\"BlessingsOfKhorne\">bénédictions de Khorne</style>.",
+    "variables": {
+      "critDmgReduction": [295, 311, 327, 343, 359, 375, 391, 406, 422, 438]
+    },
+    "constants": {},
+    "scaled": []
+  }
+}

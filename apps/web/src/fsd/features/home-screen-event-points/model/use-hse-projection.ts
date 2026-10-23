@@ -1,14 +1,16 @@
-import { useLiveQuery } from "dexie-react-hooks"
-import { hasBlueStarUnit } from "@workspace/game-catalog"
-import { getEventDefinitions } from "@workspace/game-catalog/queries"
-import { progressionStarsIndex, type Progression } from "@workspace/game-domain"
-import { getPlayerDataMetadata } from "@workspace/player-data"
+import { useCallback, useMemo } from "react"
 import {
-  getLiveProgress,
-  getPlayerCharacters,
-  getPlayerDetails,
-  getPlayerMows,
-} from "@workspace/player-data/queries"
+  hasBlueStarUnit,
+  type EventDefinitionStorageModel,
+} from "@workspace/game-catalog"
+import { progressionStarsIndex, type Progression } from "@workspace/game-domain"
+import {
+  getPlayerDataMetadata,
+  type PlayerDataChunkDto,
+} from "@workspace/player-data"
+
+import { combineReadStates, useReadState } from "@/shared/lib"
+import { useCatalogDataset, usePlayerChunk } from "@/shared/local-data"
 
 import {
   buildHseEventPointsState,
@@ -19,27 +21,6 @@ import {
 } from "./hse-event-points"
 import { useHseProjectionInputs } from "./use-hse-projection-inputs"
 
-// `useLiveQuery` has no error channel (a rejected querier throws to the error boundary), so each
-// querier resolves a tagged result instead, like `use-active-home-screen-event.ts`.
-// The read carries the definition it was made for: `useLiveQuery` keeps its last value while the
-// deps change, so a read for the previously selected event must not show under the new one.
-async function readCatalog(
-  definitionId: string
-): Promise<{ definitionId: string; read: HseCatalogRead }> {
-  try {
-    const definitions = await getEventDefinitions()
-    const definition = definitions.find(
-      (candidate) => candidate.id === definitionId
-    )
-    return {
-      definitionId,
-      read: { status: "ready", config: definition?.config ?? null },
-    }
-  } catch {
-    return { definitionId, read: { status: "error" } }
-  }
-}
-
 const rosterStars = (
   units: readonly { unitId: string; progressionIndex: Progression }[]
 ) =>
@@ -48,37 +29,18 @@ const rosterStars = (
     stars: progressionStarsIndex(unit.progressionIndex),
   }))
 
-async function readPlayer(): Promise<HsePlayerRead> {
-  try {
-    const [details, characters, mows, liveProgress, metadata] =
-      await Promise.all([
-        getPlayerDetails(),
-        getPlayerCharacters(),
-        getPlayerMows(),
-        getLiveProgress(),
-        getPlayerDataMetadata(),
-      ])
-    const tokens = liveProgress?.gameModeTokens
-    const observedAt = metadata.get("live-progress")?.updatedAt
-    return {
-      status: "ready",
-      player: {
-        powerLevel: details?.powerLevel ?? 0,
-        hasBlueStarUnit: hasBlueStarUnit([
-          ...rosterStars(characters ?? []),
-          ...rosterStars(mows ?? []),
-        ]),
-      },
-      buckets: {
-        Arena: tokens?.arena ?? null,
-        Onslaught: tokens?.onslaught ?? null,
-        SalvageRun: tokens?.salvageRun ?? null,
-      },
-      observedAtMs: observedAt ? Date.parse(observedAt) : null,
-    }
-  } catch {
-    return { status: "error" }
-  }
+const toPowerLevel = (details: PlayerDataChunkDto<"player-details"> | null) =>
+  details?.powerLevel ?? 0
+
+const toStars = (
+  units: PlayerDataChunkDto<"characters"> | PlayerDataChunkDto<"mows"> | null
+) => rosterStars(units ?? [])
+
+const toTokens = (liveProgress: PlayerDataChunkDto<"live-progress"> | null) =>
+  liveProgress?.gameModeTokens
+
+async function readLiveProgressObservedAt() {
+  return (await getPlayerDataMetadata()).get("live-progress")?.updatedAt ?? null
 }
 
 /**
@@ -90,15 +52,53 @@ export function useHseProjection(
   instance: HseInstance | null
 ): HseEventPointsState {
   const definitionId = instance?.entry.definitionId ?? ""
-  // No instance, no catalog read.
-  const catalogRead = useLiveQuery(
-    () => (definitionId ? readCatalog(definitionId) : null),
+  const selectConfig = useCallback(
+    (definitions: EventDefinitionStorageModel[]) =>
+      definitions.find((candidate) => candidate.id === definitionId)?.config ??
+      null,
     [definitionId]
   )
-  // A read for another definition (the previous selection) is still loading for this one.
-  const catalog =
-    catalogRead?.definitionId === definitionId ? catalogRead.read : undefined
-  const player = useLiveQuery(readPlayer, [])
+  const configRead = useCatalogDataset("event-definitions", selectConfig)
+  const catalog = useMemo((): HseCatalogRead | undefined => {
+    if (configRead.status === "loading") return undefined
+    return configRead.status === "ready"
+      ? { status: "ready", config: configRead.data }
+      : { status: "error" }
+  }, [configRead])
+
+  const powerLevel = usePlayerChunk("player-details", toPowerLevel)
+  const characters = usePlayerChunk("characters", toStars)
+  const mows = usePlayerChunk("mows", toStars)
+  const tokens = usePlayerChunk("live-progress", toTokens)
+  // When the buckets were synced: the chunk's metadata, not its payload.
+  const observedAt = useReadState(
+    "live-progress-observed-at",
+    readLiveProgressObservedAt,
+    []
+  )
+  const playerRead = useMemo(
+    () => combineReadStates(powerLevel, characters, mows, tokens, observedAt),
+    [powerLevel, characters, mows, tokens, observedAt]
+  )
+  const player = useMemo((): HsePlayerRead | undefined => {
+    if (playerRead.status === "loading") return undefined
+    if (playerRead.status === "error") return { status: "error" }
+    const [level, characterStars, mowStars, buckets, updatedAt] =
+      playerRead.data
+    return {
+      status: "ready",
+      player: {
+        powerLevel: level,
+        hasBlueStarUnit: hasBlueStarUnit([...characterStars, ...mowStars]),
+      },
+      buckets: {
+        Arena: buckets?.arena ?? null,
+        Onslaught: buckets?.onslaught ?? null,
+        SalvageRun: buckets?.salvageRun ?? null,
+      },
+      observedAtMs: updatedAt ? Date.parse(updatedAt) : null,
+    }
+  }, [playerRead])
   const inputs = useHseProjectionInputs(definitionId, instance?.key ?? "")
   return buildHseEventPointsState({ instance, catalog, player, inputs })
 }

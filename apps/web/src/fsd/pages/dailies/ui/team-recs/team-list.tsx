@@ -21,7 +21,7 @@ import type {
   TeamMember,
   TeamMemberPreferenceMatch,
   TeamMemberRationale,
-} from "../../model/team-recommendations.types"
+} from "@/features/team-recommendations"
 
 /** One recommended team — one character per row: portrait, name + why-chosen line, current rarity
  * and rank, and (Random Team only) a lock toggle that keeps the character across Regenerate. */

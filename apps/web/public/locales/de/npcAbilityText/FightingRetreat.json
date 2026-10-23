@@ -1,0 +1,18 @@
+{
+  "FightingRetreat": {
+    "description": "Angrenzende Gegner erhalten ein <style=\"Debuff_Markerlight\">Markierungslicht</style>. Sie verursachen außerdem einen Zug lang <style=\"Stat_Hits\">{[hitsReduction]}</style> weniger Treffer (bis zu einem Minimum von 1) und <style=\"Stat_Damage\">-{[dmgReduction]} Schaden</style>. Bis zum Ende des Zuges erhalten <style=\"Faction_Tau\">Schattenschleicher</style> und angrenzende verbündete Einheiten mit der Eigenschaft <style=\"RangedSpecialist\">Fernkampf-Experte</style> die Effekte dieser Eigenschaft auch dann, wenn sie ihren Zug an eine gegnerische Einheit angrenzend beginnen.\n\nWenn <style=\"Faction_Tau\">Schattenschleicher</style> an einen Gegner angrenzt, beendet der Einsatz von <i>Rückzugsgefecht</i> seinen Zug nicht, und er kann sich erneut bewegen, wenn er sich in diesem Zug bereits bewegt hat.",
+    "variables": {
+      "dmgReduction": [
+        8, 10, 11, 13, 14, 16, 18, 20, 22, 24, 25, 27, 29, 31, 33, 35, 36, 38,
+        40, 42, 44, 48, 55, 62, 70, 77, 84, 92, 99, 106, 113, 121, 128, 135,
+        143, 150, 157, 164, 172, 182, 196, 211, 228, 246, 279, 312, 344, 377,
+        410, 443, 448, 454, 460, 468, 476, 484, 492, 502, 512, 522, 534, 546,
+        558, 570, 582
+      ]
+    },
+    "constants": {
+      "hitsReduction": "1"
+    },
+    "scaled": ["dmgReduction"]
+  }
+}

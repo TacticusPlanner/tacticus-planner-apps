@@ -1,0 +1,8 @@
+{
+  "StormOfFlensingBlades": {
+    "description": "Attaque un ennemi adjacent deux fois d'affilée, du moment que le <style=\"Faction_Necrons\">Dépeceur</style> a commencé le tour dans un hexagone adjacent.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

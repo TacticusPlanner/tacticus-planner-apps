@@ -31,7 +31,7 @@ export function useGoalsById({
     if (includeArchived) {
       for (const goal of archived.data?.goals ?? []) map.set(goal.goalId, goal)
     }
-    return map as ReadonlyMap<string, GoalDetail>
+    return map
   }, [active.data, archived.data, includeArchived])
 
   return {

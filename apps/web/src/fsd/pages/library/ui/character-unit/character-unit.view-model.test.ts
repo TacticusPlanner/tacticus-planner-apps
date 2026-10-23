@@ -237,7 +237,7 @@ describe("characterPowerView", () => {
     )
     // Silver III counts none of its own slots: below Gold I with its slots.
     const silver3 = view.stats.byRank[ladderRanks.indexOf("Silver3")]
-    expect(silver3.health).toBeLessThan(view.stats.stats.health)
+    expect(silver3?.health).toBeLessThan(view.stats.stats.health)
   })
 
   it("keeps At a glance when one Stats by rank rank cannot be computed", () => {

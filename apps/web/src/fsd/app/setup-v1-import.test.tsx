@@ -1,5 +1,5 @@
 import userEvent from "@testing-library/user-event"
-import type { ReactNode } from "react"
+import { useState, type ReactNode } from "react"
 import { describe, expect, it, vi } from "vitest"
 
 import { render, screen } from "@/test/render"
@@ -104,14 +104,23 @@ function renderSetup() {
   const onCompleted = vi.fn()
   const onUseApiKey = vi.fn()
   const onKeyImported = vi.fn()
-  const result = render(
-    <SetupV1Import
-      onCompleted={onCompleted}
-      onKeyImported={onKeyImported}
-      onSuggestedDisplayName={vi.fn()}
-      onUseApiKey={onUseApiKey}
-    />
-  )
+  // `keyImported` is controlled by the host (the route's reducer); this stands in for it.
+  function Host() {
+    const [keyImported, setKeyImported] = useState(false)
+    return (
+      <SetupV1Import
+        keyImported={keyImported}
+        onCompleted={onCompleted}
+        onKeyImported={() => {
+          onKeyImported()
+          setKeyImported(true)
+        }}
+        onSuggestedDisplayName={vi.fn()}
+        onUseApiKey={onUseApiKey}
+      />
+    )
+  }
+  const result = render(<Host />)
   return { ...result, onCompleted, onKeyImported, onUseApiKey }
 }
 
@@ -243,6 +252,7 @@ describe("SetupV1Import", () => {
     const onImportProject = vi.fn()
     render(
       <SetupV1Import
+        keyImported={false}
         onCompleted={vi.fn()}
         onImportProject={onImportProject}
         onKeyImported={vi.fn()}

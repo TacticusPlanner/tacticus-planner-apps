@@ -1,0 +1,12 @@
+{
+  "Fidelity": {
+    "description": "Confère à <style=\"Faction_Tau\">Aun'shi</style> un effet supplémentaire selon son bonus actuel d'<i>Unificateur Serein</i> :\nSens de la pierre : <style=\"Regenerate\">Régénère</style> <style=\"Stat_Health\">{[hp]} Santé</style> après avoir attaqué\nGrâce du Zéphyr : a <style=\"Stat\">+{[extraCritChance]} % de Chance de Coup Critique</style>\nTempête de feu : les attaques infligent <style=\"Stat_Hits\">+{[extraHits]}</style> coups",
+    "variables": {
+      "hp": [3915, 4126, 4338, 4549, 4760, 4972, 5183, 5394, 5606, 5817],
+      "extraCritChance": [15, 17, 19, 21, 23, 25, 27, 29, 31, 33],
+      "extraHits": [1, 1, 1, 2, 2, 2, 2, 3, 3, 3]
+    },
+    "constants": {},
+    "scaled": []
+  }
+}

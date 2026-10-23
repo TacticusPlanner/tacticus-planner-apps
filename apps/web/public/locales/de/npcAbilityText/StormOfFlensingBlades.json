@@ -1,0 +1,8 @@
+{
+  "StormOfFlensingBlades": {
+    "description": "Greift einen angrenzenden Gegner zweimal hintereinander an, wenn der <style=\"Faction_Necrons\">Albtraum</style> seinen Zug auf einem angrenzenden Feld begonnen hat.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

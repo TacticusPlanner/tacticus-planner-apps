@@ -1,0 +1,8 @@
+{
+  "HarlequinsPanoply": {
+    "description": "À chaque tour, la première fois qu'une unité bloque un coup, tous les coups supplémentaires de cette attaque sont annulés et l'<style=\"Faction_Aeldari\">Arlequin joueur</style> se déplace d'un hexagone plus près de la source de l'attaque, si possible.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

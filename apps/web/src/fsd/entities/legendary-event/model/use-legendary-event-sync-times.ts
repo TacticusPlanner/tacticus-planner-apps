@@ -21,11 +21,15 @@ function parse(value: string | undefined): number | null {
 /** The player-data sync times the Run status needs, with the same loading / error channel as the
  *  other reads so a failed metadata read degrades instead of throwing to the error boundary. */
 export function useLegendaryEventSyncTimes(): ReadState<LegendaryEventSyncTimes> {
-  return useReadState(async () => {
-    const metadata = await getPlayerDataMetadata()
-    return {
-      syncedAtMs: parse(getManifestMetadata(metadata)?.updatedAt),
-      progressObservedAtMs: parse(metadata.get("lre-progress")?.updatedAt),
-    }
-  }, [])
+  return useReadState(
+    "player-sync-times",
+    async () => {
+      const metadata = await getPlayerDataMetadata()
+      return {
+        syncedAtMs: parse(getManifestMetadata(metadata)?.updatedAt),
+        progressObservedAtMs: parse(metadata.get("lre-progress")?.updatedAt),
+      }
+    },
+    []
+  )
 }

@@ -1,11 +1,13 @@
 import {
+  type LaneProgressView,
+  type LegendaryEventBattle,
+} from "@/entities/legendary-event"
+import {
   battleEnemyCount,
   defaultBattleIndex,
   orderLaneBattles,
   sortedWaves,
-  type LaneProgressView,
-  type LegendaryEventBattle,
-} from "@/entities/legendary-event"
+} from "../../../lib/battle-preview"
 import {
   npcLibraryHref,
   resolveLadderRow,

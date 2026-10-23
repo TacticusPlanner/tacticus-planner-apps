@@ -3,7 +3,6 @@ import type { i18n as I18n } from "i18next"
 import { beforeAll, describe, expect, it } from "vitest"
 
 import type {
-  LegendaryEvent,
   LegendaryEventPlan,
   LegendaryEventTeam,
 } from "@/entities/legendary-event"
@@ -40,10 +39,9 @@ describe("useImpactTeamName", () => {
   })
 
   it("names an Upgrade impact row's team by its display name, or its id when unknown", () => {
-    const { result } = renderHook(
-      () => useImpactTeamName(utharEvent as unknown as LegendaryEvent, plan),
-      { wrapper: i18nWrapper(i18n) }
-    )
+    const { result } = renderHook(() => useImpactTeamName(utharEvent, plan), {
+      wrapper: i18nWrapper(i18n),
+    })
     expect(result.current("imported")).toBe("Max 2 hits · Melee")
     expect(result.current("rush")).toBe("Melee rush")
     expect(result.current("gone")).toBe("gone")

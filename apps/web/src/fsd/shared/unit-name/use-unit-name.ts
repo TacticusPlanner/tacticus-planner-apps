@@ -1,6 +1,7 @@
+import { useCallback } from "react"
 import { useTranslation } from "react-i18next"
-import { useLiveQuery } from "dexie-react-hooks"
-import { getCharactersMap, getMowsMap } from "@workspace/game-catalog/queries"
+
+import { toById, useCatalogDataset } from "@/shared/local-data"
 
 /**
  * Display name for a unit (Character or Mow) by id — the single copy every layer shares. It used to
@@ -10,23 +11,32 @@ import { getCharactersMap, getMowsMap } from "@workspace/game-catalog/queries"
  *
  * Falls back to the raw id whenever the catalog doesn't know it — which is exactly the V1 import's
  * unknown-unit case, where the raw V1 identifier is the whole point of that fallback.
+ *
+ * The resolver is referentially stable while the two datasets and the language are unchanged, so
+ * effects and memos can list it as a dependency.
  */
 export function useUnitName() {
   const { t } = useTranslation(["characters", "mows"])
-  const charactersById = useLiveQuery(() => getCharactersMap(), [])
-  const mowsById = useLiveQuery(() => getMowsMap(), [])
+  const characters = useCatalogDataset("characters", toById)
+  const mows = useCatalogDataset("mows", toById)
+  const charactersById =
+    characters.status === "ready" ? characters.data : undefined
+  const mowsById = mows.status === "ready" ? mows.data : undefined
 
-  return (entityType: string | null, entityId: string | null): string => {
-    if (!entityId) return ""
-    if (entityType === "Mow") {
-      const record = mowsById?.get(entityId)
-      return t(`mows:${entityId}`, { defaultValue: record?.name ?? entityId })
-    }
-    if (entityType !== "Character") return entityId
+  return useCallback(
+    (entityType: string | null, entityId: string | null): string => {
+      if (!entityId) return ""
+      if (entityType === "Mow") {
+        const record = mowsById?.get(entityId)
+        return t(`mows:${entityId}`, { defaultValue: record?.name ?? entityId })
+      }
+      if (entityType !== "Character") return entityId
 
-    const record = charactersById?.get(entityId)
-    return t(`characters:${entityId}`, {
-      defaultValue: record?.name ?? entityId,
-    })
-  }
+      const record = charactersById?.get(entityId)
+      return t(`characters:${entityId}`, {
+        defaultValue: record?.name ?? entityId,
+      })
+    },
+    [t, charactersById, mowsById]
+  )
 }

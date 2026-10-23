@@ -1,7 +1,7 @@
 import { fireEvent, render, screen } from "@testing-library/react"
 import { describe, expect, it, vi } from "vitest"
 
-import type { GameCatalogContextValue } from "@/app/providers"
+import type { GameCatalogContextValue } from "@/shared/game-catalog-status"
 
 const status = vi.fn<() => GameCatalogContextValue>()
 const account = { homeAccountId: "account-1" }
@@ -12,7 +12,7 @@ vi.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
 }))
 
-vi.mock("@/app/providers", () => ({
+vi.mock("@/shared/game-catalog-status", () => ({
   useGameCatalogStatus: () => status(),
 }))
 

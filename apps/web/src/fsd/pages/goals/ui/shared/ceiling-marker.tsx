@@ -3,7 +3,7 @@ import type { ReactNode } from "react"
 
 import { RankBadge } from "@/shared/ui"
 
-import type { GoalProgress } from "../../model/attainment/goal-progress"
+import type { GoalProgress } from "@/features/goal-planning"
 
 function reasonSuffix(
   t: TFunction,

@@ -1,0 +1,8 @@
+{
+  "WarConstruct": {
+    "description": "Durante 1 ronda, si no hay ningún enemigo adyacente al <style=\"Faction_Aeldari\">Guardián Espectral</style>, devuelve el disparo a cada enemigo que esté dentro del alcance que lo ataque a él o a un <style=\"Faction_Aeldari\">Aeldari</style> aliado adyacente.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

@@ -1,3 +1,4 @@
+import { useId } from "react"
 import { Label } from "@workspace/ui/components/label"
 import {
   Select,
@@ -22,11 +23,14 @@ export function RankSelect({
   options: Rank[]
   onChange: (rank: Rank) => void
 }) {
+  const id = useId()
   return (
     <div className="grid gap-1.5">
-      <Label className="text-xs text-muted-foreground">{label}</Label>
+      <Label htmlFor={id} className="text-xs text-muted-foreground">
+        {label}
+      </Label>
       <Select value={value} onValueChange={(v) => onChange(v as Rank)}>
-        <SelectTrigger className="w-full">
+        <SelectTrigger id={id} className="w-full">
           <SelectValue />
         </SelectTrigger>
         <SelectContent>

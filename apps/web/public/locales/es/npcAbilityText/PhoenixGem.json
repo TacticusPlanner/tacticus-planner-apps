@@ -1,0 +1,10 @@
+{
+  "PhoenixGem": {
+    "description": "La primera vez en cada batalla que <style=\"Faction_Aeldari\">Aethana</style> es derrotada, revive con un máximo de <style=\"Stat_Health\">{[hp]} de Salud</style> restante, incluso si fue <style=\"Overkill\">Arrasada</style>.",
+    "variables": {
+      "hp": [3915, 4126, 4338, 4549, 4760, 4972, 5183, 5394, 5606, 5817]
+    },
+    "constants": {},
+    "scaled": []
+  }
+}

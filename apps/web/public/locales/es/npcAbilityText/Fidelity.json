@@ -1,0 +1,12 @@
+{
+  "Fidelity": {
+    "description": "Otorga a <style=\"Faction_Tau\">Aun'shi</style> un efecto adicional según su bonificación actual de <i>Unificador sereno</i>:\nSentido de Piedra: <style=\"Regenerate\">Regenera</style> <style=\"Stat_Health\">{[hp]} de Salud</style> después de atacar\nGracia de Zephyr: Tiene <style=\"Stat\">+{[extraCritChance]}% de Probabilidad de Crítico</style>\nTormenta de Fuego: Los ataques asestan <style=\"Stat_Hits\">+{[extraHits]}</style> impactos",
+    "variables": {
+      "hp": [3915, 4126, 4338, 4549, 4760, 4972, 5183, 5394, 5606, 5817],
+      "extraCritChance": [15, 17, 19, 21, 23, 25, 27, 29, 31, 33],
+      "extraHits": [1, 1, 1, 2, 2, 2, 2, 3, 3, 3]
+    },
+    "constants": {},
+    "scaled": []
+  }
+}

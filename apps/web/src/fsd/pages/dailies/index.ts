@@ -1,2 +1,1 @@
-export { DailiesLayout } from "./ui/dailies-layout"
-export { routes } from "./route"
+export { routes, DailiesLayout, preloadDailiesLayout } from "./route"

@@ -16,6 +16,7 @@ import {
   PopoverTrigger,
 } from "@workspace/ui/components/popover"
 
+import { useCommandListId } from "./command-list-id"
 import { closestOverlayContent } from "./overlay-content"
 
 export type SelectOption<TValue extends string | number> = {
@@ -43,17 +44,19 @@ function OptionList<TValue extends string | number>({
   onSelect,
   searchPlaceholder,
   emptyText,
+  listRef,
 }: {
   options: readonly SelectOption<TValue>[]
   isSelected: (value: TValue) => boolean
   onSelect: (value: TValue) => void
   searchPlaceholder?: string
   emptyText?: string
+  listRef: (element: HTMLElement | null) => void
 }) {
   return (
     <Command>
       <CommandInput placeholder={searchPlaceholder} />
-      <CommandList>
+      <CommandList ref={listRef}>
         <CommandEmpty>{emptyText}</CommandEmpty>
         <CommandGroup>
           {options.map((option) => (
@@ -91,9 +94,13 @@ function SelectShell({
   testId?: string
   summary: ReactNode
   trailing?: ReactNode
-  children: (close: () => void) => ReactNode
+  children: (
+    close: () => void,
+    listRef: (element: HTMLElement | null) => void
+  ) => ReactNode
 }) {
   const [open, setOpen] = useState(false)
+  const [listId, listRef] = useCommandListId()
   const [portalContainer, setPortalContainer] = useState<HTMLElement>()
   const triggerRef = useRef<HTMLButtonElement>(null)
 
@@ -112,6 +119,7 @@ function SelectShell({
             variant="outline"
             role="combobox"
             aria-expanded={open}
+            aria-controls={listId}
             aria-label={ariaLabel}
             className="h-9 w-full justify-between gap-2 pr-2 font-normal"
             data-testid={testId}
@@ -129,7 +137,7 @@ function SelectShell({
         className="w-(--radix-popover-trigger-width) min-w-56 p-0"
         container={portalContainer}
       >
-        {children(() => setOpen(false))}
+        {children(() => setOpen(false), listRef)}
       </PopoverContent>
     </Popover>
   )
@@ -176,8 +184,9 @@ export function MultiSelect<TValue extends string | number>({
         )
       }
     >
-      {() => (
+      {(_close, listRef) => (
         <OptionList
+          listRef={listRef}
           options={options}
           isSelected={(item) => value.includes(item)}
           onSelect={(item) =>
@@ -243,8 +252,9 @@ export function SearchableSelect<TValue extends string | number>({
         ) : null
       }
     >
-      {(close) => (
+      {(close, listRef) => (
         <OptionList
+          listRef={listRef}
           options={options}
           isSelected={(item) => item === value}
           onSelect={(item) => {

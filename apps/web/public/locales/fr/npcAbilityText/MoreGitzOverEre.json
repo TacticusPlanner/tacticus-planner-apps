@@ -1,0 +1,10 @@
+{
+  "MoreGitzOverEre": {
+    "description": "Les ennemis adjacent à un <style=\"Faction_Orks\">Squig</style> allié ou à au moins deux <style=\"Character\">personnages</style> <style=\"Rarity_Mythic\">Mythiques</style> alliés subissent <style=\"Stat_Damage\">+{[extraDmgPct]} % de dégâts</style> en cas d'<style=\"NormalAttack\">attaque au corps à corps normale</style> par des personnages <style=\"Rarity_Mythic\">Mythiques</style>.",
+    "variables": {
+      "extraDmgPct": [10, 13, 16, 20]
+    },
+    "constants": {},
+    "scaled": ["extraDmgPct"]
+  }
+}

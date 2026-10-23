@@ -1,0 +1,27 @@
+{
+  "MacroPlasmaIncinerator": {
+    "description": "Markiert ein Zielfeld und die beiden Felder dahinter für 1 Runde. Wenn eine gegnerische Einheit ihre Bewegung zum ersten Mal im markierten Bereich beendet, erleiden alle Gegner im markierten Bereich <style=\"Stat_Hits\">{[nrOfHits]}x</style> <style=\"DMG_Plasma\">{[minDmg]}–{[maxDmg]} Plasmaschaden</style>.\n\nAnfängliche <style=\"Cooldown\">Abklingzeit: {[initialCooldownTurns]} Runde</style>. \n\n{[S/AbilityDamageExplanation]}",
+    "variables": {
+      "minDmg": [
+        30, 36, 42, 48, 54, 61, 68, 75, 82, 89, 95, 102, 109, 116, 123, 130,
+        137, 144, 151, 158, 167, 180, 207, 234, 262, 289, 316, 344, 371, 398,
+        425, 453, 480, 507, 535, 562, 589, 617, 644, 682, 736, 793, 854, 922,
+        1045, 1169, 1292, 1415, 1538, 1662, 1680, 1703, 1725, 1755, 1785, 1815,
+        1845, 1883, 1920, 1958, 2003, 2048, 2093, 2138, 2183
+      ],
+      "maxDmg": [
+        36, 43, 50, 58, 65, 73, 81, 90, 98, 106, 114, 123, 131, 139, 148, 156,
+        164, 172, 181, 189, 200, 216, 248, 281, 314, 347, 379, 412, 445, 478,
+        510, 543, 576, 609, 642, 674, 707, 740, 773, 819, 883, 951, 1025, 1106,
+        1254, 1402, 1550, 1698, 1846, 1994, 2016, 2043, 2070, 2106, 2142, 2178,
+        2214, 2259, 2304, 2349, 2403, 2457, 2511, 2565, 2619
+      ]
+    },
+    "constants": {
+      "damageProfile": "Plasma",
+      "nrOfHits": "3",
+      "initialCooldownTurns": "1"
+    },
+    "scaled": ["minDmg", "maxDmg"]
+  }
+}

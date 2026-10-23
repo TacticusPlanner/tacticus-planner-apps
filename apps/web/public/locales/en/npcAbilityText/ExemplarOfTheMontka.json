@@ -1,0 +1,23 @@
+{
+  "ExemplarOfTheMontka": {
+    "description": "Until the end of this turn, <style=\"Faction_Tau\">Commander Farsight</style> and all other friendly <style=\"Character\">Characters</style> with a <style=\"NormalAttack\">normal ranged attack</style> gain <style=\"Unstoppable\">Unstoppable</style> and all their <style=\"NormalAttack\">normal attacks</style> deal <style=\"Stat_Damage\">+{[extraDmg]} Damage</style>. When attacking a <style=\"Big_Target\">Big Target</style>, they deal <style=\"Stat_Damage\">+{[extraDmg_2]} Damage</style> instead.\n\nUsing <i>Exemplar of the Mont'ka</i> does not end Commander Farsight's turn.",
+    "variables": {
+      "extraDmg": [
+        6, 7, 8, 10, 11, 12, 14, 15, 16, 18, 19, 20, 22, 23, 25, 26, 27, 29, 30,
+        32, 33, 36, 41, 47, 52, 58, 63, 69, 74, 80, 85, 91, 96, 101, 107, 112,
+        118, 123, 129, 136, 147, 159, 171, 184, 209, 234, 258, 283, 308, 333,
+        336, 341, 345, 351, 357, 363, 369, 377, 384, 392, 401, 410, 419, 428,
+        437
+      ],
+      "extraDmg_2": [
+        13, 16, 18, 21, 23, 26, 29, 32, 35, 38, 41, 44, 47, 50, 53, 56, 59, 62,
+        65, 68, 72, 78, 90, 102, 113, 125, 137, 149, 161, 173, 184, 196, 208,
+        220, 232, 243, 255, 267, 279, 296, 319, 344, 370, 399, 453, 506, 560,
+        613, 667, 721, 728, 738, 748, 761, 774, 787, 800, 816, 832, 848, 868,
+        887, 907, 926, 946
+      ]
+    },
+    "constants": {},
+    "scaled": ["extraDmg", "extraDmg_2"]
+  }
+}

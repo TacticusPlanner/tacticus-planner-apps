@@ -1,0 +1,16 @@
+{
+  "StructuralAnalyser": {
+    "description": "Las unidades impactadas por ataques a distancia del <style=\"Faction_Tau\">Caminante de Sombras</style> reciben una <style=\"Debuff_Markerlight\">Luz de señalización</style> por una ronda.\n\nLas unidades aliadas adyacentes al Caminante de Sombras infligen <style=\"Stat_Damage\">+{[extraDmg]} de Daño</style> al lanzar ataques a distancia contra objetivos con una <style=\"Debuff_Markerlight\">Luz de señalización</style>. Las unidades aliadas del <style=\"Faction_Tau\">Imperio T'au</style> dentro de 2 hexágonos de distancia de Caminante de Sombras también se ven afectadas.",
+    "variables": {
+      "extraDmg": [
+        10, 12, 14, 16, 18, 20, 23, 25, 27, 30, 32, 34, 36, 39, 41, 43, 46, 48,
+        50, 53, 56, 60, 69, 78, 87, 96, 105, 115, 124, 133, 142, 151, 160, 169,
+        178, 187, 196, 206, 215, 227, 245, 264, 285, 307, 348, 390, 431, 472,
+        513, 554, 560, 568, 575, 585, 595, 605, 615, 628, 640, 653, 668, 683,
+        698, 713, 728
+      ]
+    },
+    "constants": {},
+    "scaled": ["extraDmg"]
+  }
+}

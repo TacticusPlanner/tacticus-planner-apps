@@ -25,8 +25,8 @@ export const Rank = {
 export type Rank = (typeof Rank)[keyof typeof Rank]
 
 export const rankOrder: readonly Rank[] = Object.values(Rank)
-export const firstRank: Rank = rankOrder[0]
-export const lastRank: Rank = rankOrder[rankOrder.length - 1]
+export const firstRank: Rank = rankOrder[0] ?? Rank.Stone1
+export const lastRank: Rank = rankOrder.at(-1) ?? firstRank
 
 export const rankIndex = (id: Rank): number => rankOrder.indexOf(id)
 
@@ -37,4 +37,4 @@ export const isAdamantineRank = (rank: Rank): boolean =>
   rank.startsWith("Adamantine")
 
 export const rankAt = (index: number): Rank =>
-  rankOrder[Math.min(Math.max(index, 0), rankOrder.length - 1)]
+  rankOrder[Math.min(Math.max(index, 0), rankOrder.length - 1)] ?? firstRank

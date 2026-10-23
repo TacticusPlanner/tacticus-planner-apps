@@ -1,0 +1,18 @@
+{
+  "ExplosiveMaladies": {
+    "description": "Les unités alliées situées adjacentes à <style=\"Faction_DeathGuard\">Pestillian</style> infligent <style=\"Stat_Hits\">{[nrOfHits]}x</style> <style=\"DMG_Blast\">{[extraDmg]} dégâts d'explosion</style> supplémentaires avec leurs <style=\"NormalAttack\">attaques à distance normales</style>. Les unités du <style=\"Aliance_Chaos\">Chaos</style> alliées adjacentes à <style=\"Faction_DeathGuard\">Pestillian</style> infligent également ces dégâts avec leurs <style=\"NormalAttack\">attaques au corps à corps normales</style>. Les ennemis vaincus par ces attaques sont <style=\"Obliterated\">toujours exterminés</style>.",
+    "variables": {
+      "extraDmg": [
+        30, 36, 42, 48, 54, 61, 68, 75, 82, 89, 95, 102, 109, 116, 123, 130,
+        137, 144, 151, 158, 167, 180, 207, 234, 262, 289, 316, 344, 371, 398,
+        425, 453, 480, 507, 535, 562, 589, 617, 644, 682, 736, 793, 854, 922,
+        1045, 1169, 1292, 1415, 1538, 1662, 1680, 1703, 1725, 1755, 1785, 1815,
+        1845, 1883, 1920, 1958, 2003, 2048, 2093, 2138, 2183
+      ]
+    },
+    "constants": {
+      "nrOfHits": "1"
+    },
+    "scaled": ["extraDmg"]
+  }
+}

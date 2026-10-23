@@ -1,0 +1,22 @@
+{
+  "WarHowl": {
+    "description": "Wenn sich <style=\"Faction_SpaceWolves\">Ragnar</style> nicht bewegt hat, werden er und alle verbündeten <style=\"Character\">Charaktere</style> ohne <style=\"NormalAttack\">normalen Fernkampfangriff</style> bis zum Ende dieses Zugs <style=\"Unstoppable\">unaufhaltsam</style>. Zusätzlich verfügen ihre <style=\"NormalAttack\">normalen Nahkampfangriffe</style> über eine <style=\"Stat\">kritische Trefferchance von +{[extraCritChance]} %</style> und verursachen bis zum Ende dieses Zugs <style=\"Stat_Damage\">+{[extraDmg]} Schaden</style>. \n\nDer Einsatz von <i>Kriegsgeheul</i> beendet <style=\"Faction_SpaceWolves\">Ragnars</style> Zug nicht.",
+    "variables": {
+      "extraCritChance": [
+        27, 27, 27, 27, 27, 27, 27, 27, 30, 30, 30, 30, 30, 30, 30, 30, 30, 32,
+        32, 32, 32, 32, 32, 32, 32, 32, 34, 34, 34, 34, 34, 34, 34, 34, 34, 36,
+        36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36,
+        36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36
+      ],
+      "extraDmg": [
+        16, 19, 22, 26, 29, 32, 36, 40, 44, 47, 51, 55, 58, 62, 66, 69, 73, 77,
+        80, 84, 89, 96, 110, 125, 140, 154, 169, 183, 198, 212, 227, 241, 256,
+        271, 285, 300, 314, 329, 343, 364, 393, 423, 456, 492, 557, 623, 689,
+        755, 820, 886, 896, 908, 920, 936, 952, 968, 984, 1004, 1024, 1044,
+        1068, 1092, 1116, 1140, 1164
+      ]
+    },
+    "constants": {},
+    "scaled": ["extraDmg"]
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "SaviorProtocols": {
+    "description": "Si une unité alliée adjacente de l'<style=\"Faction_Tau\">Empire T'au</style> est attaquée, il y a <style=\"Stat_Chance\">{[chance]} %</style> de chances que chaque coup soit porté contre ce Drone au lieu de la cible d'origine.\n\nCe Drone se déplace en priorité sur des hexagones adjacents à des unités alliées de l'<style=\"Faction_Tau\">Empire T'au</style>.\n\nLorsqu'il attaque, ce Drone vise en priorité les ennemis affublés d'un <style=\"Debuff_Markerlight\">pointeur lumineux</style>.",
+    "variables": {},
+    "constants": {
+      "chance": "50"
+    },
+    "scaled": []
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "OmnissiahsBlessing": {
+    "description": "Whenever the <style=\"Faction_AdeptusMechanicus\">Tech-Priest Enginseer</style> <style=\"Repairing\">repairs</style> another unit, it transfers all levels of <style=\"Buff_MachineVengeance\">Machine Vengeance</style> it has to the repaired unit.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

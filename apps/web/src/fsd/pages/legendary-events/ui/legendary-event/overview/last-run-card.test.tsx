@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react"
 import type { i18n as I18n } from "i18next"
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
@@ -11,8 +10,8 @@ import {
   type LegendaryEventLifecycleState,
   type ReadState,
   type RosterSnapshot,
-  type RunHistory,
 } from "@/entities/legendary-event"
+import type { RunHistory } from "../../../lib/run-history"
 import {
   rosterAfterRun1,
   utharRun1Record,
@@ -30,21 +29,6 @@ import {
   buildLastRunViewModel,
   type LastRunViewModel,
 } from "./last-run.view-model"
-
-vi.mock("dexie-react-hooks", () => ({
-  useLiveQuery: <T,>(querier: () => Promise<T>) => {
-    const [value, setValue] = useState<T>()
-    useEffect(() => {
-      void querier().then(setValue)
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
-    return value
-  },
-}))
-vi.mock("@workspace/game-catalog/queries", () => ({
-  getCharactersMap: async () => new Map(),
-  getMowsMap: async () => new Map(),
-}))
 
 let i18n: I18n
 

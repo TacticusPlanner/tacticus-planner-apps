@@ -1,0 +1,10 @@
+{
+  "HostOfPlagues": {
+    "description": "Cada vez que una unidad enemiga no <style=\"Mechanical\">Mecánica</style> muere, hay un <style=\"Stat_Chance\">{[chance]} % de probabilidad de que</style> un <style=\"Summon\"><style=\"Faction_DeathGuard\">Plagabundo</style></style> aparezca en el hexágono donde murió esa unidad.",
+    "variables": {},
+    "constants": {
+      "chance": "100"
+    },
+    "scaled": []
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "MartialSuperiority": {
+    "description": "Si el <style=\"Faction_BlackTemplars\">Hermano Jaeger</style> es fijado como el objetivo de un ataque cuerpo a cuerpo de un enemigo adyacente durante el turno del enemigo, inflige <style=\"DMG_Power\">{[minDmg]}-{[maxDmg]} de Daño de poder</style> <style=\"Stat_Hits\">x{[nrOfHits]}</style> al atacante antes de que el ataque enemigo se ejecute.",
+    "variables": {
+      "minDmg": [
+        20, 24, 28, 32, 36, 41, 45, 50, 54, 59, 64, 68, 73, 77, 82, 87, 91, 96,
+        100, 105, 111, 120, 138, 156, 174, 193, 211, 229, 247, 265, 284, 302,
+        320, 338, 356, 375, 393, 411, 429, 455, 491, 529, 569, 615, 697, 779,
+        861, 943, 1026, 1109, 1120, 1135, 1150, 1170, 1190, 1210, 1230, 1255,
+        1280, 1305, 1335, 1365, 1395, 1425, 1455
+      ],
+      "maxDmg": [
+        22, 26, 31, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100,
+        105, 110, 116, 122, 132, 152, 172, 192, 212, 232, 252, 272, 292, 312,
+        332, 352, 372, 392, 412, 432, 452, 472, 500, 540, 581, 626, 676, 766,
+        857, 947, 1038, 1128, 1219, 1232, 1249, 1265, 1287, 1309, 1331, 1353,
+        1381, 1408, 1436, 1469, 1502, 1535, 1568, 1601
+      ]
+    },
+    "constants": {
+      "damageProfile": "Power",
+      "nrOfHits": "2"
+    },
+    "scaled": ["minDmg", "maxDmg"]
+  }
+}

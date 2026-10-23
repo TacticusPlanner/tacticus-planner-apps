@@ -16,7 +16,7 @@ import {
 import { resolveGuildRaidTeamReadiness } from "./resolve-guild-raid-team-readiness"
 import type { GuildRaidInvestmentThreshold } from "./resolve-guild-raid-investment-threshold"
 
-export type GuildRaidHeroSlotReadiness = {
+type GuildRaidHeroSlotReadiness = {
   heroId: string
   roleId: string
   essential: boolean
@@ -25,7 +25,7 @@ export type GuildRaidHeroSlotReadiness = {
   candidates: GuildRaidSlotCandidate[]
 }
 
-export type GuildRaidMowReadiness = {
+type GuildRaidMowReadiness = {
   mowId: string
   owned: boolean
   readiness: number
@@ -51,7 +51,7 @@ export type GuildRaidReadinessRoster = {
  * combined weighted team percentage. Every sub-calculation (matching, scoring, candidate listing) reads
  * `recommendation.heroSlots`/`mowId` directly and never reorders them.
  */
-export function resolveGuildRaidRecommendationReadiness(params: {
+function resolveGuildRaidRecommendationReadiness(params: {
   recommendation: GameCatalogGuildRaidMetaRecommendation
   threshold: GuildRaidInvestmentThreshold
   roster: GuildRaidReadinessRoster

@@ -1,5 +1,7 @@
+import { beforeEach, describe, expect, it } from "vitest"
+
 import { render, screen } from "@/test/render"
-import { describe, expect, it, vi } from "vitest"
+import { seedGameCatalog, seedPlayerData } from "@/test/seed"
 
 const data = {
   definitions: [
@@ -63,36 +65,34 @@ const data = {
   characters: [{ unitId: "unitA" }],
 }
 
-vi.mock("react-i18next", () => ({
-  useTranslation: () => ({ t: (key: string) => key }),
-}))
-vi.mock("dexie-react-hooks", () => ({ useLiveQuery: () => data }))
-vi.mock("@workspace/game-catalog/queries", () => ({
-  getCampaignBattles: vi.fn(),
-  getCampaignDefinitions: vi.fn(),
-}))
-vi.mock("@workspace/player-data/queries", () => ({
-  getCampaignProgress: vi.fn(),
-  getPlayerCharacters: vi.fn(),
-}))
-
 import { CampaignsPage } from "./campaigns-page"
 
+beforeEach(async () => {
+  await seedGameCatalog({
+    "campaign-definitions": data.definitions,
+    "campaign-battles": data.battles,
+  })
+  await seedPlayerData({
+    "campaign-progress": data.progress,
+    characters: data.characters,
+  })
+})
+
 describe("CampaignsPage", () => {
-  it("renders synchronized campaign summaries without editing controls", () => {
+  it("renders synchronized campaign summaries without editing controls", async () => {
     render(<CampaignsPage />)
 
-    expect(screen.getByTestId("campaigns-page")).toBeInTheDocument()
+    expect(await screen.findByTestId("campaigns-page")).toBeInTheDocument()
     expect(screen.getAllByText("3/3").length).toBeGreaterThan(0)
     expect(screen.getAllByText("1/2").length).toBeGreaterThan(0)
     expect(screen.queryByRole("slider")).not.toBeInTheDocument()
     expect(screen.queryByRole("spinbutton")).not.toBeInTheDocument()
   })
 
-  it("shows the core characters the player owns, matched by roster unitId", () => {
+  it("shows the core characters the player owns, matched by roster unitId", async () => {
     render(<CampaignsPage />)
 
-    expect(screen.getByAltText("unitA")).toBeInTheDocument()
+    expect(await screen.findByAltText("unitA")).toBeInTheDocument()
     expect(screen.queryByAltText("unitB")).not.toBeInTheDocument()
   })
 })

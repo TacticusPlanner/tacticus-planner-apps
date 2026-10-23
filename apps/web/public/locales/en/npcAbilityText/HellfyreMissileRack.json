@@ -1,0 +1,27 @@
+{
+  "HellfyreMissileRack": {
+    "description": "Deals <style=\"Stat_Hits\">{[nrOfHits]}x</style> <style=\"DMG_Heavy\">{[minDmg]}-{[maxDmg]} Heavy Round Damage</style> to a target enemy unit within range {[range]} and an additional <style=\"Stat_Hits\">{[nrOfHits]}x</style> <style=\"DMG_Heavy\">{[minDmg]}-{[maxDmg]} Heavy Round Damage</style> to each enemy unit on the map that was dealt <style=\"DMG_Psychic\">Psychic Damage</style> this turn, which can include the initial target again.\n\n{[S/AbilityDamageExplanation]}",
+    "variables": {
+      "minDmg": [
+        30, 36, 42, 48, 54, 61, 68, 75, 82, 89, 95, 102, 109, 116, 123, 130,
+        137, 144, 151, 158, 167, 180, 207, 234, 262, 289, 316, 344, 371, 398,
+        425, 453, 480, 507, 535, 562, 589, 617, 644, 682, 736, 793, 854, 922,
+        1045, 1169, 1292, 1415, 1538, 1662, 1680, 1703, 1725, 1755, 1785, 1815,
+        1845, 1883, 1920, 1958, 2003, 2048, 2093, 2138, 2183
+      ],
+      "maxDmg": [
+        40, 48, 56, 64, 72, 81, 90, 100, 109, 118, 127, 136, 146, 155, 164, 173,
+        182, 192, 201, 210, 222, 240, 276, 312, 349, 385, 422, 458, 494, 531,
+        567, 604, 640, 676, 713, 749, 786, 822, 858, 910, 982, 1057, 1139, 1229,
+        1394, 1558, 1722, 1887, 2051, 2216, 2240, 2270, 2300, 2340, 2380, 2420,
+        2460, 2510, 2560, 2610, 2670, 2730, 2790, 2850, 2910
+      ]
+    },
+    "constants": {
+      "damageProfile": "HeavyRound",
+      "range": "3",
+      "nrOfHits": "1"
+    },
+    "scaled": ["minDmg", "maxDmg"]
+  }
+}

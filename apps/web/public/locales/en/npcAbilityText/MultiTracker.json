@@ -1,0 +1,8 @@
+{
+  "MultiTracker": {
+    "description": "All enemy units that did not move during their turn receive a <style=\"Debuff_Markerlight\">Markerlight</style>.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

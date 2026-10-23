@@ -1,0 +1,31 @@
+{
+  "CalibaniteGreatsword": {
+    "description": "<style=\"Faction_DarkAngels\">Forcas</style> puede alternar entre dos posturas.\n\nPostura de ataque: al final de su turno, Forcas inicia <style=\"Buff_Overwatching\">Vigilancia</style>, incluso si atacó durante su turno. Al derrotar a una unidad durante Vigilancia, permanece en estado de Vigilancia y retiene <style=\"STAT\">{[nrOfHits]}</style> <style=\"Stat_Hits\">impactos</style> menos que el ataque anterior.\n\nPostura de barrido: los <style=\"NormalAttack\">ataques normales</style> de Forcas también infligen <style=\"DMG_Power\">{[minDmg]}-{[maxDmg]} de Daño de poder</style> <style=\"Stat_Hits\">x{[nrOfHits_2]}</style> a cada enemigo adyacente tanto a Forcas como al objetivo inicial.\n\n<i>Esta habilidad se puede usar una vez por turno, cada uso cambia la postura activa y no termina el turno de Forcas. Solo el primer uso de esta habilidad en cada batalla cuenta como usar una habilidad activa.</i>",
+    "variables": {
+      "nrOfHits": [
+        3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 2, 2, 2, 2, 2, 2, 2,
+        2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+      ],
+      "minDmg": [
+        10, 12, 14, 16, 18, 20, 23, 25, 27, 30, 32, 34, 36, 39, 41, 43, 46, 48,
+        50, 53, 56, 60, 69, 78, 87, 96, 105, 115, 124, 133, 142, 151, 160, 169,
+        178, 187, 196, 206, 215, 227, 245, 264, 285, 307, 348, 390, 431, 472,
+        513, 554, 560, 568, 575, 585, 595, 605, 615, 628, 640, 653, 668, 683,
+        698, 713, 728
+      ],
+      "maxDmg": [
+        14, 17, 20, 22, 25, 28, 32, 35, 38, 41, 45, 48, 51, 54, 57, 61, 64, 67,
+        70, 74, 78, 84, 97, 109, 122, 135, 148, 160, 173, 186, 199, 211, 224,
+        237, 249, 262, 275, 288, 300, 318, 344, 370, 399, 430, 488, 545, 603,
+        660, 718, 776, 784, 795, 805, 819, 833, 847, 861, 879, 896, 914, 935,
+        956, 977, 998, 1019
+      ]
+    },
+    "constants": {
+      "damageProfile": "Power",
+      "nrOfHits_2": "3"
+    },
+    "scaled": ["minDmg", "maxDmg"]
+  }
+}

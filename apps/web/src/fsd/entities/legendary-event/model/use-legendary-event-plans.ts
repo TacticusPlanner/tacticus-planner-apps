@@ -3,7 +3,7 @@ import { useIsAuthenticated } from "@azure/msal-react"
 
 import { legendaryEventPlanQueries } from "../api/legendary-event-plan.queries"
 import type { LegendaryEventPlan } from "./plan.types"
-import { useQueryReadState } from "./use-query-read-state"
+import { useQueryReadState } from "@/shared/lib"
 import type { ReadState } from "./use-read-state"
 
 /** Every stored plan of the caller (the master table's team membership). Enabled when signed in;

@@ -2,7 +2,7 @@ import { Link, useLocation } from "react-router"
 import { PanelLeftClose } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
-import { CommandShortcut } from "@workspace/ui/components/command"
+import { CommandShortcut } from "@workspace/ui/components/command-shortcut"
 import { cn } from "@workspace/ui/lib/utils"
 
 import { findActiveChild } from "./find-active-child"
@@ -101,7 +101,7 @@ export function DesktopSectionNavigation({
                   to={child.path}
                 >
                   <NavChildIcon child={child} className="mr-2" />
-                  <span className="min-w-0 truncate">
+                  <span className="min-w-0 break-words">
                     {subItemLabel(t, child)}
                   </span>
                   <NavLiveDot item={child} />

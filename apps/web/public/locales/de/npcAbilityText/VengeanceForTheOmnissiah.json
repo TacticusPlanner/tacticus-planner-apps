@@ -1,0 +1,10 @@
+{
+  "VengeanceForTheOmnissiah": {
+    "description": "Immer wenn eine verbündete, angrenzende <style=\"Mechanical\">mechanische</style> Einheit besiegt wird, erhält der <style=\"Faction_AdeptusMechanicus\">Maschinenseher-Techpriester</style> <style=\"Stat\">{[effectLevel]}</style> Stufen von <style=\"Buff_MachineVengeance\">Maschinenrache</style>.",
+    "variables": {},
+    "constants": {
+      "effectLevel": "1"
+    },
+    "scaled": []
+  }
+}

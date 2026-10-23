@@ -1,0 +1,10 @@
+{
+  "Thrydderghyre": {
+    "description": "The first time <style=\"Faction_ThousandSons\">Yazaghor</style> loses <style=\"Stat_Health\">Health</style> and the first time he uses <i>Sorcerous Facade</i>, he summons a <style=\"Summon\"><style=\"Faction_ThousandSons\">Copy</style></style> of himself in a free adjacent hex with <style=\"STAT\">{[statsPct]}%</style> of his own <style=\"Stat_Health\">Health</style>, <style=\"Stat_Damage\">Damage</style> and <style=\"Stat_Armor\">Armour</style>. The copies cannot use <i>Sorcerous Facade</i> or <i>Thrydderghyre</i>, but have <i>Twisted Mirage</i> as additional passive ability.",
+    "variables": {
+      "statsPct": [50, 51, 52, 54, 56, 58, 60, 62, 64, 66]
+    },
+    "constants": {},
+    "scaled": []
+  }
+}

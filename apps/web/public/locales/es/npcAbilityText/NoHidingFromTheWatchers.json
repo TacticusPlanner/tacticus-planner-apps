@@ -1,0 +1,10 @@
+{
+  "NoHidingFromTheWatchers": {
+    "description": "Cualquier <style=\"Stat_Damage\">Daño</style> que esta unidad reciba se reduce a 0. Después de ser atacada, esta unidad se mueve {[nrOfTiles]} hexágono, intentando alejarse de todas las demás unidades. Si no hay otro <style=\"Faction_DarkAngels\">Ángel Oscuro</style> aliado en el campo de batalla excepto otros <style=\"Faction_DarkAngels\">Guardianes en la Oscuridad</style>, entonces esta unidad abandona el campo de batalla.",
+    "variables": {},
+    "constants": {
+      "nrOfTiles": "1"
+    },
+    "scaled": []
+  }
+}

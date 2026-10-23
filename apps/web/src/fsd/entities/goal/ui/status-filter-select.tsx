@@ -7,6 +7,8 @@ import {
   SelectValue,
 } from "@workspace/ui/components/select"
 
+import { STATUS_VALUES } from "../model/types"
+
 // "toReach"/"reached" mirror the pages' own attainment-derived grouping (computed, not the goal's
 // lifecycle `status`); "active"/"paused" are status-driven (the goal's own `GoalStatus`,
 // straight from `row.status`). "blocked" is neither: it's the same additive, cross-cutting signal
@@ -16,14 +18,6 @@ import {
 // and reached-indicator behavior instead of each maintaining its own near-identical `TabsList`.
 export type GoalStatusFilterValue =
   "toReach" | "reached" | "blocked" | "active" | "paused"
-
-const STATUS_VALUES: readonly GoalStatusFilterValue[] = [
-  "toReach",
-  "reached",
-  "blocked",
-  "active",
-  "paused",
-]
 
 // "blocked" has no count here on purpose: unlike the others, knowing how many goals are blocked
 // requires each goal's computed blockers (`GoalOverviewMetrics.blockers`), which - to avoid fetching

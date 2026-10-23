@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next"
 
-import type { HseTeamRecommendations } from "../../model/hse-team-recommendations.types"
+import type { HseTeamRecommendations } from "@/features/team-recommendations"
 import { HseEnemyHints } from "./hse-enemy-hints"
 import { HseTeamCard } from "./hse-team-card"
 import { hseTeamTestId } from "./hse-team-test-id"

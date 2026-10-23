@@ -1,0 +1,12 @@
+{
+  "HyperCorrosiveAcid": {
+    "description": "Los enemigos que reciben daño de una <style=\"Faction_Tyranids\">mina espora</style> aliada reciben <style=\"Stat_Damage\">+{[extraDmgPct]} % de Daño</style> de ataques de <style=\"Character\">personajes</style> <style=\"Rarity_Mythic\">Míticos</style> por {[nrOfRounds]} ronda.",
+    "variables": {
+      "extraDmgPct": [10, 13, 16, 20]
+    },
+    "constants": {
+      "nrOfRounds": "1"
+    },
+    "scaled": ["extraDmgPct"]
+  }
+}

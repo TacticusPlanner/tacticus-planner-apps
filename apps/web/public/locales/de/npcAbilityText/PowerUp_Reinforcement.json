@@ -1,0 +1,8 @@
+{
+  "PowerUp_Reinforcement": {
+    "description": "Fügt 1 Truppenpunkt hinzu, wenn er von einer verbündeten Einheit eingesammelt wird.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

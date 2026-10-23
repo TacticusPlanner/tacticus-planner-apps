@@ -1,0 +1,15 @@
+{
+  "LordOfTempests": {
+    "description": "El <style=\"NormalAttack\">ataque normal</style> de <style=\"Faction_SpaceWolves\">Njal</style>inflige <style=\"Stat_Damage\">+{[extraDmg]} de daño</style> por cada hexágono que lo rodea que esté cubierto de <style=\"Effect_Ice\">hielo</style>. El hexágono de cada enemigo al que impacte el ataque normal de <style=\"Faction_SpaceWolves\">Njal</style> quedará cubierto de <style=\"Effect_Ice\">hielo</style> al final del ataque.",
+    "variables": {
+      "extraDmg": [
+        3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22,
+        23, 24, 28, 31, 35, 39, 42, 46, 49, 53, 57, 60, 64, 68, 71, 75, 79, 82,
+        86, 91, 98, 106, 114, 123, 139, 156, 172, 189, 205, 222, 223, 224, 225,
+        226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237
+      ]
+    },
+    "constants": {},
+    "scaled": ["extraDmg"]
+  }
+}

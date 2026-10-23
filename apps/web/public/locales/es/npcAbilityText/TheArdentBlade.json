@@ -1,0 +1,12 @@
+{
+  "TheArdentBlade": {
+    "description": "La primera vez en cada turno que <style=\"Faction_Sisterhood\">Celestine</style> derrota a una unidad enemiga, resucita a una de sus <style=\"Faction_Sisterhood\">Geminae Superia</style> con <style=\"Stat_Health\">{[hp]} de Salud</style> en un hexágono adyacente libre. Si no puede ser resucitada, entonces una de ellas dentro de un alcance de {[range]} hexágonos realiza una acción en su lugar.",
+    "variables": {
+      "hp": [2350, 2477, 2604, 2731, 2857, 2984, 3111, 3238, 3365, 3492]
+    },
+    "constants": {
+      "range": "3"
+    },
+    "scaled": []
+  }
+}

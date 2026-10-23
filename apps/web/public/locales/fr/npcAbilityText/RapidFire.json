@@ -1,0 +1,8 @@
+{
+  "RapidFire": {
+    "description": "S'il ne s'est pas déplacé ce tour, l'<style=\"Faction_Ultramarines\">Intercessor Lourd</style> attaque deux fois et chacune des deux attaques inflige des <style=\"Stat_Damage\">dégâts</style> normalement.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

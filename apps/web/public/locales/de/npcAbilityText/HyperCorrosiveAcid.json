@@ -1,0 +1,12 @@
+{
+  "HyperCorrosiveAcid": {
+    "description": "Gegner, die durch eine verbündete <style=\"Faction_Tyranids\">Sporenmine</style> beschädigt werden, erleiden {[nrOfRounds]} Runde lang <style=\"Stat_Damage\">+{[extraDmgPct]} % Schaden</style> durch Angriffe von <style=\"Rarity_Mythic\">Mythischen</style> <style=\"Character\">Charakteren</style>.",
+    "variables": {
+      "extraDmgPct": [10, 13, 16, 20]
+    },
+    "constants": {
+      "nrOfRounds": "1"
+    },
+    "scaled": ["extraDmgPct"]
+  }
+}

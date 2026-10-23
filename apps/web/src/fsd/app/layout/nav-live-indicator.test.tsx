@@ -3,10 +3,22 @@ import { MemoryRouter } from "react-router"
 import { TooltipProvider } from "@workspace/ui/components/tooltip"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
-const { hseState, hreLive } = vi.hoisted(() => ({
-  hseState: { current: { status: "loading" } as unknown },
+const { hseState, hreLive, signalReads } = vi.hoisted(() => ({
+  hseState: { current: { status: "loading" } },
   hreLive: { current: false },
+  signalReads: { count: 0 },
 }))
+// Pass-through that counts the renders of every live-signal reader (NavLiveDot).
+vi.mock("./hse-live-context", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("./hse-live-context")>()
+  return {
+    ...actual,
+    useEventLiveSignals: () => {
+      signalReads.count++
+      return actual.useEventLiveSignals()
+    },
+  }
+})
 vi.mock("@/features/daily-raids", () => ({
   useActiveHomeScreenEvent: () => hseState.current,
 }))
@@ -25,7 +37,7 @@ vi.mock("@/shared/auth", () => ({
   loginRequest: { scopes: ["api"] },
   useSilentSignInStatus: () => "idle",
 }))
-vi.mock("../providers/player-data-sync-button", () => ({
+vi.mock("@/widgets/account-menu/ui/player-data-sync-button", () => ({
   PlayerDataSyncButton: () => null,
 }))
 vi.mock("@/features/player-data-sync", () => ({
@@ -37,9 +49,8 @@ vi.mock("@/features/player-data-sync", () => ({
   }),
 }))
 vi.mock("../providers/auth-control", () => ({ AuthControl: () => null }))
-vi.mock("../providers/theme-switcher", () => ({ ThemeSwitcher: () => null }))
-vi.mock("../providers/userjot-board-link", () => ({
-  UserJotBoardLink: () => null,
+vi.mock("@/widgets/account-menu/ui/theme-switcher", () => ({
+  ThemeSwitcher: () => null,
 }))
 vi.mock("../providers/userjot-feedback-button", () => ({
   UserJotFeedbackButton: () => null,
@@ -55,11 +66,11 @@ import { DesktopNavigationDialog } from "./desktop-navigation-dialog"
 import { DesktopShell } from "./desktop-layout"
 import { HseLiveProvider } from "./hse-live-provider"
 import { MobileShell } from "./mobile-layout"
-import type { NavItem } from "./nav-items"
+import { NavLiveDot } from "./nav-live-dot"
 import { navItems } from "./nav-items"
 import { SectionTabs } from "./section-tabs"
 
-const items = navItems as NavItem[]
+const items = navItems
 const dailies = items.find((item) => item.path === "/dailies")!
 const noQuickActions = { actions: [], select: () => false, flush: () => {} }
 const hunt = {
@@ -246,5 +257,25 @@ describe("nav live indicator accessibility", () => {
       </MemoryRouter>
     )
     expect(screen.queryByTestId("nav-live-dot")).toBeNull()
+  })
+})
+
+describe("HseLiveProvider value", () => {
+  it("keeps NavLiveDot from re-rendering while the signals are unchanged", () => {
+    hseState.current = ready(hunt)
+    hreLive.current = false
+    // One element reused across renders, so only a context change can re-render the dot.
+    const dot = <NavLiveDot item={dailies} />
+    const { rerender } = render(<HseLiveProvider>{dot}</HseLiveProvider>)
+    const mounted = signalReads.count
+
+    // A fresh query state that still means "HSE live" re-renders the provider only.
+    hseState.current = ready({ ...hunt })
+    rerender(<HseLiveProvider>{dot}</HseLiveProvider>)
+    expect(signalReads.count).toBe(mounted)
+
+    hreLive.current = true
+    rerender(<HseLiveProvider>{dot}</HseLiveProvider>)
+    expect(signalReads.count).toBeGreaterThan(mounted)
   })
 })

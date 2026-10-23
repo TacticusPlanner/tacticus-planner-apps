@@ -1,0 +1,12 @@
+{
+  "Reveal": {
+    "description": "An enemy within {[range]} hexes that is not <style=\"Debuff_Revealed\">Revealed</style> and has defeated a friendly <style=\"Faction_Aeldari\">Aeldari</style> unit this battle becomes <style=\"Debuff_Revealed\">Revealed</style> for {[nrOfRounds]} rounds. Friendly <style=\"Faction_Aeldari\">Aeldari</style> that attack <style=\"Debuff_Revealed\">Revealed</style> enemies ignore any hit reductions and deal <style=\"Stat_Damage\">+{[extraDmgPct]}% Damage</style>.",
+    "variables": {},
+    "constants": {
+      "extraDmgPct": "33",
+      "nrOfRounds": "3",
+      "range": "2"
+    },
+    "scaled": []
+  }
+}

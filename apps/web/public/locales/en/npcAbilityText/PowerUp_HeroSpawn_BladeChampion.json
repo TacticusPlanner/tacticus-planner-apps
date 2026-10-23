@@ -1,0 +1,8 @@
+{
+  "PowerUp_HeroSpawn_BladeChampion": {
+    "description": "When picked up by a friendly unit, deploys <style=\"Faction_Custodes\">Kariyan</style> onto the battlefield. They can be controlled like other friendly <style=\"Character\">characters</style>. If possible, they try to deploy onto the hex of an enemy unit, and the enemy on that hex is <style=\"Obliterated\">always overkilled</style>.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

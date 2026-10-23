@@ -1,8 +1,7 @@
-import { act, within } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
-import { render, screen } from "@/test/render"
+import { act, render, screen, within } from "@/test/render"
 import {
   battle,
   offPlanBattle,
@@ -19,14 +18,6 @@ const { useIsMobileMock } = vi.hoisted(() => ({
   useIsMobileMock: vi.fn(() => false),
 }))
 
-vi.mock("react-i18next", () => ({
-  initReactI18next: { type: "3rdParty", init: vi.fn() },
-  useTranslation: () => ({
-    i18n: { language: "en" },
-    t: (key: string, values?: Record<string, unknown>) =>
-      values ? `${key}:${JSON.stringify(values)}` : key,
-  }),
-}))
 vi.mock("@/features/daily-raids", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@/features/daily-raids")>()
   return {
@@ -143,7 +134,7 @@ describe("Schedule page", () => {
 
     const select = screen.getByTestId("schedule-project-select")
     const trigger = screen.getByTestId("schedule-planning-settings")
-    expect(trigger).toHaveAccessibleName("goals.planningSettings.button")
+    expect(trigger).toHaveAccessibleName("Planning settings")
     expect(
       select.compareDocumentPosition(trigger) & Node.DOCUMENT_POSITION_FOLLOWING
     ).toBeTruthy()
@@ -159,7 +150,7 @@ describe("Schedule page", () => {
     render(<SchedulePage />)
 
     const select = screen.getByTestId("schedule-project-select")
-    expect(select).toHaveAccessibleName("project.placeholder")
+    expect(select).toHaveAccessibleName("Select a project")
     expect(select).not.toHaveTextContent(/\S/)
   })
 
@@ -188,10 +179,16 @@ describe("Schedule page", () => {
 
       const blocker = within(screen.getByTestId("plan-blocker-g1"))
       expect(blocker.getByText("Bellator · Rank Gold1")).toBeInTheDocument()
-      expect(blocker.getByText(/blockers\.partial/)).toBeInTheDocument()
-      expect(blocker.getByText(/Day 2.*"count":6/)).toBeInTheDocument()
       expect(
-        blocker.getByText(/goals\.estimate\.blocked\.NoFarmLocation/)
+        blocker.getByText(
+          /Obtainable work is scheduled; the rest has no supported source/
+        )
+      ).toBeInTheDocument()
+      expect(blocker.getByText(/Day 2.*×6/)).toBeInTheDocument()
+      expect(
+        blocker.getByText(
+          /No accessible farming location provides a required resource\./
+        )
       ).toBeInTheDocument()
     })
 
@@ -217,7 +214,7 @@ describe("Schedule page", () => {
     render(<SchedulePage />)
 
     const summary = within(screen.getByTestId("plan-summary"))
-    expect(summary.getByText("plan.summary.noCompletion")).toBeInTheDocument()
+    expect(summary.getByText("Not available")).toBeInTheDocument()
     expect(summary.queryByText("2026-01-06")).not.toBeInTheDocument()
   })
 
@@ -227,7 +224,7 @@ describe("Schedule page", () => {
       render(<SchedulePage />)
 
       expect(screen.getByTestId("plan-day-1")).toBeInTheDocument()
-      expect(screen.getByText("plan.today")).toBeInTheDocument()
+      expect(screen.getByText("Today")).toBeInTheDocument()
       expect(screen.getByTestId("plan-day-3")).toBeInTheDocument()
       expect(screen.queryByTestId("plan-day-4")).not.toBeInTheDocument()
       expect(screen.getByText("200")).toBeInTheDocument()
@@ -241,10 +238,10 @@ describe("Schedule page", () => {
       ).not.toBeInTheDocument()
 
       const strip = within(screen.getByTestId("plan-days"))
-      await user.click(strip.getByRole("button", { name: "plan.showAll" }))
+      await user.click(strip.getByRole("button", { name: "Show all days" }))
       expect(screen.getByTestId("plan-day-5")).toBeInTheDocument()
       expect(
-        screen.queryByRole("button", { name: "plan.showAll" })
+        screen.queryByRole("button", { name: "Show all days" })
       ).not.toBeInTheDocument()
     })
 
@@ -254,7 +251,7 @@ describe("Schedule page", () => {
 
       expect(
         within(screen.getByTestId("plan-days")).getByRole("button", {
-          name: "plan.showAll",
+          name: "Show all days",
         })
       ).toBeInTheDocument()
     })
@@ -306,7 +303,7 @@ describe("Schedule page", () => {
       )
       try {
         render(<SchedulePage />)
-        await user.click(screen.getByRole("button", { name: "plan.showAll" }))
+        await user.click(screen.getByRole("button", { name: "Show all days" }))
 
         expect(screen.getByTestId("plan-day-4")).toBeInTheDocument()
         expect(screen.queryByTestId("plan-day-4-raids")).not.toBeInTheDocument()
@@ -346,9 +343,7 @@ describe("Schedule page", () => {
       render(<SchedulePage />)
 
       const cell = screen.getByTestId("plan-cell-1-U1")
-      expect(cell).toHaveAccessibleName(
-        'plan.cell.label:{"material":"Ceramite","owned":265,"target":500}'
-      )
+      expect(cell).toHaveAccessibleName("Ceramite, 265 of 500 owned")
       act(() => cell.focus())
       const tooltip = await screen.findByRole("tooltip")
       expect(tooltip).toHaveTextContent("Ceramite")
@@ -403,7 +398,7 @@ describe("Schedule page", () => {
 
       expect(screen.getByTestId("plan-day-5")).toBeInTheDocument()
       expect(
-        screen.queryByRole("button", { name: "plan.showAll" })
+        screen.queryByRole("button", { name: "Show all days" })
       ).not.toBeInTheDocument()
     })
 
@@ -451,9 +446,7 @@ describe("Schedule page", () => {
 
         await user.click(screen.getByRole("button", { name: "Aleph-Null" }))
         // Aleph-Null is only scheduled on Day 5, so the two jumps collapse into one.
-        await user.click(
-          screen.getByRole("button", { name: 'plan.day:{"day":5}' })
-        )
+        await user.click(screen.getByRole("button", { name: "Day 5" }))
 
         expect(screen.getByTestId("plan-day-5")).toBeInTheDocument()
         expect(scrolled.at(-1)).toBe(screen.getByTestId("plan-day-5"))
@@ -469,10 +462,10 @@ describe("Schedule page", () => {
 
       await user.click(screen.getByRole("button", { name: "Bellator" }))
       expect(
-        screen.getByRole("button", { name: 'plan.filter.first:{"day":1}' })
+        screen.getByRole("button", { name: "← Day 1" })
       ).toBeInTheDocument()
       expect(
-        screen.getByRole("button", { name: 'plan.filter.last:{"day":5}' })
+        screen.getByRole("button", { name: "Day 5 →" })
       ).toBeInTheDocument()
     })
 
@@ -506,7 +499,7 @@ describe("Schedule page", () => {
       expect(main.queryByTestId("plan-cell-1-U1")).not.toBeInTheDocument()
       expect(raided.getByTestId("plan-cell-1-U1")).toBeInTheDocument()
       expect(day1.getByTestId("plan-day-1-raided-divider")).toHaveTextContent(
-        "plan.raided"
+        "Raided"
       )
       expect(
         day1
@@ -634,7 +627,7 @@ describe("Schedule page", () => {
     render(<SchedulePage />)
     expect(screen.getByTestId("plan-day-1")).toBeInTheDocument()
     expect(
-      screen.queryByRole("button", { name: "plan.showAll" })
+      screen.queryByRole("button", { name: "Show all days" })
     ).not.toBeInTheDocument()
   })
 })
@@ -681,7 +674,7 @@ describe("Schedule page shop purchases", () => {
 
     const day1 = within(screen.getByTestId("plan-day-1"))
     expect(day1.getByTestId("plan-day-1-shops-divider")).toHaveTextContent(
-      "plan.shops"
+      "Shops"
     )
     expect(
       day1
@@ -690,7 +683,7 @@ describe("Schedule page shop purchases", () => {
     ).toBe(Node.DOCUMENT_POSITION_FOLLOWING)
     const row = day1.getByTestId("plan-shop-1-war:shards_bellator-bellator")
     // 10 shards at 5 per purchase = 2 purchases; 2 × 900 = 1,800 coins.
-    expect(row).toHaveTextContent('"purchases":2,"shards":10')
+    expect(row).toHaveTextContent("≈2× · 10 shards")
     expect(row).toHaveTextContent("1,800")
     expect(
       screen.queryByTestId("plan-day-2-shops-divider")
@@ -759,7 +752,7 @@ describe("Schedule page shop purchases", () => {
       screen.getByTestId("plan-shop-1-war:shards_bellator-bellator")
     ).not.toHaveAttribute("data-dimmed")
     expect(
-      screen.getByRole("button", { name: /plan\.filter\.last/ })
+      screen.getByRole("button", { name: /^Day \d+ →$/ })
     ).toBeInTheDocument()
   })
 })
@@ -810,7 +803,7 @@ describe("Schedule page onslaught runs", () => {
 
     const day1 = within(screen.getByTestId("plan-day-1"))
     expect(day1.getByTestId("plan-day-1-onslaught-divider")).toHaveTextContent(
-      "plan.onslaught"
+      "Onslaught"
     )
     expect(
       day1
@@ -818,7 +811,7 @@ describe("Schedule page onslaught runs", () => {
         .compareDocumentPosition(day1.getByTestId("plan-day-1-onslaught"))
     ).toBe(Node.DOCUMENT_POSITION_FOLLOWING)
     expect(day1.getByTestId("plan-onslaught-1-bellator")).toHaveTextContent(
-      '"runs":1.5,"shards":6'
+      "≈1.5 runs · 6 shards"
     )
     expect(
       screen.queryByTestId("plan-day-2-onslaught-divider")

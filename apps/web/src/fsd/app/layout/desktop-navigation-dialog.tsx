@@ -76,6 +76,8 @@ export function DesktopNavigationDialog({
         </DialogHeader>
         <Input
           aria-label={t("nav.search")}
+          // The dialog exists to search; focus belongs in its field on open.
+          // eslint-disable-next-line jsx-a11y/no-autofocus
           autoFocus
           onChange={(event) => setSearch(event.target.value)}
           placeholder={t("nav.search")}
