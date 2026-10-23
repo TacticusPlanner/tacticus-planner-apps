@@ -134,6 +134,21 @@ describe("useCreateGoalPrefill", () => {
     expect(fns.setRankEnd).not.toHaveBeenCalled()
   })
 
+  it("uses an Upgrade prefill's own quantity over the ladder hint", () => {
+    render(
+      {
+        entityType: "Character",
+        entityId: unitId,
+        goalType: "Upgrade",
+        upgradeId: "upgHpC001" as UpgradeId,
+        quantity: 10,
+      },
+      unitId
+    )
+
+    expect(fns.addUpgradeTarget).toHaveBeenCalledWith("upgHpC001", 10)
+  })
+
   it("holds an Upgrade prefill until the ladder quantities have loaded", () => {
     const { rerender } = render(
       {

@@ -573,12 +573,12 @@
         "syncRequiredTitle": "Primero debes sincronizar tus datos de jugador",
         "syncRequired": "Sincroniza tus datos de jugador y luego vuelve a importar los objetivos."
       },
-      "preFarm": {
-        "title": "Los objetivos de pre-farmeo necesitan un paso más",
-        "description": "V2 no tiene objetivos de pre-farmeo, así que no se importaron. Para seguir pre-farmeando un material, crea un objetivo de Mejora para él en la unidad indicada y colócalo antes de los demás objetivos de esa unidad.",
-        "forUnits": "Pre-farmeado para {{units}}",
-        "noLinkedUnit": "Los objetivos para los que se pre-farmeaba no se importaron, así que elige tú la unidad.",
-        "createUpgradeGoal": "Crear objetivo de Mejora"
+      "materialSteps": {
+        "title": "Los objetivos de materiales necesitan un paso más",
+        "description": "Los objetivos de materiales y de pre-farmeo de V1 no tienen unidad, y todo objetivo de V2 pertenece a una, así que no se importaron. Añade un objetivo de mejora para cada material en la unidad que deba tenerlo. Si era de pre-farmeo, colócalo antes que los demás objetivos de esa unidad.",
+        "preFarmedFor": "Pre-farmeado para {{units}}",
+        "suggestedUnit": "Unidad sugerida: {{unit}}",
+        "createUpgradeGoal": "Crear objetivo de mejora"
       },
       "reasons": {
         "goalCreated": "Importado desde V1.",
@@ -597,8 +597,7 @@
         "prerequisiteRejected": "Este requisito añadido automáticamente no es válido para este objetivo.",
         "unknownUpgrade": "Este material de mejora no está en el catálogo del juego de V2.",
         "noUpgradeOwner": "Ninguno de tus personajes ni Máquinas de Guerra usa este material de mejora.",
-        "upgradeGoalOccupied": "Esta unidad ya tiene un objetivo de mejora para otros materiales. Añade tú este material a ese objetivo.",
-        "manualStepRequired": "Los objetivos de pre-farmeo no existen en V2. Añade un objetivo de mejora para este material para seguir pre-farmeándolo.",
+        "manualStepRequired": "Los objetivos de V2 siempre pertenecen a una unidad. Añade un objetivo de mejora para este material en la unidad que deba tenerlo.",
         "generic": "No se pudo importar este objetivo."
       },
       "legendaryEvents": {

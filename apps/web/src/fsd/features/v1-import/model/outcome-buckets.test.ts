@@ -8,7 +8,7 @@ import {
   groupOutcomes,
   importedCounts,
   isAutomaticallyAdded,
-  preFarmSteps,
+  materialSteps,
   reasonKeyForCode,
 } from "./outcome-buckets"
 
@@ -24,6 +24,7 @@ function outcome(overrides: Partial<V1GoalOutcome>): V1GoalOutcome {
     sourceGoalId: "v1-goal-1",
     upgradeId: null,
     linkedSourceGoalIds: null,
+    upgradeQuantity: null,
     ...overrides,
   }
 }
@@ -44,7 +45,6 @@ describe("bucketForCode", () => {
     expect(bucketForCode("missing_target")).toBe("notImported")
     expect(bucketForCode("unknown_upgrade")).toBe("notImported")
     expect(bucketForCode("no_upgrade_owner")).toBe("notImported")
-    expect(bucketForCode("upgrade_goal_occupied")).toBe("notImported")
     expect(bucketForCode("manual_step_required")).toBe("needsAction")
     expect(bucketForCode("player_data_required")).toBe("failed")
     expect(bucketForCode("target_rejected")).toBe("failed")
@@ -250,20 +250,12 @@ describe("buildDiagnosticText", () => {
           upgradeId: "upgHpC001",
         }),
       ],
-      failed: [
-        outcome({
-          code: "upgrade_goal_occupied",
-          entityId: "hero1",
-          goalType: null,
-          upgradeId: "upgHpC001",
-        }),
-      ],
+      failed: [],
       needsAction: [
         outcome({
           status: "Skipped",
           code: "manual_step_required",
-          entityType: null,
-          entityId: null,
+          entityId: "hero1",
           goalType: null,
           upgradeId: "upgDmgC001",
         }),
@@ -277,11 +269,10 @@ describe("buildDiagnosticText", () => {
     })
 
     expect(text).toContain("- upgrade:upgHpC001: reason:no_upgrade_owner")
-    expect(text).toContain(
-      "- hero1 · upgrade:upgHpC001: reason:upgrade_goal_occupied"
-    )
     expect(text).toContain("Needs a manual step:")
-    expect(text).toContain("- upgrade:upgDmgC001: reason:manual_step_required")
+    expect(text).toContain(
+      "- hero1 · upgrade:upgDmgC001: reason:manual_step_required"
+    )
   })
 
   it("omits an empty bucket's section entirely", () => {
@@ -339,9 +330,9 @@ describe("buildDiagnosticText", () => {
   })
 })
 
-describe("preFarmSteps", () => {
+describe("materialSteps", () => {
   it("resolves each pre-farm goal's linked V1 goals to their distinct units", () => {
-    const steps = preFarmSteps([
+    const steps = materialSteps([
       outcome({ sourceGoalId: "rank-a", entityId: "heroA" }),
       outcome({
         sourceGoalId: "ability-a",
@@ -366,40 +357,51 @@ describe("preFarmSteps", () => {
         status: "Skipped",
         code: "manual_step_required",
         sourceGoalId: "pf-1",
-        entityType: null,
-        entityId: null,
-        goalType: null,
+        entityId: "heroSuggested",
+        goalType: "Upgrade",
         goalId: null,
         upgradeId: "upgHpC001",
         linkedSourceGoalIds: ["rank-a", "ability-a", "mow-b", "gone"],
       }),
     ])
 
+    const linked = [
+      { entityType: "Character", entityId: "heroA" },
+      { entityType: "Mow", entityId: "mowB" },
+    ]
     expect(steps).toEqual([
       {
         sourceGoalId: "pf-1",
         upgradeId: "upgHpC001",
-        units: [
-          { entityType: "Character", entityId: "heroA" },
-          { entityType: "Mow", entityId: "mowB" },
-        ],
+        quantity: null,
+        linkedUnits: linked,
+        units: linked,
       },
     ])
   })
 
-  it("keeps a pre-farm goal whose linked goals were not imported, with no units", () => {
-    const steps = preFarmSteps([
+  it("offers the suggested unit, with its quantity, for an upgrade-material goal", () => {
+    const steps = materialSteps([
       outcome({
         status: "Skipped",
         code: "manual_step_required",
-        sourceGoalId: "pf-1",
+        sourceGoalId: "m-1",
+        entityId: "heroSuggested",
+        goalType: "Upgrade",
+        goalId: null,
         upgradeId: "upgHpC001",
-        linkedSourceGoalIds: [],
+        upgradeQuantity: 10,
       }),
     ])
 
     expect(steps).toEqual([
-      { sourceGoalId: "pf-1", upgradeId: "upgHpC001", units: [] },
+      {
+        sourceGoalId: "m-1",
+        upgradeId: "upgHpC001",
+        quantity: 10,
+        linkedUnits: [],
+        units: [{ entityType: "Character", entityId: "heroSuggested" }],
+      },
     ])
   })
 

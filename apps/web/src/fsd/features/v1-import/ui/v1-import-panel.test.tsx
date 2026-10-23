@@ -129,6 +129,7 @@ function outcome(overrides: Partial<V1GoalOutcome>): V1GoalOutcome {
     sourceGoalId: "v1-goal-1",
     upgradeId: null,
     linkedSourceGoalIds: null,
+    upgradeQuantity: null,
     ...overrides,
   }
 }

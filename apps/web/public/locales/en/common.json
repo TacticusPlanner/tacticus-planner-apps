@@ -573,11 +573,11 @@
         "syncRequiredTitle": "Player data must be synced first",
         "syncRequired": "Sync your player data, then import goals again to bring in your V1 goals."
       },
-      "preFarm": {
-        "title": "Pre-farm goals need one more step",
-        "description": "V2 has no pre-farm goal type, so these weren't imported. To keep pre-farming a material, add an Upgrade goal for it on the unit below and place it ahead of that unit's other goals.",
-        "forUnits": "Pre-farmed for {{units}}",
-        "noLinkedUnit": "The goals it pre-farmed for weren't imported, so pick the unit yourself.",
+      "materialSteps": {
+        "title": "Material goals need one more step",
+        "description": "V1 material and pre-farm goals have no unit, and every V2 goal belongs to one, so these weren't imported. Add an Upgrade goal for each material on the unit that should hold it. For a pre-farm goal, place it ahead of that unit's other goals.",
+        "preFarmedFor": "Pre-farmed for {{units}}",
+        "suggestedUnit": "Suggested unit: {{unit}}",
         "createUpgradeGoal": "Create Upgrade goal"
       },
       "reasons": {
@@ -597,8 +597,7 @@
         "prerequisiteRejected": "This automatically added prerequisite isn't valid for this goal.",
         "unknownUpgrade": "This upgrade material is not in the V2 Game Catalog.",
         "noUpgradeOwner": "None of your characters or Machines of War uses this upgrade material.",
-        "upgradeGoalOccupied": "This unit already has an Upgrade goal for other materials. Add this material to that goal yourself.",
-        "manualStepRequired": "Pre-farm goals don't exist in V2. Add an Upgrade goal for this material to keep pre-farming it.",
+        "manualStepRequired": "V2 goals always belong to a unit. Add an Upgrade goal for this material on the unit that should hold it.",
         "generic": "This goal could not be imported."
       },
       "legendaryEvents": {

@@ -26,7 +26,6 @@ const CODE_BUCKETS: Record<string, OutcomeBucketKey> = {
   missing_target: "notImported",
   unknown_upgrade: "notImported",
   no_upgrade_owner: "notImported",
-  upgrade_goal_occupied: "notImported",
   player_data_required: "failed",
   target_rejected: "failed",
   project_slot_conflict: "failed",
@@ -64,7 +63,6 @@ type ReasonKey =
   | "goals.v1Import.reasons.missingTarget"
   | "goals.v1Import.reasons.unknownUpgrade"
   | "goals.v1Import.reasons.noUpgradeOwner"
-  | "goals.v1Import.reasons.upgradeGoalOccupied"
   | "goals.v1Import.reasons.manualStepRequired"
   | "goals.v1Import.reasons.playerDataRequired"
   | "goals.v1Import.reasons.targetRejected"
@@ -86,7 +84,6 @@ const REASON_KEYS: Record<string, ReasonKey> = {
   missing_target: "goals.v1Import.reasons.missingTarget",
   unknown_upgrade: "goals.v1Import.reasons.unknownUpgrade",
   no_upgrade_owner: "goals.v1Import.reasons.noUpgradeOwner",
-  upgrade_goal_occupied: "goals.v1Import.reasons.upgradeGoalOccupied",
   manual_step_required: "goals.v1Import.reasons.manualStepRequired",
   player_data_required: "goals.v1Import.reasons.playerDataRequired",
   target_rejected: "goals.v1Import.reasons.targetRejected",
@@ -134,18 +131,23 @@ export function isAutomaticallyAdded(outcome: V1GoalOutcome): boolean {
   return outcome.code === "prerequisite_added"
 }
 
-/** One V1 pre-farm goal the user must re-create by hand: the material, and the distinct units of the
- * goals it was linked to (resolved through those goals' own outcomes in this same report, so a linked
- * goal that wasn't imported — unknown unit, missing target — simply contributes no unit). */
-export type PreFarmStep = {
+type StepUnit = { entityType: string; entityId: string }
+
+/** One V1 material goal (upgrade material or pre-farm) the user must re-create by hand as an Upgrade
+ * goal: the material, an upgrade-material goal's quantity, the distinct units of a pre-farm goal's linked
+ * goals (resolved through those goals' own outcomes in this same report, so a linked goal that wasn't
+ * imported contributes no unit), and the units to offer — the linked ones, else the server's suggestion. */
+export type MaterialStep = {
   sourceGoalId: string | null
   upgradeId: string | null
-  units: { entityType: string; entityId: string }[]
+  quantity: number | null
+  linkedUnits: StepUnit[]
+  units: StepUnit[]
 }
 
-export function preFarmSteps(
+export function materialSteps(
   outcomes: readonly V1GoalOutcome[]
-): PreFarmStep[] {
+): MaterialStep[] {
   const bySourceId = new Map(
     outcomes
       .filter((outcome) => outcome.sourceGoalId)
@@ -154,19 +156,26 @@ export function preFarmSteps(
   return outcomes
     .filter((outcome) => outcome.code === "manual_step_required")
     .map((outcome) => {
-      const units = new Map<string, { entityType: string; entityId: string }>()
+      const linked = new Map<string, StepUnit>()
       for (const linkedId of outcome.linkedSourceGoalIds ?? []) {
-        const linked = bySourceId.get(linkedId)
-        if (!linked?.entityType || !linked.entityId) continue
-        units.set(`${linked.entityType}:${linked.entityId}`, {
-          entityType: linked.entityType,
-          entityId: linked.entityId,
+        const goal = bySourceId.get(linkedId)
+        if (!goal?.entityType || !goal.entityId) continue
+        linked.set(`${goal.entityType}:${goal.entityId}`, {
+          entityType: goal.entityType,
+          entityId: goal.entityId,
         })
       }
+      const linkedUnits = [...linked.values()]
+      const suggested =
+        outcome.entityType && outcome.entityId
+          ? [{ entityType: outcome.entityType, entityId: outcome.entityId }]
+          : []
       return {
         sourceGoalId: outcome.sourceGoalId,
-        upgradeId: outcome.upgradeId ?? null,
-        units: [...units.values()],
+        upgradeId: outcome.upgradeId,
+        quantity: outcome.upgradeQuantity,
+        linkedUnits,
+        units: linkedUnits.length > 0 ? linkedUnits : suggested,
       }
     })
 }

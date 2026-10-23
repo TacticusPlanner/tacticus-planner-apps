@@ -573,12 +573,12 @@
         "syncRequiredTitle": "Les données du joueur doivent d'abord être synchronisées",
         "syncRequired": "Synchronisez vos données de joueur, puis importez à nouveau les objectifs."
       },
-      "preFarm": {
-        "title": "Les objectifs de pré-farm nécessitent une étape de plus",
-        "description": "V2 n'a pas de type d'objectif de pré-farm, ils n'ont donc pas été importés. Pour continuer à pré-farmer un matériau, créez un objectif d'Amélioration pour celui-ci sur l'unité ci-dessous et placez-le avant les autres objectifs de cette unité.",
-        "forUnits": "Pré-farmé pour {{units}}",
-        "noLinkedUnit": "Les objectifs pour lesquels il était pré-farmé n'ont pas été importés, choisissez donc l'unité vous-même.",
-        "createUpgradeGoal": "Créer un objectif d'Amélioration"
+      "materialSteps": {
+        "title": "Les objectifs de matériaux demandent une étape de plus",
+        "description": "Les objectifs de matériaux et de pré-farm de V1 n'ont pas d'unité, alors que chaque objectif V2 en a une : ils n'ont donc pas été importés. Ajoutez un objectif d'amélioration pour chaque matériau sur l'unité qui doit le recevoir. Pour un objectif de pré-farm, placez-le avant les autres objectifs de cette unité.",
+        "preFarmedFor": "Pré-farmé pour {{units}}",
+        "suggestedUnit": "Unité suggérée : {{unit}}",
+        "createUpgradeGoal": "Créer un objectif d'amélioration"
       },
       "reasons": {
         "goalCreated": "Importé depuis V1.",
@@ -597,8 +597,7 @@
         "prerequisiteRejected": "Ce prérequis ajouté automatiquement n'est pas valide pour cet objectif.",
         "unknownUpgrade": "Ce matériau d'amélioration n'est pas dans le catalogue du jeu V2.",
         "noUpgradeOwner": "Aucun de vos personnages ni de vos Machines de guerre n'utilise ce matériau d'amélioration.",
-        "upgradeGoalOccupied": "Cette unité a déjà un objectif d'amélioration pour d'autres matériaux. Ajoutez vous-même ce matériau à cet objectif.",
-        "manualStepRequired": "Les objectifs de pré-farm n'existent pas dans V2. Ajoutez un objectif d'amélioration pour ce matériau afin de continuer à le pré-farmer.",
+        "manualStepRequired": "Les objectifs V2 appartiennent toujours à une unité. Ajoutez un objectif d'amélioration pour ce matériau sur l'unité qui doit le recevoir.",
         "generic": "Cet objectif n'a pas pu être importé."
       },
       "legendaryEvents": {

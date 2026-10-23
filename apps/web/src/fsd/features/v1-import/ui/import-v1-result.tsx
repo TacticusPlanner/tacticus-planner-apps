@@ -27,7 +27,7 @@ import {
   importedCounts,
   isAutomaticallyAdded,
   outcomeSubject,
-  preFarmSteps,
+  materialSteps,
   reasonKeyForCode,
 } from "../model/outcome-buckets"
 import {
@@ -41,7 +41,7 @@ import { useLegendaryEventIssueText } from "../model/use-legendary-event-issue-t
 import { useLegendaryEventName } from "../model/use-legendary-event-name"
 import { useUpgradeName } from "../model/use-upgrade-name"
 import { LegendaryEventImportResult } from "./legendary-event-import-result"
-import { PreFarmSteps } from "./pre-farm-steps"
+import { MaterialSteps } from "./material-steps"
 
 // i18next's `t` only accepts keys it can statically verify exist in the locale resources, so a
 // status-derived key is built through this small literal-keyed lookup rather than a template
@@ -76,8 +76,8 @@ export function ImportResult({ result }: { result: ImportV1ProfileResult }) {
   const { goals: importedGoalCount, units: importedUnitCount } = importedCounts(
     buckets.imported
   )
-  const preFarm = useMemo(
-    () => preFarmSteps(result.outcomes),
+  const manualSteps = useMemo(
+    () => materialSteps(result.outcomes),
     [result.outcomes]
   )
   // Absent from a response of an API that predates the part.
@@ -169,8 +169,8 @@ export function ImportResult({ result }: { result: ImportV1ProfileResult }) {
         </Alert>
       ) : null}
 
-      {!syncRequired && preFarm.length > 0 ? (
-        <PreFarmSteps steps={preFarm} />
+      {!syncRequired && manualSteps.length > 0 ? (
+        <MaterialSteps steps={manualSteps} />
       ) : null}
 
       {!syncRequired && result.outcomes.length > 0 ? (

@@ -32,12 +32,13 @@ export type CreateGoalPrefill =
       goalType: "Unlock"
       projectIds?: string[]
     }
-  // One material target, its quantity left to the picker's own required-amount hint.
+  // One material target; without a quantity, the unit's remaining-ladder need is used.
   | {
       entityType: "Character" | "Mow"
       entityId: UnitId
       goalType: "Upgrade"
       upgradeId: UpgradeId
+      quantity?: number
       projectIds?: string[]
     }
   // Unit-only: the unit is selected and every goal type is left unticked.

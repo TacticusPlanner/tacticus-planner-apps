@@ -35,8 +35,8 @@ export function useCreateGoalPrefill({
     setProgressionEnd: (progression: Progression) => void
     setRankEnd: (rank: Rank) => void
   }
-  /** An Upgrade prefill's material, added with how many the unit's remaining ladder still needs
-   *  (undefined until the catalog has loaded, which holds the prefill back). */
+  /** An Upgrade prefill's material, added with its own quantity, else how many the unit's remaining
+   *  ladder still needs (undefined until the catalog has loaded, which holds the prefill back). */
   upgradeFields: {
     state: {
       addUpgradeTarget: (upgradeId: UpgradeId, quantity: number) => void
@@ -90,7 +90,9 @@ export function useCreateGoalPrefill({
     if (prefill.goalType === "Upgrade") {
       addUpgradeTarget(
         prefill.upgradeId,
-        remainingLadderQuantities?.get(prefill.upgradeId) ?? 1
+        prefill.quantity ??
+          remainingLadderQuantities?.get(prefill.upgradeId) ??
+          1
       )
     }
     // Unlock has no target field to prefill — selecting the entity/goal type (above) is enough.

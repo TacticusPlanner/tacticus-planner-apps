@@ -455,8 +455,8 @@ describe("ImportResult — Legendary Event teams", () => {
   })
 })
 
-describe("ImportResult — pre-farm goals", () => {
-  const preFarmResult = (): ImportV1ProfileResult => ({
+describe("ImportResult — material goals", () => {
+  const materialResult = (): ImportV1ProfileResult => ({
     ...result([]),
     goals: imported,
     outcomes: [
@@ -471,51 +471,89 @@ describe("ImportResult — pre-farm goals", () => {
         sourceGoalId: "rank-1",
         upgradeId: null,
         linkedSourceGoalIds: null,
+        upgradeQuantity: null,
       },
       {
         status: "Skipped",
         code: "manual_step_required",
         message: "V2 has no pre-farm goal type.",
-        entityType: null,
-        entityId: null,
-        goalType: null,
+        entityType: "Character",
+        entityId: "astarLysander",
+        goalType: "Upgrade",
         goalId: null,
         sourceGoalId: "pf-1",
         upgradeId: "upgHpC001",
         linkedSourceGoalIds: ["rank-1"],
+        upgradeQuantity: null,
+      },
+      {
+        status: "Skipped",
+        code: "manual_step_required",
+        message: "V1 material goals have no unit.",
+        entityType: "Character",
+        entityId: "astarLysander",
+        goalType: "Upgrade",
+        goalId: null,
+        sourceGoalId: "m-1",
+        upgradeId: "upgHpC001",
+        linkedSourceGoalIds: null,
+        upgradeQuantity: 10,
       },
     ],
   })
 
-  it("asks for the manual step, naming the material and the unit it pre-farmed for", async () => {
-    render(<ImportResult result={preFarmResult()} />)
+  it("asks for the manual step, naming the material and the unit", async () => {
+    render(<ImportResult result={materialResult()} />)
 
-    const step = await screen.findByTestId("v1-import-pre-farm-step")
-    expect(await within(step).findByText("Ceramite Plate")).toBeInTheDocument()
+    const [preFarm, material] = await screen.findAllByTestId(
+      "v1-import-material-step"
+    )
     expect(
-      await within(step).findByText(
-        "goals.v1Import.preFarm.forUnits units=Lysander"
+      await within(preFarm!).findByText("Ceramite Plate")
+    ).toBeInTheDocument()
+    expect(
+      within(preFarm!).getByText(
+        "goals.v1Import.materialSteps.preFarmedFor units=Lysander"
+      )
+    ).toBeInTheDocument()
+    expect(
+      within(material!).getByText("Ceramite Plate · ×10")
+    ).toBeInTheDocument()
+    expect(
+      within(material!).getByText(
+        "goals.v1Import.materialSteps.suggestedUnit unit=Lysander"
       )
     ).toBeInTheDocument()
     // Outside the app shell there is no creation sheet to open.
-    expect(screen.queryByTestId("v1-import-pre-farm-create")).toBeNull()
+    expect(screen.queryByTestId("v1-import-material-step-create")).toBeNull()
   })
 
-  it("opens goal creation with the unit, Upgrade type and material preselected", async () => {
+  it("opens goal creation with the unit, Upgrade type, material and quantity preselected", async () => {
     const launch = vi.fn()
     render(
       <CreateGoalLauncherContext.Provider value={launch}>
-        <ImportResult result={preFarmResult()} />
+        <ImportResult result={materialResult()} />
       </CreateGoalLauncherContext.Provider>
     )
 
-    fireEvent.click(await screen.findByTestId("v1-import-pre-farm-create"))
+    const [preFarmCreate, materialCreate] = await screen.findAllByTestId(
+      "v1-import-material-step-create"
+    )
+    fireEvent.click(preFarmCreate!)
+    fireEvent.click(materialCreate!)
 
-    expect(launch).toHaveBeenCalledWith({
+    expect(launch).toHaveBeenNthCalledWith(1, {
       entityType: "Character",
       entityId: "astarLysander",
       goalType: "Upgrade",
       upgradeId: "upgHpC001",
+    })
+    expect(launch).toHaveBeenNthCalledWith(2, {
+      entityType: "Character",
+      entityId: "astarLysander",
+      goalType: "Upgrade",
+      upgradeId: "upgHpC001",
+      quantity: 10,
     })
   })
 })

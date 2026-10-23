@@ -12262,7 +12262,8 @@
           "goalId",
           "sourceGoalId",
           "upgradeId",
-          "linkedSourceGoalIds"
+          "linkedSourceGoalIds",
+          "upgradeQuantity"
         ],
         "type": "object",
         "properties": {
@@ -12317,6 +12318,10 @@
                 "$ref": "#/components/schemas/IReadOnlyListOfString"
               }
             ]
+          },
+          "upgradeQuantity": {
+            "type": ["null", "integer"],
+            "format": "int32"
           }
         }
       },

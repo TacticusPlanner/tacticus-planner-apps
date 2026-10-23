@@ -573,11 +573,11 @@
         "syncRequiredTitle": "Spielerdaten müssen zuerst synchronisiert werden",
         "syncRequired": "Synchronisiere deine Spielerdaten und importiere die Ziele danach erneut."
       },
-      "preFarm": {
-        "title": "Vorfarm-Ziele brauchen noch einen Schritt",
-        "description": "V2 hat keinen Vorfarm-Zieltyp, daher wurden diese nicht importiert. Um ein Material weiter vorzufarmen, lege dafür ein Upgrade-Ziel für die Einheit unten an und setze es vor die anderen Ziele dieser Einheit.",
-        "forUnits": "Vorgefarmt für {{units}}",
-        "noLinkedUnit": "Die zugehörigen Ziele wurden nicht importiert, wähle die Einheit daher selbst.",
+      "materialSteps": {
+        "title": "Materialziele brauchen noch einen Schritt",
+        "description": "Material- und Vorfarm-Ziele aus V1 haben keine Einheit, aber jedes V2-Ziel gehört zu einer. Deshalb wurden sie nicht importiert. Lege für jedes Material ein Upgrade-Ziel bei der Einheit an, die es bekommen soll. Ein Vorfarm-Ziel stellst du vor die anderen Ziele dieser Einheit.",
+        "preFarmedFor": "Vorgefarmt für {{units}}",
+        "suggestedUnit": "Vorgeschlagene Einheit: {{unit}}",
         "createUpgradeGoal": "Upgrade-Ziel erstellen"
       },
       "reasons": {
@@ -597,8 +597,7 @@
         "prerequisiteRejected": "Diese automatisch hinzugefügte Voraussetzung ist für dieses Ziel ungültig.",
         "unknownUpgrade": "Dieses Upgrade-Material ist nicht im V2-Spielkatalog enthalten.",
         "noUpgradeOwner": "Keiner deiner Charaktere und keine deiner Kampfmaschinen verwendet dieses Upgrade-Material.",
-        "upgradeGoalOccupied": "Diese Einheit hat bereits ein Upgrade-Ziel für andere Materialien. Füge dieses Material selbst zu diesem Ziel hinzu.",
-        "manualStepRequired": "Vorfarm-Ziele gibt es in V2 nicht. Lege ein Upgrade-Ziel für dieses Material an, um es weiter vorzufarmen.",
+        "manualStepRequired": "V2-Ziele gehören immer zu einer Einheit. Lege für dieses Material ein Upgrade-Ziel bei der Einheit an, die es bekommen soll.",
         "generic": "Dieses Ziel konnte nicht importiert werden."
       },
       "legendaryEvents": {
