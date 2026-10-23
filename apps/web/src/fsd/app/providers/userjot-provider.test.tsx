@@ -300,6 +300,50 @@ describe("UserJotProvider", () => {
     })
   })
 
+  // Before the SDK loads, `on` is the queueing stub: it returns no unsubscribe and every handler
+  // it was given is attached once the SDK runs.
+  it("re-identifies on open without a stale signed-out handler logging out first", async () => {
+    const openHandlers: Array<() => void> = []
+    window.uj!.on = (event, handler) => {
+      if (event === "open") openHandlers.push(handler as () => void)
+      return undefined as unknown as () => void
+    }
+    useCurrentUserMock.mockReturnValue({ state: { status: "loading" } })
+    const { rerender } = renderProvider()
+
+    useCurrentUserMock.mockReturnValue({
+      state: {
+        status: "success",
+        user: {
+          applicationUserId: "user-1",
+          displayName: "Ada",
+          suggestedDisplayName: null,
+          hasCompletedOnboarding: true,
+          tacticusApiKeyMasked: null,
+          tacticusUserIdMasked: null,
+          analyticsId: "analytics-id-1",
+        },
+      },
+    })
+    rerender(
+      <UserJotProvider>
+        <Consumer />
+      </UserJotProvider>
+    )
+    await waitFor(() => {
+      expect(identify).toHaveBeenCalledTimes(1)
+    })
+    logout.mockClear()
+    identify.mockClear()
+
+    openHandlers.forEach((handler) => handler())
+
+    await waitFor(() => {
+      expect(identify).toHaveBeenCalledTimes(1)
+    })
+    expect(logout).not.toHaveBeenCalled()
+  })
+
   it("exposes the widget's unread count from its 'unread' event", () => {
     renderProvider()
 

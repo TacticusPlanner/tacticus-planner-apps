@@ -102,6 +102,22 @@ function loadSdk() {
   document.head.append(script)
 }
 
+/**
+ * Subscribes to an SDK event for as long as the caller is mounted. Before the SDK loads, `on` is
+ * the queueing stub: it returns no unsubscribe and the SDK attaches the handler later, so a cleanup
+ * alone cannot detach it. The `active` flag turns such a leftover handler into a no-op instead.
+ */
+function onSdkEvent(event: string, handler: (payload?: unknown) => void) {
+  let active = true
+  const off = window.uj?.on(event, (payload) => {
+    if (active) handler(payload)
+  })
+  return () => {
+    active = false
+    off?.()
+  }
+}
+
 const themeToUserJot: Record<Theme, "auto" | "light" | "dark"> = {
   system: "auto",
   light: "light",
@@ -174,11 +190,18 @@ export function UserJotProvider({ children }: { children: ReactNode }) {
 
   // Tokens are capped at one hour; re-identifying on every open is simpler and more robust than a
   // background refresh timer for a widget that is only open briefly at a time.
+  // Read through a ref so the one `open` subscription always runs the current identify(); a
+  // subscription per identify() would leave earlier ones (e.g. a signed-out logout()) attached.
+  const identifyRef = useRef(identify)
   useEffect(() => {
-    return window.uj?.on("open", () => {
-      void identify()
-    })
+    identifyRef.current = identify
   }, [identify])
+
+  useEffect(() => {
+    return onSdkEvent("open", () => {
+      void identifyRef.current()
+    })
+  }, [])
 
   useEffect(() => {
     window.uj?.setTheme(themeToUserJot[theme])
@@ -189,7 +212,7 @@ export function UserJotProvider({ children }: { children: ReactNode }) {
   }, [language])
 
   useEffect(() => {
-    return window.uj?.on("unread", (payload) => {
+    return onSdkEvent("unread", (payload) => {
       const count = (payload as { count?: number } | undefined)?.count
       setUnreadCount(typeof count === "number" ? count : 0)
     })
@@ -198,7 +221,7 @@ export function UserJotProvider({ children }: { children: ReactNode }) {
   // Re-read the count when the widget closes: the dot must not outlive what the user just read,
   // even if the SDK settled the count without emitting a fresh `unread` event.
   useEffect(() => {
-    return window.uj?.on("close", (state) => {
+    return onSdkEvent("close", (state) => {
       const count = (state as { unreadCount?: number | null } | undefined)
         ?.unreadCount
       if (typeof count === "number") setUnreadCount(count)
