@@ -268,6 +268,12 @@
     "loadError": "Couldn't load Onslaught progress.",
     "saveError": "Couldn't save Onslaught progress. Refresh and try again.",
     "conflict": "Onslaught progress changed elsewhere. Latest values loaded; apply your change again.",
+    "leave": {
+      "title": "Leave without saving?",
+      "description": "Your Onslaught progress changes haven't been saved and will be lost.",
+      "stay": "Stay",
+      "leave": "Leave"
+    },
     "rewardsTitle": "Shard rewards reference",
     "sectorTier": "Sector / tier",
     "current": "Current alliance progress",

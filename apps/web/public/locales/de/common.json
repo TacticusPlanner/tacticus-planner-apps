@@ -268,6 +268,12 @@
     "loadError": "Onslaught-Fortschritt konnte nicht geladen werden.",
     "saveError": "Onslaught-Fortschritt konnte nicht gespeichert werden. Aktualisiere und versuche es erneut.",
     "conflict": "Der Onslaught-Fortschritt wurde anderswo geändert. Die neuesten Werte wurden geladen; wende deine Änderung erneut an.",
+    "leave": {
+      "title": "Ohne Speichern verlassen?",
+      "description": "Deine Änderungen am Onslaught-Fortschritt wurden nicht gespeichert und gehen verloren.",
+      "stay": "Bleiben",
+      "leave": "Verlassen"
+    },
     "rewardsTitle": "Referenz für Scherben-Belohnungen",
     "sectorTier": "Sektor / Stufe",
     "current": "Aktueller Allianzfortschritt",
