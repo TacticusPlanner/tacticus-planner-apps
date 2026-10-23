@@ -25,7 +25,7 @@ Assumptions:
 
 ### Requirement: The search restarts only when its inputs change
 
-The search SHALL restart only when the settled draft economy (see `legendary-event-plan-wizard`) or the team adjustments change. The planning inputs (catalog event, roster, stored plan, goal targets, unit power) SHALL be frozen when the wizard first has them all, so background refetches and late translation loads do not restart it. A roster sync while the wizard is open is picked up the next time the wizard is opened.
+The search SHALL restart only when the settled draft economy (see `legendary-event-plan-wizard`) changes; it runs on the default team adjustments, so Teams-step edits do not restart it. The planning inputs (catalog event, roster, stored plan, goal targets, unit power) SHALL be frozen when the wizard first has them all, so background refetches and late translation loads do not restart it. A roster sync while the wizard is open is picked up the next time the wizard is opened.
 
 #### Scenario: A refetch does not restart the search
 
