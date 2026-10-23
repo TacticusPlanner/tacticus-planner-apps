@@ -1,20 +1,13 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { render, screen, waitFor } from "@/test/render"
 import userEvent from "@testing-library/user-event"
-import { MemoryRouter } from "react-router"
+import { createMemoryRouter, RouterProvider } from "react-router"
+
+import { ApiError } from "@/shared/api"
 
 const getProgress = vi.fn()
 const saveProgress = vi.fn()
 const account = { homeAccountId: "account-1" }
-const apiErrors = vi.hoisted(() => ({
-  ApiError: class ApiError extends Error {
-    status: number
-    constructor(status: number, message: string) {
-      super(message)
-      this.status = status
-    }
-  },
-}))
 
 vi.mock("@azure/msal-react", () => ({
   useMsal: () => ({
@@ -29,7 +22,8 @@ const strings: Record<string, string> = {
   "onslaught.positionComplete": "{{sector}} · Sector complete",
   "onslaught.tierNumber": "Tier {{tier}}",
 }
-vi.mock("react-i18next", () => ({
+vi.mock("react-i18next", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("react-i18next")>()),
   useTranslation: () => ({
     t: (key: string, options?: Record<string, unknown>) => {
       let text =
@@ -42,8 +36,6 @@ vi.mock("react-i18next", () => ({
     },
   }),
 }))
-
-vi.mock("@/shared/api", () => ({ ApiError: apiErrors.ApiError }))
 
 vi.mock("dexie-react-hooks", () => ({
   useLiveQuery: (query: () => unknown) => query(),
@@ -94,6 +86,20 @@ const progress = {
   revision: 4,
 }
 
+function renderPage() {
+  const router = createMemoryRouter(
+    [
+      { path: "/progress/onslaught", element: <OnslaughtPage /> },
+      { path: "/home", element: <div data-testid="home-page" /> },
+    ],
+    { initialEntries: ["/progress/onslaught"] }
+  )
+  const view = render(<RouterProvider router={router} />)
+  return { ...view, router }
+}
+
+const saveButton = () => screen.getByTestId("save-onslaught-progress")
+
 describe("OnslaughtPage", () => {
   beforeEach(() => {
     getProgress.mockReset().mockResolvedValue(progress)
@@ -106,11 +112,7 @@ describe("OnslaughtPage", () => {
 
   it("loads alliance progress, renders the reward reference, and saves the revisioned values", async () => {
     const user = userEvent.setup()
-    render(
-      <MemoryRouter>
-        <OnslaughtPage />
-      </MemoryRouter>
-    )
+    renderPage()
 
     expect(await screen.findByTestId("onslaught-page")).toBeInTheDocument()
     expect(screen.getByTestId("imperial-onslaught-sector")).toHaveTextContent(
@@ -160,19 +162,18 @@ describe("OnslaughtPage", () => {
       imperial: { sector: "Iron", tier: 4, isSet: true },
     })
     expect(await screen.findByText("onslaught.saved")).toBeInTheDocument()
+    expect(saveButton()).toBeDisabled()
 
-    await user.click(screen.getByTestId("save-onslaught-progress"))
+    // The next save carries the revision the first one returned.
+    await user.click(screen.getByTestId("imperial-onslaught-complete"))
+    await user.click(saveButton())
     await waitFor(() => expect(saveProgress).toHaveBeenCalledTimes(2))
     expect(saveProgress.mock.calls[1]?.[0]).toMatchObject({ revision: 5 })
   }, 10_000)
 
   it("resets the tier when the sector changes", async () => {
     const user = userEvent.setup()
-    render(
-      <MemoryRouter>
-        <OnslaughtPage />
-      </MemoryRouter>
-    )
+    renderPage()
     await screen.findByTestId("onslaught-page")
 
     await user.click(screen.getByTestId("imperial-onslaught-sector"))
@@ -214,22 +215,19 @@ describe("OnslaughtPage", () => {
       revision: 9,
     }
     getProgress.mockResolvedValueOnce(progress).mockResolvedValueOnce(refreshed)
-    saveProgress.mockRejectedValueOnce(
-      new apiErrors.ApiError(409, "stale revision")
-    )
-    render(
-      <MemoryRouter>
-        <OnslaughtPage />
-      </MemoryRouter>
-    )
+    saveProgress.mockRejectedValueOnce(new ApiError(409, "stale revision"))
+    renderPage()
 
     expect(await screen.findByTestId("onslaught-page")).toBeInTheDocument()
-    await user.click(screen.getByTestId("save-onslaught-progress"))
+    await user.click(screen.getByTestId("imperial-onslaught-complete"))
+    await user.click(saveButton())
 
     expect(await screen.findByText("onslaught.conflict")).toBeInTheDocument()
     expect(screen.getByTestId("imperial-onslaught-sector")).toHaveTextContent(
       "Adamantine"
     )
+    // The reloaded values replace the draft, so there is nothing left to save.
+    expect(saveButton()).toBeDisabled()
   })
 
   it("shows unsaved alliances as not set and only marks an edited one as set", async () => {
@@ -241,11 +239,7 @@ describe("OnslaughtPage", () => {
       chaos: unset,
       revision: 0,
     })
-    render(
-      <MemoryRouter>
-        <OnslaughtPage />
-      </MemoryRouter>
-    )
+    renderPage()
 
     expect(await screen.findByTestId("onslaught-page")).toBeInTheDocument()
     expect(screen.getByTestId("imperial-onslaught-not-set")).toHaveTextContent(
@@ -276,6 +270,74 @@ describe("OnslaughtPage", () => {
       xenos: unset,
       chaos: unset,
       revision: 0,
+    })
+  })
+
+  describe("unsaved changes", () => {
+    const pickTier = async (
+      user: ReturnType<typeof userEvent.setup>,
+      name: RegExp
+    ) => {
+      await user.click(screen.getByTestId("imperial-onslaught-tier"))
+      await user.click(screen.getByRole("option", { name }))
+    }
+
+    it("enables Save only while the values differ from the saved ones", async () => {
+      const user = userEvent.setup()
+      renderPage()
+      await screen.findByTestId("onslaught-page")
+      expect(saveButton()).toBeDisabled()
+
+      await pickTier(user, /Gold · Tier 3/)
+      expect(saveButton()).toBeEnabled()
+
+      // Changing the value back leaves nothing to save.
+      await pickTier(user, /Gold · Tier 2/)
+      expect(saveButton()).toBeDisabled()
+    })
+
+    it("asks before leaving with unsaved edits", async () => {
+      const user = userEvent.setup()
+      const { router } = renderPage()
+      await screen.findByTestId("onslaught-page")
+      await pickTier(user, /Gold · Tier 3/)
+
+      void router.navigate("/home")
+      expect(
+        await screen.findByText("onslaught.leave.title")
+      ).toBeInTheDocument()
+      await user.click(
+        screen.getByRole("button", { name: "onslaught.leave.stay" })
+      )
+      expect(screen.getByTestId("onslaught-page")).toBeInTheDocument()
+      expect(screen.getByTestId("imperial-onslaught-tier")).toHaveTextContent(
+        "Tier 3"
+      )
+
+      void router.navigate("/home")
+      await user.click(
+        await screen.findByRole("button", { name: "onslaught.leave.leave" })
+      )
+      expect(await screen.findByTestId("home-page")).toBeInTheDocument()
+    })
+
+    it("navigates without asking when there are no edits", async () => {
+      const { router } = renderPage()
+      await screen.findByTestId("onslaught-page")
+      void router.navigate("/home")
+      expect(await screen.findByTestId("home-page")).toBeInTheDocument()
+    })
+
+    it("navigates without asking once the edits are saved", async () => {
+      const user = userEvent.setup()
+      const { router } = renderPage()
+      await screen.findByTestId("onslaught-page")
+      await pickTier(user, /Gold · Tier 3/)
+      await user.click(saveButton())
+      expect(await screen.findByText("onslaught.saved")).toBeInTheDocument()
+
+      void router.navigate("/home")
+      expect(await screen.findByTestId("home-page")).toBeInTheDocument()
     })
   })
 })
