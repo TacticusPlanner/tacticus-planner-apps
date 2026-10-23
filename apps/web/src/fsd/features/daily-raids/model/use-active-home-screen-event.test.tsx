@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import { deleteGameCatalogDatabase } from "@workspace/game-catalog/testing"
 
+import { refreshLocalDataAfterSync } from "@/shared/local-data"
 import { act, renderHook, waitFor } from "@/test/render"
 import { seedGameCatalog } from "@/test/seed"
 
@@ -162,12 +163,14 @@ describe("useActiveHomeScreenEvent", () => {
       shouldAdvanceTime: true,
     })
     vi.setSystemTime(new Date("2026-10-01T08:00:00Z"))
-    const { result } = renderHook(() => useActiveHomeScreenEvent())
+    const { result, queryClient } = renderHook(() => useActiveHomeScreenEvent())
     await act(() => vi.advanceTimersByTimeAsync(0))
     await new Promise((resolve) => setTimeout(resolve, 50))
     expect(result.current).toEqual({ status: "loading" })
 
+    // The sync that writes the definitions refreshes what it wrote.
     await act(() => seedGameCatalog({ "event-definitions": definitions }))
+    refreshLocalDataAfterSync(queryClient, "catalog", ["event-definitions"])
     await act(() => vi.advanceTimersByTimeAsync(60_000))
     await waitFor(() =>
       expect(result.current).toMatchObject({ status: "ready", next: hunt })

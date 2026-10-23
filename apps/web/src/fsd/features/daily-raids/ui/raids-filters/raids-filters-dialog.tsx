@@ -1,17 +1,11 @@
 import { useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
-import { useLiveQuery } from "dexie-react-hooks"
 import {
   factionIcon,
   onslaughtAllianceIcon,
   rarityIcon,
   traitIcon,
 } from "@workspace/game-catalog"
-import {
-  getCampaignBattles,
-  getCharactersMap,
-  getNpcsMap,
-} from "@workspace/game-catalog/queries"
 import { factionOrder, type Rarity } from "@workspace/game-domain"
 import { Button } from "@workspace/ui/components/button"
 
@@ -26,6 +20,7 @@ import {
   SearchableSelect,
   type SelectOption,
 } from "@/shared/ui"
+import { toById, useCatalogDataset } from "@/shared/local-data"
 
 import { listEnemyTraits } from "../../model/battle-enemy-traits"
 import {
@@ -65,9 +60,14 @@ export function RaidsFiltersDialog({
   ])
   const [applied, setApplied] = useRaidsFilters()
   const [draft, setDraft] = useState<RaidsFilters>(applied)
-  const battles = useLiveQuery(() => getCampaignBattles(), [])
-  const characters = useLiveQuery(() => getCharactersMap(), [])
-  const npcs = useLiveQuery(() => getNpcsMap(), [])
+  // The option lists fill in once each dataset is read; the dialog has no loading state of its own.
+  const battlesRead = useCatalogDataset("campaign-battles")
+  const charactersRead = useCatalogDataset("characters", toById)
+  const npcsRead = useCatalogDataset("npcs", toById)
+  const battles = battlesRead.status === "ready" ? battlesRead.data : undefined
+  const characters =
+    charactersRead.status === "ready" ? charactersRead.data : undefined
+  const npcs = npcsRead.status === "ready" ? npcsRead.data : undefined
   const patch = (next: Partial<RaidsFilters>) =>
     setDraft((current) => ({ ...current, ...next }))
 

@@ -1,10 +1,5 @@
-import { useMemo, useState } from "react"
-import { useLiveQuery } from "dexie-react-hooks"
+import { useMemo } from "react"
 import { raidBossPortrait } from "@workspace/game-catalog"
-import {
-  getCharactersMap,
-  getRaidBosses,
-} from "@workspace/game-catalog/queries"
 
 import {
   buildRaidBossRosterGroups,
@@ -15,6 +10,7 @@ import {
   type RaidBossesPayload,
   type RaidBossListItem,
 } from "@/entities/raid-boss"
+import { toById, useCatalogDataset } from "@/shared/local-data"
 
 type RaidBossesCatalogStatus = "loading" | "absent" | "failed" | "ready"
 
@@ -34,7 +30,10 @@ export type RaidBossesCatalog = {
   retry: () => void
 }
 
-const FAILED = Symbol("failed")
+// raid-bosses is stored as a single row; `null` means the dataset has never synced into this client.
+function firstRecord<T>(records: T[]): T | null {
+  return records[0] ?? null
+}
 
 const EMPTY: Omit<RaidBossesCatalog, "status" | "retry"> = {
   payload: undefined,
@@ -47,7 +46,7 @@ const EMPTY: Omit<RaidBossesCatalog, "status" | "retry"> = {
 }
 
 /**
- * Reactive read of the synced `raid-bosses` catalog dataset, with each boss/prime's display label
+ * The synced `raid-bosses` catalog dataset, with each boss/prime's display label
  * resolved: a prime prefers its playable-character name from the roster (`GuildBoss4MiniBoss1OrksBigMek`
  * -> "Gibbascrapz"), falling back to the id-keyed i18n namespace, as V1 does. Distinguishes
  * still-syncing (`loading`) from never-synced (`absent`) so the page can show a feature-unavailable
@@ -55,23 +54,17 @@ const EMPTY: Omit<RaidBossesCatalog, "status" | "retry"> = {
  */
 export function useRaidBossesCatalog(): RaidBossesCatalog {
   const { bossName } = useRaidBossLabels()
-  const [retryNonce, setRetryNonce] = useState(0)
-  const retry = () => setRetryNonce((value) => value + 1)
-
-  // `useLiveQuery` swallows a thrown error into `undefined` forever — indistinguishable from
-  // "still loading". Wrapping the read lets the page show a real, retry-able failure state.
-  const result = useLiveQuery(async () => {
-    try {
-      return await getRaidBosses()
-    } catch {
-      return FAILED
-    }
-  }, [retryNonce])
-  const charactersById = useLiveQuery(() => getCharactersMap(), [], undefined)
+  const read = useCatalogDataset("raid-bosses", firstRecord)
+  // Only refines prime labels and portraits, so it neither blocks nor fails the page.
+  const characters = useCatalogDataset("characters", toById)
+  const charactersById =
+    characters.status === "ready" ? characters.data : undefined
+  const { retry } = read
 
   return useMemo<RaidBossesCatalog>(() => {
-    if (result === undefined) return { status: "loading", ...EMPTY, retry }
-    if (result === FAILED) return { status: "failed", ...EMPTY, retry }
+    if (read.status === "loading") return { status: "loading", ...EMPTY, retry }
+    if (read.status === "error") return { status: "failed", ...EMPTY, retry }
+    const result = read.data
     if (result === null) return { status: "absent", ...EMPTY, retry }
 
     const nameFor = (unit: RaidBoss): string => {
@@ -133,5 +126,5 @@ export function useRaidBossesCatalog(): RaidBossesCatalog {
       portraitById,
       retry,
     }
-  }, [result, charactersById, bossName])
+  }, [read, retry, charactersById, bossName])
 }

@@ -1,7 +1,8 @@
-import {
-  getLegendaryEvent,
-  hasLegendaryEventsSynced,
-} from "@workspace/game-catalog/queries"
+import { useCallback } from "react"
+import { hasLegendaryEventsSynced } from "@workspace/game-catalog/queries"
+
+import { combineReadStates } from "@/shared/lib"
+import { useCatalogDataset } from "@/shared/local-data"
 
 import { deriveLegendaryEventLifecycle } from "../lib/lifecycle"
 import type { LegendaryEvent, LegendaryEventLifecycle } from "./types"
@@ -20,18 +21,19 @@ export type LegendaryEventState = ReadState<LegendaryEvent | undefined> & {
  *  lifecycle re-evaluated once a minute. */
 export function useLegendaryEvent(eventId: string): LegendaryEventState {
   const nowMs = useMinuteNow()
-  const state = useReadState(async () => {
-    const [event, catalogSynced] = await Promise.all([
-      getLegendaryEvent(eventId),
-      hasLegendaryEventsSynced(),
-    ])
-    return { event, catalogSynced }
-  }, [eventId])
+  const select = useCallback(
+    (events: LegendaryEvent[]) => events.find((event) => event.id === eventId),
+    [eventId]
+  )
+  const state = combineReadStates(
+    useCatalogDataset("lres", select),
+    useReadState("lres-synced", hasLegendaryEventsSynced, [])
+  )
 
   if (state.status !== "ready") {
     return { ...state, nowMs, lifecycle: undefined, catalogSynced: false }
   }
-  const { event, catalogSynced } = state.data
+  const [event, catalogSynced] = state.data
   return {
     status: "ready",
     data: event,

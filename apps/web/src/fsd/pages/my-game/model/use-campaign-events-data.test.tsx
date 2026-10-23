@@ -1,10 +1,11 @@
 import { afterEach, describe, expect, it, vi } from "vitest"
 
+import { renderHook, waitFor } from "@/test/render"
 import { seedGameCatalog } from "@/test/seed"
 
-import { loadCampaignEventsData } from "./load-campaign-events-data"
+import { useCampaignEventsData } from "./use-campaign-events-data"
 
-describe("loadCampaignEventsData", () => {
+describe("useCampaignEventsData", () => {
   afterEach(() => {
     vi.restoreAllMocks()
   })
@@ -15,7 +16,8 @@ describe("loadCampaignEventsData", () => {
     vi.spyOn(IDBObjectStore.prototype, "get").mockImplementation(() => {
       throw new Error("IndexedDB unavailable")
     })
-    await expect(loadCampaignEventsData()).resolves.toEqual({ status: "error" })
+    const { result } = renderHook(() => useCampaignEventsData())
+    await waitFor(() => expect(result.current.status).toBe("error"))
   })
 
   it("treats a never-synced profile (undefined) as ready, not as a failure", async () => {
@@ -23,8 +25,10 @@ describe("loadCampaignEventsData", () => {
       "campaign-definitions": [],
       "campaign-battles": [],
     })
-    const result = await loadCampaignEventsData()
-    expect(result.status).toBe("ready")
-    expect(result.status === "ready" && result.data.synced).toBeUndefined()
+    const { result } = renderHook(() => useCampaignEventsData())
+    await waitFor(() => expect(result.current.status).toBe("ready"))
+    expect(
+      result.current.status === "ready" && result.current.data.synced
+    ).toBeUndefined()
   })
 })

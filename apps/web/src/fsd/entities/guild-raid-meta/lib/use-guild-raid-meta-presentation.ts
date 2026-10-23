@@ -1,16 +1,17 @@
-import {
-  getCharactersMap,
-  getGuildRaidMeta,
-  getMowsMap,
-} from "@workspace/game-catalog/queries"
-import type { GameCatalogGuildRaidMeta } from "@workspace/game-catalog"
-import { useLiveQuery } from "dexie-react-hooks"
-import { useCallback, useMemo, useState } from "react"
+import type {
+  GameCatalogGuildRaidMeta,
+  GuildRaidMetaStorageModel,
+} from "@workspace/game-catalog"
+import { useMemo } from "react"
 import { useTranslation } from "react-i18next"
+
+import { combineReadStates } from "@/shared/lib"
+import { toById, useCatalogDataset } from "@/shared/local-data"
 
 import { createGuildRaidMetaPresentationResolver } from "./resolve-guild-raid-meta"
 
-const FAILED = Symbol("guild-raid-meta-failed")
+// Guild Raid Meta is one curated payload; null means it has not synchronized yet.
+const toMeta = (rows: GuildRaidMetaStorageModel[]) => rows[0] ?? null
 
 export type GuildRaidMetaCatalog =
   | {
@@ -28,35 +29,30 @@ export type GuildRaidMetaCatalog =
 /** Reactive public entity API for data and presentation consumed by Guild Raid Meta views. */
 export function useGuildRaidMetaCatalog(): GuildRaidMetaCatalog {
   const { t } = useTranslation("raidBosses")
-  const [retryNonce, setRetryNonce] = useState(0)
-  const retry = useCallback(() => setRetryNonce((value) => value + 1), [])
-  const catalog = useLiveQuery(async () => {
-    try {
-      const [meta, charactersById, mowsById] = await Promise.all([
-        getGuildRaidMeta(),
-        getCharactersMap(),
-        getMowsMap(),
-      ])
-      return { meta, charactersById, mowsById }
-    } catch {
-      return FAILED
-    }
-  }, [retryNonce])
+  const metaRead = useCatalogDataset("guild-raid-meta", toMeta)
+  const charactersRead = useCatalogDataset("characters", toById)
+  const mowsRead = useCatalogDataset("mows", toById)
+  // Each read is stable while unchanged, so the combination is too.
+  const read = useMemo(
+    () => combineReadStates(metaRead, charactersRead, mowsRead),
+    [metaRead, charactersRead, mowsRead]
+  )
 
-  return useMemo(() => {
-    if (catalog === undefined) return { status: "loading", retry }
-    if (catalog === FAILED) return { status: "failed", retry }
-    if (catalog.meta === null) return { status: "absent", retry }
+  return useMemo((): GuildRaidMetaCatalog => {
+    const { retry } = read
+    if (read.status === "loading") return { status: "loading", retry }
+    if (read.status === "error") return { status: "failed", retry }
+    const [meta, charactersById, mowsById] = read.data
+    if (meta === null) return { status: "absent", retry }
 
-    const meta = catalog.meta
     return {
       status: "ready",
       meta,
       retry,
       presentation: createGuildRaidMetaPresentationResolver({
         meta,
-        charactersById: catalog.charactersById,
-        mowsById: catalog.mowsById,
+        charactersById,
+        mowsById,
         bossName: (bossUnitSetId, fallback) =>
           t(`raidBosses:${bossUnitSetId}`, { defaultValue: fallback }),
         roleLabel: (roleId, fallback) =>
@@ -69,7 +65,7 @@ export function useGuildRaidMetaCatalog(): GuildRaidMetaCatalog {
           }),
       }),
     }
-  }, [catalog, retry, t])
+  }, [read, t])
 }
 
 /** Backwards-compatible presentation-only access for existing consumers. */

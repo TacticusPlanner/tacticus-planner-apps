@@ -4,23 +4,27 @@ import {
   useMemo,
   useRef,
   useState,
+  useSyncExternalStore,
   type ReactNode,
 } from "react"
 
 import { useIsAuthenticated } from "@azure/msal-react"
-import { useQueryClient } from "@tanstack/react-query"
+import { useQueryClient, type QueryClient } from "@tanstack/react-query"
 
 import {
-  PlayerDataHttpClient,
   getManifestMetadata,
   getPlayerDataMetadata,
-  syncPlayerData,
   type PlayerDataSyncProgress,
   type PlayerDataSyncResult,
 } from "@workspace/player-data"
 
 import { refreshServerReadsAfterSync } from "@/features/player-data-sync"
 import { reportError } from "@/shared/lib"
+import {
+  createProgressStore,
+  refreshLocalDataAfterSync,
+  writtenKeys,
+} from "@/shared/local-data"
 import {
   acquireAccessToken,
   isInteractionRequired,
@@ -39,32 +43,47 @@ import {
 const staleAfterMs = 60 * 60 * 1000
 const staleCheckIntervalMs = 5 * 60 * 1000
 
-// Coalesces overlapping syncs for the same account into a single in-flight request, the same way
-// @workspace/game-catalog's provider does — StrictMode double-mounts and the periodic staleness
-// check firing close to a manual "sync now" click would otherwise both hit the network.
-let inFlightSync: {
-  accountId: string
-  promise: Promise<PlayerDataSyncResult>
-} | null = null
+const progressStore = createProgressStore<PlayerDataSyncProgress>()
 
-function runSharedSync(
-  accountId: string,
-  client: PlayerDataHttpClient,
-  onProgress: (progress: PlayerDataSyncProgress) => void
+async function runPlayerDataSync(
+  baseUrl: string,
+  queryClient: QueryClient
 ): Promise<PlayerDataSyncResult> {
-  if (inFlightSync && inFlightSync.accountId === accountId) {
-    return inFlightSync.promise
+  // Loaded on demand so the HTTP client and the zod schemas stay out of the entry bundle.
+  const { PlayerDataHttpClient, syncPlayerData } =
+    await import("@workspace/player-data/sync")
+  progressStore.set(null)
+  try {
+    const result = await syncPlayerData(
+      new PlayerDataHttpClient(baseUrl, acquireAccessToken),
+      { onProgress: progressStore.set }
+    )
+    refreshLocalDataAfterSync(queryClient, "player", writtenKeys(result))
+    return result
+  } catch (error) {
+    // A partly failed sync still stored some chunks; refresh those.
+    refreshLocalDataAfterSync(queryClient, "player", writtenKeys(error))
+    throw error
   }
+}
 
-  const promise = syncPlayerData(client, { onProgress }).finally(() => {
-    if (inFlightSync?.promise === promise) {
-      inFlightSync = null
-    }
+/**
+ * Runs a player-data sync for the account through the query client, which dedupes an in-flight run:
+ * StrictMode double-mounts and the periodic staleness check firing close to a manual "sync now"
+ * share one request. Every call past an in-flight one starts a fresh run (the staleness gate in the
+ * provider decides when one is due).
+ */
+function fetchPlayerDataSync(
+  queryClient: QueryClient,
+  baseUrl: string,
+  accountId: string
+): Promise<PlayerDataSyncResult> {
+  return queryClient.fetchQuery({
+    queryKey: ["sync", "player", accountId],
+    queryFn: () => runPlayerDataSync(baseUrl, queryClient),
+    staleTime: 0,
+    retry: false,
   })
-
-  inFlightSync = { accountId, promise }
-
-  return promise
 }
 
 export type PlayerDataProviderProps = {
@@ -85,33 +104,30 @@ export function PlayerDataProvider({
   const accountId = useActiveAccountId()
 
   const [status, setStatus] = useState<PlayerDataStatus>("idle")
-  const [progress, setProgress] = useState<PlayerDataSyncProgress | null>(null)
+  const progress = useSyncExternalStore(
+    progressStore.subscribe,
+    progressStore.get
+  )
   const [lastSyncedAt, setLastSyncedAt] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [requiresReauth, setRequiresReauth] = useState(false)
   const hasRequestedApiAccess = useRef(false)
   const queryClient = useQueryClient()
 
-  const client = useMemo(() => {
-    if (!isAuthenticated || !accountId) {
-      return null
-    }
-
-    return new PlayerDataHttpClient(baseUrl, acquireAccessToken)
-  }, [baseUrl, isAuthenticated, accountId])
+  // The account to sync for, or null while signed out.
+  const syncAccountId = isAuthenticated ? accountId : null
 
   const runSync = useCallback(
-    async (activeClient: PlayerDataHttpClient, activeAccountId: string) => {
+    async (activeAccountId: string) => {
       setStatus("syncing")
       setError(null)
       setRequiresReauth(false)
-      setProgress(null)
 
       try {
-        const result = await runSharedSync(
-          activeAccountId,
-          activeClient,
-          setProgress
+        const result = await fetchPlayerDataSync(
+          queryClient,
+          baseUrl,
+          activeAccountId
         )
         hasRequestedApiAccess.current = false
         setLastSyncedAt(result.syncedAt)
@@ -152,7 +168,7 @@ export function PlayerDataProvider({
         }
       }
     },
-    [queryClient]
+    [queryClient, baseUrl]
   )
 
   // Auto-sync: only fires when the last successful sync is more than an hour old (or there has never
@@ -162,7 +178,7 @@ export function PlayerDataProvider({
     let active = true
 
     async function checkAndSyncIfDue() {
-      if (!client || !accountId) {
+      if (!syncAccountId) {
         if (active) {
           setStatus("idle")
         }
@@ -187,7 +203,7 @@ export function PlayerDataProvider({
       }
 
       if (due) {
-        await runSync(client, accountId)
+        await runSync(syncAccountId)
       }
     }
 
@@ -207,18 +223,18 @@ export function PlayerDataProvider({
       active = false
       clearInterval(interval)
     }
-  }, [client, accountId, runSync])
+  }, [syncAccountId, runSync])
 
   // Manual trigger: always syncs immediately, bypassing the one-hour staleness gate above.
   const syncNow = useCallback(() => {
-    if (!client || !accountId) {
+    if (!syncAccountId) {
       return
     }
 
-    runSync(client, accountId).catch((error: unknown) =>
+    runSync(syncAccountId).catch((error: unknown) =>
       reportError(error, "player-data sync")
     )
-  }, [client, accountId, runSync])
+  }, [syncAccountId, runSync])
 
   const value = useMemo<PlayerDataContextValue>(
     () => ({

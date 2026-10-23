@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest"
 import { campaignIdSchema } from "@workspace/game-domain"
 
+import { refreshLocalDataAfterSync } from "@/shared/local-data"
 import { act, render, screen, waitFor } from "@/test/render"
 import { seedGameCatalog, seedPlayerData } from "@/test/seed"
 import { availableCampaignBattles } from "@/features/daily-raids"
@@ -124,7 +125,7 @@ async function seedCampaignEvent(
 }
 
 describe("CampaignEventStatusLine", () => {
-  // Returns once the live read has settled, so a negative assertion never passes on the
+  // Returns once the local reads have settled, so a negative assertion never passes on the
   // still-loading (inactive) first render.
   async function renderWith(
     activeCampaignEventId: typeof knownId | null,
@@ -241,7 +242,7 @@ describe("CampaignEventStatusLine", () => {
   // no client schema change, no dependency on the (currently blocked) API companion.
   it("switches from unconfirmed text to a confirmed countdown when the catalog refreshes to an authored occurrence", async () => {
     await seedCampaignEvent(knownId, unconfirmedWindow)
-    render(<CampaignEventStatusLine />)
+    const { queryClient } = render(<CampaignEventStatusLine />)
     const status = screen.getByTestId("campaign-event-status")
     await waitFor(() =>
       expect(detailOf(status)).toContain("end time not confirmed")
@@ -252,6 +253,7 @@ describe("CampaignEventStatusLine", () => {
 
     // A catalog sync replaces the projected placeholder with the authored occurrence.
     await seedCampaignEvent(knownId, confirmedWindow)
+    refreshLocalDataAfterSync(queryClient, "catalog", ["events-calendar"])
     await waitFor(() => expect(detailOf(status)).toContain(" · ends "))
     const after = detailOf(status)
     expect(after).toContain("in 3 days")

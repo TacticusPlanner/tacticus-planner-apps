@@ -1,3 +1,5 @@
+import { runManifestSync } from "@workspace/manifest-sync"
+
 import type { GameCatalogClient } from "./game-catalog-api"
 import {
   getGameCatalogMetadata,
@@ -28,6 +30,8 @@ export type GameCatalogSyncResult = {
   gameVersion: string
   firstTime: boolean
   downloaded: GameCatalogDatasetKey[]
+  /** Optional datasets the manifest withdrew, whose stored copies were dropped. */
+  removed: GameCatalogDatasetKey[]
 }
 
 export type GameCatalogSyncOptions = {
@@ -74,6 +78,7 @@ export async function syncGameCatalog(
         gameVersion: manifestMetadata?.gameVersion ?? "",
         firstTime: false,
         downloaded: [],
+        removed: [],
       }
     }
 
@@ -91,25 +96,13 @@ export async function syncGameCatalog(
 
   const { manifest, etag } = manifestResult
 
-  const changedDatasets = selectChangedDatasets(manifest, metadata)
-  const total = changedDatasets.length
-  const downloaded: GameCatalogDatasetKey[] = []
-  const failures: { key: GameCatalogDatasetKey; error: unknown }[] = []
-
-  options.onProgress?.({ downloaded: 0, total })
-
-  for (const dataset of changedDatasets) {
-    const datasetKey = dataset.key as GameCatalogDatasetKey
-
-    options.onProgress?.({
-      downloaded: downloaded.length,
-      total,
-      current: datasetKey,
-    })
-
-    // Per-dataset resilience: a single bad dataset is collected and surfaced after the loop instead of
-    // aborting the rest — so one failure can no longer wedge the init loader with a partial cache.
-    try {
+  const { downloaded, removed } = await runManifestSync({
+    items: selectChangedDatasets(manifest, metadata),
+    keyOf: (dataset) => dataset.key as GameCatalogDatasetKey,
+    label: "catalog dataset",
+    onProgress: options.onProgress,
+    download: async (dataset) => {
+      const datasetKey = dataset.key as GameCatalogDatasetKey
       const envelope = await client.getDataset(dataset)
 
       await replaceGameCatalogDataset(datasetKey, envelope.data, {
@@ -121,48 +114,32 @@ export async function syncGameCatalog(
         updatedAt: new Date().toISOString(),
         url: dataset.url,
       })
+    },
+    finalize: async () => {
+      // An optional dataset the API stopped serving is withdrawn: drop its stored copy so readers see
+      // it as absent rather than serving the last synced records.
+      const listedKeys = new Set(
+        manifest.datasets.map((dataset) => dataset.key)
+      )
+      const withdrawn = optionalDatasetKeys.filter(
+        (datasetKey) => !listedKeys.has(datasetKey) && metadata.has(datasetKey)
+      )
+      for (const datasetKey of withdrawn) {
+        await removeGameCatalogDataset(datasetKey)
+      }
 
-      downloaded.push(datasetKey)
-    } catch (error) {
-      failures.push({ key: datasetKey, error })
-    }
+      await saveManifestMetadata({
+        key: catalogManifestMetadataKey,
+        hash: manifest.sourceHash,
+        catalogVersion: manifest.version,
+        gameVersion: manifest.gameVersion,
+        schemaVersion: manifest.schemaVersion,
+        updatedAt: new Date().toISOString(),
+        etag,
+      })
 
-    options.onProgress?.({
-      downloaded: downloaded.length,
-      total,
-      current: datasetKey,
-    })
-  }
-
-  if (failures.length > 0) {
-    // Do not advance the manifest sync metadata: the failed datasets (whose per-dataset metadata was not
-    // written) will be re-selected on the next sync/retry.
-    const detail = failures
-      .map((failure) => `${failure.key}: ${describeError(failure.error)}`)
-      .join("; ")
-
-    throw new Error(
-      `Failed to sync ${failures.length} catalog dataset(s) — ${detail}`
-    )
-  }
-
-  // An optional dataset the API stopped serving is withdrawn: drop its stored copy so readers see it
-  // as absent rather than serving the last synced records.
-  const listedKeys = new Set(manifest.datasets.map((dataset) => dataset.key))
-  for (const datasetKey of optionalDatasetKeys) {
-    if (!listedKeys.has(datasetKey) && metadata.has(datasetKey)) {
-      await removeGameCatalogDataset(datasetKey)
-    }
-  }
-
-  await saveManifestMetadata({
-    key: catalogManifestMetadataKey,
-    hash: manifest.sourceHash,
-    catalogVersion: manifest.version,
-    gameVersion: manifest.gameVersion,
-    schemaVersion: manifest.schemaVersion,
-    updatedAt: new Date().toISOString(),
-    etag,
+      return withdrawn
+    },
   })
 
   const ready = await hasCompleteGameCatalogCache()
@@ -172,9 +149,6 @@ export async function syncGameCatalog(
     gameVersion: manifest.gameVersion,
     firstTime,
     downloaded,
+    removed,
   }
-}
-
-function describeError(error: unknown): string {
-  return error instanceof Error ? error.message : String(error)
 }

@@ -14,20 +14,14 @@ export {
 
 export { type PlayerDataMetadataStorageModel } from "./player-data.storage"
 
-export {
-  playerDataManifestSchema,
-  playerDataChunkEnvelopeMetaSchema,
-  playerDataChunkPayloadSchemas,
-} from "./player-data.schema"
+// The HTTP client, sync loop and zod schemas live behind `@workspace/player-data/sync` so they load
+// only when a sync runs; the types stay here because they are erased.
+export type { PlayerDataClient } from "./player-data-api"
 
-export { PlayerDataHttpClient, type PlayerDataClient } from "./player-data-api"
-
-export {
-  syncPlayerData,
-  selectChangedChunks,
-  type PlayerDataSyncResult,
-  type PlayerDataSyncProgress,
-  type PlayerDataSyncOptions,
+export type {
+  PlayerDataSyncResult,
+  PlayerDataSyncProgress,
+  PlayerDataSyncOptions,
 } from "./player-data-sync"
 
 export {

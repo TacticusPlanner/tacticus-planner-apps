@@ -1,6 +1,8 @@
-import { useLiveQuery } from "dexie-react-hooks"
+import { useCallback } from "react"
 import { useTranslation } from "react-i18next"
-import { getMythicQuestsByUnitId } from "@workspace/game-catalog/queries"
+import type { MythicQuestsStorageModel } from "@workspace/game-catalog"
+
+import { useCatalogDataset } from "@/shared/local-data"
 
 /**
  * A character's mythic quests from the catalog's `mythic-quests` dataset, or undefined without any
@@ -9,11 +11,13 @@ import { getMythicQuestsByUnitId } from "@workspace/game-catalog/queries"
  */
 export function useMythicQuests(unitId: string) {
   const { i18n } = useTranslation("mythicQuestTasks")
-  const record = useLiveQuery(
-    async () => (await getMythicQuestsByUnitId()).get(unitId),
+  const select = useCallback(
+    (rows: MythicQuestsStorageModel[]) =>
+      rows.find((row) => row.unitId === unitId),
     [unitId]
   )
-  const quests = record?.quests
+  const read = useCatalogDataset("mythic-quests", select)
+  const quests = read.status === "ready" ? read.data?.quests : undefined
   const template = (locaKey: string) =>
     (i18n.getResource(i18n.language, "mythicQuestTasks", locaKey) ??
       i18n.getResource("en", "mythicQuestTasks", locaKey)) as string | undefined

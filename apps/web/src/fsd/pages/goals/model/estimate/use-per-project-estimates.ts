@@ -1,21 +1,21 @@
 import { useEffect, useState } from "react"
 import { useQuery } from "@tanstack/react-query"
 import { useIsAuthenticated } from "@azure/msal-react"
-import { useLiveQuery } from "dexie-react-hooks"
 import { unitIdSchema, type UnitId } from "@workspace/game-domain"
 import {
   getInventoryShard,
   getPlayerCharacter,
   getPlayerMow,
 } from "@workspace/player-data/queries"
-import { getOnslaughtRewards, getShops } from "@workspace/game-catalog/queries"
 
 import { useGlobalGoalPlan, type GoalDetail } from "@/entities/goal"
 import { onslaughtProgressQueries } from "@/entities/player-data-override"
+import { useCatalogDataset } from "@/shared/local-data"
 
 import { estimateNewGoalsForProject } from ".//per-project-estimate"
 import type { EstimateOutcome } from "@/features/goal-farming"
 import { useGoalCatalog } from "../shared/use-goal-catalog"
+import { readyData } from "../shared/read-data"
 
 export type PerProjectEstimate =
   | { status: "loading" }
@@ -57,9 +57,9 @@ export function usePerProjectEstimates({
   } = useGoalCatalog()
   // A new goal's selected Onslaught/Shop acquisition sources (tacticus-planner-apps#103) need these
   // to contribute to this preview the same way they do for Today/Insights/Raids Plan — mirrors
-  // `useProgressionPreview`'s own fetch of the same three, react-query/Dexie-deduped against it.
-  const shops = useLiveQuery(() => getShops(), [])
-  const onslaughtRewards = useLiveQuery(() => getOnslaughtRewards(), [])
+  // `useProgressionPreview`'s own fetch of the same three, deduped against it by the query cache.
+  const shops = readyData(useCatalogDataset("shops"))
+  const onslaughtRewards = readyData(useCatalogDataset("onslaught-rewards"))
   const { data: onslaughtProgress } = useQuery({
     ...onslaughtProgressQueries.current(),
     enabled: isAuthenticated,
@@ -126,8 +126,7 @@ export function usePerProjectEstimates({
 
     // Promise.resolve(...) wraps each call rather than chaining .then() directly onto it — Dexie's
     // real queries always return a promise, but this stays defensive against a test double that
-    // hands back a bare value synchronously (mirrors how the dexie-react-hooks useLiveQuery mock
-    // elsewhere in this codebase tolerates both shapes).
+    // hands back a bare value synchronously.
     void Promise.all([
       Promise.all(
         entityIds.map((id) =>

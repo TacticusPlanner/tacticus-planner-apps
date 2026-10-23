@@ -1,16 +1,9 @@
 import { useEffect, useState } from "react"
 import { useQuery } from "@tanstack/react-query"
 import { useIsAuthenticated } from "@azure/msal-react"
-import { useLiveQuery } from "dexie-react-hooks"
 import { unitIdSchema, type UnitId } from "@workspace/game-domain"
-import { getOnslaughtRewards, getShops } from "@workspace/game-catalog/queries"
 import {
-  getInventoryAbilityMaterials,
   getInventoryShard,
-  getInventoryOrbs,
-  getInventoryUpgrades,
-  getInventoryXpBooks,
-  getLiveProgress,
   getPlayerCharacter,
   getPlayerMow,
 } from "@workspace/player-data/queries"
@@ -19,6 +12,7 @@ import { useGlobalGoalPlan } from "@/entities/goal"
 import { onslaughtProgressQueries } from "@/entities/player-data-override"
 import { usePlanningSettings } from "@/entities/planning-setting"
 import { useCampaignDisplay } from "@/shared/lib"
+import { useCatalogDataset, usePlayerChunk } from "@/shared/local-data"
 
 import { computePlanInsights } from ".//plan-insights-calc"
 import {
@@ -26,6 +20,13 @@ import {
   type PlanInsightsResult,
 } from ".//use-plan-insights.domain"
 import { useGoalCatalog } from "../shared/use-goal-catalog"
+import {
+  chunkOrUndefined,
+  readyData,
+  toAbilityMaterials,
+  toOrbs,
+  toXpBooks,
+} from "../shared/read-data"
 
 type FetchState =
   | { status: "idle" }
@@ -72,16 +73,19 @@ export function usePlanInsights(scopeGoalIds?: readonly string[] | null) {
   } = useGoalCatalog()
   const { name: campaignName, fullLabel: campaignFullLabel } =
     useCampaignDisplay()
-  const inventoryUpgrades = useLiveQuery(() => getInventoryUpgrades(), [])
-  const inventoryOrbs = useLiveQuery(() => getInventoryOrbs(), [])
-  const inventoryXpBooks = useLiveQuery(() => getInventoryXpBooks(), [])
-  const abilityInventory = useLiveQuery(
-    () => getInventoryAbilityMaterials(),
-    []
+  const inventoryUpgrades = readyData(
+    usePlayerChunk("inventory-upgrades", chunkOrUndefined)
   )
-  const liveProgress = useLiveQuery(() => getLiveProgress(), [])
-  const onslaughtRewards = useLiveQuery(() => getOnslaughtRewards(), [])
-  const shops = useLiveQuery(() => getShops(), [])
+  const inventoryOrbs = readyData(usePlayerChunk("inventory", toOrbs))
+  const inventoryXpBooks = readyData(usePlayerChunk("inventory", toXpBooks))
+  const abilityInventory = readyData(
+    usePlayerChunk("inventory", toAbilityMaterials)
+  )
+  const liveProgress = readyData(
+    usePlayerChunk("live-progress", chunkOrUndefined)
+  )
+  const onslaughtRewards = readyData(useCatalogDataset("onslaught-rewards"))
+  const shops = readyData(useCatalogDataset("shops"))
   const { settings: planningSettings } = usePlanningSettings()
 
   const [fetchState, setFetchState] = useState<FetchState>({ status: "idle" })

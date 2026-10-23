@@ -1,14 +1,10 @@
 import { useState } from "react"
-import { useLiveQuery } from "dexie-react-hooks"
 
 import type { UnitId } from "@workspace/game-domain"
-import {
-  getInventoryUpgrades,
-  getInventoryXpBooks,
-} from "@workspace/player-data/queries"
 
 import { type FarmingStrategy, type GoalKind } from "@/entities/goal"
 import { usePlanningSettings } from "@/entities/planning-setting"
+import { usePlayerChunk } from "@/shared/local-data"
 
 import {
   additionalTargetSelection,
@@ -22,6 +18,7 @@ import { useCreationPreview } from ".//use-creation-preview"
 import { useEntityPrefillEffect } from ".//use-entity-prefill-effect"
 import { useEntityShardSummary } from ".//use-entity-shard-summary"
 import { useGoalCatalog } from "../shared/use-goal-catalog"
+import { chunkOrUndefined, readyData, toXpBooks } from "../shared/read-data"
 import { useGoalFormReset } from ".//use-goal-form-reset"
 import { useGoalPrefill } from ".//use-goal-prefill"
 import { useGoalPrerequisitesAndReview } from ".//use-goal-prerequisites-and-review"
@@ -66,8 +63,10 @@ export function useCreateGoalForm({
     getCharacter,
     getMow,
   } = useGoalCatalog()
-  const inventoryUpgrades = useLiveQuery(() => getInventoryUpgrades(), [])
-  const inventoryXpBooks = useLiveQuery(() => getInventoryXpBooks(), [])
+  const inventoryUpgrades = readyData(
+    usePlayerChunk("inventory-upgrades", chunkOrUndefined)
+  )
+  const inventoryXpBooks = readyData(usePlayerChunk("inventory", toXpBooks))
 
   const [entityType, setEntityType] = useState<EntityType>("Character")
   const [entityId, setEntityId] = useState<UnitId | undefined>(undefined)

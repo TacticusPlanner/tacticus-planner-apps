@@ -1,34 +1,13 @@
-import { useMemo, useState } from "react"
+import { useMemo } from "react"
 import { useTranslation } from "react-i18next"
-import { useLiveQuery } from "dexie-react-hooks"
 import {
   computeShopLockContext,
   todayDow,
   type RosterUnit,
+  type ShopStorageModel,
+  type UpgradeStorageModel,
 } from "@workspace/game-catalog"
-import {
-  progressionStarsIndex,
-  unitIdSchema,
-  type UnitId,
-} from "@workspace/game-domain"
-import {
-  getAscensionCostsMap,
-  getCharactersMap,
-  getEquipmentMap,
-  getMowsMap,
-  getShops,
-  getUnlockShardCostsMap,
-  getUpgrades,
-} from "@workspace/game-catalog/queries"
-import {
-  getInventoryShard,
-  getInventoryUpgrades,
-  getPlayerCharacter,
-  getPlayerCharacters,
-  getPlayerDetails,
-  getPlayerMow,
-  getPlayerMows,
-} from "@workspace/player-data/queries"
+import { progressionStarsIndex } from "@workspace/game-domain"
 
 import { useGlobalGoalPlan, type GoalDetail } from "@/entities/goal"
 import {
@@ -42,6 +21,8 @@ import {
 } from "@/features/shop-rewards"
 
 import { activeProjectMembers } from "@/features/daily-raids"
+import { combineReadStates } from "@/shared/lib"
+import { toById, useCatalogDataset, usePlayerChunk } from "@/shared/local-data"
 import { aggregateShopNeeds } from "./shop-needs"
 import {
   buildShopRecommendations,
@@ -69,35 +50,28 @@ export type ShopRecommendationsViewModel =
 // Shop dataset order — sections render in this order regardless of the stored row order.
 const SHOP_ORDER = ["guild", "war", "rogue-trader", "crusade"]
 
-// `useLiveQuery` turns a rejected querier into a permanent `undefined`, indistinguishable from "still
-// loading" — the player-data reads below wrap their body and return this sentinel instead, so a Dexie
-// failure surfaces as a real, retry-able error state. (Catalog reads stay unwrapped: a catalog failure
-// is owned by the global GameCatalogProvider gate.)
-const LIVE_QUERY_ERROR = Symbol("live-query-error")
-type OrLiveQueryError<T> = T | typeof LIVE_QUERY_ERROR
+const toUpgradesById = (records: UpgradeStorageModel[]) =>
+  new Map(records.map((item) => [item.id, mapUpgradeStorageToDomain(item)]))
 
-async function safeLiveRead<T>(
-  read: () => Promise<T>
-): Promise<OrLiveQueryError<T>> {
-  try {
-    return await read()
-  } catch {
-    return LIVE_QUERY_ERROR
-  }
-}
+const toOrderedShops = (shops: ShopStorageModel[]) =>
+  [...shops].sort(
+    (left, right) => SHOP_ORDER.indexOf(left.id) - SHOP_ORDER.indexOf(right.id)
+  )
 
-function playerUnitIds(
-  details: readonly Pick<GoalDetail, "entityId" | "entityType">[]
-) {
-  const characterIds = new Set<UnitId>()
-  const mowIds = new Set<UnitId>()
-  for (const detail of details) {
-    const parsed = unitIdSchema.safeParse(detail.entityId)
-    if (!parsed.success) continue
-    if (detail.entityType === "Character") characterIds.add(parsed.data)
-    if (detail.entityType === "Mow") mowIds.add(parsed.data)
-  }
-  return { characterIds: [...characterIds], mowIds: [...mowIds] }
+// undefined until the inventory has synced once, which keeps the recommendations loading.
+const toAmountById = (
+  inventory: readonly { upgradeId: string; amount: number }[] | null
+) =>
+  inventory
+    ? new Map(inventory.map((entry) => [entry.upgradeId, entry.amount]))
+    : undefined
+
+const toList = <T>(chunk: readonly T[] | null): readonly T[] => chunk ?? []
+
+function toByUnitId<T extends { unitId: string }>(
+  chunk: readonly T[] | null
+): ReadonlyMap<string, T> {
+  return new Map((chunk ?? []).map((record) => [record.unitId, record]))
 }
 
 /** `projectId` undefined means every Active goal in the account's global order; a project narrows
@@ -111,7 +85,6 @@ export function useShopRecommendations(
     "upgrades",
     "equipmentItems",
   ])
-  const [retryNonce, setRetryNonce] = useState(0)
 
   // The goals list carries every goal in full and its `projectIds`, so a project scope is a filter of
   // the global plan — no membership or per-goal read.
@@ -126,132 +99,80 @@ export function useShopRecommendations(
         : globalPlan.entries
   const activeMembers = activeProjectMembers(members ?? [])
   const details = activeMembers.map((member) => member.goal)
-  const detailKey = details
-    .map((detail) => `${detail.goalId}:${detail.entityType}:${detail.entityId}`)
-    .join(",")
 
-  const charactersById = useLiveQuery(() => getCharactersMap(), [])
-  const mowsById = useLiveQuery(() => getMowsMap(), [])
-  const equipmentById = useLiveQuery(() => getEquipmentMap(), [])
-  const upgrades = useLiveQuery(() => getUpgrades(), [])
-  const ascensionCostsById = useLiveQuery(() => getAscensionCostsMap(), [])
-  const unlockShardCostsById = useLiveQuery(() => getUnlockShardCostsMap(), [])
-  const inventoryUpgradesRaw = useLiveQuery(
-    () => safeLiveRead(() => getInventoryUpgrades()),
-    [retryNonce]
-  )
-  const shopsRaw = useLiveQuery(
-    () => safeLiveRead(() => getShops()),
-    [retryNonce]
-  )
-  const playerDetailsRaw = useLiveQuery(
-    () => safeLiveRead(async () => ({ value: await getPlayerDetails() })),
-    [retryNonce]
-  )
-  const rosterRaw = useLiveQuery(
+  // Catalog and player data from the shared read cache; whole chunks by unit id, so a goal change
+  // reads nothing.
+  const charactersRead = useCatalogDataset("characters", toById)
+  const mowsRead = useCatalogDataset("mows", toById)
+  const equipmentRead = useCatalogDataset("equipment", toById)
+  const upgradesRead = useCatalogDataset("upgrades", toUpgradesById)
+  const ascensionCostsRead = useCatalogDataset("ascension-costs", toById)
+  const unlockShardCostsRead = useCatalogDataset("unlock-shard-costs", toById)
+  const shopsRead = useCatalogDataset("shops", toOrderedShops)
+  const inventoryRead = usePlayerChunk("inventory-upgrades", toAmountById)
+  const playerDetailsRead = usePlayerChunk("player-details")
+  const rosterCharactersRead = usePlayerChunk("characters", toList)
+  const rosterMowsRead = usePlayerChunk("mows", toList)
+  const playerCharactersRead = usePlayerChunk("characters", toByUnitId)
+  const playerMowsRead = usePlayerChunk("mows", toByUnitId)
+  const inventoryShardsRead = usePlayerChunk("inventory-shards", toByUnitId)
+  // Each read is stable while unchanged, so the combination (and its data tuple) is too.
+  const read = useMemo(
     () =>
-      safeLiveRead(async () => ({
-        characters: (await getPlayerCharacters()) ?? [],
-        mows: (await getPlayerMows()) ?? [],
-      })),
-    [retryNonce]
-  )
-  const playerStateRaw = useLiveQuery(
-    () =>
-      safeLiveRead(async () => {
-        const { characterIds, mowIds } = playerUnitIds(details)
-        const [characters, mows, inventoryShards] = await Promise.all([
-          Promise.all(
-            characterIds.map(
-              async (id) => [id, await getPlayerCharacter(id)] as const
-            )
-          ),
-          Promise.all(
-            mowIds.map(async (id) => [id, await getPlayerMow(id)] as const)
-          ),
-          Promise.all(
-            characterIds.map(
-              async (id) => [id, await getInventoryShard(id)] as const
-            )
-          ),
-        ])
-        return {
-          playerCharacterById: new Map(characters),
-          playerMowById: new Map(mows),
-          inventoryShardById: new Map(inventoryShards),
-        }
-      }),
-    [detailKey, retryNonce]
-  )
-
-  const liveQueryFailed = [
-    inventoryUpgradesRaw,
-    shopsRaw,
-    playerDetailsRaw,
-    rosterRaw,
-    playerStateRaw,
-  ].some((result) => result === LIVE_QUERY_ERROR)
-
-  // Treat the failure sentinel as "not loaded" for the rest of the hook — the error branch below
-  // short-circuits before any of these are read, but this keeps the downstream types clean.
-  function unwrap<T>(result: OrLiveQueryError<T> | undefined): T | undefined {
-    return result === LIVE_QUERY_ERROR ? undefined : result
-  }
-  const inventoryUpgrades = unwrap(inventoryUpgradesRaw)
-  const shops = unwrap(shopsRaw)
-  const playerDetails = unwrap(playerDetailsRaw)
-  const roster = unwrap(rosterRaw)
-  const playerState = unwrap(playerStateRaw)
-
-  const upgradesById = useMemo(
-    () =>
-      new Map(
-        (upgrades ?? []).map((item) => [
-          item.id,
-          mapUpgradeStorageToDomain(item),
-        ])
+      combineReadStates(
+        charactersRead,
+        mowsRead,
+        equipmentRead,
+        upgradesRead,
+        ascensionCostsRead,
+        unlockShardCostsRead,
+        shopsRead,
+        inventoryRead,
+        playerDetailsRead,
+        rosterCharactersRead,
+        rosterMowsRead,
+        playerCharactersRead,
+        playerMowsRead,
+        inventoryShardsRead
       ),
-    [upgrades]
+    [
+      charactersRead,
+      mowsRead,
+      equipmentRead,
+      upgradesRead,
+      ascensionCostsRead,
+      unlockShardCostsRead,
+      shopsRead,
+      inventoryRead,
+      playerDetailsRead,
+      rosterCharactersRead,
+      rosterMowsRead,
+      playerCharactersRead,
+      playerMowsRead,
+      inventoryShardsRead,
+    ]
   )
-  const inventoryUpgradeAmountById = useMemo(
-    () =>
-      new Map(
-        (inventoryUpgrades ?? []).map((entry) => [
-          entry.upgradeId,
-          entry.amount,
-        ])
-      ),
-    [inventoryUpgrades]
-  )
-
-  const isReady =
-    members !== undefined &&
-    charactersById &&
-    mowsById &&
-    equipmentById &&
-    upgrades &&
-    ascensionCostsById &&
-    unlockShardCostsById &&
-    inventoryUpgrades !== undefined &&
-    shops &&
-    playerDetails &&
-    roster &&
-    playerState
+  const data = read.status === "ready" ? read.data : undefined
 
   const sections = useMemo<ShopRecommendationSectionView[] | null>(() => {
-    if (
-      !isReady ||
-      !charactersById ||
-      !mowsById ||
-      !equipmentById ||
-      !shops ||
-      !playerState ||
-      !roster ||
-      !ascensionCostsById ||
-      !unlockShardCostsById
-    ) {
-      return null
-    }
+    if (!members || !data) return null
+    const [
+      charactersById,
+      mowsById,
+      equipmentById,
+      upgradesById,
+      ascensionCostsById,
+      unlockShardCostsById,
+      shops,
+      inventoryUpgradeAmountById,
+      playerDetails,
+      rosterCharacters,
+      rosterMows,
+      playerCharacterById,
+      playerMowById,
+      inventoryShardById,
+    ] = data
+    if (!inventoryUpgradeAmountById) return null
 
     const rewardContext = { t, charactersById, mowsById, equipmentById }
 
@@ -266,11 +187,11 @@ export function useShopRecommendations(
     }
 
     const needs = aggregateShopNeeds({
-      members: members ?? [],
+      members,
       details,
-      playerCharacterById: playerState.playerCharacterById,
-      playerMowById: playerState.playerMowById,
-      inventoryShardById: playerState.inventoryShardById,
+      playerCharacterById,
+      playerMowById,
+      inventoryShardById,
       inventoryUpgradeAmountById,
       upgradesById,
       charactersById,
@@ -292,21 +213,16 @@ export function useShopRecommendations(
       stars: progressionStarsIndex(unit.progressionIndex as never),
     })
     const lockContext = computeShopLockContext(
-      playerDetails?.value?.powerLevel ?? 0,
-      roster.characters.map(rosterUnit),
-      roster.mows.map(rosterUnit)
-    )
-
-    const orderedShops = [...shops].sort(
-      (left, right) =>
-        SHOP_ORDER.indexOf(left.id) - SHOP_ORDER.indexOf(right.id)
+      playerDetails?.powerLevel ?? 0,
+      rosterCharacters.map(rosterUnit),
+      rosterMows.map(rosterUnit)
     )
 
     return buildShopRecommendations({
-      shops: orderedShops,
+      shops,
       needs,
       day: todayDow(),
-      powerLevel: playerDetails?.value?.powerLevel ?? 0,
+      powerLevel: playerDetails?.powerLevel ?? 0,
       lockContext,
     }).map((section) => ({
       shopId: section.shopId,
@@ -315,30 +231,14 @@ export function useShopRecommendations(
       ),
       possible: section.possible.map((card) => enrichCard(card, rewardContext)),
     }))
-  }, [
-    isReady,
-    charactersById,
-    mowsById,
-    equipmentById,
-    shops,
-    playerState,
-    roster,
-    ascensionCostsById,
-    unlockShardCostsById,
-    members,
-    details,
-    inventoryUpgradeAmountById,
-    upgradesById,
-    playerDetails,
-    t,
-  ])
+  }, [members, data, details, t])
 
   const retry = () => {
     globalPlan.retry()
-    setRetryNonce((nonce) => nonce + 1)
+    read.retry()
   }
 
-  if (globalPlan.isError || liveQueryFailed) {
+  if (globalPlan.isError || read.status === "error") {
     return { status: "error", retry }
   }
   if (!sections) return { status: "loading" }

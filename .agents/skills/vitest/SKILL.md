@@ -24,7 +24,7 @@ Vitest is a next-generation testing framework powered by Vite. It provides a Jes
 ## This repo's test harness (`apps/web/src/test`)
 
 Every web test runs with real providers set up by `src/test/setup.ts`; do not mock
-`react-i18next`, `@azure/msal-react`, `dexie-react-hooks`, `@workspace/game-catalog/queries`
+`react-i18next`, `@azure/msal-react`, `@workspace/game-catalog/queries`
 or `@workspace/player-data/queries` by module path.
 
 - **Translations**: a real English i18next instance (all `public/locales/en/*.json`). Query by
@@ -35,7 +35,9 @@ or `@workspace/player-data/queries` by module path.
 - **IndexedDB**: `fake-indexeddb` runs the real catalog and player-data stores. Seed with
   `seedGameCatalog({ characters: [...] })` / `seedPlayerData({ characters: [...] })` from
   `@/test/seed`; both databases are deleted after each test. Fixtures carry only the
-  fields the code reads. Live queries resolve after mount, so use `findBy*` / `waitFor`.
+  fields the code reads. Local reads resolve after mount, so use `findBy*` / `waitFor`. Reads are not live: after re-seeding
+  mid-test, call `refreshLocalDataAfterSync(queryClient, source, keys)` (`render` / `renderHook`
+  return `queryClient`).
 - **Render**: `render(ui, options)` from `@/test/render` adds a fresh `QueryClient` and
   `TooltipProvider`. Optional: `route` + `initialEntries` (memory data router),
   `theme: true` (real `ThemeProvider`), `auth`.
@@ -44,9 +46,14 @@ or `@workspace/player-data/queries` by module path.
 // from apps/web/src/test/harness.test.tsx
 await seedGameCatalog({ characters: [{ id: "ultraCalgar", name: "Calgar" }] })
 
-const { result } = renderHook(() => useLiveQuery(getCharacters))
+const { result } = renderHook(() => useCatalogDataset("characters"))
 
-await waitFor(() => expect(result.current?.[0]?.id).toBe("ultraCalgar"))
+await waitFor(() =>
+  expect(result.current).toMatchObject({
+    status: "ready",
+    data: [{ id: "ultraCalgar" }],
+  })
+)
 
 render(<Probe />, {
   route: "/plan/goals/:goalId",

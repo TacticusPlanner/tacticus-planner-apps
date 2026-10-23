@@ -1,9 +1,12 @@
 import { useEffect, useState } from "react"
-import { useLiveQuery } from "dexie-react-hooks"
-import { getPlayerDataMetadata } from "@workspace/player-data"
-import { getLiveProgress } from "@workspace/player-data/queries"
+import {
+  getPlayerDataMetadata,
+  type PlayerDataChunkDto,
+} from "@workspace/player-data"
 
 import { useGuildRaidStatus } from "@/entities/guild-raid-status"
+import { useReadState } from "@/shared/lib"
+import { usePlayerChunk } from "@/shared/local-data"
 
 import {
   buildGuildRaidResourcesView,
@@ -16,16 +19,12 @@ import { useGuildRaidCatalog } from "./use-guild-raid-catalog"
 // the sidebar sync button's relative-time refresh cadence (see player-data-sync-button.tsx).
 const nowTickMs = 30 * 1000
 
-async function readPlayerGuildRaidTokens() {
-  const [liveProgress, metadata] = await Promise.all([
-    getLiveProgress(),
-    getPlayerDataMetadata(),
-  ])
+const toGuildRaidTokens = (
+  liveProgress: PlayerDataChunkDto<"live-progress"> | null
+) => liveProgress?.gameModeTokens.guildRaid ?? null
 
-  return {
-    guildRaidTokens: liveProgress?.gameModeTokens.guildRaid ?? null,
-    observedAt: metadata.get("live-progress")?.updatedAt,
-  }
+async function readLiveProgressObservedAt() {
+  return (await getPlayerDataMetadata()).get("live-progress")?.updatedAt ?? null
 }
 
 /** Combines persisted Guild Raid status, the local raid-boss catalog, and synced player resources into
@@ -33,7 +32,16 @@ async function readPlayerGuildRaidTokens() {
 export function useGuildRaidsViewModel(): GuildRaidsViewModel {
   const { query, refresh, isRefreshing, refreshError } = useGuildRaidStatus()
   const catalog = useGuildRaidCatalog()
-  const playerTokens = useLiveQuery(readPlayerGuildRaidTokens, [])
+  // A failed read shows no resources, like a read still loading.
+  const tokensRead = usePlayerChunk("live-progress", toGuildRaidTokens)
+  // When the tokens were synced: the chunk's metadata, not its payload.
+  const observedAtRead = useReadState(
+    "live-progress-observed-at",
+    readLiveProgressObservedAt,
+    []
+  )
+  const observedAt =
+    observedAtRead.status === "ready" ? observedAtRead.data : null
 
   const [nowMs, setNowMs] = useState(() => Date.now())
   useEffect(() => {
@@ -53,10 +61,8 @@ export function useGuildRaidsViewModel(): GuildRaidsViewModel {
   })
 
   const resources = buildGuildRaidResourcesView({
-    guildRaidTokens: playerTokens?.guildRaidTokens ?? null,
-    observedAtMs: playerTokens?.observedAt
-      ? Date.parse(playerTokens.observedAt)
-      : undefined,
+    guildRaidTokens: tokensRead.status === "ready" ? tokensRead.data : null,
+    observedAtMs: observedAt ? Date.parse(observedAt) : undefined,
     nowMs,
   })
 

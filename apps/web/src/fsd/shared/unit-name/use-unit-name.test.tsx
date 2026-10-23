@@ -66,3 +66,17 @@ describe("useUnitName", () => {
     expect(resolve(null, null)).toBe("")
   })
 })
+
+describe("useUnitName stability", () => {
+  it("returns the same resolver across re-renders while the catalog is unchanged", async () => {
+    const { result, rerender } = renderHook(() => useUnitName())
+    await waitFor(() =>
+      expect(result.current("Mow", "mow-1")).toBe("Stormbird")
+    )
+    const first = result.current
+
+    rerender()
+
+    expect(result.current).toBe(first)
+  })
+})

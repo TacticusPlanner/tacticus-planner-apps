@@ -47,7 +47,7 @@ vi.mock("@/entities/guild-raid-meta", () => ({
     useGuildRaidExactReadiness(bossUnitSetId),
 }))
 
-// The real hook composes three data sources (catalog + raid-bosses + roster) via useLiveQuery — out of
+// The real hook composes three data sources (catalog + raid-bosses + roster) from local reads — out of
 // scope for this page-shell test, which only exercises section placement. Its own composition/fallback
 // logic is covered directly in use-guild-raid-investment-readiness's own tests.
 const useGuildRaidInvestmentReadiness = vi.fn(

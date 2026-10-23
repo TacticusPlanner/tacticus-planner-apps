@@ -1,19 +1,14 @@
 import { useMemo } from "react"
-import { useLiveQuery } from "dexie-react-hooks"
 
 import {
   resolveMythicMaterialShopOffers,
   type ShopRewardOffer,
 } from "@workspace/game-catalog"
-import { getShops } from "@workspace/game-catalog/queries"
-import {
-  getPlayerCharacters,
-  getPlayerMows,
-} from "@workspace/player-data/queries"
+
+import { combineReadStates } from "@/shared/lib"
+import { useCatalogDataset, usePlayerChunk } from "@/shared/local-data"
 
 import { rosterStarsByUnitId } from "../lib/goal-acquisition"
-
-const FAILED = Symbol("failed")
 
 /**
  * Every daily-shop offer of the given Mythic upgrade materials, with the roster's lock context so the
@@ -25,26 +20,24 @@ export function useMythicMaterialShopOffers(materialIds: readonly string[]): {
   offers: ShopRewardOffer[] | undefined
   failed: boolean
 } {
-  const data = useLiveQuery(async () => {
-    try {
-      const [shops, characters, mows] = await Promise.all([
-        getShops(),
-        getPlayerCharacters(),
-        getPlayerMows(),
-      ])
-      return { shops, units: [...(characters ?? []), ...(mows ?? [])] }
-    } catch {
-      return FAILED
-    }
-  }, [])
+  const shopsRead = useCatalogDataset("shops")
+  const charactersRead = usePlayerChunk("characters")
+  const mowsRead = usePlayerChunk("mows")
+  const { status } = combineReadStates(shopsRead, charactersRead, mowsRead)
+  const shops = shopsRead.status === "ready" ? shopsRead.data : undefined
+  const characters =
+    charactersRead.status === "ready" ? charactersRead.data : undefined
+  const mows = mowsRead.status === "ready" ? mowsRead.data : undefined
 
   const key = materialIds.join(",")
+  // Keyed on each read's data (each stable while unchanged), not on the combined tuple.
   const offers = useMemo(() => {
-    if (!data || data === FAILED || !data.shops) return undefined
-    return resolveMythicMaterialShopOffers(data.shops, key.split(","), {
-      lockContext: { starsByUnitId: rosterStarsByUnitId(data.units) },
+    if (status !== "ready" || !shops) return undefined
+    const units = [...(characters ?? []), ...(mows ?? [])]
+    return resolveMythicMaterialShopOffers(shops, key.split(","), {
+      lockContext: { starsByUnitId: rosterStarsByUnitId(units) },
     })
-  }, [data, key])
+  }, [status, shops, characters, mows, key])
 
-  return { offers, failed: data === FAILED }
+  return { offers, failed: status === "error" }
 }

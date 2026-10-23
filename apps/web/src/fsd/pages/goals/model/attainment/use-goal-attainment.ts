@@ -1,12 +1,7 @@
 import { useMemo } from "react"
-import { useLiveQuery } from "dexie-react-hooks"
 import type { UnitId } from "@workspace/game-domain"
-import {
-  getInventoryUpgrades,
-  getPlayerCharacters,
-  getPlayerInventoryItems,
-  getPlayerMows,
-} from "@workspace/player-data/queries"
+
+import { usePlayerChunk } from "@/shared/local-data"
 
 import {
   computeGoalAttainment,
@@ -14,6 +9,7 @@ import {
   type GoalAttainment,
 } from "./goal-attainment"
 import { useGoalsFor } from "./use-goals-for"
+import { chunkOrUndefined, readyData } from "../shared/read-data"
 
 export type GoalAttainmentState = {
   byGoalId: ReadonlyMap<string, GoalAttainment>
@@ -23,31 +19,25 @@ export type GoalAttainmentState = {
   pending: boolean
 }
 
-/** Wraps a live query's value so "still loading" (`undefined` result) stays distinct from a table
- *  that resolved to `undefined` because it was never synced. */
-async function settled<T>(query: () => Promise<T>): Promise<{ value: T }> {
-  return { value: await query() }
-}
-
 /**
  * Batch attainment for every goal id in `goalIds` — the data source for the overview's
  * "Unfulfilled" / "Reached" grouping (plan §3). Reads each goal in full from the goals list (attainment
  * needs `config`'s numeric targets; no per-goal read), and re-evaluates
- * automatically whenever the underlying live-queried player-data tables change (a goal update, or a
- * fresh player-data sync) since `useLiveQuery` re-renders this hook's caller on any such change.
+ * whenever the goals list or a player-data chunk changes (a goal update, or a fresh player-data
+ * sync, which refreshes the shared read cache). A never-synced chunk is ready with `undefined`.
  */
 export function useGoalAttainmentState(
   goalIds: readonly string[]
 ): GoalAttainmentState {
   const goals = useGoalsFor(goalIds)
-  const charactersResult = useLiveQuery(() => settled(getPlayerCharacters), [])
-  const mowsResult = useLiveQuery(() => settled(getPlayerMows), [])
-  const upgradesResult = useLiveQuery(() => settled(getInventoryUpgrades), [])
-  const itemsResult = useLiveQuery(() => settled(getPlayerInventoryItems), [])
-  const playerCharacters = charactersResult?.value
-  const playerMows = mowsResult?.value
-  const inventoryUpgrades = upgradesResult?.value
-  const inventoryItems = itemsResult?.value
+  const charactersRead = usePlayerChunk("characters", chunkOrUndefined)
+  const mowsRead = usePlayerChunk("mows", chunkOrUndefined)
+  const upgradesRead = usePlayerChunk("inventory-upgrades", chunkOrUndefined)
+  const itemsRead = usePlayerChunk("inventory-items", chunkOrUndefined)
+  const playerCharacters = readyData(charactersRead)
+  const playerMows = readyData(mowsRead)
+  const inventoryUpgrades = readyData(upgradesRead)
+  const inventoryItems = readyData(itemsRead)
 
   const playerCharacterById = useMemo(
     () =>
@@ -83,12 +73,12 @@ export function useGoalAttainmentState(
       })
     )
   })
+  // A failed read stays pending, as it did before reads reported errors.
   const pending =
     goals.loading ||
-    !charactersResult ||
-    !mowsResult ||
-    !upgradesResult ||
-    !itemsResult
+    [charactersRead, mowsRead, upgradesRead, itemsRead].some(
+      (read) => read.status !== "ready"
+    )
   return { byGoalId: result, pending }
 }
 

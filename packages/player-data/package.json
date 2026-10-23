@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@workspace/game-domain": "workspace:*",
+    "@workspace/manifest-sync": "workspace:*",
     "dexie": "^4.4.6",
     "zod": "^4.6.7"
   },
@@ -30,6 +31,7 @@
   "exports": {
     ".": "./src/index.ts",
     "./queries": "./src/queries.ts",
-    "./testing": "./src/testing.ts"
+    "./testing": "./src/testing.ts",
+    "./sync": "./src/sync.ts"
   }
 }

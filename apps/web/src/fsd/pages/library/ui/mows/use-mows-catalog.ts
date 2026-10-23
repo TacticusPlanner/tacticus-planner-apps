@@ -1,17 +1,16 @@
 import { useMemo } from "react"
 import { useTranslation } from "react-i18next"
 import type { MowStorageModel } from "@workspace/game-catalog"
-import { getMows } from "@workspace/game-catalog/queries"
 
 import { orderUnits, type UnitListItem } from "../unit/unit-list.model"
 import {
-  useCatalogDataset,
+  useSyncedCatalogDataset,
   type CatalogDataset,
 } from "../unit/use-catalog-dataset"
 
 /** The synced `mows` dataset, with loading and failure states. */
 export function useMowsCatalog(): CatalogDataset<MowStorageModel> {
-  return useCatalogDataset("mows", getMows)
+  return useSyncedCatalogDataset("mows")
 }
 
 /** Every catalog MoW with its localized name, in the Machines of War list's default order. */

@@ -1,3 +1,4 @@
+import userEvent from "@testing-library/user-event"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
 import { hseInstance } from "@/test/fixtures/hse-render"
@@ -7,9 +8,16 @@ import {
 } from "@/test/fixtures/hse-event-points"
 import { hseTeamsFixtureRead } from "@/test/fixtures/hse-teams"
 import { unitPowerCatalog } from "@/test/fixtures/unit-power"
-import { act, renderHook, waitFor } from "@/test/render"
+import { spyOnIndexedDbReads } from "@/test/fixtures/indexeddb-failure"
+import { createTestI18n, i18nWrapper } from "@/test/i18n"
+import { act, render, renderHook, screen, waitFor } from "@/test/render"
 import { seedGameCatalog, seedPlayerData } from "@/test/seed"
 import type { HseInstance } from "@/features/home-screen-event-points"
+import enDailies from "../../../../../public/locales/en/dailies.json"
+import enNpcs from "../../../../../public/locales/en/npcs.json"
+import enTeamRecs from "../../../../../public/locales/en/teamRecs.json"
+
+import { HseTeamsSection } from "../ui/hse-teams/hse-teams-section"
 
 import { useHseTeamRecommendations } from "./use-hse-team-recommendations"
 
@@ -156,5 +164,44 @@ describe("useHseTeamRecommendations", () => {
       }
     )
     await waitFor(() => expect(result.current.status).toBe("ready"))
+  })
+})
+
+describe("HseTeamsSection over the real reads", () => {
+  function Teams({ instance }: { instance: HseInstance }) {
+    const view = useHseTeamRecommendations(
+      instance,
+      useFixtureHseProjection(instance)
+    )
+    return <HseTeamsSection view={view} />
+  }
+
+  it("shows the failure copy with Retry when the local reads fail, and Retry recovers", async () => {
+    const user = userEvent.setup()
+    const i18n = await createTestI18n("en", {
+      en: { dailies: enDailies, npcs: enNpcs, teamRecs: enTeamRecs },
+    })
+    const reads = spyOnIndexedDbReads()
+    reads.fail()
+    render(
+      <Teams instance={hseInstance("hse-trait-boost-psyker", "upcoming")} />,
+      { wrapper: i18nWrapper(i18n) }
+    )
+
+    expect(
+      await screen.findByText(
+        "Couldn't load your roster, goals, or project. Try again.",
+        undefined,
+        { timeout: 5000 }
+      )
+    ).toBeInTheDocument()
+
+    reads.fail(false)
+    await user.click(screen.getByRole("button", { name: "Retry" }))
+    expect(
+      await screen.findByTestId("hse-team-arena", undefined, { timeout: 5000 })
+    ).toBeInTheDocument()
+    expect(screen.queryByRole("button", { name: "Retry" })).toBeNull()
+    reads.restore()
   })
 })

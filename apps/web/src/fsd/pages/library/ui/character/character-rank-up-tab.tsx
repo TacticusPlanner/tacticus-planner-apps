@@ -1,16 +1,13 @@
-import { useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { useIsAuthenticated } from "@azure/msal-react"
-import { useLiveQuery } from "dexie-react-hooks"
 import { isAdamantineRank } from "@workspace/game-domain"
 import type { UnitId } from "@workspace/game-domain"
-import {
-  getInventoryUpgrades,
-  getPlayerCharacter,
-} from "@workspace/player-data/queries"
+import type { PlayerDataChunkDto } from "@workspace/player-data"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
 import { mapCharacterStorageToDomain } from "@/features/rank-lookup"
+import { usePlayerChunk } from "@/shared/local-data"
 import type { UnitPowerContext } from "@/shared/unit-power"
 
 import { CharacterLookupDesktopPage } from "./desktop/character-lookup-desktop-page"
@@ -18,11 +15,6 @@ import { CharacterLookupMobilePage } from "./mobile/character-lookup-mobile-page
 import { useCharacterLookupCalc } from "./hooks/use-character-lookup-calc"
 import { useCharacterLookupCatalog } from "./hooks/use-character-lookup-catalog"
 import { useLookupSelection } from "./hooks/use-lookup-selection"
-
-// A unique sentinel (not a plain value) so it can be distinguished from a legitimately-resolved
-// result via reference equality — the documented Dexie pattern for detecting "still loading" with
-// useLiveQuery, since its `defaultResult` argument is only returned before the first resolution.
-const PLAYER_CHARACTER_LOADING = Symbol("loading")
 
 /**
  * The unit page's Rank-up materials tab: the former Character Lookup calculator, moved in complete
@@ -69,27 +61,23 @@ export function CharacterRankUpTab({
   // just to prefill the "from" rank/progression once it loads, see the effect below. MoWs are
   // irrelevant here — Character Lookup only ever looks up characters, which have a rank/equipment
   // MoWs don't.
-  const playerCharacterResult = useLiveQuery(
-    () =>
-      isAuthenticated && draftCharacterId
-        ? getPlayerCharacter(draftCharacterId).then((data) => ({
-            id: draftCharacterId,
-            data,
-          }))
-        : { id: draftCharacterId, data: undefined },
-    [isAuthenticated, draftCharacterId],
-    PLAYER_CHARACTER_LOADING
+  const selectPlayerCharacter = useCallback(
+    (characters: PlayerDataChunkDto<"characters"> | null) =>
+      characters?.find((record) => record.unitId === draftCharacterId),
+    [draftCharacterId]
+  )
+  const playerCharacterRead = usePlayerChunk(
+    "characters",
+    selectPlayerCharacter
   )
   const playerCharacter =
-    playerCharacterResult !== PLAYER_CHARACTER_LOADING &&
-    playerCharacterResult.id === draftCharacterId
-      ? playerCharacterResult.data
+    isAuthenticated && playerCharacterRead.status === "ready"
+      ? playerCharacterRead.data
       : undefined
   const playerCharacterLoading =
     isAuthenticated &&
     !!draftCharacterId &&
-    (playerCharacterResult === PLAYER_CHARACTER_LOADING ||
-      playerCharacterResult.id !== draftCharacterId)
+    playerCharacterRead.status === "loading"
 
   // Applies the synced rank/progression prefill once per character selection, as soon as it's
   // available — never on a later background refresh of the same character, so it can't clobber
@@ -138,7 +126,11 @@ export function CharacterRankUpTab({
 
   // Whole inventory-upgrades chunk (not a single record — we don't know in advance which ids the
   // player owns), used only once includeOwned is on; harmless/unused otherwise.
-  const inventoryUpgrades = useLiveQuery(() => getInventoryUpgrades(), [])
+  const inventoryUpgradesRead = usePlayerChunk("inventory-upgrades")
+  const inventoryUpgrades =
+    inventoryUpgradesRead.status === "ready"
+      ? (inventoryUpgradesRead.data ?? undefined)
+      : undefined
 
   const characterId = applied.characterId ?? unitId
 

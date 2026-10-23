@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react"
-import { describe, expect, it, vi } from "vitest"
+import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import type {
   ImportPartResult,
@@ -7,6 +6,7 @@ import type {
   V1LegendaryEventOutcome,
 } from "@/entities/account"
 import { fireEvent, render, screen, within } from "@/test/render"
+import { seedGameCatalog } from "@/test/seed"
 
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({
@@ -30,35 +30,6 @@ vi.mock("@/entities/goal", async () => {
   }
 })
 
-vi.mock("dexie-react-hooks", () => ({
-  useLiveQuery: (querier: () => unknown) => {
-    const [value, setValue] = useState<unknown>()
-    useEffect(() => {
-      void Promise.resolve(querier()).then(setValue)
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
-    return value
-  },
-}))
-
-vi.mock("@workspace/game-catalog/queries", () => ({
-  getCharactersMap: () =>
-    new Map([["astarLysander", { id: "astarLysander", name: "Lysander" }]]),
-  getMowsMap: () => new Map(),
-  getUpgrades: async () => [{ id: "upgHpC001", label: "Ceramite Plate" }],
-  // Only the bounds the issue lines read: 10 regular and 10 premium missions, 18 battles a lane.
-  getLegendaryEvents: async () => [
-    {
-      id: "astarLysander",
-      regularMissions: Array.from({ length: 10 }),
-      premiumMissions: Array.from({ length: 10 }),
-      alpha: { battleIds: Array.from({ length: 18 }) },
-      beta: { battleIds: Array.from({ length: 18 }) },
-      gamma: { battleIds: Array.from({ length: 18 }) },
-    },
-  ],
-}))
-
 import { CreateGoalLauncherContext } from "@/entities/goal"
 
 import {
@@ -67,6 +38,28 @@ import {
 } from "../model/pending-material-steps"
 import { ImportResult } from "./import-v1-result"
 import { PendingMaterialSteps } from "./pending-material-steps"
+
+// Only the bounds the issue lines read: 10 regular and 10 premium missions, 18 battles a lane.
+const lane = {
+  battleIds: Array.from({ length: 18 }, (_, index) => `b${index}`),
+}
+beforeEach(async () => {
+  await seedGameCatalog({
+    characters: [{ id: "astarLysander", name: "Lysander" }],
+    upgrades: [{ id: "upgHpC001", label: "Ceramite Plate" }],
+    lres: [
+      {
+        id: "astarLysander",
+        eventStageStartDatesUtc: [],
+        regularMissions: Array.from({ length: 10 }, (_, index) => index),
+        premiumMissions: Array.from({ length: 10 }, (_, index) => index),
+        alpha: lane,
+        beta: lane,
+        gamma: lane,
+      },
+    ],
+  })
+})
 
 const notSelected: ImportPartResult = {
   status: "Skipped",

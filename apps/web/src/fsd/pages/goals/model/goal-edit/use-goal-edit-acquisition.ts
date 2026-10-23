@@ -1,13 +1,11 @@
 import { useMemo } from "react"
 import { useQuery } from "@tanstack/react-query"
 import { useIsAuthenticated } from "@azure/msal-react"
-import { useLiveQuery } from "dexie-react-hooks"
-import { getOnslaughtRewards } from "@workspace/game-catalog/queries"
-import type { Progression, UnitId } from "@workspace/game-domain"
-import { getPlayerCharacter } from "@workspace/player-data/queries"
+import type { Progression } from "@workspace/game-domain"
 
 import type { AcquisitionSource, GoalDetail } from "@/entities/goal"
 import { onslaughtProgressQueries } from "@/entities/player-data-override"
+import { useCatalogDataset, usePlayerChunk } from "@/shared/local-data"
 import {
   estimateGoal,
   isMythicProgression,
@@ -25,6 +23,7 @@ import {
 } from "../goal-creation-form/onslaught-yield"
 import { useAcquisitionSourceSelection } from "../goal-creation-form/use-acquisition-source-selection"
 import type { useGoalCatalog } from "../shared/use-goal-catalog"
+import { readyData, toByUnitId } from "../shared/read-data"
 
 type CharactersById = ReturnType<typeof useGoalCatalog>["charactersById"]
 type UnlockShardCostsById = ReturnType<
@@ -136,17 +135,13 @@ function useEditOnslaughtYield({
     ...onslaughtProgressQueries.current(),
     enabled: isAuthenticated && enabled,
   })
-  const rewards = useLiveQuery(
-    () => (enabled ? getOnslaughtRewards() : undefined),
-    [enabled]
-  )
-  const playerCharacter = useLiveQuery(
-    () =>
-      enabled && isAuthenticated
-        ? getPlayerCharacter(detail.entityId as UnitId)
-        : undefined,
-    [enabled, isAuthenticated, detail.entityId]
-  )
+  const rewardsRead = readyData(useCatalogDataset("onslaught-rewards"))
+  const charactersById = readyData(usePlayerChunk("characters", toByUnitId))
+  const rewards = enabled ? rewardsRead : undefined
+  const playerCharacter =
+    enabled && isAuthenticated
+      ? charactersById?.get(detail.entityId)
+      : undefined
 
   const currentProgression = (playerCharacter?.progressionIndex ??
     detail.config.progression?.start) as Progression | undefined

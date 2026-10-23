@@ -1,5 +1,4 @@
 import { useMemo } from "react"
-import { useLiveQuery } from "dexie-react-hooks"
 import { useTranslation } from "react-i18next"
 import {
   campaignDescriptor,
@@ -8,16 +7,8 @@ import {
   type CampaignBattleStorageModel,
   type CampaignDefinitionStorageModel,
 } from "@workspace/game-catalog"
-import {
-  getCampaignBattles,
-  getCampaignDefinitions,
-} from "@workspace/game-catalog/queries"
 import type { CampaignId, UnitId } from "@workspace/game-domain"
 import type { PlayerDataChunkDto } from "@workspace/player-data"
-import {
-  getCampaignProgress,
-  getPlayerCharacters,
-} from "@workspace/player-data/queries"
 import { Alert, AlertDescription } from "@workspace/ui/components/alert"
 import {
   Card,
@@ -28,7 +19,9 @@ import {
 import { Progress } from "@workspace/ui/components/progress"
 import { Spinner } from "@workspace/ui/components/spinner"
 
-import { EntityIcon } from "@/shared/ui"
+import { combineReadStates } from "@/shared/lib"
+import { useCatalogDataset, usePlayerChunk } from "@/shared/local-data"
+import { EntityIcon, LocalReadFailure } from "@/shared/ui"
 
 type Story = {
   key: string
@@ -39,19 +32,26 @@ type Story = {
 
 export function CampaignsPage() {
   const { t } = useTranslation(["common", "campaigns"])
-  const data = useLiveQuery(async () => {
-    const [definitions, battles, progress, characters] = await Promise.all([
-      getCampaignDefinitions(),
-      getCampaignBattles(),
-      getCampaignProgress(),
-      getPlayerCharacters(),
-    ])
-    return { definitions, battles, progress, characters }
-  }, [])
+  const read = combineReadStates(
+    useCatalogDataset("campaign-definitions"),
+    useCatalogDataset("campaign-battles"),
+    usePlayerChunk("campaign-progress"),
+    usePlayerChunk("characters")
+  )
+  const [definitions, battles, progress, characters] =
+    read.status === "ready" ? read.data : []
 
-  const model = useMemo(() => (data ? buildModel(data) : null), [data])
-  if (!data) return <Loading />
-  if (!data.progress || !model) {
+  // Keyed on each read's data (each referentially stable while unchanged), not on the combined tuple.
+  const model = useMemo(
+    () =>
+      definitions && battles && progress
+        ? buildModel({ definitions, battles, progress, characters })
+        : null,
+    [definitions, battles, progress, characters]
+  )
+  if (read.status === "loading") return <Loading />
+  if (read.status === "error") return <LocalReadFailure retry={read.retry} />
+  if (!model) {
     return (
       <Alert variant="destructive">
         <AlertDescription>{t("progress.loadError")}</AlertDescription>
@@ -88,10 +88,9 @@ export function CampaignsPage() {
 function buildModel(data: {
   definitions: CampaignDefinitionStorageModel[]
   battles: CampaignBattleStorageModel[]
-  progress: PlayerDataChunkDto<"campaign-progress"> | undefined
-  characters: PlayerDataChunkDto<"characters"> | undefined
+  progress: PlayerDataChunkDto<"campaign-progress">
+  characters: PlayerDataChunkDto<"characters"> | null | undefined
 }) {
-  if (!data.progress) return null
   const battlesByGroup = new Map<string, CampaignBattleStorageModel[]>()
   for (const battle of data.battles) {
     const current = battlesByGroup.get(battle.campaignGroupId) ?? []

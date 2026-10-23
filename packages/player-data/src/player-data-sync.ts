@@ -1,3 +1,5 @@
+import { runManifestSync } from "@workspace/manifest-sync"
+
 import type { PlayerDataClient } from "./player-data-api"
 import {
   getManifestMetadata,
@@ -64,25 +66,13 @@ export async function syncPlayerData(
 
   const manifest = await client.triggerSync()
 
-  const changedChunks = selectChangedChunks(manifest, metadata)
-  const total = changedChunks.length
-  const downloaded: PlayerDataChunkKey[] = []
-  const failures: { key: PlayerDataChunkKey; error: unknown }[] = []
-
-  options.onProgress?.({ downloaded: 0, total })
-
-  for (const chunk of changedChunks) {
-    const chunkKey = chunk.key as PlayerDataChunkKey
-
-    options.onProgress?.({
-      downloaded: downloaded.length,
-      total,
-      current: chunkKey,
-    })
-
-    // Per-chunk resilience: a single bad chunk is collected and surfaced after the loop instead of
-    // aborting the rest, so one failure can't wedge the cache with a partial sync.
-    try {
+  const { downloaded } = await runManifestSync({
+    items: selectChangedChunks(manifest, metadata),
+    keyOf: (chunk) => chunk.key as PlayerDataChunkKey,
+    label: "player-data chunk",
+    onProgress: options.onProgress,
+    download: async (chunk) => {
+      const chunkKey = chunk.key as PlayerDataChunkKey
       const envelope = await client.getChunk(chunk)
 
       await replacePlayerDataChunk(chunkKey, envelope.data, {
@@ -92,36 +82,16 @@ export async function syncPlayerData(
         updatedAt: new Date().toISOString(),
         url: chunk.url,
       })
-
-      downloaded.push(chunkKey)
-    } catch (error) {
-      failures.push({ key: chunkKey, error })
-    }
-
-    options.onProgress?.({
-      downloaded: downloaded.length,
-      total,
-      current: chunkKey,
-    })
-  }
-
-  if (failures.length > 0) {
-    // Do not advance the manifest sync metadata: the failed chunks (whose per-chunk metadata was not
-    // written) will be re-selected on the next sync/retry.
-    const detail = failures
-      .map((failure) => `${failure.key}: ${describeError(failure.error)}`)
-      .join("; ")
-
-    throw new Error(
-      `Failed to sync ${failures.length} player-data chunk(s) — ${detail}`
-    )
-  }
-
-  await saveManifestMetadata({
-    key: playerDataManifestMetadataKey,
-    hash: manifest.sourceHash,
-    schemaVersion: manifest.schemaVersion,
-    updatedAt: manifest.syncedAt,
+    },
+    finalize: async () => {
+      await saveManifestMetadata({
+        key: playerDataManifestMetadataKey,
+        hash: manifest.sourceHash,
+        schemaVersion: manifest.schemaVersion,
+        updatedAt: manifest.syncedAt,
+      })
+      return []
+    },
   })
 
   const ready = await hasCompletePlayerDataCache()
@@ -132,8 +102,4 @@ export async function syncPlayerData(
     firstTime,
     downloaded,
   }
-}
-
-function describeError(error: unknown): string {
-  return error instanceof Error ? error.message : String(error)
 }

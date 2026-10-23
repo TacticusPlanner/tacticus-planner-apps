@@ -2,31 +2,13 @@ import { useMemo } from "react"
 import { useTranslation } from "react-i18next"
 import { useQuery } from "@tanstack/react-query"
 import { useIsAuthenticated } from "@azure/msal-react"
-import { useLiveQuery } from "dexie-react-hooks"
 import {
   rankAt,
   unitIdSchema,
   type BattleId,
   type UnitId,
 } from "@workspace/game-domain"
-import {
-  getAscensionCostsMap,
-  getCampaignBattles,
-  getCampaignDefinitions,
-  getCharactersMap,
-  getMowsMap,
-  getNpcsMap,
-  getOnslaughtRewards,
-  getShops,
-  getUnlockShardCostsMap,
-  getUpgrades,
-} from "@workspace/game-catalog/queries"
-import {
-  getInventoryShard,
-  getInventoryUpgrades,
-  getPlayerCharacter,
-  getPlayerMow,
-} from "@workspace/player-data/queries"
+import type { UpgradeStorageModel } from "@workspace/game-catalog"
 
 import type { GoalDetail } from "@/entities/goal"
 import { onslaughtProgressQueries } from "@/entities/player-data-override"
@@ -36,7 +18,8 @@ import {
   mapCharacterStorageToDomain,
   mapUpgradeStorageToDomain,
 } from "@/features/rank-lookup/@x/daily-raids"
-import { useCampaignDisplay } from "@/shared/lib"
+import { useCampaignDisplay, type ReadState } from "@/shared/lib"
+import { toById, useCatalogDataset, usePlayerChunk } from "@/shared/local-data"
 
 import { buildResourceByBattle } from "./daily-raid-battle-resources"
 import { useBattleMaps } from "./use-battle-maps"
@@ -97,56 +80,63 @@ export function useDailyRaids(
   const activeMembers = activeProjectMembers(globalPlan.entries)
   // The goals list carries every goal in full, so no goal's detail is read separately.
   const details = activeMembers.map((member) => member.goal)
-  const detailKey = details
-    .map((detail) => `${detail.goalId}:${detail.entityType}:${detail.entityId}`)
-    .join(",")
 
-  const charactersById = useLiveQuery(() => getCharactersMap(), [])
-  const mowsById = useLiveQuery(() => getMowsMap(), [])
-  const upgrades = useLiveQuery(() => getUpgrades(), [])
-  const battles = useLiveQuery(() => getCampaignBattles(), [])
-  const campaignDefinitions = useLiveQuery(() => getCampaignDefinitions(), [])
+  const charactersRead = useCatalogDataset("characters", toById)
+  const mowsRead = useCatalogDataset("mows", toById)
+  const upgradesRead = useCatalogDataset("upgrades", toUpgradesById)
+  const battlesRead = useCatalogDataset("campaign-battles")
+  const campaignDefinitionsRead = useCatalogDataset("campaign-definitions")
+  const ascensionCostsRead = useCatalogDataset("ascension-costs", toById)
+  const unlockShardCostsRead = useCatalogDataset("unlock-shard-costs", toById)
+  const onslaughtRewardsRead = useCatalogDataset("onslaught-rewards")
+  const shopsRead = useCatalogDataset("shops")
+  // Resolved once (not per render): the Raids Filters' enemy traits and the event points read it.
+  const npcsRead = useCatalogDataset("npcs", toById)
+  const inventoryUpgradesRead = usePlayerChunk("inventory-upgrades")
+  // Whole chunks by unit id: a goal's unit is looked up in them, so a goal change reads nothing.
+  const playerCharactersRead = usePlayerChunk("characters", toByUnitId)
+  const playerMowsRead = usePlayerChunk("mows", toByUnitId)
+  const inventoryShardsRead = usePlayerChunk("inventory-shards", toByUnitId)
+  const charactersById = dataOf(charactersRead)
+  const mowsById = dataOf(mowsRead)
+  const upgradesById = dataOf(upgradesRead)
+  const battles = dataOf(battlesRead)
+  const campaignDefinitions = dataOf(campaignDefinitionsRead)
   const {
     availableBattles,
-    liveProgressResult,
-    campaignEventProgressReady,
-    campaignEventProgressError,
-    campaignProgressResult,
+    liveProgress,
+    ready: eligibilityReady,
+    isError: eligibilityError,
   } = useEligibleCampaignBattles(battles, campaignDefinitions)
-  const ascensionCostsById = useLiveQuery(() => getAscensionCostsMap(), [])
-  const unlockShardCostsById = useLiveQuery(() => getUnlockShardCostsMap(), [])
-  const onslaughtRewards = useLiveQuery(() => getOnslaughtRewards(), [])
-  const shops = useLiveQuery(() => getShops(), [])
-  // Resolved once (not per render): the Raids Filters' enemy traits and the event points read it.
-  const npcsById = useLiveQuery(() => getNpcsMap(), [])
+  const ascensionCostsById = dataOf(ascensionCostsRead)
+  const unlockShardCostsById = dataOf(unlockShardCostsRead)
+  const onslaughtRewards = dataOf(onslaughtRewardsRead)
+  const shops = dataOf(shopsRead)
+  const npcsById = dataOf(npcsRead)
   const onslaughtProgressQuery = useQuery({
     ...onslaughtProgressQueries.current(),
     enabled: isAuthenticated,
   })
-  const inventoryUpgrades = useLiveQuery(() => getInventoryUpgrades(), [])
-  const playerState = useLiveQuery(async () => {
-    const { characterIds, mowIds } = playerUnitIds(details)
-    const [characters, mows, shards] = await Promise.all([
-      Promise.all(
-        characterIds.map(
-          async (id) => [id, await getPlayerCharacter(id)] as const
-        )
-      ),
-      Promise.all(
-        mowIds.map(async (id) => [id, await getPlayerMow(id)] as const)
-      ),
-      Promise.all(
-        characterIds.map(
-          async (id) => [id, await getInventoryShard(id)] as const
-        )
-      ),
-    ])
-    return {
-      playerCharacterById: new Map(characters),
-      playerMowById: new Map(mows),
-      inventoryShardById: new Map(shards),
-    }
-  }, [detailKey])
+  const inventoryUpgrades = dataOf(inventoryUpgradesRead)
+  const playerCharacterById = dataOf(playerCharactersRead)
+  const playerMowById = dataOf(playerMowsRead)
+  const inventoryShardById = dataOf(inventoryShardsRead)
+  const localReadFailed = [
+    charactersRead,
+    mowsRead,
+    upgradesRead,
+    battlesRead,
+    campaignDefinitionsRead,
+    ascensionCostsRead,
+    unlockShardCostsRead,
+    onslaughtRewardsRead,
+    shopsRead,
+    npcsRead,
+    inventoryUpgradesRead,
+    playerCharactersRead,
+    playerMowsRead,
+    inventoryShardsRead,
+  ].some((read) => read.status === "error")
   const { settings, loading: settingsLoading } = usePlanningSettings()
   const [raidsFilters] = useRaidsFilters()
   // Every catalog battle (not only the eligible ones) as the Raids Filters matcher reads it.
@@ -167,16 +157,6 @@ export function useDailyRaids(
     npcsById,
   })
 
-  const upgradesById = useMemo(
-    () =>
-      new Map(
-        (upgrades ?? []).map((item) => [
-          item.id,
-          mapUpgradeStorageToDomain(item),
-        ])
-      ),
-    [upgrades]
-  )
   // Full catalog, unfiltered by eligibility — the source for real-attempt/energy/location-label
   // lookups (buildBattleAttemptIndex and friends below), which must reflect a real synced attempt
   // even at a battle the eligibility filter currently excludes (campaign-progress/campaign-events-
@@ -232,7 +212,7 @@ export function useDailyRaids(
   const resourceByBattleId = useMemo(
     () =>
       buildResourceByBattle(
-        upgradesById.values(),
+        upgradesById?.values() ?? [],
         charactersById?.values() ?? [],
         labelResource
       ),
@@ -245,33 +225,34 @@ export function useDailyRaids(
   const realEnergyUsedToday = useMemo(
     () =>
       calculateRealEnergyUsedToday(
-        liveProgressResult?.value?.battleAttempts ?? [],
+        liveProgress?.battleAttempts ?? [],
         battleAttemptIndex,
         allBattlesById
       ),
-    [liveProgressResult, battleAttemptIndex, allBattlesById]
+    [liveProgress, battleAttemptIndex, allBattlesById]
   )
   const attemptsLeftByBattle = useMemo(
     () =>
       buildAttemptsLeftByBattle(
-        liveProgressResult?.value?.battleAttempts ?? [],
+        liveProgress?.battleAttempts ?? [],
         battleAttemptIndex
       ),
-    [liveProgressResult, battleAttemptIndex]
+    [liveProgress, battleAttemptIndex]
   )
   const todaysAttempts = useMemo(
     () =>
       buildTodaysAttempts(
-        liveProgressResult?.value?.battleAttempts ?? [],
+        liveProgress?.battleAttempts ?? [],
         battleAttemptIndex
       ),
-    [liveProgressResult, battleAttemptIndex]
+    [liveProgress, battleAttemptIndex]
   )
 
   if (
     globalPlan.isError ||
     onslaughtProgressQuery.isError ||
-    campaignEventProgressError
+    eligibilityError ||
+    localReadFailed
   ) {
     return { status: "error" }
   }
@@ -279,12 +260,10 @@ export function useDailyRaids(
     !globalPlan.loading &&
     charactersById &&
     mowsById &&
-    upgrades &&
+    upgradesById &&
     battles &&
     campaignDefinitions &&
-    liveProgressResult &&
-    campaignEventProgressReady &&
-    campaignProgressResult &&
+    eligibilityReady &&
     ascensionCostsById &&
     unlockShardCostsById &&
     // `[]` is a catalog still syncing (or evicted), not a loaded dataset — rendering with it would
@@ -295,7 +274,9 @@ export function useDailyRaids(
     npcsById &&
     onslaughtProgressQuery.isSuccess &&
     inventoryUpgrades &&
-    playerState &&
+    playerCharacterById &&
+    playerMowById &&
+    inventoryShardById &&
     !settingsLoading
   if (!ready) return { status: "loading" }
   const planMission = (
@@ -328,7 +309,9 @@ export function useDailyRaids(
   const result = calculateDailyRaids({
     members: globalPlan.entries,
     details,
-    ...playerState,
+    playerCharacterById,
+    playerMowById,
+    inventoryShardById,
     inventoryUpgrades,
     upgradesById,
     battlesById,
@@ -411,6 +394,19 @@ export function useDailyRaids(
         missionRaids: planMission(null),
         locationsByBattleId,
       }
+}
+
+function dataOf<T>(read: ReadState<T>): T | undefined {
+  return read.status === "ready" ? read.data : undefined
+}
+
+const toUpgradesById = (records: UpgradeStorageModel[]) =>
+  new Map(records.map((item) => [item.id, mapUpgradeStorageToDomain(item)]))
+
+function toByUnitId<T extends { unitId: string }>(
+  chunk: readonly T[] | null
+): ReadonlyMap<string, T> {
+  return new Map((chunk ?? []).map((record) => [record.unitId, record]))
 }
 
 export function playerUnitIds(
