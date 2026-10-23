@@ -17,6 +17,7 @@ import {
 } from "@/shared/tour"
 
 import { AuthControl } from "../providers/auth-control"
+import { useUserJot } from "../providers/userjot-provider"
 import { AppLogo } from "./app-logo"
 import type { NavItem } from "./nav-items"
 import { SectionTabs } from "./section-tabs"
@@ -96,6 +97,7 @@ export function MobileHeader({
 function MobileGuestSettings() {
   const { t } = useTranslation()
   const [open, setOpen] = useTourControlledPopoverOpen()
+  const { open: openUserJot, status: feedbackStatus } = useUserJot()
 
   return (
     <Popover onOpenChange={setOpen} open={open}>
@@ -114,7 +116,17 @@ function MobileGuestSettings() {
         className="w-72 gap-2"
         data-testid="mobile-guest-settings-content"
       >
-        <GuestPreferencesCard>
+        <GuestPreferencesCard
+          changelogUnavailable={
+            feedbackStatus === "failed"
+              ? t("nav.quickActions.feedbackUnavailable")
+              : undefined
+          }
+          onChangelog={() => {
+            setOpen(false)
+            openUserJot({ to: "updates" })
+          }}
+        >
           <TourButton
             className="h-8 w-full justify-start px-2 font-normal"
             variant="ghost"

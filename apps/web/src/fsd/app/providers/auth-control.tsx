@@ -82,6 +82,10 @@ export function AuthControl() {
   const account = instance.getActiveAccount() ?? accounts[0]
   const { state: accountState } = useCurrentUser()
   const { open: openUserJot, status: feedbackStatus } = useUserJot()
+  const feedbackUnavailable =
+    feedbackStatus === "failed"
+      ? t("nav.quickActions.feedbackUnavailable")
+      : undefined
   const navigate = useNavigate()
   const [isManageAccountOpen, setIsManageAccountOpen] = useState(false)
   const [manageAccountTab, setManageAccountTab] =
@@ -124,8 +128,10 @@ export function AuthControl() {
   if (!isAuthenticated || !account) {
     return (
       <GuestAccountMenu
+        changelogUnavailable={feedbackUnavailable}
         checkingSignIn={isCheckingSilentSignIn}
         disabled={isInteractionInProgress}
+        onChangelog={() => openUserJot({ to: "updates" })}
         onOpenChange={setMenuOpen}
         onSignIn={handleSignIn}
         open={menuOpen}
@@ -173,11 +179,11 @@ export function AuthControl() {
         setMenuOpen(false)
         openUserJot()
       }}
-      feedbackUnavailable={
-        feedbackStatus === "failed"
-          ? t("nav.quickActions.feedbackUnavailable")
-          : undefined
-      }
+      onChangelog={() => {
+        setMenuOpen(false)
+        openUserJot({ to: "updates" })
+      }}
+      feedbackUnavailable={feedbackUnavailable}
       onImportV1={goToV1Import}
       onOpenAccountSettings={() => openManageAccount("integration")}
       onExternalLink={() => setMenuOpen(false)}

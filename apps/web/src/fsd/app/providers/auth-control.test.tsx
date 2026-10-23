@@ -253,11 +253,20 @@ describe("AuthControl", () => {
     )
     expect(roadmap).toHaveAttribute("target", "_blank")
     expect(roadmap).toHaveAttribute("rel", "noopener noreferrer")
-    expect(screen.getByTestId("auth-changelog")).toHaveAttribute(
-      "href",
-      "https://tacticusplanner.userjot.com/updates"
-    )
     expect(roadmap).toHaveTextContent("feedback.roadmap")
+  })
+
+  // Reading updates inside the widget is what marks them seen and clears the feedback button's
+  // unread dot; the public updates page is another origin and never does.
+  it("opens the widget's Updates and closes the desktop menu from the Changelog row", () => {
+    renderAuthControl()
+
+    fireEvent.click(screen.getByTestId("auth-account-trigger"))
+    expect(screen.getByTestId("auth-changelog")).not.toHaveAttribute("href")
+    fireEvent.click(screen.getByTestId("auth-changelog"))
+
+    expect(openUserJot).toHaveBeenCalledWith({ to: "updates" })
+    expect(screen.queryByTestId("auth-changelog")).not.toBeInTheDocument()
   })
 
   it("also offers Roadmap in the guest preferences menu", () => {
@@ -270,6 +279,17 @@ describe("AuthControl", () => {
       "href",
       "https://tacticusplanner.userjot.com/roadmap"
     )
+  })
+
+  it("opens the widget's Updates and closes the guest menu from the Changelog row", () => {
+    useIsAuthenticated.mockReturnValue(false)
+    renderAuthControl()
+
+    fireEvent.click(screen.getByRole("button", { name: "settings.label" }))
+    fireEvent.click(screen.getByTestId("auth-changelog"))
+
+    expect(openUserJot).toHaveBeenCalledWith({ to: "updates" })
+    expect(screen.queryByTestId("auth-changelog")).not.toBeInTheDocument()
   })
 
   it("opens the UserJot widget and closes the desktop menu from the Send feedback row", () => {
