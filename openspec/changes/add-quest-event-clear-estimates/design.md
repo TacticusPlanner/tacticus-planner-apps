@@ -3,7 +3,7 @@
 ## Context
 
 - LE clear estimates (`legendary-event-clear-estimates`) compare a team's effective power with the catalog battle power through a ratio of 1.0 until calibrated, and show the margin and the shortfall.
-- Quest battles have no catalog power, so it is computed from NPCs with `game-domain` `npcPower`, which the NPC Library already uses.
+- Quest battles carry the game's power only where recorded (Nubari). Elsewhere it is computed from NPCs with `game-domain` `npcPower`, which the NPC Library already uses.
 - `add-quest-event-teams` provides capped power, eligibility, the selector and objective badges. `add-quest-event-rewards` provides the rewards functions that take a score.
 
 ## Goals / Non-Goals

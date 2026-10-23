@@ -6,7 +6,7 @@
 - The companion API change serves `quest-events` (one record per featured hero, 17 battles with tier, position, deploy slots, board, grouped enemies, objectives and loot) and `quest-crates` (17 thresholds, the last one 8,800).
 - The LE Battles section (`pages/legendary-events/ui/legendary-event/battles/`) already renders a map with fallback, enemy tiles with ladder-index levels and an enemy detail popover or sheet. Quests need the same pieces with one enemy list instead of waves.
 - The HRE tab is the closest pattern: a `features/hre-missions` slice for instance selection, local-storage progress and UI, composed by `pages/dailies/ui/hre-page.tsx`, with `nav-live-dot.tsx` signals.
-- Severyn's decisions: tiers are 3/3/5/3/2/1, Lightning Victory is a full-HP toggle, objective scores come from the data, there is no quest data in the game API, and caps clamp stars, rank, abilities and items.
+- Severyn's decisions: tiers are 3/3/5/3/2/1, Lightning Victory is entered as 0 to 100 points (the in-game screens show partial scores such as 499 / 500), objective scores come from the data, there is no quest data in the game API, and caps clamp stars, rank, abilities and items.
 
 ## Goals / Non-Goals
 
@@ -36,7 +36,7 @@ The LE map, enemy tile, enemy detail and enemy list move from `pages/legendary-e
 
 ### D3. Scoring is one pure function
 
-`scoreQuest(battles, entries, crates)` returns per battle `{ points, max, left }`, per tier totals, the total, the maximum, crates opened and the next crate. The rows, headings and summary read only that result, so they cannot disagree. Points are `100 × medals + (lightning ? 100 : 0) + Σ ticked scores`, and all are 0 with 0 medals. The follow-up changes add inputs to this function (estimates) instead of new totals.
+`scoreQuest(battles, entries, crates)` returns per battle `{ points, max, left }`, per tier totals, the total, the maximum, crates opened and the next crate. The rows, headings and summary read only that result, so they cannot disagree. Points are `100 × medals + lightning + Σ ticked scores`, and all are 0 with 0 medals. The follow-up changes add inputs to this function (estimates) instead of new totals.
 
 ### D4. Storage
 

@@ -6,17 +6,22 @@ Estimates whether the player's roster clears each Quest Event battle, with and w
 
 ## ADDED Requirements
 
-### Requirement: Battle power is computed from the battle's NPCs
+### Requirement: Battle power is the game's figure, else computed from NPCs
 
-A battle's **power** B SHALL be the sum, over its served enemies whose NPC is not a loot object, of `count` × `npcPower` of that NPC at its `ladderIndex` row (the row resolution of `legendary-event-battle-preview`). When an enemy's id is unknown or its index is past its ladder, B SHALL be unknown and the battle SHALL show "No estimate: enemy data incomplete".
+A battle's **power** B SHALL be its served `power` when not null, as LE uses catalog power. Otherwise it SHALL be the sum, over its served enemies whose NPC is not a loot object, of `count` × `npcPower` of that NPC at its `ladderIndex` row (the row resolution of `legendary-event-battle-preview`). When `power` is null and an enemy's id is unknown or its index is past its ladder, B SHALL be unknown and the battle SHALL show "No estimate: enemy data incomplete".
 
 Assumptions:
 
 - Battle difficulty is the enemies' summed power; board, pickups and AI are not modelled.
 
+#### Scenario: Recorded power wins
+
+- **GIVEN** Nubari battle 4 with served `power` 1,183
+- **THEN** B = 1,183, whatever its NPC sum
+
 #### Scenario: Two enemy groups
 
-- **GIVEN** a battle with FlayedOne ×3 at a row of power 400 and Warrior ×4 at a row of power 350
+- **GIVEN** a battle with `power` null with FlayedOne ×3 at a row of power 400 and Warrior ×4 at a row of power 350
 - **THEN** B = 3 × 400 + 4 × 350 = 2,600
 
 ### Requirement: The estimate with objectives is always shown
@@ -32,7 +37,7 @@ The battle row SHALL show a verdict ("Clears", "Close", or "Doesn't clear") with
 
 Assumptions:
 
-- A clear is assumed at 3 medals and full HP, with every reachable objective met, including `NoDamageTakenByAnyHero`.
+- A clear is assumed at 3 medals and 100 Lightning Victory points, with every reachable objective met, including `NoDamageTakenByAnyHero`.
 - r is 1.0 until calibrated, and estimates are labelled "uncalibrated".
 
 #### Scenario: Comfortable clear
@@ -79,7 +84,7 @@ For each battle, the **projected points** SHALL be the entered points when the b
 
 ### Requirement: The power ratio can be calibrated from samples
 
-The planner SHALL provide `calibrateQuestPowerRatio(samples)`, where a sample is `{ E, B, cleared }`, returning the ratio r that the fewest samples contradict (a cleared sample contradicts r when E < r × B; a failed one when E ≥ r × B), choosing the median of the tied range, or null with fewer than 5 samples. The app SHALL ship r as a constant set from this function; there is no in-app calibration UI in this change.
+The planner SHALL provide `calibrateQuestPowerRatio(samples)`, where a sample is `{ E, B, cleared }`. Nubari's recorded powers against their NPC sums SHALL also be checked by a unit test that reports the ratio, to judge the NPC fallback, returning the ratio r that the fewest samples contradict (a cleared sample contradicts r when E < r × B; a failed one when E ≥ r × B), choosing the median of the tied range, or null with fewer than 5 samples. The app SHALL ship r as a constant set from this function; there is no in-app calibration UI in this change.
 
 #### Scenario: Too few samples
 

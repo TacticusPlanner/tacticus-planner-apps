@@ -81,10 +81,10 @@ The battle list SHALL group the 17 battles under their tier (Common, Uncommon, R
 For a running occurrence, or one in its claim window, each battle SHALL accept the player's best attempt:
 
 - **medals**: 0, 1, 2 or 3;
-- **Lightning Victory**: a "full HP" toggle worth 100 or 0;
+- **Lightning Victory**: points from 0 to 100, with a "Full HP" shortcut that sets 100 (the game awards 1 to 100 by HP left);
 - one tick per objective, each worth its served `score`.
 
-With 0 medals the battle counts as not won: the Lightning Victory toggle and the objective ticks SHALL be disabled and SHALL count 0, and stay stored. A battle's **points** SHALL be 100 × medals + Lightning Victory + the ticked objective scores. Its **maximum** SHALL be 300 + 100 + the sum of its objective scores. Inputs SHALL be read-only in a preview.
+With 0 medals the battle counts as not won: the Lightning Victory entry and the objective ticks SHALL be disabled and SHALL count 0, and stay stored. A battle's **points** SHALL be 100 × medals + the Lightning Victory points + the ticked objective scores. Its **maximum** SHALL be 300 + 100 + the sum of its objective scores. Inputs SHALL be read-only in a preview.
 
 Assumptions:
 
@@ -97,15 +97,21 @@ Assumptions:
 - **WHEN** the player sets 3 medals, full HP and ticks `UseNoSummons` only
 - **THEN** the battle shows "500 / 600"
 
+#### Scenario: Partial Lightning Victory
+
+- **GIVEN** Nubari battle 8 (Rare 2, one objective)
+- **WHEN** the player sets 3 medals, Lightning Victory 99 and ticks the objective
+- **THEN** the battle shows "499 / 500", as the game does
+
 #### Scenario: Not won
 
 - **GIVEN** battle 1 at 500 as above
 - **WHEN** the player sets 0 medals
-- **THEN** the battle shows "0 / 600", the toggle and ticks are disabled, and setting 3 medals again restores 500
+- **THEN** the battle shows "0 / 600", the Lightning Victory entry and ticks are disabled, and setting 3 medals again restores 500
 
 ### Requirement: Progress is stored per occurrence in local storage
 
-Entries SHALL be stored under `tp.dailies.quest.progress.v1` as `{ [occurrenceId]: { battles: { [number]: { medals, lightning, objectives: boolean[] } } } }`, read and written in guarded `try` blocks. Invalid entries SHALL be dropped on read, medals clamped to 0 to 3, and an `objectives` array whose length differs from the battle's objectives SHALL be padded with `false` or cut. A storage failure SHALL keep the in-memory entries for the session and show "Progress can't be saved in this browser". Entries are not keyed by account and are not synced.
+Entries SHALL be stored under `tp.dailies.quest.progress.v1` as `{ [occurrenceId]: { battles: { [number]: { medals, lightning: number, objectives: boolean[] } } } }`, read and written in guarded `try` blocks. Invalid entries SHALL be dropped on read, medals clamped to 0 to 3 and `lightning` to 0 to 100, and an `objectives` array whose length differs from the battle's objectives SHALL be padded with `false` or cut. A storage failure SHALL keep the in-memory entries for the session and show "Progress can't be saved in this browser". Entries are not keyed by account and are not synced.
 
 #### Scenario: Reload
 
@@ -147,7 +153,7 @@ On desktop (768px and up) the header SHALL sit above two columns: the summary an
 
 - **GIVEN** a 420px viewport
 - **WHEN** the player taps battle 4
-- **THEN** a bottom sheet opens with battle 4's medals, toggle and ticks above its detail
+- **THEN** a bottom sheet opens with battle 4's medals, Lightning Victory and ticks above its detail
 
 ### Requirement: Quest tab copy and tour
 

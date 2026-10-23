@@ -6,7 +6,7 @@ Players want to know before they spend tokens whether a quest battle is winnable
 
 ## What Changes
 
-- **Battle power** from NPCs: the sum over a battle's enemies (pickups excluded) of `npcPower` at the enemy's ladder row, times its count.
+- **Battle power**: the game's figure when the catalog has it (Nubari today), else from NPCs: the sum over a battle's enemies (pickups excluded) of `npcPower` at the enemy's ladder row, times its count.
 - **Estimate with objectives** (always shown): the `add-quest-event-teams` team versus battle power through a power ratio, with clear or not, the margin, and the points if cleared.
 - **Estimate without objectives** (only when the first fails or is marginal, under 15% above): the strongest team under the hard rules only, with the points it would earn and the objectives it gives up ("400 instead of 500, needs Ahriman, excluded by No Psyker").
 - **Neither clears**: the shortfall in percent, and the members below the tier cap with the power they would gain at the cap.
