@@ -1,0 +1,115 @@
+import { useEffect } from "react"
+import {
+  AlertTriangle,
+  CheckCircle2,
+  CircleDashed,
+  Clock,
+  LogIn,
+  RefreshCw,
+} from "lucide-react"
+import { useTranslation } from "react-i18next"
+import { CommandShortcut } from "@workspace/ui/components/command-shortcut"
+import { SidebarMenuButton } from "@workspace/ui/components/sidebar"
+import { cn } from "@workspace/ui/lib/utils"
+
+import { isMacPlatform } from "@/shared/lib"
+
+import { usePlayerDataSyncStatus } from "@/features/player-data-sync"
+import type { PlayerDataStatus } from "@/shared/player-data-status"
+
+const statusIcons: Record<PlayerDataStatus, typeof CheckCircle2> = {
+  idle: CircleDashed,
+  syncing: RefreshCw,
+  ready: CheckCircle2,
+  stale: Clock,
+  error: AlertTriangle,
+}
+
+const statusClasses: Record<PlayerDataStatus, string> = {
+  idle: "text-muted-foreground",
+  syncing: "bg-accent/10 text-accent hover:bg-accent/15 hover:text-accent",
+  ready: "bg-accent/10 text-accent hover:bg-accent/15 hover:text-accent",
+  stale:
+    "bg-accent/15 text-accent-foreground ring-1 ring-inset ring-accent/40 hover:bg-accent/25 hover:text-accent-foreground",
+  error:
+    "bg-destructive/10 text-destructive ring-1 ring-inset ring-destructive/25 hover:bg-destructive/15 hover:text-destructive",
+}
+
+/**
+ * The sidebar's single "Sync with Tacticus" control — combines what used to be a separate action
+ * button and a read-only status badge into one clickable element, per feedback that splitting an
+ * action and its own status across two places was confusing. The icon reflects the current status
+ * (mirroring the old badge's icon-per-status mapping) and spins while a sync is in flight; the button
+ * disables itself for the same duration so a click can't queue a second overlapping sync; the tooltip
+ * carries the same status text (plus progress and any error) the old badge showed.
+ */
+export function PlayerDataSyncButton() {
+  const { t } = useTranslation()
+  const { errorText, isSyncing, requiresReauth, status, statusText, syncNow } =
+    usePlayerDataSyncStatus()
+  const Icon =
+    status === "error" && requiresReauth ? LogIn : statusIcons[status]
+  // A raw MSAL/network error message isn't actionable for the user — once it's a sign-in issue, the
+  // friendly statusText ("Sign-in expired…") replaces it instead of surfacing errorText verbatim.
+  const tooltip = `${t("nav.syncWithTacticus")} — ${requiresReauth ? statusText : (errorText ?? statusText)}`
+  const shortcutHint = isMacPlatform() ? "⌘⇧S" : "Ctrl+Shift+S"
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (
+        (event.metaKey || event.ctrlKey) &&
+        event.shiftKey &&
+        event.key.toLowerCase() === "s"
+      ) {
+        event.preventDefault()
+        if (!isSyncing) syncNow()
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown)
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown)
+    }
+  }, [isSyncing, syncNow])
+
+  return (
+    <SidebarMenuButton
+      className={cn(
+        "mt-2 h-auto min-h-12 pl-2.5 group-data-[collapsible=icon]:min-h-8 group-data-[collapsible=icon]:justify-center",
+        statusClasses[status]
+      )}
+      data-testid="player-data-sync-button"
+      onClick={syncNow}
+      disabled={isSyncing}
+      size="lg"
+      tooltip={tooltip}
+    >
+      <span className="relative flex shrink-0 items-center justify-center">
+        <Icon
+          aria-hidden="true"
+          className={isSyncing ? "motion-safe:animate-spin" : undefined}
+        />
+        {status === "stale" ? (
+          <span
+            aria-hidden="true"
+            className="absolute -top-1 -right-1 size-2 rounded-full bg-accent motion-safe:animate-pulse"
+          />
+        ) : null}
+      </span>
+      <span className="flex min-w-0 flex-1 flex-col items-start gap-0.5 group-data-[collapsible=icon]:hidden">
+        <span className="flex w-full min-w-0 items-center gap-2">
+          <span className="truncate text-sm font-semibold">
+            {t("nav.syncWithTacticus")}
+          </span>
+          <CommandShortcut className="text-current opacity-80">
+            {shortcutHint}
+          </CommandShortcut>
+        </span>
+        <span className="truncate text-xs font-normal opacity-80">
+          {statusText}
+        </span>
+      </span>
+    </SidebarMenuButton>
+  )
+}

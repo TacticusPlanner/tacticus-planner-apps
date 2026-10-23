@@ -1,0 +1,8 @@
+{
+  "BlisteringAssault": {
+    "description": "The <style=\"Faction_Tyranids\">Screamer-Killer</style>'s <style=\"NormalAttack\">normal attacks</style> also affect all enemies adjacent to the target of the attack.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

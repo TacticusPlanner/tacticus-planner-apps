@@ -1,0 +1,10 @@
+{
+  "CabalOfSorcerers": {
+    "description": "Los <style=\"Character\">personajes</style> <style=\"Psyker\">psíquicos</style> <style=\"Rarity_Mythic\">Míticos</style> aliados infligen <style=\"Stat_Damage\">+{[extraDmgPct]} % de Daño</style> si están en una posición adyacente a <style=\"Faction_ThousandSons\">Z'Kar</style> o a otro <style=\"Character\">personaje</style> <style=\"Psyker\">psíquico</style> <style=\"Rarity_Mythic\">Mítico</style> aliado.",
+    "variables": {
+      "extraDmgPct": [10, 13, 16, 20]
+    },
+    "constants": {},
+    "scaled": ["extraDmgPct"]
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "PowerUp_MeleeHits": {
+    "description": "Cuando una unidad lo recolecta, este potenciador aumenta la cantidad de <style=\"Stat_Hits\">impactos</style> de sus ataques <style=\"Stat_Melee\">cuerpo a cuerpo</style> en {[extraHit]}.",
+    "variables": {},
+    "constants": {
+      "extraHit": "4"
+    },
+    "scaled": []
+  }
+}

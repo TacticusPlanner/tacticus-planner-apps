@@ -1,0 +1,8 @@
+{
+  "UnstoppableFerocity": {
+    "description": "Porte un <style=\"Stat_Hits\">coup</style> supplémentaire lorsque la cible est un <style=\"Psyker\">psyker</style> ennemi. \nPorte un <style=\"Stat_Hits\">coup</style> supplémentaire en cas de <style=\"Charging\">charge</style>.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "ForwardObservers": {
+    "description": "Cible une unité ennemi à portée de {[range]} dépourvue de <style=\"Debuff_Markerlight\">pointeur lumineux</style>. La cible est affublée d'un <style=\"Debuff_Markerlight\">pointeur lumineux</style> pendant {[nrOfRounds]} manches. L'<style=\"Faction_Tau\">Exo-armure Stealth</style> subit ensuite <style=\"Stat_Damage\">-{[dmgPctReduction]} % de dégâts</style> en cas d'attaques à distance pendant {[nrOfRounds_2]} manche.",
+    "variables": {},
+    "constants": {
+      "range": "3",
+      "dmgPctReduction": "50",
+      "nrOfRounds": "2",
+      "nrOfRounds_2": "1"
+    },
+    "scaled": []
+  }
+}

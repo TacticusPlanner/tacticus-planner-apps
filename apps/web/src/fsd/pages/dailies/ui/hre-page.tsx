@@ -1,3 +1,4 @@
+import { useMemo } from "react"
 import { useTranslation } from "react-i18next"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
@@ -25,7 +26,7 @@ import {
   useObjectiveText,
 } from "@/features/hre-missions"
 
-import { useHreTeamRecommendations } from "../model/use-hre-team-recommendations"
+import { useHreTeamRecommendations } from "@/features/team-recommendations"
 import { useRunningHse } from "../model/use-running-hse"
 import { HreCampaignTeams } from "./hre/hre-campaign-teams"
 import { HreTeamCard } from "./hre/hre-team-card"
@@ -71,7 +72,24 @@ export function HrePage() {
       }) as string)
     : null
   const surplus = running ? arenaSurplus(progress, tokens?.arena ?? null) : 0
-  const campaignPlan = running ? selectCampaignPlan(progress, surplus) : null
+  // Only the mission and its objective progress shape the raids request: typing points, rank or a
+  // target keeps the request (and the raids engine below) as it was.
+  const mission = progress.mission
+  const [firstProgress, secondProgress] = progress.progress
+  const campaignPlan = useMemo(
+    () =>
+      running
+        ? selectCampaignPlan(
+            {
+              ...DEFAULT_HRE_PROGRESS,
+              mission,
+              progress: [firstProgress, secondProgress],
+            },
+            surplus
+          )
+        : null,
+    [running, mission, firstProgress, secondProgress, surplus]
+  )
   const allTeamPlans = running ? selectTeamPlans(progress, surplus) : []
   // The campaign team plays the battles to fight by hand: it is built per campaign under that list.
   const battlePlan = allTeamPlans.find((plan) => plan.mode === "battle") ?? null
@@ -127,6 +145,56 @@ export function HrePage() {
       : t("hre:raids.notice.noneLeft")
   })()
 
+  const heroAlliance = hero?.alliance
+  const heroFaction = hero?.faction
+  const hasHero = !!hero
+  const request = useMemo(
+    () =>
+      campaignPlan
+        ? {
+            missionLabel: missionName(t, campaignPlan.missionNumber),
+            raids: campaignPlan.raids,
+            // Alliance-restricted nodes wait for the featured hero's alliance.
+            manual:
+              campaignPlan.battles &&
+              (!campaignPlan.battles.alliance || hasHero)
+                ? {
+                    needs: campaignPlan.battles.needs,
+                    slots: campaignPlan.battles.slots,
+                    alliance: campaignPlan.battles.alliance
+                      ? heroAlliance
+                      : undefined,
+                    heroFaction: campaignPlan.battles.featured
+                      ? heroFaction
+                      : undefined,
+                    faction: campaignPlan.battles.faction ?? undefined,
+                    preferLightning: campaignPlan.battles.preferLightning,
+                    countsAsRaids: campaignPlan.battles.countsAsWins,
+                    allianceName: campaignPlan.battles.alliance
+                      ? allianceName
+                      : null,
+                    heroFactionName:
+                      campaignPlan.battles.featured && heroFaction
+                        ? (t(`factions:${heroFaction}` as never, {
+                            defaultValue: heroFaction,
+                          }) as string)
+                        : null,
+                    factionName: campaignPlan.battles.faction
+                      ? (t(
+                          `factions:${campaignPlan.battles.faction}` as never,
+                          { defaultValue: campaignPlan.battles.faction }
+                        ) as string)
+                      : null,
+                  }
+                : null,
+            manualNotice:
+              campaignPlan.battles?.alliance && !hasHero
+                ? t("hre:raids.notice.noHero")
+                : null,
+          }
+        : null,
+    [campaignPlan, heroAlliance, heroFaction, hasHero, allianceName, t]
+  )
   const raids = instance ? (
     <HreRaidsSection
       notice={notice}
@@ -156,50 +224,7 @@ export function HrePage() {
             )
           : undefined
       }
-      request={
-        campaignPlan
-          ? {
-              missionLabel: missionName(t, campaignPlan.missionNumber),
-              raids: campaignPlan.raids,
-              // Alliance-restricted nodes wait for the featured hero's alliance.
-              manual:
-                campaignPlan.battles && (!campaignPlan.battles.alliance || hero)
-                  ? {
-                      needs: campaignPlan.battles.needs,
-                      slots: campaignPlan.battles.slots,
-                      alliance: campaignPlan.battles.alliance
-                        ? hero?.alliance
-                        : undefined,
-                      heroFaction: campaignPlan.battles.featured
-                        ? hero?.faction
-                        : undefined,
-                      faction: campaignPlan.battles.faction ?? undefined,
-                      preferLightning: campaignPlan.battles.preferLightning,
-                      countsAsRaids: campaignPlan.battles.countsAsWins,
-                      allianceName: campaignPlan.battles.alliance
-                        ? allianceName
-                        : null,
-                      heroFactionName:
-                        campaignPlan.battles.featured && hero
-                          ? (t(`factions:${hero.faction}` as never, {
-                              defaultValue: hero.faction,
-                            }) as string)
-                          : null,
-                      factionName: campaignPlan.battles.faction
-                        ? (t(
-                            `factions:${campaignPlan.battles.faction}` as never,
-                            { defaultValue: campaignPlan.battles.faction }
-                          ) as string)
-                        : null,
-                    }
-                  : null,
-              manualNotice:
-                campaignPlan.battles?.alliance && !hero
-                  ? t("hre:raids.notice.noHero")
-                  : null,
-            }
-          : null
-      }
+      request={request}
     />
   ) : null
   const teamCard = teams.map((view, index) => {
@@ -258,7 +283,7 @@ export function HrePage() {
           className="flex flex-wrap items-center gap-3"
           data-testid="hre-title-row"
         >
-          <h1 className="text-lg font-semibold">{t("hre:title")}</h1>
+          <h2 className="text-lg font-semibold">{t("hre:title")}</h2>
         </div>
         <div data-testid="hre-status">
           <HreEventHeader state={state} />

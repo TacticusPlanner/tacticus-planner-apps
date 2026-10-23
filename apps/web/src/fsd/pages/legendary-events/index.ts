@@ -1,2 +1,5 @@
-export { routes } from "./route"
-export { LegendaryEventsLayout } from "./ui/legendary-events-layout"
+export {
+  routes,
+  LegendaryEventsLayout,
+  preloadLegendaryEventsLayout,
+} from "./route"

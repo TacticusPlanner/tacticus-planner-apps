@@ -1,14 +1,9 @@
 import { useMemo } from "react"
-import { useLiveQuery } from "dexie-react-hooks"
 import type { BattleId } from "@workspace/game-domain"
-import {
-  getCampaignBattles,
-  getCampaignDefinitions,
-  getNpcsMap,
-} from "@workspace/game-catalog/queries"
 
 import { mapCampaignBattleStorageToDomain } from "@/features/rank-lookup/@x/daily-raids"
 import { useCampaignDisplay } from "@/shared/lib"
+import { toById, useCatalogDataset } from "@/shared/local-data"
 
 import { buildLocationsByBattleId } from "./daily-raid-locations"
 import {
@@ -57,14 +52,20 @@ export function useHomeScreenEventLocations(
     tierLabel: campaignTierLabel,
     shortLabel: campaignShortLabel,
   } = useCampaignDisplay()
-  const battles = useLiveQuery(() => getCampaignBattles(), [])
-  const campaignDefinitions = useLiveQuery(() => getCampaignDefinitions(), [])
-  const npcsById = useLiveQuery(() => getNpcsMap(), [])
+  // The state has no error variant: a failed read keeps the lists loading.
+  const battlesRead = useCatalogDataset("campaign-battles")
+  const campaignDefinitionsRead = useCatalogDataset("campaign-definitions")
+  const npcsRead = useCatalogDataset("npcs", toById)
+  const battles = battlesRead.status === "ready" ? battlesRead.data : undefined
+  const campaignDefinitions =
+    campaignDefinitionsRead.status === "ready"
+      ? campaignDefinitionsRead.data
+      : undefined
+  const npcsById = npcsRead.status === "ready" ? npcsRead.data : undefined
   const {
     availableBattles,
-    liveProgressResult,
-    campaignEventProgressReady,
-    campaignProgressResult,
+    liveProgress,
+    ready: eligibilityReady,
   } = useEligibleCampaignBattles(battles, campaignDefinitions)
   const [filters] = useRaidsFilters()
   const resourceByBattleId = useResourceByBattleId()
@@ -82,7 +83,7 @@ export function useHomeScreenEventLocations(
     () =>
       new Map(
         (battles ?? []).map((battle) => [
-          battle.id as BattleId,
+          battle.id,
           mapCampaignBattleStorageToDomain(battle),
         ])
       ),
@@ -108,7 +109,7 @@ export function useHomeScreenEventLocations(
     [availableBattles, definitionId, npcsById]
   )
   const raidedToday = useMemo(() => {
-    const attempts = liveProgressResult?.value?.battleAttempts ?? []
+    const attempts = liveProgress?.battleAttempts ?? []
     const index = buildBattleAttemptIndex(allBattlesById)
     const exhausted = buildAttemptsLeftByBattle(attempts, index)
     return new Set<string>([
@@ -117,7 +118,7 @@ export function useHomeScreenEventLocations(
       ),
       ...[...exhausted].filter(([, left]) => left === 0).map(([id]) => id),
     ])
-  }, [liveProgressResult, allBattlesById])
+  }, [liveProgress, allBattlesById])
 
   const lists = useMemo(() => {
     const passesFilter = (battleId: string) => {
@@ -130,8 +131,7 @@ export function useHomeScreenEventLocations(
       raidedToday,
       passesFilter,
     }
-    const activeCampaignEventId =
-      liveProgressResult?.value?.activeCampaignEventId
+    const activeCampaignEventId = liveProgress?.activeCampaignEventId
     return {
       overall: selectTopEventLocations(common),
       eventCampaign: activeCampaignEventId
@@ -147,17 +147,10 @@ export function useHomeScreenEventLocations(
     raidedToday,
     filterBattlesById,
     filters,
-    liveProgressResult,
+    liveProgress,
   ])
 
-  if (
-    !battles ||
-    !campaignDefinitions ||
-    !npcsById ||
-    !liveProgressResult ||
-    !campaignEventProgressReady ||
-    !campaignProgressResult
-  ) {
+  if (!battles || !campaignDefinitions || !npcsById || !eligibilityReady) {
     return { status: "loading" }
   }
   return { status: "ready", ...lists, locationsByBattleId, resourceByBattleId }

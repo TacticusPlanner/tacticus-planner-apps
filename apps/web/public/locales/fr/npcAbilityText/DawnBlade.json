@@ -1,0 +1,13 @@
+{
+  "DawnBlade": {
+    "description": "Les attaques au corps à corps du <style=\"Faction_Tau\">Commandant Farsight</style> infligent <style=\"Stat_Damage\">+{[extraDmg]} dégâts</style> pour chaque attaque à distance effectuée par un autre <style=\"Character\">personnage</style> allié distant de {[range]} hexagones lors de ce tour. Lorsque le Commandant Farsight élimine une unité ennemie avec une attaque au corps à corps, il se <style=\"Repairing\">répare</style> et récupère <style=\"Stat_Health\">{[hpToHeal]} santé</style>.",
+    "variables": {
+      "extraDmg": [390, 411, 432, 453, 474, 495, 516, 537, 558, 579],
+      "hpToHeal": [4895, 5159, 5423, 5688, 5952, 6216, 6480, 6745, 7009, 7273]
+    },
+    "constants": {
+      "range": "2"
+    },
+    "scaled": []
+  }
+}

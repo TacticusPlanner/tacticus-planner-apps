@@ -123,10 +123,13 @@ export function useCharacterLookupCalc({
       applied.rankEnd,
       applied.pointFive
     ).map((group) => {
+      const health: UpgradeViewModel[] = []
+      const damage: UpgradeViewModel[] = []
+      const armour: UpgradeViewModel[] = []
       const byStat: Record<string, UpgradeViewModel[]> = {
-        Health: [],
-        Damage: [],
-        Armour: [],
+        Health: health,
+        Damage: damage,
+        Armour: armour,
       }
       group.upgradeIds.forEach((id, index) => {
         const up = upgradesById.get(id)
@@ -144,9 +147,9 @@ export function useCharacterLookupCalc({
         fromRank: group.fromRank,
         toRank: group.toRank,
         pointFive: group.pointFive,
-        health: byStat.Health,
-        damage: byStat.Damage,
-        armour: byStat.Armour,
+        health,
+        damage,
+        armour,
       }
     })
   }, [

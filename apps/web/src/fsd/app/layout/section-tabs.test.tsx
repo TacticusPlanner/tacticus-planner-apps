@@ -2,10 +2,20 @@ import type { ReactNode } from "react"
 import { act, fireEvent, render, screen, waitFor } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { MemoryRouter, Routes, useLocation, useNavigate } from "react-router"
-import { describe, expect, it, vi } from "vitest"
+import { afterEach, describe, expect, it, vi } from "vitest"
+
+import deDailies from "../../../../public/locales/de/dailies.json"
+import frDailies from "../../../../public/locales/fr/dailies.json"
+
+// Lets a test render real localized labels; every other key renders as itself.
+const { localizedLabels } = vi.hoisted(() => ({
+  localizedLabels: new Map<string, string>(),
+}))
 
 vi.mock("react-i18next", () => ({
-  useTranslation: () => ({ t: (key: string) => key }),
+  useTranslation: () => ({
+    t: (key: string) => localizedLabels.get(key) ?? key,
+  }),
 }))
 
 // Mirrors desktop-layout.test.tsx's reasoning: nav-items.ts reads `isUiKitEnabled` from the real
@@ -127,6 +137,33 @@ describe("SectionTabs", () => {
     expect(screen.getByTestId("section-tab-dailies-raids")).toHaveAttribute(
       "data-state",
       "active"
+    )
+  })
+
+  describe("with localized Dailies labels", () => {
+    afterEach(() => localizedLabels.clear())
+
+    it.each([
+      ["de", deDailies.tabs],
+      ["fr", frDailies.tabs],
+    ])(
+      "shows every %s tab label in full in a horizontally scrolling row",
+      (_locale, tabs) => {
+        for (const [key, label] of Object.entries(tabs)) {
+          localizedLabels.set(`dailies:tabs.${key}`, label)
+        }
+        renderTabs(section("/dailies"), "/dailies/raids")
+
+        expect(screen.getByTestId("section-tabs")).toHaveClass(
+          "overflow-x-auto"
+        )
+        for (const key of ["raids", "hse", "hre", "shops", "guild-raids"]) {
+          const tab = screen.getByTestId(`section-tab-dailies-${key}`)
+          expect(tab).toHaveTextContent(tabs[key as keyof typeof tabs])
+          expect(tab).toHaveClass("whitespace-nowrap")
+          expect(tab.querySelector(".truncate, .line-clamp-1")).toBeNull()
+        }
+      }
     )
   })
 

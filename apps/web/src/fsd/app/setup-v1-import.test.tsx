@@ -1,5 +1,5 @@
 import userEvent from "@testing-library/user-event"
-import type { ReactNode } from "react"
+import { useState, type ReactNode } from "react"
 import { describe, expect, it, vi } from "vitest"
 
 import { render, screen } from "@/test/render"
@@ -40,6 +40,8 @@ const {
 }))
 
 vi.mock("@/features/v1-import", () => ({
+  materialSteps: (outcomes: ReadonlyArray<{ code: string }>) =>
+    outcomes.filter((outcome) => outcome.code === "manual_step_required"),
   V1ImportPanel: ({
     defaultSelection,
     lockedParts,
@@ -75,7 +77,8 @@ const failedPart: ImportPartResult = {
 }
 
 function fullResult(
-  personalTacticusApiKey: ImportPartResult
+  personalTacticusApiKey: ImportPartResult,
+  outcomes: ImportV1ProfileResult["outcomes"] = []
 ): ImportV1ProfileResult {
   return {
     tacticusUserId: okPart,
@@ -84,9 +87,10 @@ function fullResult(
     onslaughtProgress: okPart,
     campaignEventProgress: okPart,
     goals: okPart,
-    outcomes: [],
+    outcomes,
     legendaryEventPlans: okPart,
     legendaryEventOutcomes: [],
+    importProjectId: null,
     profileId: "profile-1",
     playerName: null,
     powerLevel: 0,
@@ -100,14 +104,23 @@ function renderSetup() {
   const onCompleted = vi.fn()
   const onUseApiKey = vi.fn()
   const onKeyImported = vi.fn()
-  const result = render(
-    <SetupV1Import
-      onCompleted={onCompleted}
-      onKeyImported={onKeyImported}
-      onSuggestedDisplayName={vi.fn()}
-      onUseApiKey={onUseApiKey}
-    />
-  )
+  // `keyImported` is controlled by the host (the route's reducer); this stands in for it.
+  function Host() {
+    const [keyImported, setKeyImported] = useState(false)
+    return (
+      <SetupV1Import
+        keyImported={keyImported}
+        onCompleted={onCompleted}
+        onKeyImported={() => {
+          onKeyImported()
+          setKeyImported(true)
+        }}
+        onSuggestedDisplayName={vi.fn()}
+        onUseApiKey={onUseApiKey}
+      />
+    )
+  }
+  const result = render(<Host />)
   return { ...result, onCompleted, onKeyImported, onUseApiKey }
 }
 
@@ -188,6 +201,72 @@ describe("SetupV1Import", () => {
     await user.click(await screen.findByTestId("account-setup-v1-continue"))
 
     expect(onCompleted).toHaveBeenCalledTimes(1)
+  })
+
+  it("points to the Goals page for material steps without holding Continue", async () => {
+    const user = userEvent.setup()
+    const { onCompleted } = renderSetup()
+
+    onSuccessRef.current?.(
+      fullResult(okPart, [
+        {
+          status: "Skipped",
+          code: "manual_step_required",
+          message: "",
+          entityType: "Character",
+          entityId: "ultraTigurius",
+          goalType: "Upgrade",
+          goalId: null,
+          sourceGoalId: "v1-goal-1",
+          upgradeId: "upgrade-1",
+          linkedSourceGoalIds: null,
+          upgradeQuantity: 3,
+        },
+      ])
+    )
+    expect(
+      await screen.findByTestId("account-setup-v1-material-steps-notice")
+    ).toBeVisible()
+
+    await user.click(screen.getByTestId("account-setup-v1-continue"))
+
+    expect(onCompleted).toHaveBeenCalledTimes(1)
+  })
+
+  it("explains a missing key and makes pasting one the primary action", async () => {
+    const user = userEvent.setup()
+    const { onUseApiKey } = renderSetup()
+
+    onSuccessRef.current?.(fullResult(failedPart))
+
+    expect(
+      await screen.findByTestId("account-setup-v1-key-missing")
+    ).toHaveTextContent("onboarding.import.keyMissing")
+    expect(screen.queryByTestId("account-setup-v1-use-api-key")).toBeNull()
+    expect(screen.queryByTestId("account-setup-v1-continue")).toBeNull()
+    await user.click(screen.getByTestId("account-setup-v1-paste-api-key"))
+    expect(onUseApiKey).toHaveBeenCalledTimes(1)
+  })
+
+  it("reports the project the import put its goals in", () => {
+    const onImportProject = vi.fn()
+    render(
+      <SetupV1Import
+        keyImported={false}
+        onCompleted={vi.fn()}
+        onImportProject={onImportProject}
+        onKeyImported={vi.fn()}
+        onSuggestedDisplayName={vi.fn()}
+        onUseApiKey={vi.fn()}
+      />
+    )
+
+    onSuccessRef.current?.({
+      ...fullResult(okPart),
+      importProjectId: "project-1",
+    })
+
+    expect(onImportProject).toHaveBeenCalledWith("project-1")
   })
 
   it("stays offering Continue even if a later rerun's key import fails", async () => {

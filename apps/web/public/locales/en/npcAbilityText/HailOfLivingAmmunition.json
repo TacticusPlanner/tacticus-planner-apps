@@ -1,0 +1,10 @@
+{
+  "HailOfLivingAmmunition": {
+    "description": "This unit has <style=\"Stat_Hits\">+{[extraHit]} hit</style> in ranged attacks for each Termagant it is adjacent to.",
+    "variables": {},
+    "constants": {
+      "extraHit": "1"
+    },
+    "scaled": []
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "DevoutPush": {
+    "description": "Ejecuta un <style=\"NormalAttack\">ataque cuerpo a cuerpo normal</style> contra un solo objetivo, y luego puede moverse 1 hexágono adicional.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

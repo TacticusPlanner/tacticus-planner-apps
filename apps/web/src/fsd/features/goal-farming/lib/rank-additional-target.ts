@@ -1,4 +1,5 @@
 import {
+  firstRank,
   lastRank,
   Rank,
   rankIndex,
@@ -158,7 +159,7 @@ export function requiredLevelForRankTarget(
 function appliableSlotsAtLevel(rank: RankType, level: number): number {
   const base = rankToLevel[rank]
   if (level < base) return 0
-  const nextRank = rankOrder[rankIndex(rank) + 1] as RankType | undefined
+  const nextRank = rankOrder[rankIndex(rank) + 1]
   const gatedSlots = nextRank ? rankToLevel[nextRank] - base : 6
   const freeSlots = Math.max(0, 6 - gatedSlots)
   return Math.min(6, freeSlots + (level - base))
@@ -177,10 +178,11 @@ export function reachableRankProgress(
   rarityMaxRank: RankType
 ): { rank: RankType; appliedSlots: number } {
   const rarityMaxIndex = rankIndex(rarityMaxRank)
-  let rank: RankType = rankOrder[0]
+  let rank: RankType = firstRank
   let appliedSlots = 0
   for (let index = 0; index <= rarityMaxIndex; index++) {
     const candidate = rankOrder[index]
+    if (candidate === undefined) break
     if (level < rankToLevel[candidate]) break
     rank = candidate
     appliedSlots = appliableSlotsAtLevel(candidate, level)

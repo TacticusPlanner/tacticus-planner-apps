@@ -89,7 +89,7 @@ For an Active or Paused goal the dialog SHALL show a Priority select whose optio
 
 ### Requirement: One Save submits every change
 
-The dialog SHALL have one Save button and a Cancel. Save SHALL be enabled only when at least one field differs from the loaded goal and all validation passes (a valid target per `goal-target-editing`, at least one project without a membership conflict, and valid location/source choices). Save SHALL submit every changed section (target, goal fields, project memberships, priority) in one atomic request, so either all changes are saved or none are. When it succeeds the dialog SHALL close and the list SHALL reflect the changes without a full reload. If the request fails, the dialog SHALL stay open, keep the whole draft, and name what failed; nothing SHALL be shown as saved.
+The dialog SHALL have one Save button and a Cancel. Save SHALL be enabled only when at least one field differs from the loaded goal and all validation passes (a valid target per `goal-target-editing` when the target section changed, at least one project, and valid location/source choices). Save SHALL submit every changed section (target, goal fields, project memberships, priority) in one atomic request, so either all changes are saved or none are. When it succeeds the dialog SHALL close and the list SHALL reflect the changes from the response without a full reload. If the request fails, the dialog SHALL stay open, keep the whole draft, and name what failed; nothing SHALL be shown as saved.
 
 #### Scenario: Several fields at once
 
@@ -114,8 +114,8 @@ The dialog SHALL have one Save button and a Cancel. Save SHALL be enabled only w
 #### Scenario: One section fails, nothing is saved
 
 - **GIVEN** the user changed the target and the projects
-- **WHEN** the request is rejected because the projects conflict with another goal
-- **THEN** the dialog stays open with the whole draft and the conflict message, and neither the target nor the projects were saved
+- **WHEN** the request is rejected because the new target is already held by another in-flight goal of the same unit
+- **THEN** the dialog stays open with the whole draft and a conflict message naming that goal, and neither the target nor the projects were saved
 
 #### Scenario: Stale target revision
 
@@ -138,12 +138,18 @@ Closing the dialog by Cancel, the close control, or Escape while any field diffe
 
 ### Requirement: The dialog loads and fails visibly
 
-While the goal loads the dialog SHALL show a skeleton rather than empty fields. If the goal fails to load or no longer exists, it SHALL show an error with a way to close, and SHALL NOT offer Save.
+Opening the dialog SHALL read the goal fresh from the server once, so the draft and its revision start from the current goal even when the list was loaded earlier. While that read is in flight the dialog SHALL show a skeleton rather than empty fields. If the goal fails to load or no longer exists, it SHALL show an error with a way to close, and SHALL NOT offer Save.
 
 #### Scenario: Loading
 
 - **WHEN** the dialog opens before the goal has loaded
 - **THEN** a skeleton renders and Save is not offered
+
+#### Scenario: Opening re-reads the goal
+
+- **GIVEN** the goals list was loaded a minute ago
+- **WHEN** the user opens a goal's Edit dialog
+- **THEN** exactly one read of that goal is issued and the fields show the values it returns
 
 #### Scenario: Load failure
 

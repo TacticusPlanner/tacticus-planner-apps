@@ -1,0 +1,8 @@
+{
+  "DevoutPush": {
+    "description": "Führt einen <style=\"NormalAttack\">normalen Nahkampfangriff</style> auf ein Einzelziel aus und darf sich dann 1 zusätzliches Feld weit bewegen.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

@@ -358,7 +358,9 @@
       "chartTitle": "{{label}} par niveau",
       "chartCaption": "{{label}} passe de {{from}} au niveau 1 à {{to}} au niveau {{maxLevel}}.",
       "constant": "{{label}} reste à {{value}} à tous les niveaux et n'est donc pas représenté.",
-      "missingText": "Le texte de règles n'est pas encore dans le planificateur."
+      "missingText": "Le texte de règles n'est pas encore dans le planificateur.",
+      "loadingText": "Chargement du texte de règles…",
+      "textFailed": "Impossible de charger le texte de règles."
     },
     "notFound": "Cette unité n'est pas dans la Bibliothèque.",
     "loadFailed": "Impossible de charger les données des personnages.",

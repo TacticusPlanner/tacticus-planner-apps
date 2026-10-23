@@ -1,0 +1,8 @@
+{
+  "PowerUp_HeroSpawn_VexilusPraetor": {
+    "description": "Cuando una unidad aliada lo recolecta, despliega a <style=\"Faction_Custodes\">Aesoth</style> en el campo de batalla. Se puede controlar igual que otros <style=\"Character\">personajes</style> aliados. Si es posible, se intenta desplegar en un hexágono de una unidad enemiga y el enemigo en ese hexágono <style=\"Obliterated\">siempre es Arrasado</style>.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

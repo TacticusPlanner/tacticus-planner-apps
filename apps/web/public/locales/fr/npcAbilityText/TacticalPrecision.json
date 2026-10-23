@@ -1,0 +1,49 @@
+{
+  "TacticalPrecision": {
+    "description": "Attaque un ennemi adjacent ciblé. Si <style=\"Faction_Ultramarines\">Titus</style> a <style=\"Charging\">chargé</style> cet ennemi ce tour-ci, il lui inflige <style=\"Stat_Hits\">{[nrOfHits]}x</style> <style=\"DMG_Bolter\">{[minDmg]}-{[maxDmg]} dégâts Bolter</style>. Cette attaque est toujours un <style=\"Stat_CritDamage\">coup critique</style> et inflige <style=\"Stat_CritDamage\">+{[extraCritDmg]} dégâts critiques</style> supplémentaires. \nSi Titus n'a pas <style=\"Charging\">chargé</style> l'ennemi ciblé ce tour-ci, il inflige <style=\"Stat_Hits\">{[nrOfHits_2]}x</style> <style=\"DMG_Chain\">{[minDmg_2]}-{[maxDmg_2]} dégâts d'enchaînement</style> à tous les ennemis adjacents à la place. \n\nLorsque Titus est réanimé ou ressuscité et que <i>Précision tactique</i> a déjà été utilisée, alors <i>Précision tactique</i> peut à nouveau être utilisée au cours de cette bataille.",
+    "variables": {
+      "minDmg": [
+        40, 48, 56, 64, 72, 81, 90, 100, 109, 118, 127, 136, 146, 155, 164, 173,
+        182, 192, 201, 210, 222, 240, 276, 312, 349, 385, 422, 458, 494, 531,
+        567, 604, 640, 676, 713, 749, 786, 822, 858, 910, 982, 1057, 1139, 1229,
+        1394, 1558, 1722, 1887, 2051, 2216, 2240, 2270, 2300, 2340, 2380, 2420,
+        2460, 2510, 2560, 2610, 2670, 2730, 2790, 2850, 2910
+      ],
+      "maxDmg": [
+        50, 60, 70, 80, 90, 102, 113, 125, 136, 148, 159, 171, 182, 194, 205,
+        217, 228, 240, 251, 263, 278, 300, 345, 391, 436, 482, 527, 573, 618,
+        664, 709, 755, 800, 846, 891, 937, 982, 1028, 1073, 1137, 1227, 1322,
+        1424, 1537, 1742, 1948, 2153, 2359, 2564, 2770, 2800, 2838, 2875, 2925,
+        2975, 3025, 3075, 3138, 3200, 3263, 3338, 3413, 3488, 3563, 3638
+      ],
+      "minDmg_2": [
+        25, 30, 35, 40, 45, 51, 57, 62, 68, 74, 80, 85, 91, 97, 103, 108, 114,
+        120, 126, 131, 139, 150, 173, 195, 218, 241, 264, 286, 309, 332, 355,
+        377, 400, 423, 446, 468, 491, 514, 537, 569, 614, 661, 712, 768, 871,
+        974, 1077, 1179, 1282, 1385, 1400, 1419, 1438, 1463, 1488, 1513, 1538,
+        1569, 1600, 1631, 1669, 1706, 1744, 1781, 1819
+      ],
+      "maxDmg_2": [
+        36, 43, 50, 58, 65, 73, 81, 90, 98, 106, 114, 123, 131, 139, 148, 156,
+        164, 172, 181, 189, 200, 216, 248, 281, 314, 347, 379, 412, 445, 478,
+        510, 543, 576, 609, 642, 674, 707, 740, 773, 819, 883, 951, 1025, 1106,
+        1254, 1402, 1550, 1698, 1846, 1994, 2016, 2043, 2070, 2106, 2142, 2178,
+        2214, 2259, 2304, 2349, 2403, 2457, 2511, 2565, 2619
+      ],
+      "extraCritDmg": [
+        10, 12, 14, 16, 18, 20, 23, 25, 27, 30, 32, 34, 36, 39, 41, 43, 46, 48,
+        50, 53, 56, 60, 69, 78, 87, 96, 105, 115, 124, 133, 142, 151, 160, 169,
+        178, 187, 196, 206, 215, 227, 245, 264, 285, 307, 348, 390, 431, 472,
+        513, 554, 560, 568, 575, 585, 595, 605, 615, 628, 640, 653, 668, 683,
+        698, 713, 728
+      ]
+    },
+    "constants": {
+      "damageProfile": "Bolter",
+      "nrOfHits": "1",
+      "damageProfile_2": "Chain",
+      "nrOfHits_2": "3"
+    },
+    "scaled": ["minDmg", "maxDmg", "minDmg_2", "maxDmg_2", "extraCritDmg"]
+  }
+}

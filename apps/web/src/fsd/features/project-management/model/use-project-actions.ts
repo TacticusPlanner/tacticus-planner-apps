@@ -15,7 +15,7 @@ import { ApiError, apiIssue } from "@/shared/api"
 
 /**
  * Project-level mutations: create and save (name/description/color/status/target). Reordering goals is a
- * move on the account-wide order and lives in `features/goal-order`; there is no bulk pause/resume
+ * move on the account-wide order and lives in `features/goal-planning`; there is no bulk pause/resume
  * (project-management: "No bulk pause/resume on Projects"). Response-first (spec: client-data-freshness):
  * the returned project is written into the cached project list; nothing about goals changes, so no goal
  * read is refetched, and a 409 refetches the project list only.

@@ -84,7 +84,7 @@ describe("ApiKeyForm", () => {
 
     await waitFor(() => expect(updateTacticusIntegration).toHaveBeenCalled())
     // react-query passes a mutation context as a second argument; only the payload matters here.
-    expect(updateTacticusIntegration.mock.calls[0][0]).toEqual({
+    expect(updateTacticusIntegration.mock.calls[0]?.[0]).toEqual({
       tacticusApiKey: "key-1",
       tacticusUserId: null,
     })
@@ -100,7 +100,7 @@ describe("ApiKeyForm", () => {
     await user.click(screen.getByTestId("account-setup-api-key-submit"))
 
     await waitFor(() => expect(updateTacticusIntegration).toHaveBeenCalled())
-    expect(updateTacticusIntegration.mock.calls[0][0]).toEqual({
+    expect(updateTacticusIntegration.mock.calls[0]?.[0]).toEqual({
       tacticusApiKey: "key-1",
       tacticusUserId: "u-7",
     })

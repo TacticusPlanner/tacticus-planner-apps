@@ -1,0 +1,24 @@
+{
+  "SpotterReworked": {
+    "description": "Les autres unités alliées distantes de {[range]} hexagones infligent <style=\"Stat_Damage\">+{[extraDmg]} dégâts</style> en cas d'attaque à distance. Les unités affectées équipées d'une <style=\"Heavy_Weapon\">arme lourde</style> infligent quant à elles <style=\"Stat_Damage\">+{[extraDmg_2]} dégâts</style> en cas d'attaque à distance.",
+    "variables": {
+      "extraDmg": [
+        5, 6, 7, 8, 9, 10, 11, 12, 14, 15, 16, 17, 18, 19, 21, 22, 23, 24, 25,
+        26, 28, 30, 35, 39, 44, 48, 53, 57, 62, 66, 71, 75, 80, 85, 89, 94, 98,
+        103, 107, 114, 123, 132, 142, 154, 174, 195, 215, 236, 256, 277, 280,
+        284, 288, 293, 298, 303, 308, 314, 320, 326, 334, 341, 349, 356, 364
+      ],
+      "extraDmg_2": [
+        10, 12, 14, 16, 18, 20, 23, 25, 27, 30, 32, 34, 36, 39, 41, 43, 46, 48,
+        50, 53, 56, 60, 69, 78, 87, 96, 105, 115, 124, 133, 142, 151, 160, 169,
+        178, 187, 196, 206, 215, 227, 245, 264, 285, 307, 348, 390, 431, 472,
+        513, 554, 560, 568, 575, 585, 595, 605, 615, 628, 640, 653, 668, 683,
+        698, 713, 728
+      ]
+    },
+    "constants": {
+      "range": "2"
+    },
+    "scaled": ["extraDmg", "extraDmg_2"]
+  }
+}

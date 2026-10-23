@@ -1,17 +1,20 @@
-import { getCharacters } from "@workspace/game-catalog/queries"
-import { getPlayerCharacters } from "@workspace/player-data/queries"
+import { useCatalogDataset, usePlayerChunk } from "@/shared/local-data"
 
 import type { LegendaryEventRosterUnit, LegendaryEventUnit } from "./types"
-import { useReadState, type ReadState } from "./use-read-state"
+import type { ReadState } from "./use-read-state"
+
+function orUndefined<T>(chunk: T | null): T | undefined {
+  return chunk ?? undefined
+}
 
 /** Every catalog character, the units a lane's leaderboard is built from. */
 export function useLegendaryEventUnits(): ReadState<LegendaryEventUnit[]> {
-  return useReadState(() => getCharacters(), [])
+  return useCatalogDataset("characters")
 }
 
 /** The caller's synced roster; `data` is `undefined` when the `characters` chunk has not synced. */
 export function useLegendaryEventRoster(): ReadState<
   LegendaryEventRosterUnit[] | undefined
 > {
-  return useReadState(() => getPlayerCharacters(), [])
+  return usePlayerChunk("characters", orUndefined)
 }

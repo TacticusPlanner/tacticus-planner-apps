@@ -1,6 +1,7 @@
 export { rarityClass } from "./rarity"
 export {
   ASSET_BASE_PATH,
+  gameAssetUrl,
   UpgradeIcons,
   rarityIcon,
   rankIcon,

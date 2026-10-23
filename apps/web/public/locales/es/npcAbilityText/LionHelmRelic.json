@@ -1,0 +1,11 @@
+{
+  "LionHelmRelic": {
+    "description": "Las unidades aliadas adyacentes a <style=\"Faction_DarkAngels\">Azrael</style> bloquean <style=\"Stat_Block\">+{[blockDmg]} de Daño</style> adicional. Al final del turno de Azrael, si no hay ningún <style=\"Summon\"><style=\"Faction_DarkAngels\">Vigilante en la Oscuridad</style></style> aliado en el campo de batalla, tiene un <style=\"Stat_Chance\">{[chance]}% de probabilidad</style> de invocar un Vigilante en la Oscuridad en un hexágono adyacente libre.",
+    "variables": {
+      "blockDmg": [490, 516, 543, 569, 596, 622, 649, 675, 702, 728],
+      "chance": [50, 55, 60, 65, 70, 75, 80, 90, 95, 100]
+    },
+    "constants": {},
+    "scaled": []
+  }
+}

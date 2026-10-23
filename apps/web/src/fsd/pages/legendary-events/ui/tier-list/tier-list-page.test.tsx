@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react"
+import { useState, useSyncExternalStore } from "react"
 import { MemoryRouter, Route, Routes, useLocation } from "react-router"
 import type { i18n as I18n } from "i18next"
+import userEvent from "@testing-library/user-event"
 import {
   afterEach,
   beforeAll,
@@ -13,59 +14,67 @@ import {
 
 import enEquipmentItems from "../../../../../../public/locales/en/equipmentItems.json"
 import { hordeModeTiers } from "@/test/fixtures/horde-mode-tiers"
+import { spyOnIndexedDbReads } from "@/test/fixtures/indexeddb-failure"
 import { legendaryEventCharacters } from "@/test/fixtures/legendary-event-characters"
 import { createTestI18n, i18nWrapper } from "@/test/i18n"
 import { fireEvent, render, screen, waitFor, within } from "@/test/render"
+import {
+  resetTestDatabases,
+  seedGameCatalog,
+  seedPlayerData,
+} from "@/test/seed"
 import { setViewportWidth } from "@/test/viewport"
 
 import { TierListPage } from "./tier-list-page"
 
-vi.mock("dexie-react-hooks", () => ({
-  useLiveQuery: <T,>(querier: () => Promise<T>, deps: unknown[]) => {
-    const [value, setValue] = useState<T>()
-    useEffect(() => {
-      void querier().then(setValue)
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, deps)
-    return value
-  },
-}))
-
-const data = vi.hoisted(() => ({
-  characters: [] as unknown[],
-  charactersFail: false,
-  charactersPending: false,
-  charactersCalls: 0,
-  tiers: null as unknown,
-  roster: undefined as unknown[] | undefined,
-  rosterFail: false,
-  // Set: the roster read stays pending until it is called.
-  releaseRoster: undefined as (() => void) | undefined,
-  rosterPending: false,
-}))
-vi.mock("@workspace/game-catalog/queries", () => ({
-  getCharacters: () => {
-    data.charactersCalls += 1
-    if (data.charactersPending) return new Promise(() => {})
-    return data.charactersFail
-      ? Promise.reject(new Error("catalog"))
-      : Promise.resolve(data.characters)
-  },
-  getHordeModeTiers: () => Promise.resolve(data.tiers),
-  getCharactersMap: async () => new Map(),
-  getMowsMap: async () => new Map(),
-}))
-vi.mock("@workspace/player-data/queries", () => ({
-  getPlayerCharacters: () => {
-    if (data.rosterPending)
-      return new Promise((resolve) => {
-        data.releaseRoster = () => resolve(data.roster)
-      })
-    return data.rosterFail
-      ? Promise.reject(new Error("player data"))
-      : Promise.resolve(data.roster)
-  },
-}))
+// While held, the roster read reports loading: a real IndexedDB read cannot be paused.
+const rosterHold = vi.hoisted(() => {
+  let held = false
+  const listeners = new Set<() => void>()
+  return {
+    held: () => held,
+    set(value: boolean) {
+      held = value
+      listeners.forEach((listener) => listener())
+    },
+    subscribe(listener: () => void) {
+      listeners.add(listener)
+      return () => {
+        listeners.delete(listener)
+      }
+    },
+  }
+})
+// The catalog character read cannot fail on its own in IndexedDB: `useUnitName` reads the same
+// store, and an unguarded failure there would take the whole page down. Set before render, a
+// failure latches for that mount until Retry, which re-issues the real read (counted in
+// `reissued`: Dexie's live-query cache may answer it without a store read).
+const unitsFailure = vi.hoisted(() => ({ next: false, reissued: 0 }))
+vi.mock("@/entities/legendary-event", async (importOriginal) => {
+  const actual =
+    await importOriginal<typeof import("@/entities/legendary-event")>()
+  return {
+    ...actual,
+    useLegendaryEventRoster: () => {
+      const held = useSyncExternalStore(rosterHold.subscribe, rosterHold.held)
+      const read = actual.useLegendaryEventRoster()
+      return held ? { status: "loading" as const, retry: read.retry } : read
+    },
+    useLegendaryEventUnits: () => {
+      const [failed, setFailed] = useState(() => unitsFailure.next)
+      const read = actual.useLegendaryEventUnits()
+      if (!failed) return read
+      return {
+        status: "error" as const,
+        retry: () => {
+          setFailed(unitsFailure.next)
+          unitsFailure.reissued += 1
+          read.retry()
+        },
+      }
+    },
+  }
+})
 const tour = vi.hoisted(() => ({ steps: undefined as unknown }))
 vi.mock("@/shared/tour", () => ({
   useTourPageSteps: (steps: unknown) => {
@@ -84,6 +93,14 @@ const calgar = {
 }
 
 let i18n: I18n
+let reads: ReturnType<typeof spyOnIndexedDbReads>
+
+const seedCatalog = (tiers: unknown = hordeModeTiers) =>
+  seedGameCatalog({
+    characters: legendaryEventCharacters,
+    ...(tiers ? { "horde-mode-tiers": [tiers] } : {}),
+  })
+const seedRoster = (roster: unknown[]) => seedPlayerData({ characters: roster })
 
 function LocationProbe() {
   const { search } = useLocation()
@@ -133,22 +150,17 @@ describe("TierListPage", () => {
       en: { equipmentItems: enEquipmentItems },
     })
   })
-  beforeEach(() => {
-    Object.assign(data, {
-      characters: legendaryEventCharacters,
-      charactersFail: false,
-      charactersPending: false,
-      charactersCalls: 0,
-      tiers: hordeModeTiers,
-      roster: [calgar],
-      rosterFail: false,
-      rosterPending: false,
-      releaseRoster: undefined,
-    })
+  beforeEach(async () => {
+    await seedCatalog()
+    await seedRoster([calgar])
+    reads = spyOnIndexedDbReads()
+    rosterHold.set(false)
+    Object.assign(unitsFailure, { next: false, reissued: 0 })
     analytics.captureEvent.mockReset()
     tour.steps = undefined
   })
   afterEach(() => {
+    reads.restore()
     vi.unstubAllGlobals()
   })
 
@@ -226,14 +238,14 @@ describe("TierListPage", () => {
     })
 
     it("shows the tier multiplier without an override mark for a character with no multiplier", async () => {
-      data.tiers = {
+      await seedCatalog({
         ...hordeModeTiers,
         characters: hordeModeTiers.characters.map((entry) =>
           entry.unitId === "blackPossession"
             ? { unitId: entry.unitId, tier: entry.tier }
             : entry
         ),
-      }
+      })
       renderPage()
       await ready()
 
@@ -275,6 +287,45 @@ describe("TierListPage", () => {
       }
     })
 
+    it("gives each row one tab stop and moves between its tiles with the arrow keys", async () => {
+      const user = userEvent.setup()
+      renderPage()
+      await ready()
+      const tiles = (tier: string) =>
+        within(row(tier)).getAllByTestId("tier-list-tile")
+      const focused = () => document.activeElement
+
+      for (let i = 0; i < 40 && !row("S").contains(focused()); i++) {
+        await user.tab()
+      }
+      expect(focused()).toBe(tiles("S")[0])
+      expect(
+        tiles("S").filter((tile) => tile.getAttribute("tabindex") === "0")
+      ).toEqual([tiles("S")[0]])
+
+      await user.keyboard("{ArrowRight}")
+      expect(focused()).toBe(tiles("S")[1])
+      await user.keyboard("{ArrowDown}")
+      expect(focused()).toBe(tiles("A")[1])
+      // Row S keeps the tile it was left on as its one tab stop.
+      expect(tiles("S")[1]).toHaveAttribute("tabindex", "0")
+      expect(tiles("S")[0]).toHaveAttribute("tabindex", "-1")
+      await user.keyboard("{ArrowLeft}{ArrowLeft}")
+      expect(focused()).toBe(tiles("A")[0])
+      await user.keyboard("{End}")
+      expect(focused()).toBe(tiles("A").at(-1))
+      await user.keyboard("{ArrowRight}")
+      expect(focused()).toBe(tiles("A").at(-1))
+      await user.keyboard("{Home}")
+      expect(focused()).toBe(tiles("A")[0])
+      await user.keyboard("{ArrowUp}")
+      expect(focused()).toBe(tiles("S")[0])
+      await user.keyboard("{ArrowDown}")
+
+      await user.tab()
+      expect(focused()).toBe(tiles("B")[0])
+    })
+
     it("mutes unowned tiles and hides them with Only owned, writing owned=1", async () => {
       renderPage()
       await ready()
@@ -306,7 +357,7 @@ describe("TierListPage", () => {
     })
 
     it("waits for the roster on an owned=1 link: loading with the switch on, never the unfiltered list", async () => {
-      data.rosterPending = true
+      rosterHold.set(true)
       renderPage("/legendary-events/tier-list?owned=1")
 
       // The catalog is ready (the filters render) but the roster is not.
@@ -319,7 +370,7 @@ describe("TierListPage", () => {
       openFilters()
       expect(screen.getByTestId("tier-list-only-owned")).toBeChecked()
 
-      data.releaseRoster?.()
+      rosterHold.set(false)
       await ready()
       expect(tileNames(row("S"))).toEqual([])
       expect(tileNames(row("A"))).toEqual(["Calgar"])
@@ -414,14 +465,14 @@ describe("TierListPage", () => {
     })
 
     it("shows an owned character's rarity and rank, and no tier default without an override", async () => {
-      data.roster = [
+      await seedRoster([
         calgar,
         {
           unitId: "deathBlightlord",
           rank: "Diamond1",
           progressionIndex: "Legendary:RedFiveStars",
         },
-      ]
+      ])
       renderPage()
       await ready()
 
@@ -437,7 +488,7 @@ describe("TierListPage", () => {
     })
 
     it("marks a relic-rated tile and lists the relic as equipped in its details", async () => {
-      data.roster = [
+      await seedRoster([
         calgar,
         {
           unitId: "tauCrisis",
@@ -451,7 +502,7 @@ describe("TierListPage", () => {
             },
           ],
         },
-      ]
+      ])
       renderPage()
       await ready()
 
@@ -478,7 +529,7 @@ describe("TierListPage", () => {
     })
 
     it("lists a relic without an equipped state when the roster is unknown", async () => {
-      data.rosterFail = true
+      reads.fail("tacticus-planner-player-data/characters")
       renderPage()
       await ready()
 
@@ -557,7 +608,9 @@ describe("TierListPage", () => {
     })
 
     it("shows 'Tier list not available yet' and no Untiered row when the dataset is absent", async () => {
-      data.tiers = null
+      await resetTestDatabases()
+      await seedCatalog(null)
+      await seedRoster([calgar])
       renderPage()
 
       expect(
@@ -568,7 +621,7 @@ describe("TierListPage", () => {
     })
 
     it("disables Only owned with 'Sync your roster' and leaves tiles unmuted when the roster is unknown", async () => {
-      data.rosterFail = true
+      reads.fail("tacticus-planner-player-data/characters")
       renderPage("/legendary-events/tier-list?owned=1")
       await ready()
 
@@ -589,7 +642,9 @@ describe("TierListPage", () => {
     })
 
     it("treats a never-synced roster as unknown", async () => {
-      data.roster = undefined
+      // No characters chunk has synced.
+      await resetTestDatabases()
+      await seedCatalog()
       renderPage()
       await ready()
 
@@ -601,7 +656,7 @@ describe("TierListPage", () => {
     })
 
     it("shows skeleton rows while the catalog loads", () => {
-      data.charactersPending = true
+      // The first render precedes the asynchronous catalog read.
       renderPage()
 
       expect(screen.getByTestId("tier-list-loading")).toBeInTheDocument()
@@ -609,17 +664,17 @@ describe("TierListPage", () => {
     })
 
     it("shows the error with Retry when the catalog read fails, and Retry re-issues it", async () => {
-      data.charactersFail = true
+      unitsFailure.next = true
       renderPage()
       const error = await screen.findByTestId("tier-list-error")
       expect(error).toHaveTextContent("Couldn't load the tier list.")
-      const callsBefore = data.charactersCalls
+      const callsBefore = unitsFailure.reissued
 
-      data.charactersFail = false
+      unitsFailure.next = false
       fireEvent.click(within(error).getByRole("button", { name: "Retry" }))
 
       await ready()
-      expect(data.charactersCalls).toBeGreaterThan(callsBefore)
+      expect(unitsFailure.reissued).toBeGreaterThan(callsBefore)
     })
 
     it("shows 'No character matches' with Clear filters when nothing is left", async () => {

@@ -358,7 +358,9 @@
       "chartTitle": "{{label}} by level",
       "chartCaption": "{{label}} goes from {{from}} at level 1 to {{to}} at level {{maxLevel}}.",
       "constant": "{{label}} stays at {{value}} at every level, so it isn't charted.",
-      "missingText": "Rules text isn't in the planner yet."
+      "missingText": "Rules text isn't in the planner yet.",
+      "loadingText": "Loading rules text…",
+      "textFailed": "The rules text couldn't be loaded."
     },
     "notFound": "This unit isn't in the Library.",
     "loadFailed": "Character data could not be loaded.",

@@ -1,0 +1,10 @@
+{
+  "HostOfPlagues": {
+    "description": "Whenever a non-<style=\"Mechanical\">Mechanical</style> enemy unit dies there is a <style=\"Stat_Chance\">{[chance]}% chance</style> a <style=\"Summon\"><style=\"Faction_DeathGuard\">Poxwalker</style></style> is spawned on the hex where that unit died.",
+    "variables": {},
+    "constants": {
+      "chance": "100"
+    },
+    "scaled": []
+  }
+}

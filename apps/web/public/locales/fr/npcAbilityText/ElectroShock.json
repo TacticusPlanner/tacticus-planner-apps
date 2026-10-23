@@ -1,0 +1,11 @@
+{
+  "ElectroShock": {
+    "description": "En réalisant une <style=\"NormalAttack\">attaque normale au corps à corps</style>, cette unité inflige {[dmgPct]} % de ses <style=\"Stat_Damage\">dégâts</style> à un ennemi aléatoire adjacent à la cible. Tous les ennemis atteints sont <style=\"Debuff_Pinned\">neutralisés</style> pendant 1 manche.",
+    "variables": {},
+    "constants": {
+      "damageProfile": "Particle",
+      "dmgPct": "50"
+    },
+    "scaled": []
+  }
+}

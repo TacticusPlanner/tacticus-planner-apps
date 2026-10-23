@@ -1,6 +1,9 @@
 import { useState, type FormEvent, type ReactNode } from "react"
+import type { TFunction } from "i18next"
 import { useTranslation } from "react-i18next"
+import { Lock } from "lucide-react"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { Alert, AlertDescription } from "@workspace/ui/components/alert"
 import { Button } from "@workspace/ui/components/button"
 import { Checkbox } from "@workspace/ui/components/checkbox"
 import {
@@ -27,18 +30,26 @@ import {
 
 import { legendaryEventPlanQueries } from "@/entities/legendary-event"
 
+import { materialSteps } from "../model/outcome-buckets"
 import { V1_IMPORT_PARTS, type V1ImportPartKey } from "../model/parts"
+import { savePendingMaterialSteps } from "../model/pending-material-steps"
 import { ImportResult } from "./import-v1-result"
+import { ImportSummaryCard } from "./import-summary-card"
 
 export type V1ImportSelection = Record<V1ImportPartKey, boolean>
+
+// Keeps the autofill highlight Chrome paints on a field it filled to the page's own colours,
+// since a solid blue password box after an import reads as a broken input.
+const NO_AUTOFILL_TINT =
+  "autofill:shadow-[inset_0_0_0_1000px_var(--background)] autofill:[-webkit-text-fill-color:var(--foreground)]"
 
 /**
  * The whole V1-import experience — credentials, part selection, submit, and the bucketed outcome
  * report — with no chrome of its own. Two hosts wrap this differently: `pages/v1-import` (opened
  * from the account menu, everything unchecked by default) and `app/setup-v1-import.tsx` (part of
  * initial account provisioning, everything checked by default). Only `defaultSelection`,
- * `onSuccess`, and `refreshCurrentUserOnSuccess` vary between them; the import mechanics themselves
- * are identical.
+ * `onSuccess`, `refreshCurrentUserOnSuccess` and `setup` vary between them; the import mechanics
+ * themselves are identical.
  */
 export function V1ImportPanel({
   defaultSelection,
@@ -46,6 +57,7 @@ export function V1ImportPanel({
   onSuccess,
   refreshCurrentUserOnSuccess = true,
   actions,
+  setup = false,
 }: {
   defaultSelection: V1ImportSelection
   /** Parts the user cannot uncheck — the setup flow locks `personalTacticusApiKey`, since the whole
@@ -65,6 +77,12 @@ export function V1ImportPanel({
    * API key instead" / "Continue"), so a host's own actions don't end up on a visually disconnected
    * row below this form. */
   actions?: ReactNode
+  /**
+   * The account-setup layout: the part list folds behind "Choose what to import", and a finished
+   * import folds the form into one "Imported from V1 as … · Run again" line, with the summary and
+   * `actions` (Continue) above the full report — the user's next move there is Continue, not a rerun.
+   */
+  setup?: boolean
 }) {
   const { t } = useTranslation()
   const queryClient = useQueryClient()
@@ -73,22 +91,26 @@ export function V1ImportPanel({
   const [selection, setSelection] =
     useState<V1ImportSelection>(defaultSelection)
   const [result, setResult] = useState<ImportV1ProfileResult | null>(null)
+  // The username the shown result was imported as; "Run again" reopens the form in setup.
+  const [importedAs, setImportedAs] = useState<string | null>(null)
+  const [rerunning, setRerunning] = useState(false)
   // The mutation stays pending until `onSuccess` settles, so `isSuccess` means the refreshes are done.
   const importProfile = useMutation({
     mutationFn: importV1Profile,
     onSuccess: async (imported) => {
       setResult(imported)
+      setImportedAs(username.trim())
+      setRerunning(false)
+      // Kept past this report so the Goals page can still offer them (pending-material-steps.ts).
+      savePendingMaterialSteps(materialSteps(imported.outcomes))
       await refreshAfterImport()
       setPassword("")
       onSuccess?.(imported)
     },
   })
   const submitting = importProfile.isPending
-  const error = importProfile.error
-    ? importProfile.error instanceof ApiError
-      ? importProfile.error.message
-      : t("goals.v1Import.error")
-    : null
+  const { passwordError, formError } = importErrors(importProfile.error, t)
+  const collapsed = setup && result !== null && !rerunning
 
   // Single source of truth for "can this be submitted" — drives both the submit control's disabled
   // state and the handler's guard, so the two can no longer drift the way they did before (the
@@ -144,82 +166,116 @@ export function V1ImportPanel({
     })
   }
 
+  const summary = result ? <ImportSummaryCard result={result} /> : null
+
+  if (collapsed) {
+    return (
+      <div className="flex flex-col gap-4" data-testid="v1-import-panel">
+        <p
+          className="flex flex-wrap items-center gap-x-2 text-sm text-muted-foreground"
+          data-testid="v1-import-imported-as"
+        >
+          {t("goals.v1Import.importedAs", { username: importedAs })}
+          <span aria-hidden>·</span>
+          <Button
+            className="h-auto p-0"
+            data-testid="v1-import-run-again"
+            onClick={() => setRerunning(true)}
+            type="button"
+            variant="link"
+          >
+            {t("goals.v1Import.runAgain")}
+          </Button>
+        </p>
+        {summary}
+        {actions ? (
+          <div className="flex flex-wrap items-center gap-2">{actions}</div>
+        ) : null}
+        {result ? <ImportResult result={result} /> : null}
+      </div>
+    )
+  }
+
   return (
     <form
       className="flex flex-col gap-4"
       data-testid="v1-import-panel"
       onSubmit={handleSubmit}
     >
-      <Field>
-        <FieldLabel htmlFor="v1-import-username">
-          {t("goals.v1Import.username")}
-        </FieldLabel>
-        <FieldContent>
-          <Input
-            id="v1-import-username"
-            data-testid="v1-import-username"
-            autoComplete="username"
-            required
-            value={username}
-            onChange={(event) => setUsername(event.target.value)}
-          />
-        </FieldContent>
-      </Field>
-      <Field>
-        <FieldLabel htmlFor="v1-import-password">
-          {t("goals.v1Import.password")}
-        </FieldLabel>
-        <FieldContent>
-          <Input
-            id="v1-import-password"
-            data-testid="v1-import-password"
-            autoComplete="current-password"
-            required
-            type="password"
-            value={password}
-            onChange={(event) => setPassword(event.target.value)}
-          />
-        </FieldContent>
-      </Field>
-      <fieldset className="grid gap-3 rounded-xl border p-4">
-        <legend className="px-1 text-sm font-medium">
-          {t("goals.v1Import.selectParts")}
-        </legend>
-        {V1_IMPORT_PARTS.map((part) => {
-          const { key } = part
-          const locked = lockedParts?.includes(key) ?? false
-          return (
-            <label className="flex items-start gap-3 text-sm" key={key}>
-              <Checkbox
-                className="mt-0.5"
-                data-testid={`v1-import-${key}`}
-                checked={selection[key]}
-                disabled={locked}
-                onCheckedChange={(checked) =>
-                  setSelection((current) => ({
-                    ...current,
-                    [key]: checked === true,
-                  }))
-                }
-              />
-              <span className="flex flex-col gap-0.5">
-                {t(part.label)}
-                {"description" in part ? (
-                  <span
-                    className="text-xs text-muted-foreground"
-                    data-testid={`v1-import-${key}-description`}
-                  >
-                    {t(part.description)}
-                  </span>
-                ) : null}
-              </span>
-            </label>
-          )
-        })}
+      {formError ? (
+        <Alert data-testid="v1-import-error" role="alert" variant="destructive">
+          <AlertDescription>{formError}</AlertDescription>
+        </Alert>
+      ) : null}
+      <fieldset className="flex flex-col gap-4" disabled={submitting}>
+        <Field>
+          <FieldLabel htmlFor="v1-import-username">
+            {t("goals.v1Import.username")}
+          </FieldLabel>
+          <FieldContent>
+            <Input
+              id="v1-import-username"
+              className={NO_AUTOFILL_TINT}
+              data-testid="v1-import-username"
+              autoComplete="username"
+              required
+              value={username}
+              onChange={(event) => setUsername(event.target.value)}
+            />
+          </FieldContent>
+        </Field>
+        <Field data-invalid={passwordError ? true : undefined}>
+          <FieldLabel htmlFor="v1-import-password">
+            {t("goals.v1Import.password")}
+          </FieldLabel>
+          <FieldContent>
+            <Input
+              id="v1-import-password"
+              aria-describedby={
+                passwordError ? "v1-import-password-error" : undefined
+              }
+              aria-invalid={passwordError ? true : undefined}
+              className={NO_AUTOFILL_TINT}
+              data-testid="v1-import-password"
+              autoComplete="current-password"
+              required
+              type="password"
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+            />
+            {passwordError ? (
+              <FieldError
+                data-testid="v1-import-password-error"
+                id="v1-import-password-error"
+                role="alert"
+              >
+                {passwordError}
+              </FieldError>
+            ) : null}
+          </FieldContent>
+        </Field>
+        {setup ? (
+          <details
+            className="rounded-xl border p-4"
+            data-testid="v1-import-parts-toggle"
+          >
+            <summary className="cursor-pointer text-sm font-medium">
+              {t("goals.v1Import.selectParts")}
+            </summary>
+            <div className="mt-3 grid gap-3">{partRows()}</div>
+          </details>
+        ) : (
+          <fieldset className="grid gap-3 rounded-xl border p-4">
+            <legend className="px-1 text-sm font-medium">
+              {t("goals.v1Import.selectParts")}
+            </legend>
+            {partRows()}
+          </fieldset>
+        )}
       </fieldset>
-      {error ? <FieldError role="alert">{error}</FieldError> : null}
+      {summary}
       {result ? <ImportResult result={result} /> : null}
-      {importProfile.isSuccess ? (
+      {importProfile.isSuccess && !setup ? (
         <p
           className="text-sm text-muted-foreground"
           data-testid="v1-import-rerun-hint"
@@ -238,8 +294,84 @@ export function V1ImportPanel({
           ) : null}
           {t("goals.v1Import.submit")}
         </Button>
-        {actions}
+        {submitting ? (
+          <span
+            className="text-sm text-muted-foreground"
+            data-testid="v1-import-submitting-notice"
+          >
+            {t("goals.v1Import.submittingNotice")}
+          </span>
+        ) : (
+          actions
+        )}
       </div>
     </form>
   )
+
+  function partRows() {
+    return V1_IMPORT_PARTS.map((part) => {
+      const { key } = part
+      const locked = lockedParts?.includes(key) ?? false
+      return (
+        <label className="flex items-start gap-3 text-sm" key={key}>
+          <Checkbox
+            className="mt-0.5"
+            data-testid={`v1-import-${key}`}
+            checked={selection[key]}
+            disabled={locked}
+            onCheckedChange={(checked) =>
+              setSelection((current) => ({
+                ...current,
+                [key]: checked === true,
+              }))
+            }
+          />
+          <span className="flex flex-col gap-0.5">
+            <span className="flex items-center gap-1.5">
+              {t(part.label)}
+              {locked ? (
+                <Lock aria-hidden className="size-3.5 text-muted-foreground" />
+              ) : null}
+            </span>
+            {locked ? (
+              <span
+                className="text-xs text-muted-foreground"
+                data-testid={`v1-import-${key}-locked`}
+              >
+                {t("goals.v1Import.lockedPart")}
+              </span>
+            ) : null}
+            {"description" in part ? (
+              <span
+                className="text-xs text-muted-foreground"
+                data-testid={`v1-import-${key}-description`}
+              >
+                {t(part.description)}
+              </span>
+            ) : null}
+          </span>
+        </label>
+      )
+    })
+  }
+}
+
+/**
+ * Splits a failed import's error by where it belongs: wrong credentials on the password field (the
+ * API keys that message to `password`), anything else in an alert above the form.
+ */
+function importErrors(
+  error: Error | null,
+  t: TFunction
+): { passwordError: string | null; formError: string | null } {
+  if (!error) return { passwordError: null, formError: null }
+  if (!(error instanceof ApiError)) {
+    return { passwordError: null, formError: t("goals.v1Import.error") }
+  }
+  const passwordMessage = Object.entries(error.errors ?? {}).find(([field]) =>
+    field.toLowerCase().endsWith("password")
+  )?.[1][0]
+  return passwordMessage
+    ? { passwordError: passwordMessage, formError: null }
+    : { passwordError: null, formError: error.message }
 }

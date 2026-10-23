@@ -1,0 +1,11 @@
+{
+  "MischiefMakers": {
+    "description": "Les cibles des <style=\"NormalAttack\">attaques normales</style> des <style=\"Faction_DeathGuard\">Nurglings</style> ne peuvent être réanimées, <style=\"Healing\">soignées</style>, <style=\"Repairing\">réparées</style>, ni se voir restaurer de la {[S/Health]} pendant {[nrOfRounds]} manche. Ces attaques ont également <style=\"Stat_Chance\">{[chance]} % de chances</style> de <style=\"Debuff_Pinned\">neutraliser</style> la cible pendant {[nrOfRounds]} manche.",
+    "variables": {},
+    "constants": {
+      "chance": "25",
+      "nrOfRounds": "1"
+    },
+    "scaled": []
+  }
+}

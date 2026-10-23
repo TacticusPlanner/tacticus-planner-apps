@@ -3,7 +3,7 @@ import { Plus } from "lucide-react"
 import { Button } from "@workspace/ui/components/button"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
-import { useCreateGoalLauncher } from "../../model/goal-creation-form/create-goal-launcher-context"
+import { useCreateGoalLauncher } from "@/features/goal-create"
 
 /** The Goals control area's Create goal button; icon-only on mobile, preselecting the scoped project. */
 export function GoalsCreateButton({ scopeId }: { scopeId: string | null }) {

@@ -1,0 +1,23 @@
+{
+  "IllusionsOfTzeentch": {
+    "description": "At the start of the battle, creates a copy of the enemy team to fight for him. Copies have the same stats and ability levels as the original units. As long as one of these copies is on the battlefield, reduce all incoming damage to <style=\"Faction_ThousandSons\">Thaumachus</style> by <style=\"Stat_Damage\">{[dmgReductionPct]}%</style>. Each time a copied character is defeated for the first time, Thaumachus loses <style=\"Stat_Health\">{[hp]} Health</style>.",
+    "variables": {
+      "hp": [
+        101, 107, 113, 132, 151, 170, 189, 284, 315, 368, 420, 473, 525, 578,
+        630, 790, 1105, 1080, 1215, 1350, 1485, 1620, 1755, 1890, 2320, 3175,
+        3150, 3545, 3940, 4330, 4725, 5120, 5515, 6040, 6565, 7780, 9720, 11665,
+        13610, 15555, 17500, 19445, 21390, 23335, 25280, 27220, 29165, 31110,
+        33055, 35000, 37800, 44100, 63000, 63000, 63000, 65000, 65001, 65002,
+        65003, 65004, 65005, 65006, 65007, 65008, 65009
+      ],
+      "dmgReductionPct": [
+        25, 25, 25, 25, 25, 25, 25, 25, 33, 33, 33, 33, 33, 33, 33, 33, 33, 40,
+        40, 40, 40, 40, 40, 40, 40, 40, 50, 50, 50, 50, 50, 50, 50, 50, 50, 66,
+        66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66,
+        66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66
+      ]
+    },
+    "constants": {},
+    "scaled": ["hp"]
+  }
+}

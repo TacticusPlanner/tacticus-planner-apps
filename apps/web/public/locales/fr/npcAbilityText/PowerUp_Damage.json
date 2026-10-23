@@ -1,0 +1,10 @@
+{
+  "PowerUp_Damage": {
+    "description": "Lorsqu'elle est choisie par cette unité, cette amélioration augmente ses <style=\"Stat_Damage\">dégâts</style> de {[dmgPct]} %.",
+    "variables": {},
+    "constants": {
+      "dmgPct": "100"
+    },
+    "scaled": []
+  }
+}

@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next"
 
-import type { ShopRecommendationSectionView } from "../../../model/use-shop-recommendations"
+import type { ShopRecommendationSectionView } from "@/features/shop-recommendations"
 import { ShopRecommendationCard } from "../shop-recommendation-card"
 
 /**
@@ -31,9 +31,9 @@ export function ShopsMobile({
           </h2>
           {section.guaranteed.length > 0 ? (
             <div className="space-y-1.5" data-testid="shop-group-guaranteed">
-              <p className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
+              <h3 className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
                 {t("group.guaranteed")}
-              </p>
+              </h3>
               {section.guaranteed.map((card) => (
                 <ShopRecommendationCard
                   key={card.rewardType}
@@ -45,9 +45,9 @@ export function ShopsMobile({
           ) : null}
           {section.possible.length > 0 ? (
             <div className="space-y-1.5" data-testid="shop-group-possible">
-              <p className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
+              <h3 className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
                 {t("group.possible")}
-              </p>
+              </h3>
               {section.possible.map((card) => (
                 <ShopRecommendationCard
                   key={card.rewardType}

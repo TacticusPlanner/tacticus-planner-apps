@@ -1,3 +1,1 @@
-export { routes } from "./route"
-export { GuildMembersRoute } from "./ui/guild-members-route"
-export { GuildPage } from "./ui/guild-page"
+export { routes, GuildPage, preloadGuildPage } from "./route"

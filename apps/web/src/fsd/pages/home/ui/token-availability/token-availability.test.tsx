@@ -1,23 +1,10 @@
-import { describe, expect, it, vi } from "vitest"
+import { replacePlayerDataChunk } from "@workspace/player-data/testing"
+import { afterEach, describe, expect, it, vi } from "vitest"
 
+import { spyOnIndexedDbReads } from "@/test/fixtures/indexeddb-failure"
 import { render, screen } from "@/test/render"
 
 import { TokenAvailability } from "./token-availability"
-
-const { useLiveQueryMock } = vi.hoisted(() => ({
-  useLiveQueryMock: vi.fn(),
-}))
-
-vi.mock("react-i18next", () => ({
-  useTranslation: () => ({
-    i18n: { language: "en" },
-    t: (key: string, values?: Record<string, unknown>) =>
-      values ? `${key}:${JSON.stringify(values)}` : key,
-  }),
-}))
-vi.mock("dexie-react-hooks", () => ({
-  useLiveQuery: (fn: () => unknown) => useLiveQueryMock(fn),
-}))
 
 function bucket(
   overrides: Partial<{
@@ -37,100 +24,97 @@ function bucket(
 
 const NOW = Date.parse("2026-07-12T12:00:00.000Z")
 
-function mockLiveQueries({
-  liveProgress,
-  metadata,
-}: {
-  liveProgress: unknown
-  metadata: unknown
-}) {
-  // The component calls useLiveQuery twice, in order: getLiveProgress() then
-  // getPlayerDataMetadata(). Distinguish calls by the querier's identity-agnostic call order.
-  let call = 0
-  useLiveQueryMock.mockImplementation(() => {
-    call += 1
-    return call === 1 ? liveProgress : metadata
+// Stores the "live-progress" chunk as a sync observed at `observedAtMs` would.
+function seedLiveProgress(liveProgress: unknown, observedAtMs = NOW) {
+  return replacePlayerDataChunk("live-progress", liveProgress, {
+    key: "live-progress",
+    hash: "live-progress-test",
+    schemaVersion: 1,
+    updatedAt: new Date(observedAtMs).toISOString(),
   })
 }
 
+afterEach(() => {
+  vi.restoreAllMocks()
+})
+
 describe("TokenAvailability", () => {
   it("shows a loading state while player data has not resolved", () => {
-    mockLiveQueries({ liveProgress: undefined, metadata: undefined })
-
     render(<TokenAvailability />)
 
-    expect(screen.getByTestId("token-availability-loading")).toBeInTheDocument()
+    expect(screen.getByTestId("token-availability-loading")).toHaveTextContent(
+      "Loading token status…"
+    )
   })
 
-  it("shows an empty state, not loading forever, when the account has never synced", () => {
-    // getLiveProgress() resolves to `undefined` (no "live-progress" chunk at all) for an
-    // account that's never synced. The component maps that to `null` so it's distinguishable
-    // from useLiveQuery's own "still loading" `undefined` — this asserts the resolved-null case
-    // renders the empty state instead of getting stuck on the loading state forever.
-    mockLiveQueries({
-      liveProgress: null,
-      metadata: new Map(),
-    })
-
+  it("shows an empty state, not loading forever, when the account has never synced", async () => {
+    // A never-synced account has no "live-progress" chunk at all (`usePlayerChunk` yields `null`);
+    // this asserts that resolved-null case renders the empty state instead of loading forever.
     render(<TokenAvailability />)
 
-    expect(screen.getByTestId("token-availability-empty")).toBeInTheDocument()
+    expect(
+      await screen.findByTestId("token-availability-empty")
+    ).toHaveTextContent("No token data available yet.")
     expect(
       screen.queryByTestId("token-availability-loading")
     ).not.toBeInTheDocument()
   })
 
-  it("shows an empty state when no token type has data", () => {
-    mockLiveQueries({
-      liveProgress: {
-        gameModeTokens: {
-          arena: null,
-          guildRaid: null,
-          onslaught: null,
-          salvageRun: null,
-        },
-      },
-      metadata: new Map([
-        ["live-progress", { updatedAt: new Date(NOW).toISOString() }],
-      ]),
-    })
+  it("shows the local read failure with Retry when player data cannot be read", async () => {
+    const reads = spyOnIndexedDbReads()
+    reads.fail("tacticus-planner-player-data")
 
     render(<TokenAvailability />)
 
-    expect(screen.getByTestId("token-availability-empty")).toBeInTheDocument()
+    expect(await screen.findByRole("alert")).toHaveTextContent(
+      "We couldn't read this data from your device."
+    )
+    expect(screen.getByRole("button", { name: "Retry" })).toBeInTheDocument()
   })
 
-  it("renders a row per available token type and omits missing ones", () => {
-    mockLiveQueries({
-      liveProgress: {
-        gameModeTokens: {
-          arena: bucket(),
-          guildRaid: {
-            tokens: bucket(),
-            bombTokens: bucket({ current: 1, max: 1 }),
-          },
-          onslaught: null,
-          salvageRun: bucket(),
-        },
+  it("shows an empty state when no token type has data", async () => {
+    await seedLiveProgress({
+      gameModeTokens: {
+        arena: null,
+        guildRaid: null,
+        onslaught: null,
+        salvageRun: null,
       },
-      metadata: new Map([
-        ["live-progress", { updatedAt: new Date(NOW).toISOString() }],
-      ]),
     })
 
     render(<TokenAvailability />)
 
-    expect(screen.getByTestId("token-row-arena")).toBeInTheDocument()
+    expect(
+      await screen.findByTestId("token-availability-empty")
+    ).toBeInTheDocument()
+  })
+
+  it("renders a row per available token type and omits missing ones", async () => {
+    await seedLiveProgress({
+      gameModeTokens: {
+        arena: bucket(),
+        guildRaid: {
+          tokens: bucket(),
+          bombTokens: bucket({ current: 1, max: 1 }),
+        },
+        onslaught: null,
+        salvageRun: bucket(),
+      },
+    })
+
+    render(<TokenAvailability />)
+
+    expect(await screen.findByTestId("token-row-arena")).toBeInTheDocument()
     expect(screen.getByTestId("token-row-guildRaid")).toBeInTheDocument()
     expect(screen.getByTestId("token-row-bombTokens")).toBeInTheDocument()
     expect(screen.getByTestId("token-row-salvageRun")).toBeInTheDocument()
     expect(screen.queryByTestId("token-row-onslaught")).not.toBeInTheDocument()
   })
 
-  it("shows a pending token's exact countdown without a relative-time label", () => {
+  it("shows a pending token's exact countdown without a relative-time label", async () => {
     const dateNowSpy = vi.spyOn(Date, "now").mockReturnValue(NOW)
-    mockLiveQueries({
-      liveProgress: {
+    await seedLiveProgress(
+      {
         gameModeTokens: {
           arena: bucket({ nextTokenInSeconds: 1200 }),
           guildRaid: null,
@@ -138,59 +122,47 @@ describe("TokenAvailability", () => {
           salvageRun: null,
         },
       },
-      metadata: new Map([
-        ["live-progress", { updatedAt: new Date(NOW - 300_000).toISOString() }],
-      ]),
-    })
+      NOW - 300_000
+    )
 
     render(<TokenAvailability />)
-    dateNowSpy.mockRestore()
 
-    const row = screen.getByTestId("token-row-arena")
+    const row = await screen.findByTestId("token-row-arena")
     expect(row).toHaveTextContent("0:15:00")
-    expect(row).not.toHaveTextContent("home.tokens.nextLabel")
+    expect(row).not.toHaveTextContent(/Next in/)
+    dateNowSpy.mockRestore()
   })
 
-  it("styles a capped token distinctly from a counting-down one", () => {
-    mockLiveQueries({
-      liveProgress: {
-        gameModeTokens: {
-          arena: bucket({ current: 5, max: 5 }),
-          guildRaid: null,
-          onslaught: null,
-          salvageRun: null,
-        },
+  it("styles a capped token distinctly from a counting-down one", async () => {
+    await seedLiveProgress({
+      gameModeTokens: {
+        arena: bucket({ current: 5, max: 5 }),
+        guildRaid: null,
+        onslaught: null,
+        salvageRun: null,
       },
-      metadata: new Map([
-        ["live-progress", { updatedAt: new Date(NOW).toISOString() }],
-      ]),
     })
 
     render(<TokenAvailability />)
 
-    const row = screen.getByTestId("token-row-arena")
-    expect(row).toHaveTextContent("home.tokens.full")
+    const row = await screen.findByTestId("token-row-arena")
+    expect(row).toHaveTextContent("Capped")
     expect(row.querySelector("img")).toHaveClass("animate-pulse")
   })
 
-  it("does not apply capped styling to a token still counting down", () => {
-    mockLiveQueries({
-      liveProgress: {
-        gameModeTokens: {
-          arena: bucket({ current: 1, max: 5 }),
-          guildRaid: null,
-          onslaught: null,
-          salvageRun: null,
-        },
+  it("does not apply capped styling to a token still counting down", async () => {
+    await seedLiveProgress({
+      gameModeTokens: {
+        arena: bucket({ current: 1, max: 5 }),
+        guildRaid: null,
+        onslaught: null,
+        salvageRun: null,
       },
-      metadata: new Map([
-        ["live-progress", { updatedAt: new Date(NOW).toISOString() }],
-      ]),
     })
 
     render(<TokenAvailability />)
 
-    const row = screen.getByTestId("token-row-arena")
+    const row = await screen.findByTestId("token-row-arena")
     expect(row.querySelector("img")).not.toHaveClass("animate-pulse")
   })
 })

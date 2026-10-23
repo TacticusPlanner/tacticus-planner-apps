@@ -1,0 +1,8 @@
+{
+  "UnstoppableFerocity": {
+    "description": "Erzielt beim Angriff eines gegnerischen <style=\"Psyker\">Psionikers</style> einen zusätzlichen <style=\"Stat_Hits\">Treffer</style>. \nErzielt bei einem <style=\"Charging\">Ansturm</style> einen zusätzlichen <style=\"Stat_Hits\">Treffer</style>.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

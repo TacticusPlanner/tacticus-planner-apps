@@ -1,0 +1,55 @@
+{
+  "InstrumentsOfVengeance": {
+    "description": "<style=\"Faction_DarkAngels\">Lion El'Jonson</style> marks hexes in two straight lines, originating from the edges of the battlefield. At the end of this turn, if there is no enemy unit adjacent to Lion El'Jonson, he starts <style=\"Buff_Overwatching\">Overwatching</style>. At the beginning of his next turn, all enemies on marked hexes take <style=\"Stat_Hits\">{[nrOfHits]}x</style> <style={[DamageProfileTypeStyle]}>{[minDmg]}-{[maxDmg]} {[DamageProfileType]}</style>. Lion El'Jonson then summons <style=\"STAT\">{[nrOfSummons]}</style> <style=\"Summon\"><style=\"Faction_DarkAngels\">Deathwing Knights</style></style> in free hexes on the battlefield. They can immediately attack enemies in range, but cannot move this turn.\n\nDeathwing Knight stats:\n<style=\"Stat_Health\">{[summonHp]} Health</style>\n<style=\"Stat_Damage\">{[summonDmg]} Damage</style>\n<style=\"Stat_Armor\">{[summonArmor]} Armour</style>",
+    "variables": {
+      "minDmg": [
+        15, 18, 21, 24, 27, 30, 34, 37, 41, 44, 48, 51, 55, 58, 62, 65, 68, 72,
+        75, 79, 83, 90, 104, 117, 131, 144, 158, 172, 185, 199, 213, 226, 240,
+        254, 267, 281, 295, 308, 322, 341, 368, 396, 427, 461, 523, 584, 646,
+        708, 769, 831, 899, 928, 957, 992, 1026, 1062, 1098, 1139, 1181, 1223,
+        1272, 1321, 1371, 1421, 1473
+      ],
+      "maxDmg": [
+        18, 22, 25, 29, 32, 37, 41, 45, 49, 53, 57, 61, 66, 70, 74, 78, 82, 86,
+        90, 95, 100, 108, 124, 141, 157, 173, 190, 206, 222, 239, 255, 272, 288,
+        304, 321, 337, 354, 370, 386, 409, 442, 476, 512, 553, 627, 701, 775,
+        849, 923, 997, 1079, 1113, 1149, 1190, 1232, 1274, 1317, 1367, 1417,
+        1468, 1526, 1585, 1645, 1706, 1768
+      ],
+      "nrOfSummons": [
+        1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1,
+        1, 1, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
+        4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4
+      ],
+      "summonHp": [
+        90, 108, 126, 144, 162, 183, 203, 224, 245, 266, 286, 307, 328, 348,
+        369, 390, 410, 431, 452, 473, 500, 539, 621, 703, 785, 867, 949, 1031,
+        1112, 1194, 1276, 1358, 1440, 1522, 1604, 1686, 1768, 1850, 1931, 2047,
+        2209, 2379, 2562, 2766, 3136, 3506, 3875, 4245, 4615, 4985, 5040, 5108,
+        5175, 5265, 5355, 5445, 5535, 5648, 5760, 5873, 6008, 6143, 6278, 6413,
+        6548
+      ],
+      "summonDmg": [
+        16, 19, 22, 26, 29, 32, 36, 40, 44, 47, 51, 55, 58, 62, 66, 69, 73, 77,
+        80, 84, 89, 96, 110, 125, 140, 154, 169, 183, 198, 212, 227, 241, 256,
+        271, 285, 300, 314, 329, 343, 364, 393, 423, 456, 492, 557, 623, 689,
+        755, 820, 886, 896, 908, 920, 936, 952, 968, 984, 1004, 1024, 1044,
+        1068, 1092, 1116, 1140, 1164
+      ],
+      "summonArmor": [
+        26, 31, 36, 42, 47, 53, 59, 65, 71, 77, 83, 89, 95, 101, 107, 113, 119,
+        125, 131, 137, 145, 156, 179, 203, 227, 250, 274, 298, 321, 345, 369,
+        392, 416, 440, 463, 487, 511, 534, 558, 591, 638, 687, 740, 799, 906,
+        1013, 1120, 1226, 1333, 1440, 1456, 1476, 1495, 1521, 1547, 1573, 1599,
+        1632, 1664, 1697, 1736, 1775, 1814, 1853, 1892
+      ]
+    },
+    "constants": {
+      "damageProfile": "HeavyRound",
+      "nrOfHits": "6",
+      "unitId": "darkaSmnTerminator",
+      "cooldownTurns": "2"
+    },
+    "scaled": ["minDmg", "maxDmg", "summonHp", "summonDmg", "summonArmor"]
+  }
+}

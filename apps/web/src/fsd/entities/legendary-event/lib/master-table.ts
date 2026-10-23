@@ -70,7 +70,7 @@ export interface MasterTableInput {
   pointsMode: MasterTablePointsMode
 }
 
-export interface MasterTableLaneCell {
+interface MasterTableLaneCell {
   points: number
   /** The battle depth Estimated counted to; null outside Estimated or when there is none. */
   depth: number | null

@@ -1,0 +1,10 @@
+{
+  "AllIsDust": {
+    "description": "Los ataques contra esta unidad con un <style=\"Piercing_Ratio\">{[pierceRatio]} % de tasa de perforación</style> o menos cuentan como si tuvieran un <style=\"Piercing_Ratio\">1 % de tasa de perforación</style>.",
+    "variables": {},
+    "constants": {
+      "pierceRatio": "35"
+    },
+    "scaled": []
+  }
+}

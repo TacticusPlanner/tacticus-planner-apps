@@ -1,0 +1,14 @@
+{
+  "PhasalSubjugator": {
+    "description": "After moving, if there is no friendly <style=\"Summon\"><style=\"Faction_Necrons\">Necron Warrior</style></style> on the battlefield, <style=\"Faction_Necrons\">Anuphet</style> summons a Necron Warrior in a free adjacent hex. If Anuphet does not move, this ability triggers at the end of his turn. After <i>My Will Be Done</i> triggers, it triggers a second time, but only a friendly adjacent Necron Warrior that was not affected by it this turn can perform an attack. The Necron Warriors have <style=\"Stat_Health\">{[summonHp]} Health</style>, <style=\"Stat_Damage\">{[summonDmg]} Damage</style> and <style=\"Stat_Armor\">{[summonArmor]} Armour</style>.",
+    "variables": {
+      "summonHp": [5875, 6192, 6509, 6826, 7143, 7461, 7778, 8095, 8412, 8729],
+      "summonDmg": [1960, 2066, 2172, 2277, 2383, 2489, 2595, 2701, 2806, 2912],
+      "summonArmor": [
+        1470, 1549, 1629, 1708, 1787, 1867, 1946, 2025, 2105, 2184
+      ]
+    },
+    "constants": {},
+    "scaled": []
+  }
+}

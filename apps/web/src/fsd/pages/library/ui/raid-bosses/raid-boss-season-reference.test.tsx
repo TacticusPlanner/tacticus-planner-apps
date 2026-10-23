@@ -1,17 +1,10 @@
-import { render, screen } from "@testing-library/react"
+import { render, screen } from "@/test/render"
 import userEvent from "@testing-library/user-event"
 import { describe, expect, it, vi } from "vitest"
 
 import type { RaidBossSeasonReferenceViewModel } from "./raid-boss-season-reference.view-model"
 
 import { RaidBossSeasonReference } from "./raid-boss-season-reference"
-
-vi.mock("react-i18next", () => ({
-  useTranslation: () => ({
-    t: (key: string, options?: Record<string, number>) =>
-      options ? `${key} ${JSON.stringify(options)}` : key,
-  }),
-}))
 
 const viewModel = {
   seasonId: "season-1",
@@ -50,7 +43,7 @@ const viewModel = {
                 isPrimarch: false,
                 factionId: "Tyranids",
                 name: "Tervigon",
-                portraitSrc: "/boss.png",
+                portraitSrc: "/boss.webp",
               },
             },
           ],

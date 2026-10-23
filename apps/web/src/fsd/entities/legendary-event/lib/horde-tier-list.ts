@@ -117,7 +117,7 @@ export interface HordeTierListFilters {
   alliance: HordeTierAlliance
 }
 
-export interface HordeTierTile {
+interface HordeTierTile {
   unitId: string
   multiplier: number
   /** The character's own multiplier differs from its tier's. */
@@ -128,7 +128,7 @@ export interface HordeTierTile {
   relics: readonly HordeRelicRating[]
 }
 
-export interface HordeTierRow {
+interface HordeTierRow {
   tier: string
   multiplier: number
   /** Effective multiplier descending, then localized name. */

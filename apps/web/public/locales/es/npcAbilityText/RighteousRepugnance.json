@@ -1,0 +1,32 @@
+{
+  "RighteousRepugnance": {
+    "description": "Los <style=\"NormalAttack\">ataques cuerpo a cuerpo normales</style> infligen <style=\"DMG_Power\">{[minDmg]}-{[maxDmg]} de Daño de poder</style> <style=\"Stat_Hits\">x{[nrOfHits]}</style> al objetivo y a todas las unidades enemigas adyacentes tanto al objetivo como a <style=\"Faction_Sisterhood\">Morvenn Vahl</style>. Cuando <style=\"Faction_Sisterhood\">Morvenn Vahl</style> derrota a una unidad con un ataque cuerpo a cuerpo, tiene un <style=\"STAT\">{[chance]} %</style> de probabilidad de contar como doble para <style=\"Act_Of_Faith\">Acto de fe</style>.",
+    "variables": {
+      "minDmg": [
+        12, 14, 17, 19, 22, 24, 27, 30, 33, 35, 38, 41, 44, 46, 49, 52, 55, 57,
+        60, 63, 67, 72, 83, 94, 105, 116, 126, 137, 148, 159, 170, 181, 192,
+        203, 214, 225, 236, 247, 258, 273, 294, 317, 342, 369, 418, 467, 517,
+        566, 615, 665, 672, 681, 690, 702, 714, 726, 738, 753, 768, 783, 801,
+        819, 837, 855, 873
+      ],
+      "maxDmg": [
+        16, 19, 22, 26, 29, 32, 36, 40, 44, 47, 51, 55, 58, 62, 66, 69, 73, 77,
+        80, 84, 89, 96, 110, 125, 140, 154, 169, 183, 198, 212, 227, 241, 256,
+        271, 285, 300, 314, 329, 343, 364, 393, 423, 456, 492, 557, 623, 689,
+        755, 820, 886, 896, 908, 920, 936, 952, 968, 984, 1004, 1024, 1044,
+        1068, 1092, 1116, 1140, 1164
+      ],
+      "chance": [
+        40, 40, 40, 40, 40, 40, 40, 40, 45, 45, 45, 45, 45, 45, 45, 45, 45, 50,
+        50, 50, 50, 50, 50, 50, 50, 50, 55, 55, 55, 55, 55, 55, 55, 55, 55, 60,
+        60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60,
+        60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60
+      ]
+    },
+    "constants": {
+      "damageProfile": "Power",
+      "nrOfHits": "3"
+    },
+    "scaled": ["minDmg", "maxDmg"]
+  }
+}

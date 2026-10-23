@@ -13,7 +13,7 @@ import type {
   LegendaryEvent,
   LegendaryEventLifecycle,
 } from "@/entities/legendary-event"
-import { RunInputsDrawer } from "@/features/legendary-event-run-inputs"
+import { RunInputsDrawer } from "@/features/legendary-event-plan"
 import { formatEventCountdown, formatRelativeTime } from "@/shared/lib"
 
 import { EventTimingLines } from "../shared/event-timing-lines"

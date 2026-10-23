@@ -1,0 +1,11 @@
+{
+  "BladeOfTheAncestors": {
+    "description": "<style=\"Faction_LeaguesOfVotann\">Ûthar</style> obtiene un <style=\"Stat\">+{[extraCritChance]} % de Probabilidad de Crítico</style> e inflige <style=\"Stat_CritDamage\">+{[extraCritDmg]} de Daño Crítico</style> cada vez que un <style=\"Character\">personaje</style> aliado muere o mata a una unidad enemiga. Una vez que Ûthar inflige Daño Crítico, esta bonificación se reinicia.",
+    "variables": {
+      "extraCritChance": [8, 8, 8, 8, 9, 9, 9, 10, 10, 10],
+      "extraCritDmg": [590, 622, 654, 686, 717, 749, 781, 813, 845, 877]
+    },
+    "constants": {},
+    "scaled": []
+  }
+}

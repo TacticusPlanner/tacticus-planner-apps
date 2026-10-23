@@ -7,7 +7,6 @@ import {
   buildMasterTable,
   buildSyncedLaneProgress,
   laneBattlePowers,
-  legendaryEventRunDates,
   resolveLegendaryEventRunsAt,
   unitHordeMultiplier,
   useClearEstimateConfig,
@@ -21,9 +20,12 @@ import {
   usePlanWriteQueue,
   type LegendaryEvent,
   type LegendaryEventLifecycle,
-  type LegendaryEventRunDates,
   type LegendaryEventGoalTarget,
 } from "@/entities/legendary-event"
+import {
+  legendaryEventRunDates,
+  type LegendaryEventRunDates,
+} from "../../lib/run-dates"
 import { useLegendaryEventGoalTargets } from "@/features/legendary-event-goals"
 import { useUnitName } from "@/shared/unit-name"
 import { useUnitPowerContext } from "@/shared/unit-power"
@@ -181,8 +183,6 @@ export function usePlanSource(eventId: string): PlanSource {
       hordeMultiplier: (unitId: string) =>
         unitHordeMultiplier(config.config, unitId),
     }
-    // Every read is a settled, memoised query result; `unitName` reads the settled catalog.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     settled,
     eventData,
@@ -196,6 +196,7 @@ export function usePlanSource(eventId: string): PlanSource {
     plan.data,
     progressObservedAtMs,
     nowMs,
+    unitName,
   ])
 
   if (!isAuthenticated) return { status: "signedOut" }

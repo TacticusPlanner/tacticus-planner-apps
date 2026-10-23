@@ -3,14 +3,10 @@ import { ApiError, apiClient, unwrap, type ApiSchemas } from "@/shared/api"
 // Wire shapes, generated from the API's OpenAPI document (spec: api-contract-sync); never hand-written.
 type S = ApiSchemas
 
-export type GuildRaidObservationState = S["GuildRaidObservationState"]
 export type GuildRaidFreshness = S["GuildRaidFreshness"]
 /** Serialized PascalCase, unlike the camelCase freshness and observation state. */
 export type GuildRaidDifficulty = S["GuildRaidDifficulty"]
 export type GuildRaidModifierStatus = S["GuildRaidModifierStatusResponse"]
-export type GuildRaidPrimeStatus = S["GuildRaidPrimeStatusResponse"]
-export type GuildRaidBossStatus = S["GuildRaidBossStatusResponse"]
-export type GuildRaidSeasonStatus = S["GuildRaidSeasonStatusResponse"]
 export type GuildRaidStatusResponse = S["GuildRaidStatusResponse"]
 
 /**

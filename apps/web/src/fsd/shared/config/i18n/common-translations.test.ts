@@ -40,7 +40,7 @@ describe("common namespace locale parity", () => {
               (node, key) => (node as Record<string, unknown>)[key],
               root.goals.edit
             )
-        expect(pick(locale as typeof en), path).not.toBe(pick(en))
+        expect(pick(locale), path).not.toBe(pick(en))
       }
       expect(locale.tour.editGoal.steps.priority.content).not.toBe(
         en.tour.editGoal.steps.priority.content

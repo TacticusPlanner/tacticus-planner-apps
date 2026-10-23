@@ -14,7 +14,7 @@ vi.mock("react-i18next", () => ({
   }),
 }))
 const { state } = vi.hoisted(() => ({
-  state: { current: { status: "hidden" } as EventProjectsState },
+  state: { current: { status: "hidden" } },
 }))
 vi.mock("../model/use-event-projects", () => ({
   useEventProjects: () => state.current,

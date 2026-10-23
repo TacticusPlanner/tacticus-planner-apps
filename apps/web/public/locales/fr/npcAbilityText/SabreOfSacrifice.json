@@ -1,0 +1,10 @@
+{
+  "SabreOfSacrifice": {
+    "description": "Lorsque <style=\"Faction_AstraMilitarum\">Dreir</style> ou des <style=\"Faction_AstraMilitarum\">Cavaliers de Krieg</style> adjacents à Dreir <style=\"Charging\">chargent</style>, leurs attaques <style=\"Debuff_Pinned\">neutralisent</style> leurs cibles pendant 1 manche. Après leur charge et jusqu'à la fin de leur prochain tour, ils ont également <style=\"Stat_Armor\">+{[extraArmor]} armure</style> pour chaque unité alliée vaincue au cours de ce combat.",
+    "variables": {
+      "extraArmor": [685, 722, 759, 796, 833, 870, 907, 944, 981, 1018]
+    },
+    "constants": {},
+    "scaled": []
+  }
+}

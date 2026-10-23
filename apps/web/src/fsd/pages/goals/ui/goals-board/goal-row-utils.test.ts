@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import type { GoalRow } from "../../model/shared/types"
+import type { GoalRow } from "@/features/goal-planning"
 import {
   buildCascadeContext,
   cascadeTargets,

@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 import type { ClearEstimateConfig } from "@/entities/legendary-event"
 import { legendaryEventCharacters } from "@/test/fixtures/legendary-event-characters"
 import { utharEvent } from "@/test/fixtures/legendary-events"
+import { setTestAuth } from "@/test/auth"
 import { unitPowerContextFixture } from "@/test/fixtures/unit-power"
 
 import { EMPTY_PLAN } from "./plan.fixtures"
@@ -29,8 +30,9 @@ const FAILED_GOALS = { status: "failed" }
 // Like the real reads, every render hands out a new state object around the same data.
 const read = (data: unknown) => ({ status: "ready", data, retry: vi.fn() })
 
-vi.mock("@azure/msal-react", () => ({ useIsAuthenticated: () => true }))
-vi.mock("@/shared/unit-name", () => ({ useUnitName: () => () => "" }))
+// Stable across renders, like the real resolver.
+const unitName = () => ""
+vi.mock("@/shared/unit-name", () => ({ useUnitName: () => unitName }))
 vi.mock("@/shared/unit-power", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/shared/unit-power")>()),
   useUnitPowerContext: () => ({}),
@@ -61,6 +63,7 @@ vi.mock("@/entities/legendary-event", async (importOriginal) => ({
 
 describe("usePlanSource", () => {
   beforeEach(() => {
+    setTestAuth({ authenticated: true })
     progress = PROGRESS
     roster = ROSTER
   })

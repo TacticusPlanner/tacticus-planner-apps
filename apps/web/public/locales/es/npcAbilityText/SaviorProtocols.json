@@ -1,0 +1,10 @@
+{
+  "SaviorProtocols": {
+    "description": "Si una unidad aliada adyacente del <style=\"Faction_Tau\">Imperio T'au</style> es atacada, hay un <style=\"Stat_Chance\">{[chance]} %</style> de probabilidad de que este Dron reciba cada impacto en lugar del objetivo original.\n\nCuando se mueve, este Dron prioriza a los hexágonos adyacentes a las unidades aliadas del <style=\"Faction_Tau\">Imperio T'au</style>.\n\nCuando ataca, este Dron intenta dar prioridad a los enemigos con <style=\"Debuff_Markerlight\">Luz de señalización</style>.",
+    "variables": {},
+    "constants": {
+      "chance": "50"
+    },
+    "scaled": []
+  }
+}

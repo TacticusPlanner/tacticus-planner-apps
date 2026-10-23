@@ -1,0 +1,11 @@
+{
+  "MischiefMakers": {
+    "description": "Targets of the <style=\"Faction_DeathGuard\">Nurglings'</style> <style=\"NormalAttack\">normal attacks</style> cannot be revived, <style=\"Healing\">healed</style>, <style=\"Repairing\">repaired</style>, or otherwise restore {[S/Health]} for {[nrOfRounds]} round. These attacks additionally have a <style=\"Stat_Chance\">{[chance]}% chance</style> to <style=\"Debuff_Pinned\">Suppress</style> the target for {[nrOfRounds]} round.",
+    "variables": {},
+    "constants": {
+      "chance": "25",
+      "nrOfRounds": "1"
+    },
+    "scaled": []
+  }
+}

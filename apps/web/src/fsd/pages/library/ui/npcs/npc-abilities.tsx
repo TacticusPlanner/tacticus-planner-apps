@@ -7,8 +7,10 @@ import { cn } from "@workspace/ui/lib/utils"
 import type { Rarity } from "@workspace/game-domain"
 
 import { useNpcAbilityText } from "@/entities/npc"
-import { AbilityText } from "@/shared/ability-text"
+import { AbilityText, rulesTextPending } from "@/shared/ability-text"
 import { EntityIcon } from "@/shared/ui"
+
+import { RulesTextNote } from "../unit/rules-text-note"
 
 /**
  * The variation's abilities as name + icon chips in an Active / Passive column pair — 81% of units
@@ -18,7 +20,9 @@ import { EntityIcon } from "@/shared/ui"
  *
  * An ability whose rules text resolves completely (see `useNpcAbilityText`) is expandable: the text
  * is rendered for the selected level's `abilityLevel`, so it rescales with the Level selector. The
- * rest are plain chips — rather than show a half-substituted description. An id the game leaves
+ * rest are plain chips — rather than show a half-substituted description. While the text is still
+ * downloading, or failed to, the chip expands to a loading line or a failure note with a retry
+ * instead. An id the game leaves
  * unnamed is an internal engine marker and is dropped rather than surfaced as a raw id.
  */
 function AbilityChip({
@@ -33,9 +37,11 @@ function AbilityChip({
   rarity: Rarity
 }) {
   const { t } = useTranslation("abilities")
-  const abilityText = useNpcAbilityText()
+  // Per chip, so only the shown abilities' rules text is fetched, after the page paints.
+  const rules = useNpcAbilityText([id])
   const [open, setOpen] = useState(false)
-  const text = abilityText(id)
+  const text = rules.text(id)
+  const pending = !text && rulesTextPending(rules)
   const name = t(id)
 
   const chip = (
@@ -49,7 +55,7 @@ function AbilityChip({
   const cardClass = "w-full overflow-hidden rounded-lg border bg-card text-sm"
   const rowClass = "flex w-full items-center gap-1.5 px-2 py-1.5 text-left"
 
-  if (!text) {
+  if (!text && !pending) {
     return (
       <li className={cn(cardClass, rowClass)} data-testid={`npc-ability-${id}`}>
         {chip}
@@ -79,15 +85,22 @@ function AbilityChip({
       </button>
       {open ? (
         <div className="border-t px-2 py-1.5">
-          <AbilityText
-            text={text.description}
-            level={abilityLevel}
-            variables={text.variables}
-            constants={text.constants}
-            scaledVariableNames={text.scaled}
-            rarity={rarity}
-            unitName={unitName}
-          />
+          {text ? (
+            <AbilityText
+              text={text.description}
+              level={abilityLevel}
+              variables={text.variables}
+              constants={text.constants}
+              scaledVariableNames={text.scaled}
+              rarity={rarity}
+              unitName={unitName}
+            />
+          ) : (
+            <RulesTextNote
+              rules={rules}
+              data-testid={`npc-ability-${id}-text`}
+            />
+          )}
         </div>
       ) : null}
     </li>

@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react"
-import { describe, expect, it, vi } from "vitest"
+import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import type {
   ImportPartResult,
@@ -7,6 +6,7 @@ import type {
   V1LegendaryEventOutcome,
 } from "@/entities/account"
 import { fireEvent, render, screen, within } from "@/test/render"
+import { seedGameCatalog } from "@/test/seed"
 
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({
@@ -15,46 +15,51 @@ vi.mock("react-i18next", () => ({
         ? options.defaultValue
         : options && Object.keys(options).length > 0
           ? `${key} ${Object.entries(options)
-              .map(([k, v]) => `${k}=${v}`)
+              .map(([k, v]) => `${k}=${String(v)}`)
               .join(" ")}`
           : key,
   }),
   initReactI18next: { type: "3rdParty", init: vi.fn() },
 }))
 
-vi.mock("@/entities/goal", () => ({
-  GoalTypeBadge: ({ type }: { type: string }) => <span>{type}</span>,
-}))
+vi.mock("@/entities/goal", async () => {
+  const { createContext } = await import("react")
+  return {
+    GoalTypeBadge: ({ type }: { type: string }) => <span>{type}</span>,
+    CreateGoalLauncherContext: createContext<unknown>(null),
+  }
+})
 
-vi.mock("dexie-react-hooks", () => ({
-  useLiveQuery: (querier: () => unknown) => {
-    const [value, setValue] = useState<unknown>()
-    useEffect(() => {
-      void Promise.resolve(querier()).then(setValue)
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
-    return value
-  },
-}))
+import { CreateGoalLauncherContext } from "@/entities/goal"
 
-vi.mock("@workspace/game-catalog/queries", () => ({
-  getCharactersMap: () =>
-    new Map([["astarLysander", { id: "astarLysander", name: "Lysander" }]]),
-  getMowsMap: () => new Map(),
-  // Only the bounds the issue lines read: 10 regular and 10 premium missions, 18 battles a lane.
-  getLegendaryEvents: async () => [
-    {
-      id: "astarLysander",
-      regularMissions: Array.from({ length: 10 }),
-      premiumMissions: Array.from({ length: 10 }),
-      alpha: { battleIds: Array.from({ length: 18 }) },
-      beta: { battleIds: Array.from({ length: 18 }) },
-      gamma: { battleIds: Array.from({ length: 18 }) },
-    },
-  ],
-}))
-
+import {
+  clearPendingMaterialSteps,
+  savePendingMaterialSteps,
+} from "../model/pending-material-steps"
 import { ImportResult } from "./import-v1-result"
+import { PendingMaterialSteps } from "./pending-material-steps"
+
+// Only the bounds the issue lines read: 10 regular and 10 premium missions, 18 battles a lane.
+const lane = {
+  battleIds: Array.from({ length: 18 }, (_, index) => `b${index}`),
+}
+beforeEach(async () => {
+  await seedGameCatalog({
+    characters: [{ id: "astarLysander", name: "Lysander" }],
+    upgrades: [{ id: "upgHpC001", label: "Ceramite Plate" }],
+    lres: [
+      {
+        id: "astarLysander",
+        eventStageStartDatesUtc: [],
+        regularMissions: Array.from({ length: 10 }, (_, index) => index),
+        premiumMissions: Array.from({ length: 10 }, (_, index) => index),
+        alpha: lane,
+        beta: lane,
+        gamma: lane,
+      },
+    ],
+  })
+})
 
 const notSelected: ImportPartResult = {
   status: "Skipped",
@@ -98,6 +103,7 @@ function result(
     outcomes: [],
     legendaryEventPlans: part,
     legendaryEventOutcomes,
+    importProjectId: null,
     profileId: "profile-1",
     playerName: null,
     powerLevel: 0,
@@ -205,6 +211,33 @@ describe("ImportResult — Legendary Event teams", () => {
     expect(bucket).not.toHaveTextContent("teams count")
   })
 
+  it("folds events the planner doesn't carry into one collapsed line", () => {
+    render(
+      <ImportResult
+        result={result([
+          event({
+            v1EventId: 1,
+            status: "Skipped",
+            code: "event_not_in_catalog",
+            eventId: null,
+          }),
+          event({
+            v1EventId: 2,
+            status: "Skipped",
+            code: "event_not_in_catalog",
+            eventId: null,
+          }),
+        ])}
+      />
+    )
+
+    const bucket = screen.getByTestId("v1-import-le-bucket-notImported")
+    expect(bucket).not.toHaveAttribute("open")
+    expect(bucket.querySelector("summary")).toHaveTextContent(
+      "goals.v1Import.legendaryEvents.notInPlanner count=2"
+    )
+  })
+
   it("omits empty buckets and renders no raw code", () => {
     render(
       <ImportResult
@@ -300,37 +333,6 @@ describe("ImportResult — Legendary Event teams", () => {
     expect(
       screen.getByTestId("v1-import-legendary-events")
     ).not.toHaveTextContent("goals.v1Import.reasons.generic")
-  })
-
-  it("copies event problems and issues with the goal diagnostics", async () => {
-    const writeText = vi.fn().mockResolvedValue(undefined)
-    vi.stubGlobal("navigator", { ...navigator, clipboard: { writeText } })
-    render(
-      <ImportResult
-        result={result([
-          event({
-            eventId: null,
-            v1EventId: 10,
-            status: "Skipped",
-            code: "event_not_in_catalog",
-          }),
-          event({
-            issues: [{ code: "empty_team", teamName: "Old", value: null }],
-          }),
-        ])}
-      />
-    )
-
-    fireEvent.click(await screen.findByTestId("v1-import-copy"))
-    const text = writeText.mock.calls[0][0] as string
-    expect(text).toContain("goals.v1Import.legendaryEvents.title")
-    expect(text).toContain(
-      "goals.v1Import.legendaryEvents.v1Event id=10: goals.v1Import.legendaryEvents.reasons.event_not_in_catalog"
-    )
-    expect(text).toContain(
-      "goals.v1Import.legendaryEvents.issues.empty_team (Old)"
-    )
-    vi.unstubAllGlobals()
   })
 
   it("lists an inputs-only event as imported with its runs and marks, not as imported without teams", () => {
@@ -445,5 +447,147 @@ describe("ImportResult — Legendary Event teams", () => {
     expect(issues[2]).toHaveTextContent(
       "goals.v1Import.legendaryEvents.issues.unknown_objective_mark lane=goals.v1Import.legendaryEvents.lanes.gamma objective=Old objective"
     )
+  })
+})
+
+describe("ImportResult — material goals", () => {
+  const materialResult = (): ImportV1ProfileResult => ({
+    ...result([]),
+    goals: imported,
+    outcomes: [
+      {
+        status: "Created",
+        code: "goal_created",
+        message: "Imported from V1.",
+        entityType: "Character",
+        entityId: "astarLysander",
+        goalType: "Rank",
+        goalId: "goal-1",
+        sourceGoalId: "rank-1",
+        upgradeId: null,
+        linkedSourceGoalIds: null,
+        upgradeQuantity: null,
+      },
+      {
+        status: "Skipped",
+        code: "manual_step_required",
+        message: "V2 has no pre-farm goal type.",
+        entityType: "Character",
+        entityId: "astarLysander",
+        goalType: "Upgrade",
+        goalId: null,
+        sourceGoalId: "pf-1",
+        upgradeId: "upgHpC001",
+        linkedSourceGoalIds: ["rank-1"],
+        upgradeQuantity: null,
+      },
+      {
+        status: "Skipped",
+        code: "manual_step_required",
+        message: "V1 material goals have no unit.",
+        entityType: "Character",
+        entityId: "astarLysander",
+        goalType: "Upgrade",
+        goalId: null,
+        sourceGoalId: "m-1",
+        upgradeId: "upgHpC001",
+        linkedSourceGoalIds: null,
+        upgradeQuantity: 10,
+      },
+    ],
+  })
+
+  it("asks for the manual step, naming the material and the unit", async () => {
+    render(<ImportResult result={materialResult()} />)
+
+    const [preFarm, material] = await screen.findAllByTestId(
+      "v1-import-material-step"
+    )
+    expect(
+      await within(preFarm!).findByText("Ceramite Plate")
+    ).toBeInTheDocument()
+    expect(
+      within(preFarm!).getByText(
+        "goals.v1Import.materialSteps.preFarmedFor units=Lysander"
+      )
+    ).toBeInTheDocument()
+    expect(
+      within(material!).getByText("Ceramite Plate · ×10")
+    ).toBeInTheDocument()
+    expect(
+      within(material!).getByText(
+        "goals.v1Import.materialSteps.suggestedUnit unit=Lysander"
+      )
+    ).toBeInTheDocument()
+    // Outside the app shell there is no creation sheet to open.
+    expect(screen.queryByTestId("v1-import-material-step-create")).toBeNull()
+  })
+
+  it("opens goal creation with the unit, Upgrade type, material and quantity preselected", async () => {
+    const launch = vi.fn()
+    render(
+      <CreateGoalLauncherContext.Provider value={launch}>
+        <ImportResult result={materialResult()} />
+      </CreateGoalLauncherContext.Provider>
+    )
+
+    const [preFarmCreate, materialCreate] = await screen.findAllByTestId(
+      "v1-import-material-step-create"
+    )
+    fireEvent.click(preFarmCreate!)
+    fireEvent.click(materialCreate!)
+
+    expect(launch).toHaveBeenNthCalledWith(1, {
+      entityType: "Character",
+      entityId: "astarLysander",
+      goalType: "Upgrade",
+      upgradeId: "upgHpC001",
+    })
+    expect(launch).toHaveBeenNthCalledWith(2, {
+      entityType: "Character",
+      entityId: "astarLysander",
+      goalType: "Upgrade",
+      upgradeId: "upgHpC001",
+      quantity: 10,
+    })
+  })
+})
+
+describe("PendingMaterialSteps", () => {
+  it("keeps an import's material steps until they are dismissed", async () => {
+    savePendingMaterialSteps([
+      {
+        sourceGoalId: "m-1",
+        upgradeId: "upgHpC001",
+        quantity: 10,
+        linkedUnits: [],
+        units: [{ entityType: "Character", entityId: "astarLysander" }],
+      },
+    ])
+    render(<PendingMaterialSteps />)
+
+    expect(await screen.findByText("Ceramite Plate · ×10")).toBeInTheDocument()
+    fireEvent.click(screen.getByTestId("v1-import-material-steps-dismiss"))
+
+    expect(screen.queryByTestId("v1-import-pending-material-steps")).toBeNull()
+  })
+
+  it("leaves an earlier list alone when an import has no material steps", () => {
+    savePendingMaterialSteps([
+      {
+        sourceGoalId: "m-1",
+        upgradeId: "upgHpC001",
+        quantity: null,
+        linkedUnits: [],
+        units: [],
+      },
+    ])
+    savePendingMaterialSteps([])
+    render(<PendingMaterialSteps />)
+
+    expect(
+      screen.getByTestId("v1-import-pending-material-steps")
+    ).toBeInTheDocument()
+    clearPendingMaterialSteps()
   })
 })

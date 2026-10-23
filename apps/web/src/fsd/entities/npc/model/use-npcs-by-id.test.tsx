@@ -1,39 +1,31 @@
-import { useEffect, useState } from "react"
-import { act, renderHook, waitFor } from "@testing-library/react"
-import { beforeEach, describe, expect, it, vi } from "vitest"
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
+
+import { act, renderHook, waitFor } from "@/test/render"
+import { seedGameCatalog } from "@/test/seed"
 
 import { useNpcsById } from "./use-npcs-by-id"
 
-vi.mock("dexie-react-hooks", () => ({
-  useLiveQuery: <T,>(querier: () => Promise<T>, deps: unknown[]) => {
-    const [value, setValue] = useState<T>()
-    useEffect(() => {
-      void querier().then(setValue)
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, deps)
-    return value
-  },
-}))
-
-const store = vi.hoisted(() => ({ fail: false, pending: false }))
-
-vi.mock("@workspace/game-catalog/queries", () => ({
-  getNpcsMap: () => {
-    if (store.pending) return new Promise(() => {})
-    return store.fail
-      ? Promise.reject(new Error("boom"))
-      : Promise.resolve(new Map([["orksNpc1Grot", { id: "orksNpc1Grot" }]]))
-  },
-}))
-
-beforeEach(() => {
-  store.fail = false
-  store.pending = false
+beforeEach(async () => {
+  await seedGameCatalog({ npcs: [{ id: "orksNpc1Grot" }] })
 })
+
+afterEach(() => {
+  vi.restoreAllMocks()
+})
+
+// Fails every read of the `npcs` store until the returned spy is restored.
+function failNpcReads() {
+  const getAll = IDBObjectStore.prototype.getAll
+  return vi
+    .spyOn(IDBObjectStore.prototype, "getAll")
+    .mockImplementation(function (this: IDBObjectStore, ...args) {
+      if (this.name === "npcs") throw new Error("boom")
+      return getAll.apply(this, args)
+    })
+}
 
 describe("useNpcsById", () => {
   it("is loading until the read settles", () => {
-    store.pending = true
     const { result } = renderHook(() => useNpcsById())
     expect(result.current.status).toBe("loading")
   })
@@ -48,11 +40,11 @@ describe("useNpcsById", () => {
   })
 
   it("reports a failed read and retries it", async () => {
-    store.fail = true
+    const failing = failNpcReads()
     const { result } = renderHook(() => useNpcsById())
     await waitFor(() => expect(result.current.status).toBe("error"))
 
-    store.fail = false
+    failing.mockRestore()
     act(() => result.current.retry())
     await waitFor(() => expect(result.current.status).toBe("ready"))
   })

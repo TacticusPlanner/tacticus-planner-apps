@@ -1,0 +1,10 @@
+{
+  "Vitarus": {
+    "description": "The hexes of each enemy hit by <style=\"Faction_BloodAngels\">Mephiston's</style> <style=\"NormalAttack\">normal melee attack</style> or by <i>Fury of the Ancients</i> are set on <style=\"Effect_Fire\">Fire</style>. If these attacks hit enemies on hexes with <style=\"Effect_Fire\">Fire</style>, they deal <style=\"Stat_Damage\">+{[extraDmg]} Damage</style> and extinguish the <style=\"Effect_Fire\">Fire</style>.",
+    "variables": {
+      "extraDmg": [490, 516, 543, 569, 596, 622, 649, 675, 702, 728]
+    },
+    "constants": {},
+    "scaled": []
+  }
+}

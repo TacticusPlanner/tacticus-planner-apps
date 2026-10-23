@@ -4,7 +4,7 @@ import type { Rarity } from "@workspace/game-domain"
 
 import { EntityIcon } from "@/shared/ui"
 
-import type { LevelRequirementProgress } from "../../model/attainment/level-requirement-progress"
+import type { LevelRequirementProgress } from "@/features/goal-planning"
 import { GoalProgressDisplay, GoalTargetDisplay } from "./goal-progress-visuals"
 
 export type XpBookFigure = {

@@ -1,0 +1,8 @@
+{
+  "BattleFocus": {
+    "description": "Después de atacar o recibir un ataque, se mueve <style=\"Stat_Movement\">1</style> hexágono en una dirección lo más alejada posible de los enemigos.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

@@ -30,31 +30,31 @@ export type GuildRaidMetaSourcePresentation = {
   url?: string
 }
 
-export type GuildRaidMetaBossPresentation = {
+type GuildRaidMetaBossPresentation = {
   boss: GameCatalogGuildRaidMetaBoss | null
   name: string
 }
 
-export type GuildRaidMetaRolePresentation = {
+type GuildRaidMetaRolePresentation = {
   id: string
   label: string
 }
 
 /** A recommendation's `kind` is a free-form archetype id ("meta", "lavistodes", "admech", …) — there is
  * no fixed set. Resolved through the exact same known-id/readable-fallback pattern as `roleId`. */
-export type GuildRaidMetaKindPresentation = {
+type GuildRaidMetaKindPresentation = {
   id: string
   label: string
 }
 
-export type GuildRaidMetaHeroSlotPresentation = {
+type GuildRaidMetaHeroSlotPresentation = {
   slot: GameCatalogGuildRaidMetaHeroSlot
   hero: GuildRaidMetaUnitPresentation
   role: GuildRaidMetaRolePresentation
   replacements: GuildRaidMetaUnitPresentation[]
 }
 
-export type GuildRaidMetaRecommendationPresentation = {
+type GuildRaidMetaRecommendationPresentation = {
   recommendation: GameCatalogGuildRaidMetaRecommendation
   kind: GuildRaidMetaKindPresentation
   heroes: GuildRaidMetaUnitPresentation[]

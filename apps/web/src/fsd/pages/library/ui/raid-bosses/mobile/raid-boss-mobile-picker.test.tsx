@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react"
+import { fireEvent, render, screen } from "@/test/render"
 import { describe, expect, it, vi } from "vitest"
 
 import type { RaidBossListItem } from "@/entities/raid-boss"
@@ -7,16 +7,6 @@ import {
   RaidBossMobilePicker,
   type RaidBossMobilePickerGroup,
 } from "./raid-boss-mobile-picker"
-
-vi.mock("react-i18next", () => ({
-  useTranslation: () => ({
-    t: (key: string) =>
-      ({
-        "raidBosses.pickerPlaceholder": "Search bosses and primes…",
-        "raidBosses.pickerEmpty": "No boss or prime found.",
-      })[key] ?? key,
-  }),
-}))
 
 function item(unitSetId: string, name: string): RaidBossListItem {
   return {
@@ -27,7 +17,7 @@ function item(unitSetId: string, name: string): RaidBossListItem {
     name,
     // A resolved portrait so the option renders just the name — an unresolved portrait renders an
     // initials badge whose text would otherwise leak into `optionNames()`.
-    portraitSrc: `https://example.test/${unitSetId}.png`,
+    portraitSrc: `https://example.test/${unitSetId}.webp`,
   }
 }
 
@@ -67,6 +57,15 @@ function optionNames() {
 }
 
 describe("RaidBossMobilePicker", () => {
+  it("links the open trigger to its listbox via aria-controls", () => {
+    renderPicker()
+    const trigger = screen.getByTestId("raid-boss-mobile-picker")
+    expect(trigger).toHaveAttribute("aria-expanded", "true")
+    expect(
+      document.getElementById(trigger.getAttribute("aria-controls") ?? "")
+    ).toBe(screen.getByRole("listbox"))
+  })
+
   it("renders a group heading per boss with the boss then its primes", () => {
     renderPicker()
 

@@ -1,0 +1,22 @@
+{
+  "HolyDuel": {
+    "description": "Le <style=\"Faction_BlackTemplars\">Frère Jaeger</style> <style=\"Debuff_Taunted\">provoque</style> une unité ennemie adjacente et l'attaque immédiatement avec une <style=\"NormalAttack\">attaque normale</style>. Le <style=\"Faction_BlackTemplars\">Frère Jaeger</style> lui inflige <style=\"Stat_Damage\">+{[extraDmg]} dégâts</style> et subit <style=\"Stat_Damage\">-{[dmgReduction]} dégâts</style> de la cible ainsi <style=\"Debuff_Taunted\">Provoquée</style>. Le <style=\"Faction_BlackTemplars\">Frère Jaeger</style> est également <style=\"Debuff_Taunted\">provoqué</style> par la cible et la provocation n'expire pas à la fin des manches.",
+    "variables": {
+      "extraDmg": [
+        8, 10, 11, 13, 14, 16, 18, 20, 22, 24, 25, 27, 29, 31, 33, 35, 36, 38,
+        40, 42, 44, 48, 55, 62, 70, 77, 84, 92, 99, 106, 113, 121, 128, 135,
+        143, 150, 157, 164, 172, 182, 196, 211, 228, 246, 279, 312, 344, 377,
+        410, 443, 448, 454, 460, 468, 476, 484, 492, 502, 512, 522, 534, 546,
+        558, 570, 582
+      ],
+      "dmgReduction": [
+        5, 6, 7, 8, 9, 10, 11, 12, 14, 15, 16, 17, 18, 19, 21, 22, 23, 24, 25,
+        26, 28, 30, 35, 39, 44, 48, 53, 57, 62, 66, 71, 75, 80, 85, 89, 94, 98,
+        103, 107, 114, 123, 132, 142, 154, 174, 195, 215, 236, 256, 277, 280,
+        284, 288, 293, 298, 303, 308, 314, 320, 326, 334, 341, 349, 356, 364
+      ]
+    },
+    "constants": {},
+    "scaled": ["extraDmg", "dmgReduction"]
+  }
+}

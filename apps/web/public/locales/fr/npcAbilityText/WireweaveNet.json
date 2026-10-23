@@ -1,0 +1,26 @@
+{
+  "WireweaveNet": {
+    "description": "La première fois que <style=\"Faction_Aeldari\">Calandis</style> est ciblée par une <style=\"NormalAttack\">attaque au corps à corps normale</style> pendant le tour de l'ennemi, son attaquant subit immédiatement <style=\"Stat_Hits\">{[nrOfHits]}x</style> <style=\"DMG_Piercing\">{[minDmg]}-{[maxDmg]} dégâts perforants</style>. Si l'attaquant est éliminé, il n'effectue pas son attaque au corps à corps.",
+    "variables": {
+      "minDmg": [
+        12, 14, 17, 19, 22, 24, 27, 30, 33, 35, 38, 41, 44, 46, 49, 52, 55, 57,
+        60, 63, 67, 72, 83, 94, 105, 116, 126, 137, 148, 159, 170, 181, 192,
+        203, 214, 225, 236, 247, 258, 273, 294, 317, 342, 369, 418, 467, 517,
+        566, 615, 665, 672, 681, 690, 702, 714, 726, 738, 753, 768, 783, 801,
+        819, 837, 855, 873
+      ],
+      "maxDmg": [
+        18, 22, 25, 29, 32, 37, 41, 45, 49, 53, 57, 61, 66, 70, 74, 78, 82, 86,
+        90, 95, 100, 108, 124, 141, 157, 173, 190, 206, 222, 239, 255, 272, 288,
+        304, 321, 337, 354, 370, 386, 409, 442, 476, 512, 553, 627, 701, 775,
+        849, 923, 997, 1008, 1022, 1035, 1053, 1071, 1089, 1107, 1130, 1152,
+        1175, 1202, 1229, 1256, 1283, 1310
+      ]
+    },
+    "constants": {
+      "damageProfile": "Piercing",
+      "nrOfHits": "2"
+    },
+    "scaled": ["minDmg", "maxDmg"]
+  }
+}

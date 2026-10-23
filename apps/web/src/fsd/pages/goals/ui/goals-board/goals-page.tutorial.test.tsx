@@ -1,13 +1,10 @@
-import { renderHook } from "@testing-library/react"
+import { renderHook } from "@/test/render"
 import { describe, expect, it, vi } from "vitest"
 
 import { useGoalsOverviewTutorial } from "./goals-page.tutorial"
 
 const register = vi.fn()
 
-vi.mock("react-i18next", () => ({
-  useTranslation: () => ({ t: (key: string) => `localized:${key}` }),
-}))
 vi.mock("@/shared/tour", () => ({
   useTourPageSteps: (steps: unknown) => register(steps),
 }))
@@ -23,8 +20,9 @@ describe("useGoalsOverviewTutorial", () => {
     expect(steps.desktop.length).toBeGreaterThanOrEqual(3)
     for (const step of steps.desktop) {
       expect(step.target).toMatch(/^\[data-testid="[a-z-]+"\]$/)
-      expect(step.title).toContain("localized:tour.overview.steps")
-      expect(step.content).toContain("localized:tour.overview.steps")
+      // Real English copy, never a raw key.
+      expect(step.title).not.toMatch(/^$|tour\.overview\.steps/)
+      expect(step.content).not.toMatch(/^$|tour\.overview\.steps/)
     }
     expect(steps.desktop.map((step) => step.target)).toEqual([
       '[data-testid="goals-project-scope"]',
@@ -53,15 +51,17 @@ describe("useGoalsOverviewTutorial", () => {
     )
     expect(
       steps.desktop.map((step) => `${step.title} ${step.content}`).join(" ")
-    ).toContain("tour.overview.steps.orderHint")
+    ).toContain("How the order works")
     for (const list of [steps.desktop, steps.mobile]) {
       expect(list[0]).toMatchObject({
-        title: "localized:tour.overview.steps.projectScope.title",
-        content: "localized:tour.overview.steps.projectScope.content",
+        title: "Scope by project",
+        content: expect.stringContaining(
+          "Pick a project to see only its goals"
+        ),
       })
     }
     expect(
       steps.mobile.map((step) => `${step.title} ${step.content}`).join(" ")
-    ).toContain("tour.overview.steps.reprioritize")
+    ).toContain("Prioritize your goals")
   })
 })

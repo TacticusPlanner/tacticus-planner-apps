@@ -1,0 +1,12 @@
+{
+  "TheArdentBlade": {
+    "description": "Wenn <style=\"Faction_Sisterhood\">Celestine</style> erstmals in einer Runde eine gegnerische Einheit besiegt, lässt sie eine ihrer <style=\"Faction_Sisterhood\">Geminae Superia</style> mit <style=\"Stat_Health\">{[hp]} Lebenspunkten</style> auf einem freien angrenzenden Feld wiederauferstehen. Wenn diese nicht wiederbelebt werden können, vollführt stattdessen eine von ihnen, die sich innerhalb von {[range]} Feldern aufhält, eine Aktion.",
+    "variables": {
+      "hp": [2350, 2477, 2604, 2731, 2857, 2984, 3111, 3238, 3365, 3492]
+    },
+    "constants": {
+      "range": "3"
+    },
+    "scaled": []
+  }
+}

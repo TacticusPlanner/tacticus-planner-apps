@@ -1,0 +1,11 @@
+{
+  "BladeOfTheAncestors": {
+    "description": "<style=\"Faction_LeaguesOfVotann\">Ûthar</style> gains <style=\"Stat\">+{[extraCritChance]}% Crit Chance</style> and deals <style=\"Stat_CritDamage\">+{[extraCritDmg]} Crit Damage</style> each time a friendly <style=\"Character\">character</style> dies or kills an enemy unit. Once Ûthar crits, this bonus resets.",
+    "variables": {
+      "extraCritChance": [8, 8, 8, 8, 9, 9, 9, 10, 10, 10],
+      "extraCritDmg": [590, 622, 654, 686, 717, 749, 781, 813, 845, 877]
+    },
+    "constants": {},
+    "scaled": []
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "DawnBlade": {
+    "description": "Los ataques cuerpo a cuerpo del <style=\"Faction_Tau\">Comandante Visionario</style> infligen <style=\"Stat_Damage\">+{[extraDmg]} de Daño</style> por cada vez que otro <style=\"Character\">personaje</style> aliado en el rango de {[range]} hexágonos haya realizado un ataque a distancia este turno. Cuando el Comandante Visionario mata a una unidad enemiga con un ataque cuerpo a cuerpo, se <style=\"Repairing\">repara</style> a sí mismo <style=\"Stat_Health\">{[hpToHeal]} de su Salud</style>.",
+    "variables": {
+      "extraDmg": [390, 411, 432, 453, 474, 495, 516, 537, 558, 579],
+      "hpToHeal": [4895, 5159, 5423, 5688, 5952, 6216, 6480, 6745, 7009, 7273]
+    },
+    "constants": {
+      "range": "2"
+    },
+    "scaled": []
+  }
+}

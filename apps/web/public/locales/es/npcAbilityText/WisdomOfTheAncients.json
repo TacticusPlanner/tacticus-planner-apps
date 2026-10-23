@@ -1,0 +1,10 @@
+{
+  "WisdomOfTheAncients": {
+    "description": "Los <style=\"Character\">personajes</style> <style=\"Rarity_Mythic\">Míticos</style> aliados reciben <style=\"Stat_Damage\">-{[dmgReductionPct]} % de Daño</style> si están adyacentes a <style=\"Faction_Ultramarines\">Galatian</style> o a un personaje Mítico aliado.",
+    "variables": {
+      "dmgReductionPct": [10, 13, 16, 20]
+    },
+    "constants": {},
+    "scaled": ["dmgReductionPct"]
+  }
+}

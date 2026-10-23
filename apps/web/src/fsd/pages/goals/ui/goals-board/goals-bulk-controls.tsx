@@ -7,8 +7,8 @@ import {
   useProjectActions,
 } from "@/features/project-management"
 
-import type { useGoalActions } from "../../model/goals-data/use-goal-actions"
-import type { GoalRow } from "../../model/shared/types"
+import type { useGoalActions } from "@/features/goal-planning"
+import type { GoalRow } from "@/features/goal-planning"
 import { DeleteGoalDialog } from "./delete-goal-dialog"
 import { GoalsBulkActions } from "./goals-bulk-actions"
 import { ProjectPickerDialog } from "./project-picker-dialog"
@@ -97,7 +97,7 @@ export function GoalsBulkControls({
         onSelect={addSelectionTo}
         open={pickerOpen}
         pending={false}
-        projects={choosable as ProjectSummary[]}
+        projects={choosable}
         title={t("goals.project.addToProjectTitle")}
       />
       <ManageProjectsSheet

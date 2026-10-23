@@ -1,68 +1,71 @@
-/* eslint-disable react-refresh/only-export-components */
 import {
-  createContext,
   useCallback,
-  useContext,
   useEffect,
   useState,
+  useSyncExternalStore,
   type ReactNode,
 } from "react"
 
+import { useQueryClient, type QueryClient } from "@tanstack/react-query"
 import {
-  GameCatalogHttpClient,
   hasCompleteGameCatalogCache,
-  syncGameCatalog,
   type GameCatalogSyncProgress,
   type GameCatalogSyncResult,
 } from "@workspace/game-catalog"
 
+import {
+  GameCatalogContext,
+  type GameCatalogStatus,
+} from "@/shared/game-catalog-status"
 import { reportError } from "@/shared/lib"
+import {
+  createProgressStore,
+  listenForLocalDataRefresh,
+  refreshLocalDataAfterSync,
+  writtenKeys,
+} from "@/shared/local-data"
 
-// StrictMode double-invokes effects, and auth-driven route remounts can mount the provider several times
-// in quick succession — without this guard each mount would issue its own manifest request (the source of
-// the "manifest fetched four times on refresh" behaviour). Coalesce overlapping syncs for the same
-// baseUrl into a single in-flight request; it clears once settled so a later sync still runs. Matches
-// @workspace/player-data's PlayerDataProvider, which has the same guard.
-let inFlightSync: {
-  baseUrl: string
-  promise: Promise<GameCatalogSyncResult>
-} | null = null
+const progressStore = createProgressStore<GameCatalogSyncProgress>()
 
-function runSharedSync(
+async function runCatalogSync(
   baseUrl: string,
-  onProgress: (progress: GameCatalogSyncProgress) => void
+  queryClient: QueryClient
 ): Promise<GameCatalogSyncResult> {
-  if (inFlightSync && inFlightSync.baseUrl === baseUrl) {
-    return inFlightSync.promise
+  // Loaded on demand so the HTTP client and the zod schemas stay out of the entry bundle.
+  const { GameCatalogHttpClient, syncGameCatalog } =
+    await import("@workspace/game-catalog/sync")
+  progressStore.set(null)
+  try {
+    const result = await syncGameCatalog(new GameCatalogHttpClient(baseUrl), {
+      onProgress: progressStore.set,
+    })
+    refreshLocalDataAfterSync(queryClient, "catalog", writtenKeys(result))
+    return result
+  } catch (error) {
+    // A partly failed sync still stored some datasets; refresh those.
+    refreshLocalDataAfterSync(queryClient, "catalog", writtenKeys(error))
+    throw error
   }
+}
 
-  const promise = syncGameCatalog(new GameCatalogHttpClient(baseUrl), {
-    onProgress,
-  }).finally(() => {
-    if (inFlightSync?.promise === promise) {
-      inFlightSync = null
-    }
+/**
+ * One catalog sync per session, shared through the query client: StrictMode double effects and
+ * auth-driven remounts reuse the in-flight (or finished) run instead of each requesting the
+ * manifest. `force` (Retry) runs it again, still deduping a run already in flight.
+ */
+function fetchCatalogSync(
+  queryClient: QueryClient,
+  baseUrl: string,
+  force: boolean
+): Promise<GameCatalogSyncResult> {
+  return queryClient.fetchQuery({
+    queryKey: ["sync", "catalog", baseUrl],
+    queryFn: () => runCatalogSync(baseUrl, queryClient),
+    staleTime: force ? 0 : Infinity,
+    gcTime: Infinity,
+    retry: false,
   })
-
-  inFlightSync = { baseUrl, promise }
-
-  return promise
 }
-
-export type GameCatalogStatus = "idle" | "syncing" | "ready" | "stale" | "error"
-
-export type GameCatalogContextValue = {
-  status: GameCatalogStatus
-  progress: GameCatalogSyncProgress | null
-  gameVersion: string | null
-  firstTime: boolean
-  error: string | null
-  retry: () => void
-}
-
-const GameCatalogContext = createContext<GameCatalogContextValue | undefined>(
-  undefined
-)
 
 export type GameCatalogProviderProps = {
   baseUrl: string
@@ -74,30 +77,32 @@ export function GameCatalogProvider({
   children,
 }: GameCatalogProviderProps) {
   const [status, setStatus] = useState<GameCatalogStatus>("idle")
-  const [progress, setProgress] = useState<GameCatalogSyncProgress | null>(null)
+  const progress = useSyncExternalStore(
+    progressStore.subscribe,
+    progressStore.get
+  )
+  const queryClient = useQueryClient()
   const [gameVersion, setGameVersion] = useState<string | null>(null)
   const [firstTime, setFirstTime] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [attempt, setAttempt] = useState(0)
 
+  // Other tabs post the datasets their syncs wrote; refresh those here too.
+  useEffect(() => listenForLocalDataRefresh(queryClient), [queryClient])
+
   useEffect(() => {
     // Each run owns its own `active` flag; a superseded run (StrictMode remount, baseUrl/attempt change)
     // bails before touching state, while the live run always lands its result — so the init gate can
-    // never get wedged on "syncing". The underlying sync is shared via runSharedSync so overlapping mounts
-    // don't each hit the network.
+    // never get wedged on "syncing". The underlying sync is shared through the query client so
+    // overlapping mounts don't each hit the network.
     let active = true
 
     async function runSync() {
       setStatus("syncing")
       setError(null)
-      setProgress(null)
 
       try {
-        const result = await runSharedSync(baseUrl, (value) => {
-          if (active) {
-            setProgress(value)
-          }
-        })
+        const result = await fetchCatalogSync(queryClient, baseUrl, attempt > 0)
 
         if (!active) {
           return
@@ -124,7 +129,7 @@ export function GameCatalogProvider({
     return () => {
       active = false
     }
-  }, [baseUrl, attempt])
+  }, [baseUrl, attempt, queryClient])
 
   const retry = useCallback(() => {
     setAttempt((value) => value + 1)
@@ -137,16 +142,4 @@ export function GameCatalogProvider({
       {children}
     </GameCatalogContext.Provider>
   )
-}
-
-export function useGameCatalogStatus() {
-  const context = useContext(GameCatalogContext)
-
-  if (!context) {
-    throw new Error(
-      "useGameCatalogStatus must be used within GameCatalogProvider."
-    )
-  }
-
-  return context
 }

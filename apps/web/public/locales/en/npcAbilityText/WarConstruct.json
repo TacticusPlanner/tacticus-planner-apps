@@ -1,0 +1,8 @@
+{
+  "WarConstruct": {
+    "description": "For 1 round, if there is no enemy adjacent to the <style=\"Faction_Aeldari\">Wraithguard</style>, it shoots back at each enemy within range that attacks it or a friendly adjacent <style=\"Faction_Aeldari\">Aeldari</style>.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "Stormcaller": {
+    "description": "Cible une unité ennemie distante de {[range]} hexagones. L'hexagone de la cible et tous les hexagones adjacents sont recouverts de <style=\"Effect_Ice\">Glace</style>. Tous les ennemis situés sur des hexagones recouverts de <style=\"Effect_Ice\">Glace</style> subissent <style=\"Stat_Hits\">{[nrOfHits]}x</style> <style=\"DMG_Psychic\">{[minDmg]}-{[maxDmg]} dégâts psychiques</style>. Les ennemis volants ainsi touchés subissent l'<style=\"Debuff_Stunned\">étourdissement</style> pendant 1 manche.\n\n{[S/AbilityDamageExplanation]}",
+    "variables": {
+      "minDmg": [
+        5, 6, 7, 8, 9, 10, 11, 12, 14, 15, 16, 17, 18, 19, 21, 22, 23, 24, 25,
+        26, 28, 30, 35, 39, 44, 48, 53, 57, 62, 66, 71, 75, 80, 85, 89, 94, 98,
+        103, 107, 114, 123, 132, 142, 154, 174, 195, 215, 236, 256, 277, 280,
+        284, 288, 293, 298, 303, 308, 314, 320, 326, 334, 341, 349, 356, 364
+      ],
+      "maxDmg": [
+        7, 8, 10, 11, 13, 14, 16, 17, 19, 21, 22, 24, 25, 27, 29, 30, 32, 34,
+        35, 37, 39, 42, 48, 55, 61, 67, 74, 80, 87, 93, 99, 106, 112, 118, 125,
+        131, 137, 144, 150, 159, 172, 185, 199, 215, 244, 273, 301, 330, 359,
+        388, 392, 397, 403, 410, 417, 424, 431, 439, 448, 457, 467, 478, 488,
+        499, 509
+      ]
+    },
+    "constants": {
+      "damageProfile": "Psychic",
+      "range": "3",
+      "nrOfHits": "3"
+    },
+    "scaled": ["minDmg", "maxDmg"]
+  }
+}

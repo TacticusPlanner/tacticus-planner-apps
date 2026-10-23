@@ -1,0 +1,10 @@
+{
+  "BlightedLand": {
+    "description": "Verbündete <style=\"Rarity_Mythic\">Mythische</style> <style=\"Character\">Charaktere</style> verursachen <style=\"Stat_Damage\">+{[extraDmgPct]} % Schaden</style>, wenn sie sich auf einem <style=\"Tile_Contamination\">Kontaminierten</style> Feld befinden.",
+    "variables": {
+      "extraDmgPct": [10, 13, 16, 20]
+    },
+    "constants": {},
+    "scaled": ["extraDmgPct"]
+  }
+}

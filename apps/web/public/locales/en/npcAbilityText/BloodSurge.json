@@ -1,0 +1,8 @@
+{
+  "BloodSurge": {
+    "description": "During each enemy turn, after the first time this <style=\"Faction_WorldEaters\">Berzerker</style> is attacked, he moves 1 hex towards his attacker, if able. Then, if he is adjacent to an enemy unit, he performs a <style=\"NormalAttack\">normal attack</style>, prioritising the unit that has attacked him.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

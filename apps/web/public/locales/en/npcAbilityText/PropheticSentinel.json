@@ -1,0 +1,29 @@
+{
+  "PropheticSentinel": {
+    "description": "Adjacent friendly <style=\"Aliance_Chaos\">Chaos</style> units have <style=\"Stat_Armor\">+{[extraArmor]} Armour</style>. Adjacent friendly <style=\"Psyker\">Psykers</style> have <style=\"Stat_Chance\">+{[blockChance]}% Block chance</style> and block <style=\"Stat_Block\">+{[blockDmg]} Damage</style>. At the end of its turn, if the <style=\"Faction_ThousandSons\">Sekhetar Robot</style> is adjacent to a friendly Psyker, it starts <style=\"Buff_Overwatching\">Overwatching</style>, even if it attacked during its turn.",
+    "variables": {
+      "extraArmor": [
+        9, 11, 13, 14, 16, 18, 20, 22, 24, 27, 29, 31, 33, 35, 37, 39, 41, 43,
+        45, 47, 50, 54, 62, 70, 78, 87, 95, 103, 111, 119, 128, 136, 144, 152,
+        160, 169, 177, 185, 193, 205, 221, 238, 256, 277, 314, 351, 388, 425,
+        462, 499, 504, 511, 518, 527, 536, 545, 554, 565, 576, 587, 601, 614,
+        628, 641, 655
+      ],
+      "blockChance": [
+        15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 20,
+        20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 25,
+        25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25,
+        25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25
+      ],
+      "blockDmg": [
+        9, 11, 13, 14, 16, 18, 20, 22, 24, 27, 29, 31, 33, 35, 37, 39, 41, 43,
+        45, 47, 50, 54, 62, 70, 78, 87, 95, 103, 111, 119, 128, 136, 144, 152,
+        160, 169, 177, 185, 193, 205, 221, 238, 256, 277, 314, 351, 388, 425,
+        462, 499, 504, 511, 518, 527, 536, 545, 554, 565, 576, 587, 601, 614,
+        628, 641, 655
+      ]
+    },
+    "constants": {},
+    "scaled": ["extraArmor", "blockDmg"]
+  }
+}

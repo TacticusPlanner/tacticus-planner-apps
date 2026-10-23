@@ -1,0 +1,23 @@
+{
+  "RedemptionOfTheRisen": {
+    "description": "Each time a friendly <style=\"Faction_DarkAngels\">Dark Angel</style> is defeated by a <style=\"Aliance_Chaos\">Chaos</style> enemy, <style=\"Faction_DarkAngels\">Forcas</style> loses <style=\"Stat_Health\">{[hp]} Health</style>. If a friendly Dark Angel is defeated during the enemy turn, Forcas and all friendly Dark Angels start <style=\"Buff_Overwatching\">Overwatching</style>. As long as there is another friendly Dark Angel on the battlefield, Forcas and friendly adjacent Dark Angels take <style=\"Stat_Damage\">-{[dmgReductionPct]}% Damage</style>.",
+    "variables": {
+      "hp": [
+        36, 45, 54, 63, 72, 81, 90, 135, 150, 175, 200, 225, 250, 275, 300, 375,
+        525, 515, 580, 645, 705, 770, 835, 900, 1105, 1510, 1500, 1690, 1875,
+        2065, 2250, 2440, 2625, 2875, 3120, 3700, 4625, 5555, 6480, 7405, 8335,
+        9260, 10180, 11105, 12025, 12945, 13865, 14800, 15735, 16665, 18000,
+        21000, 24000, 27000, 30000, 31350, 32700, 34050, 35400, 36750, 37800,
+        38850, 39900, 40950, 42000
+      ],
+      "dmgReductionPct": [
+        25, 25, 25, 25, 25, 25, 25, 25, 33, 33, 33, 33, 33, 33, 33, 33, 33, 40,
+        40, 40, 40, 40, 40, 40, 40, 40, 50, 50, 50, 50, 50, 50, 50, 50, 50, 66,
+        66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66,
+        66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66
+      ]
+    },
+    "constants": {},
+    "scaled": ["hp"]
+  }
+}

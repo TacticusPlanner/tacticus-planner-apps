@@ -1,0 +1,8 @@
+{
+  "ReinforcedHiveNode": {
+    "description": "Every second round – starting from the first the <style=\"Faction_Tyranids\">Tyranid Warrior</style> is in play – the <style=\"Faction_Tyranids\">Tyranid Warrior</style> has <style=\"Stat_Armor\">+100% Armour</style> and – if it has <style=\"Stat_Block\">Block</style> – 100% <style=\"Stat_Block\">Block <style=\"Stat_Chance\">chance</style></style>.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "BlightedLand": {
+    "description": "Los <style=\"Character\">personajes</style> <style=\"Rarity_Mythic\">Míticos</style> aliados infligen <style=\"Stat_Damage\">+{[extraDmgPct]} % de Daño</style> mientras están sobre un hexágono con <style=\"Tile_Contamination\">Contaminación</style>.",
+    "variables": {
+      "extraDmgPct": [10, 13, 16, 20]
+    },
+    "constants": {},
+    "scaled": ["extraDmgPct"]
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "EarlyWarningOverride": {
+    "description": "Invoca 2 <style=\"Summon\"><style=\"Faction_Tau\">drones de defensa</style></style> en los hexágonos adyacentes vacíos. Los <style=\"Summon\"><style=\"Faction_Tau\">drones de defensa</style></style> recién invocados pueden atacar a un enemigo inmediatamente con un <style=\"Stat_Melee\">ataque cuerpo a cuerpo</style>, pero no se pueden mover durante este turno.\n<style=\"Faction_Tau\">Re'vas</style> también inicia <style=\"Buff_Overwatching\">vigilancia</style> hasta el comienzo de su siguiente turno e inflige <style=\"Stat_Damage\">+{[extraDmg]} de daño</style>. Cuando derrota a una unidad mientras está en <style=\"Buff_Overwatching\">vigilancia</style>, se mantiene <style=\"Buff_Overwatching\">vigilante</style> y retiene {[hitsReduction]} menos <style=\"Stat_Hits\">impactos</style> en comparación al ataque anterior. \n\nAtributos de los drones de defensa:\n<style=\"Stat_Health\">{[summonHp]} de salud</style>\n<style=\"Stat_Damage\">{[summonDmg]} de daño</style>\n<style=\"Stat_Armor\">{[summonArmor]} de armadura</style>",
+    "variables": {
+      "extraDmg": [
+        26, 31, 36, 42, 47, 53, 59, 65, 71, 77, 83, 89, 95, 101, 107, 113, 119,
+        125, 131, 137, 145, 156, 179, 203, 227, 250, 274, 298, 321, 345, 369,
+        392, 416, 440, 463, 487, 511, 534, 558, 591, 638, 687, 740, 799, 906,
+        1013, 1120, 1226, 1333, 1440, 1456, 1476, 1495, 1521, 1547, 1573, 1599,
+        1632, 1664, 1697, 1736, 1775, 1814, 1853, 1892
+      ],
+      "summonHp": [
+        40, 48, 56, 64, 72, 81, 90, 100, 109, 118, 127, 136, 146, 155, 164, 173,
+        182, 192, 201, 210, 222, 240, 276, 312, 349, 385, 422, 458, 494, 531,
+        567, 604, 640, 676, 713, 749, 786, 822, 858, 910, 982, 1057, 1139, 1229,
+        1394, 1558, 1722, 1887, 2051, 2216, 2240, 2270, 2300, 2340, 2380, 2420,
+        2460, 2510, 2560, 2610, 2670, 2730, 2790, 2850, 2910
+      ],
+      "summonDmg": [
+        14, 17, 20, 22, 25, 28, 32, 35, 38, 41, 45, 48, 51, 54, 57, 61, 64, 67,
+        70, 74, 78, 84, 97, 109, 122, 135, 148, 160, 173, 186, 199, 211, 224,
+        237, 249, 262, 275, 288, 300, 318, 344, 370, 399, 430, 488, 545, 603,
+        660, 718, 776, 784, 795, 805, 819, 833, 847, 861, 879, 896, 914, 935,
+        956, 977, 998, 1019
+      ],
+      "summonArmor": [
+        15, 18, 21, 24, 27, 30, 34, 37, 41, 44, 48, 51, 55, 58, 62, 65, 68, 72,
+        75, 79, 83, 90, 104, 117, 131, 144, 158, 172, 185, 199, 213, 226, 240,
+        254, 267, 281, 295, 308, 322, 341, 368, 396, 427, 461, 523, 584, 646,
+        708, 769, 831, 840, 851, 863, 878, 893, 908, 923, 941, 960, 979, 1001,
+        1024, 1046, 1069, 1091
+      ]
+    },
+    "constants": {
+      "hitsReduction": "1"
+    },
+    "scaled": ["extraDmg", "summonHp", "summonDmg", "summonArmor"]
+  }
+}

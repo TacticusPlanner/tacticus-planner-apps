@@ -1,4 +1,5 @@
 import userEvent from "@testing-library/user-event"
+import { useState, type ComponentProps } from "react"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { render, screen, waitFor } from "@/test/render"
@@ -27,6 +28,26 @@ vi.mock("@/entities/account", async (importOriginal) => ({
 }))
 
 import { AccountSetupScreen } from "./account-setup-screen"
+
+// The screen is controlled (the route owns the flow state); this stands in for the route's reducer.
+function ControlledScreen(
+  props: Omit<
+    ComponentProps<typeof AccountSetupScreen>,
+    "submitted" | "onSubmitted" | "keyImported" | "onKeyImported"
+  >
+) {
+  const [submitted, setSubmitted] = useState(false)
+  const [keyImported, setKeyImported] = useState(false)
+  return (
+    <AccountSetupScreen
+      {...props}
+      keyImported={keyImported}
+      onKeyImported={() => setKeyImported(true)}
+      onSubmitted={() => setSubmitted(true)}
+      submitted={submitted}
+    />
+  )
+}
 
 const unconfiguredState: CurrentUserState = {
   status: "success",
@@ -67,7 +88,7 @@ function renderScreen(
     )
   )
   const result = render(
-    <AccountSetupScreen
+    <ControlledScreen
       onStepChange={onStepChange}
       renderImportStep={renderImportStep}
       step={step}
@@ -128,6 +149,17 @@ describe("AccountSetupScreen", () => {
     await user.click(screen.getByTestId("stub-import-key-imported"))
 
     expect(screen.queryByTestId("account-setup-back")).not.toBeInTheDocument()
+  })
+
+  it.each([
+    ["choose", "onboarding.steps.choose.title"],
+    ["key", "onboarding.steps.key.title"],
+    ["import", "onboarding.steps.import.title"],
+    ["name", "onboarding.steps.name.title"],
+  ] as const)("titles the %s step for what it asks", (step, title) => {
+    renderScreen(step)
+
+    expect(screen.getByTestId("account-setup-title")).toHaveTextContent(title)
   })
 
   it("reports the user's position in the three-step flow", () => {
@@ -220,7 +252,7 @@ describe("AccountSetupScreen", () => {
 
       currentUserState = { status: "error", error: new Error("offline") }
       rerender(
-        <AccountSetupScreen
+        <ControlledScreen
           onStepChange={onStepChange}
           renderImportStep={renderImportStep}
           step="choose"
@@ -249,7 +281,7 @@ describe("AccountSetupScreen", () => {
       // user would sit behind a spinner that never resolves.
       currentUserState = { status: "error", error: new Error("offline") }
       rerender(
-        <AccountSetupScreen
+        <ControlledScreen
           onStepChange={onStepChange}
           renderImportStep={renderImportStep}
           step="choose"

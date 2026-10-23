@@ -1,14 +1,21 @@
 /* eslint-disable react-refresh/only-export-components */
-import { useCallback, type ReactNode } from "react"
-import { PostHogProvider as VendorProvider, usePostHog } from "@posthog/react"
-import type { PostHogConfig } from "posthog-js"
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useMemo,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react"
+import type { PostHog, PostHogConfig } from "posthog-js"
 
 import type { AnalyticsEvent } from "./analytics-event"
 
 // Read fresh (not cached at module scope) so tests can flip VITE_POSTHOG_PROJECT_TOKEN with
 // vi.stubEnv without needing vi.resetModules() + a dynamic re-import.
-function isAnalyticsConfigured(): boolean {
-  return Boolean(import.meta.env.VITE_POSTHOG_PROJECT_TOKEN)
+function projectToken(): string | undefined {
+  return import.meta.env.VITE_POSTHOG_PROJECT_TOKEN || undefined
 }
 
 // Identified users only, no autocapture, no replay, no default pageview - every capture path in
@@ -33,48 +40,67 @@ const initOptions: Partial<PostHogConfig> = {
   disable_external_dependency_loading: true,
 }
 
-/**
- * Mounts the vendor SDK, or does nothing at all when no project token is configured - the
- * supported way to run with capture switched off (local dev without a token, the test
- * environment). This is the only place `@posthog/react`'s `PostHogProvider` is used; every other
- * file goes through `useAnalyticsActions` below.
- */
-export function AnalyticsProvider({ children }: { children: ReactNode }) {
-  const projectToken = import.meta.env.VITE_POSTHOG_PROJECT_TOKEN
-
-  if (!projectToken) {
-    return <>{children}</>
-  }
-
-  return (
-    <VendorProvider apiKey={projectToken} options={initOptions}>
-      {children}
-    </VendorProvider>
-  )
+type AnalyticsContextValue = {
+  /** The vendor client, or null until the SDK has loaded for an identified user. */
+  client: PostHog | null
+  identifyUser: (analyticsId: string) => void
+  clearIdentity: () => void
 }
 
+// Without a provider (and before identification) every action is inert.
+const inert: AnalyticsContextValue = {
+  client: null,
+  identifyUser: () => {},
+  clearIdentity: () => {},
+}
+const AnalyticsContext = createContext<AnalyticsContextValue>(inert)
+
 /**
- * The narrow set of analytics actions the rest of the app may perform - identity lifecycle plus
- * declared-event capture. No caller outside this file ever touches the vendor client directly.
+ * Owns the vendor SDK. Nothing is downloaded until `identifyUser` is first called with a project
+ * token configured: only then is `posthog-js` imported (its own chunk), initialised and the user
+ * identified, so a signed-out visitor never downloads analytics code
+ * (specs/product-analytics/spec.md). A blocked or failed download leaves capture off, silently.
+ * Signing out while it downloads discards the loaded SDK: nothing is initialised for that user.
  */
-export function useAnalyticsActions() {
-  const client = usePostHog()
+export function AnalyticsProvider({ children }: { children: ReactNode }) {
+  const [client, setClient] = useState<PostHog | null>(null)
+  // The id to identify once the SDK resolves; null after sign-out, which cancels a pending load.
+  const pendingId = useRef<string | null>(null)
+  const loading = useRef(false)
 
   const identifyUser = useCallback(
     (analyticsId: string) => {
-      if (!isAnalyticsConfigured()) {
+      const token = projectToken()
+      if (!token) return
+      pendingId.current = analyticsId
+      if (client) {
+        client.identify(analyticsId)
+        client.opt_in_capturing()
         return
       }
-      client.identify(analyticsId)
-      client.opt_in_capturing()
+      if (loading.current) return
+      loading.current = true
+      import("posthog-js")
+        .then(({ default: posthog }) => {
+          const id = pendingId.current
+          if (!id) return
+          const instance = posthog.init(token, initOptions)
+          instance.identify(id)
+          instance.opt_in_capturing()
+          setClient(instance)
+        })
+        // Blocked or failed download: capture stays off and the app carries on, silently.
+        .catch(() => {})
+        .finally(() => {
+          loading.current = false
+        })
     },
     [client]
   )
 
   const clearIdentity = useCallback(() => {
-    if (!isAnalyticsConfigured()) {
-      return
-    }
+    pendingId.current = null
+    if (!client) return
     // Opt out *before* reset(): reset() assigns a fresh anonymous id, and opting out afterwards
     // would leave a window in which that fresh anonymous identity could be captured - exactly the
     // anonymous capture the spec forbids.
@@ -82,9 +108,26 @@ export function useAnalyticsActions() {
     client.reset()
   }, [client])
 
+  const value = useMemo(
+    () => ({ client, identifyUser, clearIdentity }),
+    [client, identifyUser, clearIdentity]
+  )
+
+  return <AnalyticsContext value={value}>{children}</AnalyticsContext>
+}
+
+/**
+ * The narrow set of analytics actions the rest of the app may perform - identity lifecycle plus
+ * declared-event capture. No caller outside this file ever touches the vendor client directly.
+ * `isReady` turns true once the SDK has loaded for an identified user.
+ */
+export function useAnalyticsActions() {
+  const { client, identifyUser, clearIdentity } = useContext(AnalyticsContext)
+
   const captureEvent = useCallback(
     (event: AnalyticsEvent) => {
-      if (!isAnalyticsConfigured()) {
+      // Nothing is captured before the SDK has loaded for an identified user.
+      if (!client) {
         return
       }
       switch (event.type) {
@@ -271,5 +314,10 @@ export function useAnalyticsActions() {
     [client]
   )
 
-  return { identifyUser, clearIdentity, captureEvent }
+  return {
+    isReady: client !== null,
+    identifyUser,
+    clearIdentity,
+    captureEvent,
+  }
 }

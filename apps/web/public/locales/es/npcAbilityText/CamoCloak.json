@@ -1,0 +1,17 @@
+{
+  "CamoCloak": {
+    "description": "Cada vez que un <style=\"Stat_Range\">ataque a distancia</style> entrante reduzca su número de impactos por cualquier motivo, inflige <style=\"Stat_Damage\">-{[dmgReduction]} de Daño</style> por impacto a esta unidad.",
+    "variables": {
+      "dmgReduction": [
+        5, 6, 7, 8, 9, 10, 11, 12, 14, 15, 16, 17, 18, 19, 21, 22, 23, 24, 25,
+        26, 28, 30, 35, 39, 44, 48, 53, 57, 62, 66, 71, 75, 80, 85, 89, 94, 98,
+        103, 107, 114, 123, 132, 142, 154, 174, 195, 215, 236, 256, 277, 280,
+        284, 288, 293, 298, 303, 308, 314, 320, 326, 334, 341, 349, 356, 364
+      ]
+    },
+    "constants": {
+      "damageProfile": "Bolter"
+    },
+    "scaled": ["dmgReduction"]
+  }
+}

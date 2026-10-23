@@ -1,30 +1,24 @@
 import type { ReactNode } from "react"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
-import { act, renderHook, waitFor } from "@testing-library/react"
-import { afterEach, describe, expect, it, vi } from "vitest"
+import { replacePlayerDataChunk } from "@workspace/player-data/testing"
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
-import { usePlayerDataStatus } from "@/shared/player-data-status"
+import {
+  usePlayerDataProgress,
+  usePlayerDataStatus,
+} from "@/shared/player-data-status"
+import { setTestAuth } from "@/test/auth"
+import { act, render, renderHook, screen, waitFor } from "@/test/render"
 
 const sync = vi.hoisted(() => ({
   run: vi.fn(),
   refresh: vi.fn(async () => {}),
-  metadata: vi.fn(async () => ({})),
 }))
 
-vi.mock("@azure/msal-react", () => ({ useIsAuthenticated: () => true }))
-vi.mock("@/shared/auth", () => ({
-  acquireAccessToken: vi.fn(),
-  isInteractionRequired: () => false,
-  requestInteraction: vi.fn(),
-  useActiveAccountId: () => "account-1",
-}))
-vi.mock("@workspace/player-data", () => ({
-  PlayerDataHttpClient: class {},
-  // Synced a minute ago: no background sync on mount.
-  getPlayerDataMetadata: () => sync.metadata(),
-  getManifestMetadata: () => ({
-    updatedAt: new Date(Date.now() - 60_000).toISOString(),
-  }),
+// Kept (targeted): these tests are about what the provider does around `syncPlayerData`, so the
+// sync itself (a network round-trip) is the one export replaced; the metadata reads stay real.
+vi.mock("@workspace/player-data/sync", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@workspace/player-data/sync")>()),
   syncPlayerData: sync.run,
 }))
 vi.mock("@/features/player-data-sync", () => ({
@@ -43,6 +37,25 @@ function wrapper({ children }: { children: ReactNode }) {
   )
 }
 
+beforeEach(async () => {
+  setTestAuth({ authenticated: true })
+  // Synced a minute ago: no background sync on mount.
+  await replacePlayerDataChunk(
+    "player-details",
+    { name: "Tester" },
+    {
+      key: "__manifest",
+      hash: "manifest-test",
+      schemaVersion: 1,
+      updatedAt: new Date(Date.now() - 60_000).toISOString(),
+    }
+  )
+})
+
+afterEach(() => {
+  vi.restoreAllMocks()
+})
+
 describe("PlayerDataProvider", () => {
   it("refreshes the server reads (run records, plans, goals) once a sync completes, not before", async () => {
     let finish!: (value: unknown) => void
@@ -58,6 +71,85 @@ describe("PlayerDataProvider", () => {
       finish({ status: "ready", syncedAt: new Date().toISOString() })
     )
     await waitFor(() => expect(sync.refresh).toHaveBeenCalledOnce())
+  })
+
+  it("shares one in-flight sync between mounted providers and repeated clicks", async () => {
+    sync.run.mockClear()
+    let finish!: (value: unknown) => void
+    sync.run.mockReturnValueOnce(new Promise((done) => (finish = done)))
+    const queryClient = new QueryClient()
+    function sharedWrapper({ children }: { children: ReactNode }) {
+      return (
+        <QueryClientProvider client={queryClient}>
+          <PlayerDataProvider baseUrl="https://api.test">
+            <PlayerDataProvider baseUrl="https://api.test">
+              {children}
+            </PlayerDataProvider>
+          </PlayerDataProvider>
+        </QueryClientProvider>
+      )
+    }
+    const inner = renderHook(() => usePlayerDataStatus(), {
+      wrapper: sharedWrapper,
+    })
+    await waitFor(() => expect(inner.result.current.status).toBe("ready"))
+
+    act(() => inner.result.current.syncNow())
+    act(() => inner.result.current.syncNow())
+    await waitFor(() => expect(inner.result.current.status).toBe("syncing"))
+
+    expect(sync.run).toHaveBeenCalledOnce()
+    await act(async () =>
+      finish({ status: "ready", syncedAt: new Date().toISOString() })
+    )
+  })
+
+  it("re-renders a status-only reader on status changes, not on progress ticks", async () => {
+    let finish!: (value: unknown) => void
+    let report!: (progress: { downloaded: number; total: number }) => void
+    sync.run.mockImplementationOnce(
+      (_client: unknown, options: { onProgress: typeof report }) => {
+        report = options.onProgress
+        return new Promise((done) => (finish = done))
+      }
+    )
+    let statusRenders = 0
+    let status!: ReturnType<typeof usePlayerDataStatus>
+    function StatusReader() {
+      statusRenders++
+      status = usePlayerDataStatus()
+      return null
+    }
+    function ProgressReader() {
+      const progress = usePlayerDataProgress()
+      return <span data-testid="progress">{progress?.downloaded ?? "-"}</span>
+    }
+    render(
+      <>
+        <StatusReader />
+        <ProgressReader />
+      </>,
+      { wrapper }
+    )
+    await waitFor(() => expect(status.status).toBe("ready"))
+    act(() => status.syncNow())
+    await waitFor(() => expect(status.status).toBe("syncing"))
+    // The value is memoised, so this re-render count is stable once a status settles.
+    const before = statusRenders
+    const valueBefore = status
+
+    act(() => report({ downloaded: 1, total: 3 }))
+    act(() => report({ downloaded: 2, total: 3 }))
+
+    expect(screen.getByTestId("progress")).toHaveTextContent("2")
+    expect(statusRenders).toBe(before)
+    expect(status).toBe(valueBefore)
+
+    await act(async () =>
+      finish({ status: "ready", syncedAt: new Date().toISOString() })
+    )
+    await waitFor(() => expect(status.status).toBe("ready"))
+    expect(status).not.toBe(valueBefore)
   })
 
   it("does not refresh after a failed sync", async () => {
@@ -78,10 +170,18 @@ describe("PlayerDataProvider", () => {
     it("reports it and keeps checking on the interval", async () => {
       vi.useFakeTimers({ shouldAdvanceTime: true })
       const log = vi.spyOn(console, "error").mockImplementation(() => {})
-      sync.metadata.mockReset()
-      sync.metadata
-        .mockRejectedValueOnce(new Error("indexeddb closed"))
-        .mockResolvedValue({})
+      // The first metadata read fails (as if IndexedDB closed); later ones read the real store.
+      const getAll = IDBObjectStore.prototype.getAll
+      let metadataReads = 0
+      vi.spyOn(IDBObjectStore.prototype, "getAll").mockImplementation(function (
+        this: IDBObjectStore,
+        ...args
+      ) {
+        if (this.name === "metadata" && metadataReads++ === 0) {
+          throw new Error("indexeddb closed")
+        }
+        return getAll.apply(this, args)
+      })
       renderHook(() => usePlayerDataStatus(), { wrapper })
 
       await waitFor(() =>
@@ -92,7 +192,7 @@ describe("PlayerDataProvider", () => {
       )
       await act(() => vi.advanceTimersByTimeAsync(10 * 60 * 1000))
 
-      expect(sync.metadata.mock.calls.length).toBeGreaterThan(1)
+      await waitFor(() => expect(metadataReads).toBeGreaterThan(1))
     })
   })
 })

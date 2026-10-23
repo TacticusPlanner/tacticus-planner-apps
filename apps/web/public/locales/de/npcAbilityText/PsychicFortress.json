@@ -1,0 +1,25 @@
+{
+  "PsychicFortress": {
+    "description": "Alle verbündeten Einheiten um Tigurius herum verfügen über einen zusätzlichen <style=\"Stat_Block\">Block</style> mit einer <style=\"Stat_Chance\">Chance von {[blockChance]} %</style>, <style=\"Stat_Damage\">{[blockDmg]} Schaden</style> zu blocken. Reduziert außerdem den eingehenden <style=\"DMG_Psychic\"> Psi-Schaden</style> um {[dmgReduction]}.",
+    "variables": {
+      "blockDmg": [
+        6, 7, 8, 10, 11, 12, 14, 15, 16, 18, 19, 20, 22, 23, 25, 26, 27, 29, 30,
+        32, 33, 36, 41, 47, 52, 58, 63, 69, 74, 80, 85, 91, 96, 101, 107, 112,
+        118, 123, 129, 136, 147, 159, 171, 184, 209, 234, 258, 283, 308, 333,
+        336, 341, 345, 351, 357, 363, 369, 377, 384, 392, 401, 410, 419, 428,
+        437
+      ],
+      "dmgReduction": [
+        12, 14, 17, 19, 22, 24, 27, 30, 33, 35, 38, 41, 44, 46, 49, 52, 55, 57,
+        60, 63, 67, 72, 83, 94, 105, 116, 126, 137, 148, 159, 170, 181, 192,
+        203, 214, 225, 236, 247, 258, 273, 294, 317, 342, 369, 418, 467, 517,
+        566, 615, 665, 672, 681, 690, 702, 714, 726, 738, 753, 768, 783, 801,
+        819, 837, 855, 873
+      ]
+    },
+    "constants": {
+      "blockChance": "50"
+    },
+    "scaled": ["blockDmg", "dmgReduction"]
+  }
+}

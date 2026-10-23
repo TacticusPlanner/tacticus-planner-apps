@@ -1,0 +1,11 @@
+{
+  "RelicBoltPistol": {
+    "description": "Le porteur de relique obtient <style=\"Piercing_Ratio\">+{[extraPierceRatio]} % de taux de perforation</style> en cas d'attaque au corps à corps et inflige <style=\"Stat_CritDamage\">+{[extraCritDmg]} dégâts critiques</style> en cas d'attaque à distance. Ces bonus sont doublés contre les unités ennemies du <style=\"Aliance_Chaos\">Chaos</style> ou <style=\"Aliance_Xenos\">Xénos</style>.",
+    "variables": {
+      "extraPierceRatio": [5, 6, 6, 7, 7, 8, 8, 9, 9, 10],
+      "extraCritDmg": [590, 622, 654, 686, 717, 749, 781, 813, 845, 877]
+    },
+    "constants": {},
+    "scaled": []
+  }
+}

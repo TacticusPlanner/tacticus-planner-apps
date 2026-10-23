@@ -16,22 +16,10 @@ export type LegendaryEventPlanList = { plans: LegendaryEventPlan[] }
 export type LegendaryEventRunRecordEncounter =
   S["LegendaryEventRunRecordEncounterResponse"]
 
-/** Each lane null (as synced) or its encounters in battle order. */
-export type LegendaryEventRunRecordLanes =
-  S["LegendaryEventRunRecordLanesResponse"]
-
 /** A plan team as it was at the record's last progress; the depth is the one stored for the
  *  record's `run`, or null. */
 export type LegendaryEventRunRecordTeam =
   S["LegendaryEventRunRecordTeamResponse"]
-
-export type RosterSnapshotAbility = S["RosterAbilityResponse"]
-
-/** One owned character as synced (the `characters` chunk record). */
-export type RosterSnapshotCharacter = S["RosterCharacterResponse"]
-
-/** One owned MoW as synced (the `mows` chunk record). */
-export type RosterSnapshotMow = S["RosterMowResponse"]
 
 /** `GET .../run-records/{recordId}/roster`: the whole owned roster as it was at the record's last
  *  progress, read on demand (records never carry it). */

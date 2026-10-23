@@ -1,0 +1,18 @@
+{
+  "TaintedNarthecium": {
+    "description": "Una unidad aliada adyacente del <style=\"Aliance_Chaos\">Caos</style> que sea derrotada tiene un <style=\"Stat_Chance\">{[chance]} % de probabilidad</style> de ser revivida con un máximo de <style=\"Stat_Health\">{[hp]} de Salud</style>, incluso si es <style=\"Overkill\">Arrasada</style>. Solo puede activarse una vez por turno.",
+    "variables": {
+      "hp": [
+        49, 59, 69, 78, 88, 99, 111, 122, 133, 145, 156, 167, 178, 190, 201,
+        212, 223, 235, 246, 257, 272, 294, 338, 383, 427, 472, 516, 561, 606,
+        650, 695, 739, 784, 829, 873, 918, 962, 1007, 1052, 1114, 1202, 1295,
+        1395, 1506, 1707, 1909, 2110, 2311, 2513, 2715, 2744, 2781, 2818, 2867,
+        2916, 2965, 3014, 3075, 3136, 3197, 3271, 3344, 3418, 3491, 3565
+      ]
+    },
+    "constants": {
+      "chance": "75"
+    },
+    "scaled": ["hp"]
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "ScarabSummon": {
+    "description": "Invoca otro <style=\"Faction_Necrons\">Enjambre de escarabajos</style> en un hexágono adyacente libre que inmediatamente después tiene un turno.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

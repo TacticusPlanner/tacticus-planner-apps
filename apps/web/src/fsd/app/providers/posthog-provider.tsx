@@ -58,7 +58,8 @@ function PostHogIdentity({
 }) {
   const isAuthenticated = useIsAuthenticated()
   const { state } = useCurrentUser()
-  const { identifyUser, clearIdentity, captureEvent } = useAnalyticsActions()
+  const { isReady, identifyUser, clearIdentity, captureEvent } =
+    useAnalyticsActions()
   const isMobile = useIsMobile()
   const matches = useMatches()
 
@@ -99,7 +100,7 @@ function PostHogIdentity({
     : undefined
 
   useEffect(() => {
-    if (!routePattern || !isIdentified) {
+    if (!routePattern || !isIdentified || !isReady) {
       return
     }
     captureEvent({
@@ -108,13 +109,15 @@ function PostHogIdentity({
       routeGroup: routeGroup ?? "unknown",
       viewMode: isMobile ? "mobile" : "desktop",
     })
-    // Fires only on an actual route-pattern change (specs/product-analytics/spec.md's "Navigation
-    // is reported as declared page-view events") - isIdentified/routeGroup/isMobile/captureEvent
-    // are read at the moment the effect runs rather than being trigger dependencies, so signing
-    // in/out, a nav-section change, or a viewport resize on the *same* route never fires a
-    // spurious extra page_view.
+    // Fires on an actual route-pattern change (specs/product-analytics/spec.md's "Navigation is
+    // reported as declared page-view events") and once when the SDK becomes ready after
+    // identification, reporting the route the user is on at that moment (the SDK is downloaded
+    // only once a user is identified). isIdentified/routeGroup/isMobile/captureEvent are read at
+    // the moment the effect runs rather than being trigger dependencies, so signing in/out with the
+    // SDK already loaded, a nav-section change, or a viewport resize on the *same* route never
+    // fires a spurious extra page_view.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [routePattern])
+  }, [routePattern, isReady])
 
   return <>{children}</>
 }

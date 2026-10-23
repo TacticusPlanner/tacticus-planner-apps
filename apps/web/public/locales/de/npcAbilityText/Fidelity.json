@@ -1,0 +1,12 @@
+{
+  "Fidelity": {
+    "description": "Gewährt <style=\"Faction_Tau\">Aun'shi</style> einen zusätzlichen Effekt basierend auf seinem aktuellen Bonus durch <i>Erhabener Einiger</i>:\nSinn des Steins: <style=\"Regenerate\">Regeneriert</style> nach dem Angriff <style=\"Stat_Health\">{[hp]} Lebenspunkte</style>\nAnmut des Zephyr: Hat <style=\"Stat\">+{[extraCritChance]} % kritische Trefferchance</style>\nSturm des Feuers: Angriffe erzielen <style=\"Stat_Hits\">+{[extraHits]}</style> Treffer",
+    "variables": {
+      "hp": [3915, 4126, 4338, 4549, 4760, 4972, 5183, 5394, 5606, 5817],
+      "extraCritChance": [15, 17, 19, 21, 23, 25, 27, 29, 31, 33],
+      "extraHits": [1, 1, 1, 2, 2, 2, 2, 3, 3, 3]
+    },
+    "constants": {},
+    "scaled": []
+  }
+}

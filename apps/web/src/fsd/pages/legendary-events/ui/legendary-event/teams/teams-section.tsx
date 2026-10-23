@@ -15,12 +15,12 @@ import {
   type LegendaryEventTeam,
   type TeamSuggestion,
 } from "@/entities/legendary-event"
-import { TeamSuggestionsDialog } from "@/features/legendary-event-team-suggestions"
 import {
+  TeamSuggestionsDialog,
   laneTeams,
   type LegendaryEventPlanActions,
   type PickerGoalsPreview,
-} from "@/features/legendary-event-teams"
+} from "@/features/legendary-event-plan"
 import { ConfirmationDialog, SortableList } from "@/shared/ui"
 
 import {
@@ -292,6 +292,9 @@ export function TeamsSection({
           ) : (
             <SortableList
               getId={(card) => card.id}
+              getLabel={(id) =>
+                cards.find((card) => card.id === id)?.name ?? ""
+              }
               items={cards}
               onReorder={(orderedIds) =>
                 void actions.reorderLane(laneId, orderedIds)

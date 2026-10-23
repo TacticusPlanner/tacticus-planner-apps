@@ -1,0 +1,13 @@
+{
+  "Lakrimae": {
+    "description": "Les <style=\"NormalAttack\">attaques au corps à corps normales</style> de <style=\"Faction_DeathGuard\">Typhus</style> <style=\"Tile_Contamination\">contaminent</style> l'hexagone de la cible. Pendant son tour, lorsqu'une unité ennemie non mécanique présente dans l'aura de <style=\"ContagionsOfNurgle\">Contagion</style> de Typhus est éliminée, il invoque un <style=\"Summon\"><style=\"Faction_DeathGuard\">Véroleux</style></style> sur l'hexagone de l'unité vaincue, à condition qu'il y ait moins de {[nrOfUnits]} Véroleux alliés sur le champ de bataille. Les Véroleux ont <style=\"Stat_Health\">{[summonHp]} santé</style> et <style=\"Stat_Damage\">{[summonDmg]} dégâts</style>.",
+    "variables": {
+      "summonHp": [2940, 3099, 3257, 3416, 3575, 3733, 3892, 4051, 4210, 4368],
+      "summonDmg": [3425, 3610, 3795, 3980, 4165, 4349, 4534, 4719, 4904, 5089]
+    },
+    "constants": {
+      "nrOfUnits": "3"
+    },
+    "scaled": []
+  }
+}

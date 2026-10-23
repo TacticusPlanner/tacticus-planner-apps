@@ -1,30 +1,59 @@
 import { useSyncExternalStore } from "react"
-import { z } from "zod"
 import { Rarity } from "@workspace/game-domain"
 
 import {
   emptyRaidsFilters,
   RAIDS_CAMPAIGN_TYPES,
+  type RaidsCampaignType,
   type RaidsFilters,
 } from "./raids-filters.domain"
 import { safeStorage } from "@/shared/lib"
 
 const STORAGE_KEY = "raids-filters.v1"
 
-const storedFiltersSchema = z.object({
-  alliesAlliances: z.array(z.string()).default([]),
-  alliesFactions: z.array(z.string()).default([]),
-  enemiesAlliances: z.array(z.string()).default([]),
-  enemiesFactions: z.array(z.string()).default([]),
-  // Added after the first release of `raids-filters.v1`: stored filters without it still parse.
-  enemiesTraits: z.array(z.string()).default([]),
-  campaignTypes: z.array(z.enum(RAIDS_CAMPAIGN_TYPES)).default([]),
-  upgradeRarities: z.array(z.enum(Rarity)).default([]),
-  slots: z.array(z.number()).default([]),
-  enemiesTypes: z.array(z.string()).default([]),
-  enemiesMin: z.number().optional(),
-  enemiesMax: z.number().optional(),
-})
+// Validated by hand rather than with zod, which would otherwise be this hook's only reason to put
+// zod in the startup bundle (the shell reads the filters). Same contract as the earlier schema:
+// unknown keys are dropped, a missing list reads as empty (`enemiesTraits` was added after the first
+// release of `raids-filters.v1`), and any malformed field rejects the whole stored value.
+const rarities: readonly unknown[] = Object.values(Rarity)
+
+function listOf<T>(value: unknown, isItem: (item: unknown) => item is T) {
+  if (value === undefined) return []
+  if (!Array.isArray(value) || !value.every(isItem)) throw new TypeError()
+  return value
+}
+const isString = (item: unknown): item is string => typeof item === "string"
+const isNumber = (item: unknown): item is number => typeof item === "number"
+const isCampaignType = (item: unknown): item is RaidsCampaignType =>
+  (RAIDS_CAMPAIGN_TYPES as readonly unknown[]).includes(item)
+const isRarity = (item: unknown): item is Rarity => rarities.includes(item)
+
+function optionalNumber(value: unknown): number | undefined {
+  if (value === undefined || isNumber(value)) return value
+  throw new TypeError()
+}
+
+function toRaidsFilters(value: unknown): RaidsFilters {
+  if (typeof value !== "object" || value === null || Array.isArray(value)) {
+    throw new TypeError()
+  }
+  const stored = value as Record<string, unknown>
+  const enemiesMin = optionalNumber(stored.enemiesMin)
+  const enemiesMax = optionalNumber(stored.enemiesMax)
+  return {
+    alliesAlliances: listOf(stored.alliesAlliances, isString),
+    alliesFactions: listOf(stored.alliesFactions, isString),
+    enemiesAlliances: listOf(stored.enemiesAlliances, isString),
+    enemiesFactions: listOf(stored.enemiesFactions, isString),
+    enemiesTraits: listOf(stored.enemiesTraits, isString),
+    campaignTypes: listOf(stored.campaignTypes, isCampaignType),
+    upgradeRarities: listOf(stored.upgradeRarities, isRarity),
+    slots: listOf(stored.slots, isNumber),
+    enemiesTypes: listOf(stored.enemiesTypes, isString),
+    ...(enemiesMin === undefined ? {} : { enemiesMin }),
+    ...(enemiesMax === undefined ? {} : { enemiesMax }),
+  }
+}
 
 function readRaw(): string | null {
   return safeStorage.get(STORAGE_KEY)
@@ -33,8 +62,7 @@ function readRaw(): string | null {
 function parse(raw: string | null): RaidsFilters {
   if (raw === null) return emptyRaidsFilters
   try {
-    const result = storedFiltersSchema.safeParse(JSON.parse(raw))
-    return result.success ? result.data : emptyRaidsFilters
+    return toRaidsFilters(JSON.parse(raw))
   } catch {
     return emptyRaidsFilters
   }

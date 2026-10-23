@@ -68,8 +68,10 @@ export function describeSeries(
   points: readonly ChartPoint[],
   locale?: string
 ): { from: string; to: string } {
+  const first = points[0]
+  const last = points.at(-1)
   return {
-    from: points.length > 0 ? formatPoint(points[0], locale) : "",
-    to: points.length > 0 ? formatPoint(points.at(-1)!, locale) : "",
+    from: first ? formatPoint(first, locale) : "",
+    to: last ? formatPoint(last, locale) : "",
   }
 }

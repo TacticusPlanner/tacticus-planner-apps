@@ -1,0 +1,35 @@
+{
+  "TheEmperorsShield": {
+    "description": "Cada golpe anotado por un <style=\"Stat_Melee\">ataque cuerpo a cuerpo</style> contra <style=\"Faction_DarkAngels\">Lion El'Jonson</style> incrementa su <style=\"Stat_Chance\">probabilidad</style> de <style=\"Stat_Block\">bloqueo</style> en <style=\"Stat\">+{[blockChance]}%</style> hasta el final de este turno. Cada vez que Lion El'Jonson bloquea <style=\"Stat\">{[nrOfAttacks]}</style> o más <style=\"Stat_Hits\">impactos</style> de un <style=\"Stat_Melee\">ataque cuerpo a cuerpo</style> contra él, inflige <style={[DamageProfileTypeStyle]}>{[minDmg]}-{[maxDmg]} {[DamageProfileType]}</style> al atacante.",
+    "variables": {
+      "minDmg": [
+        30, 36, 42, 48, 54, 61, 68, 75, 82, 89, 95, 102, 109, 116, 123, 130,
+        137, 144, 151, 158, 167, 180, 207, 234, 262, 289, 316, 344, 371, 398,
+        425, 453, 480, 507, 535, 562, 589, 617, 644, 682, 736, 793, 854, 922,
+        1045, 1169, 1292, 1415, 1538, 1662, 1798, 1856, 1915, 1983, 2053, 2124,
+        2196, 2278, 2362, 2447, 2543, 2641, 2741, 2843, 2946
+      ],
+      "maxDmg": [
+        40, 48, 56, 64, 72, 81, 90, 100, 109, 118, 127, 136, 146, 155, 164, 173,
+        182, 192, 201, 210, 222, 240, 276, 312, 349, 385, 422, 458, 494, 531,
+        567, 604, 640, 676, 713, 749, 786, 822, 858, 910, 982, 1057, 1139, 1229,
+        1394, 1558, 1722, 1887, 2051, 2216, 2397, 2474, 2553, 2644, 2737, 2831,
+        2927, 3037, 3149, 3263, 3391, 3522, 3655, 3791, 3929
+      ],
+      "nrOfAttacks": [
+        5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 4, 4, 4, 4, 4, 4, 4,
+        4, 4, 3, 3, 3, 3, 3, 3, 3, 3, 3, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+        2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2
+      ],
+      "blockChance": [
+        1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 4, 4, 4, 4, 4, 4, 4,
+        4, 4, 6, 6, 6, 6, 6, 6, 6, 6, 6, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
+        8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8
+      ]
+    },
+    "constants": {
+      "damageProfile": "DirectDamage"
+    },
+    "scaled": ["minDmg", "maxDmg"]
+  }
+}

@@ -35,6 +35,15 @@ function optionNames() {
 }
 
 describe("RarityCombobox", () => {
+  it("links the open trigger to its listbox via aria-controls", () => {
+    renderCombobox()
+    const trigger = screen.getByRole("combobox", { name: "Select a material" })
+    expect(trigger).toHaveAttribute("aria-expanded", "true")
+    expect(
+      document.getElementById(trigger.getAttribute("aria-controls") ?? "")
+    ).toBe(screen.getByRole("listbox"))
+  })
+
   it("groups by rarity, highest first, in a stable member order", () => {
     renderCombobox()
 

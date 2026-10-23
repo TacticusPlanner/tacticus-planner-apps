@@ -1,0 +1,10 @@
+{
+  "HeadwoppasKillchoppa": {
+    "description": "<style=\"Faction_Orks\">Jefe Gulgortz</style> y todos los <style=\"Faction_Orks\">Chikoz Orkoz</style> aliados infligen <style=\"Stat_Damage\">+{[extraDmg]} de Daño</style> con ataques cuerpo a cuerpo por cada unidad enemiga que Boss Gulgortz haya derrotado en esta batalla.",
+    "variables": {
+      "extraDmg": [195, 206, 216, 227, 237, 248, 258, 269, 279, 290]
+    },
+    "constants": {},
+    "scaled": []
+  }
+}

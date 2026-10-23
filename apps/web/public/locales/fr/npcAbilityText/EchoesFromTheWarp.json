@@ -1,0 +1,8 @@
+{
+  "EchoesFromTheWarp": {
+    "description": "Lorsque cette unité se déplace, elle laisse un fantôme temporel sur son hexagone de départ. Ce fantôme disparaît si une autre unité occupe cet hexagone ou si le terrain devient infranchissable (comme pour la <style=\"Tile_Floe\">Glace brisée</style>). La première fois que cette unité est éliminée dans chaque combat, si son fantôme temporel est présent sur le champ de bataille, elle ressuscite avec <style=\"Stat_Health\"> santé</style> restante à son emplacement. Cet effet s'active même si cette unité est <style=\"Overkill\">Exterminée</style>.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

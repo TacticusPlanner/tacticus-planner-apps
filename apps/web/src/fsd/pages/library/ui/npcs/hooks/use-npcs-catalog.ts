@@ -1,9 +1,10 @@
-import { useMemo, useState } from "react"
-import { useLiveQuery } from "dexie-react-hooks"
-import { getGameCatalogMetadata } from "@workspace/game-catalog"
-import { getNpcs } from "@workspace/game-catalog/queries"
+import { useMemo } from "react"
 
 import { buildNpcGroups, type NpcGroup } from "@/entities/npc"
+import { combineReadStates } from "@/shared/lib"
+import { useCatalogDataset } from "@/shared/local-data"
+
+import { useDatasetSynced } from "../../unit/use-catalog-dataset"
 
 type NpcsCatalogStatus = "loading" | "failed" | "ready"
 
@@ -16,13 +17,8 @@ export type NpcsCatalog = {
   retry: () => void
 }
 
-const FAILED = Symbol("failed")
-const NPCS_DATASET_KEY = "npcs"
-
 /**
- * Reactive read of the synced `npcs` dataset, grouped into listed NPCs. Mirrors the raid-bosses hook:
- * `useLiveQuery` swallows a thrown error into `undefined` forever, so the read is wrapped to expose a
- * real, retry-able failure state.
+ * The synced `npcs` dataset, grouped into listed NPCs, with a retry-able failure state.
  *
  * The init gate renders pages while the very first catalog sync is still downloading, during which the
  * dataset table is simply empty. An empty table is only "no records" once the dataset's sync metadata
@@ -30,40 +26,28 @@ const NPCS_DATASET_KEY = "npcs"
  * link away to the collection URL.
  */
 export function useNpcsCatalog(): NpcsCatalog {
-  const [retryNonce, setRetryNonce] = useState(0)
-  const retry = () => setRetryNonce((value) => value + 1)
-
-  const result = useLiveQuery(async () => {
-    try {
-      return await getNpcs()
-    } catch {
-      return FAILED
-    }
-  }, [retryNonce])
-  const synced = useLiveQuery(
-    async () => {
-      try {
-        return (await getGameCatalogMetadata()).has(NPCS_DATASET_KEY)
-      } catch {
-        return FAILED
-      }
-    },
-    [retryNonce],
-    undefined
+  const read = combineReadStates(
+    useCatalogDataset("npcs"),
+    useDatasetSynced("npcs")
   )
+  const npcs =
+    read.status === "ready" && read.data[1] ? read.data[0] : undefined
+  const failed = read.status === "error"
+  const retry = read.retry
 
+  // Keyed on the dataset (referentially stable while unchanged), not on the combined tuple.
   return useMemo<NpcsCatalog>(() => {
-    if (result === FAILED || synced === FAILED) {
+    if (failed) {
       return { status: "failed", groups: [], byId: new Map(), retry }
     }
-    if (result === undefined || synced === undefined || !synced) {
+    if (!npcs) {
       return { status: "loading", groups: [], byId: new Map(), retry }
     }
     // `buildNpcGroups` throws on a slug collision, which a future catalog could introduce without any
     // code change here. Surfacing that as the page's failure state beats taking the route down with it.
     let groups: NpcGroup[]
     try {
-      groups = buildNpcGroups(result)
+      groups = buildNpcGroups(npcs)
     } catch {
       return { status: "failed", groups: [], byId: new Map(), retry }
     }
@@ -73,5 +57,7 @@ export function useNpcsCatalog(): NpcsCatalog {
       byId: new Map(groups.map((group) => [group.id, group])),
       retry,
     }
-  }, [result, synced])
+    // `retry` is rebuilt per render by combineReadStates; it only matters on failure.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [failed, npcs])
 }

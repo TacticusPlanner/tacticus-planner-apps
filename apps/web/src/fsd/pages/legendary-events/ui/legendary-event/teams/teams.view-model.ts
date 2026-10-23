@@ -5,7 +5,6 @@ import {
   objectiveClearedThrough,
   teamDepthForRun,
   teamEffectiveDepth,
-  teamPointsLeft,
   teamPower,
   type ClearEstimate,
   type ClearEstimateRoster,
@@ -19,8 +18,9 @@ import {
   type LegendaryEventTeam,
   type LegendaryEventUnit,
 } from "@/entities/legendary-event"
+import { teamPointsLeft } from "../../../lib/team-points"
 
-import type { PickerGoalsPreview } from "@/features/legendary-event-teams"
+import type { PickerGoalsPreview } from "@/features/legendary-event-plan"
 import type { UnitPowerContext } from "@/shared/unit-power"
 
 import type {

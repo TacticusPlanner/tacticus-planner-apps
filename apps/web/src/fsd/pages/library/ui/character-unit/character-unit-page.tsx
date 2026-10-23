@@ -1,24 +1,15 @@
-import { useId, useMemo, useState } from "react"
+import { useCallback, useId, useMemo, useState } from "react"
 import { Link, useLocation, useParams } from "react-router"
 import { useTranslation } from "react-i18next"
 import { useIsAuthenticated } from "@azure/msal-react"
-import { useLiveQuery } from "dexie-react-hooks"
 import { abilityIcon } from "@workspace/game-catalog"
-import {
-  getEquipment,
-  getUnlockShardCostsMap,
-} from "@workspace/game-catalog/queries"
 import {
   maxAbilityLevel,
   maxRankForProgression,
   progressionRarity,
   type UnitId,
 } from "@workspace/game-domain"
-import {
-  getInventoryShard,
-  getPlayerCharacter,
-  getPlayerCharacters,
-} from "@workspace/player-data/queries"
+import type { PlayerDataChunkDto } from "@workspace/player-data"
 import { Button } from "@workspace/ui/components/button"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
@@ -28,6 +19,7 @@ import {
   unitOriginState,
 } from "@/entities/unit"
 import { useAbilityText } from "@/shared/ability-text"
+import { toById, useCatalogDataset, usePlayerChunk } from "@/shared/local-data"
 import { useTourPageSteps } from "@/shared/tour"
 
 import { buildRadarPopulation, buildStatRadar } from "../../model/stat-radar"
@@ -58,10 +50,6 @@ import {
 
 const CHARACTERS_PATH = "/library/characters"
 const TABS = ["details", "rankup"] as const
-
-// Distinguishes "still reading" from a resolved `undefined` (no record), as Dexie's useLiveQuery
-// returns its default until the first resolution.
-const LOADING = Symbol("loading")
 
 /** `/library/characters/:entityId`: one character's unit page. */
 export function CharacterUnitPage() {
@@ -126,33 +114,44 @@ function CharacterUnit({
   const panelId = useId()
   const character = catalog.byId.get(unitId)!
   const name = t(`characters:${unitId}`, { defaultValue: character.name })
-  const abilityText = useAbilityText()
   const [tab, setTab] = useUnitTab(TABS)
 
   // --- Player data -----------------------------------------------------------------------------
-  const roster = useLiveQuery(
-    () => (isAuthenticated ? getPlayerCharacters() : undefined),
-    [isAuthenticated],
-    LOADING
+  // Signed out, the player reads are ignored (sign-out deletes the player database anyway).
+  const rosterRead = usePlayerChunk("characters")
+  const selectCharacter = useCallback(
+    (characters: PlayerDataChunkDto<"characters"> | null) =>
+      characters?.find((record) => record.unitId === unitId),
+    [unitId]
   )
-  const playerCharacter = useLiveQuery(
-    () => (isAuthenticated ? getPlayerCharacter(unitId) : undefined),
-    [isAuthenticated, unitId],
-    LOADING
+  const playerCharacterRead = usePlayerChunk("characters", selectCharacter)
+  const selectShard = useCallback(
+    (shards: PlayerDataChunkDto<"inventory-shards"> | null) =>
+      shards?.find((shard) => shard.unitId === unitId),
+    [unitId]
   )
-  const shardRecord = useLiveQuery(
-    () => (isAuthenticated ? getInventoryShard(unitId) : undefined),
-    [isAuthenticated, unitId]
-  )
-  const unlockCosts = useLiveQuery(() => getUnlockShardCostsMap(), [])
-  const equipment = useLiveQuery(() => getEquipment(), [])
+  const shardRead = usePlayerChunk("inventory-shards", selectShard)
+  const unlockCostsRead = useCatalogDataset("unlock-shard-costs", toById)
+  const equipmentRead = useCatalogDataset("equipment")
+  const shardRecord =
+    isAuthenticated && shardRead.status === "ready" ? shardRead.data : undefined
+  const unlockCosts =
+    unlockCostsRead.status === "ready" ? unlockCostsRead.data : undefined
+  const equipment =
+    equipmentRead.status === "ready" ? equipmentRead.data : undefined
 
   const player =
-    playerCharacter === LOADING ? undefined : (playerCharacter ?? undefined)
+    isAuthenticated && playerCharacterRead.status === "ready"
+      ? playerCharacterRead.data
+      : undefined
   const ownership = unitOwnership(
-    roster !== LOADING && roster !== undefined,
+    isAuthenticated &&
+      rosterRead.status === "ready" &&
+      rosterRead.data !== null,
     player,
-    isAuthenticated && (roster === LOADING || playerCharacter === LOADING)
+    isAuthenticated &&
+      (rosterRead.status === "loading" ||
+        playerCharacterRead.status === "loading")
   )
   const baseValues = player ? playerValues(player) : startingValues(character)
   const [mode, setMode] = useState<ValuesMode>("base")
@@ -168,6 +167,12 @@ function CharacterUnit({
   const setLevel = (id: string) => (level: number) =>
     setAbilityLevels((current) => ({ ...current, [id]: level }))
   const relic = relicFor(character, equipment ?? [], player)
+  // Only this unit's abilities' rules text is fetched, after the page paints.
+  const abilityText = useAbilityText(
+    [activeId, passiveId, relic?.relic.abilityId].filter(
+      (id): id is string => id !== undefined
+    )
+  )
   const slotItems = equippableItems(character, equipment ?? [])
   const mythic = useMythicQuests(unitId)
   const [relicLevel, setRelicLevel] = useState<number | undefined>()
@@ -242,7 +247,7 @@ function CharacterUnit({
   useTourPageSteps(
     useCharacterUnitTutorial({
       hasAbilityText:
-        activeId !== undefined && abilityText(activeId) !== undefined,
+        activeId !== undefined && abilityText.text(activeId) !== undefined,
     })
   )
 
@@ -252,7 +257,8 @@ function CharacterUnit({
         kind={t(`characterUnit.abilities.${kind}`)}
         name={t(`abilities:${id}`, { defaultValue: id })}
         iconSrc={abilityIcon(id)}
-        text={abilityText(id)}
+        text={abilityText.text(id)}
+        rules={abilityText}
         rarity={progressionRarity(shown.progression)}
         unitName={name}
         factionId={character.faction}
@@ -270,7 +276,8 @@ function CharacterUnit({
       characterId={character.id}
       unitName={name}
       factionId={character.faction}
-      text={relic ? abilityText(relic.relic.abilityId) : undefined}
+      text={relic ? abilityText.text(relic.relic.abilityId) : undefined}
+      rules={abilityText}
       level={shownRelicLevel}
       playerLevel={relic?.equippedLevel}
       onLevelChange={setRelicLevel}

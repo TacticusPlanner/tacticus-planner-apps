@@ -9,7 +9,7 @@ import { ShopsPage } from "./shops-page"
 import type {
   ShopRecommendationSectionView,
   ShopRecommendationsViewModel,
-} from "../model/use-shop-recommendations"
+} from "@/features/shop-recommendations"
 
 const useShopRecommendations = vi.fn<() => ShopRecommendationsViewModel>()
 const { useIsMobileMock } = vi.hoisted(() => ({
@@ -23,9 +23,12 @@ vi.mock("react-i18next", () => ({
       values ? `${key}:${JSON.stringify(values)}` : key,
   }),
 }))
-vi.mock("../model/use-shop-recommendations", () => ({
-  useShopRecommendations: () => useShopRecommendations(),
-}))
+vi.mock(
+  "@/features/shop-recommendations/model/use-shop-recommendations",
+  () => ({
+    useShopRecommendations: () => useShopRecommendations(),
+  })
+)
 vi.mock("@/shared/tour", () => ({ useTourPageSteps: () => {} }))
 vi.mock("@workspace/ui/hooks/use-mobile", () => ({
   useIsMobile: () => useIsMobileMock(),
@@ -118,6 +121,15 @@ beforeEach(() => {
 })
 
 describe("ShopsPage", () => {
+  it("renders its title as an h2 under the shell h1", () => {
+    renderPage()
+    // The shell header owns the page h1; the tab starts its hierarchy at h2.
+    expect(screen.queryAllByRole("heading", { level: 1 })).toHaveLength(0)
+    expect(
+      screen.getByRole("heading", { level: 2, name: "title" })
+    ).toBeInTheDocument()
+  })
+
   it("shows the loading state", () => {
     useShopRecommendations.mockReturnValue({ status: "loading" })
     renderPage()

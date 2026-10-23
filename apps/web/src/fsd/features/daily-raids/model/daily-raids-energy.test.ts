@@ -25,7 +25,7 @@ function battle(
     dailyAttempts: 10,
     ...overrides,
     campaignGroupId: campaignIdSchema.parse(overrides.campaignGroupId),
-  } as Battle
+  }
 }
 
 function attempt(

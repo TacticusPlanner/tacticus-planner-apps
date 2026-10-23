@@ -1,8 +1,8 @@
-import { useEffect, useState, type ReactNode } from "react"
+import type { ReactNode } from "react"
 import { MemoryRouter } from "react-router"
 import userEvent from "@testing-library/user-event"
 import type { i18n as I18n } from "i18next"
-import { beforeAll, describe, expect, it, vi } from "vitest"
+import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
 
 import type {
   LegendaryEvent,
@@ -18,6 +18,7 @@ import {
 import { unitPowerContextFixture } from "@/test/fixtures/unit-power"
 import { createTestI18n, i18nWrapper } from "@/test/i18n"
 import { cleanup, render, screen, waitFor, within } from "@/test/render"
+import { seedGameCatalog } from "@/test/seed"
 
 import type { ClearEstimatesViewModel } from "../legendary-event-page.view-model"
 
@@ -26,21 +27,9 @@ import { useTeamEditorLauncher } from "./team-editor-launcher"
 import { TeamsSection, type TeamsViewModel } from "./teams-section"
 import type { TeamsSectionState } from "./teams.view-model"
 
-vi.mock("dexie-react-hooks", () => ({
-  useLiveQuery: <T,>(querier: () => Promise<T>) => {
-    const [value, setValue] = useState<T>()
-    useEffect(() => {
-      void querier().then(setValue)
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
-    return value
-  },
-}))
-vi.mock("@workspace/game-catalog/queries", () => ({
-  getCharactersMap: async () =>
-    new Map(Object.values(teamUnits).map((unit) => [unit.id, unit])),
-  getMowsMap: async () => new Map(),
-}))
+beforeEach(async () => {
+  await seedGameCatalog({ characters: Object.values(teamUnits) })
+})
 
 let i18n: I18n
 

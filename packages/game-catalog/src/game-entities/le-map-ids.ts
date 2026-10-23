@@ -1,5 +1,5 @@
 // Ids of the tactical Legendary Event battle maps shipped as
-// apps/web/public/game_catalog/le_maps/{mapId}.jpg (the `_Visual` renders are not listed). A served
+// apps/web/public/game_catalog/le_maps/{mapId}.webp (the `_Visual` renders are not listed). A served
 // `mapId` outside this set has no image yet, so the client shows a placeholder instead of requesting a
 // file that would 404. `le-map.test.ts` fails when this list and the directory drift apart.
 export const LE_MAP_IDS: ReadonlySet<string> = new Set([

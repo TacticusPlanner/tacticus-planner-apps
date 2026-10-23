@@ -1,0 +1,10 @@
+{
+  "SabreOfSacrifice": {
+    "description": "Wenn <style=\"Faction_AstraMilitarum\">Dreir</style> oder <style=\"Faction_AstraMilitarum\">Todesreiter</style>, die an Dreir angrenzen, einen <style=\"Charging\">Ansturm</style> einsetzen, <style=\"Debuff_Pinned\">unterdrücken</style> ihre Angriffe die Ziele für 1 Runde. Nach dem Ansturm verfügen sie für jede verbündete Einheit, die in diesem Kampf besiegt wurde, bis zum Beginn ihres nächsten Zugs über <style=\"Stat_Armor\">+{[extraArmor]} Rüstung</style>.",
+    "variables": {
+      "extraArmor": [685, 722, 759, 796, 833, 870, 907, 944, 981, 1018]
+    },
+    "constants": {},
+    "scaled": []
+  }
+}

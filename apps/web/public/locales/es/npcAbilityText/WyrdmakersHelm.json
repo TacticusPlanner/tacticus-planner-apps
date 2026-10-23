@@ -1,0 +1,10 @@
+{
+  "WyrdmakersHelm": {
+    "description": "Durante su turno, cada vez que <style=\"Faction_SpaceWolves\">Baldr</style> o una unidad aliada adyacente es <style=\"Healing\">curada</style> por primera vez en el turno, Baldr realiza de inmediato un <style=\"NormalAttack\">ataque cuerpo a cuerpo normal</style>. Estos ataques infligen <style=\"Stat_Damage\">+{[extraDmg]} de daño</style> y cubre de <style=\"Effect_Ice\">hielo</style> el hexágono del objetivo.",
+    "variables": {
+      "extraDmg": [490, 516, 543, 569, 596, 622, 649, 675, 702, 728]
+    },
+    "constants": {},
+    "scaled": []
+  }
+}

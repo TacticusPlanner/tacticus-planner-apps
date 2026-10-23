@@ -1,0 +1,24 @@
+{
+  "BlackRage": {
+    "description": "Si <style=\"Faction_BloodAngels\">Lucien</style> ne s'est pas déplacé, sa santé passe à <style=\"Stat_Health\">{[hpPct]} %</style>. Ensuite, il <style=\"Charging\">charge</style> immédiatement une cible ennemie à portée de déplacement et effectue une <style=\"NormalAttack\">attaque au corps à corps normale</style>. Pour cette attaque et jusqu'à la fin de la bataille, Lucien gagne <style=\"Stat_Movement\">+{[extraMovement]} déplacement</style> et inflige <style=\"Stat_Damage\">+{[extraDmg]} dégâts</style> lorsqu'il <style=\"Charging\">charge</style>. De plus, Lucien ne peut plus être contrôlé pour le reste de la bataille ; au lieu de cela, il se déplace et attaque automatiquement au début de son tour.",
+    "variables": {
+      "hpPct": [
+        30, 30, 30, 30, 30, 30, 30, 30, 35, 35, 35, 35, 35, 35, 35, 35, 35, 40,
+        40, 40, 40, 40, 40, 40, 40, 40, 45, 45, 45, 45, 45, 45, 45, 45, 45, 50,
+        50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50,
+        50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50
+      ],
+      "extraDmg": [
+        10, 12, 14, 16, 18, 20, 23, 25, 27, 30, 32, 34, 36, 39, 41, 43, 46, 48,
+        50, 53, 56, 60, 69, 78, 87, 96, 105, 115, 124, 133, 142, 151, 160, 169,
+        178, 187, 196, 206, 215, 227, 245, 264, 285, 307, 348, 390, 431, 472,
+        513, 554, 560, 568, 575, 585, 595, 605, 615, 628, 640, 653, 668, 683,
+        698, 713, 728
+      ]
+    },
+    "constants": {
+      "extraMovement": "1"
+    },
+    "scaled": ["extraDmg"]
+  }
+}

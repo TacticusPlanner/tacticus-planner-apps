@@ -73,8 +73,8 @@ describe("parseAbilityText", () => {
       '<style="Faction_Ultramarines">{[UnitName]}</style> deals <style="Stat_Hits">3x</style>'
     )
     expect(ast).toHaveLength(3)
-    expect(ast[0].type).toBe("styled")
-    expect(ast[2].type).toBe("styled")
+    expect(ast[0]?.type).toBe("styled")
+    expect(ast[2]?.type).toBe("styled")
   })
 
   it("throws on an unmatched closing tag", () => {

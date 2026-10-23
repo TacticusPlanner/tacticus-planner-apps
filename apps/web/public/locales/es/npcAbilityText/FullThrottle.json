@@ -1,0 +1,11 @@
+{
+  "FullThrottle": {
+    "description": "Cuando esta unidad se mueve <style=\"Stat_Movement\">{[movement]}</style> o más hexágonos, hay un {[chance]} % de probabilidad de que su kohete no funcione y provoque que los <style=\"Faction_Orks\">Zoldadoz de azalto</style> ardan en llamas. En este caso, la unidad no se puede revivir.",
+    "variables": {},
+    "constants": {
+      "movement": "3",
+      "chance": "30"
+    },
+    "scaled": []
+  }
+}

@@ -45,7 +45,7 @@ export function pickXpBookRarity(xp: number, preferred: Rarity): Rarity {
   const fitting = [...rarityOrder]
     .reverse()
     .find((rarity) => xpBookValueByRarity[rarity] <= xp)
-  return fitting ?? rarityOrder[0]
+  return fitting ?? rarityOrder[0] ?? "Common"
 }
 
 /** `remainingXp` expressed as a whole-book count of `rarity` (falls back to Legendary — see

@@ -1,0 +1,12 @@
+{
+  "NornCrown": {
+    "description": "Le niveau maximum de <style=\"Debuff_Neuroparasite\">Neuroparasite</style> augmente de {[effectLevel]}. Les autres <style=\"Psyker\">Psykers</style> alliés à portée de <style=\"Synapse\">Synapse</style> et les <style=\"Summon\">invocations</style> alliées à portée de <style=\"Synapse\">Synapse</style> infligent <style=\"Stat_Damage\">+{[extraDmg]} dégâts</style> aux ennemis affectés par <style=\"Debuff_Neuroparasite\">Neuroparasite</style>.",
+    "variables": {
+      "extraDmg": [880, 928, 975, 1023, 1070, 1118, 1165, 1213, 1260, 1308]
+    },
+    "constants": {
+      "effectLevel": "1"
+    },
+    "scaled": []
+  }
+}

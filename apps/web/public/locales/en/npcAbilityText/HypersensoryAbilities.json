@@ -1,0 +1,33 @@
+{
+  "HypersensoryAbilities": {
+    "description": "The first time each enemy turn that <style=\"Faction_Genestealers\">Judh</style> is attacked, she cannot fall below <style=\"Stat\">{[hpPct]}%</style> of her current <style=\"Stat_Health\">Health</style>. After the attack, she moves to a free adjacent hex and places a <style=\"Decoy\">decoy</style> on the hex she moved from. Then, if she is within {[range]} hexes of the unit that attacked her, she deals <style=\"Stat_Hits\">{[nrOfHits]}x</style> <style=\"DMG_Projectile\">{[minDmg]}-{[maxDmg]} Projectile Damage</style> to that unit.",
+    "variables": {
+      "hpPct": [
+        30, 30, 30, 30, 30, 30, 30, 30, 35, 35, 35, 35, 35, 35, 35, 35, 35, 40,
+        40, 40, 40, 40, 40, 40, 40, 40, 45, 45, 45, 45, 45, 45, 45, 45, 45, 50,
+        50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50,
+        50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50
+      ],
+      "minDmg": [
+        20, 24, 28, 32, 36, 41, 45, 50, 54, 59, 64, 68, 73, 77, 82, 87, 91, 96,
+        100, 105, 111, 120, 138, 156, 174, 193, 211, 229, 247, 265, 284, 302,
+        320, 338, 356, 375, 393, 411, 429, 455, 491, 529, 569, 615, 697, 779,
+        861, 943, 1026, 1109, 1120, 1135, 1150, 1170, 1190, 1210, 1230, 1255,
+        1280, 1305, 1335, 1365, 1395, 1425, 1455
+      ],
+      "maxDmg": [
+        30, 36, 42, 48, 54, 61, 68, 75, 82, 89, 95, 102, 109, 116, 123, 130,
+        137, 144, 151, 158, 167, 180, 207, 234, 262, 289, 316, 344, 371, 398,
+        425, 453, 480, 507, 535, 562, 589, 617, 644, 682, 736, 793, 854, 922,
+        1045, 1169, 1292, 1415, 1538, 1662, 1680, 1703, 1725, 1755, 1785, 1815,
+        1845, 1883, 1920, 1958, 2003, 2048, 2093, 2138, 2183
+      ]
+    },
+    "constants": {
+      "damageProfile": "Projectile",
+      "range": "2",
+      "nrOfHits": "3"
+    },
+    "scaled": ["minDmg", "maxDmg"]
+  }
+}

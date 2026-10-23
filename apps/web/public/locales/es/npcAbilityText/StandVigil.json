@@ -1,0 +1,23 @@
+{
+  "StandVigil": {
+    "description": "Las unidades aliadas cercanas tienen <style=\"Stat_Armor\">+{[extraArmor]} de Armadura</style> e infligen un <style=\"Stat_Damage\">+{[extraDmgPct]} % de Daño</style> con ataques que no sean <style=\"NormalAttack\">ataques normales</style>. Si un <style=\"Faction_Custodes\">Adeptus Custodes</style> aliado usa una habilidad activa, <i>En guardia</i> afecta a todas las demás unidades aliadas dentro de {[range]} hexágonos por 1 ronda.",
+    "variables": {
+      "extraArmor": [
+        4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22,
+        23, 24, 25, 28, 31, 35, 39, 42, 46, 49, 53, 57, 60, 64, 68, 71, 75, 79,
+        82, 86, 91, 98, 106, 114, 123, 139, 156, 172, 189, 205, 222, 224, 227,
+        230, 234, 238, 242, 246, 251, 256, 261, 267, 273, 279, 285, 291
+      ],
+      "extraDmgPct": [
+        20, 20, 20, 20, 20, 20, 20, 20, 21, 21, 21, 21, 21, 21, 21, 21, 21, 22,
+        22, 22, 22, 22, 22, 22, 22, 22, 23, 23, 23, 23, 23, 23, 23, 23, 23, 25,
+        25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25,
+        25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25
+      ]
+    },
+    "constants": {
+      "range": "2"
+    },
+    "scaled": ["extraArmor"]
+  }
+}

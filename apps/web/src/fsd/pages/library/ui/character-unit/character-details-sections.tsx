@@ -18,11 +18,13 @@ import { cn } from "@workspace/ui/lib/utils"
 
 import {
   AbilityText,
+  rulesTextPending,
   useTraitText,
   type TraitTextEntry,
 } from "@/shared/ability-text"
 import { describeSeries, EntityIcon, LevelChart } from "@/shared/ui"
 
+import { RulesTextNote } from "../unit/rules-text-note"
 import { ladderRanks, type StatsFigure } from "./character-unit.view-model"
 import { EquipmentSlots } from "./equipment-slots"
 
@@ -104,15 +106,15 @@ function AttackRow({
           {pierce !== undefined ? (
             <Tooltip>
               <TooltipTrigger asChild>
-                <span
-                  tabIndex={0}
+                <button
+                  type="button"
                   className="ml-0.5 border-l pl-1.5 text-muted-foreground underline decoration-dotted underline-offset-2"
                   data-testid={`unit-attack-${kind}-pierce`}
                 >
                   {t("characterUnit.glance.pierce", {
                     value: Math.round(pierce * 100),
                   })}
-                </span>
+                </button>
               </TooltipTrigger>
               <TooltipContent>
                 {t("characterUnit.glance.pierceHint", {
@@ -249,8 +251,13 @@ export function TraitsList({ traits }: { traits: readonly string[] }) {
   const traitText = useTraitText()
   return (
     <ul className="flex flex-col gap-3" data-testid="unit-traits">
+      {traits.length > 0 && rulesTextPending(traitText) ? (
+        <li>
+          <RulesTextNote rules={traitText} data-testid="unit-traits-text" />
+        </li>
+      ) : null}
       {traits.map((trait) => {
-        const text = traitText(trait)
+        const text = traitText.text(trait)
         return (
           <li
             key={trait}
@@ -366,7 +373,7 @@ export function StatsByRank({
               </th>
               {statKeys.map((key) => (
                 <td key={key} className="py-1 text-right">
-                  {format.format(byRank[index][key])}
+                  {format.format(byRank[index]?.[key] ?? NaN)}
                 </td>
               ))}
             </tr>
@@ -390,7 +397,7 @@ export function StatsByRank({
             xLabels={xLabels}
             xTicks={xTicks}
             // Tier initials (St, Ir, Br …) under narrow charts; the readout names the full rank.
-            tickLabel={(index) => xLabels[index].slice(0, 2)}
+            tickLabel={(index) => xLabels[index]?.slice(0, 2) ?? ""}
             markerIndex={markerIndex}
             readoutSuffix={
               owned ? t("characterUnit.statsByRank.yours") : undefined

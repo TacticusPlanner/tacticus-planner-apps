@@ -1,0 +1,13 @@
+{
+  "Lakrimae": {
+    "description": "<style=\"Faction_DeathGuard\">Typhus’</style> <style=\"NormalAttack\">normale Nahkampfangriffe</style> <style=\"Tile_Contamination\">kontaminieren</style> das Zielfeld. Wenn eine nicht-mechanische gegnerische Einheit in Typhus’ <style=\"ContagionsOfNurgle\">Aura der Ansteckung</style> während seines Zugs besiegt wird, beschwört er einen <style=\"Summon\"><style=\"Faction_DeathGuard\">Seuchenwandler</style></style> auf dem Feld der besiegten Einheit, vorausgesetzt, es befinden sich weniger als {[nrOfUnits]} verbündete Seuchenwandler auf dem Schlachtfeld. Die Seuchenwandler verfügen über <style=\"Stat_Health\">{[summonHp]} Lebenspunkte</style> und <style=\"Stat_Damage\">{[summonDmg]} Schaden</style>.",
+    "variables": {
+      "summonHp": [2940, 3099, 3257, 3416, 3575, 3733, 3892, 4051, 4210, 4368],
+      "summonDmg": [3425, 3610, 3795, 3980, 4165, 4349, 4534, 4719, 4904, 5089]
+    },
+    "constants": {
+      "nrOfUnits": "3"
+    },
+    "scaled": []
+  }
+}

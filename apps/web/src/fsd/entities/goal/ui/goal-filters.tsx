@@ -9,18 +9,11 @@ import {
   SelectValue,
 } from "@workspace/ui/components/select"
 
-import type { GoalKind } from "../model/types"
+import { GOAL_TYPE_VALUES, type GoalKind } from "../model/types"
 
 export type GoalTypeFilterValue = "all" | GoalKind
 export type GoalGroupValue = "none" | "unit" | "type"
 
-const GOAL_TYPE_VALUES: readonly GoalKind[] = [
-  "Rank",
-  "Ascension",
-  "Ability",
-  "Unlock",
-  "Upgrade",
-]
 const DEFAULT_GROUP_OPTIONS: readonly GoalGroupValue[] = [
   "none",
   "unit",

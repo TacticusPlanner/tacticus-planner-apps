@@ -1,0 +1,11 @@
+{
+  "ElectroShock": {
+    "description": "Cuando esta unidad realiza un <style=\"NormalAttack\">ataque cuerpo a cuerpo normal</style>, también inflige un {[dmgPct]} % de su <style=\"Stat_Damage\">Daño</style> a un enemigo aleatorio adyacente al objetivo y todos los enemigos dañados sufren <style=\"Debuff_Pinned\">Supresión</style> por 1 ronda.",
+    "variables": {},
+    "constants": {
+      "damageProfile": "Particle",
+      "dmgPct": "50"
+    },
+    "scaled": []
+  }
+}

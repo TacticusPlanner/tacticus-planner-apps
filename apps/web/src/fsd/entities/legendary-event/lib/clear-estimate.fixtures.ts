@@ -86,4 +86,4 @@ export const UTHAR_ALPHA_PROGRESS = buildSyncedLaneProgress(UTHAR_ALPHA_MODEL, {
     { objectivesCleared: [0, 1], highScore: 29, encounterPoints: 29 },
     { objectivesCleared: [0], highScore: 31, encounterPoints: 31 },
   ],
-} as Parameters<typeof buildSyncedLaneProgress>[1])
+})

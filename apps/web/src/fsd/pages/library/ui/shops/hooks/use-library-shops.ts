@@ -1,19 +1,14 @@
 import { useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
-import { useLiveQuery } from "dexie-react-hooks"
 import {
   resolveShopSlotsForDay,
   todayDow,
   type ShopDayOfWeek,
 } from "@workspace/game-catalog"
-import {
-  getCharactersMap,
-  getEquipmentMap,
-  getMowsMap,
-  getShopsMap,
-} from "@workspace/game-catalog/queries"
 
 import { shopRewardDisplay } from "@/features/shop-rewards"
+import { combineReadStates } from "@/shared/lib"
+import { toById, useCatalogDataset } from "@/shared/local-data"
 
 import {
   buildLibraryShopSlots,
@@ -51,34 +46,26 @@ export function useLibraryShops(): LibraryShopsViewModel {
   ])
   const [day, setDay] = useState<ShopDayOfWeek>(() => todayDow())
   const [shopId, setShopId] = useState<LibraryShopId>("guild")
-  const [retryNonce, setRetryNonce] = useState(0)
+  const read = combineReadStates(
+    useCatalogDataset("shops", toById),
+    useCatalogDataset("characters", toById),
+    useCatalogDataset("mows", toById),
+    useCatalogDataset("equipment", toById)
+  )
+  const [shops, characters, mows, equipment] =
+    read.status === "ready" ? read.data : []
 
-  // useLiveQuery swallows a thrown error into `undefined` forever, which is indistinguishable from
-  // "still loading"; wrapping the read lets the page show a real retry-able failure state.
-  const catalog = useLiveQuery(async () => {
-    try {
-      const [shops, characters, mows, equipment] = await Promise.all([
-        getShopsMap(),
-        getCharactersMap(),
-        getMowsMap(),
-        getEquipmentMap(),
-      ])
-      return { ok: true as const, shops, characters, mows, equipment }
-    } catch {
-      return { ok: false as const }
-    }
-  }, [retryNonce])
-
+  // Keyed on each dataset (each referentially stable while unchanged), not on the combined tuple.
   const slots = useMemo<LibraryShopSlotView[] | null>(() => {
-    if (!catalog?.ok) return null
-    const shop = catalog.shops.get(shopId)
+    if (!shops || !characters || !mows || !equipment) return null
+    const shop = shops.get(shopId)
     if (!shop) return []
 
     const rewardContext = {
       t,
-      charactersById: catalog.characters,
-      mowsById: catalog.mows,
-      equipmentById: catalog.equipment,
+      charactersById: characters,
+      mowsById: mows,
+      equipmentById: equipment,
     }
 
     return buildLibraryShopSlots(resolveShopSlotsForDay(shop, day), (offer) => {
@@ -89,11 +76,9 @@ export function useLibraryShops(): LibraryShopsViewModel {
       )
       return { label: display.label, iconUrl: display.iconUrl }
     })
-  }, [catalog, shopId, day, t])
+  }, [shops, characters, mows, equipment, shopId, day, t])
 
-  if (catalog && !catalog.ok) {
-    return { status: "error", retry: () => setRetryNonce((value) => value + 1) }
-  }
+  if (read.status === "error") return { status: "error", retry: read.retry }
   if (!slots) return { status: "loading" }
   return { status: "ready", day, setDay, shopId, setShopId, slots }
 }

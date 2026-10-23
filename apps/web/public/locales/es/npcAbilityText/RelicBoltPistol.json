@@ -1,0 +1,11 @@
+{
+  "RelicBoltPistol": {
+    "description": "El portador de la reliquia obtiene <style=\"Piercing_Ratio\">+{[extraPierceRatio]} % de tasa de perforación</style> con ataques cuerpo a cuerpo e inflige <style=\"Stat_CritDamage\">+{[extraCritDmg]} de Daño Crítico</style> con ataques a distancia. Estas bonificaciones se duplican contra enemigos de <style=\"Aliance_Chaos\">Caos</style> o <style=\"Aliance_Xenos\">Xenos</style>.",
+    "variables": {
+      "extraPierceRatio": [5, 6, 6, 7, 7, 8, 8, 9, 9, 10],
+      "extraCritDmg": [590, 622, 654, 686, 717, 749, 781, 813, 845, 877]
+    },
+    "constants": {},
+    "scaled": []
+  }
+}

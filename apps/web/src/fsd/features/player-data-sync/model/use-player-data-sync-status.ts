@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { formatRelativeTime } from "@/shared/lib"
 import {
+  usePlayerDataProgress,
   usePlayerDataStatus,
   type PlayerDataStatus,
 } from "@/shared/player-data-status"
@@ -27,8 +28,10 @@ const relativeTimeRefreshMs = 30 * 1000
  */
 export function usePlayerDataSyncStatus() {
   const { i18n, t } = useTranslation()
-  const { error, lastSyncedAt, progress, requiresReauth, status, syncNow } =
+  const { error, lastSyncedAt, requiresReauth, status, syncNow } =
     usePlayerDataStatus()
+  // Subscribes to every progress tick: call this only from a control that shows the status text.
+  const progress = usePlayerDataProgress()
   const [, setRelativeTimeTick] = useState(() => Date.now())
   const isSyncing = status === "syncing"
   const statusLabel = t(statusLabelKeys[status])

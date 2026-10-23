@@ -1,0 +1,10 @@
+{
+  "HailOfLivingAmmunition": {
+    "description": "Esta unidad tiene <style=\"Stat_Hits\">+{[extraHit]} de impacto</style> en ataques a distancia por cada Termagante adyacente.",
+    "variables": {},
+    "constants": {
+      "extraHit": "1"
+    },
+    "scaled": []
+  }
+}

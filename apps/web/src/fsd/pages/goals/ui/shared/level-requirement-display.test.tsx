@@ -1,18 +1,9 @@
 import { render, screen } from "@/test/render"
 import { describe, expect, it, vi } from "vitest"
 
-vi.mock("react-i18next", () => ({
-  initReactI18next: { type: "3rdParty", init: vi.fn() },
-  useTranslation: () => ({
-    t: (key: string, opts?: Record<string, unknown>) =>
-      opts ? `${key}:${JSON.stringify(opts)}` : key,
-    i18n: { resolvedLanguage: "en" },
-  }),
-}))
-
 vi.mock("@workspace/ui/hooks/use-mobile", () => ({ useIsMobile: () => false }))
 
-import type { LevelRequirementProgress } from "../../model/attainment/level-requirement-progress"
+import type { LevelRequirementProgress } from "@/features/goal-planning"
 import { LevelRequirementLine } from "./level-requirement-display"
 
 const requirement: LevelRequirementProgress = {
@@ -37,15 +28,15 @@ describe("LevelRequirementLine", () => {
 
     const line = screen.getByTestId("level-requirement-line")
     expect(screen.getByTestId("level-requirement-target")).toHaveTextContent(
-      'goals.overview.levelProgress:{"current":31,"target":32}'
+      "Lv 31 → 32"
     )
     expect(line).toContainElement(
       screen.getByTestId("level-requirement-progress")
     )
     expect(screen.getByTestId("level-requirement-books")).toHaveTextContent(
-      'goals.resourceChips.xpBooksValue:{"available":"4","needed":"6"}'
+      "4 of 6"
     )
-    expect(line).not.toHaveTextContent("remainingText.levels")
+    expect(line).not.toHaveTextContent(/\d+ levels/)
     expect(line).not.toHaveTextContent("XP remaining")
   })
 
@@ -86,7 +77,7 @@ describe("LevelRequirementLine", () => {
       />
     )
     expect(screen.getByTestId("level-requirement-target")).toHaveTextContent(
-      'goals.overview.levelProgress:{"current":35,"target":38}'
+      "Lv 35 → 38"
     )
   })
 })

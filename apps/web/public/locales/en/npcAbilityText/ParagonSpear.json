@@ -1,0 +1,15 @@
+{
+  "ParagonSpear": {
+    "description": "All of <style=\"Faction_Custodes\">Tyrith's</style> hits that are <style=\"Stat_CritDamage\">Crits</style> deal the maximum possible <style=\"Stat_Damage\">Damage</style>. At the beginning of Tyrith's turn, she attacks a random enemy within range {[range]} and deals <style=\"Stat_Hits\">{[nrOfHits]}x</style> <style=\"DMG_Bolter\">{[minDmg]}-{[maxDmg]} Bolter Damage</style> to it. If there is an enemy adjacent to her, this range is reduced to 1.",
+    "variables": {
+      "minDmg": [2155, 2271, 2388, 2504, 2620, 2737, 2853, 2969, 3086, 3202],
+      "maxDmg": [2940, 3099, 3257, 3416, 3575, 3733, 3892, 4051, 4210, 4368]
+    },
+    "constants": {
+      "nrOfHits": "2",
+      "damageProfile": "Bolter",
+      "range": "2"
+    },
+    "scaled": []
+  }
+}

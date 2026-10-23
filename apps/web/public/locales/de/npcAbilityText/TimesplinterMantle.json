@@ -1,0 +1,16 @@
+{
+  "TimesplinterMantle": {
+    "description": "Zu Beginn jedes Zuges erhalten <style=\"Faction_Necrons\">Thothmek</style> und alle verbündeten angrenzenden <style=\"Mechanical\">Mechanischen</style> Einheiten <i>Zeitsplitter-Panzerung</i>. Betroffene Einheiten erleiden durch den ersten gegen sie ausgeführten Angriff <style=\"Stat_Damage\">-{[dmgReduction]} Schaden</style>. Der Effekt endet nach einem erfolgten Angriff oder am Ende des Zuges.",
+    "variables": {
+      "dmgReduction": [
+        30, 36, 42, 48, 54, 61, 68, 75, 82, 89, 95, 102, 109, 116, 123, 130,
+        137, 144, 151, 158, 167, 180, 207, 234, 262, 289, 316, 344, 371, 398,
+        425, 453, 480, 507, 535, 562, 589, 617, 644, 682, 736, 793, 854, 922,
+        1045, 1169, 1292, 1415, 1538, 1662, 1680, 1703, 1725, 1755, 1785, 1815,
+        1845, 1883, 1920, 1958, 2003, 2048, 2093, 2138, 2183
+      ]
+    },
+    "constants": {},
+    "scaled": ["dmgReduction"]
+  }
+}

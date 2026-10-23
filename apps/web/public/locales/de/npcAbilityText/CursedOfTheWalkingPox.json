@@ -1,0 +1,8 @@
+{
+  "CursedOfTheWalkingPox": {
+    "description": "Jedes Mal, wenn diese Einheit eine gegnerische nicht-<style=\"Mechanical\">mechanische</style> Einheit tötet, wird ein <style=\"Summon\"><style=\"Faction_DeathGuard\">Seuchenwandler</style></style> auf diesem Feld beschworen.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

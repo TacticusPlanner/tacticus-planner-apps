@@ -54,14 +54,14 @@ function ItemEntry({ item }: { item: EquipmentStorageModel }) {
     <li>
       <Tooltip>
         <TooltipTrigger asChild>
-          <span
-            tabIndex={0}
+          <button
+            type="button"
             className="inline-flex items-center gap-1.5 rounded-sm"
             data-testid={`unit-item-${item.id}`}
           >
             <ItemIcon item={item} />
             {name}
-          </span>
+          </button>
         </TooltipTrigger>
         <TooltipContent>
           <p className="font-semibold">

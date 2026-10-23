@@ -1,0 +1,11 @@
+{
+  "CloudOfFlies": {
+    "description": "Subit <style=\"Stat_Damage\">-{[dmgReductionPct]} % de dégâts</style> tant qu'elle se trouve sur un hexagone <style=\"Tile_Contamination\">contaminé</style>. Si cette unité est attaquée alors qu'elle ne se trouve pas sur un hexagone <style=\"Tile_Contamination\">contaminé</style>, elle a {[chance]} % de chances de contaminer l'hexagone où elle est située.",
+    "variables": {},
+    "constants": {
+      "dmgReductionPct": "30",
+      "chance": "70"
+    },
+    "scaled": []
+  }
+}

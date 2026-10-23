@@ -4,23 +4,7 @@ import { useQuery } from "@tanstack/react-query"
 import userEvent from "@testing-library/user-event"
 import { toast } from "sonner"
 
-vi.mock("react-i18next", () => ({
-  initReactI18next: { type: "3rdParty", init: () => undefined },
-  useTranslation: () => ({
-    t: (key: string, opts?: Record<string, unknown>) =>
-      opts ? `${key}:${JSON.stringify(opts)}` : key,
-  }),
-}))
-
-const account = { homeAccountId: "acc-1", username: "test@example.com" }
-
-vi.mock("@azure/msal-react", () => ({
-  useMsal: () => ({
-    accounts: [account],
-    instance: { getActiveAccount: () => account },
-  }),
-  useIsAuthenticated: () => true,
-}))
+import { setTestAuth } from "@/test/auth"
 
 vi.mock("sonner", () => ({
   toast: { success: vi.fn(), error: vi.fn() },
@@ -49,8 +33,8 @@ vi.mock("@/entities/goal", async (importOriginal) => ({
 /** A status change answers with the changed goals and the order revision. */
 const statusResponse = { goals: [], orderRevision: 0 }
 
-import { useGoalActions } from "../../model/goals-data/use-goal-actions"
-import type { GoalRow } from "../../model/shared/types"
+import { useGoalActions } from "@/features/goal-planning"
+import type { GoalRow } from "@/features/goal-planning"
 import type { CascadeContext } from "./goal-row-utils"
 import { GoalRowActions } from ".//goal-row-actions"
 
@@ -142,6 +126,7 @@ function CachedListsHarness({
 
 describe("GoalRowActions", () => {
   beforeEach(() => {
+    setTestAuth({ authenticated: true })
     updateGoalsStatus.mockReset()
     onEdit.mockReset()
     deleteGoal.mockReset()
@@ -418,7 +403,9 @@ describe("GoalRowActions", () => {
         expect(screen.getAllByText("goal-1")).toHaveLength(2)
       )
       expect(loadGoals).toHaveBeenCalledTimes(2)
-      expect(toast.error).toHaveBeenCalledWith("goals.toasts.actionError")
+      expect(toast.error).toHaveBeenCalledWith(
+        "Something went wrong. Please try again."
+      )
       expect(toast.success).not.toHaveBeenCalled()
 
       deleteGoal.mockResolvedValueOnce(undefined)
@@ -440,7 +427,7 @@ describe("GoalRowActions", () => {
 
     await vi.waitFor(() => {
       expect(toast.error).toHaveBeenCalledWith(
-        "goals.toasts.actionError",
+        "Something went wrong. Please try again.",
         undefined
       )
     })

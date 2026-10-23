@@ -1,0 +1,32 @@
+{
+  "PlagueburstMortar": {
+    "description": "Fija como objetivo un hexágono en el campo de batalla. Todos los enemigos en ese hexágono o hexágonos adyacentes que también que tengan la <style=\"Stat_Armor\">Armadura</style> reducida o que estén dentro de un aura de <style=\"ContagionsOfNurgle\">Contagio</style> aliada reciben <style=\"DMG_Toxic\">{[minDmg]}-{[maxDmg]} de Daño tóxico</style> <style=\"Stat_Hits\">x{[nrOfHits]}</style> y sufren <style=\"Debuff_Pinned\">Supresión</style> por 1 ronda. Luego <style=\"Tile_Contamination\">Contamina</style> el hexágono objetivo y hexágonos adyacentes aleatorios, hasta un total de <style=\"Stat\">{[nrOfTiles]}</style> hexágonos.\n\n<style=\"Cooldown\">Tiempo de recuperación inicial: {[initialCooldownTurns]} ronda</style>. \n\n{[S/AbilityDamageExplanation]}",
+    "variables": {
+      "minDmg": [
+        7, 8, 10, 11, 13, 14, 16, 17, 19, 21, 22, 24, 25, 27, 29, 30, 32, 34,
+        35, 37, 39, 42, 48, 55, 61, 67, 74, 80, 87, 93, 99, 106, 112, 118, 125,
+        131, 137, 144, 150, 159, 172, 185, 199, 215, 244, 273, 301, 330, 359,
+        388, 392, 397, 403, 410, 417, 424, 431, 439, 448, 457, 467, 478, 488,
+        499, 509
+      ],
+      "maxDmg": [
+        14, 17, 20, 22, 25, 28, 32, 35, 38, 41, 45, 48, 51, 54, 57, 61, 64, 67,
+        70, 74, 78, 84, 97, 109, 122, 135, 148, 160, 173, 186, 199, 211, 224,
+        237, 249, 262, 275, 288, 300, 318, 344, 370, 399, 430, 488, 545, 603,
+        660, 718, 776, 784, 795, 805, 819, 833, 847, 861, 879, 896, 914, 935,
+        956, 977, 998, 1019
+      ],
+      "nrOfTiles": [
+        3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5,
+        5, 5, 6, 6, 6, 6, 6, 6, 6, 6, 6, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
+        7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7
+      ]
+    },
+    "constants": {
+      "damageProfile": "Toxic",
+      "nrOfHits": "3",
+      "initialCooldownTurns": "1"
+    },
+    "scaled": ["minDmg", "maxDmg"]
+  }
+}

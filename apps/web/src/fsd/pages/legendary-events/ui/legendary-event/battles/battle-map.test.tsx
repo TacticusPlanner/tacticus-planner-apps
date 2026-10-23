@@ -37,7 +37,7 @@ describe("BattleMap", () => {
     const image = screen.getByRole("img", { name: "Map of Alpha battle 1" })
     expect(image).toHaveAttribute(
       "src",
-      expect.stringMatching(/\/le_maps\/LE1_26\.jpg$/)
+      expect.stringMatching(/\/le_maps\/LE1_26\.webp$/)
     )
     expect(image).toHaveAttribute("loading", "lazy")
   })

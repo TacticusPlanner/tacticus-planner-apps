@@ -1,0 +1,10 @@
+{
+  "HostOfPlagues": {
+    "description": "Lorsqu'une unité ennemie non <style=\"Mechanical\">mécanique</style> est éliminée, il y a <style=\"Stat_Chance\">{[chance]} % de chances</style> qu'un <style=\"Summon\"><style=\"Faction_DeathGuard\">Véroleux</style></style> soit invoqué sur l'hexagone de cette unité ennemie.",
+    "variables": {},
+    "constants": {
+      "chance": "100"
+    },
+    "scaled": []
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "Poxwalkers": {
+    "description": "Summons <style=\"Summon\"><style=\"Faction_DeathGuard\">Poxwalkers</style></style> in <style=\"Stat_Chance\">{[chance]}-{[chance_2]}%</style> of free hexes (rounded up) within <style=\"Faction_DeathGuard\">Corrodius'</style> <style=\"ContagionsOfNurgle\">Contagion</style> aura. Newly summoned <style=\"Summon\"><style=\"Faction_DeathGuard\">Poxwalkers</style></style> immediately attack in <style=\"Stat_Melee\">melee</style>, but cannot move this turn.\n\nPoxwalker’s stats:\n<style=\"Stat_Health\">{[summonHp]} Health</style>\n<style=\"Stat_Damage\">{[summonDmg]} Damage</style>",
+    "variables": {
+      "summonHp": [
+        30, 36, 42, 48, 54, 61, 68, 75, 82, 89, 95, 102, 109, 116, 123, 130,
+        137, 144, 151, 158, 167, 180, 207, 234, 262, 289, 316, 344, 371, 398,
+        425, 453, 480, 507, 535, 562, 589, 617, 644, 682, 736, 793, 854, 922,
+        1045, 1169, 1292, 1415, 1538, 1662, 1680, 1703, 1725, 1755, 1785, 1815,
+        1845, 1883, 1920, 1958, 2003, 2048, 2093, 2138, 2183
+      ],
+      "summonDmg": [
+        35, 42, 49, 56, 63, 71, 79, 87, 95, 103, 111, 119, 127, 135, 144, 152,
+        160, 168, 176, 184, 195, 210, 242, 273, 305, 337, 369, 401, 433, 464,
+        496, 528, 560, 592, 624, 656, 687, 719, 751, 796, 859, 925, 996, 1076,
+        1219, 1363, 1507, 1651, 1795, 1939, 1960, 1986, 2013, 2048, 2083, 2118,
+        2153, 2196, 2240, 2284, 2336, 2389, 2441, 2494, 2546
+      ],
+      "chance": [
+        15, 15, 15, 15, 15, 15, 15, 15, 17, 17, 17, 17, 17, 17, 17, 17, 17, 18,
+        18, 18, 18, 18, 18, 18, 18, 18, 19, 19, 19, 19, 19, 19, 19, 19, 19, 20,
+        20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20,
+        20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20
+      ],
+      "chance_2": [
+        25, 25, 25, 25, 25, 25, 25, 25, 30, 30, 30, 30, 30, 30, 30, 30, 30, 35,
+        35, 35, 35, 35, 35, 35, 35, 35, 40, 40, 40, 40, 40, 40, 40, 40, 40, 45,
+        45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45,
+        45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45
+      ]
+    },
+    "constants": {
+      "unitId": "deathPoxwalker"
+    },
+    "scaled": ["summonHp", "summonDmg"]
+  }
+}

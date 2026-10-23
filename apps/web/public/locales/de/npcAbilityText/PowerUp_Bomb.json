@@ -1,0 +1,28 @@
+{
+  "PowerUp_Bomb": {
+    "description": "Wenn diese Verstärkung von einer verbündeten Einheit aufgesammelt wird, löst sie eine Explosion aus, die <style=\"Stat_Hits\">{[nrOfHits]}x</style> <style=\"DMG_Blast\">{[minDmg]}–{[maxDmg]} Explosionsschaden</style> an allen Gegnern im Umkreis von {[range]} Feldern um das Feld, auf dem sie aufgesammelt wurde, zufügt. Der Schaden erhöht sich mit zunehmender Seltenheitsstufe.",
+    "variables": {
+      "minDmg": [
+        70, 70, 70, 70, 70, 70, 70, 70, 160, 160, 160, 160, 160, 160, 160, 160,
+        160, 366, 366, 366, 366, 366, 366, 366, 366, 366, 815, 815, 815, 815,
+        815, 815, 815, 815, 815, 1800, 1800, 1800, 1800, 1800, 1800, 1800, 1800,
+        1800, 1800, 1800, 1800, 1800, 1800, 1800, 2700, 2700, 2700, 2700, 2700,
+        2700, 2700, 2700, 2700, 2700, 2700, 2700, 2700, 2700, 2700
+      ],
+      "maxDmg": [
+        150, 150, 150, 150, 150, 150, 150, 150, 475, 475, 475, 475, 475, 475,
+        475, 475, 475, 1100, 1100, 1100, 1100, 1100, 1100, 1100, 1100, 1100,
+        2433, 2433, 2433, 2433, 2433, 2433, 2433, 2433, 2433, 5600, 5600, 5600,
+        5600, 5600, 5600, 5600, 5600, 5600, 5600, 5600, 5600, 5600, 5600, 5600,
+        8400, 8400, 8400, 8400, 8400, 8400, 8400, 8400, 8400, 8400, 8400, 8400,
+        8400, 8400, 8400
+      ]
+    },
+    "constants": {
+      "damageProfile": "Blast",
+      "nrOfHits": "1",
+      "range": "4"
+    },
+    "scaled": []
+  }
+}

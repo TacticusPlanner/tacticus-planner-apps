@@ -1,0 +1,11 @@
+{
+  "Dw02AdvancedBurstCannon": {
+    "description": "Jedes Mal, wenn <style=\"Faction_Tau\">Re’vas</style> angreift, erlangt sie <style=\"Piercing_Ratio\">+{[extraPierceRatio]} % Durchschlagchance</style>. Nach <style=\"STAT\">{[nrOfAttacks]}</style> Angriffen wird der Bonus zurückgesetzt und Re’vas kann ihre aktive Fähigkeit erneut einsetzen.",
+    "variables": {
+      "extraPierceRatio": [3, 4, 4, 4, 4, 5, 5, 5, 5, 6],
+      "nrOfAttacks": [8, 8, 8, 8, 8, 7, 7, 7, 7, 7]
+    },
+    "constants": {},
+    "scaled": []
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "Fealty": {
+    "description": "When <style=\"Faction_DarkAngels\">Lion El'Jonson</style> performs a <style=\"NormalAttack\">normal melee attack</style>, he also deals <style=\"Stat_Hits\">{[nrOfHits]}x</style> <style={[DamageProfileTypeStyle]}>{[minDmg]}-{[maxDmg]} {[DamageProfileType]}</style> to all enemies adjacent to both the target of the attack and to Lion El'Jonson.",
+    "variables": {
+      "minDmg": [
+        19, 23, 27, 30, 34, 39, 43, 47, 52, 56, 60, 65, 69, 74, 78, 82, 87, 91,
+        95, 100, 106, 114, 131, 148, 166, 183, 200, 218, 235, 252, 269, 287,
+        304, 321, 339, 356, 373, 390, 408, 432, 466, 502, 541, 584, 662, 740,
+        818, 896, 974, 1052, 1138, 1175, 1213, 1256, 1300, 1345, 1391, 1443,
+        1496, 1550, 1611, 1673, 1736, 1800, 1866
+      ],
+      "maxDmg": [
+        28, 34, 39, 45, 50, 57, 63, 70, 76, 83, 89, 95, 102, 108, 115, 121, 128,
+        134, 141, 147, 156, 168, 193, 219, 244, 270, 295, 321, 346, 372, 397,
+        423, 448, 473, 499, 524, 550, 575, 601, 637, 687, 740, 797, 860, 976,
+        1091, 1206, 1321, 1436, 1551, 1678, 1732, 1787, 1851, 1916, 1982, 2049,
+        2126, 2204, 2284, 2374, 2465, 2558, 2653, 2750
+      ]
+    },
+    "constants": {
+      "damageProfile": "Power",
+      "nrOfHits": "3"
+    },
+    "scaled": ["minDmg", "maxDmg"]
+  }
+}

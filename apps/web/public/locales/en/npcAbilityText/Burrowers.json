@@ -1,0 +1,8 @@
+{
+  "Burrowers": {
+    "description": "This unit may burrow in its turn, disappearing from the battlefield. In its following turn it must surface and may do so in any free hex. If adjacent to an enemy unit, it may attack in melee immediately.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

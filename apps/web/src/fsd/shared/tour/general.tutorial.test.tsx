@@ -1,6 +1,12 @@
 import { renderHook } from "@testing-library/react"
 import { afterEach, describe, expect, it, vi } from "vitest"
 
+function at<T>(xs: readonly T[] | undefined, index: number): T {
+  const value = xs?.[index]
+  if (value === undefined) throw new Error(`expected an item at index ${index}`)
+  return value
+}
+
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
 }))
@@ -143,7 +149,7 @@ describe("useMobileTutorialSteps", () => {
       const { result } = renderHook(() =>
         useMobileTutorialSteps(setMobileMenuForceOpen)
       )
-      const accountDrawerStep = result.current[2]
+      const accountDrawerStep = at(result.current, 2)
       const opening = accountDrawerStep.before?.({} as never)
 
       const resolved = vi.fn()
@@ -169,7 +175,7 @@ describe("useMobileTutorialSteps", () => {
       .mockReturnValue(new DOMRect(0, 100, 375, 400))
     const { result } = renderHook(() => useMobileTutorialSteps(vi.fn()))
     const resolved = vi.fn()
-    const opening = result.current[2].before?.({} as never)
+    const opening = at(result.current, 2).before?.({} as never)
     void opening?.then(resolved)
 
     vi.advanceTimersToNextFrame()
@@ -194,7 +200,7 @@ describe("useMobileTutorialSteps", () => {
     })
     const { result } = renderHook(() => useMobileTutorialSteps(vi.fn()))
     const resolved = vi.fn()
-    const opening = result.current[2].before?.({} as never)
+    const opening = at(result.current, 2).before?.({} as never)
     void opening?.then(resolved)
 
     await vi.advanceTimersByTimeAsync(320)
@@ -229,7 +235,7 @@ describe("useMobileTutorialSteps", () => {
       }
       const { result } = renderHook(() => useMobileTutorialSteps(vi.fn()))
       const resolved = vi.fn()
-      const opening = result.current[2].before?.({} as never)
+      const opening = at(result.current, 2).before?.({} as never)
       void opening?.then(resolved)
 
       await vi.advanceTimersByTimeAsync(999)

@@ -2,6 +2,8 @@ import type { IPublicClientApplication } from "@azure/msal-browser"
 import { deleteGameCatalogDb } from "@workspace/game-catalog"
 import { deletePlayerDataDb } from "@workspace/player-data"
 
+import { clearLocalDataCache } from "@/shared/local-data"
+
 import { forgetAccountHint } from "./authentication"
 
 export async function signOut(
@@ -9,6 +11,7 @@ export async function signOut(
   accountId: string
 ): Promise<void> {
   await Promise.all([deleteGameCatalogDb(), deletePlayerDataDb()])
+  clearLocalDataCache()
   // A new tab must show the signed-out experience, not try to restore this account.
   forgetAccountHint()
   const account = instance

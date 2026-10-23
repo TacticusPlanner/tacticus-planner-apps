@@ -215,7 +215,7 @@ export function filterLeaderboard<Row extends LeaderboardUnitRow>(
   )
 }
 
-export interface CrossLaneFigures {
+interface CrossLaneFigures {
   pointsPerBattle: number
   remainingPoints: number
 }

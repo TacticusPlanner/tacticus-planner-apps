@@ -1,0 +1,41 @@
+{
+  "BrazierOfHolyFire": {
+    "description": "Inflige <style=\"Stat_Hits\">{[nrOfHits]}x</style> <style=\"DMG_Flame\">{[minDmg]}-{[maxDmg]} de Daño de fuego</style> a un objetivo enemigo dentro del rango {[range]} y aplica <style=\"Effect_Fire\">Fuego</style> a su hexágono. Inflige <style=\"Stat_Hits\">{[nrOfHits_2]}x</style> <style=\"DMG_Flame\">{[minDmg]}-{[maxDmg]} de Daño de fuego</style> contra <style=\"Daemon\">demonios</style> en su lugar. TODOS los <style=\"Daemon\">demonios</style> dentro de {[range_2]} hexágonos del objetivo reciben <style=\"Stat_Damage\">+{[extraDmgPct]} % de Daño adicional</style> en esta ronda y la siguiente. Los <style=\"Daemon\">demonios</style><style=\"Immune\">inmunes</style> solo reciben <style=\"Stat_Damage\">+{[extraDmgPct_2]} % de Daño adicional</style>.",
+    "variables": {
+      "minDmg": [
+        32, 38, 45, 51, 58, 65, 72, 80, 87, 94, 102, 109, 116, 124, 131, 139,
+        146, 153, 161, 168, 178, 192, 221, 250, 279, 308, 337, 366, 396, 425,
+        454, 483, 512, 541, 570, 599, 628, 658, 687, 728, 785, 846, 911, 983,
+        1115, 1246, 1378, 1509, 1641, 1773, 1792, 1816, 1840, 1872, 1904, 1936,
+        1968, 2008, 2048, 2088, 2136, 2184, 2232, 2280, 2328
+      ],
+      "maxDmg": [
+        38, 46, 53, 61, 68, 77, 86, 95, 103, 112, 121, 130, 138, 147, 156, 165,
+        173, 182, 191, 200, 211, 228, 262, 297, 331, 366, 401, 435, 470, 504,
+        539, 573, 608, 643, 677, 712, 746, 781, 815, 864, 933, 1004, 1082, 1168,
+        1324, 1480, 1636, 1792, 1949, 2106, 2128, 2157, 2185, 2223, 2261, 2299,
+        2337, 2385, 2432, 2480, 2537, 2594, 2651, 2708, 2765
+      ],
+      "extraDmgPct": [
+        30, 30, 30, 30, 30, 30, 30, 30, 35, 35, 35, 35, 35, 35, 35, 35, 35, 40,
+        40, 40, 40, 40, 40, 40, 40, 40, 45, 45, 45, 45, 45, 45, 45, 45, 45, 50,
+        50, 50, 50, 50, 55, 55, 55, 55, 55, 60, 60, 60, 60, 60, 60, 60, 60, 60,
+        60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60
+      ],
+      "extraDmgPct_2": [
+        10, 10, 10, 10, 10, 10, 10, 10, 11, 11, 11, 11, 11, 11, 11, 11, 11, 12,
+        12, 12, 12, 12, 12, 12, 12, 12, 14, 14, 14, 14, 14, 14, 14, 14, 14, 16,
+        16, 16, 16, 16, 18, 18, 18, 18, 18, 20, 20, 20, 20, 20, 20, 20, 20, 20,
+        20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20
+      ]
+    },
+    "constants": {
+      "damageProfile": "Flame",
+      "range": "2",
+      "range_2": "2",
+      "nrOfHits": "2",
+      "nrOfHits_2": "4"
+    },
+    "scaled": ["minDmg", "maxDmg"]
+  }
+}

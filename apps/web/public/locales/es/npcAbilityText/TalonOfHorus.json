@@ -1,0 +1,14 @@
+{
+  "TalonOfHorus": {
+    "description": "Cuando <style=\"Faction_BlackLegion\">Abaddon</style> realiza un <style=\"NormalAttack\">ataque cuerpo a cuerpo normal</style>, también inflige <style=\"DMG_Power\">{[minDmg]}-{[maxDmg]} de Daño de poder</style> <style=\"Stat_Hits\">x{[nrOfHits]}</style> a todos los enemigos adyacentes tanto al objetivo del ataque como a Abaddon.",
+    "variables": {
+      "minDmg": [1175, 1238, 1302, 1365, 1429, 1492, 1556, 1619, 1682, 1746],
+      "maxDmg": [1565, 1649, 1734, 1818, 1903, 1987, 2072, 2156, 2241, 2325]
+    },
+    "constants": {
+      "nrOfHits": "3",
+      "damageProfile": "Power"
+    },
+    "scaled": []
+  }
+}

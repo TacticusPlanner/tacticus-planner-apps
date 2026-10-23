@@ -5,9 +5,9 @@ import { factionIcon } from "./faction"
 describe("factionIcon", () => {
   it("resolves a faction id to its emblem", () => {
     expect(factionIcon("Sisterhood")).toBe(
-      "/game_catalog/factions/Sisterhood.png"
+      "/game_catalog/factions/Sisterhood.webp"
     )
-    expect(factionIcon("Tau")).toBe("/game_catalog/factions/Tau.png")
+    expect(factionIcon("Tau")).toBe("/game_catalog/factions/Tau.webp")
   })
 
   it("has no emblem for the loot-object bucket", () => {

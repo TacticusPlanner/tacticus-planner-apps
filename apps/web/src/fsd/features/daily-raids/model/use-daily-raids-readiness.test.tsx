@@ -1,61 +1,20 @@
-import { renderHook } from "@testing-library/react"
 import { beforeEach, describe, expect, it, vi } from "vitest"
+
+import { render, renderHook, waitFor } from "@/test/render"
+import { seedGameCatalog, seedPlayerData } from "@/test/seed"
 
 import { useDailyRaids } from "./use-daily-raids"
 
-// Everything but the Onslaught rewards resolves immediately; the rewards are the variable under
-// test (spec: daily-raids-today — "Empty rewards dataset keeps Today loading").
-let onslaughtRewardsState: unknown
+// Everything but the Onslaught rewards resolves from the (empty) real stores; the rewards are the
+// variable under test (spec: daily-raids-today — "Empty rewards dataset keeps Today loading").
 
-vi.mock("react-i18next", () => ({
-  useTranslation: () => ({ t: (key: string) => key }),
-}))
-vi.mock("@azure/msal-react", () => ({ useIsAuthenticated: () => true }))
-vi.mock("@workspace/game-catalog/queries", () => ({
-  getAscensionCostsMap: vi.fn(),
-  getCampaignBattles: vi.fn(),
-  getCampaignDefinitions: vi.fn(),
-  getCharactersMap: vi.fn(),
-  getMowsMap: vi.fn(),
-  getNpcsMap: vi.fn(),
-  getOnslaughtRewards: vi.fn(),
-  getShops: vi.fn(),
-  getUnlockShardCostsMap: vi.fn(),
-  getUpgrades: vi.fn(),
-}))
-vi.mock("@workspace/player-data/queries", () => ({
-  getInventoryShard: vi.fn(),
-  getInventoryUpgrades: vi.fn(),
-  getPlayerCharacter: vi.fn(),
-  getPlayerMow: vi.fn(),
-}))
-vi.mock("dexie-react-hooks", () => ({
-  useLiveQuery: (querier: () => unknown) => {
-    const source = querier.toString()
-    if (source.includes("getOnslaughtRewards")) return onslaughtRewardsState
-    if (source.includes("playerUnitIds")) {
-      return {
-        playerCharacterById: new Map(),
-        playerMowById: new Map(),
-        inventoryShardById: new Map(),
-      }
-    }
-    if (source.includes("Map()")) return new Map()
-    return []
-  },
-}))
-vi.mock("@tanstack/react-query", () => ({
-  useQuery: () => ({ isSuccess: true, isError: false, data: {} }),
-  useQueries: () => [],
-}))
-vi.mock("@/entities/goal", () => ({
-  goalQueries: {
-    detail: (goalId: string) => ({ queryKey: ["goals", "detail", goalId] }),
-  },
-}))
-vi.mock("@/entities/player-data-override", () => ({
+vi.mock("@/entities/player-data-override", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/entities/player-data-override")>()),
   onslaughtProgressQueries: {
-    current: () => ({ queryKey: ["onslaught-progress"] }),
+    current: () => ({
+      queryKey: ["onslaught-progress"],
+      queryFn: async () => ({ revision: 1 }),
+    }),
   },
 }))
 vi.mock("@/entities/planning-setting", () => ({
@@ -64,56 +23,125 @@ vi.mock("@/entities/planning-setting", () => ({
     loading: false,
   }),
 }))
-vi.mock("@/features/rank-lookup/@x/daily-raids", () => ({
-  mapCampaignBattleStorageToDomain: (b: unknown) => b,
-  mapCharacterStorageToDomain: (c: unknown) => c,
-  mapUpgradeStorageToDomain: (u: unknown) => u,
-}))
-vi.mock("@/shared/lib", () => ({
-  useCampaignDisplay: () => ({
-    name: () => "",
-    tierLabel: () => "",
-    shortLabel: () => "",
+const scoped = vi.hoisted(() => ({ entries: [] as unknown[] }))
+vi.mock("./use-scoped-goal-plan", () => ({
+  useScopedGoalPlan: () => ({
+    entries: scoped.entries,
+    loading: false,
+    isError: false,
   }),
 }))
-vi.mock("./use-scoped-goal-plan", () => ({
-  useScopedGoalPlan: () => ({ entries: [], loading: false, isError: false }),
-}))
+const filters = vi.hoisted(() => ({}))
 vi.mock("./raids-filters/use-raids-filters", () => ({
-  useRaidsFilters: () => [{}],
+  useRaidsFilters: () => [filters],
 }))
 vi.mock("./use-eligible-campaign-battles", () => ({
-  useEligibleCampaignBattles: () => ({
-    availableBattles: [],
-    liveProgressResult: { value: { battleAttempts: [] } },
-    campaignEventProgressReady: true,
-    campaignEventProgressError: false,
-    campaignProgressResult: { value: null },
-  }),
+  useEligibleCampaignBattles: () => eligible,
+}))
+const eligible = vi.hoisted(() => ({
+  availableBattles: [],
+  liveProgress: { battleAttempts: [] },
+  ready: true,
+  isError: false,
 }))
 
+// The harness `renderHook` is Testing Library's own (no QueryClient or auth), so the hook runs in a
+// probe mounted through the harness `render`, signed in.
+function renderDailyRaids() {
+  const result = {} as { current: ReturnType<typeof useDailyRaids> }
+  function Probe() {
+    result.current = useDailyRaids()
+    return null
+  }
+  render(<Probe />, { auth: { authenticated: true } })
+  return { result }
+}
+
+/** Gives every other local read time to settle, so only the rewards gate can hold the hook. */
+const settle = () => new Promise((resolve) => setTimeout(resolve, 50))
+
 describe("useDailyRaids readiness — Onslaught rewards dataset", () => {
-  beforeEach(() => {
-    onslaughtRewardsState = undefined
+  beforeEach(async () => {
+    scoped.entries = []
+    await seedPlayerData({ "inventory-upgrades": [] })
   })
 
   it("stays loading while the rewards dataset has not loaded", () => {
-    const { result } = renderHook(() => useDailyRaids())
+    const { result } = renderDailyRaids()
     expect(result.current.status).toBe("loading")
   })
 
-  it("stays loading when the rewards dataset is present but empty", () => {
-    onslaughtRewardsState = []
-    const { result } = renderHook(() => useDailyRaids())
+  it("stays loading when the rewards dataset is present but empty", async () => {
+    await seedGameCatalog({ "onslaught-rewards": [] })
+    const { result } = renderDailyRaids()
+    await settle()
     expect(result.current.status).toBe("loading")
   })
 
-  it("proceeds once the rewards dataset has rows", () => {
-    onslaughtRewardsState = [
-      { id: "Stone-1", sector: "Stone", tier: 1, regular: [], mythic: {} },
-    ]
-    const { result } = renderHook(() => useDailyRaids())
+  it("proceeds once the rewards dataset has rows", async () => {
+    await seedGameCatalog({
+      "onslaught-rewards": [
+        { id: "Stone-1", sector: "Stone", tier: 1, regular: [], mythic: {} },
+      ],
+    })
+    const { result } = renderDailyRaids()
     // No goals in the (mocked, empty) plan — past the readiness gate, this is the next state.
+    await waitFor(() => expect(result.current.status).toBe("no-goals"))
+  })
+})
+
+describe("useDailyRaids memo boundary", () => {
+  const request = { battlesToGo: 3, eventOnly: false }
+  const activeGoal = {
+    goal: {
+      goalId: "g1",
+      status: "Active",
+      goalType: "Rank",
+      entityType: "Character",
+      entityId: "ultraCato",
+      globalPriority: 1,
+      projectIds: [],
+      config: {},
+    },
+  }
+
+  beforeEach(async () => {
+    scoped.entries = []
+    await seedPlayerData({ "inventory-upgrades": [] })
+    await seedGameCatalog({
+      "onslaught-rewards": [
+        { id: "Stone-1", sector: "Stone", tier: 1, regular: [], mythic: {} },
+      ],
+    })
+  })
+
+  function renderMemoHook() {
+    return renderHook(
+      ({ missionRaids }) => useDailyRaids(undefined, { missionRaids }),
+      { auth: { authenticated: true }, initialProps: { missionRaids: request } }
+    )
+  }
+
+  it("returns the same result for the same inputs and a new one when an input changes", async () => {
+    const { result, rerender } = renderMemoHook()
+    await waitFor(() => expect(result.current.status).toBe("no-goals"))
+    const first = result.current
+    rerender({ missionRaids: request })
+    expect(result.current).toBe(first)
+    rerender({ missionRaids: { ...request, battlesToGo: 4 } })
+    expect(result.current).not.toBe(first)
+    expect(result.current.status).toBe("no-goals")
+  })
+
+  it("goes from no goals to an active goal and back without changing the Hook order", async () => {
+    const { result, rerender } = renderMemoHook()
+    await waitFor(() => expect(result.current.status).toBe("no-goals"))
+    scoped.entries = [activeGoal]
+    rerender({ missionRaids: request })
+    expect(result.current.status).not.toBe("no-goals")
+    expect(result.current.status).not.toBe("loading")
+    scoped.entries = []
+    rerender({ missionRaids: request })
     expect(result.current.status).toBe("no-goals")
   })
 })

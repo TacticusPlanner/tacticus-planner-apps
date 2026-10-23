@@ -27,6 +27,7 @@ import { Spinner } from "@workspace/ui/components/spinner"
 import { cn } from "@workspace/ui/lib/utils"
 
 import { usePlayerDataSyncStatus } from "@/features/player-data-sync"
+import { matchesNavPath } from "./find-active-child"
 import { MobileDrawerSubItem } from "./mobile-drawer-sub-item"
 import { MobileHeader } from "./mobile-header"
 import "./mobile-layout.css"
@@ -40,14 +41,24 @@ import {
 } from "./quick-actions"
 import { QuickActionsGroup } from "./quick-actions-group"
 import { ScrollToTopButton } from "./scroll-to-top-button"
+import { SkipLink } from "./skip-link"
+import {
+  PAGE_HEADING_ID,
+  useFocusPageHeadingOnNavigate,
+} from "./use-focus-page-heading"
 
 // Matches vaul's exit transition (TRANSITIONS.DURATION = 0.5s).
 const DRAWER_EXIT_MS = 500
 
 function LoadingFill() {
+  const { t } = useTranslation()
   return (
-    <div className="flex flex-1 items-center justify-center">
-      <Spinner className="size-8 text-primary" />
+    <div
+      aria-label={t("common.loading")}
+      className="flex flex-1 items-center justify-center"
+      role="status"
+    >
+      <Spinner aria-hidden="true" className="size-8 text-primary" />
     </div>
   )
 }
@@ -69,19 +80,26 @@ export function MobileShell({
   onCreateGoal: () => void
   quickActions: QuickActionsController
 }) {
+  useFocusPageHeadingOnNavigate()
+
   return (
     <div className="flex min-h-svh flex-col bg-background text-foreground">
+      <SkipLink />
       <MobileHeader
         activeSection={activeSection}
         isAuthenticated={isAuthenticated}
         pageDescription={pageDescription}
         pageTitle={pageTitle}
       />
-      <div className="flex-1 pb-(--mobile-scroll-clearance)">
+      <main
+        className="flex-1 pb-(--mobile-scroll-clearance) outline-hidden"
+        id="main"
+        tabIndex={-1}
+      >
         <Suspense fallback={<LoadingFill />}>
           <Outlet />
         </Suspense>
-      </div>
+      </main>
       <ScrollToTopButton />
       <MobileBottomNav
         items={visibleItems}
@@ -90,10 +108,6 @@ export function MobileShell({
       />
     </div>
   )
-}
-
-function isItemActive(pathname: string, path: string) {
-  return pathname === path || pathname.startsWith(path + "/")
 }
 
 function MobileNavActions({ onCreateGoal }: { onCreateGoal: () => void }) {
@@ -188,6 +202,13 @@ function MobileBottomNav({
   const [menuOpen, setMenuOpen] = useState(false)
   const [search, setSearch] = useState("")
   const flushTimer = useRef<ReturnType<typeof setTimeout>>(undefined)
+  // Set when a drawer link closes the drawer: its close then hands focus to the page h1 (which
+  // `useFocusPageHeadingOnNavigate` skips while the drawer holds focus), not back to the trigger.
+  const focusHeadingOnClose = useRef(false)
+  const closeForNavigation = () => {
+    focusHeadingOnClose.current = true
+    setMenuOpen(false)
+  }
   useEffect(() => () => clearTimeout(flushTimer.current), [])
   const homeItem = items.find((item) => item.path === "/home")
   const goalsItem = items.find((item) => item.path === "/plan")
@@ -198,7 +219,7 @@ function MobileBottomNav({
   const isMenuItemActive = items.some(
     (item) =>
       !["/home", "/plan", "/dailies"].includes(item.path) &&
-      isItemActive(pathname, item.path)
+      matchesNavPath(pathname, item.path)
   )
 
   return (
@@ -241,6 +262,14 @@ function MobileBottomNav({
         <DrawerContent
           className="h-dvh max-h-dvh p-0 pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)] before:inset-0 before:rounded-none"
           data-testid="mobile-menu"
+          onCloseAutoFocus={(event) => {
+            if (!focusHeadingOnClose.current) return
+            focusHeadingOnClose.current = false
+            event.preventDefault()
+            document
+              .getElementById(PAGE_HEADING_ID)
+              ?.focus({ preventScroll: true })
+          }}
         >
           <DrawerHeader className="border-b px-6 py-5 text-left">
             <DrawerTitle className="text-xl">{t("nav.navigation")}</DrawerTitle>
@@ -278,7 +307,7 @@ function MobileBottomNav({
                 </h3>
                 <div className="space-y-1">
                   {filteredItems.map((item) => {
-                    const isActive = isItemActive(pathname, item.path)
+                    const isActive = matchesNavPath(pathname, item.path)
                     return (
                       <div key={item.path}>
                         <Link
@@ -291,7 +320,7 @@ function MobileBottomNav({
                               ? "bg-accent text-accent-foreground shadow-[inset_3px_0_0_0_var(--accent-foreground)]"
                               : "hover:bg-accent hover:text-accent-foreground"
                           )}
-                          onClick={() => setMenuOpen(false)}
+                          onClick={closeForNavigation}
                           to={item.path}
                         >
                           <item.icon className="size-5 shrink-0" />
@@ -321,7 +350,7 @@ function MobileBottomNav({
                                 key={child.path}
                                 hideLive={isSearching}
                                 item={child}
-                                onSelect={() => setMenuOpen(false)}
+                                onSelect={closeForNavigation}
                                 pathname={pathname}
                               />
                             ))}

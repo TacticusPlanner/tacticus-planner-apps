@@ -1,0 +1,18 @@
+{
+  "DestroyTheWitch": {
+    "description": "Gains <style=\"Stat_Movement\">+{[extraMovement]} Movement</style> when there’s an enemy <style=\"Psyker\">Psyker</style> on the battlefield. This unit and friendly adjacent units deal <style=\"Stat_Damage\">+{[extraDmg]} Damage</style> with melee attacks against <style=\"Psyker\">Psykers</style>.",
+    "variables": {
+      "extraDmg": [
+        15, 18, 21, 24, 27, 30, 34, 37, 41, 44, 48, 51, 55, 58, 62, 65, 68, 72,
+        75, 79, 83, 90, 104, 117, 131, 144, 158, 172, 185, 199, 213, 226, 240,
+        254, 267, 281, 295, 308, 322, 341, 368, 396, 427, 461, 523, 584, 646,
+        708, 769, 831, 840, 851, 863, 878, 893, 908, 923, 941, 960, 979, 1001,
+        1024, 1046, 1069, 1091
+      ]
+    },
+    "constants": {
+      "extraMovement": "1"
+    },
+    "scaled": ["extraDmg"]
+  }
+}

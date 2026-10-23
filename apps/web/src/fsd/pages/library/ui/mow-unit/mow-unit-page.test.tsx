@@ -1,45 +1,35 @@
-import { useEffect, useState } from "react"
-import {
-  act,
-  cleanup,
-  fireEvent,
-  render,
-  screen,
-  within,
-} from "@testing-library/react"
-import { I18nextProvider } from "react-i18next"
-import { MemoryRouter, Route, Routes, useLocation } from "react-router"
-import type { i18n as I18n } from "i18next"
-import { TooltipProvider } from "@workspace/ui/components/tooltip"
-import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
+import type { InitialEntry } from "react-router"
+import { useLocation } from "react-router"
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
 import { unitOriginState } from "@/entities/unit"
 import type { ReadState } from "@/shared/lib"
 import type { UnitPowerContext } from "@/shared/unit-power"
-import { createTestI18n } from "@/test/i18n"
 import { unitPowerContextFixture } from "@/test/fixtures/unit-power"
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from "@/test/render"
+import { seedGameCatalog, seedPlayerData } from "@/test/seed"
 
-import enAbilities from "../../../../../../public/locales/en/abilities.json"
-import enLibrary from "../../../../../../public/locales/en/library.json"
-import enMows from "../../../../../../public/locales/en/mows.json"
-import enNpcAbilityText from "../../../../../../public/locales/en/npcAbilityText.json"
-import enProgression from "../../../../../../public/locales/en/progression.json"
-import enUpgrades from "../../../../../../public/locales/en/upgrades.json"
+import { enNpcAbilityText } from "@/test/rules-text"
+
+import { MowUnitPage } from "./mow-unit-page"
 
 const env = vi.hoisted(() => ({
   tour: undefined as
     | { desktop: { target: unknown }[]; mobile?: { target: unknown }[] }
     | undefined,
   isMobile: false,
-  authenticated: false,
-  roster: undefined as unknown[] | undefined,
-  rosterPending: false,
-  costsSynced: true,
-  shards: undefined as { amount: number } | undefined,
-  inventory: undefined as unknown,
-  inventoryUpgrades: undefined as unknown[] | undefined,
   abilityText: {} as Record<string, unknown>,
-  galatianMythic: true,
+  /** The rules-text load: settled by default; `ready: false` while it downloads. */
+  rules: { ready: true, failed: false },
+  abilityIds: [] as readonly string[],
+  retries: 0,
   power: {
     status: "loading",
     retry: () => {},
@@ -54,42 +44,24 @@ vi.mock("@/shared/tour", () => ({
     env.tour = steps
   },
 }))
-vi.mock("@azure/msal-react", () => ({
-  useIsAuthenticated: () => env.authenticated,
-  useMsal: () => ({ instance: { loginRedirect: vi.fn() } }),
-}))
 vi.mock("@/shared/unit-power", async (importOriginal) => ({
   ...(await importOriginal<object>()),
   useUnitPowerContext: () => env.power,
 }))
 vi.mock("@/shared/ability-text", async (importOriginal) => ({
   ...(await importOriginal<object>()),
-  useAbilityText: () => (id: string) => env.abilityText[id],
-}))
-
-vi.mock("dexie-react-hooks", () => ({
-  useLiveQuery: (
-    querier: () => unknown,
-    deps: unknown[] = [],
-    defaultResult?: unknown
-  ) => {
-    const [value, setValue] = useState<unknown>(defaultResult)
-    useEffect(() => {
-      const result = querier()
-      if (result instanceof Promise) {
-        let active = true
-        void result.then((resolved) => {
-          if (active) setValue(resolved)
-        })
-        return () => {
-          active = false
-        }
-      }
-      setValue(result)
-      return undefined
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, deps)
-    return value
+  useAbilityText: (ids: readonly string[]) => {
+    env.abilityIds = ids
+    return {
+      ...env.rules,
+      retry: () => {
+        env.retries += 1
+      },
+      text: (id: string) =>
+        env.rules.ready || env.abilityText[id]
+          ? env.abilityText[id]
+          : undefined,
+    }
   },
 }))
 
@@ -114,7 +86,8 @@ const galatian = {
     name: "MacroPlasmaIncinerator",
     recipes: recipes([["upgHpC002", "upgDmgC013", "upgArmC001"]]),
   },
-  mythicAbility: { name: "WisdomOfTheAncients" },
+  mythicAbility: { name: "WisdomOfTheAncients" } as
+    { name: string } | undefined,
 }
 const biovore = {
   ...galatian,
@@ -144,7 +117,6 @@ const reanimator = {
 const costs = Array.from({ length: 59 }, (_, index) => {
   const level = index + 2
   return {
-    id: level,
     level,
     gold: level === 2 ? 15 : level === 3 ? 30 : 100,
     salvage: level <= 3 ? 5 : 0,
@@ -164,56 +136,15 @@ const upgrade = (id: string) => ({
   farmLocations: [],
 })
 
-vi.mock("@workspace/game-catalog/queries", () => ({
-  getMows: () =>
-    Promise.resolve([
-      env.galatianMythic ? galatian : { ...galatian, mythicAbility: undefined },
-      biovore,
-      reanimator,
-    ]),
-  getMowUpgradeCosts: () => Promise.resolve(costs),
-  getUpgrades: () =>
-    Promise.resolve(
-      [
-        "upgHpC002",
-        "upgDmgC001",
-        "upgArmC001",
-        "upgHpC014",
-        "upgDmgC012",
-        "upgArmC013",
-        "upgDmgC013",
-      ].map(upgrade)
-    ),
-  getUnlockShardCostsMap: () =>
-    Promise.resolve(
-      new Map([["Common", { id: "Common", rarity: "Common", shards: 40 }]])
-    ),
-}))
-vi.mock("@workspace/game-catalog", async (importOriginal) => ({
-  ...(await importOriginal<object>()),
-  getGameCatalogMetadata: () =>
-    Promise.resolve(
-      new Map([
-        ["mows", {}],
-        ...(env.costsSynced ? [["mow-upgrade-costs", {}] as const] : []),
-      ])
-    ),
-}))
-vi.mock("@workspace/player-data/queries", () => ({
-  getPlayerMows: () =>
-    env.rosterPending
-      ? new Promise<never>(() => {})
-      : Promise.resolve(env.roster),
-  getPlayerMow: (id: string) =>
-    Promise.resolve(
-      env.roster?.find((unit) => (unit as { unitId: string }).unitId === id)
-    ),
-  getInventoryShard: () => Promise.resolve(env.shards),
-  getInventoryAbilityMaterials: () => Promise.resolve(env.inventory),
-  getInventoryUpgrades: () => Promise.resolve(env.inventoryUpgrades),
-}))
-
-import { MowUnitPage } from "./mow-unit-page"
+const upgrades = [
+  "upgHpC002",
+  "upgDmgC001",
+  "upgArmC001",
+  "upgHpC014",
+  "upgDmgC012",
+  "upgArmC013",
+  "upgDmgC013",
+].map(upgrade)
 
 const ownedGalatian = {
   unitId: "ultraDreadnought",
@@ -243,19 +174,41 @@ const inventory = {
   },
 }
 
-let i18n: I18n
-beforeAll(async () => {
-  i18n = await createTestI18n("en", {
-    en: {
-      library: enLibrary,
-      abilities: enAbilities,
-      mows: enMows,
-      progression: enProgression,
-      upgrades: enUpgrades,
-      npcAbilityText: enNpcAbilityText,
-    },
+type Catalog = { costsSynced?: boolean; galatianMythic?: boolean }
+
+async function seedCatalog({
+  costsSynced = true,
+  galatianMythic = true,
+}: Catalog = {}) {
+  await seedGameCatalog({
+    mows: [
+      galatianMythic ? galatian : { ...galatian, mythicAbility: undefined },
+      biovore,
+      reanimator,
+    ],
+    ...(costsSynced ? { "mow-upgrade-costs": costs } : {}),
+    upgrades,
+    "unlock-shard-costs": [{ rarity: "Common", shards: 40 }],
   })
-})
+}
+
+// A signed-in player whose player-data reads never settle: hold every request against that
+// database (Dexie waits on a request that never fires), leaving the catalog's reads alone.
+function holdPlayerDataReads() {
+  for (const method of ["get", "getAll", "openCursor"] as const) {
+    const original = IDBObjectStore.prototype[method] as (
+      ...args: unknown[]
+    ) => IDBRequest
+    vi.spyOn(IDBObjectStore.prototype, method).mockImplementation(function (
+      this: IDBObjectStore,
+      ...args: unknown[]
+    ) {
+      return this.transaction.db.name === "tacticus-planner-player-data"
+        ? ({} as IDBRequest)
+        : original.apply(this, args)
+    } as never)
+  }
+}
 
 function Where() {
   const location = useLocation()
@@ -267,40 +220,60 @@ function Where() {
   )
 }
 
-async function renderUnit(url: string, state?: unknown) {
+/**
+ * Seeds the catalog (and, when given, a signed-in player's chunks — or "pending" for reads that
+ * never settle), then opens the unit page and waits for the catalog gate to clear.
+ */
+async function renderUnit(
+  url: string,
+  {
+    state,
+    catalog,
+    player,
+  }: {
+    state?: unknown
+    catalog?: Catalog
+    player?: Parameters<typeof seedPlayerData>[0] | "pending"
+  } = {}
+) {
+  await seedCatalog(catalog)
+  if (player === "pending") {
+    holdPlayerDataReads()
+  } else if (player) {
+    await seedPlayerData(player)
+  }
+  const [pathname, search] = url.split("?")
+  const entry: InitialEntry = {
+    pathname,
+    search: search ? `?${search}` : "",
+    state,
+  }
   render(
-    <I18nextProvider i18n={i18n}>
-      <TooltipProvider>
-        <MemoryRouter
-          initialEntries={[
-            {
-              pathname: url.split("?")[0],
-              search: url.includes("?") ? `?${url.split("?")[1]}` : "",
-              state,
-            },
-          ]}
-        >
-          <Routes>
-            <Route
-              path="/library/machines-of-war/:entityId"
-              element={
-                <>
-                  <MowUnitPage />
-                  <Where />
-                </>
-              }
-            />
-            <Route
-              path="/library/machines-of-war"
-              element={<p data-testid="list-route">list</p>}
-            />
-          </Routes>
-        </MemoryRouter>
-      </TooltipProvider>
-    </I18nextProvider>
+    <>
+      <MowUnitPage />
+      <Where />
+    </>,
+    {
+      route: "/library/machines-of-war/:entityId",
+      // The harness types entries as paths; the memory router also takes a location with state.
+      initialEntries: [entry as unknown as string],
+      auth: player ? { authenticated: true } : undefined,
+    }
   )
-  await act(async () => {})
-  await act(async () => {})
+  if (catalog?.costsSynced !== false) {
+    await waitFor(() =>
+      expect(screen.queryByTestId("mow-unit-loading")).not.toBeInTheDocument()
+    )
+  }
+  if (player && player !== "pending") {
+    // The player's reads have settled once the header states ownership either way.
+    await waitFor(() =>
+      expect(
+        screen.queryByTestId("unit-your-line") ??
+          screen.queryByTestId("unit-not-unlocked")
+      ).toBeInTheDocument()
+    )
+  }
 }
 
 const total = (key: string) =>
@@ -312,18 +285,16 @@ async function pick(trigger: string, option: string) {
   fireEvent.click(await screen.findByRole("option", { name: option }))
 }
 
+afterEach(() => {
+  vi.restoreAllMocks()
+})
+
 describe("MowUnitPage", () => {
   beforeEach(() => {
     env.isMobile = false
-    env.authenticated = false
-    env.roster = undefined
-    env.rosterPending = false
-    env.costsSynced = true
-    env.shards = undefined
-    env.inventory = undefined
-    env.inventoryUpgrades = undefined
-    env.abilityText = enNpcAbilityText as Record<string, unknown>
-    env.galatianMythic = true
+    env.abilityText = enNpcAbilityText
+    env.rules = { ready: true, failed: false }
+    env.retries = 0
     env.power = {
       status: "ready",
       data: unitPowerContextFixture(),
@@ -347,9 +318,10 @@ describe("MowUnitPage", () => {
   })
 
   it("waits for the upgrade cost ladder before showing the page", async () => {
-    env.costsSynced = false
-    await renderUnit("/library/machines-of-war/ultraDreadnought")
-    expect(screen.getByTestId("mow-unit-loading")).toBeInTheDocument()
+    await renderUnit("/library/machines-of-war/ultraDreadnought", {
+      catalog: { costsSynced: false },
+    })
+    expect(await screen.findByTestId("mow-unit-loading")).toBeInTheDocument()
     expect(screen.queryByTestId("unit-header")).not.toBeInTheDocument()
   })
 
@@ -378,21 +350,21 @@ describe("MowUnitPage", () => {
     ).toHaveAttribute("href", "/library/machines-of-war")
     // Imperial before Xenos, then by faction: Galatian, Reanimator, Biovore.
     fireEvent.click(screen.getByRole("link", { name: /Next unit: Reanimator/ }))
-    await act(async () => {})
-    expect(screen.getByTestId("where")).toHaveTextContent(
-      "/library/machines-of-war/necroReanimator?tab=upgrades"
+    await waitFor(() =>
+      expect(screen.getByTestId("where")).toHaveTextContent(
+        "/library/machines-of-war/necroReanimator?tab=upgrades"
+      )
     )
   })
 
   it("returns to Collection and walks Collection's Machine of War order when opened from Collection", async () => {
     // Collection order (Biovore, Galatian, Reanimator) differs from the list's default order.
-    await renderUnit(
-      "/library/machines-of-war/ultraDreadnought?tab=upgrades",
-      unitOriginState({
+    await renderUnit("/library/machines-of-war/ultraDreadnought?tab=upgrades", {
+      state: unitOriginState({
         kind: "collection",
         ids: ["tyranBiovore", "ultraDreadnought", "necroReanimator"],
-      })
-    )
+      }),
+    })
 
     const back = screen.getByTestId("unit-nav-back")
     expect(back).toHaveAttribute("href", "/my-game/collection")
@@ -404,10 +376,10 @@ describe("MowUnitPage", () => {
     ).toBeInTheDocument()
 
     fireEvent.click(screen.getByRole("link", { name: /Next unit: Reanimator/ }))
-    await act(async () => {})
-
-    expect(screen.getByTestId("where")).toHaveTextContent(
-      "/library/machines-of-war/necroReanimator?tab=upgrades"
+    await waitFor(() =>
+      expect(screen.getByTestId("where")).toHaveTextContent(
+        "/library/machines-of-war/necroReanimator?tab=upgrades"
+      )
     )
     expect(screen.getByTestId("unit-nav-position")).toHaveTextContent("3 of 3")
     expect(screen.getByTestId("unit-nav-next")).toBeDisabled()
@@ -476,9 +448,43 @@ describe("MowUnitPage", () => {
     }
   })
 
+  it("paints the page before the rules text arrives, asking only for its own abilities", async () => {
+    env.abilityText = {}
+    env.rules = { ready: false, failed: false }
+    await renderUnit("/library/machines-of-war/ultraDreadnought")
+    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(
+      "Galatian"
+    )
+    expect(env.abilityIds).toEqual([
+      "DutyEternal",
+      "MacroPlasmaIncinerator",
+      "WisdomOfTheAncients",
+    ])
+    for (const ability of ["primary", "secondary"]) {
+      expect(
+        screen.getByTestId(`unit-ability-${ability}-text-loading`)
+      ).toHaveTextContent("Loading rules text…")
+      expect(
+        screen.queryByTestId(`unit-ability-${ability}-missing-text`)
+      ).not.toBeInTheDocument()
+    }
+  })
+
+  it("shows a failure note with a retry when the rules text failed to download", async () => {
+    env.abilityText = {}
+    env.rules = { ready: true, failed: true }
+    await renderUnit("/library/machines-of-war/ultraDreadnought")
+    const panel = screen.getByTestId("unit-ability-primary")
+    expect(within(panel).getByRole("alert")).toHaveTextContent(
+      "The rules text couldn't be loaded."
+    )
+    fireEvent.click(within(panel).getByRole("button", { name: "Retry" }))
+    expect(env.retries).toBe(1)
+  })
+
   it("turns the panel on when rules text exists, up to the ladder's top level", async () => {
     env.abilityText = {
-      DutyEternal: (enNpcAbilityText as Record<string, unknown>).DutyEternal,
+      DutyEternal: enNpcAbilityText.DutyEternal,
     }
     await renderUnit("/library/machines-of-war/ultraDreadnought")
     expect(
@@ -496,9 +502,9 @@ describe("MowUnitPage", () => {
   })
 
   it("opens an owned MoW at the player's values, with no rank", async () => {
-    env.authenticated = true
-    env.roster = [ownedGalatian]
-    await renderUnit("/library/machines-of-war/ultraDreadnought")
+    await renderUnit("/library/machines-of-war/ultraDreadnought", {
+      player: { mows: [ownedGalatian] },
+    })
     expect(screen.getByTestId("unit-your-line")).toHaveTextContent(
       "Your Machine of War: Epic · Red One Star · primary 30 · secondary 28"
     )
@@ -525,9 +531,9 @@ describe("MowUnitPage", () => {
     }
 
     it("shows a maxed MoW's power in the header and follows Custom stars", async () => {
-      env.authenticated = true
-      env.roster = [maxedBiovore]
-      await renderUnit("/library/machines-of-war/tyranBiovore")
+      await renderUnit("/library/machines-of-war/tyranBiovore", {
+        player: { mows: [maxedBiovore] },
+      })
       const values = within(screen.getByTestId("unit-values"))
       expect(values.getByTestId("unit-power")).toHaveTextContent("Power")
       expect(values.getByTestId("unit-power-value")).toHaveTextContent(
@@ -558,9 +564,9 @@ describe("MowUnitPage", () => {
 
     it("hides the power and keeps the panels and tabs when the data failed", async () => {
       env.power = { status: "error", retry: () => {} }
-      env.authenticated = true
-      env.roster = [maxedBiovore]
-      await renderUnit("/library/machines-of-war/tyranBiovore")
+      await renderUnit("/library/machines-of-war/tyranBiovore", {
+        player: { mows: [maxedBiovore] },
+      })
       expect(screen.queryByTestId("unit-power")).not.toBeInTheDocument()
       expect(screen.getByTestId("unit-ability-primary")).toBeInTheDocument()
       expect(screen.getByTestId("unit-ability-secondary")).toBeInTheDocument()
@@ -570,9 +576,9 @@ describe("MowUnitPage", () => {
   })
 
   it("offers only rarity and stars in Custom", async () => {
-    env.authenticated = true
-    env.roster = [ownedGalatian]
-    await renderUnit("/library/machines-of-war/ultraDreadnought")
+    await renderUnit("/library/machines-of-war/ultraDreadnought", {
+      player: { mows: [ownedGalatian] },
+    })
     fireEvent.click(screen.getByTestId("unit-values-custom"))
     expect(
       within(screen.getByTestId("unit-values")).getAllByRole("combobox")
@@ -580,10 +586,14 @@ describe("MowUnitPage", () => {
   })
 
   it("starts an unowned MoW at Common with shard progress", async () => {
-    env.authenticated = true
-    env.roster = []
-    env.shards = { amount: 12 }
-    await renderUnit("/library/machines-of-war/ultraDreadnought")
+    await renderUnit("/library/machines-of-war/ultraDreadnought", {
+      player: {
+        mows: [],
+        "inventory-shards": [
+          { unitId: "ultraDreadnought", amount: 12, mythicAmount: 0 },
+        ],
+      },
+    })
     expect(screen.getByTestId("unit-not-unlocked")).toHaveTextContent(
       "Not unlocked. Values start at Common."
     )
@@ -603,9 +613,9 @@ describe("MowUnitPage", () => {
   })
 
   it("holds the banner and state lines while a signed-in player's roster is still read", async () => {
-    env.authenticated = true
-    env.rosterPending = true
-    await renderUnit("/library/machines-of-war/ultraDreadnought")
+    await renderUnit("/library/machines-of-war/ultraDreadnought", {
+      player: "pending",
+    })
     expect(screen.getByTestId("unit-header")).toBeInTheDocument()
     expect(screen.queryByTestId("unit-sign-in-banner")).not.toBeInTheDocument()
     expect(
@@ -615,9 +625,9 @@ describe("MowUnitPage", () => {
   })
 
   it("keeps the power loading while a signed-in player's record is still read", async () => {
-    env.authenticated = true
-    env.rosterPending = true
-    await renderUnit("/library/machines-of-war/ultraDreadnought")
+    await renderUnit("/library/machines-of-war/ultraDreadnought", {
+      player: "pending",
+    })
     // Not the starting values' power, shown as ready before the player's own arrive.
     expect(env.power.status).toBe("ready")
     expect(screen.getByTestId("unit-power-loading")).toBeInTheDocument()
@@ -626,9 +636,9 @@ describe("MowUnitPage", () => {
 
   it("on mobile, shows Primary expanded and Secondary collapsed with their levels", async () => {
     env.isMobile = true
-    env.authenticated = true
-    env.roster = [ownedGalatian]
-    await renderUnit("/library/machines-of-war/ultraDreadnought")
+    await renderUnit("/library/machines-of-war/ultraDreadnought", {
+      player: { mows: [ownedGalatian] },
+    })
     const primary = screen.getByTestId("unit-section-primary")
     const secondary = screen.getByTestId("unit-section-secondary")
     expect(primary).toHaveAttribute("data-state", "open")
@@ -638,14 +648,15 @@ describe("MowUnitPage", () => {
   })
 
   describe("Mythic panel", () => {
-    const owned = (progressionIndex: string) => {
-      env.authenticated = true
-      env.roster = [{ ...ownedGalatian, progressionIndex }]
-    }
+    const owned = (progressionIndex: string) => ({
+      player: { mows: [{ ...ownedGalatian, progressionIndex }] },
+    })
 
     it("follows the blue stars, without a stepper, and shows the table value unscaled", async () => {
-      owned("Mythic:TwoBlueStars")
-      await renderUnit("/library/machines-of-war/ultraDreadnought")
+      await renderUnit(
+        "/library/machines-of-war/ultraDreadnought",
+        owned("Mythic:TwoBlueStars")
+      )
       const panel = screen.getByTestId("unit-ability-mythic")
       expect(panel).toHaveTextContent("Wisdom of the Ancients")
       expect(screen.getByTestId("unit-ability-mythic-level")).toHaveTextContent(
@@ -663,9 +674,10 @@ describe("MowUnitPage", () => {
     })
 
     it("is titled Mythic ability with the missing-text note when the catalog names none", async () => {
-      env.galatianMythic = false
-      owned("Mythic:TwoBlueStars")
-      await renderUnit("/library/machines-of-war/ultraDreadnought")
+      await renderUnit("/library/machines-of-war/ultraDreadnought", {
+        ...owned("Mythic:TwoBlueStars"),
+        catalog: { galatianMythic: false },
+      })
       expect(screen.getByTestId("unit-ability-mythic")).toHaveTextContent(
         "Mythic ability"
       )
@@ -679,8 +691,10 @@ describe("MowUnitPage", () => {
 
     it("shows the ability's name with the missing-text note when its rules text is missing", async () => {
       env.abilityText = {}
-      owned("Mythic:TwoBlueStars")
-      await renderUnit("/library/machines-of-war/ultraDreadnought")
+      await renderUnit(
+        "/library/machines-of-war/ultraDreadnought",
+        owned("Mythic:TwoBlueStars")
+      )
       expect(screen.getByTestId("unit-ability-mythic")).toHaveTextContent(
         "Wisdom of the Ancients"
       )
@@ -690,8 +704,10 @@ describe("MowUnitPage", () => {
     })
 
     it("says it unlocks at Mythic below Mythic", async () => {
-      owned("Legendary:RedThreeStars")
-      await renderUnit("/library/machines-of-war/ultraDreadnought")
+      await renderUnit(
+        "/library/machines-of-war/ultraDreadnought",
+        owned("Legendary:RedThreeStars")
+      )
       expect(
         screen.getByTestId("unit-ability-mythic-locked")
       ).toHaveTextContent("Unlocks at Mythic")
@@ -701,8 +717,10 @@ describe("MowUnitPage", () => {
     })
 
     it("changes its level with Custom stars", async () => {
-      owned("Mythic:TwoBlueStars")
-      await renderUnit("/library/machines-of-war/ultraDreadnought")
+      await renderUnit(
+        "/library/machines-of-war/ultraDreadnought",
+        owned("Mythic:TwoBlueStars")
+      )
       fireEvent.click(screen.getByTestId("unit-values-custom"))
       fireEvent.click(
         within(screen.getByTestId("unit-values")).getByRole("combobox")
@@ -725,8 +743,10 @@ describe("MowUnitPage", () => {
 
     it("is a collapsed section on mobile with its level in the header", async () => {
       env.isMobile = true
-      owned("Legendary:RedThreeStars")
-      await renderUnit("/library/machines-of-war/ultraDreadnought")
+      await renderUnit(
+        "/library/machines-of-war/ultraDreadnought",
+        owned("Legendary:RedThreeStars")
+      )
       const section = screen.getByTestId("unit-section-mythic")
       expect(section).toHaveAttribute("data-state", "closed")
       expect(section).toHaveTextContent("Unlocks at Mythic")
@@ -770,11 +790,16 @@ describe("MowUnitPage", () => {
     })
 
     it("starts an owned MoW at its levels and subtracts the inventory", async () => {
-      env.authenticated = true
-      env.roster = [ownedGalatian]
-      env.inventory = inventory
-      env.inventoryUpgrades = [{ upgradeId: "upgHpC002", amount: 1 }]
-      await renderUnit("/library/machines-of-war/ultraDreadnought?tab=upgrades")
+      await renderUnit(
+        "/library/machines-of-war/ultraDreadnought?tab=upgrades",
+        {
+          player: {
+            mows: [ownedGalatian],
+            inventory,
+            "inventory-upgrades": [{ upgradeId: "upgHpC002", amount: 1 }],
+          },
+        }
+      )
 
       expect(screen.getByTestId("mow-range-primary-from")).toHaveTextContent(
         "30"

@@ -1,0 +1,27 @@
+{
+  "DaemonicPatrons": {
+    "description": "<style=\"Debuff_Taunted\">Verspottet</style> einen angrenzenden Gegner und <style=\"Faction_EmperorsChildren\">Hascule</style> wird bis zum Ende seines nächsten Zuges <i>beobachtet</i>. Während <style=\"Faction_EmperorsChildren\">Hascule</style> <i>beobachtet</i> wird, verursacht er <style=\"Stat_Damage\">+{[extraDmg]} Schaden</style> und erleidet für jeden angrenzenden <style=\"Debuff_Taunted\">verspotteten</style> Gegner <style=\"Stat_Damage\">-{[dmgReductionPct]} % Schaden</style>. Wenn er einen angrenzenden <style=\"Debuff_Taunted\">verspotteten</style> Gegner besiegt, während er <i>beobachtet</i> wird, kann er diese Fähigkeit erneut benutzen. Wenn er dies nicht tut, verliert er <style=\"Stat\">{[hpPct]} %</style> seiner aktuellen <style=\"Stat_Health\">Lebenspunkte</style>.",
+    "variables": {
+      "extraDmg": [
+        5, 6, 7, 8, 9, 10, 11, 12, 14, 15, 16, 17, 18, 19, 21, 22, 23, 24, 25,
+        26, 28, 30, 35, 39, 44, 48, 53, 57, 62, 66, 71, 75, 80, 85, 89, 94, 98,
+        103, 107, 114, 123, 132, 142, 154, 174, 195, 215, 236, 256, 277, 280,
+        284, 288, 293, 298, 303, 308, 314, 320, 326, 334, 341, 349, 356, 364
+      ],
+      "dmgReductionPct": [
+        20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 25,
+        25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 30,
+        30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
+        30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30
+      ],
+      "hpPct": [
+        50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 40,
+        40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 30,
+        30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
+        30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30
+      ]
+    },
+    "constants": {},
+    "scaled": ["extraDmg"]
+  }
+}

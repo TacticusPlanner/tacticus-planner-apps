@@ -1,0 +1,13 @@
+{
+  "ForwardObservers": {
+    "description": "Targets an enemy unit within range {[range]} that does not have a <style=\"Debuff_Markerlight\">Markerlight</style>. The target receives a <style=\"Debuff_Markerlight\">Markerlight</style> for {[nrOfRounds]} rounds. The <style=\"Faction_Tau\">Stealth Battlesuit</style> then receives <style=\"Stat_Damage\">-{[dmgPctReduction]}% Damage</style> from ranged attacks for {[nrOfRounds_2]} round.",
+    "variables": {},
+    "constants": {
+      "range": "3",
+      "dmgPctReduction": "50",
+      "nrOfRounds": "2",
+      "nrOfRounds_2": "1"
+    },
+    "scaled": []
+  }
+}

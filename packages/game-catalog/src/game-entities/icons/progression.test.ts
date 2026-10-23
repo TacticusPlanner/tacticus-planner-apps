@@ -10,12 +10,12 @@ describe("progressionVisual", () => {
   it("renders gold stars for the first five steps", () => {
     expect(progressionVisual("Common:OneStar")).toEqual({
       kind: "stars",
-      icon: "/game_catalog/stars/gold.png",
+      icon: "/game_catalog/stars/gold.webp",
       count: 1,
     })
     expect(progressionVisual("Rare:FiveStars")).toEqual({
       kind: "stars",
-      icon: "/game_catalog/stars/gold.png",
+      icon: "/game_catalog/stars/gold.webp",
       count: 5,
     })
   })
@@ -23,12 +23,12 @@ describe("progressionVisual", () => {
   it("renders red stars for the next five steps", () => {
     expect(progressionVisual("Rare:RedOneStar")).toEqual({
       kind: "stars",
-      icon: "/game_catalog/stars/red.png",
+      icon: "/game_catalog/stars/red.webp",
       count: 1,
     })
     expect(progressionVisual("Legendary:RedFiveStars")).toEqual({
       kind: "stars",
-      icon: "/game_catalog/stars/red.png",
+      icon: "/game_catalog/stars/red.webp",
       count: 5,
     })
   })
@@ -36,12 +36,12 @@ describe("progressionVisual", () => {
   it("renders blue stars for the next three steps", () => {
     expect(progressionVisual("Legendary:OneBlueStar")).toEqual({
       kind: "stars",
-      icon: "/game_catalog/stars/ui_icon_star_legendary_large.png",
+      icon: "/game_catalog/stars/ui_icon_star_legendary_large.webp",
       count: 1,
     })
     expect(progressionVisual("Mythic:ThreeBlueStars")).toEqual({
       kind: "stars",
-      icon: "/game_catalog/stars/ui_icon_star_legendary_large.png",
+      icon: "/game_catalog/stars/ui_icon_star_legendary_large.webp",
       count: 3,
     })
   })
@@ -49,7 +49,7 @@ describe("progressionVisual", () => {
   it("renders a single wings icon for the max step", () => {
     expect(progressionVisual("Mythic:MythicWings")).toEqual({
       kind: "wings",
-      icon: "/game_catalog/stars/ui_icon_star_mythic.png",
+      icon: "/game_catalog/stars/ui_icon_star_mythic.webp",
     })
   })
 })

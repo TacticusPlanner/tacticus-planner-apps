@@ -1,0 +1,25 @@
+{
+  "TheQuickening": {
+    "description": "Zielt auf ein Feld innerhalb der Bewegungsreichweite {[range]}, das weder von einem Feind noch von einer befreundeten Einheit in <style=\"Teleport_Strike_short\">Tiefschlag</style> besetzt ist. <style=\"Faction_BloodAngels\">Mephiston</style> bewegt sich auf dieses Feld. Wenn sich eine befreundete Einheit auf diesem Feld befindet, bewegt sich diese Einheit zu Mephistons vorherigem Standort. Alle <style=\"Faction_BloodAngels\">Blood Angels</style>, die sich auf diese Weise bewegen, führen nach ihrer Bewegung einen <style=\"NormalAttack\">normalen Nahkampfangriff</style> aus und verursachen <style=\"STAT\">{[dmgPct]}%</style> ihres eigenen Schadens bis zu einem Maximum von <style=\"Stat_Damage\">{[maxDmg]} Schaden</style>. Einheiten, die sich auf diese Weise bewegen, lösen keine <style=\"Buff_Overwatching\">Aufklärung</style> oder andere bewegungsbezogene Reaktionen aus.",
+    "variables": {
+      "maxDmg": [
+        50, 60, 70, 80, 90, 102, 113, 125, 136, 148, 159, 171, 182, 194, 205,
+        217, 228, 240, 251, 263, 278, 300, 345, 391, 436, 482, 527, 573, 618,
+        664, 709, 755, 800, 846, 891, 937, 982, 1028, 1073, 1137, 1227, 1322,
+        1424, 1537, 1742, 1948, 2153, 2359, 2564, 2770, 2800, 2838, 2875, 2925,
+        2975, 3025, 3075, 3138, 3200, 3263, 3338, 3413, 3488, 3563, 3638
+      ],
+      "dmgPct": [
+        100, 100, 100, 100, 100, 100, 100, 100, 105, 105, 105, 105, 105, 105,
+        105, 105, 105, 110, 110, 110, 110, 110, 110, 110, 110, 110, 115, 115,
+        115, 115, 115, 115, 115, 115, 115, 120, 120, 120, 120, 120, 120, 120,
+        120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120,
+        120, 120, 120, 120, 120, 120, 120, 120, 120
+      ]
+    },
+    "constants": {
+      "range": "2"
+    },
+    "scaled": ["maxDmg"]
+  }
+}

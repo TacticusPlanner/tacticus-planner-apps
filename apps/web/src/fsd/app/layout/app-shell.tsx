@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useState } from "react"
+import { lazy, Suspense, useCallback, useEffect, useState } from "react"
 import { useLocation } from "react-router"
 import { useTranslation } from "react-i18next"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
@@ -13,7 +13,7 @@ import {
 import {
   CreateGoalLauncherProvider,
   type CreateGoalPrefill,
-} from "@/pages/goals"
+} from "@/features/goal-create"
 
 import { GameCatalogInitGate } from "../game-catalog-init-gate"
 import { HseLiveProvider } from "./hse-live-provider"
@@ -36,7 +36,7 @@ import { useSectionEntryPath } from "./use-section-entry-path"
 // Idle until the user opens it (via onCreateGoal), so it's lazy-loaded rather than pulled into the
 // shell's own chunk — mirrors the route-level lazy-load idiom in routes.tsx.
 const CreateGoalSheet = lazy(() =>
-  import("@/pages/goals").then((m) => ({ default: m.CreateGoalSheet }))
+  import("@/features/goal-create").then((m) => ({ default: m.CreateGoalSheet }))
 )
 
 const QuickCreateProjectSheet = lazy(() =>
@@ -142,10 +142,11 @@ function ShellContent({
   } = useDesktopMenuState()
   const { pathname, search } = useLocation()
   const { getEntryPath } = useSectionEntryPath(visibleItems, pathname)
-  const launchCreateGoal = (prefill?: CreateGoalPrefill) => {
+  // Stable, so CreateGoalLauncherProvider's value does not change on every shell render.
+  const launchCreateGoal = useCallback((prefill?: CreateGoalPrefill) => {
     setCreatePrefill(prefill)
     setCreateOpen(true)
-  }
+  }, [])
   const handleCreateOpenChange = (open: boolean) => {
     setCreateOpen(open)
     if (!open) setCreatePrefill(undefined)

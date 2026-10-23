@@ -35,7 +35,7 @@ vi.mock("@/entities/goal", async (importOriginal) => ({
   }),
 }))
 
-function project(overrides: Record<string, unknown>) {
+function project(overrides: { projectId?: string } & Record<string, unknown>) {
   return {
     projectId: "p1",
     name: "Project",

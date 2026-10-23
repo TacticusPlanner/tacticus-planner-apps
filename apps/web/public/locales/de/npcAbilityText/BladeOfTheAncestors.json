@@ -1,0 +1,11 @@
+{
+  "BladeOfTheAncestors": {
+    "description": "<style=\"Faction_LeaguesOfVotann\">Ûthar</style> erhält <style=\"Stat\">+{[extraCritChance]} % Kritische Chance</style> und verursacht <style=\"Stat_CritDamage\">+{[extraCritDmg]} Kritischen Schaden</style>, wenn eine verbündete <style=\"Character\">Einheit</style> getötet wird oder selbst eine gegnerische Einheit tötet. Wenn Ûthar einen Kritischen Treffer erzielt, wird dieser Bonus zurückgesetzt.",
+    "variables": {
+      "extraCritChance": [8, 8, 8, 8, 9, 9, 9, 10, 10, 10],
+      "extraCritDmg": [590, 622, 654, 686, 717, 749, 781, 813, 845, 877]
+    },
+    "constants": {},
+    "scaled": []
+  }
+}

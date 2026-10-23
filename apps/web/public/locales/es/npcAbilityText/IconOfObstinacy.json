@@ -1,0 +1,27 @@
+{
+  "IconOfObstinacy": {
+    "description": "<style=\"Faction_AdeptusAstartes\">Lysander</style> y todas las unidades aliadas adyacentes con <style=\"Terminator_Armor\">Armadura de Exterminador</style> infligen <style=\"Stat_Damage\">+{[extraDmg]} de Daño</style>. Cuando terminan su turno sin atacar, también tienen <style=\"Stat_Armor\">+{[extraArmor]} de Armadura</style> hasta el comienzo de su próximo turno. El <style=\"Stat_Damage\">Daño</style> y la <style=\"Stat_Armor\">Armadura</style> adicionales se incrementan aún más en un <style=\"STAT\">{[chance]}%</style> del valor actual de <style=\"Stat_Damage\">Bloqueo de Daño</style> de la unidad afectada.",
+    "variables": {
+      "extraDmg": [
+        4, 5, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 15, 16, 17, 18, 19, 20, 21,
+        22, 24, 28, 31, 35, 39, 42, 46, 49, 53, 57, 60, 64, 68, 71, 75, 79, 82,
+        86, 91, 98, 106, 114, 123, 139, 156, 172, 189, 205, 222, 224, 227, 230,
+        234, 238, 242, 246, 251, 256, 261, 267, 273, 279, 285, 291
+      ],
+      "extraArmor": [
+        4, 5, 6, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 16, 17, 18, 19, 20, 21,
+        22, 24, 28, 31, 35, 39, 42, 46, 49, 53, 57, 60, 64, 68, 71, 75, 79, 82,
+        86, 91, 98, 106, 114, 123, 139, 156, 172, 189, 205, 222, 224, 227, 230,
+        234, 238, 242, 246, 251, 256, 261, 267, 273, 279, 285, 291
+      ],
+      "chance": [
+        20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 25,
+        25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 30,
+        30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
+        30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30
+      ]
+    },
+    "constants": {},
+    "scaled": ["extraDmg", "extraArmor"]
+  }
+}

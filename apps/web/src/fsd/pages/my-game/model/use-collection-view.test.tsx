@@ -1,81 +1,15 @@
-import { act, renderHook, waitFor } from "@testing-library/react"
-import { useEffect, useState } from "react"
-import { beforeEach, describe, expect, it, vi } from "vitest"
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
-import { createTestI18n, i18nWrapper } from "@/test/i18n"
-
-// Stand-in for Dexie's live query: re-runs the querier whenever its deps change or the test signals
-// a database write (`emitDbChange`), which is the contract the hook relies on to pick up a sync.
-const live = vi.hoisted(() => ({ listeners: new Set<() => void>() }))
-function emitDbChange() {
-  act(() => live.listeners.forEach((listener) => listener()))
-}
-vi.mock("dexie-react-hooks", () => ({
-  useLiveQuery<T>(querier: () => Promise<T>, deps: unknown[] = []) {
-    const [value, setValue] = useState<T | undefined>(undefined)
-    const [version, setVersion] = useState(0)
-    useEffect(() => {
-      const listener = () => setVersion((v) => v + 1)
-      live.listeners.add(listener)
-      return () => {
-        live.listeners.delete(listener)
-      }
-    }, [])
-    useEffect(() => {
-      let active = true
-      void querier().then((result) => {
-        if (active) setValue(result)
-      })
-      return () => {
-        active = false
-      }
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [...deps, version])
-    return value
-  },
-}))
-
-const auth = vi.hoisted(() => ({ isAuthenticated: true }))
-vi.mock("@azure/msal-react", () => ({
-  useIsAuthenticated: () => auth.isAuthenticated,
-}))
-
-const catalog = vi.hoisted(() => ({ fail: false }))
-vi.mock("@workspace/game-catalog/queries", () => ({
-  getCharacters: async () => {
-    if (catalog.fail) throw new Error("catalog unavailable")
-    return [
-      {
-        id: "ultraTitus",
-        name: "Titus",
-        faction: "Ultramarines",
-        alliance: "Imperial",
-        initialRarity: "Epic",
-      },
-    ]
-  },
-  getMows: async () => [],
-  getUnlockShardCosts: async () => [{ rarity: "Epic", shards: 250 }],
-  getEquipmentMap: async () => new Map(),
-}))
-
-const roster = vi.hoisted(() => ({
-  characters: undefined as unknown[] | undefined,
-  fail: false,
-}))
-vi.mock("@workspace/player-data/queries", () => ({
-  getPlayerCharacters: async () => {
-    if (roster.fail) throw new Error("roster unavailable")
-    return roster.characters
-  },
-  getPlayerMows: async () => (roster.characters ? [] : undefined),
-  getInventoryShards: async () => (roster.characters ? [] : undefined),
-}))
+import { refreshLocalDataAfterSync } from "@/shared/local-data"
+import { setTestAuth } from "@/test/auth"
+import { act, renderHook, waitFor } from "@/test/render"
+import { seedGameCatalog, seedPlayerData } from "@/test/seed"
 
 import { useCollectionView } from "./use-collection-view"
 
+// `testTitus` has no English translation, so its display name can only come from the catalog.
 const titusRecord = {
-  unitId: "ultraTitus",
+  unitId: "testTitus",
   progressionIndex: "Epic:RedOneStar",
   rank: "Silver1",
   xp: 0,
@@ -87,30 +21,60 @@ const titusRecord = {
   equippedItems: [],
 }
 
-async function renderCollectionView() {
-  const i18n = await createTestI18n("en")
-  return renderHook(() => useCollectionView(), { wrapper: i18nWrapper(i18n) })
+// Fails every read of one IndexedDB store (by database and store name) until restored.
+function failReads(database: "game-catalog" | "player-data", store: string) {
+  const getAll = IDBObjectStore.prototype.getAll
+  return vi
+    .spyOn(IDBObjectStore.prototype, "getAll")
+    .mockImplementation(function (this: IDBObjectStore, ...args) {
+      if (
+        this.name === store &&
+        this.transaction.db.name === `tacticus-planner-${database}`
+      ) {
+        throw new Error(`${database} unavailable`)
+      }
+      return getAll.apply(this, args)
+    })
+}
+
+function renderCollectionView() {
+  return renderHook(() => useCollectionView())
 }
 
 describe("useCollectionView", () => {
-  beforeEach(() => {
-    auth.isAuthenticated = true
-    catalog.fail = false
-    roster.characters = undefined
-    roster.fail = false
+  beforeEach(async () => {
+    setTestAuth({ authenticated: true })
+    await seedGameCatalog({
+      characters: [
+        {
+          id: "testTitus",
+          name: "Titus",
+          faction: "Ultramarines",
+          alliance: "Imperial",
+          initialRarity: "Epic",
+        },
+      ],
+      mows: [],
+      "unlock-shard-costs": [{ rarity: "Epic", shards: 250 }],
+      equipment: [],
+    })
+  })
+
+  afterEach(() => {
+    vi.restoreAllMocks()
   })
 
   it("is loading until the catalog and roster reads settle", async () => {
-    const { result } = await renderCollectionView()
+    const { result } = renderCollectionView()
 
     expect(result.current.status).toBe("loading")
     await waitFor(() => expect(result.current.status).toBe("ready"))
   })
 
   it("reports an anonymous roster without reading player data", async () => {
-    auth.isAuthenticated = false
-    roster.fail = true
-    const { result } = await renderCollectionView()
+    setTestAuth({ authenticated: false })
+    failReads("player-data", "characters")
+    const { result } = renderCollectionView()
 
     await waitFor(() => expect(result.current.status).toBe("ready"))
     expect(
@@ -119,11 +83,11 @@ describe("useCollectionView", () => {
   })
 
   it("surfaces a catalog failure as a retryable error", async () => {
-    catalog.fail = true
-    const { result } = await renderCollectionView()
+    const failing = failReads("game-catalog", "characters")
+    const { result } = renderCollectionView()
 
     await waitFor(() => expect(result.current.status).toBe("catalogError"))
-    catalog.fail = false
+    failing.mockRestore()
     act(() => {
       if (result.current.status === "catalogError") result.current.retry()
     })
@@ -131,8 +95,9 @@ describe("useCollectionView", () => {
   })
 
   it("keeps the catalog when only the roster read fails", async () => {
-    roster.fail = true
-    const { result } = await renderCollectionView()
+    await seedPlayerData({ characters: [titusRecord] })
+    failReads("player-data", "characters")
+    const { result } = renderCollectionView()
 
     await waitFor(() => expect(result.current.status).toBe("ready"))
     const view =
@@ -142,7 +107,7 @@ describe("useCollectionView", () => {
   })
 
   it("names a unit without a translation by its catalog name, not its id", async () => {
-    const { result } = await renderCollectionView()
+    const { result } = renderCollectionView()
 
     await waitFor(() => expect(result.current.status).toBe("ready"))
     const view =
@@ -151,14 +116,24 @@ describe("useCollectionView", () => {
   })
 
   it("shows the roster once a sync lands, without remounting", async () => {
-    const { result } = await renderCollectionView()
+    const { result, queryClient } = renderCollectionView()
     await waitFor(() => expect(result.current.status).toBe("ready"))
     expect(
       result.current.status === "ready" && result.current.view.rosterState
     ).toBe("notSynced")
 
-    roster.characters = [titusRecord]
-    emitDbChange()
+    await act(async () => {
+      await seedPlayerData({
+        characters: [titusRecord],
+        mows: [],
+        "inventory-shards": [],
+      })
+      refreshLocalDataAfterSync(queryClient, "player", [
+        "characters",
+        "mows",
+        "inventory-shards",
+      ])
+    })
 
     await waitFor(() =>
       expect(

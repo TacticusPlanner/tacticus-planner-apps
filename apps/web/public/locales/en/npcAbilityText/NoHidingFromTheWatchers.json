@@ -1,0 +1,10 @@
+{
+  "NoHidingFromTheWatchers": {
+    "description": "Any <style=\"Stat_Damage\">Damage</style> this unit takes is reduced to 0. After being attacked, this unit moves {[nrOfTiles]} hex, trying to move away from all other units. If there is no other friendly <style=\"Faction_DarkAngels\">Dark Angel</style> on the battlefield except other <style=\"Faction_DarkAngels\">Watchers in the Dark</style>, then this unit leaves the battlefield.",
+    "variables": {},
+    "constants": {
+      "nrOfTiles": "1"
+    },
+    "scaled": []
+  }
+}

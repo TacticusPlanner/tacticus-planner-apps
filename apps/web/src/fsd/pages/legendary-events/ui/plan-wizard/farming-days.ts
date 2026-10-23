@@ -142,7 +142,7 @@ function previewDetails(
     goalId: `chain-${index}`,
     entityType: "Character",
     entityId: unitId,
-    goalType: spec.goalType as GoalDetail["goalType"],
+    goalType: spec.goalType,
     status: "Paused",
     globalPriority: null,
     notes: null,

@@ -1,12 +1,16 @@
-import {
-  datasetPayloadSchemas,
-  type GameCatalogMythicQuestReward,
-} from "@workspace/game-catalog"
+import type { GameCatalogMythicQuestReward } from "@workspace/game-catalog"
+import { datasetPayloadSchemas } from "@workspace/game-catalog/sync"
 import { describe, expect, it } from "vitest"
 
 import mythicQuestTasks from "../../../../../public/locales/en/mythicQuestTasks.json"
 import fixture from "./mythic-quests.fixture.json"
 import { mythicQuestReward, mythicTaskVariables } from "./mythic-quests"
+
+function at<T>(xs: readonly T[] | undefined, index: number): T {
+  const value = xs?.[index]
+  if (value === undefined) throw new Error(`expected an item at index ${index}`)
+  return value
+}
 
 // Served `mythic-quests` records for a few characters, and every task loca key the API serves
 // (generated from tacticus-planner-api's GameCatalog/Data/mythic-quests.json).
@@ -71,7 +75,7 @@ describe("mythicQuestReward", () => {
 
 describe("mythicTaskVariables", () => {
   it("builds V1's template variables for Abaddon's first quest", () => {
-    const [task] = quests.get("blackAbaddon")![0].tasks
+    const task = at(at(quests.get("blackAbaddon"), 0).tasks, 0)
     expect(
       mythicTaskVariables(
         task,

@@ -5,7 +5,6 @@ import {
   mark,
   meleeTeam,
   utharLane,
-  workedAlphaRecord,
   workedLanes,
 } from "./token-plan.fixtures"
 import { nextToken, planTokens, type PlannedToken } from "./token-plan"
@@ -135,7 +134,7 @@ describe("planTokens", () => {
             encounters: [
               { objectivesCleared: [0], highScore: 20, encounterPoints: 25 },
             ],
-          } as typeof workedAlphaRecord,
+          },
           teams: [{ ...fiveTeam, objectiveIndexes: [], depth: 1 }],
         }),
       ],

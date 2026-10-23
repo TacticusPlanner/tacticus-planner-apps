@@ -1,0 +1,12 @@
+{
+  "ProperKilly": {
+    "description": "Always eager to engage the toughest foe, <style=\"Faction_Orks\">Ghazghkull</style>'s melee attack prioritises the unit with the highest current health total. He slashes with Gork's Klaw, attacking all enemies in the 3 hexes in front of him. Each target takes <style=\"Stat_Hits\">{[nrOfHits]} hit</style> that deals {[dmgPct]}% of their <style=\"Stat_Health\">Max Health</style> as <style=\"DMG_Power\">Power Damage</style>. When damage is dealt this way, each target hit is also <style=\"Debuff_Stunned\">Stunned</style> for 1 round. Afterwards each target is hit with <style=\"Faction_Orks\">Ghazghkull</style>'s <style=\"NormalAttack\">normal melee attack</style>.",
+    "variables": {},
+    "constants": {
+      "damageProfile": "Power",
+      "nrOfHits": "1",
+      "dmgPct": "60"
+    },
+    "scaled": []
+  }
+}

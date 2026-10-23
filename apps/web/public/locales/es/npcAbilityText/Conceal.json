@@ -1,0 +1,10 @@
+{
+  "Conceal": {
+    "description": "Las unidades <style=\"Faction_Aeldari\">Aeldari</style> dentro de los {[range]} hexágonos ignoran su rasgo de <style=\"Battle_Fatigue\">Fatiga de batalla</style> si lo tienen y son tratadas como si tuvieran el rasgo de <style=\"Camouflage\">Camuflaje</style>.",
+    "variables": {},
+    "constants": {
+      "range": "2"
+    },
+    "scaled": []
+  }
+}

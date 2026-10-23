@@ -1,0 +1,23 @@
+{
+  "RefusalToBeOutdone": {
+    "description": "Los <style=\"Character\">personajes</style> aliados que atacan a enemigos adyacentes a <style=\"Faction_EmperorsChildren\">Laviscus</style> aumentan su <i>Cólera</i> equivalente al daño más alto infligido por cualquiera de sus <style=\"Stat_Hits\">impactos</style> <style=\"DMG_Psychic\">no psíquicos</style> en este turno. El <style=\"Stat_Damage\">atributo de Daño</style> de Laviscus aumenta un <style=\"Stat\">{[extraDmgPct]} %</style> de su <i>Cólera</i> y sus <style=\"NormalAttack\">ataques normales</style> infligen <style=\"Stat_CritDamage\">+{[extraCritDmg]} de Daño Crítico</style> adicional por cada <style=\"Character\">personaje</style> del <style=\"Aliance_Chaos\">Caos</style> aliado que aumentó su <i>Cólera</i> este turno. Al final de su turno o luego de que Laviscus realice un <style=\"NormalAttack\">ataque normal</style>, su <i>Cólera</i> se reinicia.",
+    "variables": {
+      "extraDmgPct": [
+        110, 110, 110, 110, 110, 110, 110, 110, 110, 110, 110, 110, 110, 110,
+        110, 110, 110, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115,
+        115, 115, 115, 115, 115, 115, 115, 120, 120, 120, 120, 120, 120, 120,
+        120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120,
+        120, 120, 120, 120, 120, 120, 120, 120, 120
+      ],
+      "extraCritDmg": [
+        8, 10, 11, 13, 14, 16, 18, 20, 22, 24, 25, 27, 29, 31, 33, 35, 36, 38,
+        40, 42, 44, 48, 55, 62, 70, 77, 84, 92, 99, 106, 113, 121, 128, 135,
+        143, 150, 157, 164, 172, 182, 196, 211, 228, 246, 279, 312, 344, 377,
+        410, 443, 448, 454, 460, 468, 476, 484, 492, 502, 512, 522, 534, 546,
+        558, 570, 582
+      ]
+    },
+    "constants": {},
+    "scaled": ["extraCritDmg"]
+  }
+}

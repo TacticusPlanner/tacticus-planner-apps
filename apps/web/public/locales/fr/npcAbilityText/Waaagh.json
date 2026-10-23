@@ -1,0 +1,40 @@
+{
+  "Waaagh": {
+    "description": "Si <style=\"Faction_Orks\">Boss Gulgortz</style> ne s'est pas déplacé, il invoque <style=\"STAT\">{[nrOfSummons]}</style> <style=\"Summon\"><style=\"Faction_Orks\">Boyz orks</style></style> dans des hexagones adjacents libres. Jusqu'à la fin de son tour, tous les alliés <style=\"Faction_Orks\">Orks</style> adjacents et les unités alliées adjacentes à <style=\"Faction_Orks\">Boss Gulgortz</style> gagnent <style=\"Stat_Movement\">+{[extraMovement]} déplacement</style> et leurs <style=\"NormalAttack\">attaques au corps à corps normales</style> infligent <style=\"Stat_Damage\">+{[extraDmg]} dégâts</style> et portent un <style=\"Stat_Hits\">coup</style> supplémentaire. Ensuite, <style=\"Faction_Orks\">Boss Gulgortz</style> <style=\"Charging\">charge</style> un ennemi ciblé à portée de déplacement, réalisant une <style=\"NormalAttack\">attaque au corps à corps normale</style> contre lui. Tous les <style=\"Faction_Orks\">Boyz orks</style> alliés prennent leur tour.\n\nStats des Boyz orks :\n<style=\"Stat_Health\">{[summonHp]} santé</style>\n<style=\"Stat_Damage\">{[summonDmg]} dégâts</style>\n<style=\"Stat_Armor\">{[summonArmor]} armure</style>",
+    "variables": {
+      "extraDmg": [
+        8, 10, 11, 13, 14, 16, 18, 20, 22, 24, 25, 27, 29, 31, 33, 35, 36, 38,
+        40, 42, 44, 48, 55, 62, 70, 77, 84, 92, 99, 106, 113, 121, 128, 135,
+        143, 150, 157, 164, 172, 182, 196, 211, 228, 246, 279, 312, 344, 377,
+        410, 443, 448, 454, 460, 468, 476, 484, 492, 502, 512, 522, 534, 546,
+        558, 570, 582
+      ],
+      "summonHp": [
+        45, 54, 63, 72, 81, 91, 102, 112, 122, 133, 143, 153, 164, 174, 185,
+        195, 205, 216, 226, 236, 250, 270, 311, 351, 392, 433, 474, 515, 556,
+        597, 638, 679, 720, 761, 802, 843, 884, 925, 966, 1023, 1104, 1189,
+        1281, 1383, 1568, 1753, 1938, 2123, 2308, 2493, 2520, 2554, 2588, 2633,
+        2678, 2723, 2768, 2824, 2880, 2936, 3004, 3071, 3139, 3206, 3274
+      ],
+      "summonDmg": [
+        28, 34, 39, 45, 50, 57, 63, 70, 76, 83, 89, 95, 102, 108, 115, 121, 128,
+        134, 141, 147, 156, 168, 193, 219, 244, 270, 295, 321, 346, 372, 397,
+        423, 448, 473, 499, 524, 550, 575, 601, 637, 687, 740, 797, 860, 976,
+        1091, 1206, 1321, 1436, 1551, 1568, 1589, 1610, 1638, 1666, 1694, 1722,
+        1757, 1792, 1827, 1869, 1911, 1953, 1995, 2037
+      ],
+      "summonArmor": [
+        15, 18, 21, 24, 27, 30, 34, 37, 41, 44, 48, 51, 55, 58, 62, 65, 68, 72,
+        75, 79, 83, 90, 104, 117, 131, 144, 158, 172, 185, 199, 213, 226, 240,
+        254, 267, 281, 295, 308, 322, 341, 368, 396, 427, 461, 523, 584, 646,
+        708, 769, 831, 840, 851, 863, 878, 893, 908, 923, 941, 960, 979, 1001,
+        1024, 1046, 1069, 1091
+      ]
+    },
+    "constants": {
+      "extraMovement": "1",
+      "nrOfSummons": "2"
+    },
+    "scaled": ["extraDmg", "summonHp", "summonDmg", "summonArmor"]
+  }
+}

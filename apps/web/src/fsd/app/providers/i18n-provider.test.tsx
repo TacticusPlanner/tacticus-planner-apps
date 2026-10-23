@@ -12,6 +12,7 @@ import { I18nProvider } from "./i18n-provider"
 
 // Suspends like a component waiting on its translation namespaces.
 function WaitsForTranslations(): never {
+  // eslint-disable-next-line @typescript-eslint/only-throw-error -- Suspense protocol: throwing a pending promise suspends.
   throw new Promise(() => {})
 }
 

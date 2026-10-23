@@ -115,7 +115,7 @@ describe("useLibraryRouteSelection", () => {
         <>
           <output data-testid="selected">{selection.selectedId}</output>
           <button onClick={() => selection.select("calgar")}>select</button>
-          <button onClick={() => navigate(-1)}>back</button>
+          <button onClick={() => void navigate(-1)}>back</button>
         </>
       )
     }

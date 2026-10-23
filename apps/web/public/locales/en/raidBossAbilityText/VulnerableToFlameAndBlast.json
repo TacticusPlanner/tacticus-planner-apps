@@ -1,0 +1,23 @@
+{
+  "VulnerableToFlameAndBlast": {
+    "description": "Each time this unit is dealt <style=\"DMG_Flame\">Flame Damage</style> or <style=\"DMG_Blast\">Blast Damage</style>, it loses <style=\"Stat_Health\">{[hp]} Health</style> in addition to the damage done. This unit takes <style=\"Stat_Damage\">-{[dmgReductionPct]}% Damage</style> from hits that do not deal <style=\"DMG_Flame\">Flame Damage</style> or <style=\"DMG_Blast\">Blast Damage</style>.",
+    "variables": {
+      "hp": [
+        14, 17, 19, 22, 25, 28, 32, 47, 53, 61, 70, 79, 88, 96, 105, 130, 185,
+        180, 205, 225, 250, 270, 295, 315, 385, 530, 525, 590, 655, 720, 790,
+        855, 920, 1005, 1095, 1295, 1620, 1945, 2270, 2595, 2915, 3240, 3565,
+        3890, 4215, 4535, 4860, 5185, 5510, 5835, 6300, 7350, 10500, 10500,
+        10500, 11000, 11001, 11002, 11003, 11004, 11005, 11006, 11007, 11008,
+        11009
+      ],
+      "dmgReductionPct": [
+        25, 25, 25, 25, 25, 25, 25, 25, 33, 33, 33, 33, 33, 33, 33, 33, 33, 40,
+        40, 40, 40, 40, 40, 40, 40, 40, 50, 50, 50, 50, 50, 50, 50, 50, 50, 66,
+        66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66,
+        66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66
+      ]
+    },
+    "constants": {},
+    "scaled": []
+  }
+}

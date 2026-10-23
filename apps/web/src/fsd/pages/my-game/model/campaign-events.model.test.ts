@@ -115,7 +115,7 @@ describe("buildEvents", () => {
           {
             ...definition("campaign1"),
             releaseType: "standard",
-          } as CampaignDefinitionStorageModel,
+          },
         ],
         battles: [],
         characters: [],

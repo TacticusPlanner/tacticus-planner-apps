@@ -1,11 +1,11 @@
 import { z } from "zod"
+import { Rarity } from "@workspace/game-domain"
 import {
   abilityIdSchema,
   equipmentIdSchema,
   factionIdSchema,
-  Rarity,
   unitIdSchema,
-} from "@workspace/game-domain"
+} from "@workspace/game-domain/schemas"
 
 const equipmentUpgradeLevelSchema = z.looseObject({
   goldCost: z.number(),

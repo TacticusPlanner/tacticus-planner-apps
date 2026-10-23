@@ -16,10 +16,6 @@ export type CreateProjectRequest = S["CreateProjectRequest"]
 /** Absent or null `target` clears it; archiving and restoring must resend it. */
 export type UpdateProjectRequest = S["UpdateProjectRequest"]
 
-/** A goal's membership entry as a response serves it: `globalPriority` is its position in the
- *  account-wide order (null once completed/archived). */
-export type ProjectGoalEntry = S["ProjectGoalEntryResponse"]
-
 /** `PUT /projects/{id}/goals`: `goals` is the complete desired membership (goal ids only — membership
  *  never changes the account-wide order) and `expectedGoalIds` the complete membership the user
  *  reviewed — the server rejects the whole save (409 `membershipStale`) when the current membership no

@@ -1,0 +1,10 @@
+{
+  "GuardianConstruct": {
+    "description": "Les <style=\"Character\">personnages</style> <style=\"Rarity_Mythic\">Mythiques</style> alliés affectés par les <i>protocoles de réparation des nanoscarabées</i> infligent <style=\"Stat_Damage\">+{[extraDmgPct]} % de dégâts</style>.",
+    "variables": {
+      "extraDmgPct": [10, 13, 16, 20]
+    },
+    "constants": {},
+    "scaled": ["extraDmgPct"]
+  }
+}

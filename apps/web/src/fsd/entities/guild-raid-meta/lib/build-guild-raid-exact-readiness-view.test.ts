@@ -261,15 +261,15 @@ describe("buildGuildRaidRosterInvestment", () => {
         {
           unitId: "heroA",
           xpLevel: 42,
-          rank: "Gold2" as never,
-          progressionIndex: "Rare:FourStars" as never,
+          rank: "Gold2",
+          progressionIndex: "Rare:FourStars",
           abilities: [{ level: 12 }, { level: 8 }],
         },
         {
           unitId: "heroB",
           xpLevel: 1,
-          rank: "Stone1" as never,
-          progressionIndex: "Common:None" as never,
+          rank: "Stone1",
+          progressionIndex: "Common:None",
           // A newly-unlocked character may have no ability records yet.
           abilities: [],
         },
@@ -278,7 +278,7 @@ describe("buildGuildRaidRosterInvestment", () => {
         {
           unitId: "mowX",
           xpLevel: 5,
-          progressionIndex: "Uncommon:TwoStars" as never,
+          progressionIndex: "Uncommon:TwoStars",
           abilities: [{ level: 3 }],
         },
       ],

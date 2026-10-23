@@ -14,6 +14,12 @@ import {
   rosterCharacterPower,
 } from "./unit-power"
 
+function at<T>(xs: readonly T[] | undefined, index: number): T {
+  const value = xs?.[index]
+  if (value === undefined) throw new Error(`expected an item at index ${index}`)
+  return value
+}
+
 const context = unitPowerContextFixture()
 
 const tiguriusGold1 = {
@@ -115,7 +121,7 @@ describe("mowPowerAt and npcPowerAt", () => {
   })
 
   it("gives the Infiltrator's third row 45", () => {
-    const row = unitPowerCatalog.npcs[0].stats[2]
+    const row = at(at(unitPowerCatalog.npcs, 0).stats, 2)
     expect(npcPowerAt("darkaNpc1Infiltrator", row, context)).toBe(45)
   })
 

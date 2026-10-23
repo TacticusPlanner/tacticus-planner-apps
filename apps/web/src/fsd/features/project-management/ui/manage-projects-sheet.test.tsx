@@ -4,7 +4,10 @@ import { describe, expect, it, vi } from "vitest"
 
 vi.mock("react-i18next", () => ({
   initReactI18next: { init: () => undefined, type: "3rdParty" },
-  useTranslation: () => ({ t: (key: string) => key }),
+  useTranslation: () => ({
+    t: (key: string) => key,
+    i18n: { language: "en" },
+  }),
 }))
 
 import { ManageProjectsSheet } from ".//manage-projects-sheet"
@@ -32,7 +35,7 @@ describe("ManageProjectsSheet", () => {
 
     render(
       <ManageProjectsSheet
-        actions={actions as never}
+        actions={actions}
         onOpenChange={onOpenChange}
         open
         project={undefined}
@@ -87,7 +90,7 @@ describe("ManageProjectsSheet", () => {
 
     render(
       <ManageProjectsSheet
-        actions={actions as never}
+        actions={actions}
         onCreated={onCreated}
         onOpenChange={onOpenChange}
         open
@@ -114,7 +117,7 @@ describe("ManageProjectsSheet", () => {
 
     render(
       <ManageProjectsSheet
-        actions={actions as never}
+        actions={actions}
         onOpenChange={onOpenChange}
         open
         project={activeProject as never}
@@ -150,7 +153,7 @@ describe("ManageProjectsSheet", () => {
 
     render(
       <ManageProjectsSheet
-        actions={actions as never}
+        actions={actions}
         onOpenChange={onOpenChange}
         open
         project={activeProject as never}
@@ -172,7 +175,7 @@ describe("ManageProjectsSheet", () => {
 
     render(
       <ManageProjectsSheet
-        actions={actions as never}
+        actions={actions}
         onOpenChange={vi.fn()}
         open
         project={activeProject as never}
@@ -192,7 +195,7 @@ describe("ManageProjectsSheet", () => {
 
     const { rerender } = render(
       <ManageProjectsSheet
-        actions={actions as never}
+        actions={actions}
         onOpenChange={vi.fn()}
         open
         project={activeProject as never}
@@ -204,7 +207,7 @@ describe("ManageProjectsSheet", () => {
 
     rerender(
       <ManageProjectsSheet
-        actions={actions as never}
+        actions={actions}
         onOpenChange={vi.fn()}
         open
         project={undefined}

@@ -84,7 +84,7 @@ describe("Library translations", () => {
     for (const section of ["mowsList", "mowUnit"] as const) {
       const enLeaves = leafKeys(en[section]).sort()
       for (const [code, locale] of Object.entries(locales)) {
-        const localeSection = (locale as typeof en)[section]
+        const localeSection = locale[section]
         expect(leafKeys(localeSection).sort(), code).toEqual(enLeaves)
         for (const key of enLeaves) {
           const value = key

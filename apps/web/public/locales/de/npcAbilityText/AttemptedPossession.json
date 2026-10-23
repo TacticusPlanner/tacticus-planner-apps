@@ -1,0 +1,25 @@
+{
+  "AttemptedPossession": {
+    "description": "Visiere einen Gegner innerhalb von {[range]} Feldern an. Das Ziel und alle <style=\"Summon\">Beschwörungen</style>, die es gerufen hat, werden besessen und führen sofort einen <style=\"NormalAttack\">normalen Angriff</style> gegen die nächste gegnerische Einheit aus, wobei sie nicht besessene Ziele bevorzugen. Besessene Einheiten verursachen <style=\"Stat\">{[dmgPct]} %</style> ihres eigenen <style=\"Stat_Damage\">Schadens</style>, bis zu einem Maximum von <style=\"Stat_Damage\">{[maxDmg]} Schaden</style> pro <style=\"Stat_Hits\">Treffer</style>. Besessene <style=\"Summon\">Beschwörungen</style> bewegen sich, bevor sie angreifen.",
+    "variables": {
+      "dmgPct": [
+        80, 80, 80, 80, 80, 80, 80, 80, 85, 85, 85, 85, 85, 85, 85, 85, 85, 90,
+        90, 90, 90, 90, 90, 90, 90, 90, 95, 95, 95, 95, 95, 95, 95, 95, 95, 100,
+        100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
+        100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
+        100
+      ],
+      "maxDmg": [
+        55, 66, 77, 88, 99, 112, 124, 137, 150, 162, 175, 188, 200, 213, 226,
+        238, 251, 263, 276, 289, 306, 329, 380, 430, 480, 530, 580, 630, 680,
+        730, 780, 830, 880, 930, 980, 1030, 1080, 1130, 1180, 1251, 1350, 1454,
+        1566, 1690, 1916, 2142, 2368, 2594, 2820, 3046, 3080, 3121, 3163, 3218,
+        3273, 3328, 3383, 3451, 3520, 3589, 3671, 3754, 3836, 3919, 4001
+      ]
+    },
+    "constants": {
+      "range": "2"
+    },
+    "scaled": ["maxDmg"]
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "AncestralFortune": {
+    "description": "Verursacht <style=\"Stat_Hits\">{[nrOfHits]}x</style> <style={[DamageProfileTypeStyle]}>{[minDmg]}-{[maxDmg]} {[DamageProfileType]}</style> an einem benachbarten Feind und <style=\"Debuff_Taunted\">verspottet</style> ihn für 1 Runde. Die anvisierte Einheit kann für 1 Runde weder wiederbelebt, <style=\"Healing\">geheilt</style> oder <style=\"Repairing\">repariert</style> werden, noch anderweitig {[S/Health]} wiederherstellen. <style=\"Faction_LeaguesOfVotann\">Ûthar</style> erhält außerdem <style=\"Stat\">+{[extraBlockChance]}%</style> <style=\"Stat_Block\">Block</style> <style=\"Stat_Chance\">Chance</style> bis zum Beginn seines nächsten Zuges.\n\nNach insgesamt <style=\"Stat\">{[nrOfAttacks]}</style> Angriffen, die Ûthar nach dem Einsatz von <i>Ahnenglück</i> geblockt oder bei denen er <style=\"Stat_CritDamage\">Kritische Treffer</style> erzielt hat, kann die Fähigkeit erneut verwendet werden.",
+    "variables": {
+      "extraBlockChance": [
+        15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 22,
+        22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 30,
+        30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
+        30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30
+      ],
+      "minDmg": [
+        16, 19, 22, 26, 29, 32, 36, 40, 44, 47, 51, 55, 58, 62, 66, 69, 73, 77,
+        80, 84, 89, 96, 110, 125, 140, 154, 169, 183, 198, 212, 227, 241, 256,
+        271, 285, 300, 314, 329, 343, 364, 393, 423, 456, 492, 557, 623, 689,
+        755, 820, 886, 896, 908, 920, 936, 952, 968, 984, 1004, 1024, 1044,
+        1068, 1092, 1116, 1140, 1164
+      ],
+      "maxDmg": [
+        25, 30, 35, 40, 45, 51, 57, 62, 68, 74, 80, 85, 91, 97, 103, 108, 114,
+        120, 126, 131, 139, 150, 173, 195, 218, 241, 264, 286, 309, 332, 355,
+        377, 400, 423, 446, 468, 491, 514, 537, 569, 614, 661, 712, 768, 871,
+        974, 1077, 1179, 1282, 1385, 1400, 1419, 1438, 1463, 1488, 1513, 1538,
+        1569, 1600, 1631, 1669, 1706, 1744, 1781, 1819
+      ],
+      "nrOfAttacks": [
+        5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 4, 4, 4, 4, 4, 4, 4,
+        4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
+        3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3
+      ]
+    },
+    "constants": {
+      "nrOfHits": "3",
+      "damageProfile": "Plasma"
+    },
+    "scaled": ["minDmg", "maxDmg"]
+  }
+}

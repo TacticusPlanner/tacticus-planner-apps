@@ -64,7 +64,7 @@ export function ProjectSelect({
     >
       <SelectTrigger
         aria-label={iconOnly ? resolvedPlaceholder : undefined}
-        className={cn(iconOnly ? undefined : "w-56", className)}
+        className={cn(iconOnly ? undefined : "min-w-56", className)}
         data-testid={testId}
       >
         {iconOnly ? (

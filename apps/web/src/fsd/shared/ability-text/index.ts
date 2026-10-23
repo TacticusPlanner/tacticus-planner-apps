@@ -6,3 +6,8 @@ export {
   type AbilityTextEntry,
   type TraitTextEntry,
 } from "./use-ability-text"
+export {
+  rulesTextPending,
+  useRulesText,
+  type RulesText,
+} from "./use-rules-text"

@@ -1,0 +1,10 @@
+{
+  "WallOfMirrors": {
+    "description": "If the <style=\"Faction_Tau\">Stealth Battlesuit</style> has not moved, it disappears from its current hex and reappears on a free hex on the battlefield from which it can perform a <style=\"NormalAttack\">normal ranged attack</style> against an enemy that has a <style=\"Debuff_Markerlight\">Markerlight</style>. This attack has <style=\"Piercing_Ratio\">+{[extraPierce]}% Pierce Ratio</style>.",
+    "variables": {},
+    "constants": {
+      "extraPierce": "15"
+    },
+    "scaled": []
+  }
+}

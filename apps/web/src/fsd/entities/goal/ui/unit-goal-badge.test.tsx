@@ -8,7 +8,7 @@ describe("UnitGoalBadge", () => {
   it("names one goal", () => {
     render(<UnitGoalBadge label="Goals" lines={["Rank to Gold II"]} />)
     expect(
-      screen.getByRole("img", { name: "Goals: Rank to Gold II" })
+      screen.getByRole("button", { name: "Goals: Rank to Gold II" })
     ).toBeInTheDocument()
   })
 
@@ -20,7 +20,7 @@ describe("UnitGoalBadge", () => {
       />
     )
     expect(
-      screen.getByRole("img", {
+      screen.getByRole("button", {
         name: "Goals: Rank to Gold II; Ascension to Legendary Red Three Stars",
       })
     ).toBeInTheDocument()

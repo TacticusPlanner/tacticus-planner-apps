@@ -1,0 +1,27 @@
+{
+  "EntropyCannons": {
+    "description": "Cible une unité ennemie dont l'<style=\"Stat_Armor\">armure</style> est réduite ou qui se trouve dans une aura de <style=\"ContagionsOfNurgle\">Contagion</style> alliée. Inflige <style=\"Stat_Hits\">{[nrOfHits]}x</style> <style=\"DMG_Energy\">{[minDmg]}-{[maxDmg]} dégâts énergétiques</style> à la cible.\n\nCoût : <style=\"Resource_MachinesOfWarAmmo\">{[munitionsCost]} munition(s)</style>.\n\n{[S/AbilityDamageExplanation]}",
+    "variables": {
+      "minDmg": [
+        28, 34, 39, 45, 50, 57, 63, 70, 76, 83, 89, 95, 102, 108, 115, 121, 128,
+        134, 141, 147, 156, 168, 193, 219, 244, 270, 295, 321, 346, 372, 397,
+        423, 448, 473, 499, 524, 550, 575, 601, 637, 687, 740, 797, 860, 976,
+        1091, 1206, 1321, 1436, 1551, 1568, 1589, 1610, 1638, 1666, 1694, 1722,
+        1757, 1792, 1827, 1869, 1911, 1953, 1995, 2037
+      ],
+      "maxDmg": [
+        35, 42, 49, 56, 63, 71, 79, 87, 95, 103, 111, 119, 127, 135, 144, 152,
+        160, 168, 176, 184, 195, 210, 242, 273, 305, 337, 369, 401, 433, 464,
+        496, 528, 560, 592, 624, 656, 687, 719, 751, 796, 859, 925, 996, 1076,
+        1219, 1363, 1507, 1651, 1795, 1939, 1960, 1986, 2013, 2048, 2083, 2118,
+        2153, 2196, 2240, 2284, 2336, 2389, 2441, 2494, 2546
+      ]
+    },
+    "constants": {
+      "damageProfile": "Energy",
+      "nrOfHits": "2",
+      "munitionsCost": "1"
+    },
+    "scaled": ["minDmg", "maxDmg"]
+  }
+}

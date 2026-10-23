@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next"
 import { campaignIcon, characterIcon } from "@workspace/game-catalog"
-import type { CampaignId, UnitId } from "@workspace/game-domain"
+import type { UnitId } from "@workspace/game-domain"
 import {
   AccordionContent,
   AccordionItem,
@@ -43,7 +43,7 @@ function EventSummary({ view }: { view: EventView }) {
   return (
     <div className="flex min-w-0 flex-1 items-center gap-3">
       <EntityIcon
-        src={campaignIcon(event.definition.groupId as CampaignId, "Standard")}
+        src={campaignIcon(event.definition.groupId, "Standard")}
         alt=""
         className="size-10 shrink-0"
       />

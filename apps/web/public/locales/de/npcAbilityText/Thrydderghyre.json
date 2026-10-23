@@ -1,0 +1,10 @@
+{
+  "Thrydderghyre": {
+    "description": "Das erste Mal, wenn <style=\"Faction_ThousandSons\">Yazaghor</style> <style=\"Stat_Health\">Lebenspunkte</style> verliert und das erste Mal, wenn er <i>Verdrehtes Trugbild</i> einsetzt, beschwört er eine <style=\"Summon\"><style=\"Faction_ThousandSons\">Kopie</style></style> von sich selbst in einem freien benachbarten Feld mit <style=\"STAT\">{[statsPct]}%</style> seiner eigenen <style=\"Stat_Health\">Lebenspunkte</style>, <style=\"Stat_Damage\">Schaden</style> und <style=\"Stat_Armor\">Rüstung</style>. Die Kopien können <i>Magische Fassade</i> oder <i>Thrydderghyre</i> nicht einsetzen, haben aber <i>Verdrehtes Trugbild</i> als zusätzliche passive Fähigkeit.",
+    "variables": {
+      "statsPct": [50, 51, 52, 54, 56, 58, 60, 62, 64, 66]
+    },
+    "constants": {},
+    "scaled": []
+  }
+}

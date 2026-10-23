@@ -1,0 +1,16 @@
+{
+  "TimesplinterMantle": {
+    "description": "Al comienzo de cada turno, <style=\"Faction_Necrons\">Thothmek</style> y todas las unidades <style=\"Mechanical\">Mecánicas</style> amigas adyacentes ganan <i>Manto partetiempo</i>. Las unidades afectadas reciben <style=\"Stat_Damage\">-{[dmgReduction]} de Daño</style> del primer ataque realizado por una unidad en contra de ellas. Después de ser atacadas o al final del turno, el efecto termina.",
+    "variables": {
+      "dmgReduction": [
+        30, 36, 42, 48, 54, 61, 68, 75, 82, 89, 95, 102, 109, 116, 123, 130,
+        137, 144, 151, 158, 167, 180, 207, 234, 262, 289, 316, 344, 371, 398,
+        425, 453, 480, 507, 535, 562, 589, 617, 644, 682, 736, 793, 854, 922,
+        1045, 1169, 1292, 1415, 1538, 1662, 1680, 1703, 1725, 1755, 1785, 1815,
+        1845, 1883, 1920, 1958, 2003, 2048, 2093, 2138, 2183
+      ]
+    },
+    "constants": {},
+    "scaled": ["dmgReduction"]
+  }
+}

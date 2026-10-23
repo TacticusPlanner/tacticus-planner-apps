@@ -71,7 +71,7 @@ function synced(lane: V1Lane, cleared: string[][]): LegendaryEventLaneRecord {
         encounterPoints: defaults ? lane.battlePoints : 0,
       }
     }),
-  } as unknown as LegendaryEventLaneRecord
+  }
 }
 
 function team(

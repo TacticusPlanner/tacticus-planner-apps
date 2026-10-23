@@ -1,16 +1,8 @@
-import { describe, expect, it, vi } from "vitest"
+import { describe, expect, it } from "vitest"
 import userEvent from "@testing-library/user-event"
 import { battleIdSchema } from "@workspace/game-domain"
 
-import { render, screen } from "@/test/render"
-
-vi.mock("react-i18next", () => ({
-  initReactI18next: { type: "3rdParty", init: vi.fn() },
-  useTranslation: () => ({
-    t: (key: string, values?: Record<string, unknown>) =>
-      values ? `${key}:${JSON.stringify(values)}` : key,
-  }),
-}))
+import { render, screen, within } from "@/test/render"
 
 import { RaidSchedule } from "./raid-schedule"
 
@@ -247,8 +239,35 @@ describe("RaidSchedule location emphasis", () => {
 
     const lines = screen
       .getByTestId(`raid-location-${b1}`)
-      .querySelectorAll(".truncate")
+      .querySelectorAll(".break-words")
     expect([...lines].map((line) => line.textContent)).toEqual(["B1"])
+  })
+
+  it("wraps a long localized campaign name and node label in full instead of truncating them", () => {
+    const campaignName = "Adeptus Mechanicus – Kampagnenereignis"
+    const nodeLabel = "Extremis 12B (Herausforderungsknoten)"
+    render(
+      <RaidSchedule
+        attemptsUsedByBattle={new Map([[b1, 3]])}
+        emphasis="location"
+        entries={[entry(b1, 3)]}
+        goalsById={new Map([["g1", goal]])}
+        locationsByBattleId={
+          new Map([[b1, location("B1", campaignName, nodeLabel)]])
+        }
+        resourceLabels={new Map([["upgrade1", "Ceramite"]])}
+        resourceProgress={new Map()}
+        resourceVisuals={new Map()}
+        testId="schedule"
+      />
+    )
+
+    const row = within(screen.getByTestId(`raid-location-${b1}`))
+    for (const label of [campaignName, nodeLabel]) {
+      const line = row.getByText(label)
+      expect(line).toHaveClass("break-words")
+      expect(line).not.toHaveClass("truncate")
+    }
   })
 
   it("keeps the resource name accessible (sr-only) by default and shows it in a visible tooltip on hover, while keeping progress visible underneath", async () => {
@@ -332,8 +351,8 @@ describe("RaidSchedule location emphasis", () => {
     )
 
     const row = screen.getByTestId(`raid-location-${b1}`)
-    expect(row).not.toHaveTextContent("schedule.upgradesLeft")
-    expect(row).not.toHaveTextContent("schedule.raids")
+    expect(row).not.toHaveTextContent(/upgrades? left/)
+    expect(row).not.toHaveTextContent(/attempts? used/)
   })
 
   it("shows the upgrades still needed when the plan stops below the node's daily cap", () => {
@@ -355,8 +374,8 @@ describe("RaidSchedule location emphasis", () => {
     )
 
     const row = screen.getByTestId(`raid-location-${b1}`)
-    expect(row).toHaveTextContent('schedule.upgradesLeft:{"count":3}')
-    expect(row).not.toHaveTextContent("schedule.raids")
+    expect(row).toHaveTextContent("3 upgrades left")
+    expect(row).not.toHaveTextContent(/attempts? used/)
   })
 
   it("excludes a fully-raided location from the card but keeps the card for its other locations", () => {

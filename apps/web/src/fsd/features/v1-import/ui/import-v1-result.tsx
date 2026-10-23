@@ -13,31 +13,28 @@ import {
   AlertTitle,
 } from "@workspace/ui/components/alert"
 import { Badge } from "@workspace/ui/components/badge"
-import { Button } from "@workspace/ui/components/button"
-import { ScrollArea } from "@workspace/ui/components/scroll-area"
 
 import type { ImportV1ProfileResult, V1GoalOutcome } from "@/entities/account"
-import { GoalTypeBadge, type GoalKind } from "@/entities/goal"
+import { GoalTypeBadge } from "@/entities/goal"
 import { useUnitName } from "@/shared/unit-name"
 
 import {
-  buildDiagnosticText,
   effectiveGoalsStatus,
   groupOutcomes,
   importedCounts,
   isAutomaticallyAdded,
+  outcomeSubject,
+  materialSteps,
   reasonKeyForCode,
 } from "../model/outcome-buckets"
 import {
-  buildLegendaryEventDiagnosticText,
   groupLegendaryEventOutcomes,
-  legendaryEventsNeedAttention,
   reasonKeyForLegendaryEventCode,
 } from "../model/legendary-event-outcome-buckets"
 import { V1_IMPORT_PARTS } from "../model/parts"
-import { useLegendaryEventIssueText } from "../model/use-legendary-event-issue-text"
-import { useLegendaryEventName } from "../model/use-legendary-event-name"
+import { useUpgradeName } from "../model/use-upgrade-name"
 import { LegendaryEventImportResult } from "./legendary-event-import-result"
+import { MaterialSteps } from "./material-steps"
 
 // i18next's `t` only accepts keys it can statically verify exist in the locale resources, so a
 // status-derived key is built through this small literal-keyed lookup rather than a template
@@ -53,6 +50,13 @@ const STATUS_KEYS = {
 export function ImportResult({ result }: { result: ImportV1ProfileResult }) {
   const { t } = useTranslation()
   const getEntityName = useUnitName()
+  const upgradeName = useUpgradeName()
+  const subjectFor = (outcome: V1GoalOutcome) =>
+    outcomeSubject(outcome, {
+      unitName: getEntityName,
+      upgradeName,
+      noUnitLabel: t("goals.v1Import.report.noUnit"),
+    })
 
   const buckets = useMemo(
     () => groupOutcomes(result.outcomes),
@@ -65,21 +69,15 @@ export function ImportResult({ result }: { result: ImportV1ProfileResult }) {
   const { goals: importedGoalCount, units: importedUnitCount } = importedCounts(
     buckets.imported
   )
+  const manualSteps = useMemo(
+    () => materialSteps(result.outcomes),
+    [result.outcomes]
+  )
   // Absent from a response of an API that predates the part.
   const legendaryEventBuckets = useMemo(
     () => groupLegendaryEventOutcomes(result.legendaryEventOutcomes ?? []),
     [result.legendaryEventOutcomes]
   )
-  const legendaryEventName = useLegendaryEventName()
-  const legendaryEventIssueText = useLegendaryEventIssueText()
-  const hasDiagnostics =
-    buckets.notImported.length > 0 ||
-    buckets.failed.length > 0 ||
-    legendaryEventsNeedAttention(legendaryEventBuckets)
-
-  const goalTypeLabel = (goalType: string | null) =>
-    goalType ? t(`goals.create.goalTypes.${goalType as GoalKind}`) : null
-
   // "not_selected" (ImportPartResult.NotSelected — API contract) hides a part the user didn't ask
   // for, so a cleared part can't be mistaken for one that was attempted and skipped.
   // The Legendary Event part's own code is translated; the other parts keep the server's message.
@@ -98,28 +96,6 @@ export function ImportResult({ result }: { result: ImportV1ProfileResult }) {
             : part,
       }
     })
-
-  const copyDetails = () => {
-    const text = buildDiagnosticText({
-      notImported: buckets.notImported,
-      failed: buckets.failed,
-      heading: (bucket) => t(`goals.v1Import.report.${bucket}`),
-      unitName: getEntityName,
-      goalTypeLabel,
-      noUnitLabel: t("goals.v1Import.report.noUnit"),
-      reasonFor: (code) => t(reasonKeyForCode(code)),
-    })
-    const legendaryEventText = buildLegendaryEventDiagnosticText({
-      buckets: legendaryEventBuckets,
-      title: t("goals.v1Import.legendaryEvents.title"),
-      eventName: legendaryEventName,
-      reasonFor: (code) => t(reasonKeyForLegendaryEventCode(code)),
-      issueFor: legendaryEventIssueText,
-    })
-    void navigator.clipboard.writeText(
-      [text, legendaryEventText].filter(Boolean).join("\n\n")
-    )
-  }
 
   return (
     <div
@@ -151,25 +127,75 @@ export function ImportResult({ result }: { result: ImportV1ProfileResult }) {
         </Alert>
       ) : null}
 
+      {!syncRequired && manualSteps.length > 0 ? (
+        <MaterialSteps steps={manualSteps} />
+      ) : null}
+
       {!syncRequired && result.outcomes.length > 0 ? (
-        <ScrollArea className="max-h-72">
-          <div className="grid gap-3 pr-2">
-            {buckets.imported.length > 0 ? (
-              <div data-testid="v1-import-bucket-imported">
-                <p className="font-medium">
+        <div className="grid gap-3">
+          {buckets.imported.length > 0 ? (
+            // Collapsed under its count: the list is long and needs no action (only Not imported and
+            // Failed open by default).
+            <details className="group" data-testid="v1-import-bucket-imported">
+              <summary className="flex cursor-pointer items-baseline gap-2">
+                <span className="font-medium">
                   {t("goals.v1Import.report.imported")}
-                </p>
-                <p className="text-xs text-muted-foreground">
+                </span>
+                <span className="text-xs text-muted-foreground">
                   {t("goals.v1Import.report.importedCounts", {
                     goals: importedGoalCount,
                     units: importedUnitCount,
                   })}
+                </span>
+              </summary>
+              <ul className="mt-1 grid gap-1">
+                {buckets.imported.map((outcome, index) => (
+                  <OutcomeRow
+                    auto={isAutomaticallyAdded(outcome)}
+                    subject={subjectFor(outcome)}
+                    key={index}
+                    outcome={outcome}
+                    t={t}
+                  />
+                ))}
+              </ul>
+            </details>
+          ) : null}
+
+          {buckets.needsNoImport.length > 0 ? (
+            <Accordion type="single" collapsible>
+              <AccordionItem value="needsNoImport">
+                <AccordionTrigger data-testid="v1-import-bucket-needsNoImport">
+                  {t("goals.v1Import.report.needsNoImport")} (
+                  {buckets.needsNoImport.length})
+                </AccordionTrigger>
+                <AccordionContent>
+                  <ul className="grid gap-1">
+                    {buckets.needsNoImport.map((outcome, index) => (
+                      <OutcomeRow
+                        subject={subjectFor(outcome)}
+                        key={index}
+                        outcome={outcome}
+                        t={t}
+                      />
+                    ))}
+                  </ul>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+          ) : null}
+
+          {(["notImported", "failed"] as const).map((bucket) =>
+            buckets[bucket].length > 0 ? (
+              <div data-testid={`v1-import-bucket-${bucket}`} key={bucket}>
+                <p className="font-medium">
+                  {t(`goals.v1Import.report.${bucket}`)} (
+                  {buckets[bucket].length})
                 </p>
-                <ul className="mt-1 grid gap-1">
-                  {buckets.imported.map((outcome, index) => (
+                <ul className="grid gap-1">
+                  {buckets[bucket].map((outcome, index) => (
                     <OutcomeRow
-                      auto={isAutomaticallyAdded(outcome)}
-                      getEntityName={getEntityName}
+                      subject={subjectFor(outcome)}
                       key={index}
                       outcome={outcome}
                       t={t}
@@ -177,70 +203,13 @@ export function ImportResult({ result }: { result: ImportV1ProfileResult }) {
                   ))}
                 </ul>
               </div>
-            ) : null}
-
-            {buckets.needsNoImport.length > 0 ? (
-              <Accordion type="single" collapsible>
-                <AccordionItem value="needsNoImport">
-                  <AccordionTrigger data-testid="v1-import-bucket-needsNoImport">
-                    {t("goals.v1Import.report.needsNoImport")} (
-                    {buckets.needsNoImport.length})
-                  </AccordionTrigger>
-                  <AccordionContent>
-                    <ul className="grid gap-1">
-                      {buckets.needsNoImport.map((outcome, index) => (
-                        <OutcomeRow
-                          getEntityName={getEntityName}
-                          key={index}
-                          outcome={outcome}
-                          t={t}
-                        />
-                      ))}
-                    </ul>
-                  </AccordionContent>
-                </AccordionItem>
-              </Accordion>
-            ) : null}
-
-            {(["notImported", "failed"] as const).map((bucket) =>
-              buckets[bucket].length > 0 ? (
-                <div data-testid={`v1-import-bucket-${bucket}`} key={bucket}>
-                  <p className="font-medium">
-                    {t(`goals.v1Import.report.${bucket}`)} (
-                    {buckets[bucket].length})
-                  </p>
-                  <ul className="grid gap-1">
-                    {buckets[bucket].map((outcome, index) => (
-                      <OutcomeRow
-                        getEntityName={getEntityName}
-                        key={index}
-                        outcome={outcome}
-                        t={t}
-                      />
-                    ))}
-                  </ul>
-                </div>
-              ) : null
-            )}
-          </div>
-        </ScrollArea>
+            ) : null
+          )}
+        </div>
       ) : null}
 
       {(result.legendaryEventOutcomes?.length ?? 0) > 0 ? (
         <LegendaryEventImportResult buckets={legendaryEventBuckets} />
-      ) : null}
-
-      {hasDiagnostics ? (
-        <Button
-          className="justify-self-start"
-          data-testid="v1-import-copy"
-          onClick={copyDetails}
-          size="sm"
-          type="button"
-          variant="outline"
-        >
-          {t("goals.v1Import.report.copy")}
-        </Button>
       ) : null}
     </div>
   )
@@ -248,19 +217,16 @@ export function ImportResult({ result }: { result: ImportV1ProfileResult }) {
 
 function OutcomeRow({
   outcome,
-  getEntityName,
+  subject,
   t,
   auto,
 }: {
   outcome: V1GoalOutcome
-  getEntityName: (entityType: string | null, entityId: string | null) => string
+  /** The unit, or the material of a unit-less material goal (outcomeSubject). */
+  subject: string
   t: TFunction
   auto?: boolean
 }) {
-  const unit = outcome.entityId
-    ? getEntityName(outcome.entityType, outcome.entityId)
-    : t("goals.v1Import.report.noUnit")
-
   return (
     <li className="rounded-lg border bg-background p-2 text-xs">
       <div className="flex flex-wrap items-center gap-1.5">
@@ -269,14 +235,14 @@ function OutcomeRow({
             {t("goals.v1Import.report.autoAdded")}
           </Badge>
         ) : null}
-        <span className="font-medium">{unit}</span>
+        <span className="font-medium">{subject}</span>
         {outcome.goalType ? (
           // The API's GoalType/GoalEntityType wire values (e.g. "Rank", "Character") are exactly
           // this badge's expected union — trusted here the same way use-create-goal-form.ts trusts
           // its own entity-type/player-record correlation.
           <GoalTypeBadge
             entityType={outcome.entityType ?? undefined}
-            type={outcome.goalType as GoalKind}
+            type={outcome.goalType}
           />
         ) : null}
       </div>

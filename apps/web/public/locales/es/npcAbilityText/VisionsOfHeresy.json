@@ -1,0 +1,34 @@
+{
+  "VisionsOfHeresy": {
+    "description": "Tras realizar un <style=\"NormalAttack\">ataque normal</style>, <style=\"Faction_BloodAngels\">Lucien</style> realiza un segundo ataque que fija como objetivo a un enemigo dentro de un alcance de {[range]}, lo que inflige <style=\"DMG_Bolter\">{[minDmg]}-{[maxDmg]} de Daño de bólter</style> <style=\"Stat_Hits\">x{[nrOfHits]}</style>. Si Lucien tiene un <style=\"Stat_Health\">{[healthPct]} % de Salud</style> o menos, todos sus ataques tienen <style=\"Piercing_Ratio\">+{[extraPierceRatio]} % de tasa de perforación</style>.",
+    "variables": {
+      "minDmg": [
+        25, 30, 35, 40, 45, 51, 57, 45, 68, 74, 80, 85, 91, 97, 103, 108, 114,
+        120, 126, 131, 139, 150, 173, 195, 218, 241, 264, 286, 309, 332, 355,
+        377, 400, 423, 446, 468, 491, 514, 537, 569, 614, 661, 712, 768, 871,
+        974, 1077, 1179, 1282, 1385, 1400, 1419, 1438, 1463, 1488, 1513, 1538,
+        1569, 1600, 1631, 1669, 1706, 1744, 1781, 1819
+      ],
+      "maxDmg": [
+        36, 43, 50, 58, 65, 73, 81, 90, 98, 106, 114, 123, 131, 139, 148, 156,
+        164, 172, 181, 189, 200, 216, 248, 281, 314, 347, 379, 412, 445, 478,
+        510, 543, 576, 609, 642, 674, 707, 740, 773, 819, 883, 951, 1025, 1106,
+        1254, 1402, 1550, 1698, 1846, 1994, 2016, 2043, 2070, 2106, 2142, 2178,
+        2214, 2259, 2304, 2349, 2403, 2457, 2511, 2565, 2619
+      ],
+      "extraPierceRatio": [
+        10, 10, 10, 10, 10, 10, 10, 10, 12, 12, 12, 12, 12, 12, 12, 12, 12, 15,
+        15, 15, 15, 15, 15, 15, 15, 15, 17, 17, 17, 17, 17, 17, 17, 17, 17, 20,
+        20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20,
+        20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20
+      ]
+    },
+    "constants": {
+      "damageProfile": "Bolter",
+      "range": "2",
+      "nrOfHits": "2",
+      "healthPct": "50"
+    },
+    "scaled": ["minDmg", "maxDmg"]
+  }
+}

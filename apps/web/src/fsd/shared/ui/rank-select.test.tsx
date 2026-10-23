@@ -18,7 +18,7 @@ describe("RankSelect", () => {
       />
     )
 
-    expect(screen.getByText("From")).toBeInTheDocument()
+    expect(screen.getByLabelText("From")).toBe(screen.getByRole("combobox"))
     expect(screen.getByRole("combobox")).toHaveTextContent("ranks.Stone1")
 
     fireEvent.click(screen.getByRole("combobox"))

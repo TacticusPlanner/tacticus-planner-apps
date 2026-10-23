@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "type": "module",
   "private": true,
+  "sideEffects": false,
   "scripts": {
     "lint": "eslint && knip",
     "typecheck": "tsc --noEmit",
@@ -12,6 +13,7 @@
   },
   "dependencies": {
     "@workspace/game-domain": "workspace:*",
+    "@workspace/manifest-sync": "workspace:*",
     "dexie": "^4.4.6",
     "zod": "^4.6.7"
   },
@@ -29,6 +31,8 @@
   },
   "exports": {
     ".": "./src/index.ts",
-    "./queries": "./src/queries.ts"
+    "./queries": "./src/queries.ts",
+    "./testing": "./src/testing.ts",
+    "./sync": "./src/sync.ts"
   }
 }

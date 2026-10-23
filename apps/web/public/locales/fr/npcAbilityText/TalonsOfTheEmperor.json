@@ -1,0 +1,34 @@
+{
+  "TalonsOfTheEmperor": {
+    "description": "Inflige <style=\"Stat_Hits\">{[nrOfHits]}x</style> <style=\"DMG_Power\">{[minDmg]}-{[maxDmg]} dégâts d'intensité</style> à une unité ennemie adjacente. Cette attaque inflige <style=\"Stat_Damage\">+{[extraDmg]} dégâts</style> par utilisation par un <style=\"Character\">personnage</style> allié d'une capacité active au cours du combat. Si la cible est un <style=\"Psyker\">Psyker</style> ou si <style=\"Faction_Custodes\">Atlacoya</style> est adjacente à un <style=\"Faction_Custodes\">Adeptus Custodes</style> allié, cette attaque inflige des <style=\"DMG_Direct\">dégâts directs</style> à la place.",
+    "variables": {
+      "minDmg": [
+        48, 58, 67, 77, 86, 97, 108, 120, 131, 142, 153, 164, 175, 186, 197,
+        208, 219, 230, 241, 252, 267, 288, 331, 375, 419, 462, 506, 550, 593,
+        637, 681, 724, 768, 812, 855, 899, 943, 986, 1030, 1092, 1178, 1269,
+        1367, 1475, 1672, 1870, 2067, 2264, 2461, 2659, 2688, 2724, 2760, 2808,
+        2856, 2904, 2952, 3012, 3072, 3132, 3204, 3276, 3348, 3420, 3492
+      ],
+      "maxDmg": [
+        60, 72, 84, 96, 108, 122, 136, 149, 163, 177, 191, 205, 218, 232, 246,
+        260, 274, 287, 301, 315, 334, 359, 414, 469, 523, 578, 632, 687, 742,
+        796, 851, 905, 960, 1015, 1069, 1124, 1178, 1233, 1288, 1364, 1472,
+        1586, 1708, 1844, 2090, 2337, 2584, 2830, 3077, 3324, 3360, 3405, 3450,
+        3510, 3570, 3630, 3690, 3765, 3840, 3915, 4005, 4095, 4185, 4275, 4365
+      ],
+      "extraDmg": [
+        10, 12, 14, 16, 18, 20, 23, 25, 27, 30, 32, 34, 36, 39, 41, 43, 46, 48,
+        50, 53, 56, 60, 69, 78, 87, 96, 105, 115, 124, 133, 142, 151, 160, 169,
+        178, 187, 196, 206, 215, 227, 245, 264, 285, 307, 348, 390, 431, 472,
+        513, 554, 560, 568, 575, 585, 595, 605, 615, 628, 640, 653, 668, 683,
+        698, 713, 728
+      ]
+    },
+    "constants": {
+      "nrOfHits": "1",
+      "damageProfile": "Power",
+      "damageProfile_2": "DirectDamage"
+    },
+    "scaled": ["minDmg", "maxDmg", "extraDmg"]
+  }
+}

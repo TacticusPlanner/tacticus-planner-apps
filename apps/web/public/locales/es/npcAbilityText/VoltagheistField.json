@@ -1,0 +1,11 @@
+{
+  "VoltagheistField": {
+    "description": "Si se restaura <style=\"Stat_Health\">Salud</style> a esta unidad, la cantidad restaurada se reduce un <style=\"Stat\">{[healthPct]} %</style> y entonces realiza <style=\"Stat_Hits\">+{[extraHit]} impacto</style> con los <style=\"NormalAttack\">ataques normales</style> hasta el final de su turno.",
+    "variables": {},
+    "constants": {
+      "healthPct": "50",
+      "extraHit": "1"
+    },
+    "scaled": []
+  }
+}

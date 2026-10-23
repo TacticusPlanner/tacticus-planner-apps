@@ -1,0 +1,11 @@
+{
+  "VolummsMasterArtifice": {
+    "description": "Après que <style=\"Faction_LeaguesOfVotann\">Vynn</style> ou des <style=\"Faction_LeaguesOfVotann\">E-COGs</style> alliés ont effectué <style=\"Stat\">+{[nrOfRepairs]}</style> <style=\"Repairing\">réparations</style>, Vynn <style=\"Healing\">récupère</style> <style=\"Stat_Health\">{[hpToHeal]} santé</style> et peut de nouveau utiliser sa capacité active.",
+    "variables": {
+      "nrOfRepairs": [8, 8, 8, 8, 8, 7, 7, 7, 7, 7],
+      "hpToHeal": [5875, 6192, 6509, 6826, 7143, 7461, 7778, 8095, 8412, 8729]
+    },
+    "constants": {},
+    "scaled": []
+  }
+}

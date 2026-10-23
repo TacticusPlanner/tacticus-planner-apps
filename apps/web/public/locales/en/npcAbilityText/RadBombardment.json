@@ -1,0 +1,26 @@
+{
+  "RadBombardment": {
+    "description": "Deals <style=\"Stat_Hits\">{[nrOfHits]}x</style> <style=\"DMG_Toxic\">{[minDmg]}-{[maxDmg]} Toxic Damage</style> to all units in a straight line in one of 6 directions and adds <style=\"Tile_Contamination\">Contamination</style> to all hexes in the line. All units hit are <style=\"Debuff_Pinned\">Suppressed</style> for 1 round. The length of the line starts at 2 hexes and increases by 1 hex for each round that has passed and by 1 hex each time a friendly <style=\"Mechanic\">Mechanic</style> restores <style=\"Stat_Health\">Health</style> of a unit.\n\n{[S/AbilityDamageExplanation]}",
+    "variables": {
+      "minDmg": [
+        45, 54, 63, 72, 81, 91, 102, 112, 122, 133, 143, 153, 164, 174, 185,
+        195, 205, 216, 226, 236, 250, 270, 311, 351, 392, 433, 474, 515, 556,
+        597, 638, 679, 720, 761, 802, 843, 884, 925, 966, 1023, 1104, 1189,
+        1281, 1383, 1568, 1753, 1938, 2123, 2308, 2493, 2520, 2554, 2588, 2633,
+        2678, 2723, 2768, 2824, 2880, 2936, 3004, 3071, 3139, 3206, 3274
+      ],
+      "maxDmg": [
+        55, 66, 77, 88, 99, 112, 124, 137, 150, 162, 175, 188, 200, 213, 226,
+        238, 251, 263, 276, 289, 306, 329, 380, 430, 480, 530, 580, 630, 680,
+        730, 780, 830, 880, 930, 980, 1030, 1080, 1130, 1180, 1251, 1350, 1454,
+        1566, 1690, 1916, 2142, 2368, 2594, 2820, 3046, 3080, 3121, 3163, 3218,
+        3273, 3328, 3383, 3451, 3520, 3589, 3671, 3754, 3836, 3919, 4001
+      ]
+    },
+    "constants": {
+      "damageProfile": "Toxic",
+      "nrOfHits": "1"
+    },
+    "scaled": ["minDmg", "maxDmg"]
+  }
+}

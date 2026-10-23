@@ -1,0 +1,11 @@
+{
+  "LionHelmRelic": {
+    "description": "Verbündete Einheiten, die an <style=\"Faction_DarkAngels\">Azrael</style> angrenzen, blocken zusätzlich <style=\"Stat_Block\">+{[blockDmg]} Schaden</style>. Wenn sich am Ende von Azraels Zug keine verbündeten <style=\"Summon\"><style=\"Faction_DarkAngels\">Wächter der Dunkelheit</style></style> auf dem Schlachtfeld befinden, beschwört er mit einer <style=\"Stat_Chance\">Chance von {[chance]} %</style> einen Wächter der Dunkelheit auf einem freien angrenzenden Feld.",
+    "variables": {
+      "blockDmg": [490, 516, 543, 569, 596, 622, 649, 675, 702, 728],
+      "chance": [50, 55, 60, 65, 70, 75, 80, 90, 95, 100]
+    },
+    "constants": {},
+    "scaled": []
+  }
+}

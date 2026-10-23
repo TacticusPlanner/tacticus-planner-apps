@@ -1,0 +1,23 @@
+{
+  "PredictiveGuidance": {
+    "description": "Les ennemis distants de 2 hexagones d'<style=\"Faction_LeaguesOfVotann\">Âmmuk</style> sont affectés par <i>Recommandations prédictives</i>. Si un ennemi affecté ne s'est pas déplacé lors de son dernier tour, les autres unités des <style=\"Faction_LeaguesOfVotann\">Ligues de Votann</style> ou <style=\"Mechanical\">Mécaniques</style> alliées infligent <style=\"Stat_Damage\">+{[extraDmg]} Dégâts</style> en cas d'attaque au corps à corps contre cet ennemi. Si un ennemi affecté s'est déplacé lors de son dernier tour, les autres unités des <style=\"Faction_LeaguesOfVotann\">Ligues de Votann</style> ou <style=\"Mechanical\">Mécaniques</style> alliées infligent <style=\"Stat_Damage\">+{[extraDmg_2]} Dégâts</style> en cas d'attaque à distance contre cet ennemi. Les autres unités des <style=\"Faction_LeaguesOfVotann\">Ligues de Votann</style> alliées portent un <style=\"Stat_Hits\">coup</style> supplémentaire lors de toute attaque effectuée contre les ennemis affectés.",
+    "variables": {
+      "extraDmg": [
+        9, 11, 13, 14, 16, 18, 20, 22, 24, 27, 29, 31, 33, 35, 37, 39, 41, 43,
+        45, 47, 50, 54, 62, 70, 78, 87, 95, 103, 111, 119, 128, 136, 144, 152,
+        160, 169, 177, 185, 193, 205, 221, 238, 256, 277, 314, 351, 388, 425,
+        462, 499, 504, 511, 518, 527, 536, 545, 554, 565, 576, 587, 601, 614,
+        628, 641, 655
+      ],
+      "extraDmg_2": [
+        9, 11, 13, 14, 16, 18, 20, 22, 24, 27, 29, 31, 33, 35, 37, 39, 41, 43,
+        45, 47, 50, 54, 62, 70, 78, 87, 95, 103, 111, 119, 128, 136, 144, 152,
+        160, 169, 177, 185, 193, 205, 221, 238, 256, 277, 314, 351, 388, 425,
+        462, 499, 504, 511, 518, 527, 536, 545, 554, 565, 576, 587, 601, 614,
+        628, 641, 655
+      ]
+    },
+    "constants": {},
+    "scaled": ["extraDmg", "extraDmg_2"]
+  }
+}

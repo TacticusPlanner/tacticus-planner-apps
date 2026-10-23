@@ -1,0 +1,10 @@
+{
+  "StormboyzStrike": {
+    "description": "In its first turn this unit flies into any free hex, instead of starting on its designated spawn point. There's a {[chance]}% chance it misses its designated hex and ends up in a random adjacent hex instead. This fly-in counts as a movement for <i>Full Throttle</i>.",
+    "variables": {},
+    "constants": {
+      "chance": "20"
+    },
+    "scaled": []
+  }
+}

@@ -4,6 +4,12 @@ import type { RaidBossStatStep } from "@/entities/raid-boss"
 
 import { buildProgressionStepLabels } from "./progression-step-labels"
 
+function at<T>(xs: readonly T[] | undefined, index: number): T {
+  const value = xs?.[index]
+  if (value === undefined) throw new Error(`expected an item at index ${index}`)
+  return value
+}
+
 // Shape mirrors a real Tervigon ladder (Common 1-4, Uncommon 1-3, Rare 1-3, Epic 1-3,
 // Legendary 1-5, Mythic 1-5) — contiguous rarity groups, per design.md's risk note.
 const rarityCounts: [string, number][] = [
@@ -32,16 +38,16 @@ describe("buildProgressionStepLabels", () => {
         ladder.slice(0, index + 1).filter((e) => e.baseRarity === "Legendary")
           .length === 2
     )
-    expect(labels[secondLegendaryIndex].rarityTierLabel).toBe("Legendary 2")
+    expect(at(labels, secondLegendaryIndex).rarityTierLabel).toBe("Legendary 2")
 
-    expect(labels[labels.length - 1].rarityTierLabel).toBe("Mythic 5")
+    expect(at(labels, labels.length - 1).rarityTierLabel).toBe("Mythic 5")
   })
 
   it("carries each step's total health alongside its label", () => {
     const labels = buildProgressionStepLabels(ladder)
-    expect(labels[0].health).toBe(ladder[0].health)
-    expect(labels[labels.length - 1].health).toBe(
-      ladder[ladder.length - 1].health
+    expect(at(labels, 0).health).toBe(at(ladder, 0).health)
+    expect(at(labels, labels.length - 1).health).toBe(
+      at(ladder, ladder.length - 1).health
     )
   })
 })

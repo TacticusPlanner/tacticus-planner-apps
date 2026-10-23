@@ -5,15 +5,18 @@ import type { i18n as I18n } from "i18next"
 import { beforeAll, describe, expect, it } from "vitest"
 
 import { createTestI18n } from "@/test/i18n"
-import type { AbilityTextEntry } from "@/shared/ability-text"
+import type { AbilityTextEntry, RulesText } from "@/shared/ability-text"
 
 import enLibrary from "../../../../../../public/locales/en/library.json"
-import npcAbilityText from "../../../../../../public/locales/en/npcAbilityText.json"
+import stormOfWrathFile from "../../../../../../public/locales/en/npcAbilityText/StormOfWrath.json"
 import { AbilityPanel } from "./ability-panel"
 
-const stormOfWrath = (
-  npcAbilityText as unknown as Record<string, AbilityTextEntry>
-).StormOfWrath
+const stormOfWrath = stormOfWrathFile.StormOfWrath as AbilityTextEntry
+
+const rulesState = (
+  state: Pick<RulesText<unknown>, "ready" | "failed">,
+  retry = () => {}
+): RulesText<unknown> => ({ ...state, retry, text: () => undefined })
 
 let i18n: I18n
 beforeAll(async () => {
@@ -24,10 +27,12 @@ function Harness({
   text,
   playerLevel,
   levelControl,
+  rules,
 }: {
   text: AbilityTextEntry | undefined
   playerLevel?: number
   levelControl?: ReactNode
+  rules?: RulesText<unknown>
 }) {
   const [level, setLevel] = useState(58)
   return (
@@ -44,6 +49,7 @@ function Harness({
         maxLevel={60}
         playerLevel={playerLevel}
         levelControl={levelControl}
+        rules={rules}
         data-testid="panel"
       />
     </I18nextProvider>
@@ -103,6 +109,59 @@ describe("AbilityPanel", () => {
     expect(screen.getByText("Yours: level 46")).toBeInTheDocument()
     expect(screen.queryByTestId("panel-stepper")).not.toBeInTheDocument()
     expect(screen.queryByRole("figure")).not.toBeInTheDocument()
+  })
+
+  it("shows a loading line, not the missing-text note, while the text downloads", () => {
+    render(
+      <Harness
+        text={undefined}
+        rules={rulesState({ ready: false, failed: false })}
+      />
+    )
+    expect(screen.getByTestId("panel-text-loading")).toHaveTextContent(
+      "Loading rules text…"
+    )
+    expect(screen.queryByTestId("panel-missing-text")).not.toBeInTheDocument()
+    expect(screen.queryByTestId("panel-stepper")).not.toBeInTheDocument()
+  })
+
+  it("shows a failure note with a retry when the download failed", () => {
+    let retried = 0
+    render(
+      <Harness
+        text={undefined}
+        rules={rulesState({ ready: true, failed: true }, () => {
+          retried += 1
+        })}
+      />
+    )
+    expect(screen.getByRole("alert")).toHaveTextContent(
+      "The rules text couldn't be loaded."
+    )
+    expect(screen.queryByTestId("panel-missing-text")).not.toBeInTheDocument()
+    fireEvent.click(screen.getByRole("button", { name: "Retry" }))
+    expect(retried).toBe(1)
+  })
+
+  it("shows the missing-text note once a load settles without text", () => {
+    render(
+      <Harness
+        text={undefined}
+        rules={rulesState({ ready: true, failed: false })}
+      />
+    )
+    expect(screen.getByTestId("panel-missing-text")).toBeInTheDocument()
+  })
+
+  it("shows the text it has even while other text is still loading", () => {
+    render(
+      <Harness
+        text={stormOfWrath}
+        rules={rulesState({ ready: false, failed: false })}
+      />
+    )
+    expect(screen.queryByTestId("panel-text-loading")).not.toBeInTheDocument()
+    expect(screen.getByTestId("panel-stepper")).toBeInTheDocument()
   })
 
   it("shows a level control in place of the stepper, and its chart doesn't set the level", () => {

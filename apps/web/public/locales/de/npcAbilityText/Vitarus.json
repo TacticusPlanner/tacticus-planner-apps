@@ -1,0 +1,10 @@
+{
+  "Vitarus": {
+    "description": "Die Felder jeder gegnerischen Einheit, die von <style=\"Faction_BloodAngels\">Mephistons</style> <style=\"NormalAttack\">normalen Nahkampfangriffen</style> oder dem <i>Zorn der Standartenträger</i> getroffen werden, werden in <style=\"Effect_Fire\">Brand</style> gesetzt. Wenn diese Angriffe Gegner auf bereits <style=\"Effect_Fire\">brennenden</style> Feldern treffen, verursachen sie stattdessen <style=\"Stat_Damage\">+{[extraDmg]} Schaden</style> und löschen das <style=\"Effect_Fire\">Feuer</style>.",
+    "variables": {
+      "extraDmg": [490, 516, 543, 569, 596, 622, 649, 675, 702, 728]
+    },
+    "constants": {},
+    "scaled": []
+  }
+}

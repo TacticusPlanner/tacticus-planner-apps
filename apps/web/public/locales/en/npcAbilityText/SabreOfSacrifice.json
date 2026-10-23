@@ -1,0 +1,10 @@
+{
+  "SabreOfSacrifice": {
+    "description": "When <style=\"Faction_AstraMilitarum\">Dreir</style> or <style=\"Faction_AstraMilitarum\">Death Riders</style> adjacent to Dreir are <style=\"Charging\">charging</style>, their attacks <style=\"Debuff_Pinned\">Suppress</style> their targets for 1 round. After charging and until the start of their next turn, they additionally have <style=\"Stat_Armor\">+{[extraArmor]} Armour</style> for each friendly unit that has been defeated this battle.",
+    "variables": {
+      "extraArmor": [685, 722, 759, 796, 833, 870, 907, 944, 981, 1018]
+    },
+    "constants": {},
+    "scaled": []
+  }
+}

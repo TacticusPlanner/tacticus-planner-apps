@@ -5,7 +5,6 @@ import {
   buildLanePointsModel,
   buildSyncedLaneProgress,
   laneBattlePowers,
-  nextPointsMilestone,
   projectRewards,
   teamClearEstimate,
   unitClearEstimate,
@@ -26,11 +25,14 @@ import {
   type LegendaryEventRosterUnit,
   type LegendaryEventRunResolution,
   type LegendaryEventUnit,
-  type NextPointsMilestone,
   type ReadState,
   type RewardProjection,
-  type RunHistory,
 } from "@/entities/legendary-event"
+import {
+  nextPointsMilestone,
+  type NextPointsMilestone,
+} from "../../lib/next-points-milestone"
+import type { RunHistory } from "../../lib/run-history"
 
 import type { UpgradeImpactState } from "@/features/legendary-event-goals"
 import type {
@@ -386,7 +388,7 @@ export function eventUnitRecord(
   roster: ReadValue<readonly LegendaryEventRosterUnit[] | undefined>,
   eventId: string
 ): LegendaryEventRosterUnit | undefined {
-  return Array.isArray(roster)
+  return typeof roster === "object"
     ? roster.find((unit) => unit.unitId === eventId)
     : undefined
 }

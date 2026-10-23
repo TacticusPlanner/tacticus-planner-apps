@@ -1,0 +1,26 @@
+{
+  "FuryOfTheAncients": {
+    "description": "After moving, deals <style=\"Stat_Hits\">{[nrOfHits]}x</style> <style=\"DMG_Psychic\">{[minDmg]}-{[maxDmg]} Psychic Damage</style> to an adjacent enemy and an additional enemy adjacent to the initial one. For 2 rounds, affected units cannot be revived, <style=\"Healing\">healed</style>, <style=\"Repairing\">repaired</style>, nor otherwise restore {[S/Health]}. If <style=\"Faction_BloodAngels\">Mephiston</style> does not move, this ability triggers at the end of his turn.",
+    "variables": {
+      "minDmg": [
+        6, 7, 8, 10, 11, 12, 14, 15, 16, 18, 19, 20, 22, 23, 25, 26, 27, 29, 30,
+        32, 33, 36, 41, 47, 52, 58, 63, 69, 74, 80, 85, 91, 96, 101, 107, 112,
+        118, 123, 129, 136, 147, 159, 171, 184, 209, 234, 258, 283, 308, 333,
+        336, 341, 345, 351, 357, 363, 369, 377, 384, 392, 401, 410, 419, 428,
+        437
+      ],
+      "maxDmg": [
+        8, 10, 11, 13, 14, 16, 18, 20, 22, 24, 25, 27, 29, 31, 33, 35, 36, 38,
+        40, 42, 44, 48, 55, 62, 70, 77, 84, 92, 99, 106, 113, 121, 128, 135,
+        143, 150, 157, 164, 172, 182, 196, 211, 228, 246, 279, 312, 344, 377,
+        410, 443, 448, 454, 460, 468, 476, 484, 492, 502, 512, 522, 534, 546,
+        558, 570, 582
+      ]
+    },
+    "constants": {
+      "damageProfile": "Psychic",
+      "nrOfHits": "2"
+    },
+    "scaled": ["minDmg", "maxDmg"]
+  }
+}

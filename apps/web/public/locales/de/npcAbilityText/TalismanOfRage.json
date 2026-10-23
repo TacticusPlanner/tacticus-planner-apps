@@ -1,0 +1,10 @@
+{
+  "TalismanOfRage": {
+    "description": "Jedes Mal, wenn der Reliktträger einen Feind mit einem Nahkampfangriff besiegt, zählt dies doppelt für die <style=\"BlessingsOfKhorne\">Segen des Khorne</style>. Der Reliktträger erleidet <style=\"Stat_CritDamage\">-{[critDmgReduction]} Kritischen Schaden</style> pro Stufe <style=\"BlessingsOfKhorne\">Segen des Khorne</style>.",
+    "variables": {
+      "critDmgReduction": [295, 311, 327, 343, 359, 375, 391, 406, 422, 438]
+    },
+    "constants": {},
+    "scaled": []
+  }
+}

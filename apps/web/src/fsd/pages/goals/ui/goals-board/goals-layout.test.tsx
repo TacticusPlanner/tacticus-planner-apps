@@ -1,13 +1,6 @@
-import { describe, expect, it, vi } from "vitest"
-import { render, screen } from "@testing-library/react"
+import { describe, expect, it } from "vitest"
+import { render, screen } from "@/test/render"
 import { MemoryRouter, Route, Routes } from "react-router"
-
-vi.mock("react-i18next", () => ({
-  useTranslation: () => ({
-    t: (key: string, opts?: { defaultValue?: string }) =>
-      opts?.defaultValue ?? key,
-  }),
-}))
 
 import { GoalsLayout } from ".//goals-layout"
 

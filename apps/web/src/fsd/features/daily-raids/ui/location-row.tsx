@@ -32,11 +32,11 @@ export function LocationRow({
         <EntityIcon alt="" className="size-6 shrink-0" src={location.icon} />
       ) : null}
       <div className="min-w-0 flex-1 leading-tight">
-        <div className="truncate text-sm font-medium">
+        <div className="text-sm font-medium break-words">
           {location?.campaignName ?? entry.battleId}
         </div>
         {location?.nodeLabel ? (
-          <div className="truncate text-xs text-muted-foreground">
+          <div className="text-xs break-words text-muted-foreground">
             {location.nodeLabel}
           </div>
         ) : null}

@@ -1,30 +1,22 @@
-import { useEffect, useState } from "react"
 import {
-  act,
-  fireEvent,
-  render,
-  screen,
-  waitFor,
-  within,
-} from "@testing-library/react"
-import { I18nextProvider } from "react-i18next"
-import { MemoryRouter, Route, Routes, useLocation } from "react-router"
-import type { i18n as I18n } from "i18next"
-import { TooltipProvider } from "@workspace/ui/components/tooltip"
-import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
+  getEquipment,
+  getMythicQuestsByUnitId,
+  getUnlockShardCostsMap,
+} from "@workspace/game-catalog/queries"
+import { useLocation } from "react-router"
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
 import { unitOriginState } from "@/entities/unit"
 import type { ReadState } from "@/shared/lib"
 import type { UnitPowerContext } from "@/shared/unit-power"
-import { createTestI18n } from "@/test/i18n"
+import {
+  holdNamespaceLoads,
+  i18n,
+  requestedNamespaces,
+} from "@/test/i18n-instance"
+import { act, fireEvent, render, screen, waitFor, within } from "@/test/render"
+import { seedGameCatalog, seedPlayerData } from "@/test/seed"
 
-import enAbilities from "../../../../../../public/locales/en/abilities.json"
-import enEquipment from "../../../../../../public/locales/en/equipment.json"
-import enLibrary from "../../../../../../public/locales/en/library.json"
-import enMythicQuestTasks from "../../../../../../public/locales/en/mythicQuestTasks.json"
-import enNpcAbilityText from "../../../../../../public/locales/en/npcAbilityText.json"
-import enNpcTraitText from "../../../../../../public/locales/en/npcTraitText.json"
-import enProgression from "../../../../../../public/locales/en/progression.json"
 import deLibrary from "../../../../../../public/locales/de/library.json"
 import mythicQuestsFixture from "../../model/mythic-quests.fixture.json"
 
@@ -44,7 +36,7 @@ const env = vi.hoisted(() => ({
   power: {
     status: "loading",
     retry: () => {},
-  } as ReadState<UnitPowerContext | null>,
+  },
 }))
 
 vi.mock("@workspace/ui/hooks/use-mobile", () => ({
@@ -55,10 +47,6 @@ vi.mock("@/shared/tour", () => ({
     env.tour = steps
   },
 }))
-vi.mock("@azure/msal-react", () => ({
-  useIsAuthenticated: () => env.authenticated,
-  useMsal: () => ({ instance: { loginRedirect: vi.fn() } }),
-}))
 vi.mock("@/shared/unit-power", async (importOriginal) => ({
   ...(await importOriginal<object>()),
   useUnitPowerContext: () => env.power,
@@ -68,32 +56,6 @@ vi.mock("../character/character-rank-up-tab", () => ({
   CharacterRankUpTab: ({ characterId }: { characterId: string }) => (
     <p data-testid="rank-up-tab">{characterId}</p>
   ),
-}))
-
-vi.mock("dexie-react-hooks", () => ({
-  useLiveQuery: (
-    querier: () => unknown,
-    deps: unknown[] = [],
-    defaultResult?: unknown
-  ) => {
-    const [value, setValue] = useState<unknown>(defaultResult)
-    useEffect(() => {
-      const result = querier()
-      if (result instanceof Promise) {
-        let active = true
-        void result.then((resolved) => {
-          if (active) setValue(resolved)
-        })
-        return () => {
-          active = false
-        }
-      }
-      setValue(result)
-      return undefined
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, deps)
-    return value
-  },
 }))
 
 const tigurius = {
@@ -132,9 +94,9 @@ const lhykhis = {
   rangeDistance: 2,
   movement: 4,
   traits: ["Infiltrate", "Flying"],
-  // Ability ids with no rules text in npcAbilityText, to exercise the missing-text state.
-  activeAbilityNames: ["NoRulesTextActive"],
-  passiveAbilityNames: ["NoRulesTextPassive"],
+  // Known gaps (npcAbilityTextGaps): ids with no rules text, to exercise the missing-text state.
+  activeAbilityNames: ["RunsAway"],
+  passiveAbilityNames: ["RunsAround"],
   equipmentSlots: ["I_Crit", "I_Block", "I_Booster_Crit"],
 }
 const calgar = {
@@ -145,15 +107,15 @@ const calgar = {
   rangedDamage: null,
   rangedHits: null,
   rangeDistance: null,
-  activeAbilityNames: ["NotInTheText"],
-  passiveAbilityNames: ["AlsoNotInTheText"],
+  activeAbilityNames: ["BossEndFightUndefeated"],
+  passiveAbilityNames: ["RepairEnthusiast"],
 }
 const relic = {
   id: "R_Tigurius",
   name: "Psychic Hood",
   rarity: "Mythic",
   type: "I_Defensive",
-  abilityId: "NotARelicText",
+  abilityId: "RunsAway",
   isRelic: true,
   isUniqueRelic: true,
   allowedUnits: ["ultraTigurius"],
@@ -234,45 +196,51 @@ const critItems = [
   },
 ]
 
-vi.mock("@workspace/game-catalog/queries", () => ({
-  getCharacters: () =>
-    Promise.resolve([tigurius, lhykhis, calgar, ...env.extraCharacters]),
-  getEquipment: () =>
-    Promise.resolve([relic, sharedRelic, ...critItems, ...env.extraEquipment]),
-  // Served records for Abaddon, Calgar, Lucius and Tigurius; none when the dataset isn't synced.
-  getMythicQuestsByUnitId: () =>
-    Promise.resolve(
-      new Map(
-        env.mythicQuestsSynced
-          ? (env.mythicQuestRecords ?? mythicQuestsFixture.records).map(
-              (record) => [(record as { unitId: string }).unitId, record]
-            )
-          : []
-      )
-    ),
-  getUnlockShardCostsMap: () =>
-    Promise.resolve(
-      new Map([
-        ["Uncommon", { id: "Uncommon", rarity: "Uncommon", shards: 80 }],
-        ["Legendary", { id: "Legendary", rarity: "Legendary", shards: 500 }],
-      ])
-    ),
-}))
-vi.mock("@workspace/game-catalog", async (importOriginal) => ({
-  ...(await importOriginal<object>()),
-  getGameCatalogMetadata: () => Promise.resolve(new Map([["characters", {}]])),
-}))
-vi.mock("@workspace/player-data/queries", () => ({
-  getPlayerCharacters: () =>
-    env.rosterPending
-      ? new Promise<never>(() => {})
-      : Promise.resolve(env.roster),
-  getPlayerCharacter: (id: string) =>
-    Promise.resolve(
-      env.roster?.find((unit) => (unit as { unitId: string }).unitId === id)
-    ),
-  getInventoryShard: () => Promise.resolve(env.shards),
-}))
+// Seeds the catalog (and, when signed in with a roster, the player data) through real storage.
+async function seedUnitData() {
+  await seedGameCatalog({
+    characters: [tigurius, lhykhis, calgar, ...env.extraCharacters],
+    equipment: [relic, sharedRelic, ...critItems, ...env.extraEquipment],
+    // Served records for Abaddon, Calgar, Lucius and Tigurius; none when the dataset isn't synced.
+    ...(env.mythicQuestsSynced
+      ? {
+          "mythic-quests":
+            env.mythicQuestRecords ?? mythicQuestsFixture.records,
+        }
+      : {}),
+    "unlock-shard-costs": [
+      { rarity: "Uncommon", shards: 80 },
+      { rarity: "Legendary", shards: 500 },
+    ],
+  })
+  if (env.roster) {
+    await seedPlayerData({ characters: env.roster })
+  }
+  if (env.shards) {
+    await seedPlayerData({
+      "inventory-shards": [
+        { unitId: "ultraTigurius", mythicAmount: 0, ...env.shards },
+      ],
+    })
+  }
+}
+
+// Holds the roster read (the player-data `characters` store's full scan) open forever.
+function holdRosterRead() {
+  const getAll = IDBObjectStore.prototype.getAll
+  vi.spyOn(IDBObjectStore.prototype, "getAll").mockImplementation(function (
+    this: IDBObjectStore,
+    ...args: Parameters<IDBObjectStore["getAll"]>
+  ) {
+    if (
+      this.name === "characters" &&
+      this.transaction.db.name === "tacticus-planner-player-data"
+    ) {
+      return {} as IDBRequest<unknown[]>
+    }
+    return getAll.apply(this, args)
+  })
+}
 
 import { buildUnitPowerContext, characterPowerAt } from "@/shared/unit-power"
 import { unitPowerCatalog } from "@/test/fixtures/unit-power"
@@ -330,22 +298,6 @@ const ownedTigurius = {
   equippedItems: [{ slotId: "relic", equipmentId: "R_Tigurius", level: 3 }],
 }
 
-let i18n: I18n
-beforeAll(async () => {
-  i18n = await createTestI18n("en", {
-    en: {
-      library: enLibrary,
-      abilities: enAbilities,
-      equipment: enEquipment,
-      progression: enProgression,
-      npcAbilityText: enNpcAbilityText,
-      npcTraitText: enNpcTraitText,
-      mythicQuestTasks: enMythicQuestTasks,
-    },
-    de: { library: deLibrary },
-  })
-})
-
 function Where() {
   const location = useLocation()
   return (
@@ -357,40 +309,46 @@ function Where() {
 }
 
 async function renderUnit(url: string, state?: unknown) {
+  await seedUnitData()
+  if (env.rosterPending) {
+    holdRosterRead()
+  }
+  const [pathname, search] = url.split("?")
   render(
-    <I18nextProvider i18n={i18n}>
-      <TooltipProvider>
-        <MemoryRouter
-          initialEntries={[
-            {
-              pathname: url.split("?")[0],
-              search: url.includes("?") ? `?${url.split("?")[1]}` : "",
-              state,
-            },
-          ]}
-        >
-          <Routes>
-            <Route
-              path="/library/characters/:entityId"
-              element={
-                <>
-                  <CharacterUnitPage />
-                  <Where />
-                </>
-              }
-            />
-            <Route
-              path="/library/characters"
-              element={<p data-testid="list-route">list</p>}
-            />
-          </Routes>
-        </MemoryRouter>
-      </TooltipProvider>
-    </I18nextProvider>
+    <>
+      <CharacterUnitPage />
+      <Where />
+    </>,
+    {
+      route: "/library/characters/:entityId",
+      initialEntries: [{ pathname, search: search ? `?${search}` : "", state }],
+      auth: { authenticated: env.authenticated },
+    }
   )
-  await act(async () => {})
-  await act(async () => {})
+  // The catalog, then (unless held) the player's ownership state.
+  await waitFor(() =>
+    expect(
+      document.querySelector(
+        env.rosterPending
+          ? '[data-testid="unit-header"]'
+          : '[data-testid="character-unit-not-found"],[data-testid="unit-your-line"],[data-testid="unit-not-unlocked"],[data-testid="unit-sign-in-banner"]'
+      )
+    ).not.toBeNull()
+  )
+  // Signed out, ownership settles without a read; let the page's catalog reads (issued at mount,
+  // so answered first) land before the test looks.
+  await act(() =>
+    Promise.all([
+      getEquipment(),
+      getMythicQuestsByUnitId(),
+      getUnlockShardCostsMap(),
+    ])
+  )
 }
+
+afterEach(() => {
+  vi.restoreAllMocks()
+})
 
 describe("CharacterUnitPage", () => {
   beforeEach(() => {
@@ -487,6 +445,7 @@ describe("CharacterUnitPage", () => {
     const [, rankSelect] = within(
       screen.getByTestId("unit-values")
     ).getAllByRole("combobox")
+    if (!rankSelect) throw new Error("expected a rank select")
     fireEvent.click(rankSelect)
     fireEvent.click(screen.getByRole("option", { name: /Diamond I$/ }))
 
@@ -545,6 +504,7 @@ describe("CharacterUnitPage", () => {
     const [, rankSelect] = within(
       screen.getByTestId("unit-values")
     ).getAllByRole("combobox")
+    if (!rankSelect) throw new Error("expected a rank select")
     fireEvent.click(rankSelect)
     fireEvent.click(screen.getByRole("option", { name: /Silver III$/ }))
 
@@ -651,7 +611,7 @@ describe("CharacterUnitPage", () => {
   it("shows the missing-text state for both abilities of a character without rules text", async () => {
     await renderUnit("/library/characters/eldarLhykhis")
     expect(
-      screen.getByTestId("unit-ability-active-missing-text")
+      await screen.findByTestId("unit-ability-active-missing-text")
     ).toBeInTheDocument()
     expect(
       screen.getByTestId("unit-ability-passive-missing-text")
@@ -664,7 +624,9 @@ describe("CharacterUnitPage", () => {
   it("shows a relic panel only for a character a relic can be equipped on", async () => {
     await renderUnit("/library/characters/ultraTigurius")
     expect(screen.getByTestId("unit-relic")).toHaveTextContent("Psychic Hood")
-    expect(screen.getByTestId("unit-relic-missing-text")).toBeInTheDocument()
+    expect(
+      await screen.findByTestId("unit-relic-missing-text")
+    ).toBeInTheDocument()
   })
 
   it("shows a relic's rules text at the stepper's level with the next level and a chart", async () => {
@@ -672,6 +634,7 @@ describe("CharacterUnitPage", () => {
     env.extraEquipment = [voidwyrm]
     await renderUnit("/library/characters/genesBiophagus")
     const panel = screen.getByTestId("unit-relic")
+    await screen.findByTestId("unit-relic-next")
     expect(panel).toHaveTextContent(
       "The relic bearer takes -390 Crit Damage for each friendly adjacent Summon or Decoy."
     )
@@ -692,9 +655,9 @@ describe("CharacterUnitPage", () => {
     await renderUnit("/library/characters/ultraTigurius")
     // The fixture's Psychic Hood points at an ability with no rules-text entry.
     expect(screen.getByTestId("unit-relic")).toHaveTextContent("Psychic Hood")
-    expect(screen.getByTestId("unit-relic-missing-text")).toHaveTextContent(
-      "Rules text isn't in the planner yet."
-    )
+    expect(
+      await screen.findByTestId("unit-relic-missing-text")
+    ).toHaveTextContent("Rules text isn't in the planner yet.")
     expect(screen.queryByTestId("unit-relic-stepper")).not.toBeInTheDocument()
     expect(
       within(screen.getByTestId("unit-relic")).queryByRole("figure")
@@ -720,10 +683,12 @@ describe("CharacterUnitPage", () => {
     expect(crit).toHaveAttribute("aria-expanded", "true")
     const list = screen.getByTestId("unit-glance-items")
     expect(list).toHaveTextContent(
-      /Mythic\s*Master Blade.*Common\s*Combat Knife/
+      // Items show their localized names (equipmentItems), not the catalog's.
+      /Mythic\s*Ancient Combat Knife.*Common\s*Combat Knife/
     )
-    expect(list).not.toHaveTextContent("Choppa")
+    expect(list).not.toHaveTextContent("Standard-Issue Bolt Pistol")
     expect(list).not.toHaveTextContent("_I_Crit_C005")
+    expect(list).not.toHaveTextContent("Particle Casters")
     fireEvent.click(crit)
     expect(screen.queryByTestId("unit-glance-items")).not.toBeInTheDocument()
   })
@@ -733,7 +698,7 @@ describe("CharacterUnitPage", () => {
     fireEvent.click(screen.getByTestId("unit-glance-slot-I_Crit-toggle"))
     fireEvent.focus(screen.getByTestId("unit-item-I_Crit_M001"))
     const tooltip = await screen.findByRole("tooltip")
-    expect(tooltip).toHaveTextContent("Master Blade · Mythic")
+    expect(tooltip).toHaveTextContent("Ancient Combat Knife · Mythic")
     expect(tooltip).toHaveTextContent("Crit chance +20%")
     expect(tooltip).toHaveTextContent("Crit damage +1,835 → +2,727")
     expect(tooltip).toHaveTextContent("Level 1 → 2")
@@ -788,6 +753,11 @@ describe("CharacterUnitPage", () => {
       name: "Weirdboy",
       faction: "Orks",
     }
+    // The quests are a separate catalog read that can land after the unit header renderUnit waits for.
+    const renderQuests = async (url: string) => {
+      await renderUnit(url)
+      await screen.findByTestId("unit-mythic")
+    }
     const questText = (number: number) =>
       within(screen.getByTestId(`unit-mythic-quest-${number}`))
         .getAllByRole("paragraph")
@@ -796,7 +766,7 @@ describe("CharacterUnitPage", () => {
 
     it("lists a character's quests from the catalog with their tasks and rewards", async () => {
       env.extraCharacters = [abaddon]
-      await renderUnit("/library/characters/blackAbaddon")
+      await renderQuests("/library/characters/blackAbaddon")
       const card = screen.getByTestId("unit-mythic")
       expect(card).toHaveTextContent("Mythic quests")
       expect(card).toHaveTextContent("5 quests")
@@ -835,6 +805,7 @@ describe("CharacterUnitPage", () => {
       const [first, ...rest] = mythicQuestsFixture.records.find(
         (record) => record.unitId === "ultraCalgar"
       )!.quests
+      if (!first) throw new Error("expected a quest")
       env.mythicQuestRecords = [
         {
           unitId: "ultraCalgar",
@@ -847,7 +818,7 @@ describe("CharacterUnitPage", () => {
           ],
         },
       ]
-      await renderUnit("/library/characters/ultraCalgar")
+      await renderQuests("/library/characters/ultraCalgar")
       const quest = screen.getByTestId("unit-mythic-quest-1")
       expect(quest).toHaveTextContent(/^1/)
       expect(within(quest).queryByRole("paragraph")).not.toBeInTheDocument()
@@ -856,7 +827,7 @@ describe("CharacterUnitPage", () => {
     })
 
     it('keeps "in one battle" in the singular task text', async () => {
-      await renderUnit("/library/characters/ultraCalgar")
+      await renderQuests("/library/characters/ultraCalgar")
       expect(screen.getByTestId("unit-mythic-quest-4")).toHaveTextContent(
         "Defeat 1 enemy that has the Immune trait with Calgar in one battle"
       )
@@ -864,7 +835,7 @@ describe("CharacterUnitPage", () => {
 
     it("names Lucius and the Armour of Shrieking Souls effect once each", async () => {
       env.extraCharacters = [lucius]
-      await renderUnit("/library/characters/emperLucius")
+      await renderQuests("/library/characters/emperLucius")
       const text = questText(1)
       expect(text.match(/Lucius/g)).toHaveLength(1)
       expect(text.match(/Armour of Shrieking Souls/g)).toHaveLength(1)
@@ -873,9 +844,11 @@ describe("CharacterUnitPage", () => {
 
     it("shows the English task text with German labels in German", async () => {
       env.extraCharacters = [abaddon]
+      // The harness loads English only; other namespaces fall back to it.
+      i18n.addResourceBundle("de", "library", deLibrary)
       await i18n.changeLanguage("de")
       try {
-        await renderUnit("/library/characters/blackAbaddon")
+        await renderQuests("/library/characters/blackAbaddon")
         const card = screen.getByTestId("unit-mythic")
         expect(card).toHaveTextContent("Mythische Quests")
         const first = screen.getByTestId("unit-mythic-quest-1")
@@ -892,10 +865,10 @@ describe("CharacterUnitPage", () => {
   it("shows each headline stat with its stat icon", async () => {
     await renderUnit("/library/characters/ultraTigurius")
     for (const [key, file] of [
-      ["health", "ui_icon_stat_health_01.png"],
-      ["damage", "ui_icon_stat_dmg_01.png"],
-      ["armour", "ui_icon_stat_armor_01.png"],
-      ["movement", "ui_icon_stat_move_01.png"],
+      ["health", "ui_icon_stat_health_01.webp"],
+      ["damage", "ui_icon_stat_dmg_01.webp"],
+      ["armour", "ui_icon_stat_armor_01.webp"],
+      ["movement", "ui_icon_stat_move_01.webp"],
     ]) {
       const icon = screen.getByTestId(`unit-glance-${key}`).querySelector("img")
       expect(icon?.getAttribute("src"), key).toContain(file)
@@ -1102,6 +1075,36 @@ describe("CharacterUnitPage", () => {
       }
     }
   )
+
+  it("paints the page before the ability text arrives, then adds the tour's ability step", async () => {
+    requestedNamespaces.length = 0
+    const release = holdNamespaceLoads()
+    await renderUnit("/library/characters/ultraTigurius")
+    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(
+      "Tigurius"
+    )
+    expect(
+      screen.getByTestId("unit-ability-active-text-loading")
+    ).toHaveTextContent("Loading rules text…")
+    expect(
+      screen.queryByTestId("unit-ability-active-missing-text")
+    ).not.toBeInTheDocument()
+    const targets = () => env.tour?.desktop.map((step) => step.target) ?? []
+    expect(targets()).not.toContain('[data-testid="unit-ability-active"]')
+
+    act(release)
+    expect(
+      await screen.findByTestId("unit-ability-active-stepper")
+    ).toBeInTheDocument()
+    expect(targets()).toContain('[data-testid="unit-ability-active"]')
+    expect(
+      requestedNamespaces.filter((key) => key.includes("AbilityText/")).sort()
+    ).toEqual([
+      // The relic's ability (`RunsAway`) is a known gap, so it is never requested.
+      "en/npcAbilityText/PsychicFortress",
+      "en/npcAbilityText/StormOfWrath",
+    ])
+  })
 
   it("leaves the ability step out of the tour when the unit has no ability text", async () => {
     await renderUnit("/library/characters/eldarLhykhis")

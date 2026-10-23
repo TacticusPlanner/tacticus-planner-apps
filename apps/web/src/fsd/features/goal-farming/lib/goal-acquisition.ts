@@ -175,9 +175,9 @@ export function computeGoalAcquisition(params: {
     const currentProgression = isMowDetail(detail)
       ? params.playerMowById.get(detail.entityId)?.progressionIndex
       : params.playerCharacterById.get(detail.entityId)?.progressionIndex
-    const rarity = (
-      currentProgression ?? detail.config.progression.start
-    ).split(":")[0]
+    const rarity =
+      (currentProgression ?? detail.config.progression.start).split(":")[0] ??
+      ""
     const regularReward = onslaughtReward(
       params.onslaughtRewards ?? [],
       allianceProgress.sector,

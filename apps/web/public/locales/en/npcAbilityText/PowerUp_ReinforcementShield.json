@@ -1,0 +1,10 @@
+{
+  "PowerUp_ReinforcementShield": {
+    "description": "When picked up by a unit, each deployed character in this event will deploy with a <style=\"Buff_Shield\">Shield</style> equal to {[shieldPct]}% of their max <style=\"Stat_Health\">Health</style>. The shield strength accumulates with each additional Shield power-up you pick up.",
+    "variables": {},
+    "constants": {
+      "shieldPct": "10"
+    },
+    "scaled": []
+  }
+}

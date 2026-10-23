@@ -2,7 +2,7 @@ import { useTranslation } from "react-i18next"
 
 import { UpgradeIcon } from "@/shared/ui"
 
-import type { GoalProgress } from "../../model/attainment/goal-progress"
+import type { GoalProgress } from "@/features/goal-planning"
 
 /** Desktop rows are a fixed height, so a long material list (a whole rank range) is cut here and
  *  the rest folded into a "+N" chip. */

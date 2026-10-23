@@ -4,7 +4,7 @@ import { Badge } from "@workspace/ui/components/badge"
 
 import { shopCurrencyIcon } from "@/features/shop-rewards"
 import { EntityIcon } from "@/shared/ui"
-import type { ShopRecommendationCardView } from "../../model/use-shop-recommendations"
+import type { ShopRecommendationCardView } from "@/features/shop-recommendations"
 
 /** `[currency icon] 1,234` — the amount with its currency icon (V1 shop-card style). */
 function CurrencyAmount({

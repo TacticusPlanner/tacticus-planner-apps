@@ -1,0 +1,10 @@
+{
+  "NoHidingFromTheWatchers": {
+    "description": "Jeglicher <style=\"Stat_Damage\">Schaden</style>, den diese Einheit erleidet, wird auf 0 reduziert. Nachdem sie angegriffen wurde, bewegt sich diese Einheit {[nrOfTiles]} Felder, wobei sie versucht, allen anderen Einheiten zu entkommen. Wenn sich kein anderer verbündeter <style=\"Faction_DarkAngels\">Dark Angel</style> außer den <style=\"Faction_DarkAngels\">Wächtern der Dunkelheit</style> auf dem Schlachtfeld befindet, verlässt diese Einheit das Schlachtfeld.",
+    "variables": {},
+    "constants": {
+      "nrOfTiles": "1"
+    },
+    "scaled": []
+  }
+}

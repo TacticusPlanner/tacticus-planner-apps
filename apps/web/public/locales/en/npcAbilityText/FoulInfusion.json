@@ -1,0 +1,19 @@
+{
+  "FoulInfusion": {
+    "description": "<style=\"Faction_DeathGuard\">Pestillian</style> and all friendly <style=\"Aliance_Chaos\">Chaos</style> units within his <style=\"ContagionsOfNurgle\">Contagion</style> aura deal an additional <style=\"Stat_Hits\">{[nrOfHits]}x</style> <style=\"DMG_Toxic\">{[dmg]} Toxic Damage</style> with their <style=\"NormalAttack\">normal melee attacks</style> for this round and the next. <style=\"Faction_DeathGuard\">Pestillian</style> then immediately performs a <style=\"NormalAttack\">normal melee attack</style> against a random adjacent enemy.",
+    "variables": {
+      "dmg": [
+        28, 34, 39, 45, 50, 57, 63, 70, 76, 83, 89, 95, 102, 108, 115, 121, 128,
+        134, 141, 147, 156, 168, 193, 219, 244, 270, 295, 321, 346, 372, 397,
+        423, 448, 473, 499, 524, 550, 575, 601, 637, 687, 740, 797, 860, 976,
+        1091, 1206, 1321, 1436, 1551, 1568, 1589, 1610, 1638, 1666, 1694, 1722,
+        1757, 1792, 1827, 1869, 1911, 1953, 1995, 2037
+      ]
+    },
+    "constants": {
+      "damageProfile": "Toxic",
+      "nrOfHits": "1"
+    },
+    "scaled": ["dmg"]
+  }
+}

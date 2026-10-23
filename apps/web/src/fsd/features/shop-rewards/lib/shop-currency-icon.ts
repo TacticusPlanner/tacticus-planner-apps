@@ -3,13 +3,21 @@
 // `snowprint_assets/resources/`). An unregistered currency (e.g. a future event shop) returns
 // `undefined` and the amount renders without an icon.
 
-const ASSET_ROOT = "/game_catalog/resources"
+import { gameAssetUrl } from "@workspace/game-catalog"
 
 const CURRENCY_ICON_BY_ID: Record<string, string> = {
-  guildCredits: `${ASSET_ROOT}/ui_icon_resource_guild_credits_large.png`,
-  guildWarCurrency: `${ASSET_ROOT}/ui_icon_resource_guild_war_currency_large.png`,
-  elderShopCurrency: `${ASSET_ROOT}/ui_icon_resource_elder_shop_currency_large.png`,
-  crusadeCurrency: `${ASSET_ROOT}/ui_icon_resource_crusade_currency_large.png`,
+  guildCredits: gameAssetUrl(
+    `resources/ui_icon_resource_guild_credits_large.webp`
+  ),
+  guildWarCurrency: gameAssetUrl(
+    `resources/ui_icon_resource_guild_war_currency_large.webp`
+  ),
+  elderShopCurrency: gameAssetUrl(
+    `resources/ui_icon_resource_elder_shop_currency_large.webp`
+  ),
+  crusadeCurrency: gameAssetUrl(
+    `resources/ui_icon_resource_crusade_currency_large.webp`
+  ),
 }
 
 export function shopCurrencyIcon(currencyId: string): string | undefined {

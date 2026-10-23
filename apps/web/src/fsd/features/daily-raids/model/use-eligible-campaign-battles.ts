@@ -1,42 +1,44 @@
 import { useMemo } from "react"
 import { useIsAuthenticated } from "@azure/msal-react"
-import { useLiveQuery } from "dexie-react-hooks"
-import type { CampaignDefinitionStorageModel } from "@workspace/game-catalog"
-import type { CampaignBattleStorageModel } from "@workspace/game-catalog"
-import {
-  getCampaignProgress,
-  getLiveProgress,
-} from "@workspace/player-data/queries"
-
+import type {
+  CampaignDefinitionStorageModel,
+  CampaignBattleStorageModel,
+} from "@workspace/game-catalog"
+import { usePlayerChunk } from "@/shared/local-data"
 import {
   availableCampaignBattles,
   buildCampaignProgressByKey,
 } from "./campaign-event-eligibility"
-import { useEffectiveCampaignEventProgress } from "./use-effective-campaign-event-progress"
+import { useQuery } from "@tanstack/react-query"
+import {
+  buildEffectiveCampaignEventProgress,
+  campaignEventProgressQueries,
+} from "@/entities/player-data-override"
 
 /**
  * The single place that reads the live-progress, campaign-events-progress (with the player's
  * manual overrides merged over it) and campaign-progress chunks and applies
  * `availableCampaignBattles`, so Today, Raids Plan and the Goals catalog choose farm nodes from the
  * same set. Until a chunk loads it counts as empty: event nodes are ineligible and only the first
- * standing node of each track is reachable (no false date before hydration). The raw results and
- * readiness flags are returned so callers can tell whether hydration finished.
+ * standing node of each track is reachable (no false date before hydration). `liveProgress`
+ * (undefined until read, null before its first sync), `ready` and `isError` (a failed chunk read or
+ * override load) let callers tell whether hydration finished.
  */
 export function useEligibleCampaignBattles(
   battles: CampaignBattleStorageModel[] | undefined,
   campaignDefinitions: CampaignDefinitionStorageModel[] | undefined
 ) {
   const isAuthenticated = useIsAuthenticated()
-  const liveProgressResult = useLiveQuery(
-    async () => ({ value: await getLiveProgress() }),
-    []
-  )
+  const liveProgressRead = usePlayerChunk("live-progress")
   const campaignEventProgress =
     useEffectiveCampaignEventProgress(isAuthenticated)
-  const campaignProgressResult = useLiveQuery(
-    async () => ({ value: await getCampaignProgress() }),
-    []
-  )
+  const campaignProgressRead = usePlayerChunk("campaign-progress")
+  const liveProgress =
+    liveProgressRead.status === "ready" ? liveProgressRead.data : undefined
+  const campaignProgress =
+    campaignProgressRead.status === "ready"
+      ? campaignProgressRead.data
+      : undefined
   const eventCampaignIds = useMemo(
     () =>
       new Set(
@@ -48,31 +50,70 @@ export function useEligibleCampaignBattles(
   )
   const campaignEventProgressByKey = campaignEventProgress.byKey
   const campaignProgressByKey = useMemo(
-    () => buildCampaignProgressByKey(campaignProgressResult?.value ?? []),
-    [campaignProgressResult]
+    () => buildCampaignProgressByKey(campaignProgress ?? []),
+    [campaignProgress]
   )
   const availableBattles = useMemo(
     () =>
       availableCampaignBattles(
         battles ?? [],
         eventCampaignIds,
-        liveProgressResult?.value?.activeCampaignEventId,
+        liveProgress?.activeCampaignEventId,
         campaignEventProgressByKey,
         campaignProgressByKey
       ),
     [
       battles,
       eventCampaignIds,
-      liveProgressResult,
+      liveProgress,
       campaignEventProgressByKey,
       campaignProgressByKey,
     ]
   )
   return {
     availableBattles,
-    liveProgressResult,
-    campaignEventProgressReady: campaignEventProgress.ready,
-    campaignEventProgressError: campaignEventProgress.isError,
-    campaignProgressResult,
+    liveProgress,
+    ready:
+      liveProgressRead.status === "ready" &&
+      campaignProgressRead.status === "ready" &&
+      campaignEventProgress.ready,
+    isError:
+      liveProgressRead.status === "error" ||
+      campaignProgressRead.status === "error" ||
+      campaignEventProgress.isError,
+  }
+}
+
+/**
+ * Event-campaign progress for raid eligibility: the player's manual overrides from the Progress
+ * page merged over synced `campaign-events-progress` (daily-raids-today, "Only the active campaign
+ * event is farmable"). `ready` waits for synced progress and, when signed in, for the override load
+ * to settle; a failed load falls back to synced-only and is reported through `isError`, as is a
+ * failed local read of the synced chunk (which never becomes `ready`).
+ * `useDailyRaids` treats it as an error, so Today, Raids Plan and the Home raids widget and
+ * event-farm section show their error state; only the Home event tab
+ * (`useHomeScreenEventLocations`), which has no error state, keeps the synced-only view.
+ */
+function useEffectiveCampaignEventProgress(isAuthenticated: boolean) {
+  const synced = usePlayerChunk("campaign-events-progress")
+  const syncedProgress = synced.status === "ready" ? synced.data : undefined
+  const overridesQuery = useQuery({
+    ...campaignEventProgressQueries.current(),
+    enabled: isAuthenticated,
+  })
+  const byKey = useMemo(
+    () =>
+      buildEffectiveCampaignEventProgress(
+        syncedProgress ?? [],
+        overridesQuery.data?.progress ?? []
+      ),
+    [syncedProgress, overridesQuery.data]
+  )
+  return {
+    byKey,
+    ready:
+      synced.status === "ready" &&
+      (!isAuthenticated || overridesQuery.isSuccess || overridesQuery.isError),
+    isError: overridesQuery.isError || synced.status === "error",
   }
 }

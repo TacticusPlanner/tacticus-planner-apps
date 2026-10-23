@@ -10,7 +10,7 @@ import type {
   RunHistory,
   RunHistoryLane,
   RunHistoryTeam,
-} from "@/entities/legendary-event"
+} from "../../../lib/run-history"
 import { EntityIcon } from "@/shared/ui"
 import { useUnitName } from "@/shared/unit-name"
 

@@ -1,0 +1,10 @@
+{
+  "BioBarrage": {
+    "description": "The Tervigon itself and all friendly units deal +{[extraDmgPct]}% ranged <style=\"Stat_Damage\">Damage</style> if they did not move in their turn.",
+    "variables": {},
+    "constants": {
+      "extraDmgPct": "25"
+    },
+    "scaled": []
+  }
+}

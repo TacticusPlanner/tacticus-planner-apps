@@ -115,6 +115,8 @@ export function RaidBossDetail({
     Math.max(ladder.length - 1, 0)
   )
   const step = ladder[clamped]
+  // An empty stat ladder has no step to show (this used to throw on `step.health`).
+  if (!step) return null
   const stepLabels = buildProgressionStepLabels(ladder)
 
   return (
@@ -146,15 +148,19 @@ export function RaidBossDetail({
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {ladder.map((entry, index) => (
-                <SelectItem key={index} value={String(index)}>
-                  {t("raidBosses.progressionStepLabelled", {
-                    rarityTier: stepLabels[index].rarityTierLabel,
-                    stars: entry.starLevel,
-                    health: stepLabels[index].health.toLocaleString(),
-                  })}
-                </SelectItem>
-              ))}
+              {ladder.map((entry, index) => {
+                const label = stepLabels[index]
+                if (!label) return null
+                return (
+                  <SelectItem key={index} value={String(index)}>
+                    {t("raidBosses.progressionStepLabelled", {
+                      rarityTier: label.rarityTierLabel,
+                      stars: entry.starLevel,
+                      health: label.health.toLocaleString(),
+                    })}
+                  </SelectItem>
+                )
+              })}
             </SelectContent>
           </Select>
         </label>

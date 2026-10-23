@@ -12,6 +12,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 import { act, render, screen, within } from "@/test/render"
 import { battle, offPlanBattle, ready } from "@/test/fixtures/daily-raids"
 import { emptyRaidsFilters } from "@/features/daily-raids"
+import type { HseTeamsRead } from "@/features/team-recommendations"
 import { homeScreenEventReadyAt } from "@/test/fixtures/home-screen-event"
 import { hseTeamsFixtureRead } from "@/test/fixtures/hse-teams"
 
@@ -26,8 +27,7 @@ const { mocks } = vi.hoisted(() => ({
     locations: undefined as unknown,
     raidsArgs: [] as unknown[][],
     hseReads: {} as import("@/test/fixtures/hse-event-points").HseFixtureReads,
-    teamsRead: undefined as
-      import("../model/hse-teams-view-model").HseTeamsRead | undefined,
+    teamsRead: undefined as HseTeamsRead | undefined,
   },
 }))
 
@@ -71,14 +71,17 @@ vi.mock(
     }
   }
 )
-vi.mock("../model/use-hse-team-recommendations", async () => {
-  const { fixtureHseTeams } = await import("@/test/fixtures/hse-teams")
-  return {
-    useHseTeamRecommendations: (
-      ...[instance, points]: Parameters<typeof fixtureHseTeams>
-    ) => fixtureHseTeams(instance, points, mocks.teamsRead),
+vi.mock(
+  "@/features/team-recommendations/model/use-hse-team-recommendations",
+  async () => {
+    const { fixtureHseTeams } = await import("@/test/fixtures/hse-teams")
+    return {
+      useHseTeamRecommendations: (
+        ...[instance, points]: Parameters<typeof fixtureHseTeams>
+      ) => fixtureHseTeams(instance, points, mocks.teamsRead),
+    }
   }
-})
+)
 
 const HOUR = 3_600_000
 const DAY = 24 * HOUR
@@ -259,6 +262,15 @@ beforeEach(() => {
 })
 
 describe("HSE tab states", () => {
+  it("renders its title as an h2 under the shell h1", () => {
+    renderHse()
+    // The shell header owns the page h1; the tab starts its hierarchy at h2.
+    expect(screen.queryAllByRole("heading", { level: 1 })).toHaveLength(0)
+    expect(
+      screen.getByRole("heading", { level: 2, name: "hse.title" })
+    ).toBeInTheDocument()
+  })
+
   it("shows the live event, its farm list with points and energy per location and the day totals", () => {
     renderHse()
 
@@ -853,7 +865,9 @@ describe("HSE instance switcher", () => {
     const row = screen.getByTestId("hse-title-row")
     const switcher = screen.getByTestId("hse-event-switcher")
     expect(row).toContainElement(switcher)
-    expect(row).toContainElement(screen.getByRole("heading", { level: 1 }))
+    expect(row).toContainElement(
+      screen.getByRole("heading", { level: 2, name: "hse.title" })
+    )
     // Mobile: full width, so it wraps below the title; desktop: inline, pushed right.
     expect(switcher.className).toContain("w-full")
     expect(switcher.className).toContain("md:w-auto")
@@ -1139,6 +1153,16 @@ describe("HSE event details and projection", () => {
       ).not.toBeInTheDocument()
     }
   )
+
+  it("does not re-render the farm list when a projection input changes", async () => {
+    mocks.event = activeEvent("hse-warp-surge")
+    renderHse()
+    const input = screen.getByTestId("hse-projection-milestones-done-input")
+    const farmRenders = mocks.raidsArgs.length
+    await userEvent.type(input, "1")
+    expect(input).toHaveValue(1)
+    expect(mocks.raidsArgs).toHaveLength(farmRenders)
+  })
 
   it("lets the details span the row when there is no projection", () => {
     mocks.event = readyAt(

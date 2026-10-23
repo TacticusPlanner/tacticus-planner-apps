@@ -1,0 +1,15 @@
+{
+  "ParagonSpear": {
+    "description": "Tous les coups portés de <style=\"Faction_Custodes\">Tyrith</style> qui sont aussi des <style=\"Stat_CritDamage\">coups critiques</style> infligent le maximum de <style=\"Stat_Damage\">dégâts</style> possibles. Au début du tour de Tyrith, elle attaque un ennemi aléatoire à portée de {[range]} hexagones et lui inflige <style=\"Stat_Hits\">{[nrOfHits]}x</style> <style=\"DMG_Bolter\">{[minDmg]}-{[maxDmg]} dégâts Bolter</style>. Si un ennemi est adjacent à Tyrith, cette portée est réduite à 1.",
+    "variables": {
+      "minDmg": [2155, 2271, 2388, 2504, 2620, 2737, 2853, 2969, 3086, 3202],
+      "maxDmg": [2940, 3099, 3257, 3416, 3575, 3733, 3892, 4051, 4210, 4368]
+    },
+    "constants": {
+      "nrOfHits": "2",
+      "damageProfile": "Bolter",
+      "range": "2"
+    },
+    "scaled": []
+  }
+}

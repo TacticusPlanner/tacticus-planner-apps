@@ -1,0 +1,10 @@
+{
+  "PowerUp_Healing": {
+    "description": "Lorsqu'elle est choisie par cette unité, cette amélioration <style=\"Healing\">restaure</style> sa santé à hauteur de {[HealPercentage]} % de sa <style=\"Stat_Health\">santé</style> maximum.",
+    "variables": {},
+    "constants": {
+      "HealPercentage": "100"
+    },
+    "scaled": []
+  }
+}

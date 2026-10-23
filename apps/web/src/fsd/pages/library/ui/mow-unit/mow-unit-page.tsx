@@ -3,7 +3,6 @@ import { Link, useLocation, useParams } from "react-router"
 import { useTranslation } from "react-i18next"
 import { useIsAuthenticated } from "@azure/msal-react"
 import { abilityIcon, mowIcon } from "@workspace/game-catalog"
-import { getMowUpgradeCosts } from "@workspace/game-catalog/queries"
 import {
   progressionOrder,
   progressionRarity,
@@ -30,7 +29,7 @@ import { UnitHeader, type ValuesMode } from "../unit/unit-header"
 import { UnitNavBar } from "../unit/unit-nav-bar"
 import { UnitPowerValue } from "../unit/unit-power-value"
 import { UnitTabs } from "../unit/unit-tabs"
-import { useCatalogDataset } from "../unit/use-catalog-dataset"
+import { useSyncedCatalogDataset } from "../unit/use-catalog-dataset"
 import { useUnitTab } from "../unit/use-unit-tab"
 import { MowMythicPanel } from "./mow-mythic-panel"
 import { MowUnitDetails } from "./mow-unit-details"
@@ -62,7 +61,7 @@ export function MowUnitPage() {
   const catalog = useMowsCatalog()
   // The ladder sets every level cap, so the page waits for it as for `mows`: datasets sync one at a
   // time, and an unsynced ladder reads as empty, which would cap every level at 1.
-  const costs = useCatalogDataset("mow-upgrade-costs", getMowUpgradeCosts)
+  const costs = useSyncedCatalogDataset("mow-upgrade-costs")
   const { t } = useTranslation("library")
 
   if (catalog.status === "failed" || costs.status === "failed") {
@@ -129,7 +128,6 @@ function MowUnit({
   const panelId = useId()
   const mow = catalog.byId.get(unitId)!
   const name = t(`mows:${unitId}`, { defaultValue: mow.name })
-  const abilityText = useAbilityText()
   const [tab, setTab] = useUnitTab(TABS)
 
   // --- Player data -----------------------------------------------------------------------------
@@ -181,6 +179,12 @@ function MowUnit({
 
   // The mythic ability follows the blue stars of the values shown.
   const mythicKey = mow.mythicAbility?.name
+  // Only this MoW's abilities' rules text is fetched, after the page paints.
+  const abilityText = useAbilityText(
+    [abilityKeys.primary, abilityKeys.secondary, mythicKey].filter(
+      (id): id is string => id !== undefined
+    )
+  )
   const mythicName = mythicKey
     ? t(`abilities:${mythicKey}`, { defaultValue: mythicKey })
     : t("mowUnit.mythic.unnamed")
@@ -256,7 +260,8 @@ function MowUnit({
       kind={t(`mowUnit.abilities.${ability}`)}
       name={abilityNames[ability]}
       iconSrc={abilityIcon(abilityKeys[ability])}
-      text={abilityText(abilityKeys[ability])}
+      text={abilityText.text(abilityKeys[ability])}
+      rules={abilityText}
       rarity={rarity}
       unitName={name}
       factionId={mow.faction}
@@ -274,7 +279,8 @@ function MowUnit({
     <MowMythicPanel
       name={mythicName}
       abilityKey={mythicKey}
-      text={mythicKey ? abilityText(mythicKey) : undefined}
+      text={mythicKey ? abilityText.text(mythicKey) : undefined}
+      rules={mythicKey ? abilityText : undefined}
       level={mythic}
       rarity={rarity}
       unitName={name}

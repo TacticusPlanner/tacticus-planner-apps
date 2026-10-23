@@ -1,0 +1,8 @@
+{
+  "TunnelingHorror": {
+    "description": "Cette unité peut creuser des tunnels pour se mouvoir. Elle est alors retirée du champ de bataille pour émerger plus loin au début de son tour suivant dans l'hexagone de destination choisi. Elle <style=\"Displacement\">décale</style> alors toute autre unité présente dans cet hexagone et peut immédiatement attaquer tout ennemi adjacent au <style=\"Stat_Melee\">corps à corps</style>.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

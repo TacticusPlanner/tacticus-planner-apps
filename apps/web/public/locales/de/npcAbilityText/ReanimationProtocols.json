@@ -1,0 +1,11 @@
+{
+  "ReanimationProtocols": {
+    "description": "Wenn sich mindestens eine andere verbündete Einheit desselben Typs auf dem Schlachtfeld befindet, wenn diese Einheit besiegt wird, besteht eine <style=\"Stat_Chance\">Chance von {[chance]} %</style>, dass sie sofort mit <style=\"Stat\">{[hpPct]} %</style> ihrer ursprünglichen Lebenspunkte auf demselben oder einem angrenzenden Feld wiederbelebt wird. Gilt nicht bei <style=\"Overkill\">Overkill</style>.",
+    "variables": {},
+    "constants": {
+      "chance": "35",
+      "hpPct": "25"
+    },
+    "scaled": []
+  }
+}

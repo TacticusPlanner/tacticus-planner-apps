@@ -1,0 +1,26 @@
+{
+  "PileIn": {
+    "description": "If this unit has full <style=\"Stat_Health\">Health</style> at the end of its turn, it has a {[chance]}% chance to <style=\"Summon\">summon</style> another <style=\"Faction_Orks\">Grot</style> in an adjacent free hex, -{[chance_2]}% for each friendly <style=\"Faction_Orks\">Grot</style> currently on the board. The spawned <style=\"Faction_Orks\">Grot</style> acts as normal on its next turn.\n\nGrot’s stats:\n<style=\"Stat_Health\">{[summonHp]} Health</style>\n<style=\"Stat_Damage\">{[summonDmg]} Damage</style>",
+    "variables": {
+      "summonHp": [
+        40, 48, 56, 64, 72, 81, 90, 100, 109, 118, 127, 136, 146, 155, 164, 173,
+        182, 192, 201, 210, 222, 240, 276, 312, 349, 385, 422, 458, 494, 531,
+        567, 604, 640, 676, 713, 749, 786, 822, 858, 910, 982, 1057, 1139, 1229,
+        1394, 1558, 1722, 1887, 2051, 2216, 2240, 2270, 2300, 2340, 2380, 2420,
+        2460, 2510, 2560, 2610, 2670, 2730, 2790, 2850, 2910
+      ],
+      "summonDmg": [
+        20, 24, 28, 32, 36, 41, 45, 50, 54, 59, 64, 68, 73, 77, 82, 87, 91, 96,
+        100, 105, 111, 120, 138, 156, 174, 193, 211, 229, 247, 265, 284, 302,
+        320, 338, 356, 375, 393, 411, 429, 455, 491, 529, 569, 615, 697, 779,
+        861, 943, 1026, 1109, 1120, 1135, 1150, 1170, 1190, 1210, 1230, 1255,
+        1280, 1305, 1335, 1365, 1395, 1425, 1455
+      ]
+    },
+    "constants": {
+      "chance": "75",
+      "chance_2": "5"
+    },
+    "scaled": ["summonHp", "summonDmg"]
+  }
+}

@@ -25,6 +25,11 @@ import { AuthError, InteractionStatus } from "@azure/msal-browser"
 import { useIsAuthenticated, useMsal } from "@azure/msal-react"
 
 import {
+  AccountAvatar,
+  AccountCard,
+  GuestAccountMenu,
+} from "@/widgets/account-menu"
+import {
   ManageAccountDialog,
   type ManageAccountTab,
 } from "@/features/account-management"
@@ -37,9 +42,6 @@ import {
 } from "@/shared/auth"
 import { TourButton, useTourControlledPopoverOpen } from "@/shared/tour"
 
-import { AccountAvatar } from "./account-avatar"
-import { AccountCard } from "./account-card"
-import { GuestAccountMenu } from "./guest-account-menu"
 import { useUserJot } from "./userjot-provider"
 
 type AuthOperation = "api-access" | "sign-in" | "sign-out"
@@ -96,6 +98,7 @@ export function AuthControl() {
   }
 
   const handleSignOut = () => {
+    if (!account) return
     void signOut(instance, account.homeAccountId).catch((error: unknown) => {
       logAuthenticationError("sign-out", error)
       toast.error(t("auth.error"))
@@ -262,6 +265,7 @@ export function AuthControl() {
                 <div
                   className="flex items-center gap-1 text-xs"
                   data-testid="auth-account-loading"
+                  role="status"
                 >
                   <LoaderCircle
                     className="size-3 animate-spin"

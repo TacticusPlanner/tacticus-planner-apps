@@ -1,0 +1,11 @@
+{
+  "DaemonfleshPlate": {
+    "description": "Cada vez que el portador de la reliquia ataca, obtiene <style=\"Stat_Armor\">+{[extraArmor]} de Armadura</style>. Luego de atacar <style=\"STAT\">{[nrOfAttacks]}</style> veces, esta bonificación se reinicia y el portador de la reliquia puede usar su habilidad activa otra vez.",
+    "variables": {
+      "extraArmor": [145, 153, 161, 168, 176, 184, 192, 200, 208, 215],
+      "nrOfAttacks": [8, 8, 8, 8, 8, 7, 7, 7, 7, 7]
+    },
+    "constants": {},
+    "scaled": []
+  }
+}

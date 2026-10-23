@@ -1,4 +1,4 @@
-import { isMacPlatform } from "./is-mac-platform"
+import { isMacPlatform } from "@/shared/lib"
 
 /** Platform-aware hint and ARIA value for the Ctrl/Cmd+B section menu shortcut. */
 export function sectionShortcut() {

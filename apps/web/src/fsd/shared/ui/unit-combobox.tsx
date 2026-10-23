@@ -19,6 +19,7 @@ import { cn } from "@workspace/ui/lib/utils"
 import { characterIcon } from "@workspace/game-catalog"
 import type { FactionGroup, UnitId } from "@workspace/game-domain"
 
+import { useCommandListId } from "./command-list-id"
 import { closestOverlayContent } from "./overlay-content"
 
 // Fixed-size avatar slot shared by the trigger and every list item, so Character and MoW rows line
@@ -94,6 +95,7 @@ export function UnitCombobox({
   lockedIds?: ReadonlySet<UnitId>
 }) {
   const [open, setOpen] = useState(false)
+  const [listId, listRef] = useCommandListId()
   const [search, setSearch] = useState("")
   const triggerRef = useRef<HTMLButtonElement>(null)
   // Radix Dialog/Sheet's scroll lock only allows wheel/touch scroll inside its own content node —
@@ -154,6 +156,7 @@ export function UnitCombobox({
           variant="outline"
           role="combobox"
           aria-expanded={open}
+          aria-controls={listId}
           aria-label={placeholder}
           className="w-full justify-between sm:w-72"
         >
@@ -186,7 +189,7 @@ export function UnitCombobox({
             value={search}
             onValueChange={setSearch}
           />
-          <CommandList>
+          <CommandList ref={listRef}>
             <CommandEmpty>{emptyText}</CommandEmpty>
             {filteredGroups.map((group) => (
               <CommandGroup key={group.factionId} heading={group.factionName}>

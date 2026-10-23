@@ -1,0 +1,40 @@
+{
+  "DaRevolushun": {
+    "description": "Sobald eine angrenzende Einheit besiegt wird, beschwört <style=\"Faction_Orks\">Da Rote Gobbo</style> einen <style=\"Summon\"><style=\"Faction_Orks\">Grot</style></style> auf ihr Feld; es sei denn, bei der besiegten Einheit handelte es sich um einen Grot. Der beschworene Grot kann umgehend einen angrenzenden Gegner angreifen. Sobald auf einem beliebigen Feld auf dem Schlachtfeld ein verbündeter Grot besiegt wird, explodiert dieser und verursacht <style=\"Stat_Hits\">{[nrOfHits]}x</style> <style=\"DMG_Blast\">{[minDmg]}–{[maxDmg]} Explosionsschaden</style> an allen angrenzenden Grots sowie allen angrenzenden Gegnern.\n\nWerte des Grots:\n<style=\"Stat_Health\">{[summonHp]} Lebenspunkte</style>\n<style=\"Stat_Damage\">{[summonDmg]} Schaden</style>\n\n{[S/AbilityDamageExplanation]}",
+    "variables": {
+      "minDmg": [
+        55, 66, 77, 88, 99, 112, 124, 137, 150, 162, 175, 188, 200, 213, 226,
+        238, 251, 263, 276, 289, 306, 329, 380, 430, 480, 530, 580, 630, 680,
+        730, 780, 830, 880, 930, 980, 1030, 1080, 1130, 1180, 1251, 1350, 1454,
+        1566, 1690, 1916, 2142, 2368, 2594, 2820, 3046, 3080, 3121, 3163, 3218,
+        3273, 3328, 3383, 3451, 3520, 3589, 3671, 3754, 3836, 3919, 4001
+      ],
+      "maxDmg": [
+        65, 78, 91, 104, 117, 132, 147, 162, 177, 192, 207, 222, 237, 252, 267,
+        281, 296, 311, 326, 341, 361, 389, 449, 508, 567, 626, 685, 744, 803,
+        863, 922, 981, 1040, 1099, 1158, 1217, 1277, 1336, 1395, 1478, 1595,
+        1718, 1851, 1997, 2265, 2532, 2799, 3066, 3333, 3600, 3640, 3689, 3738,
+        3803, 3868, 3933, 3998, 4079, 4160, 4241, 4339, 4436, 4534, 4631, 4729
+      ],
+      "summonHp": [
+        50, 60, 70, 80, 90, 102, 113, 125, 136, 148, 159, 171, 182, 194, 205,
+        217, 228, 240, 251, 263, 278, 300, 345, 391, 436, 482, 527, 573, 618,
+        664, 709, 755, 800, 846, 891, 937, 982, 1028, 1073, 1137, 1227, 1322,
+        1424, 1537, 1742, 1948, 2153, 2359, 2564, 2770, 2800, 2838, 2875, 2925,
+        2975, 3025, 3075, 3138, 3200, 3263, 3338, 3413, 3488, 3563, 3638
+      ],
+      "summonDmg": [
+        25, 30, 35, 40, 45, 51, 57, 62, 68, 74, 80, 85, 91, 97, 103, 108, 114,
+        120, 126, 131, 139, 150, 173, 195, 218, 241, 264, 286, 309, 332, 355,
+        377, 400, 423, 446, 468, 491, 514, 537, 569, 614, 661, 712, 768, 871,
+        974, 1077, 1179, 1282, 1385, 1400, 1419, 1438, 1463, 1488, 1513, 1538,
+        1569, 1600, 1631, 1669, 1706, 1744, 1781, 1819
+      ]
+    },
+    "constants": {
+      "nrOfHits": "1",
+      "damageProfile": "Blast"
+    },
+    "scaled": ["minDmg", "maxDmg", "summonHp", "summonDmg"]
+  }
+}

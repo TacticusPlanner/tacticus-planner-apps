@@ -7,9 +7,9 @@ import {
   useProjectActions,
 } from "@/features/project-management"
 
-import type { useGoalActions } from "../../model/goals-data/use-goal-actions"
-import { isOnlyMemberOf } from "../../model/projects/project-removal"
-import type { GoalRow } from "../../model/shared/types"
+import type { useGoalActions } from "@/features/goal-planning"
+import { isOnlyMemberOf } from "@/features/goal-planning"
+import type { GoalRow } from "@/features/goal-planning"
 import { ProjectPickerDialog } from "./project-picker-dialog"
 
 /** What a row menu and the bulk bar need to offer "Remove from this project" while the Goals page is

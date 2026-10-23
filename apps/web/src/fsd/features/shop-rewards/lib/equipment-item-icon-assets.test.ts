@@ -9,7 +9,7 @@ import equipmentItems from "../../../../../public/locales/en/equipmentItems.json
 // only resolves on a case-insensitive filesystem (Windows) and 404s on the case-sensitive host.
 const shippedEquipmentIcons = new Set(
   Object.keys(
-    import.meta.glob("/public/game_catalog/equipment/*.png", { query: "?url" })
+    import.meta.glob("/public/game_catalog/equipment/*.webp", { query: "?url" })
   ).map((path) => path.split("/").pop()!)
 )
 
@@ -37,10 +37,10 @@ describe("equipment item icon assets", () => {
 
   it("keeps the known gaps honest", () => {
     for (const id of KNOWN_GAPS) {
-      expect(shippedEquipmentIcons.has(`ui_icon_item_${id}.png`), id).toBe(
+      expect(shippedEquipmentIcons.has(`ui_icon_item_${id}.webp`), id).toBe(
         false
       )
     }
-    expect(shippedEquipmentIcons.has("ui_icon_item_unknown.png")).toBe(true)
+    expect(shippedEquipmentIcons.has("ui_icon_item_unknown.webp")).toBe(true)
   })
 })

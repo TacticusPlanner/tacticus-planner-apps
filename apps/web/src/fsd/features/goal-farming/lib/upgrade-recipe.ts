@@ -49,6 +49,7 @@ export function rankUpSlotOccurrences(
   }
   for (let index = rankIndex(rankStart); index < rankIndex(rankEnd); index++) {
     const rank = rankOrder[index]
+    if (rank === undefined) continue
     push(
       rank,
       Array.from({ length: byRank.get(rank)?.length ?? 0 }, (_, slot) => slot)

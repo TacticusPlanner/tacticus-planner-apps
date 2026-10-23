@@ -1,3 +1,4 @@
+import type { ReactNode } from "react"
 import type { LucideIcon } from "lucide-react"
 
 export type QuickActionId =
@@ -11,7 +12,7 @@ export type QuickAction = {
   /** Extra search terms beyond the label/description (e.g. "api" for sync). */
   keywords: string[]
   /** Set when the action is visible but cannot run right now; shown instead of the description. */
-  disabledReason?: string
+  disabledReason?: ReactNode
 }
 
 /** What the search surfaces need: the live eligible actions, the guarded selection, and the

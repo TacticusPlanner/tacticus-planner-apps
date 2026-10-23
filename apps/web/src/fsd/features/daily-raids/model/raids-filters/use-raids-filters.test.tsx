@@ -39,10 +39,32 @@ describe("useRaidsFilters", () => {
       emptyRaidsFilters
     )
 
-    window.localStorage.setItem(KEY, JSON.stringify({ slots: "five" }))
-    expect(renderHook(() => useRaidsFilters()).result.current[0]).toEqual(
-      emptyRaidsFilters
+    for (const stored of [
+      { slots: "five" },
+      { campaignTypes: ["Legendary"] },
+      { upgradeRarities: ["Shard"] },
+      { enemiesMin: "4" },
+      null,
+      [],
+    ]) {
+      window.localStorage.setItem(KEY, JSON.stringify(stored))
+      expect(renderHook(() => useRaidsFilters()).result.current[0]).toEqual(
+        emptyRaidsFilters
+      )
+    }
+  })
+
+  it("drops unknown stored keys", () => {
+    window.localStorage.setItem(
+      KEY,
+      JSON.stringify({ slots: [3], upgradeRarities: ["Epic"], legacy: true })
     )
+
+    expect(renderHook(() => useRaidsFilters()).result.current[0]).toEqual({
+      ...emptyRaidsFilters,
+      slots: [3],
+      upgradeRarities: ["Epic"],
+    })
   })
 
   it("reads a filter stored before enemy traits existed", () => {

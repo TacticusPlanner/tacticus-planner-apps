@@ -1,0 +1,10 @@
+{
+  "WisdomOfTheAncients": {
+    "description": "Verbündete <style=\"Rarity_Mythic\">Mythische</style> <style=\"Character\">Charaktere</style> erleiden <style=\"Stat_Damage\">-{[dmgReductionPct]} % Schaden</style>, wenn sie an <style=\"Faction_Ultramarines\">Galatian</style> angrenzen oder sich neben einem verbündeten mythischen Charakter befinden.",
+    "variables": {
+      "dmgReductionPct": [10, 13, 16, 20]
+    },
+    "constants": {},
+    "scaled": ["dmgReductionPct"]
+  }
+}

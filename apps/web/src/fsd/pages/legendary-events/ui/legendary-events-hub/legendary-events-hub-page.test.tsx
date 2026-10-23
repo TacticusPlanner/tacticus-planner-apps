@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react"
 import { MemoryRouter, Route, Routes, useParams } from "react-router"
 import type { i18n as I18n } from "i18next"
 import {
@@ -16,48 +15,14 @@ import {
   lysanderEvent,
   utharEvent,
 } from "@/test/fixtures/legendary-events"
+import { spyOnIndexedDbReads } from "@/test/fixtures/indexeddb-failure"
 import { createTestI18n, i18nWrapper } from "@/test/i18n"
 import { fireEvent, render, screen, waitFor, within } from "@/test/render"
+import { seedGameCatalog, seedPlayerData } from "@/test/seed"
 import { setViewportWidth } from "@/test/viewport"
 
 import { LegendaryEventsHubPage } from "./legendary-events-hub-page"
 
-vi.mock("dexie-react-hooks", () => ({
-  useLiveQuery: <T,>(querier: () => Promise<T>, deps: unknown[]) => {
-    const [value, setValue] = useState<T>()
-    useEffect(() => {
-      void querier().then(setValue)
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, deps)
-    return value
-  },
-}))
-
-const data = vi.hoisted(() => ({
-  events: [] as unknown[],
-  eventsFail: false,
-  eventsPending: false,
-  eventsCalls: 0,
-  progress: [] as unknown[] | undefined,
-  progressFail: false,
-}))
-vi.mock("@workspace/game-catalog/queries", () => ({
-  getLegendaryEvents: () => {
-    data.eventsCalls += 1
-    if (data.eventsPending) return new Promise(() => {})
-    return data.eventsFail
-      ? Promise.reject(new Error("catalog"))
-      : Promise.resolve(data.events)
-  },
-  getCharactersMap: async () => new Map(),
-  getMowsMap: async () => new Map(),
-}))
-vi.mock("@workspace/player-data/queries", () => ({
-  getLegendaryEventsProgress: () =>
-    data.progressFail
-      ? Promise.reject(new Error("player data"))
-      : Promise.resolve(data.progress),
-}))
 const tour = vi.hoisted(() => ({ steps: undefined as unknown }))
 vi.mock("@/shared/tour", () => ({
   useTourPageSteps: (steps: unknown) => {
@@ -96,6 +61,7 @@ const lysanderProgress = {
 }
 
 let i18n: I18n
+let reads: ReturnType<typeof spyOnIndexedDbReads>
 
 function EventProbe() {
   const { eventId } = useParams()
@@ -124,20 +90,18 @@ describe("LegendaryEventsHubPage", () => {
   beforeAll(async () => {
     i18n = await createTestI18n("en")
   })
-  beforeEach(() => {
-    Object.assign(data, {
-      events: [dante, farsightEvent, utharEvent, lysanderEvent],
-      eventsFail: false,
-      eventsPending: false,
-      eventsCalls: 0,
-      progress: [lysanderProgress],
-      progressFail: false,
+  beforeEach(async () => {
+    await seedGameCatalog({
+      lres: [dante, farsightEvent, utharEvent, lysanderEvent],
     })
+    await seedPlayerData({ "lre-progress": [lysanderProgress] })
+    reads = spyOnIndexedDbReads()
     setViewportWidth(1280)
     vi.useFakeTimers({ toFake: ["Date"] })
     vi.setSystemTime(new Date("2026-09-02T12:00:00Z"))
   })
   afterEach(() => {
+    reads.restore()
     vi.useRealTimers()
     vi.unstubAllGlobals()
     vi.unstubAllEnvs()
@@ -178,7 +142,7 @@ describe("LegendaryEventsHubPage", () => {
   })
 
   it("shows only the run timing for an active row without a synced entry", async () => {
-    data.progress = []
+    await seedPlayerData({ "lre-progress": [] })
     renderHub()
     await ready()
 
@@ -208,7 +172,7 @@ describe("LegendaryEventsHubPage", () => {
   })
 
   it("heads the page with the no-active line when nothing is running", async () => {
-    data.events = [utharEvent, farsightEvent]
+    await seedGameCatalog({ lres: [utharEvent, farsightEvent] })
     renderHub()
     await ready()
 
@@ -220,7 +184,7 @@ describe("LegendaryEventsHubPage", () => {
   })
 
   it("shows a skeleton and no headings while the catalog loads", () => {
-    data.eventsPending = true
+    // The first render precedes the asynchronous catalog read.
     renderHub()
 
     expect(screen.getByTestId("legendary-events-hub-loading")).toBeVisible()
@@ -228,20 +192,20 @@ describe("LegendaryEventsHubPage", () => {
   })
 
   it("shows the error body on a catalog failure, and Retry re-issues the read", async () => {
-    data.eventsFail = true
+    reads.fail("lres")
     renderHub()
     const error = await screen.findByTestId("legendary-events-hub-error")
-    const callsBefore = data.eventsCalls
+    const callsBefore = reads.calls()
 
-    data.eventsFail = false
+    reads.fail(false)
     fireEvent.click(within(error).getByRole("button", { name: "Retry" }))
 
     await ready()
-    expect(data.eventsCalls).toBeGreaterThan(callsBefore)
+    expect(reads.calls()).toBeGreaterThan(callsBefore)
   })
 
   it("still lists catalog rows when the player data read fails", async () => {
-    data.progressFail = true
+    reads.fail("tacticus-planner-player-data")
     renderHub()
     await ready()
 
@@ -327,7 +291,7 @@ describe("LegendaryEventsHubPage", () => {
 
     it("targets the no-active line in the tour when nothing is running", async () => {
       setViewportWidth(390)
-      data.events = [utharEvent]
+      await seedGameCatalog({ lres: [utharEvent] })
       renderHub()
       await ready()
 

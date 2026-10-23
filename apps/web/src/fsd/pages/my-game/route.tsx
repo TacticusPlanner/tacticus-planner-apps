@@ -4,19 +4,28 @@
 import { lazy } from "react"
 import { Navigate, type RouteObject } from "react-router"
 
-const CollectionPage = lazy(() =>
+import { preloadOnMatch } from "@/shared/lib"
+
+// The section layout, lazy-loaded by app/routes.tsx (exported from here so the page's public API
+// never statically pulls the layout into the entry chunk).
+const loadMyGameLayout = () =>
+  import("./ui/my-game-layout").then((m) => ({ default: m.MyGameLayout }))
+export const MyGameLayout = lazy(loadMyGameLayout)
+export const preloadMyGameLayout = preloadOnMatch(loadMyGameLayout)
+
+const loadCollectionPage = () =>
   import("./ui/collection/collection-page").then((m) => ({
     default: m.CollectionPage,
   }))
-)
-const CampaignsPage = lazy(() =>
+const CollectionPage = lazy(loadCollectionPage)
+const loadCampaignsPage = () =>
   import("./ui/campaigns-page").then((m) => ({ default: m.CampaignsPage }))
-)
-const CampaignEventsPage = lazy(() =>
+const CampaignsPage = lazy(loadCampaignsPage)
+const loadCampaignEventsPage = () =>
   import("./ui/campaign-events-page").then((m) => ({
     default: m.CampaignEventsPage,
   }))
-)
+const CampaignEventsPage = lazy(loadCampaignEventsPage)
 
 // Nested under "/my-game" — see app/routes.tsx, which owns the top-level path and the layout
 // element. My Game mixes a public page with sign-in-only ones, so the routes come in two lists:
@@ -26,10 +35,22 @@ const CampaignEventsPage = lazy(() =>
 // slice importing another's internals directly.
 export const publicRoutes: RouteObject[] = [
   { index: true, element: <Navigate replace to="/my-game/collection" /> },
-  { path: "collection", element: <CollectionPage /> },
+  {
+    path: "collection",
+    element: <CollectionPage />,
+    loader: preloadOnMatch(loadCollectionPage),
+  },
 ]
 
 export const protectedRoutes: RouteObject[] = [
-  { path: "campaigns", element: <CampaignsPage /> },
-  { path: "campaign-events", element: <CampaignEventsPage /> },
+  {
+    path: "campaigns",
+    element: <CampaignsPage />,
+    loader: preloadOnMatch(loadCampaignsPage),
+  },
+  {
+    path: "campaign-events",
+    element: <CampaignEventsPage />,
+    loader: preloadOnMatch(loadCampaignEventsPage),
+  },
 ]

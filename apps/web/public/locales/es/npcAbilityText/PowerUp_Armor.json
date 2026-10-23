@@ -1,0 +1,10 @@
+{
+  "PowerUp_Armor": {
+    "description": "Cuando una unidad lo recolecta, este potenciador aumenta su <style=\"Stat_Armor\">Armadura</style> una cantidad equivalente al {[healthPct]} % de su <style=\"Stat_Health\">Salud</style> máxima.",
+    "variables": {},
+    "constants": {
+      "healthPct": "100"
+    },
+    "scaled": []
+  }
+}

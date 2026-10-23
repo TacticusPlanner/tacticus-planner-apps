@@ -34,7 +34,7 @@ export type Progression = (typeof progressionOrder)[number]
 
 export const firstProgression: Progression = progressionOrder[0]
 export const lastProgression: Progression =
-  progressionOrder[progressionOrder.length - 1]
+  progressionOrder.at(-1) ?? firstProgression
 
 export const progressionIndex = (value: Progression): number =>
   progressionOrder.indexOf(value)
@@ -43,7 +43,8 @@ export const isProgression = (value: string): value is Progression =>
   (progressionOrder as readonly string[]).includes(value)
 
 export const progressionAt = (index: number): Progression =>
-  progressionOrder[Math.min(Math.max(index, 0), progressionOrder.length - 1)]
+  progressionOrder[Math.min(Math.max(index, 0), progressionOrder.length - 1)] ??
+  firstProgression
 
 export function progressionRarity(value: Progression): Rarity {
   return value.slice(0, value.indexOf(":")) as Rarity

@@ -1,118 +1,161 @@
-import { render, renderHook, screen } from "@testing-library/react"
-import { afterEach, describe, expect, it, vi } from "vitest"
+import type { ReactNode } from "react"
+import {
+  act,
+  render,
+  renderHook,
+  screen,
+  waitFor,
+} from "@testing-library/react"
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
-const identify = vi.fn()
-const optInCapturing = vi.fn()
-const optOutCapturing = vi.fn()
-const reset = vi.fn()
-const capture = vi.fn()
-const client = {
-  identify,
-  opt_in_capturing: optInCapturing,
-  opt_out_capturing: optOutCapturing,
-  reset,
-  capture,
+function at<T>(xs: readonly T[] | undefined, index: number): T {
+  const value = xs?.[index]
+  if (value === undefined) throw new Error(`expected an item at index ${index}`)
+  return value
 }
 
-const vendorProvider = vi.fn(
-  (props: {
-    apiKey: string
-    options: Record<string, unknown>
-    children?: React.ReactNode
-  }) => <div data-testid="vendor-provider">{props.children}</div>
-)
-vi.mock("@posthog/react", () => ({
-  PostHogProvider: (props: Parameters<typeof vendorProvider>[0]) =>
-    vendorProvider(props),
-  usePostHog: () => client,
-}))
+const sdk = vi.hoisted(() => {
+  const client = {
+    identify: vi.fn(),
+    opt_in_capturing: vi.fn(),
+    opt_out_capturing: vi.fn(),
+    reset: vi.fn(),
+    capture: vi.fn(),
+  }
+  return { client, init: vi.fn(() => client), imported: vi.fn() }
+})
+vi.mock("posthog-js", () => {
+  sdk.imported()
+  return { default: { init: sdk.init } }
+})
 
 import { AnalyticsProvider, useAnalyticsActions } from "./analytics-provider"
 
+function wrapper({ children }: { children: ReactNode }) {
+  return <AnalyticsProvider>{children}</AnalyticsProvider>
+}
+
+// Identifies a user and waits for the SDK to load, then clears the setup calls.
+async function renderReady() {
+  const hook = renderHook(() => useAnalyticsActions(), { wrapper })
+  act(() => hook.result.current.identifyUser("analytics-id"))
+  await waitFor(() => expect(hook.result.current.isReady).toBe(true))
+  vi.clearAllMocks()
+  return hook
+}
+
+beforeEach(() => {
+  vi.stubEnv("VITE_POSTHOG_PROJECT_TOKEN", "test-token")
+})
+
 afterEach(() => {
   vi.unstubAllEnvs()
-  vendorProvider.mockClear()
-  identify.mockClear()
-  optInCapturing.mockClear()
-  optOutCapturing.mockClear()
-  reset.mockClear()
-  capture.mockClear()
+  vi.clearAllMocks()
 })
 
 describe("AnalyticsProvider", () => {
-  it("skips mounting the vendor SDK when no project token is configured", () => {
-    vi.stubEnv("VITE_POSTHOG_PROJECT_TOKEN", "")
-
+  it("downloads no SDK for a visitor who is never identified", async () => {
     render(
       <AnalyticsProvider>
         <span>content</span>
       </AnalyticsProvider>
     )
 
-    expect(vendorProvider).not.toHaveBeenCalled()
     expect(screen.getByText("content")).toBeInTheDocument()
+    await Promise.resolve()
+    expect(sdk.init).not.toHaveBeenCalled()
   })
 
-  it("mounts the vendor SDK opted out, with no autocapture, replay, or default pageview capture", async () => {
+  it("downloads no SDK when no project token is configured", async () => {
+    vi.stubEnv("VITE_POSTHOG_PROJECT_TOKEN", "")
+    const { result } = renderHook(() => useAnalyticsActions(), { wrapper })
+
+    act(() => result.current.identifyUser("analytics-id"))
+    await Promise.resolve()
+
+    expect(sdk.init).not.toHaveBeenCalled()
+    expect(result.current.isReady).toBe(false)
+  })
+
+  it("loads the SDK on identification, opted out, with no autocapture, replay, or default pageview capture, then identifies and opts in", async () => {
     // initOptions.api_host is a module-level constant baked in when analytics-provider is first
-    // imported, before this stub runs - stubbing alone wouldn't change an already-evaluated value.
-    // Reset the module cache and re-import fresh so this render picks up the stubbed host.
-    vi.stubEnv("VITE_POSTHOG_PROJECT_TOKEN", "test-token")
+    // imported, before this stub runs - re-import fresh so this render picks up the stubbed host.
     vi.stubEnv("VITE_POSTHOG_HOST", "https://us.i.posthog.com")
     vi.resetModules()
-    const { AnalyticsProvider: FreshAnalyticsProvider } =
-      await import("./analytics-provider")
+    const fresh = await import("./analytics-provider")
+    const { result } = renderHook(() => fresh.useAnalyticsActions(), {
+      wrapper: ({ children }: { children: ReactNode }) => (
+        <fresh.AnalyticsProvider>{children}</fresh.AnalyticsProvider>
+      ),
+    })
 
-    render(
-      <FreshAnalyticsProvider>
-        <span>content</span>
-      </FreshAnalyticsProvider>
-    )
+    act(() => result.current.identifyUser("analytics-id"))
+    await waitFor(() => expect(result.current.isReady).toBe(true))
 
-    expect(vendorProvider).toHaveBeenCalledWith(
+    expect(sdk.init).toHaveBeenCalledExactlyOnceWith(
+      "test-token",
       expect.objectContaining({
-        apiKey: "test-token",
-        options: expect.objectContaining({
-          api_host: "https://us.i.posthog.com",
-          opt_out_capturing_by_default: true,
-          autocapture: false,
-          capture_pageview: false,
-          disable_session_recording: true,
-          person_profiles: "identified_only",
-        }),
+        api_host: "https://us.i.posthog.com",
+        opt_out_capturing_by_default: true,
+        autocapture: false,
+        capture_pageview: false,
+        disable_session_recording: true,
+        person_profiles: "identified_only",
+        // opt_out_capturing_by_default alone only suppresses event capture - init() still makes
+        // its own /flags and remote-config requests. These two keep the browser silent.
+        advanced_disable_flags: true,
+        disable_external_dependency_loading: true,
       })
     )
+    expect(sdk.client.identify).toHaveBeenCalledWith("analytics-id")
+    expect(sdk.client.opt_in_capturing).toHaveBeenCalledTimes(1)
   })
 
-  it("disables the flags/remote-config request and external dependency loading, so opt-out is actually silent", () => {
-    // opt_out_capturing_by_default alone only suppresses event capture - init() still makes its
-    // own /flags and remote-config requests regardless. These two options are what actually keep
-    // a signed-out visitor's browser silent, per specs/product-analytics/spec.md.
-    vi.stubEnv("VITE_POSTHOG_PROJECT_TOKEN", "test-token")
+  it("stays silent and inert when the SDK download is blocked", async () => {
+    vi.resetModules()
+    vi.doMock("posthog-js", () => {
+      throw new Error("blocked by the client")
+    })
+    const fresh = await import("./analytics-provider")
+    const { result } = renderHook(() => fresh.useAnalyticsActions(), {
+      wrapper: ({ children }: { children: ReactNode }) => (
+        <fresh.AnalyticsProvider>{children}</fresh.AnalyticsProvider>
+      ),
+    })
 
-    render(
-      <AnalyticsProvider>
-        <span>content</span>
-      </AnalyticsProvider>
-    )
+    act(() => result.current.identifyUser("analytics-id"))
+    await new Promise((resolve) => setTimeout(resolve, 0))
+    result.current.captureEvent({
+      type: "page_view",
+      routePattern: "/home",
+      routeGroup: "/home",
+      viewMode: "desktop",
+    })
 
-    expect(vendorProvider).toHaveBeenCalledWith(
-      expect.objectContaining({
-        options: expect.objectContaining({
-          advanced_disable_flags: true,
-          disable_external_dependency_loading: true,
-        }),
-      })
-    )
+    expect(result.current.isReady).toBe(false)
+    expect(sdk.init).not.toHaveBeenCalled()
+    vi.doMock("posthog-js", () => ({ default: { init: sdk.init } }))
+  })
+
+  it("discards the SDK when the user signs out before it finished loading", async () => {
+    const { result } = renderHook(() => useAnalyticsActions(), { wrapper })
+
+    act(() => {
+      result.current.identifyUser("analytics-id")
+      result.current.clearIdentity()
+    })
+    await new Promise((resolve) => setTimeout(resolve, 0))
+
+    expect(sdk.init).not.toHaveBeenCalled()
+    expect(sdk.client.identify).not.toHaveBeenCalled()
+    expect(result.current.isReady).toBe(false)
   })
 })
 
 describe("useAnalyticsActions", () => {
-  it("makes no SDK call for any action when no project token is configured", () => {
-    vi.stubEnv("VITE_POSTHOG_PROJECT_TOKEN", "")
-    const { result } = renderHook(() => useAnalyticsActions())
+  it("makes no SDK call for any action before the SDK has loaded", async () => {
+    const { result } = renderHook(() => useAnalyticsActions(), { wrapper })
 
-    result.current.identifyUser("analytics-id")
     result.current.clearIdentity()
     result.current.captureEvent({
       type: "page_view",
@@ -120,40 +163,49 @@ describe("useAnalyticsActions", () => {
       routeGroup: "/library",
       viewMode: "desktop",
     })
+    await Promise.resolve()
 
-    expect(identify).not.toHaveBeenCalled()
-    expect(optInCapturing).not.toHaveBeenCalled()
-    expect(optOutCapturing).not.toHaveBeenCalled()
-    expect(reset).not.toHaveBeenCalled()
-    expect(capture).not.toHaveBeenCalled()
+    expect(sdk.init).not.toHaveBeenCalled()
+    expect(sdk.client.capture).not.toHaveBeenCalled()
+    expect(sdk.client.reset).not.toHaveBeenCalled()
   })
 
-  it("identifies then opts in when configured", () => {
-    vi.stubEnv("VITE_POSTHOG_PROJECT_TOKEN", "test-token")
+  it("is inert without a provider", () => {
     const { result } = renderHook(() => useAnalyticsActions())
 
     result.current.identifyUser("analytics-id")
 
-    expect(identify).toHaveBeenCalledWith("analytics-id")
-    expect(optInCapturing).toHaveBeenCalledTimes(1)
+    expect(result.current.isReady).toBe(false)
+    expect(sdk.init).not.toHaveBeenCalled()
   })
 
-  it("opts out before resetting on teardown", () => {
-    vi.stubEnv("VITE_POSTHOG_PROJECT_TOKEN", "test-token")
-    const { result } = renderHook(() => useAnalyticsActions())
+  it("re-identifies through the loaded SDK without loading it again", async () => {
+    const { result } = await renderReady()
+
+    result.current.identifyUser("analytics-id-2")
+
+    expect(sdk.init).not.toHaveBeenCalled()
+    expect(sdk.client.identify).toHaveBeenCalledWith("analytics-id-2")
+    expect(sdk.client.opt_in_capturing).toHaveBeenCalledTimes(1)
+  })
+
+  it("opts out before resetting on teardown", async () => {
+    const { result } = await renderReady()
 
     result.current.clearIdentity()
 
-    expect(optOutCapturing).toHaveBeenCalledTimes(1)
-    expect(reset).toHaveBeenCalledTimes(1)
-    const optOutOrder = optOutCapturing.mock.invocationCallOrder[0]
-    const resetOrder = reset.mock.invocationCallOrder[0]
+    expect(sdk.client.opt_out_capturing).toHaveBeenCalledTimes(1)
+    expect(sdk.client.reset).toHaveBeenCalledTimes(1)
+    const optOutOrder = at(
+      sdk.client.opt_out_capturing.mock.invocationCallOrder,
+      0
+    )
+    const resetOrder = at(sdk.client.reset.mock.invocationCallOrder, 0)
     expect(optOutOrder).toBeLessThan(resetOrder)
   })
 
-  it("captures a page_view with only the declared properties", () => {
-    vi.stubEnv("VITE_POSTHOG_PROJECT_TOKEN", "test-token")
-    const { result } = renderHook(() => useAnalyticsActions())
+  it("captures a page_view with only the declared properties", async () => {
+    const { result } = await renderReady()
 
     result.current.captureEvent({
       type: "page_view",
@@ -162,16 +214,15 @@ describe("useAnalyticsActions", () => {
       viewMode: "mobile",
     })
 
-    expect(capture).toHaveBeenCalledWith("page_view", {
+    expect(sdk.client.capture).toHaveBeenCalledWith("page_view", {
       route_pattern: "/library/characters/:entityId",
       route_group: "/library",
       view_mode: "mobile",
     })
   })
 
-  it("captures the Legendary Event team events with only the declared properties", () => {
-    vi.stubEnv("VITE_POSTHOG_PROJECT_TOKEN", "test-token")
-    const { result } = renderHook(() => useAnalyticsActions())
+  it("captures the Legendary Event team events with only the declared properties", async () => {
+    const { result } = await renderReady()
 
     result.current.captureEvent({
       type: "legendary_event_team_created",
@@ -197,30 +248,35 @@ describe("useAnalyticsActions", () => {
       estimate: 6,
     })
 
-    expect(capture).toHaveBeenCalledWith("legendary_event_team_created", {
-      event_id: "astarLysander",
-      lane_id: "alpha",
-      member_count: 3,
-      objective_count: 2,
-      source: "suggestion",
-      suggestion_rank: 1,
-    })
-    expect(capture).toHaveBeenCalledWith("legendary_event_depth_set", {
-      event_id: "astarLysander",
-      lane_id: "beta",
-      depth: 4,
-      estimate: 6,
-      from_estimate: true,
-    })
-    expect(capture).toHaveBeenCalledWith(
+    expect(sdk.client.capture).toHaveBeenCalledWith(
+      "legendary_event_team_created",
+      {
+        event_id: "astarLysander",
+        lane_id: "alpha",
+        member_count: 3,
+        objective_count: 2,
+        source: "suggestion",
+        suggestion_rank: 1,
+      }
+    )
+    expect(sdk.client.capture).toHaveBeenCalledWith(
+      "legendary_event_depth_set",
+      {
+        event_id: "astarLysander",
+        lane_id: "beta",
+        depth: 4,
+        estimate: 6,
+        from_estimate: true,
+      }
+    )
+    expect(sdk.client.capture).toHaveBeenCalledWith(
       "legendary_event_depth_estimate_restored",
       { event_id: "astarLysander", lane_id: "beta", estimate: 6 }
     )
   })
 
-  it("captures the Legendary Event Stage 6 events with only the declared properties", () => {
-    vi.stubEnv("VITE_POSTHOG_PROJECT_TOKEN", "test-token")
-    const { result } = renderHook(() => useAnalyticsActions())
+  it("captures the Legendary Event Stage 6 events with only the declared properties", async () => {
+    const { result } = await renderReady()
 
     result.current.captureEvent({
       type: "legendary_event_goals_preview_toggled",
@@ -248,29 +304,31 @@ describe("useAnalyticsActions", () => {
       suggestionCount: 5,
     })
 
-    expect(capture).toHaveBeenCalledWith(
+    expect(sdk.client.capture).toHaveBeenCalledWith(
       "legendary_event_goals_preview_toggled",
       { event_id: "votanUthar", enabled: true, surface: "picker" }
     )
-    expect(capture).toHaveBeenCalledWith("legendary_event_create_goal_opened", {
-      event_id: "votanUthar",
-      lane_id: null,
-      source: "leaderboard",
-      goal_type: "Unlock",
-    })
-    expect(capture).toHaveBeenCalledWith(
+    expect(sdk.client.capture).toHaveBeenCalledWith(
+      "legendary_event_create_goal_opened",
+      {
+        event_id: "votanUthar",
+        lane_id: null,
+        source: "leaderboard",
+        goal_type: "Unlock",
+      }
+    )
+    expect(sdk.client.capture).toHaveBeenCalledWith(
       "legendary_event_upgrade_impact_expanded",
       { event_id: "votanUthar", lane_id: "alpha", row_count: 4 }
     )
-    expect(capture).toHaveBeenCalledWith(
+    expect(sdk.client.capture).toHaveBeenCalledWith(
       "legendary_event_team_suggestions_opened",
       { event_id: "votanUthar", lane_id: "alpha", suggestion_count: 5 }
     )
   })
 
-  it("captures the Legendary Event run input, paid options and mark events with only the declared properties", () => {
-    vi.stubEnv("VITE_POSTHOG_PROJECT_TOKEN", "test-token")
-    const { result } = renderHook(() => useAnalyticsActions())
+  it("captures the Legendary Event run input, paid options and mark events with only the declared properties", async () => {
+    const { result } = await renderReady()
 
     result.current.captureEvent({
       type: "legendary_event_run_inputs_saved",
@@ -303,37 +361,45 @@ describe("useAnalyticsActions", () => {
       scope: "battle",
     })
 
-    expect(capture).toHaveBeenCalledWith("legendary_event_run_inputs_saved", {
-      event_id: "votanUthar",
-      run: 3,
-      regular_missions: 10,
-      premium_missions: 0,
-      bundle_purchased: true,
-      close_shards: 25,
-    })
-    expect(capture).toHaveBeenCalledWith(
+    expect(sdk.client.capture).toHaveBeenCalledWith(
+      "legendary_event_run_inputs_saved",
+      {
+        event_id: "votanUthar",
+        run: 3,
+        regular_missions: 10,
+        premium_missions: 0,
+        bundle_purchased: true,
+        close_shards: 25,
+      }
+    )
+    expect(sdk.client.capture).toHaveBeenCalledWith(
       "legendary_event_paid_options_toggled",
       { event_id: "votanUthar", on: true }
     )
-    expect(capture).toHaveBeenCalledWith("legendary_event_plan_created", {
-      event_id: "votanUthar",
-      goals: 4,
-      teams: 3,
-      ok: true,
-    })
-    expect(capture).toHaveBeenCalledWith("legendary_event_annotation_set", {
-      event_id: "astarLysander",
-      lane_id: "alpha",
-      battle_index: 8,
-      cell_count: 5,
-      status: "maybeClear",
-      scope: "battle",
-    })
+    expect(sdk.client.capture).toHaveBeenCalledWith(
+      "legendary_event_plan_created",
+      {
+        event_id: "votanUthar",
+        goals: 4,
+        teams: 3,
+        ok: true,
+      }
+    )
+    expect(sdk.client.capture).toHaveBeenCalledWith(
+      "legendary_event_annotation_set",
+      {
+        event_id: "astarLysander",
+        lane_id: "alpha",
+        battle_index: 8,
+        cell_count: 5,
+        status: "maybeClear",
+        scope: "battle",
+      }
+    )
   })
 
-  it("captures the Legendary Event token plan events with only the declared properties", () => {
-    vi.stubEnv("VITE_POSTHOG_PROJECT_TOKEN", "test-token")
-    const { result } = renderHook(() => useAnalyticsActions())
+  it("captures the Legendary Event token plan events with only the declared properties", async () => {
+    const { result } = await renderReady()
 
     result.current.captureEvent({
       type: "legendary_event_next_token_shown",
@@ -352,25 +418,27 @@ describe("useAnalyticsActions", () => {
       eventId: "votanUthar",
     })
 
-    expect(capture).toHaveBeenCalledWith("legendary_event_next_token_shown", {
-      event_id: "votanUthar",
-      state: "token",
-      plan_length: 6,
-      tokens_left_over: 94,
-    })
-    expect(capture).toHaveBeenCalledWith(
+    expect(sdk.client.capture).toHaveBeenCalledWith(
+      "legendary_event_next_token_shown",
+      {
+        event_id: "votanUthar",
+        state: "token",
+        plan_length: 6,
+        tokens_left_over: 94,
+      }
+    )
+    expect(sdk.client.capture).toHaveBeenCalledWith(
       "legendary_event_token_plan_expanded",
       { event_id: "votanUthar", plan_length: 6 }
     )
-    expect(capture).toHaveBeenCalledWith(
+    expect(sdk.client.capture).toHaveBeenCalledWith(
       "legendary_event_run_forecast_expanded",
       { event_id: "votanUthar" }
     )
   })
 
-  it("captures the Legendary Event master table, history and tier list events", () => {
-    vi.stubEnv("VITE_POSTHOG_PROJECT_TOKEN", "test-token")
-    const { result } = renderHook(() => useAnalyticsActions())
+  it("captures the Legendary Event master table, history and tier list events", async () => {
+    const { result } = await renderReady()
 
     result.current.captureEvent({
       type: "legendary_event_master_table_viewed",
@@ -403,7 +471,7 @@ describe("useAnalyticsActions", () => {
       tier: "S",
     })
 
-    expect(capture).toHaveBeenCalledWith(
+    expect(sdk.client.capture).toHaveBeenCalledWith(
       "legendary_event_master_table_viewed",
       {
         event_count: 4,
@@ -411,22 +479,28 @@ describe("useAnalyticsActions", () => {
         points_mode: "remaining",
       }
     )
-    expect(capture).toHaveBeenCalledWith(
+    expect(sdk.client.capture).toHaveBeenCalledWith(
       "legendary_event_master_table_changed",
       { control: "events", value: null, event_count: 2 }
     )
-    expect(capture).toHaveBeenCalledWith("legendary_event_last_run_viewed", {
-      event_id: "votanUthar",
-      run: 1,
-      team_count: 2,
-      delta_count: 2,
-    })
-    expect(capture).toHaveBeenCalledWith(
+    expect(sdk.client.capture).toHaveBeenCalledWith(
+      "legendary_event_last_run_viewed",
+      {
+        event_id: "votanUthar",
+        run: 1,
+        team_count: 2,
+        delta_count: 2,
+      }
+    )
+    expect(sdk.client.capture).toHaveBeenCalledWith(
       "legendary_event_earlier_runs_expanded",
       { event_id: "tauFarsight", record_count: 2 }
     )
-    expect(capture).toHaveBeenCalledWith("legendary_event_tier_list_viewed", {})
-    expect(capture).toHaveBeenCalledWith(
+    expect(sdk.client.capture).toHaveBeenCalledWith(
+      "legendary_event_tier_list_viewed",
+      {}
+    )
+    expect(sdk.client.capture).toHaveBeenCalledWith(
       "legendary_event_tier_list_unit_opened",
       { unit_id: "custoBladeChampion", tier: "S" }
     )

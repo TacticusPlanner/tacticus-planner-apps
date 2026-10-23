@@ -1,0 +1,10 @@
+{
+  "AdrenalGlands": {
+    "description": "Die Einheit erhält zusätzlich <style=\"Stat_Movement\">+{[extraMovement]} Bewegung</style>, wenn diese Bewegung auf einem Feld endet, das an den Gegner angrenzt.",
+    "variables": {},
+    "constants": {
+      "extraMovement": "1"
+    },
+    "scaled": []
+  }
+}

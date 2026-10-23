@@ -1,0 +1,23 @@
+{
+  "WaaaghEnergy": {
+    "description": "Immer wenn eine andere Einheit innerhalb von 2 Feldern einen Angriff ausführt, erhält <style=\"Faction_Orks\">Zappaspukka</style> eine <i>Waaagh!-Ladung</i>. Beim Angreifen verursacht er für jede seiner <i>Waaagh!-Ladungen</i> <style=\"Stat_Damage\">+{[extraDmg]} Schaden</style> zusätzlich und verliert nach dem Angriff {[effectLevelPct]} % davon. Am Ende seines Zuges verliert Zappaspukka {[hpPct]} % seiner aktuellen maximalen <style=\"Stat_Health\">Lebenspunkte</style>, wenn er <style=\"STAT\">{[effectLevel]}</style> oder mehr <i>Waaagh!-Ladungen</i> hat.",
+    "variables": {
+      "extraDmg": [
+        1, 2, 3, 4, 5, 6, 7, 8, 8, 9, 10, 11, 12, 13, 14, 15, 16, 16, 17, 18,
+        19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 32, 34, 36, 37, 39, 41,
+        43, 45, 49, 53, 57, 61, 70, 78, 86, 94, 103, 111, 112, 114, 115, 117,
+        119, 121, 123, 126, 128, 131, 134, 137, 140, 143, 146
+      ],
+      "effectLevel": [
+        5, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 6, 6, 6, 6, 6, 6, 6,
+        6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
+        7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7
+      ]
+    },
+    "constants": {
+      "effectLevelPct": "50",
+      "hpPct": "25"
+    },
+    "scaled": ["extraDmg"]
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "RelicOfLostCadia": {
+    "description": "Friendly surrounding <style=\"Aliance_Imperial\">Imperial</style> <style=\"Summon\">Summons</style> have <style=\"FinalJustice\">Final Vengeance</style>. When the relic bearer is defeated, summons a <style=\"Summon\"><style=\"Faction_AstraMilitarum\">Cadian Guardsman</style></style> in its hex with <style=\"Stat_Health\">{[summonHp]} Health</style>, <style=\"Stat_Damage\">{[summonDmg]} Damage</style> and <style=\"Stat_Armor\">{[summonArmor]} Armour</style>.",
+    "variables": {
+      "summonHp": [3915, 4126, 4338, 4549, 4760, 4972, 5183, 5394, 5606, 5817],
+      "summonDmg": [2350, 2477, 2604, 2731, 2857, 2984, 3111, 3238, 3365, 3492],
+      "summonArmor": [785, 827, 870, 912, 954, 997, 1039, 1082, 1124, 1166]
+    },
+    "constants": {
+      "unitId": "astraSmnGuardsman"
+    },
+    "scaled": []
+  }
+}

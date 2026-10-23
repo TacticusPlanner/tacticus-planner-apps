@@ -1,0 +1,36 @@
+{
+  "MultiMelta": {
+    "description": "Inflige <style=\"Stat_Hits\">{[nrOfHits]}x</style> <style={[DamageProfileTypeStyle]}>{[minDmg]}-{[maxDmg]} {[DamageProfileType]}</style> a un enemigo en el rango {[range]}. Este ataque inflige <style=\"Stat_Damage\">+{[extraDmg]} de Daño</style> si el objetivo está en un hexágono circundante. Esta habilidad se puede usar múltiples veces por batalla pero tiene un <style=\"Cooldown\">tiempo de recuperación de {[cooldownTurns]} rondas</style>.\n\n<style=\"Cooldown\">Tiempo de recuperación inicial: {[initialCooldownTurns]} ronda</style>.",
+    "variables": {
+      "minDmg": [
+        20, 24, 28, 32, 36, 41, 45, 50, 54, 59, 64, 68, 73, 77, 82, 87, 91, 96,
+        100, 105, 111, 120, 138, 156, 174, 193, 211, 229, 247, 265, 284, 302,
+        320, 338, 356, 375, 393, 411, 429, 455, 491, 529, 569, 615, 697, 779,
+        861, 943, 1026, 1109, 1120, 1135, 1150, 1170, 1190, 1210, 1230, 1255,
+        1280, 1305, 1335, 1365, 1395, 1425, 1455
+      ],
+      "maxDmg": [
+        28, 34, 39, 45, 50, 57, 63, 70, 76, 83, 89, 95, 102, 108, 115, 121, 128,
+        134, 141, 147, 156, 168, 193, 219, 244, 270, 295, 321, 346, 372, 397,
+        423, 448, 473, 499, 524, 550, 575, 601, 637, 687, 740, 797, 860, 976,
+        1091, 1206, 1321, 1436, 1551, 1568, 1589, 1610, 1638, 1666, 1694, 1722,
+        1757, 1792, 1827, 1869, 1911, 1953, 1995, 2037
+      ],
+      "extraDmg": [
+        6, 7, 8, 10, 11, 12, 14, 15, 16, 18, 19, 20, 22, 23, 25, 26, 27, 29, 30,
+        32, 33, 36, 41, 47, 52, 58, 63, 69, 74, 80, 85, 91, 96, 101, 107, 112,
+        118, 123, 129, 136, 147, 159, 171, 184, 209, 234, 258, 283, 308, 333,
+        336, 341, 345, 351, 357, 363, 369, 377, 384, 392, 401, 410, 419, 428,
+        437
+      ]
+    },
+    "constants": {
+      "nrOfHits": "2",
+      "damageProfile": "Melta",
+      "range": "2",
+      "initialCooldownTurns": "1",
+      "cooldownTurns": "2"
+    },
+    "scaled": ["minDmg", "maxDmg", "extraDmg"]
+  }
+}

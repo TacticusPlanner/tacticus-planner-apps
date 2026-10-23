@@ -1,0 +1,21 @@
+{
+  "WatchedOver": {
+    "description": "Adjacent friendly units take <style=\"DMG_Psychic\">-{[dmgReductionPct]}% Psychic Damage</style> from enemy attacks and if they have a <style=\"Stat_Block\">Block</style> <style=\"Stat_Chance\">chance</style>, that Block Chance is increased by <style=\"Stat\">+{[blockChance]}%</style>. Enemy <style=\"Psyker\">Psykers</style> will not hit an additional unit with their <style=\"NormalAttack\">normal ranged attacks</style> when attacking units that are adjacent to a <style=\"Faction_DarkAngels\">Watcher in the Dark</style>.",
+    "variables": {
+      "dmgReductionPct": [
+        15, 15, 15, 15, 15, 15, 15, 15, 17, 17, 17, 17, 17, 17, 17, 17, 17, 18,
+        18, 18, 18, 18, 18, 18, 18, 18, 19, 19, 19, 19, 19, 19, 19, 19, 19, 20,
+        20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20,
+        20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20
+      ],
+      "blockChance": [
+        10, 10, 10, 10, 10, 10, 10, 10, 12, 12, 12, 12, 12, 12, 12, 12, 12, 13,
+        13, 13, 13, 13, 13, 13, 13, 13, 14, 14, 14, 14, 14, 14, 14, 14, 14, 15,
+        15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15,
+        15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15
+      ]
+    },
+    "constants": {},
+    "scaled": []
+  }
+}

@@ -5,7 +5,7 @@ import { npcPortrait } from "./npc"
 describe("npcPortrait", () => {
   it("resolves a mapped variation id to its portrait under characters/", () => {
     expect(npcPortrait("necroBossWarden")).toBe(
-      "/game_catalog/characters/ui_image_portrait_necro_warden_01.png"
+      "/game_catalog/characters/ui_image_portrait_necro_warden_01.webp"
     )
   })
 

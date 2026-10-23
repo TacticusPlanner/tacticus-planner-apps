@@ -1,0 +1,8 @@
+{
+  "HyperAggression": {
+    "description": "Beginning on its second turn, after the <style=\"Faction_Tyranids\">Screamer-Killer</style> uses an active ability, it also performs a <style=\"NormalAttack\">normal attack</style>.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

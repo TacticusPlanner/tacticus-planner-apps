@@ -1,0 +1,32 @@
+{
+  "PlagueburstMortar": {
+    "description": "Visiert ein Ziel auf dem Schlachtfeld an. Alle Gegner auf diesem oder angrenzenden Feldern, deren <style=\"Stat_Armor\">Rüstung</style> entweder reduziert wurde oder die sich in der <style=\"ContagionsOfNurgle\">Aura der Ansteckung</style> eines Verbündeten befinden, erleiden <style=\"Stat_Hits\">{[nrOfHits]}x</style> <style=\"DMG_Toxic\">{[minDmg]}–{[maxDmg]} Toxischen Schaden</style> und werden für 1 Runde <style=\"Debuff_Pinned\">unterdrückt</style>. Dann werden das Zielfeld und einige zufällige, angrenzende Felder <style=\"Tile_Contamination\">kontaminiert</style> (maximal <style=\"Stat\">{[nrOfTiles]}</style> Felder).\n\nAnfängliche <style=\"Cooldown\">Abklingzeit: {[initialCooldownTurns]} Runde</style>. \n\n{[S/AbilityDamageExplanation]}",
+    "variables": {
+      "minDmg": [
+        7, 8, 10, 11, 13, 14, 16, 17, 19, 21, 22, 24, 25, 27, 29, 30, 32, 34,
+        35, 37, 39, 42, 48, 55, 61, 67, 74, 80, 87, 93, 99, 106, 112, 118, 125,
+        131, 137, 144, 150, 159, 172, 185, 199, 215, 244, 273, 301, 330, 359,
+        388, 392, 397, 403, 410, 417, 424, 431, 439, 448, 457, 467, 478, 488,
+        499, 509
+      ],
+      "maxDmg": [
+        14, 17, 20, 22, 25, 28, 32, 35, 38, 41, 45, 48, 51, 54, 57, 61, 64, 67,
+        70, 74, 78, 84, 97, 109, 122, 135, 148, 160, 173, 186, 199, 211, 224,
+        237, 249, 262, 275, 288, 300, 318, 344, 370, 399, 430, 488, 545, 603,
+        660, 718, 776, 784, 795, 805, 819, 833, 847, 861, 879, 896, 914, 935,
+        956, 977, 998, 1019
+      ],
+      "nrOfTiles": [
+        3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5,
+        5, 5, 6, 6, 6, 6, 6, 6, 6, 6, 6, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
+        7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7
+      ]
+    },
+    "constants": {
+      "damageProfile": "Toxic",
+      "nrOfHits": "3",
+      "initialCooldownTurns": "1"
+    },
+    "scaled": ["minDmg", "maxDmg"]
+  }
+}

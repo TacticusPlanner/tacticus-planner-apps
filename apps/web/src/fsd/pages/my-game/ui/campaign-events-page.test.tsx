@@ -1,9 +1,10 @@
 import userEvent from "@testing-library/user-event"
 import { createMemoryRouter, RouterProvider } from "react-router"
-import { beforeEach, describe, expect, it, vi } from "vitest"
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
 import { ApiError } from "@/shared/api"
 import { render, screen, waitFor, within } from "@/test/render"
+import { seedGameCatalog, seedPlayerData } from "@/test/seed"
 
 const getOverrides = vi.fn()
 const saveOverrides = vi.fn()
@@ -30,8 +31,10 @@ const track = (
     challenge: false,
     nodeNumber: index + 1,
   })),
-  ...challengeNodes.map((node) => ({
-    id: `${code}${node}B`,
+  // Challenge ids follow catalog order, so the store (which returns rows by id) keeps a node order
+  // that is deliberately not sorted.
+  ...challengeNodes.map((node, index) => ({
+    id: `${code}C${index + 1}`,
     campaignGroupId: groupId,
     type,
     challenge: true,
@@ -63,7 +66,6 @@ type CatalogData = {
 }
 
 let catalogData: CatalogData
-let catalogReadFails = false
 
 // eventCampaign1 (AM): the active event — Standard 5 with challenges at nodes 7 then 3 (catalog
 // order deliberately unsorted), Extremis 5. eventCampaign2 (DG): fully completed via synced data.
@@ -88,7 +90,7 @@ function defaultCatalog(): CatalogData {
         tacticusCampaignId: "eventCampaign1",
         type: "Standard",
         completedBattleCount: 2,
-        completedChallengeBattlesIds: ["AMS3B"],
+        completedChallengeBattlesIds: ["AMSC2"],
       },
       {
         tacticusCampaignId: "eventCampaign2",
@@ -108,43 +110,10 @@ function defaultCatalog(): CatalogData {
   }
 }
 
-vi.mock("@azure/msal-react", () => ({ useIsAuthenticated: () => true }))
-vi.mock("react-i18next", async (importOriginal) => ({
-  ...(await importOriginal<typeof import("react-i18next")>()),
-  useTranslation: () => ({
-    t: (key: string, options?: Record<string, unknown>) => {
-      if (key === "progress.events.summary.track")
-        return `${String(options?.label)} ${String(options?.done)}/${String(options?.total)}`
-      if (key === "progress.events.challengeN")
-        return `Challenge ${String(options?.n)}`
-      if (key === "progress.events.challengeNode")
-        return `Node ${String(options?.id)}`
-      if (key === "progress.events.notOwned")
-        return `${String(options?.name)} (not owned)`
-      if (options && "type" in options) return `${key} ${String(options.type)}`
-      return key
-    },
-  }),
-}))
 vi.mock("@workspace/ui/hooks/use-mobile", () => ({
   useIsMobile: () => mobile.value,
 }))
 vi.mock("@/shared/tour", () => ({ useTourPageSteps: vi.fn() }))
-vi.mock("dexie-react-hooks", () => ({
-  useLiveQuery: () =>
-    catalogReadFails
-      ? { status: "error" }
-      : { status: "ready", data: catalogData },
-}))
-vi.mock("@workspace/game-catalog/queries", () => ({
-  getCampaignBattles: vi.fn(),
-  getCampaignDefinitions: vi.fn(),
-}))
-vi.mock("@workspace/player-data/queries", () => ({
-  getCampaignEventProgress: vi.fn(),
-  getLiveProgress: vi.fn(),
-  getPlayerCharacters: vi.fn(),
-}))
 vi.mock("@/entities/player-data-override", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/entities/player-data-override")>()),
   campaignEventProgressQueries: {
@@ -161,7 +130,20 @@ import { useTourPageSteps } from "@/shared/tour"
 
 import { CampaignEventsPage } from "./campaign-events-page"
 
-function renderPage() {
+async function renderPage() {
+  await seedGameCatalog({
+    "campaign-definitions": catalogData.definitions,
+    "campaign-battles": catalogData.battles,
+  })
+  await seedPlayerData({
+    ...(catalogData.synced
+      ? { "campaign-events-progress": catalogData.synced }
+      : {}),
+    characters: catalogData.characters,
+    ...(catalogData.liveProgress
+      ? { "live-progress": catalogData.liveProgress }
+      : {}),
+  })
   const router = createMemoryRouter(
     [
       { path: "/my-game/campaign-events", element: <CampaignEventsPage /> },
@@ -172,7 +154,9 @@ function renderPage() {
     ],
     { initialEntries: ["/my-game/campaign-events"] }
   )
-  const view = render(<RouterProvider router={router} />)
+  const view = render(<RouterProvider router={router} />, {
+    auth: { authenticated: true },
+  })
   return { ...view, router }
 }
 
@@ -185,7 +169,6 @@ const count = (prefix: string, type: string) =>
 describe("CampaignEventsPage", () => {
   beforeEach(() => {
     catalogData = defaultCatalog()
-    catalogReadFails = false
     mobile.value = false
     getOverrides.mockReset().mockResolvedValue({ progress: [], revision: 4 })
     saveOverrides
@@ -195,9 +178,13 @@ describe("CampaignEventsPage", () => {
       )
   })
 
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
   describe("layout", () => {
     it("pins the active event expanded and does not repeat it in the list", async () => {
-      renderPage()
+      await renderPage()
       expect(await screen.findByTestId("current-event")).toBeInTheDocument()
       expect(
         current().getByTestId("current-event-track-Standard")
@@ -207,7 +194,7 @@ describe("CampaignEventsPage", () => {
 
     it("omits the current-event section when no event is active", async () => {
       catalogData.liveProgress = { activeCampaignEventId: null }
-      renderPage()
+      await renderPage()
       await screen.findByTestId("campaign-events-list")
       expect(screen.queryByTestId("current-event")).toBeNull()
       expect(listItem("eventCampaign1")).toBeInTheDocument()
@@ -215,13 +202,13 @@ describe("CampaignEventsPage", () => {
 
     it("omits the current-event section when the active id is not in the catalog", async () => {
       catalogData.liveProgress = { activeCampaignEventId: "eventCampaign99" }
-      renderPage()
+      await renderPage()
       await screen.findByTestId("campaign-events-list")
       expect(screen.queryByTestId("current-event")).toBeNull()
     })
 
     it("lists unfinished events first with collapsed summaries", async () => {
-      renderPage()
+      await renderPage()
       await screen.findByTestId("campaign-events-list")
       const items = screen
         .getAllByTestId(/^campaign-event-eventCampaign\d$/)
@@ -233,9 +220,7 @@ describe("CampaignEventsPage", () => {
       // Collapsed: the summary is visible, the editors are not rendered.
       expect(
         within(listItem("eventCampaign3")).getByTestId("event-summary")
-      ).toHaveTextContent(
-        "campaigns:difficulties.eventStandard 0/2campaigns:difficulties.eventExtremis 0/2"
-      )
+      ).toHaveTextContent("Standard 0/2Extremis 0/2")
       expect(
         screen.queryByTestId("campaign-event-eventCampaign3-track-Standard")
       ).toBeNull()
@@ -245,25 +230,23 @@ describe("CampaignEventsPage", () => {
     })
 
     it("shows the challenge total and completion in the current event's summary", async () => {
-      renderPage()
+      await renderPage()
       expect(
         (await screen.findByTestId("current-event")).querySelector(
           "[data-testid='event-summary']"
         )
-      ).toHaveTextContent(
-        "campaigns:difficulties.eventStandard 2/5campaigns:difficulties.eventExtremis 0/5progress.events.summary.challenges 1/2"
-      )
+      ).toHaveTextContent("Standard 2/5Extremis 0/5Challenges 1/2")
     })
 
     it("stacks tracks on mobile and shows them in columns on desktop", async () => {
-      const { unmount } = renderPage()
+      const { unmount } = await renderPage()
       expect(await screen.findByTestId("current-event-tracks")).toHaveAttribute(
         "data-layout",
         "columns"
       )
       unmount()
       mobile.value = true
-      renderPage()
+      await renderPage()
       expect(await screen.findByTestId("current-event-tracks")).toHaveAttribute(
         "data-layout",
         "stacked"
@@ -271,14 +254,14 @@ describe("CampaignEventsPage", () => {
     })
 
     it("labels core characters and marks unowned ones", async () => {
-      renderPage()
+      await renderPage()
       const core = await screen.findByTestId("current-event-core")
-      expect(core).toHaveTextContent("progress.events.coreCharacters")
+      expect(core).toHaveTextContent("Core characters")
       // Fixture unit ids have no icon asset, so assert on the labelled list items.
       const [owned, unowned] = within(core).getAllByRole("listitem")
-      expect(owned).toHaveAttribute("title", "characters:unitA")
+      expect(owned).toHaveAttribute("title", "unitA")
       expect(owned).toHaveAttribute("data-owned", "true")
-      expect(unowned).toHaveAttribute("title", "characters:unitB (not owned)")
+      expect(unowned).toHaveAttribute("title", "unitB (not owned)")
       expect(unowned).toHaveAttribute("data-owned", "false")
     })
   })
@@ -296,7 +279,7 @@ describe("CampaignEventsPage", () => {
         ],
         revision: 4,
       })
-      renderPage()
+      await renderPage()
       await screen.findByTestId("current-event")
       expect(
         screen.getByTestId("current-event-Standard-battle-source")
@@ -312,7 +295,7 @@ describe("CampaignEventsPage", () => {
 
     it("treats a never-synced profile as no synced data, not a load error", async () => {
       catalogData.synced = undefined
-      renderPage()
+      await renderPage()
       await screen.findByTestId("current-event")
       expect(
         screen.getByTestId("current-event-Standard-battle-source")
@@ -324,11 +307,11 @@ describe("CampaignEventsPage", () => {
   describe("editing", () => {
     it("steps, bounds and maxes the regular count", async () => {
       const user = userEvent.setup()
-      renderPage()
+      await renderPage()
       await screen.findByTestId("current-event")
       await user.click(
         current().getByRole("button", {
-          name: "progress.events.increase campaigns:difficulties.eventStandard",
+          name: "Increase Standard progress",
         })
       )
       expect(count("current-event", "Standard")).toHaveTextContent("3/5")
@@ -337,41 +320,41 @@ describe("CampaignEventsPage", () => {
       ).toHaveAttribute("data-source", "manual")
       await user.click(
         current().getByRole("button", {
-          name: "progress.events.maxFor campaigns:difficulties.eventStandard",
+          name: "Set Standard to max",
         })
       )
       expect(count("current-event", "Standard")).toHaveTextContent("5/5")
       expect(
         current().getByRole("button", {
-          name: "progress.events.increase campaigns:difficulties.eventStandard",
+          name: "Increase Standard progress",
         })
       ).toBeDisabled()
       expect(
         current().getByRole("button", {
-          name: "progress.events.decrease campaigns:difficulties.eventExtremis",
+          name: "Decrease Extremis progress",
         })
       ).toBeDisabled()
     })
 
     it("offers Reset to synced only while a value is manual", async () => {
       const user = userEvent.setup()
-      renderPage()
+      await renderPage()
       await screen.findByTestId("current-event")
       const standard = within(
         screen.getByTestId("current-event-track-Standard")
       )
       expect(
         standard.queryByRole("button", {
-          name: "progress.events.resetToSynced",
+          name: "Reset to synced",
         })
       ).toBeNull()
       await user.click(
         standard.getByRole("button", {
-          name: "progress.events.increase campaigns:difficulties.eventStandard",
+          name: "Increase Standard progress",
         })
       )
       await user.click(
-        standard.getByRole("button", { name: "progress.events.resetToSynced" })
+        standard.getByRole("button", { name: "Reset to synced" })
       )
       expect(count("current-event", "Standard")).toHaveTextContent("2/5")
       expect(
@@ -381,13 +364,13 @@ describe("CampaignEventsPage", () => {
 
     it("labels challenges in node order with the node id as a description", async () => {
       const user = userEvent.setup()
-      renderPage()
+      await renderPage()
       await screen.findByTestId("current-event")
       const first = current().getByRole("button", { name: "Challenge 1" })
       const second = current().getByRole("button", { name: "Challenge 2" })
-      expect(first).toHaveAccessibleDescription("Node AMS3B")
+      expect(first).toHaveAccessibleDescription("Node AMSC2")
       expect(first).toHaveAttribute("aria-pressed", "true")
-      expect(second).toHaveAccessibleDescription("Node AMS7B")
+      expect(second).toHaveAccessibleDescription("Node AMSC1")
       await user.click(second)
       expect(second).toHaveAttribute("aria-pressed", "true")
       expect(
@@ -397,7 +380,7 @@ describe("CampaignEventsPage", () => {
 
     it("keeps edits when a list card is collapsed", async () => {
       const user = userEvent.setup()
-      renderPage()
+      await renderPage()
       const trigger = await screen.findByTestId(
         "campaign-event-eventCampaign3-trigger"
       )
@@ -406,20 +389,20 @@ describe("CampaignEventsPage", () => {
         within(
           screen.getByTestId("campaign-event-eventCampaign3-track-Standard")
         ).getByRole("button", {
-          name: "progress.events.increase campaigns:difficulties.eventStandard",
+          name: "Increase Standard progress",
         })
       )
       await user.click(trigger)
       expect(
         within(listItem("eventCampaign3")).getByTestId("event-summary")
-      ).toHaveTextContent("campaigns:difficulties.eventStandard 1/2")
+      ).toHaveTextContent("Standard 1/2")
       expect(screen.getByTestId("unsaved-changes-bar")).toBeInTheDocument()
     })
 
     it("moves an event to the completed group as the draft completes it", async () => {
       const user = userEvent.setup()
       catalogData.liveProgress = { activeCampaignEventId: null }
-      renderPage()
+      await renderPage()
       await user.click(
         await screen.findByTestId("campaign-event-eventCampaign3-trigger")
       )
@@ -428,7 +411,7 @@ describe("CampaignEventsPage", () => {
           within(
             screen.getByTestId(`campaign-event-eventCampaign3-track-${type}`)
           ).getByRole("button", {
-            name: `progress.events.maxFor campaigns:difficulties.event${type}`,
+            name: `Set ${type} to max`,
           })
         )
       }
@@ -447,12 +430,12 @@ describe("CampaignEventsPage", () => {
   describe("completed filter", () => {
     it("hides completed events and remembers the choice across visits", async () => {
       const user = userEvent.setup()
-      const { unmount } = renderPage()
+      const { unmount } = await renderPage()
       await screen.findByTestId("campaign-events-list")
       await user.click(screen.getByRole("switch"))
       expect(screen.queryByTestId("campaign-event-eventCampaign2")).toBeNull()
       unmount()
-      renderPage()
+      await renderPage()
       await screen.findByTestId("campaign-events-list")
       expect(screen.getByRole("switch")).toBeChecked()
       expect(screen.queryByTestId("campaign-event-eventCampaign2")).toBeNull()
@@ -465,14 +448,14 @@ describe("CampaignEventsPage", () => {
         definition("eventCampaign1"),
         definition("eventCampaign2"),
       ]
-      renderPage()
+      await renderPage()
       await screen.findByTestId("campaign-events-list")
       await user.click(screen.getByRole("switch"))
       expect(
         screen.getByTestId("campaign-events-all-completed")
       ).toBeInTheDocument()
       await user.click(
-        screen.getByRole("button", { name: "progress.events.showCompleted" })
+        screen.getByRole("button", { name: "Show completed events" })
       )
       expect(listItem("eventCampaign2")).toBeInTheDocument()
     })
@@ -482,19 +465,19 @@ describe("CampaignEventsPage", () => {
     const increaseStandard = async (user: ReturnType<typeof userEvent.setup>) =>
       user.click(
         current().getByRole("button", {
-          name: "progress.events.increase campaigns:difficulties.eventStandard",
+          name: "Increase Standard progress",
         })
       )
     const decreaseStandard = async (user: ReturnType<typeof userEvent.setup>) =>
       user.click(
         current().getByRole("button", {
-          name: "progress.events.decrease campaigns:difficulties.eventStandard",
+          name: "Decrease Standard progress",
         })
       )
 
     it("shows the bar only while the draft differs from the saved state", async () => {
       const user = userEvent.setup()
-      renderPage()
+      await renderPage()
       await screen.findByTestId("current-event")
       expect(screen.queryByTestId("unsaved-changes-bar")).toBeNull()
       await increaseStandard(user)
@@ -505,18 +488,16 @@ describe("CampaignEventsPage", () => {
       await user.click(
         within(screen.getByTestId("current-event-track-Standard")).getByRole(
           "button",
-          { name: "progress.events.resetToSynced" }
+          { name: "Reset to synced" }
         )
       )
       expect(screen.queryByTestId("unsaved-changes-bar")).toBeNull()
-      expect(
-        screen.queryByRole("button", { name: "progress.events.unsaved.save" })
-      ).toBeNull()
+      expect(screen.queryByRole("button", { name: "Save" })).toBeNull()
     })
 
     it("saves the normalized draft with the base revision", async () => {
       const user = userEvent.setup()
-      renderPage()
+      await renderPage()
       await screen.findByTestId("current-event")
       await increaseStandard(user)
       await user.click(current().getByRole("button", { name: "Challenge 2" }))
@@ -529,14 +510,14 @@ describe("CampaignEventsPage", () => {
               campaignGroupId: "eventCampaign1",
               type: "Standard",
               completedBattleCount: 3,
-              completedChallengeBattlesIds: ["AMS3B", "AMS7B"],
+              completedChallengeBattlesIds: ["AMSC1", "AMSC2"],
             },
           ],
           revision: 4,
         })
       )
       expect(
-        await screen.findByText("progress.events.saved")
+        await screen.findByText("Campaign event progress saved.")
       ).toBeInTheDocument()
       expect(screen.queryByTestId("unsaved-changes-bar")).toBeNull()
 
@@ -549,7 +530,7 @@ describe("CampaignEventsPage", () => {
 
     it("discards every edit", async () => {
       const user = userEvent.setup()
-      renderPage()
+      await renderPage()
       await screen.findByTestId("current-event")
       await increaseStandard(user)
       await user.click(current().getByRole("button", { name: "Challenge 2" }))
@@ -578,13 +559,15 @@ describe("CampaignEventsPage", () => {
           revision: 9,
         })
       saveOverrides.mockRejectedValueOnce(new ApiError(409, "stale"))
-      renderPage()
+      await renderPage()
       await screen.findByTestId("current-event")
       await increaseStandard(user)
       await user.click(screen.getByTestId("unsaved-changes-save"))
 
       expect(
-        await screen.findByText("progress.events.conflict")
+        await screen.findByText(
+          "Campaign event progress was changed elsewhere. The latest values are loaded and your edits were not saved."
+        )
       ).toBeInTheDocument()
       expect(count("current-event", "Standard")).toHaveTextContent("4/5")
       expect(screen.queryByTestId("unsaved-changes-bar")).toBeNull()
@@ -598,13 +581,15 @@ describe("CampaignEventsPage", () => {
         .mockResolvedValueOnce({ progress: [], revision: 4 })
         .mockRejectedValueOnce(new Error("offline"))
       saveOverrides.mockRejectedValueOnce(new ApiError(409, "stale"))
-      renderPage()
+      await renderPage()
       await screen.findByTestId("current-event")
       await increaseStandard(user)
       await user.click(screen.getByTestId("unsaved-changes-save"))
 
       expect(
-        await screen.findByText("progress.events.saveError")
+        await screen.findByText(
+          "Couldn't save campaign event progress. Your changes are still here; try again."
+        )
       ).toBeInTheDocument()
       expect(screen.queryByTestId("campaign-events-load-error")).toBeNull()
       expect(count("current-event", "Standard")).toHaveTextContent("3/5")
@@ -616,13 +601,15 @@ describe("CampaignEventsPage", () => {
       saveOverrides.mockRejectedValueOnce(
         new ApiError(400, "Raw server validation text")
       )
-      renderPage()
+      await renderPage()
       await screen.findByTestId("current-event")
       await increaseStandard(user)
       await user.click(screen.getByTestId("unsaved-changes-save"))
 
       expect(
-        await screen.findByText("progress.events.saveError")
+        await screen.findByText(
+          "Couldn't save campaign event progress. Your changes are still here; try again."
+        )
       ).toBeInTheDocument()
       expect(screen.queryByText("Raw server validation text")).toBeNull()
       expect(count("current-event", "Standard")).toHaveTextContent("3/5")
@@ -631,28 +618,26 @@ describe("CampaignEventsPage", () => {
 
     it("asks before leaving with unsaved edits", async () => {
       const user = userEvent.setup()
-      const { router } = renderPage()
+      const { router } = await renderPage()
       await screen.findByTestId("current-event")
       await increaseStandard(user)
       void router.navigate("/my-game/campaigns")
       expect(
-        await screen.findByText("progress.events.leave.title")
+        await screen.findByText("Leave without saving?")
       ).toBeInTheDocument()
-      await user.click(
-        screen.getByRole("button", { name: "progress.events.leave.stay" })
-      )
+      await user.click(screen.getByRole("button", { name: "Stay" }))
       expect(screen.getByTestId("campaign-events-page")).toBeInTheDocument()
       void router.navigate("/my-game/campaigns")
       await user.click(
         await screen.findByRole("button", {
-          name: "progress.events.leave.leave",
+          name: "Leave",
         })
       )
       expect(await screen.findByTestId("campaigns-page")).toBeInTheDocument()
     })
 
     it("navigates without asking when there are no edits", async () => {
-      const { router } = renderPage()
+      const { router } = await renderPage()
       await screen.findByTestId("current-event")
       void router.navigate("/my-game/campaigns")
       expect(await screen.findByTestId("campaigns-page")).toBeInTheDocument()
@@ -667,7 +652,7 @@ describe("CampaignEventsPage", () => {
       "every %s step targets an element on the page",
       async (_form, isMobile) => {
         mobile.value = isMobile
-        renderPage()
+        await renderPage()
         await screen.findByTestId("current-event")
         const steps = vi.mocked(useTourPageSteps).mock.lastCall?.[0]
         const formSteps =
@@ -676,7 +661,7 @@ describe("CampaignEventsPage", () => {
         for (const step of formSteps ?? []) {
           expect(
             document.querySelector(step.target as string),
-            String(step.target)
+            step.target as string
           ).not.toBeNull()
         }
       }
@@ -686,7 +671,7 @@ describe("CampaignEventsPage", () => {
   describe("states", () => {
     it("shows a spinner until the saved overrides load", async () => {
       getOverrides.mockReturnValue(new Promise(() => {}))
-      renderPage()
+      await renderPage()
       await waitFor(() =>
         expect(screen.queryByTestId("campaign-events-page")).toBeNull()
       )
@@ -694,26 +679,37 @@ describe("CampaignEventsPage", () => {
 
     it("shows the translated load error when the overrides fail", async () => {
       getOverrides.mockRejectedValue(new Error("offline"))
-      renderPage()
+      await renderPage()
       expect(
         await screen.findByTestId("campaign-events-load-error")
-      ).toHaveTextContent("progress.loadError")
+      ).toHaveTextContent(
+        "Progress data is unexpectedly unavailable. Refresh and try again."
+      )
     })
 
     it("shows the translated load error when the local data read fails", async () => {
-      catalogReadFails = true
-      renderPage()
+      const getAll = IDBObjectStore.prototype.getAll
+      vi.spyOn(IDBObjectStore.prototype, "getAll").mockImplementation(function (
+        this: IDBObjectStore,
+        ...args
+      ) {
+        if (this.name === "campaign-battles") throw new Error("blocked")
+        return getAll.apply(this, args)
+      })
+      await renderPage()
       expect(
         await screen.findByTestId("campaign-events-load-error")
-      ).toHaveTextContent("progress.loadError")
+      ).toHaveTextContent(
+        "Progress data is unexpectedly unavailable. Refresh and try again."
+      )
     })
 
     it("explains when the catalog has no campaign events", async () => {
       catalogData.definitions = []
-      renderPage()
+      await renderPage()
       expect(
         await screen.findByTestId("campaign-events-empty")
-      ).toHaveTextContent("progress.events.noEvents")
+      ).toHaveTextContent("There are no campaign events to track yet.")
     })
   })
 })

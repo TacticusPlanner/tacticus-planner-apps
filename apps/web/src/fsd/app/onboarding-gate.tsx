@@ -105,6 +105,7 @@ export function OnboardingGate({ children }: { children: ReactNode }) {
           </p>
           <div className="flex gap-2">
             <Button
+              // eslint-disable-next-line jsx-a11y/no-autofocus -- the error screen replaces the whole app, so focus would otherwise drop to body.
               autoFocus
               data-testid="account-gate-retry"
               onClick={refetch}

@@ -1,0 +1,30 @@
+{
+  "EmbodiedProphecy": {
+    "description": "Pendant ses {[nrOfRounds]} premières manches, la <style=\"Faction_Sisterhood\">Zéphyrine</style> inflige <style=\"Stat_Damage\">+{[extraDmg]} dégâts</style>, bloque <style=\"Stat_Block\">+{[blockDmg]} dégâts</style> supplémentaire et ses <style=\"Stat_Chance\">chances</style> de <style=\"Stat_Block\">blocage</style> augmentent de <style=\"Stat\">+{[blockChance]} %</style>.",
+    "variables": {
+      "extraDmg": [
+        4, 5, 6, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 15, 16, 17, 18, 19, 20, 21,
+        22, 24, 28, 31, 35, 39, 42, 46, 49, 53, 57, 60, 64, 68, 71, 75, 79, 82,
+        86, 91, 98, 106, 114, 123, 139, 156, 172, 189, 205, 222, 224, 227, 230,
+        234, 238, 242, 246, 251, 256, 261, 267, 273, 279, 285, 291
+      ],
+      "blockDmg": [
+        15, 18, 21, 24, 27, 30, 34, 37, 41, 44, 48, 51, 55, 58, 62, 65, 68, 72,
+        75, 79, 83, 90, 104, 117, 131, 144, 158, 172, 185, 199, 213, 226, 240,
+        254, 267, 281, 295, 308, 322, 341, 368, 396, 427, 461, 523, 584, 646,
+        708, 769, 831, 840, 851, 863, 878, 893, 908, 923, 941, 960, 979, 1001,
+        1024, 1046, 1069, 1091
+      ],
+      "blockChance": [
+        25, 25, 25, 25, 25, 25, 25, 25, 27, 27, 27, 27, 27, 27, 27, 27, 27, 29,
+        29, 29, 29, 29, 29, 29, 29, 29, 31, 31, 31, 31, 31, 31, 31, 31, 31, 33,
+        33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33,
+        33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33
+      ]
+    },
+    "constants": {
+      "nrOfRounds": "2"
+    },
+    "scaled": ["extraDmg", "blockDmg"]
+  }
+}
