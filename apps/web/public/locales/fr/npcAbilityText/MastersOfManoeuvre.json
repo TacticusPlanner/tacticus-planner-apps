@@ -1,0 +1,12 @@
+{
+  "MastersOfManoeuvre": {
+    "description": "Les <style=\"Character\">personnages</style> <style=\"Rarity_Mythic\">Mythiques</style> alliés subissent <style=\"Stat_Damage\">-{[dmgReductionPct]} % de dégâts</style> des attaques à distance jusqu'au début de leur prochain tour s'ils ont parcouru au moins {[tilesTraversed]} hexagones pendant leur tour ou qu'ils finissent leur tour aux côtés d'un personnage <style=\"Faction_DarkAngels\">Dark Angels</style> <style=\"Rarity_Mythic\">Mythique</style> allié.",
+    "variables": {
+      "dmgReductionPct": [10, 13, 16, 20]
+    },
+    "constants": {
+      "tilesTraversed": "2"
+    },
+    "scaled": ["dmgReductionPct"]
+  }
+}

@@ -1,11 +1,9 @@
 import { describe, expect, it } from "vitest"
 
-import npcAbilityText from "../../../../public/locales/en/npcAbilityText.json"
 import { buildAbilitySeries, chartedSeries } from "./ability-series"
 import { parseAbilityText, resolveVariable } from "./ability-text"
 import type { AbilityTextEntry } from "./use-ability-text"
-
-const texts = npcAbilityText as unknown as Record<string, AbilityTextEntry>
+import { enNpcAbilityText as texts } from "@/test/rules-text"
 
 function at<T>(xs: readonly T[] | undefined, index: number): T {
   const value = xs?.[index]

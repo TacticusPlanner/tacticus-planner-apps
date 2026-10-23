@@ -1,0 +1,10 @@
+{
+  "StormboyzStrike": {
+    "description": "Lors de son premier tour, cette unité s'envole jusqu'à un hexagone libre au lieu de démarrer sur son point d'apparition désigné. Il y a {[chance]} % de chances de manquer l'hexagone de destination et de se retrouver dans un hexagone adjacent aléatoire. Cette incursion aérienne compte comme un déplacement <i>Plein gaz</i>.",
+    "variables": {},
+    "constants": {
+      "chance": "20"
+    },
+    "scaled": []
+  }
+}

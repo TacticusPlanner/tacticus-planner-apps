@@ -1,0 +1,15 @@
+{
+  "AblativePlating": {
+    "description": "Any incoming <style=\"Stat_Damage\">Damage</style> with less than <style=\"Piercing_Ratio\">{[pierceRatio]}% Pierce Ratio</style> must go through <style=\"Stat_Armor\">Armour</style> three times. Does not apply to <style=\"Stat_CritDamage\">Crits</style>.",
+    "variables": {
+      "pierceRatio": [
+        60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60,
+        60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60,
+        60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60,
+        60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60
+      ]
+    },
+    "constants": {},
+    "scaled": []
+  }
+}

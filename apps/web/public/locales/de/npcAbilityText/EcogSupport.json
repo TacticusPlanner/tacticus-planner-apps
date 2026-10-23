@@ -1,0 +1,32 @@
+{
+  "EcogSupport": {
+    "description": "Immer, wenn <style=\"Faction_LeaguesOfVotann\">Vynn</style> eine verbündete Einheit <style=\"Repairing\">repariert</style>, beschwört er einen <style=\"Summon\"><style=\"Faction_LeaguesOfVotann\">E-COG</style></style> auf einem angrenzenden freien Feld. Es können nicht mehr als {[maxSummons]} E-COGS gleichzeitig auf diese Weise beschworen werden.\nVynn kann andere verbündete Einheiten auch bei vollen <style=\"Stat_Health\">Lebenspunkten</style> <style=\"Repairing\">reparieren</style>. Wenn er eine verbündete Einheit repariert, während sich bereits {[maxSummons]} beschworene E-COGS auf dem Schlachtfeld befinden, führt ein zufälliger beschworener E-COG neben Vynn wenn möglich ebenfalls eine Reparatur durch.\n\nE-COG-Werte:\n<style=\"Stat_Health\">{[summonHp]} Lebenspunkte</style>\n<style=\"Stat_Damage\">{[summonDmg]} Schaden</style>\n<style=\"Stat_Armor\">{[summonArmor]} Rüstung</style>",
+    "variables": {
+      "summonHp": [
+        40, 48, 56, 64, 72, 81, 90, 100, 109, 118, 127, 136, 146, 155, 164, 173,
+        182, 192, 201, 210, 222, 240, 276, 312, 349, 385, 422, 458, 494, 531,
+        567, 604, 640, 676, 713, 749, 786, 822, 858, 910, 982, 1057, 1139, 1229,
+        1394, 1558, 1722, 1887, 2051, 2216, 2240, 2270, 2300, 2340, 2380, 2420,
+        2460, 2510, 2560, 2610, 2670, 2730, 2790, 2850, 2910
+      ],
+      "summonDmg": [
+        15, 18, 21, 24, 27, 30, 34, 37, 41, 44, 48, 51, 55, 58, 62, 65, 68, 72,
+        75, 79, 83, 90, 104, 117, 131, 144, 158, 172, 185, 199, 213, 226, 240,
+        254, 267, 281, 295, 308, 322, 341, 368, 396, 427, 461, 523, 584, 646,
+        708, 769, 831, 840, 851, 863, 878, 893, 908, 923, 941, 960, 979, 1001,
+        1024, 1046, 1069, 1091
+      ],
+      "summonArmor": [
+        15, 18, 21, 24, 27, 30, 34, 37, 41, 44, 48, 51, 55, 58, 62, 65, 68, 72,
+        75, 79, 83, 90, 104, 117, 131, 144, 158, 172, 185, 199, 213, 226, 240,
+        254, 267, 281, 295, 308, 322, 341, 368, 396, 427, 461, 523, 584, 646,
+        708, 769, 831, 840, 851, 863, 878, 893, 908, 923, 941, 960, 979, 1001,
+        1024, 1046, 1069, 1091
+      ]
+    },
+    "constants": {
+      "maxSummons": "3"
+    },
+    "scaled": ["summonHp", "summonDmg", "summonArmor"]
+  }
+}

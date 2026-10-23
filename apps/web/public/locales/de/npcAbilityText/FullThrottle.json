@@ -1,0 +1,11 @@
+{
+  "FullThrottle": {
+    "description": "Wenn sich diese Einheit um <style=\"Stat_Movement\">{[movement]}</style> oder mehr Felder bewegt, besteht eine Chance von {[chance]} %, dass ihre Rakete versagt und der <style=\"Faction_Orks\">Düs’nspringa</style> in Flammen aufgeht. In diesem Fall kann die Einheit nicht wiederbelebt werden.",
+    "variables": {},
+    "constants": {
+      "movement": "3",
+      "chance": "30"
+    },
+    "scaled": []
+  }
+}

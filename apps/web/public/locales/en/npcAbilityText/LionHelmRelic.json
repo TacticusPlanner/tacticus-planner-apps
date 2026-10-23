@@ -1,0 +1,11 @@
+{
+  "LionHelmRelic": {
+    "description": "Friendly units adjacent to <style=\"Faction_DarkAngels\">Azrael</style> block an additional <style=\"Stat_Block\">+{[blockDmg]} Damage</style>. At the end of Azrael's turn, if there is no friendly <style=\"Summon\"><style=\"Faction_DarkAngels\">Watcher in the Dark</style></style> on the battlefield, he has a <style=\"Stat_Chance\">{[chance]}% chance</style> to summon a Watcher in the Dark in a free adjacent hex.",
+    "variables": {
+      "blockDmg": [490, 516, 543, 569, 596, 622, 649, 675, 702, 728],
+      "chance": [50, 55, 60, 65, 70, 75, 80, 90, 95, 100]
+    },
+    "constants": {},
+    "scaled": []
+  }
+}

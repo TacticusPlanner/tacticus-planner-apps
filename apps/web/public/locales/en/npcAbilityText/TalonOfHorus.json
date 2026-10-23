@@ -1,0 +1,14 @@
+{
+  "TalonOfHorus": {
+    "description": "When <style=\"Faction_BlackLegion\">Abaddon</style> performs a <style=\"NormalAttack\">normal melee attack</style>, he also deals <style=\"Stat_Hits\">{[nrOfHits]}x</style> <style=\"DMG_Power\">{[minDmg]}-{[maxDmg]} Power Damage</style> to all enemies adjacent to both the target of the attack and to Abaddon.",
+    "variables": {
+      "minDmg": [1175, 1238, 1302, 1365, 1429, 1492, 1556, 1619, 1682, 1746],
+      "maxDmg": [1565, 1649, 1734, 1818, 1903, 1987, 2072, 2156, 2241, 2325]
+    },
+    "constants": {
+      "nrOfHits": "3",
+      "damageProfile": "Power"
+    },
+    "scaled": []
+  }
+}

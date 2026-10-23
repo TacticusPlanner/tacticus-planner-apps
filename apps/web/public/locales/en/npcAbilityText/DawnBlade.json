@@ -1,0 +1,13 @@
+{
+  "DawnBlade": {
+    "description": "<style=\"Faction_Tau\">Commander Farsight's</style> melee attacks deal <style=\"Stat_Damage\">+{[extraDmg]} Damage</style> for each time another friendly <style=\"Character\">Character</style> within {[range]} hexes has performed a ranged attack this turn. When Commander Farsight kills an enemy unit with a melee attack, he <style=\"Repairing\">repairs</style> himself for <style=\"Stat_Health\">{[hpToHeal]} Health</style>.",
+    "variables": {
+      "extraDmg": [390, 411, 432, 453, 474, 495, 516, 537, 558, 579],
+      "hpToHeal": [4895, 5159, 5423, 5688, 5952, 6216, 6480, 6745, 7009, 7273]
+    },
+    "constants": {
+      "range": "2"
+    },
+    "scaled": []
+  }
+}

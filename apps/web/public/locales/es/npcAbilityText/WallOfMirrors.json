@@ -1,0 +1,10 @@
+{
+  "WallOfMirrors": {
+    "description": "Si la <style=\"Faction_Tau\">Exoarmadura Sigilo</style> no se movió, desaparece de su hexágono actual y reaparece en un hexágono libre del campo de batalla desde el que puede realizar un <style=\"NormalAttack\">ataque a distancia normal</style> contra un enemigo que tenga una <style=\"Debuff_Markerlight\">Luz de señalización</style>. Este ataque tiene un <style=\"Piercing_Ratio\">+{[extraPierce]} % de tasa de perforación</style>.",
+    "variables": {},
+    "constants": {
+      "extraPierce": "15"
+    },
+    "scaled": []
+  }
+}

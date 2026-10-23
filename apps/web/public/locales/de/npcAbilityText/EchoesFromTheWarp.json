@@ -1,0 +1,8 @@
+{
+  "EchoesFromTheWarp": {
+    "description": "Wenn sich diese Einheit bewegt, hinterlässt sie einen Zeitgeist auf dem Feld, das sie verlassen hat. Der Zeitgeist verschwindet, wenn das Feld von einer anderen Einheit besetzt oder das Terrain unpassierbar wird (z. B. durch <style=\"Tile_Floe\">Gebrochenes Eis</style>). Stirbt diese Einheit das erste Mal in einem Kampf und befindet sich ihr Zeitgeist auf dem Schlachtfeld, wird sie mit vollen <style=\"Stat_Health\"> Lebenspunkten</style> an dessen Position wiederbelebt. Dieser Effekt tritt auch dann ein, wenn diese Einheit einen <style=\"Overkill\">Overkill</style> erleidet.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

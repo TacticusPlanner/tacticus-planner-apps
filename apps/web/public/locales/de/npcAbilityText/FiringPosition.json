@@ -1,0 +1,10 @@
+{
+  "FiringPosition": {
+    "description": "Wenn eine Einheit durch einen Angriff besiegt wird, der durch <style=\"Overwatch\">Aufklärung</style> ausgelöst wurde, behält der <style=\"Faction_BlackLegion\">Havoc</style> den Effekt <style=\"Overwatch\">Aufklärung</style>, jedoch mit {[hitsReduction]} weniger <style=\"Stat_Hits\">Treffern</style> als beim vorherigen Angriff.",
+    "variables": {},
+    "constants": {
+      "hitsReduction": "2"
+    },
+    "scaled": []
+  }
+}

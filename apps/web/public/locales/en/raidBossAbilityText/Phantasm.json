@@ -1,0 +1,24 @@
+{
+  "Phantasm": {
+    "description": "As long as there is a Phantasm, all incoming damage is reduced by <style=\"Stat_Damage\">{[dmgReductionPct]}%</style>. If <style=\"Faction_Aeldari\">Eldryon</style> becomes the target of an attack when there is no Phantasm, he moves to a random free hex and leaves a Phantasm behind, preferring hexes within range <style=\"Stat\">3</style> if possible. This movement can traverse impassable hexes and enemies and move between any elevation. When a unit moves onto the Phantasm it is destroyed and <style=\"Faction_Aeldari\">Eldryon</style> loses <style=\"Stat_Health\">{[hp]} Health</style>.",
+    "variables": {
+      "dmgReductionPct": [
+        25, 25, 25, 25, 25, 25, 25, 25, 33, 33, 33, 33, 33, 33, 33, 33, 33, 40,
+        40, 40, 40, 40, 40, 40, 40, 40, 50, 50, 50, 50, 50, 50, 50, 50, 50, 66,
+        66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66,
+        66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66
+      ],
+      "hp": [
+        8, 11, 13, 15, 17, 19, 21, 32, 35, 41, 47, 53, 58, 64, 70, 90, 125, 120,
+        135, 150, 165, 180, 195, 210, 260, 355, 350, 395, 440, 480, 525, 570,
+        615, 670, 730, 810, 1135, 1295, 1460, 1780, 1945, 2105, 2430, 2595,
+        2755, 3080, 3240, 3405, 3725, 4200, 4900, 5600, 7500, 7500, 7500, 8000,
+        8001, 8002, 8003, 8004, 8005, 8006, 8007, 8008, 8009
+      ]
+    },
+    "constants": {
+      "range": "2"
+    },
+    "scaled": ["hp"]
+  }
+}

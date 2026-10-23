@@ -1,0 +1,10 @@
+{
+  "HungeringSwarm": {
+    "description": "Cada vez que esta unidad realiza un ataque cuerpo a cuerpo, inflige <style=\"Stat_Hits\">+{[extraHit]} impacto</style> por cada Hormagante o Enjambre devorador aliado adyacente al objetivo.",
+    "variables": {},
+    "constants": {
+      "extraHit": "1"
+    },
+    "scaled": []
+  }
+}

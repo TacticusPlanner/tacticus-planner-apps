@@ -1,0 +1,11 @@
+{
+  "ReanimationProtocols": {
+    "description": "If there is at least one other friendly unit of the same type on the battlefield when this unit is defeated, it has a <style=\"Stat_Chance\">{[chance]}% chance</style> to be immediately revived with <style=\"Stat\">{[hpPct]}%</style> of its initial Health in the same hex or a random adjacent one. Does not apply if <style=\"Overkill\">Overkilled</style>.",
+    "variables": {},
+    "constants": {
+      "chance": "35",
+      "hpPct": "25"
+    },
+    "scaled": []
+  }
+}

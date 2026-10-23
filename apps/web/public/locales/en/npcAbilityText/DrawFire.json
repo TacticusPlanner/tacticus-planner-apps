@@ -1,0 +1,8 @@
+{
+  "DrawFire": {
+    "description": "Any friendly adjacent units hit by enemy attacks have half of the <style=\"Stat_Hits\">hits</style> (rounded down) hit the Terminator instead.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "TalismanOfRage": {
+    "description": "Each time the relic bearer defeats an enemy with a melee attack, it counts twice for <style=\"BlessingsOfKhorne\">Blessings Of Khorne</style>. The relic bearer takes <style=\"Stat_CritDamage\">-{[critDmgReduction]} Crit Damage</style> for each level of <style=\"BlessingsOfKhorne\">Blessings Of Khorne</style>.",
+    "variables": {
+      "critDmgReduction": [295, 311, 327, 343, 359, 375, 391, 406, 422, 438]
+    },
+    "constants": {},
+    "scaled": []
+  }
+}

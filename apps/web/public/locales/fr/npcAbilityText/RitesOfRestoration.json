@@ -1,0 +1,26 @@
+{
+  "RitesOfRestoration": {
+    "description": "<style=\"Healing\">Restaure</style> <style=\"Stat_Health\">{[hpToHeal]} santé</style> pour soi et toutes les unités alliées adjacentes. Ressuscite {[nrOfHeroes]} <style=\"Character\">personnage</style> <style=\"Aliance_Imperial\">Impérial</style> allié aléatoire et jusqu'à <style=\"Stat\">{[nrOfSummons]}</style> <style=\"Summon\">invocations</style> <style=\"Aliance_Imperial\">Impériales</style> alliées aléatoires qui ont été vaincues au cours de cette bataille. Les unités ressuscitées apparaissent dans des hexagones adjacents libres avec <style=\"Stat_Health\">{[hp]} santé</style> et sont incapables d'agir pour ce tour. Affecte uniquement les unités non <style=\"Mechanical\">mécaniques</style>.",
+    "variables": {
+      "hpToHeal": [
+        30, 36, 42, 48, 54, 61, 68, 75, 82, 89, 95, 102, 109, 116, 123, 130,
+        137, 144, 151, 158, 167, 180, 207, 234, 262, 289, 316, 344, 371, 398,
+        425, 453, 480, 507, 535, 562, 589, 617, 644, 682, 736, 793, 854, 922,
+        1045, 1169, 1292, 1415, 1538, 1662, 1680, 1703, 1725, 1755, 1785, 1815,
+        1845, 1883, 1920, 1958, 2003, 2048, 2093, 2138, 2183
+      ],
+      "hp": [
+        25, 30, 35, 40, 45, 51, 57, 62, 68, 74, 80, 85, 91, 97, 103, 108, 114,
+        120, 126, 131, 139, 150, 173, 195, 218, 241, 264, 286, 309, 332, 355,
+        377, 400, 423, 446, 468, 491, 514, 537, 569, 614, 661, 712, 768, 871,
+        974, 1077, 1179, 1282, 1385, 1400, 1419, 1438, 1463, 1488, 1513, 1538,
+        1569, 1600, 1631, 1669, 1706, 1744, 1781, 1819
+      ]
+    },
+    "constants": {
+      "nrOfHeroes": "1",
+      "nrOfSummons": "2"
+    },
+    "scaled": ["hpToHeal", "hp"]
+  }
+}

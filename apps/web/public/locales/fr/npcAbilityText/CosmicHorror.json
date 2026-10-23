@@ -1,0 +1,22 @@
+{
+  "CosmicHorror": {
+    "description": "Dès que <style=\"Faction_Genestealers\">le Paternus</style> élimine un ennemi, il place un <style=\"Decoy\">leurre</style> sur l'hexagone de cet ennemi. Les autres ennemis situés autour de l'unité vaincue ont <style=\"Stat_Chance\">{[chance]} % de chances</style> d'être <style=\"Debuff_Pinned\">neutralisés</style> pendant 1 manche et ont <style=\"Stat_Chance\">{[chance]} % de chances</style> de déclencher une deuxième fois l'<style=\"Battle_Fatigue\">Épuisement du combat</style>, s'ils en sont dotés. Lorsque <style=\"Faction_Genestealers\">le Paternus</style> se déplace sur un leurre, il se <style=\"Healing\">soigne</style> et récupère <style=\"Stat_Health\">{[hp]} santé</style>.",
+    "variables": {
+      "chance": [
+        40, 40, 40, 40, 40, 40, 40, 40, 45, 45, 45, 45, 45, 45, 45, 45, 45, 50,
+        50, 50, 50, 50, 50, 50, 50, 50, 55, 55, 55, 55, 55, 55, 55, 55, 55, 60,
+        60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60,
+        60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60
+      ],
+      "hp": [
+        40, 48, 56, 64, 72, 81, 90, 100, 109, 118, 127, 136, 146, 155, 164, 173,
+        182, 192, 201, 210, 222, 240, 276, 312, 349, 385, 422, 458, 494, 531,
+        567, 604, 640, 676, 713, 749, 786, 822, 858, 910, 982, 1057, 1139, 1229,
+        1394, 1558, 1722, 1887, 2051, 2216, 2240, 2270, 2300, 2340, 2380, 2420,
+        2460, 2510, 2560, 2610, 2670, 2730, 2790, 2850, 2910
+      ]
+    },
+    "constants": {},
+    "scaled": ["hp"]
+  }
+}

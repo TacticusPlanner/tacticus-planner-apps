@@ -12,7 +12,11 @@ const SUMMON_PATTERNS = [
   /\bcalls in an? <style="Summon">/i,
 ]
 
-/** Whether an ability's English rules text summons a unit (design D8). */
+/**
+ * Whether an ability's English rules text summons a unit (design D8). The app reads the generated
+ * `npcAbilitySummoners` list instead; `scripts/generate-ability-text-i18n.mjs` carries a copy of these
+ * patterns, and the rules-text test checks the committed list against this function.
+ */
 export function abilitySummons(description: string): boolean {
   return SUMMON_PATTERNS.some((pattern) => pattern.test(description))
 }
@@ -24,7 +28,7 @@ export function buildSummonerIds(
     activeAbilityNames: readonly string[]
     passiveAbilityNames: readonly string[]
   }>,
-  descriptionOf: (abilityId: string) => string | undefined
+  isSummoning: (abilityId: string) => boolean
 ): Set<UnitId> {
   const summoners = new Set<UnitId>()
   for (const character of characters) {
@@ -32,7 +36,7 @@ export function buildSummonerIds(
       ...character.activeAbilityNames,
       ...character.passiveAbilityNames,
     ]
-    if (abilities.some((id) => abilitySummons(descriptionOf(id) ?? ""))) {
+    if (abilities.some(isSummoning)) {
       summoners.add(character.id)
     }
   }

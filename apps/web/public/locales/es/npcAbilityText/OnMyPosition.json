@@ -1,0 +1,10 @@
+{
+  "OnMyPosition": {
+    "description": "Los enemigos adyacentes a un <style=\"Faction_AstraMilitarum\">Guardia Cadiano</style> aliado o a un <style=\"Character\">personaje</style> <style=\"Rarity_Mythic\">Mítico</style> aliado reciben <style=\"Stat_Damage\">+{[extraDmgPct]} % de Daño</style> de los ataques a distancia de personajes Míticos.",
+    "variables": {
+      "extraDmgPct": [10, 13, 16, 20]
+    },
+    "constants": {},
+    "scaled": ["extraDmgPct"]
+  }
+}

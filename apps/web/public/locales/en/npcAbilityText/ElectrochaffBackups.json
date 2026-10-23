@@ -1,0 +1,12 @@
+{
+  "ElectrochaffBackups": {
+    "description": "Enemy units that have a <style=\"Debuff_Markerlight\">Markerlight</style> or have been damaged by a ranged attack deal <style=\"Stat_Damage\">-{[dmgReductionPct]}% Damage</style> to <style=\"Rarity_Mythic\">Mythic</style> <style=\"Character\">characters</style> for {[nrOfRounds]} round.",
+    "variables": {
+      "dmgReductionPct": [10, 13, 16, 20]
+    },
+    "constants": {
+      "nrOfRounds": "1"
+    },
+    "scaled": ["dmgReductionPct"]
+  }
+}

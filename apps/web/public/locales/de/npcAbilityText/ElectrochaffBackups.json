@@ -1,0 +1,12 @@
+{
+  "ElectrochaffBackups": {
+    "description": "Gegnerische Einheiten, die über ein <style=\"Debuff_Markerlight\">Markierungslicht</style> verfügen oder Schaden durch einen Fernkampfangriff erlitten haben, verursachen {[nrOfRounds]} Runde lang <style=\"Stat_Damage\">-{[dmgReductionPct]} % Schaden</style> an <style=\"Rarity_Mythic\">Mythischen</style> <style=\"Character\">Charakteren</style>.",
+    "variables": {
+      "dmgReductionPct": [10, 13, 16, 20]
+    },
+    "constants": {
+      "nrOfRounds": "1"
+    },
+    "scaled": ["dmgReductionPct"]
+  }
+}

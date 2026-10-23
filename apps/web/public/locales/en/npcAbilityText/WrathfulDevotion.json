@@ -1,0 +1,16 @@
+{
+  "WrathfulDevotion": {
+    "description": "When <style=\"Faction_WorldEaters\">Wrask</style> arrives from <style=\"Teleport_Strike_short\">Deep Strike</style> or defeats an enemy in <style=\"Stat_Melee\">melee</style>, he and adjacent friendly <style=\"Aliance_Chaos\">Chaos</style> units gain a <style=\"Buff_Shield\">Shield</style> with <style=\"Stat_Health\">{[shieldHp]} Health</style> for 1 round.",
+    "variables": {
+      "shieldHp": [
+        40, 48, 56, 64, 72, 81, 90, 100, 109, 118, 127, 136, 146, 155, 164, 173,
+        182, 192, 201, 210, 222, 240, 276, 312, 349, 385, 422, 458, 494, 531,
+        567, 604, 640, 676, 713, 749, 786, 822, 858, 910, 982, 1057, 1139, 1229,
+        1394, 1558, 1722, 1887, 2051, 2216, 2240, 2270, 2300, 2340, 2380, 2420,
+        2460, 2510, 2560, 2610, 2670, 2730, 2790, 2850, 2910
+      ]
+    },
+    "constants": {},
+    "scaled": ["shieldHp"]
+  }
+}

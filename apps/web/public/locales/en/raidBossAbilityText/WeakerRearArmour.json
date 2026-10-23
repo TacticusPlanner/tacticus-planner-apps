@@ -1,0 +1,15 @@
+{
+  "WeakerRearArmour": {
+    "description": "If enemies are inside the rear arc of the <style=\"Faction_AstraMilitarum\">Rogal Dorn Battle Tank</style>, their attacks have <style=\"Stat\">+{[extraCritChance]}% Crit Chance</style> against it.",
+    "variables": {
+      "extraCritChance": [
+        30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
+        30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
+        30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
+        30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30
+      ]
+    },
+    "constants": {},
+    "scaled": []
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "RefusalToBeOutdone": {
+    "description": "Verbündete <style=\"Character\">Charaktere</style>, die an <style=\"Faction_EmperorsChildren\">Laviscus</style> angrenzende Gegner angreifen, erhöhen seine <i>Empörung</i> entsprechend des höchsten Schadens, den einer ihrer <style=\"Stat_Hits\">Treffer</style> in diesem Zug verursacht hat, der keinen <style=\"DMG_Psychic\">Psi-Schaden</style> verursacht. Laviscus’ <style=\"Stat_Damage\">Schadenswert</style> wird um <style=\"Stat\">{[extraDmgPct]} %</style> seiner <i>Empörung</i> erhöht und seine <style=\"NormalAttack\">normalen Angriffe</style> verursachen zusätzlich <style=\"Stat_CritDamage\">+{[extraCritDmg]} Kritischen Schaden</style> für jeden verbündeten <style=\"Aliance_Chaos\">Chaos</style>-<style=\"Character\">Charakter</style>, der in diesem Zug seine <i>Empörung</i> erhöht hat. Seine <i>Empörung</i> wird am Ende seines Zugs oder nachdem Laviscus einen <style=\"NormalAttack\">normalen Angriff</style> ausführt zurückgesetzt.",
+    "variables": {
+      "extraDmgPct": [
+        110, 110, 110, 110, 110, 110, 110, 110, 110, 110, 110, 110, 110, 110,
+        110, 110, 110, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115,
+        115, 115, 115, 115, 115, 115, 115, 120, 120, 120, 120, 120, 120, 120,
+        120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120,
+        120, 120, 120, 120, 120, 120, 120, 120, 120
+      ],
+      "extraCritDmg": [
+        8, 10, 11, 13, 14, 16, 18, 20, 22, 24, 25, 27, 29, 31, 33, 35, 36, 38,
+        40, 42, 44, 48, 55, 62, 70, 77, 84, 92, 99, 106, 113, 121, 128, 135,
+        143, 150, 157, 164, 172, 182, 196, 211, 228, 246, 279, 312, 344, 377,
+        410, 443, 448, 454, 460, 468, 476, 484, 492, 502, 512, 522, 534, 546,
+        558, 570, 582
+      ]
+    },
+    "constants": {},
+    "scaled": ["extraCritDmg"]
+  }
+}

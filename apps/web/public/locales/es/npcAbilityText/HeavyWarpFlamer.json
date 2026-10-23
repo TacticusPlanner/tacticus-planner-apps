@@ -1,0 +1,28 @@
+{
+  "HeavyWarpFlamer": {
+    "description": "Inflige <style=\"Stat_Hits\">{[nrOfHits]}x</style> <style={[DamageProfileTypeStyle]}>{[minDmg]}-{[maxDmg]} {[DamageProfileType]}</style> a un enemigo dentro del alcance {[range]}. Añade <style=\"Stat_Hits\">+1 golpe</style> por cada ataque con <style=\"DMG_Psychic\">Daño psíquico</style> que las unidades aliadas hayan realizado este turno. No puede exceder <style=\"Stat_Hits\">{[maxNrOfHits]} golpes</style>. Si este ataque derrota al objetivo, cualquier golpe sobrante se aplica a los enemigos adyacentes al objetivo y dentro del alcance {[range]}, priorizando las muertes.",
+    "variables": {
+      "minDmg": [
+        27, 32, 38, 43, 49, 55, 61, 67, 73, 80, 86, 92, 98, 104, 111, 117, 123,
+        129, 136, 142, 150, 162, 186, 211, 235, 260, 285, 309, 334, 358, 383,
+        407, 432, 457, 481, 506, 530, 555, 579, 614, 663, 714, 769, 830, 941,
+        1052, 1163, 1274, 1385, 1496, 1512, 1532, 1553, 1580, 1607, 1634, 1661,
+        1694, 1728, 1762, 1802, 1843, 1883, 1924, 1964
+      ],
+      "maxDmg": [
+        36, 43, 50, 58, 65, 73, 81, 90, 98, 106, 114, 123, 131, 139, 148, 156,
+        164, 172, 181, 189, 200, 216, 248, 281, 314, 347, 379, 412, 445, 478,
+        510, 543, 576, 609, 642, 674, 707, 740, 773, 819, 883, 951, 1025, 1106,
+        1254, 1402, 1550, 1698, 1846, 1994, 2016, 2043, 2070, 2106, 2142, 2178,
+        2214, 2259, 2304, 2349, 2403, 2457, 2511, 2565, 2619
+      ]
+    },
+    "constants": {
+      "nrOfHits": "4",
+      "damageProfile": "Flame",
+      "range": "2",
+      "maxNrOfHits": "9"
+    },
+    "scaled": ["minDmg", "maxDmg"]
+  }
+}

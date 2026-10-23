@@ -1,0 +1,30 @@
+{
+  "FirstAmongTraitors": {
+    "description": "Les autres unités du <style=\"Aliance_Chaos\">Chaos</style> alliées distantes de {[range]} hexagones infligent <style=\"Stat_Damage\">+{[extraDmg]} dégâts</style>. Cette valeur augmente de <style=\"Stat_Damage\">+{[extraDmg_2]} dégâts</style> pour chaque attaque effectuée par <style=\"Faction_BlackLegion\">Abaddon</style> lors de ce combat, jusqu'à un maximum de <style=\"Stat_Damage\">+{[maxDmg]} dégâts</style> après 13 attaques.",
+    "variables": {
+      "extraDmg": [
+        5, 6, 7, 8, 9, 10, 11, 12, 14, 15, 16, 17, 18, 19, 21, 22, 23, 24, 25,
+        26, 28, 30, 35, 39, 44, 48, 53, 57, 62, 66, 71, 75, 80, 85, 89, 94, 98,
+        103, 107, 114, 123, 132, 142, 154, 174, 195, 215, 236, 256, 277, 280,
+        284, 288, 293, 298, 303, 308, 314, 320, 326, 334, 341, 349, 356, 364
+      ],
+      "extraDmg_2": [
+        1, 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 5, 5, 5, 6, 6, 6, 7, 7, 7, 8, 8,
+        9, 10, 11, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 21, 23, 25, 26,
+        28, 31, 35, 39, 43, 47, 51, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65,
+        67, 68, 70, 71, 73
+      ],
+      "maxDmg": [
+        18, 19, 20, 21, 35, 36, 37, 51, 53, 54, 68, 69, 70, 84, 86, 87, 101,
+        102, 103, 117, 119, 121, 139, 143, 161, 178, 196, 200, 218, 235, 253,
+        270, 288, 306, 323, 341, 358, 376, 380, 413, 448, 470, 506, 557, 629,
+        702, 774, 847, 919, 992, 1008, 1025, 1042, 1060, 1078, 1096, 1114, 1133,
+        1152, 1171, 1205, 1225, 1259, 1279, 1313
+      ]
+    },
+    "constants": {
+      "range": "2"
+    },
+    "scaled": ["extraDmg", "extraDmg_2", "maxDmg"]
+  }
+}

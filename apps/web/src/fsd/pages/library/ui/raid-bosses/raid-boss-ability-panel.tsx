@@ -6,13 +6,16 @@ import {
   applyAbilityConstantAdjustments,
   applyAbilityVariableAdjustments,
   computeAbilityAdjustments,
+  useRaidBossAbilityText,
   useRaidBossLabels,
-  useRaidBossText,
+  useRaidBossTraitText,
   type RaidBoss,
   type RaidBossEncounterModifier,
   type RaidBossStatStep,
 } from "@/entities/raid-boss"
-import { AbilityText } from "@/shared/ability-text"
+import { AbilityText, rulesTextPending } from "@/shared/ability-text"
+
+import { RulesTextNote } from "../unit/rules-text-note"
 
 // Internal engine ability with no player-facing description — V1 hides it the same way.
 const HIDDEN_ABILITY_IDS = new Set(["GuildBossRunAway"])
@@ -35,8 +38,6 @@ function AbilityGroup({
   /** When non-empty, each affected ability's variables/constants are shown modifier-adjusted. */
   activeModifiers: RaidBossEncounterModifier[]
 }) {
-  const { abilityName } = useRaidBossLabels()
-  const { abilityText } = useRaidBossText()
   const shown = (ids ?? []).filter((id) => !HIDDEN_ABILITY_IDS.has(id))
   if (shown.length === 0) return null
 
@@ -46,43 +47,81 @@ function AbilityGroup({
         {label}
       </h4>
       <div className="flex flex-col gap-2">
-        {shown.map((id) => {
-          const text = abilityText(id)
-          if (!text) {
-            return (
-              <Badge key={id} variant="secondary" className="self-start">
-                {abilityName(id)}
-              </Badge>
-            )
-          }
-          const adj = activeModifiers.length
-            ? computeAbilityAdjustments(activeModifiers, id)
-            : undefined
-          const variables = adj
-            ? applyAbilityVariableAdjustments(text.variables, adj)
-            : text.variables
-          const constants = adj
-            ? applyAbilityConstantAdjustments(text.constants, adj)
-            : text.constants
-          return (
-            <div key={id} className="flex flex-col gap-1">
-              <Badge variant="secondary" className="self-start">
-                {abilityName(id)}
-              </Badge>
-              <AbilityText
-                text={text.description}
-                level={level}
-                variables={variables}
-                constants={constants}
-                scaledVariableNames={text.scaled}
-                rarity={rarity}
-                unitName={unitName}
-                factionId={factionId}
-              />
-            </div>
-          )
-        })}
+        {shown.map((id) => (
+          <RaidBossAbility
+            key={id}
+            id={id}
+            level={level}
+            rarity={rarity}
+            unitName={unitName}
+            factionId={factionId}
+            activeModifiers={activeModifiers}
+          />
+        ))}
       </div>
+    </div>
+  )
+}
+
+/** One ability: its name, then its rules text once that ability's own file has loaded. */
+function RaidBossAbility({
+  id,
+  level,
+  rarity,
+  unitName,
+  factionId,
+  activeModifiers,
+}: {
+  id: string
+  level: number
+  rarity: Rarity
+  unitName: string
+  factionId: string
+  activeModifiers: RaidBossEncounterModifier[]
+}) {
+  const { abilityName } = useRaidBossLabels()
+  const rules = useRaidBossAbilityText([id])
+  const text = rules.text(id)
+  const name = (
+    <Badge variant="secondary" className="self-start">
+      {abilityName(id)}
+    </Badge>
+  )
+  if (!text) {
+    return rulesTextPending(rules) ? (
+      <div className="flex flex-col gap-1">
+        {name}
+        <RulesTextNote
+          rules={rules}
+          data-testid={`raid-boss-ability-${id}-text`}
+        />
+      </div>
+    ) : (
+      name
+    )
+  }
+  const adj = activeModifiers.length
+    ? computeAbilityAdjustments(activeModifiers, id)
+    : undefined
+  const variables = adj
+    ? applyAbilityVariableAdjustments(text.variables, adj)
+    : text.variables
+  const constants = adj
+    ? applyAbilityConstantAdjustments(text.constants, adj)
+    : text.constants
+  return (
+    <div className="flex flex-col gap-1">
+      {name}
+      <AbilityText
+        text={text.description}
+        level={level}
+        variables={variables}
+        constants={constants}
+        scaledVariableNames={text.scaled}
+        rarity={rarity}
+        unitName={unitName}
+        factionId={factionId}
+      />
     </div>
   )
 }
@@ -102,7 +141,7 @@ export function RaidBossAbilityPanel({
 }) {
   const { t } = useTranslation("library")
   const { traitName, hasTraitName } = useRaidBossLabels()
-  const { traitText } = useRaidBossText()
+  const traitText = useRaidBossTraitText()
 
   const rarity = step.baseRarity as Rarity
   const traitIds = (unit.traitIds ?? []).filter(hasTraitName)
@@ -162,8 +201,14 @@ export function RaidBossAbilityPanel({
             {t("raidBosses.traits")}
           </h3>
           <div className="flex flex-col gap-3">
+            {rulesTextPending(traitText) ? (
+              <RulesTextNote
+                rules={traitText}
+                data-testid="raid-boss-traits-text"
+              />
+            ) : null}
             {traitIds.map((id) => {
-              const text = traitText(id)
+              const text = traitText.text(id)
               return (
                 <div key={id} className="flex flex-col gap-1">
                   <Badge variant="outline" className="self-start">

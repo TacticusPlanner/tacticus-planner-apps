@@ -1,0 +1,32 @@
+{
+  "OverwhelmingWrath": {
+    "description": "Hasta el inicio de su siguiente turno, <style=\"Faction_WorldEaters\">Azkor</style> <style=\"Debuff_Taunted\">provoca</style> a todos los enemigos adyacentes y recibe <style=\"Stat_Damage\">-{[dmgReductionPct]} % de Daño</style> de los ataques a distancia. Inflige <style=\"DMG_Eviscerate\">{[minDmg]}-{[maxDmg]} de Daño de evisceración</style> <style=\"Stat_Hits\">x{[nrOfHits]}</style> a todos los enemigos adyacentes al inicio del siguiente turno de <style=\"Faction_WorldEaters\">Azkor</style>.",
+    "variables": {
+      "minDmg": [
+        28, 34, 39, 45, 50, 57, 63, 70, 76, 83, 89, 95, 102, 108, 115, 121, 128,
+        134, 141, 147, 156, 168, 193, 219, 244, 270, 295, 321, 346, 372, 397,
+        423, 448, 473, 499, 524, 550, 575, 601, 637, 687, 740, 797, 860, 976,
+        1091, 1206, 1321, 1436, 1551, 1568, 1589, 1610, 1638, 1666, 1694, 1722,
+        1757, 1792, 1827, 1869, 1911, 1953, 1995, 2037
+      ],
+      "maxDmg": [
+        36, 43, 50, 58, 65, 73, 81, 90, 98, 106, 114, 123, 131, 139, 148, 156,
+        164, 172, 181, 189, 200, 216, 248, 281, 314, 347, 379, 412, 445, 478,
+        510, 543, 576, 609, 642, 674, 707, 740, 773, 819, 883, 951, 1025, 1106,
+        1254, 1402, 1550, 1698, 1846, 1994, 2016, 2043, 2070, 2106, 2142, 2178,
+        2214, 2259, 2304, 2349, 2403, 2457, 2511, 2565, 2619
+      ],
+      "dmgReductionPct": [
+        24, 24, 24, 24, 24, 24, 24, 24, 32, 32, 32, 32, 32, 32, 32, 32, 32, 48,
+        48, 48, 48, 48, 48, 48, 48, 48, 56, 56, 56, 56, 56, 56, 56, 56, 56, 64,
+        64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64,
+        64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64
+      ]
+    },
+    "constants": {
+      "damageProfile": "Eviscerate",
+      "nrOfHits": "2"
+    },
+    "scaled": ["minDmg", "maxDmg"]
+  }
+}

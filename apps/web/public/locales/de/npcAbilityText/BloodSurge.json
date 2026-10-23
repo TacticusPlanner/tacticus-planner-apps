@@ -1,0 +1,8 @@
+{
+  "BloodSurge": {
+    "description": "Während jedes gegnerischen Zuges bewegt sich dieser <style=\"Faction_WorldEaters\">Berserker</style>, nachdem er das erste Mal angegriffen wurde, 1 Feld auf seinen Angreifer zu - falls möglich. Wenn er dann an eine feindliche Einheit angrenzt, führt er einen <style=\"NormalAttack\">normalen Angriff</style> aus und priorisiert dabei die Einheit, die ihn angegriffen hat.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

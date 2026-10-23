@@ -1,0 +1,24 @@
+{
+  "BossAdjutant": {
+    "description": "This unit takes <style=\"Stat_Damage\">-{[dmgPctReduction]}% Damage</style>. Each time this unit is dealt damage, up to <style=\"Stat\">{[nrOfAttacks]}</style> times per turn, it loses <style=\"Stat_Health\">{[hp]} Health</style> in addition to the damage done.",
+    "variables": {
+      "hp": [
+        7, 9, 11, 13, 14, 16, 18, 27, 30, 35, 40, 45, 50, 55, 60, 75, 105, 105,
+        115, 130, 140, 155, 165, 180, 220, 300, 300, 340, 375, 415, 450, 490,
+        525, 575, 625, 740, 925, 1110, 1295, 1480, 1665, 1850, 2035, 2220, 2405,
+        2595, 2780, 2965, 3150, 3335, 3600, 4200, 6000, 6000, 6000, 6350, 6351,
+        6352, 6353, 6354, 6355, 6356, 6357, 6358, 6359
+      ],
+      "dmgPctReduction": [
+        25, 25, 25, 25, 25, 25, 25, 25, 33, 33, 33, 33, 33, 33, 33, 33, 33, 40,
+        40, 40, 40, 40, 40, 40, 40, 40, 50, 50, 50, 50, 50, 50, 50, 50, 50, 66,
+        66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66,
+        66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66
+      ]
+    },
+    "constants": {
+      "nrOfAttacks": "15"
+    },
+    "scaled": ["hp"]
+  }
+}

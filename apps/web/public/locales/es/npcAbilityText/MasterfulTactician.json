@@ -1,0 +1,19 @@
+{
+  "MasterfulTactician": {
+    "description": "Todas las unidades aliadas que están adyacentes a un <style=\"Faction_DarkAngels\">Ángel Oscuro</style> aliado infligen <style=\"Stat_Damage\">+{[extraDmg]} de Daño</style> con todos los ataques. Si están adyacentes a {[nrOfUnits]} o más Ángeles Oscuros aliados, también consiguen un <style=\"Stat_Hits\">impacto</style> adicional con ataques que infligen Daño de <style=\"DMG_Plasma\">Plasma</style> o se realizan mientras están <style=\"Buff_Overwatching\">Vigilando</style>.",
+    "variables": {
+      "extraDmg": [
+        9, 11, 13, 14, 16, 18, 20, 22, 24, 27, 29, 31, 33, 35, 37, 39, 41, 43,
+        45, 47, 50, 54, 62, 70, 78, 87, 95, 103, 111, 119, 128, 136, 144, 152,
+        160, 169, 177, 185, 193, 205, 221, 238, 256, 277, 314, 351, 388, 425,
+        462, 499, 504, 511, 518, 527, 536, 545, 554, 565, 576, 587, 601, 614,
+        628, 641, 655
+      ]
+    },
+    "constants": {
+      "nrOfUnits": "2",
+      "damageProfile": "Plasma"
+    },
+    "scaled": ["extraDmg"]
+  }
+}

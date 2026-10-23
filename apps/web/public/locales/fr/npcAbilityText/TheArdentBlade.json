@@ -1,0 +1,12 @@
+{
+  "TheArdentBlade": {
+    "description": "Chaque tour, la première fois que <style=\"Faction_Sisterhood\">Célestine</style> élimine un ennemi, elle ressuscite l'une de ses <style=\"Faction_Sisterhood\">Geminae Superia</style> avec <style=\"Stat_Health\">{[hp]} santé</style> sur un hexagone adjacent libre. Si la résurrection n'est pas possible, l'une d'entre elles distante de {[range]} hexagones peut alors agir.",
+    "variables": {
+      "hp": [2350, 2477, 2604, 2731, 2857, 2984, 3111, 3238, 3365, 3492]
+    },
+    "constants": {
+      "range": "3"
+    },
+    "scaled": []
+  }
+}

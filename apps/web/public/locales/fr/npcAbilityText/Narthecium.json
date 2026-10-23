@@ -1,0 +1,16 @@
+{
+  "Narthecium": {
+    "description": "Lorsqu'une unité non <style=\"Mechanical\">mécanique</style> alliée adjacente est vaincue, elle est immédiatement réanimée avec un maximum de <style=\"Stat_Health\">{[hp]} santé</style>, sauf si elle a été <style=\"Overkill\">Exterminée</style>. Ne peut être activé qu'une fois par tour.",
+    "variables": {
+      "hp": [
+        60, 72, 84, 96, 108, 122, 136, 149, 163, 177, 191, 205, 218, 232, 246,
+        260, 274, 287, 301, 315, 334, 359, 414, 469, 523, 578, 632, 687, 742,
+        796, 851, 905, 960, 1015, 1069, 1124, 1178, 1233, 1288, 1364, 1472,
+        1586, 1708, 1844, 2090, 2337, 2584, 2830, 3077, 3324, 3360, 3405, 3450,
+        3510, 3570, 3630, 3690, 3765, 3840, 3915, 4005, 4095, 4185, 4275, 4365
+      ]
+    },
+    "constants": {},
+    "scaled": ["hp"]
+  }
+}

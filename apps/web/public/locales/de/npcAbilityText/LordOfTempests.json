@@ -1,0 +1,15 @@
+{
+  "LordOfTempests": {
+    "description": "<style=\"Faction_SpaceWolves\">Njals</style> <style=\"NormalAttack\">normale Angriffe</style> verursachen <style=\"Stat_Damage\">+{[extraDmg]} Schaden</style> für jedes ihn umgebende Feld, das mit <style=\"Effect_Ice\">Eis</style> bedeckt ist. Das Feld eines jeden Gegners, der von <style=\"Faction_SpaceWolves\">Njals</style> normalen Angriffen getroffen wird, wird am Ende des Angriffs mit <style=\"Effect_Ice\">Eis</style> bedeckt.",
+    "variables": {
+      "extraDmg": [
+        3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22,
+        23, 24, 28, 31, 35, 39, 42, 46, 49, 53, 57, 60, 64, 68, 71, 75, 79, 82,
+        86, 91, 98, 106, 114, 123, 139, 156, 172, 189, 205, 222, 223, 224, 225,
+        226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237
+      ]
+    },
+    "constants": {},
+    "scaled": ["extraDmg"]
+  }
+}

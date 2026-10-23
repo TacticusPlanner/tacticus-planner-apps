@@ -1,0 +1,8 @@
+{
+  "WarConstruct": {
+    "description": "Pendant 1 manche, si aucun ennemi n'est adjacent au <style=\"Faction_Aeldari\">Garde Fantôme</style>, il riposte immédiatement chaque fois qu'un ennemi à portée l'attaque lui-même ou une unité <style=\"Faction_Aeldari\">Aeldari</style> alliée adjacente.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

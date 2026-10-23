@@ -1,0 +1,10 @@
+{
+  "HeadwoppasKillchoppa": {
+    "description": "<style=\"Faction_Orks\">Boss Gulgortz</style> and all friendly <style=\"Faction_Orks\">Ork Boyz</style> deal <style=\"Stat_Damage\">+{[extraDmg]} Damage</style> with melee attacks for each enemy unit that Boss Gulgortz has defeated in this battle.",
+    "variables": {
+      "extraDmg": [195, 206, 216, 227, 237, 248, 258, 269, 279, 290]
+    },
+    "constants": {},
+    "scaled": []
+  }
+}

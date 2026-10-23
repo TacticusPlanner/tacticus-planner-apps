@@ -1,0 +1,10 @@
+{
+  "WallOfMirrors": {
+    "description": "Wenn sich der <style=\"Faction_Tau\">Geist-Kampfanzug</style> nicht bewegt hat, verschwindet er von seinem aktuellen Feld. Anschließend taucht er auf einem freien Feld auf dem Schlachtfeld wieder auf, von dem er einen <style=\"NormalAttack\">normalen Fernkampfangriff</style> gegen einen Gegner mit <style=\"Debuff_Markerlight\">Markierungslicht</style> ausführen kann. Dieser Angriff hat <style=\"Piercing_Ratio\">+{[extraPierce]} %Durchschlagchance</style>.",
+    "variables": {},
+    "constants": {
+      "extraPierce": "15"
+    },
+    "scaled": []
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "AllIsDust": {
+    "description": "Angriffe mit <style=\"Piercing_Ratio\">{[pierceRatio]} % Durchschlagchance</style> oder weniger gegen diese Einheit gelten als Angriffe mit <style=\"Piercing_Ratio\">1 % Durchschlagchance</style>.",
+    "variables": {},
+    "constants": {
+      "pierceRatio": "35"
+    },
+    "scaled": []
+  }
+}

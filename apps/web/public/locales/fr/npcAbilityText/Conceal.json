@@ -1,0 +1,10 @@
+{
+  "Conceal": {
+    "description": "Les unités <style=\"Faction_Aeldari\">Aeldari</style> dans un rayon de {[range]} hexagones ignorent leur trait <style=\"Battle_Fatigue\">Épuisement du combat</style>, si nécessaire, et sont considérées comme ayant le trait <style=\"Camouflage\">Camouflage</style>.",
+    "variables": {},
+    "constants": {
+      "range": "2"
+    },
+    "scaled": []
+  }
+}

@@ -7,7 +7,7 @@ import {
 import type { Rarity } from "@workspace/game-domain"
 import { cn } from "@workspace/ui/lib/utils"
 
-import type { AbilityTextEntry } from "@/shared/ability-text"
+import type { AbilityTextEntry, RulesText } from "@/shared/ability-text"
 
 import { AbilityPanel } from "../unit/ability-panel"
 import { DetailsCard } from "./character-details-sections"
@@ -35,6 +35,7 @@ export function RelicPanel({
   unitName,
   factionId,
   text,
+  rules,
   level,
   playerLevel,
   onLevelChange,
@@ -45,6 +46,7 @@ export function RelicPanel({
   unitName: string
   factionId: string
   text: AbilityTextEntry | undefined
+  rules: RulesText<unknown>
   level: number
   playerLevel?: number
   onLevelChange: (level: number) => void
@@ -91,6 +93,7 @@ export function RelicPanel({
         RARITY_BORDER[relic.rarity]
       )}
       text={text}
+      rules={rules}
       rarity={relic.rarity}
       unitName={unitName}
       factionId={factionId}

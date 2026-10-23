@@ -1,0 +1,33 @@
+{
+  "ChampionOfTheFeast": {
+    "description": "Après le déplacement, inflige <style=\"Stat_Hits\">{[nrOfHits]}x</style> <style=\"DMG_Power\">{[minDmg]}-{[maxDmg]} dégâts d'intensité</style> à un ennemi adjacent et réduit l'armure de cet ennemi de <style=\"Stat_Armor\">{[armorReduction]} armure</style> pour le reste de la bataille. Si le <style=\"Faction_BlackTemplars\">Frère d'Épée Godswyl</style> ne se déplace pas, cette capacité se déclenche à la fin de son tour.",
+    "variables": {
+      "minDmg": [
+        25, 30, 35, 40, 45, 51, 57, 62, 68, 74, 80, 85, 91, 97, 103, 108, 114,
+        120, 126, 131, 139, 150, 173, 195, 218, 241, 264, 286, 309, 332, 355,
+        377, 400, 423, 446, 468, 491, 514, 537, 569, 614, 661, 712, 768, 871,
+        974, 1077, 1179, 1282, 1385, 1400, 1419, 1438, 1463, 1488, 1513, 1538,
+        1569, 1600, 1631, 1669, 1706, 1744, 1781, 1819
+      ],
+      "maxDmg": [
+        35, 42, 49, 56, 63, 71, 79, 87, 95, 103, 111, 119, 127, 135, 144, 152,
+        160, 168, 176, 184, 195, 210, 242, 273, 305, 337, 369, 401, 433, 464,
+        496, 528, 560, 592, 624, 656, 687, 719, 751, 796, 859, 925, 996, 1076,
+        1219, 1363, 1507, 1651, 1795, 1939, 1960, 1986, 2013, 2048, 2083, 2118,
+        2153, 2196, 2240, 2284, 2336, 2389, 2441, 2494, 2546
+      ],
+      "armorReduction": [
+        10, 12, 14, 16, 18, 20, 23, 25, 27, 30, 32, 34, 36, 39, 41, 43, 46, 48,
+        50, 53, 56, 60, 69, 78, 87, 96, 105, 115, 124, 133, 142, 151, 160, 169,
+        178, 187, 196, 206, 215, 227, 245, 264, 285, 307, 348, 390, 431, 472,
+        513, 554, 560, 568, 575, 585, 595, 605, 615, 628, 640, 653, 668, 683,
+        698, 713, 728
+      ]
+    },
+    "constants": {
+      "damageProfile": "Power",
+      "nrOfHits": "1"
+    },
+    "scaled": ["minDmg", "maxDmg", "armorReduction"]
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "PowerUp_Armor": {
+    "description": "Wenn eine Einheit diese Verstärkung einsammelt, wird ihre <style=\"Stat_Armor\">Rüstung</style> um {[healthPct]} % ihrer maximalen <style=\"Stat_Health\">Lebenspunkte</style> erhöht.",
+    "variables": {},
+    "constants": {
+      "healthPct": "100"
+    },
+    "scaled": []
+  }
+}

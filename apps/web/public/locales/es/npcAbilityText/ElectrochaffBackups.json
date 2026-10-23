@@ -1,0 +1,12 @@
+{
+  "ElectrochaffBackups": {
+    "description": "Las unidades enemigas que tienen una <style=\"Debuff_Markerlight\">Luz de señalización</style> o que recibieron daño de un ataque a distancia infligen <style=\"Stat_Damage\">-{[dmgReductionPct]} % de Daño</style> a los <style=\"Character\">personajes</style> <style=\"Rarity_Mythic\">Míticos</style> por {[nrOfRounds]} ronda.",
+    "variables": {
+      "dmgReductionPct": [10, 13, 16, 20]
+    },
+    "constants": {
+      "nrOfRounds": "1"
+    },
+    "scaled": ["dmgReductionPct"]
+  }
+}

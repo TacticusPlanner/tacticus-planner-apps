@@ -1,0 +1,12 @@
+{
+  "Reveal": {
+    "description": "Ein Gegner in bis zu {[range]} Feldern Entfernung, der noch nicht <style=\"Debuff_Revealed\">enthüllt</style> wurde und eine verbündete <style=\"Faction_Aeldari\">Aeldari</style>-Einheit in diesem Kampf besiegt hat, wird für {[nrOfRounds]} Runden <style=\"Debuff_Revealed\">enthüllt</style>. Verbündete <style=\"Faction_Aeldari\">Aeldari</style>, die <style=\"Debuff_Revealed\">enthüllte</style> Gegner angreifen, ignorieren jegliche Trefferreduzierung und verursachen <style=\"Stat_Damage\">+{[extraDmgPct]} % Schaden</style>.",
+    "variables": {},
+    "constants": {
+      "extraDmgPct": "33",
+      "nrOfRounds": "3",
+      "range": "2"
+    },
+    "scaled": []
+  }
+}

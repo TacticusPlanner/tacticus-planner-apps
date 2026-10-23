@@ -1,0 +1,11 @@
+{
+  "DaemonfleshPlate": {
+    "description": "Jedes Mal, wenn der Reliktträger angreift, erlangt er <style=\"Stat_Armor\">+{[extraArmor]} Rüstung</style>. Nach <style=\"STAT\">{[nrOfAttacks]}</style> Angriffen wird der Bonus zurückgesetzt und der Reliktträger kann seine aktive Fähigkeit erneut einsetzen.",
+    "variables": {
+      "extraArmor": [145, 153, 161, 168, 176, 184, 192, 200, 208, 215],
+      "nrOfAttacks": [8, 8, 8, 8, 8, 7, 7, 7, 7, 7]
+    },
+    "constants": {},
+    "scaled": []
+  }
+}

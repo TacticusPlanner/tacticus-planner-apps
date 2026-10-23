@@ -1,0 +1,10 @@
+{
+  "MoreGitzOverEre": {
+    "description": "Gegner, die direkt an ein verbündetes <style=\"Faction_Orks\">Squig</style> oder zwei oder mehr verbündete <style=\"Rarity_Mythic\">mythische</style> <style=\"Character\">Charaktere</style> angrenzen, erleiden <style=\"Stat_Damage\">+{[extraDmgPct]} % Schaden</style> durch <style=\"NormalAttack\">normale Nahkampfangriffe</style> <style=\"Rarity_Mythic\">mythischer</style> Charaktere.",
+    "variables": {
+      "extraDmgPct": [10, 13, 16, 20]
+    },
+    "constants": {},
+    "scaled": ["extraDmgPct"]
+  }
+}

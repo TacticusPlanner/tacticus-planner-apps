@@ -1,0 +1,19 @@
+{
+  "TreasonOfTzeentch": {
+    "description": "Creates a copy of an enemy character in a random hex within 3 hexes of <style=\"Faction_ThousandSons\">Magnus</style>. The copy fights on the side of Magnus and has <style=\"Stat\">{[hpPct]}%</style> of the original character's maximum <style=\"Stat_Health\">Health</style>. All other stats and ability levels are identical.\nWhen a character attacks Magnus while the clone of that character is on the battlefield, the character and the clone swap places.",
+    "variables": {
+      "hpPct": [
+        80, 80, 80, 80, 80, 80, 80, 80, 85, 85, 85, 85, 85, 85, 85, 85, 85, 90,
+        90, 90, 90, 90, 90, 90, 90, 90, 95, 95, 95, 95, 95, 95, 95, 95, 95, 100,
+        100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
+        100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
+        100
+      ]
+    },
+    "constants": {
+      "range": "3",
+      "maxUse": "3"
+    },
+    "scaled": []
+  }
+}

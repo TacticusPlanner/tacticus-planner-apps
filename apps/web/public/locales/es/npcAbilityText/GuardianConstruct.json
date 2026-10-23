@@ -1,0 +1,10 @@
+{
+  "GuardianConstruct": {
+    "description": "Los <style=\"Character\">personajes</style> <style=\"Rarity_Mythic\">Míticos</style> aliados que están afectados por <i>Protocolos de Reparación de Nanoescarabajos</i> infligen <style=\"Stat_Damage\">+{[extraDmgPct]}% de Daño</style>.",
+    "variables": {
+      "extraDmgPct": [10, 13, 16, 20]
+    },
+    "constants": {},
+    "scaled": ["extraDmgPct"]
+  }
+}

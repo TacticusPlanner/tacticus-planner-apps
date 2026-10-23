@@ -1,0 +1,10 @@
+{
+  "WyrdmakersHelm": {
+    "description": "During his turn, each time <style=\"Faction_SpaceWolves\">Baldr</style> or an adjacent friendly unit gets <style=\"Healing\">healed</style> for the first time this turn, Baldr immediately performs a <style=\"NormalAttack\">normal melee attack</style>. These attacks deal <style=\"Stat_Damage\">+{[extraDmg]} Damage</style> and add <style=\"Effect_Ice\">Ice</style> to the target's hex.",
+    "variables": {
+      "extraDmg": [490, 516, 543, 569, 596, 622, 649, 675, 702, 728]
+    },
+    "constants": {},
+    "scaled": []
+  }
+}

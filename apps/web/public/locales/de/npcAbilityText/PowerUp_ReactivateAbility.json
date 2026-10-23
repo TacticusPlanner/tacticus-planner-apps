@@ -1,0 +1,8 @@
+{
+  "PowerUp_ReactivateAbility": {
+    "description": "Wenn eine Einheit diese Verstärkung einsammelt, kann sie ihre aktive Fähigkeit während des laufenden Kampfes erneut einsetzen.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

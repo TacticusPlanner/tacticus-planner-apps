@@ -1,0 +1,10 @@
+{
+  "AdrenalGlands": {
+    "description": "May move with <style=\"Stat_Movement\">+{[extraMovement]} Movement</style> if that move ends in a hex adjacent to an enemy",
+    "variables": {},
+    "constants": {
+      "extraMovement": "1"
+    },
+    "scaled": []
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "FuryFromTheDelve": {
+    "description": "Les <style=\"NormalAttack\">attaques normales</style> de <style=\"Faction_LeaguesOfVotann\">Hâvyr</style> <style=\"Debuff_Pinned\">neutralisent</style> les ennemis qui disposent de plus de <style=\"Stat_Health\">{[hpPct]} % de leur santé</style>. Après avoir effectué une attaque normale contre des ennemis disposant de <style=\"Stat_Health\">{[hpPct]} % de leur santé</style> ou moins, Hâvyr porte une attaque supplémentaire contre eux, infligeant <style=\"Stat_Hits\">{[nrOfHits]}x</style> <style={[DamageProfileTypeStyle]}>{[minDmg]}-{[maxDmg]} {[DamageProfileType]}</style>.",
+    "variables": {
+      "minDmg": [
+        36, 43, 50, 58, 65, 73, 81, 90, 98, 106, 114, 123, 131, 139, 148, 156,
+        164, 172, 181, 189, 200, 216, 248, 281, 314, 347, 379, 412, 445, 478,
+        510, 543, 576, 609, 642, 674, 707, 740, 773, 819, 883, 951, 1025, 1106,
+        1254, 1402, 1550, 1698, 1846, 1994, 2016, 2043, 2070, 2106, 2142, 2178,
+        2214, 2259, 2304, 2349, 2403, 2457, 2511, 2565, 2619
+      ],
+      "maxDmg": [
+        44, 53, 62, 70, 79, 89, 99, 110, 120, 130, 140, 150, 160, 170, 180, 191,
+        201, 211, 221, 231, 245, 264, 304, 344, 384, 424, 464, 504, 544, 584,
+        624, 664, 704, 744, 784, 824, 864, 904, 944, 1001, 1080, 1163, 1253,
+        1352, 1533, 1714, 1895, 2075, 2256, 2437, 2464, 2497, 2530, 2574, 2618,
+        2662, 2706, 2761, 2816, 2871, 2937, 3003, 3069, 3135, 3201
+      ]
+    },
+    "constants": {
+      "hpPct": "50",
+      "nrOfHits": "2",
+      "damageProfile": "Eviscerate"
+    },
+    "scaled": ["minDmg", "maxDmg"]
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "Reveal": {
+    "description": "Un enemigo dentro de {[range]} hexágonos que no se haya <style=\"Debuff_Revealed\">revelado</style> y que haya derrotado a una unidad <style=\"Faction_Aeldari\">Aeldari</style> aliada durante esta batalla se <style=\"Debuff_Revealed\">revela</style> durante {[nrOfRounds]} rondas. Los <style=\"Faction_Aeldari\">Aeldari</style> aliados que atacan a enemigos <style=\"Debuff_Revealed\">revelados</style> ignoran cualquier reducción de impacto e infligen <style=\"Stat_Damage\">+{[extraDmgPct]} % de Daño</style>.",
+    "variables": {},
+    "constants": {
+      "extraDmgPct": "33",
+      "nrOfRounds": "3",
+      "range": "2"
+    },
+    "scaled": []
+  }
+}

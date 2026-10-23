@@ -1,0 +1,13 @@
+{
+  "Lakrimae": {
+    "description": "<style=\"Faction_DeathGuard\">Typhus'</style> <style=\"NormalAttack\">normal melee attacks</style> add <style=\"Tile_Contamination\">Contamination</style> to the target's hex. During his turn, when a non-mechanical enemy unit within Typhus' <style=\"ContagionsOfNurgle\">Contagion</style> aura is killed, he summons a <style=\"Summon\"><style=\"Faction_DeathGuard\">Poxwalker</style></style> in the hex of the defeated unit, as long as there are less than {[nrOfUnits]} friendly Poxwalkers on the battlefield. The Poxwalkers have <style=\"Stat_Health\">{[summonHp]} Health</style> and <style=\"Stat_Damage\">{[summonDmg]} Damage</style>.",
+    "variables": {
+      "summonHp": [2940, 3099, 3257, 3416, 3575, 3733, 3892, 4051, 4210, 4368],
+      "summonDmg": [3425, 3610, 3795, 3980, 4165, 4349, 4534, 4719, 4904, 5089]
+    },
+    "constants": {
+      "nrOfUnits": "3"
+    },
+    "scaled": []
+  }
+}

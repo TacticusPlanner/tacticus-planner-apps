@@ -1,0 +1,14 @@
+{
+  "PhasalSubjugator": {
+    "description": "Después de moverse, si no hay ningún <style=\"Summon\"><style=\"Faction_Necrons\">Guerrero Necrón</style></style> aliado en el campo de batalla, <style=\"Faction_Necrons\">Anuphet</style> invoca a un Guerrero Necrón en un hexágono adyacente libre. Si Anuphet no se mueve, esta habilidad se activa al final de su turno. Después de que se active <i>Se hará mi voluntad</i>, se activa una segunda vez, pero solo un Guerrero Necrón aliado adyacente que no haya sido afectado por ella este turno puede realizar un ataque. Los Guerreros Necrón tienen <style=\"Stat_Health\">{[summonHp]} de Salud</style>, <style=\"Stat_Damage\">{[summonDmg]} de Daño</style> y <style=\"Stat_Armor\">{[summonArmor]} de Armadura</style>.",
+    "variables": {
+      "summonHp": [5875, 6192, 6509, 6826, 7143, 7461, 7778, 8095, 8412, 8729],
+      "summonDmg": [1960, 2066, 2172, 2277, 2383, 2489, 2595, 2701, 2806, 2912],
+      "summonArmor": [
+        1470, 1549, 1629, 1708, 1787, 1867, 1946, 2025, 2105, 2184
+      ]
+    },
+    "constants": {},
+    "scaled": []
+  }
+}

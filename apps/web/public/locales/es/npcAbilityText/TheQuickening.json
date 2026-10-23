@@ -1,0 +1,25 @@
+{
+  "TheQuickening": {
+    "description": "Fija como objetivo un hexágono dentro del rango de movimiento {[range]} que no esté ocupado por un enemigo ni por una unidad aliada en <style=\"Teleport_Strike_short\">Ataque Profundo</style>. <style=\"Faction_BloodAngels\">Mephiston</style> se mueve a ese hexágono. Si una unidad aliada está en ese hexágono, esa unidad se mueve a la ubicación anterior de Mephiston. Todos los <style=\"Faction_BloodAngels\">Ángeles Sangrientos</style> que se muevan de esta manera realizan un <style=\"NormalAttack\">ataque cuerpo a cuerpo normal</style> después de moverse, infligiendo <style=\"STAT\">{[dmgPct]}%</style> de su propio daño hasta un máximo de <style=\"Stat_Damage\">{[maxDmg]}de Daño</style>. Las unidades que se mueven de esta manera no activan <style=\"Buff_Overwatching\">Vigilancia</style> u otras reacciones relacionadas con el movimiento.",
+    "variables": {
+      "maxDmg": [
+        50, 60, 70, 80, 90, 102, 113, 125, 136, 148, 159, 171, 182, 194, 205,
+        217, 228, 240, 251, 263, 278, 300, 345, 391, 436, 482, 527, 573, 618,
+        664, 709, 755, 800, 846, 891, 937, 982, 1028, 1073, 1137, 1227, 1322,
+        1424, 1537, 1742, 1948, 2153, 2359, 2564, 2770, 2800, 2838, 2875, 2925,
+        2975, 3025, 3075, 3138, 3200, 3263, 3338, 3413, 3488, 3563, 3638
+      ],
+      "dmgPct": [
+        100, 100, 100, 100, 100, 100, 100, 100, 105, 105, 105, 105, 105, 105,
+        105, 105, 105, 110, 110, 110, 110, 110, 110, 110, 110, 110, 115, 115,
+        115, 115, 115, 115, 115, 115, 115, 120, 120, 120, 120, 120, 120, 120,
+        120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120,
+        120, 120, 120, 120, 120, 120, 120, 120, 120
+      ]
+    },
+    "constants": {
+      "range": "2"
+    },
+    "scaled": ["maxDmg"]
+  }
+}

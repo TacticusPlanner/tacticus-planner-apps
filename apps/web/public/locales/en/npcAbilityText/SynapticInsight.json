@@ -1,0 +1,10 @@
+{
+  "SynapticInsight": {
+    "description": "This unit's ranged attacks score <style=\"Stat_Hits\">+{[extraHit]} hits</style> against targets that are within <style=\"Synapse\">Synapse</style> range or adjacent to another <style=\"Faction_Tyranids\">Tyranid</style>.",
+    "variables": {},
+    "constants": {
+      "extraHit": "2"
+    },
+    "scaled": []
+  }
+}

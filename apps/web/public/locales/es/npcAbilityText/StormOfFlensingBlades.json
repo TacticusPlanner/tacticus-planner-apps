@@ -1,0 +1,8 @@
+{
+  "StormOfFlensingBlades": {
+    "description": "Ataca a un enemigo adyacente dos veces seguidas, siempre que el <style=\"Faction_Necrons\">Desollador</style> haya empezado el turno adyacente a él.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

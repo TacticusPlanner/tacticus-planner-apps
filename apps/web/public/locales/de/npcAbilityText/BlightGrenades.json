@@ -1,0 +1,27 @@
+{
+  "BlightGrenades": {
+    "description": "Verursacht <style=\"Stat_Hits\">{[nrOfHits]}x</style> <style=\"DMG_Toxic\">{[minDmg]}–{[maxDmg]} Toxischen Schaden</style> an einer gegnerischen Einheit in Reichweite {[range]}, die sich nicht auf einem <style=\"Tile_Contamination\">kontaminierten</style> Feld befindet, und an bis zu zwei gegnerischen Einheiten hinter dem Ziel. Diese Fähigkeit profitiert von <style=\"Indirect_Fire\">Indirektes Feuer</style>.\n\n{[S/AbilityDamageExplanation]}",
+    "variables": {
+      "minDmg": [
+        21, 25, 29, 34, 38, 43, 47, 52, 57, 62, 67, 72, 76, 81, 86, 91, 96, 101,
+        105, 110, 117, 126, 145, 164, 183, 202, 221, 240, 260, 279, 298, 317,
+        336, 355, 374, 393, 412, 432, 451, 478, 515, 555, 598, 645, 732, 818,
+        904, 991, 1077, 1163, 1176, 1192, 1208, 1229, 1250, 1271, 1292, 1318,
+        1344, 1370, 1402, 1433, 1465, 1496, 1528
+      ],
+      "maxDmg": [
+        28, 34, 39, 45, 50, 57, 63, 70, 76, 83, 89, 95, 102, 108, 115, 121, 128,
+        134, 141, 147, 156, 168, 193, 219, 244, 270, 295, 321, 346, 372, 397,
+        423, 448, 473, 499, 524, 550, 575, 601, 637, 687, 740, 797, 860, 976,
+        1091, 1206, 1321, 1436, 1551, 1568, 1589, 1610, 1638, 1666, 1694, 1722,
+        1757, 1792, 1827, 1869, 1911, 1953, 1995, 2037
+      ]
+    },
+    "constants": {
+      "damageProfile": "Toxic",
+      "nrOfHits": "1",
+      "range": "2"
+    },
+    "scaled": ["minDmg", "maxDmg"]
+  }
+}

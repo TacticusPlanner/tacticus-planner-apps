@@ -1,0 +1,8 @@
+{
+  "StormOfFlensingBlades": {
+    "description": "Attacks an adjacent enemy twice in a row, as long as the <style=\"Faction_Necrons\">Flayed One</style> started the turn adjacent to it.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

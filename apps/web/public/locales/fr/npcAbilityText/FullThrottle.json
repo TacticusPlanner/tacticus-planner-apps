@@ -1,0 +1,11 @@
+{
+  "FullThrottle": {
+    "description": "Lorsque cette unité se déplace de <style=\"Stat_Movement\">{[movement]}</style> hexagones ou plus, il y a {[chance]} % de chances que sa rokette subisse une défaillance et réduise le <style=\"Faction_Orks\">Chokboy</style> en cendres. Dans ce cas, il est impossible de ranimer l'unité.",
+    "variables": {},
+    "constants": {
+      "movement": "3",
+      "chance": "30"
+    },
+    "scaled": []
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "CabalOfSorcerers": {
+    "description": "Verbündete <style=\"Rarity_Mythic\">Mythische</style> <style=\"Psyker\">Psioniker</style>-<style=\"Character\">Charaktere</style> verursachen <style=\"Stat_Damage\">+{[extraDmgPct]} % Schaden</style>, wenn sie an <style=\"Faction_ThousandSons\">Z’Kar</style> oder einem anderen verbündeten <style=\"Rarity_Mythic\">Mythischen</style> <style=\"Psyker\">Psioniker</style>-<style=\"Character\">Charakter</style> angrenzen.",
+    "variables": {
+      "extraDmgPct": [10, 13, 16, 20]
+    },
+    "constants": {},
+    "scaled": ["extraDmgPct"]
+  }
+}

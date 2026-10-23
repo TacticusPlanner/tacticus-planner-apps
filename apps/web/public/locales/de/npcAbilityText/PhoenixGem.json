@@ -1,0 +1,10 @@
+{
+  "PhoenixGem": {
+    "description": "Wenn <style=\"Faction_Aeldari\">Aethana</style> in einem Kampf erstmalig besiegt wird, wird sie stattdessen mit maximal <style=\"Stat_Health\">{[hp]} Lebenspunkten</style> wiederbelebt – auch dann, wenn ein <style=\"Overkill\">Overkill</style> erfolgt ist.",
+    "variables": {
+      "hp": [3915, 4126, 4338, 4549, 4760, 4972, 5183, 5394, 5606, 5817]
+    },
+    "constants": {},
+    "scaled": []
+  }
+}

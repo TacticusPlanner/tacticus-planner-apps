@@ -1,0 +1,14 @@
+{
+  "Maugetar": {
+    "description": "Wenn sich <style=\"Faction_Aeldari\">Maugan Ra</style> während seines Zuges noch nicht bewegt hat, kann er sich nach seinem Angriff bewegen. Wenn einer seiner Angriffe einen <style=\"Stat_CritDamage\">kritischen Treffer</style> zufügt, verursacht er zusätzlich <style=\"Stat_Hits\">{[nrOfHits]}x</style> <style=\"DMG_Direct\">{[minDmg]}–{[maxDmg]} Direkten Schaden</style>. Bei der <style=\"Buff_Overwatching\">Aufklärung</style> verursachen seine <style=\"Stat_CritDamage\">kritischen Treffer</style> diesen zusätzlichen <style=\"Stat_Hits\">Treffer</style> immer dann, wenn er sich in seinem letzten Zug nicht bewegt hat.",
+    "variables": {
+      "minDmg": [1765, 1860, 1956, 2051, 2146, 2241, 2337, 2432, 2527, 2622],
+      "maxDmg": [2350, 2477, 2604, 2731, 2857, 2984, 3111, 3238, 3365, 3492]
+    },
+    "constants": {
+      "nrOfHits": "1",
+      "damageProfile": "DirectDamage"
+    },
+    "scaled": []
+  }
+}

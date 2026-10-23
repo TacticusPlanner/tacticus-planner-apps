@@ -1,0 +1,23 @@
+{
+  "SanguinaryPriest": {
+    "description": "Nach seiner Bewegung <style=\"Regenerate\">regenerieren</style> alle angrenzenden, verbündeten und nicht-mechanischen Einheiten <style=\"Stat_Health\">{[hpToHeal]}–{[maxHpToHeal]} Lebenspunkte</style>. Wenn <style=\"Faction_BloodAngels\">Nicodemus</style> keine Bewegung ausführt, wird diese Fähigkeit am Ende seines Zugs ausgelöst.",
+    "variables": {
+      "hpToHeal": [
+        15, 18, 21, 24, 27, 30, 34, 37, 41, 44, 48, 51, 55, 58, 62, 65, 68, 72,
+        75, 79, 83, 90, 104, 117, 131, 144, 158, 172, 185, 199, 213, 226, 240,
+        254, 267, 281, 295, 308, 322, 341, 368, 396, 427, 461, 523, 584, 646,
+        708, 769, 831, 840, 851, 863, 878, 893, 908, 923, 941, 960, 979, 1001,
+        1024, 1046, 1069, 1091
+      ],
+      "maxHpToHeal": [
+        22, 26, 31, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100,
+        105, 110, 116, 122, 132, 152, 172, 192, 212, 232, 252, 272, 292, 312,
+        332, 352, 372, 392, 412, 432, 452, 472, 500, 540, 581, 626, 676, 766,
+        857, 947, 1038, 1128, 1219, 1232, 1249, 1265, 1287, 1309, 1331, 1353,
+        1381, 1408, 1436, 1469, 1502, 1535, 1568, 1601
+      ]
+    },
+    "constants": {},
+    "scaled": ["hpToHeal", "maxHpToHeal"]
+  }
+}

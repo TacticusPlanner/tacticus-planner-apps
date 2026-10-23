@@ -1,0 +1,30 @@
+{
+  "TzeentchsFirestorm": {
+    "description": "Marks all hexes exactly {[range_2]} hexes away from <style=\"Faction_ThousandSons\">Magnus</style> in a ring around him. At the beginning of his next turn, all enemy units on marked hexes receive <style=\"Stat_Hits\">{[nrOfHits]}x </style> <style=\"DMG_Flame\">{[minDmg]}-{[maxDmg]} Flame Damage</style>. For the next 2 turns, the process repeats, reducing the ring radius by {[range]} and increasing hits to enemies in marked hexes by <style=\"Stat_Hits\">{[extraHits]}</style> each turn. Magnus can move independently of the ring after the initial turn of casting.\n\n{[S/AbilityDamageExplanation]}",
+    "variables": {
+      "minDmg": [
+        27, 32, 38, 43, 49, 55, 61, 67, 73, 80, 86, 92, 98, 104, 111, 117, 123,
+        129, 136, 142, 150, 162, 186, 211, 235, 260, 285, 309, 334, 358, 383,
+        407, 432, 457, 481, 506, 530, 555, 579, 614, 663, 714, 769, 830, 941,
+        1052, 1163, 1274, 1385, 1496, 1618, 1670, 1723, 1785, 1847, 1911, 1976,
+        2050, 2125, 2202, 2289, 2377, 2467, 2559, 2652
+      ],
+      "maxDmg": [
+        36, 43, 50, 58, 65, 73, 81, 90, 98, 106, 114, 123, 131, 139, 148, 156,
+        164, 172, 181, 189, 200, 216, 248, 281, 314, 347, 379, 412, 445, 478,
+        510, 543, 576, 609, 642, 674, 707, 740, 773, 819, 883, 951, 1025, 1106,
+        1254, 1402, 1550, 1698, 1846, 1994, 2157, 2227, 2298, 2380, 2463, 2548,
+        2635, 2733, 2834, 2936, 3052, 3170, 3289, 3411, 3536
+      ]
+    },
+    "constants": {
+      "damageProfile": "Flame",
+      "nrOfHits": "3",
+      "extraHits": "3",
+      "range": "1",
+      "range_2": "2",
+      "cooldownTurns": "2"
+    },
+    "scaled": ["minDmg", "maxDmg"]
+  }
+}

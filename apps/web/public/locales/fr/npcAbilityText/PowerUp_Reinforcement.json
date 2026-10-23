@@ -1,0 +1,8 @@
+{
+  "PowerUp_Reinforcement": {
+    "description": "Lorsqu'elle est choisie par une unité alliée, cette amélioration ajoute 1 point de renfort.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

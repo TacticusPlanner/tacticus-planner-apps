@@ -1,0 +1,10 @@
+{
+  "Hypermorph": {
+    "description": "Gains extra <style=\"Stat_Damage\">Damage</style> equal to <style=\"STAT\">{[healthPct]}%</style> of current <style=\"Stat_Health\">Health</style>.",
+    "variables": {},
+    "constants": {
+      "healthPct": "15"
+    },
+    "scaled": []
+  }
+}

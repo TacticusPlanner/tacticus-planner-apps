@@ -1,0 +1,10 @@
+{
+  "PowerUp_Hits": {
+    "description": "Lorsqu'elle est choisie par cette unité, cette amélioration augmente le nombre de <style=\"Stat_Hits\">coups</style> portés lors des attaques de +{[extraHit]}.",
+    "variables": {},
+    "constants": {
+      "extraHit": "2"
+    },
+    "scaled": []
+  }
+}

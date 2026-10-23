@@ -40,10 +40,14 @@ declare module "i18next" {
       // NPC variation ids -> localized unit name (ported from V1 npc_names; see the npc-library change).
       npcs: Record<string, string>
       abilities: Record<string, string>
-      // Structured rules text (description + per-ability-level variable tables), read via
-      // `i18n.getResource` — see `shared/ability-text` use-ability-text.
-      npcAbilityText: Record<string, unknown>
+      // Structured trait rules text, read via `i18n.getResource` — see `shared/ability-text`
+      // use-ability-text. Ability rules text is one namespace per ability (`npcAbilityText/<id>`,
+      // with `npcAbilityTextGaps` listing the ids without one), loaded by `useRulesText`, which
+      // names them as plain strings, so they are not listed here.
       npcTraitText: Record<string, unknown>
+      // Sorted ability ids whose English rules text summons a unit (generated with the rules text);
+      // read via `i18n.getResourceBundle` by the HRE team recommender.
+      npcAbilitySummoners: Record<string, unknown>
       // Mythic quest task templates (loca key -> template), ported from V1. English-only; read via
       // `i18n.getResource` — see the library character unit page.
       mythicQuestTasks: Record<string, string>
@@ -52,9 +56,9 @@ declare module "i18next" {
       raidBosses: Record<string, string>
       raidBossAbilities: Record<string, string>
       raidBossTraits: Record<string, string>
-      // Structured rules-text (description + per-level variable/constant tables), keyed by ability /
-      // trait id. Read via `i18n.getResource`, not `t()` — see `entities/raid-boss` use-raid-boss-text.
-      raidBossAbilityText: Record<string, unknown>
+      // Structured trait rules text, keyed by trait id. Read via `i18n.getResource`, not `t()` — see
+      // `entities/raid-boss` use-raid-boss-text (ability rules text is one `raidBossAbilityText/<id>`
+      // namespace per ability, named as a plain string there).
       raidBossTraitText: Record<string, unknown>
       // Horde-mode strategy text (character id -> strengths / howToUse / relicAdvice), curated
       // content for the Tier List. Read via `i18n.getResource` — see `entities/legendary-event`

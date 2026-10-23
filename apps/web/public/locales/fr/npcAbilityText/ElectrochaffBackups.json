@@ -1,0 +1,12 @@
+{
+  "ElectrochaffBackups": {
+    "description": "Les unités ennemies affublées d'un <style=\"Debuff_Markerlight\">pointeur lumineux</style> ou qui ont subi une attaque à distance infligent <style=\"Stat_Damage\">-{[dmgReductionPct]} % de dégâts</style> aux <style=\"Character\">personnages</style> <style=\"Rarity_Mythic\">Mythiques</style> pendant {[nrOfRounds]} manche.",
+    "variables": {
+      "dmgReductionPct": [10, 13, 16, 20]
+    },
+    "constants": {
+      "nrOfRounds": "1"
+    },
+    "scaled": ["dmgReductionPct"]
+  }
+}

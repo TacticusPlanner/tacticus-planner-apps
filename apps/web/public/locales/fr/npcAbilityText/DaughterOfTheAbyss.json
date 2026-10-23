@@ -1,0 +1,30 @@
+{
+  "DaughterOfTheAbyss": {
+    "description": "<style=\"Faction_Custodes\">Atlacoya</style> subit <style=\"DMG_Psychic\">-{[dmgReduction]} dégâts psychiques</style>. Les <style=\"DMG_Psychic\">dégâts psychiques</style> infligés à d'autres unités alliées distantes de {[range]} hexagones d'Atlacoya sont réduits de <style=\"Stat\">{[dmgReductionPct]} %</style>. Les <style=\"Psyker\">Psykers</style> ennemis distants de {[range]} hexagones subissent <style=\"Stat_Damage\">+{[extraDmgPct]} % de dégâts</style>.",
+    "variables": {
+      "dmgReduction": [
+        26, 31, 36, 42, 47, 53, 59, 65, 71, 77, 83, 89, 95, 101, 107, 113, 119,
+        125, 131, 137, 145, 156, 179, 203, 227, 250, 274, 298, 321, 345, 369,
+        392, 416, 440, 463, 487, 511, 534, 558, 591, 638, 687, 740, 799, 906,
+        1013, 1120, 1226, 1333, 1440, 1456, 1476, 1495, 1521, 1547, 1573, 1599,
+        1632, 1664, 1697, 1736, 1775, 1814, 1853, 1892
+      ],
+      "dmgReductionPct": [
+        25, 25, 25, 25, 25, 25, 25, 25, 27, 27, 27, 27, 27, 27, 27, 27, 27, 29,
+        29, 29, 29, 29, 29, 29, 29, 29, 31, 31, 31, 31, 31, 31, 31, 31, 31, 33,
+        33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33,
+        33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33
+      ],
+      "extraDmgPct": [
+        15, 15, 15, 15, 15, 15, 15, 15, 16, 16, 16, 16, 16, 16, 16, 16, 16, 17,
+        17, 17, 17, 17, 17, 17, 17, 17, 18, 18, 18, 18, 18, 18, 18, 18, 18, 20,
+        20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20,
+        20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20
+      ]
+    },
+    "constants": {
+      "range": "2"
+    },
+    "scaled": ["dmgReduction"]
+  }
+}

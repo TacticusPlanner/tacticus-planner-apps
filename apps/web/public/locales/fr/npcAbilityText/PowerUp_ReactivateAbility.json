@@ -1,0 +1,8 @@
+{
+  "PowerUp_ReactivateAbility": {
+    "description": "Lorsqu'elle est choisie par cette unité, cette amélioration lui permet d'utiliser à nouveau sa capacité active au cours de cette bataille.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

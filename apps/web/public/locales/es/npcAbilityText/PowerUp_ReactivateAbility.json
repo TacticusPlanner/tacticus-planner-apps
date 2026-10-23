@@ -1,0 +1,8 @@
+{
+  "PowerUp_ReactivateAbility": {
+    "description": "Cuando una unidad lo recolecta, este potenciador le permite usar su habilidad activa una vez más durante la batalla en curso.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "HuntersBeyondDeath": {
+    "description": "Inflige <style=\"Stat_Damage\">+{[extraDmg]} de Daño</style> contra <style=\"Psyker\">Psíquicos</style>, y los <style=\"Psyker\">Psíquicos</style> enemigos dentro de 2 hexágonos de distancia infligen <style=\"Stat_Damage\">-{[dmgReduction]} de Daño</style>.\n\nA menos que sean <style=\"Immune\">Inmunes</style>, los <style=\"Psyker\">Psíquicos</style> enemigos dentro de 2 hexágonos de distancia no impactarán a una unidad adicional con sus <style=\"NormalAttack\">ataques a distancia normales</style>.",
+    "variables": {
+      "extraDmg": [
+        8, 10, 11, 13, 14, 16, 18, 20, 22, 24, 25, 27, 29, 31, 33, 35, 36, 38,
+        40, 42, 44, 48, 55, 62, 70, 77, 84, 92, 99, 106, 113, 121, 128, 135,
+        143, 150, 157, 164, 172, 182, 196, 211, 228, 246, 279, 312, 344, 377,
+        410, 443, 448, 454, 460, 468, 476, 484, 492, 502, 512, 522, 534, 546,
+        558, 570, 582
+      ],
+      "dmgReduction": [
+        8, 10, 11, 13, 14, 16, 18, 20, 22, 24, 25, 27, 29, 31, 33, 35, 36, 38,
+        40, 42, 44, 48, 55, 62, 70, 77, 84, 92, 99, 106, 113, 121, 128, 135,
+        143, 150, 157, 164, 172, 182, 196, 211, 228, 246, 279, 312, 344, 377,
+        410, 443, 448, 454, 460, 468, 476, 484, 492, 502, 512, 522, 534, 546,
+        558, 570, 582
+      ]
+    },
+    "constants": {},
+    "scaled": ["extraDmg", "dmgReduction"]
+  }
+}

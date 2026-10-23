@@ -1,0 +1,10 @@
+{
+  "Vitarus": {
+    "description": "Los hexágonos de cada enemigo impactado por un <style=\"NormalAttack\">ataque cuerpo a cuerpo normal</style> de <style=\"Faction_BloodAngels\">Mephiston</style> o por <i>Furia de los Ancianos</i> son prendidos <style=\"Effect_Fire\">Fuego</style>. Si estos ataques impactan enemigos sobre hexágonos prendidos <style=\"Effect_Fire\">Fuego</style>, infligen <style=\"Stat_Damage\">+{[extraDmg]} de Daño</style> y extinguen el <style=\"Effect_Fire\">Fuego</style>.",
+    "variables": {
+      "extraDmg": [490, 516, 543, 569, 596, 622, 649, 675, 702, 728]
+    },
+    "constants": {},
+    "scaled": []
+  }
+}

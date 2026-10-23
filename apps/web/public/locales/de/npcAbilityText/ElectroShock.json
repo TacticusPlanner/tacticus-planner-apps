@@ -1,0 +1,11 @@
+{
+  "ElectroShock": {
+    "description": "Wenn diese Einheit einen <style=\"NormalAttack\">normalen Nahkampfangriff</style> ausführt, verursacht sie außerdem {[dmgPct]} % ihres <style=\"Stat_Damage\">Schadens</style> an einem zufälligen, an das Ziel angrenzenden Gegner. Alle getroffenen Gegner werden für 1 Runde <style=\"Debuff_Pinned\">unterdrückt</style>.",
+    "variables": {},
+    "constants": {
+      "damageProfile": "Particle",
+      "dmgPct": "50"
+    },
+    "scaled": []
+  }
+}

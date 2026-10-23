@@ -1,0 +1,21 @@
+{
+  "PsychicStalk": {
+    "description": "Angriffe, die <style=\"DMG_Flame\">Flammenschaden</style> oder <style=\"DMG_Psychic\">Psi-Schaden</style> an Gegnern auf <style=\"Effect_Fire\">Brandfeldern</style> verursachen, fügen <style=\"Stat_Damage\">+{[extraDmgPct]} % Schaden</style> zu. Betroffene Angriffe von verbündeten <style=\"Aliance_Chaos\">Chaos</style>-Einheiten verursachen zusätzlich <style=\"Stat_Damage\">+{[extraDmg]} Schaden</style>.\n\n<style=\"Faction_ThousandSons\">Ahriman</style> setzt das Feld jedes Gegners, den er mit seinem <style=\"NormalAttack\">normalen Fernkampfangriff</style> trifft, in <style=\"Effect_Fire\">Brand</style>.",
+    "variables": {
+      "extraDmgPct": [
+        25, 25, 25, 25, 25, 25, 25, 25, 27, 27, 27, 27, 27, 27, 27, 27, 27, 29,
+        29, 29, 29, 29, 29, 29, 29, 29, 31, 31, 31, 31, 31, 31, 31, 31, 31, 33,
+        33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33,
+        33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33
+      ],
+      "extraDmg": [
+        5, 6, 7, 8, 9, 10, 11, 12, 14, 15, 16, 17, 18, 19, 21, 22, 23, 24, 25,
+        26, 28, 30, 35, 39, 44, 48, 53, 57, 62, 66, 71, 75, 80, 85, 89, 94, 98,
+        103, 107, 114, 123, 132, 142, 154, 174, 195, 215, 236, 256, 277, 280,
+        284, 288, 293, 298, 303, 308, 314, 320, 326, 334, 341, 349, 356, 364
+      ]
+    },
+    "constants": {},
+    "scaled": ["extraDmg"]
+  }
+}

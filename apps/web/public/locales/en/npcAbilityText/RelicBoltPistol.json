@@ -1,0 +1,11 @@
+{
+  "RelicBoltPistol": {
+    "description": "The relic bearer gains <style=\"Piercing_Ratio\">+{[extraPierceRatio]}% pierce ratio</style> with melee attacks and deals <style=\"Stat_CritDamage\">+{[extraCritDmg]} Crit Damage</style> with ranged attacks. These bonuses are doubled against <style=\"Aliance_Chaos\">Chaos</style> or <style=\"Aliance_Xenos\">Xenos</style> enemies.",
+    "variables": {
+      "extraPierceRatio": [5, 6, 6, 7, 7, 8, 8, 9, 9, 10],
+      "extraCritDmg": [590, 622, 654, 686, 717, 749, 781, 813, 845, 877]
+    },
+    "constants": {},
+    "scaled": []
+  }
+}

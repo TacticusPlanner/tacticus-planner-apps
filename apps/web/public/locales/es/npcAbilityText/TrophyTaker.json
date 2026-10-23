@@ -1,0 +1,31 @@
+{
+  "TrophyTaker": {
+    "description": "Los ataques de <style=\"Faction_WorldEaters\">Tarvakh</style> contra unidades con un {[hpPct]} % de su <style=\"Stat_Health\">Salud</style> máxima o menos infligen <style=\"Stat_Damage\">+{[extraDmg]} de Daño</style> y <style=\"Stat_CritDamage\">+{[extraCritDmg]} de Daño Crítico</style> adicional. Su <style=\"Stat_CritDamage\">Probabilidad de crítico</style> aumenta un <style=\"Stat\">{[extraCritChance]} %</style> por cada unidad que haya derrotado en esta batalla.",
+    "variables": {
+      "extraCritChance": [
+        8, 8, 8, 8, 8, 8, 8, 8, 10, 10, 10, 10, 10, 10, 10, 10, 10, 12, 12, 12,
+        12, 12, 12, 12, 12, 12, 14, 14, 14, 14, 14, 14, 14, 14, 14, 16, 16, 16,
+        16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16,
+        16, 16, 16, 16, 16, 16, 16, 16, 16
+      ],
+      "extraDmg": [
+        12, 14, 17, 19, 22, 24, 27, 30, 33, 35, 38, 41, 44, 46, 49, 52, 55, 57,
+        60, 63, 67, 72, 83, 94, 105, 116, 126, 137, 148, 159, 170, 181, 192,
+        203, 214, 225, 236, 247, 258, 273, 294, 317, 342, 369, 418, 467, 517,
+        566, 615, 665, 672, 681, 690, 702, 714, 726, 738, 753, 768, 783, 801,
+        819, 837, 855, 873
+      ],
+      "extraCritDmg": [
+        12, 14, 17, 19, 22, 24, 27, 30, 33, 35, 38, 41, 44, 46, 49, 52, 55, 57,
+        60, 63, 67, 72, 83, 94, 105, 116, 126, 137, 148, 159, 170, 181, 192,
+        203, 214, 225, 236, 247, 258, 273, 294, 317, 342, 369, 418, 467, 517,
+        566, 615, 665, 672, 681, 690, 702, 714, 726, 738, 753, 768, 783, 801,
+        819, 837, 855, 873
+      ]
+    },
+    "constants": {
+      "hpPct": "50"
+    },
+    "scaled": ["extraDmg", "extraCritDmg"]
+  }
+}

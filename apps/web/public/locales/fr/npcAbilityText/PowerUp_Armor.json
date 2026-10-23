@@ -1,0 +1,10 @@
+{
+  "PowerUp_Armor": {
+    "description": "Lorsqu'elle est choisie par cette unité, cette amélioration augmente son <style=\"Stat_Armor\">armure</style> à hauteur de {[healthPct]} % de sa <style=\"Stat_Health\">santé</style> maximum.",
+    "variables": {},
+    "constants": {
+      "healthPct": "100"
+    },
+    "scaled": []
+  }
+}

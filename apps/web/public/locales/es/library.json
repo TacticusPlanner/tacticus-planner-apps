@@ -358,7 +358,9 @@
       "chartTitle": "{{label}} por nivel",
       "chartCaption": "{{label}} pasa de {{from}} en el nivel 1 a {{to}} en el nivel {{maxLevel}}.",
       "constant": "{{label}} se mantiene en {{value}} en todos los niveles, así que no se muestra en un gráfico.",
-      "missingText": "El texto de reglas aún no está en el planificador."
+      "missingText": "El texto de reglas aún no está en el planificador.",
+      "loadingText": "Cargando el texto de reglas…",
+      "textFailed": "No se pudo cargar el texto de reglas."
     },
     "notFound": "Esta unidad no está en la Biblioteca.",
     "loadFailed": "No se pudieron cargar los datos de personajes.",

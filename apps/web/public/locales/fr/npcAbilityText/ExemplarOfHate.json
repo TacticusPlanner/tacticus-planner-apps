@@ -1,0 +1,30 @@
+{
+  "ExemplarOfHate": {
+    "description": "Cible un ennemi sur le champ de bataille. Pour cette manche et la suivante, toutes les unités alliées infligent <style=\"Stat_Damage\">+{[extraDmg]} dégâts</style> contre l'ennemi avec des attaques au corps à corps ou <style=\"Overwatch\">Sentinelle</style>. Si cet ennemi est une unité du <style=\"Aliance_Chaos\">Chaos</style>, il est <style=\"Debuff_Pinned\">neutralisé</style> et <style=\"Faction_DarkAngels\">Asmodaï</style> ou un autre <style=\"Faction_DarkAngels\">Dark Angel</style> allié effectue immédiatement une <style=\"NormalAttack\">attaque normale</style> sur la cible, infligeant <style=\"Stat\">{[dmgPct]} %</style> de ses propres dégâts, jusqu'à un maximum de <style=\"Stat_Damage\">{[maxDmg]} dégâts</style> par <style=\"Stat_Hits\">coup</style>.",
+    "variables": {
+      "extraDmg": [
+        10, 12, 14, 16, 18, 20, 23, 25, 27, 30, 32, 34, 36, 39, 41, 43, 46, 48,
+        50, 53, 56, 60, 69, 78, 87, 96, 105, 115, 124, 133, 142, 151, 160, 169,
+        178, 187, 196, 206, 215, 227, 245, 264, 285, 307, 348, 390, 431, 472,
+        513, 554, 560, 568, 575, 585, 595, 605, 615, 628, 640, 653, 668, 683,
+        698, 713, 728
+      ],
+      "maxDmg": [
+        60, 72, 84, 96, 108, 122, 136, 149, 163, 177, 191, 205, 218, 232, 246,
+        260, 274, 287, 301, 315, 334, 359, 414, 469, 523, 578, 632, 687, 742,
+        796, 851, 905, 960, 1015, 1069, 1124, 1178, 1233, 1288, 1364, 1472,
+        1586, 1708, 1844, 2090, 2337, 2584, 2830, 3077, 3324, 3360, 3405, 3450,
+        3510, 3570, 3630, 3690, 3765, 3840, 3915, 4005, 4095, 4185, 4275, 4365
+      ],
+      "dmgPct": [
+        80, 80, 80, 80, 80, 80, 80, 80, 85, 85, 85, 85, 85, 85, 85, 85, 85, 90,
+        90, 90, 90, 90, 90, 90, 90, 90, 95, 95, 95, 95, 95, 95, 95, 95, 95, 100,
+        100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
+        100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
+        100
+      ]
+    },
+    "constants": {},
+    "scaled": ["extraDmg", "maxDmg"]
+  }
+}

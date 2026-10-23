@@ -1,0 +1,8 @@
+{
+  "HarlequinsPanoply": {
+    "description": "Wenn diese Einheit in einem Zug zum ersten Mal einen Treffer blockt, gehen alle weiteren Treffer des Angriffs ins Leere und der <style=\"Faction_Aeldari\">Harlekin-Darsteller</style> bewegt sich 1 Feld näher an den Angreifer (wenn möglich).",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "MastersOfManoeuvre": {
+    "description": "Verbündete <style=\"Rarity_Mythic\">mythische</style> <style=\"Character\">Charaktere</style> erleiden bis zu Beginn ihres nächsten Zugs <style=\"Stat_Damage\">-{[dmgReductionPct]} % Schaden</style> durch Fernkampfangriffe, wenn sie sich in ihrem Zug {[tilesTraversed]} oder mehr Felder bewegt haben oder ihren Zug neben einem verbündeten <style=\"Rarity_Mythic\">mythischen</style> <style=\"Faction_DarkAngels\">Dark Angel</style> beenden.",
+    "variables": {
+      "dmgReductionPct": [10, 13, 16, 20]
+    },
+    "constants": {
+      "tilesTraversed": "2"
+    },
+    "scaled": ["dmgReductionPct"]
+  }
+}

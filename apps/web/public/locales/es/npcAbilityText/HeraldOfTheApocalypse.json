@@ -1,0 +1,34 @@
+{
+  "HeraldOfTheApocalypse": {
+    "description": "Inflige <style=\"DMG_Piercing\">{[minDmg]}-{[maxDmg]} de Daño de perforación</style> <style=\"Stat_Hits\">x{[nrOfHits]}</style> a un enemigo adyacente y a un enemigo adicional directamente detrás del objetivo. Los enemigos afectados reciben <style=\"Stat_Damage\">+{[extraDmg]} de Daño</style> del siguiente ataque que reciban de una unidad. También activa <style=\"Battle_Fatigue\">Fatiga de batalla</style> para todas las unidades enemigas dentro de {[range]} hexágonos del objetivo original.",
+    "variables": {
+      "minDmg": [
+        18, 22, 25, 29, 32, 37, 41, 45, 49, 53, 57, 61, 66, 70, 74, 78, 82, 86,
+        90, 95, 100, 108, 124, 141, 157, 173, 190, 206, 222, 239, 255, 272, 288,
+        304, 321, 337, 354, 370, 386, 409, 442, 476, 512, 553, 627, 701, 775,
+        849, 923, 997, 1008, 1022, 1035, 1053, 1071, 1089, 1107, 1130, 1152,
+        1175, 1202, 1229, 1256, 1283, 1310
+      ],
+      "maxDmg": [
+        26, 31, 36, 42, 47, 53, 59, 65, 71, 77, 83, 89, 95, 101, 107, 113, 119,
+        125, 131, 137, 145, 156, 179, 203, 227, 250, 274, 298, 321, 345, 369,
+        392, 416, 440, 463, 487, 511, 534, 558, 591, 638, 687, 740, 799, 906,
+        1013, 1120, 1226, 1333, 1440, 1456, 1476, 1495, 1521, 1547, 1573, 1599,
+        1632, 1664, 1697, 1736, 1775, 1814, 1853, 1892
+      ],
+      "extraDmg": [
+        18, 22, 25, 29, 32, 37, 41, 45, 49, 53, 57, 61, 66, 70, 74, 78, 82, 86,
+        90, 95, 100, 108, 124, 141, 157, 173, 190, 206, 222, 239, 255, 272, 288,
+        304, 321, 337, 354, 370, 386, 409, 442, 476, 512, 553, 627, 701, 775,
+        849, 923, 997, 1008, 1022, 1035, 1053, 1071, 1089, 1107, 1130, 1152,
+        1175, 1202, 1229, 1256, 1283, 1310
+      ]
+    },
+    "constants": {
+      "damageProfile": "Piercing",
+      "nrOfHits": "2",
+      "range": "2"
+    },
+    "scaled": ["minDmg", "maxDmg", "extraDmg"]
+  }
+}

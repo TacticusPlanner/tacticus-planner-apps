@@ -1,0 +1,11 @@
+{
+  "Helspear": {
+    "description": "<i>Herald of the Apocalypse</i> always adds <style=\"Tile_DespoiledGround\">Despoiled Ground</style> to the hexes of affected enemies, and the next attack against affected enemies also ignores <style=\"Stat_Armor\">{[armorIgnored]} Armour</style>. After <i>Herald of the Apocalypse</i> has been used and <style=\"Faction_BlackLegion\">Haarken</style> defeats <style=\"STAT\">{[nrOfUnits]}</style> enemy units, he can use the ability again.",
+    "variables": {
+      "armorIgnored": [685, 722, 759, 796, 833, 870, 907, 944, 981, 1018],
+      "nrOfUnits": [8, 8, 7, 7, 6, 6, 5, 5, 4, 4]
+    },
+    "constants": {},
+    "scaled": []
+  }
+}

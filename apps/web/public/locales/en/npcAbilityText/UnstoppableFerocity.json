@@ -1,0 +1,8 @@
+{
+  "UnstoppableFerocity": {
+    "description": "Scores one additional <style=\"Stat_Hits\">hit</style> when attacking an enemy <style=\"Psyker\">Psyker</style>. \nScores one additional <style=\"Stat_Hits\">hit</style> when <style=\"Charging\">charging</style>.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

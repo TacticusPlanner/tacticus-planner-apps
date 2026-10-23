@@ -1,0 +1,14 @@
+{
+  "Maugetar": {
+    "description": "Durante su turno, si <style=\"Faction_Aeldari\">Maugan Ra</style> no se movió, se puede mover luego de atacar y los ataques que sean <style=\"Stat_CritDamage\">Golpes Críticos</style> infligen <style=\"DMG_Direct\">{[minDmg]}-{[maxDmg]} de Daño directo</style> <style=\"Stat_Hits\">x{[nrOfHits]}</style> adicional. Al estar en <style=\"Buff_Overwatching\">Vigilancia</style>, los <style=\"Stat_CritDamage\">Golpes Críticos</style> infligen este <style=\"Stat_Hits\">impacto</style> adicional si no se movió en su turno anterior.",
+    "variables": {
+      "minDmg": [1765, 1860, 1956, 2051, 2146, 2241, 2337, 2432, 2527, 2622],
+      "maxDmg": [2350, 2477, 2604, 2731, 2857, 2984, 3111, 3238, 3365, 3492]
+    },
+    "constants": {
+      "nrOfHits": "1",
+      "damageProfile": "DirectDamage"
+    },
+    "scaled": []
+  }
+}

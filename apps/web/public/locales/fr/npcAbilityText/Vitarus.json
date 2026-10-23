@@ -1,0 +1,10 @@
+{
+  "Vitarus": {
+    "description": "Les hexagones de chaque ennemi touché par l'<style=\"NormalAttack\">attaque au corps à corps normale</style> de <style=\"Faction_BloodAngels\">Méphiston</style> ou par <i>Fureur des Doyens</i> prennent <style=\"Effect_Fire\">feu</style>. Si ces attaques touchent des ennemis situés sur des hexagones en <style=\"Effect_Fire\">feu</style>, elles infligent <style=\"Stat_Damage\">+{[extraDmg]} dégâts</style> et éteignent le <style=\"Effect_Fire\">feu</style>.",
+    "variables": {
+      "extraDmg": [490, 516, 543, 569, 596, 622, 649, 675, 702, 728]
+    },
+    "constants": {},
+    "scaled": []
+  }
+}

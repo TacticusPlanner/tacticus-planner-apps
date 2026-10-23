@@ -358,7 +358,9 @@
       "chartTitle": "{{label}} nach Stufe",
       "chartCaption": "{{label}} steigt von {{from}} auf Stufe 1 auf {{to}} auf Stufe {{maxLevel}}.",
       "constant": "{{label}} bleibt auf jeder Stufe bei {{value}} und wird daher nicht als Diagramm gezeigt.",
-      "missingText": "Der Regeltext ist noch nicht im Planer."
+      "missingText": "Der Regeltext ist noch nicht im Planer.",
+      "loadingText": "Regeltext wird geladen …",
+      "textFailed": "Der Regeltext konnte nicht geladen werden."
     },
     "notFound": "Diese Einheit ist nicht in der Bibliothek.",
     "loadFailed": "Charakterdaten konnten nicht geladen werden.",

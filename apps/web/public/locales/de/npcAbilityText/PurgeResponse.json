@@ -1,0 +1,8 @@
+{
+  "PurgeResponse": {
+    "description": "Befindet der <style=\"Faction_LeaguesOfVotann\">Eisenkyn-Stahlwerker</style> sich am Ende seines Zuges neben einem verbündeten <style=\"Faction_LeaguesOfVotann\">Konglomerate der Votann</style>-<style=\"Character\">Charakter</style>, beginnt er unabhängig davon, ob er in seinem Zug angegriffen hat, mit der <style=\"Buff_Overwatching\">Aufklärung</style>. Während der <style=\"Buff_Overwatching\">Aufklärung</style> ignorieren Angriffe des Eisenkyn-Stahlwerkers Trefferreduzierungen.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

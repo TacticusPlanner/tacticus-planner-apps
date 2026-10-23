@@ -1,0 +1,12 @@
+{
+  "MastersOfManoeuvre": {
+    "description": "Friendly <style=\"Rarity_Mythic\">Mythic</style> <style=\"Character\">characters</style> take <style=\"Stat_Damage\">-{[dmgReductionPct]}% Damage</style> from ranged attacks until the start of their next turn if they have traversed {[tilesTraversed]} or more hexes during their turn or end their turn next to a friendly <style=\"Rarity_Mythic\">Mythic</style> <style=\"Faction_DarkAngels\">Dark Angel</style>.",
+    "variables": {
+      "dmgReductionPct": [10, 13, 16, 20]
+    },
+    "constants": {
+      "tilesTraversed": "2"
+    },
+    "scaled": ["dmgReductionPct"]
+  }
+}

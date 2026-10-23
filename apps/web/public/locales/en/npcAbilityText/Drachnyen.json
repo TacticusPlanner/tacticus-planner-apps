@@ -1,0 +1,33 @@
+{
+  "Drachnyen": {
+    "description": "<style=\"Faction_BlackLegion\">Abaddon</style> is set to <style=\"Stat_Health\">{[hp]} Health</style> and immediately performs a <style=\"NormalAttack\">normal melee attack</style> against an adjacent enemy unit. After this attack and for the rest of the battle, after performing a <style=\"NormalAttack\">normal melee attack</style>, Abaddon performs a second attack against an adjacent enemy unit, dealing <style=\"Stat_Hits\">{[nrOfHits]}x</style> <style=\"DMG_Piercing\">{[minDmg]}-{[maxDmg]} Piercing Damage</style>. Abaddon cannot be set to higher <style=\"Stat_Health\">Health</style> than his maximum <style=\"Stat_Health\">Health</style>.",
+    "variables": {
+      "minDmg": [
+        12, 14, 17, 19, 22, 24, 27, 30, 33, 35, 38, 41, 44, 46, 49, 52, 55, 57,
+        60, 63, 67, 72, 83, 94, 105, 116, 126, 137, 148, 159, 170, 181, 192,
+        203, 214, 225, 236, 247, 258, 273, 294, 317, 342, 369, 418, 467, 517,
+        566, 615, 665, 672, 681, 690, 702, 714, 726, 738, 753, 768, 783, 801,
+        819, 837, 855, 873
+      ],
+      "maxDmg": [
+        15, 18, 21, 24, 27, 30, 34, 37, 41, 44, 48, 51, 55, 58, 62, 65, 68, 72,
+        75, 79, 83, 90, 104, 117, 131, 144, 158, 172, 185, 199, 213, 226, 240,
+        254, 267, 281, 295, 308, 322, 341, 368, 396, 427, 461, 523, 584, 646,
+        708, 769, 831, 840, 851, 863, 878, 893, 908, 923, 941, 960, 979, 1001,
+        1024, 1046, 1069, 1091
+      ],
+      "hp": [
+        65, 78, 91, 104, 117, 132, 147, 162, 177, 192, 207, 222, 237, 252, 267,
+        281, 296, 311, 326, 341, 361, 389, 449, 508, 567, 626, 685, 744, 803,
+        863, 922, 981, 1040, 1099, 1158, 1217, 1277, 1336, 1395, 1478, 1595,
+        1718, 1851, 1997, 2265, 2532, 2799, 3066, 3333, 3600, 3640, 3689, 3738,
+        3803, 3868, 3933, 3998, 4079, 4160, 4241, 4339, 4436, 4534, 4631, 4729
+      ]
+    },
+    "constants": {
+      "damageProfile": "Piercing",
+      "nrOfHits": "3"
+    },
+    "scaled": ["minDmg", "maxDmg", "hp"]
+  }
+}

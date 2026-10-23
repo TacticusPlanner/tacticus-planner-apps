@@ -1,0 +1,10 @@
+{
+  "SynapticInsight": {
+    "description": "Les attaques à distance de cette unité infligent <style=\"Stat_Hits\">+{[extraHit]} coups</style> contre les cibles dans le rayon de <style=\"Synapse\">Synapse</style> ou adjacentes à un autre <style=\"Faction_Tyranids\">Tyranide</style>.",
+    "variables": {},
+    "constants": {
+      "extraHit": "2"
+    },
+    "scaled": []
+  }
+}

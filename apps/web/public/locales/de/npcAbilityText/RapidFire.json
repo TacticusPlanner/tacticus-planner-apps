@@ -1,0 +1,8 @@
+{
+  "RapidFire": {
+    "description": "Wenn sich der <style=\"Faction_Ultramarines\">Schwere Intercessor</style> in diesem Zug nicht bewegt hat, greift er zweimal an, wobei jeder der beiden Angriffe regulären <style=\"Stat_Damage\">Schaden</style> verursacht.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

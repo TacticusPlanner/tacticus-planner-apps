@@ -1,0 +1,8 @@
+{
+  "OiWatchIt": {
+    "description": "Wenn diese Einheit angegriffen wird, wird für jeden erlittenen Treffer eine <style=\"Steppable\">zertretbare</style> Kiste mit <style=\"Resource_Gold\">Münzen</style> auf einem freien, angrenzenden Feld platziert.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

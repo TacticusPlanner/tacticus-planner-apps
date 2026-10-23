@@ -1,0 +1,17 @@
+{
+  "DefenderOfTheGreaterGood": {
+    "description": "Verbündete Einheiten, die an <style=\"Faction_Tau\">Shadowsun</style> oder ihre <style=\"Faction_Tau\">Kommandoverbindungsdrohne</style> angrenzen, verursachen <style=\"Stat_Damage\">+{[extraDmg]} Schaden</style> mit Fernkampfangriffen, mit Ausnahme von Angriffen, die <style=\"DMG_Psychic\">Psi</style>-Schaden verursachen. Betroffene Angriffe können außerdem einen zusätzlichen <style=\"Stat_Hits\">Treffer</style> zufügen – die <style=\"Stat_Chance\">Chance</style> hierfür beträgt <style=\"Stat\">{[chance]} %</style> für jede Runde, die Shadowsun auf dem Schlachtfeld ist. Verbündete Einheiten des <style=\"Faction_Tau\">Sternenreichs der T’au</style>, die sich in bis zu 2 Feldern Entfernung von Shadowsun oder ihrer Kommandoverbindungsdrohne befinden, sind ebenfalls von dieser Fähigkeit betroffen.",
+    "variables": {
+      "extraDmg": [
+        5, 6, 7, 8, 9, 10, 11, 12, 14, 15, 16, 17, 18, 19, 21, 22, 23, 24, 25,
+        26, 28, 30, 35, 39, 44, 48, 53, 57, 62, 66, 71, 75, 80, 85, 89, 94, 98,
+        103, 107, 114, 123, 132, 142, 154, 174, 195, 215, 236, 256, 277, 280,
+        284, 288, 293, 298, 303, 308, 314, 320, 326, 334, 341, 349, 356, 364
+      ]
+    },
+    "constants": {
+      "chance": "25"
+    },
+    "scaled": ["extraDmg"]
+  }
+}

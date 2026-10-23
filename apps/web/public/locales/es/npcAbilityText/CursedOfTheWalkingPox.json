@@ -1,0 +1,8 @@
+{
+  "CursedOfTheWalkingPox": {
+    "description": "Cada vez que esta unidad mata a una unidad enemiga no <style=\"Mechanical\">Mecánica</style>, se invoca a un <style=\"Summon\"><style=\"Faction_DeathGuard\">Plagabundo</style></style> en ese hexágono.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

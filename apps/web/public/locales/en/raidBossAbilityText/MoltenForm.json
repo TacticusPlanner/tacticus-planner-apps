@@ -1,0 +1,10 @@
+{
+  "MoltenForm": {
+    "description": "<style=\"DMG_Flame\">Flame</style>, <style=\"DMG_Plasma\">Plasma</style>, and <style=\"DMG_Melta\">Melta</style> Damage against the <style=\"Faction_Aeldari\">Avatar of Khaine</style> is reduced by <style=\"Stat_Damage\">{[dmgPctReduction]}%</style>.",
+    "variables": {},
+    "constants": {
+      "dmgPctReduction": "66"
+    },
+    "scaled": []
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "DaemonfleshPlate": {
+    "description": "Chaque fois que le porteur de relique attaque, il obtient <style=\"Stat_Armor\">+{[extraArmor]} armure</style>. Après <style=\"STAT\">{[nrOfAttacks]}</style> attaques, ce bonus se réinitialise et le porteur de relique peut à nouveaux utiliser sa capacité active.",
+    "variables": {
+      "extraArmor": [145, 153, 161, 168, 176, 184, 192, 200, 208, 215],
+      "nrOfAttacks": [8, 8, 8, 8, 8, 7, 7, 7, 7, 7]
+    },
+    "constants": {},
+    "scaled": []
+  }
+}

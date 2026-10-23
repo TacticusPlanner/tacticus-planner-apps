@@ -1,0 +1,12 @@
+{
+  "HyperCorrosiveAcid": {
+    "description": "Les ennemis blessés par une <style=\"Faction_Tyranids\">spore-mine</style> alliée subissent <style=\"Stat_Damage\">+{[extraDmgPct]} % de dégâts</style> en cas d'attaques de <style=\"Character\">personnages</style> <style=\"Rarity_Mythic\">Mythiques</style> pendant {[nrOfRounds]} manche.",
+    "variables": {
+      "extraDmgPct": [10, 13, 16, 20]
+    },
+    "constants": {
+      "nrOfRounds": "1"
+    },
+    "scaled": ["extraDmgPct"]
+  }
+}

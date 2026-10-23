@@ -1,0 +1,10 @@
+{
+  "ShieldOfFaith": {
+    "description": "When a friendly <style=\"Rarity_Mythic\">Mythic</style> <style=\"Character\">character</style> <style=\"Stat_CritDamage\">Crits</style> or attacks an enemy that is on a hex with <style=\"Effect_Fire\">Fire</style>, it gains a <style=\"Buff_Shield\">Shield</style> until the start of its next turn, unless it already has a shield. The shield's <style=\"Stat_Health\">Health</style> is <style=\"STAT\">{[shieldPct]}%</style> of the affected character's maximum <style=\"Stat_Health\">Health</style>.",
+    "variables": {
+      "shieldPct": [25, 32.5, 40, 50]
+    },
+    "constants": {},
+    "scaled": ["shieldPct"]
+  }
+}

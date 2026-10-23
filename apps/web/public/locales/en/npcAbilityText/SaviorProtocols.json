@@ -1,0 +1,10 @@
+{
+  "SaviorProtocols": {
+    "description": "If a friendly adjacent <style=\"Faction_Tau\">T'au Empire</style> unit is attacked, there is a <style=\"Stat_Chance\">{[chance]}%</style> chance for each hit to be scored against this Drone instead of the original target.\n\nWhen moving, this Drone prioritises hexes adjacent to friendly <style=\"Faction_Tau\">T'au Empire</style> units. \n\nWhen attacking, this Drone tries to prioritise enemies with a <style=\"Debuff_Markerlight\">Markerlight</style>.",
+    "variables": {},
+    "constants": {
+      "chance": "50"
+    },
+    "scaled": []
+  }
+}

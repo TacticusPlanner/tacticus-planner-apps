@@ -1,0 +1,8 @@
+{
+  "DrawFire": {
+    "description": "Werden verbündete Einheiten auf angrenzenden Feldern von gegnerischen Angriffen getroffen, dann wird die Hälfte der <style=\"Stat_Hits\">Treffer</style> (abgerundet) stattdessen dem Terminator zugefügt.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

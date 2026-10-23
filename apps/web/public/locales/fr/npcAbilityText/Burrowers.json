@@ -1,0 +1,8 @@
+{
+  "Burrowers": {
+    "description": "À son tour, cette unité peut s'enterrer, disparaissant du champ de bataille. À son tour suivant, elle doit refaire surface ; elle peut réapparaître dans n'importe quel hexagone libre. Si elle se retrouve adjacente à une unité ennemie, elle peut l'attaquer immédiatement au corps à corps.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

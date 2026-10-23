@@ -1,0 +1,8 @@
+{
+  "HarlequinsPanoply": {
+    "description": "The first time each turn this unit blocks a hit, all further hits of the attack are discarded and the <style=\"Faction_Aeldari\">Harlequin Player</style> moves 1 hex closer to the origin of the attack, if possible.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

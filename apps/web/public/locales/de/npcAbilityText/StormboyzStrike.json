@@ -1,0 +1,10 @@
+{
+  "StormboyzStrike": {
+    "description": "In ihrem ersten Zug fliegt diese Einheit auf ein beliebiges freies Feld, anstatt an ihrem vorgesehenen Ausgangspunkt zu starten. Es besteht eine Chance von {[chance]} %, dass die Einheit ihr Zielfeld verfehlt und stattdessen auf einem zufälligen angrenzenden Feld landet. Dieser Flug zählt als eine Bewegung für <i>Vollgas</i>.",
+    "variables": {},
+    "constants": {
+      "chance": "20"
+    },
+    "scaled": []
+  }
+}

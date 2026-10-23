@@ -1,0 +1,10 @@
+{
+  "NoctilithBeacons": {
+    "description": "<style=\"Faction_Necrons\">Szarekh</style> and all <style=\"Faction_Necrons\">Necrons</style> adjacent to him take <style=\"Stat_Damage\">-{[dmgPctReduction]}% Damage</style> from all enemies with the <style=\"Psyker\">Psyker</style> trait.",
+    "variables": {},
+    "constants": {
+      "dmgPctReduction": "40"
+    },
+    "scaled": []
+  }
+}

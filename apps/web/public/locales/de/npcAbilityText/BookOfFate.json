@@ -1,0 +1,10 @@
+{
+  "BookOfFate": {
+    "description": "Nachdem der Reliktträger einen <style=\"NormalAttack\">normalen Angriff</style> vollführt hat, führt eine verbündete angrenzende <style=\"Summon\">Beschwörung</style> einen normalen Angriff auf einen Gegner innerhalb der Reichweite durch, sofern dies möglich ist. Wenn die Beschwörung ein <style=\"Daemon\">Dämon</style> ist, verursacht dieser mit diesem Angriff <style=\"Stat_Damage\">+{[extraDmg]} Schaden</style>.",
+    "variables": {
+      "extraDmg": [880, 928, 975, 1023, 1070, 1118, 1165, 1213, 1260, 1308]
+    },
+    "constants": {},
+    "scaled": []
+  }
+}

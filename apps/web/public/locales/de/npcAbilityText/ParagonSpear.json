@@ -1,0 +1,15 @@
+{
+  "ParagonSpear": {
+    "description": "Alle <style=\"Stat_CritDamage\">kritischen Treffer</style> von <style=\"Faction_Custodes\">Tyrith</style> verursachen den maximal möglichen <style=\"Stat_Damage\">Schaden</style>. Zu Beginn von Tyriths Zug greift sie einen zufälligen Gegner in Reichweite {[range]} an und fügt ihm <style=\"Stat_Hits\">{[nrOfHits]}x</style> <style=\"DMG_Bolter\">{[minDmg]}–{[maxDmg]} Bolterschaden</style> zu. Wenn ein Gegner an sie angrenzt, wird die Reichweite auf 1 reduziert.",
+    "variables": {
+      "minDmg": [2155, 2271, 2388, 2504, 2620, 2737, 2853, 2969, 3086, 3202],
+      "maxDmg": [2940, 3099, 3257, 3416, 3575, 3733, 3892, 4051, 4210, 4368]
+    },
+    "constants": {
+      "nrOfHits": "2",
+      "damageProfile": "Bolter",
+      "range": "2"
+    },
+    "scaled": []
+  }
+}

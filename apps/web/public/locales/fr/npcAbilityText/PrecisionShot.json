@@ -1,0 +1,19 @@
+{
+  "PrecisionShot": {
+    "description": "Le Traqueur ne se déplace pas et n'attaque pas pendant un tour, mais à la place, il assure sa visée. Lors de son prochain tour, il ne peut pas se déplacer, mais il peut tirer avec son Désintégrateur\n synaptique avec une précision chirurgicale, infligeant <style=\"Stat_Hits\">{[nrOfHits]}x</style> <style=\"DMG_Energy\">{[dmg]} dégâts énergétiques</style>.",
+    "variables": {
+      "dmg": [
+        45, 54, 63, 72, 81, 91, 102, 112, 122, 133, 143, 153, 164, 174, 185,
+        195, 205, 216, 226, 236, 250, 270, 311, 351, 392, 433, 474, 515, 556,
+        597, 638, 679, 720, 761, 802, 843, 884, 925, 966, 1023, 1104, 1189,
+        1281, 1383, 1568, 1753, 1938, 2123, 2308, 2493, 2520, 2554, 2588, 2633,
+        2678, 2723, 2768, 2824, 2880, 2936, 3004, 3071, 3139, 3206, 3274
+      ]
+    },
+    "constants": {
+      "nrOfHits": "1",
+      "damageProfile": "Energy"
+    },
+    "scaled": ["dmg"]
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "ShieldOfFaith": {
+    "description": "Lorsqu'un <style=\"Character\">personnage</style> <style=\"Rarity_Mythic\">Mythique</style> allié réalise un <style=\"Stat_CritDamage\">coup critique</style> ou attaque un ennemi situé sur un hexagone en <style=\"Effect_Fire\">feu</style>, il obtient un <style=\"Buff_Shield\">bouclier</style> jusqu'au début de son prochain tour, à moins qu'il ne possède déjà un bouclier. La <style=\"Stat_Health\">santé</style> du bouclier est équivalente à <style=\"STAT\">{[shieldPct]} %</style> de la <style=\"Stat_Health\">santé</style> maximum du personnage concerné.",
+    "variables": {
+      "shieldPct": [25, 32.5, 40, 50]
+    },
+    "constants": {},
+    "scaled": ["shieldPct"]
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "Burrowers": {
+    "description": "Esta unidad puede excavar en su turno, desapareciendo del campo de batalla. En su siguiente turno debe salir a la superficie y puede hacerlo en cualquier hexágono libre. Si está adyacente a una unidad enemiga, puede realizar un ataque cuerpo a cuerpo inmediatamente.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

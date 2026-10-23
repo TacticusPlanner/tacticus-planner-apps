@@ -128,7 +128,6 @@ function MowUnit({
   const panelId = useId()
   const mow = catalog.byId.get(unitId)!
   const name = t(`mows:${unitId}`, { defaultValue: mow.name })
-  const abilityText = useAbilityText()
   const [tab, setTab] = useUnitTab(TABS)
 
   // --- Player data -----------------------------------------------------------------------------
@@ -180,6 +179,12 @@ function MowUnit({
 
   // The mythic ability follows the blue stars of the values shown.
   const mythicKey = mow.mythicAbility?.name
+  // Only this MoW's abilities' rules text is fetched, after the page paints.
+  const abilityText = useAbilityText(
+    [abilityKeys.primary, abilityKeys.secondary, mythicKey].filter(
+      (id): id is string => id !== undefined
+    )
+  )
   const mythicName = mythicKey
     ? t(`abilities:${mythicKey}`, { defaultValue: mythicKey })
     : t("mowUnit.mythic.unnamed")
@@ -255,7 +260,8 @@ function MowUnit({
       kind={t(`mowUnit.abilities.${ability}`)}
       name={abilityNames[ability]}
       iconSrc={abilityIcon(abilityKeys[ability])}
-      text={abilityText(abilityKeys[ability])}
+      text={abilityText.text(abilityKeys[ability])}
+      rules={abilityText}
       rarity={rarity}
       unitName={name}
       factionId={mow.faction}
@@ -273,7 +279,8 @@ function MowUnit({
     <MowMythicPanel
       name={mythicName}
       abilityKey={mythicKey}
-      text={mythicKey ? abilityText(mythicKey) : undefined}
+      text={mythicKey ? abilityText.text(mythicKey) : undefined}
+      rules={mythicKey ? abilityText : undefined}
       level={mythic}
       rarity={rarity}
       unitName={name}

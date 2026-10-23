@@ -1,0 +1,10 @@
+{
+  "SaviorProtocols": {
+    "description": "Wird eine verbündete, angrenzende Einheit des <style=\"Faction_Tau\">Sternenreichs der T’au</style> angegriffen, besteht für jeden Treffer eine Chance von <style=\"Stat_Chance\">{[chance]} %</style>, dass diese Einheit anstatt des ursprünglichen Ziels getroffen wird.\n\nDie Drohne priorisiert bei der Bewegung Felder, die an verbündete Einheiten des <style=\"Faction_Tau\">Sternenreichs der T’au</style> angrenzen. \n\nBei Angriffen priorisiert die Drohne Gegner mit einem <style=\"Debuff_Markerlight\">Markierungslicht</style>.",
+    "variables": {},
+    "constants": {
+      "chance": "50"
+    },
+    "scaled": []
+  }
+}

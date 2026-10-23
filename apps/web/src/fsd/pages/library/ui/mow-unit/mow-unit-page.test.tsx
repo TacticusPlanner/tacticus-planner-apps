@@ -16,7 +16,7 @@ import {
 } from "@/test/render"
 import { seedGameCatalog, seedPlayerData } from "@/test/seed"
 
-import enNpcAbilityText from "../../../../../../public/locales/en/npcAbilityText.json"
+import { enNpcAbilityText } from "@/test/rules-text"
 
 import { MowUnitPage } from "./mow-unit-page"
 
@@ -26,6 +26,10 @@ const env = vi.hoisted(() => ({
     | undefined,
   isMobile: false,
   abilityText: {} as Record<string, unknown>,
+  /** The rules-text load: settled by default; `ready: false` while it downloads. */
+  rules: { ready: true, failed: false },
+  abilityIds: [] as readonly string[],
+  retries: 0,
   power: {
     status: "loading",
     retry: () => {},
@@ -46,7 +50,19 @@ vi.mock("@/shared/unit-power", async (importOriginal) => ({
 }))
 vi.mock("@/shared/ability-text", async (importOriginal) => ({
   ...(await importOriginal<object>()),
-  useAbilityText: () => (id: string) => env.abilityText[id],
+  useAbilityText: (ids: readonly string[]) => {
+    env.abilityIds = ids
+    return {
+      ...env.rules,
+      retry: () => {
+        env.retries += 1
+      },
+      text: (id: string) =>
+        env.rules.ready || env.abilityText[id]
+          ? env.abilityText[id]
+          : undefined,
+    }
+  },
 }))
 
 // Galatian's first two recipes per ability are the catalog's; later levels reuse one recipe.
@@ -276,7 +292,9 @@ afterEach(() => {
 describe("MowUnitPage", () => {
   beforeEach(() => {
     env.isMobile = false
-    env.abilityText = enNpcAbilityText as Record<string, unknown>
+    env.abilityText = enNpcAbilityText
+    env.rules = { ready: true, failed: false }
+    env.retries = 0
     env.power = {
       status: "ready",
       data: unitPowerContextFixture(),
@@ -430,9 +448,43 @@ describe("MowUnitPage", () => {
     }
   })
 
+  it("paints the page before the rules text arrives, asking only for its own abilities", async () => {
+    env.abilityText = {}
+    env.rules = { ready: false, failed: false }
+    await renderUnit("/library/machines-of-war/ultraDreadnought")
+    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(
+      "Galatian"
+    )
+    expect(env.abilityIds).toEqual([
+      "DutyEternal",
+      "MacroPlasmaIncinerator",
+      "WisdomOfTheAncients",
+    ])
+    for (const ability of ["primary", "secondary"]) {
+      expect(
+        screen.getByTestId(`unit-ability-${ability}-text-loading`)
+      ).toHaveTextContent("Loading rules text…")
+      expect(
+        screen.queryByTestId(`unit-ability-${ability}-missing-text`)
+      ).not.toBeInTheDocument()
+    }
+  })
+
+  it("shows a failure note with a retry when the rules text failed to download", async () => {
+    env.abilityText = {}
+    env.rules = { ready: true, failed: true }
+    await renderUnit("/library/machines-of-war/ultraDreadnought")
+    const panel = screen.getByTestId("unit-ability-primary")
+    expect(within(panel).getByRole("alert")).toHaveTextContent(
+      "The rules text couldn't be loaded."
+    )
+    fireEvent.click(within(panel).getByRole("button", { name: "Retry" }))
+    expect(env.retries).toBe(1)
+  })
+
   it("turns the panel on when rules text exists, up to the ladder's top level", async () => {
     env.abilityText = {
-      DutyEternal: (enNpcAbilityText as Record<string, unknown>).DutyEternal,
+      DutyEternal: enNpcAbilityText.DutyEternal,
     }
     await renderUnit("/library/machines-of-war/ultraDreadnought")
     expect(

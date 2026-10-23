@@ -1,0 +1,8 @@
+{
+  "OmnissiahsBlessing": {
+    "description": "Lorsque le <style=\"Faction_AdeptusMechanicus\">Technaugure</style> <style=\"Repairing\">répare</style> une autre unité, il transfère tous ses niveaux de <style=\"Buff_MachineVengeance\">Vengeance des machines</style> dont il dispose vers l'unité réparée.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

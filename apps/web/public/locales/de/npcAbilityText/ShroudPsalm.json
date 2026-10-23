@@ -1,0 +1,20 @@
+{
+  "ShroudPsalm": {
+    "description": "Bis zu <style=\"Stat\">{[nrOfTargets]}</style> andere verbündete Einheiten erhalten <style=\"Stat\">{[effectLevel]}</style> Stufen von <style=\"Buff_MachineVengeance\">Maschinenrache</style> und stehen bis zu Beginn ihres nächsten Zugs unter dem Einfluss von <i>Schleierpsalm</i>, wodurch sie <style=\"Stat_Armor\">+{[extraArmor]} Rüstung</style> erhalten und <style=\"NormalAttack\">normale Angriffe</style> <style=\"Stat_Hits\">-{[hitsReduction]} Treffer</style> gegen sie erzielen (bis zu einem Minimum von 1).",
+    "variables": {
+      "extraArmor": [
+        10, 12, 14, 16, 18, 20, 23, 25, 27, 30, 32, 34, 36, 39, 41, 43, 46, 48,
+        50, 53, 56, 60, 69, 78, 87, 96, 105, 115, 124, 133, 142, 151, 160, 169,
+        178, 187, 196, 206, 215, 227, 245, 264, 285, 307, 348, 390, 431, 472,
+        513, 554, 560, 568, 575, 585, 595, 605, 615, 628, 640, 653, 668, 683,
+        698, 713, 728
+      ]
+    },
+    "constants": {
+      "nrOfTargets": "2",
+      "hitsReduction": "2",
+      "effectLevel": "2"
+    },
+    "scaled": ["extraArmor"]
+  }
+}

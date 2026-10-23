@@ -1,0 +1,8 @@
+{
+  "PurgeResponse": {
+    "description": "Al final de su turno, si el <style=\"Faction_LeaguesOfVotann\">Acerobrero Ferrofamiliar</style> está adyacente a un <style=\"Character\">personaje</style> amistoso de <style=\"Faction_LeaguesOfVotann\">Ligas de Votann</style>, entra en <style=\"Buff_Overwatching\">Vigilancia</style>, incluso si atacó en su turno. Mientras esté en <style=\"Buff_Overwatching\">Vigilancia</style>, los ataques del Acerobrero Ferrofamiliar ignoran las reducciones de impacto.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

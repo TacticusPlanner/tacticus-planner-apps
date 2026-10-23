@@ -1,0 +1,26 @@
+{
+  "SolarAtomizer": {
+    "description": "Transfers all levels of <style=\"Buff_MachineVengeance\">Machine Vengeance</style> from other friendly <style=\"Mechanical\">Mechanical</style> units to <style=\"Faction_AdeptusMechanicus\">Belisarius Cawl</style>. Additionally <style=\"Faction_AdeptusMechanicus\">Belisarius Cawl</style> faces in one of 6 directions and marks all hexes in a straight line 2 hexes wide. At the beginning of his next turn, deals <style=\"Stat_Hits\">{[nrOfHits]}x</style> <style=\"DMG_Melta\">{[minDmg]}-{[maxDmg]} Melta Damage</style> to all enemies on affected hexes.",
+    "variables": {
+      "minDmg": [
+        50, 60, 70, 80, 90, 102, 113, 125, 136, 148, 159, 171, 182, 194, 205,
+        217, 228, 240, 251, 263, 278, 300, 345, 391, 436, 482, 527, 573, 618,
+        664, 709, 755, 800, 846, 891, 937, 982, 1028, 1073, 1137, 1227, 1322,
+        1424, 1537, 1742, 1948, 2153, 2359, 2564, 2770, 2800, 2838, 2875, 2925,
+        2975, 3025, 3075, 3138, 3200, 3263, 3338, 3413, 3488, 3563, 3638
+      ],
+      "maxDmg": [
+        66, 79, 92, 106, 119, 134, 149, 164, 180, 195, 210, 225, 240, 255, 271,
+        286, 301, 316, 331, 347, 367, 395, 455, 515, 576, 636, 696, 756, 816,
+        876, 936, 996, 1056, 1116, 1176, 1236, 1296, 1356, 1416, 1501, 1620,
+        1744, 1879, 2028, 2299, 2571, 2842, 3113, 3384, 3656, 3696, 3746, 3795,
+        3861, 3927, 3993, 4059, 4142, 4224, 4307, 4406, 4505, 4604, 4703, 4802
+      ]
+    },
+    "constants": {
+      "nrOfHits": "3",
+      "damageProfile": "Melta"
+    },
+    "scaled": ["minDmg", "maxDmg"]
+  }
+}

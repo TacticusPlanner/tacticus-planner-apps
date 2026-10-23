@@ -1,0 +1,10 @@
+{
+  "SynapticInsight": {
+    "description": "Die Fernkampfangriffe dieser Einheit verursachen <style=\"Stat_Hits\">+{[extraHit]} Treffer</style> gegen Ziele, die sich in Reichweite von <style=\"Synapse\">Synapse</style> befinden oder an einen anderen <style=\"Faction_Tyranids\">Tyraniden</style> angrenzen.",
+    "variables": {},
+    "constants": {
+      "extraHit": "2"
+    },
+    "scaled": []
+  }
+}

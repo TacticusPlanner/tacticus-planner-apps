@@ -1,0 +1,10 @@
+{
+  "OnMyPosition": {
+    "description": "Gegner, die direkt an eine verbündeten <style=\"Faction_AstraMilitarum\">Cadianischen Gardisten</style> oder einem verbündeten <style=\"Rarity_Mythic\">Mythischen</style> <style=\"Character\">Charakter</style> angrenzen, erleiden <style=\"Stat_Damage\">+{[extraDmgPct]} % Schaden</style> durch Fernkampfangriffe mythischer Charaktere.",
+    "variables": {
+      "extraDmgPct": [10, 13, 16, 20]
+    },
+    "constants": {},
+    "scaled": ["extraDmgPct"]
+  }
+}

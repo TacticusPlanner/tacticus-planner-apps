@@ -1,0 +1,10 @@
+{
+  "TalismanOfRage": {
+    "description": "Cada vez que el portador de la reliquia derrota a un enemigo con un ataque cuerpo a cuerpo, cuenta doble para <style=\"BlessingsOfKhorne\">Bendiciones de Khorne</style>. El portador de la reliquia recibe <style=\"Stat_CritDamage\">-{[critDmgReduction]} de Daño Crítico</style> por cada nivel de <style=\"BlessingsOfKhorne\">Bendiciones de Khorne</style>.",
+    "variables": {
+      "critDmgReduction": [295, 311, 327, 343, 359, 375, 391, 406, 422, 438]
+    },
+    "constants": {},
+    "scaled": []
+  }
+}

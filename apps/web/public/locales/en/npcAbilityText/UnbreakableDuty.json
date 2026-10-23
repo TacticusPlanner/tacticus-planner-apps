@@ -1,0 +1,32 @@
+{
+  "UnbreakableDuty": {
+    "description": "<style=\"Faction_BlackTemplars\">Ancient Thoread</style> and all friendly units within {[range]} hexes receive <style=\"Stat_Damage\">-{[dmgReductionPct]}% Damage</style> until the start of their next turn. If 2 or more friendly <style=\"Aliance_Imperial\">Imperial</style> <style=\"Character\">Characters</style> are dead upon activation of this ability, <style=\"Faction_BlackTemplars\">Ancient Thoread</style> gains <style=\"Stat_Health\">{[extraHp]} extra Health</style> and <style=\"Stat_Damage\">+{[extraDmg]} Damage</style> until the end of the battle and immediately performs a <style=\"NormalAttack\">normal attack</style> against an adjacent enemy.",
+    "variables": {
+      "dmgReductionPct": [
+        25, 25, 25, 25, 25, 25, 25, 25, 27, 27, 27, 27, 27, 27, 27, 27, 27, 29,
+        29, 29, 29, 29, 29, 29, 29, 29, 31, 31, 31, 31, 31, 31, 31, 31, 31, 33,
+        33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33,
+        33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33
+      ],
+      "extraDmg": [
+        20, 24, 28, 32, 36, 41, 45, 50, 54, 59, 64, 68, 73, 77, 82, 87, 91, 96,
+        100, 105, 111, 120, 138, 156, 174, 193, 211, 229, 247, 265, 284, 302,
+        320, 338, 356, 375, 393, 411, 429, 455, 491, 529, 569, 615, 697, 779,
+        861, 943, 1026, 1109, 1120, 1135, 1150, 1170, 1190, 1210, 1230, 1255,
+        1280, 1305, 1335, 1365, 1395, 1425, 1455
+      ],
+      "extraHp": [
+        100, 120, 140, 160, 180, 203, 226, 249, 272, 295, 318, 341, 364, 387,
+        410, 433, 456, 479, 502, 525, 556, 599, 690, 781, 872, 963, 1054, 1145,
+        1236, 1327, 1418, 1509, 1600, 1691, 1782, 1873, 1964, 2055, 2146, 2274,
+        2454, 2643, 2847, 3073, 3484, 3895, 4306, 4717, 5128, 5539, 5600, 5675,
+        5750, 5850, 5950, 6050, 6150, 6275, 6400, 6525, 6675, 6825, 6975, 7125,
+        7275
+      ]
+    },
+    "constants": {
+      "range": "2"
+    },
+    "scaled": ["extraDmg", "extraHp"]
+  }
+}

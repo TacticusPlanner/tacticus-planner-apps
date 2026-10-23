@@ -1,0 +1,31 @@
+{
+  "SwornProtector": {
+    "description": "Cuando el Señor Castellano Creed es el primer objetivo en la batalla, el <style=\"Summon\"><style=\"Faction_AstraMilitarum\">Sargento Kell</style></style> aparece en un hexágono adyacente libre. Cada vez que Creed es atacado, <style=\"Summon\"><style=\"Faction_AstraMilitarum\">Kell</style></style> cambia de hexágono con él y recibe el <style=\"Stat_Damage\">Daño</style> en su lugar si están adyacentes. \n\nAtributos de Kell:\n<style=\"Stat_Health\">{[summonHp]} de Salud</style>\n<style=\"Stat_Damage\">{[summonDmg]} de Daño</style>\n<style=\"Stat_Armor\">{[summonArmor]} de Armadura</style>",
+    "variables": {
+      "summonHp": [
+        90, 108, 126, 144, 162, 183, 203, 224, 245, 266, 286, 307, 328, 348,
+        369, 390, 410, 431, 452, 473, 500, 539, 621, 703, 785, 867, 949, 1031,
+        1112, 1194, 1276, 1358, 1440, 1522, 1604, 1686, 1768, 1850, 1931, 2047,
+        2209, 2379, 2562, 2766, 3136, 3506, 3875, 4245, 4615, 4985, 5040, 5108,
+        5175, 5265, 5355, 5445, 5535, 5648, 5760, 5873, 6008, 6143, 6278, 6413,
+        6548
+      ],
+      "summonDmg": [
+        18, 22, 25, 29, 32, 37, 41, 45, 49, 53, 57, 61, 66, 70, 74, 78, 82, 86,
+        90, 95, 100, 108, 124, 141, 157, 173, 190, 206, 222, 239, 255, 272, 288,
+        304, 321, 337, 354, 370, 386, 409, 442, 476, 512, 553, 627, 701, 775,
+        849, 923, 997, 1008, 1022, 1035, 1053, 1071, 1089, 1107, 1130, 1152,
+        1175, 1202, 1229, 1256, 1283, 1310
+      ],
+      "summonArmor": [
+        15, 18, 21, 24, 27, 30, 34, 37, 41, 44, 48, 51, 55, 58, 62, 65, 68, 72,
+        75, 79, 83, 90, 104, 117, 131, 144, 158, 172, 185, 199, 213, 226, 240,
+        254, 267, 281, 295, 308, 322, 341, 368, 396, 427, 461, 523, 584, 646,
+        708, 769, 831, 840, 851, 863, 878, 893, 908, 923, 941, 960, 979, 1001,
+        1024, 1046, 1069, 1091
+      ]
+    },
+    "constants": {},
+    "scaled": ["summonHp", "summonDmg", "summonArmor"]
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "LionHelmRelic": {
+    "description": "Les unités alliées adjacentes à <style=\"Faction_DarkAngels\">Azraël</style> bloquent <style=\"Stat_Block\">+{[blockDmg]} dégâts</style> supplémentaires. À la fin du tour d'Azraël, si aucun allié <style=\"Summon\"><style=\"Faction_DarkAngels\">Guetteur des Ténèbres</style></style> ne se trouve sur le champ de bataille, il a <style=\"Stat_Chance\">{[chance]} % de chances</style> d'invoquer un Guetteur des Ténèbres sur un hexagone adjacent libre.",
+    "variables": {
+      "blockDmg": [490, 516, 543, 569, 596, 622, 649, 675, 702, 728],
+      "chance": [50, 55, 60, 65, 70, 75, 80, 90, 95, 100]
+    },
+    "constants": {},
+    "scaled": []
+  }
+}

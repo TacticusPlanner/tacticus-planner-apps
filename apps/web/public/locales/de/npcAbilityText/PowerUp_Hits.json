@@ -1,0 +1,10 @@
+{
+  "PowerUp_Hits": {
+    "description": "Wenn eine Einheit diese Verstärkung einsammelt, fügen ihre Angriffe +{[extraHit]} <style=\"Stat_Hits\">Treffer</style> zu.",
+    "variables": {},
+    "constants": {
+      "extraHit": "2"
+    },
+    "scaled": []
+  }
+}

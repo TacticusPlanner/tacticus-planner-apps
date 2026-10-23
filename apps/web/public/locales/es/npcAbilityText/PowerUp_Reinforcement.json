@@ -1,0 +1,8 @@
+{
+  "PowerUp_Reinforcement": {
+    "description": "Añade 1 punto de refuerzos al ser recolectado por una unidad aliada.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

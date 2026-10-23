@@ -1,0 +1,27 @@
+{
+  "DaemonicPatrons": {
+    "description": "<style=\"Debuff_Taunted\">Taunts</style> an adjacent enemy, and <style=\"Faction_EmperorsChildren\">Hascule</style> gets <i>watched</i> until the end of his next turn. While being <i>watched</i>, <style=\"Faction_EmperorsChildren\">Hascule</style> deals <style=\"Stat_Damage\">+{[extraDmg]} Damage</style> and takes <style=\"Stat_Damage\">-{[dmgReductionPct]}% Damage</style> for each adjacent <style=\"Debuff_Taunted\">Taunted</style> enemy. If he defeats an adjacent <style=\"Debuff_Taunted\">Taunted</style> enemy while being <i>watched</i>, he can use this ability again. If he does not, he loses <style=\"Stat\">{[hpPct]}%</style> of his current <style=\"Stat_Health\">Health</style>.",
+    "variables": {
+      "extraDmg": [
+        5, 6, 7, 8, 9, 10, 11, 12, 14, 15, 16, 17, 18, 19, 21, 22, 23, 24, 25,
+        26, 28, 30, 35, 39, 44, 48, 53, 57, 62, 66, 71, 75, 80, 85, 89, 94, 98,
+        103, 107, 114, 123, 132, 142, 154, 174, 195, 215, 236, 256, 277, 280,
+        284, 288, 293, 298, 303, 308, 314, 320, 326, 334, 341, 349, 356, 364
+      ],
+      "dmgReductionPct": [
+        20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 25,
+        25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 30,
+        30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
+        30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30
+      ],
+      "hpPct": [
+        50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 40,
+        40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 30,
+        30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
+        30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30
+      ]
+    },
+    "constants": {},
+    "scaled": ["extraDmg"]
+  }
+}

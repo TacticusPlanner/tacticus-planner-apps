@@ -1,0 +1,10 @@
+{
+  "BlightedLand": {
+    "description": "Friendly <style=\"Rarity_Mythic\">Mythic</style> <style=\"Character\">characters</style> deal <style=\"Stat_Damage\">+{[extraDmgPct]}% Damage</style> while on a <style=\"Tile_Contamination\">Contaminated</style> hex.",
+    "variables": {
+      "extraDmgPct": [10, 13, 16, 20]
+    },
+    "constants": {},
+    "scaled": ["extraDmgPct"]
+  }
+}

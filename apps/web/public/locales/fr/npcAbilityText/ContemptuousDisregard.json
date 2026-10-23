@@ -1,0 +1,10 @@
+{
+  "ContemptuousDisregard": {
+    "description": "Les <style=\"Character\">personnages</style> <style=\"Rarity_Mythic\">Mythiques</style> alliés subissent <style=\"Stat_Damage\">-{[dmgReductionPct]} % de dégâts</style> lorsqu'ils se trouvent sur un hexagone porteur d'un <style=\"HexEffect\">effet d'hexagone</style>.",
+    "variables": {
+      "dmgReductionPct": [10, 13, 16, 20]
+    },
+    "constants": {},
+    "scaled": ["dmgReductionPct"]
+  }
+}

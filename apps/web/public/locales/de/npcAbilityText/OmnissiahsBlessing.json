@@ -1,0 +1,8 @@
+{
+  "OmnissiahsBlessing": {
+    "description": "Immer wenn der <style=\"Faction_AdeptusMechanicus\">Maschinenseher-Techpriester</style> eine andere Einheit <style=\"Repairing\">repariert</style>, überträgt er alle seine Stufen von <style=\"Buff_MachineVengeance\">Maschinenrache</style> auf die reparierte Einheit.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

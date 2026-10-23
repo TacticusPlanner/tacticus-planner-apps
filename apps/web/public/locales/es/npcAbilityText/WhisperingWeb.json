@@ -1,0 +1,15 @@
+{
+  "WhisperingWeb": {
+    "description": "Cuando <style=\"Faction_Aeldari\">Lhykhis</style> realiza un <style=\"NormalAttack\">ataque a distancia normal</style> contra un enemigo, ese enemigo es afectado por <i>Red susurrante</i> hasta que Lhykhis sea derrotado o realice un <style=\"NormalAttack\">ataque a distancia normal</style> contra una unidad diferente. Cuando un <style=\"Character\">personaje</style> aliado ataca a un enemigo afectado, cada <style=\"Stat_Hits\">golpe</style> en el mismo ataque inflige <style=\"Stat_Damage\">+{[extraDmg]} más Daño</style> que el golpe anterior.",
+    "variables": {
+      "extraDmg": [
+        4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22,
+        23, 24, 26, 30, 34, 38, 42, 46, 50, 54, 58, 62, 66, 70, 74, 78, 82, 86,
+        90, 94, 100, 108, 116, 125, 135, 153, 171, 189, 208, 226, 244, 246, 250,
+        253, 257, 262, 266, 271, 276, 282, 287, 294, 300, 307, 314, 320
+      ]
+    },
+    "constants": {},
+    "scaled": ["extraDmg"]
+  }
+}

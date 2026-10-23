@@ -1,0 +1,8 @@
+{
+  "PowerUp_HeroSpawn_Uthar": {
+    "description": "Wenn diese Verstärkung von einer verbündeten Einheit aufgesammelt wird, setzt sie <style=\"Faction_LeaguesOfVotann\">Ûthar</style> auf dem Schlachtfeld ein, der wie andere verbündete <style=\"Character\">Charaktere</style> gesteuert werden kann. Wenn möglich, wird er auf dem Feld einer gegnerischen Einheit eingesetzt. Der Gegner auf diesem Feld erleidet <style=\"Obliterated\">immer einen Overkill</style>.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

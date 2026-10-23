@@ -1,0 +1,11 @@
+{
+  "CloudOfFlies": {
+    "description": "Recibe <style=\"Stat_Damage\">-{[dmgReductionPct]} % de Daño</style> mientras está en un hexágono <style=\"Tile_Contamination\">Contaminado</style>. Si esta unidad es atacada mientras no está en un hexágono <style=\"Tile_Contamination\">Contaminado</style>, tiene un {[chance]} % de probabilidad de contaminar el hexágono sobre el que está.",
+    "variables": {},
+    "constants": {
+      "dmgReductionPct": "30",
+      "chance": "70"
+    },
+    "scaled": []
+  }
+}

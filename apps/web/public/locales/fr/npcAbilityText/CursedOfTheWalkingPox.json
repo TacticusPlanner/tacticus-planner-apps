@@ -1,0 +1,8 @@
+{
+  "CursedOfTheWalkingPox": {
+    "description": "Chaque fois que cette unité élimine une unité ennemie non <style=\"Mechanical\">mécanique</style>, un <style=\"Summon\"><style=\"Faction_DeathGuard\">Véroleux</style></style> est invoqué dans cet hexagone.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

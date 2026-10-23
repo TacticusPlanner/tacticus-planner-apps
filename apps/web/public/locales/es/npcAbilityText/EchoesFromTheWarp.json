@@ -1,0 +1,8 @@
+{
+  "EchoesFromTheWarp": {
+    "description": "Cuando esta unidad se mueve, deja un fantasma de tiempo en el hexágono desde el que se movió. El fantasma de tiempo desaparece si el hexágono es ocupado por otra unidad o si el terreno se vuelve intransitable (como con <style=\"Tile_Floe\">Hielo roto</style>). La primera vez que esta unidad muere en cada batalla, revive con la <style=\"Stat_Health\">Salud completa</style> en su ubicación. Esto funciona aunque esta unidad resulte <style=\"Overkill\">Arrasada</style>.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

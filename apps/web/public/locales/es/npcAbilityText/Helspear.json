@@ -1,0 +1,11 @@
+{
+  "Helspear": {
+    "description": "<i>Heraldo del Apocalipsis</i> siempre añade <style=\"Tile_DespoiledGround\">Tierra saqueada</style> a los hexágonos de los enemigos afectados, y el siguiente ataque contra los enemigos afectados también ignora <style=\"Stat_Armor\">{[armorIgnored]} de Armadura</style>. Después de que se haya usado <i>Heraldo del Apocalipsis</i> y <style=\"Faction_BlackLegion\">Haarken</style> derrote a <style=\"STAT\">{[nrOfUnits]}</style> unidades enemigas, puede usar la habilidad nuevamente.",
+    "variables": {
+      "armorIgnored": [685, 722, 759, 796, 833, 870, 907, 944, 981, 1018],
+      "nrOfUnits": [8, 8, 7, 7, 6, 6, 5, 5, 4, 4]
+    },
+    "constants": {},
+    "scaled": []
+  }
+}

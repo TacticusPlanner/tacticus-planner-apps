@@ -1,0 +1,10 @@
+{
+  "PowerUp_ReinforcementShield": {
+    "description": "Wenn eine Einheit diese Verstärkung einsammelt, erhält jeder in diesem Event eingesetzte Charakter einen <style=\"Buff_Shield\">Schild</style> in Höhe von {[shieldPct]} % seiner maximalen <style=\"Stat_Health\">Lebenspunkte</style>. Die Stärke des Schildes erhöht sich mit jeder zusätzlichen Schildverstärkung, die du einsammelst.",
+    "variables": {},
+    "constants": {
+      "shieldPct": "10"
+    },
+    "scaled": []
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "MacroPlasmaIncinerator": {
+    "description": "Marque un hexagone cible et les deux hexagones derrière lui pendant 1 manche. Inflige <style=\"Stat_Hits\">{[nrOfHits]}x</style> <style=\"DMG_Plasma\">{[minDmg]}-{[maxDmg]} dégâts plasma</style> à tous les ennemis présents dans la zone marquée la première fois qu'une unité ennemie termine son mouvement dans cette zone.\n\n<style=\"Cooldown\">Rechargement initial : {[initialCooldownTurns]} manche(s)</style>. \n\n{[S/AbilityDamageExplanation]}",
+    "variables": {
+      "minDmg": [
+        30, 36, 42, 48, 54, 61, 68, 75, 82, 89, 95, 102, 109, 116, 123, 130,
+        137, 144, 151, 158, 167, 180, 207, 234, 262, 289, 316, 344, 371, 398,
+        425, 453, 480, 507, 535, 562, 589, 617, 644, 682, 736, 793, 854, 922,
+        1045, 1169, 1292, 1415, 1538, 1662, 1680, 1703, 1725, 1755, 1785, 1815,
+        1845, 1883, 1920, 1958, 2003, 2048, 2093, 2138, 2183
+      ],
+      "maxDmg": [
+        36, 43, 50, 58, 65, 73, 81, 90, 98, 106, 114, 123, 131, 139, 148, 156,
+        164, 172, 181, 189, 200, 216, 248, 281, 314, 347, 379, 412, 445, 478,
+        510, 543, 576, 609, 642, 674, 707, 740, 773, 819, 883, 951, 1025, 1106,
+        1254, 1402, 1550, 1698, 1846, 1994, 2016, 2043, 2070, 2106, 2142, 2178,
+        2214, 2259, 2304, 2349, 2403, 2457, 2511, 2565, 2619
+      ]
+    },
+    "constants": {
+      "damageProfile": "Plasma",
+      "nrOfHits": "3",
+      "initialCooldownTurns": "1"
+    },
+    "scaled": ["minDmg", "maxDmg"]
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "TheArdentBlade": {
+    "description": "The first time each turn that <style=\"Faction_Sisterhood\">Celestine</style> defeats an enemy unit, she resurrects one of her <style=\"Faction_Sisterhood\">Geminae Superia</style> with <style=\"Stat_Health\">{[hp]} Health</style> in a free adjacent hex. If they cannot be resurrected, then one of them within {[range]} hexes takes an action instead.",
+    "variables": {
+      "hp": [2350, 2477, 2604, 2731, 2857, 2984, 3111, 3238, 3365, 3492]
+    },
+    "constants": {
+      "range": "3"
+    },
+    "scaled": []
+  }
+}

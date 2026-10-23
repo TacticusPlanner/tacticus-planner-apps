@@ -1,0 +1,21 @@
+{
+  "WatchedOver": {
+    "description": "Les unités alliées adjacentes subissent <style=\"DMG_Psychic\">-{[dmgReductionPct]} % dégâts psychiques</style> des attaques ennemies. Si elles ont des <style=\"Stat_Chance\">chances</style> de <style=\"Stat_Block\">blocage</style>, celle-ci augmente de <style=\"Stat\">+{[blockChance]} %</style>. Les <style=\"Psyker\">psykers</style> ennemis ne toucheront pas d'unité supplémentaire avec leurs <style=\"NormalAttack\">attaques à distance normales</style> en cas d'attaque contre des unités adjacentes à un <style=\"Faction_DarkAngels\">Guetteur des Ténèbres</style>.",
+    "variables": {
+      "dmgReductionPct": [
+        15, 15, 15, 15, 15, 15, 15, 15, 17, 17, 17, 17, 17, 17, 17, 17, 17, 18,
+        18, 18, 18, 18, 18, 18, 18, 18, 19, 19, 19, 19, 19, 19, 19, 19, 19, 20,
+        20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20,
+        20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20
+      ],
+      "blockChance": [
+        10, 10, 10, 10, 10, 10, 10, 10, 12, 12, 12, 12, 12, 12, 12, 12, 12, 13,
+        13, 13, 13, 13, 13, 13, 13, 13, 14, 14, 14, 14, 14, 14, 14, 14, 14, 15,
+        15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15,
+        15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15
+      ]
+    },
+    "constants": {},
+    "scaled": []
+  }
+}
