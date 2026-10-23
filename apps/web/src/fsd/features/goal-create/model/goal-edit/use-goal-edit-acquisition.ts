@@ -1,7 +1,6 @@
 import { useMemo } from "react"
 import { useQuery } from "@tanstack/react-query"
 import { useIsAuthenticated } from "@azure/msal-react"
-import type { Progression } from "@workspace/game-domain"
 
 import type { AcquisitionSource, GoalDetail } from "@/entities/goal"
 import { onslaughtProgressQueries } from "@/entities/player-data-override"
@@ -143,8 +142,8 @@ function useEditOnslaughtYield({
       ? charactersById?.get(detail.entityId)
       : undefined
 
-  const currentProgression = (playerCharacter?.progressionIndex ??
-    detail.config.progression?.start) as Progression | undefined
+  const currentProgression =
+    playerCharacter?.progressionIndex ?? detail.config.progression?.start
   const shardsPerRun =
     enabled && onslaughtProgress && rewards?.length && currentProgression
       ? onslaughtShardsPerRun({

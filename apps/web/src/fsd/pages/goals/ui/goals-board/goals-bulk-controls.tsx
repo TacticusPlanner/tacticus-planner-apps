@@ -97,7 +97,7 @@ export function GoalsBulkControls({
         onSelect={addSelectionTo}
         open={pickerOpen}
         pending={false}
-        projects={choosable as ProjectSummary[]}
+        projects={choosable}
         title={t("goals.project.addToProjectTitle")}
       />
       <ManageProjectsSheet

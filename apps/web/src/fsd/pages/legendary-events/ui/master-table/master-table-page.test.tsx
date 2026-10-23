@@ -401,9 +401,13 @@ describe("MasterTablePage", () => {
     expect(rowIds()).toEqual(["bloodDante"])
     expect(search().get("q")).toBeNull()
 
-    act(() => vi.advanceTimersByTime(199))
+    act(() => {
+      vi.advanceTimersByTime(199)
+    })
     expect(search().get("q")).toBeNull()
-    act(() => vi.advanceTimersByTime(1))
+    act(() => {
+      vi.advanceTimersByTime(1)
+    })
     expect(search().get("q")).toBe("dan")
     expect(input).toHaveValue("dan")
 

@@ -57,6 +57,15 @@ function optionNames() {
 }
 
 describe("RaidBossMobilePicker", () => {
+  it("links the open trigger to its listbox via aria-controls", () => {
+    renderPicker()
+    const trigger = screen.getByTestId("raid-boss-mobile-picker")
+    expect(trigger).toHaveAttribute("aria-expanded", "true")
+    expect(
+      document.getElementById(trigger.getAttribute("aria-controls") ?? "")
+    ).toBe(screen.getByRole("listbox"))
+  })
+
   it("renders a group heading per boss with the boss then its primes", () => {
     renderPicker()
 

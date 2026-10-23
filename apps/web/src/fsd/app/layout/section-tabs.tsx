@@ -32,9 +32,10 @@ export function SectionTabs({ item }: { item: NavItem }) {
   }, [pathname])
   const children = item.children
 
-  if (!children?.length) return null
+  const firstChild = children?.[0]
+  if (!children || !firstChild) return null
 
-  const active = findActiveChild(children, pathname)?.path ?? children[0].path
+  const active = findActiveChild(children, pathname)?.path ?? firstChild.path
 
   return (
     <Tabs

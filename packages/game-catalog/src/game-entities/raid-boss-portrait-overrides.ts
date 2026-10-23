@@ -108,8 +108,13 @@ export const raidBossPrefixPortraitOverrides: Record<string, string> = (() => {
   const map: Record<string, string> = {}
   for (const unitSetId of Object.keys(raidBossFullPortraitOverrides)) {
     const prefix = /^(GuildBoss\d+)/.exec(unitSetId)?.[1]
-    if (prefix !== undefined && map[prefix] === undefined) {
-      map[prefix] = raidBossFullPortraitOverrides[unitSetId]
+    const portrait = raidBossFullPortraitOverrides[unitSetId]
+    if (
+      prefix !== undefined &&
+      portrait !== undefined &&
+      map[prefix] === undefined
+    ) {
+      map[prefix] = portrait
     }
   }
   return map

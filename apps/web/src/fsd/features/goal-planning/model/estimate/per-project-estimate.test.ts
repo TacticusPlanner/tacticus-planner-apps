@@ -10,7 +10,7 @@ import {
   battleIdSchema,
   campaignIdSchema,
   rankIndex,
-  rankOrder,
+  Rank,
   unitIdSchema,
   upgradeIdSchema,
   type UnitId,
@@ -131,7 +131,7 @@ describe("estimateNewGoalsForProject", () => {
   const character: Character = {
     id: unitId("hero1"),
     name: "Hero One",
-    rankUpUpgrades: [{ rank: rankOrder[0], upgradeIds: [upgradeId("mat1")] }],
+    rankUpUpgrades: [{ rank: Rank.Stone1, upgradeIds: [upgradeId("mat1")] }],
   }
   const characterView = {
     id: "hero1",
@@ -191,10 +191,10 @@ describe("estimateNewGoalsForProject", () => {
       goalId,
       config: {
         rank: {
-          start: rankIndex(rankOrder[0]),
+          start: rankIndex(Rank.Stone1),
           startPointFive: false,
           startAppliedUpgrades: 0,
-          end: rankIndex(rankOrder[1]),
+          end: rankIndex(Rank.Stone2),
           endPointFive: false,
           endAppliedUpgrades: 0,
         },
@@ -284,7 +284,7 @@ describe("estimateNewGoalsForProject", () => {
           mythicShards: 0,
           orbs: 0,
           orbRarity: null,
-        } as AscensionCostStorageModel,
+        },
       ],
     ])
     const shops: GameCatalogShop[] = [
@@ -307,7 +307,7 @@ describe("estimateNewGoalsForProject", () => {
             ],
           },
         ],
-      } as GameCatalogShop,
+      },
     ]
     const ascensionSpecDetail = (
       goalId: string,

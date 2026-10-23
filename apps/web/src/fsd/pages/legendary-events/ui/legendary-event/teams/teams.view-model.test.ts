@@ -4,7 +4,6 @@ import type {
   LegendaryEventPlan,
   LegendaryEventRosterUnit,
   LegendaryEventTeam,
-  LegendaryEventUnit,
 } from "@/entities/legendary-event"
 import { legendaryEventCharacters } from "@/test/fixtures/legendary-event-characters"
 import { utharEvent } from "@/test/fixtures/legendary-events"
@@ -133,7 +132,7 @@ describe("buildTeamCardViewModel team power (spec worked examples)", () => {
     buildTeamCardViewModel(
       value,
       utharEvent.alpha,
-      legendaryEventCharacters as unknown as LegendaryEventUnit[],
+      legendaryEventCharacters,
       roster,
       1,
       undefined,
@@ -193,7 +192,7 @@ describe("buildTeamCardViewModel team power (spec worked examples)", () => {
     const result = buildTeamCardViewModel(
       team(),
       utharEvent.alpha,
-      legendaryEventCharacters as unknown as LegendaryEventUnit[],
+      legendaryEventCharacters,
       roster,
       1,
       undefined,

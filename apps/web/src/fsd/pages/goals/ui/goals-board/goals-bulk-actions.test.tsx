@@ -47,7 +47,7 @@ describe("GoalsBulkActions", () => {
       ["resume", "Resume"],
       ["addToProject", "Add to project"],
       ["delete", "Delete"],
-    ]) {
+    ] satisfies [string, string][]) {
       const button = screen.getByTestId(`goals-bulk-${key}`)
       expect(button).toBeDisabled()
       expect(button).toHaveTextContent(label)

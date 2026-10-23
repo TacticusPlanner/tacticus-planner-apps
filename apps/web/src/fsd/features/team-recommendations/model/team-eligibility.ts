@@ -74,22 +74,29 @@ export function expandCandidatePool(params: {
   targetEligible?: number
 }): ExpandedPool {
   const target = Math.max(MIN_TEAM_SIZE, params.targetEligible ?? MIN_TEAM_SIZE)
+  const fullRosterPool = {
+    id: FULL_ROSTER_POOL_ID,
+    unitIds: new Set(params.rosterIds),
+  }
   const orderedPools: { id: string; unitIds: ReadonlySet<UnitId> }[] = [
     ...params.pools,
-    { id: FULL_ROSTER_POOL_ID, unitIds: new Set(params.rosterIds) },
+    fullRosterPool,
   ]
+  const primaryPool = orderedPools[0] ?? fullRosterPool
   const primaryPoolIds = new Set(
-    params.rosterIds.filter((id) => orderedPools[0].unitIds.has(id))
+    params.rosterIds.filter((id) => primaryPool.unitIds.has(id))
   )
 
   const seen = new Set<UnitId>()
   const candidateIds: UnitId[] = []
   let poolIndex = 0
+  let lastPool = primaryPool
 
-  for (let index = 0; index < orderedPools.length; index++) {
+  for (const [index, pool] of orderedPools.entries()) {
     poolIndex = index
+    lastPool = pool
     for (const id of params.rosterIds) {
-      if (orderedPools[index].unitIds.has(id) && !seen.has(id)) {
+      if (pool.unitIds.has(id) && !seen.has(id)) {
         seen.add(id)
         candidateIds.push(id)
       }
@@ -102,7 +109,7 @@ export function expandCandidatePool(params: {
   // the primary pool's own members are simply short on eligible characters).
   const broadened = candidateIds.some((id) => !primaryPoolIds.has(id))
   return {
-    poolUsed: broadened ? orderedPools[poolIndex].id : orderedPools[0].id,
+    poolUsed: broadened ? lastPool.id : primaryPool.id,
     poolIndex,
     broadened,
     candidateIds,

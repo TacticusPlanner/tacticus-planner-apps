@@ -1,7 +1,8 @@
 import { fireEvent, render, screen, within } from "@testing-library/react"
-import { useState, type ComponentProps } from "react"
-import { Link, MemoryRouter, useLocation } from "react-router"
-import { describe, expect, it, vi } from "vitest"
+import userEvent from "@testing-library/user-event"
+import { lazy, useState, type ComponentProps } from "react"
+import { Link, MemoryRouter, Route, Routes, useLocation } from "react-router"
+import { beforeEach, describe, expect, it, vi } from "vitest"
 import { TooltipProvider } from "@workspace/ui/components/tooltip"
 
 vi.mock("react-i18next", () => ({
@@ -23,15 +24,14 @@ vi.mock("@/widgets/account-menu/ui/player-data-sync-button", () => ({
 vi.mock("../providers/auth-control", () => ({
   AuthControl: () => <div data-testid="auth-account" />,
 }))
-vi.mock("../providers/userjot-board-link", () => ({
-  UserJotBoardLink: () => <a data-testid="userjot-board-link" />,
-}))
 vi.mock("../providers/userjot-feedback-button", () => ({
   UserJotFeedbackButton: () => <button data-testid="userjot-feedback-button" />,
 }))
+const tour = vi.hoisted(() => ({ running: false }))
 vi.mock("@/shared/tour", () => ({
   TourButton: () => <button data-testid="tour-button" />,
   PageTourButton: () => null,
+  useTour: () => ({ isRunning: tour.running }),
 }))
 
 import { DesktopShell as ControlledDesktopShell } from "./desktop-layout"
@@ -81,16 +81,13 @@ const lookupItem = navItems.find((item) => item.path === "/library")!
 // `ShellContent` wires them in `app-shell.tsx`, so entry-path resolution is tested end to end.
 function EntryPathHarness() {
   const { pathname } = useLocation()
-  const { getEntryPath } = useSectionEntryPath(navItems as NavItem[], pathname)
-  const { activeItem } = resolveActiveNavigation(
-    navItems as NavItem[],
-    pathname
-  )
+  const { getEntryPath } = useSectionEntryPath(navItems, pathname)
+  const { activeItem } = resolveActiveNavigation(navItems, pathname)
 
   return (
     <DesktopShell
       activeSection={activeItem}
-      visibleItems={navItems as NavItem[]}
+      visibleItems={navItems}
       pageDescription="Lookup description"
       sectionTitle="Lookup"
       onCreateGoal={vi.fn()}
@@ -105,7 +102,7 @@ describe("DesktopShell", () => {
       <MemoryRouter>
         <TooltipProvider>
           <DesktopShell
-            visibleItems={navItems as NavItem[]}
+            visibleItems={navItems}
             activeSection={homeItem}
             pageDescription="Home description"
             sectionTitle="Home"
@@ -140,7 +137,7 @@ describe("DesktopShell", () => {
       <MemoryRouter>
         <TooltipProvider>
           <DesktopShell
-            visibleItems={navItems as NavItem[]}
+            visibleItems={navItems}
             activeSection={homeItem}
             pageDescription="Your account overview"
             sectionTitle="Home"
@@ -160,7 +157,7 @@ describe("DesktopShell", () => {
       <MemoryRouter>
         <TooltipProvider>
           <DesktopShell
-            visibleItems={navItems as NavItem[]}
+            visibleItems={navItems}
             activeSection={homeItem}
             pageDescription="Home description"
             sectionTitle="Home"
@@ -185,7 +182,7 @@ describe("DesktopShell", () => {
       <MemoryRouter>
         <TooltipProvider>
           <DesktopShell
-            visibleItems={navItems as NavItem[]}
+            visibleItems={navItems}
             activeSection={homeItem}
             pageDescription="Home"
             sectionTitle="Home"
@@ -225,7 +222,7 @@ describe("DesktopShell", () => {
       <MemoryRouter initialEntries={["/library/machines-of-war"]}>
         <TooltipProvider>
           <DesktopShell
-            visibleItems={navItems as NavItem[]}
+            visibleItems={navItems}
             activeSection={lookupItem}
             pageDescription="Machines of War description"
             sectionTitle="Lookup"
@@ -254,7 +251,7 @@ describe("DesktopShell", () => {
       <MemoryRouter initialEntries={["/library/machines-of-war"]}>
         <TooltipProvider>
           <DesktopShell
-            visibleItems={navItems as NavItem[]}
+            visibleItems={navItems}
             activeSection={lookupItem}
             pageDescription="Machines of War description"
             sectionTitle="Lookup"
@@ -286,7 +283,7 @@ describe("DesktopShell", () => {
       <MemoryRouter initialEntries={["/plan/goals"]}>
         <TooltipProvider>
           <DesktopShell
-            visibleItems={navItems as NavItem[]}
+            visibleItems={navItems}
             activeSection={planItem}
             pageDescription="Plan"
             sectionTitle="Plan"
@@ -341,7 +338,7 @@ describe("DesktopShell", () => {
       <MemoryRouter initialEntries={["/library/machines-of-war"]}>
         <TooltipProvider>
           <DesktopShell
-            visibleItems={navItems as NavItem[]}
+            visibleItems={navItems}
             activeSection={lookupItem}
             pageDescription="Lookup description"
             sectionTitle="Lookup"
@@ -383,7 +380,7 @@ describe("DesktopShell", () => {
       <MemoryRouter initialEntries={["/library/characters/some-character"]}>
         <TooltipProvider>
           <DesktopShell
-            visibleItems={navItems as NavItem[]}
+            visibleItems={navItems}
             activeSection={lookupItem}
             pageDescription="Lookup description"
             sectionTitle="Lookup"
@@ -413,7 +410,7 @@ describe("DesktopShell", () => {
       <MemoryRouter initialEntries={["/guild/members"]}>
         <TooltipProvider>
           <DesktopShell
-            visibleItems={navItems as NavItem[]}
+            visibleItems={navItems}
             activeSection={guildItem}
             pageDescription="Guild"
             sectionTitle="Guild"
@@ -434,7 +431,7 @@ describe("DesktopShell", () => {
       <MemoryRouter initialEntries={["/guild/members"]}>
         <TooltipProvider>
           <DesktopShell
-            visibleItems={navItems as NavItem[]}
+            visibleItems={navItems}
             activeSection={homeItem}
             pageDescription="Home"
             sectionTitle="Home"
@@ -458,7 +455,7 @@ describe("DesktopShell", () => {
       <MemoryRouter initialEntries={["/library/characters"]}>
         <TooltipProvider>
           <DesktopShell
-            visibleItems={navItems as NavItem[]}
+            visibleItems={navItems}
             activeSection={lookupItem}
             pageDescription="Lookup description"
             sectionTitle="Lookup"
@@ -525,7 +522,7 @@ describe("DesktopShell", () => {
         <TooltipProvider>
           <input data-testid="outside-input" />
           <DesktopShell
-            visibleItems={navItems as NavItem[]}
+            visibleItems={navItems}
             activeSection={lookupItem}
             pageDescription="Lookup description"
             sectionTitle="Lookup"
@@ -559,7 +556,7 @@ describe("DesktopShell", () => {
       <MemoryRouter initialEntries={["/library/characters"]}>
         <TooltipProvider>
           <DesktopShell
-            visibleItems={navItems as NavItem[]}
+            visibleItems={navItems}
             activeSection={lookupItem}
             pageDescription="Lookup description"
             sectionTitle="Lookup"
@@ -572,6 +569,7 @@ describe("DesktopShell", () => {
     const link = within(
       screen.getByTestId("desktop-section-navigation")
     ).getAllByRole("link")[0]
+    if (!link) throw new Error("expected a section link")
     link.focus()
 
     fireEvent.keyDown(link, { ctrlKey: true, key: "b" })
@@ -587,7 +585,7 @@ describe("DesktopShell", () => {
       <MemoryRouter>
         <TooltipProvider>
           <DesktopShell
-            visibleItems={navItems as NavItem[]}
+            visibleItems={navItems}
             activeSection={homeItem}
             pageDescription="Home"
             sectionTitle="Home"
@@ -610,7 +608,7 @@ describe("DesktopShell", () => {
       <MemoryRouter initialEntries={["/library/characters"]}>
         <TooltipProvider>
           <DesktopShell
-            visibleItems={navItems as NavItem[]}
+            visibleItems={navItems}
             activeSection={lookupItem}
             pageDescription="Lookup description"
             sectionTitle="Lookup"
@@ -650,7 +648,7 @@ describe("DesktopShell", () => {
       <MemoryRouter>
         <TooltipProvider>
           <DesktopShell
-            visibleItems={navItems as NavItem[]}
+            visibleItems={navItems}
             activeSection={homeItem}
             pageDescription="Home"
             sectionTitle="Home"
@@ -671,10 +669,7 @@ describe("DesktopShell", () => {
   it("keeps both menu choices through sibling, cross-section, and childless navigation", () => {
     function NavigatingShell() {
       const { pathname } = useLocation()
-      const { activeItem } = resolveActiveNavigation(
-        navItems as NavItem[],
-        pathname
-      )
+      const { activeItem } = resolveActiveNavigation(navItems, pathname)
 
       return (
         <>
@@ -687,7 +682,7 @@ describe("DesktopShell", () => {
             onCreateGoal={vi.fn()}
             pageDescription="d"
             sectionTitle="t"
-            visibleItems={navItems as NavItem[]}
+            visibleItems={navItems}
           />
         </>
       )
@@ -734,7 +729,7 @@ describe("DesktopShell", () => {
       <MemoryRouter>
         <TooltipProvider>
           <DesktopShell
-            visibleItems={navItems as NavItem[]}
+            visibleItems={navItems}
             activeSection={homeItem}
             pageDescription="Home"
             sectionTitle="Home"
@@ -770,7 +765,7 @@ describe("DesktopShell", () => {
       <MemoryRouter initialEntries={["/library/machines-of-war"]}>
         <TooltipProvider>
           <DesktopShell
-            visibleItems={navItems as NavItem[]}
+            visibleItems={navItems}
             activeSection={lookupItem}
             pageDescription="Lookup description"
             sectionTitle="Lookup"
@@ -806,7 +801,7 @@ describe("DesktopShell", () => {
       <MemoryRouter initialEntries={["/library/machines-of-war"]}>
         <TooltipProvider>
           <DesktopShell
-            visibleItems={navItems as NavItem[]}
+            visibleItems={navItems}
             activeSection={lookupItem}
             pageDescription="Lookup description"
             sectionTitle="Lookup"
@@ -833,7 +828,7 @@ describe("DesktopShell", () => {
       <MemoryRouter initialEntries={["/library/machines-of-war"]}>
         <TooltipProvider>
           <DesktopShell
-            visibleItems={navItems as NavItem[]}
+            visibleItems={navItems}
             activeSection={lookupItem}
             pageDescription="Lookup description"
             sectionTitle="Lookup"
@@ -859,7 +854,7 @@ describe("DesktopShell", () => {
       <MemoryRouter>
         <TooltipProvider>
           <DesktopShell
-            visibleItems={navItems as NavItem[]}
+            visibleItems={navItems}
             activeSection={homeItem}
             pageDescription="Home description"
             sectionTitle="Home"
@@ -892,7 +887,7 @@ describe("DesktopShell", () => {
       <MemoryRouter>
         <TooltipProvider>
           <DesktopShell
-            visibleItems={navItems as NavItem[]}
+            visibleItems={navItems}
             activeSection={homeItem}
             pageDescription="Home description"
             sectionTitle="Home"
@@ -931,7 +926,7 @@ describe("DesktopShell", () => {
       <MemoryRouter>
         <TooltipProvider>
           <DesktopShell
-            visibleItems={navItems as NavItem[]}
+            visibleItems={navItems}
             activeSection={homeItem}
             pageDescription="Home description"
             sectionTitle="Home"
@@ -1037,7 +1032,7 @@ describe("DesktopShell", () => {
       <MemoryRouter initialEntries={["/home"]}>
         <TooltipProvider>
           <DesktopShell
-            visibleItems={navItems as NavItem[]}
+            visibleItems={navItems}
             activeSection={homeItem}
             pageDescription="Home description"
             sectionTitle="Home"
@@ -1113,7 +1108,7 @@ describe("DesktopShell quick actions in navigation search", () => {
             pageDescription="Home description"
             quickActions={quickActions}
             sectionTitle="Home"
-            visibleItems={navItems as NavItem[]}
+            visibleItems={navItems}
           />
         </TooltipProvider>
       </MemoryRouter>
@@ -1193,5 +1188,100 @@ describe("DesktopShell quick actions in navigation search", () => {
     fireEvent.change(input, { target: { value: "zzzz-nothing" } })
     expect(dialog.getByText("nav.noResults")).toBeVisible()
     expect(dialog.queryAllByRole("heading", { level: 3 })).toHaveLength(0)
+  })
+})
+
+function StubPage() {
+  return (
+    <>
+      <p>Page body</p>
+      <Link to="?filter=on">Filter</Link>
+      <Link to="/next">Next page</Link>
+    </>
+  )
+}
+
+const NeverLoads = lazy(() => new Promise<never>(() => {}))
+
+function renderDesktopRoutes(initialEntry = "/home") {
+  const shell = (
+    <DesktopShell
+      activeSection={homeItem}
+      visibleItems={navItems}
+      pageDescription={undefined}
+      sectionTitle="Home"
+      onCreateGoal={vi.fn()}
+      getEntryPath={identityEntryPath}
+    />
+  )
+  return render(
+    <MemoryRouter initialEntries={[initialEntry]}>
+      <TooltipProvider>
+        <Routes>
+          <Route element={shell}>
+            <Route element={<NeverLoads />} path="/pending" />
+            <Route element={<StubPage />} path="*" />
+          </Route>
+        </Routes>
+      </TooltipProvider>
+    </MemoryRouter>
+  )
+}
+
+describe("DesktopShell landmarks and focus", () => {
+  beforeEach(() => {
+    tour.running = false
+  })
+
+  it("renders the page inside one main landmark with the navigation outside it", () => {
+    renderDesktopRoutes()
+
+    const main = screen.getByRole("main")
+    expect(main).toContainElement(screen.getByText("Page body"))
+    expect(main).not.toContainElement(screen.getByTestId("primary-nav"))
+    expect(main).not.toContainElement(screen.getByRole("heading", { level: 1 }))
+  })
+
+  it("makes the skip link the first tab stop and moves focus into main", async () => {
+    const user = userEvent.setup()
+    renderDesktopRoutes()
+
+    await user.tab()
+    expect(
+      screen.getByRole("link", { name: "nav.skipToContent" })
+    ).toHaveFocus()
+    await user.keyboard("{Enter}")
+    expect(screen.getByRole("main")).toHaveFocus()
+  })
+
+  it("focuses the page h1 after navigation, but not on load or a query-only change", async () => {
+    const user = userEvent.setup()
+    renderDesktopRoutes()
+    expect(document.body).toHaveFocus()
+
+    const filter = screen.getByRole("link", { name: "Filter" })
+    await user.click(filter)
+    expect(filter).toHaveFocus()
+
+    await user.click(screen.getByRole("link", { name: "Next page" }))
+    expect(screen.getByRole("heading", { level: 1 })).toHaveFocus()
+  })
+
+  it("leaves focus alone while the tour is running", async () => {
+    tour.running = true
+    const user = userEvent.setup()
+    renderDesktopRoutes()
+
+    const next = screen.getByRole("link", { name: "Next page" })
+    await user.click(next)
+    expect(next).toHaveFocus()
+  })
+
+  it("announces the lazy page fallback as a localized status", () => {
+    renderDesktopRoutes("/pending")
+
+    expect(
+      screen.getByRole("status", { name: "common.loading" })
+    ).toBeInTheDocument()
   })
 })

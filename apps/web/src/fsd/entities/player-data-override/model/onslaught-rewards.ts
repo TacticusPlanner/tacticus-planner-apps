@@ -42,5 +42,6 @@ export function onslaughtReward(
 
   const mythic = key === "LegendaryBlue" || key === "Mythic"
   const range = mythic ? row.mythic : row.regular[rewardKeys.indexOf(key)]
+  if (!range) return undefined
   return { ...range, mythic }
 }

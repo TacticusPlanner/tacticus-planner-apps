@@ -34,6 +34,7 @@ export function useMissionLabel(): (mission: LegendaryEventMission) => string {
     (mission) => {
       if (!KNOWN_KINDS.has(mission.kind)) return mission.text
       const entry = (key: string, fallback: string | null) =>
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- needed: t() has no overload for a plain string key
         i18n.exists(key) ? String(i18n.t(key as never)) : (fallback ?? "")
       const kind =
         mission.kind === "defeatFaction" && mission.trait

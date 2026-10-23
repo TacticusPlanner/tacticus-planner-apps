@@ -21,18 +21,18 @@ const characters = legendaryEventCharacters.map((character) => ({
   id: character.id as UnitId,
   faction: character.faction,
   alliance: character.alliance as Alliance,
-  initialRarity: initialRarity[character.id] ?? ("Epic" as Rarity),
+  initialRarity: initialRarity[character.id] ?? "Epic",
 })) as CollectionCatalog["characters"]
 const mows = [
   {
     id: "ultraDreadnought" as UnitId,
     faction: "Ultramarines",
-    alliance: "Imperial" as Alliance,
+    alliance: "Imperial",
   },
   {
     id: "blackForgefiend" as UnitId,
     faction: "BlackLegion",
-    alliance: "Chaos" as Alliance,
+    alliance: "Chaos",
   },
 ] as CollectionCatalog["mows"]
 
@@ -43,9 +43,7 @@ const catalog: CollectionCatalog = {
     { rarity: "Epic", shards: 250 },
     { rarity: "Legendary", shards: 400 },
   ],
-  equipmentRarity: new Map([
-    ["I_Crit_L001", { rarity: "Legendary" as Rarity }],
-  ]),
+  equipmentRarity: new Map([["I_Crit_L001", { rarity: "Legendary" }]]),
 }
 
 const names: Record<string, string> = {
@@ -76,7 +74,7 @@ function character(
     appliedUpgradeSlots: [],
     equippedItems: [],
     ...overrides,
-  } as PlayerCharacter
+  }
 }
 
 function signedIn(

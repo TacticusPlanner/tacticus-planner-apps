@@ -104,15 +104,15 @@ function AttackRow({
           {pierce !== undefined ? (
             <Tooltip>
               <TooltipTrigger asChild>
-                <span
-                  tabIndex={0}
+                <button
+                  type="button"
                   className="ml-0.5 border-l pl-1.5 text-muted-foreground underline decoration-dotted underline-offset-2"
                   data-testid={`unit-attack-${kind}-pierce`}
                 >
                   {t("characterUnit.glance.pierce", {
                     value: Math.round(pierce * 100),
                   })}
-                </span>
+                </button>
               </TooltipTrigger>
               <TooltipContent>
                 {t("characterUnit.glance.pierceHint", {
@@ -366,7 +366,7 @@ export function StatsByRank({
               </th>
               {statKeys.map((key) => (
                 <td key={key} className="py-1 text-right">
-                  {format.format(byRank[index][key])}
+                  {format.format(byRank[index]?.[key] ?? NaN)}
                 </td>
               ))}
             </tr>
@@ -390,7 +390,7 @@ export function StatsByRank({
             xLabels={xLabels}
             xTicks={xTicks}
             // Tier initials (St, Ir, Br …) under narrow charts; the readout names the full rank.
-            tickLabel={(index) => xLabels[index].slice(0, 2)}
+            tickLabel={(index) => xLabels[index]?.slice(0, 2) ?? ""}
             markerIndex={markerIndex}
             readoutSuffix={
               owned ? t("characterUnit.statsByRank.yours") : undefined

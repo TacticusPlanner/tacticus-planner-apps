@@ -1,5 +1,7 @@
 import { act, fireEvent, render, screen, within } from "@testing-library/react"
-import { MemoryRouter } from "react-router"
+import userEvent from "@testing-library/user-event"
+import { lazy } from "react"
+import { Link, MemoryRouter, Route, Routes } from "react-router"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 vi.mock("react-i18next", () => ({
@@ -32,11 +34,14 @@ vi.mock("../providers/auth-control", () => ({ AuthControl: () => null }))
 vi.mock("@/widgets/account-menu/ui/theme-switcher", () => ({
   ThemeSwitcher: () => null,
 }))
-const { startTour } = vi.hoisted(() => ({ startTour: vi.fn() }))
+const { startTour, tour } = vi.hoisted(() => ({
+  startTour: vi.fn(),
+  tour: { running: false },
+}))
 vi.mock("@/shared/tour", () => ({
   TourButton: () => null,
   PageTourButton: () => null,
-  useTour: () => ({ isRunning: false, startTour }),
+  useTour: () => ({ isRunning: tour.running, startTour }),
   useTourControlledPopoverOpen: () => [false, vi.fn()] as const,
 }))
 
@@ -72,7 +77,7 @@ function renderShell(
       <MobileShell
         activeSection={activeSection}
         isAuthenticated={isAuthenticated}
-        visibleItems={navItems as NavItem[]}
+        visibleItems={navItems}
         pageDescription="Home description"
         pageTitle="Home"
         onCreateGoal={onCreateGoal}
@@ -451,5 +456,100 @@ describe("MobileBottomNav quick actions in Menu search", () => {
       target: { value: "zzzz-nothing" },
     })
     expect(drawer.getByText("nav.noResults")).toBeVisible()
+  })
+})
+
+function StubPage() {
+  return (
+    <>
+      <p>Page body</p>
+      <Link to="?filter=on">Filter</Link>
+      <Link to="/next">Next page</Link>
+    </>
+  )
+}
+
+const NeverLoads = lazy(() => new Promise<never>(() => {}))
+
+function renderMobileRoutes(initialEntry = "/home") {
+  return render(
+    <MemoryRouter initialEntries={[initialEntry]}>
+      <Routes>
+        <Route
+          element={
+            <MobileShell
+              activeSection={undefined}
+              isAuthenticated={false}
+              visibleItems={navItems}
+              pageDescription={undefined}
+              pageTitle="Home"
+              onCreateGoal={vi.fn()}
+              quickActions={noQuickActions}
+            />
+          }
+        >
+          <Route element={<NeverLoads />} path="/pending" />
+          <Route element={<StubPage />} path="*" />
+        </Route>
+      </Routes>
+    </MemoryRouter>
+  )
+}
+
+describe("MobileShell landmarks and focus", () => {
+  beforeEach(() => {
+    tour.running = false
+  })
+
+  it("renders the page inside one main landmark with the navigation outside it", () => {
+    renderMobileRoutes()
+
+    const main = screen.getByRole("main")
+    expect(main).toContainElement(screen.getByText("Page body"))
+    expect(main).not.toContainElement(screen.getByTestId("primary-nav"))
+    expect(main).not.toContainElement(screen.getByRole("heading", { level: 1 }))
+  })
+
+  it("makes the skip link the first tab stop and moves focus into main", async () => {
+    const user = userEvent.setup()
+    renderMobileRoutes()
+
+    await user.tab()
+    expect(
+      screen.getByRole("link", { name: "nav.skipToContent" })
+    ).toHaveFocus()
+    await user.keyboard("{Enter}")
+    expect(screen.getByRole("main")).toHaveFocus()
+  })
+
+  it("focuses the page h1 after navigation, but not on load or a query-only change", async () => {
+    const user = userEvent.setup()
+    renderMobileRoutes()
+    expect(document.body).toHaveFocus()
+
+    const filter = screen.getByRole("link", { name: "Filter" })
+    await user.click(filter)
+    expect(filter).toHaveFocus()
+
+    await user.click(screen.getByRole("link", { name: "Next page" }))
+    expect(screen.getByRole("heading", { level: 1 })).toHaveFocus()
+  })
+
+  it("leaves focus alone while the tour is running", async () => {
+    tour.running = true
+    const user = userEvent.setup()
+    renderMobileRoutes()
+
+    const next = screen.getByRole("link", { name: "Next page" })
+    await user.click(next)
+    expect(next).toHaveFocus()
+  })
+
+  it("announces the lazy page fallback as a localized status", () => {
+    renderMobileRoutes("/pending")
+
+    expect(
+      screen.getByRole("status", { name: "common.loading" })
+    ).toBeInTheDocument()
   })
 })

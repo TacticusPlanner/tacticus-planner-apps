@@ -95,7 +95,7 @@ describe("computeLevelRequirementProgress", () => {
     ).toBeNull()
     expect(
       computeLevelRequirementProgress({
-        detail: { ...abilityDetail(20, 35), entityType: "Mow" } as GoalDetail,
+        detail: { ...abilityDetail(20, 35), entityType: "Mow" },
         playerUnit: { xpLevel: 1, xp: 0, progressionIndex: mythic },
       })
     ).toBeNull()

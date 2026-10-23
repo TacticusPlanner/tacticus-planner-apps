@@ -111,6 +111,12 @@ are colocated with the code they cover, named `Component.test.tsx` or
 mocking, fixtures, and filtering conventions. Add new tests using the same
 colocated pattern.
 
+**Query by role first.** In new tests, find elements with `getByRole` (with
+`name`), then `getByLabelText` / `getByText`. Use `getByTestId` only when the
+element has no accessible role or name a user could find it by (e.g. a
+decorative tile or a layout container); never add a `data-testid` to something
+a role query can already reach.
+
 ## Commit & Pull Request Guidelines
 
 The current Git history uses short imperative subjects such as `Setup project`. Keep commit messages concise and action-oriented. A lefthook pre-commit hook formats and lints staged files automatically (`pnpm prepare` installs it after `pnpm install`).

@@ -36,10 +36,7 @@ const flyer = {
 } as unknown as LegendaryEventUnit
 const alpha = {
   ...lysanderEvent.alpha,
-  availableUnitIds: [
-    ...lysanderEvent.alpha.availableUnitIds,
-    flyer.id as (typeof lysanderEvent.alpha.availableUnitIds)[number],
-  ],
+  availableUnitIds: [...lysanderEvent.alpha.availableUnitIds, flyer.id],
 }
 const units = [
   ...(legendaryEventCharacters as unknown as LegendaryEventUnit[]),

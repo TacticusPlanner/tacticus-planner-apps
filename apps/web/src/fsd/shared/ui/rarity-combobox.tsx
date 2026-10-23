@@ -19,6 +19,7 @@ import { cn } from "@workspace/ui/lib/utils"
 
 import { rarityRank, type Rarity } from "@workspace/game-domain"
 
+import { useCommandListId } from "./command-list-id"
 import { closestOverlayContent } from "./overlay-content"
 
 /** Overrides an item's default rarity-based group (heading + sort position) — e.g. relic
@@ -63,6 +64,7 @@ export function RarityCombobox<TId extends string>({
 }) {
   const { t } = useTranslation(["progression"])
   const [open, setOpen] = useState(false)
+  const [listId, listRef] = useCommandListId()
   const [search, setSearch] = useState("")
   const triggerRef = useRef<HTMLButtonElement>(null)
   // Same Sheet-scroll-lock fix as UnitCombobox's own copy — see that file's doc comment.
@@ -139,6 +141,7 @@ export function RarityCombobox<TId extends string>({
           variant="outline"
           role="combobox"
           aria-expanded={open}
+          aria-controls={listId}
           aria-label={placeholder}
           className="w-full justify-between sm:w-72"
         >
@@ -158,7 +161,7 @@ export function RarityCombobox<TId extends string>({
             value={search}
             onValueChange={setSearch}
           />
-          <CommandList>
+          <CommandList ref={listRef}>
             <CommandEmpty>{emptyText}</CommandEmpty>
             {filteredGroups.map((group) => (
               <CommandGroup key={group.key} heading={group.label}>

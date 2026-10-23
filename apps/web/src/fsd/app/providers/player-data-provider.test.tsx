@@ -44,7 +44,7 @@ beforeEach(async () => {
     "player-details",
     { name: "Tester" },
     {
-      key: "__manifest" as never,
+      key: "__manifest",
       hash: "manifest-test",
       schemaVersion: 1,
       updatedAt: new Date(Date.now() - 60_000).toISOString(),

@@ -165,6 +165,7 @@ export const GoalRowCells = memo(function GoalRowCells({
           <div
             className="ml-auto"
             data-testid={`goal-row-menu-${row.goalId}`}
+            role="presentation"
             onClick={stopRowNavigation}
             onKeyDown={stopRowNavigation}
           >

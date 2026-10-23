@@ -54,6 +54,15 @@ function optionNames() {
 }
 
 describe("UnitCombobox", () => {
+  it("links the open trigger to its listbox via aria-controls", () => {
+    renderCombobox()
+    const trigger = screen.getByRole("combobox", { name: "Select a character" })
+    expect(trigger).toHaveAttribute("aria-expanded", "true")
+    expect(
+      document.getElementById(trigger.getAttribute("aria-controls") ?? "")
+    ).toBe(screen.getByRole("listbox"))
+  })
+
   it("lists every group and member in the given order when there is no search text", () => {
     renderCombobox()
 

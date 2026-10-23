@@ -22,6 +22,7 @@
     "noUnusedParameters": true,
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true,
     "paths": {
       "@/app": ["./src/fsd/app/index.tsx"],
       "@/app/*": ["./src/fsd/app/*"],

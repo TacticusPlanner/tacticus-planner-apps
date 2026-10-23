@@ -98,6 +98,7 @@ export function AuthControl() {
   }
 
   const handleSignOut = () => {
+    if (!account) return
     void signOut(instance, account.homeAccountId).catch((error: unknown) => {
       logAuthenticationError("sign-out", error)
       toast.error(t("auth.error"))
@@ -264,6 +265,7 @@ export function AuthControl() {
                 <div
                   className="flex items-center gap-1 text-xs"
                   data-testid="auth-account-loading"
+                  role="status"
                 >
                   <LoaderCircle
                     className="size-3 animate-spin"

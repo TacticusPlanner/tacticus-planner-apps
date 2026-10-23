@@ -77,8 +77,8 @@ export function LevelChart({
           `${index === 0 ? "M" : "L"}${x(index)},${y(pick(point))}`
       )
       .join(" ")
-  const lower = (point: ChartPoint) => point[0]
-  const upper = (point: ChartPoint) => point.at(-1)!
+  const lower = (point: ChartPoint) => point[0] ?? NaN
+  const upper = (point: ChartPoint) => point.at(-1) ?? NaN
   const bandPath = isBand
     ? `${linePath(upper)} ${points
         .map((point, index) => ({ point, index }))

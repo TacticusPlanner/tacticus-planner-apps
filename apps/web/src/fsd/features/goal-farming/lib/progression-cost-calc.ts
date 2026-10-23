@@ -117,13 +117,14 @@ export function ascensionResourceNeed(params: {
   const orbsByType: Partial<Record<Rarity, number>> = {}
 
   for (let index = startIndex + 1; index <= endIndex; index++) {
-    const step = ascensionCostsById.get(progressionOrder[index])
+    const progression = progressionOrder[index]
+    const step = progression && ascensionCostsById.get(progression)
     if (!step) continue
 
     shards += step.shards
     mythicShards += step.mythicShards
     if (step.orbs > 0 && step.orbRarity) {
-      const rarity = step.orbRarity as Rarity
+      const rarity = step.orbRarity
       orbsByType[rarity] = (orbsByType[rarity] ?? 0) + step.orbs
     }
   }

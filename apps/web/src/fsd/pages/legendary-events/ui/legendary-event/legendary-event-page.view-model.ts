@@ -388,7 +388,7 @@ export function eventUnitRecord(
   roster: ReadValue<readonly LegendaryEventRosterUnit[] | undefined>,
   eventId: string
 ): LegendaryEventRosterUnit | undefined {
-  return Array.isArray(roster)
+  return typeof roster === "object"
     ? roster.find((unit) => unit.unitId === eventId)
     : undefined
 }

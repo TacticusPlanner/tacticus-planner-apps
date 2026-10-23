@@ -11,10 +11,7 @@ import type { UnitPowerContext } from "@/shared/unit-power"
 import { mapRosterCharacter } from "./roster-character"
 import type { RawRosterCharacter } from "./roster-character"
 import { hseEventUnitPools } from "./hse-team-recommendations"
-import type {
-  HseTeamCatalog,
-  HseTeamMode,
-} from "./hse-team-recommendations.types"
+import type { HseTeamMode } from "./hse-team-recommendations.types"
 import { combatPowerOf } from "./team-eligibility"
 import { buildTeamRecommendations } from "./team-recommendations"
 import {
@@ -262,7 +259,7 @@ function hsePoolsFor(
     input.hseTrackers,
     mode,
     units,
-    catalog as HseTeamCatalog,
+    catalog,
     input.unitPower
   )
 }

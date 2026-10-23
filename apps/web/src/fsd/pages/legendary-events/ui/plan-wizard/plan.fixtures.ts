@@ -7,7 +7,6 @@ import {
   type LegendaryEventPlan,
   type LegendaryEventProgress,
   type LegendaryEventRosterUnit,
-  type LegendaryEventUnit,
 } from "@/entities/legendary-event"
 import { legendaryEventCharacters } from "@/test/fixtures/legendary-event-characters"
 import { utharEvent } from "@/test/fixtures/legendary-events"
@@ -98,7 +97,7 @@ export function planInputs(overrides: Partial<PlanInputs> = {}): PlanInputs {
   return {
     event: utharEvent,
     lanes: [planLane("alpha"), planLane("beta"), planLane("gamma")],
-    units: legendaryEventCharacters as unknown as LegendaryEventUnit[],
+    units: legendaryEventCharacters,
     roster: PLAN_ROSTER,
     config: PLAN_CONFIG,
     lifecycle: {

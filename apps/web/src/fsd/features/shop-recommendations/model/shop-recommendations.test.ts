@@ -21,7 +21,7 @@ function variant(
     weight: 1,
     ...(shardUnitId ? { unitId: shardUnitId } : {}),
     ...input,
-  } as GameCatalogShopVariant
+  }
 }
 
 function shop(
@@ -34,7 +34,7 @@ function shop(
     refreshWithAdWatch: false,
     allowedRefreshesPerDay: 0,
     slots: slots.map((variants) => ({ variants })),
-  } as GameCatalogShop
+  }
 }
 
 const DAY: ShopDayOfWeek = "MON"

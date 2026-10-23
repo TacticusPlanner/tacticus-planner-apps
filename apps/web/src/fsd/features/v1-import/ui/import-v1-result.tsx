@@ -242,7 +242,7 @@ function OutcomeRow({
           // its own entity-type/player-record correlation.
           <GoalTypeBadge
             entityType={outcome.entityType ?? undefined}
-            type={outcome.goalType as GoalKind}
+            type={outcome.goalType}
           />
         ) : null}
       </div>

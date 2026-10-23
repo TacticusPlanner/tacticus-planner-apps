@@ -5,12 +5,18 @@ import { makhotepRecords, npcRecord, statRow, zeroRow } from "./npc-fixtures"
 import { npcSlug } from "./npc-slug"
 import unitNames from "./npc-unit-names.fixture.json"
 
+function at<T>(xs: readonly T[] | undefined, index: number): T {
+  const value = xs?.[index]
+  if (value === undefined) throw new Error(`expected an item at index ${index}`)
+  return value
+}
+
 describe("buildNpcGroups", () => {
   it("groups the five Makhotep variations into one NPC with the base entry as default", () => {
     const groups = buildNpcGroups(makhotepRecords)
 
     expect(groups).toHaveLength(1)
-    const [makhotep] = groups
+    const makhotep = at(groups, 0)
     expect(makhotep.id).toBe("makhotep")
     expect(makhotep.name).toBe("Makhotep")
     expect(makhotep.factionId).toBe("Necrons")
@@ -25,7 +31,7 @@ describe("buildNpcGroups", () => {
   })
 
   it("keeps each variation's ladder apart", () => {
-    const [makhotep] = buildNpcGroups(makhotepRecords)
+    const makhotep = at(buildNpcGroups(makhotepRecords), 0)
     const boss = makhotep.variations.find((v) => v.id === "necroBossWarden")!
     const lhe = makhotep.variations.find((v) => v.id === "necroBossWardenLHE")!
 
@@ -60,8 +66,8 @@ describe("buildNpcGroups", () => {
     ])
 
     expect(groups).toHaveLength(1)
-    expect(groups[0].variations.map((v) => v.id)).toEqual(["necroNpc1Warrior"])
-    expect(groups[0].defaultVariationId).toBe("necroNpc1Warrior")
+    expect(groups[0]?.variations.map((v) => v.id)).toEqual(["necroNpc1Warrior"])
+    expect(groups[0]?.defaultVariationId).toBe("necroNpc1Warrior")
   })
 
   it("drops an NPC whose only variations are all-zero", () => {
@@ -91,13 +97,13 @@ describe("buildNpcGroups", () => {
       npcRecord("admecBossDominus", "Vitruvius"),
       npcRecord("admecBossDominusLEG", "Vitruvius"),
     ])
-    expect(groups[0].defaultVariationId).toBe("admecBossDominus")
+    expect(groups[0]?.defaultVariationId).toBe("admecBossDominus")
 
     const noBase = buildNpcGroups([
       npcRecord("astarBossCyrusSurv", "Cyrus"),
       npcRecord("astarCyrus_LHE", "Cyrus"),
     ])
-    expect(noBase[0].defaultVariationId).toBe("astarCyrus_LHE")
+    expect(noBase[0]?.defaultVariationId).toBe("astarCyrus_LHE")
   })
 })
 

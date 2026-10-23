@@ -5,6 +5,12 @@ import {
   guildRaidMetaSourceUrl,
 } from "./resolve-guild-raid-meta"
 
+function at<T>(xs: readonly T[] | undefined, index: number): T {
+  const value = xs?.[index]
+  if (value === undefined) throw new Error(`expected an item at index ${index}`)
+  return value
+}
+
 const meta = {
   sourceId: "terminus-maximus-guild-raid-boss-meta",
   updatedOn: "2026-07-01",
@@ -101,7 +107,7 @@ describe("Guild Raid Meta presentation", () => {
     expect(presentation.resolveSignature("admecActus").name).toBe("Actus")
 
     const lineup = presentation.resolveRecommendation(
-      meta.bosses[0].recommendations[0]
+      at(at(meta.bosses, 0).recommendations, 0)
     )
     expect(lineup.heroes.map((hero) => hero.id)).toEqual([
       "admecActus",
@@ -163,7 +169,7 @@ describe("Guild Raid Meta presentation", () => {
     })
 
     const lineup = presentation.resolveRecommendation(
-      meta.bosses[0].recommendations[0]
+      at(at(meta.bosses, 0).recommendations, 0)
     )
     expect(lineup.kind).toEqual({ id: "meta", label: "Meta" })
   })
@@ -172,7 +178,7 @@ describe("Guild Raid Meta presentation", () => {
     const presentation = resolver()
 
     const lineup = presentation.resolveRecommendation(
-      meta.bosses[0].recommendations[0]
+      at(at(meta.bosses, 0).recommendations, 0)
     )
 
     expect(lineup.heroSlots[0]).toMatchObject({
@@ -187,7 +193,7 @@ describe("Guild Raid Meta presentation", () => {
         { id: "missingHero5", name: "missing Hero5", kind: "unknown" },
       ],
     })
-    expect(lineup.heroSlots[2].role).toEqual({
+    expect(lineup.heroSlots[2]?.role).toEqual({
       id: "unknownRole",
       label: "unknown Role",
     })

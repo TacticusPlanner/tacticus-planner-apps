@@ -6,6 +6,7 @@ import { Button } from "@workspace/ui/components/button"
 import { findActiveChild } from "./find-active-child"
 import { subItemLabel, type NavItem } from "./nav-items"
 import { sectionShortcut } from "./section-shortcut"
+import { PAGE_HEADING_ID } from "./use-focus-page-heading"
 
 /**
  * Renders the desktop header's title row. The title is the active page's own name (the child's
@@ -33,23 +34,28 @@ export function DesktopSectionHeader({
   if (!title) return <span />
 
   const children = item?.children
-  if (!children?.length) {
+  const firstChild = children?.[0]
+  if (!children || !firstChild) {
     return (
       <h1
-        className="truncate text-2xl font-semibold tracking-tight"
+        className="truncate text-2xl font-semibold tracking-tight outline-hidden"
         data-testid="section-header-title"
+        id={PAGE_HEADING_ID}
+        tabIndex={-1}
       >
         {title}
       </h1>
     )
   }
 
-  const activeChild = findActiveChild(children, pathname) ?? children[0]
+  const activeChild = findActiveChild(children, pathname) ?? firstChild
   const childLabel = subItemLabel(t, activeChild)
   const heading = (
     <h1
-      className="truncate text-2xl font-semibold tracking-tight"
+      className="truncate text-2xl font-semibold tracking-tight outline-hidden"
       data-testid="section-header-title"
+      id={PAGE_HEADING_ID}
+      tabIndex={-1}
     >
       {childLabel}
     </h1>

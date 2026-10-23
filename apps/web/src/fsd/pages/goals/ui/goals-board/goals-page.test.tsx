@@ -123,7 +123,10 @@ async function holdPlayerData() {
   const db = await new Promise<IDBDatabase>((resolve, reject) => {
     const request = indexedDB.open("tacticus-planner-player-data", 1)
     request.onsuccess = () => resolve(request.result)
-    request.onerror = () => reject(request.error)
+    request.onerror = () =>
+      reject(
+        request.error ?? new Error("Could not open the player-data database")
+      )
   })
   db.onversionchange = () => undefined
   return () => db.close()
@@ -219,7 +222,7 @@ const insightsResult = vi.hoisted(() => ({
     levelPoolXpAvailableByGoalId: new Map(),
     rankSlotsByGoalId: new Map(),
   },
-  value: {} as Record<string, unknown>,
+  value: {},
 }))
 insightsResult.value = insightsResult.emptyResult
 
@@ -264,7 +267,7 @@ function LocationProbe() {
     <>
       <span data-testid="location-path">{location.pathname}</span>
       <span data-testid="location-search">{location.search}</span>
-      <button data-testid="history-back" onClick={() => navigate(-1)}>
+      <button data-testid="history-back" onClick={() => void navigate(-1)}>
         Back
       </button>
     </>

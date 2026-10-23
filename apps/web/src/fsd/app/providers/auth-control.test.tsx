@@ -233,7 +233,7 @@ describe("AuthControl", () => {
     const nodes = ids.map((id) => screen.getByTestId(id))
     nodes.slice(1).forEach((node, index) => {
       expect(
-        nodes[index].compareDocumentPosition(node) &
+        (nodes[index]?.compareDocumentPosition(node) ?? 0) &
           Node.DOCUMENT_POSITION_FOLLOWING
       ).toBeTruthy()
     })
@@ -452,7 +452,7 @@ describe("AuthControl", () => {
     const nodes = ids.map((id) => screen.getByTestId(id))
     nodes.slice(1).forEach((node, index) => {
       expect(
-        nodes[index].compareDocumentPosition(node) &
+        (nodes[index]?.compareDocumentPosition(node) ?? 0) &
           Node.DOCUMENT_POSITION_FOLLOWING
       ).toBeTruthy()
     })

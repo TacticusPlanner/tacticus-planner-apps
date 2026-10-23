@@ -41,14 +41,21 @@ import {
 } from "./quick-actions"
 import { QuickActionsGroup } from "./quick-actions-group"
 import { ScrollToTopButton } from "./scroll-to-top-button"
+import { SkipLink } from "./skip-link"
+import { useFocusPageHeadingOnNavigate } from "./use-focus-page-heading"
 
 // Matches vaul's exit transition (TRANSITIONS.DURATION = 0.5s).
 const DRAWER_EXIT_MS = 500
 
 function LoadingFill() {
+  const { t } = useTranslation()
   return (
-    <div className="flex flex-1 items-center justify-center">
-      <Spinner className="size-8 text-primary" />
+    <div
+      aria-label={t("common.loading")}
+      className="flex flex-1 items-center justify-center"
+      role="status"
+    >
+      <Spinner aria-hidden="true" className="size-8 text-primary" />
     </div>
   )
 }
@@ -70,19 +77,26 @@ export function MobileShell({
   onCreateGoal: () => void
   quickActions: QuickActionsController
 }) {
+  useFocusPageHeadingOnNavigate()
+
   return (
     <div className="flex min-h-svh flex-col bg-background text-foreground">
+      <SkipLink />
       <MobileHeader
         activeSection={activeSection}
         isAuthenticated={isAuthenticated}
         pageDescription={pageDescription}
         pageTitle={pageTitle}
       />
-      <div className="flex-1 pb-(--mobile-scroll-clearance)">
+      <main
+        className="flex-1 pb-(--mobile-scroll-clearance) outline-hidden"
+        id="main"
+        tabIndex={-1}
+      >
         <Suspense fallback={<LoadingFill />}>
           <Outlet />
         </Suspense>
-      </div>
+      </main>
       <ScrollToTopButton />
       <MobileBottomNav
         items={visibleItems}

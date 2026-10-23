@@ -125,9 +125,10 @@ export function CharacterLookupControls({
               max={maxIndex}
               step={1}
               minStepsBetweenThumbs={1}
-              onValueChange={([start, end]) =>
+              onValueChange={([start, end]) => {
+                if (start === undefined || end === undefined) return
                 onRangeChange(rankAt(start), rankAt(end))
-              }
+              }}
               aria-label={t("unitLookup.rankRange")}
             />
           </div>

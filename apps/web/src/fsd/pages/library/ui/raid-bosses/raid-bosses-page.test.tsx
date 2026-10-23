@@ -20,6 +20,12 @@ import enRaidBossAbilityText from "../../../../../../public/locales/en/raidBossA
 
 import { RaidBossesPage } from "./raid-bosses-page"
 
+function at<T>(xs: readonly T[] | undefined, index: number): T {
+  const value = xs?.[index]
+  if (value === undefined) throw new Error(`expected an item at index ${index}`)
+  return value
+}
+
 const { isMobileMock, useIsMobileMock } = vi.hoisted(() => {
   const isMobileMock = { value: false }
   const useIsMobileMock = vi.fn(() => isMobileMock.value)
@@ -488,13 +494,16 @@ describe("RaidBossesPage", () => {
           ...payload.seasons.s1,
           tiers: [
             {
-              ...payload.seasons.s1.tiers[0],
+              ...at(payload.seasons.s1.tiers, 0),
               sets: [
                 {
-                  ...payload.seasons.s1.tiers[0].sets[0],
+                  ...at(at(payload.seasons.s1.tiers, 0).sets, 0),
                   encounters: [
                     {
-                      ...payload.seasons.s1.tiers[0].sets[0].encounters[0],
+                      ...at(
+                        at(at(payload.seasons.s1.tiers, 0).sets, 0).encounters,
+                        0
+                      ),
                       unitSetId: "UnknownEncounter",
                     },
                   ],
@@ -654,9 +663,10 @@ describe("RaidBossesPage", () => {
 
     // One prime panel, one HP-lost select; choose its threshold.
     const [primeSelect] = within(adjusted).getAllByRole("combobox")
+    if (!primeSelect) throw new Error("expected a prime select")
     await user.click(primeSelect)
     const options = await screen.findAllByRole("option")
-    await user.click(options[options.length - 1])
+    await user.click(at(options, options.length - 1))
 
     // bossStatPctDecrease dmg 20 -> damage row shows base 10 -> adjusted 8 (round(10 * 0.8)).
     await waitFor(() =>
@@ -714,7 +724,7 @@ describe("RaidBossesPage", () => {
 
     await user.click(screen.getByTestId("raid-boss-progression-select"))
     const options = await screen.findAllByRole("option")
-    await user.click(options[0]) // step 1 -> ability level 1 -> dmg[0]
+    await user.click(at(options, 0)) // step 1 -> ability level 1 -> dmg[0]
 
     await waitFor(() => expect(abilities).toHaveTextContent("Deals 10 damage"))
   })
@@ -730,7 +740,7 @@ describe("RaidBossesPage", () => {
     await user.click(screen.getByTestId("raid-boss-progression-select"))
     const options = await screen.findAllByRole("option")
     expect(options).toHaveLength(3)
-    await user.click(options[1])
+    await user.click(at(options, 1))
 
     await waitFor(() => expect(stats).toHaveTextContent("Rank1"))
   })

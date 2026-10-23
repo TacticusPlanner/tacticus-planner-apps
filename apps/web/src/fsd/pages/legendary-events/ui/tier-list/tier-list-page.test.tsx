@@ -1,6 +1,7 @@
 import { useState, useSyncExternalStore } from "react"
 import { MemoryRouter, Route, Routes, useLocation } from "react-router"
 import type { i18n as I18n } from "i18next"
+import userEvent from "@testing-library/user-event"
 import {
   afterEach,
   beforeAll,
@@ -284,6 +285,45 @@ describe("TierListPage", () => {
           within(tile).getByTestId("tier-tile-multiplier")
         ).toHaveTextContent(/^1\.0×$/)
       }
+    })
+
+    it("gives each row one tab stop and moves between its tiles with the arrow keys", async () => {
+      const user = userEvent.setup()
+      renderPage()
+      await ready()
+      const tiles = (tier: string) =>
+        within(row(tier)).getAllByTestId("tier-list-tile")
+      const focused = () => document.activeElement
+
+      for (let i = 0; i < 40 && !row("S").contains(focused()); i++) {
+        await user.tab()
+      }
+      expect(focused()).toBe(tiles("S")[0])
+      expect(
+        tiles("S").filter((tile) => tile.getAttribute("tabindex") === "0")
+      ).toEqual([tiles("S")[0]])
+
+      await user.keyboard("{ArrowRight}")
+      expect(focused()).toBe(tiles("S")[1])
+      await user.keyboard("{ArrowDown}")
+      expect(focused()).toBe(tiles("A")[1])
+      // Row S keeps the tile it was left on as its one tab stop.
+      expect(tiles("S")[1]).toHaveAttribute("tabindex", "0")
+      expect(tiles("S")[0]).toHaveAttribute("tabindex", "-1")
+      await user.keyboard("{ArrowLeft}{ArrowLeft}")
+      expect(focused()).toBe(tiles("A")[0])
+      await user.keyboard("{End}")
+      expect(focused()).toBe(tiles("A").at(-1))
+      await user.keyboard("{ArrowRight}")
+      expect(focused()).toBe(tiles("A").at(-1))
+      await user.keyboard("{Home}")
+      expect(focused()).toBe(tiles("A")[0])
+      await user.keyboard("{ArrowUp}")
+      expect(focused()).toBe(tiles("S")[0])
+      await user.keyboard("{ArrowDown}")
+
+      await user.tab()
+      expect(focused()).toBe(tiles("B")[0])
     })
 
     it("mutes unowned tiles and hides them with Only owned, writing owned=1", async () => {

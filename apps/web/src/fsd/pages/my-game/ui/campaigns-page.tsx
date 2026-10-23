@@ -7,7 +7,7 @@ import {
   type CampaignBattleStorageModel,
   type CampaignDefinitionStorageModel,
 } from "@workspace/game-catalog"
-import type { CampaignId, UnitId } from "@workspace/game-domain"
+import type { UnitId } from "@workspace/game-domain"
 import type { PlayerDataChunkDto } from "@workspace/player-data"
 import { Alert, AlertDescription } from "@workspace/ui/components/alert"
 import {
@@ -238,14 +238,12 @@ function StoryCard({ story }: { story: BuiltStory }) {
     (sum, track) => sum + track.completed,
     0
   )
+  const first = story.definitions[0]
   return (
     <Card>
       <CardHeader className="flex-row items-center gap-3">
         <EntityIcon
-          src={campaignIcon(
-            story.definitions[0].definition.groupId as CampaignId,
-            story.definitions[0].type
-          )}
+          src={first && campaignIcon(first.definition.groupId, first.type)}
           alt=""
           className="size-10"
         />

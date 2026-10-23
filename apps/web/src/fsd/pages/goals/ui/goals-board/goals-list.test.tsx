@@ -822,7 +822,7 @@ describe("GoalsList remaining chips on mobile", () => {
     const { unmount } = render(
       <GoalsList
         actions={stubActions}
-        estimates={estimates as never}
+        estimates={estimates}
         metrics={chipMetrics as never}
         reorderEnabled={false}
         rows={[rows[0]!]}
@@ -835,7 +835,7 @@ describe("GoalsList remaining chips on mobile", () => {
     render(
       <GoalsList
         actions={stubActions}
-        estimates={estimates as never}
+        estimates={estimates}
         metrics={chipMetrics as never}
         reachedByGoalId={new Map([["goal-1", true]])}
         reorderEnabled={false}

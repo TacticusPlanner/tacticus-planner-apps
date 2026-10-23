@@ -40,7 +40,11 @@ function seededSample(
   const shuffled = [...ids]
   for (let i = shuffled.length - 1; i > 0; i--) {
     const j = Math.floor(rng() * (i + 1))
-    ;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+    const a = shuffled[i]
+    const b = shuffled[j]
+    if (a === undefined || b === undefined) continue
+    shuffled[i] = b
+    shuffled[j] = a
   }
   return shuffled.slice(0, size)
 }
@@ -66,10 +70,12 @@ function seededWeightedSample(
     let threshold = rng() * total
     let index = 0
     for (; index < pool.length - 1; index++) {
-      threshold -= pool[index].weight
+      threshold -= pool[index]?.weight ?? 0
       if (threshold <= 0) break
     }
-    out.push(pool[index].id)
+    const picked = pool[index]
+    if (!picked) break
+    out.push(picked.id)
     pool.splice(index, 1)
   }
   return out

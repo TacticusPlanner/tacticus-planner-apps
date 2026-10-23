@@ -266,8 +266,8 @@ export function TeamCard({
         {/* Points left and Team power share one line when it fits, and wrap between the two
             (never inside either) when it does not (French at 375px). */}
         <span className="flex min-w-0 flex-wrap items-baseline gap-x-3 text-sm font-medium tabular-nums">
-          <PointsLeft card={card} format={number.format} />
-          <TeamPower card={card} format={number.format} />
+          <PointsLeft card={card} format={(value) => number.format(value)} />
+          <TeamPower card={card} format={(value) => number.format(value)} />
         </span>
         <div className="flex min-w-0 flex-wrap items-start justify-end gap-2">
           {card.incomplete ? (

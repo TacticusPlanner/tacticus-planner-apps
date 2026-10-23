@@ -35,7 +35,7 @@ describe("ManageProjectsSheet", () => {
 
     render(
       <ManageProjectsSheet
-        actions={actions as never}
+        actions={actions}
         onOpenChange={onOpenChange}
         open
         project={undefined}
@@ -90,7 +90,7 @@ describe("ManageProjectsSheet", () => {
 
     render(
       <ManageProjectsSheet
-        actions={actions as never}
+        actions={actions}
         onCreated={onCreated}
         onOpenChange={onOpenChange}
         open
@@ -117,7 +117,7 @@ describe("ManageProjectsSheet", () => {
 
     render(
       <ManageProjectsSheet
-        actions={actions as never}
+        actions={actions}
         onOpenChange={onOpenChange}
         open
         project={activeProject as never}
@@ -153,7 +153,7 @@ describe("ManageProjectsSheet", () => {
 
     render(
       <ManageProjectsSheet
-        actions={actions as never}
+        actions={actions}
         onOpenChange={onOpenChange}
         open
         project={activeProject as never}
@@ -175,7 +175,7 @@ describe("ManageProjectsSheet", () => {
 
     render(
       <ManageProjectsSheet
-        actions={actions as never}
+        actions={actions}
         onOpenChange={vi.fn()}
         open
         project={activeProject as never}
@@ -195,7 +195,7 @@ describe("ManageProjectsSheet", () => {
 
     const { rerender } = render(
       <ManageProjectsSheet
-        actions={actions as never}
+        actions={actions}
         onOpenChange={vi.fn()}
         open
         project={activeProject as never}
@@ -207,7 +207,7 @@ describe("ManageProjectsSheet", () => {
 
     rerender(
       <ManageProjectsSheet
-        actions={actions as never}
+        actions={actions}
         onOpenChange={vi.fn()}
         open
         project={undefined}

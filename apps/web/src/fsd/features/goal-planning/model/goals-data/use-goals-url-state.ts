@@ -51,7 +51,7 @@ export function useGoalEditParam(goalIds: string[], goalsLoaded: boolean) {
     setGoalId(id, { state: { goalEditPushed: true } })
   const closeEditGoal = () => {
     if ((location.state as { goalEditPushed?: boolean } | null)?.goalEditPushed)
-      navigate(-1)
+      void navigate(-1)
     else
       setSearchParams(
         (previous) => {

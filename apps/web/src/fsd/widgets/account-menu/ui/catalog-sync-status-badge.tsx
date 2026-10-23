@@ -51,8 +51,10 @@ export function CatalogSyncStatusBadge({
       <Tooltip>
         <TooltipTrigger asChild>
           <div
+            aria-label={error ?? label}
             className="flex items-center justify-center gap-1 text-muted-foreground"
             data-testid="catalog-sync-status-compact"
+            role="status"
           >
             <Icon
               aria-hidden="true"

@@ -121,6 +121,15 @@ beforeEach(() => {
 })
 
 describe("ShopsPage", () => {
+  it("renders its title as an h2 under the shell h1", () => {
+    renderPage()
+    // The shell header owns the page h1; the tab starts its hierarchy at h2.
+    expect(screen.queryAllByRole("heading", { level: 1 })).toHaveLength(0)
+    expect(
+      screen.getByRole("heading", { level: 2, name: "title" })
+    ).toBeInTheDocument()
+  })
+
   it("shows the loading state", () => {
     useShopRecommendations.mockReturnValue({ status: "loading" })
     renderPage()

@@ -12,6 +12,12 @@ import {
 } from "./npc-filters"
 import { npcRecord } from "./npc-fixtures"
 
+function at<T>(xs: readonly T[] | undefined, index: number): T {
+  const value = xs?.[index]
+  if (value === undefined) throw new Error(`expected an item at index ${index}`)
+  return value
+}
+
 const gaussMelee = npcRecord("necroNpc1Warrior", "Necron Warrior", {
   meleeDamage: "Physical",
   traits: ["LivingMetal", "Mechanical"],
@@ -107,9 +113,9 @@ describe("filterNpcGroups", () => {
     const listed = filterNpcGroups(groups, filters, byName)
 
     expect(listed.map((g) => g.name)).toEqual(["Necron Warrior"])
-    expect(matchingVariations(listed[0], filters).map((v) => v.id)).toEqual([
-      "necroNpc1WarriorSurv",
-    ])
+    expect(matchingVariations(at(listed, 0), filters).map((v) => v.id)).toEqual(
+      ["necroNpc1WarriorSurv"]
+    )
   })
 
   it("searches the resolved display name case-insensitively", () => {
@@ -128,7 +134,7 @@ describe("filterNpcGroups", () => {
   it("returns every group and every variation with empty filters", () => {
     const listed = filterNpcGroups(groups, emptyNpcFilters, byName)
     expect(listed).toHaveLength(2)
-    expect(matchingVariations(listed[0], emptyNpcFilters)).toHaveLength(2)
+    expect(matchingVariations(at(listed, 0), emptyNpcFilters)).toHaveLength(2)
   })
 
   it("can filter every group out", () => {

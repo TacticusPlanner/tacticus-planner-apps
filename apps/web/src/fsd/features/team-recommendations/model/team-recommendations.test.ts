@@ -123,7 +123,7 @@ describe("buildTeamRecommendations — pool configuration", () => {
     ])
     expect(plan.broadened).toBe(true)
     expect(plan.poolUsed).toBe("full-roster")
-    expect(plan.members[4].rationale).toEqual({ kind: "minimum-size" })
+    expect(plan.members[4]?.rationale).toEqual({ kind: "minimum-size" })
   })
 
   it("still stops at three in XP mode when only two are XP-eligible, even at size five", () => {
@@ -175,8 +175,8 @@ describe("buildTeamRecommendations — pool configuration", () => {
         ],
       })
     )
-    expect(plan.members[0].unitId).toBe(id("d"))
-    expect(plan.members[0].rationale).toEqual({
+    expect(plan.members[0]?.unitId).toBe(id("d"))
+    expect(plan.members[0]?.rationale).toEqual({
       kind: "onslaught-goal",
       goalId: "og-d",
       projectId: "p1",

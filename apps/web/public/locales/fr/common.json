@@ -4,7 +4,8 @@
   },
   "common": {
     "close": "Fermer",
-    "back": "Retour"
+    "back": "Retour",
+    "loading": "Chargement…"
   },
   "auth": {
     "account": "Compte connecté",
@@ -245,6 +246,7 @@
     "search": "Rechercher des pages et des actions",
     "sync": "Synchroniser",
     "syncWithTacticus": "Synchroniser avec Tacticus",
+    "skipToContent": "Aller au contenu",
     "primaryNavigation": "Navigation principale",
     "sectionNavigation": "Pages de {{section}}",
     "collapseSection": "Masquer le menu {{section}}",
@@ -1308,6 +1310,13 @@
   },
   "language": {
     "label": "Langue"
+  },
+  "reorder": {
+    "pickedUp": "{{name}} saisi. Position {{position}} sur {{total}}.",
+    "movedOver": "{{name}} déplacé en position {{position}} sur {{total}}.",
+    "dropped": "{{name}} déposé en position {{position}} sur {{total}}.",
+    "cancelled": "Réorganisation annulée. {{name}} est revenu en position {{position}} sur {{total}}.",
+    "instructions": "Pour saisir un élément, appuyez sur Espace ou Entrée. Déplacez-le avec les flèches, puis appuyez sur Espace ou Entrée pour le déposer, ou sur Échap pour annuler."
   },
   "scrollToTop": "Retour en haut",
   "settings": {

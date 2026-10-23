@@ -22,9 +22,9 @@ export function MobileReorderBar({
       data-testid="mobile-reorder-bar"
     >
       <p
-        aria-live="polite"
         className="flex items-center gap-2 text-sm text-muted-foreground"
         data-testid="mobile-reorder-status"
+        role="status"
       >
         {pending ? (
           <>

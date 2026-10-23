@@ -20,6 +20,7 @@ import { AuthControl } from "../providers/auth-control"
 import { AppLogo } from "./app-logo"
 import type { NavItem } from "./nav-items"
 import { SectionTabs } from "./section-tabs"
+import { PAGE_HEADING_ID } from "./use-focus-page-heading"
 
 export function MobileHeader({
   activeSection,
@@ -52,7 +53,11 @@ export function MobileHeader({
         <div className="flex min-w-0 items-center gap-3">
           <AppLogo className="size-10 shrink-0" />
           <div className="flex min-w-0 flex-col">
-            <h1 className="truncate text-xl font-semibold tracking-tight">
+            <h1
+              className="truncate text-xl font-semibold tracking-tight outline-hidden"
+              id={PAGE_HEADING_ID}
+              tabIndex={-1}
+            >
               {pageTitle ?? t("app.name")}
             </h1>
             {pageTitle && pageDescription ? (

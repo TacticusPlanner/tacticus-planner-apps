@@ -61,7 +61,8 @@ export function rankUpUpgradeIds(
   const byRank = rankUpgradeMap(character)
   const ids: UpgradeId[] = []
   for (let i = rankIndex(rankStart); i < rankIndex(rankEnd); i++) {
-    ids.push(...(byRank.get(rankOrder[i]) ?? []))
+    const rank = rankOrder[i]
+    if (rank !== undefined) ids.push(...(byRank.get(rank) ?? []))
   }
   const endUpgrades = byRank.get(rankEnd) ?? []
   if (topRowCount > 0) {
@@ -89,10 +90,13 @@ export function groupUpgradesByRank(
   const byRank = rankUpgradeMap(character)
   const groups: RankUpGroup[] = []
   for (let i = rankIndex(rankStart); i < rankIndex(rankEnd); i++) {
+    const fromRank = rankOrder[i]
+    const toRank = rankOrder[i + 1]
+    if (fromRank === undefined || toRank === undefined) continue
     groups.push({
-      fromRank: rankOrder[i],
-      toRank: rankOrder[i + 1],
-      upgradeIds: byRank.get(rankOrder[i]) ?? [],
+      fromRank,
+      toRank,
+      upgradeIds: byRank.get(fromRank) ?? [],
     })
   }
   const endUpgrades = byRank.get(rankEnd) ?? []

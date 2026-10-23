@@ -41,6 +41,8 @@ export function RouteErrorBoundary() {
         </p>
         <div className="flex gap-2">
           <Button
+            // The error screen replaces the whole app; without this focus drops to the body.
+            // eslint-disable-next-line jsx-a11y/no-autofocus
             autoFocus
             data-testid="app-error-reload"
             onClick={() => window.location.reload()}

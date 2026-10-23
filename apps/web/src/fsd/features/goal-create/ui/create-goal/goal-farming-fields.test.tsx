@@ -11,28 +11,27 @@ import { ProgressionPreview } from "./goal-farming-fields"
 
 type Preview = NonNullable<ComponentProps<typeof ProgressionPreview>["preview"]>
 
-const basePreview = (overrides: Partial<Preview>): Preview =>
-  ({
-    regularShards: 20,
-    mythicShards: 0,
-    orbsByType: {},
-    combined: null,
-    combinedDays: 0,
-    ascensionShardEnergy: null,
-    ascensionMythicShardEnergy: null,
-    ascensionNeedsRegularShards: true,
-    ascensionNeedsMythicShards: false,
-    onslaughtShardsPerRun: 0,
-    onslaughtShardsPerDay: 0,
-    onslaughtCurrentIsMythic: false,
-    onslaughtProgressSaved: false,
-    campaignShardsPerDay: 0,
-    campaignMythicShardsPerDay: 0,
-    shopShardsPerDaySelected: 0,
-    onslaughtTokens: 0,
-    shopCurrencySpend: [],
-    ...overrides,
-  }) as Preview
+const basePreview = (overrides: Partial<Preview>): Preview => ({
+  regularShards: 20,
+  mythicShards: 0,
+  orbsByType: {},
+  combined: null,
+  combinedDays: 0,
+  ascensionShardEnergy: null,
+  ascensionMythicShardEnergy: null,
+  ascensionNeedsRegularShards: true,
+  ascensionNeedsMythicShards: false,
+  onslaughtShardsPerRun: 0,
+  onslaughtShardsPerDay: 0,
+  onslaughtCurrentIsMythic: false,
+  onslaughtProgressSaved: false,
+  campaignShardsPerDay: 0,
+  campaignMythicShardsPerDay: 0,
+  shopShardsPerDaySelected: 0,
+  onslaughtTokens: 0,
+  shopCurrencySpend: [],
+  ...overrides,
+})
 
 describe("ProgressionPreview acquisition-source contribution lines", () => {
   it("shows no Onslaught-token or shop-currency line for a campaign-only goal", () => {

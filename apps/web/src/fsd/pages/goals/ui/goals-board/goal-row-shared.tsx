@@ -86,9 +86,9 @@ export function GoalNameLink({
     <Tooltip>
       {/* Focusable so the tooltip stays reachable by keyboard now the name is not a button. */}
       <TooltipTrigger asChild>
-        <span className="font-medium" tabIndex={0}>
+        <button className="font-medium" type="button">
           {name}
-        </span>
+        </button>
       </TooltipTrigger>
       <TooltipContent>{tooltipText}</TooltipContent>
     </Tooltip>

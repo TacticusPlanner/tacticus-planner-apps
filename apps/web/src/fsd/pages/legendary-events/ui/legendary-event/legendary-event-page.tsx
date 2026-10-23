@@ -7,7 +7,6 @@ import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
 import {
   LEGENDARY_EVENT_LANE_IDS,
-  type LegendaryEvent,
   type LegendaryEventLaneId,
   useClearEstimateConfig,
   useLegendaryEvent,
@@ -263,7 +262,7 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
   useTourPageSteps(useLegendaryEventTutorial(selectTab, runHistory.hasLastRun))
 
   // A record cached before rewards were served lacks them until the next catalog sync.
-  const rewards = eventData?.rewards as LegendaryEvent["rewards"] | undefined
+  const rewards = eventData?.rewards
   const runStatus = useMemo(
     () =>
       buildRunStatusViewModel({

@@ -2,11 +2,11 @@ import { describe, expect, it } from "vitest"
 import {
   battleIdSchema,
   campaignIdSchema,
+  Rank,
   rankIndex,
   rankOrder,
   unitIdSchema,
   upgradeIdSchema,
-  type BattleId,
 } from "@workspace/game-domain"
 
 import { render, screen } from "@/test/render"
@@ -98,7 +98,7 @@ function eligibleBattles(activeCampaignEventId: string | null) {
         ],
       ])
     ).map((b) => [
-      b.id as BattleId,
+      b.id,
       { ...b, campaignGroupId: campaignIdSchema.parse(b.campaignGroupId) },
     ])
   )
@@ -116,7 +116,7 @@ function rankGoal(): GoalDetail {
     updatedAt: "2026-01-01T00:00:00.000Z",
     config: {
       rank: {
-        start: rankIndex(rankOrder[0]),
+        start: rankIndex(Rank.Stone1),
         startPointFive: false,
         startAppliedUpgrades: 0,
         end: rankIndex(rankOrder[1]!),
@@ -176,7 +176,7 @@ function surfaces(
   const character = {
     id: hero,
     name: "Synthetic hero",
-    rankUpUpgrades: [{ rank: rankOrder[0], upgradeIds }],
+    rankUpUpgrades: [{ rank: Rank.Stone1, upgradeIds }],
   } as unknown as FarmingCharacter
   const battlesById = eligibleBattles(null)
   const shared = {
@@ -207,7 +207,7 @@ function surfaces(
     releaseTypeByGroupId: new Map(),
     campaignName: (d: { nameKey: string }) => d.nameKey,
     campaignFullLabel: (d: { nameKey: string }) => d.nameKey,
-  } as never)
+  })
   const estimate = insights.estimates.get("goal-1")
   const blockers = computeGoalBlockers({
     estimateReason:

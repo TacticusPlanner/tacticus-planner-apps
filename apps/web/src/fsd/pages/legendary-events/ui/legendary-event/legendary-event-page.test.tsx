@@ -484,7 +484,9 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
 
       act(() => selectTab("alpha"))
       act(() => selectTab("beta"))
-      act(() => fireEvent.click(screen.getByTestId("back")))
+      act(() => {
+        fireEvent.click(screen.getByTestId("back"))
+      })
 
       expect(await screen.findByTestId("home")).toBeInTheDocument()
     })
@@ -511,13 +513,17 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
         "alt",
         "Map of Alpha battle 1"
       )
-      act(() => pickBattle(12))
+      act(() => {
+        pickBattle(12)
+      })
       expect(battleTitle()).toBe("Battle 12")
 
       act(() => selectTab("beta"))
       await screen.findByTestId("battle-preview")
       expect(battleTitle()).toBe("Battle 1")
-      act(() => pickBattle(3))
+      act(() => {
+        pickBattle(3)
+      })
       expect(battleTitle()).toBe("Battle 3")
 
       act(() => selectTab("alpha"))
@@ -571,7 +577,9 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
     const betaRow = screen
       .getAllByTestId("lane-summary-row")
       .find((row) => row.dataset.lane === "beta")!
-    act(() => fireEvent.click(betaRow))
+    act(() => {
+      fireEvent.click(betaRow)
+    })
     expect(selectedTab()).toHaveTextContent("Beta")
     expect(scrollIntoView).toHaveBeenCalledTimes(1)
     expect(scrollIntoView.mock.instances[0]).toBe(
@@ -589,8 +597,12 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
       "true"
     )
 
-    act(() => toggleOnlyUnlocked())
-    act(() => fireEvent.click(screen.getByTestId("leaderboard-deduct-scored")))
+    act(() => {
+      toggleOnlyUnlocked()
+    })
+    act(() => {
+      fireEvent.click(screen.getByTestId("leaderboard-deduct-scored"))
+    })
     expect(lockedRows()).toHaveLength(0)
 
     act(() => selectTab("alpha"))
@@ -629,12 +641,16 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
     await screen.findByTestId("legendary-event-overview-leaderboard")
     const previewSwitch = await screen.findByTestId("leaderboard-goals-preview")
     await vi.waitFor(() => expect(previewSwitch).toBeEnabled())
-    act(() => toggleOnlyUnlocked())
+    act(() => {
+      toggleOnlyUnlocked()
+    })
     act(() => selectTab("alpha"))
     await screen.findByTestId("legendary-event-leaderboard")
     expect(screen.getAllByTestId("leaderboard-row")).toHaveLength(1)
 
-    act(() => fireEvent.click(screen.getByTestId("leaderboard-goals-preview")))
+    act(() => {
+      fireEvent.click(screen.getByTestId("leaderboard-goals-preview"))
+    })
     // Cyrus's Unlock goal makes him owned in the preview, so Only unlocked keeps his row.
     const rows = screen.getAllByTestId("leaderboard-row")
     expect(rows).toHaveLength(2)
@@ -658,7 +674,9 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
   it("launches goal creation from a leaderboard row with the unit prefilled", async () => {
     renderPage("/legendary-events/astarLysander")
     await screen.findByTestId("legendary-event-overview-leaderboard")
-    act(() => toggleOnlyUnlocked())
+    act(() => {
+      toggleOnlyUnlocked()
+    })
     act(() => selectTab("alpha"))
     await screen.findByTestId("legendary-event-leaderboard")
 
@@ -998,7 +1016,9 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
       renderPage("/legendary-events/astarLysander")
       await screen.findByTestId("next-token-view")
 
-      act(() => fireEvent.click(screen.getByTestId("next-token-could-not")))
+      act(() => {
+        fireEvent.click(screen.getByTestId("next-token-could-not"))
+      })
 
       await vi.waitFor(() => expect(planApi.put).toHaveBeenCalledTimes(1))
       expect(planApi.put).toHaveBeenCalledWith({

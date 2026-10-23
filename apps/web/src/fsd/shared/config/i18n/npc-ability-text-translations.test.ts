@@ -13,6 +13,12 @@ type Entry = {
   scaled: string[]
 }
 
+function entryOf(locale: object, id: string): Entry {
+  const entry = (locale as Record<string, Entry>)[id]
+  if (!entry) throw new Error(`missing ability text ${id}`)
+  return entry
+}
+
 const DAMAGE_PROFILE_TYPE = /^DamageProfileType(Style)?(_\d+)?$/
 const trimmedHas = (rec: Record<string, unknown>, key: string) =>
   rec[key] !== undefined || Object.keys(rec).some((k) => k.trim() === key)
@@ -21,7 +27,7 @@ const trimmedHas = (rec: Record<string, unknown>, key: string) =>
 const placeholders = (text: string) => [
   ...new Set(
     [...text.matchAll(/\{\[(.+?)\]\}/g)].map((m) =>
-      m[1].replace(/\[\d+\]$/, "")
+      (m[1] ?? "").replace(/\[\d+\]$/, "")
     )
   ),
 ]
@@ -40,7 +46,7 @@ describe("Ability rules text", () => {
     for (const [code, locale] of Object.entries(locales)) {
       for (const [id, raw] of Object.entries(locale)) {
         const entry = raw as Entry
-        const english = (en as Record<string, Entry>)[id]
+        const english = entryOf(en, id)
         expect(
           [entry.variables, entry.constants, entry.scaled],
           `${code}:${id}`
@@ -79,28 +85,28 @@ describe("Ability rules text", () => {
 
   it("carries relic and Machine of War rules text", () => {
     const text = en as Record<string, Entry>
-    expect(text.AmuletOfTheVoidwyrm.variables.critDmgReduction).toEqual([
-      390, 411, 432, 453, 474, 495, 516, 537, 558, 579,
-    ])
-    expect(text.WisdomOfTheAncients.variables.dmgReductionPct).toEqual([
-      10, 13, 16, 20,
-    ])
+    expect(
+      entryOf(text, "AmuletOfTheVoidwyrm").variables.critDmgReduction
+    ).toEqual([390, 411, 432, 453, 474, 495, 516, 537, 558, 579])
+    expect(
+      entryOf(text, "WisdomOfTheAncients").variables.dmgReductionPct
+    ).toEqual([10, 13, 16, 20])
     // V1 keys these constants with a trailing space; the renderer looks them up trimmed.
-    expect(text.ReanimationBeam.constants).toMatchObject({
+    expect(entryOf(text, "ReanimationBeam").constants).toMatchObject({
       "initialCooldownTurns ": "1",
       "munitionsCost ": "1",
     })
-    expect((de as Record<string, Entry>).DutyEternal.description).not.toBe(
-      text.DutyEternal.description
+    expect(entryOf(de, "DutyEternal").description).not.toBe(
+      entryOf(text, "DutyEternal").description
     )
-    expect(text.SlashingDive.variables.dmg).toHaveLength(65)
+    expect(entryOf(text, "SlashingDive").variables.dmg).toHaveLength(65)
   })
 
   it("carries per-level variable tables and real localized text", () => {
-    const entry = (en as Record<string, Entry>).AdaptiveStrategy
-    expect(entry.variables.minDmg.length).toBeGreaterThan(20)
-    expect(entry.variables.minDmg[0]).toBe(12)
-    expect((de as Record<string, Entry>).AdaptiveStrategy.description).not.toBe(
+    const entry = entryOf(en, "AdaptiveStrategy")
+    expect(entry.variables.minDmg?.length).toBeGreaterThan(20)
+    expect(entry.variables.minDmg?.[0]).toBe(12)
+    expect(entryOf(de, "AdaptiveStrategy").description).not.toBe(
       entry.description
     )
   })

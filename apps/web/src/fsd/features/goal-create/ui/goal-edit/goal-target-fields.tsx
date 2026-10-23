@@ -359,7 +359,7 @@ export function GoalTargetStart({ detail }: { detail: GoalDetail }) {
       return config.rank ? <RankBadge rank={rankAt(config.rank.start)} /> : null
     case "Ascension":
       return config.progression ? (
-        <ProgressionBadge value={config.progression.start as Progression} />
+        <ProgressionBadge value={config.progression.start} />
       ) : null
     case "Ability":
       return config.ability ? (

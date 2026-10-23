@@ -98,7 +98,7 @@ export function HsePage() {
           className="flex flex-wrap items-center gap-3"
           data-testid="hse-title-row"
         >
-          <h1 className="text-lg font-semibold">{t("hse.title")}</h1>
+          <h2 className="text-lg font-semibold">{t("hse.title")}</h2>
           {state.status === "ready" ? (
             <EventSwitcher
               className="order-last md:order-none md:ml-auto"

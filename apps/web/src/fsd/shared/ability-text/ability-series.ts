@@ -38,7 +38,7 @@ const RANGE_SEPARATOR = /^\s*[-–]\s*$/
 const LINKING_WORD = /^(by|to|of|for|with|and|up|is|at|a|an|the)$/i
 
 const capitalise = (text: string) =>
-  text ? text[0].toLocaleUpperCase() + text.slice(1) : text
+  text ? text.charAt(0).toLocaleUpperCase() + text.slice(1) : text
 
 /**
  * What a value measures, for its chart title: the words that follow it in the rules text ("349–419
@@ -48,8 +48,7 @@ const capitalise = (text: string) =>
 function labelFor(tokens: Token[], first: number, last: number): string {
   const next = tokens[last + 1]
   if (next?.kind === "text") {
-    const words = next.text
-      .split(/[.,;:\n(]/)[0]
+    const words = (next.text.split(/[.,;:\n(]/)[0] ?? "")
       .trim()
       .split(/\s+/)
       .filter((word) => /\p{L}/u.test(word))
@@ -59,7 +58,7 @@ function labelFor(tokens: Token[], first: number, last: number): string {
   let before = ""
   for (let index = first - 1; index >= 0; index--) {
     const token = tokens[index]
-    if (token.kind !== "text") break
+    if (token?.kind !== "text") break
     before = token.text + before
   }
   if (before) {
@@ -117,7 +116,7 @@ export function buildAbilitySeries(
 
   for (let index = 0; index < tokens.length; index++) {
     const token = tokens[index]
-    if (token.kind !== "var" || seen.has(keyOf(token.node))) continue
+    if (token?.kind !== "var" || seen.has(keyOf(token.node))) continue
     const first = numericSeries(token.node)
     if (!first) continue
     seen.add(keyOf(token.node))
@@ -132,13 +131,14 @@ export function buildAbilitySeries(
       const max = numericSeries(second.node)
       if (max) {
         seen.add(keyOf(second.node))
-        const values = first.map((min, level) => [min, max[level]])
+        const values = first.map((min, level) => [min, max[level] ?? NaN])
+        const head = values[0]
         series.push({
           names: [keyOf(token.node), keyOf(second.node)],
           label: labelFor(tokens, index, index + 2),
           values,
           constant: values.every(
-            ([min, top]) => min === values[0][0] && top === values[0][1]
+            ([min, top]) => min === head?.[0] && top === head?.[1]
           ),
         })
         index += 2

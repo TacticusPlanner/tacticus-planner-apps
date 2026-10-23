@@ -27,25 +27,36 @@ export function UnitGoalBadge({
 }) {
   if (lines.length === 0) return null
   const name = `${label}: ${lines.join("; ")}`
-  const badge = (
-    <span
-      aria-label={name}
-      className={cn(
-        "inline-flex size-5 shrink-0 items-center justify-center rounded-full bg-primary/15 text-primary",
-        className
-      )}
-      data-testid="unit-goal-badge"
-      role="img"
-      tabIndex={tooltip ? 0 : undefined}
-      title={tooltip ? undefined : name}
-    >
-      <Target aria-hidden className="size-3.5" />
-    </span>
+  const badgeClass = cn(
+    "inline-flex size-5 shrink-0 items-center justify-center rounded-full bg-primary/15 text-primary",
+    className
   )
-  if (!tooltip) return badge
+  const icon = <Target aria-hidden className="size-3.5" />
+  if (!tooltip)
+    return (
+      <span
+        aria-label={name}
+        className={badgeClass}
+        data-testid="unit-goal-badge"
+        role="img"
+        title={name}
+      >
+        {icon}
+      </span>
+    )
+  // A real button so the tooltip is reachable by keyboard.
   return (
     <Tooltip>
-      <TooltipTrigger asChild>{badge}</TooltipTrigger>
+      <TooltipTrigger asChild>
+        <button
+          aria-label={name}
+          className={badgeClass}
+          data-testid="unit-goal-badge"
+          type="button"
+        >
+          {icon}
+        </button>
+      </TooltipTrigger>
       <TooltipContent>
         <ul className="flex flex-col gap-0.5">
           {lines.map((line) => (

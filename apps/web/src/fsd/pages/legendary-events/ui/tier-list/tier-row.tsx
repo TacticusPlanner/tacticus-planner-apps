@@ -1,4 +1,10 @@
-import { useId, type ReactNode } from "react"
+import {
+  useId,
+  useLayoutEffect,
+  useRef,
+  type KeyboardEvent,
+  type ReactNode,
+} from "react"
 import { useTranslation } from "react-i18next"
 import { ChevronDown } from "lucide-react"
 import { cn } from "@workspace/ui/lib/utils"
@@ -29,6 +35,66 @@ function TierLabel({
       </span>
     </>
   )
+}
+
+// ponytail: roving focus is wired here through the DOM because the Tier List is the only operable
+// tile grid; extract a shared `useRovingFocus` hook into shared/lib when a second one appears.
+const ROVING_ROW = "ul[data-roving-row]"
+
+/** The tile buttons of a row, in order: each `<li>` holds one tile button. */
+function tilesOf(row: Element) {
+  return Array.from(row.children, (item) => item.firstElementChild).filter(
+    (tile): tile is HTMLElement => tile instanceof HTMLElement
+  )
+}
+
+/** Keeps exactly one tile of the row in the tab order: the last focused one, else the first. */
+function syncTabStop(row: Element, active?: Element) {
+  const tiles = tilesOf(row)
+  const current =
+    (active && tiles.find((tile) => tile === active)) ??
+    tiles.find((tile) => tile.getAttribute("tabindex") === "0") ??
+    tiles[0]
+  for (const tile of tiles) tile.tabIndex = tile === current ? 0 : -1
+}
+
+function moveFocus(event: KeyboardEvent<HTMLUListElement>) {
+  const row = event.currentTarget
+  const tiles = tilesOf(row)
+  const index = tiles.indexOf(event.target as HTMLElement)
+  // Keys from a tile's portalled details popover bubble here too; leave them alone.
+  if (index < 0) return
+  let target: HTMLElement | undefined
+  switch (event.key) {
+    case "ArrowLeft":
+      target = tiles[Math.max(index - 1, 0)]
+      break
+    case "ArrowRight":
+      target = tiles[Math.min(index + 1, tiles.length - 1)]
+      break
+    case "Home":
+      target = tiles[0]
+      break
+    case "End":
+      target = tiles.at(-1)
+      break
+    case "ArrowUp":
+    case "ArrowDown": {
+      const rows = Array.from(
+        row.closest("section")?.parentElement?.querySelectorAll(ROVING_ROW) ??
+          []
+      )
+      const next =
+        rows[rows.indexOf(row) + (event.key === "ArrowDown" ? 1 : -1)]
+      const nextTiles = next ? tilesOf(next) : []
+      target = nextTiles[Math.min(index, nextTiles.length - 1)]
+      break
+    }
+    default:
+      return
+  }
+  event.preventDefault()
+  target?.focus()
 }
 
 /** One tier: on desktop a horizontal band (fixed-width coloured label cell, tiles wrapping to the
@@ -62,6 +128,11 @@ export function TierRow({
   children?: ReactNode
 }) {
   const { t } = useTranslation("legendaryEvents")
+  const tilesRef = useRef<HTMLUListElement>(null)
+  // No deps: the tiles arrive as children, so re-check the tab stop after every render.
+  useLayoutEffect(() => {
+    if (tilesRef.current) syncTabStop(tilesRef.current)
+  })
   const toneClass = tierToneClass(tone)
   const label = (
     <TierLabel isMobile={isMobile} multiplier={multiplier} name={name} />
@@ -76,12 +147,18 @@ export function TierRow({
         {t("tierList.noCharacter")}
       </p>
     ) : (
+      // The list only delegates focus and arrow keys from its tile buttons; it is not a control.
+      // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
       <ul
         className={cn(
           "min-w-0 gap-2 p-2",
           isMobile ? "grid grid-cols-4" : "flex flex-wrap"
         )}
+        data-roving-row=""
         data-testid="tier-list-tiles"
+        onFocus={(event) => syncTabStop(event.currentTarget, event.target)}
+        onKeyDown={moveFocus}
+        ref={tilesRef}
       >
         {children}
       </ul>

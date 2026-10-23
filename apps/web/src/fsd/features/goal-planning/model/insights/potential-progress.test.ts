@@ -121,8 +121,8 @@ describe("computePotentialProgressRatio", () => {
           stages: [
             {
               target: "final",
-              needs: [{ id: "U1" as never, count: 2 }],
-              remaining: [{ id: "U1" as never, count: 1 }],
+              needs: [{ id: "U1", count: 2 }],
+              remaining: [{ id: "U1", count: 1 }],
             },
           ],
         }

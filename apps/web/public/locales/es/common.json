@@ -4,7 +4,8 @@
   },
   "common": {
     "close": "Cerrar",
-    "back": "Atrás"
+    "back": "Atrás",
+    "loading": "Cargando…"
   },
   "auth": {
     "account": "Cuenta conectada",
@@ -245,6 +246,7 @@
     "search": "Buscar páginas y acciones",
     "sync": "Sincronizar",
     "syncWithTacticus": "Sincronizar con Tacticus",
+    "skipToContent": "Saltar al contenido",
     "primaryNavigation": "Navegación principal",
     "sectionNavigation": "Páginas de {{section}}",
     "collapseSection": "Ocultar el menú de {{section}}",
@@ -1308,6 +1310,13 @@
   },
   "language": {
     "label": "Idioma"
+  },
+  "reorder": {
+    "pickedUp": "Has tomado {{name}}. Está en la posición {{position}} de {{total}}.",
+    "movedOver": "{{name}} se movió a la posición {{position}} de {{total}}.",
+    "dropped": "{{name}} se soltó en la posición {{position}} de {{total}}.",
+    "cancelled": "Reordenación cancelada. {{name}} volvió a la posición {{position}} de {{total}}.",
+    "instructions": "Para tomar un elemento, pulsa Espacio o Intro. Muévelo con las flechas y pulsa Espacio o Intro para soltarlo, o Escape para cancelar."
   },
   "scrollToTop": "Desplazarse hacia arriba",
   "settings": {

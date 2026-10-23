@@ -149,7 +149,7 @@ describe("useLegendaryEventTutorial", () => {
             )
             expect(
               inside(rect, viewport),
-              `${String(step.target)} at ${height}px`
+              `${step.target as string} at ${height}px`
             ).toBe(true)
           }
         }

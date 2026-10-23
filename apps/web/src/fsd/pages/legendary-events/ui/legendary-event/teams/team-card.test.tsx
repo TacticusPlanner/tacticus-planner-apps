@@ -84,7 +84,7 @@ function renderEstimatedCard(
   value: LegendaryEventTeam,
   estimate: ClearEstimate,
   {
-    run = 1 as 1 | 2,
+    run = 1,
     roster = ownedRoster(value.memberUnitIds),
   }: { run?: 1 | 2; roster?: LegendaryEventRosterUnit[] } = {}
 ) {
@@ -409,7 +409,9 @@ describe("TeamCard", () => {
           "number-stepper-increase"
         )
       )
-      act(() => vi.advanceTimersByTime(400))
+      act(() => {
+        vi.advanceTimersByTime(400)
+      })
       expect(cardActions.onDepthChange).toHaveBeenCalledWith(1, NO_ESTIMATE)
     } finally {
       vi.useRealTimers()
@@ -428,9 +430,13 @@ describe("TeamCard", () => {
       expect(within(stepper).getByTestId("number-stepper-input")).toHaveValue(
         10
       )
-      act(() => vi.advanceTimersByTime(399))
+      act(() => {
+        vi.advanceTimersByTime(399)
+      })
       expect(cardActions.onDepthChange).not.toHaveBeenCalled()
-      act(() => vi.advanceTimersByTime(1))
+      act(() => {
+        vi.advanceTimersByTime(1)
+      })
       expect(cardActions.onDepthChange).toHaveBeenCalledTimes(1)
       expect(cardActions.onDepthChange).toHaveBeenCalledWith(10, NO_ESTIMATE)
     } finally {
@@ -471,7 +477,9 @@ describe("TeamCard", () => {
       )
       expect(stepperInput()).toHaveValue(7)
       expect(depthField()).not.toHaveAttribute("data-estimated")
-      act(() => vi.advanceTimersByTime(400))
+      act(() => {
+        vi.advanceTimersByTime(400)
+      })
       expect(cardActions.onDepthChange).toHaveBeenCalledWith(7, {
         estimate: 6,
         fromEstimate: true,
@@ -502,7 +510,9 @@ describe("TeamCard", () => {
       fireEvent.click(screen.getByTestId("team-card-depth-use-estimate"))
       expect(stepperInput()).toHaveValue(6)
       expect(depthField()).toHaveAttribute("data-estimated", "true")
-      act(() => vi.advanceTimersByTime(400))
+      act(() => {
+        vi.advanceTimersByTime(400)
+      })
       expect(cardActions.onUseEstimate).toHaveBeenCalledWith(6)
       expect(cardActions.onDepthChange).not.toHaveBeenCalled()
     } finally {

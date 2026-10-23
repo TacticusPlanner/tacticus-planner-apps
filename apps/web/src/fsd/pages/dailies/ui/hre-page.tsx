@@ -283,7 +283,7 @@ export function HrePage() {
           className="flex flex-wrap items-center gap-3"
           data-testid="hre-title-row"
         >
-          <h1 className="text-lg font-semibold">{t("hre:title")}</h1>
+          <h2 className="text-lg font-semibold">{t("hre:title")}</h2>
         </div>
         <div data-testid="hre-status">
           <HreEventHeader state={state} />

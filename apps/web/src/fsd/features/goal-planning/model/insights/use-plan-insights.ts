@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react"
 import { useQuery } from "@tanstack/react-query"
 import { useIsAuthenticated } from "@azure/msal-react"
-import { unitIdSchema, type UnitId } from "@workspace/game-domain"
+import { unitIdSchema } from "@workspace/game-domain"
 import {
   getInventoryShard,
   getPlayerCharacter,
@@ -173,21 +173,21 @@ export function usePlanInsights(scopeGoalIds?: readonly string[] | null) {
         ] = await Promise.all([
           Promise.all(
             entityIds.map((id) =>
-              getPlayerCharacter(unitIdSchema.parse(id) as UnitId).then(
+              getPlayerCharacter(unitIdSchema.parse(id)).then(
                 (data) => [id, data] as const
               )
             )
           ),
           Promise.all(
             entityIds.map((id) =>
-              getPlayerMow(unitIdSchema.parse(id) as UnitId).then(
+              getPlayerMow(unitIdSchema.parse(id)).then(
                 (data) => [id, data] as const
               )
             )
           ),
           Promise.all(
             entityIds.map((id) =>
-              getInventoryShard(unitIdSchema.parse(id) as UnitId).then(
+              getInventoryShard(unitIdSchema.parse(id)).then(
                 (data) => [id, data] as const
               )
             )
@@ -233,10 +233,10 @@ export function usePlanInsights(scopeGoalIds?: readonly string[] | null) {
             xpBookRarity: planningSettings.xpBookRarity,
             upgradesById,
             battlesById,
-            charactersById: charactersById!,
-            mowsById: mowsById!,
-            ascensionCostsById: ascensionCostsById!,
-            unlockShardCostsById: unlockShardCostsById!,
+            charactersById: charactersById,
+            mowsById: mowsById,
+            ascensionCostsById: ascensionCostsById,
+            unlockShardCostsById: unlockShardCostsById,
             abilityLadders: {
               mowUpgradeCostsByLevel,
               characterAbilityCostsByLevel,
@@ -249,7 +249,7 @@ export function usePlanInsights(scopeGoalIds?: readonly string[] | null) {
             onslaughtProgress,
             currentOnslaughtTokens:
               liveProgress?.gameModeTokens.onslaught?.current ?? 0,
-            onslaughtRewards: onslaughtRewards!,
+            onslaughtRewards: onslaughtRewards,
             shops,
           })
 

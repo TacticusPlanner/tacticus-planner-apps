@@ -368,6 +368,8 @@ export function estimateTodayRun(params: EstimatePlanParams): {
     today: run.days[0] ?? {
       day: 1,
       entries: [],
+      shopEntries: [],
+      onslaughtEntries: [],
       attemptsUsedByBattle: new Map<BattleId, number>(),
       energyTotal: 0,
       raidsTotal: 0,

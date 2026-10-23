@@ -26,6 +26,7 @@ export function UnitTabs<Tab extends string>({
 
   const focusTab = (index: number) => {
     const target = tabs[(index + tabs.length) % tabs.length]
+    if (!target) return
     onSelect(target.id)
     refs.current[(index + tabs.length) % tabs.length]?.focus()
   }

@@ -21,14 +21,13 @@ import {
 
 const mod = (
   partial: Partial<RaidBossEncounterModifier> & { type: string }
-): RaidBossEncounterModifier =>
-  ({
-    hpLost: 0,
-    modifierId: "m",
-    target: "dmg",
-    amount: 10,
-    ...partial,
-  }) as RaidBossEncounterModifier
+): RaidBossEncounterModifier => ({
+  hpLost: 0,
+  modifierId: "m",
+  target: "dmg",
+  amount: 10,
+  ...partial,
+})
 
 describe("parseSubtargets", () => {
   it("splits a comma-separated subtarget", () => {

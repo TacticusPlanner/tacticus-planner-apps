@@ -105,8 +105,8 @@ describe("buildCombinedGoalSpecs", () => {
     })
 
     expect(specs).toHaveLength(1)
-    expect(specs[0].goalType).toBe("Rank")
-    expect(specs[0].dependsOnIndex).toEqual([])
+    expect(specs[0]?.goalType).toBe("Rank")
+    expect(specs[0]?.dependsOnIndex).toEqual([])
   })
 
   it("chains Unlock -> Ascension -> Rank -> Ability by index, in that order", () => {
@@ -123,10 +123,10 @@ describe("buildCombinedGoalSpecs", () => {
       "Rank",
       "Ability",
     ])
-    expect(specs[0].dependsOnIndex).toEqual([]) // Unlock
-    expect(specs[1].dependsOnIndex).toEqual([0]) // Ascension -> Unlock
-    expect(specs[2].dependsOnIndex).toEqual([0, 1]) // Rank -> Unlock, Ascension
-    expect(specs[3].dependsOnIndex).toEqual([0, 1]) // Ability -> Unlock, Ascension
+    expect(specs[0]?.dependsOnIndex).toEqual([]) // Unlock
+    expect(specs[1]?.dependsOnIndex).toEqual([0]) // Ascension -> Unlock
+    expect(specs[2]?.dependsOnIndex).toEqual([0, 1]) // Rank -> Unlock, Ascension
+    expect(specs[3]?.dependsOnIndex).toEqual([0, 1]) // Ability -> Unlock, Ascension
   })
 
   it("gates Ability on an auto-suggested Ascension it wasn't explicitly toggled for (8.1)", () => {
@@ -142,8 +142,8 @@ describe("buildCombinedGoalSpecs", () => {
     })
 
     expect(specs.map((spec) => spec.goalType)).toEqual(["Ascension", "Ability"])
-    expect(specs[0].dependsOnIndex).toEqual([])
-    expect(specs[1].dependsOnIndex).toEqual([0]) // Ability -> Ascension
+    expect(specs[0]?.dependsOnIndex).toEqual([])
+    expect(specs[1]?.dependsOnIndex).toEqual([0]) // Ability -> Ascension
   })
 
   it("submits campaign+shop+Onslaught for Ascension but drops Onslaught and mythic for Unlock", () => {
@@ -255,10 +255,10 @@ describe("buildCombinedGoalSpecs", () => {
     })
 
     expect(specs.map((spec) => spec.goalType)).toEqual(["Unlock", "Upgrade"])
-    expect(specs[1].config.upgrade).toEqual({
+    expect(specs[1]?.config.upgrade).toEqual({
       targets: [{ upgradeId: upgradeId("h1"), quantity: 3 }],
     })
-    expect(specs[1].dependsOnIndex).toEqual([0])
+    expect(specs[1]?.dependsOnIndex).toEqual([0])
   })
 
   it("omits the Upgrade spec entirely when no targets are selected, even if toggled on", () => {
@@ -291,8 +291,8 @@ describe("buildCombinedGoalSpecs", () => {
       "Rank",
       "Ability",
     ])
-    expect(specs[2].dependsOnIndex).toEqual([0, 1])
-    expect(specs[3].dependsOnIndex).toEqual([0, 1])
+    expect(specs[2]?.dependsOnIndex).toEqual([0, 1])
+    expect(specs[3]?.dependsOnIndex).toEqual([0, 1])
   })
 })
 

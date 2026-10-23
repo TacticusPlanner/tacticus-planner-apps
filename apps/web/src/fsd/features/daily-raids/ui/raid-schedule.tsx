@@ -206,7 +206,8 @@ function groupEntries(
 ) {
   const byGoal = new Map<string, Map<string, RaidBreakdownEntry[]>>()
   for (const entry of entries) {
-    const resources = byGoal.get(entry.goalId) ?? new Map()
+    const resources =
+      byGoal.get(entry.goalId) ?? new Map<string, RaidBreakdownEntry[]>()
     const resourceEntries = resources.get(entry.resourceId) ?? []
     resourceEntries.push(entry)
     resources.set(entry.resourceId, resourceEntries)

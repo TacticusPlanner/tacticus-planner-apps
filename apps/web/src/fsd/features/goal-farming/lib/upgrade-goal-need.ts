@@ -58,6 +58,7 @@ export function upgradeResourceNeed(params: {
       { slots: secondary, covered: coveredTransitions.secondary },
     ]
     const inRange = groups.map((group) => ({
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- widens the per-group Set types so the mixed groups share one element type
       covered: group.covered as Set<string | number>,
       slots: group.slots.filter((slot) => slot.id === id),
     }))

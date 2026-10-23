@@ -15,7 +15,7 @@ function boss(unitSetId: string, kind: RaidBoss["kind"] = "boss"): RaidBoss {
     factionId: kind === "boss" ? "Tyranids" : "Orks",
     movement: 4,
     statProgression: [],
-  } as unknown as RaidBoss
+  }
 }
 
 function encounter(

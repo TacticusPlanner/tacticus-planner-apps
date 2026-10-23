@@ -83,7 +83,7 @@ export function useHomeScreenEventLocations(
     () =>
       new Map(
         (battles ?? []).map((battle) => [
-          battle.id as BattleId,
+          battle.id,
           mapCampaignBattleStorageToDomain(battle),
         ])
       ),

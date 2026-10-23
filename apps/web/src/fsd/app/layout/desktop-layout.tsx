@@ -8,7 +8,6 @@ import {
   SidebarContent,
   SidebarGroup,
   SidebarHeader,
-  SidebarInset,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -27,11 +26,18 @@ import { matchesNavPath } from "./find-active-child"
 import { NavLiveDot } from "./nav-live-dot"
 import type { NavItem } from "./nav-items"
 import type { QuickActionsController } from "./quick-actions"
+import { SkipLink } from "./skip-link"
+import { useFocusPageHeadingOnNavigate } from "./use-focus-page-heading"
 
 function LoadingFill() {
+  const { t } = useTranslation()
   return (
-    <div className="flex flex-1 items-center justify-center">
-      <Spinner className="size-8 text-primary" />
+    <div
+      aria-label={t("common.loading")}
+      className="flex flex-1 items-center justify-center"
+      role="status"
+    >
+      <Spinner aria-hidden="true" className="size-8 text-primary" />
     </div>
   )
 }
@@ -63,6 +69,8 @@ export function DesktopShell({
   sectionExpanded: boolean
   onSectionExpandedChange: (expanded: boolean) => void
 }) {
+  useFocusPageHeadingOnNavigate()
+
   // The expand and collapse buttons are different elements (panel vs. page header), so hand
   // focus to whichever one replaces the clicked button.
   const moveFocusToToggle = useRef(false)
@@ -104,6 +112,7 @@ export function DesktopShell({
 
   return (
     <div className="flex min-h-svh flex-col">
+      <SkipLink />
       <DesktopTopBar
         getEntryPath={getEntryPath}
         quickActions={quickActions}
@@ -121,7 +130,12 @@ export function DesktopShell({
           onCreateGoal={onCreateGoal}
           getEntryPath={getEntryPath}
         />
-        <SidebarInset>
+        {/* The sidebar inset is a plain div, not shadcn's <main>, so the section menu stays outside
+            the page's main landmark. */}
+        <div
+          className="relative flex w-full flex-1 flex-col bg-background"
+          data-slot="sidebar-inset"
+        >
           <div className="flex min-h-0 flex-1">
             {activeSection?.children?.length ? (
               <DesktopSectionNavigation
@@ -151,12 +165,18 @@ export function DesktopShell({
                   </p>
                 ) : null}
               </header>
-              <Suspense fallback={<LoadingFill />}>
-                <Outlet />
-              </Suspense>
+              <main
+                className="flex flex-1 flex-col outline-hidden"
+                id="main"
+                tabIndex={-1}
+              >
+                <Suspense fallback={<LoadingFill />}>
+                  <Outlet />
+                </Suspense>
+              </main>
             </div>
           </div>
-        </SidebarInset>
+        </div>
       </SidebarProvider>
     </div>
   )

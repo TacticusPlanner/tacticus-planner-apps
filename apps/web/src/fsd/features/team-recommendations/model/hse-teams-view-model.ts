@@ -12,10 +12,7 @@ import {
   buildHseTeamRecommendations,
   hseTeamModes,
 } from "./hse-team-recommendations"
-import type {
-  HseTeamCatalog,
-  HseTeamsViewModel,
-} from "./hse-team-recommendations.types"
+import type { HseTeamsViewModel } from "./hse-team-recommendations.types"
 
 /** The roster and character catalog the event teams read; undefined while loading. */
 export type HseTeamsRead =
@@ -80,7 +77,7 @@ export function buildHseTeamsViewModel(input: {
     recommendations: buildHseTeamRecommendations({
       trackers: scoring.details.trackers,
       roster: input.read.roster.map(mapRosterCharacter),
-      catalog: catalog as HseTeamCatalog,
+      catalog: catalog,
       unitPower: input.unitPower,
     }),
   }

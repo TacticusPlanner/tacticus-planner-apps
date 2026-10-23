@@ -58,12 +58,12 @@ function AbilityTargetPills({
   const mow = entityType === "Mow"
   const tracks = [
     {
-      key: (mow ? "primary" : "active") as "primary" | "active",
+      key: mow ? ("primary" as const) : ("active" as const),
       current: progress.currentActive,
       target: progress.targetActive,
     },
     {
-      key: (mow ? "secondary" : "passive") as "secondary" | "passive",
+      key: mow ? ("secondary" as const) : ("passive" as const),
       current: progress.currentPassive,
       target: progress.targetPassive,
     },
@@ -279,13 +279,13 @@ export function GoalProgressDisplay({
   const percentWithTooltip = remainingText ? (
     <Tooltip>
       <TooltipTrigger asChild>
-        <span
+        <button
           className="cursor-default"
           data-testid="goal-progress-percent"
-          tabIndex={0}
+          type="button"
         >
           {percentLabel}
-        </span>
+        </button>
       </TooltipTrigger>
       <TooltipContent data-testid="goal-remaining-text">
         {remainingText}

@@ -4,7 +4,8 @@
   },
   "common": {
     "close": "Schließen",
-    "back": "Zurück"
+    "back": "Zurück",
+    "loading": "Wird geladen…"
   },
   "auth": {
     "account": "Angemeldetes Konto",
@@ -245,6 +246,7 @@
     "search": "Seiten und Aktionen durchsuchen",
     "sync": "Sync",
     "syncWithTacticus": "Mit Tacticus synchronisieren",
+    "skipToContent": "Zum Inhalt springen",
     "primaryNavigation": "Hauptnavigation",
     "sectionNavigation": "Seiten von {{section}}",
     "collapseSection": "Menü „{{section}}“ ausblenden",
@@ -1308,6 +1310,13 @@
   },
   "language": {
     "label": "Sprache"
+  },
+  "reorder": {
+    "pickedUp": "{{name}} aufgenommen. Position {{position}} von {{total}}.",
+    "movedOver": "{{name}} auf Position {{position}} von {{total}} verschoben.",
+    "dropped": "{{name}} auf Position {{position}} von {{total}} abgelegt.",
+    "cancelled": "Neuordnung abgebrochen. {{name}} ist zurück auf Position {{position}} von {{total}}.",
+    "instructions": "Drücke Leertaste oder Eingabe, um einen Eintrag aufzunehmen. Verschiebe ihn mit den Pfeiltasten und drücke dann Leertaste oder Eingabe zum Ablegen oder Escape zum Abbrechen."
   },
   "scrollToTop": "Nach oben scrollen",
   "settings": {

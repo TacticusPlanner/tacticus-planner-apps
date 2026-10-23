@@ -12,7 +12,7 @@ const state = vi.hoisted(() => ({
   estimates: new Map<string, unknown>(),
   insightsError: false,
   retryInsights: vi.fn(),
-  order: {} as Record<string, unknown>,
+  order: {},
   moveGoal: vi.fn(),
   retryMove: vi.fn(),
   dismissConflict: vi.fn(),

@@ -4,7 +4,7 @@ import { TooltipProvider } from "@workspace/ui/components/tooltip"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 const { hseState, hreLive, signalReads } = vi.hoisted(() => ({
-  hseState: { current: { status: "loading" } as unknown },
+  hseState: { current: { status: "loading" } },
   hreLive: { current: false },
   signalReads: { count: 0 },
 }))
@@ -52,9 +52,6 @@ vi.mock("../providers/auth-control", () => ({ AuthControl: () => null }))
 vi.mock("@/widgets/account-menu/ui/theme-switcher", () => ({
   ThemeSwitcher: () => null,
 }))
-vi.mock("../providers/userjot-board-link", () => ({
-  UserJotBoardLink: () => null,
-}))
 vi.mock("../providers/userjot-feedback-button", () => ({
   UserJotFeedbackButton: () => null,
 }))
@@ -70,11 +67,10 @@ import { DesktopShell } from "./desktop-layout"
 import { HseLiveProvider } from "./hse-live-provider"
 import { MobileShell } from "./mobile-layout"
 import { NavLiveDot } from "./nav-live-dot"
-import type { NavItem } from "./nav-items"
 import { navItems } from "./nav-items"
 import { SectionTabs } from "./section-tabs"
 
-const items = navItems as NavItem[]
+const items = navItems
 const dailies = items.find((item) => item.path === "/dailies")!
 const noQuickActions = { actions: [], select: () => false, flush: () => {} }
 const hunt = {

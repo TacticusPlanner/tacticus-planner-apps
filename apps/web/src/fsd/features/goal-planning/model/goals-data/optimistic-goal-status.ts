@@ -41,11 +41,11 @@ export function applyOptimisticGoalStatus(
       ? goal
       : { ...goal, ...patch }
 
-  if ("goalId" in data && (data as { goalId: unknown }).goalId === goalId) {
+  if ("goalId" in data && data.goalId === goalId) {
     return apply(data as { goalId: string } & WithStatus)
   }
 
-  if ("goals" in data && Array.isArray((data as { goals: unknown }).goals)) {
+  if ("goals" in data && Array.isArray(data.goals)) {
     const goals = (data as { goals: unknown[] }).goals
     let changed = false
     const nextGoals = goals.map((entry) => {
