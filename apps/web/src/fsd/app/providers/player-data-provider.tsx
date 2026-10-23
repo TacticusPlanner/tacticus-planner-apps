@@ -33,6 +33,7 @@ import {
 } from "@/shared/auth"
 import {
   PlayerDataContext,
+  PlayerDataProgressContext,
   type PlayerDataContextValue,
   type PlayerDataStatus,
 } from "@/shared/player-data-status"
@@ -239,18 +240,19 @@ export function PlayerDataProvider({
   const value = useMemo<PlayerDataContextValue>(
     () => ({
       status,
-      progress,
       lastSyncedAt,
       error,
       requiresReauth,
       syncNow,
     }),
-    [status, progress, lastSyncedAt, error, requiresReauth, syncNow]
+    [status, lastSyncedAt, error, requiresReauth, syncNow]
   )
 
   return (
     <PlayerDataContext.Provider value={value}>
-      {children}
+      <PlayerDataProgressContext.Provider value={progress}>
+        {children}
+      </PlayerDataProgressContext.Provider>
     </PlayerDataContext.Provider>
   )
 }

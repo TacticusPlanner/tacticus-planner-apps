@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import { render, screen, waitFor } from "@/test/render"
+import { render, renderHook, screen, waitFor } from "@/test/render"
 import { seedPlayerData } from "@/test/seed"
 
 // The goals list read, controlled per test.
@@ -69,5 +69,22 @@ describe("useGoalAttainmentState", () => {
     await waitFor(() =>
       expect(screen.getByTestId("state")).toHaveTextContent("settled:unknown")
     )
+  })
+
+  it("keeps the same map across re-renders with equal ids, and a new one when the ids change", async () => {
+    goalsList.loading = false
+    const { result, rerender } = renderHook(
+      ({ ids }) => useGoalAttainmentState(ids),
+      { initialProps: { ids: ["goal-1"] } }
+    )
+    await waitFor(() => expect(result.current.pending).toBe(false))
+    const settled = result.current.byGoalId
+
+    // A freshly mapped array with the same ids, as the Goals page passes every render.
+    rerender({ ids: ["goal-1"] })
+    expect(result.current.byGoalId).toBe(settled)
+
+    rerender({ ids: ["goal-1", "goal-2"] })
+    expect(result.current.byGoalId).not.toBe(settled)
   })
 })

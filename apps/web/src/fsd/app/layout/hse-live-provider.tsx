@@ -1,4 +1,4 @@
-import type { ReactNode } from "react"
+import { useMemo, type ReactNode } from "react"
 
 import { useActiveHomeScreenEvent } from "@/features/daily-raids"
 import { useIsHreLive } from "@/features/hre-missions"
@@ -14,6 +14,7 @@ export function HseLiveProvider({ children }: { children: ReactNode }) {
   const state = useActiveHomeScreenEvent()
   const hse = state.status === "ready" && state.active !== null
   const hre = useIsHreLive()
+  const value = useMemo(() => ({ hse, hre }), [hse, hre])
 
-  return <HseLiveContext value={{ hse, hre }}>{children}</HseLiveContext>
+  return <HseLiveContext value={value}>{children}</HseLiveContext>
 }

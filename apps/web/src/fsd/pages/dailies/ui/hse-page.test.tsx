@@ -1143,6 +1143,16 @@ describe("HSE event details and projection", () => {
     }
   )
 
+  it("does not re-render the farm list when a projection input changes", async () => {
+    mocks.event = activeEvent("hse-warp-surge")
+    renderHse()
+    const input = screen.getByTestId("hse-projection-milestones-done-input")
+    const farmRenders = mocks.raidsArgs.length
+    await userEvent.type(input, "1")
+    expect(input).toHaveValue(1)
+    expect(mocks.raidsArgs).toHaveLength(farmRenders)
+  })
+
   it("lets the details span the row when there is no projection", () => {
     mocks.event = readyAt(
       [entryOf("hse-global-operation-imperator", now - DAY, now + DAY)],

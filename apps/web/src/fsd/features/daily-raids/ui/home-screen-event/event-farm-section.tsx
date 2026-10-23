@@ -1,3 +1,4 @@
+import { memo } from "react"
 import { useTranslation } from "react-i18next"
 import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
@@ -24,9 +25,10 @@ const EMPTY_KEYS = {
  * The HSE farm list: the point-earning locations that feed the player's goals, chosen over the whole
  * schedule and filled to the energy left today (`planEventFarm`). Each row shows its goals, raids,
  * points, energy and drop. It picks point-earning nodes even where a cheaper node without points
- * exists, so the note under the title says it can cost more energy per item than Today.
+ * exists, so the note under the title says it can cost more energy per item than Today. Memoised: the
+ * HSE page re-renders on every projection keystroke, which changes none of its props.
  */
-export function EventFarmSection({
+export const EventFarmSection = memo(function EventFarmSection({
   definitionId,
   projectId,
 }: {
@@ -115,7 +117,7 @@ export function EventFarmSection({
       ) : null}
     </section>
   )
-}
+})
 
 function EmptyState({ reason }: { reason: EventFarmEmptyReason }) {
   const { t } = useTranslation("dailies")

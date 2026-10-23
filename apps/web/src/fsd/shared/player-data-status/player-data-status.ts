@@ -10,7 +10,6 @@ export type PlayerDataStatus = "idle" | "syncing" | "ready" | "stale" | "error"
 
 export type PlayerDataContextValue = {
   status: PlayerDataStatus
-  progress: PlayerDataSyncProgress | null
   lastSyncedAt: string | null
   error: string | null
   // True when `error` is not a transient failure — acquireAccessToken could not renew the session
@@ -24,6 +23,11 @@ export const PlayerDataContext = createContext<
   PlayerDataContextValue | undefined
 >(undefined)
 
+// Per-chunk sync progress lives in its own context: it ticks many times per sync, and only the
+// controls that show it should re-render on a tick, not every status reader (the shell among them).
+export const PlayerDataProgressContext =
+  createContext<PlayerDataSyncProgress | null>(null)
+
 export function usePlayerDataStatus() {
   const context = useContext(PlayerDataContext)
 
@@ -34,4 +38,9 @@ export function usePlayerDataStatus() {
   }
 
   return context
+}
+
+/** The running sync's progress, or null between syncs. Read it only where it is displayed. */
+export function usePlayerDataProgress() {
+  return useContext(PlayerDataProgressContext)
 }

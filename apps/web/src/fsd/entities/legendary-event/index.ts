@@ -58,6 +58,7 @@ export {
 } from "./lib/synced-lane-progress"
 export { type ReadState } from "./model/use-read-state"
 export { useLegendaryEvents } from "./model/use-legendary-events"
+export { useMinuteNow } from "./model/use-minute-now"
 export {
   useLegendaryEvent,
   type LegendaryEventState,

@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react"
+import { useCallback, useMemo, useState } from "react"
 import { Navigate, useParams } from "react-router"
 import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
@@ -8,6 +8,7 @@ import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 import {
   LEGENDARY_EVENT_LANE_IDS,
   type LegendaryEvent,
+  type LegendaryEventLaneId,
   useClearEstimateConfig,
   useLegendaryEvent,
   useLegendaryEventBattles,
@@ -15,12 +16,14 @@ import {
   useLegendaryEventRoster,
   useLegendaryEventSyncTimes,
   useLegendaryEventUnits,
+  useMinuteNow,
 } from "@/entities/legendary-event"
 import {
   useAnnotations,
   useLegendaryEventPlan,
 } from "@/features/legendary-event-plan"
 import {
+  type MarkTokenHandler,
   useTokenMissionsSource,
   useTokenPlan,
 } from "@/features/legendary-event-tokens"
@@ -50,7 +53,10 @@ import { useCreateGoalFromRow } from "./use-create-goal-from-row"
 import { useEventGoals } from "./use-event-goals"
 import { useEventRuns } from "./use-event-runs"
 import { useImpactTeamName, useUpgradeImpact } from "./use-upgrade-impact"
-import { buildMarksByLane } from "./progress/progress-marks"
+import {
+  buildMarksByLane,
+  type ProgressMarksViewModel,
+} from "./progress/progress-marks"
 import { useTeamEditorLauncher } from "./teams/team-editor-launcher"
 import {
   buildTeamsSectionState,
@@ -75,6 +81,8 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
   const { t } = useTranslation("legendaryEvents")
   const isMobile = useIsMobile()
   const event = useLegendaryEvent(eventId)
+  // The run status, token plan and timing lines count down, so the page follows every minute.
+  const nowMs = useMinuteNow()
   const progress = useLegendaryEventProgress(eventId)
   const unitName = useUnitName()
   const syncTimes = useLegendaryEventSyncTimes()
@@ -182,18 +190,18 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
         : undefined,
     [eventData, preview, clearEstimateConfig, battles]
   )
-  const changeGoalsPreview = (
-    enabled: boolean,
-    surface: "leaderboard" | "picker"
-  ) => {
-    if (surface === "leaderboard") setGoalsPreview(enabled)
-    captureEvent({
-      type: "legendary_event_goals_preview_toggled",
-      eventId,
-      enabled,
-      surface,
-    })
-  }
+  const changeGoalsPreview = useCallback(
+    (enabled: boolean, surface: "leaderboard" | "picker") => {
+      if (surface === "leaderboard") setGoalsPreview(enabled)
+      captureEvent({
+        type: "legendary_event_goals_preview_toggled",
+        eventId,
+        enabled,
+        surface,
+      })
+    },
+    [captureEvent, eventId]
+  )
   const createGoalFromRow = useCreateGoalFromRow(eventId, syncedRoster)
   // Run history (design D6–D9): the previous run's card and each team's last-run clear.
   const runHistory = useLastRun(eventId, event, plan, {
@@ -230,7 +238,7 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
   const tokenPlan = useTokenPlan({
     event: eventData,
     lifecycle: event.lifecycle,
-    nowMs: event.nowMs,
+    nowMs,
     progress: progressValue,
     progressObservedAtMs,
     plan: {
@@ -253,6 +261,217 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
     setSelectedTab
   )
   useTourPageSteps(useLegendaryEventTutorial(selectTab, runHistory.hasLastRun))
+
+  // A record cached before rewards were served lacks them until the next catalog sync.
+  const rewards = eventData?.rewards as LegendaryEvent["rewards"] | undefined
+  const runStatus = useMemo(
+    () =>
+      buildRunStatusViewModel({
+        progress,
+        rewards,
+        progressObservedAtMs,
+        nowMs,
+      }),
+    [progress, rewards, progressObservedAtMs, nowMs]
+  )
+  const outlook = useMemo(
+    () =>
+      buildRewardOutlookViewModel({
+        rewards,
+        progress: progressValue,
+        unit: runs.eventUnit,
+        resolution: runs.resolution,
+        plan: plan.query,
+        planEnabled: plan.enabled,
+      }),
+    [
+      rewards,
+      progressValue,
+      runs.eventUnit,
+      runs.resolution,
+      plan.query,
+      plan.enabled,
+    ]
+  )
+  const teamsState = useMemo(
+    () =>
+      buildTeamsSectionState({
+        enabled: plan.enabled,
+        query: plan.query,
+        units,
+        retryUnits: unitsRead.retry,
+        roster,
+        runPending: progressValue === "loading",
+      }),
+    [plan.enabled, plan.query, units, unitsRead.retry, roster, progressValue]
+  )
+  const { openTeamEditor } = teamEditor
+  const addToTeam = useCallback(
+    (unitId: string, laneId: LegendaryEventLaneId) =>
+      openTeamEditor({ laneId, memberUnitIds: [unitId] }),
+    [openTeamEditor]
+  )
+  const changeLeaderboardPreview = useCallback(
+    (enabled: boolean) => changeGoalsPreview(enabled, "leaderboard"),
+    [changeGoalsPreview]
+  )
+  const { markCell, markBattle, markToken } = annotations
+  const markCellVoid = useCallback<ProgressMarksViewModel["onMarkCell"]>(
+    (laneId, battleIndex, objectiveId, status) =>
+      void markCell(laneId, battleIndex, objectiveId, status),
+    [markCell]
+  )
+  const markBattleVoid = useCallback<ProgressMarksViewModel["onMarkBattle"]>(
+    (laneId, battle, status) => void markBattle(laneId, battle, status),
+    [markBattle]
+  )
+  const markTokenVoid = useCallback<MarkTokenHandler>(
+    (laneId, battleIndex, objectiveIds, status) =>
+      void markToken(laneId, battleIndex, objectiveIds, status),
+    [markToken]
+  )
+  const pickerPreview = useCallback(
+    (laneId: LegendaryEventLaneId) =>
+      pickerGoalsPreview(laneId, {
+        enabled: goalsPreview,
+        available: previewAvailability === "ready",
+        preview,
+        estimates: previewEstimates,
+        onToggle: (enabled) => changeGoalsPreview(enabled, "picker"),
+      }),
+    [
+      goalsPreview,
+      previewAvailability,
+      preview,
+      previewEstimates,
+      changeGoalsPreview,
+    ]
+  )
+  const marksEditable = annotations.enabled && plan.query.data !== undefined
+  const syncedAtMs =
+    syncTimes.status === "ready" ? syncTimes.data.syncedAtMs : undefined
+  const lifecycle = event.lifecycle
+  const viewModel = useMemo((): LegendaryEventPageViewModel | null => {
+    if (!eventData || !lifecycle) return null
+    return {
+      event: eventData,
+      name: unitName("Character", eventData.id),
+      lifecycle,
+      nowMs,
+      runStatus,
+      outlook,
+      runInputs: { enabled: plan.enabled, runs: runs.resolution },
+      syncedAtMs,
+      selectedTab,
+      onSelectTab: selectTab,
+      onJumpToLane: jumpToLane,
+      leaderboard: {
+        ...(previewLeaderboardRows ?? leaderboardRows),
+        onlyUnlocked,
+        onOnlyUnlockedChange: setOnlyUnlocked,
+        deductScored,
+        onDeductScoredChange: setDeductScored,
+        selectedObjectives,
+        onSelectedObjectivesChange: setSelectedObjectives,
+        clears:
+          previewOn && previewEstimates ? previewEstimates : clearEstimates,
+        onAddToTeam: teamsState.kind === "ready" ? addToTeam : undefined,
+        goals: {
+          previewEnabled: goalsPreview,
+          availability: previewAvailability,
+          onPreviewChange: changeLeaderboardPreview,
+          previewed: previewOn ? preview.previewed : new Set(),
+          badgeLines: goalLines,
+          onCreateGoal: createGoalFromRow,
+        },
+      },
+      progressGrid,
+      marks: {
+        editable: marksEditable,
+        byLane: marksByLane,
+        onMarkCell: markCellVoid,
+        onMarkBattle: markBattleVoid,
+      },
+      tokens: {
+        view: tokenPlan,
+        onMarkToken: marksEditable ? markTokenVoid : undefined,
+        onOpenTeams: openTeams,
+      },
+      teams: {
+        state: teamsState,
+        run: runs.run,
+        actions: plan,
+        estimates: clearEstimates,
+        unitPower,
+        eventId,
+        lastRunClears: runHistory.lastRunClears,
+        progressByLane:
+          progressGrid.kind === "ready" ? progressGrid.lanes : undefined,
+        goals: { goalLines, goalUnitIds, pickerPreview },
+      },
+      teamEditor,
+      lastRun: runHistory.lastRun,
+      upgradeImpact: upgradeImpact
+        ? {
+            state: upgradeImpact,
+            goalTargets: goalTargetsByUnit,
+            teamName: impactTeamName,
+          }
+        : null,
+      battles: battlesSection,
+      potentials,
+    }
+  }, [
+    eventData,
+    lifecycle,
+    unitName,
+    nowMs,
+    runStatus,
+    outlook,
+    plan,
+    runs.resolution,
+    runs.run,
+    syncedAtMs,
+    selectedTab,
+    selectTab,
+    jumpToLane,
+    previewLeaderboardRows,
+    leaderboardRows,
+    onlyUnlocked,
+    deductScored,
+    selectedObjectives,
+    previewOn,
+    previewEstimates,
+    clearEstimates,
+    teamsState,
+    addToTeam,
+    goalsPreview,
+    previewAvailability,
+    changeLeaderboardPreview,
+    preview,
+    goalLines,
+    createGoalFromRow,
+    progressGrid,
+    marksEditable,
+    marksByLane,
+    markCellVoid,
+    markBattleVoid,
+    tokenPlan,
+    markTokenVoid,
+    openTeams,
+    unitPower,
+    eventId,
+    runHistory.lastRunClears,
+    goalUnitIds,
+    pickerPreview,
+    teamEditor,
+    runHistory.lastRun,
+    upgradeImpact,
+    goalTargetsByUnit,
+    impactTeamName,
+    battlesSection,
+    potentials,
+  ])
 
   // Until `lres` has synced an absent event may just not have arrived yet (the catalog init gate
   // renders routes under its overlay), so keep loading instead of bouncing a deep link to the hub.
@@ -284,127 +503,7 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
       </div>
     )
   }
-  if (!event.data || !event.lifecycle) {
-    return <Navigate replace to="/legendary-events" />
-  }
-
-  const teamsState = buildTeamsSectionState({
-    enabled: plan.enabled,
-    query: plan.query,
-    units,
-    retryUnits: unitsRead.retry,
-    roster,
-    runPending: progressValue === "loading",
-  })
-  const { openTeamEditor } = teamEditor
-  const viewModel: LegendaryEventPageViewModel = {
-    event: event.data,
-    name: unitName("Character", event.data.id),
-    lifecycle: event.lifecycle,
-    nowMs: event.nowMs,
-    runStatus: buildRunStatusViewModel({
-      progress,
-      // A record cached before rewards were served lacks them until the next catalog sync.
-      rewards: event.data.rewards as LegendaryEvent["rewards"] | undefined,
-      progressObservedAtMs,
-      nowMs: event.nowMs,
-    }),
-    outlook: buildRewardOutlookViewModel({
-      rewards: event.data.rewards as LegendaryEvent["rewards"] | undefined,
-      progress: progressValue,
-      unit: runs.eventUnit,
-      resolution: runs.resolution,
-      plan: plan.query,
-      planEnabled: plan.enabled,
-    }),
-    runInputs: { enabled: plan.enabled, runs: runs.resolution },
-    syncedAtMs:
-      syncTimes.status === "ready" ? syncTimes.data.syncedAtMs : undefined,
-    selectedTab,
-    onSelectTab: selectTab,
-    onJumpToLane: jumpToLane,
-    leaderboard: {
-      ...(previewLeaderboardRows ?? leaderboardRows),
-      onlyUnlocked,
-      onOnlyUnlockedChange: setOnlyUnlocked,
-      deductScored,
-      onDeductScoredChange: setDeductScored,
-      selectedObjectives,
-      onSelectedObjectivesChange: setSelectedObjectives,
-      clears: previewOn && previewEstimates ? previewEstimates : clearEstimates,
-      onAddToTeam:
-        teamsState.kind === "ready"
-          ? (unitId, laneId) =>
-              openTeamEditor({ laneId, memberUnitIds: [unitId] })
-          : undefined,
-      goals: {
-        previewEnabled: goalsPreview,
-        availability: previewAvailability,
-        onPreviewChange: (enabled) =>
-          changeGoalsPreview(enabled, "leaderboard"),
-        previewed: previewOn ? preview.previewed : new Set(),
-        badgeLines: goalLines,
-        onCreateGoal: createGoalFromRow,
-      },
-    },
-    progressGrid,
-    marks: {
-      editable: annotations.enabled && plan.query.data !== undefined,
-      byLane: marksByLane,
-      onMarkCell: (laneId, battleIndex, objectiveId, status) =>
-        void annotations.markCell(laneId, battleIndex, objectiveId, status),
-      onMarkBattle: (laneId, battle, status) =>
-        void annotations.markBattle(laneId, battle, status),
-    },
-    tokens: {
-      view: tokenPlan,
-      onMarkToken:
-        annotations.enabled && plan.query.data !== undefined
-          ? (laneId, battleIndex, objectiveIds, status) =>
-              void annotations.markToken(
-                laneId,
-                battleIndex,
-                objectiveIds,
-                status
-              )
-          : undefined,
-      onOpenTeams: openTeams,
-    },
-    teams: {
-      state: teamsState,
-      run: runs.run,
-      actions: plan,
-      estimates: clearEstimates,
-      unitPower,
-      eventId,
-      lastRunClears: runHistory.lastRunClears,
-      progressByLane:
-        progressGrid.kind === "ready" ? progressGrid.lanes : undefined,
-      goals: {
-        goalLines,
-        goalUnitIds,
-        pickerPreview: (laneId) =>
-          pickerGoalsPreview(laneId, {
-            enabled: goalsPreview,
-            available: previewAvailability === "ready",
-            preview,
-            estimates: previewEstimates,
-            onToggle: (enabled) => changeGoalsPreview(enabled, "picker"),
-          }),
-      },
-    },
-    teamEditor,
-    lastRun: runHistory.lastRun,
-    upgradeImpact: upgradeImpact
-      ? {
-          state: upgradeImpact,
-          goalTargets: goalTargetsByUnit,
-          teamName: impactTeamName,
-        }
-      : null,
-    battles: battlesSection,
-    potentials,
-  }
+  if (!viewModel) return <Navigate replace to="/legendary-events" />
 
   return <LegendaryEventPageView {...viewModel} isMobile={isMobile} />
 }

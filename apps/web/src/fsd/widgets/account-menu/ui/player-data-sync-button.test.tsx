@@ -15,6 +15,7 @@ const { usePlayerDataStatusMock } = vi.hoisted(() => ({
 
 vi.mock("@/shared/player-data-status", () => ({
   usePlayerDataStatus: () => usePlayerDataStatusMock(),
+  usePlayerDataProgress: () => usePlayerDataStatusMock().progress,
 }))
 
 vi.mock("@/entities/goal", () => ({

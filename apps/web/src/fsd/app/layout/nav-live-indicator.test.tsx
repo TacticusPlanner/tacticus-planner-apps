@@ -3,10 +3,22 @@ import { MemoryRouter } from "react-router"
 import { TooltipProvider } from "@workspace/ui/components/tooltip"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
-const { hseState, hreLive } = vi.hoisted(() => ({
+const { hseState, hreLive, signalReads } = vi.hoisted(() => ({
   hseState: { current: { status: "loading" } as unknown },
   hreLive: { current: false },
+  signalReads: { count: 0 },
 }))
+// Pass-through that counts the renders of every live-signal reader (NavLiveDot).
+vi.mock("./hse-live-context", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("./hse-live-context")>()
+  return {
+    ...actual,
+    useEventLiveSignals: () => {
+      signalReads.count++
+      return actual.useEventLiveSignals()
+    },
+  }
+})
 vi.mock("@/features/daily-raids", () => ({
   useActiveHomeScreenEvent: () => hseState.current,
 }))
@@ -57,6 +69,7 @@ import { DesktopNavigationDialog } from "./desktop-navigation-dialog"
 import { DesktopShell } from "./desktop-layout"
 import { HseLiveProvider } from "./hse-live-provider"
 import { MobileShell } from "./mobile-layout"
+import { NavLiveDot } from "./nav-live-dot"
 import type { NavItem } from "./nav-items"
 import { navItems } from "./nav-items"
 import { SectionTabs } from "./section-tabs"
@@ -248,5 +261,25 @@ describe("nav live indicator accessibility", () => {
       </MemoryRouter>
     )
     expect(screen.queryByTestId("nav-live-dot")).toBeNull()
+  })
+})
+
+describe("HseLiveProvider value", () => {
+  it("keeps NavLiveDot from re-rendering while the signals are unchanged", () => {
+    hseState.current = ready(hunt)
+    hreLive.current = false
+    // One element reused across renders, so only a context change can re-render the dot.
+    const dot = <NavLiveDot item={dailies} />
+    const { rerender } = render(<HseLiveProvider>{dot}</HseLiveProvider>)
+    const mounted = signalReads.count
+
+    // A fresh query state that still means "HSE live" re-renders the provider only.
+    hseState.current = ready({ ...hunt })
+    rerender(<HseLiveProvider>{dot}</HseLiveProvider>)
+    expect(signalReads.count).toBe(mounted)
+
+    hreLive.current = true
+    rerender(<HseLiveProvider>{dot}</HseLiveProvider>)
+    expect(signalReads.count).toBeGreaterThan(mounted)
   })
 })
