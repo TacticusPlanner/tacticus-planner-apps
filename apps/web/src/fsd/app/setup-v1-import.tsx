@@ -1,7 +1,6 @@
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
-import { Checkbox } from "@workspace/ui/components/checkbox"
 
 import {
   materialSteps,
@@ -50,8 +49,8 @@ const LOCKED_PARTS: ReadonlyArray<keyof V1ImportSelection> = [
  * step still needs Back for.
  *
  * Material steps (V1 material and pre-farm goals, which need an Upgrade goal created by hand) can't be
- * acted on here — there is no goal-creation sheet outside the app shell — so Continue waits until the
- * user acknowledges them; they stay on the Goals page (PendingMaterialSteps) until dismissed there.
+ * acted on here — there is no goal-creation sheet outside the app shell — so a one-line notice next to
+ * Continue points at the Goals page, where they stay (PendingMaterialSteps) until dismissed there.
  */
 export function SetupV1Import({
   onCompleted,
@@ -66,14 +65,12 @@ export function SetupV1Import({
 }) {
   const { t } = useTranslation()
   const [keySucceeded, setKeySucceeded] = useState(false)
-  const [hasMaterialSteps, setHasMaterialSteps] = useState(false)
-  const [stepsAcknowledged, setStepsAcknowledged] = useState(false)
+  const [materialStepCount, setMaterialStepCount] = useState(0)
 
   const handleSuccess = (result: ImportV1ProfileResult) => {
     // Handed to the host for the name step's prefill; an unconfirmed suggestion, never confirmed here.
     onSuggestedDisplayName(result.suggestedDisplayName ?? null)
-    setHasMaterialSteps(materialSteps(result.outcomes).length > 0)
-    setStepsAcknowledged(false)
+    setMaterialStepCount(materialSteps(result.outcomes).length)
     if (result.personalTacticusApiKey.status === "Imported") {
       setKeySucceeded(true)
       onKeyImported()
@@ -94,23 +91,19 @@ export function SetupV1Import({
               {t("onboarding.import.useApiKey")}
             </Button>
           ) : null}
-          {keySucceeded && hasMaterialSteps ? (
-            <label className="flex basis-full items-start gap-2 text-sm">
-              <Checkbox
-                className="mt-0.5"
-                checked={stepsAcknowledged}
-                data-testid="account-setup-v1-material-steps-ack"
-                onCheckedChange={(checked) =>
-                  setStepsAcknowledged(checked === true)
-                }
-              />
-              {t("onboarding.import.materialStepsAcknowledge")}
-            </label>
+          {keySucceeded && materialStepCount > 0 ? (
+            <p
+              className="basis-full text-sm text-muted-foreground"
+              data-testid="account-setup-v1-material-steps-notice"
+            >
+              {t("onboarding.import.materialStepsNotice", {
+                count: materialStepCount,
+              })}
+            </p>
           ) : null}
           {keySucceeded ? (
             <Button
               data-testid="account-setup-v1-continue"
-              disabled={hasMaterialSteps && !stepsAcknowledged}
               onClick={onCompleted}
               type="button"
             >

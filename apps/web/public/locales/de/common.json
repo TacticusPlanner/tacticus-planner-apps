@@ -134,7 +134,8 @@
     },
     "import": {
       "continue": "Weiter",
-      "materialStepsAcknowledge": "Ich lege diese Upgrade-Ziele später an. Sie bleiben auf der Zielseite, bis ich sie ausblende.",
+      "materialStepsNotice_one": "{{count}} Material braucht eine Einheit. Du findest es oben auf der Zielseite.",
+      "materialStepsNotice_other": "{{count}} Materialien brauchen eine Einheit. Du findest sie oben auf der Zielseite.",
       "useApiKey": "Stattdessen API-Schlüssel verwenden"
     },
     "name": {

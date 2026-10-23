@@ -193,7 +193,7 @@ describe("SetupV1Import", () => {
     expect(onCompleted).toHaveBeenCalledTimes(1)
   })
 
-  it("holds Continue until material steps are acknowledged", async () => {
+  it("points to the Goals page for material steps without holding Continue", async () => {
     const user = userEvent.setup()
     const { onCompleted } = renderSetup()
 
@@ -214,13 +214,11 @@ describe("SetupV1Import", () => {
         },
       ])
     )
-    const continueButton = await screen.findByTestId(
-      "account-setup-v1-continue"
-    )
-    expect(continueButton).toBeDisabled()
+    expect(
+      await screen.findByTestId("account-setup-v1-material-steps-notice")
+    ).toBeVisible()
 
-    await user.click(screen.getByTestId("account-setup-v1-material-steps-ack"))
-    await user.click(continueButton)
+    await user.click(screen.getByTestId("account-setup-v1-continue"))
 
     expect(onCompleted).toHaveBeenCalledTimes(1)
   })

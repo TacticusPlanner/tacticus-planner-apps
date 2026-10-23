@@ -134,7 +134,8 @@
     },
     "import": {
       "continue": "Continue",
-      "materialStepsAcknowledge": "I'll add these Upgrade goals later. They'll stay on the Goals page until I hide them.",
+      "materialStepsNotice_one": "{{count}} material needs a unit. You'll find it at the top of Goals.",
+      "materialStepsNotice_other": "{{count}} materials need a unit. You'll find them at the top of Goals.",
       "useApiKey": "Use an API key instead"
     },
     "name": {

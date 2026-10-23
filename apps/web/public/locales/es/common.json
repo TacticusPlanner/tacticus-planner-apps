@@ -134,7 +134,8 @@
     },
     "import": {
       "continue": "Continuar",
-      "materialStepsAcknowledge": "Añadiré estos objetivos de mejora más tarde. Seguirán en la página de objetivos hasta que los oculte.",
+      "materialStepsNotice_one": "{{count}} material necesita una unidad. Lo encontrarás arriba en Objetivos.",
+      "materialStepsNotice_other": "{{count}} materiales necesitan una unidad. Los encontrarás arriba en Objetivos.",
       "useApiKey": "Usar una clave de API en su lugar"
     },
     "name": {
