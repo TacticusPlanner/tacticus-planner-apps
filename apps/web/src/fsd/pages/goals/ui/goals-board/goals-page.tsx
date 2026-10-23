@@ -102,7 +102,6 @@ export function GoalsPage() {
   )
   // The archived query stays for prerequisite cascades only; there is no Archived view any more.
   const selectedGoals = nonArchivedGoals
-  const refreshCurrentView = selectedGoals.retry
 
   const nonArchivedGoalIds = useMemo(
     () =>
@@ -383,7 +382,7 @@ export function GoalsPage() {
       <GoalsPageStates
         fetchError={fetchError}
         isLoading={isLoading}
-        onRetry={refreshCurrentView}
+        onRetry={selectedGoals.retry}
         showEmptyProjectState={showEmptyProjectState}
         showFilteredEmpty={rows.length === 0}
         showPristineEmptyState={showPristineEmptyState}
