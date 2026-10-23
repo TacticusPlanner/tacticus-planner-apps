@@ -25,13 +25,13 @@
 
 - [ ] 4.1 With the Aspire stack running and the network throttled to Slow 3G in DevTools, open `/library/characters/<unit>`, `/library/machines-of-war/<mow>`, `/library/npcs` and a raid boss: the page header and panels paint before the rules text, each panel shows the loading state, then the text; the Network panel shows only the shown abilities' files (plus `en` fallback when the language is not English). Record the request list in this task.
 - [ ] 4.2 Block `npcAbilityText/*` with a DevTools request block, reload a unit page: the panels show the failure note with retry; unblock and retry renders the text. Repeat for a raid boss with `raidBossAbilityText/*`.
-- [ ] 4.3 Run the character unit page tour on desktop and confirm the ability-text step appears once the text has loaded.
+- [x] 4.3 Run the character unit page tour on desktop and confirm the ability-text step appears once the text has loaded.
 
 ## 5. Mobile verification (viewport below 768px)
 
 - [ ] 5.1 In a same-origin 420px-wide iframe on the app origin (see `tp-manual-ui-verification`), repeat 4.1 on the character, MoW, NPC and raid-boss pages: the mobile tab layout renders, the panels show the loading state and then the text, and the panels' loading and failure notes fit without horizontal overflow.
 - [ ] 5.2 Repeat 4.2 in the iframe for one unit page and one raid boss.
-- [ ] 5.3 Run the character unit page tour in the iframe and confirm the mobile steps still target the ability panel.
+- [x] 5.3 Run the character unit page tour in the iframe and confirm the mobile steps still target the ability panel.
 
 ## 6. Integration gates
 
@@ -80,3 +80,22 @@
 - **6.2.** The worktree build failed with `ENOTEMPTY` on `dist/game_catalog` (a Windows worktree issue). Built again in the main checkout with `build:staging`: `dist/locales/{en,de,es,fr}/npcAbilityText/` holds 434 files each, `dist/locales/en/raidBossAbilityText/` holds 152, and no monolithic `*AbilityText.json` remains.
 - **Flaky test.** In one full run, the unrelated `goals-list.drag-perf.test.tsx` failed its re-render
   budget. It passes when run alone and passed in the next full run (544 files, 5174 tests).
+
+## Manual verification (2026-10-23, Aspire stack, no throttling available)
+
+- Rules-text requests recorded per page (4.1):
+  - Bellator, en: `npcTraitText`, `npcAbilityTextGaps` and its 3 abilities (`DeathFromAbove`,
+    `ShockAssault`, `RelicBoltPistol`).
+  - Bellator, de: the de files plus the en fallbacks.
+  - Galatian MoW: gaps plus `DutyEternal`, `MacroPlasmaIncinerator`, `WisdomOfTheAncients`.
+  - Roswitha NPC: only the selected variation's `BrazierOfHolyFire` and `CondemnorStake`.
+  - Belisarius raid boss: `raidBossAbilityTextGaps`, `raidBossTraitText` and its 6 shown abilities.
+  - No other ability file is requested on any of these pages, and all text renders.
+- 4.1 / 5.1 stay open: DevTools throttling isn't available from the browser extension, so the
+  loading state painting first hasn't been seen. Mobile (420px) renders all four pages with text and
+  no horizontal overflow.
+- 4.2 / 5.2 are blocked: they need DevTools request blocking.
+- **4.3 / 5.3** The character tour runs all 5 steps, including "Abilities", on desktop and in the
+  iframe.
+- Minor follow-up: `npcAbilityTextGaps` is also requested for the active non-English language, where
+  no file exists. The dev server answers with index.html and i18next falls back to en silently.
