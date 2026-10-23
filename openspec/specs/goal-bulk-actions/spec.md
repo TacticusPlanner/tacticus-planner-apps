@@ -132,7 +132,7 @@ Activating bulk Delete SHALL open one confirmation naming the number of goals an
 
 ### Requirement: Add to project adds the selection to one chosen project
 
-Activating Add to project SHALL open a destination picker listing the account's non-archived projects (the Default project included) with their colour dots; when no non-archived project exists it SHALL instead open project creation and, once created, use the new project as the destination. Choosing a destination SHALL add every selected goal to that project in one membership request, keeping each goal's existing memberships; a goal that is already a member SHALL be left as it is. The request SHALL be computed from the destination's membership as the loaded project list carries it, and when that membership changed in the meantime the change SHALL be applied once more to the current membership rather than failing. Membership is never rejected for an occupied slot (slots are per account, see `goal-project-membership`). Membership changes SHALL NOT change any goal's status, target or priority. On success one toast SHALL name the destination and the number of goals added.
+Activating Add to project SHALL open a destination picker listing the account's non-archived projects (the Default project included) with their colour dots; when no non-archived project exists it SHALL instead open project creation and, once created, use the new project as the destination. Choosing a destination SHALL add every selected goal to that project in one membership request, keeping each goal's existing memberships; a goal that is already a member SHALL be left as it is. The request SHALL be computed from the destination's membership as the loaded project list carries it and sent with that membership as `expectedGoalIds`; when the server rejects it as `membershipStale` because the membership changed in the meantime, the change SHALL be re-applied once to the current membership that rejection carries and resubmitted, without a member-list read, rather than failing. Membership is never rejected for an occupied slot (slots are per account, see `goal-project-membership`). Membership changes SHALL NOT change any goal's status, target or priority. On success one toast SHALL name the destination and the number of goals added.
 
 #### Scenario: Three goals join a project
 
@@ -144,7 +144,7 @@ Activating Add to project SHALL open a destination picker listing the account's 
 
 - **GIVEN** two goals are selected and the user opens the picker
 - **WHEN** another goal joins project B from another tab before the user chooses B
-- **THEN** the selection is added to B and the goal added from the other tab stays in B
+- **THEN** the first request is rejected as `membershipStale`, one retry built from the membership the rejection carries adds the selection to B, and the goal added from the other tab stays in B
 
 #### Scenario: No member-list read precedes the request
 
@@ -152,7 +152,7 @@ Activating Add to project SHALL open a destination picker listing the account's 
 - **WHEN** the user chooses a destination
 - **THEN** the membership request is issued without first reading that project's member list
 
-#### Scenario: An occupied slot adds nothing
+#### Scenario: An occupied slot does not block the add
 
 - **GIVEN** three goals are selected and one of them has the same unit and kind as a goal already in project B
 - **WHEN** the user chooses project B
@@ -202,7 +202,7 @@ While the Goals page is scoped to a project, activating Remove from project SHAL
 - **WHEN** the user activates Remove from project and chooses project C in the picker
 - **THEN** the A-only goal is added to C, then both goals are removed from A, and a toast reports 2 goals removed from A with 1 moved to C
 
-#### Scenario: An occupied destination slot removes nothing
+#### Scenario: An occupied destination slot does not block the move
 
 - **GIVEN** a selected goal's only project is A and project C already holds an Active goal of the same unit and kind
 - **WHEN** the user chooses C as the destination

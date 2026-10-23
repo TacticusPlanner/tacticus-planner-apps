@@ -65,16 +65,16 @@ The Edit goal dialog has one Save. When the target changed, Save SHALL submit it
 
 ### Requirement: Conflicts preserve the draft
 
-If the server rejects a target edit because the goal revision is stale or the target collides with another in-flight goal of the same unit anywhere in the account, the Edit goal dialog SHALL stay open, retain the proposed target and the rest of the draft, explain the conflict, and offer a way to refresh the current goal before retrying. It SHALL not claim success or overwrite the newer server state.
+If the server rejects a target edit because the goal revision is stale or a Rank target collides with another in-flight Rank goal of the same unit anywhere in the account (same `(entityType, entityId, normalizedEndTarget)`; a non-Rank target edit keeps its `(entityType, entityId, goalType)` slot and cannot collide, see `goal-project-membership`), the Edit goal dialog SHALL stay open, retain the proposed target and the rest of the draft, explain the conflict, and offer a way to refresh the current goal before retrying. It SHALL not claim success or overwrite the newer server state.
 
 #### Scenario: Stale revision
 
 - **WHEN** the goal changes elsewhere before the dialog's Save is submitted
-- **THEN** the dialog keeps the draft, adopts the current goal the rejection carries as the base for the next attempt, and shows a refresh-and-retry path
+- **THEN** the dialog keeps the draft and its opening base, shows a refresh-and-retry path, and adopts the current goal the rejection carries as the base for the next attempt only after the user chooses refresh
 
 #### Scenario: Rank milestone collision
 
-- **WHEN** the new Rank end target matches an existing in-flight Rank milestone for the same character, in any project
+- **WHEN** the new Rank end target, normalized, matches an existing in-flight Rank milestone for the same character, in any project
 - **THEN** the dialog keeps the draft and names the conflicting goal and its target
 
 ### Requirement: Planning reflects the saved target

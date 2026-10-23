@@ -39,7 +39,8 @@ exists". A hidden session check SHALL give up after at most 6 seconds.
 #### Scenario: Refresh token expired
 
 - **GIVEN** a cached account whose refresh token has expired (for example the
-  user last signed in more than 24 hours ago)
+  user last signed in more than 24 hours ago) and whose tab holds no valid
+  access token
 - **WHEN** the application loads
 - **THEN** exactly one hidden identity-provider session check runs, and it
   gives up after at most 6 seconds if it cannot complete

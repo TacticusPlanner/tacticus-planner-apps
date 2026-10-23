@@ -112,7 +112,7 @@ When no analytics destination is configured, the client SHALL run normally and a
 
 ### Requirement: Each environment reports to its own analytics project
 
-The staging deployment SHALL report to an analytics project distinct from production's, so staging page views, declared events and client errors never mix into production measurements.
+When a staging-specific analytics token is configured, the staging deployment SHALL report to an analytics project distinct from production's, so staging page views, declared events and client errors never mix into production measurements. Without one, staging SHALL send nothing and SHALL NOT fall back to the production token.
 
 #### Scenario: Page view on staging
 

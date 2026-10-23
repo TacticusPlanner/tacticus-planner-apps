@@ -8,7 +8,7 @@ Defines how the client reads the API's single RFC 7807 problem-details error sha
 
 ### Requirement: Every API failure is read as a problem-details error
 
-A non-2xx API response SHALL be read as one error carrying the HTTP status, the `issueCode` extension (or none), the human-readable `detail` (falling back to `title`, then to a generic "request failed with status N" text), and, when present, the `current` resource state and the `errors` field map. A failure whose body is not `application/problem+json` (a proxy error page, an empty body) SHALL still produce an error with the status and the generic text, never an unhandled parse failure.
+A non-2xx API response SHALL be read as one error carrying the HTTP status, the `issueCode` extension (or none), the human-readable `detail` (falling back to `title`, then to a generic "API request failed with status N" text), and, when present, the `current` resource state and the `errors` field map. A failure whose body is not `application/problem+json` (a proxy error page, an empty body) SHALL still produce an error with the status and the generic text, never an unhandled parse failure.
 
 #### Scenario: Problem body with an issue code
 
@@ -18,7 +18,7 @@ A non-2xx API response SHALL be read as one error carrying the HTTP status, the 
 #### Scenario: Non-problem body
 
 - **WHEN** a request is answered with 502 and an HTML body
-- **THEN** the error exposes status 502, no issue code and the generic "request failed with status 502" text, and the caller's generic error path runs
+- **THEN** the error exposes status 502, no issue code and the generic "API request failed with status 502" text, and the caller's generic error path runs
 
 #### Scenario: Validation failure names its fields
 
@@ -27,7 +27,7 @@ A non-2xx API response SHALL be read as one error carrying the HTTP status, the 
 
 ### Requirement: Failure handling keys on the issue code, not on the body shape
 
-A feature that reacts to a specific failure (a stale revision, a stale order, an occupied slot, a stale membership, a stale plan, a last-membership removal) SHALL decide by the error's `issueCode` alone. The same issue code SHALL be handled the same way whichever route produced it. An unknown issue code SHALL fall back to showing the error's text with the feature's generic failure handling.
+A feature that reacts to a specific failure (a stale revision, a stale order, an occupied slot, a stale membership, a stale plan, a last-membership removal) SHALL decide by the error's `issueCode` alone. The same issue code SHALL be handled the same way whichever route produced it. An unknown issue code SHALL fall back to showing the error's text with the feature's generic failure handling. The one exception is the campaign-events overrides page, whose route answers only with a `concurrency` 409: it treats every 409 as a stale revision, adopts the state it carries (or re-reads it when absent) and drops its draft.
 
 #### Scenario: Same code from two routes
 

@@ -65,7 +65,7 @@ The list route SHALL NOT render its own "Projects" (or equivalent) page title �
 
 ### Requirement: Project cards communicate planning value
 
-Every project card SHALL show color, name, description when present, and a goal/unit summary derived from the project's `goalIds` joined with the loaded goals list — no per-project read. Where summary data is available a card SHALL also show reached, blocked, and estimate/progress information; the richer dashboard metrics (reached, blocked, completion date) belong to the Default project card only, as they belonged to the Current plan project before it was removed, and are computed from the one global run. Identity and actions SHALL remain usable while the goals list or a summary calculation loads or fails.
+Every project card SHALL show color, name, description when present, and a goal/unit summary derived from the project's `goalIds` joined with the loaded goals list — no per-project read. Where summary data is available, the Default project card only SHALL also show reached, blocked, and estimate/progress information (completion date and unestimated goals), as the Current plan project did before it was removed, computed from the one global run; other project cards show the goal/unit summary only. Identity and actions SHALL remain usable while the goals list or a summary calculation loads or fails.
 
 #### Scenario: Summary loads progressively
 

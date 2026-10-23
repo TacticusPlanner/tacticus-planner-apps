@@ -8,7 +8,7 @@ Defines the baseline security response headers the static host sends with the ap
 
 ### Requirement: Documents carry baseline security headers
 
-Every document response from the static host SHALL include `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`, and a `Permissions-Policy` that denies camera, microphone, geolocation and payment.
+Every document response from the static host SHALL include `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`, and `Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()`.
 
 #### Scenario: Entry document response
 

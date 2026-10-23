@@ -66,6 +66,8 @@ Review SHALL offer as the destination the most recently updated active project w
 
 ### Requirement: Wizard layouts
 
+The wizard SHALL use a vertical stepper with a persistent Back / Next footer at or above 768px, and a step header with a progress bar and a sticky Back / Next bar below 768px, with no horizontal scrolling.
+
 #### Scenario: Desktop layout
 
 - **WHEN** the wizard renders at or above 768px

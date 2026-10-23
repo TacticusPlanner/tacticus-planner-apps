@@ -189,7 +189,7 @@ Wherever a goal is presented as a member of a specific project, the system SHALL
 
 ### Requirement: The goal row's project-removal action offers a chosen destination when relocation is needed
 
-When a goal's viewed project is its only membership, the row's project-removal action ("Move to project") SHALL let the user choose the destination rather than relocating automatically: it SHALL list the account's other existing projects, and SHALL offer creating a new project as an additional option. Selecting an existing project SHALL move the goal there, subject to the occupied-slot conflict check described in "Relocation reports an occupied destination slot before removing". Choosing to create a new project SHALL open project creation; once the new project is saved, the goal SHALL move into it.
+When a goal's viewed project is its only membership, the row's project-removal action ("Move to project") SHALL let the user choose the destination rather than relocating automatically: it SHALL list the account's other existing projects, and SHALL offer creating a new project as an additional option. Selecting an existing project SHALL move the goal there; the move is never rejected for an occupied slot (see "In-flight goal-type uniqueness is scoped to a project"). Choosing to create a new project SHALL open project creation; once the new project is saved, the goal SHALL move into it.
 
 When the goal's viewed project is not its only membership, the row's project-removal action SHALL remain a plain removal with no destination to choose, leaving the goal a member of its other project(s) — unchanged from today's behavior.
 

@@ -105,7 +105,7 @@ by intermediate HTTP caches.
 
 ### Requirement: At most one interactive redirect starts per page load
 
-When one or more callers (an API request, the player-data sync, a sign-in control) determine that interaction is required at about the same time, the system SHALL start exactly one interactive redirect. Later callers in the same page load SHALL join the in-flight redirect instead of starting another, so the identity provider is never entered twice and the return destination is the one recorded by the first caller.
+When one or more callers (an API request, the player-data sync, a sign-in control) determine that interaction is required at about the same time, the system SHALL start exactly one interactive redirect. Later callers in the same page load SHALL join the in-flight redirect instead of starting another, so the identity provider is never entered twice and the return destination is the one recorded by the first caller. A redirect whose launch fails clears the in-flight state, so a later caller MAY start a new one.
 
 #### Scenario: API request and background sync both require interaction
 

@@ -8,7 +8,7 @@ Defines what happens to an error that no component, request handler or backgroun
 
 ### Requirement: Uncaught errors and rejections are captured once
 
-The app SHALL capture every uncaught exception and unhandled promise rejection raised in the page, including failures of the background game-catalog and player-data sync loops, through a single capture path. Each error SHALL be written to the browser console exactly once with its message and stack.
+The app SHALL capture every uncaught exception and unhandled promise rejection raised in the page, including failures of the background game-catalog and player-data sync loops, through a single capture path. The app SHALL write each error to the browser console exactly once with its message and stack. The listeners do not cancel the events, so the browser's own default report of an uncaught error may also appear; that report is not counted as the app's log.
 
 #### Scenario: Background sync loop fails
 
@@ -22,7 +22,7 @@ The app SHALL capture every uncaught exception and unhandled promise rejection r
 
 ### Requirement: Captured errors are reported only for identified users
 
-When analytics is configured and the current user is identified (see `product-analytics`), a captured error SHALL be reported as a declared `client_error` event carrying the error message, stack, current route group and app version. It SHALL NOT carry form values, query strings, route parameters or request bodies. When the user is not identified or analytics is not configured, nothing SHALL be sent.
+When analytics is configured and the current user is identified (see `product-analytics`), a captured error SHALL be reported as a declared `client_error` event carrying the error message, stack, current route group and app version. It SHALL NOT attach form values, route parameters or request bodies, and query strings SHALL be stripped from the message and stack; the error text is otherwise sent as raised, without further redaction. When the user is not identified or analytics is not configured, nothing SHALL be sent.
 
 #### Scenario: Identified user hits an uncaught error
 
@@ -38,7 +38,7 @@ When analytics is configured and the current user is identified (see `product-an
 
 ### Requirement: Reporting never degrades the app
 
-A failing, blocked or slow analytics destination SHALL NOT delay, re-throw or loop error reporting. A failure inside the reporting path itself SHALL be logged and dropped.
+A failing, blocked or slow analytics destination SHALL NOT delay, re-throw or loop error reporting. A failure inside the reporting path itself SHALL be dropped silently; the captured error has already been logged.
 
 #### Scenario: Analytics destination blocked during reporting
 

@@ -81,7 +81,7 @@ Every mutation whose response carries the updated resource SHALL write that resp
 
 ### Requirement: Mutation responses that carry the resource replace refetches of it
 
-Guild registration and synchronization SHALL update the shared current-guild state from their responses without refetching it. A Tacticus integration update SHALL update the cached current user's configured-key and user-id state from its response. The V1 profile import SHALL issue at most one current-user read after it completes.
+Guild registration and synchronization SHALL update the shared current-guild state from their responses without refetching it. A Tacticus integration update SHALL update the cached current user's configured-key and user-id state from its response. A V1 profile import started from the account menu SHALL issue exactly one current-user read after it completes. A V1 profile import started from account setup SHALL issue none when it completes; the single current-user read follows the user's Continue.
 
 #### Scenario: Registering a guild
 
@@ -102,8 +102,8 @@ Guild registration and synchronization SHALL update the shared current-guild sta
 
 #### Scenario: V1 import refreshes the current user once
 
-- **WHEN** a V1 import that may change the account completes from account setup
-- **THEN** exactly one current-user request follows it
+- **WHEN** a V1 import completes from account setup and the user selects Continue
+- **THEN** no current-user request follows the import itself, and exactly one follows the Continue
 
 ### Requirement: Invalidating one player-data override does not refetch another
 

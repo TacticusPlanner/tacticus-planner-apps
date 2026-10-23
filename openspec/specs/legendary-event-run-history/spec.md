@@ -8,7 +8,7 @@ Defines run history on a Legendary Event page: how the previous run is chosen fr
 
 ### Requirement: The previous run is chosen from the event's run records
 
-The event page SHALL read the first page of the event's run records (newest first, the server's default page size) and classify them. When the event is active and the newest record's `run` equals the synced `currentEventRun`, the newest record SHALL be the **current** run, the next the **previous** run, and the rest **earlier** runs. Otherwise (the event is upcoming or archived, or no record exists yet for the current run) there SHALL be no current record, the newest SHALL be the previous run and the rest earlier runs. Records beyond the first page SHALL be read only when the user asks for more earlier runs. Records SHALL be read-only and SHALL NOT carry the roster; the roster is read separately (see "Roster changes since the previous run").
+The event page SHALL read the first page of the event's run records (newest first, the server's default page size of 20, so the current and previous records are always on it) and classify them. When the event is active and the newest record's `run` equals the synced `currentEventRun`, the newest record SHALL be the **current** run, the next the **previous** run, and the rest **earlier** runs. Otherwise (the event is upcoming or archived, or no record exists yet for the current run) there SHALL be no current record, the newest SHALL be the previous run and the rest earlier runs. Records beyond the first page SHALL be read only when the user asks for more earlier runs. Records SHALL be read-only and SHALL NOT carry the roster; the roster is read separately (see "Roster changes since the previous run").
 
 Assumptions:
 
@@ -83,7 +83,7 @@ For the distinct members and reserves of a shown record's teams (the previous ru
 
 - **GIVEN** a previous run with teams
 - **WHEN** the Last run card renders and the user later expands one earlier run
-- **THEN** exactly one roster request is issued for each of the two records, and re-collapsing and re-expanding issues none
+- **THEN** exactly one roster request is issued for each of the two records, and re-collapsing and re-expanding within the 5-minute freshness window (see `client-data-freshness`) issues none
 
 #### Scenario: No teams, no roster read
 
@@ -147,7 +147,7 @@ The history SHALL distinguish: records loading (card skeleton); records read fai
 
 ### Requirement: Run history tour step and analytics
 
-When the Last run card renders, the event page tour SHALL include a Last run step after the Run status step, targeting `data-testid="legendary-event-last-run"` on both forms, with localized copy in en/de/es/fr; when the card does not render the step SHALL be skipped. The page SHALL record `legendary_event_last_run_viewed` (eventId, run, teamCount, deltaCount) once per page view when the card first becomes visible, and `legendary_event_earlier_runs_expanded` (eventId, recordCount) when Earlier runs is opened.
+When the Last run card renders, the event page tour SHALL include a Last run step after the Run status step, targeting `data-testid="legendary-event-last-run"` on both forms, with localized copy in en/de/es/fr; when the card does not render the step SHALL be skipped. The page SHALL record `legendary_event_last_run_viewed` (eventId, run, teamCount, deltaCount) once per page view when the card first becomes visible, where `deltaCount` is the number of listed roster changes when the comparison is ready at that moment and 0 otherwise (roster loading or failed, no teams, or no current roster), and `legendary_event_earlier_runs_expanded` (eventId, recordCount) when Earlier runs is opened.
 
 #### Scenario: Tour with a previous run
 

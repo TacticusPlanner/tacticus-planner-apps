@@ -150,7 +150,7 @@ Desktop navigation search and mobile Menu search SHALL offer Submit Feedback as 
 
 ### Requirement: The widget SDK is loaded on demand from app code
 
-The feedback widget SDK SHALL be loaded by the application after first paint, from a versioned SDK URL, and never as a script in the entry document's head. Loading SHALL start when the user is signed in or when any entry point (desktop header button, mobile drawer row, search quick action) is first activated by an anonymous user. Until the SDK has loaded, entry points SHALL remain visible and activation SHALL open the widget once loading completes.
+The feedback widget SDK SHALL be loaded by the application after first paint, from a versioned SDK URL, and never as a static `<script>` in the entry document; app code inserts the SDK script at runtime. Loading SHALL start when the user is signed in or when any entry point (desktop header button, mobile drawer row, search quick action) is first activated by an anonymous user. Until the SDK has loaded, entry points SHALL remain visible and activation SHALL open the widget once loading completes.
 
 #### Scenario: Signed-in user, SDK loads in the background
 

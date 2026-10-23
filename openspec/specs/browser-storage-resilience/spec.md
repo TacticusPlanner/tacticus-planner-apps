@@ -23,7 +23,7 @@ When reading or writing browser local storage throws (storage blocked, private m
 
 ### Requirement: Persisted preferences use one storage path
 
-Every persisted client preference SHALL be read and written through the same guarded storage path, so a storage failure is handled identically everywhere and a preference changed in one place is observed by every reader in the same page.
+Every persisted client preference that application code reads or writes SHALL go through the same guarded storage path, so a storage failure is handled identically everywhere and a preference changed in one place is observed by every reader in the same page. Two reads sit outside that path: the pre-paint theme script in the entry document reads the `theme` key inside its own try/catch and falls back to the system theme, as the guarded path does; and the UI language is persisted under `i18nextLng` by the i18next browser language detector, which probes storage availability itself.
 
 #### Scenario: Preference changed in one component
 
