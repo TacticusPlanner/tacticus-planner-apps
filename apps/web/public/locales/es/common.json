@@ -1101,6 +1101,7 @@
     "overview": {
       "levelProgress": "Nv {{current}} → {{target}}",
       "ownedOfRequired": "{{owned}} / {{required}}",
+      "upgradeMaterial": "{{name}}: {{owned}} / {{quantity}}",
       "abilityTrack": {
         "active": "Activa",
         "passive": "Pasiva",

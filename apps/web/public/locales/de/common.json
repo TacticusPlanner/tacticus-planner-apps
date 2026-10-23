@@ -1101,6 +1101,7 @@
     "overview": {
       "levelProgress": "Stufe {{current}} → {{target}}",
       "ownedOfRequired": "{{owned}} / {{required}}",
+      "upgradeMaterial": "{{name}}: {{owned}} / {{quantity}}",
       "abilityTrack": {
         "active": "Aktiv",
         "passive": "Passiv",
