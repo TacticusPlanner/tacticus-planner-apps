@@ -6,6 +6,7 @@ import {
   rankIndex,
   type Progression,
   type Rank,
+  type Rarity,
   type UpgradeId,
 } from "@workspace/game-domain"
 import type { UnlockShardCostStorageModel } from "@workspace/game-catalog"
@@ -90,8 +91,25 @@ export type GoalProgress =
        *  shows the raw slot/material count, not a potential-adjusted one). */
       remainingXp: number
     }
-  | { kind: "Upgrade"; ratio: number | null }
+  | {
+      kind: "Upgrade"
+      ratio: number | null
+      /** One entry per targeted material, in the goal's own order, so the row can show each
+       *  material's image beside its owned/needed count. */
+      materials: UpgradeProgressMaterial[]
+    }
   | { kind: "Unknown" }
+
+type UpgradeProgressMaterial = {
+  upgradeId: UpgradeId
+  /** Catalog name, or the raw id while the catalog hasn't loaded. */
+  label: string
+  rarity?: Rarity
+  crafted?: boolean
+  /** `null` while the upgrade inventory hasn't loaded. */
+  owned: number | null
+  quantity: number
+}
 
 const UNKNOWN_PROGRESS: GoalProgress = { kind: "Unknown" }
 
@@ -108,6 +126,12 @@ export type GoalProgressParams = GoalAttainmentParams & {
   /** The not-yet-unlocked unit's shard inventory (`inventory-shards` chunk) — separate from
    *  `playerCharacter`/`playerMow`'s own `shards` field, which only exists once already unlocked. */
   inventoryShard: InventoryShard | undefined
+  /** Upgrade catalog, for an Upgrade goal's material names/rarities; absent falls back to the raw
+   *  id with no rarity frame. */
+  upgradesById?: ReadonlyMap<
+    UpgradeId,
+    { label: string; rarity: Rarity; crafted: boolean }
+  >
 }
 
 export function computeGoalProgress(params: GoalProgressParams): GoalProgress {
@@ -260,22 +284,36 @@ export function computeGoalProgress(params: GoalProgressParams): GoalProgress {
       }
     }
     case "Upgrade": {
-      const target = detail.config.upgrade
-      if (!target || target.targets.length === 0)
-        return { kind: "Upgrade", ratio: null }
-      if (!params.inventoryUpgrades) return { kind: "Upgrade", ratio: null }
-      const ownedById = new Map(
-        params.inventoryUpgrades.map((entry) => [entry.upgradeId, entry.amount])
-      )
-      const ratios = target.targets.map((need) =>
-        clampRatio(
-          ownedById.get(need.upgradeId as UpgradeId) ?? 0,
-          need.quantity
-        )
+      const targets = detail.config.upgrade?.targets ?? []
+      const ownedById = params.inventoryUpgrades
+        ? new Map(
+            params.inventoryUpgrades.map((entry) => [
+              entry.upgradeId,
+              entry.amount,
+            ])
+          )
+        : null
+      const materials = targets.map((need): UpgradeProgressMaterial => {
+        const upgradeId = need.upgradeId as UpgradeId
+        const upgrade = params.upgradesById?.get(upgradeId)
+        return {
+          upgradeId,
+          label: upgrade?.label ?? need.upgradeId,
+          rarity: upgrade?.rarity,
+          crafted: upgrade?.crafted,
+          owned: ownedById ? (ownedById.get(upgradeId) ?? 0) : null,
+          quantity: need.quantity,
+        }
+      })
+      if (materials.length === 0 || !ownedById)
+        return { kind: "Upgrade", ratio: null, materials }
+      const ratios = materials.map((material) =>
+        clampRatio(material.owned ?? 0, material.quantity)
       )
       return {
         kind: "Upgrade",
         ratio: ratios.reduce((sum, value) => sum + value, 0) / ratios.length,
+        materials,
       }
     }
     default:
