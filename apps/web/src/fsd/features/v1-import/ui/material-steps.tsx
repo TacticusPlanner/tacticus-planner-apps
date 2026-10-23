@@ -47,7 +47,7 @@ export function MaterialSteps({
             <li
               className="rounded-lg border bg-background p-2 text-xs text-foreground"
               data-testid="v1-import-material-step"
-              key={step.sourceGoalId ?? index}
+              key={`${step.sourceGoalId ?? ""}:${step.upgradeId ?? ""}:${index}`}
             >
               <p className="font-medium">
                 {[
