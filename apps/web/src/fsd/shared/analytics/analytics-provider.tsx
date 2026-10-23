@@ -11,6 +11,7 @@ import {
 import type { PostHog, PostHogConfig } from "posthog-js"
 
 import type { AnalyticsEvent } from "./analytics-event"
+import { sanitizeCapture, setReportedRoutePattern } from "./capture-sanitizer"
 
 // Read fresh (not cached at module scope) so tests can flip VITE_POSTHOG_PROJECT_TOKEN with
 // vi.stubEnv without needing vi.resetModules() + a dynamic re-import.
@@ -19,7 +20,8 @@ function projectToken(): string | undefined {
 }
 
 // Identified users only, no autocapture, no replay, no default pageview - every capture path in
-// this module opts in explicitly. See specs/product-analytics/spec.md.
+// this module opts in explicitly. See specs/product-analytics/spec.md. Page views are sent as
+// PostHog's own $pageview (with $pageleave on) so the built-in Web analytics dashboard works.
 //
 // opt_out_capturing_by_default only suppresses event capture - the SDK's init() still makes its
 // own /flags and remote-config requests regardless of opt-out state, which is real anonymous
@@ -31,14 +33,20 @@ function projectToken(): string | undefined {
 // features (surveys, server-toggled web vitals, etc.) are affected.
 const initOptions: Partial<PostHogConfig> = {
   api_host: import.meta.env.VITE_POSTHOG_HOST,
+  defaults: "2026-08-30",
   opt_out_capturing_by_default: true,
   autocapture: false,
   capture_pageview: false,
+  capture_pageleave: true,
   disable_session_recording: true,
   person_profiles: "identified_only",
   advanced_disable_flags: true,
   disable_external_dependency_loading: true,
+  before_send: sanitizeCapture,
 }
+
+// No $opt_in event: opting in is an identity-lifecycle detail, not product usage.
+const optInOptions = { captureEventName: false } as const
 
 type AnalyticsContextValue = {
   /** The vendor client, or null until the SDK has loaded for an identified user. */
@@ -74,8 +82,16 @@ export function AnalyticsProvider({ children }: { children: ReactNode }) {
       if (!token) return
       pendingId.current = analyticsId
       if (client) {
+        // Re-running for the user already identified and opted in (e.g. the identity effect
+        // re-firing once the SDK has loaded) would only send a redundant $identify.
+        if (
+          client.get_distinct_id() === analyticsId &&
+          !client.has_opted_out_capturing()
+        ) {
+          return
+        }
         client.identify(analyticsId)
-        client.opt_in_capturing()
+        client.opt_in_capturing(optInOptions)
         return
       }
       if (loading.current) return
@@ -86,7 +102,7 @@ export function AnalyticsProvider({ children }: { children: ReactNode }) {
           if (!id) return
           const instance = posthog.init(token, initOptions)
           instance.identify(id)
-          instance.opt_in_capturing()
+          instance.opt_in_capturing(optInOptions)
           setClient(instance)
         })
         // Blocked or failed download: capture stays off and the app carries on, silently.
@@ -132,7 +148,8 @@ export function useAnalyticsActions() {
       }
       switch (event.type) {
         case "page_view":
-          client.capture("page_view", {
+          setReportedRoutePattern(event.routePattern)
+          client.capture("$pageview", {
             route_pattern: event.routePattern,
             route_group: event.routeGroup,
             view_mode: event.viewMode,
