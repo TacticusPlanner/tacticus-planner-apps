@@ -8,7 +8,7 @@ Shows one Quest Event battle in full: its board, its enemies with level and stat
 
 ### Requirement: The battle header states the lineup rules
 
-The detail SHALL open with the battle number and tier, the deploy slots ("3 units, Nubari included"), the rarity cap for the tier and what it limits, the Lightning Victory turn count, and the battle's maximum points. The cap line SHALL name the tier's rarity and its maximum stars, rank, ability level and item level, read from `game-domain` (`abilityCapByRarity`, the progression and rank caps) and the served equipment ladder for that rarity.
+The detail SHALL open with the battle number and tier, the deploy slots ("3 units, Nubari included"), the rarity cap for the tier and what it limits, the Lightning Victory turn count, the enemy power (the served `power`, or "Enemy power not recorded" when null), and the battle's maximum points. The cap line SHALL name the tier's rarity and its maximum stars, rank, ability level and item level, read from `game-domain` (`abilityCapByRarity`, the progression and rank caps) and the served equipment ladder for that rarity.
 
 Assumptions:
 
@@ -17,7 +17,7 @@ Assumptions:
 #### Scenario: Nubari battle 4
 
 - **GIVEN** Nubari battle 4 (Uncommon, position 1, `lightningVictoryTurns` 2)
-- **THEN** the header shows "Battle 4 · Uncommon", "3 units, Nubari included", the Uncommon cap with ability level 17, "Lightning Victory in 2 turns" and "Up to 600 points"
+- **THEN** the header shows "Battle 4 · Uncommon", "3 units, Nubari included", the Uncommon cap with ability level 17, "Lightning Victory in 2 turns", "Enemy power 1,183" and "Up to 600 points"
 
 ### Requirement: The board image is shown with an unavailable state
 
