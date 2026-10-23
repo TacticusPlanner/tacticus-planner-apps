@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest"
 import userEvent from "@testing-library/user-event"
 import { battleIdSchema } from "@workspace/game-domain"
 
-import { render, screen } from "@/test/render"
+import { render, screen, within } from "@/test/render"
 
 import { RaidSchedule } from "./raid-schedule"
 
@@ -239,8 +239,35 @@ describe("RaidSchedule location emphasis", () => {
 
     const lines = screen
       .getByTestId(`raid-location-${b1}`)
-      .querySelectorAll(".truncate")
+      .querySelectorAll(".break-words")
     expect([...lines].map((line) => line.textContent)).toEqual(["B1"])
+  })
+
+  it("wraps a long localized campaign name and node label in full instead of truncating them", () => {
+    const campaignName = "Adeptus Mechanicus – Kampagnenereignis"
+    const nodeLabel = "Extremis 12B (Herausforderungsknoten)"
+    render(
+      <RaidSchedule
+        attemptsUsedByBattle={new Map([[b1, 3]])}
+        emphasis="location"
+        entries={[entry(b1, 3)]}
+        goalsById={new Map([["g1", goal]])}
+        locationsByBattleId={
+          new Map([[b1, location("B1", campaignName, nodeLabel)]])
+        }
+        resourceLabels={new Map([["upgrade1", "Ceramite"]])}
+        resourceProgress={new Map()}
+        resourceVisuals={new Map()}
+        testId="schedule"
+      />
+    )
+
+    const row = within(screen.getByTestId(`raid-location-${b1}`))
+    for (const label of [campaignName, nodeLabel]) {
+      const line = row.getByText(label)
+      expect(line).toHaveClass("break-words")
+      expect(line).not.toHaveClass("truncate")
+    }
   })
 
   it("keeps the resource name accessible (sr-only) by default and shows it in a visible tooltip on hover, while keeping progress visible underneath", async () => {
