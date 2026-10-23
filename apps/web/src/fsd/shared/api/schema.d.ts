@@ -2753,6 +2753,8 @@ export interface components {
       legendaryEventPlans: components["schemas"]["ImportPartResult"]
       legendaryEventOutcomes: components["schemas"]["IReadOnlyListOfV1LegendaryEventOutcome"]
       /** Format: uuid */
+      importProjectId: null | string
+      /** Format: uuid */
       profileId: string
       playerName: null | string
       /** Format: int32 */

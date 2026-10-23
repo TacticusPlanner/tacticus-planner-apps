@@ -217,6 +217,33 @@ describe("ImportResult — Legendary Event teams", () => {
     expect(bucket).not.toHaveTextContent("teams count")
   })
 
+  it("folds events the planner doesn't carry into one collapsed line", () => {
+    render(
+      <ImportResult
+        result={result([
+          event({
+            v1EventId: 1,
+            status: "Skipped",
+            code: "event_not_in_catalog",
+            eventId: null,
+          }),
+          event({
+            v1EventId: 2,
+            status: "Skipped",
+            code: "event_not_in_catalog",
+            eventId: null,
+          }),
+        ])}
+      />
+    )
+
+    const bucket = screen.getByTestId("v1-import-le-bucket-notImported")
+    expect(bucket).not.toHaveAttribute("open")
+    expect(bucket.querySelector("summary")).toHaveTextContent(
+      "goals.v1Import.legendaryEvents.notInPlanner count=2"
+    )
+  })
+
   it("omits empty buckets and renders no raw code", () => {
     render(
       <ImportResult

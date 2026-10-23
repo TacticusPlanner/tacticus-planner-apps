@@ -111,18 +111,16 @@
     "feedbackHint": "Si sigue ocurriendo, cuéntanoslo con el botón de Feedback."
   },
   "onboarding": {
-    "title": "Conecta tu cuenta",
-    "description": "Elige cómo quieres traer tus datos de Tacticus. Cualquiera de las dos opciones lleva alrededor de un minuto.",
     "genericError": "Algo salió mal. Inténtalo de nuevo.",
     "stepPosition": "Paso {{current}} de {{total}}",
     "back": "Atrás",
     "paths": {
       "apiKeyName": "Pegar una clave de API",
-      "apiKeyBadge": "Inicio nuevo",
+      "apiKeyBadge": "La más rápida",
       "apiKeyDescription": "Ya tienes una clave de api.tacticusgame.com, o puedes conseguir una ahora.",
       "v1Name": "Importar desde V1",
-      "v1Badge": "Más completo",
-      "v1Description": "Inicia sesión con tu cuenta del planificador antiguo para traer tu clave, objetivos y progreso."
+      "v1Badge": "Recomendado si usabas V1",
+      "v1Description": "Inicia sesión con tu cuenta del planificador antiguo. Trae tu clave de API, objetivos, equipos de Legendary Event y progreso de Onslaught y campaña."
     },
     "signUp": {
       "apiKeyLabel": "Clave de API de Tacticus",
@@ -136,7 +134,10 @@
       "continue": "Continuar",
       "materialStepsNotice_one": "{{count}} material necesita una unidad. Lo encontrarás arriba en Objetivos.",
       "materialStepsNotice_other": "{{count}} materiales necesitan una unidad. Los encontrarás arriba en Objetivos.",
-      "useApiKey": "Usar una clave de API en su lugar"
+      "useApiKey": "Usar una clave de API en su lugar",
+      "keyMissingTitle": "Tu perfil de V1 no tiene una clave de API válida",
+      "keyMissing": "Pega una para terminar la configuración. Todo lo demás se importó.",
+      "pasteApiKey": "Pegar una clave de API"
     },
     "name": {
       "label": "Nombre en el planificador",
@@ -151,7 +152,25 @@
     },
     "confirming": "Finalizando la configuración…",
     "confirmFailed": "Tu clave se guardó, pero no pudimos confirmar tu cuenta.",
-    "confirmRetry": "Reintentar"
+    "confirmRetry": "Reintentar",
+    "steps": {
+      "choose": {
+        "title": "Conecta tu cuenta",
+        "description": "Elige cómo traer tus datos de Tacticus. Cualquiera de las dos opciones tarda un minuto."
+      },
+      "key": {
+        "title": "Pega tu clave de API de Tacticus",
+        "description": "El planificador la usa para leer tu plantilla y tu progreso."
+      },
+      "import": {
+        "title": "Importar desde V1",
+        "description": "Tu contraseña de V1 se usa una vez y nunca se guarda."
+      },
+      "name": {
+        "title": "Elige tu nombre en el planificador",
+        "description": "Así aparecerás en el planificador."
+      }
+    }
   },
   "unitLookup": {
     "subtitle": "Elige un intervalo de rangos para ver las mejoras necesarias y dónde conseguirlas.",
@@ -536,7 +555,7 @@
       "menu": "Importar desde V1",
       "title": "Importar desde V1",
       "back": "Atrás",
-      "description": "Tus credenciales de V1 se usan una sola vez y nunca se guardan. Un objetivo de V1 que coincide con un objetivo de V2 existente se omite, no se reemplaza, y cada objetivo importado queda activo o en pausa según si estaba en tu planificación diaria de V1.",
+      "description": "Tus credenciales de V1 se usan una vez y nunca se guardan.",
       "username": "Usuario de V1",
       "password": "Contraseña de V1",
       "selectParts": "Elige qué importar",
@@ -659,7 +678,29 @@
           "existing_annotations_kept_other": "Se conservaron {{count}} marcas que ya estaban en el planificador.",
           "unknown_objective_mark": "Se omitió una marca en el objetivo no reconocido «{{objective}}» de {{lane}}.",
           "unknown_lane_mark": "Se omitió una marca en el carril no reconocido «{{lane}}»."
-        }
+        },
+        "notInPlanner_one": "{{count}} evento de V1 aún no está en el planificador",
+        "notInPlanner_other": "{{count}} eventos de V1 aún no están en el planificador"
+      },
+      "descriptionNote": "Los objetivos que ya tienes se omiten, no se reemplazan. Cada objetivo importado queda Activo o En pausa según tu planificación diaria de V1.",
+      "submittingNotice": "Importando tus datos de V1… puede tardar hasta un minuto.",
+      "lockedPart": "Necesario para terminar la configuración",
+      "importedAs": "Importado desde V1 como {{username}}",
+      "runAgain": "Volver a ejecutar",
+      "summary": {
+        "title": "Esto es lo que se trajo",
+        "goals_one": "{{count}} objetivo",
+        "goals_other": "{{count}} objetivos",
+        "legendaryEvents_one": "Equipos de Legendary Event para {{count}} evento",
+        "legendaryEvents_other": "Equipos de Legendary Event para {{count}} eventos",
+        "parts": {
+          "personalTacticusApiKey": "Clave de API",
+          "tacticusUserId": "ID de usuario de Tacticus",
+          "guildApiToken": "Token de API del gremio",
+          "onslaughtProgress": "Progreso de Onslaught",
+          "campaignEventProgress": "Progreso de eventos de campaña"
+        },
+        "empty": "No se trajo nada nuevo. El planificador ya tiene todo lo de tu perfil de V1."
       }
     },
     "empty": {

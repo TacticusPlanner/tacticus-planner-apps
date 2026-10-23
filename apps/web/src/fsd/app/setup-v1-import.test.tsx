@@ -223,6 +223,41 @@ describe("SetupV1Import", () => {
     expect(onCompleted).toHaveBeenCalledTimes(1)
   })
 
+  it("explains a missing key and makes pasting one the primary action", async () => {
+    const user = userEvent.setup()
+    const { onUseApiKey } = renderSetup()
+
+    onSuccessRef.current?.(fullResult(failedPart))
+
+    expect(
+      await screen.findByTestId("account-setup-v1-key-missing")
+    ).toHaveTextContent("onboarding.import.keyMissing")
+    expect(screen.queryByTestId("account-setup-v1-use-api-key")).toBeNull()
+    expect(screen.queryByTestId("account-setup-v1-continue")).toBeNull()
+    await user.click(screen.getByTestId("account-setup-v1-paste-api-key"))
+    expect(onUseApiKey).toHaveBeenCalledTimes(1)
+  })
+
+  it("reports the project the import put its goals in", () => {
+    const onImportProject = vi.fn()
+    render(
+      <SetupV1Import
+        onCompleted={vi.fn()}
+        onImportProject={onImportProject}
+        onKeyImported={vi.fn()}
+        onSuggestedDisplayName={vi.fn()}
+        onUseApiKey={vi.fn()}
+      />
+    )
+
+    onSuccessRef.current?.({
+      ...fullResult(okPart),
+      importProjectId: "project-1",
+    })
+
+    expect(onImportProject).toHaveBeenCalledWith("project-1")
+  })
+
   it("stays offering Continue even if a later rerun's key import fails", async () => {
     renderSetup()
 

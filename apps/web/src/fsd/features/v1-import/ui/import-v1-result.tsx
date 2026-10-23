@@ -14,7 +14,6 @@ import {
 } from "@workspace/ui/components/alert"
 import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
-import { ScrollArea } from "@workspace/ui/components/scroll-area"
 
 import type { ImportV1ProfileResult, V1GoalOutcome } from "@/entities/account"
 import { GoalTypeBadge, type GoalKind } from "@/entities/goal"
@@ -174,65 +173,46 @@ export function ImportResult({ result }: { result: ImportV1ProfileResult }) {
       ) : null}
 
       {!syncRequired && result.outcomes.length > 0 ? (
-        <ScrollArea className="max-h-72">
-          <div className="grid gap-3 pr-2">
-            {buckets.imported.length > 0 ? (
-              <div data-testid="v1-import-bucket-imported">
-                <p className="font-medium">
+        <div className="grid gap-3">
+          {buckets.imported.length > 0 ? (
+            // Collapsed under its count: the list is long and needs no action (only Not imported and
+            // Failed open by default).
+            <details className="group" data-testid="v1-import-bucket-imported">
+              <summary className="flex cursor-pointer items-baseline gap-2">
+                <span className="font-medium">
                   {t("goals.v1Import.report.imported")}
-                </p>
-                <p className="text-xs text-muted-foreground">
+                </span>
+                <span className="text-xs text-muted-foreground">
                   {t("goals.v1Import.report.importedCounts", {
                     goals: importedGoalCount,
                     units: importedUnitCount,
                   })}
-                </p>
-                <ul className="mt-1 grid gap-1">
-                  {buckets.imported.map((outcome, index) => (
-                    <OutcomeRow
-                      auto={isAutomaticallyAdded(outcome)}
-                      subject={subjectFor(outcome)}
-                      key={index}
-                      outcome={outcome}
-                      t={t}
-                    />
-                  ))}
-                </ul>
-              </div>
-            ) : null}
+                </span>
+              </summary>
+              <ul className="mt-1 grid gap-1">
+                {buckets.imported.map((outcome, index) => (
+                  <OutcomeRow
+                    auto={isAutomaticallyAdded(outcome)}
+                    subject={subjectFor(outcome)}
+                    key={index}
+                    outcome={outcome}
+                    t={t}
+                  />
+                ))}
+              </ul>
+            </details>
+          ) : null}
 
-            {buckets.needsNoImport.length > 0 ? (
-              <Accordion type="single" collapsible>
-                <AccordionItem value="needsNoImport">
-                  <AccordionTrigger data-testid="v1-import-bucket-needsNoImport">
-                    {t("goals.v1Import.report.needsNoImport")} (
-                    {buckets.needsNoImport.length})
-                  </AccordionTrigger>
-                  <AccordionContent>
-                    <ul className="grid gap-1">
-                      {buckets.needsNoImport.map((outcome, index) => (
-                        <OutcomeRow
-                          subject={subjectFor(outcome)}
-                          key={index}
-                          outcome={outcome}
-                          t={t}
-                        />
-                      ))}
-                    </ul>
-                  </AccordionContent>
-                </AccordionItem>
-              </Accordion>
-            ) : null}
-
-            {(["notImported", "failed"] as const).map((bucket) =>
-              buckets[bucket].length > 0 ? (
-                <div data-testid={`v1-import-bucket-${bucket}`} key={bucket}>
-                  <p className="font-medium">
-                    {t(`goals.v1Import.report.${bucket}`)} (
-                    {buckets[bucket].length})
-                  </p>
+          {buckets.needsNoImport.length > 0 ? (
+            <Accordion type="single" collapsible>
+              <AccordionItem value="needsNoImport">
+                <AccordionTrigger data-testid="v1-import-bucket-needsNoImport">
+                  {t("goals.v1Import.report.needsNoImport")} (
+                  {buckets.needsNoImport.length})
+                </AccordionTrigger>
+                <AccordionContent>
                   <ul className="grid gap-1">
-                    {buckets[bucket].map((outcome, index) => (
+                    {buckets.needsNoImport.map((outcome, index) => (
                       <OutcomeRow
                         subject={subjectFor(outcome)}
                         key={index}
@@ -241,11 +221,32 @@ export function ImportResult({ result }: { result: ImportV1ProfileResult }) {
                       />
                     ))}
                   </ul>
-                </div>
-              ) : null
-            )}
-          </div>
-        </ScrollArea>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+          ) : null}
+
+          {(["notImported", "failed"] as const).map((bucket) =>
+            buckets[bucket].length > 0 ? (
+              <div data-testid={`v1-import-bucket-${bucket}`} key={bucket}>
+                <p className="font-medium">
+                  {t(`goals.v1Import.report.${bucket}`)} (
+                  {buckets[bucket].length})
+                </p>
+                <ul className="grid gap-1">
+                  {buckets[bucket].map((outcome, index) => (
+                    <OutcomeRow
+                      subject={subjectFor(outcome)}
+                      key={index}
+                      outcome={outcome}
+                      t={t}
+                    />
+                  ))}
+                </ul>
+              </div>
+            ) : null
+          )}
+        </div>
       ) : null}
 
       {(result.legendaryEventOutcomes?.length ?? 0) > 0 ? (
