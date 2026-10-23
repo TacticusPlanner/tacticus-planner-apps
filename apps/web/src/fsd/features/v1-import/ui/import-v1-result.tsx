@@ -15,7 +15,7 @@ import {
 import { Badge } from "@workspace/ui/components/badge"
 
 import type { ImportV1ProfileResult, V1GoalOutcome } from "@/entities/account"
-import { GoalTypeBadge, type GoalKind } from "@/entities/goal"
+import { GoalTypeBadge } from "@/entities/goal"
 import { useUnitName } from "@/shared/unit-name"
 
 import {
