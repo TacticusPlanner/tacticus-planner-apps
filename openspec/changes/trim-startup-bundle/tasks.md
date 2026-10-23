@@ -22,7 +22,7 @@
 ## 4. Lazy tour runner
 
 - [x] 4.1 Split `src/fsd/shared/tour/tour-provider.tsx` into the context provider (no react-joyride runtime import) and a `React.lazy` `TourRunner` that owns `useJoyride`, rendered only when a tour is requested or a first-run auto-start is pending; keep `TourPageSteps` and `useTourPageSteps` unchanged; verify `tour-provider.test.tsx` passes with the lazy boundary (await the runner in tests).
-- [ ] 4.2 Verify `react-joyride` is absent from the entry graph (`bundle-budget.mjs` output or the bundle report) and that the general tour and one page tour (`/home`) still start and step correctly on desktop (>=768px) and mobile (<768px, same-origin iframe per `tp-manual-ui-verification`), noting the result here.
+- [x] 4.2 Verify `react-joyride` is absent from the entry graph (`bundle-budget.mjs` output or the bundle report) and that the general tour and one page tour (`/home`) still start and step correctly on desktop (>=768px) and mobile (<768px, same-origin iframe per `tp-manual-ui-verification`), noting the result here.
 
 ## 5. Sync code behind package subpaths
 
@@ -99,3 +99,17 @@ Deviations and findings:
 - 9.4 (code done, left unticked): `EntityIcon` accepts `width`/`height`. The audit found only one image whose box CSS does not fix: the mythic-wings badge (`h-4 w-auto` in `unit-tile` and `npc-level-badge`), which now passes 512×164. Every other `<img>` has a fixed `size-*`, a fixed aspect or an absolute inset box. The Lighthouse CLS check is open.
 - Open (needs the infra repo or a live environment): nothing in `tacticus-planner-infra` is required, because Azure Static Web Apps reads `staticwebapp.config.json`. Still open: the deployed-header check (8.3), the network-panel checks (3.3, 6.2) and the desktop/mobile runs (4.2, 10.3, 10.4).
 - 6.1, side effect: Routes now carry loaders, so a data router renders its first frame only after the (synchronous) loaders settle, one microtask later. In dev, React Router logs a one-time "No `HydrateFallback`" warning. One test (`dailies-layout.test.tsx`) now waits for the second router render instead of reading it synchronously.
+
+## Manual verification (2026-10-23)
+
+- **4.2** `bundle-budget.mjs`: OK. `react-joyride`, `posthog-js` and `zod` are not in the shared
+  graph. The general tour (8 desktop and 4 mobile steps) and the `/home` page tour (6 steps, desktop
+  and 420px iframe) start and step correctly.
+- After rebasing on main the budget failed: main's V1 import additions reached startup through the
+  statically imported setup route, and every route was over budget with `zod` in the shared graph.
+  The setup route is now lazy: startup is 1206 KB (was 1337 KB), `/home` 1317 KB and
+  `/library/characters` 1214 KB.
+- Still open: 1.1 / 2.3 / 3.3 / 6.2 / 8.3 / 9.4 / 10.3 / 10.4 need a built app that can sign in.
+  `vite preview` of a local production build stops at "Missing required environment variable:
+  VITE_MSAL_CLIENT_ID", since Aspire injects that only into the dev server. Staging or SWA CLI with
+  the real env is needed, plus Lighthouse. 1.3 / 1.4 are tooling and CI work.
