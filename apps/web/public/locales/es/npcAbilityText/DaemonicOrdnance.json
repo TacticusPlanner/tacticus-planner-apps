@@ -1,0 +1,41 @@
+{
+  "DaemonicOrdnance": {
+    "description": "Prende <style=\"Effect_Fire\">fuego</style> al hexágono objetivo y los dos hexágonos de atrás. Si alguno de estos hexágonos ya está en llamas, inflige <style=\"DMG_Plasma\">{[minDmg]}-{[maxDmg]} de Daño de plasma</style> <style=\"Stat_Hits\">x{[nrOfHits]}</style> a los enemigos que estén sobre él. Puede infligir <style=\"Stat_CritDamage\">{[extraCritDmg]} de Daño Crítico</style>.\n\nLa <style=\"Stat_CritChance\">Probabilidad de Crítico</style> del <style=\"MoW\"><style=\"Faction_BlackLegion\">Diablo de la Forja</style></style> para ambas habilidades aumenta un <style=\"Stat\">{[extraCritChance]} %</style> cada vez que <i>Artillería Daemónica</i> se usa durante una batalla, pero una vez que el Diablo de la Forja realiza {[nrOfHits_2]} o más impactos críticos durante su turno, no podrá realizar más impactos críticos por el resto de la batalla.\n\n<style=\"Cooldown\">Tiempo de recuperación inicial: {[initialCooldownTurns]} ronda</style>.",
+    "variables": {
+      "minDmg": [
+        18, 22, 25, 29, 32, 37, 41, 45, 49, 53, 57, 61, 66, 70, 74, 78, 82, 86,
+        90, 95, 100, 108, 124, 141, 157, 173, 190, 206, 222, 239, 255, 272, 288,
+        304, 321, 337, 354, 370, 386, 409, 442, 476, 512, 553, 627, 701, 775,
+        849, 923, 997, 1008, 1022, 1035, 1053, 1071, 1089, 1107, 1130, 1152,
+        1175, 1202, 1229, 1256, 1283, 1310
+      ],
+      "maxDmg": [
+        24, 29, 34, 38, 43, 49, 54, 60, 65, 71, 76, 82, 87, 93, 98, 104, 109,
+        115, 120, 126, 133, 144, 166, 187, 209, 231, 253, 275, 297, 318, 340,
+        362, 384, 406, 428, 450, 471, 493, 515, 546, 589, 634, 683, 738, 836,
+        935, 1033, 1132, 1231, 1330, 1344, 1362, 1380, 1404, 1428, 1452, 1476,
+        1506, 1536, 1566, 1602, 1638, 1674, 1710, 1746
+      ],
+      "extraCritDmg": [
+        18, 22, 25, 29, 32, 37, 41, 45, 49, 53, 57, 61, 66, 70, 74, 78, 82, 86,
+        90, 95, 100, 108, 124, 141, 157, 173, 190, 206, 222, 239, 255, 272, 288,
+        304, 321, 337, 354, 370, 386, 409, 442, 476, 512, 553, 627, 701, 775,
+        849, 923, 997, 1008, 1022, 1035, 1053, 1071, 1089, 1107, 1130, 1152,
+        1175, 1202, 1229, 1256, 1283, 1310
+      ],
+      "extraCritChance": [
+        15, 15, 15, 15, 15, 15, 15, 15, 17, 17, 17, 17, 17, 17, 17, 17, 17, 18,
+        18, 18, 18, 18, 18, 18, 18, 18, 19, 19, 19, 19, 19, 19, 19, 19, 19, 20,
+        20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20,
+        20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20
+      ]
+    },
+    "constants": {
+      "damageProfile": "Plasma",
+      "nrOfHits": "3",
+      "nrOfHits_2": "3",
+      "initialCooldownTurns": "1"
+    },
+    "scaled": ["minDmg", "maxDmg", "extraCritDmg"]
+  }
+}

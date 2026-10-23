@@ -1,0 +1,15 @@
+{
+  "WhisperingWeb": {
+    "description": "Lorsque <style=\"Faction_Aeldari\">Lhykhis</style> effectue une <style=\"NormalAttack\">attaque à distance normale</style> contre un ennemi, cet ennemi est affecté par la <i>Toile du Murmure</i> jusqu'à ce que Lhykhis soit vaincue ou effectue une <style=\"NormalAttack\">attaque à distance normale</style> contre une autre unité. Lorsqu'un <style=\"Character\">personnage</style> allié attaque un ennemi affecté, chaque <style=\"Stat_Hits\">coup</style> de la même attaque inflige <style=\"Stat_Damage\">+{[extraDmg]}dégâts</style> supplémentaires par rapport au coup précédent.",
+    "variables": {
+      "extraDmg": [
+        4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22,
+        23, 24, 26, 30, 34, 38, 42, 46, 50, 54, 58, 62, 66, 70, 74, 78, 82, 86,
+        90, 94, 100, 108, 116, 125, 135, 153, 171, 189, 208, 226, 244, 246, 250,
+        253, 257, 262, 266, 271, 276, 282, 287, 294, 300, 307, 314, 320
+      ]
+    },
+    "constants": {},
+    "scaled": ["extraDmg"]
+  }
+}

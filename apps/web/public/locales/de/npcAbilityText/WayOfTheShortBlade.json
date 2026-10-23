@@ -1,0 +1,24 @@
+{
+  "WayOfTheShortBlade": {
+    "description": "<style=\"NormalAttack\">Normale Fernkampfangriffe</style> anderer verbündeter <style=\"Character\">Charaktere</style> innerhalb von {[range]} Feldern gegen Gegner, die an einen verbündeten <style=\"Character\">Charakter</style> angrenzen, ignorieren <style=\"Stat_Armor\">{[armorIgnored]} Rüstung</style> und verursachen <style=\"Stat_Damage\">+{[extraDmgPct]} % Schaden</style> (ausgenommen Angriffe, die <style=\"DMG_Psychic\">Psi</style>-Schaden verursachen).\n\n<style=\"Faction_Tau\">Commander Weitsicht</style> und betroffene <style=\"Character\">Charaktere</style> des <style=\"Faction_Tau\">Sternenreichs der T’au</style>, die innerhalb von {[range]} Feldern einen Nahkampfangriff ausführen, führen sofort einen <style=\"NormalAttack\">normalen Fernkampfangriff</style> gegen dieselbe Einheit aus, selbst wenn sie an sie angrenzen.",
+    "variables": {
+      "extraDmgPct": [
+        15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 22,
+        22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 30,
+        30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
+        30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30
+      ],
+      "armorIgnored": [
+        7, 8, 10, 11, 13, 14, 16, 17, 19, 21, 22, 24, 25, 27, 29, 30, 32, 34,
+        35, 37, 39, 42, 48, 55, 61, 67, 74, 80, 87, 93, 99, 106, 112, 118, 125,
+        131, 137, 144, 150, 159, 172, 185, 199, 215, 244, 273, 301, 330, 359,
+        388, 392, 397, 403, 410, 417, 424, 431, 439, 448, 457, 467, 478, 488,
+        499, 509
+      ]
+    },
+    "constants": {
+      "range": "2"
+    },
+    "scaled": ["armorIgnored"]
+  }
+}

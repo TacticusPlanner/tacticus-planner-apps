@@ -18,11 +18,13 @@ import { cn } from "@workspace/ui/lib/utils"
 
 import {
   AbilityText,
+  rulesTextPending,
   useTraitText,
   type TraitTextEntry,
 } from "@/shared/ability-text"
 import { describeSeries, EntityIcon, LevelChart } from "@/shared/ui"
 
+import { RulesTextNote } from "../unit/rules-text-note"
 import { ladderRanks, type StatsFigure } from "./character-unit.view-model"
 import { EquipmentSlots } from "./equipment-slots"
 
@@ -249,8 +251,13 @@ export function TraitsList({ traits }: { traits: readonly string[] }) {
   const traitText = useTraitText()
   return (
     <ul className="flex flex-col gap-3" data-testid="unit-traits">
+      {traits.length > 0 && rulesTextPending(traitText) ? (
+        <li>
+          <RulesTextNote rules={traitText} data-testid="unit-traits-text" />
+        </li>
+      ) : null}
       {traits.map((trait) => {
-        const text = traitText(trait)
+        const text = traitText.text(trait)
         return (
           <li
             key={trait}

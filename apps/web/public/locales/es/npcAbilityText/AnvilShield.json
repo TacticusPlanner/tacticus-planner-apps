@@ -1,0 +1,24 @@
+{
+  "AnvilShield": {
+    "description": "<style=\"Faction_SpaceWolves\">Arjac</style> bloquea <style=\"Stat_Damage\">{[blockDmg]} de Daño</style> adicional y, cuando <style=\"Stat_Block\">bloquea</style>, cubre el hexágono del atacante con <style=\"Effect_Ice\">hielo</style>. Si <style=\"Faction_SpaceWolves\">Arjac</style> está por debajo del <style=\"Stat_Health\">{[healthPct]} % de Salud</style> o si el atacante está en un hexágono cubierto de <style=\"Effect_Ice\">hielo</style>, obtiene <style=\"Stat\">+{[blockChance]} %</style> de <style=\"Stat_Chance\">probabilidad</style> de <style=\"Stat_Block\">bloquear</style>, y si bloquea un ataque cuerpo a cuerpo, el atacante queda <style=\"Debuff_Stunned\">aturdido</style> hasta el final de su siguiente turno.",
+    "variables": {
+      "blockDmg": [
+        10, 12, 14, 16, 18, 20, 23, 25, 27, 30, 32, 34, 36, 39, 41, 43, 46, 48,
+        50, 53, 56, 60, 69, 78, 87, 96, 105, 115, 124, 133, 142, 151, 160, 169,
+        178, 187, 196, 206, 215, 227, 245, 264, 285, 307, 348, 390, 431, 472,
+        513, 554, 560, 568, 575, 585, 595, 605, 615, 628, 640, 653, 668, 683,
+        698, 713, 728
+      ],
+      "blockChance": [
+        15, 15, 15, 15, 15, 15, 15, 15, 17, 17, 17, 17, 17, 17, 17, 17, 17, 18,
+        18, 18, 18, 18, 18, 18, 18, 18, 19, 19, 19, 19, 19, 19, 19, 19, 19, 20,
+        20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20,
+        20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20
+      ]
+    },
+    "constants": {
+      "healthPct": "35"
+    },
+    "scaled": ["blockDmg"]
+  }
+}

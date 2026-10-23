@@ -1,0 +1,11 @@
+{
+  "VolummsMasterArtifice": {
+    "description": "After <style=\"Faction_LeaguesOfVotann\">Vynn</style> or friendly <style=\"Faction_LeaguesOfVotann\">E-COGs</style> have performed <style=\"Stat\">+{[nrOfRepairs]}</style> <style=\"Repairing\">repairs</style>, Vynn <style=\"Healing\">heals</style> for <style=\"Stat_Health\">{[hpToHeal]} Health</style> and can use his active ability again.",
+    "variables": {
+      "nrOfRepairs": [8, 8, 8, 8, 8, 7, 7, 7, 7, 7],
+      "hpToHeal": [5875, 6192, 6509, 6826, 7143, 7461, 7778, 8095, 8412, 8729]
+    },
+    "constants": {},
+    "scaled": []
+  }
+}

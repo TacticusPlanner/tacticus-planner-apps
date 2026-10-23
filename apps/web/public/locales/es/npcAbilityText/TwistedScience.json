@@ -1,0 +1,22 @@
+{
+  "TwistedScience": {
+    "description": "Las unidades <style=\"Healing\">curadas</style> por <style=\"Faction_Genestealers\">Hollan</style>, excepto él mismo, son afectadas por <i>Ciencia corrompida</i> hasta que son derrotadas. <style=\"Faction_Genestealers\">Hollan</style> puede curar a otras unidades no afectadas incluso si tienen la <style=\"Stat_Health\">Salud</style> completa. Las unidades afectadas obtienen inmediatamente <style=\"Stat_Health\">{[hp]} de Salud</style> y su <style=\"Stat_Health\">Salud</style> máxima aumenta la misma cantidad. Si se trata de una unidad que pertenece a un <style=\"Faction_Genestealers\">Culto Genestealer</style>, además inflige <style=\"Stat_Damage\">+{[extraDmg]} de Daño</style> mientras tenga este efecto. Las unidades afectadas no pueden obtener los efectos de <i>Ciencia corrompida</i> otra vez.",
+    "variables": {
+      "hp": [
+        30, 36, 42, 48, 54, 61, 68, 75, 82, 89, 95, 102, 109, 116, 123, 130,
+        137, 144, 151, 158, 167, 180, 207, 234, 262, 289, 316, 344, 371, 398,
+        425, 453, 480, 507, 535, 562, 589, 617, 644, 682, 736, 793, 854, 922,
+        1045, 1169, 1292, 1415, 1538, 1662, 1680, 1703, 1725, 1755, 1785, 1815,
+        1845, 1883, 1920, 1958, 2003, 2048, 2093, 2138, 2183
+      ],
+      "extraDmg": [
+        5, 6, 7, 8, 9, 10, 11, 12, 14, 15, 16, 17, 18, 19, 21, 22, 23, 24, 25,
+        26, 28, 30, 35, 39, 44, 48, 53, 57, 62, 66, 71, 75, 80, 85, 89, 94, 98,
+        103, 107, 114, 123, 132, 142, 154, 174, 195, 215, 236, 256, 277, 280,
+        284, 288, 293, 298, 303, 308, 314, 320, 326, 334, 341, 349, 356, 364
+      ]
+    },
+    "constants": {},
+    "scaled": ["hp", "extraDmg"]
+  }
+}

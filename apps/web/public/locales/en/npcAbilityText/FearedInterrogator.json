@@ -1,0 +1,21 @@
+{
+  "FearedInterrogator": {
+    "description": "Deals <style=\"Stat_Damage\">+{[extraDmg]} Damage</style> against enemies that are <style=\"Debuff_Pinned\">Suppressed</style>, <style=\"Debuff_Stunned\">Stunned</style>, or that are adjacent to another friendly <style=\"Faction_DarkAngels\">Dark Angel</style>. Scores <style=\"Stat\">{[extraHits]}</style> additional <style=\"Stat_Hits\">hits</style> if the enemy is also <style=\"Aliance_Chaos\">Chaos</style>.",
+    "variables": {
+      "extraDmg": [
+        10, 12, 14, 16, 18, 20, 23, 25, 27, 30, 32, 34, 36, 39, 41, 43, 46, 48,
+        50, 53, 56, 60, 69, 78, 87, 96, 105, 115, 124, 133, 142, 151, 160, 169,
+        178, 187, 196, 206, 215, 227, 245, 264, 285, 307, 348, 390, 431, 472,
+        513, 554, 560, 568, 575, 585, 595, 605, 615, 628, 640, 653, 668, 683,
+        698, 713, 728
+      ],
+      "extraHits": [
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+        1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+        2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2
+      ]
+    },
+    "constants": {},
+    "scaled": ["extraDmg"]
+  }
+}

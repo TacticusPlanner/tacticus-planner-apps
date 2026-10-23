@@ -1,0 +1,24 @@
+{
+  "MindControl": {
+    "description": "Cible une unité ennemie distante de {[range]} hexagones adjacente à une ou plusieurs unités alliées. Pour cette manche et la suivante, cette unité ennemie inflige <style=\"Stat_Damage\">-{[dmgReduction]} dégâts</style>, subit <style=\"Stat_Damage\">+{[extraDmgPct]} % de dégâts</style> et devient <style=\"Debuff_Taunted\">provoquée</style> par l'unité adjacente dotée du maximum de <style=\"Stat_Health\">santé</style> le plus élevé.",
+    "variables": {
+      "dmgReduction": [
+        8, 10, 11, 13, 14, 16, 18, 20, 22, 24, 25, 27, 29, 31, 33, 35, 36, 38,
+        40, 42, 44, 48, 55, 62, 70, 77, 84, 92, 99, 106, 113, 121, 128, 135,
+        143, 150, 157, 164, 172, 182, 196, 211, 228, 246, 279, 312, 344, 377,
+        410, 443, 448, 454, 460, 468, 476, 484, 492, 502, 512, 522, 534, 546,
+        558, 570, 582
+      ],
+      "extraDmgPct": [
+        10, 10, 10, 10, 10, 10, 10, 10, 12, 12, 12, 12, 12, 12, 12, 12, 12, 15,
+        15, 15, 15, 15, 15, 15, 15, 15, 17, 17, 17, 17, 17, 17, 17, 17, 17, 20,
+        20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20,
+        20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20
+      ]
+    },
+    "constants": {
+      "range": "3"
+    },
+    "scaled": ["dmgReduction"]
+  }
+}

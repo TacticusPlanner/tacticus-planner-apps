@@ -1,0 +1,10 @@
+{
+  "GuardianConstruct": {
+    "description": "Friendly <style=\"Rarity_Mythic\">Mythic</style> <style=\"Character\">characters</style> that are affected by <i>Nanoscarab Repair Protocols</i> deal <style=\"Stat_Damage\">+{[extraDmgPct]}% Damage</style>.",
+    "variables": {
+      "extraDmgPct": [10, 13, 16, 20]
+    },
+    "constants": {},
+    "scaled": ["extraDmgPct"]
+  }
+}

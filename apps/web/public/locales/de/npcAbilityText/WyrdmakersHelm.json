@@ -1,0 +1,10 @@
+{
+  "WyrdmakersHelm": {
+    "description": "Jedes Mal, wenn während <style=\"Faction_SpaceWolves\">Baldrs</style> Zug er selbst oder eine angrenzende verbündete Einheit zum ersten Mal in dieser Runde <style=\"Healing\">geheilt</style> wird, führt Baldr sofort einen <style=\"NormalAttack\">normalen Nahkampfangriff</style> aus. Diese Angriffe verursachen <style=\"Stat_Damage\">+{[extraDmg]} Schaden</style> und fügen dem Feld des Ziels <style=\"Effect_Ice\">Eis</style> hinzu.",
+    "variables": {
+      "extraDmg": [490, 516, 543, 569, 596, 622, 649, 675, 702, 728]
+    },
+    "constants": {},
+    "scaled": []
+  }
+}

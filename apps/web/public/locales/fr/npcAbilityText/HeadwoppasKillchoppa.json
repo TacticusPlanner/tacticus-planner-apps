@@ -1,0 +1,10 @@
+{
+  "HeadwoppasKillchoppa": {
+    "description": "<style=\"Faction_Orks\">Boss Gulgortz</style> et tous les <style=\"Faction_Orks\">Boyz orks</style> alliés infligent <style=\"Stat_Damage\">+{[extraDmg]} dégâts</style> avec des attaque au corps à corps pour chaque unité ennemie vaincue par Boss Gulgortz au cours de ce combat.",
+    "variables": {
+      "extraDmg": [195, 206, 216, 227, 237, 248, 258, 269, 279, 290]
+    },
+    "constants": {},
+    "scaled": []
+  }
+}

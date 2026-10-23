@@ -1,0 +1,17 @@
+{
+  "BeaconOfRage": {
+    "description": "<style=\"Faction_WorldEaters\">Azkor</style> verursacht <style=\"Stat_Damage\">+{[extraDmg]} Schaden</style> für jeden Angriff, den er im Kampf erlitten hat (bis zu <style=\"stat\">{[nrOfAttacks]}-mal</style>). Wenn <style=\"Faction_WorldEaters\">Azkor</style> einen Gegner in diesem Kampf besiegt, werden <style=\"stat\">50 %</style> des Extraschadens von <i>Leuchtfeuer der Wut</i> zum Nahkampfschaden angrenzender verbündeter <style=\"Aliance_Chaos\">Chaos</style>-Einheiten hinzuaddiert.",
+    "variables": {
+      "extraDmg": [
+        1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30,
+        32, 34, 36, 38, 40, 43, 46, 50, 55, 60, 66, 72, 78, 84, 90, 96, 102,
+        110, 118, 124, 134, 144, 154, 166, 190, 212, 234, 256, 278, 300, 301,
+        302, 303, 304, 305, 306, 307, 308, 309, 310, 311, 312, 313, 314, 315
+      ]
+    },
+    "constants": {
+      "nrOfAttacks": "8"
+    },
+    "scaled": []
+  }
+}

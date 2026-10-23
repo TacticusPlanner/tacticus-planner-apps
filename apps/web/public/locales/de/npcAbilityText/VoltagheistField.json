@@ -1,0 +1,11 @@
+{
+  "VoltagheistField": {
+    "description": "Wenn die <style=\"Stat_Health\">Lebenspunkte</style> dieser Einheit wiederhergestellt werden, wird die wiederhergestellte Menge um <style=\"Stat\">{[healthPct]} %</style> reduziert. Die Einheit erzielt anschließend bis zum Ende ihres Zugs <style=\"Stat_Hits\">+{[extraHit]} Treffer</style> mit <style=\"NormalAttack\">normalen Angriffen</style>.",
+    "variables": {},
+    "constants": {
+      "healthPct": "50",
+      "extraHit": "1"
+    },
+    "scaled": []
+  }
+}

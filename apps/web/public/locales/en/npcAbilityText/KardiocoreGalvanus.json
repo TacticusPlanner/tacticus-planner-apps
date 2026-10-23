@@ -1,0 +1,10 @@
+{
+  "KardiocoreGalvanus": {
+    "description": "The relic bearer deals <style=\"Stat_CritDamage\">+{[extraCritDmg]} Crit Damage</style> for each friendly adjacent <style=\"Mechanical\">Mechanical</style> unit.",
+    "variables": {
+      "extraCritDmg": [295, 311, 327, 343, 359, 375, 391, 406, 422, 438]
+    },
+    "constants": {},
+    "scaled": []
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "ScarabSummon": {
+    "description": "Invoque une autre <style=\"Faction_Necrons\">Nuée de Scarabées</style> dans un hexagone adjacent libre, qui prend alors son tour immédiatement.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

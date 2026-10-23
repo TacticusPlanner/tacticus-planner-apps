@@ -1,0 +1,41 @@
+{
+  "NovaShield": {
+    "description": "El <style=\"Faction_Tau\">Cataclismo</style> obtiene un <style=\"Buff_Shield\">escudo</style> con <style=\"Stat_Health\">{[shieldHp]} de Salud</style> y recibe un <style=\"Stat_Chance\">+{[blockChance]} % de probabilidad de bloquear</style> por {[nrOfRounds]} ronda. Luego marca un hexágono del campo de batalla y todos los hexágonos adyacentes al él. Las <style=\"Tile_Trench\">Trincheras</style> no pueden ser marcadas. Al inicio de su siguiente turno, el Cataclismo inflige <style=\"DMG_Particle\">{[minDmg]}-{[maxDmg]} de Daño de partículas</style> <style=\"Stat_Hits\">x{[nrOfHits]}</style> a todos los enemigos sobre los hexágonos marcados.",
+    "variables": {
+      "shieldHp": [
+        100, 120, 140, 160, 180, 203, 226, 249, 272, 295, 318, 341, 364, 387,
+        410, 433, 456, 479, 502, 525, 556, 599, 690, 781, 872, 963, 1054, 1145,
+        1236, 1327, 1418, 1509, 1600, 1691, 1782, 1873, 1964, 2055, 2146, 2274,
+        2454, 2643, 2847, 3073, 3484, 3895, 4306, 4717, 5128, 5539, 5992, 6186,
+        6383, 6611, 6843, 7079, 7319, 7593, 7872, 8156, 8477, 8804, 9137, 9476,
+        9821
+      ],
+      "blockChance": [
+        10, 10, 10, 10, 10, 10, 10, 10, 20, 20, 20, 20, 20, 20, 20, 20, 20, 35,
+        35, 35, 35, 35, 35, 35, 35, 35, 50, 50, 50, 50, 50, 50, 50, 50, 50, 70,
+        70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70,
+        70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70
+      ],
+      "minDmg": [
+        48, 58, 67, 77, 86, 97, 108, 120, 131, 142, 153, 164, 175, 186, 197,
+        208, 219, 230, 241, 252, 267, 288, 331, 375, 419, 462, 506, 550, 593,
+        637, 681, 724, 768, 812, 855, 899, 943, 986, 1030, 1092, 1178, 1269,
+        1367, 1475, 1672, 1870, 2067, 2264, 2461, 2659, 2876, 2969, 3064, 3173,
+        3284, 3398, 3513, 3645, 3779, 3915, 4069, 4226, 4386, 4549, 4714
+      ],
+      "maxDmg": [
+        60, 72, 84, 96, 108, 122, 136, 149, 163, 177, 191, 205, 218, 232, 246,
+        260, 274, 287, 301, 315, 334, 359, 414, 469, 523, 578, 632, 687, 742,
+        796, 851, 905, 960, 1015, 1069, 1124, 1178, 1233, 1288, 1364, 1472,
+        1586, 1708, 1844, 2090, 2337, 2584, 2830, 3077, 3324, 3595, 3711, 3830,
+        3966, 4106, 4247, 4391, 4556, 4723, 4894, 5086, 5283, 5482, 5686, 5893
+      ]
+    },
+    "constants": {
+      "nrOfRounds": "1",
+      "damageProfile": "Particle",
+      "nrOfHits": "6"
+    },
+    "scaled": ["shieldHp", "minDmg", "maxDmg"]
+  }
+}

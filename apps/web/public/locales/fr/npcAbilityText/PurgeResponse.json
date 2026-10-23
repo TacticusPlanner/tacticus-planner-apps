@@ -1,0 +1,8 @@
+{
+  "PurgeResponse": {
+    "description": "À la fin de son tour, si le <style=\"Faction_LeaguesOfVotann\">Chaudronnier des Cognats de Fer</style> est adjacent à un <style=\"Character\">personnage</style> des <style=\"Faction_LeaguesOfVotann\">Ligues de Votann</style> allié, il passe en mode <style=\"Buff_Overwatching\">Sentinelle</style>, même s'il a effectué une attaque pendant son tour. En mode <style=\"Buff_Overwatching\">Sentinelle</style>, les attaques du Chaudronnier des Cognats de Fer ignorent les réductions de coups.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

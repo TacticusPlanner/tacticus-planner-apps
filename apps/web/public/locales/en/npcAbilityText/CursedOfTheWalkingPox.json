@@ -1,0 +1,8 @@
+{
+  "CursedOfTheWalkingPox": {
+    "description": "Each time this unit kills an enemy non-<style=\"Mechanical\">Mechanical</style> unit, a <style=\"Summon\"><style=\"Faction_DeathGuard\">Poxwalker</style></style> is summoned in that hex.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

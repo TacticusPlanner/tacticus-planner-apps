@@ -1,0 +1,12 @@
+{
+  "RelicOfLostCadia": {
+    "description": "Les <style=\"Summon\">invocations</style> <style=\"Aliance_Imperial\">impériales</style> alliées environnantes ont <style=\"FinalJustice\">Vengeance finale</style>. En cas d'élimination du porteur de relique, invoque un <style=\"Summon\"><style=\"Faction_AstraMilitarum\">Garde Impérial Cadien</style></style> sur son hexagone avec <style=\"Stat_Health\">{[summonHp]} santé</style>, <style=\"Stat_Damage\">{[summonDmg]} dégâts</style> et <style=\"Stat_Armor\">{[summonArmor]} armure</style>.",
+    "variables": {
+      "summonHp": [3915, 4126, 4338, 4549, 4760, 4972, 5183, 5394, 5606, 5817],
+      "summonDmg": [2350, 2477, 2604, 2731, 2857, 2984, 3111, 3238, 3365, 3492],
+      "summonArmor": [785, 827, 870, 912, 954, 997, 1039, 1082, 1124, 1166]
+    },
+    "constants": {},
+    "scaled": []
+  }
+}

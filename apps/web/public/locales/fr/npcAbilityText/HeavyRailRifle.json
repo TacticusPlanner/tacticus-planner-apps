@@ -1,0 +1,38 @@
+{
+  "HeavyRailRifle": {
+    "description": "Cible un ennemi et tire au fusil-rail lourd au début du prochain tour de <style=\"Faction_Tau\">Tson'ji</style>. Si la cible est une unité, inflige <style=\"Stat_Hits\">{[nrOfHits]}x</style> <style=\"DMG_Piercing\">{[minDmg]}-{[maxDmg]} dégâts perforants</style>. Ces dégâts sont réduits de <style=\"STAT\">{[dmgPctReduction]} %</style> pour chaque hexagone traversé par la cible pendant son dernier tour, jusqu'à un minimum de 0 dégât. Tout dégât infligé aux <style=\"Vehicle\">véhicules</style> et aux <style=\"Big_Target\">cibles de grande taille</style> est augmenté de <style=\"STAT\">{[extraDmgPct]} %</style> chacun. Si les cibles sont des <style=\"MoW\">machines de guerre</style>, prolonge le <style=\"Cooldown\">rechargement</style> de la capacité secondaire de la cible de {[cooldownIncrease]} manche et a <style=\"STAT\">{[chance]} %</style> de chances de prolonger aussi le <style=\"Cooldown\">rechargement</style> de sa capacité primaire de {[cooldownIncrease_2]} manche.\n\n<style=\"Cooldown\">Rechargement initial : {[initialCooldownTurns]} manche</style>. \nCoût : <style=\"Resource_MachinesOfWarAmmo\">{[munitionsCost]} munitions</style>.\n\n{[S/AbilityDamageExplanation]}",
+    "variables": {
+      "minDmg": [
+        50, 60, 70, 80, 90, 102, 113, 125, 136, 148, 159, 171, 182, 194, 205,
+        217, 228, 240, 251, 263, 278, 300, 345, 391, 436, 482, 527, 573, 618,
+        664, 709, 755, 800, 846, 891, 937, 982, 1028, 1073, 1137, 1227, 1322,
+        1424, 1537, 1742, 1948, 2153, 2359, 2564, 2770, 2800, 2838, 2875, 2925,
+        2975, 3025, 3075, 3138, 3200, 3263, 3338, 3413, 3488, 3563, 3638
+      ],
+      "maxDmg": [
+        60, 72, 84, 96, 108, 122, 136, 149, 163, 177, 191, 205, 218, 232, 246,
+        260, 274, 287, 301, 315, 334, 359, 414, 469, 523, 578, 632, 687, 742,
+        796, 851, 905, 960, 1015, 1069, 1124, 1178, 1233, 1288, 1364, 1472,
+        1586, 1708, 1844, 2090, 2337, 2584, 2830, 3077, 3324, 3360, 3405, 3450,
+        3510, 3570, 3630, 3690, 3765, 3840, 3915, 4005, 4095, 4185, 4275, 4365
+      ],
+      "chance": [
+        25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42,
+        43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60,
+        61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 75, 75, 75, 75, 75,
+        75, 75, 75, 75, 75, 75, 75, 75, 75, 75, 75
+      ]
+    },
+    "constants": {
+      "damageProfile": "Piercing",
+      "nrOfHits": "2",
+      "cooldownIncrease": "1",
+      "cooldownIncrease_2": "1",
+      "dmgPctReduction": "30",
+      "extraDmgPct": "75",
+      "initialCooldownTurns": "1",
+      "munitionsCost": "1"
+    },
+    "scaled": ["minDmg", "maxDmg"]
+  }
+}

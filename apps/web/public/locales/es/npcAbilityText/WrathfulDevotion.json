@@ -1,0 +1,16 @@
+{
+  "WrathfulDevotion": {
+    "description": "Cuando <style=\"Faction_WorldEaters\">Wrask</style> llega con un <style=\"Teleport_Strike_short\">Ataque Profundo</style> o derrota a un enemigo con ataques <style=\"Stat_Melee\">cuerpo a cuerpo</style>, él y las unidades de <style=\"Aliance_Chaos\">Caos</style> adyacentes aliadas obtienen un <style=\"Buff_Shield\">Escudo</style> con <style=\"Stat_Health\">{[shieldHp]} de Salud</style> por 1 ronda.",
+    "variables": {
+      "shieldHp": [
+        40, 48, 56, 64, 72, 81, 90, 100, 109, 118, 127, 136, 146, 155, 164, 173,
+        182, 192, 201, 210, 222, 240, 276, 312, 349, 385, 422, 458, 494, 531,
+        567, 604, 640, 676, 713, 749, 786, 822, 858, 910, 982, 1057, 1139, 1229,
+        1394, 1558, 1722, 1887, 2051, 2216, 2240, 2270, 2300, 2340, 2380, 2420,
+        2460, 2510, 2560, 2610, 2670, 2730, 2790, 2850, 2910
+      ]
+    },
+    "constants": {},
+    "scaled": ["shieldHp"]
+  }
+}

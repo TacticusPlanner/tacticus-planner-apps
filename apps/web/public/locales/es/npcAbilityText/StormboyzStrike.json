@@ -1,0 +1,10 @@
+{
+  "StormboyzStrike": {
+    "description": "En su primer turno, esta unidad vuela a cualquier hexágono libre en lugar de empezar en su punto de aparición designado. Hay un {[chance]} % de probabilidad de que pierda su hexágono designado y termine en un hexágono adyacente al azar. Esta entrada voladora cuenta como un movimiento de <i>A toda velocidad</i>.",
+    "variables": {},
+    "constants": {
+      "chance": "20"
+    },
+    "scaled": []
+  }
+}

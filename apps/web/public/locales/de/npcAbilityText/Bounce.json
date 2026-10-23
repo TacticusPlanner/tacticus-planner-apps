@@ -1,0 +1,26 @@
+{
+  "Bounce": {
+    "description": "Wird nach einem erlittenen Angriff mit einer Chance von <style=\"STAT\">{[chance]} %</style> auf eine neue Position in bis zu 2 Feldern Reichweite <style=\"Displacement\">geschleudert</style>. Ist das Feld blockiert, verursacht der <style=\"Faction_Orks\">Riesige Squig</style> <style=\"DMG_Physical\">{[minDmg]}–{[maxDmg]} Physischen Schaden</style> an der Einheit auf diesem Feld und <style=\"Displacement\">stößt</style> sie auf ein beliebiges angrenzendes freies Feld. Diese Fähigkeit kann auch dann ausgelöst werden, wenn der <style=\"Faction_Orks\">Riesige Squig</style> durch einen Angriff getötet wird – es sei denn, er erleidet einen <style=\"Overkill\">Overkill</style>.",
+    "variables": {
+      "minDmg": [
+        25, 30, 35, 40, 45, 51, 57, 62, 68, 74, 80, 85, 91, 97, 103, 108, 114,
+        120, 126, 131, 139, 150, 173, 195, 218, 241, 264, 286, 309, 332, 355,
+        377, 400, 423, 446, 468, 491, 514, 537, 569, 614, 661, 712, 768, 871,
+        974, 1077, 1179, 1282, 1385, 1400, 1419, 1438, 1463, 1488, 1513, 1538,
+        1569, 1600, 1631, 1669, 1706, 1744, 1781, 1819
+      ],
+      "maxDmg": [
+        40, 48, 56, 64, 72, 81, 90, 100, 109, 118, 127, 136, 146, 155, 164, 173,
+        182, 192, 201, 210, 222, 240, 276, 312, 349, 385, 422, 458, 494, 531,
+        567, 604, 640, 676, 713, 749, 786, 822, 858, 910, 982, 1057, 1139, 1229,
+        1394, 1558, 1722, 1887, 2051, 2216, 2240, 2270, 2300, 2340, 2380, 2420,
+        2460, 2510, 2560, 2610, 2670, 2730, 2790, 2850, 2910
+      ]
+    },
+    "constants": {
+      "chance": "60",
+      "damageProfile": "Physical"
+    },
+    "scaled": ["minDmg", "maxDmg"]
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "HungeringSwarm": {
+    "description": "Lorsque cette unité attaque au corps à corps, elle inflige <style=\"Stat_Hits\">+{[extraHit]} coups</style> pour chaque Hormagaunt et Nuée de Voraces alliés adjacents à la cible.",
+    "variables": {},
+    "constants": {
+      "extraHit": "1"
+    },
+    "scaled": []
+  }
+}

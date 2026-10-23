@@ -1,0 +1,8 @@
+{
+  "DevoutPush": {
+    "description": "Executes a <style=\"NormalAttack\">normal melee attack</style> on a single target, then gets to move 1 additional hex.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

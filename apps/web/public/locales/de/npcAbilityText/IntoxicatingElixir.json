@@ -1,0 +1,14 @@
+{
+  "IntoxicatingElixir": {
+    "description": "Der Reliktträger verursacht <style=\"Stat_CritDamage\">+{[extraCritDmg]} Kritischen Schaden</style> pro Einheit in Reichweite ({[range]}), die entweder <style=\"Debuff_Pinned\">Unterdrückt</style>, <style=\"Debuff_Stunned\">Betäubt</style> oder <style=\"Debuff_Taunted\">Verspottet</style> ist bzw. unter <style=\"ThrillSeekers\">Adrenalin</style> steht – bis zu einem Maximum von {[nrOfUnits]}-mal. Dieser Bonus wird verdoppelt, wenn der Reliktträger <style=\"Stat_Health\">{[healthPct]} % Lebenspunkte</style> oder weniger hat.",
+    "variables": {
+      "extraCritDmg": [295, 311, 327, 343, 359, 375, 391, 406, 422, 438]
+    },
+    "constants": {
+      "range": "2",
+      "nrOfUnits": "6",
+      "healthPct": "50"
+    },
+    "scaled": []
+  }
+}

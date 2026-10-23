@@ -1,0 +1,10 @@
+{
+  "BookOfFate": {
+    "description": "Après une <style=\"NormalAttack\">attaque normale</style> du porteur de relique, une <style=\"Summon\">invocation</style> alliée adjacente effectue une attaque normale contre un ennemi à portée, si possible. Si cette invocation est un <style=\"Daemon\">démon</style>, il inflige <style=\"Stat_Damage\">+{[extraDmg]} dégâts</style> lors de cette attaque.",
+    "variables": {
+      "extraDmg": [880, 928, 975, 1023, 1070, 1118, 1165, 1213, 1260, 1308]
+    },
+    "constants": {},
+    "scaled": []
+  }
+}

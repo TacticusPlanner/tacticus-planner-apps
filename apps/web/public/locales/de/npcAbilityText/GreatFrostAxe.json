@@ -1,0 +1,26 @@
+{
+  "GreatFrostAxe": {
+    "description": "Verursacht <style=\"Stat_Hits\">{[nrOfHits]}x</style> <style=\"DMG_Piercing\">{[minDmg]}–{[maxDmg]} Durchschlagschaden</style> an einem angrenzenden Gegner und bedeckt das Feld, auf dem der Gegner steht, und alle angrenzenden Felder mit <style=\"Effect_Ice\">Eis</style>. Bei diesem Angriff wird der <style=\"Stat_CritDamage\">Kritische Schadensbonus</style> des <style=\"Effect_Ice\">Eis</style>-Effekts bereits angewendet.",
+    "variables": {
+      "minDmg": [
+        20, 24, 28, 32, 36, 41, 45, 50, 54, 59, 64, 68, 73, 77, 82, 87, 91, 96,
+        100, 105, 111, 120, 138, 156, 174, 193, 211, 229, 247, 265, 284, 302,
+        320, 338, 356, 375, 393, 411, 429, 455, 491, 529, 569, 615, 697, 779,
+        861, 943, 1026, 1109, 1120, 1135, 1150, 1170, 1190, 1210, 1230, 1255,
+        1280, 1305, 1335, 1365, 1395, 1425, 1455
+      ],
+      "maxDmg": [
+        25, 30, 35, 40, 45, 51, 57, 62, 68, 74, 80, 85, 91, 97, 103, 108, 114,
+        120, 126, 131, 139, 150, 173, 195, 218, 241, 264, 286, 309, 332, 355,
+        377, 400, 423, 446, 468, 491, 514, 537, 569, 614, 661, 712, 768, 871,
+        974, 1077, 1179, 1282, 1385, 1400, 1419, 1438, 1463, 1488, 1513, 1538,
+        1569, 1600, 1631, 1669, 1706, 1744, 1781, 1819
+      ]
+    },
+    "constants": {
+      "damageProfile": "Piercing",
+      "nrOfHits": "4"
+    },
+    "scaled": ["minDmg", "maxDmg"]
+  }
+}

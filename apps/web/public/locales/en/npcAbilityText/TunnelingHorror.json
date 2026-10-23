@@ -1,0 +1,8 @@
+{
+  "TunnelingHorror": {
+    "description": "This unit may use tunnelling to move. It is then removed from the battlefield and emerges in its chosen hex at the start of its next turn, <style=\"Displacement\">pushing</style> any unit in that hex aside. It is then able to immediately attack any adjacent enemy in <style=\"Stat_Melee\">melee</style>.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

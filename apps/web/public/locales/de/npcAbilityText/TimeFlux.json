@@ -1,0 +1,30 @@
+{
+  "TimeFlux": {
+    "description": "Zu Beginn seines Zugs <style=\"Regenerate\">regeneriert</style> <style=\"Faction_ThousandSons\">Toth</style> <style=\"Stat_Health\">{[hpToHeal]} Lebenspunkte</style>, plus den <style=\"Stat_Damage\">Schadenswert</style> des letzten <style=\"Stat_Hits\">Treffers</style>, den er im vorherigen gegnerischen Zug erlitten hat. Die regenerierte Gesamtmenge kann <style=\"Stat_Health\">{[maxHpToHeal]} Lebenspunkte</style> nicht übersteigen.\n\nWenn sich <style=\"Faction_ThousandSons\">Toth</style> bewegt, hinterlässt er einen Zeitgeist auf dem Feld, das er verlassen hat. Der Zeitgeist verschwindet, wenn das Feld von einer anderen Einheit besetzt oder das Terrain unpassierbar wird (z. B. durch <style=\"Tile_Floe\">Gebrochenes Eis</style>). Stirbt <style=\"Faction_ThousandSons\">Toth</style> das erste Mal in einem Kampf und befindet sich sein Zeitgeist auf dem Schlachtfeld, wird er mit <style=\"Stat_Health\">{[hp]} Lebenspunkten</style> an dessen Position wiederbelebt. Dieser Effekt tritt auch dann ein, wenn <style=\"Faction_ThousandSons\">Toth</style> einen <style=\"Overkill\">Overkill</style> erleidet.",
+    "variables": {
+      "hpToHeal": [
+        12, 14, 17, 19, 22, 24, 27, 30, 33, 35, 38, 41, 44, 46, 49, 52, 55, 57,
+        60, 63, 67, 72, 83, 94, 105, 116, 126, 137, 148, 159, 170, 181, 192,
+        203, 214, 225, 236, 247, 258, 273, 294, 317, 342, 369, 418, 467, 517,
+        566, 615, 665, 672, 681, 690, 702, 714, 726, 738, 753, 768, 783, 801,
+        819, 837, 855, 873
+      ],
+      "hp": [
+        33, 40, 46, 53, 59, 67, 75, 82, 90, 97, 105, 113, 120, 128, 135, 143,
+        150, 158, 166, 173, 183, 198, 228, 258, 288, 318, 348, 378, 408, 438,
+        468, 498, 528, 558, 588, 618, 648, 678, 708, 750, 810, 872, 940, 1014,
+        1150, 1285, 1421, 1557, 1692, 1828, 1848, 1873, 1898, 1931, 1964, 1997,
+        2030, 2071, 2112, 2153, 2203, 2252, 2302, 2351, 2401
+      ],
+      "maxHpToHeal": [
+        60, 72, 84, 96, 108, 122, 136, 149, 163, 177, 191, 205, 218, 232, 246,
+        260, 274, 287, 301, 315, 334, 359, 414, 469, 523, 578, 632, 687, 742,
+        796, 851, 905, 960, 1015, 1069, 1124, 1178, 1233, 1288, 1364, 1472,
+        1586, 1708, 1844, 2090, 2337, 2584, 2830, 3077, 3324, 3360, 3405, 3450,
+        3510, 3570, 3630, 3690, 3765, 3840, 3915, 4005, 4095, 4185, 4275, 4365
+      ]
+    },
+    "constants": {},
+    "scaled": ["hpToHeal", "hp", "maxHpToHeal"]
+  }
+}

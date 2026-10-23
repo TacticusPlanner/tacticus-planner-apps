@@ -1,0 +1,8 @@
+{
+  "PowerUp_Resurrect": {
+    "description": "When picked up by a friendly unit, resurrects a chosen <style=\"Character\">character</style> that has been defeated. The resurrected character spawns in a random free hex and can immediately take a turn. \n\nIf there is no eligible character,  it adds 1 Reinforcement point instead.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

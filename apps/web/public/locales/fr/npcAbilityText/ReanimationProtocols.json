@@ -1,0 +1,11 @@
+{
+  "ReanimationProtocols": {
+    "description": "S'il y a au moins une autre unité alliée du même type sur le champ de bataille lorsque cette unité est vaincue, elle a <style=\"Stat_Chance\">{[chance]} % de chances</style> d'être réanimée immédiatement avec <style=\"Stat\">{[hpPct]} %</style> de sa santé initiale dans le même hexagone ou un hexagone adjacent aléatoire. Ne s'applique pas en cas <style=\"Overkill\">d'Extermination</style>.",
+    "variables": {},
+    "constants": {
+      "chance": "35",
+      "hpPct": "25"
+    },
+    "scaled": []
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "PowerVomit": {
+    "description": "Afecta a 3 hexágonos en línea recta en una de 6 direcciones. Inflige <style=\"Stat_Hits\">{[nrOfHits]}x</style> <style={[DamageProfileTypeStyle]}>{[minDmg]}-{[maxDmg]} {[DamageProfileType]}</style> a todas las unidades en los hexágonos afectados. Inflige <style=\"Stat_Damage\">+{[extraDmg_2]} de Daño</style> a las unidades enemigas por cada <i>carga de ¡Waaagh!</i> que tenga <style=\"Faction_Orks\">Zapspitta</style>. Durante <style=\"STAT\">{[nrOfRounds]} rondas</style>, todo el <style=\"DMG_Psychic\">Daño psíquico</style> recibido e infligido por las unidades afectadas aumenta en <style=\"Stat_Damage\">+{[extraDmg]} de Daño</style>.\n\n{[S/AbilityDamageExplanation]}",
+    "variables": {
+      "minDmg": [
+        12, 14, 17, 19, 22, 24, 27, 30, 33, 35, 38, 41, 44, 46, 49, 52, 55, 57,
+        60, 63, 67, 72, 83, 94, 105, 116, 126, 137, 148, 159, 170, 181, 192,
+        203, 214, 225, 236, 247, 258, 273, 294, 317, 342, 369, 418, 467, 517,
+        566, 615, 665, 672, 681, 690, 702, 714, 726, 738, 753, 768, 783, 801,
+        819, 837, 855, 873
+      ],
+      "maxDmg": [
+        18, 22, 25, 29, 32, 37, 41, 45, 49, 53, 57, 61, 66, 70, 74, 78, 82, 86,
+        90, 95, 100, 108, 124, 141, 157, 173, 190, 206, 222, 239, 255, 272, 288,
+        304, 321, 337, 354, 370, 386, 409, 442, 476, 512, 553, 627, 701, 775,
+        849, 923, 997, 1008, 1022, 1035, 1053, 1071, 1089, 1107, 1130, 1152,
+        1175, 1202, 1229, 1256, 1283, 1310
+      ],
+      "nrOfRounds": [
+        2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3,
+        3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
+        4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4
+      ],
+      "extraDmg": [
+        10, 12, 14, 16, 18, 20, 23, 25, 27, 30, 32, 34, 36, 39, 41, 43, 46, 48,
+        50, 53, 56, 60, 69, 78, 87, 96, 105, 115, 124, 133, 142, 151, 160, 169,
+        178, 187, 196, 206, 215, 227, 245, 264, 285, 307, 348, 390, 431, 472,
+        513, 554, 560, 568, 575, 585, 595, 605, 615, 628, 640, 653, 668, 683,
+        698, 713, 728
+      ],
+      "extraDmg_2": [
+        2, 2, 3, 3, 4, 4, 5, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10, 11, 11, 12,
+        14, 16, 17, 19, 21, 23, 25, 27, 28, 30, 32, 34, 36, 37, 39, 41, 43, 45,
+        49, 53, 57, 61, 70, 78, 86, 94, 103, 112, 113, 114, 115, 117, 119, 121,
+        123, 126, 128, 131, 134, 137, 140, 143, 146
+      ]
+    },
+    "constants": {
+      "nrOfHits": "3",
+      "damageProfile": "Psychic"
+    },
+    "scaled": ["minDmg", "maxDmg", "extraDmg", "extraDmg_2"]
+  }
+}

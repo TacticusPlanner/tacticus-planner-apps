@@ -1,0 +1,10 @@
+{
+  "Conceal": {
+    "description": "<style=\"Faction_Aeldari\">Aeldari</style>-Einheiten in bis zu {[range]} Feldern Entfernung ignorieren die Eigenschaft <style=\"Battle_Fatigue\">Kampfmüdigkeit</style> (falls vorhanden) und gelten als <style=\"Camouflage\">getarnt</style>.",
+    "variables": {},
+    "constants": {
+      "range": "2"
+    },
+    "scaled": []
+  }
+}

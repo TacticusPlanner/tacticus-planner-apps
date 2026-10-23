@@ -1,0 +1,12 @@
+{
+  "BookOfFate": {
+    "description": "After the relic bearer performs a <style=\"NormalAttack\">normal attack</style>, a friendly adjacent <style=\"Summon\">Summon</style> performs a normal attack against an enemy in range, if possible. If the summon is a <style=\"Daemon\">Daemon</style>, it deals <style=\"Stat_Damage\">+{[extraDmg]} Damage</style> with this attack.",
+    "variables": {
+      "extraDmg": [880, 928, 975, 1023, 1070, 1118, 1165, 1213, 1260, 1308]
+    },
+    "constants": {
+      "affectedUnitId": "thousSmnDaemonPrince"
+    },
+    "scaled": []
+  }
+}

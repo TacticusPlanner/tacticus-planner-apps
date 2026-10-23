@@ -1,0 +1,8 @@
+{
+  "BattleFocus": {
+    "description": "Nachdem diese Einheit angegriffen wurde oder selbst angegriffen hat, bewegt sie sich <style=\"Stat_Movement\">1</style> Feld weit in eine Richtung, die so weit wie möglich von Gegnern entfernt ist.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

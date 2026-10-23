@@ -1,0 +1,27 @@
+{
+  "GrapnelLauncher": {
+    "description": "Fija como objetivo a una unidad enemiga dentro de {[range]} hexágonos de distancia y le inflige <style=\"DMG_Physical\">{[minDmg]}-{[maxDmg]} de Daño físico</style> <style=\"Stat_Hits\">x{[nrOfHits]}</style>. Luego es <style=\"Displacement\">arrastrada</style> 1 hexágono en dirección a <style=\"Faction_SpaceWolves\">Tjark</style> de ser posible si <style=\"Faction_SpaceWolves\">Tjark</style> no se encuentra en una ubicación adyacente al objetivo, y puede ser arrastrada a través de cualquier elevación, pero no a través de terreno intransitable. <style=\"Faction_SpaceWolves\">Tjark</style> luego se desplaza y ocupa el hexágono en el que estaba el objetivo en un principio en caso de estar libre, o un hexágono adyacente que esté desocupado en caso contrario. Si no quedan hexágonos libres, <style=\"Faction_SpaceWolves\">Tjark</style> no se desplaza.",
+    "variables": {
+      "minDmg": [
+        27, 32, 38, 43, 49, 55, 61, 67, 73, 80, 86, 92, 98, 104, 111, 117, 123,
+        129, 136, 142, 150, 162, 186, 211, 235, 260, 285, 309, 334, 358, 383,
+        407, 432, 457, 481, 506, 530, 555, 579, 614, 663, 714, 769, 830, 941,
+        1052, 1163, 1274, 1385, 1496, 1512, 1532, 1553, 1580, 1607, 1634, 1661,
+        1694, 1728, 1762, 1802, 1843, 1883, 1924, 1964
+      ],
+      "maxDmg": [
+        38, 46, 53, 61, 68, 77, 86, 95, 103, 112, 121, 130, 138, 147, 156, 165,
+        173, 182, 191, 200, 211, 228, 262, 297, 331, 366, 401, 435, 470, 504,
+        539, 573, 608, 643, 677, 712, 746, 781, 815, 864, 933, 1004, 1082, 1168,
+        1324, 1480, 1636, 1792, 1949, 2106, 2128, 2157, 2185, 2223, 2261, 2299,
+        2337, 2385, 2432, 2480, 2537, 2594, 2651, 2708, 2765
+      ]
+    },
+    "constants": {
+      "damageProfile": "Physical",
+      "nrOfHits": "1",
+      "range": "3"
+    },
+    "scaled": ["minDmg", "maxDmg"]
+  }
+}

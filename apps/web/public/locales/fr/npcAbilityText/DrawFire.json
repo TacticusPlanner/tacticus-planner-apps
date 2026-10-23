@@ -1,0 +1,8 @@
+{
+  "DrawFire": {
+    "description": "Toute unité alliée adjacente touchée par les attaques ennemies dévie la moitié des <style=\"Stat_Hits\">coups</style> (arrondi à l'inférieur) vers le Terminator.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

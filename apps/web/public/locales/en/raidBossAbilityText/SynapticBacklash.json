@@ -1,0 +1,12 @@
+{
+  "SynapticBacklash": {
+    "description": "Whenever the Tervigon sustains a <style=\"Stat_CritDamage\">Crit</style>, friendly Termagants within {[range]} hexes are also dealt {[dmgPct]}% of that attack’s <style=\"Stat_Damage\">Damage</style>.",
+    "variables": {},
+    "constants": {
+      "range": "2",
+      "dmgPct": "50",
+      "unitIds": "tyranNpc3Termagant,tyranSmnTermagant,GuildBoss1Npc1TyranTermagantLeviathan,GuildBoss1Npc2TyranTermagantKronos,GuildBoss1Npc3TyranTermagantGorgon"
+    },
+    "scaled": []
+  }
+}

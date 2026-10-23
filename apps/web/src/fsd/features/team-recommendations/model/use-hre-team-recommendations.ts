@@ -22,7 +22,8 @@ export type HreTeamViewModel =
 
 /**
  * One HRE mission team per team plan of the current mission (`selectTeamPlans`), in plan order.
- * Summoners come from the English ability rules text (`npcAbilityText`). A running HSE's
+ * Summoners come from the generated `npcAbilitySummoners` list (the abilities whose English rules
+ * text summons a unit). A running HSE's
  * `hseTrackers` put its scoring units first in the token-mode teams.
  */
 export function useHreTeamRecommendations(input: {
@@ -38,15 +39,21 @@ export function useHreTeamRecommendations(input: {
     [roster, catalog]
   )
   const { loading: unitPowerLoading, unitPower } = useTeamUnitPower()
-  const { i18n } = useTranslation("npcAbilityText")
+  const { i18n } = useTranslation("npcAbilitySummoners")
 
   const summoners = useMemo(() => {
     if (read.status !== "ready") return new Set<never>()
-    return buildSummonerIds(read.data[1].values(), (abilityId) => {
-      const entry = i18n.getResource("en", "npcAbilityText", abilityId) as
-        { description?: string } | undefined
-      return entry?.description
-    })
+    const summoning = new Set(
+      Object.values(
+        (i18n.getResourceBundle("en", "npcAbilitySummoners") ?? {}) as Record<
+          string,
+          string
+        >
+      )
+    )
+    return buildSummonerIds(read.data[1].values(), (abilityId) =>
+      summoning.has(abilityId)
+    )
   }, [read, i18n])
 
   return input.plans.map((plan): HreTeamViewModel => {

@@ -1,0 +1,22 @@
+{
+  "InescapableAccuracy": {
+    "description": "Si <style=\"Faction_Aeldari\">Maugan Ra</style> no se mueve, sus ataques a distancia ignoran las reducciones de impacto, tienen <style=\"Stat\">+{[extraCritChance]} % de Probabilidad de Crítico</style> e infligen un <style=\"Stat_CritDamage\">{[extraCritDmg]} de Daño Crítico adicional</style>. <i>Precisión inevitable</i> aplica a los objetivos de <i>Cosechador de almas</i> y a los ataques activados por <style=\"Overwatch\">Vigilancia</style>.",
+    "variables": {
+      "extraCritChance": [
+        10, 10, 10, 10, 10, 10, 10, 10, 12, 12, 12, 12, 12, 12, 12, 12, 12, 13,
+        13, 13, 13, 13, 13, 13, 13, 13, 14, 14, 14, 14, 14, 14, 14, 14, 14, 15,
+        15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15,
+        15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15
+      ],
+      "extraCritDmg": [
+        10, 12, 14, 16, 18, 20, 23, 25, 27, 30, 32, 34, 36, 39, 41, 43, 46, 48,
+        50, 53, 56, 60, 69, 78, 87, 96, 105, 115, 124, 133, 142, 151, 160, 169,
+        178, 187, 196, 206, 215, 227, 245, 264, 285, 307, 348, 390, 431, 472,
+        513, 554, 560, 568, 575, 585, 595, 605, 615, 628, 640, 653, 668, 683,
+        698, 713, 728
+      ]
+    },
+    "constants": {},
+    "scaled": ["extraCritDmg"]
+  }
+}

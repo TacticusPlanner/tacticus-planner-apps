@@ -12,11 +12,13 @@ import userEvent from "@testing-library/user-event"
 import { useLocation } from "react-router"
 
 import { refreshLocalDataAfterSync } from "@/shared/local-data"
-import { i18n } from "@/test/i18n-instance"
+import {
+  holdNamespaceLoads,
+  i18n,
+  requestedNamespaces,
+} from "@/test/i18n-instance"
 import { act, fireEvent, render, screen, waitFor, within } from "@/test/render"
 import { seedGameCatalog } from "@/test/seed"
-
-import enRaidBossAbilityText from "../../../../../../public/locales/en/raidBossAbilityText.json"
 
 import { RaidBossesPage } from "./raid-bosses-page"
 
@@ -265,12 +267,16 @@ function failReads(store: string) {
     })
 }
 
+// One namespace per ability, as the generator writes them (`raidBossAbilityText/<id>`).
 beforeAll(() => {
-  i18n.addResourceBundle("en", "raidBossAbilityText", abilityTextFixture, true)
+  i18n.addResourceBundle(
+    "en",
+    "raidBossAbilityText/AbilityX",
+    abilityTextFixture
+  )
 })
 afterAll(() => {
-  i18n.removeResourceBundle("en", "raidBossAbilityText")
-  i18n.addResourceBundle("en", "raidBossAbilityText", enRaidBossAbilityText)
+  i18n.removeResourceBundle("en", "raidBossAbilityText/AbilityX")
 })
 afterEach(() => {
   vi.restoreAllMocks()
@@ -727,6 +733,87 @@ describe("RaidBossesPage", () => {
     await user.click(at(options, 0)) // step 1 -> ability level 1 -> dmg[0]
 
     await waitFor(() => expect(abilities).toHaveTextContent("Deals 10 damage"))
+  })
+
+  describe("rules text", () => {
+    // A real ability (its file loads through the test backend), a listed gap (no file, never
+    // requested) and an id with neither (its download fails).
+    const withAbilities = {
+      ...payload,
+      bosses: [
+        unit("GuildBoss1Boss1Tervigon", "boss", {
+          activeAbilityIds: ["ATemptingTrap", "MawClawsofThyrax"],
+          passiveAbilityIds: ["AbilityGone"],
+          traitIds: ["Flying"],
+        }),
+      ],
+    }
+    afterEach(() => {
+      i18n.removeResourceBundle("en", "raidBossAbilityText/AbilityGone")
+    })
+
+    it("paints the detail view first and fetches only the shown abilities", async () => {
+      requestedNamespaces.length = 0
+      const release = holdNamespaceLoads()
+      await renderPage("/library/raid-bosses/GuildBoss1Boss1Tervigon", {
+        raidBosses: withAbilities,
+      })
+      const abilities = await screen.findByTestId("raid-boss-abilities")
+      expect(screen.getByTestId("raid-boss-stats")).toBeInTheDocument()
+      expect(abilities).toHaveTextContent("A Tempting Trap")
+      expect(
+        within(abilities).getByTestId(
+          "raid-boss-ability-ATemptingTrap-text-loading"
+        )
+      ).toHaveTextContent("Loading rules text…")
+
+      act(release)
+      await waitFor(() =>
+        expect(
+          within(abilities).queryByTestId(
+            "raid-boss-ability-ATemptingTrap-text-loading"
+          )
+        ).not.toBeInTheDocument()
+      )
+      expect(requestedNamespaces.sort()).toEqual([
+        "en/raidBossAbilityText/ATemptingTrap",
+        "en/raidBossAbilityText/AbilityGone",
+      ])
+      // The gap shows its name alone: no note, no description.
+      expect(
+        within(abilities).queryByTestId(
+          "raid-boss-ability-MawClawsofThyrax-text-failed"
+        )
+      ).not.toBeInTheDocument()
+    })
+
+    it("shows a failure note with a retry, and the text once a retry succeeds", async () => {
+      await renderPage("/library/raid-bosses/GuildBoss1Boss1Tervigon", {
+        raidBosses: withAbilities,
+      })
+      const failed = await screen.findByTestId(
+        "raid-boss-ability-AbilityGone-text-failed"
+      )
+      expect(failed).toHaveTextContent("The rules text couldn't be loaded.")
+
+      i18n.addResourceBundle("en", "raidBossAbilityText/AbilityGone", {
+        AbilityGone: {
+          description: "Back again",
+          variables: {},
+          constants: {},
+          scaled: [],
+        },
+      })
+      fireEvent.click(within(failed).getByRole("button", { name: "Retry" }))
+      await waitFor(() =>
+        expect(screen.getByTestId("raid-boss-abilities")).toHaveTextContent(
+          "Back again"
+        )
+      )
+      expect(
+        screen.queryByTestId("raid-boss-ability-AbilityGone-text-failed")
+      ).not.toBeInTheDocument()
+    })
   })
 
   it("changes the progression step via the dropdown", async () => {

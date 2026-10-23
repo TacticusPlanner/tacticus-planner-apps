@@ -1,0 +1,31 @@
+{
+  "TheWrathOfKhaineUnleashedReworked": {
+    "description": "At the beginning of the <style=\"Faction_Aeldari\">Avatar of Khaine</style>'s next turn, he deals <style=\"DMG_Flame\">Flame Damage</style> to all enemies within {[range]} hexes, except enemies on healing hexes. This attack deals <style=\"DMG_Flame\">{[minDmg]}-{[maxDmg]} Flame Damage</style> per <style=\"Stat_Hits\">hit</style> and scores <style=\"Stat_Hits\">{[nrOfHits]} hits</style> against surrounding enemies, <style=\"Stat_Hits\">{[nrOfHits_2]} hits</style> against enemies at range {[range_2]}, and <style=\"Stat_Hits\">{[nrOfHits_3]} hits</style> against enemies at range {[range]}. Then all <style=\"Effect_Fire\">Fire</style> in the affected area is extinguished, and all adjacent enemies are <style=\"Displacement\">pushed</style> one hex.",
+    "variables": {
+      "minDmg": [
+        24, 29, 34, 38, 43, 49, 54, 60, 65, 71, 76, 82, 87, 93, 98, 104, 109,
+        115, 120, 126, 133, 144, 166, 187, 209, 231, 253, 275, 297, 318, 340,
+        362, 384, 406, 428, 450, 471, 493, 515, 546, 589, 634, 683, 738, 836,
+        935, 1033, 1132, 1231, 1330, 1438, 1485, 1532, 1587, 1642, 1699, 1756,
+        1822, 1889, 1958, 2035, 2113, 2193, 2274, 2357
+      ],
+      "maxDmg": [
+        30, 36, 42, 48, 54, 61, 68, 75, 82, 89, 95, 102, 109, 116, 123, 130,
+        137, 144, 151, 158, 167, 180, 207, 234, 262, 289, 316, 344, 371, 398,
+        425, 453, 480, 507, 535, 562, 589, 617, 644, 682, 736, 793, 854, 922,
+        1045, 1169, 1292, 1415, 1538, 1662, 1798, 1856, 1915, 1983, 2053, 2124,
+        2196, 2278, 2362, 2447, 2543, 2641, 2741, 2843, 2946
+      ]
+    },
+    "constants": {
+      "range": "3",
+      "range_2": "2",
+      "nrOfHits": "5",
+      "nrOfHits_2": "4",
+      "nrOfHits_3": "3",
+      "damageProfile": "Flame",
+      "cooldownTurns": "2"
+    },
+    "scaled": ["minDmg", "maxDmg"]
+  }
+}

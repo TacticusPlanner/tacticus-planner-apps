@@ -1,0 +1,41 @@
+{
+  "ExemplarOfTheKauyon": {
+    "description": "<style=\"Faction_Tau\">Commander Schattensonne</style> verschwindet und taucht anschließend auf einem Zielfeld, das an eine verbündete Einheit angrenzt, wieder auf. Sie führt sofort einen <style=\"NormalAttack\">normalen Angriff</style> auf das nächste gegnerische Ziel aus. Dieser Angriff verursacht zusätzlich <style=\"Stat_Hits\">{[nrOfHits]}x</style> <style=\"DMG_Blast\">{[dmg]} Explosionsschaden</style>. Eine stationäre <style=\"Summon\"><style=\"Faction_Tau\">Kommandoverbindungsdrohne</style></style> wird auf dem Feld, von dem sie verschwunden ist, beschworen.\n\n<style=\"Cooldown\">Anfängliche Abklingzeit: {[initialCooldownTurns]} Runde</style>.\n\nWerte der Kommandoverbindungsdrohne:\n<style=\"Stat_Health\">{[summonHp]} Lebenspunkte</style>\n<style=\"Stat_Damage\">{[summonDmg]} Schaden</style>\n<style=\"Stat_Armor\">{[summonArmor]} Rüstung</style>",
+    "variables": {
+      "dmg": [
+        30, 36, 42, 48, 54, 61, 68, 75, 82, 89, 95, 102, 109, 116, 123, 130,
+        137, 144, 151, 158, 167, 180, 207, 234, 262, 289, 316, 344, 371, 398,
+        425, 453, 480, 507, 535, 562, 589, 617, 644, 682, 736, 793, 854, 922,
+        1045, 1169, 1292, 1415, 1538, 1662, 1680, 1703, 1725, 1755, 1785, 1815,
+        1845, 1883, 1920, 1958, 2003, 2048, 2093, 2138, 2183
+      ],
+      "summonHp": [
+        40, 48, 56, 64, 72, 81, 90, 100, 109, 118, 127, 136, 146, 155, 164, 173,
+        182, 192, 201, 210, 222, 240, 276, 312, 349, 385, 422, 458, 494, 531,
+        567, 604, 640, 676, 713, 749, 786, 822, 858, 910, 982, 1057, 1139, 1229,
+        1394, 1558, 1722, 1887, 2051, 2216, 2240, 2270, 2300, 2340, 2380, 2420,
+        2460, 2510, 2560, 2610, 2670, 2730, 2790, 2850, 2910
+      ],
+      "summonDmg": [
+        14, 17, 20, 22, 25, 28, 32, 35, 38, 41, 45, 48, 51, 54, 57, 61, 64, 67,
+        70, 74, 78, 84, 97, 109, 122, 135, 148, 160, 173, 186, 199, 211, 224,
+        237, 249, 262, 275, 288, 300, 318, 344, 370, 399, 430, 488, 545, 603,
+        660, 718, 776, 784, 795, 805, 819, 833, 847, 861, 879, 896, 914, 935,
+        956, 977, 998, 1019
+      ],
+      "summonArmor": [
+        15, 18, 21, 24, 27, 30, 34, 37, 41, 44, 48, 51, 55, 58, 62, 65, 68, 72,
+        75, 79, 83, 90, 104, 117, 131, 144, 158, 172, 185, 199, 213, 226, 240,
+        254, 267, 281, 295, 308, 322, 341, 368, 396, 427, 461, 523, 584, 646,
+        708, 769, 831, 840, 851, 863, 878, 893, 908, 923, 941, 960, 979, 1001,
+        1024, 1046, 1069, 1091
+      ]
+    },
+    "constants": {
+      "damageProfile": "Blast",
+      "nrOfHits": "2",
+      "initialCooldownTurns": "1"
+    },
+    "scaled": ["dmg", "summonHp", "summonDmg", "summonArmor"]
+  }
+}

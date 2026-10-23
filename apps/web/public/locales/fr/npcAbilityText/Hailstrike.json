@@ -1,0 +1,33 @@
+{
+  "Hailstrike": {
+    "description": "Cible une unité alliée sur le champ de bataille. Pendant {[nrOfRounds]} manche, bénéficie de <style=\"Piercing_Ratio\">+{[extraPierceRatio]} % de taux de perforation</style> en cas d'attaques à distance en mode <style=\"Buff_Overwatching\">Sentinelle</style>. Lorsque l'unité affectée cible un ennemi avec une de ces attaques, le <style=\"Faction_DarkAngels\">Storm Speeder</style> attaque cette même cible, infligeant <style=\"Stat_Hits\">{[nrOfHits]}x</style> <style={[DamageProfileTypeStyle]}>{[minDmg]}-{[maxDmg]} {[DamageProfileType]}</style>.\n\n{[S/AbilityDamageExplanation]}",
+    "variables": {
+      "minDmg": [
+        21, 25, 29, 34, 38, 43, 47, 52, 57, 62, 67, 72, 76, 81, 86, 91, 96, 101,
+        105, 110, 117, 126, 145, 164, 183, 202, 221, 240, 260, 279, 298, 317,
+        336, 355, 374, 393, 412, 432, 451, 478, 515, 555, 598, 645, 732, 818,
+        904, 991, 1077, 1163, 1176, 1192, 1208, 1229, 1250, 1271, 1292, 1318,
+        1344, 1370, 1402, 1433, 1465, 1496, 1528
+      ],
+      "maxDmg": [
+        27, 32, 38, 43, 49, 55, 61, 67, 73, 80, 86, 92, 98, 104, 111, 117, 123,
+        129, 136, 142, 150, 162, 186, 211, 235, 260, 285, 309, 334, 358, 383,
+        407, 432, 457, 481, 506, 530, 555, 579, 614, 663, 714, 769, 830, 941,
+        1052, 1163, 1274, 1385, 1496, 1512, 1532, 1553, 1580, 1607, 1634, 1661,
+        1694, 1728, 1762, 1802, 1843, 1883, 1924, 1964
+      ],
+      "extraPierceRatio": [
+        10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 12,
+        12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 15,
+        15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15,
+        15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15
+      ]
+    },
+    "constants": {
+      "damageProfile": "Projectile",
+      "nrOfHits": "3",
+      "nrOfRounds": "1"
+    },
+    "scaled": ["minDmg", "maxDmg"]
+  }
+}

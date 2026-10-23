@@ -1,0 +1,21 @@
+{
+  "SummaryExecution": {
+    "description": "Verbündete Einheiten mit <style=\"Battle_Fatigue\">Kampfmüdigkeit</style> erhalten <style=\"Stat_Damage\">+{[extraDmg]} Schaden</style>. Das erste Mal, wenn eine verbündete Einheit normalerweise aufgrund von <style=\"Battle_Fatigue\">Kampfmüdigkeit</style> aus dem Kampf fliehen würde, wird sie stattdessen hingerichtet und alle anderen verbündeten Einheiten mit der Eigenschaft ignorieren diese und erhalten zusätzlich <style=\"Stat_Damage\">+{[extraDmg_2]} Schaden</style>.",
+    "variables": {
+      "extraDmg": [
+        4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22,
+        23, 24, 25, 28, 31, 35, 39, 42, 46, 49, 53, 57, 60, 64, 68, 71, 75, 79,
+        82, 86, 91, 98, 106, 114, 123, 139, 156, 172, 189, 205, 222, 224, 227,
+        230, 234, 238, 242, 246, 251, 256, 261, 267, 273, 279, 285, 291
+      ],
+      "extraDmg_2": [
+        2, 2, 3, 3, 4, 4, 5, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10, 11, 11, 12,
+        14, 16, 17, 19, 21, 23, 25, 27, 28, 30, 32, 34, 36, 37, 39, 41, 43, 45,
+        49, 53, 57, 61, 70, 78, 86, 94, 103, 112, 113, 114, 115, 117, 119, 121,
+        123, 126, 128, 131, 134, 137, 140, 143, 146
+      ]
+    },
+    "constants": {},
+    "scaled": ["extraDmg", "extraDmg_2"]
+  }
+}

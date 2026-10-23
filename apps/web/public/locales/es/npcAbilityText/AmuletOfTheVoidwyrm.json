@@ -1,0 +1,10 @@
+{
+  "AmuletOfTheVoidwyrm": {
+    "description": "El portador de la reliquia recibe <style=\"Stat_CritDamage\">-{[critDmgReduction]} de Daño Crítico</style> por cada <style=\"Summon\">invocación</style> o cada <style=\"Decoy\">señuelo</style> aliado adyacente.",
+    "variables": {
+      "critDmgReduction": [390, 411, 432, 453, 474, 495, 516, 537, 558, 579]
+    },
+    "constants": {},
+    "scaled": []
+  }
+}

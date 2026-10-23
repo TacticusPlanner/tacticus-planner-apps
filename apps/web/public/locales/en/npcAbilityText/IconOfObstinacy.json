@@ -1,0 +1,27 @@
+{
+  "IconOfObstinacy": {
+    "description": "<style=\"Faction_AdeptusAstartes\">Lysander</style> and all friendly adjacent <style=\"Terminator_Armor\">Terminator Armour</style> units deal <style=\"Stat_Damage\">+{[extraDmg]} Damage</style>. When they end their turn without attacking, they also have <style=\"Stat_Armor\">+{[extraArmor]} Armour</style> until the beginning of their next turn. The additional <style=\"Stat_Damage\">Damage</style> and <style=\"Stat_Armor\">Armour</style> are further increased by <style=\"STAT\">{[chance]}%</style> of the affected unit's current <style=\"Stat_Damage\">Block Damage</style> value.",
+    "variables": {
+      "extraDmg": [
+        4, 5, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 15, 16, 17, 18, 19, 20, 21,
+        22, 24, 28, 31, 35, 39, 42, 46, 49, 53, 57, 60, 64, 68, 71, 75, 79, 82,
+        86, 91, 98, 106, 114, 123, 139, 156, 172, 189, 205, 222, 224, 227, 230,
+        234, 238, 242, 246, 251, 256, 261, 267, 273, 279, 285, 291
+      ],
+      "extraArmor": [
+        4, 5, 6, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 16, 17, 18, 19, 20, 21,
+        22, 24, 28, 31, 35, 39, 42, 46, 49, 53, 57, 60, 64, 68, 71, 75, 79, 82,
+        86, 91, 98, 106, 114, 123, 139, 156, 172, 189, 205, 222, 224, 227, 230,
+        234, 238, 242, 246, 251, 256, 261, 267, 273, 279, 285, 291
+      ],
+      "chance": [
+        20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 25,
+        25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 30,
+        30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
+        30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30
+      ]
+    },
+    "constants": {},
+    "scaled": ["extraDmg", "extraArmor"]
+  }
+}

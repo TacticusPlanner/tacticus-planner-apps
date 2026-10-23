@@ -1,0 +1,8 @@
+{
+  "EchoesFromTheWarp": {
+    "description": "When this unit moves, it leaves a time ghost behind on the hex it moved from. The time ghost vanishes if the hex becomes occupied by another unit or if the terrain becomes impassable (as with <style=\"Tile_Floe\">Broken Ice</style>). The first time this unit dies each battle, if its time ghost is on the battlefield then it revives with <style=\"Stat_Health\">Full Health</style> at its location. This works even if this unit is <style=\"Overkill\">Overkilled</style>.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

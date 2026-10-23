@@ -1,0 +1,12 @@
+{
+  "Reveal": {
+    "description": "Un ennemi non <style=\"Debuff_Revealed\">visible</style> dans un rayon de {[range]} hexagones et ayant vaincu une unité <style=\"Faction_Aeldari\">Aeldari</style> alliée lors de ce combat devient <style=\"Debuff_Revealed\">visible</style> pendant {[nrOfRounds]} manches. Les <style=\"Faction_Aeldari\">Aeldari</style> alliés qui attaquent les ennemis <style=\"Debuff_Revealed\">visibles</style> ignorent toute réduction de coups et infligent <style=\"Stat_Damage\">+{[extraDmgPct]} % de dégâts</style>.",
+    "variables": {},
+    "constants": {
+      "extraDmgPct": "33",
+      "nrOfRounds": "3",
+      "range": "2"
+    },
+    "scaled": []
+  }
+}

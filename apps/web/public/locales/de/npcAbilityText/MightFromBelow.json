@@ -1,0 +1,47 @@
+{
+  "MightFromBelow": {
+    "description": "Verursacht <style=\"Stat_Hits\">{[nrOfHits]}x</style> <style=\"DMG_Psychic\">{[minDmg]}–{[maxDmg]} Psi-Schaden</style> an einem angrenzenden Gegner und beschwört dann einen <style=\"Summon\"><style=\"Faction_Genestealers\">Reinerbigen Symbionten</style></style> auf jedem <style=\"Decoy\">Köder</style>, der an <style=\"Faction_Genestealers\">den Schöpfungsvater</style> angrenzt. Die Reinerbigen Symbionten können sofort einen <style=\"Stat_Melee\">Nahkampfangriff</style> ausführen, sich in diesem Zug aber nicht bewegen.\n\nWerte des Reinerbigen Symbionten:\n<style=\"Stat_Health\">{[summonHp]} Lebenspunkte</style>\n<style=\"Stat_Damage\">{[summonDmg]} Schaden</style>\n<style=\"Stat_Armor\">{[summonArmor]} Rüstung</style>\n\n{[S/AbilityDamageExplanation]}",
+    "variables": {
+      "minDmg": [
+        10, 12, 14, 16, 18, 20, 23, 25, 27, 30, 32, 34, 36, 39, 41, 43, 46, 48,
+        50, 53, 56, 60, 69, 78, 87, 96, 105, 115, 124, 133, 142, 151, 160, 169,
+        178, 187, 196, 206, 215, 227, 245, 264, 285, 307, 348, 390, 431, 472,
+        513, 554, 560, 568, 575, 585, 595, 605, 615, 628, 640, 653, 668, 683,
+        698, 713, 728
+      ],
+      "maxDmg": [
+        12, 14, 17, 19, 22, 24, 27, 30, 33, 35, 38, 41, 44, 46, 49, 52, 55, 57,
+        60, 63, 67, 72, 83, 94, 105, 116, 126, 137, 148, 159, 170, 181, 192,
+        203, 214, 225, 236, 247, 258, 273, 294, 317, 342, 369, 418, 467, 517,
+        566, 615, 665, 672, 681, 690, 702, 714, 726, 738, 753, 768, 783, 801,
+        819, 837, 855, 873
+      ],
+      "summonHp": [
+        45, 54, 63, 72, 81, 91, 102, 112, 122, 133, 143, 153, 164, 174, 185,
+        195, 205, 216, 226, 236, 250, 270, 311, 351, 392, 433, 474, 515, 556,
+        597, 638, 679, 720, 761, 802, 843, 884, 925, 966, 1023, 1104, 1189,
+        1281, 1383, 1568, 1753, 1938, 2123, 2308, 2493, 2520, 2554, 2588, 2633,
+        2678, 2723, 2768, 2824, 2880, 2936, 3004, 3071, 3139, 3206, 3274
+      ],
+      "summonDmg": [
+        21, 25, 29, 34, 38, 43, 47, 52, 57, 62, 67, 72, 76, 81, 86, 91, 96, 101,
+        105, 110, 117, 126, 145, 164, 183, 202, 221, 240, 260, 279, 298, 317,
+        336, 355, 374, 393, 412, 432, 451, 478, 515, 555, 598, 645, 732, 818,
+        904, 991, 1077, 1163, 1176, 1192, 1208, 1229, 1250, 1271, 1292, 1318,
+        1344, 1370, 1402, 1433, 1465, 1496, 1528
+      ],
+      "summonArmor": [
+        12, 14, 17, 19, 22, 24, 27, 30, 33, 35, 38, 41, 44, 46, 49, 52, 55, 57,
+        60, 63, 67, 72, 83, 94, 105, 116, 126, 137, 148, 159, 170, 181, 192,
+        203, 214, 225, 236, 247, 258, 273, 294, 317, 342, 369, 418, 467, 517,
+        566, 615, 665, 672, 681, 690, 702, 714, 726, 738, 753, 768, 783, 801,
+        819, 837, 855, 873
+      ]
+    },
+    "constants": {
+      "damageProfile": "Psychic",
+      "nrOfHits": "5"
+    },
+    "scaled": ["minDmg", "maxDmg", "summonHp", "summonDmg", "summonArmor"]
+  }
+}

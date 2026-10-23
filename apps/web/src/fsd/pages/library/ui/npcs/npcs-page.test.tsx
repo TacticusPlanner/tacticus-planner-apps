@@ -2,7 +2,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import userEvent from "@testing-library/user-event"
 import { useLocation } from "react-router"
 
-import { render, screen, waitFor, within } from "@/test/render"
+import { holdNamespaceLoads, requestedNamespaces } from "@/test/i18n-instance"
+import { act, render, screen, waitFor, within } from "@/test/render"
 import { seedGameCatalog } from "@/test/seed"
 
 import type { NpcRecord, NpcStatRow } from "@/entities/npc"
@@ -429,6 +430,32 @@ describe("NpcsPage", () => {
     expect(screen.getByTestId("npc-abilities-active")).toHaveTextContent(
       "Adaptive Strategy"
     )
+  })
+
+  it("paints the NPC before its rules text arrives and fetches only its abilities", async () => {
+    const user = userEvent.setup()
+    requestedNamespaces.length = 0
+    const release = holdNamespaceLoads()
+    await renderPage("/library/npcs/makhotep?variation=necroBossWarden")
+    expect(await screen.findByTestId("npc-name")).toHaveTextContent("Makhotep")
+
+    await user.click(screen.getByRole("button", { name: /Adaptive Strategy/ }))
+    expect(
+      screen.getByTestId("npc-ability-AdaptiveStrategy-text-loading")
+    ).toHaveTextContent("Loading rules text…")
+
+    act(release)
+    await waitFor(() =>
+      expect(
+        screen.queryByTestId("npc-ability-AdaptiveStrategy-text-loading")
+      ).toBeNull()
+    )
+    expect(
+      requestedNamespaces.filter((key) => key.includes("AbilityText/")).sort()
+    ).toEqual([
+      "en/npcAbilityText/AdaptiveStrategy",
+      "en/npcAbilityText/RelentlessMarch",
+    ])
   })
 
   it("renders no abilities section for a variation with none", async () => {

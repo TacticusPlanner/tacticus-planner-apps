@@ -1,0 +1,20 @@
+{
+  "ShroudPsalm": {
+    "description": "Up to <style=\"Stat\">{[nrOfTargets]}</style> other friendly units gain <style=\"Stat\">{[effectLevel]}</style> levels of <style=\"Buff_MachineVengeance\">Machine Vengeance</style> and are affected by <i>Shroud Psalm</i> until the start of their next turn. Affected units have <style=\"Stat_Armor\">+{[extraArmor]} Armour</style> and <style=\"NormalAttack\">normal attacks</style> against them score <style=\"Stat_Hits\">-{[hitsReduction]} hits</style>, to a minimum of 1.",
+    "variables": {
+      "extraArmor": [
+        10, 12, 14, 16, 18, 20, 23, 25, 27, 30, 32, 34, 36, 39, 41, 43, 46, 48,
+        50, 53, 56, 60, 69, 78, 87, 96, 105, 115, 124, 133, 142, 151, 160, 169,
+        178, 187, 196, 206, 215, 227, 245, 264, 285, 307, 348, 390, 431, 472,
+        513, 554, 560, 568, 575, 585, 595, 605, 615, 628, 640, 653, 668, 683,
+        698, 713, 728
+      ]
+    },
+    "constants": {
+      "nrOfTargets": "2",
+      "hitsReduction": "2",
+      "effectLevel": "2"
+    },
+    "scaled": ["extraArmor"]
+  }
+}

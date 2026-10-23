@@ -1,0 +1,8 @@
+{
+  "PowerUp_HeroSpawn_Uthar": {
+    "description": "Lorsqu'elle est choisie par une unité alliée, déploie <style=\"Faction_LeaguesOfVotann\">Uthar</style> sur le champ de bataille. Il est contrôlable comme toute autre <style=\"Character\">personnage</style> allié. Si possible, il tente de se déployer sur l'hexagone d'une unité ennemie et l'unité de cet hexagone est <style=\"Obliterated\">toujours exterminée</style>.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

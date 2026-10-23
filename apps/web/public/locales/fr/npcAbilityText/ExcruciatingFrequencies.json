@@ -1,0 +1,33 @@
+{
+  "ExcruciatingFrequencies": {
+    "description": "Affecte {[nrOfTiles]} hexagones en ligne droite dans l'une des 6 directions. Cette attaque a <style=\"Stat\">+{[extraCritChance]} % de chances de coup critique</style> par unité présente sur les hexagones affectés et inflige <style=\"Stat_Hits\">{[nrOfHits]}x</style> <style=\"DMG_Blast\">{[minDmg]}-{[maxDmg]} dégâts d'explosion</style> à chaque ennemi présent sur ces hexagones. Les ennemis touchés sont également <style=\"Debuff_Pinned\">neutralisés</style>.",
+    "variables": {
+      "minDmg": [
+        48, 58, 67, 77, 86, 97, 108, 120, 131, 142, 153, 164, 175, 186, 197,
+        208, 219, 230, 241, 252, 267, 288, 331, 375, 419, 462, 506, 550, 593,
+        637, 681, 724, 768, 812, 855, 899, 943, 986, 1030, 1092, 1178, 1269,
+        1367, 1475, 1672, 1870, 2067, 2264, 2461, 2659, 2688, 2724, 2760, 2808,
+        2856, 2904, 2952, 3012, 3072, 3132, 3204, 3276, 3348, 3420, 3492
+      ],
+      "maxDmg": [
+        60, 72, 84, 96, 108, 122, 136, 149, 163, 177, 191, 205, 218, 232, 246,
+        260, 274, 287, 301, 315, 334, 359, 414, 469, 523, 578, 632, 687, 742,
+        796, 851, 905, 960, 1015, 1069, 1124, 1178, 1233, 1288, 1364, 1472,
+        1586, 1708, 1844, 2090, 2337, 2584, 2830, 3077, 3324, 3360, 3405, 3450,
+        3510, 3570, 3630, 3690, 3765, 3840, 3915, 4005, 4095, 4185, 4275, 4365
+      ],
+      "extraCritChance": [
+        20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 25,
+        25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 30,
+        30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
+        30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30
+      ]
+    },
+    "constants": {
+      "damageProfile": "Blast",
+      "nrOfHits": "1",
+      "nrOfTiles": "3"
+    },
+    "scaled": ["minDmg", "maxDmg"]
+  }
+}

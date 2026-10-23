@@ -1,0 +1,10 @@
+{
+  "PowerUp_MeleeHits": {
+    "description": "When picked up by a unit, this power-up increases the number of <style=\"Stat_Hits\">hits</style> on their <style=\"Stat_Melee\">melee</style> attack by +{[extraHit]}.",
+    "variables": {},
+    "constants": {
+      "extraHit": "4"
+    },
+    "scaled": []
+  }
+}

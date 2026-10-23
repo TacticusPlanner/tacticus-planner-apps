@@ -1,0 +1,13 @@
+{
+  "RelicPowerFist": {
+    "description": "The relic bearer's attacks that deal <style=\"DMG_Power\">Power Damage</style> have a <style=\"Stat_Chance\">{[chance]}% chance</style> to <style=\"Debuff_Pinned\">Suppress</style> and a <style=\"Stat_Chance\">{[chance_2]}% chance</style> to <style=\"Debuff_Stunned\">Stun</style> enemies targeted by them. These chances are doubled if the attack is an active ability.",
+    "variables": {
+      "chance": [33, 34, 36, 38, 40, 42, 44, 46, 48, 50],
+      "chance_2": [33, 34, 36, 38, 40, 42, 44, 46, 48, 50]
+    },
+    "constants": {
+      "damageProfile": "Power"
+    },
+    "scaled": []
+  }
+}

@@ -114,7 +114,6 @@ function CharacterUnit({
   const panelId = useId()
   const character = catalog.byId.get(unitId)!
   const name = t(`characters:${unitId}`, { defaultValue: character.name })
-  const abilityText = useAbilityText()
   const [tab, setTab] = useUnitTab(TABS)
 
   // --- Player data -----------------------------------------------------------------------------
@@ -168,6 +167,12 @@ function CharacterUnit({
   const setLevel = (id: string) => (level: number) =>
     setAbilityLevels((current) => ({ ...current, [id]: level }))
   const relic = relicFor(character, equipment ?? [], player)
+  // Only this unit's abilities' rules text is fetched, after the page paints.
+  const abilityText = useAbilityText(
+    [activeId, passiveId, relic?.relic.abilityId].filter(
+      (id): id is string => id !== undefined
+    )
+  )
   const slotItems = equippableItems(character, equipment ?? [])
   const mythic = useMythicQuests(unitId)
   const [relicLevel, setRelicLevel] = useState<number | undefined>()
@@ -242,7 +247,7 @@ function CharacterUnit({
   useTourPageSteps(
     useCharacterUnitTutorial({
       hasAbilityText:
-        activeId !== undefined && abilityText(activeId) !== undefined,
+        activeId !== undefined && abilityText.text(activeId) !== undefined,
     })
   )
 
@@ -252,7 +257,8 @@ function CharacterUnit({
         kind={t(`characterUnit.abilities.${kind}`)}
         name={t(`abilities:${id}`, { defaultValue: id })}
         iconSrc={abilityIcon(id)}
-        text={abilityText(id)}
+        text={abilityText.text(id)}
+        rules={abilityText}
         rarity={progressionRarity(shown.progression)}
         unitName={name}
         factionId={character.faction}
@@ -270,7 +276,8 @@ function CharacterUnit({
       characterId={character.id}
       unitName={name}
       factionId={character.faction}
-      text={relic ? abilityText(relic.relic.abilityId) : undefined}
+      text={relic ? abilityText.text(relic.relic.abilityId) : undefined}
+      rules={abilityText}
       level={shownRelicLevel}
       playerLevel={relic?.equippedLevel}
       onLevelChange={setRelicLevel}

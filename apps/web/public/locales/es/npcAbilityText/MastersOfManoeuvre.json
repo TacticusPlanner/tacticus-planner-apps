@@ -1,0 +1,12 @@
+{
+  "MastersOfManoeuvre": {
+    "description": "Los <style=\"Character\">personajes</style> <style=\"Rarity_Mythic\">Míticos</style> aliados reciben un <style=\"Stat_Damage\">-{[dmgReductionPct]} % de Daño</style> de los ataques a distancia hasta el inicio de su siguiente turno si recorrieron {[tilesTraversed]} o más hexágonos durante su turno o si terminan su turno junto a un <style=\"Faction_DarkAngels\">Ángel Oscuro</style> <style=\"Rarity_Mythic\">Mítico</style> aliado.",
+    "variables": {
+      "dmgReductionPct": [10, 13, 16, 20]
+    },
+    "constants": {
+      "tilesTraversed": "2"
+    },
+    "scaled": ["dmgReductionPct"]
+  }
+}

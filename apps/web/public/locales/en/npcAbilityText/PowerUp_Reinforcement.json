@@ -1,0 +1,8 @@
+{
+  "PowerUp_Reinforcement": {
+    "description": "Adds 1 Reinforcement point when picked up by a friendly unit.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "SpiritLeech": {
+    "description": "Deals <style=\"Stat_Hits\">{[nrOfHits]}x</style> <style=\"DMG_Psychic\">{[minDmg]}-{[maxDmg]} Psychic Damage</style> to an enemy unit within {[range]} hexes. If the target is <style=\"Debuff_Pinned\">Suppressed</style>, deals an additional <style=\"Stat_Damage\">+{[extraDmg]} Damage</style>, otherwise <style=\"Debuff_Pinned\">Suppresses</style> it. The <style=\"Faction_Tyranids\">Neurothrope</style> <style=\"Healing\">heals</style> itself and friendly <style=\"Faction_Tyranids\">Tyranids</style> adjacent to it for <style=\"Stat_Health\">Health</style> equal to <style=\"STAT\">{[hpToHealPct]}%</style> of the total damage dealt with this ability.\n\n{[S/AbilityDamageExplanation]}",
+    "variables": {
+      "minDmg": [
+        22, 26, 31, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100,
+        105, 110, 116, 122, 132, 152, 172, 192, 212, 232, 252, 272, 292, 312,
+        332, 352, 372, 392, 412, 432, 452, 472, 500, 540, 581, 626, 676, 766,
+        857, 947, 1038, 1128, 1219, 1232, 1249, 1265, 1287, 1309, 1331, 1353,
+        1381, 1408, 1436, 1469, 1502, 1535, 1568, 1601
+      ],
+      "maxDmg": [
+        30, 36, 42, 48, 54, 61, 68, 75, 82, 89, 95, 102, 109, 116, 123, 130,
+        137, 144, 151, 158, 167, 180, 207, 234, 262, 289, 316, 344, 371, 398,
+        425, 453, 480, 507, 535, 562, 589, 617, 644, 682, 736, 793, 854, 922,
+        1045, 1169, 1292, 1415, 1538, 1662, 1680, 1703, 1725, 1755, 1785, 1815,
+        1845, 1883, 1920, 1958, 2003, 2048, 2093, 2138, 2183
+      ],
+      "extraDmg": [
+        22, 26, 31, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100,
+        105, 110, 116, 122, 132, 152, 172, 192, 212, 232, 252, 272, 292, 312,
+        332, 352, 372, 392, 412, 432, 452, 472, 500, 540, 581, 626, 676, 766,
+        857, 947, 1038, 1128, 1219, 1232, 1249, 1265, 1287, 1309, 1331, 1353,
+        1381, 1408, 1436, 1469, 1502, 1535, 1568, 1601
+      ],
+      "hpToHealPct": [
+        40, 40, 40, 40, 40, 40, 40, 40, 45, 45, 45, 45, 45, 45, 45, 45, 45, 50,
+        50, 50, 50, 50, 50, 50, 50, 50, 55, 55, 55, 55, 55, 55, 55, 55, 55, 60,
+        60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60,
+        60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60
+      ]
+    },
+    "constants": {
+      "damageProfile": "Psychic",
+      "nrOfHits": "1",
+      "range": "3"
+    },
+    "scaled": ["minDmg", "maxDmg", "extraDmg"]
+  }
+}

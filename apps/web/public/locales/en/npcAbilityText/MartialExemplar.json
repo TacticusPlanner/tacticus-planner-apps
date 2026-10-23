@@ -1,0 +1,33 @@
+{
+  "MartialExemplar": {
+    "description": "Deals <style=\"Stat_Hits\">{[nrOfHits]}x</style> <style={[DamageProfileTypeStyle]}>{[minDmg]}-{[maxDmg]} {[DamageProfileType]}</style> to all adjacent enemies. Then moves up to {[nrOfTiles]} hex towards the closest enemy unit and performs a <style=\"NormalAttack\">normal attack</style>. These attacks and all further attacks this turn have <style=\"Stat\">+{[extraCritChance]}% Crit Chance</style> against <style=\"Summon\">Summons</style>.",
+    "variables": {
+      "minDmg": [
+        10, 12, 14, 16, 18, 20, 23, 25, 27, 30, 32, 34, 36, 39, 41, 43, 46, 48,
+        50, 53, 56, 60, 69, 78, 87, 96, 105, 115, 124, 133, 142, 151, 160, 169,
+        178, 187, 196, 206, 215, 227, 245, 264, 285, 307, 348, 390, 431, 472,
+        513, 554, 599, 619, 638, 661, 684, 708, 732, 759, 787, 816, 848, 880,
+        914, 948, 982
+      ],
+      "maxDmg": [
+        14, 17, 20, 22, 25, 28, 32, 35, 38, 41, 45, 48, 51, 54, 57, 61, 64, 67,
+        70, 74, 78, 84, 97, 109, 122, 135, 148, 160, 173, 186, 199, 211, 224,
+        237, 249, 262, 275, 288, 300, 318, 344, 370, 399, 430, 488, 545, 603,
+        660, 718, 776, 839, 866, 894, 925, 958, 991, 1025, 1063, 1102, 1142,
+        1187, 1233, 1279, 1327, 1375
+      ],
+      "extraCritChance": [
+        10, 10, 10, 10, 10, 10, 10, 10, 15, 15, 15, 15, 15, 15, 15, 15, 15, 25,
+        25, 25, 25, 25, 25, 25, 25, 25, 50, 50, 50, 50, 50, 50, 50, 50, 50, 80,
+        80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80,
+        80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80
+      ]
+    },
+    "constants": {
+      "damageProfile": "Power",
+      "nrOfHits": "6",
+      "nrOfTiles": "1"
+    },
+    "scaled": ["minDmg", "maxDmg"]
+  }
+}

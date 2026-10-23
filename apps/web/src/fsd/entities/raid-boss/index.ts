@@ -17,7 +17,10 @@ export {
   type RaidBossSeasonBoard,
 } from "./lib/season-reference"
 export { useRaidBossLabels } from "./lib/use-raid-boss-labels"
-export { useRaidBossText } from "./lib/use-raid-boss-text"
+export {
+  useRaidBossAbilityText,
+  useRaidBossTraitText,
+} from "./lib/use-raid-boss-text"
 export { RaidBossPortrait } from "./ui/raid-boss-portrait"
 export {
   describeModifier,

@@ -1,0 +1,25 @@
+{
+  "TheQuickening": {
+    "description": "Cible un hexagone à portée de déplacement de {[range]} hexagones qui n'est ni occupé par un ennemi ni par une unité alliée en mode <style=\"Teleport_Strike_short\">Assaut en Profondeur</style>. <style=\"Faction_BloodAngels\">Méphiston</style> se déplace sur cet hexagone. Si une unité alliée se trouve sur cet hexagone, celle-ci se déplace vers l'emplacement précédent de Méphiston. Tous les <style=\"Faction_BloodAngels\">Blood Angels</style> se déplaçant ainsi effectuent une <style=\"NormalAttack\">attaque au corps à corps normale</style> après leur déplacement, infligeant <style=\"STAT\">{[dmgPct]}%</style> de leurs propres dégâts jusqu'à un maximum de <style=\"Stat_Damage\">{[maxDmg]} Dégâts</style>. Les unités se déplaçant ainsi ne déclenchent pas <style=\"Buff_Overwatching\">Sentinelle</style> ou d'autres réactions liées au déplacement.",
+    "variables": {
+      "maxDmg": [
+        50, 60, 70, 80, 90, 102, 113, 125, 136, 148, 159, 171, 182, 194, 205,
+        217, 228, 240, 251, 263, 278, 300, 345, 391, 436, 482, 527, 573, 618,
+        664, 709, 755, 800, 846, 891, 937, 982, 1028, 1073, 1137, 1227, 1322,
+        1424, 1537, 1742, 1948, 2153, 2359, 2564, 2770, 2800, 2838, 2875, 2925,
+        2975, 3025, 3075, 3138, 3200, 3263, 3338, 3413, 3488, 3563, 3638
+      ],
+      "dmgPct": [
+        100, 100, 100, 100, 100, 100, 100, 100, 105, 105, 105, 105, 105, 105,
+        105, 105, 105, 110, 110, 110, 110, 110, 110, 110, 110, 110, 115, 115,
+        115, 115, 115, 115, 115, 115, 115, 120, 120, 120, 120, 120, 120, 120,
+        120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120,
+        120, 120, 120, 120, 120, 120, 120, 120, 120
+      ]
+    },
+    "constants": {
+      "range": "2"
+    },
+    "scaled": ["maxDmg"]
+  }
+}

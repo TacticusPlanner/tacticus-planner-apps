@@ -1,0 +1,8 @@
+{
+  "RapidFire": {
+    "description": "The <style=\"Faction_Ultramarines\">Heavy Intercessor</style> attacks twice if he did not move this turn, with each of the two attacks dealing <style=\"Stat_Damage\">Damage</style> as normal.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

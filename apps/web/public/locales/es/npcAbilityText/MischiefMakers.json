@@ -1,0 +1,11 @@
+{
+  "MischiefMakers": {
+    "description": "Los objetivos de los <style=\"NormalAttack\">ataques normales</style> de los <style=\"Faction_DeathGuard\">Nurgletes</style> no pueden ser revividos, <style=\"Healing\">curados</style>, <style=\"Repairing\">reparados</style>, y tampoco pueden restaurar {[S/Health]} por {[nrOfRounds]} ronda. Estos ataques además tienen un <style=\"Stat_Chance\">{[chance]} % de probabilidad</style> de <style=\"Debuff_Pinned\">Suprimir</style> al objetivo por {[nrOfRounds]} ronda.",
+    "variables": {},
+    "constants": {
+      "chance": "25",
+      "nrOfRounds": "1"
+    },
+    "scaled": []
+  }
+}

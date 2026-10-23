@@ -1,0 +1,26 @@
+{
+  "ArmouredMight": {
+    "description": "This unit’s movement is not blocked by other units, instead they get <style=\"Displacement\">pushed</style> and take <style=\"Stat_Hits\">{[nrOfHits]}x</style> <style=\"DMG_Melta\">{[minDmg]}-{[maxDmg]} Melta Damage</style>. <style=\"Summon\">Summons</style> and units that cannot be displaced are automatically defeated, and all units defeated by this ability are <style=\"Obliterated\">always overkilled</style>.",
+    "variables": {
+      "minDmg": [
+        40, 48, 56, 64, 72, 81, 90, 100, 109, 118, 127, 136, 146, 155, 164, 173,
+        182, 192, 201, 210, 222, 240, 276, 312, 349, 385, 422, 458, 494, 531,
+        567, 604, 640, 676, 713, 749, 786, 822, 858, 910, 982, 1057, 1139, 1229,
+        1394, 1558, 1722, 1887, 2051, 2216, 2397, 2474, 2553, 2644, 2737, 2831,
+        2927, 3037, 3149, 3263, 3391, 3522, 3655, 3791, 3929
+      ],
+      "maxDmg": [
+        48, 58, 67, 77, 86, 97, 108, 120, 131, 142, 153, 164, 175, 186, 197,
+        208, 219, 230, 241, 252, 267, 288, 331, 375, 419, 462, 506, 550, 593,
+        637, 681, 724, 768, 812, 855, 899, 943, 986, 1030, 1092, 1178, 1269,
+        1367, 1475, 1672, 1870, 2067, 2264, 2461, 2659, 2876, 2969, 3064, 3173,
+        3284, 3398, 3513, 3645, 3779, 3915, 4069, 4226, 4386, 4549, 4714
+      ]
+    },
+    "constants": {
+      "damageProfile": "Melta",
+      "nrOfHits": "2"
+    },
+    "scaled": ["minDmg", "maxDmg"]
+  }
+}

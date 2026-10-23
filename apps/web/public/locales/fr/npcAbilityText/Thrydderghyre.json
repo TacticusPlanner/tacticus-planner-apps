@@ -1,0 +1,10 @@
+{
+  "Thrydderghyre": {
+    "description": "La première fois que <style=\"Faction_ThousandSons\">Yazaghor</style> perd de la <style=\"Stat_Health\">Santé</style> et la première fois qu’il utilise <i>Façade de Sorcier</i>, il invoque une <style=\"Summon\"><style=\"Faction_ThousandSons\">Copie</style></style> de lui-même sur une case hexagonale adjacente libre avec <style=\"STAT\">{[statsPct]}%</style> de sa propre <style=\"Stat_Health\">Santé</style>, de ses <style=\"Stat_Damage\">Dégâts</style> et de son <style=\"Stat_Armor\">Armure</style>. Les copies ne peuvent pas utiliser <i>Façade de Sorcier</i> ni <i>Thrydderghyre</i>, mais possèdent <i>Mirage Déformé</i> comme capacité passive supplémentaire.",
+    "variables": {
+      "statsPct": [50, 51, 52, 54, 56, 58, 60, 62, 64, 66]
+    },
+    "constants": {},
+    "scaled": []
+  }
+}

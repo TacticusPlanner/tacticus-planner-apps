@@ -1,0 +1,30 @@
+{
+  "PriorityReclamation": {
+    "description": "While there is an <style=\"Faction_AdeptusMechanicus\">Archeotec Crate</style> on the battlefield, <style=\"Faction_AdeptusMechanicus\">Actus</style> receives <style=\"Stat_Damage\">-{[dmgReductionPct]}% Damage</style>, but loses <style=\"Stat_Health\">{[hp]} Health</style> each time an enemy destroys an Archeotec Crate. At the end of his turn, if Actus is adjacent to an Archeotec Crate, he removes one Archeotec Crate and all friendly <style=\"Mechanical\">Mechanical</style> units gain <style=\"Stat\">{[effectLevel]}</style> levels of <style=\"Buff_MachineVengeance\">Machine Vengeance</style>.",
+    "variables": {
+      "dmgReductionPct": [
+        25, 25, 25, 25, 25, 25, 25, 25, 33, 33, 33, 33, 33, 33, 33, 33, 33, 40,
+        40, 40, 40, 40, 40, 40, 40, 40, 50, 50, 50, 50, 50, 50, 50, 50, 50, 66,
+        66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66,
+        66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66
+      ],
+      "hp": [
+        101, 117, 132, 154, 176, 198, 221, 331, 368, 429, 490, 551, 613, 674,
+        735, 920, 1285, 1260, 1420, 1575, 1735, 1890, 2050, 2205, 2705, 3700,
+        4200, 4725, 5250, 5775, 6300, 6825, 7350, 8050, 8750, 10500, 14000,
+        17500, 20000, 23625, 26250, 30000, 32500, 35000, 38000, 40875, 43750,
+        46000, 49250, 52500, 52500, 52500, 73500, 73500, 73500, 75000, 75001,
+        75002, 75003, 75004, 75005, 75006, 75007, 75008, 75009
+      ],
+      "effectLevel": [
+        2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3,
+        3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+        5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5
+      ]
+    },
+    "constants": {
+      "unitId": "GuildBoss10LootObjArcheotecCrate"
+    },
+    "scaled": []
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "InescapableAccuracy": {
+    "description": "If <style=\"Faction_Aeldari\">Maugan Ra</style> has not moved, then his ranged attacks ignore hit reductions, have <style=\"Stat\">+{[extraCritChance]}% Crit Chance</style>, and deal an additional <style=\"Stat_CritDamage\">{[extraCritDmg]} Crit Damage</style>. <i>Inescapable Accuracy</i> applies to targets of <i>Harvester of Souls</i> as well as attacks triggered by <style=\"Overwatch\">Overwatch</style>.",
+    "variables": {
+      "extraCritChance": [
+        10, 10, 10, 10, 10, 10, 10, 10, 12, 12, 12, 12, 12, 12, 12, 12, 12, 13,
+        13, 13, 13, 13, 13, 13, 13, 13, 14, 14, 14, 14, 14, 14, 14, 14, 14, 15,
+        15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15,
+        15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15
+      ],
+      "extraCritDmg": [
+        10, 12, 14, 16, 18, 20, 23, 25, 27, 30, 32, 34, 36, 39, 41, 43, 46, 48,
+        50, 53, 56, 60, 69, 78, 87, 96, 105, 115, 124, 133, 142, 151, 160, 169,
+        178, 187, 196, 206, 215, 227, 245, 264, 285, 307, 348, 390, 431, 472,
+        513, 554, 560, 568, 575, 585, 595, 605, 615, 628, 640, 653, 668, 683,
+        698, 713, 728
+      ]
+    },
+    "constants": {},
+    "scaled": ["extraCritDmg"]
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "OiWatchIt": {
+    "description": "When this unit is attacked, a <style=\"Steppable\">steppable</style> crate of <style=\"Resource_Gold\">Coins</style> is spawned in a free adjacent hex for each hit taken.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

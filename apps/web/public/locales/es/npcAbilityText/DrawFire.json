@@ -1,0 +1,8 @@
+{
+  "DrawFire": {
+    "description": "Cualquier unidad aliada adyacente impactada por ataques enemigos recibe la mitad de los <style=\"Stat_Hits\">impactos</style> (redondeados hacia abajo) que impactan al Exterminador en su lugar.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

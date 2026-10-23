@@ -1,0 +1,30 @@
+{
+  "TimeFlux": {
+    "description": "Au début de son tour, <style=\"Faction_ThousandSons\">Toth</style> <style=\"Regenerate\">régénère</style> <style=\"Stat_Health\">{[hpToHeal]} santé</style> plus une quantité égale aux <style=\"Stat_Damage\">dégâts</style> du dernier <style=\"Stat_Hits\">coup</style> qu'il a reçu pendant le dernier tour ennemi. Le total de santé restaurée ne peut dépasser <style=\"Stat_Health\">{[maxHpToHeal]} santé</style>.\n\nLorsque <style=\"Faction_ThousandSons\">Toth</style> se déplace, il laisse un fantôme temporel sur son hexagone de départ. Ce fantôme disparaît si une autre unité occupe cet hexagone ou si le terrain devient infranchissable (comme pour la <style=\"Tile_Floe\">Glace brisée</style>). La première fois que <style=\"Faction_ThousandSons\">Toth</style> est éliminé dans chaque combat, si son fantôme temporel est présent sur le champ de bataille, il ressuscite avec <style=\"Stat_Health\">{[hp]} santé</style> restante à son emplacement. Cet effet s'active même si <style=\"Faction_ThousandSons\">Toth</style> est <style=\"Overkill\">Exterminé</style>.",
+    "variables": {
+      "hpToHeal": [
+        12, 14, 17, 19, 22, 24, 27, 30, 33, 35, 38, 41, 44, 46, 49, 52, 55, 57,
+        60, 63, 67, 72, 83, 94, 105, 116, 126, 137, 148, 159, 170, 181, 192,
+        203, 214, 225, 236, 247, 258, 273, 294, 317, 342, 369, 418, 467, 517,
+        566, 615, 665, 672, 681, 690, 702, 714, 726, 738, 753, 768, 783, 801,
+        819, 837, 855, 873
+      ],
+      "hp": [
+        33, 40, 46, 53, 59, 67, 75, 82, 90, 97, 105, 113, 120, 128, 135, 143,
+        150, 158, 166, 173, 183, 198, 228, 258, 288, 318, 348, 378, 408, 438,
+        468, 498, 528, 558, 588, 618, 648, 678, 708, 750, 810, 872, 940, 1014,
+        1150, 1285, 1421, 1557, 1692, 1828, 1848, 1873, 1898, 1931, 1964, 1997,
+        2030, 2071, 2112, 2153, 2203, 2252, 2302, 2351, 2401
+      ],
+      "maxHpToHeal": [
+        60, 72, 84, 96, 108, 122, 136, 149, 163, 177, 191, 205, 218, 232, 246,
+        260, 274, 287, 301, 315, 334, 359, 414, 469, 523, 578, 632, 687, 742,
+        796, 851, 905, 960, 1015, 1069, 1124, 1178, 1233, 1288, 1364, 1472,
+        1586, 1708, 1844, 2090, 2337, 2584, 2830, 3077, 3324, 3360, 3405, 3450,
+        3510, 3570, 3630, 3690, 3765, 3840, 3915, 4005, 4095, 4185, 4275, 4365
+      ]
+    },
+    "constants": {},
+    "scaled": ["hpToHeal", "hp", "maxHpToHeal"]
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "HeadwoppasKillchoppa": {
+    "description": "<style=\"Faction_Orks\">Boss Gulgortz</style> und alle verbündeten <style=\"Faction_Orks\">Orkboys</style> verursachen für jede gegnerische Einheit, die Boss Gulgortz in diesem Kampf besiegt hat, <style=\"Stat_Damage\">+{[extraDmg]} Schaden</style> mit Nahkampfangriffen.",
+    "variables": {
+      "extraDmg": [195, 206, 216, 227, 237, 248, 258, 269, 279, 290]
+    },
+    "constants": {},
+    "scaled": []
+  }
+}

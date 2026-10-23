@@ -1,0 +1,23 @@
+{
+  "GalvanicField": {
+    "description": "Siempre que <style=\"Faction_AdeptusMechanicus\">Actus</style> <style=\"Repairing\">repare</style> a otra unidad, esa unidad atacará inmediatamente a un objetivo al alcance, infligiendo un <style=\"Stat\">{[dmgPct]} %</style> de su propio <style=\"Stat_Damage\">Daño</style>, hasta un máximo de <style=\"Stat_Damage\">{[maxDmg]} de Daño</style> por <style=\"Stat_Hits\">impacto</style>. <style=\"Faction_AdeptusMechanicus\">Actus</style> puede <style=\"Repairing\">reparar</style> a otras unidades aliadas incluso si tienen toda su <style=\"Stat_Health\">Salud</style>.",
+    "variables": {
+      "dmgPct": [
+        80, 80, 80, 80, 80, 80, 80, 80, 85, 85, 85, 85, 85, 85, 85, 85, 85, 90,
+        90, 90, 90, 90, 90, 90, 90, 90, 95, 95, 95, 95, 95, 95, 95, 95, 95, 100,
+        100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
+        100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
+        100
+      ],
+      "maxDmg": [
+        60, 72, 84, 96, 108, 122, 136, 149, 163, 177, 191, 205, 218, 232, 246,
+        260, 274, 287, 301, 315, 334, 359, 414, 469, 523, 578, 632, 687, 742,
+        796, 851, 905, 960, 1015, 1069, 1124, 1178, 1233, 1288, 1364, 1472,
+        1586, 1708, 1844, 2090, 2337, 2584, 2830, 3077, 3324, 3360, 3405, 3450,
+        3510, 3570, 3630, 3690, 3765, 3840, 3915, 4005, 4095, 4185, 4275, 4365
+      ]
+    },
+    "constants": {},
+    "scaled": ["maxDmg"]
+  }
+}

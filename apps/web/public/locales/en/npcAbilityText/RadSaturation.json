@@ -1,0 +1,8 @@
+{
+  "RadSaturation": {
+    "description": "After the <style=\"Faction_AdeptusMechanicus\">Skitarii Vanguard</style> moves, it adds <style=\"Tile_Contamination\">Contamination</style> to its hex. If it does not move, then this ability triggers at the end of its turn.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

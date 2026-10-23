@@ -1,0 +1,25 @@
+{
+  "SereneUnifier": {
+    "description": "Au début de son tour, <style=\"Faction_Tau\">Aun'Shi</style> accorde à lui-même et aux unités alliées adjacentes un bonus basé sur la manche actuelle. Les unités alliées de l'<style=\"Faction_Tau\">Empire T'au</style> distantes de {[range]} hexagones bénéficient de ce bonus. Celui-ci dure jusqu'au début du prochain tour de cette unité, même si <style=\"Faction_Tau\">Aun'Shi</style> est vaincu. Les buffs suivants sont activés consécutivement à chaque manche :\n\n1 - <style=\"BUFF_no_underscore\">Sens de la pierre</style> : les unités subissent <style=\"Stat_Damage\">-{[dmgReductionPct]} % de dégâts</style>\n2 - <style=\"BUFF_no_underscore\">Grâce du Zéphyr</style> : les unités bénéficient de <style=\"Stat_Movement\">+{[extraMovement]} de déplacement</style>\n3 - <style=\"BUFF_no_underscore\">Tempête de feu</style> : les unités obtiennent <style=\"Stat_Damage\">+{[extraDmg]} dégâts</style>\n\nAprès la 3e manche, le cycle recommence et se répète jusqu'à ce qu'<style=\"Faction_Tau\">Aun'Shi</style> soit vaincu.",
+    "variables": {
+      "extraDmg": [
+        8, 10, 11, 13, 14, 16, 18, 20, 22, 24, 25, 27, 29, 31, 33, 35, 36, 38,
+        40, 42, 44, 48, 55, 62, 70, 77, 84, 92, 99, 106, 113, 121, 128, 135,
+        143, 150, 157, 164, 172, 182, 196, 211, 228, 246, 279, 312, 344, 377,
+        410, 443, 448, 454, 460, 468, 476, 484, 492, 502, 512, 522, 534, 546,
+        558, 570, 582
+      ],
+      "dmgReductionPct": [
+        25, 26, 26, 27, 27, 28, 28, 29, 29, 30, 30, 31, 31, 32, 32, 33, 33, 34,
+        34, 35, 35, 36, 36, 37, 37, 38, 38, 39, 39, 40, 40, 41, 41, 42, 42, 43,
+        43, 44, 44, 45, 45, 46, 46, 47, 47, 48, 48, 49, 49, 50, 50, 50, 50, 50,
+        50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50
+      ]
+    },
+    "constants": {
+      "range": "2",
+      "extraMovement": "1"
+    },
+    "scaled": ["extraDmg"]
+  }
+}

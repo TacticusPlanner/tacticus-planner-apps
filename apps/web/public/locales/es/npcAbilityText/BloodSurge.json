@@ -1,0 +1,8 @@
+{
+  "BloodSurge": {
+    "description": "Durante cada turno enemigo, después de la primera vez que este <style=\"Faction_WorldEaters\">Bersérker</style> sea atacado, se mueve 1 hexágono hacia su atacante, si puede. Después, si está adyacente a una unidad enemiga, realiza un <style=\"NormalAttack\">ataque normal</style>, dando prioridad a la unidad que le ha atacado.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

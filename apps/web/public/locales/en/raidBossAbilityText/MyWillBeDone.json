@@ -1,0 +1,10 @@
+{
+  "MyWillBeDone": {
+    "description": "Immediately trigger one attack by each friendly <style=\"Faction_Necrons\">Necron</style> unit on the battlefield from their current hex and as long as they have a target in range.",
+    "variables": {},
+    "constants": {
+      "cooldownTurns": "2"
+    },
+    "scaled": []
+  }
+}

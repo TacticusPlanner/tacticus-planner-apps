@@ -9,7 +9,11 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import { unitOriginState } from "@/entities/unit"
 import type { ReadState } from "@/shared/lib"
 import type { UnitPowerContext } from "@/shared/unit-power"
-import { i18n } from "@/test/i18n-instance"
+import {
+  holdNamespaceLoads,
+  i18n,
+  requestedNamespaces,
+} from "@/test/i18n-instance"
 import { act, fireEvent, render, screen, waitFor, within } from "@/test/render"
 import { seedGameCatalog, seedPlayerData } from "@/test/seed"
 
@@ -90,9 +94,9 @@ const lhykhis = {
   rangeDistance: 2,
   movement: 4,
   traits: ["Infiltrate", "Flying"],
-  // Ability ids with no rules text in npcAbilityText, to exercise the missing-text state.
-  activeAbilityNames: ["NoRulesTextActive"],
-  passiveAbilityNames: ["NoRulesTextPassive"],
+  // Known gaps (npcAbilityTextGaps): ids with no rules text, to exercise the missing-text state.
+  activeAbilityNames: ["RunsAway"],
+  passiveAbilityNames: ["RunsAround"],
   equipmentSlots: ["I_Crit", "I_Block", "I_Booster_Crit"],
 }
 const calgar = {
@@ -103,15 +107,15 @@ const calgar = {
   rangedDamage: null,
   rangedHits: null,
   rangeDistance: null,
-  activeAbilityNames: ["NotInTheText"],
-  passiveAbilityNames: ["AlsoNotInTheText"],
+  activeAbilityNames: ["BossEndFightUndefeated"],
+  passiveAbilityNames: ["RepairEnthusiast"],
 }
 const relic = {
   id: "R_Tigurius",
   name: "Psychic Hood",
   rarity: "Mythic",
   type: "I_Defensive",
-  abilityId: "NotARelicText",
+  abilityId: "RunsAway",
   isRelic: true,
   isUniqueRelic: true,
   allowedUnits: ["ultraTigurius"],
@@ -607,7 +611,7 @@ describe("CharacterUnitPage", () => {
   it("shows the missing-text state for both abilities of a character without rules text", async () => {
     await renderUnit("/library/characters/eldarLhykhis")
     expect(
-      screen.getByTestId("unit-ability-active-missing-text")
+      await screen.findByTestId("unit-ability-active-missing-text")
     ).toBeInTheDocument()
     expect(
       screen.getByTestId("unit-ability-passive-missing-text")
@@ -620,7 +624,9 @@ describe("CharacterUnitPage", () => {
   it("shows a relic panel only for a character a relic can be equipped on", async () => {
     await renderUnit("/library/characters/ultraTigurius")
     expect(screen.getByTestId("unit-relic")).toHaveTextContent("Psychic Hood")
-    expect(screen.getByTestId("unit-relic-missing-text")).toBeInTheDocument()
+    expect(
+      await screen.findByTestId("unit-relic-missing-text")
+    ).toBeInTheDocument()
   })
 
   it("shows a relic's rules text at the stepper's level with the next level and a chart", async () => {
@@ -628,6 +634,7 @@ describe("CharacterUnitPage", () => {
     env.extraEquipment = [voidwyrm]
     await renderUnit("/library/characters/genesBiophagus")
     const panel = screen.getByTestId("unit-relic")
+    await screen.findByTestId("unit-relic-next")
     expect(panel).toHaveTextContent(
       "The relic bearer takes -390 Crit Damage for each friendly adjacent Summon or Decoy."
     )
@@ -648,9 +655,9 @@ describe("CharacterUnitPage", () => {
     await renderUnit("/library/characters/ultraTigurius")
     // The fixture's Psychic Hood points at an ability with no rules-text entry.
     expect(screen.getByTestId("unit-relic")).toHaveTextContent("Psychic Hood")
-    expect(screen.getByTestId("unit-relic-missing-text")).toHaveTextContent(
-      "Rules text isn't in the planner yet."
-    )
+    expect(
+      await screen.findByTestId("unit-relic-missing-text")
+    ).toHaveTextContent("Rules text isn't in the planner yet.")
     expect(screen.queryByTestId("unit-relic-stepper")).not.toBeInTheDocument()
     expect(
       within(screen.getByTestId("unit-relic")).queryByRole("figure")
@@ -1068,6 +1075,36 @@ describe("CharacterUnitPage", () => {
       }
     }
   )
+
+  it("paints the page before the ability text arrives, then adds the tour's ability step", async () => {
+    requestedNamespaces.length = 0
+    const release = holdNamespaceLoads()
+    await renderUnit("/library/characters/ultraTigurius")
+    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(
+      "Tigurius"
+    )
+    expect(
+      screen.getByTestId("unit-ability-active-text-loading")
+    ).toHaveTextContent("Loading rules text…")
+    expect(
+      screen.queryByTestId("unit-ability-active-missing-text")
+    ).not.toBeInTheDocument()
+    const targets = () => env.tour?.desktop.map((step) => step.target) ?? []
+    expect(targets()).not.toContain('[data-testid="unit-ability-active"]')
+
+    act(release)
+    expect(
+      await screen.findByTestId("unit-ability-active-stepper")
+    ).toBeInTheDocument()
+    expect(targets()).toContain('[data-testid="unit-ability-active"]')
+    expect(
+      requestedNamespaces.filter((key) => key.includes("AbilityText/")).sort()
+    ).toEqual([
+      // The relic's ability (`RunsAway`) is a known gap, so it is never requested.
+      "en/npcAbilityText/PsychicFortress",
+      "en/npcAbilityText/StormOfWrath",
+    ])
+  })
 
   it("leaves the ability step out of the tour when the unit has no ability text", async () => {
     await renderUnit("/library/characters/eldarLhykhis")

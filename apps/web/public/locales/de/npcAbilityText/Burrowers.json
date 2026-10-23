@@ -1,0 +1,8 @@
+{
+  "Burrowers": {
+    "description": "Diese Einheit kann sich während ihres Zugs eingraben und so vom Schlachtfeld verschwinden. Im darauffolgenden Zug muss sie auf einem beliebigen freien Feld wieder auftauchen. Wenn dieses Feld an einen Gegner angrenzt, kann die Einheit sofort im Nahkampf angreifen.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

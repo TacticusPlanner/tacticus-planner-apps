@@ -1,0 +1,10 @@
+{
+  "Thrydderghyre": {
+    "description": "La primera vez que <style=\"Faction_ThousandSons\">Yazaghor</style> pierde <style=\"Stat_Health\">Salud</style> y la primera vez que usa <i>Fachada hechicera</i>, invoca una <style=\"Summon\"><style=\"Faction_ThousandSons\">copia</style></style> de sí mismo en un hexágono adyacente libre con el <style=\"STAT\">{[statsPct]}%</style> de su propia <style=\"Stat_Health\">Salud</style>, <style=\"Stat_Damage\">Daño</style> y <style=\"Stat_Armor\">Armadura</style>. Las copias no pueden usar <i>Fachada hechicera</i> ni <i>Thrydderghyre</i>, pero tienen <i>Espejismo retorcido</i> como habilidad pasiva adicional.",
+    "variables": {
+      "statsPct": [50, 51, 52, 54, 56, 58, 60, 62, 64, 66]
+    },
+    "constants": {},
+    "scaled": []
+  }
+}

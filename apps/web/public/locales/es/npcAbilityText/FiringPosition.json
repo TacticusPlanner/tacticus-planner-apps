@@ -1,0 +1,10 @@
+{
+  "FiringPosition": {
+    "description": "Al derrotar a una unidad con un ataque provocado por <style=\"Overwatch\">Vigilancia</style>, el <style=\"Faction_BlackLegion\">Havoc</style> se queda en <style=\"Overwatch\">Vigilancia</style> y retiene {[hitsReduction]} <style=\"Stat_Hits\">impactos</style> menos en comparación con el ataque anterior.",
+    "variables": {},
+    "constants": {
+      "hitsReduction": "2"
+    },
+    "scaled": []
+  }
+}

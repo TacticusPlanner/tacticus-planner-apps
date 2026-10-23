@@ -1,0 +1,13 @@
+{
+  "ForwardObservers": {
+    "description": "Fija como objetivo a una unidad enemiga dentro de un alcance de {[range]} que no tenga una <style=\"Debuff_Markerlight\">Luz de señalización</style>. El objetivo recibe una <style=\"Debuff_Markerlight\">Luz de señalización</style> por {[nrOfRounds]} rondas. La <style=\"Faction_Tau\">Exoarmadura Sigilo</style> recibe entonces un <style=\"Stat_Damage\">-{[dmgPctReduction]} % de Daño</style> de los ataques a distancia por {[nrOfRounds_2]} ronda.",
+    "variables": {},
+    "constants": {
+      "range": "3",
+      "dmgPctReduction": "50",
+      "nrOfRounds": "2",
+      "nrOfRounds_2": "1"
+    },
+    "scaled": []
+  }
+}

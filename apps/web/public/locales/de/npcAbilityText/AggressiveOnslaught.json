@@ -1,0 +1,32 @@
+{
+  "AggressiveOnslaught": {
+    "description": "<style=\"Faction_BloodAngels\">Mataneo</style> beschwört beim <style=\"Charging\">Ansturm</style> {[nrOfSummons]} <style=\"Summon\"><style=\"Faction_BloodAngels\">Intercessoren mit Sprungmodul</style></style> auf Felder, die an sein Ziel angrenzen, wonach diese das Ziel sofort angreifen. Wenn sich Mataneo zu Beginn seines Zugs noch auf dem Schlachtfeld befindet, verlassen alle auf diese Weise beschworenen Intercessoren mit Sprungmodul das Schlachtfeld.\n\nWerte des Intercessors mit Sprungmodul:\n<style=\"Stat_Health\">{[summonHp]} Lebenspunkte</style>\n<style=\"Stat_Damage\">{[summonDmg]} Schaden</style>\n<style=\"Stat_Armor\">{[summonArmor]} Rüstung</style>",
+    "variables": {
+      "summonDmg": [
+        18, 22, 25, 29, 32, 37, 41, 45, 49, 53, 57, 61, 66, 70, 74, 78, 82, 86,
+        90, 95, 100, 108, 124, 141, 157, 173, 190, 206, 222, 239, 255, 272, 288,
+        304, 321, 337, 354, 370, 386, 409, 442, 476, 512, 553, 627, 701, 775,
+        849, 923, 997, 1008, 1022, 1035, 1053, 1071, 1089, 1107, 1130, 1152,
+        1175, 1202, 1229, 1256, 1283, 1310
+      ],
+      "summonHp": [
+        50, 60, 70, 80, 90, 102, 113, 125, 136, 148, 159, 171, 182, 194, 205,
+        217, 228, 240, 251, 263, 278, 300, 345, 391, 436, 482, 527, 573, 618,
+        664, 709, 755, 800, 846, 891, 937, 982, 1028, 1073, 1137, 1227, 1322,
+        1424, 1537, 1742, 1948, 2153, 2359, 2564, 2770, 2800, 2838, 2875, 2925,
+        2975, 3025, 3075, 3138, 3200, 3263, 3338, 3413, 3488, 3563, 3638
+      ],
+      "summonArmor": [
+        18, 22, 25, 29, 32, 37, 41, 45, 49, 53, 57, 61, 66, 70, 74, 78, 82, 86,
+        90, 95, 100, 108, 124, 141, 157, 173, 190, 206, 222, 239, 255, 272, 288,
+        304, 321, 337, 354, 370, 386, 409, 442, 476, 512, 553, 627, 701, 775,
+        849, 923, 997, 1008, 1022, 1035, 1053, 1071, 1089, 1107, 1130, 1152,
+        1175, 1202, 1229, 1256, 1283, 1310
+      ]
+    },
+    "constants": {
+      "nrOfSummons": "2"
+    },
+    "scaled": ["summonDmg", "summonHp", "summonArmor"]
+  }
+}

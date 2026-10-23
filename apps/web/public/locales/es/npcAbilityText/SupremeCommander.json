@@ -1,0 +1,33 @@
+{
+  "SupremeCommander": {
+    "description": "Invoca a hasta <style=\"Stat\">{[nrOfSummons]}</style><style=\"Summon\"><style=\"Faction_AstraMilitarum\">Guardia Cadiano</style></style> en hexágonos adyacentes libres. Todos los <style=\"Summon\"><style=\"Faction_AstraMilitarum\">Guardias Cadianos</style></style> aliados en el rango de {[range]} hexágonos toman un turno de inmediato. Si el <style=\"Faction_AstraMilitarum\">Sargento Kell</style> está en juego, invoca un <style=\"Summon\"><style=\"Faction_AstraMilitarum\">Guardia Cadiano</style></style> adicional y el rango de activación es de 3.\n\nAtributos de Guardia Cadiano:\n<style=\"Stat_Health\">{[summonHp]} de Salud</style>\n<style=\"Stat_Damage\">{[summonDmg]} de Daño</style>\n<style=\"Stat_Armor\">{[summonArmor]} de Armadura</style>",
+    "variables": {
+      "summonHp": [
+        40, 48, 56, 64, 72, 81, 90, 100, 109, 118, 127, 136, 146, 155, 164, 173,
+        182, 192, 201, 210, 222, 240, 276, 312, 349, 385, 422, 458, 494, 531,
+        567, 604, 640, 676, 713, 749, 786, 822, 858, 910, 982, 1057, 1139, 1229,
+        1394, 1558, 1722, 1887, 2051, 2216, 2240, 2270, 2300, 2340, 2380, 2420,
+        2460, 2510, 2560, 2610, 2670, 2730, 2790, 2850, 2910
+      ],
+      "summonDmg": [
+        24, 29, 34, 38, 43, 49, 54, 60, 65, 71, 76, 82, 87, 93, 98, 104, 109,
+        115, 120, 126, 133, 144, 166, 187, 209, 231, 253, 275, 297, 318, 340,
+        362, 384, 406, 428, 450, 471, 493, 515, 546, 589, 634, 683, 738, 836,
+        935, 1033, 1132, 1231, 1330, 1344, 1362, 1380, 1404, 1428, 1452, 1476,
+        1506, 1536, 1566, 1602, 1638, 1674, 1710, 1746
+      ],
+      "summonArmor": [
+        8, 10, 11, 13, 14, 16, 18, 20, 22, 24, 25, 27, 29, 31, 33, 35, 36, 38,
+        40, 42, 44, 48, 55, 62, 70, 77, 84, 92, 99, 106, 113, 121, 128, 135,
+        143, 150, 157, 164, 172, 182, 196, 211, 228, 246, 279, 312, 344, 377,
+        410, 443, 448, 454, 460, 468, 476, 484, 492, 502, 512, 522, 534, 546,
+        558, 570, 582
+      ]
+    },
+    "constants": {
+      "nrOfSummons": "2",
+      "range": "2"
+    },
+    "scaled": ["summonHp", "summonDmg", "summonArmor"]
+  }
+}

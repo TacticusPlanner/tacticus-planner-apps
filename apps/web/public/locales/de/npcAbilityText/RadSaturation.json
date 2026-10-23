@@ -1,0 +1,8 @@
+{
+  "RadSaturation": {
+    "description": "Nachdem sich der <style=\"Faction_AdeptusMechanicus\">Skitarii-Strahlenkrieger</style> bewegt hat, <style=\"Tile_Contamination\">kontaminiert</style> er sein Feld. Wenn er sich nicht bewegt, wird diese Fähigkeit am Ende seines Zugs ausgelöst.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

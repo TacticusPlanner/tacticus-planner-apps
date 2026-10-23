@@ -1,0 +1,10 @@
+{
+  "WallOfMirrors": {
+    "description": "Si l'<style=\"Faction_Tau\">Exo-armure Stealth</style> ne s'est pas déplacée, elle disparaît de son hexagone actuel et réapparaît sur un hexagone libre du champ de bataille depuis lequel elle peut effectuer une <style=\"NormalAttack\">attaque à distance normale</style> contre un ennemi affublé d'un <style=\"Debuff_Markerlight\">pointeur lumineux</style>. Cette attaque bénéficie de <style=\"Piercing_Ratio\">+{[extraPierce]} % de taux de perforation</style>.",
+    "variables": {},
+    "constants": {
+      "extraPierce": "15"
+    },
+    "scaled": []
+  }
+}

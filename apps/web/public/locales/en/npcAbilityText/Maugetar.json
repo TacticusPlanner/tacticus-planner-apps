@@ -1,0 +1,14 @@
+{
+  "Maugetar": {
+    "description": "During his turn, if <style=\"Faction_Aeldari\">Maugan Ra</style> has not moved, he can move after attacking and his attacks that contain a <style=\"Stat_CritDamage\">Crit</style> deal an additional <style=\"Stat_Hits\">{[nrOfHits]}x</style> <style=\"DMG_Direct\">{[minDmg]}-{[maxDmg]} Direct Damage</style>. When <style=\"Buff_Overwatching\">Overwatching</style>, <style=\"Stat_CritDamage\">Crits</style> deal this additional <style=\"Stat_Hits\">hit</style> if he has not moved in his last turn.",
+    "variables": {
+      "minDmg": [1765, 1860, 1956, 2051, 2146, 2241, 2337, 2432, 2527, 2622],
+      "maxDmg": [2350, 2477, 2604, 2731, 2857, 2984, 3111, 3238, 3365, 3492]
+    },
+    "constants": {
+      "nrOfHits": "1",
+      "damageProfile": "DirectDamage"
+    },
+    "scaled": []
+  }
+}

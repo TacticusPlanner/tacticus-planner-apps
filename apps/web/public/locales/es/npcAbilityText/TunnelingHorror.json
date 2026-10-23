@@ -1,0 +1,8 @@
+{
+  "TunnelingHorror": {
+    "description": "Esta unidad puede hacer túneles para moverse. Luego se retira del campo de batalla y emerge en su hexágono elegido al comienzo de su siguiente turno y <style=\"Displacement\">empuja</style> a cualquier unidad de ese hexágono a un lado. A continuación, puede realizar un ataque <style=\"Stat_Melee\">cuerpo a cuerpo</style> de forma inmediata contra cualquier enemigo adyacente.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

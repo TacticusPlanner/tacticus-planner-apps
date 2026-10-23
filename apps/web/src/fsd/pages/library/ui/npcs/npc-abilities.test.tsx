@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest"
+import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import userEvent from "@testing-library/user-event"
 
@@ -15,14 +15,91 @@ const abilityText = {
   },
 }
 
+const rules = vi.hoisted(() => ({
+  state: { ready: true, failed: false },
+  requested: [] as string[],
+  retries: 0,
+}))
+
 vi.mock("@/entities/npc", () => ({
-  useNpcAbilityText: () => (id: string) =>
-    abilityText[id as keyof typeof abilityText],
+  useNpcAbilityText: (ids: readonly string[]) => {
+    rules.requested.push(...ids)
+    return {
+      ...rules.state,
+      retry: () => {
+        rules.retries += 1
+      },
+      text: (id: string) =>
+        rules.state.ready && !rules.state.failed
+          ? abilityText[id as keyof typeof abilityText]
+          : undefined,
+    }
+  },
 }))
 
 import { NpcAbilities } from "./npc-abilities"
 
 describe("NpcAbilities", () => {
+  beforeEach(() => {
+    rules.state = { ready: true, failed: false }
+    rules.requested = []
+    rules.retries = 0
+  })
+
+  it("asks for the shown abilities' text only", () => {
+    render(
+      <NpcAbilities
+        abilityLevel={2}
+        unitName="Makhotep"
+        rarity="Common"
+        activeAbilities={["AdaptiveStrategy", "RunsAway"]}
+        passiveAbilities={["RelentlessMarch"]}
+      />
+    )
+    expect([...new Set(rules.requested)].sort()).toEqual([
+      "AdaptiveStrategy",
+      "RelentlessMarch",
+    ])
+  })
+
+  it("expands to a loading line while the text downloads", async () => {
+    const user = userEvent.setup()
+    rules.state = { ready: false, failed: false }
+    render(
+      <NpcAbilities
+        abilityLevel={2}
+        unitName="Makhotep"
+        rarity="Common"
+        activeAbilities={["AdaptiveStrategy"]}
+        passiveAbilities={[]}
+      />
+    )
+    await user.click(screen.getByRole("button", { name: /Adaptive Strategy/ }))
+    expect(
+      screen.getByTestId("npc-ability-AdaptiveStrategy-text-loading")
+    ).toHaveTextContent("Loading rules text…")
+  })
+
+  it("expands to a failure note with a retry when the download failed", async () => {
+    const user = userEvent.setup()
+    rules.state = { ready: true, failed: true }
+    render(
+      <NpcAbilities
+        abilityLevel={2}
+        unitName="Makhotep"
+        rarity="Common"
+        activeAbilities={["AdaptiveStrategy"]}
+        passiveAbilities={[]}
+      />
+    )
+    await user.click(screen.getByRole("button", { name: /Adaptive Strategy/ }))
+    expect(screen.getByRole("alert")).toHaveTextContent(
+      "The rules text couldn't be loaded."
+    )
+    await user.click(screen.getByRole("button", { name: "Retry" }))
+    expect(rules.retries).toBe(1)
+  })
+
   it("lists active and passive abilities with their icons", () => {
     render(
       <NpcAbilities

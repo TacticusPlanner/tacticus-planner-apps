@@ -1,0 +1,11 @@
+{
+  "FullThrottle": {
+    "description": "Whenever this unit moves <style=\"Stat_Movement\">{[movement]}</style> or more hexes, there’s a {[chance]}% chance its rokkit malfunctions and causes the <style=\"Faction_Orks\">Storm Boy</style> to go up in flames. In this event the unit is not revivable.",
+    "variables": {},
+    "constants": {
+      "movement": "3",
+      "chance": "30"
+    },
+    "scaled": []
+  }
+}

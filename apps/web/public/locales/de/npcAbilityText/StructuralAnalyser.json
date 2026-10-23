@@ -1,0 +1,16 @@
+{
+  "StructuralAnalyser": {
+    "description": "Einheiten, die von den Fernkampfangriffen des <style=\"Faction_Tau\">Schattenschleichers</style> getroffen werden, erhalten eine Runde lang ein <style=\"Debuff_Markerlight\">Markierungslicht</style>.\n\nVerbündete Einheiten, die an den Schattenschleicher angrenzen, verursachen an Zielen mit einem <style=\"Debuff_Markerlight\">Markierungslicht</style> <style=\"Stat_Damage\">+{[extraDmg]} Schaden</style> mit Fernkampfangriffen. Verbündete Einheiten des <style=\"Faction_Tau\">Sternenreichs der T’au</style>, die bis zu 2 Felder von Schattenschleicher entfernt sind, sind ebenfalls betroffen.",
+    "variables": {
+      "extraDmg": [
+        10, 12, 14, 16, 18, 20, 23, 25, 27, 30, 32, 34, 36, 39, 41, 43, 46, 48,
+        50, 53, 56, 60, 69, 78, 87, 96, 105, 115, 124, 133, 142, 151, 160, 169,
+        178, 187, 196, 206, 215, 227, 245, 264, 285, 307, 348, 390, 431, 472,
+        513, 554, 560, 568, 575, 585, 595, 605, 615, 628, 640, 653, 668, 683,
+        698, 713, 728
+      ]
+    },
+    "constants": {},
+    "scaled": ["extraDmg"]
+  }
+}

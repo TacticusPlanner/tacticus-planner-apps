@@ -1,0 +1,14 @@
+{
+  "IntoxicatingElixir": {
+    "description": "The relic bearer deals <style=\"Stat_CritDamage\">+{[extraCritDmg]} Crit Damage</style> for each unit within range {[range]} that is <style=\"Debuff_Pinned\">Suppressed</style>, <style=\"Debuff_Stunned\">Stunned</style>, <style=\"Debuff_Taunted\">Taunted</style>, or <style=\"ThrillSeekers\">Thrilled</style>, up to a maximum of {[nrOfUnits]} times. This bonus is doubled if the relic bearer is at or below <style=\"Stat_Health\">{[healthPct]}% Health</style>.",
+    "variables": {
+      "extraCritDmg": [295, 311, 327, 343, 359, 375, 391, 406, 422, 438]
+    },
+    "constants": {
+      "range": "2",
+      "nrOfUnits": "6",
+      "healthPct": "50"
+    },
+    "scaled": []
+  }
+}

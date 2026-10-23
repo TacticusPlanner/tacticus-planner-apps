@@ -1,0 +1,28 @@
+{
+  "BasiliskBarrage": {
+    "description": "If <style=\"Faction_AstraMilitarum\">Thaddeus Noble</style> has not moved, unleashes a barrage of {[nrOfProjectiles]} shells on any target on the battlefield, each dealing <style=\"Stat_Hits\">{[nrOfHits]}x</style> <style=\"DMG_Blast\">{[minDmg]}-{[maxDmg]} Blast Damage</style>. {[nrOfProjectiles_2]} randomly hit the target hex or surrounding hexes and the remaining 2 hit the hexes surrounding those. For each round that has ended, 1 more of the shells hits the target hex, starting with the shells hitting the outer hexes. The <style=\"Suppressive_Fire\">Suppressive Fire</style> trait applies also to this ability.\n\n{[S/AbilityDamageExplanation]}",
+    "variables": {
+      "minDmg": [
+        30, 36, 42, 48, 54, 61, 68, 75, 82, 89, 95, 102, 109, 116, 123, 130,
+        137, 144, 151, 158, 167, 180, 207, 234, 262, 289, 316, 344, 371, 398,
+        425, 453, 480, 507, 535, 562, 589, 617, 644, 682, 736, 793, 854, 922,
+        1045, 1169, 1292, 1415, 1538, 1662, 1680, 1703, 1725, 1755, 1785, 1815,
+        1845, 1883, 1920, 1958, 2003, 2048, 2093, 2138, 2183
+      ],
+      "maxDmg": [
+        32, 38, 45, 51, 58, 65, 72, 80, 87, 94, 102, 109, 116, 124, 131, 139,
+        146, 153, 161, 168, 178, 192, 221, 250, 279, 308, 337, 366, 396, 425,
+        454, 483, 512, 541, 570, 599, 628, 658, 687, 728, 785, 846, 911, 983,
+        1115, 1246, 1378, 1509, 1641, 1773, 1792, 1816, 1840, 1872, 1904, 1936,
+        1968, 2008, 2048, 2088, 2136, 2184, 2232, 2280, 2328
+      ]
+    },
+    "constants": {
+      "damageProfile": "Blast",
+      "nrOfHits": "2",
+      "nrOfProjectiles": "5",
+      "nrOfProjectiles_2": "3"
+    },
+    "scaled": ["minDmg", "maxDmg"]
+  }
+}

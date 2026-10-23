@@ -1,0 +1,24 @@
+{
+  "WayOfTheShortBlade": {
+    "description": "Les <style=\"NormalAttack\">attaques à distance normales</style> des autres <style=\"Character\">personnages</style> alliés distants de {[range]} hexagones contre les ennemis adjacents à un <style=\"Character\">personnage</style> allié ignorent <style=\"Stat_Armor\">{[armorIgnored]} armure</style> et infligent <style=\"Stat_Damage\">+{[extraDmgPct]} % de dégâts</style>, sauf attaque infligeant des dégâts <style=\"DMG_Psychic\">psychiques</style>.\n\nLe <style=\"Faction_Tau\">Commandant Farsight</style> et les autres <style=\"Character\">personnages</style> alliés de l'<style=\"Faction_Tau\">Empire T'au</style> distants de {[range]} hexagones qui effectuent une attaque au corps à corps enchaînent immédiatement avec une <style=\"NormalAttack\">attaque à distance normale</style> contre la même unité, même s'ils lui sont adjacents.",
+    "variables": {
+      "extraDmgPct": [
+        15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 22,
+        22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 30,
+        30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
+        30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30
+      ],
+      "armorIgnored": [
+        7, 8, 10, 11, 13, 14, 16, 17, 19, 21, 22, 24, 25, 27, 29, 30, 32, 34,
+        35, 37, 39, 42, 48, 55, 61, 67, 74, 80, 87, 93, 99, 106, 112, 118, 125,
+        131, 137, 144, 150, 159, 172, 185, 199, 215, 244, 273, 301, 330, 359,
+        388, 392, 397, 403, 410, 417, 424, 431, 439, 448, 457, 467, 478, 488,
+        499, 509
+      ]
+    },
+    "constants": {
+      "range": "2"
+    },
+    "scaled": ["armorIgnored"]
+  }
+}

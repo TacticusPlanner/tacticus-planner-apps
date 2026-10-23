@@ -1,0 +1,10 @@
+{
+  "Conceal": {
+    "description": "<style=\"Faction_Aeldari\">Aeldari</style> units within {[range]} hexes ignore their <style=\"Battle_Fatigue\">Battle Fatigue</style> trait, if they have it, and are treated as having the <style=\"Camouflage\">Camouflage</style> trait.",
+    "variables": {},
+    "constants": {
+      "range": "2"
+    },
+    "scaled": []
+  }
+}

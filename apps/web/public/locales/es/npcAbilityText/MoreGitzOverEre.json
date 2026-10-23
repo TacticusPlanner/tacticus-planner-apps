@@ -1,0 +1,10 @@
+{
+  "MoreGitzOverEre": {
+    "description": "Los enemigos adyacentes a un <style=\"Faction_Orks\">garrapato</style> aliado o a dos o más <style=\"Character\">personajes</style> <style=\"Rarity_Mythic\">Míticos</style> aliados reciben <style=\"Stat_Damage\">+{[extraDmgPct]} % de Daño</style> de los <style=\"NormalAttack\">ataques cuerpo a cuerpo normales</style> de personajes <style=\"Rarity_Mythic\">Míticos</style>.",
+    "variables": {
+      "extraDmgPct": [10, 13, 16, 20]
+    },
+    "constants": {},
+    "scaled": ["extraDmgPct"]
+  }
+}

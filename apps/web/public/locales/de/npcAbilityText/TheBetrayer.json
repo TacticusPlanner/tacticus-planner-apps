@@ -1,0 +1,31 @@
+{
+  "TheBetrayer": {
+    "description": "Nach der Ausführung eines <style=\"NormalAttack\">normalen Angriffs</style> führt <style=\"Faction_WorldEaters\">Khârn</style> einen zweiten Angriff gegen einen angrenzenden Gegner aus und fügt ihm <style=\"Stat_Hits\">{[nrOfHits]}x</style> <style=\"DMG_Eviscerate\">{[minDmg]}–{[maxDmg]} Ausnehm-Schaden</style> zu.\n\nWenn <style=\"Faction_WorldEaters\">Khârn</style> in diesem Kampf einen Gegner besiegt hat, bewegt er sich zu Beginn seines Zuges automatisch bis zu {[range]} Felder in Richtung der nächsten Einheit und verursacht dann <style=\"Stat_Hits\">{[nrOfHits]}x</style> <style=\"DMG_Eviscerate\">{[minDmg]}–{[maxDmg]} Ausnehm-Schaden</style> an einer angrenzenden Einheit. <style=\"Faction_WorldEaters\">Khârn</style> bevorzugt bei dieser automatischen Kombination aus Bewegung und Angriff gegnerische Einheiten, visiert aber auch verbündete Einheiten an, wenn sich keine Gegner innerhalb der Reichweite befinden.",
+    "variables": {
+      "minDmg": [
+        14, 17, 20, 22, 25, 28, 32, 35, 38, 41, 45, 48, 51, 54, 57, 61, 64, 67,
+        70, 74, 78, 84, 97, 109, 122, 135, 148, 160, 173, 186, 199, 211, 224,
+        237, 249, 262, 275, 288, 300, 318, 344, 370, 399, 430, 488, 545, 603,
+        660, 718, 776, 784, 795, 805, 819, 833, 847, 861, 879, 896, 914, 935,
+        956, 977, 998, 1019
+      ],
+      "maxDmg": [
+        18, 22, 25, 29, 32, 37, 41, 45, 49, 53, 57, 61, 66, 70, 74, 78, 82, 86,
+        90, 95, 100, 108, 124, 141, 157, 173, 190, 206, 222, 239, 255, 272, 288,
+        304, 321, 337, 354, 370, 386, 409, 442, 476, 512, 553, 627, 701, 775,
+        849, 923, 997, 1008, 1022, 1035, 1053, 1071, 1089, 1107, 1130, 1152,
+        1175, 1202, 1229, 1256, 1283, 1310
+      ],
+      "range": [
+        2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+        2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+        2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2
+      ]
+    },
+    "constants": {
+      "nrOfHits": "4",
+      "damageProfile": "Eviscerate"
+    },
+    "scaled": ["minDmg", "maxDmg"]
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "Skullsmasher": {
+    "description": "<style=\"Faction_WorldEaters\">Macer</style> verursacht pro <style=\"Stat\">{[hpPct]} %</style> der maximalen <style=\"Stat_Health\">Lebenspunkte</style>, die er aktuell verloren hat, <style=\"Stat_Damage\">+{[extraDmg]} Schaden</style>. Wenn <style=\"Faction_WorldEaters\">Macer</style> in diesem Kampf einen Gegner besiegt, werden außerdem alle Gegner, die er angreift, <style=\"Debuff_Stunned\">Betäubt</style>.",
+    "variables": {
+      "extraDmg": [
+        1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+        21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 36, 37, 39, 41,
+        43, 45, 49, 53, 57, 61, 70, 78, 86, 94, 103, 111, 112, 113, 114, 115,
+        116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126
+      ]
+    },
+    "constants": {
+      "hpPct": "10"
+    },
+    "scaled": ["extraDmg"]
+  }
+}

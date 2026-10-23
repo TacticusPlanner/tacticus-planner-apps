@@ -1,0 +1,10 @@
+{
+  "VengeanceForTheOmnissiah": {
+    "description": "Whenever an adjacent friendly <style=\"Mechanical\">Mechanical</style> is defeated, the <style=\"Faction_AdeptusMechanicus\">Tech-Priest Enginseer</style> gains <style=\"Stat\">{[effectLevel]}</style> level of <style=\"Buff_MachineVengeance\">Machine Vengeance</style>.",
+    "variables": {},
+    "constants": {
+      "effectLevel": "1"
+    },
+    "scaled": []
+  }
+}

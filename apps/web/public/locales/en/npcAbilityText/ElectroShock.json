@@ -1,0 +1,11 @@
+{
+  "ElectroShock": {
+    "description": "When this unit performs a <style=\"NormalAttack\">normal melee attack</style>, it also deals {[dmgPct]}% of its <style=\"Stat_Damage\">Damage</style> to a random enemy adjacent to the target and all damaged enemies are <style=\"Debuff_Pinned\">Suppressed</style> for 1 round.",
+    "variables": {},
+    "constants": {
+      "damageProfile": "Particle",
+      "dmgPct": "50"
+    },
+    "scaled": []
+  }
+}

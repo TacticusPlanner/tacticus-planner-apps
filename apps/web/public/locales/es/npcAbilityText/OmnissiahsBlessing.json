@@ -1,0 +1,8 @@
+{
+  "OmnissiahsBlessing": {
+    "description": "Cuando el <style=\"Faction_AdeptusMechanicus\">Tecnosacerdote Visioingeniero</style> <style=\"Repairing\">repara</style> a otra unidad, le transfiere todos los niveles de <style=\"Buff_MachineVengeance\">Venganza de las máquinas</style> que tiene a la unidad reparada.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

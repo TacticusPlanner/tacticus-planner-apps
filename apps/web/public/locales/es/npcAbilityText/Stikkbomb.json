@@ -1,0 +1,28 @@
+{
+  "Stikkbomb": {
+    "description": "Lanza una granada a un objetivo, infligiendo <style=\"Stat_Hits\">{[nrOfHits]}x</style> <style=\"DMG_Blast\">{[minDmg]}-{[maxDmg]} de Daño de explosión</style> al objetivo y <style=\"Stat_Hits\">{[nrOfHits_2]}x</style> <style=\"DMG_Blast\">{[minDmg]}-{[maxDmg]} de Daño de explosión</style> a las unidades en hexágonos adyacentes al objetivo. Se aplica rango de {[range]} y <style=\"Indirect_Fire\">Fuego indirecto</style>.",
+    "variables": {
+      "minDmg": [
+        21, 25, 29, 34, 38, 43, 47, 52, 57, 62, 67, 72, 76, 81, 86, 91, 96, 101,
+        105, 110, 117, 126, 145, 164, 183, 202, 221, 240, 260, 279, 298, 317,
+        336, 355, 374, 393, 412, 432, 451, 478, 515, 555, 598, 645, 732, 818,
+        904, 991, 1077, 1163, 1176, 1192, 1208, 1229, 1250, 1271, 1292, 1318,
+        1344, 1370, 1402, 1433, 1465, 1496, 1528
+      ],
+      "maxDmg": [
+        24, 29, 34, 38, 43, 49, 54, 60, 65, 71, 76, 82, 87, 93, 98, 104, 109,
+        115, 120, 126, 133, 144, 166, 187, 209, 231, 253, 275, 297, 318, 340,
+        362, 384, 406, 428, 450, 471, 493, 515, 546, 589, 634, 683, 738, 836,
+        935, 1033, 1132, 1231, 1330, 1344, 1362, 1380, 1404, 1428, 1452, 1476,
+        1506, 1536, 1566, 1602, 1638, 1674, 1710, 1746
+      ]
+    },
+    "constants": {
+      "damageProfile": "Blast",
+      "nrOfHits": "2",
+      "nrOfHits_2": "1",
+      "range": "2"
+    },
+    "scaled": ["minDmg", "maxDmg"]
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "WatchedOver": {
+    "description": "Angrenzende verbündete Einheiten erleiden <style=\"DMG_Psychic\">-{[dmgReductionPct]} % Psi-Schaden</style> durch gegnerische Angriffe und ihre <style=\"Stat_Block\">Block</style>-<style=\"Stat_Chance\">Chance</style> wird, wenn vorhanden, um <style=\"Stat\">+{[blockChance]} %</style> erhöht. Gegnerische <style=\"Psyker\">Psioniker</style> treffen keine zusätzliche Einheit mit ihren <style=\"NormalAttack\">normalen Fernkampfangriffen</style>, wenn sie Einheiten angreifen, die an einen <style=\"Faction_DarkAngels\">Wächter der Dunkelheit</style> angrenzen.",
+    "variables": {
+      "dmgReductionPct": [
+        15, 15, 15, 15, 15, 15, 15, 15, 17, 17, 17, 17, 17, 17, 17, 17, 17, 18,
+        18, 18, 18, 18, 18, 18, 18, 18, 19, 19, 19, 19, 19, 19, 19, 19, 19, 20,
+        20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20,
+        20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20
+      ],
+      "blockChance": [
+        10, 10, 10, 10, 10, 10, 10, 10, 12, 12, 12, 12, 12, 12, 12, 12, 12, 13,
+        13, 13, 13, 13, 13, 13, 13, 13, 14, 14, 14, 14, 14, 14, 14, 14, 14, 15,
+        15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15,
+        15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15
+      ]
+    },
+    "constants": {},
+    "scaled": []
+  }
+}

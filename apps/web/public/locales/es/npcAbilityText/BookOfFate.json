@@ -1,0 +1,10 @@
+{
+  "BookOfFate": {
+    "description": "Luego de que el portador de la reliquia realiza un <style=\"NormalAttack\">ataque normal</style>, una <style=\"Summon\">invocación</style> aliada adyacente realiza un ataque normal contra un enemigo dentro del alcance de ser posible. Si la invocación es un <style=\"Daemon\">daemon</style>, inflige <style=\"Stat_Damage\">+{[extraDmg]} de Daño</style> con este ataque.",
+    "variables": {
+      "extraDmg": [880, 928, 975, 1023, 1070, 1118, 1165, 1213, 1260, 1308]
+    },
+    "constants": {},
+    "scaled": []
+  }
+}

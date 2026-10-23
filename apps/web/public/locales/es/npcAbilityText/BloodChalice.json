@@ -1,0 +1,24 @@
+{
+  "BloodChalice": {
+    "description": "Todas las unidades aliadas adyacentes no mecánicas quedan con un <style=\"Stat_Health\">{[healthPct]} % de Salud</style>. Hasta el inicio de su siguiente turno, las unidades afectadas obtienen <style=\"Piercing_Ratio\">+{[extraPierceRatio]} % de tasa de perforación</style> con ataques cuerpo a cuerpo y se <style=\"Healing\">curan</style> <style=\"Stat_Health\">{[hpToHeal]} de Salud</style> si realizan un ataque cuerpo a cuerpo.",
+    "variables": {
+      "hpToHeal": [
+        50, 60, 70, 80, 90, 102, 113, 125, 136, 148, 159, 171, 182, 194, 205,
+        217, 228, 240, 251, 263, 278, 300, 345, 391, 436, 482, 527, 573, 618,
+        664, 709, 755, 800, 846, 891, 937, 982, 1028, 1073, 1137, 1227, 1322,
+        1424, 1537, 1742, 1948, 2153, 2359, 2564, 2770, 2800, 2838, 2875, 2925,
+        2975, 3025, 3075, 3138, 3200, 3263, 3338, 3413, 3488, 3563, 3638
+      ],
+      "extraPierceRatio": [
+        10, 10, 10, 10, 10, 10, 10, 10, 12, 12, 12, 12, 12, 12, 12, 12, 12, 15,
+        15, 15, 15, 15, 15, 15, 15, 15, 17, 17, 17, 17, 17, 17, 17, 17, 17, 20,
+        20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20,
+        20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20
+      ]
+    },
+    "constants": {
+      "healthPct": "50"
+    },
+    "scaled": ["hpToHeal"]
+  }
+}

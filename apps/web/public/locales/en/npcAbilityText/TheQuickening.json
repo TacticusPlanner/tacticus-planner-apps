@@ -1,0 +1,25 @@
+{
+  "TheQuickening": {
+    "description": "Targets a hex within movement range {[range]} that is neither occupied by an enemy nor by a friendly unit in <style=\"Teleport_Strike_short\">Deep Strike</style>. <style=\"Faction_BloodAngels\">Mephiston</style> moves onto that hex. If a friendly unit is on that hex, that unit moves to Mephiston's previous location. All <style=\"Faction_BloodAngels\">Blood Angels</style> moving this way perform a <style=\"NormalAttack\">normal melee attack</style> after they move, dealing <style=\"STAT\">{[dmgPct]}%</style> of their own damage to a maximum of <style=\"Stat_Damage\">{[maxDmg]} Damage</style>. Units moving this way do not trigger <style=\"Buff_Overwatching\">Overwatch</style> or other movement related reactions.",
+    "variables": {
+      "maxDmg": [
+        50, 60, 70, 80, 90, 102, 113, 125, 136, 148, 159, 171, 182, 194, 205,
+        217, 228, 240, 251, 263, 278, 300, 345, 391, 436, 482, 527, 573, 618,
+        664, 709, 755, 800, 846, 891, 937, 982, 1028, 1073, 1137, 1227, 1322,
+        1424, 1537, 1742, 1948, 2153, 2359, 2564, 2770, 2800, 2838, 2875, 2925,
+        2975, 3025, 3075, 3138, 3200, 3263, 3338, 3413, 3488, 3563, 3638
+      ],
+      "dmgPct": [
+        100, 100, 100, 100, 100, 100, 100, 100, 105, 105, 105, 105, 105, 105,
+        105, 105, 105, 110, 110, 110, 110, 110, 110, 110, 110, 110, 115, 115,
+        115, 115, 115, 115, 115, 115, 115, 120, 120, 120, 120, 120, 120, 120,
+        120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120,
+        120, 120, 120, 120, 120, 120, 120, 120, 120
+      ]
+    },
+    "constants": {
+      "range": "2"
+    },
+    "scaled": ["maxDmg"]
+  }
+}

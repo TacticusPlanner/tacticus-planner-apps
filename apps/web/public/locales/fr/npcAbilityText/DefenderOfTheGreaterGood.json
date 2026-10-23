@@ -1,0 +1,17 @@
+{
+  "DefenderOfTheGreaterGood": {
+    "description": "Les unités alliées adjacentes à <style=\"Faction_Tau\">Shadowsun</style> ou à son <style=\"Faction_Tau\">Drone de Commandement</style> infligent <style=\"Stat_Damage\">+{[extraDmg]} dégâts</style> avec les attaques à distance, sauf si elles infligent des dégâts <style=\"DMG_Psychic\">psychiques</style>. Les attaques concernées ont également des <style=\"Stat_Chance\">chances</style> d'infliger un <style=\"Stat_Hits\">coup</style> supplémentaire. Ces chances s'élèvent à <style=\"Stat\">{[chance]} %</style> pour chaque manche que Shadowsun a passée sur le champ de bataille. Les unités alliées de l'<style=\"Faction_Tau\">Empire T'au</style> distantes de 2 hexagones de Shadowsun ou de son Drone de Commandement bénéficient également de cette capacité.",
+    "variables": {
+      "extraDmg": [
+        5, 6, 7, 8, 9, 10, 11, 12, 14, 15, 16, 17, 18, 19, 21, 22, 23, 24, 25,
+        26, 28, 30, 35, 39, 44, 48, 53, 57, 62, 66, 71, 75, 80, 85, 89, 94, 98,
+        103, 107, 114, 123, 132, 142, 154, 174, 195, 215, 236, 256, 277, 280,
+        284, 288, 293, 298, 303, 308, 314, 320, 326, 334, 341, 349, 356, 364
+      ]
+    },
+    "constants": {
+      "chance": "25"
+    },
+    "scaled": ["extraDmg"]
+  }
+}

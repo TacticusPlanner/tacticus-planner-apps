@@ -1,0 +1,11 @@
+{
+  "ChaliceOfBaal": {
+    "description": "La première fois de chaque tour qu'une unité adjacente à <style=\"Faction_BloodAngels\">Nicodemus</style> meurt, il se <style=\"Healing\">soigne</style> ainsi que toutes les unités alliées adjacentes à hauteur de <style=\"Stat_Health\">{[hp]} santé</style>. Toutes les unités affectées infligent <style=\"Stat_Damage\">+{[extraDmg]} dégâts</style> avec les <style=\"NormalAttack\">attaques au corps à corps normales</style> jusqu'à la fin de ce tour.",
+    "variables": {
+      "hp": [1765, 1860, 1956, 2051, 2146, 2241, 2337, 2432, 2527, 2622],
+      "extraDmg": [490, 516, 543, 569, 596, 622, 649, 675, 702, 728]
+    },
+    "constants": {},
+    "scaled": []
+  }
+}

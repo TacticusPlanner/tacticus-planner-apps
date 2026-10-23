@@ -1,0 +1,10 @@
+{
+  "HungeringSwarm": {
+    "description": "Jedes Mal, wenn diese Einheit einen Nahkampfangriff ausführt, landet sie für jeden anderen verbündeten Hormaganten oder Absorberschwarm, der sich auf einem der an das Ziel angrenzenden Felder befindet, <style=\"Stat_Hits\">+{[extraHit]} Treffer</style>.",
+    "variables": {},
+    "constants": {
+      "extraHit": "1"
+    },
+    "scaled": []
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "CloudOfFlies": {
+    "description": "Receives <style=\"Stat_Damage\">-{[dmgReductionPct]}% Damage</style> while on a hex with <style=\"Tile_Contamination\">Contamination</style>. If this unit is attacked while it is not on a hex with <style=\"Tile_Contamination\">Contamination</style>, it has a {[chance]}% chance to contaminate the hex it is standing on.",
+    "variables": {},
+    "constants": {
+      "dmgReductionPct": "30",
+      "chance": "70"
+    },
+    "scaled": []
+  }
+}

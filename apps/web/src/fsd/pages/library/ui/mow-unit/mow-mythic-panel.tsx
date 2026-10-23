@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next"
 import { abilityIcon } from "@workspace/game-catalog"
 import type { Rarity } from "@workspace/game-domain"
 
-import type { AbilityTextEntry } from "@/shared/ability-text"
+import type { AbilityTextEntry, RulesText } from "@/shared/ability-text"
 
 import { AbilityPanel } from "../unit/ability-panel"
 import { MYTHIC_MAX_LEVEL } from "./mow-unit.view-model"
@@ -20,6 +20,7 @@ export function MowMythicPanel({
   name,
   abilityKey,
   text,
+  rules,
   level,
   rarity,
   unitName,
@@ -28,6 +29,8 @@ export function MowMythicPanel({
   name: string
   abilityKey: string | undefined
   text: AbilityTextEntry | undefined
+  /** Omitted when the catalog names no mythic ability (no text is loading for it). */
+  rules?: RulesText<unknown>
   /** `undefined` below Mythic. */
   level: number | undefined
   rarity: Rarity
@@ -45,6 +48,7 @@ export function MowMythicPanel({
       name={name}
       iconSrc={abilityKey ? abilityIcon(abilityKey) : undefined}
       text={unscaledText}
+      rules={rules}
       rarity={rarity}
       unitName={unitName}
       factionId={factionId}

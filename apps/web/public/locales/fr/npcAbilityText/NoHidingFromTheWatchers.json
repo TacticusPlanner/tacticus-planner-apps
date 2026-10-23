@@ -1,0 +1,10 @@
+{
+  "NoHidingFromTheWatchers": {
+    "description": "Tous les <style=\"Stat_Damage\">dégâts</style> que subit cette unité se voient réduits à 0. Après avoir subi une attaque, cette unité se déplace de {[nrOfTiles]} hexagone dans le but de s'éloigner de toutes les autres unités. Si aucune autre unité <style=\"Faction_DarkAngels\">Dark Angels</style> alliée ne se trouve sur le champ de bataille à part d'autres <style=\"Faction_DarkAngels\">Guetteurs des Ténèbres</style>, cette unité quitte le champ de bataille.",
+    "variables": {},
+    "constants": {
+      "nrOfTiles": "1"
+    },
+    "scaled": []
+  }
+}

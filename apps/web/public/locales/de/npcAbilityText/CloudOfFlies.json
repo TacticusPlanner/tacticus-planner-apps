@@ -1,0 +1,11 @@
+{
+  "CloudOfFlies": {
+    "description": "Erleidet <style=\"Stat_Damage\">-{[dmgReductionPct]} % Schaden</style> auf <style=\"Tile_Contamination\">kontaminierten</style> Feldern. Wenn diese Einheit auf einem Feld angegriffen wird, das nicht <style=\"Tile_Contamination\">kontaminiert</style> ist, kontaminiert sie das Feld mit einer Chance von {[chance]} %.",
+    "variables": {},
+    "constants": {
+      "dmgReductionPct": "30",
+      "chance": "70"
+    },
+    "scaled": []
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "DaBossIsWatchin": {
+    "description": "Adjacent <style=\"Faction_Orks\">Orks</style> ignore <style=\"Battle_Fatigue\">Battle Fatigue</style> and deal <style=\"Stat_Damage\">+{[extraDmgPct]}% Damage</style>.",
+    "variables": {},
+    "constants": {
+      "extraDmgPct": "20"
+    },
+    "scaled": []
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "SquigLaunchas": {
+    "description": "Verursacht <style=\"Stat_Hits\">{[nrOfHits]}x</style> <style=\"DMG_Physical\">{[minDmg]}–{[maxDmg]} Physischen Schaden</style> an einer gegnerischen Einheit, die an mindestens {[nrOfUnits]} verbündeten <style=\"Faction_Orks\">Orks</style> oder {[nrOfUnits_2]} verbündete Einheiten angrenzt. Wenn das Ziel an {[nrOfUnits_3]} verbündete Orks oder {[nrOfUnits_4]} verbündete Einheiten angrenzt, wird ein <style=\"Summon\"><style=\"Faction_Orks\">Riesiger Squig</style></style> auf einem zufälligen freien Feld beschworen, das an das Ziel angrenzt. \n\nWerte des Riesigen Squigs:\n<style=\"Stat_Health\">{[summonHp]} Lebenspunkte</style>\n<style=\"Stat_Damage\">{[summonDmg]} Schaden</style>\n<style=\"Stat_Armor\">{[summonArmor]} Rüstung</style>\n\nAnfängliche <style=\"Cooldown\">Abklingzeit: {[initialCooldownTurns]} Runde</style>. \nKosten: <style=\"Resource_MachinesOfWarAmmo\">{[munitionsCost]} Munition</style>.\n\n{[S/AbilityDamageExplanation]}",
+    "variables": {
+      "minDmg": [
+        36, 43, 50, 58, 65, 73, 81, 90, 98, 106, 114, 123, 131, 139, 148, 156,
+        164, 172, 181, 189, 200, 216, 248, 281, 314, 347, 379, 412, 445, 478,
+        510, 543, 576, 609, 642, 674, 707, 740, 773, 819, 883, 951, 1025, 1106,
+        1254, 1402, 1550, 1698, 1846, 1994, 2016, 2043, 2070, 2106, 2142, 2178,
+        2214, 2259, 2304, 2349, 2403, 2457, 2511, 2565, 2619
+      ],
+      "maxDmg": [
+        42, 50, 59, 67, 76, 85, 95, 105, 114, 124, 134, 143, 153, 163, 172, 182,
+        192, 201, 211, 221, 234, 252, 290, 328, 366, 404, 443, 481, 519, 557,
+        596, 634, 672, 710, 748, 787, 825, 863, 901, 955, 1031, 1110, 1196,
+        1291, 1463, 1636, 1809, 1981, 2154, 2327, 2352, 2384, 2415, 2457, 2499,
+        2541, 2583, 2636, 2688, 2741, 2804, 2867, 2930, 2993, 3056
+      ],
+      "summonHp": [
+        65, 78, 91, 104, 117, 132, 147, 162, 177, 192, 207, 222, 237, 252, 267,
+        281, 296, 311, 326, 341, 361, 389, 449, 508, 567, 626, 685, 744, 803,
+        863, 922, 981, 1040, 1099, 1158, 1217, 1277, 1336, 1395, 1478, 1595,
+        1718, 1851, 1997, 2265, 2532, 2799, 3066, 3333, 3600, 3640, 3689, 3738,
+        3803, 3868, 3933, 3998, 4079, 4160, 4241, 4339, 4436, 4534, 4631, 4729
+      ],
+      "summonDmg": [
+        24, 29, 34, 38, 43, 49, 54, 60, 65, 71, 76, 82, 87, 93, 98, 104, 109,
+        115, 120, 126, 133, 144, 166, 187, 209, 231, 253, 275, 297, 318, 340,
+        362, 384, 406, 428, 450, 471, 493, 515, 546, 589, 634, 683, 738, 836,
+        935, 1033, 1132, 1231, 1330, 1344, 1362, 1380, 1404, 1428, 1452, 1476,
+        1506, 1536, 1566, 1602, 1638, 1674, 1710, 1746
+      ],
+      "summonArmor": [
+        15, 18, 21, 24, 27, 30, 34, 37, 41, 44, 48, 51, 55, 58, 62, 65, 68, 72,
+        75, 79, 83, 90, 104, 117, 131, 144, 158, 172, 185, 199, 213, 226, 240,
+        254, 267, 281, 295, 308, 322, 341, 368, 396, 427, 461, 523, 584, 646,
+        708, 769, 831, 840, 851, 863, 878, 893, 908, 923, 941, 960, 979, 1001,
+        1024, 1046, 1069, 1091
+      ]
+    },
+    "constants": {
+      "damageProfile": "Physical",
+      "nrOfHits": "3",
+      "nrOfUnits": "1",
+      "nrOfUnits_2": "2",
+      "nrOfUnits_3": "2",
+      "nrOfUnits_4": "4",
+      "initialCooldownTurns": "1",
+      "munitionsCost": "1"
+    },
+    "scaled": ["minDmg", "maxDmg", "summonHp", "summonDmg", "summonArmor"]
+  }
+}

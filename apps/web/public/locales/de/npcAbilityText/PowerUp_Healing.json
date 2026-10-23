@@ -1,0 +1,10 @@
+{
+  "PowerUp_Healing": {
+    "description": "Wenn eine Einheit diese Verstärkung einsammelt, <style=\"Healing\">heilt</style> sie diese Einheit um {[HealPercentage]} % ihrer maximalen <style=\"Stat_Health\">Lebenspunkte</style>.",
+    "variables": {},
+    "constants": {
+      "HealPercentage": "100"
+    },
+    "scaled": []
+  }
+}

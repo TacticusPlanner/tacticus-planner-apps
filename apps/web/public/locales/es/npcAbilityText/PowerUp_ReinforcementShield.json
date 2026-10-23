@@ -1,0 +1,10 @@
+{
+  "PowerUp_ReinforcementShield": {
+    "description": "Cuando una unidad lo recolecte, cada personaje desplegado en este evento será desplegado con un <style=\"Buff_Shield\">escudo</style> equivalente al {[shieldPct]} % de su <style=\"Stat_Health\">Salud</style> máxima. La fuerza del escudo se acumula con cada potenciador de escudo que recolectes.",
+    "variables": {},
+    "constants": {
+      "shieldPct": "10"
+    },
+    "scaled": []
+  }
+}

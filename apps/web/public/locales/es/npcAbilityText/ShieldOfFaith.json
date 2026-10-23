@@ -1,0 +1,10 @@
+{
+  "ShieldOfFaith": {
+    "description": "Cuando un <style=\"Character\">personaje</style> <style=\"Rarity_Mythic\">Mítico</style> aliado realiza un <style=\"Stat_CritDamage\">Golpe Crítico</style> o ataca a un enemigo que está sobre un hexágono prendido <style=\"Effect_Fire\">Fuego</style>, obtiene un <style=\"Buff_Shield\">escudo</style> hasta el inicio de su siguiente turno, a menos que ya tenga uno. La <style=\"Stat_Health\">Salud</style> del escudo es de un <style=\"STAT\">{[shieldPct]} %</style> de la <style=\"Stat_Health\">Salud</style> máxima del personaje afectado.",
+    "variables": {
+      "shieldPct": [25, 32.5, 40, 50]
+    },
+    "constants": {},
+    "scaled": ["shieldPct"]
+  }
+}

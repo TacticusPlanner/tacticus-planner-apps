@@ -1,0 +1,8 @@
+{
+  "RapidFire": {
+    "description": "El <style=\"Faction_Ultramarines\">Intercesor pesado</style> ataca dos veces si no se movió en este turno. Cada uno de los dos ataques inflige <style=\"Stat_Damage\">de Daño</style> normal.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

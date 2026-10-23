@@ -1,0 +1,10 @@
+{
+  "SabreOfSacrifice": {
+    "description": "Cuando <style=\"Faction_AstraMilitarum\">Dreir</style> o los <style=\"Faction_AstraMilitarum\">Jinetes de la muerte</style> adyacentes a Dreir <style=\"Charging\">cargan</style>, sus ataques <style=\"Debuff_Pinned\">Suprimen</style> a sus objetivos por 1 ronda. Tras cargar y hasta el inicio de su siguiente turno, además tienen <style=\"Stat_Armor\">+{[extraArmor]} de Armadura</style> por cada unidad aliada que haya sido derrotada en esta batalla.",
+    "variables": {
+      "extraArmor": [685, 722, 759, 796, 833, 870, 907, 944, 981, 1018]
+    },
+    "constants": {},
+    "scaled": []
+  }
+}

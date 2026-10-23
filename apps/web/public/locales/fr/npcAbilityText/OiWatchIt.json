@@ -1,0 +1,8 @@
+{
+  "OiWatchIt": {
+    "description": "Lorsque cette unité est attaquée, une caisse <style=\"Steppable\">vulnérable</style> de <style=\"Resource_Gold\">pièces</style> apparaît dans un hexagone adjacent libre pour chaque coup encaissé.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

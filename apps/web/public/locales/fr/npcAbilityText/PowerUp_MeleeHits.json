@@ -1,0 +1,10 @@
+{
+  "PowerUp_MeleeHits": {
+    "description": "Lorsqu'elle est choisie par cette unité, cette amélioration augmente le nombre de <style=\"Stat_Hits\">coups</style> portés lors des attaques au <style=\"Stat_Melee\">corps à corps</style> de +{[extraHit]}.",
+    "variables": {},
+    "constants": {
+      "extraHit": "4"
+    },
+    "scaled": []
+  }
+}

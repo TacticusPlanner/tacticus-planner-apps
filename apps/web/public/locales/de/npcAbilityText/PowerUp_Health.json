@@ -1,0 +1,10 @@
+{
+  "PowerUp_Health": {
+    "description": "Wenn eine Einheit diese Verstärkung einsammelt, werden ihre <style=\"Stat_Health\">Lebenspunkte</style> um {[healthPct]} % ihrer maximalen <style=\"Stat_Health\">Lebenspunkte</style> erhöht.",
+    "variables": {},
+    "constants": {
+      "healthPct": "200"
+    },
+    "scaled": []
+  }
+}

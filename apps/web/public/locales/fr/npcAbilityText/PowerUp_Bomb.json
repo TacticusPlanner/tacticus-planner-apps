@@ -1,0 +1,28 @@
+{
+  "PowerUp_Bomb": {
+    "description": "Lorsqu'elle est choisie par une unité alliée, déclenche une explosion qui inflige <style=\"Stat_Hits\">{[nrOfHits]}x</style> <style=\"DMG_Blast\">{[minDmg]}-{[maxDmg]} dégâts d'explosion</style> à tous les ennemis distants de {[range]} hexagones avec l'hexagone où elle a été choisie. Les dégâts augmentent aux échelons de rareté plus élevée.",
+    "variables": {
+      "minDmg": [
+        70, 70, 70, 70, 70, 70, 70, 70, 160, 160, 160, 160, 160, 160, 160, 160,
+        160, 366, 366, 366, 366, 366, 366, 366, 366, 366, 815, 815, 815, 815,
+        815, 815, 815, 815, 815, 1800, 1800, 1800, 1800, 1800, 1800, 1800, 1800,
+        1800, 1800, 1800, 1800, 1800, 1800, 1800, 2700, 2700, 2700, 2700, 2700,
+        2700, 2700, 2700, 2700, 2700, 2700, 2700, 2700, 2700, 2700
+      ],
+      "maxDmg": [
+        150, 150, 150, 150, 150, 150, 150, 150, 475, 475, 475, 475, 475, 475,
+        475, 475, 475, 1100, 1100, 1100, 1100, 1100, 1100, 1100, 1100, 1100,
+        2433, 2433, 2433, 2433, 2433, 2433, 2433, 2433, 2433, 5600, 5600, 5600,
+        5600, 5600, 5600, 5600, 5600, 5600, 5600, 5600, 5600, 5600, 5600, 5600,
+        8400, 8400, 8400, 8400, 8400, 8400, 8400, 8400, 8400, 8400, 8400, 8400,
+        8400, 8400, 8400
+      ]
+    },
+    "constants": {
+      "damageProfile": "Blast",
+      "nrOfHits": "1",
+      "range": "4"
+    },
+    "scaled": []
+  }
+}

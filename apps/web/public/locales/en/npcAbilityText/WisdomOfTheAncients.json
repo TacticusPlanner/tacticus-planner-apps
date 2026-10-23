@@ -1,0 +1,10 @@
+{
+  "WisdomOfTheAncients": {
+    "description": "Friendly <style=\"Rarity_Mythic\">Mythic</style> <style=\"Character\">characters</style> take <style=\"Stat_Damage\">-{[dmgReductionPct]}% Damage</style> if they are adjacent to <style=\"Faction_Ultramarines\">Galatian</style> or a friendly Mythic character.",
+    "variables": {
+      "dmgReductionPct": [10, 13, 16, 20]
+    },
+    "constants": {},
+    "scaled": ["dmgReductionPct"]
+  }
+}

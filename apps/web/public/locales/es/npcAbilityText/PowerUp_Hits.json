@@ -1,0 +1,10 @@
+{
+  "PowerUp_Hits": {
+    "description": "Cuando una unidad lo recolecta, este potenciador aumenta la cantidad de <style=\"Stat_Hits\">impactos</style> de sus ataques en {[extraHit]}.",
+    "variables": {},
+    "constants": {
+      "extraHit": "2"
+    },
+    "scaled": []
+  }
+}

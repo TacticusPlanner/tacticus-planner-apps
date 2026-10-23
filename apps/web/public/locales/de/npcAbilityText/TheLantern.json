@@ -1,0 +1,27 @@
+{
+  "TheLantern": {
+    "description": "Ruft ein Miasma der Pestilenz herbei, das ein an <style=\"Faction_DeathGuard\">Mortarion</style> angrenzendes 3x3-Feld ausfüllt, und schickt es in eine von sechs Richtungen. Gegnerische Einheiten, die von dem Miasma getroffen werden, werden <style=\"Debuff_Pinned\">Unterdrückt</style>. Zu Beginn von <style=\"Faction_DeathGuard\">Mortarions</style> nächstem Zug feuert er den Strahl der Laterne in einem Bogen über das betroffene Gebiet und verursacht <style=\"Stat_Hits\">{[nrOfHits]}x</style> <style=\"DMG_Energy\">{[minDmg]}–{[maxDmg]} Strahlenschaden</style> an jeder gegnerischen Einheit in diesem Gebiet.\n\n{[S/AbilityDamageExplanation]}",
+    "variables": {
+      "minDmg": [
+        77, 92, 108, 123, 139, 156, 174, 192, 209, 227, 245, 263, 280, 298, 316,
+        333, 351, 369, 387, 404, 428, 461, 531, 601, 671, 742, 812, 882, 952,
+        1022, 1092, 1162, 1232, 1302, 1372, 1442, 1512, 1582, 1652, 1751, 1890,
+        2035, 2192, 2366, 2683, 2999, 3316, 3632, 3949, 4266, 4614, 4763, 4915,
+        5090, 5269, 5450, 5635, 5846, 6061, 6280, 6527, 6779, 7036, 7297, 7562
+      ],
+      "maxDmg": [
+        90, 108, 126, 144, 162, 183, 203, 224, 245, 266, 286, 307, 328, 348,
+        369, 390, 410, 431, 452, 473, 500, 539, 621, 703, 785, 867, 949, 1031,
+        1112, 1194, 1276, 1358, 1440, 1522, 1604, 1686, 1768, 1850, 1931, 2047,
+        2209, 2379, 2562, 2766, 3136, 3506, 3875, 4245, 4615, 4985, 5393, 5567,
+        5744, 5949, 6158, 6371, 6587, 6833, 7085, 7341, 7630, 7924, 8224, 8529,
+        8839
+      ]
+    },
+    "constants": {
+      "damageProfile": "Energy",
+      "nrOfHits": "1"
+    },
+    "scaled": ["minDmg", "maxDmg"]
+  }
+}

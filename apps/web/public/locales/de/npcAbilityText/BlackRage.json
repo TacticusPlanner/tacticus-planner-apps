@@ -1,0 +1,24 @@
+{
+  "BlackRage": {
+    "description": "Wenn sich <style=\"Faction_BloodAngels\">Lucien</style> nicht bewegt hat, werden seine <style=\"Stat_Health\">Lebenspunkte</style> auf {[hpPct]} % gesetzt. Dann <style=\"Charging\">stürmt</style> er auf ein gegnerisches Ziel in Bewegungsreichweite zu und führt einen <style=\"NormalAttack\">normalen Nahkampfangriff</style> aus. Ab diesem Angriff bis zum Ende des Kampfes verfügt Lucien über <style=\"Stat_Movement\">+{[extraMovement]} Bewegung</style> und verursacht <style=\"Stat_Damage\">+{[extraDmg]} Schaden</style> beim <style=\"Charging\">Ansturm</style>. Zudem kann Lucien für den Rest des Kampfes nicht mehr kontrolliert werden. Zu Beginn seines Zuges bewegt er sich stattdessen automatisch und greift an.",
+    "variables": {
+      "hpPct": [
+        30, 30, 30, 30, 30, 30, 30, 30, 35, 35, 35, 35, 35, 35, 35, 35, 35, 40,
+        40, 40, 40, 40, 40, 40, 40, 40, 45, 45, 45, 45, 45, 45, 45, 45, 45, 50,
+        50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50,
+        50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50
+      ],
+      "extraDmg": [
+        10, 12, 14, 16, 18, 20, 23, 25, 27, 30, 32, 34, 36, 39, 41, 43, 46, 48,
+        50, 53, 56, 60, 69, 78, 87, 96, 105, 115, 124, 133, 142, 151, 160, 169,
+        178, 187, 196, 206, 215, 227, 245, 264, 285, 307, 348, 390, 431, 472,
+        513, 554, 560, 568, 575, 585, 595, 605, 615, 628, 640, 653, 668, 683,
+        698, 713, 728
+      ]
+    },
+    "constants": {
+      "extraMovement": "1"
+    },
+    "scaled": ["extraDmg"]
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "EmpyricAmbush": {
+    "description": "<style=\"Faction_Aeldari\">Lhykhis</style> se mueve adyacente a una unidad enemiga en el campo de batalla que tenga un hexágono adyacente libre y le inflige <style=\"Stat_Hits\">{[nrOfHits]}x</style> <style={[DamageProfileTypeStyle]}>{[minDmg]}-{[maxDmg]} {[DamageProfileType]}</style>. Hasta el final de este turno, los ataques contra el objetivo de <i>Emboscada empírica</i> realizados por otros <style=\"Character\">personajes</style> aliados que sean <style=\"Faction_Aeldari\">Aeldari</style> o hayan atravesado {[movement]} o más hexágonos este turno tienen <style=\"Stat\">+{[extraCritChance]}% de Probabilidad de Crítico</style> e infligen <style=\"Stat_CritDamage\">{[extraCritDmg]} de Daño Crítico</style>.\n\nCuando Lhykhis derrota a un enemigo con un <style=\"NormalAttack\">ataque cuerpo a cuerpo normal</style>, y <i>Emboscada empírica</i> ya se ha usado, entonces <i>Emboscada empírica</i> se puede usar de nuevo en esta batalla.\n\n<style=\"Cooldown\">Tiempo de recuperación inicial: {[initialCooldownTurns]} ronda</style>.",
+    "variables": {
+      "minDmg": [
+        7, 8, 10, 11, 13, 14, 16, 17, 19, 21, 22, 24, 25, 27, 29, 30, 32, 34,
+        35, 37, 39, 42, 48, 55, 61, 67, 74, 80, 87, 93, 99, 106, 112, 118, 125,
+        131, 137, 144, 150, 159, 172, 185, 199, 215, 244, 273, 301, 330, 359,
+        388, 392, 397, 403, 410, 417, 424, 431, 439, 448, 457, 467, 478, 488,
+        499, 509
+      ],
+      "maxDmg": [
+        10, 12, 14, 16, 18, 20, 23, 25, 27, 30, 32, 34, 36, 39, 41, 43, 46, 48,
+        50, 53, 56, 60, 69, 78, 87, 96, 105, 115, 124, 133, 142, 151, 160, 169,
+        178, 187, 196, 206, 215, 227, 245, 264, 285, 307, 348, 390, 431, 472,
+        513, 554, 560, 568, 575, 585, 595, 605, 615, 628, 640, 653, 668, 683,
+        698, 713, 728
+      ],
+      "extraCritChance": [
+        15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 20,
+        20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 25,
+        25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25,
+        25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25
+      ],
+      "extraCritDmg": [
+        10, 12, 14, 16, 18, 20, 23, 25, 27, 30, 32, 34, 36, 39, 41, 43, 46, 48,
+        50, 53, 56, 60, 69, 78, 87, 96, 105, 115, 124, 133, 142, 151, 160, 169,
+        178, 187, 196, 206, 215, 227, 245, 264, 285, 307, 348, 390, 431, 472,
+        513, 554, 560, 568, 575, 585, 595, 605, 615, 628, 640, 653, 668, 683,
+        698, 713, 728
+      ]
+    },
+    "constants": {
+      "nrOfHits": "8",
+      "damageProfile": "Eviscerate",
+      "movement": "4",
+      "initialCooldownTurns": "1"
+    },
+    "scaled": ["minDmg", "maxDmg", "extraCritDmg"]
+  }
+}

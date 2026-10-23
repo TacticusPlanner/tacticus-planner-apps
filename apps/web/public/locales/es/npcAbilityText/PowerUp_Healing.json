@@ -1,0 +1,10 @@
+{
+  "PowerUp_Healing": {
+    "description": "Cuando una unidad lo recolecta, este potenciador <style=\"Healing\">cura</style> a dicha unidad un {[HealPercentage]} % de su <style=\"Stat_Health\">Salud</style> máxima.",
+    "variables": {},
+    "constants": {
+      "HealPercentage": "100"
+    },
+    "scaled": []
+  }
+}

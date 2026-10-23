@@ -2,7 +2,8 @@
 //   public/locales/en/raidBosses.json         unitSetId -> display name
 //   public/locales/en/raidBossAbilities.json  abilityId -> ability name (referenced ids only)
 //   public/locales/en/raidBossTraits.json     traitId   -> trait name (referenced ids only)
-//   public/locales/en/raidBossAbilityText.json abilityId -> { description, variables, constants, scaled }
+//   public/locales/en/raidBossAbilityText/<abilityId>.json { <abilityId>: { description, variables, constants, scaled } }
+//   public/locales/en/raidBossAbilityTextGaps.json         sorted referenced ability ids with no rules text
 //   public/locales/en/raidBossTraitText.json  traitId   -> { description, styledName, variables }
 //
 // Source: tacticusplanner (develop) datamine. Other locales fall back to en (i18next fallbackLng),
@@ -10,9 +11,10 @@
 // game-version refresh. Names are derived with V1's own `getUnitDisplayName` formatting; ability/trait
 // rules-text carries `{[variable]}` tokens the client resolves per progression step (see the
 // `add-raid-boss-ability-text` OpenSpec change).
-import { readFileSync, writeFileSync } from "node:fs"
+import { mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs"
 import { resolve, dirname } from "node:path"
 import { fileURLToPath } from "node:url"
+import { format, resolveConfig } from "prettier"
 
 const here = dirname(fileURLToPath(import.meta.url))
 const v1 = resolve(here, "../../../../tacticusplanner/src/fsd/4-entities")
@@ -285,25 +287,52 @@ for (const traitId of [...referencedTraitIds].sort()) {
 const sortObject = (obj) =>
   Object.fromEntries(Object.entries(obj).sort(([a], [b]) => a.localeCompare(b)))
 
-writeFileSync(
-  `${outDir}/raidBosses.json`,
-  JSON.stringify(sortObject(raidBosses), null, 2) + "\n"
-)
-writeFileSync(
-  `${outDir}/raidBossAbilities.json`,
-  JSON.stringify(raidBossAbilities, null, 2) + "\n"
-)
-writeFileSync(
-  `${outDir}/raidBossTraits.json`,
-  JSON.stringify(raidBossTraits, null, 2) + "\n"
-)
-writeFileSync(
-  `${outDir}/raidBossAbilityText.json`,
-  JSON.stringify(sortObject(raidBossAbilityText), null, 2) + "\n"
-)
-writeFileSync(
+// Every ability id becomes a file name: keep them portable and collision-free on case-insensitive
+// file systems.
+const SAFE_ID_RE = /^[A-Za-z0-9_-]+$/
+const lowerIds = new Map()
+for (const id of Object.keys(raidBossAbilityText)) {
+  if (!SAFE_ID_RE.test(id))
+    throw new Error(`ability id is not a safe file name: ${id}`)
+  const other = lowerIds.get(id.toLowerCase())
+  if (other) throw new Error(`ability ids differ only by case: ${other}, ${id}`)
+  lowerIds.set(id.toLowerCase(), id)
+}
+
+const prettierOptions = await resolveConfig(`${outDir}/common.json`)
+// Formatted as the pre-commit hook would, so a second run leaves the committed files unchanged.
+const writeJson = async (path, value) =>
+  writeFileSync(
+    path,
+    await format(JSON.stringify(value, null, 2), {
+      ...prettierOptions,
+      filepath: path,
+    })
+  )
+
+await writeJson(`${outDir}/raidBosses.json`, sortObject(raidBosses))
+await writeJson(`${outDir}/raidBossAbilities.json`, raidBossAbilities)
+await writeJson(`${outDir}/raidBossTraits.json`, raidBossTraits)
+await writeJson(
   `${outDir}/raidBossTraitText.json`,
-  JSON.stringify(sortObject(raidBossTraitText), null, 2) + "\n"
+  sortObject(raidBossTraitText)
+)
+
+// Ability rules text: one file (and i18next namespace) per ability id, so the detail view fetches only
+// the abilities it shows. The directory is emptied first, so a dropped ability's file disappears; the
+// referenced ids without text are listed so the client never requests them.
+rmSync(`${outDir}/raidBossAbilityText.json`, { force: true })
+const abilityTextDir = `${outDir}/raidBossAbilityText`
+rmSync(abilityTextDir, { recursive: true, force: true })
+mkdirSync(abilityTextDir)
+for (const id of Object.keys(raidBossAbilityText).sort()) {
+  await writeJson(`${abilityTextDir}/${id}.json`, {
+    [id]: raidBossAbilityText[id],
+  })
+}
+await writeJson(
+  `${outDir}/raidBossAbilityTextGaps.json`,
+  [...referencedAbilityIds].filter((id) => !raidBossAbilityText[id]).sort()
 )
 
 console.log("raidBosses:", Object.keys(raidBosses).length)

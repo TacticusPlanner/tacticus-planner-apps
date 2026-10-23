@@ -1,0 +1,11 @@
+{
+  "DaemonfleshPlate": {
+    "description": "Each time the relic bearer attacks, it gains <style=\"Stat_Armor\">+{[extraArmor]} Armour</style>. After attacking <style=\"STAT\">{[nrOfAttacks]}</style> times, this bonus is reset and the relic bearer can use its active ability again.",
+    "variables": {
+      "extraArmor": [145, 153, 161, 168, 176, 184, 192, 200, 208, 215],
+      "nrOfAttacks": [8, 8, 8, 8, 8, 7, 7, 7, 7, 7]
+    },
+    "constants": {},
+    "scaled": []
+  }
+}

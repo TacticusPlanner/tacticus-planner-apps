@@ -1,0 +1,25 @@
+{
+  "Catalyst": {
+    "description": "Toutes les unités alliées <style=\"Faction_Tyranids\">Tyranides</style> obtiennent <style=\"Stat_Armor\">+{[extraArmor]} armure</style> et <style=\"Stat_Chance\">{[blockChance]} % de chances</style> de <style=\"Stat_Block\">bloquer {[blockDmg]} dégâts</style> pour le reste de ce tour et le prochain tour de l'ennemi.",
+    "variables": {
+      "extraArmor": [
+        10, 12, 14, 16, 18, 20, 23, 25, 27, 30, 32, 34, 36, 39, 41, 43, 46, 48,
+        50, 53, 56, 60, 69, 78, 87, 96, 105, 115, 124, 133, 142, 151, 160, 169,
+        178, 187, 196, 206, 215, 227, 245, 264, 285, 307, 348, 390, 431, 472,
+        513, 554, 560, 568, 575, 585, 595, 605, 615, 628, 640, 653, 668, 683,
+        698, 713, 728
+      ],
+      "blockDmg": [
+        15, 18, 21, 24, 27, 30, 34, 37, 41, 44, 48, 51, 55, 58, 62, 65, 68, 72,
+        75, 79, 83, 90, 104, 117, 131, 144, 158, 172, 185, 199, 213, 226, 240,
+        254, 267, 281, 295, 308, 322, 341, 368, 396, 427, 461, 523, 584, 646,
+        708, 769, 831, 840, 851, 863, 878, 893, 908, 923, 941, 960, 979, 1001,
+        1024, 1046, 1069, 1091
+      ]
+    },
+    "constants": {
+      "blockChance": "30"
+    },
+    "scaled": ["extraArmor", "blockDmg"]
+  }
+}

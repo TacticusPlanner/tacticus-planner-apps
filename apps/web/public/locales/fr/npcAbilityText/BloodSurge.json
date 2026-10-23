@@ -1,0 +1,8 @@
+{
+  "BloodSurge": {
+    "description": "Pendant chaque tour ennemi, après la première fois que ce <style=\"Faction_WorldEaters\">Berzerk</style> est attaqué, il se déplace d’un hexagone vers son attaquant, si possible. Ensuite, s’il est adjacent à une unité ennemie, il effectue une <style=\"NormalAttack\">attaque normale</style>, en donnant la priorité à l’unité qui l’a attaqué.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "HailOfLivingAmmunition": {
+    "description": "Cette unité dispose de <style=\"Stat_Hits\">+{[extraHit]} coup(s)</style> à distance pour chaque Termagant qui lui est adjacent.",
+    "variables": {},
+    "constants": {
+      "extraHit": "1"
+    },
+    "scaled": []
+  }
+}
