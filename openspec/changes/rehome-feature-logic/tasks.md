@@ -14,7 +14,7 @@ Prerequisites: `test-harness-render-app` and `catalog-read-layer` archived; `tun
 - [x] 2.1 `git mv` `account-card.tsx`, `account-menu-parts.tsx`, `guest-account-menu.tsx`, `theme-switcher.tsx`, `account-avatar.tsx`, `player-data-sync-button.tsx`, `catalog-sync-status-badge.tsx` and their tests from `app/providers` to `widgets/account-menu/ui`, add `widgets/account-menu/index.ts` exporting `AccountMenu`, `GuestAccountMenu`, `PlayerDataSyncButton`, `CatalogSyncStatusBadge`, `ThemeSwitcher`, and repoint `desktop-layout.tsx`, `mobile-layout.tsx` and the moved tests; verify `pnpm lint:fsd` passes and `app/providers` contains only `*-provider.tsx`, `auth-control.tsx`, `query-provider.tsx` and tests.
 - [ ] 2.2 If `add-debug-info-export` has landed, confirm its export button renders inside the moved `account-card.tsx`; verify its tests still pass from the new path.
 - [x] 2.3 Move any navigation item shaping that is duplicated between `desktop-layout.tsx` / `desktop-section-navigation.tsx` and `mobile-layout.tsx` / `mobile-drawer-sub-item.tsx` into `nav-items.ts`, `resolve-active-navigation.ts` or `navigation-filter.ts`; verify both `desktop-layout.test.tsx` and `mobile-layout.test.tsx` pass and the desktop and mobile shells show the same section list for the same auth state in the Aspire-started app.
-- [ ] 2.4 Update `shared/tour/general.tutorial.tsx` only if a `data-testid` the shell tour targets moved with the account-menu widget; verify the general tour steps still find their targets on desktop (>=768px) and mobile (<768px, same-origin iframe).
+- [x] 2.4 Update `shared/tour/general.tutorial.tsx` only if a `data-testid` the shell tour targets moved with the account-menu widget; verify the general tour steps still find their targets on desktop (>=768px) and mobile (<768px, same-origin iframe).
 
 ## 3. Dailies recommendation features
 
@@ -42,8 +42,8 @@ Prerequisites: `test-harness-render-app` and `catalog-read-layer` archived; `tun
 ## 6. Integration checks
 
 - [x] 6.1 Run `pnpm test:run`, `pnpm typecheck`, `pnpm lint`, `pnpm lint:fsd`, `pnpm --filter web exec knip` and `git diff --check`; verify all pass and the test count equals the pre-change count (5,094 on 2026-10-20) plus or minus merged files only.
-- [ ] 6.2 Start the stack through Aspire, sign in, and walk the shell tour, `/plan/goals`, `/dailies/raids`, `/legendary-events` at a viewport >=768px; verify navigation, account menu, create-goal sheet and recommendations render with no console errors.
-- [ ] 6.3 Repeat 6.2 at <768px using a same-origin iframe; verify the mobile drawer, account menu and the same pages render the mobile layout with no console errors.
+- [x] 6.2 Start the stack through Aspire, sign in, and walk the shell tour, `/plan/goals`, `/dailies/raids`, `/legendary-events` at a viewport >=768px; verify navigation, account menu, create-goal sheet and recommendations render with no console errors.
+- [x] 6.3 Repeat 6.2 at <768px using a same-origin iframe; verify the mobile drawer, account menu and the same pages render the mobile layout with no console errors.
 - [ ] 6.4 Update `tacticus-planner-docs/architecture/frontend.md` slice map to the new feature and widget names (docs repo, separate PR); verify the page lists `features/goal-planning`, `goal-create`, `team-recommendations`, `shop-recommendations`, `legendary-event-plan` and `widgets/account-menu`.
 
 ## Workflow follow-up
@@ -66,3 +66,15 @@ Prerequisites: `test-harness-render-app` and `catalog-read-layer` archived; `tun
   - The creation-form hooks merged back into `use-create-goal-form.ts`. The ones left separate would have pushed it past the 800-line ceiling, and their comments now say so.
 - 6.1: web 536 files / 5,108 tests (the count rose with the earlier changes in this stack); no test file was dropped by the moves.
 - Open for a reviewer: the render snapshot tasks (3.4, 4.4, 5.6), the Aspire and browser walks (2.3 visual check, 2.4, 6.2, 6.3), the docs PR (6.4), and 2.2 (`add-debug-info-export` has not landed).
+
+## Manual verification (2026-10-23, Aspire stack)
+
+- **2.4** No tour target moved. General tour runs all 8 desktop steps and all 4 mobile steps (420px
+  iframe); joyride shows only steps whose target exists.
+- **6.2** Desktop: shell tour, `/plan/goals`, `/dailies/raids`, `/dailies/hse`, `/dailies/hre` and
+  `/legendary-events/:id` render; the account menu opens; the shell quick action opens "Create a
+  goal"; no console errors.
+- **6.3** 420px iframe: menu drawer, account menu, Goals cards, Dailies tabs and Library pages render
+  the mobile layout; no console errors.
+- Still open: 2.2 (`add-debug-info-export` has not landed), 3.4 / 4.4 / 5.6 (`renderApp` snapshot
+  tests), 4.3 (barrel size) and 6.4 (docs repo).
