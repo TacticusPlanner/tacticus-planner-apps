@@ -39,6 +39,7 @@ const TYPES_REQUIRING_UNLOCK: ReadonlySet<GoalKind> = new Set([
 export function useGoalPrerequisites({
   isLocked,
   currentProgression,
+  unlockProgression,
   enabledTypes,
   rankEnd,
   abilityActiveEnd,
@@ -48,6 +49,9 @@ export function useGoalPrerequisites({
   isLocked: boolean
   /** The character's current progression, when known (unavailable while locked). */
   currentProgression: Progression | undefined
+  /** Where a locked character lands once its Unlock goal completes (its starting rarity's first
+   *  step), when known. */
+  unlockProgression?: Progression
   enabledTypes: ReadonlySet<GoalKind>
   rankEnd: Rank
   abilityActiveEnd: number
@@ -61,9 +65,11 @@ export function useGoalPrerequisites({
   const needsAscension = useMemo<AscensionSuggestion | null>(() => {
     if (enabledTypes.has("Ascension")) return null
 
-    // A locked character has no synced progression to reason from — conservatively assume the
-    // lowest possible starting point, since a freshly-unlocked unit starts there.
-    const start = currentProgression ?? firstProgression
+    // A locked character has no synced progression: unlocking puts it at its starting rarity, so
+    // reason from there. Falling back to the lowest step would suggest an Ascension the Unlock
+    // already covers (e.g. Common -> Epic for an Epic character). Only when the starting rarity is
+    // unknown do we assume the lowest possible point.
+    const start = currentProgression ?? unlockProgression ?? firstProgression
 
     // The lowest progression each enabled target needs: a Rank target needs a rarity that permits
     // that rank; an Ability target needs a rarity whose ability cap covers the higher of the two
@@ -92,6 +98,7 @@ export function useGoalPrerequisites({
     enabledTypes,
     rankEnd,
     currentProgression,
+    unlockProgression,
     abilityActiveEnd,
     abilityPassiveEnd,
   ])
