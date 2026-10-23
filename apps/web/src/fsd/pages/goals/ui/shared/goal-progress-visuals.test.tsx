@@ -462,9 +462,7 @@ describe("GoalTargetDisplay for Upgrade goals", () => {
     )
     const materials = screen.getAllByRole("img")
     expect(materials).toHaveLength(2)
-    expect(materials[0]).toHaveAccessibleName(
-      'goals.overview.upgradeMaterial:{"name":"Sword","owned":"5","quantity":10}'
-    )
+    expect(materials[0]).toHaveAccessibleName("Sword: 5 / 10")
     expect(materials[0]).toHaveTextContent("5/10")
     expect(materials[1]).toHaveTextContent("–/4")
     expect(container.querySelectorAll("img").length).toBeGreaterThanOrEqual(2)
@@ -488,10 +486,7 @@ describe("GoalTargetDisplay for Upgrade goals", () => {
     const more = screen.getByTestId("goal-upgrade-materials-more")
     expect(more).toHaveTextContent("+3")
     expect(more.getAttribute("title")?.split("\n")).toEqual(
-      [4, 5, 6].map(
-        (index) =>
-          `goals.overview.upgradeMaterial:{"name":"Mat ${index}","owned":"${index}","quantity":10}`
-      )
+      [4, 5, 6].map((index) => `Mat ${index}: ${index} / 10`)
     )
   })
 
