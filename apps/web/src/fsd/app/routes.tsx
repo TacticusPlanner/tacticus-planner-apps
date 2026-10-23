@@ -41,7 +41,6 @@ import {
 import { isUiKitEnabled } from "@/shared/config"
 import { preloadOnMatch } from "@/shared/lib"
 
-import { AccountSetupRoute } from "./account-setup-route"
 import { accountSetupRoutes } from "./account-setup-routes"
 import {
   AuthResolving,
@@ -73,6 +72,12 @@ const V1ImportPage = lazy(loadV1ImportPage)
 const loadOnslaughtPage = () =>
   import("@/pages/onslaught").then((m) => ({ default: m.OnslaughtPage }))
 const OnslaughtPage = lazy(loadOnslaughtPage)
+// Lazy too: the setup flow pulls in the whole V1 import panel, which only a first-run user needs.
+const loadAccountSetupRoute = () =>
+  import("./account-setup-route").then((m) => ({
+    default: m.AccountSetupRoute,
+  }))
+const AccountSetupRoute = lazy(loadAccountSetupRoute)
 
 function ProtectedRoute({ children }: { children: ReactNode }) {
   return (
@@ -114,6 +119,7 @@ const appRoutes: RouteObject[] = [
     element: <AccountSetupLayout />,
     children: accountSetupRoutes.map(({ path, step }) => ({
       path,
+      loader: preloadOnMatch(loadAccountSetupRoute),
       element: (
         <AuthenticatedRoute>
           <AccountSetupRoute step={step} />
