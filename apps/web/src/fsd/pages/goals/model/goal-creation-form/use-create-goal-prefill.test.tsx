@@ -17,24 +17,36 @@ const fns = {
   addUpgradeTarget: vi.fn(),
 }
 
-const upgradeFields = {
-  state: {
-    addUpgradeTarget: fns.addUpgradeTarget,
-    relevantUpgradeQuantities: new Map([["upgHpC001" as UpgradeId, 4]]),
-  },
-}
+const ladderQuantities = new Map([["upgHpC001" as UpgradeId, 4]])
 
-function render(prefill: CreateGoalPrefill | undefined, entityId?: UnitId) {
-  return renderHook(() =>
-    useCreateGoalPrefill({
-      open: true,
-      prefill,
-      entityId,
-      playerEntity: {},
-      ...fns,
-      targetSetters: fns,
-      upgradeFields,
-    })
+function render(
+  prefill: CreateGoalPrefill | undefined,
+  entityId?: UnitId,
+  catalogLoaded = true
+) {
+  return renderHook(
+    ({ quantities }) =>
+      useCreateGoalPrefill({
+        open: true,
+        prefill,
+        entityId,
+        playerEntity: {},
+        ...fns,
+        targetSetters: fns,
+        upgradeFields: {
+          state: {
+            addUpgradeTarget: fns.addUpgradeTarget,
+            remainingLadderQuantities: quantities,
+          },
+        },
+      }),
+    {
+      initialProps: {
+        quantities: catalogLoaded
+          ? (ladderQuantities as ReadonlyMap<UpgradeId, number> | undefined)
+          : undefined,
+      },
+    }
   )
 }
 
@@ -120,6 +132,26 @@ describe("useCreateGoalPrefill", () => {
     expect(fns.setEnabledTypes).toHaveBeenCalledWith(new Set(["Upgrade"]))
     expect(fns.addUpgradeTarget).toHaveBeenCalledWith("upgHpC001", 4)
     expect(fns.setRankEnd).not.toHaveBeenCalled()
+  })
+
+  it("holds an Upgrade prefill until the ladder quantities have loaded", () => {
+    const { rerender } = render(
+      {
+        entityType: "Character",
+        entityId: unitId,
+        goalType: "Upgrade",
+        upgradeId: "upgHpC001" as UpgradeId,
+      },
+      unitId,
+      false
+    )
+
+    expect(fns.addUpgradeTarget).not.toHaveBeenCalled()
+
+    rerender({ quantities: ladderQuantities })
+
+    expect(fns.addUpgradeTarget).toHaveBeenCalledOnce()
+    expect(fns.addUpgradeTarget).toHaveBeenCalledWith("upgHpC001", 4)
   })
 
   it("selects only the unit for a unit-only prefill and keeps the project fallback", () => {

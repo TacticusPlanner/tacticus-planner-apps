@@ -565,6 +565,7 @@
         "importedCounts": "{{goals}} Ziel(e) über {{units}} Einheit(en)",
         "needsNoImport": "Kein Import nötig",
         "notImported": "Nicht importiert",
+        "needsAction": "Manueller Schritt nötig",
         "failed": "Fehlgeschlagen",
         "autoAdded": "Automatisch hinzugefügt",
         "noUnit": "Keine bestimmte Einheit",
@@ -596,7 +597,8 @@
         "prerequisiteRejected": "Diese automatisch hinzugefügte Voraussetzung ist für dieses Ziel ungültig.",
         "unknownUpgrade": "Dieses Upgrade-Material ist nicht im V2-Spielkatalog enthalten.",
         "noUpgradeOwner": "Keiner deiner Charaktere und keine deiner Kampfmaschinen verwendet dieses Upgrade-Material.",
-        "manualStepRequired": "Vorfarm-Ziele gibt es in V2 nicht. Folge den Schritten oben, um dieses Material weiter vorzufarmen.",
+        "upgradeGoalOccupied": "Diese Einheit hat bereits ein Upgrade-Ziel für andere Materialien. Füge dieses Material selbst zu diesem Ziel hinzu.",
+        "manualStepRequired": "Vorfarm-Ziele gibt es in V2 nicht. Lege ein Upgrade-Ziel für dieses Material an, um es weiter vorzufarmen.",
         "generic": "Dieses Ziel konnte nicht importiert werden."
       },
       "legendaryEvents": {

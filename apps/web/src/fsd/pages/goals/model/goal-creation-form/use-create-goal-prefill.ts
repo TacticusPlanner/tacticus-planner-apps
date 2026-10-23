@@ -35,11 +35,12 @@ export function useCreateGoalPrefill({
     setProgressionEnd: (progression: Progression) => void
     setRankEnd: (rank: Rank) => void
   }
-  /** An Upgrade prefill's material, added with the picker's own required-amount hint. */
+  /** An Upgrade prefill's material, added with how many the unit's remaining ladder still needs
+   *  (undefined until the catalog has loaded, which holds the prefill back). */
   upgradeFields: {
     state: {
       addUpgradeTarget: (upgradeId: UpgradeId, quantity: number) => void
-      relevantUpgradeQuantities: ReadonlyMap<UpgradeId, number>
+      remainingLadderQuantities: ReadonlyMap<UpgradeId, number> | undefined
     }
   }
 }) {
@@ -78,21 +79,28 @@ export function useCreateGoalPrefill({
     ) {
       return
     }
+    const { addUpgradeTarget, remainingLadderQuantities } = upgradeFields.state
+    const isUpgrade = "goalType" in prefill && prefill.goalType === "Upgrade"
+    if (isUpgrade && !remainingLadderQuantities) return
     targetKeyRef.current = prefillKey
     if (!("goalType" in prefill)) return
     if (prefill.goalType === "Ascension")
       targetSetters.setProgressionEnd(prefill.requiredProgression)
     if (prefill.goalType === "Rank") targetSetters.setRankEnd(prefill.rankEnd)
     if (prefill.goalType === "Upgrade") {
-      const { addUpgradeTarget, relevantUpgradeQuantities } =
-        upgradeFields.state
       addUpgradeTarget(
         prefill.upgradeId,
-        relevantUpgradeQuantities.get(prefill.upgradeId) ?? 1
+        remainingLadderQuantities?.get(prefill.upgradeId) ?? 1
       )
     }
     // Unlock has no target field to prefill — selecting the entity/goal type (above) is enough.
     // Field setters are stable and the target applies once per prefill.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open, prefillKey, playerEntity, entityId])
+  }, [
+    open,
+    prefillKey,
+    playerEntity,
+    entityId,
+    upgradeFields.state.remainingLadderQuantities,
+  ])
 }

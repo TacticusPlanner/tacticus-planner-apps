@@ -469,6 +469,8 @@ describe("ImportResult — pre-farm goals", () => {
         goalType: "Rank",
         goalId: "goal-1",
         sourceGoalId: "rank-1",
+        upgradeId: null,
+        linkedSourceGoalIds: null,
       },
       {
         status: "Skipped",

@@ -565,6 +565,7 @@
         "importedCounts": "{{goals}} objectif(s) sur {{units}} unité(s)",
         "needsNoImport": "Aucun import nécessaire",
         "notImported": "Non importé",
+        "needsAction": "Étape manuelle requise",
         "failed": "Échoué",
         "autoAdded": "Ajouté automatiquement",
         "noUnit": "Unité non précisée",
@@ -596,7 +597,8 @@
         "prerequisiteRejected": "Ce prérequis ajouté automatiquement n'est pas valide pour cet objectif.",
         "unknownUpgrade": "Ce matériau d'amélioration n'est pas dans le catalogue du jeu V2.",
         "noUpgradeOwner": "Aucun de vos personnages ni de vos Machines de guerre n'utilise ce matériau d'amélioration.",
-        "manualStepRequired": "Les objectifs de pré-farm n'existent pas dans V2. Suivez les étapes ci-dessus pour continuer à pré-farmer ce matériau.",
+        "upgradeGoalOccupied": "Cette unité a déjà un objectif d'amélioration pour d'autres matériaux. Ajoutez vous-même ce matériau à cet objectif.",
+        "manualStepRequired": "Les objectifs de pré-farm n'existent pas dans V2. Ajoutez un objectif d'amélioration pour ce matériau afin de continuer à le pré-farmer.",
         "generic": "Cet objectif n'a pas pu être importé."
       },
       "legendaryEvents": {

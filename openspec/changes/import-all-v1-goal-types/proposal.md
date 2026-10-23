@@ -4,7 +4,7 @@ The V1 import now brings in every V1 goal type it can (API change `import-all-v1
 
 ## What Changes
 
-- New outcome codes: `manual_step_required` (its own `needsAction` bucket), `unknown_upgrade` and `no_upgrade_owner` (not imported), each with translated copy in every locale.
+- New outcome codes: `manual_step_required` (its own `needsAction` bucket), `unknown_upgrade` and `no_upgrade_owner`, `upgrade_goal_occupied` (not imported), each with translated copy in every locale.
 - The import report shows a "Pre-farm goals need one more step" prompt above the outcome list: each pre-farm goal's material, the units it pre-farmed for (resolved through the linked goals' own outcomes), and — inside the app shell — a "Create Upgrade goal" button per unit.
 - `CreateGoalPrefill` gains an Upgrade variant (unit + one material). The creation sheet selects the unit and Upgrade type and adds the material with the picker's required-amount hint.
 - Regenerated API types: `V1GoalOutcome.upgradeId` and `linkedSourceGoalIds`.

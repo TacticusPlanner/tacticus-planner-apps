@@ -26,6 +26,7 @@ import {
   groupOutcomes,
   importedCounts,
   isAutomaticallyAdded,
+  outcomeSubject,
   preFarmSteps,
   reasonKeyForCode,
 } from "../model/outcome-buckets"
@@ -38,6 +39,7 @@ import {
 import { V1_IMPORT_PARTS } from "../model/parts"
 import { useLegendaryEventIssueText } from "../model/use-legendary-event-issue-text"
 import { useLegendaryEventName } from "../model/use-legendary-event-name"
+import { useUpgradeName } from "../model/use-upgrade-name"
 import { LegendaryEventImportResult } from "./legendary-event-import-result"
 import { PreFarmSteps } from "./pre-farm-steps"
 
@@ -55,6 +57,13 @@ const STATUS_KEYS = {
 export function ImportResult({ result }: { result: ImportV1ProfileResult }) {
   const { t } = useTranslation()
   const getEntityName = useUnitName()
+  const upgradeName = useUpgradeName()
+  const subjectFor = (outcome: V1GoalOutcome) =>
+    outcomeSubject(outcome, {
+      unitName: getEntityName,
+      upgradeName,
+      noUnitLabel: t("goals.v1Import.report.noUnit"),
+    })
 
   const buckets = useMemo(
     () => groupOutcomes(result.outcomes),
@@ -80,6 +89,7 @@ export function ImportResult({ result }: { result: ImportV1ProfileResult }) {
   const legendaryEventIssueText = useLegendaryEventIssueText()
   const hasDiagnostics =
     buckets.notImported.length > 0 ||
+    buckets.needsAction.length > 0 ||
     buckets.failed.length > 0 ||
     legendaryEventsNeedAttention(legendaryEventBuckets)
 
@@ -108,9 +118,11 @@ export function ImportResult({ result }: { result: ImportV1ProfileResult }) {
   const copyDetails = () => {
     const text = buildDiagnosticText({
       notImported: buckets.notImported,
+      needsAction: buckets.needsAction,
       failed: buckets.failed,
       heading: (bucket) => t(`goals.v1Import.report.${bucket}`),
       unitName: getEntityName,
+      upgradeName,
       goalTypeLabel,
       noUnitLabel: t("goals.v1Import.report.noUnit"),
       reasonFor: (code) => t(reasonKeyForCode(code)),
@@ -179,7 +191,7 @@ export function ImportResult({ result }: { result: ImportV1ProfileResult }) {
                   {buckets.imported.map((outcome, index) => (
                     <OutcomeRow
                       auto={isAutomaticallyAdded(outcome)}
-                      getEntityName={getEntityName}
+                      subject={subjectFor(outcome)}
                       key={index}
                       outcome={outcome}
                       t={t}
@@ -200,7 +212,7 @@ export function ImportResult({ result }: { result: ImportV1ProfileResult }) {
                     <ul className="grid gap-1">
                       {buckets.needsNoImport.map((outcome, index) => (
                         <OutcomeRow
-                          getEntityName={getEntityName}
+                          subject={subjectFor(outcome)}
                           key={index}
                           outcome={outcome}
                           t={t}
@@ -222,7 +234,7 @@ export function ImportResult({ result }: { result: ImportV1ProfileResult }) {
                   <ul className="grid gap-1">
                     {buckets[bucket].map((outcome, index) => (
                       <OutcomeRow
-                        getEntityName={getEntityName}
+                        subject={subjectFor(outcome)}
                         key={index}
                         outcome={outcome}
                         t={t}
@@ -258,19 +270,16 @@ export function ImportResult({ result }: { result: ImportV1ProfileResult }) {
 
 function OutcomeRow({
   outcome,
-  getEntityName,
+  subject,
   t,
   auto,
 }: {
   outcome: V1GoalOutcome
-  getEntityName: (entityType: string | null, entityId: string | null) => string
+  /** The unit, or the material of a unit-less material goal (outcomeSubject). */
+  subject: string
   t: TFunction
   auto?: boolean
 }) {
-  const unit = outcome.entityId
-    ? getEntityName(outcome.entityType, outcome.entityId)
-    : t("goals.v1Import.report.noUnit")
-
   return (
     <li className="rounded-lg border bg-background p-2 text-xs">
       <div className="flex flex-wrap items-center gap-1.5">
@@ -279,7 +288,7 @@ function OutcomeRow({
             {t("goals.v1Import.report.autoAdded")}
           </Badge>
         ) : null}
-        <span className="font-medium">{unit}</span>
+        <span className="font-medium">{subject}</span>
         {outcome.goalType ? (
           // The API's GoalType/GoalEntityType wire values (e.g. "Rank", "Character") are exactly
           // this badge's expected union — trusted here the same way use-create-goal-form.ts trusts

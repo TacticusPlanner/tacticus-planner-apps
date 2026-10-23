@@ -26,6 +26,7 @@ const CODE_BUCKETS: Record<string, OutcomeBucketKey> = {
   missing_target: "notImported",
   unknown_upgrade: "notImported",
   no_upgrade_owner: "notImported",
+  upgrade_goal_occupied: "notImported",
   player_data_required: "failed",
   target_rejected: "failed",
   project_slot_conflict: "failed",
@@ -63,6 +64,7 @@ type ReasonKey =
   | "goals.v1Import.reasons.missingTarget"
   | "goals.v1Import.reasons.unknownUpgrade"
   | "goals.v1Import.reasons.noUpgradeOwner"
+  | "goals.v1Import.reasons.upgradeGoalOccupied"
   | "goals.v1Import.reasons.manualStepRequired"
   | "goals.v1Import.reasons.playerDataRequired"
   | "goals.v1Import.reasons.targetRejected"
@@ -84,6 +86,7 @@ const REASON_KEYS: Record<string, ReasonKey> = {
   missing_target: "goals.v1Import.reasons.missingTarget",
   unknown_upgrade: "goals.v1Import.reasons.unknownUpgrade",
   no_upgrade_owner: "goals.v1Import.reasons.noUpgradeOwner",
+  upgrade_goal_occupied: "goals.v1Import.reasons.upgradeGoalOccupied",
   manual_step_required: "goals.v1Import.reasons.manualStepRequired",
   player_data_required: "goals.v1Import.reasons.playerDataRequired",
   target_rejected: "goals.v1Import.reasons.targetRejected",
@@ -176,11 +179,32 @@ export function preFarmSteps(
  * failure (an unhandled 500's ProblemDetails body), which is a different code path from this
  * bucketed report entirely, so none is appended here (see import-v1-dialog.tsx's deviation note).
  */
+/** One outcome's subject for the report: its unit and/or the material it carries (a material or
+ *  pre-farm goal), else the "no unit" label. Shared by OutcomeRow and buildDiagnosticText. */
+export function outcomeSubject(
+  outcome: V1GoalOutcome,
+  names: {
+    unitName: (entityType: string | null, entityId: string | null) => string
+    upgradeName: (upgradeId: string) => string
+    noUnitLabel: string
+  }
+): string {
+  const parts = [
+    outcome.entityId && names.unitName(outcome.entityType, outcome.entityId),
+    outcome.upgradeId && names.upgradeName(outcome.upgradeId),
+  ].filter(Boolean)
+  return parts.length > 0 ? parts.join(" · ") : names.noUnitLabel
+}
+
+type DiagnosticBucket = "notImported" | "needsAction" | "failed"
+
 export function buildDiagnosticText(params: {
   notImported: readonly V1GoalOutcome[]
+  needsAction: readonly V1GoalOutcome[]
   failed: readonly V1GoalOutcome[]
-  heading: (bucket: "notImported" | "failed") => string
+  heading: (bucket: DiagnosticBucket) => string
   unitName: (entityType: string | null, entityId: string | null) => string
+  upgradeName: (upgradeId: string) => string
   goalTypeLabel: (goalType: string | null) => string | null
   noUnitLabel: string
   // Translated reason text for one outcome's code — not `outcome.message` (the server's untranslated
@@ -188,16 +212,14 @@ export function buildDiagnosticText(params: {
   reasonFor: (code: string) => string
 }): string {
   const section = (
-    bucket: "notImported" | "failed",
+    bucket: DiagnosticBucket,
     outcomes: readonly V1GoalOutcome[]
   ) => {
     if (outcomes.length === 0) return null
     const rows = outcomes.map((outcome) => {
-      const unit = outcome.entityId
-        ? params.unitName(outcome.entityType, outcome.entityId)
-        : params.noUnitLabel
+      const subject = outcomeSubject(outcome, params)
       const type = params.goalTypeLabel(outcome.goalType)
-      const label = type ? `${unit} (${type})` : unit
+      const label = type ? `${subject} (${type})` : subject
       return `- ${label}: ${params.reasonFor(outcome.code)}`
     })
     return [`${params.heading(bucket)}:`, ...rows].join("\n")
@@ -205,6 +227,7 @@ export function buildDiagnosticText(params: {
 
   return [
     section("notImported", params.notImported),
+    section("needsAction", params.needsAction),
     section("failed", params.failed),
   ]
     .filter((part): part is string => part !== null)

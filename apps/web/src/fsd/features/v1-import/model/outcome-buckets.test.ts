@@ -22,6 +22,8 @@ function outcome(overrides: Partial<V1GoalOutcome>): V1GoalOutcome {
     goalType: "Rank",
     goalId: "goal-1",
     sourceGoalId: "v1-goal-1",
+    upgradeId: null,
+    linkedSourceGoalIds: null,
     ...overrides,
   }
 }
@@ -42,6 +44,7 @@ describe("bucketForCode", () => {
     expect(bucketForCode("missing_target")).toBe("notImported")
     expect(bucketForCode("unknown_upgrade")).toBe("notImported")
     expect(bucketForCode("no_upgrade_owner")).toBe("notImported")
+    expect(bucketForCode("upgrade_goal_occupied")).toBe("notImported")
     expect(bucketForCode("manual_step_required")).toBe("needsAction")
     expect(bucketForCode("player_data_required")).toBe("failed")
     expect(bucketForCode("target_rejected")).toBe("failed")
@@ -197,8 +200,13 @@ describe("effectiveGoalsStatus", () => {
 })
 
 describe("buildDiagnosticText", () => {
-  const heading = (bucket: "notImported" | "failed") =>
-    bucket === "notImported" ? "Not imported" : "Failed"
+  const heading = (bucket: "notImported" | "needsAction" | "failed") =>
+    ({
+      notImported: "Not imported",
+      needsAction: "Needs a manual step",
+      failed: "Failed",
+    })[bucket]
+  const upgradeName = (upgradeId: string) => `upgrade:${upgradeId}`
   const unitName = (_entityType: string | null, entityId: string | null) =>
     entityId ?? ""
   const goalTypeLabel = (goalType: string | null) => goalType
@@ -209,6 +217,7 @@ describe("buildDiagnosticText", () => {
       notImported: [
         outcome({ code: "unknown_unit", entityId: "SomeV1Id", goalType: null }),
       ],
+      needsAction: [],
       failed: [
         outcome({
           code: "target_rejected",
@@ -218,6 +227,7 @@ describe("buildDiagnosticText", () => {
       ],
       heading,
       unitName,
+      upgradeName,
       goalTypeLabel,
       noUnitLabel: "Unspecified unit",
       reasonFor,
@@ -229,12 +239,59 @@ describe("buildDiagnosticText", () => {
     expect(text).toContain("- hero1 (Rank): reason:target_rejected")
   })
 
+  it("names the material of a unit-less material or pre-farm goal", () => {
+    const text = buildDiagnosticText({
+      notImported: [
+        outcome({
+          code: "no_upgrade_owner",
+          entityType: null,
+          entityId: null,
+          goalType: null,
+          upgradeId: "upgHpC001",
+        }),
+      ],
+      failed: [
+        outcome({
+          code: "upgrade_goal_occupied",
+          entityId: "hero1",
+          goalType: null,
+          upgradeId: "upgHpC001",
+        }),
+      ],
+      needsAction: [
+        outcome({
+          status: "Skipped",
+          code: "manual_step_required",
+          entityType: null,
+          entityId: null,
+          goalType: null,
+          upgradeId: "upgDmgC001",
+        }),
+      ],
+      heading,
+      unitName,
+      upgradeName,
+      goalTypeLabel,
+      noUnitLabel: "Unspecified unit",
+      reasonFor,
+    })
+
+    expect(text).toContain("- upgrade:upgHpC001: reason:no_upgrade_owner")
+    expect(text).toContain(
+      "- hero1 · upgrade:upgHpC001: reason:upgrade_goal_occupied"
+    )
+    expect(text).toContain("Needs a manual step:")
+    expect(text).toContain("- upgrade:upgDmgC001: reason:manual_step_required")
+  })
+
   it("omits an empty bucket's section entirely", () => {
     const text = buildDiagnosticText({
       notImported: [],
+      needsAction: [],
       failed: [outcome({ code: "target_rejected" })],
       heading,
       unitName,
+      upgradeName,
       goalTypeLabel,
       noUnitLabel: "Unspecified unit",
       reasonFor,
@@ -247,9 +304,11 @@ describe("buildDiagnosticText", () => {
     expect(
       buildDiagnosticText({
         notImported: [],
+        needsAction: [],
         failed: [],
         heading,
         unitName,
+        upgradeName,
         goalTypeLabel,
         noUnitLabel: "Unspecified unit",
         reasonFor,
@@ -267,9 +326,11 @@ describe("buildDiagnosticText", () => {
           goalType: null,
         }),
       ],
+      needsAction: [],
       failed: [],
       heading,
       unitName,
+      upgradeName,
       goalTypeLabel,
       noUnitLabel: "Unspecified unit",
       reasonFor,

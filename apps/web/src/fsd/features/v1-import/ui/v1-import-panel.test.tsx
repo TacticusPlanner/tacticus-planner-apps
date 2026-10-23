@@ -90,6 +90,7 @@ vi.mock("@workspace/game-catalog/queries", () => ({
   getCharactersMap: () =>
     new Map([["hero1", { id: "hero1", name: "Hero One" }]]),
   getMowsMap: () => new Map([["mow1", { id: "mow1", name: "Stormbird" }]]),
+  getUpgrades: async () => [],
 }))
 
 import { V1_IMPORT_PARTS } from "../model/parts"
@@ -126,6 +127,8 @@ function outcome(overrides: Partial<V1GoalOutcome>): V1GoalOutcome {
     goalType: "Rank",
     goalId: "goal-1",
     sourceGoalId: "v1-goal-1",
+    upgradeId: null,
+    linkedSourceGoalIds: null,
     ...overrides,
   }
 }

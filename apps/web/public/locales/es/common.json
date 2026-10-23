@@ -565,6 +565,7 @@
         "importedCounts": "{{goals}} objetivo(s) en {{units}} unidad(es)",
         "needsNoImport": "No necesitó importación",
         "notImported": "No importado",
+        "needsAction": "Requiere un paso manual",
         "failed": "Fallido",
         "autoAdded": "Añadido automáticamente",
         "noUnit": "Unidad no especificada",
@@ -596,7 +597,8 @@
         "prerequisiteRejected": "Este requisito añadido automáticamente no es válido para este objetivo.",
         "unknownUpgrade": "Este material de mejora no está en el catálogo del juego de V2.",
         "noUpgradeOwner": "Ninguno de tus personajes ni Máquinas de Guerra usa este material de mejora.",
-        "manualStepRequired": "Los objetivos de pre-farmeo no existen en V2. Sigue los pasos de arriba para seguir pre-farmeando este material.",
+        "upgradeGoalOccupied": "Esta unidad ya tiene un objetivo de mejora para otros materiales. Añade tú este material a ese objetivo.",
+        "manualStepRequired": "Los objetivos de pre-farmeo no existen en V2. Añade un objetivo de mejora para este material para seguir pre-farmeándolo.",
         "generic": "No se pudo importar este objetivo."
       },
       "legendaryEvents": {

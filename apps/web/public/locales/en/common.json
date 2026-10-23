@@ -565,6 +565,7 @@
         "importedCounts": "{{goals}} goal(s) across {{units}} unit(s)",
         "needsNoImport": "Needed no import",
         "notImported": "Not imported",
+        "needsAction": "Needs a manual step",
         "failed": "Failed",
         "autoAdded": "Automatically added",
         "noUnit": "Unspecified unit",
@@ -596,7 +597,8 @@
         "prerequisiteRejected": "This automatically added prerequisite isn't valid for this goal.",
         "unknownUpgrade": "This upgrade material is not in the V2 Game Catalog.",
         "noUpgradeOwner": "None of your characters or Machines of War uses this upgrade material.",
-        "manualStepRequired": "Pre-farm goals don't exist in V2. See the steps above to keep pre-farming this material.",
+        "upgradeGoalOccupied": "This unit already has an Upgrade goal for other materials. Add this material to that goal yourself.",
+        "manualStepRequired": "Pre-farm goals don't exist in V2. Add an Upgrade goal for this material to keep pre-farming it.",
         "generic": "This goal could not be imported."
       },
       "legendaryEvents": {
