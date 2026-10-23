@@ -23,7 +23,7 @@
 
 ## Decisions
 
-1. **The target key lives in `entities/goal`** as `goalTargetKey(detail | spec)`, mirroring the server's `GoalTargetKey` (Rank delegates to the existing `rankTargetKey`). `findGoalSlotConflict` compares it for every type. The type-specific `rankTargetKey` param is replaced by a `targetKey` computed from the spec being placed, one per spec when a request carries several.
+1. **The target key lives in `entities/goal`** as `goalTargetKey(detail | spec)`, exported from its `index.ts` beside `rankTargetKey` (`model/rank-target-key.ts`) and mirroring the server's `GoalTargetKey`. Rank delegates to `rankTargetKey`. `features/goal-create` (pre-check), `features/goal-planning` (conflict copy, blockers) and `pages/goals/ui` (labels) consume it through the entity's public API only, so no feature-to-feature import is added. The Ascension coverage stays inside `features/goal-farming` and reaches its consumers through the existing `@x/daily-raids`, `@x/goal-planning` and `@x/shop-recommendations` surfaces. `findGoalSlotConflict` compares it for every type. The type-specific `rankTargetKey` param is replaced by a `targetKey` computed from the spec being placed, one per spec when a request carries several.
 2. **Ascension coverage.** Extend `UnitCoverage` with `progressionSteps: Set<number>` and `shardPool: { shards: number; mythicShards: number }`, seeded per unit from the player's owned shards once per plan build.
    - `ascensionResourceNeed` takes an optional coverage. It charges only steps not yet in `progressionSteps`, adds them, then draws owned shards from `shardPool` (decrementing it) instead of subtracting the full owned amount.
    - Without coverage (standalone estimates) behavior is unchanged.

@@ -6,7 +6,7 @@
 ## 2. Planning
 
 - [ ] 2.1 Extend `UnitCoverage` with `progressionSteps` and `shardPool`; make `ascensionResourceNeed` claim steps and draw pooled shards when coverage is given; tests for the worked Ragnar example (960 shards / 55 orbs) and higher-target-first ordering.
-- [ ] 2.2 Seed the shard pool once per unit in every plan builder (`plan-insights-calc`, `daily-raids-calc`, `shop-needs`, LE `farming-days`); verify standalone estimates are unchanged.
+- [ ] 2.2 Seed the shard pool once per unit in every plan builder (`features/goal-planning` `plan-insights-calc`, `features/daily-raids` `daily-raids-calc`, `features/shop-recommendations` `shop-needs`, `pages/legendary-events` `farming-days`); verify standalone estimates are unchanged.
 - [ ] 2.3 Add tests for two Character Ability goals and for two MoW Ability goals plus an Upgrade goal on one unit sharing transition coverage.
 
 ## 3. Creation
@@ -14,13 +14,14 @@
 - [ ] 3.1 `findGoalSlotConflict`/`useGoalSlotConflict`: compare `goalTargetKey` for every type, one check per spec; tests for distinct and equal Ascension/Ability/Upgrade targets and Unlock.
 - [ ] 3.2 `useGoalPrerequisites`: consider in-flight Ascension goals; return an "existing covering goal" result wired into review copy and `dependsOnGoalIds`; tests for covering, too-low and none.
 - [ ] 3.3 "Add milestone" on Rank, Ascension and Ability cards; `goal-spec-builder` emits one spec per milestone with chained `dependsOnIndex` and Ascension placement; validation per milestone; tests for Ragnar's four-step ladder and conflict on one step.
-- [ ] 3.4 Update the create-sheet Joyride tutorial (`create-goal-sheet.tutorial.tsx`) with an "Add milestone" step for desktop and mobile, with `tour.*` keys.
+- [ ] 3.4 Update the create-sheet Joyride tutorial (`features/goal-create/ui/create-goal/create-goal-sheet.tutorial.tsx`) with an "Add milestone" step for desktop and mobile, with `tour.*` keys.
 
 ## 4. Display, blockers, edit
 
 - [ ] 4.1 Goal rows/cards: `goalTargetLabel` for every type; range start from previous same-type milestone; "covered by" note; tests.
 - [ ] 4.2 `implicit-prerequisite-blockers`: too-low existing Ascension offers create-covering plus review; tests.
 - [ ] 4.3 Edit dialog: sibling collision message for every type; tests.
+- [ ] 4.4 `features/v1-import`: check the outcome copy now that an existing Upgrade goal no longer forces `manual_step_required`, and that each V1 material goal can land as its own Upgrade goal; update tests.
 
 ## 5. i18n
 
