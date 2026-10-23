@@ -25,6 +25,7 @@ import {
   formatGoalRemainingText,
 } from "./goal-remaining-text"
 import { StackedProgressBar } from "./stacked-progress-bar"
+import { UpgradeTargetMaterials } from "./upgrade-target-materials"
 
 /** Locale-aware thousands separator for a number embedded directly in translated copy (the info
  *  popover's per-line remaining-count clauses) — mirrors `goal-remaining-text.ts`'s own formatting so
@@ -155,9 +156,10 @@ export function GoalTargetDisplay({
         target: progress.target,
       })}
     </span>
+  ) : progress.kind === "Upgrade" && progress.materials.length > 0 ? (
+    <UpgradeTargetMaterials materials={progress.materials} />
   ) : progress.ratio !== null ? (
-    // "Upgrade" — no natural current/target pair to show (it's an average across several
-    // materials), so the percentage itself is the only visible readout.
+    // An "Upgrade" goal with no materials: the percentage is the only readout left.
     <span>{displayPercent(progress.ratio)}%</span>
   ) : null
 }

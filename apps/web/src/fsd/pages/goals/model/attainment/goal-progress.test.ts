@@ -271,3 +271,62 @@ describe("computeGoalProgress Ascension", () => {
     ).toMatchObject({ kind: "Ascension", current: "Common:TwoStars" })
   })
 })
+
+function upgradeDetail(targets: { upgradeId: string; quantity: number }[]) {
+  return {
+    entityType: "Character",
+    goalType: "Upgrade",
+    config: { upgrade: { targets } },
+  } as GoalDetail
+}
+
+describe("computeGoalProgress Upgrade", () => {
+  it("lists each targeted material with its catalog name, rarity and owned count", () => {
+    expect(
+      computeGoalProgress({
+        detail: upgradeDetail([
+          { upgradeId: "upgA", quantity: 10 },
+          { upgradeId: "upgB", quantity: 4 },
+        ]),
+        inventoryUpgrades: [{ upgradeId: "upgA", amount: 5 }],
+        upgradesById: new Map([
+          ["upgA", { label: "Sword", rarity: "Rare", crafted: false }],
+        ]),
+      } as never)
+    ).toEqual({
+      kind: "Upgrade",
+      ratio: 0.25,
+      materials: [
+        {
+          upgradeId: "upgA",
+          label: "Sword",
+          rarity: "Rare",
+          crafted: false,
+          owned: 5,
+          quantity: 10,
+        },
+        {
+          upgradeId: "upgB",
+          label: "upgB",
+          rarity: undefined,
+          crafted: undefined,
+          owned: 0,
+          quantity: 4,
+        },
+      ],
+    })
+  })
+
+  it("keeps the materials but no ratio while the inventory hasn't loaded", () => {
+    expect(
+      computeGoalProgress({
+        detail: upgradeDetail([{ upgradeId: "upgA", quantity: 10 }]),
+        inventoryUpgrades: undefined,
+      } as never)
+    ).toMatchObject({
+      kind: "Upgrade",
+      ratio: null,
+      materials: [{ upgradeId: "upgA", owned: null, quantity: 10 }],
+    })
+  })
+})
