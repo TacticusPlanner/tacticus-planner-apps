@@ -65,8 +65,10 @@ state with a way back to the characters list.
 The unit page SHALL show a navigation bar with a back button, a breadcrumb
 `Library / Characters / <name>`, Previous and Next buttons, and the unit's position. The page tour
 button SHALL be in the app header, as on every page, not in the navigation bar. Back, prev/next and the position SHALL follow the page the user came from: the characters
-list (its current order and search) by default, or the Collection page when the unit was opened from a
-Collection tile. Opened from Collection, the back button SHALL be labelled "Collection" (its accessible
+list by default, or the Collection page when the unit was opened from a Collection tile. From the
+list, prev/next and the position SHALL walk the characters the list showed, in its current order and
+narrowed by its search; the back button SHALL return to `/library/characters` without restoring that
+search. Opened from Collection, the back button SHALL be labelled "Collection" (its accessible
 name "Back to Collection") and return to `/my-game/collection`, and prev/next and the position SHALL
 walk only the characters, in the order Collection showed them; Machines of War SHALL NOT be stepped
 onto. The origin SHALL survive reload and history back/forward and SHALL carry over when the user
