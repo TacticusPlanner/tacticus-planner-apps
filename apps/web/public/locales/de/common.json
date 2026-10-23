@@ -569,6 +569,8 @@
         "legendaryEventPlans": "Teams für Legendäre Events"
       },
       "partDescriptions": {
+        "userId": "Verknüpft dein Planer-Konto mit deinem Spieler im Spiel. Gildenfunktionen benötigen das.",
+        "guildKey": "Wird nur genutzt, wenn du Anführer oder Ko-Anführer deiner Gilde bist: Er registriert deine Gilde im Planer, damit alle Mitglieder die Gildenfunktionen nutzen können.",
         "legendaryEventPlans": "Selbst erstellte Teams, Notizen, Missions- und Paketeingaben pro Durchlauf sowie „Vielleicht schaffbar“-/„Hier aufhören“-Markierungen für die Events, die der Planer kennt. Der Event-Fortschritt wird nicht importiert."
       },
       "submit": "Ausgewählte importieren",

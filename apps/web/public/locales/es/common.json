@@ -569,6 +569,8 @@
         "legendaryEventPlans": "Equipos de Eventos Legendarios"
       },
       "partDescriptions": {
+        "userId": "Vincula tu cuenta del planificador con tu jugador del juego, algo que necesitan las funciones de gremio.",
+        "guildKey": "Solo se usa si eres líder o colíder de tu gremio: registra tu gremio en el planificador para que todos los miembros puedan usar las funciones de gremio.",
         "legendaryEventPlans": "Equipos creados a mano, notas, datos de misiones y packs por ronda y marcas «Quizá superable» / «Parar aquí» de los eventos que conoce el planificador. El progreso del evento no se importa."
       },
       "submit": "Importar selección",

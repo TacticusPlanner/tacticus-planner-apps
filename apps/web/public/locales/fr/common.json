@@ -569,6 +569,8 @@
         "legendaryEventPlans": "Équipes des Événements Légendaires"
       },
       "partDescriptions": {
+        "userId": "Relie votre compte du planificateur à votre joueur en jeu, ce dont les fonctions de guilde ont besoin.",
+        "guildKey": "Utilisé uniquement si vous êtes chef ou co-chef de votre guilde : il enregistre votre guilde dans le planificateur pour que tous les membres puissent utiliser les fonctions de guilde.",
         "legendaryEventPlans": "Les équipes composées à la main, les notes, les saisies de missions et de packs par manche et les marques « Peut-être faisable » / « S'arrêter ici » des événements que le planificateur connaît. La progression des événements n'est pas importée."
       },
       "submit": "Importer la sélection",

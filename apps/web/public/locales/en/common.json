@@ -569,6 +569,8 @@
         "legendaryEventPlans": "Legendary Event teams"
       },
       "partDescriptions": {
+        "userId": "Links your planner account to your in-game player, which guild features need.",
+        "guildKey": "Used only if you're your guild's Leader or Co-Leader: it registers your guild in the planner so every member can use guild features.",
         "legendaryEventPlans": "Hand-built teams, notes, per-run mission and pack inputs, and Maybe clear / Stop here marks for the events the planner knows. Event progress is not imported."
       },
       "submit": "Import selected",

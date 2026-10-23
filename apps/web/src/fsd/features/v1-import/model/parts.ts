@@ -2,8 +2,16 @@
 // keys — the one definition both the panel's checkboxes and the result's part rows read.
 export const V1_IMPORT_PARTS = [
   { key: "personalTacticusApiKey", label: "goals.v1Import.parts.personalKey" },
-  { key: "tacticusUserId", label: "goals.v1Import.parts.userId" },
-  { key: "guildApiToken", label: "goals.v1Import.parts.guildKey" },
+  {
+    key: "tacticusUserId",
+    label: "goals.v1Import.parts.userId",
+    description: "goals.v1Import.partDescriptions.userId",
+  },
+  {
+    key: "guildApiToken",
+    label: "goals.v1Import.parts.guildKey",
+    description: "goals.v1Import.partDescriptions.guildKey",
+  },
   { key: "goals", label: "goals.v1Import.parts.goals" },
   {
     key: "onslaughtProgress",
