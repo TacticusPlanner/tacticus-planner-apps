@@ -153,7 +153,9 @@ export function OnslaughtPage() {
 
       <section className="space-y-3">
         <h2 className="text-xl font-semibold">{t("onslaught.rewardsTitle")}</h2>
-        <div className="overflow-x-auto rounded-lg border">
+        {/* `relative` keeps the header's absolutely positioned sr-only labels inside this scroller,
+            so the wide table cannot widen the page on mobile. */}
+        <div className="relative overflow-x-auto rounded-lg border">
           <table className="min-w-full text-sm">
             <thead className="bg-muted/50">
               <tr>
