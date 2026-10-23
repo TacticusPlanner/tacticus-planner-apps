@@ -28,20 +28,20 @@
 
 Required data: a signed-in account with at least one goal (for reorder) and the Tier List page reachable.
 
-- [ ] 4.1 Tab once on `/home`: skip link visible; Enter moves focus into `main`.
-- [ ] 4.2 Navigate Home -> Plan -> Dailies/HSE via the sidebar: focus lands on each page `h1`; exactly one `h1` in the document on each Dailies tab.
-- [ ] 4.3 Open the unit combobox in Create Goal: `aria-controls` resolves to the listbox (inspect in devtools); rank select announces its label.
-- [ ] 4.4 Reorder a goal row with the keyboard in German: announcements are in German.
+- [x] 4.1 Tab once on `/home`: skip link visible; Enter moves focus into `main`.
+- [x] 4.2 Navigate Home -> Plan -> Dailies/HSE via the sidebar: focus lands on each page `h1`; exactly one `h1` in the document on each Dailies tab.
+- [x] 4.3 Open the unit combobox in Create Goal: `aria-controls` resolves to the listbox (inspect in devtools); rank select announces its label.
+- [x] 4.4 Reorder a goal row with the keyboard in German: announcements are in German.
 - [ ] 4.5 Tier List: one Tab stop per row, arrows move between tiles.
-- [ ] 4.6 Run the shell tour (`general.tutorial.tsx`): the skip link never becomes visible between steps.
+- [x] 4.6 Run the shell tour (`general.tutorial.tsx`): the skip link never becomes visible between steps.
 
 ## 5. Mobile verification (viewport below 768px, same-origin iframe per `tp-manual-ui-verification`)
 
-- [ ] 5.1 Confirm the mobile shell renders (bottom nav present); Tab once shows the skip link; activating it focuses `main`.
-- [ ] 5.2 Navigate via the bottom nav and the menu drawer: focus lands on the mobile header `h1`; one `h1` per Dailies tab.
-- [ ] 5.3 Raid-boss mobile picker: `aria-controls` resolves to its listbox.
-- [ ] 5.4 Mobile reorder mode: announcements are in the active locale.
-- [ ] 5.5 Run the mobile shell tour: no skip-link flash between steps.
+- [x] 5.1 Confirm the mobile shell renders (bottom nav present); Tab once shows the skip link; activating it focuses `main`.
+- [x] 5.2 Navigate via the bottom nav and the menu drawer: focus lands on the mobile header `h1`; one `h1` per Dailies tab.
+- [x] 5.3 Raid-boss mobile picker: `aria-controls` resolves to its listbox.
+- [x] 5.4 Mobile reorder mode: announcements are in the active locale.
+- [x] 5.5 Run the mobile shell tour: no skip-link flash between steps.
 
 ## 6. Gates
 
@@ -59,3 +59,26 @@ Required data: a signed-in account with at least one goal (for reorder) and the 
 - 3.2: test files keep the promise rules but turn off `no-unsafe-*`, `unbound-method`, `require-await` and `no-unnecessary-type-assertion`. typescript-eslint 8.71.2 misreports widening assertions as unnecessary, and fixtures rely on those assertions. `steiger.config.ts` uses `disableTypeChecked`, because it is in no tsconfig project.
 - The lockfile diff includes pnpm 11.7's `supports-color` resolver churn alongside the two new dev dependencies.
 - Groups 4 and 5 (desktop and mobile checks) are open for a browser pass.
+
+## Manual verification (2026-10-23, Aspire stack)
+
+- **4.1 / 5.1** The first Tab shows "Skip to content" (desktop and 420px iframe); Enter focuses
+  `main#main`.
+- **4.2** Sidebar Home -> Plan -> Dailies -> HSE -> HRE: focus lands on each page's `h1`; exactly one
+  `h1` on every Dailies tab.
+- **4.3** The unit combobox's `aria-controls` resolves to the listbox (130 options); the rank select
+  is named "Target rank".
+- **4.4 / 5.4** German keyboard reorder announces "Arjac aufgenommen. Position 1 von 17.", "... auf
+  Position 2 von 17 verschoben." and "Neuordnung abgebrochen. Arjac ist zurück auf Position 1 von
+  17." Escape did nothing at first: the handle's table cell stopped keydown propagation, so dnd-kit
+  never saw Arrow, drop or Escape. Fixed on this branch, with a regression test.
+- **4.6 / 5.5** A focus listener on the skip link recorded 0 focus events across all 8 desktop and
+  all 4 mobile general-tour steps.
+- **5.2** Bottom nav and section tabs focus the mobile `h1`. Opening a page from the menu drawer
+  first left focus on the Menu trigger: route focus skips while a dialog holds focus, and vaul
+  returned focus to the trigger. Fixed on this branch: a drawer link now hands focus to the page
+  heading on close. Regression test added.
+- **5.3** The raid-boss mobile picker's `aria-controls` resolves to its listbox (41 options).
+- Also fixed here: the desktop sidebar inset lacked `min-w-0`, so a long page description widened
+  the page by the rail width (seen on Onslaught).
+- Still open: 2.3 / 4.5 (Tier List roving focus, waiting on the spec decision).
