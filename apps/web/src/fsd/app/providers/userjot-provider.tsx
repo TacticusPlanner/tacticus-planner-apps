@@ -115,6 +115,11 @@ function onSdkEvent(event: string, handler: (payload?: unknown) => void) {
   }
 }
 
+// Tokens live one hour. Re-identify on open only once the last identity is near that age: every
+// identify() makes the SDK clear its viewer caches and abort in-flight loads, so doing it on each
+// open broke the page the widget was loading (the "We couldn't load this page." error on first open).
+const REIDENTIFY_AFTER_MS = 50 * 60 * 1000
+
 const themeToUserJot: Record<Theme, "auto" | "light" | "dark"> = {
   system: "auto",
   light: "light",
@@ -145,6 +150,8 @@ export function UserJotProvider({ children }: { children: ReactNode }) {
   // superseded by a newer one (sign-out or a different user, mid-fetch) becomes a no-op instead of
   // applying a stale identity after the newer call already ran.
   const identifyGenerationRef = useRef(0)
+  // When the current signed identity was applied, or null when there is none.
+  const identifiedAtRef = useRef<number | null>(null)
 
   const applicationUserId =
     state.status === "success" ? state.user.applicationUserId : null
@@ -163,10 +170,13 @@ export function UserJotProvider({ children }: { children: ReactNode }) {
     const generation = ++identifyGenerationRef.current
 
     if (!isAuthenticated || !applicationUserId) {
+      identifiedAtRef.current = null
       sdk.logout()
       return
     }
 
+    // Until this call succeeds there is no fresh identity, so a failure is retried on the next open.
+    identifiedAtRef.current = null
     try {
       const { token } = await queryClient.fetchQuery(
         accountQueries.userJotToken()
@@ -175,8 +185,15 @@ export function UserJotProvider({ children }: { children: ReactNode }) {
         return
       }
       await sdk.identify({ token })
+      if (identifyGenerationRef.current === generation) {
+        identifiedAtRef.current = Date.now()
+      }
     } catch (error) {
       console.error("Failed to identify the UserJot widget.", error)
+      // Never leave a previous identity (e.g. another user's) applied when this one failed.
+      if (identifyGenerationRef.current === generation) {
+        sdk.logout()
+      }
     }
   }, [isAuthenticated, applicationUserId, queryClient])
 
@@ -185,8 +202,6 @@ export function UserJotProvider({ children }: { children: ReactNode }) {
     // confirmedDisplayName: re-identify with a newly signed token after a name edit.
   }, [identify, confirmedDisplayName])
 
-  // Tokens are capped at one hour; re-identifying on every open is simpler and more robust than a
-  // background refresh timer for a widget that is only open briefly at a time.
   // Read through a ref so the one `open` subscription always runs the current identify(); a
   // subscription per identify() would leave earlier ones (e.g. a signed-out logout()) attached.
   const identifyRef = useRef(identify)
@@ -196,6 +211,13 @@ export function UserJotProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     return onSdkEvent("open", () => {
+      const identifiedAt = identifiedAtRef.current
+      if (
+        identifiedAt !== null &&
+        Date.now() - identifiedAt < REIDENTIFY_AFTER_MS
+      ) {
+        return
+      }
       void identifyRef.current()
     })
   }, [])
