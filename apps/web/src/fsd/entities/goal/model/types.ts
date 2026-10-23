@@ -1,11 +1,44 @@
 import type { ApiSchemas } from "@/shared/api"
 
-import type { GoalGroupValue } from "../ui/goal-filters"
+import type { GoalGroupValue, GoalTypeFilterValue } from "../ui/goal-filters"
+import type { GoalStatusFilterValue } from "../ui/status-filter-select"
 
 /** Type guard for a value read back from persisted storage (`usePersistedSelection`) — callers
  *  that remember the user's Group selection across visits use this to validate what they read. */
 export function isGoalGroupValue(value: unknown): value is GoalGroupValue {
   return value === "none" || value === "unit" || value === "type"
+}
+
+export const STATUS_VALUES: readonly GoalStatusFilterValue[] = [
+  "toReach",
+  "reached",
+  "blocked",
+  "active",
+  "paused",
+]
+
+export const GOAL_TYPE_VALUES: readonly GoalKind[] = [
+  "Rank",
+  "Ascension",
+  "Ability",
+  "Unlock",
+  "Upgrade",
+]
+
+/** Type guard for a value read back from the URL (`?status=` on the Goals page). */
+export function isGoalStatusFilterValue(
+  value: string
+): value is GoalStatusFilterValue {
+  return (STATUS_VALUES as readonly string[]).includes(value)
+}
+
+/** Type guard for a value read back from the URL (`?type=` on the Goals page). */
+export function isGoalTypeFilterValue(
+  value: string
+): value is GoalTypeFilterValue {
+  return (
+    value === "all" || (GOAL_TYPE_VALUES as readonly string[]).includes(value)
+  )
 }
 
 // Wire shapes, generated from the API's OpenAPI document (spec: api-contract-sync); never hand-written.

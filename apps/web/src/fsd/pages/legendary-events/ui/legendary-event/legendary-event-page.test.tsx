@@ -215,11 +215,19 @@ let i18n: I18n
 let reads: ReturnType<typeof spyOnIndexedDbReads>
 
 function Controls() {
-  const { pathname } = useLocation()
+  const { pathname, search } = useLocation()
   const navigate = useNavigate()
   return (
     <>
       <span data-testid="current-path">{pathname}</span>
+      <span data-testid="current-search">{search}</span>
+      <button
+        data-testid="back"
+        onClick={() => void navigate(-1)}
+        type="button"
+      >
+        Back
+      </button>
       <button
         data-testid="open-uthar"
         onClick={() => void navigate("/legendary-events/votanUthar")}
@@ -430,6 +438,57 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
     await screen.findByText("Lysander", { selector: "h1" })
     expect(selectedTab()).toHaveTextContent("Overview")
   }, 30_000)
+
+  describe("tab query parameter", () => {
+    const currentSearch = () => screen.getByTestId("current-search")
+
+    it("writes the selected lane to the URL so a reload keeps it", async () => {
+      renderPage("/legendary-events/astarLysander")
+      await screen.findByTestId("legendary-event-overview-leaderboard")
+
+      act(() => selectTab("beta"))
+      expect(currentSearch()).toHaveTextContent(/^\?tab=beta$/)
+      act(() => selectTab("overview"))
+      expect(currentSearch()).toBeEmptyDOMElement()
+    })
+
+    it("restores the lane from the URL on reload", async () => {
+      renderPage("/legendary-events/astarLysander?tab=beta")
+      await screen.findByTestId("legendary-event-page")
+
+      expect(selectedTab()).toHaveTextContent("Beta")
+      expect(laneLabels()).toEqual(["beta"])
+    })
+
+    it("opens a shared lane link on that lane", async () => {
+      renderPage("/legendary-events/astarLysander?tab=gamma")
+      await screen.findByTestId("legendary-event-page")
+
+      expect(selectedTab()).toHaveTextContent("Gamma")
+    })
+
+    it("falls back to Overview on an unknown tab value and drops it from the URL", async () => {
+      renderPage("/legendary-events/astarLysander?tab=delta")
+      await screen.findByTestId("legendary-event-page")
+
+      expect(selectedTab()).toHaveTextContent("Overview")
+      expect(currentSearch()).toBeEmptyDOMElement()
+      expect(screen.getByTestId("current-path")).toHaveTextContent(
+        /^\/legendary-events\/astarLysander$/
+      )
+    })
+
+    it("adds no history entry when switching tabs", async () => {
+      renderPage("/legendary-events/astarLysander")
+      await screen.findByTestId("legendary-event-overview-leaderboard")
+
+      act(() => selectTab("alpha"))
+      act(() => selectTab("beta"))
+      act(() => fireEvent.click(screen.getByTestId("back")))
+
+      expect(await screen.findByTestId("home")).toBeInTheDocument()
+    })
+  })
 
   describe("battles", () => {
     const battleTitle = () => screen.getByTestId("battle-title").textContent

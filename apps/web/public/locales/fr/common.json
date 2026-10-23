@@ -287,7 +287,7 @@
     "saving": "Enregistrement…",
     "saved": "Progression de l'Onslaught enregistrée.",
     "loadError": "Impossible de charger la progression de l'Onslaught.",
-    "saveError": "Impossible d'enregistrer la progression de l'Onslaught. Actualisez et réessayez.",
+    "saveError": "Impossible d'enregistrer la progression de l'Onslaught. Vos modifications sont conservées ; réessayez.",
     "conflict": "La progression de l'Onslaught a changé ailleurs. Les dernières valeurs ont été chargées ; réappliquez votre modification.",
     "rewardsTitle": "Référence des récompenses en éclats",
     "sectorTier": "Secteur / palier",
@@ -300,6 +300,17 @@
       "Legendary": "Légendaire",
       "LegendaryBlue": "Légendaire 1★ bleu",
       "Mythic": "Mythique"
+    },
+    "unsaved": {
+      "message": "Vous avez des modifications non enregistrées",
+      "save": "Enregistrer",
+      "discard": "Annuler"
+    },
+    "leave": {
+      "title": "Quitter sans enregistrer ?",
+      "description": "Vos modifications de la progression Onslaught n'ont pas été enregistrées et seront perdues.",
+      "stay": "Rester",
+      "leave": "Quitter"
     }
   },
   "myGame": {
@@ -1510,6 +1521,18 @@
         "hideCompleted": {
           "title": "Masquer les événements terminés",
           "content": "Les événements inachevés apparaissent en premier. Activez cette option pour masquer ceux qui sont terminés ; le choix est mémorisé dans ce navigateur."
+        },
+        "save": {
+          "title": "Enregistrer vos modifications",
+          "content": "Dès que vous modifiez quelque chose, une barre avec Enregistrer et Annuler apparaît en bas. Une confirmation vous est demandée avant de quitter avec des modifications non enregistrées."
+        }
+      }
+    },
+    "onslaught": {
+      "steps": {
+        "alliances": {
+          "title": "Progression des alliances",
+          "content": "Indiquez le secteur et le palier que farme chaque alliance. Chaque carte affiche les éclats que rapporte une partie à cette position."
         },
         "save": {
           "title": "Enregistrer vos modifications",

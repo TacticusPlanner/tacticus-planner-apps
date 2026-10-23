@@ -190,7 +190,7 @@ describe("GoalsPage reordering", () => {
   })
 
   it("moves the dragged goal onto the goal that held its new place in the whole order", () => {
-    render(<GoalsPage />)
+    render(<GoalsPage />, { route: "/plan/goals" })
 
     // Unfiltered: e dropped above d takes d's global position.
     fireEvent.click(screen.getByTestId("move-up-e"))
@@ -203,7 +203,7 @@ describe("GoalsPage reordering", () => {
 
   it("resolves a drop on a filtered list against the hidden goals too (A,B,C,D,E; visible A,C,E; E above C gives A,B,E,C,D)", async () => {
     const user = userEvent.setup()
-    render(<GoalsPage />)
+    render(<GoalsPage />, { route: "/plan/goals" })
     await user.click(screen.getByTestId("goals-type-filter"))
     await user.click(
       await screen.findByRole("option", {
@@ -222,7 +222,7 @@ describe("GoalsPage reordering", () => {
 
   it("keeps a grouped drop inside its own group section", async () => {
     const user = userEvent.setup()
-    render(<GoalsPage />)
+    render(<GoalsPage />, { route: "/plan/goals" })
     await user.click(screen.getByTestId("goals-group-by"))
     await user.click(
       await screen.findByRole("option", { name: "Group by type" })
@@ -244,14 +244,14 @@ describe("GoalsPage reordering", () => {
       goal("b", 2, { status: "Paused" }),
       goal("a", 1),
     ]
-    render(<GoalsPage />)
+    render(<GoalsPage />, { route: "/plan/goals" })
 
     expect(rowIds()).toEqual(["a", "b", "c", "done"])
     expect(screen.queryByTestId("goals-sort")).not.toBeInTheDocument()
   })
 
   it("feeds the list plan-aware estimates from the same plan run Today uses", () => {
-    render(<GoalsPage />)
+    render(<GoalsPage />, { route: "/plan/goals" })
 
     expect(screen.getByTestId("goals-list")).toHaveAttribute(
       "data-estimates",
@@ -261,7 +261,7 @@ describe("GoalsPage reordering", () => {
 
   it("does not offer reordering for a single in-flight goal", async () => {
     state.goals = [goal("a", 1)]
-    render(<GoalsPage />)
+    render(<GoalsPage />, { route: "/plan/goals" })
     expect(screen.getByTestId("goals-list")).toHaveAttribute(
       "data-reorder",
       "false"
@@ -272,7 +272,7 @@ describe("GoalsPage reordering", () => {
   it("keeps the mobile reorder toggle in place but disabled when reordering is unavailable", () => {
     state.isMobile = true
     state.goals = [goal("a", 1)]
-    render(<GoalsPage />)
+    render(<GoalsPage />, { route: "/plan/goals" })
     expect(screen.getByTestId("goals-mobile-reorder-toggle")).toBeDisabled()
     expect(screen.getByTestId("goals-mobile-select-toggle")).toBeEnabled()
   })
@@ -282,7 +282,7 @@ describe("GoalsPage reordering", () => {
       ...state.order,
       conflict: { move: { goalId: "e", displacedGoalId: "d" }, message: "x" },
     }
-    render(<GoalsPage />)
+    render(<GoalsPage />, { route: "/plan/goals" })
 
     expect(screen.getByTestId("goal-order-conflict")).toBeInTheDocument()
     expect(state.retryMove).not.toHaveBeenCalled()
@@ -294,7 +294,7 @@ describe("GoalsPage reordering", () => {
 
   it("offers a dedicated reorder mode on mobile with an in-reach Done control", () => {
     state.isMobile = true
-    render(<GoalsPage />)
+    render(<GoalsPage />, { route: "/plan/goals" })
 
     expect(screen.queryByTestId("mobile-reorder-bar")).not.toBeInTheDocument()
     fireEvent.click(screen.getByTestId("goals-mobile-reorder-toggle"))
@@ -311,7 +311,7 @@ describe("GoalsPage reordering", () => {
     state.insightsError = true
     state.estimates = new Map()
     state.goals = [goal("a", 1)]
-    render(<GoalsPage />)
+    render(<GoalsPage />, { route: "/plan/goals" })
 
     expect(screen.getByTestId("goals-estimates-error")).toBeInTheDocument()
     // Below the list, so its late arrival doesn't push the rows down.
@@ -329,7 +329,7 @@ describe("GoalsPage reordering", () => {
   it("shows the save in flight next to the list while the mobile mode is on", () => {
     state.isMobile = true
     state.order = { ...state.order, pending: true }
-    render(<GoalsPage />)
+    render(<GoalsPage />, { route: "/plan/goals" })
     fireEvent.click(screen.getByTestId("goals-mobile-reorder-toggle"))
 
     expect(screen.getByTestId("mobile-reorder-status")).toHaveTextContent(
@@ -340,7 +340,7 @@ describe("GoalsPage reordering", () => {
   it("says there is no farming to plan when the Active goals need nothing farmable, but not for Paused-only", () => {
     state.estimates = new Map()
     state.goals = [goal("a", 1)]
-    const { unmount } = render(<GoalsPage />)
+    const { unmount } = render(<GoalsPage />, { route: "/plan/goals" })
     expect(screen.getByTestId("goals-no-farmable")).toBeInTheDocument()
     expect(
       screen
@@ -351,7 +351,7 @@ describe("GoalsPage reordering", () => {
     unmount()
 
     state.goals = [goal("a", 1, { status: "Paused" })]
-    render(<GoalsPage />)
+    render(<GoalsPage />, { route: "/plan/goals" })
     expect(screen.queryByTestId("goals-no-farmable")).not.toBeInTheDocument()
   })
 })

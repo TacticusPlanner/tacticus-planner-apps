@@ -287,7 +287,7 @@
     "saving": "Saving…",
     "saved": "Onslaught progress saved.",
     "loadError": "Couldn't load Onslaught progress.",
-    "saveError": "Couldn't save Onslaught progress. Refresh and try again.",
+    "saveError": "Couldn't save Onslaught progress. Your changes are still here; try again.",
     "conflict": "Onslaught progress changed elsewhere. Latest values loaded; apply your change again.",
     "rewardsTitle": "Shard rewards reference",
     "sectorTier": "Sector / tier",
@@ -300,6 +300,17 @@
       "Legendary": "Legendary",
       "LegendaryBlue": "Legendary 1★ blue",
       "Mythic": "Mythic"
+    },
+    "unsaved": {
+      "message": "You have unsaved changes",
+      "save": "Save",
+      "discard": "Discard"
+    },
+    "leave": {
+      "title": "Leave without saving?",
+      "description": "Your Onslaught progress changes haven't been saved and will be lost.",
+      "stay": "Stay",
+      "leave": "Leave"
     }
   },
   "myGame": {
@@ -1510,6 +1521,18 @@
         "hideCompleted": {
           "title": "Hide completed events",
           "content": "Unfinished events are listed first. Turn this on to hide completed ones; the choice is remembered in this browser."
+        },
+        "save": {
+          "title": "Save your changes",
+          "content": "Once you edit something, a bar with Save and Discard appears at the bottom. You'll be asked before leaving with unsaved changes."
+        }
+      }
+    },
+    "onslaught": {
+      "steps": {
+        "alliances": {
+          "title": "Alliance progress",
+          "content": "Set the sector and tier each alliance is farming. Each card shows the shards one run pays at that position."
         },
         "save": {
           "title": "Save your changes",
