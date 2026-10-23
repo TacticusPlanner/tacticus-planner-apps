@@ -234,7 +234,7 @@ describe("UserJotProvider", () => {
       expect(consoleError).toHaveBeenCalled()
     })
     expect(identify).not.toHaveBeenCalled()
-    expect(logout).not.toHaveBeenCalled()
+    expect(logout).toHaveBeenCalledTimes(1)
 
     consoleError.mockRestore()
   })
@@ -303,6 +303,24 @@ describe("UserJotProvider", () => {
 
     expect(fetchQueryMock).toHaveBeenCalledTimes(1)
     expect(identify).toHaveBeenCalledTimes(1)
+  })
+
+  it("logs out and retries on the next open when a signed identify fails", async () => {
+    const consoleError = vi.spyOn(console, "error").mockImplementation(() => {})
+    fetchQueryMock.mockRejectedValueOnce(new Error("network"))
+    renderProvider()
+
+    await waitFor(() => {
+      expect(logout).toHaveBeenCalledTimes(1)
+    })
+    expect(identify).not.toHaveBeenCalled()
+
+    listeners.get("open")?.()
+
+    await waitFor(() => {
+      expect(identify).toHaveBeenCalledWith({ token: "signed-jwt" })
+    })
+    consoleError.mockRestore()
   })
 
   it("re-identifies on open once the signed identity is near its one-hour expiry", async () => {

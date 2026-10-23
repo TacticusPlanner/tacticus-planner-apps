@@ -175,6 +175,8 @@ export function UserJotProvider({ children }: { children: ReactNode }) {
       return
     }
 
+    // Until this call succeeds there is no fresh identity, so a failure is retried on the next open.
+    identifiedAtRef.current = null
     try {
       const { token } = await queryClient.fetchQuery(
         accountQueries.userJotToken()
@@ -188,6 +190,10 @@ export function UserJotProvider({ children }: { children: ReactNode }) {
       }
     } catch (error) {
       console.error("Failed to identify the UserJot widget.", error)
+      // Never leave a previous identity (e.g. another user's) applied when this one failed.
+      if (identifyGenerationRef.current === generation) {
+        sdk.logout()
+      }
     }
   }, [isAuthenticated, applicationUserId, queryClient])
 
