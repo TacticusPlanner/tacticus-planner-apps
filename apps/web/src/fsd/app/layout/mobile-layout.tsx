@@ -42,7 +42,10 @@ import {
 import { QuickActionsGroup } from "./quick-actions-group"
 import { ScrollToTopButton } from "./scroll-to-top-button"
 import { SkipLink } from "./skip-link"
-import { useFocusPageHeadingOnNavigate } from "./use-focus-page-heading"
+import {
+  PAGE_HEADING_ID,
+  useFocusPageHeadingOnNavigate,
+} from "./use-focus-page-heading"
 
 // Matches vaul's exit transition (TRANSITIONS.DURATION = 0.5s).
 const DRAWER_EXIT_MS = 500
@@ -199,6 +202,13 @@ function MobileBottomNav({
   const [menuOpen, setMenuOpen] = useState(false)
   const [search, setSearch] = useState("")
   const flushTimer = useRef<ReturnType<typeof setTimeout>>(undefined)
+  // Set when a drawer link closes the drawer: its close then hands focus to the page h1 (which
+  // `useFocusPageHeadingOnNavigate` skips while the drawer holds focus), not back to the trigger.
+  const focusHeadingOnClose = useRef(false)
+  const closeForNavigation = () => {
+    focusHeadingOnClose.current = true
+    setMenuOpen(false)
+  }
   useEffect(() => () => clearTimeout(flushTimer.current), [])
   const homeItem = items.find((item) => item.path === "/home")
   const goalsItem = items.find((item) => item.path === "/plan")
@@ -252,6 +262,14 @@ function MobileBottomNav({
         <DrawerContent
           className="h-dvh max-h-dvh p-0 pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)] before:inset-0 before:rounded-none"
           data-testid="mobile-menu"
+          onCloseAutoFocus={(event) => {
+            if (!focusHeadingOnClose.current) return
+            focusHeadingOnClose.current = false
+            event.preventDefault()
+            document
+              .getElementById(PAGE_HEADING_ID)
+              ?.focus({ preventScroll: true })
+          }}
         >
           <DrawerHeader className="border-b px-6 py-5 text-left">
             <DrawerTitle className="text-xl">{t("nav.navigation")}</DrawerTitle>
@@ -302,7 +320,7 @@ function MobileBottomNav({
                               ? "bg-accent text-accent-foreground shadow-[inset_3px_0_0_0_var(--accent-foreground)]"
                               : "hover:bg-accent hover:text-accent-foreground"
                           )}
-                          onClick={() => setMenuOpen(false)}
+                          onClick={closeForNavigation}
                           to={item.path}
                         >
                           <item.icon className="size-5 shrink-0" />
@@ -332,7 +350,7 @@ function MobileBottomNav({
                                 key={child.path}
                                 hideLive={isSearching}
                                 item={child}
-                                onSelect={() => setMenuOpen(false)}
+                                onSelect={closeForNavigation}
                                 pathname={pathname}
                               />
                             ))}

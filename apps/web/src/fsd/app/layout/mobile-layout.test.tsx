@@ -1,4 +1,11 @@
-import { act, fireEvent, render, screen, within } from "@testing-library/react"
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { lazy } from "react"
 import { Link, MemoryRouter, Route, Routes } from "react-router"
@@ -532,6 +539,22 @@ describe("MobileShell landmarks and focus", () => {
     expect(filter).toHaveFocus()
 
     await user.click(screen.getByRole("link", { name: "Next page" }))
+    expect(screen.getByRole("heading", { level: 1 })).toHaveFocus()
+  })
+
+  it("focuses the page h1, not the Menu trigger, after navigating from the drawer", async () => {
+    const user = userEvent.setup()
+    renderMobileRoutes()
+
+    await user.click(screen.getByTestId("mobile-menu-trigger"))
+    const menu = await screen.findByTestId("mobile-menu")
+    await user.click(
+      within(menu).getAllByRole("link", { name: /nav\.goals/ })[0]!
+    )
+
+    await waitFor(() =>
+      expect(screen.queryByTestId("mobile-menu")).not.toBeInTheDocument()
+    )
     expect(screen.getByRole("heading", { level: 1 })).toHaveFocus()
   })
 
