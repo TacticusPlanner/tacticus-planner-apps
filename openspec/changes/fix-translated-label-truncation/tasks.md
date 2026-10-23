@@ -11,8 +11,8 @@
 
 ## 3. Verification
 
-- [ ] 3.1 Desktop verification (≥768px) in de and fr: Today schedule, Home raids widget, project selector, Dailies section menu — no clipped labels.
-- [ ] 3.2 Mobile verification (<768px) in de and fr: Today schedule, Home raids widget, project selector (icon-only trigger unaffected), Dailies tab row — no clipped labels.
+- [x] 3.1 Desktop verification (≥768px) in de and fr: Today schedule, Home raids widget, project selector, Dailies section menu — no clipped labels.
+- [x] 3.2 Mobile verification (<768px) in de and fr: Today schedule, Home raids widget, project selector (icon-only trigger unaffected), Dailies tab row — no clipped labels.
 - [x] 3.3 Run `pnpm test:run`, `pnpm typecheck`, `pnpm lint`, `pnpm lint:fsd`, and `git diff --check`; verify all pass.
 
 ## Notes (as built)
@@ -23,3 +23,16 @@
 - 2.3: section-menu item labels now wrap with `break-words` instead of truncating, and keep their existing `title`. The menu is shared, so this applies to every section, not only Dailies. The section-name header row keeps `truncate` because it is not a tab label.
 - 2.4: added `location-row.test.tsx` and long-label tests in `dailies-pages`, `raid-schedule`, `project-select`, `section-tabs` and `desktop-section-navigation`. The last two use the shipped de/fr `dailies.json` tab labels. Existing `.truncate` selectors in `dailies-pages`, `raid-schedule` and `raids-widget` were updated.
 - No new or changed strings, so there are no translation changes.
+
+## Manual verification (2026-10-23, Aspire stack)
+
+- **3.1** Desktop, de and fr: the Raids page (Today's attempts and bonus schedule), the Home raids
+  widget, the project selector (trigger and options) and the Dailies section menu show no clipped
+  text (scan for `scrollWidth > clientWidth` on truncating elements, sr-only excluded) and look
+  complete in screenshots.
+- **3.2** 420px iframe, de and fr: the same surfaces plus the tab row ("Raids SBE HRE Läden
+  Gilden-Raids" / "Raids ÉÉA ÉSH Boutiques Raids de guilde") show in full; the project selector is
+  icon-only.
+- Outside this change: Home's event calendar titles ("Événement de nouveau personnage :
+  Zapspitta") and the mobile header subtitle still truncate, by design.
+- 1.1 stays open: it is a pre-change baseline, and a browser run can't recover it now.
