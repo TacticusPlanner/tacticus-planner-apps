@@ -6,7 +6,7 @@ Quest Events run for 72 hours every few weeks: 17 hand-made battles from Common 
 
 ## What Changes
 
-- New Dailies **Quest** tab at `/dailies/quest`, directly after HRE. It shows the running quest, the quest in its 24 h claim window, or the next quest as a labelled preview. A quest picker browses every quest in the catalog, as V1's hero picker did.
+- New Dailies **Quest** tab at `/dailies/quest`, directly after HRE. It shows the running quest, the quest in its 24 h claim window, or the next quest as a labelled preview. A quest picker browses every quest in the catalog (the last 3: Cyrus, Nubari, Kîmm), as V1's hero picker did.
 - **Header**: featured hero (portrait, name, owned or not, current shards), allowed and enemy factions, the countdown, and a claim-window warning.
 - **Battle tracker**: the 17 battles grouped by tier in play order (Common first). For each battle, the player records their best attempt: medals 0 to 3, Lightning Victory as a full-HP toggle (100 or 0), and a tick per bonus objective. Saved in local storage per occurrence, like HRE. The tab shows points out of 8,800, points left per battle, crates opened and the points to the next crate.
 - **Battle detail**: select a battle to see its board, enemies with level and stats, the rarity cap, deploy slots, Lightning Victory turns, objective chips with their scores, and its drop with odds and goal need (have / need, and up to 3 units that need it). It is built from a new shared `widgets/battle-preview`, split out of the Legendary Event Battles section with no change to LE.

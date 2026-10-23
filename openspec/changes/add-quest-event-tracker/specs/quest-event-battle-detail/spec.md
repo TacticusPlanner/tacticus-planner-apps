@@ -38,7 +38,7 @@ The detail SHALL list the served enemies in served order with the shared battle-
 
 #### Scenario: Power-up
 
-- **GIVEN** Sekhetar Robot battle 4, which serves `powupHealing`
+- **GIVEN** Nubari battle 9, which serves `powupArmor`
 - **THEN** it shows under "Board pickups" and is not counted as an enemy
 
 ### Requirement: Objectives are shown as chips with their scores

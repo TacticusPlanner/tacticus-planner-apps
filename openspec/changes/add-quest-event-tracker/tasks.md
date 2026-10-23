@@ -16,7 +16,7 @@ Companion API change: `add-quest-event-tracker` in `tacticus-planner-api` (serve
 - [ ] 3.1 Implement `selectQuestInstance` (running, claim, preview, none, tie-breaks) and verify with unit tests for the Nubari, claim-window and Kîmm preview scenarios
 - [ ] 3.2 Implement `scoreQuest` (battle, tier and total points, crates opened, next crate, points left) and verify with unit tests for Nubari battle 1, 0 medals, the next-crate and all-perfect scenarios
 - [ ] 3.3 Implement guarded storage (`tp.dailies.quest.progress.v1`, clamping, padding, failure notice) and verify with tests for reload, a new quest and throwing storage
-- [ ] 3.4 Build the header, quest picker, tier-grouped battle list with score inputs, and summary, and verify with component tests for the Nubari not-owned, browse-Cyrus and Cezare no-data scenarios
+- [ ] 3.4 Build the header, quest picker, tier-grouped battle list with score inputs, and summary, and verify with component tests for the Nubari not-owned, browse-Cyrus and older-quest no-data scenarios
 - [ ] 3.5 Build the battle detail (header with cap line, board, enemies and pickups, objective chips, drop with odds and goal need), and verify with component tests for Nubari battles 4 and 17 and the NPC-failure state
 
 ## 4. Page, navigation and tour
