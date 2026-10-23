@@ -133,7 +133,7 @@ export function DesktopShell({
         {/* The sidebar inset is a plain div, not shadcn's <main>, so the section menu stays outside
             the page's main landmark. */}
         <div
-          className="relative flex w-full flex-1 flex-col bg-background"
+          className="relative flex w-full min-w-0 flex-1 flex-col bg-background"
           data-slot="sidebar-inset"
         >
           <div className="flex min-h-0 flex-1">
