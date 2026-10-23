@@ -134,6 +134,7 @@
     },
     "import": {
       "continue": "Continuar",
+      "materialStepsAcknowledge": "Añadiré estos objetivos de mejora más tarde. Seguirán en la página de objetivos hasta que los oculte.",
       "useApiKey": "Usar una clave de API en su lugar"
     },
     "name": {
@@ -578,7 +579,8 @@
         "description": "Los objetivos de materiales y de pre-farmeo de V1 no tienen unidad, y todo objetivo de V2 pertenece a una, así que no se importaron. Añade un objetivo de mejora para cada material en la unidad que deba tenerlo. Si era de pre-farmeo, colócalo antes que los demás objetivos de esa unidad.",
         "preFarmedFor": "Pre-farmeado para {{units}}",
         "suggestedUnit": "Unidad sugerida: {{unit}}",
-        "createUpgradeGoal": "Crear objetivo de mejora"
+        "createUpgradeGoal": "Crear objetivo de mejora",
+        "dismiss": "Hecho, ocultar"
       },
       "reasons": {
         "goalCreated": "Importado desde V1.",

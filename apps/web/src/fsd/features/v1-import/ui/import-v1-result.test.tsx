@@ -61,7 +61,12 @@ vi.mock("@workspace/game-catalog/queries", () => ({
 
 import { CreateGoalLauncherContext } from "@/entities/goal"
 
+import {
+  clearPendingMaterialSteps,
+  savePendingMaterialSteps,
+} from "../model/pending-material-steps"
 import { ImportResult } from "./import-v1-result"
+import { PendingMaterialSteps } from "./pending-material-steps"
 
 const notSelected: ImportPartResult = {
   status: "Skipped",
@@ -555,5 +560,44 @@ describe("ImportResult — material goals", () => {
       upgradeId: "upgHpC001",
       quantity: 10,
     })
+  })
+})
+
+describe("PendingMaterialSteps", () => {
+  it("keeps an import's material steps until they are dismissed", async () => {
+    savePendingMaterialSteps([
+      {
+        sourceGoalId: "m-1",
+        upgradeId: "upgHpC001",
+        quantity: 10,
+        linkedUnits: [],
+        units: [{ entityType: "Character", entityId: "astarLysander" }],
+      },
+    ])
+    render(<PendingMaterialSteps />)
+
+    expect(await screen.findByText("Ceramite Plate · ×10")).toBeInTheDocument()
+    fireEvent.click(screen.getByTestId("v1-import-material-steps-dismiss"))
+
+    expect(screen.queryByTestId("v1-import-pending-material-steps")).toBeNull()
+  })
+
+  it("leaves an earlier list alone when an import has no material steps", () => {
+    savePendingMaterialSteps([
+      {
+        sourceGoalId: "m-1",
+        upgradeId: "upgHpC001",
+        quantity: null,
+        linkedUnits: [],
+        units: [],
+      },
+    ])
+    savePendingMaterialSteps([])
+    render(<PendingMaterialSteps />)
+
+    expect(
+      screen.getByTestId("v1-import-pending-material-steps")
+    ).toBeInTheDocument()
+    clearPendingMaterialSteps()
   })
 })

@@ -134,6 +134,7 @@
     },
     "import": {
       "continue": "Continuer",
+      "materialStepsAcknowledge": "J'ajouterai ces objectifs d'amélioration plus tard. Ils resteront sur la page Objectifs jusqu'à ce que je les masque.",
       "useApiKey": "Utiliser une clé API à la place"
     },
     "name": {
@@ -578,7 +579,8 @@
         "description": "Les objectifs de matériaux et de pré-farm de V1 n'ont pas d'unité, alors que chaque objectif V2 en a une : ils n'ont donc pas été importés. Ajoutez un objectif d'amélioration pour chaque matériau sur l'unité qui doit le recevoir. Pour un objectif de pré-farm, placez-le avant les autres objectifs de cette unité.",
         "preFarmedFor": "Pré-farmé pour {{units}}",
         "suggestedUnit": "Unité suggérée : {{unit}}",
-        "createUpgradeGoal": "Créer un objectif d'amélioration"
+        "createUpgradeGoal": "Créer un objectif d'amélioration",
+        "dismiss": "Terminé, masquer"
       },
       "reasons": {
         "goalCreated": "Importé depuis V1.",

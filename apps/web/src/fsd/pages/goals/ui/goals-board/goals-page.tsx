@@ -10,6 +10,7 @@ import {
   type GoalTypeFilterValue,
 } from "@/entities/goal"
 import { MobileReorderBar, OrderConflictBanner } from "@/features/goal-order"
+import { PendingMaterialSteps } from "@/features/v1-import"
 import {
   PlanningSettingsDialog,
   PlanningSettingsTrigger,
@@ -364,6 +365,8 @@ export function GoalsPage() {
         selectToggle={selectToggle}
         statusFilter={statusFilter}
       />
+
+      <PendingMaterialSteps />
 
       {orderActions.conflict ? (
         <OrderConflictBanner

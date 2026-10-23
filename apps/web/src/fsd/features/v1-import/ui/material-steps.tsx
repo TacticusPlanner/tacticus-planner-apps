@@ -20,7 +20,14 @@ import { useUpgradeName } from "../model/use-upgrade-name"
  * the units it pre-farmed for or the suggested unit — and, where the app shell's goal-creation sheet is
  * mounted, a shortcut that opens it with that unit, the Upgrade type and the material preselected.
  */
-export function MaterialSteps({ steps }: { steps: readonly MaterialStep[] }) {
+export function MaterialSteps({
+  steps,
+  onDismiss,
+}: {
+  steps: readonly MaterialStep[]
+  /** Offered where the list outlives its import report (the Goals page), to put it away once done. */
+  onDismiss?: () => void
+}) {
   const { t } = useTranslation()
   const getUnitName = useUnitName()
   const getUpgradeName = useUpgradeName()
@@ -89,6 +96,18 @@ export function MaterialSteps({ steps }: { steps: readonly MaterialStep[] }) {
             </li>
           ))}
         </ul>
+        {onDismiss ? (
+          <Button
+            className="mt-2"
+            data-testid="v1-import-material-steps-dismiss"
+            onClick={onDismiss}
+            size="sm"
+            type="button"
+            variant="ghost"
+          >
+            {t("goals.v1Import.materialSteps.dismiss")}
+          </Button>
+        ) : null}
       </AlertDescription>
     </Alert>
   )

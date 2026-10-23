@@ -134,6 +134,7 @@
     },
     "import": {
       "continue": "Continue",
+      "materialStepsAcknowledge": "I'll add these Upgrade goals later. They'll stay on the Goals page until I hide them.",
       "useApiKey": "Use an API key instead"
     },
     "name": {
@@ -578,7 +579,8 @@
         "description": "V1 material and pre-farm goals have no unit, and every V2 goal belongs to one, so these weren't imported. Add an Upgrade goal for each material on the unit that should hold it. For a pre-farm goal, place it ahead of that unit's other goals.",
         "preFarmedFor": "Pre-farmed for {{units}}",
         "suggestedUnit": "Suggested unit: {{unit}}",
-        "createUpgradeGoal": "Create Upgrade goal"
+        "createUpgradeGoal": "Create Upgrade goal",
+        "dismiss": "Done, hide this"
       },
       "reasons": {
         "goalCreated": "Imported from V1.",

@@ -134,6 +134,7 @@
     },
     "import": {
       "continue": "Weiter",
+      "materialStepsAcknowledge": "Ich lege diese Upgrade-Ziele später an. Sie bleiben auf der Zielseite, bis ich sie ausblende.",
       "useApiKey": "Stattdessen API-Schlüssel verwenden"
     },
     "name": {
@@ -578,7 +579,8 @@
         "description": "Material- und Vorfarm-Ziele aus V1 haben keine Einheit, aber jedes V2-Ziel gehört zu einer. Deshalb wurden sie nicht importiert. Lege für jedes Material ein Upgrade-Ziel bei der Einheit an, die es bekommen soll. Ein Vorfarm-Ziel stellst du vor die anderen Ziele dieser Einheit.",
         "preFarmedFor": "Vorgefarmt für {{units}}",
         "suggestedUnit": "Vorgeschlagene Einheit: {{unit}}",
-        "createUpgradeGoal": "Upgrade-Ziel erstellen"
+        "createUpgradeGoal": "Upgrade-Ziel erstellen",
+        "dismiss": "Erledigt, ausblenden"
       },
       "reasons": {
         "goalCreated": "Aus V1 importiert.",

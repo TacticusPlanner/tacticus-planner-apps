@@ -27,7 +27,9 @@ import {
 
 import { legendaryEventPlanQueries } from "@/entities/legendary-event"
 
+import { materialSteps } from "../model/outcome-buckets"
 import { V1_IMPORT_PARTS, type V1ImportPartKey } from "../model/parts"
+import { savePendingMaterialSteps } from "../model/pending-material-steps"
 import { ImportResult } from "./import-v1-result"
 
 export type V1ImportSelection = Record<V1ImportPartKey, boolean>
@@ -78,6 +80,8 @@ export function V1ImportPanel({
     mutationFn: importV1Profile,
     onSuccess: async (imported) => {
       setResult(imported)
+      // Kept past this report so the Goals page can still offer them (pending-material-steps.ts).
+      savePendingMaterialSteps(materialSteps(imported.outcomes))
       await refreshAfterImport()
       setPassword("")
       onSuccess?.(imported)

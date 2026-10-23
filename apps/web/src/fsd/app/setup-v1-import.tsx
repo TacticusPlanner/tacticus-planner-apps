@@ -1,8 +1,13 @@
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
+import { Checkbox } from "@workspace/ui/components/checkbox"
 
-import { V1ImportPanel, type V1ImportSelection } from "@/features/v1-import"
+import {
+  materialSteps,
+  V1ImportPanel,
+  type V1ImportSelection,
+} from "@/features/v1-import"
 import type { ImportV1ProfileResult } from "@/entities/account"
 
 const ALL_SELECTED: V1ImportSelection = {
@@ -43,6 +48,10 @@ const LOCKED_PARTS: ReadonlyArray<keyof V1ImportSelection> = [
  * hide its own Back control once the key is in: backing out of setup after the account is already
  * provisioned makes no sense, and going back mid-way is exactly the "not yet available" case this
  * step still needs Back for.
+ *
+ * Material steps (V1 material and pre-farm goals, which need an Upgrade goal created by hand) can't be
+ * acted on here — there is no goal-creation sheet outside the app shell — so Continue waits until the
+ * user acknowledges them; they stay on the Goals page (PendingMaterialSteps) until dismissed there.
  */
 export function SetupV1Import({
   onCompleted,
@@ -57,10 +66,14 @@ export function SetupV1Import({
 }) {
   const { t } = useTranslation()
   const [keySucceeded, setKeySucceeded] = useState(false)
+  const [hasMaterialSteps, setHasMaterialSteps] = useState(false)
+  const [stepsAcknowledged, setStepsAcknowledged] = useState(false)
 
   const handleSuccess = (result: ImportV1ProfileResult) => {
     // Handed to the host for the name step's prefill; an unconfirmed suggestion, never confirmed here.
     onSuggestedDisplayName(result.suggestedDisplayName ?? null)
+    setHasMaterialSteps(materialSteps(result.outcomes).length > 0)
+    setStepsAcknowledged(false)
     if (result.personalTacticusApiKey.status === "Imported") {
       setKeySucceeded(true)
       onKeyImported()
@@ -81,9 +94,23 @@ export function SetupV1Import({
               {t("onboarding.import.useApiKey")}
             </Button>
           ) : null}
+          {keySucceeded && hasMaterialSteps ? (
+            <label className="flex basis-full items-start gap-2 text-sm">
+              <Checkbox
+                className="mt-0.5"
+                checked={stepsAcknowledged}
+                data-testid="account-setup-v1-material-steps-ack"
+                onCheckedChange={(checked) =>
+                  setStepsAcknowledged(checked === true)
+                }
+              />
+              {t("onboarding.import.materialStepsAcknowledge")}
+            </label>
+          ) : null}
           {keySucceeded ? (
             <Button
               data-testid="account-setup-v1-continue"
+              disabled={hasMaterialSteps && !stepsAcknowledged}
               onClick={onCompleted}
               type="button"
             >

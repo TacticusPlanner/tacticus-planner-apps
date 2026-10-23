@@ -40,6 +40,8 @@ const {
 }))
 
 vi.mock("@/features/v1-import", () => ({
+  materialSteps: (outcomes: ReadonlyArray<{ code: string }>) =>
+    outcomes.filter((outcome) => outcome.code === "manual_step_required"),
   V1ImportPanel: ({
     defaultSelection,
     lockedParts,
@@ -75,7 +77,8 @@ const failedPart: ImportPartResult = {
 }
 
 function fullResult(
-  personalTacticusApiKey: ImportPartResult
+  personalTacticusApiKey: ImportPartResult,
+  outcomes: ImportV1ProfileResult["outcomes"] = []
 ): ImportV1ProfileResult {
   return {
     tacticusUserId: okPart,
@@ -84,7 +87,7 @@ function fullResult(
     onslaughtProgress: okPart,
     campaignEventProgress: okPart,
     goals: okPart,
-    outcomes: [],
+    outcomes,
     legendaryEventPlans: okPart,
     legendaryEventOutcomes: [],
     profileId: "profile-1",
@@ -186,6 +189,38 @@ describe("SetupV1Import", () => {
 
     onSuccessRef.current?.(fullResult(okPart))
     await user.click(await screen.findByTestId("account-setup-v1-continue"))
+
+    expect(onCompleted).toHaveBeenCalledTimes(1)
+  })
+
+  it("holds Continue until material steps are acknowledged", async () => {
+    const user = userEvent.setup()
+    const { onCompleted } = renderSetup()
+
+    onSuccessRef.current?.(
+      fullResult(okPart, [
+        {
+          status: "Skipped",
+          code: "manual_step_required",
+          message: "",
+          entityType: "Character",
+          entityId: "ultraTigurius",
+          goalType: "Upgrade",
+          goalId: null,
+          sourceGoalId: "v1-goal-1",
+          upgradeId: "upgrade-1",
+          linkedSourceGoalIds: null,
+          upgradeQuantity: 3,
+        },
+      ])
+    )
+    const continueButton = await screen.findByTestId(
+      "account-setup-v1-continue"
+    )
+    expect(continueButton).toBeDisabled()
+
+    await user.click(screen.getByTestId("account-setup-v1-material-steps-ack"))
+    await user.click(continueButton)
 
     expect(onCompleted).toHaveBeenCalledTimes(1)
   })
