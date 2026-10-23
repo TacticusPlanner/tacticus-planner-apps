@@ -104,6 +104,28 @@ export function useUpgradeFields({
     upgradesById,
   ])
 
+  // How many of each material the unit still needs over its whole remaining ladder (current rank to
+  // the last for a Character, both full tracks for a Mow) — the quantity hint for a prefilled
+  // material, which usually belongs to a later rank than the sheet's default one-rank range.
+  const remainingLadderQuantities = useMemo(() => {
+    if (upgradesById.size === 0) return undefined
+    if (character) {
+      return characterRelevantUpgradeQuantities(
+        character,
+        currentRank ?? firstRank,
+        lastRank,
+        upgradesById
+      )
+    }
+    if (mow) {
+      return mowRelevantUpgradeQuantities(mow, upgradesById, {
+        activeRange: null,
+        passiveRange: null,
+      })
+    }
+    return undefined
+  }, [character, mow, currentRank, upgradesById])
+
   // The range(s) sent with the goal: a Character's rank range, a Mow's set tracks only.
   const upgradeRanges = useMemo<UpgradeRanges>(() => {
     if (character) {
@@ -211,6 +233,7 @@ export function useUpgradeFields({
       removeUpgradeTarget,
       setUpgradeTargetQuantity,
       relevantUpgradeQuantities,
+      remainingLadderQuantities,
       upgradeGoalNeed,
     },
     reset,

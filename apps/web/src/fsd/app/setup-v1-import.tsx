@@ -1,8 +1,17 @@
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
+import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
+} from "@workspace/ui/components/alert"
 import { Button } from "@workspace/ui/components/button"
 
-import { V1ImportPanel, type V1ImportSelection } from "@/features/v1-import"
+import {
+  materialSteps,
+  V1ImportPanel,
+  type V1ImportSelection,
+} from "@/features/v1-import"
 import type { ImportV1ProfileResult } from "@/entities/account"
 
 const ALL_SELECTED: V1ImportSelection = {
@@ -43,35 +52,73 @@ const LOCKED_PARTS: ReadonlyArray<keyof V1ImportSelection> = [
  * hide its own Back control once the key is in: backing out of setup after the account is already
  * provisioned makes no sense, and going back mid-way is exactly the "not yet available" case this
  * step still needs Back for.
+ *
+ * When a run's key part doesn't come across, an alert says so and "Paste an API key" becomes the
+ * primary action; once that key is saved the route's guard goes straight to the name step.
+ *
+ * Material steps (V1 material and pre-farm goals, which need an Upgrade goal created by hand) can't be
+ * acted on here — there is no goal-creation sheet outside the app shell — so a one-line notice next to
+ * Continue points at the Goals page, where they stay (PendingMaterialSteps) until dismissed there.
  */
 export function SetupV1Import({
   onCompleted,
   onUseApiKey,
   onKeyImported,
   onSuggestedDisplayName,
+  onImportProject,
 }: {
   onCompleted: () => void
   onUseApiKey: () => void
   onKeyImported: () => void
   onSuggestedDisplayName: (name: string | null) => void
+  /** The project a run put its goals in, so setup can end there; a run that created none keeps the last. */
+  onImportProject?: (projectId: string) => void
 }) {
   const { t } = useTranslation()
   const [keySucceeded, setKeySucceeded] = useState(false)
+  // An import ran but its key part didn't come across (Skipped/Failed): setup can't finish without one.
+  const [keyMissing, setKeyMissing] = useState(false)
+  const [materialStepCount, setMaterialStepCount] = useState(0)
 
   const handleSuccess = (result: ImportV1ProfileResult) => {
     // Handed to the host for the name step's prefill; an unconfirmed suggestion, never confirmed here.
     onSuggestedDisplayName(result.suggestedDisplayName ?? null)
+    if (result.importProjectId) onImportProject?.(result.importProjectId)
+    setMaterialStepCount(materialSteps(result.outcomes).length)
     if (result.personalTacticusApiKey.status === "Imported") {
       setKeySucceeded(true)
       onKeyImported()
     }
+    setKeyMissing(result.personalTacticusApiKey.status !== "Imported")
   }
 
   return (
     <V1ImportPanel
       actions={
         <>
-          {!keySucceeded ? (
+          {!keySucceeded && keyMissing ? (
+            <>
+              <Alert
+                className="basis-full"
+                data-testid="account-setup-v1-key-missing"
+              >
+                <AlertTitle>
+                  {t("onboarding.import.keyMissingTitle")}
+                </AlertTitle>
+                <AlertDescription>
+                  {t("onboarding.import.keyMissing")}
+                </AlertDescription>
+              </Alert>
+              <Button
+                data-testid="account-setup-v1-paste-api-key"
+                onClick={onUseApiKey}
+                type="button"
+              >
+                {t("onboarding.import.pasteApiKey")}
+              </Button>
+            </>
+          ) : null}
+          {!keySucceeded && !keyMissing ? (
             <Button
               data-testid="account-setup-v1-use-api-key"
               onClick={onUseApiKey}
@@ -80,6 +127,16 @@ export function SetupV1Import({
             >
               {t("onboarding.import.useApiKey")}
             </Button>
+          ) : null}
+          {keySucceeded && materialStepCount > 0 ? (
+            <p
+              className="basis-full text-sm text-muted-foreground"
+              data-testid="account-setup-v1-material-steps-notice"
+            >
+              {t("onboarding.import.materialStepsNotice", {
+                count: materialStepCount,
+              })}
+            </p>
           ) : null}
           {keySucceeded ? (
             <Button
@@ -96,6 +153,7 @@ export function SetupV1Import({
       lockedParts={LOCKED_PARTS}
       onSuccess={handleSuccess}
       refreshCurrentUserOnSuccess={false}
+      setup
     />
   )
 }

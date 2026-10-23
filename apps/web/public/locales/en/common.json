@@ -111,18 +111,16 @@
     "feedbackHint": "If it keeps happening, tell us with the Feedback button."
   },
   "onboarding": {
-    "title": "Connect your account",
-    "description": "Pick how you want to bring your Tacticus data in. Either way takes about a minute.",
     "genericError": "Something went wrong. Please try again.",
     "stepPosition": "Step {{current}} of {{total}}",
     "back": "Back",
     "paths": {
       "apiKeyName": "Paste an API key",
-      "apiKeyBadge": "Fresh Start",
+      "apiKeyBadge": "Quickest",
       "apiKeyDescription": "You already have a key from api.tacticusgame.com, or you can grab one now.",
       "v1Name": "Import from V1",
-      "v1Badge": "Most Complete",
-      "v1Description": "Sign in with your old planner login to bring your key, goals, and progress across."
+      "v1Badge": "Recommended if you used V1",
+      "v1Description": "Sign in with your old planner login. Brings across your API key, goals, Legendary Event teams, and Onslaught and campaign progress."
     },
     "signUp": {
       "apiKeyLabel": "Tacticus API key",
@@ -134,7 +132,12 @@
     },
     "import": {
       "continue": "Continue",
-      "useApiKey": "Use an API key instead"
+      "materialStepsNotice_one": "{{count}} material needs a unit. You'll find it at the top of Goals.",
+      "materialStepsNotice_other": "{{count}} materials need a unit. You'll find them at the top of Goals.",
+      "useApiKey": "Use an API key instead",
+      "keyMissingTitle": "Your V1 profile has no usable API key",
+      "keyMissing": "Paste one to finish setup. Everything else was imported.",
+      "pasteApiKey": "Paste an API key"
     },
     "name": {
       "label": "Planner name",
@@ -149,7 +152,25 @@
     },
     "confirming": "Finishing setup…",
     "confirmFailed": "Your key was saved, but we could not confirm your account.",
-    "confirmRetry": "Retry"
+    "confirmRetry": "Retry",
+    "steps": {
+      "choose": {
+        "title": "Connect your account",
+        "description": "Pick how you want to bring your Tacticus data in. Either way takes about a minute."
+      },
+      "key": {
+        "title": "Paste your Tacticus API key",
+        "description": "The planner reads your roster and progress with it."
+      },
+      "import": {
+        "title": "Import from V1",
+        "description": "Your V1 password is used once and never saved."
+      },
+      "name": {
+        "title": "Choose your planner name",
+        "description": "This is how you'll appear in the planner."
+      }
+    }
   },
   "unitLookup": {
     "subtitle": "Pick a rank range to see the required upgrades and where to farm them.",
@@ -534,7 +555,7 @@
       "menu": "Import from V1",
       "title": "Import from V1",
       "back": "Back",
-      "description": "Your V1 credentials are used once and are never saved. A V1 goal that matches an existing V2 goal is skipped, not replaced, and each imported goal is Active or Paused according to whether it was in your V1 daily planning.",
+      "description": "Your V1 credentials are used once and are never saved.",
       "username": "V1 username",
       "password": "V1 password",
       "selectParts": "Choose what to import",
@@ -548,6 +569,8 @@
         "legendaryEventPlans": "Legendary Event teams"
       },
       "partDescriptions": {
+        "userId": "Links your planner account to your in-game player, which guild features need.",
+        "guildKey": "Used only if you're your guild's Leader or Co-Leader: it registers your guild in the planner so every member can use guild features.",
         "legendaryEventPlans": "Hand-built teams, notes, per-run mission and pack inputs, and Maybe clear / Stop here marks for the events the planner knows. Event progress is not imported."
       },
       "submit": "Import selected",
@@ -565,16 +588,25 @@
         "importedCounts": "{{goals}} goal(s) across {{units}} unit(s)",
         "needsNoImport": "Needed no import",
         "notImported": "Not imported",
+        "needsAction": "Needs a manual step",
         "failed": "Failed",
         "autoAdded": "Automatically added",
         "noUnit": "Unspecified unit",
-        "copy": "Copy details",
         "syncRequiredTitle": "Player data must be synced first",
         "syncRequired": "Sync your player data, then import goals again to bring in your V1 goals."
+      },
+      "materialSteps": {
+        "title": "Some material goals need one more step",
+        "description": "These V1 material goals couldn't become Upgrade goals automatically: the unit already has an Upgrade goal for other materials, or the goals they were pre-farmed for weren't imported. Add each material to an Upgrade goal on the unit shown.",
+        "preFarmedFor": "Pre-farmed for {{units}}",
+        "suggestedUnit": "Suggested unit: {{unit}}",
+        "createUpgradeGoal": "Create Upgrade goal",
+        "dismiss": "Done, hide this"
       },
       "reasons": {
         "goalCreated": "Imported from V1.",
         "prerequisiteAdded": "Automatically added because another imported goal needs it.",
+        "upgradeGoalAssigned": "Created on a suggested unit, since the V1 goal had none. Move it if another unit should hold it.",
         "targetAlreadyReached": "The target is already reached.",
         "goalAlreadyExists": "The account already has a goal of this type for this unit.",
         "duplicateGoalMerged": "Another V1 goal of this type for this unit was imported in its place.",
@@ -587,6 +619,9 @@
         "targetRejected": "The target for this goal isn't valid.",
         "projectSlotConflict": "Another goal for this unit and type was created concurrently.",
         "prerequisiteRejected": "This automatically added prerequisite isn't valid for this goal.",
+        "unknownUpgrade": "This upgrade material is not in the V2 Game Catalog.",
+        "noUpgradeOwner": "None of your characters or Machines of War uses this upgrade material.",
+        "manualStepRequired": "This material couldn't be placed automatically. Add it to an Upgrade goal on the unit shown.",
         "generic": "This goal could not be imported."
       },
       "legendaryEvents": {
@@ -644,7 +679,29 @@
           "existing_annotations_kept_other": "{{count}} marks already in the planner were kept.",
           "unknown_objective_mark": "A mark on an unrecognised objective \"{{objective}}\" in {{lane}} was skipped.",
           "unknown_lane_mark": "A mark on an unrecognised lane \"{{lane}}\" was skipped."
-        }
+        },
+        "notInPlanner_one": "{{count}} event from V1 isn't in the planner yet",
+        "notInPlanner_other": "{{count}} events from V1 aren't in the planner yet"
+      },
+      "descriptionNote": "Goals you already have are skipped, not replaced. Each imported goal is Active or Paused, following your V1 daily planning.",
+      "submittingNotice": "Importing your V1 data… this can take up to a minute.",
+      "lockedPart": "Needed to finish setup",
+      "importedAs": "Imported from V1 as {{username}}",
+      "runAgain": "Run again",
+      "summary": {
+        "title": "Here's what came across",
+        "goals_one": "{{count}} goal",
+        "goals_other": "{{count}} goals",
+        "legendaryEvents_one": "Legendary Event teams for {{count}} event",
+        "legendaryEvents_other": "Legendary Event teams for {{count}} events",
+        "parts": {
+          "personalTacticusApiKey": "API key",
+          "tacticusUserId": "Tacticus user ID",
+          "guildApiToken": "Guild API token",
+          "onslaughtProgress": "Onslaught progress",
+          "campaignEventProgress": "Campaign event progress"
+        },
+        "empty": "Nothing new came across. The planner already has everything from your V1 profile."
       }
     },
     "empty": {

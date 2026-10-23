@@ -32,7 +32,7 @@ export function V1ImportPage() {
       className="mx-auto flex w-full max-w-2xl flex-col gap-6 p-4"
       data-testid="v1-import-page"
     >
-      <div className="flex items-center gap-3">
+      <div className="flex items-start gap-3">
         <Button
           aria-label={t("goals.v1Import.back")}
           onClick={() => void navigate("/home")}
@@ -47,6 +47,9 @@ export function V1ImportPage() {
           </h1>
           <p className="text-sm text-muted-foreground">
             {t("goals.v1Import.description")}
+          </p>
+          <p className="mt-1 text-xs text-muted-foreground">
+            {t("goals.v1Import.descriptionNote")}
           </p>
         </div>
       </div>

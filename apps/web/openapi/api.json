@@ -250,7 +250,7 @@
       "post": {
         "tags": ["Account"],
         "summary": "Selectively imports integration data, progress, and goals from V1.",
-        "description": "V1 credentials are used once and never persisted. After profile retrieval, each selected part is applied independently and reports Imported, Skipped, or Failed. Goals are created directly by this operation, in V1 priority order — the response carries one outcome per source V1 goal (created, skipped, or failed), plus one per automatically added prerequisite. The goals part is refused (no goals created) when the account has no player data snapshot. The legendaryEventPlans part creates one Legendary Event plan per V1 event (never touching a plan that already has teams) and reports one outcome per V1 event in legendaryEventOutcomes.",
+        "description": "V1 credentials are used once and never persisted. After profile retrieval, each selected part is applied independently and reports Imported, Skipped, or Failed. Goals are created directly by this operation, in V1 priority order — the response carries one outcome per source V1 goal (created, skipped, or failed), one per linked unit when a pre-farm goal fans out, plus one per automatically added prerequisite. The goals part is refused (no goals created) when the account has no player data snapshot. The legendaryEventPlans part creates one Legendary Event plan per V1 event (never touching a plan that already has teams) and reports one outcome per V1 event in legendaryEventOutcomes.",
         "operationId": "TacticusPlannerApiFeaturesV1ImportImportV1ProfileEndpoint",
         "requestBody": {
           "content": {
@@ -9772,6 +9772,7 @@
           "outcomes",
           "legendaryEventPlans",
           "legendaryEventOutcomes",
+          "importProjectId",
           "profileId",
           "playerName",
           "powerLevel",
@@ -9807,6 +9808,10 @@
           },
           "legendaryEventOutcomes": {
             "$ref": "#/components/schemas/IReadOnlyListOfV1LegendaryEventOutcome"
+          },
+          "importProjectId": {
+            "type": ["null", "string"],
+            "format": "uuid"
           },
           "profileId": {
             "type": "string",
@@ -12260,7 +12265,10 @@
           "entityId",
           "goalType",
           "goalId",
-          "sourceGoalId"
+          "sourceGoalId",
+          "upgradeId",
+          "linkedSourceGoalIds",
+          "upgradeQuantity"
         ],
         "type": "object",
         "properties": {
@@ -12302,6 +12310,23 @@
           },
           "sourceGoalId": {
             "type": ["null", "string"]
+          },
+          "upgradeId": {
+            "type": ["null", "string"]
+          },
+          "linkedSourceGoalIds": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/IReadOnlyListOfString"
+              }
+            ]
+          },
+          "upgradeQuantity": {
+            "type": ["null", "integer"],
+            "format": "int32"
           }
         }
       },

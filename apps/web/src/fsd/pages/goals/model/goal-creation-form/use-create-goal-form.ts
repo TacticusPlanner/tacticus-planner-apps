@@ -225,6 +225,7 @@ export function useCreateGoalForm({
     setEnabledTypes,
     selectProjects: projectSelection.selectProjects,
     targetSetters: { ...ascensionFields.state, ...rankFields.state },
+    upgradeFields,
   })
 
   useDefaultUnitPreselect({

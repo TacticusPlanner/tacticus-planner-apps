@@ -130,6 +130,17 @@ describe("AccountSetupScreen", () => {
     expect(screen.queryByTestId("account-setup-back")).not.toBeInTheDocument()
   })
 
+  it.each([
+    ["choose", "onboarding.steps.choose.title"],
+    ["key", "onboarding.steps.key.title"],
+    ["import", "onboarding.steps.import.title"],
+    ["name", "onboarding.steps.name.title"],
+  ] as const)("titles the %s step for what it asks", (step, title) => {
+    renderScreen(step)
+
+    expect(screen.getByTestId("account-setup-title")).toHaveTextContent(title)
+  })
+
   it("reports the user's position in the three-step flow", () => {
     renderScreen("import")
 

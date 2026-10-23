@@ -3,11 +3,11 @@ import type { V1GoalOutcome } from "@/entities/account"
 
 import {
   bucketForCode,
-  buildDiagnosticText,
   effectiveGoalsStatus,
   groupOutcomes,
   importedCounts,
   isAutomaticallyAdded,
+  materialSteps,
   reasonKeyForCode,
 } from "./outcome-buckets"
 
@@ -21,6 +21,9 @@ function outcome(overrides: Partial<V1GoalOutcome>): V1GoalOutcome {
     goalType: "Rank",
     goalId: "goal-1",
     sourceGoalId: "v1-goal-1",
+    upgradeId: null,
+    linkedSourceGoalIds: null,
+    upgradeQuantity: null,
     ...overrides,
   }
 }
@@ -29,6 +32,7 @@ describe("bucketForCode", () => {
   it("maps every documented code to its bucket (4.1)", () => {
     expect(bucketForCode("goal_created")).toBe("imported")
     expect(bucketForCode("prerequisite_added")).toBe("imported")
+    expect(bucketForCode("upgrade_goal_assigned")).toBe("imported")
     expect(bucketForCode("target_already_reached")).toBe("needsNoImport")
     expect(bucketForCode("goal_already_exists")).toBe("needsNoImport")
     expect(bucketForCode("duplicate_goal_merged")).toBe("needsNoImport")
@@ -39,6 +43,9 @@ describe("bucketForCode", () => {
     expect(bucketForCode("unsupported_goal_type")).toBe("notImported")
     expect(bucketForCode("invalid_progression")).toBe("notImported")
     expect(bucketForCode("missing_target")).toBe("notImported")
+    expect(bucketForCode("unknown_upgrade")).toBe("notImported")
+    expect(bucketForCode("no_upgrade_owner")).toBe("notImported")
+    expect(bucketForCode("manual_step_required")).toBe("needsAction")
     expect(bucketForCode("player_data_required")).toBe("failed")
     expect(bucketForCode("target_rejected")).toBe("failed")
     expect(bucketForCode("project_slot_conflict")).toBe("failed")
@@ -57,6 +64,9 @@ describe("reasonKeyForCode", () => {
     )
     expect(reasonKeyForCode("prerequisite_added")).toBe(
       "goals.v1Import.reasons.prerequisiteAdded"
+    )
+    expect(reasonKeyForCode("upgrade_goal_assigned")).toBe(
+      "goals.v1Import.reasons.upgradeGoalAssigned"
     )
     expect(reasonKeyForCode("target_already_reached")).toBe(
       "goals.v1Import.reasons.targetAlreadyReached"
@@ -134,6 +144,7 @@ describe("groupOutcomes", () => {
     expect(grouped).toEqual({
       imported: [],
       needsNoImport: [],
+      needsAction: [],
       notImported: [],
       failed: [],
     })
@@ -191,84 +202,87 @@ describe("effectiveGoalsStatus", () => {
   })
 })
 
-describe("buildDiagnosticText", () => {
-  const heading = (bucket: "notImported" | "failed") =>
-    bucket === "notImported" ? "Not imported" : "Failed"
-  const unitName = (_entityType: string | null, entityId: string | null) =>
-    entityId ?? ""
-  const goalTypeLabel = (goalType: string | null) => goalType
-  const reasonFor = (code: string) => `reason:${code}`
+describe("materialSteps", () => {
+  it("resolves each pre-farm goal's linked V1 goals to their distinct units", () => {
+    const steps = materialSteps([
+      outcome({ sourceGoalId: "rank-a", entityId: "heroA" }),
+      outcome({
+        sourceGoalId: "ability-a",
+        entityId: "heroA",
+        goalType: "Ability",
+      }),
+      outcome({
+        sourceGoalId: "mow-b",
+        entityType: "Mow",
+        entityId: "mowB",
+        goalType: "Ability",
+      }),
+      outcome({
+        status: "Failed",
+        code: "unknown_unit",
+        sourceGoalId: "gone",
+        entityType: "Character",
+        entityId: null,
+        goalType: null,
+      }),
+      outcome({
+        status: "Skipped",
+        code: "manual_step_required",
+        sourceGoalId: "pf-1",
+        entityId: "heroSuggested",
+        goalType: "Upgrade",
+        goalId: null,
+        upgradeId: "upgHpC001",
+        linkedSourceGoalIds: ["rank-a", "ability-a", "mow-b", "gone"],
+      }),
+    ])
 
-  it("lists each not-imported/failed outcome's unit, goal type and reason (6.1)", () => {
-    const text = buildDiagnosticText({
-      notImported: [
-        outcome({ code: "unknown_unit", entityId: "SomeV1Id", goalType: null }),
-      ],
-      failed: [
-        outcome({
-          code: "target_rejected",
-          entityId: "hero1",
-          goalType: "Rank",
-        }),
-      ],
-      heading,
-      unitName,
-      goalTypeLabel,
-      noUnitLabel: "Unspecified unit",
-      reasonFor,
-    })
-
-    expect(text).toContain("Not imported:")
-    expect(text).toContain("- SomeV1Id: reason:unknown_unit")
-    expect(text).toContain("Failed:")
-    expect(text).toContain("- hero1 (Rank): reason:target_rejected")
+    const linked = [
+      { entityType: "Character", entityId: "heroA" },
+      { entityType: "Mow", entityId: "mowB" },
+    ]
+    expect(steps).toEqual([
+      {
+        sourceGoalId: "pf-1",
+        upgradeId: "upgHpC001",
+        quantity: null,
+        linkedUnits: linked,
+        units: linked,
+      },
+    ])
   })
 
-  it("omits an empty bucket's section entirely", () => {
-    const text = buildDiagnosticText({
-      notImported: [],
-      failed: [outcome({ code: "target_rejected" })],
-      heading,
-      unitName,
-      goalTypeLabel,
-      noUnitLabel: "Unspecified unit",
-      reasonFor,
-    })
-    expect(text).not.toContain("Not imported:")
-    expect(text).toContain("Failed:")
+  it("offers the suggested unit, with its quantity, for an upgrade-material goal", () => {
+    const steps = materialSteps([
+      outcome({
+        status: "Skipped",
+        code: "manual_step_required",
+        sourceGoalId: "m-1",
+        entityId: "heroSuggested",
+        goalType: "Upgrade",
+        goalId: null,
+        upgradeId: "upgHpC001",
+        upgradeQuantity: 10,
+      }),
+    ])
+
+    expect(steps).toEqual([
+      {
+        sourceGoalId: "m-1",
+        upgradeId: "upgHpC001",
+        quantity: 10,
+        linkedUnits: [],
+        units: [{ entityType: "Character", entityId: "heroSuggested" }],
+      },
+    ])
   })
 
-  it("is empty when both buckets are empty (6.3)", () => {
-    expect(
-      buildDiagnosticText({
-        notImported: [],
-        failed: [],
-        heading,
-        unitName,
-        goalTypeLabel,
-        noUnitLabel: "Unspecified unit",
-        reasonFor,
-      })
-    ).toBe("")
-  })
+  it("groups the manual step in its own bucket", () => {
+    const buckets = groupOutcomes([
+      outcome({ code: "manual_step_required", status: "Skipped" }),
+    ])
 
-  it("falls back to a no-unit label when the outcome carries no unit id", () => {
-    const text = buildDiagnosticText({
-      notImported: [
-        outcome({
-          code: "unsupported_goal_type",
-          entityType: null,
-          entityId: null,
-          goalType: null,
-        }),
-      ],
-      failed: [],
-      heading,
-      unitName,
-      goalTypeLabel,
-      noUnitLabel: "Unspecified unit",
-      reasonFor,
-    })
-    expect(text).toContain("- Unspecified unit: reason:unsupported_goal_type")
+    expect(buckets.needsAction).toHaveLength(1)
+    expect(buckets.notImported).toHaveLength(0)
   })
 })

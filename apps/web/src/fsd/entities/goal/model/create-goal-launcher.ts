@@ -1,5 +1,10 @@
 import { createContext, useContext } from "react"
-import type { Progression, Rank, UnitId } from "@workspace/game-domain"
+import type {
+  Progression,
+  Rank,
+  UnitId,
+  UpgradeId,
+} from "@workspace/game-domain"
 
 /**
  * What a goal-creation launch preselects in the shell's creation sheet. `projectIds` absent means
@@ -25,6 +30,15 @@ export type CreateGoalPrefill =
       entityType: "Character" | "Mow"
       entityId: UnitId
       goalType: "Unlock"
+      projectIds?: string[]
+    }
+  // One material target; without a quantity, the unit's remaining-ladder need is used.
+  | {
+      entityType: "Character" | "Mow"
+      entityId: UnitId
+      goalType: "Upgrade"
+      upgradeId: UpgradeId
+      quantity?: number
       projectIds?: string[]
     }
   // Unit-only: the unit is selected and every goal type is left unticked.
