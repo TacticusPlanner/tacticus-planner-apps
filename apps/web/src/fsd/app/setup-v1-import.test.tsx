@@ -90,6 +90,7 @@ function fullResult(
     outcomes,
     legendaryEventPlans: okPart,
     legendaryEventOutcomes: [],
+    importProjectId: null,
     profileId: "profile-1",
     playerName: null,
     powerLevel: 0,

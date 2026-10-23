@@ -110,6 +110,7 @@ function result(
     outcomes: [],
     legendaryEventPlans: part,
     legendaryEventOutcomes,
+    importProjectId: null,
     profileId: "profile-1",
     playerName: null,
     powerLevel: 0,

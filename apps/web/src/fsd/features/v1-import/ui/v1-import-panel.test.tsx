@@ -57,7 +57,17 @@ vi.mock("@/entities/legendary-event", () => ({
 }))
 
 vi.mock("@/shared/api", () => ({
-  ApiError: class ApiError extends Error {},
+  ApiError: class ApiError extends Error {
+    errors?: Record<string, string[]>
+    constructor(
+      _status: number,
+      message: string,
+      problem: { errors?: Record<string, string[]> } = {}
+    ) {
+      super(message)
+      this.errors = problem.errors
+    }
+  },
 }))
 
 vi.mock("dexie-react-hooks", () => ({
@@ -850,9 +860,12 @@ describe("V1ImportPanel", () => {
 
   describe("errors and progress", () => {
     it("puts a wrong-credentials error on the password field", async () => {
-      const error = Object.assign(
-        new ApiError("The V1 username or password is invalid."),
-        { errors: { password: ["The V1 username or password is invalid."] } }
+      const error = new ApiError(
+        400,
+        "The V1 username or password is invalid.",
+        {
+          errors: { password: ["The V1 username or password is invalid."] },
+        }
       )
       importV1Profile.mockRejectedValue(error)
       renderPanel()
@@ -871,7 +884,7 @@ describe("V1ImportPanel", () => {
 
     it("shows any other failure in an alert above the form", async () => {
       importV1Profile.mockRejectedValue(
-        new ApiError("The V1 profile could not be retrieved.")
+        new ApiError(400, "The V1 profile could not be retrieved.")
       )
       renderPanel()
       await fillCredentials()
