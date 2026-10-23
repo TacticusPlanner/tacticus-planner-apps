@@ -744,6 +744,11 @@ describe("CharacterUnitPage", () => {
       name: "Weirdboy",
       faction: "Orks",
     }
+    // The quests are a separate catalog read that can land after the unit header renderUnit waits for.
+    const renderQuests = async (url: string) => {
+      await renderUnit(url)
+      await screen.findByTestId("unit-mythic")
+    }
     const questText = (number: number) =>
       within(screen.getByTestId(`unit-mythic-quest-${number}`))
         .getAllByRole("paragraph")
@@ -752,7 +757,7 @@ describe("CharacterUnitPage", () => {
 
     it("lists a character's quests from the catalog with their tasks and rewards", async () => {
       env.extraCharacters = [abaddon]
-      await renderUnit("/library/characters/blackAbaddon")
+      await renderQuests("/library/characters/blackAbaddon")
       const card = screen.getByTestId("unit-mythic")
       expect(card).toHaveTextContent("Mythic quests")
       expect(card).toHaveTextContent("5 quests")
@@ -803,7 +808,7 @@ describe("CharacterUnitPage", () => {
           ],
         },
       ]
-      await renderUnit("/library/characters/ultraCalgar")
+      await renderQuests("/library/characters/ultraCalgar")
       const quest = screen.getByTestId("unit-mythic-quest-1")
       expect(quest).toHaveTextContent(/^1/)
       expect(within(quest).queryByRole("paragraph")).not.toBeInTheDocument()
@@ -812,7 +817,7 @@ describe("CharacterUnitPage", () => {
     })
 
     it('keeps "in one battle" in the singular task text', async () => {
-      await renderUnit("/library/characters/ultraCalgar")
+      await renderQuests("/library/characters/ultraCalgar")
       expect(screen.getByTestId("unit-mythic-quest-4")).toHaveTextContent(
         "Defeat 1 enemy that has the Immune trait with Calgar in one battle"
       )
@@ -820,7 +825,7 @@ describe("CharacterUnitPage", () => {
 
     it("names Lucius and the Armour of Shrieking Souls effect once each", async () => {
       env.extraCharacters = [lucius]
-      await renderUnit("/library/characters/emperLucius")
+      await renderQuests("/library/characters/emperLucius")
       const text = questText(1)
       expect(text.match(/Lucius/g)).toHaveLength(1)
       expect(text.match(/Armour of Shrieking Souls/g)).toHaveLength(1)
@@ -833,7 +838,7 @@ describe("CharacterUnitPage", () => {
       i18n.addResourceBundle("de", "library", deLibrary)
       await i18n.changeLanguage("de")
       try {
-        await renderUnit("/library/characters/blackAbaddon")
+        await renderQuests("/library/characters/blackAbaddon")
         const card = screen.getByTestId("unit-mythic")
         expect(card).toHaveTextContent("Mythische Quests")
         const first = screen.getByTestId("unit-mythic-quest-1")
