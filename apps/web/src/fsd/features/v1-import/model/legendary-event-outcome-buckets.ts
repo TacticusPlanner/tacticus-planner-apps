@@ -6,10 +6,13 @@ import { MAX_CLOSE_SHARDS, MIN_TEAM_MEMBERS } from "@/entities/legendary-event"
 
 import type { OutcomeBucketKey } from "./outcome-buckets"
 
+// No Legendary Event outcome asks the user for a manual step.
+export type LegendaryEventBucketKey = Exclude<OutcomeBucketKey, "needsAction">
+
 // Per-event outcomes of the `legendaryEventPlans` part, bucketed like goals (add-legendary-event-
 // teams design D10). An unknown code falls back by status, so a new server code still lands in a
 // bucket that reads right ("Failed" → failed, anything else not imported).
-const CODE_BUCKETS: Record<string, OutcomeBucketKey> = {
+const CODE_BUCKETS: Record<string, LegendaryEventBucketKey> = {
   imported: "imported",
   // Run inputs, marks and/or notes written without a team (add-legendary-event-run-inputs D7).
   inputs_imported: "imported",
@@ -20,7 +23,7 @@ const CODE_BUCKETS: Record<string, OutcomeBucketKey> = {
 
 function bucketForLegendaryEventOutcome(
   outcome: Pick<V1LegendaryEventOutcome, "code" | "status">
-): OutcomeBucketKey {
+): LegendaryEventBucketKey {
   return (
     CODE_BUCKETS[outcome.code] ??
     (outcome.status === "Failed" ? "failed" : "notImported")
@@ -28,7 +31,7 @@ function bucketForLegendaryEventOutcome(
 }
 
 export type LegendaryEventBuckets = Record<
-  OutcomeBucketKey,
+  LegendaryEventBucketKey,
   V1LegendaryEventOutcome[]
 >
 
@@ -284,56 +287,4 @@ export function describeLegendaryEventIssue(
     default:
       return plain
   }
-}
-
-/** Whether the Legendary Event report has anything worth copying: an event not imported or
- *  failed, or any issue. */
-export function legendaryEventsNeedAttention(
-  buckets: LegendaryEventBuckets
-): boolean {
-  return (
-    buckets.notImported.length > 0 ||
-    buckets.failed.length > 0 ||
-    Object.values(buckets).some((outcomes) =>
-      outcomes.some((outcome) => outcome.issues.length > 0)
-    )
-  )
-}
-
-/**
- * The Legendary Event lines of the copied diagnostic: one line per not-imported or failed event
- * and per issue (under its event), all in translated copy.
- */
-export function buildLegendaryEventDiagnosticText(params: {
-  buckets: LegendaryEventBuckets
-  title: string
-  eventName: (outcome: V1LegendaryEventOutcome) => string
-  reasonFor: (code: string) => string
-  /** The issue's translated line and whether its raw value is shown beside it. */
-  issueFor: (
-    issue: V1LegendaryEventIssue,
-    outcome: V1LegendaryEventOutcome
-  ) => { text: string; showValue: boolean }
-}): string {
-  const lines: string[] = []
-  for (const outcome of Object.values(params.buckets).flat()) {
-    const attention =
-      bucketForLegendaryEventOutcome(outcome) === "notImported" ||
-      bucketForLegendaryEventOutcome(outcome) === "failed"
-    if (attention) {
-      lines.push(
-        `- ${params.eventName(outcome)}: ${params.reasonFor(outcome.code)}`
-      )
-    }
-    for (const issue of outcome.issues) {
-      const { text, showValue } = params.issueFor(issue, outcome)
-      const where = [issue.teamName, showValue ? issue.value : null]
-        .filter(Boolean)
-        .join(": ")
-      lines.push(
-        `- ${params.eventName(outcome)}: ${text}${where ? ` (${where})` : ""}`
-      )
-    }
-  }
-  return lines.length > 0 ? [`${params.title}:`, ...lines].join("\n") : ""
 }

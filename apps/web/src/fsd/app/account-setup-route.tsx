@@ -13,7 +13,7 @@ import {
 import { useCurrentUser } from "@/entities/account"
 
 import { SETUP_STEP_PATHS } from "./account-setup-routes"
-import { resolveNextPath } from "./resolve-next-path"
+import { arrivalPath } from "./arrival-path"
 import { SetupV1Import } from "./setup-v1-import"
 
 /**
@@ -49,7 +49,10 @@ export function AccountSetupRoute({ step }: { step: AccountSetupStep }) {
   return <AccountSetupRouteForStep key={step} step={step} />
 }
 
-type SetupLocationState = { suggestedDisplayName?: string } | null
+type SetupLocationState = {
+  suggestedDisplayName?: string
+  importProjectId?: string
+} | null
 
 function AccountSetupRouteForStep({ step }: { step: AccountSetupStep }) {
   const { state } = useCurrentUser()
@@ -63,6 +66,11 @@ function AccountSetupRouteForStep({ step }: { step: AccountSetupStep }) {
   // The V1 login username the import proposed as a name. The API does not store it, so it rides
   // router state from here to the name step (surviving Back, not a reload).
   const [v1Suggestion, setV1Suggestion] = useState<string | null>(null)
+  // The project the setup import put its goals in, carried the same way so setup can end on it.
+  const locationState = location.state as SetupLocationState
+  const [importProjectId, setImportProjectId] = useState<string | null>(
+    locationState?.importProjectId ?? null
+  )
 
   // Carried across step navigation so the remembered destination survives Back, the mobile
   // "paste a key instead" shortcut, and a reload.
@@ -75,16 +83,17 @@ function AccountSetupRouteForStep({ step }: { step: AccountSetupStep }) {
     const { hasCompletedOnboarding, displayName } = state.user
 
     if (hasCompletedOnboarding && displayName !== null) {
-      return <Navigate replace to={resolveNextPath(next)} />
+      return <Navigate replace to={arrivalPath(next, importProjectId)} />
     }
     // A key without a confirmed name only owes the name step.
     if (hasCompletedOnboarding && step !== "name") {
       return (
         <Navigate
           replace
-          state={
-            v1Suggestion ? { suggestedDisplayName: v1Suggestion } : undefined
-          }
+          state={{
+            suggestedDisplayName: v1Suggestion ?? undefined,
+            importProjectId: importProjectId ?? undefined,
+          }}
           to={`${SETUP_STEP_PATHS.name}${search}`}
         />
       )
@@ -107,14 +116,13 @@ function AccountSetupRouteForStep({ step }: { step: AccountSetupStep }) {
             onCompleted()
           }}
           onKeyImported={onKeyImported}
+          onImportProject={setImportProjectId}
           onSuggestedDisplayName={setV1Suggestion}
           onUseApiKey={() => void navigate(`${SETUP_STEP_PATHS.key}${search}`)}
         />
       )}
       step={step}
-      suggestedDisplayName={
-        (location.state as SetupLocationState)?.suggestedDisplayName
-      }
+      suggestedDisplayName={locationState?.suggestedDisplayName}
     />
   )
 }

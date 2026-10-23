@@ -51,7 +51,10 @@ export function upgradeStepPrefill(
 }
 
 export function prefillGoalType(prefill: CreateGoalPrefill): PrefillGoalType {
-  return "goalType" in prefill ? prefill.goalType : null
+  // Legendary Event entry points never launch an Upgrade goal.
+  return "goalType" in prefill && prefill.goalType !== "Upgrade"
+    ? prefill.goalType
+    : null
 }
 
 /** Whether the unit already has an Active goal whose target is at or beyond the step ("In goals"). */

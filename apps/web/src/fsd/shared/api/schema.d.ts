@@ -79,7 +79,7 @@ export interface paths {
     put?: never
     /**
      * Selectively imports integration data, progress, and goals from V1.
-     * @description V1 credentials are used once and never persisted. After profile retrieval, each selected part is applied independently and reports Imported, Skipped, or Failed. Goals are created directly by this operation, in V1 priority order — the response carries one outcome per source V1 goal (created, skipped, or failed), plus one per automatically added prerequisite. The goals part is refused (no goals created) when the account has no player data snapshot. The legendaryEventPlans part creates one Legendary Event plan per V1 event (never touching a plan that already has teams) and reports one outcome per V1 event in legendaryEventOutcomes.
+     * @description V1 credentials are used once and never persisted. After profile retrieval, each selected part is applied independently and reports Imported, Skipped, or Failed. Goals are created directly by this operation, in V1 priority order — the response carries one outcome per source V1 goal (created, skipped, or failed), one per linked unit when a pre-farm goal fans out, plus one per automatically added prerequisite. The goals part is refused (no goals created) when the account has no player data snapshot. The legendaryEventPlans part creates one Legendary Event plan per V1 event (never touching a plan that already has teams) and reports one outcome per V1 event in legendaryEventOutcomes.
      */
     post: operations["TacticusPlannerApiFeaturesV1ImportImportV1ProfileEndpoint"]
     delete?: never
@@ -2753,6 +2753,8 @@ export interface components {
       legendaryEventPlans: components["schemas"]["ImportPartResult"]
       legendaryEventOutcomes: components["schemas"]["IReadOnlyListOfV1LegendaryEventOutcome"]
       /** Format: uuid */
+      importProjectId: null | string
+      /** Format: uuid */
       profileId: string
       playerName: null | string
       /** Format: int32 */
@@ -3465,6 +3467,10 @@ export interface components {
       /** Format: uuid */
       goalId: null | string
       sourceGoalId: null | string
+      upgradeId: null | string
+      linkedSourceGoalIds: null | components["schemas"]["IReadOnlyListOfString"]
+      /** Format: int32 */
+      upgradeQuantity: null | number
     }
     /** @enum {string} */
     V1GoalOutcomeStatus: "Created" | "Skipped" | "Failed"

@@ -57,7 +57,17 @@ vi.mock("@/entities/legendary-event", () => ({
 }))
 
 vi.mock("@/shared/api", () => ({
-  ApiError: class ApiError extends Error {},
+  ApiError: class ApiError extends Error {
+    errors?: Record<string, string[]>
+    constructor(
+      _status: number,
+      message: string,
+      problem: { errors?: Record<string, string[]> } = {}
+    ) {
+      super(message)
+      this.errors = problem.errors
+    }
+  },
 }))
 
 vi.mock("dexie-react-hooks", () => ({
@@ -90,7 +100,10 @@ vi.mock("@workspace/game-catalog/queries", () => ({
   getCharactersMap: () =>
     new Map([["hero1", { id: "hero1", name: "Hero One" }]]),
   getMowsMap: () => new Map([["mow1", { id: "mow1", name: "Stormbird" }]]),
+  getUpgrades: async () => [],
 }))
+
+import { ApiError } from "@/shared/api"
 
 import { V1_IMPORT_PARTS } from "../model/parts"
 import { V1ImportPanel } from "./v1-import-panel"
@@ -126,6 +139,9 @@ function outcome(overrides: Partial<V1GoalOutcome>): V1GoalOutcome {
     goalType: "Rank",
     goalId: "goal-1",
     sourceGoalId: "v1-goal-1",
+    upgradeId: null,
+    linkedSourceGoalIds: null,
+    upgradeQuantity: null,
     ...overrides,
   }
 }
@@ -681,46 +697,6 @@ describe("V1ImportPanel", () => {
     }
   })
 
-  describe("copy details", () => {
-    it("copies the not-imported and failed outcomes to the clipboard (6.1)", async () => {
-      const writeText = vi.fn().mockResolvedValue(undefined)
-      vi.stubGlobal("navigator", { ...navigator, clipboard: { writeText } })
-      importV1Profile.mockResolvedValue(
-        response({
-          outcomes: [
-            outcome({
-              code: "unknown_unit",
-              status: "Failed",
-              entityId: "raw-v1-id",
-              goalType: null,
-            }),
-          ],
-        })
-      )
-      renderPanel()
-      await fillCredentials()
-      fireEvent.click(screen.getByTestId("v1-import-submit"))
-
-      fireEvent.click(await screen.findByTestId("v1-import-copy"))
-
-      expect(writeText).toHaveBeenCalledTimes(1)
-      const text = writeText.mock.calls[0][0] as string
-      expect(text).toContain("raw-v1-id")
-      expect(text).toContain("goals.v1Import.reasons.unknownUnit")
-      vi.unstubAllGlobals()
-    })
-
-    it("offers no copy action when nothing needs attention (6.3)", async () => {
-      importV1Profile.mockResolvedValue(response({ outcomes: [outcome({})] }))
-      renderPanel()
-      await fillCredentials()
-      fireEvent.click(screen.getByTestId("v1-import-submit"))
-
-      await screen.findByTestId("v1-import-result")
-      expect(screen.queryByTestId("v1-import-copy")).not.toBeInTheDocument()
-    })
-  })
-
   it("shows an import failure without refreshing account state", async () => {
     importV1Profile.mockRejectedValue(new Error("network"))
     renderPanel()
@@ -838,6 +814,134 @@ describe("V1ImportPanel", () => {
       fireEvent.change(screen.getByTestId("v1-import-password"), {
         target: { value: "" },
       })
+      expect(screen.getByTestId("v1-import-submit")).toBeDisabled()
+    })
+  })
+
+  describe("errors and progress", () => {
+    it("puts a wrong-credentials error on the password field", async () => {
+      const error = new ApiError(
+        400,
+        "The V1 username or password is invalid.",
+        {
+          errors: { password: ["The V1 username or password is invalid."] },
+        }
+      )
+      importV1Profile.mockRejectedValue(error)
+      renderPanel()
+      await fillCredentials()
+      fireEvent.click(screen.getByTestId("v1-import-submit"))
+
+      expect(
+        await screen.findByTestId("v1-import-password-error")
+      ).toHaveTextContent("The V1 username or password is invalid.")
+      expect(screen.getByTestId("v1-import-password")).toHaveAttribute(
+        "aria-invalid",
+        "true"
+      )
+      expect(screen.queryByTestId("v1-import-error")).toBeNull()
+    })
+
+    it("shows any other failure in an alert above the form", async () => {
+      importV1Profile.mockRejectedValue(
+        new ApiError(400, "The V1 profile could not be retrieved.")
+      )
+      renderPanel()
+      await fillCredentials()
+      fireEvent.click(screen.getByTestId("v1-import-submit"))
+
+      expect(await screen.findByTestId("v1-import-error")).toHaveTextContent(
+        "The V1 profile could not be retrieved."
+      )
+      expect(screen.queryByTestId("v1-import-password-error")).toBeNull()
+    })
+
+    it("disables the form and says it may take a minute while importing", async () => {
+      importV1Profile.mockReturnValue(new Promise(() => {}))
+      renderPanel()
+      await fillCredentials()
+      fireEvent.click(screen.getByTestId("v1-import-submit"))
+
+      expect(
+        await screen.findByTestId("v1-import-submitting-notice")
+      ).toHaveTextContent("goals.v1Import.submittingNotice")
+      expect(screen.getByTestId("v1-import-username")).toBeDisabled()
+    })
+  })
+
+  it("summarises what came across above the report", async () => {
+    importV1Profile.mockResolvedValue(
+      response({ outcomes: [outcome({}), outcome({ goalId: "goal-2" })] })
+    )
+    renderPanel()
+    await fillCredentials()
+    fireEvent.click(screen.getByTestId("v1-import-submit"))
+
+    const summary = await screen.findByTestId("v1-import-summary")
+    expect(summary).toHaveTextContent("goals.v1Import.summary.goals count=2")
+    expect(summary).toHaveTextContent(
+      "goals.v1Import.summary.parts.personalTacticusApiKey"
+    )
+    expect(summary).not.toHaveTextContent(
+      "goals.v1Import.summary.parts.onslaughtProgress"
+    )
+  })
+
+  describe("setup layout", () => {
+    function renderSetup() {
+      return render(
+        <V1ImportPanel
+          actions={<button data-testid="host-continue">Continue</button>}
+          defaultSelection={ALL_SELECTED}
+          lockedParts={["personalTacticusApiKey"]}
+          setup
+        />
+      )
+    }
+
+    it("folds the part list and marks the locked part as needed for setup", () => {
+      renderSetup()
+
+      expect(screen.getByTestId("v1-import-parts-toggle")).not.toHaveAttribute(
+        "open"
+      )
+      expect(
+        screen.getByTestId("v1-import-personalTacticusApiKey-locked")
+      ).toHaveTextContent("goals.v1Import.lockedPart")
+    })
+
+    it("folds the form after an import, with the summary and host actions before the report", async () => {
+      renderSetup()
+      await fillCredentials()
+      fireEvent.click(screen.getByTestId("v1-import-submit"))
+
+      expect(
+        await screen.findByTestId("v1-import-imported-as")
+      ).toHaveTextContent("goals.v1Import.importedAs username=legacy-user")
+      expect(screen.queryByTestId("v1-import-submit")).toBeNull()
+      expect(screen.queryByTestId("v1-import-password")).toBeNull()
+      expect(screen.queryByTestId("v1-import-rerun-hint")).toBeNull()
+      const summary = screen.getByTestId("v1-import-summary")
+      const continueButton = screen.getByTestId("host-continue")
+      const report = screen.getByTestId("v1-import-result")
+      expect(
+        summary.compareDocumentPosition(continueButton) &
+          Node.DOCUMENT_POSITION_FOLLOWING
+      ).toBeTruthy()
+      expect(
+        continueButton.compareDocumentPosition(report) &
+          Node.DOCUMENT_POSITION_FOLLOWING
+      ).toBeTruthy()
+    })
+
+    it("reopens the form on Run again", async () => {
+      renderSetup()
+      await fillCredentials()
+      fireEvent.click(screen.getByTestId("v1-import-submit"))
+
+      fireEvent.click(await screen.findByTestId("v1-import-run-again"))
+
+      expect(screen.getByTestId("v1-import-password")).toHaveValue("")
       expect(screen.getByTestId("v1-import-submit")).toBeDisabled()
     })
   })

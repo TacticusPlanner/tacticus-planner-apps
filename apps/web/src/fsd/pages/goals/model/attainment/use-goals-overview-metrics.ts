@@ -235,6 +235,7 @@ function useComputedGoalsOverviewMetrics(
       initialRarity: charactersById?.get(detail.entityId)?.initialRarity,
       unlockShardCostsById: unlockShardCostsById ?? new Map(),
       inventoryShard,
+      upgradesById,
     })
 
     const remainingStandalone = catalogReady

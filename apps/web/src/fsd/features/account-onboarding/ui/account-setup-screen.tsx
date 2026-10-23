@@ -32,7 +32,7 @@ type ScreenProps = {
    * `app` layer, which already composes both features, supplies this instead.
    *
    * The second argument lets that content report "the account is provisioned now" before the whole
-   * screen finishes (`onCompleted`) — see `Steps`'s `keyImported` state for why Back needs to know
+   * screen finishes (`onCompleted`) — see `AccountSetupScreen`'s `keyImported` state for why Back needs to know
    * this earlier.
    */
   renderImportStep: (
@@ -65,6 +65,12 @@ export function AccountSetupScreen({
   // Set once a submission has succeeded, so the screen can tell "still waiting for confirmation"
   // apart from "idle" — the difference between showing progress and showing a retry.
   const [submitted, setSubmitted] = useState(false)
+  // Sticky, and only ever set by the import step (the key step's own success unmounts the steps via
+  // `submitted` instead). Once true, the account already has a key, so a Back control offering to
+  // abandon setup no longer makes sense.
+  const [keyImported, setKeyImported] = useState(false)
+  const showBack =
+    (step === "key" || step === "import") && !keyImported && !submitted
 
   const handleCompleted = () => {
     setSubmitted(true)
@@ -76,22 +82,39 @@ export function AccountSetupScreen({
   const confirmationFailed = submitted && state.status === "error"
 
   return (
-    <div className="mx-auto flex w-full max-w-5xl flex-col gap-6 px-4 py-6">
+    <div className="mx-auto flex w-full max-w-xl flex-col gap-6 px-4 py-6">
       <header className="flex flex-col gap-1.5">
-        <p
-          className="text-xs font-medium tracking-wide text-muted-foreground uppercase"
-          data-testid="account-setup-step-position"
+        <div className="flex items-center gap-2">
+          {showBack ? (
+            <Button
+              className="-ml-2"
+              data-testid="account-setup-back"
+              onClick={() => onStepChange("choose")}
+              size="sm"
+              variant="ghost"
+            >
+              <ChevronLeft />
+              {t("onboarding.back")}
+            </Button>
+          ) : null}
+          <p
+            className="text-xs font-medium tracking-wide text-muted-foreground uppercase"
+            data-testid="account-setup-step-position"
+          >
+            {t("onboarding.stepPosition", {
+              current: step === "choose" ? 1 : step === "name" ? 3 : 2,
+              total: 3,
+            })}
+          </p>
+        </div>
+        <h1
+          className="font-heading text-xl font-medium"
+          data-testid="account-setup-title"
         >
-          {t("onboarding.stepPosition", {
-            current: step === "choose" ? 1 : step === "name" ? 3 : 2,
-            total: 3,
-          })}
-        </p>
-        <h1 className="font-heading text-xl font-medium">
-          {t("onboarding.title")}
+          {t(STEP_COPY[step].title)}
         </h1>
         <p className="text-sm text-muted-foreground">
-          {t("onboarding.description")}
+          {t(STEP_COPY[step].description)}
         </p>
       </header>
 
@@ -108,6 +131,7 @@ export function AccountSetupScreen({
       ) : (
         <Steps
           onCompleted={handleCompleted}
+          onKeyImported={() => setKeyImported(true)}
           onStepChange={onStepChange}
           renderImportStep={renderImportStep}
           step={step}
@@ -145,6 +169,29 @@ function ConfirmationRetry({ onRetry }: { onRetry: () => void }) {
   )
 }
 
+// Each step says what it asks for; only the first one is about choosing a path.
+const STEP_COPY = {
+  choose: {
+    title: "onboarding.steps.choose.title",
+    description: "onboarding.steps.choose.description",
+  },
+  key: {
+    title: "onboarding.steps.key.title",
+    description: "onboarding.steps.key.description",
+  },
+  import: {
+    title: "onboarding.steps.import.title",
+    description: "onboarding.steps.import.description",
+  },
+  name: {
+    title: "onboarding.steps.name.title",
+    description: "onboarding.steps.name.description",
+  },
+} as const satisfies Record<
+  AccountSetupStep,
+  { title: string; description: string }
+>
+
 // Both breakpoints go through the same choose-then-step flow: showing both paths on screen at once
 // (as desktop once did) does not fit the V1-import path anymore now that it is the same full,
 // multi-part panel used from the account menu, not a two-field shortcut.
@@ -152,14 +199,11 @@ function Steps({
   step,
   onStepChange,
   onCompleted,
+  onKeyImported,
   renderImportStep,
   suggestedDisplayName,
-}: ScreenProps & { onCompleted: () => void }) {
+}: ScreenProps & { onCompleted: () => void; onKeyImported: () => void }) {
   const { t } = useTranslation()
-  // Sticky, and only ever set by the import step (the key step's own success unmounts this whole
-  // component via `submitted` instead — see AccountSetupScreen). Once true, the account already has
-  // a key, so a Back control offering to abandon setup no longer makes sense.
-  const [keyImported, setKeyImported] = useState(false)
 
   if (step === "choose") {
     return (
@@ -196,30 +240,15 @@ function Steps({
   }
 
   return (
-    <div className="flex flex-col gap-4">
-      <Card>
-        <CardContent>
-          {step === "key" ? (
-            <ApiKeyForm onCompleted={onCompleted} />
-          ) : (
-            renderImportStep(onCompleted, () => setKeyImported(true))
-          )}
-        </CardContent>
-      </Card>
-
-      {keyImported ? null : (
-        <Button
-          className="self-start"
-          data-testid="account-setup-back"
-          onClick={() => onStepChange("choose")}
-          size="sm"
-          variant="ghost"
-        >
-          <ChevronLeft />
-          {t("onboarding.back")}
-        </Button>
-      )}
-    </div>
+    <Card>
+      <CardContent>
+        {step === "key" ? (
+          <ApiKeyForm onCompleted={onCompleted} />
+        ) : (
+          renderImportStep(onCompleted, onKeyImported)
+        )}
+      </CardContent>
+    </Card>
   )
 }
 

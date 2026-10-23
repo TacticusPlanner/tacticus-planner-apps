@@ -462,3 +462,70 @@ describe("Goal kind without a type label", () => {
     expect(container).not.toHaveTextContent("ownedOfTotal")
   })
 })
+
+describe("GoalTargetDisplay for Upgrade goals", () => {
+  it("shows each material's image with its owned/needed count and name", () => {
+    const { container } = render(
+      <GoalTargetDisplay
+        progress={
+          {
+            kind: "Upgrade",
+            ratio: 0.25,
+            materials: [
+              {
+                upgradeId: "upgA",
+                label: "Sword",
+                rarity: "Rare",
+                owned: 5,
+                quantity: 10,
+              },
+              { upgradeId: "upgB", label: "upgB", owned: null, quantity: 4 },
+            ],
+          } as never
+        }
+      />
+    )
+    const materials = screen.getAllByRole("img")
+    expect(materials).toHaveLength(2)
+    expect(materials[0]).toHaveAccessibleName(
+      'goals.overview.upgradeMaterial:{"name":"Sword","owned":"5","quantity":10}'
+    )
+    expect(materials[0]).toHaveTextContent("5/10")
+    expect(materials[1]).toHaveTextContent("–/4")
+    expect(container.querySelectorAll("img").length).toBeGreaterThanOrEqual(2)
+    expect(screen.queryByTestId("goal-upgrade-materials-more")).toBeNull()
+    expect(container).not.toHaveTextContent("25%")
+  })
+
+  it("shows the first four materials and folds the rest into a +N chip", () => {
+    const materials = Array.from({ length: 7 }, (_, index) => ({
+      upgradeId: `upg${index}`,
+      label: `Mat ${index}`,
+      owned: index,
+      quantity: 10,
+    }))
+    render(
+      <GoalTargetDisplay
+        progress={{ kind: "Upgrade", ratio: 0.3, materials } as never}
+      />
+    )
+    expect(screen.getAllByRole("img")).toHaveLength(5)
+    const more = screen.getByTestId("goal-upgrade-materials-more")
+    expect(more).toHaveTextContent("+3")
+    expect(more.getAttribute("title")?.split("\n")).toEqual(
+      [4, 5, 6].map(
+        (index) =>
+          `goals.overview.upgradeMaterial:{"name":"Mat ${index}","owned":"${index}","quantity":10}`
+      )
+    )
+  })
+
+  it("falls back to the percentage when the goal has no materials", () => {
+    render(
+      <GoalTargetDisplay
+        progress={{ kind: "Upgrade", ratio: 0.5, materials: [] } as never}
+      />
+    )
+    expect(screen.getByText("50%")).toBeInTheDocument()
+  })
+})

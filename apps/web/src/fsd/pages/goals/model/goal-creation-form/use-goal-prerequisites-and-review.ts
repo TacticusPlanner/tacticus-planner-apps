@@ -1,6 +1,11 @@
 import { useMemo } from "react"
 
-import type { Progression, Rank, UnitId } from "@workspace/game-domain"
+import {
+  startingProgression,
+  type Progression,
+  type Rank,
+  type UnitId,
+} from "@workspace/game-domain"
 
 import type { GoalKind } from "@/entities/goal"
 
@@ -62,6 +67,9 @@ export function useGoalPrerequisitesAndReview({
   const prerequisites = useGoalPrerequisites({
     isLocked: !!entityId && !isOwned,
     currentProgression: playerEntity?.progressionIndex,
+    unlockProgression: character
+      ? startingProgression(character.initialRarity)
+      : undefined,
     enabledTypes,
     rankEnd,
     abilityActiveEnd,

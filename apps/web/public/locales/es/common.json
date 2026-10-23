@@ -111,18 +111,16 @@
     "feedbackHint": "Si sigue ocurriendo, cuéntanoslo con el botón de Feedback."
   },
   "onboarding": {
-    "title": "Conecta tu cuenta",
-    "description": "Elige cómo quieres traer tus datos de Tacticus. Cualquiera de las dos opciones lleva alrededor de un minuto.",
     "genericError": "Algo salió mal. Inténtalo de nuevo.",
     "stepPosition": "Paso {{current}} de {{total}}",
     "back": "Atrás",
     "paths": {
       "apiKeyName": "Pegar una clave de API",
-      "apiKeyBadge": "Inicio nuevo",
+      "apiKeyBadge": "La más rápida",
       "apiKeyDescription": "Ya tienes una clave de api.tacticusgame.com, o puedes conseguir una ahora.",
       "v1Name": "Importar desde V1",
-      "v1Badge": "Más completo",
-      "v1Description": "Inicia sesión con tu cuenta del planificador antiguo para traer tu clave, objetivos y progreso."
+      "v1Badge": "Recomendado si usabas V1",
+      "v1Description": "Inicia sesión con tu cuenta del planificador antiguo. Trae tu clave de API, objetivos, equipos de Legendary Event y progreso de Onslaught y campaña."
     },
     "signUp": {
       "apiKeyLabel": "Clave de API de Tacticus",
@@ -134,7 +132,12 @@
     },
     "import": {
       "continue": "Continuar",
-      "useApiKey": "Usar una clave de API en su lugar"
+      "materialStepsNotice_one": "{{count}} material necesita una unidad. Lo encontrarás arriba en Objetivos.",
+      "materialStepsNotice_other": "{{count}} materiales necesitan una unidad. Los encontrarás arriba en Objetivos.",
+      "useApiKey": "Usar una clave de API en su lugar",
+      "keyMissingTitle": "Tu perfil de V1 no tiene una clave de API válida",
+      "keyMissing": "Pega una para terminar la configuración. Todo lo demás se importó.",
+      "pasteApiKey": "Pegar una clave de API"
     },
     "name": {
       "label": "Nombre en el planificador",
@@ -149,7 +152,25 @@
     },
     "confirming": "Finalizando la configuración…",
     "confirmFailed": "Tu clave se guardó, pero no pudimos confirmar tu cuenta.",
-    "confirmRetry": "Reintentar"
+    "confirmRetry": "Reintentar",
+    "steps": {
+      "choose": {
+        "title": "Conecta tu cuenta",
+        "description": "Elige cómo traer tus datos de Tacticus. Cualquiera de las dos opciones tarda un minuto."
+      },
+      "key": {
+        "title": "Pega tu clave de API de Tacticus",
+        "description": "El planificador la usa para leer tu plantilla y tu progreso."
+      },
+      "import": {
+        "title": "Importar desde V1",
+        "description": "Tu contraseña de V1 se usa una vez y nunca se guarda."
+      },
+      "name": {
+        "title": "Elige tu nombre en el planificador",
+        "description": "Así aparecerás en el planificador."
+      }
+    }
   },
   "unitLookup": {
     "subtitle": "Elige un intervalo de rangos para ver las mejoras necesarias y dónde conseguirlas.",
@@ -534,7 +555,7 @@
       "menu": "Importar desde V1",
       "title": "Importar desde V1",
       "back": "Atrás",
-      "description": "Tus credenciales de V1 se usan una sola vez y nunca se guardan. Un objetivo de V1 que coincide con un objetivo de V2 existente se omite, no se reemplaza, y cada objetivo importado queda activo o en pausa según si estaba en tu planificación diaria de V1.",
+      "description": "Tus credenciales de V1 se usan una vez y nunca se guardan.",
       "username": "Usuario de V1",
       "password": "Contraseña de V1",
       "selectParts": "Elige qué importar",
@@ -548,6 +569,8 @@
         "legendaryEventPlans": "Equipos de Eventos Legendarios"
       },
       "partDescriptions": {
+        "userId": "Vincula tu cuenta del planificador con tu jugador del juego, algo que necesitan las funciones de gremio.",
+        "guildKey": "Solo se usa si eres líder o colíder de tu gremio: registra tu gremio en el planificador para que todos los miembros puedan usar las funciones de gremio.",
         "legendaryEventPlans": "Equipos creados a mano, notas, datos de misiones y packs por ronda y marcas «Quizá superable» / «Parar aquí» de los eventos que conoce el planificador. El progreso del evento no se importa."
       },
       "submit": "Importar selección",
@@ -565,16 +588,25 @@
         "importedCounts": "{{goals}} objetivo(s) en {{units}} unidad(es)",
         "needsNoImport": "No necesitó importación",
         "notImported": "No importado",
+        "needsAction": "Requiere un paso manual",
         "failed": "Fallido",
         "autoAdded": "Añadido automáticamente",
         "noUnit": "Unidad no especificada",
-        "copy": "Copiar detalles",
         "syncRequiredTitle": "Primero debes sincronizar tus datos de jugador",
         "syncRequired": "Sincroniza tus datos de jugador y luego vuelve a importar los objetivos."
+      },
+      "materialSteps": {
+        "title": "Algunos objetivos de material necesitan un paso más",
+        "description": "Estos objetivos de material de V1 no pudieron convertirse automáticamente en objetivos de mejora: la unidad ya tiene un objetivo de mejora para otros materiales, o los objetivos para los que se prefarmeaba no se importaron. Añade cada material a un objetivo de mejora de la unidad indicada.",
+        "preFarmedFor": "Pre-farmeado para {{units}}",
+        "suggestedUnit": "Unidad sugerida: {{unit}}",
+        "createUpgradeGoal": "Crear objetivo de mejora",
+        "dismiss": "Hecho, ocultar"
       },
       "reasons": {
         "goalCreated": "Importado desde V1.",
         "prerequisiteAdded": "Añadido automáticamente porque otro objetivo importado lo necesita.",
+        "upgradeGoalAssigned": "Creado en una unidad sugerida, ya que el objetivo de V1 no tenía ninguna. Muévelo si otra unidad debería tenerlo.",
         "targetAlreadyReached": "El objetivo ya se ha alcanzado.",
         "goalAlreadyExists": "La cuenta ya tiene un objetivo de este tipo para esta unidad.",
         "duplicateGoalMerged": "Se importó en su lugar otro objetivo de V1 de este tipo para esta unidad.",
@@ -587,6 +619,9 @@
         "targetRejected": "El objetivo de este objetivo no es válido.",
         "projectSlotConflict": "Se creó simultáneamente otro objetivo para esta unidad y tipo.",
         "prerequisiteRejected": "Este requisito añadido automáticamente no es válido para este objetivo.",
+        "unknownUpgrade": "Este material de mejora no está en el catálogo del juego de V2.",
+        "noUpgradeOwner": "Ninguno de tus personajes ni Máquinas de Guerra usa este material de mejora.",
+        "manualStepRequired": "Este material no se pudo asignar automáticamente. Añádelo a un objetivo de mejora de la unidad indicada.",
         "generic": "No se pudo importar este objetivo."
       },
       "legendaryEvents": {
@@ -644,7 +679,29 @@
           "existing_annotations_kept_other": "Se conservaron {{count}} marcas que ya estaban en el planificador.",
           "unknown_objective_mark": "Se omitió una marca en el objetivo no reconocido «{{objective}}» de {{lane}}.",
           "unknown_lane_mark": "Se omitió una marca en el carril no reconocido «{{lane}}»."
-        }
+        },
+        "notInPlanner_one": "{{count}} evento de V1 aún no está en el planificador",
+        "notInPlanner_other": "{{count}} eventos de V1 aún no están en el planificador"
+      },
+      "descriptionNote": "Los objetivos que ya tienes se omiten, no se reemplazan. Cada objetivo importado queda Activo o En pausa según tu planificación diaria de V1.",
+      "submittingNotice": "Importando tus datos de V1… puede tardar hasta un minuto.",
+      "lockedPart": "Necesario para terminar la configuración",
+      "importedAs": "Importado desde V1 como {{username}}",
+      "runAgain": "Volver a ejecutar",
+      "summary": {
+        "title": "Esto es lo que se trajo",
+        "goals_one": "{{count}} objetivo",
+        "goals_other": "{{count}} objetivos",
+        "legendaryEvents_one": "Equipos de Legendary Event para {{count}} evento",
+        "legendaryEvents_other": "Equipos de Legendary Event para {{count}} eventos",
+        "parts": {
+          "personalTacticusApiKey": "Clave de API",
+          "tacticusUserId": "ID de usuario de Tacticus",
+          "guildApiToken": "Token de API del gremio",
+          "onslaughtProgress": "Progreso de Onslaught",
+          "campaignEventProgress": "Progreso de eventos de campaña"
+        },
+        "empty": "No se trajo nada nuevo. El planificador ya tiene todo lo de tu perfil de V1."
       }
     },
     "empty": {
@@ -1101,6 +1158,7 @@
     "overview": {
       "levelProgress": "Nv {{current}} → {{target}}",
       "ownedOfRequired": "{{owned}} / {{required}}",
+      "upgradeMaterial": "{{name}}: {{owned}} / {{quantity}}",
       "abilityTrack": {
         "active": "Activa",
         "passive": "Pasiva",

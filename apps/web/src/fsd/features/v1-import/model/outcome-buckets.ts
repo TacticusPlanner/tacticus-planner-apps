@@ -5,7 +5,7 @@ import type { V1GoalOutcome } from "@/entities/account"
 // attention tomorrow) is a local change, not an API change (design.md: "Group in the client, from a
 // flat server list").
 export type OutcomeBucketKey =
-  "imported" | "needsNoImport" | "notImported" | "failed"
+  "imported" | "needsNoImport" | "needsAction" | "notImported" | "failed"
 
 // Every code the API can emit (rewrite-v1-goal-import API contract), mapped to the bucket it reads
 // as. An unrecognised code falls back to "notImported" — surfaced for attention rather than hidden
@@ -14,14 +14,21 @@ export type OutcomeBucketKey =
 const CODE_BUCKETS: Record<string, OutcomeBucketKey> = {
   goal_created: "imported",
   prerequisite_added: "imported",
+  // A V1 material goal placed on a suggested unit (it had none): created, but worth a look.
+  upgrade_goal_assigned: "imported",
   target_already_reached: "needsNoImport",
   goal_already_exists: "needsNoImport",
   duplicate_goal_merged: "needsNoImport",
+  // A V1 material goal the import couldn't place: nothing was created, and the user has a step to
+  // take (see materialSteps).
+  manual_step_required: "needsAction",
   prerequisite_target_insufficient: "notImported",
   unknown_unit: "notImported",
   unsupported_goal_type: "notImported",
   invalid_progression: "notImported",
   missing_target: "notImported",
+  unknown_upgrade: "notImported",
+  no_upgrade_owner: "notImported",
   player_data_required: "failed",
   target_rejected: "failed",
   project_slot_conflict: "failed",
@@ -49,6 +56,7 @@ export function bucketForCode(code: string): OutcomeBucketKey {
 type ReasonKey =
   | "goals.v1Import.reasons.goalCreated"
   | "goals.v1Import.reasons.prerequisiteAdded"
+  | "goals.v1Import.reasons.upgradeGoalAssigned"
   | "goals.v1Import.reasons.targetAlreadyReached"
   | "goals.v1Import.reasons.goalAlreadyExists"
   | "goals.v1Import.reasons.duplicateGoalMerged"
@@ -57,6 +65,9 @@ type ReasonKey =
   | "goals.v1Import.reasons.unsupportedGoalType"
   | "goals.v1Import.reasons.invalidProgression"
   | "goals.v1Import.reasons.missingTarget"
+  | "goals.v1Import.reasons.unknownUpgrade"
+  | "goals.v1Import.reasons.noUpgradeOwner"
+  | "goals.v1Import.reasons.manualStepRequired"
   | "goals.v1Import.reasons.playerDataRequired"
   | "goals.v1Import.reasons.targetRejected"
   | "goals.v1Import.reasons.projectSlotConflict"
@@ -66,6 +77,7 @@ type ReasonKey =
 const REASON_KEYS: Record<string, ReasonKey> = {
   goal_created: "goals.v1Import.reasons.goalCreated",
   prerequisite_added: "goals.v1Import.reasons.prerequisiteAdded",
+  upgrade_goal_assigned: "goals.v1Import.reasons.upgradeGoalAssigned",
   target_already_reached: "goals.v1Import.reasons.targetAlreadyReached",
   goal_already_exists: "goals.v1Import.reasons.goalAlreadyExists",
   duplicate_goal_merged: "goals.v1Import.reasons.duplicateGoalMerged",
@@ -75,6 +87,9 @@ const REASON_KEYS: Record<string, ReasonKey> = {
   unsupported_goal_type: "goals.v1Import.reasons.unsupportedGoalType",
   invalid_progression: "goals.v1Import.reasons.invalidProgression",
   missing_target: "goals.v1Import.reasons.missingTarget",
+  unknown_upgrade: "goals.v1Import.reasons.unknownUpgrade",
+  no_upgrade_owner: "goals.v1Import.reasons.noUpgradeOwner",
+  manual_step_required: "goals.v1Import.reasons.manualStepRequired",
   player_data_required: "goals.v1Import.reasons.playerDataRequired",
   target_rejected: "goals.v1Import.reasons.targetRejected",
   project_slot_conflict: "goals.v1Import.reasons.projectSlotConflict",
@@ -93,6 +108,7 @@ export function groupOutcomes(
   const buckets: BucketedOutcomes = {
     imported: [],
     needsNoImport: [],
+    needsAction: [],
     notImported: [],
     failed: [],
   }
@@ -120,47 +136,70 @@ export function isAutomaticallyAdded(outcome: V1GoalOutcome): boolean {
   return outcome.code === "prerequisite_added"
 }
 
-/**
- * Plain-text diagnostic for the clipboard (design.md: "Copy details as plain text, assembled from
- * what is already rendered"): one line per not-imported/failed outcome, naming the unit, the goal
- * type when one was determined, and the server's own reason. There is no per-outcome trace
- * identifier in this API's response shape — a trace id only ever appears on a whole-request
- * failure (an unhandled 500's ProblemDetails body), which is a different code path from this
- * bucketed report entirely, so none is appended here (see import-v1-dialog.tsx's deviation note).
- */
-export function buildDiagnosticText(params: {
-  notImported: readonly V1GoalOutcome[]
-  failed: readonly V1GoalOutcome[]
-  heading: (bucket: "notImported" | "failed") => string
-  unitName: (entityType: string | null, entityId: string | null) => string
-  goalTypeLabel: (goalType: string | null) => string | null
-  noUnitLabel: string
-  // Translated reason text for one outcome's code — not `outcome.message` (the server's untranslated
-  // English), same reasoning as OutcomeRow's own rendering in import-v1-result.tsx.
-  reasonFor: (code: string) => string
-}): string {
-  const section = (
-    bucket: "notImported" | "failed",
-    outcomes: readonly V1GoalOutcome[]
-  ) => {
-    if (outcomes.length === 0) return null
-    const rows = outcomes.map((outcome) => {
-      const unit = outcome.entityId
-        ? params.unitName(outcome.entityType, outcome.entityId)
-        : params.noUnitLabel
-      const type = params.goalTypeLabel(outcome.goalType)
-      const label = type ? `${unit} (${type})` : unit
-      return `- ${label}: ${params.reasonFor(outcome.code)}`
-    })
-    return [`${params.heading(bucket)}:`, ...rows].join("\n")
-  }
+type StepUnit = { entityType: string; entityId: string }
 
-  return [
-    section("notImported", params.notImported),
-    section("failed", params.failed),
-  ]
-    .filter((part): part is string => part !== null)
-    .join("\n\n")
+/** One V1 material goal (upgrade material or pre-farm) the user must re-create by hand as an Upgrade
+ * goal: the material, an upgrade-material goal's quantity, the distinct units of a pre-farm goal's linked
+ * goals (resolved through those goals' own outcomes in this same report, so a linked goal that wasn't
+ * imported contributes no unit), and the units to offer — the linked ones, else the server's suggestion. */
+export type MaterialStep = {
+  sourceGoalId: string | null
+  upgradeId: string | null
+  quantity: number | null
+  linkedUnits: StepUnit[]
+  units: StepUnit[]
+}
+
+export function materialSteps(
+  outcomes: readonly V1GoalOutcome[]
+): MaterialStep[] {
+  const bySourceId = new Map(
+    outcomes
+      .filter((outcome) => outcome.sourceGoalId)
+      .map((outcome) => [outcome.sourceGoalId, outcome])
+  )
+  return outcomes
+    .filter((outcome) => outcome.code === "manual_step_required")
+    .map((outcome) => {
+      const linked = new Map<string, StepUnit>()
+      for (const linkedId of outcome.linkedSourceGoalIds ?? []) {
+        const goal = bySourceId.get(linkedId)
+        if (!goal?.entityType || !goal.entityId) continue
+        linked.set(`${goal.entityType}:${goal.entityId}`, {
+          entityType: goal.entityType,
+          entityId: goal.entityId,
+        })
+      }
+      const linkedUnits = [...linked.values()]
+      const suggested =
+        outcome.entityType && outcome.entityId
+          ? [{ entityType: outcome.entityType, entityId: outcome.entityId }]
+          : []
+      return {
+        sourceGoalId: outcome.sourceGoalId,
+        upgradeId: outcome.upgradeId,
+        quantity: outcome.upgradeQuantity,
+        linkedUnits,
+        units: linkedUnits.length > 0 ? linkedUnits : suggested,
+      }
+    })
+}
+
+/** One outcome's subject for the report: its unit and/or the material it carries (a material or
+ *  pre-farm goal), else the "no unit" label. Rendered by OutcomeRow. */
+export function outcomeSubject(
+  outcome: V1GoalOutcome,
+  names: {
+    unitName: (entityType: string | null, entityId: string | null) => string
+    upgradeName: (upgradeId: string) => string
+    noUnitLabel: string
+  }
+): string {
+  const parts = [
+    outcome.entityId && names.unitName(outcome.entityType, outcome.entityId),
+    outcome.upgradeId && names.upgradeName(outcome.upgradeId),
+  ].filter(Boolean)
+  return parts.length > 0 ? parts.join(" · ") : names.noUnitLabel
 }
 
 /** The goals part's reported status, derived from the outcomes rather than trusting the server's
