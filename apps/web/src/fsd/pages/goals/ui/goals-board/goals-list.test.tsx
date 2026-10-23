@@ -59,6 +59,25 @@ const rows: GoalRow[] = [
 describe("GoalsList", () => {
   beforeEach(() => useIsMobileMock.mockReturnValue(false))
 
+  it("lets Escape on the drag handle cancel a keyboard reorder", async () => {
+    render(<GoalsList actions={stubActions} reorderEnabled rows={rows} />)
+    const handle = await screen.findByRole("button", {
+      name: "Drag Hero One to reorder",
+    })
+    handle.focus()
+    fireEvent.keyDown(handle, { key: " ", code: "Space" })
+    await waitFor(() =>
+      expect(handle.closest("tr")).toHaveAttribute("data-dragging")
+    )
+
+    // dnd-kit's keyboard sensor listens on the document, so the handle's cell must let keys through.
+    fireEvent.keyDown(handle, { key: "Escape", code: "Escape" })
+
+    await waitFor(() =>
+      expect(handle.closest("tr")).not.toHaveAttribute("data-dragging")
+    )
+  })
+
   it("hides move buttons when reorder is disabled", async () => {
     render(
       <GoalsList actions={stubActions} reorderEnabled={false} rows={rows} />
@@ -822,7 +841,7 @@ describe("GoalsList remaining chips on mobile", () => {
     const { unmount } = render(
       <GoalsList
         actions={stubActions}
-        estimates={estimates as never}
+        estimates={estimates}
         metrics={chipMetrics as never}
         reorderEnabled={false}
         rows={[rows[0]!]}
@@ -835,7 +854,7 @@ describe("GoalsList remaining chips on mobile", () => {
     render(
       <GoalsList
         actions={stubActions}
-        estimates={estimates as never}
+        estimates={estimates}
         metrics={chipMetrics as never}
         reachedByGoalId={new Map([["goal-1", true]])}
         reorderEnabled={false}

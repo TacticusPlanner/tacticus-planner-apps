@@ -222,7 +222,7 @@ describe("Legendary Event read hooks", () => {
     // A real sync writes the manifest row; replacePlayerDataChunk writes whichever metadata row it
     // is handed, so it stands in for that here.
     await replacePlayerDataChunk("lre-progress", [progress], {
-      key: playerDataManifestMetadataKey as "lre-progress",
+      key: playerDataManifestMetadataKey,
       hash: "manifest-test",
       schemaVersion: 1,
       updatedAt: "2026-09-02T11:35:00Z",

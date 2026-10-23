@@ -52,7 +52,7 @@ describe("ProjectList", () => {
   it("lists every project including archived ones", () => {
     render(
       <ProjectList
-        actions={actionsHarness() as never}
+        actions={actionsHarness()}
         onEdit={vi.fn()}
         onSelect={vi.fn()}
         projects={[defaultProject, otherProject, archivedProject]}
@@ -69,7 +69,7 @@ describe("ProjectList", () => {
     const onSelect = vi.fn()
     render(
       <ProjectList
-        actions={actionsHarness() as never}
+        actions={actionsHarness()}
         onEdit={vi.fn()}
         onSelect={onSelect}
         projects={[defaultProject, otherProject]}
@@ -86,7 +86,7 @@ describe("ProjectList", () => {
     const onEdit = vi.fn()
     render(
       <ProjectList
-        actions={actionsHarness() as never}
+        actions={actionsHarness()}
         onEdit={onEdit}
         onSelect={onSelect}
         projects={[otherProject]}

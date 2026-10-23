@@ -15,7 +15,7 @@ vi.mock("react-i18next", () => ({
         ? options.defaultValue
         : options && Object.keys(options).length > 0
           ? `${key} ${Object.entries(options)
-              .map(([k, v]) => `${k}=${v}`)
+              .map(([k, v]) => `${k}=${String(v)}`)
               .join(" ")}`
           : key,
   }),

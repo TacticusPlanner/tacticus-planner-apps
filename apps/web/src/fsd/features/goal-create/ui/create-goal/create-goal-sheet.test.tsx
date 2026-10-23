@@ -140,7 +140,7 @@ characters.set("hero2", {
   initialRarity: "Common",
   shardLocations: [],
   rankUpUpgrades: [],
-} as never)
+})
 
 const shopOnlyShop = {
   id: "war",
@@ -543,7 +543,7 @@ describe("CreateGoalSheet", () => {
     await vi.waitFor(() => {
       expect(createCombinedGoals).toHaveBeenCalledTimes(1)
     })
-    const [request] = createCombinedGoals.mock.calls[0]
+    const [request] = createCombinedGoals.mock.calls[0] ?? []
     expect(request).toMatchObject({
       entityType: "Character",
       entityId: "hero1",
@@ -645,7 +645,7 @@ describe("CreateGoalSheet", () => {
     await vi.waitFor(() => {
       expect(createCombinedGoals).toHaveBeenCalledTimes(1)
     })
-    const [request] = createCombinedGoals.mock.calls[0]
+    const [request] = createCombinedGoals.mock.calls[0] ?? []
     expect(
       request.goals.map((goal: { goalType: string }) => goal.goalType)
     ).toEqual(["Rank"])
@@ -853,7 +853,7 @@ describe("CreateGoalSheet", () => {
     await vi.waitFor(() => {
       expect(createCombinedGoals).toHaveBeenCalledTimes(1)
     })
-    const unlockSpec = createCombinedGoals.mock.calls[0][0].goals.find(
+    const unlockSpec = createCombinedGoals.mock.calls[0]?.[0].goals.find(
       (goal: { goalType: string }) => goal.goalType === "Unlock"
     )
     expect(unlockSpec.config.acquisitionSources).toContainEqual({
@@ -913,7 +913,7 @@ describe("CreateGoalSheet", () => {
     await vi.waitFor(() => {
       expect(createCombinedGoals).toHaveBeenCalledTimes(1)
     })
-    const [request] = createCombinedGoals.mock.calls[0]
+    const [request] = createCombinedGoals.mock.calls[0] ?? []
     const unlockSpec = request.goals.find(
       (goal: { goalType: string }) => goal.goalType === "Unlock"
     )
@@ -1239,7 +1239,7 @@ describe("CreateGoalSheet", () => {
       await vi.waitFor(() => {
         expect(createCombinedGoals).toHaveBeenCalledTimes(1)
       })
-      return createCombinedGoals.mock.calls[0][0].goals[0].config
+      return createCombinedGoals.mock.calls[0]?.[0].goals[0].config
     }
 
     it("appears once the range needs one, checked by default, and an untouched form saves no selection", async () => {
@@ -1337,7 +1337,7 @@ describe("CreateGoalSheet", () => {
     await vi.waitFor(() => {
       expect(createCombinedGoals).toHaveBeenCalledTimes(1)
     })
-    const [request] = createCombinedGoals.mock.calls[0]
+    const [request] = createCombinedGoals.mock.calls[0] ?? []
     expect(request).not.toHaveProperty("startPaused")
   })
 
@@ -1354,7 +1354,7 @@ describe("CreateGoalSheet", () => {
     await vi.waitFor(() => {
       expect(createCombinedGoals).toHaveBeenCalledTimes(1)
     })
-    const [request] = createCombinedGoals.mock.calls[0]
+    const [request] = createCombinedGoals.mock.calls[0] ?? []
     expect(request).toMatchObject({ startPaused: true })
   })
 
@@ -1383,7 +1383,7 @@ describe("CreateGoalSheet", () => {
     await vi.waitFor(() => {
       expect(createCombinedGoals).toHaveBeenCalledTimes(1)
     })
-    const [request] = createCombinedGoals.mock.calls[0]
+    const [request] = createCombinedGoals.mock.calls[0] ?? []
     expect(request.goals.length).toBeGreaterThan(1)
     expect(request.startPaused).toBe(true)
     // Request-wide, never per spec.
@@ -1546,7 +1546,7 @@ describe("CreateGoalSheet", () => {
     await vi.waitFor(() => {
       expect(createCombinedGoals).toHaveBeenCalledTimes(1)
     })
-    const [request] = createCombinedGoals.mock.calls[0]
+    const [request] = createCombinedGoals.mock.calls[0] ?? []
     expect(request.goals).toEqual([
       expect.objectContaining({
         goalType: "Unlock",
@@ -1583,7 +1583,7 @@ describe("CreateGoalSheet", () => {
     await vi.waitFor(() => {
       expect(createCombinedGoals).toHaveBeenCalledTimes(1)
     })
-    const [request] = createCombinedGoals.mock.calls[0]
+    const [request] = createCombinedGoals.mock.calls[0] ?? []
     expect(request.goals).toEqual([
       expect.objectContaining({
         goalType: "Upgrade",
@@ -1626,7 +1626,7 @@ describe("CreateGoalSheet", () => {
     await vi.waitFor(() => {
       expect(createCombinedGoals).toHaveBeenCalledTimes(1)
     })
-    const [request] = createCombinedGoals.mock.calls[0]
+    const [request] = createCombinedGoals.mock.calls[0] ?? []
     const upgrade = request.goals.find(
       (goal: { goalType: string }) => goal.goalType === "Upgrade"
     )
@@ -1773,7 +1773,7 @@ describe("CreateGoalSheet", () => {
     await vi.waitFor(() => {
       expect(createCombinedGoals).toHaveBeenCalledTimes(1)
     })
-    const [request] = createCombinedGoals.mock.calls[0]
+    const [request] = createCombinedGoals.mock.calls[0] ?? []
     expect(request).toMatchObject({ entityType: "Mow", entityId: "mow1" })
     expect(request.goals).toEqual([
       expect.objectContaining({
@@ -1811,7 +1811,7 @@ describe("CreateGoalSheet", () => {
     await vi.waitFor(() => {
       expect(createCombinedGoals).toHaveBeenCalledTimes(1)
     })
-    const [request] = createCombinedGoals.mock.calls[0]
+    const [request] = createCombinedGoals.mock.calls[0] ?? []
     expect(request.goals).toHaveLength(2)
     expect(request.goals[0]).toMatchObject({
       goalType: "Unlock",
@@ -1940,7 +1940,7 @@ describe("CreateGoalSheet", () => {
     await vi.waitFor(() => {
       expect(createCombinedGoals).toHaveBeenCalledTimes(1)
     })
-    const [request] = createCombinedGoals.mock.calls[0]
+    const [request] = createCombinedGoals.mock.calls[0] ?? []
     expect(request).toMatchObject({
       entityType: "Mow",
       entityId: "mow1",
@@ -1995,7 +1995,7 @@ describe("CreateGoalSheet", () => {
     await vi.waitFor(() => {
       expect(createCombinedGoals).toHaveBeenCalledTimes(1)
     })
-    const [request] = createCombinedGoals.mock.calls[0]
+    const [request] = createCombinedGoals.mock.calls[0] ?? []
     expect(request.goals).toHaveLength(1)
     expect(request.goals[0]).toMatchObject({
       goalType: "Ability",
@@ -2047,7 +2047,7 @@ describe("CreateGoalSheet", () => {
     await vi.waitFor(() => {
       expect(createCombinedGoals).toHaveBeenCalledTimes(1)
     })
-    const [request] = createCombinedGoals.mock.calls[0]
+    const [request] = createCombinedGoals.mock.calls[0] ?? []
     expect(
       request.goals.map((goal: { goalType: string }) => goal.goalType)
     ).toEqual(["Ascension", "Ability"])
@@ -2094,7 +2094,7 @@ describe("CreateGoalSheet", () => {
     await vi.waitFor(() => {
       expect(createCombinedGoals).toHaveBeenCalledTimes(1)
     })
-    const [request] = createCombinedGoals.mock.calls[0]
+    const [request] = createCombinedGoals.mock.calls[0] ?? []
     expect(request.projects).toEqual([
       { projectId: "proj-1" },
       { projectId: "proj-2" },
@@ -2153,7 +2153,7 @@ describe("CreateGoalSheet", () => {
     it("offers the last projects and goal type again after 'create another', without the old targets or start-paused", async () => {
       render(<CreateGoalSheet open onOpenChange={vi.fn()} />)
       await createRankGoalInBothProjects(true)
-      expect(createCombinedGoals.mock.calls[0][0].startPaused).toBe(true)
+      expect(createCombinedGoals.mock.calls[0]?.[0].startPaused).toBe(true)
 
       await vi.waitFor(() => {
         expect(
@@ -2187,7 +2187,7 @@ describe("CreateGoalSheet", () => {
       await vi.waitFor(() => {
         expect(createCombinedGoals).toHaveBeenCalledTimes(2)
       })
-      const [request] = createCombinedGoals.mock.calls[1]
+      const [request] = createCombinedGoals.mock.calls[1] ?? []
       expect(request.projects).toEqual([
         { projectId: "proj-1" },
         { projectId: "proj-2" },
@@ -2373,7 +2373,7 @@ describe("CreateGoalSheet", () => {
       await vi.waitFor(() => {
         expect(createCombinedGoals).toHaveBeenCalledTimes(1)
       })
-      const [request] = createCombinedGoals.mock.calls[0]
+      const [request] = createCombinedGoals.mock.calls[0] ?? []
       expect(request.projects).toEqual([
         { projectId: "proj-1" },
         { projectId: "proj-new" },

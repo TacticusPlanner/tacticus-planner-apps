@@ -11,8 +11,10 @@ const avatarColors = [
 
 export function getAccountInitials(displayName: string) {
   const segments = displayName.trim().split(/\s+/u).filter(Boolean)
+  const first = segments[0]
+  const last = segments.at(-1)
   const selected =
-    segments.length > 1 ? [segments[0], segments.at(-1)!] : segments
+    segments.length > 1 && first && last ? [first, last] : segments
 
   return (
     selected

@@ -367,7 +367,7 @@ describe("OnslaughtPage", () => {
         for (const step of formSteps ?? []) {
           expect(
             document.querySelector(step.target as string),
-            String(step.target)
+            step.target as string
           ).not.toBeNull()
         }
       }

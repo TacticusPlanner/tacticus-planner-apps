@@ -6,6 +6,12 @@ import type { AdjustedStatsView, RaidBoss } from "@/entities/raid-boss"
 
 import { RaidBossAdjustedStats } from "./raid-boss-adjusted-stats"
 
+function at<T>(xs: readonly T[] | undefined, index: number): T {
+  const value = xs?.[index]
+  if (value === undefined) throw new Error(`expected an item at index ${index}`)
+  return value
+}
+
 const unit = {
   unitSetId: "boss",
   kind: "boss",
@@ -127,7 +133,7 @@ describe("RaidBossAdjustedStats", () => {
     }
     render(<RaidBossAdjustedStats {...baseProps} view={percentView} />)
 
-    await user.click(screen.getAllByRole("combobox")[0])
+    await user.click(at(screen.getAllByRole("combobox"), 0))
     expect(screen.getByRole("option", { name: "Full HP" })).toBeInTheDocument()
     expect(
       screen.getByRole("option", {

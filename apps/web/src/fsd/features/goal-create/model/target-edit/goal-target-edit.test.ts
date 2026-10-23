@@ -395,7 +395,7 @@ describe("getChangedGoalTargetIssue", () => {
     const rank = rankGoal(rankIndex(Rank.Silver1))
     const asc = goal("Ascension", {
       progression: { start: "Common:TwoStars", end: "Common:TwoStars" },
-    } as Partial<GoalConfig>)
+    })
     for (const detail of [rank, asc]) {
       const stored = goalTargetDraftFromDetail(detail)!
       expect(getGoalTargetIssue(detail, stored)).not.toBeNull()

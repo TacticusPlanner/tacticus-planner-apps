@@ -193,9 +193,8 @@ describe("buildLaneLeaderboard", () => {
     const roster: LegendaryEventRosterUnit[] = [
       {
         unitId: "bloodDante" as LegendaryEventRosterUnit["unitId"],
-        rank: "Diamond1" as LegendaryEventRosterUnit["rank"],
-        progressionIndex:
-          "Legendary:RedFiveStars" as LegendaryEventRosterUnit["progressionIndex"],
+        rank: "Diamond1",
+        progressionIndex: "Legendary:RedFiveStars",
       },
     ]
     const built = buildLaneLeaderboard(

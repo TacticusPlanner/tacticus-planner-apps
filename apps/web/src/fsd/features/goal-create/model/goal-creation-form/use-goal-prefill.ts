@@ -36,10 +36,7 @@ export function useGoalPrefill(
     entityType === "Character"
       ? (playerEntity as PlayerDataChunkDto<"characters">[number] | undefined)
       : undefined
-  const playerMow =
-    entityType === "Mow"
-      ? (playerEntity as PlayerDataChunkDto<"mows">[number] | undefined)
-      : undefined
+  const playerMow = entityType === "Mow" ? playerEntity : undefined
 
   return { playerEntity, playerCharacter, playerMow, loading }
 }

@@ -53,7 +53,7 @@ vi.mock("@azure/msal-browser", () => {
   class PublicClientApplication {
     constructor(configuration: unknown) {
       mocks.constructor(configuration)
-      return mocks.instance as never
+      return mocks.instance
     }
   }
 
@@ -124,7 +124,7 @@ describe("authentication", () => {
     mocks.instance.handleRedirectPromise.mockResolvedValue({
       account: redirectAccount,
     })
-    mocks.instance.getActiveAccount.mockReturnValue(redirectAccount as never)
+    mocks.instance.getActiveAccount.mockReturnValue(redirectAccount)
 
     await auth.initializeAuthentication()
 
@@ -163,7 +163,7 @@ describe("authentication", () => {
 
   it("acquires and redirects API tokens for the active account", async () => {
     const account = { homeAccountId: "active" }
-    mocks.instance.getActiveAccount.mockReturnValue(account as never)
+    mocks.instance.getActiveAccount.mockReturnValue(account)
     mocks.instance.acquireTokenSilent.mockResolvedValue({
       accessToken: "token",
     })
@@ -210,7 +210,7 @@ describe("authentication", () => {
       mocks.instance.handleRedirectPromise.mockResolvedValue({
         account,
         accessToken: "secret-access-token",
-      } as never)
+      })
 
       await auth.initializeAuthentication()
 
@@ -290,7 +290,7 @@ describe("authentication", () => {
     const account = { homeAccountId: "cached" }
 
     beforeEach(() => {
-      mocks.instance.getActiveAccount.mockReturnValue(account as never)
+      mocks.instance.getActiveAccount.mockReturnValue(account)
     })
 
     it("waits for an in-flight restore instead of racing it", async () => {

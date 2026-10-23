@@ -52,7 +52,7 @@ export function ShopsPage() {
     <div className="space-y-5 md:space-y-7" data-testid="shops-page">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div className="space-y-1">
-          <h1 className="text-lg font-semibold">{t("title")}</h1>
+          <h2 className="text-lg font-semibold">{t("title")}</h2>
           {/* Offers are recommended for every Active goal unless a project narrows them; the
               account-wide raid plan (Today, Raids Plan) is not affected by it. */}
           <p className="text-sm text-muted-foreground">

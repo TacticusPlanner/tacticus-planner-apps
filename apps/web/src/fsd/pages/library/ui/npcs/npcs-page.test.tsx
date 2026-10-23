@@ -14,6 +14,12 @@ import {
 } from "@/shared/unit-power"
 import { unitPowerCatalog } from "@/test/fixtures/unit-power"
 
+function at<T>(xs: readonly T[] | undefined, index: number): T {
+  const value = xs?.[index]
+  if (value === undefined) throw new Error(`expected an item at index ${index}`)
+  return value
+}
+
 const { isMobileMock, useIsMobileMock } = vi.hoisted(() => {
   const isMobileMock = { value: false }
   const useIsMobileMock = vi.fn(() => isMobileMock.value)
@@ -26,7 +32,7 @@ vi.mock("@workspace/ui/hooks/use-mobile", () => ({
 vi.mock("@/shared/tour", () => ({ useTourPageSteps: () => {} }))
 
 const powerMock = vi.hoisted(() => ({
-  state: { status: "loading" } as { status: string },
+  state: { status: "loading" },
 }))
 vi.mock("@/shared/unit-power", async (importOriginal) => ({
   ...(await importOriginal<object>()),
@@ -180,7 +186,7 @@ const infiltrator = npcRecord("darkaNpc1Infiltrator", "Infiltrator", {
   rangedHits: infiltratorNpc.rangedHits,
   distance: infiltratorNpc.distance,
   traits: [...infiltratorNpc.traits],
-  stats: infiltratorNpc.stats as NpcStatRow[],
+  stats: infiltratorNpc.stats,
 })
 const watcher = npcRecord("tyranNpcWatcher", "Watcher", {
   factionId: "Tyranids",
@@ -387,7 +393,7 @@ describe("NpcsPage", () => {
     expect(options).toHaveLength(3)
     expect(options[2]).toHaveTextContent(/ HP$/)
     expect(options[2]).toHaveTextContent(numberText(1_729_700))
-    await user.click(options[2])
+    await user.click(at(options, 2))
 
     await waitFor(() => expect(location()).toBe("/library/npcs/havoc?level=2"))
     expect(screen.getByTestId("npc-stat-health")).toHaveTextContent(
@@ -417,7 +423,7 @@ describe("NpcsPage", () => {
 
     await user.click(screen.getByTestId("npcs-level-select"))
     const options = await screen.findAllByRole("option")
-    await user.click(options[options.length - 1])
+    await user.click(at(options, options.length - 1))
 
     await waitFor(() => expect(location()).toContain("level="))
     expect(screen.getByTestId("npc-abilities-active")).toHaveTextContent(
@@ -512,6 +518,22 @@ describe("NpcsPage", () => {
     expect(location()).toBe("/library/npcs/makhotep")
   })
 
+  it("links an open filter combobox to its listbox via aria-controls", async () => {
+    const user = userEvent.setup()
+    await renderPage("/library/npcs/makhotep")
+    await screen.findByTestId("npc-name")
+
+    await openFilters(user)
+    const trigger = screen.getByTestId("npcs-trait-filter")
+    expect(trigger).not.toHaveAttribute("aria-controls")
+    await user.click(trigger)
+
+    expect(trigger).toHaveAttribute("aria-expanded", "true")
+    expect(
+      document.getElementById(trigger.getAttribute("aria-controls") ?? "")
+    ).toBe(await screen.findByRole("listbox"))
+  })
+
   it("resets filters when the user leaves and returns", async () => {
     const user = userEvent.setup()
     const view = await renderPage("/library/npcs/makhotep")
@@ -551,7 +573,7 @@ describe("NpcsPage", () => {
       await user.type(screen.getByPlaceholderText("Select an NPC"), "makh")
       const options = await screen.findAllByRole("option")
       expect(options).toHaveLength(1)
-      await user.click(options[0])
+      await user.click(at(options, 0))
 
       await waitFor(() => expect(location()).toBe("/library/npcs/makhotep"))
     })
@@ -726,14 +748,14 @@ describe("NpcsPage power card", () => {
 
     await user.click(screen.getByTestId("npcs-level-select"))
     const options = await screen.findAllByRole("option")
-    await user.click(options[5])
+    await user.click(at(options, 5))
     await waitFor(() => expect(location()).not.toMatch(/level=2$/))
     const level = Number(
-      new URLSearchParams(location()!.split("?")[1]).get("level")
+      new URLSearchParams(location().split("?")[1]).get("level")
     )
     const expected = npcPowerAt(
       "darkaNpc1Infiltrator",
-      infiltratorNpc.stats[level],
+      at(infiltratorNpc.stats, level),
       powerContext
     )!
     expect(expected).not.toBe(45)
@@ -745,7 +767,7 @@ describe("NpcsPage power card", () => {
     await screen.findByTestId("npc-name")
     const expected = npcPowerAt(
       "tyranNpcWatcher",
-      watcher.stats[0],
+      at(watcher.stats, 0),
       powerContext
     )!
     expect(expected).toBeGreaterThan(10)

@@ -140,6 +140,7 @@ function MenuSubView({
       <div className="flex items-center gap-1">
         <Button
           aria-label={t("common.back")}
+          // eslint-disable-next-line jsx-a11y/no-autofocus -- the sub-view replaces the focused menu row, so focus must move into it.
           autoFocus
           data-testid="account-menu-back"
           onClick={onBack}

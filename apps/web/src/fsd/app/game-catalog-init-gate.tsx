@@ -86,7 +86,7 @@ export function GameCatalogInitGate({ children }: { children: ReactNode }) {
             </>
           ) : (
             <>
-              <Spinner className="size-8 text-primary" />
+              <Spinner aria-hidden="true" className="size-8 text-primary" />
               <h2 className="text-lg font-semibold">
                 {firstTime
                   ? t("catalog.init.firstTimeTitle")

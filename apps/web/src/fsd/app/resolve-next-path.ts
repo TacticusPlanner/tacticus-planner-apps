@@ -41,7 +41,7 @@ export function resolveNextPath(
   }
 
   if (!options?.allowSetupDestination) {
-    const path = next.split(/[?#]/)[0]
+    const path = next.split(/[?#]/)[0] ?? next
     if (path === SETUP_PATH || path.startsWith(`${SETUP_PATH}/`)) {
       return DEFAULT_SIGNED_IN_PATH
     }

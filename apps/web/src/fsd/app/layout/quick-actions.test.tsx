@@ -29,7 +29,7 @@ vi.mock("@/shared/player-data-status", () => ({
 
 const userJot = vi.hoisted(() => ({
   open: vi.fn(),
-  status: "ready" as "idle" | "loading" | "ready" | "failed",
+  status: "ready",
 }))
 vi.mock("../providers/userjot-provider", () => ({
   useUserJot: () => userJot,

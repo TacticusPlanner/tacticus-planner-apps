@@ -87,7 +87,7 @@ export function AbilityPanel({
     [locale]
   )
   const formatAt = (values: number[][], index: number) =>
-    values[index].map((value) => format.format(value)).join("–")
+    (values[index] ?? []).map((value) => format.format(value)).join("–")
   const yours =
     playerLevel === undefined
       ? null

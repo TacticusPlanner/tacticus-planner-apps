@@ -59,7 +59,7 @@ export function buildPreviewGoalDetails(
     goalId: `preview-${index}`,
     entityType,
     entityId,
-    goalType: spec.goalType as GoalDetail["goalType"],
+    goalType: spec.goalType,
     status: "Paused",
     globalPriority: null,
     notes: null,

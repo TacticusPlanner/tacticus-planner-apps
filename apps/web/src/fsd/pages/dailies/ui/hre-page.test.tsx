@@ -203,6 +203,15 @@ beforeEach(() => {
 })
 
 describe("HRE tab", () => {
+  it("renders its title as an h2 under the shell h1", () => {
+    renderHre()
+    // The shell header owns the page h1; the tab starts its hierarchy at h2.
+    expect(screen.queryAllByRole("heading", { level: 1 })).toHaveLength(0)
+    expect(
+      screen.getByRole("heading", { level: 2, name: "hre:title" })
+    ).toBeInTheDocument()
+  })
+
   it("loads directly at /dailies/hre with the running event's header", () => {
     renderHre()
     expect(screen.getByTestId("hre-header-hero")).toHaveTextContent(

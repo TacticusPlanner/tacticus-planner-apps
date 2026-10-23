@@ -192,7 +192,7 @@ export function applyUnitRemovals(
   const ids = enemyIds.filter((rawId) => {
     const unitSetId = rawId.replace(/:\d+$/, "")
     if ((remaining[unitSetId] ?? 0) > 0) {
-      remaining[unitSetId] -= 1
+      remaining[unitSetId] = (remaining[unitSetId] ?? 0) - 1
       removedCounts[unitSetId] = (removedCounts[unitSetId] ?? 0) + 1
       return false
     }

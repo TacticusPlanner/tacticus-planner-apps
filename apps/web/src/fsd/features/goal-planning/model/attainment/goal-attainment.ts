@@ -1,7 +1,6 @@
 import {
   progressionOrder,
   rankIndex,
-  type Progression,
   type UpgradeId,
 } from "@workspace/game-domain"
 import type { PlayerDataChunkDto } from "@workspace/player-data"
@@ -112,10 +111,8 @@ export function computeGoalAttainment(
     case "Ascension": {
       const target = detail.config.progression
       if (!target || !owned) return UNKNOWN
-      const currentIndex = progressionOrder.indexOf(
-        owned.progressionIndex as Progression
-      )
-      const endIndex = progressionOrder.indexOf(target.end as Progression)
+      const currentIndex = progressionOrder.indexOf(owned.progressionIndex)
+      const endIndex = progressionOrder.indexOf(target.end)
       if (currentIndex < 0 || endIndex < 0) return UNKNOWN
       return fromBoolean(currentIndex >= endIndex)
     }

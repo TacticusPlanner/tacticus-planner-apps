@@ -168,7 +168,7 @@ describe("useGoalActions", () => {
       expect(listGoal("a")?.status).toBe("Active")
       expect(listGoal("b")?.status).toBe("Paused")
       expect(toast.error).toHaveBeenCalledTimes(1)
-      const message = String(vi.mocked(toast.error).mock.calls[0]![0])
+      const message = vi.mocked(toast.error).mock.calls[0]![0] as string
       expect(message).toBe(
         "Unit a · Rank could not change: Unit z already has an active or paused Rank goal."
       )

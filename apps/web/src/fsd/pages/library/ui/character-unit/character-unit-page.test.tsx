@@ -32,7 +32,7 @@ const env = vi.hoisted(() => ({
   power: {
     status: "loading",
     retry: () => {},
-  } as ReadState<UnitPowerContext | null>,
+  },
 }))
 
 vi.mock("@workspace/ui/hooks/use-mobile", () => ({
@@ -441,6 +441,7 @@ describe("CharacterUnitPage", () => {
     const [, rankSelect] = within(
       screen.getByTestId("unit-values")
     ).getAllByRole("combobox")
+    if (!rankSelect) throw new Error("expected a rank select")
     fireEvent.click(rankSelect)
     fireEvent.click(screen.getByRole("option", { name: /Diamond I$/ }))
 
@@ -499,6 +500,7 @@ describe("CharacterUnitPage", () => {
     const [, rankSelect] = within(
       screen.getByTestId("unit-values")
     ).getAllByRole("combobox")
+    if (!rankSelect) throw new Error("expected a rank select")
     fireEvent.click(rankSelect)
     fireEvent.click(screen.getByRole("option", { name: /Silver III$/ }))
 
@@ -796,6 +798,7 @@ describe("CharacterUnitPage", () => {
       const [first, ...rest] = mythicQuestsFixture.records.find(
         (record) => record.unitId === "ultraCalgar"
       )!.quests
+      if (!first) throw new Error("expected a quest")
       env.mythicQuestRecords = [
         {
           unitId: "ultraCalgar",

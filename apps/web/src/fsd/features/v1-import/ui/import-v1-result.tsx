@@ -15,7 +15,7 @@ import {
 import { Badge } from "@workspace/ui/components/badge"
 
 import type { ImportV1ProfileResult, V1GoalOutcome } from "@/entities/account"
-import { GoalTypeBadge, type GoalKind } from "@/entities/goal"
+import { GoalTypeBadge } from "@/entities/goal"
 import { useUnitName } from "@/shared/unit-name"
 
 import {
@@ -242,7 +242,7 @@ function OutcomeRow({
           // its own entity-type/player-record correlation.
           <GoalTypeBadge
             entityType={outcome.entityType ?? undefined}
-            type={outcome.goalType as GoalKind}
+            type={outcome.goalType}
           />
         ) : null}
       </div>

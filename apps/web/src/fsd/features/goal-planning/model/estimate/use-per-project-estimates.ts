@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { useQuery } from "@tanstack/react-query"
 import { useIsAuthenticated } from "@azure/msal-react"
-import { unitIdSchema, type UnitId } from "@workspace/game-domain"
+import { unitIdSchema } from "@workspace/game-domain"
 import {
   getInventoryShard,
   getPlayerCharacter,
@@ -130,23 +130,23 @@ export function usePerProjectEstimates({
     void Promise.all([
       Promise.all(
         entityIds.map((id) =>
-          Promise.resolve(
-            getPlayerCharacter(unitIdSchema.parse(id) as UnitId)
-          ).then((data) => [id, data] as const)
-        )
-      ),
-      Promise.all(
-        entityIds.map((id) =>
-          Promise.resolve(getPlayerMow(unitIdSchema.parse(id) as UnitId)).then(
+          Promise.resolve(getPlayerCharacter(unitIdSchema.parse(id))).then(
             (data) => [id, data] as const
           )
         )
       ),
       Promise.all(
         entityIds.map((id) =>
-          Promise.resolve(
-            getInventoryShard(unitIdSchema.parse(id) as UnitId)
-          ).then((data) => [id, data] as const)
+          Promise.resolve(getPlayerMow(unitIdSchema.parse(id))).then(
+            (data) => [id, data] as const
+          )
+        )
+      ),
+      Promise.all(
+        entityIds.map((id) =>
+          Promise.resolve(getInventoryShard(unitIdSchema.parse(id))).then(
+            (data) => [id, data] as const
+          )
         )
       ),
     ])
@@ -178,10 +178,10 @@ export function usePerProjectEstimates({
           inventoryUpgrades,
           upgradesById,
           battlesById,
-          charactersById: charactersById!,
-          mowsById: mowsById!,
-          ascensionCostsById: ascensionCostsById!,
-          unlockShardCostsById: unlockShardCostsById!,
+          charactersById: charactersById,
+          mowsById: mowsById,
+          ascensionCostsById: ascensionCostsById,
+          unlockShardCostsById: unlockShardCostsById,
           releaseTypeByGroupId,
           getCharacter,
           dailyEnergy,

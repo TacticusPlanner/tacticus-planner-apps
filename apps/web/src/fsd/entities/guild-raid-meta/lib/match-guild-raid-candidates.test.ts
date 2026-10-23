@@ -97,7 +97,7 @@ describe("matchGuildRaidCandidates", () => {
 
     const usedIds = result.assignments
       .filter((assignment) => assignment !== null)
-      .map((assignment) => assignment!.characterId)
+      .map((assignment) => assignment.characterId)
     expect(new Set(usedIds).size).toBe(usedIds.length)
     expect(filledCounts(slots, result.assignments).total).toBe(1)
   })

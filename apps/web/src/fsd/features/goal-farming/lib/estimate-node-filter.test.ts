@@ -72,9 +72,9 @@ const upgradesById = new Map<EstimateResourceId, EstimateUpgrade>([
   ],
   // A character shard resource goes through the very same path as an upgrade.
   [
-    "shard:hero" as EstimateResourceId,
+    "shard:hero",
     {
-      id: "shard:hero" as EstimateResourceId,
+      id: "shard:hero",
       farmLocations: [location("CHEAP"), location("PRICEY")],
     },
   ],

@@ -262,6 +262,15 @@ beforeEach(() => {
 })
 
 describe("HSE tab states", () => {
+  it("renders its title as an h2 under the shell h1", () => {
+    renderHse()
+    // The shell header owns the page h1; the tab starts its hierarchy at h2.
+    expect(screen.queryAllByRole("heading", { level: 1 })).toHaveLength(0)
+    expect(
+      screen.getByRole("heading", { level: 2, name: "hse.title" })
+    ).toBeInTheDocument()
+  })
+
   it("shows the live event, its farm list with points and energy per location and the day totals", () => {
     renderHse()
 
@@ -856,7 +865,9 @@ describe("HSE instance switcher", () => {
     const row = screen.getByTestId("hse-title-row")
     const switcher = screen.getByTestId("hse-event-switcher")
     expect(row).toContainElement(switcher)
-    expect(row).toContainElement(screen.getByRole("heading", { level: 1 }))
+    expect(row).toContainElement(
+      screen.getByRole("heading", { level: 2, name: "hse.title" })
+    )
     // Mobile: full width, so it wraps below the title; desktop: inline, pushed right.
     expect(switcher.className).toContain("w-full")
     expect(switcher.className).toContain("md:w-auto")

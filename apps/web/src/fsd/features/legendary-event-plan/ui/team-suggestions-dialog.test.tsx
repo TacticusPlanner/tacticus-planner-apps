@@ -62,7 +62,7 @@ const source: TeamSuggestionsSource = {
       { objectivesCleared: [0, 1], highScore: 29, encounterPoints: 29 },
       { objectivesCleared: [0], highScore: 31, encounterPoints: 31 },
     ],
-  } as Parameters<typeof buildSyncedLaneProgress>[1]),
+  }),
   estimates: {
     battlePowers: [1018, 3055, 8199, 20703, 40586, 75787, 134603],
     roster: new Map(OWNED.map((unitId) => [unitId, rosterUnit(unitId)])),
@@ -177,7 +177,7 @@ describe("TeamSuggestionsDialog", () => {
           highScore: 0,
           encounterPoints: 0,
         })),
-      } as Parameters<typeof buildSyncedLaneProgress>[1]),
+      }),
     })
     await screen.findAllByText("Incisus")
     const melee = cards().find(
@@ -204,7 +204,7 @@ describe("TeamSuggestionsDialog", () => {
     await screen.findAllByText("Incisus")
     const use = within(cards()[0]!).getByTestId("team-suggestion-use")
     expect(use).toHaveAccessibleDescription(
-      within(cards()[0]!).getByTestId("team-suggestion-reason").textContent!
+      within(cards()[0]!).getByTestId("team-suggestion-reason").textContent
     )
     fireEvent.click(use)
     expect(onUseSuggestion).toHaveBeenCalledWith(

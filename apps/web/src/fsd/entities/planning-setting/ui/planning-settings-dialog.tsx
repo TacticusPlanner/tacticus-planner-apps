@@ -76,7 +76,7 @@ export function PlanningSettingsDialog({
     setError(null)
     try {
       await save({
-        dailyEnergy: dailyEnergyTiers[tierIndex],
+        dailyEnergy: dailyEnergyTiers[tierIndex] ?? dailyEnergyTiers[0],
         xpBookRarity,
         revision: settings.revision,
       })
@@ -122,7 +122,9 @@ export function PlanningSettingsDialog({
               max={dailyEnergyTiers.length - 1}
               step={1}
               value={[tierIndex]}
-              onValueChange={([value]) => setTierIndex(value)}
+              onValueChange={([value]) => {
+                if (value !== undefined) setTierIndex(value)
+              }}
             />
             <div className="flex justify-between text-xs text-muted-foreground">
               <span>288</span>

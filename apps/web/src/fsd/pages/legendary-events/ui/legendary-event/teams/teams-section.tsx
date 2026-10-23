@@ -292,6 +292,9 @@ export function TeamsSection({
           ) : (
             <SortableList
               getId={(card) => card.id}
+              getLabel={(id) =>
+                cards.find((card) => card.id === id)?.name ?? ""
+              }
               items={cards}
               onReorder={(orderedIds) =>
                 void actions.reorderLane(laneId, orderedIds)

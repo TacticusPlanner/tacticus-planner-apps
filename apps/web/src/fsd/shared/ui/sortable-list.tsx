@@ -1,4 +1,5 @@
-import { useMemo, type CSSProperties, type ReactNode } from "react"
+import { useMemo, useRef, type CSSProperties, type ReactNode } from "react"
+import { useTranslation } from "react-i18next"
 import {
   closestCenter,
   DndContext,
@@ -6,7 +7,9 @@ import {
   PointerSensor,
   useSensor,
   useSensors,
+  type Announcements,
   type DragEndEvent,
+  type UniqueIdentifier,
 } from "@dnd-kit/core"
 import {
   SortableContext,
@@ -82,10 +85,13 @@ export function SortableList<T>({
   getId,
   onReorder,
   renderItem,
+  getLabel,
   disabled = false,
 }: {
   items: T[]
   getId: (item: T) => string
+  /** The item's visible name, for the screen-reader reorder announcements. */
+  getLabel: (id: string) => string
   onReorder: (orderedIds: string[], movedId: string) => void
   renderItem: (item: T, sortable: SortableRenderProps) => ReactNode
   /** While true, drags are ignored (design.md: the drag surface is disabled while a reorder mutation
@@ -98,6 +104,32 @@ export function SortableList<T>({
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
   )
   const ids = items.map(getId)
+  const { t } = useTranslation("common")
+
+  const describe = (id: UniqueIdentifier, at: UniqueIdentifier = id) => ({
+    name: getLabel(String(id)),
+    position: ids.indexOf(String(at)) + 1,
+    total: ids.length,
+  })
+  // dnd-kit reports the picked-up item as "over" itself right after pick-up; skipping a repeat of
+  // the last position keeps that from overwriting the pick-up announcement.
+  const lastOverId = useRef<UniqueIdentifier>(undefined)
+  const announcements: Announcements = {
+    onDragStart: ({ active }) => {
+      lastOverId.current = active.id
+      return t("reorder.pickedUp", describe(active.id))
+    },
+    onDragOver: ({ active, over }) => {
+      if (!over || over.id === lastOverId.current) return undefined
+      lastOverId.current = over.id
+      return t("reorder.movedOver", describe(active.id, over.id))
+    },
+    onDragEnd: ({ active, over }) =>
+      over
+        ? t("reorder.dropped", describe(active.id, over.id))
+        : t("reorder.cancelled", describe(active.id)),
+    onDragCancel: ({ active }) => t("reorder.cancelled", describe(active.id)),
+  }
 
   const handleDragEnd = ({ active, over }: DragEndEvent) => {
     if (disabled || !over || active.id === over.id) return
@@ -113,6 +145,10 @@ export function SortableList<T>({
 
   return (
     <DndContext
+      accessibility={{
+        announcements,
+        screenReaderInstructions: { draggable: t("reorder.instructions") },
+      }}
       collisionDetection={closestCenter}
       onDragEnd={handleDragEnd}
       sensors={sensors}

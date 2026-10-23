@@ -14,19 +14,15 @@ function resolveCssVariableValue(
   seen = new Set<string>()
 ) {
   const trimmedValue = value.trim()
-  const match = trimmedValue.match(/^var\((--[^,)]+)\)$/)
+  const name = trimmedValue.match(/^var\((--[^,)]+)\)$/)?.[1]
 
-  if (!match || seen.has(match[1])) {
+  if (name === undefined || seen.has(name)) {
     return trimmedValue
   }
 
-  seen.add(match[1])
+  seen.add(name)
 
-  return resolveCssVariableValue(
-    styles,
-    styles.getPropertyValue(match[1]),
-    seen
-  )
+  return resolveCssVariableValue(styles, styles.getPropertyValue(name), seen)
 }
 
 function readColorValues() {

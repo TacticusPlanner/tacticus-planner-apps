@@ -96,7 +96,7 @@ beforeEach(() => {
       x: 0,
       y: top,
       toJSON: () => ({}),
-    } as DOMRect
+    }
   }
 })
 

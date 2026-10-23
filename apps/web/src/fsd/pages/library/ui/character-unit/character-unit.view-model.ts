@@ -169,12 +169,13 @@ export function relicFor(
   const relics = equipment.filter(
     (item) => item.isRelic && item.allowedUnits.includes(character.id)
   )
-  if (relics.length === 0) return undefined
+  const [firstRelic] = relics
+  if (!firstRelic) return undefined
   for (const equipped of player?.equippedItems ?? []) {
     const relic = relics.find((item) => item.id === equipped.equipmentId)
     if (relic) return { relic, equippedLevel: equipped.level }
   }
-  return { relic: relics.find((item) => item.isUniqueRelic) ?? relics[0] }
+  return { relic: relics.find((item) => item.isUniqueRelic) ?? firstRelic }
 }
 
 export type ItemStatLine = {

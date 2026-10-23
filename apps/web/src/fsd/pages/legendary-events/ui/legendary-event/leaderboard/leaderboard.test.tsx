@@ -158,13 +158,13 @@ const figure = (entry: HTMLElement) =>
   Number(
     within(entry)
       .getByTestId("leaderboard-points")
-      .textContent!.replaceAll(/\D/g, "")
+      .textContent.replaceAll(/\D/g, "")
   )
 const objectivesCount = (entry: HTMLElement) =>
   Number(
     within(entry)
       .getByTestId("leaderboard-objectives")
-      .textContent!.replaceAll(/\D/g, "")
+      .textContent.replaceAll(/\D/g, "")
   )
 const chip = (key: string) =>
   screen
@@ -353,7 +353,9 @@ describe("LeaderboardSection", () => {
     const toggle = screen.getByTestId("leaderboard-deduct-scored")
     expect(toggle).toHaveAttribute("aria-checked", "true")
 
-    act(() => fireEvent.click(toggle))
+    act(() => {
+      fireEvent.click(toggle)
+    })
     expect(screen.getByTestId("leaderboard-figure-head")).toHaveTextContent(
       "Per battle"
     )
@@ -388,12 +390,16 @@ describe("LeaderboardSection", () => {
   it("narrows the rows to units satisfying every selected objective", () => {
     renderLeaderboard()
     const before = rows().length
-    act(() => fireEvent.click(chip(flyingKey)))
+    act(() => {
+      fireEvent.click(chip(flyingKey))
+    })
     expect(rows().length).toBeLessThan(before)
     expect(units()).toContain("bloodDante")
     expect(chip(flyingKey)).toHaveAttribute("data-state", "on")
 
-    act(() => fireEvent.click(chip(noResilientKey)))
+    act(() => {
+      fireEvent.click(chip(noResilientKey))
+    })
     expect(units()).toContain("bloodDante")
     for (const entry of rows()) {
       const met = within(entry)
@@ -407,14 +413,20 @@ describe("LeaderboardSection", () => {
   it("shows the empty body with a clear action when no unit matches", () => {
     renderLeaderboard()
     // No fixture unit both flies and deals Eviscerate damage.
-    act(() => fireEvent.click(chip(flyingKey)))
-    act(() => fireEvent.click(chip(eviscerateKey)))
+    act(() => {
+      fireEvent.click(chip(flyingKey))
+    })
+    act(() => {
+      fireEvent.click(chip(eviscerateKey))
+    })
     expect(rows()).toHaveLength(0)
     expect(screen.getByTestId("leaderboard-none-match")).toHaveTextContent(
       "No unit satisfies these objectives."
     )
 
-    act(() => fireEvent.click(screen.getByTestId("leaderboard-clear-filter")))
+    act(() => {
+      fireEvent.click(screen.getByTestId("leaderboard-clear-filter"))
+    })
     expect(rows().length).toBeGreaterThan(0)
     expect(
       screen
@@ -425,7 +437,9 @@ describe("LeaderboardSection", () => {
 
   it("marks a selected objective chip as pressed with the thick primary border and tint", () => {
     renderLeaderboard()
-    act(() => fireEvent.click(chip(flyingKey)))
+    act(() => {
+      fireEvent.click(chip(flyingKey))
+    })
     expect(chip(flyingKey)).toHaveAttribute("aria-pressed", "true")
     expect(chip(flyingKey)).toHaveClass(
       "data-[state=on]:border-2",
@@ -532,7 +546,9 @@ describe("LeaderboardSection", () => {
       within(dante).getByTestId("leaderboard-objectives")
     ).toHaveTextContent("Objectives: 2")
 
-    act(() => fireEvent.click(screen.getByTestId("leaderboard-deduct-scored")))
+    act(() => {
+      fireEvent.click(screen.getByTestId("leaderboard-deduct-scored"))
+    })
     expect(within(dante).getByTestId("leaderboard-points")).toHaveTextContent(
       "152 per battle"
     )
@@ -583,7 +599,7 @@ describe("LeaderboardSection", () => {
         },
       })
       expect(
-        within(row("ultraCalgar")).getByRole("img", {
+        within(row("ultraCalgar")).getByRole("button", {
           name: "Goals: Rank to Gold II; Ascension to Legendary Red Three Stars",
         })
       ).toBeInTheDocument()

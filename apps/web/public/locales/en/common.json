@@ -4,7 +4,8 @@
   },
   "common": {
     "close": "Close",
-    "back": "Back"
+    "back": "Back",
+    "loading": "Loading…"
   },
   "auth": {
     "account": "Signed-in account",
@@ -245,6 +246,7 @@
     "search": "Search pages and actions",
     "sync": "Sync",
     "syncWithTacticus": "Sync with Tacticus",
+    "skipToContent": "Skip to content",
     "primaryNavigation": "Main navigation",
     "sectionNavigation": "{{section}} pages",
     "collapseSection": "Hide {{section}} menu",
@@ -1308,6 +1310,13 @@
   },
   "language": {
     "label": "Language"
+  },
+  "reorder": {
+    "pickedUp": "Picked up {{name}}. It is at position {{position}} of {{total}}.",
+    "movedOver": "{{name}} moved to position {{position}} of {{total}}.",
+    "dropped": "{{name}} dropped at position {{position}} of {{total}}.",
+    "cancelled": "Reordering cancelled. {{name}} returned to position {{position}} of {{total}}.",
+    "instructions": "To pick up an item, press Space or Enter. Use the arrow keys to move it, then press Space or Enter to drop it, or Escape to cancel."
   },
   "scrollToTop": "Scroll to top",
   "settings": {

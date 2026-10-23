@@ -5,11 +5,11 @@ export function createProgressStore<P>() {
   const listeners = new Set<() => void>()
   return {
     get: () => value,
-    set(next: P | null) {
+    set: (next: P | null) => {
       value = next
       for (const listener of listeners) listener()
     },
-    subscribe(listener: () => void) {
+    subscribe: (listener: () => void) => {
       listeners.add(listener)
       return () => {
         listeners.delete(listener)

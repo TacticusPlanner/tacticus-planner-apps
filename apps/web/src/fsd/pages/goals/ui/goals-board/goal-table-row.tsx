@@ -110,7 +110,9 @@ export const GoalRowCells = memo(function GoalRowCells({
 
   return (
     <>
-      <TableCell onClick={stopRowNavigation} onKeyDown={stopRowNavigation}>
+      {/* No onKeyDown stop here: dnd-kit's keyboard sensor reads the drag handle's arrow, drop and
+          Escape keys on the document, so they must bubble. */}
+      <TableCell onClick={stopRowNavigation}>
         <div className="flex items-center gap-2">
           <Checkbox
             aria-label={t("goals.bulk.selectRow", {
@@ -165,6 +167,7 @@ export const GoalRowCells = memo(function GoalRowCells({
           <div
             className="ml-auto"
             data-testid={`goal-row-menu-${row.goalId}`}
+            role="presentation"
             onClick={stopRowNavigation}
             onKeyDown={stopRowNavigation}
           >

@@ -64,7 +64,7 @@ export function campaignDescriptor(
   const storylineMatch = STORYLINE_GROUP_ID.exec(groupId)
   if (storylineMatch) {
     const [, kind, index] = storylineMatch
-    const nameKey = storylineNames[index]
+    const nameKey = index === undefined ? undefined : storylineNames[index]
     if (!nameKey) return undefined
     const isMirror = kind === "mirror" || kind === "eliteMirror"
     const isElite = kind === "elite" || kind === "eliteMirror"
@@ -79,7 +79,9 @@ export function campaignDescriptor(
 
   const eventMatch = EVENT_GROUP_ID.exec(groupId)
   if (eventMatch) {
-    const nameKey = eventNames[eventMatch[1]]
+    const eventIndex = eventMatch[1]
+    const nameKey =
+      eventIndex === undefined ? undefined : eventNames[eventIndex]
     if (!nameKey) return undefined
     if (type !== "Standard" && type !== "Extremis") return undefined
     return {

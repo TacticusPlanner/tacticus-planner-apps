@@ -19,12 +19,18 @@ describe("useDebouncedCommit", () => {
   it("shows each edit at once and commits only the last one after the delay", () => {
     const { result, commit } = setup(3)
     act(() => result.current[1](4))
-    act(() => vi.advanceTimersByTime(200))
+    act(() => {
+      vi.advanceTimersByTime(200)
+    })
     act(() => result.current[1](5))
     expect(result.current[0]).toBe(5)
-    act(() => vi.advanceTimersByTime(399))
+    act(() => {
+      vi.advanceTimersByTime(399)
+    })
     expect(commit).not.toHaveBeenCalled()
-    act(() => vi.advanceTimersByTime(1))
+    act(() => {
+      vi.advanceTimersByTime(1)
+    })
     expect(commit).toHaveBeenCalledTimes(1)
     expect(commit).toHaveBeenCalledWith(5)
   })
@@ -33,7 +39,9 @@ describe("useDebouncedCommit", () => {
     const { result, commit } = setup(3)
     act(() => result.current[1](4))
     act(() => result.current[1](3))
-    act(() => vi.advanceTimersByTime(400))
+    act(() => {
+      vi.advanceTimersByTime(400)
+    })
     expect(commit).not.toHaveBeenCalled()
   })
 

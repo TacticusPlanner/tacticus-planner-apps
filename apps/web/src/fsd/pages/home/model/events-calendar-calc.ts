@@ -20,7 +20,8 @@ export function toIsoDate(date: Date): string {
 
 /** Inverse of `toIsoDate` — parses a "yyyy-MM-dd" date key back into a local-midnight Date. */
 export function parseLocalDate(isoDate: string): Date {
-  const [year, month, day] = isoDate.split("-").map(Number)
+  // Missing parts stay NaN, so a malformed key still yields an Invalid Date.
+  const [year = NaN, month = NaN, day = NaN] = isoDate.split("-").map(Number)
   return new Date(year, month - 1, day)
 }
 

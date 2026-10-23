@@ -123,6 +123,10 @@ export function GoalsMobileCards({
         <SortableList
           disabled={reorderPending}
           getId={(row) => row.goalId}
+          getLabel={(id) => {
+            const row = reorderableRows.find((item) => item.goalId === id)
+            return row ? getEntityName(row.entityType, row.entityId) : ""
+          }}
           items={reorderableRows}
           onReorder={(orderedIds, movedId) => onReorder?.(orderedIds, movedId)}
           renderItem={(row, sortable) => (
@@ -192,6 +196,7 @@ export function GoalsMobileCards({
                 <div className="flex min-w-0 items-center gap-2">
                   {selectActive ? (
                     <div
+                      role="presentation"
                       onClick={stopRowNavigation}
                       onKeyDown={stopRowNavigation}
                     >
@@ -237,6 +242,7 @@ export function GoalsMobileCards({
                   />
                   <div
                     data-testid="goal-row-actions"
+                    role="presentation"
                     onClick={stopRowNavigation}
                     onKeyDown={stopRowNavigation}
                   >
@@ -262,6 +268,7 @@ export function GoalsMobileCards({
               ) : (
                 <>
                   <div
+                    role="presentation"
                     onClick={stopRowNavigation}
                     onKeyDown={stopRowNavigation}
                   >

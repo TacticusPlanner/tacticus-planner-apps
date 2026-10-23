@@ -15,7 +15,6 @@ import {
   calculateGoalResourceNeed,
   createCraftedInventoryPool,
   createUnitCoverage,
-  type Battle,
 } from "@/features/goal-farming/@x/goal-planning"
 import type {
   Character,
@@ -81,7 +80,7 @@ function catalogData(standing: boolean) {
           battleIndex: row[5],
           energyCost: row[6],
           dailyAttempts: row[7],
-        } as unknown as Battle & { id: string },
+        },
       ])
   )
   const upgradesById = new Map(

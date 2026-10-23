@@ -51,7 +51,7 @@ export function useSyncedCatalogDataset<K extends GameCatalogDatasetKey>(
     () => ({
       status,
       records: recordsData ?? [],
-      byId: byIdData ?? new Map(),
+      byId: byIdData ?? new Map<string, StorageModel<K>>(),
       retry,
     }),
     // `retry` is rebuilt per render by combineReadStates; it only matters on failure.

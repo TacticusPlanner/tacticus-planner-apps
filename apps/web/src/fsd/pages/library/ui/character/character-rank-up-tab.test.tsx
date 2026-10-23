@@ -4,6 +4,12 @@ import { Link, useParams } from "react-router"
 import { act, fireEvent, render, screen, waitFor, within } from "@/test/render"
 import { seedGameCatalog, seedPlayerData } from "@/test/seed"
 
+function at<T>(xs: readonly T[] | undefined, index: number): T {
+  const value = xs?.[index]
+  if (value === undefined) throw new Error(`expected an item at index ${index}`)
+  return value
+}
+
 // The page must work for unauthenticated users with no user data — it reads only the public catalog
 // by default. Synced player data only ever *adds* a rank/progression prefill on character select
 // (see "prefills from synced player data" below); every other test exercises the signed-out /
@@ -366,6 +372,7 @@ describe("CharacterRankUpTab", () => {
 
     // Selects, in DOM order: progression "From", progression "To".
     const [, progressionToTrigger] = screen.getAllByRole("combobox")
+    if (!progressionToTrigger) throw new Error("expected a progression select")
     fireEvent.click(progressionToTrigger)
     fireEvent.click(screen.getByRole("option", { name: /None/ }))
 
@@ -535,8 +542,8 @@ describe("CharacterRankUpTab", () => {
     // percentage should be shown.
     const rows = within(item as HTMLElement).getAllByText(/Base$/)
     expect(rows).toHaveLength(2)
-    expect(rows[0].textContent).toContain("Legendary Base")
-    expect(rows[1].textContent).toContain("Health Base")
+    expect(rows[0]?.textContent).toContain("Legendary Base")
+    expect(rows[1]?.textContent).toContain("Health Base")
     expect(within(item as HTMLElement).queryByText(/%/)).not.toBeInTheDocument()
   })
 
@@ -547,7 +554,7 @@ describe("CharacterRankUpTab", () => {
     scrollIntoView.mockClear()
 
     // The insight chip is rendered before the table, so it's the first "Armour Base" match.
-    fireEvent.click(screen.getAllByText("Armour Base")[0])
+    fireEvent.click(at(screen.getAllByText("Armour Base"), 0))
 
     const targetRow = document.getElementById("base-upgrade-a1")
     expect(targetRow).not.toBeNull()
@@ -597,7 +604,7 @@ describe("CharacterRankUpTab", () => {
         .closest("tr")
       const cells = within(row as HTMLElement).getAllByRole("cell")
       expect(cells).toHaveLength(6)
-      expect(cells[2].textContent).toBe("1") // count
+      expect(cells[2]?.textContent).toBe("1") // count
       expect(screen.queryByText("Owned")).not.toBeInTheDocument()
       expect(screen.queryByText("Missing")).not.toBeInTheDocument()
     })
@@ -631,15 +638,15 @@ describe("CharacterRankUpTab", () => {
 
       // Health Base (h1): 1 needed, 1 owned in inventory → fully covered. The inventory's live
       // query may land after the toggle.
-      await waitFor(() => expect(healthCells()[3].textContent).toBe("1")) // owned
-      expect(healthCells()[4].textContent).toBe("0") // missing
+      await waitFor(() => expect(healthCells()[3]?.textContent).toBe("1")) // owned
+      expect(healthCells()[4]?.textContent).toBe("0") // missing
 
       // Damage Base (d1) has no owned inventory — unaffected.
       const damageCells = within(
         table.getByText("Damage Base").closest("tr") as HTMLElement
       ).getAllByRole("cell")
-      expect(damageCells[3].textContent).toBe("0")
-      expect(damageCells[4].textContent).toBe("1")
+      expect(damageCells[3]?.textContent).toBe("0")
+      expect(damageCells[4]?.textContent).toBe("1")
     })
 
     it("feeds owned-deducted counts into campaign insight contributions once enabled", async () => {

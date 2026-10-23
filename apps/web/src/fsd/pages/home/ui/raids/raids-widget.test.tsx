@@ -80,17 +80,17 @@ describe("RaidsWidget", () => {
         entries: [
           entry({
             goalId: "goal-a",
-            battleId: "node-1" as BattleId,
+            battleId: "node-1",
             raidsPerformed: 2,
           }),
           entry({
             goalId: "goal-b",
-            battleId: "node-1" as BattleId,
+            battleId: "node-1",
             raidsPerformed: 3,
           }),
           entry({
             goalId: "goal-a",
-            battleId: "node-2" as BattleId,
+            battleId: "node-2",
             raidsPerformed: 1,
           }),
         ],
@@ -113,9 +113,9 @@ describe("RaidsWidget", () => {
   it("lists Today's entries only below the energy limit, so it follows the filtered Today and not Bonus or the Plan", () => {
     useDailyRaidsMock.mockReturnValue({
       status: "ready",
-      today: { entries: [entry({ battleId: "node-1" as BattleId })] },
-      bonus: { entries: [entry({ battleId: "node-bonus" as BattleId })] },
-      planDays: [{ entries: [entry({ battleId: "node-plan" as BattleId })] }],
+      today: { entries: [entry({ battleId: "node-1" })] },
+      bonus: { entries: [entry({ battleId: "node-bonus" })] },
+      planDays: [{ entries: [entry({ battleId: "node-plan" })] }],
       attemptsLeftByBattle: new Map(),
       locationsByBattleId: new Map(),
       resourceLabels: new Map(),
@@ -136,7 +136,7 @@ describe("RaidsWidget", () => {
   it("excludes a location whose real attempts today are exhausted", () => {
     useDailyRaidsMock.mockReturnValue({
       status: "ready",
-      today: { entries: [entry({ battleId: "node-1" as BattleId })] },
+      today: { entries: [entry({ battleId: "node-1" })] },
       bonus: { entries: [] },
       attemptsLeftByBattle: new Map([["node-1" as BattleId, 0]]),
       locationsByBattleId: new Map(),
@@ -152,11 +152,11 @@ describe("RaidsWidget", () => {
   it("lists Bonus Raids with a limit caption once today's energy spend reaches the daily limit", () => {
     useDailyRaidsMock.mockReturnValue({
       status: "ready",
-      today: { entries: [entry({ battleId: "node-1" as BattleId })] },
+      today: { entries: [entry({ battleId: "node-1" })] },
       bonus: {
         entries: [
-          entry({ battleId: "node-bonus" as BattleId }),
-          entry({ battleId: "node-spent" as BattleId }),
+          entry({ battleId: "node-bonus" }),
+          entry({ battleId: "node-spent" }),
         ],
       },
       dailyEnergy: 288,
@@ -186,7 +186,7 @@ describe("RaidsWidget", () => {
   it("shows the limit caption and the empty message when no bonus raid is left", () => {
     useDailyRaidsMock.mockReturnValue({
       status: "ready",
-      today: { entries: [entry({ battleId: "node-1" as BattleId })] },
+      today: { entries: [entry({ battleId: "node-1" })] },
       bonus: { entries: [] },
       dailyEnergy: 288,
       realEnergyUsedToday: 288,
@@ -210,8 +210,8 @@ describe("RaidsWidget", () => {
   it("keeps the plan with no limit caption below the daily limit", () => {
     useDailyRaidsMock.mockReturnValue({
       status: "ready",
-      today: { entries: [entry({ battleId: "node-1" as BattleId })] },
-      bonus: { entries: [entry({ battleId: "node-bonus" as BattleId })] },
+      today: { entries: [entry({ battleId: "node-1" })] },
+      bonus: { entries: [entry({ battleId: "node-bonus" })] },
       dailyEnergy: 288,
       realEnergyUsedToday: 120,
       attemptsLeftByBattle: new Map(),
@@ -234,7 +234,7 @@ describe("RaidsWidget", () => {
   it("reads a location exactly as Today does — campaign name, then tier and node", () => {
     useDailyRaidsMock.mockReturnValue({
       status: "ready",
-      today: { entries: [entry({ battleId: "node-1" as BattleId })] },
+      today: { entries: [entry({ battleId: "node-1" })] },
       bonus: { entries: [] },
       attemptsLeftByBattle: new Map(),
       locationsByBattleId: new Map([
@@ -265,7 +265,7 @@ describe("RaidsWidget", () => {
   it("omits the second line entirely for a location the catalog has no descriptor for", () => {
     useDailyRaidsMock.mockReturnValue({
       status: "ready",
-      today: { entries: [entry({ battleId: "node-1" as BattleId })] },
+      today: { entries: [entry({ battleId: "node-1" })] },
       bonus: { entries: [] },
       attemptsLeftByBattle: new Map(),
       locationsByBattleId: new Map([

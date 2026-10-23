@@ -11,6 +11,7 @@ import {
 } from "@workspace/ui/components/table"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
+import { useGoalCatalog } from "@/features/goal-planning"
 import { SortableList } from "@/shared/ui"
 import { GoalRowCells } from "./goal-table-row"
 import {
@@ -61,6 +62,7 @@ function GoalsTable({
   onSelectAllVisible,
 }: GoalsListProps) {
   const { t } = useTranslation()
+  const { getEntityName } = useGoalCatalog()
   const [openPopoverGoalId, setOpenPopoverGoalId] = useState<string | null>(
     null
   )
@@ -102,6 +104,10 @@ function GoalsTable({
         <SortableList
           disabled={reorderPending}
           getId={(row) => row.goalId}
+          getLabel={(id) => {
+            const row = rows.find((item) => item.goalId === id)
+            return row ? getEntityName(row.entityType, row.entityId) : ""
+          }}
           items={rows}
           onReorder={(orderedIds, movedId) => onReorder?.(orderedIds, movedId)}
           renderItem={(row, sortable) => {

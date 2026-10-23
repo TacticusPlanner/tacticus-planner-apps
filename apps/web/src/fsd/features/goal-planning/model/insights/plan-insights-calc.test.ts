@@ -11,6 +11,7 @@ import type {
 import {
   battleIdSchema,
   campaignIdSchema,
+  Rank,
   rankIndex,
   rankOrder,
   unitIdSchema,
@@ -67,8 +68,8 @@ describe("computePlanInsights", () => {
     id: unitId("hero1"),
     name: "Hero One",
     rankUpUpgrades: [
-      { rank: rankOrder[0], upgradeIds: [upgradeId("mat1")] },
-      { rank: rankOrder[1], upgradeIds: [upgradeId("mat2")] },
+      { rank: Rank.Stone1, upgradeIds: [upgradeId("mat1")] },
+      { rank: Rank.Stone2, upgradeIds: [upgradeId("mat2")] },
     ],
   }
   const characterView = {
@@ -140,10 +141,10 @@ describe("computePlanInsights", () => {
         goalType: "Rank",
         config: {
           rank: {
-            start: rankIndex(rankOrder[0]),
+            start: rankIndex(Rank.Stone1),
             startPointFive: false,
             startAppliedUpgrades: 0,
-            end: rankIndex(rankOrder[1]),
+            end: rankIndex(Rank.Stone2),
             endPointFive: false,
             endAppliedUpgrades: 0,
           },
@@ -177,7 +178,7 @@ describe("computePlanInsights", () => {
         config: {
           ...goalDetail({}).config,
           rank: {
-            start: rankIndex(rankOrder[0]),
+            start: rankIndex(Rank.Stone1),
             startPointFive: false,
             startAppliedUpgrades: 0,
             end: rankIndex(rankOrder[end]!),
@@ -342,7 +343,7 @@ describe("computePlanInsights", () => {
     const baseId = upgradeId("base")
     const craftedCharacter: Character = {
       ...character,
-      rankUpUpgrades: [{ rank: rankOrder[0], upgradeIds: [craftedId] }],
+      rankUpUpgrades: [{ rank: Rank.Stone1, upgradeIds: [craftedId] }],
     }
     const baseUpgrade: UpgradeWithFarmLocations = {
       ...upgrade,
@@ -359,10 +360,10 @@ describe("computePlanInsights", () => {
     }
     const rankConfig = {
       rank: {
-        start: rankIndex(rankOrder[0]),
+        start: rankIndex(Rank.Stone1),
         startPointFive: false,
         startAppliedUpgrades: 0,
-        end: rankIndex(rankOrder[1]),
+        end: rankIndex(Rank.Stone2),
         endPointFive: false,
         endAppliedUpgrades: 0,
       },
@@ -414,7 +415,7 @@ describe("computePlanInsights", () => {
         goalType: "Rank",
         config: {
           rank: {
-            start: rankIndex(rankOrder[0]),
+            start: rankIndex(Rank.Stone1),
             startPointFive: false,
             startAppliedUpgrades: 0,
             end: rankIndex(rankOrder[end]!),
@@ -484,10 +485,10 @@ describe("computePlanInsights", () => {
       goalDetail({
         config: {
           rank: {
-            start: rankIndex(rankOrder[1]),
+            start: rankIndex(Rank.Stone2),
             startPointFive: false,
             startAppliedUpgrades: 0,
-            end: rankIndex(rankOrder[1]),
+            end: rankIndex(Rank.Stone2),
             endPointFive: false,
             endAppliedUpgrades: 1,
           },
@@ -508,7 +509,7 @@ describe("computePlanInsights", () => {
         [
           "hero1",
           {
-            rank: rankOrder[1],
+            rank: Rank.Stone2,
             appliedUpgradeSlots: [],
             progressionIndex: "Mythic:MythicWings",
             xpLevel: 60,
@@ -529,11 +530,11 @@ describe("computePlanInsights", () => {
       ...character,
       rankUpUpgrades: [
         {
-          rank: rankOrder[0],
+          rank: Rank.Stone1,
           upgradeIds: Array(6).fill(upgrade.id),
         },
         {
-          rank: rankOrder[1],
+          rank: Rank.Stone2,
           upgradeIds: Array(6).fill(upgrade.id),
         },
       ],
@@ -542,10 +543,10 @@ describe("computePlanInsights", () => {
       goalDetail({
         config: {
           rank: {
-            start: rankIndex(rankOrder[0]),
+            start: rankIndex(Rank.Stone1),
             startPointFive: false,
             startAppliedUpgrades: 0,
-            end: rankIndex(rankOrder[2]),
+            end: rankIndex(Rank.Stone3),
             endPointFive: false,
             endAppliedUpgrades: 0,
           },
@@ -566,7 +567,7 @@ describe("computePlanInsights", () => {
         [
           "hero1",
           {
-            rank: rankOrder[1],
+            rank: Rank.Stone2,
             appliedUpgradeSlots: [0, 1, 2],
             progressionIndex: "Mythic:MythicWings",
             xpLevel: 60,
@@ -608,10 +609,10 @@ describe("computePlanInsights", () => {
         goalType: "Rank",
         config: {
           rank: {
-            start: rankIndex(rankOrder[0]),
+            start: rankIndex(Rank.Stone1),
             startPointFive: false,
             startAppliedUpgrades: 0,
-            end: rankIndex(rankOrder[1]),
+            end: rankIndex(Rank.Stone2),
             endPointFive: false,
             endAppliedUpgrades: 0,
           },
@@ -1126,10 +1127,10 @@ describe("computePlanInsights", () => {
   })
 
   const rankRange = {
-    start: rankIndex(rankOrder[0]),
+    start: rankIndex(Rank.Stone1),
     startPointFive: false,
     startAppliedUpgrades: 0,
-    end: rankIndex(rankOrder[1]),
+    end: rankIndex(Rank.Stone2),
     endPointFive: false,
     endAppliedUpgrades: 0,
   }
@@ -1152,7 +1153,7 @@ describe("computePlanInsights", () => {
     id: unitId("hero2"),
     name: "Hero Two",
     rankUpUpgrades: [
-      { rank: rankOrder[0], upgradeIds: [upgradeId("stranded")] },
+      { rank: Rank.Stone1, upgradeIds: [upgradeId("stranded")] },
     ],
   }
   const mixedParams = {
@@ -1338,10 +1339,10 @@ describe("computePlanInsights", () => {
   describe("scoped to a project's goals", () => {
     const rankConfig = {
       rank: {
-        start: rankIndex(rankOrder[0]),
+        start: rankIndex(Rank.Stone1),
         startPointFive: false,
         startAppliedUpgrades: 0,
-        end: rankIndex(rankOrder[1]),
+        end: rankIndex(Rank.Stone2),
         endPointFive: false,
         endAppliedUpgrades: 0,
       },

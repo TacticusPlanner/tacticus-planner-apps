@@ -2,6 +2,12 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { seedGameCatalog, seedPlayerData } from "@/test/seed"
 
+function at<T>(xs: readonly T[] | undefined, index: number): T {
+  const value = xs?.[index]
+  if (value === undefined) throw new Error(`expected an item at index ${index}`)
+  return value
+}
+
 const forgetAccountHint = vi.fn()
 vi.mock("./authentication", () => ({
   forgetAccountHint: () => forgetAccountHint(),
@@ -49,7 +55,7 @@ describe("signOut", () => {
 
     expect(forgetAccountHint).toHaveBeenCalledOnce()
     expect(forgetAccountHint.mock.invocationCallOrder[0]).toBeLessThan(
-      logoutRedirect.mock.invocationCallOrder[0]
+      at(logoutRedirect.mock.invocationCallOrder, 0)
     )
   })
 })

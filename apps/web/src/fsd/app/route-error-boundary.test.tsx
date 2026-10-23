@@ -101,6 +101,7 @@ describe("RouteErrorBoundary", () => {
 
     const page = await screen.findByTestId("app-error-page")
     expect(page).toBeVisible()
+    expect(screen.getByRole("alert")).toBe(page)
     expect(screen.getByTestId("shell-boundary")).toContainElement(page)
     expect(screen.getByText("appError.title")).toBeVisible()
     expect(screen.getByTestId("app-error-reload")).toHaveFocus()

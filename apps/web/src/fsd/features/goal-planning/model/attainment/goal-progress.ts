@@ -170,7 +170,7 @@ export function computeGoalProgress(params: GoalProgressParams): GoalProgress {
       // ceiling can't outpace real, level-gated applied-slot progress. `null` (no marker) once that
       // ceiling is at or past the target, i.e. nothing currently restricts this goal.
       const rarityMaxRank = maxRankForProgression(
-        params.playerCharacter.progressionIndex as Progression
+        params.playerCharacter.progressionIndex
       )
       const levelUnrestricted = reachableRankProgress(
         params.playerCharacter.xpLevel,
@@ -242,11 +242,9 @@ export function computeGoalProgress(params: GoalProgressParams): GoalProgress {
     case "Ascension": {
       const target = detail.config.progression
       if (!target || !ownedUnit) return UNKNOWN_PROGRESS
-      const startIndex = progressionOrder.indexOf(target.start as Progression)
-      const endIndex = progressionOrder.indexOf(target.end as Progression)
-      const currentIndex = progressionOrder.indexOf(
-        ownedUnit.progressionIndex as Progression
-      )
+      const startIndex = progressionOrder.indexOf(target.start)
+      const endIndex = progressionOrder.indexOf(target.end)
+      const currentIndex = progressionOrder.indexOf(ownedUnit.progressionIndex)
       if (startIndex < 0 || endIndex < 0 || currentIndex < 0)
         return UNKNOWN_PROGRESS
       const clampedCurrent = Math.min(
@@ -259,10 +257,8 @@ export function computeGoalProgress(params: GoalProgressParams): GoalProgress {
         // `startIndex` for the ratio — a floor that must never apply to the displayed value (see
         // the "below start" scenario in the goal-progress-display spec).
         current:
-          currentIndex > endIndex
-            ? (target.end as Progression)
-            : (ownedUnit.progressionIndex as Progression),
-        target: target.end as Progression,
+          currentIndex > endIndex ? target.end : ownedUnit.progressionIndex,
+        target: target.end,
         ratio: clampRatio(clampedCurrent - startIndex, endIndex - startIndex),
       }
     }

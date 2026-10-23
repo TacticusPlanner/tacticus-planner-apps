@@ -2,12 +2,7 @@ import { useMemo } from "react"
 import { useTranslation } from "react-i18next"
 import { useQuery } from "@tanstack/react-query"
 import { useIsAuthenticated } from "@azure/msal-react"
-import {
-  rankAt,
-  unitIdSchema,
-  type BattleId,
-  type UnitId,
-} from "@workspace/game-domain"
+import { rankAt, unitIdSchema, type UnitId } from "@workspace/game-domain"
 import type { UpgradeStorageModel } from "@workspace/game-catalog"
 
 import type { GoalDetail } from "@/entities/goal"
@@ -162,7 +157,7 @@ export function useDailyRaids(
     () =>
       new Map(
         (battles ?? []).map((battle) => [
-          battle.id as BattleId,
+          battle.id,
           mapCampaignBattleStorageToDomain(battle),
         ])
       ),
@@ -173,7 +168,7 @@ export function useDailyRaids(
     () =>
       new Map(
         availableBattles.map((battle) => [
-          battle.id as BattleId,
+          battle.id,
           mapCampaignBattleStorageToDomain(battle),
         ])
       ),

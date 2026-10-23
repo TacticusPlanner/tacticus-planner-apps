@@ -19,6 +19,7 @@ describe("useCreateGoalSheetTutorial", () => {
 
       expect(result.current[viewport]).toHaveLength(3)
       const [step, mythicStep, projectStep] = result.current[viewport] ?? []
+      if (!step || !mythicStep || !projectStep) throw new Error("missing steps")
       expect(step.target).toBe(
         '[data-testid="create-goal-acquisition-sources"]'
       )

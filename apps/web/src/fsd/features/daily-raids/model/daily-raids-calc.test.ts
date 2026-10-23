@@ -9,6 +9,7 @@ import type {
 import {
   battleIdSchema,
   campaignIdSchema,
+  Rank,
   rankIndex,
   rankOrder,
   unitIdSchema,
@@ -799,7 +800,7 @@ describe("daily raid derivation", () => {
           mythicShards: 0,
           orbs: 0,
           orbRarity: null,
-        } as AscensionCostStorageModel,
+        },
       ],
     ])
     const shops: GameCatalogShop[] = [
@@ -822,7 +823,7 @@ describe("daily raid derivation", () => {
             ],
           },
         ],
-      } as GameCatalogShop,
+      },
     ]
     const baseInput = {
       playerCharacterById: new Map(),
@@ -947,7 +948,7 @@ describe("daily raid derivation", () => {
     const character: FarmingCharacter = {
       id: heroId,
       name: "Synthetic hero",
-      rankUpUpgrades: [{ rank: rankOrder[0], upgradeIds: [craftedId] }],
+      rankUpUpgrades: [{ rank: Rank.Stone1, upgradeIds: [craftedId] }],
     }
     const baseUpgrade = {
       id: baseId,
@@ -985,10 +986,10 @@ describe("daily raid derivation", () => {
         goalType: "Rank",
         config: {
           rank: {
-            start: rankIndex(rankOrder[0]),
+            start: rankIndex(Rank.Stone1),
             startPointFive: false,
             startAppliedUpgrades: 0,
-            end: rankIndex(rankOrder[1]),
+            end: rankIndex(Rank.Stone2),
             endPointFive: false,
             endAppliedUpgrades: 0,
           },
@@ -1059,8 +1060,8 @@ describe("daily raid derivation", () => {
       id: heroId,
       name: "Synthetic hero",
       rankUpUpgrades: [
-        { rank: rankOrder[0], upgradeIds: [baseA] },
-        { rank: rankOrder[1], upgradeIds: [baseB] },
+        { rank: Rank.Stone1, upgradeIds: [baseA] },
+        { rank: Rank.Stone2, upgradeIds: [baseB] },
       ],
     }
     const base = (id: typeof baseA, label: string) =>
@@ -1089,7 +1090,7 @@ describe("daily raid derivation", () => {
         goalType: "Rank",
         config: {
           rank: {
-            start: rankIndex(rankOrder[0]),
+            start: rankIndex(Rank.Stone1),
             startPointFive: false,
             startAppliedUpgrades: 0,
             end: rankIndex(rankOrder[end]!),
@@ -1162,9 +1163,7 @@ describe("daily raid derivation", () => {
     const character: FarmingCharacter = {
       id: heroId,
       name: "Synthetic hero",
-      rankUpUpgrades: [
-        { rank: rankOrder[0], upgradeIds: [farmable, noSource] },
-      ],
+      rankUpUpgrades: [{ rank: Rank.Stone1, upgradeIds: [farmable, noSource] }],
     }
     const upgrade = (id: typeof farmable, withNode: boolean) =>
       ({
@@ -1193,7 +1192,7 @@ describe("daily raid derivation", () => {
       goalType: "Rank",
       config: {
         rank: {
-          start: rankIndex(rankOrder[0]),
+          start: rankIndex(Rank.Stone1),
           startPointFive: false,
           startAppliedUpgrades: 0,
           end: rankIndex(rankOrder[1]!),
@@ -1299,10 +1298,10 @@ describe("daily raid derivation", () => {
       goalType: "Rank",
       config: {
         rank: {
-          start: rankIndex(rankOrder[0]),
+          start: rankIndex(Rank.Stone1),
           startPointFive: false,
           startAppliedUpgrades: 0,
-          end: rankIndex(rankOrder[1]),
+          end: rankIndex(Rank.Stone2),
           endPointFive: false,
           endAppliedUpgrades: 0,
         },
@@ -1334,7 +1333,7 @@ describe("daily raid derivation", () => {
         getCharacter: () => ({
           id: heroId,
           name: "Synthetic hero",
-          rankUpUpgrades: [{ rank: rankOrder[0], upgradeIds: [baseId] }],
+          rankUpUpgrades: [{ rank: Rank.Stone1, upgradeIds: [baseId] }],
         }),
         dailyEnergy: 100,
         referenceDate: new Date("2026-01-01T00:00:00.000Z"),

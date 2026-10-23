@@ -15,7 +15,7 @@ describe("useNpcsTutorial", () => {
       '[data-testid="npcs-level-select"]',
       '[data-testid="npcs-stats"]',
     ])
-    expect(result.current.desktop[0].title).toBe("Filter the roster")
+    expect(result.current.desktop[0]?.title).toBe("Filter the roster")
   })
 
   it("targets the mobile combobox, selectors, and stats", () => {
@@ -27,7 +27,7 @@ describe("useNpcsTutorial", () => {
       '[data-testid="npcs-level-select"]',
       '[data-testid="npcs-stats"]',
     ])
-    expect(result.current.mobile?.[0].content).toBe(
+    expect(result.current.mobile?.[0]?.content).toBe(
       "Open the picker and search for a unit. Variations of the same unit are grouped under one entry."
     )
   })

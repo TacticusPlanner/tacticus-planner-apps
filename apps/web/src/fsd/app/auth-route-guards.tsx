@@ -1,5 +1,6 @@
 import type { ReactNode } from "react"
 import { Navigate, useLocation, useSearchParams } from "react-router"
+import { useTranslation } from "react-i18next"
 import { Spinner } from "@workspace/ui/components/spinner"
 
 import { InteractionStatus } from "@azure/msal-browser"
@@ -16,12 +17,15 @@ import { resolveNextPath } from "./resolve-next-path"
 // `isAuthenticated`; deciding on the stale first-render value is what caused a hard refresh on a
 // protected deep link (e.g. /guild/members) to bounce to "/" before MSAL had a chance to catch up.
 export function AuthResolving() {
+  const { t } = useTranslation()
   return (
     <div
+      aria-label={t("common.loading")}
       className="flex min-h-svh items-center justify-center"
       data-testid="app-loading"
+      role="status"
     >
-      <Spinner className="size-8 text-primary" />
+      <Spinner aria-hidden="true" className="size-8 text-primary" />
     </div>
   )
 }

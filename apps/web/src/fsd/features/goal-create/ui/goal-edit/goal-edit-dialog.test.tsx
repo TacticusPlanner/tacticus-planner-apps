@@ -228,8 +228,7 @@ const unlockGoal = { ...base, goalType: "Unlock", config } as GoalDetail
 const goalOnScreen = (goal: GoalDetail) => {
   getGoal.mockReset().mockResolvedValue(goal)
 }
-const stayOnScreen = (goalId: string) =>
-  goalOnScreen({ ...rankGoal, goalId } as GoalDetail)
+const stayOnScreen = (goalId: string) => goalOnScreen({ ...rankGoal, goalId })
 
 function renderDialog(
   props: Partial<Parameters<typeof GoalEditDialog>[0]> = {},
@@ -255,7 +254,7 @@ function DialogAtGoalParam() {
   const navigate = useNavigate()
   return (
     <>
-      <button data-testid="history-back" onClick={() => navigate(-1)}>
+      <button data-testid="history-back" onClick={() => void navigate(-1)}>
         Back
       </button>
       <span data-testid="location-search">{useLocation().search}</span>
@@ -766,13 +765,13 @@ describe("GoalEditDialog", () => {
     })
 
     it("shows the select for a Paused goal and hides it for a goal with no position", async () => {
-      goalOnScreen({ ...rankGoal, goalId: "c", status: "Paused" } as GoalDetail)
+      goalOnScreen({ ...rankGoal, goalId: "c", status: "Paused" })
       const first = renderDialog({ goalId: "c" })
       await loaded()
       expect(screen.getByTestId("goal-edit-priority")).toBeInTheDocument()
       first.unmount()
 
-      goalOnScreen({ ...rankGoal, status: "Completed" } as GoalDetail)
+      goalOnScreen({ ...rankGoal, status: "Completed" })
       renderDialog({ goalId: "goal-1" })
       await loaded()
       expect(screen.queryByTestId("goal-edit-priority")).toBeNull()

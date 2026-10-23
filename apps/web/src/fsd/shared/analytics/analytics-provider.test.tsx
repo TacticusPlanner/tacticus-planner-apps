@@ -1,6 +1,12 @@
 import { render, renderHook, screen } from "@testing-library/react"
 import { afterEach, describe, expect, it, vi } from "vitest"
 
+function at<T>(xs: readonly T[] | undefined, index: number): T {
+  const value = xs?.[index]
+  if (value === undefined) throw new Error(`expected an item at index ${index}`)
+  return value
+}
+
 const identify = vi.fn()
 const optInCapturing = vi.fn()
 const optOutCapturing = vi.fn()
@@ -146,8 +152,8 @@ describe("useAnalyticsActions", () => {
 
     expect(optOutCapturing).toHaveBeenCalledTimes(1)
     expect(reset).toHaveBeenCalledTimes(1)
-    const optOutOrder = optOutCapturing.mock.invocationCallOrder[0]
-    const resetOrder = reset.mock.invocationCallOrder[0]
+    const optOutOrder = at(optOutCapturing.mock.invocationCallOrder, 0)
+    const resetOrder = at(reset.mock.invocationCallOrder, 0)
     expect(optOutOrder).toBeLessThan(resetOrder)
   })
 

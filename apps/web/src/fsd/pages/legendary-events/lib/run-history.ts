@@ -12,7 +12,6 @@ import {
   type LegendaryEvent,
   type LegendaryEventLane,
   type LegendaryEventLaneId,
-  type LegendaryEventLaneRecord,
   type LegendaryEventLifecycleState,
   type LegendaryEventProgress,
   type LegendaryEventRosterUnit,
@@ -98,7 +97,7 @@ export function recordLaneSummary(
       ...encounter,
       encounterPoints: encounter.highScore,
     })),
-  } as unknown as LegendaryEventLaneRecord)
+  })
   return { clearedBattle, points: progress.pointsEarned }
 }
 

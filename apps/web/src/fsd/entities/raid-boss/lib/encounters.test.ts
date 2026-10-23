@@ -284,9 +284,9 @@ describe("buildAdjustedView", () => {
     expect(view.primes.map((p) => p.id)).toEqual(["1", "2"])
     expect(view.primes.map((p) => p.unitSetId)).toEqual(["prime-a", "prime-b"])
     // prime-a: 2 modifiers, health 200 -> thresholds [100, 200]; options prepend 0
-    expect(view.primes[0].hpLostPoints).toEqual([0, 100, 200])
+    expect(view.primes[0]?.hpLostPoints).toEqual([0, 100, 200])
     // prime-b: 1 modifier, health 400 -> [400]
-    expect(view.primes[1].hpLostPoints).toEqual([0, 400])
+    expect(view.primes[1]?.hpLostPoints).toEqual([0, 400])
   })
 
   it("full HP (no selection) leaves nothing active and no adjustment", () => {
