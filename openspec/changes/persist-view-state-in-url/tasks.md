@@ -38,17 +38,17 @@ Moved to `tune-client-query-caching` group 6: that change rewrites the `onSucces
 
 Required data states: an account with at least one Paused and one Reached goal in two projects; an active Legendary Event with synced progress; Onslaught progress saved at a known revision (second tab available to force a conflict).
 
-- [ ] 8.1 On `/plan/goals`, set status and type, reload, confirm both filters and the list persist, then press Back and confirm it leaves the page in one step.
-- [ ] 8.2 Open Edit on a goal, reload, confirm the dialog reopens; edit a field, press Back, confirm the confirmation appears and both outcomes behave as specified.
-- [ ] 8.3 On an event page select Beta, reload, confirm Beta is selected; open `?tab=delta` and confirm Overview with the param removed.
-- [ ] 8.4 On `/my-game/onslaught` change a tier, confirm the bar spans the content area without covering the last card, Discard restores, Save succeeds, and a save from a second tab produces the translated conflict message; confirm leaving with edits asks first.
-- [ ] 8.5 Run the onslaught tour on desktop and confirm every step attaches to its target.
+- [x] 8.1 On `/plan/goals`, set status and type, reload, confirm both filters and the list persist, then press Back and confirm it leaves the page in one step.
+- [x] 8.2 Open Edit on a goal, reload, confirm the dialog reopens; edit a field, press Back, confirm the confirmation appears and both outcomes behave as specified.
+- [x] 8.3 On an event page select Beta, reload, confirm Beta is selected; open `?tab=delta` and confirm Overview with the param removed.
+- [x] 8.4 On `/my-game/onslaught` change a tier, confirm the bar spans the content area without covering the last card, Discard restores, Save succeeds, and a save from a second tab produces the translated conflict message; confirm leaving with edits asks first.
+- [x] 8.5 Run the onslaught tour on desktop and confirm every step attaches to its target.
 
 ## 9. Mobile verification (viewport below 768px, same-origin 420px iframe)
 
-- [ ] 9.1 Repeat 8.1 and 8.3 in the iframe and confirm the mobile card list and the fixed tab strip reflect the URL state.
-- [ ] 9.2 On `/my-game/onslaught` in the iframe, confirm the unsaved-changes bar sits directly above the bottom navigation without overlapping it or the last alliance card.
-- [ ] 9.3 Run the onslaught tour on mobile and confirm every mobile step attaches to its target.
+- [x] 9.1 Repeat 8.1 and 8.3 in the iframe and confirm the mobile card list and the fixed tab strip reflect the URL state.
+- [x] 9.2 On `/my-game/onslaught` in the iframe, confirm the unsaved-changes bar sits directly above the bottom navigation without overlapping it or the last alliance card.
+- [x] 9.3 Run the onslaught tour on mobile and confirm every mobile step attaches to its target.
 
 ## 10. Gates
 
@@ -61,3 +61,27 @@ Required data states: an account with at least one Paused and one Reached goal i
 - Raid Bosses: `repairRaidBossesSearch` returns `{ pathname?, search } | null` (an unknown entity changes the path); the detail logic moved to `hooks/use-raid-boss-detail.ts` to get the page under 400 lines.
 - Onslaught: the bar's tour step targets the help paragraph, since the bar only renders with edits (same as campaign events). `onslaught.saveError` now says the changes are still there instead of "Refresh", since the draft survives a failed save.
 - Groups 8 and 9 (desktop/mobile manual checks) are open for a browser pass.
+
+## Manual verification (2026-10-23, Aspire stack, signed-in account)
+
+- **8.1** Home -> Plan, set status Active and type Ascension: 2 rows. Reload keeps both filters and
+  the list; one Back returns to `/home`.
+- **8.2** Edit on Z'Kar's goal, reload: the dialog reopens (`?goal=`). Typed a note, pressed Back:
+  "Discard unsaved changes?" appears; Keep editing keeps the dialog and the note, Discard closes it,
+  drops `?goal` and saves nothing.
+- **8.3** Fabius Bile event: Beta survives a reload (`?tab=beta`); `?tab=delta` shows Overview with
+  the param removed.
+- **8.4** Tier change shows the bar inside the content column (288-1497 of 264-1521) and below the
+  last row; Discard restores Tier 1; Save shows "Onslaught progress saved." and persists; a stale tab
+  saving after another tab's save shows "Onslaught progress changed elsewhere. Latest values loaded;
+  apply your change again."; leaving with edits asks "Leave without saving?" and Leave discards.
+  Found and fixed on the way: a long one-line page description pushed the desktop shell 56px past the
+  viewport and cut off Save (inset `min-w-0`, in shell-accessibility-and-lint), and the rewards
+  table's absolutely positioned sr-only labels gave the mobile page a 159px horizontal scroll
+  (`relative` on the table scroller, this branch). Original Onslaught values restored afterwards.
+- **8.5** Desktop tour: both steps attach (alliance cards, progress help).
+- **9.1** 420px iframe: the mobile card list reloads with Active + Ascension (Toth, Shiron), Back
+  leaves in one step; the event tab strip keeps Beta after reload and drops `?tab=delta`.
+- **9.2** The bar sits 16px above the bottom nav, leaves `mr-14` for the scroll-to-top button, and
+  the last card and table scroll clear of it.
+- **9.3** Mobile tour: both steps attach (Imperial card, progress help).
