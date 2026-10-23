@@ -4,13 +4,8 @@ import userEvent from "@testing-library/user-event"
 
 import { render, screen } from "@/test/render"
 
-// Only these ids have a name; `RunsAway` stands in for an internal marker the game never names.
-const names: Record<string, string> = {
-  AdaptiveStrategy: "Adaptive Strategy",
-  RelentlessMarch: "Relentless March",
-  ArcScourge: "Arc Scourge",
-}
-
+// Names come from the real `abilities` namespace; `RunsAway` stands in for an internal marker the
+// game never names.
 const abilityText = {
   AdaptiveStrategy: {
     description: "Deals {[minDmg]}-{[maxDmg]} Damage per hit.",
@@ -23,13 +18,6 @@ const abilityText = {
 vi.mock("@/entities/npc", () => ({
   useNpcAbilityText: () => (id: string) =>
     abilityText[id as keyof typeof abilityText],
-}))
-
-vi.mock("react-i18next", () => ({
-  useTranslation: () => ({
-    t: (key: string) => names[key] ?? (names[key.slice(10)] || key),
-    i18n: { exists: (key: string) => names[key.slice(10)] !== undefined },
-  }),
 }))
 
 import { NpcAbilities } from "./npc-abilities"

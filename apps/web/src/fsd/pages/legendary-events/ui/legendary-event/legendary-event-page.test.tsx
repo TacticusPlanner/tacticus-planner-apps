@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useSyncExternalStore } from "react"
 import {
   MemoryRouter,
   Route,
@@ -17,7 +17,12 @@ import {
   vi,
 } from "vitest"
 
+import { catalogManifestMetadataKey } from "@workspace/game-catalog"
+import { replaceGameCatalogDataset } from "@workspace/game-catalog/testing"
+
 import { CreateGoalLauncherContext } from "@/entities/goal"
+import { setTestAuth } from "@/test/auth"
+import { spyOnIndexedDbReads } from "@/test/fixtures/indexeddb-failure"
 import { legendaryEventCharacters } from "@/test/fixtures/legendary-event-characters"
 import {
   utharRun1Record,
@@ -30,20 +35,14 @@ import {
 } from "@/test/fixtures/lysander-battles"
 import { createTestI18n, i18nWrapper } from "@/test/i18n"
 import { act, fireEvent, render, screen, within } from "@/test/render"
+import {
+  resetTestDatabases,
+  seedGameCatalog,
+  seedPlayerData,
+} from "@/test/seed"
 import { setViewportWidth } from "@/test/viewport"
 
 import { LegendaryEventPage } from "./legendary-event-page"
-
-vi.mock("dexie-react-hooks", () => ({
-  useLiveQuery: <T,>(querier: () => Promise<T>, deps: unknown[]) => {
-    const [value, setValue] = useState<T>()
-    useEffect(() => {
-      void querier().then(setValue)
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, deps)
-    return value
-  },
-}))
 
 const events = [
   lysanderEvent,
@@ -58,51 +57,71 @@ const events = [
     ],
   },
 ]
-const catalog = vi.hoisted(() => ({ synced: true }))
-// The served `lre-battles` (none unless a test sets them); `fail` rejects the read, `pending` never
-// settles it.
-const battlesApi = vi.hoisted(() => ({
-  battles: [] as unknown[],
-  npcs: new Map<string, unknown>(),
-  fail: false,
-  pending: false,
-}))
-vi.mock("@workspace/game-catalog/queries", () => ({
-  hasLegendaryEventsSynced: async () => catalog.synced,
-  getLegendaryEvent: async (id: string) =>
-    events.find((event) => event.id === id),
-  getCharactersMap: async () => new Map(),
-  getMowsMap: async () => new Map(),
-  getCharacters: async () => legendaryEventCharacters,
-  getLegendaryEventBattles: () =>
-    battlesApi.pending
-      ? new Promise(() => {})
-      : battlesApi.fail
-        ? Promise.reject(new Error("lre-battles unavailable"))
-        : Promise.resolve(battlesApi.battles),
-  getNpcsMap: async () => battlesApi.npcs,
-  getHordeModeTiers: async () => null,
-}))
-// Dante owned, everyone else locked; no synced entry for any event unless a test sets one.
-const player = vi.hoisted(() => ({
-  roster: [
-    {
-      unitId: "bloodDante",
-      rank: "Diamond1",
-      progressionIndex: "Legendary:RedFiveStars",
-    },
-  ] as unknown[] | undefined,
-  progress: undefined as unknown,
-}))
-vi.mock("@workspace/player-data/queries", () => ({
-  getLegendaryEventProgress: async () => player.progress,
-  getPlayerCharacters: async () => player.roster,
-}))
-vi.mock("@workspace/player-data", () => ({
-  getPlayerDataMetadata: async () => new Map(),
-  getManifestMetadata: () => undefined,
-}))
 const tour = vi.hoisted(() => ({ steps: undefined as unknown }))
+// Dante owned, everyone else locked; no synced entry for any event unless a test seeds one.
+const roster = [
+  {
+    unitId: "bloodDante",
+    rank: "Diamond1",
+    progressionIndex: "Legendary:RedFiveStars",
+  },
+]
+/** Seeds the catalog the page reads: the events (unless `lres` is false), every character, the
+ *  battles' enemies, and the served `lre-battles` (none unless given). With the events it also
+ *  completes the first sync, without a served `unit-power` dataset (no clear estimate shows). */
+async function seedCatalog({
+  lres = true,
+  battles = [] as unknown[],
+}: { lres?: boolean; battles?: unknown[] } = {}) {
+  await seedGameCatalog({
+    ...(lres ? { lres: events } : {}),
+    characters: legendaryEventCharacters,
+    npcs: lysanderBattleNpcs,
+    "lre-battles": battles,
+  })
+  if (!lres) return
+  // A real sync writes the manifest row last; the dataset writer stores whichever row it is handed.
+  await replaceGameCatalogDataset("unit-power", [], {
+    key: catalogManifestMetadataKey,
+    hash: "manifest-test",
+    catalogVersion: "test",
+    gameVersion: "test",
+    schemaVersion: 1,
+    updatedAt: "2026-01-01T00:00:00Z",
+  })
+}
+const seedProgress = (progress: unknown) =>
+  seedPlayerData({ "lre-progress": [progress] })
+// While held, the battles read reports loading: a real IndexedDB read cannot be paused.
+const battlesHold = vi.hoisted(() => {
+  let held = false
+  const listeners = new Set<() => void>()
+  return {
+    held: () => held,
+    set(value: boolean) {
+      held = value
+      listeners.forEach((listener) => listener())
+    },
+    subscribe(listener: () => void) {
+      listeners.add(listener)
+      return () => {
+        listeners.delete(listener)
+      }
+    },
+  }
+})
+vi.mock("@/entities/legendary-event", async (importOriginal) => {
+  const actual =
+    await importOriginal<typeof import("@/entities/legendary-event")>()
+  return {
+    ...actual,
+    useLegendaryEventBattles: (eventId: string) => {
+      const held = useSyncExternalStore(battlesHold.subscribe, battlesHold.held)
+      const read = actual.useLegendaryEventBattles(eventId)
+      return held ? { status: "loading" as const, retry: read.retry } : read
+    },
+  }
+})
 // A synced Lysander entry with Alpha's first battle cleared, so the lane tabs render the grid.
 const lysanderProgress = {
   id: "astarLysander",
@@ -135,7 +154,6 @@ const analytics = vi.hoisted(() => ({ capture: vi.fn() }))
 vi.mock("@/shared/analytics", () => ({
   useAnalyticsActions: () => ({ captureEvent: analytics.capture }),
 }))
-vi.mock("@azure/msal-react", () => ({ useIsAuthenticated: () => true }))
 vi.mock("@/shared/api", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/shared/api")>()),
   apiClient: (await import("@/test/fake-api-client")).fakeApiClient(
@@ -194,6 +212,7 @@ vi.mock("@/shared/tour", () => ({
 }))
 
 let i18n: I18n
+let reads: ReturnType<typeof spyOnIndexedDbReads>
 
 function Controls() {
   const { pathname } = useLocation()
@@ -274,20 +293,13 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
   beforeAll(async () => {
     i18n = await createTestI18n("en")
   })
-  beforeEach(() => {
-    catalog.synced = true
-    battlesApi.battles = []
-    battlesApi.npcs = new Map(lysanderBattleNpcs.map((npc) => [npc.id, npc]))
-    battlesApi.fail = false
-    battlesApi.pending = false
-    player.roster = [
-      {
-        unitId: "bloodDante",
-        rank: "Diamond1",
-        progressionIndex: "Legendary:RedFiveStars",
-      },
-    ]
-    player.progress = undefined
+  beforeEach(async () => {
+    await seedCatalog()
+    await seedPlayerData({ characters: roster })
+    reads = spyOnIndexedDbReads()
+    battlesHold.set(false)
+    // Signed in, with an empty plan per event.
+    setTestAuth({ authenticated: true })
     goals.summaries = []
     goals.details.clear()
     launchCreateGoal.mockReset()
@@ -301,6 +313,7 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
     vi.setSystemTime(new Date("2026-09-02T12:00:00Z"))
   })
   afterEach(() => {
+    reads.restore()
     vi.useRealTimers()
     vi.unstubAllGlobals()
   })
@@ -349,7 +362,9 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
   })
 
   it("keeps loading a deep link until the catalog has synced", async () => {
-    catalog.synced = false
+    // No `lres` dataset has synced yet.
+    await resetTestDatabases()
+    await seedCatalog({ lres: false })
     renderPage("/legendary-events/notYetSynced")
 
     // Let every read resolve (only Date is faked), then check nothing redirected.
@@ -424,7 +439,7 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
       )
 
     it("keeps each lane's battle selection across lane tabs, starting on battle 1 without progress", async () => {
-      battlesApi.battles = lysanderBattles
+      await seedCatalog({ battles: lysanderBattles })
       renderPage("/legendary-events/astarLysander")
       await screen.findByTestId("legendary-event-overview-leaderboard")
 
@@ -453,7 +468,7 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
     })
 
     it("shows a skeleton and no selector while the battles read is pending", async () => {
-      battlesApi.pending = true
+      battlesHold.set(true)
       renderPage("/legendary-events/astarLysander")
       await screen.findByTestId("legendary-event-overview-leaderboard")
 
@@ -463,7 +478,7 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
     })
 
     it("shows an error with Retry that re-runs the read, keeping the rest of the lane tab", async () => {
-      battlesApi.fail = true
+      reads.fail("lre-battles")
       renderPage("/legendary-events/astarLysander")
       await screen.findByTestId("legendary-event-overview-leaderboard")
 
@@ -476,8 +491,10 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
         screen.getByTestId("legendary-event-progress-grid")
       ).toBeInTheDocument()
 
-      battlesApi.fail = false
-      battlesApi.battles = lysanderBattles
+      // Served while the read still fails: only Retry reads them.
+      await seedCatalog({ battles: lysanderBattles })
+      expect(screen.getByTestId("battles-error")).toBeInTheDocument()
+      reads.fail(false)
       fireEvent.click(within(error).getByRole("button", { name: "Retry" }))
       await screen.findByTestId("battle-preview")
       expect(battleTitle()).toBe("Battle 1")
@@ -745,10 +762,12 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
       async (_form, width) => {
         setViewportWidth(width)
         history.records = [lastRunRecord]
-        player.progress = runTwoProgress
+        await seedProgress(runTwoProgress)
         renderPage("/legendary-events/astarLysander")
-        const lastRun = await screen.findByTestId("legendary-event-last-run")
-        await within(lastRun).findByTestId("last-run-run")
+        // The card mounts loading and is replaced once its reads settle.
+        await screen.findByTestId("last-run-run")
+        const lastRun = screen.getByTestId("legendary-event-last-run")
+        expect(within(lastRun).getByTestId("last-run-run")).toBeInTheDocument()
         expect(
           follows(screen.getByTestId("legendary-event-run-status"), lastRun)
         ).toBe(true)
@@ -832,7 +851,7 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
         },
       ]
       history.records = [utharRun1Record]
-      player.progress = runTwoProgress
+      await seedProgress(runTwoProgress)
       renderPage("/legendary-events/astarLysander")
       await screen.findByTestId("legendary-event-last-run")
       selectTab("alpha")
@@ -881,7 +900,7 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
     }
 
     it("orders the Overview: Next token, Run status, Token plan, Run forecast, lane summary, leaderboard", async () => {
-      player.progress = runOneProgress
+      await seedProgress(runOneProgress)
       planApi.teams = [deepTeam]
       renderPage("/legendary-events/astarLysander")
       const card = await screen.findByTestId("next-token-view")
@@ -914,7 +933,7 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
     })
 
     it("re-plans at once when a card action marks the token", async () => {
-      player.progress = runOneProgress
+      await seedProgress(runOneProgress)
       planApi.teams = [deepTeam]
       planApi.put.mockReturnValue(new Promise(() => {}))
       renderPage("/legendary-events/astarLysander")
@@ -943,7 +962,7 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
     })
 
     it("names the lane to add a team on when there are no teams", async () => {
-      player.progress = runOneProgress
+      await seedProgress(runOneProgress)
       renderPage("/legendary-events/astarLysander")
 
       expect(await screen.findByTestId("next-token-noTeams")).toHaveTextContent(
@@ -963,14 +982,14 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
 
   describe("desktop (1280px)", () => {
     it("renders a static strip, the cross-lane table and the lane table", async () => {
-      player.progress = lysanderProgress
+      await seedProgress(lysanderProgress)
       renderPage("/legendary-events/astarLysander")
       await screen.findByTestId("legendary-event-overview-leaderboard")
 
       expect(screen.getByTestId("legendary-event-tabs")).not.toHaveAttribute(
         "data-sticky"
       )
-      expect(screen.getByTestId("cross-lane-table")).toBeInTheDocument()
+      expect(await screen.findByTestId("cross-lane-table")).toBeInTheDocument()
       act(() => selectTab("alpha"))
       expect(await screen.findByTestId("leaderboard-table")).toBeInTheDocument()
       expect(screen.getByTestId("progress-grid")).toBeInTheDocument()
@@ -981,14 +1000,14 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
     beforeEach(() => setViewportWidth(390))
 
     it("renders the strip sticky under the header, row cards and compact rows", async () => {
-      player.progress = lysanderProgress
+      await seedProgress(lysanderProgress)
       renderPage("/legendary-events/astarLysander")
       await screen.findByTestId("legendary-event-overview-leaderboard")
 
       const strip = screen.getByTestId("legendary-event-tabs")
       expect(strip).toHaveAttribute("data-sticky", "true")
       expect(strip).toHaveClass("sticky", "top-(--mobile-header-height)")
-      expect(screen.getByTestId("cross-lane-list")).toBeInTheDocument()
+      expect(await screen.findByTestId("cross-lane-list")).toBeInTheDocument()
 
       act(() => selectTab("alpha"))
       expect(await screen.findByTestId("leaderboard-list")).toBeInTheDocument()

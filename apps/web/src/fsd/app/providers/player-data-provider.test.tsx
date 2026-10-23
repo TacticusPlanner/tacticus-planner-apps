@@ -1,30 +1,21 @@
 import type { ReactNode } from "react"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
-import { act, renderHook, waitFor } from "@testing-library/react"
-import { afterEach, describe, expect, it, vi } from "vitest"
+import { replacePlayerDataChunk } from "@workspace/player-data/testing"
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
 import { usePlayerDataStatus } from "@/shared/player-data-status"
+import { setTestAuth } from "@/test/auth"
+import { act, renderHook, waitFor } from "@/test/render"
 
 const sync = vi.hoisted(() => ({
   run: vi.fn(),
   refresh: vi.fn(async () => {}),
-  metadata: vi.fn(async () => ({})),
 }))
 
-vi.mock("@azure/msal-react", () => ({ useIsAuthenticated: () => true }))
-vi.mock("@/shared/auth", () => ({
-  acquireAccessToken: vi.fn(),
-  isInteractionRequired: () => false,
-  requestInteraction: vi.fn(),
-  useActiveAccountId: () => "account-1",
-}))
-vi.mock("@workspace/player-data", () => ({
-  PlayerDataHttpClient: class {},
-  // Synced a minute ago: no background sync on mount.
-  getPlayerDataMetadata: () => sync.metadata(),
-  getManifestMetadata: () => ({
-    updatedAt: new Date(Date.now() - 60_000).toISOString(),
-  }),
+// Kept (targeted): these tests are about what the provider does around `syncPlayerData`, so the
+// sync itself (a network round-trip) is the one export replaced; the metadata reads stay real.
+vi.mock("@workspace/player-data", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@workspace/player-data")>()),
   syncPlayerData: sync.run,
 }))
 vi.mock("@/features/player-data-sync", () => ({
@@ -42,6 +33,25 @@ function wrapper({ children }: { children: ReactNode }) {
     </QueryClientProvider>
   )
 }
+
+beforeEach(async () => {
+  setTestAuth({ authenticated: true })
+  // Synced a minute ago: no background sync on mount.
+  await replacePlayerDataChunk(
+    "player-details",
+    { name: "Tester" },
+    {
+      key: "__manifest" as never,
+      hash: "manifest-test",
+      schemaVersion: 1,
+      updatedAt: new Date(Date.now() - 60_000).toISOString(),
+    }
+  )
+})
+
+afterEach(() => {
+  vi.restoreAllMocks()
+})
 
 describe("PlayerDataProvider", () => {
   it("refreshes the server reads (run records, plans, goals) once a sync completes, not before", async () => {
@@ -78,10 +88,18 @@ describe("PlayerDataProvider", () => {
     it("reports it and keeps checking on the interval", async () => {
       vi.useFakeTimers({ shouldAdvanceTime: true })
       const log = vi.spyOn(console, "error").mockImplementation(() => {})
-      sync.metadata.mockReset()
-      sync.metadata
-        .mockRejectedValueOnce(new Error("indexeddb closed"))
-        .mockResolvedValue({})
+      // The first metadata read fails (as if IndexedDB closed); later ones read the real store.
+      const getAll = IDBObjectStore.prototype.getAll
+      let metadataReads = 0
+      vi.spyOn(IDBObjectStore.prototype, "getAll").mockImplementation(function (
+        this: IDBObjectStore,
+        ...args
+      ) {
+        if (this.name === "metadata" && metadataReads++ === 0) {
+          throw new Error("indexeddb closed")
+        }
+        return getAll.apply(this, args)
+      })
       renderHook(() => usePlayerDataStatus(), { wrapper })
 
       await waitFor(() =>
@@ -92,7 +110,7 @@ describe("PlayerDataProvider", () => {
       )
       await act(() => vi.advanceTimersByTimeAsync(10 * 60 * 1000))
 
-      expect(sync.metadata.mock.calls.length).toBeGreaterThan(1)
+      await waitFor(() => expect(metadataReads).toBeGreaterThan(1))
     })
   })
 })

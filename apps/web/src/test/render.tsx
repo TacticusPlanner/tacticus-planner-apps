@@ -1,13 +1,29 @@
-import type { JSXElementConstructor, ReactElement, ReactNode } from "react"
+// Test utilities intentionally re-export non-component Testing Library helpers.
+/* eslint-disable react-refresh/only-export-components */
+import {
+  createContext,
+  useContext,
+  useState,
+  type JSXElementConstructor,
+  type ReactElement,
+  type ReactNode,
+} from "react"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import {
   render as testingLibraryRender,
   type RenderOptions,
 } from "@testing-library/react"
 import { TooltipProvider } from "@workspace/ui/components/tooltip"
+import {
+  createMemoryRouter,
+  RouterProvider,
+  type InitialEntry,
+} from "react-router"
 
-// Test utilities intentionally re-export non-component Testing Library helpers.
-// eslint-disable-next-line react-refresh/only-export-components
+import { ThemeProvider } from "@/shared/theme"
+
+import { setTestAuth } from "./auth"
+
 export * from "@testing-library/react"
 
 function createTestQueryClient() {
@@ -26,14 +42,57 @@ function createTestQueryClient() {
 
 type TestWrapper = JSXElementConstructor<{ children: ReactNode }>
 
-function createWrapper(UserWrapper?: TestWrapper): TestWrapper {
+export type TestRenderOptions = RenderOptions & {
+  /** Mounts the UI as this route's element in a memory data router (e.g. `/plan/goals/:goalId`). */
+  route?: string
+  /** Router history; defaults to `[route]`. */
+  initialEntries?: InitialEntry[]
+  /** Wraps the UI in the app's real `ThemeProvider`. */
+  theme?: boolean
+  /** Signed-in state for the MSAL test stub, applied before rendering. */
+  auth?: Parameters<typeof setTestAuth>[0]
+}
+
+// Lets the router's single route element follow `rerender` without recreating the router.
+const RouteChildren = createContext<ReactNode>(null)
+
+function RouteElement() {
+  return useContext(RouteChildren)
+}
+
+function createTestRouter(
+  route: string,
+  initialEntries: InitialEntry[] = [route]
+) {
+  return createMemoryRouter([{ path: route, element: <RouteElement /> }], {
+    initialEntries,
+  })
+}
+
+function createWrapper(
+  UserWrapper: TestWrapper | undefined,
+  { route, initialEntries, theme }: TestRenderOptions
+): TestWrapper {
   const queryClient = createTestQueryClient()
 
   return function TestQueryWrapper({ children }) {
+    const [router] = useState(() =>
+      route ? createTestRouter(route, initialEntries) : null
+    )
+    let content = UserWrapper ? <UserWrapper>{children}</UserWrapper> : children
+
+    if (router) {
+      content = (
+        <RouteChildren.Provider value={content}>
+          <RouterProvider router={router} />
+        </RouteChildren.Provider>
+      )
+    }
+
     return (
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
-          {UserWrapper ? <UserWrapper>{children}</UserWrapper> : children}
+          {theme ? <ThemeProvider>{content}</ThemeProvider> : content}
         </TooltipProvider>
       </QueryClientProvider>
     )
@@ -42,10 +101,16 @@ function createWrapper(UserWrapper?: TestWrapper): TestWrapper {
 
 export function render(
   ui: ReactElement,
-  options: RenderOptions = {}
+  options: TestRenderOptions = {}
 ): ReturnType<typeof testingLibraryRender> {
+  const { route, initialEntries, theme, auth, wrapper, ...rest } = options
+
+  if (auth) {
+    setTestAuth(auth)
+  }
+
   return testingLibraryRender(ui, {
-    ...options,
-    wrapper: createWrapper(options.wrapper),
+    ...rest,
+    wrapper: createWrapper(wrapper, { route, initialEntries, theme }),
   })
 }

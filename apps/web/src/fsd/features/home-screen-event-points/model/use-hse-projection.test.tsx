@@ -1,71 +1,70 @@
-import { useEffect, useState } from "react"
-import { renderHook, waitFor } from "@testing-library/react"
-import { beforeEach, describe, expect, it, vi } from "vitest"
+import { replacePlayerDataChunk } from "@workspace/player-data/testing"
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
 import { hseDefinitionConfig } from "@/test/fixtures/home-screen-event-scoring"
+import { renderHook, waitFor } from "@/test/render"
+import { seedGameCatalog, seedPlayerData } from "@/test/seed"
 
 import type { HseInstance } from "./hse-event-points"
 import { useHseProjection } from "./use-hse-projection"
 
-vi.mock("dexie-react-hooks", () => ({
-  useLiveQuery: <T,>(querier: () => Promise<T> | T, deps: unknown[]) => {
-    const [value, setValue] = useState<T>()
-    useEffect(() => {
-      void Promise.resolve(querier()).then(setValue)
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, deps)
-    return value
-  },
-}))
-
-const reads = vi.hoisted(() => ({
-  catalogFails: false,
-  playerFails: false,
-  catalogReads: 0,
-  definitions: [] as { id: string; type: string; config: unknown }[],
-}))
-
-vi.mock("@workspace/game-catalog/queries", () => ({
-  getEventDefinitions: async () => {
-    reads.catalogReads += 1
-    if (reads.catalogFails) throw new Error("boom")
-    return reads.definitions
-  },
-}))
-
 const HOUR_S = 3600
-vi.mock("@workspace/player-data/queries", () => ({
-  getPlayerDetails: async () => {
-    if (reads.playerFails) throw new Error("boom")
-    return { name: "Player", powerLevel: 62 }
-  },
-  getPlayerCharacters: async () => [
-    { unitId: "bloodMephiston", progressionIndex: "Legendary:OneBlueStar" },
-  ],
-  getPlayerMows: async () => [],
-  getLiveProgress: async () => ({
-    gameModeTokens: {
-      arena: {
-        current: 4,
-        max: 10,
-        nextTokenInSeconds: 1 * HOUR_S,
-        regenDelayInSeconds: 2 * HOUR_S,
+
+// Counts reads per IndexedDB store ("<database>/<store>") and fails the stores listed in `failing`.
+const idb = vi.hoisted(() => ({
+  reads: new Map<string, number>(),
+  failing: new Set<string>(),
+}))
+
+function spyOnStoreReads() {
+  const getAll = IDBObjectStore.prototype.getAll
+  vi.spyOn(IDBObjectStore.prototype, "getAll").mockImplementation(function (
+    this: IDBObjectStore,
+    ...args
+  ) {
+    const store = `${this.transaction.db.name.replace("tacticus-planner-", "")}/${this.name}`
+    idb.reads.set(store, (idb.reads.get(store) ?? 0) + 1)
+    if (idb.failing.has(store)) throw new Error("boom")
+    return getAll.apply(this, args)
+  })
+}
+
+async function seedPlayer() {
+  await seedPlayerData({
+    "player-details": { name: "Player", powerLevel: 62 },
+    characters: [
+      { unitId: "bloodMephiston", progressionIndex: "Legendary:OneBlueStar" },
+    ],
+    mows: [],
+  })
+  await replacePlayerDataChunk(
+    "live-progress",
+    {
+      gameModeTokens: {
+        arena: {
+          current: 4,
+          max: 10,
+          nextTokenInSeconds: 1 * HOUR_S,
+          regenDelayInSeconds: 2 * HOUR_S,
+        },
+        onslaught: null,
+        salvageRun: {
+          current: 2,
+          max: 2,
+          nextTokenInSeconds: 8 * HOUR_S,
+          regenDelayInSeconds: 8 * HOUR_S,
+        },
+        guildRaid: null,
       },
-      onslaught: null,
-      salvageRun: {
-        current: 2,
-        max: 2,
-        nextTokenInSeconds: 8 * HOUR_S,
-        regenDelayInSeconds: 8 * HOUR_S,
-      },
-      guildRaid: null,
     },
-  }),
-}))
-vi.mock("@workspace/player-data", () => ({
-  getPlayerDataMetadata: async () =>
-    new Map([["live-progress", { updatedAt: "2026-10-21T08:00:00Z" }]]),
-}))
+    {
+      key: "live-progress",
+      hash: "live-progress-test",
+      schemaVersion: 1,
+      updatedAt: "2026-10-21T08:00:00Z",
+    }
+  )
+}
 
 const definition = (id: string, config: unknown = null) => ({
   id,
@@ -87,22 +86,28 @@ const instance = (
   },
 })
 
-beforeEach(() => {
-  window.localStorage.clear()
-  reads.catalogFails = false
-  reads.playerFails = false
-  reads.catalogReads = 0
-  reads.definitions = [
-    definition(
-      "hse-trait-boost-psyker",
-      hseDefinitionConfig("hse-trait-boost-psyker")
-    ),
-    definition(
-      "hse-global-operation-imperator",
-      hseDefinitionConfig("hse-global-operation-imperator")
-    ),
-    definition("hse-against-the-tide"),
-  ]
+beforeEach(async () => {
+  idb.reads.clear()
+  idb.failing.clear()
+  await seedPlayer()
+  await seedGameCatalog({
+    "event-definitions": [
+      definition(
+        "hse-trait-boost-psyker",
+        hseDefinitionConfig("hse-trait-boost-psyker")
+      ),
+      definition(
+        "hse-global-operation-imperator",
+        hseDefinitionConfig("hse-global-operation-imperator")
+      ),
+      definition("hse-against-the-tide"),
+    ],
+  })
+  spyOnStoreReads()
+})
+
+afterEach(() => {
+  vi.restoreAllMocks()
 })
 
 const settle = async (target: HseInstance | null) => {
@@ -126,7 +131,7 @@ describe("useHseProjection", () => {
     const { result } = renderHook(() => useHseProjection(null))
     expect(result.current.status).toBe("none")
     await waitFor(() => expect(result.current.status).toBe("none"))
-    expect(reads.catalogReads).toBe(0)
+    expect(idb.reads.get("game-catalog/event-definitions")).toBeUndefined()
   })
 
   it("is loading, not the previous event's data, right after the selection changes", async () => {
@@ -199,14 +204,14 @@ describe("useHseProjection", () => {
   })
 
   it("fails when the catalog cannot be read", async () => {
-    reads.catalogFails = true
+    idb.failing.add("game-catalog/event-definitions")
     expect(
       (await settle(instance("hse-trait-boost-psyker", "running"))).status
     ).toBe("error")
   })
 
   it("keeps the details and fails only the projection when the player data cannot be read", async () => {
-    reads.playerFails = true
+    idb.failing.add("player-data/characters")
     const state = await settle(instance("hse-trait-boost-psyker", "running"))
     if (state.status !== "ready") throw new Error(state.status)
     expect(state.details.playerTier).toBeNull()

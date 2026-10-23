@@ -1,14 +1,5 @@
 import { render, screen } from "@/test/render"
-import { describe, expect, it, vi } from "vitest"
-
-vi.mock("react-i18next", () => ({
-  initReactI18next: { type: "3rdParty", init: vi.fn() },
-  useTranslation: () => ({
-    t: (key: string, opts?: Record<string, unknown>) =>
-      opts ? `${key}:${JSON.stringify(opts)}` : key,
-    i18n: { resolvedLanguage: "en" },
-  }),
-}))
+import { describe, expect, it } from "vitest"
 
 import { InsightsSummary } from "./insights-summary"
 
@@ -52,7 +43,7 @@ describe("InsightsSummary completion outlook", () => {
     )
     expect(
       screen.getByTestId("insights-completion-excluded")
-    ).toHaveTextContent('goals.insights.completionExcluded:{"count":1}')
+    ).toHaveTextContent("1 goal not included in this date")
   })
 
   it("keeps its unknown placeholder, with the caveat, when nothing is estimable", () => {
@@ -66,10 +57,10 @@ describe("InsightsSummary completion outlook", () => {
 
     // Insights is the one surface of the three that has a placeholder (design Decision 5).
     expect(screen.getByTestId("insights-completion-date")).toHaveTextContent(
-      "goals.insights.completionUnknown"
+      "—"
     )
     expect(
       screen.getByTestId("insights-completion-excluded")
-    ).toHaveTextContent('goals.insights.completionExcluded:{"count":7}')
+    ).toHaveTextContent("7 goals not included in this date")
   })
 })

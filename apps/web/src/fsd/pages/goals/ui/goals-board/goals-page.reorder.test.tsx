@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import { fireEvent, render, screen } from "@testing-library/react"
+import { fireEvent, render, screen } from "@/test/render"
 import userEvent from "@testing-library/user-event"
 
 // Reordering on the Goals page (spec: `global-goal-priority`, `goals-navigation`). Dragging under
@@ -18,10 +18,6 @@ const state = vi.hoisted(() => ({
   dismissConflict: vi.fn(),
 }))
 
-vi.mock("react-i18next", () => ({
-  useTranslation: () => ({ t: (key: string) => key }),
-  initReactI18next: { type: "3rdParty", init: vi.fn() },
-}))
 vi.mock("@workspace/ui/hooks/use-mobile", () => ({
   useIsMobile: () => state.isMobile,
 }))
@@ -211,7 +207,7 @@ describe("GoalsPage reordering", () => {
     await user.click(screen.getByTestId("goals-type-filter"))
     await user.click(
       await screen.findByRole("option", {
-        name: "goals.create.goalTypes.Rank",
+        name: "Rank",
       })
     )
     expect(rowIds()).toEqual(["a", "c", "e"])
@@ -229,7 +225,7 @@ describe("GoalsPage reordering", () => {
     render(<GoalsPage />)
     await user.click(screen.getByTestId("goals-group-by"))
     await user.click(
-      await screen.findByRole("option", { name: "goals.filters.groupByType" })
+      await screen.findByRole("option", { name: "Group by type" })
     )
 
     expect(screen.getAllByTestId("goals-list")).toHaveLength(2)
@@ -326,9 +322,7 @@ describe("GoalsPage reordering", () => {
         Node.DOCUMENT_POSITION_FOLLOWING
     ).toBeTruthy()
     expect(screen.queryByTestId("goals-no-farmable")).not.toBeInTheDocument()
-    fireEvent.click(
-      screen.getByRole("button", { name: "goals.order.estimatesRetry" })
-    )
+    fireEvent.click(screen.getByRole("button", { name: "Retry estimates" }))
     expect(state.retryInsights).toHaveBeenCalledOnce()
   })
 
@@ -339,7 +333,7 @@ describe("GoalsPage reordering", () => {
     fireEvent.click(screen.getByTestId("goals-mobile-reorder-toggle"))
 
     expect(screen.getByTestId("mobile-reorder-status")).toHaveTextContent(
-      "goals.order.saving"
+      "Saving order…"
     )
   })
 

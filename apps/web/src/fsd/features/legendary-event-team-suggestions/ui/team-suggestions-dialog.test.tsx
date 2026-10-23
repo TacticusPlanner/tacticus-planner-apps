@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react"
 import type { i18n as I18n } from "i18next"
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
 
@@ -12,6 +11,7 @@ import { utharEvent } from "@/test/fixtures/legendary-events"
 import { unitPowerContextFixture } from "@/test/fixtures/unit-power"
 import { createTestI18n, i18nWrapper } from "@/test/i18n"
 import { fireEvent, render, screen, within } from "@/test/render"
+import { seedGameCatalog } from "@/test/seed"
 import { setViewportWidth } from "@/test/viewport"
 
 import type { TeamSuggestionsSource } from "../model/team-suggestions-state"
@@ -21,21 +21,10 @@ const capture = vi.hoisted(() => vi.fn())
 vi.mock("@/shared/analytics", () => ({
   useAnalyticsActions: () => ({ captureEvent: capture }),
 }))
-vi.mock("dexie-react-hooks", () => ({
-  useLiveQuery: <T,>(querier: () => Promise<T>) => {
-    const [value, setValue] = useState<T>()
-    useEffect(() => {
-      void querier().then(setValue)
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
-    return value
-  },
-}))
-vi.mock("@workspace/game-catalog/queries", () => ({
-  getCharactersMap: async () =>
-    new Map(legendaryEventCharacters.map((unit) => [unit.id, unit])),
-  getMowsMap: async () => new Map(),
-}))
+
+beforeEach(async () => {
+  await seedGameCatalog({ characters: legendaryEventCharacters })
+})
 
 let i18n: I18n
 

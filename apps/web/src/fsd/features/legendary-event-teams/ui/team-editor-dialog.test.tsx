@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react"
 import type { i18n as I18n } from "i18next"
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
 
@@ -16,6 +15,7 @@ import {
 } from "@/test/fixtures/legendary-event-teams"
 import { createTestI18n, i18nWrapper } from "@/test/i18n"
 import { act, fireEvent, render, screen, within } from "@/test/render"
+import { seedGameCatalog } from "@/test/seed"
 import { setViewportWidth } from "@/test/viewport"
 
 import type { TeamDraft } from "../model/plan-patches"
@@ -25,21 +25,9 @@ import type {
 } from "../model/use-legendary-event-plan"
 import { TeamEditorDialog } from "./team-editor-dialog"
 
-vi.mock("dexie-react-hooks", () => ({
-  useLiveQuery: <T,>(querier: () => Promise<T>) => {
-    const [value, setValue] = useState<T>()
-    useEffect(() => {
-      void querier().then(setValue)
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
-    return value
-  },
-}))
-vi.mock("@workspace/game-catalog/queries", () => ({
-  getCharactersMap: async () =>
-    new Map(Object.values(teamUnits).map((unit) => [unit.id, unit])),
-  getMowsMap: async () => new Map(),
-}))
+beforeEach(async () => {
+  await seedGameCatalog({ characters: Object.values(teamUnits) })
+})
 
 let i18n: I18n
 

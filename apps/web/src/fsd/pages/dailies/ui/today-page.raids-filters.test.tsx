@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { render, screen } from "@/test/render"
 import { ready } from "@/test/fixtures/daily-raids"
+import { seedGameCatalog } from "@/test/seed"
 
 import {
   countActiveFilterGroups,
@@ -31,13 +32,6 @@ const { useIsMobileMock, state, activeEventSpy, dailyRaidsArgs } = vi.hoisted(
   })
 )
 
-vi.mock("react-i18next", () => ({
-  initReactI18next: { type: "3rdParty", init: vi.fn() },
-  useTranslation: () => ({
-    t: (key: string, values?: Record<string, unknown>) =>
-      values && "count" in values ? `${key}:${values.count}` : key,
-  }),
-}))
 // A stand-in for the real hook that reacts to the applied filter the way calculateDailyRaids does:
 // a slots filter removes every Today node and reports the material (or pinned goal) as filtered out.
 vi.mock("@/features/daily-raids", async (importOriginal) => {
@@ -81,21 +75,6 @@ vi.mock("@/shared/tour", () => ({ useTourPageSteps: vi.fn() }))
 vi.mock("@workspace/ui/hooks/use-mobile", () => ({
   useIsMobile: () => useIsMobileMock(),
 }))
-vi.mock("@workspace/game-catalog/queries", () => ({
-  getCampaignBattles: () => [
-    {
-      enemiesTotal: 5,
-      enemiesTypes: [],
-      detailedEnemyTypes: [{ id: "bot", count: 1 }],
-    },
-  ],
-  getCharactersMap: () => new Map(),
-  getNpcsMap: () => new Map([["bot", { traits: ["Mechanical"] }]]),
-}))
-vi.mock("dexie-react-hooks", () => ({
-  useLiveQuery: (querier: () => unknown) => querier(),
-}))
-
 function renderToday() {
   const context: DailiesOutletContext = {
     projects: [],
@@ -125,7 +104,19 @@ async function applySlotsFilter(user: ReturnType<typeof userEvent.setup>) {
 }
 
 describe("Today page Raids Filters", () => {
-  beforeEach(() => {
+  beforeEach(async () => {
+    // One five-enemy battle with a Mechanical NPC: the dialog derives its trait options from these.
+    await seedGameCatalog({
+      "campaign-battles": [
+        {
+          id: "battle-1",
+          enemiesTotal: 5,
+          enemiesTypes: [],
+          detailedEnemyTypes: [{ id: "bot", count: 1 }],
+        },
+      ],
+      npcs: [{ id: "bot", traits: ["Mechanical"] }],
+    })
     state.pinned = false
     activeEventSpy.mockClear()
     dailyRaidsArgs.length = 0
@@ -146,7 +137,7 @@ describe("Today page Raids Filters", () => {
   it("shows the trigger with a label on desktop", () => {
     renderToday()
     expect(screen.getByTestId("raids-filters")).toHaveTextContent(
-      "raidsFilters.trigger"
+      "Raids Filters"
     )
   })
 
@@ -154,8 +145,8 @@ describe("Today page Raids Filters", () => {
     useIsMobileMock.mockReturnValue(true)
     renderToday()
     const trigger = screen.getByTestId("raids-filters")
-    expect(trigger).toHaveAccessibleName("raidsFilters.trigger")
-    expect(trigger).not.toHaveTextContent("raidsFilters.trigger")
+    expect(trigger).toHaveAccessibleName("Raids Filters")
+    expect(trigger).not.toHaveTextContent("Raids Filters")
   })
 
   it("changes the rendered raids and offers a Reset when a filter filters everything out", async () => {
@@ -172,7 +163,9 @@ describe("Today page Raids Filters", () => {
     expect(screen.getByTestId("raids-filters-badge")).toHaveTextContent("1")
     expect(
       screen.getByTestId("raids-filters-filtered-out-materials")
-    ).toHaveTextContent("raidsFilters.filteredOut.materials:1")
+    ).toHaveTextContent(
+      "1 material has no allowed location with these filters."
+    )
     expect(
       screen.queryByTestId("raids-filters-filtered-out-pinned")
     ).not.toBeInTheDocument()
@@ -192,7 +185,7 @@ describe("Today page Raids Filters", () => {
 
     await user.click(screen.getByTestId("raids-filters"))
     await user.click(await screen.findByTestId("raids-filters-enemy-traits"))
-    await user.click(screen.getByTestId("option-Mechanical"))
+    await user.click(await screen.findByTestId("option-Mechanical"))
     await user.keyboard("{Escape}")
     await user.click(screen.getByTestId("raids-filters-apply"))
 
@@ -214,7 +207,9 @@ describe("Today page Raids Filters", () => {
 
     expect(
       screen.getByTestId("raids-filters-filtered-out-pinned")
-    ).toHaveTextContent("raidsFilters.filteredOut.pinned:1")
+    ).toHaveTextContent(
+      "1 goal is pinned to a location excluded by your Raids Filters."
+    )
     expect(
       screen.queryByTestId("raids-filters-filtered-out-materials")
     ).not.toBeInTheDocument()

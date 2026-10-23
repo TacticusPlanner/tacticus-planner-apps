@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest"
+import { describe, expect, it } from "vitest"
 import {
   battleIdSchema,
   campaignIdSchema,
@@ -17,11 +17,6 @@ import {
 } from "@/features/daily-raids"
 import type { RaidsFilters } from "@/features/daily-raids"
 import type { FarmingCharacter, FarmingUpgrade } from "@/features/goal-farming"
-
-vi.mock("react-i18next", () => ({
-  initReactI18next: { type: "3rdParty", init: vi.fn() },
-  useTranslation: () => ({ t: (key: string) => key }),
-}))
 
 import { computeGoalBlockers } from "../blockers/goal-blockers"
 import { BlockedIndicator } from "../../ui/shared/status-badge"

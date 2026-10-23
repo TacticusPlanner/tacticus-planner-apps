@@ -5,11 +5,6 @@ import type { ShopRewardOffer } from "@workspace/game-catalog"
 import { render, screen } from "@/test/render"
 import type { MythicMaterialSelection } from "../../model/goal-creation-form/use-mythic-material-selection"
 
-vi.mock("react-i18next", () => ({
-  initReactI18next: { type: "3rdParty", init: vi.fn() },
-  useTranslation: () => ({ t: (key: string) => key }),
-}))
-
 const { useIsMobileMock } = vi.hoisted(() => ({
   useIsMobileMock: vi.fn(() => false),
 }))
@@ -70,7 +65,7 @@ describe("MythicMaterialSourceField", () => {
     }
     expect(
       screen.getByTestId("create-goal-shop-offer-yield-crusade:upgHpM004")
-    ).toHaveTextContent("goals.create.mythicMaterials.perDay")
+    ).toHaveTextContent("≈ 0.64 per day")
   })
 
   it("marks only the rotating days of an offer that is guaranteed on another day", () => {
@@ -135,7 +130,7 @@ describe("MythicMaterialSourceField", () => {
     )
 
     expect(
-      screen.getByText("goals.create.mythicMaterials.noOffers")
+      screen.getByText("No shop currently offers this material to you.")
     ).toBeInTheDocument()
   })
 
@@ -150,7 +145,7 @@ describe("MythicMaterialSourceField", () => {
 
     expect(
       screen.getByTestId("goal-mythic-material-spend-crusadeCurrency")
-    ).toBeInTheDocument()
+    ).toHaveTextContent("1720 Crusade Coins")
   })
 
   it("collapses a material with several offers below 768px, with the same rows once expanded", async () => {

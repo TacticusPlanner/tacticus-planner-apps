@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useSyncExternalStore } from "react"
 import { MemoryRouter, Route, Routes, useLocation } from "react-router"
 import type { i18n as I18n } from "i18next"
 import {
@@ -11,6 +11,7 @@ import {
   vi,
 } from "vitest"
 
+import { spyOnIndexedDbReads } from "@/test/fixtures/indexeddb-failure"
 import { fixtureCharacter } from "@/test/fixtures/legendary-event-characters"
 import {
   farsightEvent,
@@ -19,20 +20,14 @@ import {
 } from "@/test/fixtures/legendary-events"
 import { createTestI18n, i18nWrapper } from "@/test/i18n"
 import { act, fireEvent, render, screen, waitFor, within } from "@/test/render"
+import {
+  resetTestDatabases,
+  seedGameCatalog,
+  seedPlayerData,
+} from "@/test/seed"
 import { setViewportWidth } from "@/test/viewport"
 
 import { MasterTablePage } from "./master-table-page"
-
-vi.mock("dexie-react-hooks", () => ({
-  useLiveQuery: <T,>(querier: () => Promise<T>, deps: unknown[]) => {
-    const [value, setValue] = useState<T>()
-    useEffect(() => {
-      void querier().then(setValue)
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, deps)
-    return value
-  },
-}))
 
 const UNIT_IDS = [
   "bloodDante",
@@ -43,6 +38,14 @@ const UNIT_IDS = [
   "bloodTerminator",
 ] as const
 const characters = UNIT_IDS.map((id) => fixtureCharacter(id))
+const LANES = ["alpha", "beta", "gamma"] as const
+// Dante reuses Lysander's lanes under its own battle ids, so its battles keep their own records.
+const danteLane = (lane: (typeof LANES)[number]) => ({
+  ...lysanderEvent[lane],
+  battleIds: lysanderEvent[lane].battleIds.map((id) =>
+    id.replace("astarLysander", "bloodDante")
+  ),
+})
 const dante = {
   ...lysanderEvent,
   id: "bloodDante",
@@ -51,55 +54,34 @@ const dante = {
     "2025-09-07T00:00:00Z",
     "2026-01-04T00:00:00Z",
   ],
+  alpha: danteLane("alpha"),
+  beta: danteLane("beta"),
+  gamma: danteLane("gamma"),
 }
+const events = [utharEvent, farsightEvent, lysanderEvent, dante]
+// Every battle out of reach (a power no estimate clears).
+const battles = events.flatMap((event) =>
+  LANES.flatMap((lane) =>
+    event[lane].battleIds.map((id) => ({ id, lreId: event.id, power: 1e15 }))
+  )
+)
+const danteRoster = [
+  {
+    unitId: "bloodDante",
+    rank: "Gold1",
+    progressionIndex: "Legendary:RedThreeStars",
+  },
+]
+const seedCatalog = () =>
+  seedGameCatalog({ lres: events, characters, "lre-battles": battles })
 
 const data = vi.hoisted(() => ({
-  events: [] as unknown[],
-  eventsFail: false,
-  eventsPending: false,
-  roster: undefined as unknown[] | undefined,
-  rosterFail: false,
-  /** While set, the roster read waits for it (the roster is loading). */
-  rosterGate: null as Promise<void> | null,
-  progress: [] as unknown[],
-  progressFail: false,
-  battlesFail: false,
   plans: { status: "ready", data: [] as unknown[] } as {
     status: "loading" | "error" | "ready"
     data?: unknown[]
   },
   capture: vi.fn(),
   steps: undefined as unknown,
-}))
-const read = <T,>(value: T, fail = false): Promise<T> =>
-  fail ? Promise.reject(new Error("read")) : Promise.resolve(value)
-
-vi.mock("@workspace/game-catalog/queries", () => ({
-  getLegendaryEvents: () =>
-    data.eventsPending
-      ? new Promise(() => {})
-      : read(data.events, data.eventsFail),
-  getCharacters: async () => characters,
-  getCharactersMap: async () =>
-    new Map(characters.map((unit) => [unit.id, unit])),
-  getMowsMap: async () => new Map(),
-  getLegendaryEventsBattles: (eventIds: readonly string[]) =>
-    read(
-      Object.fromEntries(
-        eventIds.map((eventId) => [
-          eventId,
-          [utharEvent, lysanderEvent, farsightEvent, dante]
-            .filter((event) => event.id === eventId)
-            .flatMap((event) =>
-              (["alpha", "beta", "gamma"] as const).flatMap((lane) =>
-                event[lane].battleIds.map((id) => ({ id, power: 1e15 }))
-              )
-            ),
-        ])
-      ),
-      data.battlesFail
-    ),
-  getHordeModeTiers: async () => null,
 }))
 // Power data for every unit the table lists (any non-null power: the battles are out of reach).
 vi.mock("@/shared/unit-power", async (importOriginal) => {
@@ -131,17 +113,37 @@ vi.mock("@/shared/unit-power", async (importOriginal) => {
   }
   return { ...original, useUnitPowerContext: () => state }
 })
-vi.mock("@workspace/player-data/queries", () => ({
-  getPlayerCharacters: () =>
-    data.rosterGate
-      ? data.rosterGate.then(() => read(data.roster, data.rosterFail))
-      : read(data.roster, data.rosterFail),
-  getLegendaryEventsProgress: () => read(data.progress, data.progressFail),
-}))
-vi.mock("@/entities/legendary-event", async (importOriginal) => ({
-  ...(await importOriginal<typeof import("@/entities/legendary-event")>()),
-  useLegendaryEventPlans: () => ({ ...data.plans, retry: vi.fn() }),
-}))
+// While held, the roster read reports loading: a real IndexedDB read cannot be paused.
+const rosterHold = vi.hoisted(() => {
+  let held = false
+  const listeners = new Set<() => void>()
+  return {
+    held: () => held,
+    set(value: boolean) {
+      held = value
+      listeners.forEach((listener) => listener())
+    },
+    subscribe(listener: () => void) {
+      listeners.add(listener)
+      return () => {
+        listeners.delete(listener)
+      }
+    },
+  }
+})
+vi.mock("@/entities/legendary-event", async (importOriginal) => {
+  const actual =
+    await importOriginal<typeof import("@/entities/legendary-event")>()
+  return {
+    ...actual,
+    useLegendaryEventPlans: () => ({ ...data.plans, retry: vi.fn() }),
+    useLegendaryEventRoster: () => {
+      const held = useSyncExternalStore(rosterHold.subscribe, rosterHold.held)
+      const read = actual.useLegendaryEventRoster()
+      return held ? { status: "loading" as const, retry: read.retry } : read
+    },
+  }
+})
 vi.mock("@/shared/analytics", () => ({
   useAnalyticsActions: () => ({ captureEvent: data.capture }),
 }))
@@ -152,6 +154,7 @@ vi.mock("@/shared/tour", () => ({
 }))
 
 let i18n: I18n
+let reads: ReturnType<typeof spyOnIndexedDbReads>
 
 function LocationProbe() {
   const location = useLocation()
@@ -176,14 +179,8 @@ function renderPage(search = "") {
 
 /** Holds the roster read until the returned function is called. */
 function holdRoster() {
-  let release = () => {}
-  data.rosterGate = new Promise<void>((resolve) => {
-    release = resolve
-  })
-  return () => {
-    data.rosterGate = null
-    release()
-  }
+  rosterHold.set(true)
+  return () => rosterHold.set(false)
 }
 
 const viewedEvents = () =>
@@ -221,23 +218,12 @@ describe("MasterTablePage", () => {
   beforeAll(async () => {
     i18n = await createTestI18n("en")
   })
-  beforeEach(() => {
+  beforeEach(async () => {
+    await seedCatalog()
+    await seedPlayerData({ characters: danteRoster, "lre-progress": [] })
+    reads = spyOnIndexedDbReads()
+    rosterHold.set(false)
     Object.assign(data, {
-      events: [utharEvent, farsightEvent, lysanderEvent, dante],
-      eventsFail: false,
-      eventsPending: false,
-      roster: [
-        {
-          unitId: "bloodDante",
-          rank: "Gold1",
-          progressionIndex: "Legendary:RedThreeStars",
-        },
-      ],
-      rosterFail: false,
-      rosterGate: null,
-      progress: [],
-      progressFail: false,
-      battlesFail: false,
       plans: { status: "ready", data: [] },
       steps: undefined,
     })
@@ -248,6 +234,7 @@ describe("MasterTablePage", () => {
     vi.setSystemTime(new Date("2026-10-06T12:00:00Z"))
   })
   afterEach(() => {
+    reads.restore()
     vi.useRealTimers()
     vi.unstubAllGlobals()
   })
@@ -296,15 +283,17 @@ describe("MasterTablePage", () => {
   })
 
   it("deducts synced progress in Remaining: 5,774 + 5,004 = 10,778", async () => {
-    data.progress = [
-      {
-        id: "astarLysander",
-        currentEventRun: 1,
-        alpha: { encounters: fullyCleared(5) },
-        beta: null,
-        gamma: null,
-      },
-    ]
+    await seedPlayerData({
+      "lre-progress": [
+        {
+          id: "astarLysander",
+          currentEventRun: 1,
+          alpha: { encounters: fullyCleared(5) },
+          beta: null,
+          gamma: null,
+        },
+      ],
+    })
     renderPage("?events=astarLysander,votanUthar")
     await ready()
     await waitFor(() =>
@@ -315,18 +304,16 @@ describe("MasterTablePage", () => {
   })
 
   it("restores a shared link and sorts by Farsight", async () => {
-    data.roster = [
-      {
-        unitId: "bloodDante",
-        rank: "Gold1",
-        progressionIndex: "Legendary:RedThreeStars",
-      },
-      {
-        unitId: "tauFarsight",
-        rank: "Gold1",
-        progressionIndex: "Legendary:RedThreeStars",
-      },
-    ]
+    await seedPlayerData({
+      characters: [
+        ...danteRoster,
+        {
+          unitId: "tauFarsight",
+          rank: "Gold1",
+          progressionIndex: "Legendary:RedThreeStars",
+        },
+      ],
+    })
     renderPage(
       "?events=tauFarsight,votanUthar&units=unlocked&points=all&sort=tauFarsight"
     )
@@ -516,7 +503,7 @@ describe("MasterTablePage", () => {
   })
 
   it("disables Unlocked and Estimated without a roster", async () => {
-    data.rosterFail = true
+    reads.fail("tacticus-planner-player-data/characters")
     renderPage()
     await ready()
     await waitFor(() =>
@@ -531,7 +518,7 @@ describe("MasterTablePage", () => {
   })
 
   it("labels Remaining when synced progress failed", async () => {
-    data.progressFail = true
+    reads.fail("lre-progress")
     renderPage("?events=astarLysander,votanUthar")
     await ready()
     expect(await screen.findByTestId("master-table-no-progress")).toBeVisible()
@@ -543,7 +530,7 @@ describe("MasterTablePage", () => {
   })
 
   it("shows Remaining with a note when a link asks for Estimated without estimates", async () => {
-    data.battlesFail = true
+    reads.fail("lre-battles")
     renderPage("?points=estimated")
     await ready()
     expect(
@@ -572,12 +559,11 @@ describe("MasterTablePage", () => {
   })
 
   it("shows skeleton rows while the catalog loads, and an error with Retry when it fails", async () => {
-    data.eventsPending = true
+    // The first render precedes the asynchronous catalog read.
     const { unmount } = renderPage()
     expect(screen.getByTestId("master-table-loading")).toBeVisible()
     unmount()
-    data.eventsPending = false
-    data.eventsFail = true
+    reads.fail("lres")
     renderPage()
     expect(await screen.findByTestId("master-table-error")).toHaveTextContent(
       "Retry"
@@ -728,7 +714,9 @@ describe("MasterTablePage", () => {
   })
 
   it("names the missing roster in the Estimated fallback note", async () => {
-    data.roster = undefined
+    // No characters chunk has synced.
+    await resetTestDatabases()
+    await seedCatalog()
     renderPage("?points=estimated")
     await ready()
     expect(
@@ -738,7 +726,7 @@ describe("MasterTablePage", () => {
 
   it("shows both unit-set hints when the plans failed and there is no roster", async () => {
     data.plans = { status: "error" }
-    data.rosterFail = true
+    reads.fail("tacticus-planner-player-data/characters")
     renderPage()
     await ready()
     await waitFor(() =>

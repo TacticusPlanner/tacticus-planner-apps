@@ -5,17 +5,6 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 
 const createCombinedGoals = vi.fn()
 
-vi.mock("react-i18next", () => ({
-  useTranslation: () => ({
-    t: (key: string, options?: Record<string, unknown>) =>
-      options && "defaultValue" in options
-        ? String(options.defaultValue)
-        : options
-          ? `${key}:${JSON.stringify(options)}`
-          : key,
-  }),
-  initReactI18next: { type: "3rdParty", init: vi.fn() },
-}))
 vi.mock("@/entities/goal", () => ({
   buildCreateGoalSnapshot: () => null,
   createCombinedGoals: (...args: unknown[]) => createCombinedGoals(...args),
@@ -99,7 +88,7 @@ describe("useGoalSubmit conflicts", () => {
     // The error state is read from the mutation, which reports it on its next notification.
     await vi.waitFor(() => expect(result.current.status).toBe("error"))
     expect(result.current.errorMessage).toBe(
-      'goals.project.membershipConflictRank:{"unit":"Unit bellator","target":"Rank11"}'
+      "Unit bellator already has an active or paused Rank goal with the target Rank11."
     )
     // Nothing was closed or reset, so the user's draft is still on screen.
     expect(onOpenChange).not.toHaveBeenCalled()

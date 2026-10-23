@@ -3,12 +3,12 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { act, renderHook, waitFor } from "@testing-library/react"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
+import { setTestAuth } from "@/test/auth"
+
 import { useLegendaryEventPlans } from "./use-legendary-event-plans"
 import type { LegendaryEventRunRecord } from "./run-record.types"
 import { useLegendaryEventRunRecordRosters } from "./use-legendary-event-run-record-roster"
 import { useLegendaryEventRunRecords } from "./use-legendary-event-run-records"
-
-vi.mock("@azure/msal-react", () => ({ useIsAuthenticated: () => true }))
 
 const api = vi.hoisted(() => ({
   list: vi.fn(),
@@ -32,7 +32,10 @@ function wrapper() {
 }
 
 describe("server read hooks", () => {
-  beforeEach(() => vi.clearAllMocks())
+  beforeEach(() => {
+    vi.clearAllMocks()
+    setTestAuth({ authenticated: true })
+  })
 
   it("reports the plan list loading, then ready", async () => {
     let resolve!: (value: unknown) => void

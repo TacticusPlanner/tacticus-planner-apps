@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { act, fireEvent, render, screen } from "@/test/render"
 
@@ -32,47 +31,6 @@ vi.mock("../shared/goal-progress-visuals", async (importActual) => {
     },
   }
 })
-
-vi.mock("dexie-react-hooks", () => ({
-  useLiveQuery: (
-    querier: () => unknown,
-    deps: unknown[] = [],
-    defaultResult?: unknown
-  ) => {
-    const [value, setValue] = useState<unknown>(defaultResult)
-    useEffect(() => {
-      setValue(querier())
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, deps)
-    return value
-  },
-}))
-
-vi.mock("react-i18next", () => ({
-  initReactI18next: { type: "3rdParty", init: vi.fn() },
-  useTranslation: () => ({
-    t: (key: string) => key,
-    i18n: { resolvedLanguage: "en" },
-  }),
-}))
-
-vi.mock("@workspace/player-data/queries", () => ({
-  getCampaignEventProgress: async () => [],
-  getLiveProgress: async () => undefined,
-  getCampaignProgress: () => [],
-}))
-
-vi.mock("@workspace/game-catalog/queries", () => ({
-  getCharactersMap: () => new Map(),
-  getMowsMap: () => new Map(),
-  getUpgrades: () => [],
-  getCampaignBattles: () => [],
-  getCampaignDefinitions: () => [],
-  getAscensionCostsMap: () => new Map(),
-  getUnlockShardCostsMap: () => new Map(),
-  getMowUpgradeCosts: () => [],
-  getCharacterAbilityCosts: () => [],
-}))
 
 vi.mock("../shared/goal-resource-chips", () => ({
   GoalResourceChips: () => {
@@ -139,6 +97,18 @@ beforeEach(() => {
   }
 })
 
+// Rendering the full list over real live queries takes seconds under a parallel run, so the perf
+// tests get more than the 5 s default.
+// The real live queries resolve after mount and re-render every row; measure only once a quiet
+// window passes with no row content rendering, so those settle renders never count as drag renders.
+async function settleLiveQueries() {
+  for (;;) {
+    const before = counts.target + counts.catalog + counts.chips
+    await act(() => new Promise((resolve) => setTimeout(resolve, 50)))
+    if (counts.target + counts.catalog + counts.chips === before) return
+  }
+}
+
 describe("GoalsList drag performance", () => {
   it("does not re-render every row on drag start / over change", async () => {
     const onReorder = vi.fn()
@@ -151,6 +121,7 @@ describe("GoalsList drag performance", () => {
       />
     )
     const handles = await screen.findAllByTestId("goal-row-drag-handle")
+    await settleLiveQueries()
     const reset = () => {
       counts.chips = 0
       counts.catalog = 0
@@ -183,7 +154,7 @@ describe("GoalsList drag performance", () => {
     expect(start.chips).toBeLessThanOrEqual(2)
     expect(overOnce.chips + overTwice.chips).toBeLessThanOrEqual(2)
     expect(start.move + overOnce.move + overTwice.move).toBeLessThanOrEqual(3)
-  })
+  }, 15_000)
 })
 
 describe("GoalsList mobile reorder cards drag performance", () => {
@@ -200,6 +171,7 @@ describe("GoalsList mobile reorder cards drag performance", () => {
       />
     )
     const handles = await screen.findAllByTestId("goal-row-drag-handle")
+    await settleLiveQueries()
     expect(handles).toHaveLength(ROWS)
     const reset = () => {
       counts.target = 0
@@ -235,5 +207,5 @@ describe("GoalsList mobile reorder cards drag performance", () => {
     expect(
       start.catalog + overOnce.catalog + overTwice.catalog
     ).toBeLessThanOrEqual(2)
-  })
+  }, 15_000)
 })

@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react"
-import { beforeEach, describe, expect, it, vi } from "vitest"
+import { describe, expect, it } from "vitest"
+
 import { render, screen, waitFor } from "@/test/render"
+import { seedGameCatalog } from "@/test/seed"
 
 import { EventsCalendar } from "./events-calendar"
 
@@ -43,49 +44,26 @@ const definitions = [
   },
 ]
 
-let entries: unknown[] = []
+type CalendarEntry = {
+  occurrenceId: string | null
+  definitionId: string
+  confirmed: boolean
+  startUtc: string
+  endUtc: string
+  parameters: null
+}
 
-vi.mock("@workspace/game-catalog/queries", () => ({
-  getEventDefinitions: () => Promise.resolve(definitions),
-  getUpcomingEvents: () => Promise.resolve(entries),
-}))
-
-// Matches the fake-effect-based useLiveQuery mock established in goals-page.test.tsx — real
-// Dexie.liveQuery() relies on internal Promise patching that doesn't play well with a querier that
-// never actually touches a Dexie table (as here, once game-catalog/queries is mocked above).
-vi.mock("dexie-react-hooks", () => ({
-  useLiveQuery: (
-    querier: () => unknown,
-    deps: unknown[] = [],
-    defaultResult?: unknown
-  ) => {
-    const [value, setValue] = useState<unknown>(defaultResult)
-    useEffect(() => {
-      const result = querier()
-      if (result instanceof Promise) {
-        let active = true
-        void result.then((resolved) => {
-          if (active) setValue(resolved)
-        })
-        return () => {
-          active = false
-        }
-      }
-      setValue(result)
-      return undefined
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, deps)
-    return value
-  },
-}))
-
-vi.mock("react-i18next", () => ({
-  useTranslation: () => ({
-    t: (key: string, opts?: { defaultValue?: string }) =>
-      opts?.defaultValue ?? key,
-    i18n: { resolvedLanguage: "en" },
-  }),
-}))
+// The calendar payload is keyed by date; the queries filter on each entry's own window.
+function seedCalendar(entries: CalendarEntry[]) {
+  const byDate: Record<string, CalendarEntry[]> = {}
+  for (const entry of entries) {
+    ;(byDate[entry.startUtc.slice(0, 10)] ??= []).push(entry)
+  }
+  return seedGameCatalog({
+    "event-definitions": definitions,
+    "events-calendar": byDate,
+  })
+}
 
 function isoDaysFromNow(days: number): string {
   const date = new Date()
@@ -95,11 +73,8 @@ function isoDaysFromNow(days: number): string {
 }
 
 describe("EventsCalendar", () => {
-  beforeEach(() => {
-    entries = []
-  })
-
   it("shows a loading state, then an empty state when there are no entries in range", async () => {
+    await seedCalendar([])
     render(<EventsCalendar />)
 
     expect(screen.getByTestId("events-calendar-loading")).toBeInTheDocument()
@@ -116,7 +91,7 @@ describe("EventsCalendar", () => {
   })
 
   it("renders a confirmed occurrence and a projected placeholder distinctly", async () => {
-    entries = [
+    await seedCalendar([
       {
         occurrenceId: "occ-lucius",
         definitionId: "legendary-event",
@@ -133,7 +108,7 @@ describe("EventsCalendar", () => {
         endUtc: isoDaysFromNow(3),
         parameters: null,
       },
-    ]
+    ])
 
     render(<EventsCalendar />)
 
@@ -142,19 +117,15 @@ describe("EventsCalendar", () => {
 
     const confirmedBadges = screen.getAllByTestId("event-confirmed-badge")
     expect(
-      confirmedBadges.some(
-        (badge) => badge.textContent === "events:badges.confirmed"
-      )
+      confirmedBadges.some((badge) => badge.textContent === "Confirmed")
     ).toBe(true)
     expect(
-      confirmedBadges.some(
-        (badge) => badge.textContent === "events:badges.projected"
-      )
+      confirmedBadges.some((badge) => badge.textContent === "Projected")
     ).toBe(true)
   })
 
   it("links to the wiki for a definition that has an article, but not for one that doesn't", async () => {
-    entries = [
+    await seedCalendar([
       {
         occurrenceId: "occ-lucius",
         definitionId: "legendary-event",
@@ -171,13 +142,13 @@ describe("EventsCalendar", () => {
         endUtc: isoDaysFromNow(3),
         parameters: null,
       },
-    ]
+    ])
 
     render(<EventsCalendar />)
 
     await screen.findAllByTestId("event-entry-card")
 
-    const wikiLinks = screen.getAllByRole("link", { name: "events:wikiLink" })
+    const wikiLinks = screen.getAllByRole("link", { name: "Wiki" })
     expect(wikiLinks).toHaveLength(1)
     expect(wikiLinks[0]).toHaveAttribute(
       "href",
@@ -188,7 +159,7 @@ describe("EventsCalendar", () => {
   })
 
   it("shows a legend swatch only for color categories present in the visible range", async () => {
-    entries = [
+    await seedCalendar([
       {
         occurrenceId: "occ-lucius",
         definitionId: "legendary-event",
@@ -197,19 +168,19 @@ describe("EventsCalendar", () => {
         endUtc: isoDaysFromNow(8),
         parameters: null,
       },
-    ]
+    ])
 
     render(<EventsCalendar />)
 
     await screen.findAllByTestId("event-entry-card")
 
     const legend = screen.getByTestId("events-calendar-legend")
-    expect(legend).toHaveTextContent("legend.legendary")
-    expect(legend).not.toHaveTextContent("legend.homeScreen")
+    expect(legend).toHaveTextContent("Legendary Event")
+    expect(legend).not.toHaveTextContent("Home Screen Event")
   })
 
   it("omits Double XP/Double Gold from the legend even when they're in the visible range", async () => {
-    entries = [
+    await seedCalendar([
       {
         occurrenceId: "occ-double-xp",
         definitionId: "always-double-xp-sunday",
@@ -226,19 +197,20 @@ describe("EventsCalendar", () => {
         endUtc: isoDaysFromNow(8),
         parameters: null,
       },
-    ]
+    ])
 
     render(<EventsCalendar />)
 
     await screen.findAllByTestId("event-entry-card")
 
     const legend = screen.getByTestId("events-calendar-legend")
-    expect(legend).toHaveTextContent("legend.legendary")
+    // Only the Legendary Event swatch: a Double XP one would render its (untranslated) key.
+    expect(legend).toHaveTextContent(/^Legendary Event$/)
     expect(legend).not.toHaveTextContent("legend.doubleXp")
   })
 
   it("marks an entry active when the current time falls within its window", async () => {
-    entries = [
+    await seedCalendar([
       {
         occurrenceId: "occ-active",
         definitionId: "legendary-event",
@@ -247,7 +219,7 @@ describe("EventsCalendar", () => {
         endUtc: isoDaysFromNow(5),
         parameters: null,
       },
-    ]
+    ])
 
     render(<EventsCalendar />)
 
@@ -257,7 +229,7 @@ describe("EventsCalendar", () => {
   })
 
   it("does not mark an entry active outside its window", async () => {
-    entries = [
+    await seedCalendar([
       {
         occurrenceId: "occ-future",
         definitionId: "legendary-event",
@@ -266,7 +238,7 @@ describe("EventsCalendar", () => {
         endUtc: isoDaysFromNow(10),
         parameters: null,
       },
-    ]
+    ])
 
     render(<EventsCalendar />)
 
@@ -275,6 +247,7 @@ describe("EventsCalendar", () => {
   })
 
   it("navigates to the next/previous week and back to today", async () => {
+    await seedCalendar([])
     render(<EventsCalendar />)
 
     await waitFor(() =>

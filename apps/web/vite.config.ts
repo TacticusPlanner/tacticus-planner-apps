@@ -49,14 +49,35 @@ export default defineConfig({
     },
   },
   resolve: {
-    alias: {
-      "@/app": path.resolve(__dirname, "./src/fsd/app"),
-      "@/pages": path.resolve(__dirname, "./src/fsd/pages"),
-      "@/widgets": path.resolve(__dirname, "./src/fsd/widgets"),
-      "@/features": path.resolve(__dirname, "./src/fsd/features"),
-      "@/entities": path.resolve(__dirname, "./src/fsd/entities"),
-      "@/shared": path.resolve(__dirname, "./src/fsd/shared"),
-      "@": path.resolve(__dirname, "./src"),
-    },
+    alias: [
+      // Resolve the shared UI package from source so dev, typecheck and tests need no prior
+      // `packages/ui` build. `@workspace/ui/globals.css` keeps resolving through its export.
+      {
+        find: /^@workspace\/ui\/(components|hooks|lib)\/(.*)$/,
+        replacement: path.resolve(__dirname, "../../packages/ui/src/$1/$2"),
+      },
+      { find: "@/app", replacement: path.resolve(__dirname, "./src/fsd/app") },
+      {
+        find: "@/pages",
+        replacement: path.resolve(__dirname, "./src/fsd/pages"),
+      },
+      {
+        find: "@/widgets",
+        replacement: path.resolve(__dirname, "./src/fsd/widgets"),
+      },
+      {
+        find: "@/features",
+        replacement: path.resolve(__dirname, "./src/fsd/features"),
+      },
+      {
+        find: "@/entities",
+        replacement: path.resolve(__dirname, "./src/fsd/entities"),
+      },
+      {
+        find: "@/shared",
+        replacement: path.resolve(__dirname, "./src/fsd/shared"),
+      },
+      { find: "@", replacement: path.resolve(__dirname, "./src") },
+    ],
   },
 })

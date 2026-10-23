@@ -1,25 +1,6 @@
 import { cleanup } from "@testing-library/react"
 import { render, screen, within } from "@/test/render"
-import { describe, expect, it, vi } from "vitest"
-
-vi.mock("react-i18next", () => ({
-  initReactI18next: { type: "3rdParty", init: vi.fn() },
-  useTranslation: () => ({
-    t: (key: string, opts?: Record<string, unknown>) => {
-      if (key.startsWith("goals.resourceChips.rarity.")) {
-        return key.split(".").pop()
-      }
-      if (key === "goals.resourceChips.chipLabel") {
-        return `${opts?.name}: ${opts?.quantity}`
-      }
-      if (key === "goals.resourceChips.poolLabel") {
-        return `${opts?.name}: ${opts?.available} of ${opts?.needed}`
-      }
-      return opts?.rarity ? `${opts.rarity} ${key.split(".").pop()}` : key
-    },
-    i18n: { resolvedLanguage: "en" },
-  }),
-}))
+import { describe, expect, it } from "vitest"
 
 import type { ResourceNeed } from "@/features/goal-farming"
 import { GoalResourceChips } from "./goal-resource-chips"
@@ -66,7 +47,7 @@ describe("GoalResourceChips", () => {
     }
     expect(shown(42_235)).toEqual({
       text: "42k",
-      label: "goals.resourceChips.gold: 42,235",
+      label: "Gold: 42,235",
     })
     expect(shown(1_999).text).toBe("1k")
     expect(shown(750).text).toBe("750")
@@ -81,10 +62,7 @@ describe("GoalResourceChips", () => {
         remaining={need({ levelGold: 42_000 })}
       />
     )
-    expect(chipNames()).toEqual([
-      "goals.resourceChips.energy: 1,674",
-      "goals.resourceChips.gold: 42,000",
-    ])
+    expect(chipNames()).toEqual(["Energy: 1,674", "Gold: 42,000"])
   })
 
   it("Rank: energy with a thousands separator, no material chips", () => {
@@ -96,7 +74,7 @@ describe("GoalResourceChips", () => {
         remaining={need()}
       />
     )
-    expect(chipNames()).toEqual(["goals.resourceChips.energy: 1,674"])
+    expect(chipNames()).toEqual(["Energy: 1,674"])
   })
 
   it("Ascension: orbs by rarity, shards, mythic shards and energy; zero quantities omitted", () => {
@@ -112,11 +90,7 @@ describe("GoalResourceChips", () => {
         })}
       />
     )
-    expect(chipNames()).toEqual([
-      "goals.resourceChips.energy: 50",
-      "Rare orbs: 3",
-      "goals.resourceChips.shards: 200",
-    ])
+    expect(chipNames()).toEqual(["Energy: 50", "Rare orbs: 3", "Shards: 200"])
   })
 
   it("Ascension: energy, gold, then onslaught tokens lead; orbs and shards follow", () => {
@@ -130,10 +104,10 @@ describe("GoalResourceChips", () => {
       />
     )
     expect(chipNames()).toEqual([
-      "goals.resourceChips.energy: 50",
-      "goals.resourceChips.onslaughtTokens: 7",
+      "Energy: 50",
+      "Onslaught tokens: 7",
       "Rare orbs: 3",
-      "goals.resourceChips.shards: 200",
+      "Shards: 200",
     ])
   })
 
@@ -146,10 +120,7 @@ describe("GoalResourceChips", () => {
         remaining={need({ shards: 227 })}
       />
     )
-    expect(chipNames()).toEqual([
-      "goals.resourceChips.energy: 5",
-      "goals.resourceChips.shards: 227",
-    ])
+    expect(chipNames()).toEqual(["Energy: 5", "Shards: 227"])
   })
 
   it("MoW Ability: available/needed badges, forge badges and components, then gold and energy", () => {
@@ -177,11 +148,11 @@ describe("GoalResourceChips", () => {
       screen.getAllByTestId("goal-resource-chip").map((c) => c.textContent)
     ).toEqual(["900", "12k", "27/27", "30/27", "118/138"])
     expect(chipNames()).toEqual([
-      "goals.resourceChips.energy: 900",
-      "goals.resourceChips.gold: 12,000",
-      "Legendary abilityBadges: 27 of 27",
-      "Legendary forgeBadges: 30 of 27",
-      "goals.resourceChips.components: 118 of 138",
+      "Energy: 900",
+      "Gold: 12,000",
+      "Legendary ability badges: 27 of 27",
+      "Legendary forge badges: 30 of 27",
+      "Machine of War components: 118 of 138",
     ])
   })
 
@@ -239,7 +210,7 @@ describe("GoalResourceChips", () => {
         })}
       />
     )
-    expect(chipNames()).toEqual(["Epic abilityBadges: 0 of 4"])
+    expect(chipNames()).toEqual(["Epic ability badges: 0 of 4"])
   })
 
   it("Character Ability: badges and gold", () => {
@@ -257,10 +228,7 @@ describe("GoalResourceChips", () => {
         })}
       />
     )
-    expect(chipNames()).toEqual([
-      "goals.resourceChips.gold: 12,000",
-      "Epic abilityBadges: 4",
-    ])
+    expect(chipNames()).toEqual(["Gold: 12,000", "Epic ability badges: 4"])
   })
 
   it("Upgrade: energy only", () => {
@@ -272,7 +240,7 @@ describe("GoalResourceChips", () => {
         remaining={need()}
       />
     )
-    expect(chipNames()).toEqual(["goals.resourceChips.energy: 80"])
+    expect(chipNames()).toEqual(["Energy: 80"])
   })
 
   it("renders each chip's icon and nothing when there is nothing to show", () => {
@@ -343,23 +311,19 @@ describe("GoalResourceChips", () => {
     }
 
     it("shows a token chip and no energy chip for an Onslaught-only goal", () => {
-      expect(renderTokens(0, 30)).toEqual([
-        "goals.resourceChips.onslaughtTokens: 30",
-      ])
+      expect(renderTokens(0, 30)).toEqual(["Onslaught tokens: 30"])
     })
 
     it("shows energy and tokens for a mixed goal", () => {
       expect(renderTokens(400, 12)).toEqual([
-        "goals.resourceChips.energy: 400",
-        "goals.resourceChips.onslaughtTokens: 12",
+        "Energy: 400",
+        "Onslaught tokens: 12",
       ])
     })
 
     it("shows no token chip without an Onslaught source", () => {
-      expect(renderTokens(400, undefined)).toEqual([
-        "goals.resourceChips.energy: 400",
-      ])
-      expect(renderTokens(400, 0)).toEqual(["goals.resourceChips.energy: 400"])
+      expect(renderTokens(400, undefined)).toEqual(["Energy: 400"])
+      expect(renderTokens(400, 0)).toEqual(["Energy: 400"])
     })
   })
 
@@ -375,8 +339,8 @@ describe("GoalResourceChips", () => {
     const chip = screen.getByTestId("goal-resource-chip")
     expect(chip).toHaveTextContent("1,995")
     const title = within(chip).getByRole("img").getAttribute("title")
-    expect(title).toContain("goals.resourceChips.energy: 1,995")
-    expect(title).toContain("goals.resourceChips.standalone")
+    expect(title).toContain("Energy: 1,995")
+    expect(title).toContain("Standalone: 12 upgrade slots, 3,410 energy")
   })
 
   it("shows no standalone tooltip content without overlap", () => {
@@ -393,7 +357,7 @@ describe("GoalResourceChips", () => {
       within(screen.getByTestId("goal-resource-chip"))
         .getByRole("img")
         .getAttribute("title")
-    ).not.toContain("standalone")
+    ).not.toContain("Standalone")
   })
   describe("shop currency", () => {
     it("shows the currency still to spend beside the shard chip, grouped per currency", () => {
@@ -413,9 +377,9 @@ describe("GoalResourceChips", () => {
       )
 
       expect(chipNames()).toEqual([
-        "goals.resourceChips.shards: 500",
-        "shops:currency.guildWarCurrency: 90,000",
-        "shops:currency.elderShopCurrency: 1,200",
+        "Shards: 500",
+        "Guild War Coins: 90,000",
+        "Rogue Trader Currency: 1,200",
       ])
     })
 
@@ -428,7 +392,7 @@ describe("GoalResourceChips", () => {
           remaining={need({ shards: 500, shardId: "shards" as never })}
         />
       )
-      expect(chipNames()).toEqual(["goals.resourceChips.shards: 500"])
+      expect(chipNames()).toEqual(["Shards: 500"])
 
       rerender(
         <GoalResourceChips
@@ -439,7 +403,7 @@ describe("GoalResourceChips", () => {
           shopSpend={new Map([["guildWarCurrency", 0.2]])}
         />
       )
-      expect(chipNames()).toEqual(["goals.resourceChips.shards: 500"])
+      expect(chipNames()).toEqual(["Shards: 500"])
     })
   })
 })

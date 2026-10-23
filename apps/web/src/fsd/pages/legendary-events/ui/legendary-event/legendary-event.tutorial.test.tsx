@@ -2,10 +2,6 @@ import { renderHook } from "@testing-library/react"
 import type { Step } from "react-joyride"
 import { describe, expect, it, vi } from "vitest"
 
-vi.mock("react-i18next", () => ({
-  useTranslation: () => ({ t: (key: string) => key }),
-}))
-
 import { useLegendaryEventTutorial } from "./legendary-event.tutorial"
 
 /**
@@ -97,7 +93,7 @@ function eventSteps() {
 describe("useLegendaryEventTutorial", () => {
   it("targets the Token plan header, not the whole card", () => {
     const step = eventSteps().desktop.find(
-      (entry) => entry.title === "tour.event.steps.tokenPlan.title"
+      (entry) => entry.title === "Token plan"
     )!
     expect(step.target).toBe(
       '[data-testid="legendary-event-token-plan-header"]'
@@ -107,7 +103,7 @@ describe("useLegendaryEventTutorial", () => {
 
   it("shows the Token plan step's tooltip below its header inside 1280 by 784 with 24 tokens", () => {
     const step = eventSteps().desktop.find(
-      (entry) => entry.title === "tour.event.steps.tokenPlan.title"
+      (entry) => entry.title === "Token plan"
     )!
     for (const tooltip of TOOLTIPS) {
       const rect = tooltipRect(

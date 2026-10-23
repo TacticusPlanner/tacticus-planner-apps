@@ -1,7 +1,9 @@
-import { useEffect, useState } from "react"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { act, fireEvent, render, screen, within } from "@/test/render"
 import userEvent from "@testing-library/user-event"
+
+import { setTestAuth } from "@/test/auth"
+import { seedGameCatalog, seedPlayerData } from "@/test/seed"
 
 vi.mock("@/shared/tour", () => ({
   useTourPageSteps: () => undefined,
@@ -11,41 +13,6 @@ vi.mock("@/shared/tour", () => ({
 vi.mock("../goal-edit/goal-edit-dialog", () => ({
   GoalEditDialog: ({ goalId }: { goalId: string | null }) =>
     goalId ? <div data-testid="goal-edit-dialog">{goalId}</div> : null,
-}))
-
-vi.mock("dexie-react-hooks", () => ({
-  useLiveQuery: (
-    querier: () => unknown,
-    deps: unknown[] = [],
-    defaultResult?: unknown
-  ) => {
-    const [value, setValue] = useState<unknown>(defaultResult)
-    useEffect(() => {
-      const result = querier()
-      if (result instanceof Promise) {
-        let active = true
-        void result.then((resolved) => {
-          if (active) setValue(resolved)
-        })
-        return () => {
-          active = false
-        }
-      }
-      setValue(result)
-      return undefined
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, deps)
-    return value
-  },
-}))
-
-vi.mock("react-i18next", () => ({
-  initReactI18next: { type: "3rdParty", init: () => undefined },
-  useTranslation: () => ({
-    t: (key: string, opts?: { defaultValue?: string }) =>
-      opts?.defaultValue ?? key,
-    i18n: { language: "en" },
-  }),
 }))
 
 vi.mock("@/entities/player-data-override", () => ({
@@ -112,59 +79,39 @@ vi.mock("sonner", () => ({
   toast: { success: vi.fn(), error: vi.fn() },
 }))
 
-const account = { homeAccountId: "acc-1", username: "test@example.com" }
+// Catalog record for the one unit every goal here targets.
+const catalogCharacters = [
+  {
+    id: "hero1",
+    name: "Hero One",
+    faction: "Ultramarines",
+    rankUpUpgrades: [{ rank: "Stone1", upgradeIds: ["h1"] }],
+  },
+]
 
-vi.mock("@azure/msal-react", () => ({
-  useMsal: () => ({
-    accounts: [account],
-    instance: { getActiveAccount: () => account },
-  }),
-  useIsAuthenticated: () => true,
-}))
+/** A synced, owned hero1 (so a Rank goal has no missing-Unlock blocker). */
+const ownedHero = (overrides: Record<string, unknown> = {}) => ({
+  unitId: "hero1",
+  rank: "Stone1",
+  appliedUpgradeSlots: [],
+  progressionIndex: "Mythic:MythicWings",
+  xpLevel: 60,
+  ...overrides,
+})
 
-const characters = new Map([
-  [
-    "hero1",
-    {
-      id: "hero1",
-      name: "Hero One",
-      faction: "Ultramarines",
-      rankUpUpgrades: [{ rank: "Stone1", upgradeIds: ["h1"] }],
-    },
-  ],
-])
-
-vi.mock("@workspace/game-catalog/queries", () => ({
-  getLegendaryEvents: () => Promise.resolve([]),
-  getCharactersMap: () => characters,
-  getMowsMap: () => new Map(),
-  getUpgrades: () => [],
-  getCampaignBattles: () => [],
-  getCampaignDefinitions: () => [],
-  getAscensionCostsMap: () => new Map(),
-  getUnlockShardCostsMap: () => new Map(),
-  getMowUpgradeCosts: () => [],
-  getCharacterAbilityCosts: () => [],
-  getOnslaughtRewards: () => [],
-  getShops: () => Promise.resolve([]),
-}))
-
-const getPlayerCharacters = vi.fn<() => unknown[]>(() => [])
-
-vi.mock("@workspace/player-data/queries", () => ({
-  getCampaignEventProgress: async () => [],
-  getCampaignProgress: vi.fn(async () => []),
-  getPlayerCharacter: () => Promise.resolve(undefined),
-  getPlayerMow: () => Promise.resolve(undefined),
-  getPlayerCharacters: (...args: unknown[]) =>
-    Promise.resolve(getPlayerCharacters(...(args as []))),
-  getPlayerMows: () => Promise.resolve([]),
-  getInventoryUpgrades: () => Promise.resolve(undefined),
-  getPlayerInventoryItems: () => Promise.resolve([]),
-  getInventoryAbilityMaterials: () => Promise.resolve(undefined),
-  getInventoryShard: () => Promise.resolve(undefined),
-  getLiveProgress: () => undefined,
-}))
+/**
+ * Holds every player-data read pending: an older-version connection that ignores `versionchange`
+ * blocks Dexie's open (and so every live query over it) until the returned release closes it.
+ */
+async function holdPlayerData() {
+  const db = await new Promise<IDBDatabase>((resolve, reject) => {
+    const request = indexedDB.open("tacticus-planner-player-data", 1)
+    request.onsuccess = () => resolve(request.result)
+    request.onerror = () => reject(request.error)
+  })
+  db.onversionchange = () => undefined
+  return () => db.close()
+}
 
 const listGoals = vi.fn()
 const listProjects = vi.fn()
@@ -376,14 +323,15 @@ const overviewProject = {
 }
 
 describe("GoalsPage", () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     listGoals.mockReset()
     listProjects.mockReset()
     createProject.mockReset()
     navigateMock.mockReset()
     membership = {}
     listProjects.mockResolvedValue({ projects: [] })
-    getPlayerCharacters.mockReset().mockReturnValue([])
+    setTestAuth({ authenticated: true })
+    await seedGameCatalog({ characters: catalogCharacters })
     updateProjectGoals.mockReset()
     updateGoalsStatus.mockReset()
     mobile.value = false
@@ -414,16 +362,15 @@ describe("GoalsPage", () => {
 
       await screen.findByTestId("goals-page-empty")
       const button = screen.getByTestId("goals-create-goal")
-      expect(button).toHaveAccessibleName("goals.createButton")
+      expect(button).toHaveAccessibleName("Create goal")
       // Desktop: Create goal leads the actions row. Mobile: it sits in the icon row.
       expect(
         screen.getByTestId(
           isMobile ? "goals-filter-group" : "goals-actions-row"
         )
       ).toContainElement(button)
-      if (isMobile)
-        expect(within(button).queryByText("goals.createButton")).toBeNull()
-      else expect(button).toHaveTextContent("goals.createButton")
+      if (isMobile) expect(within(button).queryByText("Create goal")).toBeNull()
+      else expect(button).toHaveTextContent("Create goal")
 
       await user.click(button)
       expect(onLaunch).toHaveBeenCalledTimes(1)
@@ -438,7 +385,7 @@ describe("GoalsPage", () => {
 
     await screen.findByTestId("goals-page-empty")
     const settingsButton = screen.getByTestId("goals-planning-settings")
-    expect(settingsButton).toHaveAccessibleName("goals.planningSettings.button")
+    expect(settingsButton).toHaveAccessibleName("Planning settings")
 
     await user.click(settingsButton)
     expect(
@@ -453,18 +400,16 @@ describe("GoalsPage", () => {
     await screen.findByTestId("goals-page-empty")
 
     const group = screen.getByTestId("goals-group-by")
-    expect(group).toHaveAccessibleName("goals.filters.groupByLabel")
+    expect(group).toHaveAccessibleName("Group by")
     expect(
       document.getElementById("goals-group-value")
     ).not.toBeEmptyDOMElement()
 
     await user.click(group)
-    await user.click(
-      screen.getByRole("option", { name: "goals.filters.groupByType" })
-    )
-    expect(group).toHaveAccessibleName("goals.filters.groupByLabel")
+    await user.click(screen.getByRole("option", { name: "Group by type" }))
+    expect(group).toHaveAccessibleName("Group by")
     expect(document.getElementById("goals-group-value")).toHaveTextContent(
-      "goals.filters.groupByType"
+      "Group by type"
     )
   })
 
@@ -493,7 +438,8 @@ describe("GoalsPage", () => {
     renderPage()
 
     expect(await screen.findByTestId("goals-list-table")).toBeInTheDocument()
-    expect(screen.getByText("Hero One")).toBeInTheDocument()
+    // The unit name comes from the seeded catalog, read by a live query after mount.
+    expect(await screen.findByText("Hero One")).toBeInTheDocument()
     expect(
       screen.getByTestId(`goal-row-menu-${activeGoal.goalId}`)
     ).toBeInTheDocument()
@@ -507,9 +453,7 @@ describe("GoalsPage", () => {
     await screen.findByTestId("goals-list-table")
 
     await user.click(screen.getByTestId("goals-status-filter"))
-    await user.click(
-      await screen.findByRole("option", { name: "goals.tabs.reached (0)" })
-    )
+    await user.click(await screen.findByRole("option", { name: "Reached (0)" }))
 
     expect(
       await screen.findByTestId("goals-page-filtered-empty")
@@ -524,9 +468,7 @@ describe("GoalsPage", () => {
     await screen.findByTestId("goals-list-table")
 
     await user.click(screen.getByTestId("goals-status-filter"))
-    await user.click(
-      await screen.findByRole("option", { name: /^goals\.tabs\.paused/ })
-    )
+    await user.click(await screen.findByRole("option", { name: /^Paused/ }))
 
     await screen.findByTestId("goals-list-table")
     expect(screen.getAllByTestId("goal-row")).toHaveLength(1)
@@ -543,9 +485,7 @@ describe("GoalsPage", () => {
     await screen.findByTestId("goals-list-table")
 
     await user.click(screen.getByTestId("goals-status-filter"))
-    await user.click(
-      await screen.findByRole("option", { name: /^goals\.tabs\.active/ })
-    )
+    await user.click(await screen.findByRole("option", { name: /^Active/ }))
 
     await screen.findByTestId("goals-list-table")
     expect(screen.getAllByTestId("goal-row")).toHaveLength(1)
@@ -557,25 +497,15 @@ describe("GoalsPage", () => {
   it("selects the Blocked status without a live count and shows the filtered-empty state when nothing is blocked", async () => {
     listGoals.mockResolvedValue({ goals: [activeGoal] })
     // Owned, so the Rank goal has no missing-Unlock blocker.
-    getPlayerCharacters.mockReturnValue([
-      {
-        unitId: "hero1",
-        rank: "Stone1",
-        appliedUpgradeSlots: [],
-        progressionIndex: "Mythic:MythicWings",
-        xpLevel: 60,
-      },
-    ])
+    await seedPlayerData({ characters: [ownedHero()] })
     const user = userEvent.setup()
     renderPage()
 
     await screen.findByTestId("goals-list-table")
 
     await user.click(screen.getByTestId("goals-status-filter"))
-    expect(
-      screen.getByRole("option", { name: "goals.tabs.blocked" })
-    ).toBeInTheDocument()
-    await user.click(screen.getByRole("option", { name: "goals.tabs.blocked" }))
+    expect(screen.getByRole("option", { name: "Blocked" })).toBeInTheDocument()
+    await user.click(screen.getByRole("option", { name: "Blocked" }))
 
     expect(
       await screen.findByTestId("goals-page-filtered-empty")
@@ -584,21 +514,17 @@ describe("GoalsPage", () => {
 
   it("holds the Unfulfilled list in its loading state until every goal's attainment is known", async () => {
     listGoals.mockResolvedValue({ goals: [activeGoal] })
-    let resolveCharacters!: (value: unknown[]) => void
-    getPlayerCharacters.mockReturnValue(
-      new Promise((resolve) => {
-        resolveCharacters = resolve
-      }) as unknown as unknown[]
-    )
+    const releasePlayerData = await holdPlayerData()
     renderPage()
 
-    await vi.waitFor(() => expect(getPlayerCharacters).toHaveBeenCalled())
-    expect(screen.getByTestId("goals-page-loading")).toBeInTheDocument()
+    // The goals list has loaded, but the player-data read behind attainment has not.
+    await vi.waitFor(() => expect(listGoals).toHaveBeenCalled())
+    expect(await screen.findByTestId("goals-page-loading")).toBeInTheDocument()
     expect(screen.queryByTestId("goal-row")).toBeNull()
     expect(screen.queryByTestId("goals-page-filtered-empty")).toBeNull()
 
     await act(async () => {
-      resolveCharacters([])
+      releasePlayerData()
       await Promise.resolve()
     })
     await vi.waitFor(() =>
@@ -642,15 +568,7 @@ describe("GoalsPage", () => {
         },
       ],
     })
-    getPlayerCharacters.mockReturnValue([
-      {
-        unitId: "hero1",
-        rank: "Stone1",
-        appliedUpgradeSlots: [],
-        progressionIndex: "Mythic:MythicWings",
-        xpLevel: 60,
-      },
-    ])
+    await seedPlayerData({ characters: [ownedHero()] })
     const user = userEvent.setup()
     renderPage()
 
@@ -663,9 +581,7 @@ describe("GoalsPage", () => {
     // Attainment may already be resolved by the time the dropdown opens (this test's mocks
     // resolve the goal as already meeting its rank target), so match the option by its status
     // label alone rather than an exact, timing-dependent count.
-    await user.click(
-      await screen.findByRole("option", { name: /^goals\.tabs\.reached/ })
-    )
+    await user.click(await screen.findByRole("option", { name: /^Reached/ }))
 
     expect(await screen.findByText("Hero One")).toBeInTheDocument()
     await vi.waitFor(() => {
@@ -691,16 +607,9 @@ describe("GoalsPage", () => {
         },
       ],
     })
-    getPlayerCharacters.mockReturnValue([
-      {
-        unitId: "hero1",
-        rank: "Stone1",
-        appliedUpgradeSlots: [],
-        progressionIndex: "Mythic:MythicWings",
-        xpLevel: 31,
-        xp: 82_000,
-      },
-    ])
+    await seedPlayerData({
+      characters: [ownedHero({ xpLevel: 31, xp: 82_000 })],
+    })
     // 94,200 - 82,000 = 12,200 XP charged; a 100,000-XP pool at the default Legendary rarity
     // (12,500/book) is floor(100,000 / 12,500) = 8 available against ceil(12,200 / 12,500) = 1 needed.
     insightsResult.value = {
@@ -711,7 +620,7 @@ describe("GoalsPage", () => {
     renderPage()
 
     const books = await screen.findByTestId("level-requirement-books")
-    expect(books).toHaveTextContent("goals.resourceChips.xpBooksValue")
+    expect(books).toHaveTextContent("8 of 1")
     expect(screen.queryByTestId("goal-resource-chip")).toBeNull()
   })
 
@@ -727,10 +636,10 @@ describe("GoalsPage", () => {
     await screen.findByTestId("goals-list-table")
     await user.click(screen.getByTestId("goals-status-filter"))
     expect(
-      await screen.findByRole("option", { name: "goals.tabs.toReach (1)" })
+      await screen.findByRole("option", { name: "Unfulfilled (1)" })
     ).toBeInTheDocument()
     expect(
-      screen.queryByRole("option", { name: /^goals\.tabs\.archived/ })
+      screen.queryByRole("option", { name: /^Archived/ })
     ).not.toBeInTheDocument()
     expect(listGoals).toHaveBeenCalledWith({ archived: true })
   })
@@ -792,10 +701,10 @@ describe("GoalsPage", () => {
 
     await screen.findByTestId(`goal-row-menu-${activeGoal.goalId}`)
     expect(
-      screen.queryByRole("heading", { name: "goals.create.goalTypes.Rank" })
+      screen.queryByRole("heading", { name: "Rank" })
     ).not.toBeInTheDocument()
     expect(
-      screen.queryByRole("heading", { name: "goals.create.goalTypes.Ability" })
+      screen.queryByRole("heading", { name: "Ability" })
     ).not.toBeInTheDocument()
   })
 
@@ -810,14 +719,14 @@ describe("GoalsPage", () => {
 
     fireEvent.click(await screen.findByTestId("goals-group-by"))
     fireEvent.click(
-      await screen.findByRole("option", { name: "goals.filters.groupByType" })
+      await screen.findByRole("option", { name: "Group by type" })
     )
 
     expect(
-      screen.getByRole("heading", { name: "goals.create.goalTypes.Rank" })
+      await screen.findByRole("heading", { name: "Rank" })
     ).toBeInTheDocument()
     expect(
-      screen.getByRole("heading", { name: "goals.create.goalTypes.Ability" })
+      await screen.findByRole("heading", { name: "Ability" })
     ).toBeInTheDocument()
   })
 
@@ -879,7 +788,7 @@ describe("GoalsPage", () => {
         within(screen.getByTestId("goals-project-scope"))
           .getAllByRole("button")
           .map((chip) => chip.textContent)
-      ).toEqual(["goals.project.scopeAll2", "My Goals1", "Event Prep1"])
+      ).toEqual(["All goals2", "My Goals1", "Event Prep1"])
     )
     expect(screen.getByTestId("location-search")).toHaveTextContent("")
   })
@@ -934,17 +843,13 @@ describe("GoalsPage", () => {
       expect(screen.getAllByTestId("goal-row")).toHaveLength(1)
     )
     expect(screen.getByTestId("goal-row")).toHaveTextContent("hero2")
-    expect(
-      screen.getByRole("heading", { name: "goals.create.goalTypes.Rank" })
-    ).toBeInTheDocument()
+    expect(screen.getByRole("heading", { name: "Rank" })).toBeInTheDocument()
 
     await user.click(screen.getByTestId("goals-type-filter"))
-    await user.click(
-      await screen.findByRole("option", { name: "goals.create.goalTypes.Rank" })
-    )
+    await user.click(await screen.findByRole("option", { name: "Rank" }))
     await user.click(screen.getByTestId("goals-status-filter"))
     expect(
-      await screen.findByRole("option", { name: "goals.tabs.toReach (1)" })
+      await screen.findByRole("option", { name: "Unfulfilled (1)" })
     ).toBeInTheDocument()
     await user.keyboard("{Escape}")
 
@@ -952,15 +857,13 @@ describe("GoalsPage", () => {
     await vi.waitFor(() =>
       expect(screen.getAllByTestId("goal-row")).toHaveLength(2)
     )
-    expect(
-      screen.getByRole("heading", { name: "goals.create.goalTypes.Rank" })
-    ).toBeInTheDocument()
+    expect(screen.getByRole("heading", { name: "Rank" })).toBeInTheDocument()
     expect(
       document.getElementById("goals-type-filter-value")
-    ).toHaveTextContent("goals.create.goalTypes.Rank")
+    ).toHaveTextContent("Rank")
     await user.click(screen.getByTestId("goals-status-filter"))
     expect(
-      await screen.findByRole("option", { name: "goals.tabs.toReach (2)" })
+      await screen.findByRole("option", { name: "Unfulfilled (2)" })
     ).toBeInTheDocument()
     window.localStorage.removeItem("goals.overview.group")
   })
@@ -1049,8 +952,12 @@ describe("GoalsPage", () => {
     expect(screen.queryByTestId("goals-order-note")).toBeNull()
     await user.click(await screen.findByTestId("goals-order-hint"))
     const content = await screen.findByTestId("goals-order-hint-content")
-    expect(content).toHaveTextContent("goals.order.listNote")
-    expect(content).not.toHaveTextContent("goals.order.scopedNote")
+    expect(content).toHaveTextContent(
+      "Goals are in your priority order. Drag an active or paused goal to move it"
+    )
+    expect(content).not.toHaveTextContent(
+      "position in your account-wide priority order"
+    )
     view.unmount()
 
     renderPage("/plan/goals?project=proj-1")
@@ -1058,7 +965,7 @@ describe("GoalsPage", () => {
     await user.click(await screen.findByTestId("goals-order-hint"))
     expect(
       await screen.findByTestId("goals-order-hint-content")
-    ).toHaveTextContent("goals.order.scopedNote")
+    ).toHaveTextContent("position in your account-wide priority order")
   })
 
   it("opens the order hint on keyboard focus and hides it when reordering is unavailable", async () => {
@@ -1127,7 +1034,9 @@ describe("GoalsPage", () => {
 
     expect(
       await screen.findByTestId("goals-page-empty-project")
-    ).toHaveTextContent("goals.project.emptyProjectDescription")
+    ).toHaveTextContent(
+      "Use Manage goals on the Projects page to put existing goals into it"
+    )
     expect(screen.queryByTestId("goals-page-filtered-empty")).toBeNull()
     expect(screen.queryByTestId("goals-page-empty")).toBeNull()
     view.unmount()
@@ -1136,9 +1045,7 @@ describe("GoalsPage", () => {
     renderPage("/plan/goals?project=proj-1")
     await screen.findByTestId("goals-list-table")
     await user.click(screen.getByTestId("goals-status-filter"))
-    await user.click(
-      await screen.findByRole("option", { name: /^goals\.tabs\.reached/ })
-    )
+    await user.click(await screen.findByRole("option", { name: /^Reached/ }))
     expect(
       await screen.findByTestId("goals-page-filtered-empty")
     ).toBeInTheDocument()
@@ -1150,12 +1057,13 @@ describe("GoalsPage bulk actions", () => {
   const goalB = { ...activeGoal, goalId: "goal-b", entityId: "hero1" }
   const pausedB = { ...pausedGoal, goalId: "goal-p", entityId: "hero1" }
 
-  beforeEach(() => {
+  beforeEach(async () => {
     listGoals.mockReset()
     listProjects.mockReset()
     membership = {}
     listProjects.mockResolvedValue({ projects: [] })
-    getPlayerCharacters.mockReset().mockReturnValue([])
+    setTestAuth({ authenticated: true })
+    await seedGameCatalog({ characters: catalogCharacters })
     updateGoalsStatus
       .mockReset()
       .mockResolvedValue({ goals: [], orderRevision: 0 })
@@ -1238,9 +1146,7 @@ describe("GoalsPage bulk actions", () => {
     expect(screen.getByTestId("goals-bulk-delete")).toBeEnabled()
 
     await user.click(screen.getByTestId("goals-status-filter"))
-    await user.click(
-      await screen.findByRole("option", { name: /^goals\.tabs\.paused/ })
-    )
+    await user.click(await screen.findByRole("option", { name: /^Paused/ }))
 
     await vi.waitFor(() =>
       expect(screen.getByTestId("goals-bulk-delete")).toBeDisabled()
@@ -1257,7 +1163,7 @@ describe("GoalsPage bulk actions", () => {
 
     await user.click(screen.getByTestId("goals-bulk-delete"))
     expect(await screen.findByTestId("delete-goal-dialog")).toBeInTheDocument()
-    await user.click(screen.getByText("goals.delete.cancel"))
+    await user.click(screen.getByText("Cancel"))
     expect(deleteGoal).not.toHaveBeenCalled()
     expect(screen.getByTestId("goal-row-select-goal-1")).toBeChecked()
 
@@ -1336,7 +1242,7 @@ describe("GoalsPage bulk actions", () => {
       const item = await screen.findByTestId(
         "goal-row-remove-from-project-goal-b"
       )
-      expect(item).toHaveTextContent("goals.project.removeFromProject")
+      expect(item).toHaveTextContent("Remove from this project")
       await user.click(item)
 
       await vi.waitFor(() =>
@@ -1360,7 +1266,7 @@ describe("GoalsPage bulk actions", () => {
       const item = await screen.findByTestId(
         "goal-row-remove-from-project-goal-1"
       )
-      expect(item).toHaveTextContent("goals.project.moveToProject")
+      expect(item).toHaveTextContent("Move to project")
       await user.click(item)
       await user.click(
         await screen.findByTestId("project-picker-option-proj-2")
@@ -1424,7 +1330,9 @@ describe("GoalsPage bulk actions", () => {
 
       expect(
         await screen.findByTestId("delete-goal-project-alternative")
-      ).toHaveTextContent("goals.delete.projectAlternative")
+      ).toHaveTextContent(
+        "To take it out of My Goals only, cancel and use “Remove from this project” instead."
+      )
     })
   })
 
@@ -1453,7 +1361,7 @@ describe("GoalsPage bulk actions", () => {
       await user.click(screen.getByTestId("goals-mobile-select-toggle"))
       const bar = await screen.findByTestId("mobile-select-bar")
       expect(within(bar).getByTestId("mobile-select-count")).toHaveTextContent(
-        "goals.bulk.selected"
+        "0 selected"
       )
       expect(screen.getByTestId("goals-bulk-delete")).toBeDisabled()
 
