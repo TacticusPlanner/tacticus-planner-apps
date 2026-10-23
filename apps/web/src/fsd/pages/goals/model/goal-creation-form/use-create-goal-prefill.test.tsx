@@ -1,6 +1,6 @@
 import { renderHook } from "@testing-library/react"
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import type { UnitId } from "@workspace/game-domain"
+import type { UnitId, UpgradeId } from "@workspace/game-domain"
 
 import { useCreateGoalPrefill } from ".//use-create-goal-prefill"
 import type { CreateGoalPrefill } from ".//create-goal-launcher-context"
@@ -14,6 +14,14 @@ const fns = {
   selectProjects: vi.fn(),
   setProgressionEnd: vi.fn(),
   setRankEnd: vi.fn(),
+  addUpgradeTarget: vi.fn(),
+}
+
+const upgradeFields = {
+  state: {
+    addUpgradeTarget: fns.addUpgradeTarget,
+    relevantUpgradeQuantities: new Map([["upgHpC001" as UpgradeId, 4]]),
+  },
 }
 
 function render(prefill: CreateGoalPrefill | undefined, entityId?: UnitId) {
@@ -25,6 +33,7 @@ function render(prefill: CreateGoalPrefill | undefined, entityId?: UnitId) {
       playerEntity: {},
       ...fns,
       targetSetters: fns,
+      upgradeFields,
     })
   )
 }
@@ -95,6 +104,22 @@ describe("useCreateGoalPrefill", () => {
     expect(fns.setEnabledTypes).toHaveBeenCalledWith(new Set(["Rank"]))
     expect(fns.setRankEnd).toHaveBeenCalledWith("Silver3")
     expect(fns.setProgressionEnd).not.toHaveBeenCalled()
+  })
+
+  it("adds the material target for an Upgrade prefill", () => {
+    render(
+      {
+        entityType: "Character",
+        entityId: unitId,
+        goalType: "Upgrade",
+        upgradeId: "upgHpC001" as UpgradeId,
+      },
+      unitId
+    )
+
+    expect(fns.setEnabledTypes).toHaveBeenCalledWith(new Set(["Upgrade"]))
+    expect(fns.addUpgradeTarget).toHaveBeenCalledWith("upgHpC001", 4)
+    expect(fns.setRankEnd).not.toHaveBeenCalled()
   })
 
   it("selects only the unit for a unit-only prefill and keeps the project fallback", () => {

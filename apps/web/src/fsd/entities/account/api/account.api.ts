@@ -48,7 +48,8 @@ export type ImportPartResult = S["ImportPartResult"]
 /** One outcome per source V1 goal, plus one per automatically added prerequisite — the import creates
  *  goals itself. `code` is a stable machine-readable discriminator (e.g. "goal_created",
  *  "unknown_unit") the client buckets on; `message` is a server-composed, already-readable sentence
- *  rendered as-is. */
+ *  rendered as-is. A V1 material goal's outcome carries its `upgradeId`; a V1 pre-farm goal's
+ *  ("manual_step_required") also carries `linkedSourceGoalIds`, the V1 goals it pre-farmed for. */
 export type V1GoalOutcome = S["V1GoalOutcome"]
 
 /** One dropped unit, objective or team, or a merge, or a run input or mark issue, under the V1 event it

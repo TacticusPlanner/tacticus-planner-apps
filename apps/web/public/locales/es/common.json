@@ -572,6 +572,13 @@
         "syncRequiredTitle": "Primero debes sincronizar tus datos de jugador",
         "syncRequired": "Sincroniza tus datos de jugador y luego vuelve a importar los objetivos."
       },
+      "preFarm": {
+        "title": "Los objetivos de pre-farmeo necesitan un paso más",
+        "description": "V2 no tiene objetivos de pre-farmeo, así que no se importaron. Para seguir pre-farmeando un material, crea un objetivo de Mejora para él en la unidad indicada y colócalo antes de los demás objetivos de esa unidad.",
+        "forUnits": "Pre-farmeado para {{units}}",
+        "noLinkedUnit": "Los objetivos para los que se pre-farmeaba no se importaron, así que elige tú la unidad.",
+        "createUpgradeGoal": "Crear objetivo de Mejora"
+      },
       "reasons": {
         "goalCreated": "Importado desde V1.",
         "prerequisiteAdded": "Añadido automáticamente porque otro objetivo importado lo necesita.",
@@ -587,6 +594,9 @@
         "targetRejected": "El objetivo de este objetivo no es válido.",
         "projectSlotConflict": "Se creó simultáneamente otro objetivo para esta unidad y tipo.",
         "prerequisiteRejected": "Este requisito añadido automáticamente no es válido para este objetivo.",
+        "unknownUpgrade": "Este material de mejora no está en el catálogo del juego de V2.",
+        "noUpgradeOwner": "Ninguno de tus personajes ni Máquinas de Guerra usa este material de mejora.",
+        "manualStepRequired": "Los objetivos de pre-farmeo no existen en V2. Sigue los pasos de arriba para seguir pre-farmeando este material.",
         "generic": "No se pudo importar este objetivo."
       },
       "legendaryEvents": {

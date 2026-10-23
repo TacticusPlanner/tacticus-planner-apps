@@ -8,6 +8,7 @@ import {
   groupOutcomes,
   importedCounts,
   isAutomaticallyAdded,
+  preFarmSteps,
   reasonKeyForCode,
 } from "./outcome-buckets"
 
@@ -39,6 +40,9 @@ describe("bucketForCode", () => {
     expect(bucketForCode("unsupported_goal_type")).toBe("notImported")
     expect(bucketForCode("invalid_progression")).toBe("notImported")
     expect(bucketForCode("missing_target")).toBe("notImported")
+    expect(bucketForCode("unknown_upgrade")).toBe("notImported")
+    expect(bucketForCode("no_upgrade_owner")).toBe("notImported")
+    expect(bucketForCode("manual_step_required")).toBe("needsAction")
     expect(bucketForCode("player_data_required")).toBe("failed")
     expect(bucketForCode("target_rejected")).toBe("failed")
     expect(bucketForCode("project_slot_conflict")).toBe("failed")
@@ -134,6 +138,7 @@ describe("groupOutcomes", () => {
     expect(grouped).toEqual({
       imported: [],
       needsNoImport: [],
+      needsAction: [],
       notImported: [],
       failed: [],
     })
@@ -270,5 +275,79 @@ describe("buildDiagnosticText", () => {
       reasonFor,
     })
     expect(text).toContain("- Unspecified unit: reason:unsupported_goal_type")
+  })
+})
+
+describe("preFarmSteps", () => {
+  it("resolves each pre-farm goal's linked V1 goals to their distinct units", () => {
+    const steps = preFarmSteps([
+      outcome({ sourceGoalId: "rank-a", entityId: "heroA" }),
+      outcome({
+        sourceGoalId: "ability-a",
+        entityId: "heroA",
+        goalType: "Ability",
+      }),
+      outcome({
+        sourceGoalId: "mow-b",
+        entityType: "Mow",
+        entityId: "mowB",
+        goalType: "Ability",
+      }),
+      outcome({
+        status: "Failed",
+        code: "unknown_unit",
+        sourceGoalId: "gone",
+        entityType: "Character",
+        entityId: null,
+        goalType: null,
+      }),
+      outcome({
+        status: "Skipped",
+        code: "manual_step_required",
+        sourceGoalId: "pf-1",
+        entityType: null,
+        entityId: null,
+        goalType: null,
+        goalId: null,
+        upgradeId: "upgHpC001",
+        linkedSourceGoalIds: ["rank-a", "ability-a", "mow-b", "gone"],
+      }),
+    ])
+
+    expect(steps).toEqual([
+      {
+        sourceGoalId: "pf-1",
+        upgradeId: "upgHpC001",
+        units: [
+          { entityType: "Character", entityId: "heroA" },
+          { entityType: "Mow", entityId: "mowB" },
+        ],
+      },
+    ])
+  })
+
+  it("keeps a pre-farm goal whose linked goals were not imported, with no units", () => {
+    const steps = preFarmSteps([
+      outcome({
+        status: "Skipped",
+        code: "manual_step_required",
+        sourceGoalId: "pf-1",
+        upgradeId: "upgHpC001",
+        linkedSourceGoalIds: [],
+      }),
+    ])
+
+    expect(steps).toEqual([
+      { sourceGoalId: "pf-1", upgradeId: "upgHpC001", units: [] },
+    ])
+  })
+
+  it("groups the manual step in its own bucket", () => {
+    const buckets = groupOutcomes([
+      outcome({ code: "manual_step_required", status: "Skipped" }),
+    ])
+
+    expect(buckets.needsAction).toHaveLength(1)
+    expect(buckets.notImported).toHaveLength(0)
   })
 })

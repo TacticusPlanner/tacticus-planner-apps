@@ -572,6 +572,13 @@
         "syncRequiredTitle": "Spielerdaten müssen zuerst synchronisiert werden",
         "syncRequired": "Synchronisiere deine Spielerdaten und importiere die Ziele danach erneut."
       },
+      "preFarm": {
+        "title": "Vorfarm-Ziele brauchen noch einen Schritt",
+        "description": "V2 hat keinen Vorfarm-Zieltyp, daher wurden diese nicht importiert. Um ein Material weiter vorzufarmen, lege dafür ein Upgrade-Ziel für die Einheit unten an und setze es vor die anderen Ziele dieser Einheit.",
+        "forUnits": "Vorgefarmt für {{units}}",
+        "noLinkedUnit": "Die zugehörigen Ziele wurden nicht importiert, wähle die Einheit daher selbst.",
+        "createUpgradeGoal": "Upgrade-Ziel erstellen"
+      },
       "reasons": {
         "goalCreated": "Aus V1 importiert.",
         "prerequisiteAdded": "Automatisch hinzugefügt, da ein anderes importiertes Ziel dies benötigt.",
@@ -587,6 +594,9 @@
         "targetRejected": "Das Ziel für dieses Vorhaben ist ungültig.",
         "projectSlotConflict": "Ein weiteres Ziel für diese Einheit und diesen Typ wurde gleichzeitig erstellt.",
         "prerequisiteRejected": "Diese automatisch hinzugefügte Voraussetzung ist für dieses Ziel ungültig.",
+        "unknownUpgrade": "Dieses Upgrade-Material ist nicht im V2-Spielkatalog enthalten.",
+        "noUpgradeOwner": "Keiner deiner Charaktere und keine deiner Kampfmaschinen verwendet dieses Upgrade-Material.",
+        "manualStepRequired": "Vorfarm-Ziele gibt es in V2 nicht. Folge den Schritten oben, um dieses Material weiter vorzufarmen.",
         "generic": "Dieses Ziel konnte nicht importiert werden."
       },
       "legendaryEvents": {

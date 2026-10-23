@@ -1,5 +1,10 @@
 import { useEffect, useRef } from "react"
-import type { Progression, Rank, UnitId } from "@workspace/game-domain"
+import type {
+  Progression,
+  Rank,
+  UnitId,
+  UpgradeId,
+} from "@workspace/game-domain"
 
 import type { GoalKind } from "@/entities/goal"
 import type { EntityType } from ".//use-create-goal-form"
@@ -15,6 +20,7 @@ export function useCreateGoalPrefill({
   setEnabledTypes,
   selectProjects,
   targetSetters,
+  upgradeFields,
 }: {
   open: boolean
   prefill?: CreateGoalPrefill
@@ -28,6 +34,13 @@ export function useCreateGoalPrefill({
   targetSetters: {
     setProgressionEnd: (progression: Progression) => void
     setRankEnd: (rank: Rank) => void
+  }
+  /** An Upgrade prefill's material, added with the picker's own required-amount hint. */
+  upgradeFields: {
+    state: {
+      addUpgradeTarget: (upgradeId: UpgradeId, quantity: number) => void
+      relevantUpgradeQuantities: ReadonlyMap<UpgradeId, number>
+    }
   }
 }) {
   const selectionKeyRef = useRef("")
@@ -70,6 +83,14 @@ export function useCreateGoalPrefill({
     if (prefill.goalType === "Ascension")
       targetSetters.setProgressionEnd(prefill.requiredProgression)
     if (prefill.goalType === "Rank") targetSetters.setRankEnd(prefill.rankEnd)
+    if (prefill.goalType === "Upgrade") {
+      const { addUpgradeTarget, relevantUpgradeQuantities } =
+        upgradeFields.state
+      addUpgradeTarget(
+        prefill.upgradeId,
+        relevantUpgradeQuantities.get(prefill.upgradeId) ?? 1
+      )
+    }
     // Unlock has no target field to prefill — selecting the entity/goal type (above) is enough.
     // Field setters are stable and the target applies once per prefill.
     // eslint-disable-next-line react-hooks/exhaustive-deps

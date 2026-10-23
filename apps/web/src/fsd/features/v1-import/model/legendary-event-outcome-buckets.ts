@@ -6,10 +6,13 @@ import { MAX_CLOSE_SHARDS, MIN_TEAM_MEMBERS } from "@/entities/legendary-event"
 
 import type { OutcomeBucketKey } from "./outcome-buckets"
 
+// No Legendary Event outcome asks the user for a manual step.
+export type LegendaryEventBucketKey = Exclude<OutcomeBucketKey, "needsAction">
+
 // Per-event outcomes of the `legendaryEventPlans` part, bucketed like goals (add-legendary-event-
 // teams design D10). An unknown code falls back by status, so a new server code still lands in a
 // bucket that reads right ("Failed" → failed, anything else not imported).
-const CODE_BUCKETS: Record<string, OutcomeBucketKey> = {
+const CODE_BUCKETS: Record<string, LegendaryEventBucketKey> = {
   imported: "imported",
   // Run inputs, marks and/or notes written without a team (add-legendary-event-run-inputs D7).
   inputs_imported: "imported",
@@ -20,7 +23,7 @@ const CODE_BUCKETS: Record<string, OutcomeBucketKey> = {
 
 function bucketForLegendaryEventOutcome(
   outcome: Pick<V1LegendaryEventOutcome, "code" | "status">
-): OutcomeBucketKey {
+): LegendaryEventBucketKey {
   return (
     CODE_BUCKETS[outcome.code] ??
     (outcome.status === "Failed" ? "failed" : "notImported")
@@ -28,7 +31,7 @@ function bucketForLegendaryEventOutcome(
 }
 
 export type LegendaryEventBuckets = Record<
-  OutcomeBucketKey,
+  LegendaryEventBucketKey,
   V1LegendaryEventOutcome[]
 >
 

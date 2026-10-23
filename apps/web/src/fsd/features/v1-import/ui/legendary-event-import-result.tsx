@@ -2,13 +2,13 @@ import { useTranslation } from "react-i18next"
 
 import {
   reasonKeyForLegendaryEventOutcome,
+  type LegendaryEventBucketKey,
   type LegendaryEventBuckets,
 } from "../model/legendary-event-outcome-buckets"
-import type { OutcomeBucketKey } from "../model/outcome-buckets"
 import { useLegendaryEventIssueText } from "../model/use-legendary-event-issue-text"
 import { useLegendaryEventName } from "../model/use-legendary-event-name"
 
-const BUCKET_ORDER: readonly OutcomeBucketKey[] = [
+const BUCKET_ORDER: readonly LegendaryEventBucketKey[] = [
   "imported",
   "needsNoImport",
   "notImported",

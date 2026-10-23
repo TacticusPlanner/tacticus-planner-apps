@@ -26,6 +26,7 @@ import {
   groupOutcomes,
   importedCounts,
   isAutomaticallyAdded,
+  preFarmSteps,
   reasonKeyForCode,
 } from "../model/outcome-buckets"
 import {
@@ -38,6 +39,7 @@ import { V1_IMPORT_PARTS } from "../model/parts"
 import { useLegendaryEventIssueText } from "../model/use-legendary-event-issue-text"
 import { useLegendaryEventName } from "../model/use-legendary-event-name"
 import { LegendaryEventImportResult } from "./legendary-event-import-result"
+import { PreFarmSteps } from "./pre-farm-steps"
 
 // i18next's `t` only accepts keys it can statically verify exist in the locale resources, so a
 // status-derived key is built through this small literal-keyed lookup rather than a template
@@ -64,6 +66,10 @@ export function ImportResult({ result }: { result: ImportV1ProfileResult }) {
   const syncRequired = result.goals.code === "player_data_required"
   const { goals: importedGoalCount, units: importedUnitCount } = importedCounts(
     buckets.imported
+  )
+  const preFarm = useMemo(
+    () => preFarmSteps(result.outcomes),
+    [result.outcomes]
   )
   // Absent from a response of an API that predates the part.
   const legendaryEventBuckets = useMemo(
@@ -149,6 +155,10 @@ export function ImportResult({ result }: { result: ImportV1ProfileResult }) {
             {t("goals.v1Import.report.syncRequired")}
           </AlertDescription>
         </Alert>
+      ) : null}
+
+      {!syncRequired && preFarm.length > 0 ? (
+        <PreFarmSteps steps={preFarm} />
       ) : null}
 
       {!syncRequired && result.outcomes.length > 0 ? (

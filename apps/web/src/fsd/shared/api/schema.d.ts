@@ -3465,6 +3465,9 @@ export interface components {
       /** Format: uuid */
       goalId: null | string
       sourceGoalId: null | string
+      upgradeId?: null | string
+      linkedSourceGoalIds?:
+        null | components["schemas"]["IReadOnlyListOfString"]
     }
     /** @enum {string} */
     V1GoalOutcomeStatus: "Created" | "Skipped" | "Failed"

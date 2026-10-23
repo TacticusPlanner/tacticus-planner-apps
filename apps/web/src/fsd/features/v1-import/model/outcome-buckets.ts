@@ -5,7 +5,7 @@ import type { V1GoalOutcome } from "@/entities/account"
 // attention tomorrow) is a local change, not an API change (design.md: "Group in the client, from a
 // flat server list").
 export type OutcomeBucketKey =
-  "imported" | "needsNoImport" | "notImported" | "failed"
+  "imported" | "needsNoImport" | "needsAction" | "notImported" | "failed"
 
 // Every code the API can emit (rewrite-v1-goal-import API contract), mapped to the bucket it reads
 // as. An unrecognised code falls back to "notImported" — surfaced for attention rather than hidden
@@ -17,11 +17,15 @@ const CODE_BUCKETS: Record<string, OutcomeBucketKey> = {
   target_already_reached: "needsNoImport",
   goal_already_exists: "needsNoImport",
   duplicate_goal_merged: "needsNoImport",
+  // A V1 pre-farm goal: nothing was created, and the user has a step to take (see preFarmSteps).
+  manual_step_required: "needsAction",
   prerequisite_target_insufficient: "notImported",
   unknown_unit: "notImported",
   unsupported_goal_type: "notImported",
   invalid_progression: "notImported",
   missing_target: "notImported",
+  unknown_upgrade: "notImported",
+  no_upgrade_owner: "notImported",
   player_data_required: "failed",
   target_rejected: "failed",
   project_slot_conflict: "failed",
@@ -57,6 +61,9 @@ type ReasonKey =
   | "goals.v1Import.reasons.unsupportedGoalType"
   | "goals.v1Import.reasons.invalidProgression"
   | "goals.v1Import.reasons.missingTarget"
+  | "goals.v1Import.reasons.unknownUpgrade"
+  | "goals.v1Import.reasons.noUpgradeOwner"
+  | "goals.v1Import.reasons.manualStepRequired"
   | "goals.v1Import.reasons.playerDataRequired"
   | "goals.v1Import.reasons.targetRejected"
   | "goals.v1Import.reasons.projectSlotConflict"
@@ -75,6 +82,9 @@ const REASON_KEYS: Record<string, ReasonKey> = {
   unsupported_goal_type: "goals.v1Import.reasons.unsupportedGoalType",
   invalid_progression: "goals.v1Import.reasons.invalidProgression",
   missing_target: "goals.v1Import.reasons.missingTarget",
+  unknown_upgrade: "goals.v1Import.reasons.unknownUpgrade",
+  no_upgrade_owner: "goals.v1Import.reasons.noUpgradeOwner",
+  manual_step_required: "goals.v1Import.reasons.manualStepRequired",
   player_data_required: "goals.v1Import.reasons.playerDataRequired",
   target_rejected: "goals.v1Import.reasons.targetRejected",
   project_slot_conflict: "goals.v1Import.reasons.projectSlotConflict",
@@ -93,6 +103,7 @@ export function groupOutcomes(
   const buckets: BucketedOutcomes = {
     imported: [],
     needsNoImport: [],
+    needsAction: [],
     notImported: [],
     failed: [],
   }
@@ -118,6 +129,43 @@ export function importedCounts(imported: readonly V1GoalOutcome[]): {
 
 export function isAutomaticallyAdded(outcome: V1GoalOutcome): boolean {
   return outcome.code === "prerequisite_added"
+}
+
+/** One V1 pre-farm goal the user must re-create by hand: the material, and the distinct units of the
+ * goals it was linked to (resolved through those goals' own outcomes in this same report, so a linked
+ * goal that wasn't imported — unknown unit, missing target — simply contributes no unit). */
+export type PreFarmStep = {
+  sourceGoalId: string | null
+  upgradeId: string | null
+  units: { entityType: string; entityId: string }[]
+}
+
+export function preFarmSteps(
+  outcomes: readonly V1GoalOutcome[]
+): PreFarmStep[] {
+  const bySourceId = new Map(
+    outcomes
+      .filter((outcome) => outcome.sourceGoalId)
+      .map((outcome) => [outcome.sourceGoalId, outcome])
+  )
+  return outcomes
+    .filter((outcome) => outcome.code === "manual_step_required")
+    .map((outcome) => {
+      const units = new Map<string, { entityType: string; entityId: string }>()
+      for (const linkedId of outcome.linkedSourceGoalIds ?? []) {
+        const linked = bySourceId.get(linkedId)
+        if (!linked?.entityType || !linked.entityId) continue
+        units.set(`${linked.entityType}:${linked.entityId}`, {
+          entityType: linked.entityType,
+          entityId: linked.entityId,
+        })
+      }
+      return {
+        sourceGoalId: outcome.sourceGoalId,
+        upgradeId: outcome.upgradeId ?? null,
+        units: [...units.values()],
+      }
+    })
 }
 
 /**

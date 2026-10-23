@@ -572,6 +572,13 @@
         "syncRequiredTitle": "Les données du joueur doivent d'abord être synchronisées",
         "syncRequired": "Synchronisez vos données de joueur, puis importez à nouveau les objectifs."
       },
+      "preFarm": {
+        "title": "Les objectifs de pré-farm nécessitent une étape de plus",
+        "description": "V2 n'a pas de type d'objectif de pré-farm, ils n'ont donc pas été importés. Pour continuer à pré-farmer un matériau, créez un objectif d'Amélioration pour celui-ci sur l'unité ci-dessous et placez-le avant les autres objectifs de cette unité.",
+        "forUnits": "Pré-farmé pour {{units}}",
+        "noLinkedUnit": "Les objectifs pour lesquels il était pré-farmé n'ont pas été importés, choisissez donc l'unité vous-même.",
+        "createUpgradeGoal": "Créer un objectif d'Amélioration"
+      },
       "reasons": {
         "goalCreated": "Importé depuis V1.",
         "prerequisiteAdded": "Ajouté automatiquement car un autre objectif importé en a besoin.",
@@ -587,6 +594,9 @@
         "targetRejected": "La cible de cet objectif n'est pas valide.",
         "projectSlotConflict": "Un autre objectif pour cette unité et ce type a été créé simultanément.",
         "prerequisiteRejected": "Ce prérequis ajouté automatiquement n'est pas valide pour cet objectif.",
+        "unknownUpgrade": "Ce matériau d'amélioration n'est pas dans le catalogue du jeu V2.",
+        "noUpgradeOwner": "Aucun de vos personnages ni de vos Machines de guerre n'utilise ce matériau d'amélioration.",
+        "manualStepRequired": "Les objectifs de pré-farm n'existent pas dans V2. Suivez les étapes ci-dessus pour continuer à pré-farmer ce matériau.",
         "generic": "Cet objectif n'a pas pu être importé."
       },
       "legendaryEvents": {

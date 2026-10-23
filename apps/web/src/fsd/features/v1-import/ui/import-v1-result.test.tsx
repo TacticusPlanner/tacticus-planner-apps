@@ -22,9 +22,13 @@ vi.mock("react-i18next", () => ({
   initReactI18next: { type: "3rdParty", init: vi.fn() },
 }))
 
-vi.mock("@/entities/goal", () => ({
-  GoalTypeBadge: ({ type }: { type: string }) => <span>{type}</span>,
-}))
+vi.mock("@/entities/goal", async () => {
+  const { createContext } = await import("react")
+  return {
+    GoalTypeBadge: ({ type }: { type: string }) => <span>{type}</span>,
+    CreateGoalLauncherContext: createContext<unknown>(null),
+  }
+})
 
 vi.mock("dexie-react-hooks", () => ({
   useLiveQuery: (querier: () => unknown) => {
@@ -41,6 +45,7 @@ vi.mock("@workspace/game-catalog/queries", () => ({
   getCharactersMap: () =>
     new Map([["astarLysander", { id: "astarLysander", name: "Lysander" }]]),
   getMowsMap: () => new Map(),
+  getUpgrades: async () => [{ id: "upgHpC001", label: "Ceramite Plate" }],
   // Only the bounds the issue lines read: 10 regular and 10 premium missions, 18 battles a lane.
   getLegendaryEvents: async () => [
     {
@@ -53,6 +58,8 @@ vi.mock("@workspace/game-catalog/queries", () => ({
     },
   ],
 }))
+
+import { CreateGoalLauncherContext } from "@/entities/goal"
 
 import { ImportResult } from "./import-v1-result"
 
@@ -445,5 +452,68 @@ describe("ImportResult — Legendary Event teams", () => {
     expect(issues[2]).toHaveTextContent(
       "goals.v1Import.legendaryEvents.issues.unknown_objective_mark lane=goals.v1Import.legendaryEvents.lanes.gamma objective=Old objective"
     )
+  })
+})
+
+describe("ImportResult — pre-farm goals", () => {
+  const preFarmResult = (): ImportV1ProfileResult => ({
+    ...result([]),
+    goals: imported,
+    outcomes: [
+      {
+        status: "Created",
+        code: "goal_created",
+        message: "Imported from V1.",
+        entityType: "Character",
+        entityId: "astarLysander",
+        goalType: "Rank",
+        goalId: "goal-1",
+        sourceGoalId: "rank-1",
+      },
+      {
+        status: "Skipped",
+        code: "manual_step_required",
+        message: "V2 has no pre-farm goal type.",
+        entityType: null,
+        entityId: null,
+        goalType: null,
+        goalId: null,
+        sourceGoalId: "pf-1",
+        upgradeId: "upgHpC001",
+        linkedSourceGoalIds: ["rank-1"],
+      },
+    ],
+  })
+
+  it("asks for the manual step, naming the material and the unit it pre-farmed for", async () => {
+    render(<ImportResult result={preFarmResult()} />)
+
+    const step = await screen.findByTestId("v1-import-pre-farm-step")
+    expect(await within(step).findByText("Ceramite Plate")).toBeInTheDocument()
+    expect(
+      await within(step).findByText(
+        "goals.v1Import.preFarm.forUnits units=Lysander"
+      )
+    ).toBeInTheDocument()
+    // Outside the app shell there is no creation sheet to open.
+    expect(screen.queryByTestId("v1-import-pre-farm-create")).toBeNull()
+  })
+
+  it("opens goal creation with the unit, Upgrade type and material preselected", async () => {
+    const launch = vi.fn()
+    render(
+      <CreateGoalLauncherContext.Provider value={launch}>
+        <ImportResult result={preFarmResult()} />
+      </CreateGoalLauncherContext.Provider>
+    )
+
+    fireEvent.click(await screen.findByTestId("v1-import-pre-farm-create"))
+
+    expect(launch).toHaveBeenCalledWith({
+      entityType: "Character",
+      entityId: "astarLysander",
+      goalType: "Upgrade",
+      upgradeId: "upgHpC001",
+    })
   })
 })
