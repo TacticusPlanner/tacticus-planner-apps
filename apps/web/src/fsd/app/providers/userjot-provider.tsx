@@ -23,7 +23,6 @@ type UserJotOpenTarget = {
 
 const USERJOT_BOARD_URL = "https://tacticusplanner.userjot.com"
 export const USERJOT_ROADMAP_URL = `${USERJOT_BOARD_URL}/roadmap`
-export const USERJOT_CHANGELOG_URL = `${USERJOT_BOARD_URL}/updates`
 
 type UserJotSdk = {
   open: (target?: UserJotOpenTarget) => void
@@ -193,6 +192,16 @@ export function UserJotProvider({ children }: { children: ReactNode }) {
     return window.uj?.on("unread", (payload) => {
       const count = (payload as { count?: number } | undefined)?.count
       setUnreadCount(typeof count === "number" ? count : 0)
+    })
+  }, [])
+
+  // Re-read the count when the widget closes: the dot must not outlive what the user just read,
+  // even if the SDK settled the count without emitting a fresh `unread` event.
+  useEffect(() => {
+    return window.uj?.on("close", (state) => {
+      const count = (state as { unreadCount?: number | null } | undefined)
+        ?.unreadCount
+      if (typeof count === "number") setUnreadCount(count)
     })
   }, [])
 

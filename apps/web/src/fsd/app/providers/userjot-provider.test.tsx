@@ -311,4 +311,28 @@ describe("UserJotProvider", () => {
 
     expect(screen.getByTestId("consumer")).toHaveTextContent("3")
   })
+
+  it("re-reads the unread count from the widget state when it closes", () => {
+    renderProvider()
+
+    act(() => {
+      listeners.get("unread")?.({ count: 2 })
+    })
+    expect(screen.getByTestId("consumer")).toHaveTextContent("2")
+
+    act(() => {
+      listeners.get("close")?.({ unreadCount: 0 })
+    })
+    expect(screen.getByTestId("consumer")).toHaveTextContent("0")
+  })
+
+  it("keeps the unread count when the closed widget has not fetched it yet", () => {
+    renderProvider()
+
+    act(() => {
+      listeners.get("unread")?.({ count: 2 })
+      listeners.get("close")?.({ unreadCount: null })
+    })
+    expect(screen.getByTestId("consumer")).toHaveTextContent("2")
+  })
 })

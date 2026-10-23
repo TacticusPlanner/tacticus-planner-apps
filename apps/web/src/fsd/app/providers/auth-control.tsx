@@ -170,6 +170,10 @@ export function AuthControl() {
         setMenuOpen(false)
         openUserJot()
       }}
+      onChangelog={() => {
+        setMenuOpen(false)
+        openUserJot({ to: "updates" })
+      }}
       feedbackUnavailable={
         feedbackStatus === "failed"
           ? t("nav.quickActions.feedbackUnavailable")

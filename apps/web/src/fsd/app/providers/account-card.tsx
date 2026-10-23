@@ -23,7 +23,7 @@ import {
 } from "./account-menu-parts"
 import { CatalogSyncStatusBadge } from "./catalog-sync-status-badge"
 import { EditDisplayNameButton } from "./edit-display-name-button"
-import { USERJOT_CHANGELOG_URL, USERJOT_ROADMAP_URL } from "./userjot-provider"
+import { USERJOT_ROADMAP_URL } from "./userjot-provider"
 
 /** Signed-in account card, shared by the desktop popover and the mobile drawer: identity header, preferences, account/import/feedback rows,
  *  sign out, and the game catalog status as a quiet footer. Language opens an
@@ -37,6 +37,7 @@ export function AccountCard({
   identityPending = false,
   onEditName,
   onFeedback,
+  onChangelog,
   feedbackUnavailable,
   onImportV1,
   onOpenAccountSettings,
@@ -54,6 +55,8 @@ export function AccountCard({
   identityPending?: boolean
   onEditName: () => void
   onFeedback: () => void
+  /** Opens the widget's Updates, so reading there clears the feedback button's unread dot. */
+  onChangelog: () => void
   /** Why the feedback row is disabled (the widget failed to load), or undefined when it works. */
   feedbackUnavailable?: string
   onImportV1: () => void
@@ -144,12 +147,13 @@ export function AccountCard({
           icon={MapIcon}
           label={t("feedback.roadmap")}
         />
-        <MenuLinkRow
+        <MenuRow
           data-testid="auth-changelog"
-          onClick={onExternalLink}
-          href={USERJOT_CHANGELOG_URL}
+          disabled={Boolean(feedbackUnavailable)}
           icon={Newspaper}
           label={t("feedback.changelog")}
+          onClick={onChangelog}
+          title={feedbackUnavailable}
         />
       </div>
       <Separator />

@@ -9,11 +9,12 @@ import {
   PopoverTrigger,
 } from "@workspace/ui/components/popover"
 import { Separator } from "@workspace/ui/components/separator"
-import { USERJOT_CHANGELOG_URL, USERJOT_ROADMAP_URL } from "./userjot-provider"
+import { USERJOT_ROADMAP_URL, useUserJot } from "./userjot-provider"
 
 import {
   LanguagePickerView,
   MenuLinkRow,
+  MenuRow,
   PreferencesSection,
   type AccountMenuView,
 } from "./account-menu-parts"
@@ -22,8 +23,16 @@ import {
 /** Guest Preferences (theme, language), the Roadmap and Changelog rows, and caller-supplied extra content
  *  (sign-in on desktop, the tour on mobile). Language opens an in-card picker; the view resets
  *  because popover content unmounts on close. */
-export function GuestPreferencesCard({ children }: { children?: ReactNode }) {
+export function GuestPreferencesCard({
+  children,
+  onOpenWidget,
+}: {
+  children?: ReactNode
+  /** Closes the surrounding menu before the UserJot widget opens over it. */
+  onOpenWidget?: () => void
+}) {
   const { t } = useTranslation()
+  const { open: openUserJot, status: feedbackStatus } = useUserJot()
   const [view, setView] = useState<AccountMenuView>("main")
 
   if (view === "language") {
@@ -39,11 +48,20 @@ export function GuestPreferencesCard({ children }: { children?: ReactNode }) {
         icon={MapIcon}
         label={t("feedback.roadmap")}
       />
-      <MenuLinkRow
+      <MenuRow
         data-testid="auth-changelog"
-        href={USERJOT_CHANGELOG_URL}
+        disabled={feedbackStatus === "failed"}
         icon={Newspaper}
         label={t("feedback.changelog")}
+        onClick={() => {
+          onOpenWidget?.()
+          openUserJot({ to: "updates" })
+        }}
+        title={
+          feedbackStatus === "failed"
+            ? t("nav.quickActions.feedbackUnavailable")
+            : undefined
+        }
       />
       {children}
     </>
@@ -86,7 +104,7 @@ export function GuestAccountMenu({
           side="bottom"
         >
           <PopoverArrow />
-          <GuestPreferencesCard>
+          <GuestPreferencesCard onOpenWidget={() => onOpenChange(false)}>
             <Separator />
             <Button
               data-testid="auth-sign-in"

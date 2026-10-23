@@ -109,7 +109,7 @@ function MobileGuestSettings() {
         className="w-72 gap-2"
         data-testid="mobile-guest-settings-content"
       >
-        <GuestPreferencesCard>
+        <GuestPreferencesCard onOpenWidget={() => setOpen(false)}>
           <TourButton
             className="h-8 w-full justify-start px-2 font-normal"
             variant="ghost"
