@@ -592,7 +592,6 @@
         "failed": "Failed",
         "autoAdded": "Automatically added",
         "noUnit": "Unspecified unit",
-        "copy": "Copy details",
         "syncRequiredTitle": "Player data must be synced first",
         "syncRequired": "Sync your player data, then import goals again to bring in your V1 goals."
       },

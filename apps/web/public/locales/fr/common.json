@@ -592,7 +592,6 @@
         "failed": "Échoué",
         "autoAdded": "Ajouté automatiquement",
         "noUnit": "Unité non précisée",
-        "copy": "Copier les détails",
         "syncRequiredTitle": "Les données du joueur doivent d'abord être synchronisées",
         "syncRequired": "Synchronisez vos données de joueur, puis importez à nouveau les objectifs."
       },

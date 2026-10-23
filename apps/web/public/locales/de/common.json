@@ -592,7 +592,6 @@
         "failed": "Fehlgeschlagen",
         "autoAdded": "Automatisch hinzugefügt",
         "noUnit": "Keine bestimmte Einheit",
-        "copy": "Details kopieren",
         "syncRequiredTitle": "Spielerdaten müssen zuerst synchronisiert werden",
         "syncRequired": "Synchronisiere deine Spielerdaten und importiere die Ziele danach erneut."
       },

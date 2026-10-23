@@ -13,14 +13,12 @@ import {
   AlertTitle,
 } from "@workspace/ui/components/alert"
 import { Badge } from "@workspace/ui/components/badge"
-import { Button } from "@workspace/ui/components/button"
 
 import type { ImportV1ProfileResult, V1GoalOutcome } from "@/entities/account"
 import { GoalTypeBadge, type GoalKind } from "@/entities/goal"
 import { useUnitName } from "@/shared/unit-name"
 
 import {
-  buildDiagnosticText,
   effectiveGoalsStatus,
   groupOutcomes,
   importedCounts,
@@ -30,14 +28,10 @@ import {
   reasonKeyForCode,
 } from "../model/outcome-buckets"
 import {
-  buildLegendaryEventDiagnosticText,
   groupLegendaryEventOutcomes,
-  legendaryEventsNeedAttention,
   reasonKeyForLegendaryEventCode,
 } from "../model/legendary-event-outcome-buckets"
 import { V1_IMPORT_PARTS } from "../model/parts"
-import { useLegendaryEventIssueText } from "../model/use-legendary-event-issue-text"
-import { useLegendaryEventName } from "../model/use-legendary-event-name"
 import { useUpgradeName } from "../model/use-upgrade-name"
 import { LegendaryEventImportResult } from "./legendary-event-import-result"
 import { MaterialSteps } from "./material-steps"
@@ -84,17 +78,6 @@ export function ImportResult({ result }: { result: ImportV1ProfileResult }) {
     () => groupLegendaryEventOutcomes(result.legendaryEventOutcomes ?? []),
     [result.legendaryEventOutcomes]
   )
-  const legendaryEventName = useLegendaryEventName()
-  const legendaryEventIssueText = useLegendaryEventIssueText()
-  const hasDiagnostics =
-    buckets.notImported.length > 0 ||
-    buckets.needsAction.length > 0 ||
-    buckets.failed.length > 0 ||
-    legendaryEventsNeedAttention(legendaryEventBuckets)
-
-  const goalTypeLabel = (goalType: string | null) =>
-    goalType ? t(`goals.create.goalTypes.${goalType as GoalKind}`) : null
-
   // "not_selected" (ImportPartResult.NotSelected — API contract) hides a part the user didn't ask
   // for, so a cleared part can't be mistaken for one that was attempted and skipped.
   // The Legendary Event part's own code is translated; the other parts keep the server's message.
@@ -113,30 +96,6 @@ export function ImportResult({ result }: { result: ImportV1ProfileResult }) {
             : part,
       }
     })
-
-  const copyDetails = () => {
-    const text = buildDiagnosticText({
-      notImported: buckets.notImported,
-      needsAction: buckets.needsAction,
-      failed: buckets.failed,
-      heading: (bucket) => t(`goals.v1Import.report.${bucket}`),
-      unitName: getEntityName,
-      upgradeName,
-      goalTypeLabel,
-      noUnitLabel: t("goals.v1Import.report.noUnit"),
-      reasonFor: (code) => t(reasonKeyForCode(code)),
-    })
-    const legendaryEventText = buildLegendaryEventDiagnosticText({
-      buckets: legendaryEventBuckets,
-      title: t("goals.v1Import.legendaryEvents.title"),
-      eventName: legendaryEventName,
-      reasonFor: (code) => t(reasonKeyForLegendaryEventCode(code)),
-      issueFor: legendaryEventIssueText,
-    })
-    void navigator.clipboard.writeText(
-      [text, legendaryEventText].filter(Boolean).join("\n\n")
-    )
-  }
 
   return (
     <div
@@ -251,19 +210,6 @@ export function ImportResult({ result }: { result: ImportV1ProfileResult }) {
 
       {(result.legendaryEventOutcomes?.length ?? 0) > 0 ? (
         <LegendaryEventImportResult buckets={legendaryEventBuckets} />
-      ) : null}
-
-      {hasDiagnostics ? (
-        <Button
-          className="justify-self-start"
-          data-testid="v1-import-copy"
-          onClick={copyDetails}
-          size="sm"
-          type="button"
-          variant="outline"
-        >
-          {t("goals.v1Import.report.copy")}
-        </Button>
       ) : null}
     </div>
   )

@@ -342,37 +342,6 @@ describe("ImportResult — Legendary Event teams", () => {
     ).not.toHaveTextContent("goals.v1Import.reasons.generic")
   })
 
-  it("copies event problems and issues with the goal diagnostics", async () => {
-    const writeText = vi.fn().mockResolvedValue(undefined)
-    vi.stubGlobal("navigator", { ...navigator, clipboard: { writeText } })
-    render(
-      <ImportResult
-        result={result([
-          event({
-            eventId: null,
-            v1EventId: 10,
-            status: "Skipped",
-            code: "event_not_in_catalog",
-          }),
-          event({
-            issues: [{ code: "empty_team", teamName: "Old", value: null }],
-          }),
-        ])}
-      />
-    )
-
-    fireEvent.click(await screen.findByTestId("v1-import-copy"))
-    const text = writeText.mock.calls[0][0] as string
-    expect(text).toContain("goals.v1Import.legendaryEvents.title")
-    expect(text).toContain(
-      "goals.v1Import.legendaryEvents.v1Event id=10: goals.v1Import.legendaryEvents.reasons.event_not_in_catalog"
-    )
-    expect(text).toContain(
-      "goals.v1Import.legendaryEvents.issues.empty_team (Old)"
-    )
-    vi.unstubAllGlobals()
-  })
-
   it("lists an inputs-only event as imported with its runs and marks, not as imported without teams", () => {
     render(
       <ImportResult

@@ -697,46 +697,6 @@ describe("V1ImportPanel", () => {
     }
   })
 
-  describe("copy details", () => {
-    it("copies the not-imported and failed outcomes to the clipboard (6.1)", async () => {
-      const writeText = vi.fn().mockResolvedValue(undefined)
-      vi.stubGlobal("navigator", { ...navigator, clipboard: { writeText } })
-      importV1Profile.mockResolvedValue(
-        response({
-          outcomes: [
-            outcome({
-              code: "unknown_unit",
-              status: "Failed",
-              entityId: "raw-v1-id",
-              goalType: null,
-            }),
-          ],
-        })
-      )
-      renderPanel()
-      await fillCredentials()
-      fireEvent.click(screen.getByTestId("v1-import-submit"))
-
-      fireEvent.click(await screen.findByTestId("v1-import-copy"))
-
-      expect(writeText).toHaveBeenCalledTimes(1)
-      const text = writeText.mock.calls[0][0] as string
-      expect(text).toContain("raw-v1-id")
-      expect(text).toContain("goals.v1Import.reasons.unknownUnit")
-      vi.unstubAllGlobals()
-    })
-
-    it("offers no copy action when nothing needs attention (6.3)", async () => {
-      importV1Profile.mockResolvedValue(response({ outcomes: [outcome({})] }))
-      renderPanel()
-      await fillCredentials()
-      fireEvent.click(screen.getByTestId("v1-import-submit"))
-
-      await screen.findByTestId("v1-import-result")
-      expect(screen.queryByTestId("v1-import-copy")).not.toBeInTheDocument()
-    })
-  })
-
   it("shows an import failure without refreshing account state", async () => {
     importV1Profile.mockRejectedValue(new Error("network"))
     renderPanel()
