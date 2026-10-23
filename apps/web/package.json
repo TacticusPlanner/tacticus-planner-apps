@@ -4,7 +4,8 @@
   "type": "module",
   "private": true,
   "sideEffects": [
-    "*.css"
+    "*.css",
+    "./src/fsd/shared/config/i18n/i18n.ts"
   ],
   "scripts": {
     "dev": "vite",
