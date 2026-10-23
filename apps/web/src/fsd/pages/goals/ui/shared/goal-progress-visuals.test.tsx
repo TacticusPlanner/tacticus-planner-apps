@@ -492,8 +492,32 @@ describe("GoalTargetDisplay for Upgrade goals", () => {
     )
     expect(materials[0]).toHaveTextContent("5/10")
     expect(materials[1]).toHaveTextContent("–/4")
-    expect(container.querySelectorAll("img").length).toBeGreaterThan(0)
+    expect(container.querySelectorAll("img").length).toBeGreaterThanOrEqual(2)
+    expect(screen.queryByTestId("goal-upgrade-materials-more")).toBeNull()
     expect(container).not.toHaveTextContent("25%")
+  })
+
+  it("shows the first four materials and folds the rest into a +N chip", () => {
+    const materials = Array.from({ length: 7 }, (_, index) => ({
+      upgradeId: `upg${index}`,
+      label: `Mat ${index}`,
+      owned: index,
+      quantity: 10,
+    }))
+    render(
+      <GoalTargetDisplay
+        progress={{ kind: "Upgrade", ratio: 0.3, materials } as never}
+      />
+    )
+    expect(screen.getAllByRole("img")).toHaveLength(5)
+    const more = screen.getByTestId("goal-upgrade-materials-more")
+    expect(more).toHaveTextContent("+3")
+    expect(more.getAttribute("title")?.split("\n")).toEqual(
+      [4, 5, 6].map(
+        (index) =>
+          `goals.overview.upgradeMaterial:{"name":"Mat ${index}","owned":"${index}","quantity":10}`
+      )
+    )
   })
 
   it("falls back to the percentage when the goal has no materials", () => {

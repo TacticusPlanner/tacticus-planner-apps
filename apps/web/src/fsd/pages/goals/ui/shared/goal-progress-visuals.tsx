@@ -159,8 +159,7 @@ export function GoalTargetDisplay({
   ) : progress.kind === "Upgrade" && progress.materials.length > 0 ? (
     <UpgradeTargetMaterials materials={progress.materials} />
   ) : progress.ratio !== null ? (
-    // "Upgrade" — no natural current/target pair to show (it's an average across several
-    // materials), so the percentage itself is the only visible readout.
+    // An "Upgrade" goal with no materials: the percentage is the only readout left.
     <span>{displayPercent(progress.ratio)}%</span>
   ) : null
 }
