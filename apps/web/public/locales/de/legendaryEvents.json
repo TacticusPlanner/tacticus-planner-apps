@@ -1026,7 +1026,7 @@
       "label": "Planübersicht",
       "target": "{{step}} · {{verdict}}",
       "spare": "+{{points}} Reserve",
-      "ceiling": "Obergrenze {{ceiling}} von {{points}} benötigten",
+      "ceiling": "Obergrenze {{ceiling}} von {{points}} benötigten Punkten",
       "goals_one": "{{count}} Ziel zu erstellen",
       "goals_other": "{{count}} Ziele zu erstellen",
       "teams": "Teams: +{{created}} / −{{removed}}"
