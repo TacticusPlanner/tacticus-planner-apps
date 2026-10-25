@@ -213,17 +213,51 @@ export function createFarmingDaysEstimator(
   inputs: FarmingDaysInputs
 ): (request: UpgradeChainRequest) => FarmingDays {
   const cache = new Map<string, FarmingDays>()
+  const shared = sharedEstimateInputs(inputs)
   return (request) => {
     const key = requestKey(request)
     if (cache.has(key)) return cache.get(key) ?? null
-    const result = estimateChain(inputs, request)
+    const result = estimateChain(inputs, shared, request)
     cache.set(key, result)
     return result
   }
 }
 
+interface SharedEstimateInputs {
+  /** The upgrades map with a chain's shard entries added; the base map when there are none. */
+  upgradesWith: (
+    shardEntries: ReadonlyMap<EstimateResourceId, EstimateUpgrade>
+  ) => ReadonlyMap<EstimateResourceId, EstimateUpgrade>
+  inventory: { id: EstimateResourceId; count: number }[]
+}
+
+/** Inputs every chain estimate shares, built once per estimator instead of once per chain. */
+function sharedEstimateInputs(inputs: FarmingDaysInputs): SharedEstimateInputs {
+  const base = new Map<EstimateResourceId, EstimateUpgrade>(inputs.upgradesById)
+  const withShards = new Map<
+    string,
+    ReadonlyMap<EstimateResourceId, EstimateUpgrade>
+  >()
+  return {
+    upgradesWith: (shardEntries) => {
+      if (shardEntries.size === 0) return base
+      const key = [...shardEntries.keys()].toSorted().join("|")
+      const cached = withShards.get(key)
+      if (cached) return cached
+      const map = new Map([...base, ...shardEntries])
+      withShards.set(key, map)
+      return map
+    },
+    inventory: inputs.inventoryUpgrades.map((entry) => ({
+      id: entry.upgradeId as EstimateResourceId,
+      count: entry.amount,
+    })),
+  }
+}
+
 function estimateChain(
   inputs: FarmingDaysInputs,
+  shared: SharedEstimateInputs,
   request: UpgradeChainRequest
 ): FarmingDays {
   const characterView = inputs.charactersById.get(request.unitId)
@@ -313,16 +347,10 @@ function estimateChain(
 
   const outcomes = estimatePlan({
     goals,
-    upgradesById: new Map<EstimateResourceId, EstimateUpgrade>([
-      ...inputs.upgradesById,
-      ...shardEntries,
-    ]),
+    upgradesById: shared.upgradesWith(shardEntries),
     battlesById: inputs.battlesById,
     dailyEnergy: inputs.dailyEnergy,
-    inventory: inputs.inventoryUpgrades.map((entry) => ({
-      id: entry.upgradeId as EstimateResourceId,
-      count: entry.amount,
-    })),
+    inventory: shared.inventory,
     referenceDate,
   })
 

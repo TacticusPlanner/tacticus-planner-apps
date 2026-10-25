@@ -199,7 +199,36 @@ export function usePlanSource(eventId: string): PlanSource {
     unitName,
   ])
 
+  // The first complete inputs are kept for the life of the page, like the clock: a refetch or a
+  // late translation load would otherwise restart the upgrade search (spec: the search restarts
+  // only when its inputs change). Create still writes on the latest stored revision.
+  const [frozen, setFrozen] = useState<Extract<
+    PlanSource,
+    { status: "ready" }
+  > | null>(null)
+  const plannable =
+    event.lifecycle?.state !== undefined &&
+    event.lifecycle.state !== "archived" &&
+    config.status === "ready" &&
+    Boolean(config.config.unitPower)
+  if (
+    !frozen &&
+    plannable &&
+    ready &&
+    eventData &&
+    goalTargets.status !== "loading"
+  ) {
+    setFrozen({
+      status: "ready",
+      event: eventData,
+      ...ready,
+      goalTargets:
+        goalTargets.status === "ready" ? goalTargets.byUnit : NO_GOAL_TARGETS,
+    })
+  }
+
   if (!isAuthenticated) return { status: "signedOut" }
+  if (frozen) return frozen
   if (failed || plan.status === "error") {
     return {
       status: "error",

@@ -1,4 +1,4 @@
-import { useMemo } from "react"
+import { useDeferredValue, useMemo } from "react"
 import { useTranslation } from "react-i18next"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 import { Badge } from "@workspace/ui/components/badge"
@@ -40,8 +40,22 @@ export function TargetStep({
   const exploring =
     draft.recommendations.status === "estimating" ||
     draft.recommendations.status === "running"
+  // Run-input edits not yet planned, or a search in progress: verdicts are being rechecked.
+  const busy = exploring || draft.settling
+  const lastVerdicts = useMemo(
+    () =>
+      new Map(
+        draft.lastSettledOptions.options.map((option) => [
+          option.target.step,
+          option.verdict,
+        ])
+      ),
+    [draft.lastSettledOptions]
+  )
   const isMobile = useIsMobile()
-  const { inputs, evaluation, runs } = draft
+  const { inputs, runs } = draft
+  // The potential maps follow the ticks at deferred priority.
+  const evaluation = useDeferredValue(draft.evaluation)
   const potentials = useMemo(
     () => planPotentials(inputs, evaluation, runs),
     [inputs, evaluation, runs]
@@ -116,8 +130,15 @@ export function TargetStep({
           className="flex flex-col gap-2"
           role="radiogroup"
         >
-          {draft.options.options.map(({ target, verdict }) => {
+          {draft.options.options.map(({ target, verdict: current }) => {
             const checked = target.step === draft.target
+            // Upgrades only raise the ceiling, so a step reachable now stays settled while the
+            // search runs; anything else shows its last settled verdict, dimmed, until rechecked.
+            const rechecking =
+              busy && (draft.settling || current.kind !== "reachableNow")
+            const verdict = rechecking
+              ? (lastVerdicts.get(target.step) ?? current)
+              : current
             return (
               <label
                 className={cn(
@@ -126,7 +147,7 @@ export function TargetStep({
                 )}
                 data-step={target.step}
                 data-testid="plan-wizard-target-option"
-                data-verdict={verdict.kind}
+                data-verdict={current.kind}
                 key={target.step}
               >
                 <input
@@ -139,7 +160,7 @@ export function TargetStep({
                       type: "legendary_event_plan_target_chosen",
                       eventId: source.event.id,
                       step: target.step,
-                      verdict: verdict.kind,
+                      verdict: current.kind,
                     })
                   }}
                   type="radio"
@@ -148,7 +169,13 @@ export function TargetStep({
                   <span className="font-medium">
                     {t(`outlook.steps.${target.step}`)}
                   </span>
-                  <span className="text-xs text-muted-foreground">
+                  <span
+                    className={cn(
+                      "text-xs text-muted-foreground",
+                      rechecking && "opacity-60"
+                    )}
+                    data-testid="plan-wizard-verdict-detail"
+                  >
                     {target.kind === "points"
                       ? t("planWizard.target.points", {
                           points: number.format(target.points),
@@ -162,9 +189,7 @@ export function TargetStep({
                       : null}
                   </span>
                 </span>
-                {/* Upgrades only raise the ceiling: until they are explored, a step not
-                    reachable now has no settled verdict. */}
-                {exploring && verdict.kind !== "reachableNow" ? (
+                {rechecking ? (
                   <Badge data-testid="plan-wizard-verdict" variant="outline">
                     {t("planWizard.target.verdicts.checking")}
                   </Badge>
@@ -183,7 +208,7 @@ export function TargetStep({
         </div>
       )}
       <p className="text-sm" data-testid="plan-wizard-best-step">
-        {exploring
+        {busy
           ? t("planWizard.target.estimating")
           : draft.options.best
             ? t("planWizard.target.bestStep", {

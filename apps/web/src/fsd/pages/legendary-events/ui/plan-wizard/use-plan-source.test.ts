@@ -30,8 +30,8 @@ const FAILED_GOALS = { status: "failed" }
 // Like the real reads, every render hands out a new state object around the same data.
 const read = (data: unknown) => ({ status: "ready", data, retry: vi.fn() })
 
-// Stable across renders, like the real resolver.
-const unitName = () => ""
+// Stable across renders, like the real resolver (a test swaps it to check the frozen source).
+let unitName = () => ""
 vi.mock("@/shared/unit-name", () => ({ useUnitName: () => unitName }))
 vi.mock("@/shared/unit-power", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/shared/unit-power")>()),
@@ -66,6 +66,7 @@ describe("usePlanSource", () => {
     setTestAuth({ authenticated: true })
     progress = PROGRESS
     roster = ROSTER
+    unitName = () => ""
   })
 
   it("is ready for an event with no synced progress or roster", () => {
@@ -89,5 +90,15 @@ describe("usePlanSource", () => {
     expect(second.inputs).toBe(first.inputs)
     expect(second.goalTargets).toBe(first.goalTargets)
     expect(second.goalTargets.size).toBe(0)
+  })
+  it("keeps its first ready value when a read refetches or the unit names change", () => {
+    const { result, rerender } = renderHook(() => usePlanSource(utharEvent.id))
+    const first = result.current
+    // A refetch hands out new arrays around the same data; a language switch, a new resolver.
+    roster = []
+    progress = { ...PROGRESS }
+    unitName = () => "renamed"
+    rerender()
+    expect(result.current).toBe(first)
   })
 })

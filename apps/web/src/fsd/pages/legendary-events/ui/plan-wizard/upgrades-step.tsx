@@ -151,7 +151,7 @@ export function UpgradesStep({ draft }: { draft: PlanDraft }) {
           })}
         </ol>
       )}
-      {recommendations.status === "running" ? (
+      {recommendations.status === "running" && !draft.targetSettled ? (
         <p className="text-sm text-muted-foreground" role="status">
           {t("planWizard.upgrades.running")}
         </p>

@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react"
+import { useDeferredValue, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { X } from "lucide-react"
 import { characterIcon } from "@workspace/game-catalog"
@@ -24,16 +24,18 @@ import type { PlanDraft } from "./use-plan-draft"
 export function TeamsStep({ draft }: { draft: PlanDraft }) {
   const { t } = useTranslation("legendaryEvents")
   const [lane, setLane] = useState<LegendaryEventLaneId>("alpha")
-  const { adjustments, evaluation, economy, inputs } = draft
+  const { adjustments, evaluation, planEconomy, inputs } = draft
+  // Swap offers regenerate a lane per kept team: computed at deferred priority.
+  const deferred = useDeferredValue(evaluation)
   const swaps = useMemo(
     () =>
       new Map(
-        teamSwaps(inputs, economy, adjustments, evaluation).map((swap) => [
+        teamSwaps(inputs, planEconomy, adjustments, deferred).map((swap) => [
           swap.teamKey,
           swap,
         ])
       ),
-    [inputs, economy, adjustments, evaluation]
+    [inputs, planEconomy, adjustments, deferred]
   )
   const hasStored = draft.inputs.plan.teams.some(
     (team) => team.memberUnitIds.length > 0

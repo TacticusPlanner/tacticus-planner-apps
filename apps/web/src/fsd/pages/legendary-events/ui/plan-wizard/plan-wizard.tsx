@@ -168,8 +168,8 @@ export function PlanWizard({
   const failed = create.items.some((item) => item.status === "failed")
   // Once Create has run, the draft is frozen: only Retry failed is left.
   const locked = create.running || snapshot !== null
-  // Create waits for the exploration, or it would file a partial list.
-  const exploring = draft.recommendations.status === "running"
+  // Create waits until the chosen target's recommendations are final, or it would file a partial list.
+  const exploring = !draft.targetSettled
   const last = index === PLAN_WIZARD_STEPS.length - 1
   const tooAmbitious =
     draft.recommendations.status !== "running" &&
