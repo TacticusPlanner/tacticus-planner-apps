@@ -419,7 +419,9 @@
       "tierListDescription": "La lista de niveles del modo horda que usan las estimaciones de avance",
       "activeEventDescription": "Evento Legendario activo con tu progreso sincronizado",
       "upcomingEventDescription": "Próximo Evento Legendario",
-      "archivedEventDescription": "Evento Legendario pasado con tu progreso sincronizado"
+      "archivedEventDescription": "Evento Legendario pasado con tu progreso sincronizado",
+      "runStartsOn": "Empieza el {{date}}",
+      "runEndsOn": "Termina el {{date}}"
     }
   },
   "home": {

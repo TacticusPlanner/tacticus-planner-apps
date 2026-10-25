@@ -1,11 +1,13 @@
 import { useMemo } from "react"
 import { useTranslation } from "react-i18next"
+import type { TFunction } from "i18next"
 import { characterIcon } from "@workspace/game-catalog"
 import type { UnitId } from "@workspace/game-domain"
 
 import {
   orderLegendaryEventsForHub,
   useLegendaryEvents,
+  type LegendaryEventLifecycle,
   type LegendaryEventLifecycleState,
 } from "@/entities/legendary-event"
 import { useUnitName } from "@/shared/unit-name"
@@ -17,6 +19,26 @@ const DESCRIPTION_KEY = {
   upcoming: "legendaryEvents.tabs.upcomingEventDescription",
   archived: "legendaryEvents.tabs.archivedEventDescription",
 } as const satisfies Record<LegendaryEventLifecycleState, string>
+
+/** The date the event's page header names: when the current run ends for an active event, when
+ *  the next run starts for an upcoming one; nothing for an archived or TBA one. */
+function runDate(
+  lifecycle: LegendaryEventLifecycle,
+  locale: string,
+  t: TFunction<"common">
+): string | undefined {
+  if (lifecycle.runStartMs === undefined) return undefined
+  const active = lifecycle.state === "active"
+  const date = new Date(
+    active ? lifecycle.runEndMs : lifecycle.runStartMs
+  ).toLocaleDateString(locale, { dateStyle: "medium" })
+  return t(
+    active
+      ? "legendaryEvents.tabs.runEndsOn"
+      : "legendaryEvents.tabs.runStartsOn",
+    { date }
+  )
+}
 
 /**
  * `navItems` with each section's `dynamicChildren` resolved (design D1). For `legendaryEvents`
@@ -46,7 +68,12 @@ export function useNavItems(): NavItem[] {
   ].map(({ event, lifecycle }) => ({
     path: `/legendary-events/${event.id}`,
     label: unitName("Character", event.id),
-    description: t(DESCRIPTION_KEY[lifecycle.state]),
+    description: [
+      t(DESCRIPTION_KEY[lifecycle.state]),
+      runDate(lifecycle, i18n.language, t),
+    ]
+      .filter(Boolean)
+      .join(" · "),
     iconSrc: characterIcon(event.id as UnitId),
   }))
   const signature = JSON.stringify(eventChildren)

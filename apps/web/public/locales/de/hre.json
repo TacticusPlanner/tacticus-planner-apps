@@ -79,7 +79,11 @@
     "done": "Erledigt",
     "locked": "Gesperrt",
     "markDone": "Erledigt",
-    "markDoneLabel": "Erledigt: {{objective}}"
+    "markDoneLabel": "Erledigt: {{objective}}",
+    "add": "+{{amount}}",
+    "addLabel": "{{amount}} hinzufügen: {{objective}}",
+    "completed": "{{mission}} abgeschlossen.",
+    "undo": "Rückgängig"
   },
   "raids": {
     "title": "Kampagne für {{mission}}",
@@ -141,7 +145,8 @@
       "openEnded": "Wie viele Schlachten das braucht, lässt sich nicht schätzen, also spiele diese, bis es geschafft ist.",
       "modes": "Arena- und Onslaught-Schlachten zählen auch, also aktualisiere danach deinen Fortschritt.",
       "more": "Nach der heutigen Energie sind weitere Schlachten nötig.",
-      "none": "Kein Kampagnenknoten passt zu den Zielen dieser Mission."
+      "none": "Kein Kampagnenknoten passt zu den Zielen dieser Mission.",
+      "rulesTitle": "Knotenregeln"
     }
   },
   "tokens": {
@@ -166,8 +171,8 @@
     "rank": "Ranglistenplatz",
     "rankPlaceholder": "Optional",
     "enterPoints": "Gib deine Eventpunkte ein, um zu sehen, wo das Event für dich endet.",
-    "bracket": "Auszahlungen für Rang {{from}} bis {{to}}.",
-    "bracketOpen": "Auszahlungen für Rang {{from}} und darunter.",
+    "bracket": "Rang {{from}} bis {{to}}: {{daily}} pro Tag.",
+    "bracketOpen": "Rang {{from}} und darunter: {{daily}} pro Tag.",
     "noRank": "Gib deinen Rang für eine bessere Schätzung ein.",
     "projected": "Erwartete Punkte",
     "projectedValue": "{{points}} ({{perDay}} pro Tag)",
@@ -176,7 +181,7 @@
     "chest": "Truhenstufe",
     "chestValue": "Stufe {{tier}} ({{spent}} ausgegeben, {{left}} übrig)",
     "shards": "Splitter",
-    "shardsValue": "{{chests}} aus Truhen + {{crates}} aus Kisten = {{total}}",
+    "shardsValue": "{{chests}} aus Truhen + {{crates}} aus Kisten = mindestens {{total}}",
     "reached": "Erreicht",
     "notUnlocked": "Noch nicht freigeschaltet",
     "shortOf": "{{shards}} Splitter fehlen bis {{step}}",
@@ -204,7 +209,34 @@
       "legendary-red-4": "Legendär, 4 rote Sterne",
       "legendary-red-5": "Legendär, 5 rote Sterne",
       "legendary-blue-1": "Legendär, 1 blauer Stern"
-    }
+    },
+    "rankAgeToday": "Rang heute eingetragen.",
+    "rankAgeYesterday": "Rang gestern eingetragen.",
+    "rankAgeDays_one": "Rang vor {{count}} Tag eingetragen.",
+    "rankAgeDays_other": "Rang vor {{count}} Tagen eingetragen.",
+    "owned": "Was du jetzt hast",
+    "ownedCurrency": "Währung im Besitz",
+    "nextTier": "Nächste Truhenstufe",
+    "heroStep": "Heldenstufe",
+    "toNext": "Splitter zur nächsten Stufe",
+    "stepNone": "Nicht freigeschaltet",
+    "ownedHint": "Trag diese Werte vom Eventbildschirm ein, damit die Schätzung bei dem ansetzt, was du hast.",
+    "ownedPartial": "Trag die übrigen Werte ein, damit die Schätzung bei dem ansetzt, was du hast.",
+    "currencyOwnedValue": "{{owned}} im Besitz + {{milestones}} Meilensteine + {{missions}} Missionen + {{daily}} täglich + {{crates}} Kisten = {{total}}",
+    "chestRange": "Stufen {{from}} bis {{tier}} ({{spent}} ausgegeben, {{left}} übrig)",
+    "chestNone": "Noch keine Truhe ({{left}} verfügbar)",
+    "shardsOwnedValue": "{{held}} vorhanden + {{chests}} aus Truhen + {{crates}} aus Kisten = mindestens {{total}}",
+    "now": "Jetzt",
+    "nowValue": "{{step}} · {{toNext}} / {{gap}} bis {{next}}",
+    "nextMilestone": "Nächster Meilenstein: {{points}} Punkte, +{{reward}}",
+    "allMilestones": "Alle Meilensteine erreicht.",
+    "nextChest": "Nächste Truhe: Stufe {{tier}}, {{cost}} · noch {{missing}} zum Öffnen",
+    "nextChestReady": "Nächste Truhe: Stufe {{tier}}, {{cost}} · du kannst sie jetzt öffnen",
+    "targetReached": "{{shards}} Splitter: erreicht mit dem, was du hast, und den kommenden Kisten.",
+    "needsTimeUp": "{{shards}} Splitter sind nicht mehr erreichbar: Das Event hat keine Tage mehr.",
+    "summary": "{{points}} Punkte → {{projected}} · {{step}}",
+    "summaryEmpty": "Gib deine Eventpunkte ein, um das Tempo zu sehen.",
+    "details": "Details"
   },
   "teams": {
     "title": "Missionsteam",

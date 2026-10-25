@@ -1,11 +1,20 @@
 import userEvent from "@testing-library/user-event"
 import type { i18n as I18n } from "i18next"
 import { createMemoryRouter, RouterProvider } from "react-router"
-import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
+import {
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from "vitest"
 
 import { utharEvent } from "@/test/fixtures/legendary-events"
 import { createTestI18n, i18nWrapper } from "@/test/i18n"
 import { render, screen, waitFor, within } from "@/test/render"
+import { setViewportWidth } from "@/test/viewport"
 
 import { PlanWizard } from "./plan-wizard"
 import { EMPTY_PLAN, RUN_3_START_MS, planInputs } from "./plan.fixtures"
@@ -72,7 +81,11 @@ beforeEach(() => {
   run.mockResolvedValue({ ok: true, projectId: "project-1" })
 })
 
-function renderWizard(source = SOURCE) {
+afterEach(() => {
+  vi.unstubAllGlobals()
+})
+
+function renderWizard(source = SOURCE, search = "") {
   const router = createMemoryRouter(
     [
       {
@@ -84,13 +97,37 @@ function renderWizard(source = SOURCE) {
         element: <div data-testid="event-page" />,
       },
     ],
-    { initialEntries: [`/legendary-events/${utharEvent.id}/plan`] }
+    { initialEntries: [`/legendary-events/${utharEvent.id}/plan${search}`] }
   )
   render(<RouterProvider router={router} />, { wrapper: i18nWrapper(i18n) })
   return router
 }
 
 const next = () => userEvent.click(screen.getByTestId("plan-wizard-next"))
+
+const STORED_TEAM = {
+  id: "mine",
+  laneId: "alpha" as const,
+  name: "Mine",
+  sortOrder: 0,
+  memberUnitIds: ["ultraCalgar", "ultraTitus", "ultraApothecary"],
+  reserveUnitId: null,
+  objectiveIndexes: [0],
+  runDepths: [],
+}
+const WITH_STORED_TEAM = {
+  ...SOURCE,
+  inputs: planInputs({ plan: { ...EMPTY_PLAN, teams: [STORED_TEAM] } }),
+}
+
+const searchOver = () =>
+  waitFor(
+    () =>
+      expect(screen.getByTestId("plan-wizard-best-step")).not.toHaveTextContent(
+        "Checking"
+      ),
+    { timeout: 5000 }
+  )
 
 describe("PlanWizard", () => {
   it("shows the estimated deadline and a verdict per step", async () => {
@@ -107,7 +144,7 @@ describe("PlanWizard", () => {
     )
     const options = screen.getAllByTestId("plan-wizard-target-option")
     expect(options[0]).toHaveAttribute("data-step", "unlock")
-    expect(within(options[0]!).getByRole("radio")).toBeChecked()
+    expect(options[0]).toBeChecked()
     // The exploration runs in chunks; give it room on a busy runner.
     await waitFor(
       () =>
@@ -123,8 +160,9 @@ describe("PlanWizard", () => {
     ).not.toContain("Checking…")
   })
 
-  it("shows every lane's roster potential on the Target step", () => {
+  it("shows every lane's roster potential under Why this verdict?", async () => {
     renderWizard()
+    await userEvent.click(screen.getByTestId("plan-wizard-potential-toggle"))
     const potential = screen.getByTestId("plan-wizard-potential")
     expect(within(potential).getByText("Roster potential")).toBeInTheDocument()
     expect(within(potential).getAllByTestId("roster-potential")).toHaveLength(3)
@@ -222,7 +260,7 @@ describe("PlanWizard", () => {
   it("asks before leaving once the draft changed", async () => {
     const router = renderWizard()
     const options = screen.getAllByTestId("plan-wizard-target-option")
-    await userEvent.click(within(options[1]!).getByRole("radio"))
+    await userEvent.click(options[1]!)
     void router.navigate(`/legendary-events/${utharEvent.id}`)
     expect(await screen.findByText("Leave the plan?")).toBeInTheDocument()
   })
@@ -248,5 +286,339 @@ describe("PlanWizard", () => {
     expect(second.writes).toBe(first.writes)
     expect(second.destination).toBe(first.destination)
     expect(second.onlyFailed).toBe(true)
+  })
+  it("keeps the step in the URL, so the browser's Back moves one step without asking", async () => {
+    const router = renderWizard()
+    await userEvent.click(
+      screen.getAllByTestId("plan-wizard-target-option")[1]!
+    )
+    await next()
+    expect(router.state.location.search).toBe("?step=upgrades")
+    await next()
+    expect(router.state.location.search).toBe("?step=teams")
+    await router.navigate(-1)
+    expect(
+      await screen.findByTestId("plan-wizard-upgrades")
+    ).toBeInTheDocument()
+    expect(screen.queryByText("Leave the plan?")).not.toBeInTheDocument()
+    // Visited steps stay reachable from the chips; later ones do not.
+    expect(screen.getByTestId("plan-wizard-chip-teams")).toBeEnabled()
+    expect(screen.getByTestId("plan-wizard-chip-runs")).toBeDisabled()
+    expect(screen.getByTestId("plan-wizard-chip-review")).toBeDisabled()
+    await userEvent.click(screen.getByTestId("plan-wizard-chip-target"))
+    expect(screen.getByTestId("plan-wizard-target")).toBeInTheDocument()
+  })
+
+  it("opens each new step at the top of the page", async () => {
+    const scrollTo = vi.mocked(window.scrollTo)
+    scrollTo.mockClear()
+    renderWizard()
+    expect(scrollTo).not.toHaveBeenCalled()
+    await next()
+    expect(scrollTo).toHaveBeenCalledWith({ top: 0 })
+  })
+
+  it("opens a reload or a deep link to a later step on Target", async () => {
+    const router = renderWizard(SOURCE, "?step=teams")
+    expect(screen.getByTestId("plan-wizard-target")).toBeInTheDocument()
+    await waitFor(() =>
+      expect(router.state.location.search).toBe("?step=target")
+    )
+  })
+
+  it("keeps Back / Next at the bottom of the viewport on desktop", () => {
+    renderWizard()
+    expect(screen.getByTestId("plan-wizard-footer")).toHaveClass("bottom-0")
+  })
+
+  it("shows the mobile layout below 768px: chips, summary strip, footer above the navigation", () => {
+    setViewportWidth(390)
+    renderWizard()
+    expect(screen.getByTestId("plan-wizard-footer")).toHaveClass(
+      "bottom-(--mobile-nav-height)"
+    )
+    expect(screen.getByTestId("plan-wizard-chip-target")).toBeEnabled()
+    expect(screen.getByTestId("plan-wizard-chip-upgrades")).toBeDisabled()
+    expect(screen.getByTestId("plan-wizard-summary")).toHaveClass("sticky")
+  })
+
+  it("puts every tour target on the Target step at both widths", () => {
+    for (const width of [1280, 390]) {
+      setViewportWidth(width)
+      const { unmount } = render(
+        <RouterProvider
+          router={createMemoryRouter(
+            [
+              {
+                path: "/plan",
+                element: <PlanWizard initialTarget={null} source={SOURCE} />,
+              },
+            ],
+            { initialEntries: ["/plan"] }
+          )}
+        />,
+        { wrapper: i18nWrapper(i18n) }
+      )
+      const steps = (
+        tourSteps as Record<"desktop" | "mobile", { target: string }[]>
+      )[width < 768 ? "mobile" : "desktop"]
+      for (const step of steps) {
+        expect(document.querySelector(step.target)).not.toBeNull()
+      }
+      // The whole card list is taller than a phone screen, so mobile points at one card.
+      expect(
+        document.querySelector(steps[1]!.target)?.getAttribute("data-testid")
+      ).toBe(
+        width < 768 ? "plan-wizard-target-option" : "plan-wizard-target-cards"
+      )
+      unmount()
+    }
+  })
+
+  it("moves the choice with the arrow keys", async () => {
+    renderWizard()
+    const options = screen.getAllByTestId("plan-wizard-target-option")
+    options[0]!.focus()
+    await userEvent.keyboard("{ArrowDown}")
+    expect(options[1]).toBeChecked()
+    expect(options[1]).toHaveFocus()
+    expect(capture).toHaveBeenCalledWith(
+      expect.objectContaining({ type: "legendary_event_plan_target_chosen" })
+    )
+  })
+
+  it("summarises the run inputs in the closed Assumptions panel", async () => {
+    renderWizard()
+    const of = utharEvent.regularMissions.length
+    expect(
+      screen.getByTestId("plan-wizard-run-inputs-summary")
+    ).toHaveTextContent(
+      `Run 2: 0 of ${of} missions · Run 3: 0 of ${of} missions`
+    )
+    expect(screen.queryByTestId("run-inputs-run")).not.toBeInTheDocument()
+    await userEvent.click(screen.getByTestId("plan-wizard-run-inputs-toggle"))
+    expect(screen.getAllByTestId("run-inputs-run").length).toBeGreaterThan(0)
+  })
+
+  it("selects the highest step within reach once the search ends, unless the user chose", async () => {
+    renderWizard()
+    await searchOver()
+    const checked = screen
+      .getAllByTestId("plan-wizard-target-option")
+      .find((option) => option.getAttribute("aria-checked") === "true")!
+    const best = screen.getByTestId("plan-wizard-best-step").textContent ?? ""
+    if (best.includes("is the highest step within reach")) {
+      expect(best).toContain(
+        within(checked).getAllByText(/\S/)[0]!.textContent ?? ""
+      )
+    } else {
+      expect(checked).toHaveAttribute("data-step", "unlock")
+    }
+  })
+
+  it("never replaces an explicit choice", async () => {
+    renderWizard()
+    const options = screen.getAllByTestId("plan-wizard-target-option")
+    const chosen = options.at(-1)!
+    await userEvent.click(chosen)
+    await searchOver()
+    expect(
+      screen
+        .getAllByTestId("plan-wizard-target-option")
+        .find((option) => option.getAttribute("aria-checked") === "true")
+    ).toHaveAttribute("data-step", chosen.dataset.step)
+    expect(screen.getByTestId("plan-wizard-summary-moved")).toHaveTextContent(
+      ""
+    )
+  })
+
+  it("undoes one removed team at a time", async () => {
+    FARMING.status = "unavailable"
+    renderWizard()
+    await next()
+    await next()
+    const alpha = () =>
+      screen
+        .getAllByTestId("plan-wizard-lane")
+        .find((lane) => lane.dataset.lane === "alpha")!
+    const teams = within(alpha()).getAllByTestId("plan-wizard-team")
+    expect(teams.length).toBeGreaterThanOrEqual(2)
+    await userEvent.click(
+      within(teams[0]!).getByTestId("plan-wizard-team-remove")
+    )
+    await userEvent.click(
+      within(
+        within(alpha()).getAllByTestId("plan-wizard-team")[0]!
+      ).getByTestId("plan-wizard-team-remove")
+    )
+    const removed = within(alpha()).getAllByTestId("plan-wizard-removed-team")
+    expect(removed).toHaveLength(2)
+    const [first, second] = removed.map((row) => row.textContent)
+    await userEvent.click(
+      within(removed[0]!).getByTestId("plan-wizard-team-undo")
+    )
+    const left = within(alpha()).getAllByTestId("plan-wizard-removed-team")
+    expect(left).toHaveLength(1)
+    expect(left[0]!.textContent).toBe(second)
+    expect(left[0]!.textContent).not.toBe(first)
+    await userEvent.click(screen.getByTestId("plan-wizard-teams-restore-all"))
+    expect(
+      within(alpha()).queryAllByTestId("plan-wizard-removed-team")
+    ).toHaveLength(0)
+  })
+
+  it("sends an edited stored team's name with its update", async () => {
+    FARMING.status = "unavailable"
+    renderWizard(WITH_STORED_TEAM)
+    await next()
+    await next()
+    const stored = screen
+      .getAllByTestId("plan-wizard-team")
+      .find((team) => team.dataset.stored === "true")!
+    await userEvent.click(within(stored).getByTestId("plan-wizard-team-edit"))
+    const name = await screen.findByTestId("team-editor-name")
+    await userEvent.clear(name)
+    await userEvent.type(name, "Renamed")
+    await userEvent.click(screen.getByTestId("team-editor-save"))
+    await next()
+    await next()
+    await waitFor(() =>
+      expect(screen.getByTestId("plan-wizard-create")).toBeEnabled()
+    )
+    await userEvent.click(screen.getByTestId("plan-wizard-create"))
+    const call = run.mock.calls[0]![0]
+    const update = call.writes.lanes.flatMap(
+      (lane: { update: { storedId: string | null }[] }) => lane.update
+    )
+    expect(
+      update.map((team: { storedId: string | null }) => team.storedId)
+    ).toEqual(["mine"])
+    expect(call.teamName(update[0])).toBe("Renamed")
+  })
+
+  it("names every removed team on Review in destructive styling", async () => {
+    FARMING.status = "unavailable"
+    renderWizard(WITH_STORED_TEAM)
+    await next()
+    await next()
+    expect(screen.getByTestId("plan-wizard-teams-keep")).toHaveTextContent(
+      "Keep my team (1)"
+    )
+    await userEvent.click(screen.getByTestId("plan-wizard-teams-replace"))
+    await next()
+    await next()
+    const removal = screen.getByTestId("plan-wizard-review-remove")
+    expect(removal).toHaveTextContent("Remove 'Mine' from Alpha")
+    expect(removal).toHaveClass("text-destructive")
+    const created = screen.getAllByTestId("plan-wizard-review-create").length
+    expect(screen.getByTestId("plan-wizard-create")).toHaveTextContent(
+      created === 1 ? "Create 1 team" : `Create ${created} teams`
+    )
+    expect(
+      within(screen.getByTestId("plan-wizard-review-runs")).getByText(
+        "Nothing to change"
+      )
+    ).toBeInTheDocument()
+  })
+
+  it("names a removed lane-default team on Review as the Teams step shows it", async () => {
+    FARMING.status = "unavailable"
+    renderWizard({
+      ...SOURCE,
+      inputs: planInputs({
+        plan: { ...EMPTY_PLAN, teams: [{ ...STORED_TEAM, name: "alpha" }] },
+      }),
+    })
+    await next()
+    await next()
+    // The stored team is listed first in its lane.
+    const alpha = screen
+      .getAllByTestId("plan-wizard-lane")
+      .find((lane) => lane.dataset.lane === "alpha")!
+    await userEvent.click(
+      within(within(alpha).getAllByTestId("plan-wizard-team")[0]!).getByTestId(
+        "plan-wizard-team-remove"
+      )
+    )
+    const shown = screen.getByTestId("plan-wizard-removed-team").textContent
+    const name = shown?.replace("Undo", "").trim()
+    expect(name).toBeTruthy()
+    expect(name).not.toBe("alpha")
+    await next()
+    await next()
+    expect(screen.getByTestId("plan-wizard-review-remove")).toHaveTextContent(
+      `Remove '${name}' from Alpha`
+    )
+    // Replacing removes it without a manual removal: the same name.
+    await userEvent.click(screen.getByTestId("plan-wizard-step-teams"))
+    await userEvent.click(screen.getByTestId("plan-wizard-team-undo"))
+    await userEvent.click(screen.getByTestId("plan-wizard-teams-replace"))
+    await userEvent.click(screen.getByTestId("plan-wizard-step-review"))
+    expect(screen.getByTestId("plan-wizard-review-remove")).toHaveTextContent(
+      `Remove '${name}' from Alpha`
+    )
+  })
+
+  it("offers Retry failed at once after a partial failure and asks before leaving", async () => {
+    const router = renderWizard()
+    for (let step = 0; step < 4; step += 1) await next()
+    await waitFor(() =>
+      expect(screen.getByTestId("plan-wizard-create")).toBeEnabled()
+    )
+    run.mockImplementationOnce(async () => {
+      createState.items = [{ key: "goals:calgar", status: "failed" }]
+      return { ok: false, projectId: null }
+    })
+    await userEvent.click(screen.getByTestId("plan-wizard-create"))
+    expect(screen.getByTestId("plan-wizard-create")).toHaveTextContent(
+      "Retry failed"
+    )
+    expect(screen.getByTestId("plan-wizard-create")).toBeEnabled()
+    void router.navigate(`/legendary-events/${utharEvent.id}`)
+    expect(
+      await screen.findByText("Some items failed. Leave without retrying?")
+    ).toBeInTheDocument()
+  })
+  it("groups upgrades by run and sets the ticks with All, None and Just enough", async () => {
+    renderWizard()
+    await searchOver()
+    await next()
+    const boxes = () => screen.getAllByRole("checkbox")
+    expect(
+      screen.getAllByTestId("plan-wizard-upgrade-group")[0]
+    ).toHaveTextContent(/Ready for run \d/)
+    await userEvent.click(screen.getByRole("button", { name: "All" }))
+    expect(
+      boxes().every((box) => box.getAttribute("aria-checked") === "true")
+    ).toBe(true)
+    await userEvent.click(screen.getByRole("button", { name: "None" }))
+    expect(
+      boxes().some((box) => box.getAttribute("aria-checked") === "true")
+    ).toBe(false)
+    await userEvent.click(screen.getByRole("button", { name: "Just enough" }))
+    expect(
+      screen.queryByTestId("plan-wizard-upgrades-new")
+    ).not.toBeInTheDocument()
+  })
+
+  it("makes the mobile lane tabs accessible tabs", async () => {
+    setViewportWidth(390)
+    FARMING.status = "unavailable"
+    renderWizard()
+    await next()
+    await next()
+    const tabs = screen.getAllByRole("tab")
+    expect(tabs[0]).toHaveAttribute("aria-selected", "true")
+    expect(tabs[0]).toHaveAttribute("aria-controls", "plan-wizard-lane-alpha")
+    expect(document.getElementById("plan-wizard-lane-alpha")).toHaveAttribute(
+      "role",
+      "tabpanel"
+    )
+    tabs[0]!.focus()
+    await userEvent.keyboard("{ArrowRight}")
+    expect(screen.getAllByRole("tab")[1]).toHaveAttribute(
+      "aria-selected",
+      "true"
+    )
   })
 })

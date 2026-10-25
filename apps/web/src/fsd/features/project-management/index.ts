@@ -1,7 +1,10 @@
 export { useProjectActions } from "./model/use-project-actions"
 export { useHomeProjects } from "./model/use-home-projects"
 export { useProjectsWithGoals } from "./model/use-projects-with-goals"
-export { linkedEventProjects } from "./model/use-event-projects"
+export {
+  linkedEventProjects,
+  useEventProjects,
+} from "./model/use-event-projects"
 export { orderDefaultFirst } from "./model/order-default-first"
 export { AddGoalsToProjectSheet } from "./ui/add-goals-to-project-sheet"
 export { EventProjectsLine } from "./ui/event-projects-line"

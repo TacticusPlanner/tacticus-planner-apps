@@ -58,6 +58,114 @@ describe("useHreProgress", () => {
     expect(result.current[0].mission).toBe(5)
   })
 
+  it("keeps each mission's progress when switching and restores it", () => {
+    const { result } = renderHook(() => useHreProgress("occ-zapspitta"))
+    act(() => result.current[1].setMission(20))
+    act(() => result.current[1].setObjectiveProgress(1, 70))
+    act(() => result.current[1].setMission(21))
+    expect(result.current[0]).toMatchObject({ mission: 21, progress: [0, 0] })
+    act(() => result.current[1].setMission(20))
+    expect(result.current[0]).toMatchObject({ mission: 20, progress: [0, 70] })
+  })
+
+  it("restores the entry before Mission complete", () => {
+    const { result } = renderHook(() => useHreProgress("occ-zapspitta"))
+    act(() => result.current[1].setMission(5))
+    act(() => result.current[1].setObjectiveProgress(0, 10_000))
+    act(() => result.current[1].setObjectiveProgress(1, 100))
+    const before = result.current[0]
+    act(() => result.current[1].completeMission())
+    expect(result.current[0]).toMatchObject({ mission: 6, progress: [0, 0] })
+    act(() => result.current[1].restore(before))
+    expect(result.current[0]).toMatchObject({
+      mission: 5,
+      progress: [10_000, 100],
+    })
+  })
+
+  it("dates the rank only when it changes", () => {
+    vi.spyOn(Date, "now").mockReturnValue(1000)
+    const { result } = renderHook(() => useHreProgress("occ-zapspitta"))
+    act(() => result.current[1].setRank(26_602))
+    expect(result.current[0].rankAt).toBe(1000)
+    vi.spyOn(Date, "now").mockReturnValue(2000)
+    act(() => result.current[1].setRank(26_602))
+    expect(result.current[0].rankAt).toBe(1000)
+    act(() => result.current[1].setRank(null))
+    expect(result.current[0].rankAt).toBeNull()
+  })
+
+  it("stores the owned inputs and reloads them", () => {
+    const first = renderHook(() => useHreProgress("occ-zapspitta"))
+    act(() =>
+      first.result.current[1].setOwned({
+        currency: 372,
+        nextTier: 17,
+        step: "rare-4",
+        toNext: 17,
+      })
+    )
+    first.unmount()
+    const reloaded = renderHook(() => useHreProgress("occ-zapspitta"))
+    expect(reloaded.result.current[0].owned).toEqual({
+      currency: 372,
+      nextTier: 17,
+      step: "rare-4",
+      toNext: 17,
+    })
+  })
+
+  it("loads an entry stored before the new fields", () => {
+    window.localStorage.setItem(
+      HRE_PROGRESS_STORAGE_KEY,
+      JSON.stringify({
+        "occ-zapspitta": {
+          mission: 20,
+          progress: [0, 70],
+          points: 15_657,
+          rank: 26_602,
+          order: 2,
+        },
+      })
+    )
+    const { result } = renderHook(() => useHreProgress("occ-zapspitta"))
+    expect(result.current[0]).toMatchObject({
+      mission: 20,
+      progress: [0, 70],
+      points: 15_657,
+      rank: 26_602,
+      rankAt: null,
+      byMission: {},
+      owned: { currency: null, nextTier: null, step: null, toNext: null },
+    })
+  })
+
+  it("drops an invalid new field alone", () => {
+    window.localStorage.setItem(
+      HRE_PROGRESS_STORAGE_KEY,
+      JSON.stringify({
+        "occ-zapspitta": {
+          mission: 20,
+          progress: [0, 70],
+          points: 15_657,
+          order: 2,
+          rankAt: "yesterday",
+          byMission: "broken",
+          owned: { currency: 372, nextTier: 99, step: "mythic", toNext: 17 },
+        },
+      })
+    )
+    const { result } = renderHook(() => useHreProgress("occ-zapspitta"))
+    expect(result.current[0]).toMatchObject({
+      mission: 20,
+      progress: [0, 70],
+      points: 15_657,
+      rankAt: null,
+      byMission: {},
+      owned: { currency: 372, nextTier: null, step: null, toNext: 17 },
+    })
+  })
+
   it("stores points and rank with the mission progress", () => {
     const { result } = renderHook(() => useHreProgress("occ-zapspitta"))
     act(() => result.current[1].setPoints(14_500))

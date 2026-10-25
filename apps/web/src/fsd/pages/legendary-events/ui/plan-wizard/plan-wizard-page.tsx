@@ -5,6 +5,7 @@ import { Button } from "@workspace/ui/components/button"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 
 import { ASCENSION_STEPS, type AscensionStep } from "@/entities/legendary-event"
+import { useUnitName } from "@/shared/unit-name"
 
 import { PlanWizard, type PlanWizardEntry } from "./plan-wizard"
 import { usePlanSource } from "./use-plan-source"
@@ -27,6 +28,7 @@ function PlanWizardPageContent({ eventId }: { eventId: string }) {
   const { t } = useTranslation("legendaryEvents")
   const [params] = useSearchParams()
   const source = usePlanSource(eventId)
+  const unitName = useUnitName()
   const target = params.get("target")
   const backToEvent = (
     <Button asChild variant="outline">
@@ -94,7 +96,22 @@ function PlanWizardPageContent({ eventId }: { eventId: string }) {
       return (
         <Message
           testId="plan-wizard-no-estimates"
-          text={t("planWizard.states.noEstimates")}
+          text={t("planWizard.states.noEstimatesMissing", {
+            missing: source.missing
+              .map((dataset) => t(`planWizard.states.datasets.${dataset}`))
+              .join(", "),
+          })}
+        >
+          {backToEvent}
+        </Message>
+      )
+    case "nothingToReach":
+      return (
+        <Message
+          testId="plan-wizard-nothing-to-reach"
+          text={t(`planWizard.states.nothingToReach.${source.reason}`, {
+            name: unitName("Character", source.event.id),
+          })}
         >
           {backToEvent}
         </Message>

@@ -376,7 +376,11 @@
         },
         "pace": {
           "title": "Event-Tempo",
-          "content": "Gib deine Eventpunkte und deinen Rang ein, um Währung, Truhenstufe und Splitter zu schätzen, und wähle ein Ziel, um die nötigen Punkte pro Tag zu sehen."
+          "content": "Gib deine Eventpunkte und deinen Rang ein, optional auch, was du jetzt hast, um Währung, Truhenstufe und Splitter zu schätzen, und wähle ein Ziel, um die nötigen Punkte pro Tag zu sehen."
+        },
+        "paceSummary": {
+          "title": "Tempo auf einen Blick",
+          "content": "Deine Punkte, wo sie landen und welche Stufe sie erreichen. Tippe auf Details, um Punkte, Rang und deinen Besitz einzutragen und ein Ziel zu wählen."
         }
       }
     }

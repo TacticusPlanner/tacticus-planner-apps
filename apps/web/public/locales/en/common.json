@@ -419,7 +419,9 @@
       "tierListDescription": "The horde-mode tier list behind clear estimates",
       "activeEventDescription": "Active Legendary Event with your synced progress",
       "upcomingEventDescription": "Upcoming Legendary Event",
-      "archivedEventDescription": "Past Legendary Event with your synced progress"
+      "archivedEventDescription": "Past Legendary Event with your synced progress",
+      "runStartsOn": "Starts {{date}}",
+      "runEndsOn": "Ends {{date}}"
     }
   },
   "home": {

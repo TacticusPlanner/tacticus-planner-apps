@@ -6,6 +6,7 @@ import {
   createLegendaryEventTeam,
   deleteLegendaryEventTeam,
   updateLegendaryEventPlan,
+  updateLegendaryEventTeam,
   updateLegendaryEventRunInputs,
   usePlanWriteQueue,
   type LegendaryEventPlan,
@@ -33,8 +34,12 @@ export interface CreateItem {
 const errorText = (error: unknown) =>
   error instanceof ApiError || error instanceof Error ? error.message : ""
 
-/** Sends one lane's removals and new teams in order, each on the revision the previous returned. */
-async function writeLane(
+const sortedObjectives = (indexes: readonly number[]) =>
+  [...indexes].sort((a, b) => a - b)
+
+/** Sends one lane's removals, updates and new teams in order, each on the revision the previous
+ *  returned. */
+export async function writeLane(
   eventId: string,
   base: LegendaryEventPlan,
   lane: PlanWrites["lanes"][number],
@@ -46,6 +51,31 @@ async function writeLane(
   for (const teamId of lane.remove) {
     if (!plan.teams.some((team) => team.id === teamId)) continue
     plan = await deleteLegendaryEventTeam(eventId, teamId, plan.revision)
+  }
+  for (const team of lane.update) {
+    const name = teamName(team)
+    const objectives = sortedObjectives(team.objectiveIndexes)
+    const stored = plan.teams.find((entry) => entry.id === team.storedId)
+    if (
+      !stored ||
+      (stored.name === name &&
+        memberKey(stored.memberUnitIds) === memberKey(team.memberUnitIds) &&
+        stored.reserveUnitId === team.reserveUnitId &&
+        stored.objectiveIndexes.join() === objectives.join())
+    ) {
+      continue
+    }
+    // New members make the stored depth stale: it is left to the live estimate, like a new team.
+    plan = await updateLegendaryEventTeam(eventId, stored.id, {
+      name,
+      memberUnitIds: team.memberUnitIds,
+      reserveUnitId: team.reserveUnitId,
+      objectiveIndexes: objectives,
+      expectedRevision: plan.revision,
+      run: runs[0] ?? 1,
+      expectedBattleClears: null,
+      expectedBattleClearsSource: null,
+    })
   }
   for (const team of lane.create) {
     const members = memberKey(team.memberUnitIds)
@@ -64,7 +94,7 @@ async function writeLane(
       name: teamName(team),
       memberUnitIds: team.memberUnitIds,
       reserveUnitId: team.reserveUnitId,
-      objectiveIndexes: [...team.objectiveIndexes].sort((a, b) => a - b),
+      objectiveIndexes: sortedObjectives(team.objectiveIndexes),
       expectedRevision: plan.revision,
       laneId: lane.laneId,
       run: runs[0] ?? 1,

@@ -1,8 +1,3 @@
-import {
-  getEquipment,
-  getMythicQuestsByUnitId,
-  getUnlockShardCostsMap,
-} from "@workspace/game-catalog/queries"
 import { useLocation } from "react-router"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
@@ -314,7 +309,7 @@ async function renderUnit(url: string, state?: unknown) {
     holdRosterRead()
   }
   const [pathname, search] = url.split("?")
-  render(
+  const { queryClient } = render(
     <>
       <CharacterUnitPage />
       <Where />
@@ -335,15 +330,12 @@ async function renderUnit(url: string, state?: unknown) {
       )
     ).not.toBeNull()
   )
-  // Signed out, ownership settles without a read; let the page's catalog reads (issued at mount,
-  // so answered first) land before the test looks.
-  await act(() =>
-    Promise.all([
-      getEquipment(),
-      getMythicQuestsByUnitId(),
-      getUnlockShardCostsMap(),
-    ])
+  // Let the page's catalog reads (equipment, for the relic) settle before the test looks. TanStack
+  // Query renders a settled read on a later timer tick, so flush one after the reads are done.
+  await waitFor(() =>
+    expect(queryClient.isFetching({ queryKey: ["local", "catalog"] })).toBe(0)
   )
+  await act(() => new Promise((resolve) => setTimeout(resolve, 0)))
 }
 
 afterEach(() => {

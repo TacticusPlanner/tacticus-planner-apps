@@ -494,19 +494,19 @@
         },
         "progress": {
           "title": "Cinco pasos",
-          "content": "Objetivo, Mejoras, Equipos, Rondas y fichas, y luego Revisar y crear. No se guarda nada hasta que pulses Crear."
+          "content": "La cabecera muestra dónde estás. Toca la etiqueta de un paso visitado para volver a él. No se guarda nada hasta que pulses Crear."
         },
-        "runInputs": {
-          "title": "Primero, los datos de las rondas",
-          "content": "Las misiones y las opciones de pago cambian los puntos alcanzables. Configúralas aquí para que todas las valoraciones y recomendaciones las sigan."
-        },
-        "target": {
+        "targetCards": {
           "title": "Elige un objetivo",
-          "content": "Cada paso muestra los puntos que necesita y si tu plantilla lo alcanza ya, necesita mejoras o es demasiado ambicioso para este evento."
+          "content": "Cada tarjeta muestra los puntos que necesita un paso, su veredicto y una barra: sólida para tu plantilla actual y rayada para lo que añaden las mejoras recomendadas."
         },
-        "bestStep": {
-          "title": "Paso más alto a tu alcance",
-          "content": "Cuando se exploran las mejoras, aquí aparece el paso más alto que tu plantilla puede alcanzar con ellas."
+        "assumptions": {
+          "title": "Supuestos",
+          "content": "Las misiones y las opciones de pago cambian los puntos alcanzables. Abre este panel para cambiarlas; todos los veredictos las siguen."
+        },
+        "summary": {
+          "title": "Resumen del plan",
+          "content": "Tu objetivo, su veredicto, los objetivos por crear y los cambios de equipos, en cada paso."
         },
         "footer": {
           "title": "Atrás y Siguiente",
@@ -859,6 +859,7 @@
   },
   "planWizard": {
     "open": "Planificar este evento",
+    "refine": "Afinar el plan",
     "openFromSuggestions": "Planificar todas las líneas para un objetivo",
     "title": "Planificar {{name}}",
     "back": "Atrás",
@@ -883,13 +884,23 @@
       "noEstimates": "El plan en 1 clic necesita estimaciones de batallas, que no están disponibles ahora.",
       "backToEvent": "Volver al evento",
       "missing": "No se encontró este evento.",
-      "backToEvents": "Todos los eventos legendarios"
+      "backToEvents": "Todos los eventos legendarios",
+      "noEstimatesMissing": "El plan en 1 clic necesita estimaciones de batallas. Falta: {{missing}}.",
+      "datasets": {
+        "unitPower": "poder de las unidades",
+        "hordeModeTiers": "niveles del modo horda"
+      },
+      "nothingToReach": {
+        "fullyAscended": "A {{name}} no le queda ningún paso por alcanzar en este evento.",
+        "noLadder": "Este evento no tiene escala de recompensas, así que no hay ningún paso que planificar."
+      }
     },
     "leave": {
       "title": "¿Salir del plan?",
       "description": "Todavía no se ha creado nada. Perderás tus elecciones en este plan.",
       "stay": "Quedarse",
-      "leave": "Salir"
+      "leave": "Salir",
+      "failedDescription": "Algunos elementos han fallado. ¿Salir sin reintentar?"
     },
     "target": {
       "heading": "¿Qué debería alcanzar {{name}} al final del evento?",
@@ -910,7 +921,10 @@
       "estimating": "Comprobando lo que pueden aportar las mejoras…",
       "bestStep": "{{step}} es el paso más alto a tu alcance",
       "noStep": "Ningún paso está a tu alcance",
-      "noTargets": "No queda ningún paso por alcanzar en este evento."
+      "noTargets": "No queda ningún paso por alcanzar en este evento.",
+      "spareWithUpgrades": "+{{points}} de margen con mejoras",
+      "shortWithUpgrades": "Faltan {{points}} puntos con mejoras",
+      "why": "¿Por qué este veredicto?"
     },
     "banner": "{{step}} parece fuera de alcance: {{best}}",
     "bannerLink": "Cambiar objetivo",
@@ -927,26 +941,43 @@
       "alreadyPlanned": "Ya planificada",
       "verdictReachable": "Con estas mejoras: alcanzable · {{points}} puntos de margen",
       "verdictShort": "Con estas mejoras: faltan {{points}} puntos",
-      "notNeeded": "Tu plantilla ya alcanza el objetivo: no hacen falta mejoras."
+      "notNeeded": "Tu plantilla ya alcanza el objetivo: no hacen falta mejoras.",
+      "quick": {
+        "justEnough": "Lo justo",
+        "all": "Todas",
+        "none": "Ninguna"
+      },
+      "newSuggestions_one": "{{count}} sugerencia nueva sin marcar",
+      "newSuggestions_other": "{{count}} sugerencias nuevas sin marcar",
+      "tickNew": "Marcarlas",
+      "group": "Lista para la ronda {{run}}",
+      "ceilingAfter": "→ {{ceiling}}",
+      "ceilingAfterTarget": "→ {{ceiling}} / {{points}}",
+      "ceilingNote": "El techo de cada fila supone que todas las filas anteriores están marcadas."
     },
     "teams": {
-      "keep": "Mantener mis equipos",
-      "replace": "Reemplazar mis equipos",
       "yours": "Tuyo",
       "empty": "Ningún equipo para esta línea",
-      "depth": "Ronda {{run}}: batalla {{depth}}",
-      "depthNone": "Ronda {{run}}: ninguna",
       "removeTeam": "Quitar {{name}}",
       "removed_one": "{{count}} equipo quitado",
       "removed_other": "{{count}} equipos quitados",
-      "restore": "Restaurar",
       "swap": "Un equipo más fuerte podría ocupar este puesto: +{{points}} puntos",
       "swapSame": "Estas unidades pueden cumplir más objetivos como un equipo nuevo: +{{points}} puntos",
       "swapAccept": "Cambiar",
-      "swapSkip": "Mantener el mío"
+      "swapSkip": "Mantener el mío",
+      "keepCount_one": "Mantener mi equipo ({{count}})",
+      "keepCount_other": "Mantener mis equipos ({{count}})",
+      "replaceCount_one": "Reemplazar por generados ({{count}})",
+      "replaceCount_other": "Reemplazar por generados ({{count}})",
+      "modeLabel": "Tus equipos",
+      "restoreAll": "Restaurar todos",
+      "undo": "Deshacer",
+      "add": "Añadir un equipo",
+      "editTeam": "Editar {{name}}",
+      "lanesLabel": "Líneas",
+      "depthOf": "Ronda {{run}}: {{depth}} de {{battles}} batallas"
     },
     "runs": {
-      "heading": "Datos de las rondas",
       "description": "Las misiones y las opciones de pago cambian los puntos alcanzables, así que las valoraciones de abajo los siguen. Se guardan con el plan al pulsar Crear."
     },
     "review": {
@@ -954,16 +985,8 @@
       "newProject": "Proyecto nuevo",
       "newProjectName": "{{name}} · {{step}}",
       "goals": "Objetivos a crear",
-      "noGoals": "Ningún objetivo nuevo",
       "teams": "Equipos",
-      "createTeams_one": "{{lane}}: crear {{count}} equipo",
-      "createTeams_other": "{{lane}}: crear {{count}} equipos",
-      "removeTeams_one": "{{lane}}: quitar {{count}} equipo",
-      "removeTeams_other": "{{lane}}: quitar {{count}} equipos",
-      "noTeams": "Sin cambios en los equipos",
       "runs": "Datos de las rondas",
-      "runsChanged": "Guardar los datos de las rondas editados",
-      "noRuns": "Sin cambios en los datos de las rondas",
       "final": "Al final de la ronda {{run}}: {{step}} alcanzado · {{points}} puntos de margen",
       "finalShort": "Al final de la ronda {{run}}: a {{step}} le faltan {{points}} puntos",
       "items": {
@@ -977,12 +1000,43 @@
         "done": "Hecho",
         "failed": "Fallido"
       },
-      "newProjectNameLabel": "Nombre del proyecto nuevo"
+      "newProjectNameLabel": "Nombre del proyecto nuevo",
+      "heading": "Revisar y crear",
+      "nothing": "Nada que cambiar",
+      "removeTeam": "Quitar «{{name}}» de {{lane}}",
+      "updateTeam": "Actualizar «{{name}}» en {{lane}}",
+      "createTeam": "Crear «{{name}}» en {{lane}}",
+      "paidOn": "Mostrar opciones de pago: activado",
+      "paidOff": "Mostrar opciones de pago: desactivado"
     },
     "toast": {
-      "created": "Plan creado: {{goals}} objetivos, {{teams}} equipos",
+      "created": "Plan creado: {{goals}}, {{teams}}",
       "openProject": "Abrir proyecto"
     },
-    "stepsLabel": "Pasos del plan"
+    "stepsLabel": "Pasos del plan",
+    "createBoth": "Crear {{goals}} y {{teams}}",
+    "createOne": "Crear {{what}}",
+    "saveRunInputs": "Guardar los datos de las rondas",
+    "counts": {
+      "goals_one": "{{count}} objetivo",
+      "goals_other": "{{count}} objetivos",
+      "teams_one": "{{count}} equipo",
+      "teams_other": "{{count}} equipos"
+    },
+    "summary": {
+      "label": "Resumen del plan",
+      "target": "{{step}} · {{verdict}}",
+      "spare": "+{{points}} de margen",
+      "ceiling": "techo de {{ceiling}} de {{points}} necesarios",
+      "goals_one": "{{count}} objetivo por crear",
+      "goals_other": "{{count}} objetivos por crear",
+      "teams": "Equipos: +{{created}} / −{{removed}}"
+    },
+    "assumptions": {
+      "title": "Supuestos",
+      "run": "Ronda {{run}}: {{missions}} de {{of}} misiones",
+      "bundle": "paquete",
+      "paidOn": "opciones de pago activadas"
+    }
   }
 }

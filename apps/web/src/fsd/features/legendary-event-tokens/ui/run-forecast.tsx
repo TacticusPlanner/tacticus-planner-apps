@@ -27,16 +27,24 @@ export function RunForecastSection({
   isMobile,
   editInputs,
   onOpenTeams,
+  openKey = OPEN_KEY,
+  defaultOpen = false,
+  trackExpand = true,
 }: {
   eventId: string
   view: TokenPlanView
   isMobile: boolean
   editInputs: ReactNode
   onOpenTeams: OpenTeamsHandler
+  /** Where the open state is remembered; another page keeps its own. */
+  openKey?: string
+  defaultOpen?: boolean
+  /** Report expanding it to analytics (the event page's sections do). */
+  trackExpand?: boolean
 }) {
   const { t } = useTranslation("legendaryEvents")
   const { captureEvent } = useAnalyticsActions()
-  const [open, setOpen] = useStoredOpen(OPEN_KEY)
+  const [open, setOpen] = useStoredOpen(openKey, defaultOpen)
   if (view.kind === "loading") {
     return (
       <div data-testid="legendary-event-run-forecast-loading">
@@ -50,7 +58,7 @@ export function RunForecastSection({
   if (!last) return null
 
   const toggle = () => {
-    if (!open) {
+    if (!open && trackExpand) {
       captureEvent({ type: "legendary_event_run_forecast_expanded", eventId })
     }
     setOpen(!open)

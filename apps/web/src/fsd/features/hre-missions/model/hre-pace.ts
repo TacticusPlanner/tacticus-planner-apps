@@ -10,6 +10,8 @@ import {
 } from "./hre-reward-tables"
 
 const DAY_MS = 86_400_000
+/** Missions 1 to 20 each give the same currency; the Bonus gives none. */
+const PAID_MISSIONS = 20
 
 export type HreBracket = (typeof HRE_BRACKETS)[number]
 
@@ -40,18 +42,43 @@ function milestoneCurrency(points: number): number {
   return currency
 }
 
-/** The highest chest tier whose cumulative cost fits, with its cost and shards. */
-function chestTierFor(currency: number) {
-  let tier = 0
+/** The next milestone above `points` and the currency it adds; null once every one is reached. */
+function nextMilestoneFor(points: number) {
+  const index = HRE_MILESTONES.findIndex((item) => item.points > points)
+  if (index < 0) return null
+  const previous = index > 0 ? HRE_MILESTONES[index - 1]!.cumulative : 0
+  const milestone = HRE_MILESTONES[index]!
+  return { points: milestone.points, reward: milestone.cumulative - previous }
+}
+
+/**
+ * The chests opened from tier `from` upward while the currency covers the next cost: the last tier
+ * opened (`from` − 1 when none), their cost and their minimum shards.
+ */
+function chestTierFor(currency: number, from = 1) {
+  let tier = from - 1
   let spent = 0
   let shards = 0
-  for (const chest of HRE_CHESTS) {
+  for (const chest of HRE_CHESTS.slice(from - 1)) {
     if (spent + chest.cost > currency) break
     tier += 1
     spent += chest.cost
     shards += chest.shards
   }
   return { tier, spent, shards }
+}
+
+/** Whole local calendar days from `fromMs` to `toMs` (0 on the same day). */
+export function calendarDaysBetween(fromMs: number, toMs: number): number {
+  const midnight = (ms: number) => {
+    const date = new Date(ms)
+    return new Date(
+      date.getFullYear(),
+      date.getMonth(),
+      date.getDate()
+    ).getTime()
+  }
+  return Math.max(0, Math.round((midnight(toMs) - midnight(fromMs)) / DAY_MS))
 }
 
 export type HreStep = (typeof HRE_RARITY_STEPS)[number]
@@ -64,9 +91,77 @@ export function stepsFor(startRarity: string | null): readonly HreStep[] {
   return HRE_RARITY_STEPS.slice(Math.max(index, 0))
 }
 
+/** The featured hero's step as the event screen shows it: "none" before the unlock. */
+export type HreOwnedStep = HreRarityStepId | "none"
+
+/** What the player holds now, read off the game's event screen (design D1), every input set. */
+export type HreOwned = {
+  currency: number
+  /** The tier on the chest button, 1 to 28. */
+  nextTier: number
+  step: HreOwnedStep
+  /** Shards toward the next step; 0 at the last step. */
+  toNext: number
+}
+
+/** The owned inputs as stored, each null until entered. */
+export type HreOwnedInput = {
+  currency: number | null
+  nextTier: number | null
+  step: string | null
+  toNext: number | null
+}
+
+/** The step after `step` (the hero's first step after "none"), or null at the last step. */
+function stepAfter(
+  step: HreOwnedStep,
+  startRarity: string | null
+): HreStep | null {
+  const steps = stepsFor(startRarity)
+  if (step === "none") return steps[0] ?? null
+  const index = HRE_RARITY_STEPS.findIndex((item) => item.id === step)
+  return HRE_RARITY_STEPS[index + 1] ?? null
+}
+
+/** The shards from `step` to the next one ("none" counts from 0), or null at the last step. */
+export function stepGap(
+  step: HreOwnedStep,
+  startRarity: string | null
+): number | null {
+  const next = stepAfter(step, startRarity)
+  if (!next) return null
+  const current = HRE_RARITY_STEPS.find((item) => item.id === step)
+  return next.shards - (current?.shards ?? 0)
+}
+
+/** The owned inputs as one group, or null until every one of them is set (design D1). */
+export function ownedFrom(
+  input: HreOwnedInput,
+  startRarity: string | null
+): HreOwned | null {
+  const { currency, nextTier, step } = input
+  if (currency === null || nextTier === null || step === null) return null
+  if (step !== "none" && !HRE_RARITY_STEPS.some((item) => item.id === step))
+    return null
+  const gap = stepGap(step as HreOwnedStep, startRarity)
+  if (gap !== null && input.toNext === null) return null
+  return {
+    currency,
+    nextTier: Math.min(Math.max(nextTier, 1), HRE_CHESTS.length),
+    step: step as HreOwnedStep,
+    toNext: gap === null ? 0 : Math.min(input.toNext ?? 0, gap - 1),
+  }
+}
+
 export type HrePaceInput = {
   points: number
   rank: number | null
+  /** When the rank was entered (ms), or null when unknown. */
+  rankAt?: number | null
+  /** The tracker's current mission, 1 to 22; only the owned projection uses it. */
+  mission?: number
+  /** What the player holds now; null keeps the points-only chain. */
+  owned?: HreOwned | null
   startMs: number
   endMs: number
   nowMs: number
@@ -77,12 +172,18 @@ export type HrePaceInput = {
 
 type HreTargetNeeds = {
   step: HreStep
+  /** The projected points cover the points needed. */
   reached: boolean
-  /** Shards still to come from chests after the weekly crates, and the chest tier giving them. */
+  /** With the owned inputs: no chest shards are needed any more. */
+  covered: boolean
+  /** With the owned inputs: no days left and not covered. */
+  timeUp: boolean
+  /** Shards still to come from chests after the shards held and the crates, and the chest tier
+   * giving them. */
   chestShards: number
   chestTier: number | null
   currency: number | null
-  /** Milestone currency needed after missions, payouts and crates. */
+  /** Milestone currency needed after what is owned, missions, payouts and crates. */
   milestoneCurrency: number | null
   points: number | null
   pointsPerDay: number | null
@@ -93,19 +194,41 @@ type HreTargetNeeds = {
 export type HrePace = {
   bracket: HreBracket
   rankKnown: boolean
+  /** Local calendar days since the rank was entered, or null when unknown. */
+  rankAgeDays: number | null
   elapsedDays: number
   daysLeft: number
   averagePerDay: number
   projectedPoints: number
+  /** Currency by source; with the owned inputs, what is owned plus only the income still to come. */
   currency: {
+    owned: number | null
     milestones: number
     missions: number
     daily: number
     crates: number
     total: number
   }
-  chest: { tier: number; spent: number; left: number }
-  shards: { chests: number; crates: number; total: number }
+  /** The chests opened: tiers `from` to `tier`, none when `tier` is below `from`. */
+  chest: { from: number; tier: number; spent: number; left: number }
+  /** Shards by source, a minimum: each chest counts the low end of its range. */
+  shards: {
+    held: number | null
+    chests: number
+    crates: number
+    total: number
+  }
+  /** The step held and the shards toward the next one, with the owned inputs. */
+  owned: {
+    step: HreStep | null
+    toNext: number
+    next: HreStep | null
+    gap: number | null
+  } | null
+  /** The next milestone and its reward, or null once every milestone is reached. */
+  nextMilestone: { points: number; reward: number } | null
+  /** With the owned inputs: the next chest's tier, cost and the currency still missing for it. */
+  nextChest: { tier: number; cost: number; missing: number } | null
   /** The highest step reached, or null when not even the unlock is. */
   reached: HreStep | null
   next: HreStep | null
@@ -115,21 +238,35 @@ export type HrePace = {
   target: HreTargetNeeds | null
 }
 
+/** What the target is measured from: everything the projection counts apart from milestones. */
+type TargetBase = {
+  /** Shards held now (owned) or none. */
+  held: number
+  crateShards: number
+  /** The first chest tier still to open. */
+  fromTier: number
+  /** Currency owned plus the missions, payouts and crates still to come. */
+  fixed: number
+  /** Milestone currency already earned (owned) or none. */
+  milestonesNow: number
+  owned: boolean
+}
+
 function targetNeeds(
   step: HreStep,
-  bracket: HreBracket,
+  base: TargetBase,
   input: HrePaceInput,
   projectedPoints: number,
   daysLeft: number
 ): HreTargetNeeds {
-  const crateShards = bracket.week1.shards + bracket.week2.shards
-  const chestShards = Math.max(0, step.shards - crateShards)
+  const chestShards = Math.max(0, step.shards - base.held - base.crateShards)
   let tier: number | null = null
   let cost = 0
   let shards = 0
   if (chestShards === 0) tier = 0
   else {
     for (const [index, chest] of HRE_CHESTS.entries()) {
+      if (index + 1 < base.fromTier) continue
       cost += chest.cost
       shards += chest.shards
       if (shards >= chestShards) {
@@ -138,25 +275,24 @@ function targetNeeds(
       }
     }
   }
+  const covered = base.owned && chestShards === 0
+  const timeUp = base.owned && !covered && daysLeft <= 0
   const currency = tier === null ? null : tier === 0 ? 0 : cost
-  const fixed =
-    HRE_MISSION_CURRENCY +
-    bracket.daily * HRE_DAILY_PAYOUTS +
-    bracket.week1.currency +
-    bracket.week2.currency
   const fromMilestones =
-    currency === null ? null : Math.max(0, currency - fixed)
-  const points =
-    fromMilestones === null
-      ? null
-      : fromMilestones === 0
-        ? 0
-        : (HRE_MILESTONES.find((item) => item.cumulative >= fromMilestones)
-            ?.points ?? null)
+    currency === null || timeUp ? null : Math.max(0, currency - base.fixed)
+  let points: number | null = null
+  if (fromMilestones === 0) points = base.owned ? input.points : 0
+  else if (fromMilestones !== null)
+    points =
+      HRE_MILESTONES.find(
+        (item) => item.cumulative >= base.milestonesNow + fromMilestones
+      )?.points ?? null
   const reached = points !== null && projectedPoints >= points
   return {
     step,
     reached,
+    covered,
+    timeUp,
     chestShards,
     chestTier: tier,
     currency,
@@ -172,7 +308,9 @@ function targetNeeds(
 
 /**
  * The HRE pace chain in one result (design D7): projected points, then currency by source, then the
- * chest tier, then shards by source, then the step reached, plus what the chosen target needs.
+ * chest tier, then shards by source, then the step reached, plus what the chosen target needs. With
+ * the owned inputs (design D2) it starts from what the player holds and adds only the income still
+ * to come.
  */
 export function projectHrePace(input: HrePaceInput): HrePace {
   const totalDays = Math.max(1, (input.endMs - input.startMs) / DAY_MS)
@@ -187,13 +325,30 @@ export function projectHrePace(input: HrePaceInput): HrePace {
   const projectedPoints = Math.round(input.points + averagePerDay * daysLeft)
 
   const bracket = bracketForRank(input.rank)
-  const milestones = milestoneCurrency(projectedPoints)
-  const daily = bracket.daily * HRE_DAILY_PAYOUTS
-  const crates = bracket.week1.currency + bracket.week2.currency
-  const total = milestones + HRE_MISSION_CURRENCY + daily + crates
-  const chest = chestTierFor(total)
-  const crateShards = bracket.week1.shards + bracket.week2.shards
-  const shardTotal = chest.shards + crateShards
+  const owned = input.owned ?? null
+  // Owned: payouts arrive on days 2 to 15 and the week 1 crate at day 7, so count what is left.
+  const milestonesNow = owned ? milestoneCurrency(input.points) : 0
+  const milestones = milestoneCurrency(projectedPoints) - milestonesNow
+  const missionsDone = Math.min((input.mission ?? 1) - 1, PAID_MISSIONS)
+  const missions = owned
+    ? (PAID_MISSIONS - missionsDone) * (HRE_MISSION_CURRENCY / PAID_MISSIONS)
+    : HRE_MISSION_CURRENCY
+  const payouts = owned
+    ? Math.max(0, HRE_DAILY_PAYOUTS - Math.floor(sinceStart))
+    : HRE_DAILY_PAYOUTS
+  const daily = bracket.daily * payouts
+  const week1 = !owned || sinceStart < 7
+  const crates = (week1 ? bracket.week1.currency : 0) + bracket.week2.currency
+  const crateShards = (week1 ? bracket.week1.shards : 0) + bracket.week2.shards
+  const fixed = (owned?.currency ?? 0) + missions + daily + crates
+  const total = fixed + milestones
+  const fromTier = owned?.nextTier ?? 1
+  const chest = chestTierFor(total, fromTier)
+  const ownedStep = owned
+    ? (HRE_RARITY_STEPS.find((step) => step.id === owned.step) ?? null)
+    : null
+  const held = owned ? (ownedStep?.shards ?? 0) + owned.toNext : null
+  const shardTotal = (held ?? 0) + chest.shards + crateShards
 
   const steps = stepsFor(input.startRarity)
   const reached = [...steps].reverse().find((step) => shardTotal >= step.shards)
@@ -201,29 +356,75 @@ export function projectHrePace(input: HrePaceInput): HrePace {
   const shortOfNext = next ? next.shards - shardTotal : null
   const targetStep =
     steps.find((step) => step.id === input.target) ?? next ?? null
+  const nextChestCost = owned ? HRE_CHESTS[fromTier - 1]?.cost : undefined
 
   return {
     bracket,
     rankKnown: input.rank !== null,
+    rankAgeDays:
+      input.rank !== null && input.rankAt != null
+        ? calendarDaysBetween(input.rankAt, input.nowMs)
+        : null,
     elapsedDays,
     daysLeft,
     averagePerDay: Math.round(averagePerDay),
     projectedPoints,
     currency: {
+      owned: owned?.currency ?? null,
       milestones,
-      missions: HRE_MISSION_CURRENCY,
+      missions,
       daily,
       crates,
       total,
     },
-    chest: { tier: chest.tier, spent: chest.spent, left: total - chest.spent },
-    shards: { chests: chest.shards, crates: crateShards, total: shardTotal },
+    chest: {
+      from: fromTier,
+      tier: chest.tier,
+      spent: chest.spent,
+      left: total - chest.spent,
+    },
+    shards: {
+      held,
+      chests: chest.shards,
+      crates: crateShards,
+      total: shardTotal,
+    },
+    owned: owned
+      ? {
+          step: ownedStep,
+          toNext: owned.toNext,
+          next: stepAfter(owned.step, input.startRarity),
+          gap: stepGap(owned.step, input.startRarity),
+        }
+      : null,
+    nextMilestone: nextMilestoneFor(input.points),
+    nextChest:
+      owned && nextChestCost !== undefined
+        ? {
+            tier: fromTier,
+            cost: nextChestCost,
+            missing: Math.max(0, nextChestCost - owned.currency),
+          }
+        : null,
     reached: reached ?? null,
     next,
     shortOfNext,
     ohSoClose: shortOfNext !== null && shortOfNext <= HRE_OH_SO_CLOSE_SHARDS,
     target: targetStep
-      ? targetNeeds(targetStep, bracket, input, projectedPoints, daysLeft)
+      ? targetNeeds(
+          targetStep,
+          {
+            held: held ?? 0,
+            crateShards,
+            fromTier,
+            fixed,
+            milestonesNow,
+            owned: owned !== null,
+          },
+          input,
+          projectedPoints,
+          daysLeft
+        )
       : null,
   }
 }
@@ -236,6 +437,9 @@ export function hrePaceFor(input: {
   nowMs: number
   points: number | null
   rank: number | null
+  rankAt?: number | null
+  mission?: number
+  owned?: HreOwnedInput | null
   target: string | null
   startRarity: string | null
 }): HrePace | null {
@@ -244,6 +448,9 @@ export function hrePaceFor(input: {
   return projectHrePace({
     points: input.points,
     rank: input.rank,
+    rankAt: input.rankAt,
+    mission: input.mission,
+    owned: input.owned ? ownedFrom(input.owned, input.startRarity) : null,
     startMs: Date.parse(input.startUtc),
     endMs: Date.parse(input.endUtc),
     nowMs: input.nowMs,
