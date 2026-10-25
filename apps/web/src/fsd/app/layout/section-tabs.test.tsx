@@ -122,7 +122,7 @@ describe("SectionTabs", () => {
     )
   })
 
-  it("shows the five Dailies tabs in order: Raids, HSE, HRE, Shops, Guild Raids", () => {
+  it("shows the six Dailies tabs in order: Raids, HSE, HRE, Quest, Shops, Guild Raids", () => {
     renderTabs(section("/dailies"), "/dailies/raids")
 
     expect(
@@ -131,6 +131,7 @@ describe("SectionTabs", () => {
       "section-tab-dailies-raids",
       "section-tab-dailies-hse",
       "section-tab-dailies-hre",
+      "section-tab-dailies-quest",
       "section-tab-dailies-shops",
       "section-tab-dailies-guild-raids",
     ])
@@ -157,7 +158,14 @@ describe("SectionTabs", () => {
         expect(screen.getByTestId("section-tabs")).toHaveClass(
           "overflow-x-auto"
         )
-        for (const key of ["raids", "hse", "hre", "shops", "guild-raids"]) {
+        for (const key of [
+          "raids",
+          "hse",
+          "hre",
+          "quest",
+          "shops",
+          "guild-raids",
+        ]) {
           const tab = screen.getByTestId(`section-tab-dailies-${key}`)
           expect(tab).toHaveTextContent(tabs[key as keyof typeof tabs])
           expect(tab).toHaveClass("whitespace-nowrap")

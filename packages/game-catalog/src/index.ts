@@ -168,6 +168,7 @@ export {
   onslaughtTokenIcon,
   goldIcon,
   salvageIcon,
+  raidTicketIcon,
   xpBookIcon,
   characterIcon,
   mowIcon,

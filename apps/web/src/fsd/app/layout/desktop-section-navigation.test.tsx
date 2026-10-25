@@ -81,7 +81,14 @@ describe("DesktopSectionNavigation", () => {
         )
 
         const menu = within(screen.getByTestId("desktop-section-navigation"))
-        for (const key of ["raids", "hse", "hre", "shops", "guild-raids"]) {
+        for (const key of [
+          "raids",
+          "hse",
+          "hre",
+          "quest",
+          "shops",
+          "guild-raids",
+        ]) {
           const label = tabs[key as keyof typeof tabs]
           const link = menu.getByRole("link", { name: label })
           expect(link).toHaveAttribute("title", label)

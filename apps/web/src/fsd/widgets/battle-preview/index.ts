@@ -9,5 +9,3 @@ export {
 } from "./model/enemy-tile"
 export { BoardMap } from "./ui/board-map"
 export { EnemyList } from "./ui/enemy-list"
-export { EnemyTile } from "./ui/enemy-tile"
-export { useEnemyLabels } from "./ui/enemy-label"

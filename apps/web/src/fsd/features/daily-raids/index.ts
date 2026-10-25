@@ -34,6 +34,7 @@ export type {
   DailyRaidBattleResource,
   DailyRaidLocationViewModel,
   DailyRaidsReadyViewModel,
+  DailyRaidsViewModel,
 } from "./model/daily-raids.domain"
 export type { TodaysAttempt } from "./model/daily-raids-energy"
 export type { MissionDeployGroup } from "./model/mission-deploy-groups"

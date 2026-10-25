@@ -46,5 +46,6 @@ export {
   onslaughtTokenIcon,
   goldIcon,
   salvageIcon,
+  raidTicketIcon,
   xpBookIcon,
 } from "./resource"

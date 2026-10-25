@@ -20,6 +20,9 @@ const HsePage = lazy(loadHsePage)
 const loadHrePage = () =>
   import("./ui/hre-page").then((module) => ({ default: module.HrePage }))
 const HrePage = lazy(loadHrePage)
+const loadQuestPage = () =>
+  import("./ui/quest-page").then((module) => ({ default: module.QuestPage }))
+const QuestPage = lazy(loadQuestPage)
 const loadGuildRaidsPage = () =>
   import("./ui/guild-raids/guild-raids-page").then((module) => ({
     default: module.GuildRaidsPage,
@@ -39,6 +42,11 @@ export const routes: RouteObject[] = [
   },
   { path: "hse", element: <HsePage />, loader: preloadOnMatch(loadHsePage) },
   { path: "hre", element: <HrePage />, loader: preloadOnMatch(loadHrePage) },
+  {
+    path: "quest",
+    element: <QuestPage />,
+    loader: preloadOnMatch(loadQuestPage),
+  },
   {
     path: "shops",
     element: <ShopsPage />,

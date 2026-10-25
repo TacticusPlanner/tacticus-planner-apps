@@ -15,6 +15,8 @@
     "hseDescription": "Home Screen Event: raid where the current event earns points",
     "hre": "HRE",
     "hreDescription": "Hero Release Event: track your missions and raid for them with the least energy",
+    "quest": "Quest",
+    "questDescription": "Quest Event: track your score per battle and see each battle's board, enemies and drop",
     "shops": "Shops",
     "shopsDescription": "Track shop rotations and purchases",
     "guild-raids": "Guild Raids",
@@ -377,6 +379,38 @@
         "pace": {
           "title": "Event pace",
           "content": "Enter your event points and rank to project currency, chest tier and shards, and pick a target to see the points a day it needs."
+        }
+      }
+    },
+    "quest": {
+      "steps": {
+        "header": {
+          "title": "The quest",
+          "content": "The featured hero, who must play every battle, the factions you may deploy and the time left. Pick another quest to browse its battles."
+        },
+        "summary": {
+          "title": "Your score",
+          "content": "Your points out of 8,800, the crates they open and the battles where points are still left."
+        },
+        "battles": {
+          "title": "Battles by tier",
+          "content": "The 17 battles from Common to Mythic with their slots, bonus objectives, drop and points. Select one to see it."
+        },
+        "entry": {
+          "title": "Your best attempt",
+          "content": "Enter medals, Lightning Victory points and the bonus objectives you met. Only your best attempt counts."
+        },
+        "detail": {
+          "title": "Battle detail",
+          "content": "The board, enemies with their level, the rarity cap, and the drop with what your goals need of it."
+        },
+        "rewards": {
+          "title": "Rewards",
+          "content": "The crates your score opens, the featured hero's shards from medals and what they unlock, with a shortcut to plan them as a goal."
+        },
+        "tokens": {
+          "title": "Attempts",
+          "content": "Enter your tokens now to see whether your attempts cover the battles still below their maximum."
         }
       }
     }

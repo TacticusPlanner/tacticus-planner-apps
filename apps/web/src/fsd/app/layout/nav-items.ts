@@ -49,6 +49,7 @@ type NavLabelKey =
   | "dailies:tabs.raids"
   | "dailies:tabs.hse"
   | "dailies:tabs.hre"
+  | "dailies:tabs.quest"
   | "dailies:tabs.shops"
   | "dailies:tabs.guild-raids"
 
@@ -84,7 +85,7 @@ interface NavSubItemBase {
   // inherit it.
   isLandingPage?: boolean
   // Names a live signal this entry shows through `NavLiveDot` (absent means none).
-  liveIndicator?: "hse" | "hre"
+  liveIndicator?: "hse" | "hre" | "quest"
   // Overrides the section's `anonymousAllowed` for this child, so one section can mix public and
   // sign-in-only pages (My Game: Collection is public, the rest are not). Absent means inherit.
   // It can only narrow: `filterVisibleNavItems` drops a sign-in-only section before looking at its
@@ -134,7 +135,7 @@ export interface NavItem {
   mobilePlacement: "primary" | "menu"
   // See `NavSubItem.liveIndicator`; the parent shows it too so it stays visible when collapsed.
   // "events" is live while either the HSE or the HRE signal is.
-  liveIndicator?: "hse" | "hre" | "events"
+  liveIndicator?: "hse" | "hre" | "quest" | "events"
 }
 
 export const navItems: NavItem[] = [
@@ -239,6 +240,12 @@ export const navItems: NavItem[] = [
         labelKey: "dailies:tabs.hre",
         descriptionKey: "dailies:tabs.hreDescription",
         liveIndicator: "hre",
+      },
+      {
+        path: "/dailies/quest",
+        labelKey: "dailies:tabs.quest",
+        descriptionKey: "dailies:tabs.questDescription",
+        liveIndicator: "quest",
       },
       {
         path: "/dailies/shops",

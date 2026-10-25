@@ -15,6 +15,8 @@
     "hseDescription": "Startbildschirm-Event: Raide dort, wo das aktuelle Event Punkte bringt",
     "hre": "HRE",
     "hreDescription": "Helden-Release-Event: Verfolge deine Missionen und raide dafür mit möglichst wenig Energie",
+    "quest": "Quest",
+    "questDescription": "Quest-Event: verfolge deine Punkte je Kampf und sieh Karte, Gegner und Beute jedes Kampfes",
     "shops": "Läden",
     "shopsDescription": "Ladenrotationen und Käufe verfolgen",
     "guild-raids": "Gilden-Raids",
@@ -377,6 +379,38 @@
         "pace": {
           "title": "Event-Tempo",
           "content": "Gib deine Eventpunkte und deinen Rang ein, um Währung, Truhenstufe und Splitter zu schätzen, und wähle ein Ziel, um die nötigen Punkte pro Tag zu sehen."
+        }
+      }
+    },
+    "quest": {
+      "steps": {
+        "header": {
+          "title": "Die Quest",
+          "content": "Der Held der Quest, der jeden Kampf bestreiten muss, die erlaubten Fraktionen und die verbleibende Zeit. Wähle eine andere Quest, um ihre Kämpfe anzusehen."
+        },
+        "summary": {
+          "title": "Deine Punkte",
+          "content": "Deine Punkte von 8.800, die Kisten, die sie öffnen, und die Kämpfe, in denen noch Punkte offen sind."
+        },
+        "battles": {
+          "title": "Kämpfe nach Stufe",
+          "content": "Die 17 Kämpfe von Gewöhnlich bis Mythisch mit Plätzen, Bonuszielen, Beute und Punkten. Wähle einen aus, um ihn anzusehen."
+        },
+        "entry": {
+          "title": "Dein bester Versuch",
+          "content": "Trage Medaillen, Blitzsieg-Punkte und erfüllte Bonusziele ein. Nur dein bester Versuch zählt."
+        },
+        "detail": {
+          "title": "Kampfdetails",
+          "content": "Die Karte, die Gegner mit ihrer Stufe, die Seltenheitsgrenze und die Beute samt dem, was deine Ziele davon brauchen."
+        },
+        "rewards": {
+          "title": "Belohnungen",
+          "content": "Die Kisten, die deine Punkte öffnen, die Splitter des Helden aus Medaillen und was sie freischalten, mit einer Abkürzung, um sie als Ziel zu planen."
+        },
+        "tokens": {
+          "title": "Versuche",
+          "content": "Trage deine aktuellen Marken ein, um zu sehen, ob deine Versuche für die Kämpfe unter ihrem Maximum reichen."
         }
       }
     }

@@ -15,6 +15,8 @@
     "hseDescription": "Événement d'écran d'accueil : raidez là où l'événement en cours rapporte des points",
     "hre": "ÉSH",
     "hreDescription": "Événement de sortie de héros : suivez vos missions et raidez pour elles avec le moins d'énergie possible",
+    "quest": "Quête",
+    "questDescription": "Événement de Quête : suivez votre score par combat et voyez la carte, les ennemis et le butin de chaque combat",
     "shops": "Boutiques",
     "shopsDescription": "Suivez les rotations et achats en boutique",
     "guild-raids": "Raids de guilde",
@@ -377,6 +379,38 @@
         "pace": {
           "title": "Rythme de l'événement",
           "content": "Saisissez vos points d'événement et votre rang pour estimer la monnaie, le niveau de coffre et les fragments, et choisissez un objectif pour voir les points par jour nécessaires."
+        }
+      }
+    },
+    "quest": {
+      "steps": {
+        "header": {
+          "title": "La quête",
+          "content": "Le héros vedette, qui doit jouer chaque combat, les factions que vous pouvez déployer et le temps restant. Choisissez une autre quête pour consulter ses combats."
+        },
+        "summary": {
+          "title": "Votre score",
+          "content": "Vos points sur 8 800, les caisses qu'ils ouvrent et les combats où il reste des points."
+        },
+        "battles": {
+          "title": "Combats par palier",
+          "content": "Les 17 combats de Commun à Mythique avec leurs places, objectifs bonus, butin et points. Sélectionnez-en un pour le voir."
+        },
+        "entry": {
+          "title": "Votre meilleure tentative",
+          "content": "Indiquez les médailles, les points de Victoire éclair et les objectifs bonus remplis. Seule votre meilleure tentative compte."
+        },
+        "detail": {
+          "title": "Détail du combat",
+          "content": "La carte, les ennemis avec leur niveau, le plafond de rareté et le butin avec ce que vos objectifs en demandent."
+        },
+        "rewards": {
+          "title": "Récompenses",
+          "content": "Les caisses que votre score ouvre, les fragments du héros obtenus avec les médailles et ce qu'ils débloquent, avec un raccourci pour en faire un objectif."
+        },
+        "tokens": {
+          "title": "Tentatives",
+          "content": "Indiquez vos jetons actuels pour voir si vos tentatives couvrent les combats encore sous leur maximum."
         }
       }
     }
