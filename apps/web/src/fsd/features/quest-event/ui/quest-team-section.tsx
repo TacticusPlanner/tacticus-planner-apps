@@ -5,7 +5,7 @@ import { Skeleton } from "@workspace/ui/components/skeleton"
 import { Button } from "@workspace/ui/components/button"
 
 import type { QuestTeam } from "../model/quest-team"
-import type { QuestTeamViewModel } from "../model/use-quest-team"
+import type { QuestTeamViewModel } from "../model/use-quest-plan"
 
 /** Every quest battle needs at least this many units deployed. */
 const MIN_TEAM = 3

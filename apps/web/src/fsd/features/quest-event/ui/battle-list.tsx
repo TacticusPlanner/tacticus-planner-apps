@@ -7,6 +7,7 @@ import { cn } from "@workspace/ui/lib/utils"
 import { UpgradeIcon } from "@/shared/ui"
 
 import { battlesByTier, type QuestBattle } from "../model/quest-battles"
+import type { QuestVerdict } from "../model/quest-estimates"
 import type { QuestScore } from "../model/quest-score"
 import { ObjectiveChips } from "./objective-chips"
 
@@ -25,6 +26,7 @@ export function BattleList({
   isMobile,
   openTiers,
   onToggleTier,
+  verdicts,
 }: {
   battles: readonly QuestBattle[]
   score: QuestScore | null
@@ -34,6 +36,8 @@ export function BattleList({
   isMobile: boolean
   openTiers: ReadonlySet<Rarity>
   onToggleTier: (tier: Rarity) => void
+  /** Each battle's clear verdict; absent when no estimate can be made. */
+  verdicts?: ReadonlyMap<number, QuestVerdict>
 }) {
   const { t, i18n } = useTranslation(["quest", "progression", "upgrades"])
   const number = new Intl.NumberFormat(i18n.language)
@@ -168,6 +172,9 @@ export function BattleList({
                                 })}
                               </span>
                             </span>
+                            <VerdictBadge
+                              verdict={verdicts?.get(battle.number)}
+                            />
                             {battleScore ? (
                               <span
                                 className="flex items-center gap-1 text-sm tabular-nums"
@@ -201,5 +208,37 @@ export function BattleList({
         )
       })}
     </div>
+  )
+}
+
+const VERDICT_STYLES: Record<QuestVerdict, string> = {
+  clears: "bg-green-600/15 text-green-800 dark:text-green-300",
+  close: "bg-amber-500/15 text-amber-800 dark:text-amber-300",
+  fails: "bg-destructive/15 text-destructive",
+  unknown: "bg-muted text-muted-foreground",
+  pending: "text-muted-foreground",
+}
+
+function VerdictBadge({ verdict }: { verdict: QuestVerdict | undefined }) {
+  const { t } = useTranslation("quest")
+  if (!verdict) return null
+  return (
+    <span
+      className={cn(
+        "shrink-0 rounded-full px-1.5 text-xs font-medium",
+        VERDICT_STYLES[verdict]
+      )}
+      data-testid="quest-battle-verdict"
+      data-verdict={verdict}
+    >
+      {verdict === "pending" ? (
+        <>
+          <span aria-hidden>–</span>
+          <span className="sr-only">{t("estimate.verdict.pending")}</span>
+        </>
+      ) : (
+        t(`estimate.verdict.${verdict}`)
+      )}
+    </span>
   )
 }

@@ -28,5 +28,11 @@ export { RewardsCard } from "./ui/rewards-card"
 export { TokenPlanCard } from "./ui/token-plan-card"
 export { questTierCap, type QuestTierCap } from "./model/quest-tier-cap"
 export type { QuestObjectiveBadge } from "./model/quest-team"
-export { useQuestTeam } from "./model/use-quest-team"
+export { questTeamView, useQuestPlan } from "./model/use-quest-plan"
+export {
+  projectQuest,
+  questVerdict,
+  type QuestVerdict,
+} from "./model/quest-estimates"
+export { QuestEstimateBlock } from "./ui/quest-estimate-block"
 export { QuestTeamSection } from "./ui/quest-team-section"

@@ -180,6 +180,7 @@ export function RewardsCard({
   isMobile,
   open,
   onOpenChange,
+  projectedShards = null,
 }: {
   crates: QuestCrateView<QuestCrateStorageModel>[] | null
   retryCrates: () => void
@@ -194,6 +195,8 @@ export function RewardsCard({
   isMobile: boolean
   open: boolean
   onOpenChange: (open: boolean) => void
+  /** Shards from the projected medals (an estimate), or null without a projection. */
+  projectedShards?: number | null
 }) {
   const { t, i18n } = useTranslation("quest")
   const number = new Intl.NumberFormat(i18n.language)
@@ -210,6 +213,16 @@ export function RewardsCard({
             reachable: number.format(shards.reachable),
           })}
         </p>
+        {projectedShards === null ? null : (
+          <p
+            className="text-sm text-muted-foreground tabular-nums"
+            data-testid="quest-shards-projected"
+          >
+            {t("estimate.projectedShards", {
+              shards: number.format(projectedShards),
+            })}
+          </p>
+        )}
         <div className="flex items-center gap-2">
           <Switch
             checked={bundle}

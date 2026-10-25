@@ -316,6 +316,10 @@ describe("QuestPage", () => {
       "A battle needs at least 3 units"
     )
     expect(screen.getByTestId("quest-team-no-power")).toBeVisible()
+    // Without unit power there is no verdict, estimate or projection.
+    expect(screen.queryAllByTestId("quest-battle-verdict")).toHaveLength(0)
+    expect(screen.queryByTestId("quest-estimate")).toBeNull()
+    expect(screen.queryByTestId("quest-summary-projected")).toBeNull()
     const detail = screen.getByTestId("quest-battle-detail")
     expect(
       within(detail).getByTestId("quest-objective-badge")

@@ -415,6 +415,10 @@
         "team": {
           "title": "Équipe suggérée",
           "content": "Ton héros de quête plus les unités les plus fortes qui respectent les objectifs bonus, avec la puissance au plafond du palier. Les badges montrent les objectifs remplis par l'équipe."
+        },
+        "estimate": {
+          "title": "Estimation de victoire",
+          "content": "Si ton équipe dépasse la puissance de la bataille au plafond du palier, avec et sans objectifs bonus. Les lignes montrent le verdict, le résumé projette tes points finaux."
         }
       }
     }

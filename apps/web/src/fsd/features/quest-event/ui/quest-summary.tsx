@@ -14,11 +14,14 @@ export function QuestSummary({
   crateCount,
   onSelect,
   saveFailed,
+  projected = null,
 }: {
   score: QuestScore
   crateCount: number | null
   onSelect: (battle: number) => void
   saveFailed: boolean
+  /** The projection from entered scores and clear estimates, or null without one. */
+  projected?: QuestScore | null
 }) {
   const { t, i18n } = useTranslation("quest")
   const number = new Intl.NumberFormat(i18n.language)
@@ -44,6 +47,19 @@ export function QuestSummary({
         aria-label={t("summary.title")}
         value={score.max > 0 ? (score.total / score.max) * 100 : 0}
       />
+      {projected ? (
+        <p
+          className="text-sm text-muted-foreground tabular-nums"
+          data-testid="quest-summary-projected"
+        >
+          {t("estimate.projected", {
+            total: number.format(projected.total),
+            max: number.format(projected.max),
+            opened: number.format(projected.cratesOpened),
+            count: number.format(crateCount ?? 0),
+          })}
+        </p>
+      ) : null}
       <p className="text-sm" data-testid="quest-summary-crates">
         {crateCount === null ? (
           t("summary.cratesUnknown")

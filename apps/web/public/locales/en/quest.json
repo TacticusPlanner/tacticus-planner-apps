@@ -182,5 +182,29 @@
       "UseNoSummons": "{{hero}} summons",
       "DoNoHealOrRepair": "{{hero}} heals or repairs"
     }
+  },
+  "estimate": {
+    "title": "Clear estimate",
+    "label": "estimate",
+    "labelUncalibrated": "estimate · uncalibrated",
+    "unknown": "No estimate: enemy data incomplete",
+    "verdict": {
+      "clears": "Clears",
+      "close": "Close",
+      "fails": "Doesn't clear",
+      "unknown": "No estimate",
+      "pending": "Estimate loading"
+    },
+    "first": "With objectives: {{result}} · team {{power}} vs {{required}} needed",
+    "margin": "{{margin}} margin",
+    "points": "{{points}} points",
+    "secondClears": "Without objectives: clears for {{points}} instead of {{instead}} ({{margin}} margin)",
+    "secondFails": "Without objectives: doesn't clear either (team {{power}})",
+    "givenUp": "needs {{units}}, excluded by {{objective}}",
+    "givenUpNoUnit": "gives up {{objective}}",
+    "short": "{{percent}} short",
+    "capGain": "{{name}}: +{{gain}} power at the cap",
+    "projected": "Projected: {{total}} / {{max}} · {{opened}} of {{count}} crates (estimate, uncalibrated)",
+    "projectedShards": "Projected: {{shards}} shards (estimate, uncalibrated)"
   }
 }

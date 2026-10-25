@@ -415,6 +415,10 @@
         "team": {
           "title": "Teamvorschlag",
           "content": "Dein Questheld plus die stärksten Einheiten, die die Bonusziele einhalten, mit Stärke am Limit der Stufe. Abzeichen zeigen, welche Ziele das Team erfüllt."
+        },
+        "estimate": {
+          "title": "Siegesschätzung",
+          "content": "Ob dein Team die Stärke des Kampfes am Limit der Stufe schlägt, mit und ohne Bonusziele. Zeilen zeigen das Urteil, die Übersicht prognostiziert deine Endpunkte."
         }
       }
     }

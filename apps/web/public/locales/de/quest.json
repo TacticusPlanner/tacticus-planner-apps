@@ -182,5 +182,29 @@
       "UseNoSummons": "{{hero}} beschwört",
       "DoNoHealOrRepair": "{{hero}} heilt oder repariert"
     }
+  },
+  "estimate": {
+    "title": "Siegesschätzung",
+    "label": "Schätzung",
+    "labelUncalibrated": "Schätzung · unkalibriert",
+    "unknown": "Keine Schätzung: Gegnerdaten unvollständig",
+    "verdict": {
+      "clears": "Schaffbar",
+      "close": "Knapp",
+      "fails": "Nicht schaffbar",
+      "unknown": "Keine Schätzung",
+      "pending": "Schätzung lädt"
+    },
+    "first": "Mit Zielen: {{result}} · Team {{power}} gegen {{required}} benötigt",
+    "margin": "{{margin}} Vorsprung",
+    "points": "{{points}} Punkte",
+    "secondClears": "Ohne Ziele: schaffbar für {{points}} statt {{instead}} ({{margin}} Vorsprung)",
+    "secondFails": "Ohne Ziele: auch nicht schaffbar (Team {{power}})",
+    "givenUp": "braucht {{units}}, ausgeschlossen durch {{objective}}",
+    "givenUpNoUnit": "verzichtet auf {{objective}}",
+    "short": "{{percent}} zu schwach",
+    "capGain": "{{name}}: +{{gain}} Stärke am Limit",
+    "projected": "Prognose: {{total}} / {{max}} · {{opened}} von {{count}} Kisten (Schätzung, unkalibriert)",
+    "projectedShards": "Prognose: {{shards}} Splitter (Schätzung, unkalibriert)"
   }
 }

@@ -182,5 +182,29 @@
       "UseNoSummons": "{{hero}} invoque",
       "DoNoHealOrRepair": "{{hero}} soigne ou répare"
     }
+  },
+  "estimate": {
+    "title": "Estimation de victoire",
+    "label": "estimation",
+    "labelUncalibrated": "estimation · non calibrée",
+    "unknown": "Pas d'estimation : données ennemies incomplètes",
+    "verdict": {
+      "clears": "Gagnable",
+      "close": "Serré",
+      "fails": "Pas gagnable",
+      "unknown": "Pas d'estimation",
+      "pending": "Estimation en cours"
+    },
+    "first": "Avec objectifs : {{result}} · équipe {{power}} contre {{required}} requis",
+    "margin": "{{margin}} de marge",
+    "points": "{{points}} points",
+    "secondClears": "Sans objectifs : gagnable pour {{points}} au lieu de {{instead}} ({{margin}} de marge)",
+    "secondFails": "Sans objectifs : pas gagnable non plus (équipe {{power}})",
+    "givenUp": "il faut {{units}}, exclus par {{objective}}",
+    "givenUpNoUnit": "abandonne {{objective}}",
+    "short": "{{percent}} de retard",
+    "capGain": "{{name}} : +{{gain}} de puissance au plafond",
+    "projected": "Projection : {{total}} / {{max}} · {{opened}} coffres sur {{count}} (estimation, non calibrée)",
+    "projectedShards": "Projection : {{shards}} fragments (estimation, non calibrée)"
   }
 }

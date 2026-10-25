@@ -415,6 +415,10 @@
         "team": {
           "title": "Suggested team",
           "content": "Your featured hero plus the strongest units that keep the bonus objectives, with power at the tier's cap. Badges show which objectives the team meets."
+        },
+        "estimate": {
+          "title": "Clear estimate",
+          "content": "Whether your team beats the battle's power at the tier cap, with and without the bonus objectives. Rows show the verdict; the summary projects your final points."
         }
       }
     }

@@ -32,7 +32,12 @@ import {
   useQuestCatalog,
   useQuestInstance,
   useQuestProgress,
-  useQuestTeam,
+  useQuestPlan,
+  questTeamView,
+  questVerdict,
+  projectQuest,
+  QuestEstimateBlock,
+  type QuestVerdict,
   QuestTeamSection,
   questTierCap,
   type QuestBattle,
@@ -155,12 +160,41 @@ export function QuestPage() {
   const [boardOpen, setBoardOpen] = useState(false)
   const equipmentList =
     equipment.status === "ready" ? equipment.data : undefined
-  const teamView = useQuestTeam({
-    battle: selected ?? null,
+  const plan = useQuestPlan({
+    battles,
     featuredCharacterId: heroId,
     allowedFactionIds: quest?.allowedFactionIds ?? NO_FACTIONS,
     equipment: equipmentList,
   })
+  const teamView = questTeamView(plan, selected?.number ?? null)
+  const selectedPlan =
+    plan.status === "ready" && selected
+      ? plan.battles.get(selected.number)
+      : undefined
+  // Verdicts show a dash while loading, and nothing when no estimate can be made.
+  const estimates = new Map(
+    plan.status === "ready"
+      ? [...plan.battles].flatMap(([number, entry]) =>
+          entry.estimate ? [[number, entry.estimate] as const] : []
+        )
+      : []
+  )
+  const verdicts: ReadonlyMap<number, QuestVerdict> | undefined =
+    plan.status === "loading"
+      ? new Map(battles.map((battle) => [battle.number, "pending" as const]))
+      : estimates.size > 0
+        ? new Map(
+            [...estimates].map(([number, estimate]) => [
+              number,
+              questVerdict(estimate),
+            ])
+          )
+        : undefined
+  // A projection needs entered scores: none in a preview or a browsed quest.
+  const projection =
+    editable && estimates.size > 0
+      ? projectQuest(battles, entries, estimates, crateList ?? [])
+      : null
   const unitName = (id: string) =>
     t(`characters:${id}` as never, {
       defaultValue: heroName(id) ?? id,
@@ -252,6 +286,7 @@ export function QuestPage() {
     editable,
     browsing,
     hasTokens: !!tokenPlan,
+    hasEstimate: !!selectedPlan?.estimate,
   })
 
   const heroes = useMemo(
@@ -270,7 +305,18 @@ export function QuestPage() {
       value={heroId}
     />
   )
-  const team = <QuestTeamSection nameOf={unitName} view={teamView} />
+  const team = (
+    <>
+      <QuestTeamSection nameOf={unitName} view={teamView} />
+      {selected ? (
+        <QuestEstimateBlock
+          estimate={selectedPlan?.estimate ?? null}
+          nameOf={unitName}
+          objectives={selected.objectives}
+        />
+      ) : null}
+    </>
+  )
   // Without a roster only the featured hero's own verdicts hold.
   const badges =
     teamView.status === "ready"
@@ -346,6 +392,7 @@ export function QuestPage() {
         <QuestSummary
           crateCount={crateList ? crateList.length : null}
           onSelect={select}
+          projected={projection?.score ?? null}
           saveFailed={progress.saveFailed}
           score={score}
         />
@@ -390,6 +437,9 @@ export function QuestPage() {
         onBundleChange={editable ? progress.actions.setBundle : null}
         onOpenChange={setRewardsOpen}
         open={rewardsOpen}
+        projectedShards={
+          projection ? questShards([projection.medals], bundle).earned : null
+        }
         retryCrates={crates.retry}
         shards={shards}
       />
@@ -404,6 +454,7 @@ export function QuestPage() {
         score={browsing ? null : score}
         selected={selectedNumber}
         upgradesById={upgradesById}
+        verdicts={verdicts}
       />
     )
     if (isMobile) {

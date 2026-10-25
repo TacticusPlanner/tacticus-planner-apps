@@ -182,5 +182,29 @@
       "UseNoSummons": "{{hero}} invoca",
       "DoNoHealOrRepair": "{{hero}} cura o repara"
     }
+  },
+  "estimate": {
+    "title": "Estimación de victoria",
+    "label": "estimación",
+    "labelUncalibrated": "estimación · sin calibrar",
+    "unknown": "Sin estimación: datos de enemigos incompletos",
+    "verdict": {
+      "clears": "Se gana",
+      "close": "Justo",
+      "fails": "No se gana",
+      "unknown": "Sin estimación",
+      "pending": "Cargando estimación"
+    },
+    "first": "Con objetivos: {{result}} · equipo {{power}} contra {{required}} necesario",
+    "margin": "{{margin}} de margen",
+    "points": "{{points}} puntos",
+    "secondClears": "Sin objetivos: se gana por {{points}} en vez de {{instead}} ({{margin}} de margen)",
+    "secondFails": "Sin objetivos: tampoco se gana (equipo {{power}})",
+    "givenUp": "necesita a {{units}}, excluidos por {{objective}}",
+    "givenUpNoUnit": "renuncia a {{objective}}",
+    "short": "faltan {{percent}}",
+    "capGain": "{{name}}: +{{gain}} de poder en el límite",
+    "projected": "Previsión: {{total}} / {{max}} · {{opened}} de {{count}} cofres (estimación, sin calibrar)",
+    "projectedShards": "Previsión: {{shards}} fragmentos (estimación, sin calibrar)"
   }
 }

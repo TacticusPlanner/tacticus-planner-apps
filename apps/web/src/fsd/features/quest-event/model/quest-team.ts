@@ -157,6 +157,8 @@ export type QuestTeam = {
   /** Slots for units other than the featured hero. */
   openSlots: number
   badges: QuestObjectiveBadge[]
+  /** Per objective, the members that break it (empty when none does). */
+  breakers: string[][]
   powerUnavailable: boolean
 }
 
@@ -188,6 +190,8 @@ function byStrength(a: QuestTeamCandidate, b: QuestTeamCandidate) {
  * The suggested team (design D2): the featured hero, then the eligible candidates by capped power
  * (ties by id) up to `deploySlots` − 1, with one swap for a `DamageType` objective nobody meets.
  * A restriction the featured hero fails is unreachable and filters nobody (design D4).
+ * `ignoreObjectives` builds the hard-rules team (allowed factions only) and still badges it against
+ * the objectives, for the estimate without objectives.
  */
 export function selectQuestTeam(input: {
   featured: QuestTeamCharacter
@@ -197,11 +201,14 @@ export function selectQuestTeam(input: {
   objectives: readonly Objective[]
   deploySlots: number
   summoners: ReadonlySet<string>
+  ignoreObjectives?: boolean
 }): QuestTeam {
   const { featured, objectives, summoners } = input
-  const active = objectives.filter(
-    (objective) => passesObjective(featured, objective, summoners) === true
-  )
+  const active = input.ignoreObjectives
+    ? []
+    : objectives.filter(
+        (objective) => passesObjective(featured, objective, summoners) === true
+      )
   const eligible = [
     ...input.candidates.filter(
       ({ character }) =>
@@ -216,7 +223,7 @@ export function selectQuestTeam(input: {
   const openSlots = Math.max(0, input.deploySlots - 1)
   const picked = eligible.slice(0, openSlots)
 
-  for (const objective of objectives) {
+  for (const objective of input.ignoreObjectives ? [] : objectives) {
     if (objective.type !== "DamageType") continue
     const type = objective.target ?? ""
     const dealt = (unit: QuestTeamCharacter) => dealsDamageType(unit, type)
@@ -277,6 +284,14 @@ export function selectQuestTeam(input: {
     eligibleCount: eligible.length,
     openSlots,
     badges,
+    breakers: objectives.map((objective) =>
+      team
+        .filter(
+          ({ character }) =>
+            passesObjective(character, objective, summoners) === false
+        )
+        .map(({ character }) => character.id)
+    ),
     powerUnavailable,
   }
 }

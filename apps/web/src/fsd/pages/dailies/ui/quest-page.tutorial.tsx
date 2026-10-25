@@ -13,6 +13,7 @@ type StepKey =
   | "rewards"
   | "tokens"
   | "team"
+  | "estimate"
 
 /**
  * Joyride tour for Dailies > Quest: the header, then (with battle data) the summary on a current
@@ -26,11 +27,13 @@ export function useQuestTutorial({
   editable,
   browsing,
   hasTokens,
+  hasEstimate,
 }: {
   hasBattles: boolean
   editable: boolean
   browsing: boolean
   hasTokens: boolean
+  hasEstimate: boolean
 }) {
   const { t } = useTranslation("dailies")
 
@@ -53,6 +56,7 @@ export function useQuestTutorial({
               step("quest-battle-list", "battles"),
               ...(editable ? [step("quest-score-entry", "entry")] : []),
               step("quest-team", "team"),
+              ...(hasEstimate ? [step("quest-estimate", "estimate")] : []),
               step("quest-battle-detail", "detail"),
             ]
           : []),
@@ -67,7 +71,7 @@ export function useQuestTutorial({
         ...(hasBattles ? [step("quest-tier-toggle", "battles")] : []),
       ],
     }
-  }, [t, hasBattles, editable, browsing, hasTokens])
+  }, [t, hasBattles, editable, browsing, hasTokens, hasEstimate])
 
   useTourPageSteps(steps)
 }
