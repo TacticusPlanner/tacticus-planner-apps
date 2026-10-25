@@ -411,6 +411,10 @@
         "tokens": {
           "title": "Intentos",
           "content": "Anota tus fichas actuales para ver si tus intentos cubren las batallas que aún no están al máximo."
+        },
+        "team": {
+          "title": "Equipo sugerido",
+          "content": "Tu protagonista más las unidades más fuertes que cumplen los objetivos extra, con el poder al límite del nivel. Las insignias muestran qué objetivos cumple el equipo."
         }
       }
     }

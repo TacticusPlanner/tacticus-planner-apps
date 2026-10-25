@@ -153,5 +153,34 @@
     "tip": "Connectez-vous au moins toutes les 12 heures pour que les jetons continuent de se régénérer",
     "closed": "Les combats sont terminés",
     "preview": "Vous aurez environ {{attempts}} tentatives"
+  },
+  "team": {
+    "title": "Équipe suggérée",
+    "error": "Ton roster n'a pas pu être lu.",
+    "featured": "héros de la quête",
+    "atCap": "au plafond",
+    "belowCap": "sous le plafond",
+    "total": "Puissance de l'équipe {{power}}",
+    "sync": "Synchronise ton compte pour voir une équipe de ton roster.",
+    "short_one": "Seulement {{count}} unité éligible pour {{slots}} places",
+    "short_other": "Seulement {{count}} unités éligibles pour {{slots}} places",
+    "minimum": "Une bataille demande au moins {{count}} unités",
+    "powerUnavailable": "Puissance indisponible : triée par rareté et rang",
+    "badge": {
+      "met": "Rempli",
+      "unreachable": "Inaccessible : {{reason}} · laisse {{score}} points",
+      "noEligible": "Aucune unité éligible",
+      "dependsOnPlay": "Dépend de la partie"
+    },
+    "unreachable": {
+      "NotTrait": "{{hero}} a {{trait}}",
+      "NotFaction": "{{hero}} fait partie de {{faction}}",
+      "NotDamageType": "{{hero}} inflige {{damageType}}",
+      "HasRangedAttack": "{{hero}} n'a pas d'attaque à distance",
+      "MaxHits": "{{hero}} a plus de {{count}} coups",
+      "MinHits": "{{hero}} a moins de {{count}} coups",
+      "UseNoSummons": "{{hero}} invoque",
+      "DoNoHealOrRepair": "{{hero}} soigne ou répare"
+    }
   }
 }

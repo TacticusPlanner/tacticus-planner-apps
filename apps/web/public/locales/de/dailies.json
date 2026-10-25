@@ -411,6 +411,10 @@
         "tokens": {
           "title": "Versuche",
           "content": "Trage deine aktuellen Marken ein, um zu sehen, ob deine Versuche für die Kämpfe unter ihrem Maximum reichen."
+        },
+        "team": {
+          "title": "Teamvorschlag",
+          "content": "Dein Questheld plus die stärksten Einheiten, die die Bonusziele einhalten, mit Stärke am Limit der Stufe. Abzeichen zeigen, welche Ziele das Team erfüllt."
         }
       }
     }

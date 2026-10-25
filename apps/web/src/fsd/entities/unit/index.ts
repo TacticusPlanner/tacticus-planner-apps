@@ -8,3 +8,4 @@ export {
   type UnitOrigin,
 } from "./model/unit-origin"
 export { UnitTile } from "./ui/unit-tile"
+export { buildSummonerIds } from "./model/summoners"

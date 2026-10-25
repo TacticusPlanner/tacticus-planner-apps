@@ -153,5 +153,34 @@
     "tip": "Entra al menos cada 12 horas para que las fichas sigan regenerándose",
     "closed": "Las batallas han terminado",
     "preview": "Tendrás unos {{attempts}} intentos"
+  },
+  "team": {
+    "title": "Equipo sugerido",
+    "error": "No se pudo leer tu plantilla.",
+    "featured": "protagonista",
+    "atCap": "en el límite",
+    "belowCap": "bajo el límite",
+    "total": "Poder del equipo {{power}}",
+    "sync": "Sincroniza tu cuenta para ver un equipo de tu plantilla.",
+    "short_one": "Solo {{count}} unidad válida para {{slots}} huecos",
+    "short_other": "Solo {{count}} unidades válidas para {{slots}} huecos",
+    "minimum": "Una batalla necesita al menos {{count}} unidades",
+    "powerUnavailable": "Poder no disponible: ordenado por rareza y rango",
+    "badge": {
+      "met": "Cumplido",
+      "unreachable": "Inalcanzable: {{reason}} · sáltate {{score}} puntos",
+      "noEligible": "Ninguna unidad válida",
+      "dependsOnPlay": "Depende de la partida"
+    },
+    "unreachable": {
+      "NotTrait": "{{hero}} tiene {{trait}}",
+      "NotFaction": "{{hero}} es de {{faction}}",
+      "NotDamageType": "{{hero}} inflige {{damageType}}",
+      "HasRangedAttack": "{{hero}} no tiene ataque a distancia",
+      "MaxHits": "{{hero}} tiene más de {{count}} golpes",
+      "MinHits": "{{hero}} tiene menos de {{count}} golpes",
+      "UseNoSummons": "{{hero}} invoca",
+      "DoNoHealOrRepair": "{{hero}} cura o repara"
+    }
   }
 }

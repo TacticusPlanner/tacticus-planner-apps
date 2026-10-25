@@ -7,7 +7,7 @@ import type { HreTeamPlan } from "@/features/hre-missions/@x/team-recommendation
 import { combineReadStates } from "@/shared/lib"
 import { toById, useCatalogDataset, usePlayerChunk } from "@/shared/local-data"
 
-import { buildSummonerIds } from "./hre-summoners"
+import { buildSummonerIds } from "@/entities/unit"
 import { buildHreTeam, type HreTeam } from "./hre-team-recommendations"
 import { useTeamUnitPower } from "./use-team-unit-power"
 

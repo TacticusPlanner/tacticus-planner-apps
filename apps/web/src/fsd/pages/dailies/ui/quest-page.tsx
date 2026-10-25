@@ -32,6 +32,9 @@ import {
   useQuestCatalog,
   useQuestInstance,
   useQuestProgress,
+  useQuestTeam,
+  QuestTeamSection,
+  questTierCap,
   type QuestBattle,
   type QuestHeroOwnership,
 } from "@/features/quest-event"
@@ -42,10 +45,11 @@ import type { EnemyNpcs } from "@/widgets/battle-preview"
 
 import { questDropNeed } from "../model/quest-drop-need"
 import { questGoalAction } from "../model/quest-goal-action"
-import { questTierCap } from "../model/quest-tier-cap"
+
 import { QuestBattleDetail } from "./quest/quest-battle-detail"
 import { useQuestTutorial } from "./quest-page.tutorial"
 
+const NO_FACTIONS: readonly string[] = []
 const EMPTY_ENTRIES: ReturnType<typeof useQuestProgress>["entries"] = {}
 const byUnitId = <T extends { unitId: string }>(records: T[] | null) =>
   new Map<string, T>((records ?? []).map((record) => [record.unitId, record]))
@@ -149,6 +153,18 @@ export function QuestPage() {
   const selected = battles.find((battle) => battle.number === selectedNumber)
   const [sheetOpen, setSheetOpen] = useState(false)
   const [boardOpen, setBoardOpen] = useState(false)
+  const equipmentList =
+    equipment.status === "ready" ? equipment.data : undefined
+  const teamView = useQuestTeam({
+    battle: selected ?? null,
+    featuredCharacterId: heroId,
+    allowedFactionIds: quest?.allowedFactionIds ?? NO_FACTIONS,
+    equipment: equipmentList,
+  })
+  const unitName = (id: string) =>
+    t(`characters:${id}` as never, {
+      defaultValue: heroName(id) ?? id,
+    }) as string
   const firstOpenTier = useMemo(() => {
     const groups = battlesByTier(battles)
     return (
@@ -254,12 +270,23 @@ export function QuestPage() {
       value={heroId}
     />
   )
-  const equipmentList =
-    equipment.status === "ready" ? equipment.data : undefined
+  const team = <QuestTeamSection nameOf={unitName} view={teamView} />
+  // Without a roster only the featured hero's own verdicts hold.
+  const badges =
+    teamView.status === "ready"
+      ? teamView.team.badges
+      : teamView.status === "unsynced"
+        ? teamView.team.badges.map((badge) =>
+            badge.kind === "unreachable" || badge.kind === "dependsOnPlay"
+              ? badge
+              : { kind: "none" as const }
+          )
+        : undefined
   const detail = (battle: QuestBattle) => (
     <QuestBattleDetail
       battle={battle}
       boardOpen={boardOpen}
+      badges={badges}
       cap={questTierCap(battle.tier, equipmentList)}
       heroName={shownHeroLabel}
       isMobile={isMobile}
@@ -267,6 +294,7 @@ export function QuestPage() {
       npcs={npcs}
       onBoardOpenChange={setBoardOpen}
       retryNpcs={npcsRead.status === "error" ? npcsRead.retry : undefined}
+      team={isMobile ? null : team}
       upgrade={upgradesById?.get(battle.loot.upgradeId)}
     />
   )
@@ -400,6 +428,7 @@ export function QuestPage() {
               {selected ? (
                 <div className="flex flex-col gap-4 overflow-y-auto px-4 pb-4">
                   {scoreEntry(selected)}
+                  {team}
                   {detail(selected)}
                 </div>
               ) : null}

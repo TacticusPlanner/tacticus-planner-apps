@@ -1,3 +1,4 @@
+import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import { battleBoardImage } from "@workspace/game-catalog"
 import type { UpgradeStorageModel } from "@workspace/game-catalog"
@@ -8,6 +9,8 @@ import {
   isBoardPickup,
   ObjectiveChips,
   type QuestBattle,
+  type QuestObjectiveBadge,
+  type QuestTierCap,
 } from "@/features/quest-event"
 import type { NpcRecord } from "@/entities/npc"
 import { UpgradeIcon } from "@/shared/ui"
@@ -19,7 +22,6 @@ import {
 } from "@/widgets/battle-preview"
 
 import type { QuestDropNeed } from "../../model/quest-drop-need"
-import type { QuestTierCap } from "../../model/quest-tier-cap"
 
 /**
  * One quest battle in full (spec: quest-event-battle-detail): the header with the lineup rules (slots,
@@ -37,6 +39,8 @@ export function QuestBattleDetail({
   isMobile,
   boardOpen,
   onBoardOpenChange,
+  team,
+  badges,
 }: {
   battle: QuestBattle
   heroName: string
@@ -48,6 +52,9 @@ export function QuestBattleDetail({
   isMobile: boolean
   boardOpen: boolean
   onBoardOpenChange: (open: boolean) => void
+  /** The suggested team, under the header (desktop); null where the page shows it elsewhere. */
+  team: ReactNode
+  badges: readonly QuestObjectiveBadge[] | undefined
 }) {
   const { t, i18n } = useTranslation(["quest", "progression", "upgrades"])
   const number = new Intl.NumberFormat(i18n.language)
@@ -172,7 +179,12 @@ export function QuestBattleDetail({
           </li>
         </ul>
       </header>
-      <ObjectiveChips objectives={battle.objectives} />
+      {team}
+      <ObjectiveChips
+        badges={badges}
+        heroName={heroName}
+        objectives={battle.objectives}
+      />
       {retryNpcs ? (
         <div
           className="flex flex-wrap items-center gap-2"

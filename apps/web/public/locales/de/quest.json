@@ -153,5 +153,34 @@
     "tip": "Melde dich mindestens alle 12 Stunden an, damit Marken weiter regenerieren",
     "closed": "Die Kämpfe sind vorbei",
     "preview": "Du bekommst etwa {{attempts}} Versuche"
+  },
+  "team": {
+    "title": "Teamvorschlag",
+    "error": "Dein Roster konnte nicht gelesen werden.",
+    "featured": "Questheld",
+    "atCap": "am Limit",
+    "belowCap": "unter dem Limit",
+    "total": "Teamstärke {{power}}",
+    "sync": "Synchronisiere dein Konto, um ein Team aus deinem Roster zu sehen.",
+    "short_one": "Nur {{count}} geeignete Einheit für {{slots}} Plätze",
+    "short_other": "Nur {{count}} geeignete Einheiten für {{slots}} Plätze",
+    "minimum": "Ein Kampf braucht mindestens {{count}} Einheiten",
+    "powerUnavailable": "Stärke nicht verfügbar: nach Seltenheit und Rang sortiert",
+    "badge": {
+      "met": "Erfüllt",
+      "unreachable": "Nicht erreichbar: {{reason}} · {{score}} Punkte auslassen",
+      "noEligible": "Keine geeignete Einheit",
+      "dependsOnPlay": "Hängt vom Spiel ab"
+    },
+    "unreachable": {
+      "NotTrait": "{{hero}} hat {{trait}}",
+      "NotFaction": "{{hero}} gehört zu {{faction}}",
+      "NotDamageType": "{{hero}} verursacht {{damageType}}",
+      "HasRangedAttack": "{{hero}} hat keinen Fernkampfangriff",
+      "MaxHits": "{{hero}} hat mehr als {{count}} Treffer",
+      "MinHits": "{{hero}} hat weniger als {{count}} Treffer",
+      "UseNoSummons": "{{hero}} beschwört",
+      "DoNoHealOrRepair": "{{hero}} heilt oder repariert"
+    }
   }
 }

@@ -182,7 +182,7 @@ for (const id of [...referenced].sort()) {
 
 // ---- summoners ---------------------------------------------------------------------------------------
 
-// Kept equal to `SUMMON_PATTERNS` in the app's `features/team-recommendations/model/hre-summoners.ts`
+// Kept equal to `SUMMON_PATTERNS` in the app's `entities/unit/model/summoners.ts`
 // (this script cannot import TypeScript); the apps parity test checks the committed list against them.
 const SUMMON_SPAN = String.raw`<style="Summon">(?:<style=[^>]*>)?[^<]*(?:</style>)?</style>`
 const SUMMON_PATTERNS = [

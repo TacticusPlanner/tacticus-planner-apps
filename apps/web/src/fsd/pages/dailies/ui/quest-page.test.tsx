@@ -1,9 +1,11 @@
 import userEvent from "@testing-library/user-event"
 import type { i18n as I18n } from "i18next"
 import { MemoryRouter } from "react-router"
+import { catalogManifestMetadataKey } from "@workspace/game-catalog"
 import {
   questCratesFixture,
   questEventsFixture,
+  replaceGameCatalogDataset,
 } from "@workspace/game-catalog/testing"
 import {
   afterEach,
@@ -81,6 +83,41 @@ const instance = (
 
 let i18n: I18n
 
+const hero = (
+  id: string,
+  name: string,
+  faction: string,
+  traits: string[] = []
+) => ({
+  id,
+  name,
+  faction,
+  alliance: faction === "Necrons" ? "Xenos" : "Imperial",
+  initialRarity: "Common",
+  traits,
+  meleeDamage: "Power",
+  meleeHits: 1,
+  rangedDamage: null,
+  rangedHits: null,
+  activeAbilityNames: [],
+  passiveAbilityNames: [],
+  activeAbilityDamage: [],
+  passiveAbilityDamage: [],
+})
+
+const owned = (unitId: string, rank: string) => ({
+  unitId,
+  rank,
+  progressionIndex: "Rare:FiveStars",
+  xp: 0,
+  xpLevel: 1,
+  shards: 0,
+  mythicShards: 0,
+  abilities: [{ level: 30 }, { level: 30 }],
+  appliedUpgradeSlots: [],
+  equippedItems: [],
+})
+
 function renderPage() {
   return render(
     <CreateGoalLauncherProvider onLaunch={mocks.launch}>
@@ -112,10 +149,22 @@ describe("QuestPage", () => {
       "quest-events": questEventsFixture,
       "quest-crates": questCratesFixture,
       characters: [
-        { id: "astarEradicator", name: "Nubari" },
-        { id: "astarCyrus", name: "Cyrus" },
-        { id: "votanChampion", name: "Kîmm" },
+        hero("astarEradicator", "Nubari", "AdeptusAstartes"),
+        hero("astarCyrus", "Cyrus", "AdeptusAstartes"),
+        hero("votanChampion", "Kîmm", "LeaguesOfVotann"),
+        hero("ultraCalgar", "Calgar", "Ultramarines"),
+        hero("bloodMephiston", "Mephiston", "BloodAngels", ["Psyker"]),
+        hero("necroSpyder", "Spyder", "Necrons"),
       ],
+    })
+    // A real sync writes the manifest row last; without `unit-power` the teams show without power.
+    await replaceGameCatalogDataset("unit-power", [], {
+      key: catalogManifestMetadataKey,
+      hash: "manifest-test",
+      catalogVersion: "test",
+      gameVersion: "test",
+      schemaVersion: 1,
+      updatedAt: "2026-01-01T00:00:00Z",
     })
     await seedPlayerData({
       characters: [],
@@ -234,6 +283,52 @@ describe("QuestPage", () => {
       "Battles are closed"
     )
     expect(screen.getByTestId("quest-crate-track")).toBeVisible()
+  })
+
+  it("suggests a team for battle 11 without Psykers, and explains the short roster", async () => {
+    await seedPlayerData({
+      characters: [
+        owned("ultraCalgar", "Gold1"),
+        owned("bloodMephiston", "Gold3"),
+        owned("necroSpyder", "Gold3"),
+      ],
+      "inventory-shards": [],
+    })
+    const user = userEvent.setup()
+    renderPage()
+    await screen.findAllByTestId("quest-battle-row")
+    await user.click(row(11))
+
+    await waitFor(() =>
+      expect(
+        screen
+          .getAllByTestId("quest-team-member")
+          .map((member) => member.textContent)
+      ).toEqual([
+        expect.stringContaining("Nubari"),
+        expect.stringContaining("Calgar"),
+      ])
+    )
+    expect(screen.getByTestId("quest-team-short")).toHaveTextContent(
+      "Only 1 eligible unit for 4 slots"
+    )
+    expect(screen.getByTestId("quest-team-min")).toHaveTextContent(
+      "A battle needs at least 3 units"
+    )
+    expect(screen.getByTestId("quest-team-no-power")).toBeVisible()
+    const detail = screen.getByTestId("quest-battle-detail")
+    expect(
+      within(detail).getByTestId("quest-objective-badge")
+    ).toHaveTextContent("Met")
+  })
+
+  it("shows the featured hero alone with a sync prompt when no roster is synced", async () => {
+    const user = userEvent.setup()
+    renderPage()
+    await screen.findAllByTestId("quest-battle-row")
+    await user.click(row(4))
+    expect(await screen.findByTestId("quest-team-sync")).toBeVisible()
+    expect(screen.getAllByTestId("quest-team-member")).toHaveLength(1)
   })
 
   it("shows battle 4's lineup rules, enemies and objectives", async () => {

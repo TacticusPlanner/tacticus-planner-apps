@@ -5,7 +5,14 @@ import type { Step } from "react-joyride"
 import { useTourPageSteps, type TourPageSteps } from "@/shared/tour"
 
 type StepKey =
-  "header" | "summary" | "battles" | "entry" | "detail" | "rewards" | "tokens"
+  | "header"
+  | "summary"
+  | "battles"
+  | "entry"
+  | "detail"
+  | "rewards"
+  | "tokens"
+  | "team"
 
 /**
  * Joyride tour for Dailies > Quest: the header, then (with battle data) the summary on a current
@@ -45,6 +52,7 @@ export function useQuestTutorial({
           ? [
               step("quest-battle-list", "battles"),
               ...(editable ? [step("quest-score-entry", "entry")] : []),
+              step("quest-team", "team"),
               step("quest-battle-detail", "detail"),
             ]
           : []),

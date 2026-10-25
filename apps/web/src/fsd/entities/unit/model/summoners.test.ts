@@ -3,7 +3,7 @@ import type { UnitId } from "@workspace/game-domain"
 
 import summonerList from "../../../../../public/locales/en/npcAbilitySummoners.json"
 import { enNpcAbilityText } from "@/test/rules-text"
-import { abilitySummons, buildSummonerIds } from "./hre-summoners"
+import { abilitySummons, buildSummonerIds } from "./summoners"
 
 const descriptionOf = (id: string) => enNpcAbilityText[id]?.description
 const listed = new Set<string>(summonerList)

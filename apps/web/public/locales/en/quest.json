@@ -153,5 +153,34 @@
     "tip": "Log in at least every 12 hours to keep tokens regenerating",
     "closed": "Battles are closed",
     "preview": "You'll get about {{attempts}} attempts"
+  },
+  "team": {
+    "title": "Suggested team",
+    "error": "Your roster could not be read.",
+    "featured": "featured",
+    "atCap": "at cap",
+    "belowCap": "below cap",
+    "total": "Team power {{power}}",
+    "sync": "Sync your account to see a team from your roster.",
+    "short_one": "Only {{count}} eligible unit for {{slots}} slots",
+    "short_other": "Only {{count}} eligible units for {{slots}} slots",
+    "minimum": "A battle needs at least {{count}} units",
+    "powerUnavailable": "Power unavailable: ordered by rarity and rank",
+    "badge": {
+      "met": "Met",
+      "unreachable": "Unreachable: {{reason}} · skip for {{score}} points",
+      "noEligible": "No eligible unit",
+      "dependsOnPlay": "Depends on play"
+    },
+    "unreachable": {
+      "NotTrait": "{{hero}} has {{trait}}",
+      "NotFaction": "{{hero}} is {{faction}}",
+      "NotDamageType": "{{hero}} deals {{damageType}}",
+      "HasRangedAttack": "{{hero}} has no ranged attack",
+      "MaxHits": "{{hero}} has more than {{count}} hits",
+      "MinHits": "{{hero}} has fewer than {{count}} hits",
+      "UseNoSummons": "{{hero}} summons",
+      "DoNoHealOrRepair": "{{hero}} heals or repairs"
+    }
   }
 }

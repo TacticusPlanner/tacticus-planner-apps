@@ -411,6 +411,10 @@
         "tokens": {
           "title": "Attempts",
           "content": "Enter your tokens now to see whether your attempts cover the battles still below their maximum."
+        },
+        "team": {
+          "title": "Suggested team",
+          "content": "Your featured hero plus the strongest units that keep the bonus objectives, with power at the tier's cap. Badges show which objectives the team meets."
         }
       }
     }

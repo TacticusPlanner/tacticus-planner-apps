@@ -411,6 +411,10 @@
         "tokens": {
           "title": "Tentatives",
           "content": "Indiquez vos jetons actuels pour voir si vos tentatives couvrent les combats encore sous leur maximum."
+        },
+        "team": {
+          "title": "Équipe suggérée",
+          "content": "Ton héros de quête plus les unités les plus fortes qui respectent les objectifs bonus, avec la puissance au plafond du palier. Les badges montrent les objectifs remplis par l'équipe."
         }
       }
     }

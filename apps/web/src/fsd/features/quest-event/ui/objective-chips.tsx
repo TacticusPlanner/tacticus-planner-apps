@@ -3,6 +3,7 @@ import { BanIcon, CircleCheckIcon } from "lucide-react"
 import { cn } from "@workspace/ui/lib/utils"
 
 import { isRestrictingObjective } from "../model/quest-objectives"
+import type { QuestObjectiveBadge } from "../model/quest-team"
 import { useObjectiveWording, type Objective } from "./use-objective-wording"
 
 /**
@@ -12,9 +13,14 @@ import { useObjectiveWording, type Objective } from "./use-objective-wording"
 export function ObjectiveChips({
   objectives,
   compact = false,
+  badges,
+  heroName = "",
 }: {
   objectives: readonly Objective[]
   compact?: boolean
+  /** Whether the suggested team meets each objective, in `objectives` order. */
+  badges?: readonly QuestObjectiveBadge[]
+  heroName?: string
 }) {
   const { t, i18n } = useTranslation("quest")
   const word = useObjectiveWording()
@@ -28,6 +34,25 @@ export function ObjectiveChips({
       {objectives.map((objective, index) => {
         const restriction = isRestrictingObjective(objective.type)
         const Icon = restriction ? BanIcon : CircleCheckIcon
+        const badge = badges?.[index]
+        const score = number.format(objective.score)
+        const badgeText = (() => {
+          switch (badge?.kind) {
+            case "met":
+              return t("team.badge.met")
+            case "unreachable":
+              return t("team.badge.unreachable", {
+                reason: word.reason(objective, heroName),
+                score,
+              })
+            case "noEligible":
+              return t("team.badge.noEligible")
+            case "dependsOnPlay":
+              return t("team.badge.dependsOnPlay")
+            default:
+              return null
+          }
+        })()
         return (
           <li
             className={cn(
@@ -44,11 +69,23 @@ export function ObjectiveChips({
               <span className="sr-only">{t("objectives.restriction")}: </span>
             ) : null}
             <span className="truncate">
-              {t("objectives.chip", {
-                text: word(objective),
-                score: number.format(objective.score),
-              })}
+              {t("objectives.chip", { text: word(objective), score })}
             </span>
+            {badgeText ? <span className="sr-only"> · </span> : null}
+            {badgeText ? (
+              <span
+                className={cn(
+                  "min-w-0 rounded-full px-1.5 text-xs font-medium",
+                  badge?.kind === "met"
+                    ? "bg-green-600/15 text-green-800 dark:text-green-300"
+                    : "bg-muted text-muted-foreground"
+                )}
+                data-badge={badge?.kind}
+                data-testid="quest-objective-badge"
+              >
+                {badgeText}
+              </span>
+            ) : null}
           </li>
         )
       })}
