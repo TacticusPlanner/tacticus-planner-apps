@@ -234,7 +234,7 @@ describe("UserJotProvider", () => {
       expect(consoleError).toHaveBeenCalled()
     })
     expect(identify).not.toHaveBeenCalled()
-    expect(logout).not.toHaveBeenCalled()
+    expect(logout).toHaveBeenCalledTimes(1)
 
     consoleError.mockRestore()
   })
@@ -289,19 +289,103 @@ describe("UserJotProvider", () => {
     expect(identify).not.toHaveBeenCalled()
   })
 
-  it("re-identifies when the widget is opened", async () => {
+  // Every identify() makes the SDK clear its caches and abort in-flight loads, which broke the
+  // page the widget was loading on its first open.
+  it("does not re-identify on open while the signed identity is fresh", async () => {
     renderProvider()
 
     await waitFor(() => {
       expect(identify).toHaveBeenCalledTimes(1)
     })
 
+    listeners.get("open")?.()
+    await Promise.resolve()
+
+    expect(fetchQueryMock).toHaveBeenCalledTimes(1)
+    expect(identify).toHaveBeenCalledTimes(1)
+  })
+
+  it("logs out and retries on the next open when a signed identify fails", async () => {
+    const consoleError = vi.spyOn(console, "error").mockImplementation(() => {})
+    fetchQueryMock.mockRejectedValueOnce(new Error("network"))
+    renderProvider()
+
+    await waitFor(() => {
+      expect(logout).toHaveBeenCalledTimes(1)
+    })
+    expect(identify).not.toHaveBeenCalled()
+
+    listeners.get("open")?.()
+
+    await waitFor(() => {
+      expect(identify).toHaveBeenCalledWith({ token: "signed-jwt" })
+    })
+    consoleError.mockRestore()
+  })
+
+  it("re-identifies on open once the signed identity is near its one-hour expiry", async () => {
+    const now = vi.spyOn(Date, "now").mockReturnValue(0)
+    renderProvider()
+
+    await waitFor(() => {
+      expect(identify).toHaveBeenCalledTimes(1)
+    })
+
+    now.mockReturnValue(50 * 60 * 1000)
     fetchQueryMock.mockResolvedValue({ token: "second-jwt" })
     listeners.get("open")?.()
 
     await waitFor(() => {
       expect(identify).toHaveBeenCalledWith({ token: "second-jwt" })
     })
+    now.mockRestore()
+  })
+
+  // Before the SDK loads, `on` is the queueing stub: it returns no unsubscribe and every handler
+  // it was given is attached once the SDK runs.
+  it("re-identifies on open without a stale signed-out handler logging out first", async () => {
+    const now = vi.spyOn(Date, "now").mockReturnValue(0)
+    const openHandlers: Array<() => void> = []
+    window.uj!.on = (event, handler) => {
+      if (event === "open") openHandlers.push(handler as () => void)
+      return undefined as unknown as () => void
+    }
+    useCurrentUserMock.mockReturnValue({ state: { status: "loading" } })
+    const { rerender } = renderProvider()
+
+    useCurrentUserMock.mockReturnValue({
+      state: {
+        status: "success",
+        user: {
+          applicationUserId: "user-1",
+          displayName: "Ada",
+          suggestedDisplayName: null,
+          hasCompletedOnboarding: true,
+          tacticusApiKeyMasked: null,
+          tacticusUserIdMasked: null,
+          analyticsId: "analytics-id-1",
+        },
+      },
+    })
+    rerender(
+      <UserJotProvider>
+        <Consumer />
+      </UserJotProvider>
+    )
+    await waitFor(() => {
+      expect(identify).toHaveBeenCalledTimes(1)
+    })
+    logout.mockClear()
+    identify.mockClear()
+    now.mockReturnValue(50 * 60 * 1000)
+
+    openHandlers.forEach((handler) => handler())
+
+    await waitFor(() => {
+      expect(identify).toHaveBeenCalledTimes(1)
+    })
+    expect(logout).not.toHaveBeenCalled()
+    now.mockRestore()
   })
 
   it("exposes the widget's unread count from its 'unread' event", () => {
@@ -314,5 +398,29 @@ describe("UserJotProvider", () => {
     })
 
     expect(screen.getByTestId("consumer")).toHaveTextContent("3")
+  })
+
+  it("re-reads the unread count from the widget state when it closes", () => {
+    renderProvider()
+
+    act(() => {
+      listeners.get("unread")?.({ count: 2 })
+    })
+    expect(screen.getByTestId("consumer")).toHaveTextContent("2")
+
+    act(() => {
+      listeners.get("close")?.({ unreadCount: 0 })
+    })
+    expect(screen.getByTestId("consumer")).toHaveTextContent("0")
+  })
+
+  it("keeps the unread count when the closed widget has not fetched it yet", () => {
+    renderProvider()
+
+    act(() => {
+      listeners.get("unread")?.({ count: 2 })
+      listeners.get("close")?.({ unreadCount: null })
+    })
+    expect(screen.getByTestId("consumer")).toHaveTextContent("2")
   })
 })

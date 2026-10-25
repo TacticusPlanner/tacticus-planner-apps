@@ -9,14 +9,12 @@ import {
   PopoverTrigger,
 } from "@workspace/ui/components/popover"
 import { Separator } from "@workspace/ui/components/separator"
-import {
-  USERJOT_CHANGELOG_URL,
-  USERJOT_ROADMAP_URL,
-} from "../model/userjot-links"
+import { USERJOT_ROADMAP_URL } from "../model/userjot-links"
 
 import {
   LanguagePickerView,
   MenuLinkRow,
+  MenuRow,
   PreferencesSection,
   type AccountMenuView,
 } from "./account-menu-parts"
@@ -25,7 +23,17 @@ import {
 /** Guest Preferences (theme, language), the Roadmap and Changelog rows, and caller-supplied extra content
  *  (sign-in on desktop, the tour on mobile). Language opens an in-card picker; the view resets
  *  because popover content unmounts on close. */
-export function GuestPreferencesCard({ children }: { children?: ReactNode }) {
+export function GuestPreferencesCard({
+  children,
+  changelogUnavailable,
+  onChangelog,
+}: {
+  children?: ReactNode
+  /** Why the Changelog row is disabled (the widget failed to load), or undefined when it works. */
+  changelogUnavailable?: string
+  /** Opens the widget's Updates (and closes the surrounding menu), so reading there clears the unread dot. */
+  onChangelog: () => void
+}) {
   const { t } = useTranslation()
   const [view, setView] = useState<AccountMenuView>("main")
 
@@ -42,11 +50,13 @@ export function GuestPreferencesCard({ children }: { children?: ReactNode }) {
         icon={MapIcon}
         label={t("feedback.roadmap")}
       />
-      <MenuLinkRow
+      <MenuRow
         data-testid="auth-changelog"
-        href={USERJOT_CHANGELOG_URL}
+        disabled={Boolean(changelogUnavailable)}
         icon={Newspaper}
         label={t("feedback.changelog")}
+        onClick={onChangelog}
+        title={changelogUnavailable}
       />
       {children}
     </>
@@ -54,14 +64,18 @@ export function GuestPreferencesCard({ children }: { children?: ReactNode }) {
 }
 
 export function GuestAccountMenu({
+  changelogUnavailable,
   checkingSignIn,
   disabled,
+  onChangelog,
   onOpenChange,
   onSignIn,
   open,
 }: {
+  changelogUnavailable?: string
   checkingSignIn: boolean
   disabled: boolean
+  onChangelog: () => void
   onOpenChange: (open: boolean) => void
   onSignIn: () => void
   open: boolean
@@ -89,7 +103,13 @@ export function GuestAccountMenu({
           side="bottom"
         >
           <PopoverArrow />
-          <GuestPreferencesCard>
+          <GuestPreferencesCard
+            changelogUnavailable={changelogUnavailable}
+            onChangelog={() => {
+              onOpenChange(false)
+              onChangelog()
+            }}
+          >
             <Separator />
             <Button
               data-testid="auth-sign-in"
