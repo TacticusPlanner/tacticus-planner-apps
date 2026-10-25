@@ -10,7 +10,13 @@ import {
   tokenNeeds,
 } from "./hre-objectives"
 import { arenaSurplus, selectTeamPlans } from "./hre-team-plan"
-import { bracketForRank, bracketRange, projectHrePace } from "./hre-pace"
+import {
+  bracketForRank,
+  bracketRange,
+  calendarDaysBetween,
+  ownedFrom,
+  projectHrePace,
+} from "./hre-pace"
 import {
   advanceMission,
   DEFAULT_HRE_PROGRESS,
@@ -149,6 +155,7 @@ describe("progress", () => {
         target: "epic-red-1",
       })
     ).toEqual({
+      ...DEFAULT_HRE_PROGRESS,
       mission: 5,
       progress: [0, 37],
       points: 14_500,
@@ -365,14 +372,20 @@ describe("projectHrePace", () => {
     const pace = projectHrePace(base)
     expect(pace.projectedPoints).toBe(30_000)
     expect(pace.currency).toEqual({
+      owned: null,
       milestones: 3450,
       missions: 2000,
       daily: 826,
       crates: 720,
       total: 6996,
     })
-    expect(pace.chest.tier).toBe(21)
-    expect(pace.shards).toEqual({ chests: 438, crates: 42, total: 480 })
+    expect(pace.chest).toEqual({ from: 1, tier: 21, spent: 6750, left: 246 })
+    expect(pace.shards).toEqual({
+      held: null,
+      chests: 438,
+      crates: 42,
+      total: 480,
+    })
     expect(pace.reached?.id).toBe("epic-red-1")
     expect(pace.next?.id).toBe("epic-red-2")
   })
@@ -426,6 +439,197 @@ describe("projectHrePace", () => {
     expect(near.shortOfNext).toBe(13)
     expect(near.ohSoClose).toBe(true)
     expect(projectHrePace(base).ohSoClose).toBe(false)
+  })
+
+  it("gives the same result within one milestone band", () => {
+    for (const [points, days] of [
+      [7464, 3.67],
+      [15_657, 7.35],
+    ] as const) {
+      const pace = projectHrePace({
+        ...base,
+        points,
+        rank: 26_602,
+        nowMs: start + days * DAY_MS,
+      })
+      expect(pace.projectedPoints).toBeGreaterThanOrEqual(28_000)
+      expect(pace.projectedPoints).toBeLessThan(30_000)
+      expect(pace.currency).toMatchObject({
+        milestones: 3240,
+        missions: 2000,
+        daily: 616,
+        crates: 510,
+        total: 6366,
+      })
+      expect(pace.chest.tier).toBe(20)
+      expect(pace.shards.total).toBe(431)
+      expect(pace.nextMilestone?.points).toBeGreaterThan(points)
+    }
+  })
+
+  describe("from what the player holds", () => {
+    // Day 8 of Zapspitta's event: 15,657 points at 7.0 days, rank 26,602 (25,001 to 35,000),
+    // mission 20 current, 372 owned, next chest tier 17, "Rare, 4 stars" with 17 toward the next.
+    const day8 = {
+      ...base,
+      points: 15_657,
+      rank: 26_602,
+      nowMs: start + 7 * DAY_MS,
+      startRarity: "Rare",
+      mission: 20,
+      owned: {
+        currency: 372,
+        nextTier: 17,
+        step: "rare-4",
+        toNext: 17,
+      } as const,
+    }
+
+    it("projects day 8 from the shards held and the income still to come", () => {
+      const pace = projectHrePace(day8)
+      expect(pace.projectedPoints).toBe(31_314)
+      expect(pace.bracket.daily).toBe(44)
+      expect(pace.currency).toEqual({
+        owned: 372,
+        milestones: 1540,
+        missions: 100,
+        daily: 308,
+        crates: 340,
+        total: 2660,
+      })
+      expect(pace.currency.total - 372).toBe(2288)
+      expect(pace.chest).toEqual({ from: 17, tier: 20, spent: 2100, left: 560 })
+      expect(pace.shards).toEqual({
+        held: 297,
+        chests: 123,
+        crates: 18,
+        total: 438,
+      })
+      expect(pace.reached?.id).toBe("rare-red-1")
+      expect(pace.next?.id).toBe("epic-red-1")
+      expect(pace.shortOfNext).toBe(22)
+      expect(pace.ohSoClose).toBe(true)
+      expect(pace.owned).toMatchObject({
+        step: { id: "rare-4" },
+        toNext: 17,
+        next: { id: "rare-5" },
+        gap: 50,
+      })
+      // The points-only chain for the same points.
+      expect(projectHrePace({ ...day8, owned: null }).shards.total).toBe(431)
+    })
+
+    it("names the next milestone and the next chest", () => {
+      const pace = projectHrePace(day8)
+      expect(pace.nextMilestone).toEqual({ points: 16_000, reward: 175 })
+      expect(pace.nextChest).toEqual({ tier: 17, cost: 450, missing: 78 })
+      const day4 = projectHrePace({
+        ...day8,
+        points: 7464,
+        nowMs: start + 3.5 * DAY_MS,
+        owned: { ...day8.owned, currency: 26, nextTier: 14 },
+      })
+      expect(day4.nextMilestone).toEqual({ points: 8000, reward: 140 })
+      expect(day4.nextChest).toEqual({ tier: 14, cost: 360, missing: 334 })
+      expect(
+        projectHrePace({ ...day8, points: 1_000_000 }).nextMilestone
+      ).toBeNull()
+    })
+
+    it("measures the Epic 1 red star target from what the player holds", () => {
+      const pace = projectHrePace({ ...day8, target: "epic-red-1" })
+      expect(pace.target).toMatchObject({
+        chestShards: 145,
+        chestTier: 21,
+        currency: 2750,
+        milestoneCurrency: 1630,
+        points: 33_000,
+        pointsPerDay: 2478,
+        covered: false,
+        timeUp: false,
+      })
+    })
+
+    it("reads the target as reached once no chest shards are needed", () => {
+      const pace = projectHrePace({
+        ...day8,
+        owned: { ...day8.owned, step: "rare-red-1", toNext: 60 },
+        target: "epic-red-1",
+      })
+      expect(pace.shards.held).toBe(450)
+      expect(pace.target).toMatchObject({
+        chestShards: 0,
+        covered: true,
+        milestoneCurrency: 0,
+      })
+    })
+
+    it("reads the target as out of reach with no days left", () => {
+      const pace = projectHrePace({
+        ...day8,
+        nowMs: end,
+        target: "epic-red-1",
+      })
+      expect(pace.target).toMatchObject({
+        covered: false,
+        timeUp: true,
+        points: null,
+        pointsPerDay: null,
+      })
+    })
+
+    it("counts the shards toward the unlock from 0", () => {
+      expect(
+        ownedFrom(
+          { currency: 0, nextTier: 1, step: "none", toNext: 214 },
+          "Rare"
+        )
+      ).toEqual({ currency: 0, nextTier: 1, step: "none", toNext: 214 })
+      const pace = projectHrePace({
+        ...day8,
+        owned: { currency: 0, nextTier: 1, step: "none", toNext: 214 },
+      })
+      expect(pace.shards.held).toBe(214)
+      expect(pace.owned).toMatchObject({ step: null, gap: 280 })
+    })
+
+    it("keeps the points-only chain until every owned input is set", () => {
+      expect(
+        ownedFrom(
+          { currency: 372, nextTier: null, step: "rare-4", toNext: 17 },
+          "Rare"
+        )
+      ).toBeNull()
+      expect(
+        ownedFrom(
+          { currency: 372, nextTier: 17, step: "rare-4", toNext: null },
+          "Rare"
+        )
+      ).toBeNull()
+      // No next step at Legendary blue star: the shards toward it count as 0.
+      expect(
+        ownedFrom(
+          {
+            currency: 372,
+            nextTier: 17,
+            step: "legendary-blue-1",
+            toNext: null,
+          },
+          "Rare"
+        )
+      ).toMatchObject({ toNext: 0 })
+    })
+  })
+
+  it("dates the rank by local calendar day", () => {
+    const pace = projectHrePace({
+      ...base,
+      rank: 30_668,
+      rankAt: end - 2 * DAY_MS,
+    })
+    expect(pace.rankAgeDays).toBe(2)
+    expect(projectHrePace(base).rankAgeDays).toBeNull()
+    expect(calendarDaysBetween(end, end)).toBe(0)
   })
 
   it("starts the steps at the hero's unlock rarity", () => {

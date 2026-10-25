@@ -1,4 +1,4 @@
-import { useMemo } from "react"
+import { useMemo, useRef } from "react"
 import { useTranslation } from "react-i18next"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
@@ -15,6 +15,7 @@ import {
   missionName,
   nextCampaignMission,
   PaceCard,
+  PaceSummary,
   remainingCampaignBattles,
   selectCampaignPlan,
   selectTeamPlans,
@@ -62,6 +63,7 @@ export function HrePage() {
     instance?.featuredCharacterId ?? null
   )
   const tokens = useHreTokens()
+  const paceRef = useRef<HTMLDivElement>(null)
 
   const heroName = hero
     ? t(`characters:${hero.id}`, { defaultValue: hero.name })
@@ -111,6 +113,9 @@ export function HrePage() {
           nowMs: ready.nowMs,
           points: progress.points,
           rank: progress.rank,
+          rankAt: progress.rankAt,
+          mission: progress.mission,
+          owned: progress.owned,
           target: progress.target,
           startRarity: hero?.initialRarity ?? null,
         })
@@ -252,13 +257,29 @@ export function HrePage() {
       <TokensNeededCard rows={tokenRows} synced={!!tokens} />
     ) : null
   const paceCard = running ? (
-    <PaceCard
-      actions={actions}
-      pace={pace}
-      startRarity={hero?.initialRarity ?? null}
-      state={progress}
-    />
+    <div className="scroll-mt-4" data-testid="hre-pace-section" ref={paceRef}>
+      <PaceCard
+        actions={actions}
+        pace={pace}
+        startRarity={hero?.initialRarity ?? null}
+        state={progress}
+      />
+    </div>
   ) : null
+  // Mobile only (design D4): the pace card sits far below, so its summary follows the tracker.
+  const paceSummary =
+    running && isMobile ? (
+      <PaceSummary
+        onDetails={() =>
+          paceRef.current?.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          })
+        }
+        pace={pace}
+        points={progress.points}
+      />
+    ) : null
   const tracker = running ? (
     <div data-testid="hre-tracker">
       <MissionTracker
@@ -301,6 +322,7 @@ export function HrePage() {
         isMobile ? (
           <div className="space-y-5" data-testid="hre-sections">
             {tracker}
+            {paceSummary}
             {raids}
             {teamCard}
             {tokensCard}

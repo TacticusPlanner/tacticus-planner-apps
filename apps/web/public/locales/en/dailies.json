@@ -376,7 +376,11 @@
         },
         "pace": {
           "title": "Event pace",
-          "content": "Enter your event points and rank to project currency, chest tier and shards, and pick a target to see the points a day it needs."
+          "content": "Enter your event points and rank, and optionally what you hold now, to project currency, chest tier and shards, and pick a target to see the points a day it needs."
+        },
+        "paceSummary": {
+          "title": "Pace at a glance",
+          "content": "Your points, where they end up and the step they reach. Tap Details to enter points, rank and what you hold, and to pick a target."
         }
       }
     }

@@ -6,8 +6,10 @@ import {
   DEFAULT_HRE_PROGRESS,
   HRE_PROGRESS_ORDER,
   parseHreProgress,
+  switchMission,
   type HreProgress,
 } from "./hre-progress"
+import type { HreOwnedInput } from "./hre-pace"
 import { safeStorage } from "@/shared/lib"
 
 // Design D4: one entry per HRE instance (occurrence id), per browser. Every storage access is
@@ -49,9 +51,13 @@ export type HreProgressActions = {
   setMission: (mission: number) => void
   setObjectiveProgress: (index: 0 | 1, value: number) => void
   completeMission: () => void
+  /** Puts back a whole earlier entry (Undo after "Mission complete"). */
+  restore: (entry: HreProgress) => void
   setPoints: (points: number | null) => void
+  /** Sets the rank and, when it changes, the time it was entered. */
   setRank: (rank: number | null) => void
   setTarget: (target: string | null) => void
+  setOwned: (owned: Partial<HreOwnedInput>) => void
 }
 
 /** The stored progress of one HRE instance and its edits; `key` null keeps defaults in memory. */
@@ -78,11 +84,7 @@ export function useHreProgress(
 
   const actions: HreProgressActions = {
     setMission: (mission) =>
-      update((current) => ({
-        ...current,
-        mission,
-        progress: mission === current.mission ? current.progress : [0, 0],
-      })),
+      update((current) => switchMission(current, mission)),
     setObjectiveProgress: (index, value) =>
       update((current) => {
         const progress: [number, number] = [...current.progress]
@@ -93,9 +95,20 @@ export function useHreProgress(
         }
       }),
     completeMission: () => update(advanceMission),
+    restore: (entry) => update(() => entry),
     setPoints: (points) => update((current) => ({ ...current, points })),
-    setRank: (rank) => update((current) => ({ ...current, rank })),
+    setRank: (rank) =>
+      update((current) =>
+        rank === current.rank
+          ? current
+          : { ...current, rank, rankAt: rank === null ? null : Date.now() }
+      ),
     setTarget: (target) => update((current) => ({ ...current, target })),
+    setOwned: (owned) =>
+      update((current) => ({
+        ...current,
+        owned: { ...current.owned, ...owned },
+      })),
   }
   return [state, actions]
 }

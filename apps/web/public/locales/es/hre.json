@@ -79,7 +79,11 @@
     "done": "Hecha",
     "locked": "Bloqueada",
     "markDone": "Hecho",
-    "markDoneLabel": "Hecho: {{objective}}"
+    "markDoneLabel": "Hecho: {{objective}}",
+    "add": "+{{amount}}",
+    "addLabel": "Sumar {{amount}}: {{objective}}",
+    "completed": "{{mission}} completada.",
+    "undo": "Deshacer"
   },
   "raids": {
     "title": "Campaña: {{mission}}",
@@ -141,7 +145,8 @@
       "openEnded": "No se puede estimar cuántas batallas hacen falta, así que juega estas hasta completarlo.",
       "modes": "Las batallas de Arena y Onslaught también cuentan, así que actualiza tu progreso después.",
       "more": "Hacen falta más batallas después de la energía de hoy.",
-      "none": "Ningún nodo de campaña encaja con los objetivos de esta misión."
+      "none": "Ningún nodo de campaña encaja con los objetivos de esta misión.",
+      "rulesTitle": "Reglas de nodos"
     }
   },
   "tokens": {
@@ -166,8 +171,8 @@
     "rank": "Puesto en la clasificación",
     "rankPlaceholder": "Opcional",
     "enterPoints": "Introduce tus puntos del evento para ver cómo termina.",
-    "bracket": "Pagos de los puestos {{from}} a {{to}}.",
-    "bracketOpen": "Pagos del puesto {{from}} en adelante.",
+    "bracket": "Puestos {{from}} a {{to}}: {{daily}} al día.",
+    "bracketOpen": "Puesto {{from}} en adelante: {{daily}} al día.",
     "noRank": "Introduce tu puesto para una estimación mejor.",
     "projected": "Puntos previstos",
     "projectedValue": "{{points}} ({{perDay}} al día)",
@@ -176,7 +181,7 @@
     "chest": "Nivel de cofre",
     "chestValue": "Nivel {{tier}} ({{spent}} gastados, {{left}} restantes)",
     "shards": "Fragmentos",
-    "shardsValue": "{{chests}} de cofres + {{crates}} de cajas = {{total}}",
+    "shardsValue": "{{chests}} de cofres + {{crates}} de cajas = al menos {{total}}",
     "reached": "Alcanza",
     "notUnlocked": "Aún sin desbloquear",
     "shortOf": "faltan {{shards}} fragmentos para {{step}}",
@@ -204,7 +209,34 @@
       "legendary-red-4": "Legendario, 4 estrellas rojas",
       "legendary-red-5": "Legendario, 5 estrellas rojas",
       "legendary-blue-1": "Legendario, 1 estrella azul"
-    }
+    },
+    "rankAgeToday": "Puesto introducido hoy.",
+    "rankAgeYesterday": "Puesto introducido ayer.",
+    "rankAgeDays_one": "Puesto introducido hace {{count}} día.",
+    "rankAgeDays_other": "Puesto introducido hace {{count}} días.",
+    "owned": "Lo que tienes ahora",
+    "ownedCurrency": "Moneda que tienes",
+    "nextTier": "Siguiente nivel de cofre",
+    "heroStep": "Paso del héroe",
+    "toNext": "Fragmentos hacia el siguiente paso",
+    "stepNone": "Sin desbloquear",
+    "ownedHint": "Rellénalos desde la pantalla del evento para que la estimación parta de lo que tienes.",
+    "ownedPartial": "Rellena el resto para que la estimación parta de lo que tienes.",
+    "currencyOwnedValue": "{{owned}} en posesión + {{milestones}} hitos + {{missions}} misiones + {{daily}} diarios + {{crates}} cajas = {{total}}",
+    "chestRange": "Niveles {{from}} a {{tier}} ({{spent}} gastados, {{left}} restantes)",
+    "chestNone": "Aún ningún cofre ({{left}} disponibles)",
+    "shardsOwnedValue": "{{held}} en posesión + {{chests}} de cofres + {{crates}} de cajas = al menos {{total}}",
+    "now": "Ahora",
+    "nowValue": "{{step}} · {{toNext}} / {{gap}} para {{next}}",
+    "nextMilestone": "Siguiente hito: {{points}} puntos, +{{reward}}",
+    "allMilestones": "Todos los hitos alcanzados.",
+    "nextChest": "Siguiente cofre: nivel {{tier}}, {{cost}} · faltan {{missing}} para abrirlo",
+    "nextChestReady": "Siguiente cofre: nivel {{tier}}, {{cost}} · puedes abrirlo ya",
+    "targetReached": "{{shards}} fragmentos: alcanzados con lo que tienes y las cajas que quedan.",
+    "needsTimeUp": "{{shards}} fragmentos quedan fuera de alcance: al evento no le quedan días.",
+    "summary": "{{points}} puntos → {{projected}} · {{step}}",
+    "summaryEmpty": "Introduce tus puntos del evento para ver el ritmo.",
+    "details": "Detalles"
   },
   "teams": {
     "title": "Equipo de misión",

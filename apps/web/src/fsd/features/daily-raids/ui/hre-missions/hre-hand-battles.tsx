@@ -20,8 +20,9 @@ export type HreHandBattlesNotes = {
 
 /**
  * The battles to fight by hand for the current mission's manual objectives (kills, damage, healing,
- * ability uses, lineup wins): raids count none of them. Notes say why, which nodes are kept, that
- * Arena and Onslaught battles count too, and whether the counts are estimates or open-ended.
+ * ability uses, lineup wins): raids count none of them. One visible line says why; "Node rules"
+ * folds the rest: which nodes are kept, that Arena and Onslaught battles count too, and whether the
+ * counts are estimates or open-ended.
  */
 export function HreHandBattles({
   plan,
@@ -33,10 +34,10 @@ export function HreHandBattles({
   view: RaidRowsView
 }) {
   const { t } = useTranslation("hre")
-  const parts = [
-    t("raids.battles.note"),
+  // The hero's faction rule already implies the alliance rule, so only one of them is listed.
+  const rules = [
     notes.slots ? t("raids.battles.slots", { slots: notes.slots }) : null,
-    notes.alliance
+    notes.alliance && !notes.heroFaction
       ? t("raids.battles.alliance", { alliance: notes.alliance })
       : null,
     notes.heroFaction
@@ -49,7 +50,7 @@ export function HreHandBattles({
     notes.countsAsWins ? t("raids.battles.countsAsWins") : null,
     plan.openEnded ? t("raids.battles.openEnded") : t("raids.battles.estimate"),
     t("raids.battles.modes"),
-  ].filter((part): part is string => !!part)
+  ].filter((rule): rule is string => !!rule)
   return (
     <div className="space-y-2" data-testid="hre-battles">
       <h3 className="font-medium">{t("raids.battles.title")}</h3>
@@ -57,8 +58,18 @@ export function HreHandBattles({
         className="text-sm text-muted-foreground"
         data-testid="hre-battles-note"
       >
-        {parts.join(" ")}
+        {t("raids.battles.note")}
       </p>
+      <details className="text-sm" data-testid="hre-battles-rules">
+        <summary className="cursor-pointer font-medium">
+          {t("raids.battles.rulesTitle")}
+        </summary>
+        <ul className="mt-1 list-disc space-y-1 pl-5 text-muted-foreground">
+          {rules.map((rule) => (
+            <li key={rule}>{rule}</li>
+          ))}
+        </ul>
+      </details>
       {plan.rows.length > 0 ? (
         <>
           <RaidRows
