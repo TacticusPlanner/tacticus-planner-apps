@@ -332,7 +332,7 @@
         },
         "projection": {
           "title": "Projection des points",
-          "content": "Les jetons d'Arène, d'Onslaught et de Course au pillage que vous pouvez encore utiliser avant la fin de l'événement, la moyenne qu'il faut à chacun pour atteindre le dernier palier et où mènent vos propres moyennes. Modifiez les moyennes ; elles sont mémorisées pour cet événement."
+          "content": "Les jetons d'Arène, d'Onslaught et de Course au pillage que vous pouvez encore utiliser avant la fin de l'événement, la moyenne qu'il faut à chacun pour atteindre le dernier palier et où mènent vos propres moyennes. Modifiez les moyennes ; elles sont mémorisées pour cet événement. Les jetons d'Arène de tournoi ne sont pas synchronisés : saisissez les vôtres quand l'événement y rapporte des points."
         },
         "teams": {
           "title": "Équipes de l'événement",
@@ -669,6 +669,7 @@
       "averageNeeded": "Saisissez une moyenne",
       "tokensValue_one": "{{count}} jeton",
       "tokensValue_other": "{{count}} jetons",
+      "tokensLabel": "Jetons pour {{mode}}",
       "projected": "Points projetés",
       "projectedValue": "{{points}} pts",
       "needAverage": "Saisissez une moyenne pour chaque mode pour voir les points projetés.",
@@ -683,6 +684,7 @@
         "locked": "Pas encore débloqué, ignoré : {{modes}}.",
         "enemyRestricted": "Seuls certains ennemis comptent (voir les détails de l'événement) : saisissez votre moyenne d'éliminations qui comptent.",
         "battles": "Les modes de combat rapportent une fois par jeton : un combat par jeton.",
+        "manualTokens": "Les jetons de {{modes}} ne sont pas synchronisés depuis le jeu : saisissez combien vous en dépenserez pendant l’événement.",
         "campaign": "Les raids de campagne rapportent aussi des points dans cet événement ; ils sont planifiés dans la liste de farm ci-dessous.",
         "syncedAt": "Jetons issus de votre synchronisation {{when}}, en supposant que vous les dépensez avant que vos réserves soient pleines.",
         "syncUnknown": "L'heure de votre synchronisation est inconnue, les jetons sont donc comptés à partir de maintenant, en supposant que vous les dépensez avant que vos réserves soient pleines.",

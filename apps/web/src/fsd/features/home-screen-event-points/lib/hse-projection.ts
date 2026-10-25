@@ -4,7 +4,11 @@ import {
   type GameCatalogHseTracker,
 } from "@workspace/game-catalog"
 
-import { HSE_TOKEN_MODES, type HseTokenMode } from "./hse-token-supply"
+import {
+  HSE_TOKEN_MODES,
+  isHseManualTokenMode,
+  type HseTokenMode,
+} from "./hse-token-supply"
 
 /** What one scoring unit is: a kill, a cleared wave, or a battle (one per token). */
 type HseScoringUnit = "kills" | "waves" | "battles"
@@ -21,6 +25,7 @@ const UNIT_BY_TRACKER_KIND: Readonly<Record<string, HseScoringUnit>> = {
 /** Default kills per token (Severyn's estimates; editable and persisted, design D5). */
 const HSE_DEFAULT_KILLS_PER_TOKEN: Readonly<Record<HseTokenMode, number>> = {
   Arena: 5,
+  TournamentArena: 5,
   Onslaught: 20,
   SalvageRun: 12,
 }
@@ -93,6 +98,8 @@ export type HseProjectionMode = HseModeScoring & {
   average: number | null
   /** True for a battle mode: one battle per token, not editable. */
   fixedAverage: boolean
+  /** True when the player enters the tokens (the API does not sync the mode's bucket). */
+  manualTokens: boolean
   /** tokens x average x points per unit, or null without an average. */
   points: number | null
 }
@@ -183,6 +190,7 @@ export function projectHsePoints(
       tokens,
       average,
       fixedAverage,
+      manualTokens: isHseManualTokenMode(mode.mode),
       points: average === null ? null : tokens * average * mode.pointsPerUnit,
     })
   }

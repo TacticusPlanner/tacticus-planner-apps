@@ -332,7 +332,7 @@
         },
         "projection": {
           "title": "Points projection",
-          "content": "The Arena, Onslaught and Salvage Run tokens you can still use before the event ends, what each must average to reach the final milestone, and where your own averages land. Edit the averages; they are remembered for this event."
+          "content": "The Arena, Onslaught and Salvage Run tokens you can still use before the event ends, what each must average to reach the final milestone, and where your own averages land. Edit the averages; they are remembered for this event. Tournament Arena tokens are not synced, so enter yours when the event scores there."
         },
         "teams": {
           "title": "Event teams",
@@ -669,6 +669,7 @@
       "averageNeeded": "Enter an average",
       "tokensValue_one": "{{count}} token",
       "tokensValue_other": "{{count}} tokens",
+      "tokensLabel": "Tokens for {{mode}}",
       "projected": "Projected points",
       "projectedValue": "{{points}} pts",
       "needAverage": "Enter an average for every mode to see the projected points.",
@@ -683,6 +684,7 @@
         "locked": "Not unlocked yet, left out: {{modes}}.",
         "enemyRestricted": "Only some enemies count (see the event details), so enter your average of kills that count.",
         "battles": "Battle modes score once per token: one battle per token.",
+        "manualTokens": "{{modes}} tokens are not synced from the game: enter how many you will spend during the event.",
         "campaign": "Campaign raids also earn points in this event; they are planned in the farm list below.",
         "syncedAt": "Tokens from your sync {{when}}, assuming you spend them before your buckets fill up.",
         "syncUnknown": "Your sync time is unknown, so tokens are counted from now, assuming you spend them before your buckets fill up.",

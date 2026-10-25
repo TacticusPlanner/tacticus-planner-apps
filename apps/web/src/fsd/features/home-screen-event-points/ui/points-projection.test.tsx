@@ -288,6 +288,34 @@ describe("PointsProjection: other events and states", () => {
     ).toBeInTheDocument()
   })
 
+  it("lets the player enter Faction Focus's Tournament Arena tokens, which the sync does not cover", async () => {
+    renderHse(
+      i18n,
+      hseInstance("hse-faction-focus", "upcoming", {
+        hseVariant: "october-2026",
+      })
+    )
+    expect(cellsOf("TournamentArena")).toEqual([
+      "Tournament Arena",
+      "",
+      "1 battle",
+      "3 per battle",
+      "0 pts",
+    ])
+    expect(
+      screen.getByTestId("hse-projection-note-manual-tokens")
+    ).toHaveTextContent(/^Tournament Arena tokens are not synced/)
+    const tokens = screen.getByTestId(
+      "hse-projection-tokens-input-TournamentArena"
+    )
+    expect(tokens).toHaveAccessibleName("Tokens for Tournament Arena")
+    await userEvent.type(tokens, "20")
+    // 406 + 20 x 3 = 466; 1220 / 107 = 11.40 -> 11.5
+    expect(within(row("TournamentArena")).getByText("60 pts")).toBeVisible()
+    expect(total("projected")).toHaveTextContent("466 pts")
+    expect(total("required")).toHaveTextContent("11.5 event points per token")
+  })
+
   it("asks for Defeat Waves' averages before projecting points", async () => {
     renderHse(i18n, hseInstance("hse-defeat-waves", "upcoming"))
 

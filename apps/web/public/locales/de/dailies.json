@@ -332,7 +332,7 @@
         },
         "projection": {
           "title": "Punkteprognose",
-          "content": "Die Arena-, Onslaught- und Plünderungslauf-Marken, die du bis zum Event-Ende noch nutzen kannst, welchen Schnitt jede für den letzten Meilenstein braucht und wo deine eigenen Schnitte landen. Bearbeite die Schnitte; sie werden für dieses Event gespeichert."
+          "content": "Die Arena-, Onslaught- und Plünderungslauf-Marken, die du bis zum Event-Ende noch nutzen kannst, welchen Schnitt jede für den letzten Meilenstein braucht und wo deine eigenen Schnitte landen. Bearbeite die Schnitte; sie werden für dieses Event gespeichert. Turnier-Arena-Marken werden nicht synchronisiert: Gib deine ein, wenn das Event dort zählt."
         },
         "teams": {
           "title": "Event-Teams",
@@ -669,6 +669,7 @@
       "averageNeeded": "Schnitt eingeben",
       "tokensValue_one": "{{count}} Marke",
       "tokensValue_other": "{{count}} Marken",
+      "tokensLabel": "Marken für {{mode}}",
       "projected": "Prognostizierte Punkte",
       "projectedValue": "{{points}} Pkt.",
       "needAverage": "Gib für jeden Modus einen Schnitt ein, um die prognostizierten Punkte zu sehen.",
@@ -683,6 +684,7 @@
         "locked": "Noch nicht freigeschaltet, ausgelassen: {{modes}}.",
         "enemyRestricted": "Nur manche Feinde zählen (siehe Event-Details), gib daher deinen Schnitt an zählenden Abschüssen ein.",
         "battles": "Kampf-Modi zählen einmal pro Marke: ein Kampf pro Marke.",
+        "manualTokens": "{{modes}}-Marken werden nicht aus dem Spiel synchronisiert: Gib ein, wie viele du während des Events ausgibst.",
         "campaign": "Kampagnen-Raids bringen in diesem Event ebenfalls Punkte; sie werden in der Farmliste unten geplant.",
         "syncedAt": "Marken aus deiner Synchronisierung {{when}}, vorausgesetzt du verbrauchst sie, bevor deine Speicher voll sind.",
         "syncUnknown": "Der Zeitpunkt deiner Synchronisierung ist unbekannt, daher werden Marken ab jetzt gezählt, vorausgesetzt du verbrauchst sie, bevor deine Speicher voll sind.",

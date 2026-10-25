@@ -3,7 +3,11 @@ import { useTranslation } from "react-i18next"
 import { Input } from "@workspace/ui/components/input"
 
 import type { HseProjectionMode } from "../lib/hse-projection"
-import type { HseTokenMode } from "../lib/hse-token-supply"
+import {
+  isHseManualTokenMode,
+  type HseManualTokenMode,
+  type HseTokenMode,
+} from "../lib/hse-token-supply"
 import { useModeName } from "./use-mode-name"
 
 /** An input's text as an average: empty clears it (null), anything else a non-negative number. */
@@ -14,9 +18,9 @@ function parseAverage(raw: string): number | null {
 }
 
 /**
- * A whole-number progress input (milestones done, points in the current milestone), as raw text so it
- * can be cleared and retyped (an empty field means 0, shown as the placeholder). The text follows the
- * stored value when it changes from elsewhere (another instance).
+ * A whole-number input (milestones done, points in the current milestone, entered tokens), as raw
+ * text so it can be cleared and retyped (an empty field means 0, shown as the placeholder). The text
+ * follows the stored value when it changes from elsewhere (another instance).
  */
 export function ProgressInput({
   value,
@@ -24,12 +28,15 @@ export function ProgressInput({
   label,
   testId,
   max,
+  describedBy,
 }: {
   value: number
   onChange: (value: number) => void
   label: string
   testId: string
   max?: number
+  /** The id of the hint that explains the input. */
+  describedBy?: string
 }) {
   const [raw, setRaw] = useState(() => (value === 0 ? "" : String(value)))
   const [seen, setSeen] = useState(value)
@@ -40,7 +47,7 @@ export function ProgressInput({
   }
   return (
     <Input
-      aria-describedby="hse-progress-hint"
+      aria-describedby={describedBy}
       aria-label={label}
       className="h-7 w-20"
       data-testid={testId}
@@ -55,6 +62,33 @@ export function ProgressInput({
       type="number"
       value={raw}
     />
+  )
+}
+
+/** A mode's tokens: the synced count, or an input for a mode the API does not sync. */
+export function TokensCell({
+  mode,
+  onChange,
+}: {
+  mode: HseProjectionMode
+  onChange: (mode: HseManualTokenMode, value: number) => void
+}) {
+  const { t, i18n } = useTranslation("dailies")
+  const modeName = useModeName()
+  if (!isHseManualTokenMode(mode.mode))
+    return <>{new Intl.NumberFormat(i18n.language).format(mode.tokens)}</>
+  const manual = mode.mode
+  // Inline, so the table's right-aligned tokens column lines it up with the synced counts.
+  return (
+    <span className="inline-block">
+      <ProgressInput
+        describedBy="hse-manual-tokens-hint"
+        label={t("hse.projection.tokensLabel", { mode: modeName(manual) })}
+        onChange={(value) => onChange(manual, value)}
+        testId={`hse-projection-tokens-input-${manual}`}
+        value={mode.tokens}
+      />
+    </span>
   )
 }
 

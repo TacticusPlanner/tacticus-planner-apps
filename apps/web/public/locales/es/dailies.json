@@ -332,7 +332,7 @@
         },
         "projection": {
           "title": "Proyección de puntos",
-          "content": "Las fichas de Arena, Onslaught y Carrera de Saqueo que aún puedes usar antes de que acabe el evento, la media que necesita cada una para llegar al último hito y adónde llegan tus propias medias. Edita las medias; se recuerdan para este evento."
+          "content": "Las fichas de Arena, Onslaught y Carrera de Saqueo que aún puedes usar antes de que acabe el evento, la media que necesita cada una para llegar al último hito y adónde llegan tus propias medias. Edita las medias; se recuerdan para este evento. Las fichas de Arena de torneo no se sincronizan: introduce las tuyas cuando el evento puntúe allí."
         },
         "teams": {
           "title": "Equipos del evento",
@@ -669,6 +669,7 @@
       "averageNeeded": "Introduce una media",
       "tokensValue_one": "{{count}} ficha",
       "tokensValue_other": "{{count}} fichas",
+      "tokensLabel": "Fichas para {{mode}}",
       "projected": "Puntos proyectados",
       "projectedValue": "{{points}} pts",
       "needAverage": "Introduce una media para cada modo para ver los puntos proyectados.",
@@ -683,6 +684,7 @@
         "locked": "Aún no desbloqueado, se omite: {{modes}}.",
         "enemyRestricted": "Solo cuentan algunos enemigos (consulta los detalles del evento), así que introduce tu media de bajas que cuentan.",
         "battles": "Los modos de combate puntúan una vez por ficha: un combate por ficha.",
+        "manualTokens": "Las fichas de {{modes}} no se sincronizan desde el juego: introduce cuántas gastarás durante el evento.",
         "campaign": "Las incursiones de campaña también dan puntos en este evento; se planifican en la lista de farmeo de abajo.",
         "syncedAt": "Fichas de tu sincronización {{when}}, suponiendo que las gastas antes de que tus reservas se llenen.",
         "syncUnknown": "Se desconoce la hora de tu sincronización, así que las fichas se cuentan desde ahora, suponiendo que las gastas antes de que tus reservas se llenen.",
