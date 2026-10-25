@@ -39,4 +39,8 @@
 ## 8. Mobile verification (<768px)
 
 - [x] 8.1 In a 420px same-origin iframe, repeat the ladder creation in the sheet, check the stacked milestone list and the mobile tour steps. (Bellator, Diamond II → Diamond III → Adamantine I → Adamantine II.)
-- [ ] 8.2 Check milestone rows, the covered note and blocker actions on the mobile Goals list.
+- [x] 8.2 Check milestone rows, the covered note and blocker actions on the mobile Goals list. ("Open that goal" from the edit conflict error opens the colliding sibling; prerequisite remedy actions have no UI yet, see Deferred.)
+
+## Deferred / out-of-session
+
+- Render the prerequisite blocker remedy actions on the Goals list (create the covering goal prefilled, or review the existing one). The reason model and `prerequisitePrefill` exist, but today the reasons only show as tooltip text. This gap predates this change. Tracked in TacticusPlanner/tacticus-planner-apps#301.

@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, type ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
 import { Checkbox } from "@workspace/ui/components/checkbox"
@@ -15,7 +15,6 @@ import {
   ResponsiveDialogHeader,
   ResponsiveDialogTitle,
 } from "@/shared/ui"
-import { PageTourButton } from "@/shared/tour"
 import { useCreateGoalForm } from "../../model/goal-creation-form/use-create-goal-form"
 import type { CreateGoalPrefill } from "../../model/goal-creation-form/create-goal-launcher-context"
 import { CreateGoalSheetTourRegistration } from "./create-goal-sheet.tutorial"
@@ -25,6 +24,9 @@ type CreateGoalSheetProps = {
   open: boolean
   onOpenChange: (open: boolean) => void
   prefill?: CreateGoalPrefill
+  /** Header action beside the title, e.g. the page tour button: the page header's sits behind the
+   *  modal. Passed in rather than imported so this lazy chunk's import graph stays as it is. */
+  headerAction?: ReactNode
 }
 
 /**
@@ -38,6 +40,7 @@ export function CreateGoalSheet({
   open,
   onOpenChange,
   prefill,
+  headerAction,
 }: CreateGoalSheetProps) {
   const { t } = useTranslation()
   const [portalContainer, setPortalContainer] = useState<HTMLDivElement | null>(
@@ -59,8 +62,7 @@ export function CreateGoalSheet({
       {open ? <CreateGoalSheetTourRegistration /> : null}
       <ResponsiveDialogHeader className="flex-row items-center gap-2">
         <ResponsiveDialogTitle>{t("goals.create.title")}</ResponsiveDialogTitle>
-        {/* The page header's tour button sits behind the modal, so the sheet carries its own. */}
-        <PageTourButton />
+        {headerAction}
       </ResponsiveDialogHeader>
 
       <ResponsiveDialogBody>

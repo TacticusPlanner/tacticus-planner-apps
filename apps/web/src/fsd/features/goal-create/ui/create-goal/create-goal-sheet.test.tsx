@@ -18,7 +18,6 @@ function render(ui: ReactElement, options: RenderOptions = {}) {
 
 vi.mock("@/shared/tour", () => ({
   useTourPageSteps: () => undefined,
-  PageTourButton: () => <button type="button">Tour this page</button>,
 }))
 
 // The saved Onslaught progress the Ascension card's Onslaught group reads; reset in beforeEach.
@@ -503,7 +502,13 @@ describe("CreateGoalSheet", () => {
   })
 
   it("carries its own tour button, since the page header's sits behind the modal", () => {
-    render(<CreateGoalSheet open onOpenChange={vi.fn()} />)
+    render(
+      <CreateGoalSheet
+        headerAction={<button type="button">Tour this page</button>}
+        onOpenChange={vi.fn()}
+        open
+      />
+    )
 
     expect(
       within(screen.getByTestId("create-goal-sheet")).getByRole("button", {
