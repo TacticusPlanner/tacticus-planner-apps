@@ -32,7 +32,7 @@ const LOCKED_PARTS: ReadonlyArray<keyof V1ImportSelection> = [
 
 /**
  * Composes `V1ImportPanel` (features/v1-import) into the account-setup "import" step
- * (features/account-onboarding, via its `renderImportStep` prop) — the `app` layer is where the two
+ * (features/account, via its `renderImportStep` prop) — the `app` layer is where the two
  * features are allowed to meet (see account-setup-screen.tsx's `renderImportStep` doc comment).
  *
  * Deliberately does NOT call `onCompleted` as soon as the panel succeeds, unlike `ApiKeyForm`. That
