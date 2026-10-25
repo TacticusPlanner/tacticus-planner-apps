@@ -38,7 +38,7 @@ export function usePlanWizardTutorial(): TourPageSteps {
         step("stepper", "right"),
         step("targetCards", "bottom"),
         step("assumptions", "top"),
-        step("summary", "left"),
+        step("summary", "bottom"),
         step("footer", "top"),
       ],
       mobile: [

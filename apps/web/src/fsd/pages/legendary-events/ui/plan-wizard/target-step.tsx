@@ -158,7 +158,7 @@ export function TargetStep({
       ) : (
         <div
           aria-label={t("planWizard.steps.target")}
-          className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3"
+          className="grid grid-cols-[repeat(auto-fill,minmax(12.5rem,1fr))] gap-2"
           data-testid="plan-wizard-target-cards"
           role="radiogroup"
         >

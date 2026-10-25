@@ -71,12 +71,17 @@ Review SHALL offer the destination project as today (`project-event-target`). Cr
 
 ### Requirement: Wizard layouts
 
-At or above 768px the wizard SHALL show a vertical stepper on the left, the step content in the middle, the plan summary as a right rail (above the content from 768px to 1023px), and Back / Next in a footer that stays visible. Below 768px it SHALL show a step header with chips for visited steps and a progress bar, the plan summary as a sticky strip under it, and a sticky Back / Next bar above the bottom navigation. Nothing SHALL scroll horizontally.
+At or above 768px the wizard SHALL show a vertical stepper on the left, the step content in the middle, the plan summary as a right rail from 1536px (below that, a line above the content), the target cards in as many columns as the content width fits, and Back / Next in a footer that stays visible. Below 768px it SHALL show a step header with chips for visited steps and a progress bar, the plan summary as a sticky strip under it, and a sticky Back / Next bar above the bottom navigation. Nothing SHALL scroll horizontally.
 
 #### Scenario: Desktop layout
 
-- **WHEN** the wizard renders at 1280px
-- **THEN** the stepper is on the left, the summary rail on the right, and Back / Next stay visible while the content scrolls
+- **WHEN** the wizard renders at 1280×800
+- **THEN** the stepper is on the left, the summary is a line above the content, every target card is visible without scrolling, and Back / Next stay visible while the content scrolls
+
+#### Scenario: Wide desktop layout
+
+- **WHEN** the wizard renders at 1536px or wider
+- **THEN** the plan summary is a right rail beside the step content
 
 #### Scenario: Mobile layout
 

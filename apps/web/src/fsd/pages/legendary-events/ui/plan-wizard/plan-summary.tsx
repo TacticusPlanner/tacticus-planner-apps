@@ -12,7 +12,8 @@ import type { PlanDraft } from "./use-plan-draft"
  * The plan summary on every step (spec: plan summary on every step): the target and its verdict,
  * the ceiling against the points needed (or the spare points), the goals to create and the team
  * changes. A Too ambitious target shows its warning here with Change target. On desktop it is a
- * panel (a rail from 1024px, a strip above the content below that); on mobile a one-line sticky
+ * panel (a rail from 1536px; below that a wrapping line above the content, so the target cards
+ * get the width to sit in two rows at 1280×800); on mobile a one-line sticky
  * strip that expands on tap.
  */
 export function PlanSummary({
@@ -148,7 +149,7 @@ export function PlanSummary({
   return (
     <aside
       aria-label={t("planWizard.summary.label")}
-      className="flex flex-col gap-1.5 rounded-xl border p-3 text-sm lg:sticky lg:top-4 lg:order-last lg:w-64 lg:shrink-0"
+      className="flex flex-wrap items-baseline gap-x-4 gap-y-1 rounded-xl border px-3 py-2 text-sm 2xl:sticky 2xl:top-4 2xl:order-last 2xl:w-64 2xl:shrink-0 2xl:flex-col 2xl:items-stretch 2xl:gap-1.5 2xl:p-3"
       data-testid="plan-wizard-summary"
     >
       <h2 className="text-xs font-semibold text-muted-foreground uppercase">
@@ -156,7 +157,7 @@ export function PlanSummary({
       </h2>
       <p className="font-medium">{headline}</p>
       <p data-testid="plan-wizard-summary-ceiling">{ceiling}</p>
-      <div className="flex flex-col gap-1.5 text-muted-foreground">
+      <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1 text-muted-foreground 2xl:flex-col 2xl:gap-1.5">
         {details}
       </div>
       {announcement}

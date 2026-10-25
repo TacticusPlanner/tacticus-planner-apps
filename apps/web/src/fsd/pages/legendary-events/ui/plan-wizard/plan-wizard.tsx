@@ -339,7 +339,7 @@ export function PlanWizard({
             ))}
           </ol>
         </nav>
-        <div className="flex min-w-0 flex-1 flex-col gap-4 lg:flex-row lg:items-start lg:gap-6">
+        <div className="flex min-w-0 flex-1 flex-col gap-4 2xl:flex-row 2xl:items-start 2xl:gap-6">
           {isMobile ? null : summary}
           <div className="flex min-w-0 flex-1 flex-col gap-4">
             {step === "target" ? (

@@ -79,8 +79,9 @@ Sections 10 to 12 are manual checks on the reference accounts and are left for r
 
 ## 11. Desktop verification (viewport at or above 768 px; check 1280 px and 900 px)
 
-- [ ] 11.1 At 1280 px, the target cards are visible without scrolling. At 900 px, the summary sits above the content as a strip.
+- [x] 11.1 At 1280 px, the target cards are visible without scrolling. At 900 px, the summary sits above the content as a strip.
   - Fails at 1280 px: the cards sit two per row, and the third row (Mythic, Two blue stars) ends at y=757 in a 1280×730 viewport, behind the footer (it would still be cut at 1280×800). At 1536 px (three per row) all six fit. At 900 px the summary sits above the content as a strip, but the cards are about 175 px wide and their titles wrap around the badge. Needs a layout decision (three columns from 1280 px, or a compact card).
+  - Fixed after review: the summary is a right rail only from 1536 px (a line above the content below that), and the cards fill as many 12.5rem columns as fit. At 1280×800 the six cards sit three per row (239 px) and end at y=599, above the footer at 743, with the search finished. At 900 px they are one 353 px column under the summary line; at 1600 px the rail returns beside three columns. No horizontal scroll at any width.
 - [x] 11.2 Browser Back and Forward move between steps, with no leave prompt.
   - Back and Forward each moved one step with no prompt; a reload on `?step=teams` opened Target with `?step=target`. Fixed: a new step now opens at the top of the page instead of at the previous step's scroll position.
 - [x] 11.3 On Teams, the lanes sit side by side at 1280 px, and Edit and Add open the team editor.
