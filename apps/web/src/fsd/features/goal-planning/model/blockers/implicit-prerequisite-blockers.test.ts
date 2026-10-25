@@ -111,6 +111,39 @@ describe("implicitPrerequisiteBlockers", () => {
     ).toEqual(["MissingAscensionPrerequisite"])
   })
 
+  it("links the highest too-low milestone for review and clears once a covering one exists", () => {
+    const params = {
+      detail: abilityGoal(),
+      playerUnit: { xpLevel: 10, progressionIndex: "Common:None" },
+      ready: true,
+      unitName: "Test Unit",
+    }
+    const low = {
+      ...prerequisiteGoal("Active", "Common:OneStar"),
+      goalId: "low",
+    }
+    const higher = {
+      ...prerequisiteGoal("Active", "Uncommon:TwoStars"),
+      goalId: "higher",
+    }
+    expect(
+      implicitPrerequisiteBlockers({
+        ...params,
+        prerequisiteGoals: [low, higher],
+      })[0]
+    ).toMatchObject({
+      kind: "MissingAscensionPrerequisite",
+      requiredProgression: "Rare:FourStars",
+      existingGoalId: "higher",
+    })
+    expect(
+      implicitPrerequisiteBlockers({
+        ...params,
+        prerequisiteGoals: [low, higher, prerequisiteGoal()],
+      })
+    ).toEqual([])
+  })
+
   it("links an inadequate active prerequisite and waits for loaded inputs", () => {
     const inadequate = prerequisiteGoal("Active", "Common:TwoStars")
     expect(

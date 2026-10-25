@@ -36,6 +36,8 @@ import {
 } from "./goal-attainment"
 import { NO_BLOCKERS, UNKNOWN_PROGRESS } from "./goal-overview-metrics-defaults"
 import { computeGoalProgress, type GoalProgress } from "./goal-progress"
+import { milestoneSiblings, withMilestoneStart } from "./milestone-siblings"
+import type { GoalDetail } from "@/entities/goal"
 import {
   computeLevelRequirementProgress,
   type LevelRequirementProgress,
@@ -53,6 +55,9 @@ export type GoalOverviewMetrics = {
   /** The level this Rank/Ability goal's target needs while the character is below it — ordinary
    *  progress shown beside the goal, never a blocker. `null` when sufficient or not applicable. */
   levelRequirement: LevelRequirementProgress | null
+  /** The higher-priority in-flight goal of the same unit and type that already reaches this goal's
+   *  target (goal-milestone-planning), so this one adds no work of its own; null otherwise. */
+  coveredBy?: GoalDetail | null
 }
 
 const UNKNOWN_METRICS: GoalOverviewMetrics = {
@@ -199,7 +204,9 @@ function useComputedGoalsOverviewMetrics(
         inventoryItems,
       })
 
-      const progress = computeGoalProgress({
+      // A milestone's range reads from the previous milestone's end (display only).
+      const siblings = milestoneSiblings(detail, goals.goalsById.values())
+      const liveProgress = computeGoalProgress({
         detail,
         playerCharacter,
         playerMow,
@@ -210,6 +217,7 @@ function useComputedGoalsOverviewMetrics(
         inventoryShard,
         upgradesById,
       })
+      const progress = withMilestoneStart(liveProgress, siblings)
 
       const remainingStandalone = catalogReady
         ? calculateGoalResourceNeed({
@@ -304,6 +312,7 @@ function useComputedGoalsOverviewMetrics(
         progress,
         remaining,
         blockers,
+        coveredBy: siblings?.coveredBy ?? null,
         levelRequirement: computeLevelRequirementProgress({
           detail,
           playerUnit,

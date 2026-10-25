@@ -34,6 +34,10 @@ export type BlockerReason =
   | { kind: "PlayerDataUnavailable" }
   /** The static game catalog (characters, upgrades, costs) this goal needs hasn't loaded yet. */
   | { kind: "CatalogDataUnavailable" }
+  /** No Ascension goal of the unit reaches the progression this target needs. `existingGoalId` is the
+   *  highest in-flight Ascension goal ending below it, if any: the remedy offers both creating a
+   *  covering Ascension milestone (pre-filled with `requiredProgression`) and reviewing that goal; the
+   *  reason clears once a covering goal is in the plan. */
   | {
       kind: "MissingAscensionPrerequisite"
       requiredProgression: Progression

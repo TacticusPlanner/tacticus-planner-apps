@@ -903,7 +903,8 @@
       "eventArchived_one": "+{{count}} archiviert",
       "eventArchived_other": "+{{count}} archiviert",
       "eventNoProject": "Kein Projekt für dieses Event",
-      "eventOpenProjects": "Zu den Projekten"
+      "eventOpenProjects": "Zu den Projekten",
+      "membershipConflictTarget": "{{unit}} hat bereits ein aktives oder pausiertes {{type}}-Ziel mit dem Ziel {{target}}."
     },
     "toasts": {
       "statusConflict": "{{goal}} konnte nicht geändert werden: {{reason}}",
@@ -1084,7 +1085,8 @@
         "includeUnlock": "Das vorgeschlagene Freischaltungsziel einbeziehen",
         "includeAscension": "Das vorgeschlagene Aufstiegsziel einbeziehen",
         "unlockRequired": "erforderlich, dieser Charakter wird noch nicht besessen",
-        "ascensionRequired": "erforderlich, um den Zielrang zu erreichen"
+        "ascensionRequired": "erforderlich, um den Zielrang zu erreichen",
+        "dependsOnExisting": "Hängt von deinem bestehenden Ziel Aufstieg → {{target}} ab"
       },
       "validation": {
         "alreadyUnlocked": "Dieser Charakter ist bereits freigeschaltet.",
@@ -1104,6 +1106,13 @@
         "title": "Benötigt Level {{required}} (aktuell {{current}})",
         "xpRemaining": "Noch {{xp}} XP nötig",
         "note": "Nur zur Information – das gehört zum Ziel, ist kein eigenes Ziel und blockiert es nie."
+      },
+      "milestones": {
+        "add": "Meilenstein hinzufügen",
+        "label": "Meilenstein {{number}}",
+        "remove": "Meilenstein {{number}} entfernen",
+        "hint": "Jeder Meilenstein wird ein eigenes Ziel, nach dem vorherigen.",
+        "notAbove": "Jeder Meilenstein muss über dem vorherigen liegen."
       }
     },
     "estimate": {
@@ -1213,7 +1222,8 @@
       "reachableCeilingLevelLabel": "Aktuell erreichbar: Stufe {{level}}",
       "reachableCeilingReasonRarity": "begrenzt durch Seltenheit",
       "reachableCeilingReasonLevel": "begrenzt durch Stufe",
-      "reachableCeilingReasonBoth": "begrenzt durch Seltenheit und Stufe"
+      "reachableCeilingReasonBoth": "begrenzt durch Seltenheit und Stufe",
+      "coveredBy": "Abgedeckt durch das Ziel {{type}} → {{target}}"
     },
     "insights": {
       "selectProject": "Wähle ein Projekt",
@@ -1260,7 +1270,9 @@
         "upgradeEmpty": "Ein Upgrade-Ziel braucht mindestens ein Material.",
         "upgradeRange": "Wähle einen Bereich, der über seinem Start endet."
       },
-      "reachedNote": "Ein bereits erreichtes Ziel ist in Ordnung: Es braucht nichts mehr, und das Ziel behält seinen Status, bis du es abschließt."
+      "reachedNote": "Ein bereits erreichtes Ziel ist in Ordnung: Es braucht nichts mehr, und das Ziel behält seinen Status, bis du es abschließt.",
+      "upgradeMaterials_one": "{{count}} Material",
+      "upgradeMaterials_other": "{{count}} Materialien"
     },
     "order": {
       "conflictTitle": "Der Plan hat sich geändert",
@@ -1307,7 +1319,8 @@
         "projects": "Projekte",
         "priority": "Priorität",
         "unknown": "eine Eingabe"
-      }
+      },
+      "openConflict": "Dieses Ziel öffnen"
     }
   },
   "language": {
@@ -1438,7 +1451,7 @@
         },
         "list": {
           "title": "Deine Ziele",
-          "content": "Jedes Ziel erscheint unten in deiner Prioritätsreihenfolge – aktive und pausierte zuerst, danach erreichte. Mit der Aktion „Bearbeiten“ eines Ziels änderst du Zielwert, Priorität, Notizen oder Projekte. Ein Charakter kann mehrere Rang-Ziele haben, jedes mit eigenem Ziel gekennzeichnet."
+          "content": "Jedes Ziel erscheint unten in deiner Prioritätsreihenfolge – aktive und pausierte zuerst, danach erreichte. Mit der Aktion „Bearbeiten“ eines Ziels änderst du Zielwert, Priorität, Notizen oder Projekte. Eine Einheit kann mehrere Rang-, Aufstiegs-, Fähigkeits- oder Upgrade-Ziele haben, jedes mit eigenem Ziel gekennzeichnet."
         }
       }
     },
@@ -1455,6 +1468,10 @@
         "mythicMaterialSources": {
           "title": "Mythische Materialien",
           "content": "Shop-Angebote für die mythischen Materialien, die dieses Ziel braucht. Standardmäßig zählt jedes verfügbare Angebot; entferne den Haken bei allem, was du nicht kaufen wirst."
+        },
+        "milestones": {
+          "title": "Meilensteine",
+          "content": "Füge Meilensteine hinzu, um mehrere Ziele für diese Einheit auf einmal zu planen, etwa Gold 1, dann Diamant 1, dann Diamant 3. Jeder wird ein eigenes Ziel, nach dem vorherigen."
         }
       }
     },

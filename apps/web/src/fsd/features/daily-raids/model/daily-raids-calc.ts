@@ -168,6 +168,7 @@ export function calculateDailyRaids(
       unlockShardCostsById: params.unlockShardCostsById,
       coveredAbilityTransitions: coverage,
       coveredRankSlots: coverage.rankSlots,
+      ascensionCoverage: coverage,
       craftedInventory,
     }
     const stages = calculateGoalFarmingStages(requirementParams)

@@ -17,6 +17,7 @@ const goal = (
     status: "Active",
     projectIds: ["p1"],
     config: {
+      progression: null,
       rank:
         rankEnd === undefined
           ? null
@@ -41,7 +42,7 @@ const find = (
     goals,
     entityType: "Character",
     entityId: "ragnar",
-    goalTypes: ["Ascension"],
+    candidates: [{ goalType: "Ascension", targetKey: null }],
     ...options,
   })?.goalId ?? null
 
@@ -74,8 +75,7 @@ describe("findGoalSlotConflict", () => {
     it("conflicts only with the exact same normalized target", () => {
       expect(
         find([rank("silver3", 11), rank("gold1", 13)], {
-          goalTypes: ["Rank"],
-          rankTargetKey: "13:0",
+          candidates: [{ goalType: "Rank", targetKey: "13:0" }],
         })
       ).toBe("gold1")
     })
@@ -83,14 +83,49 @@ describe("findGoalSlotConflict", () => {
     it("lets a different Rank target coexist", () => {
       expect(
         find([rank("silver3", 11)], {
-          goalTypes: ["Rank"],
-          rankTargetKey: "13:0",
+          candidates: [{ goalType: "Rank", targetKey: "13:0" }],
         })
       ).toBeNull()
     })
 
-    it("reports nothing while the new target is unknown (the server stays authoritative)", () => {
-      expect(find([rank("gold1", 13)], { goalTypes: ["Rank"] })).toBeNull()
+    it("checks every candidate of a ladder", () => {
+      expect(
+        find([rank("gold1", 13)], {
+          candidates: [
+            { goalType: "Rank", targetKey: "11:0" },
+            { goalType: "Rank", targetKey: "13:0" },
+          ],
+        })
+      ).toBe("gold1")
+    })
+  })
+
+  describe("other targets", () => {
+    const ascension = (goalId: string, end: string) =>
+      goal(goalId, {
+        config: { progression: { start: "Epic:None", end } },
+      } as unknown as Partial<GoalDetail>)
+
+    it("lets a different Ascension end coexist and blocks the same end", () => {
+      const goals = [ascension("legendary", "Legendary:None")]
+      expect(
+        find(goals, {
+          candidates: [{ goalType: "Ascension", targetKey: "Mythic:None" }],
+        })
+      ).toBeNull()
+      expect(
+        find(goals, {
+          candidates: [{ goalType: "Ascension", targetKey: "Legendary:None" }],
+        })
+      ).toBe("legendary")
+    })
+
+    it("keeps Unlock to one per unit", () => {
+      expect(
+        find([goal("unlock", { goalType: "Unlock" })], {
+          candidates: [{ goalType: "Unlock", targetKey: null }],
+        })
+      ).toBe("unlock")
     })
   })
 })

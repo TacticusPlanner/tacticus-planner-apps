@@ -13,6 +13,7 @@ import {
   GoalProgressDisplay,
   GoalTargetDisplay,
 } from "../shared/goal-progress-visuals"
+import { CoveredByNote } from "../shared/covered-by-note"
 import { GoalProjectBadges, GoalUnitIcon } from "@/features/goal-create"
 import { LevelRequirementLine } from "../shared/level-requirement-display"
 import type { SortableRenderProps } from "@/shared/ui"
@@ -197,6 +198,7 @@ export const GoalRowCells = memo(function GoalRowCells({
       </TableCell>
       <TableCell>
         <GoalTargetDisplay entityType={row.entityType} progress={progress} />
+        <CoveredByNote coveredBy={metrics?.get(row.goalId)?.coveredBy} />
       </TableCell>
       <TableCell
         className="min-w-[220px]"

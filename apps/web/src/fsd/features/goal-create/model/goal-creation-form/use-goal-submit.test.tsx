@@ -12,17 +12,13 @@ vi.mock("@/entities/goal", () => ({
     lists: () => ["goals", "list"],
     detail: (id: string) => ({ queryKey: ["goals", "detail", id] }),
   },
-  goalRankTargetKey: (goal: {
-    goalType: string
-    config: { rank?: { end: number } | null }
-  }) =>
+  goalTargetLabel: (
+    _t: unknown,
+    goal: { goalType: string; config: { rank?: { end: number } | null } }
+  ) =>
     goal.goalType === "Rank" && goal.config.rank
-      ? `${goal.config.rank.end}:0`
+      ? `Rank${goal.config.rank.end}`
       : null,
-  describeRankTargetKey: (key: string) => {
-    const [end, slots] = key.split(":").map(Number)
-    return { rank: `Rank${end}`, slots }
-  },
 }))
 vi.mock("@/shared/unit-name", () => ({
   useUnitName: () => (_type: string, id: string) => `Unit ${id}`,

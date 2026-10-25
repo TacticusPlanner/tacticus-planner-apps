@@ -13,13 +13,22 @@ import {
 
 describe("useCreateGoalSheetTutorial", () => {
   it.each(["desktop", "mobile"] as const)(
-    "%s steps target the sources and project pickers inside the dialog or sheet body",
+    "%s steps target the milestones, sources and project pickers inside the dialog or sheet body",
     (viewport) => {
       const { result } = renderHook(() => useCreateGoalSheetTutorial())
 
-      expect(result.current[viewport]).toHaveLength(3)
-      const [step, mythicStep, projectStep] = result.current[viewport] ?? []
-      if (!step || !mythicStep || !projectStep) throw new Error("missing steps")
+      expect(result.current[viewport]).toHaveLength(4)
+      const [milestoneStep, step, mythicStep, projectStep] =
+        result.current[viewport] ?? []
+      if (!milestoneStep || !step || !mythicStep || !projectStep)
+        throw new Error("missing steps")
+      expect(milestoneStep.target).toBe(
+        '[data-testid="create-goal-rank-milestones"], [data-testid="create-goal-ascension-milestones"], [data-testid="create-goal-ability-milestones"]'
+      )
+      expect(milestoneStep.title).toBe("Milestones")
+      expect(milestoneStep.content).toBe(
+        "Add milestone to plan several targets for this unit at once, such as Gold 1, then Diamond 1, then Diamond 3. Each becomes its own goal, after the one before it."
+      )
       expect(step.target).toBe(
         '[data-testid="create-goal-acquisition-sources"]'
       )
