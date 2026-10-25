@@ -112,27 +112,6 @@ machine-readable code or untranslated server text to the user.
 - **WHEN** it is rendered in any supported locale
 - **THEN** no machine-readable code string appears in the output
 
-### Requirement: The result offers a copyable diagnostic
-
-The result SHALL offer an action that places the not-imported and failed
-outcomes on the clipboard as plain text, including for each the unit, the goal
-type, the reason, and a server trace identifier where the failure carried one.
-The user SHALL NOT have to read a trace identifier out of browser developer
-tools to report a failure.
-
-#### Scenario: Copying yields the attention-needing detail
-
-- **GIVEN** a result with a non-empty not-imported or failed bucket
-- **WHEN** the user invokes the copy action
-- **THEN** the clipboard holds plain text listing each such outcome's unit, goal type and
-  reason
-
-#### Scenario: No copy action without anything to report
-
-- **GIVEN** a result whose not-imported and failed buckets are both empty
-- **WHEN** the result is shown
-- **THEN** no copy action is offered
-
 ### Requirement: Each part's outcome shows its reason, not only its status
 
 A part's reported outcome SHALL include the reason for that outcome when the
