@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import { legendaryEventRunDates } from "./run-dates"
+import { legendaryEventRunDates, legendaryEventRunWindow } from "./run-dates"
 
 const uthar = {
   eventStageStartDatesUtc: ["2026-03-08T00:00:00Z", "2026-10-04T00:00:00Z"],
@@ -39,5 +39,35 @@ describe("legendaryEventRunDates", () => {
     const dates = legendaryEventRunDates({ eventStageStartDatesUtc: [] })
     expect(dates.starts.every((start) => start.startMs === null)).toBe(true)
     expect(dates.deadlineMs).toBeNull()
+  })
+
+  it("guesses unannounced runs at the typical gap, never before the earliest", () => {
+    const bile = legendaryEventRunDates({
+      eventStageStartDatesUtc: ["2026-11-08T00:00:00Z"],
+    })
+    expect(bile.starts.map((start) => day(start.guessMs))).toEqual([
+      "2026-11-08",
+      "2027-05-02",
+      "2027-10-24",
+    ])
+    const uthar3 = legendaryEventRunDates(uthar).starts[2]!
+    expect(day(uthar3.guessMs)).toBe("2027-03-28")
+  })
+
+  it("windows a run from its guess, flagged when not announced", () => {
+    const [first, second] = legendaryEventRunDates(uthar).starts
+    expect(legendaryEventRunWindow(first!)).toMatchObject({ guessed: false })
+    const window = legendaryEventRunWindow(
+      legendaryEventRunDates(bile).starts[1]!
+    )
+    expect(day(window!.startMs)).toBe("2027-05-02")
+    expect(day(window!.endMs)).toBe("2027-05-09")
+    expect(window!.guessed).toBe(true)
+    expect(second!.guessMs).toBe(second!.startMs)
+    expect(
+      legendaryEventRunWindow(
+        legendaryEventRunDates({ eventStageStartDatesUtc: [] }).starts[0]!
+      )
+    ).toBeNull()
   })
 })

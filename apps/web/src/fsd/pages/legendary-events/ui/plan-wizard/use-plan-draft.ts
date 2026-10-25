@@ -242,6 +242,16 @@ export function usePlanDraft(
 ) {
   const { inputs } = source
   const [economy, setEconomy] = useState(() => initialEconomy(source))
+  const runs = useMemo(() => planRuns(inputs.resolution), [inputs.resolution])
+  // The run the target is reached by (spec: targets are per run): the run in progress or the
+  // next one until the user picks a later run.
+  const [chosenHorizon, setHorizon] = useState<LegendaryEventRun | null>(null)
+  const horizon =
+    runs.find((run) => run === chosenHorizon) ?? runs[0] ?? (3 as const)
+  const horizonRuns = useMemo(
+    () => runs.filter((run) => run <= horizon),
+    [runs, horizon]
+  )
   const [target, setTarget] = useState<AscensionStep | null>(initialTarget)
   // The user's ticks by recommendation key, so they survive a re-exploration that finds the same
   // recommendations; null until they tick something.
@@ -269,15 +279,16 @@ export function usePlanDraft(
   // One evaluator (and its lane cache) per settled economy, shared by the synced ceiling, the search
   // and the draft's evaluations on the default team adjustments.
   const evaluator = useMemo(
-    () => createPlanEvaluator(inputs, planEconomy),
-    [inputs, planEconomy]
+    () =>
+      createPlanEvaluator(inputs, planEconomy, NO_TEAM_ADJUSTMENTS, horizon),
+    [inputs, planEconomy, horizon]
   )
   const draftEvaluator = useMemo(
     () =>
       adjustments === NO_TEAM_ADJUSTMENTS
         ? evaluator
-        : createPlanEvaluator(inputs, planEconomy, adjustments),
-    [evaluator, inputs, planEconomy, adjustments]
+        : createPlanEvaluator(inputs, planEconomy, adjustments, horizon),
+    [evaluator, inputs, planEconomy, adjustments, horizon]
   )
   const syncedCeiling = useMemo(
     () => evaluator.evaluate([]).ceiling,
@@ -289,8 +300,8 @@ export function usePlanDraft(
     syncedCeiling
   )
   const targets = useMemo(
-    () => stepTargets(inputs, planEconomy),
-    [inputs, planEconomy]
+    () => stepTargets(inputs, planEconomy, horizon),
+    [inputs, planEconomy, horizon]
   )
   const upgradedCeiling =
     "upgradedCeiling" in recommendations
@@ -393,7 +404,6 @@ export function usePlanDraft(
     [list, tickedSet, inputs.roster, source.goalTargets]
   )
 
-  const runs = useMemo(() => planRuns(inputs.resolution), [inputs.resolution])
   const markDirty = useCallback(() => setDirty(true), [])
   const newKeys = newSuggestionKeys(keys, seenKeys, userTicks)
   const tickManually = (next: ReadonlySet<string>) => {
@@ -410,6 +420,18 @@ export function usePlanDraft(
   return {
     inputs,
     runs,
+    /** The run the target is reached by: verdicts, ceilings and upgrades count up to its end. */
+    horizon,
+    /** The plan runs through the horizon. */
+    horizonRuns,
+    chooseHorizon: (run: LegendaryEventRun) => {
+      if (run === horizon) return
+      setHorizon(run)
+      setTicked(null)
+      // The default target follows the new horizon's highest step within reach.
+      setDefaultStep(null)
+      markDirty()
+    },
     /** The run inputs as edited (the form and the writes). */
     economy,
     /** The run inputs the verdicts and the search use: `economy` once it has settled. */

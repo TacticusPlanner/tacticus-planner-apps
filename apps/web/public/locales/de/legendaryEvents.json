@@ -15,7 +15,9 @@
     "endsAt": "Endet am {{date}}",
     "startsAt": "Beginnt am {{date}}",
     "startsTba": "Startdatum folgt",
-    "syncedUnavailable": "Synchronisierte Daten nicht verfügbar"
+    "syncedUnavailable": "Synchronisierte Daten nicht verfügbar",
+    "runs": "Durchläufe",
+    "run": "Durchlauf {{run}}: {{date}}"
   },
   "lifecycle": {
     "active": "Aktiv",
@@ -903,13 +905,16 @@
       "failedDescription": "Einige Einträge sind fehlgeschlagen. Ohne erneuten Versuch verlassen?"
     },
     "target": {
-      "heading": "Was soll {{name}} bis zum Ende des Events erreichen?",
-      "deadline": "Frist: {{date}}",
-      "deadlineEstimated": "Frist: etwa {{date}} (geschätzt)",
-      "deadlineUnknown": "Durchlauftermine unbekannt: es werden nur die angekündigten Durchläufe geplant",
+      "heading": "Was soll {{name}} bis zum Ende von Durchlauf {{run}} erreichen?",
+      "horizon": "Erreichen bis zum Ende von",
+      "horizonRun": "Durchlauf {{run}}",
+      "horizonNote": "Plane einen Durchlauf nach dem anderen: Bis zu den späteren Durchläufen können sich Prioritäten stark ändern.",
+      "runEnds": "Durchlauf {{run}} endet am {{date}}",
+      "runEndsGuessed": "Durchlauf {{run}} endet vielleicht um den {{date}} (geschätzt aus früheren Durchläufen)",
+      "runDatesUnknown": "Die Termine von Durchlauf {{run}} sind noch unbekannt",
       "shards": "{{name}} hat {{shards}} Splitter",
       "points": "{{points}} Punkte",
-      "unreachable": "In diesem Event nicht erreichbar",
+      "unreachable": "Bis zum Ende dieses Durchlaufs nicht erreichbar",
       "verdicts": {
         "reachableNow": "Jetzt erreichbar",
         "needsUpgrades": "Braucht Verbesserungen",
@@ -933,7 +938,7 @@
       "description": "Ausgewählt nach Punkten pro Farmtag, bereit vor dem Durchlauf, dem sie helfen. Die Termine gehen davon aus, dass diese Ziele in dieser Reihenfolge gefarmt werden.",
       "estimating": "Farmzeit wird geschätzt…",
       "unavailable": "Die Farmzeit kann nicht geschätzt werden, daher werden keine Verbesserungen empfohlen.",
-      "none": "Keine Verbesserung bringt vor der Frist Punkte.",
+      "none": "Keine Verbesserung bringt vor dem Ende dieses Durchlaufs Punkte.",
       "running": "Suche weiter nach Verbesserungen…",
       "gain": "+{{points}} Punkte",
       "ready": "Bereit etwa {{date}}",
@@ -1038,5 +1043,10 @@
       "bundle": "Paket",
       "paidOn": "kostenpflichtige Optionen an"
     }
+  },
+  "runDates": {
+    "window": "{{start}} – {{end}}",
+    "guessed": "vielleicht ~{{date}}",
+    "unknown": "Termin unbekannt"
   }
 }

@@ -15,7 +15,9 @@
     "endsAt": "Se termine le {{date}}",
     "startsAt": "Commence le {{date}}",
     "startsTba": "Date de début à annoncer",
-    "syncedUnavailable": "Données synchronisées indisponibles"
+    "syncedUnavailable": "Données synchronisées indisponibles",
+    "runs": "Manches",
+    "run": "Manche {{run}} : {{date}}"
   },
   "lifecycle": {
     "active": "En cours",
@@ -903,13 +905,16 @@
       "failedDescription": "Certains éléments ont échoué. Quitter sans réessayer ?"
     },
     "target": {
-      "heading": "Que doit atteindre {{name}} d'ici la fin de l'événement ?",
-      "deadline": "Échéance : {{date}}",
-      "deadlineEstimated": "Échéance : vers le {{date}} (estimée)",
-      "deadlineUnknown": "Dates des manches inconnues : seules les manches annoncées sont planifiées",
+      "heading": "Que doit atteindre {{name}} d'ici la fin de la manche {{run}} ?",
+      "horizon": "À atteindre d'ici la fin de",
+      "horizonRun": "Manche {{run}}",
+      "horizonNote": "Planifiez une manche à la fois : les priorités peuvent beaucoup changer avant les manches suivantes.",
+      "runEnds": "La manche {{run}} se termine le {{date}}",
+      "runEndsGuessed": "La manche {{run}} se termine peut-être vers le {{date}} (estimé d'après les manches passées)",
+      "runDatesUnknown": "Les dates de la manche {{run}} ne sont pas encore connues",
       "shards": "{{name}} a {{shards}} fragments",
       "points": "{{points}} points",
-      "unreachable": "Inatteignable lors de cet événement",
+      "unreachable": "Inatteignable d'ici la fin de cette manche",
       "verdicts": {
         "reachableNow": "Atteignable maintenant",
         "needsUpgrades": "Améliorations nécessaires",
@@ -933,7 +938,7 @@
       "description": "Choisies selon les points gagnés par jour de farm, prêtes avant la manche qu'elles aident. Les dates supposent que ces objectifs sont farmés dans cet ordre.",
       "estimating": "Estimation du temps de farm…",
       "unavailable": "Le temps de farm ne peut pas être estimé, aucune amélioration n'est donc recommandée.",
-      "none": "Aucune amélioration n'apporte de points avant l'échéance.",
+      "none": "Aucune amélioration n'ajoute de points avant la fin de cette manche.",
       "running": "Recherche d'améliorations en cours…",
       "gain": "+{{points}} points",
       "ready": "Prête vers le {{date}}",
@@ -1038,5 +1043,10 @@
       "bundle": "pack",
       "paidOn": "options payantes activées"
     }
+  },
+  "runDates": {
+    "window": "{{start}} – {{end}}",
+    "guessed": "peut-être ~{{date}}",
+    "unknown": "date inconnue"
   }
 }

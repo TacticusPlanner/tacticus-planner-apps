@@ -49,7 +49,7 @@ export function ReviewStep({
   const nameId = useId()
   const { chosenTarget, evaluation } = draft
   const ceiling = evaluation.ceiling ?? 0
-  const lastRun = draft.runs.at(-1) ?? 3
+  const lastRun = draft.horizon
   const nameOf = draft.inputs.nameOf
   const displayName = useTeamDisplayName()
   // The name the Teams step showed, so a lane-default name ("alpha") reads as its objectives.

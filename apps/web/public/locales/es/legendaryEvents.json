@@ -15,7 +15,9 @@
     "endsAt": "Termina el {{date}}",
     "startsAt": "Empieza el {{date}}",
     "startsTba": "Fecha de inicio por anunciar",
-    "syncedUnavailable": "Datos sincronizados no disponibles"
+    "syncedUnavailable": "Datos sincronizados no disponibles",
+    "runs": "Rondas",
+    "run": "Ronda {{run}}: {{date}}"
   },
   "lifecycle": {
     "active": "Activo",
@@ -903,13 +905,16 @@
       "failedDescription": "Algunos elementos han fallado. ¿Salir sin reintentar?"
     },
     "target": {
-      "heading": "¿Qué debería alcanzar {{name}} al final del evento?",
-      "deadline": "Fecha límite: {{date}}",
-      "deadlineEstimated": "Fecha límite: hacia el {{date}} (estimada)",
-      "deadlineUnknown": "Fechas de las rondas desconocidas: solo se planifican las rondas anunciadas",
+      "heading": "¿Qué debe alcanzar {{name}} al final de la ronda {{run}}?",
+      "horizon": "Alcanzarlo al final de la",
+      "horizonRun": "Ronda {{run}}",
+      "horizonNote": "Planifica una ronda cada vez: las prioridades pueden cambiar mucho antes de las rondas siguientes.",
+      "runEnds": "La ronda {{run}} termina el {{date}}",
+      "runEndsGuessed": "La ronda {{run}} quizá termine hacia el {{date}} (estimado según rondas anteriores)",
+      "runDatesUnknown": "Las fechas de la ronda {{run}} aún no se conocen",
       "shards": "{{name}} tiene {{shards}} fragmentos",
       "points": "{{points}} puntos",
-      "unreachable": "No alcanzable en este evento",
+      "unreachable": "No alcanzable al final de esta ronda",
       "verdicts": {
         "reachableNow": "Alcanzable ya",
         "needsUpgrades": "Necesita mejoras",
@@ -933,7 +938,7 @@
       "description": "Elegidas por puntos ganados por día de farmeo, listas antes de la ronda en la que ayudan. Las fechas suponen que estos objetivos se farmean en este orden.",
       "estimating": "Estimando el tiempo de farmeo…",
       "unavailable": "No se puede estimar el tiempo de farmeo, así que no se recomiendan mejoras.",
-      "none": "Ninguna mejora suma puntos antes de la fecha límite.",
+      "none": "Ninguna mejora suma puntos antes de que termine esta ronda.",
       "running": "Sigue buscando mejoras…",
       "gain": "+{{points}} puntos",
       "ready": "Lista hacia el {{date}}",
@@ -1038,5 +1043,10 @@
       "bundle": "paquete",
       "paidOn": "opciones de pago activadas"
     }
+  },
+  "runDates": {
+    "window": "{{start}} – {{end}}",
+    "guessed": "quizá ~{{date}}",
+    "unknown": "fecha desconocida"
   }
 }

@@ -17,6 +17,7 @@ import { RunInputsForm } from "@/features/legendary-event-plan"
 import { useAnalyticsActions } from "@/shared/analytics"
 import { safeStorage } from "@/shared/lib"
 
+import { legendaryEventRunWindow } from "../../lib/run-dates"
 import { RosterPotentialMap } from "../legendary-event/roster-potential-map"
 import { planPotentials } from "./plan-potential"
 import { TargetCard } from "./target-card"
@@ -26,7 +27,8 @@ import type { PlanSource } from "./use-plan-source"
 
 const ASSUMPTIONS_OPEN_KEY = "legendaryEvents.planWizard.assumptions.open"
 
-/** Step 1 (spec: target step leads with the choice): the deadline, then one card per step after
+/** Step 1 (spec: target step leads with the choice): the run the target is reached by, with
+ *  its announced or guessed end, then one card per step after
  *  the unit's progression with its points, verdict and ceiling bar, the highest step within
  *  reach, the run inputs in a collapsed Assumptions panel (missions and paid options change the
  *  points, so the verdicts follow them), and every lane's roster potential under Why this
@@ -41,6 +43,14 @@ export function TargetStep({
   const { t, i18n } = useTranslation("legendaryEvents")
   const number = new Intl.NumberFormat(i18n.language)
   const date = new Intl.DateTimeFormat(i18n.language, { dateStyle: "medium" })
+  const short = new Intl.DateTimeFormat(i18n.language, {
+    month: "short",
+    day: "numeric",
+  })
+  const month = new Intl.DateTimeFormat(i18n.language, {
+    month: "short",
+    year: "numeric",
+  })
   const { captureEvent } = useAnalyticsActions()
   const { runDates } = source
   const name = source.inputs.nameOf(source.event.id)
@@ -61,12 +71,12 @@ export function TargetStep({
     [draft.lastSettledOptions]
   )
   const isMobile = useIsMobile()
-  const { inputs, runs } = draft
+  const { inputs, runs, horizon, horizonRuns } = draft
   // The potential maps follow the ticks at deferred priority.
   const evaluation = useDeferredValue(draft.evaluation)
   const potentials = useMemo(
-    () => planPotentials(inputs, evaluation, runs),
-    [inputs, evaluation, runs]
+    () => planPotentials(inputs, evaluation, horizonRuns),
+    [inputs, evaluation, horizonRuns]
   )
   const cards = useRef(new Map<AscensionStep, HTMLButtonElement>())
   const options = draft.options.options
@@ -101,7 +111,7 @@ export function TargetStep({
     choose(next.target.step)
     cards.current.get(next.target.step)?.focus()
   }
-  const assumptions = runAssumptions(source.event, draft.economy, runs)
+  const assumptions = runAssumptions(source.event, draft.economy, horizonRuns)
   const assumptionsSummary = [
     ...assumptions.map((entry) =>
       [
@@ -118,23 +128,36 @@ export function TargetStep({
       : []),
   ].join(" · ")
 
-  let deadline: string
-  if (runDates.deadlineMs === null) {
-    deadline = t("planWizard.target.deadlineUnknown")
-  } else {
-    deadline = t(
-      runDates.deadlineEstimated
-        ? "planWizard.target.deadlineEstimated"
-        : "planWizard.target.deadline",
-      { date: date.format(runDates.deadlineMs) }
-    )
+  const windowOf = (run: number) => {
+    const start = runDates.starts.find((entry) => entry.run === run)
+    return start ? legendaryEventRunWindow(start) : null
+  }
+  const horizonWindow = windowOf(horizon)
+  const deadline =
+    horizonWindow === null
+      ? t("planWizard.target.runDatesUnknown", { run: horizon })
+      : t(
+          horizonWindow.guessed
+            ? "planWizard.target.runEndsGuessed"
+            : "planWizard.target.runEnds",
+          { run: horizon, date: date.format(horizonWindow.endMs) }
+        )
+  const runLabel = (run: number) => {
+    const window = windowOf(run)
+    if (window === null) return t("runDates.unknown")
+    return window.guessed
+      ? t("runDates.guessed", { date: month.format(window.startMs) })
+      : t("runDates.window", {
+          start: short.format(window.startMs),
+          end: short.format(window.endMs),
+        })
   }
 
   return (
     <section className="flex flex-col gap-4" data-testid="plan-wizard-target">
       <div className="flex flex-col gap-1">
         <h2 className="text-lg font-semibold">
-          {t("planWizard.target.heading", { name })}
+          {t("planWizard.target.heading", { name, run: horizon })}
         </h2>
         <p
           className="text-sm text-muted-foreground"
@@ -151,6 +174,47 @@ export function TargetStep({
           </p>
         ) : null}
       </div>
+      {runs.length > 1 ? (
+        <div className="flex flex-col gap-2">
+          <div
+            aria-label={t("planWizard.target.horizon")}
+            className="grid grid-cols-[repeat(auto-fit,minmax(7rem,1fr))] gap-2"
+            data-testid="plan-wizard-horizon"
+            role="radiogroup"
+          >
+            {runs.map((run) => {
+              const checked = run === horizon
+              return (
+                <button
+                  aria-checked={checked}
+                  className={cn(
+                    "flex min-h-11 flex-col items-start rounded-xl border px-3 py-2 text-left transition-colors",
+                    "focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none",
+                    checked
+                      ? "border-primary bg-primary/10"
+                      : "hover:bg-muted/50"
+                  )}
+                  data-testid={`plan-wizard-horizon-${run}`}
+                  key={run}
+                  onClick={() => draft.chooseHorizon(run)}
+                  role="radio"
+                  type="button"
+                >
+                  <span className="font-medium">
+                    {t("planWizard.target.horizonRun", { run })}
+                  </span>
+                  <span className="text-xs text-muted-foreground">
+                    {runLabel(run)}
+                  </span>
+                </button>
+              )
+            })}
+          </div>
+          <p className="text-xs text-muted-foreground">
+            {t("planWizard.target.horizonNote")}
+          </p>
+        </div>
+      ) : null}
       {options.length === 0 ? (
         <p className="text-sm text-muted-foreground">
           {t("planWizard.target.noTargets")}
