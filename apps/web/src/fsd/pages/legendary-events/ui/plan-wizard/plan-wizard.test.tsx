@@ -467,6 +467,35 @@ describe("PlanWizard", () => {
     ).toHaveLength(0)
   })
 
+  it("sends an edited stored team's name with its update", async () => {
+    FARMING.status = "unavailable"
+    renderWizard(WITH_STORED_TEAM)
+    await next()
+    await next()
+    const stored = screen
+      .getAllByTestId("plan-wizard-team")
+      .find((team) => team.dataset.stored === "true")!
+    await userEvent.click(within(stored).getByTestId("plan-wizard-team-edit"))
+    const name = await screen.findByTestId("team-editor-name")
+    await userEvent.clear(name)
+    await userEvent.type(name, "Renamed")
+    await userEvent.click(screen.getByTestId("team-editor-save"))
+    await next()
+    await next()
+    await waitFor(() =>
+      expect(screen.getByTestId("plan-wizard-create")).toBeEnabled()
+    )
+    await userEvent.click(screen.getByTestId("plan-wizard-create"))
+    const call = run.mock.calls[0]![0]
+    const update = call.writes.lanes.flatMap(
+      (lane: { update: { storedId: string | null }[] }) => lane.update
+    )
+    expect(
+      update.map((team: { storedId: string | null }) => team.storedId)
+    ).toEqual(["mine"])
+    expect(call.teamName(update[0])).toBe("Renamed")
+  })
+
   it("names every removed team on Review in destructive styling", async () => {
     FARMING.status = "unavailable"
     renderWizard(WITH_STORED_TEAM)

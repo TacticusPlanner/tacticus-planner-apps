@@ -161,7 +161,7 @@ export function PlanWizard({
       if (!destination.value) return
       const names = new Map(
         writes.lanes.flatMap((lane) =>
-          lane.create.map((team) => [
+          [...lane.update, ...lane.create].map((team) => [
             team.key,
             draft.teamName(team.key).slice(0, TEAM_NAME_MAX_LENGTH),
           ])
