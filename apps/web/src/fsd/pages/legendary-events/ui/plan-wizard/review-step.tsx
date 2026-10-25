@@ -5,7 +5,10 @@ import { Input } from "@workspace/ui/components/input"
 import { Label } from "@workspace/ui/components/label"
 import { cn } from "@workspace/ui/lib/utils"
 
-import type { LegendaryEventLaneId } from "@/entities/legendary-event"
+import {
+  useTeamDisplayName,
+  type LegendaryEventLaneId,
+} from "@/entities/legendary-event"
 import { useGoalLabels } from "@/features/legendary-event-goals"
 
 import type { PlanWrites } from "./plan-create"
@@ -48,8 +51,20 @@ export function ReviewStep({
   const ceiling = evaluation.ceiling ?? 0
   const lastRun = draft.runs.at(-1) ?? 3
   const nameOf = draft.inputs.nameOf
-  const storedName = (teamId: string) =>
-    draft.inputs.plan.teams.find((team) => team.id === teamId)?.name ?? ""
+  const displayName = useTeamDisplayName()
+  // The name the Teams step showed, so a lane-default name ("alpha") reads as its objectives.
+  const storedName = (teamId: string) => {
+    const removed = draft.removedTeams.get(teamId)
+    if (removed) return removed.name
+    const team = draft.inputs.plan.teams.find((entry) => entry.id === teamId)
+    return team
+      ? displayName(
+          team,
+          draft.inputs.event[team.laneId],
+          draft.inputs.plan.teams
+        )
+      : ""
+  }
   const changedRuns = new Set(writes.runs.map((entry) => entry.run))
   const runLines = runAssumptions(
     draft.inputs.event,

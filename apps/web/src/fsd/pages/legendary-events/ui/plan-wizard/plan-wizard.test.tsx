@@ -309,6 +309,15 @@ describe("PlanWizard", () => {
     expect(screen.getByTestId("plan-wizard-target")).toBeInTheDocument()
   })
 
+  it("opens each new step at the top of the page", async () => {
+    const scrollTo = vi.mocked(window.scrollTo)
+    scrollTo.mockClear()
+    renderWizard()
+    expect(scrollTo).not.toHaveBeenCalled()
+    await next()
+    expect(scrollTo).toHaveBeenCalledWith({ top: 0 })
+  })
+
   it("opens a reload or a deep link to a later step on Target", async () => {
     const router = renderWizard(SOURCE, "?step=teams")
     expect(screen.getByTestId("plan-wizard-target")).toBeInTheDocument()
@@ -356,6 +365,12 @@ describe("PlanWizard", () => {
       for (const step of steps) {
         expect(document.querySelector(step.target)).not.toBeNull()
       }
+      // The whole card list is taller than a phone screen, so mobile points at one card.
+      expect(
+        document.querySelector(steps[1]!.target)?.getAttribute("data-testid")
+      ).toBe(
+        width < 768 ? "plan-wizard-target-option" : "plan-wizard-target-cards"
+      )
       unmount()
     }
   })
@@ -475,6 +490,44 @@ describe("PlanWizard", () => {
         "Nothing to change"
       )
     ).toBeInTheDocument()
+  })
+
+  it("names a removed lane-default team on Review as the Teams step shows it", async () => {
+    FARMING.status = "unavailable"
+    renderWizard({
+      ...SOURCE,
+      inputs: planInputs({
+        plan: { ...EMPTY_PLAN, teams: [{ ...STORED_TEAM, name: "alpha" }] },
+      }),
+    })
+    await next()
+    await next()
+    // The stored team is listed first in its lane.
+    const alpha = screen
+      .getAllByTestId("plan-wizard-lane")
+      .find((lane) => lane.dataset.lane === "alpha")!
+    await userEvent.click(
+      within(within(alpha).getAllByTestId("plan-wizard-team")[0]!).getByTestId(
+        "plan-wizard-team-remove"
+      )
+    )
+    const shown = screen.getByTestId("plan-wizard-removed-team").textContent
+    const name = shown?.replace("Undo", "").trim()
+    expect(name).toBeTruthy()
+    expect(name).not.toBe("alpha")
+    await next()
+    await next()
+    expect(screen.getByTestId("plan-wizard-review-remove")).toHaveTextContent(
+      `Remove '${name}' from Alpha`
+    )
+    // Replacing removes it without a manual removal: the same name.
+    await userEvent.click(screen.getByTestId("plan-wizard-step-teams"))
+    await userEvent.click(screen.getByTestId("plan-wizard-team-undo"))
+    await userEvent.click(screen.getByTestId("plan-wizard-teams-replace"))
+    await userEvent.click(screen.getByTestId("plan-wizard-step-review"))
+    expect(screen.getByTestId("plan-wizard-review-remove")).toHaveTextContent(
+      `Remove '${name}' from Alpha`
+    )
   })
 
   it("offers Retry failed at once after a partial failure and asks before leaving", async () => {

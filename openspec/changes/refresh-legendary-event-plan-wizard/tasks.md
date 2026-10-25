@@ -59,32 +59,47 @@ Required data states for verification:
 
 ## 9. Gates
 
-- [ ] 9.1 Run `pnpm test:run`, `pnpm typecheck`, `pnpm lint`, `pnpm lint:fsd` and `git diff --check` from `tacticus-planner-apps`; all pass.
+- [x] 9.1 Run `pnpm test:run`, `pnpm typecheck`, `pnpm lint`, `pnpm lint:fsd` and `git diff --check` from `tacticus-planner-apps`; all pass.
+  - Run 2026-10-25 after the verification fixes: web 5,313 tests pass; typecheck, lint, lint:fsd and `git diff --check` pass.
 
 Sections 10 to 12 are manual checks on the reference accounts and are left for review.
 
 ## 10. Shared verification (data states a–d)
 
-- [ ] 10.1 (a) The default target moves at most once to the highest step within reach, and the summary announces it.
-- [ ] 10.2 (b) Reachable now shows "+N spare", and Upgrades says no upgrades are needed.
+- [x] 10.1 (a) The default target moves at most once to the highest step within reach, and the summary announces it.
+  - Fabius Bile: with no choice, the selection moved once at the end of the search (Unlock → 5 stars) and the summary announced "5 stars is the highest step within reach". An explicit 4 stars stayed selected after the search ended.
+- [x] 10.2 (b) Reachable now shows "+N spare", and Upgrades says no upgrades are needed.
+  - Unlock is Reachable now on the reference account: the summary shows "+2,937 spare" and Upgrades says "Your roster already reaches the target: no upgrades needed."
 - [ ] 10.3 (c) The nothing-to-reach state shows, with its link back to the event.
-- [ ] 10.4 (d) After the forced failure, Retry failed is enabled at once and leaving asks first.
+  - Blocked: no event unit on the reference account is fully ascended (Fabius Bile, Farsight, Lysander and Uthar all have steps left). Needs a second account or a local fixture.
+- [x] 10.4 (d) After the forced failure, Retry failed is enabled at once and leaving asks first.
+  - Forced with a "Helbrecht: Rank to Diamond III" goal created in another tab: the item failed with "An active or paused Rank goal with this target for this unit already exists.", Retry failed was enabled at once while the search still ran, and leaving asked "Some items failed. Leave without retrying?". After removing the conflicting goal, Retry failed completed.
 - [ ] 10.5 Review lists names for removals and updates, and Create completes and returns to Overview with the pluralised toast.
+  - Review lists "Create 'No Bolter' in Alpha" and so on, the button read "Create 6 goals and 4 teams", and Create returned to Overview with "Plan created: 6 goals, 4 teams". Fixed: a removed team whose stored name is the lane id was listed as "Remove 'alpha' from Alpha"; Review now uses the name the Teams step shows. Not yet seen in the browser: an update line (an edited stored team).
 
 ## 11. Desktop verification (viewport at or above 768 px; check 1280 px and 900 px)
 
 - [ ] 11.1 At 1280 px, the target cards are visible without scrolling. At 900 px, the summary sits above the content as a strip.
-- [ ] 11.2 Browser Back and Forward move between steps, with no leave prompt.
-- [ ] 11.3 On Teams, the lanes sit side by side at 1280 px, and Edit and Add open the team editor.
-- [ ] 11.4 Runs and tokens opens expanded, and the leftover link opens Teams on that lane.
-- [ ] 11.5 The desktop tour targets every step.
+  - Fails at 1280 px: the cards sit two per row, and the third row (Mythic, Two blue stars) ends at y=757 in a 1280×730 viewport, behind the footer (it would still be cut at 1280×800). At 1536 px (three per row) all six fit. At 900 px the summary sits above the content as a strip, but the cards are about 175 px wide and their titles wrap around the badge. Needs a layout decision (three columns from 1280 px, or a compact card).
+- [x] 11.2 Browser Back and Forward move between steps, with no leave prompt.
+  - Back and Forward each moved one step with no prompt; a reload on `?step=teams` opened Target with `?step=target`. Fixed: a new step now opens at the top of the page instead of at the previous step's scroll position.
+- [x] 11.3 On Teams, the lanes sit side by side at 1280 px, and Edit and Add open the team editor.
+  - Lanes side by side; Edit opens "Edit Black Templars" with its members; Add a team opens empty ("Add a team to Alpha", 0/5); a removed team stays in the lane, struck through, with Undo (it moves to the end of the lane); Restore all brought back two removed teams. Note: team names truncate to 5–7 characters in the side-by-side cards.
+- [x] 11.4 Runs and tokens opens expanded, and the leftover link opens Teams on that lane.
+  - Token plan and Run forecast open expanded; "96 tokens with nothing to play" opens Teams.
+- [x] 11.5 The desktop tour targets every step.
+  - All five desktop targets render (stepper, cards, Assumptions, summary rail, footer). On the summary step the rail scrolls partly under the app header.
 
 ## 12. Mobile verification (viewport below 768 px, 390 px same-origin iframe per `tp-manual-ui-verification`)
 
-- [ ] 12.1 Confirm the mobile layout renders: chips, progress bar, summary strip, no stepper.
-- [ ] 12.2 Back / Next stay visible above the bottom navigation while scrolling every step, and nothing scrolls horizontally.
-- [ ] 12.3 The summary strip expands on tap, visited chips navigate, and the Teams lane tabs work with touch.
-- [ ] 12.4 The mobile tour's tooltips stay inside the viewport on every step.
+- [x] 12.1 Confirm the mobile layout renders: chips, progress bar, summary strip, no stepper.
+  - 390 px same-origin iframe: "Step 1 of 5 · Target", chips, progress bar and summary strip; no stepper.
+- [x] 12.2 Back / Next stay visible above the bottom navigation while scrolling every step, and nothing scrolls horizontally.
+  - Back / Next sit on the bottom navigation while scrolling and rest in the page flow at the end of a step. Fixed: the Keep / Replace control overflowed by 9 px on Teams; its buttons now wrap.
+- [x] 12.3 The summary strip expands on tap, visited chips navigate, and the Teams lane tabs work with touch.
+  - The strip expands on tap; unvisited chips are disabled and visited ones navigate; lane tabs switch while the search runs.
+- [x] 12.4 The mobile tour's tooltips stay inside the viewport on every step.
+  - Fixed: the "Pick a target" tooltip opened above the viewport because the whole card list was the target; the mobile step now targets the first card. In the iframe each tooltip still ends 10 px past the edge, from the desktop scrollbar (not present on phones).
 
 ## Workflow follow-up
 

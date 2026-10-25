@@ -92,6 +92,13 @@ export function PlanWizard({
       { replace: true }
     )
   }, [params, step, setParams])
+  // A new step opens at the top, not at the previous step's scroll position.
+  const shownStep = useRef(step)
+  useEffect(() => {
+    if (shownStep.current === step) return
+    shownStep.current = step
+    window.scrollTo({ top: 0 })
+  }, [step])
   const setStep = (next: PlanWizardStep) => {
     setVisited((current) => Math.max(current, stepIndex(next)))
     setParams((current) => {

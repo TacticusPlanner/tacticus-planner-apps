@@ -8,6 +8,8 @@ const PLAN_TOUR_TARGETS = {
   stepper: '[data-testid="plan-wizard-stepper"]',
   progress: '[data-testid="plan-wizard-progress"]',
   targetCards: '[data-testid="plan-wizard-target-cards"]',
+  // On mobile the stacked cards are taller than the screen, which pushes the tooltip above it.
+  firstTargetCard: '[data-testid="plan-wizard-target-option"]',
   assumptions: '[data-testid="plan-wizard-run-inputs"]',
   summary: '[data-testid="plan-wizard-summary"]',
   footer: '[data-testid="plan-wizard-footer"]',
@@ -22,10 +24,11 @@ export function usePlanWizardTutorial(): TourPageSteps {
   const { t } = useTranslation("legendaryEvents")
   return useMemo(() => {
     const step = (
-      key: keyof typeof PLAN_TOUR_TARGETS,
-      placement: Step["placement"]
+      key: Exclude<keyof typeof PLAN_TOUR_TARGETS, "firstTargetCard">,
+      placement: Step["placement"],
+      target: string = PLAN_TOUR_TARGETS[key]
     ): Step => ({
-      target: PLAN_TOUR_TARGETS[key],
+      target,
       placement,
       title: t(`tour.planWizard.steps.${key}.title`),
       content: t(`tour.planWizard.steps.${key}.content`),
@@ -40,7 +43,7 @@ export function usePlanWizardTutorial(): TourPageSteps {
       ],
       mobile: [
         step("progress", "bottom"),
-        step("targetCards", "bottom"),
+        step("targetCards", "bottom", PLAN_TOUR_TARGETS.firstTargetCard),
         step("assumptions", "top"),
         step("summary", "bottom"),
         step("footer", "top"),

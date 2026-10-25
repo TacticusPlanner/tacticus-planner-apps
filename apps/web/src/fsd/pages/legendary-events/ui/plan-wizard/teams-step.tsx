@@ -99,12 +99,14 @@ export function TeamsStep({
       {storedCount > 0 ? (
         <div
           aria-label={t("planWizard.teams.modeLabel")}
-          className="inline-flex w-fit rounded-lg border p-0.5"
+          className="inline-flex w-fit max-w-full rounded-lg border p-0.5"
           role="group"
         >
           {([false, true] as const).map((replace) => (
             <Button
               aria-pressed={adjustments.replace === replace}
+              // Wraps instead of overflowing a phone-width page (longer in de/es/fr).
+              className="h-auto min-h-8 min-w-0 shrink whitespace-normal"
               data-testid={`plan-wizard-teams-${replace ? "replace" : "keep"}`}
               key={String(replace)}
               onClick={() =>
