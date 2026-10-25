@@ -257,7 +257,11 @@ export function HrePage() {
       <TokensNeededCard rows={tokenRows} synced={!!tokens} />
     ) : null
   const paceCard = running ? (
-    <div className="scroll-mt-4" data-testid="hre-pace-section" ref={paceRef}>
+    <div
+      className="scroll-mt-[calc(var(--mobile-header-height)+3rem)] md:scroll-mt-4"
+      data-testid="hre-pace-section"
+      ref={paceRef}
+    >
       <PaceCard
         actions={actions}
         pace={pace}
