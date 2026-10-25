@@ -3,6 +3,8 @@ import {
   HRE_REORDERED_MISSIONS,
   hreMission,
 } from "./hre-missions"
+import type { HreOwnedInput } from "./hre-pace"
+import { HRE_CHESTS, HRE_RARITY_STEPS } from "./hre-reward-tables"
 
 /** The player's own record of one HRE instance, kept in this browser only. */
 export type HreProgress = {
@@ -16,6 +18,19 @@ export type HreProgress = {
   rank: number | null
   /** The chosen pace target step id, or null for the default. */
   target: string | null
+  /** When the rank was entered (ms), or null when unknown. */
+  rankAt: number | null
+  /** Each mission's two values as last left (design D3); `progress` holds the current one's. */
+  byMission: Record<number, [number, number]>
+  /** The pace card's owned inputs, each null until entered (design D1). */
+  owned: HreOwnedInput
+}
+
+const EMPTY_HRE_OWNED: HreOwnedInput = {
+  currency: null,
+  nextTier: null,
+  step: null,
+  toNext: null,
 }
 
 export const HRE_ALL_DONE = HRE_MISSIONS.length + 1
@@ -30,6 +45,9 @@ export const DEFAULT_HRE_PROGRESS: HreProgress = {
   points: null,
   rank: null,
   target: null,
+  rankAt: null,
+  byMission: {},
+  owned: EMPTY_HRE_OWNED,
 }
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
@@ -72,6 +90,59 @@ export function parseHreProgress(value: unknown): HreProgress | null {
     points: wholeAtLeast(value.points, 0),
     rank: wholeAtLeast(value.rank, 1),
     target: typeof value.target === "string" ? value.target : null,
+    rankAt: wholeAtLeast(value.rankAt, 0),
+    byMission: parseByMission(value.byMission),
+    owned: parseOwned(value.owned),
+  }
+}
+
+// The fields added after the first release are optional: an invalid one is dropped alone.
+function parseByMission(value: unknown): Record<number, [number, number]> {
+  if (!isRecord(value)) return {}
+  const entries: Record<number, [number, number]> = {}
+  for (const [key, pair] of Object.entries(value)) {
+    const mission = Number(key)
+    if (!Number.isInteger(mission) || mission < 1 || mission >= HRE_ALL_DONE)
+      continue
+    if (!Array.isArray(pair)) continue
+    entries[mission] = clampProgress(
+      mission,
+      pair.map((item: unknown) => wholeAtLeast(item, 0) ?? 0)
+    )
+  }
+  return entries
+}
+
+function parseOwned(value: unknown): HreOwnedInput {
+  if (!isRecord(value)) return EMPTY_HRE_OWNED
+  const nextTier = wholeAtLeast(value.nextTier, 1)
+  const step =
+    value.step === "none" ||
+    HRE_RARITY_STEPS.some((item) => item.id === value.step)
+      ? (value.step as string)
+      : null
+  return {
+    currency: wholeAtLeast(value.currency, 0),
+    nextTier:
+      nextTier !== null && nextTier <= HRE_CHESTS.length ? nextTier : null,
+    step,
+    toNext: wholeAtLeast(value.toNext, 0),
+  }
+}
+
+/** Choosing a mission keeps the current one's values and restores the chosen one's (design D3). */
+export function switchMission(
+  state: HreProgress,
+  mission: number
+): HreProgress {
+  if (mission === state.mission) return state
+  const byMission = { ...state.byMission }
+  if (state.mission < HRE_ALL_DONE) byMission[state.mission] = state.progress
+  return {
+    ...state,
+    mission,
+    progress: clampProgress(mission, byMission[mission] ?? [0, 0]),
+    byMission,
   }
 }
 
@@ -82,12 +153,15 @@ export function isMissionComplete(state: HreProgress): boolean {
   return state.progress[0] >= first.target && state.progress[1] >= second.target
 }
 
-/** "Mission complete": the next mission with both progress values at 0. */
+/** "Mission complete": keeps the finished values, then the next mission with both values at 0. */
 export function advanceMission(state: HreProgress): HreProgress {
+  const byMission = { ...state.byMission }
+  if (state.mission < HRE_ALL_DONE) byMission[state.mission] = state.progress
   return {
     ...state,
     mission: Math.min(state.mission + 1, HRE_ALL_DONE),
     progress: [0, 0],
+    byMission,
   }
 }
 

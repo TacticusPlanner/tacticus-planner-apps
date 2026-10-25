@@ -79,7 +79,11 @@
     "done": "Terminée",
     "locked": "Verrouillée",
     "markDone": "Terminé",
-    "markDoneLabel": "Terminé : {{objective}}"
+    "markDoneLabel": "Terminé : {{objective}}",
+    "add": "+{{amount}}",
+    "addLabel": "Ajouter {{amount}} : {{objective}}",
+    "completed": "{{mission}} terminée.",
+    "undo": "Annuler"
   },
   "raids": {
     "title": "Campagne : {{mission}}",
@@ -141,7 +145,8 @@
       "openEnded": "Impossible d'estimer le nombre de batailles nécessaires : jouez celles-ci jusqu'à ce que ce soit fait.",
       "modes": "Les batailles d'Arène et d'Onslaught comptent aussi : mettez votre progression à jour ensuite.",
       "more": "D'autres batailles seront nécessaires après l'énergie du jour.",
-      "none": "Aucun nœud de campagne ne convient aux objectifs de cette mission."
+      "none": "Aucun nœud de campagne ne convient aux objectifs de cette mission.",
+      "rulesTitle": "Règles des nœuds"
     }
   },
   "tokens": {
@@ -166,8 +171,8 @@
     "rank": "Rang au classement",
     "rankPlaceholder": "Facultatif",
     "enterPoints": "Saisissez vos points d'événement pour voir où l'événement vous mène.",
-    "bracket": "Gains des rangs {{from}} à {{to}}.",
-    "bracketOpen": "Gains du rang {{from}} et au-delà.",
+    "bracket": "Rangs {{from}} à {{to}} : {{daily}} par jour.",
+    "bracketOpen": "Rang {{from}} et au-delà : {{daily}} par jour.",
     "noRank": "Saisissez votre rang pour une meilleure estimation.",
     "projected": "Points prévus",
     "projectedValue": "{{points}} ({{perDay}} par jour)",
@@ -176,7 +181,7 @@
     "chest": "Niveau de coffre",
     "chestValue": "Niveau {{tier}} ({{spent}} dépensés, {{left}} restants)",
     "shards": "Fragments",
-    "shardsValue": "{{chests}} des coffres + {{crates}} des caisses = {{total}}",
+    "shardsValue": "{{chests}} des coffres + {{crates}} des caisses = au moins {{total}}",
     "reached": "Atteint",
     "notUnlocked": "Pas encore débloqué",
     "shortOf": "il manque {{shards}} fragments pour {{step}}",
@@ -204,7 +209,34 @@
       "legendary-red-4": "Légendaire, 4 étoiles rouges",
       "legendary-red-5": "Légendaire, 5 étoiles rouges",
       "legendary-blue-1": "Légendaire, 1 étoile bleue"
-    }
+    },
+    "rankAgeToday": "Rang saisi aujourd'hui.",
+    "rankAgeYesterday": "Rang saisi hier.",
+    "rankAgeDays_one": "Rang saisi il y a {{count}} jour.",
+    "rankAgeDays_other": "Rang saisi il y a {{count}} jours.",
+    "owned": "Ce que vous avez maintenant",
+    "ownedCurrency": "Monnaie possédée",
+    "nextTier": "Prochain niveau de coffre",
+    "heroStep": "Palier du héros",
+    "toNext": "Fragments vers le palier suivant",
+    "stepNone": "Pas débloqué",
+    "ownedHint": "Remplissez-les depuis l'écran de l'événement pour partir de ce que vous avez.",
+    "ownedPartial": "Remplissez le reste pour partir de ce que vous avez.",
+    "currencyOwnedValue": "{{owned}} possédés + {{milestones}} paliers + {{missions}} missions + {{daily}} quotidiens + {{crates}} caisses = {{total}}",
+    "chestRange": "Niveaux {{from}} à {{tier}} ({{spent}} dépensés, {{left}} restants)",
+    "chestNone": "Aucun coffre pour l'instant ({{left}} disponibles)",
+    "shardsOwnedValue": "{{held}} possédés + {{chests}} des coffres + {{crates}} des caisses = au moins {{total}}",
+    "now": "Maintenant",
+    "nowValue": "{{step}} · {{toNext}} / {{gap}} vers {{next}}",
+    "nextMilestone": "Prochain palier : {{points}} points, +{{reward}}",
+    "allMilestones": "Tous les paliers sont atteints.",
+    "nextChest": "Prochain coffre : niveau {{tier}}, {{cost}} · encore {{missing}} pour l'ouvrir",
+    "nextChestReady": "Prochain coffre : niveau {{tier}}, {{cost}} · vous pouvez l'ouvrir maintenant",
+    "targetReached": "{{shards}} fragments : atteint avec ce que vous avez et les caisses à venir.",
+    "needsTimeUp": "{{shards}} fragments sont hors de portée : l'événement n'a plus de jours.",
+    "summary": "{{points}} points → {{projected}} · {{step}}",
+    "summaryEmpty": "Saisissez vos points d'événement pour voir le rythme.",
+    "details": "Détails"
   },
   "teams": {
     "title": "Équipe de mission",
