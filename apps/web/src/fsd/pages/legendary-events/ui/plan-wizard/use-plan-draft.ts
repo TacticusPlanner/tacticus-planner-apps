@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import {
   runInputValues,
   type AscensionStep,
+  type LegendaryEventLaneId,
   type LegendaryEventRun,
   type LegendaryEventRunInputValues,
   type UpgradeStep,
@@ -14,6 +15,7 @@ import { draftTokenView, stepTargets } from "./plan-ceiling"
 import {
   chainRequest,
   goalChains,
+  newSuggestionKeys,
   recommendationKey,
   recommendationsFor,
   targetOptions,
@@ -43,6 +45,17 @@ import { useDebouncedValue } from "./use-debounced-value"
 import { useUpgradeFarmingDays } from "./use-upgrade-farming-days"
 
 type ReadySource = Extract<PlanSource, { status: "ready" }>
+
+/** What the team editor sets on a draft team. */
+export type TeamValues = Pick<
+  DraftTeam,
+  "name" | "memberUnitIds" | "reserveUnitId" | "objectiveIndexes"
+>
+
+export interface RemovedTeam {
+  team: DraftTeam
+  name: string
+}
 
 export type RecommendationsState =
   | { status: "estimating" }
@@ -233,6 +246,15 @@ export function usePlanDraft(
   // The user's ticks by recommendation key, so they survive a re-exploration that finds the same
   // recommendations; null until they tick something.
   const [userTicks, setTicked] = useState<ReadonlySet<string> | null>(null)
+  // The recommendations the user had seen at their last manual tick: later finds are "new".
+  const [seenKeys, setSeenKeys] = useState<ReadonlySet<string>>(() => new Set())
+  // The target the draft moved to once the search ended, while the user had not chosen one.
+  const [defaultStep, setDefaultStep] = useState<AscensionStep | null>(null)
+  // Removed teams by draft key, with the name they had, so each can be undone.
+  const [removedTeams, setRemovedTeams] = useState<
+    ReadonlyMap<string, RemovedTeam>
+  >(() => new Map())
+  const addedCount = useRef(0)
   const [adjustments, setAdjustments] =
     useState<TeamAdjustments>(NO_TEAM_ADJUSTMENTS)
   const [dirty, setDirty] = useState(false)
@@ -278,9 +300,30 @@ export function usePlanDraft(
     () => targetOptions(targets, syncedCeiling ?? 0, upgradedCeiling),
     [targets, syncedCeiling, upgradedCeiling]
   )
-  // No choice yet, or a step no longer offered: the next step.
+  // Until the user chooses, the next step while upgrades are explored, then the highest step within
+  // reach, once (spec: default target is the highest step within reach).
+  const searchOver =
+    recommendations.status === "done" ||
+    recommendations.status === "unavailable"
+  if (
+    target === null &&
+    defaultStep === null &&
+    searchOver &&
+    !settling &&
+    targets.length > 0
+  ) {
+    setDefaultStep(options.best ?? targets[0]!.step)
+  }
+  // A step no longer offered falls back to the next step.
   const chosenTarget =
-    targets.find((entry) => entry.step === target) ?? targets[0]
+    targets.find((entry) => entry.step === (target ?? defaultStep)) ??
+    targets[0]
+  const movedToBest =
+    target === null &&
+    defaultStep !== null &&
+    chosenTarget !== undefined &&
+    chosenTarget.step === defaultStep &&
+    defaultStep !== targets[0]?.step
   const list = useMemo(
     () =>
       "recommendations" in recommendations
@@ -352,6 +395,17 @@ export function usePlanDraft(
 
   const runs = useMemo(() => planRuns(inputs.resolution), [inputs.resolution])
   const markDirty = useCallback(() => setDirty(true), [])
+  const newKeys = newSuggestionKeys(keys, seenKeys, userTicks)
+  const tickManually = (next: ReadonlySet<string>) => {
+    setTicked(next)
+    setSeenKeys(new Set(keys))
+    markDirty()
+  }
+  const removeKeys = (current: TeamAdjustments, drop: Iterable<string>) => {
+    const removed = new Set(current.removed)
+    for (const key of drop) removed.delete(key)
+    return { ...current, removed }
+  }
 
   return {
     inputs,
@@ -365,6 +419,8 @@ export function usePlanDraft(
     /** The chosen target's recommendations are final: Create may run. */
     targetSettled,
     target: chosenTarget?.step ?? null,
+    /** The default target moved to the highest step within reach (announced in the summary). */
+    movedToBest,
     targets,
     options,
     /** The verdicts as of the last search that ended on settled inputs. */
@@ -386,14 +442,105 @@ export function usePlanDraft(
     },
     toggle: (index: number) => {
       const next = toggleRecommendation(list, tickedSet, index)
-      setTicked(new Set([...next].map((entry) => keys[entry]!)))
+      tickManually(new Set([...next].map((entry) => keys[entry]!)))
+    },
+    /** Just enough: back to the target's prefix, which follows new finds. */
+    tickJustEnough: () => {
+      setTicked(null)
       markDirty()
+    },
+    tickAll: () => tickManually(new Set(keys)),
+    tickNone: () => tickManually(new Set()),
+    /** Recommendations found after the user's last manual tick that are not ticked. */
+    newSuggestions: newKeys.length,
+    tickNew: () => {
+      let next: ReadonlySet<number> = tickedSet
+      keys.forEach((key, index) => {
+        if (newKeys.includes(key) && !next.has(index)) {
+          next = toggleRecommendation(list, next, index)
+        }
+      })
+      tickManually(new Set([...next].map((entry) => keys[entry]!)))
     },
     skippedSwaps,
     skipSwap: (key: string) =>
       setSkippedSwaps((current) => new Set([...current, key])),
     adjustTeams: (change: (current: TeamAdjustments) => TeamAdjustments) => {
       setAdjustments(change)
+      markDirty()
+    },
+    /** Removed teams in removal order, each with its own Undo. */
+    removedTeams,
+    removeTeam: (team: DraftTeam) => {
+      setRemovedTeams((current) =>
+        new Map(current).set(team.key, { team, name: teamName(team.key) })
+      )
+      setAdjustments((current) => ({
+        ...current,
+        removed: new Set([...current.removed, team.key]),
+      }))
+      markDirty()
+    },
+    undoRemove: (key: string) => {
+      setRemovedTeams((current) => {
+        const next = new Map(current)
+        next.delete(key)
+        return next
+      })
+      setAdjustments((current) => removeKeys(current, [key]))
+    },
+    restoreAll: () => {
+      setAdjustments((current) => removeKeys(current, removedTeams.keys()))
+      setRemovedTeams(new Map())
+    },
+    /** Applies the editor's values: a stored or added team is edited in place; a generated team
+     *  becomes an added team with them, and the generated one is not proposed again. */
+    editTeam: (team: DraftTeam, values: TeamValues) => {
+      setAdjustments((current) => {
+        if (team.storedId !== null) {
+          return {
+            ...current,
+            edited: new Map(current.edited).set(team.key, {
+              ...team,
+              ...values,
+              edited: true,
+            }),
+          }
+        }
+        if (current.added.some((entry) => entry.key === team.key)) {
+          return {
+            ...current,
+            added: current.added.map((entry) =>
+              entry.key === team.key ? { ...entry, ...values } : entry
+            ),
+          }
+        }
+        addedCount.current += 1
+        return {
+          ...current,
+          removed: new Set([...current.removed, team.key]),
+          added: [
+            ...current.added,
+            { ...team, ...values, key: `added:${addedCount.current}` },
+          ],
+        }
+      })
+      markDirty()
+    },
+    addTeam: (laneId: LegendaryEventLaneId, values: TeamValues) => {
+      addedCount.current += 1
+      const team: DraftTeam = {
+        key: `added:${addedCount.current}`,
+        laneId,
+        storedId: null,
+        depthByRun: {},
+        edited: false,
+        ...values,
+      }
+      setAdjustments((current) => ({
+        ...current,
+        added: [...current.added, team],
+      }))
       markDirty()
     },
     runValues: (run: LegendaryEventRun): LegendaryEventRunInputValues =>

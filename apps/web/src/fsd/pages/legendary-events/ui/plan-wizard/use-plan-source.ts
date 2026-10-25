@@ -30,6 +30,7 @@ import { useLegendaryEventGoalTargets } from "@/features/legendary-event-goals"
 import { useUnitName } from "@/shared/unit-name"
 import { useUnitPowerContext } from "@/shared/unit-power"
 
+import { stepTargets } from "./plan-ceiling"
 import type { PlanInputs } from "./plan-inputs"
 
 // One instance: the draft keys its upgrade exploration on the goal targets.
@@ -52,7 +53,18 @@ export type PlanSource =
   | { status: "signedOut" }
   /** The event is archived or finished: nothing to plan. */
   | { status: "finished"; event: LegendaryEvent }
-  | { status: "noEstimates"; event: LegendaryEvent }
+  | {
+      status: "noEstimates"
+      event: LegendaryEvent
+      /** The datasets clear estimates need that are missing. */
+      missing: ("unitPower" | "hordeModeTiers")[]
+    }
+  /** The event unit has no step left to reach, or the event has no reward ladder. */
+  | {
+      status: "nothingToReach"
+      event: LegendaryEvent
+      reason: "fullyAscended" | "noLadder"
+    }
   | {
       status: "ready"
       event: LegendaryEvent
@@ -228,7 +240,21 @@ export function usePlanSource(eventId: string): PlanSource {
   }
 
   if (!isAuthenticated) return { status: "signedOut" }
-  if (frozen) return frozen
+  if (frozen) {
+    const { inputs } = frozen
+    const economy = {
+      runs: inputs.plan.runs ?? [],
+      showPaidOptions: inputs.plan.showPaidOptions,
+    }
+    if (stepTargets(inputs, economy).length === 0) {
+      return {
+        status: "nothingToReach",
+        event: frozen.event,
+        reason: inputs.event.rewards ? "fullyAscended" : "noLadder",
+      }
+    }
+    return frozen
+  }
   if (failed || plan.status === "error") {
     return {
       status: "error",
@@ -245,11 +271,11 @@ export function usePlanSource(eventId: string): PlanSource {
   if (event.lifecycle.state === "archived") {
     return { status: "finished", event: eventData }
   }
-  if (
-    config.status === "failed" ||
-    (config.status === "ready" && !config.config.unitPower)
-  ) {
-    return { status: "noEstimates", event: eventData }
+  if (config.status === "failed") {
+    return { status: "noEstimates", event: eventData, missing: config.missing }
+  }
+  if (config.status === "ready" && !config.config.unitPower) {
+    return { status: "noEstimates", event: eventData, missing: ["unitPower"] }
   }
   if (!ready || goalTargets.status !== "ready") {
     // A failed goal read plans without reusing goals rather than blocking the wizard.

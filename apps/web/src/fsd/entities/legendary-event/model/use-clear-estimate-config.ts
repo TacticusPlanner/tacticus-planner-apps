@@ -14,7 +14,12 @@ import type { ReadState } from "./use-read-state"
  *  show); a missing `unit-power` record leaves `config.unitPower` null (no estimate shows). */
 export type ClearEstimateConfigState =
   | { status: "loading" }
-  | { status: "failed"; retry: () => void }
+  | {
+      status: "failed"
+      retry: () => void
+      /** The datasets whose read failed. */
+      missing: ("unitPower" | "hordeModeTiers")[]
+    }
   | { status: "ready"; config: ClearEstimateConfig }
 
 /** The config, ready once both the tier list and the power context are read, and stable across
@@ -35,6 +40,10 @@ export function useClearEstimateConfig(
     if (tiersStatus === "error" || powerStatus === "error") {
       return {
         status: "failed",
+        missing: [
+          ...(powerStatus === "error" ? ["unitPower" as const] : []),
+          ...(tiersStatus === "error" ? ["hordeModeTiers" as const] : []),
+        ],
         retry: () => {
           if (tiersStatus === "error") retryTiers()
           if (powerStatus === "error") retryPower()

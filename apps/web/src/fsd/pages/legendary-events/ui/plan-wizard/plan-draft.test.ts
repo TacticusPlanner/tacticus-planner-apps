@@ -8,6 +8,7 @@ import type {
 import type { StepTarget } from "./plan-ceiling"
 import {
   goalChains,
+  newSuggestionKeys,
   recommendationKey,
   recommendationsFor,
   targetOptions,
@@ -147,5 +148,21 @@ describe("targetOptions", () => {
       "tooAmbitious",
     ])
     expect(best).toBe("fiveStars")
+  })
+})
+
+describe("newSuggestionKeys", () => {
+  it("lists the finds after the last manual tick that are not ticked", () => {
+    // The user unticked b while a, b and c were found; d and e came later.
+    const seen = new Set(["a", "b", "c"])
+    const ticked = new Set(["a", "c"])
+    expect(newSuggestionKeys(["a", "b", "c", "d", "e"], seen, ticked)).toEqual([
+      "d",
+      "e",
+    ])
+  })
+
+  it("has none while the default ticks follow the search", () => {
+    expect(newSuggestionKeys(["a", "b"], new Set(), null)).toEqual([])
   })
 })

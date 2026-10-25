@@ -494,19 +494,19 @@
         },
         "progress": {
           "title": "Five steps",
-          "content": "Target, Upgrades, Teams, Runs and tokens, then Review and create. Nothing is saved until you press Create."
+          "content": "The header shows where you are. Tap a visited step's chip to go back to it. Nothing is saved until you press Create."
         },
-        "runInputs": {
-          "title": "Run inputs first",
-          "content": "Missions and paid options change the points you can reach. Set them here so every verdict and recommendation follows them."
-        },
-        "target": {
+        "targetCards": {
           "title": "Pick a target",
-          "content": "Each step shows the points it needs and whether your roster reaches it now, needs upgrades, or is too ambitious for this event."
+          "content": "Each card shows the points a step needs, its verdict and a bar: solid for your roster now, hatched for what the recommended upgrades add."
         },
-        "bestStep": {
-          "title": "Highest step within reach",
-          "content": "Once the upgrades are explored, this names the highest step your roster can reach with them."
+        "assumptions": {
+          "title": "Assumptions",
+          "content": "Missions and paid options change the points you can reach. Open this panel to change them; every verdict follows."
+        },
+        "summary": {
+          "title": "Plan summary",
+          "content": "Your target, its verdict, the goals to create and the team changes, on every step."
         },
         "footer": {
           "title": "Back and Next",
@@ -883,13 +883,23 @@
       "noEstimates": "The 1-click plan needs clear estimates, which are not available right now.",
       "backToEvent": "Back to the event",
       "missing": "This event was not found.",
-      "backToEvents": "All legendary events"
+      "backToEvents": "All legendary events",
+      "noEstimatesMissing": "The 1-click plan needs clear estimates. Missing: {{missing}}.",
+      "datasets": {
+        "unitPower": "unit power",
+        "hordeModeTiers": "horde-mode tiers"
+      },
+      "nothingToReach": {
+        "fullyAscended": "{{name}} has no step left to reach in this event.",
+        "noLadder": "This event has no reward ladder, so there is no step to plan."
+      }
     },
     "leave": {
       "title": "Leave the plan?",
       "description": "Nothing has been created yet. Your choices in this plan will be lost.",
       "stay": "Stay",
-      "leave": "Leave"
+      "leave": "Leave",
+      "failedDescription": "Some items failed. Leave without retrying?"
     },
     "target": {
       "heading": "What should {{name}} reach by the end of the event?",
@@ -910,7 +920,10 @@
       "estimating": "Checking what upgrades can add…",
       "bestStep": "{{step}} is the highest step within reach",
       "noStep": "No step is within reach",
-      "noTargets": "There is no step left to reach in this event."
+      "noTargets": "There is no step left to reach in this event.",
+      "spareWithUpgrades": "+{{points}} spare with upgrades",
+      "shortWithUpgrades": "{{points}} points short with upgrades",
+      "why": "Why this verdict?"
     },
     "banner": "{{step}} looks out of reach: {{best}}",
     "bannerLink": "Change target",
@@ -927,26 +940,43 @@
       "alreadyPlanned": "Already planned",
       "verdictReachable": "With these upgrades: reachable · {{points}} points spare",
       "verdictShort": "With these upgrades: {{points}} points short",
-      "notNeeded": "Your roster already reaches the target: no upgrades needed."
+      "notNeeded": "Your roster already reaches the target: no upgrades needed.",
+      "quick": {
+        "justEnough": "Just enough",
+        "all": "All",
+        "none": "None"
+      },
+      "newSuggestions_one": "{{count}} new suggestion not ticked",
+      "newSuggestions_other": "{{count}} new suggestions not ticked",
+      "tickNew": "Tick them",
+      "group": "Ready for run {{run}}",
+      "ceilingAfter": "→ {{ceiling}}",
+      "ceilingAfterTarget": "→ {{ceiling}} / {{points}}",
+      "ceilingNote": "Each row's ceiling assumes every row above it is ticked."
     },
     "teams": {
-      "keep": "Keep my teams",
-      "replace": "Replace my teams",
       "yours": "Yours",
       "empty": "No team for this lane",
-      "depth": "Run {{run}}: battle {{depth}}",
-      "depthNone": "Run {{run}}: none",
       "removeTeam": "Remove {{name}}",
       "removed_one": "{{count}} team removed",
       "removed_other": "{{count}} teams removed",
-      "restore": "Restore",
       "swap": "A stronger team could take this slot: +{{points}} points",
       "swapSame": "These units can score more objectives as a new team: +{{points}} points",
       "swapAccept": "Swap",
-      "swapSkip": "Keep mine"
+      "swapSkip": "Keep mine",
+      "keepCount_one": "Keep my team ({{count}})",
+      "keepCount_other": "Keep my teams ({{count}})",
+      "replaceCount_one": "Replace with generated ({{count}})",
+      "replaceCount_other": "Replace with generated ({{count}})",
+      "modeLabel": "Your teams",
+      "restoreAll": "Restore all",
+      "undo": "Undo",
+      "add": "Add a team",
+      "editTeam": "Edit {{name}}",
+      "lanesLabel": "Lanes",
+      "depthOf": "Run {{run}}: {{depth}} of {{battles}} battles"
     },
     "runs": {
-      "heading": "Run inputs",
       "description": "Missions and paid options change the points you can reach, so the verdicts below follow them. Saved with the plan when you press Create."
     },
     "review": {
@@ -954,16 +984,8 @@
       "newProject": "New project",
       "newProjectName": "{{name}} · {{step}}",
       "goals": "Goals to create",
-      "noGoals": "No new goals",
       "teams": "Teams",
-      "createTeams_one": "{{lane}}: create {{count}} team",
-      "createTeams_other": "{{lane}}: create {{count}} teams",
-      "removeTeams_one": "{{lane}}: remove {{count}} team",
-      "removeTeams_other": "{{lane}}: remove {{count}} teams",
-      "noTeams": "No team changes",
       "runs": "Run inputs",
-      "runsChanged": "Save the edited run inputs",
-      "noRuns": "No run input changes",
       "final": "By the end of run {{run}}: {{step}} reached · {{points}} points spare",
       "finalShort": "By the end of run {{run}}: {{step}} is {{points}} points short",
       "items": {
@@ -977,12 +999,43 @@
         "done": "Done",
         "failed": "Failed"
       },
-      "newProjectNameLabel": "New project name"
+      "newProjectNameLabel": "New project name",
+      "heading": "Review and create",
+      "nothing": "Nothing to change",
+      "removeTeam": "Remove '{{name}}' from {{lane}}",
+      "updateTeam": "Update '{{name}}' in {{lane}}",
+      "createTeam": "Create '{{name}}' in {{lane}}",
+      "paidOn": "Show paid options: on",
+      "paidOff": "Show paid options: off"
     },
     "toast": {
-      "created": "Plan created: {{goals}} goals, {{teams}} teams",
+      "created": "Plan created: {{goals}}, {{teams}}",
       "openProject": "Open project"
     },
-    "stepsLabel": "Plan steps"
+    "stepsLabel": "Plan steps",
+    "createBoth": "Create {{goals}} and {{teams}}",
+    "createOne": "Create {{what}}",
+    "saveRunInputs": "Save run inputs",
+    "counts": {
+      "goals_one": "{{count}} goal",
+      "goals_other": "{{count}} goals",
+      "teams_one": "{{count}} team",
+      "teams_other": "{{count}} teams"
+    },
+    "summary": {
+      "label": "Plan summary",
+      "target": "{{step}} · {{verdict}}",
+      "spare": "+{{points}} spare",
+      "ceiling": "ceiling {{ceiling}} of {{points}} needed",
+      "goals_one": "{{count}} goal to create",
+      "goals_other": "{{count}} goals to create",
+      "teams": "Teams: +{{created}} / −{{removed}}"
+    },
+    "assumptions": {
+      "title": "Assumptions",
+      "run": "Run {{run}}: {{missions}} of {{of}} missions",
+      "bundle": "bundle",
+      "paidOn": "paid options on"
+    }
   }
 }

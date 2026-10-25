@@ -3,7 +3,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
 import { utharEvent } from "@/test/fixtures/legendary-events"
 
-import { RUN_3_START_MS, planInputs } from "./plan.fixtures"
+import { planWrites } from "./plan-create"
+import { EMPTY_PLAN, RUN_3_START_MS, planInputs } from "./plan.fixtures"
 import type { UpgradeRecommendation } from "./plan-upgrades"
 import type { PlanSource } from "./use-plan-source"
 import {
@@ -165,5 +166,84 @@ describe("usePlanDraft", () => {
     expect(generated).toBeGreaterThan(0)
     rerender()
     expect(generateLaneTeams).toHaveBeenCalledTimes(generated)
+  })
+})
+
+describe("usePlanDraft team edits", () => {
+  const stored = {
+    id: "melee",
+    laneId: "alpha" as const,
+    name: "Melee",
+    sortOrder: 0,
+    memberUnitIds: ["ultraCalgar", "ultraTitus", "ultraApothecary"],
+    reserveUnitId: null,
+    objectiveIndexes: [0],
+    runDepths: [],
+  }
+  const source = {
+    ...SOURCE,
+    inputs: planInputs({ plan: { ...EMPTY_PLAN, teams: [stored] } }),
+  }
+  const writesOf = (draft: ReturnType<typeof usePlanDraft>) =>
+    planWrites({
+      plan: draft.inputs.plan,
+      teams: draft.evaluation.teams,
+      chains: draft.chains,
+      runs: draft.runs,
+      economy: draft.economy,
+    })
+
+  it("turns an edited stored team into one update, not a removal and a creation", () => {
+    const { result } = renderHook(() => usePlanDraft(source, null))
+    const team = result.current.evaluation.teams.find(
+      (entry) => entry.storedId === "melee"
+    )!
+    act(() =>
+      result.current.editTeam(team, {
+        name: "Melee",
+        memberUnitIds: ["ultraCalgar", "ultraTitus", "ultraTigurius"],
+        reserveUnitId: null,
+        objectiveIndexes: [0],
+      })
+    )
+    const alpha = writesOf(result.current).lanes.find(
+      (lane) => lane.laneId === "alpha"
+    )!
+    expect(alpha.remove).toEqual([])
+    expect(alpha.update.map((entry) => entry.storedId)).toEqual(["melee"])
+    expect(alpha.update[0]!.memberUnitIds).toContain("ultraTigurius")
+  })
+
+  it("creates an added team", () => {
+    const { result } = renderHook(() => usePlanDraft(source, null))
+    act(() =>
+      result.current.addTeam("beta", {
+        name: "Mine",
+        memberUnitIds: ["ultraCalgar", "ultraTitus", "ultraApothecary"],
+        reserveUnitId: null,
+        objectiveIndexes: [],
+      })
+    )
+    const beta = writesOf(result.current).lanes.find(
+      (lane) => lane.laneId === "beta"
+    )!
+    expect(beta.create.some((entry) => entry.name === "Mine")).toBe(true)
+  })
+
+  it("keeps a removed team removed until its own Undo", () => {
+    const { result } = renderHook(() => usePlanDraft(source, null))
+    const team = result.current.evaluation.teams.find(
+      (entry) => entry.storedId === "melee"
+    )!
+    act(() => result.current.removeTeam(team))
+    expect(result.current.removedTeams.get("melee")?.name).toBe("Melee")
+    expect(
+      result.current.evaluation.teams.some((entry) => entry.key === "melee")
+    ).toBe(false)
+    act(() => result.current.undoRemove("melee"))
+    expect(result.current.removedTeams.size).toBe(0)
+    expect(
+      result.current.evaluation.teams.some((entry) => entry.key === "melee")
+    ).toBe(true)
   })
 })

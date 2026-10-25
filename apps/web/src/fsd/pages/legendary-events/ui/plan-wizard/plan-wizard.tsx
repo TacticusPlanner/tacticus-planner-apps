@@ -1,13 +1,15 @@
 import { useEffect, useMemo, useRef, useState } from "react"
-import { Link, useNavigate } from "react-router"
+import { Link, useNavigate, useSearchParams } from "react-router"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 import { ArrowLeft } from "lucide-react"
 import { Button } from "@workspace/ui/components/button"
+import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 import { cn } from "@workspace/ui/lib/utils"
 
 import type {
   AscensionStep,
+  LegendaryEventLaneId,
   LegendaryEventRun,
 } from "@/entities/legendary-event"
 import { useAnalyticsActions } from "@/shared/analytics"
@@ -17,9 +19,11 @@ import { UnsavedChangesGuard } from "@/shared/ui"
 import { PLAN_WIZARD_STEPS, type PlanWizardStep } from "./plan-draft"
 import {
   planWrites,
+  writeCounts,
   type PlanDestination,
   type PlanWrites,
 } from "./plan-create"
+import { PlanSummary } from "./plan-summary"
 import type { DraftTeam } from "./plan-teams"
 import { usePlanWizardTutorial } from "./plan-wizard.tutorial"
 import { ReviewStep } from "./review-step"
@@ -44,11 +48,16 @@ export type PlanWizardEntry = "overview" | "suggestions" | "link"
 /** New teams are named by their display name, within the API's 60-character limit. */
 const TEAM_NAME_MAX_LENGTH = 60
 
+const stepIndex = (value: string | null) =>
+  PLAN_WIZARD_STEPS.indexOf(value as PlanWizardStep)
+
 /**
  * The 1-click plan wizard (spec: five steps with a preview before anything is written): Target,
  * Upgrades, Teams, Runs and tokens, Review and create. A stepper on the left from 768px, a
- * "Step N of 5" header with a progress bar below it, and a sticky Back / Next footer. Leaving with
- * changes asks first; nothing is written until Create.
+ * "Step N of 5" header with chips for visited steps and a progress bar below it, the plan summary,
+ * and a sticky Back / Next footer. The step is the `?step=` parameter, so the browser's Back and
+ * Forward move between steps (spec: wizard step is kept in the URL). Leaving with changes asks
+ * first; nothing is written until Create.
  */
 export function PlanWizard({
   source,
@@ -65,11 +74,37 @@ export function PlanWizard({
   const draft = usePlanDraft(source, initialTarget)
   const create = usePlanCreate(source.event.id)
   const destination = usePlanDestination(source, draft.target)
-  const [step, setStepState] = useState<PlanWizardStep>("target")
+  const isMobile = useIsMobile()
+  const [params, setParams] = useSearchParams()
+  // The furthest step visited; a step after it (a reload or a deep link) shows it instead. The
+  // draft is not saved, so a reload starts at Target.
   const [visited, setVisited] = useState(0)
+  const index = Math.min(Math.max(stepIndex(params.get("step")), 0), visited)
+  const step = PLAN_WIZARD_STEPS[index]!
+  useEffect(() => {
+    if (params.get("step") === step) return
+    setParams(
+      (current) => {
+        const next = new URLSearchParams(current)
+        next.set("step", step)
+        return next
+      },
+      { replace: true }
+    )
+  }, [params, step, setParams])
   const setStep = (next: PlanWizardStep) => {
-    setStepState(next)
-    setVisited((current) => Math.max(current, PLAN_WIZARD_STEPS.indexOf(next)))
+    setVisited((current) => Math.max(current, stepIndex(next)))
+    setParams((current) => {
+      const updated = new URLSearchParams(current)
+      updated.set("step", next)
+      return updated
+    })
+  }
+  // The Teams step's lane (tabs on mobile), also set by the leftover-tokens link.
+  const [lane, setLane] = useState<LegendaryEventLaneId>("alpha")
+  const openTeams = (laneId: LegendaryEventLaneId) => {
+    setLane(laneId)
+    setStep("teams")
   }
   const [created, setCreated] = useState(false)
   useTourPageSteps(usePlanWizardTutorial())
@@ -84,7 +119,6 @@ export function PlanWizard({
       source: openedFrom,
     })
   }, [captureEvent, openedFrom, source.event.id])
-  const index = PLAN_WIZARD_STEPS.indexOf(step)
   const name = source.inputs.nameOf(source.event.id)
   const eventPath = `/legendary-events/${source.event.id}`
 
@@ -141,18 +175,21 @@ export function PlanWizard({
       targetEventId: source.event.id,
       onlyFailed: create.items.length > 0,
     })
-    const teams = sent.lanes.reduce((sum, lane) => sum + lane.create.length, 0)
+    const { goals, teams } = writeCounts(sent)
     captureEvent({
       type: "legendary_event_plan_created",
       eventId: source.event.id,
-      goals: sent.goals.length,
+      goals,
       teams,
       ok: result.ok,
     })
     if (!result.ok) return
     const projectId = result.projectId
     toast.success(
-      t("planWizard.toast.created", { goals: sent.goals.length, teams }),
+      t("planWizard.toast.created", {
+        goals: t("planWizard.counts.goals", { count: goals }),
+        teams: t("planWizard.counts.teams", { count: teams }),
+      }),
       projectId
         ? {
             action: {
@@ -171,11 +208,36 @@ export function PlanWizard({
   // Create waits until the chosen target's recommendations are final, or it would file a partial list.
   const exploring = !draft.targetSettled
   const last = index === PLAN_WIZARD_STEPS.length - 1
-  const tooAmbitious =
-    draft.recommendations.status !== "running" &&
-    draft.recommendations.status !== "estimating" &&
-    draft.options.options.find((option) => option.target.step === draft.target)
-      ?.verdict.kind === "tooAmbitious"
+  const shownWrites = snapshot?.writes ?? writes
+  const counts = writeCounts(shownWrites)
+  let createLabel: string
+  if (counts.goals > 0 || counts.teams > 0) {
+    const parts = [
+      counts.goals > 0
+        ? t("planWizard.counts.goals", { count: counts.goals })
+        : null,
+      counts.teams > 0
+        ? t("planWizard.counts.teams", { count: counts.teams })
+        : null,
+    ].filter((part) => part !== null)
+    createLabel =
+      parts.length === 2
+        ? t("planWizard.createBoth", { goals: parts[0], teams: parts[1] })
+        : t("planWizard.createOne", { what: parts[0] })
+  } else if (counts.runs) {
+    createLabel = t("planWizard.saveRunInputs")
+  } else {
+    createLabel = t("planWizard.create")
+  }
+  const summary = (
+    <PlanSummary
+      draft={draft}
+      locked={locked}
+      mobile={isMobile}
+      onChangeTarget={() => setStep("target")}
+      writes={shownWrites}
+    />
+  )
 
   return (
     <div className="flex min-w-0 flex-col gap-4" data-testid="plan-wizard">
@@ -202,6 +264,32 @@ export function PlanWizard({
             name: t(`planWizard.steps.${step}`),
           })}
         </p>
+        <ol
+          aria-label={t("planWizard.stepsLabel")}
+          className="flex flex-wrap gap-1.5"
+          data-testid="plan-wizard-chips"
+        >
+          {PLAN_WIZARD_STEPS.map((entry, position) => (
+            <li key={entry}>
+              <button
+                aria-current={entry === step ? "step" : undefined}
+                className={cn(
+                  "min-h-8 rounded-full border px-2.5 text-xs",
+                  entry === step
+                    ? "border-primary bg-primary text-primary-foreground"
+                    : "text-muted-foreground",
+                  position > visited && "opacity-50"
+                )}
+                data-testid={`plan-wizard-chip-${entry}`}
+                disabled={locked || position > visited}
+                onClick={() => setStep(entry)}
+                type="button"
+              >
+                {t(`planWizard.steps.${entry}`)}
+              </button>
+            </li>
+          ))}
+        </ol>
         <div className="h-1.5 overflow-hidden rounded-full bg-muted">
           <div
             className="h-full rounded-full bg-primary transition-[width]"
@@ -211,6 +299,7 @@ export function PlanWizard({
           />
         </div>
       </div>
+      {isMobile ? summary : null}
       <div className="flex min-w-0 gap-6">
         <nav
           aria-label={t("planWizard.stepsLabel")}
@@ -243,53 +332,38 @@ export function PlanWizard({
             ))}
           </ol>
         </nav>
-        <div className="flex min-w-0 flex-1 flex-col gap-4">
-          {tooAmbitious && draft.target !== null && step !== "target" ? (
-            <div
-              className="flex flex-wrap items-center gap-x-3 gap-y-1 rounded-lg border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm"
-              data-testid="plan-wizard-banner"
-              role="status"
-            >
-              <span>
-                {t("planWizard.banner", {
-                  step: t(`outlook.steps.${draft.target}`),
-                  best: draft.options.best
-                    ? t("planWizard.target.bestStep", {
-                        step: t(`outlook.steps.${draft.options.best}`),
-                      })
-                    : t("planWizard.target.noStep"),
-                })}
-              </span>
-              <Button
-                className="h-auto px-0"
-                disabled={locked}
-                onClick={() => setStep("target")}
-                variant="link"
-              >
-                {t("planWizard.bannerLink")}
-              </Button>
-            </div>
-          ) : null}
-          {step === "target" ? (
-            <TargetStep draft={draft} source={source} />
-          ) : null}
-          {step === "upgrades" ? <UpgradesStep draft={draft} /> : null}
-          {step === "teams" ? <TeamsStep draft={draft} /> : null}
-          {step === "runs" ? <RunsStep draft={draft} source={source} /> : null}
-          {step === "review" ? (
-            <ReviewStep
-              create={create}
-              destination={destination}
-              draft={draft}
-              exploring={exploring}
-              locked={locked}
-              writes={snapshot?.writes ?? writes}
-            />
-          ) : null}
+        <div className="flex min-w-0 flex-1 flex-col gap-4 lg:flex-row lg:items-start lg:gap-6">
+          {isMobile ? null : summary}
+          <div className="flex min-w-0 flex-1 flex-col gap-4">
+            {step === "target" ? (
+              <TargetStep draft={draft} source={source} />
+            ) : null}
+            {step === "upgrades" ? <UpgradesStep draft={draft} /> : null}
+            {step === "teams" ? (
+              <TeamsStep draft={draft} lane={lane} onLaneChange={setLane} />
+            ) : null}
+            {step === "runs" ? (
+              <RunsStep draft={draft} onOpenTeams={openTeams} source={source} />
+            ) : null}
+            {step === "review" ? (
+              <ReviewStep
+                create={create}
+                destination={destination}
+                draft={draft}
+                exploring={exploring}
+                locked={locked}
+                writes={shownWrites}
+              />
+            ) : null}
+          </div>
         </div>
       </div>
       <div
-        className="sticky bottom-0 z-10 -mx-4 flex items-center justify-between gap-3 border-t bg-background px-4 py-3"
+        className={cn(
+          "sticky z-10 -mx-4 flex items-center justify-between gap-3 border-t bg-background px-4 py-3 sm:-mx-6 sm:px-6",
+          // Above the bottom navigation on mobile.
+          isMobile ? "bottom-(--mobile-nav-height)" : "bottom-0"
+        )}
         data-testid="plan-wizard-footer"
       >
         <Button
@@ -304,9 +378,10 @@ export function PlanWizard({
             data-testid="plan-wizard-create"
             disabled={
               create.running ||
-              exploring ||
-              (!snapshot && !destination.value) ||
-              created
+              created ||
+              // Retry failed resends the frozen snapshot: it needs neither the search nor a
+              // destination.
+              (!snapshot && (exploring || !destination.value))
             }
             onClick={() => void runCreate()}
           >
@@ -314,7 +389,7 @@ export function PlanWizard({
               ? t("planWizard.creating")
               : failed
                 ? t("planWizard.retryFailed")
-                : t("planWizard.create")}
+                : createLabel}
           </Button>
         ) : (
           <Button
@@ -327,11 +402,19 @@ export function PlanWizard({
         )}
       </div>
       <UnsavedChangesGuard
-        description={t("planWizard.leave.description")}
+        description={
+          failed
+            ? t("planWizard.leave.failedDescription")
+            : t("planWizard.leave.description")
+        }
         leaveLabel={t("planWizard.leave.leave")}
         stayLabel={t("planWizard.leave.stay")}
         title={t("planWizard.leave.title")}
-        when={draft.dirty && !created && create.items.length === 0}
+        when={
+          !created &&
+          ((draft.dirty && create.items.length === 0) ||
+            (failed && !create.running))
+        }
       />
     </div>
   )

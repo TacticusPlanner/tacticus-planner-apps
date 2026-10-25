@@ -17,6 +17,8 @@ const CONFIG: ClearEstimateConfig = {
   unitPower: unitPowerContextFixture(),
 }
 const CONFIG_STATE = { status: "ready", config: CONFIG }
+let configState: unknown = CONFIG_STATE
+let eventData: unknown = utharEvent
 const PLAN_QUERY = { query: { status: "success", data: EMPTY_PLAN } }
 const EVENTS = [utharEvent]
 const ROSTER: never[] = []
@@ -44,7 +46,7 @@ vi.mock("@/entities/legendary-event", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/entities/legendary-event")>()),
   useLegendaryEvent: () => ({
     status: "ready",
-    data: utharEvent,
+    data: eventData,
     retry: vi.fn(),
     nowMs: 0,
     // Re-derived every render, as the minute tick does.
@@ -57,7 +59,7 @@ vi.mock("@/entities/legendary-event", async (importOriginal) => ({
   useLegendaryEventRoster: () => read(roster),
   useLegendaryEventBattles: () => read(BATTLES),
   useLegendaryEventSyncTimes: () => read(SYNC_TIMES),
-  useClearEstimateConfig: () => CONFIG_STATE,
+  useClearEstimateConfig: () => configState,
   usePlanWriteQueue: () => PLAN_QUERY,
 }))
 
@@ -67,6 +69,8 @@ describe("usePlanSource", () => {
     progress = PROGRESS
     roster = ROSTER
     unitName = () => ""
+    configState = CONFIG_STATE
+    eventData = utharEvent
   })
 
   it("is ready for an event with no synced progress or roster", () => {
@@ -100,5 +104,22 @@ describe("usePlanSource", () => {
     unitName = () => "renamed"
     rerender()
     expect(result.current).toBe(first)
+  })
+  it("says there is nothing to reach when the event has no reward ladder", () => {
+    eventData = { ...utharEvent, rewards: undefined }
+    const { result } = renderHook(() => usePlanSource(utharEvent.id))
+    expect(result.current).toMatchObject({
+      status: "nothingToReach",
+      reason: "noLadder",
+    })
+  })
+
+  it("names unit power as missing when clear estimates are unavailable", () => {
+    configState = { status: "ready", config: { ...CONFIG, unitPower: null } }
+    const { result } = renderHook(() => usePlanSource(utharEvent.id))
+    expect(result.current).toMatchObject({
+      status: "noEstimates",
+      missing: ["unitPower"],
+    })
   })
 })

@@ -26,22 +26,30 @@ export function TokenPlanList({
   event,
   view,
   isMobile,
+  openKey = OPEN_KEY,
+  defaultOpen = false,
+  trackExpand = true,
 }: {
   eventId: string
   event: Pick<LegendaryEvent, "alpha" | "beta" | "gamma">
   view: TokenPlanView
   isMobile: boolean
+  /** Where the open state is remembered; another page keeps its own. */
+  openKey?: string
+  defaultOpen?: boolean
+  /** Report expanding it to analytics (the event page's sections do). */
+  trackExpand?: boolean
 }) {
   const { t, i18n } = useTranslation("legendaryEvents")
   const { captureEvent } = useAnalyticsActions()
-  const [open, setOpen] = useStoredOpen(OPEN_KEY)
+  const [open, setOpen] = useStoredOpen(openKey, defaultOpen)
   if (view.kind !== "ready" || view.plan.tokens.length === 0) return null
   const number = new Intl.NumberFormat(i18n.language)
   const { plan } = view
   const markers = view.forecast?.markers ?? []
 
   const toggle = () => {
-    if (!open) {
+    if (!open && trackExpand) {
       captureEvent({
         type: "legendary_event_token_plan_expanded",
         eventId,
