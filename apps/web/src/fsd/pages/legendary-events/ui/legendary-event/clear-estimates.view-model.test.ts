@@ -65,9 +65,11 @@ describe("buildClearEstimates", () => {
   })
 
   it("is hidden when the tier-list read or the battles failed", () => {
-    expect(build({ config: { status: "failed", retry: () => {} } }).kind).toBe(
-      "hidden"
-    )
+    expect(
+      build({
+        config: { status: "failed", retry: () => {}, missing: ["unitPower"] },
+      }).kind
+    ).toBe("hidden")
     expect(build({ battles: "error" }).kind).toBe("hidden")
   })
 

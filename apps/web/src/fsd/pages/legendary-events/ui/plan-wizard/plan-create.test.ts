@@ -74,7 +74,27 @@ describe("planWrites", () => {
       economy,
     })
     expect(writes.lanes).toEqual([
-      { laneId: "alpha", remove: ["stored"], create: [] },
+      { laneId: "alpha", remove: ["stored"], update: [], create: [] },
+    ])
+  })
+
+  it("updates an edited stored team instead of removing and recreating it", () => {
+    const edited = draftTeam({
+      key: "stored",
+      storedId: "stored",
+      name: "Mine",
+      memberUnitIds: ["x", "y", "w"],
+      edited: true,
+    })
+    const writes = planWrites({
+      plan: PLAN,
+      teams: [edited],
+      chains: [],
+      runs: [2, 3],
+      economy,
+    })
+    expect(writes.lanes).toEqual([
+      { laneId: "alpha", remove: [], update: [edited], create: [] },
     ])
   })
 

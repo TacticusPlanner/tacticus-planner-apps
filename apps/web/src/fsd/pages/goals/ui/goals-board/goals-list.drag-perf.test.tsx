@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import { act, fireEvent, render, screen } from "@/test/render"
+import type { QueryClient } from "@tanstack/react-query"
+import { act, fireEvent, render, screen, waitFor } from "@/test/render"
 
 /**
  * Render-count harness for the drag-lag fix: with many rows, starting a drag / moving over another
@@ -102,9 +103,13 @@ beforeEach(() => {
 
 // Rendering the full list over real live queries takes seconds under a parallel run, so the perf
 // tests get more than the 5 s default.
-// The real live queries resolve after mount and re-render every row; measure only once a quiet
-// window passes with no row content rendering, so those settle renders never count as drag renders.
-async function settleLiveQueries() {
+// The real live queries resolve after mount and re-render every row; measure only once they are
+// done and a quiet window passes with no row content rendering, so those settle renders never count
+// as drag renders. A quiet window alone isn't enough on a loaded runner, where a read can land later.
+async function settleLiveQueries(queryClient: QueryClient) {
+  await waitFor(() => expect(queryClient.isFetching()).toBe(0), {
+    timeout: 10_000,
+  })
   for (;;) {
     const before = counts.target + counts.catalog + counts.chips
     await act(() => new Promise((resolve) => setTimeout(resolve, 50)))
@@ -115,7 +120,7 @@ async function settleLiveQueries() {
 describe("GoalsList drag performance", () => {
   it("does not re-render every row on drag start / over change", async () => {
     const onReorder = vi.fn()
-    render(
+    const { queryClient } = render(
       <GoalsList
         actions={actions}
         onReorder={onReorder}
@@ -124,7 +129,7 @@ describe("GoalsList drag performance", () => {
       />
     )
     const handles = await screen.findAllByTestId("goal-row-drag-handle")
-    await settleLiveQueries()
+    await settleLiveQueries(queryClient)
     const reset = () => {
       counts.chips = 0
       counts.catalog = 0
@@ -164,7 +169,7 @@ describe("GoalsList mobile reorder cards drag performance", () => {
   it("does not re-render every card on drag start / over change", async () => {
     env.mobile = true
     const onReorder = vi.fn()
-    render(
+    const { queryClient } = render(
       <GoalsList
         actions={actions}
         mobileReorderActive
@@ -174,7 +179,7 @@ describe("GoalsList mobile reorder cards drag performance", () => {
       />
     )
     const handles = await screen.findAllByTestId("goal-row-drag-handle")
-    await settleLiveQueries()
+    await settleLiveQueries(queryClient)
     expect(handles).toHaveLength(ROWS)
     const reset = () => {
       counts.target = 0

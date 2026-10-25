@@ -17,6 +17,8 @@ const CONFIG: ClearEstimateConfig = {
   unitPower: unitPowerContextFixture(),
 }
 const CONFIG_STATE = { status: "ready", config: CONFIG }
+let configState: unknown = CONFIG_STATE
+let eventData: unknown = utharEvent
 const PLAN_QUERY = { query: { status: "success", data: EMPTY_PLAN } }
 const EVENTS = [utharEvent]
 const ROSTER: never[] = []
@@ -30,8 +32,8 @@ const FAILED_GOALS = { status: "failed" }
 // Like the real reads, every render hands out a new state object around the same data.
 const read = (data: unknown) => ({ status: "ready", data, retry: vi.fn() })
 
-// Stable across renders, like the real resolver.
-const unitName = () => ""
+// Stable across renders, like the real resolver (a test swaps it to check the frozen source).
+let unitName = () => ""
 vi.mock("@/shared/unit-name", () => ({ useUnitName: () => unitName }))
 vi.mock("@/shared/unit-power", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/shared/unit-power")>()),
@@ -44,7 +46,7 @@ vi.mock("@/entities/legendary-event", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/entities/legendary-event")>()),
   useLegendaryEvent: () => ({
     status: "ready",
-    data: utharEvent,
+    data: eventData,
     retry: vi.fn(),
     nowMs: 0,
     // Re-derived every render, as the minute tick does.
@@ -57,7 +59,7 @@ vi.mock("@/entities/legendary-event", async (importOriginal) => ({
   useLegendaryEventRoster: () => read(roster),
   useLegendaryEventBattles: () => read(BATTLES),
   useLegendaryEventSyncTimes: () => read(SYNC_TIMES),
-  useClearEstimateConfig: () => CONFIG_STATE,
+  useClearEstimateConfig: () => configState,
   usePlanWriteQueue: () => PLAN_QUERY,
 }))
 
@@ -66,6 +68,9 @@ describe("usePlanSource", () => {
     setTestAuth({ authenticated: true })
     progress = PROGRESS
     roster = ROSTER
+    unitName = () => ""
+    configState = CONFIG_STATE
+    eventData = utharEvent
   })
 
   it("is ready for an event with no synced progress or roster", () => {
@@ -89,5 +94,32 @@ describe("usePlanSource", () => {
     expect(second.inputs).toBe(first.inputs)
     expect(second.goalTargets).toBe(first.goalTargets)
     expect(second.goalTargets.size).toBe(0)
+  })
+  it("keeps its first ready value when a read refetches or the unit names change", () => {
+    const { result, rerender } = renderHook(() => usePlanSource(utharEvent.id))
+    const first = result.current
+    // A refetch hands out new arrays around the same data; a language switch, a new resolver.
+    roster = []
+    progress = { ...PROGRESS }
+    unitName = () => "renamed"
+    rerender()
+    expect(result.current).toBe(first)
+  })
+  it("says there is nothing to reach when the event has no reward ladder", () => {
+    eventData = { ...utharEvent, rewards: undefined }
+    const { result } = renderHook(() => usePlanSource(utharEvent.id))
+    expect(result.current).toMatchObject({
+      status: "nothingToReach",
+      reason: "noLadder",
+    })
+  })
+
+  it("names unit power as missing when clear estimates are unavailable", () => {
+    configState = { status: "ready", config: { ...CONFIG, unitPower: null } }
+    const { result } = renderHook(() => usePlanSource(utharEvent.id))
+    expect(result.current).toMatchObject({
+      status: "noEstimates",
+      missing: ["unitPower"],
+    })
   })
 })
