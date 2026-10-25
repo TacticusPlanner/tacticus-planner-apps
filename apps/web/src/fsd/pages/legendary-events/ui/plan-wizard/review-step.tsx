@@ -1,14 +1,18 @@
 import { useId, type ReactNode } from "react"
 import { useTranslation } from "react-i18next"
-import { Check, CircleDashed, X } from "lucide-react"
+import { Check, CircleDashed, Minus, Pencil, Plus, X } from "lucide-react"
 import { Input } from "@workspace/ui/components/input"
 import { Label } from "@workspace/ui/components/label"
 import { cn } from "@workspace/ui/lib/utils"
 
-import type { LegendaryEventLaneId } from "@/entities/legendary-event"
+import {
+  useTeamDisplayName,
+  type LegendaryEventLaneId,
+} from "@/entities/legendary-event"
 import { useGoalLabels } from "@/features/legendary-event-goals"
 
 import type { PlanWrites } from "./plan-create"
+import { runAssumptions } from "./target-step.model"
 import type { CreateItem, usePlanCreate } from "./use-plan-create"
 import { NEW_PROJECT, type PlanDestinationState } from "./use-plan-destination"
 import type { PlanDraft } from "./use-plan-draft"
@@ -16,9 +20,10 @@ import type { PlanDraft } from "./use-plan-draft"
 const STATUS_ICON = { pending: CircleDashed, done: Check, failed: X } as const
 
 /**
- * Step 5 (spec: review and create): the project the goals go to, the goals by unit, each lane's
- * team changes, the run inputs and the final verdict. After Create, every item shows pending, done
- * or failed; Retry failed resends only the failed ones.
+ * Step 5 (spec: review lists every write by name): the project the goals go to, then Goals, Teams
+ * and Run inputs cards (each says Nothing to change when empty; team removals are named in
+ * destructive styling, updates and creations by name), and the final verdict. After Create, every
+ * item shows pending, done or failed; Retry failed resends only the failed ones.
  */
 export function ReviewStep({
   draft,
@@ -46,6 +51,26 @@ export function ReviewStep({
   const ceiling = evaluation.ceiling ?? 0
   const lastRun = draft.runs.at(-1) ?? 3
   const nameOf = draft.inputs.nameOf
+  const displayName = useTeamDisplayName()
+  // The name the Teams step showed, so a lane-default name ("alpha") reads as its objectives.
+  const storedName = (teamId: string) => {
+    const removed = draft.removedTeams.get(teamId)
+    if (removed) return removed.name
+    const team = draft.inputs.plan.teams.find((entry) => entry.id === teamId)
+    return team
+      ? displayName(
+          team,
+          draft.inputs.event[team.laneId],
+          draft.inputs.plan.teams
+        )
+      : ""
+  }
+  const changedRuns = new Set(writes.runs.map((entry) => entry.run))
+  const runLines = runAssumptions(
+    draft.inputs.event,
+    draft.economy,
+    draft.runs.filter((run) => changedRuns.has(run))
+  )
 
   const itemLabel = (item: CreateItem) => {
     switch (item.kind) {
@@ -66,6 +91,9 @@ export function ReviewStep({
 
   return (
     <section className="flex flex-col gap-5" data-testid="plan-wizard-review">
+      <h2 className="text-lg font-semibold">
+        {t("planWizard.review.heading")}
+      </h2>
       <div className="flex flex-col gap-2">
         <Label htmlFor={selectId}>{t("planWizard.review.project")}</Label>
         <select
@@ -101,57 +129,108 @@ export function ReviewStep({
         ) : null}
       </div>
 
-      <Group title={t("planWizard.review.goals")}>
-        {writes.goals.length === 0 ? (
-          <Empty text={t("planWizard.review.noGoals")} />
-        ) : (
-          writes.goals.map((chain) => (
-            <li data-testid="plan-wizard-review-goal" key={chain.unitId}>
-              <span className="font-medium">{nameOf(chain.unitId)}</span>
-              {": "}
-              {chain.steps.map((step) => labels.step(step)).join(" → ")}
-            </li>
-          ))
-        )}
-      </Group>
+      <div className="grid gap-3 md:grid-cols-3">
+        <Group
+          testId="plan-wizard-review-goals"
+          title={t("planWizard.review.goals")}
+        >
+          {writes.goals.length === 0 ? (
+            <Empty text={t("planWizard.review.nothing")} />
+          ) : (
+            writes.goals.map((chain) => (
+              <li data-testid="plan-wizard-review-goal" key={chain.unitId}>
+                <span className="font-medium">{nameOf(chain.unitId)}</span>
+                {": "}
+                {chain.steps.map((step) => labels.step(step)).join(" → ")}
+              </li>
+            ))
+          )}
+        </Group>
 
-      <Group title={t("planWizard.review.teams")}>
-        {writes.lanes.length === 0 ? (
-          <Empty text={t("planWizard.review.noTeams")} />
-        ) : (
-          writes.lanes.flatMap((lane) => {
-            const name = t(`lanes.${lane.laneId}`)
-            return [
-              lane.remove.length > 0 ? (
-                <li key={`${lane.laneId}:remove`}>
-                  {t("planWizard.review.removeTeams", {
-                    lane: name,
-                    count: lane.remove.length,
-                  })}
-                </li>
-              ) : null,
-              lane.create.length > 0 ? (
-                <li key={`${lane.laneId}:create`}>
-                  {t("planWizard.review.createTeams", {
-                    lane: name,
-                    count: lane.create.length,
-                  })}
-                </li>
-              ) : null,
-            ]
-          })
-        )}
-      </Group>
+        <Group
+          testId="plan-wizard-review-teams"
+          title={t("planWizard.review.teams")}
+        >
+          {writes.lanes.length === 0 ? (
+            <Empty text={t("planWizard.review.nothing")} />
+          ) : (
+            writes.lanes.flatMap((lane) => {
+              const laneName = t(`lanes.${lane.laneId}`)
+              return [
+                ...lane.remove.map((teamId) => (
+                  <Line
+                    destructive
+                    icon={Minus}
+                    key={`remove:${teamId}`}
+                    testId="plan-wizard-review-remove"
+                    text={t("planWizard.review.removeTeam", {
+                      name: storedName(teamId),
+                      lane: laneName,
+                    })}
+                  />
+                )),
+                ...lane.update.map((team) => (
+                  <Line
+                    icon={Pencil}
+                    key={`update:${team.key}`}
+                    testId="plan-wizard-review-update"
+                    text={t("planWizard.review.updateTeam", {
+                      name: draft.teamName(team.key),
+                      lane: laneName,
+                    })}
+                  />
+                )),
+                ...lane.create.map((team) => (
+                  <Line
+                    icon={Plus}
+                    key={`create:${team.key}`}
+                    testId="plan-wizard-review-create"
+                    text={t("planWizard.review.createTeam", {
+                      name: draft.teamName(team.key),
+                      lane: laneName,
+                    })}
+                  />
+                )),
+              ]
+            })
+          )}
+        </Group>
 
-      <Group title={t("planWizard.review.runs")}>
-        <Empty
-          text={
-            writes.runs.length > 0 || writes.showPaidOptions !== null
-              ? t("planWizard.review.runsChanged")
-              : t("planWizard.review.noRuns")
-          }
-        />
-      </Group>
+        <Group
+          testId="plan-wizard-review-runs"
+          title={t("planWizard.review.runs")}
+        >
+          {runLines.length === 0 && writes.showPaidOptions === null ? (
+            <Empty text={t("planWizard.review.nothing")} />
+          ) : (
+            <>
+              {runLines.map((entry) => (
+                <li key={entry.run}>
+                  {[
+                    t("planWizard.assumptions.run", {
+                      run: entry.run,
+                      missions: number.format(entry.missions),
+                      of: number.format(entry.of),
+                    }),
+                    ...(entry.bundle
+                      ? [t("planWizard.assumptions.bundle")]
+                      : []),
+                  ].join(" · ")}
+                </li>
+              ))}
+              {writes.showPaidOptions === null ? null : (
+                <li>
+                  {t(
+                    writes.showPaidOptions
+                      ? "planWizard.review.paidOn"
+                      : "planWizard.review.paidOff"
+                  )}
+                </li>
+              )}
+            </>
+          )}
+        </Group>
+      </div>
 
       {chosenTarget?.kind === "points" ? (
         <p className="font-medium" data-testid="plan-wizard-final-verdict">
@@ -217,12 +296,48 @@ export function ReviewStep({
   )
 }
 
-function Group({ title, children }: { title: string; children: ReactNode }) {
+function Group({
+  title,
+  testId,
+  children,
+}: {
+  title: string
+  testId: string
+  children: ReactNode
+}) {
   return (
-    <div className="flex flex-col gap-1.5">
+    <div
+      className="flex flex-col gap-1.5 rounded-xl border p-3"
+      data-testid={testId}
+    >
       <h3 className="text-sm font-semibold">{title}</h3>
       <ul className="flex flex-col gap-1 text-sm">{children}</ul>
     </div>
+  )
+}
+
+function Line({
+  icon: Icon,
+  text,
+  testId,
+  destructive = false,
+}: {
+  icon: typeof Plus
+  text: string
+  testId: string
+  destructive?: boolean
+}) {
+  return (
+    <li
+      className={cn(
+        "flex items-start gap-1.5",
+        destructive && "text-destructive"
+      )}
+      data-testid={testId}
+    >
+      <Icon aria-hidden="true" className="mt-0.5 size-4 shrink-0" />
+      <span>{text}</span>
+    </li>
   )
 }
 

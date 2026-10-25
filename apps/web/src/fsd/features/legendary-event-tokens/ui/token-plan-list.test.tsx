@@ -211,3 +211,36 @@ describe("TokenPlanList", () => {
     })
   })
 })
+
+describe("TokenPlanList on another page", () => {
+  beforeAll(async () => {
+    i18n = await createTestI18n("en")
+  })
+  beforeEach(() => {
+    capture.mockReset()
+    localStorage.clear()
+  })
+
+  it("opens by default, keeps its own open state and reports no expand events", () => {
+    render(
+      <TokenPlanList
+        defaultOpen
+        event={utharEvent}
+        eventId="votanUthar"
+        isMobile={false}
+        openKey="wizard.open"
+        trackExpand={false}
+        view={buildTokenPlanView(workedViewInput())}
+      />,
+      { wrapper: i18nWrapper(i18n) }
+    )
+    expect(screen.getAllByTestId("token-plan-row").length).toBeGreaterThan(0)
+    fireEvent.click(screen.getByTestId("token-plan-toggle"))
+    fireEvent.click(screen.getByTestId("token-plan-toggle"))
+    expect(capture).not.toHaveBeenCalled()
+    expect(localStorage.getItem("wizard.open")).toBe("true")
+    expect(
+      Object.keys(localStorage).filter((key) => key !== "wizard.open")
+    ).toEqual([])
+  })
+})

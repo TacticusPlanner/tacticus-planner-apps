@@ -12,7 +12,12 @@ import {
   teamSwaps,
 } from "./plan-evaluator"
 import { MAX_PLAN_TEAMS_PER_LANE, storedDrafts } from "./plan-teams"
-import { chosenFrom, recommendUpgradesNow } from "./plan-upgrades"
+import {
+  chosenFrom,
+  recommendUpgrades,
+  recommendUpgradesNow,
+} from "./plan-upgrades"
+import { runSliced, type SliceClock } from "./run-sliced"
 import { EMPTY_PLAN, NOW_MS, RUN_3_START_MS, planInputs } from "./plan.fixtures"
 import type { LegendaryEventTeam } from "@/entities/legendary-event"
 
@@ -191,6 +196,57 @@ describe("upgrade recommendations", () => {
       (entry) => entry.readyMs
     )
     expect(ready).toEqual(result.recommendations.map((entry) => entry.readyMs))
+  })
+
+  it("gives the same result run in slices as in one go", () => {
+    const inputs = planInputs()
+    const input = {
+      ...base,
+      inputs,
+      targetPoints: Number.POSITIVE_INFINITY,
+      farmingDays: (_: string, steps: readonly unknown[]) => steps.length * 10,
+      cap: 4,
+    }
+    const whole = recommendUpgradesNow({
+      ...input,
+      evaluator: createPlanEvaluator(inputs, economy),
+    })
+    // A clock where every step overruns its slice, and slices run on demand.
+    let time = 0
+    const queue: (() => void)[] = []
+    const clock: SliceClock = {
+      now: () => ++time,
+      schedule: (work) => {
+        queue.push(() => work(time))
+        return () => undefined
+      },
+      scheduleIdle: (work) => {
+        queue.push(() => work(time))
+        return () => undefined
+      },
+    }
+    let sliced: ReturnType<typeof recommendUpgradesNow> | null = null
+    let slices = 0
+    runSliced(
+      recommendUpgrades({
+        ...input,
+        evaluator: createPlanEvaluator(inputs, economy),
+      }),
+      {
+        clock,
+        onYield: () => undefined,
+        onDone: (value) => {
+          sliced = value
+        },
+      }
+    )
+    while (queue.length > 0) {
+      queue.shift()!()
+      slices++
+    }
+    expect(slices).toBeGreaterThan(whole.recommendations.length)
+    expect(sliced!.recommendations).toEqual(whole.recommendations)
+    expect(sliced!.final.ceiling).toBe(whole.final.ceiling)
   })
 
   it("drops a step ready after the last run starts", () => {
