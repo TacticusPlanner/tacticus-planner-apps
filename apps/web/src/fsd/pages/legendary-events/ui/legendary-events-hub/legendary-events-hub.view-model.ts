@@ -23,7 +23,7 @@ type HubCardSynced =
     }
 
 /** One run of an unfinished event: its announced or guessed start, null when not estimable. */
-export interface HubCardRun {
+interface HubCardRun {
   run: number
   startMs: number | null
   guessed: boolean
