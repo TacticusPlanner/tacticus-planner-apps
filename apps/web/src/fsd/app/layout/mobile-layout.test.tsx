@@ -38,6 +38,17 @@ vi.mock("@/shared/auth", () => ({
 vi.mock("@/shared/config", () => ({ isUiKitEnabled: true }))
 
 vi.mock("../providers/auth-control", () => ({ AuthControl: () => null }))
+// The card's own rows are covered by the account-menu tests; here only the header's wiring matters.
+vi.mock("@/widgets/account-menu", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/widgets/account-menu")>()),
+  GuestPreferencesCard: ({ onChangelog }: { onChangelog: () => void }) => (
+    <button data-testid="auth-changelog" onClick={onChangelog} type="button" />
+  ),
+}))
+const openUserJot = vi.hoisted(() => vi.fn())
+vi.mock("../providers/userjot-provider", () => ({
+  useUserJot: () => ({ open: openUserJot, status: "ready", unreadCount: 0 }),
+}))
 vi.mock("@/widgets/account-menu/ui/theme-switcher", () => ({
   ThemeSwitcher: () => null,
 }))
@@ -45,12 +56,15 @@ const { startTour, tour } = vi.hoisted(() => ({
   startTour: vi.fn(),
   tour: { running: false },
 }))
-vi.mock("@/shared/tour", () => ({
-  TourButton: () => null,
-  PageTourButton: () => null,
-  useTour: () => ({ isRunning: tour.running, startTour }),
-  useTourControlledPopoverOpen: () => [false, vi.fn()] as const,
-}))
+vi.mock("@/shared/tour", async () => {
+  const { useState } = await vi.importActual<typeof import("react")>("react")
+  return {
+    TourButton: () => null,
+    PageTourButton: () => null,
+    useTour: () => ({ isRunning: tour.running, startTour }),
+    useTourControlledPopoverOpen: () => useState(false),
+  }
+})
 
 const { usePlayerDataSyncStatusMock } = vi.hoisted(() => ({
   usePlayerDataSyncStatusMock: vi.fn(() => ({
@@ -111,6 +125,17 @@ describe("MobileHeader", () => {
     await vi.waitFor(() => {
       expect(loginRedirect).toHaveBeenCalledTimes(1)
     })
+  })
+
+  it("opens the widget's Updates and closes guest settings from the Changelog row", () => {
+    openUserJot.mockClear()
+    renderShell()
+
+    fireEvent.click(screen.getByTestId("mobile-guest-settings"))
+    fireEvent.click(screen.getByTestId("auth-changelog"))
+
+    expect(openUserJot).toHaveBeenCalledWith({ to: "updates" })
+    expect(screen.queryByTestId("auth-changelog")).not.toBeInTheDocument()
   })
 
   it("renders the page description beneath the page title", () => {

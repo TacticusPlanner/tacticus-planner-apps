@@ -21,6 +21,8 @@ const sdk = vi.hoisted(() => {
     opt_out_capturing: vi.fn(),
     reset: vi.fn(),
     capture: vi.fn(),
+    get_distinct_id: vi.fn(() => "anonymous-id"),
+    has_opted_out_capturing: vi.fn(() => true),
   }
   return { client, init: vi.fn(() => client), imported: vi.fn() }
 })
@@ -105,10 +107,14 @@ describe("AnalyticsProvider", () => {
         // its own /flags and remote-config requests. These two keep the browser silent.
         advanced_disable_flags: true,
         disable_external_dependency_loading: true,
+        capture_pageleave: true,
+        before_send: expect.any(Function),
       })
     )
     expect(sdk.client.identify).toHaveBeenCalledWith("analytics-id")
-    expect(sdk.client.opt_in_capturing).toHaveBeenCalledTimes(1)
+    expect(sdk.client.opt_in_capturing).toHaveBeenCalledExactlyOnceWith({
+      captureEventName: false,
+    })
   })
 
   it("stays silent and inert when the SDK download is blocked", async () => {
@@ -186,7 +192,20 @@ describe("useAnalyticsActions", () => {
 
     expect(sdk.init).not.toHaveBeenCalled()
     expect(sdk.client.identify).toHaveBeenCalledWith("analytics-id-2")
-    expect(sdk.client.opt_in_capturing).toHaveBeenCalledTimes(1)
+    expect(sdk.client.opt_in_capturing).toHaveBeenCalledExactlyOnceWith({
+      captureEventName: false,
+    })
+  })
+
+  it("sends nothing when re-identifying the user already identified and opted in", async () => {
+    const { result } = await renderReady()
+    sdk.client.get_distinct_id.mockReturnValueOnce("analytics-id")
+    sdk.client.has_opted_out_capturing.mockReturnValueOnce(false)
+
+    result.current.identifyUser("analytics-id")
+
+    expect(sdk.client.identify).not.toHaveBeenCalled()
+    expect(sdk.client.opt_in_capturing).not.toHaveBeenCalled()
   })
 
   it("opts out before resetting on teardown", async () => {
@@ -204,7 +223,7 @@ describe("useAnalyticsActions", () => {
     expect(optOutOrder).toBeLessThan(resetOrder)
   })
 
-  it("captures a page_view with only the declared properties", async () => {
+  it("captures a page_view as $pageview with only the declared properties", async () => {
     const { result } = await renderReady()
 
     result.current.captureEvent({
@@ -214,7 +233,7 @@ describe("useAnalyticsActions", () => {
       viewMode: "mobile",
     })
 
-    expect(sdk.client.capture).toHaveBeenCalledWith("page_view", {
+    expect(sdk.client.capture).toHaveBeenCalledWith("$pageview", {
       route_pattern: "/library/characters/:entityId",
       route_group: "/library",
       view_mode: "mobile",
