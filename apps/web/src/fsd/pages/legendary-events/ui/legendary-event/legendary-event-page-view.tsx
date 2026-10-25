@@ -1,11 +1,8 @@
-import { Link } from "react-router"
 import { useTranslation } from "react-i18next"
-import { Sparkles } from "lucide-react"
 import { Button } from "@workspace/ui/components/button"
 
 import { UpgradeImpactSection } from "@/features/legendary-event-goals"
 import { RunInputsDrawer } from "@/features/legendary-event-plan"
-import { EventProjectsLine } from "@/features/project-management"
 import {
   NextTokenCard,
   RunForecastSection,
@@ -18,6 +15,7 @@ import { LaneOverview } from "./lane-overview"
 import { LeaderboardSection } from "./leaderboard/leaderboard-section"
 import { LegendaryEventHeader } from "./legendary-event-header"
 import type { LegendaryEventPageViewModel } from "./legendary-event-page.view-model"
+import { LegendaryEventPlanEntry } from "./legendary-event-plan-entry"
 import { LegendaryEventTabs } from "./legendary-event-tabs"
 import { CrossLaneLeaderboard } from "./overview/cross-lane-leaderboard"
 import { LaneSummary } from "./overview/lane-summary"
@@ -28,8 +26,8 @@ import { TeamEditorHost } from "./teams/team-editor-host"
 import { TeamsSection } from "./teams/teams-section"
 
 /**
- * The event page on both forms (design D3): header, the tab strip, then the Overview tab (Next
- * token, Run status, linked projects, Last run, Token plan, Run forecast, lane summary, cross-lane leaderboard) or a lane tab
+ * The event page on both forms (design D3): header (with the linked projects and the plan wizard
+ * button), the tab strip, then the Overview tab (Next token, Run status, Last run, Token plan, Run forecast, lane summary, cross-lane leaderboard) or a lane tab
  * (lane overview, Teams, Upgrade impact, synced progress, Battles, then the lane's leaderboard). The forms
  * differ only in the strip's stickiness and in the table-versus-cards rendering of the leaderboard
  * and grid. The team editor is mounted once here (design D4), so the Teams section and both
@@ -47,7 +45,22 @@ export function LegendaryEventPageView({
       className="flex min-w-0 flex-col gap-4"
       data-testid="legendary-event-page"
     >
-      <LegendaryEventHeader {...props} />
+      <LegendaryEventHeader
+        {...props}
+        actions={
+          <LegendaryEventPlanEntry
+            eventId={props.event.id}
+            showButton={
+              props.runInputs.enabled && props.lifecycle.state !== "archived"
+            }
+            teams={
+              props.teams.state.kind === "ready"
+                ? props.teams.state.plan.teams
+                : undefined
+            }
+          />
+        }
+      />
       <LegendaryEventTabs
         isMobile={isMobile}
         onSelectTab={props.onSelectTab}
@@ -58,21 +71,6 @@ export function LegendaryEventPageView({
           className="flex min-w-0 flex-col gap-6"
           data-testid="legendary-event-overview"
         >
-          {props.runInputs.enabled && props.lifecycle.state !== "archived" ? (
-            <Button
-              asChild
-              className="self-start"
-              data-testid="legendary-event-plan-wizard"
-              variant="outline"
-            >
-              <Link
-                to={`/legendary-events/${props.event.id}/plan?from=overview`}
-              >
-                <Sparkles aria-hidden="true" />
-                {t("planWizard.open")}
-              </Link>
-            </Button>
-          ) : null}
           <NextTokenCard
             event={props.event}
             eventId={props.event.id}
@@ -82,7 +80,6 @@ export function LegendaryEventPageView({
             view={tokens.view}
           />
           <RunStatusCard {...props} isMobile={isMobile} />
-          <EventProjectsLine eventId={props.event.id} />
           <LastRunCard
             isMobile={isMobile}
             lastRun={props.lastRun.state}

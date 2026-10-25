@@ -419,7 +419,9 @@
       "tierListDescription": "Die Horde-Modus-Tier-Liste hinter den Abschlussschätzungen",
       "activeEventDescription": "Aktives Legendäres Event mit deinem synchronisierten Fortschritt",
       "upcomingEventDescription": "Bevorstehendes Legendäres Event",
-      "archivedEventDescription": "Vergangenes Legendäres Event mit deinem synchronisierten Fortschritt"
+      "archivedEventDescription": "Vergangenes Legendäres Event mit deinem synchronisierten Fortschritt",
+      "runStartsOn": "Beginnt am {{date}}",
+      "runEndsOn": "Endet am {{date}}"
     }
   },
   "home": {
