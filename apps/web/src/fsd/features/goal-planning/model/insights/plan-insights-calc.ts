@@ -183,6 +183,7 @@ export function computePlanInsights(params: {
       unlockShardCostsById: params.unlockShardCostsById,
       coveredAbilityTransitions: coverage,
       coveredRankSlots: coverage.rankSlots,
+      ascensionCoverage: coverage,
       craftedInventory,
     }
     abilityMaterials.add(detail, {

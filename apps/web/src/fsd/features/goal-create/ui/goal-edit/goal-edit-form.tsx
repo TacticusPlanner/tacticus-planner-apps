@@ -42,12 +42,14 @@ export function GoalEditForm({
   detail,
   portalContainer,
   onDirtyChange,
+  onOpenGoal,
   onRequestClose,
   onSaved,
 }: {
   detail: GoalDetail
   portalContainer: HTMLElement | null
   onDirtyChange: (dirty: boolean) => void
+  onOpenGoal?: (goalId: string) => void
   onRequestClose: () => void
   onSaved: () => void
 }) {
@@ -215,6 +217,7 @@ export function GoalEditForm({
           <div className="md:mr-auto">
             <GoalEditError
               error={saver.error}
+              onOpenGoal={onOpenGoal}
               onRefreshGoal={() => {
                 if (saver.error?.kind === "stale") {
                   saver.refreshGoal(saver.error.current)

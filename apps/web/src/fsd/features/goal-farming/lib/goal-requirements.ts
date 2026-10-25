@@ -24,7 +24,9 @@ import {
 import { upgradeResourceNeed } from "./upgrade-goal-need"
 import {
   ascensionResourceNeed,
+  createAscensionCoverage,
   unlockResourceNeed,
+  type AscensionCoverage,
   type ResourceNeed,
 } from "./progression-cost-calc"
 
@@ -33,18 +35,21 @@ type PlayerMow = PlayerDataChunkDto<"mows">[number]
 type InventoryShard = PlayerDataChunkDto<"inventory-shards">[number]
 
 /** What earlier (higher-priority) goals of one unit already claimed, so overlapping goals charge shared
- * progression once: the MoW ability transitions per track, and the Rank upgrade slots. One per unit
- * across a plan, goals invoked in effective priority order. */
+ * progression once: the ability transitions per track, the Rank upgrade slots, and the Ascension
+ * progression steps together with the owned shards each Ascension goal drew. One per unit across a
+ * plan, goals invoked in effective priority order. */
 export type UnitCoverage = {
   primary: Set<number>
   secondary: Set<number>
   rankSlots: Set<string>
+  ascension: AscensionCoverage
 }
 
 export const createUnitCoverage = (): UnitCoverage => ({
   primary: new Set(),
   secondary: new Set(),
   rankSlots: new Set(),
+  ascension: createAscensionCoverage(),
 })
 
 export type GoalRequirementParams = {
@@ -70,6 +75,9 @@ export type GoalRequirementParams = {
   /** The Rank slots earlier (higher-priority) goals of this character already claimed — one set per
    *  character across the plan, goals invoked in priority order (see `rankResourceNeed`). */
   coveredRankSlots?: Set<string>
+  /** The unit's plan coverage, for Ascension goals: steps an earlier goal claimed are not charged again,
+   *  and owned shards are drawn once across the unit's Ascension goals. Omit for a standalone estimate. */
+  ascensionCoverage?: UnitCoverage
   craftedInventory?: CraftedInventoryPool
 }
 
@@ -181,6 +189,10 @@ export function calculateGoalResourceNeed(
       ownedMythicShards: owned?.mythicShards ?? 0,
       currentProgression: owned?.progressionIndex,
       ascensionCostsById: params.ascensionCostsById,
+      coverage: params.ascensionCoverage && {
+        goalId: detail.goalId,
+        allocation: params.ascensionCoverage.ascension,
+      },
     })
   }
   if (detail.goalType === "Unlock") {

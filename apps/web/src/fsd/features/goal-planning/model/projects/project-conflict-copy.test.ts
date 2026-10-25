@@ -6,12 +6,12 @@ import en from "../../../../../../public/locales/en/common.json"
 import es from "../../../../../../public/locales/es/common.json"
 import fr from "../../../../../../public/locales/fr/common.json"
 
+import { rankTargetKeyLabel } from "@/entities/goal"
 import { ApiError } from "@/shared/api"
 
 import {
   membershipErrorText,
   projectConflictText,
-  rankTargetKeyLabel,
 } from "./project-conflict-copy"
 
 // Echoes the key and options so the test sees which message was chosen; a rank lookup returns its
@@ -55,15 +55,35 @@ describe("projectConflictText", () => {
     )
   })
 
-  it("names the unit and goal kind for every other goal type", () => {
+  it("names the exact target of a keyed goal of any other type", () => {
     expect(
       projectConflictText(
         t,
-        { goalType: "Ascension", config: {} } as never,
+        {
+          goalType: "Ascension",
+          config: {
+            progression: {
+              start: "Epic:RedThreeStars",
+              end: "Legendary:RedFourStars",
+            },
+          },
+        } as never,
         "Ragnar"
       )
     ).toBe(
-      'goals.project.membershipConflict:{"unit":"Ragnar","type":"goals.create.goalTypes.Ascension"}'
+      'goals.project.membershipConflictTarget:{"unit":"Ragnar","type":"goals.create.goalTypes.Ascension","target":"Legendary RedFourStars"}'
+    )
+  })
+
+  it("names the unit and goal kind for an unkeyed goal", () => {
+    expect(
+      projectConflictText(
+        t,
+        { goalType: "Unlock", config: {} } as never,
+        "Ragnar"
+      )
+    ).toBe(
+      'goals.project.membershipConflict:{"unit":"Ragnar","type":"goals.create.goalTypes.Unlock"}'
     )
   })
 })
@@ -77,11 +97,15 @@ describe("goal-naming conflict copy in every locale", () => {
     for (const key of [
       "membershipConflict",
       "membershipConflictRank",
+      "membershipConflictTarget",
     ] as const) {
       expect(locale.goals.project[key]).toContain("{{unit}}")
       expect(locale.goals.project[key]).not.toBe(en.goals.project[key])
     }
     expect(locale.goals.project.membershipConflictRank).toContain("{{target}}")
+    expect(locale.goals.project.membershipConflictTarget).toContain(
+      "{{target}}"
+    )
     expect(locale.goals.toasts.statusConflict).toContain("{{goal}}")
     expect(locale.goals.toasts.statusConflict).toContain("{{reason}}")
     expect(locale.goals.toasts.statusConflict).not.toBe(
@@ -94,7 +118,9 @@ describe("goal-naming conflict copy in every locale", () => {
 
   it("no longer names a project in the English conflict copy", () => {
     expect(en.goals.project.membershipConflict).not.toContain("{{project}}")
-    expect(en.tour.overview.steps.list.content).toMatch(/Rank goals/)
+    expect(en.tour.overview.steps.list.content).toMatch(
+      /several Rank, Ascension, Ability or Upgrade goals/
+    )
   })
 })
 

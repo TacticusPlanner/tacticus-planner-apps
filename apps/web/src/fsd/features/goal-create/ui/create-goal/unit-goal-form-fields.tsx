@@ -9,7 +9,7 @@ import type { useCreateGoalForm } from "../../model/goal-creation-form/use-creat
 import { GoalProjectsField } from "../projects/goal-projects-field"
 import { GoalTypeToggleGroup, GoalTypeCard } from "../shared/goal-visuals"
 import { UnitInfoCard } from "./unit-info-card"
-import type { GoalKind } from "@/entities/goal"
+import { progressionLabel, type GoalKind } from "@/entities/goal"
 import {
   AcquisitionSourceField,
   ShopOfferRow,
@@ -23,6 +23,12 @@ import { LevelRequirementNote } from "./level-requirement-note"
 import { MythicMaterialSourceField } from "./mythic-material-source-field"
 import { UnlockRequirementField } from "./unlock-requirement-field"
 import { UpgradeGoalFields } from "./upgrade-goal-fields"
+import {
+  AbilityMilestoneFields,
+  AscensionMilestoneFields,
+  RankMilestoneFields,
+} from "./goal-milestone-fields"
+import { canAddMilestone } from "../../model/goal-creation-form/goal-milestones"
 
 type GoalForm = ReturnType<typeof useCreateGoalForm>
 
@@ -202,6 +208,7 @@ export function UnitGoalFormFields({
             {form.reviewItems.map((item) => (
               <li key={item.goalType}>
                 {t(`goals.create.goalTypes.${item.goalType}`)}
+                {item.count > 1 ? ` ×${item.count}` : null}
                 {item.autoSuggested ? (
                   <span className="text-xs">
                     {" — "}
@@ -214,6 +221,16 @@ export function UnitGoalFormFields({
                 ) : null}
               </li>
             ))}
+            {form.prerequisites.coveringAscension ? (
+              <li data-testid="create-goal-review-depends-on-existing">
+                {t("goals.create.suggestions.dependsOnExisting", {
+                  target: progressionLabel(
+                    t,
+                    form.prerequisites.coveringAscension.end
+                  ),
+                })}
+              </li>
+            ) : null}
           </ul>
           {form.estimatedProjectIds.length > 0 ? (
             <ul className="flex flex-wrap gap-x-3 border-l pl-3 text-muted-foreground">
@@ -287,6 +304,19 @@ function GoalTypeCards({
         kind === "Upgrade" ||
         (kind === "Ability" && form.entityType === "Mow"))
   )
+  // Each ladder's last target: the newest added milestone, else the card's own target.
+  const { milestoneFields } = form
+  const { milestones } = milestoneFields
+  const ladderEnds = {
+    rank: milestones.rank.at(-1) ?? form.rankEnd,
+    progression: milestones.ascension.at(-1) ?? form.progressionEnd,
+    ability: milestones.ability.at(-1) ?? {
+      activeEnd: form.abilityActiveEnd,
+      passiveEnd: form.abilityPassiveEnd,
+    },
+  }
+  const invalidMilestone = (kind: GoalKind) =>
+    form.milestoneIssue?.kind === kind ? form.milestoneIssue.index : null
   const mythicField = (kind: GoalKind) =>
     kind === mythicHost ? (
       <MythicMaterialSourceField selection={form.mythicMaterialSelection} />
@@ -335,6 +365,17 @@ function GoalTypeCards({
                       />
                     </div>
                   </div>
+                  <RankMilestoneFields
+                    canAdd={canAddMilestone("Rank", ladderEnds)}
+                    invalidIndex={invalidMilestone("Rank")}
+                    milestones={milestones.rank}
+                    onAdd={() => milestoneFields.addRank(ladderEnds.rank)}
+                    onChange={(index, value) =>
+                      milestoneFields.update("rank", index, value)
+                    }
+                    onRemove={(index) => milestoneFields.remove("rank", index)}
+                    rankStart={form.rankStart}
+                  />
                   {mythicField(kind)}
                 </GoalTypeCard>
               )
@@ -370,6 +411,21 @@ function GoalTypeCards({
                     progressionPreview={form.progressionPreview}
                     progressionStart={form.progressionStart}
                     onProgressionEndChange={form.setProgressionEnd}
+                  />
+                  <AscensionMilestoneFields
+                    canAdd={canAddMilestone("Ascension", ladderEnds)}
+                    invalidIndex={invalidMilestone("Ascension")}
+                    milestones={milestones.ascension}
+                    onAdd={() =>
+                      milestoneFields.addAscension(ladderEnds.progression)
+                    }
+                    onChange={(index, value) =>
+                      milestoneFields.update("ascension", index, value)
+                    }
+                    onRemove={(index) =>
+                      milestoneFields.remove("ascension", index)
+                    }
+                    progressionStart={form.progressionStart}
                   />
                   <AcquisitionSourceField
                     battlesById={form.battlesById}
@@ -477,6 +533,21 @@ function GoalTypeCards({
                     onPassiveTargetChange={form.setAbilityPassiveTarget}
                     missingUpgrades={form.missingUpgrades}
                     costingSupported={form.entityType === "Mow"}
+                  />
+                  <AbilityMilestoneFields
+                    activeStart={form.abilityActiveStart}
+                    canAdd={canAddMilestone("Ability", ladderEnds)}
+                    entityType={form.entityType}
+                    invalidIndex={invalidMilestone("Ability")}
+                    milestones={milestones.ability}
+                    onAdd={() => milestoneFields.addAbility(ladderEnds.ability)}
+                    onChange={(index, value) =>
+                      milestoneFields.update("ability", index, value)
+                    }
+                    onRemove={(index) =>
+                      milestoneFields.remove("ability", index)
+                    }
+                    passiveStart={form.abilityPassiveStart}
                   />
                   <LevelRequirementNote
                     preview={form.levelRequirements.Ability}

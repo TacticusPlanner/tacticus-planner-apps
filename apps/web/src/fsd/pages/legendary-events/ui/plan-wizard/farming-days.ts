@@ -267,6 +267,7 @@ function estimateChain(
       unlockShardCostsById: inputs.unlockShardCostsById,
       coveredAbilityTransitions: coverage,
       coveredRankSlots: coverage.rankSlots,
+      ascensionCoverage: coverage,
       craftedInventory,
     }
     const stages = calculateGoalFarmingStages(needParams)

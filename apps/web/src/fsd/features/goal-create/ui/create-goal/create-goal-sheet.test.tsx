@@ -365,10 +365,13 @@ const createCombinedGoals = vi.fn()
 const listProjects = vi.fn()
 const createProject = vi.fn()
 const listGoals = vi.fn(() => Promise.resolve({ goals: [] }))
+// The account's goals the slot pre-check and the Ascension prerequisite read — empty by default.
+let inFlightGoalsById = new Map<string, unknown>()
 
 vi.mock("@/entities/goal", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/entities/goal")>()),
   createCombinedGoals: (...args: unknown[]) => createCombinedGoals(...args),
+  useGoalsById: () => ({ goalsById: inFlightGoalsById, loading: false }),
   // The account's Active goals in global order, which the new goal's duration estimate folds in
   // behind — empty by default (the per-goal engine itself is covered by per-project-estimate.test.ts).
   useGlobalGoalPlan: () => ({
@@ -449,6 +452,7 @@ describe("CreateGoalSheet", () => {
     createProject.mockReset()
     listGoals.mockReset()
     listGoals.mockResolvedValue({ goals: [] })
+    inFlightGoalsById = new Map()
 
     // Owned, nothing applied yet — numerically identical missingUpgrades/estimate math to an
     // undefined playerCharacter, but not locked, so most tests exercise the plain (no
@@ -2057,6 +2061,160 @@ describe("CreateGoalSheet", () => {
     expect(ability.config.ability).toMatchObject({
       activeStart: 12,
       activeEnd: 35,
+    })
+  })
+
+  describe("milestones (goal-target-milestones)", () => {
+    const seedInFlightGoal = (
+      overrides: { goalId: string } & Record<string, unknown>
+    ) => {
+      const goal = {
+        entityType: "Character",
+        entityId: "hero1",
+        status: "Active",
+        projectIds: [],
+        ...overrides,
+      }
+      inFlightGoalsById = new Map([[goal.goalId, goal]])
+    }
+
+    async function enableRank() {
+      await selectCharacter()
+      await vi.waitFor(() => {
+        expect(
+          screen.getByTestId("create-goal-type-toggle-Rank")
+        ).not.toBeDisabled()
+      })
+      fireEvent.click(screen.getByTestId("create-goal-type-toggle-Rank"))
+    }
+
+    it("creates a Rank ladder in one request, each milestone depending on the previous", async () => {
+      createCombinedGoals.mockResolvedValue({ goals: [] })
+      render(<CreateGoalSheet open onOpenChange={vi.fn()} />)
+      await enableRank()
+
+      fireEvent.click(screen.getByTestId("create-goal-rank-add-milestone"))
+      fireEvent.click(screen.getByTestId("create-goal-rank-add-milestone"))
+      expect(
+        screen.getByTestId("create-goal-rank-milestone-1")
+      ).toHaveTextContent("Milestone 3")
+      await vi.waitFor(() => {
+        expect(screen.getByTestId("create-goal-review")).toHaveTextContent("×3")
+      })
+      fireEvent.click(screen.getByTestId("create-goal-submit"))
+
+      await vi.waitFor(() => {
+        expect(createCombinedGoals).toHaveBeenCalledTimes(1)
+      })
+      const [request] = createCombinedGoals.mock.calls[0] ?? []
+      expect(
+        request.goals.map(
+          (goal: { config: { rank: { start: number; end: number } } }) => [
+            goal.config.rank.start,
+            goal.config.rank.end,
+          ]
+        )
+      ).toEqual([
+        [0, 1],
+        [0, 2],
+        [0, 3],
+      ])
+      expect(
+        request.goals.map(
+          (goal: { dependsOnIndex: number[] }) => goal.dependsOnIndex
+        )
+      ).toEqual([[], [0], [1]])
+    })
+
+    it("removes a milestone before submission", async () => {
+      render(<CreateGoalSheet open onOpenChange={vi.fn()} />)
+      await enableRank()
+
+      fireEvent.click(screen.getByTestId("create-goal-rank-add-milestone"))
+      fireEvent.click(
+        screen.getByRole("button", { name: "Remove milestone 2" })
+      )
+
+      expect(
+        screen.queryByTestId("create-goal-rank-milestone-0")
+      ).not.toBeInTheDocument()
+    })
+
+    it("blocks a ladder step that matches an in-flight goal, naming it", async () => {
+      seedInFlightGoal({
+        goalId: "rank-2",
+        goalType: "Rank",
+        config: {
+          rank: {
+            start: 0,
+            startPointFive: false,
+            startAppliedUpgrades: 0,
+            end: 2,
+            endPointFive: false,
+            endAppliedUpgrades: 0,
+          },
+        },
+      })
+      render(<CreateGoalSheet open onOpenChange={vi.fn()} />)
+      await enableRank()
+
+      // The card's own Stone2 target doesn't collide; the added Stone3 milestone does.
+      expect(
+        screen.queryByTestId("create-goal-slot-conflict")
+      ).not.toBeInTheDocument()
+      fireEvent.click(screen.getByTestId("create-goal-rank-add-milestone"))
+
+      expect(
+        await screen.findByTestId("create-goal-slot-conflict")
+      ).toHaveTextContent("Rank goal with the target")
+      expect(screen.getByTestId("create-goal-submit")).toBeDisabled()
+    })
+
+    it("depends on an in-flight Ascension goal that covers an above-cap target instead of suggesting one", async () => {
+      await seedCharacter({
+        rank: "Silver1",
+        progressionIndex: "Rare:FourStars", // ability cap 26
+        appliedUpgradeSlots: [],
+        xpLevel: 59,
+        abilities: [
+          { abilityId: "a1", level: 12 },
+          { abilityId: "a2", level: 9 },
+        ],
+      })
+      seedInFlightGoal({
+        goalId: "asc-epic",
+        goalType: "Ascension",
+        config: {
+          progression: { start: "Rare:FourStars", end: "Epic:RedOneStar" },
+        },
+      })
+      createCombinedGoals.mockResolvedValue({ goals: [] })
+      render(<CreateGoalSheet open onOpenChange={vi.fn()} />)
+
+      await selectCharacter()
+      fireEvent.click(screen.getByTestId("create-goal-type-toggle-Ability"))
+      fireEvent.click(screen.getByTestId("create-goal-ability-active-target"))
+      const activeList = await screen.findByRole("listbox")
+      fireEvent.click(within(activeList).getByRole("option", { name: "35" }))
+
+      expect(
+        await screen.findByTestId("create-goal-review-depends-on-existing")
+      ).toBeInTheDocument()
+      expect(
+        screen.queryByTestId("create-goal-include-ascension")
+      ).not.toBeInTheDocument()
+
+      fireEvent.click(screen.getByTestId("create-goal-submit"))
+      await vi.waitFor(() => {
+        expect(createCombinedGoals).toHaveBeenCalledTimes(1)
+      })
+      const [request] = createCombinedGoals.mock.calls[0] ?? []
+      expect(request.goals).toHaveLength(1)
+      expect(request.goals[0]).toMatchObject({
+        goalType: "Ability",
+        dependsOnIndex: [],
+        dependsOnGoalIds: ["asc-epic"],
+      })
     })
   })
 

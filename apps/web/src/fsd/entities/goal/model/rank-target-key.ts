@@ -1,3 +1,4 @@
+import type { TFunction } from "i18next"
 import { Rank, rankAt, rankIndex } from "@workspace/game-domain"
 
 import type { GoalDetail, RankTarget } from "./types"
@@ -36,6 +37,21 @@ export function describeRankTargetKey(
   return rest.length === 0 && Number.isInteger(end) && Number.isInteger(slots)
     ? { rank: rankAt(end!), slots: slots! }
     : null
+}
+
+/** "Silver3" or "Silver3 (3/6)" — the Rank end target a normalized target key stands for, or null when the
+ * key is malformed. */
+export function rankTargetKeyLabel(
+  t: TFunction,
+  rankTargetKey: string
+): string | null {
+  const target = describeRankTargetKey(rankTargetKey)
+  if (!target) return null
+  const rank = t(`ranks.${target.rank}`, {
+    ns: "progression",
+    defaultValue: target.rank,
+  })
+  return target.slots > 0 ? `${rank} (${target.slots}/6)` : rank
 }
 
 /** The Rank target key of a goal, or null for any non-Rank goal (or a Rank goal without a target). */

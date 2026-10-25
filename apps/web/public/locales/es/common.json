@@ -901,7 +901,8 @@
       "eventArchived_one": "+{{count}} archivado",
       "eventArchived_other": "+{{count}} archivados",
       "eventNoProject": "No hay ningún proyecto para este evento",
-      "eventOpenProjects": "Ir a Proyectos"
+      "eventOpenProjects": "Ir a Proyectos",
+      "membershipConflictTarget": "{{unit}} ya tiene una meta de {{type}} activa o en pausa con el objetivo {{target}}."
     },
     "toasts": {
       "statusConflict": "No se pudo cambiar {{goal}}: {{reason}}",
@@ -1082,7 +1083,8 @@
         "includeUnlock": "Incluir el objetivo de Desbloqueo sugerido",
         "includeAscension": "Incluir el objetivo de Ascensión sugerido",
         "unlockRequired": "necesario, este personaje aún no se posee",
-        "ascensionRequired": "necesario para alcanzar el rango objetivo"
+        "ascensionRequired": "necesario para alcanzar el rango objetivo",
+        "dependsOnExisting": "Depende de tu objetivo existente Ascensión → {{target}}"
       },
       "validation": {
         "alreadyUnlocked": "Este personaje ya está desbloqueado.",
@@ -1102,6 +1104,13 @@
         "title": "Requiere nivel {{required}} (actualmente {{current}})",
         "xpRemaining": "Faltan {{xp}} XP",
         "note": "Solo informativo: forma parte del objetivo, no es un objetivo aparte y nunca lo bloquea."
+      },
+      "milestones": {
+        "add": "Añadir hito",
+        "label": "Hito {{number}}",
+        "remove": "Quitar el hito {{number}}",
+        "hint": "Cada hito se convierte en su propio objetivo, después del anterior.",
+        "notAbove": "Cada hito debe estar por encima del anterior."
       }
     },
     "estimate": {
@@ -1211,7 +1220,8 @@
       "reachableCeilingLevelLabel": "Alcanzable actualmente: Nivel {{level}}",
       "reachableCeilingReasonRarity": "limitado por rareza",
       "reachableCeilingReasonLevel": "limitado por nivel",
-      "reachableCeilingReasonBoth": "limitado por rareza y nivel"
+      "reachableCeilingReasonBoth": "limitado por rareza y nivel",
+      "coveredBy": "Cubierto por el objetivo {{type}} → {{target}}"
     },
     "insights": {
       "selectProject": "Selecciona un proyecto",
@@ -1258,7 +1268,9 @@
         "upgradeEmpty": "Una meta de mejoras necesita al menos un material.",
         "upgradeRange": "Elige un rango que termine por encima de su inicio."
       },
-      "reachedNote": "Un objetivo ya alcanzado es válido: no necesita nada más y el objetivo conserva su estado hasta que lo completes."
+      "reachedNote": "Un objetivo ya alcanzado es válido: no necesita nada más y el objetivo conserva su estado hasta que lo completes.",
+      "upgradeMaterials_one": "{{count}} material",
+      "upgradeMaterials_other": "{{count}} materiales"
     },
     "order": {
       "conflictTitle": "El plan ha cambiado",
@@ -1305,7 +1317,8 @@
         "projects": "proyectos",
         "priority": "prioridad",
         "unknown": "una entrada"
-      }
+      },
+      "openConflict": "Abrir ese objetivo"
     }
   },
   "language": {
@@ -1436,7 +1449,7 @@
         },
         "list": {
           "title": "Tus objetivos",
-          "content": "Cada meta aparece abajo según tu orden de prioridad: primero las activas y pausadas, luego las alcanzadas. Usa la acción Editar de una meta para cambiar su objetivo, prioridad, notas o proyectos. Un personaje puede tener varias metas de rango, cada una etiquetada con su propio objetivo."
+          "content": "Cada meta aparece abajo según tu orden de prioridad: primero las activas y pausadas, luego las alcanzadas. Usa la acción Editar de una meta para cambiar su objetivo, prioridad, notas o proyectos. Una unidad puede tener varias metas de rango, ascensión, habilidad o mejora, cada una etiquetada con su propio objetivo."
         }
       }
     },
@@ -1453,6 +1466,10 @@
         "mythicMaterialSources": {
           "title": "Materiales míticos",
           "content": "Ofertas de tienda para los materiales míticos que necesita este objetivo. Por defecto se cuentan todas las ofertas disponibles; desmarca las que no vayas a comprar."
+        },
+        "milestones": {
+          "title": "Hitos",
+          "content": "Añade hitos para planificar varios objetivos de esta unidad a la vez, como Oro 1, luego Diamante 1 y luego Diamante 3. Cada uno se convierte en su propio objetivo, después del anterior."
         }
       }
     },

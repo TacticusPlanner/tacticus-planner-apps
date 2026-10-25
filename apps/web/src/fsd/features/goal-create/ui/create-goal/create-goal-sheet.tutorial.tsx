@@ -8,6 +8,7 @@ import { useTourPageSteps, type TourPageSteps } from "@/shared/tour"
 /**
  * The create-goal sheet's own onboarding tour (plan: acquisition-source picker,
  * tacticus-planner-apps#103) — the sheet had no tour coverage before this change. One step for
+ * "Add milestone" (a ladder of targets for one unit), one for
  * explaining that Campaigns/Onslaught/Shops sources combine, and one for the project picker's
  * inline Create action (skipped by Joyride until a unit is chosen and the picker exists). The targets
  * are `data-testid`s inside the form body, which both shells render (centered dialog at or above
@@ -15,6 +16,17 @@ import { useTourPageSteps, type TourPageSteps } from "@/shared/tour"
  */
 export function useCreateGoalSheetTutorial(): TourPageSteps {
   const { t } = useTranslation()
+
+  // The first enabled Rank, Ascension or Ability card's milestone list (goal-target-milestones);
+  // skipped by Joyride until one of those cards is shown.
+  const milestones = useMemo<Step>(
+    () => ({
+      target: MILESTONE_TARGET,
+      title: t("tour.createGoal.steps.milestones.title"),
+      content: t("tour.createGoal.steps.milestones.content"),
+    }),
+    [t]
+  )
 
   const acquisitionSources = useMemo<Step>(
     () => ({
@@ -47,12 +59,21 @@ export function useCreateGoalSheetTutorial(): TourPageSteps {
 
   return useMemo<TourPageSteps>(
     () => ({
-      desktop: [acquisitionSources, mythicMaterialSources, projects],
-      mobile: [acquisitionSources, mythicMaterialSources, projects],
+      desktop: [
+        milestones,
+        acquisitionSources,
+        mythicMaterialSources,
+        projects,
+      ],
+      mobile: [milestones, acquisitionSources, mythicMaterialSources, projects],
     }),
-    [acquisitionSources, mythicMaterialSources, projects]
+    [milestones, acquisitionSources, mythicMaterialSources, projects]
   )
 }
+
+const MILESTONE_TARGET = ["rank", "ascension", "ability"]
+  .map((kind) => `[data-testid="create-goal-${kind}-milestones"]`)
+  .join(", ")
 
 /**
  * Registers the sheet's tour steps only while it's open. `CreateGoalSheet` is mounted

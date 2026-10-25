@@ -970,6 +970,40 @@ describe("GoalEditDialog", () => {
       expect(editGoal).toHaveBeenCalledTimes(1)
     })
 
+    it("names a colliding Ascension sibling with its target and offers to open it", async () => {
+      const onOpenGoal = vi.fn()
+      goalOnScreen(ascensionGoal)
+      editGoal.mockRejectedValue(
+        new ApiError(409, "occupied", {
+          issueCode: "slotOccupied",
+          current: {
+            ...ascensionGoal,
+            goalId: "goal-9",
+            config: {
+              ...ascensionGoal.config,
+              progression: {
+                start: "Common:None",
+                end: "Legendary:RedFiveStars",
+              },
+            },
+          },
+        })
+      )
+      renderDialog({ onOpenGoal })
+      await loaded()
+
+      fireEvent.change(screen.getByLabelText("Notes"), {
+        target: { value: "Next milestone" },
+      })
+      fireEvent.click(screen.getByTestId("goal-edit-save"))
+
+      expect(await screen.findByTestId("goal-edit-error")).toHaveTextContent(
+        /already has an active or paused Ascension goal with the target Legendary/
+      )
+      fireEvent.click(screen.getByTestId("goal-edit-open-conflict"))
+      expect(onOpenGoal).toHaveBeenCalledWith("goal-9")
+    })
+
     it("keeps the draft on a stale revision and retries against the refreshed goal", async () => {
       const current = { ...rankGoal, revision: 8, notes: "Old note" }
       editGoal.mockRejectedValueOnce(

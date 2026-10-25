@@ -901,7 +901,8 @@
       "eventArchived_one": "+{{count}} archivé",
       "eventArchived_other": "+{{count}} archivés",
       "eventNoProject": "Aucun projet pour cet événement",
-      "eventOpenProjects": "Aller aux projets"
+      "eventOpenProjects": "Aller aux projets",
+      "membershipConflictTarget": "{{unit}} a déjà un objectif {{type}} actif ou en pause avec la cible {{target}}."
     },
     "toasts": {
       "statusConflict": "{{goal}} n'a pas pu être modifié : {{reason}}",
@@ -1082,7 +1083,8 @@
         "includeUnlock": "Inclure l'objectif de Déblocage suggéré",
         "includeAscension": "Inclure l'objectif d'Ascension suggéré",
         "unlockRequired": "requis, ce personnage n'est pas encore possédé",
-        "ascensionRequired": "requis pour atteindre le rang cible"
+        "ascensionRequired": "requis pour atteindre le rang cible",
+        "dependsOnExisting": "Dépend de votre objectif existant Ascension → {{target}}"
       },
       "validation": {
         "alreadyUnlocked": "Ce personnage est déjà débloqué.",
@@ -1102,6 +1104,13 @@
         "title": "Nécessite le niveau {{required}} (actuellement {{current}})",
         "xpRemaining": "Il reste {{xp}} XP à gagner",
         "note": "À titre indicatif : cela fait partie de l'objectif, ce n'est pas un objectif distinct et il ne le bloque jamais."
+      },
+      "milestones": {
+        "add": "Ajouter une étape",
+        "label": "Étape {{number}}",
+        "remove": "Retirer l'étape {{number}}",
+        "hint": "Chaque étape devient un objectif à part entière, après la précédente.",
+        "notAbove": "Chaque étape doit être au-dessus de la précédente."
       }
     },
     "estimate": {
@@ -1211,7 +1220,8 @@
       "reachableCeilingLevelLabel": "Actuellement atteignable : niveau {{level}}",
       "reachableCeilingReasonRarity": "limité par la rareté",
       "reachableCeilingReasonLevel": "limité par le niveau",
-      "reachableCeilingReasonBoth": "limité par la rareté et le niveau"
+      "reachableCeilingReasonBoth": "limité par la rareté et le niveau",
+      "coveredBy": "Couvert par l'objectif {{type}} → {{target}}"
     },
     "insights": {
       "selectProject": "Sélectionnez un projet",
@@ -1258,7 +1268,9 @@
         "upgradeEmpty": "Un objectif d'améliorations nécessite au moins un matériau.",
         "upgradeRange": "Choisissez une plage qui se termine au-dessus de son début."
       },
-      "reachedNote": "Un objectif déjà atteint est valide : il n'a plus besoin de rien et garde son statut jusqu'à ce que vous le terminiez."
+      "reachedNote": "Un objectif déjà atteint est valide : il n'a plus besoin de rien et garde son statut jusqu'à ce que vous le terminiez.",
+      "upgradeMaterials_one": "{{count}} matériau",
+      "upgradeMaterials_other": "{{count}} matériaux"
     },
     "order": {
       "conflictTitle": "Le plan a changé",
@@ -1305,7 +1317,8 @@
         "projects": "projets",
         "priority": "priorité",
         "unknown": "une saisie"
-      }
+      },
+      "openConflict": "Ouvrir cet objectif"
     }
   },
   "language": {
@@ -1436,7 +1449,7 @@
         },
         "list": {
           "title": "Vos objectifs",
-          "content": "Chaque objectif apparaît ci-dessous selon votre ordre de priorité : les actifs et en pause d'abord, puis les atteints. Utilisez l'action Modifier d'un objectif pour changer sa cible, sa priorité, ses notes ou ses projets. Un personnage peut avoir plusieurs objectifs de rang, chacun étiqueté avec sa propre cible."
+          "content": "Chaque objectif apparaît ci-dessous selon votre ordre de priorité : les actifs et en pause d'abord, puis les atteints. Utilisez l'action Modifier d'un objectif pour changer sa cible, sa priorité, ses notes ou ses projets. Une unité peut avoir plusieurs objectifs de rang, d'ascension, de capacité ou d'amélioration, chacun étiqueté avec sa propre cible."
         }
       }
     },
@@ -1453,6 +1466,10 @@
         "mythicMaterialSources": {
           "title": "Matériaux mythiques",
           "content": "Offres de boutique pour les matériaux mythiques dont cet objectif a besoin. Toutes les offres disponibles sont comptées par défaut ; décochez celles que vous n'achèterez pas."
+        },
+        "milestones": {
+          "title": "Étapes",
+          "content": "Ajoutez des étapes pour planifier plusieurs cibles pour cette unité à la fois, par exemple Or 1, puis Diamant 1, puis Diamant 3. Chacune devient un objectif à part entière, après la précédente."
         }
       }
     },

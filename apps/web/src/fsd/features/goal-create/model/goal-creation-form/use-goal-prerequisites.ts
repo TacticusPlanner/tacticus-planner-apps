@@ -1,14 +1,24 @@
 import { useMemo } from "react"
 import {
   firstProgression,
-  minProgressionForAbilityLevel,
-  minProgressionForRank,
   progressionIndex,
   type Progression,
   type Rank,
 } from "@workspace/game-domain"
 
 import type { GoalKind } from "@/entities/goal"
+
+import {
+  abilityProgressionNeed,
+  EMPTY_MILESTONES,
+  highestProgression,
+  lowestCoveringAscension,
+  rankProgressionNeed,
+  type GoalMilestones,
+} from "./goal-milestones"
+
+/** An in-flight Ascension goal of the selected unit. */
+export type ExistingAscension = { goalId: string; end: Progression }
 
 type AscensionSuggestion = { start: Progression; end: Progression }
 
@@ -19,6 +29,11 @@ export type GoalPrerequisites = {
   /** The enabled Rank goal's target isn't reachable at the effective current progression, and
    *  Ascension wasn't already toggled to cover it — `null` otherwise. */
   needsAscension: AscensionSuggestion | null
+  /** The in-flight Ascension goal the highest enabled target will depend on instead of a new
+   *  Ascension (the lowest one that reaches it), or null when none does or none is needed. */
+  coveringAscension: ExistingAscension | null
+  /** The progression the targets are reasoned from: current, else where the Unlock lands. */
+  baseProgression: Progression
 }
 
 const TYPES_REQUIRING_UNLOCK: ReadonlySet<GoalKind> = new Set([
@@ -44,6 +59,8 @@ export function useGoalPrerequisites({
   rankEnd,
   abilityActiveEnd,
   abilityPassiveEnd,
+  milestones = EMPTY_MILESTONES,
+  existingAscensions = NO_ASCENSIONS,
 }: {
   /** Whether the selected character is absent from the caller's synced roster. */
   isLocked: boolean
@@ -56,52 +73,69 @@ export function useGoalPrerequisites({
   rankEnd: Rank
   abilityActiveEnd: number
   abilityPassiveEnd: number
+  /** The extra ladder targets ("Add milestone") of each enabled type. */
+  milestones?: GoalMilestones
+  /** The unit's in-flight Ascension goals: one reaching the need replaces the suggestion. */
+  existingAscensions?: readonly ExistingAscension[]
 }): GoalPrerequisites {
   const needsUnlock =
     isLocked &&
     !enabledTypes.has("Unlock") &&
     [...enabledTypes].some((kind) => TYPES_REQUIRING_UNLOCK.has(kind))
 
-  const needsAscension = useMemo<AscensionSuggestion | null>(() => {
-    if (enabledTypes.has("Ascension")) return null
+  // A locked character has no synced progression: unlocking puts it at its starting rarity, so reason
+  // from there. Falling back to the lowest step would suggest an Ascension the Unlock already covers
+  // (e.g. Common -> Epic for an Epic character). Only when the starting rarity is unknown do we assume
+  // the lowest possible point.
+  const baseProgression =
+    currentProgression ?? unlockProgression ?? firstProgression
 
-    // A locked character has no synced progression: unlocking puts it at its starting rarity, so
-    // reason from there. Falling back to the lowest step would suggest an Ascension the Unlock
-    // already covers (e.g. Common -> Epic for an Epic character). Only when the starting rarity is
-    // unknown do we assume the lowest possible point.
-    const start = currentProgression ?? unlockProgression ?? firstProgression
+  const ascension = useMemo(() => {
+    const none = { needsAscension: null, coveringAscension: null }
+    if (enabledTypes.has("Ascension")) return none
 
-    // The lowest progression each enabled target needs: a Rank target needs a rarity that permits
-    // that rank; an Ability target needs a rarity whose ability cap covers the higher of the two
-    // tracks. Whichever demands more wins.
-    const required: Progression[] = []
-    if (enabledTypes.has("Rank")) {
-      required.push(minProgressionForRank(rankEnd))
+    // The lowest progression each enabled target needs: a Rank target needs a rarity that permits that
+    // rank; an Ability target needs a rarity whose ability cap covers the higher of the two tracks.
+    // Every milestone counts, and whichever demands most wins.
+    const end = highestProgression([
+      ...(enabledTypes.has("Rank")
+        ? [rankEnd, ...milestones.rank].map((rank) =>
+            rankProgressionNeed(rank, baseProgression)
+          )
+        : []),
+      ...(enabledTypes.has("Ability")
+        ? [
+            { activeEnd: abilityActiveEnd, passiveEnd: abilityPassiveEnd },
+            ...milestones.ability,
+          ].map((ability) => abilityProgressionNeed(ability, baseProgression))
+        : []),
+    ])
+    if (
+      end === null ||
+      progressionIndex(end) <= progressionIndex(baseProgression)
+    ) {
+      return none
     }
-    if (enabledTypes.has("Ability")) {
-      const abilityTarget = Math.max(abilityActiveEnd, abilityPassiveEnd)
-      if (abilityTarget > 0) {
-        required.push(minProgressionForAbilityLevel(abilityTarget))
-      }
+
+    // An in-flight Ascension goal that already reaches the need is depended on instead; a lower one
+    // doesn't block suggesting a new one (it stays a separate milestone).
+    const covering = lowestCoveringAscension(existingAscensions, end)
+    if (covering) return { needsAscension: null, coveringAscension: covering }
+    return {
+      needsAscension: { start: baseProgression, end },
+      coveringAscension: null,
     }
-    if (required.length === 0) return null
-
-    const end = required.reduce((highest, candidate) =>
-      progressionIndex(candidate) > progressionIndex(highest)
-        ? candidate
-        : highest
-    )
-    if (progressionIndex(end) <= progressionIndex(start)) return null
-
-    return { start, end }
   }, [
     enabledTypes,
     rankEnd,
-    currentProgression,
-    unlockProgression,
+    baseProgression,
     abilityActiveEnd,
     abilityPassiveEnd,
+    milestones,
+    existingAscensions,
   ])
 
-  return { needsUnlock, needsAscension }
+  return { needsUnlock, ...ascension, baseProgression }
 }
+
+const NO_ASCENSIONS: readonly ExistingAscension[] = []
