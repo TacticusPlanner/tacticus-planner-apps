@@ -146,6 +146,15 @@ const datasetData: Record<string, unknown> = {
       units: [],
     },
   ],
+  "quest-events": [
+    {
+      featuredCharacterId: "astarCyrus",
+      allowedFactionIds: ["AdeptusAstartes"],
+      enemyFactionIds: ["Necrons"],
+      battles: [],
+    },
+  ],
+  "quest-crates": [{ number: 1, points: 1000, rewards: [] }],
 }
 
 function createManifest(
@@ -406,6 +415,29 @@ describe("syncGameCatalog", () => {
     )
     expect(result.status).toBe("ready")
     expect(await getDatasetRecords("unit-power")).toEqual([])
+  })
+
+  it("keys quest-events by featured hero and quest-crates by number, and is ready without them", async () => {
+    await syncGameCatalog(new FakeGameCatalogClient(createManifest()))
+    expect(await getDatasetRecords("quest-events")).toEqual([
+      expect.objectContaining({ id: "astarCyrus" }),
+    ])
+    expect(await getDatasetRecords("quest-crates")).toEqual([
+      expect.objectContaining({ id: "1", points: 1000 }),
+    ])
+
+    await resetDb()
+    const manifest = createManifest()
+    const result = await syncGameCatalog(
+      new FakeGameCatalogClient({
+        ...manifest,
+        datasets: manifest.datasets.filter(
+          (dataset) =>
+            dataset.key !== "quest-events" && dataset.key !== "quest-crates"
+        ),
+      })
+    )
+    expect(result.status).toBe("ready")
   })
 
   it("is ready when the manifest does not list the optional horde-mode-tiers dataset", async () => {

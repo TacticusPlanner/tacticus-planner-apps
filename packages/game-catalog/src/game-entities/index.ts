@@ -22,6 +22,7 @@ export {
   mowIcon,
   npcPortrait,
   legendaryEventMap,
+  battleBoardImage,
   factionIcon,
   abilityIcon,
   raidBossPortrait,

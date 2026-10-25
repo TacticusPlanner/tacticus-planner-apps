@@ -1,0 +1,2167 @@
+[
+  {
+    "featuredCharacterId": "astarCyrus",
+    "allowedFactionIds": [
+      "AdeptusAstartes",
+      "Ultramarines",
+      "SpaceWolves",
+      "BlackTemplars"
+    ],
+    "enemyFactionIds": ["Necrons"],
+    "battles": [
+      {
+        "number": 1,
+        "tier": "Common",
+        "tierPosition": 1,
+        "deploySlots": 3,
+        "boardId": "C3_70",
+        "spawnPointsSet": 6,
+        "lightningVictoryTurns": 3,
+        "power": null,
+        "enemies": [
+          {
+            "id": "necroNpc2FlayedOne",
+            "ladderIndex": 1,
+            "count": 3
+          },
+          {
+            "id": "necroNpc1Warrior",
+            "ladderIndex": 1,
+            "count": 4
+          }
+        ],
+        "objectives": [
+          {
+            "type": "NoDamageTakenByAnyHero",
+            "target": null,
+            "score": 100
+          },
+          {
+            "type": "NotDamageType",
+            "target": "Power",
+            "score": 100
+          }
+        ],
+        "loot": {
+          "upgradeId": "upgDmgC001",
+          "chanceNumerator": 3,
+          "chanceDenominator": 4
+        }
+      },
+      {
+        "number": 2,
+        "tier": "Common",
+        "tierPosition": 2,
+        "deploySlots": 4,
+        "boardId": "LE3_18",
+        "spawnPointsSet": 1,
+        "lightningVictoryTurns": 3,
+        "power": null,
+        "enemies": [
+          {
+            "id": "necroNpc2FlayedOne",
+            "ladderIndex": 2,
+            "count": 3
+          },
+          {
+            "id": "necroNpc1Warrior",
+            "ladderIndex": 2,
+            "count": 5
+          }
+        ],
+        "objectives": [
+          {
+            "type": "NoDamageTakenByAnyHero",
+            "target": null,
+            "score": 100
+          }
+        ],
+        "loot": {
+          "upgradeId": "upgArmC001",
+          "chanceNumerator": 3,
+          "chanceDenominator": 4
+        }
+      },
+      {
+        "number": 3,
+        "tier": "Common",
+        "tierPosition": 3,
+        "deploySlots": 5,
+        "boardId": "LE3_12",
+        "spawnPointsSet": 2,
+        "lightningVictoryTurns": 2,
+        "power": null,
+        "enemies": [
+          {
+            "id": "necroBossPlasmancerLHE",
+            "ladderIndex": 3,
+            "count": 1
+          },
+          {
+            "id": "necroNpc2FlayedOne",
+            "ladderIndex": 3,
+            "count": 3
+          },
+          {
+            "id": "necroNpc1Warrior",
+            "ladderIndex": 2,
+            "count": 4
+          }
+        ],
+        "objectives": [
+          {
+            "type": "NoDamageTakenByAnyHero",
+            "target": null,
+            "score": 100
+          }
+        ],
+        "loot": {
+          "upgradeId": "upgArmC006",
+          "chanceNumerator": 3,
+          "chanceDenominator": 4
+        }
+      },
+      {
+        "number": 4,
+        "tier": "Uncommon",
+        "tierPosition": 1,
+        "deploySlots": 3,
+        "boardId": "MC3_53",
+        "spawnPointsSet": 9,
+        "lightningVictoryTurns": 2,
+        "power": null,
+        "enemies": [
+          {
+            "id": "necroNpc2FlayedOne",
+            "ladderIndex": 4,
+            "count": 2
+          },
+          {
+            "id": "necroNpc1Warrior",
+            "ladderIndex": 4,
+            "count": 4
+          },
+          {
+            "id": "necroNpc5Swarm",
+            "ladderIndex": 4,
+            "count": 2
+          }
+        ],
+        "objectives": [
+          {
+            "type": "DamageType",
+            "target": "Bolter",
+            "score": 100
+          },
+          {
+            "type": "DoNoHealOrRepair",
+            "target": null,
+            "score": 100
+          }
+        ],
+        "loot": {
+          "upgradeId": "upgArmU013",
+          "chanceNumerator": 3,
+          "chanceDenominator": 4
+        }
+      },
+      {
+        "number": 5,
+        "tier": "Uncommon",
+        "tierPosition": 2,
+        "deploySlots": 4,
+        "boardId": "LE3_14",
+        "spawnPointsSet": 1,
+        "lightningVictoryTurns": 2,
+        "power": null,
+        "enemies": [
+          {
+            "id": "necroNpc5Swarm",
+            "ladderIndex": 7,
+            "count": 2
+          },
+          {
+            "id": "necroNpc1Warrior",
+            "ladderIndex": 5,
+            "count": 4
+          }
+        ],
+        "objectives": [
+          {
+            "type": "NotTrait",
+            "target": "Flying",
+            "score": 100
+          }
+        ],
+        "loot": {
+          "upgradeId": "upgArmU001",
+          "chanceNumerator": 3,
+          "chanceDenominator": 4
+        }
+      },
+      {
+        "number": 6,
+        "tier": "Uncommon",
+        "tierPosition": 3,
+        "deploySlots": 5,
+        "boardId": "MC3_45",
+        "spawnPointsSet": 10,
+        "lightningVictoryTurns": 2,
+        "power": null,
+        "enemies": [
+          {
+            "id": "necroBossSpyderLHE",
+            "ladderIndex": 2,
+            "count": 1
+          },
+          {
+            "id": "necroNpc2FlayedOne",
+            "ladderIndex": 5,
+            "count": 3
+          },
+          {
+            "id": "necroNpc1Warrior",
+            "ladderIndex": 5,
+            "count": 3
+          },
+          {
+            "id": "necroNpc5Swarm",
+            "ladderIndex": 5,
+            "count": 2
+          }
+        ],
+        "objectives": [
+          {
+            "type": "MaxHits",
+            "target": "3",
+            "score": 100
+          }
+        ],
+        "loot": {
+          "upgradeId": "upgDmgU003",
+          "chanceNumerator": 3,
+          "chanceDenominator": 4
+        }
+      },
+      {
+        "number": 7,
+        "tier": "Rare",
+        "tierPosition": 1,
+        "deploySlots": 3,
+        "boardId": "C3_04",
+        "spawnPointsSet": 7,
+        "lightningVictoryTurns": 2,
+        "power": null,
+        "enemies": [
+          {
+            "id": "necroNpc3Deathmark",
+            "ladderIndex": 8,
+            "count": 2
+          },
+          {
+            "id": "necroNpc2FlayedOne",
+            "ladderIndex": 8,
+            "count": 2
+          },
+          {
+            "id": "necroNpc1Warrior",
+            "ladderIndex": 8,
+            "count": 1
+          }
+        ],
+        "objectives": [
+          {
+            "type": "NotFaction",
+            "target": "BlackTemplars",
+            "score": 100
+          },
+          {
+            "type": "UseNoSummons",
+            "target": null,
+            "score": 100
+          }
+        ],
+        "loot": {
+          "upgradeId": "upgArmR005",
+          "chanceNumerator": 3,
+          "chanceDenominator": 4
+        }
+      },
+      {
+        "number": 8,
+        "tier": "Rare",
+        "tierPosition": 2,
+        "deploySlots": 3,
+        "boardId": "SyncPvp_Arctic_04",
+        "spawnPointsSet": 3,
+        "lightningVictoryTurns": 2,
+        "power": null,
+        "enemies": [
+          {
+            "id": "necroNpc3Deathmark",
+            "ladderIndex": 9,
+            "count": 1
+          },
+          {
+            "id": "necroNpc2FlayedOne",
+            "ladderIndex": 9,
+            "count": 1
+          },
+          {
+            "id": "necroNpc2FlayedOne",
+            "ladderIndex": 7,
+            "count": 1
+          },
+          {
+            "id": "necroNpc1Warrior",
+            "ladderIndex": 6,
+            "count": 8
+          }
+        ],
+        "objectives": [
+          {
+            "type": "NotTrait",
+            "target": "MkXGravis",
+            "score": 100
+          }
+        ],
+        "loot": {
+          "upgradeId": "upgHpR043",
+          "chanceNumerator": 3,
+          "chanceDenominator": 4
+        }
+      },
+      {
+        "number": 9,
+        "tier": "Rare",
+        "tierPosition": 3,
+        "deploySlots": 3,
+        "boardId": "C3_06",
+        "spawnPointsSet": 12,
+        "lightningVictoryTurns": 2,
+        "power": null,
+        "enemies": [
+          {
+            "id": "necroNpc3Deathmark",
+            "ladderIndex": 9,
+            "count": 5
+          },
+          {
+            "id": "necroNpc2FlayedOne",
+            "ladderIndex": 10,
+            "count": 1
+          },
+          {
+            "id": "necroNpc2FlayedOne",
+            "ladderIndex": 9,
+            "count": 1
+          },
+          {
+            "id": "necroNpc1Warrior",
+            "ladderIndex": 8,
+            "count": 1
+          }
+        ],
+        "objectives": [
+          {
+            "type": "NotTrait",
+            "target": "Psyker",
+            "score": 100
+          }
+        ],
+        "loot": {
+          "upgradeId": "upgDmgR007",
+          "chanceNumerator": 3,
+          "chanceDenominator": 4
+        }
+      },
+      {
+        "number": 10,
+        "tier": "Rare",
+        "tierPosition": 4,
+        "deploySlots": 4,
+        "boardId": "LE3_23",
+        "spawnPointsSet": 1,
+        "lightningVictoryTurns": 3,
+        "power": null,
+        "enemies": [
+          {
+            "id": "necroNpc3Deathmark",
+            "ladderIndex": 10,
+            "count": 3
+          },
+          {
+            "id": "necroNpc2FlayedOne",
+            "ladderIndex": 10,
+            "count": 3
+          },
+          {
+            "id": "necroNpc1Warrior",
+            "ladderIndex": 10,
+            "count": 5
+          }
+        ],
+        "objectives": [
+          {
+            "type": "NotFaction",
+            "target": "SpaceWolves",
+            "score": 100
+          }
+        ],
+        "loot": {
+          "upgradeId": "upgHpR005",
+          "chanceNumerator": 3,
+          "chanceDenominator": 4
+        }
+      },
+      {
+        "number": 11,
+        "tier": "Rare",
+        "tierPosition": 5,
+        "deploySlots": 5,
+        "boardId": "C3_75",
+        "spawnPointsSet": 7,
+        "lightningVictoryTurns": 2,
+        "power": null,
+        "enemies": [
+          {
+            "id": "necroBossDestroyerLHE",
+            "ladderIndex": 2,
+            "count": 1
+          },
+          {
+            "id": "necroNpc3Deathmark",
+            "ladderIndex": 10,
+            "count": 2
+          },
+          {
+            "id": "necroNpc2FlayedOne",
+            "ladderIndex": 10,
+            "count": 3
+          },
+          {
+            "id": "necroNpc1Warrior",
+            "ladderIndex": 9,
+            "count": 4
+          }
+        ],
+        "objectives": [
+          {
+            "type": "NotTrait",
+            "target": "Parry",
+            "score": 100
+          }
+        ],
+        "loot": {
+          "upgradeId": "upgArmR015",
+          "chanceNumerator": 3,
+          "chanceDenominator": 4
+        }
+      },
+      {
+        "number": 12,
+        "tier": "Epic",
+        "tierPosition": 1,
+        "deploySlots": 3,
+        "boardId": "C3_13",
+        "spawnPointsSet": 12,
+        "lightningVictoryTurns": 2,
+        "power": null,
+        "enemies": [
+          {
+            "id": "necroNpc4Destroyer",
+            "ladderIndex": 13,
+            "count": 1
+          },
+          {
+            "id": "necroNpc2FlayedOne",
+            "ladderIndex": 13,
+            "count": 1
+          },
+          {
+            "id": "necroNpc1Warrior",
+            "ladderIndex": 13,
+            "count": 5
+          }
+        ],
+        "objectives": [
+          {
+            "type": "MinHits",
+            "target": "3",
+            "score": 100
+          }
+        ],
+        "loot": {
+          "upgradeId": "upgHpE003",
+          "chanceNumerator": 3,
+          "chanceDenominator": 4
+        }
+      },
+      {
+        "number": 13,
+        "tier": "Epic",
+        "tierPosition": 2,
+        "deploySlots": 4,
+        "boardId": "C3_31",
+        "spawnPointsSet": 12,
+        "lightningVictoryTurns": 2,
+        "power": null,
+        "enemies": [
+          {
+            "id": "necroNpc4Destroyer",
+            "ladderIndex": 14,
+            "count": 2
+          },
+          {
+            "id": "necroNpc4Destroyer",
+            "ladderIndex": 13,
+            "count": 1
+          },
+          {
+            "id": "necroNpc2FlayedOne",
+            "ladderIndex": 13,
+            "count": 2
+          },
+          {
+            "id": "necroNpc1Warrior",
+            "ladderIndex": 13,
+            "count": 2
+          }
+        ],
+        "objectives": [
+          {
+            "type": "MaxHits",
+            "target": "3",
+            "score": 100
+          }
+        ],
+        "loot": {
+          "upgradeId": "upgDmgE001",
+          "chanceNumerator": 3,
+          "chanceDenominator": 4
+        }
+      },
+      {
+        "number": 14,
+        "tier": "Epic",
+        "tierPosition": 3,
+        "deploySlots": 5,
+        "boardId": "EMC3_03",
+        "spawnPointsSet": 6,
+        "lightningVictoryTurns": 3,
+        "power": null,
+        "enemies": [
+          {
+            "id": "necroBossWardenLHE",
+            "ladderIndex": 4,
+            "count": 1
+          },
+          {
+            "id": "necroNpc4Destroyer",
+            "ladderIndex": 16,
+            "count": 1
+          },
+          {
+            "id": "necroNpc2FlayedOne",
+            "ladderIndex": 16,
+            "count": 2
+          },
+          {
+            "id": "necroNpc1Warrior",
+            "ladderIndex": 14,
+            "count": 6
+          }
+        ],
+        "objectives": [
+          {
+            "type": "NotTrait",
+            "target": "MkXGravis",
+            "score": 100
+          }
+        ],
+        "loot": {
+          "upgradeId": "upgArmE013",
+          "chanceNumerator": 3,
+          "chanceDenominator": 4
+        }
+      },
+      {
+        "number": 15,
+        "tier": "Legendary",
+        "tierPosition": 1,
+        "deploySlots": 5,
+        "boardId": "C3_22",
+        "spawnPointsSet": 5,
+        "lightningVictoryTurns": 2,
+        "power": null,
+        "enemies": [
+          {
+            "id": "necroNpc4Destroyer",
+            "ladderIndex": 20,
+            "count": 2
+          },
+          {
+            "id": "necroNpc3Deathmark",
+            "ladderIndex": 20,
+            "count": 1
+          },
+          {
+            "id": "necroNpc1Warrior",
+            "ladderIndex": 20,
+            "count": 6
+          }
+        ],
+        "objectives": [
+          {
+            "type": "NotFaction",
+            "target": "Ultramarines",
+            "score": 100
+          }
+        ],
+        "loot": {
+          "upgradeId": "upgHpL100",
+          "chanceNumerator": 3,
+          "chanceDenominator": 4
+        }
+      },
+      {
+        "number": 16,
+        "tier": "Legendary",
+        "tierPosition": 2,
+        "deploySlots": 5,
+        "boardId": "C3_51",
+        "spawnPointsSet": 11,
+        "lightningVictoryTurns": 4,
+        "power": null,
+        "enemies": [
+          {
+            "id": "necroBossOverlordLHE",
+            "ladderIndex": 1,
+            "count": 1
+          },
+          {
+            "id": "necroNpc3Deathmark",
+            "ladderIndex": 24,
+            "count": 1
+          },
+          {
+            "id": "necroNpc2FlayedOne",
+            "ladderIndex": 24,
+            "count": 4
+          },
+          {
+            "id": "necroNpc1Warrior",
+            "ladderIndex": 24,
+            "count": 2
+          }
+        ],
+        "objectives": [
+          {
+            "type": "NotTrait",
+            "target": "Unstoppable",
+            "score": 100
+          }
+        ],
+        "loot": {
+          "upgradeId": "upgDmgL001",
+          "chanceNumerator": 3,
+          "chanceDenominator": 4
+        }
+      },
+      {
+        "number": 17,
+        "tier": "Mythic",
+        "tierPosition": 1,
+        "deploySlots": 5,
+        "boardId": "LE3_24",
+        "spawnPointsSet": 1,
+        "lightningVictoryTurns": 4,
+        "power": null,
+        "enemies": [
+          {
+            "id": "necroBossChronomancerLHE",
+            "ladderIndex": 1,
+            "count": 1
+          },
+          {
+            "id": "necroBossDestroyerLHE",
+            "ladderIndex": 3,
+            "count": 1
+          },
+          {
+            "id": "necroNpc4Destroyer",
+            "ladderIndex": 24,
+            "count": 2
+          },
+          {
+            "id": "necroNpc2FlayedOne",
+            "ladderIndex": 30,
+            "count": 3
+          },
+          {
+            "id": "necroNpc1Warrior",
+            "ladderIndex": 30,
+            "count": 4
+          }
+        ],
+        "objectives": [
+          {
+            "type": "NotTrait",
+            "target": "Resilient",
+            "score": 100
+          }
+        ],
+        "loot": {
+          "upgradeId": "upgHpM001",
+          "chanceNumerator": 1,
+          "chanceDenominator": 6
+        }
+      }
+    ]
+  },
+  {
+    "featuredCharacterId": "astarEradicator",
+    "allowedFactionIds": [
+      "AdeptusAstartes",
+      "Ultramarines",
+      "Sisterhood",
+      "BloodAngels"
+    ],
+    "enemyFactionIds": ["BlackLegion"],
+    "battles": [
+      {
+        "number": 1,
+        "tier": "Common",
+        "tierPosition": 1,
+        "deploySlots": 3,
+        "boardId": "EC2_04",
+        "spawnPointsSet": 3,
+        "lightningVictoryTurns": 2,
+        "power": 260,
+        "enemies": [
+          {
+            "id": "blackBossHaarkenLHE",
+            "ladderIndex": 1,
+            "count": 1
+          },
+          {
+            "id": "blackNpc3TraitorGuardsman",
+            "ladderIndex": 3,
+            "count": 6
+          }
+        ],
+        "objectives": [
+          {
+            "type": "NoDamageTakenByAnyHero",
+            "target": null,
+            "score": 100
+          },
+          {
+            "type": "UseNoSummons",
+            "target": null,
+            "score": 100
+          }
+        ],
+        "loot": {
+          "upgradeId": "upgArmC002",
+          "chanceNumerator": 3,
+          "chanceDenominator": 4
+        }
+      },
+      {
+        "number": 2,
+        "tier": "Common",
+        "tierPosition": 2,
+        "deploySlots": 4,
+        "boardId": "EC2_02",
+        "spawnPointsSet": 9,
+        "lightningVictoryTurns": 2,
+        "power": 447,
+        "enemies": [
+          {
+            "id": "blackBossHaarkenLHE",
+            "ladderIndex": 1,
+            "count": 1
+          },
+          {
+            "id": "blackNpc3TraitorGuardsman",
+            "ladderIndex": 8,
+            "count": 1
+          },
+          {
+            "id": "blackNpc3TraitorGuardsman",
+            "ladderIndex": 4,
+            "count": 7
+          }
+        ],
+        "objectives": [
+          {
+            "type": "NoDamageTakenByAnyHero",
+            "target": null,
+            "score": 100
+          }
+        ],
+        "loot": {
+          "upgradeId": "upgDmgC003",
+          "chanceNumerator": 3,
+          "chanceDenominator": 4
+        }
+      },
+      {
+        "number": 3,
+        "tier": "Common",
+        "tierPosition": 3,
+        "deploySlots": 5,
+        "boardId": "LE2_07",
+        "spawnPointsSet": 1,
+        "lightningVictoryTurns": 2,
+        "power": 757,
+        "enemies": [
+          {
+            "id": "blackBossHaarkenLHE",
+            "ladderIndex": 2,
+            "count": 1
+          },
+          {
+            "id": "blackNpc3TraitorGuardsman",
+            "ladderIndex": 8,
+            "count": 1
+          },
+          {
+            "id": "blackNpc3TraitorGuardsman",
+            "ladderIndex": 5,
+            "count": 9
+          }
+        ],
+        "objectives": [
+          {
+            "type": "NoDamageTakenByAnyHero",
+            "target": null,
+            "score": 100
+          }
+        ],
+        "loot": {
+          "upgradeId": "upgArmC001",
+          "chanceNumerator": 3,
+          "chanceDenominator": 4
+        }
+      },
+      {
+        "number": 4,
+        "tier": "Uncommon",
+        "tierPosition": 1,
+        "deploySlots": 3,
+        "boardId": "MC2_01",
+        "spawnPointsSet": 8,
+        "lightningVictoryTurns": 2,
+        "power": 1183,
+        "enemies": [
+          {
+            "id": "blackNpc2Terminator",
+            "ladderIndex": 7,
+            "count": 1
+          },
+          {
+            "id": "blackNpc1Bloodletter",
+            "ladderIndex": 7,
+            "count": 3
+          },
+          {
+            "id": "blackNpc3TraitorGuardsman",
+            "ladderIndex": 7,
+            "count": 2
+          }
+        ],
+        "objectives": [
+          {
+            "type": "NotTrait",
+            "target": "RapidAssault",
+            "score": 100
+          },
+          {
+            "type": "NotDamageType",
+            "target": "Blast",
+            "score": 100
+          }
+        ],
+        "loot": {
+          "upgradeId": "upgArmU002",
+          "chanceNumerator": 3,
+          "chanceDenominator": 4
+        }
+      },
+      {
+        "number": 5,
+        "tier": "Uncommon",
+        "tierPosition": 2,
+        "deploySlots": 4,
+        "boardId": "SyncPvp_Temperate_04",
+        "spawnPointsSet": 2,
+        "lightningVictoryTurns": 2,
+        "power": 2336,
+        "enemies": [
+          {
+            "id": "blackNpc2Terminator",
+            "ladderIndex": 8,
+            "count": 1
+          },
+          {
+            "id": "blackNpc1Bloodletter",
+            "ladderIndex": 8,
+            "count": 3
+          },
+          {
+            "id": "blackNpc3TraitorGuardsman",
+            "ladderIndex": 8,
+            "count": 7
+          }
+        ],
+        "objectives": [
+          {
+            "type": "NotTrait",
+            "target": "FinalJustice",
+            "score": 100
+          }
+        ],
+        "loot": {
+          "upgradeId": "upgArmU001",
+          "chanceNumerator": 3,
+          "chanceDenominator": 4
+        }
+      },
+      {
+        "number": 6,
+        "tier": "Uncommon",
+        "tierPosition": 3,
+        "deploySlots": 5,
+        "boardId": "SyncPvp_Temperate_01",
+        "spawnPointsSet": 5,
+        "lightningVictoryTurns": 3,
+        "power": 3540,
+        "enemies": [
+          {
+            "id": "blackBossPossessionLHE",
+            "ladderIndex": 2,
+            "count": 1
+          },
+          {
+            "id": "blackNpc2Terminator",
+            "ladderIndex": 9,
+            "count": 1
+          },
+          {
+            "id": "blackNpc1Bloodletter",
+            "ladderIndex": 8,
+            "count": 3
+          },
+          {
+            "id": "blackNpc3TraitorGuardsman",
+            "ladderIndex": 8,
+            "count": 5
+          }
+        ],
+        "objectives": [
+          {
+            "type": "NotDamageType",
+            "target": "Flame",
+            "score": 100
+          }
+        ],
+        "loot": {
+          "upgradeId": "upgDmgU003",
+          "chanceNumerator": 3,
+          "chanceDenominator": 4
+        }
+      },
+      {
+        "number": 7,
+        "tier": "Rare",
+        "tierPosition": 1,
+        "deploySlots": 3,
+        "boardId": "EMC2_05",
+        "spawnPointsSet": 6,
+        "lightningVictoryTurns": 3,
+        "power": 7003,
+        "enemies": [
+          {
+            "id": "blackNpc2Terminator",
+            "ladderIndex": 11,
+            "count": 1
+          },
+          {
+            "id": "thousNpc1PinkHorror",
+            "ladderIndex": 11,
+            "count": 3
+          },
+          {
+            "id": "blackNpc3TraitorGuardsman",
+            "ladderIndex": 11,
+            "count": 5
+          }
+        ],
+        "objectives": [
+          {
+            "type": "MaxHits",
+            "target": "3",
+            "score": 100
+          },
+          {
+            "type": "NotTrait",
+            "target": "TerminatorArmour",
+            "score": 100
+          }
+        ],
+        "loot": {
+          "upgradeId": "upgDmgR007",
+          "chanceNumerator": 3,
+          "chanceDenominator": 4
+        }
+      },
+      {
+        "number": 8,
+        "tier": "Rare",
+        "tierPosition": 2,
+        "deploySlots": 3,
+        "boardId": "EC2_06",
+        "spawnPointsSet": 8,
+        "lightningVictoryTurns": 2,
+        "power": 8379,
+        "enemies": [
+          {
+            "id": "blackNpc2Terminator",
+            "ladderIndex": 11,
+            "count": 2
+          },
+          {
+            "id": "thousNpc1PinkHorror",
+            "ladderIndex": 11,
+            "count": 2
+          },
+          {
+            "id": "blackNpc3TraitorGuardsman",
+            "ladderIndex": 11,
+            "count": 7
+          }
+        ],
+        "objectives": [
+          {
+            "type": "NotTrait",
+            "target": "Healer",
+            "score": 100
+          }
+        ],
+        "loot": {
+          "upgradeId": "upgArmR005",
+          "chanceNumerator": 3,
+          "chanceDenominator": 4
+        }
+      },
+      {
+        "number": 9,
+        "tier": "Rare",
+        "tierPosition": 3,
+        "deploySlots": 3,
+        "boardId": "MC2_45",
+        "spawnPointsSet": 10,
+        "lightningVictoryTurns": 3,
+        "power": 10020,
+        "enemies": [
+          {
+            "id": "blackBossObliteratorLHE",
+            "ladderIndex": 1,
+            "count": 1
+          },
+          {
+            "id": "thousNpc1PinkHorror",
+            "ladderIndex": 13,
+            "count": 1
+          },
+          {
+            "id": "blackNpc3TraitorGuardsman",
+            "ladderIndex": 13,
+            "count": 6
+          },
+          {
+            "id": "powupArmor",
+            "ladderIndex": 1,
+            "count": 1
+          }
+        ],
+        "objectives": [
+          {
+            "type": "NotDamageType",
+            "target": "Chain",
+            "score": 100
+          }
+        ],
+        "loot": {
+          "upgradeId": "upgHpR021",
+          "chanceNumerator": 3,
+          "chanceDenominator": 4
+        }
+      },
+      {
+        "number": 10,
+        "tier": "Rare",
+        "tierPosition": 4,
+        "deploySlots": 4,
+        "boardId": "survival_12",
+        "spawnPointsSet": 2,
+        "lightningVictoryTurns": 3,
+        "power": 15822,
+        "enemies": [
+          {
+            "id": "blackBossObliteratorLHE",
+            "ladderIndex": 1,
+            "count": 1
+          },
+          {
+            "id": "thousNpc1PinkHorror",
+            "ladderIndex": 13,
+            "count": 3
+          },
+          {
+            "id": "blackNpc3TraitorGuardsman",
+            "ladderIndex": 13,
+            "count": 6
+          }
+        ],
+        "objectives": [
+          {
+            "type": "NotTrait",
+            "target": "Terrifying",
+            "score": 100
+          }
+        ],
+        "loot": {
+          "upgradeId": "upgArmR006",
+          "chanceNumerator": 3,
+          "chanceDenominator": 4
+        }
+      },
+      {
+        "number": 11,
+        "tier": "Rare",
+        "tierPosition": 5,
+        "deploySlots": 5,
+        "boardId": "survival_07",
+        "spawnPointsSet": 5,
+        "lightningVictoryTurns": 3,
+        "power": 22214,
+        "enemies": [
+          {
+            "id": "blackBossObliteratorLHE",
+            "ladderIndex": 2,
+            "count": 1
+          },
+          {
+            "id": "blackNpc2Terminator",
+            "ladderIndex": 13,
+            "count": 1
+          },
+          {
+            "id": "thousNpc1PinkHorror",
+            "ladderIndex": 13,
+            "count": 3
+          },
+          {
+            "id": "blackNpc3TraitorGuardsman",
+            "ladderIndex": 12,
+            "count": 5
+          }
+        ],
+        "objectives": [
+          {
+            "type": "NotTrait",
+            "target": "Psyker",
+            "score": 100
+          }
+        ],
+        "loot": {
+          "upgradeId": "upgArmR015",
+          "chanceNumerator": 3,
+          "chanceDenominator": 4
+        }
+      },
+      {
+        "number": 12,
+        "tier": "Epic",
+        "tierPosition": 1,
+        "deploySlots": 3,
+        "boardId": "LE2_04",
+        "spawnPointsSet": 1,
+        "lightningVictoryTurns": 3,
+        "power": 33847,
+        "enemies": [
+          {
+            "id": "blackNpc4Havoc",
+            "ladderIndex": 15,
+            "count": 1
+          },
+          {
+            "id": "blackNpc2Terminator",
+            "ladderIndex": 16,
+            "count": 2
+          },
+          {
+            "id": "blackNpc3TraitorGuardsman",
+            "ladderIndex": 16,
+            "count": 7
+          }
+        ],
+        "objectives": [
+          {
+            "type": "NotDamageType",
+            "target": "Power",
+            "score": 100
+          }
+        ],
+        "loot": {
+          "upgradeId": "upgHpE003",
+          "chanceNumerator": 3,
+          "chanceDenominator": 4
+        }
+      },
+      {
+        "number": 13,
+        "tier": "Epic",
+        "tierPosition": 2,
+        "deploySlots": 4,
+        "boardId": "SyncPvp_Temperate_07",
+        "spawnPointsSet": 4,
+        "lightningVictoryTurns": 3,
+        "power": 57252,
+        "enemies": [
+          {
+            "id": "blackNpc4Havoc",
+            "ladderIndex": 17,
+            "count": 2
+          },
+          {
+            "id": "blackNpc2Terminator",
+            "ladderIndex": 17,
+            "count": 2
+          },
+          {
+            "id": "blackNpc3TraitorGuardsman",
+            "ladderIndex": 17,
+            "count": 8
+          }
+        ],
+        "objectives": [
+          {
+            "type": "NotFaction",
+            "target": "Ultramarines",
+            "score": 100
+          }
+        ],
+        "loot": {
+          "upgradeId": "upgArmE013",
+          "chanceNumerator": 3,
+          "chanceDenominator": 4
+        }
+      },
+      {
+        "number": 14,
+        "tier": "Epic",
+        "tierPosition": 3,
+        "deploySlots": 5,
+        "boardId": "C2_02",
+        "spawnPointsSet": 12,
+        "lightningVictoryTurns": 2,
+        "power": 98715,
+        "enemies": [
+          {
+            "id": "blackBossTerminatorLHE",
+            "ladderIndex": 4,
+            "count": 1
+          },
+          {
+            "id": "blackNpc4Havoc",
+            "ladderIndex": 20,
+            "count": 2
+          },
+          {
+            "id": "blackNpc3TraitorGuardsman",
+            "ladderIndex": 20,
+            "count": 7
+          }
+        ],
+        "objectives": [
+          {
+            "type": "MaxHits",
+            "target": "4",
+            "score": 100
+          }
+        ],
+        "loot": {
+          "upgradeId": "upgDmgE011",
+          "chanceNumerator": 3,
+          "chanceDenominator": 4
+        }
+      },
+      {
+        "number": 15,
+        "tier": "Legendary",
+        "tierPosition": 1,
+        "deploySlots": 5,
+        "boardId": "survival_01",
+        "spawnPointsSet": 2,
+        "lightningVictoryTurns": 3,
+        "power": 455880,
+        "enemies": [
+          {
+            "id": "blackNpc4Havoc",
+            "ladderIndex": 26,
+            "count": 2
+          },
+          {
+            "id": "blackNpc2Terminator",
+            "ladderIndex": 25,
+            "count": 2
+          },
+          {
+            "id": "blackNpc1Bloodletter",
+            "ladderIndex": 25,
+            "count": 4
+          },
+          {
+            "id": "blackNpc3TraitorGuardsman",
+            "ladderIndex": 25,
+            "count": 4
+          }
+        ],
+        "objectives": [
+          {
+            "type": "NotDamageType",
+            "target": "Piercing",
+            "score": 100
+          }
+        ],
+        "loot": {
+          "upgradeId": "upgHpL100",
+          "chanceNumerator": 3,
+          "chanceDenominator": 4
+        }
+      },
+      {
+        "number": 16,
+        "tier": "Legendary",
+        "tierPosition": 2,
+        "deploySlots": 5,
+        "boardId": "C2_15",
+        "spawnPointsSet": 12,
+        "lightningVictoryTurns": 3,
+        "power": 1459769,
+        "enemies": [
+          {
+            "id": "blackBossAbaddonLHE",
+            "ladderIndex": 1,
+            "count": 1
+          },
+          {
+            "id": "blackNpc4Havoc",
+            "ladderIndex": 31,
+            "count": 2
+          },
+          {
+            "id": "blackNpc1Bloodletter",
+            "ladderIndex": 31,
+            "count": 3
+          },
+          {
+            "id": "blackNpc3TraitorGuardsman",
+            "ladderIndex": 31,
+            "count": 6
+          }
+        ],
+        "objectives": [
+          {
+            "type": "NotDamageType",
+            "target": "Physical",
+            "score": 100
+          }
+        ],
+        "loot": {
+          "upgradeId": "upgArmL001",
+          "chanceNumerator": 3,
+          "chanceDenominator": 4
+        }
+      },
+      {
+        "number": 17,
+        "tier": "Mythic",
+        "tierPosition": 1,
+        "deploySlots": 5,
+        "boardId": "C2_47",
+        "spawnPointsSet": 13,
+        "lightningVictoryTurns": 3,
+        "power": 4703789,
+        "enemies": [
+          {
+            "id": "blackBossAbaddonLHE",
+            "ladderIndex": 2,
+            "count": 1
+          },
+          {
+            "id": "blackBossTerminatorLHE",
+            "ladderIndex": 6,
+            "count": 1
+          },
+          {
+            "id": "blackNpc4Havoc",
+            "ladderIndex": 34,
+            "count": 2
+          },
+          {
+            "id": "thousNpc1PinkHorror",
+            "ladderIndex": 34,
+            "count": 2
+          },
+          {
+            "id": "blackNpc3TraitorGuardsman",
+            "ladderIndex": 34,
+            "count": 6
+          }
+        ],
+        "objectives": [
+          {
+            "type": "NotTrait",
+            "target": "Flying",
+            "score": 100
+          }
+        ],
+        "loot": {
+          "upgradeId": "upgHpM004",
+          "chanceNumerator": 1,
+          "chanceDenominator": 6
+        }
+      }
+    ]
+  },
+  {
+    "featuredCharacterId": "votanChampion",
+    "allowedFactionIds": ["LeaguesOfVotann", "Ultramarines", "Tau"],
+    "enemyFactionIds": ["Orks"],
+    "battles": [
+      {
+        "number": 1,
+        "tier": "Common",
+        "tierPosition": 1,
+        "deploySlots": 3,
+        "boardId": "SR_09",
+        "spawnPointsSet": 5,
+        "lightningVictoryTurns": 2,
+        "power": null,
+        "enemies": [
+          {
+            "id": "orksNpc2OrkBoy",
+            "ladderIndex": 2,
+            "count": 2
+          },
+          {
+            "id": "orksNpc1Grot",
+            "ladderIndex": 2,
+            "count": 6
+          }
+        ],
+        "objectives": [
+          {
+            "type": "NoDamageTakenByAnyHero",
+            "target": null,
+            "score": 100
+          },
+          {
+            "type": "NotDamageType",
+            "target": "Pulse",
+            "score": 100
+          }
+        ],
+        "loot": {
+          "upgradeId": "upgDmgC007",
+          "chanceNumerator": 3,
+          "chanceDenominator": 4
+        }
+      },
+      {
+        "number": 2,
+        "tier": "Common",
+        "tierPosition": 2,
+        "deploySlots": 4,
+        "boardId": "SR_04",
+        "spawnPointsSet": 5,
+        "lightningVictoryTurns": 2,
+        "power": null,
+        "enemies": [
+          {
+            "id": "orksNpc2OrkBoy",
+            "ladderIndex": 6,
+            "count": 2
+          },
+          {
+            "id": "orksNpc1Grot",
+            "ladderIndex": 3,
+            "count": 10
+          }
+        ],
+        "objectives": [
+          {
+            "type": "NoDamageTakenByAnyHero",
+            "target": null,
+            "score": 100
+          }
+        ],
+        "loot": {
+          "upgradeId": "upgArmC012",
+          "chanceNumerator": 3,
+          "chanceDenominator": 4
+        }
+      },
+      {
+        "number": 3,
+        "tier": "Common",
+        "tierPosition": 3,
+        "deploySlots": 5,
+        "boardId": "SR_15",
+        "spawnPointsSet": 5,
+        "lightningVictoryTurns": 3,
+        "power": null,
+        "enemies": [
+          {
+            "id": "orksBossRuntherdLHE",
+            "ladderIndex": 1,
+            "count": 1
+          },
+          {
+            "id": "orksNpc2OrkBoy",
+            "ladderIndex": 4,
+            "count": 3
+          },
+          {
+            "id": "orksNpc1Grot",
+            "ladderIndex": 5,
+            "count": 6
+          }
+        ],
+        "objectives": [
+          {
+            "type": "NoDamageTakenByAnyHero",
+            "target": null,
+            "score": 100
+          }
+        ],
+        "loot": {
+          "upgradeId": "upgDmgC015",
+          "chanceNumerator": 3,
+          "chanceDenominator": 4
+        }
+      },
+      {
+        "number": 4,
+        "tier": "Uncommon",
+        "tierPosition": 1,
+        "deploySlots": 3,
+        "boardId": "C1_06",
+        "spawnPointsSet": 6,
+        "lightningVictoryTurns": 3,
+        "power": null,
+        "enemies": [
+          {
+            "id": "orksNpc7Squig",
+            "ladderIndex": 8,
+            "count": 2
+          },
+          {
+            "id": "orksNpc2OrkBoy",
+            "ladderIndex": 7,
+            "count": 2
+          },
+          {
+            "id": "orksNpc1Grot",
+            "ladderIndex": 7,
+            "count": 4
+          }
+        ],
+        "objectives": [
+          {
+            "type": "MaxHits",
+            "target": "2",
+            "score": 100
+          },
+          {
+            "type": "UseNoSummons",
+            "target": null,
+            "score": 100
+          }
+        ],
+        "loot": {
+          "upgradeId": "upgArmU002",
+          "chanceNumerator": 3,
+          "chanceDenominator": 4
+        }
+      },
+      {
+        "number": 5,
+        "tier": "Uncommon",
+        "tierPosition": 2,
+        "deploySlots": 4,
+        "boardId": "LE1_24",
+        "spawnPointsSet": 1,
+        "lightningVictoryTurns": 3,
+        "power": null,
+        "enemies": [
+          {
+            "id": "orksNpc7Squig",
+            "ladderIndex": 9,
+            "count": 3
+          },
+          {
+            "id": "orksNpc2OrkBoy",
+            "ladderIndex": 9,
+            "count": 2
+          },
+          {
+            "id": "orksNpc1Grot",
+            "ladderIndex": 9,
+            "count": 3
+          }
+        ],
+        "objectives": [
+          {
+            "type": "NotTrait",
+            "target": "Flying",
+            "score": 100
+          }
+        ],
+        "loot": {
+          "upgradeId": "upgArmU009",
+          "chanceNumerator": 3,
+          "chanceDenominator": 4
+        }
+      },
+      {
+        "number": 6,
+        "tier": "Uncommon",
+        "tierPosition": 3,
+        "deploySlots": 5,
+        "boardId": "LE1_21",
+        "spawnPointsSet": 1,
+        "lightningVictoryTurns": 3,
+        "power": null,
+        "enemies": [
+          {
+            "id": "orksBossNobLHE",
+            "ladderIndex": 1,
+            "count": 1
+          },
+          {
+            "id": "orksNpc7Squig",
+            "ladderIndex": 9,
+            "count": 2
+          },
+          {
+            "id": "orksNpc2OrkBoy",
+            "ladderIndex": 9,
+            "count": 2
+          },
+          {
+            "id": "orksNpc1Grot",
+            "ladderIndex": 9,
+            "count": 6
+          }
+        ],
+        "objectives": [
+          {
+            "type": "NotDamageType",
+            "target": "Power",
+            "score": 100
+          }
+        ],
+        "loot": {
+          "upgradeId": "upgDmgU004",
+          "chanceNumerator": 3,
+          "chanceDenominator": 4
+        }
+      },
+      {
+        "number": 7,
+        "tier": "Rare",
+        "tierPosition": 1,
+        "deploySlots": 3,
+        "boardId": "LE1_10",
+        "spawnPointsSet": 1,
+        "lightningVictoryTurns": 2,
+        "power": null,
+        "enemies": [
+          {
+            "id": "orksNpc2OrkBoy",
+            "ladderIndex": 15,
+            "count": 4
+          },
+          {
+            "id": "orksNpc1Grot",
+            "ladderIndex": 15,
+            "count": 4
+          },
+          {
+            "id": "powupArmor",
+            "ladderIndex": 1,
+            "count": 1
+          }
+        ],
+        "objectives": [
+          {
+            "type": "NotTrait",
+            "target": "FinalJustice",
+            "score": 100
+          },
+          {
+            "type": "NotTrait",
+            "target": "Mechanical",
+            "score": 100
+          }
+        ],
+        "loot": {
+          "upgradeId": "upgHpR040",
+          "chanceNumerator": 3,
+          "chanceDenominator": 4
+        }
+      },
+      {
+        "number": 8,
+        "tier": "Rare",
+        "tierPosition": 2,
+        "deploySlots": 3,
+        "boardId": "LE1_14",
+        "spawnPointsSet": 1,
+        "lightningVictoryTurns": 2,
+        "power": null,
+        "enemies": [
+          {
+            "id": "orksNpc3GrotTank",
+            "ladderIndex": 14,
+            "count": 2
+          },
+          {
+            "id": "orksNpc2OrkBoy",
+            "ladderIndex": 14,
+            "count": 3
+          },
+          {
+            "id": "orksNpc1Grot",
+            "ladderIndex": 14,
+            "count": 4
+          }
+        ],
+        "objectives": [
+          {
+            "type": "NotFaction",
+            "target": "Ultramarines",
+            "score": 100
+          }
+        ],
+        "loot": {
+          "upgradeId": "upgDmgR040",
+          "chanceNumerator": 3,
+          "chanceDenominator": 4
+        }
+      },
+      {
+        "number": 9,
+        "tier": "Rare",
+        "tierPosition": 3,
+        "deploySlots": 3,
+        "boardId": "EMC1_06",
+        "spawnPointsSet": 8,
+        "lightningVictoryTurns": 3,
+        "power": null,
+        "enemies": [
+          {
+            "id": "orksNpc3GrotTank",
+            "ladderIndex": 15,
+            "count": 3
+          },
+          {
+            "id": "orksNpc2OrkBoy",
+            "ladderIndex": 14,
+            "count": 2
+          },
+          {
+            "id": "orksNpc1Grot",
+            "ladderIndex": 14,
+            "count": 4
+          },
+          {
+            "id": "powupHealing",
+            "ladderIndex": 1,
+            "count": 1
+          }
+        ],
+        "objectives": [
+          {
+            "type": "NotTrait",
+            "target": "Infiltrate",
+            "score": 100
+          }
+        ],
+        "loot": {
+          "upgradeId": "upgArmR040",
+          "chanceNumerator": 3,
+          "chanceDenominator": 4
+        }
+      },
+      {
+        "number": 10,
+        "tier": "Rare",
+        "tierPosition": 4,
+        "deploySlots": 4,
+        "boardId": "LE1_15",
+        "spawnPointsSet": 1,
+        "lightningVictoryTurns": 2,
+        "power": null,
+        "enemies": [
+          {
+            "id": "orksNpc3GrotTank",
+            "ladderIndex": 17,
+            "count": 3
+          },
+          {
+            "id": "orksNpc2OrkBoy",
+            "ladderIndex": 17,
+            "count": 3
+          },
+          {
+            "id": "orksNpc1Grot",
+            "ladderIndex": 16,
+            "count": 5
+          }
+        ],
+        "objectives": [
+          {
+            "type": "NotFaction",
+            "target": "Ultramarines",
+            "score": 100
+          }
+        ],
+        "loot": {
+          "upgradeId": "upgHpR014",
+          "chanceNumerator": 3,
+          "chanceDenominator": 4
+        }
+      },
+      {
+        "number": 11,
+        "tier": "Rare",
+        "tierPosition": 5,
+        "deploySlots": 5,
+        "boardId": "LE1_04",
+        "spawnPointsSet": 1,
+        "lightningVictoryTurns": 3,
+        "power": null,
+        "enemies": [
+          {
+            "id": "orksBossBigMekLHE",
+            "ladderIndex": 2,
+            "count": 1
+          },
+          {
+            "id": "orksNpc3GrotTank",
+            "ladderIndex": 17,
+            "count": 2
+          },
+          {
+            "id": "orksNpc2OrkBoy",
+            "ladderIndex": 17,
+            "count": 2
+          },
+          {
+            "id": "orksNpc1Grot",
+            "ladderIndex": 17,
+            "count": 5
+          }
+        ],
+        "objectives": [
+          {
+            "type": "NotTrait",
+            "target": "CrushingStrike",
+            "score": 100
+          }
+        ],
+        "loot": {
+          "upgradeId": "upgArmR006",
+          "chanceNumerator": 3,
+          "chanceDenominator": 4
+        }
+      },
+      {
+        "number": 12,
+        "tier": "Epic",
+        "tierPosition": 1,
+        "deploySlots": 3,
+        "boardId": "C1_07",
+        "spawnPointsSet": 5,
+        "lightningVictoryTurns": 2,
+        "power": null,
+        "enemies": [
+          {
+            "id": "orksNpc6Stormboy",
+            "ladderIndex": 20,
+            "count": 4
+          },
+          {
+            "id": "orksNpc2OrkBoy",
+            "ladderIndex": 20,
+            "count": 3
+          },
+          {
+            "id": "orksNpc1Grot",
+            "ladderIndex": 20,
+            "count": 5
+          }
+        ],
+        "objectives": [
+          {
+            "type": "NotFaction",
+            "target": "Ultramarines",
+            "score": 100
+          }
+        ],
+        "loot": {
+          "upgradeId": "upgArmE010",
+          "chanceNumerator": 3,
+          "chanceDenominator": 4
+        }
+      },
+      {
+        "number": 13,
+        "tier": "Epic",
+        "tierPosition": 2,
+        "deploySlots": 4,
+        "boardId": "EC1_09",
+        "spawnPointsSet": 8,
+        "lightningVictoryTurns": 2,
+        "power": null,
+        "enemies": [
+          {
+            "id": "orksNpc6Stormboy",
+            "ladderIndex": 24,
+            "count": 3
+          },
+          {
+            "id": "orksNpc3GrotTank",
+            "ladderIndex": 24,
+            "count": 3
+          },
+          {
+            "id": "orksNpc2OrkBoy",
+            "ladderIndex": 24,
+            "count": 3
+          },
+          {
+            "id": "orksNpc1Grot",
+            "ladderIndex": 24,
+            "count": 2
+          },
+          {
+            "id": "powupHealing",
+            "ladderIndex": 1,
+            "count": 1
+          }
+        ],
+        "objectives": [
+          {
+            "type": "NotTrait",
+            "target": "BeastSlayer",
+            "score": 100
+          }
+        ],
+        "loot": {
+          "upgradeId": "upgDmgE001",
+          "chanceNumerator": 3,
+          "chanceDenominator": 4
+        }
+      },
+      {
+        "number": 14,
+        "tier": "Epic",
+        "tierPosition": 3,
+        "deploySlots": 5,
+        "boardId": "LE1_28",
+        "spawnPointsSet": 1,
+        "lightningVictoryTurns": 3,
+        "power": null,
+        "enemies": [
+          {
+            "id": "orksBossKillaKanLHE",
+            "ladderIndex": 2,
+            "count": 1
+          },
+          {
+            "id": "orksNpc6Stormboy",
+            "ladderIndex": 27,
+            "count": 4
+          },
+          {
+            "id": "orksNpc3GrotTank",
+            "ladderIndex": 27,
+            "count": 1
+          },
+          {
+            "id": "orksNpc2OrkBoy",
+            "ladderIndex": 27,
+            "count": 3
+          },
+          {
+            "id": "orksNpc1Grot",
+            "ladderIndex": 27,
+            "count": 3
+          }
+        ],
+        "objectives": [
+          {
+            "type": "UseNoSummons",
+            "target": null,
+            "score": 100
+          }
+        ],
+        "loot": {
+          "upgradeId": "upgHpE012",
+          "chanceNumerator": 3,
+          "chanceDenominator": 4
+        }
+      },
+      {
+        "number": 15,
+        "tier": "Legendary",
+        "tierPosition": 1,
+        "deploySlots": 5,
+        "boardId": "MC1_15",
+        "spawnPointsSet": 4,
+        "lightningVictoryTurns": 2,
+        "power": null,
+        "enemies": [
+          {
+            "id": "orksNpc3GrotTank",
+            "ladderIndex": 38,
+            "count": 2
+          },
+          {
+            "id": "orksNpc2OrkBoy",
+            "ladderIndex": 38,
+            "count": 4
+          },
+          {
+            "id": "orksNpc1Grot",
+            "ladderIndex": 38,
+            "count": 6
+          }
+        ],
+        "objectives": [
+          {
+            "type": "NotFaction",
+            "target": "Ultramarines",
+            "score": 100
+          }
+        ],
+        "loot": {
+          "upgradeId": "upgHpL099",
+          "chanceNumerator": 3,
+          "chanceDenominator": 4
+        }
+      },
+      {
+        "number": 16,
+        "tier": "Legendary",
+        "tierPosition": 2,
+        "deploySlots": 5,
+        "boardId": "LE1_30",
+        "spawnPointsSet": 1,
+        "lightningVictoryTurns": 4,
+        "power": null,
+        "enemies": [
+          {
+            "id": "orksBossWarbossLHE",
+            "ladderIndex": 2,
+            "count": 1
+          },
+          {
+            "id": "orksNpc3GrotTank",
+            "ladderIndex": 42,
+            "count": 3
+          },
+          {
+            "id": "orksNpc2OrkBoy",
+            "ladderIndex": 42,
+            "count": 4
+          },
+          {
+            "id": "orksNpc1Grot",
+            "ladderIndex": 42,
+            "count": 4
+          }
+        ],
+        "objectives": [
+          {
+            "type": "NotTrait",
+            "target": "MkXGravis",
+            "score": 100
+          }
+        ],
+        "loot": {
+          "upgradeId": "upgDmgL204",
+          "chanceNumerator": 3,
+          "chanceDenominator": 4
+        }
+      },
+      {
+        "number": 17,
+        "tier": "Mythic",
+        "tierPosition": 1,
+        "deploySlots": 5,
+        "boardId": "EMC1_08",
+        "spawnPointsSet": 6,
+        "lightningVictoryTurns": 3,
+        "power": null,
+        "enemies": [
+          {
+            "id": "orksBossWarbossLHE",
+            "ladderIndex": 4,
+            "count": 1
+          },
+          {
+            "id": "orksBossKillaKanLHE",
+            "ladderIndex": 4,
+            "count": 1
+          },
+          {
+            "id": "orksNpc3GrotTank",
+            "ladderIndex": 47,
+            "count": 2
+          },
+          {
+            "id": "orksNpc2OrkBoy",
+            "ladderIndex": 47,
+            "count": 4
+          },
+          {
+            "id": "orksNpc1Grot",
+            "ladderIndex": 47,
+            "count": 4
+          }
+        ],
+        "objectives": [
+          {
+            "type": "NotFaction",
+            "target": "Ultramarines",
+            "score": 100
+          }
+        ],
+        "loot": {
+          "upgradeId": "upgHpM001",
+          "chanceNumerator": 1,
+          "chanceDenominator": 6
+        }
+      }
+    ]
+  }
+]
