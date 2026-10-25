@@ -62,7 +62,7 @@ The pace card SHALL offer three optional inputs, read off the game's event scree
 
 - currency owned ("You own"), 0 or more
 - the next chest tier on the chest button, 1 to 28
-- the featured hero's current step ("Not unlocked", or a step from the hero's unlock to Legendary blue star) and the shards toward the next step, from 0 to that gap minus 1
+- the featured hero's current step ("Not unlocked", or a step from the hero's unlock to Legendary blue star) and the shards toward the next step, from 0 to that gap minus 1. At Legendary blue star there is no next step, so that input is hidden and counts as 0.
 
 #### Scenario: Reading the day 8 screen
 
@@ -137,6 +137,20 @@ With all owned inputs set, the target SHALL need the chest shards left after the
 - **THEN** chest shards needed are 460 − 297 − 18 = 145, and tiers 17 to 21 give 28 + 30 + 32 + 33 + 34 = 157, so tier 21 is needed
 - **AND** those chests cost 450 + 500 + 550 + 600 + 650 = 2,750, so milestone currency needed is 2,750 − 372 − 100 − 308 − 340 = 1,630
 - **AND** 1,910 + 1,630 = 3,540 needs the 33,000 milestone (cumulative 3,665), which is (33,000 − 15,657) / 7 = 2,478 points a day, rounded up
+
+### Requirement: Owned-state target needs never go below zero
+
+With the owned inputs set, chest shards and milestone currency needed SHALL never be below 0. When no chest shards are needed, the target SHALL read as reached. With no days left and the target not reached, it SHALL read as out of reach.
+
+#### Scenario: Target already covered
+
+- **GIVEN** 450 shards held, 18 crate shards still to come and target Epic, 1 red star (460)
+- **THEN** no chest shards are needed, and the target reads as reached
+
+#### Scenario: Event over
+
+- **GIVEN** no days left and a target that needs tier 21 while tier 20 is the last opened
+- **THEN** the target reads as out of reach, with no points per day
 
 ### Requirement: The card names the next milestone and the next chest
 

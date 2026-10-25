@@ -2,7 +2,7 @@
 
 ## D1. Owned state is optional and read off the game screen
 
-The game's event screen shows "You own: N", the next chest ("Tier 17", with its cost) and the featured hero's shard bar ("214/280 Unlock at Rare", or "17/50 Promote"). The card asks for exactly those: currency owned, next chest tier, and the current step plus shards toward the next step. The step picker lists "Not unlocked" and every step from the hero's unlock. Shards held = the step's cumulative shards + the shards toward the next one ("Not unlocked" counts from 0).
+The game's event screen shows "You own: N", the next chest ("Tier 17", with its cost) and the featured hero's shard bar ("214/280 Unlock at Rare", or "17/50 Promote"). The card asks for exactly those: currency owned, next chest tier, and the current step plus shards toward the next step. The step picker lists "Not unlocked" and every step from the hero's unlock. Shards held = the step's cumulative shards + the shards toward the next one ("Not unlocked" counts from 0). At Legendary blue star there is no next step, so the second input is hidden and counts as 0.
 
 The three inputs act as one group: the owned projection runs only when all three are set. Otherwise the card uses the existing points-only chain and says that filling them in improves the estimate. The game shows a total for none of these, so no input asks for one.
 
@@ -17,7 +17,7 @@ With the owned inputs, at elapsed days `e` (from the start) and current mission 
 
 Currency available = owned + income still to come. Chests open from the entered tier upward while the available currency covers the next cost. Shards = held + those chests' minimum shards + the crate shards still to come.
 
-The target uses the same base. Chest shards needed = target − held − crate shards still to come, opened from the entered tier. Milestone currency needed = that chests' cost − owned − missions − payouts − crates still to come. Points needed = the lowest milestone whose cumulative reaches cumulative(points now) + that amount.
+The target uses the same base. Chest shards needed = target − held − crate shards still to come, opened from the entered tier. Milestone currency needed = that chests' cost − owned − missions − payouts − crates still to come. Points needed = the lowest milestone whose cumulative reaches cumulative(points now) + that amount. Shards and currency needed are clamped at 0; 0 chest shards needed means the target is reached, and no days left with the target unmet means it is out of reach.
 
 ## D3. Per-mission progress in the stored entry
 
