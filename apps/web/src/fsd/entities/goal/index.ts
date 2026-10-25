@@ -39,12 +39,10 @@ export {
 export {
   describeRankTargetKey,
   goalRankTargetKey,
-  rankTargetKey,
   rankTargetKeyLabel,
   rankTargetSlots,
 } from "./model/rank-target-key"
 export {
-  goalTargetKey,
   goalTargetKeyOf,
   goalTargetLabel,
   progressionLabel,

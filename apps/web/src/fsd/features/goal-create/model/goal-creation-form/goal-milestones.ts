@@ -55,7 +55,7 @@ export function nextAbilityMilestone(
 }
 
 /** Whether `next` is above `previous`: no track lower, and at least one higher. */
-export function abilityMilestoneAbove(
+function abilityMilestoneAbove(
   previous: AbilityMilestone,
   next: AbilityMilestone
 ): boolean {
