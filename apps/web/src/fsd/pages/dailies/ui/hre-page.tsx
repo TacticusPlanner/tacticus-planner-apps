@@ -270,12 +270,15 @@ export function HrePage() {
   const paceSummary =
     running && isMobile ? (
       <PaceSummary
-        onDetails={() =>
+        onDetails={() => {
+          const reduced = window.matchMedia?.(
+            "(prefers-reduced-motion: reduce)"
+          ).matches
           paceRef.current?.scrollIntoView({
-            behavior: "smooth",
+            behavior: reduced ? "auto" : "smooth",
             block: "start",
           })
-        }
+        }}
         pace={pace}
         points={progress.points}
       />
