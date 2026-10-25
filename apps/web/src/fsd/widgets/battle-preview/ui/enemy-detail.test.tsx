@@ -6,17 +6,29 @@ import { afterEach, beforeAll, describe, expect, it, vi } from "vitest"
 import { createTestI18n, i18nWrapper } from "@/test/i18n"
 import { render, screen, within } from "@/test/render"
 import { setViewportWidth } from "@/test/viewport"
-import libraryEn from "../../../../../../../public/locales/en/library.json"
+import { lysanderBattleNpcs } from "@/test/fixtures/lysander-battles"
+import libraryEn from "../../../../../public/locales/en/library.json"
 
-import { lysanderLane } from "./battles.test-utils"
-import type { EnemyTileViewModel } from "./battles.view-model"
+import type { NpcRecord } from "@/entities/npc"
+
+import { buildEnemyTile, type EnemyTileViewModel } from "../model/enemy-tile"
 import { EnemyTile } from "./enemy-tile"
 
 let i18n: I18n
-const grotTile = lysanderLane("alpha")[0]!.waves[0]!.enemies[0]!
-const helbrechtTile = lysanderLane("beta")[12]!
-  .waves.find((wave) => wave.round === 3)!
-  .enemies.find((tile) => tile.npcId === "templBossHelbrecht")!
+const npcs = new Map<string, NpcRecord>(
+  lysanderBattleNpcs.map((npc) => [npc.id, npc])
+)
+// Lysander Alpha battle 1's first wave entry, and Beta battle 13's Helbrecht (an index past his ladder).
+const grotTile = buildEnemyTile(
+  { id: "orksNpc1Grot", ladderIndex: 4, count: 7 },
+  "grot",
+  npcs
+)
+const helbrechtTile = buildEnemyTile(
+  { id: "templBossHelbrecht", ladderIndex: 3, count: 1 },
+  "helbrecht",
+  npcs
+)
 
 function renderTile(tile: EnemyTileViewModel, isMobile: boolean) {
   setViewportWidth(isMobile ? 390 : 1280)

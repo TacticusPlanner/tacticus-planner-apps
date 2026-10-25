@@ -1,7 +1,8 @@
 import { useTranslation } from "react-i18next"
 
+import { EnemyList } from "@/widgets/battle-preview"
+
 import type { BattlePreviewViewModel } from "./battles.view-model"
-import { EnemyTile } from "./enemy-tile"
 
 /** The selected battle's header: number, enemy power and total enemy count, formatted for the UI
  *  language. */
@@ -75,13 +76,7 @@ export function BattleWaves({
               {t("battles.noEnemies")}
             </p>
           ) : (
-            <ul className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3">
-              {wave.enemies.map((tile) => (
-                <li className="min-w-0" key={tile.key}>
-                  <EnemyTile isMobile={isMobile} tile={tile} />
-                </li>
-              ))}
-            </ul>
+            <EnemyList isMobile={isMobile} tiles={wave.enemies} />
           )}
         </li>
       ))}

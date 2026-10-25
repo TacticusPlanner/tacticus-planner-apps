@@ -15,7 +15,7 @@ import {
 
 import { NpcLevelBadge, NpcPortrait } from "@/entities/npc"
 
-import type { EnemyTileViewModel } from "./battles.view-model"
+import type { EnemyTileViewModel } from "../model/enemy-tile"
 import { EnemyDetail } from "./enemy-detail"
 import { useEnemyLabels } from "./enemy-label"
 

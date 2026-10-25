@@ -4,7 +4,7 @@ import { Button } from "@workspace/ui/components/button"
 
 import { NpcPortrait, NpcStatSummary } from "@/entities/npc"
 
-import type { EnemyTileViewModel } from "./battles.view-model"
+import type { EnemyTileViewModel } from "../model/enemy-tile"
 import { useEnemyLabels } from "./enemy-label"
 
 /**

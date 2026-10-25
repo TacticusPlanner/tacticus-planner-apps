@@ -5,7 +5,7 @@ import { rankAt } from "@workspace/game-domain"
 
 import { useNpcLabels } from "@/entities/npc"
 
-import type { EnemyTileViewModel } from "./battles.view-model"
+import type { EnemyTileViewModel } from "../model/enemy-tile"
 
 /**
  * A tile's display name and its spoken level: the raw id while `npcs` is pending or failed (spec: tiles show
