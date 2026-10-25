@@ -33,10 +33,10 @@
 
 ## 7. Desktop verification (≥768px)
 
-- [ ] 7.1 On the Aspire stack, create Ragnar's Rank ladder in the dialog, check the four rows, labels and order in Goals, and step through the updated tour.
-- [ ] 7.2 Create a second Ascension milestone and a Rank target covered by an existing Ascension goal; confirm no collision and the dependency review copy.
+- [x] 7.1 On the Aspire stack, create Ragnar's Rank ladder in the dialog, check the four rows, labels and order in Goals, and step through the updated tour. (The test account's Ragnar is already Adamantine I, one step below the top rank, so "Add milestone" correctly hides; ran the same four-step ladder on Incisus, Gold III → Diamond II → Diamond III → Adamantine I, with the suggested Ascension placed before the Adamantine step. The tour had no reachable start while the modal was open, so the sheet header now carries its own `PageTourButton`.)
+- [x] 7.2 Create a second Ascension milestone and a Rank target covered by an existing Ascension goal; confirm no collision and the dependency review copy.
 
 ## 8. Mobile verification (<768px)
 
-- [ ] 8.1 In a 420px same-origin iframe, repeat the ladder creation in the sheet, check the stacked milestone list and the mobile tour steps.
+- [x] 8.1 In a 420px same-origin iframe, repeat the ladder creation in the sheet, check the stacked milestone list and the mobile tour steps. (Bellator, Diamond II → Diamond III → Adamantine I → Adamantine II.)
 - [ ] 8.2 Check milestone rows, the covered note and blocker actions on the mobile Goals list.

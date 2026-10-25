@@ -15,6 +15,7 @@ import {
   ResponsiveDialogHeader,
   ResponsiveDialogTitle,
 } from "@/shared/ui"
+import { PageTourButton } from "@/shared/tour"
 import { useCreateGoalForm } from "../../model/goal-creation-form/use-create-goal-form"
 import type { CreateGoalPrefill } from "../../model/goal-creation-form/create-goal-launcher-context"
 import { CreateGoalSheetTourRegistration } from "./create-goal-sheet.tutorial"
@@ -56,8 +57,10 @@ export function CreateGoalSheet({
       preventOutsideClose
     >
       {open ? <CreateGoalSheetTourRegistration /> : null}
-      <ResponsiveDialogHeader>
+      <ResponsiveDialogHeader className="flex-row items-center gap-2">
         <ResponsiveDialogTitle>{t("goals.create.title")}</ResponsiveDialogTitle>
+        {/* The page header's tour button sits behind the modal, so the sheet carries its own. */}
+        <PageTourButton />
       </ResponsiveDialogHeader>
 
       <ResponsiveDialogBody>
