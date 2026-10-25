@@ -3,7 +3,7 @@
 UserJot "Support Multiple Rank Goals per Unit" (Ragnar) asks for V1 parity: stack G1 → D1 → D3 → A1 for a raid team and interleave the steps across units by priority. V2 already supports distinct Rank milestones (`rank-milestone-planning`), but:
 
 - Every other goal type is one per unit, while V1 allowed any number (Legendary now and Mythic later; ability 40 now and 50 later).
-- Creating a higher Rank milestone that needs more rarity auto-suggests a *new* Ascension goal even when the unit already has one. That collides with the existing Ascension slot and blocks submit (`features/goal-create/.../use-goal-prerequisites.ts` only looks at current progression, and `findGoalSlotConflict` then rejects the review set).
+- Creating a higher Rank milestone that needs more rarity auto-suggests a _new_ Ascension goal even when the unit already has one. That collides with the existing Ascension slot and blocks submit (`features/goal-create/.../use-goal-prerequisites.ts` only looks at current progression, and `findGoalSlotConflict` then rejects the review set).
 - A ladder takes one trip through the create sheet per step.
 
 The companion API change lifts the one-per-type rule for every type except Unlock (one goal per distinct target), allows repeated types in one combined request, and lets a new goal depend on existing goals.
