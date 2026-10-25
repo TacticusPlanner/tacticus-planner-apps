@@ -185,7 +185,6 @@
   },
   "estimate": {
     "title": "Clear estimate",
-    "label": "estimate",
     "labelUncalibrated": "estimate · uncalibrated",
     "unknown": "No estimate: enemy data incomplete",
     "verdict": {

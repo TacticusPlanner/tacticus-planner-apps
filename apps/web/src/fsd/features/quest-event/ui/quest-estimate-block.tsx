@@ -1,9 +1,8 @@
 import { useTranslation } from "react-i18next"
 
-import {
-  QUEST_POWER_RATIO_CALIBRATED,
-  type QuestBattleEstimate,
-  type QuestTeamEstimate,
+import type {
+  QuestBattleEstimate,
+  QuestTeamEstimate,
 } from "../model/quest-estimates"
 import { useObjectiveWording, type Objective } from "./use-objective-wording"
 
@@ -42,9 +41,7 @@ export function QuestEstimateBlock({
       <h4 className="font-semibold" id="quest-estimate-title">
         {t("estimate.title")}{" "}
         <span className="font-normal text-muted-foreground">
-          {QUEST_POWER_RATIO_CALIBRATED
-            ? t("estimate.label")
-            : t("estimate.labelUncalibrated")}
+          {t("estimate.labelUncalibrated")}
         </span>
       </h4>
       {estimate.kind === "unknown" ? (

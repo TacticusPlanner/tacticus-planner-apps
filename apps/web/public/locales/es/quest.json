@@ -185,7 +185,6 @@
   },
   "estimate": {
     "title": "Estimación de victoria",
-    "label": "estimación",
     "labelUncalibrated": "estimación · sin calibrar",
     "unknown": "Sin estimación: datos de enemigos incompletos",
     "verdict": {

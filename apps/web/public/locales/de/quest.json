@@ -185,7 +185,6 @@
   },
   "estimate": {
     "title": "Siegesschätzung",
-    "label": "Schätzung",
     "labelUncalibrated": "Schätzung · unkalibriert",
     "unknown": "Keine Schätzung: Gegnerdaten unvollständig",
     "verdict": {

@@ -13,9 +13,11 @@ import type { QuestObjectiveBadge, QuestTeam } from "./quest-team"
 
 /** A clear under this margin is "Close" (design D3); tune with calibration. */
 const MARGINAL_MARGIN = 0.15
-/** The power ratio r: 1.0 until `calibrateQuestPowerRatio` has enough samples (design D5). */
+/**
+ * The power ratio r: 1.0 until `calibrateQuestPowerRatio` has enough samples (design D5). While it is
+ * uncalibrated the estimate block says so; drop that label when r is calibrated.
+ */
 const QUEST_POWER_RATIO = 1
-export const QUEST_POWER_RATIO_CALIBRATED = false
 const MIN_CALIBRATION_SAMPLES = 5
 const CAP_GAINS_SHOWN = 3
 
