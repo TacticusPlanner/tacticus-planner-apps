@@ -59,7 +59,7 @@ Required data states for verification:
 
 ## 9. Gates
 
-- [ ] 9.1 Run `pnpm test:run`, `pnpm typecheck`, `pnpm lint`, `pnpm lint:fsd` and `git diff --check` from `tacticus-planner-apps`; all pass.
+- [x] 9.1 Run `pnpm test:run`, `pnpm typecheck`, `pnpm lint`, `pnpm lint:fsd` and `git diff --check` from `tacticus-planner-apps`; all pass.
 
 Sections 10 to 12 are manual checks on the reference accounts and are left for review.
 
