@@ -859,6 +859,7 @@
   },
   "planWizard": {
     "open": "Dieses Event planen",
+    "refine": "Plan verfeinern",
     "openFromSuggestions": "Alle Lanes für ein Ziel planen",
     "title": "{{name}} planen",
     "back": "Zurück",

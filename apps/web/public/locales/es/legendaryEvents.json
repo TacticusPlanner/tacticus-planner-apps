@@ -859,6 +859,7 @@
   },
   "planWizard": {
     "open": "Planificar este evento",
+    "refine": "Afinar el plan",
     "openFromSuggestions": "Planificar todas las líneas para un objetivo",
     "title": "Planificar {{name}}",
     "back": "Atrás",

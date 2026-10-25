@@ -38,6 +38,9 @@ function legendaryEventsChildren(items: ReturnType<typeof useNavItems>) {
   return items.find((item) => item.path === "/legendary-events")?.children
 }
 
+const localDate = (iso: string) =>
+  new Date(iso).toLocaleDateString("en", { dateStyle: "medium" })
+
 const STATIC_CHILDREN = [
   "/legendary-events",
   "/legendary-events/master-table",
@@ -77,7 +80,8 @@ describe("useNavItems", () => {
     })
     expect(children?.[3]).toMatchObject({
       label: "Lysander",
-      description: "Active Legendary Event with your synced progress",
+      // The run's end, in the device timezone like the page.
+      description: `Active Legendary Event with your synced progress · Ends ${localDate("2026-09-06T00:00:00Z")}`,
       iconSrc: expect.stringContaining("astar_lysander"),
     })
   })
@@ -111,7 +115,7 @@ describe("useNavItems", () => {
     ])
     expect(children?.[3]).toMatchObject({
       label: "Lysander",
-      description: "Upcoming Legendary Event",
+      description: `Upcoming Legendary Event · Starts ${localDate("2026-08-30T00:00:00Z")}`,
     })
     expect(children?.[4]).toMatchObject({
       label: "Uthar",
