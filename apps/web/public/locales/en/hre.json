@@ -79,7 +79,11 @@
     "done": "Done",
     "locked": "Locked",
     "markDone": "Mark done",
-    "markDoneLabel": "Mark done: {{objective}}"
+    "markDoneLabel": "Mark done: {{objective}}",
+    "add": "+{{amount}}",
+    "addLabel": "Add {{amount}}: {{objective}}",
+    "completed": "{{mission}} complete.",
+    "undo": "Undo"
   },
   "raids": {
     "title": "Campaign for {{mission}}",
@@ -141,7 +145,8 @@
       "openEnded": "The page can't estimate how many battles this takes, so play these until it's done.",
       "modes": "Arena and Onslaught battles count too, so update your progress after them.",
       "more": "More battles are needed after today's energy.",
-      "none": "No campaign node fits this mission's objectives."
+      "none": "No campaign node fits this mission's objectives.",
+      "rulesTitle": "Node rules"
     }
   },
   "tokens": {
@@ -166,8 +171,8 @@
     "rank": "Leaderboard rank",
     "rankPlaceholder": "Optional",
     "enterPoints": "Enter your event points to see where the event ends up.",
-    "bracket": "Rank {{from}} to {{to}} payouts.",
-    "bracketOpen": "Rank {{from}} and below payouts.",
+    "bracket": "Rank {{from}} to {{to}}: {{daily}} a day.",
+    "bracketOpen": "Rank {{from}} and below: {{daily}} a day.",
     "noRank": "Enter your rank for a better estimate.",
     "projected": "Projected points",
     "projectedValue": "{{points}} ({{perDay}} a day)",
@@ -176,7 +181,7 @@
     "chest": "Chest tier",
     "chestValue": "Tier {{tier}} ({{spent}} spent, {{left}} left)",
     "shards": "Shards",
-    "shardsValue": "{{chests}} from chests + {{crates}} from crates = {{total}}",
+    "shardsValue": "{{chests}} from chests + {{crates}} from crates = at least {{total}}",
     "reached": "Reaches",
     "notUnlocked": "Not unlocked yet",
     "shortOf": "{{shards}} shards short of {{step}}",
@@ -204,7 +209,34 @@
       "legendary-red-4": "Legendary, 4 red stars",
       "legendary-red-5": "Legendary, 5 red stars",
       "legendary-blue-1": "Legendary, 1 blue star"
-    }
+    },
+    "rankAgeToday": "Rank entered today.",
+    "rankAgeYesterday": "Rank entered yesterday.",
+    "rankAgeDays_one": "Rank entered {{count}} day ago.",
+    "rankAgeDays_other": "Rank entered {{count}} days ago.",
+    "owned": "What you hold now",
+    "ownedCurrency": "Currency owned",
+    "nextTier": "Next chest tier",
+    "heroStep": "Hero step",
+    "toNext": "Shards toward next step",
+    "stepNone": "Not unlocked",
+    "ownedHint": "Fill these in from the event screen to start the estimate from what you hold.",
+    "ownedPartial": "Fill in the rest of these to start the estimate from what you hold.",
+    "currencyOwnedValue": "{{owned}} owned + {{milestones}} milestones + {{missions}} missions + {{daily}} daily + {{crates}} crates = {{total}}",
+    "chestRange": "Tiers {{from}} to {{tier}} ({{spent}} spent, {{left}} left)",
+    "chestNone": "No chest yet ({{left}} available)",
+    "shardsOwnedValue": "{{held}} held + {{chests}} from chests + {{crates}} from crates = at least {{total}}",
+    "now": "Now",
+    "nowValue": "{{step}} · {{toNext}} / {{gap}} to {{next}}",
+    "nextMilestone": "Next milestone: {{points}} points, +{{reward}}",
+    "allMilestones": "Every milestone reached.",
+    "nextChest": "Next chest: tier {{tier}}, {{cost}} · {{missing}} more to open",
+    "nextChestReady": "Next chest: tier {{tier}}, {{cost}} · you can open it now",
+    "targetReached": "{{shards}} shards: reached with what you hold and the crates to come.",
+    "needsTimeUp": "{{shards}} shards is out of reach: the event has no days left.",
+    "summary": "{{points}} points → {{projected}} · {{step}}",
+    "summaryEmpty": "Enter your event points to see the pace.",
+    "details": "Details"
   },
   "teams": {
     "title": "Mission team",

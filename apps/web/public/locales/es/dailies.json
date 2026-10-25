@@ -376,7 +376,11 @@
         },
         "pace": {
           "title": "Ritmo del evento",
-          "content": "Introduce tus puntos del evento y tu puesto para estimar moneda, nivel de cofre y fragmentos, y elige un objetivo para ver los puntos al día que necesita."
+          "content": "Introduce tus puntos del evento y tu puesto, y si quieres lo que tienes ahora, para estimar moneda, nivel de cofre y fragmentos, y elige un objetivo para ver los puntos al día que necesita."
+        },
+        "paceSummary": {
+          "title": "El ritmo de un vistazo",
+          "content": "Tus puntos, dónde acaban y el paso que alcanzan. Toca Detalles para introducir puntos, puesto y lo que tienes, y para elegir un objetivo."
         }
       }
     }

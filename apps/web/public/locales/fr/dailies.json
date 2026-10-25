@@ -376,7 +376,11 @@
         },
         "pace": {
           "title": "Rythme de l'événement",
-          "content": "Saisissez vos points d'événement et votre rang pour estimer la monnaie, le niveau de coffre et les fragments, et choisissez un objectif pour voir les points par jour nécessaires."
+          "content": "Saisissez vos points d'événement et votre rang, et si vous voulez ce que vous avez maintenant, pour estimer la monnaie, le niveau de coffre et les fragments, et choisissez un objectif pour voir les points par jour nécessaires."
+        },
+        "paceSummary": {
+          "title": "Le rythme en un coup d'œil",
+          "content": "Vos points, où ils mènent et le palier atteint. Touchez Détails pour saisir vos points, votre rang et ce que vous avez, et choisir un objectif."
         }
       }
     }

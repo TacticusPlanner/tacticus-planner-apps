@@ -19,7 +19,17 @@ const { mocks } = vi.hoisted(() => ({
     homeScreenEvent: { status: "loading" } as unknown,
     hse: null as unknown,
     teamArgs: [] as unknown[],
+    toasts: [] as [string, { action: { onClick: () => void } }][],
   },
+}))
+
+vi.mock("sonner", () => ({
+  toast: Object.assign(
+    (message: string, options: { action: { onClick: () => void } }) => {
+      mocks.toasts.push([message, options])
+    },
+    { error: vi.fn(), success: vi.fn() }
+  ),
 }))
 
 vi.mock("react-i18next", () => {
@@ -199,6 +209,7 @@ beforeEach(() => {
   mocks.homeScreenEvent = { status: "loading" }
   mocks.hse = null
   mocks.teamArgs = []
+  mocks.toasts = []
   act(() => {})
 })
 
@@ -423,7 +434,7 @@ describe("HRE tab", () => {
         },
       },
     })
-    const note = screen.getByTestId("hre-battles-note")
+    const note = screen.getByTestId("hre-battles-rules")
     expect(note).toHaveTextContent("raids.battles.slots|slots=5")
     expect(note).toHaveTextContent(
       "raids.battles.alliance|alliance=common:alliances.Xenos"
@@ -562,7 +573,7 @@ describe("HRE tab", () => {
         },
       },
     })
-    const note = screen.getByTestId("hre-battles-note")
+    const note = screen.getByTestId("hre-battles-rules")
     expect(note).toHaveTextContent(
       "raids.battles.faction|faction=factions:Necrons"
     )
@@ -587,8 +598,15 @@ describe("HRE tab", () => {
       missionRaids: { manual: { alliance: "Xenos", heroFaction: "Orks" } },
     })
     expect(screen.getByTestId("hre-battles-note")).toHaveTextContent(
+      "raids.battles.note"
+    )
+    const rules = screen.getByTestId("hre-battles-rules")
+    expect(rules).not.toHaveAttribute("open")
+    expect(within(rules).getAllByRole("listitem").length).toBeGreaterThan(1)
+    expect(rules).toHaveTextContent(
       "raids.battles.heroFaction|faction=factions:Orks"
     )
+    expect(rules).not.toHaveTextContent("raids.battles.alliance")
   })
 
   it("lists open-ended battles with their energy per battle", () => {
@@ -601,7 +619,7 @@ describe("HRE tab", () => {
     }
     seed({ mission: 8, progress: [2, 0] })
     renderHre()
-    expect(screen.getByTestId("hre-battles-note")).toHaveTextContent(
+    expect(screen.getByTestId("hre-battles-rules")).toHaveTextContent(
       "raids.battles.openEnded"
     )
     expect(screen.getByTestId("hre-raid-X30")).toHaveTextContent(
@@ -785,5 +803,216 @@ describe("HRE tab", () => {
     expect(steps.mobile.at(-1)?.target).toBe(
       '[data-testid="hre-all-missions-toggle"]'
     )
+    expect(steps.desktop.map((step) => step.target)).toContain(
+      '[data-testid="hre-pace"]'
+    )
+  })
+
+  it("points the mobile tour's pace step at the summary, and renders every mobile target", () => {
+    mocks.isMobile = true
+    renderHre()
+    const steps = mocks.tourSteps as { mobile: { target: string }[] }
+    for (const step of steps.mobile) {
+      expect(document.querySelector(step.target), step.target).not.toBeNull()
+    }
+    const targets = steps.mobile.map((step) => step.target)
+    expect(targets).toContain('[data-testid="hre-pace-summary"]')
+    expect(targets).not.toContain('[data-testid="hre-pace"]')
+  })
+
+  describe("pace from what the player holds", () => {
+    // Day 8 of Zapspitta's event, as the game showed it.
+    const day8 = {
+      mission: 20,
+      progress: [0, 70],
+      points: 15_657,
+      rank: 26_602,
+      owned: { currency: 372, nextTier: 17, step: "rare-4", toNext: 17 },
+      order: 2,
+    }
+    beforeEach(() => {
+      mocks.instance = { ...running(), nowMs: START + 7 * DAY }
+    })
+
+    it("projects day 8 from the shards held and names the next milestone and chest", () => {
+      seed(day8)
+      renderHre()
+      expect(screen.getByTestId("hre-pace-now")).toHaveTextContent(
+        "pace.nowValue|step=pace.steps.rare-4,toNext=17,gap=50,next=pace.steps.rare-5"
+      )
+      expect(screen.getByTestId("hre-pace-currency")).toHaveTextContent(
+        "pace.currencyOwnedValue|owned=372,milestones=1,540,missions=100,daily=308,crates=340,total=2,660"
+      )
+      expect(screen.getByTestId("hre-pace-chest")).toHaveTextContent(
+        "pace.chestRange|from=17,tier=20,spent=2,100,left=560"
+      )
+      expect(screen.getByTestId("hre-pace-shards")).toHaveTextContent(
+        "held=297,chests=123,crates=18,total=438"
+      )
+      expect(screen.getByTestId("hre-pace-oh-so-close")).toBeInTheDocument()
+      expect(screen.getByTestId("hre-pace-next-milestone")).toHaveTextContent(
+        "pace.nextMilestone|points=16,000,reward=175"
+      )
+      expect(screen.getByTestId("hre-pace-next-chest")).toHaveTextContent(
+        "pace.nextChest|tier=17,cost=450,missing=78"
+      )
+      expect(screen.getByTestId("hre-pace-bracket")).toHaveTextContent(
+        "from=25,001,to=35,000,daily=44"
+      )
+      expect(screen.queryByTestId("hre-pace-owned-hint")).toBeNull()
+    })
+
+    it("keeps the points-only chain and asks for the rest when partly filled", () => {
+      seed({ ...day8, owned: { currency: 372 } })
+      renderHre()
+      expect(screen.getByTestId("hre-pace-owned-hint")).toHaveTextContent(
+        "pace.ownedPartial"
+      )
+      expect(screen.getByTestId("hre-pace-shards")).toHaveTextContent(
+        "pace.shardsValue|"
+      )
+      expect(screen.queryByTestId("hre-pace-now")).toBeNull()
+      expect(screen.queryByTestId("hre-pace-next-chest")).toBeNull()
+    })
+
+    it("stores typed owned inputs", async () => {
+      seed({ ...day8, owned: undefined })
+      renderHre()
+      expect(screen.getByTestId("hre-pace-owned-hint")).toHaveTextContent(
+        "pace.ownedHint"
+      )
+      await userEvent.type(screen.getByTestId("hre-pace-owned-currency"), "372")
+      await userEvent.type(screen.getByTestId("hre-pace-next-tier"), "17")
+      await userEvent.click(screen.getByTestId("hre-pace-step"))
+      await userEvent.click(
+        screen.getByRole("option", { name: "pace.steps.rare-4" })
+      )
+      await userEvent.type(screen.getByTestId("hre-pace-to-next"), "17")
+      expect(screen.getByTestId("hre-pace-shards")).toHaveTextContent(
+        "total=438"
+      )
+      const stored = JSON.parse(
+        window.localStorage.getItem("tp.dailies.hre.progress.v1") ?? "{}"
+      ) as Record<string, { owned: unknown }>
+      expect(stored["occ-zapspitta"]?.owned).toEqual(day8.owned)
+    })
+
+    it("hides the shards toward the next step at Legendary blue star", () => {
+      seed({
+        ...day8,
+        owned: { ...day8.owned, step: "legendary-blue-1", toNext: null },
+      })
+      renderHre()
+      expect(screen.queryByTestId("hre-pace-to-next")).toBeNull()
+      expect(screen.getByTestId("hre-pace-now")).toHaveTextContent(
+        "pace.steps.legendary-blue-1"
+      )
+    })
+
+    it("says when the rank was entered", () => {
+      seed({ ...day8, rankAt: START + 5 * DAY })
+      renderHre()
+      expect(screen.getByTestId("hre-pace-bracket")).toHaveTextContent(
+        "pace.rankAgeDays|count=2"
+      )
+    })
+  })
+
+  describe("tracker", () => {
+    it("restores a mission's progress after picking another one", async () => {
+      seed({ mission: 20, progress: [0, 70], order: 2 })
+      renderHre()
+      await userEvent.click(screen.getByTestId("hre-mission-picker"))
+      await userEvent.click(
+        screen.getByRole("option", { name: "missions.bonus" })
+      )
+      expect(screen.getByTestId("hre-objective-1-input")).toHaveValue(null)
+      await userEvent.click(screen.getByTestId("hre-mission-picker"))
+      await userEvent.click(
+        screen.getByRole("option", { name: "missions.number|number=20" })
+      )
+      expect(screen.getByTestId("hre-objective-1-input")).toHaveValue(70)
+    })
+
+    it("steps objectives by 1 and 10, clamped at the target", async () => {
+      seed({ mission: 20, progress: [0, 70], order: 2 })
+      renderHre()
+      await userEvent.click(screen.getByTestId("hre-objective-1-plus-10"))
+      await userEvent.click(screen.getByTestId("hre-objective-0-plus-1"))
+      expect(screen.getByTestId("hre-objective-1-input")).toHaveValue(80)
+      expect(screen.getByTestId("hre-objective-0-input")).toHaveValue(1)
+      expect(screen.queryByTestId("hre-objective-0-plus-10")).toBeNull()
+
+      const input = screen.getByTestId("hre-objective-1-input")
+      await userEvent.clear(input)
+      await userEvent.type(input, "245")
+      await userEvent.click(screen.getByTestId("hre-objective-1-plus-10"))
+      expect(input).toHaveValue(250)
+      expect(screen.queryByTestId("hre-objective-1-plus-1")).toBeNull()
+    })
+
+    it("offers Undo after Mission complete", async () => {
+      seed({ mission: 5, progress: [10_000, 100] })
+      renderHre()
+      await userEvent.click(screen.getByTestId("hre-mission-complete"))
+      expect(screen.getByTestId("hre-mission-6")).toHaveAttribute(
+        "data-status",
+        "current"
+      )
+      const [message, options] = mocks.toasts.at(-1)!
+      expect(message).toBe("tracker.completed|mission=missions.number|number=5")
+      act(() => options.action.onClick())
+      expect(screen.getByTestId("hre-mission-5")).toHaveAttribute(
+        "data-status",
+        "current"
+      )
+      expect(screen.getByTestId("hre-objective-1-input")).toHaveValue(100)
+    })
+  })
+
+  describe("mobile pace summary", () => {
+    it("sits under the current mission and asks for points without them", async () => {
+      mocks.isMobile = true
+      renderHre()
+      const order = [...screen.getByTestId("hre-sections").children].map(
+        (child) => child.getAttribute("data-testid")
+      )
+      expect(order.indexOf("hre-pace-summary")).toBe(
+        order.indexOf("hre-tracker") + 1
+      )
+      expect(screen.getByTestId("hre-pace-summary")).toHaveTextContent(
+        "pace.summaryEmpty"
+      )
+      const scroll = vi.spyOn(HTMLElement.prototype, "scrollIntoView")
+      await userEvent.click(screen.getByTestId("hre-pace-summary-details"))
+      expect(scroll).toHaveBeenCalled()
+      expect(scroll.mock.contexts.at(-1)).toBe(
+        screen.getByTestId("hre-pace-section")
+      )
+    })
+
+    it("summarises day 8 in one line", () => {
+      mocks.isMobile = true
+      mocks.instance = { ...running(), nowMs: START + 7 * DAY }
+      seed({
+        mission: 20,
+        progress: [0, 70],
+        points: 15_657,
+        rank: 26_602,
+        owned: { currency: 372, nextTier: 17, step: "rare-4", toNext: 17 },
+        order: 2,
+      })
+      renderHre()
+      expect(screen.getByTestId("hre-pace-summary")).toHaveTextContent(
+        "pace.summary|points=15,657,projected=31,314,step=pace.steps.rare-red-1"
+      )
+    })
+
+    it("is not shown on desktop", () => {
+      seed({ points: 15_657 })
+      renderHre()
+      expect(screen.queryByTestId("hre-pace-summary")).toBeNull()
+      expect(screen.getByTestId("hre-pace")).toBeInTheDocument()
+    })
   })
 })
