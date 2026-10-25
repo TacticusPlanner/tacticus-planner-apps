@@ -45,18 +45,18 @@ The detail SHALL list the served enemies in served order with the shared battle-
 
 Each served objective SHALL show as a chip with an icon, localized wording and its score. The wording per type:
 
-| Type | Wording (en) |
-|---|---|
-| `NoDamageTakenByAnyHero` | No unit takes damage |
-| `NotTrait` | No {trait} units |
-| `NotFaction` | No {faction} units |
-| `NotDamageType` | No {damage type} damage |
-| `DamageType` | Deal {damage type} damage |
-| `HasRangedAttack` | Only units with a ranged attack |
-| `MaxHits` | Units with at most {n} hits |
-| `MinHits` | Units with at least {n} hits |
-| `UseNoSummons` | No summons |
-| `DoNoHealOrRepair` | No healing or repair |
+| Type                     | Wording (en)                    |
+| ------------------------ | ------------------------------- |
+| `NoDamageTakenByAnyHero` | No unit takes damage            |
+| `NotTrait`               | No {trait} units                |
+| `NotFaction`             | No {faction} units              |
+| `NotDamageType`          | No {damage type} damage         |
+| `DamageType`             | Deal {damage type} damage       |
+| `HasRangedAttack`        | Only units with a ranged attack |
+| `MaxHits`                | Units with at most {n} hits     |
+| `MinHits`                | Units with at least {n} hits    |
+| `UseNoSummons`           | No summons                      |
+| `DoNoHealOrRepair`       | No healing or repair            |
 
 Traits, factions and damage types SHALL be localized by id. The lineup-restricting types (`NotTrait`, `NotFaction`, `NotDamageType`, `HasRangedAttack`, `MaxHits`, `MinHits`, `UseNoSummons`, `DoNoHealOrRepair`) SHALL carry a restriction marker with accessible text, not colour alone. An unknown type SHALL show its raw type with its score. The same chips SHALL show, compact, on the battle row.
 
