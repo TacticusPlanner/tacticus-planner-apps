@@ -8,7 +8,7 @@ Defines the 1-click plan wizard at `/legendary-events/:eventId/plan`: its entry 
 
 ### Requirement: Plan wizard entry points
 
-For signed-in users on an event that is active or upcoming, the event header row SHALL show the wizard button after the linked projects line, on every tab: a primary **Plan this event** button until the event has a plan, then a secondary **Refine plan** button. An event has a plan when a project targets it and every lane holds at least two stored teams; while either is unknown (loading or failed) it counts as having none, and each lane's Suggest teams dialog SHALL show a **Plan all lanes for a goal** link. Both SHALL open `/legendary-events/:eventId/plan` with step 1's target on the next step (a `?target=` step preselects another). An archived or finished event SHALL show neither.
+For signed-in users on an event that is active or upcoming, the event header row SHALL show the wizard button after the linked projects line, on every tab: a primary **Plan this event** button until the event has a plan, then a secondary **Refine plan** button. An event has a plan when a project targets it and every lane holds at least two stored teams; while either is unknown (loading or failed) it counts as having none. Each lane's Suggest teams dialog SHALL show a **Plan all lanes for a goal** link. Both SHALL open `/legendary-events/:eventId/plan` with step 1's target on the next step (a `?target=` step preselects another). An archived or finished event SHALL show neither.
 
 #### Scenario: Open from Overview
 
