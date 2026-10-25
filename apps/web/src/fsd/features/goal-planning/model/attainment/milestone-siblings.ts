@@ -41,8 +41,8 @@ function endScores(goal: GoalDetail): number[] | null {
 export type MilestoneSiblings = {
   /** The higher-priority in-flight sibling whose end reaches this goal's end on every dimension. */
   coveredBy: GoalDetail | null
-  /** Per dimension, the highest end of a higher-priority sibling still below this goal's end — where
-   *  this milestone's own range starts (null when none is below). */
+  /** The ends of the nearest higher-priority sibling below this goal's end (none of its dimensions
+   *  above, at least one below) — where this milestone's own range starts (nulls when none is below). */
   previousEnds: (number | null)[]
 }
 
@@ -75,7 +75,8 @@ export function milestoneSiblings(
     )
 
   let coveredBy: GoalDetail | null = null
-  const previousEnds: (number | null)[] = own.map(() => null)
+  let previousEnds: (number | null)[] = own.map(() => null)
+  let previousTotal = -1
   for (const sibling of ahead) {
     const scores = endScores(sibling)
     if (!scores) continue
@@ -85,13 +86,17 @@ export function milestoneSiblings(
     ) {
       coveredBy = sibling
     }
-    scores.forEach((score, index) => {
-      const ownScore = own[index] ?? 0
-      const previous = previousEnds[index] ?? null
-      if (score < ownScore && (previous === null || score > previous)) {
-        previousEnds[index] = score
-      }
-    })
+    // The nearest sibling below this goal: no dimension above it and at least one below. One goal
+    // supplies every dimension, so a two-track Ability start is always some goal's actual end.
+    // On a tie the later (nearest-priority) sibling wins.
+    const below =
+      scores.every((score, index) => score <= (own[index] ?? 0)) &&
+      scores.some((score, index) => score < (own[index] ?? 0))
+    const total = scores.reduce((sum, score) => sum + score, 0)
+    if (below && total >= previousTotal) {
+      previousEnds = scores
+      previousTotal = total
+    }
   }
   return { coveredBy, previousEnds }
 }

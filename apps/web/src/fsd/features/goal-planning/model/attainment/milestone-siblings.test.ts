@@ -158,4 +158,28 @@ describe("milestoneSiblings", () => {
       milestoneSiblings(ability45, [ability50, ability45])?.coveredBy
     ).toBe(null)
   })
+
+  it("takes both Ability tracks from one predecessor", () => {
+    const ability = (
+      goalId: string,
+      priority: number,
+      active: number,
+      passive: number
+    ) =>
+      goal(goalId, priority, "Ability", {
+        ability: {
+          activeStart: 30,
+          activeEnd: active,
+          passiveStart: 30,
+          passiveEnd: passive,
+        },
+      })
+    const left = ability("left", 1, 40, 45)
+    const right = ability("right", 2, 45, 40)
+    const sideways = ability("sideways", 3, 55, 35)
+    const target = ability("target", 4, 50, 50)
+    const goals = [left, right, sideways, target]
+    expect(milestoneSiblings(target, goals)?.previousEnds).toEqual([45, 40])
+    expect(milestoneSiblings(target, goals)?.coveredBy).toBe(null)
+  })
 })
