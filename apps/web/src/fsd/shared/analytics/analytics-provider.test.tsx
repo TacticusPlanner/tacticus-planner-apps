@@ -48,6 +48,7 @@ async function renderReady() {
 }
 
 beforeEach(() => {
+  vi.stubEnv("VITE_ANALYTICS_ENABLED", "true")
   vi.stubEnv("VITE_POSTHOG_PROJECT_TOKEN", "test-token")
 })
 
@@ -71,6 +72,17 @@ describe("AnalyticsProvider", () => {
 
   it("downloads no SDK when no project token is configured", async () => {
     vi.stubEnv("VITE_POSTHOG_PROJECT_TOKEN", "")
+    const { result } = renderHook(() => useAnalyticsActions(), { wrapper })
+
+    act(() => result.current.identifyUser("analytics-id"))
+    await Promise.resolve()
+
+    expect(sdk.init).not.toHaveBeenCalled()
+    expect(result.current.isReady).toBe(false)
+  })
+
+  it("downloads no SDK when analytics is not enabled, even with a project token", async () => {
+    vi.stubEnv("VITE_ANALYTICS_ENABLED", "false")
     const { result } = renderHook(() => useAnalyticsActions(), { wrapper })
 
     act(() => result.current.identifyUser("analytics-id"))
