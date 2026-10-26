@@ -11,6 +11,8 @@ import type { PlayerDataChunkDto } from "@workspace/player-data"
 
 import type { GoalKind } from "@/entities/goal"
 
+import { milestoneOrderIssue, type GoalMilestones } from "./goal-milestones"
+
 import { mowAbilityTrackLevel } from "@/features/goal-farming/@x/goal-create"
 import {
   getGoalValidationIssue,
@@ -42,6 +44,7 @@ export function useGoalValidationState({
   abilityPassiveStart,
   abilityPassiveEnd,
   upgradeFieldsValid,
+  milestones,
 }: {
   entityType: "Character" | "Mow"
   entityId: UnitId | undefined
@@ -59,6 +62,7 @@ export function useGoalValidationState({
   abilityPassiveStart: number
   abilityPassiveEnd: number
   upgradeFieldsValid: boolean
+  milestones: GoalMilestones
 }) {
   const { t } = useTranslation()
 
@@ -98,9 +102,20 @@ export function useGoalValidationState({
     currentPassiveAbility,
     upgradeFieldsValid,
   })
+  // Each added milestone must be above the one before it (goal-target-milestones); the card shows the
+  // message on that milestone, and this one blocks submission.
+  const milestoneIssue = milestoneOrderIssue({
+    enabledTypes,
+    rankEnd,
+    progressionEnd,
+    ability: { activeEnd: abilityActiveEnd, passiveEnd: abilityPassiveEnd },
+    milestones,
+  })
   const validationMessage = validationIssue
     ? t(`goals.create.validation.${validationIssue}`)
-    : null
+    : milestoneIssue
+      ? t("goals.create.milestones.notAbove")
+      : null
 
   // Every gate below either has a `validationMessage` of its own or is unreachable through the UI's
   // own option lists (a start/end select never offers an inverted range) — an Upgrade goal's missing
@@ -120,6 +135,7 @@ export function useGoalValidationState({
     atMaxProgression,
     atMaxAbility,
     validationMessage,
+    milestoneIssue,
     canSubmit,
   }
 }

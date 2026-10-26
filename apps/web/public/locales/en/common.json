@@ -903,7 +903,8 @@
       "eventArchived_one": "+{{count}} archived",
       "eventArchived_other": "+{{count}} archived",
       "eventNoProject": "No project for this event",
-      "eventOpenProjects": "Go to Projects"
+      "eventOpenProjects": "Go to Projects",
+      "membershipConflictTarget": "{{unit}} already has an active or paused {{type}} goal with the target {{target}}."
     },
     "toasts": {
       "statusConflict": "{{goal}} could not change: {{reason}}",
@@ -1084,7 +1085,8 @@
         "includeUnlock": "Include the suggested Unlock goal",
         "includeAscension": "Include the suggested Ascension goal",
         "unlockRequired": "required, this character isn't owned yet",
-        "ascensionRequired": "required to reach the target rank"
+        "ascensionRequired": "required to reach the target rank",
+        "dependsOnExisting": "Depends on your existing Ascension → {{target}} goal"
       },
       "validation": {
         "alreadyUnlocked": "This character is already unlocked.",
@@ -1104,6 +1106,13 @@
         "title": "Requires level {{required}} (currently {{current}})",
         "xpRemaining": "{{xp}} XP still to gain",
         "note": "Shown for reference — this is part of the goal, not a separate goal, and never blocks it."
+      },
+      "milestones": {
+        "add": "Add milestone",
+        "label": "Milestone {{number}}",
+        "remove": "Remove milestone {{number}}",
+        "hint": "Each milestone becomes its own goal, after the one before it.",
+        "notAbove": "Each milestone must be above the one before it."
       }
     },
     "estimate": {
@@ -1213,7 +1222,8 @@
       "reachableCeilingLevelLabel": "Currently reachable: Level {{level}}",
       "reachableCeilingReasonRarity": "capped by rarity",
       "reachableCeilingReasonLevel": "capped by level",
-      "reachableCeilingReasonBoth": "capped by rarity and level"
+      "reachableCeilingReasonBoth": "capped by rarity and level",
+      "coveredBy": "Covered by the {{type}} → {{target}} goal"
     },
     "insights": {
       "selectProject": "Select a project",
@@ -1260,7 +1270,9 @@
         "upgradeEmpty": "An upgrade goal needs at least one material.",
         "upgradeRange": "Choose a range that ends above where it starts."
       },
-      "reachedNote": "An already-reached target is fine: it needs nothing more, and the goal keeps its status until you complete it."
+      "reachedNote": "An already-reached target is fine: it needs nothing more, and the goal keeps its status until you complete it.",
+      "upgradeMaterials_one": "{{count}} material",
+      "upgradeMaterials_other": "{{count}} materials"
     },
     "order": {
       "conflictTitle": "The plan changed",
@@ -1307,7 +1319,8 @@
         "projects": "projects",
         "priority": "priority",
         "unknown": "an entry"
-      }
+      },
+      "openConflict": "Open that goal"
     }
   },
   "language": {
@@ -1438,7 +1451,7 @@
         },
         "list": {
           "title": "Your goals",
-          "content": "Every goal appears below in your priority order — active and paused goals first, then reached ones. Use a goal's Edit action to change its target, priority, notes, or projects. A character can have several Rank goals, each labelled with its own target."
+          "content": "Every goal appears below in your priority order — active and paused goals first, then reached ones. Use a goal's Edit action to change its target, priority, notes, or projects. A unit can have several Rank, Ascension, Ability or Upgrade goals, each labelled with its own target."
         }
       }
     },
@@ -1455,6 +1468,10 @@
         "mythicMaterialSources": {
           "title": "Mythic materials",
           "content": "Shop offers for the Mythic materials this goal needs. Every available offer is counted by default; uncheck any you won't buy."
+        },
+        "milestones": {
+          "title": "Milestones",
+          "content": "Add milestone to plan several targets for this unit at once, such as Gold 1, then Diamond 1, then Diamond 3. Each becomes its own goal, after the one before it."
         }
       }
     },

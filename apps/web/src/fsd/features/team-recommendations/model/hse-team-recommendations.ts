@@ -366,7 +366,10 @@ export function hseTeamModes(
   trackers: readonly GameCatalogHseTracker[]
 ): HseTeamMode[] {
   const scoring = new Set(hseModeScoring(trackers).map((entry) => entry.mode))
-  return HSE_TOKEN_MODES.filter((mode) => scoring.has(mode))
+  return HSE_TOKEN_MODES.filter(
+    (mode): mode is HseTeamMode =>
+      mode !== "TournamentArena" && scoring.has(mode)
+  )
 }
 
 /**

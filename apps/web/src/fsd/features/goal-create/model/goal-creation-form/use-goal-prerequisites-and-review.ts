@@ -7,11 +7,15 @@ import {
   type UnitId,
 } from "@workspace/game-domain"
 
-import type { GoalKind } from "@/entities/goal"
+import { useGoalsById, type GoalKind } from "@/entities/goal"
 
 import { buildReviewItems } from "./goal-spec-builder"
 import type { GoalAcquisitionPlan } from "./acquisition-plan"
-import { useGoalPrerequisites } from "./use-goal-prerequisites"
+import type { GoalMilestones } from "./goal-milestones"
+import {
+  useGoalPrerequisites,
+  type ExistingAscension,
+} from "./use-goal-prerequisites"
 import { useProgressionPreview } from "./use-progression-preview"
 
 type ProgressionPreviewParams = Parameters<typeof useProgressionPreview>[0]
@@ -35,6 +39,7 @@ export function useGoalPrerequisitesAndReview({
   rankEnd,
   abilityActiveEnd,
   abilityPassiveEnd,
+  milestones,
   includeSuggestedUnlock,
   includeSuggestedAscension,
   progressionStart,
@@ -54,6 +59,7 @@ export function useGoalPrerequisitesAndReview({
   rankEnd: Rank
   abilityActiveEnd: number
   abilityPassiveEnd: number
+  milestones: GoalMilestones
   includeSuggestedUnlock: boolean
   includeSuggestedAscension: boolean
   progressionStart: Progression
@@ -64,6 +70,7 @@ export function useGoalPrerequisitesAndReview({
   battlesById: ProgressionPreviewParams["battlesById"]
   dailyEnergy: number
 }) {
+  const existingAscensions = useExistingAscensions(entityType, entityId)
   const prerequisites = useGoalPrerequisites({
     isLocked: !!entityId && !isOwned,
     currentProgression: playerEntity?.progressionIndex,
@@ -74,6 +81,8 @@ export function useGoalPrerequisitesAndReview({
     rankEnd,
     abilityActiveEnd,
     abilityPassiveEnd,
+    milestones,
+    existingAscensions,
   })
 
   // Whether Unlock will actually be submitted — either the user toggled it explicitly, or it's
@@ -105,8 +114,15 @@ export function useGoalPrerequisitesAndReview({
   // "What will be created" review list (plan §7) — in submit order, flagging entries the user
   // didn't explicitly toggle themselves. Pure builder in ./goal-spec-builder.ts.
   const reviewItems = useMemo(
-    () => buildReviewItems(enabledTypes, includesUnlock, includesAscension),
-    [enabledTypes, includesUnlock, includesAscension]
+    () =>
+      buildReviewItems(enabledTypes, includesUnlock, includesAscension, {
+        Rank: milestones.rank.length + 1,
+        Ascension: enabledTypes.has("Ascension")
+          ? milestones.ascension.length + 1
+          : 1,
+        Ability: milestones.ability.length + 1,
+      }),
+    [enabledTypes, includesUnlock, includesAscension, milestones]
   )
 
   return {
@@ -115,5 +131,32 @@ export function useGoalPrerequisitesAndReview({
     includesAscension,
     progressionPreview,
     reviewItems,
+    existingAscensions,
   }
+}
+
+/** The selected unit's in-flight Ascension goals, which a new Rank/Ability target can depend on. */
+function useExistingAscensions(
+  entityType: "Character" | "Mow",
+  entityId: UnitId | undefined
+): readonly ExistingAscension[] {
+  const { goalsById } = useGoalsById()
+  return useMemo(
+    () =>
+      [...goalsById.values()].flatMap((goal) =>
+        goal.goalType === "Ascension" &&
+        goal.entityType === entityType &&
+        goal.entityId === entityId &&
+        (goal.status === "Active" || goal.status === "Paused") &&
+        goal.config.progression
+          ? [
+              {
+                goalId: goal.goalId,
+                end: goal.config.progression.end,
+              },
+            ]
+          : []
+      ),
+    [goalsById, entityType, entityId]
+  )
 }

@@ -52,7 +52,7 @@ describe("EventDetails", () => {
     )
 
     expect(descriptionLines()).toEqual([
-      "Dark Angels characters gain 2x XP in Arena, Onslaught, and Salvage Run when the whole team is from one faction.",
+      "Dark Angels characters gain +100% XP in Arena, Onslaught, and Salvage Run for each deployed friendly character of the same faction.",
       "Dark Angels characters have +20% Health, +20% Damage and +20% Armour in Arena.",
       "You gain 2 points for each enemy unit (excluding Summons) you defeat with Imperial characters in Arena, Onslaught, and Salvage Run.",
       "You gain 1 point for each enemy unit (excluding Summons) you defeat with Dark Angels characters in Arena, Onslaught, and Salvage Run.",

@@ -30,6 +30,7 @@ vi.mock("posthog-js", () => {
   sdk.imported()
   return { default: { init: sdk.init } }
 })
+vi.mock("posthog-js/dist/web-vitals", () => ({}))
 
 import { AnalyticsProvider, useAnalyticsActions } from "./analytics-provider"
 
@@ -108,6 +109,11 @@ describe("AnalyticsProvider", () => {
         advanced_disable_flags: true,
         disable_external_dependency_loading: true,
         capture_pageleave: true,
+        // Web vitals are enabled client-side (remote config is off) and their extension is bundled.
+        capture_performance: {
+          web_vitals: true,
+          web_vitals_attribution: false,
+        },
         before_send: expect.any(Function),
       })
     )

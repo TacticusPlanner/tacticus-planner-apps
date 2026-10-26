@@ -76,6 +76,19 @@ const EMPTY_NEED: ResourceNeed = {
   upgradeSlotsRemaining: null,
 }
 
+/** A unit's Ascension allocation across a plan (goal-milestone-planning): the goal each progression
+ *  step is charged to, and the owned shards each goal drew. Keyed by goal so computing one goal's need
+ *  again (plan builders do, for several views) reads back the same allocation. */
+export type AscensionCoverage = {
+  steps: Map<number, string>
+  shardDraws: Map<string, { shards: number; mythicShards: number }>
+}
+
+export const createAscensionCoverage = (): AscensionCoverage => ({
+  steps: new Map(),
+  shardDraws: new Map(),
+})
+
 /** The shards/mythic shards/orbs to cross every progression step in `(start, end]`, net of what's
  *  already owned (shards/orbs accumulate and carry over between steps, so netting the *total* owned
  *  against the *total* crossed cost is correct regardless of step ordering — the same "total need
@@ -92,6 +105,10 @@ export function ascensionResourceNeed(params: {
   ownedMythicShards: number
   currentProgression?: string
   ascensionCostsById: ReadonlyMap<string, AscensionCostStorageModel>
+  /** Plan allocation across a unit's Ascension goals, invoked in priority order: a step another goal
+   *  claimed is skipped and the rest are claimed for `goalId`; owned shards other goals drew are not
+   *  netted again. Omit for a standalone estimate. */
+  coverage?: { goalId: string; allocation: AscensionCoverage }
 }): ResourceNeed {
   const {
     start,
@@ -102,6 +119,7 @@ export function ascensionResourceNeed(params: {
     ownedMythicShards,
     ascensionCostsById,
     currentProgression,
+    coverage,
   } = params
 
   const configuredStartIndex = progressionOrder.indexOf(start as Progression)
@@ -117,6 +135,11 @@ export function ascensionResourceNeed(params: {
   const orbsByType: Partial<Record<Rarity, number>> = {}
 
   for (let index = startIndex + 1; index <= endIndex; index++) {
+    if (coverage) {
+      const owner = coverage.allocation.steps.get(index)
+      if (owner !== undefined && owner !== coverage.goalId) continue
+      coverage.allocation.steps.set(index, coverage.goalId)
+    }
     const progression = progressionOrder[index]
     const step = progression && ascensionCostsById.get(progression)
     if (!step) continue
@@ -129,8 +152,26 @@ export function ascensionResourceNeed(params: {
     }
   }
 
-  const netShards = Math.max(0, shards - ownedShards)
-  const netMythicShards = Math.max(0, mythicShards - ownedMythicShards)
+  let availableShards = ownedShards
+  let availableMythicShards = ownedMythicShards
+  if (coverage) {
+    for (const [goalId, drawn] of coverage.allocation.shardDraws) {
+      if (goalId === coverage.goalId) continue
+      availableShards -= drawn.shards
+      availableMythicShards -= drawn.mythicShards
+    }
+    availableShards = Math.max(0, availableShards)
+    availableMythicShards = Math.max(0, availableMythicShards)
+    // A gross-demand call (owned stock zeroed by the caller) leaves the recorded draw alone.
+    if (ownedShards > 0 || ownedMythicShards > 0) {
+      coverage.allocation.shardDraws.set(coverage.goalId, {
+        shards: Math.min(shards, availableShards),
+        mythicShards: Math.min(mythicShards, availableMythicShards),
+      })
+    }
+  }
+  const netShards = Math.max(0, shards - availableShards)
+  const netMythicShards = Math.max(0, mythicShards - availableMythicShards)
   if (
     netShards === 0 &&
     netMythicShards === 0 &&

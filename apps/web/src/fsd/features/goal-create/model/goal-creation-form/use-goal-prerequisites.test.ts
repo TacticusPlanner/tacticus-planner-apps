@@ -211,4 +211,84 @@ describe("useGoalPrerequisites", () => {
     expect(result.current.needsUnlock).toBe(false)
     expect(result.current.needsAscension).toBeNull()
   })
+
+  describe("existing Ascension goals", () => {
+    const rankToDiamond1 = {
+      ...baseParams,
+      isLocked: false,
+      currentProgression: "Epic:RedThreeStars" as const,
+      enabledTypes: types("Rank"),
+      rankEnd: "Diamond1" as const,
+    }
+
+    it("depends on an in-flight Ascension goal that reaches the need instead of suggesting one", () => {
+      const { result } = renderHook(() =>
+        useGoalPrerequisites({
+          ...rankToDiamond1,
+          existingAscensions: [
+            { goalId: "mythic", end: "Mythic:OneBlueStar" },
+            { goalId: "legendary", end: "Legendary:RedFiveStars" },
+          ],
+        })
+      )
+
+      expect(result.current.needsAscension).toBeNull()
+      expect(result.current.coveringAscension).toEqual({
+        goalId: "legendary",
+        end: "Legendary:RedFiveStars",
+      })
+    })
+
+    it("still suggests a new Ascension when the existing one is too low", () => {
+      const { result } = renderHook(() =>
+        useGoalPrerequisites({
+          ...rankToDiamond1,
+          existingAscensions: [{ goalId: "epic", end: "Epic:RedThreeStars" }],
+        })
+      )
+
+      expect(result.current.coveringAscension).toBeNull()
+      expect(result.current.needsAscension).toEqual({
+        start: "Epic:RedThreeStars",
+        end: "Legendary:RedThreeStars",
+      })
+    })
+
+    it("needs neither when no target is above the current cap", () => {
+      const { result } = renderHook(() =>
+        useGoalPrerequisites({
+          ...rankToDiamond1,
+          rankEnd: "Gold1",
+          existingAscensions: [
+            { goalId: "legendary", end: "Legendary:RedFiveStars" },
+          ],
+        })
+      )
+
+      expect(result.current.needsAscension).toBeNull()
+      expect(result.current.coveringAscension).toBeNull()
+    })
+
+    it("reasons from the highest milestone of a ladder", () => {
+      const { result } = renderHook(() =>
+        useGoalPrerequisites({
+          ...rankToDiamond1,
+          rankEnd: "Gold1",
+          milestones: {
+            rank: ["Diamond1", "Adamantine1"],
+            ascension: [],
+            ability: [],
+          },
+          existingAscensions: [
+            { goalId: "legendary", end: "Legendary:RedFiveStars" },
+          ],
+        })
+      )
+
+      expect(result.current.needsAscension).toEqual({
+        start: "Epic:RedThreeStars",
+        end: "Mythic:OneBlueStar",
+      })
+    })
+  })
 })

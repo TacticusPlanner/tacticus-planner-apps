@@ -31,9 +31,12 @@ import { GoalEditUnsavedDialog } from "./goal-edit-unsaved-dialog"
 export function GoalEditDialog({
   goalId,
   onOpenChange,
+  onOpenGoal,
 }: {
   goalId: string | null
   onOpenChange: (open: boolean) => void
+  /** Opens another goal in this dialog — offered when a target edit collides with a sibling goal. */
+  onOpenGoal?: (goalId: string) => void
 }) {
   // Keyed by goal so every open starts from a fresh draft.
   return goalId ? (
@@ -41,6 +44,7 @@ export function GoalEditDialog({
       goalId={goalId}
       key={goalId}
       onOpenChange={onOpenChange}
+      onOpenGoal={onOpenGoal}
     />
   ) : null
 }
@@ -48,9 +52,11 @@ export function GoalEditDialog({
 function GoalEditDialogContent({
   goalId,
   onOpenChange,
+  onOpenGoal,
 }: {
   goalId: string
   onOpenChange: (open: boolean) => void
+  onOpenGoal?: (goalId: string) => void
 }) {
   const { t } = useTranslation()
   const isAuthenticated = useIsAuthenticated()
@@ -127,6 +133,7 @@ function GoalEditDialogContent({
           <GoalEditForm
             detail={detail}
             onDirtyChange={setDirty}
+            onOpenGoal={onOpenGoal}
             onRequestClose={requestClose}
             onSaved={close}
             portalContainer={portalContainer}

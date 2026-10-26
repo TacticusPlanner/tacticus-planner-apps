@@ -332,7 +332,7 @@
         },
         "projection": {
           "title": "Proyección de puntos",
-          "content": "Las fichas de Arena, Onslaught y Carrera de Saqueo que aún puedes usar antes de que acabe el evento, la media que necesita cada una para llegar al último hito y adónde llegan tus propias medias. Edita las medias; se recuerdan para este evento."
+          "content": "Las fichas de Arena, Onslaught y Carrera de Saqueo que aún puedes usar antes de que acabe el evento, la media que necesita cada una para llegar al último hito y adónde llegan tus propias medias. Edita las medias; se recuerdan para este evento. Las fichas de Arena de torneo no se sincronizan: introduce las tuyas cuando el evento puntúe allí."
         },
         "teams": {
           "title": "Equipos del evento",
@@ -587,9 +587,9 @@
       },
       "lines": {
         "xp": "{{units}} ganan {{multiplier}}x de EXP {{modes}}",
-        "xpTeam": "{{units}} ganan {{multiplier}}x de EXP {{modes}} cuando todo el equipo es de una facción",
+        "xpTeam": "{{units}} ganan +{{bonusPct}} % de EXP {{modes}} por cada personaje aliado desplegado de la misma facción",
         "xpByRarity": "{{units}} ganan EXP extra según la rareza ({{rates}}) {{modes}}",
-        "xpByRarityTeam": "{{units}} ganan EXP extra según la rareza ({{rates}}) {{modes}} cuando todo el equipo es de una facción",
+        "xpByRarityTeam": "{{units}} ganan EXP extra según la rareza ({{rates}}) {{modes}} por cada personaje aliado desplegado de la misma facción",
         "stat": "{{units}} tienen +{{health}} % de salud, +{{damage}} % de daño y +{{armour}} % de armadura {{modes}}",
         "kill_one": "Ganas {{count}} punto por cada {{enemy}} que derrotes {{modes}}",
         "kill_other": "Ganas {{count}} puntos por cada {{enemy}} que derrotes {{modes}}",
@@ -597,10 +597,10 @@
         "killWith_other": "Ganas {{count}} puntos por cada {{enemy}} que derrotes con {{player}} {{modes}}",
         "waves_one": "Ganas {{count}} punto por cada oleada que superes {{modes}}",
         "waves_other": "Ganas {{count}} puntos por cada oleada que superes {{modes}}",
-        "factionMajority_one": "Ganas {{count}} punto por cada combate {{modes}} en el que la mayoría de las unidades que despliegas son de una facción",
-        "factionMajority_other": "Ganas {{count}} puntos por cada combate {{modes}} en el que la mayoría de las unidades que despliegas son de una facción",
-        "fullLineUp_one": "Ganas {{count}} punto por cada combate {{modes}} en el que toda tu alineación es de una facción",
-        "fullLineUp_other": "Ganas {{count}} puntos por cada combate {{modes}} en el que toda tu alineación es de una facción",
+        "factionMajority_one": "Obtienes {{count}} punto {{modes}} por cada personaje desplegado de la facción con más personajes en tu alineación",
+        "factionMajority_other": "Obtienes {{count}} puntos {{modes}} por cada personaje desplegado de la facción con más personajes en tu alineación",
+        "fullLineUp_one": "Obtienes {{count}} punto adicional por cada combate {{modes}} en el que toda tu alineación es de una sola facción",
+        "fullLineUp_other": "Obtienes {{count}} puntos adicionales por cada combate {{modes}} en el que toda tu alineación es de una sola facción",
         "donateUpgrade_one": "Ganas {{count}} punto por cada mejora que donas a un miembro del gremio",
         "donateUpgrade_other": "Ganas {{count}} puntos por cada mejora que donas a un miembro del gremio",
         "donateUpgradeByRarity": "Ganas puntos por cada mejora que donas a un miembro del gremio: {{rates}}",
@@ -669,6 +669,7 @@
       "averageNeeded": "Introduce una media",
       "tokensValue_one": "{{count}} ficha",
       "tokensValue_other": "{{count}} fichas",
+      "tokensLabel": "Fichas para {{mode}}",
       "projected": "Puntos proyectados",
       "projectedValue": "{{points}} pts",
       "needAverage": "Introduce una media para cada modo para ver los puntos proyectados.",
@@ -682,7 +683,8 @@
         "summed": "{{mode}}: se aplican {{count}} reglas de puntos, así que «{{perUnit}}» supone que cada una las cumple todas.",
         "locked": "Aún no desbloqueado, se omite: {{modes}}.",
         "enemyRestricted": "Solo cuentan algunos enemigos (consulta los detalles del evento), así que introduce tu media de bajas que cuentan.",
-        "battles": "Los modos de combate puntúan una vez por ficha: un combate por ficha.",
+        "battles": "Los modos de combate puntúan una vez por ficha, suponiendo una alineación completa de cinco personajes de una sola facción: puntos por personaje más la bonificación de alineación completa.",
+        "manualTokens": "Las fichas de {{modes}} no se sincronizan desde el juego: introduce cuántas gastarás durante el evento.",
         "campaign": "Las incursiones de campaña también dan puntos en este evento; se planifican en la lista de farmeo de abajo.",
         "syncedAt": "Fichas de tu sincronización {{when}}, suponiendo que las gastas antes de que tus reservas se llenen.",
         "syncUnknown": "Se desconoce la hora de tu sincronización, así que las fichas se cuentan desde ahora, suponiendo que las gastas antes de que tus reservas se llenen.",

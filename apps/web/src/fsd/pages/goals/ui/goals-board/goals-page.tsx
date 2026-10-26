@@ -451,6 +451,7 @@ export function GoalsPage() {
       <GoalEditDialog
         goalId={editGoalId}
         onOpenChange={(open) => !open && closeEditGoal()}
+        onOpenGoal={openEditGoal}
       />
       {settingsOpen ? (
         <PlanningSettingsDialog open onOpenChange={setSettingsOpen} />

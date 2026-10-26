@@ -40,6 +40,7 @@ import { useGoalPrefill } from "./use-goal-prefill"
 import { useGoalPrerequisitesAndReview } from "./use-goal-prerequisites-and-review"
 import { useGoalSubmission } from "./use-goal-submission"
 import { useGoalValidationState } from "./use-goal-validation-state"
+import { useGoalMilestones } from "./use-goal-milestones"
 import { useLevelRequirementPreviews } from "./use-level-requirement-preview"
 import { useUpgradeFields } from "./use-upgrade-fields"
 import type { CreateGoalPrefill } from "./create-goal-launcher-context"
@@ -128,6 +129,8 @@ export function useCreateGoalForm({
   const { progressionStart, progressionEnd } = ascensionFields.state
 
   const abilityFields = useAbilityFields()
+  const milestoneFields = useGoalMilestones()
+  const { milestones } = milestoneFields
   const {
     abilityActiveStart,
     abilityActiveEnd,
@@ -215,6 +218,7 @@ export function useCreateGoalForm({
     ascensionFields,
     abilityFields,
     upgradeFields,
+    milestoneFields,
     acquisitionSourceSelection,
     projectSelection,
     setFarmingStrategy,
@@ -287,6 +291,7 @@ export function useCreateGoalForm({
     includesAscension,
     progressionPreview,
     reviewItems,
+    existingAscensions,
   } = useGoalPrerequisitesAndReview({
     entityId,
     entityType,
@@ -300,6 +305,7 @@ export function useCreateGoalForm({
     rankEnd,
     abilityActiveEnd,
     abilityPassiveEnd,
+    milestones,
     includeSuggestedUnlock,
     includeSuggestedAscension,
     progressionStart,
@@ -318,6 +324,7 @@ export function useCreateGoalForm({
     atMaxProgression,
     atMaxAbility,
     validationMessage,
+    milestoneIssue,
     canSubmit,
   } = useGoalValidationState({
     entityType,
@@ -336,6 +343,7 @@ export function useCreateGoalForm({
     abilityPassiveStart,
     abilityPassiveEnd,
     upgradeFieldsValid: upgradeFields.isValid,
+    milestones,
   })
 
   const combinedSpecParams = {
@@ -354,6 +362,9 @@ export function useCreateGoalForm({
     plan: acquisitionPlan,
     mythicMaterialSources: mythicMaterialSelection.acquisitionSources,
     isMow: entityType === "Mow",
+    milestones,
+    baseProgression: prerequisites.baseProgression,
+    existingAscensions,
   }
 
   const submission = useGoalSubmission({
@@ -362,7 +373,6 @@ export function useCreateGoalForm({
     canSubmit,
     projects,
     selectedProjectIds,
-    goalTypes: reviewItems.map((item) => item.goalType),
     dailyEnergy: planningSettings.dailyEnergy,
     inventoryUpgrades,
     open,
@@ -451,6 +461,8 @@ export function useCreateGoalForm({
     planningSettings,
     progressionPreview,
     validationMessage,
+    milestoneFields,
+    milestoneIssue,
   }
 }
 

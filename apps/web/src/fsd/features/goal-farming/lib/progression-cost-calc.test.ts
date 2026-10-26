@@ -3,9 +3,11 @@ import type {
   AscensionCostStorageModel,
   UnlockShardCostStorageModel,
 } from "@workspace/game-catalog"
+import type { Progression } from "@workspace/game-domain"
 
 import {
   ascensionResourceNeed,
+  createAscensionCoverage,
   isMythicProgression,
   unlockResourceNeed,
 } from "./progression-cost-calc"
@@ -201,5 +203,103 @@ describe("isMythicProgression", () => {
   it("is false for every pre-Mythic tier", () => {
     expect(isMythicProgression("Common:None")).toBe(false)
     expect(isMythicProgression("Legendary:OneBlueStar")).toBe(false)
+  })
+})
+
+describe("ascensionResourceNeed plan coverage", () => {
+  const step = (
+    progression: Progression,
+    shards: number,
+    orbs: number
+  ): [string, AscensionCostStorageModel] => [
+    progression,
+    {
+      id: progression,
+      progression,
+      shards,
+      mythicShards: 0,
+      orbs,
+      orbRarity: "Legendary",
+    },
+  ]
+  const legendaryCosts = new Map<string, AscensionCostStorageModel>([
+    step("Legendary:RedThreeStars", 100, 10),
+    step("Legendary:RedFourStars", 150, 10),
+    step("Legendary:RedFiveStars", 250, 15),
+    step("Legendary:OneBlueStar", 500, 20),
+  ])
+  const ragnar = (end: string) => ({
+    start: "Epic:RedThreeStars",
+    end,
+    entityId: "ragnar",
+    isMow: false,
+    ownedShards: 40,
+    ownedMythicShards: 0,
+    currentProgression: "Epic:RedThreeStars",
+    ascensionCostsById: legendaryCosts,
+  })
+
+  it("charges overlapping milestones once and draws owned shards once (worked Ragnar example)", () => {
+    const allocation = createAscensionCoverage()
+
+    const first = ascensionResourceNeed({
+      ...ragnar("Legendary:RedFourStars"),
+      coverage: { goalId: "p1", allocation },
+    })
+    const second = ascensionResourceNeed({
+      ...ragnar("Legendary:OneBlueStar"),
+      coverage: { goalId: "p2", allocation },
+    })
+
+    expect(first.shards).toBe(210)
+    expect(first.orbsByType).toEqual({ Legendary: 20 })
+    expect(second.shards).toBe(750)
+    expect(second.orbsByType).toEqual({ Legendary: 35 })
+    expect(first.shards + second.shards).toBe(960)
+  })
+
+  it("reads back the same allocation when a goal's need is computed again", () => {
+    const allocation = createAscensionCoverage()
+    const first = (owned: number) =>
+      ascensionResourceNeed({
+        ...ragnar("Legendary:RedFourStars"),
+        ownedShards: owned,
+        coverage: { goalId: "p1", allocation },
+      })
+
+    expect(first(40).shards).toBe(210)
+    // A gross-demand pass (owned stock zeroed) neither loses the steps nor the recorded draw.
+    expect(first(0).shards).toBe(250)
+    expect(first(40).shards).toBe(210)
+    expect(
+      ascensionResourceNeed({
+        ...ragnar("Legendary:OneBlueStar"),
+        coverage: { goalId: "p2", allocation },
+      }).shards
+    ).toBe(750)
+  })
+
+  it("charges every step to a higher target ordered first, leaving the lower one nothing", () => {
+    const allocation = createAscensionCoverage()
+
+    const higher = ascensionResourceNeed({
+      ...ragnar("Legendary:OneBlueStar"),
+      coverage: { goalId: "p1", allocation },
+    })
+    const lower = ascensionResourceNeed({
+      ...ragnar("Legendary:RedFourStars"),
+      coverage: { goalId: "p2", allocation },
+    })
+
+    expect(higher.shards).toBe(960)
+    expect(lower.shards).toBe(0)
+    expect(lower.orbsByType).toEqual({})
+  })
+
+  it("leaves a standalone estimate charging its whole range net of all owned shards", () => {
+    const standalone = ascensionResourceNeed(ragnar("Legendary:OneBlueStar"))
+
+    expect(standalone.shards).toBe(960)
+    expect(standalone.orbsByType).toEqual({ Legendary: 55 })
   })
 })

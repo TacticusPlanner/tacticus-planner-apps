@@ -60,7 +60,7 @@ function abilityTargetGroups(
 
 /** One ability-track target dropdown — its own trigger ref/container so the two tracks' menus
  * portal into the sheet independently. */
-function AbilityTargetSelect({
+export function AbilityTargetSelect({
   label,
   testId,
   currentLevel,

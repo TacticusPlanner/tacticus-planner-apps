@@ -19,6 +19,7 @@ import { GameCatalogInitGate } from "../game-catalog-init-gate"
 import { HseLiveProvider } from "./hse-live-provider"
 import { DesktopShell } from "./desktop-layout"
 import { documentTitle } from "./document-title"
+import { PageTourButton } from "@/shared/tour"
 import { MobileShell } from "./mobile-layout"
 import {
   filterVisibleNavItems,
@@ -192,6 +193,7 @@ function ShellContent({
             open={createOpen}
             onOpenChange={handleCreateOpenChange}
             prefill={createPrefill}
+            headerAction={<PageTourButton />}
           />
           <QuickCreateProjectSheet
             onOpenChange={setCreateProjectOpen}

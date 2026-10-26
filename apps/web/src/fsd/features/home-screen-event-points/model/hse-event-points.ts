@@ -144,7 +144,7 @@ function projectionView(
   if (player.status === "error") return { status: "error" }
   const startMs = Date.parse(instance.entry.startUtc)
   const endMs = Date.parse(instance.entry.endUtc)
-  const tokens = hseTokenSupply(
+  const synced = hseTokenSupply(
     player.buckets,
     instance.status === "running"
       ? {
@@ -155,6 +155,11 @@ function projectionView(
         }
       : { status: "upcoming", startMs, endMs }
   )
+  // Tournament Arena has no synced bucket: the player enters its tokens (none until then).
+  const tokens = {
+    ...synced,
+    TournamentArena: inputs.tokens.TournamentArena ?? 0,
+  }
   const cells = hseMilestoneCells(tier)
   const projection = projectHsePoints({
     tier,
