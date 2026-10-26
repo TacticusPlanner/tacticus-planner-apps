@@ -118,9 +118,24 @@ export function planInputs(overrides: Partial<PlanInputs> = {}): PlanInputs {
     eventUnit: undefined,
     plan: EMPTY_PLAN,
     runStarts: [
-      { run: 1, startMs: Date.parse("2026-03-08T00:00:00Z"), estimated: false },
-      { run: 2, startMs: NOW_MS - DAY_MS, estimated: false },
-      { run: 3, startMs: RUN_3_START_MS, estimated: true },
+      {
+        run: 1,
+        startMs: Date.parse("2026-03-08T00:00:00Z"),
+        guessMs: Date.parse("2026-03-08T00:00:00Z"),
+        estimated: false,
+      },
+      {
+        run: 2,
+        startMs: NOW_MS - DAY_MS,
+        guessMs: NOW_MS - DAY_MS,
+        estimated: false,
+      },
+      {
+        run: 3,
+        startMs: RUN_3_START_MS,
+        guessMs: RUN_3_START_MS,
+        estimated: true,
+      },
     ],
     initialRarityOf: () => "Epic",
     nameOf: (unitId) => unitId,

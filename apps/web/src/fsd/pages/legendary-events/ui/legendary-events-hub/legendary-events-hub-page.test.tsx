@@ -120,6 +120,12 @@ describe("LegendaryEventsHubPage", () => {
     expect(
       names(screen.getByTestId("legendary-events-group-archived"))
     ).toEqual(["Dante"])
+    // A finished event lists no run dates.
+    expect(
+      within(
+        screen.getByTestId("legendary-events-group-archived")
+      ).queryByTestId("legendary-event-runs")
+    ).toBeNull()
     expect(
       screen.getAllByRole("heading", { level: 2 }).map((h) => h.textContent)
     ).toEqual(["Active", "Upcoming", "Archived"])
@@ -169,6 +175,14 @@ describe("LegendaryEventsHubPage", () => {
     expect(
       within(uthar).getByTestId("event-timing-countdown")
     ).toHaveTextContent("Starts in 14 days")
+    // Only run 1 is announced: runs 2 and 3 are guessed 175 days apart.
+    expect(within(uthar).getByTestId("legendary-event-runs")).toHaveTextContent(
+      "Run 1: Oct 4, 2026Run 2: maybe ~Mar 2027Run 3: maybe ~Sep 2027"
+    )
+    expect(within(uthar).getByTestId("legendary-event-run-2")).toHaveAttribute(
+      "data-guessed",
+      "true"
+    )
   })
 
   it("heads the page with the no-active line when nothing is running", async () => {

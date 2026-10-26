@@ -1,7 +1,10 @@
 import { describe, expect, it } from "vitest"
 
+import type { TokenPlanView } from "@/features/legendary-event-tokens"
+
 import {
   bestStepWithinReach,
+  ceilingOf,
   stepTargets,
   stepVerdict,
   type StepTarget,
@@ -36,6 +39,23 @@ describe("team generation", () => {
     expect(alpha.every((team) => team.storedId === null)).toBe(true)
     expect(alpha[0]!.depthByRun[2]).toBeGreaterThan(0)
     expect(ceiling).toBeGreaterThan(0)
+  })
+
+  it("measures the ceiling at the end of the horizon run", () => {
+    const view = {
+      kind: "ready",
+      forecast: {
+        runs: [
+          { run: 2, endingPoints: 9000 },
+          { run: 3, endingPoints: 15_000 },
+        ],
+      },
+    } as unknown as TokenPlanView
+    expect(ceilingOf(view, 2)).toBe(9000)
+    expect(ceilingOf(view, 3)).toBe(15_000)
+    expect(ceilingOf(view)).toBe(15_000)
+    // A horizon before the forecast's first run reads that run.
+    expect(ceilingOf(view, 1)).toBe(9000)
   })
 
   it("keeps the user's teams first", () => {

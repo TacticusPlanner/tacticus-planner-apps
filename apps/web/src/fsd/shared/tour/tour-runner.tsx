@@ -145,8 +145,9 @@ export function TourRunner({
 
   const steps = React.useMemo<Step[]>(() => {
     if (tourKind === "general" || !pageSteps) return defaultSteps
-    return (isMobile ? pageSteps.mobile : undefined) ?? pageSteps.desktop
-  }, [tourKind, pageSteps, defaultSteps, isMobile])
+    const page = (isMobile ? pageSteps.mobile : undefined) ?? pageSteps.desktop
+    return run ? withoutMissingOptionalSteps(page) : page
+  }, [tourKind, pageSteps, defaultSteps, isMobile, run])
 
   const locale = React.useMemo<Locale>(
     () => ({

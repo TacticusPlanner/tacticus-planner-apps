@@ -7,8 +7,9 @@ import { cn } from "@workspace/ui/lib/utils"
 import { EventTimingLines } from "../shared/event-timing-lines"
 import type { HubCardViewModel } from "./legendary-events-hub.view-model"
 
-/** One hub row: portrait, localized name and timing, plus the synced run, tokens and points for
- *  the active event. Activating it opens the event page. */
+/** One hub row: portrait, localized name and timing, every run's date (guessed when not
+ *  announced) for an unfinished event, plus the synced run, tokens and points for the active
+ *  event. Activating it opens the event page. */
 export function LegendaryEventCard({
   card,
   nowMs,
@@ -22,6 +23,11 @@ export function LegendaryEventCard({
   const number = new Intl.NumberFormat(i18n.language)
   const portrait = characterIcon(card.eventId as UnitId)
   const { synced } = card
+  const short = new Intl.DateTimeFormat(i18n.language, { dateStyle: "medium" })
+  const month = new Intl.DateTimeFormat(i18n.language, {
+    month: "short",
+    year: "numeric",
+  })
 
   return (
     <Link
@@ -55,6 +61,31 @@ export function LegendaryEventCard({
           {card.name}
         </p>
         <EventTimingLines lifecycle={card.lifecycle} nowMs={nowMs} />
+        {card.runs.length > 0 ? (
+          <ul
+            aria-label={t("hub.runs")}
+            className="flex flex-wrap gap-x-3 text-xs text-muted-foreground"
+            data-testid="legendary-event-runs"
+          >
+            {card.runs.map(({ run, startMs, guessed }) => (
+              <li
+                data-guessed={guessed}
+                data-testid={`legendary-event-run-${run}`}
+                key={run}
+              >
+                {t("hub.run", {
+                  run,
+                  date:
+                    startMs === null
+                      ? t("runDates.unknown")
+                      : guessed
+                        ? t("runDates.guessed", { date: month.format(startMs) })
+                        : short.format(startMs),
+                })}
+              </li>
+            ))}
+          </ul>
+        ) : null}
         {synced.kind === "unavailable" ? (
           <p
             className="text-sm text-muted-foreground"
