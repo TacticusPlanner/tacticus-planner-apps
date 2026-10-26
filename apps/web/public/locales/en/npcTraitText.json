@@ -171,7 +171,7 @@
     "description": "This unit deals <style=\"Stat_Damage\">+{[extraDmgPct]}% Damage</style> with all attacks and takes <style=\"Stat_Damage\">-{[dmgReductionPct]}% Damage</style>. If it traverses 3 or more hexes during its turn, it loses this effect until the start of its next turn.",
     "variables": {
       "extraDmgPct": [25],
-      "dmgReductionPct": [33]
+      "dmgReductionPct": [25]
     }
   },
   "Psyker": {

@@ -33,7 +33,9 @@ const traitData = JSON.parse(
 // Ported verbatim from V1 `4-entities/traits/trait-variables.ts`. Trait descriptions carry
 // `{[varName]}` placeholders whose values come from these global game constants (traits do not level,
 // so each resolves to a single-element array). Build-time only — kept here so shipped app code reads
-// already-resolved values.
+// already-resolved values. Two values are corrected from V1 to the game config's
+// `globalValues.traitVariables` (datamine 1.43.157): deathToTheFalseEmperorExtraHitChance 33 -> 50,
+// prioritisedEfficiencyDmgReductionPct 33 -> 25.
 const TRAIT_GLOBAL_VARIABLES = {
   livingMetalHp: 10,
   heavyWeaponExtraDmg: 25,
@@ -41,7 +43,7 @@ const TRAIT_GLOBAL_VARIABLES = {
   psykerExtraDmg: 50,
   emplacementMeleeDmgModifier: -50,
   emplacementRangedDmgModifier: 50,
-  deathToTheFalseEmperorExtraHitChance: 33,
+  deathToTheFalseEmperorExtraHitChance: 50,
   actOfFaithExtraCritChance: 10,
   actOfFaithExtraCritDmgPct: 25,
   battleFatigueChance: 10,
@@ -88,7 +90,7 @@ const TRAIT_GLOBAL_VARIABLES = {
   thrillSeekersExtraCritChance: 15,
   LetTheGalaxyBurnChancePct: 33,
   prioritisedEfficiencyExtraDmgPct: 25,
-  prioritisedEfficiencyDmgReductionPct: 33,
+  prioritisedEfficiencyDmgReductionPct: 25,
   rangedSpecialistDmgPct: 33,
 }
 

@@ -4,13 +4,16 @@
 // which corrects V1's `getPierceRatio` for Chain (20%, not 15%) and Plasma (65%, not 60%). The wiki's
 // Las bonus (+50% for Emplacement or Heavy Weapon units) is unit-specific and not modelled here. Keys
 // are the catalog's damage type strings; "Heavy Round" and "Molecular" are V1's display spellings of
-// the catalog's "HeavyRound" and "Gauss".
+// the catalog's "HeavyRound" and "Gauss", and "Direct" of "DirectDamage". All values match the game
+// config's `units.damageProfiles[].PiercingRatio` (datamine 1.43.157), which also supplies Acid.
 const pierceRatioByDamageType: Readonly<Record<string, number>> = {
+  Acid: 0.4,
   Bio: 0.3,
   Blast: 0.15,
   Bolter: 0.2,
   Chain: 0.2,
   Direct: 1,
+  DirectDamage: 1,
   Energy: 0.3,
   Eviscerate: 0.5,
   Flame: 0.25,

@@ -49,6 +49,12 @@ describe("pierceRatio", () => {
     expect(pierceRatio("HeavyRound")).toBe(0.55)
     expect(pierceRatio("Molecular")).toBe(pierceRatio("Gauss"))
     expect(pierceRatio("Gauss")).toBe(0.6)
+    expect(pierceRatio("Direct")).toBe(pierceRatio("DirectDamage"))
+  })
+
+  it("knows the game config's types the wiki table lacks", () => {
+    expect(pierceRatio("DirectDamage")).toBe(1)
+    expect(pierceRatio("Acid")).toBe(0.4)
   })
 
   it("returns undefined for an unknown damage type", () => {
