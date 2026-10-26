@@ -13,9 +13,13 @@ import type { PostHog, PostHogConfig } from "posthog-js"
 import type { AnalyticsEvent } from "./analytics-event"
 import { sanitizeCapture, setReportedRoutePattern } from "./capture-sanitizer"
 
-// Read fresh (not cached at module scope) so tests can flip VITE_POSTHOG_PROJECT_TOKEN with
-// vi.stubEnv without needing vi.resetModules() + a dynamic re-import.
+// Read fresh (not cached at module scope) so tests can flip VITE_ANALYTICS_ENABLED /
+// VITE_POSTHOG_PROJECT_TOKEN with vi.stubEnv without needing vi.resetModules() + a dynamic re-import.
+//
+// Capture is off unless VITE_ANALYTICS_ENABLED is exactly "true" - only .env.production sets it, so
+// local dev and staging never report into the production project even though they carry its token.
 function projectToken(): string | undefined {
+  if (import.meta.env.VITE_ANALYTICS_ENABLED !== "true") return undefined
   return import.meta.env.VITE_POSTHOG_PROJECT_TOKEN || undefined
 }
 

@@ -12,6 +12,7 @@ export { useGoalSlotConflict } from "../model/projects/use-project-goal-conflict
 export {
   abilityLevelsByRarity,
   getGoalValidationIssue,
+  getGoalValidationIssues,
   goalKindsForEntity,
   isAtMaxAbility,
   isAtMaxProgression,

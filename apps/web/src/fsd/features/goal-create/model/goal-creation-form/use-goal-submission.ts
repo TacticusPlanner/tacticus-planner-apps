@@ -33,6 +33,8 @@ export function useGoalSubmission({
   open,
   specParams,
   startPaused,
+  notes,
+  position,
   snapshotContext,
   onOpenChange,
   resetForm,
@@ -48,6 +50,8 @@ export function useGoalSubmission({
   open: boolean
   specParams: SpecParams
   startPaused: boolean
+  notes?: Parameters<typeof useGoalSubmit>[0]["notes"]
+  position?: number | null
   snapshotContext: SnapshotContext
   onOpenChange: (open: boolean) => void
   resetForm: () => void
@@ -88,6 +92,8 @@ export function useGoalSubmission({
     selectedProjects,
     specParams,
     startPaused,
+    notes,
+    position,
     snapshotContext,
     onOpenChange,
     resetForm,
@@ -96,15 +102,21 @@ export function useGoalSubmission({
   return {
     ...submission,
     canSubmit: submissionAllowed,
-    slotConflictMessage: slotConflict.conflict
-      ? projectConflictText(
-          t,
-          slotConflict.conflict,
-          getUnitName(
-            slotConflict.conflict.entityType,
-            slotConflict.conflict.entityId
-          )
-        )
+    // Shown in the conflicting goal type's card, under its target.
+    slotConflictIssue: slotConflict.conflict
+      ? {
+          kind: slotConflict.conflict.goalType,
+          field: "target",
+          code: "slotConflict",
+          message: projectConflictText(
+            t,
+            slotConflict.conflict,
+            getUnitName(
+              slotConflict.conflict.entityType,
+              slotConflict.conflict.entityId
+            )
+          ),
+        }
       : null,
     perProjectEstimates,
     estimatedProjectIds,

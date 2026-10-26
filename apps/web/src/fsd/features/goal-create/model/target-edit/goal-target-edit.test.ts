@@ -12,6 +12,9 @@ import {
   isGoalTargetDraftChanged,
   isGoalTargetEditable,
   rankEndOptionsFor,
+  rankOptionsAbove,
+  progressionEndOptionsFor,
+  abilityLevelOptionsFor,
   type GoalTargetDraft,
 } from "./goal-target-edit"
 
@@ -410,5 +413,35 @@ describe("rankEndOptionsFor", () => {
 
     expect(options[0]).toBe(Rank.Silver2)
     expect(options).not.toContain(Rank.Silver1)
+  })
+})
+
+describe("target options above the start", () => {
+  it("offers Ascension steps above the start only, keeping a stored step at or below it", () => {
+    const options = progressionEndOptionsFor("Epic:RedTwoStars")
+    expect(options[0]).toBe("Epic:RedThreeStars")
+    expect(options).not.toContain("Epic:RedTwoStars")
+    expect(options.some((step) => step.endsWith(":None"))).toBe(false)
+
+    const withStored = progressionEndOptionsFor(
+      "Epic:RedTwoStars",
+      "Rare:FourStars"
+    )
+    expect(withStored[0]).toBe("Rare:FourStars")
+    expect(withStored[1]).toBe("Epic:RedThreeStars")
+  })
+
+  it("offers Rank targets above the start, keeping a stored one at or below it", () => {
+    expect(rankOptionsAbove(rankIndex(Rank.Gold2))[0]).toBe(Rank.Gold3)
+    expect(rankOptionsAbove(rankIndex(Rank.Gold2), Rank.Gold1)[0]).toBe(
+      Rank.Gold1
+    )
+  })
+
+  it("offers an ability track's start (no change) and every level above it", () => {
+    const options = abilityLevelOptionsFor(48)
+    expect(options[0]).toBe(48)
+    expect(options).not.toContain(47)
+    expect(abilityLevelOptionsFor(48, 40)[0]).toBe(40)
   })
 })
