@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { useQuery } from "@tanstack/react-query"
 import { useIsAuthenticated } from "@azure/msal-react"
@@ -30,6 +30,12 @@ import { GoalEditFarmingFields, GoalEditNotesField } from "./goal-edit-fields"
 import { GoalEditPriorityField } from "./goal-edit-priority-field"
 import { MythicMaterialSourceField } from "../create-goal/mythic-material-source-field"
 import { GoalEditTarget } from "./goal-edit-target"
+import { GoalEditEstimate } from "./goal-edit-estimate"
+import { usePlayerChunk } from "@/shared/local-data"
+import {
+  chunkOrUndefined,
+  readyData,
+} from "@/features/goal-planning/@x/goal-create"
 
 /**
  * The Edit goal form (body + footer): one `GoalEditDraft` for every editable field and one Save that
@@ -71,6 +77,18 @@ export function GoalEditForm({
     dailyEnergy: planningSettings.dailyEnergy,
   })
   const saver = useGoalEditSave({ goalId: detail.goalId, onSaved })
+  const inventoryUpgrades = readyData(
+    usePlayerChunk("inventory-upgrades", chunkOrUndefined)
+  )
+  const ownedQuantities = useMemo(
+    () =>
+      inventoryUpgrades
+        ? new Map(
+            inventoryUpgrades.map((entry) => [entry.upgradeId, entry.amount])
+          )
+        : undefined,
+    [inventoryUpgrades]
+  )
 
   const inFlightIds = plan.inFlight.map((goal) => goal.goalId)
   const currentPosition = inFlightIds.indexOf(detail.goalId) + 1
@@ -159,7 +177,9 @@ export function GoalEditForm({
                 detail={detail}
                 draft={draft.target}
                 onChange={(target) => edit({ target })}
+                ownedQuantities={ownedQuantities}
                 portalContainer={portalContainer}
+                units={catalog}
                 upgradesById={catalog.upgradesById}
               />
             </div>
@@ -200,8 +220,25 @@ export function GoalEditForm({
               edit({ farmingLocationIds })
             }
             overrideValid={overrideValid}
+            rankTarget={
+              draft.target?.kind === "Rank"
+                ? { end: draft.target.end, additional: draft.target.additional }
+                : undefined
+            }
             selectedLocations={draft.farmingLocationIds}
           />
+
+          {draft.target ? (
+            <div className="col-span-full">
+              <GoalEditEstimate
+                acquisition={acquisition}
+                catalog={catalog}
+                dailyEnergy={planningSettings.dailyEnergy}
+                detail={detail}
+                target={draft.target}
+              />
+            </div>
+          ) : null}
 
           <div className="col-span-full">
             <MythicMaterialSourceField

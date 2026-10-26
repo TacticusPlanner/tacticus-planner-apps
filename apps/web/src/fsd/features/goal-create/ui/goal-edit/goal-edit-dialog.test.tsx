@@ -104,7 +104,18 @@ vi.mock("@/features/goal-planning/model/shared/use-goal-catalog", () => ({
     battlesById: new Map(),
     ascensionCostsById: new Map(),
     unlockShardCostsById: new Map(),
-    getCharacter: () => undefined,
+    // Only "hero-ladder" has a rank ladder, so only its Rank goal has materials to estimate.
+    getCharacter: (id: string) =>
+      id === "hero-ladder"
+        ? {
+            id,
+            rankUpUpgrades: [
+              { rank: "Stone1", upgradeIds: ["upgHpC014"] },
+              { rank: "Stone2", upgradeIds: ["upgHpC014"] },
+              { rank: "Stone3", upgradeIds: ["upgHpC014"] },
+            ],
+          }
+        : undefined,
   }),
 }))
 
@@ -614,7 +625,7 @@ describe("GoalEditDialog", () => {
       })
     })
 
-    it("Upgrade: blocks Save with a reason for a zero quantity", async () => {
+    it("Upgrade: blocks Save with a reason on the row for a zero quantity", async () => {
       goalOnScreen(upgradeGoal)
       renderDialog()
       await loaded()
@@ -623,10 +634,250 @@ describe("GoalEditDialog", () => {
         target: { value: "0" },
       })
 
-      expect(screen.getByTestId("goal-target-issue")).toHaveTextContent(
-        "Every quantity must be a whole number from 1 to 10,000."
-      )
+      expect(
+        screen.getByTestId("goal-target-upgrade-upgHpC014")
+      ).toHaveTextContent("Enter a whole number from 1 to 10,000.")
+      expect(screen.queryByTestId("goal-target-issue")).not.toBeInTheDocument()
       expect(screen.getByTestId("goal-edit-save")).toBeDisabled()
+    })
+
+    describe("polish-goal-dialogs", () => {
+      const twoMaterials = {
+        ...upgradeGoal,
+        config: {
+          ...config,
+          upgrade: {
+            targets: [
+              { upgradeId: "upgHpC014", quantity: 3 },
+              { upgradeId: "upgHpM004", quantity: 1 },
+            ],
+          },
+        },
+      } as unknown as GoalDetail
+
+      it("Upgrade: shows the error only on the cleared row and marks it invalid", async () => {
+        goalOnScreen(twoMaterials)
+        renderDialog()
+        await loaded()
+
+        const [first, second] = screen.getAllByRole("spinbutton", {
+          name: "Target quantity",
+        })
+        fireEvent.change(first!, { target: { value: "" } })
+
+        expect(first).toHaveAttribute("aria-invalid", "true")
+        expect(first).toHaveAccessibleDescription(
+          "Enter a whole number from 1 to 10,000."
+        )
+        expect(second).not.toHaveAttribute("aria-invalid")
+        expect(
+          screen.getByTestId("goal-target-upgrade-upgHpM004")
+        ).not.toHaveTextContent("Enter a whole number")
+        expect(screen.getByTestId("goal-edit-save")).toBeDisabled()
+      })
+
+      it("Upgrade: removes a material and saves the rest; the last one can't be removed", async () => {
+        goalOnScreen(twoMaterials)
+        renderDialog()
+        await loaded()
+
+        fireEvent.click(
+          within(screen.getByTestId("goal-target-upgrade-upgHpM004")).getByRole(
+            "button",
+            { name: "Remove" }
+          )
+        )
+        expect(
+          within(screen.getByTestId("goal-target-upgrade-upgHpC014")).getByRole(
+            "button",
+            { name: "Remove" }
+          )
+        ).toBeDisabled()
+        fireEvent.click(screen.getByTestId("goal-edit-save"))
+
+        await vi.waitFor(() => expect(editGoal).toHaveBeenCalled())
+        expect(editGoal).toHaveBeenCalledWith("goal-1", {
+          target: {
+            expectedRevision: 5,
+            target: {
+              upgrade: { targets: [{ upgradeId: "upgHpC014", quantity: 3 }] },
+            },
+          },
+        })
+      })
+
+      it("Upgrade: adds a material with the creation picker and saves the whole list", async () => {
+        goalOnScreen({
+          ...upgradeGoal,
+          entityId: "hero-ladder",
+          config: {
+            ...config,
+            upgrade: {
+              targets: [{ upgradeId: "upgHpM004", quantity: 1 }],
+              rankRange: { start: 0, end: 2 },
+            },
+          },
+        } as unknown as GoalDetail)
+        renderDialog()
+        await loaded()
+
+        fireEvent.click(
+          screen.getByRole("combobox", { name: "Add an upgrade" })
+        )
+        fireEvent.click(
+          within(await screen.findByRole("listbox")).getByText("upgHpC014")
+        )
+        fireEvent.click(screen.getByTestId("goal-edit-save"))
+
+        await vi.waitFor(() => expect(editGoal).toHaveBeenCalled())
+        const [, request] = editGoal.mock.calls[0] ?? []
+        expect(request.target.target.upgrade.targets).toEqual([
+          { upgradeId: "upgHpM004", quantity: 1 },
+          { upgradeId: "upgHpC014", quantity: 2 },
+        ])
+      })
+
+      it("Upgrade: shows no empty Started from", async () => {
+        goalOnScreen(upgradeGoal)
+        renderDialog()
+        await loaded()
+
+        expect(
+          screen.queryByTestId("goal-target-started-from")
+        ).not.toBeInTheDocument()
+        expect(screen.queryByText("Started from")).not.toBeInTheDocument()
+      })
+
+      it("Ability: names the start tracks, Primary/Secondary for a Machine of War", async () => {
+        goalOnScreen({
+          ...abilityGoal,
+          entityType: "Mow",
+          config: {
+            ...config,
+            ability: {
+              activeStart: 48,
+              activeEnd: 50,
+              passiveStart: 26,
+              passiveEnd: 30,
+            },
+          },
+        } as unknown as GoalDetail)
+        renderDialog()
+        await loaded()
+
+        expect(
+          screen.getByTestId("goal-target-start-ability")
+        ).toHaveTextContent("Primary 48 · Secondary 26")
+      })
+
+      it("says there are no locations to choose when none applies", async () => {
+        goalOnScreen(abilityGoal)
+        renderDialog()
+        await loaded()
+
+        expect(
+          screen.getByTestId("goal-edit-locations-empty")
+        ).toHaveTextContent("There are no locations to choose for this goal.")
+      })
+
+      it("Ascension: offers only steps above the start, with no None option", async () => {
+        goalOnScreen(ascensionGoal)
+        renderDialog()
+        await loaded()
+
+        fireEvent.click(screen.getByTestId("goal-target-ascension-end"))
+        const options = within(await screen.findByRole("listbox")).getAllByRole(
+          "option"
+        )
+        expect(options[0]).toHaveAccessibleName(/One Star/i)
+        expect(
+          options.some((option) => /None/.test(option.textContent ?? ""))
+        ).toBe(false)
+      })
+
+      it("Ascension: says the cheapest node is used when Campaigns has no node checked", async () => {
+        goalOnScreen({
+          ...ascensionGoal,
+          config: {
+            ...ascensionGoal.config,
+            acquisitionSources: [{ kind: "Campaign", ids: [] }],
+          },
+        } as unknown as GoalDetail)
+        renderDialog()
+        await loaded()
+
+        expect(
+          await screen.findByTestId("create-goal-acquisition-cheapest-node")
+        ).toBeInTheDocument()
+      })
+
+      it("Rank: the farming-strategy preview follows the edited target", async () => {
+        goalOnScreen({
+          ...rankGoal,
+          config: {
+            ...rankGoal.config,
+            farmingStrategy: "EveryStep",
+            rank: { ...rankGoal.config.rank!, start: 9, end: 12 },
+          },
+        } as unknown as GoalDetail)
+        renderDialog()
+        await loaded()
+
+        // Silver I → Gold I is three steps; Silver I → Diamond I is six.
+        const preview = () =>
+          screen.getByTestId("create-goal-farming-strategy-preview")
+        expect(preview()).toHaveTextContent("(3 checkpoints)")
+        expect(
+          within(preview()).getAllByRole("img").at(-1)
+        ).toHaveAccessibleName("Gold I")
+        await chooseOption("goal-target-rank-end", "Diamond I")
+        expect(preview()).toHaveTextContent("(6 checkpoints)")
+        expect(
+          within(preview()).getAllByRole("img").at(-1)
+        ).toHaveAccessibleName("Diamond I")
+      })
+
+      it("Rank: the estimate follows the edited target; Unlock shows none", async () => {
+        goalOnScreen({
+          ...rankGoal,
+          entityId: "hero-ladder",
+          config: {
+            ...rankGoal.config,
+            rank: { ...rankGoal.config.rank!, start: 0, end: 1 },
+          },
+        } as unknown as GoalDetail)
+        const { unmount } = renderDialog()
+        await loaded()
+
+        const estimate = screen.getByTestId("goal-edit-estimate")
+        expect(estimate).toHaveTextContent("Estimate for this target")
+        expect(estimate).toHaveTextContent("upgHpC014 × 1")
+        await chooseOption("goal-target-rank-end", "Stone III")
+        expect(screen.getByTestId("goal-edit-estimate")).toHaveTextContent(
+          "upgHpC014 × 2"
+        )
+        unmount()
+
+        goalOnScreen(unlockGoal)
+        renderDialog()
+        await loaded()
+        expect(
+          screen.queryByTestId("goal-edit-estimate")
+        ).not.toBeInTheDocument()
+      })
+
+      it("carries the page tour button in its header", async () => {
+        renderDialog({
+          headerAction: <button type="button">Tour this page</button>,
+        })
+        await loaded()
+
+        expect(
+          within(screen.getByTestId("goal-edit-dialog")).getByRole("button", {
+            name: "Tour this page",
+          })
+        ).toBeInTheDocument()
+      })
     })
   })
 

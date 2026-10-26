@@ -309,3 +309,18 @@ export function isValidUpgradeQuantity(quantity: number): boolean {
     quantity <= MAX_UPGRADE_QUANTITY
   )
 }
+
+/** Whether the goal stores a start the "Started from" text can show (an Upgrade goal has none). */
+export function hasGoalTargetStart(detail: GoalDetail): boolean {
+  const { config } = detail
+  switch (detail.goalType) {
+    case "Rank":
+      return !!config.rank
+    case "Ascension":
+      return !!config.progression
+    case "Ability":
+      return !!config.ability
+    default:
+      return false
+  }
+}

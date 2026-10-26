@@ -1,10 +1,10 @@
 import { useId } from "react"
 import { useTranslation } from "react-i18next"
-import { rankAt } from "@workspace/game-domain"
+import { rankAt, type Rank } from "@workspace/game-domain"
 import { Field, FieldLabel } from "@workspace/ui/components/field"
 import { Textarea } from "@workspace/ui/components/textarea"
 import type { FarmingStrategy, GoalDetail } from "@/entities/goal"
-import { additionalTargetFromWire } from "@/features/goal-farming/@x/goal-create"
+import type { RankAdditionalTarget } from "@/features/goal-farming/@x/goal-create"
 import type { useGoalEditAcquisition } from "../../model/goal-edit/use-goal-edit-acquisition"
 import { AcquisitionSourceField } from "../create-goal/acquisition-source-field"
 import { FarmingStrategyField } from "../create-goal/farming-strategy-field"
@@ -54,6 +54,7 @@ export function GoalEditFarmingFields({
   overrideValid,
   acquisition,
   battlesById,
+  rankTarget,
 }: {
   detail: GoalDetail
   farmingStrategy: FarmingStrategy
@@ -64,12 +65,14 @@ export function GoalEditFarmingFields({
   overrideValid: boolean
   acquisition: ReturnType<typeof useGoalEditAcquisition>
   battlesById: Parameters<typeof AcquisitionSourceField>[0]["battlesById"]
+  /** The draft Rank target, so the strategy preview describes the range being saved. */
+  rankTarget?: { end: Rank; additional: RankAdditionalTarget }
 }) {
   const isRank = detail.goalType === "Rank"
   const { selection } = acquisition
 
   if (isRank) {
-    return detail.config.rank ? (
+    return detail.config.rank && rankTarget ? (
       <FarmingStrategyField
         abilityActiveEnd={0}
         abilityActiveStart={0}
@@ -78,11 +81,8 @@ export function GoalEditFarmingFields({
         context="rank"
         farmingStrategy={farmingStrategy}
         onFarmingStrategyChange={onFarmingStrategyChange}
-        rankAdditionalTarget={additionalTargetFromWire(
-          rankAt(detail.config.rank.end),
-          detail.config.rank
-        )}
-        rankEnd={rankAt(detail.config.rank.end)}
+        rankAdditionalTarget={rankTarget.additional}
+        rankEnd={rankTarget.end}
         rankStart={rankAt(detail.config.rank.start)}
       />
     ) : null
@@ -171,6 +171,14 @@ function GoalLocationsField({
           )}
         />
       </h3>
+      {allLocations.length === 0 ? (
+        <p
+          className="text-muted-foreground"
+          data-testid="goal-edit-locations-empty"
+        >
+          {t("goals.detail.farmingEmpty")}
+        </p>
+      ) : null}
       <div className="grid grid-cols-2 gap-x-3 gap-y-1.5">
         {allLocations.map((battleId) => (
           <label className="flex items-center gap-2" key={battleId}>

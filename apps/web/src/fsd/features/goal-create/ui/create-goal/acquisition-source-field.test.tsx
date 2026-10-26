@@ -9,7 +9,7 @@ import {
   type BattleId,
 } from "@workspace/game-domain"
 
-import { render as testingLibraryRender, screen } from "@/test/render"
+import { render as testingLibraryRender, screen, within } from "@/test/render"
 import type {
   Battle,
   FarmLocation,
@@ -53,6 +53,18 @@ const battlesById = new Map<BattleId, Battle>([
       challenge: false,
       nodeNumber: 1,
       battleIndex: 0,
+      energyCost: 10,
+      dailyAttempts: 10,
+    },
+  ],
+  [
+    battleId("B2"),
+    {
+      campaignGroupId: campaignId("campaign1"),
+      type: "Standard",
+      challenge: false,
+      nodeNumber: 2,
+      battleIndex: 1,
       energyCost: 10,
       dailyAttempts: 10,
     },
@@ -124,6 +136,107 @@ function baseProps() {
 }
 
 describe("AcquisitionSourceField", () => {
+  it("doesn't offer a node missing from the battle catalog, nor show its raw id", () => {
+    render(
+      <AcquisitionSourceField
+        {...baseProps()}
+        regularShardLocations={[location("B1"), location("ASE22")]}
+        selectedShardLocationIds={["B1"]}
+        showCampaigns
+      />
+    )
+
+    expect(
+      screen.getByTestId("create-goal-shard-location-B1")
+    ).toBeInTheDocument()
+    expect(
+      screen.queryByTestId("create-goal-shard-location-ASE22")
+    ).not.toBeInTheDocument()
+    expect(screen.queryByText(/ASE22/)).not.toBeInTheDocument()
+  })
+
+  it("keeps a saved unknown node selected, as a disabled Unknown node row", () => {
+    render(
+      <AcquisitionSourceField
+        {...baseProps()}
+        regularShardLocations={[location("B1"), location("ASE22")]}
+        selectedShardLocationIds={["ASE22"]}
+        showCampaigns
+      />
+    )
+
+    const row = screen.getByTestId("create-goal-shard-location-ASE22")
+    expect(row).toHaveTextContent("Unknown node (ASE22)")
+    const checkbox = within(row).getByRole("checkbox")
+    expect(checkbox).toBeChecked()
+    expect(checkbox).toBeDisabled()
+  })
+
+  it("says the cheapest node is used when Campaigns is on with no node checked", () => {
+    const { rerender } = render(
+      <AcquisitionSourceField
+        {...baseProps()}
+        regularShardLocations={[location("B1")]}
+        showCampaigns
+      />
+    )
+    expect(
+      screen.getByTestId("create-goal-acquisition-cheapest-node")
+    ).toHaveTextContent("the cheapest node for the shards needed is used")
+
+    rerender(
+      <MemoryRouter>
+        <AcquisitionSourceField
+          {...baseProps()}
+          regularShardLocations={[location("B1")]}
+          selectedShardLocationIds={["B1"]}
+          showCampaigns
+        />
+      </MemoryRouter>
+    )
+    expect(
+      screen.queryByTestId("create-goal-acquisition-cheapest-node")
+    ).not.toBeInTheDocument()
+  })
+
+  it("reads 'Available every day' for an offer on all seven days", () => {
+    render(
+      <AcquisitionSourceField
+        {...baseProps()}
+        shopOffers={[guaranteedOffer, rotatingOffer]}
+      />
+    )
+
+    expect(
+      screen.getByTestId(`create-goal-shop-offer-${guaranteedOffer.offerId}`)
+    ).toHaveTextContent("Available every day")
+    expect(
+      screen.getByTestId(`create-goal-shop-offer-${rotatingOffer.offerId}`)
+    ).toHaveTextContent("Available TUE, FRI")
+  })
+
+  it("reads 'every day' for a rotating slot on all seven days", () => {
+    render(
+      <AcquisitionSourceField
+        {...baseProps()}
+        shopOffers={[
+          {
+            ...guaranteedOffer,
+            probabilityByDay: Object.fromEntries(
+              guaranteedOffer.days.map((day) => [day, 0.03])
+            ),
+          },
+        ]}
+      />
+    )
+
+    expect(
+      screen.getByTestId(
+        `create-goal-shop-offer-possible-${guaranteedOffer.offerId}`
+      )
+    ).toHaveTextContent("≈3% chance every day")
+  })
+
   it("renders nothing when no group can contribute", () => {
     const { container } = render(<AcquisitionSourceField {...baseProps()} />)
     expect(container).toBeEmptyDOMElement()

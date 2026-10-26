@@ -60,7 +60,17 @@ export function GoalShardLocationsField({
 }) {
   const { t } = useTranslation()
   const { fullLabel } = useCampaignDisplay()
-  if (shardLocations.length === 0) return null
+  // A node the battle catalog can't resolve isn't offered (it can't be costed or named); one already in
+  // the saved selection stays there, shown as an unknown node that can't be picked again.
+  const known = shardLocations.filter((location) =>
+    battlesById.has(location.battleId)
+  )
+  const unknownSelected = shardLocations.filter(
+    (location) =>
+      !battlesById.has(location.battleId) &&
+      selectedIds.includes(location.battleId)
+  )
+  if (known.length === 0 && unknownSelected.length === 0) return null
 
   return (
     <div
@@ -74,7 +84,29 @@ export function GoalShardLocationsField({
             : "goals.create.shardLocations.labelRegular"
         )}
       </p>
-      {shardLocations.map((location) => {
+      {unknownSelected.map((location) => (
+        <Field
+          data-disabled
+          data-testid={`create-goal-shard-location-${location.battleId}`}
+          key={location.battleId}
+          orientation="horizontal"
+        >
+          <Checkbox
+            checked
+            disabled
+            id={`create-goal-shard-location-${shardType}-${location.battleId}`}
+          />
+          <FieldLabel
+            className="font-normal text-muted-foreground"
+            htmlFor={`create-goal-shard-location-${shardType}-${location.battleId}`}
+          >
+            {t("goals.create.shardLocations.unknownNode", {
+              id: location.battleId,
+            })}
+          </FieldLabel>
+        </Field>
+      ))}
+      {known.map((location) => {
         const battle = battlesById.get(location.battleId)
         const rate = dropRate(location)
         const energyPerShard =

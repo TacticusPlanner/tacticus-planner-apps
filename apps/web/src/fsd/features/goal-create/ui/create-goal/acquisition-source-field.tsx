@@ -30,6 +30,10 @@ function rotatingDays(offer: ShopRewardOffer) {
 const isShardOffer = (offer: ShopRewardOffer): offer is ShopShardOffer =>
   "isMythic" in offer
 
+const ALL_WEEK = 7
+/** Whether a weekday list covers every day of the week. */
+const isEveryDay = (days: readonly string[]) => new Set(days).size >= ALL_WEEK
+
 /**
  * The Unlock/Ascension acquisition-source picker (plan: Campaigns/Onslaught/Shops multi-select,
  * tacticus-planner-apps#103) — replaces the single-select shard-source dropdown. Each top-level
@@ -129,6 +133,19 @@ export function AcquisitionSourceField({
       <Label>{t("goals.create.acquisitionSources.label")}</Label>
       {showCampaigns ? (
         <SourceGroup
+          note={
+            campaignEnabled &&
+            ![...regularShardLocations, ...mythicShardLocations].some(
+              (location) => selectedShardLocationIds.includes(location.battleId)
+            ) ? (
+              <p
+                className="text-xs text-muted-foreground"
+                data-testid="create-goal-acquisition-cheapest-node"
+              >
+                {t("goals.create.acquisitionSources.cheapestNode")}
+              </p>
+            ) : undefined
+          }
           checked={campaignEnabled}
           defaultExpanded={!isMobile}
           headerNote={campaignNote}
@@ -225,6 +242,7 @@ function SourceGroup({
   defaultExpanded,
   testId,
   headerNote,
+  note,
   children,
 }: {
   label: string
@@ -235,6 +253,8 @@ function SourceGroup({
   /** A compact yield line shown under the header at every viewport, expanded or not — so the
    *  groups' "shards/day" figures stay comparable at a glance. */
   headerNote?: React.ReactNode
+  /** Shown under the header whether or not the group is expanded (e.g. the cheapest-node note). */
+  note?: React.ReactNode
   children: React.ReactNode
 }) {
   const { t } = useTranslation()
@@ -274,6 +294,7 @@ function SourceGroup({
       {headerNote ? (
         <div className="pl-6 text-xs text-muted-foreground">{headerNote}</div>
       ) : null}
+      {note ? <div className="pl-6">{note}</div> : null}
       {expanded ? <div className="grid gap-2 pl-6">{children}</div> : null}
     </div>
   )
@@ -297,6 +318,10 @@ export function ShopOfferRow({
     defaultValue: offer.cost.currency,
   })
   const days = offer.days.join(", ")
+  const chance = Math.round(
+    Math.max(0, ...rotating.map((day) => offer.probabilityByDay[day] ?? 0)) *
+      100
+  )
 
   return (
     <Label
@@ -333,7 +358,9 @@ export function ShopOfferRow({
           })}
         </span>
         <span className="text-xs text-muted-foreground">
-          {t("goals.create.acquisitionSources.shopOfferDays", { days })}
+          {isEveryDay(offer.days)
+            ? t("goals.create.acquisitionSources.shopOfferEveryDay")
+            : t("goals.create.acquisitionSources.shopOfferDays", { days })}
         </span>
         <span
           className="text-xs text-muted-foreground"
@@ -357,14 +384,14 @@ export function ShopOfferRow({
           >
             {t("goals.create.acquisitionSources.shopOfferPossibleReward")}
             {" — "}
-            {t("goals.create.acquisitionSources.shopOfferChance", {
-              percent: Math.round(
-                Math.max(
-                  ...rotating.map((day) => offer.probabilityByDay[day] ?? 0)
-                ) * 100
-              ),
-              days: rotating.join(", "),
-            })}
+            {isEveryDay(rotating)
+              ? t("goals.create.acquisitionSources.shopOfferChanceEveryDay", {
+                  percent: chance,
+                })
+              : t("goals.create.acquisitionSources.shopOfferChance", {
+                  percent: chance,
+                  days: rotating.join(", "),
+                })}
           </span>
         ) : null}
       </span>

@@ -1,6 +1,5 @@
-import { useId, type ReactNode } from "react"
+import { useId, useMemo, type ReactNode } from "react"
 import { useTranslation } from "react-i18next"
-import { Input } from "@workspace/ui/components/input"
 import {
   Select,
   SelectContent,
@@ -9,29 +8,47 @@ import {
   SelectValue,
 } from "@workspace/ui/components/select"
 import {
+  isProgression,
+  lastRank,
   maxAbilityLevel,
-  progressionOrder,
   rankAt,
   rankOrder,
   type Progression,
   type Rank,
   type UpgradeId,
 } from "@workspace/game-domain"
+import type { MowStorageModel } from "@workspace/game-catalog"
 
 import type { GoalDetail } from "@/entities/goal"
 import {
   additionalTargetOptions,
   type RankAdditionalTarget,
 } from "@/features/goal-farming/@x/goal-create"
-import type { UpgradeWithFarmLocations } from "@/features/rank-lookup/@x/goal-create"
-import { ProgressionBadge, RankBadge, UpgradeIcon } from "@/shared/ui"
+import type {
+  Character,
+  UpgradeWithFarmLocations,
+} from "@/features/rank-lookup/@x/goal-create"
+import {
+  ProgressionBadge,
+  RankBadge,
+  RarityCombobox,
+  UpgradeIcon,
+  type RarityComboboxItem,
+} from "@/shared/ui"
 
 import {
-  MAX_UPGRADE_QUANTITY,
+  abilityLevelOptionsFor,
+  isValidUpgradeQuantity,
+  progressionEndOptionsFor,
   rankEndOptionsFor,
   type GoalTargetDraft,
 } from "../../model/target-edit/goal-target-edit"
+import {
+  characterRelevantUpgradeQuantities,
+  mowRelevantUpgradeQuantities,
+} from "../../model/goal-creation-form/goal-spec-builder"
 import { OptionalRangeField } from "../shared/optional-range-field"
+import { UpgradeQuantityRow } from "../shared/upgrade-quantity-row"
 import { AdditionalTargetLabel } from "../create-goal/goal-type-fields"
 
 type FieldsProps<Kind extends GoalTargetDraft["kind"]> = {
@@ -70,7 +87,7 @@ function TargetSelect({
         }}
         value={value}
       >
-        <SelectTrigger className="w-full" data-testid={testId} id={id}>
+        <SelectTrigger className="w-full max-w-xs" data-testid={testId} id={id}>
           <SelectValue />
         </SelectTrigger>
         <SelectContent container={portalContainer ?? undefined}>
@@ -143,11 +160,19 @@ function RankFields({
 }
 
 function AscensionFields({
+  detail,
   draft,
   onChange,
   portalContainer,
 }: FieldsProps<"Ascension">) {
   const { t } = useTranslation()
+  const start = detail.config.progression?.start
+  const stored = detail.config.progression?.end
+  // Only steps above where the goal started, plus a stored target that isn't (so it never opens blank).
+  const options = progressionEndOptionsFor(
+    start && isProgression(start) ? start : "Common:None",
+    stored && isProgression(stored) ? stored : undefined
+  )
 
   return (
     <TargetSelect
@@ -159,7 +184,7 @@ function AscensionFields({
       testId="goal-target-ascension-end"
       value={draft.end}
     >
-      {progressionOrder.map((option) => (
+      {options.map((option) => (
         <SelectItem key={option} value={option}>
           <ProgressionBadge value={option} />
         </SelectItem>
@@ -183,11 +208,13 @@ function AbilityFields({
       key: "activeEnd" as const,
       label: t(isMow ? "goals.target.primaryEnd" : "goals.target.activeEnd"),
       start: ability?.activeStart ?? 0,
+      stored: ability?.activeEnd,
     },
     {
       key: "passiveEnd" as const,
       label: t(isMow ? "goals.target.secondaryEnd" : "goals.target.passiveEnd"),
       start: ability?.passiveStart ?? 0,
+      stored: ability?.passiveEnd,
     },
   ]
 
@@ -213,9 +240,11 @@ function AbilityFields({
           testId={`goal-target-ability-${track.key}`}
           value={String(Math.max(draft[track.key], track.start))}
         >
-          {range(track.start, maxAbilityLevel).map((level) => (
+          {abilityLevelOptionsFor(track.start, track.stored).map((level) => (
             <SelectItem key={level} value={String(level)}>
-              {level}
+              {level === track.start
+                ? t("goals.create.ability.noChange", { level })
+                : level}
             </SelectItem>
           ))}
         </TargetSelect>
@@ -233,17 +262,76 @@ const abilityLevelOptions = range(1, maxAbilityLevel).map((level) => ({
   label: level,
 }))
 
-/** The quantities and the optional range(s) are editable � each material keeps its identity. */
+/** What the Upgrade picker offers: the materials the unit's range (a Character's rank range, else the
+ * whole ladder; a Machine of War's ability ranges) needs, with how many — as in creation. */
+function useUpgradeChoices(
+  detail: GoalDetail,
+  draft: Extract<GoalTargetDraft, { kind: "Upgrade" }>,
+  upgradesById: ReadonlyMap<UpgradeId, UpgradeWithFarmLocations>,
+  units: UpgradeUnits
+): ReadonlyMap<UpgradeId, number> {
+  return useMemo(() => {
+    if (detail.entityType === "Character") {
+      const character = units.getCharacter(detail.entityId as never)
+      if (!character) return new Map()
+      return characterRelevantUpgradeQuantities(
+        character,
+        rankAt(draft.rankRange?.start ?? 0),
+        draft.rankRange ? rankAt(draft.rankRange.end) : lastRank,
+        upgradesById
+      )
+    }
+    const mow = units.mowsById?.get(detail.entityId)
+    return mow
+      ? mowRelevantUpgradeQuantities(mow, upgradesById, {
+          activeRange: draft.activeRange,
+          passiveRange: draft.passiveRange,
+        })
+      : new Map()
+  }, [detail, draft, upgradesById, units])
+}
+
+type UpgradeUnits = {
+  getCharacter: (id: never) => Character | undefined
+  mowsById: ReadonlyMap<string, MowStorageModel> | undefined
+}
+
+/** The quantities and the optional range(s) are editable, and materials can be added with the creation
+ * dialog's picker and removed, as long as one remains. Each quantity error shows on its own row. */
 function UpgradeFields({
   detail,
   draft,
   onChange,
   portalContainer,
   upgradesById,
+  ownedQuantities,
+  units,
 }: FieldsProps<"Upgrade"> & {
   upgradesById: ReadonlyMap<UpgradeId, UpgradeWithFarmLocations>
+  ownedQuantities?: ReadonlyMap<string, number>
+  units: UpgradeUnits
 }) {
   const { t } = useTranslation()
+  const choices = useUpgradeChoices(detail, draft, upgradesById, units)
+  const available = useMemo<RarityComboboxItem<UpgradeId>[]>(() => {
+    const selected = new Set(draft.targets.map((target) => target.upgradeId))
+    return [...choices.entries()]
+      .filter(([id]) => !selected.has(id))
+      .map(([id, quantity]) => {
+        const upgrade = upgradesById.get(id)
+        return {
+          id,
+          name: upgrade?.label ?? id,
+          rarity: upgrade?.rarity ?? "Common",
+          meta: (
+            <span className="shrink-0 text-xs text-muted-foreground">
+              {t("goals.create.upgrade.required", { count: quantity })}
+            </span>
+          ),
+        }
+      })
+  }, [choices, draft.targets, upgradesById, t])
+  const onlyOne = draft.targets.length <= 1
 
   return (
     <div className="grid gap-2">
@@ -276,46 +364,73 @@ function UpgradeFields({
           value={draft.rankRange}
         />
       )}
-      {draft.targets.map((target) => {
-        const upgrade = upgradesById.get(target.upgradeId as UpgradeId)
-        return (
-          <div
-            className="flex items-center gap-2"
-            data-testid={`goal-target-upgrade-${target.upgradeId}`}
-            key={target.upgradeId}
-          >
-            <UpgradeIcon
-              className="size-8 shrink-0"
-              crafted={upgrade?.crafted}
-              id={target.upgradeId as UpgradeId}
-              rarity={upgrade?.rarity}
-            />
-            <span className="flex-1 truncate text-sm">
-              {upgrade?.label ?? target.upgradeId}
-            </span>
-            <Input
-              aria-label={t("goals.target.quantity")}
-              className="w-24"
-              max={MAX_UPGRADE_QUANTITY}
-              min={1}
-              onChange={(event) =>
-                onChange({
-                  ...draft,
-                  targets: draft.targets.map((entry) =>
-                    entry.upgradeId === target.upgradeId
-                      ? { ...entry, quantity: Number(event.target.value) }
-                      : entry
-                  ),
-                })
-              }
-              type="number"
-              // 0 (a cleared field) renders empty so the owner can type a new number; it stays an
-              // invalid draft (quantity < 1) until they do.
-              value={target.quantity === 0 ? "" : target.quantity}
-            />
-          </div>
-        )
-      })}
+      {draft.targets.map((target) => (
+        <UpgradeQuantityRow
+          error={
+            isValidUpgradeQuantity(target.quantity)
+              ? null
+              : t("goals.create.validation.upgradeQuantity")
+          }
+          key={target.upgradeId}
+          onQuantityChange={(quantity) =>
+            onChange({
+              ...draft,
+              targets: draft.targets.map((entry) =>
+                entry.upgradeId === target.upgradeId
+                  ? { ...entry, quantity }
+                  : entry
+              ),
+            })
+          }
+          onRemove={() =>
+            onChange({
+              ...draft,
+              targets: draft.targets.filter(
+                (entry) => entry.upgradeId !== target.upgradeId
+              ),
+            })
+          }
+          owned={
+            ownedQuantities
+              ? (ownedQuantities.get(target.upgradeId) ?? 0)
+              : undefined
+          }
+          quantity={target.quantity}
+          removeDisabledReason={
+            onlyOne ? t("goals.target.removeLast") : undefined
+          }
+          testId={`goal-target-upgrade-${target.upgradeId}`}
+          upgrade={upgradesById.get(target.upgradeId as UpgradeId)}
+          upgradeId={target.upgradeId as UpgradeId}
+        />
+      ))}
+      {available.length > 0 ? (
+        <RarityCombobox
+          emptyText={t("goals.create.upgrade.addEmpty")}
+          items={available}
+          onChange={(id) =>
+            onChange({
+              ...draft,
+              targets: [
+                ...draft.targets,
+                { upgradeId: id, quantity: Math.max(1, choices.get(id) ?? 1) },
+              ],
+            })
+          }
+          placeholder={t("goals.create.upgrade.add")}
+          renderIcon={(id) => {
+            const upgrade = upgradesById.get(id)
+            return (
+              <UpgradeIcon
+                className="size-6 shrink-0"
+                crafted={upgrade?.crafted}
+                id={id}
+                rarity={upgrade?.rarity}
+              />
+            )
+          }}
+        />
+      ) : null}
     </div>
   )
 }
@@ -328,12 +443,17 @@ export function GoalTargetFields({
   onChange,
   portalContainer,
   upgradesById,
+  ownedQuantities,
+  units,
 }: {
   detail: GoalDetail
   draft: GoalTargetDraft
   onChange: (draft: GoalTargetDraft) => void
   portalContainer: HTMLElement | null
   upgradesById: ReadonlyMap<UpgradeId, UpgradeWithFarmLocations>
+  /** How many of each material the account owns, shown on Upgrade rows (undefined until loaded). */
+  ownedQuantities?: ReadonlyMap<string, number>
+  units: UpgradeUnits
 }) {
   const common = { detail, onChange, portalContainer }
   switch (draft.kind) {
@@ -345,15 +465,24 @@ export function GoalTargetFields({
       return <AbilityFields {...common} draft={draft} />
     case "Upgrade":
       return (
-        <UpgradeFields {...common} draft={draft} upgradesById={upgradesById} />
+        <UpgradeFields
+          {...common}
+          draft={draft}
+          ownedQuantities={ownedQuantities}
+          units={units}
+          upgradesById={upgradesById}
+        />
       )
   }
 }
 
 /** The goal's stored starting point, shown read-only above the editor so the owner can see what the
- * target is measured from. */
+ * target is measured from. Ability names its tracks: Active/Passive, or Primary/Secondary for a
+ * Machine of War. */
 export function GoalTargetStart({ detail }: { detail: GoalDetail }) {
+  const { t } = useTranslation()
   const { config } = detail
+  const isMow = detail.entityType === "Mow"
   switch (detail.goalType) {
     case "Rank":
       return config.rank ? <RankBadge rank={rankAt(config.rank.start)} /> : null
@@ -363,8 +492,24 @@ export function GoalTargetStart({ detail }: { detail: GoalDetail }) {
       ) : null
     case "Ability":
       return config.ability ? (
-        <span>
-          {config.ability.activeStart} / {config.ability.passiveStart}
+        <span data-testid="goal-target-start-ability">
+          {t("goals.create.ability.trackLevel", {
+            track: t(
+              isMow
+                ? "goals.create.ability.tracks.primary"
+                : "goals.create.ability.tracks.active"
+            ),
+            level: config.ability.activeStart,
+          })}
+          {" · "}
+          {t("goals.create.ability.trackLevel", {
+            track: t(
+              isMow
+                ? "goals.create.ability.tracks.secondary"
+                : "goals.create.ability.tracks.passive"
+            ),
+            level: config.ability.passiveStart,
+          })}
         </span>
       ) : null
     default:
