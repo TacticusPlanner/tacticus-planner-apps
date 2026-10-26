@@ -10,7 +10,7 @@ import { RankBadge, UpgradeIcon } from "@/shared/ui"
 
 import { PreviewSection, type PreviewState } from "../shared/preview-section"
 
-export type MissingUpgrade = { id: string; label: string; missing: number }
+type MissingUpgrade = { id: string; label: string; missing: number }
 
 /** A card's resource preview, as both dialogs compute it: its state, the materials still to farm and,
  * when there is one, the estimated days line. */
@@ -23,7 +23,7 @@ export type ResourcePreview = {
 const RESOURCES_NEEDED_VISIBLE_COUNT = 3
 
 /** "Resources needed" upgrade list, collapsed to the first 3 entries until expanded. */
-export function ResourcesNeededList({
+function ResourcesNeededList({
   missingUpgrades,
 }: {
   missingUpgrades: readonly MissingUpgrade[]

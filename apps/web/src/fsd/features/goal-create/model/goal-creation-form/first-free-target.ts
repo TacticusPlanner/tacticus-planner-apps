@@ -40,10 +40,7 @@ export const rankEndKey = (rank: Rank) =>
     },
   })!
 
-export const abilityPairKey = (
-  start: AbilityTargetPair,
-  end: AbilityTargetPair
-) =>
+const abilityPairKey = (start: AbilityTargetPair, end: AbilityTargetPair) =>
   goalTargetKeyOf({
     goalType: "Ability",
     config: {
