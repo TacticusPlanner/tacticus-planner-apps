@@ -939,7 +939,7 @@ export interface paths {
     put?: never
     /**
      * Creates one goal, or several linked goals for one entity, in one call.
-     * @description A single goal is a one-spec request. Each spec's DependsOnIndex (indices into this same request's Goals list, referencing only earlier entries) is resolved into real DependsOn edges; DependsOnGoalIds adds edges to the same unit's existing Active/Paused goals, and an existing Ascension goal reachable through them lifts the rarity cap the targets are validated against. A goal type may appear more than once when the end targets differ. Assigns the whole set to the given project(s), or the caller's default project (created on first use) when none is given. Every goal starts Active; startPaused (request-level boolean, default false) creates the whole set Paused instead and cannot be set per goal.
+     * @description A single goal is a one-spec request. Each spec's DependsOnIndex (indices into this same request's Goals list, referencing only earlier entries) is resolved into real DependsOn edges; DependsOnGoalIds adds edges to the same unit's existing Active/Paused goals, and an existing Ascension goal reachable through them lifts the rarity cap the targets are validated against. A goal type may appear more than once when the end targets differ. Assigns the whole set to the given project(s), or the caller's default project (created on first use) when none is given. Each spec may carry notes. position (request-level, 1 to in-flight count + 1) inserts the set there in request order, shifting later goals down; null appends at the end. Every goal starts Active; startPaused (request-level boolean, default false) creates the whole set Paused instead and cannot be set per goal.
      */
     post: operations["TacticusPlannerApiFeaturesGoalsCreateCombinedGoalsEndpoint"]
     delete?: never
@@ -1578,6 +1578,7 @@ export interface components {
       dependsOnIndex: components["schemas"]["ListOfInt32"]
       snapshot?: null | components["schemas"]["CreateGoalSnapshotRequest"]
       dependsOnGoalIds?: null | components["schemas"]["ListOfGuid"]
+      notes?: null | string
     }
     CreateCombinedGoalsRequest: {
       entityType: components["schemas"]["GoalEntityType"]
@@ -1586,6 +1587,8 @@ export interface components {
       goals: components["schemas"]["ListOfCombinedGoalSpec"]
       /** @default false */
       startPaused?: boolean
+      /** Format: int32 */
+      position?: null | number
     }
     CreateCombinedGoalsResponse: {
       goals: components["schemas"]["ListOfGoalDetailResponse"]
@@ -6241,7 +6244,7 @@ export interface operations {
           "application/json": components["schemas"]["CreateCombinedGoalsResponse"]
         }
       }
-      /** @description Invalid entity/goal type, a bad DependsOnIndex or DependsOnGoalIds, an unknown project, or a null/per-goal startPaused. */
+      /** @description Invalid entity/goal type, a bad DependsOnIndex or DependsOnGoalIds, an unknown project, a null/per-goal startPaused, notes over the limit, or a position out of range. */
       400: {
         headers: {
           [name: string]: unknown
