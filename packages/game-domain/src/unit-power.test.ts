@@ -141,6 +141,22 @@ describe("characterPower", () => {
     )
   })
 
+  it("raises power with a stat factor, and a factor of 1 changes nothing", () => {
+    const boosted = { ...testState, statFactor: 1.2 }
+    const plain = characterPower(testTables, testUnit, testState, testUpgrades)
+    expect(
+      characterPower(testTables, testUnit, boosted, testUpgrades)
+    ).toBeGreaterThan(plain)
+    expect(
+      characterPower(
+        testTables,
+        testUnit,
+        { ...testState, statFactor: 1 },
+        testUpgrades
+      )
+    ).toBe(plain)
+  })
+
   it("adds relic ability power for an equipped relic", () => {
     const withRelic = { ...testState, items: [{ item: relic, level: 2 }] }
     expect(characterPower(testTables, testUnit, withRelic, testUpgrades)).toBe(

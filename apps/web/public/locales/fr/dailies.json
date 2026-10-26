@@ -15,6 +15,8 @@
     "hseDescription": "Événement d'écran d'accueil : raidez là où l'événement en cours rapporte des points",
     "hre": "ÉSH",
     "hreDescription": "Événement de sortie de héros : suivez vos missions et raidez pour elles avec le moins d'énergie possible",
+    "quest": "Quête",
+    "questDescription": "Événement de Quête : suivez votre score par combat et voyez la carte, les ennemis et le butin de chaque combat",
     "shops": "Boutiques",
     "shopsDescription": "Suivez les rotations et achats en boutique",
     "guild-raids": "Raids de guilde",
@@ -381,6 +383,46 @@
         "paceSummary": {
           "title": "Le rythme en un coup d'œil",
           "content": "Vos points, où ils mènent et le palier atteint. Touchez Détails pour saisir vos points, votre rang et ce que vous avez, et choisir un objectif."
+        }
+      }
+    },
+    "quest": {
+      "steps": {
+        "header": {
+          "title": "La quête",
+          "content": "Le héros vedette, qui doit jouer chaque combat, les factions que vous pouvez déployer et le temps restant. Choisissez une autre quête pour consulter ses combats."
+        },
+        "summary": {
+          "title": "Votre score",
+          "content": "Vos points sur 8 800, les caisses qu'ils ouvrent et les combats où il reste des points."
+        },
+        "battles": {
+          "title": "Combats par palier",
+          "content": "Les 17 combats de Commun à Mythique avec leurs places, objectifs bonus, butin et points. Sélectionnez-en un pour le voir."
+        },
+        "entry": {
+          "title": "Votre meilleure tentative",
+          "content": "Indiquez les médailles, les points de Victoire éclair et les objectifs bonus remplis. Seule votre meilleure tentative compte."
+        },
+        "detail": {
+          "title": "Détail du combat",
+          "content": "La carte, les ennemis avec leur niveau, le plafond de rareté et le butin avec ce que vos objectifs en demandent."
+        },
+        "rewards": {
+          "title": "Récompenses",
+          "content": "Les caisses que votre score ouvre, les fragments du héros obtenus avec les médailles et ce qu'ils débloquent, avec un raccourci pour en faire un objectif."
+        },
+        "tokens": {
+          "title": "Tentatives",
+          "content": "Indiquez vos jetons actuels pour voir si vos tentatives couvrent les combats encore sous leur maximum."
+        },
+        "team": {
+          "title": "Équipe suggérée",
+          "content": "Ton héros de quête plus les unités les plus fortes qui respectent les objectifs bonus, avec la puissance au plafond du palier. Les badges montrent les objectifs remplis par l'équipe."
+        },
+        "estimate": {
+          "title": "Estimation de victoire",
+          "content": "Si ton équipe dépasse la puissance de la bataille au plafond du palier, avec et sans objectifs bonus. Les lignes montrent le verdict, le résumé projette tes points finaux."
         }
       }
     }

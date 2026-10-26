@@ -13,6 +13,7 @@ export { shardIcon } from "./shard"
 export { characterIcon, mowIcon } from "./character"
 export { npcPortrait } from "./npc"
 export { legendaryEventMap } from "./le-map"
+export { battleBoardImage } from "./battle-board"
 export { factionIcon } from "./faction"
 export { abilityIcon } from "./ability"
 export {
@@ -45,5 +46,6 @@ export {
   onslaughtTokenIcon,
   goldIcon,
   salvageIcon,
+  raidTicketIcon,
   xpBookIcon,
 } from "./resource"

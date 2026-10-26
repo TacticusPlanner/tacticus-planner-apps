@@ -1,4 +1,4 @@
-import type { AccountSetupStep } from "@/features/account-onboarding"
+import type { AccountSetupStep } from "@/features/account"
 
 export const SETUP_STEP_PATHS: Record<AccountSetupStep, string> = {
   choose: "/setup",

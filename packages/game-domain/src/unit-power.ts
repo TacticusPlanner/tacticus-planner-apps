@@ -91,6 +91,8 @@ export type CharacterPowerState = {
   passiveAbilityLevel: number
   /** Equipped items at their levels (1-based); none for the stats before equipment. */
   items?: readonly { item: PowerItem; level: number }[]
+  /** Multiplies Health, Damage and Armour before items (a Quest's featured hero: 1.2); default 1. */
+  statFactor?: number
 }
 
 export type CharacterStats = { health: number; damage: number; armour: number }
@@ -230,7 +232,16 @@ export function characterPower(
     progressionIndex(state.progression),
     character.id
   )
-  const base = characterStats(tables, character, state, upgradeStats)
+  const unscaled = characterStats(tables, character, state, upgradeStats)
+  const factor = state.statFactor ?? 1
+  const base =
+    factor === 1
+      ? unscaled
+      : {
+          health: Math.trunc(unscaled.health * factor),
+          damage: Math.trunc(unscaled.damage * factor),
+          armour: Math.trunc(unscaled.armour * factor),
+        }
   const items = state.items ?? []
   const stats = withItems(base, items)
   const relicLevel = items.reduce(

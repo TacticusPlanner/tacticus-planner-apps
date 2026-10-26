@@ -28,6 +28,7 @@ export {
   defeatAllIcon,
   type ObjectiveIcon as ObjectiveIconModel,
 } from "./lib/objective-label"
+export { unitDealtDamageTypes } from "./lib/damage-profile-exclusions"
 export { objectivesSatisfied } from "./lib/objective-match"
 export {
   buildCrossLaneLeaderboard,

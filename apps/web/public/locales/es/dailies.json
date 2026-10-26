@@ -15,6 +15,8 @@
     "hseDescription": "Evento de pantalla de inicio: haz incursiones donde el evento actual da puntos",
     "hre": "ELH",
     "hreDescription": "Evento de lanzamiento de héroe: sigue tus misiones y haz incursiones para ellas con la menor energía",
+    "quest": "Misión",
+    "questDescription": "Evento de Misión: sigue tu puntuación por batalla y mira el mapa, los enemigos y el botín de cada batalla",
     "shops": "Tiendas",
     "shopsDescription": "Consulta las rotaciones y compras de la tienda",
     "guild-raids": "Incursiones de gremio",
@@ -381,6 +383,46 @@
         "paceSummary": {
           "title": "El ritmo de un vistazo",
           "content": "Tus puntos, dónde acaban y el paso que alcanzan. Toca Detalles para introducir puntos, puesto y lo que tienes, y para elegir un objetivo."
+        }
+      }
+    },
+    "quest": {
+      "steps": {
+        "header": {
+          "title": "La misión",
+          "content": "El héroe protagonista, que debe jugar todas las batallas, las facciones que puedes desplegar y el tiempo restante. Elige otra misión para ver sus batallas."
+        },
+        "summary": {
+          "title": "Tu puntuación",
+          "content": "Tus puntos sobre 8800, las cajas que abren y las batallas en las que aún quedan puntos."
+        },
+        "battles": {
+          "title": "Batallas por nivel",
+          "content": "Las 17 batallas de Común a Mítico con sus huecos, objetivos adicionales, botín y puntos. Selecciona una para verla."
+        },
+        "entry": {
+          "title": "Tu mejor intento",
+          "content": "Anota medallas, puntos de Victoria relámpago y los objetivos adicionales que cumpliste. Solo cuenta tu mejor intento."
+        },
+        "detail": {
+          "title": "Detalle de la batalla",
+          "content": "El mapa, los enemigos con su nivel, el límite de rareza y el botín con lo que tus objetivos necesitan de él."
+        },
+        "rewards": {
+          "title": "Recompensas",
+          "content": "Las cajas que abre tu puntuación, los fragmentos del héroe por medallas y lo que desbloquean, con un atajo para planificarlos como objetivo."
+        },
+        "tokens": {
+          "title": "Intentos",
+          "content": "Anota tus fichas actuales para ver si tus intentos cubren las batallas que aún no están al máximo."
+        },
+        "team": {
+          "title": "Equipo sugerido",
+          "content": "Tu protagonista más las unidades más fuertes que cumplen los objetivos extra, con el poder al límite del nivel. Las insignias muestran qué objetivos cumple el equipo."
+        },
+        "estimate": {
+          "title": "Estimación de victoria",
+          "content": "Si tu equipo supera el poder de la batalla al límite del nivel, con y sin objetivos extra. Las filas muestran el veredicto y el resumen prevé tus puntos finales."
         }
       }
     }
