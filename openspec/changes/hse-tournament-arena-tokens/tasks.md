@@ -1,7 +1,7 @@
 ## 1. Projection
 
 - [x] 1.1 Add `TournamentArena` to `HSE_TOKEN_MODES`, keep the synced buckets on `HSE_SYNCED_TOKEN_MODES`, add `isHseManualTokenMode`; verify `hse-token-supply` tests pass unchanged.
-- [x] 1.2 Add `manualTokens` and the Tournament Arena default average (5 kills) to `projectHsePoints`; verify the Faction Focus worked example (58 / 20 / 15 / 14 tokens -> 466 points, 11.5 points per token).
+- [x] 1.2 Add `manualTokens` and the Tournament Arena default average (5 kills) to `projectHsePoints`; verify the Faction Focus worked example (58 / 20 / 15 / 14 tokens -> 1,126 points, 11.5 points per token).
 - [x] 1.3 Persist entered tokens per instance in `useHseProjectionInputs` (`tp.dailies.hse.tokens.v1`) and merge them in `projectionView`; verify with a reload test.
 
 ## 2. UI and copy

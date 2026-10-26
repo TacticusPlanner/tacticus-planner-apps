@@ -54,6 +54,8 @@ export function ProgressInput({
       inputMode="numeric"
       max={max}
       min={0}
+      // Leaving the field shows the stored value (a typed 12.7 tokens is stored as 12).
+      onBlur={() => setRaw(value === 0 ? "" : String(value))}
       onChange={(event) => {
         setRaw(event.target.value)
         onChange(parseAverage(event.target.value) ?? 0)

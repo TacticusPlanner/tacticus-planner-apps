@@ -315,6 +315,12 @@ describe("PointsProjection: other events and states", () => {
     expect(within(row("TournamentArena")).getByText("140 pts")).toBeVisible()
     expect(total("projected")).toHaveTextContent("1,126 pts")
     expect(total("required")).toHaveTextContent("11.5 event points per token")
+
+    // A fractional count is stored as a whole number and shown as one once the field is left.
+    await userEvent.clear(tokens)
+    await userEvent.type(tokens, "12.7")
+    await userEvent.tab()
+    expect(tokens).toHaveValue(12)
   })
 
   it("asks for Defeat Waves' averages before projecting points", async () => {
