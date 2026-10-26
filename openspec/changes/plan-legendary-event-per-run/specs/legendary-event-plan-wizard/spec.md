@@ -32,3 +32,24 @@ Assumptions:
 - **GIVEN** the horizon is run 1
 - **WHEN** the user picks Run 2
 - **THEN** the heading reads "… by the end of run 2?", the end line reads "Run 2 ends maybe around May 9, 2027 (guessed from past runs)", and every verdict is rechecked against run 2's ending points
+
+#### Scenario: Choosing a run with the keyboard
+
+- **GIVEN** the horizon is run 2 and the picker offers Run 2 and Run 3
+- **WHEN** the user tabs into the picker and presses the right arrow key
+- **THEN** the picker is one tab stop on the checked run, Run 3 becomes checked and focused, and the verdicts are rechecked against run 3
+
+### Requirement: Wizard tour and analytics
+
+The wizard SHALL have a page tour on desktop (stepper, run picker, target cards, Assumptions panel, plan summary rail, footer) and on mobile (step header and chips, run picker, target cards, Assumptions panel, summary strip, bottom bar), localized in en/de/es/fr. The run picker step SHALL be skipped when the plan plays one run. It SHALL report analytics for opening the wizard (with the entry point), an explicit target choice (with its verdict), and creating a plan (with goal and team counts). The wizard's token plan and forecast SHALL NOT report the event page's expand events.
+
+#### Scenario: Tour on mobile
+
+- **WHEN** the tour runs below 768px
+- **THEN** every tooltip lies inside the viewport and targets the visible step header, run picker, cards, Assumptions panel, summary strip and bottom bar
+
+#### Scenario: Tour of a one-run plan
+
+- **GIVEN** the plan plays only the event's last run, so the Target step shows no run picker
+- **WHEN** the tour runs
+- **THEN** it skips the run picker step and counts one step fewer
