@@ -21,12 +21,20 @@ import type {
 import { mowAbilityUpgradeIds } from "@/features/goal-farming/@x/goal-create"
 import { acquisitionSourcesFromPlan } from "./acquisition-plan"
 import type { GoalAcquisitionPlan } from "./acquisition-plan"
+import {
+  abilityProgressionNeed,
+  EMPTY_MILESTONES,
+  lowestCoveringAscension,
+  rankProgressionNeed,
+  type AbilityMilestone,
+  type GoalMilestones,
+} from "./goal-milestones"
 
 // Pure helpers behind the combined-creation composer (plan §6/§7), kept out of
 // `use-create-goal-form.ts` because they are pure: all plain
 // functions (no hooks), so they're directly unit-testable without rendering anything.
 
-// Deliberately not reusing goal-type-fields.tsx's own `MissingUpgrade` type name (id: string) to
+// Deliberately not reusing goal-card/card-parts.tsx's `MissingUpgrade` type name (id: string) to
 // avoid two same-named-but-different exported types — this one's `id` stays branded `UpgradeId`,
 // which is structurally assignable to that string-keyed prop type at the call site.
 export type MissingUpgradeEntry = {
@@ -246,43 +254,56 @@ export function computeUpgradeGoalNeed(params: {
     .filter((entry) => params.includeCovered || entry.missing > 0)
 }
 
-export type ReviewItem = { goalType: GoalKind; autoSuggested: boolean }
+export type ReviewItem = {
+  goalType: GoalKind
+  autoSuggested: boolean
+  /** How many goals of this type the ladder creates (1 without added milestones). */
+  count: number
+}
 
-/** "What will be created" review list, in submit order, flagging entries the user didn't
- * explicitly toggle themselves (auto-included via `useGoalPrerequisites`'s suggestions). */
+/** "What will be created" review list, flagging entries the user didn't explicitly toggle themselves
+ * (auto-included via `useGoalPrerequisites`'s suggestions), with each type's milestone count. */
 export function buildReviewItems(
   enabledTypes: ReadonlySet<GoalKind>,
   includesUnlock: boolean,
-  includesAscension: boolean
+  includesAscension: boolean,
+  counts: Partial<Record<GoalKind, number>> = {}
 ): ReviewItem[] {
   const items: ReviewItem[] = []
+  const countOf = (kind: GoalKind) => counts[kind] ?? 1
   if (includesUnlock) {
     items.push({
       goalType: "Unlock",
       autoSuggested: !enabledTypes.has("Unlock"),
+      count: 1,
     })
   }
   if (includesAscension) {
     items.push({
       goalType: "Ascension",
       autoSuggested: !enabledTypes.has("Ascension"),
+      count: countOf("Ascension"),
     })
   }
   for (const kind of ["Rank", "Ability", "Upgrade"] as const) {
     if (enabledTypes.has(kind)) {
-      items.push({ goalType: kind, autoSuggested: false })
+      items.push({ goalType: kind, autoSuggested: false, count: countOf(kind) })
     }
   }
   return items
 }
 
 /**
- * The ordered spec list to submit: Unlock -> Ascension -> Rank -> Ability. Rank/Ability depend on
- * whichever of Unlock/Ascension precede them; Ascension depends on Unlock alone. The character level a
- * Rank/Ability target needs is never a spec or a dependency — the goal itself carries it
- * (integrate-level-progression-into-rank-goals). `ascensionSuggestion` is
- * `useGoalPrerequisites`'s auto-suggested target, used only when Ascension itself wasn't explicitly
- * toggled.
+ * The ordered spec list to submit: Unlock -> Ascension milestones -> Rank milestones -> Ability
+ * milestones -> Upgrade. Each milestone of a ladder (goal-target-milestones) depends on the one before
+ * it, and every stored start stays at the unit's current state. A Rank/Ability milestone whose target
+ * needs a higher progression than `baseProgression` depends on the lowest Ascension that reaches it: an
+ * in-flight one from `existingAscensions` (sent as `dependsOnGoalIds`), else one in this request. An
+ * explicitly toggled Ascension ladder comes right after Unlock and also gates milestones that need no
+ * ascension (by its first step); the auto-suggested one (`ascensionSuggestion`, used only when
+ * Ascension itself wasn't toggled) is placed just before the first milestone that needs it, and only
+ * milestones that need it depend on it. The character level a target needs is never a spec — the goal
+ * itself carries it (integrate-level-progression-into-rank-goals).
  */
 export function buildCombinedGoalSpecs(params: {
   enabledTypes: ReadonlySet<GoalKind>
@@ -311,14 +332,28 @@ export function buildCombinedGoalSpecs(params: {
    *  Upgrade, and Machine-of-War Ability specs. `null`/absent keeps the all-available default. */
   mythicMaterialSources?: AcquisitionSource[] | null
   isMow?: boolean
+  /** Extra Rank/Ascension/Ability end targets after the cards' own fields ("Add milestone"). */
+  milestones?: GoalMilestones
+  /** The progression the unit reasons from (current, else where its Unlock lands); defaults to
+   *  `progressionStart`. */
+  baseProgression?: Progression
+  /** The unit's in-flight Ascension goals a milestone can depend on instead of a new one. */
+  existingAscensions?: readonly { goalId: string; end: Progression }[]
 }): CombinedGoalSpec[] {
   const { enabledTypes, includesUnlock, includesAscension } = params
+  const milestones = params.milestones ?? EMPTY_MILESTONES
+  const base = params.baseProgression ?? params.progressionStart
+  const existingAscensions = params.existingAscensions ?? []
   const specs: CombinedGoalSpec[] = []
   let unlockIndex: number | null = null
-  let ascensionIndex: number | null = null
+  const ascensions: { index: number; end: Progression }[] = []
   const mythicMaterialSources = params.mythicMaterialSources
     ? { acquisitionSources: params.mythicMaterialSources }
     : {}
+  const withUnlock = (indexes: (number | null)[]) =>
+    [unlockIndex, ...indexes]
+      .filter((index): index is number => index !== null)
+      .sort((a, b) => a - b)
 
   if (includesUnlock) {
     specs.push({
@@ -333,67 +368,125 @@ export function buildCombinedGoalSpecs(params: {
     unlockIndex = specs.length - 1
   }
 
-  if (includesAscension) {
-    const ascension = enabledTypes.has("Ascension")
-      ? { start: params.progressionStart, end: params.progressionEnd }
-      : params.ascensionSuggestion!
+  const pushAscension = (range: { start: Progression; end: Progression }) => {
+    const previous = ascensions.at(-1)?.index ?? null
     specs.push({
       goalType: "Ascension",
       config: {
-        progression: ascension,
+        progression: range,
         acquisitionSources: acquisitionSourcesFromPlan(params.plan),
       },
-      dependsOnIndex: unlockIndex === null ? [] : [unlockIndex],
+      dependsOnIndex: withUnlock([previous]),
     })
-    ascensionIndex = specs.length - 1
+    ascensions.push({ index: specs.length - 1, end: range.end })
   }
 
+  const explicitAscension = enabledTypes.has("Ascension")
+  if (includesAscension && explicitAscension) {
+    for (const end of [params.progressionEnd, ...milestones.ascension]) {
+      pushAscension({ start: params.progressionStart, end })
+    }
+  }
+  let pendingSuggestion =
+    includesAscension && !explicitAscension ? params.ascensionSuggestion : null
+
+  /** The Ascension dependency of a Rank/Ability milestone needing `need` (null: none needed). */
+  const ascensionDependency = (
+    need: Progression | null
+  ): { index: number | null; goalIds: string[] } => {
+    if (need === null) {
+      return {
+        index: explicitAscension ? (ascensions[0]?.index ?? null) : null,
+        goalIds: [],
+      }
+    }
+    const existing = lowestCoveringAscension(existingAscensions, need)
+    if (existing) return { index: null, goalIds: [existing.goalId] }
+    if (pendingSuggestion) {
+      pushAscension(pendingSuggestion)
+      pendingSuggestion = null
+    }
+    const covering =
+      lowestCoveringAscension(ascensions, need) ?? ascensions.at(-1)
+    return { index: covering?.index ?? null, goalIds: [] }
+  }
+  const dependsOnGoalIds = (goalIds: string[]) =>
+    goalIds.length > 0 ? { dependsOnGoalIds: goalIds } : {}
+
   if (enabledTypes.has("Rank")) {
-    specs.push({
-      goalType: "Rank",
-      config: {
-        farmingStrategy: params.farmingStrategy,
-        ...mythicMaterialSources,
-        rank: {
-          start: rankIndex(params.rankStart),
-          // The "From" field is always a clean rank boundary (read-only, synced from the unit's
-          // actual current rank) — only the target end carries an Additional target.
-          startPointFive: false,
-          startAppliedUpgrades: 0,
-          end: rankIndex(params.rankEnd),
-          endPointFive: params.rankEndPointFive,
-          endAppliedUpgrades: params.rankEndAppliedUpgrades,
+    let previous: number | null = null
+    for (const [position, end] of [
+      params.rankEnd,
+      ...milestones.rank,
+    ].entries()) {
+      // Only the card's own target carries an Additional target; added milestones are whole ranks.
+      const first = position === 0
+      const dependency = ascensionDependency(rankProgressionNeed(end, base))
+      specs.push({
+        goalType: "Rank",
+        config: {
+          farmingStrategy: params.farmingStrategy,
+          ...mythicMaterialSources,
+          rank: {
+            start: rankIndex(params.rankStart),
+            // The "From" field is always a clean rank boundary (read-only, synced from the unit's
+            // actual current rank) — only the target end carries an Additional target.
+            startPointFive: false,
+            startAppliedUpgrades: 0,
+            end: rankIndex(end),
+            endPointFive: first ? params.rankEndPointFive : false,
+            endAppliedUpgrades: first ? params.rankEndAppliedUpgrades : 0,
+          },
         },
-      },
-      dependsOnIndex: [unlockIndex, ascensionIndex].filter(
-        (index): index is number => index !== null
-      ),
-    })
+        dependsOnIndex: withUnlock([dependency.index, previous]),
+        ...dependsOnGoalIds(dependency.goalIds),
+      })
+      previous = specs.length - 1
+    }
   }
 
   if (enabledTypes.has("Ability")) {
-    specs.push({
-      goalType: "Ability",
-      config: {
-        farmingStrategy: params.farmingStrategy,
-        ...(params.isMow ? mythicMaterialSources : {}),
-        ability: {
-          activeStart: params.abilityActiveStart,
-          activeEnd: params.abilityActiveEnd,
-          passiveStart: params.abilityPassiveStart,
-          passiveEnd: params.abilityPassiveEnd,
-        },
+    let previous: number | null = null
+    const ladder: AbilityMilestone[] = [
+      {
+        activeEnd: params.abilityActiveEnd,
+        passiveEnd: params.abilityPassiveEnd,
       },
-      // Ascension included here (same as Rank above): an above-cap ability target is one of the
-      // two things that triggers the auto-suggested Ascension (use-goal-prerequisites.ts), so the
-      // Ability goal must declare that dependency, not merely follow it in submit order — the API
-      // only lifts an ability target's cap from an Ascension spec the goal depends on
+      ...milestones.ability,
+    ]
+    for (const ability of ladder) {
+      // Ascension included here (same as Rank above): an above-cap ability target is one of the two
+      // things that triggers the auto-suggested Ascension (use-goal-prerequisites.ts), so the Ability
+      // goal must declare that dependency, not merely follow it in submit order — the API only lifts
+      // an ability target's cap from an Ascension the goal depends on
       // (fix-goal-ability-cap-effective-progression; rewrite-v1-goal-import).
-      dependsOnIndex: [unlockIndex, ascensionIndex].filter(
-        (index): index is number => index !== null
-      ),
-    })
+      const dependency = ascensionDependency(
+        abilityProgressionNeed(ability, base)
+      )
+      specs.push({
+        goalType: "Ability",
+        config: {
+          farmingStrategy: params.farmingStrategy,
+          ...(params.isMow ? mythicMaterialSources : {}),
+          ability: {
+            activeStart: params.abilityActiveStart,
+            activeEnd: Math.max(params.abilityActiveStart, ability.activeEnd),
+            passiveStart: params.abilityPassiveStart,
+            passiveEnd: Math.max(
+              params.abilityPassiveStart,
+              ability.passiveEnd
+            ),
+          },
+        },
+        dependsOnIndex: withUnlock([dependency.index, previous]),
+        ...dependsOnGoalIds(dependency.goalIds),
+      })
+      previous = specs.length - 1
+    }
   }
+
+  // A suggestion nothing above ended up needing still goes in, as the user left it included.
+  if (pendingSuggestion) pushAscension(pendingSuggestion)
 
   if (enabledTypes.has("Upgrade") && params.upgradeTargets.length > 0) {
     specs.push({

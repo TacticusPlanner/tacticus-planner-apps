@@ -236,4 +236,19 @@ describe("createFarmingDaysEstimator", () => {
     expect(second).toBe(first)
     expect(getCharacter).toHaveBeenCalledTimes(calls)
   })
+  it("gives each request the same estimate whether or not it reuses the shared maps", () => {
+    const requests = [
+      rankUp,
+      { ...rankUp, from: undefined },
+      { unitId: "hero1", from: undefined },
+      { unitId: "hero1", from: owned() },
+    ] as const
+    const shared = createFarmingDaysEstimator(inputs())
+
+    for (const request of requests) {
+      expect(shared(request)).toEqual(
+        createFarmingDaysEstimator(inputs())(request)
+      )
+    }
+  })
 })

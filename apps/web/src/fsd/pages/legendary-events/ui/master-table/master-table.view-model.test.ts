@@ -213,7 +213,7 @@ describe("estimatedAvailability", () => {
     ).toBe("loading")
     expect(
       estimatedAvailability({
-        config: { status: "failed", retry: () => {} },
+        config: { status: "failed", retry: () => {}, missing: ["unitPower"] },
         battles,
         roster: "ready",
         events: [utharEvent],

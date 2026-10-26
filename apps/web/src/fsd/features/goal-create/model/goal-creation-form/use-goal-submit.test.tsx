@@ -12,25 +12,23 @@ vi.mock("@/entities/goal", () => ({
     lists: () => ["goals", "list"],
     detail: (id: string) => ({ queryKey: ["goals", "detail", id] }),
   },
-  goalRankTargetKey: (goal: {
-    goalType: string
-    config: { rank?: { end: number } | null }
-  }) =>
+  goalTargetLabel: (
+    _t: unknown,
+    goal: { goalType: string; config: { rank?: { end: number } | null } }
+  ) =>
     goal.goalType === "Rank" && goal.config.rank
-      ? `${goal.config.rank.end}:0`
+      ? `Rank${goal.config.rank.end}`
       : null,
-  describeRankTargetKey: (key: string) => {
-    const [end, slots] = key.split(":").map(Number)
-    return { rank: `Rank${end}`, slots }
-  },
 }))
 vi.mock("@/shared/unit-name", () => ({
   useUnitName: () => (_type: string, id: string) => `Unit ${id}`,
 }))
+type Spec = { goalType: string; config: object; dependsOnIndex: number[] }
+const specs = vi.fn((): Spec[] => [
+  { goalType: "Rank", config: {}, dependsOnIndex: [] },
+])
 vi.mock("./goal-spec-builder", () => ({
-  buildCombinedGoalSpecs: () => [
-    { goalType: "Rank", config: {}, dependsOnIndex: [] },
-  ],
+  buildCombinedGoalSpecs: () => specs(),
 }))
 
 import { ApiError } from "@/shared/api"
@@ -70,7 +68,7 @@ describe("useGoalSubmit conflicts", () => {
           entityType: "Character",
           canSubmit: true,
           selectedProjects: [{ projectId: "project-1" }],
-          specParams: {} as never,
+          specParams: { enabledTypes: new Set(["Rank"]) } as never,
           startPaused: false,
           snapshotContext: {} as never,
           onOpenChange,
@@ -117,7 +115,7 @@ describe("useGoalSubmit cache updates", () => {
           entityType: "Character",
           canSubmit: true,
           selectedProjects: [{ projectId: "p1" }],
-          specParams: {} as never,
+          specParams: { enabledTypes: new Set(["Rank"]) } as never,
           startPaused: false,
           snapshotContext: {} as never,
           onOpenChange,
@@ -142,5 +140,71 @@ describe("useGoalSubmit cache updates", () => {
       ]
     )
     expect(onOpenChange).toHaveBeenCalledWith(false)
+  })
+})
+
+describe("useGoalSubmit notes and priority", () => {
+  beforeEach(() => vi.clearAllMocks())
+
+  const submit = async (
+    params: Partial<Parameters<typeof useGoalSubmit>[0]>
+  ) => {
+    createCombinedGoals.mockResolvedValue({ goals: [] })
+    const { result } = renderHook(
+      () =>
+        useGoalSubmit({
+          entityId: "bellator" as never,
+          entityType: "Character",
+          canSubmit: true,
+          selectedProjects: [],
+          specParams: { enabledTypes: new Set(["Rank", "Ascension"]) } as never,
+          startPaused: false,
+          snapshotContext: {} as never,
+          onOpenChange: vi.fn(),
+          resetForm: vi.fn(),
+          ...params,
+        }),
+      { wrapper }
+    )
+    await act(async () => {
+      await result.current.handleSubmit({ preventDefault: () => {} } as never)
+    })
+    return createCombinedGoals.mock.calls[0]?.[0]
+  }
+
+  it("sends each card's note on its own goals only, and the chosen position", async () => {
+    specs.mockReturnValueOnce([
+      { goalType: "Ascension", config: {}, dependsOnIndex: [] },
+      { goalType: "Rank", config: {}, dependsOnIndex: [0] },
+    ])
+    const request = await submit({
+      notes: { Rank: "  For Guild Raid " },
+      position: 1,
+    })
+
+    expect(request.position).toBe(1)
+    expect(request.goals[0]).not.toHaveProperty("notes")
+    expect(request.goals[1].notes).toBe("For Guild Raid")
+  })
+
+  it("leaves position out by default, so the goals go after every in-flight goal", async () => {
+    const request = await submit({})
+
+    expect(request).not.toHaveProperty("position")
+    expect(request.goals[0]).not.toHaveProperty("notes")
+  })
+
+  it("puts no note on an auto-suggested prerequisite", async () => {
+    specs.mockReturnValueOnce([
+      { goalType: "Unlock", config: {}, dependsOnIndex: [] },
+      { goalType: "Rank", config: {}, dependsOnIndex: [0] },
+    ])
+    const request = await submit({
+      specParams: { enabledTypes: new Set(["Rank"]) } as never,
+      notes: { Unlock: "stale", Rank: "Mine" },
+    })
+
+    expect(request.goals[0]).not.toHaveProperty("notes")
+    expect(request.goals[1].notes).toBe("Mine")
   })
 })

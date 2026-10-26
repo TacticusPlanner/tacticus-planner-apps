@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next"
 
 import {
+  maxAbilityLevel,
   progressionIndex,
   rankIndex,
   type Progression,
@@ -11,9 +12,11 @@ import type { PlayerDataChunkDto } from "@workspace/player-data"
 
 import type { GoalKind } from "@/entities/goal"
 
+import { milestoneOrderIssue, type GoalMilestones } from "./goal-milestones"
+
 import { mowAbilityTrackLevel } from "@/features/goal-farming/@x/goal-create"
 import {
-  getGoalValidationIssue,
+  getGoalValidationIssues,
   isAtMaxAbility,
   isAtMaxProgression,
   isAtMaxRank,
@@ -41,7 +44,10 @@ export function useGoalValidationState({
   abilityActiveEnd,
   abilityPassiveStart,
   abilityPassiveEnd,
+  abilityTargets,
   upgradeFieldsValid,
+  invalidUpgradeQuantityIds,
+  milestones,
 }: {
   entityType: "Character" | "Mow"
   entityId: UnitId | undefined
@@ -58,7 +64,13 @@ export function useGoalValidationState({
   abilityActiveEnd: number
   abilityPassiveStart: number
   abilityPassiveEnd: number
+  /** The levels the steppers hold, before clamping to the start: a typed level outside start..60 is
+   *  reported as out of range rather than silently dropped. */
+  abilityTargets?: { abilityActiveTarget: number; abilityPassiveTarget: number }
   upgradeFieldsValid: boolean
+  /** Upgrade rows whose quantity is empty, not whole, or outside 1–10,000. */
+  invalidUpgradeQuantityIds: readonly string[]
+  milestones: GoalMilestones
 }) {
   const { t } = useTranslation()
 
@@ -82,7 +94,17 @@ export function useGoalValidationState({
     currentPassiveAbility
   )
 
-  const validationIssue = getGoalValidationIssue({
+  const inRange = (level: number, start: number) =>
+    Number.isInteger(level) && level >= start && level <= maxAbilityLevel
+  const abilityOutOfRange =
+    enabledTypes.has("Ability") &&
+    !!abilityTargets &&
+    !(
+      inRange(abilityTargets.abilityActiveTarget, abilityActiveStart) &&
+      inRange(abilityTargets.abilityPassiveTarget, abilityPassiveStart)
+    )
+
+  const allTargetIssues = getGoalValidationIssues({
     hasEntityId: !!entityId,
     enabledTypes,
     isOwned,
@@ -98,17 +120,59 @@ export function useGoalValidationState({
     currentPassiveAbility,
     upgradeFieldsValid,
   })
-  const validationMessage = validationIssue
-    ? t(`goals.create.validation.${validationIssue}`)
-    : null
+  // An out-of-range level replaces the Ability card's other target messages: it is the one to fix.
+  const targetIssues = abilityOutOfRange
+    ? [
+        ...allTargetIssues.filter((issue) => issue.kind !== "Ability"),
+        {
+          kind: "Ability" as const,
+          field: "target",
+          issue: "abilityOutOfRange" as const,
+        },
+      ]
+    : allTargetIssues
+  // Each added milestone must be above the one before it (goal-target-milestones); the card shows the
+  // message on that milestone, and this one blocks submission.
+  const milestoneIssue = milestoneOrderIssue({
+    enabledTypes,
+    rankEnd,
+    progressionEnd,
+    ability: { activeEnd: abilityActiveEnd, passiveEnd: abilityPassiveEnd },
+    milestones,
+  })
+  const issues: GoalFormIssueView[] = [
+    ...targetIssues.map(({ kind, field, issue }) => ({
+      kind,
+      field,
+      code: issue,
+      message: t(`goals.create.validation.${issue}`),
+    })),
+    ...(enabledTypes.has("Upgrade")
+      ? invalidUpgradeQuantityIds.map((id) => ({
+          kind: "Upgrade" as const,
+          field: `quantity-${id}`,
+          code: "upgradeQuantity",
+          message: t("goals.create.validation.upgradeQuantity"),
+        }))
+      : []),
+    ...(milestoneIssue
+      ? [
+          {
+            kind: milestoneIssue.kind,
+            field: `milestone-${milestoneIssue.index}`,
+            code: "milestoneNotAbove",
+            message: t("goals.create.milestones.notAbove"),
+          },
+        ]
+      : []),
+  ]
 
-  // Every gate below either has a `validationMessage` of its own or is unreachable through the UI's
-  // own option lists (a start/end select never offers an inverted range) — an Upgrade goal's missing
-  // target is the one that used to disable submit silently, and now reports itself as an issue.
+  // Every gate below either has an issue of its own or is unreachable through the UI's own option
+  // lists (a start/end select never offers an inverted range).
   const canSubmit =
     !!entityId &&
     enabledTypes.size > 0 &&
-    !validationMessage &&
+    issues.length === 0 &&
     (!enabledTypes.has("Rank") || rankIndex(rankStart) < rankIndex(rankEnd)) &&
     (!enabledTypes.has("Ascension") ||
       progressionIndex(progressionStart) < progressionIndex(progressionEnd))
@@ -119,7 +183,17 @@ export function useGoalValidationState({
     atMaxRank,
     atMaxProgression,
     atMaxAbility,
-    validationMessage,
+    issues,
+    milestoneIssue,
     canSubmit,
   }
+}
+
+/** One blocking problem as the form shows it: in `kind`'s card, under the control named by `field`. */
+export type GoalFormIssueView = {
+  kind: GoalKind
+  field: string
+  /** What is wrong (`slotConflict`, `upgradeQuantity`, or a `GoalValidationIssue`). */
+  code: string
+  message: string
 }

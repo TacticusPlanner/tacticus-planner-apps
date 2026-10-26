@@ -86,6 +86,17 @@ export function toggleRecommendation(
   return next
 }
 
+/** Recommendations found after the user's last manual tick that are not ticked (spec: manual
+ *  ticks keep later finds visible); none while the default ticks follow the search. */
+export function newSuggestionKeys(
+  keys: readonly string[],
+  seen: ReadonlySet<string>,
+  ticked: ReadonlySet<string> | null
+): string[] {
+  if (!ticked) return []
+  return keys.filter((key) => !seen.has(key) && !ticked.has(key))
+}
+
 /** A unit's goals as one chain: the end progression and rank its steps reach. */
 export interface UnitGoalChain {
   unitId: string

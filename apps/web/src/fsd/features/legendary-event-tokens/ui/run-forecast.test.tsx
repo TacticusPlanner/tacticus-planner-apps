@@ -160,3 +160,37 @@ describe("RunForecastSection", () => {
     ).toBeInTheDocument()
   })
 })
+
+describe("RunForecastSection on another page", () => {
+  beforeAll(async () => {
+    i18n = await createTestI18n("en")
+  })
+  beforeEach(() => {
+    capture.mockReset()
+    localStorage.clear()
+  })
+
+  it("opens by default, keeps its own open state and reports no expand events", () => {
+    render(
+      <RunForecastSection
+        defaultOpen
+        editInputs={null}
+        eventId="votanUthar"
+        isMobile={false}
+        onOpenTeams={onOpenTeams}
+        openKey="wizard.open"
+        trackExpand={false}
+        view={buildTokenPlanView(workedViewInput())}
+      />,
+      { wrapper: i18nWrapper(i18n) }
+    )
+    expect(screen.getAllByTestId("run-forecast-run").length).toBeGreaterThan(0)
+    fireEvent.click(screen.getByTestId("run-forecast-toggle"))
+    fireEvent.click(screen.getByTestId("run-forecast-toggle"))
+    expect(capture).not.toHaveBeenCalled()
+    expect(localStorage.getItem("wizard.open")).toBe("true")
+    expect(
+      Object.keys(localStorage).filter((key) => key !== "wizard.open")
+    ).toEqual([])
+  })
+})

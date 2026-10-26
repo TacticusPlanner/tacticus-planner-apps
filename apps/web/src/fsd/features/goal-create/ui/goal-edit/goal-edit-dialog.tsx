@@ -1,4 +1,4 @@
-import { useRef, useState } from "react"
+import { useRef, useState, type ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import { useBlocker } from "react-router"
 import { useQuery } from "@tanstack/react-query"
@@ -31,16 +31,25 @@ import { GoalEditUnsavedDialog } from "./goal-edit-unsaved-dialog"
 export function GoalEditDialog({
   goalId,
   onOpenChange,
+  onOpenGoal,
+  headerAction,
 }: {
   goalId: string | null
   onOpenChange: (open: boolean) => void
+  /** Opens another goal in this dialog — offered when a target edit collides with a sibling goal. */
+  onOpenGoal?: (goalId: string) => void
+  /** Header action beside the title, e.g. the page tour button: the page header's sits behind the
+   *  modal. Passed in, as `CreateGoalSheet`'s is, so the tour stays out of this feature's imports. */
+  headerAction?: ReactNode
 }) {
   // Keyed by goal so every open starts from a fresh draft.
   return goalId ? (
     <GoalEditDialogContent
       goalId={goalId}
+      headerAction={headerAction}
       key={goalId}
       onOpenChange={onOpenChange}
+      onOpenGoal={onOpenGoal}
     />
   ) : null
 }
@@ -48,9 +57,13 @@ export function GoalEditDialog({
 function GoalEditDialogContent({
   goalId,
   onOpenChange,
+  onOpenGoal,
+  headerAction,
 }: {
   goalId: string
   onOpenChange: (open: boolean) => void
+  onOpenGoal?: (goalId: string) => void
+  headerAction?: ReactNode
 }) {
   const { t } = useTranslation()
   const isAuthenticated = useIsAuthenticated()
@@ -108,7 +121,12 @@ function GoalEditDialogContent({
       >
         {detail ? <GoalEditDialogTourRegistration /> : null}
         <ResponsiveDialogHeader>
-          <ResponsiveDialogTitle>{t("goals.edit.title")}</ResponsiveDialogTitle>
+          <div className="flex items-center gap-2">
+            <ResponsiveDialogTitle>
+              {t("goals.edit.title")}
+            </ResponsiveDialogTitle>
+            {headerAction}
+          </div>
           {detail ? (
             <p
               className="text-sm text-muted-foreground"
@@ -127,6 +145,7 @@ function GoalEditDialogContent({
           <GoalEditForm
             detail={detail}
             onDirtyChange={setDirty}
+            onOpenGoal={onOpenGoal}
             onRequestClose={requestClose}
             onSaved={close}
             portalContainer={portalContainer}

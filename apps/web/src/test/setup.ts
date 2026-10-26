@@ -38,6 +38,8 @@ if (!window.matchMedia) {
   }))
 }
 window.HTMLElement.prototype.scrollIntoView ??= vi.fn()
+// jsdom defines scrollTo but only logs "Not implemented".
+window.scrollTo = vi.fn()
 window.HTMLElement.prototype.hasPointerCapture ??= vi.fn()
 window.HTMLElement.prototype.releasePointerCapture ??= vi.fn()
 window.HTMLElement.prototype.setPointerCapture ??= vi.fn()

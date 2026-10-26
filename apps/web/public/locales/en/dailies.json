@@ -334,7 +334,7 @@
         },
         "projection": {
           "title": "Points projection",
-          "content": "The Arena, Onslaught and Salvage Run tokens you can still use before the event ends, what each must average to reach the final milestone, and where your own averages land. Edit the averages; they are remembered for this event."
+          "content": "The Arena, Onslaught and Salvage Run tokens you can still use before the event ends, what each must average to reach the final milestone, and where your own averages land. Edit the averages; they are remembered for this event. Tournament Arena tokens are not synced, so enter yours when the event scores there."
         },
         "teams": {
           "title": "Event teams",
@@ -378,7 +378,11 @@
         },
         "pace": {
           "title": "Event pace",
-          "content": "Enter your event points and rank to project currency, chest tier and shards, and pick a target to see the points a day it needs."
+          "content": "Enter your event points and rank, and optionally what you hold now, to project currency, chest tier and shards, and pick a target to see the points a day it needs."
+        },
+        "paceSummary": {
+          "title": "Pace at a glance",
+          "content": "Your points, where they end up and the step they reach. Tap Details to enter points, rank and what you hold, and to pick a target."
         }
       }
     },
@@ -625,9 +629,9 @@
       },
       "lines": {
         "xp": "{{units}} gain {{multiplier}}x XP {{modes}}",
-        "xpTeam": "{{units}} gain {{multiplier}}x XP {{modes}} when the whole team is from one faction",
+        "xpTeam": "{{units}} gain +{{bonusPct}}% XP {{modes}} for each deployed friendly character of the same faction",
         "xpByRarity": "{{units}} gain bonus XP by rarity ({{rates}}) {{modes}}",
-        "xpByRarityTeam": "{{units}} gain bonus XP by rarity ({{rates}}) {{modes}} when the whole team is from one faction",
+        "xpByRarityTeam": "{{units}} gain bonus XP by rarity ({{rates}}) {{modes}} for each deployed friendly character of the same faction",
         "stat": "{{units}} have +{{health}}% Health, +{{damage}}% Damage and +{{armour}}% Armour {{modes}}",
         "kill_one": "You gain {{count}} point for each {{enemy}} you defeat {{modes}}",
         "kill_other": "You gain {{count}} points for each {{enemy}} you defeat {{modes}}",
@@ -635,10 +639,10 @@
         "killWith_other": "You gain {{count}} points for each {{enemy}} you defeat with {{player}} {{modes}}",
         "waves_one": "You gain {{count}} point for each wave you defeat {{modes}}",
         "waves_other": "You gain {{count}} points for each wave you defeat {{modes}}",
-        "factionMajority_one": "You gain {{count}} point for each battle {{modes}} in which most of the units you deploy are from one faction",
-        "factionMajority_other": "You gain {{count}} points for each battle {{modes}} in which most of the units you deploy are from one faction",
-        "fullLineUp_one": "You gain {{count}} point for each battle {{modes}} in which your whole line-up is from one faction",
-        "fullLineUp_other": "You gain {{count}} points for each battle {{modes}} in which your whole line-up is from one faction",
+        "factionMajority_one": "You gain {{count}} point {{modes}} for each deployed character from the faction with the most characters in your line-up",
+        "factionMajority_other": "You gain {{count}} points {{modes}} for each deployed character from the faction with the most characters in your line-up",
+        "fullLineUp_one": "You gain {{count}} bonus point for each battle {{modes}} in which your whole line-up is from one faction",
+        "fullLineUp_other": "You gain {{count}} bonus points for each battle {{modes}} in which your whole line-up is from one faction",
         "donateUpgrade_one": "You gain {{count}} point for each upgrade you donate to a guild member",
         "donateUpgrade_other": "You gain {{count}} points for each upgrade you donate to a guild member",
         "donateUpgradeByRarity": "You gain points for each upgrade you donate to a guild member: {{rates}}",
@@ -707,6 +711,7 @@
       "averageNeeded": "Enter an average",
       "tokensValue_one": "{{count}} token",
       "tokensValue_other": "{{count}} tokens",
+      "tokensLabel": "Tokens for {{mode}}",
       "projected": "Projected points",
       "projectedValue": "{{points}} pts",
       "needAverage": "Enter an average for every mode to see the projected points.",
@@ -720,7 +725,8 @@
         "summed": "{{mode}}: {{count}} point rules apply, so “{{perUnit}}” assumes each one matches all of them.",
         "locked": "Not unlocked yet, left out: {{modes}}.",
         "enemyRestricted": "Only some enemies count (see the event details), so enter your average of kills that count.",
-        "battles": "Battle modes score once per token: one battle per token.",
+        "battles": "Battle modes score once per token, assuming a full line-up of five characters from one faction: points per character plus the full line-up bonus.",
+        "manualTokens": "{{modes}} tokens are not synced from the game: enter how many you will spend during the event.",
         "campaign": "Campaign raids also earn points in this event; they are planned in the farm list below.",
         "syncedAt": "Tokens from your sync {{when}}, assuming you spend them before your buckets fill up.",
         "syncUnknown": "Your sync time is unknown, so tokens are counted from now, assuming you spend them before your buckets fill up.",

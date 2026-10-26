@@ -48,6 +48,7 @@ import { GoalsProjectScope } from "./goals-project-scope"
 import { useGoalsProjectScope } from "@/features/goal-planning"
 import { buildCascadeContext } from "./goal-row-utils"
 import { GoalEditDialog } from "@/features/goal-create"
+import { PageTourButton } from "@/shared/tour"
 import { useGoalsOverviewTutorial } from "./goals-page.tutorial"
 
 /**
@@ -451,6 +452,8 @@ export function GoalsPage() {
       <GoalEditDialog
         goalId={editGoalId}
         onOpenChange={(open) => !open && closeEditGoal()}
+        onOpenGoal={openEditGoal}
+        headerAction={<PageTourButton />}
       />
       {settingsOpen ? (
         <PlanningSettingsDialog open onOpenChange={setSettingsOpen} />

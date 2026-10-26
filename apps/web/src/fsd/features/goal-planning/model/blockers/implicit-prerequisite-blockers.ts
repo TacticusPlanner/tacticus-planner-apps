@@ -44,16 +44,28 @@ function coveringAscensionGoal(
   )
 }
 
-function conflictingAscensionGoalId(
-  goals: readonly GoalDetail[],
-  entityId: string
-) {
-  return goals.find(
-    (goal) =>
-      goal.entityId === entityId &&
-      goal.goalType === "Ascension" &&
-      (goal.status === "Active" || goal.status === "Paused")
-  )?.goalId
+/** The highest-ending in-flight Ascension goal of the unit — called only once none covers the need, so
+ *  it ends too low. It stays a milestone of its own (goal-milestone-planning): the remedy offers to
+ *  review it beside creating a covering Ascension milestone (`prerequisitePrefill`). */
+function tooLowAscensionGoalId(goals: readonly GoalDetail[], entityId: string) {
+  let highest: GoalDetail | undefined
+  for (const goal of goals) {
+    if (
+      goal.entityId !== entityId ||
+      goal.goalType !== "Ascension" ||
+      (goal.status !== "Active" && goal.status !== "Paused")
+    ) {
+      continue
+    }
+    if (
+      !highest ||
+      progressionIndex(goal.config.progression?.end as Progression) >
+        progressionIndex(highest.config.progression?.end as Progression)
+    ) {
+      highest = goal
+    }
+  }
+  return highest?.goalId
 }
 
 function coveringUnlockGoal(goals: readonly GoalDetail[], entityId: string) {
@@ -121,10 +133,7 @@ export function implicitPrerequisiteBlockers(params: {
     reasons.push({
       kind: "MissingAscensionPrerequisite",
       requiredProgression,
-      existingGoalId: conflictingAscensionGoalId(
-        prerequisiteGoals,
-        detail.entityId
-      ),
+      existingGoalId: tooLowAscensionGoalId(prerequisiteGoals, detail.entityId),
     })
   }
 

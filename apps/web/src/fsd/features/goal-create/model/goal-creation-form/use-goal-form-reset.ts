@@ -14,6 +14,7 @@ import type {
 } from "./use-create-goal-form"
 import type { useAcquisitionSourceSelection } from "./use-acquisition-source-selection"
 import type { useUpgradeFields } from "./use-upgrade-fields"
+import type { useGoalMilestones } from "./use-goal-milestones"
 
 type EntityType = "Character" | "Mow"
 
@@ -28,6 +29,7 @@ export function useGoalFormReset(params: {
   ascensionFields: ReturnType<typeof useAscensionFields>
   abilityFields: ReturnType<typeof useAbilityFields>
   upgradeFields: ReturnType<typeof useUpgradeFields>
+  milestoneFields: ReturnType<typeof useGoalMilestones>
   acquisitionSourceSelection: ReturnType<typeof useAcquisitionSourceSelection>
   projectSelection: ReturnType<typeof useProjectSelection>
   setFarmingStrategy: (value: FarmingStrategy) => void
@@ -68,6 +70,7 @@ export function useGoalFormReset(params: {
     params.ascensionFields.reset()
     params.abilityFields.reset()
     params.upgradeFields.reset()
+    params.milestoneFields.reset()
     params.setFarmingStrategy("TotalUpgrades")
     params.acquisitionSourceSelection.reset()
   }

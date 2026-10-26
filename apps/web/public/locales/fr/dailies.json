@@ -334,7 +334,7 @@
         },
         "projection": {
           "title": "Projection des points",
-          "content": "Les jetons d'Arène, d'Onslaught et de Course au pillage que vous pouvez encore utiliser avant la fin de l'événement, la moyenne qu'il faut à chacun pour atteindre le dernier palier et où mènent vos propres moyennes. Modifiez les moyennes ; elles sont mémorisées pour cet événement."
+          "content": "Les jetons d'Arène, d'Onslaught et de Course au pillage que vous pouvez encore utiliser avant la fin de l'événement, la moyenne qu'il faut à chacun pour atteindre le dernier palier et où mènent vos propres moyennes. Modifiez les moyennes ; elles sont mémorisées pour cet événement. Les jetons d'Arène de tournoi ne sont pas synchronisés : saisissez les vôtres quand l'événement y rapporte des points."
         },
         "teams": {
           "title": "Équipes de l'événement",
@@ -378,7 +378,11 @@
         },
         "pace": {
           "title": "Rythme de l'événement",
-          "content": "Saisissez vos points d'événement et votre rang pour estimer la monnaie, le niveau de coffre et les fragments, et choisissez un objectif pour voir les points par jour nécessaires."
+          "content": "Saisissez vos points d'événement et votre rang, et si vous voulez ce que vous avez maintenant, pour estimer la monnaie, le niveau de coffre et les fragments, et choisissez un objectif pour voir les points par jour nécessaires."
+        },
+        "paceSummary": {
+          "title": "Le rythme en un coup d'œil",
+          "content": "Vos points, où ils mènent et le palier atteint. Touchez Détails pour saisir vos points, votre rang et ce que vous avez, et choisir un objectif."
         }
       }
     },
@@ -625,9 +629,9 @@
       },
       "lines": {
         "xp": "{{units}} gagnent {{multiplier}}x d'XP {{modes}}",
-        "xpTeam": "{{units}} gagnent {{multiplier}}x d'XP {{modes}} quand toute l'équipe est d'une seule faction",
+        "xpTeam": "{{units}} gagnent +{{bonusPct}} % d'XP {{modes}} pour chaque personnage allié déployé de la même faction",
         "xpByRarity": "{{units}} gagnent de l'XP bonus selon la rareté ({{rates}}) {{modes}}",
-        "xpByRarityTeam": "{{units}} gagnent de l'XP bonus selon la rareté ({{rates}}) {{modes}} quand toute l'équipe est d'une seule faction",
+        "xpByRarityTeam": "{{units}} gagnent de l'XP bonus selon la rareté ({{rates}}) {{modes}} pour chaque personnage allié déployé de la même faction",
         "stat": "{{units}} ont +{{health}} % de santé, +{{damage}} % de dégâts et +{{armour}} % d'armure {{modes}}",
         "kill_one": "Vous gagnez {{count}} point pour chaque {{enemy}} vaincue {{modes}}",
         "kill_other": "Vous gagnez {{count}} points pour chaque {{enemy}} vaincue {{modes}}",
@@ -635,10 +639,10 @@
         "killWith_other": "Vous gagnez {{count}} points pour chaque {{enemy}} vaincue avec {{player}} {{modes}}",
         "waves_one": "Vous gagnez {{count}} point pour chaque vague vaincue {{modes}}",
         "waves_other": "Vous gagnez {{count}} points pour chaque vague vaincue {{modes}}",
-        "factionMajority_one": "Vous gagnez {{count}} point pour chaque combat {{modes}} où la plupart des unités déployées sont d'une seule faction",
-        "factionMajority_other": "Vous gagnez {{count}} points pour chaque combat {{modes}} où la plupart des unités déployées sont d'une seule faction",
-        "fullLineUp_one": "Vous gagnez {{count}} point pour chaque combat {{modes}} où toute votre formation est d'une seule faction",
-        "fullLineUp_other": "Vous gagnez {{count}} points pour chaque combat {{modes}} où toute votre formation est d'une seule faction",
+        "factionMajority_one": "Vous gagnez {{count}} point {{modes}} pour chaque personnage déployé de la faction la plus représentée dans votre composition",
+        "factionMajority_other": "Vous gagnez {{count}} points {{modes}} pour chaque personnage déployé de la faction la plus représentée dans votre composition",
+        "fullLineUp_one": "Vous gagnez {{count}} point bonus pour chaque combat {{modes}} où toute votre composition appartient à une seule faction",
+        "fullLineUp_other": "Vous gagnez {{count}} points bonus pour chaque combat {{modes}} où toute votre composition appartient à une seule faction",
         "donateUpgrade_one": "Vous gagnez {{count}} point pour chaque amélioration donnée à un membre de la guilde",
         "donateUpgrade_other": "Vous gagnez {{count}} points pour chaque amélioration donnée à un membre de la guilde",
         "donateUpgradeByRarity": "Vous gagnez des points pour chaque amélioration donnée à un membre de la guilde : {{rates}}",
@@ -707,6 +711,7 @@
       "averageNeeded": "Saisissez une moyenne",
       "tokensValue_one": "{{count}} jeton",
       "tokensValue_other": "{{count}} jetons",
+      "tokensLabel": "Jetons pour {{mode}}",
       "projected": "Points projetés",
       "projectedValue": "{{points}} pts",
       "needAverage": "Saisissez une moyenne pour chaque mode pour voir les points projetés.",
@@ -720,7 +725,8 @@
         "summed": "{{mode}} : {{count}} règles de points s'appliquent, donc « {{perUnit}} » suppose que chacune les remplit toutes.",
         "locked": "Pas encore débloqué, ignoré : {{modes}}.",
         "enemyRestricted": "Seuls certains ennemis comptent (voir les détails de l'événement) : saisissez votre moyenne d'éliminations qui comptent.",
-        "battles": "Les modes de combat rapportent une fois par jeton : un combat par jeton.",
+        "battles": "Les modes de combat rapportent une fois par jeton, en supposant une composition complète de cinq personnages d’une seule faction : points par personnage plus le bonus de composition complète.",
+        "manualTokens": "{{modes}} : les jetons ne sont pas synchronisés depuis le jeu ; saisissez combien vous en dépenserez pendant l’événement.",
         "campaign": "Les raids de campagne rapportent aussi des points dans cet événement ; ils sont planifiés dans la liste de farm ci-dessous.",
         "syncedAt": "Jetons issus de votre synchronisation {{when}}, en supposant que vous les dépensez avant que vos réserves soient pleines.",
         "syncUnknown": "L'heure de votre synchronisation est inconnue, les jetons sont donc comptés à partir de maintenant, en supposant que vous les dépensez avant que vos réserves soient pleines.",

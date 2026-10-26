@@ -1,9 +1,5 @@
-import { rankIndex, type UnitId } from "@workspace/game-domain"
-import {
-  rankTargetKey,
-  type GoalKind,
-  type ProjectMembership,
-} from "@/entities/goal"
+import type { UnitId } from "@workspace/game-domain"
+import { goalTargetKeyOf, type ProjectMembership } from "@/entities/goal"
 import type { ProjectSummary } from "@/entities/project"
 import { useTranslation } from "react-i18next"
 import { useUnitName } from "@/shared/unit-name"
@@ -32,12 +28,13 @@ export function useGoalSubmission({
   canSubmit,
   projects,
   selectedProjectIds,
-  goalTypes,
   dailyEnergy,
   inventoryUpgrades,
   open,
   specParams,
   startPaused,
+  notes,
+  position,
   snapshotContext,
   onOpenChange,
   resetForm,
@@ -47,33 +44,30 @@ export function useGoalSubmission({
   canSubmit: boolean
   projects: ProjectSummary[]
   selectedProjectIds: string[]
-  goalTypes: GoalKind[]
   dailyEnergy: number
   inventoryUpgrades:
     readonly { upgradeId: string; amount: number }[] | undefined
   open: boolean
   specParams: SpecParams
   startPaused: boolean
+  notes?: Parameters<typeof useGoalSubmit>[0]["notes"]
+  position?: number | null
   snapshotContext: SnapshotContext
   onOpenChange: (open: boolean) => void
   resetForm: () => void
 }) {
   const { t } = useTranslation()
   const getUnitName = useUnitName()
-  // The in-flight slot is per account, whatever projects the goal joins. A Rank goal only conflicts with
-  // an in-flight Rank goal at the same normalized end target — distinct targets coexist
-  // (rank-milestones), so the check needs the target being created.
+  // The in-flight slot is per account, whatever projects the goal joins. Each goal about to be created
+  // conflicts only with an in-flight goal of the same unit and type at the same normalized end target —
+  // distinct targets coexist (goal-target-milestones), so every spec of the request is checked.
   const slotConflict = useGoalSlotConflict({
     entityType,
     entityId,
-    goalTypes,
-    rankTargetKey: goalTypes.includes("Rank")
-      ? rankTargetKey({
-          end: rankIndex(specParams.rankEnd),
-          endPointFive: specParams.rankEndPointFive,
-          endAppliedUpgrades: specParams.rankEndAppliedUpgrades ?? 0,
-        })
-      : null,
+    candidates: buildCombinedGoalSpecs(specParams).map((spec) => ({
+      goalType: spec.goalType,
+      targetKey: goalTargetKeyOf(spec),
+    })),
   })
   const submissionAllowed =
     canSubmit && !slotConflict.loading && !slotConflict.conflict
@@ -98,6 +92,8 @@ export function useGoalSubmission({
     selectedProjects,
     specParams,
     startPaused,
+    notes,
+    position,
     snapshotContext,
     onOpenChange,
     resetForm,
@@ -106,15 +102,21 @@ export function useGoalSubmission({
   return {
     ...submission,
     canSubmit: submissionAllowed,
-    slotConflictMessage: slotConflict.conflict
-      ? projectConflictText(
-          t,
-          slotConflict.conflict,
-          getUnitName(
-            slotConflict.conflict.entityType,
-            slotConflict.conflict.entityId
-          )
-        )
+    // Shown in the conflicting goal type's card, under its target.
+    slotConflictIssue: slotConflict.conflict
+      ? {
+          kind: slotConflict.conflict.goalType,
+          field: "target",
+          code: "slotConflict",
+          message: projectConflictText(
+            t,
+            slotConflict.conflict,
+            getUnitName(
+              slotConflict.conflict.entityType,
+              slotConflict.conflict.entityId
+            )
+          ),
+        }
       : null,
     perProjectEstimates,
     estimatedProjectIds,

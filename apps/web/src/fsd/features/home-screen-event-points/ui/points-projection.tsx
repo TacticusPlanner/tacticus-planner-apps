@@ -20,7 +20,11 @@ import type {
   HseEventPointsState,
   HseProjectionView,
 } from "../model/hse-event-points"
-import { AverageInput, ProgressInput } from "./points-projection-inputs"
+import {
+  AverageInput,
+  ProgressInput,
+  TokensCell,
+} from "./points-projection-inputs"
 import { useModeName } from "./use-mode-name"
 
 type ReadyProjection = Extract<HseProjectionView, { status: "ready" }>
@@ -116,6 +120,7 @@ function ReadyProjectionBody({
             <span className="flex flex-col gap-1.5">
               <span className="flex flex-wrap items-center gap-1.5">
                 <ProgressInput
+                  describedBy="hse-progress-hint"
                   label={t("hse.projection.milestonesDoneLabel")}
                   max={view.milestones.max ?? undefined}
                   onChange={(milestonesDone) =>
@@ -140,6 +145,7 @@ function ReadyProjectionBody({
               ) : (
                 <span className="flex flex-wrap items-center gap-1.5">
                   <ProgressInput
+                    describedBy="hse-progress-hint"
                     label={t("hse.projection.pointsInMilestoneLabel")}
                     max={view.milestones.currentPoints}
                     onChange={(pointsInMilestone) =>
@@ -241,7 +247,7 @@ function ReadyProjectionBody({
     </dl>
   )
 
-  const notes: { id: string; text: string }[] = [
+  const notes: { id: string; text: string; hintId?: string }[] = [
     ...projection.modes
       .filter((mode) => mode.trackerCount > 1)
       .map((mode) => ({
@@ -259,6 +265,21 @@ function ReadyProjectionBody({
           {
             id: "locked",
             text: t("hse.projection.notes.locked", { modes: lockedList }),
+          },
+        ]
+      : []),
+    ...(projection.modes.some((mode) => mode.manualTokens)
+      ? [
+          {
+            id: "manual-tokens",
+            hintId: "hse-manual-tokens-hint",
+            text: t("hse.projection.notes.manualTokens", {
+              modes: listFormat.format(
+                projection.modes
+                  .filter((mode) => mode.manualTokens)
+                  .map((mode) => modeName(mode.mode))
+              ),
+            }),
           },
         ]
       : []),
@@ -297,9 +318,13 @@ function ReadyProjectionBody({
             >
               <div className="flex items-baseline justify-between gap-2">
                 <span className="font-medium">{modeName(mode.mode)}</span>
-                <span className="text-sm text-muted-foreground tabular-nums">
-                  {t("hse.projection.tokensValue", { count: mode.tokens })}
-                </span>
+                {mode.manualTokens ? (
+                  <TokensCell mode={mode} onChange={inputs.setTokens} />
+                ) : (
+                  <span className="text-sm text-muted-foreground tabular-nums">
+                    {t("hse.projection.tokensValue", { count: mode.tokens })}
+                  </span>
+                )}
               </div>
               <div className="flex items-center justify-between gap-2 text-sm">
                 <AverageInput mode={mode} onChange={inputs.setAverage} />
@@ -340,7 +365,7 @@ function ReadyProjectionBody({
                   {modeName(mode.mode)}
                 </TableCell>
                 <TableCell className="text-right tabular-nums">
-                  {numbers.format(mode.tokens)}
+                  <TokensCell mode={mode} onChange={inputs.setTokens} />
                 </TableCell>
                 <TableCell>
                   <AverageInput mode={mode} onChange={inputs.setAverage} />
@@ -363,7 +388,11 @@ function ReadyProjectionBody({
         data-testid="hse-projection-notes"
       >
         {notes.map((note) => (
-          <li data-testid={`hse-projection-note-${note.id}`} key={note.id}>
+          <li
+            data-testid={`hse-projection-note-${note.id}`}
+            id={note.hintId}
+            key={note.id}
+          >
             {note.text}
           </li>
         ))}

@@ -141,6 +141,7 @@ export function aggregateShopNeeds(
       unlockShardCostsById: params.unlockShardCostsById,
       coveredAbilityTransitions: coverage,
       coveredRankSlots: coverage.rankSlots,
+      ascensionCoverage: coverage,
     }
 
     // Mythic uncraftable materials — from the per-stage material needs when the goal is staged,

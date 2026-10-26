@@ -1,7 +1,10 @@
 import { describe, expect, it } from "vitest"
 
+import type { TokenPlanView } from "@/features/legendary-event-tokens"
+
 import {
   bestStepWithinReach,
+  ceilingOf,
   stepTargets,
   stepVerdict,
   type StepTarget,
@@ -12,7 +15,12 @@ import {
   teamSwaps,
 } from "./plan-evaluator"
 import { MAX_PLAN_TEAMS_PER_LANE, storedDrafts } from "./plan-teams"
-import { chosenFrom, recommendUpgradesNow } from "./plan-upgrades"
+import {
+  chosenFrom,
+  recommendUpgrades,
+  recommendUpgradesNow,
+} from "./plan-upgrades"
+import { runSliced, type SliceClock } from "./run-sliced"
 import { EMPTY_PLAN, NOW_MS, RUN_3_START_MS, planInputs } from "./plan.fixtures"
 import type { LegendaryEventTeam } from "@/entities/legendary-event"
 
@@ -31,6 +39,23 @@ describe("team generation", () => {
     expect(alpha.every((team) => team.storedId === null)).toBe(true)
     expect(alpha[0]!.depthByRun[2]).toBeGreaterThan(0)
     expect(ceiling).toBeGreaterThan(0)
+  })
+
+  it("measures the ceiling at the end of the horizon run", () => {
+    const view = {
+      kind: "ready",
+      forecast: {
+        runs: [
+          { run: 2, endingPoints: 9000 },
+          { run: 3, endingPoints: 15_000 },
+        ],
+      },
+    } as unknown as TokenPlanView
+    expect(ceilingOf(view, 2)).toBe(9000)
+    expect(ceilingOf(view, 3)).toBe(15_000)
+    expect(ceilingOf(view)).toBe(15_000)
+    // A horizon before the forecast's first run reads that run.
+    expect(ceilingOf(view, 1)).toBe(9000)
   })
 
   it("keeps the user's teams first", () => {
@@ -191,6 +216,57 @@ describe("upgrade recommendations", () => {
       (entry) => entry.readyMs
     )
     expect(ready).toEqual(result.recommendations.map((entry) => entry.readyMs))
+  })
+
+  it("gives the same result run in slices as in one go", () => {
+    const inputs = planInputs()
+    const input = {
+      ...base,
+      inputs,
+      targetPoints: Number.POSITIVE_INFINITY,
+      farmingDays: (_: string, steps: readonly unknown[]) => steps.length * 10,
+      cap: 4,
+    }
+    const whole = recommendUpgradesNow({
+      ...input,
+      evaluator: createPlanEvaluator(inputs, economy),
+    })
+    // A clock where every step overruns its slice, and slices run on demand.
+    let time = 0
+    const queue: (() => void)[] = []
+    const clock: SliceClock = {
+      now: () => ++time,
+      schedule: (work) => {
+        queue.push(() => work(time))
+        return () => undefined
+      },
+      scheduleIdle: (work) => {
+        queue.push(() => work(time))
+        return () => undefined
+      },
+    }
+    let sliced: ReturnType<typeof recommendUpgradesNow> | null = null
+    let slices = 0
+    runSliced(
+      recommendUpgrades({
+        ...input,
+        evaluator: createPlanEvaluator(inputs, economy),
+      }),
+      {
+        clock,
+        onYield: () => undefined,
+        onDone: (value) => {
+          sliced = value
+        },
+      }
+    )
+    while (queue.length > 0) {
+      queue.shift()!()
+      slices++
+    }
+    expect(slices).toBeGreaterThan(whole.recommendations.length)
+    expect(sliced!.recommendations).toEqual(whole.recommendations)
+    expect(sliced!.final.ceiling).toBe(whole.final.ceiling)
   })
 
   it("drops a step ready after the last run starts", () => {

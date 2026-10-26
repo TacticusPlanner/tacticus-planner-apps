@@ -52,6 +52,7 @@ export function RarityCombobox<TId extends string>({
   placeholder,
   emptyText,
   renderIcon,
+  triggerProps,
 }: {
   items: RarityComboboxItem<TId>[]
   value?: TId
@@ -61,6 +62,12 @@ export function RarityCombobox<TId extends string>({
   /** Optional per-item leading visual — the combobox reserves no fixed avatar slot itself, since
    * callers need different shapes (a layered `UpgradeIcon`, a generic fallback for Equipment, …). */
   renderIcon?: (id: TId) => ReactNode
+  /** Extra trigger attributes, e.g. an id and `aria-invalid`/`aria-describedby` for a form issue. */
+  triggerProps?: {
+    id?: string
+    "aria-invalid"?: boolean
+    "aria-describedby"?: string
+  }
 }) {
   const { t } = useTranslation(["progression"])
   const [open, setOpen] = useState(false)
@@ -143,7 +150,8 @@ export function RarityCombobox<TId extends string>({
           aria-expanded={open}
           aria-controls={listId}
           aria-label={placeholder}
-          className="w-full justify-between sm:w-72"
+          className="w-full justify-between"
+          {...triggerProps}
         >
           <span className="flex min-w-0 items-center gap-2">
             {selected && renderIcon ? renderIcon(selected.id) : null}
@@ -154,7 +162,11 @@ export function RarityCombobox<TId extends string>({
           <ChevronsUpDown className="shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-72 p-0" container={portalContainer}>
+      {/* As wide as the trigger (at least 20rem), with wrapping names, so none is cut off. */}
+      <PopoverContent
+        className="w-(--radix-popover-trigger-width) min-w-80 p-0"
+        container={portalContainer}
+      >
         <Command shouldFilter={false}>
           <CommandInput
             placeholder={placeholder}
@@ -177,7 +189,9 @@ export function RarityCombobox<TId extends string>({
                     className="gap-2"
                   >
                     {renderIcon ? renderIcon(item.id) : null}
-                    <span className="min-w-0 flex-1 truncate">{item.name}</span>
+                    <span className="min-w-0 flex-1 break-words">
+                      {item.name}
+                    </span>
                     {item.meta}
                     <Check
                       className={cn(

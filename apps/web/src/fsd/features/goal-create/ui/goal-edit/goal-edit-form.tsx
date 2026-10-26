@@ -1,11 +1,15 @@
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { useQuery } from "@tanstack/react-query"
 import { useIsAuthenticated } from "@azure/msal-react"
 import { Button } from "@workspace/ui/components/button"
 import { Spinner } from "@workspace/ui/components/spinner"
 
-import { useGlobalGoalPlan, type GoalDetail } from "@/entities/goal"
+import {
+  goalTargetKeyOf,
+  useGlobalGoalPlan,
+  type GoalDetail,
+} from "@/entities/goal"
 import { usePlanningSettings } from "@/entities/planning-setting"
 import { projectQueries } from "@/entities/project"
 import { ResponsiveDialogBody, ResponsiveDialogFooter } from "@/shared/ui"
@@ -24,12 +28,22 @@ import { useGoalEditSave } from "../../model/goal-edit/use-goal-edit-save"
 import { useGoalLocationGroups } from "@/features/goal-planning/@x/goal-create"
 import { useGoalCatalog } from "@/features/goal-planning/@x/goal-create"
 import { getChangedGoalTargetIssue } from "../../model/target-edit/goal-target-edit"
+import { goalEditIssues } from "../../model/goal-edit/goal-edit-issues"
+import { useTakenTargets } from "../../model/goal-creation-form/first-free-target"
 import { GoalProjectsField } from "../projects/goal-projects-field"
 import { GoalEditError } from "./goal-edit-error"
 import { GoalEditFarmingFields, GoalEditNotesField } from "./goal-edit-fields"
 import { GoalEditPriorityField } from "./goal-edit-priority-field"
 import { MythicMaterialSourceField } from "../create-goal/mythic-material-source-field"
 import { GoalEditTarget } from "./goal-edit-target"
+import { GoalEditCard } from "./goal-edit-card"
+import { useGoalEditEstimate } from "./use-goal-edit-estimate"
+import { usePlayerChunk } from "@/shared/local-data"
+import {
+  chunkOrUndefined,
+  readyData,
+} from "@/features/goal-planning/@x/goal-create"
+import { abilityCapForProgression, isProgression } from "@workspace/game-domain"
 
 /**
  * The Edit goal form (body + footer): one `GoalEditDraft` for every editable field and one Save that
@@ -38,16 +52,30 @@ import { GoalEditTarget } from "./goal-edit-target"
  * revision keeps the owner's edits. Mounted only once the goal (and, for source pickers, the catalog)
  * has loaded, so the acquisition picker seeds from the saved goal.
  */
+/** The unit's current progression, for the Ability card's "Rarity cap": the synced roster entry, else
+ * where the goal started. */
+function useUnitProgression(detail: GoalDetail) {
+  const characters = readyData(usePlayerChunk("characters", chunkOrUndefined))
+  const mows = readyData(usePlayerChunk("mows", chunkOrUndefined))
+  const roster = detail.entityType === "Mow" ? mows : characters
+  const synced = roster?.find((unit) => unit.unitId === detail.entityId)
+  if (synced) return synced.progressionIndex
+  const start = detail.config.progression?.start
+  return start && isProgression(start) ? start : "Common:None"
+}
+
 export function GoalEditForm({
   detail,
   portalContainer,
   onDirtyChange,
+  onOpenGoal,
   onRequestClose,
   onSaved,
 }: {
   detail: GoalDetail
   portalContainer: HTMLElement | null
   onDirtyChange: (dirty: boolean) => void
+  onOpenGoal?: (goalId: string) => void
   onRequestClose: () => void
   onSaved: () => void
 }) {
@@ -69,6 +97,18 @@ export function GoalEditForm({
     dailyEnergy: planningSettings.dailyEnergy,
   })
   const saver = useGoalEditSave({ goalId: detail.goalId, onSaved })
+  const inventoryUpgrades = readyData(
+    usePlayerChunk("inventory-upgrades", chunkOrUndefined)
+  )
+  const ownedQuantities = useMemo(
+    () =>
+      inventoryUpgrades
+        ? new Map(
+            inventoryUpgrades.map((entry) => [entry.upgradeId, entry.amount])
+          )
+        : undefined,
+    [inventoryUpgrades]
+  )
 
   const inFlightIds = plan.inFlight.map((goal) => goal.goalId)
   const currentPosition = inFlightIds.indexOf(detail.goalId) + 1
@@ -114,6 +154,28 @@ export function GoalEditForm({
   const targetIssue = draft.target
     ? getChangedGoalTargetIssue(detail, draft.target)
     : null
+  const issues = (draft.target ? goalEditIssues(detail, draft.target) : []).map(
+    ({ kind, field, code, messageKey }) => ({
+      kind,
+      field,
+      code,
+      message: t(messageKey),
+    })
+  )
+  // Other in-flight goals' targets of this unit and kind; this goal's own stored target is free.
+  const { takenFor } = useTakenTargets(detail.entityType, detail.entityId)
+  const ownKey = goalTargetKeyOf(detail)
+  const takenKeys = new Set(
+    [...takenFor(detail.goalType)].filter((key) => key !== ownKey)
+  )
+  const previews = useGoalEditEstimate({
+    detail,
+    target: draft.target,
+    catalog,
+    acquisition,
+    dailyEnergy: planningSettings.dailyEnergy,
+  })
+  const unitProgression = useUnitProgression(detail)
 
   const changes = goalEditChanges(baseline, draft)
   const dirty = isGoalEditDirty(changes)
@@ -124,6 +186,27 @@ export function GoalEditForm({
     targetIssue === null &&
     overrideValid &&
     projectsValid
+
+  const sourcesField = (
+    <GoalEditFarmingFields
+      acquisition={acquisition}
+      allLocations={allLocations}
+      battlesById={catalog.battlesById}
+      detail={detail}
+      onLocationsChange={(farmingLocationIds) => edit({ farmingLocationIds })}
+      overrideValid={overrideValid}
+      selectedLocations={draft.farmingLocationIds}
+    />
+  )
+  const mythicField = (
+    <MythicMaterialSourceField selection={mythicMaterials} showSpend={false} />
+  )
+  const notesField = (
+    <GoalEditNotesField
+      notes={draft.notes}
+      onChange={(notes) => edit({ notes })}
+    />
+  )
 
   const save = () =>
     void saver.save(
@@ -151,17 +234,39 @@ export function GoalEditForm({
           className="grid content-start items-start gap-x-6 gap-y-3 pb-3 text-sm @2xl:grid-cols-2"
           data-testid="goal-edit-form"
         >
-          {draft.target ? (
+          {draft.target || detail.goalType === "Unlock" ? (
             <div className="col-span-full">
-              <GoalEditTarget
-                detail={detail}
-                draft={draft.target}
-                onChange={(target) => edit({ target })}
-                portalContainer={portalContainer}
-                upgradesById={catalog.upgradesById}
-              />
+              <GoalEditTarget detail={detail}>
+                <GoalEditCard
+                  detail={detail}
+                  draft={draft.target}
+                  farmingStrategy={draft.farmingStrategy}
+                  issues={issues}
+                  mythic={mythicField}
+                  note={notesField}
+                  onChange={(target) => edit({ target })}
+                  onFarmingStrategyChange={(farmingStrategy) =>
+                    edit({ farmingStrategy })
+                  }
+                  ownedQuantities={ownedQuantities}
+                  portalContainer={portalContainer}
+                  previews={previews}
+                  rarityCap={abilityCapForProgression(unitProgression)}
+                  sources={sourcesField}
+                  takenKeys={takenKeys}
+                  units={catalog}
+                  upgradesById={catalog.upgradesById}
+                />
+              </GoalEditTarget>
             </div>
-          ) : null}
+          ) : (
+            // A Completed or Archived goal keeps its preferences and notes, without a target to change.
+            <div className="col-span-full grid gap-3">
+              {sourcesField}
+              {mythicField}
+              {notesField}
+            </div>
+          )}
 
           {draft.priorityPosition !== null ? (
             <GoalEditPriorityField
@@ -172,11 +277,6 @@ export function GoalEditForm({
             />
           ) : null}
 
-          <GoalEditNotesField
-            notes={draft.notes}
-            onChange={(notes) => edit({ notes })}
-          />
-
           <GoalProjectsField
             onSelectionChange={(projectIds) => edit({ projectIds })}
             portalContainer={portalContainer}
@@ -184,29 +284,6 @@ export function GoalEditForm({
             projectsValid={projectsValid}
             selectedProjectIds={draft.projectIds}
           />
-
-          <GoalEditFarmingFields
-            acquisition={acquisition}
-            allLocations={allLocations}
-            battlesById={catalog.battlesById}
-            detail={detail}
-            farmingStrategy={draft.farmingStrategy}
-            onFarmingStrategyChange={(farmingStrategy) =>
-              edit({ farmingStrategy })
-            }
-            onLocationsChange={(farmingLocationIds) =>
-              edit({ farmingLocationIds })
-            }
-            overrideValid={overrideValid}
-            selectedLocations={draft.farmingLocationIds}
-          />
-
-          <div className="col-span-full">
-            <MythicMaterialSourceField
-              selection={mythicMaterials}
-              showSpend={false}
-            />
-          </div>
         </div>
       </ResponsiveDialogBody>
 
@@ -215,6 +292,7 @@ export function GoalEditForm({
           <div className="md:mr-auto">
             <GoalEditError
               error={saver.error}
+              onOpenGoal={onOpenGoal}
               onRefreshGoal={() => {
                 if (saver.error?.kind === "stale") {
                   saver.refreshGoal(saver.error.current)

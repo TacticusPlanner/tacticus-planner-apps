@@ -419,7 +419,9 @@
       "tierListDescription": "La liste des tiers du mode horde utilisée par les estimations de progression",
       "activeEventDescription": "Événement Légendaire en cours avec votre progression synchronisée",
       "upcomingEventDescription": "Événement Légendaire à venir",
-      "archivedEventDescription": "Événement Légendaire passé avec votre progression synchronisée"
+      "archivedEventDescription": "Événement Légendaire passé avec votre progression synchronisée",
+      "runStartsOn": "Commence le {{date}}",
+      "runEndsOn": "Se termine le {{date}}"
     }
   },
   "home": {
@@ -901,7 +903,8 @@
       "eventArchived_one": "+{{count}} archivé",
       "eventArchived_other": "+{{count}} archivés",
       "eventNoProject": "Aucun projet pour cet événement",
-      "eventOpenProjects": "Aller aux projets"
+      "eventOpenProjects": "Aller aux projets",
+      "membershipConflictTarget": "{{unit}} a déjà un objectif {{type}} actif ou en pause avec la cible {{target}}."
     },
     "toasts": {
       "statusConflict": "{{goal}} n'a pas pu être modifié : {{reason}}",
@@ -933,7 +936,9 @@
       "info": {
         "title": "État actuel",
         "shards": "Éclats",
-        "mythicShards": "Éclats mythiques"
+        "mythicShards": "Éclats mythiques",
+        "expand": "Afficher l'état actuel complet",
+        "levelShort": "Niveau {{level}}"
       },
       "goalTypeLabel": "Type d'objectif",
       "goalTypes": {
@@ -954,14 +959,16 @@
           "none": "Aucune",
           "topRow": "Rangée supérieure (rang et demi)",
           "row": "{{count}} sur {{total}} — Niveau {{level}}"
-        }
+        },
+        "noResources": "Il ne reste aucune amélioration à farmer pour cette plage."
       },
       "ascension": {
         "start": "Ascension actuelle",
         "end": "Ascension cible",
         "shards": "{{regular}} éclats · {{mythic}} éclats mythiques",
         "orbs": "orbes × {{count}}",
-        "combinedEstimate": "Durée combinée : {{days}} jours"
+        "combinedEstimate": "Durée combinée : {{days}} jours",
+        "resourceLine": "≈{{energy}} d'énergie ({{raids}} raids) · ≈{{days}} jours"
       },
       "acquisitionSources": {
         "label": "Sources d'acquisition",
@@ -979,7 +986,11 @@
         "shopOfferPossibleReward": "Une des nombreuses récompenses possibles pour cet emplacement",
         "shopOfferChance": "≈{{percent}}% de chance le {{days}}",
         "shopOfferDays": "Disponible {{days}}",
-        "ascensionOnlyMythicLabel": "Sources mythiques réservées à l'ascension"
+        "ascensionOnlyMythicLabel": "Sources mythiques réservées à l'ascension",
+        "toggleGroup": "Afficher ou masquer les options de {{group}}",
+        "shopOfferEveryDay": "Disponible tous les jours",
+        "shopOfferChanceEveryDay": "≈{{percent}} % de chances chaque jour",
+        "cheapestNode": "Aucun nœud coché : le nœud le moins coûteux pour les fragments nécessaires est utilisé."
       },
       "mythicMaterials": {
         "title": "Matériaux mythiques des boutiques",
@@ -997,7 +1008,17 @@
         "primaryStart": "Capacité principale, niveau actuel",
         "primaryTarget": "Capacité principale, niveau cible",
         "secondaryStart": "Capacité secondaire, niveau actuel",
-        "secondaryTarget": "Capacité secondaire, niveau cible"
+        "secondaryTarget": "Capacité secondaire, niveau cible",
+        "tracks": {
+          "active": "Active",
+          "passive": "Passive",
+          "primary": "Principale",
+          "secondary": "Secondaire"
+        },
+        "trackRange": "{{track}} {{start}} → {{end}}",
+        "trackLevel": "{{track}} {{level}}",
+        "noChange": "{{level}} (inchangé)",
+        "noResources": "Aucune amélioration n'est nécessaire pour les niveaux choisis."
       },
       "level": {
         "current": "Niveau actuel",
@@ -1036,7 +1057,8 @@
         "energyPerShard": "≈{{energy}} énergie par éclat",
         "remainingEnergy": "≈{{energy}} énergie pour obtenir les éclats restants",
         "energyValue": "≈{{energy}} énergie",
-        "daysValue": "≈{{days}} jours"
+        "daysValue": "≈{{days}} jours",
+        "unknownNode": "Nœud inconnu ({{id}})"
       },
       "unlock": {
         "ownedOfTotal": "{{owned}} / {{total}} éclats",
@@ -1058,7 +1080,10 @@
           "start": "{{label}} : début",
           "end": "{{label}} : fin",
           "unset": "Non défini"
-        }
+        },
+        "owned": "{{count}} possédés",
+        "alreadyMet": "Vous en possédez déjà autant : cet objectif est donc déjà atteint.",
+        "noResources": "Vous possédez déjà tous les matériaux dans ces quantités."
       },
       "previewTitle": "Ressources nécessaires",
       "showAll": "Tout afficher ({{count}})",
@@ -1082,19 +1107,24 @@
         "includeUnlock": "Inclure l'objectif de Déblocage suggéré",
         "includeAscension": "Inclure l'objectif d'Ascension suggéré",
         "unlockRequired": "requis, ce personnage n'est pas encore possédé",
-        "ascensionRequired": "requis pour atteindre le rang cible"
+        "ascensionRequired": "requis pour atteindre le rang cible",
+        "dependsOnExisting": "Dépend de votre objectif existant Ascension → {{target}}",
+        "unlockRequired_mow": "obligatoire, cette machine de guerre n'est pas encore possédée"
       },
       "validation": {
         "alreadyUnlocked": "Ce personnage est déjà débloqué.",
         "rankAlreadyReached": "Le rang sélectionné a déjà été atteint.",
         "progressionAlreadyReached": "L'ascension sélectionnée a déjà été atteinte.",
-        "abilityRange": "Au moins une capacité doit augmenter, et aucune plage ne peut diminuer.",
+        "abilityRange": "Augmentez au moins une compétence au-dessus de son niveau actuel.",
         "abilityAlreadyReached": "Les niveaux de capacité sélectionnés ont déjà été atteints.",
         "upgradeTargetsRequired": "Sélectionnez au moins une amélioration à farmer pour l'objectif d'amélioration.",
         "rankMaxed": "Ce personnage a déjà atteint le rang maximum.",
         "progressionMaxed": "Cette unité a déjà atteint le niveau d'ascension maximum.",
         "abilityMaxed": "Les capacités de cette unité ont déjà atteint le niveau maximum pour sa rareté actuelle.",
-        "activeOrPausedGoalExists": "Un objectif {{goalType}} actif ou en pause existe déjà pour cette unité."
+        "activeOrPausedGoalExists": "Un objectif {{goalType}} actif ou en pause existe déjà pour cette unité.",
+        "upgradeQuantity": "Saisissez un nombre entier de 1 à 10 000.",
+        "alreadyUnlocked_mow": "Cette machine de guerre est déjà débloquée.",
+        "abilityOutOfRange": "Choisissez un niveau entre le niveau actuel et 60."
       },
       "startPaused": "Créer en pause",
       "startPausedHint": "Reste hors de la planification quotidienne jusqu'à sa reprise.",
@@ -1102,6 +1132,50 @@
         "title": "Nécessite le niveau {{required}} (actuellement {{current}})",
         "xpRemaining": "Il reste {{xp}} XP à gagner",
         "note": "À titre indicatif : cela fait partie de l'objectif, ce n'est pas un objectif distinct et il ne le bloque jamais."
+      },
+      "milestones": {
+        "add": "Ajouter une étape",
+        "label": "Étape {{number}}",
+        "remove": "Retirer l'étape {{number}}",
+        "hint": "Chaque étape devient un objectif à part entière, après la précédente.",
+        "notAbove": "Chaque étape doit être au-dessus de la précédente."
+      },
+      "unlockUnavailable_mow": "Le déblocage est indisponible, car cette machine de guerre n'a aucun lieu d'obtention de fragments dans le catalogue.",
+      "unlockDescription_mow": "Cet objectif est atteint dès que la machine de guerre est débloquée.",
+      "unlockExistingGoal": "Il existe déjà un objectif de déblocage pour cette unité.",
+      "openGoal": "Ouvrir",
+      "takenTarget": "Déjà un objectif",
+      "issues": {
+        "summary_one": "{{count}} problème à corriger",
+        "summary_other": "{{count}} problèmes à corriger",
+        "count_one": "{{count}} problème",
+        "count_other": "{{count}} problèmes",
+        "title": "Corrigez ceci pour créer les objectifs"
+      },
+      "review": {
+        "prerequisite": "prérequis",
+        "estimateAfterFix": "l'estimation s'affiche une fois les problèmes corrigés",
+        "projectDone": "terminé dans ≈ {{days}} jours",
+        "upgradesToFarm_one": "{{count}} amélioration à farmer",
+        "upgradesToFarm_other": "{{count}} améliorations à farmer",
+        "days": "≈ {{days}} jours"
+      },
+      "previewLoading": "Calcul des ressources…",
+      "previewFailed": "Les ressources n'ont pas pu être calculées.",
+      "emptyTypes": "Choisissez un type d'objectif ci-dessus pour commencer.",
+      "notes": {
+        "add": "Ajouter une note"
+      },
+      "priorityHint": "L'emplacement des nouveaux objectifs dans votre ordre de priorité.",
+      "priorityLast": "{{position}} sur {{total}} (dernier)",
+      "steps": {
+        "label": "Étapes de création d’un objectif",
+        "position": "Étape {{position}} sur {{total}} :",
+        "unit": "Unité",
+        "goals": "Objectifs",
+        "review": "Vérification",
+        "back": "Retour",
+        "next": "Suivant"
       }
     },
     "estimate": {
@@ -1142,7 +1216,8 @@
       "projectGuidancePreview": "Aperçu — pas le programme des Dailies d'aujourd'hui",
       "projectGuidanceSummary_one": "{{count}} matériau encore nécessaire pour les objectifs de ce projet.",
       "projectGuidanceSummary_other": "{{count}} matériaux encore nécessaires pour les objectifs de ce projet.",
-      "projectGuidanceNone": "Rien à farmer pour ce projet."
+      "projectGuidanceNone": "Rien à farmer pour ce projet.",
+      "farmingEmpty": "Il n'y a aucun lieu à choisir pour cet objectif."
     },
     "resourceChips": {
       "energy": "Énergie",
@@ -1211,7 +1286,8 @@
       "reachableCeilingLevelLabel": "Actuellement atteignable : niveau {{level}}",
       "reachableCeilingReasonRarity": "limité par la rareté",
       "reachableCeilingReasonLevel": "limité par le niveau",
-      "reachableCeilingReasonBoth": "limité par la rareté et le niveau"
+      "reachableCeilingReasonBoth": "limité par la rareté et le niveau",
+      "coveredBy": "Couvert par l'objectif {{type}} → {{target}}"
     },
     "insights": {
       "selectProject": "Sélectionnez un projet",
@@ -1249,16 +1325,12 @@
       "secondaryEnd": "Capacité secondaire, niveau cible",
       "quantity": "Quantité cible",
       "issues": {
-        "rankNotAboveStart": "Choisissez un rang supérieur à celui de départ de cet objectif.",
-        "progressionNotAboveStart": "Choisissez une étape supérieure à celle de départ de cet objectif.",
-        "abilityBelowStart": "L'objectif d'une capacité ne peut pas être inférieur à son niveau de départ.",
-        "abilityNoAdvance": "Augmentez au moins une capacité au-dessus de son point de départ.",
-        "abilityAboveMax": "Ce niveau dépasse le niveau maximal de capacité.",
-        "upgradeQuantity": "Chaque quantité doit être un nombre entier de 1 à 10 000.",
-        "upgradeEmpty": "Un objectif d'améliorations nécessite au moins un matériau.",
         "upgradeRange": "Choisissez une plage qui se termine au-dessus de son début."
       },
-      "reachedNote": "Un objectif déjà atteint est valide : il n'a plus besoin de rien et garde son statut jusqu'à ce que vous le terminiez."
+      "reachedNote": "Un objectif déjà atteint est valide : il n'a plus besoin de rien et garde son statut jusqu'à ce que vous le terminiez.",
+      "upgradeMaterials_one": "{{count}} matériau",
+      "upgradeMaterials_other": "{{count}} matériaux",
+      "removeLast": "Un objectif d'amélioration nécessite au moins un matériau."
     },
     "order": {
       "conflictTitle": "Le plan a changé",
@@ -1305,6 +1377,35 @@
         "projects": "projets",
         "priority": "priorité",
         "unknown": "une saisie"
+      },
+      "openConflict": "Ouvrir cet objectif",
+      "estimate": {
+        "title": "Estimation pour cette cible",
+        "days": "≈ {{days}} jours depuis le point de départ de cet objectif",
+        "loading": "Calcul de l'estimation…",
+        "failed": "L'estimation n'a pas pu être calculée.",
+        "nothing": "Il ne reste rien à farmer pour cette cible."
+      }
+    },
+    "card": {
+      "ladder": {
+        "current": "Actuel",
+        "taken": "Déjà un objectif"
+      },
+      "range": {
+        "span": "{{start}} → {{end}}",
+        "materials_one": "{{count}} matériau à farmer",
+        "materials_other": "{{count}} matériaux à farmer",
+        "nothing": "plus rien à farmer"
+      },
+      "ability": {
+        "next": "Suivant",
+        "plusFive": "+5",
+        "rarityCap": "Plafond de rareté",
+        "decrease": "Baisser {{track}}",
+        "increase": "Augmenter {{track}}",
+        "noChange": "Aucun changement",
+        "quickPicks": "{{track}} : choix rapides"
       }
     }
   },
@@ -1436,7 +1537,7 @@
         },
         "list": {
           "title": "Vos objectifs",
-          "content": "Chaque objectif apparaît ci-dessous selon votre ordre de priorité : les actifs et en pause d'abord, puis les atteints. Utilisez l'action Modifier d'un objectif pour changer sa cible, sa priorité, ses notes ou ses projets. Un personnage peut avoir plusieurs objectifs de rang, chacun étiqueté avec sa propre cible."
+          "content": "Chaque objectif apparaît ci-dessous selon votre ordre de priorité : les actifs et en pause d'abord, puis les atteints. Utilisez l'action Modifier d'un objectif pour changer sa cible, sa priorité, ses notes ou ses projets. Une unité peut avoir plusieurs objectifs de rang, d'ascension, de capacité ou d'amélioration, chacun étiqueté avec sa propre cible."
         }
       }
     },
@@ -1453,6 +1554,26 @@
         "mythicMaterialSources": {
           "title": "Matériaux mythiques",
           "content": "Offres de boutique pour les matériaux mythiques dont cet objectif a besoin. Toutes les offres disponibles sont comptées par défaut ; décochez celles que vous n'achèterez pas."
+        },
+        "milestones": {
+          "title": "Étapes",
+          "content": "Ajoutez des étapes pour planifier plusieurs cibles pour cette unité à la fois, par exemple Or 1, puis Diamant 1, puis Diamant 3. Chacune devient un objectif à part entière, après la précédente."
+        },
+        "status": {
+          "title": "État actuel",
+          "content": "Où en est cette unité aujourd'hui. Chaque cible part d'ici."
+        },
+        "issues": {
+          "title": "Problèmes à corriger",
+          "content": "Quand quelque chose empêche de créer les objectifs, ce compteur indique les problèmes. Choisissez-en un pour aller à son champ."
+        },
+        "ladder": {
+          "title": "Échelle des objectifs",
+          "content": "Choisissez l’objectif sur l’échelle. « Actuel » indique où en est l’unité, et les paliers marqués « Déjà un objectif » appartiennent à un autre objectif. La ligne en dessous montre la plage et ce dont elle a besoin."
+        },
+        "stepIndicator": {
+          "title": "Trois étapes",
+          "content": "Choisissez l’unité, puis ses objectifs, puis vérifiez et créez. Retour conserve tout ce que vous avez saisi."
         }
       }
     },
@@ -1473,7 +1594,7 @@
       "steps": {
         "target": {
           "title": "Cible",
-          "content": "Modifiez où cet objectif se termine sans le recréer. Il conserve son historique et votre plan est recalculé à l'enregistrement."
+          "content": "Choisissez où cet objectif se termine sur l’échelle ou avec le sélecteur de niveau. Il garde son historique, et votre plan est recalculé à l’enregistrement."
         },
         "priority": {
           "title": "Priorité",

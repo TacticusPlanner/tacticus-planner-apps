@@ -56,6 +56,14 @@ export interface RecommendUpgradesInput {
   cap?: number
 }
 
+/** One step of the search: after each candidate chain (so a driver can slice the work), and after
+ *  each round with the recommendations so far. */
+export type RecommendUpgradesStep =
+  | { kind: "progress" }
+  | { kind: "round"; recommendations: UpgradeRecommendation[] }
+
+const PROGRESS: RecommendUpgradesStep = { kind: "progress" }
+
 export interface RecommendUpgradesResult {
   baseline: PlanEvaluation
   recommendations: UpgradeRecommendation[]
@@ -130,11 +138,12 @@ interface Scored {
  * already chosen, by the ceiling it adds divided by its farming days, drops steps ready after the
  * last plan run starts, and takes the best (ties: master table total, horde multiplier, name).
  * Recommendations queue: each is ready after the farming days of every earlier one. Stops at the
- * target, when nothing gains, or at the cap. A generator so the wizard can yield between rounds.
+ * target, when nothing gains, or at the cap. A generator that yields after every candidate chain and
+ * every round, so the wizard can run it in time slices (spec: the search runs in slices).
  */
 export function* recommendUpgrades(
   input: RecommendUpgradesInput
-): Generator<UpgradeRecommendation[], RecommendUpgradesResult> {
+): Generator<RecommendUpgradesStep, RecommendUpgradesResult> {
   const { inputs, evaluator } = input
   const cap = input.cap ?? MAX_PLAN_UPGRADES
   const runs = planRuns(inputs.resolution)
@@ -172,29 +181,21 @@ export function* recommendUpgrades(
         inputs,
         MAX_STEPS_PER_UNIT - earlier.length
       )) {
-        const total = input.farmingDays(unitId, [...earlier, ...steps])
-        if (total === null) continue
-        const farmingDays = Math.max(0, total - before)
-        const readyMs = inputs.nowMs + (queueDays + farmingDays) * DAY_MS
-        const firstRun = runStarts.find((entry) => entry.startMs >= readyMs)
-        if (!firstRun) continue
-        const evaluation = evaluator.evaluate([
-          ...chosen,
-          { unitId, step: steps.at(-1)!, readyMs },
-        ])
-        const gain = (evaluation.ceiling ?? 0) - (current.ceiling ?? 0)
-        if (gain <= 0) continue
-        const candidate: Scored = {
+        const candidate = scoreChain({
+          input,
           unitId,
           steps,
-          farmingDays,
-          readyMs,
-          firstRun: firstRun.run,
-          evaluation,
-          gain,
-          score: gain / Math.max(1, farmingDays),
+          earlier,
+          before,
+          chosen,
+          current,
+          queueDays,
+          runStarts,
+        })
+        if (candidate && (!best || better(candidate, best, input))) {
+          best = candidate
         }
-        if (!best || better(candidate, best, input)) best = candidate
+        yield PROGRESS
       }
     }
     if (!best) break
@@ -221,9 +222,56 @@ export function* recommendUpgrades(
         input.alreadyPlanned(best.unitId, step)
       ),
     })
-    yield [...recommendations]
+    yield { kind: "round", recommendations: [...recommendations] }
   }
   return { baseline, recommendations, final: current }
+}
+
+/** One candidate chain scored on top of the chosen upgrades, or null when it cannot be estimated,
+ *  helps no run or gains nothing. */
+function scoreChain({
+  input,
+  unitId,
+  steps,
+  earlier,
+  before,
+  chosen,
+  current,
+  queueDays,
+  runStarts,
+}: {
+  input: RecommendUpgradesInput
+  unitId: string
+  steps: UpgradeStep[]
+  earlier: readonly UpgradeStep[]
+  before: number
+  chosen: readonly ChosenUpgrade[]
+  current: PlanEvaluation
+  queueDays: number
+  runStarts: readonly { run: LegendaryEventRun; startMs: number }[]
+}): Scored | null {
+  const total = input.farmingDays(unitId, [...earlier, ...steps])
+  if (total === null) return null
+  const farmingDays = Math.max(0, total - before)
+  const readyMs = input.inputs.nowMs + (queueDays + farmingDays) * DAY_MS
+  const firstRun = runStarts.find((entry) => entry.startMs >= readyMs)
+  if (!firstRun) return null
+  const evaluation = input.evaluator.evaluate([
+    ...chosen,
+    { unitId, step: steps.at(-1)!, readyMs },
+  ])
+  const gain = (evaluation.ceiling ?? 0) - (current.ceiling ?? 0)
+  if (gain <= 0) return null
+  return {
+    unitId,
+    steps,
+    farmingDays,
+    readyMs,
+    firstRun: firstRun.run,
+    evaluation,
+    gain,
+    score: gain / Math.max(1, farmingDays),
+  }
 }
 
 /** Every chain of one to `MAX_CHAIN_STEPS` next steps from a unit's state, one per state reached

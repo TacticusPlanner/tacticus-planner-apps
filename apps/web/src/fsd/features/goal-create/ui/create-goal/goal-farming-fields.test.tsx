@@ -69,3 +69,32 @@ describe("ProgressionPreview acquisition-source contribution lines", () => {
     ).toHaveTextContent("40 rogueTraderCurrency")
   })
 })
+
+describe("ProgressionPreview resources line", () => {
+  it("merges the energy, raids and days into one line instead of repeating them", () => {
+    render(
+      <ProgressionPreview
+        preview={basePreview({
+          combined: {
+            status: "Estimated",
+            energyTotal: 1450,
+            raidsTotal: 290,
+            days: 29,
+          } as Preview["combined"],
+          combinedDays: 29,
+          ascensionShardEnergy: {
+            status: "Estimated",
+            energyTotal: 1450,
+          } as Preview["ascensionShardEnergy"],
+        })}
+      />
+    )
+
+    expect(
+      screen.getByTestId("create-goal-progression-resource-line")
+    ).toHaveTextContent("≈1450 energy (290 raids) · ≈29.0 days")
+    expect(screen.queryByText(/1450 energy to obtain/)).not.toBeInTheDocument()
+    expect(screen.queryByText(/Combined duration/)).not.toBeInTheDocument()
+    expect(screen.getAllByText(/1450/)).toHaveLength(1)
+  })
+})

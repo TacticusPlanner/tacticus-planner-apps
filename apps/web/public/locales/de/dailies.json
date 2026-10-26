@@ -334,7 +334,7 @@
         },
         "projection": {
           "title": "Punkteprognose",
-          "content": "Die Arena-, Onslaught- und Plünderungslauf-Marken, die du bis zum Event-Ende noch nutzen kannst, welchen Schnitt jede für den letzten Meilenstein braucht und wo deine eigenen Schnitte landen. Bearbeite die Schnitte; sie werden für dieses Event gespeichert."
+          "content": "Die Arena-, Onslaught- und Plünderungslauf-Marken, die du bis zum Event-Ende noch nutzen kannst, welchen Schnitt jede für den letzten Meilenstein braucht und wo deine eigenen Schnitte landen. Bearbeite die Schnitte; sie werden für dieses Event gespeichert. Turnier-Arena-Marken werden nicht synchronisiert: Gib deine ein, wenn das Event dort zählt."
         },
         "teams": {
           "title": "Event-Teams",
@@ -378,7 +378,11 @@
         },
         "pace": {
           "title": "Event-Tempo",
-          "content": "Gib deine Eventpunkte und deinen Rang ein, um Währung, Truhenstufe und Splitter zu schätzen, und wähle ein Ziel, um die nötigen Punkte pro Tag zu sehen."
+          "content": "Gib deine Eventpunkte und deinen Rang ein, optional auch, was du jetzt hast, um Währung, Truhenstufe und Splitter zu schätzen, und wähle ein Ziel, um die nötigen Punkte pro Tag zu sehen."
+        },
+        "paceSummary": {
+          "title": "Tempo auf einen Blick",
+          "content": "Deine Punkte, wo sie landen und welche Stufe sie erreichen. Tippe auf Details, um Punkte, Rang und deinen Besitz einzutragen und ein Ziel zu wählen."
         }
       }
     },
@@ -625,9 +629,9 @@
       },
       "lines": {
         "xp": "{{units}} erhalten {{multiplier}}x XP {{modes}}",
-        "xpTeam": "{{units}} erhalten {{multiplier}}x XP {{modes}}, wenn das ganze Team aus einer Fraktion stammt",
+        "xpTeam": "{{units}} erhalten +{{bonusPct}} % XP {{modes}} für jeden eingesetzten verbündeten Charakter derselben Fraktion",
         "xpByRarity": "{{units}} erhalten Bonus-XP nach Seltenheit ({{rates}}) {{modes}}",
-        "xpByRarityTeam": "{{units}} erhalten Bonus-XP nach Seltenheit ({{rates}}) {{modes}}, wenn das ganze Team aus einer Fraktion stammt",
+        "xpByRarityTeam": "{{units}} erhalten Bonus-XP nach Seltenheit ({{rates}}) {{modes}} für jeden eingesetzten verbündeten Charakter derselben Fraktion",
         "stat": "{{units}} haben +{{health}} % Lebenspunkte, +{{damage}} % Schaden und +{{armour}} % Rüstung {{modes}}",
         "kill_one": "Du erhältst {{count}} Punkt für jede {{enemy}}, die du {{modes}} besiegst",
         "kill_other": "Du erhältst {{count}} Punkte für jede {{enemy}}, die du {{modes}} besiegst",
@@ -635,10 +639,10 @@
         "killWith_other": "Du erhältst {{count}} Punkte für jede {{enemy}}, die du mit {{player}} {{modes}} besiegst",
         "waves_one": "Du erhältst {{count}} Punkt für jede Welle, die du {{modes}} besiegst",
         "waves_other": "Du erhältst {{count}} Punkte für jede Welle, die du {{modes}} besiegst",
-        "factionMajority_one": "Du erhältst {{count}} Punkt für jeden Kampf {{modes}}, in dem die meisten eingesetzten Einheiten aus einer Fraktion stammen",
-        "factionMajority_other": "Du erhältst {{count}} Punkte für jeden Kampf {{modes}}, in dem die meisten eingesetzten Einheiten aus einer Fraktion stammen",
-        "fullLineUp_one": "Du erhältst {{count}} Punkt für jeden Kampf {{modes}}, in dem deine ganze Aufstellung aus einer Fraktion stammt",
-        "fullLineUp_other": "Du erhältst {{count}} Punkte für jeden Kampf {{modes}}, in dem deine ganze Aufstellung aus einer Fraktion stammt",
+        "factionMajority_one": "Du erhältst {{count}} Punkt {{modes}} für jeden eingesetzten Charakter der Fraktion mit den meisten Charakteren in deiner Aufstellung",
+        "factionMajority_other": "Du erhältst {{count}} Punkte {{modes}} für jeden eingesetzten Charakter der Fraktion mit den meisten Charakteren in deiner Aufstellung",
+        "fullLineUp_one": "Du erhältst {{count}} Bonuspunkt für jeden Kampf {{modes}}, in dem deine ganze Aufstellung aus einer Fraktion stammt",
+        "fullLineUp_other": "Du erhältst {{count}} Bonuspunkte für jeden Kampf {{modes}}, in dem deine ganze Aufstellung aus einer Fraktion stammt",
         "donateUpgrade_one": "Du erhältst {{count}} Punkt für jede Verbesserung, die du einem Gildenmitglied spendest",
         "donateUpgrade_other": "Du erhältst {{count}} Punkte für jede Verbesserung, die du einem Gildenmitglied spendest",
         "donateUpgradeByRarity": "Du erhältst Punkte für jede Verbesserung, die du einem Gildenmitglied spendest: {{rates}}",
@@ -707,6 +711,7 @@
       "averageNeeded": "Schnitt eingeben",
       "tokensValue_one": "{{count}} Marke",
       "tokensValue_other": "{{count}} Marken",
+      "tokensLabel": "Marken für {{mode}}",
       "projected": "Prognostizierte Punkte",
       "projectedValue": "{{points}} Pkt.",
       "needAverage": "Gib für jeden Modus einen Schnitt ein, um die prognostizierten Punkte zu sehen.",
@@ -720,7 +725,8 @@
         "summed": "{{mode}}: Es gelten {{count}} Punkteregeln, daher setzt „{{perUnit}}“ voraus, dass jede alle davon erfüllt.",
         "locked": "Noch nicht freigeschaltet, ausgelassen: {{modes}}.",
         "enemyRestricted": "Nur manche Feinde zählen (siehe Event-Details), gib daher deinen Schnitt an zählenden Abschüssen ein.",
-        "battles": "Kampf-Modi zählen einmal pro Marke: ein Kampf pro Marke.",
+        "battles": "Kampf-Modi zählen einmal pro Marke, angenommen wird eine volle Aufstellung aus fünf Charakteren einer Fraktion: Punkte pro Charakter plus der Bonus für die volle Aufstellung.",
+        "manualTokens": "{{modes}}-Marken werden nicht aus dem Spiel synchronisiert: Gib ein, wie viele du während des Events ausgibst.",
         "campaign": "Kampagnen-Raids bringen in diesem Event ebenfalls Punkte; sie werden in der Farmliste unten geplant.",
         "syncedAt": "Marken aus deiner Synchronisierung {{when}}, vorausgesetzt du verbrauchst sie, bevor deine Speicher voll sind.",
         "syncUnknown": "Der Zeitpunkt deiner Synchronisierung ist unbekannt, daher werden Marken ab jetzt gezählt, vorausgesetzt du verbrauchst sie, bevor deine Speicher voll sind.",

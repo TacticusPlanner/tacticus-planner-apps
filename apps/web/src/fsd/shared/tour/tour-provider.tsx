@@ -40,7 +40,14 @@ type TourContextValue = {
   /** Registers a page's (or an open sheet's) own tour steps and returns the function that removes them.
    *  Registrations stack: the most recent one is the active page tour, and removing it restores the
    *  previous one — so a sheet opened over a page overrides the page's steps only while it is open. */
-  registerPageSteps: (steps: TourPageSteps) => () => void
+  /** Registers or updates (in place, keeping its stack position) the steps held under `key`; an
+   *  `overlay` registration (a dialog or sheet) outranks every page registration. */
+  registerPageSteps: (
+    steps: TourPageSteps,
+    key?: object,
+    overlay?: boolean
+  ) => () => void
+  unregisterPageSteps: (key: object) => void
   // Lets a mobile tutorial step force the theme/language/tour-replay Popover (AuthControl /
   // MobileGuestSettings) open - see useTourControlledPopoverOpen - since a DOM-click simulation
   // races with react-joyride's overlay and Radix's own outside-click dismissal.
@@ -57,16 +64,32 @@ export function TourProvider({ children }: { children: ReactNode }) {
   const [run, setRun] = React.useState(false)
   // Whether any tour has been requested yet: the runner (and react-joyride) is loaded from then on.
   const [requested, setRequested] = React.useState(false)
-  const [pageStepStack, setPageStepStack] = React.useState<TourPageSteps[]>([])
-  const pageSteps = pageStepStack.at(-1) ?? null
-  const registerPageSteps = React.useCallback((steps: TourPageSteps) => {
-    setPageStepStack((stack) => [...stack, steps])
-    return () =>
-      setPageStepStack((stack) => {
-        const index = stack.lastIndexOf(steps)
-        return index === -1 ? stack : stack.filter((_, i) => i !== index)
-      })
+  // Each registration keeps its slot while its steps change, so a page whose steps update while a
+  // dialog's are on top (e.g. once its data loads) doesn't jump back above the dialog's tour.
+  // An overlay (dialog/sheet) mounted together with its page registers first (child effects run
+  // before the parent's), so overlays rank above pages regardless of registration order.
+  const [pageStepStack, setPageStepStack] = React.useState<
+    { key: object; steps: TourPageSteps; overlay: boolean }[]
+  >([])
+  const pageSteps =
+    (pageStepStack.findLast((entry) => entry.overlay) ?? pageStepStack.at(-1))
+      ?.steps ?? null
+  const unregisterPageSteps = React.useCallback((key: object) => {
+    setPageStepStack((stack) => stack.filter((entry) => entry.key !== key))
   }, [])
+  const registerPageSteps = React.useCallback(
+    (steps: TourPageSteps, key: object = steps, overlay = false) => {
+      setPageStepStack((stack) => {
+        const index = stack.findIndex((entry) => entry.key === key)
+        if (index === -1) return [...stack, { key, steps, overlay }]
+        const next = [...stack]
+        next[index] = { key, steps, overlay }
+        return next
+      })
+      return () => unregisterPageSteps(key)
+    },
+    [unregisterPageSteps]
+  )
   const [mobileMenuForceOpen, setMobileMenuForceOpen] = React.useState(false)
   // Which tour the running/next run shows. Defaults to "general": the auto-start above and the
   // persistent "Show me around" control both mean the navigation tour, even on a page that has
@@ -103,6 +126,7 @@ export function TourProvider({ children }: { children: ReactNode }) {
       hasPageTour,
       stopTour,
       registerPageSteps,
+      unregisterPageSteps,
       mobileMenuForceOpen,
       setMobileMenuForceOpen,
     }),
@@ -114,6 +138,7 @@ export function TourProvider({ children }: { children: ReactNode }) {
       hasPageTour,
       stopTour,
       registerPageSteps,
+      unregisterPageSteps,
       mobileMenuForceOpen,
     ]
   )
@@ -151,10 +176,20 @@ export const useTour = () => {
  *  unmount. Registrations stack, so a sheet that registers its own steps while open hands the page's
  *  back when it closes. Memoize `steps` (it's an effect dependency) so registration doesn't churn
  *  every render. */
-export function useTourPageSteps(steps: TourPageSteps) {
-  const { registerPageSteps } = useTour()
+export function useTourPageSteps(
+  steps: TourPageSteps,
+  { overlay = false }: { overlay?: boolean } = {}
+) {
+  const { registerPageSteps, unregisterPageSteps } = useTour()
+  const [key] = React.useState(() => ({}))
 
-  React.useEffect(() => registerPageSteps(steps), [steps, registerPageSteps])
+  React.useEffect(() => {
+    registerPageSteps(steps, key, overlay)
+  }, [steps, key, overlay, registerPageSteps])
+  React.useEffect(
+    () => () => unregisterPageSteps(key),
+    [key, unregisterPageSteps]
+  )
 }
 
 /**

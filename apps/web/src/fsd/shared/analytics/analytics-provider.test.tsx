@@ -30,6 +30,7 @@ vi.mock("posthog-js", () => {
   sdk.imported()
   return { default: { init: sdk.init } }
 })
+vi.mock("posthog-js/dist/web-vitals", () => ({}))
 
 import { AnalyticsProvider, useAnalyticsActions } from "./analytics-provider"
 
@@ -47,6 +48,7 @@ async function renderReady() {
 }
 
 beforeEach(() => {
+  vi.stubEnv("VITE_ANALYTICS_ENABLED", "true")
   vi.stubEnv("VITE_POSTHOG_PROJECT_TOKEN", "test-token")
 })
 
@@ -70,6 +72,17 @@ describe("AnalyticsProvider", () => {
 
   it("downloads no SDK when no project token is configured", async () => {
     vi.stubEnv("VITE_POSTHOG_PROJECT_TOKEN", "")
+    const { result } = renderHook(() => useAnalyticsActions(), { wrapper })
+
+    act(() => result.current.identifyUser("analytics-id"))
+    await Promise.resolve()
+
+    expect(sdk.init).not.toHaveBeenCalled()
+    expect(result.current.isReady).toBe(false)
+  })
+
+  it("downloads no SDK when analytics is not enabled, even with a project token", async () => {
+    vi.stubEnv("VITE_ANALYTICS_ENABLED", "false")
     const { result } = renderHook(() => useAnalyticsActions(), { wrapper })
 
     act(() => result.current.identifyUser("analytics-id"))
@@ -108,6 +121,11 @@ describe("AnalyticsProvider", () => {
         advanced_disable_flags: true,
         disable_external_dependency_loading: true,
         capture_pageleave: true,
+        // Web vitals are enabled client-side (remote config is off) and their extension is bundled.
+        capture_performance: {
+          web_vitals: true,
+          web_vitals_attribution: false,
+        },
         before_send: expect.any(Function),
       })
     )

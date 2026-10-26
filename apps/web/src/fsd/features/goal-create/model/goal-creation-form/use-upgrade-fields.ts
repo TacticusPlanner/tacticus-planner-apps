@@ -17,6 +17,7 @@ import type {
   Character,
 } from "@/features/rank-lookup/@x/goal-create"
 
+import { isValidUpgradeQuantity } from "../target-edit/goal-target-edit"
 import {
   characterRelevantUpgradeQuantities,
   computeUpgradeGoalNeed,
@@ -152,7 +153,10 @@ export function useUpgradeFields({
     () =>
       computeUpgradeGoalNeed({
         upgradeEnabled,
-        targets: upgradeTargets,
+        // A row whose quantity is still being typed (or out of range) costs nothing until it is valid.
+        targets: upgradeTargets.filter((target) =>
+          isValidUpgradeQuantity(target.quantity)
+        ),
         inventoryUpgrades,
         upgradesById,
       }),
@@ -203,12 +207,27 @@ export function useUpgradeFields({
     })
   }
 
+  // A target list is complete once it holds at least one distinct material; each row's quantity is
+  // validated on its own (`invalidUpgradeQuantityIds`) so the message lands on that row.
   const isValid =
     !upgradeEnabled ||
     (upgradeTargets.length > 0 &&
-      upgradeTargets.every((target) => target.quantity > 0) &&
       new Set(upgradeTargets.map((target) => target.upgradeId)).size ===
         upgradeTargets.length)
+  const invalidUpgradeQuantityIds = upgradeTargets
+    .filter((target) => !isValidUpgradeQuantity(target.quantity))
+    .map((target) => target.upgradeId)
+  // How many of each material the account owns, shown beside its target quantity.
+  const ownedUpgradeQuantities = useMemo(
+    () =>
+      new Map(
+        (inventoryUpgrades ?? []).map((entry) => [
+          entry.upgradeId,
+          entry.amount,
+        ])
+      ),
+    [inventoryUpgrades]
+  )
 
   return {
     state: {
@@ -235,6 +254,8 @@ export function useUpgradeFields({
       relevantUpgradeQuantities,
       remainingLadderQuantities,
       upgradeGoalNeed,
+      invalidUpgradeQuantityIds,
+      ownedUpgradeQuantities,
     },
     reset,
     prefillFrom,

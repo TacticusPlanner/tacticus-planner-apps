@@ -15,6 +15,7 @@ import {
   mowRelevantUpgradeQuantities,
 } from "./goal-spec-builder"
 import { emptyAcquisitionPlan } from "./acquisition-plan"
+import { minProgressionForRank } from "@workspace/game-domain"
 
 const upgradeId = upgradeIdSchema.parse
 const upgradeIds = (values: string[]) => values.map((value) => upgradeId(value))
@@ -61,9 +62,9 @@ describe("buildReviewItems", () => {
   it("flags an auto-included Unlock and Ascension as suggested, not the user's own selections", () => {
     const items = buildReviewItems(new Set(["Rank"]), true, true)
     expect(items).toEqual([
-      { goalType: "Unlock", autoSuggested: true },
-      { goalType: "Ascension", autoSuggested: true },
-      { goalType: "Rank", autoSuggested: false },
+      { goalType: "Unlock", autoSuggested: true, count: 1 },
+      { goalType: "Ascension", autoSuggested: true, count: 1 },
+      { goalType: "Rank", autoSuggested: false, count: 1 },
     ])
   })
 
@@ -74,9 +75,9 @@ describe("buildReviewItems", () => {
       true
     )
     expect(items).toEqual([
-      { goalType: "Unlock", autoSuggested: false },
-      { goalType: "Ascension", autoSuggested: false },
-      { goalType: "Rank", autoSuggested: false },
+      { goalType: "Unlock", autoSuggested: false, count: 1 },
+      { goalType: "Ascension", autoSuggested: false, count: 1 },
+      { goalType: "Rank", autoSuggested: false, count: 1 },
     ])
   })
 
@@ -86,7 +87,20 @@ describe("buildReviewItems", () => {
 
   it("includes an enabled Upgrade goal, never auto-suggested", () => {
     const items = buildReviewItems(new Set(["Upgrade"]), false, false)
-    expect(items).toEqual([{ goalType: "Upgrade", autoSuggested: false }])
+    expect(items).toEqual([
+      { goalType: "Upgrade", autoSuggested: false, count: 1 },
+    ])
+  })
+
+  it("counts each type's milestones", () => {
+    const items = buildReviewItems(new Set(["Rank"]), false, true, {
+      Rank: 4,
+      Ascension: 1,
+    })
+    expect(items).toEqual([
+      { goalType: "Ascension", autoSuggested: true, count: 1 },
+      { goalType: "Rank", autoSuggested: false, count: 4 },
+    ])
   })
 
   it("never lists a Level goal for a Rank/Ability target, however high its level requirement", () => {
@@ -139,6 +153,7 @@ describe("buildCombinedGoalSpecs", () => {
         start: "Common:None",
         end: "Legendary:RedThreeStars",
       },
+      abilityActiveEnd: 40,
     })
 
     expect(specs.map((spec) => spec.goalType)).toEqual(["Ascension", "Ability"])
@@ -293,6 +308,127 @@ describe("buildCombinedGoalSpecs", () => {
     ])
     expect(specs[2]?.dependsOnIndex).toEqual([0, 1])
     expect(specs[3]?.dependsOnIndex).toEqual([0, 1])
+  })
+})
+
+describe("buildCombinedGoalSpecs milestones", () => {
+  const ladder = {
+    ...baseSpecParams,
+    rankStart: "Silver2" as const,
+    progressionStart: "Legendary:RedFiveStars" as const,
+    progressionEnd: "Legendary:RedFiveStars" as const,
+    includesUnlock: false,
+  }
+
+  it("sends Ragnar's four-step Rank ladder in order, each depending on the previous", () => {
+    const specs = buildCombinedGoalSpecs({
+      ...ladder,
+      enabledTypes: new Set(["Rank"]),
+      includesAscension: false,
+      rankEnd: "Gold1",
+      milestones: {
+        rank: ["Diamond1", "Diamond3", "Adamantine1"],
+        ascension: [],
+        ability: [],
+      },
+      existingAscensions: [{ goalId: "asc-mythic", end: "Mythic:OneBlueStar" }],
+    })
+
+    expect(specs.map((spec) => spec.config.rank?.end)).toEqual([12, 15, 17, 18])
+    expect(specs.map((spec) => spec.config.rank?.start)).toEqual([
+      10, 10, 10, 10,
+    ])
+    expect(specs.map((spec) => spec.dependsOnIndex)).toEqual([
+      [],
+      [0],
+      [1],
+      [2],
+    ])
+    // Only Adamantine1 is above the Legendary cap; the existing Mythic goal covers it.
+    expect(specs.map((spec) => spec.dependsOnGoalIds)).toEqual([
+      undefined,
+      undefined,
+      undefined,
+      ["asc-mythic"],
+    ])
+  })
+
+  it("places the suggested Ascension before the first milestone that needs it", () => {
+    const legendary = minProgressionForRank("Diamond1")
+    const specs = buildCombinedGoalSpecs({
+      ...ladder,
+      progressionStart: "Epic:RedThreeStars",
+      enabledTypes: new Set(["Rank"]),
+      includesAscension: true,
+      ascensionSuggestion: { start: "Epic:RedThreeStars", end: legendary },
+      rankEnd: "Gold1",
+      milestones: { rank: ["Diamond1"], ascension: [], ability: [] },
+    })
+
+    expect(specs.map((spec) => spec.goalType)).toEqual([
+      "Rank",
+      "Ascension",
+      "Rank",
+    ])
+    expect(specs[0]?.dependsOnIndex).toEqual([])
+    expect(specs[1]?.config.progression?.end).toBe(legendary)
+    expect(specs[2]?.dependsOnIndex).toEqual([0, 1])
+  })
+
+  it("chains explicit Ascension milestones and gates each Rank on the lowest that reaches it", () => {
+    const specs = buildCombinedGoalSpecs({
+      ...ladder,
+      progressionStart: "Epic:RedThreeStars",
+      progressionEnd: minProgressionForRank("Diamond1"),
+      enabledTypes: new Set(["Ascension", "Rank"]),
+      includesAscension: true,
+      rankEnd: "Diamond1",
+      milestones: {
+        rank: ["Adamantine1"],
+        ascension: ["Mythic:OneBlueStar"],
+        ability: [],
+      },
+    })
+
+    expect(specs.map((spec) => spec.goalType)).toEqual([
+      "Ascension",
+      "Ascension",
+      "Rank",
+      "Rank",
+    ])
+    expect(specs[1]?.dependsOnIndex).toEqual([0])
+    expect(specs[2]?.dependsOnIndex).toEqual([0])
+    expect(specs[3]?.dependsOnIndex).toEqual([1, 2])
+  })
+
+  it("depends on an existing covering Ascension instead of a new one", () => {
+    const specs = buildCombinedGoalSpecs({
+      ...ladder,
+      progressionStart: "Epic:RedThreeStars",
+      enabledTypes: new Set(["Ability"]),
+      includesAscension: false,
+      abilityActiveStart: 30,
+      abilityPassiveStart: 30,
+      abilityActiveEnd: 45,
+      abilityPassiveEnd: 30,
+      milestones: {
+        rank: [],
+        ascension: [],
+        ability: [{ activeEnd: 50, passiveEnd: 50 }],
+      },
+      existingAscensions: [
+        { goalId: "asc-epic", end: "Epic:RedThreeStars" },
+        { goalId: "asc-legendary", end: "Legendary:RedFiveStars" },
+      ],
+    })
+
+    expect(specs.map((spec) => spec.config.ability)).toEqual([
+      { activeStart: 30, activeEnd: 45, passiveStart: 30, passiveEnd: 30 },
+      { activeStart: 30, activeEnd: 50, passiveStart: 30, passiveEnd: 50 },
+    ])
+    expect(specs[0]?.dependsOnGoalIds).toEqual(["asc-legendary"])
+    expect(specs[1]?.dependsOnIndex).toEqual([0])
+    expect(specs[1]?.dependsOnGoalIds).toEqual(["asc-legendary"])
   })
 })
 

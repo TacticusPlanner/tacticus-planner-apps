@@ -6,6 +6,11 @@ import {
   type ReadState,
 } from "@/entities/legendary-event"
 
+import {
+  legendaryEventRunDates,
+  legendaryEventRunWindow,
+} from "../../lib/run-dates"
+
 /** What a hub card shows from the sync, for an active event only. */
 type HubCardSynced =
   | { kind: "none" }
@@ -17,11 +22,37 @@ type HubCardSynced =
       points: number
     }
 
+/** One run of an unfinished event: its announced or guessed start, null when not estimable. */
+interface HubCardRun {
+  run: number
+  startMs: number | null
+  guessed: boolean
+}
+
 export interface HubCardViewModel {
   eventId: string
   name: string
   lifecycle: LegendaryEventLifecycle
   synced: HubCardSynced
+  /** Every run with its date (guessed from past run gaps when not announced); empty once the
+   *  event is finished. */
+  runs: HubCardRun[]
+}
+
+/** The dates of each run of an unfinished event (spec: guessed run dates on the hub). */
+function hubRuns(
+  event: LegendaryEvent,
+  lifecycle: LegendaryEventLifecycle
+): HubCardRun[] {
+  if (lifecycle.state === "archived") return []
+  return legendaryEventRunDates(event).starts.map((start) => {
+    const window = legendaryEventRunWindow(start)
+    return {
+      run: start.run,
+      startMs: window?.startMs ?? null,
+      guessed: window?.guessed ?? false,
+    }
+  })
 }
 
 export interface HubViewModel {
@@ -75,6 +106,7 @@ export function buildHubViewModel(
       name: nameOf(event.id),
       lifecycle,
       synced: withSync ? syncedFor(event.id, progress) : { kind: "none" },
+      runs: hubRuns(event, lifecycle),
     })
   return {
     active: groups.active.map(toCard(true)),

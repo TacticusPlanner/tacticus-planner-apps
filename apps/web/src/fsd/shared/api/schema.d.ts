@@ -686,6 +686,74 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  "/api/v1/game-catalog/quest-crates": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Gets the Quest Event crate track. */
+    get: operations["TacticusPlannerApiFeaturesGameCatalogGetGameCatalogQuestCratesEndpoint1"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/game-catalog/quest-crates/{envelopeHash}": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Gets the Quest Event crate track. */
+    get: operations["TacticusPlannerApiFeaturesGameCatalogGetGameCatalogQuestCratesEndpoint2"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/game-catalog/quest-events": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Gets game catalog quest events. */
+    get: operations["TacticusPlannerApiFeaturesGameCatalogGetGameCatalogQuestEventsEndpoint1"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/game-catalog/quest-events/{envelopeHash}": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Gets game catalog quest events. */
+    get: operations["TacticusPlannerApiFeaturesGameCatalogGetGameCatalogQuestEventsEndpoint2"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   "/api/v1/game-catalog/raid-bosses": {
     parameters: {
       query?: never
@@ -871,7 +939,7 @@ export interface paths {
     put?: never
     /**
      * Creates one goal, or several linked goals for one entity, in one call.
-     * @description A single goal is a one-spec request. Each spec's DependsOnIndex (indices into this same request's Goals list, referencing only earlier entries) is resolved into real DependsOn edges. Assigns the whole set to the given project(s), or the caller's default project (created on first use) when none is given. Every goal starts Active; startPaused (request-level boolean, default false) creates the whole set Paused instead and cannot be set per goal.
+     * @description A single goal is a one-spec request. Each spec's DependsOnIndex (indices into this same request's Goals list, referencing only earlier entries) is resolved into real DependsOn edges; DependsOnGoalIds adds edges to the same unit's existing Active/Paused goals, and an existing Ascension goal reachable through them lifts the rarity cap the targets are validated against. A goal type may appear more than once when the end targets differ. Assigns the whole set to the given project(s), or the caller's default project (created on first use) when none is given. Each spec may carry notes. position (request-level, 1 to in-flight count + 1) inserts the set there in request order, shifting later goals down; null appends at the end. Every goal starts Active; startPaused (request-level boolean, default false) creates the whole set Paused instead and cannot be set per goal.
      */
     post: operations["TacticusPlannerApiFeaturesGoalsCreateCombinedGoalsEndpoint"]
     delete?: never
@@ -1509,6 +1577,8 @@ export interface components {
       config: components["schemas"]["CreateGoalConfigRequest"]
       dependsOnIndex: components["schemas"]["ListOfInt32"]
       snapshot?: null | components["schemas"]["CreateGoalSnapshotRequest"]
+      dependsOnGoalIds?: null | components["schemas"]["ListOfGuid"]
+      notes?: null | string
     }
     CreateCombinedGoalsRequest: {
       entityType: components["schemas"]["GoalEntityType"]
@@ -1517,6 +1587,8 @@ export interface components {
       goals: components["schemas"]["ListOfCombinedGoalSpec"]
       /** @default false */
       startPaused?: boolean
+      /** Format: int32 */
+      position?: null | number
     }
     CreateCombinedGoalsResponse: {
       goals: components["schemas"]["ListOfGoalDetailResponse"]
@@ -1952,6 +2024,27 @@ export interface components {
         | null
         | components["schemas"]["IReadOnlyListOfGameCatalogOnslaughtReward"]
     }
+    GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogQuestCrate: {
+      version: string
+      /** Format: int32 */
+      schemaVersion: number
+      gameVersion: string
+      sourceHash: string
+      datasetKey: string
+      datasetHash: string
+      data: null | components["schemas"]["IReadOnlyListOfGameCatalogQuestCrate"]
+    }
+    GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogQuestEventView: {
+      version: string
+      /** Format: int32 */
+      schemaVersion: number
+      gameVersion: string
+      sourceHash: string
+      datasetKey: string
+      datasetHash: string
+      data:
+        null | components["schemas"]["IReadOnlyListOfGameCatalogQuestEventView"]
+    }
     GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogShopView: {
       version: string
       /** Format: int32 */
@@ -2380,6 +2473,67 @@ export interface components {
       regular: components["schemas"]["IReadOnlyListOfGameCatalogRewardRange"]
       mythic: components["schemas"]["GameCatalogRewardRange"]
       badges: components["schemas"]["IReadOnlyListOfGameCatalogAmountByRarity"]
+    }
+    GameCatalogQuestBattleView: {
+      /** Format: int32 */
+      number: number
+      tier: string
+      /** Format: int32 */
+      tierPosition: number
+      /** Format: int32 */
+      deploySlots: number
+      boardId: string
+      /** Format: int32 */
+      spawnPointsSet: number
+      /** Format: int32 */
+      lightningVictoryTurns: number
+      /** Format: int32 */
+      power: null | number
+      enemies: components["schemas"]["IReadOnlyListOfGameCatalogQuestEnemyView"]
+      objectives: components["schemas"]["IReadOnlyListOfGameCatalogQuestObjectiveView"]
+      loot: components["schemas"]["GameCatalogQuestLootView"]
+    }
+    GameCatalogQuestCrate: {
+      /** Format: int32 */
+      number: number
+      /** Format: int32 */
+      points: number
+      rewards: components["schemas"]["IReadOnlyListOfGameCatalogQuestCrateReward"]
+    }
+    GameCatalogQuestCrateReward: {
+      type: string
+      /** Format: int32 */
+      min: number
+      /** Format: int32 */
+      max: number
+      rarity: null | string
+      maxRarity: null | string
+    }
+    GameCatalogQuestEnemyView: {
+      id: string
+      /** Format: int32 */
+      ladderIndex: number
+      /** Format: int32 */
+      count: number
+    }
+    GameCatalogQuestEventView: {
+      featuredCharacterId: string
+      allowedFactionIds: components["schemas"]["IReadOnlyListOfString"]
+      enemyFactionIds: components["schemas"]["IReadOnlyListOfString"]
+      battles: components["schemas"]["IReadOnlyListOfGameCatalogQuestBattleView"]
+    }
+    GameCatalogQuestLootView: {
+      upgradeId: string
+      /** Format: int32 */
+      chanceNumerator: number
+      /** Format: int32 */
+      chanceDenominator: number
+    }
+    GameCatalogQuestObjectiveView: {
+      type: string
+      target: null | string
+      /** Format: int32 */
+      score: number
     }
     GameCatalogRaidBossEncounterModifierView: {
       /** Format: double */
@@ -2841,6 +2995,12 @@ export interface components {
     IReadOnlyListOfGameCatalogNpc: components["schemas"]["GameCatalogNpc"][]
     IReadOnlyListOfGameCatalogNpcStat: components["schemas"]["GameCatalogNpcStat"][]
     IReadOnlyListOfGameCatalogOnslaughtReward: components["schemas"]["GameCatalogOnslaughtReward"][]
+    IReadOnlyListOfGameCatalogQuestBattleView: components["schemas"]["GameCatalogQuestBattleView"][]
+    IReadOnlyListOfGameCatalogQuestCrate: components["schemas"]["GameCatalogQuestCrate"][]
+    IReadOnlyListOfGameCatalogQuestCrateReward: components["schemas"]["GameCatalogQuestCrateReward"][]
+    IReadOnlyListOfGameCatalogQuestEnemyView: components["schemas"]["GameCatalogQuestEnemyView"][]
+    IReadOnlyListOfGameCatalogQuestEventView: components["schemas"]["GameCatalogQuestEventView"][]
+    IReadOnlyListOfGameCatalogQuestObjectiveView: components["schemas"]["GameCatalogQuestObjectiveView"][]
     IReadOnlyListOfGameCatalogRaidBossEncounterModifierView: components["schemas"]["GameCatalogRaidBossEncounterModifierView"][]
     IReadOnlyListOfGameCatalogRaidBossEncounterView: components["schemas"]["GameCatalogRaidBossEncounterView"][]
     IReadOnlyListOfGameCatalogRaidBossSetView: components["schemas"]["GameCatalogRaidBossSetView"][]
@@ -5369,6 +5529,190 @@ export interface operations {
       }
     }
   }
+  TacticusPlannerApiFeaturesGameCatalogGetGameCatalogQuestCratesEndpoint1: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description The shared 17-crate point track with each crate's points and rewards. */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogQuestCrate"]
+        }
+      }
+      /** @description The dataset has not changed. */
+      304: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description The envelope hash is not the current release's. */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+    }
+  }
+  TacticusPlannerApiFeaturesGameCatalogGetGameCatalogQuestCratesEndpoint2: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        envelopeHash: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description The shared 17-crate point track with each crate's points and rewards. */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogQuestCrate"]
+        }
+      }
+      /** @description The dataset has not changed. */
+      304: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description The envelope hash is not the current release's. */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+    }
+  }
+  TacticusPlannerApiFeaturesGameCatalogGetGameCatalogQuestEventsEndpoint1: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Each Quest Event's featured hero, factions and 17 battles with enemies, objectives and drops. */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogQuestEventView"]
+        }
+      }
+      /** @description The dataset has not changed. */
+      304: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description The envelope hash is not the current release's. */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+    }
+  }
+  TacticusPlannerApiFeaturesGameCatalogGetGameCatalogQuestEventsEndpoint2: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        envelopeHash: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Each Quest Event's featured hero, factions and 17 battles with enemies, objectives and drops. */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogQuestEventView"]
+        }
+      }
+      /** @description The dataset has not changed. */
+      304: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description The envelope hash is not the current release's. */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+    }
+  }
   TacticusPlannerApiFeaturesGameCatalogGetGameCatalogRaidBossesEndpoint1: {
     parameters: {
       query?: never
@@ -5900,7 +6244,7 @@ export interface operations {
           "application/json": components["schemas"]["CreateCombinedGoalsResponse"]
         }
       }
-      /** @description Invalid entity/goal type, a bad DependsOnIndex, an unknown project, or a null/per-goal startPaused. */
+      /** @description Invalid entity/goal type, a bad DependsOnIndex or DependsOnGoalIds, an unknown project, a null/per-goal startPaused, notes over the limit, or a position out of range. */
       400: {
         headers: {
           [name: string]: unknown

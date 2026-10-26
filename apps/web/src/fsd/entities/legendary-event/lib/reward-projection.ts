@@ -160,6 +160,9 @@ export interface RewardProjectionInput {
   /** The step to project instead of the next one (the 1-click plan's target); a step at or before
    *  the unit's synced progression reads as every step reached. */
   targetStep?: AscensionStep
+  /** The last run whose missions, bundle and close shards count (the 1-click plan's run
+   *  horizon); every future run when absent. */
+  throughRun?: LegendaryEventRun
 }
 
 /** One future run's contribution (runs already started are counted through sync). */
@@ -261,6 +264,7 @@ export function projectRewards({
   runs,
   showPaidOptions,
   targetStep,
+  throughRun,
 }: RewardProjectionInput): RewardProjection {
   // 1. Base from sync.
   const base = {
@@ -273,8 +277,9 @@ export function projectRewards({
   const fromStep = unitNextAscensionStep(unit)
 
   // 2–3. Future runs: the runs that have not started (none while the run is unknown).
-  const futureRuns = futureRunNumbers(resolution, progress !== undefined).map(
-    (run): FutureRunContribution => {
+  const futureRuns = futureRunNumbers(resolution, progress !== undefined)
+    .filter((run) => throughRun === undefined || run <= throughRun)
+    .map((run): FutureRunContribution => {
       const values = runInputValues(runs, run)
       const premium = showPaidOptions ? values.premiumMissions : 0
       const bonus = premium > 0 ? PREMIUM_BONUS_CURRENCY : 0
@@ -288,8 +293,7 @@ export function projectRewards({
             : 0,
         closeShards: showPaidOptions ? values.closeShards : 0,
       }
-    }
-  )
+    })
   const futureMissions = futureRuns.reduce(
     (sum, run) => sum + run.missionCurrency,
     0

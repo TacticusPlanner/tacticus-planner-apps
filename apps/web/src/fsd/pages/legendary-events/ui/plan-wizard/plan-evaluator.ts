@@ -68,13 +68,14 @@ function laneStart(
 
 /**
  * Evaluates chosen upgrades on the draft (design D3–D5): each run's projected roster, every lane's
- * generated teams and the ceiling. A lane's generation is cached by the roster changes of the units
+ * generated teams and the ceiling at the end of the horizon run (the last run without one). A lane's generation is cached by the roster changes of the units
  * it allows, so evaluating one unit's upgrade regenerates only the lanes that unit plays in.
  */
 export function createPlanEvaluator(
   inputs: PlanInputs,
   economy: PlanEconomy,
-  adjustments: TeamAdjustments = NO_TEAM_ADJUSTMENTS
+  adjustments: TeamAdjustments = NO_TEAM_ADJUSTMENTS,
+  horizon?: LegendaryEventRun
 ): PlanEvaluator {
   const runs = planRuns(inputs.resolution)
   const base = new Map(
@@ -119,7 +120,7 @@ export function createPlanEvaluator(
     return {
       rosters,
       teams,
-      ceiling: ceilingOf(draftTokenView(inputs, teams, economy)),
+      ceiling: ceilingOf(draftTokenView(inputs, teams, economy), horizon),
     }
   }
   return { evaluate }
@@ -144,7 +145,8 @@ export function teamSwaps(
   inputs: PlanInputs,
   economy: PlanEconomy,
   adjustments: TeamAdjustments,
-  evaluation: PlanEvaluation
+  evaluation: PlanEvaluation,
+  horizon?: LegendaryEventRun
 ): TeamSwap[] {
   const { ceiling } = evaluation
   if (ceiling === null) return []
@@ -169,7 +171,8 @@ export function teamSwaps(
       ...laneTeams,
     ]
     const gain =
-      (ceilingOf(draftTokenView(inputs, teams, economy)) ?? 0) - ceiling
+      (ceilingOf(draftTokenView(inputs, teams, economy), horizon) ?? 0) -
+      ceiling
     return gain > 0
       ? [{ laneId: team.laneId, teamKey: team.key, replacements, gain }]
       : []
