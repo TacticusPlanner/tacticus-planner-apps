@@ -190,7 +190,12 @@ export function getGoalTargetIssue(
     case "Ability": {
       if (!config.ability) return null
       const { activeStart, passiveStart } = config.ability
-      if (draft.activeEnd < activeStart || draft.passiveEnd < passiveStart) {
+      if (
+        !Number.isInteger(draft.activeEnd) ||
+        !Number.isInteger(draft.passiveEnd) ||
+        draft.activeEnd < activeStart ||
+        draft.passiveEnd < passiveStart
+      ) {
         return "abilityBelowStart"
       }
       if (

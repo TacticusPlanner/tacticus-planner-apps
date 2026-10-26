@@ -5,7 +5,9 @@ import { Button } from "@workspace/ui/components/button"
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@workspace/ui/components/select"
@@ -17,11 +19,13 @@ import {
   rankOrder,
   type Progression,
   type Rank,
+  type Rarity,
 } from "@workspace/game-domain"
 
 import { closestOverlayContent, ProgressionBadge, RankBadge } from "@/shared/ui"
 import type { AbilityMilestone } from "../../model/goal-creation-form/goal-milestones"
-import { AbilityTargetSelect } from "./ability-goal-fields"
+import { abilityLevelsByRarity } from "@/features/goal-planning/@x/goal-create"
+import { abilityLevelOptionsFor } from "../../model/target-edit/goal-target-edit"
 
 type MilestoneListProps<T> = {
   kind: "rank" | "ascension" | "ability"
@@ -267,5 +271,74 @@ export function AbilityMilestoneFields({
         </div>
       )}
     />
+  )
+}
+
+/** One track's milestone levels (`abilityLevelOptionsFor`) grouped by the rarity tier whose cap first
+ * permits each level, under a tier heading per block. */
+function abilityTargetGroups(
+  currentLevel: number
+): { rarity: Rarity; levels: number[] }[] {
+  const levels = abilityLevelOptionsFor(currentLevel)
+  const groups: { rarity: Rarity; levels: number[] }[] = []
+  let tierStart = 1
+  for (const { rarity, level: cap } of abilityLevelsByRarity) {
+    const inTier = levels.filter((level) => level >= tierStart && level <= cap)
+    if (inTier.length > 0) groups.push({ rarity, levels: inTier })
+    tierStart = cap + 1
+  }
+  return groups
+}
+
+/** One ability milestone track's level dropdown, portalled into the sheet. */
+function AbilityTargetSelect({
+  label,
+  testId,
+  currentLevel,
+  value,
+  onValueChange,
+}: {
+  label: string
+  testId: string
+  currentLevel: number
+  value: number
+  onValueChange: (value: number) => void
+}) {
+  const { t } = useTranslation("progression")
+  const { t: tGoals } = useTranslation()
+  const triggerRef = useRef<HTMLButtonElement>(null)
+  const [container, setContainer] = useState<HTMLElement>()
+
+  return (
+    <div className="grid gap-1.5">
+      <label className="text-xs text-muted-foreground">{label}</label>
+      <Select
+        onOpenChange={(open) => {
+          if (open) setContainer(closestOverlayContent(triggerRef.current))
+        }}
+        onValueChange={(next) => onValueChange(Number(next))}
+        value={String(value)}
+      >
+        <SelectTrigger className="w-full" data-testid={testId} ref={triggerRef}>
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent container={container}>
+          {abilityTargetGroups(currentLevel).map(({ rarity, levels }) => (
+            <SelectGroup key={rarity}>
+              <SelectLabel>
+                {t(`rarities.${rarity}`, { defaultValue: rarity })}
+              </SelectLabel>
+              {levels.map((level) => (
+                <SelectItem key={level} value={String(level)}>
+                  {level === currentLevel
+                    ? tGoals("goals.create.ability.noChange", { level })
+                    : level}
+                </SelectItem>
+              ))}
+            </SelectGroup>
+          ))}
+        </SelectContent>
+      </Select>
+    </div>
   )
 }

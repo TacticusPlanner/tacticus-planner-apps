@@ -384,6 +384,7 @@ export function useCreateGoalForm({
     abilityActiveEnd,
     abilityPassiveStart,
     abilityPassiveEnd,
+    abilityTargets: abilityFields.state,
     upgradeFieldsValid: upgradeFields.isValid,
     invalidUpgradeQuantityIds: upgradeFields.state.invalidUpgradeQuantityIds,
     milestones,

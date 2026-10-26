@@ -1115,7 +1115,7 @@
         "alreadyUnlocked": "Dieser Charakter ist bereits freigeschaltet.",
         "rankAlreadyReached": "Der gewählte Rang wurde bereits erreicht.",
         "progressionAlreadyReached": "Der gewählte Aufstieg wurde bereits erreicht.",
-        "abilityRange": "Mindestens eine Fähigkeit muss steigen, und kein Bereich darf sinken.",
+        "abilityRange": "Erhöhe mindestens eine Fähigkeit über ihre aktuelle Stufe.",
         "abilityAlreadyReached": "Die gewählten Fähigkeitsstufen wurden bereits erreicht.",
         "upgradeTargetsRequired": "Wähle mindestens ein Upgrade aus, das für das Upgrade-Ziel gefarmt werden soll.",
         "rankMaxed": "Dieser Charakter hat bereits den maximalen Rang erreicht.",
@@ -1123,7 +1123,8 @@
         "abilityMaxed": "Die Fähigkeiten dieser Einheit haben bereits die maximale Stufe für ihre aktuelle Seltenheit erreicht.",
         "activeOrPausedGoalExists": "Für diese Einheit existiert bereits ein aktives oder pausiertes {{goalType}}-Ziel.",
         "upgradeQuantity": "Gib eine ganze Zahl von 1 bis 10.000 ein.",
-        "alreadyUnlocked_mow": "Diese Kriegsmaschine ist bereits freigeschaltet."
+        "alreadyUnlocked_mow": "Diese Kriegsmaschine ist bereits freigeschaltet.",
+        "abilityOutOfRange": "Wähle eine Stufe von der aktuellen bis 60."
       },
       "startPaused": "Pausiert erstellen",
       "startPausedHint": "Bleibt aus der Tagesplanung, bis du es fortsetzt.",
@@ -1166,7 +1167,16 @@
         "add": "Notiz hinzufügen"
       },
       "priorityHint": "Wo die neuen Ziele in deiner Prioritätsreihenfolge landen.",
-      "priorityLast": "{{position}} von {{total}} (zuletzt)"
+      "priorityLast": "{{position}} von {{total}} (zuletzt)",
+      "steps": {
+        "label": "Schritte zum Erstellen eines Ziels",
+        "position": "Schritt {{position}} von {{total}}:",
+        "unit": "Einheit",
+        "goals": "Ziele",
+        "review": "Überprüfen",
+        "back": "Zurück",
+        "next": "Weiter"
+      }
     },
     "estimate": {
       "none": "—",
@@ -1315,13 +1325,6 @@
       "secondaryEnd": "Sekundäre Fähigkeit, Zielstufe",
       "quantity": "Zielmenge",
       "issues": {
-        "rankNotAboveStart": "Wähle einen Rang über dem, bei dem dieses Ziel gestartet ist.",
-        "progressionNotAboveStart": "Wähle eine Stufe über der, bei der dieses Ziel gestartet ist.",
-        "abilityBelowStart": "Ein Fähigkeitsziel darf nicht unter dem Startlevel dieses Ziels liegen.",
-        "abilityNoAdvance": "Erhöhe mindestens eine Fähigkeit über den Startwert dieses Ziels.",
-        "abilityAboveMax": "Dieses Level liegt über dem maximalen Fähigkeitslevel.",
-        "upgradeQuantity": "Jede Menge muss eine ganze Zahl von 1 bis 10.000 sein.",
-        "upgradeEmpty": "Ein Upgrade-Ziel braucht mindestens ein Material.",
         "upgradeRange": "Wähle einen Bereich, der über seinem Start endet."
       },
       "reachedNote": "Ein bereits erreichtes Ziel ist in Ordnung: Es braucht nichts mehr, und das Ziel behält seinen Status, bis du es abschließt.",
@@ -1382,6 +1385,27 @@
         "loading": "Schätzung wird berechnet…",
         "failed": "Die Schätzung konnte nicht berechnet werden.",
         "nothing": "Für dieses Ziel gibt es nichts mehr zu farmen."
+      }
+    },
+    "card": {
+      "ladder": {
+        "current": "Aktuell",
+        "taken": "Bereits ein Ziel"
+      },
+      "range": {
+        "span": "{{start}} → {{end}}",
+        "materials_one": "{{count}} Material zu farmen",
+        "materials_other": "{{count}} Materialien zu farmen",
+        "nothing": "nichts mehr zu farmen"
+      },
+      "ability": {
+        "next": "Nächste",
+        "plusFive": "+5",
+        "rarityCap": "Seltenheitsgrenze",
+        "decrease": "{{track}} senken",
+        "increase": "{{track}} erhöhen",
+        "noChange": "Keine Änderung",
+        "quickPicks": "{{track}}: Schnellauswahl"
       }
     }
   },
@@ -1542,6 +1566,14 @@
         "issues": {
           "title": "Zu behebende Probleme",
           "content": "Wenn etwas das Erstellen der Ziele verhindert, zählt dies die Probleme. Wähle eines, um zu seinem Feld zu springen."
+        },
+        "ladder": {
+          "title": "Zielleiter",
+          "content": "Wähle das Ziel auf der Leiter. „Aktuell“ markiert, wo die Einheit jetzt steht, und mit „Bereits ein Ziel“ markierte Stufen gehören zu einem anderen Ziel. Die Zeile darunter zeigt den Bereich und was er braucht."
+        },
+        "stepIndicator": {
+          "title": "Drei Schritte",
+          "content": "Wähle die Einheit, dann ihre Ziele, dann überprüfe und erstelle. Mit Zurück bleibt alles erhalten, was du eingegeben hast."
         }
       }
     },
@@ -1562,7 +1594,7 @@
       "steps": {
         "target": {
           "title": "Zielwert",
-          "content": "Ändere, wo dieses Ziel endet, ohne es neu anzulegen. Der Verlauf bleibt erhalten, und dein Plan wird beim Speichern neu berechnet."
+          "content": "Wähle auf der Leiter oder mit dem Stufenregler, wo dieses Ziel endet. Es behält seinen Verlauf, und dein Plan wird beim Speichern neu berechnet."
         },
         "priority": {
           "title": "Priorität",

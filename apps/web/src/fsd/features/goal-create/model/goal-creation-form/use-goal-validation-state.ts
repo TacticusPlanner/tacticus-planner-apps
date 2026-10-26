@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next"
 
 import {
+  maxAbilityLevel,
   progressionIndex,
   rankIndex,
   type Progression,
@@ -43,6 +44,7 @@ export function useGoalValidationState({
   abilityActiveEnd,
   abilityPassiveStart,
   abilityPassiveEnd,
+  abilityTargets,
   upgradeFieldsValid,
   invalidUpgradeQuantityIds,
   milestones,
@@ -62,6 +64,9 @@ export function useGoalValidationState({
   abilityActiveEnd: number
   abilityPassiveStart: number
   abilityPassiveEnd: number
+  /** The levels the steppers hold, before clamping to the start: a typed level outside start..60 is
+   *  reported as out of range rather than silently dropped. */
+  abilityTargets?: { abilityActiveTarget: number; abilityPassiveTarget: number }
   upgradeFieldsValid: boolean
   /** Upgrade rows whose quantity is empty, not whole, or outside 1–10,000. */
   invalidUpgradeQuantityIds: readonly string[]
@@ -89,7 +94,17 @@ export function useGoalValidationState({
     currentPassiveAbility
   )
 
-  const targetIssues = getGoalValidationIssues({
+  const inRange = (level: number, start: number) =>
+    Number.isInteger(level) && level >= start && level <= maxAbilityLevel
+  const abilityOutOfRange =
+    enabledTypes.has("Ability") &&
+    !!abilityTargets &&
+    !(
+      inRange(abilityTargets.abilityActiveTarget, abilityActiveStart) &&
+      inRange(abilityTargets.abilityPassiveTarget, abilityPassiveStart)
+    )
+
+  const allTargetIssues = getGoalValidationIssues({
     hasEntityId: !!entityId,
     enabledTypes,
     isOwned,
@@ -105,6 +120,17 @@ export function useGoalValidationState({
     currentPassiveAbility,
     upgradeFieldsValid,
   })
+  // An out-of-range level replaces the Ability card's other target messages: it is the one to fix.
+  const targetIssues = abilityOutOfRange
+    ? [
+        ...allTargetIssues.filter((issue) => issue.kind !== "Ability"),
+        {
+          kind: "Ability" as const,
+          field: "target",
+          issue: "abilityOutOfRange" as const,
+        },
+      ]
+    : allTargetIssues
   // Each added milestone must be above the one before it (goal-target-milestones); the card shows the
   // message on that milestone, and this one blocks submission.
   const milestoneIssue = milestoneOrderIssue({

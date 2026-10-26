@@ -11,73 +11,64 @@ import {
   useCreateGoalSheetTutorial,
 } from "./create-goal-sheet.tutorial"
 
+const testId = (id: string) => `[data-testid="${id}"]`
+const ladder = `${testId("create-goal-rank-end")}, ${testId("create-goal-ascension-end")}`
+const milestones = ["rank", "ascension", "ability"]
+  .map((kind) => testId(`create-goal-${kind}-milestones`))
+  .join(", ")
+
 describe("useCreateGoalSheetTutorial", () => {
-  it.each(["desktop", "mobile"] as const)(
-    "%s steps target the milestones, sources and project pickers inside the dialog or sheet body",
-    (viewport) => {
-      const { result } = renderHook(() => useCreateGoalSheetTutorial())
-
-      expect(result.current[viewport]).toHaveLength(6)
-      const [
-        statusStep,
-        milestoneStep,
-        step,
-        mythicStep,
-        projectStep,
-        issueStep,
-      ] = result.current[viewport] ?? []
-      if (
-        !statusStep ||
-        !milestoneStep ||
-        !step ||
-        !mythicStep ||
-        !projectStep ||
-        !issueStep
-      )
-        throw new Error("missing steps")
-      expect(statusStep.target).toBe(
-        viewport === "mobile"
-          ? '[data-testid="create-goal-unit-status-summary"]'
-          : '[data-testid="create-goal-unit-info"]'
-      )
-      expect(statusStep.title).toBe("Current status")
-      expect(issueStep.target).toBe('[data-testid="create-goal-issue-summary"]')
-      expect(issueStep.title).toBe("Problems to fix")
-      expect(milestoneStep.target).toBe(
-        '[data-testid="create-goal-rank-milestones"], [data-testid="create-goal-ascension-milestones"], [data-testid="create-goal-ability-milestones"]'
-      )
-      expect(milestoneStep.title).toBe("Milestones")
-      expect(milestoneStep.content).toBe(
-        "Add milestone to plan several targets for this unit at once, such as Gold 1, then Diamond 1, then Diamond 3. Each becomes its own goal, after the one before it."
-      )
-      expect(step.target).toBe(
-        '[data-testid="create-goal-acquisition-sources"]'
-      )
-      expect(step.title).toBe("Acquisition sources")
-      expect(step.content).toBe(
-        "Combine campaign farming, Onslaught, and daily shops — select any mix to lower this goal's estimated time."
-      )
-      expect(mythicStep.target).toBe(
-        '[data-testid="goal-mythic-material-sources"]'
-      )
-      expect(mythicStep.title).toBe("Mythic materials")
-      expect(mythicStep.content).toBe(
-        "Shop offers for the Mythic materials this goal needs. Every available offer is counted by default; uncheck any you won't buy."
-      )
-      expect(projectStep.target).toBe('[data-testid="create-goal-projects"]')
-      expect(projectStep.title).toBe("Projects")
-      expect(projectStep.content).toBe(
-        "Search for a project name that doesn't exist yet and choose Create to add it here without leaving this form. Which projects hold the goal never changes its status or priority."
-      )
-    }
-  )
-
-  it("shares every step across viewports but the status one", () => {
+  it("desktop steps target the status, ladder, milestones, sources, projects and problem count", () => {
     const { result } = renderHook(() => useCreateGoalSheetTutorial())
 
-    expect(result.current.desktop?.slice(1)).toEqual(
-      result.current.mobile?.slice(1)
+    expect(result.current.desktop?.map((step) => step.target)).toEqual([
+      testId("create-goal-unit-info"),
+      ladder,
+      milestones,
+      testId("create-goal-acquisition-sources"),
+      testId("goal-mythic-material-sources"),
+      testId("create-goal-projects"),
+      testId("create-goal-issue-summary"),
+    ])
+    const [status, ladderStep, milestoneStep] = result.current.desktop ?? []
+    expect(status?.title).toBe("Current status")
+    expect(ladderStep?.title).toBe("Target ladder")
+    expect(milestoneStep?.content).toBe(
+      "Add milestone to plan several targets for this unit at once, such as Gold 1, then Diamond 1, then Diamond 3. Each becomes its own goal, after the one before it."
     )
+    expect(result.current.desktop?.some((step) => step.before)).toBe(false)
+  })
+
+  it("mobile steps start with the step indicator and walk the composer steps", async () => {
+    const setMobileStep = vi.fn()
+    document.body.innerHTML = `<div data-testid="create-goal-step-indicator"></div><div data-testid="create-goal-unit-info"></div><div data-testid="create-goal-rank-end"></div><div data-testid="create-goal-rank-milestones"></div><div data-testid="create-goal-acquisition-sources"></div><div data-testid="goal-mythic-material-sources"></div><div data-testid="create-goal-issue-summary"></div><div data-testid="create-goal-projects"></div>`
+    const { result } = renderHook(() =>
+      useCreateGoalSheetTutorial(setMobileStep)
+    )
+
+    const steps = result.current.mobile ?? []
+    expect(steps.map((step) => step.target)).toEqual([
+      testId("create-goal-step-indicator"),
+      testId("create-goal-unit-info"),
+      ladder,
+      milestones,
+      testId("create-goal-acquisition-sources"),
+      testId("goal-mythic-material-sources"),
+      testId("create-goal-issue-summary"),
+      testId("create-goal-projects"),
+    ])
+    expect(steps[0]?.title).toBe("Three steps")
+    for (const step of steps) await step.before?.({} as never)
+    expect(setMobileStep.mock.calls.map(([step]) => step)).toEqual([
+      "unit",
+      "unit",
+      "goals",
+      "goals",
+      "goals",
+      "goals",
+      "goals",
+      "review",
+    ])
   })
 })
 

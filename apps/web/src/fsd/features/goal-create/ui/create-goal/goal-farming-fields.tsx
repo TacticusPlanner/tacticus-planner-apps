@@ -1,44 +1,9 @@
 import { useTranslation } from "react-i18next"
 import { gameAssetUrl } from "@workspace/game-catalog"
-import type { Progression } from "@workspace/game-domain"
 
 import { shopCurrencyIcon } from "@/features/shop-rewards/@x/goal-create"
 import { energyIconUrl, EntityIcon } from "@/shared/ui"
 import type { useProgressionPreview } from "../../model/goal-creation-form/use-progression-preview"
-import { AscensionGoalFields } from "./goal-type-fields"
-
-export function AscensionFarmingFields({
-  progressionStart,
-  progressionEnd,
-  progressionEndOptions,
-  onProgressionEndChange,
-  progressionPreview,
-  taken,
-  issues,
-}: {
-  progressionStart: Progression
-  progressionEnd: Progression
-  progressionEndOptions: readonly Progression[]
-  onProgressionEndChange: (value: Progression) => void
-  progressionPreview: ProgressionPreviewResult
-  taken?: ReadonlySet<string>
-  issues?: Parameters<typeof AscensionGoalFields>[0]["issues"]
-}) {
-  return (
-    <div className="grid gap-3">
-      <AscensionGoalFields
-        issues={issues}
-        progressionStart={progressionStart}
-        progressionEnd={progressionEnd}
-        progressionEndOptions={progressionEndOptions}
-        onProgressionEndChange={onProgressionEndChange}
-        taken={taken}
-      />
-      <ProgressionPreview preview={progressionPreview} />
-    </div>
-  )
-}
-
 type ProgressionPreviewResult = ReturnType<typeof useProgressionPreview>
 
 export function ProgressionPreview({

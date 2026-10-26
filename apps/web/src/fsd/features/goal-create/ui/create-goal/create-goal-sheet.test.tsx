@@ -441,6 +441,22 @@ async function selectMow() {
   fireEvent.click(await screen.findByText("Stormbird"))
 }
 
+/** Types `level` into the ability stepper labelled `label`. */
+function setLevel(label: string, level: number) {
+  fireEvent.change(screen.getByRole("spinbutton", { name: label }), {
+    target: { value: String(level) },
+  })
+}
+
+/** Selects the ladder step named `name` in the ladder `testId`. */
+function pickStep(testId: string, name: string) {
+  fireEvent.click(
+    within(screen.getByTestId(testId)).getByRole("radio", {
+      name: new RegExp(`^${name}(,|$)`),
+    })
+  )
+}
+
 describe("CreateGoalSheet", () => {
   beforeEach(async () => {
     setTestAuth({ authenticated: true })
@@ -1042,11 +1058,7 @@ describe("CreateGoalSheet", () => {
       ).not.toBeDisabled()
     })
     fireEvent.click(screen.getByTestId("create-goal-type-toggle-Ascension"))
-    fireEvent.click(screen.getByTestId("create-goal-ascension-end"))
-    const targetList = await screen.findByRole("listbox")
-    fireEvent.click(
-      within(targetList).getByAltText("One Star").closest('[role="option"]')!
-    )
+    pickStep("create-goal-ascension-end", "Common One Star")
     await screen.findByTestId("create-goal-shard-location-B1")
 
     // Following the link closes the sheet (via onNavigateAway) — it must not reset the form.
@@ -1082,11 +1094,7 @@ describe("CreateGoalSheet", () => {
     // The default Common:None -> Common:None range needs no shards at all, so the selector
     // correctly stays hidden until the target actually crosses a step that costs regular shards —
     // advance to Common:OneStar (20 regular shards per the ascension-costs fixture above).
-    fireEvent.click(screen.getByTestId("create-goal-ascension-end"))
-    const listbox = await screen.findByRole("listbox")
-    fireEvent.click(
-      within(listbox).getByAltText("One Star").closest('[role="option"]')!
-    )
+    pickStep("create-goal-ascension-end", "Common One Star")
 
     // Ascension alone: the shared selector shows on its card.
     await screen.findByTestId("create-goal-shard-location-B1")
@@ -1144,11 +1152,7 @@ describe("CreateGoalSheet", () => {
 
     // Advance all the way to Mythic:TwoBlueStars (8 mythic shards per the fixture above) — now the
     // mythic group appears, listing ASE28 (never B1, which is regular-only).
-    fireEvent.click(screen.getByTestId("create-goal-ascension-end"))
-    const listbox = await screen.findByRole("listbox")
-    fireEvent.click(
-      within(listbox).getByAltText("Two Blue Stars").closest('[role="option"]')!
-    )
+    pickStep("create-goal-ascension-end", "Mythic Two Blue Stars")
 
     await screen.findByTestId("create-goal-shard-location-ASE28")
     expect(
@@ -1172,11 +1176,7 @@ describe("CreateGoalSheet", () => {
 
     // Advance to a range needing mythic shards before Unlock is enabled — same fixture/target as
     // "offers the mythic shard-location group..." above.
-    fireEvent.click(screen.getByTestId("create-goal-ascension-end"))
-    const listbox = await screen.findByRole("listbox")
-    fireEvent.click(
-      within(listbox).getByAltText("Two Blue Stars").closest('[role="option"]')!
-    )
+    pickStep("create-goal-ascension-end", "Mythic Two Blue Stars")
     await screen.findByTestId("create-goal-shard-location-ASE28")
 
     // Enabling Unlock alongside it moves the shared Campaigns group's regular-only sources to
@@ -1217,10 +1217,7 @@ describe("CreateGoalSheet", () => {
 
     // Milestones needs a range spanning at least 2 milestone tiers — the default Stone1 -> Stone2
     // range is too short, so widen the target first.
-    fireEvent.click(screen.getByTestId("create-goal-rank-end"))
-    fireEvent.click(
-      within(await screen.findByRole("listbox")).getByText("Silver I")
-    )
+    pickStep("create-goal-rank-end", "Silver I")
 
     fireEvent.click(screen.getByTestId("create-goal-farming-strategy"))
     fireEvent.click(
@@ -1253,9 +1250,7 @@ describe("CreateGoalSheet", () => {
       expect(
         screen.queryByTestId("goal-mythic-material-sources")
       ).not.toBeInTheDocument()
-      fireEvent.click(screen.getByTestId("create-goal-rank-end"))
-      const listbox = await screen.findByRole("listbox")
-      fireEvent.click(within(listbox).getByText(rank))
+      pickStep("create-goal-rank-end", rank)
     }
 
     async function submittedRankConfig() {
@@ -1316,9 +1311,7 @@ describe("CreateGoalSheet", () => {
         name: "None",
       })
     )
-    fireEvent.click(screen.getByTestId("create-goal-rank-end"))
-    listbox = await screen.findByRole("listbox")
-    fireEvent.click(within(listbox).getByText("Adamantine I"))
+    pickStep("create-goal-rank-end", "Adamantine I")
 
     fireEvent.click(screen.getByTestId("create-goal-rank-additional-target"))
     listbox = await screen.findByRole("listbox")
@@ -1333,9 +1326,7 @@ describe("CreateGoalSheet", () => {
         name: "None",
       })
     )
-    fireEvent.click(screen.getByTestId("create-goal-rank-end"))
-    listbox = await screen.findByRole("listbox")
-    fireEvent.click(within(listbox).getByText("Adamantine II"))
+    pickStep("create-goal-rank-end", "Adamantine II")
 
     fireEvent.click(screen.getByTestId("create-goal-rank-additional-target"))
     listbox = await screen.findByRole("listbox")
@@ -1984,6 +1975,18 @@ describe("CreateGoalSheet", () => {
     })
   })
 
+  it("shows the range message for a typed Ability level above 60 and blocks creation", async () => {
+    render(<CreateGoalSheet open onOpenChange={vi.fn()} />)
+    await selectCharacter()
+    fireEvent.click(screen.getByTestId("create-goal-type-toggle-Ability"))
+
+    setLevel("Active ability, target level", 61)
+    expect(
+      screen.getByTestId("create-goal-issue-Ability-target")
+    ).toHaveTextContent("Choose a level from the current one up to 60.")
+    expect(screen.getByTestId("create-goal-submit")).toBeDisabled()
+  })
+
   it("creates a Character Ability goal with independent active and passive targets", async () => {
     await seedCharacter({
       rank: "Silver1",
@@ -2001,26 +2004,14 @@ describe("CreateGoalSheet", () => {
     await selectCharacter()
     fireEvent.click(screen.getByTestId("create-goal-type-toggle-Ability"))
 
-    // Full range per track: current level selectable, an intermediate level present, above-cap
-    // levels present, nothing below the current level.
-    fireEvent.click(screen.getByTestId("create-goal-ability-active-target"))
-    const activeList = await screen.findByRole("listbox")
+    // Each track's stepper starts at its own level: no lower, and that level leaves it unchanged.
+    setLevel("Active ability, target level", 20)
+    setLevel("Passive ability, target level", 9)
     expect(
-      within(activeList).getByRole("option", { name: "12 (no change)" })
-    ).toBeVisible()
-    expect(within(activeList).getByRole("option", { name: "14" })).toBeVisible()
-    expect(within(activeList).getByRole("option", { name: "30" })).toBeVisible()
-    expect(
-      within(activeList).queryByRole("option", { name: "11" })
-    ).not.toBeInTheDocument()
-    fireEvent.click(within(activeList).getByRole("option", { name: "20" }))
-
-    // Leave the passive track alone by selecting its own current level.
-    fireEvent.click(screen.getByTestId("create-goal-ability-passive-target"))
-    const passiveList = await screen.findByRole("listbox")
-    fireEvent.click(
-      within(passiveList).getByRole("option", { name: "9 (no change)" })
-    )
+      screen.getByRole("button", {
+        name: "Lower Passive ability, target level",
+      })
+    ).toBeDisabled()
 
     await vi.waitFor(() => {
       expect(screen.getByTestId("create-goal-submit")).not.toBeDisabled()
@@ -2063,9 +2054,7 @@ describe("CreateGoalSheet", () => {
     await selectCharacter()
     fireEvent.click(screen.getByTestId("create-goal-type-toggle-Ability"))
 
-    fireEvent.click(screen.getByTestId("create-goal-ability-active-target"))
-    const activeList = await screen.findByRole("listbox")
-    fireEvent.click(within(activeList).getByRole("option", { name: "35" }))
+    setLevel("Active ability, target level", 35)
 
     // Above the Rare ability cap (26): Ascension is offered. It is also above the current character
     // level (20): the Ability card shows that requirement, but no Level prerequisite is offered.
@@ -2224,9 +2213,7 @@ describe("CreateGoalSheet", () => {
 
       await selectCharacter()
       fireEvent.click(screen.getByTestId("create-goal-type-toggle-Ability"))
-      fireEvent.click(screen.getByTestId("create-goal-ability-active-target"))
-      const activeList = await screen.findByRole("listbox")
-      fireEvent.click(within(activeList).getByRole("option", { name: "35" }))
+      setLevel("Active ability, target level", 35)
 
       expect(
         await screen.findByTestId("create-goal-review-depends-on-existing")
@@ -2648,17 +2635,16 @@ describe("CreateGoalSheet", () => {
       await selectCharacter()
       await enable("Rank")
 
-      expect(screen.getByTestId("create-goal-rank-end")).toHaveTextContent(
-        "Stone III"
-      )
+      const ladder = screen.getByTestId("create-goal-rank-end")
+      expect(
+        within(ladder).getByRole("radio", { checked: true })
+      ).toHaveAccessibleName("Stone III")
       expect(
         screen.queryByTestId("create-goal-slot-conflict")
       ).not.toBeInTheDocument()
-      fireEvent.click(screen.getByTestId("create-goal-rank-end"))
-      const taken = within(await screen.findByRole("listbox")).getByRole(
-        "option",
-        { name: /Stone II.*Already a goal/ }
-      )
+      const taken = within(ladder).getByRole("radio", {
+        name: "Stone II, Already a goal",
+      })
       expect(taken).toHaveAttribute("aria-disabled", "true")
     })
 
@@ -2670,11 +2656,12 @@ describe("CreateGoalSheet", () => {
       expect(
         screen.queryByText("The selected progression has already been reached.")
       ).not.toBeInTheDocument()
-      fireEvent.click(screen.getByTestId("create-goal-ascension-end"))
-      const [first] = within(await screen.findByRole("listbox")).getAllByRole(
-        "option"
-      )
-      expect(first).toHaveAccessibleName(/One Star/i)
+      expect(
+        within(screen.getByTestId("create-goal-ascension-end")).getByRole(
+          "radio",
+          { checked: true }
+        )
+      ).toHaveAccessibleName("Common One Star")
     })
 
     it("shows every problem inline at once, counts them beside submit, and moves focus from the summary", async () => {
@@ -2732,7 +2719,12 @@ describe("CreateGoalSheet", () => {
       ])
       fireEvent.click(items[1]!)
       await vi.waitFor(() => {
-        expect(screen.getByTestId("create-goal-rank-end")).toHaveFocus()
+        expect(
+          within(screen.getByTestId("create-goal-rank-end")).getByRole(
+            "radio",
+            { checked: true }
+          )
+        ).toHaveFocus()
       })
       expect(screen.getByTestId("create-goal-type-card-Rank")).toHaveAttribute(
         "data-expanded",
@@ -2949,43 +2941,128 @@ describe("CreateGoalSheet", () => {
       )
     })
 
-    it("on mobile, keeps only Close and Create goal in the footer, the options above the review, and the status as one line", async () => {
-      const restore = asMobile()
-      try {
+    describe("mobile step flow (unify-goal-composer)", () => {
+      const footerButtons = () =>
+        [
+          ...screen
+            .getByTestId("create-goal-sheet")
+            .querySelector('[data-slot="responsive-dialog-footer"]')!
+            .querySelectorAll("button"),
+        ].map((button) => button.textContent)
+      const currentStep = () =>
+        within(screen.getByTestId("create-goal-step-indicator"))
+          .getAllByRole("listitem")
+          .find((item) => item.getAttribute("aria-current") === "step")
+      const next = () => screen.getByRole("button", { name: "Next" })
+
+      it("shows no step indicator on desktop", async () => {
         render(<CreateGoalSheet open onOpenChange={vi.fn()} />)
-        await selectCharacter().catch(() => undefined)
-        await vi.waitFor(() => {
+        await selectCharacter()
+        expect(
+          screen.queryByTestId("create-goal-step-indicator")
+        ).not.toBeInTheDocument()
+        expect(screen.queryByRole("button", { name: "Next" })).toBeNull()
+      })
+
+      it("walks a plain launch from Unit to Goals to Review, keeping values on Back", async () => {
+        const restore = asMobile()
+        try {
+          render(<CreateGoalSheet open onOpenChange={vi.fn()} />)
+          await selectCharacter()
+
+          // Unit: the picker and the full status, step 1 of 3.
+          expect(currentStep()).toHaveTextContent("Step 1 of 3:1Unit")
           expect(
-            screen.getByTestId("create-goal-unit-status-summary")
-          ).toBeInTheDocument()
-        })
+            screen.queryByTestId("create-goal-unit-status-summary")
+          ).not.toBeInTheDocument()
+          expect(footerButtons()).toEqual(["Close", "Next"])
 
-        const footer = screen
-          .getByTestId("create-goal-sheet")
-          .querySelector('[data-slot="responsive-dialog-footer"]')!
-        expect(
-          [...footer.querySelectorAll("button")].map((b) => b.textContent)
-        ).toEqual(["Close", "Create goal"])
-        const options = screen.getByTestId("create-goal-footer-options")
-        expect(footer).not.toContainElement(options)
-        await enable("Rank")
-        const review = await screen.findByTestId("create-goal-review")
-        expect(
-          options.compareDocumentPosition(review) &
-            Node.DOCUMENT_POSITION_FOLLOWING
-        ).toBeTruthy()
+          // Goals: the one-line status, the types and an empty state; Next waits for a goal type.
+          fireEvent.click(next())
+          expect(currentStep()).toHaveTextContent("Goals")
+          expect(
+            screen.getByTestId("create-goal-unit-status-summary-toggle")
+          ).toHaveAttribute("aria-expanded", "false")
+          expect(
+            screen.getByTestId("create-goal-empty-state")
+          ).toHaveTextContent("Choose a goal type")
+          expect(next()).toBeDisabled()
+          await enable("Rank")
+          pickStep("create-goal-rank-end", "Silver I")
+          await vi.waitFor(() => expect(next()).toBeEnabled())
+          expect(footerButtons()).toEqual(["Back", "Next"])
 
-        const toggle = screen.getByTestId(
-          "create-goal-unit-status-summary-toggle"
-        )
-        expect(toggle).toHaveAttribute("aria-expanded", "false")
-        expect(toggle).toHaveTextContent("Stone I")
-        fireEvent.click(toggle)
-        expect(toggle).toHaveAttribute("aria-expanded", "true")
-        expect(screen.getByTestId("create-goal-unit-info")).toBeVisible()
-      } finally {
-        restore()
-      }
+          // Review: projects, the options above the review, and Create goal.
+          fireEvent.click(next())
+          expect(currentStep()).toHaveTextContent("Review")
+          const options = screen.getByTestId("create-goal-footer-options")
+          const review = screen.getByTestId("create-goal-review")
+          expect(
+            options.compareDocumentPosition(review) &
+              Node.DOCUMENT_POSITION_FOLLOWING
+          ).toBeTruthy()
+          expect(screen.getByTestId("create-goal-projects")).toBeInTheDocument()
+          expect(footerButtons()).toEqual(["Back", "Create goal"])
+
+          fireEvent.click(screen.getByRole("button", { name: "Back" }))
+          expect(currentStep()).toHaveTextContent("Goals")
+          expect(
+            within(screen.getByTestId("create-goal-rank-end")).getByRole(
+              "radio",
+              { checked: true }
+            )
+          ).toHaveAccessibleName("Silver I")
+        } finally {
+          restore()
+        }
+      })
+
+      it("starts a launch that carries a unit at Goals, with Back to Unit", async () => {
+        const restore = asMobile()
+        try {
+          render(
+            <CreateGoalSheet
+              onOpenChange={vi.fn()}
+              open
+              prefill={{ entityType: "Character", entityId: "hero1" as never }}
+            />
+          )
+          await vi.waitFor(() => {
+            expect(currentStep()).toHaveTextContent("Goals")
+          })
+          fireEvent.click(screen.getByRole("button", { name: "Back" }))
+          expect(currentStep()).toHaveTextContent("Unit")
+        } finally {
+          restore()
+        }
+      })
+
+      it("blocks Next on Goals while Upgrade has no material, with the problem beside it", async () => {
+        const restore = asMobile()
+        try {
+          render(<CreateGoalSheet open onOpenChange={vi.fn()} />)
+          await selectCharacter()
+          fireEvent.click(next())
+          await enable("Upgrade")
+
+          expect(next()).toBeDisabled()
+          expect(
+            screen.getByTestId("create-goal-issue-summary")
+          ).toHaveTextContent("1 problem to fix")
+          fireEvent.click(
+            screen.getByRole("combobox", { name: "Add an upgrade" })
+          )
+          fireEvent.click(
+            within(await screen.findByRole("listbox")).getByText("Health Base")
+          )
+          await vi.waitFor(() => expect(next()).toBeEnabled())
+          expect(
+            screen.queryByTestId("create-goal-issue-summary")
+          ).not.toBeInTheDocument()
+        } finally {
+          restore()
+        }
+      })
     })
 
     it("sends a separate note per goal type card and places the goals last by default", async () => {

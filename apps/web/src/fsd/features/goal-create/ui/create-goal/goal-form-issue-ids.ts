@@ -37,6 +37,11 @@ export function focusGoalField(kind: GoalKind, field: string) {
       document.getElementById(goalFieldId(kind, field)) ??
       document.getElementById(goalCardHeaderId(kind))
     target?.scrollIntoView?.({ block: "center" })
-    target?.focus()
+    // A target ladder is a radio group: focus its one tab stop.
+    const focusable =
+      target?.getAttribute("role") === "radiogroup"
+        ? target.querySelector<HTMLElement>('[tabindex="0"]')
+        : target
+    focusable?.focus()
   }, 0)
 }

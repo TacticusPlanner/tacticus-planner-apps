@@ -16,6 +16,10 @@ const plan = vi.hoisted(() => ({
   loading: false,
 }))
 const mobile = vi.hoisted(() => ({ value: false }))
+// The account's goals the taken-target check reads.
+const accountGoals = vi.hoisted(() => new Map<string, unknown>())
+const seedInFlight = (goal: { goalId: string }) =>
+  accountGoals.set(goal.goalId, goal)
 
 vi.mock("@workspace/ui/hooks/use-mobile", () => ({
   useIsMobile: () => mobile.value,
@@ -47,6 +51,7 @@ vi.mock("@/entities/goal", async (importOriginal) => {
     },
     editGoal: (...args: unknown[]) => editGoal(...args),
     useGlobalGoalPlan: () => plan,
+    useGoalsById: () => ({ goalsById: accountGoals }),
   }
 })
 
@@ -296,6 +301,26 @@ async function chooseOption(triggerTestId: string, optionText: string) {
   )
 }
 
+/** Selects the ladder step named `name`. */
+function pickStep(testId: string, name: string) {
+  fireEvent.click(
+    within(screen.getByTestId(testId)).getByRole("radio", {
+      name: new RegExp(`^${name}(,|$)`),
+    })
+  )
+}
+
+/** The ladder's selected step. */
+const selectedStep = (testId: string) =>
+  within(screen.getByTestId(testId)).getByRole("radio", { checked: true })
+
+/** Types `level` into the ability stepper labelled `label`. */
+function setLevel(label: string, level: number) {
+  fireEvent.change(screen.getByRole("spinbutton", { name: label }), {
+    target: { value: String(level) },
+  })
+}
+
 const position = (n: number, total = 5) => `${n} of ${total}`
 
 // The Onslaught reward the Edit dialog's yield note reads for a Gold 3 position.
@@ -311,6 +336,7 @@ const onslaughtRewards = [
 
 describe("GoalEditDialog", () => {
   beforeEach(async () => {
+    accountGoals.clear()
     setTestAuth({ authenticated: true })
     await seedGameCatalog({ "onslaught-rewards": onslaughtRewards })
     await seedPlayerData({
@@ -470,7 +496,7 @@ describe("GoalEditDialog", () => {
       renderDialog()
       await loaded()
 
-      expect(screen.getByTestId("goal-target-rank-end")).toHaveTextContent(
+      expect(selectedStep("create-goal-rank-end")).toHaveAccessibleName(
         "Diamond I"
       )
       expect(screen.getByTestId("goal-edit-save")).toBeDisabled()
@@ -491,7 +517,7 @@ describe("GoalEditDialog", () => {
       renderDialog()
       await loaded()
 
-      await chooseOption("goal-target-ability-activeEnd", "9")
+      setLevel("Active ability, target level", 9)
       fireEvent.click(screen.getByTestId("goal-edit-save"))
 
       await vi.waitFor(() => expect(editGoal).toHaveBeenCalled())
@@ -522,10 +548,14 @@ describe("GoalEditDialog", () => {
         renderDialog()
         await loaded()
 
-        expect(screen.queryByTestId("goal-target-issue")).toBeNull()
         expect(
-          screen.getByTestId("goal-target-ability-passiveEnd")
-        ).toHaveTextContent("26")
+          screen.queryByTestId("create-goal-issue-Ability-target")
+        ).toBeNull()
+        expect(
+          screen.getByRole("spinbutton", {
+            name: "Passive ability, target level",
+          })
+        ).toHaveValue(26)
         fireEvent.change(screen.getByLabelText("Notes"), {
           target: { value: "New note" },
         })
@@ -541,7 +571,7 @@ describe("GoalEditDialog", () => {
         renderDialog()
         await loaded()
 
-        await chooseOption("goal-target-ability-activeEnd", "50")
+        setLevel("Active ability, target level", 50)
         fireEvent.click(screen.getByTestId("goal-edit-save"))
 
         await vi.waitFor(() => expect(editGoal).toHaveBeenCalled())
@@ -635,9 +665,11 @@ describe("GoalEditDialog", () => {
       })
 
       expect(
-        screen.getByTestId("goal-target-upgrade-upgHpC014")
+        screen.getByTestId("create-goal-upgrade-target-upgHpC014")
       ).toHaveTextContent("Enter a whole number from 1 to 10,000.")
-      expect(screen.queryByTestId("goal-target-issue")).not.toBeInTheDocument()
+      expect(
+        screen.queryByTestId("create-goal-issue-Upgrade-materials")
+      ).not.toBeInTheDocument()
       expect(screen.getByTestId("goal-edit-save")).toBeDisabled()
     })
 
@@ -671,7 +703,7 @@ describe("GoalEditDialog", () => {
         )
         expect(second).not.toHaveAttribute("aria-invalid")
         expect(
-          screen.getByTestId("goal-target-upgrade-upgHpM004")
+          screen.getByTestId("create-goal-upgrade-target-upgHpM004")
         ).not.toHaveTextContent("Enter a whole number")
         expect(screen.getByTestId("goal-edit-save")).toBeDisabled()
       })
@@ -682,16 +714,14 @@ describe("GoalEditDialog", () => {
         await loaded()
 
         fireEvent.click(
-          within(screen.getByTestId("goal-target-upgrade-upgHpM004")).getByRole(
-            "button",
-            { name: "Remove" }
-          )
+          within(
+            screen.getByTestId("create-goal-upgrade-target-upgHpM004")
+          ).getByRole("button", { name: "Remove" })
         )
         expect(
-          within(screen.getByTestId("goal-target-upgrade-upgHpC014")).getByRole(
-            "button",
-            { name: "Remove" }
-          )
+          within(
+            screen.getByTestId("create-goal-upgrade-target-upgHpC014")
+          ).getByRole("button", { name: "Remove" })
         ).toBeDisabled()
         fireEvent.click(screen.getByTestId("goal-edit-save"))
 
@@ -780,19 +810,100 @@ describe("GoalEditDialog", () => {
         ).toHaveTextContent("There are no locations to choose for this goal.")
       })
 
+      describe("unify-goal-composer", () => {
+        it("shows a stored Ascension target at or below its start as selected, with creation's message", async () => {
+          goalOnScreen({
+            ...ascensionGoal,
+            config: {
+              ...ascensionGoal.config,
+              progression: {
+                start: "Epic:RedTwoStars",
+                end: "Epic:RedOneStar",
+              },
+            },
+          } as unknown as GoalDetail)
+          renderDialog()
+          await loaded()
+
+          expect(
+            selectedStep("create-goal-ascension-end")
+          ).toHaveAccessibleName("Epic Red One Star")
+          // The same text creation shows for a target at or below the start.
+          expect(
+            screen.getByTestId("create-goal-issue-Ascension-target")
+          ).toHaveTextContent(
+            "The selected progression has already been reached."
+          )
+          expect(
+            screen.getByTestId("create-goal-ascension-end")
+          ).toHaveAttribute("aria-invalid", "true")
+        })
+
+        it("marks other in-flight Rank targets of the unit as taken, but not its own", async () => {
+          goalOnScreen(rankGoal)
+          seedInFlight({
+            ...rankGoal,
+            goalId: "goal-other",
+            config: {
+              ...rankGoal.config,
+              rank: { ...rankGoal.config.rank!, end: 16 },
+            },
+          } as unknown as GoalDetail)
+          renderDialog()
+          await loaded()
+
+          expect(
+            within(screen.getByTestId("create-goal-rank-end")).getByRole(
+              "radio",
+              { name: "Diamond II, Already a goal" }
+            )
+          ).toHaveAttribute("aria-disabled", "true")
+          expect(selectedStep("create-goal-rank-end")).toHaveAccessibleName(
+            "Diamond I"
+          )
+        })
+
+        it("shows no creation-only controls for a Rank goal", async () => {
+          renderDialog()
+          await loaded()
+
+          expect(screen.queryByTestId("create-goal-rank-milestones")).toBeNull()
+          expect(
+            screen.queryByTestId("create-goal-include-ascension")
+          ).toBeNull()
+          expect(screen.queryByTestId("create-goal-include-unlock")).toBeNull()
+          expect(screen.queryByText("Create paused")).toBeNull()
+          expect(screen.queryByText("Create another goal")).toBeNull()
+          expect(screen.getByTestId("create-goal-rank-end")).toBeInTheDocument()
+        })
+
+        it("shows the range message for a typed Ability level above 60 and blocks Save", async () => {
+          goalOnScreen(abilityGoal)
+          renderDialog()
+          await loaded()
+
+          setLevel("Active ability, target level", 61)
+          expect(
+            screen.getByTestId("create-goal-issue-Ability-target")
+          ).toHaveTextContent("Choose a level from the current one up to 60.")
+          expect(screen.getByTestId("goal-edit-save")).toBeDisabled()
+        })
+      })
+
       it("Ascension: offers only steps above the start, with no None option", async () => {
         goalOnScreen(ascensionGoal)
         renderDialog()
         await loaded()
 
-        fireEvent.click(screen.getByTestId("goal-target-ascension-end"))
-        const options = within(await screen.findByRole("listbox")).getAllByRole(
-          "option"
-        )
-        expect(options[0]).toHaveAccessibleName(/One Star/i)
+        // Steps at or below the start can't be chosen; the first choosable one is the next step.
+        const ladder = screen.getByTestId("create-goal-ascension-end")
+        const choosable = within(ladder)
+          .getAllByRole("radio")
+          .filter((step) => !step.hasAttribute("aria-disabled"))
+        expect(choosable[0]).toHaveAccessibleName(/Common One Star/)
         expect(
-          options.some((option) => /None/.test(option.textContent ?? ""))
-        ).toBe(false)
+          within(ladder).getByRole("radio", { name: "Common, Current" })
+        ).toHaveAttribute("aria-disabled", "true")
       })
 
       it("Ascension: says the cheapest node is used when Campaigns has no node checked", async () => {
@@ -830,7 +941,7 @@ describe("GoalEditDialog", () => {
         expect(
           within(preview()).getAllByRole("img").at(-1)
         ).toHaveAccessibleName("Gold I")
-        await chooseOption("goal-target-rank-end", "Diamond I")
+        pickStep("create-goal-rank-end", "Diamond I")
         expect(preview()).toHaveTextContent("(6 checkpoints)")
         expect(
           within(preview()).getAllByRole("img").at(-1)
@@ -849,11 +960,11 @@ describe("GoalEditDialog", () => {
         const { unmount } = renderDialog()
         await loaded()
 
-        const estimate = screen.getByTestId("goal-edit-estimate")
-        expect(estimate).toHaveTextContent("Estimate for this target")
+        const estimate = screen.getByTestId("create-goal-preview")
+        expect(estimate).toHaveTextContent("Resources needed")
         expect(estimate).toHaveTextContent("upgHpC014 × 1")
-        await chooseOption("goal-target-rank-end", "Stone III")
-        expect(screen.getByTestId("goal-edit-estimate")).toHaveTextContent(
+        pickStep("create-goal-rank-end", "Stone III")
+        expect(screen.getByTestId("create-goal-preview")).toHaveTextContent(
           "upgHpC014 × 2"
         )
         unmount()
@@ -862,7 +973,7 @@ describe("GoalEditDialog", () => {
         renderDialog()
         await loaded()
         expect(
-          screen.queryByTestId("goal-edit-estimate")
+          screen.queryByTestId("create-goal-preview")
         ).not.toBeInTheDocument()
       })
 
@@ -950,9 +1061,9 @@ describe("GoalEditDialog", () => {
       await screen.findByTestId(guildOffer)
 
       fireEvent.change(
-        within(screen.getByTestId("goal-target-upgrade-upgHpM004")).getByRole(
-          "spinbutton"
-        ),
+        within(
+          screen.getByTestId("create-goal-upgrade-target-upgHpM004")
+        ).getByRole("spinbutton"),
         { target: { value: "" } }
       )
 
@@ -1072,7 +1183,7 @@ describe("GoalEditDialog", () => {
       renderDialog({ goalId: "e", onOpenChange }, queryClient)
       await loaded()
 
-      await chooseOption("goal-target-rank-end", "Gold II")
+      pickStep("create-goal-rank-end", "Gold II")
       fireEvent.change(screen.getByLabelText("Notes"), {
         target: { value: " Updated " },
       })
@@ -1203,7 +1314,7 @@ describe("GoalEditDialog", () => {
       renderDialog({ onOpenChange })
       await loaded()
 
-      await chooseOption("goal-target-rank-end", "Gold II")
+      pickStep("create-goal-rank-end", "Gold II")
       await user.click(screen.getByTestId("goal-edit-add-project"))
       await user.click(await screen.findByText("Event Prep"))
       fireEvent.click(screen.getByTestId("goal-edit-save"))
@@ -1212,7 +1323,7 @@ describe("GoalEditDialog", () => {
         /already has an active or paused Rank goal/
       )
       expect(onOpenChange).not.toHaveBeenCalled()
-      expect(screen.getByTestId("goal-target-rank-end")).toHaveTextContent(
+      expect(selectedStep("create-goal-rank-end")).toHaveAccessibleName(
         "Gold II"
       )
       expect(
@@ -1267,14 +1378,14 @@ describe("GoalEditDialog", () => {
       renderDialog({ onOpenChange })
       await loaded()
 
-      await chooseOption("goal-target-rank-end", "Gold II")
+      pickStep("create-goal-rank-end", "Gold II")
       fireEvent.click(screen.getByTestId("goal-edit-save"))
 
       expect(await screen.findByTestId("goal-edit-error")).toHaveTextContent(
         "This goal was changed elsewhere and nothing was saved. Refresh the goal (your edits are kept), then save again."
       )
       expect(onOpenChange).not.toHaveBeenCalled()
-      expect(screen.getByTestId("goal-target-rank-end")).toHaveTextContent(
+      expect(selectedStep("create-goal-rank-end")).toHaveAccessibleName(
         "Gold II"
       )
 
@@ -1283,7 +1394,7 @@ describe("GoalEditDialog", () => {
       await vi.waitFor(() =>
         expect(screen.queryByTestId("goal-edit-error")).toBeNull()
       )
-      expect(screen.getByTestId("goal-target-rank-end")).toHaveTextContent(
+      expect(selectedStep("create-goal-rank-end")).toHaveAccessibleName(
         "Gold II"
       )
       // Let the refetch of the refreshed goal settle before retrying.

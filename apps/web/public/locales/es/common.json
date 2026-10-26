@@ -1115,7 +1115,7 @@
         "alreadyUnlocked": "Este personaje ya está desbloqueado.",
         "rankAlreadyReached": "El rango seleccionado ya se ha alcanzado.",
         "progressionAlreadyReached": "La ascensión seleccionada ya se ha alcanzado.",
-        "abilityRange": "Al menos una habilidad debe aumentar, y ningún intervalo puede disminuir.",
+        "abilityRange": "Sube al menos una habilidad por encima de su nivel actual.",
         "abilityAlreadyReached": "Los niveles de habilidad seleccionados ya se han alcanzado.",
         "upgradeTargetsRequired": "Selecciona al menos una mejora para farmear para el objetivo de mejora.",
         "rankMaxed": "Este personaje ya ha alcanzado el rango máximo.",
@@ -1123,7 +1123,8 @@
         "abilityMaxed": "Las habilidades de esta unidad ya han alcanzado el nivel máximo para su rareza actual.",
         "activeOrPausedGoalExists": "Ya existe un objetivo de {{goalType}} activo o pausado para esta unidad.",
         "upgradeQuantity": "Introduce un número entero del 1 al 10.000.",
-        "alreadyUnlocked_mow": "Esta máquina de guerra ya está desbloqueada."
+        "alreadyUnlocked_mow": "Esta máquina de guerra ya está desbloqueada.",
+        "abilityOutOfRange": "Elige un nivel desde el actual hasta 60."
       },
       "startPaused": "Crear en pausa",
       "startPausedHint": "Queda fuera de la planificación diaria hasta que lo reanudes.",
@@ -1166,7 +1167,16 @@
         "add": "Añadir nota"
       },
       "priorityHint": "Dónde se colocan los nuevos objetivos en tu orden de prioridad.",
-      "priorityLast": "{{position}} de {{total}} (último)"
+      "priorityLast": "{{position}} de {{total}} (último)",
+      "steps": {
+        "label": "Pasos para crear un objetivo",
+        "position": "Paso {{position}} de {{total}}:",
+        "unit": "Unidad",
+        "goals": "Objetivos",
+        "review": "Revisar",
+        "back": "Atrás",
+        "next": "Siguiente"
+      }
     },
     "estimate": {
       "none": "—",
@@ -1315,13 +1325,6 @@
       "secondaryEnd": "Habilidad secundaria, nivel objetivo",
       "quantity": "Cantidad objetivo",
       "issues": {
-        "rankNotAboveStart": "Elige un rango superior al de partida de esta meta.",
-        "progressionNotAboveStart": "Elige un paso superior al de partida de esta meta.",
-        "abilityBelowStart": "El objetivo de una habilidad no puede ser inferior al nivel de partida de esta meta.",
-        "abilityNoAdvance": "Sube al menos una habilidad por encima de su punto de partida.",
-        "abilityAboveMax": "Ese nivel supera el nivel máximo de habilidad.",
-        "upgradeQuantity": "Cada cantidad debe ser un número entero de 1 a 10.000.",
-        "upgradeEmpty": "Una meta de mejoras necesita al menos un material.",
         "upgradeRange": "Elige un rango que termine por encima de su inicio."
       },
       "reachedNote": "Un objetivo ya alcanzado es válido: no necesita nada más y el objetivo conserva su estado hasta que lo completes.",
@@ -1382,6 +1385,27 @@
         "loading": "Calculando la estimación…",
         "failed": "No se pudo calcular la estimación.",
         "nothing": "No queda nada por conseguir para este objetivo."
+      }
+    },
+    "card": {
+      "ladder": {
+        "current": "Actual",
+        "taken": "Ya es un objetivo"
+      },
+      "range": {
+        "span": "{{start}} → {{end}}",
+        "materials_one": "{{count}} material por farmear",
+        "materials_other": "{{count}} materiales por farmear",
+        "nothing": "no queda nada por farmear"
+      },
+      "ability": {
+        "next": "Siguiente",
+        "plusFive": "+5",
+        "rarityCap": "Límite de rareza",
+        "decrease": "Bajar {{track}}",
+        "increase": "Subir {{track}}",
+        "noChange": "Sin cambios",
+        "quickPicks": "{{track}}: selección rápida"
       }
     }
   },
@@ -1542,6 +1566,14 @@
         "issues": {
           "title": "Problemas por resolver",
           "content": "Cuando algo impide crear los objetivos, aquí se cuentan los problemas. Elige uno para ir a su campo."
+        },
+        "ladder": {
+          "title": "Escalera de objetivos",
+          "content": "Elige el objetivo en la escalera. «Actual» marca dónde está la unidad ahora, y los pasos marcados como «Ya es un objetivo» pertenecen a otro objetivo. La línea de abajo muestra el rango y lo que necesita."
+        },
+        "stepIndicator": {
+          "title": "Tres pasos",
+          "content": "Elige la unidad, luego sus objetivos, y después revisa y crea. Atrás conserva todo lo que hayas introducido."
         }
       }
     },
@@ -1562,7 +1594,7 @@
       "steps": {
         "target": {
           "title": "Meta",
-          "content": "Cambia dónde termina este objetivo sin volver a crearlo. Conserva su historial y tu plan se recalcula al guardar."
+          "content": "Elige dónde termina este objetivo en la escalera o con el selector de nivel. Conserva su historial, y tu plan se recalcula al guardar."
         },
         "priority": {
           "title": "Prioridad",

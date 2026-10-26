@@ -1115,7 +1115,7 @@
         "alreadyUnlocked": "This character is already unlocked.",
         "rankAlreadyReached": "The selected rank has already been reached.",
         "progressionAlreadyReached": "The selected progression has already been reached.",
-        "abilityRange": "At least one ability must increase and neither range may decrease.",
+        "abilityRange": "Raise at least one ability above its current level.",
         "abilityAlreadyReached": "The selected ability levels have already been reached.",
         "upgradeTargetsRequired": "Select at least one upgrade to farm for the Upgrade goal.",
         "rankMaxed": "This character has already reached the maximum rank.",
@@ -1123,7 +1123,8 @@
         "abilityMaxed": "This unit's abilities have already reached the maximum level for its current rarity.",
         "activeOrPausedGoalExists": "An active or paused {{goalType}} goal already exists for this unit.",
         "upgradeQuantity": "Enter a whole number from 1 to 10,000.",
-        "alreadyUnlocked_mow": "This Machine of War is already unlocked."
+        "alreadyUnlocked_mow": "This Machine of War is already unlocked.",
+        "abilityOutOfRange": "Choose a level from the current one up to 60."
       },
       "startPaused": "Create paused",
       "startPausedHint": "Stays out of daily planning until you resume it.",
@@ -1166,7 +1167,16 @@
         "add": "Add note"
       },
       "priorityHint": "Where the new goals go in your priority order.",
-      "priorityLast": "{{position}} of {{total}} (last)"
+      "priorityLast": "{{position}} of {{total}} (last)",
+      "steps": {
+        "label": "Steps to create a goal",
+        "position": "Step {{position}} of {{total}}:",
+        "unit": "Unit",
+        "goals": "Goals",
+        "review": "Review",
+        "back": "Back",
+        "next": "Next"
+      }
     },
     "estimate": {
       "none": "—",
@@ -1315,13 +1325,6 @@
       "secondaryEnd": "Secondary ability, target level",
       "quantity": "Target quantity",
       "issues": {
-        "rankNotAboveStart": "Choose a rank above the one this goal started from.",
-        "progressionNotAboveStart": "Choose a step above the one this goal started from.",
-        "abilityBelowStart": "An ability target can't be below the level this goal started from.",
-        "abilityNoAdvance": "Raise at least one ability above where this goal started.",
-        "abilityAboveMax": "That level is above the maximum ability level.",
-        "upgradeQuantity": "Every quantity must be a whole number from 1 to 10,000.",
-        "upgradeEmpty": "An upgrade goal needs at least one material.",
         "upgradeRange": "Choose a range that ends above where it starts."
       },
       "reachedNote": "An already-reached target is fine: it needs nothing more, and the goal keeps its status until you complete it.",
@@ -1382,6 +1385,27 @@
         "loading": "Calculating the estimate…",
         "failed": "The estimate couldn't be calculated.",
         "nothing": "Nothing left to farm for this target."
+      }
+    },
+    "card": {
+      "ladder": {
+        "current": "Current",
+        "taken": "Already a goal"
+      },
+      "range": {
+        "span": "{{start}} → {{end}}",
+        "materials_one": "{{count}} material to farm",
+        "materials_other": "{{count}} materials to farm",
+        "nothing": "nothing left to farm"
+      },
+      "ability": {
+        "next": "Next",
+        "plusFive": "+5",
+        "rarityCap": "Rarity cap",
+        "decrease": "Lower {{track}}",
+        "increase": "Raise {{track}}",
+        "noChange": "No change",
+        "quickPicks": "{{track}}: quick picks"
       }
     }
   },
@@ -1542,6 +1566,14 @@
         "issues": {
           "title": "Problems to fix",
           "content": "When something blocks creating the goals, this counts the problems. Choose one to jump to its field."
+        },
+        "ladder": {
+          "title": "Target ladder",
+          "content": "Pick the target on the ladder. Current marks where the unit is now, and steps marked Already a goal belong to another goal. The line under it shows the range and what it needs."
+        },
+        "stepIndicator": {
+          "title": "Three steps",
+          "content": "Choose the unit, then its goals, then review and create. Back keeps everything you entered."
         }
       }
     },
@@ -1562,7 +1594,7 @@
       "steps": {
         "target": {
           "title": "Target",
-          "content": "Change where this goal ends without recreating it. It keeps its history, and your plan recalculates when you save."
+          "content": "Pick where this goal ends on the ladder or the level stepper. It keeps its history, and your plan recalculates when you save."
         },
         "priority": {
           "title": "Priority",
