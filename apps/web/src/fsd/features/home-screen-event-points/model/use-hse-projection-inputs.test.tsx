@@ -4,6 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import {
   HSE_AVERAGES_STORAGE_KEY,
   HSE_PROGRESS_STORAGE_KEY,
+  HSE_TOKENS_STORAGE_KEY,
   useHseProjectionInputs,
 } from "./use-hse-projection-inputs"
 
@@ -46,6 +47,28 @@ describe("useHseProjectionInputs", () => {
     expect(
       JSON.parse(window.localStorage.getItem(HSE_AVERAGES_STORAGE_KEY)!)
     ).toEqual({ "hse-trait-boost-psyker": { Onslaught: 25, Arena: null } })
+  })
+
+  it("persists entered Tournament Arena tokens per instance, as whole non-negative numbers", () => {
+    const first = renderHook(() =>
+      useHseProjectionInputs("hse-faction-focus", "occ-1")
+    )
+    expect(first.result.current.tokens).toEqual({})
+    act(() => first.result.current.setTokens("TournamentArena", 12.7))
+    first.unmount()
+
+    const reload = renderHook(() =>
+      useHseProjectionInputs("hse-faction-focus", "occ-1")
+    )
+    expect(reload.result.current.tokens).toEqual({ TournamentArena: 12 })
+    expect(
+      JSON.parse(window.localStorage.getItem(HSE_TOKENS_STORAGE_KEY)!)
+    ).toEqual({ "occ-1": { TournamentArena: 12 } })
+
+    const other = renderHook(() =>
+      useHseProjectionInputs("hse-faction-focus", "occ-2")
+    )
+    expect(other.result.current.tokens).toEqual({})
   })
 
   it("keeps definitions and instances apart", () => {

@@ -4,7 +4,12 @@ import {
   NO_HSE_MILESTONE_PROGRESS,
   type HseMilestoneProgress,
 } from "../lib/hse-milestones"
-import { HSE_TOKEN_MODES, type HseTokenMode } from "../lib/hse-token-supply"
+import {
+  HSE_TOKEN_MODES,
+  isHseManualTokenMode,
+  type HseManualTokenMode,
+  type HseTokenMode,
+} from "../lib/hse-token-supply"
 import { safeStorage } from "@/shared/lib"
 
 // Design D5: averages persist per browser by (definition, mode), milestone progress by instance. Both are
@@ -14,12 +19,18 @@ export const HSE_AVERAGES_STORAGE_KEY = "tp.dailies.hse.averages.v1"
 // v2 holds milestones done and points in the current one (the game restarts at 0 per milestone);
 // v1's cumulative totals are no longer read.
 export const HSE_PROGRESS_STORAGE_KEY = "tp.dailies.hse.progress.v2"
+// Tokens of the modes the API does not sync (Tournament Arena), by instance: each event has its own.
+export const HSE_TOKENS_STORAGE_KEY = "tp.dailies.hse.tokens.v1"
 
 /** Edited averages of one definition: a number, or null for an input the player cleared. */
 type HseAverages = Partial<Record<HseTokenMode, number | null>>
 
 type StoredAverages = Record<string, HseAverages>
 type StoredProgress = Record<string, HseMilestoneProgress>
+
+/** Entered tokens of one instance; absent means none (0). */
+type HseManualTokens = Partial<Record<HseManualTokenMode, number>>
+type StoredTokens = Record<string, HseManualTokens>
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === "object" && value !== null && !Array.isArray(value)
@@ -79,18 +90,39 @@ function readProgress(): StoredProgress {
   return stored
 }
 
+function readTokens(): StoredTokens {
+  const stored: StoredTokens = {}
+  for (const [instanceKey, modes] of Object.entries(
+    readJson(HSE_TOKENS_STORAGE_KEY)
+  )) {
+    if (!isRecord(modes)) continue
+    const tokens: HseManualTokens = {}
+    for (const mode of HSE_TOKEN_MODES) {
+      const value = modes[mode]
+      if (isHseManualTokenMode(mode) && isCount(value)) tokens[mode] = value
+    }
+    stored[instanceKey] = tokens
+  }
+  return stored
+}
+
 const NO_AVERAGES: HseAverages = {}
+const NO_TOKENS: HseManualTokens = {}
 
 export type HseProjectionInputs = {
   averages: HseAverages
   setAverage: (mode: HseTokenMode, value: number | null) => void
   progress: HseMilestoneProgress
   setProgress: (progress: Partial<HseMilestoneProgress>) => void
+  /** Tokens the player entered for the modes the API does not sync. */
+  tokens: HseManualTokens
+  setTokens: (mode: HseManualTokenMode, value: number) => void
 }
 
 /**
  * The projection's editable inputs for one definition and instance: the per-mode averages (absent
- * means the default) and the milestone progress (none by default).
+ * means the default), the milestone progress (none by default) and the tokens of the modes the API
+ * does not sync (none by default).
  */
 export function useHseProjectionInputs(
   definitionId: string,
@@ -100,6 +132,8 @@ export function useHseProjectionInputs(
     useState<StoredAverages>(readAverages)
   const [progressByInstance, setProgressByInstance] =
     useState<StoredProgress>(readProgress)
+  const [tokensByInstance, setTokensByInstance] =
+    useState<StoredTokens>(readTokens)
 
   const setAverage = useCallback(
     (mode: HseTokenMode, value: number | null) =>
@@ -139,10 +173,28 @@ export function useHseProjectionInputs(
     [instanceKey]
   )
 
+  const setTokens = useCallback(
+    (mode: HseManualTokenMode, value: number) =>
+      setTokensByInstance((previous) => {
+        const next = {
+          ...previous,
+          [instanceKey]: {
+            ...previous[instanceKey],
+            [mode]: Math.max(0, Math.floor(value)),
+          },
+        }
+        writeJson(HSE_TOKENS_STORAGE_KEY, next)
+        return next
+      }),
+    [instanceKey]
+  )
+
   return {
     averages: averagesByDefinition[definitionId] ?? NO_AVERAGES,
     setAverage,
     progress: progressByInstance[instanceKey] ?? NO_HSE_MILESTONE_PROGRESS,
     setProgress,
+    tokens: tokensByInstance[instanceKey] ?? NO_TOKENS,
+    setTokens,
   }
 }
