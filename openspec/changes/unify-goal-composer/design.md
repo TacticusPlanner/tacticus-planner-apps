@@ -50,6 +50,10 @@ New `ui/goal-card/` in `features/goal-create`: `RankGoalCard`, `AscensionGoalCar
 - the source and strategy props the shared fields already take;
 - `mode: "create" | "edit"`. Only creation-only parts check it, which are milestones and prerequisites.
 
+As implemented, the per-dialog parts (sources, farming locations, Mythic materials, notes, milestones and level notes) are passed to the card as rendered slots (`sources`, `mythic`, `note`, `milestones`, `extra`); the card fixes their order and renders `milestones` only in `"create"`. Upgrade uses `mode` to keep an edited goal's last material.
+
+Edit reports its target problems in the issues-list shape with creation's message keys (`goalEditIssues`), so both dialogs show the same text. An untouched stored Rank or Ascension target at or below its start still shows its message, without blocking Save. Edit's `takenKeys` come from `useTakenTargets`, minus the goal's own target. A typed ability level outside start..60 is one issue, `abilityOutOfRange`, in both dialogs.
+
 Create adapts `useCreateGoalForm` to these props, and edit adapts `GoalEditDraft`. Both dialogs keep their own shell: header, footer, save and submit, unsaved-changes dialog, priority and projects.
 
 Everything stays in one slice, so there are no new cross-feature imports. `GoalTargetFields`, `goal-type-fields.tsx`, `ability-goal-fields.tsx` and `upgrade-goal-fields.tsx` are deleted once both dialogs use the cards. The `GoalTypeCards` switch becomes a map from kind to card.
@@ -97,7 +101,7 @@ The range highlight is a background on the steps between start and value. The co
 ### D5. Tours across steps
 
 - **Mobile create tour:** each step that targets content on another composer step uses a `before` hook to set `mobileStep`. The tour reaches the setter through the tour registration props. It relies on the readiness wait from `mobile-tour-target-readiness`, which already covers force-opened content.
-- **New steps:** the ladder and the step indicator, on both desktop and mobile.
+- **New steps:** the ladder on desktop and mobile, and the step indicator on mobile only (desktop has none).
 - **Edit tour:** the target step now targets the ladder.
 
 ## Risks / Trade-offs
