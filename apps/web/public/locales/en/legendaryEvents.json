@@ -498,6 +498,10 @@
           "title": "Five steps",
           "content": "The header shows where you are. Tap a visited step's chip to go back to it. Nothing is saved until you press Create."
         },
+        "horizon": {
+          "title": "Choose the run",
+          "content": "Plan to the end of one run. Later runs show a guessed date marked “maybe”; the targets, verdicts and upgrades follow the run you pick."
+        },
         "targetCards": {
           "title": "Pick a target",
           "content": "Each card shows the points a step needs, its verdict and a bar: solid for your roster now, hatched for what the recommended upgrades add."

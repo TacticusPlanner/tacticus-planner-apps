@@ -371,7 +371,7 @@ describe("PlanWizard", () => {
       }
       // The whole card list is taller than a phone screen, so mobile points at one card.
       expect(
-        document.querySelector(steps[1]!.target)?.getAttribute("data-testid")
+        document.querySelector(steps[2]!.target)?.getAttribute("data-testid")
       ).toBe(
         width < 768 ? "plan-wizard-target-option" : "plan-wizard-target-cards"
       )
@@ -389,6 +389,21 @@ describe("PlanWizard", () => {
     expect(capture).toHaveBeenCalledWith(
       expect.objectContaining({ type: "legendary_event_plan_target_chosen" })
     )
+  })
+
+  it("moves the run with the arrow keys, one tab stop for the picker", async () => {
+    renderWizard()
+    const run2 = screen.getByTestId("plan-wizard-horizon-2")
+    const run3 = screen.getByTestId("plan-wizard-horizon-3")
+    expect(run2).toHaveAttribute("tabindex", "0")
+    expect(run3).toHaveAttribute("tabindex", "-1")
+    run2.focus()
+    await userEvent.keyboard("{ArrowRight}")
+    expect(run3).toBeChecked()
+    expect(run3).toHaveFocus()
+    expect(run3).toHaveAttribute("tabindex", "0")
+    await userEvent.keyboard("{ArrowRight}")
+    expect(run2).toBeChecked()
   })
 
   it("summarises the run inputs in the closed Assumptions panel", async () => {

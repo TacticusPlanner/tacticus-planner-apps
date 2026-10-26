@@ -498,6 +498,10 @@
           "title": "Fünf Schritte",
           "content": "Die Kopfzeile zeigt, wo du gerade bist. Tippe auf den Chip eines besuchten Schritts, um dorthin zurückzukehren. Gespeichert wird erst beim Erstellen."
         },
+        "horizon": {
+          "title": "Durchlauf wählen",
+          "content": "Plane bis zum Ende eines Durchlaufs. Spätere Durchläufe zeigen ein geschätztes Datum mit „vielleicht“; Ziele, Einschätzungen und Verbesserungen richten sich nach dem gewählten Durchlauf."
+        },
         "targetCards": {
           "title": "Ziel wählen",
           "content": "Jede Karte zeigt die nötigen Punkte einer Stufe, ihre Einschätzung und einen Balken: voll für deinen Kader jetzt, schraffiert für das, was die empfohlenen Verbesserungen hinzufügen."

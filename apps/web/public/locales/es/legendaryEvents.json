@@ -498,6 +498,10 @@
           "title": "Cinco pasos",
           "content": "La cabecera muestra dónde estás. Toca la etiqueta de un paso visitado para volver a él. No se guarda nada hasta que pulses Crear."
         },
+        "horizon": {
+          "title": "Elige la ronda",
+          "content": "Planifica hasta el final de una ronda. Las rondas siguientes muestran una fecha estimada marcada con «quizá»; los objetivos, veredictos y mejoras siguen la ronda que elijas."
+        },
         "targetCards": {
           "title": "Elige un objetivo",
           "content": "Cada tarjeta muestra los puntos que necesita un paso, su veredicto y una barra: sólida para tu plantilla actual y rayada para lo que añaden las mejoras recomendadas."

@@ -120,6 +120,12 @@ describe("LegendaryEventsHubPage", () => {
     expect(
       names(screen.getByTestId("legendary-events-group-archived"))
     ).toEqual(["Dante"])
+    // A finished event lists no run dates.
+    expect(
+      within(
+        screen.getByTestId("legendary-events-group-archived")
+      ).queryByTestId("legendary-event-runs")
+    ).toBeNull()
     expect(
       screen.getAllByRole("heading", { level: 2 }).map((h) => h.textContent)
     ).toEqual(["Active", "Upcoming", "Archived"])

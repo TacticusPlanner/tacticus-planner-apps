@@ -498,6 +498,10 @@
           "title": "Cinq étapes",
           "content": "L'en-tête indique où vous en êtes. Touchez la pastille d'une étape déjà visitée pour y revenir. Rien n'est enregistré avant d'appuyer sur Créer."
         },
+        "horizon": {
+          "title": "Choisir la manche",
+          "content": "Planifiez jusqu'à la fin d'une manche. Les manches suivantes affichent une date estimée marquée « peut-être » ; les objectifs, verdicts et améliorations suivent la manche choisie."
+        },
         "targetCards": {
           "title": "Choisir un objectif",
           "content": "Chaque carte indique les points nécessaires à un palier, son verdict et une barre : pleine pour votre effectif actuel, hachurée pour ce qu'ajoutent les améliorations recommandées."

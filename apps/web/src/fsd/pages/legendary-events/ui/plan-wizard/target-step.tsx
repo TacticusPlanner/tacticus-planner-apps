@@ -12,7 +12,10 @@ import { ChevronDown } from "lucide-react"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 import { cn } from "@workspace/ui/lib/utils"
 
-import type { AscensionStep } from "@/entities/legendary-event"
+import type {
+  AscensionStep,
+  LegendaryEventRun,
+} from "@/entities/legendary-event"
 import { RunInputsForm } from "@/features/legendary-event-plan"
 import { useAnalyticsActions } from "@/shared/analytics"
 import { safeStorage } from "@/shared/lib"
@@ -98,18 +101,23 @@ export function TargetStep({
   }
   // Arrow keys move the choice within the group, as native radios do.
   const onCardKey = (event: KeyboardEvent<HTMLButtonElement>, at: number) => {
-    const delta =
-      event.key === "ArrowDown" || event.key === "ArrowRight"
-        ? 1
-        : event.key === "ArrowUp" || event.key === "ArrowLeft"
-          ? -1
-          : 0
+    const delta = arrowDelta(event.key)
     if (delta === 0) return
     event.preventDefault()
     const next = options[(at + delta + options.length) % options.length]
     if (!next) return
     choose(next.target.step)
     cards.current.get(next.target.step)?.focus()
+  }
+  const runButtons = useRef(new Map<LegendaryEventRun, HTMLButtonElement>())
+  const onRunKey = (event: KeyboardEvent<HTMLButtonElement>, at: number) => {
+    const delta = arrowDelta(event.key)
+    if (delta === 0) return
+    event.preventDefault()
+    const next = runs[(at + delta + runs.length) % runs.length]
+    if (next === undefined) return
+    draft.chooseHorizon(next)
+    runButtons.current.get(next)?.focus()
   }
   const assumptions = runAssumptions(source.event, draft.economy, horizonRuns)
   const assumptionsSummary = [
@@ -182,11 +190,15 @@ export function TargetStep({
             data-testid="plan-wizard-horizon"
             role="radiogroup"
           >
-            {runs.map((run) => {
+            {runs.map((run, at) => {
               const checked = run === horizon
               return (
                 <button
                   aria-checked={checked}
+                  ref={(element) => {
+                    if (element) runButtons.current.set(run, element)
+                    else runButtons.current.delete(run)
+                  }}
                   className={cn(
                     "flex min-h-11 flex-col items-start rounded-xl border px-3 py-2 text-left transition-colors",
                     "focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none",
@@ -197,7 +209,9 @@ export function TargetStep({
                   data-testid={`plan-wizard-horizon-${run}`}
                   key={run}
                   onClick={() => draft.chooseHorizon(run)}
+                  onKeyDown={(event) => onRunKey(event, at)}
                   role="radio"
+                  tabIndex={checked ? 0 : -1}
                   type="button"
                 >
                   <span className="font-medium">
@@ -312,6 +326,13 @@ export function TargetStep({
       </Disclosure>
     </section>
   )
+}
+
+/** The step an arrow key moves a radio group's choice by: 1, −1, or 0 for any other key. */
+function arrowDelta(key: string): number {
+  if (key === "ArrowDown" || key === "ArrowRight") return 1
+  if (key === "ArrowUp" || key === "ArrowLeft") return -1
+  return 0
 }
 
 /** A collapsible panel; with `storageKey` its open state is remembered per device. */
