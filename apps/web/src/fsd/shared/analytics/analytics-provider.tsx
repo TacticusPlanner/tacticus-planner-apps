@@ -31,6 +31,9 @@ function projectToken(): string | undefined {
 // rather than merely suppressing what they'd send. Verified against a live PostHog project:
 // capture()/identify() still queue and flush normally with flags disabled - only flag-dependent
 // features (surveys, server-toggled web vitals, etc.) are affected.
+//
+// Web vitals are therefore switched on here rather than by the project's remote setting, and
+// their extension is bundled into the SDK chunk (see loadSdk) instead of fetched from PostHog's CDN.
 const initOptions: Partial<PostHogConfig> = {
   api_host: import.meta.env.VITE_POSTHOG_HOST,
   defaults: "2026-08-30",
@@ -42,7 +45,17 @@ const initOptions: Partial<PostHogConfig> = {
   person_profiles: "identified_only",
   advanced_disable_flags: true,
   disable_external_dependency_loading: true,
+  capture_performance: { web_vitals: true },
   before_send: sanitizeCapture,
+}
+
+// The web-vitals extension registers itself on window when imported, so it must load before init().
+async function loadSdk() {
+  const [{ default: posthog }] = await Promise.all([
+    import("posthog-js"),
+    import("posthog-js/dist/web-vitals"),
+  ])
+  return posthog
 }
 
 // No $opt_in event: opting in is an identity-lifecycle detail, not product usage.
@@ -96,8 +109,8 @@ export function AnalyticsProvider({ children }: { children: ReactNode }) {
       }
       if (loading.current) return
       loading.current = true
-      import("posthog-js")
-        .then(({ default: posthog }) => {
+      loadSdk()
+        .then((posthog) => {
           const id = pendingId.current
           if (!id) return
           const instance = posthog.init(token, initOptions)
