@@ -8,8 +8,9 @@ import type { RosterCharacter } from "./roster-character"
 import type { TrackEligibleCharacter, AllianceTrack } from "./alliance-tracks"
 import type { TeamCategory } from "./team-recommendations.types"
 
-/** The token game modes the HSE event teams cover, by their catalog names, in display order. */
-export type HseTeamMode = HseTokenMode
+/** The token game modes the HSE event teams cover, by their catalog names, in display order.
+ * Tournament Arena has no team of its own: the Arena team plays it. */
+export type HseTeamMode = Exclude<HseTokenMode, "TournamentArena">
 
 /** Every HSE event team holds five characters (design D1: no team size control). */
 export const HSE_TEAM_SIZE = 5

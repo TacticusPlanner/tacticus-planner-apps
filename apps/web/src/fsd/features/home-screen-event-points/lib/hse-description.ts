@@ -247,10 +247,13 @@ function modifierLine(modifier: GameCatalogHseModifier): HseText {
       modes,
       rates: rates(modifier.multiplierByRarity, "rateXp"),
     })
+  const multiplier = modifier.multiplier ?? 1
+  // The game words the same-faction bonus as "+100% XP", not "2x XP".
   return text(`lines.xp${team}`, {
     units,
     modes,
-    multiplier: modifier.multiplier ?? 1,
+    multiplier,
+    bonusPct: Math.round((multiplier - 1) * 100),
   })
 }
 

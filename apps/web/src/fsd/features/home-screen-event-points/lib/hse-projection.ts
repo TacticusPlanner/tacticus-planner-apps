@@ -4,7 +4,11 @@ import {
   type GameCatalogHseTracker,
 } from "@workspace/game-catalog"
 
-import { HSE_TOKEN_MODES, type HseTokenMode } from "./hse-token-supply"
+import {
+  HSE_TOKEN_MODES,
+  isHseManualTokenMode,
+  type HseTokenMode,
+} from "./hse-token-supply"
 
 /** What one scoring unit is: a kill, a cleared wave, or a battle (one per token). */
 type HseScoringUnit = "kills" | "waves" | "battles"
@@ -18,9 +22,19 @@ const UNIT_BY_TRACKER_KIND: Readonly<Record<string, HseScoringUnit>> = {
   FullLineUpOfFaction: "battles",
 }
 
+/** Characters in a full line-up (Arena, Onslaught, Salvage Run; Machines of War never count). */
+const HSE_LINEUP_SIZE = 5
+
+/** How many times a tracker scores per unit: a faction-majority tracker scores per deployed
+ * character of that faction, so a battle with a full line-up of one faction scores it five times. */
+function trackerScoresPerUnit(tracker: GameCatalogHseTracker): number {
+  return tracker.kind === "DeployedUnitsOfFactionMajority" ? HSE_LINEUP_SIZE : 1
+}
+
 /** Default kills per token (Severyn's estimates; editable and persisted, design D5). */
 const HSE_DEFAULT_KILLS_PER_TOKEN: Readonly<Record<HseTokenMode, number>> = {
   Arena: 5,
+  TournamentArena: 5,
   Onslaught: 20,
   SalvageRun: 12,
 }
@@ -28,7 +42,8 @@ const HSE_DEFAULT_KILLS_PER_TOKEN: Readonly<Record<HseTokenMode, number>> = {
 export type HseModeScoring = {
   mode: HseTokenMode
   unit: HseScoringUnit
-  /** The points of every tracker of that unit whose game modes pass the mode, summed. */
+  /** The points of every tracker of that unit whose game modes pass the mode, summed (a battle
+   * assumes a full line-up of one faction: five characters for a faction-majority tracker). */
   pointsPerUnit: number
   /** How many trackers were summed (more than one: the UI states the "matches all" assumption). */
   trackerCount: number
@@ -58,7 +73,8 @@ export function hseModeScoring(
         mode,
         unit,
         pointsPerUnit: sameUnit.reduce(
-          (sum, tracker) => sum + tracker.points,
+          (sum, tracker) =>
+            sum + tracker.points * trackerScoresPerUnit(tracker),
           0
         ),
         trackerCount: sameUnit.length,
@@ -93,6 +109,8 @@ export type HseProjectionMode = HseModeScoring & {
   average: number | null
   /** True for a battle mode: one battle per token, not editable. */
   fixedAverage: boolean
+  /** True when the player enters the tokens (the API does not sync the mode's bucket). */
+  manualTokens: boolean
   /** tokens x average x points per unit, or null without an average. */
   points: number | null
 }
@@ -183,6 +201,7 @@ export function projectHsePoints(
       tokens,
       average,
       fixedAverage,
+      manualTokens: isHseManualTokenMode(mode.mode),
       points: average === null ? null : tokens * average * mode.pointsPerUnit,
     })
   }

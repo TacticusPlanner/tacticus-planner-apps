@@ -13,8 +13,18 @@ const psyker = {
   tier: hseTier("hse-trait-boost-psyker", "High"),
   trackers: hseVariant("hse-trait-boost-psyker").trackers,
 }
-const upcomingTokens = { Arena: 58, Onslaught: 15, SalvageRun: 14 }
-const runningTokens = { Arena: 28, Onslaught: 7, SalvageRun: 8 }
+const upcomingTokens = {
+  Arena: 58,
+  TournamentArena: 0,
+  Onslaught: 15,
+  SalvageRun: 14,
+}
+const runningTokens = {
+  Arena: 28,
+  TournamentArena: 0,
+  Onslaught: 7,
+  SalvageRun: 8,
+}
 
 const project = (input: Partial<HseProjectionInput> = {}) => {
   const projection = projectHsePoints({
@@ -138,7 +148,12 @@ describe("projectHsePoints: Psyker Boost worked examples (High tier)", () => {
 
   it("leaves out a mode that is not unlocked and names it", () => {
     const projection = project({
-      tokens: { Arena: 58, Onslaught: null, SalvageRun: 14 },
+      tokens: {
+        Arena: 58,
+        TournamentArena: 0,
+        Onslaught: null,
+        SalvageRun: 14,
+      },
     })
     expect(projection.modes.map((mode) => mode.mode)).toEqual([
       "Arena",
@@ -151,7 +166,12 @@ describe("projectHsePoints: Psyker Boost worked examples (High tier)", () => {
 
   it("has no requirement or projection when every scoring mode is locked", () => {
     const projection = project({
-      tokens: { Arena: null, Onslaught: null, SalvageRun: null },
+      tokens: {
+        Arena: null,
+        TournamentArena: 0,
+        Onslaught: null,
+        SalvageRun: null,
+      },
     })
     expect(projection.modes).toEqual([])
     expect(projection.lockedModes).toEqual(["Arena", "Onslaught", "SalvageRun"])
@@ -202,7 +222,7 @@ describe("projectHsePoints: other events", () => {
     const projection = projectHsePoints({
       tier: hseTier("hse-faction-boost", "High", "DarkAngels"),
       trackers: hseVariant("hse-faction-boost", "DarkAngels").trackers,
-      tokens: { Arena: 0, Onslaught: 0, SalvageRun: 0 },
+      tokens: { Arena: 0, TournamentArena: 0, Onslaught: 0, SalvageRun: 0 },
       averages: {},
       pointsSoFar: 1000 + 250 * 50,
     })!
@@ -211,53 +231,72 @@ describe("projectHsePoints: other events", () => {
     expect(projection.requiredPerToken).toBeNull()
   })
 
-  it("Faction Focus counts battles: 3 per Arena battle, 8 per Onslaught and Salvage Run battle", () => {
+  it("Faction Focus counts full single-faction line-ups: 5 x 1 + 2 = 7 per Arena and Tournament Arena battle, 5 x 3 + 5 = 20 per Onslaught and Salvage Run battle", () => {
     const projection = projectHsePoints({
       tier: hseTier("hse-faction-focus", "Default", "october-2026"),
       trackers: hseVariant("hse-faction-focus", "october-2026").trackers,
-      tokens: upcomingTokens,
+      tokens: { ...upcomingTokens, TournamentArena: 20 },
       averages: { Arena: 7 },
       pointsSoFar: 0,
     })!
     expect(
       projection.modes.map(
-        ({ mode, unit, pointsPerUnit, average, fixedAverage }) => ({
+        ({
           mode,
           unit,
           pointsPerUnit,
           average,
           fixedAverage,
+          manualTokens,
+        }) => ({
+          mode,
+          unit,
+          pointsPerUnit,
+          average,
+          fixedAverage,
+          manualTokens,
         })
       )
     ).toEqual([
       {
         mode: "Arena",
         unit: "battles",
-        pointsPerUnit: 3,
+        pointsPerUnit: 7,
         average: 1,
         fixedAverage: true,
+        manualTokens: false,
+      },
+      {
+        mode: "TournamentArena",
+        unit: "battles",
+        pointsPerUnit: 7,
+        average: 1,
+        fixedAverage: true,
+        manualTokens: true,
       },
       {
         mode: "Onslaught",
         unit: "battles",
-        pointsPerUnit: 8,
+        pointsPerUnit: 20,
         average: 1,
         fixedAverage: true,
+        manualTokens: false,
       },
       {
         mode: "SalvageRun",
         unit: "battles",
-        pointsPerUnit: 8,
+        pointsPerUnit: 20,
         average: 1,
         fixedAverage: true,
+        manualTokens: false,
       },
     ])
     expect(projection.target).toBe(1220)
     expect(projection.unitsToFinal).toBeNull()
-    // 1220 / 87 tokens = 14.02 -> 14.1 event points per token
-    expect(projection.requiredPerToken).toEqual({ value: 14.1, unit: "points" })
-    // 58 x 3 + 15 x 8 + 14 x 8 = 174 + 120 + 112 = 406
-    expect(projection.projected?.points).toBe(406)
+    // 1220 / 107 tokens = 11.40 -> 11.5 event points per token
+    expect(projection.requiredPerToken).toEqual({ value: 11.5, unit: "points" })
+    // 58 x 7 + 20 x 7 + 15 x 20 + 14 x 20 = 406 + 140 + 300 + 280 = 1126
+    expect(projection.projected?.points).toBe(1126)
   })
 
   it("Defeat Waves asks for an average: requirement in waves, no projected points", () => {

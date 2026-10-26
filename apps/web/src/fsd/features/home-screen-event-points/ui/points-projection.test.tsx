@@ -275,17 +275,64 @@ describe("PointsProjection: other events and states", () => {
       "Arena",
       "58",
       "1 battle",
-      "3 per battle",
-      "174 pts",
+      "7 per battle",
+      "406 pts",
     ])
-    expect(cellsOf("Onslaught")[3]).toBe("8 per battle")
+    expect(cellsOf("Onslaught")[3]).toBe("20 per battle")
     expect(screen.queryByTestId("hse-projection-units")).not.toBeInTheDocument()
     // 1220 / 87 = 14.02 -> 14.1
     expect(total("required")).toHaveTextContent("14.1 event points per token")
-    expect(total("projected")).toHaveTextContent("406 pts")
+    // 58 x 7 + 15 x 20 + 14 x 20 = 406 + 300 + 280 = 986
+    expect(total("projected")).toHaveTextContent("986 pts")
     expect(
       screen.getByTestId("hse-projection-note-battles")
     ).toBeInTheDocument()
+  })
+
+  it("lets the player enter Faction Focus's Tournament Arena tokens, which the sync does not cover", async () => {
+    renderHse(
+      i18n,
+      hseInstance("hse-faction-focus", "upcoming", {
+        hseVariant: "october-2026",
+      })
+    )
+    expect(cellsOf("TournamentArena")).toEqual([
+      "Tournament Arena",
+      "",
+      "1 battle",
+      "7 per battle",
+      "0 pts",
+    ])
+    expect(
+      screen.getByTestId("hse-projection-note-manual-tokens")
+    ).toHaveTextContent(/^Tournament Arena tokens are not synced/)
+    const tokens = screen.getByTestId(
+      "hse-projection-tokens-input-TournamentArena"
+    )
+    expect(tokens).toHaveAccessibleName("Tokens for Tournament Arena")
+    await userEvent.type(tokens, "20")
+    // 986 + 20 x 7 = 1126; 1220 / 107 = 11.40 -> 11.5
+    expect(within(row("TournamentArena")).getByText("140 pts")).toBeVisible()
+    expect(total("projected")).toHaveTextContent("1,126 pts")
+    expect(total("required")).toHaveTextContent("11.5 event points per token")
+
+    // A fractional count is stored as a whole number and shown as one once the field is left.
+    await userEvent.clear(tokens)
+    await userEvent.type(tokens, "12.7")
+    await userEvent.tab()
+    expect(tokens).toHaveValue(12)
+  })
+
+  it("names Tournament Arena in the French note without a broken elision", async () => {
+    renderHse(
+      await hseTestI18n("fr"),
+      hseInstance("hse-faction-focus", "upcoming", {
+        hseVariant: "october-2026",
+      })
+    )
+    const note = screen.getByTestId("hse-projection-note-manual-tokens")
+    expect(note).toHaveTextContent(/^Arène de tournoi : les jetons/)
+    expect(note).not.toHaveTextContent("de Arène")
   })
 
   it("asks for Defeat Waves' averages before projecting points", async () => {
