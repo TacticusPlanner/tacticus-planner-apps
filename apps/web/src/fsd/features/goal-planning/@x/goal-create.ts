@@ -13,7 +13,6 @@ export {
   abilityLevelsByRarity,
   getGoalValidationIssue,
   getGoalValidationIssues,
-  type GoalFormIssue,
   goalKindsForEntity,
   isAtMaxAbility,
   isAtMaxProgression,
