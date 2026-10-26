@@ -26,6 +26,18 @@ When goal creation opens without a launch that carries a unit, the dialog SHALL 
 - **WHEN** the desktop dialog is open
 - **THEN** "Create paused" and "Create another goal" are at the footer's left, followed by Close, then Create goal at the far right
 
+#### Scenario: Mobile footer layout
+
+- **GIVEN** a viewport below 768px
+- **WHEN** the creation sheet is on its Review step
+- **THEN** the footer is one row with Back then Create goal, and "Create paused" and "Create another goal" appear in the body above the review
+
+#### Scenario: Mobile status summary
+
+- **GIVEN** a viewport below 768px and Incisus selected at Gold II, Legendary three red stars, level 38
+- **WHEN** the sheet is on its Goals step
+- **THEN** the current status shows as one line with those three values above the goal-type selector, and activating the summary expands the full status
+
 ## ADDED Requirements
 
 ### Requirement: Mobile creation is a three-step flow
