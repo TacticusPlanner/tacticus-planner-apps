@@ -110,7 +110,10 @@ describe("AnalyticsProvider", () => {
         disable_external_dependency_loading: true,
         capture_pageleave: true,
         // Web vitals are enabled client-side (remote config is off) and their extension is bundled.
-        capture_performance: { web_vitals: true },
+        capture_performance: {
+          web_vitals: true,
+          web_vitals_attribution: false,
+        },
         before_send: expect.any(Function),
       })
     )

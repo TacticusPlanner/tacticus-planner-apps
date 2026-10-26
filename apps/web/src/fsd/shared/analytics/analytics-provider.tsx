@@ -45,7 +45,9 @@ const initOptions: Partial<PostHogConfig> = {
   person_profiles: "identified_only",
   advanced_disable_flags: true,
   disable_external_dependency_loading: true,
-  capture_performance: { web_vitals: true },
+  // Attribution off: the SDK then picks the plain "web-vitals" flavor, which is the one bundled
+  // below (the attribution flavor would need a CDN fetch, which is disabled).
+  capture_performance: { web_vitals: true, web_vitals_attribution: false },
   before_send: sanitizeCapture,
 }
 
