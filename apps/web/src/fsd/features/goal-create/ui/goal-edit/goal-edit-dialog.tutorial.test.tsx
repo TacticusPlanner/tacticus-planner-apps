@@ -20,7 +20,7 @@ describe("useGoalEditDialogTutorial", () => {
 
       const steps = result.current[viewport] ?? []
       expect(steps.map((step) => step.target)).toEqual([
-        '[data-testid="goal-edit-target"]',
+        '[data-testid="goal-card-target"]',
         '[data-testid="goal-edit-priority"]',
         '[data-testid="goal-edit-projects"]',
         '[data-testid="goal-mythic-material-sources"]',
@@ -28,7 +28,7 @@ describe("useGoalEditDialogTutorial", () => {
       expect(steps.map((step) => [step.title, step.content])).toEqual([
         [
           "Target",
-          "Change where this goal ends without recreating it. It keeps its history, and your plan recalculates when you save.",
+          "Pick where this goal ends on the ladder or the level stepper. It keeps its history, and your plan recalculates when you save.",
         ],
         [
           "Priority",

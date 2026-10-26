@@ -157,6 +157,12 @@ describe.each(Object.entries(themes))("%s contrast", (_name, t) => {
       expect(ratio(t.get("muted-foreground"), tint)).toBeGreaterThanOrEqual(4.5)
     }
   })
+
+  it("solid focus ring (ring-2 ring-ring, offset by the surface) >= 3 on card, canvas and popover", () => {
+    for (const s of ["card", "background", "popover"]) {
+      expect(ratio(t.get("ring"), t.get(s))).toBeGreaterThanOrEqual(3)
+    }
+  })
 })
 
 describe("collection tile tokens", () => {

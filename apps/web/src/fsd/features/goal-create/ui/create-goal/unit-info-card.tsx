@@ -1,4 +1,7 @@
+import { useId, useState } from "react"
 import { useTranslation } from "react-i18next"
+import { ChevronDownIcon } from "lucide-react"
+import { cn } from "@workspace/ui/lib/utils"
 
 import { shardIcon } from "@workspace/game-catalog"
 import type { Progression, Rank } from "@workspace/game-domain"
@@ -100,6 +103,59 @@ export function UnitInfoCard({
             </ReadOnlyField>
           </>
         ) : null}
+      </div>
+    </div>
+  )
+}
+
+/**
+ * Below 768px the current status starts as one line — rank, progression and level — that expands to the
+ * full `UnitInfoCard` on activation, so the goal-type selector stays in view (goal-creation).
+ */
+export function UnitStatusSummary(props: Parameters<typeof UnitInfoCard>[0]) {
+  const { t } = useTranslation()
+  const [expanded, setExpanded] = useState(false)
+  const bodyId = useId()
+  if (props.loading) return null
+
+  return (
+    <div className="grid gap-2" data-testid="create-goal-unit-status-summary">
+      <button
+        aria-controls={bodyId}
+        aria-expanded={expanded}
+        aria-label={t("goals.create.info.expand")}
+        className="flex min-h-11 items-center gap-2 rounded-2xl border px-3 text-left text-sm"
+        data-testid="create-goal-unit-status-summary-toggle"
+        onClick={() => setExpanded((current) => !current)}
+        type="button"
+      >
+        <span className="font-medium">{t("goals.create.info.title")}</span>
+        <span className="flex min-w-0 flex-1 flex-wrap items-center gap-x-2 text-muted-foreground">
+          {props.isOwned ? (
+            <>
+              {props.rank ? <RankBadge rank={props.rank} /> : null}
+              <ProgressionBadge value={props.progression} />
+              {props.level !== undefined ? (
+                <span>
+                  {t("goals.create.info.levelShort", { level: props.level })}
+                </span>
+              ) : null}
+            </>
+          ) : (
+            <span>
+              {t("goals.create.info.shards")} {props.shardCount}
+            </span>
+          )}
+        </span>
+        <ChevronDownIcon
+          className={cn(
+            "size-4 shrink-0 text-muted-foreground transition-transform",
+            expanded && "rotate-180"
+          )}
+        />
+      </button>
+      <div hidden={!expanded} id={bodyId}>
+        <UnitInfoCard {...props} />
       </div>
     </div>
   )

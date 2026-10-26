@@ -15,6 +15,8 @@ type ResponsiveDialogProps = {
   /** Ignore pointer-downs outside the content (the form must not be lost to a stray click). */
   preventOutsideClose?: boolean
   contentClassName?: string
+  /** Extra classes for the centered dialog only (at or above 768px), e.g. a fixed height. */
+  desktopClassName?: string
   contentRef?: Ref<HTMLDivElement>
   "data-testid"?: string
 }
@@ -32,6 +34,7 @@ export function ResponsiveDialog({
   children,
   preventOutsideClose = false,
   contentClassName,
+  desktopClassName,
   contentRef,
   "data-testid": testId,
 }: ResponsiveDialogProps) {
@@ -56,7 +59,8 @@ export function ResponsiveDialog({
         {...contentProps}
         className={cn(
           "flex max-h-[calc(100vh-1rem)] w-full flex-col gap-0 p-0 sm:max-w-5xl",
-          contentClassName
+          contentClassName,
+          desktopClassName
         )}
       >
         {children}

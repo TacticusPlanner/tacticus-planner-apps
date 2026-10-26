@@ -1,3 +1,4 @@
+import type { ReactNode } from "react"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { act, fireEvent, render, screen, within } from "@/test/render"
 import userEvent from "@testing-library/user-event"
@@ -7,6 +8,7 @@ import { seedGameCatalog, seedPlayerData } from "@/test/seed"
 
 vi.mock("@/shared/tour", () => ({
   useTourPageSteps: () => undefined,
+  PageTourButton: () => <button type="button">Tour this page</button>,
 }))
 
 // The dialog has its own tests; here only which goal the page hands it and how it closes matter.
@@ -14,13 +16,16 @@ vi.mock("@/features/goal-create/ui/goal-edit/goal-edit-dialog", () => ({
   GoalEditDialog: ({
     goalId,
     onOpenChange,
+    headerAction,
   }: {
     goalId: string | null
     onOpenChange: (open: boolean) => void
+    headerAction?: ReactNode
   }) =>
     goalId ? (
       <div data-testid="goal-edit-dialog">
         {goalId}
+        {headerAction}
         <button
           data-testid="goal-edit-close"
           onClick={() => onOpenChange(false)}
@@ -685,6 +690,12 @@ describe("GoalsPage", () => {
     expect(await screen.findByTestId("goal-edit-dialog")).toHaveTextContent(
       activeGoal.goalId
     )
+    // The page header's tour button sits behind the modal, so the dialog carries its own.
+    expect(
+      within(screen.getByTestId("goal-edit-dialog")).getByRole("button", {
+        name: "Tour this page",
+      })
+    ).toBeInTheDocument()
   })
 
   it("opens nothing when the goal name or the row is clicked", async () => {

@@ -138,6 +138,80 @@ describe("TourProvider page-step registrations", () => {
   })
 })
 
+describe("TourProvider updated registrations", () => {
+  function ChangingPage({ steps }: { steps: typeof PAGE_STEPS }) {
+    useTourPageSteps(steps)
+    return null
+  }
+  function Host({
+    pageSteps,
+    sheetOpen,
+  }: {
+    pageSteps: typeof PAGE_STEPS
+    sheetOpen: boolean
+  }) {
+    const { startPageTour } = useTour()
+    return (
+      <>
+        <ChangingPage steps={pageSteps} />
+        {sheetOpen ? <SheetTourProbe /> : null}
+        <button data-testid="start" onClick={startPageTour} type="button" />
+      </>
+    )
+  }
+
+  it("keeps an open dialog's steps on top when the page's own steps change underneath", async () => {
+    const updated = { desktop: [{ target: "page-step-2", content: "" }] }
+    const { rerender } = render(
+      <TourProvider>
+        <Host pageSteps={PAGE_STEPS} sheetOpen />
+      </TourProvider>
+    )
+    rerender(
+      <TourProvider>
+        <Host pageSteps={updated} sheetOpen />
+      </TourProvider>
+    )
+    fireEvent.click(screen.getByTestId("start"))
+    await waitFor(() => expect(targets()).toEqual(["sheet-step"]))
+
+    rerender(
+      <TourProvider>
+        <Host pageSteps={updated} sheetOpen={false} />
+      </TourProvider>
+    )
+    expect(targets()).toEqual(["page-step-2"])
+  })
+})
+
+describe("TourProvider overlay registrations", () => {
+  function OverlayProbe() {
+    useTourPageSteps(SHEET_STEPS, { overlay: true })
+    return null
+  }
+  // A dialog opened by the page's own URL mounts with it: its (child) effect registers first.
+  function PageWithOverlayChild() {
+    const { startPageTour } = useTour()
+    useTourPageSteps(PAGE_STEPS)
+    return (
+      <>
+        <OverlayProbe />
+        <button data-testid="start" onClick={startPageTour} type="button" />
+      </>
+    )
+  }
+
+  it("ranks a dialog's steps above its page's even when the dialog registered first", async () => {
+    render(
+      <TourProvider>
+        <PageWithOverlayChild />
+      </TourProvider>
+    )
+    fireEvent.click(screen.getByTestId("start"))
+    await waitFor(() => expect(targets()).toEqual(["sheet-step"]))
+  })
+})
+
 describe("TourProvider", () => {
   it("auto-starts the tour the first time a page opts in on this device", () => {
     window.localStorage.removeItem(AUTO_STARTED_STORAGE_KEY)
