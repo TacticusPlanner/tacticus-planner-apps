@@ -275,14 +275,15 @@ describe("PointsProjection: other events and states", () => {
       "Arena",
       "58",
       "1 battle",
-      "3 per battle",
-      "174 pts",
+      "7 per battle",
+      "406 pts",
     ])
-    expect(cellsOf("Onslaught")[3]).toBe("8 per battle")
+    expect(cellsOf("Onslaught")[3]).toBe("20 per battle")
     expect(screen.queryByTestId("hse-projection-units")).not.toBeInTheDocument()
     // 1220 / 87 = 14.02 -> 14.1
     expect(total("required")).toHaveTextContent("14.1 event points per token")
-    expect(total("projected")).toHaveTextContent("406 pts")
+    // 58 x 7 + 15 x 20 + 14 x 20 = 406 + 300 + 280 = 986
+    expect(total("projected")).toHaveTextContent("986 pts")
     expect(
       screen.getByTestId("hse-projection-note-battles")
     ).toBeInTheDocument()
@@ -299,7 +300,7 @@ describe("PointsProjection: other events and states", () => {
       "Tournament Arena",
       "",
       "1 battle",
-      "3 per battle",
+      "7 per battle",
       "0 pts",
     ])
     expect(
@@ -310,9 +311,9 @@ describe("PointsProjection: other events and states", () => {
     )
     expect(tokens).toHaveAccessibleName("Tokens for Tournament Arena")
     await userEvent.type(tokens, "20")
-    // 406 + 20 x 3 = 466; 1220 / 107 = 11.40 -> 11.5
-    expect(within(row("TournamentArena")).getByText("60 pts")).toBeVisible()
-    expect(total("projected")).toHaveTextContent("466 pts")
+    // 986 + 20 x 7 = 1126; 1220 / 107 = 11.40 -> 11.5
+    expect(within(row("TournamentArena")).getByText("140 pts")).toBeVisible()
+    expect(total("projected")).toHaveTextContent("1,126 pts")
     expect(total("required")).toHaveTextContent("11.5 event points per token")
   })
 

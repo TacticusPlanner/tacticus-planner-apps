@@ -231,7 +231,7 @@ describe("projectHsePoints: other events", () => {
     expect(projection.requiredPerToken).toBeNull()
   })
 
-  it("Faction Focus counts battles: 3 per Arena and Tournament Arena battle, 8 per Onslaught and Salvage Run battle", () => {
+  it("Faction Focus counts full single-faction line-ups: 5 x 1 + 2 = 7 per Arena and Tournament Arena battle, 5 x 3 + 5 = 20 per Onslaught and Salvage Run battle", () => {
     const projection = projectHsePoints({
       tier: hseTier("hse-faction-focus", "Default", "october-2026"),
       trackers: hseVariant("hse-faction-focus", "october-2026").trackers,
@@ -261,7 +261,7 @@ describe("projectHsePoints: other events", () => {
       {
         mode: "Arena",
         unit: "battles",
-        pointsPerUnit: 3,
+        pointsPerUnit: 7,
         average: 1,
         fixedAverage: true,
         manualTokens: false,
@@ -269,7 +269,7 @@ describe("projectHsePoints: other events", () => {
       {
         mode: "TournamentArena",
         unit: "battles",
-        pointsPerUnit: 3,
+        pointsPerUnit: 7,
         average: 1,
         fixedAverage: true,
         manualTokens: true,
@@ -277,7 +277,7 @@ describe("projectHsePoints: other events", () => {
       {
         mode: "Onslaught",
         unit: "battles",
-        pointsPerUnit: 8,
+        pointsPerUnit: 20,
         average: 1,
         fixedAverage: true,
         manualTokens: false,
@@ -285,7 +285,7 @@ describe("projectHsePoints: other events", () => {
       {
         mode: "SalvageRun",
         unit: "battles",
-        pointsPerUnit: 8,
+        pointsPerUnit: 20,
         average: 1,
         fixedAverage: true,
         manualTokens: false,
@@ -295,8 +295,8 @@ describe("projectHsePoints: other events", () => {
     expect(projection.unitsToFinal).toBeNull()
     // 1220 / 107 tokens = 11.40 -> 11.5 event points per token
     expect(projection.requiredPerToken).toEqual({ value: 11.5, unit: "points" })
-    // 58 x 3 + 20 x 3 + 15 x 8 + 14 x 8 = 174 + 60 + 120 + 112 = 466
-    expect(projection.projected?.points).toBe(466)
+    // 58 x 7 + 20 x 7 + 15 x 20 + 14 x 20 = 406 + 140 + 300 + 280 = 1126
+    expect(projection.projected?.points).toBe(1126)
   })
 
   it("Defeat Waves asks for an average: requirement in waves, no projected points", () => {

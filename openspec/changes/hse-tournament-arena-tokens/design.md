@@ -21,3 +21,11 @@ Desktop: the tokens cell of the Tournament Arena table row is the input (inline,
 ### D4. Teams
 
 `HseTeamMode` is `Exclude<HseTokenMode, "TournamentArena">` and `hseTeamModes` leaves Tournament Arena out: its line-up rules are Arena's, so the Arena team covers it and no duplicate card is shown.
+
+### D5. Faction-majority trackers score per character
+
+`DeployedUnitsOfFactionMajority` scores once per deployed character of the line-up's largest faction (game copy: "1 point per character, +2 bonus points if the entire lineup belongs to one faction"). `hseModeScoring` multiplies such a tracker's points by the full line-up size (5; Machines of War are filtered out by the tracker) when summing a mode's points per battle; `FullLineUpOfFaction` stays once per battle. The projection's "battles" note states the full single-faction line-up assumption. A partial line-up (fewer characters of the faction) scores less; the player can't edit a battle mode's average, so this is the ceiling, matching the game's stated maximums (7 and 20).
+
+### D6. Event details follow the game's wording
+
+The faction-majority line reads per deployed character of the faction with the most characters in the line-up; the full line-up line reads as bonus points; the same-faction XP line reads "+{bonusPct}% XP ... for each deployed friendly character of the same faction" with `bonusPct = (multiplier - 1) x 100`.
