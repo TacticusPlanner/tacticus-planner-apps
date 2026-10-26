@@ -7,12 +7,12 @@ import { useTourPageSteps, type TourPageSteps } from "@/shared/tour"
 
 /**
  * The create-goal sheet's own onboarding tour (plan: acquisition-source picker,
- * tacticus-planner-apps#103) — the sheet had no tour coverage before this change. One step for
- * "Add milestone" (a ladder of targets for one unit), one for
- * explaining that Campaigns/Onslaught/Shops sources combine, and one for the project picker's
- * inline Create action (skipped by Joyride until a unit is chosen and the picker exists). The targets
- * are `data-testid`s inside the form body, which both shells render (centered dialog at or above
- * 768px, bottom sheet below), so desktop and mobile share the same steps.
+ * tacticus-planner-apps#103). One step for the current status (the full card at or above 768px, the
+ * one-line summary below it), one for "Add milestone" (a ladder of targets for one unit), one for
+ * explaining that Campaigns/Onslaught/Shops sources combine, one for the project picker's inline
+ * Create action, and one for the problem count beside Create goal. Steps whose target isn't on screen
+ * (no unit chosen, no problem) are skipped by Joyride. The targets are `data-testid`s that both shells
+ * render (centered dialog at or above 768px, bottom sheet below).
  */
 export function useCreateGoalSheetTutorial(): TourPageSteps {
   const { t } = useTranslation()
@@ -57,18 +57,52 @@ export function useCreateGoalSheetTutorial(): TourPageSteps {
     [t]
   )
 
-  return useMemo<TourPageSteps>(
-    () => ({
-      desktop: [
-        milestones,
-        acquisitionSources,
-        mythicMaterialSources,
-        projects,
-      ],
-      mobile: [milestones, acquisitionSources, mythicMaterialSources, projects],
-    }),
-    [milestones, acquisitionSources, mythicMaterialSources, projects]
+  const statusStep = (target: string): Step => ({
+    target,
+    title: t("tour.createGoal.steps.status.title"),
+    content: t("tour.createGoal.steps.status.content"),
+  })
+  const desktopStatus = useMemo<Step>(
+    () => statusStep('[data-testid="create-goal-unit-info"]'),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [t]
   )
+  const mobileStatus = useMemo<Step>(
+    () => statusStep('[data-testid="create-goal-unit-status-summary"]'),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [t]
+  )
+
+  // Skipped by Joyride while the form has no blocking problem.
+  const issues = useMemo<Step>(
+    () => ({
+      target: '[data-testid="create-goal-issue-summary"]',
+      title: t("tour.createGoal.steps.issues.title"),
+      content: t("tour.createGoal.steps.issues.content"),
+    }),
+    [t]
+  )
+
+  return useMemo<TourPageSteps>(() => {
+    const shared = [
+      milestones,
+      acquisitionSources,
+      mythicMaterialSources,
+      projects,
+    ]
+    return {
+      desktop: [desktopStatus, ...shared, issues],
+      mobile: [mobileStatus, ...shared, issues],
+    }
+  }, [
+    desktopStatus,
+    mobileStatus,
+    milestones,
+    acquisitionSources,
+    mythicMaterialSources,
+    projects,
+    issues,
+  ])
 }
 
 const MILESTONE_TARGET = ["rank", "ascension", "ability"]

@@ -17,11 +17,32 @@ describe("useCreateGoalSheetTutorial", () => {
     (viewport) => {
       const { result } = renderHook(() => useCreateGoalSheetTutorial())
 
-      expect(result.current[viewport]).toHaveLength(4)
-      const [milestoneStep, step, mythicStep, projectStep] =
-        result.current[viewport] ?? []
-      if (!milestoneStep || !step || !mythicStep || !projectStep)
+      expect(result.current[viewport]).toHaveLength(6)
+      const [
+        statusStep,
+        milestoneStep,
+        step,
+        mythicStep,
+        projectStep,
+        issueStep,
+      ] = result.current[viewport] ?? []
+      if (
+        !statusStep ||
+        !milestoneStep ||
+        !step ||
+        !mythicStep ||
+        !projectStep ||
+        !issueStep
+      )
         throw new Error("missing steps")
+      expect(statusStep.target).toBe(
+        viewport === "mobile"
+          ? '[data-testid="create-goal-unit-status-summary"]'
+          : '[data-testid="create-goal-unit-info"]'
+      )
+      expect(statusStep.title).toBe("Current status")
+      expect(issueStep.target).toBe('[data-testid="create-goal-issue-summary"]')
+      expect(issueStep.title).toBe("Problems to fix")
       expect(milestoneStep.target).toBe(
         '[data-testid="create-goal-rank-milestones"], [data-testid="create-goal-ascension-milestones"], [data-testid="create-goal-ability-milestones"]'
       )
@@ -51,10 +72,12 @@ describe("useCreateGoalSheetTutorial", () => {
     }
   )
 
-  it("shares the same steps across viewports", () => {
+  it("shares every step across viewports but the status one", () => {
     const { result } = renderHook(() => useCreateGoalSheetTutorial())
 
-    expect(result.current.desktop).toEqual(result.current.mobile)
+    expect(result.current.desktop?.slice(1)).toEqual(
+      result.current.mobile?.slice(1)
+    )
   })
 })
 
