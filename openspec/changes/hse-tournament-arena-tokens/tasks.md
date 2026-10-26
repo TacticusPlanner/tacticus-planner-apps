@@ -18,6 +18,6 @@
 ## 4. Verification
 
 - [x] 4.1 Run `pnpm test:run`, `pnpm typecheck`, `pnpm lint`, `pnpm lint:fsd`, and `git diff --check`; verify all pass.
-- [ ] 4.2 Desktop verification (≥768px), upcoming Faction Focus (Oct 26 – Nov 1, 2026) on a synced account: the Tournament Arena row sits between Arena and Onslaught with an empty tokens input and 0 pts; Arena shows 7 per battle and Onslaught / Salvage Run 20; entering 20 adds 140 pts to the projection and lowers the required points per token; the value survives a reload.
-- [ ] 4.3 Mobile verification (<768px, same-origin 420px iframe), same data: the Tournament Arena row shows the tokens input in its header; entering tokens updates the totals above the rows.
-- [ ] 4.4 Psyker Boost (scores in Arena, Onslaught and Salvage Run only, no Tournament Arena tracker): no Tournament Arena row and no "not synced" note.
+- [x] 4.2 Desktop verification (≥768px), upcoming Faction Focus (Oct 26 – Nov 1, 2026) on a synced account: the Tournament Arena row sits between Arena and Onslaught with an empty tokens input and 0 pts; Arena shows 7 per battle and Onslaught / Salvage Run 20; entering 20 adds 140 pts to the projection and lowers the required points per token; the value survives a reload. Verified on 2026-10-26 with Faction Focus running (synced 63 / 9 / 12, so 861 pts; 20 tokens -> 1,001 pts and 14.6 -> 11.8 per token); Training Rush, which also scores in Tournament Arena, kept its own empty input.
+- [x] 4.3 Mobile verification (<768px, same-origin 420px iframe), same data: the Tournament Arena row shows the tokens input in its header; entering tokens updates the totals above the rows.
+- [x] 4.4 Psyker Boost (scores in Arena, Onslaught and Salvage Run only, no Tournament Arena tracker): no Tournament Arena row and no "not synced" note. Verified with upcoming Warp Surge (Arena only), since Psyker Boost had ended and past events show no projection; its projection and teams match `main`.
