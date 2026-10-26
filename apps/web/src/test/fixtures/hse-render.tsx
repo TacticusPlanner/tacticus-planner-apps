@@ -10,6 +10,7 @@ import enDailies from "../../../public/locales/en/dailies.json"
 import enNpcs from "../../../public/locales/en/npcs.json"
 import enShops from "../../../public/locales/en/shops.json"
 import deDailies from "../../../public/locales/de/dailies.json"
+import frDailies from "../../../public/locales/fr/dailies.json"
 
 import {
   EventDetails,
@@ -21,12 +22,13 @@ import {
 /* eslint-disable react-refresh/only-export-components */
 
 // Shared by the details and projection tests: the real components over the fixture state, rendered
-// with the shipped English (or German) copy.
+// with the shipped English (or German or French) copy.
 
-export function hseTestI18n(lng: "en" | "de" = "en"): Promise<I18n> {
+export function hseTestI18n(lng: "en" | "de" | "fr" = "en"): Promise<I18n> {
   return createTestI18n(lng, {
     en: { dailies: enDailies, npcs: enNpcs, shops: enShops },
     de: { dailies: deDailies },
+    fr: { dailies: frDailies },
   })
 }
 

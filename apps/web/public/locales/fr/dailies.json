@@ -684,7 +684,7 @@
         "locked": "Pas encore débloqué, ignoré : {{modes}}.",
         "enemyRestricted": "Seuls certains ennemis comptent (voir les détails de l'événement) : saisissez votre moyenne d'éliminations qui comptent.",
         "battles": "Les modes de combat rapportent une fois par jeton, en supposant une composition complète de cinq personnages d’une seule faction : points par personnage plus le bonus de composition complète.",
-        "manualTokens": "Les jetons de {{modes}} ne sont pas synchronisés depuis le jeu : saisissez combien vous en dépenserez pendant l’événement.",
+        "manualTokens": "{{modes}} : les jetons ne sont pas synchronisés depuis le jeu ; saisissez combien vous en dépenserez pendant l’événement.",
         "campaign": "Les raids de campagne rapportent aussi des points dans cet événement ; ils sont planifiés dans la liste de farm ci-dessous.",
         "syncedAt": "Jetons issus de votre synchronisation {{when}}, en supposant que vous les dépensez avant que vos réserves soient pleines.",
         "syncUnknown": "L'heure de votre synchronisation est inconnue, les jetons sont donc comptés à partir de maintenant, en supposant que vous les dépensez avant que vos réserves soient pleines.",

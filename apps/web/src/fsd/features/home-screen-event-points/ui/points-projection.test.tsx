@@ -323,6 +323,18 @@ describe("PointsProjection: other events and states", () => {
     expect(tokens).toHaveValue(12)
   })
 
+  it("names Tournament Arena in the French note without a broken elision", async () => {
+    renderHse(
+      await hseTestI18n("fr"),
+      hseInstance("hse-faction-focus", "upcoming", {
+        hseVariant: "october-2026",
+      })
+    )
+    const note = screen.getByTestId("hse-projection-note-manual-tokens")
+    expect(note).toHaveTextContent(/^Arène de tournoi : les jetons/)
+    expect(note).not.toHaveTextContent("de Arène")
+  })
+
   it("asks for Defeat Waves' averages before projecting points", async () => {
     renderHse(i18n, hseInstance("hse-defeat-waves", "upcoming"))
 
