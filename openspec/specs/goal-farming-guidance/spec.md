@@ -91,7 +91,7 @@ The available/needed XP-book count (see "Required-level guidance preserves raw X
 
 ### Requirement: The create-goal required-level preview follows the selected rarity
 
-The required-level cost preview on a Rank or Ability goal's creation card (`computeLevelGoalCost`) SHALL express the owned-book remainder in the user's selected XP-book rarity, so it never disagrees with goal and project guidance. The book count SHALL be `ceil(net XP gap / selected book XP)` after netting owned books, and the gold to apply SHALL be that count multiplied by the fixed per-book apply cost (500 gold, independent of rarity). A missing or unsupported stored rarity SHALL behave as Legendary, which keeps today's Legendary-only figures for users who never change the setting. The raw remaining-XP figure is unchanged.
+The required-level cost preview on a Rank or Ability goal's creation card (`computeLevelGoalCost`) SHALL express the owned-book remainder in the user's selected XP-book rarity, so it never disagrees with goal and project guidance. The book count SHALL be `ceil(net XP gap / selected book XP)` after netting owned books, and the gold to apply SHALL be that count multiplied by the selected rarity's per-book apply cost (the game config's `consumables.xpBooks[].gold`: Common 5, Uncommon 15, Rare 50, Epic 150, Legendary 500, Mythic 2,000). A missing or unsupported stored rarity SHALL behave as Legendary, which keeps today's Legendary-only figures for users who never change the setting. The raw remaining-XP figure is unchanged.
 
 #### Scenario: Default rarity keeps today's preview
 
@@ -103,4 +103,4 @@ The required-level cost preview on a Rank or Ability goal's creation card (`comp
 
 - **GIVEN** the user selected Epic (2,500 XP per book) and the same 12,200 XP gap with no owned books
 - **WHEN** the creation card previews the required level
-- **THEN** it shows 5 books and 2,500 gold, and, once the goal is created, the Goals list and project list show the same 5 Epic-book equivalent
+- **THEN** it shows 5 books and 750 gold (150 per Epic book), and, once the goal is created, the Goals list and project list show the same 5 Epic-book equivalent
