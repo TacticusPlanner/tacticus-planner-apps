@@ -982,7 +982,8 @@
         "shopOfferPossibleReward": "Une des nombreuses récompenses possibles pour cet emplacement",
         "shopOfferChance": "≈{{percent}}% de chance le {{days}}",
         "shopOfferDays": "Disponible {{days}}",
-        "ascensionOnlyMythicLabel": "Sources mythiques réservées à l'ascension"
+        "ascensionOnlyMythicLabel": "Sources mythiques réservées à l'ascension",
+        "toggleGroup": "Afficher ou masquer les options de {{group}}"
       },
       "mythicMaterials": {
         "title": "Matériaux mythiques des boutiques",

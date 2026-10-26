@@ -982,7 +982,8 @@
         "shopOfferPossibleReward": "One of several possible rewards for this slot",
         "shopOfferChance": "≈{{percent}}% chance on {{days}}",
         "shopOfferDays": "Available {{days}}",
-        "ascensionOnlyMythicLabel": "Ascension-only mythic sources"
+        "ascensionOnlyMythicLabel": "Ascension-only mythic sources",
+        "toggleGroup": "Show or hide {{group}} options"
       },
       "mythicMaterials": {
         "title": "Mythic materials from shops",

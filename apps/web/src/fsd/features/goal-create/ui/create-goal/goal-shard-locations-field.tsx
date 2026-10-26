@@ -92,13 +92,17 @@ export function GoalShardLocationsField({
           >
             <Checkbox
               checked={selectedIds.includes(location.battleId)}
+              id={`create-goal-shard-location-${shardType}-${location.battleId}`}
               data-testid={`create-goal-shard-location-checkbox-${location.battleId}`}
               onCheckedChange={(checked) =>
                 onToggle(location.battleId, checked === true)
               }
             />
             <EntityIcon alt="" className="size-5 shrink-0" src={icon} />
-            <FieldLabel className="font-normal">
+            <FieldLabel
+              className="font-normal"
+              htmlFor={`create-goal-shard-location-${shardType}-${location.battleId}`}
+            >
               {battleLabel(battle, location.battleId, fullLabel)}
               {energyPerShard != null
                 ? ` — ${t("goals.create.shardLocations.energyPerShard", {

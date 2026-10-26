@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useId, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { Link } from "react-router"
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react"
@@ -237,29 +237,38 @@ function SourceGroup({
   headerNote?: React.ReactNode
   children: React.ReactNode
 }) {
+  const { t } = useTranslation()
   const [expanded, setExpanded] = useState(defaultExpanded)
   const Chevron = expanded ? ChevronUpIcon : ChevronDownIcon
+  const checkboxId = useId()
 
   return (
     <div
       className="grid gap-1.5 rounded-2xl border p-3"
       data-testid={`create-goal-acquisition-group-${testId}`}
     >
-      <div className="flex items-center gap-2">
+      {/* The label row toggles the group; the chevron alone shows or hides its options. */}
+      <div className="flex min-h-11 items-center gap-2 md:min-h-0">
         <Checkbox
-          aria-label={label}
           checked={checked}
           data-testid={`create-goal-acquisition-group-${testId}-toggle`}
+          id={checkboxId}
           onCheckedChange={(value) => onCheckedChange(value === true)}
         />
+        <Label className="min-h-11 flex-1 md:min-h-0" htmlFor={checkboxId}>
+          {label}
+        </Label>
         <button
-          className="flex flex-1 items-center justify-between gap-2 text-left font-medium"
+          aria-expanded={expanded}
+          aria-label={t("goals.create.acquisitionSources.toggleGroup", {
+            group: label,
+          })}
+          className="relative rounded-full p-1 text-muted-foreground after:absolute after:-inset-1 hover:bg-muted"
           data-testid={`create-goal-acquisition-group-${testId}-header`}
           onClick={() => setExpanded((current) => !current)}
           type="button"
         >
-          {label}
-          <Chevron className="size-4 shrink-0 text-muted-foreground" />
+          <Chevron className="size-4 shrink-0" />
         </button>
       </div>
       {headerNote ? (

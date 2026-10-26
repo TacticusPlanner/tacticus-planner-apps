@@ -169,30 +169,44 @@ export function UnitGoalFormFields({
       {/* Prerequisite suggestions describe extra goals to prepend to the set above — shown after
           the config cards so the user sees what they configured before what gets auto-added. */}
       {form.prerequisites.needsUnlock ? (
-        <Field className="col-span-full" orientation="horizontal">
+        <Field
+          className="col-span-full min-h-11 md:min-h-0"
+          orientation="horizontal"
+        >
           <Checkbox
             checked={form.includeSuggestedUnlock}
             data-testid="create-goal-include-unlock"
+            id="create-goal-include-unlock"
             onCheckedChange={(checked) =>
               form.setIncludeSuggestedUnlock(checked === true)
             }
           />
-          <FieldLabel className="font-normal">
+          <FieldLabel
+            className="font-normal"
+            htmlFor="create-goal-include-unlock"
+          >
             {t("goals.create.suggestions.includeUnlock")}
           </FieldLabel>
         </Field>
       ) : null}
 
       {form.prerequisites.needsAscension ? (
-        <Field className="col-span-full" orientation="horizontal">
+        <Field
+          className="col-span-full min-h-11 md:min-h-0"
+          orientation="horizontal"
+        >
           <Checkbox
             checked={form.includeSuggestedAscension}
             data-testid="create-goal-include-ascension"
+            id="create-goal-include-ascension"
             onCheckedChange={(checked) =>
               form.setIncludeSuggestedAscension(checked === true)
             }
           />
-          <FieldLabel className="font-normal">
+          <FieldLabel
+            className="font-normal"
+            htmlFor="create-goal-include-ascension"
+          >
             {t("goals.create.suggestions.includeAscension")}
           </FieldLabel>
         </Field>

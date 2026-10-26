@@ -2585,4 +2585,46 @@ describe("CreateGoalSheet", () => {
       expect(createCombinedGoals).not.toHaveBeenCalled()
     })
   })
+
+  describe("polish-goal-dialogs", () => {
+    it("names each goal-type checkbox by its label and toggles it from the label text", async () => {
+      render(<CreateGoalSheet open onOpenChange={vi.fn()} />)
+      await selectCharacter()
+
+      const ascension = screen.getByRole("checkbox", { name: "Ascension" })
+      expect(ascension).not.toBeChecked()
+      fireEvent.click(screen.getByText("Ascension", { selector: "label" }))
+      expect(ascension).toBeChecked()
+      expect(
+        screen
+          .getByRole("checkbox", { name: "Ascension" })
+          .closest("[data-slot=field]")
+      ).toHaveClass("min-h-11")
+    })
+
+    it("gives each project chip's remove control a hit area of at least 24px", async () => {
+      listProjects.mockResolvedValue({
+        projects: [
+          {
+            projectId: "proj-1",
+            name: "My Goals",
+            isDefault: true,
+            status: "Active",
+            color: null,
+          },
+        ],
+      })
+      render(<CreateGoalSheet open onOpenChange={vi.fn()} />)
+      await selectCharacter()
+
+      const remove = await screen.findByRole("button", {
+        name: /Remove.*My Goals/,
+      })
+      // 16px control (12px icon + 2px padding) plus a 4px ::after inset on every side.
+      expect(remove).toHaveClass("relative", "after:absolute", "after:-inset-1")
+      expect(remove.closest("[data-slot=badge]")).toHaveClass(
+        "overflow-visible"
+      )
+    })
+  })
 })

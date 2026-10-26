@@ -1,4 +1,4 @@
-import type { ReactNode } from "react"
+import { useId, type ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import { characterIcon, mowIcon } from "@workspace/game-catalog"
 import type { UnitId } from "@workspace/game-domain"
@@ -58,18 +58,27 @@ export function GoalTypeToggleGroup({
   entityType?: string
 }) {
   const { t } = useTranslation()
+  const idPrefix = useId()
 
   return (
     <div className="grid grid-cols-2 gap-x-3 gap-y-1.5 rounded-2xl border p-3">
       {kinds.map((kind) => (
-        <Field key={kind} orientation="horizontal">
+        <Field
+          className="min-h-11 md:min-h-0"
+          key={kind}
+          orientation="horizontal"
+        >
           <Checkbox
             checked={enabledTypes.has(kind)}
             disabled={isDisabled?.(kind)}
+            id={`${idPrefix}-${kind}`}
             onCheckedChange={(checked) => onToggle(kind, checked === true)}
             data-testid={`create-goal-type-toggle-${kind}`}
           />
-          <FieldLabel className="font-normal">
+          <FieldLabel
+            className="min-h-11 flex-1 items-center font-normal md:min-h-0"
+            htmlFor={`${idPrefix}-${kind}`}
+          >
             <EntityIcon
               alt=""
               className="size-5 shrink-0"

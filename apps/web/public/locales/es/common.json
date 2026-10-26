@@ -982,7 +982,8 @@
         "shopOfferPossibleReward": "Una de varias recompensas posibles para esta ranura",
         "shopOfferChance": "≈{{percent}}% de probabilidad el {{days}}",
         "shopOfferDays": "Disponible {{days}}",
-        "ascensionOnlyMythicLabel": "Fuentes míticas exclusivas de ascensión"
+        "ascensionOnlyMythicLabel": "Fuentes míticas exclusivas de ascensión",
+        "toggleGroup": "Mostrar u ocultar las opciones de {{group}}"
       },
       "mythicMaterials": {
         "title": "Materiales míticos de las tiendas",
