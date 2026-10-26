@@ -66,6 +66,6 @@ export function useGoalEditDialogTutorial(): TourPageSteps {
  * `registerPageSteps` in `tour-provider.tsx`).
  */
 export function GoalEditDialogTourRegistration() {
-  useTourPageSteps(useGoalEditDialogTutorial())
+  useTourPageSteps(useGoalEditDialogTutorial(), { overlay: true })
   return null
 }

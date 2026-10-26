@@ -117,6 +117,6 @@ const MILESTONE_TARGET = ["rank", "ascension", "ability"]
  * open and closing it restores the underlying page's own steps.
  */
 export function CreateGoalSheetTourRegistration() {
-  useTourPageSteps(useCreateGoalSheetTutorial())
+  useTourPageSteps(useCreateGoalSheetTutorial(), { overlay: true })
   return null
 }
