@@ -8,6 +8,7 @@ import {
   buildCreateGoalSnapshot,
   createCombinedGoals,
   goalQueries,
+  type GoalKind,
   type ProjectMembership,
 } from "@/entities/goal"
 import { projectQueries } from "@/entities/project"
@@ -41,6 +42,8 @@ export function useGoalSubmit({
   selectedProjects,
   specParams,
   startPaused,
+  notes = {},
+  position = null,
   snapshotContext,
   onOpenChange,
   resetForm,
@@ -51,6 +54,11 @@ export function useGoalSubmit({
   selectedProjects: ProjectMembership[]
   specParams: SpecParams
   startPaused: boolean
+  /** Each goal type card's note, sent on every goal of that type the user configured (not on an
+   *  auto-suggested prerequisite). */
+  notes?: Partial<Record<GoalKind, string>>
+  /** Where the new goals go in the global priority order (1-based); null appends them. */
+  position?: number | null
   snapshotContext: SnapshotContext
   onOpenChange: (open: boolean) => void
   resetForm: () => void
@@ -67,10 +75,19 @@ export function useGoalSubmit({
         entityType,
         entityId: unitId,
         projects: selectedProjects.length > 0 ? selectedProjects : null,
-        goals: specs.map((spec) => ({
-          ...spec,
-          snapshot: buildCreateGoalSnapshot({ ...snapshotContext, spec }),
-        })),
+        goals: specs.map((spec) => {
+          // A card's note goes on the goals of that type the user configured, never on an
+          // auto-suggested prerequisite.
+          const note = specParams.enabledTypes.has(spec.goalType)
+            ? notes[spec.goalType]?.trim()
+            : undefined
+          return {
+            ...spec,
+            ...(note ? { notes: note } : {}),
+            snapshot: buildCreateGoalSnapshot({ ...snapshotContext, spec }),
+          }
+        }),
+        ...(position !== null ? { position } : {}),
         // Omitted rather than sent as false when off, so the default path's body stays byte-identical
         // to today's — the API's own default is what produces the Active goal.
         ...(startPaused ? { startPaused: true } : {}),

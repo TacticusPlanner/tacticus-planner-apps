@@ -493,9 +493,7 @@ describe("CreateGoalSheet", () => {
     expect(
       shell.querySelector('[data-slot="responsive-dialog-body"]')
     ).toHaveClass("overflow-y-auto")
-    expect(shell.querySelector("#create-goal-form")).toHaveClass(
-      "@2xl:grid-cols-2"
-    )
+    expect(shell).toHaveClass("h-[min(56rem,calc(100vh-2rem))]")
     expect(
       shell.querySelector('[data-slot="responsive-dialog-footer"]')
     ).toContainElement(screen.getByTestId("create-goal-submit"))
@@ -808,7 +806,7 @@ describe("CreateGoalSheet", () => {
     })
   })
 
-  it("renders sections in order: status, goal types and projects, then config cards, then prerequisite suggestions, then the review", async () => {
+  it("renders sections in order: status, goal types, prerequisite suggestions, projects, then config cards, then the review", async () => {
     // A locked character (getPlayerCharacter unresolved) is what puts a prerequisite-suggestion
     // checkbox and a config card and the review on screen simultaneously (see the auto-suggests
     // test below) — reused here purely to compare their DOM positions.
@@ -829,9 +827,15 @@ describe("CreateGoalSheet", () => {
     // the document.
     const follows = (first: Element, second: Element) =>
       first.compareDocumentPosition(second) & Node.DOCUMENT_POSITION_FOLLOWING
+    // The status is shown first (CSS order; it sits in the side column), the review last.
+    expect(
+      screen.getByTestId("create-goal-unit-info").parentElement
+    ).toHaveClass("order-1")
+    const types = screen.getByTestId("create-goal-type-toggle-Rank")
+    expect(follows(types, unlockSuggestion)).toBeTruthy()
+    expect(follows(unlockSuggestion, projectLabel)).toBeTruthy()
     expect(follows(projectLabel, rankCard)).toBeTruthy()
-    expect(follows(rankCard, unlockSuggestion)).toBeTruthy()
-    expect(follows(unlockSuggestion, review)).toBeTruthy()
+    expect(follows(rankCard, review)).toBeTruthy()
   })
 
   it("offers Unlock for a shop-only character, with the Shops group as its source and no Campaigns group", async () => {
@@ -1470,17 +1474,18 @@ describe("CreateGoalSheet", () => {
     ).not.toBeInTheDocument()
   })
 
-  it("preselects the first character when launched with no prefill and shows the status and goal-type sections side by side", async () => {
+  it("preselects the first character when launched with no prefill and shows the status beside the main column", async () => {
     render(<CreateGoalSheet open onOpenChange={vi.fn()} />)
 
     await selectCharacter()
 
-    const sections = screen.getByTestId("create-goal-status-and-types")
-    expect(sections).toHaveClass("@2xl:grid-cols-2")
-    expect(sections).toContainElement(
+    expect(screen.getByTestId("create-goal-columns")).toHaveClass(
+      "@2xl:grid-cols-[minmax(0,1fr)_22rem]"
+    )
+    expect(screen.getByTestId("create-goal-side-column")).toContainElement(
       screen.getByTestId("create-goal-unit-info")
     )
-    expect(sections).toContainElement(
+    expect(screen.getByTestId("create-goal-main-column")).toContainElement(
       screen.getByTestId("create-goal-type-toggle-Rank")
     )
   })
@@ -1594,7 +1599,7 @@ describe("CreateGoalSheet", () => {
     fireEvent.click(within(listbox).getByText("Health Base"))
 
     const quantityInput = screen.getByRole("spinbutton", {
-      name: "Quantity",
+      name: "Target quantity",
     })
     fireEvent.change(quantityInput, { target: { value: "3" } })
 
@@ -1677,7 +1682,7 @@ describe("CreateGoalSheet", () => {
     fireEvent.click(within(listbox).getByText("Health Base"))
 
     const quantityInput = screen.getByRole("spinbutton", {
-      name: "Quantity",
+      name: "Target quantity",
     })
     // Stone1 needs h1 once directly plus c1, which is crafted from 2 more h1 — 3 in total.
     expect(quantityInput).toHaveValue(3)
@@ -1690,9 +1695,12 @@ describe("CreateGoalSheet", () => {
     fireEvent.click(screen.getByTestId("create-goal-type-toggle-Upgrade"))
 
     expect(
-      screen.getByTestId("create-goal-validation-error")
+      screen.getByTestId("create-goal-issue-Upgrade-materials")
     ).toHaveTextContent(
       "Select at least one upgrade to farm for the Upgrade goal."
+    )
+    expect(screen.getByTestId("create-goal-issue-summary")).toHaveTextContent(
+      "1 problem to fix"
     )
     expect(screen.getByTestId("create-goal-submit")).toBeDisabled()
 
@@ -1702,9 +1710,12 @@ describe("CreateGoalSheet", () => {
 
     await vi.waitFor(() => {
       expect(
-        screen.queryByTestId("create-goal-validation-error")
+        screen.queryByTestId("create-goal-issue-Upgrade-materials")
       ).not.toBeInTheDocument()
     })
+    expect(
+      screen.queryByTestId("create-goal-issue-summary")
+    ).not.toBeInTheDocument()
     expect(screen.getByTestId("create-goal-submit")).toBeEnabled()
   })
 
@@ -1820,7 +1831,7 @@ describe("CreateGoalSheet", () => {
 
     const review = await screen.findByTestId("create-goal-review")
     expect(review).toHaveTextContent("Unlock")
-    expect(review).toHaveTextContent("required, this character isn't owned yet")
+    expect(review).toHaveTextContent("Unlock(prerequisite)")
     expect(review).not.toHaveTextContent("goals.create.goalTypes.Level")
     expect(
       await screen.findByTestId("create-goal-level-requirement")
@@ -1994,7 +2005,9 @@ describe("CreateGoalSheet", () => {
     // levels present, nothing below the current level.
     fireEvent.click(screen.getByTestId("create-goal-ability-active-target"))
     const activeList = await screen.findByRole("listbox")
-    expect(within(activeList).getByRole("option", { name: "12" })).toBeVisible()
+    expect(
+      within(activeList).getByRole("option", { name: "12 (no change)" })
+    ).toBeVisible()
     expect(within(activeList).getByRole("option", { name: "14" })).toBeVisible()
     expect(within(activeList).getByRole("option", { name: "30" })).toBeVisible()
     expect(
@@ -2005,7 +2018,9 @@ describe("CreateGoalSheet", () => {
     // Leave the passive track alone by selecting its own current level.
     fireEvent.click(screen.getByTestId("create-goal-ability-passive-target"))
     const passiveList = await screen.findByRole("listbox")
-    fireEvent.click(within(passiveList).getByRole("option", { name: "9" }))
+    fireEvent.click(
+      within(passiveList).getByRole("option", { name: "9 (no change)" })
+    )
 
     await vi.waitFor(() => {
       expect(screen.getByTestId("create-goal-submit")).not.toBeDisabled()
@@ -2115,7 +2130,7 @@ describe("CreateGoalSheet", () => {
         screen.getByTestId("create-goal-rank-milestone-1")
       ).toHaveTextContent("Milestone 3")
       await vi.waitFor(() => {
-        expect(screen.getByTestId("create-goal-review")).toHaveTextContent("×3")
+        expect(screen.getAllByTestId("create-goal-review-item")).toHaveLength(3)
       })
       fireEvent.click(screen.getByTestId("create-goal-submit"))
 
@@ -2587,6 +2602,436 @@ describe("CreateGoalSheet", () => {
   })
 
   describe("polish-goal-dialogs", () => {
+    const rankGoal = (goalId: string, end: number) => ({
+      goalId,
+      entityType: "Character",
+      entityId: "hero1",
+      goalType: "Rank",
+      status: "Active",
+      projectIds: [],
+      config: {
+        rank: {
+          start: 0,
+          startPointFive: false,
+          startAppliedUpgrades: 0,
+          end,
+          endPointFive: false,
+          endAppliedUpgrades: 0,
+        },
+      },
+    })
+    const withGoals = (...goals: { goalId: string }[]) => {
+      inFlightGoalsById = new Map(goals.map((goal) => [goal.goalId, goal]))
+    }
+    async function enable(kind: string) {
+      await vi.waitFor(() => {
+        expect(
+          screen.getByTestId(`create-goal-type-toggle-${kind}`)
+        ).not.toBeDisabled()
+      })
+      fireEvent.click(screen.getByTestId(`create-goal-type-toggle-${kind}`))
+    }
+    function asMobile() {
+      const matchMedia = vi.mocked(window.matchMedia)
+      const original = matchMedia.getMockImplementation()
+      matchMedia.mockImplementation(
+        (query: string) => ({ ...original?.(query), matches: true }) as never
+      )
+      return () => {
+        if (original) matchMedia.mockImplementation(original)
+      }
+    }
+
+    it("defaults Rank to the first target no in-flight goal holds and marks taken targets", async () => {
+      withGoals(rankGoal("stone2", 1))
+      render(<CreateGoalSheet open onOpenChange={vi.fn()} />)
+      await selectCharacter()
+      await enable("Rank")
+
+      expect(screen.getByTestId("create-goal-rank-end")).toHaveTextContent(
+        "Stone III"
+      )
+      expect(
+        screen.queryByTestId("create-goal-slot-conflict")
+      ).not.toBeInTheDocument()
+      fireEvent.click(screen.getByTestId("create-goal-rank-end"))
+      const taken = within(await screen.findByRole("listbox")).getByRole(
+        "option",
+        { name: /Stone II.*Already a goal/ }
+      )
+      expect(taken).toHaveAttribute("aria-disabled", "true")
+    })
+
+    it("defaults Ascension to the next step, the picker's first option", async () => {
+      render(<CreateGoalSheet open onOpenChange={vi.fn()} />)
+      await selectCharacter()
+      await enable("Ascension")
+
+      expect(
+        screen.queryByText("The selected progression has already been reached.")
+      ).not.toBeInTheDocument()
+      fireEvent.click(screen.getByTestId("create-goal-ascension-end"))
+      const [first] = within(await screen.findByRole("listbox")).getAllByRole(
+        "option"
+      )
+      expect(first).toHaveAccessibleName(/One Star/i)
+    })
+
+    it("shows every problem inline at once, counts them beside submit, and moves focus from the summary", async () => {
+      withGoals(rankGoal("stone2", 1))
+      render(
+        <CreateGoalSheet
+          onOpenChange={vi.fn()}
+          open
+          prefill={{
+            entityType: "Character",
+            entityId: "hero1" as never,
+            goalType: "Rank",
+            rankEnd: "Stone2" as never,
+          }}
+        />
+      )
+      await selectCharacter()
+      await enable("Upgrade")
+
+      const conflict = await screen.findByTestId("create-goal-slot-conflict")
+      expect(
+        within(screen.getByTestId("create-goal-type-card-Rank")).getByTestId(
+          "create-goal-slot-conflict"
+        )
+      ).toBe(conflict)
+      expect(
+        within(screen.getByTestId("create-goal-type-card-Upgrade")).getByTestId(
+          "create-goal-issue-Upgrade-materials"
+        )
+      ).toBeInTheDocument()
+      const trigger = screen.getByTestId("create-goal-rank-end")
+      expect(trigger).toHaveAttribute("aria-invalid", "true")
+      expect(trigger).toHaveAccessibleDescription(
+        expect.stringContaining("Rank goal with the target")
+      )
+      const summary = screen.getByTestId("create-goal-issue-summary")
+      expect(summary).toHaveTextContent("2 problems to fix")
+
+      // The Rank card is collapsed (Upgrade was enabled last): following its issue expands it first.
+      expect(screen.getByTestId("create-goal-type-card-Rank")).toHaveAttribute(
+        "data-expanded",
+        "false"
+      )
+      expect(
+        screen.getByTestId("create-goal-type-card-Rank-issue-count")
+      ).toHaveTextContent("1 problem")
+      fireEvent.click(summary)
+      const items = await screen.findAllByTestId(
+        "create-goal-issue-summary-item"
+      )
+      // Card order: Upgrade's card comes before Rank's.
+      expect(items.map((item) => item.textContent)).toEqual([
+        expect.stringContaining("Upgrade"),
+        expect.stringContaining("Rank"),
+      ])
+      fireEvent.click(items[1]!)
+      await vi.waitFor(() => {
+        expect(screen.getByTestId("create-goal-rank-end")).toHaveFocus()
+      })
+      expect(screen.getByTestId("create-goal-type-card-Rank")).toHaveAttribute(
+        "data-expanded",
+        "true"
+      )
+    })
+
+    it("validates Upgrade quantities inline without clamping, and shows the owned count", async () => {
+      await seedPlayerData({
+        "inventory-upgrades": [{ upgradeId: "h1", amount: 13 }],
+      })
+      render(<CreateGoalSheet open onOpenChange={vi.fn()} />)
+      await selectCharacter()
+      await enable("Upgrade")
+      fireEvent.click(screen.getByRole("combobox", { name: "Add an upgrade" }))
+      fireEvent.click(
+        within(await screen.findByRole("listbox")).getByText("Health Base")
+      )
+      const quantity = await screen.findByRole("spinbutton", {
+        name: "Target quantity",
+      })
+      const row = screen.getByTestId("create-goal-upgrade-target-h1")
+      await vi.waitFor(() => {
+        expect(within(row).getByText("own 13")).toBeInTheDocument()
+      })
+
+      fireEvent.change(quantity, { target: { value: "" } })
+      expect(quantity).toHaveValue(null)
+      expect(quantity).toHaveAttribute("aria-invalid", "true")
+      expect(row).toHaveTextContent("Enter a whole number from 1 to 10,000.")
+      expect(screen.getByTestId("create-goal-submit")).toBeDisabled()
+
+      fireEvent.change(quantity, { target: { value: "0" } })
+      expect(quantity).toHaveValue(0)
+      expect(row).toHaveTextContent("Enter a whole number from 1 to 10,000.")
+
+      fireEvent.change(quantity, { target: { value: "10" } })
+      expect(quantity).toHaveValue(10)
+      expect(
+        screen.getByTestId("create-goal-upgrade-target-h1-already-met")
+      ).toBeInTheDocument()
+      await vi.waitFor(() => {
+        expect(screen.getByTestId("create-goal-submit")).toBeEnabled()
+      })
+    })
+
+    it("disables Unlock when an Unlock goal exists, offers to open it, and suggests no new one", async () => {
+      await seedCharacter(undefined)
+      withGoals({
+        goalId: "unlock-1",
+        entityType: "Character",
+        entityId: "hero1",
+        goalType: "Unlock",
+        status: "Active",
+        projectIds: [],
+        config: {},
+      } as never)
+      render(<CreateGoalSheet open onOpenChange={vi.fn()} />)
+      await selectCharacter()
+
+      expect(
+        screen.getByTestId("create-goal-type-toggle-Unlock")
+      ).toBeDisabled()
+      const hint = screen.getByTestId("create-goal-unlock-existing")
+      expect(hint).toHaveTextContent(
+        "There's already an Unlock goal for this unit."
+      )
+      expect(within(hint).getByRole("link", { name: "Open" })).toHaveAttribute(
+        "href",
+        "/plan/goals?goal=unlock-1"
+      )
+      fireEvent.click(screen.getByTestId("create-goal-type-toggle-Rank"))
+      await screen.findByTestId("create-goal-type-card-Rank")
+      expect(
+        screen.queryByTestId("create-goal-include-unlock")
+      ).not.toBeInTheDocument()
+    })
+
+    it("words the owned-unit hint for a Machine of War", async () => {
+      await seedMow({
+        progressionIndex: "Common:None",
+        abilities: [],
+        appliedUpgradeSlots: [],
+      })
+      render(<CreateGoalSheet open onOpenChange={vi.fn()} />)
+      await selectMow()
+
+      expect(
+        await screen.findByText("This Machine of War is already unlocked.")
+      ).toBeInTheDocument()
+      expect(
+        screen.queryByText("This character is already unlocked.")
+      ).not.toBeInTheDocument()
+    })
+
+    it("states why a Machine of War's Ability resources are empty instead of an empty box", async () => {
+      await seedMow({
+        progressionIndex: "Common:None",
+        abilities: [],
+        appliedUpgradeSlots: [],
+      })
+      // Everything the first level needs is owned, so nothing is left to farm.
+      await seedPlayerData({
+        "inventory-upgrades": [{ upgradeId: "h1", amount: 99 }],
+      })
+      render(<CreateGoalSheet open onOpenChange={vi.fn()} />)
+      await selectMow()
+      await enable("Ability")
+
+      await vi.waitFor(() => {
+        expect(
+          screen.getByTestId("create-goal-ability-preview")
+        ).toHaveTextContent("No upgrades are needed for the selected levels.")
+      })
+    })
+
+    it("reviews each goal with its range in card order, and holds the estimate while there are problems", async () => {
+      listProjects.mockResolvedValue({
+        projects: [
+          {
+            projectId: "proj-1",
+            name: "My Goals",
+            isDefault: true,
+            status: "Active",
+            color: null,
+          },
+        ],
+      })
+      render(<CreateGoalSheet open onOpenChange={vi.fn()} />)
+      await selectCharacter()
+      await enable("Rank")
+      await enable("Ascension")
+
+      const items = await screen.findAllByTestId("create-goal-review-item")
+      expect(items.map((item) => item.textContent)).toEqual([
+        expect.stringMatching(/^Ascension:/),
+        expect.stringMatching(/^Rank:Stone I.*Stone II/),
+      ])
+
+      await enable("Upgrade")
+      expect(
+        await screen.findByTestId("create-goal-project-estimate-proj-1")
+      ).toHaveTextContent(
+        "My Goals: the estimate appears once the problems are fixed"
+      )
+      expect(screen.getByTestId("create-goal-review")).not.toHaveTextContent(
+        "calculating"
+      )
+    })
+
+    it("shows an empty state until a goal type is chosen", async () => {
+      render(<CreateGoalSheet open onOpenChange={vi.fn()} />)
+      await selectCharacter()
+
+      expect(screen.getByTestId("create-goal-empty-state")).toHaveTextContent(
+        "Choose a goal type above to start."
+      )
+      await enable("Rank")
+      expect(
+        screen.queryByTestId("create-goal-empty-state")
+      ).not.toBeInTheDocument()
+    })
+
+    it("expands only the newest card; a collapsed card shows its range and toggles from its header", async () => {
+      render(<CreateGoalSheet open onOpenChange={vi.fn()} />)
+      await selectCharacter()
+      await enable("Rank")
+      const rankCard = screen.getByTestId("create-goal-type-card-Rank")
+      expect(rankCard).toHaveAttribute("data-expanded", "true")
+
+      await enable("Ascension")
+      expect(rankCard).toHaveAttribute("data-expanded", "false")
+      expect(
+        screen.getByTestId("create-goal-type-card-Ascension")
+      ).toHaveAttribute("data-expanded", "true")
+      const header = screen.getByTestId("create-goal-type-card-Rank-header")
+      expect(header).toHaveAttribute("aria-expanded", "false")
+      expect(header).toHaveTextContent(/Rank.*Stone I.*Stone II/)
+
+      fireEvent.click(header)
+      expect(rankCard).toHaveAttribute("data-expanded", "true")
+      expect(
+        screen.getByTestId("create-goal-type-card-Ascension")
+      ).toHaveAttribute("data-expanded", "false")
+    })
+
+    it("brings a newly enabled card into view without moving focus", async () => {
+      const scrollIntoView = vi
+        .spyOn(HTMLElement.prototype, "scrollIntoView")
+        .mockImplementation(() => {})
+      render(<CreateGoalSheet open onOpenChange={vi.fn()} />)
+      await selectCharacter()
+      const checkbox = screen.getByTestId("create-goal-type-toggle-Rank")
+      checkbox.focus()
+      await enable("Rank")
+
+      await vi.waitFor(() => {
+        expect(scrollIntoView.mock.contexts).toContain(
+          screen.getByTestId("create-goal-type-card-Rank")
+        )
+      })
+      expect(checkbox).toHaveFocus()
+    })
+
+    it("keeps the options in the footer on desktop", async () => {
+      render(<CreateGoalSheet open onOpenChange={vi.fn()} />)
+      await selectCharacter()
+
+      const footer = screen
+        .getByTestId("create-goal-sheet")
+        .querySelector('[data-slot="responsive-dialog-footer"]')
+      expect(footer).toContainElement(
+        screen.getByTestId("create-goal-footer-options")
+      )
+    })
+
+    it("on mobile, keeps only Close and Create goal in the footer, the options above the review, and the status as one line", async () => {
+      const restore = asMobile()
+      try {
+        render(<CreateGoalSheet open onOpenChange={vi.fn()} />)
+        await selectCharacter().catch(() => undefined)
+        await vi.waitFor(() => {
+          expect(
+            screen.getByTestId("create-goal-unit-status-summary")
+          ).toBeInTheDocument()
+        })
+
+        const footer = screen
+          .getByTestId("create-goal-sheet")
+          .querySelector('[data-slot="responsive-dialog-footer"]')!
+        expect(
+          [...footer.querySelectorAll("button")].map((b) => b.textContent)
+        ).toEqual(["Close", "Create goal"])
+        const options = screen.getByTestId("create-goal-footer-options")
+        expect(footer).not.toContainElement(options)
+        await enable("Rank")
+        const review = await screen.findByTestId("create-goal-review")
+        expect(
+          options.compareDocumentPosition(review) &
+            Node.DOCUMENT_POSITION_FOLLOWING
+        ).toBeTruthy()
+
+        const toggle = screen.getByTestId(
+          "create-goal-unit-status-summary-toggle"
+        )
+        expect(toggle).toHaveAttribute("aria-expanded", "false")
+        expect(toggle).toHaveTextContent("Stone I")
+        fireEvent.click(toggle)
+        expect(toggle).toHaveAttribute("aria-expanded", "true")
+        expect(screen.getByTestId("create-goal-unit-info")).toBeVisible()
+      } finally {
+        restore()
+      }
+    })
+
+    it("sends a separate note per goal type card and places the goals last by default", async () => {
+      createCombinedGoals.mockResolvedValue({ goals: [] })
+      render(<CreateGoalSheet open onOpenChange={vi.fn()} />)
+      await selectCharacter()
+      await enable("Rank")
+      fireEvent.click(screen.getByTestId("create-goal-add-note-Rank"))
+      fireEvent.change(
+        within(screen.getByTestId("create-goal-note-Rank")).getByRole(
+          "textbox",
+          { name: "Notes" }
+        ),
+        { target: { value: "For Guild Raid" } }
+      )
+      await enable("Ascension")
+      fireEvent.click(screen.getByTestId("create-goal-add-note-Ascension"))
+      fireEvent.change(
+        within(screen.getByTestId("create-goal-note-Ascension")).getByRole(
+          "textbox",
+          { name: "Notes" }
+        ),
+        { target: { value: "Later" } }
+      )
+      expect(
+        screen.getByTestId("create-goal-priority-select")
+      ).toHaveTextContent("1 of 1 (last)")
+
+      await vi.waitFor(() => {
+        expect(screen.getByTestId("create-goal-submit")).toBeEnabled()
+      })
+      fireEvent.click(screen.getByTestId("create-goal-submit"))
+      await vi.waitFor(() => {
+        expect(createCombinedGoals).toHaveBeenCalledTimes(1)
+      })
+      const [request] = createCombinedGoals.mock.calls[0] ?? []
+      expect(request).not.toHaveProperty("position")
+      const byType = Object.fromEntries(
+        request.goals.map((goal: { goalType: string; notes?: string }) => [
+          goal.goalType,
+          goal.notes,
+        ])
+      )
+      expect(byType).toEqual({ Ascension: "Later", Rank: "For Guild Raid" })
+    })
+
     it("names each goal-type checkbox by its label and toggles it from the label text", async () => {
       render(<CreateGoalSheet open onOpenChange={vi.fn()} />)
       await selectCharacter()

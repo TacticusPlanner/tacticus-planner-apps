@@ -10,20 +10,29 @@ import { AscensionGoalFields } from "./goal-type-fields"
 export function AscensionFarmingFields({
   progressionStart,
   progressionEnd,
+  progressionEndOptions,
   onProgressionEndChange,
   progressionPreview,
+  taken,
+  issues,
 }: {
   progressionStart: Progression
   progressionEnd: Progression
+  progressionEndOptions: readonly Progression[]
   onProgressionEndChange: (value: Progression) => void
   progressionPreview: ProgressionPreviewResult
+  taken?: ReadonlySet<string>
+  issues?: Parameters<typeof AscensionGoalFields>[0]["issues"]
 }) {
   return (
     <div className="grid gap-3">
       <AscensionGoalFields
+        issues={issues}
         progressionStart={progressionStart}
         progressionEnd={progressionEnd}
+        progressionEndOptions={progressionEndOptions}
         onProgressionEndChange={onProgressionEndChange}
+        taken={taken}
       />
       <ProgressionPreview preview={progressionPreview} />
     </div>
@@ -106,11 +115,26 @@ export function ProgressionPreview({
           </p>
         )
       })}
-      {/* Ascension's own energy-for-remaining-shards line (plan: shard-location selector) —
-          isolated to Ascension's net regular-shard need, distinct from the combined `preview`
-          below (which also folds in an enabled Unlock's own shard need, plus every selected
-          acquisition source, for the shared farm-day simulation). */}
-      {preview.ascensionShardEnergy ? (
+      {/* One line for the energy, raids and days (the combined farm-day simulation over every selected
+          source, which also folds in an enabled Unlock's shards); Ascension's own
+          energy-for-remaining-shards figure stands in only while that has no estimate. */}
+      {preview.combined?.status === "Estimated" ? (
+        <p
+          className="flex items-center gap-1.5 font-medium"
+          data-testid="create-goal-progression-resource-line"
+        >
+          <EntityIcon alt="" className="size-5 shrink-0" src={energyIconUrl} />
+          {t("goals.create.ascension.resourceLine", {
+            energy: preview.combined.energyTotal,
+            raids: preview.combined.raidsTotal,
+            days: preview.combinedDays.toFixed(1),
+          })}
+        </p>
+      ) : preview.combined?.status === "Blocked" ? (
+        <p className="text-muted-foreground">
+          {t(`goals.estimate.blocked.${preview.combined.reason}`)}
+        </p>
+      ) : preview.ascensionShardEnergy ? (
         <p className="flex items-center gap-1.5 text-muted-foreground">
           <EntityIcon alt="" className="size-5 shrink-0" src={energyIconUrl} />
           {preview.ascensionShardEnergy.status === "Blocked"
@@ -119,26 +143,13 @@ export function ProgressionPreview({
                 energy: preview.ascensionShardEnergy.energyTotal,
               })}
         </p>
-      ) : null}
-      {preview.combined?.status === "Estimated" ? (
-        <p className="flex items-center gap-1.5">
-          <EntityIcon alt="" className="size-5 shrink-0" src={energyIconUrl} />
-          {t("goals.create.acquisitionSources.combinedEstimate", {
-            energy: preview.combined.energyTotal,
-            raids: preview.combined.raidsTotal,
-            days: preview.combined.days,
+      ) : (
+        <p className="font-medium">
+          {t("goals.create.ascension.combinedEstimate", {
+            days: preview.combinedDays.toFixed(1),
           })}
         </p>
-      ) : preview.combined?.status === "Blocked" ? (
-        <p className="text-muted-foreground">
-          {t(`goals.estimate.blocked.${preview.combined.reason}`)}
-        </p>
-      ) : null}
-      <p className="font-medium">
-        {t("goals.create.ascension.combinedEstimate", {
-          days: preview.combinedDays.toFixed(1),
-        })}
-      </p>
+      )}
     </div>
   )
 }

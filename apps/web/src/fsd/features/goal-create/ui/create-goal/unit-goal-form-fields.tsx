@@ -1,21 +1,30 @@
+import { useRef, type RefObject } from "react"
 import { useTranslation } from "react-i18next"
+import { Link } from "react-router"
 import { Checkbox } from "@workspace/ui/components/checkbox"
 import { Field, FieldError, FieldLabel } from "@workspace/ui/components/field"
 import { Label } from "@workspace/ui/components/label"
+import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 import type { UnitId } from "@workspace/game-domain"
 import { UnitCombobox } from "@/shared/ui"
 import { goalKindsForEntity } from "@/features/goal-planning/@x/goal-create"
 import type { useCreateGoalForm } from "../../model/goal-creation-form/use-create-goal-form"
+import { buildCombinedGoalSpecs } from "../../model/goal-creation-form/goal-spec-builder"
 import { GoalProjectsField } from "../projects/goal-projects-field"
 import { GoalTypeToggleGroup, GoalTypeCard } from "../shared/goal-visuals"
-import { UnitInfoCard } from "./unit-info-card"
-import { progressionLabel, type GoalKind } from "@/entities/goal"
+import { GoalRangeSummary } from "../shared/goal-range-summary"
+import { UnitInfoCard, UnitStatusSummary } from "./unit-info-card"
+import type { GoalKind } from "@/entities/goal"
 import {
   AcquisitionSourceField,
   ShopOfferRow,
 } from "./acquisition-source-field"
+import { CreateGoalOptions } from "./create-goal-options"
 import { FarmingStrategyField } from "./farming-strategy-field"
 import { AscensionFarmingFields } from "./goal-farming-fields"
+import { GoalCreationReview } from "./goal-creation-review"
+import { goalCardHeaderId } from "./goal-form-issue-ids"
+import { GoalNoteDisclosure } from "./goal-note-disclosure"
 import { GoalShardLocationsField } from "./goal-shard-locations-field"
 import { AbilityGoalFields } from "./ability-goal-fields"
 import { RankGoalFields } from "./goal-type-fields"
@@ -33,11 +42,12 @@ import { canAddMilestone } from "../../model/goal-creation-form/goal-milestones"
 type GoalForm = ReturnType<typeof useCreateGoalForm>
 
 /**
- * The "Unit" pill's entire form body, in display order: unit picker, goal-type toggles, every
- * enabled goal-type's `GoalTypeCard` (assembled by `GoalTypeCards`), prerequisite suggestions,
- * project membership selection, then the combined-goal review list ("What will be
- * created", with each selected project's own duration estimate) last. This is a coordinator-level component, not a leaf presentational field, so taking the
- * whole `form` is the same posture as the sheet already had.
+ * The "Unit" pill's entire form body: the unit picker, then (at the dialog's `@2xl` width) a main column
+ * — goal-type selector, prerequisite suggestions, projects, an empty state or the enabled goal-type
+ * cards (an accordion: one expanded at a time) — beside a side column that stays in view with the
+ * current status and the "What will be created" review. Narrower, it is one column: status first, then
+ * the main column, then (below 768px) the footer's options and the review. A coordinator-level
+ * component, so it takes the whole `form`.
  */
 export function UnitGoalFormFields({
   form,
@@ -49,61 +59,73 @@ export function UnitGoalFormFields({
   unitIcon: (id: UnitId) => string | undefined
 }) {
   const { t } = useTranslation()
+  const isMobile = useIsMobile()
   const goalKinds = goalKindsForEntity(form.entityType)
+  const cardRefs = useRef(new Map<GoalKind, HTMLDivElement>())
+  const unitKind = form.entityType === "Mow" ? "mow" : undefined
+
+  const toggleType = (kind: GoalKind, enabled: boolean) => {
+    form.toggleType(kind, enabled)
+    // Bring the new card's header into view without moving focus off the checkbox.
+    if (enabled) {
+      setTimeout(() => {
+        cardRefs.current.get(kind)?.scrollIntoView?.({ block: "nearest" })
+      }, 0)
+    }
+  }
+
+  const statusProps = {
+    entityType: form.entityType,
+    isOwned: form.entityAlreadyOwned,
+    loading: form.entityLoading,
+    rank: form.entityType === "Character" ? form.rankStart : undefined,
+    progression: form.progressionStart,
+    abilityActiveLevel: form.abilityActiveStart,
+    abilityPassiveLevel: form.abilityPassiveStart,
+    level: form.entityType === "Character" ? form.currentLevel : undefined,
+    shardCount: form.entityAlreadyOwned
+      ? ((form.usesMythicShards ? form.ownedMythicShards : form.ownedShards) ??
+        0)
+      : (form.lockedShards ?? 0),
+    shardIsMythic: form.entityAlreadyOwned && form.usesMythicShards,
+  }
 
   return (
     <form
       id="create-goal-form"
-      className="grid items-start gap-3 pb-3 @2xl:grid-cols-2"
+      className="grid items-start gap-3 pb-3"
       onSubmit={(event) => void form.handleSubmit(event)}
     >
-      <div className="col-span-full">
-        <UnitCombobox
-          groups={form.unitGroups}
-          value={form.entityId}
-          onChange={form.handleEntityChange}
-          placeholder={t("goals.create.unitPlaceholder")}
-          emptyText={t("goals.create.unitEmpty")}
-          icon={unitIcon}
-          lockedIds={form.lockedUnitIds}
-        />
-      </div>
+      <UnitCombobox
+        groups={form.unitGroups}
+        value={form.entityId}
+        onChange={form.handleEntityChange}
+        placeholder={t("goals.create.unitPlaceholder")}
+        emptyText={t("goals.create.unitEmpty")}
+        icon={unitIcon}
+        lockedIds={form.lockedUnitIds}
+      />
 
       {form.entityId ? (
         <div
-          className="col-span-full grid items-start gap-3 @2xl:grid-cols-2"
-          data-testid="create-goal-status-and-types"
+          className="grid items-start gap-3 @2xl:grid-cols-[minmax(0,1fr)_22rem]"
+          data-testid="create-goal-columns"
         >
-          <UnitInfoCard
-            entityType={form.entityType}
-            isOwned={form.entityAlreadyOwned}
-            loading={form.entityLoading}
-            rank={form.entityType === "Character" ? form.rankStart : undefined}
-            progression={form.progressionStart}
-            abilityActiveLevel={form.abilityActiveStart}
-            abilityPassiveLevel={form.abilityPassiveStart}
-            level={
-              form.entityType === "Character" ? form.currentLevel : undefined
-            }
-            shardCount={
-              form.entityAlreadyOwned
-                ? ((form.usesMythicShards
-                    ? form.ownedMythicShards
-                    : form.ownedShards) ?? 0)
-                : (form.lockedShards ?? 0)
-            }
-            shardIsMythic={form.entityAlreadyOwned && form.usesMythicShards}
-          />
-
-          <div className="grid content-start gap-3">
-            <div className="grid gap-1">
+          <div
+            className="order-2 grid min-w-0 content-start gap-3 @2xl:col-start-1 @2xl:row-start-1"
+            data-testid="create-goal-main-column"
+          >
+            <div
+              className="grid gap-1"
+              data-testid="create-goal-status-and-types"
+            >
               <Label className="text-xs text-muted-foreground">
                 {t("goals.create.goalTypeLabel")}
               </Label>
               <GoalTypeToggleGroup
                 kinds={goalKinds}
                 enabledTypes={form.enabledTypes}
-                onToggle={form.toggleType}
+                onToggle={toggleType}
                 isDisabled={(kind) =>
                   (kind === "Unlock" && !form.unlockAvailable) ||
                   (kind === "Rank" && form.atMaxRank) ||
@@ -115,13 +137,29 @@ export function UnitGoalFormFields({
                 }
                 entityType={form.entityType}
               />
-              {!form.unlockAvailable ? (
+              {form.existingUnlockGoalId ? (
+                <p
+                  className="flex flex-wrap items-center gap-x-2 text-xs text-muted-foreground"
+                  data-testid="create-goal-unlock-existing"
+                >
+                  {t("goals.create.unlockExistingGoal")}
+                  <Link
+                    className="font-medium text-primary underline"
+                    onClick={form.onNavigateAway}
+                    to={`/plan/goals?goal=${form.existingUnlockGoalId}`}
+                  >
+                    {t("goals.create.openGoal")}
+                  </Link>
+                </p>
+              ) : !form.unlockAvailable ? (
                 <p className="text-xs text-muted-foreground">
-                  {t(
-                    form.entityAlreadyOwned
-                      ? "goals.create.validation.alreadyUnlocked"
-                      : "goals.create.unlockUnavailable"
-                  )}
+                  {form.entityAlreadyOwned
+                    ? t("goals.create.validation.alreadyUnlocked", {
+                        context: unitKind,
+                      })
+                    : t("goals.create.unlockUnavailable", {
+                        context: unitKind,
+                      })}
                 </p>
               ) : null}
               {form.atMaxRank ? (
@@ -141,15 +179,45 @@ export function UnitGoalFormFields({
               ) : null}
             </div>
 
-            {form.slotConflictMessage ? (
-              <p
-                className="text-sm text-destructive"
-                data-testid="create-goal-slot-conflict"
-                role="alert"
-              >
-                {form.slotConflictMessage}
-              </p>
+            {/* Prerequisite suggestions describe extra goals to prepend to the set below. */}
+            {form.prerequisites.needsUnlock ? (
+              <Field className="min-h-11 md:min-h-0" orientation="horizontal">
+                <Checkbox
+                  checked={form.includeSuggestedUnlock}
+                  data-testid="create-goal-include-unlock"
+                  id="create-goal-include-unlock"
+                  onCheckedChange={(checked) =>
+                    form.setIncludeSuggestedUnlock(checked === true)
+                  }
+                />
+                <FieldLabel
+                  className="font-normal"
+                  htmlFor="create-goal-include-unlock"
+                >
+                  {t("goals.create.suggestions.includeUnlock")}
+                </FieldLabel>
+              </Field>
             ) : null}
+
+            {form.prerequisites.needsAscension ? (
+              <Field className="min-h-11 md:min-h-0" orientation="horizontal">
+                <Checkbox
+                  checked={form.includeSuggestedAscension}
+                  data-testid="create-goal-include-ascension"
+                  id="create-goal-include-ascension"
+                  onCheckedChange={(checked) =>
+                    form.setIncludeSuggestedAscension(checked === true)
+                  }
+                />
+                <FieldLabel
+                  className="font-normal"
+                  htmlFor="create-goal-include-ascension"
+                >
+                  {t("goals.create.suggestions.includeAscension")}
+                </FieldLabel>
+              </Field>
+            ) : null}
+
             <GoalProjectsField
               onSelectionChange={form.selectProjects}
               portalContainer={portalContainer}
@@ -158,138 +226,54 @@ export function UnitGoalFormFields({
               selectedProjectIds={form.selectedProjectIds}
               testIdPrefix="create-goal"
             />
+
+            {form.enabledTypes.size === 0 ? (
+              <p
+                className="rounded-2xl border border-dashed p-6 text-center text-sm text-muted-foreground"
+                data-testid="create-goal-empty-state"
+              >
+                {t("goals.create.emptyTypes")}
+              </p>
+            ) : (
+              <GoalTypeCards
+                cardRefs={cardRefs}
+                form={form}
+                goalKinds={goalKinds}
+              />
+            )}
           </div>
-        </div>
-      ) : null}
-
-      {form.entityId ? (
-        <GoalTypeCards form={form} goalKinds={goalKinds} />
-      ) : null}
-
-      {/* Prerequisite suggestions describe extra goals to prepend to the set above — shown after
-          the config cards so the user sees what they configured before what gets auto-added. */}
-      {form.prerequisites.needsUnlock ? (
-        <Field
-          className="col-span-full min-h-11 md:min-h-0"
-          orientation="horizontal"
-        >
-          <Checkbox
-            checked={form.includeSuggestedUnlock}
-            data-testid="create-goal-include-unlock"
-            id="create-goal-include-unlock"
-            onCheckedChange={(checked) =>
-              form.setIncludeSuggestedUnlock(checked === true)
-            }
-          />
-          <FieldLabel
-            className="font-normal"
-            htmlFor="create-goal-include-unlock"
+          {/* The side column, after the main one in reading order: below @2xl its items join the single
+              column (`contents`), the status first and the review last. */}
+          <aside
+            className="contents @2xl:sticky @2xl:top-0 @2xl:col-start-2 @2xl:row-start-1 @2xl:grid @2xl:gap-3"
+            data-testid="create-goal-side-column"
           >
-            {t("goals.create.suggestions.includeUnlock")}
-          </FieldLabel>
-        </Field>
-      ) : null}
-
-      {form.prerequisites.needsAscension ? (
-        <Field
-          className="col-span-full min-h-11 md:min-h-0"
-          orientation="horizontal"
-        >
-          <Checkbox
-            checked={form.includeSuggestedAscension}
-            data-testid="create-goal-include-ascension"
-            id="create-goal-include-ascension"
-            onCheckedChange={(checked) =>
-              form.setIncludeSuggestedAscension(checked === true)
-            }
-          />
-          <FieldLabel
-            className="font-normal"
-            htmlFor="create-goal-include-ascension"
-          >
-            {t("goals.create.suggestions.includeAscension")}
-          </FieldLabel>
-        </Field>
-      ) : null}
-
-      {form.entityId && form.reviewItems.length > 0 ? (
-        <div
-          className="col-span-full flex flex-wrap items-baseline gap-x-4 gap-y-0.5 rounded-2xl border px-3 py-2 text-sm"
-          data-testid="create-goal-review"
-        >
-          <p className="font-medium">{t("goals.create.reviewTitle")}</p>
-          <ul className="flex flex-wrap gap-x-3 text-muted-foreground">
-            {form.reviewItems.map((item) => (
-              <li key={item.goalType}>
-                {t(`goals.create.goalTypes.${item.goalType}`)}
-                {item.count > 1 ? ` ×${item.count}` : null}
-                {item.autoSuggested ? (
-                  <span className="text-xs">
-                    {" — "}
-                    {t(
-                      item.goalType === "Unlock"
-                        ? "goals.create.suggestions.unlockRequired"
-                        : "goals.create.suggestions.ascensionRequired"
-                    )}
-                  </span>
-                ) : null}
-              </li>
-            ))}
-            {form.prerequisites.coveringAscension ? (
-              <li data-testid="create-goal-review-depends-on-existing">
-                {t("goals.create.suggestions.dependsOnExisting", {
-                  target: progressionLabel(
-                    t,
-                    form.prerequisites.coveringAscension.end
-                  ),
-                })}
-              </li>
+            <div className="order-1">
+              {isMobile ? (
+                <UnitStatusSummary {...statusProps} />
+              ) : (
+                <UnitInfoCard {...statusProps} />
+              )}
+            </div>
+            {isMobile ? (
+              <div className="order-3">
+                <CreateGoalOptions
+                  form={form}
+                  placement="body"
+                  portalContainer={portalContainer}
+                />
+              </div>
             ) : null}
-          </ul>
-          {form.estimatedProjectIds.length > 0 ? (
-            <ul className="flex flex-wrap gap-x-3 border-l pl-3 text-muted-foreground">
-              {form.estimatedProjectIds.map((projectId) => {
-                const project = form.projects.find(
-                  (candidate) => candidate.projectId === projectId
-                )
-                const estimate = form.perProjectEstimates.get(projectId)
-                return (
-                  <li
-                    data-testid={`create-goal-project-estimate-${projectId}`}
-                    key={projectId}
-                  >
-                    {project?.name ?? projectId}
-                    {": "}
-                    {!estimate || estimate.status === "loading"
-                      ? t("goals.create.projectEstimateLoading")
-                      : estimate.status === "unavailable"
-                        ? t("goals.create.projectEstimateUnavailable")
-                        : estimate.outcome.status === "Blocked"
-                          ? t(
-                              `goals.estimate.blocked.${estimate.outcome.reason}`
-                            )
-                          : t("goals.create.previewEstimate", {
-                              days: estimate.outcome.days,
-                            })}
-                  </li>
-                )
-              })}
-            </ul>
-          ) : null}
+            <div className="order-3">
+              <GoalCreationReview form={form} />
+            </div>
+          </aside>
         </div>
       ) : null}
 
       {form.status === "error" && form.errorMessage ? (
-        <FieldError className="col-span-full" data-testid="create-goal-error">
+        <FieldError data-testid="create-goal-error">
           {form.errorMessage}
-        </FieldError>
-      ) : null}
-      {form.validationMessage ? (
-        <FieldError
-          className="col-span-full"
-          data-testid="create-goal-validation-error"
-        >
-          {form.validationMessage}
         </FieldError>
       ) : null}
     </form>
@@ -304,11 +288,44 @@ export function UnitGoalFormFields({
 function GoalTypeCards({
   form,
   goalKinds,
+  cardRefs,
 }: {
   form: GoalForm
   goalKinds: GoalKind[]
+  cardRefs: RefObject<Map<GoalKind, HTMLDivElement>>
 }) {
   const { t } = useTranslation()
+  const { issues } = form
+  // Each card's own goal (the first spec of its type; later ones are its milestones), for the summary.
+  const specs = buildCombinedGoalSpecs(form.combinedSpecParams)
+  // The accordion and summary line every card shares (goal-creation: cards collapse to one line).
+  const cardProps = (kind: GoalKind) => {
+    const spec = specs.find((candidate) => candidate.goalType === kind)
+    return {
+      kind,
+      entityType: form.entityType,
+      expanded: form.expandedKind === kind,
+      onExpandedChange: (expanded: boolean) =>
+        form.setExpandedKind(expanded ? kind : null),
+      summary: spec ? (
+        <GoalRangeSummary entityType={form.entityType} spec={spec} />
+      ) : undefined,
+      issueCount: issues.filter((issue) => issue.kind === kind).length,
+      headerId: goalCardHeaderId(kind),
+      ref: (node: HTMLDivElement | null) => {
+        if (node) cardRefs.current.set(kind, node)
+        else cardRefs.current.delete(kind)
+      },
+    }
+  }
+  const note = (kind: GoalKind) => (
+    <GoalNoteDisclosure
+      kind={kind}
+      note={form.notes[kind] ?? ""}
+      onChange={(value) => form.setNote(kind, value)}
+    />
+  )
+  const previewLoading = form.entityLoading || form.upgradesById.size === 0
   // One Mythic-material selection serves every enabled Rank/Upgrade/MoW-Ability goal of this unit
   // (add-mythic-material-shop-sources); render it once, in the first such card.
   const mythicHost = goalKinds.find(
@@ -344,7 +361,7 @@ function GoalTypeCards({
           switch (kind) {
             case "Rank":
               return (
-                <GoalTypeCard key={kind} kind="Rank" wide>
+                <GoalTypeCard key={kind} {...cardProps(kind)}>
                   <div className="grid items-start gap-2 @2xl:grid-cols-2">
                     <RankGoalFields
                       rankStart={form.rankStart}
@@ -359,6 +376,9 @@ function GoalTypeCards({
                       missingUpgrades={form.missingUpgrades}
                       rankAppliedUpgrades={form.rankAppliedUpgrades}
                       rankUpgradeSlotsTotal={form.rankUpgradeSlotsTotal}
+                      issues={issues}
+                      previewLoading={previewLoading}
+                      taken={form.takenTargetsFor("Rank")}
                     />
                     <div className="grid gap-2">
                       <LevelRequirementNote
@@ -391,6 +411,7 @@ function GoalTypeCards({
                     rankStart={form.rankStart}
                   />
                   {mythicField(kind)}
+                  {note(kind)}
                 </GoalTypeCard>
               )
             case "Ascension": {
@@ -419,8 +440,11 @@ function GoalTypeCards({
                   ? (form.shopOffers ?? []).filter((offer) => offer.isMythic)
                   : []
               return (
-                <GoalTypeCard key={kind} kind="Ascension" wide>
+                <GoalTypeCard key={kind} {...cardProps(kind)}>
                   <AscensionFarmingFields
+                    issues={issues}
+                    progressionEndOptions={form.progressionEndOptions}
+                    taken={form.takenTargetsFor("Ascension")}
                     progressionEnd={form.progressionEnd}
                     progressionPreview={form.progressionPreview}
                     progressionStart={form.progressionStart}
@@ -527,16 +551,13 @@ function GoalTypeCards({
                       ) : null}
                     </div>
                   ) : null}
+                  {note(kind)}
                 </GoalTypeCard>
               )
             }
             case "Ability":
               return (
-                <GoalTypeCard
-                  entityType={form.entityType}
-                  key={kind}
-                  kind="Ability"
-                >
+                <GoalTypeCard key={kind} {...cardProps(kind)}>
                   <AbilityGoalFields
                     entityType={form.entityType}
                     activeStart={form.abilityActiveStart}
@@ -547,6 +568,9 @@ function GoalTypeCards({
                     onPassiveTargetChange={form.setAbilityPassiveTarget}
                     missingUpgrades={form.missingUpgrades}
                     costingSupported={form.entityType === "Mow"}
+                    issues={issues}
+                    previewLoading={previewLoading}
+                    taken={form.takenTargetsFor("Ability")}
                   />
                   <AbilityMilestoneFields
                     activeStart={form.abilityActiveStart}
@@ -581,12 +605,19 @@ function GoalTypeCards({
                     />
                   ) : null}
                   {mythicField(kind)}
+                  {note(kind)}
                 </GoalTypeCard>
               )
             case "Upgrade":
               return (
-                <GoalTypeCard key={kind} kind="Upgrade" wide>
+                <GoalTypeCard key={kind} {...cardProps(kind)}>
                   <UpgradeGoalFields
+                    issues={issues}
+                    ownedQuantities={
+                      form.inventoryLoaded
+                        ? form.ownedUpgradeQuantities
+                        : undefined
+                    }
                     targets={form.upgradeTargets}
                     relevantUpgradeQuantities={form.relevantUpgradeQuantities}
                     upgradesById={form.upgradesById}
@@ -624,13 +655,16 @@ function GoalTypeCards({
                     }
                   />
                   {mythicField(kind)}
+                  {note(kind)}
                 </GoalTypeCard>
               )
             case "Unlock":
               return (
-                <GoalTypeCard key={kind} kind="Unlock" wide>
+                <GoalTypeCard key={kind} {...cardProps(kind)}>
                   <p className="text-sm text-muted-foreground">
-                    {t("goals.create.unlockDescription")}
+                    {t("goals.create.unlockDescription", {
+                      context: form.entityType === "Mow" ? "mow" : undefined,
+                    })}
                   </p>
                   {form.entityType === "Mow" ? (
                     <p className="text-xs text-muted-foreground">
@@ -675,6 +709,7 @@ function GoalTypeCards({
                       />
                     </>
                   )}
+                  {note(kind)}
                 </GoalTypeCard>
               )
           }

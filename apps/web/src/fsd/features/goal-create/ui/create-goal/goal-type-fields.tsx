@@ -1,4 +1,4 @@
-import { useRef, useState } from "react"
+import { useRef, useState, type ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import { Badge } from "@workspace/ui/components/badge"
 import {
@@ -9,12 +9,7 @@ import {
   SelectValue,
 } from "@workspace/ui/components/select"
 
-import {
-  progressionOrder,
-  type Progression,
-  type Rank,
-  type UpgradeId,
-} from "@workspace/game-domain"
+import type { Progression, Rank, UpgradeId } from "@workspace/game-domain"
 
 import {
   closestOverlayContent,
@@ -27,6 +22,39 @@ import {
   rowCount,
   type RankAdditionalTarget,
 } from "@/features/goal-farming/@x/goal-create"
+import { rankEndKey } from "../../model/goal-creation-form/first-free-target"
+import type { GoalFormIssueView } from "../../model/goal-creation-form/use-goal-validation-state"
+import { PreviewSection } from "../shared/preview-section"
+import { FieldIssues } from "./goal-form-issues"
+import { fieldIssueProps } from "./goal-form-issue-ids"
+
+import { PLAIN_VALUE } from "./plain-value"
+
+const NO_ISSUES: readonly GoalFormIssueView[] = []
+const NO_TAKEN: ReadonlySet<string> = new Set()
+
+/** A target option an in-flight goal of the unit already holds: shown, marked, and not selectable. */
+export function TakenTargetItem({
+  value,
+  taken,
+  children,
+}: {
+  value: string
+  taken: boolean
+  children: ReactNode
+}) {
+  const { t } = useTranslation()
+  return (
+    <SelectItem disabled={taken} value={value}>
+      {children}
+      {taken ? (
+        <span className="text-xs text-muted-foreground">
+          {t("goals.create.takenTarget")}
+        </span>
+      ) : null}
+    </SelectItem>
+  )
+}
 
 export type MissingUpgrade = { id: string; label: string; missing: number }
 
@@ -121,6 +149,9 @@ export function RankGoalFields({
   missingUpgrades,
   rankAppliedUpgrades,
   rankUpgradeSlotsTotal,
+  taken = NO_TAKEN,
+  issues = NO_ISSUES,
+  previewLoading = false,
 }: {
   rankStart: Rank
   rankEnd: Rank
@@ -132,6 +163,10 @@ export function RankGoalFields({
   missingUpgrades: MissingUpgrade[]
   rankAppliedUpgrades: number
   rankUpgradeSlotsTotal: number
+  /** Target keys in-flight Rank goals of this unit hold. */
+  taken?: ReadonlySet<string>
+  issues?: readonly GoalFormIssueView[]
+  previewLoading?: boolean
 }) {
   const { t } = useTranslation()
   const targetTriggerRef = useRef<HTMLButtonElement>(null)
@@ -142,7 +177,10 @@ export function RankGoalFields({
   return (
     <div className="grid gap-2">
       <div className="grid grid-cols-2 gap-3">
-        <ReadOnlyField label={t("goals.create.rank.current")}>
+        <ReadOnlyField
+          className={PLAIN_VALUE}
+          label={t("goals.create.rank.current")}
+        >
           <RankBadge rank={rankStart} />
           {rankUpgradeSlotsTotal > 0 ? (
             <Badge
@@ -176,17 +214,25 @@ export function RankGoalFields({
               className="w-full"
               data-testid="create-goal-rank-end"
               ref={targetTriggerRef}
+              {...fieldIssueProps(issues, "Rank", "target")}
             >
               <SelectValue />
             </SelectTrigger>
             <SelectContent container={targetContainer}>
               {rankEndOptions.map((rank) => (
-                <SelectItem key={rank} value={rank}>
+                <TakenTargetItem
+                  key={rank}
+                  taken={rank !== rankEnd && taken.has(rankEndKey(rank))}
+                  value={rank}
+                >
                   <RankBadge rank={rank} />
-                </SelectItem>
+                </TakenTargetItem>
               ))}
             </SelectContent>
           </Select>
+        </div>
+        <div className="col-span-2">
+          <FieldIssues field="target" issues={issues} kind="Rank" />
         </div>
       </div>
 
@@ -224,18 +270,22 @@ export function RankGoalFields({
         </Select>
       </div>
 
-      {missingUpgrades.length > 0 ? (
-        <div
-          className="grid gap-1 rounded-2xl border p-3 text-sm"
-          data-testid="create-goal-preview"
-        >
-          <p className="font-medium">{t("goals.create.previewTitle")}</p>
-          <ResourcesNeededList missingUpgrades={missingUpgrades} />
-          <p className="text-xs text-muted-foreground">
-            {t("goals.create.previewDisclaimer")}
-          </p>
-        </div>
-      ) : null}
+      <PreviewSection
+        emptyText={t("goals.create.rank.noResources")}
+        state={
+          previewLoading
+            ? "loading"
+            : missingUpgrades.length > 0
+              ? "content"
+              : "empty"
+        }
+        testId="create-goal-preview"
+      >
+        <ResourcesNeededList missingUpgrades={missingUpgrades} />
+        <p className="text-xs text-muted-foreground">
+          {t("goals.create.previewDisclaimer")}
+        </p>
+      </PreviewSection>
     </div>
   )
 }
@@ -243,11 +293,18 @@ export function RankGoalFields({
 export function AscensionGoalFields({
   progressionStart,
   progressionEnd,
+  progressionEndOptions,
   onProgressionEndChange,
+  taken = NO_TAKEN,
+  issues = NO_ISSUES,
 }: {
   progressionStart: Progression
   progressionEnd: Progression
+  /** Steps above the start (`progressionEndOptionsFor`). */
+  progressionEndOptions: readonly Progression[]
   onProgressionEndChange: (value: Progression) => void
+  taken?: ReadonlySet<string>
+  issues?: readonly GoalFormIssueView[]
 }) {
   const { t } = useTranslation()
   const endTriggerRef = useRef<HTMLButtonElement>(null)
@@ -255,7 +312,10 @@ export function AscensionGoalFields({
 
   return (
     <div className="grid grid-cols-2 gap-3">
-      <ReadOnlyField label={t("goals.create.ascension.start")}>
+      <ReadOnlyField
+        className={PLAIN_VALUE}
+        label={t("goals.create.ascension.start")}
+      >
         <ProgressionBadge value={progressionStart} />
       </ReadOnlyField>
       <div className="grid gap-1.5">
@@ -277,17 +337,25 @@ export function AscensionGoalFields({
             className="w-full"
             data-testid="create-goal-ascension-end"
             ref={endTriggerRef}
+            {...fieldIssueProps(issues, "Ascension", "target")}
           >
             <SelectValue />
           </SelectTrigger>
           <SelectContent container={endContainer}>
-            {progressionOrder.map((option) => (
-              <SelectItem key={option} value={option}>
+            {progressionEndOptions.map((option) => (
+              <TakenTargetItem
+                key={option}
+                taken={option !== progressionEnd && taken.has(option)}
+                value={option}
+              >
                 <ProgressionBadge value={option} />
-              </SelectItem>
+              </TakenTargetItem>
             ))}
           </SelectContent>
         </Select>
+      </div>
+      <div className="col-span-2">
+        <FieldIssues field="target" issues={issues} kind="Ascension" />
       </div>
     </div>
   )

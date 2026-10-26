@@ -1,9 +1,8 @@
 import { useState, type ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
-import { Checkbox } from "@workspace/ui/components/checkbox"
-import { Field, FieldLabel } from "@workspace/ui/components/field"
 import { Spinner } from "@workspace/ui/components/spinner"
+import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
 import { characterIcon, mowIcon } from "@workspace/game-catalog"
 import type { UnitId } from "@workspace/game-domain"
@@ -18,6 +17,9 @@ import {
 import { useCreateGoalForm } from "../../model/goal-creation-form/use-create-goal-form"
 import type { CreateGoalPrefill } from "../../model/goal-creation-form/create-goal-launcher-context"
 import { CreateGoalSheetTourRegistration } from "./create-goal-sheet.tutorial"
+import { CreateGoalOptions } from "./create-goal-options"
+import { GoalFormIssueSummary } from "./goal-form-issues"
+import { focusGoalField } from "./goal-form-issue-ids"
 import { UnitGoalFormFields } from "./unit-goal-form-fields"
 
 type CreateGoalSheetProps = {
@@ -47,6 +49,7 @@ export function CreateGoalSheet({
     null
   )
   const form = useCreateGoalForm({ open, onOpenChange, prefill })
+  const isMobile = useIsMobile()
 
   const unitIcon = (id: UnitId) =>
     form.charactersById?.has(id) ? characterIcon(id) : mowIcon(id)
@@ -57,6 +60,8 @@ export function CreateGoalSheet({
       onOpenChange={onOpenChange}
       data-testid="create-goal-sheet"
       contentRef={setPortalContainer}
+      // A fixed height at 768px and wider, so enabling a goal type never resizes or moves the dialog.
+      desktopClassName="h-[min(56rem,calc(100vh-2rem))]"
       preventOutsideClose
     >
       {open ? <CreateGoalSheetTourRegistration /> : null}
@@ -73,49 +78,18 @@ export function CreateGoalSheet({
         />
       </ResponsiveDialogBody>
 
-      <ResponsiveDialogFooter>
-        <div
-          className="flex flex-col gap-2 md:mr-auto md:flex-row md:items-center md:gap-5"
-          data-testid="create-goal-footer-options"
-        >
-          <Field
-            className="md:w-auto"
-            data-testid="create-goal-start-paused"
-            orientation="horizontal"
-          >
-            <Checkbox
-              checked={form.startPaused}
-              data-testid="create-goal-start-paused-checkbox"
-              id="create-goal-start-paused-checkbox"
-              onCheckedChange={(checked) =>
-                form.setStartPaused(checked === true)
-              }
-            />
-            <FieldLabel
-              className="font-normal text-muted-foreground"
-              htmlFor="create-goal-start-paused-checkbox"
-              title={t("goals.create.startPausedHint")}
-            >
-              {t("goals.create.startPaused")}
-            </FieldLabel>
-          </Field>
-          <Field className="md:w-auto" orientation="horizontal">
-            <Checkbox
-              id="create-goal-another"
-              checked={form.createAnother}
-              onCheckedChange={(checked) =>
-                form.setCreateAnother(checked === true)
-              }
-            />
-            <FieldLabel
-              className="font-normal text-muted-foreground"
-              htmlFor="create-goal-another"
-            >
-              {t("goals.create.createAnother")}
-            </FieldLabel>
-          </Field>
-        </div>
+      {/* Below 768px the footer is one row — Close, the problem count, Create goal — and the options
+          sit in the body above the review instead (goal-creation). */}
+      <ResponsiveDialogFooter className="flex-row items-center justify-end max-md:gap-2">
+        {isMobile ? null : (
+          <CreateGoalOptions
+            form={form}
+            placement="footer"
+            portalContainer={portalContainer}
+          />
+        )}
         <Button
+          className="max-md:flex-1"
           data-testid="create-goal-close"
           onClick={() => onOpenChange(false)}
           type="button"
@@ -123,7 +97,16 @@ export function CreateGoalSheet({
         >
           {t("goals.create.close")}
         </Button>
+        <GoalFormIssueSummary
+          issues={form.issues}
+          onFollow={(issue) => {
+            form.setExpandedKind(issue.kind)
+            focusGoalField(issue.kind, issue.field)
+          }}
+          portalContainer={portalContainer}
+        />
         <Button
+          className="max-md:flex-1"
           data-testid="create-goal-submit"
           disabled={!form.canSubmit || form.status === "submitting"}
           form="create-goal-form"

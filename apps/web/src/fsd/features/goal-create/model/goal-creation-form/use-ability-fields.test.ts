@@ -4,16 +4,25 @@ import { describe, expect, it } from "vitest"
 import { useAbilityFields } from "./use-create-goal-form"
 
 describe("useAbilityFields", () => {
-  it("starts fully zeroed", () => {
+  it("starts at level 0, targeting the first level of each track", () => {
     const { result } = renderHook(() => useAbilityFields())
     expect(result.current.state).toMatchObject({
       abilityActiveStart: 0,
-      abilityActiveEnd: 0,
-      abilityActiveTarget: 0,
+      abilityActiveEnd: 1,
+      abilityActiveTarget: 1,
       abilityPassiveStart: 0,
-      abilityPassiveEnd: 0,
-      abilityPassiveTarget: 0,
+      abilityPassiveEnd: 1,
+      abilityPassiveTarget: 1,
     })
+  })
+
+  it("skips a target pair an in-flight Ability goal already holds", () => {
+    const { result } = renderHook(() => useAbilityFields(new Set(["13:10"])))
+
+    act(() => result.current.prefillFrom(12, 9))
+
+    expect(result.current.state.abilityActiveTarget).toBe(14)
+    expect(result.current.state.abilityPassiveTarget).toBe(11)
   })
 
   it("seeds each track's target from its own current level + 1", () => {
@@ -65,15 +74,14 @@ describe("useAbilityFields", () => {
     const { result } = renderHook(() => useAbilityFields())
 
     act(() => result.current.prefillFrom(12, 9))
+    act(() => result.current.state.setAbilityActiveTarget(20))
     act(() => result.current.reset())
 
     expect(result.current.state).toMatchObject({
       abilityActiveStart: 0,
-      abilityActiveEnd: 0,
-      abilityActiveTarget: 0,
+      abilityActiveTarget: 1,
       abilityPassiveStart: 0,
-      abilityPassiveEnd: 0,
-      abilityPassiveTarget: 0,
+      abilityPassiveTarget: 1,
     })
   })
 })

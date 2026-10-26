@@ -83,7 +83,15 @@ export type GoalValidationIssue =
   | "abilityAlreadyReached"
   | "upgradeTargetsRequired"
 
-export function getGoalValidationIssue(params: {
+/** One blocking problem of the creation form: the goal type whose card shows it, the control it sits under
+ * (`target` for the type's target picker, `materials` for the Upgrade picker), and what is wrong. */
+export type GoalFormIssue = {
+  kind: GoalKind
+  field: string
+  issue: GoalValidationIssue
+}
+
+type GoalValidationParams = {
   hasEntityId: boolean
   enabledTypes: ReadonlySet<GoalKind>
   isOwned: boolean
@@ -98,17 +106,18 @@ export function getGoalValidationIssue(params: {
   currentActiveAbility: number
   currentPassiveAbility: number
   upgradeFieldsValid: boolean
-}): GoalValidationIssue | null {
-  if (!params.hasEntityId) return null
+}
+
+/** Every target-shape problem of the enabled goal types at once, in card order (`goalKindsForEntity`). */
+export function getGoalValidationIssues(
+  params: GoalValidationParams
+): GoalFormIssue[] {
+  if (!params.hasEntityId) return []
+  const issues: GoalFormIssue[] = []
+  const add = (kind: GoalKind, field: string, issue: GoalValidationIssue) =>
+    issues.push({ kind, field, issue })
   if (params.enabledTypes.has("Unlock") && params.isOwned) {
-    return "alreadyUnlocked"
-  }
-  if (
-    params.enabledTypes.has("Rank") &&
-    params.currentRank &&
-    rankIndex(params.rankEnd) <= rankIndex(params.currentRank)
-  ) {
-    return "rankAlreadyReached"
+    add("Unlock", "type", "alreadyUnlocked")
   }
   if (
     params.enabledTypes.has("Ascension") &&
@@ -116,7 +125,7 @@ export function getGoalValidationIssue(params: {
     progressionIndex(params.progressionEnd) <=
       progressionIndex(params.currentProgression)
   ) {
-    return "progressionAlreadyReached"
+    add("Ascension", "target", "progressionAlreadyReached")
   }
   if (params.enabledTypes.has("Ability")) {
     const validRange =
@@ -124,20 +133,31 @@ export function getGoalValidationIssue(params: {
       params.abilityPassiveEnd >= params.abilityPassiveStart &&
       (params.abilityActiveEnd > params.abilityActiveStart ||
         params.abilityPassiveEnd > params.abilityPassiveStart)
-    if (!validRange) return "abilityRange"
-    if (
+    if (!validRange) add("Ability", "target", "abilityRange")
+    else if (
       params.abilityActiveEnd <= params.currentActiveAbility &&
       params.abilityPassiveEnd <= params.currentPassiveAbility
     ) {
-      return "abilityAlreadyReached"
+      add("Ability", "target", "abilityAlreadyReached")
     }
   }
-  // An Upgrade goal is nothing without a target. This is the only gate on `upgradeFieldsValid` the
-  // picker can actually leave unsatisfied (it prevents duplicate ids and quantities below 1), and
-  // routing it through here rather than straight into `canSubmit` is what keeps the disabled submit
-  // button from looking inert with no stated reason.
+  // An Upgrade goal is nothing without a target; per-row quantity problems are reported by the form.
   if (params.enabledTypes.has("Upgrade") && !params.upgradeFieldsValid) {
-    return "upgradeTargetsRequired"
+    add("Upgrade", "materials", "upgradeTargetsRequired")
   }
-  return null
+  if (
+    params.enabledTypes.has("Rank") &&
+    params.currentRank &&
+    rankIndex(params.rankEnd) <= rankIndex(params.currentRank)
+  ) {
+    add("Rank", "target", "rankAlreadyReached")
+  }
+  return issues
+}
+
+/** The first of {@link getGoalValidationIssues}, or null. */
+export function getGoalValidationIssue(
+  params: GoalValidationParams
+): GoalValidationIssue | null {
+  return getGoalValidationIssues(params)[0]?.issue ?? null
 }

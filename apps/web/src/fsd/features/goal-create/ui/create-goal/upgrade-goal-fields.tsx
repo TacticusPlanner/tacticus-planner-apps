@@ -1,8 +1,5 @@
 import { useMemo } from "react"
 import { useTranslation } from "react-i18next"
-import { X } from "lucide-react"
-import { Button } from "@workspace/ui/components/button"
-import { Input } from "@workspace/ui/components/input"
 
 import type { Rank, UpgradeId } from "@workspace/game-domain"
 
@@ -12,6 +9,11 @@ import { OptionalRangeField } from "../shared/optional-range-field"
 import type { RarityComboboxItem } from "@/shared/ui"
 import type { UpgradeWithFarmLocations } from "@/features/rank-lookup/@x/goal-create"
 import type { MissingUpgradeEntry } from "../../model/goal-creation-form/goal-spec-builder"
+import type { GoalFormIssueView } from "../../model/goal-creation-form/use-goal-validation-state"
+import { UpgradeQuantityRow } from "../shared/upgrade-quantity-row"
+import { PreviewSection } from "../shared/preview-section"
+import { FieldIssues } from "./goal-form-issues"
+import { fieldIssueProps, goalFieldId } from "./goal-form-issue-ids"
 
 type MowTrackRange = {
   value: UpgradeRange | null
@@ -46,6 +48,8 @@ export function UpgradeGoalFields({
   missingUpgrades,
   rankRange,
   mowRanges,
+  ownedQuantities,
+  issues = [],
 }: {
   targets: { upgradeId: UpgradeId; quantity: number }[]
   relevantUpgradeQuantities: ReadonlyMap<UpgradeId, number>
@@ -70,6 +74,9 @@ export function UpgradeGoalFields({
     primary: MowTrackRange
     secondary: MowTrackRange
   }
+  /** How many of each material the account owns (undefined until the inventory has loaded). */
+  ownedQuantities?: ReadonlyMap<UpgradeId, number>
+  issues?: readonly GoalFormIssueView[]
 }) {
   const { t } = useTranslation()
 
@@ -133,46 +140,30 @@ export function UpgradeGoalFields({
       {targets.length > 0 ? (
         <div className="grid gap-2">
           {targets.map((target) => {
-            const upgrade = upgradesById.get(target.upgradeId)
+            const field = `quantity-${target.upgradeId}`
             return (
-              <div
-                className="flex items-center gap-2"
-                data-testid={`create-goal-upgrade-target-${target.upgradeId}`}
+              <UpgradeQuantityRow
+                error={
+                  issues.find(
+                    (issue) => issue.kind === "Upgrade" && issue.field === field
+                  )?.message
+                }
+                inputId={goalFieldId("Upgrade", field)}
                 key={target.upgradeId}
-              >
-                <UpgradeIcon
-                  className="size-8 shrink-0"
-                  crafted={upgrade?.crafted}
-                  id={target.upgradeId}
-                  rarity={upgrade?.rarity}
-                />
-                <span className="flex-1 truncate text-sm">
-                  {upgrade?.label ?? target.upgradeId}
-                </span>
-                <Input
-                  aria-label={t("goals.create.upgrade.quantity")}
-                  className="w-20"
-                  max={10000}
-                  min={1}
-                  onChange={(event) =>
-                    onQuantityChange(
-                      target.upgradeId,
-                      Math.max(1, Number(event.target.value))
-                    )
-                  }
-                  type="number"
-                  value={target.quantity}
-                />
-                <Button
-                  aria-label={t("goals.create.upgrade.remove")}
-                  onClick={() => onRemove(target.upgradeId)}
-                  size="icon"
-                  type="button"
-                  variant="ghost"
-                >
-                  <X />
-                </Button>
-              </div>
+                onQuantityChange={(quantity) =>
+                  onQuantityChange(target.upgradeId, quantity)
+                }
+                onRemove={() => onRemove(target.upgradeId)}
+                owned={
+                  ownedQuantities
+                    ? (ownedQuantities.get(target.upgradeId) ?? 0)
+                    : undefined
+                }
+                quantity={target.quantity}
+                testId={`create-goal-upgrade-target-${target.upgradeId}`}
+                upgrade={upgradesById.get(target.upgradeId)}
+                upgradeId={target.upgradeId}
+              />
             )
           })}
         </div>
@@ -188,6 +179,7 @@ export function UpgradeGoalFields({
           items={availableItems}
           onChange={(id) => onAdd(id, relevantUpgradeQuantities.get(id) ?? 1)}
           placeholder={t("goals.create.upgrade.add")}
+          triggerProps={fieldIssueProps(issues, "Upgrade", "materials")}
           renderIcon={(id) => {
             const upgrade = upgradesById.get(id)
             return (
@@ -202,12 +194,14 @@ export function UpgradeGoalFields({
         />
       ) : null}
 
-      {missingUpgrades.length > 0 ? (
-        <div
-          className="grid gap-1 rounded-2xl border p-3 text-sm"
-          data-testid="create-goal-upgrade-preview"
+      <FieldIssues field="materials" issues={issues} kind="Upgrade" />
+
+      {targets.length > 0 ? (
+        <PreviewSection
+          emptyText={t("goals.create.upgrade.noResources")}
+          state={missingUpgrades.length > 0 ? "content" : "empty"}
+          testId="create-goal-upgrade-preview"
         >
-          <p className="font-medium">{t("goals.create.previewTitle")}</p>
           <ul className="grid gap-0.5 text-muted-foreground">
             {missingUpgrades.map((entry) => (
               <li className="flex items-center gap-1.5" key={entry.id}>
@@ -216,7 +210,7 @@ export function UpgradeGoalFields({
               </li>
             ))}
           </ul>
-        </div>
+        </PreviewSection>
       ) : null}
     </div>
   )

@@ -1,3 +1,4 @@
+import { useId } from "react"
 import { useTranslation } from "react-i18next"
 import { rankAt } from "@workspace/game-domain"
 import { Field, FieldLabel } from "@workspace/ui/components/field"
@@ -18,18 +19,20 @@ export function GoalEditNotesField({
   onChange: (notes: string) => void
 }) {
   const { t } = useTranslation()
+  // Creation renders one per goal type card, so the id must be unique.
+  const id = useId()
 
   return (
     <Field className="gap-1.5">
       <div className="flex items-center justify-between gap-2">
-        <FieldLabel htmlFor="goal-notes">{t("goals.detail.notes")}</FieldLabel>
+        <FieldLabel htmlFor={id}>{t("goals.detail.notes")}</FieldLabel>
         <span className="text-xs text-muted-foreground">
           {notes.length}/200
         </span>
       </div>
       <Textarea
         className="min-h-12"
-        id="goal-notes"
+        id={id}
         maxLength={200}
         onChange={(event) => onChange(event.target.value)}
         rows={2}

@@ -4,7 +4,6 @@ import {
   Select,
   SelectContent,
   SelectGroup,
-  SelectItem,
   SelectLabel,
   SelectTrigger,
   SelectValue,
@@ -14,7 +13,18 @@ import type { Rarity } from "@workspace/game-domain"
 
 import { ReadOnlyField, closestOverlayContent } from "@/shared/ui"
 import { abilityLevelsByRarity } from "@/features/goal-planning/@x/goal-create"
-import { ResourcesNeededList, type MissingUpgrade } from "./goal-type-fields"
+import { PLAIN_VALUE } from "./plain-value"
+import {
+  ResourcesNeededList,
+  TakenTargetItem,
+  type MissingUpgrade,
+} from "./goal-type-fields"
+import { abilityLevelOptionsFor } from "../../model/target-edit/goal-target-edit"
+import { abilityPairKey } from "../../model/goal-creation-form/first-free-target"
+import type { GoalFormIssueView } from "../../model/goal-creation-form/use-goal-validation-state"
+import { PreviewSection } from "../shared/preview-section"
+import { FieldIssues } from "./goal-form-issues"
+import { fieldIssueProps } from "./goal-form-issue-ids"
 
 type AbilityEntityType = "Character" | "Mow"
 
@@ -35,24 +45,20 @@ const abilityTrackKeys = {
   },
 } as const
 
-/** Every selectable target level for one ability track — the full `currentLevel .. max` range,
- * grouped by the rarity tier whose cap first permits each level so the dropdown keeps a tier
- * heading over each block. The current level itself is selectable and means "leave this track
- * where it is"; levels below it are never offered. Levels above the unit's current rarity cap
- * stay selectable (an above-cap target auto-suggests an Ascension prerequisite — see
+/** One track's target levels (`abilityLevelOptionsFor`: the current level, meaning "leave this track
+ * where it is", then every level above it) grouped by the rarity tier whose cap first permits each level,
+ * so the dropdown keeps a tier heading over each block. Levels above the unit's current rarity cap stay
+ * selectable (an above-cap target auto-suggests an Ascension prerequisite — see
  * use-goal-prerequisites.ts). */
 function abilityTargetGroups(
   currentLevel: number
 ): { rarity: Rarity; levels: number[] }[] {
-  const floor = Math.max(currentLevel, 1)
+  const levels = abilityLevelOptionsFor(currentLevel)
   const groups: { rarity: Rarity; levels: number[] }[] = []
   let tierStart = 1
   for (const { rarity, level: cap } of abilityLevelsByRarity) {
-    const levels: number[] = []
-    for (let level = Math.max(tierStart, floor); level <= cap; level++) {
-      levels.push(level)
-    }
-    if (levels.length > 0) groups.push({ rarity, levels })
+    const inTier = levels.filter((level) => level >= tierStart && level <= cap)
+    if (inTier.length > 0) groups.push({ rarity, levels: inTier })
     tierStart = cap + 1
   }
   return groups
@@ -66,14 +72,20 @@ export function AbilityTargetSelect({
   currentLevel,
   value,
   onValueChange,
+  isTaken,
+  triggerProps,
 }: {
   label: string
   testId: string
   currentLevel: number
   value: number
   onValueChange: (value: number) => void
+  /** Whether choosing `level` would give a target an in-flight Ability goal already holds. */
+  isTaken?: (level: number) => boolean
+  triggerProps?: ReturnType<typeof fieldIssueProps>
 }) {
   const { t } = useTranslation("progression")
+  const { t: tGoals } = useTranslation()
   const triggerRef = useRef<HTMLButtonElement>(null)
   const [container, setContainer] = useState<HTMLElement>()
   const groups = abilityTargetGroups(currentLevel)
@@ -90,7 +102,12 @@ export function AbilityTargetSelect({
         onValueChange={(next) => onValueChange(Number(next))}
         value={String(value)}
       >
-        <SelectTrigger className="w-full" data-testid={testId} ref={triggerRef}>
+        <SelectTrigger
+          className="w-full"
+          data-testid={testId}
+          ref={triggerRef}
+          {...triggerProps}
+        >
           <SelectValue />
         </SelectTrigger>
         <SelectContent container={container}>
@@ -100,9 +117,15 @@ export function AbilityTargetSelect({
                 {t(`rarities.${rarity}`, { defaultValue: rarity })}
               </SelectLabel>
               {levels.map((level) => (
-                <SelectItem key={level} value={String(level)}>
-                  {level}
-                </SelectItem>
+                <TakenTargetItem
+                  key={level}
+                  taken={level !== value && !!isTaken?.(level)}
+                  value={String(level)}
+                >
+                  {level === currentLevel
+                    ? tGoals("goals.create.ability.noChange", { level })
+                    : level}
+                </TakenTargetItem>
               ))}
             </SelectGroup>
           ))}
@@ -128,6 +151,9 @@ export function AbilityGoalFields({
   onPassiveTargetChange,
   missingUpgrades,
   costingSupported,
+  taken,
+  issues = [],
+  previewLoading = false,
 }: {
   entityType: AbilityEntityType
   activeStart: number
@@ -138,16 +164,23 @@ export function AbilityGoalFields({
   onPassiveTargetChange: (value: number) => void
   missingUpgrades: MissingUpgrade[]
   costingSupported: boolean
+  /** Target keys in-flight Ability goals of this unit hold. */
+  taken?: ReadonlySet<string>
+  issues?: readonly GoalFormIssueView[]
+  previewLoading?: boolean
 }) {
   const { t: tGoals } = useTranslation()
   const keys = abilityTrackKeys[entityType]
+  const start = { active: activeStart, passive: passiveStart }
+  const takenPair = (active: number, passive: number) =>
+    !!taken?.has(abilityPairKey(start, { active, passive }))
 
   return (
     <div className="grid grid-cols-2 gap-3">
-      <ReadOnlyField label={tGoals(keys.activeStart)}>
+      <ReadOnlyField className={PLAIN_VALUE} label={tGoals(keys.activeStart)}>
         {activeStart}
       </ReadOnlyField>
-      <ReadOnlyField label={tGoals(keys.passiveStart)}>
+      <ReadOnlyField className={PLAIN_VALUE} label={tGoals(keys.passiveStart)}>
         {passiveStart}
       </ReadOnlyField>
       <AbilityTargetSelect
@@ -156,6 +189,10 @@ export function AbilityGoalFields({
         currentLevel={activeStart}
         value={activeTarget}
         onValueChange={onActiveTargetChange}
+        isTaken={(level) =>
+          takenPair(level, Math.max(passiveTarget, passiveStart))
+        }
+        triggerProps={fieldIssueProps(issues, "Ability", "target")}
       />
       <AbilityTargetSelect
         label={tGoals(keys.passiveTarget)}
@@ -163,15 +200,28 @@ export function AbilityGoalFields({
         currentLevel={passiveStart}
         value={passiveTarget}
         onValueChange={onPassiveTargetChange}
+        isTaken={(level) =>
+          takenPair(Math.max(activeTarget, activeStart), level)
+        }
       />
+      <div className="col-span-2">
+        <FieldIssues field="target" issues={issues} kind="Ability" />
+      </div>
       {costingSupported ? (
-        <div
+        <PreviewSection
           className="col-span-2 grid gap-1 rounded-2xl border p-3 text-sm"
-          data-testid="create-goal-ability-preview"
+          emptyText={tGoals("goals.create.ability.noResources")}
+          state={
+            previewLoading
+              ? "loading"
+              : missingUpgrades.length > 0
+                ? "content"
+                : "empty"
+          }
+          testId="create-goal-ability-preview"
         >
-          <p className="font-medium">{tGoals("goals.create.previewTitle")}</p>
           <ResourcesNeededList missingUpgrades={missingUpgrades} />
-        </div>
+        </PreviewSection>
       ) : (
         <p className="col-span-2 text-xs text-muted-foreground">
           {tGoals("goals.create.characterAbilityCostUnsupported")}
