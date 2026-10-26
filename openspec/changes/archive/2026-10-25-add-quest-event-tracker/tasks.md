@@ -28,8 +28,8 @@ Companion API change: `add-quest-event-tracker` in `tacticus-planner-api` (serve
 
 ## 5. Verification
 
-- [ ] 5.1 Desktop (1280px, Aspire stack, synced account): with Nubari running, enter scores on battles 1 and 4 and check the summary, crates, points-left order and the detail of battles 4 and 17; run the desktop tour
-- [ ] 5.2 Mobile (420px): the tier disclosures, the bottom-sheet score entry and the collapsed board; no horizontal scroll; run the mobile tour
+- [x] 5.1 Desktop (1280px, Aspire stack, synced account): with Nubari running, enter scores on battles 1 and 4 and check the summary, crates, points-left order and the detail of battles 4 and 17; run the desktop tour
+- [x] 5.2 Mobile (420px): the tier disclosures, the bottom-sheet score entry and the collapsed board; no horizontal scroll; run the mobile tour
 
 ## 6. Gates
 
@@ -42,5 +42,5 @@ Companion API change: `add-quest-event-tracker` in `tacticus-planner-api` (serve
 ## Implementation notes
 
 - 3.5: the battle detail is composed in `pages/dailies/ui/quest/quest-battle-detail.tsx`, not in the feature, because it uses `widgets/battle-preview` and the goal need from `features/daily-raids`, which a feature cannot import (design D6 deviation). The goal need comes from `useDailyRaids` totals, an approximation of the goal plan.
-- 5.1 and 5.2 were not run: they need the Aspire stack and a synced account. Component and page tests cover both viewports.
-- 6.1: `pnpm lint:fsd` fails steiger's `excessive-slicing` (21 feature slices with `quest-event`); the fix is waiting on a decision. The other gates are clean.
+- 5.1, 5.2: passed 2026-10-26 at 1280 and 420 (same-origin iframe), synced account, Nubari made running with a temporary dev-only clock offset (removed). Found and fixed: at 1280 the enemy names in the battle detail truncated to one letter, since `EnemyList` picked columns by viewport; it now sizes them by its own width (container query).
+- 6.1: 2026-10-26: `pnpm typecheck`, `pnpm lint`, `pnpm lint:fsd` and `git diff --check` are clean. `pnpm test:run` has 5,519 of 5,520 passing; the one failure is `analytics-provider.test.tsx` "re-identifies through the loaded SDK" (from main's #294, not touched here), which fails in every full local run (3 of 3) and passes on its own and in subsets. Left open until it is green.

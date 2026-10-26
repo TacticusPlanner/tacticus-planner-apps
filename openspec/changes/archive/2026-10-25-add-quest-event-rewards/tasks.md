@@ -19,7 +19,7 @@ Apps only; no companion API change. Depends on `add-quest-event-tracker`.
 
 ## 4. Verification and gates
 
-- [ ] 4.1 Desktop (1280px) and mobile (420px) with Nubari running: bundle toggle, Create goal prefill, tokens entry and bank-full warning; no horizontal scroll
+- [x] 4.1 Desktop (1280px) and mobile (420px) with Nubari running: bundle toggle, Create goal prefill, tokens entry and bank-full warning; no horizontal scroll
 - [ ] 4.2 Run `pnpm test:run`, `pnpm typecheck`, `pnpm lint`, `pnpm lint:fsd` and `git diff --check`, all clean
 
 ## Workflow follow-up
@@ -29,5 +29,5 @@ Apps only; no companion API change. Depends on `add-quest-event-tracker`.
 ## Implementation notes
 
 - 1.1: `questRewards` is split into `crateTrack`, `questShards` and `shardMeaning` in `features/quest-event/model/quest-rewards.ts`; the goal action (`questGoalAction`) lives in `pages/dailies/model` since it reads `entities/goal`.
-- 4.1 was not run (needs the Aspire stack and a synced account).
-- 4.2: as for the tracker, only `pnpm lint:fsd` is open.
+- 4.1: passed 2026-10-26 at 1280 and 420 (same-origin iframe), synced account, Nubari made running with a temporary dev-only clock offset (removed): the bundle triples earned, max and projected shards, Create goal opens prefilled (Nubari, Ascension to the covered step), tokens give attempts, a full bank shows the warning.
+- 4.2: as for the tracker's 6.1.

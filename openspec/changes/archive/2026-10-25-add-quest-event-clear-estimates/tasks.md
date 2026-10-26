@@ -26,5 +26,5 @@ Apps only; no companion API change. Depends on `add-quest-event-tracker`, `add-q
 
 - 1.2: the points if cleared also leave out a `DamageType` objective no eligible unit can meet, as well as unreachable ones.
 - 1.4: the unit test comparing Nubari's recorded powers with their NPC sums is not written: the test fixtures do not carry those NPCs. The shipped ratio stays 1.0 and every estimate is labelled uncalibrated.
-- 3.1 was not run (needs the Aspire stack and a synced account).
-- 3.2: as for the tracker, only `pnpm lint:fsd` is open.
+- 3.1: left open 2026-10-26. Passed at 1280 and 420 (same-origin iframe), synced account, Nubari made running with a temporary dev-only clock offset (removed): all 17 battles show a verdict (15 Clears, 16 and 17 Doesn't clear), battle 17 shows the second estimate (gives up No Flying units for Bellator and Dante), 59% short and 3 cap gains, entered scores replace the estimate in the projected points and shards, and every estimate says uncalibrated. Not seen: no battle is "Close" with this roster.
+- 3.2: as for the tracker's 6.1.
