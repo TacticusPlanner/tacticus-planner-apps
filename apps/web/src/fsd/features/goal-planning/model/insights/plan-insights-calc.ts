@@ -437,11 +437,13 @@ export function computePlanInsights(params: {
     benefitingGoalIdsByInsightId.set(insight.id, [...goalIds])
   }
 
+  // The token wait runs at the served Onslaught cadence (1.5 runs a day until it loads), so it
+  // matches the shard supply above.
   const planOnslaughtDays =
     Math.max(
       0,
       planOnslaughtTokens - Math.max(0, params.currentOnslaughtTokens ?? 0)
-    ) / 1.5
+    ) / (params.onslaughtRunsPerDay ?? 1.5)
   // A scoped view reports the wait only when its own goals need tokens, but the date below always
   // extends by the plan's wait: the project's goals queue behind everything ranked above them.
   const onslaughtDays = onslaughtTokens > 0 ? planOnslaughtDays : 0

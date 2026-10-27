@@ -1281,6 +1281,19 @@ describe("computePlanInsights", () => {
     expect(result.unestimatedGoalCount).toBe(1)
   })
 
+  it("waits for Onslaught tokens at the served cadence", () => {
+    const params = {
+      levelRules,
+      ...baseParams,
+      ...ascensionWithOnslaught(100_000),
+      currentOnslaughtTokens: 0,
+    }
+    const fallback = computePlanInsights(params)
+    const served = computePlanInsights({ ...params, onslaughtRunsPerDay: 3 })
+
+    expect(served.onslaughtDays).toBeCloseTo(fallback.onslaughtDays / 2)
+  })
+
   it("waits for the plan's Onslaught tokens, not just the project's own, when scoped to a project", () => {
     const tokenGoal = ascensionWithOnslaught(100_000)
     const scoped = computePlanInsights({
