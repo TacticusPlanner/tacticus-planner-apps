@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next"
-import { gameAssetUrl } from "@workspace/game-catalog"
+import { datamineAssetUrl, gameAssetUrl } from "@workspace/game-catalog"
 
 import { shopCurrencyIcon } from "@/features/shop-rewards/@x/goal-create"
 import { energyIconUrl, EntityIcon } from "@/shared/ui"
@@ -35,8 +35,8 @@ export function ProgressionPreview({
           <EntityIcon
             alt=""
             className="size-6"
-            src={gameAssetUrl(
-              `resources/ui_hero_ascension_orbs_${rarity.toLowerCase()}.webp`
+            src={datamineAssetUrl(
+              `atlases/ui_hero_ascension_orbs_${rarity.toLowerCase()}.webp`
             )}
           />
           {rarity} {t("goals.create.ascension.orbs", { count })}

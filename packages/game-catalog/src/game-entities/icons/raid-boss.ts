@@ -8,8 +8,7 @@ import {
 import { gameAssetUrl } from "./asset-path"
 import { characterIcon } from "./character"
 
-const characterAsset = (file: string): string =>
-  gameAssetUrl(`characters/${file}`)
+const characterAsset = (file: string): string => gameAssetUrl(file)
 
 /**
  * Full (non-round) splash portrait for a boss, resolved from its `GuildBoss{N}` prefix. Ported now for

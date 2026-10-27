@@ -20,9 +20,9 @@
 // The script prints every referenced id it could not cover and exits non-zero when that set differs from
 // KNOWN_GAPS, or when a relic ability icon is missing (exact filename case), so a refresh notices both.
 import {
+  existsSync,
   mkdirSync,
   readFileSync,
-  readdirSync,
   rmSync,
   writeFileSync,
 } from "node:fs"
@@ -30,12 +30,13 @@ import { resolve, dirname } from "node:path"
 import { fileURLToPath } from "node:url"
 import { format, resolveConfig } from "prettier"
 
+import abilityIconOverrides from "../../../packages/game-catalog/src/game-entities/icons/ability-icon-overrides.json" with { type: "json" }
 import { ensureDatamine } from "./datamine.mjs"
 
 const here = dirname(fileURLToPath(import.meta.url))
 const datamine = ensureDatamine()
 const localesDir = resolve(here, "../public/locales")
-const abilityIconDir = resolve(here, "../public/game_catalog/abilities")
+const catalogImageDir = resolve(here, "../public/game_catalog")
 
 const LOCALES = ["en", "de", "es", "fr"]
 
@@ -221,9 +222,15 @@ await writeJson(
 
 // ---- report ------------------------------------------------------------------------------------------
 
-const abilityIcons = new Set(readdirSync(abilityIconDir))
+// The paths game-catalog's abilityIcon() serves: the game's sprite (by id, or its override), else the
+// planner's own copy.
+const hasAbilityIcon = (id) =>
+  [
+    `datamines/${abilityIconOverrides[id] ?? `abilities/ui_icon_ability2_${id}.webp`}`,
+    `abilities/ui_icon_ability2_${id}.webp`,
+  ].some((path) => existsSync(resolve(catalogImageDir, path)))
 const missingRelicIcons = [...relicAbilityIds]
-  .filter((id) => !abilityIcons.has(`ui_icon_ability2_${id}.webp`))
+  .filter((id) => !hasAbilityIcon(id))
   .sort()
 
 const newGaps = [...uncovered.keys()].filter((id) => !KNOWN_GAPS.has(id))

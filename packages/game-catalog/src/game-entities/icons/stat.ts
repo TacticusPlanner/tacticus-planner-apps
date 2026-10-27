@@ -1,4 +1,4 @@
-import { gameAssetUrl } from "./asset-path"
+import { datamineAssetUrl } from "./asset-path"
 
 const statIconFile = {
   health: "ui_icon_stat_health_01.webp",
@@ -13,5 +13,5 @@ const statIconFile = {
 export type StatIconKind = keyof typeof statIconFile
 
 export function statIcon(kind: StatIconKind): string {
-  return gameAssetUrl(`stat_icons/${statIconFile[kind]}`)
+  return datamineAssetUrl(`atlases/${statIconFile[kind]}`)
 }

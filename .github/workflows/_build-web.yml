@@ -136,6 +136,17 @@ jobs:
             exit 1
           fi
 
+      # public/game_catalog/datamines holds exactly the sprites datamine/sprites.txt lists.
+      - name: Check the copied datamine sprites match their list
+        if: ${{ inputs.run-validation }}
+        working-directory: apps/web
+        run: |
+          if ! diff <(grep -v '^#' datamine/sprites.txt | sed '/^$/d') \
+            <(cd public/game_catalog/datamines && find . -type f | sed 's|^\./||' | LC_ALL=C sort); then
+            echo "::error::public/game_catalog/datamines differs from datamine/sprites.txt. Run 'pnpm --filter web datamine:sprites'."
+            exit 1
+          fi
+
       - name: Check formatting
         if: ${{ inputs.run-validation }}
         run: pnpm exec prettier --check "**/*.{ts,tsx}"

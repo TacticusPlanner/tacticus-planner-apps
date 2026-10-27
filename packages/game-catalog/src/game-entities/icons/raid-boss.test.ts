@@ -6,7 +6,7 @@ import {
   raidBossSplashPortrait,
 } from "./raid-boss"
 
-const BASE = "/game_catalog/characters"
+const BASE = "/game_catalog/datamines/atlases"
 
 describe("raidBossPortrait", () => {
   it("resolves a mapped boss id to its ported asset", () => {

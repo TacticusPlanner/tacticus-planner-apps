@@ -53,7 +53,7 @@ describe("shopRewardDisplay", () => {
     )
     expect(display.kind).toBe("forgeBadge")
     expect(display.iconUrl).toBe(
-      "/game_catalog/resources/ui_forge_badges_mythic.webp"
+      "/game_catalog/datamines/atlases/ui_forge_badges_mythic.webp"
     )
   })
 
@@ -65,7 +65,7 @@ describe("shopRewardDisplay", () => {
     )
     expect(display.kind).toBe("orb")
     expect(display.iconUrl).toBe(
-      "/game_catalog/resources/ui_icon_droptable_draft_ascensionOrbsLegendary.webp"
+      "/game_catalog/datamines/droptables/ui_icon_droptable_draft_ascensionOrbsLegendary.webp"
     )
   })
 
@@ -77,7 +77,7 @@ describe("shopRewardDisplay", () => {
     )
     expect(display.kind).toBe("mowToken")
     expect(display.iconUrl).toBe(
-      "/game_catalog/resources/ui_icon_droptable_draft_machinesOfWarToken.webp"
+      "/game_catalog/datamines/droptables/ui_icon_droptable_draft_machinesOfWarToken.webp"
     )
   })
 
@@ -89,7 +89,7 @@ describe("shopRewardDisplay", () => {
     )
     expect(display.kind).toBe("abilityBadge")
     expect(display.iconUrl).toBe(
-      "/game_catalog/resources/ui_icon_droptable_draft_abilityTokensMythic.webp"
+      "/game_catalog/datamines/droptables/ui_icon_droptable_draft_abilityTokensMythic.webp"
     )
   })
 
@@ -97,16 +97,16 @@ describe("shopRewardDisplay", () => {
     const display = shopRewardDisplay("xpLegendary", undefined, ctx)
     expect(display.kind).toBe("xpBook")
     expect(display.iconUrl).toBe(
-      "/game_catalog/books/ui_icon_consumable_xp_book_4.webp"
+      "/game_catalog/datamines/atlases/ui_icon_consumable_xp_book_4.webp"
     )
   })
 
   it("maps salvage / mythic salvage rewards to their resource assets", () => {
     expect(shopRewardDisplay("dust", undefined, ctx).iconUrl).toBe(
-      "/game_catalog/resources/ui_icon_resource_salvage.webp"
+      "/game_catalog/datamines/atlases/ui_icon_resource_salvage.webp"
     )
     expect(shopRewardDisplay("mythicDust", undefined, ctx).iconUrl).toBe(
-      "/game_catalog/resources/ui_icon_resource_mythic_salvage.webp"
+      "/game_catalog/datamines/atlases/ui_icon_resource_mythic_salvage.webp"
     )
   })
 
@@ -114,7 +114,7 @@ describe("shopRewardDisplay", () => {
     const display = shopRewardDisplay("R_Crit_Vitarus", undefined, ctx)
     expect(display.kind).toBe("equipment")
     expect(display.iconUrl).toBe(
-      "/game_catalog/equipment/ui_icon_item_R_Crit_Vitarus.webp"
+      "/game_catalog/datamines/items/ui_icon_item_R_Crit_Vitarus.webp"
     )
   })
 
@@ -156,7 +156,7 @@ describe("shopRewardDisplay", () => {
   it("gives expedition speed-ups their V1 resource icon", () => {
     const display = shopRewardDisplay("expeditionSpeedUp", undefined, ctx)
     expect(display.iconUrl).toBe(
-      "/game_catalog/resources/Resource_ExpeditionSpeedUp.webp"
+      "/game_catalog/datamines/fonts/Resource_ExpeditionSpeedUp.webp"
     )
   })
 
