@@ -1347,8 +1347,8 @@
       "tooltipStarts": "Fertig am {{date}}, bevor die {{season}} am {{deadline}} beginnt",
       "tooltipAfterEnds": "Fertig am {{date}}, nachdem die {{season}} am {{deadline}} endet",
       "tooltipAfterStarts": "Fertig am {{date}}, nachdem die {{season}} am {{deadline}} beginnt",
-      "dividerEnds": "{{season}} endet am {{deadline}}. Das nächste Ziel wird später fertig.",
-      "dividerStarts": "{{season}} beginnt am {{deadline}}. Das nächste Ziel wird danach fertig."
+      "dividerEnds": "{{season}} endet am {{deadline}} – das nächste Ziel wird später fertig.",
+      "dividerStarts": "{{season}} beginnt am {{deadline}} – das nächste Ziel wird danach fertig."
     },
     "detail": {
       "notes": "Notizen",

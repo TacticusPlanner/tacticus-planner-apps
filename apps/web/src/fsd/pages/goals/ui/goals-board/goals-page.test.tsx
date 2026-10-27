@@ -580,6 +580,16 @@ describe("GoalsPage", () => {
     }
   })
 
+  it("wraps the mobile icon row so the Season fit trigger does not push the page wider than a 390px phone", async () => {
+    mobile.value = true
+    listGoals.mockReturnValue(new Promise(() => undefined))
+    renderPage()
+
+    expect(await screen.findByTestId("goals-page-loading")).toBeInTheDocument()
+    // jsdom has no layout; the wrap class is what keeps the row inside 358px.
+    expect(screen.getByTestId("goals-filter-group")).toHaveClass("flex-wrap")
+  })
+
   it("moves a goal to the Reached tab once its rank target is met", async () => {
     listGoals.mockResolvedValue({
       goals: [

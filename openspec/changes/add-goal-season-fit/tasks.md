@@ -27,18 +27,18 @@
 
 Required data states: an account with at least four Active Rank/Ascension goals whose Done By dates straddle the current Battle Pass deadline, one Active Ability goal, one Paused goal, one Blocked goal, and a project holding a subset of them.
 
-- [ ] 5.1 Season fit select in the filters row; Battle Pass and Guild War selectable; Guild Raid disabled with its reason while the catalog has no raid season dates.
-- [ ] 5.2 Labels, tooltips and accents match the offsets; Ability, Paused and Blocked rows show none.
-- [ ] 5.3 Divider before the first spilling goal with Group None, absent with Group Type; still correct in project scope; dragging a row across the divider re-places it after the drop.
-- [ ] 5.4 Tour includes the Season fit step.
+- [x] 5.1 Season fit select in the filters row; Battle Pass and Guild War selectable; Guild Raid disabled with its reason while the catalog has no raid season dates. (Verified 27 Oct against API PR #139, where Guild Raid is enabled; the disabled reason was not seen by hand and stays covered by `goals-page.test.tsx`.)
+- [x] 5.2 Labels, tooltips and accents match the offsets; Ability, Paused and Blocked rows show none.
+- [x] 5.3 Divider before the first spilling goal with Group None, absent with Group Type; still correct in project scope; dragging a row across the divider re-places it after the drop.
+- [x] 5.4 Tour includes the Season fit step.
 
 ## 6. Mobile verification (viewport below 768px)
 
 Same data states as group 5.
 
-- [ ] 6.1 Icon-only Season fit trigger in the second control row; choosing a mode updates the cards.
-- [ ] 6.2 Card labels, accents and the divider list item match desktop; divider also shows in reorder mode.
-- [ ] 6.3 Tour includes the Season fit step on mobile.
+- [x] 6.1 Icon-only Season fit trigger in the second control row; choosing a mode updates the cards.
+- [x] 6.2 Card labels, accents and the divider list item match desktop; divider also shows in reorder mode.
+- [x] 6.3 Tour includes the Season fit step on mobile.
 
 ## Deferred / out-of-session
 

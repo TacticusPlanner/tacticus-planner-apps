@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest"
 
+import { formatEstimateDate } from "@/shared/lib"
+
 import de from "../../../../../public/locales/de/common.json"
 import en from "../../../../../public/locales/en/common.json"
 import es from "../../../../../public/locales/es/common.json"
@@ -195,4 +197,26 @@ describe("common namespace locale parity", () => {
     expect(issues.team_too_small_one).not.toBe(english.team_too_small_one)
     expect(issues.team_too_small_other).not.toBe(english.team_too_small_other)
   })
+
+  it.each([
+    ["en", en],
+    ["de", de],
+    ["es", es],
+    ["fr", fr],
+  ])(
+    "%s season cut-off divider does not double the period after a short date",
+    (lng, locale) => {
+      // German and French short months end in a period ("15. Nov.", "15 nov.").
+      const deadline = formatEstimateDate("2026-11-15", lng) ?? ""
+      for (const copy of [
+        locale.goals.seasonFit.dividerEnds,
+        locale.goals.seasonFit.dividerStarts,
+      ]) {
+        const text = copy
+          .replace("{{season}}", "S")
+          .replace("{{deadline}}", deadline)
+        expect(text).not.toContain("..")
+      }
+    }
+  )
 })

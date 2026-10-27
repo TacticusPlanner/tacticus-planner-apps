@@ -1347,8 +1347,8 @@
       "tooltipStarts": "Terminé le {{date}}, avant le début de la {{season}} le {{deadline}}",
       "tooltipAfterEnds": "Terminé le {{date}}, après la fin de la {{season}} le {{deadline}}",
       "tooltipAfterStarts": "Terminé le {{date}}, après le début de la {{season}} le {{deadline}}",
-      "dividerEnds": "La {{season}} se termine le {{deadline}}. L’objectif suivant finit plus tard.",
-      "dividerStarts": "La {{season}} commence le {{deadline}}. L’objectif suivant finit après."
+      "dividerEnds": "La {{season}} se termine le {{deadline}} – l’objectif suivant finit plus tard.",
+      "dividerStarts": "La {{season}} commence le {{deadline}} – l’objectif suivant finit après."
     },
     "detail": {
       "notes": "Notes",
