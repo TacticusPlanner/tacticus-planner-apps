@@ -224,6 +224,7 @@ export function useShopRecommendations(
       day: todayDow(),
       powerLevel: playerDetails?.powerLevel ?? 0,
       lockContext,
+      upgradesById,
     }).map((section) => ({
       shopId: section.shopId,
       guaranteed: section.guaranteed.map((card) =>

@@ -322,6 +322,7 @@ function estimateChain(
       charactersById: inputs.charactersById,
       playerCharacterById,
       playerMowById: new Map(),
+      upgradesById: inputs.upgradesById,
       shops: inputs.shops,
       referenceDate,
     })

@@ -131,6 +131,8 @@ const voidwyrm = {
   name: "Amulet of the Voidwyrm",
   abilityId: "AmuletOfTheVoidwyrm",
   allowedUnits: ["genesBiophagus"],
+  // The served relic levels set the stepper's cap (every relic serves 10).
+  levels: Array.from({ length: 10 }, () => ({ stats: {} })),
 }
 const sharedRelic = {
   ...relic,

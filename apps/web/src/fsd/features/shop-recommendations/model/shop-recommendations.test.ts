@@ -4,6 +4,7 @@ import type {
   GameCatalogShopVariant,
   ShopDayOfWeek,
 } from "@workspace/game-catalog"
+import { Rarity, type UpgradeId } from "@workspace/game-domain"
 
 import { buildShopRecommendations } from "./shop-recommendations"
 import type { ShopNeedAggregate } from "./shop-needs"
@@ -39,7 +40,14 @@ function shop(
 
 const DAY: ShopDayOfWeek = "MON"
 const NOW = Date.UTC(2026, 5, 1)
-const NO_ROSTER = { powerLevel: 40, lockContext: {}, now: NOW }
+// Imperial Aquila … Venerable Battle Mark: Mythic materials with no recipe (shop-only).
+const upgradesById = new Map(
+  ["upgHpM001", "upgHpM002", "upgHpM003", "upgHpM004"].map((id) => [
+    id as UpgradeId,
+    { rarity: Rarity.Mythic, recipe: [] },
+  ])
+)
+const NO_ROSTER = { powerLevel: 40, lockContext: {}, upgradesById, now: NOW }
 
 function needs(
   entries: Record<

@@ -323,6 +323,7 @@ export function useCreateGoalForm({
 
   const mythicMaterialSelection = useMythicMaterialSelection({
     needs: [...missingUpgrades, ...upgradeFields.state.upgradeGoalNeed],
+    upgradesById,
     resetKey: entityId,
   })
 

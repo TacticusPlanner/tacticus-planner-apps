@@ -1,6 +1,9 @@
 import { describe, expect, it, vi } from "vitest"
 import { act, renderHook } from "@testing-library/react"
 import type { ShopRewardOffer } from "@workspace/game-catalog"
+import { Rarity, type UpgradeId } from "@workspace/game-domain"
+
+import type { MythicMaterialCatalog } from "@/features/goal-farming/@x/goal-create"
 
 const venerable = (
   shopId: string,
@@ -40,10 +43,17 @@ const needs = [
   { id: "upgHpM004", missing: 6 },
   { id: "upgDmgL202", missing: 3 },
 ]
+// Venerable Battle Mark has no recipe (shop-only); the Legendary material is farmable.
+const upgradesById: MythicMaterialCatalog = new Map([
+  ["upgHpM004" as UpgradeId, { rarity: Rarity.Mythic, recipe: [] }],
+  ["upgDmgL202" as UpgradeId, { rarity: Rarity.Legendary, recipe: [] }],
+])
 
 describe("useMythicMaterialSelection", () => {
   it("defaults to every listed offer and saves nothing", () => {
-    const { result } = renderHook(() => useMythicMaterialSelection({ needs }))
+    const { result } = renderHook(() =>
+      useMythicMaterialSelection({ needs, upgradesById })
+    )
 
     expect(result.current.materialIds).toEqual(["upgHpM004"])
     expect(result.current.checkedIds).toEqual(offers.map((o) => o.offerId))
@@ -55,6 +65,7 @@ describe("useMythicMaterialSelection", () => {
     const { result } = renderHook(() =>
       useMythicMaterialSelection({
         needs,
+        upgradesById,
         referenceDate: new Date(Date.UTC(2026, 9, 5)),
       })
     )
@@ -66,7 +77,9 @@ describe("useMythicMaterialSelection", () => {
   })
 
   it("pins the listed offers on the first toggle, and opts out when all are unchecked", () => {
-    const { result } = renderHook(() => useMythicMaterialSelection({ needs }))
+    const { result } = renderHook(() =>
+      useMythicMaterialSelection({ needs, upgradesById })
+    )
 
     act(() => result.current.toggle("guild:upgHpM004", false))
     expect(result.current.acquisitionSources).toEqual([
@@ -85,7 +98,8 @@ describe("useMythicMaterialSelection", () => {
   it("seeds from a saved selection and resets when the unit changes", () => {
     const seed = [{ kind: "Shop" as const, ids: ["crusade:upgHpM004"] }]
     const { result, rerender } = renderHook(
-      ({ resetKey }) => useMythicMaterialSelection({ needs, seed, resetKey }),
+      ({ resetKey }) =>
+        useMythicMaterialSelection({ needs, upgradesById, seed, resetKey }),
       { initialProps: { resetKey: "spaceRagnar" } }
     )
     expect(result.current.checkedIds).toEqual(["crusade:upgHpM004"])
