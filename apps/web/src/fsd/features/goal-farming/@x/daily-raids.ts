@@ -8,6 +8,7 @@ export {
   createCraftedInventoryPool,
   createUnitCoverage,
   estimateBonusRaids,
+  estimateRaidsLeftToday,
   estimateGoal,
   estimatePlanSchedule,
   estimateTodayRun,

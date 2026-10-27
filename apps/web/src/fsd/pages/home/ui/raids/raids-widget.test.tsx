@@ -96,6 +96,7 @@ describe("RaidsWidget", () => {
         ],
       },
       bonus: { entries: [] },
+      raidsLeftToday: { entries: [] },
       attemptsLeftByBattle: new Map(),
       locationsByBattleId: new Map(),
       resourceLabels: new Map([["upgrade-1", "Upgrade"]]),
@@ -116,6 +117,7 @@ describe("RaidsWidget", () => {
       today: { entries: [entry({ battleId: "node-1" })] },
       bonus: { entries: [entry({ battleId: "node-bonus" })] },
       planDays: [{ entries: [entry({ battleId: "node-plan" })] }],
+      raidsLeftToday: { entries: [] },
       attemptsLeftByBattle: new Map(),
       locationsByBattleId: new Map(),
       resourceLabels: new Map(),
@@ -138,6 +140,7 @@ describe("RaidsWidget", () => {
       status: "ready",
       today: { entries: [entry({ battleId: "node-1" })] },
       bonus: { entries: [] },
+      raidsLeftToday: { entries: [] },
       attemptsLeftByBattle: new Map([["node-1" as BattleId, 0]]),
       locationsByBattleId: new Map(),
       resourceLabels: new Map(),
@@ -153,8 +156,11 @@ describe("RaidsWidget", () => {
     useDailyRaidsMock.mockReturnValue({
       status: "ready",
       today: { entries: [entry({ battleId: "node-1" })] },
-      bonus: {
+      bonus: { entries: [entry({ battleId: "node-bonus" })] },
+      // Every raid still open today: the plan's own material keeps its remaining farming.
+      raidsLeftToday: {
         entries: [
+          entry({ battleId: "node-plan-left" }),
           entry({ battleId: "node-bonus" }),
           entry({ battleId: "node-spent" }),
         ],
@@ -176,6 +182,9 @@ describe("RaidsWidget", () => {
       screen.getByTestId("home-raid-location-node-bonus")
     ).toBeInTheDocument()
     expect(
+      screen.getByTestId("home-raid-location-node-plan-left")
+    ).toBeInTheDocument()
+    expect(
       screen.queryByTestId("home-raid-location-node-1")
     ).not.toBeInTheDocument()
     expect(
@@ -190,6 +199,7 @@ describe("RaidsWidget", () => {
       bonus: { entries: [] },
       dailyEnergy: 288,
       realEnergyUsedToday: 288,
+      raidsLeftToday: { entries: [] },
       attemptsLeftByBattle: new Map(),
       locationsByBattleId: new Map(),
       resourceLabels: new Map(),
@@ -214,6 +224,7 @@ describe("RaidsWidget", () => {
       bonus: { entries: [entry({ battleId: "node-bonus" })] },
       dailyEnergy: 288,
       realEnergyUsedToday: 120,
+      raidsLeftToday: { entries: [] },
       attemptsLeftByBattle: new Map(),
       locationsByBattleId: new Map(),
       resourceLabels: new Map(),
@@ -236,6 +247,7 @@ describe("RaidsWidget", () => {
       status: "ready",
       today: { entries: [entry({ battleId: "node-1" })] },
       bonus: { entries: [] },
+      raidsLeftToday: { entries: [] },
       attemptsLeftByBattle: new Map(),
       locationsByBattleId: new Map([
         [
@@ -267,6 +279,7 @@ describe("RaidsWidget", () => {
       status: "ready",
       today: { entries: [entry({ battleId: "node-1" })] },
       bonus: { entries: [] },
+      raidsLeftToday: { entries: [] },
       attemptsLeftByBattle: new Map(),
       locationsByBattleId: new Map([
         [

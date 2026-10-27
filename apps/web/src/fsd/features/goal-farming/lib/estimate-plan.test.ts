@@ -17,6 +17,7 @@ import { projectShopSupply } from "./shop-supply"
 import {
   estimateBonusRaids,
   estimatePlanSchedule,
+  estimateRaidsLeftToday,
   estimateTodaySchedule,
 } from "./estimate-plan"
 
@@ -231,6 +232,86 @@ describe("bonus raids", () => {
     expect([...bonus.attemptsUsedByBattle]).toEqual([
       [battleId("B2"), 1],
       [battleId("B3"), 1],
+    ])
+  })
+})
+
+describe("raids left today", () => {
+  // The bug report: the top goal (Snappa D1) takes the whole daily budget, so Bonus Raids drop
+  // its materials and start at the second goal (Patermine B1) once the limit is spent.
+  const snappaAndPatermine = {
+    goals: [
+      {
+        goalId: "patermine",
+        priority: 2,
+        needs: [{ id: upgradeId("U2"), count: 2 }],
+      },
+      {
+        goalId: "snappa",
+        priority: 1,
+        needs: [{ id: upgradeId("U1"), count: 8 }],
+      },
+    ],
+    upgradesById: resources(["U1", "B1"], ["U2", "B2"]),
+    battlesById: new Map([battle("B1", 5), battle("B2", 5)]),
+    dailyEnergy: 30,
+    inventory: [],
+    referenceDate,
+  }
+
+  it("Bonus Raids alone skip the top goal's partly-raided material", () => {
+    expect(
+      estimateBonusRaids(snappaAndPatermine).entries.map(
+        (entry) => entry.goalId
+      )
+    ).toEqual(["patermine"])
+  })
+
+  it("keeps the top goal's farming first, capped at the real attempts left", () => {
+    // 3 of B1's 5 attempts are spent: Snappa still has 2 raids there, then Patermine's 2 at B2.
+    const left = estimateRaidsLeftToday({
+      ...snappaAndPatermine,
+      attemptsLeftByBattle: new Map([[battleId("B1"), 2]]),
+    })
+
+    expect(
+      left.entries.map((entry) => [
+        entry.goalId,
+        entry.battleId,
+        entry.raidsPerformed,
+        entry.dailyAttempts,
+      ])
+    ).toEqual([
+      ["snappa", battleId("B1"), 2, 2],
+      ["patermine", battleId("B2"), 2, 5],
+    ])
+    expect(left.energyTotal).toBe(40)
+    expect([...left.attemptsUsedByBattle]).toEqual([
+      [battleId("B1"), 2],
+      [battleId("B2"), 2],
+    ])
+  })
+
+  it("plans nothing at a node with no attempts left", () => {
+    const left = estimateRaidsLeftToday({
+      ...snappaAndPatermine,
+      attemptsLeftByBattle: new Map([[battleId("B1"), 0]]),
+    })
+
+    expect(left.entries.map((entry) => entry.goalId)).toEqual(["patermine"])
+  })
+
+  it("uses the full daily cap at a node with no synced attempts", () => {
+    const left = estimateRaidsLeftToday({
+      ...snappaAndPatermine,
+      attemptsLeftByBattle: new Map(),
+    })
+
+    expect(
+      left.entries.map((entry) => [entry.goalId, entry.raidsPerformed])
+    ).toEqual([
+      ["snappa", 5],
+      ["patermine", 2],
     ])
   })
 })

@@ -25,6 +25,7 @@ import {
   createCraftedInventoryPool,
   createUnitCoverage,
   estimateBonusRaids,
+  estimateRaidsLeftToday,
   estimateGoal,
   estimatePlanSchedule,
   estimateTodayRun,
@@ -89,6 +90,9 @@ export type DailyRaidsCalculationInput = {
    *  Today and Bonus Raids only; the Plan, blockers and urgency are always computed unfiltered. */
   raidsFilters?: RaidsFilters
   filterBattlesById?: ReadonlyMap<string, RaidsFilterBattle>
+  /** The player's real attempts left today per node (none synced: every node is fresh). Only the
+   *  raids left today read it. */
+  attemptsLeftByBattle?: ReadonlyMap<BattleId, number>
   /** The Dailies > HSE farm list inputs: event points per eligible battle, real attempts left today
    *  and the energy left today. Without them no `eventFarm` is returned; Today, Bonus and the Plan
    *  never read them. */
@@ -339,6 +343,10 @@ export function calculateDailyRaids(
   }
   const { today, filteredOut } = estimateTodayRun(filteredCalculation)
   const bonus = estimateBonusRaids(filteredCalculation)
+  const raidsLeftToday = estimateRaidsLeftToday({
+    ...filteredCalculation,
+    attemptsLeftByBattle: params.attemptsLeftByBattle ?? new Map(),
+  })
   const plan: RaidPlanSchedule = estimatePlanSchedule(calculation)
   const eventFarm = params.eventFarm
     ? planEventFarm({
@@ -370,6 +378,7 @@ export function calculateDailyRaids(
     status: "ready",
     today,
     bonus,
+    raidsLeftToday,
     planDays: plan.days,
     planSummary: plan.summary,
     blockedGoals,

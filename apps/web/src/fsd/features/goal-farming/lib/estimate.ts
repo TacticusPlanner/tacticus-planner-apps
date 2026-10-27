@@ -204,13 +204,16 @@ function daysToFinish(
  * `dailyAttempts` cap is tracked per `battleId` across the whole call (not per material) — it's the
  * same real-world battle regardless of which material happens to drop there, so two different
  * materials farmed from the same node share one daily cap rather than each getting a fresh one.
+ * `attemptsLeftByBattle` (the player's real attempts left today) lowers a node's cap to what is
+ * left; such an entry reports that lowered cap as its `dailyAttempts`.
  */
 export function spendDay(
   remaining: Map<EstimateResourceId, number>,
   nodesById: ReadonlyMap<EstimateResourceId, FarmNode[]>,
   startingEnergy: number,
   dailyEnergy: number,
-  attemptsUsedByBattle = new Map<BattleId, number>()
+  attemptsUsedByBattle = new Map<BattleId, number>(),
+  attemptsLeftByBattle?: ReadonlyMap<BattleId, number>
 ): {
   energySpent: number
   raidsPerformed: number
@@ -239,7 +242,11 @@ export function spendDay(
     if (energy < node.energyCost) continue
 
     const attemptsUsed = attemptsUsedByBattle.get(node.battleId) ?? 0
-    const attemptsCap = node.dailyAttempts > 0 ? node.dailyAttempts : Infinity
+    const attemptsLeft = attemptsLeftByBattle?.get(node.battleId)
+    const attemptsCap = Math.min(
+      node.dailyAttempts > 0 ? node.dailyAttempts : Infinity,
+      attemptsLeft ?? Infinity
+    )
     const attemptsRemaining = attemptsCap - attemptsUsed
     if (attemptsRemaining <= 0) continue
 
@@ -264,7 +271,8 @@ export function spendDay(
       raidsPerformed: raidsToPerform,
       itemsFarmed: farmed,
       energySpent: spent,
-      dailyAttempts: node.dailyAttempts,
+      dailyAttempts:
+        attemptsLeft === undefined ? node.dailyAttempts : attemptsCap,
       remainingBefore: remainingCount,
     })
 

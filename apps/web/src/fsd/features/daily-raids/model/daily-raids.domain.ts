@@ -135,6 +135,9 @@ export type DailyRaidsReadyViewModel = {
   status: "ready"
   today: RaidDaySchedule
   bonus: RaidDaySchedule
+  /** Every raid still open today at the real attempts left (unlimited energy). Bonus Raids list it
+   *  once today's real energy spend reaches the daily energy limit. */
+  raidsLeftToday: RaidDaySchedule
   planDays: RaidDaySchedule[]
   planSummary: RaidPlanSummary
   /** Goals whose plan outcome is Blocked, in priority order — same result the schedule came from. */
