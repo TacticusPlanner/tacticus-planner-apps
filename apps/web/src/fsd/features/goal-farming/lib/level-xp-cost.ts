@@ -86,9 +86,6 @@ export function levelBookAvailability(
   }
 }
 
-/** Gold cost to apply a single book, independent of rarity (V1's `legendaryTomeApplyCost`). */
-const XP_BOOK_APPLY_GOLD = 500
-
 /** `xpBookId` -> rarity mapping, confirmed against a real synced account's own `inventory:summary`
  * record (`xpCommon`/`xpUncommon`/`xpRare`/`xpEpic`/`xpLegendary`/`xpMythic`) — an earlier best-guess
  * mapping here used a `"book"` prefix instead of `"xp"` (a plausible but wrong guess made before any
@@ -241,5 +238,8 @@ export function computeLevelGoalCost(params: {
   if (remaining <= 0) return null
 
   const books = xpBookEquivalent(remaining, params.rarity)
-  return { books, gold: books * XP_BOOK_APPLY_GOLD }
+  // Each book costs its own rarity's apply gold (game config `consumables.xpBooks[].gold`); V1's flat
+  // 500 was only the Legendary price.
+  const gold = books * xpBookGoldByRarity[normalizeXpBookRarity(params.rarity)]
+  return { books, gold }
 }

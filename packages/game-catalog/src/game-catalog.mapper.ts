@@ -54,6 +54,16 @@ function byUnitId(data: unknown): Record<string, unknown>[] {
   return asArray(data).map((row) => ({ id: row.unitId, ...row }))
 }
 
+// quest-events has one record per featured hero, so the hero id doubles as the store id.
+function byFeaturedCharacterId(data: unknown): Record<string, unknown>[] {
+  return asArray(data).map((row) => ({ id: row.featuredCharacterId, ...row }))
+}
+
+// quest-crates is the shared 17-crate track, keyed by crate number.
+function byNumber(data: unknown): Record<string, unknown>[] {
+  return asArray(data).map((row) => ({ id: row.number, ...row }))
+}
+
 // raid-bosses is the second non-array payload (after events-calendar): a single object
 // ({ seasonConfigRotation, bosses[], primes[], seasons{} }) the Library always reads whole. Stored as
 // one row under a fixed id rather than flattened, since nothing queries it by sub-key.
@@ -92,6 +102,10 @@ export const datasetToStorageModels: Record<
   "guild-raid-meta": (data) => asSingleRow("guild-raid-meta", data),
   "mythic-quests": byUnitId,
   "unit-power": asArray,
+  "quest-events": byFeaturedCharacterId,
+  "quest-crates": byNumber,
+  factions: asArray,
+  "damage-types": asArray,
 }
 
 export function mapDatasetRowToStorageModel<T extends Record<string, unknown>>(

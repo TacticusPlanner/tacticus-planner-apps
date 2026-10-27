@@ -16,11 +16,11 @@ import deCommon from "../../public/locales/de/common.json"
 import deLegendaryEvents from "../../public/locales/de/legendaryEvents.json"
 
 /**
- * A real i18next instance over the shipped English (and German) resources, for tests that assert
+ * A real i18next instance over the shipped English (and German or French) resources, for tests that assert
  * the rendered copy rather than translation keys. `extra` seeds additional entries per language.
  */
 export async function createTestI18n(
-  lng: "en" | "de" = "en",
+  lng: "en" | "de" | "fr" = "en",
   extra: Record<string, Record<string, Record<string, unknown>>> = {}
 ): Promise<I18n> {
   const instance = i18next.createInstance()
@@ -48,6 +48,7 @@ export async function createTestI18n(
         legendaryEvents: deLegendaryEvents,
         ...extra.de,
       },
+      fr: { ...extra.fr },
     },
   })
   return instance

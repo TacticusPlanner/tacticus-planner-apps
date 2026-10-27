@@ -13,6 +13,10 @@ export { useRaidsFilters } from "./model/raids-filters/use-raids-filters"
 // Dailies > HSE: the active event, the instance switcher, its raid-point rules and the tab's sections.
 export { useActiveHomeScreenEvent } from "./model/use-active-home-screen-event"
 export {
+  useHomeScreenEventCalendar,
+  useIsHomeScreenEventLive,
+} from "./model/use-home-screen-event-calendar"
+export {
   resolveHomeScreenEventSelection,
   selectListTarget,
 } from "./model/select-active-home-screen-event"
@@ -34,6 +38,7 @@ export type {
   DailyRaidBattleResource,
   DailyRaidLocationViewModel,
   DailyRaidsReadyViewModel,
+  DailyRaidsViewModel,
 } from "./model/daily-raids.domain"
 export type { TodaysAttempt } from "./model/daily-raids-energy"
 export type { MissionDeployGroup } from "./model/mission-deploy-groups"

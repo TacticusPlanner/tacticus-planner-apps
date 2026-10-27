@@ -34,7 +34,7 @@ import {
 // `use-create-goal-form.ts` because they are pure: all plain
 // functions (no hooks), so they're directly unit-testable without rendering anything.
 
-// Deliberately not reusing goal-type-fields.tsx's own `MissingUpgrade` type name (id: string) to
+// Deliberately not reusing goal-card/card-parts.tsx's `MissingUpgrade` type name (id: string) to
 // avoid two same-named-but-different exported types — this one's `id` stays branded `UpgradeId`,
 // which is structurally assignable to that string-keyed prop type at the call site.
 export type MissingUpgradeEntry = {

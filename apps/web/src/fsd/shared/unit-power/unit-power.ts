@@ -32,6 +32,8 @@ export type CharacterPowerValues = {
   activeAbilityLevel: number
   passiveAbilityLevel: number
   items?: readonly { equipmentId: string; level: number }[]
+  /** Multiplies Health, Damage and Armour before items; default 1. */
+  statFactor?: number
 }
 
 export type MowPowerValues = {
@@ -67,6 +69,7 @@ function powerState(
     activeAbilityLevel: values.activeAbilityLevel,
     passiveAbilityLevel: values.passiveAbilityLevel,
     items,
+    statFactor: values.statFactor,
   }
 }
 

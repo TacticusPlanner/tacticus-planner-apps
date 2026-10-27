@@ -15,7 +15,9 @@
     "endsAt": "Ends {{date}}",
     "startsAt": "Starts {{date}}",
     "startsTba": "Start date to be announced",
-    "syncedUnavailable": "Synced data unavailable"
+    "syncedUnavailable": "Synced data unavailable",
+    "runs": "Runs",
+    "run": "Run {{run}}: {{date}}"
   },
   "lifecycle": {
     "active": "Active",
@@ -496,6 +498,10 @@
           "title": "Five steps",
           "content": "The header shows where you are. Tap a visited step's chip to go back to it. Nothing is saved until you press Create."
         },
+        "horizon": {
+          "title": "Choose the run",
+          "content": "Plan to the end of one run. Later runs show a guessed date marked “maybe”; the targets, verdicts and upgrades follow the run you pick."
+        },
         "targetCards": {
           "title": "Pick a target",
           "content": "Each card shows the points a step needs, its verdict and a bar: solid for your roster now, hatched for what the recommended upgrades add."
@@ -903,13 +909,16 @@
       "failedDescription": "Some items failed. Leave without retrying?"
     },
     "target": {
-      "heading": "What should {{name}} reach by the end of the event?",
-      "deadline": "Deadline: {{date}}",
-      "deadlineEstimated": "Deadline: about {{date}} (estimated)",
-      "deadlineUnknown": "Run dates are unknown: planning only the announced runs",
+      "heading": "What should {{name}} reach by the end of run {{run}}?",
+      "horizon": "Reach it by the end of",
+      "horizonRun": "Run {{run}}",
+      "horizonNote": "Plan one run at a time: priorities can change a lot before the later runs.",
+      "runEnds": "Run {{run}} ends {{date}}",
+      "runEndsGuessed": "Run {{run}} ends maybe around {{date}} (guessed from past runs)",
+      "runDatesUnknown": "Run {{run}}'s dates are not known yet",
       "shards": "{{name}} has {{shards}} shards",
       "points": "{{points}} points",
-      "unreachable": "Not reachable this event",
+      "unreachable": "Not reachable by the end of this run",
       "verdicts": {
         "reachableNow": "Reachable now",
         "needsUpgrades": "Needs upgrades",
@@ -933,7 +942,7 @@
       "description": "Picked by points gained per farming day, ready before the run they help. Ready dates assume these goals are farmed in this order.",
       "estimating": "Estimating farming time…",
       "unavailable": "Farming time can't be estimated, so no upgrades are recommended.",
-      "none": "No upgrade adds points before the deadline.",
+      "none": "No upgrade adds points before this run ends.",
       "running": "Still looking for upgrades…",
       "gain": "+{{points}} points",
       "ready": "Ready about {{date}}",
@@ -1038,5 +1047,10 @@
       "bundle": "bundle",
       "paidOn": "paid options on"
     }
+  },
+  "runDates": {
+    "window": "{{start}} – {{end}}",
+    "guessed": "maybe ~{{date}}",
+    "unknown": "date unknown"
   }
 }

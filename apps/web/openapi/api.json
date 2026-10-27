@@ -7,7 +7,9 @@
   "paths": {
     "/api/v1/account": {
       "get": {
-        "tags": ["Account"],
+        "tags": [
+          "Account"
+        ],
         "summary": "Gets the authenticated user's planner account, creating it on first access.",
         "description": "Every authenticated caller has a planner account: this endpoint creates the profile on first access if they do not exist yet. displayName is the user-confirmed name or null; suggestedDisplayName is a private, editable suggestion that is never public identity. Tacticus integration values are never returned in full — only a masked preview and whether onboarding is complete.",
         "operationId": "TacticusPlannerApiFeaturesCurrentUserGetCurrentUserEndpoint",
@@ -45,12 +47,14 @@
         },
         "security": [
           {
-            "JWTBearerAuth": []
+            "JWTBearerAuth": [ ]
           }
         ]
       },
       "delete": {
-        "tags": ["Account"],
+        "tags": [
+          "Account"
+        ],
         "summary": "Permanently deletes the authenticated user's planner account and all related data.",
         "description": "Deletes the profile and every row it owns for the caller. This cannot be undone. Also makes a best-effort attempt to delete the corresponding Microsoft Entra External ID identity; see IExternalIdentityDeleter for the current limitation. Idempotent: repeating the request after the account is gone still succeeds.",
         "operationId": "TacticusPlannerApiFeaturesAccountManagementPurgeAccountEndpoint",
@@ -81,14 +85,16 @@
         },
         "security": [
           {
-            "JWTBearerAuth": []
+            "JWTBearerAuth": [ ]
           }
         ]
       }
     },
     "/api/v1/account/display-name": {
       "put": {
-        "tags": ["Account"],
+        "tags": [
+          "Account"
+        ],
         "summary": "Confirms or edits the current profile's app-owned display name.",
         "description": "Trims the name, requires 1-80 characters without control characters, saves it, which confirms it. Names are not required to be unique.",
         "operationId": "TacticusPlannerApiFeaturesCurrentUserUpdateDisplayNameEndpoint",
@@ -156,14 +162,16 @@
         },
         "security": [
           {
-            "JWTBearerAuth": []
+            "JWTBearerAuth": [ ]
           }
         ]
       }
     },
     "/api/v1/account/tacticus-integration": {
       "put": {
-        "tags": ["Account"],
+        "tags": [
+          "Account"
+        ],
         "summary": "Updates the authenticated user's Tacticus integration settings.",
         "description": "The Tacticus API key is only revalidated and updated when a new value is supplied; omit it to change only the Tacticus user id. The user id can be updated or removed independently — set clearTacticusUserId to remove it without touching the stored API key.",
         "operationId": "TacticusPlannerApiFeaturesTacticusIntegrationUpdateTacticusIntegrationEndpoint",
@@ -241,14 +249,16 @@
         },
         "security": [
           {
-            "JWTBearerAuth": []
+            "JWTBearerAuth": [ ]
           }
         ]
       }
     },
     "/api/v1/account/v1-import": {
       "post": {
-        "tags": ["Account"],
+        "tags": [
+          "Account"
+        ],
         "summary": "Selectively imports integration data, progress, and goals from V1.",
         "description": "V1 credentials are used once and never persisted. After profile retrieval, each selected part is applied independently and reports Imported, Skipped, or Failed. Goals are created directly by this operation, in V1 priority order — the response carries one outcome per source V1 goal (created, skipped, or failed), one per linked unit when a pre-farm goal fans out, plus one per automatically added prerequisite. The goals part is refused (no goals created) when the account has no player data snapshot. The legendaryEventPlans part creates one Legendary Event plan per V1 event (never touching a plan that already has teams) and reports one outcome per V1 event in legendaryEventOutcomes.",
         "operationId": "TacticusPlannerApiFeaturesV1ImportImportV1ProfileEndpoint",
@@ -316,14 +326,16 @@
         },
         "security": [
           {
-            "JWTBearerAuth": []
+            "JWTBearerAuth": [ ]
           }
         ]
       }
     },
     "/api/v1/game-catalog/ascension-costs": {
       "get": {
-        "tags": ["Game-Catalog"],
+        "tags": [
+          "Game-Catalog"
+        ],
         "summary": "Gets the ascension-orb/shard cost ladder.",
         "operationId": "TacticusPlannerApiFeaturesGameCatalogGetGameCatalogAscensionCostsEndpoint1",
         "responses": {
@@ -365,7 +377,9 @@
     },
     "/api/v1/game-catalog/ascension-costs/{envelopeHash}": {
       "get": {
-        "tags": ["Game-Catalog"],
+        "tags": [
+          "Game-Catalog"
+        ],
         "summary": "Gets the ascension-orb/shard cost ladder.",
         "operationId": "TacticusPlannerApiFeaturesGameCatalogGetGameCatalogAscensionCostsEndpoint2",
         "parameters": [
@@ -417,7 +431,9 @@
     },
     "/api/v1/game-catalog/campaign-battles": {
       "get": {
-        "tags": ["Game-Catalog"],
+        "tags": [
+          "Game-Catalog"
+        ],
         "summary": "Gets game catalog campaign battles.",
         "operationId": "TacticusPlannerApiFeaturesGameCatalogGetGameCatalogCampaignBattlesEndpoint1",
         "responses": {
@@ -459,7 +475,9 @@
     },
     "/api/v1/game-catalog/campaign-battles/{envelopeHash}": {
       "get": {
-        "tags": ["Game-Catalog"],
+        "tags": [
+          "Game-Catalog"
+        ],
         "summary": "Gets game catalog campaign battles.",
         "operationId": "TacticusPlannerApiFeaturesGameCatalogGetGameCatalogCampaignBattlesEndpoint2",
         "parameters": [
@@ -511,7 +529,9 @@
     },
     "/api/v1/game-catalog/campaign-definitions": {
       "get": {
-        "tags": ["Game-Catalog"],
+        "tags": [
+          "Game-Catalog"
+        ],
         "summary": "Gets game catalog campaign definitions.",
         "operationId": "TacticusPlannerApiFeaturesGameCatalogGetGameCatalogCampaignDefinitionsEndpoint1",
         "responses": {
@@ -553,7 +573,9 @@
     },
     "/api/v1/game-catalog/campaign-definitions/{envelopeHash}": {
       "get": {
-        "tags": ["Game-Catalog"],
+        "tags": [
+          "Game-Catalog"
+        ],
         "summary": "Gets game catalog campaign definitions.",
         "operationId": "TacticusPlannerApiFeaturesGameCatalogGetGameCatalogCampaignDefinitionsEndpoint2",
         "parameters": [
@@ -605,7 +627,9 @@
     },
     "/api/v1/game-catalog/character-ability-costs": {
       "get": {
-        "tags": ["Game-Catalog"],
+        "tags": [
+          "Game-Catalog"
+        ],
         "summary": "Gets the character ability cost ladder.",
         "operationId": "TacticusPlannerApiFeaturesGameCatalogGetGameCatalogCharacterAbilityCostsEndpoint1",
         "responses": {
@@ -647,7 +671,9 @@
     },
     "/api/v1/game-catalog/character-ability-costs/{envelopeHash}": {
       "get": {
-        "tags": ["Game-Catalog"],
+        "tags": [
+          "Game-Catalog"
+        ],
         "summary": "Gets the character ability cost ladder.",
         "operationId": "TacticusPlannerApiFeaturesGameCatalogGetGameCatalogCharacterAbilityCostsEndpoint2",
         "parameters": [
@@ -699,7 +725,9 @@
     },
     "/api/v1/game-catalog/characters": {
       "get": {
-        "tags": ["Game-Catalog"],
+        "tags": [
+          "Game-Catalog"
+        ],
         "summary": "Gets game catalog characters.",
         "operationId": "TacticusPlannerApiFeaturesGameCatalogGetGameCatalogCharactersEndpoint1",
         "responses": {
@@ -741,7 +769,9 @@
     },
     "/api/v1/game-catalog/characters/{envelopeHash}": {
       "get": {
-        "tags": ["Game-Catalog"],
+        "tags": [
+          "Game-Catalog"
+        ],
         "summary": "Gets game catalog characters.",
         "operationId": "TacticusPlannerApiFeaturesGameCatalogGetGameCatalogCharactersEndpoint2",
         "parameters": [
@@ -791,9 +821,109 @@
         }
       }
     },
+    "/api/v1/game-catalog/damage-types": {
+      "get": {
+        "tags": [
+          "Game-Catalog"
+        ],
+        "summary": "Gets the damage types.",
+        "operationId": "TacticusPlannerApiFeaturesGameCatalogGetGameCatalogDamageTypesEndpoint1",
+        "responses": {
+          "200": {
+            "description": "One record per damage type, ordered by id: its piercing ratio (the percentage of a hit that ignores armour) and the traits its hits carry.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogDamageType"
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "The dataset has not changed."
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiProblem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The envelope hash is not the current release's.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/game-catalog/damage-types/{envelopeHash}": {
+      "get": {
+        "tags": [
+          "Game-Catalog"
+        ],
+        "summary": "Gets the damage types.",
+        "operationId": "TacticusPlannerApiFeaturesGameCatalogGetGameCatalogDamageTypesEndpoint2",
+        "parameters": [
+          {
+            "name": "envelopeHash",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "One record per damage type, ordered by id: its piercing ratio (the percentage of a hit that ignores armour) and the traits its hits carry.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogDamageType"
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "The dataset has not changed."
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiProblem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The envelope hash is not the current release's.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/game-catalog/equipment": {
       "get": {
-        "tags": ["Game-Catalog"],
+        "tags": [
+          "Game-Catalog"
+        ],
         "summary": "Gets game catalog equipment.",
         "operationId": "TacticusPlannerApiFeaturesGameCatalogGetGameCatalogEquipmentEndpoint1",
         "responses": {
@@ -835,7 +965,9 @@
     },
     "/api/v1/game-catalog/equipment/{envelopeHash}": {
       "get": {
-        "tags": ["Game-Catalog"],
+        "tags": [
+          "Game-Catalog"
+        ],
         "summary": "Gets game catalog equipment.",
         "operationId": "TacticusPlannerApiFeaturesGameCatalogGetGameCatalogEquipmentEndpoint2",
         "parameters": [
@@ -887,7 +1019,9 @@
     },
     "/api/v1/game-catalog/event-definitions": {
       "get": {
-        "tags": ["Game-Catalog"],
+        "tags": [
+          "Game-Catalog"
+        ],
         "summary": "Gets game catalog event definitions.",
         "operationId": "TacticusPlannerApiFeaturesGameCatalogGetGameCatalogEventDefinitionsEndpoint1",
         "responses": {
@@ -929,7 +1063,9 @@
     },
     "/api/v1/game-catalog/event-definitions/{envelopeHash}": {
       "get": {
-        "tags": ["Game-Catalog"],
+        "tags": [
+          "Game-Catalog"
+        ],
         "summary": "Gets game catalog event definitions.",
         "operationId": "TacticusPlannerApiFeaturesGameCatalogGetGameCatalogEventDefinitionsEndpoint2",
         "parameters": [
@@ -981,7 +1117,9 @@
     },
     "/api/v1/game-catalog/events-calendar": {
       "get": {
-        "tags": ["Game-Catalog"],
+        "tags": [
+          "Game-Catalog"
+        ],
         "summary": "Gets the game events calendar.",
         "operationId": "TacticusPlannerApiFeaturesGameCatalogGetGameCatalogEventsCalendarEndpoint1",
         "responses": {
@@ -1023,7 +1161,9 @@
     },
     "/api/v1/game-catalog/events-calendar/{envelopeHash}": {
       "get": {
-        "tags": ["Game-Catalog"],
+        "tags": [
+          "Game-Catalog"
+        ],
         "summary": "Gets the game events calendar.",
         "operationId": "TacticusPlannerApiFeaturesGameCatalogGetGameCatalogEventsCalendarEndpoint2",
         "parameters": [
@@ -1073,9 +1213,207 @@
         }
       }
     },
+    "/api/v1/game-catalog/factions": {
+      "get": {
+        "tags": [
+          "Game-Catalog"
+        ],
+        "summary": "Gets the game factions.",
+        "operationId": "TacticusPlannerApiFeaturesGameCatalogGetGameCatalogFactionsEndpoint1",
+        "responses": {
+          "200": {
+            "description": "One record per faction, in unlock order: its alliance (Imperial, Chaos or Xenos), unlock date (UTC) and whether it is a collection faction grouping units of other factions.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogFaction"
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "The dataset has not changed."
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiProblem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The envelope hash is not the current release's.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/game-catalog/factions/{envelopeHash}": {
+      "get": {
+        "tags": [
+          "Game-Catalog"
+        ],
+        "summary": "Gets the game factions.",
+        "operationId": "TacticusPlannerApiFeaturesGameCatalogGetGameCatalogFactionsEndpoint2",
+        "parameters": [
+          {
+            "name": "envelopeHash",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "One record per faction, in unlock order: its alliance (Imperial, Chaos or Xenos), unlock date (UTC) and whether it is a collection faction grouping units of other factions.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogFaction"
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "The dataset has not changed."
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiProblem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The envelope hash is not the current release's.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/game-catalog/global-values": {
+      "get": {
+        "tags": [
+          "Game-Catalog"
+        ],
+        "summary": "Gets the game-wide constants.",
+        "operationId": "TacticusPlannerApiFeaturesGameCatalogGetGameCatalogGlobalValuesEndpoint1",
+        "responses": {
+          "200": {
+            "description": "The single record of game-wide constants, named as the game names them: energy, Onslaught and limited-battle stamina (times in seconds), team size, terrifying and battle-fatigue values, trait variables, and the energy shop ladder (energy, raid tickets and gem cost per purchase).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogGlobalValues"
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "The dataset has not changed."
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiProblem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The envelope hash is not the current release's.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/game-catalog/global-values/{envelopeHash}": {
+      "get": {
+        "tags": [
+          "Game-Catalog"
+        ],
+        "summary": "Gets the game-wide constants.",
+        "operationId": "TacticusPlannerApiFeaturesGameCatalogGetGameCatalogGlobalValuesEndpoint2",
+        "parameters": [
+          {
+            "name": "envelopeHash",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The single record of game-wide constants, named as the game names them: energy, Onslaught and limited-battle stamina (times in seconds), team size, terrifying and battle-fatigue values, trait variables, and the energy shop ladder (energy, raid tickets and gem cost per purchase).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogGlobalValues"
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "The dataset has not changed."
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiProblem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The envelope hash is not the current release's.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/game-catalog/guild-raid-meta": {
       "get": {
-        "tags": ["Game-Catalog"],
+        "tags": [
+          "Game-Catalog"
+        ],
         "summary": "Gets curated Guild Raid Meta recommendations.",
         "operationId": "TacticusPlannerApiFeaturesGameCatalogGetGameCatalogGuildRaidMetaEndpoint1",
         "responses": {
@@ -1117,7 +1455,9 @@
     },
     "/api/v1/game-catalog/guild-raid-meta/{envelopeHash}": {
       "get": {
-        "tags": ["Game-Catalog"],
+        "tags": [
+          "Game-Catalog"
+        ],
         "summary": "Gets curated Guild Raid Meta recommendations.",
         "operationId": "TacticusPlannerApiFeaturesGameCatalogGetGameCatalogGuildRaidMetaEndpoint2",
         "parameters": [
@@ -1169,7 +1509,9 @@
     },
     "/api/v1/game-catalog/horde-mode-tiers": {
       "get": {
-        "tags": ["Game-Catalog"],
+        "tags": [
+          "Game-Catalog"
+        ],
         "summary": "Gets the horde-mode character tier list.",
         "operationId": "TacticusPlannerApiFeaturesGameCatalogGetGameCatalogHordeModeTiersEndpoint1",
         "responses": {
@@ -1211,7 +1553,9 @@
     },
     "/api/v1/game-catalog/horde-mode-tiers/{envelopeHash}": {
       "get": {
-        "tags": ["Game-Catalog"],
+        "tags": [
+          "Game-Catalog"
+        ],
         "summary": "Gets the horde-mode character tier list.",
         "operationId": "TacticusPlannerApiFeaturesGameCatalogGetGameCatalogHordeModeTiersEndpoint2",
         "parameters": [
@@ -1263,7 +1607,9 @@
     },
     "/api/v1/game-catalog/lre-battles": {
       "get": {
-        "tags": ["Game-Catalog"],
+        "tags": [
+          "Game-Catalog"
+        ],
         "summary": "Gets game catalog LRE battles.",
         "operationId": "TacticusPlannerApiFeaturesGameCatalogGetGameCatalogLreBattlesEndpoint1",
         "responses": {
@@ -1305,7 +1651,9 @@
     },
     "/api/v1/game-catalog/lre-battles/{envelopeHash}": {
       "get": {
-        "tags": ["Game-Catalog"],
+        "tags": [
+          "Game-Catalog"
+        ],
         "summary": "Gets game catalog LRE battles.",
         "operationId": "TacticusPlannerApiFeaturesGameCatalogGetGameCatalogLreBattlesEndpoint2",
         "parameters": [
@@ -1357,7 +1705,9 @@
     },
     "/api/v1/game-catalog/lres": {
       "get": {
-        "tags": ["Game-Catalog"],
+        "tags": [
+          "Game-Catalog"
+        ],
         "summary": "Gets game catalog legendary release events.",
         "operationId": "TacticusPlannerApiFeaturesGameCatalogGetGameCatalogLresEndpoint1",
         "responses": {
@@ -1399,7 +1749,9 @@
     },
     "/api/v1/game-catalog/lres/{envelopeHash}": {
       "get": {
-        "tags": ["Game-Catalog"],
+        "tags": [
+          "Game-Catalog"
+        ],
         "summary": "Gets game catalog legendary release events.",
         "operationId": "TacticusPlannerApiFeaturesGameCatalogGetGameCatalogLresEndpoint2",
         "parameters": [
@@ -1451,7 +1803,9 @@
     },
     "/api/v1/game-catalog/manifest": {
       "get": {
-        "tags": ["Game-Catalog"],
+        "tags": [
+          "Game-Catalog"
+        ],
         "summary": "Gets the active game catalog manifest.",
         "description": "Returns game catalog release metadata (version, schema version, game version), source hash, and per dataset its payload hash and immutable download url ({prefix}/{dataset}/{envelopeHash}, cacheable forever).",
         "operationId": "TacticusPlannerApiFeaturesGameCatalogGetGameCatalogManifestEndpoint",
@@ -1484,7 +1838,9 @@
     },
     "/api/v1/game-catalog/mow-upgrade-costs": {
       "get": {
-        "tags": ["Game-Catalog"],
+        "tags": [
+          "Game-Catalog"
+        ],
         "summary": "Gets the machine-of-war upgrade-cost ladder.",
         "operationId": "TacticusPlannerApiFeaturesGameCatalogGetGameCatalogMowUpgradeCostsEndpoint1",
         "responses": {
@@ -1526,7 +1882,9 @@
     },
     "/api/v1/game-catalog/mow-upgrade-costs/{envelopeHash}": {
       "get": {
-        "tags": ["Game-Catalog"],
+        "tags": [
+          "Game-Catalog"
+        ],
         "summary": "Gets the machine-of-war upgrade-cost ladder.",
         "operationId": "TacticusPlannerApiFeaturesGameCatalogGetGameCatalogMowUpgradeCostsEndpoint2",
         "parameters": [
@@ -1578,7 +1936,9 @@
     },
     "/api/v1/game-catalog/mows": {
       "get": {
-        "tags": ["Game-Catalog"],
+        "tags": [
+          "Game-Catalog"
+        ],
         "summary": "Gets game catalog machines of war.",
         "operationId": "TacticusPlannerApiFeaturesGameCatalogGetGameCatalogMowsEndpoint1",
         "responses": {
@@ -1620,7 +1980,9 @@
     },
     "/api/v1/game-catalog/mows/{envelopeHash}": {
       "get": {
-        "tags": ["Game-Catalog"],
+        "tags": [
+          "Game-Catalog"
+        ],
         "summary": "Gets game catalog machines of war.",
         "operationId": "TacticusPlannerApiFeaturesGameCatalogGetGameCatalogMowsEndpoint2",
         "parameters": [
@@ -1672,7 +2034,9 @@
     },
     "/api/v1/game-catalog/mythic-quests": {
       "get": {
-        "tags": ["Game-Catalog"],
+        "tags": [
+          "Game-Catalog"
+        ],
         "summary": "Gets game catalog mythic quests.",
         "operationId": "TacticusPlannerApiFeaturesGameCatalogGetGameCatalogMythicQuestsEndpoint1",
         "responses": {
@@ -1714,7 +2078,9 @@
     },
     "/api/v1/game-catalog/mythic-quests/{envelopeHash}": {
       "get": {
-        "tags": ["Game-Catalog"],
+        "tags": [
+          "Game-Catalog"
+        ],
         "summary": "Gets game catalog mythic quests.",
         "operationId": "TacticusPlannerApiFeaturesGameCatalogGetGameCatalogMythicQuestsEndpoint2",
         "parameters": [
@@ -1766,7 +2132,9 @@
     },
     "/api/v1/game-catalog/npcs": {
       "get": {
-        "tags": ["Game-Catalog"],
+        "tags": [
+          "Game-Catalog"
+        ],
         "summary": "Gets game catalog NPCs.",
         "operationId": "TacticusPlannerApiFeaturesGameCatalogGetGameCatalogNpcsEndpoint1",
         "responses": {
@@ -1808,7 +2176,9 @@
     },
     "/api/v1/game-catalog/npcs/{envelopeHash}": {
       "get": {
-        "tags": ["Game-Catalog"],
+        "tags": [
+          "Game-Catalog"
+        ],
         "summary": "Gets game catalog NPCs.",
         "operationId": "TacticusPlannerApiFeaturesGameCatalogGetGameCatalogNpcsEndpoint2",
         "parameters": [
@@ -1860,7 +2230,9 @@
     },
     "/api/v1/game-catalog/onslaught-rewards": {
       "get": {
-        "tags": ["Game-Catalog"],
+        "tags": [
+          "Game-Catalog"
+        ],
         "summary": "Gets the Onslaught reward table.",
         "operationId": "TacticusPlannerApiFeaturesGameCatalogGetGameCatalogOnslaughtRewardsEndpoint1",
         "responses": {
@@ -1902,7 +2274,9 @@
     },
     "/api/v1/game-catalog/onslaught-rewards/{envelopeHash}": {
       "get": {
-        "tags": ["Game-Catalog"],
+        "tags": [
+          "Game-Catalog"
+        ],
         "summary": "Gets the Onslaught reward table.",
         "operationId": "TacticusPlannerApiFeaturesGameCatalogGetGameCatalogOnslaughtRewardsEndpoint2",
         "parameters": [
@@ -1952,9 +2326,109 @@
         }
       }
     },
+    "/api/v1/game-catalog/progression-rules": {
+      "get": {
+        "tags": [
+          "Game-Catalog"
+        ],
+        "summary": "Gets the unit progression rules.",
+        "operationId": "TacticusPlannerApiFeaturesGameCatalogGetGameCatalogProgressionRulesEndpoint1",
+        "responses": {
+          "200": {
+            "description": "The single record of progression rules, named as the game names them: the XP curve (element i is the total XP to reach level i + 2), XP books, the XP level each rank-up upgrade slot needs per rank, and each hero and MoW ascension step's caps (max XP level, max rank, max ability level), stat multipliers and Hero Release Event shard cost.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogProgressionRules"
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "The dataset has not changed."
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiProblem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The envelope hash is not the current release's.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/game-catalog/progression-rules/{envelopeHash}": {
+      "get": {
+        "tags": [
+          "Game-Catalog"
+        ],
+        "summary": "Gets the unit progression rules.",
+        "operationId": "TacticusPlannerApiFeaturesGameCatalogGetGameCatalogProgressionRulesEndpoint2",
+        "parameters": [
+          {
+            "name": "envelopeHash",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The single record of progression rules, named as the game names them: the XP curve (element i is the total XP to reach level i + 2), XP books, the XP level each rank-up upgrade slot needs per rank, and each hero and MoW ascension step's caps (max XP level, max rank, max ability level), stat multipliers and Hero Release Event shard cost.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogProgressionRules"
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "The dataset has not changed."
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiProblem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The envelope hash is not the current release's.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/game-catalog/quest-crates": {
       "get": {
-        "tags": ["Game-Catalog"],
+        "tags": [
+          "Game-Catalog"
+        ],
         "summary": "Gets the Quest Event crate track.",
         "operationId": "TacticusPlannerApiFeaturesGameCatalogGetGameCatalogQuestCratesEndpoint1",
         "responses": {
@@ -1996,7 +2470,9 @@
     },
     "/api/v1/game-catalog/quest-crates/{envelopeHash}": {
       "get": {
-        "tags": ["Game-Catalog"],
+        "tags": [
+          "Game-Catalog"
+        ],
         "summary": "Gets the Quest Event crate track.",
         "operationId": "TacticusPlannerApiFeaturesGameCatalogGetGameCatalogQuestCratesEndpoint2",
         "parameters": [
@@ -2048,7 +2524,9 @@
     },
     "/api/v1/game-catalog/quest-events": {
       "get": {
-        "tags": ["Game-Catalog"],
+        "tags": [
+          "Game-Catalog"
+        ],
         "summary": "Gets game catalog quest events.",
         "operationId": "TacticusPlannerApiFeaturesGameCatalogGetGameCatalogQuestEventsEndpoint1",
         "responses": {
@@ -2090,7 +2568,9 @@
     },
     "/api/v1/game-catalog/quest-events/{envelopeHash}": {
       "get": {
-        "tags": ["Game-Catalog"],
+        "tags": [
+          "Game-Catalog"
+        ],
         "summary": "Gets game catalog quest events.",
         "operationId": "TacticusPlannerApiFeaturesGameCatalogGetGameCatalogQuestEventsEndpoint2",
         "parameters": [
@@ -2142,7 +2622,9 @@
     },
     "/api/v1/game-catalog/raid-bosses": {
       "get": {
-        "tags": ["Game-Catalog"],
+        "tags": [
+          "Game-Catalog"
+        ],
         "summary": "Gets the raid bosses and raid-boss primes.",
         "operationId": "TacticusPlannerApiFeaturesGameCatalogGetGameCatalogRaidBossesEndpoint1",
         "responses": {
@@ -2184,7 +2666,9 @@
     },
     "/api/v1/game-catalog/raid-bosses/{envelopeHash}": {
       "get": {
-        "tags": ["Game-Catalog"],
+        "tags": [
+          "Game-Catalog"
+        ],
         "summary": "Gets the raid bosses and raid-boss primes.",
         "operationId": "TacticusPlannerApiFeaturesGameCatalogGetGameCatalogRaidBossesEndpoint2",
         "parameters": [
@@ -2236,7 +2720,9 @@
     },
     "/api/v1/game-catalog/shops": {
       "get": {
-        "tags": ["Game-Catalog"],
+        "tags": [
+          "Game-Catalog"
+        ],
         "summary": "Gets the always-on daily shops.",
         "operationId": "TacticusPlannerApiFeaturesGameCatalogGetGameCatalogShopsEndpoint1",
         "responses": {
@@ -2278,7 +2764,9 @@
     },
     "/api/v1/game-catalog/shops/{envelopeHash}": {
       "get": {
-        "tags": ["Game-Catalog"],
+        "tags": [
+          "Game-Catalog"
+        ],
         "summary": "Gets the always-on daily shops.",
         "operationId": "TacticusPlannerApiFeaturesGameCatalogGetGameCatalogShopsEndpoint2",
         "parameters": [
@@ -2330,7 +2818,9 @@
     },
     "/api/v1/game-catalog/unit-power": {
       "get": {
-        "tags": ["Game-Catalog"],
+        "tags": [
+          "Game-Catalog"
+        ],
         "summary": "Gets the unit power tables.",
         "operationId": "TacticusPlannerApiFeaturesGameCatalogGetGameCatalogUnitPowerEndpoint1",
         "responses": {
@@ -2372,7 +2862,9 @@
     },
     "/api/v1/game-catalog/unit-power/{envelopeHash}": {
       "get": {
-        "tags": ["Game-Catalog"],
+        "tags": [
+          "Game-Catalog"
+        ],
         "summary": "Gets the unit power tables.",
         "operationId": "TacticusPlannerApiFeaturesGameCatalogGetGameCatalogUnitPowerEndpoint2",
         "parameters": [
@@ -2424,7 +2916,9 @@
     },
     "/api/v1/game-catalog/unlock-shard-costs": {
       "get": {
-        "tags": ["Game-Catalog"],
+        "tags": [
+          "Game-Catalog"
+        ],
         "summary": "Gets the per-rarity character unlock shard cost table.",
         "operationId": "TacticusPlannerApiFeaturesGameCatalogGetGameCatalogUnlockShardCostsEndpoint1",
         "responses": {
@@ -2466,7 +2960,9 @@
     },
     "/api/v1/game-catalog/unlock-shard-costs/{envelopeHash}": {
       "get": {
-        "tags": ["Game-Catalog"],
+        "tags": [
+          "Game-Catalog"
+        ],
         "summary": "Gets the per-rarity character unlock shard cost table.",
         "operationId": "TacticusPlannerApiFeaturesGameCatalogGetGameCatalogUnlockShardCostsEndpoint2",
         "parameters": [
@@ -2518,7 +3014,9 @@
     },
     "/api/v1/game-catalog/upgrades": {
       "get": {
-        "tags": ["Game-Catalog"],
+        "tags": [
+          "Game-Catalog"
+        ],
         "summary": "Gets game catalog upgrade materials.",
         "operationId": "TacticusPlannerApiFeaturesGameCatalogGetGameCatalogUpgradesEndpoint1",
         "responses": {
@@ -2560,7 +3058,9 @@
     },
     "/api/v1/game-catalog/upgrades/{envelopeHash}": {
       "get": {
-        "tags": ["Game-Catalog"],
+        "tags": [
+          "Game-Catalog"
+        ],
         "summary": "Gets game catalog upgrade materials.",
         "operationId": "TacticusPlannerApiFeaturesGameCatalogGetGameCatalogUpgradesEndpoint2",
         "parameters": [
@@ -2612,9 +3112,11 @@
     },
     "/api/v1/goals": {
       "post": {
-        "tags": ["Goals"],
+        "tags": [
+          "Goals"
+        ],
         "summary": "Creates one goal, or several linked goals for one entity, in one call.",
-        "description": "A single goal is a one-spec request. Each spec's DependsOnIndex (indices into this same request's Goals list, referencing only earlier entries) is resolved into real DependsOn edges; DependsOnGoalIds adds edges to the same unit's existing Active/Paused goals, and an existing Ascension goal reachable through them lifts the rarity cap the targets are validated against. A goal type may appear more than once when the end targets differ. Assigns the whole set to the given project(s), or the caller's default project (created on first use) when none is given. Every goal starts Active; startPaused (request-level boolean, default false) creates the whole set Paused instead and cannot be set per goal.",
+        "description": "A single goal is a one-spec request. Each spec's DependsOnIndex (indices into this same request's Goals list, referencing only earlier entries) is resolved into real DependsOn edges; DependsOnGoalIds adds edges to the same unit's existing Active/Paused goals, and an existing Ascension goal reachable through them lifts the rarity cap the targets are validated against. A goal type may appear more than once when the end targets differ. Assigns the whole set to the given project(s), or the caller's default project (created on first use) when none is given. Each spec may carry notes. position (request-level, 1 to in-flight count + 1) inserts the set there in request order, shifting later goals down; null appends at the end. Every goal starts Active; startPaused (request-level boolean, default false) creates the whole set Paused instead and cannot be set per goal.",
         "operationId": "TacticusPlannerApiFeaturesGoalsCreateCombinedGoalsEndpoint",
         "requestBody": {
           "content": {
@@ -2638,7 +3140,7 @@
             }
           },
           "400": {
-            "description": "Invalid entity/goal type, a bad DependsOnIndex or DependsOnGoalIds, an unknown project, or a null/per-goal startPaused.",
+            "description": "Invalid entity/goal type, a bad DependsOnIndex or DependsOnGoalIds, an unknown project, a null/per-goal startPaused, notes over the limit, or a position out of range.",
             "content": {
               "application/problem+json": {
                 "schema": {
@@ -2690,12 +3192,14 @@
         },
         "security": [
           {
-            "JWTBearerAuth": []
+            "JWTBearerAuth": [ ]
           }
         ]
       },
       "get": {
-        "tags": ["Goals"],
+        "tags": [
+          "Goals"
+        ],
         "summary": "Lists the authenticated user's goals.",
         "description": "Excludes archived goals by default; pass ?archived=true to list only archived goals. Each entry is the full goal detail (config, snapshot, projectIds, revision, globalPriority), identical to GET goals/{goalId}.",
         "operationId": "TacticusPlannerApiFeaturesGoalsListGoalsEndpoint",
@@ -2704,7 +3208,10 @@
             "name": "archived",
             "in": "query",
             "schema": {
-              "type": ["null", "boolean"]
+              "type": [
+                "null",
+                "boolean"
+              ]
             }
           }
         ],
@@ -2752,14 +3259,16 @@
         },
         "security": [
           {
-            "JWTBearerAuth": []
+            "JWTBearerAuth": [ ]
           }
         ]
       }
     },
     "/api/v1/goals/order": {
       "put": {
-        "tags": ["Goals"],
+        "tags": [
+          "Goals"
+        ],
         "summary": "Reorders every in-flight goal in the account-wide order.",
         "description": "GoalIds must be the exact, duplicate-free set of the caller's Active and Paused goals, ExpectedRevision the revision last read. Any ordering is accepted, including one that places a goal ahead of a DependsOn prerequisite it hasn't reached.",
         "operationId": "TacticusPlannerApiFeaturesGoalsUpdateGoalOrderEndpoint",
@@ -2837,14 +3346,16 @@
         },
         "security": [
           {
-            "JWTBearerAuth": []
+            "JWTBearerAuth": [ ]
           }
         ]
       }
     },
     "/api/v1/goals/status": {
       "post": {
-        "tags": ["Goals"],
+        "tags": [
+          "Goals"
+        ],
         "summary": "Transitions one or many goals to a status (Active/Paused/Completed/Archived), atomically.",
         "description": "expectedOrderRevision is required when a goal enters or leaves the in-flight set (to or from Completed/Archived) and ignored otherwise. Any rejection changes nothing.",
         "operationId": "TacticusPlannerApiFeaturesGoalsUpdateGoalsStatusEndpoint",
@@ -2922,14 +3433,16 @@
         },
         "security": [
           {
-            "JWTBearerAuth": []
+            "JWTBearerAuth": [ ]
           }
         ]
       }
     },
     "/api/v1/goals/{goalId}": {
       "delete": {
-        "tags": ["Goals"],
+        "tags": [
+          "Goals"
+        ],
         "summary": "Permanently deletes a goal.",
         "operationId": "TacticusPlannerApiFeaturesGoalsDeleteGoalEndpoint",
         "parameters": [
@@ -2979,12 +3492,14 @@
         },
         "security": [
           {
-            "JWTBearerAuth": []
+            "JWTBearerAuth": [ ]
           }
         ]
       },
       "put": {
-        "tags": ["Goals"],
+        "tags": [
+          "Goals"
+        ],
         "summary": "Edits a goal's target, details, project memberships and priority in one atomic request.",
         "description": "Every section is optional and an absent section leaves that aspect unchanged; a request with no section is a no-op. Sections apply in the order target, details, projectIds, priority; if any fails nothing is saved. target carries its own expectedRevision (the goal revision); priority.position is the 1-based position among the account's Active/Paused goals and priority.expectedOrderRevision the order revision the client computed it from. The response carries the updated goal and the new order (null unless priority was supplied).",
         "operationId": "TacticusPlannerApiFeaturesGoalsEditGoalEndpoint",
@@ -3072,12 +3587,14 @@
         },
         "security": [
           {
-            "JWTBearerAuth": []
+            "JWTBearerAuth": [ ]
           }
         ]
       },
       "get": {
-        "tags": ["Goals"],
+        "tags": [
+          "Goals"
+        ],
         "summary": "Gets a single goal's full detail (the same shape the goals list serves).",
         "operationId": "TacticusPlannerApiFeaturesGoalsGetGoalEndpoint",
         "parameters": [
@@ -3134,14 +3651,16 @@
         },
         "security": [
           {
-            "JWTBearerAuth": []
+            "JWTBearerAuth": [ ]
           }
         ]
       }
     },
     "/api/v1/guild": {
       "get": {
-        "tags": ["Guild"],
+        "tags": [
+          "Guild"
+        ],
         "summary": "Gets the authenticated user's guild registration and membership state.",
         "description": "The state field discriminates between needing a Tacticus User ID (tacticusUserIdRequired), having no linked registered guild (unregistered), and full guild + member details (registered). This endpoint reads persisted state only.",
         "operationId": "TacticusPlannerApiFeaturesGuildsGetMyGuildEndpoint",
@@ -3189,12 +3708,14 @@
         },
         "security": [
           {
-            "JWTBearerAuth": []
+            "JWTBearerAuth": [ ]
           }
         ]
       },
       "delete": {
-        "tags": ["Guild"],
+        "tags": [
+          "Guild"
+        ],
         "summary": "Permanently deletes the caller's guild registration and roster from Planner.",
         "description": "Requires the caller to be a linked Leader or Co-Leader of a registered guild. Deletes the guild and all of its member rows from Planner. This does not affect the guild in Tacticus itself, only Planner's registration of it, and cannot be undone — any current member can re-register it afterward.",
         "operationId": "TacticusPlannerApiFeaturesGuildsPurgeGuildEndpoint",
@@ -3235,14 +3756,16 @@
         },
         "security": [
           {
-            "JWTBearerAuth": []
+            "JWTBearerAuth": [ ]
           }
         ]
       }
     },
     "/api/v1/guild/raid-status": {
       "get": {
-        "tags": ["Guild"],
+        "tags": [
+          "Guild"
+        ],
         "summary": "Gets the caller's guild's current Guild Raid status.",
         "description": "Returns an id-only normalized status from the latest persisted observation. This endpoint never calls the upstream Guild Raid API; use POST guild/raid-status/refresh to force a sync.",
         "operationId": "TacticusPlannerApiFeaturesGuildsGetMyGuildRaidStatusEndpoint",
@@ -3310,14 +3833,16 @@
         },
         "security": [
           {
-            "JWTBearerAuth": []
+            "JWTBearerAuth": [ ]
           }
         ]
       }
     },
     "/api/v1/guild/raid-status/refresh": {
       "post": {
-        "tags": ["Guild"],
+        "tags": [
+          "Guild"
+        ],
         "summary": "Forces a Guild Raid status refresh for the caller's guild.",
         "description": "Performs an upstream Guild Raid sync subject to a one-minute per-guild cooldown measured from the last attempt, successful or failed; a request inside the cooldown returns the current persisted result instead of calling upstream.",
         "operationId": "TacticusPlannerApiFeaturesGuildsRefreshMyGuildRaidStatusEndpoint",
@@ -3395,14 +3920,16 @@
         },
         "security": [
           {
-            "JWTBearerAuth": []
+            "JWTBearerAuth": [ ]
           }
         ]
       }
     },
     "/api/v1/guild/register": {
       "post": {
-        "tags": ["Guild"],
+        "tags": [
+          "Guild"
+        ],
         "summary": "Registers a Tacticus guild using a Guild-scoped API token.",
         "description": "Requires the caller to have a configured Tacticus User ID and to appear as the guild's Leader or Co-Leader in the upstream response. Performs a complete synchronization and persists the encrypted token. Re-registering an already-registered guild updates it rather than duplicating it.",
         "operationId": "TacticusPlannerApiFeaturesGuildsRegisterGuildEndpoint",
@@ -3500,14 +4027,16 @@
         },
         "security": [
           {
-            "JWTBearerAuth": []
+            "JWTBearerAuth": [ ]
           }
         ]
       }
     },
     "/api/v1/guild/sync": {
       "post": {
-        "tags": ["Guild"],
+        "tags": [
+          "Guild"
+        ],
         "summary": "Re-synchronizes the authenticated user's guild from the Tacticus API.",
         "description": "Fetches fresh guild data using the stored Guild API token and requires the caller to still appear as Leader or Co-Leader in that fresh response before any data changes. The stored token itself is never replaced by this endpoint.",
         "operationId": "TacticusPlannerApiFeaturesGuildsSyncMyGuildEndpoint",
@@ -3595,14 +4124,16 @@
         },
         "security": [
           {
-            "JWTBearerAuth": []
+            "JWTBearerAuth": [ ]
           }
         ]
       }
     },
     "/api/v1/legendary-event-plans": {
       "get": {
-        "tags": ["Legendary-Event-Plans"],
+        "tags": [
+          "Legendary-Event-Plans"
+        ],
         "summary": "Lists every stored plan of the caller's profile.",
         "description": "Ordered by eventId (ordinal). Only stored plans are listed: a catalog event with no plan written is not returned as an empty plan. Plans whose event left the catalog are included.",
         "operationId": "TacticusPlannerApiFeaturesLegendaryEventPlansListLegendaryEventPlansEndpoint",
@@ -3650,14 +4181,16 @@
         },
         "security": [
           {
-            "JWTBearerAuth": []
+            "JWTBearerAuth": [ ]
           }
         ]
       }
     },
     "/api/v1/legendary-event-plans/{eventId}": {
       "get": {
-        "tags": ["Legendary-Event-Plans"],
+        "tags": [
+          "Legendary-Event-Plans"
+        ],
         "summary": "Reads the caller's plan for a Legendary Event.",
         "description": "A missing plan reads as an empty plan at revision 0; nothing is created. Reads never validate against the catalog, so a plan written under an older catalog still reads, and a stored plan stays readable after its event leaves the catalog.",
         "operationId": "TacticusPlannerApiFeaturesLegendaryEventPlansGetLegendaryEventPlanEndpoint",
@@ -3715,12 +4248,14 @@
         },
         "security": [
           {
-            "JWTBearerAuth": []
+            "JWTBearerAuth": [ ]
           }
         ]
       },
       "put": {
-        "tags": ["Legendary-Event-Plans"],
+        "tags": [
+          "Legendary-Event-Plans"
+        ],
         "summary": "Writes the plan-level fields (notes, showPaidOptions), creating the plan if needed.",
         "operationId": "TacticusPlannerApiFeaturesLegendaryEventPlansUpdateLegendaryEventPlanEndpoint",
         "parameters": [
@@ -3807,14 +4342,16 @@
         },
         "security": [
           {
-            "JWTBearerAuth": []
+            "JWTBearerAuth": [ ]
           }
         ]
       }
     },
     "/api/v1/legendary-event-plans/{eventId}/annotations": {
       "put": {
-        "tags": ["Legendary-Event-Plans"],
+        "tags": [
+          "Legendary-Event-Plans"
+        ],
         "summary": "Sets or clears Maybe clear / Stop here marks on cells of one battle.",
         "description": "status maybeClear or stopHere marks every listed cell; null removes their marks. Other cells are untouched; a write that changes no cell succeeds without bumping the revision. Marks are stored whatever the synced progress says; the client applies one only to a cell not yet cleared.",
         "operationId": "TacticusPlannerApiFeaturesLegendaryEventPlansUpdateLegendaryEventAnnotationsEndpoint",
@@ -3902,14 +4439,16 @@
         },
         "security": [
           {
-            "JWTBearerAuth": []
+            "JWTBearerAuth": [ ]
           }
         ]
       }
     },
     "/api/v1/legendary-event-plans/{eventId}/run-records": {
       "get": {
-        "tags": ["Legendary-Event-Plans"],
+        "tags": [
+          "Legendary-Event-Plans"
+        ],
         "summary": "Reads a page of the caller's run records for a Legendary Event, newest first.",
         "description": "Records are written by player sync only and are ordered by startedAt then id, both descending. limit is 1–100 (default 20); after is the opaque nextAfter of the previous page, null on the last one. Records carry no roster: read it from .../run-records/{recordId}/roster. A current catalog event with no records reads as an empty page; an event that left the catalog keeps answering with its records.",
         "operationId": "TacticusPlannerApiFeaturesLegendaryEventPlansGetLegendaryEventRunRecordsEndpoint",
@@ -3926,7 +4465,10 @@
             "name": "limit",
             "in": "query",
             "schema": {
-              "type": ["null", "integer"],
+              "type": [
+                "null",
+                "integer"
+              ],
               "format": "int32"
             }
           },
@@ -3934,7 +4476,10 @@
             "name": "after",
             "in": "query",
             "schema": {
-              "type": ["null", "string"]
+              "type": [
+                "null",
+                "string"
+              ]
             }
           }
         ],
@@ -3992,14 +4537,16 @@
         },
         "security": [
           {
-            "JWTBearerAuth": []
+            "JWTBearerAuth": [ ]
           }
         ]
       }
     },
     "/api/v1/legendary-event-plans/{eventId}/run-records/{recordId}/roster": {
       "get": {
-        "tags": ["Legendary-Event-Plans"],
+        "tags": [
+          "Legendary-Event-Plans"
+        ],
         "summary": "Reads the roster snapshot of one of the caller's run records.",
         "description": "The whole owned roster as of the record's last progress. The ETag changes whenever a sync rewrites the roster; a matching If-None-Match answers 304.",
         "operationId": "TacticusPlannerApiFeaturesLegendaryEventPlansGetLegendaryEventRunRecordRosterEndpoint",
@@ -4068,14 +4615,16 @@
         },
         "security": [
           {
-            "JWTBearerAuth": []
+            "JWTBearerAuth": [ ]
           }
         ]
       }
     },
     "/api/v1/legendary-event-plans/{eventId}/runs/{run}": {
       "put": {
-        "tags": ["Legendary-Event-Plans"],
+        "tags": [
+          "Legendary-Event-Plans"
+        ],
         "summary": "Writes one run's inputs (missions, completed missions, bundle, close shards).",
         "description": "Upserts the given run (1–3) and leaves the other runs untouched. Completed mission arrays list distinct catalog indices, absent means none, and are stored ascending; each count must be at least its completed array's length. Values equal to the stored run, or all zero for a run with none, succeed without bumping the revision.",
         "operationId": "TacticusPlannerApiFeaturesLegendaryEventPlansUpdateLegendaryEventRunInputsEndpoint",
@@ -4171,14 +4720,16 @@
         },
         "security": [
           {
-            "JWTBearerAuth": []
+            "JWTBearerAuth": [ ]
           }
         ]
       }
     },
     "/api/v1/legendary-event-plans/{eventId}/teams": {
       "post": {
-        "tags": ["Legendary-Event-Plans"],
+        "tags": [
+          "Legendary-Event-Plans"
+        ],
         "summary": "Creates a team on a lane, appended after the lane's existing teams.",
         "description": "A non-null expectedBattleClears stores the depth for the given run only.",
         "operationId": "TacticusPlannerApiFeaturesLegendaryEventPlansCreateLegendaryEventTeamEndpoint",
@@ -4266,14 +4817,16 @@
         },
         "security": [
           {
-            "JWTBearerAuth": []
+            "JWTBearerAuth": [ ]
           }
         ]
       }
     },
     "/api/v1/legendary-event-plans/{eventId}/teams/order": {
       "put": {
-        "tags": ["Legendary-Event-Plans"],
+        "tags": [
+          "Legendary-Event-Plans"
+        ],
         "summary": "Replaces one lane's team order with the given complete id set.",
         "description": "Sending the current order succeeds without bumping the revision.",
         "operationId": "TacticusPlannerApiFeaturesLegendaryEventPlansUpdateLegendaryEventTeamOrderEndpoint",
@@ -4361,14 +4914,16 @@
         },
         "security": [
           {
-            "JWTBearerAuth": []
+            "JWTBearerAuth": [ ]
           }
         ]
       }
     },
     "/api/v1/legendary-event-plans/{eventId}/teams/{teamId}": {
       "put": {
-        "tags": ["Legendary-Event-Plans"],
+        "tags": [
+          "Legendary-Event-Plans"
+        ],
         "summary": "Replaces a team's name, members, objectives and the given run's clear depth.",
         "description": "The lane and order are kept (a body with laneId is rejected); a null expectedBattleClears deletes only the given run's depth.",
         "operationId": "TacticusPlannerApiFeaturesLegendaryEventPlansUpdateLegendaryEventTeamEndpoint",
@@ -4464,12 +5019,14 @@
         },
         "security": [
           {
-            "JWTBearerAuth": []
+            "JWTBearerAuth": [ ]
           }
         ]
       },
       "delete": {
-        "tags": ["Legendary-Event-Plans"],
+        "tags": [
+          "Legendary-Event-Plans"
+        ],
         "summary": "Deletes a team and re-densifies its lane's order.",
         "operationId": "TacticusPlannerApiFeaturesLegendaryEventPlansDeleteLegendaryEventTeamEndpoint",
         "parameters": [
@@ -4493,7 +5050,10 @@
             "name": "expectedRevision",
             "in": "query",
             "schema": {
-              "type": ["null", "integer"],
+              "type": [
+                "null",
+                "integer"
+              ],
               "format": "int64"
             }
           }
@@ -4562,14 +5122,16 @@
         },
         "security": [
           {
-            "JWTBearerAuth": []
+            "JWTBearerAuth": [ ]
           }
         ]
       }
     },
     "/api/v1/player-data-overrides/campaign-events-progress": {
       "get": {
-        "tags": ["Player-Data-Overrides"],
+        "tags": [
+          "Player-Data-Overrides"
+        ],
         "summary": "Gets manual campaign-event progress overrides.",
         "operationId": "TacticusPlannerApiFeaturesPlayerDataOverridesGetCampaignEventProgressEndpoint",
         "responses": {
@@ -4606,12 +5168,14 @@
         },
         "security": [
           {
-            "JWTBearerAuth": []
+            "JWTBearerAuth": [ ]
           }
         ]
       },
       "put": {
-        "tags": ["Player-Data-Overrides"],
+        "tags": [
+          "Player-Data-Overrides"
+        ],
         "summary": "Replaces manual campaign-event progress overrides.",
         "operationId": "TacticusPlannerApiFeaturesPlayerDataOverridesUpdateCampaignEventProgressEndpoint",
         "requestBody": {
@@ -4668,14 +5232,16 @@
         },
         "security": [
           {
-            "JWTBearerAuth": []
+            "JWTBearerAuth": [ ]
           }
         ]
       }
     },
     "/api/v1/player-data-overrides/onslaught-progress": {
       "get": {
-        "tags": ["Player-Data-Overrides"],
+        "tags": [
+          "Player-Data-Overrides"
+        ],
         "summary": "Gets the current profile's manual Onslaught progress.",
         "operationId": "TacticusPlannerApiFeaturesPlayerDataOverridesGetOnslaughtProgressEndpoint",
         "responses": {
@@ -4712,12 +5278,14 @@
         },
         "security": [
           {
-            "JWTBearerAuth": []
+            "JWTBearerAuth": [ ]
           }
         ]
       },
       "put": {
-        "tags": ["Player-Data-Overrides"],
+        "tags": [
+          "Player-Data-Overrides"
+        ],
         "summary": "Updates the current profile's manual Onslaught progress.",
         "operationId": "TacticusPlannerApiFeaturesPlayerDataOverridesUpdateOnslaughtProgressEndpoint",
         "requestBody": {
@@ -4774,14 +5342,16 @@
         },
         "security": [
           {
-            "JWTBearerAuth": []
+            "JWTBearerAuth": [ ]
           }
         ]
       }
     },
     "/api/v1/player-data/sync": {
       "post": {
-        "tags": ["Player-Data"],
+        "tags": [
+          "Player-Data"
+        ],
         "summary": "Syncs the authenticated user's player data from the Tacticus API.",
         "description": "Fetches the current player from the Tacticus API, transforms it into normalized chunks, and persists chunks whose canonical content hash changed. The game configuration hash is retained as metadata and does not suppress player-content updates.",
         "operationId": "TacticusPlannerApiFeaturesPlayerDataPlayerSyncEndpoint",
@@ -4859,14 +5429,16 @@
         },
         "security": [
           {
-            "JWTBearerAuth": []
+            "JWTBearerAuth": [ ]
           }
         ]
       }
     },
     "/api/v1/player-data/{chunk}": {
       "get": {
-        "tags": ["Player-Data"],
+        "tags": [
+          "Player-Data"
+        ],
         "summary": "Gets one player-data chunk for the authenticated user.",
         "description": "Chunk key must be one of the keys advertised by the player-data manifest.",
         "operationId": "TacticusPlannerApiFeaturesPlayerDataGetPlayerDataChunkEndpoint",
@@ -4937,14 +5509,16 @@
         },
         "security": [
           {
-            "JWTBearerAuth": []
+            "JWTBearerAuth": [ ]
           }
         ]
       }
     },
     "/api/v1/projects": {
       "post": {
-        "tags": ["Projects"],
+        "tags": [
+          "Projects"
+        ],
         "summary": "Creates a new project.",
         "operationId": "TacticusPlannerApiFeaturesProjectsCreateProjectEndpoint",
         "requestBody": {
@@ -5011,12 +5585,14 @@
         },
         "security": [
           {
-            "JWTBearerAuth": []
+            "JWTBearerAuth": [ ]
           }
         ]
       },
       "get": {
-        "tags": ["Projects"],
+        "tags": [
+          "Projects"
+        ],
         "summary": "Lists the authenticated user's projects.",
         "description": "Creates the default project ('My Goals') on first access, so this always returns at least one project. goalIds lists the member goals in global order: non-archived goals by default, only archived goals with ?archived=true (the selector filters goalIds, never the projects).",
         "operationId": "TacticusPlannerApiFeaturesProjectsListProjectsEndpoint",
@@ -5025,7 +5601,10 @@
             "name": "archived",
             "in": "query",
             "schema": {
-              "type": ["null", "boolean"]
+              "type": [
+                "null",
+                "boolean"
+              ]
             }
           }
         ],
@@ -5073,14 +5652,16 @@
         },
         "security": [
           {
-            "JWTBearerAuth": []
+            "JWTBearerAuth": [ ]
           }
         ]
       }
     },
     "/api/v1/projects/{projectId}": {
       "put": {
-        "tags": ["Projects"],
+        "tags": [
+          "Projects"
+        ],
         "summary": "Updates or archives a project.",
         "description": "An absent or null target clears it; archiving keeps it.",
         "operationId": "TacticusPlannerApiFeaturesProjectsUpdateProjectEndpoint",
@@ -5158,14 +5739,16 @@
         },
         "security": [
           {
-            "JWTBearerAuth": []
+            "JWTBearerAuth": [ ]
           }
         ]
       }
     },
     "/api/v1/projects/{projectId}/goal-order": {
       "put": {
-        "tags": ["Projects"],
+        "tags": [
+          "Projects"
+        ],
         "summary": "Moves a project goal onto the global position of another project goal.",
         "description": "Both goals must be in-flight members of the project. The move writes through to the account-wide order; it never changes membership, status or dependencies. ExpectedRevision is the order revision last read.",
         "operationId": "TacticusPlannerApiFeaturesProjectsUpdateProjectGoalOrderEndpoint",
@@ -5253,14 +5836,16 @@
         },
         "security": [
           {
-            "JWTBearerAuth": []
+            "JWTBearerAuth": [ ]
           }
         ]
       }
     },
     "/api/v1/projects/{projectId}/goals": {
       "put": {
-        "tags": ["Projects"],
+        "tags": [
+          "Projects"
+        ],
         "summary": "Replaces a project's goal membership.",
         "description": "Atomic: any rejection changes nothing. Never changes any goal's global priority, status or the goal-order revision. expectedGoalIds is the membership the client reviewed; it is compared with the current membership under the lock.",
         "operationId": "TacticusPlannerApiFeaturesProjectsUpdateProjectGoalsEndpoint",
@@ -5348,14 +5933,16 @@
         },
         "security": [
           {
-            "JWTBearerAuth": []
+            "JWTBearerAuth": [ ]
           }
         ]
       }
     },
     "/api/v1/settings": {
       "get": {
-        "tags": ["Settings"],
+        "tags": [
+          "Settings"
+        ],
         "summary": "Gets the current profile's user settings.",
         "operationId": "TacticusPlannerApiFeaturesUserSettingsGetUserSettingsEndpoint",
         "responses": {
@@ -5392,12 +5979,14 @@
         },
         "security": [
           {
-            "JWTBearerAuth": []
+            "JWTBearerAuth": [ ]
           }
         ]
       },
       "put": {
-        "tags": ["Settings"],
+        "tags": [
+          "Settings"
+        ],
         "summary": "Updates the current profile's user settings.",
         "operationId": "TacticusPlannerApiFeaturesUserSettingsUpdateUserSettingsEndpoint",
         "requestBody": {
@@ -5454,14 +6043,16 @@
         },
         "security": [
           {
-            "JWTBearerAuth": []
+            "JWTBearerAuth": [ ]
           }
         ]
       }
     },
     "/api/v1/userjot-token": {
       "get": {
-        "tags": ["Userjot-Token"],
+        "tags": [
+          "Userjot-Token"
+        ],
         "summary": "Issues a short-lived signed identity token for the UserJot feedback widget.",
         "description": "The token proves the caller's identity to UserJot's widget SDK (signed identity) so feedback and messages cannot be attributed to a spoofed identity from the browser. Each call returns a fresh token, valid for at most one hour.",
         "operationId": "TacticusPlannerApiFeaturesUserJotGetUserJotTokenEndpoint",
@@ -5509,7 +6100,7 @@
         },
         "security": [
           {
-            "JWTBearerAuth": []
+            "JWTBearerAuth": [ ]
           }
         ]
       }
@@ -5518,7 +6109,10 @@
   "components": {
     "schemas": {
       "AbilityEndTargetRequest": {
-        "required": ["activeEnd", "passiveEnd"],
+        "required": [
+          "activeEnd",
+          "passiveEnd"
+        ],
         "type": "object",
         "properties": {
           "activeEnd": {
@@ -5532,7 +6126,12 @@
         }
       },
       "AbilityTargetRequest": {
-        "required": ["activeStart", "activeEnd", "passiveStart", "passiveEnd"],
+        "required": [
+          "activeStart",
+          "activeEnd",
+          "passiveStart",
+          "passiveEnd"
+        ],
         "type": "object",
         "properties": {
           "activeStart": {
@@ -5554,7 +6153,12 @@
         }
       },
       "AbilityTargetResponse": {
-        "required": ["activeStart", "activeEnd", "passiveStart", "passiveEnd"],
+        "required": [
+          "activeStart",
+          "activeEnd",
+          "passiveStart",
+          "passiveEnd"
+        ],
         "type": "object",
         "properties": {
           "activeStart": {
@@ -5576,11 +6180,18 @@
         }
       },
       "AcquisitionSourceKind": {
-        "enum": ["Campaign", "Onslaught", "Shop"],
+        "enum": [
+          "Campaign",
+          "Onslaught",
+          "Shop"
+        ],
         "type": "string"
       },
       "AcquisitionSourceRequest": {
-        "required": ["kind", "ids"],
+        "required": [
+          "kind",
+          "ids"
+        ],
         "type": "object",
         "properties": {
           "kind": {
@@ -5592,7 +6203,10 @@
         }
       },
       "AcquisitionSourceResponse": {
-        "required": ["kind", "ids"],
+        "required": [
+          "kind",
+          "ids"
+        ],
         "type": "object",
         "properties": {
           "kind": {
@@ -5635,7 +6249,10 @@
             "type": "string"
           },
           "issueCode": {
-            "examples": ["validation", "goalRevisionStale"],
+            "examples": [
+              "validation",
+              "goalRevisionStale"
+            ],
             "type": "string"
           },
           "errors": {
@@ -5669,7 +6286,10 @@
             "type": "string"
           },
           "completedBattleCount": {
-            "type": ["null", "integer"],
+            "type": [
+              "null",
+              "integer"
+            ],
             "format": "int32"
           },
           "completedChallengeBattlesIds": {
@@ -5700,7 +6320,10 @@
             "type": "string"
           },
           "completedBattleCount": {
-            "type": ["null", "integer"],
+            "type": [
+              "null",
+              "integer"
+            ],
             "format": "int32"
           },
           "completedChallengeBattlesIds": {
@@ -5716,7 +6339,10 @@
         }
       },
       "CampaignEventProgressOverridesResponse": {
-        "required": ["progress", "revision"],
+        "required": [
+          "progress",
+          "revision"
+        ],
         "type": "object",
         "properties": {
           "progress": {
@@ -5729,7 +6355,11 @@
         }
       },
       "CombinedGoalSpec": {
-        "required": ["goalType", "config", "dependsOnIndex"],
+        "required": [
+          "goalType",
+          "config",
+          "dependsOnIndex"
+        ],
         "type": "object",
         "properties": {
           "goalType": {
@@ -5760,12 +6390,23 @@
                 "$ref": "#/components/schemas/ListOfGuid"
               }
             ]
+          },
+          "notes": {
+            "type": [
+              "null",
+              "string"
+            ]
           }
         },
         "additionalProperties": false
       },
       "CreateCombinedGoalsRequest": {
-        "required": ["entityType", "entityId", "projects", "goals"],
+        "required": [
+          "entityType",
+          "entityId",
+          "projects",
+          "goals"
+        ],
         "type": "object",
         "properties": {
           "entityType": {
@@ -5792,11 +6433,20 @@
           "startPaused": {
             "type": "boolean",
             "default": false
+          },
+          "position": {
+            "type": [
+              "null",
+              "integer"
+            ],
+            "format": "int32"
           }
         }
       },
       "CreateCombinedGoalsResponse": {
-        "required": ["goals"],
+        "required": [
+          "goals"
+        ],
         "type": "object",
         "properties": {
           "goals": {
@@ -5903,11 +6553,17 @@
             ]
           },
           "initialActiveAbilityLevel": {
-            "type": ["null", "integer"],
+            "type": [
+              "null",
+              "integer"
+            ],
             "format": "int32"
           },
           "initialPassiveAbilityLevel": {
-            "type": ["null", "integer"],
+            "type": [
+              "null",
+              "integer"
+            ],
             "format": "int32"
           },
           "initialRequirement": {
@@ -5961,7 +6617,10 @@
             "$ref": "#/components/schemas/IReadOnlyListOfString"
           },
           "reserveUnitId": {
-            "type": ["null", "string"]
+            "type": [
+              "null",
+              "string"
+            ]
           },
           "objectiveIndexes": {
             "$ref": "#/components/schemas/IReadOnlyListOfInt32"
@@ -5971,7 +6630,10 @@
             "format": "int32"
           },
           "expectedBattleClears": {
-            "type": ["null", "integer"],
+            "type": [
+              "null",
+              "integer"
+            ],
             "format": "int32"
           },
           "expectedBattleClearsSource": {
@@ -5987,7 +6649,11 @@
         }
       },
       "CreateProjectRequest": {
-        "required": ["name", "description", "color"],
+        "required": [
+          "name",
+          "description",
+          "color"
+        ],
         "type": "object",
         "properties": {
           "name": {
@@ -5998,12 +6664,18 @@
           "description": {
             "maxLength": 2000,
             "minLength": 0,
-            "type": ["null", "string"]
+            "type": [
+              "null",
+              "string"
+            ]
           },
           "color": {
             "maxLength": 16,
             "minLength": 0,
-            "type": ["null", "string"]
+            "type": [
+              "null",
+              "string"
+            ]
           },
           "target": {
             "oneOf": [
@@ -6034,19 +6706,31 @@
             "format": "uuid"
           },
           "displayName": {
-            "type": ["null", "string"]
+            "type": [
+              "null",
+              "string"
+            ]
           },
           "suggestedDisplayName": {
-            "type": ["null", "string"]
+            "type": [
+              "null",
+              "string"
+            ]
           },
           "hasCompletedOnboarding": {
             "type": "boolean"
           },
           "tacticusApiKeyMasked": {
-            "type": ["null", "string"]
+            "type": [
+              "null",
+              "string"
+            ]
           },
           "tacticusUserIdMasked": {
-            "type": ["null", "string"]
+            "type": [
+              "null",
+              "string"
+            ]
           },
           "analyticsId": {
             "type": "string"
@@ -6054,7 +6738,10 @@
         }
       },
       "EditGoalPriorityRequest": {
-        "required": ["position", "expectedOrderRevision"],
+        "required": [
+          "position",
+          "expectedOrderRevision"
+        ],
         "type": "object",
         "properties": {
           "position": {
@@ -6113,7 +6800,10 @@
         }
       },
       "EditGoalResponse": {
-        "required": ["goal", "order"],
+        "required": [
+          "goal",
+          "order"
+        ],
         "type": "object",
         "properties": {
           "goal": {
@@ -6158,11 +6848,20 @@
         "description": "the dto used to send an error response to the client"
       },
       "FarmingStrategy": {
-        "enum": ["TotalUpgrades", "EveryStep", "Milestones", "MajorMilestones"],
+        "enum": [
+          "TotalUpgrades",
+          "EveryStep",
+          "Milestones",
+          "MajorMilestones"
+        ],
         "type": "string"
       },
       "GameCatalogAbilityPowerCurves": {
-        "required": ["active", "passive", "relic"],
+        "required": [
+          "active",
+          "passive",
+          "relic"
+        ],
         "type": "object",
         "properties": {
           "active": {
@@ -6177,7 +6876,10 @@
         }
       },
       "GameCatalogAbilityPowerModifier": {
-        "required": ["abilityId", "modifier"],
+        "required": [
+          "abilityId",
+          "modifier"
+        ],
         "type": "object",
         "properties": {
           "abilityId": {
@@ -6190,7 +6892,10 @@
         }
       },
       "GameCatalogAmountByRarity": {
-        "required": ["rarity", "amount"],
+        "required": [
+          "rarity",
+          "amount"
+        ],
         "type": "object",
         "properties": {
           "rarity": {
@@ -6228,7 +6933,10 @@
             "format": "int32"
           },
           "orbRarity": {
-            "type": ["null", "string"]
+            "type": [
+              "null",
+              "string"
+            ]
           }
         }
       },
@@ -6350,7 +7058,13 @@
         }
       },
       "GameCatalogCampaignDetailedEnemy": {
-        "required": ["id", "name", "count", "stars", "rank"],
+        "required": [
+          "id",
+          "name",
+          "count",
+          "stars",
+          "rank"
+        ],
         "type": "object",
         "properties": {
           "id": {
@@ -6373,7 +7087,11 @@
         }
       },
       "GameCatalogCampaignGuaranteedReward": {
-        "required": ["id", "min", "max"],
+        "required": [
+          "id",
+          "min",
+          "max"
+        ],
         "type": "object",
         "properties": {
           "id": {
@@ -6404,27 +7122,45 @@
             "type": "string"
           },
           "chanceId": {
-            "type": ["null", "string"]
+            "type": [
+              "null",
+              "string"
+            ]
           },
           "rewardKind": {
-            "type": ["null", "string"]
+            "type": [
+              "null",
+              "string"
+            ]
           },
           "numerator": {
-            "type": ["null", "integer"],
+            "type": [
+              "null",
+              "integer"
+            ],
             "format": "int32"
           },
           "denominator": {
-            "type": ["null", "integer"],
+            "type": [
+              "null",
+              "integer"
+            ],
             "format": "int32"
           },
           "effectiveRate": {
-            "type": ["null", "number"],
+            "type": [
+              "null",
+              "number"
+            ],
             "format": "double"
           }
         }
       },
       "GameCatalogCampaignRewardsView": {
-        "required": ["guaranteed", "potential"],
+        "required": [
+          "guaranteed",
+          "potential"
+        ],
         "type": "object",
         "properties": {
           "guaranteed": {
@@ -6436,7 +7172,11 @@
         }
       },
       "GameCatalogCharacterAbilityCostView": {
-        "required": ["level", "gold", "badges"],
+        "required": [
+          "level",
+          "gold",
+          "badges"
+        ],
         "type": "object",
         "properties": {
           "level": {
@@ -6453,7 +7193,10 @@
         }
       },
       "GameCatalogCharacterRankUp": {
-        "required": ["rank", "upgradeIds"],
+        "required": [
+          "rank",
+          "upgradeIds"
+        ],
         "type": "object",
         "properties": {
           "rank": {
@@ -6527,14 +7270,23 @@
             "format": "int32"
           },
           "rangedDamage": {
-            "type": ["null", "string"]
+            "type": [
+              "null",
+              "string"
+            ]
           },
           "rangedHits": {
-            "type": ["null", "integer"],
+            "type": [
+              "null",
+              "integer"
+            ],
             "format": "int32"
           },
           "rangeDistance": {
-            "type": ["null", "integer"],
+            "type": [
+              "null",
+              "integer"
+            ],
             "format": "int32"
           },
           "movement": {
@@ -6571,7 +7323,10 @@
         }
       },
       "GameCatalogDamageProfileModifier": {
-        "required": ["damageType", "modifier"],
+        "required": [
+          "damageType",
+          "modifier"
+        ],
         "type": "object",
         "properties": {
           "damageType": {
@@ -6580,6 +7335,26 @@
           "modifier": {
             "type": "integer",
             "format": "int32"
+          }
+        }
+      },
+      "GameCatalogDamageType": {
+        "required": [
+          "id",
+          "piercingRatio",
+          "traits"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "piercingRatio": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "traits": {
+            "$ref": "#/components/schemas/IReadOnlyListOfString"
           }
         }
       },
@@ -6927,6 +7702,49 @@
           }
         }
       },
+      "GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogDamageType": {
+        "required": [
+          "version",
+          "schemaVersion",
+          "gameVersion",
+          "sourceHash",
+          "datasetKey",
+          "datasetHash",
+          "data"
+        ],
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "string"
+          },
+          "schemaVersion": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "gameVersion": {
+            "type": "string"
+          },
+          "sourceHash": {
+            "type": "string"
+          },
+          "datasetKey": {
+            "type": "string"
+          },
+          "datasetHash": {
+            "type": "string"
+          },
+          "data": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/IReadOnlyListOfGameCatalogDamageType"
+              }
+            ]
+          }
+        }
+      },
       "GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogEquipmentView": {
         "required": [
           "version",
@@ -7008,6 +7826,92 @@
               },
               {
                 "$ref": "#/components/schemas/IReadOnlyListOfGameCatalogEventDefinition"
+              }
+            ]
+          }
+        }
+      },
+      "GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogFaction": {
+        "required": [
+          "version",
+          "schemaVersion",
+          "gameVersion",
+          "sourceHash",
+          "datasetKey",
+          "datasetHash",
+          "data"
+        ],
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "string"
+          },
+          "schemaVersion": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "gameVersion": {
+            "type": "string"
+          },
+          "sourceHash": {
+            "type": "string"
+          },
+          "datasetKey": {
+            "type": "string"
+          },
+          "datasetHash": {
+            "type": "string"
+          },
+          "data": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/IReadOnlyListOfGameCatalogFaction"
+              }
+            ]
+          }
+        }
+      },
+      "GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogGlobalValues": {
+        "required": [
+          "version",
+          "schemaVersion",
+          "gameVersion",
+          "sourceHash",
+          "datasetKey",
+          "datasetHash",
+          "data"
+        ],
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "string"
+          },
+          "schemaVersion": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "gameVersion": {
+            "type": "string"
+          },
+          "sourceHash": {
+            "type": "string"
+          },
+          "datasetKey": {
+            "type": "string"
+          },
+          "datasetHash": {
+            "type": "string"
+          },
+          "data": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/IReadOnlyListOfGameCatalogGlobalValues"
               }
             ]
           }
@@ -7357,6 +8261,49 @@
           }
         }
       },
+      "GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogProgressionRules": {
+        "required": [
+          "version",
+          "schemaVersion",
+          "gameVersion",
+          "sourceHash",
+          "datasetKey",
+          "datasetHash",
+          "data"
+        ],
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "string"
+          },
+          "schemaVersion": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "gameVersion": {
+            "type": "string"
+          },
+          "sourceHash": {
+            "type": "string"
+          },
+          "datasetKey": {
+            "type": "string"
+          },
+          "datasetHash": {
+            "type": "string"
+          },
+          "data": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/IReadOnlyListOfGameCatalogProgressionRules"
+              }
+            ]
+          }
+        }
+      },
       "GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogQuestCrate": {
         "required": [
           "version",
@@ -7616,7 +8563,9 @@
         }
       },
       "GameCatalogEquipmentLevel": {
-        "required": ["stats"],
+        "required": [
+          "stats"
+        ],
         "type": "object",
         "properties": {
           "stats": {
@@ -7625,7 +8574,10 @@
         }
       },
       "GameCatalogEquipmentSlot": {
-        "required": ["slot", "equipmentIds"],
+        "required": [
+          "slot",
+          "equipmentIds"
+        ],
         "type": "object",
         "properties": {
           "slot": {
@@ -7637,7 +8589,11 @@
         }
       },
       "GameCatalogEquipmentUpgradeLevel": {
-        "required": ["goldCost", "salvageCost", "mythicSalvageCost"],
+        "required": [
+          "goldCost",
+          "salvageCost",
+          "mythicSalvageCost"
+        ],
         "type": "object",
         "properties": {
           "goldCost": {
@@ -7740,22 +8696,36 @@
         }
       },
       "GameCatalogEventRecurrence": {
-        "required": ["kind", "intervalDays", "durationDays", "anchorUtc"],
+        "required": [
+          "kind",
+          "intervalDays",
+          "durationDays",
+          "anchorUtc"
+        ],
         "type": "object",
         "properties": {
           "kind": {
             "type": "string"
           },
           "intervalDays": {
-            "type": ["null", "integer"],
+            "type": [
+              "null",
+              "integer"
+            ],
             "format": "int32"
           },
           "durationDays": {
-            "type": ["null", "integer"],
+            "type": [
+              "null",
+              "integer"
+            ],
             "format": "int32"
           },
           "anchorUtc": {
-            "type": ["null", "string"],
+            "type": [
+              "null",
+              "string"
+            ],
             "format": "date-time"
           }
         }
@@ -7772,7 +8742,10 @@
         "type": "object",
         "properties": {
           "occurrenceId": {
-            "type": ["null", "string"]
+            "type": [
+              "null",
+              "string"
+            ]
           },
           "definitionId": {
             "type": "string"
@@ -7797,6 +8770,29 @@
                 "$ref": "#/components/schemas/IReadOnlyDictionaryOfStringAndJsonElement"
               }
             ]
+          }
+        }
+      },
+      "GameCatalogFaction": {
+        "required": [
+          "id",
+          "alliance",
+          "unlockDateUtc",
+          "collectionFaction"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "alliance": {
+            "type": "string"
+          },
+          "unlockDateUtc": {
+            "type": "string"
+          },
+          "collectionFaction": {
+            "type": "boolean"
           }
         }
       },
@@ -7828,31 +8824,135 @@
             "type": "boolean"
           },
           "chanceId": {
-            "type": ["null", "string"]
+            "type": [
+              "null",
+              "string"
+            ]
           },
           "numerator": {
-            "type": ["null", "integer"],
+            "type": [
+              "null",
+              "integer"
+            ],
             "format": "int32"
           },
           "denominator": {
-            "type": ["null", "integer"],
+            "type": [
+              "null",
+              "integer"
+            ],
             "format": "int32"
           },
           "effectiveRate": {
-            "type": ["null", "number"],
+            "type": [
+              "null",
+              "number"
+            ],
             "format": "double"
           },
           "isMythic": {
             "type": "boolean"
           },
           "expectedGold": {
-            "type": ["null", "number"],
+            "type": [
+              "null",
+              "number"
+            ],
             "format": "double"
           }
         }
       },
+      "GameCatalogGlobalValues": {
+        "required": [
+          "maxStamina",
+          "staminaRegenerationTime",
+          "staminaRegenerationAmount",
+          "wavesMaxStamina",
+          "wavesStaminaRegenerationTime",
+          "wavesStaminaRegenerationAmount",
+          "campaignLevelMaxStamina",
+          "campaignLevelStaminaRegenerationTime",
+          "campaignLevelStaminaRegenerationAmount",
+          "minUnitsNeededForBattle",
+          "maxUnitsPossibleForBattle",
+          "terrifyingBonus",
+          "battleFatigueFleeChance",
+          "battleFatigueFleeChanceOverkill",
+          "traitVariables",
+          "staminaShopTiers"
+        ],
+        "type": "object",
+        "properties": {
+          "maxStamina": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "staminaRegenerationTime": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "staminaRegenerationAmount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "wavesMaxStamina": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "wavesStaminaRegenerationTime": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "wavesStaminaRegenerationAmount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "campaignLevelMaxStamina": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "campaignLevelStaminaRegenerationTime": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "campaignLevelStaminaRegenerationAmount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "minUnitsNeededForBattle": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "maxUnitsPossibleForBattle": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "terrifyingBonus": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "battleFatigueFleeChance": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "battleFatigueFleeChanceOverkill": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "traitVariables": {
+            "$ref": "#/components/schemas/IReadOnlyDictionaryOfStringAndJsonElement"
+          },
+          "staminaShopTiers": {
+            "$ref": "#/components/schemas/IReadOnlyListOfGameCatalogStaminaShopTier"
+          }
+        }
+      },
       "GameCatalogGuildRaidMetaBossView": {
-        "required": ["bossUnitSetId", "primeUnitSetIds", "recommendations"],
+        "required": [
+          "bossUnitSetId",
+          "primeUnitSetIds",
+          "recommendations"
+        ],
         "type": "object",
         "properties": {
           "bossUnitSetId": {
@@ -7917,7 +9017,10 @@
         }
       },
       "GameCatalogGuildRaidMetaPrimeView": {
-        "required": ["primeUnitSetId", "recommendations"],
+        "required": [
+          "primeUnitSetId",
+          "recommendations"
+        ],
         "type": "object",
         "properties": {
           "primeUnitSetId": {
@@ -7965,7 +9068,13 @@
         }
       },
       "GameCatalogGuildRaidMetaView": {
-        "required": ["sourceId", "updatedOn", "comps", "bosses", "primes"],
+        "required": [
+          "sourceId",
+          "updatedOn",
+          "comps",
+          "bosses",
+          "primes"
+        ],
         "type": "object",
         "properties": {
           "sourceId": {
@@ -7986,7 +9095,11 @@
         }
       },
       "GameCatalogHeroPowerStep": {
-        "required": ["step", "unitStatMultiplierPct", "abilityPowerMultiplier"],
+        "required": [
+          "step",
+          "unitStatMultiplierPct",
+          "abilityPowerMultiplier"
+        ],
         "type": "object",
         "properties": {
           "step": {
@@ -8003,8 +9116,63 @@
           }
         }
       },
+      "GameCatalogHeroProgressionRule": {
+        "required": [
+          "step",
+          "progression",
+          "rarity",
+          "stars",
+          "maxXpLevel",
+          "maxRank",
+          "unitStatMultiplierPct",
+          "abilityStatMultiplierPct",
+          "hreShards"
+        ],
+        "type": "object",
+        "properties": {
+          "step": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "progression": {
+            "type": "string"
+          },
+          "rarity": {
+            "type": "string"
+          },
+          "stars": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "maxXpLevel": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "maxRank": {
+            "type": "string"
+          },
+          "unitStatMultiplierPct": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "abilityStatMultiplierPct": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "hreShards": {
+            "type": [
+              "null",
+              "integer"
+            ],
+            "format": "int32"
+          }
+        }
+      },
       "GameCatalogHordeModeCharacter": {
-        "required": ["unitId", "tier"],
+        "required": [
+          "unitId",
+          "tier"
+        ],
         "type": "object",
         "properties": {
           "unitId": {
@@ -8014,7 +9182,10 @@
             "type": "string"
           },
           "multiplier": {
-            "type": ["null", "number"],
+            "type": [
+              "null",
+              "number"
+            ],
             "format": "double"
           },
           "synergies": {
@@ -8040,7 +9211,10 @@
         }
       },
       "GameCatalogHordeModeRelic": {
-        "required": ["equipmentId", "multiplier"],
+        "required": [
+          "equipmentId",
+          "multiplier"
+        ],
         "type": "object",
         "properties": {
           "equipmentId": {
@@ -8053,7 +9227,10 @@
         }
       },
       "GameCatalogHordeModeTier": {
-        "required": ["tier", "multiplier"],
+        "required": [
+          "tier",
+          "multiplier"
+        ],
         "type": "object",
         "properties": {
           "tier": {
@@ -8066,7 +9243,11 @@
         }
       },
       "GameCatalogHordeModeTiers": {
-        "required": ["id", "tiers", "characters"],
+        "required": [
+          "id",
+          "tiers",
+          "characters"
+        ],
         "type": "object",
         "properties": {
           "id": {
@@ -8127,7 +9308,10 @@
         }
       },
       "GameCatalogLreChestsMilestone": {
-        "required": ["chestLevel", "engramCost"],
+        "required": [
+          "chestLevel",
+          "engramCost"
+        ],
         "type": "object",
         "properties": {
           "chestLevel": {
@@ -8141,7 +9325,11 @@
         }
       },
       "GameCatalogLreEnemy": {
-        "required": ["id", "ladderIndex", "count"],
+        "required": [
+          "id",
+          "ladderIndex",
+          "count"
+        ],
         "type": "object",
         "properties": {
           "id": {
@@ -8158,7 +9346,11 @@
         }
       },
       "GameCatalogLreFilter": {
-        "required": ["kind", "target", "exclude"],
+        "required": [
+          "kind",
+          "target",
+          "exclude"
+        ],
         "type": "object",
         "properties": {
           "kind": {
@@ -8197,16 +9389,28 @@
             "format": "int32"
           },
           "faction": {
-            "type": ["null", "string"]
+            "type": [
+              "null",
+              "string"
+            ]
           },
           "alliance": {
-            "type": ["null", "string"]
+            "type": [
+              "null",
+              "string"
+            ]
           },
           "damageType": {
-            "type": ["null", "string"]
+            "type": [
+              "null",
+              "string"
+            ]
           },
           "trait": {
-            "type": ["null", "string"]
+            "type": [
+              "null",
+              "string"
+            ]
           },
           "text": {
             "type": "string"
@@ -8214,7 +9418,11 @@
         }
       },
       "GameCatalogLrePointsMilestone": {
-        "required": ["milestone", "cumulativePoints", "engramPayout"],
+        "required": [
+          "milestone",
+          "cumulativePoints",
+          "engramPayout"
+        ],
         "type": "object",
         "properties": {
           "milestone": {
@@ -8269,7 +9477,12 @@
         }
       },
       "GameCatalogLreRestriction": {
-        "required": ["name", "points", "index", "filter"],
+        "required": [
+          "name",
+          "points",
+          "index",
+          "filter"
+        ],
         "type": "object",
         "properties": {
           "name": {
@@ -8313,7 +9526,10 @@
         }
       },
       "GameCatalogLreTrackEnemies": {
-        "required": ["label", "link"],
+        "required": [
+          "label",
+          "link"
+        ],
         "type": "object",
         "properties": {
           "label": {
@@ -8422,7 +9638,11 @@
         }
       },
       "GameCatalogLreWave": {
-        "required": ["round", "power", "enemies"],
+        "required": [
+          "round",
+          "power",
+          "enemies"
+        ],
         "type": "object",
         "properties": {
           "round": {
@@ -8467,7 +9687,11 @@
         }
       },
       "GameCatalogManifestDataset": {
-        "required": ["key", "hash", "url"],
+        "required": [
+          "key",
+          "hash",
+          "url"
+        ],
         "type": "object",
         "properties": {
           "key": {
@@ -8527,7 +9751,10 @@
         }
       },
       "GameCatalogMowAbility": {
-        "required": ["name", "recipes"],
+        "required": [
+          "name",
+          "recipes"
+        ],
         "type": "object",
         "properties": {
           "name": {
@@ -8539,7 +9766,9 @@
         }
       },
       "GameCatalogMowMythicAbility": {
-        "required": ["name"],
+        "required": [
+          "name"
+        ],
         "type": "object",
         "properties": {
           "name": {
@@ -8548,7 +9777,11 @@
         }
       },
       "GameCatalogMowPowerStep": {
-        "required": ["step", "abilityPowerMultiplier", "mythicAbilityPower"],
+        "required": [
+          "step",
+          "abilityPowerMultiplier",
+          "mythicAbilityPower"
+        ],
         "type": "object",
         "properties": {
           "step": {
@@ -8561,6 +9794,49 @@
           },
           "mythicAbilityPower": {
             "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "GameCatalogMowProgressionRule": {
+        "required": [
+          "step",
+          "progression",
+          "rarity",
+          "stars",
+          "maxAbilityLevel",
+          "abilityStatMultiplierPct",
+          "mythicAbilityStatMultiplierPct"
+        ],
+        "type": "object",
+        "properties": {
+          "step": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "progression": {
+            "type": "string"
+          },
+          "rarity": {
+            "type": "string"
+          },
+          "stars": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "maxAbilityLevel": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "abilityStatMultiplierPct": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "mythicAbilityStatMultiplierPct": {
+            "type": [
+              "null",
+              "integer"
+            ],
             "format": "int32"
           }
         }
@@ -8608,7 +9884,10 @@
         }
       },
       "GameCatalogMythicQuestRewardView": {
-        "required": ["type", "amount"],
+        "required": [
+          "type",
+          "amount"
+        ],
         "type": "object",
         "properties": {
           "type": {
@@ -8619,21 +9898,36 @@
             "format": "int32"
           },
           "unitId": {
-            "type": ["null", "string"]
+            "type": [
+              "null",
+              "string"
+            ]
           },
           "rarity": {
-            "type": ["null", "string"]
+            "type": [
+              "null",
+              "string"
+            ]
           },
           "alliance": {
-            "type": ["null", "string"]
+            "type": [
+              "null",
+              "string"
+            ]
           },
           "equipmentId": {
-            "type": ["null", "string"]
+            "type": [
+              "null",
+              "string"
+            ]
           }
         }
       },
       "GameCatalogMythicQuestsView": {
-        "required": ["unitId", "quests"],
+        "required": [
+          "unitId",
+          "quests"
+        ],
         "type": "object",
         "properties": {
           "unitId": {
@@ -8645,7 +9939,11 @@
         }
       },
       "GameCatalogMythicQuestTaskView": {
-        "required": ["locaKey", "target", "parameters"],
+        "required": [
+          "locaKey",
+          "target",
+          "parameters"
+        ],
         "type": "object",
         "properties": {
           "locaKey": {
@@ -8661,7 +9959,11 @@
         }
       },
       "GameCatalogMythicQuestView": {
-        "required": ["number", "tasks", "rewards"],
+        "required": [
+          "number",
+          "tasks",
+          "rewards"
+        ],
         "type": "object",
         "properties": {
           "number": {
@@ -8721,14 +10023,23 @@
             "format": "int32"
           },
           "rangedDamage": {
-            "type": ["null", "string"]
+            "type": [
+              "null",
+              "string"
+            ]
           },
           "rangedHits": {
-            "type": ["null", "integer"],
+            "type": [
+              "null",
+              "integer"
+            ],
             "format": "int32"
           },
           "distance": {
-            "type": ["null", "integer"],
+            "type": [
+              "null",
+              "integer"
+            ],
             "format": "int32"
           },
           "movement": {
@@ -8798,7 +10109,14 @@
         }
       },
       "GameCatalogOnslaughtReward": {
-        "required": ["id", "sector", "tier", "regular", "mythic", "badges"],
+        "required": [
+          "id",
+          "sector",
+          "tier",
+          "regular",
+          "mythic",
+          "badges"
+        ],
         "type": "object",
         "properties": {
           "id": {
@@ -8822,6 +10140,33 @@
           }
         }
       },
+      "GameCatalogProgressionRules": {
+        "required": [
+          "xpLevels",
+          "xpBooks",
+          "upgradeSlots",
+          "heroProgressionSteps",
+          "mowProgressionSteps"
+        ],
+        "type": "object",
+        "properties": {
+          "xpLevels": {
+            "$ref": "#/components/schemas/IReadOnlyListOfInt32"
+          },
+          "xpBooks": {
+            "$ref": "#/components/schemas/IReadOnlyListOfGameCatalogXpBook"
+          },
+          "upgradeSlots": {
+            "$ref": "#/components/schemas/IReadOnlyListOfGameCatalogUpgradeSlotRank"
+          },
+          "heroProgressionSteps": {
+            "$ref": "#/components/schemas/IReadOnlyListOfGameCatalogHeroProgressionRule"
+          },
+          "mowProgressionSteps": {
+            "$ref": "#/components/schemas/IReadOnlyListOfGameCatalogMowProgressionRule"
+          }
+        }
+      },
       "GameCatalogQuestBattleView": {
         "required": [
           "number",
@@ -8831,7 +10176,6 @@
           "boardId",
           "spawnPointsSet",
           "lightningVictoryTurns",
-          "power",
           "enemies",
           "objectives",
           "loot"
@@ -8864,10 +10208,6 @@
             "type": "integer",
             "format": "int32"
           },
-          "power": {
-            "type": ["null", "integer"],
-            "format": "int32"
-          },
           "enemies": {
             "$ref": "#/components/schemas/IReadOnlyListOfGameCatalogQuestEnemyView"
           },
@@ -8880,7 +10220,11 @@
         }
       },
       "GameCatalogQuestCrate": {
-        "required": ["number", "points", "rewards"],
+        "required": [
+          "number",
+          "points",
+          "rewards"
+        ],
         "type": "object",
         "properties": {
           "number": {
@@ -8897,7 +10241,13 @@
         }
       },
       "GameCatalogQuestCrateReward": {
-        "required": ["type", "min", "max", "rarity", "maxRarity"],
+        "required": [
+          "type",
+          "min",
+          "max",
+          "rarity",
+          "maxRarity"
+        ],
         "type": "object",
         "properties": {
           "type": {
@@ -8912,15 +10262,25 @@
             "format": "int32"
           },
           "rarity": {
-            "type": ["null", "string"]
+            "type": [
+              "null",
+              "string"
+            ]
           },
           "maxRarity": {
-            "type": ["null", "string"]
+            "type": [
+              "null",
+              "string"
+            ]
           }
         }
       },
       "GameCatalogQuestEnemyView": {
-        "required": ["id", "ladderIndex", "count"],
+        "required": [
+          "id",
+          "ladderIndex",
+          "count"
+        ],
         "type": "object",
         "properties": {
           "id": {
@@ -8960,7 +10320,11 @@
         }
       },
       "GameCatalogQuestLootView": {
-        "required": ["upgradeId", "chanceNumerator", "chanceDenominator"],
+        "required": [
+          "upgradeId",
+          "chanceNumerator",
+          "chanceDenominator"
+        ],
         "type": "object",
         "properties": {
           "upgradeId": {
@@ -8977,14 +10341,21 @@
         }
       },
       "GameCatalogQuestObjectiveView": {
-        "required": ["type", "target", "score"],
+        "required": [
+          "type",
+          "target",
+          "score"
+        ],
         "type": "object",
         "properties": {
           "type": {
             "type": "string"
           },
           "target": {
-            "type": ["null", "string"]
+            "type": [
+              "null",
+              "string"
+            ]
           },
           "score": {
             "type": "integer",
@@ -9017,7 +10388,10 @@
             "type": "string"
           },
           "subtarget": {
-            "type": ["null", "string"]
+            "type": [
+              "null",
+              "string"
+            ]
           },
           "amount": {
             "type": "number",
@@ -9062,7 +10436,10 @@
             "format": "int32"
           },
           "bossType": {
-            "type": ["null", "string"]
+            "type": [
+              "null",
+              "string"
+            ]
           },
           "fieldNpcIds": {
             "$ref": "#/components/schemas/IReadOnlyListOfString"
@@ -9076,7 +10453,12 @@
         }
       },
       "GameCatalogRaidBossesView": {
-        "required": ["seasonConfigRotation", "bosses", "primes", "seasons"],
+        "required": [
+          "seasonConfigRotation",
+          "bosses",
+          "primes",
+          "seasons"
+        ],
         "type": "object",
         "properties": {
           "seasonConfigRotation": {
@@ -9094,7 +10476,10 @@
         }
       },
       "GameCatalogRaidBossSeasonView": {
-        "required": ["seasonConfigId", "tiers"],
+        "required": [
+          "seasonConfigId",
+          "tiers"
+        ],
         "type": "object",
         "properties": {
           "seasonConfigId": {
@@ -9106,7 +10491,12 @@
         }
       },
       "GameCatalogRaidBossSetView": {
-        "required": ["set", "chestId", "guildXp", "encounters"],
+        "required": [
+          "set",
+          "chestId",
+          "guildXp",
+          "encounters"
+        ],
         "type": "object",
         "properties": {
           "set": {
@@ -9175,29 +10565,47 @@
             "format": "int32"
           },
           "relicAbilityLevel": {
-            "type": ["null", "integer"],
+            "type": [
+              "null",
+              "integer"
+            ],
             "format": "int32"
           },
           "blockChance": {
-            "type": ["null", "number"],
+            "type": [
+              "null",
+              "number"
+            ],
             "format": "double"
           },
           "blockDamage": {
-            "type": ["null", "number"],
+            "type": [
+              "null",
+              "number"
+            ],
             "format": "double"
           },
           "critChance": {
-            "type": ["null", "number"],
+            "type": [
+              "null",
+              "number"
+            ],
             "format": "double"
           },
           "critDamage": {
-            "type": ["null", "number"],
+            "type": [
+              "null",
+              "number"
+            ],
             "format": "double"
           }
         }
       },
       "GameCatalogRaidBossTierView": {
-        "required": ["tier", "sets"],
+        "required": [
+          "tier",
+          "sets"
+        ],
         "type": "object",
         "properties": {
           "tier": {
@@ -9296,12 +10704,19 @@
             ]
           },
           "questUnitId": {
-            "type": ["null", "string"]
+            "type": [
+              "null",
+              "string"
+            ]
           }
         }
       },
       "GameCatalogRaidBossWeaponView": {
-        "required": ["hits", "damageProfile", "range"],
+        "required": [
+          "hits",
+          "damageProfile",
+          "range"
+        ],
         "type": "object",
         "properties": {
           "hits": {
@@ -9312,13 +10727,19 @@
             "type": "string"
           },
           "range": {
-            "type": ["null", "number"],
+            "type": [
+              "null",
+              "number"
+            ],
             "format": "double"
           }
         }
       },
       "GameCatalogRewardRange": {
-        "required": ["min", "max"],
+        "required": [
+          "min",
+          "max"
+        ],
         "type": "object",
         "properties": {
           "min": {
@@ -9336,7 +10757,10 @@
         }
       },
       "GameCatalogShopCostView": {
-        "required": ["currency", "amount"],
+        "required": [
+          "currency",
+          "amount"
+        ],
         "type": "object",
         "properties": {
           "currency": {
@@ -9349,7 +10773,10 @@
         }
       },
       "GameCatalogShopRefreshCostView": {
-        "required": ["resourceType", "amount"],
+        "required": [
+          "resourceType",
+          "amount"
+        ],
         "type": "object",
         "properties": {
           "resourceType": {
@@ -9362,7 +10789,10 @@
         }
       },
       "GameCatalogShopRewardView": {
-        "required": ["type", "qty"],
+        "required": [
+          "type",
+          "qty"
+        ],
         "type": "object",
         "properties": {
           "type": {
@@ -9375,7 +10805,9 @@
         }
       },
       "GameCatalogShopSlotView": {
-        "required": ["variants"],
+        "required": [
+          "variants"
+        ],
         "type": "object",
         "properties": {
           "variants": {
@@ -9402,7 +10834,10 @@
             "$ref": "#/components/schemas/GameCatalogShopRewardView"
           },
           "unitId": {
-            "type": ["null", "string"]
+            "type": [
+              "null",
+              "string"
+            ]
           },
           "freeOffer": {
             "oneOf": [
@@ -9422,22 +10857,34 @@
             "format": "int32"
           },
           "weight": {
-            "type": ["null", "number"],
+            "type": [
+              "null",
+              "number"
+            ],
             "format": "double"
           },
           "days": {
             "$ref": "#/components/schemas/IReadOnlyListOfString"
           },
           "minPowerLevel": {
-            "type": ["null", "integer"],
+            "type": [
+              "null",
+              "integer"
+            ],
             "format": "int32"
           },
           "maxPowerLevel": {
-            "type": ["null", "integer"],
+            "type": [
+              "null",
+              "integer"
+            ],
             "format": "int32"
           },
           "lockId": {
-            "type": ["null", "string"]
+            "type": [
+              "null",
+              "string"
+            ]
           }
         }
       },
@@ -9480,8 +10927,37 @@
           }
         }
       },
+      "GameCatalogStaminaShopTier": {
+        "required": [
+          "productId",
+          "stamina",
+          "raidTickets",
+          "gems"
+        ],
+        "type": "object",
+        "properties": {
+          "productId": {
+            "type": "string"
+          },
+          "stamina": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "raidTickets": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "gems": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
       "GameCatalogTraitPowerModifier": {
-        "required": ["traitId", "modifier"],
+        "required": [
+          "traitId",
+          "modifier"
+        ],
         "type": "object",
         "properties": {
           "traitId": {
@@ -9533,7 +11009,11 @@
         }
       },
       "GameCatalogUnitPowerUnit": {
-        "required": ["unitId", "powerMultiplier", "rankUpStatIncreases"],
+        "required": [
+          "unitId",
+          "powerMultiplier",
+          "rankUpStatIncreases"
+        ],
         "type": "object",
         "properties": {
           "unitId": {
@@ -9549,7 +11029,10 @@
         }
       },
       "GameCatalogUnlockShardCostView": {
-        "required": ["rarity", "shards"],
+        "required": [
+          "rarity",
+          "shards"
+        ],
         "type": "object",
         "properties": {
           "rarity": {
@@ -9562,7 +11045,10 @@
         }
       },
       "GameCatalogUpgradeRecipeIngredient": {
-        "required": ["material", "count"],
+        "required": [
+          "material",
+          "count"
+        ],
         "type": "object",
         "properties": {
           "material": {
@@ -9581,6 +11067,21 @@
                 "$ref": "#/components/schemas/IReadOnlyListOfGameCatalogUpgradeRecipeIngredient"
               }
             ]
+          }
+        }
+      },
+      "GameCatalogUpgradeSlotRank": {
+        "required": [
+          "rank",
+          "xpLevelRequirements"
+        ],
+        "type": "object",
+        "properties": {
+          "rank": {
+            "type": "string"
+          },
+          "xpLevelRequirements": {
+            "$ref": "#/components/schemas/IReadOnlyListOfInt32"
           }
         }
       },
@@ -9624,6 +11125,31 @@
           },
           "farmLocations": {
             "$ref": "#/components/schemas/IReadOnlyListOfGameCatalogFarmLocation"
+          }
+        }
+      },
+      "GameCatalogXpBook": {
+        "required": [
+          "id",
+          "rarity",
+          "xpIncrease",
+          "gold"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "rarity": {
+            "type": "string"
+          },
+          "xpIncrease": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "gold": {
+            "type": "integer",
+            "format": "int32"
           }
         }
       },
@@ -9740,7 +11266,10 @@
             "$ref": "#/components/schemas/GoalStatus"
           },
           "notes": {
-            "type": ["null", "string"]
+            "type": [
+              "null",
+              "string"
+            ]
           },
           "config": {
             "$ref": "#/components/schemas/GoalConfigResponse"
@@ -9775,17 +11304,26 @@
             "default": 0
           },
           "globalPriority": {
-            "type": ["null", "integer"],
+            "type": [
+              "null",
+              "integer"
+            ],
             "format": "int32"
           }
         }
       },
       "GoalEntityType": {
-        "enum": ["Character", "Mow"],
+        "enum": [
+          "Character",
+          "Mow"
+        ],
         "type": "string"
       },
       "GoalOrderResponse": {
-        "required": ["revision", "goalIds"],
+        "required": [
+          "revision",
+          "goalIds"
+        ],
         "type": "object",
         "properties": {
           "revision": {
@@ -9798,7 +11336,10 @@
         }
       },
       "GoalSnapshotResourceRequest": {
-        "required": ["resourceId", "count"],
+        "required": [
+          "resourceId",
+          "count"
+        ],
         "type": "object",
         "properties": {
           "resourceId": {
@@ -9811,7 +11352,10 @@
         }
       },
       "GoalSnapshotResourceResponse": {
-        "required": ["resourceId", "count"],
+        "required": [
+          "resourceId",
+          "count"
+        ],
         "type": "object",
         "properties": {
           "resourceId": {
@@ -9855,11 +11399,17 @@
             ]
           },
           "initialActiveAbilityLevel": {
-            "type": ["null", "integer"],
+            "type": [
+              "null",
+              "integer"
+            ],
             "format": "int32"
           },
           "initialPassiveAbilityLevel": {
-            "type": ["null", "integer"],
+            "type": [
+              "null",
+              "integer"
+            ],
             "format": "int32"
           },
           "initialRequirement": {
@@ -9871,7 +11421,12 @@
         }
       },
       "GoalStatus": {
-        "enum": ["Active", "Paused", "Completed", "Archived"],
+        "enum": [
+          "Active",
+          "Paused",
+          "Completed",
+          "Archived"
+        ],
         "type": "string"
       },
       "GoalTargetEditRequest": {
@@ -9920,7 +11475,13 @@
         }
       },
       "GoalType": {
-        "enum": ["Rank", "Ascension", "Ability", "Unlock", "Upgrade"],
+        "enum": [
+          "Rank",
+          "Ascension",
+          "Ability",
+          "Unlock",
+          "Upgrade"
+        ],
         "type": "string"
       },
       "GuildMemberSummary": {
@@ -9945,7 +11506,10 @@
             "type": "string"
           },
           "linkedPlayerName": {
-            "type": ["null", "string"]
+            "type": [
+              "null",
+              "string"
+            ]
           },
           "isLinked": {
             "type": "boolean"
@@ -9958,11 +11522,17 @@
             "format": "int32"
           },
           "lastActiveInGameOn": {
-            "type": ["null", "integer"],
+            "type": [
+              "null",
+              "integer"
+            ],
             "format": "int64"
           },
           "lastActiveInPlannerOn": {
-            "type": ["null", "string"],
+            "type": [
+              "null",
+              "string"
+            ],
             "format": "date-time"
           },
           "displayLabel": {
@@ -10001,11 +11571,21 @@
         }
       },
       "GuildRaidDifficulty": {
-        "enum": ["Common", "Uncommon", "Rare", "Epic", "Legendary", "Mythic"],
+        "enum": [
+          "Common",
+          "Uncommon",
+          "Rare",
+          "Epic",
+          "Legendary",
+          "Mythic"
+        ],
         "type": "string"
       },
       "GuildRaidFreshness": {
-        "enum": ["fresh", "stale"],
+        "enum": [
+          "fresh",
+          "stale"
+        ],
         "type": "string"
       },
       "GuildRaidModifierStatusResponse": {
@@ -10030,23 +11610,35 @@
             "type": "string"
           },
           "subtarget": {
-            "type": ["null", "string"]
+            "type": [
+              "null",
+              "string"
+            ]
           },
           "amount": {
             "type": "number",
             "format": "double"
           },
           "activationRemainingHp": {
-            "type": ["null", "integer"],
+            "type": [
+              "null",
+              "integer"
+            ],
             "format": "int32"
           },
           "active": {
-            "type": ["null", "boolean"]
+            "type": [
+              "null",
+              "boolean"
+            ]
           }
         }
       },
       "GuildRaidObservationState": {
-        "enum": ["active", "noActiveSeason"],
+        "enum": [
+          "active",
+          "noActiveSeason"
+        ],
         "type": "string"
       },
       "GuildRaidPrimeStatusResponse": {
@@ -10072,11 +11664,17 @@
             "format": "int32"
           },
           "remainingHp": {
-            "type": ["null", "integer"],
+            "type": [
+              "null",
+              "integer"
+            ],
             "format": "int32"
           },
           "maximumHp": {
-            "type": ["null", "integer"],
+            "type": [
+              "null",
+              "integer"
+            ],
             "format": "int32"
           },
           "modifiers": {
@@ -10106,7 +11704,10 @@
             "type": "string"
           },
           "endsAt": {
-            "type": ["null", "string"],
+            "type": [
+              "null",
+              "string"
+            ],
             "format": "date-time"
           },
           "tierIndex": {
@@ -10169,30 +11770,53 @@
         }
       },
       "GuildRole": {
-        "enum": ["Member", "Officer", "CoLeader", "Leader"],
+        "enum": [
+          "Member",
+          "Officer",
+          "CoLeader",
+          "Leader"
+        ],
         "type": "string"
       },
       "ImportPartResult": {
-        "required": ["status", "code", "message"],
+        "required": [
+          "status",
+          "code",
+          "message"
+        ],
         "type": "object",
         "properties": {
           "status": {
             "$ref": "#/components/schemas/ImportPartStatus"
           },
           "code": {
-            "type": ["null", "string"]
+            "type": [
+              "null",
+              "string"
+            ]
           },
           "message": {
-            "type": ["null", "string"]
+            "type": [
+              "null",
+              "string"
+            ]
           }
         }
       },
       "ImportPartStatus": {
-        "enum": ["Imported", "Skipped", "Failed"],
+        "enum": [
+          "Imported",
+          "Skipped",
+          "Failed"
+        ],
         "type": "string"
       },
       "ImportV1ProfileRequest": {
-        "required": ["username", "password", "import"],
+        "required": [
+          "username",
+          "password",
+          "import"
+        ],
         "type": "object",
         "properties": {
           "username": {
@@ -10264,7 +11888,10 @@
             "$ref": "#/components/schemas/IReadOnlyListOfV1LegendaryEventOutcome"
           },
           "importProjectId": {
-            "type": ["null", "string"],
+            "type": [
+              "null",
+              "string"
+            ],
             "format": "uuid"
           },
           "profileId": {
@@ -10272,20 +11899,32 @@
             "format": "uuid"
           },
           "playerName": {
-            "type": ["null", "string"]
+            "type": [
+              "null",
+              "string"
+            ]
           },
           "powerLevel": {
             "type": "integer",
             "format": "int32"
           },
           "tacticusApiKeyMasked": {
-            "type": ["null", "string"]
+            "type": [
+              "null",
+              "string"
+            ]
           },
           "tacticusUserIdMasked": {
-            "type": ["null", "string"]
+            "type": [
+              "null",
+              "string"
+            ]
           },
           "suggestedDisplayName": {
-            "type": ["null", "string"]
+            "type": [
+              "null",
+              "string"
+            ]
           }
         }
       },
@@ -10440,6 +12079,12 @@
           "$ref": "#/components/schemas/GameCatalogDamageProfileModifier"
         }
       },
+      "IReadOnlyListOfGameCatalogDamageType": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/GameCatalogDamageType"
+        }
+      },
       "IReadOnlyListOfGameCatalogEquipmentLevel": {
         "type": "array",
         "items": {
@@ -10476,10 +12121,22 @@
           "$ref": "#/components/schemas/GameCatalogEventsCalendarEntry"
         }
       },
+      "IReadOnlyListOfGameCatalogFaction": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/GameCatalogFaction"
+        }
+      },
       "IReadOnlyListOfGameCatalogFarmLocation": {
         "type": "array",
         "items": {
           "$ref": "#/components/schemas/GameCatalogFarmLocation"
+        }
+      },
+      "IReadOnlyListOfGameCatalogGlobalValues": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/GameCatalogGlobalValues"
         }
       },
       "IReadOnlyListOfGameCatalogGuildRaidMetaBossView": {
@@ -10516,6 +12173,12 @@
         "type": "array",
         "items": {
           "$ref": "#/components/schemas/GameCatalogHeroPowerStep"
+        }
+      },
+      "IReadOnlyListOfGameCatalogHeroProgressionRule": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/GameCatalogHeroProgressionRule"
         }
       },
       "IReadOnlyListOfGameCatalogHordeModeCharacter": {
@@ -10614,6 +12277,12 @@
           "$ref": "#/components/schemas/GameCatalogMowPowerStep"
         }
       },
+      "IReadOnlyListOfGameCatalogMowProgressionRule": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/GameCatalogMowProgressionRule"
+        }
+      },
       "IReadOnlyListOfGameCatalogMowUpgradeCostView": {
         "type": "array",
         "items": {
@@ -10660,6 +12329,12 @@
         "type": "array",
         "items": {
           "$ref": "#/components/schemas/GameCatalogOnslaughtReward"
+        }
+      },
+      "IReadOnlyListOfGameCatalogProgressionRules": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/GameCatalogProgressionRules"
         }
       },
       "IReadOnlyListOfGameCatalogQuestBattleView": {
@@ -10764,6 +12439,12 @@
           "$ref": "#/components/schemas/GameCatalogShopView"
         }
       },
+      "IReadOnlyListOfGameCatalogStaminaShopTier": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/GameCatalogStaminaShopTier"
+        }
+      },
       "IReadOnlyListOfGameCatalogTraitPowerModifier": {
         "type": "array",
         "items": {
@@ -10794,10 +12475,22 @@
           "$ref": "#/components/schemas/GameCatalogUpgradeRecipeIngredient"
         }
       },
+      "IReadOnlyListOfGameCatalogUpgradeSlotRank": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/GameCatalogUpgradeSlotRank"
+        }
+      },
       "IReadOnlyListOfGameCatalogUpgradeView": {
         "type": "array",
         "items": {
           "$ref": "#/components/schemas/GameCatalogUpgradeView"
+        }
+      },
+      "IReadOnlyListOfGameCatalogXpBook": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/GameCatalogXpBook"
         }
       },
       "IReadOnlyListOfGuid": {
@@ -10947,15 +12640,25 @@
         }
       },
       "LegendaryEventAnnotationStatus": {
-        "enum": ["maybeClear", "stopHere"],
+        "enum": [
+          "maybeClear",
+          "stopHere"
+        ],
         "type": "string"
       },
       "LegendaryEventDepthSource": {
-        "enum": ["estimate", "manual"],
+        "enum": [
+          "estimate",
+          "manual"
+        ],
         "type": "string"
       },
       "LegendaryEventLaneId": {
-        "enum": ["alpha", "beta", "gamma"],
+        "enum": [
+          "alpha",
+          "beta",
+          "gamma"
+        ],
         "type": "string"
       },
       "LegendaryEventObjectiveAnnotationResponse": {
@@ -10989,7 +12692,9 @@
         }
       },
       "LegendaryEventPlanListResponse": {
-        "required": ["plans"],
+        "required": [
+          "plans"
+        ],
         "type": "object",
         "properties": {
           "plans": {
@@ -11021,7 +12726,10 @@
             "type": "string"
           },
           "notes": {
-            "type": ["null", "string"]
+            "type": [
+              "null",
+              "string"
+            ]
           },
           "showPaidOptions": {
             "type": "boolean"
@@ -11082,7 +12790,10 @@
         }
       },
       "LegendaryEventRunRecordEncounterResponse": {
-        "required": ["objectivesCleared", "highScore"],
+        "required": [
+          "objectivesCleared",
+          "highScore"
+        ],
         "type": "object",
         "properties": {
           "objectivesCleared": {
@@ -11095,7 +12806,11 @@
         }
       },
       "LegendaryEventRunRecordLanesResponse": {
-        "required": ["alpha", "beta", "gamma"],
+        "required": [
+          "alpha",
+          "beta",
+          "gamma"
+        ],
         "type": "object",
         "properties": {
           "alpha": {
@@ -11175,7 +12890,11 @@
         }
       },
       "LegendaryEventRunRecordsResponse": {
-        "required": ["eventId", "records", "nextAfter"],
+        "required": [
+          "eventId",
+          "records",
+          "nextAfter"
+        ],
         "type": "object",
         "properties": {
           "eventId": {
@@ -11185,7 +12904,10 @@
             "$ref": "#/components/schemas/IReadOnlyListOfLegendaryEventRunRecordResponse"
           },
           "nextAfter": {
-            "type": ["null", "string"]
+            "type": [
+              "null",
+              "string"
+            ]
           }
         }
       },
@@ -11221,13 +12943,19 @@
             "$ref": "#/components/schemas/IReadOnlyListOfString"
           },
           "reserveUnitId": {
-            "type": ["null", "string"]
+            "type": [
+              "null",
+              "string"
+            ]
           },
           "objectiveIndexes": {
             "$ref": "#/components/schemas/IReadOnlyListOfInt32"
           },
           "expectedBattleClears": {
-            "type": ["null", "integer"],
+            "type": [
+              "null",
+              "integer"
+            ],
             "format": "int32"
           },
           "expectedBattleClearsSource": {
@@ -11273,7 +13001,10 @@
             "$ref": "#/components/schemas/IReadOnlyListOfString"
           },
           "reserveUnitId": {
-            "type": ["null", "string"]
+            "type": [
+              "null",
+              "string"
+            ]
           },
           "objectiveIndexes": {
             "$ref": "#/components/schemas/IReadOnlyListOfInt32"
@@ -11310,7 +13041,10 @@
         }
       },
       "ListGoalsResponse": {
-        "required": ["goals", "orderRevision"],
+        "required": [
+          "goals",
+          "orderRevision"
+        ],
         "type": "object",
         "properties": {
           "goals": {
@@ -11430,7 +13164,9 @@
         }
       },
       "ListProjectsResponse": {
-        "required": ["projects"],
+        "required": [
+          "projects"
+        ],
         "type": "object",
         "properties": {
           "projects": {
@@ -11439,7 +13175,10 @@
         }
       },
       "MyGuildResponse": {
-        "required": ["state", "guild"],
+        "required": [
+          "state",
+          "guild"
+        ],
         "type": "object",
         "properties": {
           "state": {
@@ -11458,12 +13197,19 @@
         }
       },
       "MyGuildState": {
-        "enum": ["tacticusUserIdRequired", "unregistered", "registered"],
+        "enum": [
+          "tacticusUserIdRequired",
+          "unregistered",
+          "registered"
+        ],
         "type": "string"
       },
-      "NullableOfJsonElement": {},
+      "NullableOfJsonElement": { },
       "OnslaughtAllianceProgressRequest": {
-        "required": ["sector", "tier"],
+        "required": [
+          "sector",
+          "tier"
+        ],
         "type": "object",
         "properties": {
           "sector": {
@@ -11478,7 +13224,11 @@
         }
       },
       "OnslaughtAllianceProgressResponse": {
-        "required": ["sector", "tier", "isSet"],
+        "required": [
+          "sector",
+          "tier",
+          "isSet"
+        ],
         "type": "object",
         "properties": {
           "sector": {
@@ -11494,7 +13244,12 @@
         }
       },
       "OnslaughtProgressResponse": {
-        "required": ["imperial", "xenos", "chaos", "revision"],
+        "required": [
+          "imperial",
+          "xenos",
+          "chaos",
+          "revision"
+        ],
         "type": "object",
         "properties": {
           "imperial": {
@@ -11551,7 +13306,7 @@
           "chunkHash": {
             "type": "string"
           },
-          "data": {}
+          "data": { }
         }
       },
       "PlayerDataManifest": {
@@ -11584,7 +13339,11 @@
         }
       },
       "PlayerDataManifestChunk": {
-        "required": ["key", "hash", "url"],
+        "required": [
+          "key",
+          "hash",
+          "url"
+        ],
         "type": "object",
         "properties": {
           "key": {
@@ -11599,7 +13358,9 @@
         }
       },
       "ProgressionEndTargetRequest": {
-        "required": ["end"],
+        "required": [
+          "end"
+        ],
         "type": "object",
         "properties": {
           "end": {
@@ -11608,7 +13369,10 @@
         }
       },
       "ProgressionTargetRequest": {
-        "required": ["start", "end"],
+        "required": [
+          "start",
+          "end"
+        ],
         "type": "object",
         "properties": {
           "start": {
@@ -11620,7 +13384,10 @@
         }
       },
       "ProgressionTargetResponse": {
-        "required": ["start", "end"],
+        "required": [
+          "start",
+          "end"
+        ],
         "type": "object",
         "properties": {
           "start": {
@@ -11632,7 +13399,9 @@
         }
       },
       "ProjectGoalEntryRequest": {
-        "required": ["goalId"],
+        "required": [
+          "goalId"
+        ],
         "type": "object",
         "properties": {
           "goalId": {
@@ -11642,7 +13411,10 @@
         }
       },
       "ProjectGoalEntryResponse": {
-        "required": ["goalId", "globalPriority"],
+        "required": [
+          "goalId",
+          "globalPriority"
+        ],
         "type": "object",
         "properties": {
           "goalId": {
@@ -11650,13 +13422,18 @@
             "format": "uuid"
           },
           "globalPriority": {
-            "type": ["null", "integer"],
+            "type": [
+              "null",
+              "integer"
+            ],
             "format": "int32"
           }
         }
       },
       "ProjectGoalsResponse": {
-        "required": ["goals"],
+        "required": [
+          "goals"
+        ],
         "type": "object",
         "properties": {
           "goals": {
@@ -11665,7 +13442,9 @@
         }
       },
       "ProjectPriorityRequest": {
-        "required": ["projectId"],
+        "required": [
+          "projectId"
+        ],
         "type": "object",
         "properties": {
           "projectId": {
@@ -11675,7 +13454,11 @@
         }
       },
       "ProjectStatus": {
-        "enum": ["Active", "Paused", "Archived"],
+        "enum": [
+          "Active",
+          "Paused",
+          "Archived"
+        ],
         "type": "string"
       },
       "ProjectSummaryResponse": {
@@ -11702,10 +13485,16 @@
             "type": "string"
           },
           "description": {
-            "type": ["null", "string"]
+            "type": [
+              "null",
+              "string"
+            ]
           },
           "color": {
-            "type": ["null", "string"]
+            "type": [
+              "null",
+              "string"
+            ]
           },
           "status": {
             "$ref": "#/components/schemas/ProjectStatus"
@@ -11741,7 +13530,10 @@
         }
       },
       "ProjectTargetDto": {
-        "required": ["kind", "eventId"],
+        "required": [
+          "kind",
+          "eventId"
+        ],
         "type": "object",
         "properties": {
           "kind": {
@@ -11753,11 +13545,17 @@
         }
       },
       "ProjectTargetKind": {
-        "enum": ["legendaryEvent"],
+        "enum": [
+          "legendaryEvent"
+        ],
         "type": "string"
       },
       "RankEndTargetRequest": {
-        "required": ["end", "endPointFive", "endAppliedUpgrades"],
+        "required": [
+          "end",
+          "endPointFive",
+          "endAppliedUpgrades"
+        ],
         "type": "object",
         "properties": {
           "end": {
@@ -11876,7 +13674,10 @@
             "format": "int32"
           },
           "lastSyncSucceededAt": {
-            "type": ["null", "string"],
+            "type": [
+              "null",
+              "string"
+            ],
             "format": "date-time"
           },
           "callerRole": {
@@ -11891,7 +13692,9 @@
         }
       },
       "RegisterGuildRequest": {
-        "required": ["guildApiToken"],
+        "required": [
+          "guildApiToken"
+        ],
         "type": "object",
         "properties": {
           "guildApiToken": {
@@ -11900,7 +13703,10 @@
         }
       },
       "RosterAbilityResponse": {
-        "required": ["abilityId", "level"],
+        "required": [
+          "abilityId",
+          "level"
+        ],
         "type": "object",
         "properties": {
           "abilityId": {
@@ -11964,7 +13770,11 @@
         }
       },
       "RosterEquipmentSlotResponse": {
-        "required": ["slotId", "equipmentId", "level"],
+        "required": [
+          "slotId",
+          "equipmentId",
+          "level"
+        ],
         "type": "object",
         "properties": {
           "slotId": {
@@ -12023,7 +13833,12 @@
         }
       },
       "RosterSnapshotResponse": {
-        "required": ["takenAt", "catalogVersion", "characters", "mows"],
+        "required": [
+          "takenAt",
+          "catalogVersion",
+          "characters",
+          "mows"
+        ],
         "type": "object",
         "properties": {
           "takenAt": {
@@ -12096,7 +13911,10 @@
         "type": "string"
       },
       "UpdateCampaignEventProgressRequest": {
-        "required": ["progress", "revision"],
+        "required": [
+          "progress",
+          "revision"
+        ],
         "type": "object",
         "properties": {
           "progress": {
@@ -12110,7 +13928,9 @@
         }
       },
       "UpdateDisplayNameRequest": {
-        "required": ["displayName"],
+        "required": [
+          "displayName"
+        ],
         "type": "object",
         "properties": {
           "displayName": {
@@ -12119,7 +13939,9 @@
         }
       },
       "UpdateDisplayNameResponse": {
-        "required": ["displayName"],
+        "required": [
+          "displayName"
+        ],
         "type": "object",
         "properties": {
           "displayName": {
@@ -12128,7 +13950,10 @@
         }
       },
       "UpdateGoalOrderRequest": {
-        "required": ["goalIds", "expectedRevision"],
+        "required": [
+          "goalIds",
+          "expectedRevision"
+        ],
         "type": "object",
         "properties": {
           "goalIds": {
@@ -12142,13 +13967,19 @@
         }
       },
       "UpdateGoalRequest": {
-        "required": ["notes", "farmingLocationIds"],
+        "required": [
+          "notes",
+          "farmingLocationIds"
+        ],
         "type": "object",
         "properties": {
           "notes": {
             "maxLength": 2000,
             "minLength": 0,
-            "type": ["null", "string"]
+            "type": [
+              "null",
+              "string"
+            ]
           },
           "farmingLocationIds": {
             "oneOf": [
@@ -12183,7 +14014,10 @@
         }
       },
       "UpdateGoalsStatusRequest": {
-        "required": ["goalIds", "status"],
+        "required": [
+          "goalIds",
+          "status"
+        ],
         "type": "object",
         "properties": {
           "goalIds": {
@@ -12194,13 +14028,19 @@
           },
           "expectedOrderRevision": {
             "minimum": 0,
-            "type": ["null", "integer"],
+            "type": [
+              "null",
+              "integer"
+            ],
             "format": "int64"
           }
         }
       },
       "UpdateGoalsStatusResponse": {
-        "required": ["goals", "orderRevision"],
+        "required": [
+          "goals",
+          "orderRevision"
+        ],
         "type": "object",
         "properties": {
           "goals": {
@@ -12213,7 +14053,10 @@
         }
       },
       "UpdateGoalTargetRequest": {
-        "required": ["expectedRevision", "target"],
+        "required": [
+          "expectedRevision",
+          "target"
+        ],
         "type": "object",
         "properties": {
           "expectedRevision": {
@@ -12264,7 +14107,11 @@
         }
       },
       "UpdateLegendaryEventPlanRequest": {
-        "required": ["expectedRevision", "notes", "showPaidOptions"],
+        "required": [
+          "expectedRevision",
+          "notes",
+          "showPaidOptions"
+        ],
         "type": "object",
         "properties": {
           "expectedRevision": {
@@ -12273,7 +14120,10 @@
             "format": "int64"
           },
           "notes": {
-            "type": ["null", "string"]
+            "type": [
+              "null",
+              "string"
+            ]
           },
           "showPaidOptions": {
             "type": "boolean"
@@ -12333,7 +14183,11 @@
         }
       },
       "UpdateLegendaryEventTeamOrderRequest": {
-        "required": ["expectedRevision", "laneId", "teamIds"],
+        "required": [
+          "expectedRevision",
+          "laneId",
+          "teamIds"
+        ],
         "type": "object",
         "properties": {
           "expectedRevision": {
@@ -12374,7 +14228,10 @@
             "$ref": "#/components/schemas/IReadOnlyListOfString"
           },
           "reserveUnitId": {
-            "type": ["null", "string"]
+            "type": [
+              "null",
+              "string"
+            ]
           },
           "objectiveIndexes": {
             "$ref": "#/components/schemas/IReadOnlyListOfInt32"
@@ -12384,7 +14241,10 @@
             "format": "int32"
           },
           "expectedBattleClears": {
-            "type": ["null", "integer"],
+            "type": [
+              "null",
+              "integer"
+            ],
             "format": "int32"
           },
           "expectedBattleClearsSource": {
@@ -12410,7 +14270,12 @@
         }
       },
       "UpdateOnslaughtProgressRequest": {
-        "required": ["imperial", "xenos", "chaos", "revision"],
+        "required": [
+          "imperial",
+          "xenos",
+          "chaos",
+          "revision"
+        ],
         "type": "object",
         "properties": {
           "imperial": {
@@ -12451,7 +14316,11 @@
         }
       },
       "UpdateProjectGoalOrderRequest": {
-        "required": ["goalId", "displacedGoalId", "expectedRevision"],
+        "required": [
+          "goalId",
+          "displacedGoalId",
+          "expectedRevision"
+        ],
         "type": "object",
         "properties": {
           "goalId": {
@@ -12472,7 +14341,10 @@
         }
       },
       "UpdateProjectGoalsRequest": {
-        "required": ["goals", "expectedGoalIds"],
+        "required": [
+          "goals",
+          "expectedGoalIds"
+        ],
         "type": "object",
         "properties": {
           "goals": {
@@ -12484,7 +14356,13 @@
         }
       },
       "UpdateProjectRequest": {
-        "required": ["name", "description", "color", "status", "revision"],
+        "required": [
+          "name",
+          "description",
+          "color",
+          "status",
+          "revision"
+        ],
         "type": "object",
         "properties": {
           "name": {
@@ -12492,10 +14370,16 @@
             "type": "string"
           },
           "description": {
-            "type": ["null", "string"]
+            "type": [
+              "null",
+              "string"
+            ]
           },
           "color": {
-            "type": ["null", "string"]
+            "type": [
+              "null",
+              "string"
+            ]
           },
           "status": {
             "$ref": "#/components/schemas/ProjectStatus"
@@ -12518,14 +14402,23 @@
         }
       },
       "UpdateTacticusIntegrationRequest": {
-        "required": ["tacticusApiKey", "tacticusUserId"],
+        "required": [
+          "tacticusApiKey",
+          "tacticusUserId"
+        ],
         "type": "object",
         "properties": {
           "tacticusApiKey": {
-            "type": ["null", "string"]
+            "type": [
+              "null",
+              "string"
+            ]
           },
           "tacticusUserId": {
-            "type": ["null", "string"]
+            "type": [
+              "null",
+              "string"
+            ]
           },
           "clearTacticusUserId": {
             "type": "boolean",
@@ -12556,22 +14449,38 @@
             "type": "boolean"
           },
           "playerName": {
-            "type": ["null", "string"]
+            "type": [
+              "null",
+              "string"
+            ]
           },
           "powerLevel": {
-            "type": ["null", "integer"],
+            "type": [
+              "null",
+              "integer"
+            ],
             "format": "int32"
           },
           "tacticusApiKeyMasked": {
-            "type": ["null", "string"]
+            "type": [
+              "null",
+              "string"
+            ]
           },
           "tacticusUserIdMasked": {
-            "type": ["null", "string"]
+            "type": [
+              "null",
+              "string"
+            ]
           }
         }
       },
       "UpdateUserSettingsRequest": {
-        "required": ["dailyEnergy", "xpBookRarity", "revision"],
+        "required": [
+          "dailyEnergy",
+          "xpBookRarity",
+          "revision"
+        ],
         "type": "object",
         "properties": {
           "dailyEnergy": {
@@ -12589,7 +14498,10 @@
         }
       },
       "UpgradeMaterialTargetRequest": {
-        "required": ["upgradeId", "quantity"],
+        "required": [
+          "upgradeId",
+          "quantity"
+        ],
         "type": "object",
         "properties": {
           "upgradeId": {
@@ -12602,7 +14514,10 @@
         }
       },
       "UpgradeMaterialTargetResponse": {
-        "required": ["upgradeId", "quantity"],
+        "required": [
+          "upgradeId",
+          "quantity"
+        ],
         "type": "object",
         "properties": {
           "upgradeId": {
@@ -12615,21 +14530,33 @@
         }
       },
       "UpgradeRangeRequest": {
-        "required": ["start", "end"],
+        "required": [
+          "start",
+          "end"
+        ],
         "type": "object",
         "properties": {
           "start": {
-            "type": ["null", "integer"],
+            "type": [
+              "null",
+              "integer"
+            ],
             "format": "int32"
           },
           "end": {
-            "type": ["null", "integer"],
+            "type": [
+              "null",
+              "integer"
+            ],
             "format": "int32"
           }
         }
       },
       "UpgradeRangeResponse": {
-        "required": ["start", "end"],
+        "required": [
+          "start",
+          "end"
+        ],
         "type": "object",
         "properties": {
           "start": {
@@ -12643,7 +14570,9 @@
         }
       },
       "UpgradeTargetRequest": {
-        "required": ["targets"],
+        "required": [
+          "targets"
+        ],
         "type": "object",
         "properties": {
           "targets": {
@@ -12682,7 +14611,12 @@
         }
       },
       "UpgradeTargetResponse": {
-        "required": ["targets", "rankRange", "activeRange", "passiveRange"],
+        "required": [
+          "targets",
+          "rankRange",
+          "activeRange",
+          "passiveRange"
+        ],
         "type": "object",
         "properties": {
           "targets": {
@@ -12721,7 +14655,9 @@
         }
       },
       "UserJotTokenResponse": {
-        "required": ["token"],
+        "required": [
+          "token"
+        ],
         "type": "object",
         "properties": {
           "token": {
@@ -12730,7 +14666,11 @@
         }
       },
       "UserSettingsResponse": {
-        "required": ["dailyEnergy", "xpBookRarity", "revision"],
+        "required": [
+          "dailyEnergy",
+          "xpBookRarity",
+          "revision"
+        ],
         "type": "object",
         "properties": {
           "dailyEnergy": {
@@ -12782,7 +14722,10 @@
             ]
           },
           "entityId": {
-            "type": ["null", "string"]
+            "type": [
+              "null",
+              "string"
+            ]
           },
           "goalType": {
             "oneOf": [
@@ -12795,14 +14738,23 @@
             ]
           },
           "goalId": {
-            "type": ["null", "string"],
+            "type": [
+              "null",
+              "string"
+            ],
             "format": "uuid"
           },
           "sourceGoalId": {
-            "type": ["null", "string"]
+            "type": [
+              "null",
+              "string"
+            ]
           },
           "upgradeId": {
-            "type": ["null", "string"]
+            "type": [
+              "null",
+              "string"
+            ]
           },
           "linkedSourceGoalIds": {
             "oneOf": [
@@ -12815,27 +14767,44 @@
             ]
           },
           "upgradeQuantity": {
-            "type": ["null", "integer"],
+            "type": [
+              "null",
+              "integer"
+            ],
             "format": "int32"
           }
         }
       },
       "V1GoalOutcomeStatus": {
-        "enum": ["Created", "Skipped", "Failed"],
+        "enum": [
+          "Created",
+          "Skipped",
+          "Failed"
+        ],
         "type": "string"
       },
       "V1LegendaryEventIssue": {
-        "required": ["code", "teamName", "value"],
+        "required": [
+          "code",
+          "teamName",
+          "value"
+        ],
         "type": "object",
         "properties": {
           "code": {
             "type": "string"
           },
           "teamName": {
-            "type": ["null", "string"]
+            "type": [
+              "null",
+              "string"
+            ]
           },
           "value": {
-            "type": ["null", "string"]
+            "type": [
+              "null",
+              "string"
+            ]
           }
         }
       },
@@ -12854,7 +14823,10 @@
         "type": "object",
         "properties": {
           "eventId": {
-            "type": ["null", "string"]
+            "type": [
+              "null",
+              "string"
+            ]
           },
           "v1EventId": {
             "type": "integer",
@@ -12887,7 +14859,14 @@
         }
       },
       "XpBookRarity": {
-        "enum": ["Common", "Uncommon", "Rare", "Epic", "Legendary", "Mythic"],
+        "enum": [
+          "Common",
+          "Uncommon",
+          "Rare",
+          "Epic",
+          "Legendary",
+          "Mythic"
+        ],
         "type": "string"
       }
     },

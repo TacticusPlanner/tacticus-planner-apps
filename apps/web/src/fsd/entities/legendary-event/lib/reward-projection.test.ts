@@ -390,6 +390,19 @@ describe("projectRewards", () => {
     expect(projection.chests).toMatchObject({ toGo: 4, required: 14 })
   })
 
+  it("counts only the runs through the horizon run", () => {
+    const projection = projectRewards({ ...utharExample, throughRun: 2 })
+    // Run 3 (10 missions and the bundle) is after the horizon; run 2 is in progress.
+    expect(projection.futureRuns).toEqual([])
+    expect(projection.currency).toMatchObject({
+      futureMissions: 0,
+      futureBundles: 0,
+    })
+    expect(
+      projectRewards({ ...utharExample, throughRun: 3 }).futureRuns
+    ).toHaveLength(1)
+  })
+
   it("matches V1 on the Dante ladder without run inputs (13,000)", () => {
     const projection = projectRewards({
       rewards: dante,

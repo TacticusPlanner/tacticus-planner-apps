@@ -58,7 +58,7 @@ const SOURCE: Extract<PlanSource, { status: "ready" }> = {
   event: utharEvent,
   inputs: planInputs(),
   runDates: {
-    starts: [],
+    starts: [...planInputs().runStarts],
     deadlineMs: RUN_3_START_MS + 7 * 24 * 60 * 60 * 1000,
     deadlineEstimated: true,
   },
@@ -130,7 +130,7 @@ const searchOver = () =>
   )
 
 describe("PlanWizard", () => {
-  it("shows the estimated deadline and a verdict per step", async () => {
+  it("plans to the end of the run in progress and a verdict per step", async () => {
     renderWizard()
     expect(capture).toHaveBeenCalledWith({
       type: "legendary_event_plan_wizard_opened",
@@ -139,9 +139,13 @@ describe("PlanWizard", () => {
     })
     expect(tourSteps).toMatchObject({ desktop: expect.any(Array) })
     expect(screen.getByTestId("plan-wizard-run-inputs")).toBeInTheDocument()
+    expect(
+      screen.getByRole("heading", { name: /by the end of run 2\?/ })
+    ).toBeInTheDocument()
     expect(screen.getByTestId("plan-wizard-deadline")).toHaveTextContent(
-      "Deadline: about Feb 28, 2027 (estimated)"
+      "Run 2 ends Oct 12, 2026"
     )
+    expect(screen.getByTestId("plan-wizard-horizon-2")).toBeChecked()
     const options = screen.getAllByTestId("plan-wizard-target-option")
     expect(options[0]).toHaveAttribute("data-step", "unlock")
     expect(options[0]).toBeChecked()
@@ -367,7 +371,7 @@ describe("PlanWizard", () => {
       }
       // The whole card list is taller than a phone screen, so mobile points at one card.
       expect(
-        document.querySelector(steps[1]!.target)?.getAttribute("data-testid")
+        document.querySelector(steps[2]!.target)?.getAttribute("data-testid")
       ).toBe(
         width < 768 ? "plan-wizard-target-option" : "plan-wizard-target-cards"
       )
@@ -387,9 +391,28 @@ describe("PlanWizard", () => {
     )
   })
 
+  it("moves the run with the arrow keys, one tab stop for the picker", async () => {
+    renderWizard()
+    const run2 = screen.getByTestId("plan-wizard-horizon-2")
+    const run3 = screen.getByTestId("plan-wizard-horizon-3")
+    expect(run2).toHaveAttribute("tabindex", "0")
+    expect(run3).toHaveAttribute("tabindex", "-1")
+    run2.focus()
+    await userEvent.keyboard("{ArrowRight}")
+    expect(run3).toBeChecked()
+    expect(run3).toHaveFocus()
+    expect(run3).toHaveAttribute("tabindex", "0")
+    await userEvent.keyboard("{ArrowRight}")
+    expect(run2).toBeChecked()
+  })
+
   it("summarises the run inputs in the closed Assumptions panel", async () => {
     renderWizard()
     const of = utharEvent.regularMissions.length
+    expect(
+      screen.getByTestId("plan-wizard-run-inputs-summary")
+    ).toHaveTextContent(`Run 2: 0 of ${of} missions`)
+    await userEvent.click(screen.getByTestId("plan-wizard-horizon-3"))
     expect(
       screen.getByTestId("plan-wizard-run-inputs-summary")
     ).toHaveTextContent(
@@ -581,6 +604,8 @@ describe("PlanWizard", () => {
   })
   it("groups upgrades by run and sets the ticks with All, None and Just enough", async () => {
     renderWizard()
+    // Upgrades cannot help the run in progress: plan to run 3.
+    await userEvent.click(screen.getByTestId("plan-wizard-horizon-3"))
     await searchOver()
     await next()
     const boxes = () => screen.getAllByRole("checkbox")
@@ -619,6 +644,20 @@ describe("PlanWizard", () => {
     expect(screen.getAllByRole("tab")[1]).toHaveAttribute(
       "aria-selected",
       "true"
+    )
+  })
+
+  it("plans to a later run with its guessed end", async () => {
+    renderWizard()
+    const run3 = screen.getByTestId("plan-wizard-horizon-3")
+    expect(run3).toHaveTextContent("maybe ~Feb 2027")
+    await userEvent.click(run3)
+    expect(run3).toBeChecked()
+    expect(
+      screen.getByRole("heading", { name: /by the end of run 3\?/ })
+    ).toBeInTheDocument()
+    expect(screen.getByTestId("plan-wizard-deadline")).toHaveTextContent(
+      "Run 3 ends maybe around Feb 28, 2027 (guessed from past runs)"
     )
   })
 })

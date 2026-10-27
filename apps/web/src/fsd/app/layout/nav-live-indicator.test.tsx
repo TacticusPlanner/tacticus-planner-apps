@@ -3,9 +3,10 @@ import { MemoryRouter } from "react-router"
 import { TooltipProvider } from "@workspace/ui/components/tooltip"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
-const { hseState, hreLive, signalReads } = vi.hoisted(() => ({
+const { hseState, hreLive, questLive, signalReads } = vi.hoisted(() => ({
   hseState: { current: { status: "loading" } },
   hreLive: { current: false },
+  questLive: { current: false },
   signalReads: { count: 0 },
 }))
 // Pass-through that counts the renders of every live-signal reader (NavLiveDot).
@@ -20,10 +21,16 @@ vi.mock("./hse-live-context", async (importOriginal) => {
   }
 })
 vi.mock("@/features/daily-raids", () => ({
-  useActiveHomeScreenEvent: () => hseState.current,
+  useIsHomeScreenEventLive: () => {
+    const state = hseState.current as { status: string; active?: unknown }
+    return state.status === "ready" && !!state.active
+  },
 }))
 vi.mock("@/features/hre-missions", () => ({
   useIsHreLive: () => hreLive.current,
+}))
+vi.mock("@/features/quest-event", () => ({
+  useIsQuestLive: () => questLive.current,
 }))
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({
@@ -123,6 +130,7 @@ describe.each([
   beforeEach(() => {
     hseState.current = state
     hreLive.current = false
+    questLive.current = false
   })
 
   it("desktop side menu (expanded) marks only Dailies, with text beside the label", () => {
@@ -210,22 +218,51 @@ describe.each([
 })
 
 describe.each([
-  ["only an HRE running", false, true, { hse: 0, hre: 1, dailies: 1 }],
-  ["an HSE and an HRE running", true, true, { hse: 1, hre: 1, dailies: 1 }],
-  ["neither running", false, false, { hse: 0, hre: 0, dailies: 0 }],
-])("nav live indicator with %s", (_name, hse, hre, expected) => {
+  [
+    "only an HRE running",
+    false,
+    true,
+    false,
+    { hse: 0, hre: 1, quest: 0, dailies: 1 },
+  ],
+  [
+    "an HSE and an HRE running",
+    true,
+    true,
+    false,
+    { hse: 1, hre: 1, quest: 0, dailies: 1 },
+  ],
+  [
+    "only a quest running",
+    false,
+    false,
+    true,
+    { hse: 0, hre: 0, quest: 1, dailies: 1 },
+  ],
+  [
+    "neither running",
+    false,
+    false,
+    false,
+    { hse: 0, hre: 0, quest: 0, dailies: 0 },
+  ],
+])("nav live indicator with %s", (_name, hse, hre, quest, expected) => {
   beforeEach(() => {
     hseState.current = ready(hse ? hunt : null)
     hreLive.current = hre
+    questLive.current = quest
   })
 
-  it("marks the HRE and HSE tabs by their own event", () => {
+  it("marks the HRE, HSE and Quest tabs by their own event", () => {
     shell(<SectionTabs item={dailies} />)
     expect(dots(screen.getByTestId("section-tab-dailies-hse"))).toHaveLength(
       expected.hse
     )
     expect(dots(screen.getByTestId("section-tab-dailies-hre"))).toHaveLength(
       expected.hre
+    )
+    expect(dots(screen.getByTestId("section-tab-dailies-quest"))).toHaveLength(
+      expected.quest
     )
   })
 
@@ -264,6 +301,7 @@ describe("HseLiveProvider value", () => {
   it("keeps NavLiveDot from re-rendering while the signals are unchanged", () => {
     hseState.current = ready(hunt)
     hreLive.current = false
+    questLive.current = false
     // One element reused across renders, so only a context change can re-render the dot.
     const dot = <NavLiveDot item={dailies} />
     const { rerender } = render(<HseLiveProvider>{dot}</HseLiveProvider>)

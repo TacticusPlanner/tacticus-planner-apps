@@ -25,6 +25,8 @@ import type {
   LegendaryEventBattleStorageModel,
   HordeModeTiersStorageModel,
   UnitPowerStorageModel,
+  QuestCrateStorageModel,
+  QuestEventStorageModel,
   LegendaryEventStorageModel,
   MowStorageModel,
   MythicQuestsStorageModel,
@@ -384,4 +386,15 @@ export async function getUnitPower(): Promise<UnitPowerStorageModel | null> {
 // device before its first sync completes).
 export function hasGameCatalogSynced(): Promise<boolean> {
   return hasCatalogSynced()
+}
+
+// Every Quest Event in the catalog (one record per featured hero), ordered by featured hero id.
+export function getQuestEvents(): Promise<QuestEventStorageModel[]> {
+  return getDatasetRecords("quest-events")
+}
+
+// The 17-crate Quest Event reward track, ordered by crate number.
+export async function getQuestCrates(): Promise<QuestCrateStorageModel[]> {
+  const rows = await getDatasetRecords("quest-crates")
+  return [...rows].sort((a, b) => a.number - b.number)
 }

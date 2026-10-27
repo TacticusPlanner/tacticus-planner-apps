@@ -23,6 +23,10 @@ export const servedDatasetKeys = [
   "guild-raid-meta",
   "mythic-quests",
   "unit-power",
+  "quest-events",
+  "quest-crates",
+  "factions",
+  "damage-types",
 ] as const
 
 export type GameCatalogDatasetKey = (typeof servedDatasetKeys)[number]
@@ -32,6 +36,8 @@ export type GameCatalogDatasetKey = (typeof servedDatasetKeys)[number]
 export const optionalDatasetKeys: readonly GameCatalogDatasetKey[] = [
   "horde-mode-tiers",
   "unit-power",
+  "quest-events",
+  "quest-crates",
 ]
 
 // Metadata-store key for the manifest sync metadata (etag/version) used for delta sync.

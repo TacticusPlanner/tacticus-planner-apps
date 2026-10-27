@@ -8,30 +8,13 @@ import {
   orderLaneBattles,
   sortedWaves,
 } from "../../../lib/battle-preview"
+import type { NpcRecord } from "@/entities/npc"
 import {
-  npcLibraryHref,
-  resolveLadderRow,
-  type NpcRecord,
-  type NpcStatRow,
-} from "@/entities/npc"
+  buildEnemyTile,
+  type EnemyTileViewModel,
+} from "@/widgets/battle-preview"
 
 import type { ReadValue } from "../legendary-event-page.view-model"
-
-/** One enemy entry of a wave: an NPC at a ladder index, `count` times. */
-export interface EnemyTileViewModel {
-  key: string
-  npcId: string
-  /** The served NPC, or undefined while `npcs` is pending or failed, or when the id is unknown. */
-  npc: NpcRecord | undefined
-  count: number
-  /** The resolved ladder row; undefined when the level is unknown (or NPCs are pending). */
-  row: NpcStatRow | undefined
-  /** The NPC Library page at this variation and level, when the Library lists the variation. */
-  libraryHref: string | undefined
-  /** `pending`: NPCs not read yet; `unavailable`: the NPC read failed; `unknownLevel`: unknown id or
-   *  an index past the ladder. */
-  level: "resolved" | "unknownLevel" | "pending" | "unavailable"
-}
 
 interface WaveViewModel {
   /** 1-based wave number in round order. */
@@ -78,7 +61,7 @@ export interface BattlesViewModel {
 
 /**
  * A lane's Battles section from the event page's `lre-battles` read, the `npcs` read and the lane's
- * synced progress. Enemy levels resolve through `resolveLadderRow` (1-based `ladderIndex`).
+ * synced progress.
  */
 export function buildBattlesSection({
   battleIds,
@@ -132,39 +115,9 @@ export function buildBattlesSection({
         round: wave.round,
         power: wave.power,
         enemies: wave.enemies.map((enemy, enemyIndex) =>
-          enemyTile(enemy, `${waveIndex}-${enemyIndex}`, npcsById)
+          buildEnemyTile(enemy, `${waveIndex}-${enemyIndex}`, npcsById)
         ),
       })),
     })),
-  }
-}
-
-function enemyTile(
-  enemy: { id: string; ladderIndex: number; count: number },
-  key: string,
-  npcsById: ReadonlyMap<string, NpcRecord> | "pending" | "unavailable"
-): EnemyTileViewModel {
-  if (typeof npcsById === "string") {
-    return {
-      key,
-      npcId: enemy.id,
-      npc: undefined,
-      count: enemy.count,
-      row: undefined,
-      libraryHref: undefined,
-      level: npcsById,
-    }
-  }
-  const npc = npcsById.get(enemy.id)
-  const resolved = resolveLadderRow(npc, enemy.ladderIndex)
-  return {
-    key,
-    npcId: enemy.id,
-    npc,
-    count: enemy.count,
-    row: resolved?.row,
-    libraryHref:
-      npc && resolved ? npcLibraryHref(npc, resolved.servedIndex) : undefined,
-    level: resolved ? "resolved" : "unknownLevel",
   }
 }

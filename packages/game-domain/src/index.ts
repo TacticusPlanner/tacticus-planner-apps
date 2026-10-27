@@ -49,7 +49,6 @@ export {
   levelCapForProgression,
   type Progression,
 } from "./progression"
-export { pierceRatio } from "./pierce-ratio"
 
 export {
   unitPowerTables,

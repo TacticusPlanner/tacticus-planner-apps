@@ -18,6 +18,15 @@ export const safeStorage = {
       // Best effort: the caller's in-memory value still applies for this visit.
     }
   },
+  /** `set` that reports whether the write landed, for callers that tell the player it did not. */
+  trySet(key: string, value: string): boolean {
+    try {
+      window.localStorage.setItem(key, value)
+      return true
+    } catch {
+      return false
+    }
+  },
   remove(key: string): void {
     try {
       window.localStorage.removeItem(key)

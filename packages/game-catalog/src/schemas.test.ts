@@ -1,6 +1,8 @@
 import { describe, expect, expectTypeOf, it } from "vitest"
 import type { BattleId, FactionId } from "@workspace/game-domain"
 
+import questCrates from "./schemas/quest-crates.fixture.json"
+import questEvents from "./schemas/quest-events.fixture.json"
 import {
   characterViewSchema,
   datasetPayloadSchemas,
@@ -785,5 +787,81 @@ describe("unit-power schema", () => {
         },
       ])
     ).toThrow()
+  })
+
+  it("parses the served quest-events, with Cyrus battle 1 as served", () => {
+    const quests = datasetPayloadSchemas["quest-events"].parse(questEvents)
+    expect(quests.map((quest) => quest.featuredCharacterId)).toEqual([
+      "astarCyrus",
+      "astarEradicator",
+      "votanChampion",
+    ])
+    expect(quests[0]?.battles[0]).toEqual({
+      number: 1,
+      tier: "Common",
+      tierPosition: 1,
+      deploySlots: 3,
+      boardId: "C3_70",
+      spawnPointsSet: 6,
+      lightningVictoryTurns: 3,
+      power: null,
+      enemies: [
+        { id: "necroNpc2FlayedOne", ladderIndex: 1, count: 3 },
+        { id: "necroNpc1Warrior", ladderIndex: 1, count: 4 },
+      ],
+      objectives: [
+        { type: "NoDamageTakenByAnyHero", target: null, score: 100 },
+        { type: "NotDamageType", target: "Power", score: 100 },
+      ],
+      loot: {
+        upgradeId: "upgDmgC001",
+        chanceNumerator: 3,
+        chanceDenominator: 4,
+      },
+    })
+  })
+
+  it("parses the quest-crates track and rejects an unknown reward type", () => {
+    const crates = datasetPayloadSchemas["quest-crates"].parse(questCrates)
+    expect(crates).toHaveLength(17)
+    expect(crates.at(-1)?.points).toBe(8800)
+    expect(
+      datasetPayloadSchemas["quest-crates"].safeParse([
+        {
+          number: 1,
+          points: 1000,
+          rewards: [{ type: "Gold", min: 1, max: 1 }],
+        },
+      ]).success
+    ).toBe(false)
+  })
+})
+
+describe("factions and damage-types schemas", () => {
+  it("parses a served faction and rejects an unknown alliance", () => {
+    const faction = {
+      id: "AdeptusAstartes",
+      alliance: "Imperial",
+      unlockDateUtc: "2022-01-01T00:00:00Z",
+      collectionFaction: true,
+    }
+    expect(datasetPayloadSchemas.factions.parse([faction])).toEqual([faction])
+    expect(
+      datasetPayloadSchemas.factions.safeParse([
+        { ...faction, alliance: "Tyranid" },
+      ]).success
+    ).toBe(false)
+  })
+
+  it("parses a served damage type and rejects a ratio above 100", () => {
+    const flame = { id: "Flame", piercingRatio: 25, traits: ["OnFire"] }
+    expect(datasetPayloadSchemas["damage-types"].parse([flame])).toEqual([
+      flame,
+    ])
+    expect(
+      datasetPayloadSchemas["damage-types"].safeParse([
+        { ...flame, piercingRatio: 125 },
+      ]).success
+    ).toBe(false)
   })
 })

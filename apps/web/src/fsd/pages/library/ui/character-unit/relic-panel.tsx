@@ -12,8 +12,6 @@ import type { AbilityTextEntry, RulesText } from "@/shared/ability-text"
 import { AbilityPanel } from "../unit/ability-panel"
 import { DetailsCard } from "./character-details-sections"
 
-const RELIC_MAX_LEVEL = 10
-
 /** Static class names (Tailwind can't see built ones) for a relic's rarity-coloured frame. */
 const RARITY_BORDER: Record<Rarity, string> = {
   Common: "border-(--rarity-common)",
@@ -99,7 +97,7 @@ export function RelicPanel({
       factionId={factionId}
       level={level}
       onLevelChange={onLevelChange}
-      maxLevel={RELIC_MAX_LEVEL}
+      maxLevel={relic.levels.length}
       playerLevel={playerLevel}
       chartFromZero={false}
       headingLevel="h2"

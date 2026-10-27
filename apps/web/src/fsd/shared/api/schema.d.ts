@@ -258,6 +258,40 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  "/api/v1/game-catalog/damage-types": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Gets the damage types. */
+    get: operations["TacticusPlannerApiFeaturesGameCatalogGetGameCatalogDamageTypesEndpoint1"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/game-catalog/damage-types/{envelopeHash}": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Gets the damage types. */
+    get: operations["TacticusPlannerApiFeaturesGameCatalogGetGameCatalogDamageTypesEndpoint2"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   "/api/v1/game-catalog/equipment": {
     parameters: {
       query?: never
@@ -352,6 +386,74 @@ export interface paths {
     }
     /** Gets the game events calendar. */
     get: operations["TacticusPlannerApiFeaturesGameCatalogGetGameCatalogEventsCalendarEndpoint2"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/game-catalog/factions": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Gets the game factions. */
+    get: operations["TacticusPlannerApiFeaturesGameCatalogGetGameCatalogFactionsEndpoint1"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/game-catalog/factions/{envelopeHash}": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Gets the game factions. */
+    get: operations["TacticusPlannerApiFeaturesGameCatalogGetGameCatalogFactionsEndpoint2"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/game-catalog/global-values": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Gets the game-wide constants. */
+    get: operations["TacticusPlannerApiFeaturesGameCatalogGetGameCatalogGlobalValuesEndpoint1"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/game-catalog/global-values/{envelopeHash}": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Gets the game-wide constants. */
+    get: operations["TacticusPlannerApiFeaturesGameCatalogGetGameCatalogGlobalValuesEndpoint2"]
     put?: never
     post?: never
     delete?: never
@@ -686,6 +788,40 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  "/api/v1/game-catalog/progression-rules": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Gets the unit progression rules. */
+    get: operations["TacticusPlannerApiFeaturesGameCatalogGetGameCatalogProgressionRulesEndpoint1"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/game-catalog/progression-rules/{envelopeHash}": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Gets the unit progression rules. */
+    get: operations["TacticusPlannerApiFeaturesGameCatalogGetGameCatalogProgressionRulesEndpoint2"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   "/api/v1/game-catalog/quest-crates": {
     parameters: {
       query?: never
@@ -939,7 +1075,7 @@ export interface paths {
     put?: never
     /**
      * Creates one goal, or several linked goals for one entity, in one call.
-     * @description A single goal is a one-spec request. Each spec's DependsOnIndex (indices into this same request's Goals list, referencing only earlier entries) is resolved into real DependsOn edges; DependsOnGoalIds adds edges to the same unit's existing Active/Paused goals, and an existing Ascension goal reachable through them lifts the rarity cap the targets are validated against. A goal type may appear more than once when the end targets differ. Assigns the whole set to the given project(s), or the caller's default project (created on first use) when none is given. Every goal starts Active; startPaused (request-level boolean, default false) creates the whole set Paused instead and cannot be set per goal.
+     * @description A single goal is a one-spec request. Each spec's DependsOnIndex (indices into this same request's Goals list, referencing only earlier entries) is resolved into real DependsOn edges; DependsOnGoalIds adds edges to the same unit's existing Active/Paused goals, and an existing Ascension goal reachable through them lifts the rarity cap the targets are validated against. A goal type may appear more than once when the end targets differ. Assigns the whole set to the given project(s), or the caller's default project (created on first use) when none is given. Each spec may carry notes. position (request-level, 1 to in-flight count + 1) inserts the set there in request order, shifting later goals down; null appends at the end. Every goal starts Active; startPaused (request-level boolean, default false) creates the whole set Paused instead and cannot be set per goal.
      */
     post: operations["TacticusPlannerApiFeaturesGoalsCreateCombinedGoalsEndpoint"]
     delete?: never
@@ -1578,6 +1714,7 @@ export interface components {
       dependsOnIndex: components["schemas"]["ListOfInt32"]
       snapshot?: null | components["schemas"]["CreateGoalSnapshotRequest"]
       dependsOnGoalIds?: null | components["schemas"]["ListOfGuid"]
+      notes?: null | string
     }
     CreateCombinedGoalsRequest: {
       entityType: components["schemas"]["GoalEntityType"]
@@ -1586,6 +1723,8 @@ export interface components {
       goals: components["schemas"]["ListOfCombinedGoalSpec"]
       /** @default false */
       startPaused?: boolean
+      /** Format: int32 */
+      position?: null | number
     }
     CreateCombinedGoalsResponse: {
       goals: components["schemas"]["ListOfGoalDetailResponse"]
@@ -1819,6 +1958,12 @@ export interface components {
       /** Format: int32 */
       modifier: number
     }
+    GameCatalogDamageType: {
+      id: string
+      /** Format: int32 */
+      piercingRatio: number
+      traits: components["schemas"]["IReadOnlyListOfString"]
+    }
     GameCatalogDatasetEnvelopeOfGameCatalogGuildRaidMetaView: {
       version: string
       /** Format: int32 */
@@ -1910,6 +2055,16 @@ export interface components {
       data:
         null | components["schemas"]["IReadOnlyListOfGameCatalogCharacterView"]
     }
+    GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogDamageType: {
+      version: string
+      /** Format: int32 */
+      schemaVersion: number
+      gameVersion: string
+      sourceHash: string
+      datasetKey: string
+      datasetHash: string
+      data: null | components["schemas"]["IReadOnlyListOfGameCatalogDamageType"]
+    }
     GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogEquipmentView: {
       version: string
       /** Format: int32 */
@@ -1932,6 +2087,27 @@ export interface components {
       data:
         | null
         | components["schemas"]["IReadOnlyListOfGameCatalogEventDefinition"]
+    }
+    GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogFaction: {
+      version: string
+      /** Format: int32 */
+      schemaVersion: number
+      gameVersion: string
+      sourceHash: string
+      datasetKey: string
+      datasetHash: string
+      data: null | components["schemas"]["IReadOnlyListOfGameCatalogFaction"]
+    }
+    GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogGlobalValues: {
+      version: string
+      /** Format: int32 */
+      schemaVersion: number
+      gameVersion: string
+      sourceHash: string
+      datasetKey: string
+      datasetHash: string
+      data:
+        null | components["schemas"]["IReadOnlyListOfGameCatalogGlobalValues"]
     }
     GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogHordeModeTiers: {
       version: string
@@ -2020,6 +2196,18 @@ export interface components {
       data:
         | null
         | components["schemas"]["IReadOnlyListOfGameCatalogOnslaughtReward"]
+    }
+    GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogProgressionRules: {
+      version: string
+      /** Format: int32 */
+      schemaVersion: number
+      gameVersion: string
+      sourceHash: string
+      datasetKey: string
+      datasetHash: string
+      data:
+        | null
+        | components["schemas"]["IReadOnlyListOfGameCatalogProgressionRules"]
     }
     GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogQuestCrate: {
       version: string
@@ -2141,6 +2329,12 @@ export interface components {
         | null
         | components["schemas"]["IReadOnlyDictionaryOfStringAndJsonElement"]
     }
+    GameCatalogFaction: {
+      id: string
+      alliance: string
+      unlockDateUtc: string
+      collectionFaction: boolean
+    }
     GameCatalogFarmLocation: {
       battleId: string
       type: string
@@ -2156,6 +2350,38 @@ export interface components {
       isMythic: boolean
       /** Format: double */
       expectedGold: null | number
+    }
+    GameCatalogGlobalValues: {
+      /** Format: int32 */
+      maxStamina: number
+      /** Format: int32 */
+      staminaRegenerationTime: number
+      /** Format: int32 */
+      staminaRegenerationAmount: number
+      /** Format: int32 */
+      wavesMaxStamina: number
+      /** Format: int32 */
+      wavesStaminaRegenerationTime: number
+      /** Format: int32 */
+      wavesStaminaRegenerationAmount: number
+      /** Format: int32 */
+      campaignLevelMaxStamina: number
+      /** Format: int32 */
+      campaignLevelStaminaRegenerationTime: number
+      /** Format: int32 */
+      campaignLevelStaminaRegenerationAmount: number
+      /** Format: int32 */
+      minUnitsNeededForBattle: number
+      /** Format: int32 */
+      maxUnitsPossibleForBattle: number
+      /** Format: int32 */
+      terrifyingBonus: number
+      /** Format: int32 */
+      battleFatigueFleeChance: number
+      /** Format: int32 */
+      battleFatigueFleeChanceOverkill: number
+      traitVariables: components["schemas"]["IReadOnlyDictionaryOfStringAndJsonElement"]
+      staminaShopTiers: components["schemas"]["IReadOnlyListOfGameCatalogStaminaShopTier"]
     }
     GameCatalogGuildRaidMetaBossView: {
       bossUnitSetId: string
@@ -2203,6 +2429,23 @@ export interface components {
       unitStatMultiplierPct: number
       /** Format: int32 */
       abilityPowerMultiplier: number
+    }
+    GameCatalogHeroProgressionRule: {
+      /** Format: int32 */
+      step: number
+      progression: string
+      rarity: string
+      /** Format: int32 */
+      stars: number
+      /** Format: int32 */
+      maxXpLevel: number
+      maxRank: string
+      /** Format: int32 */
+      unitStatMultiplierPct: number
+      /** Format: int32 */
+      abilityStatMultiplierPct: number
+      /** Format: int32 */
+      hreShards: null | number
     }
     GameCatalogHordeModeCharacter: {
       unitId: string
@@ -2386,6 +2629,20 @@ export interface components {
       /** Format: int32 */
       mythicAbilityPower: number
     }
+    GameCatalogMowProgressionRule: {
+      /** Format: int32 */
+      step: number
+      progression: string
+      rarity: string
+      /** Format: int32 */
+      stars: number
+      /** Format: int32 */
+      maxAbilityLevel: number
+      /** Format: int32 */
+      abilityStatMultiplierPct: number
+      /** Format: int32 */
+      mythicAbilityStatMultiplierPct: null | number
+    }
     GameCatalogMowUpgradeCostView: {
       /** Format: int32 */
       level: number
@@ -2471,6 +2728,13 @@ export interface components {
       mythic: components["schemas"]["GameCatalogRewardRange"]
       badges: components["schemas"]["IReadOnlyListOfGameCatalogAmountByRarity"]
     }
+    GameCatalogProgressionRules: {
+      xpLevels: components["schemas"]["IReadOnlyListOfInt32"]
+      xpBooks: components["schemas"]["IReadOnlyListOfGameCatalogXpBook"]
+      upgradeSlots: components["schemas"]["IReadOnlyListOfGameCatalogUpgradeSlotRank"]
+      heroProgressionSteps: components["schemas"]["IReadOnlyListOfGameCatalogHeroProgressionRule"]
+      mowProgressionSteps: components["schemas"]["IReadOnlyListOfGameCatalogMowProgressionRule"]
+    }
     GameCatalogQuestBattleView: {
       /** Format: int32 */
       number: number
@@ -2484,8 +2748,6 @@ export interface components {
       spawnPointsSet: number
       /** Format: int32 */
       lightningVictoryTurns: number
-      /** Format: int32 */
-      power: null | number
       enemies: components["schemas"]["IReadOnlyListOfGameCatalogQuestEnemyView"]
       objectives: components["schemas"]["IReadOnlyListOfGameCatalogQuestObjectiveView"]
       loot: components["schemas"]["GameCatalogQuestLootView"]
@@ -2683,6 +2945,15 @@ export interface components {
         null | components["schemas"]["GameCatalogShopRefreshCostView"]
       slots: components["schemas"]["IReadOnlyListOfGameCatalogShopSlotView"]
     }
+    GameCatalogStaminaShopTier: {
+      productId: string
+      /** Format: int32 */
+      stamina: number
+      /** Format: int32 */
+      raidTickets: number
+      /** Format: int32 */
+      gems: number
+    }
     GameCatalogTraitPowerModifier: {
       traitId: string
       /** Format: int32 */
@@ -2717,6 +2988,10 @@ export interface components {
         | null
         | components["schemas"]["IReadOnlyListOfGameCatalogUpgradeRecipeIngredient"]
     }
+    GameCatalogUpgradeSlotRank: {
+      rank: string
+      xpLevelRequirements: components["schemas"]["IReadOnlyListOfInt32"]
+    }
     GameCatalogUpgradeView: {
       id: string
       material: string
@@ -2727,6 +3002,14 @@ export interface components {
       craftable: boolean
       recipe: components["schemas"]["IReadOnlyListOfGameCatalogUpgradeRecipeIngredient"]
       farmLocations: components["schemas"]["IReadOnlyListOfGameCatalogFarmLocation"]
+    }
+    GameCatalogXpBook: {
+      id: string
+      rarity: string
+      /** Format: int32 */
+      xpIncrease: number
+      /** Format: int32 */
+      gold: number
     }
     GoalConfigResponse: {
       rank: null | components["schemas"]["RankTargetResponse"]
@@ -2955,19 +3238,23 @@ export interface components {
     IReadOnlyListOfGameCatalogCharacterRankUp: components["schemas"]["GameCatalogCharacterRankUp"][]
     IReadOnlyListOfGameCatalogCharacterView: components["schemas"]["GameCatalogCharacterView"][]
     IReadOnlyListOfGameCatalogDamageProfileModifier: components["schemas"]["GameCatalogDamageProfileModifier"][]
+    IReadOnlyListOfGameCatalogDamageType: components["schemas"]["GameCatalogDamageType"][]
     IReadOnlyListOfGameCatalogEquipmentLevel: components["schemas"]["GameCatalogEquipmentLevel"][]
     IReadOnlyListOfGameCatalogEquipmentSlot: components["schemas"]["GameCatalogEquipmentSlot"][]
     IReadOnlyListOfGameCatalogEquipmentUpgradeLevel: components["schemas"]["GameCatalogEquipmentUpgradeLevel"][]
     IReadOnlyListOfGameCatalogEquipmentView: components["schemas"]["GameCatalogEquipmentView"][]
     IReadOnlyListOfGameCatalogEventDefinition: components["schemas"]["GameCatalogEventDefinition"][]
     IReadOnlyListOfGameCatalogEventsCalendarEntry: components["schemas"]["GameCatalogEventsCalendarEntry"][]
+    IReadOnlyListOfGameCatalogFaction: components["schemas"]["GameCatalogFaction"][]
     IReadOnlyListOfGameCatalogFarmLocation: components["schemas"]["GameCatalogFarmLocation"][]
+    IReadOnlyListOfGameCatalogGlobalValues: components["schemas"]["GameCatalogGlobalValues"][]
     IReadOnlyListOfGameCatalogGuildRaidMetaBossView: components["schemas"]["GameCatalogGuildRaidMetaBossView"][]
     IReadOnlyListOfGameCatalogGuildRaidMetaCompView: components["schemas"]["GameCatalogGuildRaidMetaCompView"][]
     IReadOnlyListOfGameCatalogGuildRaidMetaHeroSlotView: components["schemas"]["GameCatalogGuildRaidMetaHeroSlotView"][]
     IReadOnlyListOfGameCatalogGuildRaidMetaPrimeView: components["schemas"]["GameCatalogGuildRaidMetaPrimeView"][]
     IReadOnlyListOfGameCatalogGuildRaidMetaRecommendationView: components["schemas"]["GameCatalogGuildRaidMetaRecommendationView"][]
     IReadOnlyListOfGameCatalogHeroPowerStep: components["schemas"]["GameCatalogHeroPowerStep"][]
+    IReadOnlyListOfGameCatalogHeroProgressionRule: components["schemas"]["GameCatalogHeroProgressionRule"][]
     IReadOnlyListOfGameCatalogHordeModeCharacter: components["schemas"]["GameCatalogHordeModeCharacter"][]
     IReadOnlyListOfGameCatalogHordeModeRelic: components["schemas"]["GameCatalogHordeModeRelic"][]
     IReadOnlyListOfGameCatalogHordeModeTier: components["schemas"]["GameCatalogHordeModeTier"][]
@@ -2984,6 +3271,7 @@ export interface components {
     IReadOnlyListOfGameCatalogManifestDataset: components["schemas"]["GameCatalogManifestDataset"][]
     IReadOnlyListOfGameCatalogMow: components["schemas"]["GameCatalogMow"][]
     IReadOnlyListOfGameCatalogMowPowerStep: components["schemas"]["GameCatalogMowPowerStep"][]
+    IReadOnlyListOfGameCatalogMowProgressionRule: components["schemas"]["GameCatalogMowProgressionRule"][]
     IReadOnlyListOfGameCatalogMowUpgradeCostView: components["schemas"]["GameCatalogMowUpgradeCostView"][]
     IReadOnlyListOfGameCatalogMythicQuestRewardView: components["schemas"]["GameCatalogMythicQuestRewardView"][]
     IReadOnlyListOfGameCatalogMythicQuestsView: components["schemas"]["GameCatalogMythicQuestsView"][]
@@ -2992,6 +3280,7 @@ export interface components {
     IReadOnlyListOfGameCatalogNpc: components["schemas"]["GameCatalogNpc"][]
     IReadOnlyListOfGameCatalogNpcStat: components["schemas"]["GameCatalogNpcStat"][]
     IReadOnlyListOfGameCatalogOnslaughtReward: components["schemas"]["GameCatalogOnslaughtReward"][]
+    IReadOnlyListOfGameCatalogProgressionRules: components["schemas"]["GameCatalogProgressionRules"][]
     IReadOnlyListOfGameCatalogQuestBattleView: components["schemas"]["GameCatalogQuestBattleView"][]
     IReadOnlyListOfGameCatalogQuestCrate: components["schemas"]["GameCatalogQuestCrate"][]
     IReadOnlyListOfGameCatalogQuestCrateReward: components["schemas"]["GameCatalogQuestCrateReward"][]
@@ -3009,12 +3298,15 @@ export interface components {
     IReadOnlyListOfGameCatalogShopSlotView: components["schemas"]["GameCatalogShopSlotView"][]
     IReadOnlyListOfGameCatalogShopVariantView: components["schemas"]["GameCatalogShopVariantView"][]
     IReadOnlyListOfGameCatalogShopView: components["schemas"]["GameCatalogShopView"][]
+    IReadOnlyListOfGameCatalogStaminaShopTier: components["schemas"]["GameCatalogStaminaShopTier"][]
     IReadOnlyListOfGameCatalogTraitPowerModifier: components["schemas"]["GameCatalogTraitPowerModifier"][]
     IReadOnlyListOfGameCatalogUnitPower: components["schemas"]["GameCatalogUnitPower"][]
     IReadOnlyListOfGameCatalogUnitPowerUnit: components["schemas"]["GameCatalogUnitPowerUnit"][]
     IReadOnlyListOfGameCatalogUnlockShardCostView: components["schemas"]["GameCatalogUnlockShardCostView"][]
     IReadOnlyListOfGameCatalogUpgradeRecipeIngredient: components["schemas"]["GameCatalogUpgradeRecipeIngredient"][]
+    IReadOnlyListOfGameCatalogUpgradeSlotRank: components["schemas"]["GameCatalogUpgradeSlotRank"][]
     IReadOnlyListOfGameCatalogUpgradeView: components["schemas"]["GameCatalogUpgradeView"][]
+    IReadOnlyListOfGameCatalogXpBook: components["schemas"]["GameCatalogXpBook"][]
     IReadOnlyListOfGuid: string[]
     IReadOnlyListOfGuildMemberSummary: components["schemas"]["GuildMemberSummary"][]
     IReadOnlyListOfGuildRaidModifierStatusResponse: components["schemas"]["GuildRaidModifierStatusResponse"][]
@@ -4386,6 +4678,98 @@ export interface operations {
       }
     }
   }
+  TacticusPlannerApiFeaturesGameCatalogGetGameCatalogDamageTypesEndpoint1: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description One record per damage type, ordered by id: its piercing ratio (the percentage of a hit that ignores armour) and the traits its hits carry. */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogDamageType"]
+        }
+      }
+      /** @description The dataset has not changed. */
+      304: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description The envelope hash is not the current release's. */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+    }
+  }
+  TacticusPlannerApiFeaturesGameCatalogGetGameCatalogDamageTypesEndpoint2: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        envelopeHash: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description One record per damage type, ordered by id: its piercing ratio (the percentage of a hit that ignores armour) and the traits its hits carry. */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogDamageType"]
+        }
+      }
+      /** @description The dataset has not changed. */
+      304: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description The envelope hash is not the current release's. */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+    }
+  }
   TacticusPlannerApiFeaturesGameCatalogGetGameCatalogEquipmentEndpoint1: {
     parameters: {
       query?: never
@@ -4633,6 +5017,190 @@ export interface operations {
         }
         content: {
           "application/json": components["schemas"]["GameCatalogDatasetEnvelopeOfIReadOnlyDictionaryOfStringAndIReadOnlyListOfGameCatalogEventsCalendarEntry"]
+        }
+      }
+      /** @description The dataset has not changed. */
+      304: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description The envelope hash is not the current release's. */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+    }
+  }
+  TacticusPlannerApiFeaturesGameCatalogGetGameCatalogFactionsEndpoint1: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description One record per faction, in unlock order: its alliance (Imperial, Chaos or Xenos), unlock date (UTC) and whether it is a collection faction grouping units of other factions. */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogFaction"]
+        }
+      }
+      /** @description The dataset has not changed. */
+      304: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description The envelope hash is not the current release's. */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+    }
+  }
+  TacticusPlannerApiFeaturesGameCatalogGetGameCatalogFactionsEndpoint2: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        envelopeHash: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description One record per faction, in unlock order: its alliance (Imperial, Chaos or Xenos), unlock date (UTC) and whether it is a collection faction grouping units of other factions. */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogFaction"]
+        }
+      }
+      /** @description The dataset has not changed. */
+      304: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description The envelope hash is not the current release's. */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+    }
+  }
+  TacticusPlannerApiFeaturesGameCatalogGetGameCatalogGlobalValuesEndpoint1: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description The single record of game-wide constants, named as the game names them: energy, Onslaught and limited-battle stamina (times in seconds), team size, terrifying and battle-fatigue values, trait variables, and the energy shop ladder (energy, raid tickets and gem cost per purchase). */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogGlobalValues"]
+        }
+      }
+      /** @description The dataset has not changed. */
+      304: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description The envelope hash is not the current release's. */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+    }
+  }
+  TacticusPlannerApiFeaturesGameCatalogGetGameCatalogGlobalValuesEndpoint2: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        envelopeHash: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description The single record of game-wide constants, named as the game names them: energy, Onslaught and limited-battle stamina (times in seconds), team size, terrifying and battle-fatigue values, trait variables, and the energy shop ladder (energy, raid tickets and gem cost per purchase). */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogGlobalValues"]
         }
       }
       /** @description The dataset has not changed. */
@@ -5526,6 +6094,98 @@ export interface operations {
       }
     }
   }
+  TacticusPlannerApiFeaturesGameCatalogGetGameCatalogProgressionRulesEndpoint1: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description The single record of progression rules, named as the game names them: the XP curve (element i is the total XP to reach level i + 2), XP books, the XP level each rank-up upgrade slot needs per rank, and each hero and MoW ascension step's caps (max XP level, max rank, max ability level), stat multipliers and Hero Release Event shard cost. */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogProgressionRules"]
+        }
+      }
+      /** @description The dataset has not changed. */
+      304: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description The envelope hash is not the current release's. */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+    }
+  }
+  TacticusPlannerApiFeaturesGameCatalogGetGameCatalogProgressionRulesEndpoint2: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        envelopeHash: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description The single record of progression rules, named as the game names them: the XP curve (element i is the total XP to reach level i + 2), XP books, the XP level each rank-up upgrade slot needs per rank, and each hero and MoW ascension step's caps (max XP level, max rank, max ability level), stat multipliers and Hero Release Event shard cost. */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogProgressionRules"]
+        }
+      }
+      /** @description The dataset has not changed. */
+      304: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description The envelope hash is not the current release's. */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+    }
+  }
   TacticusPlannerApiFeaturesGameCatalogGetGameCatalogQuestCratesEndpoint1: {
     parameters: {
       query?: never
@@ -6241,7 +6901,7 @@ export interface operations {
           "application/json": components["schemas"]["CreateCombinedGoalsResponse"]
         }
       }
-      /** @description Invalid entity/goal type, a bad DependsOnIndex or DependsOnGoalIds, an unknown project, or a null/per-goal startPaused. */
+      /** @description Invalid entity/goal type, a bad DependsOnIndex or DependsOnGoalIds, an unknown project, a null/per-goal startPaused, notes over the limit, or a position out of range. */
       400: {
         headers: {
           [name: string]: unknown

@@ -3,6 +3,7 @@ import { Rank, lastRank } from "@workspace/game-domain"
 
 import {
   getGoalValidationIssue,
+  getGoalValidationIssues,
   isAtMaxAbility,
   isAtMaxProgression,
   isAtMaxRank,
@@ -110,6 +111,28 @@ describe("getGoalValidationIssue", () => {
     expect(
       getGoalValidationIssue({ ...base, upgradeFieldsValid: false })
     ).toBeNull()
+  })
+})
+
+describe("getGoalValidationIssues", () => {
+  it("reports every enabled type's problem together, in card order", () => {
+    expect(
+      getGoalValidationIssues({
+        ...base,
+        enabledTypes: new Set(["Rank", "Upgrade", "Ascension"] as const),
+        rankEnd: Rank.Silver1,
+        progressionEnd: "Rare:FourStars",
+        upgradeFieldsValid: false,
+      })
+    ).toEqual([
+      {
+        kind: "Ascension",
+        field: "target",
+        issue: "progressionAlreadyReached",
+      },
+      { kind: "Upgrade", field: "materials", issue: "upgradeTargetsRequired" },
+      { kind: "Rank", field: "target", issue: "rankAlreadyReached" },
+    ])
   })
 })
 

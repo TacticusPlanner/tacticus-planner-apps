@@ -1,4 +1,4 @@
-import { pierceRatio } from "@workspace/game-domain"
+import type { PierceRatios } from "./pierce-ratios"
 
 /**
  * V1's "Stat percentiles" radar (`3-features/character-details/unit-stat-radar.utils.ts`), unchanged:
@@ -47,14 +47,17 @@ const referenceFactor = (1.252 ** 17 + 5 * 2) * (1 + 0.1 * 14)
 
 const atReference = (base: number) => Math.round(base * referenceFactor)
 
-function axisValues(character: RadarCharacter): Record<RadarAxis, number> {
+function axisValues(
+  character: RadarCharacter,
+  pierceRatios: PierceRatios
+): Record<RadarAxis, number> {
   const damage = atReference(character.damage)
   const meleeHits = character.meleeHits
   const rangedHits = character.rangedDamage ? (character.rangedHits ?? 0) : 0
   // An unknown damage type pierces nothing, as in V1.
-  const meleePierce = pierceRatio(character.meleeDamage) ?? 0
+  const meleePierce = pierceRatios.get(character.meleeDamage) ?? 0
   const rangedPierce = character.rangedDamage
-    ? (pierceRatio(character.rangedDamage) ?? 0)
+    ? (pierceRatios.get(character.rangedDamage) ?? 0)
     : 0
 
   return {
@@ -79,9 +82,12 @@ function percentileOf(value: number, population: readonly number[]): number {
 
 /** Each axis's population, computed once per catalog. */
 export function buildRadarPopulation(
-  characters: readonly RadarCharacter[]
+  characters: readonly RadarCharacter[],
+  pierceRatios: PierceRatios
 ): Record<RadarAxis, number[]> {
-  const values = characters.map(axisValues)
+  const values = characters.map((character) =>
+    axisValues(character, pierceRatios)
+  )
   return Object.fromEntries(
     radarAxes.map((axis) => [axis, values.map((entry) => entry[axis])])
   ) as Record<RadarAxis, number[]>
@@ -89,9 +95,10 @@ export function buildRadarPopulation(
 
 export function buildStatRadar(
   character: RadarCharacter,
-  population: Record<RadarAxis, number[]>
+  population: Record<RadarAxis, number[]>,
+  pierceRatios: PierceRatios
 ): RadarAxisResult[] {
-  const values = axisValues(character)
+  const values = axisValues(character, pierceRatios)
   return radarAxes.map((axis) => ({
     axis,
     value: values[axis],

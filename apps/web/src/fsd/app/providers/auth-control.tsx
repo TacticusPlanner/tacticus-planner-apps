@@ -29,10 +29,7 @@ import {
   AccountCard,
   GuestAccountMenu,
 } from "@/widgets/account-menu"
-import {
-  ManageAccountDialog,
-  type ManageAccountTab,
-} from "@/features/account-management"
+import { ManageAccountDialog, type ManageAccountTab } from "@/features/account"
 import { useCurrentUser } from "@/entities/account"
 import {
   loginRequest,

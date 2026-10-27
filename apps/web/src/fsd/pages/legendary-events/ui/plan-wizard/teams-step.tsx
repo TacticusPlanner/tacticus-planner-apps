@@ -60,12 +60,15 @@ export function TeamsStep({
   const swaps = useMemo(
     () =>
       new Map(
-        teamSwaps(inputs, planEconomy, adjustments, deferred).map((swap) => [
-          swap.teamKey,
-          swap,
-        ])
+        teamSwaps(
+          inputs,
+          planEconomy,
+          adjustments,
+          deferred,
+          draft.horizon
+        ).map((swap) => [swap.teamKey, swap])
       ),
-    [inputs, planEconomy, adjustments, deferred]
+    [inputs, planEconomy, adjustments, deferred, draft.horizon]
   )
   const storedCount = inputs.plan.teams.filter(
     (team) => team.memberUnitIds.length > 0

@@ -3,11 +3,21 @@ import type {
   GameCatalogShop,
   OnslaughtRewardStorageModel,
 } from "@workspace/game-catalog"
+import { Rarity, type UpgradeId } from "@workspace/game-domain"
 
 import type { GoalDetail } from "@/entities/goal"
 import type { OnslaughtProgress } from "@/entities/player-data-override"
 
-import { computeGoalAcquisition } from "./goal-acquisition"
+import {
+  computeGoalAcquisition,
+  type MythicMaterialCatalog,
+} from "./goal-acquisition"
+
+// Venerable Battle Mark has no recipe (shop-only); the Legendary material is farmable.
+const upgradesById: MythicMaterialCatalog = new Map([
+  ["upgHpM004" as UpgradeId, { rarity: Rarity.Mythic, recipe: [] }],
+  ["upgDmgL202" as UpgradeId, { rarity: Rarity.Legendary, recipe: [] }],
+])
 
 // Venerable Battle Mark as the real Guild shop serves it: guaranteed on TUE, 1 of 4 on SAT/SUN.
 const guild = {
@@ -64,6 +74,7 @@ function acquisition(detail: GoalDetail, upgradeNeedIds = ["upgHpM004"]) {
     charactersById: new Map(),
     playerCharacterById: new Map(),
     playerMowById: new Map(),
+    upgradesById,
     shops: [guild],
     referenceDate: monday,
   })
@@ -104,6 +115,7 @@ function ascensionWithOnslaught(
     charactersById: new Map(),
     playerCharacterById: new Map(),
     playerMowById: new Map(),
+    upgradesById,
     onslaughtProgress: {
       imperial: { sector: "Gold", tier: 4, isSet },
     } as unknown as OnslaughtProgress,

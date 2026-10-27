@@ -1,15 +1,11 @@
 import { useState, useMemo, useEffect, useRef } from "react"
 import {
   type UnitId,
-  maxAbilityLevel,
   firstProgression,
   progressionIndex,
   type Progression,
   firstRank,
-  lastRank,
-  rankAt,
   rankIndex,
-  rankOrder,
   type Rank,
   type UpgradeId,
   type FactionGroup,
@@ -31,6 +27,7 @@ import {
   chunkOrUndefined,
   readyData,
   toXpBooks,
+  goalKindsForEntity,
   isAtMaxAbility,
   isAtMaxProgression,
   isAtMaxRank,
@@ -47,7 +44,13 @@ import type { CreateGoalPrefill } from "./create-goal-launcher-context"
 import { useCreateGoalPrefill } from "./use-create-goal-prefill"
 import { useDefaultUnitPreselect } from "./use-default-unit-preselect"
 import { computeCreationPreview } from "./goal-preview"
+import { firstFreeTarget, useTakenTargets } from "./first-free-target"
+import {
+  progressionEndOptionsFor,
+  rankOptionsAbove,
+} from "../target-edit/goal-target-edit"
 import { useQuery } from "@tanstack/react-query"
+import { useGlobalGoalPlan } from "@/entities/goal"
 import { projectQueries } from "@/entities/project"
 
 export type EntityType = "Character" | "Mow"
@@ -91,6 +94,15 @@ export function useCreateGoalForm({
   const [includeSuggestedUnlock, setIncludeSuggestedUnlock] = useState(true)
   const [includeSuggestedAscension, setIncludeSuggestedAscension] =
     useState(true)
+  // The one goal card shown expanded (goal-creation: cards collapse to a one-line summary).
+  const [expandedKind, setExpandedKind] = useState<GoalKind | null>(null)
+  // Each goal type card's optional note, and where the new goals go in the global order (null: last).
+  const [notes, setNotes] = useState<Partial<Record<GoalKind, string>>>({})
+  const [priorityPosition, setPriorityPosition] = useState<number | null>(null)
+  const globalPlan = useGlobalGoalPlan()
+  const inFlightCount = globalPlan.inFlight.length
+  // The unit's in-flight targets: defaults skip them and the pickers mark them as already a goal.
+  const takenTargets = useTakenTargets(entityType, entityId)
 
   const [farmingStrategy, setFarmingStrategy] =
     useState<FarmingStrategy>("TotalUpgrades")
@@ -114,7 +126,7 @@ export function useCreateGoalForm({
     entityType === "Character" && entityId ? getCharacter(entityId) : undefined
   const mow = entityType === "Mow" && entityId ? getMow(entityId) : undefined
 
-  const rankFields = useRankFields()
+  const rankFields = useRankFields(takenTargets.takenFor("Rank"))
   const { rankStart, rankEnd, rankAdditionalTarget } = rankFields.state
   const {
     pointFive: rankEndPointFive,
@@ -125,10 +137,10 @@ export function useCreateGoalForm({
   const { rankUpgradeSlotsTotal, rankAppliedUpgrades } =
     useRankUpgradeSlotsSummary(character, rankStart, playerCharacter)
 
-  const ascensionFields = useAscensionFields()
+  const ascensionFields = useAscensionFields(takenTargets.takenFor("Ascension"))
   const { progressionStart, progressionEnd } = ascensionFields.state
 
-  const abilityFields = useAbilityFields()
+  const abilityFields = useAbilityFields(takenTargets.takenFor("Ability"))
   const milestoneFields = useGoalMilestones()
   const { milestones } = milestoneFields
   const {
@@ -176,15 +188,22 @@ export function useCreateGoalForm({
 
   const { offers: shopOffers } = useUnitShopShardSupply(entityId)
 
-  const { usesMythicShards, lockedShards, unlockAvailable } =
-    useEntityShardSummary(
-      entityType,
-      entityId,
-      isOwned,
-      playerEntity,
-      charactersById,
-      shopOffers
-    )
+  const {
+    usesMythicShards,
+    lockedShards,
+    unlockAvailable: unlockAcquirable,
+  } = useEntityShardSummary(
+    entityType,
+    entityId,
+    isOwned,
+    playerEntity,
+    charactersById,
+    shopOffers
+  )
+
+  // An in-flight Unlock goal already covers unlocking this unit (goal-creation).
+  const existingUnlockGoalId = takenTargets.unlockGoal?.goalId
+  const unlockAvailable = unlockAcquirable && !existingUnlockGoalId
 
   const acquisitionSourceSelection = useAcquisitionSourceSelection({
     entityType,
@@ -213,7 +232,11 @@ export function useCreateGoalForm({
     plan: acquisitionPlan,
   } = acquisitionSourceSelection
 
-  const { toggleType, resetForm, handleEntityChange } = useGoalFormReset({
+  const {
+    toggleType: toggleEnabledType,
+    resetForm: resetFormFields,
+    handleEntityChange: changeEntity,
+  } = useGoalFormReset({
     rankFields,
     ascensionFields,
     abilityFields,
@@ -232,6 +255,24 @@ export function useCreateGoalForm({
     setEntityId,
     charactersById,
   })
+  // Enabling a type expands its card and collapses the rest; notes and priority go with the form.
+  const toggleType = (kind: GoalKind, enabled: boolean) => {
+    toggleEnabledType(kind, enabled)
+    if (enabled) setExpandedKind(kind)
+  }
+  const clearComposerExtras = () => {
+    setExpandedKind(null)
+    setNotes({})
+    setPriorityPosition(null)
+  }
+  const resetForm = () => {
+    resetFormFields()
+    clearComposerExtras()
+  }
+  const handleEntityChange = (id: UnitId) => {
+    changeEntity(id)
+    clearComposerExtras()
+  }
 
   useCreateGoalPrefill({
     open,
@@ -282,6 +323,7 @@ export function useCreateGoalForm({
 
   const mythicMaterialSelection = useMythicMaterialSelection({
     needs: [...missingUpgrades, ...upgradeFields.state.upgradeGoalNeed],
+    upgradesById,
     resetKey: entityId,
   })
 
@@ -295,7 +337,8 @@ export function useCreateGoalForm({
   } = useGoalPrerequisitesAndReview({
     entityId,
     entityType,
-    isOwned,
+    // An existing Unlock goal already unlocks the unit, so no new one is suggested.
+    isOwned: isOwned || !!existingUnlockGoalId,
     playerEntity,
     character:
       entityType === "Character" && entityId
@@ -323,7 +366,7 @@ export function useCreateGoalForm({
     atMaxRank,
     atMaxProgression,
     atMaxAbility,
-    validationMessage,
+    issues: formIssues,
     milestoneIssue,
     canSubmit,
   } = useGoalValidationState({
@@ -342,7 +385,9 @@ export function useCreateGoalForm({
     abilityActiveEnd,
     abilityPassiveStart,
     abilityPassiveEnd,
+    abilityTargets: abilityFields.state,
     upgradeFieldsValid: upgradeFields.isValid,
+    invalidUpgradeQuantityIds: upgradeFields.state.invalidUpgradeQuantityIds,
     milestones,
   })
 
@@ -378,6 +423,8 @@ export function useCreateGoalForm({
     open,
     specParams: combinedSpecParams,
     startPaused,
+    notes,
+    position: priorityPosition,
     snapshotContext: {
       entityType,
       playerEntity,
@@ -389,6 +436,14 @@ export function useCreateGoalForm({
     onOpenChange,
     resetForm,
   })
+
+  const { slotConflictIssue, ...submissionState } = submission
+  // Every blocking problem, in card order (goal-creation: shown inline and counted beside submit).
+  const goalKinds = goalKindsForEntity(entityType)
+  const issues = [
+    ...formIssues,
+    ...(slotConflictIssue ? [slotConflictIssue] : []),
+  ].sort((a, b) => goalKinds.indexOf(a.kind) - goalKinds.indexOf(b.kind))
 
   return {
     charactersById,
@@ -455,35 +510,54 @@ export function useCreateGoalForm({
     selectProjects: projectSelection.selectProjects,
     startPaused,
     setStartPaused,
-    ...submission,
+    ...submissionState,
+    issues,
+    expandedKind,
+    setExpandedKind,
+    notes,
+    setNote: (kind: GoalKind, note: string) =>
+      setNotes((current) => ({ ...current, [kind]: note })),
+    // 1-based position in the global order; the new goals go last unless the user moves them.
+    priorityPosition: priorityPosition ?? inFlightCount + 1,
+    priorityTotal: inFlightCount + 1,
+    setPriorityPosition: (position: number) =>
+      setPriorityPosition(position > inFlightCount ? null : position),
+    takenTargetsFor: takenTargets.takenFor,
+    existingUnlockGoalId,
+    combinedSpecParams,
+    inventoryLoaded: inventoryUpgrades !== undefined,
     missingUpgrades,
     estimatePreview,
     planningSettings,
     progressionPreview,
-    validationMessage,
     milestoneFields,
     milestoneIssue,
   }
-}
-
-// A track's sensible default target: the next level above its own current level, so the goal
-// starts out proposing the smallest real advancement for that track (clamped to the ceiling for
-// a track already at the maximum).
-function defaultTargetLevel(currentLevel: number): number {
-  return Math.min(currentLevel + 1, maxAbilityLevel)
 }
 
 /**
  * The Ability goal's per-track target state — read-only active/passive current levels (always the
  * unit's live synced values — see `prefillFrom`) and an independent Target level for each track.
  * A single Ability goal may raise one track or both; a track whose Target is at or below its own
- * current level simply doesn't move (see `abilityActiveEnd`/`abilityPassiveEnd` below).
+ * current level simply doesn't move (see `abilityActiveEnd`/`abilityPassiveEnd` below). Until the user
+ * picks a track's Target it follows `firstFreeTarget` (both tracks up a level, skipping in-flight
+ * targets in `taken`).
  */
-export function useAbilityFields() {
+export function useAbilityFields(
+  taken: ReadonlySet<string> = NO_TAKEN_TARGETS
+) {
   const [abilityActiveStart, setAbilityActiveStart] = useState(0)
   const [abilityPassiveStart, setAbilityPassiveStart] = useState(0)
-  const [abilityActiveTarget, setAbilityActiveTarget] = useState(0)
-  const [abilityPassiveTarget, setAbilityPassiveTarget] = useState(0)
+  const [activePicked, setActivePicked] = useState<number | null>(null)
+  const [passivePicked, setPassivePicked] = useState<number | null>(null)
+
+  const defaults = firstFreeTarget(
+    "Ability",
+    { active: abilityActiveStart, passive: abilityPassiveStart },
+    taken
+  )
+  const abilityActiveTarget = activePicked ?? defaults.active
+  const abilityPassiveTarget = passivePicked ?? defaults.passive
 
   // Never a regression below either track's own current level — a track whose selected Target is
   // at or below its current level has nothing left to farm for this goal.
@@ -493,18 +567,17 @@ export function useAbilityFields() {
   const reset = () => {
     setAbilityActiveStart(0)
     setAbilityPassiveStart(0)
-    setAbilityActiveTarget(0)
-    setAbilityPassiveTarget(0)
+    setActivePicked(null)
+    setPassivePicked(null)
   }
 
   // Applies the synced current-ability-level prefill once per entity selection — called from the
   // parent's single ref-guarded prefill effect (see use-create-goal-form.ts), not on every render.
-  // Each track's Target seeds from its own current level so neither is forced onto the other.
   const prefillFrom = (activeLevel: number, passiveLevel: number) => {
     setAbilityActiveStart(activeLevel)
     setAbilityPassiveStart(passiveLevel)
-    setAbilityActiveTarget(defaultTargetLevel(activeLevel))
-    setAbilityPassiveTarget(defaultTargetLevel(passiveLevel))
+    setActivePicked(null)
+    setPassivePicked(null)
   }
 
   return {
@@ -512,52 +585,62 @@ export function useAbilityFields() {
       abilityActiveStart,
       abilityActiveEnd,
       abilityActiveTarget,
-      setAbilityActiveTarget,
+      setAbilityActiveTarget: (level: number) => setActivePicked(level),
       abilityPassiveStart,
       abilityPassiveEnd,
       abilityPassiveTarget,
-      setAbilityPassiveTarget,
+      setAbilityPassiveTarget: (level: number) => setPassivePicked(level),
     },
     reset,
     prefillFrom,
   }
 }
 
+const NO_TAKEN_TARGETS: ReadonlySet<string> = new Set()
+
 /**
  * The Ascension goal's own target-range state — a read-only start progression (always the unit's
  * live synced progression, never user-editable — see `prefillFrom`) and the target progression
- * step. The shard-source selection (Campaigns/Onslaught/Shops) lives in `useAcquisitionSourceSelection`
+ * step. Until the user picks a target above the start it follows `firstFreeTarget` — the next step,
+ * skipping in-flight targets in `taken` — so it never defaults to the current progression. The
+ * shard-source selection (Campaigns/Onslaught/Shops) lives in `useAcquisitionSourceSelection`
  * instead — it's shared with Unlock, not Ascension-specific.
  */
-export function useAscensionFields() {
+export function useAscensionFields(
+  taken: ReadonlySet<string> = NO_TAKEN_TARGETS
+) {
   const [progressionStart, setProgressionStart] =
     useState<Progression>(firstProgression)
-  const [progressionEnd, setProgressionEnd] =
-    useState<Progression>(firstProgression)
+  const [picked, setPicked] = useState<Progression | null>(null)
+
+  const progressionEnd =
+    picked && progressionIndex(picked) > progressionIndex(progressionStart)
+      ? picked
+      : firstFreeTarget("Ascension", progressionStart, taken)
+  const progressionEndOptions = useMemo(
+    () => progressionEndOptionsFor(progressionStart),
+    [progressionStart]
+  )
 
   const reset = () => {
     setProgressionStart(firstProgression)
-    setProgressionEnd(firstProgression)
+    setPicked(null)
   }
 
   // Applies the synced current-progression prefill once per entity selection — called from the
   // parent's single ref-guarded prefill effect (see use-create-goal-form.ts), not on every render.
   // `progressionStart` is never otherwise settable — the "From" field always reflects this synced
-  // value.
+  // value. A target picked (or prefilled) before it arrived stays while it is above the start.
   const prefillFrom = (progression: Progression) => {
     setProgressionStart(progression)
-    setProgressionEnd((current) =>
-      progressionIndex(current) > progressionIndex(progression)
-        ? current
-        : progression
-    )
   }
 
   return {
     state: {
       progressionStart,
       progressionEnd,
-      setProgressionEnd,
+      progressionEndOptions,
+      setProgressionEnd: (value: Progression) => setPicked(value),
     },
     reset,
     prefillFrom,
@@ -568,18 +651,23 @@ export function useAscensionFields() {
  * The Rank goal's own target-range state — a read-only start rank (always the unit's live synced
  * rank, set only via `prefillFrom` — never user-editable), the target rank, the target rank's
  * "Additional target" (V1's Point Five / Mythic-tier partial-upgrade selection, see
- * rank-additional-target.ts), and the option lists each select offers.
+ * rank-additional-target.ts), and the option lists each select offers. Until the user picks a target
+ * above the start it follows `firstFreeTarget`, skipping in-flight targets in `taken`.
  */
-export function useRankFields() {
+export function useRankFields(taken: ReadonlySet<string> = NO_TAKEN_TARGETS) {
   const [rankStart, setRankStart] = useState<Rank>(firstRank)
-  const [rankEnd, setRankEndState] = useState<Rank>(rankAt(1))
+  const [picked, setPicked] = useState<Rank | null>(null)
   const [rankAdditionalTarget, setRankAdditionalTarget] =
     useState<RankAdditionalTarget>("None")
 
-  const rankEndOptions = useMemo(() => {
-    const options = rankOrder.filter((r) => rankIndex(r) > rankIndex(rankStart))
-    return options.length > 0 ? options : [rankStart]
-  }, [rankStart])
+  const rankEnd =
+    picked && rankIndex(picked) > rankIndex(rankStart)
+      ? picked
+      : firstFreeTarget("Rank", rankStart, taken)
+  const rankEndOptions = useMemo(
+    () => rankOptionsAbove(rankIndex(rankStart)),
+    [rankStart]
+  )
   const additionalTargetChoices = useMemo(
     () => additionalTargetOptions(rankEnd),
     [rankEnd]
@@ -589,13 +677,13 @@ export function useRankFields() {
   // Mythic-tier rank drops its numbered partial options) — reset to None rather than leave a
   // selection the new rank doesn't actually offer.
   const setRankEnd = (rank: Rank) => {
-    setRankEndState(rank)
+    setPicked(rank)
     setRankAdditionalTarget("None")
   }
 
   const reset = () => {
     setRankStart(firstRank)
-    setRankEndState(rankAt(1))
+    setPicked(null)
     setRankAdditionalTarget("None")
   }
 
@@ -606,12 +694,6 @@ export function useRankFields() {
   // never otherwise settable — the "From" field always reflects this synced value.
   const prefillFrom = (rank: Rank | undefined) => {
     setRankStart((current) => rank ?? current)
-    setRankEndState((current) => {
-      if (!rank) return current
-      return rankIndex(current) > rankIndex(rank)
-        ? current
-        : rankAt(Math.min(rankIndex(rank) + 1, rankIndex(lastRank)))
-    })
     setRankAdditionalTarget("None")
   }
 

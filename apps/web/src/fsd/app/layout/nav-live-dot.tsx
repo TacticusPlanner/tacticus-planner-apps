@@ -26,7 +26,7 @@ export function NavLiveDot({
   const signals = useEventLiveSignals()
   const isLive =
     item.liveIndicator === "events"
-      ? signals.hse || signals.hre
+      ? signals.hse || signals.hre || signals.quest
       : item.liveIndicator
         ? signals[item.liveIndicator]
         : false

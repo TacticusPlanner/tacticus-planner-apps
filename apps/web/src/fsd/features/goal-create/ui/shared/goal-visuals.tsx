@@ -1,4 +1,5 @@
-import type { ReactNode } from "react"
+import { useId, type ReactNode, type Ref } from "react"
+import { ChevronDownIcon } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { characterIcon, mowIcon } from "@workspace/game-catalog"
 import type { UnitId } from "@workspace/game-domain"
@@ -58,18 +59,27 @@ export function GoalTypeToggleGroup({
   entityType?: string
 }) {
   const { t } = useTranslation()
+  const idPrefix = useId()
 
   return (
     <div className="grid grid-cols-2 gap-x-3 gap-y-1.5 rounded-2xl border p-3">
       {kinds.map((kind) => (
-        <Field key={kind} orientation="horizontal">
+        <Field
+          className="min-h-11 md:min-h-0"
+          key={kind}
+          orientation="horizontal"
+        >
           <Checkbox
             checked={enabledTypes.has(kind)}
             disabled={isDisabled?.(kind)}
+            id={`${idPrefix}-${kind}`}
             onCheckedChange={(checked) => onToggle(kind, checked === true)}
             data-testid={`create-goal-type-toggle-${kind}`}
           />
-          <FieldLabel className="font-normal">
+          <FieldLabel
+            className="min-h-11 flex-1 items-center font-normal md:min-h-0"
+            htmlFor={`${idPrefix}-${kind}`}
+          >
             <EntityIcon
               alt=""
               className="size-5 shrink-0"
@@ -84,44 +94,101 @@ export function GoalTypeToggleGroup({
 }
 
 /** Wraps a selected goal type's own fields in a `Card` headed by that type's icon/name — the
- * counterpart `GoalTypeToggleGroup` toggles into view. */
+ * counterpart `GoalTypeToggleGroup` toggles into view. The header is a band set off from the fields;
+ * with `onExpandedChange` it is a disclosure button and a collapsed card shows only its header, with
+ * `summary` (start → target) and the number of blocking problems. A collapsed body stays mounted. */
 export function GoalTypeCard({
   kind,
   entityType,
   children,
-  wide,
+  expanded = true,
+  onExpandedChange,
+  summary,
+  issueCount = 0,
+  headerId,
+  ref,
 }: {
   kind: GoalKind
   entityType?: string
   children: ReactNode
-  /** Spans both columns of the create dialog's two-column body (for wide content like source trees). */
-  wide?: boolean
+  expanded?: boolean
+  onExpandedChange?: (expanded: boolean) => void
+  summary?: ReactNode
+  issueCount?: number
+  /** The header button's id, so an issue on a collapsed card can fall back to focusing it. */
+  headerId?: string
+  ref?: Ref<HTMLDivElement>
 }) {
   const { t } = useTranslation()
+  const bodyId = useId()
+  const title = (
+    <>
+      <EntityIcon
+        alt=""
+        className="size-6 shrink-0"
+        src={goalTypeIcon(kind, entityType)}
+      />
+      <span>{t(`goals.create.goalTypes.${kind}`)}</span>
+      {summary ? (
+        <span className="flex min-w-0 items-center gap-1 text-sm font-normal text-muted-foreground">
+          <span aria-hidden>·</span>
+          {summary}
+        </span>
+      ) : null}
+      {issueCount > 0 ? (
+        <Badge
+          className="ml-auto"
+          data-testid={`create-goal-type-card-${kind}-issue-count`}
+          variant="destructive"
+        >
+          {t("goals.create.issues.count", { count: issueCount })}
+        </Badge>
+      ) : null}
+    </>
+  )
 
   return (
     // shrink-0: Card's own `overflow-hidden` resets its automatic min-height to 0 as a flex item —
     // without this, the Sheet's scrolling `flex flex-col` form squeezes every card down to a sliver
     // (flex-shrink has nothing content-sized to stop at) instead of the form scrolling past them.
     <Card
-      className={cn(
-        "shrink-0 data-[size=sm]:[--card-spacing:--spacing(3)]",
-        wide && "col-span-full"
-      )}
+      className="col-span-full shrink-0 gap-0 py-0 data-[size=sm]:[--card-spacing:--spacing(3)]"
+      data-expanded={expanded}
       data-testid={`create-goal-type-card-${kind}`}
+      ref={ref}
       size="sm"
     >
-      <CardHeader className="gap-0">
+      <CardHeader
+        className={cn("gap-0 bg-muted/50 py-2", expanded && "border-b")}
+      >
         <CardTitle className="flex items-center gap-2">
-          <EntityIcon
-            alt=""
-            className="size-6 shrink-0"
-            src={goalTypeIcon(kind, entityType)}
-          />
-          {t(`goals.create.goalTypes.${kind}`)}
+          {onExpandedChange ? (
+            <button
+              aria-controls={bodyId}
+              aria-expanded={expanded}
+              className="flex min-h-8 w-full flex-wrap items-center gap-2 text-left"
+              data-testid={`create-goal-type-card-${kind}-header`}
+              id={headerId}
+              onClick={() => onExpandedChange(!expanded)}
+              type="button"
+            >
+              {title}
+              <ChevronDownIcon
+                className={cn(
+                  "size-4 shrink-0 text-muted-foreground transition-transform",
+                  issueCount === 0 && "ml-auto",
+                  expanded && "rotate-180"
+                )}
+              />
+            </button>
+          ) : (
+            title
+          )}
         </CardTitle>
       </CardHeader>
-      <CardContent className="grid gap-2">{children}</CardContent>
+      <CardContent className="grid gap-2 py-3" hidden={!expanded} id={bodyId}>
+        {children}
+      </CardContent>
     </Card>
   )
 }

@@ -53,6 +53,10 @@ export function goldIcon(): string {
   return gameAssetUrl(`misc/ui_icon_resource_coin.webp`)
 }
 
+export function raidTicketIcon(): string {
+  return gameAssetUrl(`resources/ui_icon_raid_ticket.webp`)
+}
+
 export function salvageIcon(): string {
   return gameAssetUrl(`resources/ui_icon_resource_salvage.webp`)
 }

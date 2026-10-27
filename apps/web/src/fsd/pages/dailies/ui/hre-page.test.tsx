@@ -3,6 +3,7 @@ import userEvent from "@testing-library/user-event"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { act, render, screen, within } from "@/test/render"
+import { homeScreenEventRaidRuleOf } from "@/test/fixtures/home-screen-event"
 
 import type { DailiesOutletContext } from "./dailies-layout"
 import { HrePage } from "./hre-page"
@@ -240,6 +241,7 @@ describe("HRE tab", () => {
     mocks.homeScreenEvent = {
       status: "ready",
       active: { definitionId: "hse-machine-hunt" },
+      activeRaidRule: homeScreenEventRaidRuleOf("hse-machine-hunt"),
     }
     mocks.raids = {
       status: "no-goals",
@@ -248,7 +250,7 @@ describe("HRE tab", () => {
     }
     renderHre()
     expect(mocks.raidsArgs.at(-1)?.[1]).toMatchObject({
-      homeScreenEventId: "hse-machine-hunt",
+      homeScreenEventRule: homeScreenEventRaidRuleOf("hse-machine-hunt"),
       eventFarm: false,
     })
     expect(screen.getByTestId("hre-raids-budget")).toHaveTextContent(
@@ -263,6 +265,7 @@ describe("HRE tab", () => {
     mocks.homeScreenEvent = {
       status: "ready",
       active: { definitionId: "hse-machine-hunt" },
+      activeRaidRule: homeScreenEventRaidRuleOf("hse-machine-hunt"),
     }
     renderHre()
     expect(screen.getByTestId("hre-raids-budget")).not.toHaveTextContent(
@@ -279,11 +282,12 @@ describe("HRE tab", () => {
     mocks.homeScreenEvent = {
       status: "ready",
       active: { definitionId: "hse-faction-boost" },
+      activeRaidRule: null,
     }
     renderHre()
-    expect(mocks.raidsArgs.at(-1)?.[1]).not.toHaveProperty(
-      "homeScreenEventId",
-      "hse-faction-boost"
+    expect(mocks.raidsArgs.at(-1)?.[1]).toHaveProperty(
+      "homeScreenEventRule",
+      undefined
     )
     expect(screen.getByTestId("hre-raids-budget")).not.toHaveTextContent(
       "raids.noteHomeScreenEvent"

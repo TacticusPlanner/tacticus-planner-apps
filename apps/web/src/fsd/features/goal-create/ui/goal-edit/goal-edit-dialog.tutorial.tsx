@@ -6,7 +6,7 @@ import type { Step } from "react-joyride"
 import { useTourPageSteps, type TourPageSteps } from "@/shared/tour"
 
 /**
- * The Edit goal dialog's own onboarding tour: the target editors, the priority position and the project
+ * The Edit goal dialog's own onboarding tour: the target (the ladder or stepper of the goal's card), the priority position and the project
  * picker, all `data-testid`s inside the form body. Both shells (centered dialog at or above 768px,
  * bottom sheet below) render the same body, so desktop and mobile share the steps; a step whose target
  * the goal does not have (an Unlock goal has no target) is skipped by Joyride.
@@ -16,7 +16,7 @@ export function useGoalEditDialogTutorial(): TourPageSteps {
 
   const target = useMemo<Step>(
     () => ({
-      target: '[data-testid="goal-edit-target"]',
+      target: '[data-testid="goal-card-target"]',
       title: t("tour.editGoal.steps.target.title"),
       content: t("tour.editGoal.steps.target.content"),
     }),
@@ -66,6 +66,6 @@ export function useGoalEditDialogTutorial(): TourPageSteps {
  * `registerPageSteps` in `tour-provider.tsx`).
  */
 export function GoalEditDialogTourRegistration() {
-  useTourPageSteps(useGoalEditDialogTutorial())
+  useTourPageSteps(useGoalEditDialogTutorial(), { overlay: true })
   return null
 }

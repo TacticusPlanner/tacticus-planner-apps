@@ -75,25 +75,36 @@ export function draftTokenView(
   })
 }
 
-/** The ceiling (spec: ceiling and verdict per step): the last run's forecast ending points. */
-export function ceilingOf(view: TokenPlanView): number | null {
+/** The ceiling (spec: ceiling and verdict per step): the forecast ending points of the horizon
+ *  run, or of the last run without one. */
+export function ceilingOf(
+  view: TokenPlanView,
+  horizon?: LegendaryEventRun
+): number | null {
   if (view.kind !== "ready" || !view.forecast) return null
-  return view.forecast.runs.at(-1)?.endingPoints ?? null
+  const { runs } = view.forecast
+  const atHorizon =
+    horizon === undefined
+      ? undefined
+      : (runs.findLast((entry) => entry.run <= horizon) ?? runs[0])
+  return (atHorizon ?? runs.at(-1))?.endingPoints ?? null
 }
 
-/** A step's points target: the points to end the event on, or not reachable this event. */
+/** A step's points target: the points to end the horizon run on, or not reachable by then. */
 export type StepTarget =
   | { step: AscensionStep; kind: "points"; points: number }
   | { step: AscensionStep; kind: "unreachable" }
 
 /**
  * The points target of every step after the unit's synced progression (spec: points target for a
- * chosen ascension step), through the projection with that step in place of the next one. A step
- * the held shards already cover is not offered; enough currency now targets the current points.
+ * chosen ascension step) by the end of the horizon run, through the projection with that step in
+ * place of the next one and only the runs through the horizon. A step the held shards already
+ * cover is not offered; enough currency now targets the current points.
  */
 export function stepTargets(
   inputs: Pick<PlanInputs, "event" | "progress" | "resolution" | "eventUnit">,
-  economy: PlanEconomy
+  economy: PlanEconomy,
+  horizon?: LegendaryEventRun
 ): StepTarget[] {
   const rewards = inputs.event.rewards as
     PlanInputs["event"]["rewards"] | undefined
@@ -110,6 +121,7 @@ export function stepTargets(
         runs: economy.runs,
         showPaidOptions: economy.showPaidOptions,
         targetStep: step,
+        ...(horizon === undefined ? {} : { throughRun: horizon }),
       })
       if (projection.goal.step === "fullyAscended") return []
       const points = projection.points

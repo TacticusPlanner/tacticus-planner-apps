@@ -201,7 +201,7 @@ describe("computeLevelGoalCost", () => {
     ).toEqual({ books: 1, gold: 500 })
   })
 
-  it("raises both book count and gold together for a lower rarity (Epic: 5 books, 2,500 gold)", () => {
+  it("prices each book at its own rarity's apply gold (Epic: 5 books x 150 = 750 gold)", () => {
     expect(
       computeLevelGoalCost({
         currentLevel: 31,
@@ -210,7 +210,7 @@ describe("computeLevelGoalCost", () => {
         ownedXpBooks: undefined,
         rarity: "Epic",
       })
-    ).toEqual({ books: 5, gold: 2_500 })
+    ).toEqual({ books: 5, gold: 750 })
   })
 
   it("falls back to Legendary for a missing or unsupported stored rarity", () => {

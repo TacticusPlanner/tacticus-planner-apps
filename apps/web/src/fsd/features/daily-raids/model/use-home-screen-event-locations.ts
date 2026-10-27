@@ -19,7 +19,11 @@ import {
   selectTopEventLocations,
   type TopEventLocation,
 } from "./home-screen-event-locations"
-import { battleEventPoints } from "./home-screen-event-rules"
+import {
+  battleEventPoints,
+  eventCampaignGroupIds,
+  type HseRaidRule,
+} from "./home-screen-event-rules"
 import { buildRaidsFilterBattles } from "./raids-filters/campaign-type"
 import { passLocationFilter } from "./raids-filters/pass-location-filter"
 import { useRaidsFilters } from "./raids-filters/use-raids-filters"
@@ -45,7 +49,7 @@ export type HomeScreenEventLocationsState =
  * campaign event) and locations already raided today.
  */
 export function useHomeScreenEventLocations(
-  definitionId: string
+  rule: HseRaidRule
 ): HomeScreenEventLocationsState {
   const {
     name: campaignDisplayName,
@@ -98,16 +102,15 @@ export function useHomeScreenEventLocations(
       }),
     [allBattlesById, campaignDisplayName, campaignTierLabel, campaignShortLabel]
   )
-  const pointsByBattleId = useMemo(
-    () =>
-      new Map(
-        availableBattles.map((battle) => [
-          battle.id,
-          battleEventPoints(definitionId, battle, npcsById ?? new Map()),
-        ])
-      ),
-    [availableBattles, definitionId, npcsById]
-  )
+  const pointsByBattleId = useMemo(() => {
+    const eventGroupIds = eventCampaignGroupIds(campaignDefinitions ?? [])
+    return new Map(
+      availableBattles.map((battle) => [
+        battle.id,
+        battleEventPoints(rule, battle, npcsById ?? new Map(), eventGroupIds),
+      ])
+    )
+  }, [availableBattles, campaignDefinitions, rule, npcsById])
   const raidedToday = useMemo(() => {
     const attempts = liveProgress?.battleAttempts ?? []
     const index = buildBattleAttemptIndex(allBattlesById)

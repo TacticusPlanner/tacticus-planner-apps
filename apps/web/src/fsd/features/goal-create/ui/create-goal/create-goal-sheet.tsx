@@ -1,9 +1,8 @@
 import { useState, type ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
-import { Checkbox } from "@workspace/ui/components/checkbox"
-import { Field, FieldLabel } from "@workspace/ui/components/field"
 import { Spinner } from "@workspace/ui/components/spinner"
+import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
 import { characterIcon, mowIcon } from "@workspace/game-catalog"
 import type { UnitId } from "@workspace/game-domain"
@@ -18,6 +17,14 @@ import {
 import { useCreateGoalForm } from "../../model/goal-creation-form/use-create-goal-form"
 import type { CreateGoalPrefill } from "../../model/goal-creation-form/create-goal-launcher-context"
 import { CreateGoalSheetTourRegistration } from "./create-goal-sheet.tutorial"
+import { CreateGoalOptions } from "./create-goal-options"
+import { GoalFormIssueSummary } from "./goal-form-issues"
+import { focusGoalField } from "./goal-form-issue-ids"
+import {
+  MOBILE_CREATE_STEPS,
+  type MobileCreateStep,
+} from "./mobile-create-step"
+import { MobileStepIndicator } from "./mobile-create-steps"
 import { UnitGoalFormFields } from "./unit-goal-form-fields"
 
 type CreateGoalSheetProps = {
@@ -47,6 +54,21 @@ export function CreateGoalSheet({
     null
   )
   const form = useCreateGoalForm({ open, onOpenChange, prefill })
+  const isMobile = useIsMobile()
+  // Below 768px creation is a three-step flow; a launch that carries a unit starts at Goals.
+  const firstStep: MobileCreateStep =
+    prefill && "entityId" in prefill ? "goals" : "unit"
+  const [mobileStep, setMobileStep] = useState<MobileCreateStep>(firstStep)
+  const [wasOpen, setWasOpen] = useState(open)
+  if (open !== wasOpen) {
+    setWasOpen(open)
+    if (open) setMobileStep(firstStep)
+  }
+  const stepIndex = MOBILE_CREATE_STEPS.indexOf(mobileStep)
+  const nextBlocked =
+    mobileStep === "unit"
+      ? !form.entityId
+      : form.issues.length > 0 || form.enabledTypes.size === 0
 
   const unitIcon = (id: UnitId) =>
     form.charactersById?.has(id) ? characterIcon(id) : mowIcon(id)
@@ -57,81 +79,96 @@ export function CreateGoalSheet({
       onOpenChange={onOpenChange}
       data-testid="create-goal-sheet"
       contentRef={setPortalContainer}
+      // A fixed height at 768px and wider, so enabling a goal type never resizes or moves the dialog.
+      desktopClassName="h-[min(56rem,calc(100vh-2rem))]"
       preventOutsideClose
     >
-      {open ? <CreateGoalSheetTourRegistration /> : null}
-      <ResponsiveDialogHeader className="flex-row items-center gap-2">
+      {open ? (
+        <CreateGoalSheetTourRegistration setMobileStep={setMobileStep} />
+      ) : null}
+      <ResponsiveDialogHeader className="flex-row flex-wrap items-center gap-2">
         <ResponsiveDialogTitle>{t("goals.create.title")}</ResponsiveDialogTitle>
         {headerAction}
+        {isMobile ? (
+          <div className="basis-full">
+            <MobileStepIndicator step={mobileStep} />
+          </div>
+        ) : null}
       </ResponsiveDialogHeader>
 
       <ResponsiveDialogBody>
         <UnitGoalFormFields
           form={form}
+          mobileStep={isMobile ? mobileStep : undefined}
           portalContainer={portalContainer}
           unitIcon={unitIcon}
         />
       </ResponsiveDialogBody>
 
-      <ResponsiveDialogFooter>
-        <div
-          className="flex flex-col gap-2 md:mr-auto md:flex-row md:items-center md:gap-5"
-          data-testid="create-goal-footer-options"
-        >
-          <Field
-            className="md:w-auto"
-            data-testid="create-goal-start-paused"
-            orientation="horizontal"
+      {/* Below 768px the footer is one row: Close (Back after the first step), the problem count, then
+          Next or, on Review, Create goal (goal-creation: mobile step navigation keeps values). */}
+      <ResponsiveDialogFooter className="flex-row items-center justify-end max-md:gap-2">
+        {isMobile ? null : (
+          <CreateGoalOptions
+            form={form}
+            placement="footer"
+            portalContainer={portalContainer}
+          />
+        )}
+        {isMobile && stepIndex > 0 ? (
+          <Button
+            className="flex-1"
+            data-testid="create-goal-back"
+            onClick={() => setMobileStep(MOBILE_CREATE_STEPS[stepIndex - 1]!)}
+            type="button"
+            variant="outline"
           >
-            <Checkbox
-              checked={form.startPaused}
-              data-testid="create-goal-start-paused-checkbox"
-              id="create-goal-start-paused-checkbox"
-              onCheckedChange={(checked) =>
-                form.setStartPaused(checked === true)
-              }
-            />
-            <FieldLabel
-              className="font-normal text-muted-foreground"
-              htmlFor="create-goal-start-paused-checkbox"
-              title={t("goals.create.startPausedHint")}
-            >
-              {t("goals.create.startPaused")}
-            </FieldLabel>
-          </Field>
-          <Field className="md:w-auto" orientation="horizontal">
-            <Checkbox
-              id="create-goal-another"
-              checked={form.createAnother}
-              onCheckedChange={(checked) =>
-                form.setCreateAnother(checked === true)
-              }
-            />
-            <FieldLabel
-              className="font-normal text-muted-foreground"
-              htmlFor="create-goal-another"
-            >
-              {t("goals.create.createAnother")}
-            </FieldLabel>
-          </Field>
-        </div>
-        <Button
-          data-testid="create-goal-close"
-          onClick={() => onOpenChange(false)}
-          type="button"
-          variant="outline"
-        >
-          {t("goals.create.close")}
-        </Button>
-        <Button
-          data-testid="create-goal-submit"
-          disabled={!form.canSubmit || form.status === "submitting"}
-          form="create-goal-form"
-          type="submit"
-        >
-          {form.status === "submitting" ? <Spinner /> : null}
-          {t("goals.create.submit")}
-        </Button>
+            {t("goals.create.steps.back")}
+          </Button>
+        ) : (
+          <Button
+            className="max-md:flex-1"
+            data-testid="create-goal-close"
+            onClick={() => onOpenChange(false)}
+            type="button"
+            variant="outline"
+          >
+            {t("goals.create.close")}
+          </Button>
+        )}
+        {isMobile && mobileStep === "unit" ? null : (
+          <GoalFormIssueSummary
+            issues={form.issues}
+            onFollow={(issue) => {
+              if (isMobile) setMobileStep("goals")
+              form.setExpandedKind(issue.kind)
+              focusGoalField(issue.kind, issue.field)
+            }}
+            portalContainer={portalContainer}
+          />
+        )}
+        {isMobile && mobileStep !== "review" ? (
+          <Button
+            className="flex-1"
+            data-testid="create-goal-next"
+            disabled={nextBlocked}
+            onClick={() => setMobileStep(MOBILE_CREATE_STEPS[stepIndex + 1]!)}
+            type="button"
+          >
+            {t("goals.create.steps.next")}
+          </Button>
+        ) : (
+          <Button
+            className="max-md:flex-1"
+            data-testid="create-goal-submit"
+            disabled={!form.canSubmit || form.status === "submitting"}
+            form="create-goal-form"
+            type="submit"
+          >
+            {form.status === "submitting" ? <Spinner /> : null}
+            {t("goals.create.submit")}
+          </Button>
+        )}
       </ResponsiveDialogFooter>
     </ResponsiveDialog>
   )

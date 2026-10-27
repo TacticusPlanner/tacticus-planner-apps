@@ -1,26 +1,34 @@
 import {
+  isUncraftableMythicUpgrade,
   resolveShopOffersForToday,
   type GameCatalogShop,
   type ResolvedShopOffer,
   type ShopDayOfWeek,
   type ShopLockContext,
 } from "@workspace/game-catalog"
+import type { UpgradeId } from "@workspace/game-domain"
 
-import {
-  MYTHIC_UPGRADE_NEED_IDS,
-  type ShopNeedAggregate,
-  type ShopNeedUnitEntry,
-} from "./shop-needs"
+import type { ShopNeedAggregate, ShopNeedUnitEntry } from "./shop-needs"
 
-const MATCHABLE_NON_SHARD = new Set<string>(MYTHIC_UPGRADE_NEED_IDS)
-
-/** Reward types this release can match against a goal need — shards, mythic shards, `upgHpM00x`. */
-function isMatchableRewardType(rewardType: string): boolean {
+/** Reward types this release can match against a goal need — shards, mythic shards, and the
+ *  uncraftable Mythic materials. */
+function isMatchableRewardType(
+  rewardType: string,
+  upgradesById: BuildShopRecommendationsParams["upgradesById"]
+): boolean {
   return (
     rewardType.startsWith("shards_") ||
     rewardType.startsWith("mythicShards_") ||
-    MATCHABLE_NON_SHARD.has(rewardType)
+    isShopOnlyMaterial(rewardType, upgradesById)
   )
+}
+
+function isShopOnlyMaterial(
+  rewardType: string,
+  upgradesById: BuildShopRecommendationsParams["upgradesById"]
+): boolean {
+  const upgrade = upgradesById.get(rewardType as UpgradeId)
+  return upgrade !== undefined && isUncraftableMythicUpgrade(upgrade)
 }
 
 export interface ShopRecommendationCard {
@@ -54,6 +62,12 @@ export interface BuildShopRecommendationsParams {
   day: ShopDayOfWeek
   powerLevel: number
   lockContext: ShopLockContext
+  /** The served upgrades, to tell the uncraftable Mythic materials in Rogue Trader's penultimate
+   *  slot apart. */
+  upgradesById: ReadonlyMap<
+    UpgradeId,
+    Parameters<typeof isUncraftableMythicUpgrade>[0]
+  >
   now?: number
 }
 
@@ -69,19 +83,20 @@ export function buildShopRecommendations({
   day,
   powerLevel,
   lockContext,
+  upgradesById,
   now = Date.now(),
 }: BuildShopRecommendationsParams): ShopRecommendationSection[] {
   return shops.map((shop) => {
     const offers =
       shop.id === "rogue-trader"
-        ? rogueTraderPenultimateOffers(shop, day, now)
+        ? rogueTraderPenultimateOffers(shop, day, now, upgradesById)
         : resolveShopOffersForToday(shop, { day, powerLevel, lockContext, now })
 
     const guaranteed: ShopRecommendationCard[] = []
     const possible: ShopRecommendationCard[] = []
 
     for (const offer of offers) {
-      if (!isMatchableRewardType(offer.rewardType)) continue
+      if (!isMatchableRewardType(offer.rewardType, upgradesById)) continue
       const need = needs.get(offer.rewardType)
       if (!need || need.acquired >= need.required) continue
 
@@ -135,7 +150,8 @@ function toCard(
 function rogueTraderPenultimateOffers(
   shop: GameCatalogShop,
   day: ShopDayOfWeek,
-  now: number
+  now: number,
+  upgradesById: BuildShopRecommendationsParams["upgradesById"]
 ): ResolvedShopOffer[] {
   if (shop.slots.length <= 2) return []
   const penultimate = shop.slots[shop.slots.length - 2]!
@@ -145,7 +161,9 @@ function rogueTraderPenultimateOffers(
     slots: [
       {
         variants: penultimate.variants
-          .filter((variant) => MATCHABLE_NON_SHARD.has(variant.reward.type))
+          .filter((variant) =>
+            isShopOnlyMaterial(variant.reward.type, upgradesById)
+          )
           .map((variant) => ({
             ...variant,
             lockId: undefined,

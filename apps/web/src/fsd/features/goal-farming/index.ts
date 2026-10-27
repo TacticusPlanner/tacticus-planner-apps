@@ -66,6 +66,7 @@ export {
 export {
   computeGoalAcquisition,
   isMowDetail,
+  type MythicMaterialCatalog,
   neededMythicMaterialIds,
   selectMythicMaterialOffers,
 } from "./lib/goal-acquisition"

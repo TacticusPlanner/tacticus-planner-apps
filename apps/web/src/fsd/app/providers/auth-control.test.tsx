@@ -63,7 +63,7 @@ vi.mock("@/entities/account", () => ({
   useCurrentUser: () => useCurrentUser(),
 }))
 
-vi.mock("@/features/account-management", () => ({
+vi.mock("@/features/account", () => ({
   ManageAccountDialog: ({
     open,
     initialTab,

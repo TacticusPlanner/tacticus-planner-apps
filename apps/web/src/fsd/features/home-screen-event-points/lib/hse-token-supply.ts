@@ -1,6 +1,23 @@
 /** The token game modes a Home Screen Event projection covers, by their catalog names. */
-export const HSE_TOKEN_MODES = ["Arena", "Onslaught", "SalvageRun"] as const
+export const HSE_TOKEN_MODES = [
+  "Arena",
+  "TournamentArena",
+  "Onslaught",
+  "SalvageRun",
+] as const
 export type HseTokenMode = (typeof HSE_TOKEN_MODES)[number]
+
+/** The token modes whose buckets the Tacticus API syncs (`gameModeTokens.*`). */
+const HSE_SYNCED_TOKEN_MODES = ["Arena", "Onslaught", "SalvageRun"] as const
+export type HseSyncedTokenMode = (typeof HSE_SYNCED_TOKEN_MODES)[number]
+
+/** Token modes the API does not sync: the player enters their tokens (Tournament Arena). */
+export type HseManualTokenMode = Exclude<HseTokenMode, HseSyncedTokenMode>
+
+export const isHseManualTokenMode = (
+  mode: HseTokenMode
+): mode is HseManualTokenMode =>
+  !(HSE_SYNCED_TOKEN_MODES as readonly HseTokenMode[]).includes(mode)
 
 /** A synced token bucket (`gameModeTokens.*`): seconds are relative to the instant it was synced. */
 export type HseTokenBucket = {
@@ -11,7 +28,7 @@ export type HseTokenBucket = {
 }
 
 /** The synced buckets by mode; null when the mode is not unlocked. */
-export type HseTokenBuckets = Record<HseTokenMode, HseTokenBucket | null>
+export type HseTokenBuckets = Record<HseSyncedTokenMode, HseTokenBucket | null>
 
 export type HseTokenWindow =
   | {
@@ -73,13 +90,13 @@ export function hseBucketTokens(
   return held + arrivalsBefore(first, endMs, regenMs)
 }
 
-/** Tokens per token mode until the event ends; null for a mode that is not unlocked. */
+/** Tokens per synced token mode until the event ends; null for a mode that is not unlocked. */
 export function hseTokenSupply(
   buckets: HseTokenBuckets,
   window: HseTokenWindow
-): Record<HseTokenMode, number | null> {
-  const supply = {} as Record<HseTokenMode, number | null>
-  for (const mode of HSE_TOKEN_MODES) {
+): Record<HseSyncedTokenMode, number | null> {
+  const supply = {} as Record<HseSyncedTokenMode, number | null>
+  for (const mode of HSE_SYNCED_TOKEN_MODES) {
     const bucket = buckets[mode]
     supply[mode] = bucket ? hseBucketTokens(bucket, window) : null
   }

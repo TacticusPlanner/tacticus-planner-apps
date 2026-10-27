@@ -131,6 +131,8 @@ const voidwyrm = {
   name: "Amulet of the Voidwyrm",
   abilityId: "AmuletOfTheVoidwyrm",
   allowedUnits: ["genesBiophagus"],
+  // The served relic levels set the stepper's cap (every relic serves 10).
+  levels: Array.from({ length: 10 }, () => ({ stats: {} })),
 }
 const sharedRelic = {
   ...relic,
@@ -206,6 +208,12 @@ async function seedUnitData() {
     "unlock-shard-costs": [
       { rarity: "Uncommon", shards: 80 },
       { rarity: "Legendary", shards: 500 },
+    ],
+    "damage-types": [
+      { id: "Physical", piercingRatio: 1, traits: [] },
+      { id: "Psychic", piercingRatio: 100, traits: ["NoBlocking"] },
+      { id: "Gauss", piercingRatio: 60, traits: [] },
+      { id: "Eviscerate", piercingRatio: 50, traits: [] },
     ],
   })
   if (env.roster) {

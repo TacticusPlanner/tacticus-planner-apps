@@ -125,7 +125,10 @@ export function GoalProjectsField({
               data-testid={`${testIdPrefix}-project-chip-${project.projectId}`}
               key={project.projectId}
             >
-              <Badge className="gap-1.5 py-1" variant="outline">
+              <Badge
+                className="gap-1.5 overflow-visible py-1"
+                variant="outline"
+              >
                 <ProjectColorDot color={project.color} />
                 <span>{project.name}</span>
                 {project.isDefault ? (
@@ -138,7 +141,7 @@ export function GoalProjectsField({
                   aria-label={t("goals.project.removeMembership", {
                     project: project.name,
                   })}
-                  className="rounded-full p-0.5 hover:bg-muted"
+                  className="relative rounded-full p-0.5 after:absolute after:-inset-1 hover:bg-muted"
                   onClick={() => remove(project.projectId)}
                   type="button"
                 >

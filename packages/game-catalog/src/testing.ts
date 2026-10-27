@@ -9,3 +9,7 @@ export { replaceGameCatalogDataset } from "./game-catalog-storage"
 export function deleteGameCatalogDatabase() {
   return Dexie.delete(catalogDbName)
 }
+
+// The served `quest-events` and `quest-crates` payloads for the shipped quests (Cyrus, Nubari, Kîmm),
+// parsed through the catalog schemas, so feature tests read the same shapes the sync stores.
+export { questCratesFixture, questEventsFixture } from "./quests.fixtures"

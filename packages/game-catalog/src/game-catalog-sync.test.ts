@@ -146,6 +146,24 @@ const datasetData: Record<string, unknown> = {
       units: [],
     },
   ],
+  "quest-events": [
+    {
+      featuredCharacterId: "astarCyrus",
+      allowedFactionIds: ["AdeptusAstartes"],
+      enemyFactionIds: ["Necrons"],
+      battles: [],
+    },
+  ],
+  "quest-crates": [{ number: 1, points: 1000, rewards: [] }],
+  factions: [
+    {
+      id: "Ultramarines",
+      alliance: "Imperial",
+      unlockDateUtc: "2022-01-01T00:00:00Z",
+      collectionFaction: false,
+    },
+  ],
+  "damage-types": [{ id: "Flame", piercingRatio: 25, traits: ["OnFire"] }],
 }
 
 function createManifest(
@@ -406,6 +424,39 @@ describe("syncGameCatalog", () => {
     )
     expect(result.status).toBe("ready")
     expect(await getDatasetRecords("unit-power")).toEqual([])
+  })
+
+  it("keys quest-events by featured hero and quest-crates by number, and is ready without them", async () => {
+    await syncGameCatalog(new FakeGameCatalogClient(createManifest()))
+    expect(await getDatasetRecords("quest-events")).toEqual([
+      expect.objectContaining({ id: "astarCyrus" }),
+    ])
+    expect(await getDatasetRecords("quest-crates")).toEqual([
+      expect.objectContaining({ id: "1", points: 1000 }),
+    ])
+
+    await resetDb()
+    const manifest = createManifest()
+    const result = await syncGameCatalog(
+      new FakeGameCatalogClient({
+        ...manifest,
+        datasets: manifest.datasets.filter(
+          (dataset) =>
+            dataset.key !== "quest-events" && dataset.key !== "quest-crates"
+        ),
+      })
+    )
+    expect(result.status).toBe("ready")
+  })
+
+  it("keys factions and damage-types by their game id", async () => {
+    await syncGameCatalog(new FakeGameCatalogClient(createManifest()))
+    expect(await getDatasetRecords("factions")).toEqual([
+      expect.objectContaining({ id: "Ultramarines", alliance: "Imperial" }),
+    ])
+    expect(await getDatasetRecords("damage-types")).toEqual([
+      expect.objectContaining({ id: "Flame", piercingRatio: 25 }),
+    ])
   })
 
   it("is ready when the manifest does not list the optional horde-mode-tiers dataset", async () => {

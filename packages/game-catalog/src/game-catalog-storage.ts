@@ -23,7 +23,9 @@ export const catalogDbName = "tacticus-planner-game-catalog"
 // stale metadata row.
 // v11: add the `mythic-quests` store (same additive cascade).
 // v12: add the `unit-power` store (same additive cascade).
-export const catalogDbVersion = 12
+// v13: add the `quest-events` and `quest-crates` stores (same additive cascade).
+// v14: add the `factions` and `damage-types` stores (same additive cascade).
+export const catalogDbVersion = 14
 
 // One EntityTable per served dataset, keyed by "id" — computed from the same union that builds the
 // stores below (GameCatalogDatasetKey === typeof servedDatasetKeys[number]), so every dataset store is

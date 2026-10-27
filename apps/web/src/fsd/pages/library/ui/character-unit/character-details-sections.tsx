@@ -7,7 +7,7 @@ import {
   type CharacterStorageModel,
   type EquipmentStorageModel,
 } from "@workspace/game-catalog"
-import { pierceRatio, type Rank } from "@workspace/game-domain"
+import type { Rank } from "@workspace/game-domain"
 import {
   Tooltip,
   TooltipContent,
@@ -24,6 +24,7 @@ import {
 } from "@/shared/ability-text"
 import { describeSeries, EntityIcon, LevelChart } from "@/shared/ui"
 
+import { usePierceRatios } from "../../model/use-pierce-ratios"
 import { RulesTextNote } from "../unit/rules-text-note"
 import { ladderRanks, type StatsFigure } from "./character-unit.view-model"
 import { EquipmentSlots } from "./equipment-slots"
@@ -82,7 +83,7 @@ function AttackRow({
   range?: number
 }) {
   const { t } = useTranslation(["library", "damageTypes"])
-  const pierce = pierceRatio(damageType)
+  const pierce = usePierceRatios()?.get(damageType)
   return (
     <div
       className="flex flex-wrap items-center gap-x-3 gap-y-1 border-t py-2"

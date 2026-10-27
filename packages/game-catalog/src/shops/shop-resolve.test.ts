@@ -1,10 +1,15 @@
 import { describe, expect, it } from "vitest"
 
-import { progressionStarsIndex, type Progression } from "@workspace/game-domain"
+import {
+  progressionStarsIndex,
+  Rarity,
+  type Progression,
+} from "@workspace/game-domain"
 
 import type { GameCatalogShop, GameCatalogShopVariant } from "../record-types"
 import {
   computeShopLockContext,
+  isUncraftableMythicUpgrade,
   lockIsActive,
   resolveEventLockId,
   resolveMythicMaterialShopOffers,
@@ -550,10 +555,32 @@ describe("resolveMythicMaterialShopOffers (add-mythic-material-shop-sources)", (
     ])
   })
 
-  it("ignores ids that are not one of the four Mythic materials", () => {
+  it("returns nothing when no material is asked for", () => {
+    expect(resolveMythicMaterialShopOffers(shops, [], blueStarRoster)).toEqual(
+      []
+    )
+  })
+})
+
+describe("isUncraftableMythicUpgrade", () => {
+  const recipe = [{ material: "upgHpL100", count: 2, recipe: null }]
+
+  it("is true for a Mythic material with no recipe", () => {
     expect(
-      resolveMythicMaterialShopOffers(shops, ["upgDmgL202"], blueStarRoster)
-    ).toEqual([])
+      isUncraftableMythicUpgrade({ rarity: Rarity.Mythic, recipe: [] })
+    ).toBe(true)
+  })
+
+  it("is false for a craftable Mythic material", () => {
+    expect(isUncraftableMythicUpgrade({ rarity: Rarity.Mythic, recipe })).toBe(
+      false
+    )
+  })
+
+  it("is false for a base material below Mythic", () => {
+    expect(
+      isUncraftableMythicUpgrade({ rarity: Rarity.Legendary, recipe: [] })
+    ).toBe(false)
   })
 })
 

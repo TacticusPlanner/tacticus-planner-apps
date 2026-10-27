@@ -1,8 +1,10 @@
 import {
   isProgression,
+  lastProgression,
   lastRank,
   maxAbilityLevel,
   progressionIndex,
+  progressionOrder,
   rankAt,
   rankIndex,
   rankOrder,
@@ -188,7 +190,12 @@ export function getGoalTargetIssue(
     case "Ability": {
       if (!config.ability) return null
       const { activeStart, passiveStart } = config.ability
-      if (draft.activeEnd < activeStart || draft.passiveEnd < passiveStart) {
+      if (
+        !Number.isInteger(draft.activeEnd) ||
+        !Number.isInteger(draft.passiveEnd) ||
+        draft.activeEnd < activeStart ||
+        draft.passiveEnd < passiveStart
+      ) {
         return "abilityBelowStart"
       }
       if (
@@ -211,11 +218,8 @@ export function getGoalTargetIssue(
       ) {
         return "upgradeRange"
       }
-      return draft.targets.every(
-        (target) =>
-          Number.isInteger(target.quantity) &&
-          target.quantity >= 1 &&
-          target.quantity <= MAX_UPGRADE_QUANTITY
+      return draft.targets.every((target) =>
+        isValidUpgradeQuantity(target.quantity)
       )
         ? null
         : "upgradeQuantity"
@@ -235,10 +239,93 @@ export function getChangedGoalTargetIssue(
     : null
 }
 
-/** Ranks a Rank target can be raised or lowered to: everything above the stored start, up to the top of
- * the ladder (never an empty list — the start's own rank stands in when it is the last one). */
-export function rankEndOptionsFor(detail: GoalDetail): Rank[] {
-  const start = detail.config.rank?.start ?? 0
+/** `options` with a stored value that isn't among them put back in ladder order, so a picker holding an
+ * out-of-range stored target (e.g. from an import) never opens blank. */
+function keepStored<T>(
+  options: readonly T[],
+  ladder: readonly T[],
+  stored: T | undefined
+): T[] {
+  if (stored === undefined || options.includes(stored)) return [...options]
+  return ladder.filter((step) => step === stored || options.includes(step))
+}
+
+/** Ranks a Rank target can be set to: everything above `start` (a rank index), plus a stored target
+ * that is itself at or below it. Never empty: the last rank stands in at the top of the ladder. */
+export function rankOptionsAbove(start: number, stored?: Rank): Rank[] {
   const options = rankOrder.filter((rank) => rankIndex(rank) > start)
-  return options.length > 0 ? options : [lastRank]
+  return keepStored(
+    options.length > 0 ? options : [lastRank],
+    rankOrder,
+    stored
+  )
+}
+
+/** {@link rankOptionsAbove} for a stored goal's start and target. */
+export function rankEndOptionsFor(detail: GoalDetail): Rank[] {
+  return rankOptionsAbove(
+    detail.config.rank?.start ?? 0,
+    detail.config.rank ? rankAt(detail.config.rank.end) : undefined
+  )
+}
+
+/** Ascension steps above `start`, plus a stored target at or below it. Never "None" or empty: the last
+ * step stands in at the top of the ladder. */
+export function progressionEndOptionsFor(
+  start: Progression,
+  stored?: Progression
+): Progression[] {
+  const from = progressionIndex(start)
+  const options = progressionOrder.filter(
+    (step) => progressionIndex(step) > from
+  )
+  return keepStored(
+    options.length > 0 ? options : [lastProgression],
+    progressionOrder,
+    stored
+  )
+}
+
+/**
+ * One ability track's target levels: the start level, which leaves the track where it is so a single
+ * Ability goal can raise just the other track, then every level above it up to the maximum, plus a stored
+ * level below the start. A level of 0 (no start) offers from 1.
+ */
+export function abilityLevelOptionsFor(
+  start: number,
+  stored?: number
+): number[] {
+  const from = Math.max(start, 1)
+  const options = Array.from(
+    { length: Math.max(0, maxAbilityLevel - from + 1) },
+    (_, i) => from + i
+  )
+  return stored === undefined || options.includes(stored) || stored < 1
+    ? options
+    : [...options, stored].sort((a, b) => a - b)
+}
+
+/** Whether an Upgrade quantity is a whole number from 1 to {@link MAX_UPGRADE_QUANTITY}. A cleared field
+ * reads as `NaN`. */
+export function isValidUpgradeQuantity(quantity: number): boolean {
+  return (
+    Number.isInteger(quantity) &&
+    quantity >= 1 &&
+    quantity <= MAX_UPGRADE_QUANTITY
+  )
+}
+
+/** Whether the goal stores a start the "Started from" text can show (an Upgrade goal has none). */
+export function hasGoalTargetStart(detail: GoalDetail): boolean {
+  const { config } = detail
+  switch (detail.goalType) {
+    case "Rank":
+      return !!config.rank
+    case "Ascension":
+      return !!config.progression
+    case "Ability":
+      return !!config.ability
+    default:
+      return false
+  }
 }

@@ -15,6 +15,8 @@
     "hseDescription": "Evento de pantalla de inicio: haz incursiones donde el evento actual da puntos",
     "hre": "ELH",
     "hreDescription": "Evento de lanzamiento de héroe: sigue tus misiones y haz incursiones para ellas con la menor energía",
+    "quest": "Misión",
+    "questDescription": "Evento de Misión: sigue tu puntuación por batalla y mira el mapa, los enemigos y el botín de cada batalla",
     "shops": "Tiendas",
     "shopsDescription": "Consulta las rotaciones y compras de la tienda",
     "guild-raids": "Incursiones de gremio",
@@ -332,7 +334,7 @@
         },
         "projection": {
           "title": "Proyección de puntos",
-          "content": "Las fichas de Arena, Onslaught y Carrera de Saqueo que aún puedes usar antes de que acabe el evento, la media que necesita cada una para llegar al último hito y adónde llegan tus propias medias. Edita las medias; se recuerdan para este evento."
+          "content": "Las fichas de Arena, Onslaught y Carrera de Saqueo que aún puedes usar antes de que acabe el evento, la media que necesita cada una para llegar al último hito y adónde llegan tus propias medias. Edita las medias; se recuerdan para este evento. Las fichas de Arena de torneo no se sincronizan: introduce las tuyas cuando el evento puntúe allí."
         },
         "teams": {
           "title": "Equipos del evento",
@@ -381,6 +383,46 @@
         "paceSummary": {
           "title": "El ritmo de un vistazo",
           "content": "Tus puntos, dónde acaban y el paso que alcanzan. Toca Detalles para introducir puntos, puesto y lo que tienes, y para elegir un objetivo."
+        }
+      }
+    },
+    "quest": {
+      "steps": {
+        "header": {
+          "title": "La misión",
+          "content": "El héroe protagonista, que debe jugar todas las batallas, las facciones que puedes desplegar y el tiempo restante. Elige otra misión para ver sus batallas."
+        },
+        "summary": {
+          "title": "Tu puntuación",
+          "content": "Tus puntos sobre 8800, las cajas que abren y las batallas en las que aún quedan puntos."
+        },
+        "battles": {
+          "title": "Batallas por nivel",
+          "content": "Las 17 batallas de Común a Mítico con sus huecos, objetivos adicionales, botín y puntos. Selecciona una para verla."
+        },
+        "entry": {
+          "title": "Tu mejor intento",
+          "content": "Anota medallas, puntos de Victoria relámpago y los objetivos adicionales que cumpliste. Solo cuenta tu mejor intento."
+        },
+        "detail": {
+          "title": "Detalle de la batalla",
+          "content": "El mapa, los enemigos con su nivel, el límite de rareza y el botín con lo que tus objetivos necesitan de él."
+        },
+        "rewards": {
+          "title": "Recompensas",
+          "content": "Las cajas que abre tu puntuación, los fragmentos del héroe por medallas y lo que desbloquean, con un atajo para planificarlos como objetivo."
+        },
+        "tokens": {
+          "title": "Intentos",
+          "content": "Anota tus fichas actuales para ver si tus intentos cubren las batallas que aún no están al máximo."
+        },
+        "team": {
+          "title": "Equipo sugerido",
+          "content": "Tu protagonista más las unidades más fuertes que cumplen los objetivos extra, con el poder al límite del nivel. Las insignias muestran qué objetivos cumple el equipo."
+        },
+        "estimate": {
+          "title": "Estimación de victoria",
+          "content": "Si tu equipo supera el poder de la batalla al límite del nivel, con y sin objetivos extra. Las filas muestran el veredicto y el resumen prevé tus puntos finales."
         }
       }
     }
@@ -587,9 +629,9 @@
       },
       "lines": {
         "xp": "{{units}} ganan {{multiplier}}x de EXP {{modes}}",
-        "xpTeam": "{{units}} ganan {{multiplier}}x de EXP {{modes}} cuando todo el equipo es de una facción",
+        "xpTeam": "{{units}} ganan +{{bonusPct}} % de EXP {{modes}} por cada personaje aliado desplegado de la misma facción",
         "xpByRarity": "{{units}} ganan EXP extra según la rareza ({{rates}}) {{modes}}",
-        "xpByRarityTeam": "{{units}} ganan EXP extra según la rareza ({{rates}}) {{modes}} cuando todo el equipo es de una facción",
+        "xpByRarityTeam": "{{units}} ganan EXP extra según la rareza ({{rates}}) {{modes}} por cada personaje aliado desplegado de la misma facción",
         "stat": "{{units}} tienen +{{health}} % de salud, +{{damage}} % de daño y +{{armour}} % de armadura {{modes}}",
         "kill_one": "Ganas {{count}} punto por cada {{enemy}} que derrotes {{modes}}",
         "kill_other": "Ganas {{count}} puntos por cada {{enemy}} que derrotes {{modes}}",
@@ -597,10 +639,10 @@
         "killWith_other": "Ganas {{count}} puntos por cada {{enemy}} que derrotes con {{player}} {{modes}}",
         "waves_one": "Ganas {{count}} punto por cada oleada que superes {{modes}}",
         "waves_other": "Ganas {{count}} puntos por cada oleada que superes {{modes}}",
-        "factionMajority_one": "Ganas {{count}} punto por cada combate {{modes}} en el que la mayoría de las unidades que despliegas son de una facción",
-        "factionMajority_other": "Ganas {{count}} puntos por cada combate {{modes}} en el que la mayoría de las unidades que despliegas son de una facción",
-        "fullLineUp_one": "Ganas {{count}} punto por cada combate {{modes}} en el que toda tu alineación es de una facción",
-        "fullLineUp_other": "Ganas {{count}} puntos por cada combate {{modes}} en el que toda tu alineación es de una facción",
+        "factionMajority_one": "Obtienes {{count}} punto {{modes}} por cada personaje desplegado de la facción con más personajes en tu alineación",
+        "factionMajority_other": "Obtienes {{count}} puntos {{modes}} por cada personaje desplegado de la facción con más personajes en tu alineación",
+        "fullLineUp_one": "Obtienes {{count}} punto adicional por cada combate {{modes}} en el que toda tu alineación es de una sola facción",
+        "fullLineUp_other": "Obtienes {{count}} puntos adicionales por cada combate {{modes}} en el que toda tu alineación es de una sola facción",
         "donateUpgrade_one": "Ganas {{count}} punto por cada mejora que donas a un miembro del gremio",
         "donateUpgrade_other": "Ganas {{count}} puntos por cada mejora que donas a un miembro del gremio",
         "donateUpgradeByRarity": "Ganas puntos por cada mejora que donas a un miembro del gremio: {{rates}}",
@@ -669,6 +711,7 @@
       "averageNeeded": "Introduce una media",
       "tokensValue_one": "{{count}} ficha",
       "tokensValue_other": "{{count}} fichas",
+      "tokensLabel": "Fichas para {{mode}}",
       "projected": "Puntos proyectados",
       "projectedValue": "{{points}} pts",
       "needAverage": "Introduce una media para cada modo para ver los puntos proyectados.",
@@ -682,7 +725,8 @@
         "summed": "{{mode}}: se aplican {{count}} reglas de puntos, así que «{{perUnit}}» supone que cada una las cumple todas.",
         "locked": "Aún no desbloqueado, se omite: {{modes}}.",
         "enemyRestricted": "Solo cuentan algunos enemigos (consulta los detalles del evento), así que introduce tu media de bajas que cuentan.",
-        "battles": "Los modos de combate puntúan una vez por ficha: un combate por ficha.",
+        "battles": "Los modos de combate puntúan una vez por ficha, suponiendo una alineación completa de cinco personajes de una sola facción: puntos por personaje más la bonificación de alineación completa.",
+        "manualTokens": "Las fichas de {{modes}} no se sincronizan desde el juego: introduce cuántas gastarás durante el evento.",
         "campaign": "Las incursiones de campaña también dan puntos en este evento; se planifican en la lista de farmeo de abajo.",
         "syncedAt": "Fichas de tu sincronización {{when}}, suponiendo que las gastas antes de que tus reservas se llenen.",
         "syncUnknown": "Se desconoce la hora de tu sincronización, así que las fichas se cuentan desde ahora, suponiendo que las gastas antes de que tus reservas se llenen.",

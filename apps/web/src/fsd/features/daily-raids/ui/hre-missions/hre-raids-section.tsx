@@ -14,7 +14,6 @@ import {
 } from "../../model/mission-deploy-groups"
 import { emptyRaidsFilters } from "../../model/raids-filters/raids-filters.domain"
 import { useRaidsFilters } from "../../model/raids-filters/use-raids-filters"
-import { hasHomeScreenEventRule } from "../../model/home-screen-event-rules"
 import { useActiveHomeScreenEvent } from "../../model/use-active-home-screen-event"
 import { useDailyRaids } from "../../model/use-daily-raids"
 import { useHomeScreenEventName } from "../home-screen-event/use-home-screen-event-name"
@@ -75,10 +74,10 @@ export function HreRaidsSection({
   // A running Home Screen Event with a raid rule ranks the nodes too, so both events progress.
   const homeScreenEvent = useActiveHomeScreenEvent()
   const eventName = useHomeScreenEventName()
+  const runningEventRule =
+    homeScreenEvent.status === "ready" ? homeScreenEvent.activeRaidRule : null
   const runningEvent =
-    homeScreenEvent.status === "ready" &&
-    homeScreenEvent.active &&
-    hasHomeScreenEventRule(homeScreenEvent.active.definitionId)
+    runningEventRule && homeScreenEvent.status === "ready"
       ? homeScreenEvent.active
       : null
   const manual = request?.manual ?? null
@@ -110,7 +109,7 @@ export function HreRaidsSection({
     [hasRequest, battlesToGo, eventOnly, manual]
   )
   const raids = useDailyRaids(undefined, {
-    homeScreenEventId: runningEvent?.definitionId,
+    homeScreenEventRule: runningEventRule ?? undefined,
     eventFarm: false,
     missionRaids,
   })
