@@ -8,7 +8,7 @@ import { useCatalogDataset, usePlayerChunk } from "@/shared/local-data"
 import {
   estimateGoal,
   isMythicProgression,
-  ONSLAUGHT_RUNS_PER_DAY,
+  toOnslaughtRunsPerDay,
   useUnitShopShardSupply,
 } from "@/features/goal-farming/@x/goal-create"
 
@@ -135,6 +135,9 @@ function useEditOnslaughtYield({
     enabled: isAuthenticated && enabled,
   })
   const rewardsRead = readyData(useCatalogDataset("onslaught-rewards"))
+  const runsPerDay = readyData(
+    useCatalogDataset("global-values", toOnslaughtRunsPerDay)
+  )
   const charactersById = readyData(usePlayerChunk("characters", toByUnitId))
   const rewards = enabled ? rewardsRead : undefined
   const playerCharacter =
@@ -156,7 +159,7 @@ function useEditOnslaughtYield({
 
   return {
     progressSaved: isOnslaughtProgressSaved(onslaughtProgress, alliance),
-    shardsPerDay: shardsPerRun * ONSLAUGHT_RUNS_PER_DAY,
+    shardsPerDay: shardsPerRun * (runsPerDay ?? 0),
     currentIsMythic: currentProgression
       ? isMythicProgression(currentProgression)
       : false,

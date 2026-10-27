@@ -40,3 +40,4 @@ export type QuestEventStorageModel = StorageModel<"quest-events">
 export type QuestCrateStorageModel = StorageModel<"quest-crates">
 export type FactionStorageModel = StorageModel<"factions">
 export type DamageTypeStorageModel = StorageModel<"damage-types">
+export type GlobalValuesStorageModel = StorageModel<"global-values">

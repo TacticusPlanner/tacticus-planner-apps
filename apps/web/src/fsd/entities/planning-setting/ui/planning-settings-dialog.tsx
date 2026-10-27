@@ -18,28 +18,20 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@workspace/ui/components/select"
+import { Skeleton } from "@workspace/ui/components/skeleton"
 import { Slider } from "@workspace/ui/components/slider"
 import { Spinner } from "@workspace/ui/components/spinner"
 
 import {
-  dailyEnergyTiers,
   normalizeXpBookRarity,
   usePlanningSettings,
   xpBookRarityOptions,
 } from "@/entities/planning-setting"
 import { ApiError } from "@/shared/api"
+import { useCatalogDataset } from "@/shared/local-data"
 import { energyIconUrl, EntityIcon } from "@/shared/ui"
 
-const tierLabels = [
-  "Free",
-  "Ad",
-  "25 BS",
-  "50 BS",
-  "110 BS",
-  "250 BS",
-  "500 BS",
-  "1000 BS",
-]
+import { energySourceLabel, toDailyEnergyTiers } from "../model/energy-tiers"
 
 /**
  * The one Planning Settings dialog, reused from both Plan > Goals (`/plan/goals`) and Dailies >
@@ -57,14 +49,13 @@ export function PlanningSettingsDialog({
 }) {
   const { t } = useTranslation(["common", "progression"])
   const { settings, save } = usePlanningSettings()
-  const [tierIndex, setTierIndex] = useState(() =>
-    Math.max(
-      0,
-      dailyEnergyTiers.indexOf(
-        settings.dailyEnergy as (typeof dailyEnergyTiers)[number]
-      )
-    )
-  )
+  const tiersRead = useCatalogDataset("global-values", toDailyEnergyTiers)
+  const tiers = tiersRead.status === "ready" ? tiersRead.data : null
+  // The saved value until the slider moves, even when the ladder no longer offers it.
+  const [dailyEnergy, setDailyEnergy] = useState(settings.dailyEnergy)
+  const tier = tiers?.find((candidate) => candidate.energy === dailyEnergy)
+  // An energy value off the ladder only parks the slider at its first tier.
+  const tierIndex = tier && tiers ? tiers.indexOf(tier) : 0
   const [xpBookRarity, setXpBookRarity] = useState<Rarity>(() =>
     normalizeXpBookRarity(settings.xpBookRarity)
   )
@@ -76,7 +67,7 @@ export function PlanningSettingsDialog({
     setError(null)
     try {
       await save({
-        dailyEnergy: dailyEnergyTiers[tierIndex] ?? dailyEnergyTiers[0],
+        dailyEnergy,
         xpBookRarity,
         revision: settings.revision,
       })
@@ -113,23 +104,36 @@ export function PlanningSettingsDialog({
                 className="size-5 shrink-0"
                 src={energyIconUrl}
               />
-              {dailyEnergyTiers[tierIndex]} · {tierLabels[tierIndex]}
+              {tier
+                ? `${tier.energy} · ${energySourceLabel(tier.source)}`
+                : dailyEnergy}
             </p>
-            <Slider
-              aria-label={t("goals.planningSettings.dailyEnergy")}
-              data-testid="planning-settings-energy"
-              min={0}
-              max={dailyEnergyTiers.length - 1}
-              step={1}
-              value={[tierIndex]}
-              onValueChange={([value]) => {
-                if (value !== undefined) setTierIndex(value)
-              }}
-            />
-            <div className="flex justify-between text-xs text-muted-foreground">
-              <span>288</span>
-              <span>938</span>
-            </div>
+            {tiers ? (
+              <>
+                <Slider
+                  aria-label={t("goals.planningSettings.dailyEnergy")}
+                  data-testid="planning-settings-energy"
+                  min={0}
+                  max={tiers.length - 1}
+                  step={1}
+                  value={[tierIndex]}
+                  onValueChange={([value]) => {
+                    const next = value === undefined ? undefined : tiers[value]
+                    if (next) setDailyEnergy(next.energy)
+                  }}
+                />
+                <div className="flex justify-between text-xs text-muted-foreground">
+                  <span>{tiers[0]?.energy}</span>
+                  <span>{tiers.at(-1)?.energy}</span>
+                </div>
+              </>
+            ) : (
+              // Until global-values loads there are no tiers to slide between.
+              <Skeleton
+                className="h-9 w-full"
+                data-testid="planning-settings-energy-loading"
+              />
+            )}
           </Field>
 
           <Field>

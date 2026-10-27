@@ -1,6 +1,7 @@
 import { describe, expect, expectTypeOf, it } from "vitest"
 import type { BattleId, FactionId } from "@workspace/game-domain"
 
+import globalValues from "./schemas/global-values.fixture.json"
 import questCrates from "./schemas/quest-crates.fixture.json"
 import questEvents from "./schemas/quest-events.fixture.json"
 import {
@@ -861,6 +862,24 @@ describe("factions and damage-types schemas", () => {
     expect(
       datasetPayloadSchemas["damage-types"].safeParse([
         { ...flame, piercingRatio: 125 },
+      ]).success
+    ).toBe(false)
+  })
+})
+
+describe("global-values schema", () => {
+  it("parses the served record and keeps string trait constants", () => {
+    const [values] = datasetPayloadSchemas["global-values"].parse(globalValues)
+    expect(values?.staminaRegenerationTime).toBe(300)
+    expect(values?.staminaShopTiers).toHaveLength(8)
+    expect(values?.traitVariables.putridExplosionFactionId).toBe("DeathGuard")
+  })
+
+  it("rejects a record without its stamina shop", () => {
+    const [values] = globalValues
+    expect(
+      datasetPayloadSchemas["global-values"].safeParse([
+        { ...values, staminaShopTiers: undefined },
       ]).success
     ).toBe(false)
   })

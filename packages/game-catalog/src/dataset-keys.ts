@@ -27,6 +27,7 @@ export const servedDatasetKeys = [
   "quest-crates",
   "factions",
   "damage-types",
+  "global-values",
 ] as const
 
 export type GameCatalogDatasetKey = (typeof servedDatasetKeys)[number]

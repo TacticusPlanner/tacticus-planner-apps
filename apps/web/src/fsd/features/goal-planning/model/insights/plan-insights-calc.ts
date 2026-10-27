@@ -104,6 +104,7 @@ export function computePlanInsights(params: {
   onslaughtProgress?: OnslaughtProgress
   currentOnslaughtTokens?: number
   onslaughtRewards?: readonly OnslaughtRewardStorageModel[]
+  onslaughtRunsPerDay?: number
   /** The daily-shop dataset, used to resolve a goal's selected `Shop` acquisition-source ids back
    *  into offers with their per-day supply (tacticus-planner-apps#103). Omitting it treats every
    *  goal as if it selected no shop sources — the shared estimate still runs, just without that
@@ -225,6 +226,7 @@ export function computePlanInsights(params: {
       playerMowById: params.playerMowById,
       onslaughtProgress: params.onslaughtProgress,
       onslaughtRewards: params.onslaughtRewards,
+      onslaughtRunsPerDay: params.onslaughtRunsPerDay,
       upgradesById: params.upgradesById,
       shops: params.shops,
       referenceDate,

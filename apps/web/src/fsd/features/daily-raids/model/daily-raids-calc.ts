@@ -102,6 +102,7 @@ export type DailyRaidsCalculationInput = {
   referenceDate?: Date
   onslaughtProgress?: OnslaughtProgress
   onslaughtRewards?: readonly OnslaughtRewardStorageModel[]
+  onslaughtRunsPerDay?: number
   shops?: readonly GameCatalogShop[]
 }
 
@@ -204,6 +205,7 @@ export function calculateDailyRaids(
       playerMowById: params.playerMowById,
       onslaughtProgress: params.onslaughtProgress,
       onslaughtRewards: params.onslaughtRewards,
+      onslaughtRunsPerDay: params.onslaughtRunsPerDay,
       upgradesById: params.upgradesById,
       shops: params.shops,
       referenceDate,

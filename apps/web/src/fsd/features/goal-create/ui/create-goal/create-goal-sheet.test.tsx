@@ -4,6 +4,7 @@ import type { RenderOptions } from "@testing-library/react"
 import { MemoryRouter } from "react-router"
 import { fireEvent, render as baseRender, screen, within } from "@/test/render"
 import { setTestAuth } from "@/test/auth"
+import { globalValuesFixture } from "@workspace/game-catalog/testing"
 import { seedGameCatalog, seedPlayerData } from "@/test/seed"
 import { lastRank } from "@workspace/game-domain"
 
@@ -62,7 +63,6 @@ vi.mock("@/entities/player-data-override", () => ({
 }))
 
 vi.mock("@/entities/planning-setting", () => ({
-  dailyEnergyTiers: [288, 378, 438, 538, 638, 738, 838, 938],
   xpBookRarityOptions: [
     "Common",
     "Uncommon",
@@ -288,6 +288,7 @@ const mows = new Map([
 // The catalog the sheet reads, written through the real game-catalog storage.
 function seedCatalog() {
   return seedGameCatalog({
+    "global-values": [globalValuesFixture],
     characters: [...characters.values()],
     mows: [...mows.values()],
     upgrades,

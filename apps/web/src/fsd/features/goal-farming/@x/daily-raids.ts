@@ -28,4 +28,5 @@ export {
   type RaidPlanSchedule,
   type RaidPlanSummary,
   type UnitCoverage,
+  toOnslaughtRunsPerDay,
 } from "../index"
