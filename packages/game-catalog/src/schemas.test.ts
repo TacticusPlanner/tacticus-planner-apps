@@ -733,7 +733,7 @@ describe("catalog schemas", () => {
   it("validates a manifest", () => {
     const result = manifestSchema.safeParse({
       version: "dev-1",
-      schemaVersion: 11,
+      schemaHash: "schema-11",
       gameVersion: "1.40",
       sourceHash: "abc",
       datasets: [
@@ -743,6 +743,18 @@ describe("catalog schemas", () => {
           url: "/api/v1/game-catalog/characters",
         },
       ],
+    })
+
+    expect(result.success).toBe(true)
+  })
+
+  it("accepts a manifest from an API release that still serves schemaVersion", () => {
+    const result = manifestSchema.safeParse({
+      version: "dev-1",
+      schemaVersion: 15,
+      gameVersion: "1.40",
+      sourceHash: "abc",
+      datasets: [],
     })
 
     expect(result.success).toBe(true)

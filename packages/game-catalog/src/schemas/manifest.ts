@@ -8,7 +8,8 @@ export const manifestDatasetSchema = z.looseObject({
 
 export const manifestSchema = z.looseObject({
   version: z.string(),
-  schemaVersion: z.number(),
+  // Derived from the served payload contracts; optional while API releases without it are live.
+  schemaHash: z.string().optional(),
   gameVersion: z.string(),
   sourceHash: z.string(),
   datasets: z.array(manifestDatasetSchema),
@@ -17,7 +18,7 @@ export const manifestSchema = z.looseObject({
 // Envelope metadata; `data` is validated separately by the per-key payload schema.
 export const datasetEnvelopeMetaSchema = z.looseObject({
   version: z.string(),
-  schemaVersion: z.number(),
+  schemaHash: z.string().optional(),
   gameVersion: z.string(),
   sourceHash: z.string(),
   datasetKey: z.string(),
