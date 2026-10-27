@@ -7,7 +7,7 @@ import {
 } from "@workspace/ui/components/card"
 
 import type { Rarity } from "@workspace/game-domain"
-import { gameAssetUrl } from "@workspace/game-catalog"
+import { datamineAssetUrl, gameAssetUrl } from "@workspace/game-catalog"
 
 import { formatEstimateDate } from "@/shared/lib"
 import { energyIconUrl, EntityIcon, RarityIcon } from "@/shared/ui"
@@ -123,8 +123,8 @@ export function InsightsSummary({
                   <EntityIcon
                     alt=""
                     className="size-7"
-                    src={gameAssetUrl(
-                      `resources/ui_hero_ascension_orbs_${rarity.toLowerCase()}.webp`
+                    src={datamineAssetUrl(
+                      `atlases/ui_hero_ascension_orbs_${rarity.toLowerCase()}.webp`
                     )}
                   />
                   <span className="font-medium">{count}</span>

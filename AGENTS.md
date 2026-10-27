@@ -91,6 +91,12 @@ committed; the raw files are fetched into a gitignored cache.
 - `pnpm --filter web datamine:pull --local [dir]` copies from a data-mines
   checkout (default: the sibling workspace checkout) and sets the pin to
   `local`; CI rejects a `local` pin.
+- Game sprites live in `apps/web/public/game_catalog/datamines/`, copied byte
+  for byte from data-mines `sprites-webp/` at the same relative path and name
+  (never renamed or re-encoded). `apps/web/datamine/sprites.txt` lists them;
+  `pnpm --filter web datamine:sprites` copies exactly that list (and deletes
+  anything else there), and CI checks the folder matches it. Icon helpers build
+  these URLs with `datamineAssetUrl()` from `@workspace/game-catalog`.
 - Generators call `ensureDatamine()` from `apps/web/scripts/datamine.mjs`,
   which re-fetches when the pin or the list changed (`pnpm --filter web
 datamine:sync` does the same by hand).

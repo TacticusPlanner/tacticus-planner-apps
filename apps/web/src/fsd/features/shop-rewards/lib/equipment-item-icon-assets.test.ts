@@ -7,10 +7,10 @@ import equipmentItems from "../../../../../public/locales/en/equipmentItems.json
 
 // Vite's glob lists the shipped assets with their exact filename case, so the audit catches a file that
 // only resolves on a case-insensitive filesystem (Windows) and 404s on the case-sensitive host.
-const shippedEquipmentIcons = new Set(
+const shippedCatalogImages = new Set(
   Object.keys(
-    import.meta.glob("/public/game_catalog/equipment/*.webp", { query: "?url" })
-  ).map((path) => path.split("/").pop()!)
+    import.meta.glob("/public/game_catalog/**/*.webp", { query: "?url" })
+  ).map((path) => path.replace(/^\/public/, ""))
 )
 
 // Named items with no asset in V1 or the game data: they show EquipmentIcons.fallback.
@@ -25,22 +25,22 @@ describe("equipment item icon assets", () => {
   it("ships an exact-case icon for every named catalog item except the known gaps", () => {
     expect(namedIds.length).toBeGreaterThan(200)
 
-    const missing = namedIds.filter((id) => {
-      const file = EquipmentIcons.icon(id as EquipmentId)
-        .split("/")
-        .pop()!
-      return !KNOWN_GAPS.has(id) && !shippedEquipmentIcons.has(file)
-    })
+    const missing = namedIds.filter(
+      (id) =>
+        !KNOWN_GAPS.has(id) &&
+        !shippedCatalogImages.has(EquipmentIcons.icon(id as EquipmentId))
+    )
 
     expect(missing).toEqual([])
   })
 
   it("keeps the known gaps honest", () => {
     for (const id of KNOWN_GAPS) {
-      expect(shippedEquipmentIcons.has(`ui_icon_item_${id}.webp`), id).toBe(
-        false
-      )
+      expect(
+        shippedCatalogImages.has(EquipmentIcons.icon(id as EquipmentId)),
+        id
+      ).toBe(false)
     }
-    expect(shippedEquipmentIcons.has("ui_icon_item_unknown.webp")).toBe(true)
+    expect(shippedCatalogImages.has(EquipmentIcons.fallback)).toBe(true)
   })
 })

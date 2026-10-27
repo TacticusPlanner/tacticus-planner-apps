@@ -2,3 +2,18 @@
 # gitignored cache (node_modules/.cache/datamine) for the generators. Relative to that repo's root;
 # a trailing `/` takes the whole folder. List a path only when a generator reads it. Sorted.
 raw/VERSION
+sprites-webp/abilities/
+sprites-webp/abilties/
+sprites-webp/atlases/
+sprites-webp/avatars/
+sprites-webp/chests/
+sprites-webp/damage_profiles2/
+sprites-webp/droptables/
+sprites-webp/fonts/
+sprites-webp/guildboss/
+sprites-webp/items/
+sprites-webp/liveevenst/
+sprites-webp/liveevents/
+sprites-webp/root/
+sprites-webp/ui/
+sprites-webp/upgrades/

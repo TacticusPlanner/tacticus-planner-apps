@@ -11,7 +11,7 @@ describe("NpcPortrait", () => {
     const img = screen.getByRole("img", { name: "Makhotep" })
     expect(img).toHaveAttribute(
       "src",
-      "/game_catalog/characters/ui_image_portrait_necro_warden_01.webp"
+      "/game_catalog/datamines/atlases/ui_image_portrait_necro_warden_01.webp"
     )
   })
 

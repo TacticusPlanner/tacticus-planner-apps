@@ -7,5 +7,5 @@ import { gameAssetUrl } from "./asset-path"
  */
 export function npcPortrait(id: string): string | undefined {
   const file = npcPortraitOverrides[id]
-  return file ? gameAssetUrl(`characters/${file}`) : undefined
+  return file ? gameAssetUrl(file) : undefined
 }
