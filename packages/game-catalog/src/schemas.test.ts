@@ -3,6 +3,7 @@ import type { BattleId, FactionId } from "@workspace/game-domain"
 
 import globalValues from "./schemas/global-values.fixture.json"
 import progressionRules from "./schemas/progression-rules.fixture.json"
+import hre from "./schemas/hre.fixture.json"
 import questCrates from "./schemas/quest-crates.fixture.json"
 import questEvents from "./schemas/quest-events.fixture.json"
 import {
@@ -916,6 +917,37 @@ describe("progression-rules schema", () => {
         {
           ...rules,
           upgradeSlots: [{ rank: "Stone1", xpLevelRequirements: [1, 1, 1] }],
+        },
+      ]).success
+    ).toBe(false)
+  })
+})
+
+describe("hre schema", () => {
+  it("parses the served records", () => {
+    const [weirdboy] = datasetPayloadSchemas.hre.parse(hre)
+    expect(weirdboy?.heroId).toBe("orksWeirdboy")
+    expect(weirdboy?.missions).toHaveLength(21)
+    expect(weirdboy?.missions[1]?.tasks[1]).toEqual({
+      name: "SlayEnemiesWithFactionTrait",
+      target: 10,
+      parameters: { factionTrait: "Xenos" },
+    })
+    expect(weirdboy?.leaderboard.phases[0]?.tiers[0]).toMatchObject({
+      position: 0,
+      currency: 550,
+      shards: 33,
+    })
+    expect(weirdboy?.chestShop[0]).toMatchObject({ cost: 100, minShards: 10 })
+  })
+
+  it("rejects a mission without two tasks", () => {
+    const [weirdboy] = hre
+    expect(
+      datasetPayloadSchemas.hre.safeParse([
+        {
+          ...weirdboy,
+          missions: [{ ...weirdboy!.missions[0], tasks: [] }],
         },
       ]).success
     ).toBe(false)

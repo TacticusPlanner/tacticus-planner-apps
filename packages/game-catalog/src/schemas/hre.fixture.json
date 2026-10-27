@@ -1,0 +1,2424 @@
+[
+  {
+    "id": "hero_release_event_1",
+    "heroId": "orksWeirdboy",
+    "baseRarity": "Rare",
+    "maxRarity": "Legendary",
+    "featuredFaction": "Orks",
+    "gameModes": [
+      "Campaign",
+      "EliteCampaign",
+      "PvP",
+      "GuildBoss",
+      "MirrorCampaign",
+      "MirrorEliteCampaign",
+      "CampaignEvent"
+    ],
+    "scorePoints": {
+      "campaignScorePointsDifficultyMultiplier": 1,
+      "campaignScorePointsLightningVictoryDifficultyMultiplier": 1,
+      "campaignScorePointsMainUnitsDeadMultiplier": 1,
+      "campaignScorePointsStaminaMultiplier": 3,
+      "pvpScorePointsDifficultyMultiplier": 11,
+      "scorePointsEnemyPowerTable": [
+        5000, 25000, 50000, 100000, 250000, 500000, 1000000, 2000000, 5000000,
+        100000000
+      ],
+      "guildBossScorePointsDamageTableByRarity": {
+        "Common": [1, 4, 7, 11, 15, 20],
+        "Epic": [3, 10, 18, 28, 38, 50],
+        "Legendary": [3, 12, 21, 33, 45, 60],
+        "Mythic": [5, 15, 25, 40, 55, 70],
+        "Rare": [2, 8, 14, 22, 30, 40],
+        "Uncommon": [2, 6, 11, 17, 23, 30]
+      }
+    },
+    "milestones": [
+      {
+        "scorePoints": 100,
+        "currency": 55
+      },
+      {
+        "scorePoints": 250,
+        "currency": 60
+      },
+      {
+        "scorePoints": 500,
+        "currency": 65
+      },
+      {
+        "scorePoints": 850,
+        "currency": 70
+      },
+      {
+        "scorePoints": 1350,
+        "currency": 80
+      },
+      {
+        "scorePoints": 2000,
+        "currency": 85
+      },
+      {
+        "scorePoints": 3000,
+        "currency": 95
+      },
+      {
+        "scorePoints": 4000,
+        "currency": 100
+      },
+      {
+        "scorePoints": 5000,
+        "currency": 110
+      },
+      {
+        "scorePoints": 6000,
+        "currency": 120
+      },
+      {
+        "scorePoints": 7000,
+        "currency": 130
+      },
+      {
+        "scorePoints": 8000,
+        "currency": 140
+      },
+      {
+        "scorePoints": 9000,
+        "currency": 150
+      },
+      {
+        "scorePoints": 10000,
+        "currency": 155
+      },
+      {
+        "scorePoints": 11000,
+        "currency": 160
+      },
+      {
+        "scorePoints": 12000,
+        "currency": 165
+      },
+      {
+        "scorePoints": 14000,
+        "currency": 170
+      },
+      {
+        "scorePoints": 16000,
+        "currency": 175
+      },
+      {
+        "scorePoints": 18000,
+        "currency": 180
+      },
+      {
+        "scorePoints": 20000,
+        "currency": 185
+      },
+      {
+        "scorePoints": 22000,
+        "currency": 190
+      },
+      {
+        "scorePoints": 24000,
+        "currency": 195
+      },
+      {
+        "scorePoints": 26000,
+        "currency": 200
+      },
+      {
+        "scorePoints": 28000,
+        "currency": 205
+      },
+      {
+        "scorePoints": 30000,
+        "currency": 210
+      },
+      {
+        "scorePoints": 33000,
+        "currency": 215
+      },
+      {
+        "scorePoints": 36000,
+        "currency": 220
+      },
+      {
+        "scorePoints": 40000,
+        "currency": 225
+      },
+      {
+        "scorePoints": 45000,
+        "currency": 230
+      },
+      {
+        "scorePoints": 50000,
+        "currency": 235
+      },
+      {
+        "scorePoints": 60000,
+        "currency": 240
+      },
+      {
+        "scorePoints": 75000,
+        "currency": 245
+      },
+      {
+        "scorePoints": 100000,
+        "currency": 250
+      },
+      {
+        "scorePoints": 250000,
+        "currency": 255
+      },
+      {
+        "scorePoints": 500000,
+        "currency": 260
+      },
+      {
+        "scorePoints": 1000000,
+        "currency": 265
+      }
+    ],
+    "missions": [
+      {
+        "index": 1,
+        "id": "hre1_q1",
+        "bonus": false,
+        "currency": 100,
+        "rewards": ["hreCurrency:100"],
+        "tasks": [
+          {
+            "name": "WinLightningVictories",
+            "target": 2,
+            "parameters": {}
+          },
+          {
+            "name": "SlayEnemiesWithMeleeAttacks",
+            "target": 5,
+            "parameters": {}
+          }
+        ]
+      },
+      {
+        "index": 2,
+        "id": "hre1_q2",
+        "bonus": false,
+        "currency": 100,
+        "rewards": ["hreCurrency:100"],
+        "tasks": [
+          {
+            "name": "RaidBattles",
+            "target": 5,
+            "parameters": {}
+          },
+          {
+            "name": "SlayEnemiesWithFactionTrait",
+            "target": 10,
+            "parameters": {
+              "factionTrait": "Xenos"
+            }
+          }
+        ]
+      },
+      {
+        "index": 3,
+        "id": "hre1_q3",
+        "bonus": false,
+        "currency": 100,
+        "rewards": ["hreCurrency:100"],
+        "tasks": [
+          {
+            "name": "WinCampaignBattles",
+            "target": 20,
+            "parameters": {}
+          },
+          {
+            "name": "UseAbility",
+            "target": 30,
+            "parameters": {}
+          }
+        ]
+      },
+      {
+        "index": 4,
+        "id": "hre1_q4",
+        "bonus": false,
+        "currency": 100,
+        "rewards": ["hreCurrency:100"],
+        "tasks": [
+          {
+            "name": "PlayBattlesInGameMode",
+            "target": 4,
+            "parameters": {
+              "gameMode": "PvP"
+            }
+          },
+          {
+            "name": "SlayEnemiesWithRangedAttacks",
+            "target": 50,
+            "parameters": {}
+          }
+        ]
+      },
+      {
+        "index": 5,
+        "id": "hre1_q5",
+        "bonus": false,
+        "currency": 100,
+        "rewards": ["hreCurrency:100"],
+        "tasks": [
+          {
+            "name": "DealAbilityDamage",
+            "target": 10000,
+            "parameters": {}
+          },
+          {
+            "name": "WinCampaignBattles",
+            "target": 100,
+            "parameters": {}
+          }
+        ]
+      },
+      {
+        "index": 6,
+        "id": "hre1_q6",
+        "bonus": false,
+        "currency": 100,
+        "rewards": ["hreCurrency:100"],
+        "tasks": [
+          {
+            "name": "HealHealth",
+            "target": 2500,
+            "parameters": {}
+          },
+          {
+            "name": "WinBattlesWithoutUsingSummons",
+            "target": 10,
+            "parameters": {}
+          }
+        ]
+      },
+      {
+        "index": 7,
+        "id": "hre1_q7",
+        "bonus": false,
+        "currency": 100,
+        "rewards": ["hreCurrency:100"],
+        "tasks": [
+          {
+            "name": "UseAbilityWithFactionTrait",
+            "target": 20,
+            "parameters": {
+              "factionTrait": "Xenos"
+            }
+          },
+          {
+            "name": "PlayBattlesInGameMode",
+            "target": 2,
+            "parameters": {
+              "gameMode": "TreasureBeach"
+            }
+          }
+        ]
+      },
+      {
+        "index": 8,
+        "id": "hre1_q8",
+        "bonus": false,
+        "currency": 100,
+        "rewards": ["hreCurrency:100"],
+        "tasks": [
+          {
+            "name": "PlayBattlesInGameMode",
+            "target": 2,
+            "parameters": {
+              "gameMode": "GuildBoss"
+            }
+          },
+          {
+            "name": "DealDamage",
+            "target": 20000,
+            "parameters": {}
+          }
+        ]
+      },
+      {
+        "index": 9,
+        "id": "hre1_q9",
+        "bonus": false,
+        "currency": 100,
+        "rewards": ["hreCurrency:100"],
+        "tasks": [
+          {
+            "name": "DealDamageOfProfileType",
+            "target": 7500,
+            "parameters": {
+              "damageProfileType": "Psychic"
+            }
+          },
+          {
+            "name": "SlayEnemiesWithRangedAttacks",
+            "target": 75,
+            "parameters": {}
+          }
+        ]
+      },
+      {
+        "index": 10,
+        "id": "hre1_q10",
+        "bonus": false,
+        "currency": 100,
+        "rewards": ["hreCurrency:100"],
+        "tasks": [
+          {
+            "name": "WinBattlesWithFactionTraitLineup",
+            "target": 15,
+            "parameters": {
+              "factionTrait": "Xenos"
+            }
+          },
+          {
+            "name": "PlayBattlesInGameMode",
+            "target": 4,
+            "parameters": {
+              "gameMode": "PvP"
+            }
+          }
+        ]
+      },
+      {
+        "index": 11,
+        "id": "hre1_q11",
+        "bonus": false,
+        "currency": 100,
+        "rewards": ["hreCurrency:100"],
+        "tasks": [
+          {
+            "name": "WinLightningVictories",
+            "target": 25,
+            "parameters": {}
+          },
+          {
+            "name": "SlayEnemiesOfFaction",
+            "target": 100,
+            "parameters": {
+              "factionId": "Necrons"
+            }
+          }
+        ]
+      },
+      {
+        "index": 12,
+        "id": "hre1_q12",
+        "bonus": false,
+        "currency": 100,
+        "rewards": ["hreCurrency:100"],
+        "tasks": [
+          {
+            "name": "HealHealth",
+            "target": 5000,
+            "parameters": {}
+          },
+          {
+            "name": "PlayBattlesInGameMode",
+            "target": 1,
+            "parameters": {
+              "gameMode": "Waves"
+            }
+          }
+        ]
+      },
+      {
+        "index": 13,
+        "id": "hre1_q13",
+        "bonus": false,
+        "currency": 100,
+        "rewards": ["hreCurrency:100"],
+        "tasks": [
+          {
+            "name": "SlayEnemies",
+            "target": 75,
+            "parameters": {}
+          },
+          {
+            "name": "UseAbilityWithFactionTrait",
+            "target": 50,
+            "parameters": {
+              "factionTrait": "Xenos"
+            }
+          }
+        ]
+      },
+      {
+        "index": 14,
+        "id": "hre1_q14",
+        "bonus": false,
+        "currency": 100,
+        "rewards": ["hreCurrency:100"],
+        "tasks": [
+          {
+            "name": "WinBattlesWithFactionTraitLineup",
+            "target": 25,
+            "parameters": {
+              "factionTrait": "Xenos"
+            }
+          },
+          {
+            "name": "DealDamage",
+            "target": 30000,
+            "parameters": {}
+          }
+        ]
+      },
+      {
+        "index": 15,
+        "id": "hre1_q15",
+        "bonus": false,
+        "currency": 100,
+        "rewards": ["hreCurrency:100"],
+        "tasks": [
+          {
+            "name": "UseAbility",
+            "target": 150,
+            "parameters": {}
+          },
+          {
+            "name": "PlayBattlesInGameMode",
+            "target": 4,
+            "parameters": {
+              "gameMode": "PvP"
+            }
+          }
+        ]
+      },
+      {
+        "index": 16,
+        "id": "hre1_q16",
+        "bonus": false,
+        "currency": 100,
+        "rewards": ["hreCurrency:100"],
+        "tasks": [
+          {
+            "name": "SlayEnemiesWithFactionTrait",
+            "target": 100,
+            "parameters": {
+              "factionTrait": "Xenos"
+            }
+          },
+          {
+            "name": "RaidBattles",
+            "target": 25,
+            "parameters": {}
+          }
+        ]
+      },
+      {
+        "index": 17,
+        "id": "hre1_q17",
+        "bonus": false,
+        "currency": 100,
+        "rewards": ["hreCurrency:100"],
+        "tasks": [
+          {
+            "name": "DealDamage",
+            "target": 60000,
+            "parameters": {}
+          },
+          {
+            "name": "SlayEnemies",
+            "target": 75,
+            "parameters": {}
+          }
+        ]
+      },
+      {
+        "index": 18,
+        "id": "hre1_q18",
+        "bonus": false,
+        "currency": 100,
+        "rewards": ["hreCurrency:100"],
+        "tasks": [
+          {
+            "name": "DealAbilityDamage",
+            "target": 50000,
+            "parameters": {}
+          },
+          {
+            "name": "SlayEnemiesWithRangedAttacks",
+            "target": 250,
+            "parameters": {}
+          }
+        ]
+      },
+      {
+        "index": 19,
+        "id": "hre1_q19",
+        "bonus": false,
+        "currency": 100,
+        "rewards": ["hreCurrency:100"],
+        "tasks": [
+          {
+            "name": "SlayEnemiesWithMeleeAttacks",
+            "target": 100,
+            "parameters": {}
+          },
+          {
+            "name": "WinCampaignBattles",
+            "target": 75,
+            "parameters": {}
+          }
+        ]
+      },
+      {
+        "index": 20,
+        "id": "hre1_q20",
+        "bonus": false,
+        "currency": 100,
+        "rewards": ["hreCurrency:100"],
+        "tasks": [
+          {
+            "name": "UseAbilityWithHero",
+            "target": 10,
+            "parameters": {
+              "heroId": "orksWeirdboy"
+            }
+          },
+          {
+            "name": "WinCampaignBattles",
+            "target": 250,
+            "parameters": {}
+          }
+        ]
+      },
+      {
+        "index": 21,
+        "id": "hre1_bonus",
+        "bonus": true,
+        "currency": 0,
+        "rewards": ["summoningToken"],
+        "tasks": [
+          {
+            "name": "DealDamageWithHero",
+            "target": 15000,
+            "parameters": {
+              "heroId": "orksWeirdboy"
+            }
+          },
+          {
+            "name": "WinCampaignBattles",
+            "target": 250,
+            "parameters": {}
+          }
+        ]
+      }
+    ],
+    "leaderboard": {
+      "id": "heroReleaseLeaderboard",
+      "dailyRewards": [
+        {
+          "position": 0,
+          "currency": 100
+        },
+        {
+          "position": 1,
+          "currency": 95
+        },
+        {
+          "position": 2,
+          "currency": 92
+        },
+        {
+          "position": 3,
+          "currency": 89
+        },
+        {
+          "position": 10,
+          "currency": 86
+        },
+        {
+          "position": 25,
+          "currency": 83
+        },
+        {
+          "position": 50,
+          "currency": 80
+        },
+        {
+          "position": 100,
+          "currency": 77
+        },
+        {
+          "position": 150,
+          "currency": 74
+        },
+        {
+          "position": 250,
+          "currency": 71
+        },
+        {
+          "position": 500,
+          "currency": 68
+        },
+        {
+          "position": 1000,
+          "currency": 65
+        },
+        {
+          "position": 1500,
+          "currency": 62
+        },
+        {
+          "position": 2500,
+          "currency": 59
+        },
+        {
+          "position": 5000,
+          "currency": 56
+        },
+        {
+          "position": 10000,
+          "currency": 53
+        },
+        {
+          "position": 15000,
+          "currency": 50
+        },
+        {
+          "position": 20000,
+          "currency": 47
+        },
+        {
+          "position": 25000,
+          "currency": 44
+        },
+        {
+          "position": 35000,
+          "currency": 40
+        },
+        {
+          "position": 50000,
+          "currency": 36
+        },
+        {
+          "position": 75000,
+          "currency": 32
+        },
+        {
+          "position": 100000,
+          "currency": 28
+        },
+        {
+          "position": 150000,
+          "currency": 24
+        },
+        {
+          "position": 200000,
+          "currency": 20
+        }
+      ],
+      "phases": [
+        {
+          "endOffsetDays": 7,
+          "tiers": [
+            {
+              "position": 0,
+              "chestId": "hre_phase_chest_1_00",
+              "currency": 550,
+              "shards": 33
+            },
+            {
+              "position": 1,
+              "chestId": "hre_phase_chest_1_10",
+              "currency": 520,
+              "shards": 29
+            },
+            {
+              "position": 2,
+              "chestId": "hre_phase_chest_1_20",
+              "currency": 490,
+              "shards": 26
+            },
+            {
+              "position": 3,
+              "chestId": "hre_phase_chest_1_30",
+              "currency": 460,
+              "shards": 24
+            },
+            {
+              "position": 10,
+              "chestId": "hre_phase_chest_1_40",
+              "currency": 430,
+              "shards": 23
+            },
+            {
+              "position": 25,
+              "chestId": "hre_phase_chest_1_50",
+              "currency": 400,
+              "shards": 22
+            },
+            {
+              "position": 50,
+              "chestId": "hre_phase_chest_1_60",
+              "currency": 380,
+              "shards": 21
+            },
+            {
+              "position": 100,
+              "chestId": "hre_phase_chest_1_70",
+              "currency": 360,
+              "shards": 20
+            },
+            {
+              "position": 150,
+              "chestId": "hre_phase_chest_1_80",
+              "currency": 340,
+              "shards": 19
+            },
+            {
+              "position": 250,
+              "chestId": "hre_phase_chest_1_90",
+              "currency": 320,
+              "shards": 18
+            },
+            {
+              "position": 500,
+              "chestId": "hre_phase_chest_1_100",
+              "currency": 300,
+              "shards": 17
+            },
+            {
+              "position": 1000,
+              "chestId": "hre_phase_chest_1_110",
+              "currency": 280,
+              "shards": 16
+            },
+            {
+              "position": 1500,
+              "chestId": "hre_phase_chest_1_120",
+              "currency": 260,
+              "shards": 15
+            },
+            {
+              "position": 2500,
+              "chestId": "hre_phase_chest_1_130",
+              "currency": 240,
+              "shards": 14
+            },
+            {
+              "position": 5000,
+              "chestId": "hre_phase_chest_1_140",
+              "currency": 220,
+              "shards": 13
+            },
+            {
+              "position": 10000,
+              "chestId": "hre_phase_chest_1_150",
+              "currency": 200,
+              "shards": 12
+            },
+            {
+              "position": 15000,
+              "chestId": "hre_phase_chest_1_160",
+              "currency": 190,
+              "shards": 11
+            },
+            {
+              "position": 20000,
+              "chestId": "hre_phase_chest_1_170",
+              "currency": 180,
+              "shards": 10
+            },
+            {
+              "position": 25000,
+              "chestId": "hre_phase_chest_1_180",
+              "currency": 170,
+              "shards": 9
+            },
+            {
+              "position": 35000,
+              "chestId": "hre_phase_chest_1_190",
+              "currency": 160,
+              "shards": 8
+            },
+            {
+              "position": 50000,
+              "chestId": "hre_phase_chest_1_200",
+              "currency": 150,
+              "shards": 7
+            },
+            {
+              "position": 75000,
+              "chestId": "hre_phase_chest_1_210",
+              "currency": 140,
+              "shards": 6
+            },
+            {
+              "position": 100000,
+              "chestId": "hre_phase_chest_1_220",
+              "currency": 130,
+              "shards": 5
+            },
+            {
+              "position": 150000,
+              "chestId": "hre_phase_chest_1_230",
+              "currency": 120,
+              "shards": 4
+            },
+            {
+              "position": 200000,
+              "chestId": "hre_phase_chest_1_240",
+              "currency": 110,
+              "shards": 3
+            }
+          ]
+        },
+        {
+          "endOffsetDays": null,
+          "tiers": [
+            {
+              "position": 0,
+              "chestId": "hre_phase_chest_2_00",
+              "currency": 1100,
+              "shards": 66
+            },
+            {
+              "position": 1,
+              "chestId": "hre_phase_chest_2_10",
+              "currency": 1040,
+              "shards": 58
+            },
+            {
+              "position": 2,
+              "chestId": "hre_phase_chest_2_20",
+              "currency": 980,
+              "shards": 52
+            },
+            {
+              "position": 3,
+              "chestId": "hre_phase_chest_2_30",
+              "currency": 920,
+              "shards": 48
+            },
+            {
+              "position": 10,
+              "chestId": "hre_phase_chest_2_40",
+              "currency": 860,
+              "shards": 46
+            },
+            {
+              "position": 25,
+              "chestId": "hre_phase_chest_2_50",
+              "currency": 800,
+              "shards": 44
+            },
+            {
+              "position": 50,
+              "chestId": "hre_phase_chest_2_60",
+              "currency": 760,
+              "shards": 42
+            },
+            {
+              "position": 100,
+              "chestId": "hre_phase_chest_2_70",
+              "currency": 720,
+              "shards": 40
+            },
+            {
+              "position": 150,
+              "chestId": "hre_phase_chest_2_80",
+              "currency": 680,
+              "shards": 38
+            },
+            {
+              "position": 250,
+              "chestId": "hre_phase_chest_2_90",
+              "currency": 640,
+              "shards": 36
+            },
+            {
+              "position": 500,
+              "chestId": "hre_phase_chest_2_100",
+              "currency": 600,
+              "shards": 34
+            },
+            {
+              "position": 1000,
+              "chestId": "hre_phase_chest_2_110",
+              "currency": 560,
+              "shards": 32
+            },
+            {
+              "position": 1500,
+              "chestId": "hre_phase_chest_2_120",
+              "currency": 520,
+              "shards": 30
+            },
+            {
+              "position": 2500,
+              "chestId": "hre_phase_chest_2_130",
+              "currency": 480,
+              "shards": 28
+            },
+            {
+              "position": 5000,
+              "chestId": "hre_phase_chest_2_140",
+              "currency": 440,
+              "shards": 26
+            },
+            {
+              "position": 10000,
+              "chestId": "hre_phase_chest_2_150",
+              "currency": 400,
+              "shards": 24
+            },
+            {
+              "position": 15000,
+              "chestId": "hre_phase_chest_2_160",
+              "currency": 380,
+              "shards": 22
+            },
+            {
+              "position": 20000,
+              "chestId": "hre_phase_chest_2_170",
+              "currency": 360,
+              "shards": 20
+            },
+            {
+              "position": 25000,
+              "chestId": "hre_phase_chest_2_180",
+              "currency": 340,
+              "shards": 18
+            },
+            {
+              "position": 35000,
+              "chestId": "hre_phase_chest_2_190",
+              "currency": 320,
+              "shards": 16
+            },
+            {
+              "position": 50000,
+              "chestId": "hre_phase_chest_2_200",
+              "currency": 300,
+              "shards": 14
+            },
+            {
+              "position": 75000,
+              "chestId": "hre_phase_chest_2_210",
+              "currency": 280,
+              "shards": 12
+            },
+            {
+              "position": 100000,
+              "chestId": "hre_phase_chest_2_220",
+              "currency": 260,
+              "shards": 10
+            },
+            {
+              "position": 150000,
+              "chestId": "hre_phase_chest_2_230",
+              "currency": 240,
+              "shards": 8
+            },
+            {
+              "position": 200000,
+              "chestId": "hre_phase_chest_2_240",
+              "currency": 220,
+              "shards": 6
+            }
+          ]
+        }
+      ]
+    },
+    "chestShop": [
+      {
+        "chestId": "hre_progress_chest_01",
+        "cost": 100,
+        "minShards": 10,
+        "maxShards": 11
+      },
+      {
+        "chestId": "hre_progress_chest_02",
+        "cost": 120,
+        "minShards": 11,
+        "maxShards": 12
+      },
+      {
+        "chestId": "hre_progress_chest_03",
+        "cost": 140,
+        "minShards": 12,
+        "maxShards": 13
+      },
+      {
+        "chestId": "hre_progress_chest_04",
+        "cost": 160,
+        "minShards": 13,
+        "maxShards": 14
+      },
+      {
+        "chestId": "hre_progress_chest_05",
+        "cost": 180,
+        "minShards": 14,
+        "maxShards": 15
+      },
+      {
+        "chestId": "hre_progress_chest_06",
+        "cost": 200,
+        "minShards": 15,
+        "maxShards": 16
+      },
+      {
+        "chestId": "hre_progress_chest_07",
+        "cost": 220,
+        "minShards": 16,
+        "maxShards": 17
+      },
+      {
+        "chestId": "hre_progress_chest_08",
+        "cost": 240,
+        "minShards": 17,
+        "maxShards": 18
+      },
+      {
+        "chestId": "hre_progress_chest_09",
+        "cost": 260,
+        "minShards": 18,
+        "maxShards": 19
+      },
+      {
+        "chestId": "hre_progress_chest_10",
+        "cost": 280,
+        "minShards": 19,
+        "maxShards": 20
+      },
+      {
+        "chestId": "hre_progress_chest_11",
+        "cost": 300,
+        "minShards": 20,
+        "maxShards": 21
+      },
+      {
+        "chestId": "hre_progress_chest_12",
+        "cost": 320,
+        "minShards": 21,
+        "maxShards": 22
+      },
+      {
+        "chestId": "hre_progress_chest_13",
+        "cost": 340,
+        "minShards": 22,
+        "maxShards": 23
+      },
+      {
+        "chestId": "hre_progress_chest_14",
+        "cost": 360,
+        "minShards": 23,
+        "maxShards": 24
+      },
+      {
+        "chestId": "hre_progress_chest_15",
+        "cost": 380,
+        "minShards": 24,
+        "maxShards": 25
+      },
+      {
+        "chestId": "hre_progress_chest_16",
+        "cost": 400,
+        "minShards": 26,
+        "maxShards": 27
+      },
+      {
+        "chestId": "hre_progress_chest_17",
+        "cost": 450,
+        "minShards": 28,
+        "maxShards": 29
+      },
+      {
+        "chestId": "hre_progress_chest_18",
+        "cost": 500,
+        "minShards": 30,
+        "maxShards": 31
+      },
+      {
+        "chestId": "hre_progress_chest_19",
+        "cost": 550,
+        "minShards": 32,
+        "maxShards": 33
+      },
+      {
+        "chestId": "hre_progress_chest_20",
+        "cost": 600,
+        "minShards": 33,
+        "maxShards": 34
+      },
+      {
+        "chestId": "hre_progress_chest_21",
+        "cost": 650,
+        "minShards": 34,
+        "maxShards": 35
+      },
+      {
+        "chestId": "hre_progress_chest_22",
+        "cost": 700,
+        "minShards": 35,
+        "maxShards": 36
+      },
+      {
+        "chestId": "hre_progress_chest_23",
+        "cost": 750,
+        "minShards": 36,
+        "maxShards": 37
+      },
+      {
+        "chestId": "hre_progress_chest_24",
+        "cost": 800,
+        "minShards": 37,
+        "maxShards": 38
+      },
+      {
+        "chestId": "hre_progress_chest_25",
+        "cost": 850,
+        "minShards": 38,
+        "maxShards": 39
+      },
+      {
+        "chestId": "hre_progress_chest_26",
+        "cost": 900,
+        "minShards": 40,
+        "maxShards": 41
+      },
+      {
+        "chestId": "hre_progress_chest_27",
+        "cost": 1000,
+        "minShards": 40,
+        "maxShards": 41
+      },
+      {
+        "chestId": "hre_progress_chest_28",
+        "cost": 5000,
+        "minShards": 40,
+        "maxShards": 41
+      }
+    ],
+    "ohSoCloseOffer": {
+      "unlock": {
+        "base": 450,
+        "multiplier": 100
+      },
+      "ascension": {
+        "base": 100,
+        "multiplier": 100
+      }
+    }
+  },
+  {
+    "id": "hero_release_event_2",
+    "heroId": "astarEradicator",
+    "baseRarity": "Uncommon",
+    "maxRarity": "Legendary",
+    "featuredFaction": "AdeptusAstartes",
+    "gameModes": [
+      "Campaign",
+      "EliteCampaign",
+      "PvP",
+      "GuildBoss",
+      "MirrorCampaign",
+      "MirrorEliteCampaign",
+      "CampaignEvent"
+    ],
+    "scorePoints": {
+      "campaignScorePointsDifficultyMultiplier": 1,
+      "campaignScorePointsLightningVictoryDifficultyMultiplier": 1,
+      "campaignScorePointsMainUnitsDeadMultiplier": 1,
+      "campaignScorePointsStaminaMultiplier": 3,
+      "pvpScorePointsDifficultyMultiplier": 11,
+      "scorePointsEnemyPowerTable": [
+        5000, 25000, 50000, 100000, 250000, 500000, 1000000, 2000000, 5000000,
+        100000000
+      ],
+      "guildBossScorePointsDamageTableByRarity": {
+        "Common": [1, 4, 7, 11, 15, 20],
+        "Epic": [3, 10, 18, 28, 38, 50],
+        "Legendary": [3, 12, 21, 33, 45, 60],
+        "Mythic": [5, 15, 25, 40, 55, 70],
+        "Rare": [2, 8, 14, 22, 30, 40],
+        "Uncommon": [2, 6, 11, 17, 23, 30]
+      }
+    },
+    "milestones": [
+      {
+        "scorePoints": 100,
+        "currency": 55
+      },
+      {
+        "scorePoints": 250,
+        "currency": 60
+      },
+      {
+        "scorePoints": 500,
+        "currency": 65
+      },
+      {
+        "scorePoints": 850,
+        "currency": 70
+      },
+      {
+        "scorePoints": 1350,
+        "currency": 80
+      },
+      {
+        "scorePoints": 2000,
+        "currency": 85
+      },
+      {
+        "scorePoints": 3000,
+        "currency": 95
+      },
+      {
+        "scorePoints": 4000,
+        "currency": 100
+      },
+      {
+        "scorePoints": 5000,
+        "currency": 110
+      },
+      {
+        "scorePoints": 6000,
+        "currency": 120
+      },
+      {
+        "scorePoints": 7000,
+        "currency": 130
+      },
+      {
+        "scorePoints": 8000,
+        "currency": 140
+      },
+      {
+        "scorePoints": 9000,
+        "currency": 150
+      },
+      {
+        "scorePoints": 10000,
+        "currency": 155
+      },
+      {
+        "scorePoints": 11000,
+        "currency": 160
+      },
+      {
+        "scorePoints": 12000,
+        "currency": 165
+      },
+      {
+        "scorePoints": 14000,
+        "currency": 170
+      },
+      {
+        "scorePoints": 16000,
+        "currency": 175
+      },
+      {
+        "scorePoints": 18000,
+        "currency": 180
+      },
+      {
+        "scorePoints": 20000,
+        "currency": 185
+      },
+      {
+        "scorePoints": 22000,
+        "currency": 190
+      },
+      {
+        "scorePoints": 24000,
+        "currency": 195
+      },
+      {
+        "scorePoints": 26000,
+        "currency": 200
+      },
+      {
+        "scorePoints": 28000,
+        "currency": 205
+      },
+      {
+        "scorePoints": 30000,
+        "currency": 210
+      },
+      {
+        "scorePoints": 33000,
+        "currency": 215
+      },
+      {
+        "scorePoints": 36000,
+        "currency": 220
+      },
+      {
+        "scorePoints": 40000,
+        "currency": 225
+      },
+      {
+        "scorePoints": 45000,
+        "currency": 230
+      },
+      {
+        "scorePoints": 50000,
+        "currency": 235
+      },
+      {
+        "scorePoints": 60000,
+        "currency": 240
+      },
+      {
+        "scorePoints": 75000,
+        "currency": 245
+      },
+      {
+        "scorePoints": 100000,
+        "currency": 250
+      },
+      {
+        "scorePoints": 250000,
+        "currency": 255
+      },
+      {
+        "scorePoints": 500000,
+        "currency": 260
+      },
+      {
+        "scorePoints": 1000000,
+        "currency": 265
+      }
+    ],
+    "missions": [
+      {
+        "index": 1,
+        "id": "hre2_q1",
+        "bonus": false,
+        "currency": 100,
+        "rewards": ["hreCurrency:100"],
+        "tasks": [
+          {
+            "name": "WinLightningVictories",
+            "target": 2,
+            "parameters": {}
+          },
+          {
+            "name": "SlayEnemiesWithMeleeAttacks",
+            "target": 5,
+            "parameters": {}
+          }
+        ]
+      },
+      {
+        "index": 2,
+        "id": "hre2_q2",
+        "bonus": false,
+        "currency": 100,
+        "rewards": ["hreCurrency:100"],
+        "tasks": [
+          {
+            "name": "RaidBattles",
+            "target": 5,
+            "parameters": {}
+          },
+          {
+            "name": "SlayEnemiesWithFactionTrait",
+            "target": 10,
+            "parameters": {
+              "factionTrait": "Imperial"
+            }
+          }
+        ]
+      },
+      {
+        "index": 3,
+        "id": "hre2_q3",
+        "bonus": false,
+        "currency": 100,
+        "rewards": ["hreCurrency:100"],
+        "tasks": [
+          {
+            "name": "WinCampaignBattles",
+            "target": 20,
+            "parameters": {}
+          },
+          {
+            "name": "UseAbility",
+            "target": 30,
+            "parameters": {}
+          }
+        ]
+      },
+      {
+        "index": 4,
+        "id": "hre2_q4",
+        "bonus": false,
+        "currency": 100,
+        "rewards": ["hreCurrency:100"],
+        "tasks": [
+          {
+            "name": "PlayBattlesInGameMode",
+            "target": 4,
+            "parameters": {
+              "gameMode": "PvP"
+            }
+          },
+          {
+            "name": "SlayEnemiesWithRangedAttacks",
+            "target": 50,
+            "parameters": {}
+          }
+        ]
+      },
+      {
+        "index": 5,
+        "id": "hre2_q5",
+        "bonus": false,
+        "currency": 100,
+        "rewards": ["hreCurrency:100"],
+        "tasks": [
+          {
+            "name": "DealAbilityDamage",
+            "target": 10000,
+            "parameters": {}
+          },
+          {
+            "name": "WinCampaignBattles",
+            "target": 100,
+            "parameters": {}
+          }
+        ]
+      },
+      {
+        "index": 6,
+        "id": "hre2_q6",
+        "bonus": false,
+        "currency": 100,
+        "rewards": ["hreCurrency:100"],
+        "tasks": [
+          {
+            "name": "HealHealth",
+            "target": 2500,
+            "parameters": {}
+          },
+          {
+            "name": "WinBattlesWithoutUsingSummons",
+            "target": 10,
+            "parameters": {}
+          }
+        ]
+      },
+      {
+        "index": 7,
+        "id": "hre2_q7",
+        "bonus": false,
+        "currency": 100,
+        "rewards": ["hreCurrency:100"],
+        "tasks": [
+          {
+            "name": "UseAbilityWithFactionTrait",
+            "target": 20,
+            "parameters": {
+              "factionTrait": "Imperial"
+            }
+          },
+          {
+            "name": "PlayBattlesInGameMode",
+            "target": 2,
+            "parameters": {
+              "gameMode": "TreasureBeach"
+            }
+          }
+        ]
+      },
+      {
+        "index": 8,
+        "id": "hre2_q8",
+        "bonus": false,
+        "currency": 100,
+        "rewards": ["hreCurrency:100"],
+        "tasks": [
+          {
+            "name": "PlayBattlesInGameMode",
+            "target": 2,
+            "parameters": {
+              "gameMode": "GuildBoss"
+            }
+          },
+          {
+            "name": "DealDamage",
+            "target": 20000,
+            "parameters": {}
+          }
+        ]
+      },
+      {
+        "index": 9,
+        "id": "hre2_q9",
+        "bonus": false,
+        "currency": 100,
+        "rewards": ["hreCurrency:100"],
+        "tasks": [
+          {
+            "name": "DealDamageOfProfileType",
+            "target": 7500,
+            "parameters": {
+              "damageProfileType": "Psychic"
+            }
+          },
+          {
+            "name": "SlayEnemiesWithRangedAttacks",
+            "target": 75,
+            "parameters": {}
+          }
+        ]
+      },
+      {
+        "index": 10,
+        "id": "hre2_q10",
+        "bonus": false,
+        "currency": 100,
+        "rewards": ["hreCurrency:100"],
+        "tasks": [
+          {
+            "name": "WinBattlesWithFactionTraitLineup",
+            "target": 15,
+            "parameters": {
+              "factionTrait": "Imperial"
+            }
+          },
+          {
+            "name": "PlayBattlesInGameMode",
+            "target": 4,
+            "parameters": {
+              "gameMode": "PvP"
+            }
+          }
+        ]
+      },
+      {
+        "index": 11,
+        "id": "hre2_q11",
+        "bonus": false,
+        "currency": 100,
+        "rewards": ["hreCurrency:100"],
+        "tasks": [
+          {
+            "name": "WinLightningVictories",
+            "target": 25,
+            "parameters": {}
+          },
+          {
+            "name": "SlayEnemiesOfFaction",
+            "target": 100,
+            "parameters": {
+              "factionId": "Necrons"
+            }
+          }
+        ]
+      },
+      {
+        "index": 12,
+        "id": "hre2_q12",
+        "bonus": false,
+        "currency": 100,
+        "rewards": ["hreCurrency:100"],
+        "tasks": [
+          {
+            "name": "HealHealth",
+            "target": 5000,
+            "parameters": {}
+          },
+          {
+            "name": "PlayBattlesInGameMode",
+            "target": 1,
+            "parameters": {
+              "gameMode": "Waves"
+            }
+          }
+        ]
+      },
+      {
+        "index": 13,
+        "id": "hre2_q13",
+        "bonus": false,
+        "currency": 100,
+        "rewards": ["hreCurrency:100"],
+        "tasks": [
+          {
+            "name": "SlayEnemies",
+            "target": 75,
+            "parameters": {}
+          },
+          {
+            "name": "UseAbilityWithFactionTrait",
+            "target": 50,
+            "parameters": {
+              "factionTrait": "Imperial"
+            }
+          }
+        ]
+      },
+      {
+        "index": 14,
+        "id": "hre2_q14",
+        "bonus": false,
+        "currency": 100,
+        "rewards": ["hreCurrency:100"],
+        "tasks": [
+          {
+            "name": "WinBattlesWithFactionTraitLineup",
+            "target": 25,
+            "parameters": {
+              "factionTrait": "Imperial"
+            }
+          },
+          {
+            "name": "DealDamage",
+            "target": 30000,
+            "parameters": {}
+          }
+        ]
+      },
+      {
+        "index": 15,
+        "id": "hre2_q15",
+        "bonus": false,
+        "currency": 100,
+        "rewards": ["hreCurrency:100"],
+        "tasks": [
+          {
+            "name": "UseAbility",
+            "target": 150,
+            "parameters": {}
+          },
+          {
+            "name": "PlayBattlesInGameMode",
+            "target": 4,
+            "parameters": {
+              "gameMode": "PvP"
+            }
+          }
+        ]
+      },
+      {
+        "index": 16,
+        "id": "hre2_q16",
+        "bonus": false,
+        "currency": 100,
+        "rewards": ["hreCurrency:100"],
+        "tasks": [
+          {
+            "name": "SlayEnemiesWithFactionTrait",
+            "target": 100,
+            "parameters": {
+              "factionTrait": "Imperial"
+            }
+          },
+          {
+            "name": "RaidBattles",
+            "target": 25,
+            "parameters": {}
+          }
+        ]
+      },
+      {
+        "index": 17,
+        "id": "hre2_q17",
+        "bonus": false,
+        "currency": 100,
+        "rewards": ["hreCurrency:100"],
+        "tasks": [
+          {
+            "name": "DealDamage",
+            "target": 60000,
+            "parameters": {}
+          },
+          {
+            "name": "SlayEnemies",
+            "target": 75,
+            "parameters": {}
+          }
+        ]
+      },
+      {
+        "index": 18,
+        "id": "hre2_q18",
+        "bonus": false,
+        "currency": 100,
+        "rewards": ["hreCurrency:100"],
+        "tasks": [
+          {
+            "name": "DealAbilityDamage",
+            "target": 50000,
+            "parameters": {}
+          },
+          {
+            "name": "SlayEnemiesWithRangedAttacks",
+            "target": 250,
+            "parameters": {}
+          }
+        ]
+      },
+      {
+        "index": 19,
+        "id": "hre2_q19",
+        "bonus": false,
+        "currency": 100,
+        "rewards": ["hreCurrency:100"],
+        "tasks": [
+          {
+            "name": "SlayEnemiesWithMeleeAttacks",
+            "target": 100,
+            "parameters": {}
+          },
+          {
+            "name": "WinCampaignBattles",
+            "target": 75,
+            "parameters": {}
+          }
+        ]
+      },
+      {
+        "index": 20,
+        "id": "hre2_q20",
+        "bonus": false,
+        "currency": 100,
+        "rewards": ["hreCurrency:100"],
+        "tasks": [
+          {
+            "name": "UseAbilityWithHero",
+            "target": 10,
+            "parameters": {
+              "heroId": "astarEradicator"
+            }
+          },
+          {
+            "name": "WinCampaignBattles",
+            "target": 250,
+            "parameters": {}
+          }
+        ]
+      },
+      {
+        "index": 21,
+        "id": "hre2_bonus",
+        "bonus": true,
+        "currency": 0,
+        "rewards": ["summoningToken"],
+        "tasks": [
+          {
+            "name": "DealDamageWithHero",
+            "target": 15000,
+            "parameters": {
+              "heroId": "astarEradicator"
+            }
+          },
+          {
+            "name": "WinCampaignBattles",
+            "target": 250,
+            "parameters": {}
+          }
+        ]
+      }
+    ],
+    "leaderboard": {
+      "id": "heroReleaseLeaderboard_2",
+      "dailyRewards": [
+        {
+          "position": 0,
+          "currency": 100
+        },
+        {
+          "position": 1,
+          "currency": 95
+        },
+        {
+          "position": 2,
+          "currency": 92
+        },
+        {
+          "position": 3,
+          "currency": 89
+        },
+        {
+          "position": 10,
+          "currency": 86
+        },
+        {
+          "position": 25,
+          "currency": 83
+        },
+        {
+          "position": 50,
+          "currency": 80
+        },
+        {
+          "position": 100,
+          "currency": 77
+        },
+        {
+          "position": 150,
+          "currency": 74
+        },
+        {
+          "position": 250,
+          "currency": 71
+        },
+        {
+          "position": 500,
+          "currency": 68
+        },
+        {
+          "position": 1000,
+          "currency": 65
+        },
+        {
+          "position": 1500,
+          "currency": 62
+        },
+        {
+          "position": 2500,
+          "currency": 59
+        },
+        {
+          "position": 5000,
+          "currency": 56
+        },
+        {
+          "position": 10000,
+          "currency": 53
+        },
+        {
+          "position": 15000,
+          "currency": 50
+        },
+        {
+          "position": 20000,
+          "currency": 47
+        },
+        {
+          "position": 25000,
+          "currency": 44
+        },
+        {
+          "position": 35000,
+          "currency": 40
+        },
+        {
+          "position": 50000,
+          "currency": 36
+        },
+        {
+          "position": 75000,
+          "currency": 32
+        },
+        {
+          "position": 100000,
+          "currency": 28
+        },
+        {
+          "position": 150000,
+          "currency": 24
+        },
+        {
+          "position": 200000,
+          "currency": 20
+        }
+      ],
+      "phases": [
+        {
+          "endOffsetDays": 7,
+          "tiers": [
+            {
+              "position": 0,
+              "chestId": "hre_phase_chest_1_00",
+              "currency": 550,
+              "shards": 33
+            },
+            {
+              "position": 1,
+              "chestId": "hre_phase_chest_1_10",
+              "currency": 520,
+              "shards": 29
+            },
+            {
+              "position": 2,
+              "chestId": "hre_phase_chest_1_20",
+              "currency": 490,
+              "shards": 26
+            },
+            {
+              "position": 3,
+              "chestId": "hre_phase_chest_1_30",
+              "currency": 460,
+              "shards": 24
+            },
+            {
+              "position": 10,
+              "chestId": "hre_phase_chest_1_40",
+              "currency": 430,
+              "shards": 23
+            },
+            {
+              "position": 25,
+              "chestId": "hre_phase_chest_1_50",
+              "currency": 400,
+              "shards": 22
+            },
+            {
+              "position": 50,
+              "chestId": "hre_phase_chest_1_60",
+              "currency": 380,
+              "shards": 21
+            },
+            {
+              "position": 100,
+              "chestId": "hre_phase_chest_1_70",
+              "currency": 360,
+              "shards": 20
+            },
+            {
+              "position": 150,
+              "chestId": "hre_phase_chest_1_80",
+              "currency": 340,
+              "shards": 19
+            },
+            {
+              "position": 250,
+              "chestId": "hre_phase_chest_1_90",
+              "currency": 320,
+              "shards": 18
+            },
+            {
+              "position": 500,
+              "chestId": "hre_phase_chest_1_100",
+              "currency": 300,
+              "shards": 17
+            },
+            {
+              "position": 1000,
+              "chestId": "hre_phase_chest_1_110",
+              "currency": 280,
+              "shards": 16
+            },
+            {
+              "position": 1500,
+              "chestId": "hre_phase_chest_1_120",
+              "currency": 260,
+              "shards": 15
+            },
+            {
+              "position": 2500,
+              "chestId": "hre_phase_chest_1_130",
+              "currency": 240,
+              "shards": 14
+            },
+            {
+              "position": 5000,
+              "chestId": "hre_phase_chest_1_140",
+              "currency": 220,
+              "shards": 13
+            },
+            {
+              "position": 10000,
+              "chestId": "hre_phase_chest_1_150",
+              "currency": 200,
+              "shards": 12
+            },
+            {
+              "position": 15000,
+              "chestId": "hre_phase_chest_1_160",
+              "currency": 190,
+              "shards": 11
+            },
+            {
+              "position": 20000,
+              "chestId": "hre_phase_chest_1_170",
+              "currency": 180,
+              "shards": 10
+            },
+            {
+              "position": 25000,
+              "chestId": "hre_phase_chest_1_180",
+              "currency": 170,
+              "shards": 9
+            },
+            {
+              "position": 35000,
+              "chestId": "hre_phase_chest_1_190",
+              "currency": 160,
+              "shards": 8
+            },
+            {
+              "position": 50000,
+              "chestId": "hre_phase_chest_1_200",
+              "currency": 150,
+              "shards": 7
+            },
+            {
+              "position": 75000,
+              "chestId": "hre_phase_chest_1_210",
+              "currency": 140,
+              "shards": 6
+            },
+            {
+              "position": 100000,
+              "chestId": "hre_phase_chest_1_220",
+              "currency": 130,
+              "shards": 5
+            },
+            {
+              "position": 150000,
+              "chestId": "hre_phase_chest_1_230",
+              "currency": 120,
+              "shards": 4
+            },
+            {
+              "position": 200000,
+              "chestId": "hre_phase_chest_1_240",
+              "currency": 110,
+              "shards": 3
+            }
+          ]
+        },
+        {
+          "endOffsetDays": null,
+          "tiers": [
+            {
+              "position": 0,
+              "chestId": "hre_phase_chest_2_00",
+              "currency": 1100,
+              "shards": 66
+            },
+            {
+              "position": 1,
+              "chestId": "hre_phase_chest_2_10",
+              "currency": 1040,
+              "shards": 58
+            },
+            {
+              "position": 2,
+              "chestId": "hre_phase_chest_2_20",
+              "currency": 980,
+              "shards": 52
+            },
+            {
+              "position": 3,
+              "chestId": "hre_phase_chest_2_30",
+              "currency": 920,
+              "shards": 48
+            },
+            {
+              "position": 10,
+              "chestId": "hre_phase_chest_2_40",
+              "currency": 860,
+              "shards": 46
+            },
+            {
+              "position": 25,
+              "chestId": "hre_phase_chest_2_50",
+              "currency": 800,
+              "shards": 44
+            },
+            {
+              "position": 50,
+              "chestId": "hre_phase_chest_2_60",
+              "currency": 760,
+              "shards": 42
+            },
+            {
+              "position": 100,
+              "chestId": "hre_phase_chest_2_70",
+              "currency": 720,
+              "shards": 40
+            },
+            {
+              "position": 150,
+              "chestId": "hre_phase_chest_2_80",
+              "currency": 680,
+              "shards": 38
+            },
+            {
+              "position": 250,
+              "chestId": "hre_phase_chest_2_90",
+              "currency": 640,
+              "shards": 36
+            },
+            {
+              "position": 500,
+              "chestId": "hre_phase_chest_2_100",
+              "currency": 600,
+              "shards": 34
+            },
+            {
+              "position": 1000,
+              "chestId": "hre_phase_chest_2_110",
+              "currency": 560,
+              "shards": 32
+            },
+            {
+              "position": 1500,
+              "chestId": "hre_phase_chest_2_120",
+              "currency": 520,
+              "shards": 30
+            },
+            {
+              "position": 2500,
+              "chestId": "hre_phase_chest_2_130",
+              "currency": 480,
+              "shards": 28
+            },
+            {
+              "position": 5000,
+              "chestId": "hre_phase_chest_2_140",
+              "currency": 440,
+              "shards": 26
+            },
+            {
+              "position": 10000,
+              "chestId": "hre_phase_chest_2_150",
+              "currency": 400,
+              "shards": 24
+            },
+            {
+              "position": 15000,
+              "chestId": "hre_phase_chest_2_160",
+              "currency": 380,
+              "shards": 22
+            },
+            {
+              "position": 20000,
+              "chestId": "hre_phase_chest_2_170",
+              "currency": 360,
+              "shards": 20
+            },
+            {
+              "position": 25000,
+              "chestId": "hre_phase_chest_2_180",
+              "currency": 340,
+              "shards": 18
+            },
+            {
+              "position": 35000,
+              "chestId": "hre_phase_chest_2_190",
+              "currency": 320,
+              "shards": 16
+            },
+            {
+              "position": 50000,
+              "chestId": "hre_phase_chest_2_200",
+              "currency": 300,
+              "shards": 14
+            },
+            {
+              "position": 75000,
+              "chestId": "hre_phase_chest_2_210",
+              "currency": 280,
+              "shards": 12
+            },
+            {
+              "position": 100000,
+              "chestId": "hre_phase_chest_2_220",
+              "currency": 260,
+              "shards": 10
+            },
+            {
+              "position": 150000,
+              "chestId": "hre_phase_chest_2_230",
+              "currency": 240,
+              "shards": 8
+            },
+            {
+              "position": 200000,
+              "chestId": "hre_phase_chest_2_240",
+              "currency": 220,
+              "shards": 6
+            }
+          ]
+        }
+      ]
+    },
+    "chestShop": [
+      {
+        "chestId": "hre_progress_chest_01",
+        "cost": 100,
+        "minShards": 10,
+        "maxShards": 11
+      },
+      {
+        "chestId": "hre_progress_chest_02",
+        "cost": 120,
+        "minShards": 11,
+        "maxShards": 12
+      },
+      {
+        "chestId": "hre_progress_chest_03",
+        "cost": 140,
+        "minShards": 12,
+        "maxShards": 13
+      },
+      {
+        "chestId": "hre_progress_chest_04",
+        "cost": 160,
+        "minShards": 13,
+        "maxShards": 14
+      },
+      {
+        "chestId": "hre_progress_chest_05",
+        "cost": 180,
+        "minShards": 14,
+        "maxShards": 15
+      },
+      {
+        "chestId": "hre_progress_chest_06",
+        "cost": 200,
+        "minShards": 15,
+        "maxShards": 16
+      },
+      {
+        "chestId": "hre_progress_chest_07",
+        "cost": 220,
+        "minShards": 16,
+        "maxShards": 17
+      },
+      {
+        "chestId": "hre_progress_chest_08",
+        "cost": 240,
+        "minShards": 17,
+        "maxShards": 18
+      },
+      {
+        "chestId": "hre_progress_chest_09",
+        "cost": 260,
+        "minShards": 18,
+        "maxShards": 19
+      },
+      {
+        "chestId": "hre_progress_chest_10",
+        "cost": 280,
+        "minShards": 19,
+        "maxShards": 20
+      },
+      {
+        "chestId": "hre_progress_chest_11",
+        "cost": 300,
+        "minShards": 20,
+        "maxShards": 21
+      },
+      {
+        "chestId": "hre_progress_chest_12",
+        "cost": 320,
+        "minShards": 21,
+        "maxShards": 22
+      },
+      {
+        "chestId": "hre_progress_chest_13",
+        "cost": 340,
+        "minShards": 22,
+        "maxShards": 23
+      },
+      {
+        "chestId": "hre_progress_chest_14",
+        "cost": 360,
+        "minShards": 23,
+        "maxShards": 24
+      },
+      {
+        "chestId": "hre_progress_chest_15",
+        "cost": 380,
+        "minShards": 24,
+        "maxShards": 25
+      },
+      {
+        "chestId": "hre_progress_chest_16",
+        "cost": 400,
+        "minShards": 26,
+        "maxShards": 27
+      },
+      {
+        "chestId": "hre_progress_chest_17",
+        "cost": 450,
+        "minShards": 28,
+        "maxShards": 29
+      },
+      {
+        "chestId": "hre_progress_chest_18",
+        "cost": 500,
+        "minShards": 30,
+        "maxShards": 31
+      },
+      {
+        "chestId": "hre_progress_chest_19",
+        "cost": 550,
+        "minShards": 32,
+        "maxShards": 33
+      },
+      {
+        "chestId": "hre_progress_chest_20",
+        "cost": 600,
+        "minShards": 33,
+        "maxShards": 34
+      },
+      {
+        "chestId": "hre_progress_chest_21",
+        "cost": 650,
+        "minShards": 34,
+        "maxShards": 35
+      },
+      {
+        "chestId": "hre_progress_chest_22",
+        "cost": 700,
+        "minShards": 35,
+        "maxShards": 36
+      },
+      {
+        "chestId": "hre_progress_chest_23",
+        "cost": 750,
+        "minShards": 36,
+        "maxShards": 37
+      },
+      {
+        "chestId": "hre_progress_chest_24",
+        "cost": 800,
+        "minShards": 37,
+        "maxShards": 38
+      },
+      {
+        "chestId": "hre_progress_chest_25",
+        "cost": 850,
+        "minShards": 38,
+        "maxShards": 39
+      },
+      {
+        "chestId": "hre_progress_chest_26",
+        "cost": 900,
+        "minShards": 40,
+        "maxShards": 41
+      },
+      {
+        "chestId": "hre_progress_chest_27",
+        "cost": 1000,
+        "minShards": 40,
+        "maxShards": 41
+      },
+      {
+        "chestId": "hre_progress_chest_28",
+        "cost": 5000,
+        "minShards": 40,
+        "maxShards": 41
+      }
+    ],
+    "ohSoCloseOffer": {
+      "unlock": {
+        "base": 450,
+        "multiplier": 100
+      },
+      "ascension": {
+        "base": 100,
+        "multiplier": 100
+      }
+    }
+  }
+]

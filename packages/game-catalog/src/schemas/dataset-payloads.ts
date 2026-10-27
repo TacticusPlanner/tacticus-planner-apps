@@ -7,6 +7,7 @@ import { equipmentSchema } from "./equipment"
 import { damageTypeSchema, factionSchema } from "./factions"
 import { globalValuesSchema } from "./global-values"
 import { progressionRulesSchema } from "./progression-rules"
+import { hreSchema } from "./hre"
 import {
   eventDefinitionSchema,
   eventsCalendarPayloadSchema,
@@ -63,6 +64,7 @@ export const datasetPayloadSchemas = {
   // One record, stored under a fixed id (see game-catalog.mapper.ts).
   "global-values": z.array(globalValuesSchema),
   "progression-rules": z.array(progressionRulesSchema),
+  hre: z.array(hreSchema),
 } satisfies Record<GameCatalogDatasetKey, z.ZodType>
 
 // Record (per-item) type for each dataset. Every dataset is a plain array, so the record type is the
@@ -99,4 +101,5 @@ export type GameCatalogRecordByKey = {
   "damage-types": z.infer<typeof damageTypeSchema>
   "global-values": z.infer<typeof globalValuesSchema> & { id: string }
   "progression-rules": z.infer<typeof progressionRulesSchema> & { id: string }
+  hre: z.infer<typeof hreSchema>
 }

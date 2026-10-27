@@ -5,6 +5,8 @@ import de from "../../../../../public/locales/de/hre.json"
 import en from "../../../../../public/locales/en/hre.json"
 import es from "../../../../../public/locales/es/hre.json"
 import fr from "../../../../../public/locales/fr/hre.json"
+import { hreMissions } from "@/test/fixtures/hre-rules"
+
 import { HRE_OBJECTIVE_KINDS, hreMission } from "./hre-missions"
 import { isTokenObjective } from "./hre-objectives"
 import { objectiveTextKey } from "./hre-objective-text"
@@ -25,7 +27,7 @@ function word(
   index: 0 | 1,
   context: { alliance: string | null; hero: string; qualifier?: string }
 ) {
-  const objective = hreMission(mission).objectives[index]
+  const objective = hreMission(hreMissions, mission).objectives[index]
   const { key, values } = objectiveTextKey(objective, {
     ...context,
     formatNumber: (value) => value.toLocaleString("en"),
