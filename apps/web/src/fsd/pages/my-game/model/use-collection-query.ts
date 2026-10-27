@@ -1,8 +1,8 @@
-import { useCallback, useMemo } from "react"
+import { useCallback, useEffect, useMemo } from "react"
 import { useSearchParams } from "react-router"
-import type { Rarity } from "@workspace/game-domain"
+import { rankIndex, type Rarity } from "@workspace/game-domain"
 
-import { usePersistedSelection, useSearchParamState } from "@/shared/lib"
+import { usePersistedSelection } from "@/shared/lib"
 
 import {
   defaultCollectionQuery,
@@ -39,12 +39,71 @@ const CLEARED_FILTERS: Partial<CollectionQuery> = Object.fromEntries(
   Object.entries(defaultCollectionQuery).filter(([key]) => key !== "sort")
 )
 
-const anyText = () => true
 const list = (raw: string) => raw.split(",")
-const listOf =
-  (isItem: (value: string) => boolean) =>
-  (raw: string): boolean =>
-    raw !== "" && list(raw).every(isItem)
+
+/** Each parameter to rewrite (`null` removes it) to bring the URL in line with the query read. */
+type ParamFixes = Partial<Record<string, string | null>>
+
+/**
+ * The query the URL holds, read in one pass, and the fixes that make the URL say the same: an
+ * invalid value is removed, a list keeps only its valid items, and a rank range set backwards is
+ * swapped. While `factionIds` is `undefined` the `faction` list cannot be checked yet, so it is kept
+ * as it is and not applied.
+ */
+function readCollectionQuery(
+  params: URLSearchParams,
+  factionIds: ReadonlySet<string> | undefined,
+  rememberedSort: CollectionSort
+): { query: CollectionQuery; fixes: ParamFixes } {
+  const fixes: ParamFixes = {}
+  const one = <T extends string>(
+    param: string,
+    isValid: (value: string) => value is T
+  ): T | null => {
+    const raw = params.get(param)
+    if (raw === null) return null
+    if (isValid(raw)) return raw
+    fixes[param] = null
+    return null
+  }
+  const many = <T extends string>(
+    param: string,
+    isItem: ((value: string) => value is T) | undefined
+  ): T[] => {
+    const raw = params.get(param)
+    if (raw === null || !isItem) return []
+    const items = list(raw)
+    const valid = items.filter(isItem)
+    if (valid.length !== items.length) {
+      fixes[param] = valid.length > 0 ? valid.join(",") : null
+    }
+    return valid
+  }
+
+  let rankMin = one(PARAM.rankMin, isCollectionRank)
+  let rankMax = one(PARAM.rankMax, isCollectionRank)
+  if (rankMin && rankMax && rankIndex(rankMin) > rankIndex(rankMax)) {
+    ;[rankMin, rankMax] = [rankMax, rankMin]
+    fixes[PARAM.rankMin] = rankMin
+    fixes[PARAM.rankMax] = rankMax
+  }
+  const query: CollectionQuery = {
+    search: params.get(PARAM.search) ?? "",
+    alliance: one(PARAM.alliance, isCollectionAlliance),
+    factions: many(
+      PARAM.factions,
+      factionIds && ((id: string): id is string => factionIds.has(id))
+    ),
+    rarities: many<Rarity>(PARAM.rarities, isCollectionRarity),
+    rankMin,
+    rankMax,
+    ownership: one(PARAM.ownership, isCollectionOwnership),
+    kind: one(PARAM.kind, isCollectionKind),
+    quick: one(PARAM.quick, isCollectionQuickFilter),
+    sort: one(PARAM.sort, isCollectionSort) ?? rememberedSort,
+  }
+  return { query, fixes }
+}
 
 /** A query part as its URL value; `null` removes the parameter (the part is at its default). */
 function serialize<K extends keyof CollectionQuery>(
@@ -69,80 +128,41 @@ export interface CollectionQueryState {
 /**
  * The Collection toolbar's state, owned by the URL (`?q=&alliance=&faction=&rarity=&rankMin=
  * &rankMax=&owned=&kind=&quick=&sort=`) so reload, Back and shared links restore it. Invalid values
- * are dropped from the URL. `factionIds` validates the `faction` list; while it is `undefined`
- * (catalog loading) the raw value is kept and not applied yet. The last selected sort is
+ * are dropped from the URL (a list keeps its valid items) and a backwards rank range is swapped.
+ * `factionIds` validates the `faction` list; while it is `undefined` (catalog loading) the raw value
+ * is kept and not applied yet. The last selected sort is
  * remembered in this browser and applies when the URL carries none.
  */
 export function useCollectionQuery(
   factionIds: ReadonlySet<string> | undefined
 ): CollectionQueryState {
-  const [, setParams] = useSearchParams()
+  const [params, setParams] = useSearchParams()
   const [rememberedSort, rememberSort] = usePersistedSelection<CollectionSort>(
     SORT_STORAGE_KEY,
     isCollectionSort,
     defaultCollectionSort
   )
-  const isFactionList = useCallback(
-    (raw: string) =>
-      factionIds === undefined
-        ? undefined
-        : listOf((id) => factionIds.has(id))(raw),
-    [factionIds]
+  const { query, fixes } = useMemo(
+    () => readCollectionQuery(params, factionIds, rememberedSort),
+    [params, factionIds, rememberedSort]
   )
 
-  const [search] = useSearchParamState(PARAM.search, anyText, "")
-  const [alliance] = useSearchParamState(
-    PARAM.alliance,
-    isCollectionAlliance,
-    ""
-  )
-  const [factions] = useSearchParamState(PARAM.factions, isFactionList, "")
-  const [rarities] = useSearchParamState(
-    PARAM.rarities,
-    listOf(isCollectionRarity),
-    ""
-  )
-  const [rankMin] = useSearchParamState(PARAM.rankMin, isCollectionRank, "")
-  const [rankMax] = useSearchParamState(PARAM.rankMax, isCollectionRank, "")
-  const [ownership] = useSearchParamState(
-    PARAM.ownership,
-    isCollectionOwnership,
-    ""
-  )
-  const [kind] = useSearchParamState(PARAM.kind, isCollectionKind, "")
-  const [quick] = useSearchParamState(PARAM.quick, isCollectionQuickFilter, "")
-  const [sort] = useSearchParamState<string>(
-    PARAM.sort,
-    isCollectionSort,
-    rememberedSort
-  )
-
-  const query = useMemo<CollectionQuery>(
-    () => ({
-      search,
-      alliance: isCollectionAlliance(alliance) ? alliance : null,
-      factions: factions ? list(factions) : [],
-      rarities: rarities ? (list(rarities) as Rarity[]) : [],
-      rankMin: isCollectionRank(rankMin) ? rankMin : null,
-      rankMax: isCollectionRank(rankMax) ? rankMax : null,
-      ownership: isCollectionOwnership(ownership) ? ownership : null,
-      kind: isCollectionKind(kind) ? kind : null,
-      quick: isCollectionQuickFilter(quick) ? quick : null,
-      sort: isCollectionSort(sort) ? sort : defaultCollectionSort,
-    }),
-    [
-      search,
-      alliance,
-      factions,
-      rarities,
-      rankMin,
-      rankMax,
-      ownership,
-      kind,
-      quick,
-      sort,
-    ]
-  )
+  // One replacement for every fix, so fixes to several parameters cannot overwrite each other.
+  const fixesKey = Object.keys(fixes).length > 0 ? JSON.stringify(fixes) : ""
+  useEffect(() => {
+    if (!fixesKey) return
+    const pending = JSON.parse(fixesKey) as ParamFixes
+    setParams(
+      (previous) => {
+        for (const [param, value] of Object.entries(pending)) {
+          if (value == null) previous.delete(param)
+          else previous.set(param, value)
+        }
+        return previous
+      },
+      { replace: true }
+    )
+  }, [fixesKey, setParams])
 
   const update = useCallback(
     (patch: Partial<CollectionQuery>) => {

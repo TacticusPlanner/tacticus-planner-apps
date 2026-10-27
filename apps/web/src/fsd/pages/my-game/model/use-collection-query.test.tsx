@@ -80,6 +80,48 @@ describe("useCollectionQuery", () => {
     expect(result.current.location.search).toBe("?alliance=Chaos")
   })
 
+  it("fixes several invalid values in one replacement", () => {
+    const { result } = renderAt(
+      "/my-game/collection?alliance=bogus&kind=bogus&sort=bogus&owned=owned"
+    )
+    expect(result.current.state.query).toMatchObject({
+      alliance: null,
+      kind: null,
+      sort: "rarity",
+      ownership: "owned",
+    })
+    expect(result.current.location.search).toBe("?owned=owned")
+  })
+
+  it("keeps the valid items of a list with an unknown one", () => {
+    const { result } = renderAt(
+      "/my-game/collection?faction=BlackLegion,RemovedFaction,Aeldari&rarity=Epic,Shiny"
+    )
+    expect(result.current.state.query).toMatchObject({
+      factions: ["BlackLegion", "Aeldari"],
+      rarities: ["Epic"],
+    })
+    expect(
+      new URLSearchParams(result.current.location.search).get("faction")
+    ).toBe("BlackLegion,Aeldari")
+    expect(
+      new URLSearchParams(result.current.location.search).get("rarity")
+    ).toBe("Epic")
+  })
+
+  it("swaps a rank range set backwards", () => {
+    const { result } = renderAt(
+      "/my-game/collection?rankMin=Diamond3&rankMax=Stone1"
+    )
+    expect(result.current.state.query).toMatchObject({
+      rankMin: "Stone1",
+      rankMax: "Diamond3",
+    })
+    expect(result.current.location.search).toBe(
+      "?rankMin=Stone1&rankMax=Diamond3"
+    )
+  })
+
   it("keeps an unknown-yet faction list while the catalog loads", () => {
     const { result } = renderAt("/my-game/collection?faction=Aeldari", {
       catalogLoading: true,

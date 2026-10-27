@@ -1,5 +1,6 @@
 import { useId } from "react"
 import { useTranslation } from "react-i18next"
+import { Button } from "@workspace/ui/components/button"
 import {
   ToggleGroup,
   ToggleGroupItem,
@@ -29,16 +30,20 @@ const isUnavailable = (
 /**
  * The quick filters as a single-select chip row: selecting a chip selects it, selecting it again
  * clears it. A chip whose data is missing is disabled, and one line per reason below the row says
- * why (each disabled chip points at its line).
+ * why (each disabled chip points at its line); the line for data that failed to load offers a
+ * retry. A chip whose data is still being read is disabled until it arrives, so selecting it never
+ * swaps the page for its loading state.
  */
 export function QuickFilterChips({
   value,
   availability,
   onChange,
+  onRetry,
 }: {
   value: CollectionQuickFilter | null
   availability: Record<CollectionQuickFilter, QuickFilterAvailability>
   onChange: (next: CollectionQuickFilter | null) => void
+  onRetry: () => void
 }) {
   const { t, i18n } = useTranslation("common")
   const noteId = useId()
@@ -94,7 +99,7 @@ export function QuickFilterChips({
               key={quick}
               value={quick}
               className={FILTER_CHIP_CLASS_NAME}
-              disabled={isUnavailable(status)}
+              disabled={status !== "available"}
               title={t(`myGame.collection.toolbar.quickHelp.${quick}`)}
               aria-describedby={
                 isUnavailable(status) ? `${noteId}-${status}` : undefined
@@ -108,10 +113,19 @@ export function QuickFilterChips({
       {notes.map((note) => (
         <p
           key={note.reason}
-          id={`${noteId}-${note.reason}`}
-          className="text-xs text-muted-foreground"
+          className="flex flex-wrap items-center gap-x-2 text-xs text-muted-foreground"
         >
-          {note.text}
+          <span id={`${noteId}-${note.reason}`}>{note.text}</span>
+          {note.reason === "failed" ? (
+            <Button
+              variant="link"
+              size="sm"
+              className="h-auto p-0 text-xs"
+              onClick={onRetry}
+            >
+              {t("myGame.collection.retry")}
+            </Button>
+          ) : null}
         </p>
       ))}
     </div>

@@ -1,4 +1,4 @@
-import { useId, useState } from "react"
+import { useCallback, useEffect, useId, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { Search, SlidersHorizontal, X } from "lucide-react"
 import { Button } from "@workspace/ui/components/button"
@@ -41,6 +41,8 @@ export interface CollectionToolbarProps {
   factions: readonly CollectionFactionOption[]
   rosterAvailable: boolean
   quickFilters: Record<CollectionQuickFilter, QuickFilterAvailability>
+  /** Reads the quick filters' data again after it failed to load. */
+  onRetry: () => void
 }
 
 /**
@@ -55,9 +57,20 @@ export function CollectionToolbar(props: CollectionToolbarProps) {
 }
 
 function DesktopToolbar(props: CollectionToolbarProps) {
-  const { query, update, clear, factions, rosterAvailable, quickFilters } =
-    props
+  const {
+    query,
+    update,
+    clear,
+    factions,
+    rosterAvailable,
+    quickFilters,
+    onRetry,
+  } = props
   const { t } = useTranslation("common")
+  const setSearch = useCallback(
+    (search: string) => update({ search }),
+    [update]
+  )
   const [open, setOpen] = useState(() => activeStandaloneFilterCount(query) > 0)
   const panelId = useId()
   const active = activeFilterCount(query)
@@ -72,7 +85,7 @@ function DesktopToolbar(props: CollectionToolbarProps) {
       >
         <SearchField
           value={query.search}
-          onChange={(search) => update({ search })}
+          onChange={setSearch}
           className="min-w-48 flex-1"
         />
         <SortSelect query={query} update={update} />
@@ -99,15 +112,27 @@ function DesktopToolbar(props: CollectionToolbarProps) {
         value={query.quick}
         availability={quickFilters}
         onChange={(quick) => update({ quick })}
+        onRetry={onRetry}
       />
     </div>
   )
 }
 
 function MobileToolbar(props: CollectionToolbarProps) {
-  const { query, update, clear, factions, rosterAvailable, quickFilters } =
-    props
+  const {
+    query,
+    update,
+    clear,
+    factions,
+    rosterAvailable,
+    quickFilters,
+    onRetry,
+  } = props
   const { t } = useTranslation("common")
+  const setSearch = useCallback(
+    (search: string) => update({ search }),
+    [update]
+  )
   const [open, setOpen] = useState(false)
   const active = activeFilterCount(query)
 
@@ -119,10 +144,7 @@ function MobileToolbar(props: CollectionToolbarProps) {
         aria-label={t("myGame.collection.toolbar.label")}
         data-testid="collection-toolbar"
       >
-        <SearchField
-          value={query.search}
-          onChange={(search) => update({ search })}
-        />
+        <SearchField value={query.search} onChange={setSearch} />
         <div className="grid grid-cols-2 gap-2">
           <SortSelect query={query} update={update} />
           <FiltersButton
@@ -137,6 +159,7 @@ function MobileToolbar(props: CollectionToolbarProps) {
         value={query.quick}
         availability={quickFilters}
         onChange={(quick) => update({ quick })}
+        onRetry={onRetry}
       />
       <ResponsiveDialog
         open={open}
@@ -170,6 +193,13 @@ function MobileToolbar(props: CollectionToolbarProps) {
   )
 }
 
+const SEARCH_DELAY_MS = 200
+
+/**
+ * The search box keeps what the player types and sends it to the URL once typing pauses, so a
+ * keystroke never waits on a navigation and a list rebuild. A URL change made elsewhere (Clear
+ * filters, Back) replaces the text; the echo of a value it sent itself does not.
+ */
 function SearchField({
   value,
   onChange,
@@ -180,6 +210,23 @@ function SearchField({
   className?: string
 }) {
   const { t } = useTranslation("common")
+  const [draft, setDraft] = useState(value)
+  const [followed, setFollowed] = useState(value)
+  const [sent, setSent] = useState<string | null>(null)
+  if (value !== followed) {
+    setFollowed(value)
+    if (value !== sent) setDraft(value)
+  }
+
+  useEffect(() => {
+    if (draft === value) return
+    const timer = setTimeout(() => {
+      setSent(draft)
+      onChange(draft)
+    }, SEARCH_DELAY_MS)
+    return () => clearTimeout(timer)
+  }, [draft, value, onChange])
+
   return (
     <div className={cn("relative", className)}>
       <Search
@@ -188,8 +235,8 @@ function SearchField({
       />
       <Input
         type="search"
-        value={value}
-        onChange={(event) => onChange(event.target.value)}
+        value={draft}
+        onChange={(event) => setDraft(event.target.value)}
         placeholder={t("myGame.collection.toolbar.searchPlaceholder")}
         aria-label={t("myGame.collection.toolbar.search")}
         className="pl-8"

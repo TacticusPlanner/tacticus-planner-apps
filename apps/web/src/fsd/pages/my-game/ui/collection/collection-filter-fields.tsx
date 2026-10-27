@@ -1,4 +1,4 @@
-import { useId } from "react"
+import { useId, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { factionIcon, rarityIcon } from "@workspace/game-catalog"
 import { rankOrder, rarityOrder, type Rank } from "@workspace/game-domain"
@@ -13,6 +13,7 @@ import {
 import { cn } from "@workspace/ui/lib/utils"
 
 import {
+  closestOverlayContent,
   EntityIcon,
   MultiSelect,
   RankBadge,
@@ -278,17 +279,28 @@ function PlainSelect({
   disabled?: boolean
   describedBy?: string
 }) {
+  const triggerRef = useRef<HTMLButtonElement>(null)
+  // Inside the mobile sheet the list must portal into the sheet, or its scroll lock blocks it.
+  const [container, setContainer] = useState<HTMLElement>()
   return (
     <Select
       value={value ?? ANY}
       onValueChange={(next) => onChange(next === ANY ? null : next)}
+      onOpenChange={(open) => {
+        if (open) setContainer(closestOverlayContent(triggerRef.current))
+      }}
       disabled={disabled}
     >
-      <SelectTrigger id={id} className="w-full" aria-describedby={describedBy}>
+      <SelectTrigger
+        ref={triggerRef}
+        id={id}
+        className="w-full"
+        aria-describedby={describedBy}
+      >
         <SelectValue />
       </SelectTrigger>
       {/* Below the trigger, not item-aligned over it: an aligned list covers its own control. */}
-      <SelectContent position="popper" align="start">
+      <SelectContent position="popper" align="start" container={container}>
         <SelectItem value={ANY}>{anyLabel}</SelectItem>
         {options.map((option) => (
           <SelectItem key={option.value} value={option.value}>

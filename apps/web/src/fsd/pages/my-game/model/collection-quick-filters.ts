@@ -16,6 +16,7 @@ import {
 import type { PlayerDataChunkDto } from "@workspace/player-data"
 
 import type { UnitKind } from "@/entities/unit"
+import { ascensionResourceNeed } from "@/features/goal-farming"
 
 /** What the progression quick filters read of one owned unit. */
 export interface QuickFilterUnit {
@@ -29,13 +30,7 @@ export interface QuickFilterUnit {
 }
 
 /** The catalog's ascension cost ladder, keyed by the step each entry reaches. */
-export type AscensionLadder = ReadonlyMap<
-  Progression,
-  Pick<
-    AscensionCostStorageModel,
-    "shards" | "mythicShards" | "orbs" | "orbRarity"
-  >
->
+export type AscensionLadder = ReadonlyMap<string, AscensionCostStorageModel>
 
 /** Ascension orbs the player holds for one alliance, by orb rarity. */
 export type HeldOrbs = Partial<Record<Rarity, number>>
@@ -122,30 +117,33 @@ function ascendTarget(current: Progression): Progression | undefined {
 }
 
 /** Whether held shards, mythic shards and orbs pay for every step after the unit's current one up
- *  to and including `target`. A step missing from the ladder cannot be costed, so it never covers. */
+ *  to and including `target`, costed by goal planning's `ascensionResourceNeed`. A step missing
+ *  from the ladder cannot be costed, so it never covers. */
 function covers(
   unit: QuickFilterUnit,
   ladder: AscensionLadder,
   orbs: HeldOrbs,
   target: Progression
 ): boolean {
-  let shards = 0
-  let mythicShards = 0
-  const orbCost: HeldOrbs = {}
   const from = progressionIndex(unit.progression) + 1
   for (let index = from; index <= progressionIndex(target); index++) {
-    const step = ladder.get(progressionAt(index))
-    if (!step) return false
-    shards += step.shards
-    mythicShards += step.mythicShards
-    if (step.orbs > 0 && step.orbRarity) {
-      orbCost[step.orbRarity] = (orbCost[step.orbRarity] ?? 0) + step.orbs
-    }
+    if (!ladder.has(progressionAt(index))) return false
   }
+  // Net of the held shards; orbs come back gross, so they are compared here.
+  const need = ascensionResourceNeed({
+    start: unit.progression,
+    end: target,
+    // Only names the shard to farm, which this check does not read.
+    entityId: "",
+    isMow: unit.kind === "mow",
+    ownedShards: unit.shards,
+    ownedMythicShards: unit.mythicShards,
+    ascensionCostsById: ladder,
+  })
   return (
-    unit.shards >= shards &&
-    unit.mythicShards >= mythicShards &&
-    Object.entries(orbCost).every(
+    need.shards === 0 &&
+    need.mythicShards === 0 &&
+    Object.entries(need.orbsByType).every(
       ([rarity, amount]) => (orbs[rarity as Rarity] ?? 0) >= amount
     )
   )

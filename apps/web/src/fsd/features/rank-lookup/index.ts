@@ -5,6 +5,7 @@ export {
   aggregateBaseUpgradeAmounts,
   aggregateOwnedBaseUpgrades,
   appliedUpgradeIds,
+  inventoryBaseUpgrades,
   rankUpReadiness,
   type Character,
   type RecipeIngredient,

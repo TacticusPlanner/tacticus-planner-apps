@@ -648,6 +648,25 @@ describe("buildCollectionView with a query", () => {
     expect(ids(view)).toEqual(["ultraCalgar", "ultraTitus"])
   })
 
+  it("reads a rank range set backwards as the ranks between its ends", () => {
+    const view = buildCollectionView(
+      catalog,
+      signedIn({
+        characters: [
+          character("ultraTitus", { rank: "Gold1" }),
+          character("ultraCalgar", { rank: "Diamond3" }),
+          character("ultraTigurius", { rank: "Silver3" }),
+        ],
+        mows: [mowRecord("ultraDreadnought")],
+        shards: [],
+      }),
+      labels,
+      query({ rankMin: "Diamond3", rankMax: "Gold1" })
+    )
+
+    expect(ids(view)).toEqual(["ultraCalgar", "ultraTitus"])
+  })
+
   it("hides factions without a match and counts only matching units", () => {
     const view = buildCollectionView(
       catalog,
@@ -721,6 +740,12 @@ describe("buildCollectionView with a query", () => {
     expect(view.groups.every((group) => group.alliance === "Imperial")).toBe(
       true
     )
+    expect(view.query).toMatchObject({
+      alliance: "Imperial",
+      quick: null,
+      rankMin: null,
+      ownership: null,
+    })
   })
 
   it("applies quick filters to owned units only", () => {

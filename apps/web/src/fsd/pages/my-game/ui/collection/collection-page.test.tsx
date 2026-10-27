@@ -16,7 +16,7 @@ import type { PlayerDataChunkDto } from "@workspace/player-data"
 import { readUnitOrigin } from "@/entities/unit"
 import type { TourPageSteps } from "@/shared/tour"
 import { createTestI18n } from "@/test/i18n"
-import { fireEvent, render, screen, within } from "@/test/render"
+import { fireEvent, render, screen, waitFor, within } from "@/test/render"
 import { setViewportWidth } from "@/test/viewport"
 
 import type { CollectionQuery } from "../../model/collection-query"
@@ -601,16 +601,24 @@ describe("CollectionPage toolbar on desktop", () => {
     expect(factionsShown()).toEqual(["Ultramarines"])
   })
 
-  it("narrows the list as the user types a name", () => {
+  it("narrows the list once the user pauses typing a name", async () => {
     ready(synced)
     renderPage(1280)
 
-    fireEvent.change(screen.getByRole("searchbox", { name: "Search units" }), {
-      target: { value: "HAAR" },
-    })
+    const search = screen.getByRole("searchbox", { name: "Search units" })
+    fireEvent.change(search, { target: { value: "HAAR" } })
 
-    expect(screen.getAllByRole("link")).toHaveLength(1)
+    // The text shows at once; the list follows when typing pauses.
+    expect(search).toHaveValue("HAAR")
+    expect(screen.getAllByRole("link")).toHaveLength(4)
+    await waitFor(() => expect(screen.getAllByRole("link")).toHaveLength(1))
     expect(factionsShown()).toEqual(["BlackLegion"])
+    expect(search).toHaveValue("HAAR")
+
+    // Clear filters, a change from outside the box, replaces the typed text.
+    fireEvent.click(screen.getByRole("button", { name: "Clear filters" }))
+    expect(search).toHaveValue("")
+    expect(screen.getAllByRole("link")).toHaveLength(4)
   })
 
   it("shows an empty state with Clear filters instead of a blank page", () => {
@@ -709,6 +717,27 @@ describe("CollectionPage toolbar on desktop", () => {
     expect(
       within(quick).getByRole("radio", { name: "Can ascend" })
     ).toBeEnabled()
+
+    fireEvent.click(screen.getByRole("button", { name: "Try again" }))
+    expect(
+      viewState.current.status === "ready" && viewState.current.retry
+    ).toHaveBeenCalledOnce()
+  })
+
+  it("keeps a chip disabled while its data is still loading", () => {
+    ready(synced, quickFilters("available", { canAscend: "loading" }))
+    renderPage(1280)
+
+    const quick = screen.getByRole("radiogroup", { name: "Quick filters" })
+    expect(
+      within(quick).getByRole("radio", { name: "Can ascend" })
+    ).toBeDisabled()
+    expect(
+      within(quick).getByRole("radio", { name: "Need to level" })
+    ).toBeEnabled()
+    expect(
+      screen.queryByRole("button", { name: "Try again" })
+    ).not.toBeInTheDocument()
   })
 
   it("shows no toolbar while loading or after a catalog failure", () => {

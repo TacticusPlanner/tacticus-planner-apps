@@ -6,6 +6,7 @@ import {
   aggregateOwnedBaseUpgrades,
   appliedUpgradeIds,
   groupUpgradesByRank,
+  inventoryBaseUpgrades,
   rankUpReadiness,
   rankUpUpgradeIds,
   type Character,
@@ -324,12 +325,16 @@ describe("rankUpReadiness", () => {
       },
     ],
   }
-  const inventory = (fineSeals: number) => [
-    { id: upgradeId("upgArmE031C"), amount: 1 },
-    { id: upgradeId("upgArmR015"), amount: 6 },
-    { id: upgradeId("upgArmU005"), amount: 6 },
-    { id: upgradeId("upgArmC002"), amount: fineSeals },
-  ]
+  const inventory = (fineSeals: number) =>
+    inventoryBaseUpgrades(
+      [
+        { id: upgradeId("upgArmE031C"), amount: 1 },
+        { id: upgradeId("upgArmR015"), amount: 6 },
+        { id: upgradeId("upgArmU005"), amount: 6 },
+        { id: upgradeId("upgArmC002"), amount: fineSeals },
+      ],
+      upgrades
+    )
 
   it("is ready when the inventory covers the unfilled slots' base materials", () => {
     expect(
@@ -345,8 +350,14 @@ describe("rankUpReadiness", () => {
 
   it("is ready with every slot of the rank filled", () => {
     expect(
-      rankUpReadiness(arjac, "Silver1", [0, 1, 2, 3, 4, 5], [], upgrades)
+      rankUpReadiness(arjac, "Silver1", [0, 1, 2, 3, 4, 5], new Map(), upgrades)
     ).toBe(true)
+  })
+
+  it("is not ready at a rank the catalog lists no upgrades for", () => {
+    expect(rankUpReadiness(arjac, "Silver2", [], inventory(6), upgrades)).toBe(
+      false
+    )
   })
 
   it("does not cover an upgrade the catalog does not know", () => {

@@ -24,7 +24,6 @@ import { loginRequest } from "@/shared/auth"
 import { useTourPageSteps } from "@/shared/tour"
 import { EntityIcon } from "@/shared/ui"
 
-import type { CollectionQuery } from "../../model/collection-query"
 import type {
   CollectionFactionGroup,
   CollectionRosterState,
@@ -92,19 +91,6 @@ export function CollectionPage() {
 
   const { view, quickFilters, retry } = state
   const rosterAvailable = view.rosterState === "available"
-  // The toolbar shows what is applied: a value the page cannot apply yet (no roster, or a quick
-  // filter whose data is missing) stays in the URL for later but is not shown as selected.
-  const quickApplies =
-    query.quick !== null &&
-    (quickFilters[query.quick] === "available" ||
-      quickFilters[query.quick] === "loading")
-  const shownQuery: CollectionQuery = {
-    ...query,
-    quick: quickApplies ? query.quick : null,
-    ...(rosterAvailable
-      ? {}
-      : { rankMin: null, rankMax: null, ownership: null }),
-  }
 
   return (
     <div className="space-y-6" data-testid="collection-page">
@@ -112,12 +98,15 @@ export function CollectionPage() {
         <RosterPrompt rosterState={view.rosterState} onRetry={retry} />
       )}
       <CollectionToolbar
-        query={shownQuery}
+        // The applied query: a value the page cannot apply yet (no roster, or a quick filter whose
+        // data is missing) stays in the URL for later but is not shown as selected.
+        query={view.query}
         update={update}
         clear={clear}
         factions={factions ?? []}
         rosterAvailable={rosterAvailable}
         quickFilters={quickFilters}
+        onRetry={retry}
       />
       {rosterAvailable && view.groups.length > 0 ? (
         <p

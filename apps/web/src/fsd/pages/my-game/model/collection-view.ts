@@ -108,6 +108,9 @@ export interface CollectionView {
   total: number
   /** A search, filter or quick filter narrowed the list, so the counts cover matching units only. */
   filtered: boolean
+  /** The query actually applied: the given one without the parts this roster cannot apply. The
+   *  toolbar shows this, so it never marks as selected a value that does not narrow the list. */
+  query: CollectionQuery
 }
 
 interface CollectionRow {
@@ -233,6 +236,7 @@ export function buildCollectionView(
     owned: ownedCount,
     total,
     filtered: activeFilterCount(effective) > 0,
+    query: effective,
   }
 }
 
@@ -249,9 +253,12 @@ function rowMatcher(
   const needle = searchable(query.search.trim(), locale)
   const factions = new Set(query.factions)
   const rarities = new Set(query.rarities)
-  const rankMin = query.rankMin === null ? -1 : rankIndex(query.rankMin)
-  const rankMax =
+  const low = query.rankMin === null ? -1 : rankIndex(query.rankMin)
+  const high =
     query.rankMax === null ? Number.POSITIVE_INFINITY : rankIndex(query.rankMax)
+  // A range set backwards still means the ranks between its two ends.
+  const rankMin = Math.min(low, high)
+  const rankMax = Math.max(low, high)
   const rankRange = query.rankMin !== null || query.rankMax !== null
 
   return (row) => {

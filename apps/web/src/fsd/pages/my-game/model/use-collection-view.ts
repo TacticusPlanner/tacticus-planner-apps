@@ -9,6 +9,7 @@ import { maxRankForProgression } from "@workspace/game-domain"
 import type { PlayerDataChunkDto } from "@workspace/player-data"
 
 import {
+  inventoryBaseUpgrades,
   mapCharacterStorageToDomain,
   mapUpgradeStorageToDomain,
   rankUpReadiness,
@@ -251,10 +252,13 @@ function readyToRankUp(
   upgradesById: ReturnType<typeof toUpgradesById>
 ): ReadonlySet<string> {
   const catalogById = new Map(characters.map((unit) => [unit.id, unit]))
-  const inventory = inventoryUpgrades.map((entry) => ({
-    id: entry.upgradeId,
-    amount: entry.amount,
-  }))
+  const ownedBase = inventoryBaseUpgrades(
+    inventoryUpgrades.map((entry) => ({
+      id: entry.upgradeId,
+      amount: entry.amount,
+    })),
+    upgradesById
+  )
   const ready = new Set<string>()
   for (const record of playerCharacters) {
     const character = catalogById.get(record.unitId)
@@ -265,7 +269,7 @@ function readyToRankUp(
         mapCharacterStorageToDomain(character),
         record.rank,
         record.appliedUpgradeSlots,
-        inventory,
+        ownedBase,
         upgradesById
       )
     ) {
