@@ -4,7 +4,7 @@ const secondsSchema = z.number().int().positive()
 
 // One energy purchase of the game's stamina shop ladder, in game order: the energy and raid tickets
 // it gives and its gem cost.
-export const staminaShopTierSchema = z.looseObject({
+const staminaShopTierSchema = z.looseObject({
   productId: z.string(),
   stamina: z.number().int().positive(),
   raidTickets: z.number().int().nonnegative(),
