@@ -42,4 +42,4 @@ Same data states as group 5.
 
 ## Deferred / out-of-session
 
-- Guild Raid mode data: companion `tacticus-planner-api` change making `guild-raid-season` a `Fixed` recurrence (pending Severyn's decision in the project thread). Web side needs no change.
+- Guild Raid mode data: companion `tacticus-planner-api` change `add-goal-season-fit` makes `guild-raid-season` a `Fixed` 14-day recurrence (decided 27 Oct, separate PR). Web side needs no change; Guild Raid mode enables once that catalog ships.
