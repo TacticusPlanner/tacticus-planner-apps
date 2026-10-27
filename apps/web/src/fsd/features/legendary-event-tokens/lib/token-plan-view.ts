@@ -63,7 +63,10 @@ export interface TokenPlanMissionsSource {
 }
 
 export interface TokenPlanViewInput {
-  event: Pick<LegendaryEvent, "alpha" | "beta" | "gamma" | "rewards">
+  event: Pick<
+    LegendaryEvent,
+    "alpha" | "beta" | "gamma" | "rewards" | "tokens" | "ohSoCloseOffer"
+  >
   lifecycle: LegendaryEventLifecycle
   nowMs: number
   /** The event's synced entry, `undefined` without one, or the read's pending / failed status. */
@@ -201,6 +204,7 @@ export function buildTokenPlanView(input: TokenPlanViewInput): TokenPlanView {
   })
 
   const supply = runTokenSupply({
+    bank: event.tokens,
     lifecycle,
     resolution,
     progress: entry,
@@ -218,6 +222,7 @@ export function buildTokenPlanView(input: TokenPlanViewInput): TokenPlanView {
     supply && event.rewards
       ? forecastRuns({
           rewards: event.rewards,
+          ohSoCloseOffer: event.ohSoCloseOffer,
           progress: entry,
           supply,
           fromStep: unitNextAscensionStep(input.eventUnit),
