@@ -1,0 +1,18 @@
+{
+  "PrimarchOfTheFirstLegion": {
+    "description": "La mitad de los <style=\"Stat_Hits\">impactos</style> (redondeado hacia abajo) anotados contra <style=\"Faction_DarkAngels\">Lion El'Jonson</style> se anotan contra otros <style=\"Faction_DarkAngels\">Ángeles Oscuros</style> amigos adyacentes en su lugar. Los Ángeles Oscuros amigos que reciben <style=\"Stat_Damage\">daño</style> de esta manera infligen <style=\"Stat_Damage\">+{[extraDmg]} de Daño</style> durante {[nrOfRounds]} ronda.",
+    "variables": {
+      "extraDmg": [
+        8, 10, 11, 13, 14, 16, 18, 20, 22, 24, 25, 27, 29, 31, 33, 35, 36, 38,
+        40, 42, 44, 48, 55, 62, 70, 77, 84, 92, 99, 106, 113, 121, 128, 135,
+        143, 150, 157, 164, 172, 182, 196, 211, 228, 246, 279, 312, 344, 377,
+        410, 443, 479, 495, 511, 529, 547, 566, 585, 607, 630, 653, 678, 704,
+        731, 758, 786
+      ]
+    },
+    "constants": {
+      "nrOfRounds": "1"
+    },
+    "scaled": ["extraDmg"]
+  }
+}

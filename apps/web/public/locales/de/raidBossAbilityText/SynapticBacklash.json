@@ -1,0 +1,12 @@
+{
+  "SynapticBacklash": {
+    "description": "Jedes Mal, wenn der Tervigon einen <style=\"Stat_CritDamage\">Kritischen Treffer</style> erleidet, werden verbündeten Termaganten in bis zu {[range]} Feldern Entfernung ebenfalls {[dmgPct]} % des <style=\"Stat_Damage\">Schadens</style> zugefügt.",
+    "variables": {},
+    "constants": {
+      "range": "2",
+      "dmgPct": "50",
+      "unitIds": "tyranNpc3Termagant,tyranSmnTermagant,GuildBoss1Npc1TyranTermagantLeviathan,GuildBoss1Npc2TyranTermagantKronos,GuildBoss1Npc3TyranTermagantGorgon"
+    },
+    "scaled": []
+  }
+}

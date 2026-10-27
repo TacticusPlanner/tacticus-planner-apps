@@ -1,0 +1,198 @@
+{
+  "BeastSlayer": {
+    "description": "Diese Einheit fügt <style=\"Big_Target\">Großen Zielen</style> und <style=\"Vehicle\">Fahrzeugen</style> mit Nahkampfangriffen <style=\"Stat_Damage\">+{[extraDmgPct]} % Schaden</style> zu. Außerdem hat sie eine <style=\"Stat_Chance\">{[blockChance]}%ige Chance</style>, Schaden in Höhe ihrer aktuellen <style=\"Stat_Armor\">Rüstung</style> zu <style=\"Stat_Block\">blocken</style>.",
+    "styledName": "<style=\"Beast_Snagga\">Bestienschlächter</style>",
+    "variables": {
+      "extraDmgPct": [20],
+      "blockChance": [10]
+    }
+  },
+  "BigTarget": {
+    "description": "Aufgrund ihrer Größe profitiert diese Einheit weniger von Deckung, behindert aber auch die Sicht des Gegners. Sie erhält keine Boni durch <style=\"Tile_Grass\">Hohes Gras</style> und <style=\"Tile_Trench\">Schützengräben</style>. Angrenzende verbündete Einheiten erleiden <style=\"Stat_Hits\">-1 Treffer</style> durch <style=\"Stat_Range\">Fernkampfangriffe</style> (bis zu einem Minimum von 1). Kann nicht weggestoßen werden.",
+    "styledName": "<style=\"Big_Target\">Großes Ziel</style>",
+    "variables": {}
+  },
+  "Camouflage": {
+    "description": "<style=\"Stat_Range\">Fernkampfangriffe</style> verursachen bei diesem Charakter <style=\"Stat_Hits\">-1 Treffer</style>. Befindet sich der Charakter mehr als 2 Felder vom Angreifer entfernt, verursachen sie <style=\"Stat_Hits\">-2 Treffer</style>. Steht der Charakter in <style=\"Tile_Grass\">Hohem Gras</style>, verursachen sie <style=\"Stat_Hits\">-3 Treffer</style>. Angreifer verursachen immer mindestens <style=\"Stat_Hits\">1 Treffer</style>.",
+    "styledName": "<style=\"Camouflage\">Tarnung</style>",
+    "variables": {}
+  },
+  "ContagionsOfNurgle": {
+    "description": "Diese Einheit wird von einer Aura umgeben, die sich mit der Zeit ausbreitet. Gegner verfügen über {[armorReduction]} % <style=\"Stat_Armor\">Rüstung</style>, während sie sich in der Aura befinden. Überschneiden sich zwei oder mehr Auren, verfügen Gegner in der Schnittfläche über {[armorReduction2]} % <style=\"Stat_Armor\">Rüstung</style>.\n\nAura:\nRunde 1–2: <style=\"Stat_Range\">1 Reichweite</style>\nRunde 3–4: <style=\"Stat_Range\">2 Reichweite</style>\nRunde 5+: <style=\"Stat_Range\">3 Reichweite</style>",
+    "styledName": "<style=\"ContagionsOfNurgle\">Ansteckung des Nurgle</style>",
+    "variables": {
+      "armorReduction": [-20],
+      "armorReduction2": [-40]
+    }
+  },
+  "CrushingStrike": {
+    "description": "Diese Einheit verursacht mit normalen <style=\"Stat_Melee\">Nahkampfangriffen</style> <style=\"Stat_Damage\">+{[extraDmgPct]} % Schaden</style>, wenn sie sich in diesem Zug nicht bewegt hat.",
+    "styledName": "<style=\"CrushingStrike\">Zermalmender Hieb</style>",
+    "variables": {
+      "extraDmgPct": [50]
+    }
+  },
+  "Daemon": {
+    "description": "Diese Einheit <style=\"Stat_Block\">blockt</style> mit einer zusätzlichen <style=\"Stat_Chance\">Chance von {[blockChance]} %</style> bis zu {[blockDmgPct]} % ihres eigenen aktuellen <style=\"Stat_Damage\">Schadenswerts</style>.",
+    "styledName": "<style=\"Daemon\">Dämon</style>",
+    "variables": {
+      "blockChance": [25],
+      "blockDmgPct": [50]
+    }
+  },
+  "Dakka": {
+    "description": "Angriffe mit mindestens <style=\"Stat_Range\">3 Reichweite</style> verursachen <style=\"Stat_Hits\">+{[extraHit]} Treffer</style>, wenn sich das Ziel in <style=\"Stat_Range\">2 Reichweite</style> befindet.",
+    "styledName": "<style=\"Dakka\">Dakka</style>",
+    "variables": {
+      "extraHit": [2]
+    }
+  },
+  "Explodes": {
+    "description": "Diese Einheit <style=\"Explodes\">explodiert</style> bei ihrem Tod und verursacht <style=\"Stat\">25 %</style> ihrer maximalen <style=\"Stat_Health\">Lebenspunkte</style> als <style=\"DMG_Direct\">Direkten Schaden</style> an allen angrenzenden Einheiten.",
+    "styledName": "<style=\"Explodes\">Explodiert</style>",
+    "variables": {}
+  },
+  "FinalJustice": {
+    "description": "Wenn diese Einheit ihre letzten <style=\"Stat_Health\">Lebenspunkte</style> verliert, führt sie sofort einen <style=\"NormalAttack\">normalen Angriff</style> auf ein gültiges Ziel aus und gilt erst dann als besiegt, sofern sie keinen <style=\"Overkill\">Overkill</style> erleidet.",
+    "styledName": "<style=\"FinalJustice\">Endgültige Rache</style>",
+    "variables": {}
+  },
+  "Flying": {
+    "description": "Kann unpassierbare Felder und Gegner überqueren und sich auf beliebig hohem Terrain bewegen.",
+    "styledName": "<style=\"Flying\">Fliegend</style>",
+    "variables": {}
+  },
+  "GetStuckIn": {
+    "description": "Nachdem diese Einheit 2 Angriffstreffer gegen einen Gegner in 2 Feldern Reichweite erzielt hat, besteht eine Chance von <style=\"STAT\">{[chance]} %</style>, einen zusätzlichen <style=\"Stat_Hits\">Treffer</style> zu erzielen. Wenn 2 oder mehr verbündete <style=\"Faction_Orks\">Orks</style> oder 4 oder mehr verbündete Einheiten an das Ziel angrenzen, steigt diese Chance auf <style=\"STAT\">{[chance_2]} %</style>.",
+    "styledName": "<style=\"GetStuckIn\">Haut drauf!</style>",
+    "variables": {
+      "chance": [30],
+      "chance_2": [100]
+    }
+  },
+  "Healer": {
+    "description": "Kann als Aktion eine verbündete Einheit <style=\"Healing\">heilen</style>.\nDie Menge der geheilten <style=\"Stat_Health\">Lebenspunkte</style> entspricht dem <style=\"Stat_Damage\">Schaden</style> des Heilers, multipliziert mit der höchsten <style=\"Stat_Hits\">Trefferanzahl</style> einer Waffe in seinem Besitz. ",
+    "styledName": "<style=\"Healer\">Heiler</style>",
+    "variables": {}
+  },
+  "HeavyWeapon": {
+    "description": "Hat sich diese Einheit in diesem Zug nicht bewegt, verursacht sie <style=\"Stat_Damage\">+{[extraDmgPct]} % Schaden</style> mit Fernkampfangriffen.",
+    "styledName": "<style=\"Heavy_Weapon\">Schwere Waffe</style>",
+    "variables": {
+      "extraDmgPct": [25]
+    }
+  },
+  "Immune": {
+    "description": "Diese Einheit ist immun gegen Spezialfelder und <style=\"HexEffect\">Feldeffekte</style>. Ihre <style=\"Stat_Armor\">Rüstung</style>, <style=\"Stat_Hits\">Treffer</style>, <style=\"Stat_Movement\">Bewegung</style> und <style=\"Stat_Range\">Reichweite</style> kann nicht reduziert werden.\n\nZudem kann diese Einheit nicht <style=\"Debuff_Stunned\">betäubt</style>, <style=\"Debuff_Pinned\">unterdrückt</style> oder <style=\"Debuff_Taunted\">verspottet</style> werden und erleidet keinen Rückstoßschaden.",
+    "styledName": "<style=\"Immune\">Immun</style>",
+    "variables": {}
+  },
+  "IndirectFire": {
+    "description": "Diese Einheit kann über <style=\"Out_Of_Sight\">verdeckende</style> Felder hinweg schießen und Ziele in <style=\"Tile_Trench\">Schützengräben</style> treffen.",
+    "styledName": "<style=\"Indirect_Fire\">Indirektes Feuer</style>",
+    "variables": {}
+  },
+  "Infiltrate": {
+    "description": "Diese Einheit löst die Eigenschaft <style=\"Overwatch\">Aufklärung</style> nicht aus.",
+    "styledName": "<style=\"Infiltrate\">Infiltrieren</style>",
+    "variables": {}
+  },
+  "InstinctiveBehaviour": {
+    "description": "Diese Einheit versucht immer, das nächstgelegene Ziel anzugreifen. Wenn sich Ziele in Reichweite befinden, bewegt sich diese Einheit vor dem Angriff nicht.",
+    "styledName": "<style=\"Instinctive_Behaviour\">Instinktives Handeln</style>",
+    "variables": {}
+  },
+  "LivingMetal": {
+    "description": "<style=\"Regenerate\">Regeneriert</style> <style=\"Stat\">{[hpPct]} %</style> der maximalen <style=\"Stat_Health\">Lebenspunkte</style> zu Beginn des Spielerzugs. Diese Einheit ist außerdem <style=\"Mechanical\">Mechanisch</style>.",
+    "styledName": "<style=\"Living_Metal\">Lebendes Metall</style>",
+    "variables": {
+      "hpPct": [10]
+    }
+  },
+  "Mechanic": {
+    "description": "Kann als Aktion eine verbündete, <style=\"Mechanical\">mechanische</style> Einheit <style=\"Repairing\">reparieren</style>.\nDie Menge der wiederhergestellten <style=\"Stat_Health\">Lebenspunkte</style> entspricht dem Schaden des <style=\"Mechanic\">Mechanikers</style>, multipliziert mit der höchsten <style=\"Stat_Hits\">Trefferanzahl</style> einer Waffe in seinem Besitz.",
+    "styledName": "<style=\"Mechanic\">Mechaniker</style>",
+    "variables": {}
+  },
+  "Mechanical": {
+    "description": "Kann nicht <style=\"Healing\">geheilt</style>, aber stattdessen <style=\"Repairing\">repariert</style> werden.\n<i>Hinweis: Einheiten mit der Eigenschaft <style=\"Living_Metal\">Lebendes Metall</style> zählen als <style=\"Mechanical\">mechanische</style> Einheiten.</i>",
+    "styledName": "<style=\"Mechanical\">Mechanisch</style>",
+    "variables": {}
+  },
+  "Overwatch": {
+    "description": "Wenn diese Einheit während ihres Zugs – oder danach – nicht angegriffen hat, greift sie sofort an, wenn sich ein Gegner während seines Zugs in Reichweite bewegt.",
+    "styledName": "<style=\"Overwatch\">Aufklärung</style>",
+    "variables": {}
+  },
+  "Parry": {
+    "description": "Diese Einheit reduziert eingehende <style=\"Stat_Melee\">Nahkampfangriffe</style> mit mehreren Treffern um <style=\"Stat_Hits\">{[hitsReduction]} Treffer</style> (bis zu einem Minimum von 1).",
+    "styledName": "<style=\"Parry\">Parieren</style>",
+    "variables": {
+      "hitsReduction": [1]
+    }
+  },
+  "Psyker": {
+    "description": "Wenn diese Einheit einen <style=\"NormalAttack\">normalen Fernkampfangriff</style> ausführt, verursacht sie außerdem {[extraDmgPct]} % ihres <style=\"Stat_Damage\">Schaden</style> an einem zufälligen, an das Ziel angrenzenden Gegner.",
+    "styledName": "<style=\"Psyker\">Psioniker</style>",
+    "variables": {
+      "extraDmgPct": [50]
+    }
+  },
+  "RangedSpecialist": {
+    "description": "Grenzt diese Einheit zu Beginn ihres Zuges nicht an eine gegnerische Einheit an, verursacht sie mit Fernkampfangriffen <style=\"Stat_Damage\">+{[extraDmgPct]} % Schaden</style>.",
+    "styledName": "<style=\"RangedSpecialist\">Fernkampf-Experte</style>",
+    "variables": {
+      "extraDmgPct": [33]
+    }
+  },
+  "Resilient": {
+    "description": "Wenn diese Einheit über mehr als <style=\"Stat_Health\">1 Lebenspunkt</style> verfügt und besiegt werden würde, werden ihre <style=\"Stat_Health\">Lebenspunkte</style> stattdessen auf <style=\"Stat_Health\">1</style> reduziert, es sei denn, die Einheit würde einen <style=\"Overkill\">Overkill</style> erleiden.",
+    "styledName": "<style=\"Resilient\">Unverwüstlich</style>",
+    "variables": {}
+  },
+  "ShadowInTheWarp": {
+    "description": "Gegnerische <style=\"Psyker\">Psioniker</style> in bis zu {[range]} Feldern Entfernung verursachen {[dmgPct]} % <style=\"DMG_Psychic\">Psi-Schaden</style>. Hat keinen Effekt auf <style=\"Faction_Tyranids\">tyranidische</style> <style=\"Psyker\">Psioniker</style>.",
+    "styledName": "<style=\"Shadow_In_The_Warp\">Schatten im Warp</style>",
+    "variables": {
+      "range": [2],
+      "dmgPct": [-25]
+    }
+  },
+  "SuppressiveFire": {
+    "description": "Ein Gegner, der von einem Fernkampfangriff dieser Einheit getroffen wird, wird <style=\"Debuff_Pinned\">Unterdrückt</style>.",
+    "styledName": "<style=\"Suppressive_Fire\">Unterdrückendes Feuer</style>",
+    "variables": {}
+  },
+  "Synapse": {
+    "description": "Verbündete Einheiten in bis zu 2 Feldern Reichweite ignorieren die Effekte von <style=\"Instinctive_Behaviour\">Instinktives Handeln</style> und <style=\"Battle_Fatigue\">Kampfmüdigkeit</style>.",
+    "styledName": "<style=\"Synapse\">Synapse</style>",
+    "variables": {}
+  },
+  "TeleportStrike": {
+    "description": "Diese Einheit beginnt den Kampf im Tiefschlag. Einheiten im Tiefschlag können sich auf ein beliebiges freies Feld auf dem Schlachtfeld bewegen, das nicht an einen Gegner angrenzt, dürfen dann aber bis zum Ende ihres Zuges keine Fernkampfangriffe ausführen. Sie können sich auch von ihrer aktuellen Position aus normal bewegen. Einheiten im Tiefschlag können nicht als Ziel gewählt oder verletzt werden, bis sie eine Aktion ausgeführt oder ihren Zug beendet haben.",
+    "styledName": "<style=\"Teleport_Strike\">Tiefschlag</style>",
+    "variables": {}
+  },
+  "TerminatorArmour": {
+    "description": "Der erste Angriff, den diese Einheit in jedem Zug erleidet, verursacht <style=\"Stat\">{[dmgPctReduction]} % Schaden</style>. <style=\"Stat_Hits\">Treffer</style>, die <style=\"DMG_Psychic\">Psi-Schaden</style> oder <style=\"DMG_Direct\">Direkten Schaden</style> verursachen, sind ausgenommen. Diese Einheit kann nicht <style=\"Debuff_Pinned\">Unterdrückt</style> werden.",
+    "styledName": "<style=\"Terminator_Armor\">Terminatorrüstung</style>",
+    "variables": {
+      "dmgPctReduction": [-75]
+    }
+  },
+  "Unstoppable": {
+    "description": "Diese Einheit lässt sich nicht durch Spezialfelder und <style=\"HexEffect\">Feldeffekte</style> aufhalten, die Einheiten zum Beenden ihrer <style=\"Stat_Movement\">Bewegung</style> zwingen.",
+    "styledName": "<style=\"Unstoppable\">Unaufhaltsam</style>",
+    "variables": {}
+  },
+  "Vehicle": {
+    "description": "Diese Einheit lässt sich nicht durch Spezialfelder und <style=\"HexEffect\">Feldeffekte</style> aufhalten, die Einheiten zum Beenden ihrer <style=\"Stat_Movement\">Bewegung</style> zwingen, und erhält keine Boni durch <style=\"Tile_Grass\">Hohes Gras</style> und <style=\"Tile_Trench\">Schützengräben</style>. Diese Einheit ist außerdem <style=\"Mechanical\">mechanisch</style>.",
+    "styledName": "<style=\"Vehicle\">Fahrzeug</style>",
+    "variables": {}
+  },
+  "WeaverOfFate": {
+    "description": "Wenn 3 oder mehr gegnerische Einheiten in einem Zug <style=\"DMG_Psychic\">Psi-Schaden</style> erlitten haben, verursacht diese Einheit mit ihren Angriffen und Fähigkeiten in diesem Zug den maximal möglichen <style=\"Stat_Damage\">Schaden</style>.",
+    "styledName": "<style=\"WeaverOfFate\">Schicksalsweber</style>",
+    "variables": {}
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "RelentlessMarch": {
+    "description": "Gewährt allen verbündeten Einheiten, die ihren Zug auf einem angrenzenden Feld beginnen, +1 <style=\"Stat_Movement\">Bewegung</style>. <style=\"Repairing\">Repariert</style> zudem betroffene <style=\"Mechanical\">mechanische</style> Einheiten um <style=\"Stat_Health\">{[hpToRepair]} Lebenspunkte</style>.",
+    "variables": {
+      "hpToRepair": [
+        20, 24, 28, 32, 36, 41, 45, 50, 54, 59, 64, 68, 73, 77, 82, 87, 91, 96,
+        100, 105, 111, 120, 138, 156, 174, 193, 211, 229, 247, 265, 284, 302,
+        320, 338, 356, 375, 393, 411, 429, 455, 491, 529, 569, 615, 697, 779,
+        861, 943, 1026, 1109, 1120, 1135, 1150, 1170, 1190, 1210, 1230, 1255,
+        1280, 1305, 1335, 1365, 1395, 1425, 1455
+      ]
+    },
+    "constants": {},
+    "scaled": ["hpToRepair"]
+  }
+}

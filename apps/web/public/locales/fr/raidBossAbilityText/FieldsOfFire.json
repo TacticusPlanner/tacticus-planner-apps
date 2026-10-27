@@ -1,0 +1,25 @@
+{
+  "FieldsOfFire": {
+    "description": "Les unités alliées dotées du trait <style=\"Emplacement\">Mise en batterie</style> infligent <style=\"Stat_Damage\">+{[extraDmgPct]} % de dégâts</style> contre les unités situées à {[range]} hexagones ou plus de leur propre hexagone. Chaque fois que <style=\"Faction_AstraMilitarum\">Thaddeus Noble</style> subit une attaque au <style=\"Stat_Melee\">corps à corps</style> ou subirait l'<style=\"Debuff_Stunned\">Étourdissement</style>, il perd <style=\"Stat_Health\">{[hp]} santé</style> en plus des dégâts infligés. La première fois qu'il perd de la <style=\"Stat_Health\">santé</style> de cette manière au cours d'une manche, toutes les unités alliées dotées de <style=\"Emplacement\">Mise en batterie</style> sont <style=\"Debuff_Pinned\">neutralisées</style> pendant 1 manche.",
+    "variables": {
+      "extraDmgPct": [
+        30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
+        30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
+        30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
+        30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30
+      ],
+      "hp": [
+        10, 13, 15, 18, 20, 23, 25, 38, 50, 59, 67, 76, 84, 92, 101, 135, 170,
+        200, 225, 250, 275, 300, 330, 355, 460, 565, 670, 755, 840, 925, 1010,
+        1090, 1175, 1290, 1400, 1865, 2335, 2800, 3265, 3735, 4200, 4665, 5135,
+        5600, 6065, 6535, 7000, 7465, 7935, 8400, 11200, 14000, 16800, 18200,
+        19600, 21000, 22400, 23800, 25200, 26600, 28000, 29400, 31735, 34065,
+        36400
+      ]
+    },
+    "constants": {
+      "range": "4"
+    },
+    "scaled": []
+  }
+}

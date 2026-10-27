@@ -3,12 +3,12 @@
     "description": "The first time there are no allied <style=\"Daemon\">Daemons</style> on the battlefield at the end of his turn, <style=\"Faction_ThousandSons\">Abraxas</style> summons <style=\"Stat\">{[nrOfSummons]}</style> <style=\"Summon\"><style=\"Faction_ThousandSons\">Screamers</style></style> onto random hexes on the battlefield. When a friendly Daemon is defeated, Abraxas loses <style=\"Stat_Health\">{[hp]} Health</style>. As long as there are friendly Daemons on the battlefield, all incoming damage to Abraxas is reduced by <style=\"Stat_Damage\">{[dmgReductionPct]}%</style>.\n\nScreamer of Tzeentch stats:\n<style=\"Stat_Health\">{[summonHp]} Health</style>\n<style=\"Stat_Damage\">{[summonDmg]} Damage</style>",
     "variables": {
       "hp": [
-        20, 25, 30, 35, 40, 45, 50, 76, 84, 98, 112, 126, 140, 154, 168, 210,
-        295, 290, 325, 360, 395, 430, 470, 505, 620, 845, 840, 945, 1050, 1155,
-        1260, 1365, 1470, 1610, 1750, 1945, 2720, 3110, 3500, 4280, 4665, 5055,
-        5835, 6220, 6610, 7390, 7780, 8165, 8945, 9335, 10025, 11695, 16705,
-        16705, 16705, 17250, 17251, 17252, 17253, 17254, 17255, 17256, 17257,
-        17258, 17259
+        24, 30, 36, 42, 48, 54, 60, 90, 120, 140, 160, 180, 200, 220, 240, 320,
+        400, 480, 540, 600, 660, 720, 780, 840, 1095, 1345, 1600, 1800, 2000,
+        2200, 2400, 2600, 2800, 3065, 3335, 4445, 5555, 6665, 7780, 8890, 10000,
+        11110, 12220, 13335, 14445, 15555, 16665, 17780, 18890, 20000, 26665,
+        33335, 40000, 43335, 46665, 50000, 53335, 56665, 60000, 63335, 66665,
+        70000, 75555, 81110, 86665
       ],
       "dmgReductionPct": [
         25, 25, 25, 25, 25, 25, 25, 25, 33, 33, 33, 33, 33, 33, 33, 33, 33, 40,
@@ -35,6 +35,6 @@
       "nrOfSummons": "9",
       "unitId": "GuildBoss9Npc5ThousScreamerSummon"
     },
-    "scaled": ["hp", "summonHp", "summonDmg"]
+    "scaled": ["summonHp", "summonDmg"]
   }
 }

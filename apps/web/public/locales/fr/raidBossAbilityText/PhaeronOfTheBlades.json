@@ -1,0 +1,16 @@
+{
+  "PhaeronOfTheBlades": {
+    "description": "Tous les <style=\"Faction_Necrons\">Nécrons</style> adjacents infligent <style=\"Stat_Damage\">+{[extraDmg]} dégâts</style> au corps à corps.",
+    "variables": {
+      "extraDmg": [
+        7, 8, 10, 11, 13, 14, 16, 17, 19, 21, 22, 24, 25, 27, 29, 30, 32, 34,
+        35, 37, 39, 42, 48, 55, 61, 67, 74, 80, 87, 93, 99, 106, 112, 118, 125,
+        131, 137, 144, 150, 159, 172, 185, 199, 215, 244, 273, 301, 330, 359,
+        388, 419, 433, 447, 463, 479, 495, 512, 531, 551, 571, 593, 616, 640,
+        663, 687
+      ]
+    },
+    "constants": {},
+    "scaled": ["extraDmg"]
+  }
+}

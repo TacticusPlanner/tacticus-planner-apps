@@ -1,0 +1,23 @@
+{
+  "RedemptionOfTheRisen": {
+    "description": "Chaque fois qu'une unité <style=\"Faction_DarkAngels\">Dark Angels</style> est vaincue par un ennemi du <style=\"Aliance_Chaos\">Chaos</style>, <style=\"Faction_DarkAngels\">Forcas</style> perd <style=\"Stat_Health\">{[hp]} santé</style>. Si un Dark Angel allié est vaincu pendant le tour ennemi, Forcas et tous les Dark Angels alliés passent en mode <style=\"Buff_Overwatching\">Sentinelle</style>. Tant qu'un Dark Angel allié se trouve sur le champ de bataille, Forcas et les Dark Angels alliés adjacents subissent <style=\"Stat_Damage\">-{[dmgReductionPct]} % dégâts</style>.",
+    "variables": {
+      "hp": [
+        34, 42, 50, 59, 67, 76, 84, 126, 168, 196, 224, 252, 280, 308, 336, 450,
+        560, 670, 755, 840, 925, 1010, 1090, 1175, 1530, 1885, 2240, 2520, 2800,
+        3080, 3360, 3640, 3920, 4295, 4665, 6220, 7780, 9335, 10890, 12445,
+        14000, 15555, 17110, 18665, 20220, 21780, 23335, 24890, 26445, 28000,
+        37335, 46665, 56000, 60665, 65335, 70000, 74665, 79335, 84000, 88665,
+        93335, 98000, 105780, 113555, 121335
+      ],
+      "dmgReductionPct": [
+        25, 25, 25, 25, 25, 25, 25, 25, 33, 33, 33, 33, 33, 33, 33, 33, 33, 40,
+        40, 40, 40, 40, 40, 40, 40, 40, 50, 50, 50, 50, 50, 50, 50, 50, 50, 66,
+        66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66,
+        66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66
+      ]
+    },
+    "constants": {},
+    "scaled": []
+  }
+}

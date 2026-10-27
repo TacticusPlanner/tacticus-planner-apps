@@ -1,0 +1,22 @@
+{
+  "Neuroparasite": {
+    "description": "Cada enemigo que recibe <style=\"DMG_Psychic\">Daño psíquico</style> por parte del <style=\"Faction_Tyranids\">Neurótropo</style> resulta infectado por un <style=\"Debuff_Neuroparasite\">neuroparásito</style> hasta que la unidad se cure o el <style=\"Faction_Tyranids\">Neurótropo</style> sea derrotado. Cuando una unidad infectada con un <style=\"Debuff_Neuroparasite\">neuroparásito</style> recibe <style=\"DMG_Psychic\">Daño psíquico</style> o resulta afectada por un ataque o habilidad que lo <style=\"Debuff_Pinned\">suprime</style>, el nivel del <style=\"Debuff_Neuroparasite\">neuroparásito</style> aumenta en 1, hasta un máximo de <style=\"STAT\">{[buffMaxLevel]}</style>.\n\nEl<style=\"DMG_Psychic\">Daño psíquico</style> infligido por el <style=\"Faction_Tyranids\">Neurótropo</style> aumenta <style=\"Stat_Damage\">+{[extraDmg]} de Daño</style> por cada nivel del <style=\"Debuff_Neuroparasite\">neuroparásito</style> en el objetivo.",
+    "variables": {
+      "extraDmg": [
+        17, 20, 24, 27, 31, 35, 38, 42, 46, 50, 54, 58, 62, 66, 70, 74, 78, 81,
+        85, 89, 95, 102, 117, 133, 148, 164, 179, 195, 210, 226, 241, 257, 272,
+        287, 303, 318, 334, 349, 365, 387, 417, 449, 484, 522, 592, 662, 732,
+        802, 872, 942, 952, 965, 978, 995, 1012, 1029, 1046, 1067, 1088, 1109,
+        1135, 1160, 1186, 1211, 1237
+      ],
+      "buffMaxLevel": [
+        10, 10, 10, 10, 10, 10, 10, 10, 12, 12, 12, 12, 12, 12, 12, 12, 12, 13,
+        13, 13, 13, 13, 13, 13, 13, 13, 14, 14, 14, 14, 14, 14, 14, 14, 14, 15,
+        15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15,
+        15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15
+      ]
+    },
+    "constants": {},
+    "scaled": ["extraDmg"]
+  }
+}

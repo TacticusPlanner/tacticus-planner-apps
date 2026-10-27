@@ -1,0 +1,8 @@
+{
+  "BlisteringAssault": {
+    "description": "Die <style=\"NormalAttack\">normalen Angriffe</style> des <style=\"Faction_Tyranids\">Kreischer-Killers</style> treffen auch alle an das Angriffsziel angrenzenden Gegner.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}
