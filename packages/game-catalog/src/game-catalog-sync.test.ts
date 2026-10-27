@@ -20,6 +20,7 @@ import {
   type GameCatalogManifestDataset,
 } from "./types"
 import globalValuesPayload from "./schemas/global-values.fixture.json"
+import progressionRulesPayload from "./schemas/progression-rules.fixture.json"
 
 // The fake client bypasses zod (the real GameCatalogHttpClient validates); these records only need the shape
 // the storage adapters key on (an id, a groupId, etc.), not the full served schema.
@@ -166,6 +167,7 @@ const datasetData: Record<string, unknown> = {
   ],
   "damage-types": [{ id: "Flame", piercingRatio: 25, traits: ["OnFire"] }],
   "global-values": globalValuesPayload,
+  "progression-rules": progressionRulesPayload,
 }
 
 function createManifest(
@@ -481,6 +483,13 @@ describe("syncGameCatalog", () => {
     expect(await getDatasetRecords("global-values")).toEqual([
       expect.objectContaining({ id: "global-values", maxStamina: 60 }),
     ])
+  })
+
+  it("stores the one progression-rules record under the dataset key", async () => {
+    await syncGameCatalog(new FakeGameCatalogClient(createManifest()))
+    const [rules] = await getDatasetRecords("progression-rules")
+    expect(rules).toMatchObject({ id: "progression-rules" })
+    expect(rules?.xpLevels).toHaveLength(64)
   })
 
   it("keys factions and damage-types by their game id", async () => {

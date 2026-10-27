@@ -29,6 +29,7 @@ type Progression = ProgressionTarget["start"]
 
 import type { Battle } from "@/features/goal-farming/@x/goal-planning"
 import { computePlanInsights } from "./plan-insights-calc"
+import { levelRules } from "@/test/fixtures/level-rules"
 
 const unitId = unitIdSchema.parse
 const upgradeId = upgradeIdSchema.parse
@@ -159,6 +160,7 @@ describe("computePlanInsights", () => {
     ]
 
     const result = computePlanInsights({
+      levelRules,
       ...baseParams,
       details,
       priorityByGoalId: new Map([["goal-1", 1]]),
@@ -191,6 +193,7 @@ describe("computePlanInsights", () => {
     const near = rankGoal("near", 1)
 
     const covered = computePlanInsights({
+      levelRules,
       ...baseParams,
       details: [near, far],
       priorityByGoalId: new Map([
@@ -206,6 +209,7 @@ describe("computePlanInsights", () => {
     expect(nearSlots?.standalone).toBeGreaterThan(0)
 
     const inOrder = computePlanInsights({
+      levelRules,
       ...baseParams,
       details: [near, far],
       priorityByGoalId: new Map([
@@ -245,6 +249,7 @@ describe("computePlanInsights", () => {
     const second = abilityGoal("second", 9, 11)
 
     const result = computePlanInsights({
+      levelRules,
       ...baseParams,
       abilityLadders: { characterAbilityCostsByLevel: ladder as never },
       details: [second, first],
@@ -300,6 +305,7 @@ describe("computePlanInsights", () => {
     })
     const run = (xenosEpic: number) =>
       computePlanInsights({
+        levelRules,
         ...baseParams,
         abilityLadders: { characterAbilityCostsByLevel: ladder as never },
         abilityInventory: inventory(xenosEpic) as never,
@@ -382,6 +388,7 @@ describe("computePlanInsights", () => {
     ]
 
     const result = computePlanInsights({
+      levelRules,
       ...baseParams,
       details,
       inventoryUpgrades: [{ upgradeId: craftedId, amount: 1 }],
@@ -436,6 +443,7 @@ describe("computePlanInsights", () => {
       overrides: Partial<Parameters<typeof computePlanInsights>[0]> = {}
     ) =>
       computePlanInsights({
+        levelRules,
         ...baseParams,
         details,
         priorityByGoalId: new Map(order.map((id, index) => [id, index + 1])),
@@ -503,6 +511,7 @@ describe("computePlanInsights", () => {
     ]
 
     const result = computePlanInsights({
+      levelRules,
       ...baseParams,
       details,
       playerCharacterById: new Map([
@@ -561,6 +570,7 @@ describe("computePlanInsights", () => {
     ]
 
     const result = computePlanInsights({
+      levelRules,
       ...baseParams,
       details,
       playerCharacterById: new Map([
@@ -592,6 +602,7 @@ describe("computePlanInsights", () => {
     const details = [goalDetail({ goalType: "Ability" })]
 
     const result = computePlanInsights({
+      levelRules,
       ...baseParams,
       details,
       priorityByGoalId: new Map(),
@@ -627,6 +638,7 @@ describe("computePlanInsights", () => {
     ]
 
     const result = computePlanInsights({
+      levelRules,
       ...baseParams,
       details,
       priorityByGoalId: new Map([["goal-1", 1]]),
@@ -655,6 +667,7 @@ describe("computePlanInsights", () => {
       }),
     ]
     const result = computePlanInsights({
+      levelRules,
       ...baseParams,
       details,
       priorityByGoalId: new Map([["goal-1", 1]]),
@@ -738,6 +751,7 @@ describe("computePlanInsights", () => {
     ]
 
     const withShop = computePlanInsights({
+      levelRules,
       ...baseParams,
       details,
       priorityByGoalId: new Map([["goal-1", 1]]),
@@ -757,6 +771,7 @@ describe("computePlanInsights", () => {
       shops,
     })
     const campaignOnly = computePlanInsights({
+      levelRules,
       ...baseParams,
       details,
       priorityByGoalId: new Map([["goal-1", 1]]),
@@ -843,6 +858,7 @@ describe("computePlanInsights", () => {
 
   it("derives Ascension potential from owned alliance orbs", () => {
     const result = computePlanInsights({
+      levelRules,
       ...baseParams,
       details: [
         goalDetail({
@@ -914,6 +930,7 @@ describe("computePlanInsights", () => {
 
   it("prices a Rank goal's level-up books as Rank gold", () => {
     const result = computePlanInsights({
+      levelRules,
       ...baseParams,
       details: [rankNeedingLevel("goal-1")],
       priorityByGoalId: new Map([["goal-1", 1]]),
@@ -929,6 +946,7 @@ describe("computePlanInsights", () => {
 
   it("derives a Rank goal's level Potential from owned xp books", () => {
     const result = computePlanInsights({
+      levelRules,
       ...baseParams,
       details: [rankNeedingLevel("goal-1")],
       priorityByGoalId: new Map([["goal-1", 1]]),
@@ -942,6 +960,7 @@ describe("computePlanInsights", () => {
 
   it("gives a higher-priority goal first claim on the shared xp-book pool", () => {
     const result = computePlanInsights({
+      levelRules,
       ...baseParams,
       details: [
         { ...rankNeedingLevel("goal-low"), entityId: "hero2" },
@@ -972,6 +991,7 @@ describe("computePlanInsights", () => {
     // second is charged only the XP beyond the first, so 8 books (100,000 XP) cover the first while the
     // second's extra 28,000 XP is only partly reachable.
     const result = computePlanInsights({
+      levelRules,
       ...baseParams,
       details: [
         rankNeedingLevel("goal-a"),
@@ -1012,6 +1032,7 @@ describe("computePlanInsights", () => {
     }
 
     const restrictedToCheapNode = computePlanInsights({
+      levelRules,
       ...params,
       details: [
         goalDetail({
@@ -1024,6 +1045,7 @@ describe("computePlanInsights", () => {
       ],
     })
     const restrictedToExpensiveNode = computePlanInsights({
+      levelRules,
       ...params,
       details: [
         goalDetail({
@@ -1059,6 +1081,7 @@ describe("computePlanInsights", () => {
     }
 
     const result = computePlanInsights({
+      levelRules,
       ...params,
       details: [goalDetail({ goalType: "Unlock" })],
     })
@@ -1177,6 +1200,7 @@ describe("computePlanInsights", () => {
 
   it("reports a date over the estimable goals and counts the blocked one", () => {
     const result = computePlanInsights({
+      levelRules,
       ...mixedParams,
       details: [
         goalDetail({ goalId: "goal-1", goalType: "Rank", config: rankConfig }),
@@ -1203,6 +1227,7 @@ describe("computePlanInsights", () => {
 
   it("reports no date, and counts every goal, when nothing can be estimated", () => {
     const result = computePlanInsights({
+      levelRules,
       ...mixedParams,
       details: [
         goalDetail({
@@ -1223,11 +1248,13 @@ describe("computePlanInsights", () => {
     // An Ability goal is uncostable here, so it never reaches `goalNeeds` at all - it must still
     // read as excluded rather than as "this project has nothing in it".
     const filteredOut = computePlanInsights({
+      levelRules,
       ...baseParams,
       details: [goalDetail({ goalType: "Ability" })],
       priorityByGoalId: new Map([["goal-1", 1]]),
     })
     const empty = computePlanInsights({
+      levelRules,
       ...baseParams,
       details: [],
       priorityByGoalId: new Map(),
@@ -1241,6 +1268,7 @@ describe("computePlanInsights", () => {
 
   it("does not turn an Onslaught shortfall into a date when nothing is estimable", () => {
     const result = computePlanInsights({
+      levelRules,
       ...baseParams,
       ...ascensionWithOnslaught(100_000),
       currentOnslaughtTokens: 0,
@@ -1256,6 +1284,7 @@ describe("computePlanInsights", () => {
   it("waits for the plan's Onslaught tokens, not just the project's own, when scoped to a project", () => {
     const tokenGoal = ascensionWithOnslaught(100_000)
     const scoped = computePlanInsights({
+      levelRules,
       ...baseParams,
       ...tokenGoal,
       details: [
@@ -1308,6 +1337,7 @@ describe("computePlanInsights", () => {
     ]
     const base = ascensionWithOnslaught(100)
     const result = computePlanInsights({
+      levelRules,
       ...baseParams,
       ...base,
       details: [
@@ -1374,17 +1404,20 @@ describe("computePlanInsights", () => {
 
     it("reports only the project's goals but keeps their place in the one global run", () => {
       const whole = computePlanInsights({
+        levelRules,
         ...params,
         details,
         priorityByGoalId,
       })
       const projectB = computePlanInsights({
+        levelRules,
         ...params,
         details,
         priorityByGoalId,
         scopeGoalIds: new Set(["b"]),
       })
       const alone = computePlanInsights({
+        levelRules,
         ...params,
         details: [details[1]!],
         priorityByGoalId: new Map([["b", 1]]),
@@ -1411,6 +1444,7 @@ describe("computePlanInsights", () => {
 
     it("has nothing to report for a scope holding none of the plan's goals", () => {
       const nothing = computePlanInsights({
+        levelRules,
         ...params,
         details,
         priorityByGoalId,

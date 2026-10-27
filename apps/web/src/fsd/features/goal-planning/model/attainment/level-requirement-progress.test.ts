@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest"
 
 import type { GoalDetail } from "@/entities/goal"
+import { levelRules } from "@/test/fixtures/level-rules"
 
 import {
   computeLevelRequirementProgress,
@@ -43,6 +44,7 @@ describe("computeLevelRequirementProgress", () => {
     // Level 32's total-XP threshold is 94,200; 82,000 gained → 12,200 XP to go.
     expect(
       computeLevelRequirementProgress({
+        levelRules,
         detail: rankDetail,
         playerUnit: { xpLevel: 31, xp: 82_000, progressionIndex: mythic },
       })
@@ -61,6 +63,7 @@ describe("computeLevelRequirementProgress", () => {
     for (const status of ["Completed", "Archived"]) {
       expect(
         computeLevelRequirementProgress({
+          levelRules,
           detail: { ...rankDetail, status } as GoalDetail,
           playerUnit,
         })
@@ -71,6 +74,7 @@ describe("computeLevelRequirementProgress", () => {
   it("derives an Ability goal's requirement from its higher track", () => {
     expect(
       computeLevelRequirementProgress({
+        levelRules,
         detail: abilityDetail(20, 35),
         playerUnit: { xpLevel: 30, xp: 72_200, progressionIndex: mythic },
       })
@@ -80,6 +84,7 @@ describe("computeLevelRequirementProgress", () => {
   it("is absent once the character's level is sufficient", () => {
     expect(
       computeLevelRequirementProgress({
+        levelRules,
         detail: rankDetail,
         playerUnit: { xpLevel: 32, xp: 94_200, progressionIndex: mythic },
       })
@@ -89,18 +94,21 @@ describe("computeLevelRequirementProgress", () => {
   it("is absent for a unit that isn't owned, a Mow, and every other goal kind", () => {
     expect(
       computeLevelRequirementProgress({
+        levelRules,
         detail: rankDetail,
         playerUnit: undefined,
       })
     ).toBeNull()
     expect(
       computeLevelRequirementProgress({
+        levelRules,
         detail: { ...abilityDetail(20, 35), entityType: "Mow" },
         playerUnit: { xpLevel: 1, xp: 0, progressionIndex: mythic },
       })
     ).toBeNull()
     expect(
       computeLevelRequirementProgress({
+        levelRules,
         detail: {
           entityType: "Character",
           goalType: "Ascension",
@@ -115,6 +123,7 @@ describe("computeLevelRequirementProgress", () => {
     // Rare's level cap is 26 (levelCapByRarity.Rare); the requirement is level 32, on a 1..32 scale.
     expect(
       computeLevelRequirementProgress({
+        levelRules,
         detail: rankDetail,
         playerUnit: { xpLevel: 5, xp: 0, progressionIndex: "Rare:FourStars" },
       })

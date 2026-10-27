@@ -11,7 +11,10 @@ import {
 import { useGlobalGoalPlan } from "@/entities/goal"
 import { onslaughtProgressQueries } from "@/entities/player-data-override"
 import { usePlanningSettings } from "@/entities/planning-setting"
-import { toOnslaughtRunsPerDay } from "@/features/goal-farming/@x/goal-planning"
+import {
+  toOnslaughtRunsPerDay,
+  useLevelRules,
+} from "@/features/goal-farming/@x/goal-planning"
 import { useCampaignDisplay } from "@/shared/lib"
 import { useCatalogDataset, usePlayerChunk } from "@/shared/local-data"
 
@@ -89,6 +92,7 @@ export function usePlanInsights(scopeGoalIds?: readonly string[] | null) {
     useCatalogDataset("global-values", toOnslaughtRunsPerDay)
   )
   const shops = readyData(useCatalogDataset("shops"))
+  const levelRules = useLevelRules()
   const { settings: planningSettings } = usePlanningSettings()
 
   const [fetchState, setFetchState] = useState<FetchState>({ status: "idle" })
@@ -156,6 +160,7 @@ export function usePlanInsights(scopeGoalIds?: readonly string[] | null) {
     !!mowsById &&
     !!onslaughtRewards?.length &&
     onslaughtRunsPerDay !== undefined &&
+    !!levelRules &&
     !!shops &&
     !!ascensionCostsById &&
     !!unlockShardCostsById
@@ -237,6 +242,7 @@ export function usePlanInsights(scopeGoalIds?: readonly string[] | null) {
             inventoryXpBooks,
             abilityInventory,
             xpBookRarity: planningSettings.xpBookRarity,
+            levelRules,
             upgradesById,
             battlesById,
             charactersById: charactersById,

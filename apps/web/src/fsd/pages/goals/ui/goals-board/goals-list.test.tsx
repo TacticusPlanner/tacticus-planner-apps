@@ -307,7 +307,7 @@ describe("GoalsList", () => {
           metrics={metrics as never}
           reorderEnabled={false}
           rows={rows}
-          xpBookRarity="Legendary"
+          xpBook={{ rarity: "Legendary", xp: 12_500 }}
         />
       )
 
@@ -604,7 +604,7 @@ describe("GoalsList reached rows and column layout", () => {
           reachedByGoalId={new Map([["goal-1", true]])}
           reorderEnabled={false}
           rows={[rows[0]!]}
-          xpBookRarity="Legendary"
+          xpBook={{ rarity: "Legendary", xp: 12_500 }}
         />
       )
 

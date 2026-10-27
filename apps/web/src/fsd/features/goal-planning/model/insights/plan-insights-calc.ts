@@ -30,6 +30,7 @@ import {
   type EstimateResourceId,
   type EstimateUpgrade,
   type GoalNeed,
+  type LevelRules,
   type UpgradeNeed,
 } from "@/features/goal-farming/@x/goal-planning"
 import {
@@ -96,6 +97,8 @@ export function computePlanInsights(params: {
   abilityInventory?: Parameters<typeof createAbilityMaterialsPlan>[1]
   /** The user's selected XP-book rarity, pricing the books a Rank goal still needs (Rank gold). */
   xpBookRarity?: string | null
+  /** The game's level rules; omitted, no goal gets a level Potential ratio or level-up gold. */
+  levelRules?: LevelRules
   releaseTypeByGroupId: ReadonlyMap<CampaignId, string>
   getCharacter: (unitId: UnitId) => Character | undefined
   campaignName: (descriptor: Pick<CampaignDescriptor, "nameKey">) => string
@@ -354,6 +357,7 @@ export function computePlanInsights(params: {
     playerCharacterById: params.playerCharacterById,
     inventoryXpBooks: params.inventoryXpBooks,
     xpBookRarity: params.xpBookRarity,
+    levelRules: params.levelRules,
   })
   // What each active goal still needs once the plan's orb and shard stock is spent in priority order,
   // plus the gold to apply a Rank goal's level-up books (goal-remaining-resources).

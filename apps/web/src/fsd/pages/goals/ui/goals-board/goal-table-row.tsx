@@ -46,7 +46,7 @@ type GoalRowCellsProps = Pick<
   | "levelPotentialProgress"
   | "levelChargedXp"
   | "levelPoolXpAvailable"
-  | "xpBookRarity"
+  | "xpBook"
   | "onToggleSelected"
   | "reachedByGoalId"
   | "cascadeContext"
@@ -74,7 +74,7 @@ export const GoalRowCells = memo(function GoalRowCells({
   levelPotentialProgress,
   levelChargedXp,
   levelPoolXpAvailable,
-  xpBookRarity,
+  xpBook,
   reachedByGoalId,
   cascadeContext,
   projectRemoval,
@@ -99,7 +99,7 @@ export const GoalRowCells = memo(function GoalRowCells({
     : goalXpBookFigure(
         levelChargedXp?.get(row.goalId),
         levelPoolXpAvailable?.get(row.goalId),
-        xpBookRarity
+        xpBook
       )
   const remainingText = formatGoalRemainingText(
     t,
@@ -285,7 +285,7 @@ function sameRowProps(a: GoalRowCellsProps, b: GoalRowCellsProps) {
     props.selected,
     props.reorderEnabled,
     props.popoverOpen,
-    props.xpBookRarity,
+    props.xpBook,
     props.actions.pendingIds.has(id),
     props.onToggleSelected,
     props.dragHandle,

@@ -101,7 +101,7 @@ export function GoalsMobileCards({
   levelPotentialProgress,
   levelChargedXp,
   levelPoolXpAvailable,
-  xpBookRarity,
+  xpBook,
   reachedByGoalId,
   cascadeContext,
   projectRemoval,
@@ -173,7 +173,7 @@ export function GoalsMobileCards({
             : goalXpBookFigure(
                 levelChargedXp?.get(row.goalId),
                 levelPoolXpAvailable?.get(row.goalId),
-                xpBookRarity
+                xpBook
               )
           const remainingText = formatGoalRemainingText(
             t,

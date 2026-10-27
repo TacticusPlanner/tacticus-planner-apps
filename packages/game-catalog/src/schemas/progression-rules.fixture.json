@@ -1,0 +1,537 @@
+[
+  {
+    "xpLevels": [
+      25, 60, 120, 200, 300, 420, 560, 720, 900, 1100, 1350, 1650, 2000, 2400,
+      2850, 3350, 3950, 4700, 5600, 6700, 8100, 9900, 12200, 15200, 19200,
+      24700, 32200, 42200, 55200, 72200, 94200, 122200, 157200, 200200, 252200,
+      314200, 387200, 472200, 570200, 682200, 809200, 952200, 1112200, 1290200,
+      1487200, 1704200, 1942200, 2202200, 2485200, 2775200, 3070200, 3370200,
+      3675200, 3985200, 4300200, 4620200, 4945200, 5275200, 5610200, 5950200,
+      6295200, 6645200, 7000200, 7360200
+    ],
+    "xpBooks": [
+      {
+        "id": "xpCommon",
+        "rarity": "Common",
+        "xpIncrease": 20,
+        "gold": 5
+      },
+      {
+        "id": "xpUncommon",
+        "rarity": "Uncommon",
+        "xpIncrease": 100,
+        "gold": 15
+      },
+      {
+        "id": "xpRare",
+        "rarity": "Rare",
+        "xpIncrease": 500,
+        "gold": 50
+      },
+      {
+        "id": "xpEpic",
+        "rarity": "Epic",
+        "xpIncrease": 2500,
+        "gold": 150
+      },
+      {
+        "id": "xpLegendary",
+        "rarity": "Legendary",
+        "xpIncrease": 12500,
+        "gold": 500
+      },
+      {
+        "id": "xpMythic",
+        "rarity": "Mythic",
+        "xpIncrease": 62500,
+        "gold": 2000
+      }
+    ],
+    "upgradeSlots": [
+      {
+        "rank": "Stone1",
+        "xpLevelRequirements": [1, 1, 1, 1, 2, 3]
+      },
+      {
+        "rank": "Stone2",
+        "xpLevelRequirements": [3, 3, 3, 4, 3, 5]
+      },
+      {
+        "rank": "Stone3",
+        "xpLevelRequirements": [5, 6, 5, 7, 5, 8]
+      },
+      {
+        "rank": "Iron1",
+        "xpLevelRequirements": [8, 9, 8, 10, 8, 11]
+      },
+      {
+        "rank": "Iron2",
+        "xpLevelRequirements": [11, 12, 11, 13, 11, 14]
+      },
+      {
+        "rank": "Iron3",
+        "xpLevelRequirements": [14, 15, 14, 16, 14, 17]
+      },
+      {
+        "rank": "Bronze1",
+        "xpLevelRequirements": [17, 18, 17, 19, 17, 20]
+      },
+      {
+        "rank": "Bronze2",
+        "xpLevelRequirements": [20, 21, 20, 22, 20, 23]
+      },
+      {
+        "rank": "Bronze3",
+        "xpLevelRequirements": [23, 24, 23, 25, 23, 26]
+      },
+      {
+        "rank": "Silver1",
+        "xpLevelRequirements": [26, 27, 26, 28, 26, 29]
+      },
+      {
+        "rank": "Silver2",
+        "xpLevelRequirements": [29, 30, 29, 31, 29, 32]
+      },
+      {
+        "rank": "Silver3",
+        "xpLevelRequirements": [32, 33, 32, 34, 32, 35]
+      },
+      {
+        "rank": "Gold1",
+        "xpLevelRequirements": [35, 36, 35, 37, 35, 38]
+      },
+      {
+        "rank": "Gold2",
+        "xpLevelRequirements": [38, 39, 38, 40, 38, 41]
+      },
+      {
+        "rank": "Gold3",
+        "xpLevelRequirements": [41, 42, 41, 43, 41, 44]
+      },
+      {
+        "rank": "Diamond1",
+        "xpLevelRequirements": [44, 45, 44, 46, 44, 47]
+      },
+      {
+        "rank": "Diamond2",
+        "xpLevelRequirements": [47, 48, 47, 49, 47, 50]
+      },
+      {
+        "rank": "Diamond3",
+        "xpLevelRequirements": [50, 53, 51, 54, 52, 55]
+      },
+      {
+        "rank": "Adamantine1",
+        "xpLevelRequirements": [55, 58, 56, 59, 57, 60]
+      },
+      {
+        "rank": "Adamantine2",
+        "xpLevelRequirements": [60, 63, 61, 64, 62, 65]
+      }
+    ],
+    "heroProgressionSteps": [
+      {
+        "step": 0,
+        "progression": "Common:None",
+        "rarity": "Common",
+        "stars": 0,
+        "maxXpLevel": 8,
+        "maxRank": "Iron1",
+        "unitStatMultiplierPct": 100,
+        "abilityStatMultiplierPct": 100,
+        "hreShards": 25
+      },
+      {
+        "step": 1,
+        "progression": "Common:OneStar",
+        "rarity": "Common",
+        "stars": 1,
+        "maxXpLevel": 8,
+        "maxRank": "Iron1",
+        "unitStatMultiplierPct": 110,
+        "abilityStatMultiplierPct": 100,
+        "hreShards": 25
+      },
+      {
+        "step": 2,
+        "progression": "Common:TwoStars",
+        "rarity": "Common",
+        "stars": 2,
+        "maxXpLevel": 8,
+        "maxRank": "Iron1",
+        "unitStatMultiplierPct": 120,
+        "abilityStatMultiplierPct": 100,
+        "hreShards": 25
+      },
+      {
+        "step": 3,
+        "progression": "Uncommon:TwoStars",
+        "rarity": "Uncommon",
+        "stars": 2,
+        "maxXpLevel": 17,
+        "maxRank": "Bronze1",
+        "unitStatMultiplierPct": 120,
+        "abilityStatMultiplierPct": 120,
+        "hreShards": 25
+      },
+      {
+        "step": 4,
+        "progression": "Uncommon:ThreeStars",
+        "rarity": "Uncommon",
+        "stars": 3,
+        "maxXpLevel": 17,
+        "maxRank": "Bronze1",
+        "unitStatMultiplierPct": 130,
+        "abilityStatMultiplierPct": 120,
+        "hreShards": 50
+      },
+      {
+        "step": 5,
+        "progression": "Uncommon:FourStars",
+        "rarity": "Uncommon",
+        "stars": 4,
+        "maxXpLevel": 17,
+        "maxRank": "Bronze1",
+        "unitStatMultiplierPct": 140,
+        "abilityStatMultiplierPct": 120,
+        "hreShards": 60
+      },
+      {
+        "step": 6,
+        "progression": "Rare:FourStars",
+        "rarity": "Rare",
+        "stars": 4,
+        "maxXpLevel": 26,
+        "maxRank": "Silver1",
+        "unitStatMultiplierPct": 140,
+        "abilityStatMultiplierPct": 140,
+        "hreShards": 70
+      },
+      {
+        "step": 7,
+        "progression": "Rare:FiveStars",
+        "rarity": "Rare",
+        "stars": 5,
+        "maxXpLevel": 26,
+        "maxRank": "Silver1",
+        "unitStatMultiplierPct": 150,
+        "abilityStatMultiplierPct": 140,
+        "hreShards": 50
+      },
+      {
+        "step": 8,
+        "progression": "Rare:RedOneStar",
+        "rarity": "Rare",
+        "stars": 6,
+        "maxXpLevel": 26,
+        "maxRank": "Silver1",
+        "unitStatMultiplierPct": 160,
+        "abilityStatMultiplierPct": 140,
+        "hreShards": 60
+      },
+      {
+        "step": 9,
+        "progression": "Epic:RedOneStar",
+        "rarity": "Epic",
+        "stars": 6,
+        "maxXpLevel": 35,
+        "maxRank": "Gold1",
+        "unitStatMultiplierPct": 160,
+        "abilityStatMultiplierPct": 160,
+        "hreShards": 70
+      },
+      {
+        "step": 10,
+        "progression": "Epic:RedTwoStars",
+        "rarity": "Epic",
+        "stars": 7,
+        "maxXpLevel": 35,
+        "maxRank": "Gold1",
+        "unitStatMultiplierPct": 170,
+        "abilityStatMultiplierPct": 160,
+        "hreShards": 50
+      },
+      {
+        "step": 11,
+        "progression": "Epic:RedThreeStars",
+        "rarity": "Epic",
+        "stars": 8,
+        "maxXpLevel": 35,
+        "maxRank": "Gold1",
+        "unitStatMultiplierPct": 180,
+        "abilityStatMultiplierPct": 160,
+        "hreShards": 60
+      },
+      {
+        "step": 12,
+        "progression": "Legendary:RedThreeStars",
+        "rarity": "Legendary",
+        "stars": 8,
+        "maxXpLevel": 50,
+        "maxRank": "Diamond3",
+        "unitStatMultiplierPct": 180,
+        "abilityStatMultiplierPct": 180,
+        "hreShards": 100
+      },
+      {
+        "step": 13,
+        "progression": "Legendary:RedFourStars",
+        "rarity": "Legendary",
+        "stars": 9,
+        "maxXpLevel": 50,
+        "maxRank": "Diamond3",
+        "unitStatMultiplierPct": 190,
+        "abilityStatMultiplierPct": 180,
+        "hreShards": 100
+      },
+      {
+        "step": 14,
+        "progression": "Legendary:RedFiveStars",
+        "rarity": "Legendary",
+        "stars": 10,
+        "maxXpLevel": 50,
+        "maxRank": "Diamond3",
+        "unitStatMultiplierPct": 200,
+        "abilityStatMultiplierPct": 180,
+        "hreShards": 200
+      },
+      {
+        "step": 15,
+        "progression": "Legendary:OneBlueStar",
+        "rarity": "Legendary",
+        "stars": 11,
+        "maxXpLevel": 50,
+        "maxRank": "Diamond3",
+        "unitStatMultiplierPct": 210,
+        "abilityStatMultiplierPct": 180,
+        "hreShards": 400
+      },
+      {
+        "step": 16,
+        "progression": "Mythic:OneBlueStar",
+        "rarity": "Mythic",
+        "stars": 11,
+        "maxXpLevel": 60,
+        "maxRank": "Adamantine3",
+        "unitStatMultiplierPct": 210,
+        "abilityStatMultiplierPct": 200,
+        "hreShards": null
+      },
+      {
+        "step": 17,
+        "progression": "Mythic:TwoBlueStars",
+        "rarity": "Mythic",
+        "stars": 12,
+        "maxXpLevel": 60,
+        "maxRank": "Adamantine3",
+        "unitStatMultiplierPct": 220,
+        "abilityStatMultiplierPct": 200,
+        "hreShards": null
+      },
+      {
+        "step": 18,
+        "progression": "Mythic:ThreeBlueStars",
+        "rarity": "Mythic",
+        "stars": 13,
+        "maxXpLevel": 60,
+        "maxRank": "Adamantine3",
+        "unitStatMultiplierPct": 230,
+        "abilityStatMultiplierPct": 200,
+        "hreShards": null
+      },
+      {
+        "step": 19,
+        "progression": "Mythic:MythicWings",
+        "rarity": "Mythic",
+        "stars": 14,
+        "maxXpLevel": 60,
+        "maxRank": "Adamantine3",
+        "unitStatMultiplierPct": 240,
+        "abilityStatMultiplierPct": 200,
+        "hreShards": null
+      }
+    ],
+    "mowProgressionSteps": [
+      {
+        "step": 0,
+        "progression": "Common:None",
+        "rarity": "Common",
+        "stars": 0,
+        "maxAbilityLevel": 8,
+        "abilityStatMultiplierPct": 100,
+        "mythicAbilityStatMultiplierPct": null
+      },
+      {
+        "step": 1,
+        "progression": "Common:OneStar",
+        "rarity": "Common",
+        "stars": 1,
+        "maxAbilityLevel": 8,
+        "abilityStatMultiplierPct": 105,
+        "mythicAbilityStatMultiplierPct": null
+      },
+      {
+        "step": 2,
+        "progression": "Common:TwoStars",
+        "rarity": "Common",
+        "stars": 2,
+        "maxAbilityLevel": 8,
+        "abilityStatMultiplierPct": 110,
+        "mythicAbilityStatMultiplierPct": null
+      },
+      {
+        "step": 3,
+        "progression": "Uncommon:TwoStars",
+        "rarity": "Uncommon",
+        "stars": 2,
+        "maxAbilityLevel": 17,
+        "abilityStatMultiplierPct": 115,
+        "mythicAbilityStatMultiplierPct": null
+      },
+      {
+        "step": 4,
+        "progression": "Uncommon:ThreeStars",
+        "rarity": "Uncommon",
+        "stars": 3,
+        "maxAbilityLevel": 17,
+        "abilityStatMultiplierPct": 120,
+        "mythicAbilityStatMultiplierPct": null
+      },
+      {
+        "step": 5,
+        "progression": "Uncommon:FourStars",
+        "rarity": "Uncommon",
+        "stars": 4,
+        "maxAbilityLevel": 17,
+        "abilityStatMultiplierPct": 125,
+        "mythicAbilityStatMultiplierPct": null
+      },
+      {
+        "step": 6,
+        "progression": "Rare:FourStars",
+        "rarity": "Rare",
+        "stars": 4,
+        "maxAbilityLevel": 26,
+        "abilityStatMultiplierPct": 130,
+        "mythicAbilityStatMultiplierPct": null
+      },
+      {
+        "step": 7,
+        "progression": "Rare:FiveStars",
+        "rarity": "Rare",
+        "stars": 5,
+        "maxAbilityLevel": 26,
+        "abilityStatMultiplierPct": 135,
+        "mythicAbilityStatMultiplierPct": null
+      },
+      {
+        "step": 8,
+        "progression": "Rare:RedOneStar",
+        "rarity": "Rare",
+        "stars": 6,
+        "maxAbilityLevel": 26,
+        "abilityStatMultiplierPct": 140,
+        "mythicAbilityStatMultiplierPct": null
+      },
+      {
+        "step": 9,
+        "progression": "Epic:RedOneStar",
+        "rarity": "Epic",
+        "stars": 6,
+        "maxAbilityLevel": 35,
+        "abilityStatMultiplierPct": 145,
+        "mythicAbilityStatMultiplierPct": null
+      },
+      {
+        "step": 10,
+        "progression": "Epic:RedTwoStars",
+        "rarity": "Epic",
+        "stars": 7,
+        "maxAbilityLevel": 35,
+        "abilityStatMultiplierPct": 150,
+        "mythicAbilityStatMultiplierPct": null
+      },
+      {
+        "step": 11,
+        "progression": "Epic:RedThreeStars",
+        "rarity": "Epic",
+        "stars": 8,
+        "maxAbilityLevel": 35,
+        "abilityStatMultiplierPct": 155,
+        "mythicAbilityStatMultiplierPct": null
+      },
+      {
+        "step": 12,
+        "progression": "Legendary:RedThreeStars",
+        "rarity": "Legendary",
+        "stars": 8,
+        "maxAbilityLevel": 50,
+        "abilityStatMultiplierPct": 160,
+        "mythicAbilityStatMultiplierPct": null
+      },
+      {
+        "step": 13,
+        "progression": "Legendary:RedFourStars",
+        "rarity": "Legendary",
+        "stars": 9,
+        "maxAbilityLevel": 50,
+        "abilityStatMultiplierPct": 165,
+        "mythicAbilityStatMultiplierPct": null
+      },
+      {
+        "step": 14,
+        "progression": "Legendary:RedFiveStars",
+        "rarity": "Legendary",
+        "stars": 10,
+        "maxAbilityLevel": 50,
+        "abilityStatMultiplierPct": 170,
+        "mythicAbilityStatMultiplierPct": null
+      },
+      {
+        "step": 15,
+        "progression": "Legendary:OneBlueStar",
+        "rarity": "Legendary",
+        "stars": 11,
+        "maxAbilityLevel": 50,
+        "abilityStatMultiplierPct": 180,
+        "mythicAbilityStatMultiplierPct": null
+      },
+      {
+        "step": 16,
+        "progression": "Mythic:OneBlueStar",
+        "rarity": "Mythic",
+        "stars": 11,
+        "maxAbilityLevel": 60,
+        "abilityStatMultiplierPct": 185,
+        "mythicAbilityStatMultiplierPct": 100
+      },
+      {
+        "step": 17,
+        "progression": "Mythic:TwoBlueStars",
+        "rarity": "Mythic",
+        "stars": 12,
+        "maxAbilityLevel": 60,
+        "abilityStatMultiplierPct": 190,
+        "mythicAbilityStatMultiplierPct": 130
+      },
+      {
+        "step": 18,
+        "progression": "Mythic:ThreeBlueStars",
+        "rarity": "Mythic",
+        "stars": 13,
+        "maxAbilityLevel": 60,
+        "abilityStatMultiplierPct": 195,
+        "mythicAbilityStatMultiplierPct": 160
+      },
+      {
+        "step": 19,
+        "progression": "Mythic:MythicWings",
+        "rarity": "Mythic",
+        "stars": 14,
+        "maxAbilityLevel": 60,
+        "abilityStatMultiplierPct": 200,
+        "mythicAbilityStatMultiplierPct": 200
+      }
+    ]
+  }
+]
