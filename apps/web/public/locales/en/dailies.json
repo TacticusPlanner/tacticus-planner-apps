@@ -175,7 +175,8 @@
       "unnamedWithTime": "Active · name unavailable · ends {{time}}",
       "unnamedUnconfirmed": "Active · name unavailable · end time not confirmed",
       "inactive": "Not active"
-    }
+    },
+    "onslaughtSummary": "About {{runs}} Onslaught runs for your goals today"
   },
   "schedule": {
     "raids_one": "{{count}} attempt used",
@@ -295,6 +296,10 @@
         "filters": {
           "title": "Raids Filters",
           "content": "Limit Today and Bonus Raids to the campaign locations you want, for example only 5-slot Elite nodes or a specific enemy faction. The badge shows how many filters are active."
+        },
+        "onslaught": {
+          "title": "Onslaught",
+          "content": "Today's Onslaught tokens, by unit: the runs are shared across your goals in priority order, the same way Plan > Schedule spends them."
         }
       }
     },

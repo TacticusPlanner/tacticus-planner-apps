@@ -16,6 +16,7 @@ export function useTodayTutorial() {
         | "campaignEvent"
         | "energyUsage"
         | "todaysAttempts"
+        | "onslaught"
     ): Step => ({
       target,
       title: t(`tour.today.steps.${key}.title`),
@@ -36,6 +37,7 @@ export function useTodayTutorial() {
       createStep('[data-testid="energy-usage"]', "energyUsage"),
       createStep('[data-testid="today-lanes"]', "schedule"),
       createStep('[data-testid="todays-attempts"]', "todaysAttempts"),
+      createStep('[data-testid="today-onslaught"]', "onslaught"),
       // The shop steps keep the former Shops tab's copy, from the shops namespace.
       createShopsStep('[data-testid="today-shops"]', "purpose"),
       createShopsStep('[data-testid="shop-group-guaranteed"]', "availability"),

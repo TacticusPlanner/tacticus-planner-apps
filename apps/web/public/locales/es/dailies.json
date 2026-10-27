@@ -175,7 +175,8 @@
       "unnamedWithTime": "Activo · nombre no disponible · termina {{time}}",
       "unnamedUnconfirmed": "Activo · nombre no disponible · hora de finalización no confirmada",
       "inactive": "No activo"
-    }
+    },
+    "onslaughtSummary": "Unas {{runs}} partidas de Onslaught para tus objetivos hoy"
   },
   "schedule": {
     "raids_one": "{{count}} intento usado",
@@ -295,6 +296,10 @@
         "filters": {
           "title": "Filtros de incursiones",
           "content": "Limita Hoy y las incursiones extra a las ubicaciones de campaña que quieras, por ejemplo solo nodos Élite de 5 espacios o una facción enemiga concreta. La insignia muestra cuántos filtros están activos."
+        },
+        "onslaught": {
+          "title": "Onslaught",
+          "content": "Tus fichas de Onslaught de hoy, por unidad: las partidas se reparten entre tus objetivos por orden de prioridad, igual que en Plan > Calendario."
         }
       }
     },

@@ -1,5 +1,6 @@
 import { useState, type ReactNode } from "react"
 import { Swords } from "lucide-react"
+import { onslaughtTokenIcon } from "@workspace/game-catalog"
 import { useOutletContext } from "react-router"
 import { useTranslation } from "react-i18next"
 import type { BattleId } from "@workspace/game-domain"
@@ -8,7 +9,9 @@ import { Button } from "@workspace/ui/components/button"
 import { Progress } from "@workspace/ui/components/progress"
 
 import {
+  buildOnslaughtRuns,
   FilteredOutNotice,
+  OnslaughtRunList,
   RaidsFiltersTrigger,
   useDailyRaids,
   RaidSchedule,
@@ -127,6 +130,13 @@ function TodaySchedule({ raids }: { raids: DailyRaidsReadyViewModel }) {
       visual,
     })
   }
+  // Today's share of the account's Onslaught tokens, already split across goals in priority order by
+  // the same run the Schedule's day cards read. The badge rounds up: a token is spent whole.
+  const onslaughtRuns = buildOnslaughtRuns(raids.today, raids)
+  const onslaughtRunsTotal = onslaughtRuns.reduce(
+    (sum, run) => sum + run.runs,
+    0
+  )
   const energyUsagePercent =
     raids.dailyEnergy > 0
       ? (raids.realEnergyUsedToday / raids.dailyEnergy) * 100
@@ -274,6 +284,35 @@ function TodaySchedule({ raids }: { raids: DailyRaidsReadyViewModel }) {
           )}
         </section>
       </div>
+      {onslaughtRuns.length > 0 ? (
+        <section className="space-y-2" data-testid="today-onslaught">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <h2 className="text-lg font-semibold">{t("plan.onslaught")}</h2>
+            <p className="sr-only">
+              {t("today.onslaughtSummary", {
+                runs: Math.ceil(onslaughtRunsTotal),
+              })}
+            </p>
+            <div aria-hidden="true">
+              <BadgeStat
+                icon={
+                  <EntityIcon
+                    alt=""
+                    className="size-4"
+                    src={onslaughtTokenIcon()}
+                  />
+                }
+                value={Math.ceil(onslaughtRunsTotal)}
+              />
+            </div>
+          </div>
+          <OnslaughtRunList
+            rowTestId={(unitId) => `today-onslaught-${unitId}`}
+            runs={onslaughtRuns}
+            testId="today-onslaught-list"
+          />
+        </section>
+      ) : null}
     </div>
   )
 }

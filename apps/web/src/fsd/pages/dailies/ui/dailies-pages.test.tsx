@@ -130,6 +130,41 @@ describe("Dailies raid pages", () => {
     })
   })
 
+  it("lists today's Onslaught runs per unit, in goal priority, with the tokens to spend", () => {
+    const base = ready()
+    useDailyRaids.mockReturnValue(
+      ready({
+        today: {
+          ...base.today,
+          onslaughtEntries: [
+            { goalId: "g2", runs: 0.5, expectedShards: 2 },
+            { goalId: "g1", runs: 1.2, expectedShards: 6 },
+          ],
+        },
+      })
+    )
+    renderPage(<TodayPage />)
+
+    const section = within(screen.getByTestId("today-onslaught"))
+    expect(
+      section.getByRole("heading", { level: 2, name: "plan.onslaught" })
+    ).toBeInTheDocument()
+    expect(
+      section
+        .getAllByRole("listitem")
+        .map((row) => row.getAttribute("data-testid"))
+    ).toEqual(["today-onslaught-bellator", "today-onslaught-alephNull"])
+    // 1.7 expected runs need 2 whole tokens.
+    expect(
+      section.getByText('today.onslaughtSummary:{"runs":2}')
+    ).toBeInTheDocument()
+  })
+
+  it("leaves the Onslaught section out when no goal needs a run today", () => {
+    renderPage(<TodayPage />)
+    expect(screen.queryByTestId("today-onslaught")).not.toBeInTheDocument()
+  })
+
   it("renders its title as an h2 under the shell h1", () => {
     renderPage(<TodayPage />)
     // The shell header owns the page h1; the tab starts its hierarchy at h2.

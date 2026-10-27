@@ -33,39 +33,60 @@ export function PlanOnslaughtRuns({
         <h3>{t("plan.onslaught")}</h3>
         <span aria-hidden="true" className="h-px flex-1 bg-border" />
       </div>
-      <ul className="space-y-1.5" data-testid={`plan-day-${day}-onslaught`}>
-        {runs.map((run) => {
-          const dimmed =
-            selectedUnitId !== undefined && run.unit.unitId !== selectedUnitId
-          const values = {
-            unit: run.unit.unitLabel,
-            runs: rounded(run.runs),
-            shards: rounded(run.shards),
-          }
-          return (
-            <li
-              key={run.unit.unitId}
-              aria-label={t("plan.onslaughtRun.label", values)}
-              className={cn(
-                "flex items-center gap-2 rounded-lg border bg-card p-1.5 transition-opacity",
-                dimmed && "opacity-30"
-              )}
-              data-dimmed={dimmed || undefined}
-              data-testid={`plan-onslaught-${day}-${run.unit.unitId}`}
-            >
-              <UnitIcon className="size-8 rounded-full" goal={run.unit} />
-              <span className="min-w-0 flex-1 truncate text-xs text-muted-foreground tabular-nums">
-                {t("plan.onslaughtRun.expected", values)}
-              </span>
-              <EntityIcon
-                alt=""
-                className="size-5"
-                src={onslaughtTokenIcon()}
-              />
-            </li>
-          )
-        })}
-      </ul>
+      <OnslaughtRunList
+        rowTestId={(unitId) => `plan-onslaught-${day}-${unitId}`}
+        runs={runs}
+        selectedUnitId={selectedUnitId}
+        testId={`plan-day-${day}-onslaught`}
+      />
     </>
+  )
+}
+
+/** One row per unit with its expected Onslaught runs and shards: a Schedule day card's Onslaught
+ *  section and Dailies > Raids' Onslaught lane both list runs this way. */
+export function OnslaughtRunList({
+  runs,
+  selectedUnitId,
+  testId,
+  rowTestId,
+}: {
+  runs: PlanOnslaughtRun[]
+  selectedUnitId?: string
+  testId: string
+  rowTestId: (unitId: string) => string
+}) {
+  const { t } = useTranslation("dailies")
+
+  return (
+    <ul className="space-y-1.5" data-testid={testId}>
+      {runs.map((run) => {
+        const dimmed =
+          selectedUnitId !== undefined && run.unit.unitId !== selectedUnitId
+        const values = {
+          unit: run.unit.unitLabel,
+          runs: rounded(run.runs),
+          shards: rounded(run.shards),
+        }
+        return (
+          <li
+            key={run.unit.unitId}
+            aria-label={t("plan.onslaughtRun.label", values)}
+            className={cn(
+              "flex items-center gap-2 rounded-lg border bg-card p-1.5 transition-opacity",
+              dimmed && "opacity-30"
+            )}
+            data-dimmed={dimmed || undefined}
+            data-testid={rowTestId(run.unit.unitId)}
+          >
+            <UnitIcon className="size-8 rounded-full" goal={run.unit} />
+            <span className="min-w-0 flex-1 truncate text-xs text-muted-foreground tabular-nums">
+              {t("plan.onslaughtRun.expected", values)}
+            </span>
+            <EntityIcon alt="" className="size-5" src={onslaughtTokenIcon()} />
+          </li>
+        )
+      })}
+    </ul>
   )
 }
