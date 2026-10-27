@@ -61,16 +61,6 @@ For every material (upgrades and character shards alike) the engine SHALL first 
 - **WHEN** the filter is reset or the pin is changed to a passing node
 - **THEN** the goal is scheduled again
 
-#### Scenario: HSE farm list is filter-then-pick
-
-- **GIVEN** a filter is applied and the HSE tab shows a rule-bearing event
-- **THEN** its farm list is chosen only among locations that pass the filter (and earn event points), evaluated with the material the location drops; a material is never reported as filtered out there and never moved to a node that fails the filter, and a filter that leaves no candidate shows the HSE empty state with a Reset action
-
-#### Scenario: HSE top-10 lists honor the filter
-
-- **GIVEN** a filter is applied and the HSE tab shows a rule-bearing event
-- **THEN** both top-10 lists contain only locations that pass the filter (evaluated without a material, so the rarity criterion does not apply)
-
 ### Requirement: Location matching semantics
 
 A campaign location SHALL pass the filter only when all of the following hold; an empty or unset criterion always passes:

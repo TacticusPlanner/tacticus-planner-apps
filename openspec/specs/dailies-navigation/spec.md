@@ -90,16 +90,6 @@ Every primary tab SHALL be addressable by its own URL path, not by client-only t
 
 The `/dailies` section SHALL include an HSE tab (label: the localized abbreviation of Home Screen Event) at `/dailies/hse`, positioned directly after Raids, so the primary tabs are Raids, HSE, Shops, Guild Raids. The tab SHALL appear in section tabs, the desktop section menu and navigation search, and SHALL be shown whether or not an event is active. This supersedes any statement of the number of Dailies primary tabs in other requirements of this capability.
 
-#### Scenario: Tab order
-
-- **WHEN** a signed-in user opens `/dailies`
-- **THEN** the tabs are Raids, HSE, Shops, Guild Raids and the Raids tab is active by default
-
-#### Scenario: Direct navigation
-
-- **WHEN** a user loads `/dailies/hse` directly
-- **THEN** the Dailies tab bar renders with the HSE tab active and its content shown
-
 #### Scenario: Tab shown without an active event
 
 - **GIVEN** no HSE is active
@@ -124,16 +114,6 @@ The HSE tab SHALL show the shared live indicator (see `app-navigation` "Navigati
 
 The `/dailies` section SHALL include an HRE tab, labelled with the localized abbreviation of Hero Release Event, at `/dailies/hre`. It SHALL sit directly after HSE, so the primary tabs are Raids, HSE, HRE, Shops, Guild Raids. The tab SHALL appear in section tabs, the desktop section menu and navigation search. It SHALL be shown whether or not an HRE is running. This supersedes any statement of the number or order of Dailies primary tabs elsewhere in this capability.
 
-#### Scenario: Tab order
-
-- **WHEN** a signed-in user opens `/dailies`
-- **THEN** the tabs are Raids, HSE, HRE, Shops, Guild Raids, and the Raids tab is active by default
-
-#### Scenario: Direct navigation
-
-- **WHEN** a user loads `/dailies/hre` directly
-- **THEN** the Dailies tab bar renders with the HRE tab active and its content shown
-
 #### Scenario: Tab shown without an event
 
 - **GIVEN** no HRE is running or scheduled
@@ -156,11 +136,6 @@ The HRE tab SHALL show the shared live indicator while an HRE is running, in the
 ### Requirement: Dailies has a Quest tab
 
 The `/dailies` section SHALL include a Quest tab, labelled with the localized name of Quest Event, at `/dailies/quest`. It SHALL sit directly after HRE, so the primary tabs are Raids, HSE, HRE, Quest, Shops, Guild Raids. The tab SHALL appear in section tabs, the desktop section menu and navigation search, and SHALL be shown whether or not a quest is running. This supersedes any statement of the number or order of Dailies primary tabs elsewhere in this capability.
-
-#### Scenario: Tab order
-
-- **WHEN** a signed-in user opens `/dailies`
-- **THEN** the tabs are Raids, HSE, HRE, Quest, Shops, Guild Raids, and Raids is active
 
 #### Scenario: Direct navigation
 
@@ -198,11 +173,6 @@ Dailies tab labels (mobile section tabs and the desktop section menu) and the To
 ### Requirement: Shops is not a Dailies tab
 
 Dailies SHALL NOT have a Shops primary tab: today's shop recommendations are part of the Raids tab (see `daily-shop-recommendations` "Shop recommendations are a section of the Raids tab"). The primary tabs SHALL be Raids, HSE, HRE, Quest, Guild Raids, in section tabs, the desktop section menu and navigation search. `/dailies/shops` SHALL redirect to `/dailies/raids`, replacing the history entry. This supersedes any statement of the number or order of Dailies primary tabs, and any mention of a Shops tab, elsewhere in this capability.
-
-#### Scenario: Tab order
-
-- **WHEN** a signed-in user opens `/dailies`
-- **THEN** the tabs are Raids, HSE, HRE, Quest, Guild Raids, and Raids is active
 
 #### Scenario: Old Shops link
 

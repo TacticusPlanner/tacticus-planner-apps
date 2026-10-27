@@ -53,11 +53,6 @@ The Edit goal dialog has one Save. When the target changed, Save SHALL submit it
 - **WHEN** the owner saves a revised Ascension target
 - **THEN** the same goal remains in each project with its other settings unchanged and the list shows the new target
 
-#### Scenario: Other detail draft exists
-
-- **WHEN** notes have unsaved changes while the owner saves a changed target
-- **THEN** the same request carries the target and the notes, and neither is dropped
-
 #### Scenario: Only the target changed
 
 - **WHEN** the owner changes only the target and saves

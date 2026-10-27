@@ -16,7 +16,7 @@ under which no shop supplies the goal's Mythic materials.
 - **THEN** all of Venerable Battle Mark's listed offers are checked and the goal is saved with no
   explicit selection
 
-#### Scenario: Existing goal picks up the default
+#### Scenario: Goal without a saved selection uses the default
 
 - **GIVEN** a Ragnar Rank Adamantine 2 goal with no saved selection
 - **WHEN** Goals, Today, or Raids Plan estimate it

@@ -488,12 +488,6 @@ range in the URL, and the existing range-default and range-control rules. The ca
 SHALL be the unit page's character. The values control SHALL NOT change it. Share SHALL copy the full
 URL including `tab=rankup`.
 
-#### Scenario: Synced default range
-
-- **GIVEN** a signed-in, synced owned character and no range in the URL
-- **WHEN** the user opens Rank-up materials
-- **THEN** the range starts at the player's rank and progression, as before this change
-
 #### Scenario: Share includes the tab
 
 - **WHEN** the user shares a calculation

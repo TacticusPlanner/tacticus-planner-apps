@@ -2,7 +2,7 @@
 
 ## Purpose
 
-TBD - created by archiving change rewrite-v1-goal-import. Update Purpose after archive.
+Defines the V1 profile import dialog: it takes V1 credentials and a selection of profile parts, leaves goal and Legendary Event plan creation to the import operation, and reports each selected part's outcome — per-goal and per-event outcomes in four buckets with translated reasons — without silent no-ops or retained credentials.
 
 ## Requirements
 

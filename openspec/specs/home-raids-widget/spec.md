@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Gives players a compact, location-first view of what's still worth raiding today for their Active project, without leaving the home page or wading through Today's per-goal grouping.
+Gives players a compact, location-first view of what's still worth raiding today for all their Active goals, without leaving the home page or wading through Today's per-goal grouping.
 
 ## Requirements
 
@@ -14,11 +14,6 @@ The authenticated home page SHALL render a Daily Raids section after Your Projec
 
 - **WHEN** a signed-in user opens `/home` at or above the 768px breakpoint
 - **THEN** Daily Raids renders side by side with Your Projects, below Token Availability and above the events calendar
-
-#### Scenario: Mobile stacks Daily Raids after Projects
-
-- **WHEN** a signed-in user opens `/home` below the 768px breakpoint
-- **THEN** Daily Raids renders as its own full-width section, after Your Projects and before the events calendar
 
 ### Requirement: The widget shows the real (energy-budget) schedule only, one row per location
 

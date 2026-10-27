@@ -28,17 +28,6 @@ When the Goals page is scoped to a project, each goal row's "⋯" menu, on deskt
 - **WHEN** a goal's row menu is opened
 - **THEN** the project-removal item is disabled until the project list loads, and is then enabled at once; no member-list request is ever issued
 
-#### Scenario: Unscoped menu has no removal
-
-- **WHEN** a row menu is opened on the Goals page without a project scope
-- **THEN** it offers no project-removal item
-
-#### Scenario: Delete confirmation names the alternative while scoped
-
-- **GIVEN** the Goals page is scoped to project A
-- **WHEN** a row's delete confirmation opens
-- **THEN** it says the deletion is account-wide and names removal from A as the alternative
-
 ### Requirement: The goal row's project-removal action offers a chosen destination when relocation is needed
 
 When a goal's viewed project is its only membership, the row's project-removal action ("Move to project") SHALL let the user choose the destination rather than relocating automatically: it SHALL list the account's other existing projects, and SHALL offer creating a new project as an additional option. Selecting an existing project SHALL move the goal there; the move is never rejected for an occupied slot (see "In-flight goal-type uniqueness is scoped to a project"). Choosing to create a new project SHALL open project creation; once the new project is saved, the goal SHALL move into it.
@@ -46,18 +35,6 @@ When a goal's viewed project is its only membership, the row's project-removal a
 When the goal's viewed project is not its only membership, the row's project-removal action SHALL remain a plain removal with no destination to choose, leaving the goal a member of its other project(s).
 
 This requirement governs the goal row's own project-removal action specifically. The goal's membership editor (its edit form's project chips) is a separate surface and keeps its own last-membership behavior — see "Every goal retains at least one project membership".
-
-#### Scenario: Removal without a destination when other memberships exist
-
-- **GIVEN** a goal belongs to projects A and B
-- **WHEN** it is removed from A via its row action
-- **THEN** it remains a member of B, and no destination picker is shown
-
-#### Scenario: Moving to an existing project
-
-- **GIVEN** a goal's only membership is project A, and the account also has project B
-- **WHEN** the user opens the row's "Move to project" action and selects project B
-- **THEN** the goal belongs to project B and no longer belongs to A
 
 #### Scenario: Moving to a newly created project
 

@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Defines how the signed-in user's account menu presents itself and its identity on desktop — its trigger, its position and shape relative to that trigger, and the identity information shown when it opens — so it reads as a self-contained "account card" rather than a plain unlabeled dropdown. This capability covers the authenticated desktop account menu only; the sign-in button shown when signed out, and the mobile account drawer, are unaffected and out of scope.
+Defines the account menu: its global-bar trigger, the account card's position and sections (shared by the desktop popover and the mobile drawer), preference access for signed-out users, and the loading identity shown until the planner account is known.
 
 ## Requirements
 

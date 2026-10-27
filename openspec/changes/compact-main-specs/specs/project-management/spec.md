@@ -19,11 +19,6 @@ Every account SHALL have exactly one Default project. It SHALL be renamable and 
 - **WHEN** any project surface renders
 - **THEN** it shows no Active, Current plan, or Make current label or control for any project
 
-#### Scenario: A goal's last membership is removed
-
-- **WHEN** a goal's last non-Default membership is removed
-- **THEN** the client has already added the Default project membership (the API itself rejects removing a goal's only remaining membership), so the goal remains a member of the Default project
-
 ### Requirement: Project lifecycle actions are Edit and Archive/Restore in an overflow menu
 
 Project actions SHALL NOT render as an always-visible inline icon cluster. Edit and Archive/Restore SHALL appear in an accessible overflow menu. Archive SHALL be unavailable with explanatory text for the Default project, which is permanent (see "The Default project is permanent").
@@ -44,12 +39,6 @@ Project actions SHALL NOT render as an always-visible inline icon cluster. Edit 
 - **GIVEN** an archived project
 - **WHEN** the user activates Restore from its action menu
 - **THEN** the project returns to the available-project section
-
-#### Scenario: Archive is unavailable for the Default project
-
-- **GIVEN** the Default project
-- **WHEN** its action menu renders
-- **THEN** Archive is unavailable and explanatory text identifies the restriction
 
 ### Requirement: The Projects row menu hosts every project-specific action
 

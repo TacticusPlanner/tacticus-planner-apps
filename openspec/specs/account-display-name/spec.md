@@ -47,11 +47,6 @@ Manage Account SHALL show the display name in an editable field and save it thro
 - **WHEN** the save succeeds
 - **THEN** the account menu/avatar and a newly identified feedback widget use `Commander Ada` without requiring sign-out
 
-#### Scenario: Name edit is one tap from the user menu
-
-- **WHEN** a user with a name opens the account menu on desktop or mobile
-- **THEN** an edit control beside the shown name opens Manage Account on the name editor
-
 #### Scenario: Save fails
 
 - **WHEN** the name update fails
@@ -66,9 +61,3 @@ The shell SHALL NOT display a provider/email-like suggestion as the account's pu
 - **GIVEN** `/account` reports an email-like suggestion and no name
 - **WHEN** the shell or account menu renders
 - **THEN** it shows neutral account identity rather than that suggestion
-
-#### Scenario: Name not yet known
-
-- **GIVEN** `/account` has not answered yet for a user who has a confirmed name
-- **WHEN** the shell or account menu renders
-- **THEN** it shows a loading identity, neither the neutral label nor the provider email, until the confirmed name arrives

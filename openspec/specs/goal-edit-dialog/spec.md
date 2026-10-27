@@ -27,11 +27,6 @@ Wherever the Goals list renders (desktop table and mobile cards, on Overview and
 - **WHEN** the user activates a goal's name or clicks its row outside the row's controls
 - **THEN** no dialog or panel opens
 
-#### Scenario: Same action on Overview and Project Detail
-
-- **WHEN** the user opens a project's detail route
-- **THEN** its goals offer the same Edit action and dialog as Overview
-
 ### Requirement: The Edit goal dialog contains only editable fields
 
 The Edit goal dialog SHALL show the goal's unit and kind as read-only text (the goal type SHALL NOT be changeable), followed by only these editable fields: the goal target (for kinds that have one, per `goal-target-editing`), the goal's priority, notes, project memberships, and the farming preferences that apply to the goal's kind (rank farming strategy; Unlock/Ascension acquisition sources per `goal-acquisition-source-picker`; farming locations for the remaining kinds; and, for Character Rank, Upgrade, and Machine-of-War Ability goals whose target needs a Mythic upgrade material, the Mythic materials control per `goal-mythic-material-sources`). For a goal with an editable target it SHALL also show a read-only estimate of the resources needed and the estimated days from the goal's start to the draft target, computed as the create preview computes it and refreshed when the draft target or farming preferences change. It SHALL NOT show history, dependencies or prerequisites, blockers, progress, or farming guidance. An Unlock goal, which has no editable target, SHALL show no target section and no estimate.
@@ -46,16 +41,6 @@ The Edit goal dialog SHALL show the goal's unit and kind as read-only text (the 
 - **GIVEN** the dialog is open for Arjac's Rank goal with a saved target of Gold I
 - **WHEN** the user changes the target to Diamond I
 - **THEN** the estimate shows the resources and days for the range up to Diamond I
-
-#### Scenario: Rank goal needing a Mythic material
-
-- **WHEN** the dialog opens for an Active Rank goal whose target is Adamantine 2 and needs Venerable Battle Mark
-- **THEN** it also shows the Mythic materials control with that goal's selection (or every available offer checked when it has none)
-
-#### Scenario: Editing the target updates the control
-
-- **WHEN** the user lowers that goal's target so that no Mythic material is needed
-- **THEN** the Mythic materials control is hidden
 
 #### Scenario: Goal type is fixed
 
@@ -122,11 +107,6 @@ The dialog SHALL have one Save button and a Cancel. Save SHALL be enabled only w
 - **GIVEN** the user changed the target and the projects
 - **WHEN** the request is rejected because the new target is already held by another in-flight goal of the same unit
 - **THEN** the dialog stays open with the whole draft and a conflict message naming that goal, and neither the target nor the projects were saved
-
-#### Scenario: Stale target revision
-
-- **WHEN** the goal changed elsewhere and the request is rejected as stale
-- **THEN** the dialog keeps the draft, saves nothing, and offers refresh-and-retry per `goal-target-editing`
 
 ### Requirement: Closing with unsaved changes asks for confirmation
 

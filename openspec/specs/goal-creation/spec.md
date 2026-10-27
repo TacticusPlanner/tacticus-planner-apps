@@ -55,12 +55,6 @@ validation message and block submission.
 - **THEN** the goal is valid and each track's submitted range independently runs from its
   current level to its own chosen target
 
-#### Scenario: Neither track advances
-
-- **WHEN** both target selectors are at or below their respective current levels
-- **THEN** the submit action is blocked and the sheet shows the ability "nothing to do"
-  validation message
-
 #### Scenario: Targets seed from current levels
 
 - **WHEN** a user selects a unit and enables the Ability goal type
@@ -301,11 +295,6 @@ At or above 768px, launching goal creation (from any entry point in `goal-creati
 
 - **WHEN** the user activates Create Goal at or above 768px
 - **THEN** a centered dialog opens with the same unit and goal-kind form as before
-
-#### Scenario: Mobile presentation unchanged
-
-- **WHEN** the user activates Create Goal below 768px
-- **THEN** the bottom-anchored sheet opens as before
 
 #### Scenario: Prefill and create another
 

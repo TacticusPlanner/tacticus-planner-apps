@@ -4,16 +4,6 @@
 
 The Submit Feedback quick action in desktop navigation search and mobile Menu search (availability and search hand-off: see `app-navigation`) SHALL open the same feedback/roadmap/updates widget, retaining verified identity, anonymous fallback, theme, language, and suppression of proactive UI, and SHALL NOT open Conversations.
 
-#### Scenario: Desktop feedback from search
-
-- **WHEN** a desktop user selects Submit Feedback in navigation search while the widget is ready
-- **THEN** search closes and the existing widget opens without posting content
-
-#### Scenario: Mobile feedback from search
-
-- **WHEN** a mobile user taps Submit Feedback in Menu search while the widget is ready
-- **THEN** the Menu drawer releases focus and pointer restrictions before the existing widget opens
-
 #### Scenario: Identification failure preserves anonymous feedback
 
 - **WHEN** a signed-in user selects Submit Feedback and identity verification fails

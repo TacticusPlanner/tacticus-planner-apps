@@ -138,11 +138,6 @@ Every account SHALL have exactly one Default project. It SHALL be renamable and 
 - **WHEN** any project surface renders
 - **THEN** it shows no Active, Current plan, or Make current label or control for any project
 
-#### Scenario: A goal's last membership is removed
-
-- **WHEN** a goal's last non-Default membership is removed
-- **THEN** the client has already added the Default project membership (the API itself rejects removing a goal's only remaining membership), so the goal remains a member of the Default project
-
 ### Requirement: The list route shows every project, Default first, without its goal table
 
 The dashboard SHALL show the Default project first, other non-archived projects after it, and archived projects in a subdued section collapsed by default when non-archived projects exist. It SHALL explain a project as a named selection of account goals whose displayed order is a projection of global priority, and the Default project as the permanent home of goals that belong to no other project. The explanation SHALL be visible on arrival at both breakpoints. The dashboard SHALL NOT render a goal table.
@@ -194,20 +189,9 @@ Project actions SHALL no longer render as an always-visible inline icon cluster.
 - **WHEN** the user activates Restore from its action menu
 - **THEN** the project returns to the available-project section
 
-#### Scenario: Archive is unavailable for the Default project
-
-- **GIVEN** the Default project
-- **WHEN** its action menu renders
-- **THEN** Archive is unavailable and explanatory text identifies the restriction
-
 ### Requirement: A project is viewed on the Goals page scoped to that project
 
 The system SHALL NOT present a per-project goal detail route. A project's goals SHALL be viewed on the Goals page (`/plan/goals`) with that project selected in its project scope (see `goals-navigation`, "Goals project scope is URL state"). `/plan/projects/{id}` SHALL NOT be a route; it falls through to the app's existing not-found handling. Wherever another spec says "project detail route", "Project Detail", "a project's page", or "the detail route", it means the Goals page scoped to that project.
-
-#### Scenario: A project opens on Goals
-
-- **WHEN** the user activates a project anywhere it is listed (Projects page row, home page card)
-- **THEN** the Goals page opens at `/plan/goals?project={id}` scoped to that project
 
 #### Scenario: The former detail path is not a route
 

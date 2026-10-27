@@ -157,12 +157,6 @@ Today SHALL provide its own project selector that defaults to all goals; it is n
 - **WHEN** the user selects all goals
 - **THEN** Today shows the account-wide schedule again
 
-#### Scenario: Schedule's selection does not leak into Today
-
-- **GIVEN** the user selected project B on Plan > Schedule this session
-- **WHEN** they open Dailies > Raids
-- **THEN** Today's selector shows all goals unless a project was chosen on Today itself
-
 #### Scenario: Project list fails to load
 
 - **GIVEN** project-list loading fails while global goals load successfully

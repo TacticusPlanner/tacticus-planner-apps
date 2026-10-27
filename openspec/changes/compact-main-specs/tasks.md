@@ -2,15 +2,15 @@
 
 ## 1. Pre-flight
 
-- [ ] 1.1 Compare every MODIFIED block under `specs/` with its current requirement in `openspec/specs/`. The only differences allowed are the ones `audit.md` calls for. Refresh any block whose main requirement changed after this change was written. Verify by listing the differences per block and matching each one to an audit id.
-- [ ] 1.2 For each of the 5 REMOVED requirements (D13, D28, D46, D47, D54), grep the canonical requirement named in its **Migration** for the removed requirement's key terms. Confirm the behavior is still stated there. Verify with a removed → canonical checklist that has no gaps.
+- [x] 1.1 Compare every MODIFIED block under `specs/` with its current requirement in `openspec/specs/`. The only differences allowed are the ones `audit.md` calls for. Refresh any block whose main requirement changed after this change was written. Verify by listing the differences per block and matching each one to an audit id.
+- [x] 1.2 For each of the 5 REMOVED requirements (D13, D28, D46, D47, D54), grep the canonical requirement named in its **Migration** for the removed requirement's key terms. Confirm the behavior is still stated there. Verify with a removed → canonical checklist that has no gaps.
 
 ## 2. Direct edits to main specs
 
-- [ ] 2.1 Apply every entry in `direct-edits.md`. Remove or rename each listed scenario in `openspec/specs/<capability>/spec.md`, and make the same edit in the matching MODIFIED block under `specs/` when one exists. Verify with an exact whole-line match (`grep -rnx "#### Scenario: <title>"`), checked within the named requirement, that each listed title is gone (or renamed) in both places, and that every edited requirement still has at least one scenario.
-- [ ] 2.2 Replace the three `TBD - created by archiving change …` Purposes (`datamine-source`, `goal-season-fit`, `v1-profile-import`) with the replacement text in audit L1–L3. Verify that `grep -rn "TBD" openspec/specs` returns nothing.
-- [ ] 2.3 Rewrite the six stale Purposes (`account-menu`, `home-projects-widget`, `home-raids-widget`, `goals-navigation`, `daily-shop-recommendations`, `goal-status-actions`) as given in audit L4a–L4f. Also apply the `app-navigation` Purpose rewording (L5i). Verify that "Current plan", "Active project", "out of scope", "existing full-tree" and the follow-up issue link no longer appear in those Purposes.
-- [ ] 2.4 Run `openspec validate compact-main-specs --strict` and `openspec validate --specs --strict` from `tacticus-planner-apps`. Verify that both pass. Report any description-length warnings on untouched text without fixing them here.
+- [x] 2.1 Apply every entry in `direct-edits.md`. Remove or rename each listed scenario in `openspec/specs/<capability>/spec.md`, and make the same edit in the matching MODIFIED block under `specs/` when one exists. Verify with an exact whole-line match (`grep -rnx "#### Scenario: <title>"`), checked within the named requirement, that each listed title is gone (or renamed) in both places, and that every edited requirement still has at least one scenario.
+- [x] 2.2 Replace the three `TBD - created by archiving change …` Purposes (`datamine-source`, `goal-season-fit`, `v1-profile-import`) with the replacement text in audit L1–L3. Verify that `grep -rn "TBD" openspec/specs` returns nothing.
+- [x] 2.3 Rewrite the six stale Purposes (`account-menu`, `home-projects-widget`, `home-raids-widget`, `goals-navigation`, `daily-shop-recommendations`, `goal-status-actions`) as given in audit L4a–L4f. Also apply the `app-navigation` Purpose rewording (L5i). Verify that "Current plan", "Active project", "out of scope", "existing full-tree" and the follow-up issue link no longer appear in those Purposes.
+- [x] 2.4 Run `openspec validate compact-main-specs --strict` and `openspec validate --specs --strict` from `tacticus-planner-apps`. Verify that both pass. Report any description-length warnings on untouched text without fixing them here.
 
 ## 3. Archive dry check
 

@@ -38,9 +38,3 @@ Assumptions:
 - **GIVEN** battle 9 is marked Maybe clear
 - **WHEN** the lane header, the row's earned points and the Overview lane summary render
 - **THEN** each figure equals the figure without the mark
-
-#### Scenario: Marks steer the token plan
-
-- **GIVEN** battle 4 of a lane has its defeat-all cell marked Stop here and sync does not show it cleared
-- **WHEN** the token plan is computed
-- **THEN** no token is planned on battle 4 or any later battle of that lane, while the grid's points are unchanged

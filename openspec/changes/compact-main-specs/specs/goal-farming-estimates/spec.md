@@ -122,7 +122,7 @@ Assumption: a shop's daily purchase cap is per account, not per goal.
 - **WHEN** the preview estimate is computed
 - **THEN** it treats the Dreadnought as the only user of the offers
 
-#### Scenario: Shard offers are unaffected
+#### Scenario: Shard offers of different units are not shared
 
 - **GIVEN** two goals for different units, each using its own unit's shard shop offer
 - **WHEN** the plan is computed

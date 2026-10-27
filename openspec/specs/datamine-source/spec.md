@@ -2,7 +2,7 @@
 
 ## Purpose
 
-TBD - created by archiving change add-datamine-pin. Update Purpose after archive.
+Pins the web app's generated game text and catalog images to one `tacticus-planner-data-mines` commit, and defines how generators read only allowlisted data-mines files from an uncommitted cache, copy game sprites unchanged, keep game sprites apart from curated images, and generate the game name namespaces from that pin.
 
 ## Requirements
 

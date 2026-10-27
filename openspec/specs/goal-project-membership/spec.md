@@ -195,18 +195,6 @@ When the goal's viewed project is not its only membership, the row's project-rem
 
 This requirement governs the goal row's own project-removal action specifically. The goal's membership editor (its edit form's project chips) is a separate surface and keeps its own last-membership behavior — see "Every goal retains at least one project membership".
 
-#### Scenario: Removal without a destination when other memberships exist
-
-- **GIVEN** a goal belongs to projects A and B
-- **WHEN** it is removed from A via its row action
-- **THEN** it remains a member of B, and no destination picker is shown
-
-#### Scenario: Moving to an existing project
-
-- **GIVEN** a goal's only membership is project A, and the account also has project B
-- **WHEN** the user opens the row's "Move to project" action and selects project B
-- **THEN** the goal belongs to project B and no longer belongs to A
-
 #### Scenario: Moving to a newly created project
 
 - **GIVEN** a goal's only membership is project A
@@ -381,14 +369,3 @@ When the Goals page is scoped to a project, each goal row's "⋯" menu, on deskt
 - **GIVEN** the Goals page is scoped to project A, the goals have loaded and the project list is still loading
 - **WHEN** a goal's row menu is opened
 - **THEN** the project-removal item is disabled until the project list loads, and is then enabled at once; no member-list request is ever issued
-
-#### Scenario: Unscoped menu has no removal
-
-- **WHEN** a row menu is opened on the Goals page without a project scope
-- **THEN** it offers no project-removal item
-
-#### Scenario: Delete confirmation names the alternative while scoped
-
-- **GIVEN** the Goals page is scoped to project A
-- **WHEN** a row's delete confirmation opens
-- **THEN** it says the deletion is account-wide and names removal from A as the alternative

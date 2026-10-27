@@ -14,11 +14,6 @@ The Plan section SHALL render its Planning Settings entry point on the Goals sub
 - **WHEN** the user opens Goals
 - **THEN** a Planning Settings control is visible and opens the planning settings dialog
 
-#### Scenario: Planning Settings visible on Schedule
-
-- **WHEN** the user opens Schedule
-- **THEN** a Planning Settings control is visible after the project selector and opens the same planning settings dialog
-
 #### Scenario: Planning Settings absent from Projects and Insights
 
 - **WHEN** the user opens Projects or Insights
@@ -33,11 +28,6 @@ Insights and every Dailies page that offers the shared project selector (Shops, 
 - **GIVEN** the account has a Default project and other projects
 - **WHEN** the user opens Insights with no earlier selection this session
 - **THEN** Insights shows all goals with "All goals" selected in its project selector
-
-#### Scenario: A project filter narrows without re-planning
-
-- **WHEN** the user selects project B on Insights or Shops
-- **THEN** results shown are project B's goals' outcomes from the global run, and Today's schedule is unchanged
 
 #### Scenario: Browsing a project does not set the filter
 

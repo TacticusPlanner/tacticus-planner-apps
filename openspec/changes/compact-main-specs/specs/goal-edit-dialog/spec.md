@@ -30,11 +30,6 @@ Wherever the Goals list renders (desktop table and mobile cards, with or without
 - **WHEN** the user activates a goal's name or clicks its row outside the row's controls
 - **THEN** no dialog or panel opens
 
-#### Scenario: Same action on Overview and Project Detail
-
-- **WHEN** the user opens a project's detail route
-- **THEN** its goals offer the same Edit action and dialog as Overview
-
 ### Requirement: Edit and create goal dialogs use the available space on desktop
 
 On desktop (at or above 768px) the Edit goal dialog and the Create goal dialog SHALL be centered dialogs sized to the viewport (wide, up to a maximum width, with a maximum height that scrolls the body, never the header or the footer), laying their fields out in two columns at widths where two columns fit and one column otherwise. They SHALL be compact: dense label/field spacing and tight gaps and paddings, so that the Create form for a Rank or Ability character goal fits without scrolling at 1440x900 (ideally 1280x720) and the Edit form for a Rank goal fits at 1440x900. In the Create dialog the "Current status" section and the "Goal type" selector SHALL sit side by side in two columns (one column below the container breakpoint and on mobile). Neither dialog SHALL show explanatory helper paragraphs; supplementary hints SHALL be an accessible tooltip (`title` plus an accessible name) and validation and error messages SHALL stay visible. The header (title) and the footer SHALL stay visible while the body scrolls, and the footer SHALL end with the dismiss button (Close/Cancel, outline) followed by the primary button (Create goal/Save) as its rightmost button. Below 768px the presentation SHALL remain the existing bottom-anchored sheet with a single column.

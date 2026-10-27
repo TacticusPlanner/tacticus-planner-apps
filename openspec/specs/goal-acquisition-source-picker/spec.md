@@ -254,7 +254,7 @@ selection SHALL be retained even if its offer row is briefly unavailable during 
 - **THEN** the saved selection is preserved and reflected once the data is available, not
   reset to campaign-only
 
-#### Scenario: Goal created before this control existed
+#### Scenario: Goal saved with a single source choice
 
 - **WHEN** a goal whose farming config predates this control is opened for editing
 - **THEN** its previous single source choice is presented as the equivalent group selection

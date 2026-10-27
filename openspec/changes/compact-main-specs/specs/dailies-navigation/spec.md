@@ -23,16 +23,6 @@ The system SHALL present a `/dailies` section with 5 primary tabs, in order Raid
 
 The `/dailies` section SHALL include an HSE tab (label: the localized abbreviation of Home Screen Event) at `/dailies/hse`. The tab SHALL appear in section tabs, the desktop section menu and navigation search, and SHALL be shown whether or not an event is active.
 
-#### Scenario: Tab order
-
-- **WHEN** a signed-in user opens `/dailies`
-- **THEN** the tabs are Raids, HSE, Shops, Guild Raids and the Raids tab is active by default
-
-#### Scenario: Direct navigation
-
-- **WHEN** a user loads `/dailies/hse` directly
-- **THEN** the Dailies tab bar renders with the HSE tab active and its content shown
-
 #### Scenario: Tab shown without an active event
 
 - **GIVEN** no HSE is active
@@ -41,16 +31,6 @@ The `/dailies` section SHALL include an HSE tab (label: the localized abbreviati
 ### Requirement: Dailies has an HRE tab
 
 The `/dailies` section SHALL include an HRE tab, labelled with the localized abbreviation of Hero Release Event, at `/dailies/hre`. The tab SHALL appear in section tabs, the desktop section menu and navigation search. It SHALL be shown whether or not an HRE is running.
-
-#### Scenario: Tab order
-
-- **WHEN** a signed-in user opens `/dailies`
-- **THEN** the tabs are Raids, HSE, HRE, Shops, Guild Raids, and the Raids tab is active by default
-
-#### Scenario: Direct navigation
-
-- **WHEN** a user loads `/dailies/hre` directly
-- **THEN** the Dailies tab bar renders with the HRE tab active and its content shown
 
 #### Scenario: Tab shown without an event
 
@@ -61,11 +41,6 @@ The `/dailies` section SHALL include an HRE tab, labelled with the localized abb
 
 The `/dailies` section SHALL include a Quest tab, labelled with the localized name of Quest Event, at `/dailies/quest`. The tab SHALL appear in section tabs, the desktop section menu and navigation search, and SHALL be shown whether or not a quest is running.
 
-#### Scenario: Tab order
-
-- **WHEN** a signed-in user opens `/dailies`
-- **THEN** the tabs are Raids, HSE, HRE, Quest, Shops, Guild Raids, and Raids is active
-
 #### Scenario: Direct navigation
 
 - **WHEN** a user loads `/dailies/quest` directly
@@ -74,11 +49,6 @@ The `/dailies` section SHALL include a Quest tab, labelled with the localized na
 ### Requirement: Shops is not a Dailies tab
 
 Dailies SHALL NOT have a Shops primary tab: today's shop recommendations are part of the Raids tab (see `daily-shop-recommendations` "Shop recommendations are a section of the Raids tab"). `/dailies/shops` SHALL redirect to `/dailies/raids`, replacing the history entry.
-
-#### Scenario: Tab order
-
-- **WHEN** a signed-in user opens `/dailies`
-- **THEN** the tabs are Raids, HSE, HRE, Quest, Guild Raids, and Raids is active
 
 #### Scenario: Old Shops link
 

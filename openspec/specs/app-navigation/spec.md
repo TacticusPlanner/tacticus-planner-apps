@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Defines the behavior of the app-wide navigation shell — the desktop sidebar, the mobile bottom navigation and its menu drawer, navigation search, item descriptions, the shared page header (title, description, and a section's tab row), and how the desktop sidebar resolves a section entry to a starting child route — so that Level 2 destinations are discoverable in exactly one place (the shared header's tab row) instead of being duplicated with the sidebar, or duplicated against a page's own separately-rendered title and description. The mobile menu drawer's existing full-tree listing is deliberately left intact.
+Defines the behavior of the app-wide navigation shell — the desktop sidebar, the mobile bottom navigation and its menu drawer, navigation search, item descriptions, the shared page header (title, description, and a section's tab row), and how the desktop sidebar resolves a section entry to a starting child route — so that Level 2 destinations are discoverable in exactly one place (the shared header's tab row) instead of being duplicated with the sidebar, or duplicated against a page's own separately-rendered title and description. The mobile menu drawer keeps the full tree.
 
 ## Requirements
 
@@ -478,11 +478,6 @@ On desktop, a section with one or more child pages SHALL expose them in a persis
 
 - **WHEN** the main rail is compact or expanded
 - **THEN** the Sync control has the same size and horizontal center as the Create Goal control when compact, and the same icon left edge when expanded
-
-#### Scenario: Search launcher has no tooltip
-
-- **WHEN** a user hovers or focuses the global bar's search launcher
-- **THEN** no tooltip appears, and the launcher keeps its accessible name and visible shortcut hint
 
 #### Scenario: Single-child and childless sections
 

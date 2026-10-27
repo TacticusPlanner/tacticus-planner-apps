@@ -8,8 +8,3 @@ The authenticated home page SHALL render a Daily Raids section in the position d
 
 - **WHEN** a signed-in user opens `/home` at or above the 768px breakpoint
 - **THEN** Daily Raids renders side by side with Your Projects, below Token Availability and above the events calendar
-
-#### Scenario: Mobile stacks Daily Raids after Projects
-
-- **WHEN** a signed-in user opens `/home` below the 768px breakpoint
-- **THEN** Daily Raids renders as its own full-width section, after Your Projects and before the events calendar

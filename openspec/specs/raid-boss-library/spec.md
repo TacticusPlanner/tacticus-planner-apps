@@ -39,14 +39,6 @@ Selecting an entity in either form SHALL behave identically.
 - **THEN** Bosses and Primes sections are shown in served order, with a
   portrait or readable initials fallback for every entity
 
-#### Scenario: Both sections render
-
-- **WHEN** an anonymous user opens `/library/raid-bosses` at ≥768px after the
-  dataset has synced
-- **THEN** a Bosses section and a Primes section are shown in the Details
-  tab, each populated with served entities in order and a portrait or
-  initials-badge fallback
-
 #### Scenario: Mobile shows a grouped searchable Select
 
 - **WHEN** an anonymous user opens `/library/raid-bosses` below 768px after
@@ -109,24 +101,12 @@ its selection/filter.
 - **THEN** the URL is replaced with
   `/library/raid-bosses/{firstEntityId}` and Details is the active tab
 
-#### Scenario: Bare collection URL canonicalizes
-
-- **WHEN** a user opens `/library/raid-bosses` and the dataset has entities
-- **THEN** the URL is replaced with `/library/raid-bosses/{firstEntityId}` and
-  Details is the active tab
-
 #### Scenario: Unknown URL state is repaired
 
 - **WHEN** a user opens the page with an unknown entity id, tab, season, or
   Comp id
 - **THEN** the page uses the defined defaults, replaces invalid selection state
   in the URL, and renders no broken view
-
-#### Scenario: Unknown entity id falls back
-
-- **WHEN** a user opens `/library/raid-bosses/not-a-real-id`
-- **THEN** the page selects the first available entity instead of rendering an
-  empty Details view
 
 ### Requirement: The detail view shows progression-stepped stats
 
@@ -319,12 +299,6 @@ Meta-unavailable state with retry where applicable while Details and Seasons
 Config remain usable; and when it is valid but lacks a particular boss group,
 Meta shows an explicit no-recommendation state for that boss or filter.
 
-#### Scenario: Core raid-boss data is unavailable
-
-- **WHEN** the `raid-bosses` dataset is absent or fails to load
-- **THEN** the page shows the corresponding feature-unavailable or retry-able
-  state instead of broken Details or Seasons Config content
-
 #### Scenario: Loading
 
 - **WHEN** the page opens before the `raid-bosses` dataset has finished
@@ -393,15 +367,6 @@ platform-appropriate targets.
   desktop or mobile
 - **THEN** every content step targets an element present in that active tab and
   does not point to hidden Details content
-
-#### Scenario: Tour runs on desktop and mobile
-
-- **WHEN** a user starts the page tour at a viewport ≥768px and again below
-  768px
-- **THEN** the platform-appropriate active-tab step set runs, each step
-  anchors to a present element, with localized copy — on desktop the roster
-  steps anchor to the Bosses and Primes sections, on mobile a single roster
-  step anchors to the searchable Select
 
 ### Requirement: Season-board navigation preserves an exact encounter context
 

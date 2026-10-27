@@ -2,7 +2,7 @@
 
 ## Purpose
 
-TBD - created by archiving change add-goal-season-fit. Update Purpose after archive.
+Lets the Goals page show, for a chosen season type (Battle Pass, Guild Raid or Guild War), how many season boundaries each eligible goal's estimated completion falls beyond, using season windows from the events catalog, and marks the season cut-off with a divider.
 
 ## Requirements
 
