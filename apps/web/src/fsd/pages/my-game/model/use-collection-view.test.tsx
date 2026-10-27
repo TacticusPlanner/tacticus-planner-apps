@@ -5,7 +5,14 @@ import { setTestAuth } from "@/test/auth"
 import { act, renderHook, waitFor } from "@/test/render"
 import { seedGameCatalog, seedPlayerData } from "@/test/seed"
 
-import { useCollectionView } from "./use-collection-view"
+import {
+  defaultCollectionQuery,
+  type CollectionQuery,
+} from "./collection-query"
+import {
+  useCollectionView,
+  type CollectionViewState,
+} from "./use-collection-view"
 
 // `testTitus` has no English translation, so its display name can only come from the catalog.
 const titusRecord = {
@@ -37,8 +44,56 @@ function failReads(database: "game-catalog" | "player-data", store: string) {
     })
 }
 
-function renderCollectionView() {
-  return renderHook(() => useCollectionView())
+function renderCollectionView(query?: CollectionQuery) {
+  return renderHook(() => useCollectionView(query))
+}
+
+const inventory = {
+  xpBooks: [],
+  abilityBadges: { imperial: [], xenos: [], chaos: [] },
+  components: {
+    imperial: { amount: 0 },
+    xenos: { amount: 0 },
+    chaos: { amount: 0 },
+  },
+  forgeBadges: [],
+  orbs: {
+    imperial: [{ rarity: "Legendary", amount: 10 }],
+    xenos: [],
+    chaos: [],
+  },
+  requisitionOrdersRegular: 0,
+  requisitionOrdersBlessed: 0,
+  resetStones: 0,
+}
+
+// Titus at Epic red one star with 260 shards: 250 shards and 10 Legendary orbs reach Legendary.
+const ladder = (
+  [
+    ["Epic:RedTwoStars", 65, 0, null],
+    ["Epic:RedThreeStars", 85, 0, null],
+    ["Legendary:RedThreeStars", 100, 10, "Legendary"],
+  ] as const
+).map(([progression, shards, orbs, orbRarity]) => ({
+  id: progression,
+  progression,
+  shards,
+  mythicShards: 0,
+  orbs,
+  orbRarity,
+}))
+
+async function seedSyncedRoster(chunks: Record<string, unknown> = {}) {
+  await seedPlayerData({
+    characters: [{ ...titusRecord, shards: 260 }],
+    mows: [],
+    "inventory-shards": [],
+    ...chunks,
+  })
+}
+
+function ready(state: CollectionViewState) {
+  return state.status === "ready" ? state : undefined
 }
 
 describe("useCollectionView", () => {
@@ -143,5 +198,121 @@ describe("useCollectionView", () => {
     expect(result.current.status === "ready" && result.current.view.owned).toBe(
       1
     )
+  })
+  it("offers every quick filter once the roster, inventory and their catalog data are read", async () => {
+    await seedGameCatalog({ "ascension-costs": ladder, upgrades: [] })
+    await seedSyncedRoster({ inventory, "inventory-upgrades": [] })
+    const { result } = renderCollectionView()
+
+    await waitFor(() => expect(result.current.status).toBe("ready"))
+    expect(ready(result.current)?.quickFilters).toEqual({
+      readyToRankUp: "available",
+      needToAscend: "available",
+      canAscend: "available",
+      needToLevel: "available",
+      blueStarReady: "available",
+    })
+  })
+
+  it("needs a roster for every quick filter while signed out", async () => {
+    setTestAuth({ authenticated: false })
+    const { result } = renderCollectionView()
+
+    await waitFor(() => expect(result.current.status).toBe("ready"))
+    expect(Object.values(ready(result.current)?.quickFilters ?? {})).toEqual(
+      Array(5).fill("needsRoster")
+    )
+  })
+
+  it("marks only Ready to rank up failed when the upgrade recipes cannot be read", async () => {
+    await seedGameCatalog({ "ascension-costs": ladder, upgrades: [] })
+    await seedSyncedRoster({ inventory, "inventory-upgrades": [] })
+    failReads("game-catalog", "upgrades")
+    const { result } = renderCollectionView()
+
+    await waitFor(() =>
+      expect(ready(result.current)?.quickFilters.readyToRankUp).toBe("failed")
+    )
+    expect(ready(result.current)?.view.total).toBe(1)
+    expect(ready(result.current)?.quickFilters.canAscend).toBe("available")
+  })
+
+  it("needs the upgrade inventory only for Ready to rank up", async () => {
+    await seedGameCatalog({ "ascension-costs": ladder, upgrades: [] })
+    await seedSyncedRoster({ inventory })
+    const { result } = renderCollectionView()
+
+    await waitFor(() => expect(result.current.status).toBe("ready"))
+    expect(ready(result.current)?.quickFilters).toMatchObject({
+      readyToRankUp: "needsInventory",
+      canAscend: "available",
+      blueStarReady: "available",
+    })
+  })
+
+  it("needs the orb inventory for Can ascend and Blue star ready", async () => {
+    await seedGameCatalog({ "ascension-costs": ladder, upgrades: [] })
+    await seedSyncedRoster({ "inventory-upgrades": [] })
+    const { result } = renderCollectionView()
+
+    await waitFor(() => expect(result.current.status).toBe("ready"))
+    expect(ready(result.current)?.quickFilters).toMatchObject({
+      readyToRankUp: "available",
+      canAscend: "needsInventory",
+      blueStarReady: "needsInventory",
+      needToAscend: "available",
+    })
+  })
+
+  it("does not narrow the list by a quick filter it cannot offer", async () => {
+    await seedGameCatalog({ "ascension-costs": ladder, upgrades: [] })
+    await seedSyncedRoster({ "inventory-upgrades": [] })
+    const { result } = renderCollectionView({
+      ...defaultCollectionQuery,
+      quick: "blueStarReady",
+    })
+
+    await waitFor(() => expect(result.current.status).toBe("ready"))
+    expect(ready(result.current)?.view).toMatchObject({
+      total: 1,
+      filtered: false,
+    })
+  })
+
+  it("never shows the list unfiltered while a selected quick filter is loading its data", async () => {
+    await seedGameCatalog({ "ascension-costs": ladder, upgrades: [] })
+    await seedSyncedRoster({ inventory, "inventory-upgrades": [] })
+    const states: CollectionViewState[] = []
+    renderHook(() => {
+      const state = useCollectionView({
+        ...defaultCollectionQuery,
+        quick: "canAscend",
+        alliance: "Xenos",
+      })
+      states.push(state)
+      return state
+    })
+
+    await waitFor(() => expect(states.at(-1)?.status).toBe("ready"))
+    expect(states[0]?.status).toBe("loading")
+    for (const state of states) {
+      if (state.status === "ready") expect(state.view.total).toBe(0)
+    }
+  })
+
+  it("lists Titus under Can ascend from his shards and Imperial orbs", async () => {
+    await seedGameCatalog({ "ascension-costs": ladder, upgrades: [] })
+    await seedSyncedRoster({ inventory, "inventory-upgrades": [] })
+    const { result } = renderCollectionView({
+      ...defaultCollectionQuery,
+      quick: "canAscend",
+    })
+
+    await waitFor(() => expect(result.current.status).toBe("ready"))
+    expect(ready(result.current)?.view).toMatchObject({
+      total: 1,
+      owned: 1,
+      filtered: true,
+    })
   })
 })

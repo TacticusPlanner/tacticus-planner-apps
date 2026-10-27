@@ -5,6 +5,12 @@ import type { PlayerDataChunkDto } from "@workspace/player-data"
 import legendaryEventCharacters from "@/test/fixtures/legendary-event-characters.json"
 
 import {
+  defaultCollectionQuery,
+  type CollectionQuery,
+} from "./collection-query"
+import { ascensionLadder } from "./collection-quick-filters"
+
+import {
   buildCollectionView,
   type CollectionCatalog,
   type CollectionRoster,
@@ -397,5 +403,383 @@ describe("buildCollectionView", () => {
       shards: 3,
       mythicShards: 1,
     })
+  })
+})
+
+describe("buildCollectionView with a query", () => {
+  const query = (overrides: Partial<CollectionQuery>): CollectionQuery => ({
+    ...defaultCollectionQuery,
+    ...overrides,
+  })
+  const mowRecord = (
+    unitId: string,
+    overrides: Partial<PlayerMow> = {}
+  ): PlayerMow =>
+    ({
+      unitId: unitId as UnitId,
+      progressionIndex: "Epic:RedOneStar",
+      xp: 0,
+      xpLevel: 1,
+      shards: 0,
+      mythicShards: 0,
+      abilities: [],
+      appliedUpgradeSlots: [],
+      ...overrides,
+    }) as unknown as PlayerMow
+  const abilities = (active: number, passive: number) =>
+    [
+      { abilityId: "active", level: active },
+      { abilityId: "passive", level: passive },
+    ] as PlayerCharacter["abilities"]
+  const ids = (view: ReturnType<typeof buildCollectionView>) =>
+    view.groups.flatMap((group) => group.units).map((unit) => unit.unitId)
+  const ultramarines = (view: ReturnType<typeof buildCollectionView>) =>
+    view.groups
+      .find((group) => group.factionId === "Ultramarines")
+      ?.units.map((unit) => unit.unitId)
+
+  it("sorts by rank with Machines of War after the characters (the spec's Ultramarines)", () => {
+    const view = buildCollectionView(
+      catalog,
+      signedIn({
+        characters: [
+          character("ultraTitus", { rank: "Gold1" }),
+          character("ultraCalgar", { rank: "Diamond1" }),
+        ],
+        mows: [mowRecord("ultraDreadnought")],
+        shards: [],
+      }),
+      labels,
+      query({ sort: "rank" })
+    )
+
+    expect(ultramarines(view)?.slice(0, 3)).toEqual([
+      "ultraCalgar",
+      "ultraTitus",
+      "ultraDreadnought",
+    ])
+  })
+
+  it("sorts by ability sum, breaking ties by progression", () => {
+    const view = buildCollectionView(
+      catalog,
+      signedIn({
+        characters: [
+          character("ultraTitus", {
+            abilities: abilities(40, 38),
+            progressionIndex: "Legendary:RedFourStars",
+          }),
+          character("ultraCalgar", { abilities: abilities(50, 20) }),
+          character("ultraTigurius", {
+            abilities: abilities(45, 33),
+            progressionIndex: "Epic:RedThreeStars",
+          }),
+        ],
+        mows: [],
+        shards: [],
+      }),
+      labels,
+      query({ sort: "abilities" })
+    )
+
+    expect(ultramarines(view)?.slice(0, 3)).toEqual([
+      "ultraTitus",
+      "ultraTigurius",
+      "ultraCalgar",
+    ])
+  })
+
+  it("sorts by shards with units past one blue star first, by mythic shards", () => {
+    const view = buildCollectionView(
+      catalog,
+      signedIn({
+        characters: [
+          character("ultraTitus", {
+            progressionIndex: "Legendary:RedFiveStars",
+            shards: 480,
+          }),
+          character("ultraCalgar", {
+            progressionIndex: "Legendary:OneBlueStar",
+            shards: 300,
+            mythicShards: 12,
+          }),
+          character("ultraTigurius", {
+            progressionIndex: "Mythic:TwoBlueStars",
+            mythicShards: 40,
+          }),
+        ],
+        mows: [],
+        shards: [],
+      }),
+      labels,
+      query({ sort: "shards" })
+    )
+
+    expect(ultramarines(view)?.slice(0, 3)).toEqual([
+      "ultraTigurius",
+      "ultraCalgar",
+      "ultraTitus",
+    ])
+  })
+
+  it.each(["rarity", "rank", "abilities", "shards"] as const)(
+    "keeps owned first and unowned nearest to unlock under sort %s",
+    (sort) => {
+      const view = buildCollectionView(
+        catalog,
+        signedIn({
+          characters: [character("ultraTitus")],
+          mows: [],
+          shards: [
+            { unitId: "ultraCalgar" as UnitId, amount: 75, mythicAmount: 0 },
+            {
+              unitId: "ultraTigurius" as UnitId,
+              amount: 200,
+              mythicAmount: 0,
+            },
+          ],
+        }),
+        labels,
+        query({ sort })
+      )
+
+      // Tigurius holds 200 of 250 (Epic), Calgar 75 of 400 (Legendary).
+      expect(ultramarines(view)?.slice(0, 3)).toEqual([
+        "ultraTitus",
+        "ultraTigurius",
+        "ultraCalgar",
+      ])
+    }
+  )
+
+  it("searches localized and catalog names ignoring case and diacritics", () => {
+    const withTitusName = {
+      ...catalog,
+      characters: catalog.characters.map((unit) =>
+        unit.id === "ultraTitus" ? { ...unit, name: "Titus" } : unit
+      ),
+    }
+    const localized: CollectionLabels = {
+      ...labels,
+      unitName: (_kind, id) =>
+        id === "ultraCalgar"
+          ? "Marneus Calgár"
+          : id === "ultraTitus"
+            ? "Leutnant"
+            : id,
+    }
+
+    expect(
+      ids(
+        buildCollectionView(
+          withTitusName,
+          { state: "anonymous" },
+          localized,
+          query({ search: "  CALGAR " })
+        )
+      )
+    ).toEqual(["ultraCalgar"])
+    expect(
+      ids(
+        buildCollectionView(
+          withTitusName,
+          { state: "anonymous" },
+          localized,
+          query({ search: "titus" })
+        )
+      )
+    ).toEqual(["ultraTitus"])
+  })
+
+  it("combines filters: Imperial, Legendary and Machines of War lists only owned Legendary Imperial Machines of War", () => {
+    const view = buildCollectionView(
+      catalog,
+      signedIn({
+        characters: [
+          character("ultraTitus", {
+            progressionIndex: "Legendary:RedFourStars",
+          }),
+        ],
+        mows: [
+          mowRecord("ultraDreadnought", {
+            progressionIndex: "Legendary:RedThreeStars",
+          }),
+          mowRecord("blackForgefiend", {
+            progressionIndex: "Legendary:RedThreeStars",
+          }),
+        ],
+        shards: [],
+      }),
+      labels,
+      query({ alliance: "Imperial", rarities: ["Legendary"], kind: "mow" })
+    )
+
+    expect(ids(view)).toEqual(["ultraDreadnought"])
+    expect(view).toMatchObject({ owned: 1, total: 1, filtered: true })
+  })
+
+  it("matches an unowned character's starting rarity and never an unowned Machine of War", () => {
+    const view = buildCollectionView(
+      catalog,
+      { state: "anonymous" },
+      labels,
+      query({ rarities: ["Legendary"] })
+    )
+
+    expect(ids(view)).toEqual(["ultraCalgar"])
+  })
+
+  it("rank range lists only owned characters inside it", () => {
+    const view = buildCollectionView(
+      catalog,
+      signedIn({
+        characters: [
+          character("ultraTitus", { rank: "Gold1" }),
+          character("ultraCalgar", { rank: "Diamond3" }),
+          character("ultraTigurius", { rank: "Silver3" }),
+        ],
+        mows: [mowRecord("ultraDreadnought")],
+        shards: [],
+      }),
+      labels,
+      query({ rankMin: "Gold1", rankMax: "Diamond3" })
+    )
+
+    expect(ids(view)).toEqual(["ultraCalgar", "ultraTitus"])
+  })
+
+  it("hides factions without a match and counts only matching units", () => {
+    const view = buildCollectionView(
+      catalog,
+      signedIn({ characters: [character("ultraTitus")], mows: [], shards: [] }),
+      labels,
+      query({ factions: ["Ultramarines"] })
+    )
+
+    expect(view.groups.map((group) => group.factionId)).toEqual([
+      "Ultramarines",
+    ])
+    expect(view.groups[0]).toMatchObject({ owned: 1 })
+    expect(view).toMatchObject({ owned: 1, total: 7, filtered: true })
+  })
+
+  it("lists nothing when no unit matches", () => {
+    const view = buildCollectionView(
+      catalog,
+      { state: "anonymous" },
+      labels,
+      query({ search: "no such unit" })
+    )
+
+    expect(view).toMatchObject({
+      groups: [],
+      owned: 0,
+      total: 0,
+      filtered: true,
+    })
+  })
+
+  it("filters by ownership", () => {
+    const roster = signedIn({
+      characters: [character("ultraTitus")],
+      mows: [],
+      shards: [],
+    })
+
+    expect(
+      buildCollectionView(
+        catalog,
+        roster,
+        labels,
+        query({ ownership: "owned" })
+      ).total
+    ).toBe(1)
+    expect(
+      buildCollectionView(
+        catalog,
+        roster,
+        labels,
+        query({ ownership: "unowned" })
+      ).total
+    ).toBe(119)
+  })
+
+  it("ignores rank range, ownership and quick filters without a roster", () => {
+    const view = buildCollectionView(
+      catalog,
+      { state: "anonymous" },
+      labels,
+      query({
+        alliance: "Imperial",
+        quick: "canAscend",
+        rankMin: "Gold1",
+        ownership: "owned",
+      })
+    )
+
+    expect(view.total).toBeGreaterThan(0)
+    expect(view.groups.every((group) => group.alliance === "Imperial")).toBe(
+      true
+    )
+  })
+
+  it("applies quick filters to owned units only", () => {
+    const ladder = ascensionLadder([
+      {
+        id: "a",
+        progression: "Epic:RedTwoStars",
+        shards: 65,
+        mythicShards: 0,
+        orbs: 0,
+        orbRarity: null,
+      },
+      {
+        id: "b",
+        progression: "Epic:RedThreeStars",
+        shards: 85,
+        mythicShards: 0,
+        orbs: 0,
+        orbRarity: null,
+      },
+      {
+        id: "c",
+        progression: "Legendary:RedThreeStars",
+        shards: 100,
+        mythicShards: 0,
+        orbs: 10,
+        orbRarity: "Legendary",
+      },
+    ] as Parameters<typeof ascensionLadder>[0])
+    const roster = signedIn({
+      characters: [
+        character("ultraTitus", { shards: 260 }),
+        character("ultraTigurius", { rank: "Gold1" }),
+      ],
+      mows: [],
+      shards: [
+        { unitId: "ultraCalgar" as UnitId, amount: 5000, mythicAmount: 0 },
+      ],
+    })
+    const orbs = {
+      imperial: [{ rarity: "Legendary" as const, amount: 10 }],
+      chaos: [],
+      xenos: [],
+    }
+    const view = (
+      quick: CollectionQuery["quick"],
+      extras?: Parameters<typeof buildCollectionView>[4]
+    ) =>
+      ids(
+        buildCollectionView(catalog, roster, labels, query({ quick }), extras)
+      )
+
+    expect(view("canAscend", { ladder, orbs })).toEqual(["ultraTitus"])
+    expect(view("canAscend", { ladder })).toEqual([])
+    expect(view("needToAscend")).toEqual(["ultraTigurius"])
+    expect(
+      view("readyToRankUp", {
+        rankUpReady: new Set(["ultraTitus", "ultraCalgar"]),
+      })
+    ).toEqual(["ultraTitus"])
   })
 })

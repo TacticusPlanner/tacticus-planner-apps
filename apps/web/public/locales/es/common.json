@@ -339,7 +339,72 @@
       "catalogErrorTitle": "No se pudo cargar el catálogo de unidades",
       "catalogErrorBody": "Sin él no se puede mostrar la colección. Inténtalo de nuevo.",
       "retry": "Reintentar",
-      "factionOwned": "{{owned}} de {{total}} en tu poder"
+      "factionOwned": "{{owned}} de {{total}} en tu poder",
+      "summaryFiltered": "{{owned}} de {{total}} unidades coincidentes en tu poder",
+      "toolbar": {
+        "label": "Buscar, ordenar y filtrar unidades",
+        "search": "Buscar unidades",
+        "searchPlaceholder": "Buscar por nombre",
+        "sort": "Orden",
+        "sortOptions": {
+          "rarity": "Rareza",
+          "rank": "Rango",
+          "abilities": "Habilidades",
+          "shards": "Fragmentos"
+        },
+        "filters": "Filtros",
+        "filtersCount_one": "Filtros ({{count}})",
+        "filtersCount_other": "Filtros ({{count}})",
+        "clearFilters": "Borrar filtros",
+        "done": "Listo",
+        "alliance": "Alianza",
+        "allAlliances": "Todas las alianzas",
+        "faction": "Facción",
+        "allFactions": "Todas las facciones",
+        "searchFactions": "Buscar facciones",
+        "noFactions": "Ninguna facción coincide",
+        "rarity": "Rareza",
+        "allRarities": "Todas las rarezas",
+        "rankFrom": "Rango mínimo",
+        "rankTo": "Rango máximo",
+        "anyRank": "Cualquier rango",
+        "clearRankFrom": "Quitar rango mínimo",
+        "clearRankTo": "Quitar rango máximo",
+        "searchRanks": "Buscar rangos",
+        "noRanks": "Ningún rango coincide",
+        "ownership": "Posesión",
+        "ownershipAll": "En tu poder y sin desbloquear",
+        "owned": "En tu poder",
+        "unowned": "Sin desbloquear",
+        "kind": "Tipo de unidad",
+        "kindAll": "Personajes y Máquinas de Guerra",
+        "character": "Personajes",
+        "mow": "Máquinas de Guerra",
+        "needsRoster": "Los filtros de rango y posesión necesitan una plantilla sincronizada.",
+        "quickFilters": "Filtros rápidos",
+        "quick": {
+          "readyToRankUp": "Lista para subir de rango",
+          "needToAscend": "Necesita ascender",
+          "canAscend": "Puede ascender",
+          "needToLevel": "Necesita subir de nivel",
+          "blueStarReady": "Lista para la estrella azul"
+        },
+        "quickHelp": {
+          "readyToRankUp": "Tu inventario de mejoras cubre todos los materiales que aún faltan en el rango actual.",
+          "needToAscend": "En el rango más alto de su rareza, con una Ascensión aún pendiente.",
+          "canAscend": "Tus fragmentos y orbes alcanzan para la siguiente rareza (la siguiente estrella en Mítico).",
+          "needToLevel": "Por debajo del nivel máximo de su rareza.",
+          "blueStarReady": "Tus fragmentos y orbes alcanzan para todos los pasos hasta la primera estrella azul."
+        },
+        "quickNeedsRoster": "Los filtros rápidos necesitan una plantilla sincronizada.",
+        "quickNeedsInventory": "{{filters}}: necesita tu inventario sincronizado.",
+        "quickFailed": "{{filters}}: no se pudieron cargar sus datos del juego.",
+        "rankRange": "Intervalo de rangos"
+      },
+      "empty": {
+        "title": "Ninguna unidad coincide con estos filtros",
+        "body": "Cambia o borra los filtros para ver más unidades."
+      }
     }
   },
   "unitTile": {
@@ -1525,6 +1590,14 @@
         "unowned": {
           "title": "Aún no desbloqueada",
           "content": "Las unidades en gris no están en tu plantilla. La barra muestra lo cerca que estás de desbloquearlas. Selecciona una unidad para abrir sus detalles en la Biblioteca."
+        },
+        "toolbar": {
+          "title": "Buscar, ordenar y filtrar",
+          "content": "Encuentra una unidad por su nombre, cambia el orden dentro de cada facción y acota la lista con los filtros. Tus elecciones quedan en la dirección de la página, así que puedes recargarla o compartirla."
+        },
+        "quickFilters": {
+          "title": "Filtros rápidos",
+          "content": "Con un toque ves las unidades en las que trabajar a continuación: lista para subir de rango, necesita ascender, puede ascender, necesita subir de nivel o lista para la estrella azul. Vuelve a seleccionar un filtro para quitarlo."
         }
       }
     },

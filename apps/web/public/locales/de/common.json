@@ -339,7 +339,72 @@
       "catalogErrorTitle": "Der Einheitenkatalog konnte nicht geladen werden",
       "catalogErrorBody": "Ohne ihn kann die Sammlung nicht angezeigt werden. Versuche es erneut.",
       "retry": "Erneut versuchen",
-      "factionOwned": "{{owned}} von {{total}} im Besitz"
+      "factionOwned": "{{owned}} von {{total}} im Besitz",
+      "summaryFiltered": "{{owned}} von {{total}} passenden Einheiten im Besitz",
+      "toolbar": {
+        "label": "Einheiten suchen, sortieren und filtern",
+        "search": "Einheiten suchen",
+        "searchPlaceholder": "Nach Namen suchen",
+        "sort": "Sortierung",
+        "sortOptions": {
+          "rarity": "Seltenheit",
+          "rank": "Rang",
+          "abilities": "Fähigkeiten",
+          "shards": "Scherben"
+        },
+        "filters": "Filter",
+        "filtersCount_one": "Filter ({{count}})",
+        "filtersCount_other": "Filter ({{count}})",
+        "clearFilters": "Filter zurücksetzen",
+        "done": "Fertig",
+        "alliance": "Allianz",
+        "allAlliances": "Alle Allianzen",
+        "faction": "Fraktion",
+        "allFactions": "Alle Fraktionen",
+        "searchFactions": "Fraktionen suchen",
+        "noFactions": "Keine passende Fraktion",
+        "rarity": "Seltenheit",
+        "allRarities": "Alle Seltenheiten",
+        "rankFrom": "Niedrigster Rang",
+        "rankTo": "Höchster Rang",
+        "anyRank": "Beliebiger Rang",
+        "clearRankFrom": "Niedrigsten Rang entfernen",
+        "clearRankTo": "Höchsten Rang entfernen",
+        "searchRanks": "Ränge suchen",
+        "noRanks": "Kein passender Rang",
+        "ownership": "Besitz",
+        "ownershipAll": "Im Besitz und nicht im Besitz",
+        "owned": "Im Besitz",
+        "unowned": "Nicht im Besitz",
+        "kind": "Einheitentyp",
+        "kindAll": "Charaktere und Kriegsmaschinen",
+        "character": "Charaktere",
+        "mow": "Kriegsmaschinen",
+        "needsRoster": "Rang- und Besitzfilter brauchen einen synchronisierten Kader.",
+        "quickFilters": "Schnellfilter",
+        "quick": {
+          "readyToRankUp": "Bereit zum Rangaufstieg",
+          "needToAscend": "Aufstieg nötig",
+          "canAscend": "Aufstieg möglich",
+          "needToLevel": "Stufe erhöhen",
+          "blueStarReady": "Bereit für blauen Stern"
+        },
+        "quickHelp": {
+          "readyToRankUp": "Dein Verbesserungsinventar deckt alle Materialien, die im aktuellen Rang noch fehlen.",
+          "needToAscend": "Auf dem höchsten Rang seiner Seltenheit, mit einem noch ausstehenden Aufstieg.",
+          "canAscend": "Deine Scherben und Orbs reichen für die nächste Seltenheit (bei Mythisch für den nächsten Stern).",
+          "needToLevel": "Unter der Stufenobergrenze seiner Seltenheit.",
+          "blueStarReady": "Deine Scherben und Orbs reichen für alle Schritte bis zum ersten blauen Stern."
+        },
+        "quickNeedsRoster": "Schnellfilter brauchen einen synchronisierten Kader.",
+        "quickNeedsInventory": "{{filters}}: braucht dein synchronisiertes Inventar.",
+        "quickFailed": "{{filters}}: Die Spieldaten dafür konnten nicht geladen werden.",
+        "rankRange": "Rangbereich"
+      },
+      "empty": {
+        "title": "Keine Einheit passt zu diesen Filtern",
+        "body": "Ändere die Filter oder setze sie zurück, um mehr Einheiten zu sehen."
+      }
     }
   },
   "unitTile": {
@@ -1525,6 +1590,14 @@
         "unowned": {
           "title": "Noch nicht freigeschaltet",
           "content": "Ausgegraute Einheiten sind nicht in deinem Kader. Der Balken zeigt, wie nah du an der Freischaltung bist. Wähle eine Einheit aus, um ihre Details in der Bibliothek zu öffnen."
+        },
+        "toolbar": {
+          "title": "Suchen, sortieren und filtern",
+          "content": "Finde eine Einheit nach Namen, ändere die Reihenfolge innerhalb jeder Fraktion und grenze die Liste mit den Filtern ein. Deine Auswahl bleibt in der Seitenadresse, sodass du neu laden oder sie teilen kannst."
+        },
+        "quickFilters": {
+          "title": "Schnellfilter",
+          "content": "Ein Tipp zeigt die Einheiten, an denen du als Nächstes arbeiten kannst: bereit zum Rangaufstieg, Aufstieg nötig, Aufstieg möglich, Stufe erhöhen oder bereit für den blauen Stern. Wähle einen Chip erneut, um ihn zu entfernen."
         }
       }
     },

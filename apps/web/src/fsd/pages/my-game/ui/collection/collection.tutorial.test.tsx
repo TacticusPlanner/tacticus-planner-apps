@@ -19,15 +19,20 @@ beforeAll(async () => {
 
 function steps(flags: {
   hasSummary: boolean
+  hasGroups?: boolean
   hasOwned: boolean
   hasUnowned: boolean
 }) {
   const wrapper = ({ children }: { children: ReactNode }) => (
     <I18nextProvider i18n={i18n}>{children}</I18nextProvider>
   )
-  return renderHook(() => useCollectionTutorial(flags), { wrapper }).result
-    .current
+  return renderHook(
+    () => useCollectionTutorial({ hasGroups: true, ...flags }),
+    { wrapper }
+  ).result.current
 }
+
+const toolbar = ["toolbar", "quick-filters"]
 
 const tileTargets = new Set([
   '[data-testid="collection-owned-tile"]',
@@ -39,17 +44,17 @@ describe("useCollectionTutorial", () => {
     [
       "a synced roster with owned and unowned units",
       { hasSummary: true, hasOwned: true, hasUnowned: true },
-      ["summary", "faction-group", "owned-tile", "unowned-tile"],
+      [...toolbar, "summary", "faction-group", "owned-tile", "unowned-tile"],
     ],
     [
       "a player who owns every unit",
       { hasSummary: true, hasOwned: true, hasUnowned: false },
-      ["summary", "faction-group", "owned-tile"],
+      [...toolbar, "summary", "faction-group", "owned-tile"],
     ],
     [
       "a signed-out visitor",
       { hasSummary: false, hasOwned: false, hasUnowned: true },
-      ["faction-group", "unowned-tile"],
+      [...toolbar, "faction-group", "unowned-tile"],
     ],
   ])(
     "with %s, every tile step says a tile opens the Library",
@@ -73,6 +78,43 @@ describe("useCollectionTutorial", () => {
       }
     }
   )
+
+  it("covers only the toolbar and quick filters when the filters match nothing", () => {
+    const tour = steps({
+      hasSummary: false,
+      hasGroups: false,
+      hasOwned: true,
+      hasUnowned: true,
+    })
+
+    for (const form of ["desktop", "mobile"] as const) {
+      expect((tour[form] ?? []).map((step) => step.target)).toEqual(
+        toolbar.map((target) => `[data-testid="collection-${target}"]`)
+      )
+    }
+  })
+
+  it.each([
+    ["en", enCommon],
+    ["de", deCommon],
+    ["es", esCommon],
+    ["fr", frCommon],
+  ])("has translated toolbar and quick-filter steps in %s", (lang, common) => {
+    const { toolbar: toolbarStep, quickFilters } = common.tour.collection.steps
+    for (const text of [
+      toolbarStep.title,
+      toolbarStep.content,
+      quickFilters.title,
+      quickFilters.content,
+    ]) {
+      expect(text.length).toBeGreaterThan(0)
+    }
+    if (lang !== "en") {
+      expect(toolbarStep.content).not.toBe(
+        enCommon.tour.collection.steps.toolbar.content
+      )
+    }
+  })
 
   it.each([
     ["en", enCommon, "Library"],

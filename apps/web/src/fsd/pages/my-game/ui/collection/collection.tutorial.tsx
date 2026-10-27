@@ -4,21 +4,26 @@ import type { Step } from "react-joyride"
 
 import { type TourPageSteps } from "@/shared/tour"
 
-type CollectionStepKey = "summary" | "faction" | "owned" | "unowned"
+type CollectionStepKey =
+  "toolbar" | "quickFilters" | "summary" | "faction" | "owned" | "unowned"
 
 /**
- * Walks the summary, the first faction group, an owned tile and a greyed-out unowned tile. Both
- * layouts share the same targets (the page only reflows); only placement differs. The summary is
- * shown only once a roster has synced, an owned tile only when the player owns a unit and an unowned
- * tile only while some unit is not owned, so those steps are left out otherwise rather than pointing
- * at nothing.
+ * Walks the toolbar (search, sort and filters), the quick filters, the summary, the first faction
+ * group, an owned tile and a greyed-out unowned tile. Both layouts share the same targets: on
+ * mobile the toolbar target is the search and button rows, never the filter sheet, which is closed
+ * during the tour. The summary is shown only once a roster has synced and some unit is listed, the
+ * faction step only while a group is listed, an owned tile only when a listed unit is owned and an
+ * unowned tile only while a listed unit is not, so those steps are left out otherwise rather than
+ * pointing at nothing.
  */
 export function useCollectionTutorial({
   hasSummary,
+  hasGroups,
   hasOwned,
   hasUnowned,
 }: {
   hasSummary: boolean
+  hasGroups: boolean
   hasOwned: boolean
   hasUnowned: boolean
 }): TourPageSteps {
@@ -36,27 +41,39 @@ export function useCollectionTutorial({
         content: t(`tour.collection.steps.${key}.content`),
         placement,
       }) satisfies Step
+    const toolbar = [
+      step("toolbar", "collection-toolbar", "bottom"),
+      step("quickFilters", "collection-quick-filters", "bottom"),
+    ]
     const summary = hasSummary
       ? [step("summary", "collection-summary", "bottom")]
       : []
+    const faction = (placement: Step["placement"]) =>
+      hasGroups ? [step("faction", "collection-faction-group", placement)] : []
     const owned = (placement: Step["placement"]) =>
-      hasOwned ? [step("owned", "collection-owned-tile", placement)] : []
+      hasGroups && hasOwned
+        ? [step("owned", "collection-owned-tile", placement)]
+        : []
     const unowned = (placement: Step["placement"]) =>
-      hasUnowned ? [step("unowned", "collection-unowned-tile", placement)] : []
+      hasGroups && hasUnowned
+        ? [step("unowned", "collection-unowned-tile", placement)]
+        : []
 
     return {
       desktop: [
+        ...toolbar,
         ...summary,
-        step("faction", "collection-faction-group", "right"),
+        ...faction("right"),
         ...owned("bottom"),
         ...unowned("bottom"),
       ],
       mobile: [
+        ...toolbar,
         ...summary,
-        step("faction", "collection-faction-group", "bottom"),
+        ...faction("bottom"),
         ...owned("bottom"),
         ...unowned("top"),
       ],
     }
-  }, [t, hasSummary, hasOwned, hasUnowned])
+  }, [t, hasSummary, hasGroups, hasOwned, hasUnowned])
 }
