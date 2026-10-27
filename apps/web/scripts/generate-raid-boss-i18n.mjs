@@ -30,68 +30,28 @@ const traitData = JSON.parse(
   readFileSync(`${v1}/traits/data/new-traits-data.json`, "utf8")
 )
 
-// Ported verbatim from V1 `4-entities/traits/trait-variables.ts`. Trait descriptions carry
-// `{[varName]}` placeholders whose values come from these global game constants (traits do not level,
-// so each resolves to a single-element array). Build-time only — kept here so shipped app code reads
-// already-resolved values. Two values are corrected from V1 to the game config's
-// `globalValues.traitVariables` (datamine 1.43.157): deathToTheFalseEmperorExtraHitChance 33 -> 50,
-// prioritisedEfficiencyDmgReductionPct 33 -> 25.
+// Trait descriptions carry `{[varName]}` placeholders whose values come from global game constants
+// (traits do not level, so each resolves to a single-element array). Build-time only, so shipped app
+// code reads already-resolved values. They come from the served `global-values` record (the game's
+// `globalValues.traitVariables`, plus three of its top-level values under V1's names); the game
+// config has no source for the last three, which keep V1's values.
+const globalValues = JSON.parse(
+  readFileSync(
+    resolve(
+      here,
+      "../../../packages/game-catalog/src/schemas/global-values.fixture.json"
+    ),
+    "utf8"
+  )
+)[0]
 const TRAIT_GLOBAL_VARIABLES = {
-  livingMetalHp: 10,
-  heavyWeaponExtraDmg: 25,
+  ...globalValues.traitVariables,
+  battleFatigueChance: globalValues.battleFatigueFleeChance,
+  battleFatigueChance_2: globalValues.battleFatigueFleeChanceOverkill,
+  terrifyingDefensePct: globalValues.terrifyingBonus,
   damagedMachineDestroyChanceIncrease: 50,
-  psykerExtraDmg: 50,
-  emplacementMeleeDmgModifier: -50,
-  emplacementRangedDmgModifier: 50,
-  deathToTheFalseEmperorExtraHitChance: 50,
   actOfFaithExtraCritChance: 10,
   actOfFaithExtraCritDmgPct: 25,
-  battleFatigueChance: 10,
-  battleFatigueChance_2: 40,
-  terrifyingDefensePct: -30,
-  daemonBlockChance: 25,
-  daemonBlockDamagePercentage: 50,
-  shadowInTheWarpDmgModifier: -25,
-  shadowInTheWarpRange: 2,
-  putridExplosionDmgPct: 25,
-  putridExplosionFactionId: "DeathGuard",
-  putridExplosionDamageProfile: "Toxic",
-  contagionsOfNurgleArmorOneAura: -20,
-  contagionsOfNurgleArmorTwoOrMoreAuras: -40,
-  parryHitReduction: 1,
-  diminutiveHitReduction: 1,
-  dakkaExtraHits: 2,
-  beastSnaggaDmgBonus: 20,
-  beastSnaggaBlockChance: 10,
-  beastSnaggaDmgAsMaxHpPct: 20,
-  beastSlayerExtraDmgPct: 20,
-  beastSlayerBlockChance: 10,
-  beastSlayerBlockAsMaxArmorPct: 100,
-  closeCombatWeaknessMeleeDmgPctReduction: -50,
-  closeCombatWeaknessRangeDmgPctReduction: -25,
-  camouflageHitReduction_1: 1,
-  camouflageHitReduction_2: 2,
-  camouflageHitReduction_3: 3,
-  terminatorArmourDmgReduction: -75,
-  terminatorArmourExcludedDmgProfiles: "Psychic,DirectDamage",
-  bossAdjutantDmgReductionPct: 66,
-  bossAdjutantDmgPct: 1,
-  crushingStrikeExtraDmgPct: 50,
-  rapidAssaultExtraDmgPct: 25,
-  blessingsOfKhorneExtraDmgPct: 3,
-  blessingsOfKhorneDmgPctReduction: 8,
-  blessingsOfKhorneMaxDefeatedUnits: 8,
-  getStuckInChance: 30,
-  getStuckInChance_2: 100,
-  ambushUnitToSpawn: "genesSmnDecoy",
-  martialKatahDmgReductionPct: 20,
-  martialKatahExtraDmgPct: 100,
-  thrillSeekersNrOfRounds: 1,
-  thrillSeekersExtraCritChance: 15,
-  LetTheGalaxyBurnChancePct: 33,
-  prioritisedEfficiencyExtraDmgPct: 25,
-  prioritisedEfficiencyDmgReductionPct: 25,
-  rangedSpecialistDmgPct: 33,
 }
 
 const TRAIT_VARIABLE_MAP = {

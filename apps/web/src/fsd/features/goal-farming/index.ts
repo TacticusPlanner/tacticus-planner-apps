@@ -58,10 +58,10 @@ export {
 } from "./lib/ability-materials"
 export { estimateRemainingShardEnergy } from "./lib/shard-energy-estimate"
 export {
-  ONSLAUGHT_RUNS_PER_DAY,
   projectOnslaughtSupply,
   projectShopSupply,
   shopOfferPerDay,
+  toOnslaughtRunsPerDay,
 } from "./lib/shop-supply"
 export {
   computeGoalAcquisition,

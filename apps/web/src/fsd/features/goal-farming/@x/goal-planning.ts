@@ -35,4 +35,5 @@ export {
   type UnitCoverage,
   type UpgradeNeed,
   xpNeededForLevelRange,
+  toOnslaughtRunsPerDay,
 } from "../index"

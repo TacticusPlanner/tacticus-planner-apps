@@ -13,6 +13,7 @@ import {
   mapCharacterStorageToDomain,
   mapUpgradeStorageToDomain,
 } from "@/features/rank-lookup/@x/daily-raids"
+import { toOnslaughtRunsPerDay } from "@/features/goal-farming/@x/daily-raids"
 import { useCampaignDisplay, type ReadState } from "@/shared/lib"
 import { toById, useCatalogDataset, usePlayerChunk } from "@/shared/local-data"
 
@@ -82,6 +83,10 @@ export function useDailyRaids(
   const ascensionCostsRead = useCatalogDataset("ascension-costs", toById)
   const unlockShardCostsRead = useCatalogDataset("unlock-shard-costs", toById)
   const onslaughtRewardsRead = useCatalogDataset("onslaught-rewards")
+  const onslaughtRunsPerDayRead = useCatalogDataset(
+    "global-values",
+    toOnslaughtRunsPerDay
+  )
   const shopsRead = useCatalogDataset("shops")
   // Resolved once (not per render): the Raids Filters' enemy traits and the event points read it.
   const npcsRead = useCatalogDataset("npcs", toById)
@@ -104,6 +109,7 @@ export function useDailyRaids(
   const ascensionCostsById = dataOf(ascensionCostsRead)
   const unlockShardCostsById = dataOf(unlockShardCostsRead)
   const onslaughtRewards = dataOf(onslaughtRewardsRead)
+  const onslaughtRunsPerDay = dataOf(onslaughtRunsPerDayRead)
   const shops = dataOf(shopsRead)
   const npcsById = dataOf(npcsRead)
   const onslaughtProgressQuery = useQuery({
@@ -123,6 +129,7 @@ export function useDailyRaids(
     ascensionCostsRead,
     unlockShardCostsRead,
     onslaughtRewardsRead,
+    onslaughtRunsPerDayRead,
     shopsRead,
     npcsRead,
     inventoryUpgradesRead,
@@ -271,6 +278,7 @@ export function useDailyRaids(
       // plan without Onslaught and, before this gate, threw on the first reward lookup.
       onslaughtRewards &&
       onslaughtRewards.length > 0 &&
+      onslaughtRunsPerDay !== undefined &&
       shops &&
       npcsById &&
       onslaughtReady &&
@@ -326,6 +334,7 @@ export function useDailyRaids(
       unlockShardCostsById,
       onslaughtProgress,
       onslaughtRewards,
+      onslaughtRunsPerDay,
       shops,
       getCharacter: (id) => {
         const record = charactersById.get(id)
@@ -425,6 +434,7 @@ export function useDailyRaids(
     onslaughtProgress,
     onslaughtReady,
     onslaughtRewards,
+    onslaughtRunsPerDay,
     planLoading,
     playerCharacterById,
     playerMowById,

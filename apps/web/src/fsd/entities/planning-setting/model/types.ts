@@ -27,7 +27,3 @@ export function normalizeXpBookRarity(
     ? (rarity as Rarity)
     : "Legendary"
 }
-
-export const dailyEnergyTiers = [
-  288, 378, 438, 538, 638, 738, 838, 938,
-] as const

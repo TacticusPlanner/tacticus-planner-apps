@@ -1,4 +1,8 @@
-import { DOW_MAP, type ShopRewardOffer } from "@workspace/game-catalog"
+import {
+  DOW_MAP,
+  type GlobalValuesStorageModel,
+  type ShopRewardOffer,
+} from "@workspace/game-catalog"
 import type { UpgradeId } from "@workspace/game-domain"
 
 import {
@@ -44,9 +48,25 @@ export function projectShopSupply(
   }
 }
 
-/** The current Onslaught run cadence (runs per day) the estimate and the creation preview both
- *  assume — matches V1. */
-export const ONSLAUGHT_RUNS_PER_DAY = 1.5
+const SECONDS_PER_DAY = 86_400
+
+/** The Onslaught run cadence (runs per day) the estimate and the creation preview both assume: the
+ *  game's Onslaught token regeneration (`86400 / wavesStaminaRegenerationTime ×
+ *  wavesStaminaRegenerationAmount`, 1.5 today). A module-level selector over the one-record
+ *  `global-values` dataset; undefined until it is served. */
+export function toOnslaughtRunsPerDay(
+  records: readonly Pick<
+    GlobalValuesStorageModel,
+    "wavesStaminaRegenerationTime" | "wavesStaminaRegenerationAmount"
+  >[]
+): number | undefined {
+  const values = records[0]
+  if (!values) return undefined
+  return (
+    (SECONDS_PER_DAY / values.wavesStaminaRegenerationTime) *
+    values.wavesStaminaRegenerationAmount
+  )
+}
 
 /** A shop offer's expected supply (shards, or items for a Mythic material) averaged to a per-day
  *  rate — its expected purchasable amount on each weekday it can appear (`rewardQty * maxPerDay * probabilityByDay[weekday]`)
@@ -66,19 +86,19 @@ export function shopOfferPerDay(offer: ShopRewardOffer): number {
 /**
  * A selected Onslaught source's flat per-day shard supply (spec: *A selected Onslaught source
  * supplies its per-run shard yield*) — a constant `avgShardsPerRun * runsPerDay` every day,
- * consuming no daily energy, at the current Onslaught run cadence (`runsPerDay`, default
- * `ONSLAUGHT_RUNS_PER_DAY` — matching V1 and the pre-existing progression preview).
+ * consuming no daily energy, at the game's Onslaught run cadence (`runsPerDay`, see
+ * `toOnslaughtRunsPerDay`).
  */
 export function projectOnslaughtSupply({
   entityId,
   isMythic,
   avgShardsPerRun,
-  runsPerDay = ONSLAUGHT_RUNS_PER_DAY,
+  runsPerDay,
 }: {
   entityId: string
   isMythic: boolean
   avgShardsPerRun: number
-  runsPerDay?: number
+  runsPerDay: number
 }): FlatSupplier {
   const supply = Math.max(0, avgShardsPerRun) * runsPerDay
   return {

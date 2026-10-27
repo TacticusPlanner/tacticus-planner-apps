@@ -148,6 +148,7 @@ export {
   type QuestCrateStorageModel,
   type FactionStorageModel,
   type DamageTypeStorageModel,
+  type GlobalValuesStorageModel,
 } from "./game-catalog.storage"
 
 export {

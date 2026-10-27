@@ -80,7 +80,6 @@ vi.mock("@/entities/planning-setting", async (importOriginal) => {
     await importOriginal<typeof import("@/entities/planning-setting")>()
   return {
     ...actual,
-    dailyEnergyTiers: [288, 378, 438, 538, 638, 738, 838, 938],
     xpBookRarityOptions: [
       "Common",
       "Uncommon",
