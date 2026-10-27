@@ -13,28 +13,31 @@ import type { QuestBattle } from "../model/quest-battles"
 import type { QuestProgressActions } from "../model/use-quest-progress"
 import {
   EMPTY_BATTLE_ENTRY,
-  MAX_LIGHTNING_POINTS,
   MAX_MEDALS,
   type QuestBattleEntry,
+  type QuestScoring,
 } from "../model/quest-score"
 import { useObjectiveWording } from "./use-objective-wording"
 
 const MEDAL_VALUES = Array.from({ length: MAX_MEDALS + 1 }, (_, value) => value)
 
 /**
- * The player's best attempt at one battle: medals 0 to 3, Lightning Victory points 0 to 100 with a
- * "Full HP" shortcut, and a tick per objective. With 0 medals the battle is not won, so the Lightning
+ * The player's best attempt at one battle: medals 0 to 3, Lightning Victory points 0 to the served
+ * maximum with a "Full HP" shortcut, and a tick per objective. With 0 medals the battle is not won, so the Lightning
  * Victory entry and ticks are disabled (and kept). `actions` null renders it read-only.
  */
 export function ScoreEntry({
   battle,
   entry = EMPTY_BATTLE_ENTRY,
+  scoring,
   actions,
 }: {
   battle: QuestBattle
   entry?: QuestBattleEntry
+  scoring: QuestScoring
   actions: QuestProgressActions | null
 }) {
+  const maxLightning = scoring.maxPointsForLightningVictory
   const { t, i18n } = useTranslation("quest")
   const word = useObjectiveWording()
   const number = new Intl.NumberFormat(i18n.language)
@@ -85,7 +88,7 @@ export function ScoreEntry({
               decrease: t("entry.lightningDecrease"),
               increase: t("entry.lightningIncrease"),
             }}
-            max={MAX_LIGHTNING_POINTS}
+            max={maxLightning}
             min={0}
             onChange={(value) =>
               actions?.setLightning(battle.number, value ?? 0)
@@ -96,9 +99,7 @@ export function ScoreEntry({
           />
           <Button
             disabled={readOnly || !won}
-            onClick={() =>
-              actions?.setLightning(battle.number, MAX_LIGHTNING_POINTS)
-            }
+            onClick={() => actions?.setLightning(battle.number, maxLightning)}
             size="sm"
             type="button"
             variant="outline"

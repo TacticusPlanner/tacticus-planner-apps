@@ -3,11 +3,12 @@ import { resolveLadderRow } from "@/entities/npc"
 
 import { isBoardPickup, type QuestBattle } from "./quest-battles"
 import {
-  MAX_LIGHTNING_POINTS,
+  fullClearPoints,
   MAX_MEDALS,
   scoreQuest,
   type QuestBattleEntry,
   type QuestScore,
+  type QuestScoring,
 } from "./quest-score"
 import type { QuestObjectiveBadge, QuestTeam } from "./quest-team"
 
@@ -76,8 +77,6 @@ export type QuestBattleEstimate =
       capGains: { unitId: string; gain: number }[]
     }
 
-const BASE_POINTS = MAX_MEDALS * 100 + MAX_LIGHTNING_POINTS
-
 /** Ticks per objective for a clear: every objective the badge does not rule out. */
 function keptObjectives(badges: readonly QuestObjectiveBadge[]): boolean[] {
   return badges.map(
@@ -91,7 +90,8 @@ function keptObjectives(badges: readonly QuestObjectiveBadge[]): boolean[] {
 function teamEstimate(
   team: QuestTeam,
   battle: Pick<QuestBattle, "objectives">,
-  required: number
+  required: number,
+  scoring: QuestScoring
 ): QuestTeamEstimate | null {
   if (team.totalPower === null) return null
   const objectives = keptObjectives(team.badges)
@@ -103,7 +103,7 @@ function teamEstimate(
     margin,
     marginal: clears && margin < MARGINAL_MARGIN,
     points:
-      BASE_POINTS +
+      fullClearPoints(scoring) +
       battle.objectives.reduce(
         (sum, objective, index) =>
           sum + (objectives[index] ? objective.score : 0),
@@ -128,12 +128,13 @@ export function estimateQuestBattle(input: {
   team: QuestTeam
   buildHardRulesTeam: () => QuestTeam
   gainAtCap: (unitId: string) => number | null
+  scoring: QuestScoring
   ratio?: number
 }): QuestBattleEstimate {
   const ratio = input.ratio ?? QUEST_POWER_RATIO
   if (input.battlePower === null) return { kind: "unknown" }
   const required = ratio * input.battlePower
-  const first = teamEstimate(input.team, input.battle, required)
+  const first = teamEstimate(input.team, input.battle, required, input.scoring)
   if (!first) return { kind: "unknown" }
 
   let second: Extract<QuestBattleEstimate, { kind: "ready" }>["second"] = null
@@ -141,7 +142,7 @@ export function estimateQuestBattle(input: {
     const team = input.buildHardRulesTeam()
     const estimate = sameMembers(team, input.team)
       ? null
-      : teamEstimate(team, input.battle, required)
+      : teamEstimate(team, input.battle, required, input.scoring)
     if (estimate) {
       second = {
         ...estimate,
@@ -209,7 +210,8 @@ export function projectQuest(
   battles: readonly QuestBattle[],
   entries: Readonly<Record<number, QuestBattleEntry | undefined>>,
   estimates: ReadonlyMap<number, QuestBattleEstimate>,
-  crates: readonly { number: number; points: number }[]
+  crates: readonly { number: number; points: number }[],
+  scoring: QuestScoring
 ): QuestProjection {
   const projected: Record<number, QuestBattleEntry> = {}
   let medals = 0
@@ -230,12 +232,12 @@ export function projectQuest(
     if (!clear) continue
     projected[battle.number] = {
       medals: MAX_MEDALS,
-      lightning: MAX_LIGHTNING_POINTS,
+      lightning: scoring.maxPointsForLightningVictory,
       objectives: clear.objectives,
     }
     medals += MAX_MEDALS
   }
-  return { score: scoreQuest(battles, projected, crates), medals }
+  return { score: scoreQuest(battles, projected, crates, scoring), medals }
 }
 
 export type QuestCalibrationSample = { E: number; B: number; cleared: boolean }

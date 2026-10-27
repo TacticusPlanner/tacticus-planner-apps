@@ -823,6 +823,25 @@ describe("unit-power schema", () => {
     })
   })
 
+  it("reads each quest's token bank and scoring, and rejects a quest without them", () => {
+    const [cyrus] = datasetPayloadSchemas["quest-events"].parse(questEvents)
+    expect(cyrus?.tokens).toEqual({
+      max: 6,
+      regenSeconds: 7200,
+      regenAmount: 1,
+      refillGemsCost: 50,
+    })
+    expect(cyrus?.scorePoints).toEqual({
+      pointsPerStar: 100,
+      maxPointsForLightningVictory: 100,
+    })
+    const withoutScoring: Partial<NonNullable<typeof cyrus>> = { ...cyrus }
+    delete withoutScoring.scorePoints
+    expect(
+      datasetPayloadSchemas["quest-events"].safeParse([withoutScoring]).success
+    ).toBe(false)
+  })
+
   it("parses the quest-crates track and rejects an unknown reward type", () => {
     const crates = datasetPayloadSchemas["quest-crates"].parse(questCrates)
     expect(crates).toHaveLength(17)

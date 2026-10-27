@@ -19,6 +19,7 @@ import {
   questBattlePower,
   type QuestBattleEstimate,
 } from "./quest-estimates"
+import type { QuestScoring } from "./quest-score"
 import {
   capUnitState,
   featuredHeroState,
@@ -78,6 +79,8 @@ export function useQuestPlan(input: {
   featuredCharacterId: string | null
   allowedFactionIds: readonly string[]
   equipment: readonly EquipmentStorageModel[] | undefined
+  /** The served quest's scoring; estimates wait for it. */
+  scoring: QuestScoring | null
 }): QuestPlanViewModel {
   const roster = usePlayerChunk("characters", toRoster)
   const catalog = useCatalogDataset("characters", toById)
@@ -104,7 +107,13 @@ export function useQuestPlan(input: {
     )
   }, [read, i18n])
 
-  const { battles, featuredCharacterId, allowedFactionIds, equipment } = input
+  const {
+    battles,
+    featuredCharacterId,
+    allowedFactionIds,
+    equipment,
+    scoring,
+  } = input
   return useMemo((): QuestPlanViewModel => {
     if (
       read.status === "loading" ||
@@ -157,7 +166,7 @@ export function useQuestPlan(input: {
         })
       const team = select(false)
       const estimate =
-        context && !unsynced
+        context && !unsynced && scoring
           ? estimateQuestBattle({
               battle,
               battlePower: questBattlePower(
@@ -167,6 +176,7 @@ export function useQuestPlan(input: {
               ),
               team,
               buildHardRulesTeam: () => select(true),
+              scoring,
               gainAtCap: (unitId) => {
                 const unit = units.find((entry) => entry.unitId === unitId)
                 const candidate = candidates.find(
@@ -205,5 +215,6 @@ export function useQuestPlan(input: {
     featuredCharacterId,
     allowedFactionIds,
     equipment,
+    scoring,
   ])
 }

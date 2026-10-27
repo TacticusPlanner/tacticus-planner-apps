@@ -4,7 +4,7 @@
 export { useIsQuestLive, useQuestInstance } from "./model/use-quest-instance"
 export { useQuestCatalog } from "./model/use-quest-catalog"
 export { useQuestProgress } from "./model/use-quest-progress"
-export { scoreQuest, battleMax } from "./model/quest-score"
+export { scoreQuest, battleMax, type QuestScoring } from "./model/quest-score"
 export {
   battlesByTier,
   isBoardPickup,
