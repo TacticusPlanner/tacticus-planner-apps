@@ -23,6 +23,9 @@ export type GameCatalogSyncProgress = {
   downloaded: number
   total: number
   current?: GameCatalogDatasetKey
+  /** The manifest's game version being synced to, known once dataset downloads start. */
+  gameVersion: string
+  firstTime: boolean
 }
 
 export type GameCatalogSyncResult = {
@@ -100,7 +103,14 @@ export async function syncGameCatalog(
     items: selectChangedDatasets(manifest, metadata),
     keyOf: (dataset) => dataset.key as GameCatalogDatasetKey,
     label: "catalog dataset",
-    onProgress: options.onProgress,
+    onProgress:
+      options.onProgress &&
+      ((progress) =>
+        options.onProgress?.({
+          ...progress,
+          gameVersion: manifest.gameVersion,
+          firstTime,
+        })),
     download: async (dataset) => {
       const datasetKey = dataset.key as GameCatalogDatasetKey
       const envelope = await client.getDataset(dataset)

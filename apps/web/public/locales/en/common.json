@@ -32,6 +32,7 @@
       "firstTimeDescription": "First use on this device — this can take a little longer.",
       "updatingTitle": "Updating game catalog",
       "updatingDescription": "Updating game catalog data to version {{version}}.",
+      "updatingDescriptionNoVersion": "Updating game catalog data.",
       "preparing": "Preparing game catalog…",
       "progress": "Downloading {{done}} / {{total}}…",
       "errorTitle": "Could not load game data",

@@ -32,6 +32,7 @@
       "firstTimeDescription": "Primer uso en este dispositivo — esto puede tardar un poco más.",
       "updatingTitle": "Actualizando el catálogo del juego",
       "updatingDescription": "Actualizando los datos del catálogo del juego a la versión {{version}}.",
+      "updatingDescriptionNoVersion": "Actualizando los datos del catálogo del juego.",
       "preparing": "Preparando el catálogo del juego…",
       "progress": "Descargando {{done}} / {{total}}…",
       "errorTitle": "No se pudieron cargar los datos del juego",

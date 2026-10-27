@@ -1,5 +1,5 @@
 import Dexie from "dexie"
-import { beforeEach, describe, expect, it } from "vitest"
+import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import type {
   GameCatalogClient,
@@ -365,6 +365,31 @@ describe("syncGameCatalog", () => {
     // mythic-quests key on the character id (one record per character with quests).
     expect((await getDatasetRecords("mythic-quests"))[0]?.id).toBe(
       "blackAbaddon"
+    )
+  })
+
+  it("reports the target game version and first-time flag with download progress", async () => {
+    const onProgress = vi.fn()
+
+    await syncGameCatalog(new FakeGameCatalogClient(createManifest()), {
+      onProgress,
+    })
+
+    expect(onProgress).toHaveBeenCalled()
+    for (const [progress] of onProgress.mock.calls) {
+      expect(progress).toMatchObject({ gameVersion: "1.40", firstTime: true })
+    }
+
+    const updated = { ...createManifest(), gameVersion: "1.41" }
+    updated.datasets = updated.datasets.map((dataset) =>
+      dataset.key === "characters" ? { ...dataset, hash: "changed" } : dataset
+    )
+    onProgress.mockClear()
+
+    await syncGameCatalog(new FakeGameCatalogClient(updated), { onProgress })
+
+    expect(onProgress).toHaveBeenLastCalledWith(
+      expect.objectContaining({ gameVersion: "1.41", firstTime: false })
     )
   })
 
