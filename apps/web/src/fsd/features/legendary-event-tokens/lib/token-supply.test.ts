@@ -7,6 +7,8 @@ import {
   type LegendaryEventRunResolution,
 } from "@/entities/legendary-event"
 
+import { utharEvent } from "@/test/fixtures/legendary-events"
+
 import { runTokenSupply, type TokenSupplyInput } from "./token-supply"
 
 const HOUR = 60 * 60 * 1000
@@ -68,6 +70,7 @@ const states = (supply: ReturnType<typeof runTokenSupply>) =>
 const worked = (
   overrides: Partial<TokenSupplyInput> = {}
 ): TokenSupplyInput => ({
+  bank: utharEvent.tokens,
   lifecycle: {
     state: "active",
     runStartMs: NOW + 76 * HOUR - 7 * DAY,
@@ -299,6 +302,16 @@ describe("runTokenSupply", () => {
     it("offers 4 ad tokens 2.5 days in after today's ad", () => {
       // V1: getAdTokensRemainingInIteration(event, true, 2.5 days in) === 4.
       expect(runTokenSupply(started(2.5, true))?.[0]?.ad).toBe(4)
+    })
+
+    it("plans a later run from the event's served token bank", () => {
+      const supply = runTokenSupply({
+        ...started(1, false),
+        bank: { start: 10, regenSeconds: 2 * 60 * 60, regenAmount: 2 },
+      })
+
+      // 10 to start plus (7 × 12 − 1) ticks of 2 tokens.
+      expect(supply?.[1]?.free).toBe(176)
     })
 
     it("plans 61 free and 7 ad tokens for each later run", () => {

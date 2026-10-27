@@ -23,6 +23,7 @@ const battles = [
     campaignGroupId: "campaign1",
     type: "Standard",
     nodeNumber: 6,
+    lightningVictoryTurns: null,
     rewards: rewards(7, []),
   },
   {
@@ -32,6 +33,7 @@ const battles = [
     campaignGroupId: "campaign1",
     type: "Standard",
     nodeNumber: 15,
+    lightningVictoryTurns: null,
     rewards: rewards(12, ["shards_necroWarden"]),
   },
 ]
@@ -115,6 +117,7 @@ describe("planHookMissionRaids", () => {
       campaignGroupId: "campaign1",
       type: "Standard",
       nodeNumber,
+      lightningVictoryTurns: nodeNumber >= 19 ? 4 : null,
       rewards: rewards(12, ["shards_necroWarden"]),
     })
     const result = plan({
@@ -145,6 +148,7 @@ describe("planHookMissionRaids", () => {
       campaignGroupId: "campaign1",
       type: "Standard",
       nodeNumber: 20,
+      lightningVictoryTurns: 4,
       rewards: rewards(12, ["shards_necroWarden"]),
     })
     const result = plan({
@@ -170,6 +174,8 @@ describe("planHookMissionRaids", () => {
       campaignGroupId: "campaign1",
       type: "Standard",
       nodeNumber,
+      // As served: Indomitus nodes below 19 have no lightning victory.
+      lightningVictoryTurns: nodeNumber >= 19 ? 4 : null,
       enemyPower,
       rewards: rewards(12, ["shards_necroWarden"]),
     })
@@ -208,6 +214,7 @@ const node = (
   campaignGroupId: "campaign1",
   type: "Standard",
   nodeNumber,
+  lightningVictoryTurns: nodeNumber >= 19 ? 4 : null,
   rewards: rewards(7, ["shards_necroWarden"]),
 })
 const manual = (

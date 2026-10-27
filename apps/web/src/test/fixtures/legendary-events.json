@@ -1394,6 +1394,24 @@
         "ultraTigurius",
         "ultraTitus"
       ]
+    },
+    "tokens": {
+      "start": 6,
+      "max": 12,
+      "regenSeconds": 10800,
+      "regenAmount": 1,
+      "dailyRefreshes": 1
+    },
+    "maxRuns": 3,
+    "ohSoCloseOffer": {
+      "unlock": {
+        "base": 500,
+        "multiplier": 100
+      },
+      "ascension": {
+        "base": 500,
+        "multiplier": 50
+      }
     }
   },
   "uthar": {
@@ -2767,6 +2785,24 @@
         "ultraTigurius",
         "ultraTitus"
       ]
+    },
+    "tokens": {
+      "start": 6,
+      "max": 12,
+      "regenSeconds": 10800,
+      "regenAmount": 1,
+      "dailyRefreshes": 1
+    },
+    "maxRuns": 3,
+    "ohSoCloseOffer": {
+      "unlock": {
+        "base": 500,
+        "multiplier": 100
+      },
+      "ascension": {
+        "base": 500,
+        "multiplier": 50
+      }
     }
   },
   "farsight": {
@@ -4140,6 +4176,24 @@
         "ultraTigurius",
         "ultraTitus"
       ]
+    },
+    "tokens": {
+      "start": 6,
+      "max": 12,
+      "regenSeconds": 10800,
+      "regenAmount": 1,
+      "dailyRefreshes": 1
+    },
+    "maxRuns": 3,
+    "ohSoCloseOffer": {
+      "unlock": {
+        "base": 500,
+        "multiplier": 100
+      },
+      "ascension": {
+        "base": 500,
+        "multiplier": 50
+      }
     }
   }
 }

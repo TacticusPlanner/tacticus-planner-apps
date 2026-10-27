@@ -4,7 +4,8 @@ import type { LegendaryEventLifecycle } from "../model/types"
  *  catalog-served duration can replace it. */
 export const LEGENDARY_EVENT_RUN_DURATION_MS = 7 * 24 * 60 * 60 * 1000
 
-/** An event has three runs; run `n` starts at element `n − 1` of `eventStageStartDatesUtc`. */
+/** An event has three runs; run `n` starts at element `n − 1` of `eventStageStartDatesUtc`. Kept in
+ *  code as the `LegendaryEventRun` union; the served `maxRuns` is checked against it in tests. */
 export const LEGENDARY_EVENT_RUN_COUNT = 3
 
 /** The structural fields lifecycle reads from a catalog event. */

@@ -75,6 +75,18 @@ const baseLre = {
   alpha: lreTrack,
   beta: lreTrack,
   gamma: lreTrack,
+  tokens: {
+    start: 6,
+    max: 12,
+    regenSeconds: 10_800,
+    regenAmount: 1,
+    dailyRefreshes: 1,
+  },
+  maxRuns: 3,
+  ohSoCloseOffer: {
+    unlock: { base: 500, multiplier: 100 },
+    ascension: { base: 500, multiplier: 50 },
+  },
 }
 
 const lreBattle = {
@@ -550,6 +562,22 @@ describe("catalog schemas", () => {
     )
   })
 
+  it("reads an lres record's token bank, run count and Oh So Close offer", () => {
+    const [lre] = datasetPayloadSchemas.lres.parse([baseLre])
+    expect(lre?.tokens.regenSeconds).toBe(10_800)
+    expect(lre?.maxRuns).toBe(3)
+    expect(lre?.ohSoCloseOffer.ascension).toEqual({ base: 500, multiplier: 50 })
+
+    const withoutTokens: Partial<typeof baseLre> = { ...baseLre }
+    delete withoutTokens.tokens
+    expect(datasetPayloadSchemas.lres.safeParse([withoutTokens]).success).toBe(
+      false
+    )
+    expect(
+      datasetPayloadSchemas.lres.safeParse([{ ...baseLre, maxRuns: 0 }]).success
+    ).toBe(false)
+  })
+
   it("rejects a reward points milestone of the wrong type", () => {
     const result = datasetPayloadSchemas.lres.safeParse([
       {
@@ -591,6 +619,7 @@ describe("catalog schemas", () => {
         enemiesTotal: 5,
         enemiesTypes: [],
         detailedEnemyTypes: [],
+        lightningVictoryTurns: null,
       },
     ])
     const definitions = datasetPayloadSchemas["campaign-definitions"].safeParse(
@@ -618,6 +647,9 @@ describe("catalog schemas", () => {
     ).toEqualTypeOf<FactionId>()
     expectTypeOf(definitions.data[0]!.battleIds[0]!).toEqualTypeOf<BattleId>()
     expectTypeOf(definitions.data[0]!.faction).toEqualTypeOf<FactionId>()
+    expectTypeOf(battles.data[0]!.lightningVictoryTurns).toEqualTypeOf<
+      number | null
+    >()
   })
 
   it("validates an upgrade, including its recursively-nested craft recipe", () => {

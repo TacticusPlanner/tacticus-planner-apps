@@ -100,6 +100,28 @@ export const lreTrackViewSchema = z.looseObject({
   availableUnitIds: z.array(unitIdSchema),
 })
 
+// The game's "Oh So Close" offer for an event hero: the blackstone price of the shards still missing,
+// `base` plus `multiplier` per shard, for its unlock and for each later ascension step.
+const ohSoClosePriceSchema = z.looseObject({
+  base: z.number().int().nonnegative(),
+  multiplier: z.number().int().nonnegative(),
+})
+
+const ohSoCloseOfferSchema = z.looseObject({
+  unlock: ohSoClosePriceSchema,
+  ascension: ohSoClosePriceSchema,
+})
+
+// The event's token bank (the game's stamina): it starts at `start`, holds at most `max` and regains
+// `regenAmount` every `regenSeconds` while below `max`; `dailyRefreshes` is the paid refills a day allows.
+const lreTokensSchema = z.looseObject({
+  start: z.number().int().nonnegative(),
+  max: z.number().int().positive(),
+  regenSeconds: z.number().int().positive(),
+  regenAmount: z.number().int().positive(),
+  dailyRefreshes: z.number().int().nonnegative(),
+})
+
 export const lreViewSchema = z.looseObject({
   // The event's unit snowprint id (e.g. "emperLucius") — the stable string id of the LRE.
   id: z.string(),
@@ -117,6 +139,10 @@ export const lreViewSchema = z.looseObject({
   alpha: lreTrackViewSchema,
   beta: lreTrackViewSchema,
   gamma: lreTrackViewSchema,
+  tokens: lreTokensSchema,
+  // How many runs the event has (the game's heroEventMaxRuns).
+  maxRuns: z.number().int().positive(),
+  ohSoCloseOffer: ohSoCloseOfferSchema,
 })
 
 // A served LRE battle (lre-battles dataset): the battle body plus its composite id and owning event/track,

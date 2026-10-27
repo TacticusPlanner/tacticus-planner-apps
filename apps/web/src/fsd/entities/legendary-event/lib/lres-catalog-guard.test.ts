@@ -13,6 +13,7 @@ import {
   type LegendaryEventUnitFilter,
 } from "../model/types"
 import { unitDealtDamageTypes } from "./damage-profile-exclusions"
+import { LEGENDARY_EVENT_RUN_COUNT } from "./lifecycle"
 import { describeUnitFilter } from "./objective-label"
 import {
   isSupportedUnitFilterKind,
@@ -155,5 +156,15 @@ describe("served lres lane kill points", () => {
   it("leaves Lysander's and Farsight's bases unchanged", () => {
     expect(killPointsOf(lysanderEvent)).toEqual([32, 38, 31])
     expect(killPointsOf(farsightEvent)).toEqual([34, 26, 17])
+  })
+})
+
+// The run count is the `LegendaryEventRun` union (1 | 2 | 3), so it stays in code: this fails if the
+// game ever serves an event with another number of runs.
+describe("served lres run count", () => {
+  it("matches the client's three runs on every served event", () => {
+    expect(servedEvents.map((event) => event.maxRuns)).toEqual(
+      servedEvents.map(() => LEGENDARY_EVENT_RUN_COUNT)
+    )
   })
 })
