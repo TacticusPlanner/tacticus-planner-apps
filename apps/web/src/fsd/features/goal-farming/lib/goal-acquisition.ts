@@ -6,11 +6,15 @@ import type {
   ShopRewardOffer,
 } from "@workspace/game-catalog"
 import {
-  MYTHIC_UNCRAFTABLE_UPGRADE_IDS,
+  isUncraftableMythicUpgrade,
   resolveMythicMaterialShopOffers,
   resolveUnitShardShopOffers,
 } from "@workspace/game-catalog"
-import { progressionStarsIndex, type Progression } from "@workspace/game-domain"
+import {
+  progressionStarsIndex,
+  type Progression,
+  type UpgradeId,
+} from "@workspace/game-domain"
 import type { PlayerDataChunkDto } from "@workspace/player-data"
 
 import type { AcquisitionSource, GoalDetail } from "@/entities/goal"
@@ -48,11 +52,21 @@ function takesMythicMaterialSources(detail: GoalDetail) {
   )
 }
 
-/** The needed ids that are one of the four shop-only Mythic upgrade materials. */
-export function neededMythicMaterialIds(needIds: readonly string[]) {
-  return [...new Set(needIds)].filter((id) =>
-    MYTHIC_UNCRAFTABLE_UPGRADE_IDS.includes(id)
-  )
+/** The served upgrades by id, as far as telling a shop-only Mythic material apart needs. */
+export type MythicMaterialCatalog = ReadonlyMap<
+  UpgradeId,
+  Parameters<typeof isUncraftableMythicUpgrade>[0]
+>
+
+/** The needed ids that are a shop-only (uncraftable) Mythic upgrade material. */
+export function neededMythicMaterialIds(
+  needIds: readonly string[],
+  upgradesById: MythicMaterialCatalog
+) {
+  return [...new Set(needIds)].filter((id) => {
+    const upgrade = upgradesById.get(id as UpgradeId)
+    return upgrade !== undefined && isUncraftableMythicUpgrade(upgrade)
+  })
 }
 
 /** The roster's stars by unit id, for shop lock resolution (the Crusade shop's Mythic-material offers
@@ -114,6 +128,7 @@ export function computeGoalAcquisition(params: {
     mythicShards: number
     upgrades?: readonly { id: string }[]
   }
+  upgradesById: MythicMaterialCatalog
   mowsById: ReadonlyMap<string, MowStorageModel>
   charactersById: ReadonlyMap<string, CharacterStorageModel>
   playerCharacterById: ReadonlyMap<string, PlayerCharacter | undefined>
@@ -221,7 +236,8 @@ export function computeGoalAcquisition(params: {
 
   if (takesMythicMaterialSources(detail) && params.shops?.length) {
     const materialIds = neededMythicMaterialIds(
-      (need.upgrades ?? []).map((upgrade) => upgrade.id)
+      (need.upgrades ?? []).map((upgrade) => upgrade.id),
+      params.upgradesById
     )
     if (materialIds.length > 0) {
       const offers = resolveMythicMaterialShopOffers(

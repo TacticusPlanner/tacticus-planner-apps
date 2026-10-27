@@ -130,6 +130,7 @@ export function GoalEditForm({
   // listed for the materials the draft target needs; `null` keeps the saved choice (or the default).
   const mythicMaterials = useMythicMaterialSelection({
     needs: goalEditMaterialNeeds(detail, editedTarget, catalog),
+    upgradesById: catalog.upgradesById,
     seed: acquisition.usesAcquisitionSources
       ? null
       : detail.config.acquisitionSources,

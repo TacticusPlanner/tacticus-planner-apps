@@ -204,6 +204,7 @@ export function calculateDailyRaids(
       playerMowById: params.playerMowById,
       onslaughtProgress: params.onslaughtProgress,
       onslaughtRewards: params.onslaughtRewards,
+      upgradesById: params.upgradesById,
       shops: params.shops,
       referenceDate,
     })

@@ -1,4 +1,8 @@
-import { progressionStarsIndex, type Progression } from "@workspace/game-domain"
+import {
+  progressionStarsIndex,
+  Rarity,
+  type Progression,
+} from "@workspace/game-domain"
 
 import type { GameCatalogShop, GameCatalogShopVariant } from "../record-types"
 import type { ShopDayOfWeek } from "../schemas/shops"
@@ -45,19 +49,16 @@ const MAX_LEGENDARY_STARS_THRESHOLD = progressionStarsIndex(
 export const PL_MEDIUM = 20
 
 /**
- * The four mythic upgrade materials the game only sells (never craftable), so a mythic-material goal
- * need can only be met from a shop. Ported from V1 `mythic-tier.ts` (icons dropped — resolved by id in
- * V2).
+ * A Mythic upgrade material with no recipe: the game never lets you craft it, so a goal's need for one
+ * can only be met from a shop (`upgHpM001`–`upgHpM004` at the time of writing). Read off the served
+ * `upgrades` dataset rather than a kept id list, so a new one is picked up when the catalog adds it.
  */
-export const MYTHIC_UNCRAFTABLE_UPGRADES = [
-  { id: "upgHpM001", material: "Imperial Aquila" },
-  { id: "upgHpM002", material: "Mutant Form" },
-  { id: "upgHpM003", material: "Ancient Inscription" },
-  { id: "upgHpM004", material: "Venerable Battle Mark" },
-] as const
-
-export const MYTHIC_UNCRAFTABLE_UPGRADE_IDS: readonly string[] =
-  MYTHIC_UNCRAFTABLE_UPGRADES.map((upgrade) => upgrade.id)
+export function isUncraftableMythicUpgrade(upgrade: {
+  rarity: Rarity
+  recipe: readonly unknown[]
+}): boolean {
+  return upgrade.rarity === Rarity.Mythic && upgrade.recipe.length === 0
+}
 
 export interface RosterUnit {
   /** snowprintId / catalog unit id. */
@@ -529,7 +530,7 @@ export function resolveUnitShardShopOffers(
 }
 
 /**
- * Every shop offer for the given Mythic upgrade materials (`MYTHIC_UNCRAFTABLE_UPGRADE_IDS`), whose
+ * Every shop offer for the given Mythic upgrade materials (see `isUncraftableMythicUpgrade`), whose
  * reward type is the upgrade id itself — see `resolveShopRewardOffers`. Pass the roster's
  * `lockContext.starsByUnitId`: the Crusade shop's Mythic-material variants are gated on owning a
  * blue-star unit, which reads as "not owned" without it.
@@ -539,9 +540,7 @@ export function resolveMythicMaterialShopOffers(
   materialIds: readonly string[],
   options: ResolveUnitShardShopOffersOptions = {}
 ): ShopRewardOffer[] {
-  const wanted = new Set(
-    materialIds.filter((id) => MYTHIC_UNCRAFTABLE_UPGRADE_IDS.includes(id))
-  )
+  const wanted = new Set(materialIds)
   if (wanted.size === 0) return []
   return resolveShopRewardOffers(
     shops,

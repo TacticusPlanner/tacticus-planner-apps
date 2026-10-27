@@ -18,6 +18,7 @@ export {
   type LevelGoalCost,
   mowAbilityTrackLevel,
   mowAbilityUpgradeIds,
+  type MythicMaterialCatalog,
   mythicShardResourceId,
   neededMythicMaterialIds,
   ONSLAUGHT_RUNS_PER_DAY,

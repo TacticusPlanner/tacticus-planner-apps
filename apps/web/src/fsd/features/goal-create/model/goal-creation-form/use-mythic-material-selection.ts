@@ -4,6 +4,7 @@ import type { UpgradeId } from "@workspace/game-domain"
 import type { AcquisitionSource } from "@/entities/goal"
 import {
   estimateGoal,
+  type MythicMaterialCatalog,
   neededMythicMaterialIds,
   projectShopSupply,
   selectMythicMaterialOffers,
@@ -23,9 +24,11 @@ function seedShopIds(seed: readonly AcquisitionSource[] | null | undefined) {
  * The first toggle pins the listed offers as an explicit selection, then toggles.
  */
 export function useMythicMaterialSelection(params: {
-  /** The goal's needed base materials (`missing` = still needed); only the four Mythic materials
-   *  matter. Compared by value, so callers may pass a fresh array each render. */
+  /** The goal's needed base materials (`missing` = still needed); only the shop-only Mythic
+   *  materials matter. Compared by value, so callers may pass a fresh array each render. */
   needs: readonly { id: string; missing: number }[]
+  /** The served upgrades, to tell which needed materials are shop-only Mythic ones. */
+  upgradesById: MythicMaterialCatalog
   /** A saved goal's `acquisitionSources` (edit). Omit for a new goal. */
   seed?: readonly AcquisitionSource[] | null
   /** Changing it (a newly picked unit) drops back to the seed/default. */
@@ -38,15 +41,21 @@ export function useMythicMaterialSelection(params: {
       .filter((need) => need.missing > 0)
       .map((need) => [need.id, need.missing])
   )
+  const { upgradesById } = params
   const mythicNeeds = useMemo(() => {
     const needs = JSON.parse(needsKey) as [string, number][]
-    const ids = new Set(neededMythicMaterialIds(needs.map(([id]) => id)))
+    const ids = new Set(
+      neededMythicMaterialIds(
+        needs.map(([id]) => id),
+        upgradesById
+      )
+    )
     const counts = new Map<string, number>()
     for (const [id, missing] of needs) {
       if (ids.has(id)) counts.set(id, (counts.get(id) ?? 0) + missing)
     }
     return [...counts].map(([id, count]) => ({ id, count }))
-  }, [needsKey])
+  }, [needsKey, upgradesById])
   const materialIds = useMemo(
     () => mythicNeeds.map((need) => need.id),
     [mythicNeeds]

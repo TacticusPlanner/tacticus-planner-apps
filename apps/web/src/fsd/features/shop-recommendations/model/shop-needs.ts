@@ -1,8 +1,9 @@
-import type {
-  AscensionCostStorageModel,
-  CharacterStorageModel,
-  MowStorageModel,
-  UnlockShardCostStorageModel,
+import {
+  isUncraftableMythicUpgrade,
+  type AscensionCostStorageModel,
+  type CharacterStorageModel,
+  type MowStorageModel,
+  type UnlockShardCostStorageModel,
 } from "@workspace/game-catalog"
 import type { UnitId, UpgradeId } from "@workspace/game-domain"
 import type { PlayerDataChunkDto } from "@workspace/player-data"
@@ -23,19 +24,6 @@ type PlayerCharacter = PlayerDataChunkDto<"characters">[number]
 type PlayerMow = PlayerDataChunkDto<"mows">[number]
 type InventoryShard = PlayerDataChunkDto<"inventory-shards">[number]
 
-/**
- * The four mythic upgrade materials the game never lets you craft — a goal's need for one can only be
- * met from a shop, so they're the one non-shard reward category this selector keys (V1 `MYTHIC_IDS`).
- */
-export const MYTHIC_UPGRADE_NEED_IDS = [
-  "upgHpM001",
-  "upgHpM002",
-  "upgHpM003",
-  "upgHpM004",
-] as const
-
-const MYTHIC_UPGRADE_NEED_ID_SET = new Set<string>(MYTHIC_UPGRADE_NEED_IDS)
-
 /** One project goal-unit that still needs a given shop resource, and how much of it. */
 export interface ShopNeedUnitEntry {
   unitId: string
@@ -55,7 +43,8 @@ interface ShopResourceNeed {
 
 /**
  * Keyed by the shop reward type string a resolved offer carries: `shards_<unitId>`,
- * `mythicShards_<unitId>`, or one of {@link MYTHIC_UPGRADE_NEED_IDS}.
+ * `mythicShards_<unitId>`, or the id of a Mythic upgrade material the game never lets you craft (a
+ * need for one can only be met from a shop — see `isUncraftableMythicUpgrade`).
  */
 export type ShopNeedAggregate = ReadonlyMap<string, ShopResourceNeed>
 
@@ -78,7 +67,7 @@ export interface AggregateShopNeedsParams {
 
 /**
  * For a project's `Active` goals, aggregates the outstanding need per shop-available reward resource —
- * character shards, mythic character shards, and the four mythic uncraftable upgrade materials — into
+ * character shards, mythic character shards, and the uncraftable Mythic upgrade materials — into
  * `{ acquired, required, neededBy }`, derived from `goal-farming`'s per-goal resource-need calc rather
  * than the daily-raid farm schedule (so count-only / non-farmable needs still count). Goals that are
  * not `Active` never contribute (via {@link activeProjectMembers}).
@@ -153,7 +142,8 @@ export function aggregateShopNeeds(
       : (need?.upgrades ?? [])
     const mythicMaterialTotals = new Map<string, number>()
     for (const materialNeed of materialNeeds) {
-      if (!MYTHIC_UPGRADE_NEED_ID_SET.has(materialNeed.id)) continue
+      const upgrade = params.upgradesById.get(materialNeed.id as UpgradeId)
+      if (!upgrade || !isUncraftableMythicUpgrade(upgrade)) continue
       mythicMaterialTotals.set(
         materialNeed.id,
         (mythicMaterialTotals.get(materialNeed.id) ?? 0) + materialNeed.count
