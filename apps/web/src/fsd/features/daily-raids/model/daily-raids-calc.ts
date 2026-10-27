@@ -123,7 +123,7 @@ export function activeProjectMembers(members: GoalPlanEntry[]) {
 
 /** An Unlock goal for a character no campaign node drops shards for (Kharn, Ragnar): its shards come
  *  from shops, so the Schedule's completion date leaves it out rather than showing none at all. */
-export function isShopOnlyUnlock(
+function isShopOnlyUnlock(
   detail: GoalDetail,
   character: Pick<CharacterStorageModel, "shardLocations"> | undefined
 ) {
