@@ -1190,7 +1190,7 @@ describe("GoalsPage", () => {
       expect(labels.toSorted()).toEqual(["Next season", "This season"])
       const cutoff = screen.getByTestId("goals-season-cutoff")
       expect(cutoff).toHaveTextContent(
-        "Battle Pass season 42 ends Nov 15. Goals below finish later."
+        "Battle Pass season 42 ends Nov 15. The next goal finishes later."
       )
       expect(cutoff.nextElementSibling).toHaveAttribute(
         "data-goal-id",

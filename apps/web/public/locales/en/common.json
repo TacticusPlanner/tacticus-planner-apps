@@ -1347,8 +1347,8 @@
       "tooltipStarts": "Done by {{date}}, before {{season}} starts on {{deadline}}",
       "tooltipAfterEnds": "Done by {{date}}, after {{season}} ends on {{deadline}}",
       "tooltipAfterStarts": "Done by {{date}}, after {{season}} starts on {{deadline}}",
-      "dividerEnds": "{{season}} ends {{deadline}}. Goals below finish later.",
-      "dividerStarts": "{{season}} starts {{deadline}}. Goals below finish after it."
+      "dividerEnds": "{{season}} ends {{deadline}}. The next goal finishes later.",
+      "dividerStarts": "{{season}} starts {{deadline}}. The next goal finishes after it."
     },
     "detail": {
       "notes": "Notes",

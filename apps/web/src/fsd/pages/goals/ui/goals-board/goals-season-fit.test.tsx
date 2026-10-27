@@ -69,7 +69,7 @@ describe("GoalsList season fit", () => {
 
     const cutoff = await screen.findByTestId("goals-season-cutoff")
     expect(cutoff).toHaveTextContent(
-      "Guild War season 29 starts Nov 28. Goals below finish after it."
+      "Guild War season 29 starts Nov 28. The next goal finishes after it."
     )
     expect(cutoff.nextElementSibling).toHaveAttribute("data-goal-id", "b")
     // One drag handle per goal: the divider is not a sortable item.

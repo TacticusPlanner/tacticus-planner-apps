@@ -15,7 +15,7 @@ Agreed scope (Severyn, 27 Oct): Phase 1 only; modes Battle Pass, Guild Raid and 
 - A **Season fit** select in the Goals toolbar: Off (default), Battle Pass, Guild Raid, Guild War. Persisted per browser; the same value applies whether Goals is unscoped or scoped to a project.
 - Season windows come from the catalog: cycle starts projected from a `Fixed` definition's anchor and interval for any date, with an authored occurrence's start replacing its projected slot. A mode whose definition yields no current season is disabled in the select with a reason.
 - Each estimated, in-flight, non-Ability goal gets a fit label beside its Done By date ("This season", "Next season", "In 2 seasons", "Later") with a tooltip naming the deadline, and a coloured left accent on its row (desktop) or card (mobile). Colour never carries the meaning alone.
-- In priority order (Group = None), a divider sits before the first goal that finishes after the current season: "Battle Pass season 42 ends Nov 15. Goals below finish later."
+- In priority order (Group = None), a divider sits before the first goal that finishes after the current season: "Battle Pass season 42 ends Nov 15. The next goal finishes later."
 - Ability goals, Reached, Paused, Blocked and unestimated goals get no label or accent and never place the divider.
 - i18n in en/de/es/fr, a Goals tour step for the new control, and three new colour tokens in `packages/ui` globals.
 
