@@ -95,8 +95,11 @@ committed; the raw files are fetched into a gitignored cache.
   which re-fetches when the pin or the list changed (`pnpm --filter web
 datamine:sync` does the same by hand).
 - Datamine generators, re-run from `apps/web` after each pull and commit their
-  output: `node scripts/generate-ability-text-i18n.mjs` (`npcAbilityText`) and
-  `node scripts/generate-raid-boss-i18n.mjs` (`raidBoss*`).
+  output: `node scripts/generate-ability-text-i18n.mjs` (`npcAbilityText`),
+  `node scripts/generate-raid-boss-i18n.mjs` (`raidBoss*`) and
+  `node scripts/generate-game-names-i18n.mjs` (`upgrades`, `abilities`,
+  `equipmentItems`, `characters`, `mows`, `traits`, `factions`,
+  `mythicQuestTasks`; overrides in `apps/web/datamine/curated-names.json`).
 
 ## Coding Style & Naming Conventions
 

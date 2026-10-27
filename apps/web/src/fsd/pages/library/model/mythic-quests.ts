@@ -5,7 +5,7 @@ import type {
 
 /**
  * A character's mythic quests, served by the game catalog's `mythic-quests` dataset (ported from V1's
- * `4-entities/mythic_quests`). Task text comes from the English game-text namespace `mythicQuestTasks`
+ * `4-entities/mythic_quests`). Task text comes from the game-text namespace `mythicQuestTasks`
  * (task loca key -> template with `{[VAR]}` tokens and i2p plurals, rendered by the ability-text renderer).
  */
 export type MythicQuestData = GameCatalogMythicQuest
