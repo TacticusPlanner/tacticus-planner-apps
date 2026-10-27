@@ -1,6 +1,6 @@
 import type { EquipmentId, Rarity } from "@workspace/game-domain"
 
-import { datamineAssetUrl, gameAssetUrl } from "./asset-path"
+import { datamineAssetUrl } from "./asset-path"
 
 // Slot codes are free-form strings on the character record (e.g. "I_Crit") — there is no closed
 // enum server-side, so unrecognized codes fall back to `undefined` rather than throwing.
@@ -35,7 +35,9 @@ export const EquipmentIcons = {
     return datamineAssetUrl(`items/ui_icon_item_${file}.webp`)
   },
   frame(rarity: Rarity): string {
-    return gameAssetUrl(`misc/ui_frame_items_${rarity.toLowerCase()}.webp`)
+    return datamineAssetUrl(
+      `atlases/ui_frame_items_${rarity.toLowerCase()}.webp`
+    )
   },
-  relicFrame: gameAssetUrl(`misc/ui_frame_items_relic.webp`),
+  relicFrame: datamineAssetUrl(`atlases/ui_frame_items_relic.webp`),
 } as const

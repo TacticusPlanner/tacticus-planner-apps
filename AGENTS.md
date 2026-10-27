@@ -97,6 +97,12 @@ committed; the raw files are fetched into a gitignored cache.
   `pnpm --filter web datamine:sprites` copies exactly that list (and deletes
   anything else there), and CI checks the folder matches it. Icon helpers build
   these URLs with `datamineAssetUrl()` from `@workspace/game-catalog`.
+- Images the game ships no file for (battle maps, rarity markers, the Extremis
+  and Onslaught campaign icons, a few "?" icons) live in
+  `apps/web/public/game_catalog/curated/`, reached with `curatedAssetUrl()`.
+  Nothing else goes directly under `game_catalog/`; CI checks that too. An icon
+  the game draws from stacked sprites (an ability badge) is a `LayeredIcon` of
+  datamine sprites, which `EntityIcon` stacks; never commit a combined image.
 - Generators call `ensureDatamine()` from `apps/web/scripts/datamine.mjs`,
   which re-fetches when the pin or the list changed (`pnpm --filter web
 datamine:sync` does the same by hand).

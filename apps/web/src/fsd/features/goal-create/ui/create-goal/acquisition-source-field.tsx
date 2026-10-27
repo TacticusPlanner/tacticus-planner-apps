@@ -16,9 +16,9 @@ import {
   type FarmLocation,
 } from "@/features/goal-farming/@x/goal-create"
 import { GoalShardLocationsField } from "./goal-shard-locations-field"
-import { gameAssetUrl } from "@workspace/game-catalog"
+import { shardIcon } from "@workspace/game-catalog"
 
-const SHARD_ICON = gameAssetUrl(`misc/ui_icon_character_shard_empty.webp`)
+const SHARD_ICON = shardIcon("Regular")
 
 /** The weekdays a shop offer's slot can resolve to another reward (probability below 1) — i.e. where it
  *  shares a rotating slot (spec: *rotating-slot offer row content*). Empty for a guaranteed offer. A

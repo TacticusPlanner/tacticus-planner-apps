@@ -94,7 +94,7 @@ describe("useObjectiveLabel", () => {
     )
     expect(label(objective("Melee", "AttackType", "Ranged", true))).toEqual({
       label: "Melee",
-      icon: { src: expect.stringContaining("stat-melee") },
+      icon: { src: expect.stringContaining("ui_icon_stat_melee_01") },
     })
     expect(label(objective("Max 1 Hit", "MaxHits", "1")).label).toBe(
       "Max 1 hit"

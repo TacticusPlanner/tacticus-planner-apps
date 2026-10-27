@@ -3,8 +3,9 @@
 // The served `npcs` dataset carries no icon (id-only display contract), and NPC portrait file names do
 // not follow the id (`necroBossWarden` -> `ui_image_portrait_necro_warden_01.webp`), so this is a full
 // variation-id -> file map. Paths are relative to `apps/web/public/game_catalog/`: `datamines/…` is the
-// game's own sprite, `characters/…` a file the datamine doesn't ship under that name. Regenerate it
-// from V1 when the catalog gains NPC ids; an id missing here renders the initials badge.
+// game's own sprite. The `characters/…` entries are loot objects and power-ups, which are never listed,
+// so their portraits are not shipped. Add an entry when the catalog gains an NPC id; an id missing here
+// renders the initials badge.
 
 /** Portrait file (relative to the catalog image root) per NPC variation id. */
 export const npcPortraitOverrides: Record<string, string> = {
@@ -563,7 +564,8 @@ export const npcPortraitOverrides: Record<string, string> = {
     "datamines/atlases/ui_image_portrait_darka_infiltrator_01.webp",
   darkaNpc2Hellblaster:
     "datamines/atlases/ui_image_portrait_darka_hellblaster_02.webp",
-  darkaNpc3Terminator: "characters/ui_image_portrait_darka_deathwing_01.webp",
+  darkaNpc3Terminator:
+    "datamines/atlases/ui_image_portrait_darka_terminator_02.webp",
   darkaNpc4Watcher: "datamines/atlases/ui_image_portrait_darka_watcher_01.webp",
   darkaBossLion: "datamines/atlases/ui_image_portrait_guild_lion_01.webp",
   darkaNpcMowStormSpeeder:

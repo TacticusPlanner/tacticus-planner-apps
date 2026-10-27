@@ -22,7 +22,7 @@ describe("describeUnitFilter", () => {
     })
     expect(describeUnitFilter(filter("Faction", "Orks"))).toEqual({
       label: { type: "entry", key: "factions:Orks", negate: false },
-      icon: { src: expect.stringContaining("factions/Orks.webp") },
+      icon: { src: expect.stringContaining("ui_icon_faction_orks_01.webp") },
     })
   })
 
@@ -49,22 +49,28 @@ describe("describeUnitFilter", () => {
   it("uses the hits templates with the count and the hits asset with a bound badge", () => {
     expect(describeUnitFilter(filter("MinHits", "5"))).toEqual({
       label: { type: "hits", template: "minHits", count: 5 },
-      icon: { src: expect.stringContaining("stat-hit"), badge: "min" },
+      icon: {
+        src: expect.stringContaining("ui_icon_stat_hit_01"),
+        badge: "min",
+      },
     })
     expect(describeUnitFilter(filter("MaxHits", "1"))).toEqual({
       label: { type: "hits", template: "maxHits", count: 1 },
-      icon: { src: expect.stringContaining("stat-hit"), badge: "max" },
+      icon: {
+        src: expect.stringContaining("ui_icon_stat_hit_01"),
+        badge: "max",
+      },
     })
   })
 
   it("reads attack type as Ranged, and excluded Ranged as Melee, with the stat assets", () => {
     expect(describeUnitFilter(filter("AttackType", "Ranged"))).toEqual({
       label: { type: "attackType", template: "ranged" },
-      icon: { src: expect.stringContaining("stat-ranged") },
+      icon: { src: expect.stringContaining("ui_icon_stat_rangedattack_01") },
     })
     expect(describeUnitFilter(filter("AttackType", "Ranged", true))).toEqual({
       label: { type: "attackType", template: "melee" },
-      icon: { src: expect.stringContaining("stat-melee") },
+      icon: { src: expect.stringContaining("ui_icon_stat_melee_01") },
     })
   })
 

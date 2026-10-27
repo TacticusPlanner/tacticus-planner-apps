@@ -10,8 +10,8 @@ describe("gameAssetUrl", () => {
     vi.stubEnv("VITE_GAME_ASSETS_VERSION", "")
     const { gameAssetUrl } = await import("./asset-path")
 
-    expect(gameAssetUrl("stars/gold.webp")).toBe(
-      "/game_catalog/stars/gold.webp"
+    expect(gameAssetUrl("curated/rarity/epic.webp")).toBe(
+      "/game_catalog/curated/rarity/epic.webp"
     )
   })
 
@@ -19,8 +19,22 @@ describe("gameAssetUrl", () => {
     vi.stubEnv("VITE_GAME_ASSETS_VERSION", "01336a1ea86a")
     const { gameAssetUrl } = await import("./asset-path")
 
-    expect(gameAssetUrl("stars/gold.webp")).toBe(
-      "/game_catalog/stars/gold.webp?v=01336a1ea86a"
+    expect(gameAssetUrl("curated/rarity/epic.webp")).toBe(
+      "/game_catalog/curated/rarity/epic.webp?v=01336a1ea86a"
+    )
+  })
+})
+
+describe("datamineAssetUrl and curatedAssetUrl", () => {
+  it("place game sprites under datamines/ and the rest under curated/", async () => {
+    vi.stubEnv("VITE_GAME_ASSETS_VERSION", "")
+    const { curatedAssetUrl, datamineAssetUrl } = await import("./asset-path")
+
+    expect(datamineAssetUrl("fonts/Rank_3.webp")).toBe(
+      "/game_catalog/datamines/fonts/Rank_3.webp"
+    )
+    expect(curatedAssetUrl("rarity/epic.webp")).toBe(
+      "/game_catalog/curated/rarity/epic.webp"
     )
   })
 })

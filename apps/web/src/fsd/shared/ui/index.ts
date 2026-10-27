@@ -1,5 +1,5 @@
 export { EntityIcon } from "./entity-icon"
-export { default as energyIconUrl } from "./energy.png"
+export { energyIconUrl } from "./energy-icon"
 export { UpgradeIcon } from "./upgrade-icon"
 export { RankBadge } from "./rank-badge"
 export { RarityIcon } from "./rarity-icon"

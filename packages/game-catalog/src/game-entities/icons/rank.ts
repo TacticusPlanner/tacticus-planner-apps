@@ -1,8 +1,12 @@
-import type { Rank } from "@workspace/game-domain"
+import { rankIndex, type Rank } from "@workspace/game-domain"
 
-import { gameAssetUrl } from "./asset-path"
+import { datamineAssetUrl } from "./asset-path"
 
-// All rank assets are named by Rank value (lowercase): stone1.webp … adamantine3.webp.
+// The game ships its rank badges as `fonts/Rank_<n>.webp`, numbered in ladder order from Stone I (0);
+// Silver III alone ships under another name.
 export function rankIcon(id: Rank): string {
-  return gameAssetUrl(`ranks/${id.toLowerCase()}.webp`)
+  const index = rankIndex(id)
+  return datamineAssetUrl(
+    index === 11 ? "fonts/IdunTextRRank_11.webp" : `fonts/Rank_${index}.webp`
+  )
 }

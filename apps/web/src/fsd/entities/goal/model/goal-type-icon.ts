@@ -1,4 +1,8 @@
-import { datamineAssetUrl, gameAssetUrl } from "@workspace/game-catalog"
+import {
+  curatedAssetUrl,
+  datamineAssetUrl,
+  shardIcon,
+} from "@workspace/game-catalog"
 
 import type { GoalKind } from "./types"
 
@@ -19,12 +23,12 @@ export function goalTypeIcon(kind: GoalKind, entityType?: string): string {
       // Same theme — both are fundamentally "farm this upgrade" goals.
       return genericUpgradeIcon
     case "Ascension":
-      return gameAssetUrl(`misc/orbs_generic.webp`)
+      return curatedAssetUrl(`misc/orbs_generic.webp`)
     case "Ability":
       return entityType === "Mow"
-        ? gameAssetUrl(`misc/components_generic.webp`)
-        : gameAssetUrl(`misc/ability_badges_generic.webp`)
+        ? curatedAssetUrl(`misc/components_generic.webp`)
+        : curatedAssetUrl(`misc/ability_badges_generic.webp`)
     case "Unlock":
-      return gameAssetUrl(`misc/ui_icon_character_shard_empty.webp`)
+      return shardIcon("Regular")
   }
 }

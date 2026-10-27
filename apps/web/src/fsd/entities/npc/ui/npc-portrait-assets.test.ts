@@ -13,11 +13,6 @@ const shippedCatalogImages = new Set(
     import.meta.glob("/public/game_catalog/**/*.webp", { query: "?url" })
   ).map((path) => path.replace(/^\/public/, ""))
 )
-const shippedEmblems = new Set(
-  Object.keys(
-    import.meta.glob("/public/game_catalog/factions/*.webp", { query: "?url" })
-  ).map((path) => path.split("/").pop()!)
-)
 
 // Loot objects and power-ups are served with `kind: "object"` and never listed, so their portraits
 // (supply pods, hero-spawn power-ups) are intentionally not shipped.
@@ -66,7 +61,7 @@ describe("faction emblem assets", () => {
       "WorldEaters",
     ]
     const missing = npcFactionIds.filter(
-      (id) => !shippedEmblems.has(factionIcon(id)!.split("/").pop()!)
+      (id) => !shippedCatalogImages.has(factionIcon(id) ?? "")
     )
     expect(missing).toEqual([])
   })

@@ -152,9 +152,8 @@ describe("CampaignEventStatusLine", () => {
     const image = (await renderWith(knownId, confirmedWindow)).querySelector(
       "img"
     )
-    expect(image?.getAttribute("src")).toContain(
-      "adepta-sororitas-vs-death-guard"
-    )
+    // A Standard event shows its faction's emblem (Death Guard for this one).
+    expect(image?.getAttribute("src")).toContain("ui_icon_faction_death_guard")
   })
 
   it("carries no icon when no event is detected", async () => {

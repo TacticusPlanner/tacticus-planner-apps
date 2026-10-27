@@ -156,7 +156,7 @@ describe("GoalResourceChips", () => {
     ])
   })
 
-  it("uses V1's alliance art for badges, components and orbs, and its energy glyph", () => {
+  it("uses the alliance art for badges (frame + emblem), components and orbs, and the energy glyph", () => {
     const { container } = render(
       <GoalResourceChips
         energy={5}
@@ -169,9 +169,10 @@ describe("GoalResourceChips", () => {
       img.getAttribute("src")
     )
     expect(sources).toEqual([
-      "/game_catalog/misc/energy.webp",
-      "/game_catalog/misc/ui_icon_resource_coin.webp",
-      "/game_catalog/badges/xenos-epic.webp",
+      "/game_catalog/datamines/atlases/ui_icon_resource_stamina_small.webp",
+      "/game_catalog/datamines/atlases/ui_icon_resource_coin_small.webp",
+      "/game_catalog/datamines/atlases/ui_ability_badges_epic.webp",
+      "/game_catalog/datamines/atlases/ui_ability_badges_xenos.webp",
       "/game_catalog/datamines/atlases/ui_forge_badges_rare.webp",
       "/game_catalog/datamines/atlases/ui_machines_of_war_tokens_xenos.webp",
     ])
@@ -252,7 +253,8 @@ describe("GoalResourceChips", () => {
         remaining={need({ abilityMaterials })}
       />
     )
-    expect(container.querySelectorAll("img").length).toBe(4)
+    // Gold, a two-layer ability badge, a forge badge and components.
+    expect(container.querySelectorAll("img").length).toBe(5)
     unmount()
     const empty = render(
       <GoalResourceChips

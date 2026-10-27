@@ -1,5 +1,5 @@
-// Ids of the Quest Event battle boards shipped as apps/web/public/game_catalog/quest_maps/{boardId}.webp
-// (V1's quest_maps, converted). Some quest boards are Legendary Event boards, so `battleBoardImage`
+// Ids of the Quest Event battle boards shipped as apps/web/public/game_catalog/curated/quest_maps/{boardId}.webp
+// (planner crops of the game boards). Some quest boards are Legendary Event boards, so `battleBoardImage`
 // falls through to `LE_MAP_IDS`. `battle-board.test.ts` fails when this list and the directory drift apart.
 export const QUEST_MAP_IDS: ReadonlySet<string> = new Set([
   "C1_06",

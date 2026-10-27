@@ -1,6 +1,7 @@
 export { rarityClass } from "./rarity"
 export {
   ASSET_BASE_PATH,
+  curatedAssetUrl,
   datamineAssetUrl,
   gameAssetUrl,
   UpgradeIcons,
@@ -20,6 +21,11 @@ export {
   salvageIcon,
   raidTicketIcon,
   xpBookIcon,
+  gameModeTokenIcon,
+  type GameModeToken,
+  type GameIcon,
+  type IconLayer,
+  type LayeredIcon,
   characterIcon,
   mowIcon,
   npcPortrait,

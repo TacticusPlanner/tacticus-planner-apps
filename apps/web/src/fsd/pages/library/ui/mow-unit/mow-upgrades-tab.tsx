@@ -6,6 +6,7 @@ import {
   goldIcon,
   mowComponentIcon,
   salvageIcon,
+  type GameIcon,
 } from "@workspace/game-catalog"
 import {
   rarityOrder,
@@ -71,47 +72,48 @@ export function MowUpgradesTab({
     t(`upgrades:${id}`, { defaultValue: upgradesById.get(id)?.label ?? id })
   const hasSteps = result.steps.length > 0
 
-  const boxes: { key: string; icon: string; label: string; value: number }[] = [
-    {
-      key: "gold",
-      icon: goldIcon(),
-      label: t("mowUnit.upgrades.gold"),
-      value: totals.gold,
-    },
-    {
-      key: "salvage",
-      icon: salvageIcon(),
-      label: t("mowUnit.upgrades.salvage"),
-      value: totals.salvage,
-    },
-    {
-      key: "components",
-      icon: mowComponentIcon(alliance),
-      label: t("mowUnit.upgrades.components", { alliance: allianceName }),
-      value: totals.components,
-    },
-    ...rarityOrder
-      .filter((rarity) => result.needed.badges[rarity] !== undefined)
-      .map((rarity) => ({
-        key: `badges-${rarity}`,
-        icon: abilityBadgeIcon(rarity, alliance),
-        label: t("mowUnit.upgrades.badges", {
-          rarity: rarityName(rarity),
-          alliance: allianceName,
-        }),
-        value: totals.badges[rarity] ?? 0,
-      })),
-    ...rarityOrder
-      .filter((rarity) => result.needed.forgeBadges[rarity] !== undefined)
-      .map((rarity) => ({
-        key: `forge-${rarity}`,
-        icon: forgeBadgeIcon(rarity),
-        label: t("mowUnit.upgrades.forgeBadges", {
-          rarity: rarityName(rarity),
-        }),
-        value: totals.forgeBadges[rarity] ?? 0,
-      })),
-  ]
+  const boxes: { key: string; icon: GameIcon; label: string; value: number }[] =
+    [
+      {
+        key: "gold",
+        icon: goldIcon(),
+        label: t("mowUnit.upgrades.gold"),
+        value: totals.gold,
+      },
+      {
+        key: "salvage",
+        icon: salvageIcon(),
+        label: t("mowUnit.upgrades.salvage"),
+        value: totals.salvage,
+      },
+      {
+        key: "components",
+        icon: mowComponentIcon(alliance),
+        label: t("mowUnit.upgrades.components", { alliance: allianceName }),
+        value: totals.components,
+      },
+      ...rarityOrder
+        .filter((rarity) => result.needed.badges[rarity] !== undefined)
+        .map((rarity) => ({
+          key: `badges-${rarity}`,
+          icon: abilityBadgeIcon(rarity, alliance),
+          label: t("mowUnit.upgrades.badges", {
+            rarity: rarityName(rarity),
+            alliance: allianceName,
+          }),
+          value: totals.badges[rarity] ?? 0,
+        })),
+      ...rarityOrder
+        .filter((rarity) => result.needed.forgeBadges[rarity] !== undefined)
+        .map((rarity) => ({
+          key: `forge-${rarity}`,
+          icon: forgeBadgeIcon(rarity),
+          label: t("mowUnit.upgrades.forgeBadges", {
+            rarity: rarityName(rarity),
+          }),
+          value: totals.forgeBadges[rarity] ?? 0,
+        })),
+    ]
 
   return (
     <div className="flex flex-col gap-5" data-testid="mow-upgrades">

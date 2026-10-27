@@ -113,7 +113,7 @@ describe("ProgressSection", () => {
     expect(columns[0]!.querySelector("svg")).toBeNull()
     expect(columns[4]!.querySelector("img")).toHaveAttribute(
       "src",
-      expect.stringContaining("stat-hit")
+      expect.stringContaining("ui_icon_stat_hit_01")
     )
     expect(
       within(columns[4]!).getByTestId("objective-icon-badge-min")

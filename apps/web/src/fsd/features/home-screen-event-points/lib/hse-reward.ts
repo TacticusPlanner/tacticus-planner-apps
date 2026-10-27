@@ -2,7 +2,7 @@ import {
   shopRewardDisplay,
   type ShopRewardDisplayContext,
 } from "@/features/shop-rewards/@x/home-screen-event-points"
-import { gameAssetUrl } from "@workspace/game-catalog"
+import { datamineAssetUrl } from "@workspace/game-catalog"
 
 export type HseRewardDisplay = {
   /** Absent for a reward without art: the grid shows a generic reward icon. */
@@ -15,11 +15,13 @@ const SUMMONING_TOKENS: Readonly<
   Record<string, { iconUrl: string; labelKey: string }>
 > = {
   summoningToken: {
-    iconUrl: gameAssetUrl("misc/ui_icon_resource_req_order.webp"),
+    iconUrl: datamineAssetUrl("atlases/ui_icon_resource_summoning_token.webp"),
     labelKey: "dailies:hse.details.rewards.summoningToken",
   },
   specialSummoningToken: {
-    iconUrl: gameAssetUrl("misc/ui_icon_resource_blessed_req_order.webp"),
+    iconUrl: datamineAssetUrl(
+      "atlases/ui_icon_resource_summoning_special.webp"
+    ),
     labelKey: "dailies:hse.details.rewards.specialSummoningToken",
   },
 }

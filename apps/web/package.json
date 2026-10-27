@@ -78,7 +78,6 @@
     "knip": "catalog:",
     "openapi-typescript": "^7.13.0",
     "prettier": "catalog:",
-    "sharp": "^0.35.5",
     "steiger": "^0.5.13",
     "typescript": "catalog:",
     "typescript-eslint": "catalog:",

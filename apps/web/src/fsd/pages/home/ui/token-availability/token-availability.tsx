@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
+import { gameModeTokenIcon, type GameModeToken } from "@workspace/game-catalog"
 import {
   getPlayerDataMetadata,
   type PlayerDataChunkDto,
@@ -16,11 +17,6 @@ import { combineReadStates, useReadState } from "@/shared/lib"
 import { usePlayerChunk } from "@/shared/local-data"
 import { EntityIcon, LocalReadFailure } from "@/shared/ui"
 
-import arenaTokenIcon from "./assets/arena-token.png"
-import bombTokenIcon from "./assets/bomb-token.png"
-import guildRaidTokenIcon from "./assets/guild-raid-token.png"
-import onslaughtTokenIcon from "./assets/onslaught-token.png"
-import salvageRunTokenIcon from "./assets/salvage-run-token.png"
 import { formatExactCountdown } from "./format-exact-countdown"
 import { tokenCountdown, type TokenBucketData } from "./token-countdown"
 
@@ -28,8 +24,7 @@ const NOW_TICK_MS = 1000
 
 type GameModeTokens = PlayerDataChunkDto<"live-progress">["gameModeTokens"]
 
-type TokenLabelKey =
-  "arena" | "guildRaid" | "bombTokens" | "onslaught" | "salvageRun"
+type TokenLabelKey = GameModeToken
 
 type TokenEntry = {
   key: string
@@ -43,15 +38,6 @@ const tokenLabelI18nKeys = {
   bombTokens: "home.tokens.labels.bombTokens",
   onslaught: "home.tokens.labels.onslaught",
   salvageRun: "home.tokens.labels.salvageRun",
-} as const satisfies Record<TokenLabelKey, string>
-
-// Same icon set V1 used per token type (ui_icon_resource_token_*.png / ui_icon_bomb.png).
-const tokenIcons = {
-  arena: arenaTokenIcon,
-  guildRaid: guildRaidTokenIcon,
-  bombTokens: bombTokenIcon,
-  onslaught: onslaughtTokenIcon,
-  salvageRun: salvageRunTokenIcon,
 } as const satisfies Record<TokenLabelKey, string>
 
 function collectTokenEntries(tokens: GameModeTokens): TokenEntry[] {
@@ -125,7 +111,7 @@ function TokenRow({
           "size-9 shrink-0",
           isCapped && "animate-pulse drop-shadow-[0_0_6px_var(--destructive)]"
         )}
-        src={tokenIcons[entry.labelKey]}
+        src={gameModeTokenIcon(entry.labelKey)}
       />
       <div className="flex flex-col gap-0.5">
         <span className="text-xs text-muted-foreground">

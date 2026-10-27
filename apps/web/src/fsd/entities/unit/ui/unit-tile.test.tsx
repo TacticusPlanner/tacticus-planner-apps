@@ -97,12 +97,14 @@ describe("UnitTile", () => {
       "Legendary"
     )
     const stars = within(tile).getByTestId("unit-tile-stars")
-    expect(stars.querySelectorAll('img[src$="/stars/red.webp"]')).toHaveLength(
-      4
-    )
+    expect(
+      stars.querySelectorAll(
+        'img[src$="/ui_icon_star_herodetail_epic_01.webp"]'
+      )
+    ).toHaveLength(4)
     expect(
       within(tile).getByTestId("unit-tile-rank").querySelector("img")
-    ).toHaveAttribute("src", expect.stringMatching(/\/ranks\/gold1\.webp$/))
+    ).toHaveAttribute("src", expect.stringMatching(/\/fonts\/Rank_12\.webp$/))
     expect(within(tile).getByTestId("unit-tile-shards")).toHaveTextContent(
       "120"
     )

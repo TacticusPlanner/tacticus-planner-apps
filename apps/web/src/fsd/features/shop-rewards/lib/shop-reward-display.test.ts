@@ -170,7 +170,7 @@ describe("shopRewardDisplay", () => {
     const display = shopRewardDisplay("gold", undefined, ctx)
     expect(display.kind).toBe("gold")
     expect(display.iconUrl).toBe(
-      "/game_catalog/misc/ui_icon_resource_coin.webp"
+      "/game_catalog/datamines/atlases/ui_icon_resource_coin_small.webp"
     )
   })
 })

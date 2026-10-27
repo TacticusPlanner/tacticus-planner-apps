@@ -8,7 +8,7 @@ import { legendaryEventMap } from "./le-map"
 
 const LE_MAPS_DIR = fileURLToPath(
   new URL(
-    "../../../../../apps/web/public/game_catalog/le_maps/",
+    "../../../../../apps/web/public/game_catalog/curated/le_maps/",
     import.meta.url
   )
 )
@@ -16,7 +16,7 @@ const LE_MAPS_DIR = fileURLToPath(
 describe("legendaryEventMap", () => {
   it("resolves a shipped map id to its tactical image under le_maps/", () => {
     expect(legendaryEventMap("LE1_26")).toBe(
-      "/game_catalog/le_maps/LE1_26.webp"
+      "/game_catalog/curated/le_maps/LE1_26.webp"
     )
   })
 
