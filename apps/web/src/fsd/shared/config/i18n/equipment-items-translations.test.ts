@@ -7,8 +7,8 @@ import fr from "../../../../../public/locales/fr/equipmentItems.json"
 
 const locales = { de, en, es, fr }
 
-// Catalog coverage was verified against tacticus-planner-api's equipment dataset (217 ids, 1.43) when the
-// names were ported from V1; a catalog change that adds ids falls back to the catalog English name.
+// Generated from the pinned datamine by scripts/generate-game-names-i18n.mjs (217 ids at 1.43); ids the
+// game has no term for keep the game config's own name.
 describe("equipment item name translations", () => {
   it("covers the same equipment ids in every locale with no empty names", () => {
     const enKeys = Object.keys(en).sort()
@@ -22,7 +22,7 @@ describe("equipment item name translations", () => {
     }
   })
 
-  it("carries the V1 game localization", () => {
+  it("carries the game localization", () => {
     expect(en.I_Crit_C001).toBe("Combat Knife")
     expect(de.I_Crit_C001).toBe("Kampfmesser")
   })

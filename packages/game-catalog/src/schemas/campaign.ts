@@ -61,6 +61,8 @@ export const campaignBattleViewSchema = z.looseObject({
   enemiesTotal: z.number(),
   enemiesTypes: z.array(z.string()),
   detailedEnemyTypes: z.array(campaignDetailedEnemySchema),
+  // The turn limit of the battle's lightning victory, or null when it has none (early Indomitus nodes).
+  lightningVictoryTurns: z.number().int().positive().nullable(),
 })
 
 // A campaign group's definition: metadata plus the ids of the battles in the campaign-battles dataset.

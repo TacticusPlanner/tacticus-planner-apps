@@ -7,7 +7,7 @@ import { useCatalogDataset } from "@/shared/local-data"
 /**
  * A character's mythic quests from the catalog's `mythic-quests` dataset, or undefined without any
  * (no record for the character, the dataset not synced into this client, or still reading). Task
- * templates come from the English `mythicQuestTasks` game text, in the UI language when it has one.
+ * templates come from the `mythicQuestTasks` game text in the UI language, falling back to English.
  */
 export function useMythicQuests(unitId: string) {
   const { i18n } = useTranslation("mythicQuestTasks")

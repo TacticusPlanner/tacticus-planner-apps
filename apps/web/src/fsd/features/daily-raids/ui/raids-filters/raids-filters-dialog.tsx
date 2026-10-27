@@ -123,7 +123,7 @@ export function RaidsFiltersDialog({
     [battles]
   )
   // Only traits that occur on an enemy of a campaign battle, labelled through the game-data `traits`
-  // namespace (en only; other locales fall back to the English game term, like every trait surface).
+  // namespace, like every trait surface.
   const enemyTraitOptions = useMemo<SelectOption<string>[]>(
     () =>
       listEnemyTraits(battles ?? [], npcs ?? new Map())
