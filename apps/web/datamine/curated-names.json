@@ -1,0 +1,28 @@
+{
+  "$comment": "Game-text overrides for scripts/generate-game-names-i18n.mjs: ids the game has no term for, and terms the game gets wrong. Keep it small; each entry says why.",
+  "characters": {
+    "extraIds": {
+      "tauBroadside": "Not in the game's lineup yet (an upcoming MoW the home screen can feature); its name comes from the game's Units/ terms."
+    }
+  },
+  "traits": {
+    "values": {
+      "Mounted": {
+        "why": "No Traits/ term in the game.",
+        "en": "Mounted"
+      }
+    }
+  },
+  "mythicQuestTasks": {
+    "values": {
+      "SlayEnemiesWithHeroToTraitInOneBattle_description": {
+        "why": "The game's singular form drops \"in one battle\".",
+        "en": "[i2p_Plural]Defeat {[KILL_AMOUNT]} enemies that have the {[TRAIT]} trait with {[HERO_NAME]} in one battle[i2p_One]Defeat {[KILL_AMOUNT]} enemy that has the {[TRAIT]} trait with {[HERO_NAME]} in one battle"
+      },
+      "SlayEnemiesWithHeroToUnitEffectInOneBattle_UnitEffect_ArmourOfShriekingSouls_description": {
+        "why": "The game's English text names the effect twice and never the hero.",
+        "en": "Defeat {[KILL_AMOUNT]} enemies with {[HERO_NAME]} while under the <i>{[UNIT_EFFECT]}</i> effect in one battle"
+      }
+    }
+  }
+}

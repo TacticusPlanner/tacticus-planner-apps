@@ -631,7 +631,7 @@ describe("MasterTablePage", () => {
         .getAllByTestId("master-table-event-line")
         .map((line) => line.textContent)
     ).toEqual([
-      "Uthar · 5,004 · 3 objectives",
+      "Ûthar · 5,004 · 3 objectives",
       "Lysander · 6,534 · 5 objectives",
     ])
     fireEvent.click(screen.getByTestId("master-table-controls"))

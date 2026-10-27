@@ -429,7 +429,7 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
     expect(laneLabels()).toEqual(["gamma"])
 
     fireEvent.click(screen.getByTestId("open-uthar"))
-    await screen.findByText("Uthar", { selector: "h1" })
+    await screen.findByText("Ûthar", { selector: "h1" })
     expect(selectedTab()).toHaveTextContent("Overview")
     expect(screen.queryByTestId("legendary-event-lane-panel")).toBeNull()
 
@@ -621,7 +621,7 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
     expect(screen.getByTestId("leaderboard-points")).toHaveTextContent("152")
 
     fireEvent.click(screen.getByTestId("open-uthar"))
-    await screen.findByText("Uthar", { selector: "h1" })
+    await screen.findByText("Ûthar", { selector: "h1" })
     await screen.findByTestId("legendary-event-overview-leaderboard")
     expect(screen.getByTestId("leaderboard-only-unlocked")).toHaveAttribute(
       "aria-checked",
@@ -663,7 +663,7 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
     )
 
     fireEvent.click(screen.getByTestId("open-uthar"))
-    await screen.findByText("Uthar", { selector: "h1" })
+    await screen.findByText("Ûthar", { selector: "h1" })
     await screen.findByTestId("legendary-event-overview-leaderboard")
     expect(screen.getByTestId("leaderboard-goals-preview")).toHaveAttribute(
       "aria-checked",
