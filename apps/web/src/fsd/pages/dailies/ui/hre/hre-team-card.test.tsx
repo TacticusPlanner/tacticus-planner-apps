@@ -53,6 +53,7 @@ const renderCard = (
     <HreTeamCard
       alliance="Xenos"
       hero="Zapspitta"
+      missions={[]}
       hseEvent={hseEvent}
       plan={{
         mode: "onslaught",
@@ -103,6 +104,7 @@ describe("HreTeamCard", () => {
       <HreTeamCard
         alliance="Xenos"
         hero="Zapspitta"
+        missions={[]}
         plan={{ mode: "battle", preferPsychic: false, reserve: null }}
         tokens={null}
         view={{

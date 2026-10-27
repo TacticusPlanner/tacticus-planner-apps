@@ -19,8 +19,8 @@ import {
 } from "@workspace/ui/components/select"
 
 import {
-  HRE_MISSIONS,
   hreMission,
+  type HreMission,
   type HreObjective,
 } from "../model/hre-missions"
 import { isMissionComplete, type HreProgress } from "../model/hre-progress"
@@ -39,16 +39,18 @@ const steps = (target: number) => (target >= 20 ? [1, 10] : [1])
  */
 export function CurrentMissionCard({
   state,
+  missions,
   actions,
   objectiveText,
 }: {
   state: HreProgress
+  missions: readonly HreMission[]
   actions: HreProgressActions
   objectiveText: (objective: HreObjective) => string
 }) {
   const { t, i18n } = useTranslation("hre")
-  const mission = hreMission(state.mission)
-  const complete = isMissionComplete(state)
+  const mission = hreMission(missions, state.mission)
+  const complete = isMissionComplete(state, missions)
 
   return (
     <Card data-testid="hre-current-mission">
@@ -66,9 +68,9 @@ export function CurrentMissionCard({
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            {HRE_MISSIONS.map((item) => (
+            {missions.map((item) => (
               <SelectItem key={item.number} value={String(item.number)}>
-                {missionName(t, item.number)}
+                {missionName(t, item.number, missions)}
               </SelectItem>
             ))}
           </SelectContent>
@@ -167,6 +169,7 @@ export function CurrentMissionCard({
         })}
         <ObjectiveTips
           missionNumber={mission.number}
+          missions={missions}
           objectives={mission.objectives}
           testId="hre-current-tips"
         />
@@ -179,7 +182,7 @@ export function CurrentMissionCard({
             actions.completeMission()
             toast(
               t("tracker.completed", {
-                mission: missionName(t, previous.mission),
+                mission: missionName(t, previous.mission, missions),
               }),
               {
                 action: {

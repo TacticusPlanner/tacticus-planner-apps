@@ -26,6 +26,7 @@ import {
   type HrePace,
 } from "../model/hre-pace"
 import type { HreRarityStepId } from "../model/hre-reward-tables"
+import type { HreRewardRules } from "../model/hre-rules"
 import type { HreProgress } from "../model/hre-progress"
 import type { HreProgressActions } from "../model/use-hre-progress"
 
@@ -45,10 +46,13 @@ export function PaceCard({
   state,
   actions,
   pace,
+  rules,
   startRarity,
 }: {
   state: HreProgress
   actions: HreProgressActions
+  /** The event's served reward rules. */
+  rules: HreRewardRules
   /** The projection, or null until points are entered. */
   pace: HrePace | null
   startRarity: string | null
@@ -56,11 +60,12 @@ export function PaceCard({
   const { t, i18n } = useTranslation("hre")
   const n = (value: number) => value.toLocaleString(i18n.language)
   const stepName = (id: HreRarityStepId) => t(`pace.steps.${id}`)
-  const range = pace ? bracketRange(pace.bracket) : null
+  const range = pace ? bracketRange(rules, pace.bracket) : null
   const owned = state.owned
   const ownedStep = owned.step as HreOwnedStep | null
-  const gap = ownedStep ? stepGap(ownedStep, startRarity) : null
-  const ownedSet = ownedFrom(owned, startRarity) !== null
+  const gap = ownedStep ? stepGap(rules, ownedStep, startRarity) : null
+  const ownedSet = ownedFrom(rules, owned, startRarity) !== null
+  const lastTier = rules.chests.length
   const ownedStarted = Object.values(owned).some((value) => value !== null)
 
   const rankAge = (() => {
@@ -108,11 +113,12 @@ export function PaceCard({
             <NumberField
               id="hre-pace-next-tier"
               label={t("pace.nextTier")}
-              max={28}
+              max={lastTier}
               min={1}
               onChange={(nextTier) =>
                 actions.setOwned({
-                  nextTier: nextTier === null ? null : Math.min(nextTier, 28),
+                  nextTier:
+                    nextTier === null ? null : Math.min(nextTier, lastTier),
                 })
               }
               placeholder={t("pace.rankPlaceholder")}
@@ -133,7 +139,7 @@ export function PaceCard({
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="none">{t("pace.stepNone")}</SelectItem>
-                  {stepsFor(startRarity).map((step) => (
+                  {stepsFor(rules, startRarity).map((step) => (
                     <SelectItem key={step.id} value={step.id}>
                       {stepName(step.id)}
                     </SelectItem>
@@ -320,7 +326,7 @@ export function PaceCard({
               <SelectValue placeholder={t("pace.targetPlaceholder")} />
             </SelectTrigger>
             <SelectContent>
-              {stepsFor(startRarity).map((step) => (
+              {stepsFor(rules, startRarity).map((step) => (
                 <SelectItem key={step.id} value={step.id}>
                   {stepName(step.id)}
                 </SelectItem>

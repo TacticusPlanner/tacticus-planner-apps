@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { act, render, screen, within } from "@/test/render"
 import { homeScreenEventRaidRuleOf } from "@/test/fixtures/home-screen-event"
+import { hreRules } from "@/test/fixtures/hre-rules"
 
 import type { DailiesOutletContext } from "./dailies-layout"
 import { HrePage } from "./hre-page"
@@ -113,12 +114,14 @@ const running = () => ({
   status: "ready",
   instance: { ...zapspitta, status: "running" },
   hero,
+  rules: hreRules,
   nowMs: START + 20 * 3_600_000,
 })
 const preview = () => ({
   status: "ready",
   instance: { ...zapspitta, status: "upcoming" },
   hero,
+  rules: hreRules,
   nowMs: START - DAY,
 })
 
@@ -299,10 +302,18 @@ describe("HRE tab", () => {
       status: "ready",
       instance: null,
       hero: null,
+      rules: hreRules,
       nowMs: START,
     }
     renderHre()
     expect(screen.getByTestId("hre-header-none")).toBeInTheDocument()
+    expect(screen.queryByTestId("hre-sections")).toBeNull()
+  })
+
+  it("shows only the header and a notice when the served rules are missing", () => {
+    mocks.instance = { ...running(), rules: null }
+    renderHre()
+    expect(screen.getByTestId("hre-rules-missing")).toBeInTheDocument()
     expect(screen.queryByTestId("hre-sections")).toBeNull()
   })
 

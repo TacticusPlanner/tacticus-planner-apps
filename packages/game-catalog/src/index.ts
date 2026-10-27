@@ -150,6 +150,7 @@ export {
   type DamageTypeStorageModel,
   type GlobalValuesStorageModel,
   type ProgressionRulesStorageModel,
+  type HreStorageModel,
 } from "./game-catalog.storage"
 
 export {

@@ -7,7 +7,11 @@ import {
   CardTitle,
 } from "@workspace/ui/components/card"
 
-import { missionName, type HreTeamPlan } from "@/features/hre-missions"
+import {
+  missionName,
+  type HreMission,
+  type HreTeamPlan,
+} from "@/features/hre-missions"
 
 import {
   HRE_TEAM_SIZE,
@@ -28,6 +32,7 @@ type RuledTeam = Exclude<HreTeam, { status: "locked-hero" }>
 export function HreTeamCard({
   view,
   plan,
+  missions,
   tokens,
   alliance,
   hero,
@@ -38,6 +43,8 @@ export function HreTeamCard({
 }: {
   view: HreTeamViewModel
   plan: Pick<HreTeamPlan, "mode" | "reserve" | "preferPsychic"> | null
+  /** The event's missions, for naming the reserve's mission. */
+  missions: readonly HreMission[]
   /** Synced tokens of the plan's mode, or null when unknown. */
   tokens: number | null
   /** The featured hero's localized alliance, or null when the hero does not resolve. */
@@ -84,7 +91,7 @@ export function HreTeamCard({
             {t("hre:teams.reserve", {
               count: reserve.tokens,
               mode: modeName,
-              mission: missionName(t, reserve.missionNumber),
+              mission: missionName(t, reserve.missionNumber, missions),
             })}
             {tokens === null
               ? null
