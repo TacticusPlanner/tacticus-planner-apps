@@ -14,8 +14,8 @@
 // wins in the locales it gives and is the fallback for the rest. Re-run after every
 // `pnpm datamine:pull` and commit the four locale directories' files.
 //
-// The script prints every id that has no term anywhere (the game's or a curated one) and exits non-zero
-// if there is one, so a refresh that adds an unnamed id is noticed.
+// The script prints every id that has no term anywhere (the game's or a curated one) and exits non-zero,
+// writing nothing, if there is one, so a refresh that adds an unnamed id is noticed.
 import { readFileSync, writeFileSync } from "node:fs"
 import { resolve, dirname } from "node:path"
 import { fileURLToPath } from "node:url"
@@ -138,6 +138,12 @@ for (const [namespace, { ids, key, fallback }] of Object.entries(NAMESPACES)) {
   }
 }
 
+// An id with no term fails the run before any file is touched, so the committed files stay complete.
+if (unnamed.length > 0) {
+  for (const id of unnamed) console.log(`  NO TERM   ${id}`)
+  process.exit(1)
+}
+
 // ---- write -------------------------------------------------------------------------------------------
 
 const prettierOptions = await resolveConfig(`${localesDir}/en/common.json`)
@@ -160,5 +166,3 @@ for (const [namespace, byLocale] of Object.entries(tables)) {
   }
   console.log(`${namespace}: ${Object.keys(byLocale.en).length}`)
 }
-for (const id of unnamed) console.log(`  NO TERM   ${id}`)
-if (unnamed.length > 0) process.exitCode = 1

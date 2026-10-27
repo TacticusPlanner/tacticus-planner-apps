@@ -48,11 +48,17 @@ describe("game name translations", () => {
     }
   })
 
-  it("applies the curated English terms", () => {
+  it("applies the curated terms in each locale they give", () => {
     for (const [namespace, entry] of Object.entries(curated)) {
       if (typeof entry === "string" || !("values" in entry)) continue
       for (const [id, value] of Object.entries(entry.values)) {
-        expect(tables[namespace]?.en?.[id], `${namespace}:${id}`).toBe(value.en)
+        for (const [locale, term] of Object.entries(value)) {
+          if (locale === "why") continue
+          expect(
+            tables[namespace]?.[locale]?.[id],
+            `${namespace}/${locale}:${id}`
+          ).toBe(term)
+        }
       }
     }
   })

@@ -20,7 +20,7 @@ Eight game-name namespaces (`upgrades`, `abilities`, `equipmentItems`, `characte
   | `mythicQuestTasks` | `mythic_*` task `locaKey`s in `quests/groups.json` | `Quests/<key>`                            |
 
 - A term missing in one locale falls back to English. Values are trimmed.
-- `apps/web/datamine/curated-names.json` holds the few things the game lacks or gets wrong, each with a reason: the `tauBroadside` id (not in the lineup yet), the `Mounted` trait (no game term) and two broken English mythic-task templates.
+- `apps/web/datamine/curated-names.json` holds the few things the game lacks or gets wrong, each with a reason: the `tauBroadside` id (not in the lineup yet), the `Mounted` trait (no game term) and two mythic-task templates the game gets wrong (in English and, where the game does too, de/es/fr).
 - The generator exits non-zero when an id has no term anywhere.
 - `datamine/files.txt` adds `upgrades.json`, `units/factions.json` and `quests/groups.json`.
 

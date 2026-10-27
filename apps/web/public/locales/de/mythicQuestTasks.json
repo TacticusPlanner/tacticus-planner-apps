@@ -27,7 +27,7 @@
   "SlayEnemiesWithHeroInOneTurn_description": "Besiege mit {[HERO_NAME]} in einem Zug {[KILL_AMOUNT]} Gegner",
   "SlayEnemiesWithHeroToTraitInOneBattle_description": "[i2p_Plural]Besiege mit {[HERO_NAME]} in einem Kampf {[KILL_AMOUNT]} Gegner mit der Eigenschaft „{[TRAIT]}“[i2p_One]Besiege mit {[HERO_NAME]} in einem Kampf {[KILL_AMOUNT]} Gegner mit der Eigenschaft „{[TRAIT]}“",
   "SlayEnemiesWithHeroToUnitEffectInOneBattle_TileEffect_description": "Besiege mit {[HERO_NAME]} in einem Kampf {[KILL_AMOUNT]} Gegner auf Feldern mit dem Effekt „{[UNIT_EFFECT]}“",
-  "SlayEnemiesWithHeroToUnitEffectInOneBattle_UnitEffect_ArmourOfShriekingSouls_description": "Besiege {[KILL_AMOUNT]} Feinde, die den <i>{[UNIT_EFFECT]}</i>-Effekt haben, mit dem <i>{[UNIT_EFFECT]}</i>-Effekt in einem Kampf.",
+  "SlayEnemiesWithHeroToUnitEffectInOneBattle_UnitEffect_ArmourOfShriekingSouls_description": "Besiege mit {[HERO_NAME]} unter dem Effekt <i>„{[UNIT_EFFECT]}“</i> in einem Kampf {[KILL_AMOUNT]} Gegner",
   "SlayEnemiesWithHeroToUnitEffectInOneBattle_UnitEffect_Overwatch_description": "Besiege mit {[HERO_NAME]} in einem Kampf {[KILL_AMOUNT]} Gegner mit <style=\"Buff_Overwatching\">Aufklärung</style>",
   "SlayEnemiesWithHeroToUnitEffectInOneBattle_UnitEffect_Taunted_description": "Besiege mit {[HERO_NAME]} in einem Kampf {[KILL_AMOUNT]} <style=\"Debuff_Taunted\">verspottete</style> Gegner",
   "SlayEnemiesWithHeroToUnitEffectInOneBattle_UnitEffect_description": "Besiege mit {[HERO_NAME]} in einem Kampf {[KILL_AMOUNT]} Gegner mit dem Effekt <i>„{[UNIT_EFFECT]}</i>“",
