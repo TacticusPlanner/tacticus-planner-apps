@@ -28,6 +28,7 @@ import { ProjectSelect } from "@/entities/project"
 import { energyIconUrl, EntityIcon } from "@/shared/ui"
 import { CampaignEventStatusLine } from "./campaign-event-status"
 import type { DailiesOutletContext } from "./dailies-layout"
+import { TodayShops } from "./today-shops"
 import { useTodayTutorial } from "./today.tutorial"
 
 const BONUS_LIMIT = 3
@@ -36,7 +37,8 @@ const BONUS_LIMIT = 3
  * Dailies > Raids is the Today page itself (the multi-day plan is Plan > Schedule). Above the
  * schedule sits the Dailies-wide project selector (default: all goals) with the shared Planning
  * Settings trigger trailing it (`planning-settings-access`) - the same dialog Plan > Goals opens - and
- * the Raids Filters trigger before it (filters constrain Today and Bonus Raids only).
+ * the Raids Filters trigger before it (filters constrain Today and Bonus Raids only). Today's shop
+ * buys for the same project close the page (the former Shops tab).
  */
 export function TodayPage() {
   const context = useOutletContext<DailiesOutletContext>()
@@ -67,6 +69,7 @@ export function TodayPage() {
       ) : (
         <RaidState state={raids.status} />
       )}
+      <TodayShops />
       {settingsOpen ? (
         <PlanningSettingsDialog
           onOpenChange={setSettingsOpen}

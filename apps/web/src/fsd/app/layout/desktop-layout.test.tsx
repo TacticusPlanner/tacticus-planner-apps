@@ -984,19 +984,19 @@ describe("DesktopShell", () => {
 
   it("treats Dailies as a multi-child section too, once it has children", () => {
     render(
-      <MemoryRouter initialEntries={["/dailies/shops"]}>
+      <MemoryRouter initialEntries={["/dailies/guild-raids"]}>
         <TooltipProvider>
           <EntryPathHarness />
         </TooltipProvider>
       </MemoryRouter>
     )
 
-    // Switch to a different top-level section - Dailies' sidebar link should now remember /shops.
+    // Switch to a different top-level section - Dailies' sidebar link should now remember /guild-raids.
     fireEvent.click(screen.getByTestId("desktop-nav-home"))
 
     expect(screen.getByTestId("desktop-nav-dailies")).toHaveAttribute(
       "href",
-      "/dailies/shops"
+      "/dailies/guild-raids"
     )
   })
 

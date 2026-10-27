@@ -5,7 +5,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 import { render, screen } from "@/test/render"
 
 import type { DailiesOutletContext } from "./dailies-layout"
-import { ShopsPage } from "./shops-page"
+import { TodayShops } from "./today-shops"
 import type {
   ShopRecommendationSectionView,
   ShopRecommendationsViewModel,
@@ -29,7 +29,6 @@ vi.mock(
     useShopRecommendations: () => useShopRecommendations(),
   })
 )
-vi.mock("@/shared/tour", () => ({ useTourPageSteps: () => {} }))
 vi.mock("@workspace/ui/hooks/use-mobile", () => ({
   useIsMobile: () => useIsMobileMock(),
 }))
@@ -65,7 +64,7 @@ function renderPage() {
     <MemoryRouter initialEntries={["/"]}>
       <Routes>
         <Route path="/" element={<Outlet context={context} />}>
-          <Route index element={<ShopsPage />} />
+          <Route index element={<TodayShops />} />
         </Route>
       </Routes>
     </MemoryRouter>
@@ -120,10 +119,10 @@ beforeEach(() => {
   useShopRecommendations.mockReturnValue({ status: "loading" })
 })
 
-describe("ShopsPage", () => {
-  it("renders its title as an h2 under the shell h1", () => {
+describe("TodayShops", () => {
+  it("renders its title as an h2 section of the Raids tab", () => {
     renderPage()
-    // The shell header owns the page h1; the tab starts its hierarchy at h2.
+    // The shell header owns the page h1; the section sits beside the raid lanes' h2s.
     expect(screen.queryAllByRole("heading", { level: 1 })).toHaveLength(0)
     expect(
       screen.getByRole("heading", { level: 2, name: "title" })
@@ -136,10 +135,13 @@ describe("ShopsPage", () => {
     expect(screen.getByTestId("shops-loading")).toBeInTheDocument()
   })
 
-  it("lets the user pick which project's goals the offers are recommended for", () => {
+  it("has no project selector of its own: the Raids selector narrows it", () => {
     useShopRecommendations.mockReturnValue({ status: "loading" })
     renderPage()
-    expect(screen.getByTestId("shops-project-select")).toBeInTheDocument()
+    expect(screen.queryByTestId("shops-project-select")).not.toBeInTheDocument()
+    expect(
+      screen.getByText('subtitle:{"project":"My Project"}')
+    ).toBeInTheDocument()
   })
 
   it("shows the no-Active-goals state when there is nothing to shop for", () => {
@@ -212,6 +214,13 @@ describe("ShopsPage", () => {
     expect(screen.getByTestId("shop-card-guild-upgHpM001")).toBeInTheDocument()
     expect(screen.getByTestId("shop-group-guaranteed")).toBeInTheDocument()
     expect(screen.getByTestId("shop-group-possible")).toBeInTheDocument()
+    // Shop names and their groups nest under the section's h2.
+    expect(
+      screen.getByRole("heading", { level: 3, name: /^shopName\.guild/ })
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole("heading", { level: 4, name: "group.guaranteed" })
+    ).toBeInTheDocument()
   })
 
   it("renders the mobile layout as dense rows preserving the same detail", () => {

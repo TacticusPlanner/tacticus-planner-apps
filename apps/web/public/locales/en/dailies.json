@@ -17,8 +17,6 @@
     "hreDescription": "Hero Release Event: track your missions and raid for them with the least energy",
     "quest": "Quest",
     "questDescription": "Quest Event: track your score per battle and see each battle's board, enemies and drop",
-    "shops": "Shops",
-    "shopsDescription": "Track shop rotations and purchases",
     "guild-raids": "Guild Raids",
     "guild-raidsDescription": "See your guild's current Guild Raid status and your personal raid resources."
   },

@@ -17,8 +17,6 @@
     "hreDescription": "Événement de sortie de héros : suivez vos missions et raidez pour elles avec le moins d'énergie possible",
     "quest": "Quête",
     "questDescription": "Événement de Quête : suivez votre score par combat et voyez la carte, les ennemis et le butin de chaque combat",
-    "shops": "Boutiques",
-    "shopsDescription": "Suivez les rotations et achats en boutique",
     "guild-raids": "Raids de guilde",
     "guild-raidsDescription": "Consultez le statut actuel du Raid de guilde et vos ressources personnelles de raid."
   },

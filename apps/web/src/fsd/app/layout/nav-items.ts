@@ -50,7 +50,6 @@ type NavLabelKey =
   | "dailies:tabs.hse"
   | "dailies:tabs.hre"
   | "dailies:tabs.quest"
-  | "dailies:tabs.shops"
   | "dailies:tabs.guild-raids"
 
 // Follows the sibling-leaf naming convention: a description key is always the matching label key
@@ -246,11 +245,6 @@ export const navItems: NavItem[] = [
         labelKey: "dailies:tabs.quest",
         descriptionKey: "dailies:tabs.questDescription",
         liveIndicator: "quest",
-      },
-      {
-        path: "/dailies/shops",
-        labelKey: "dailies:tabs.shops",
-        descriptionKey: "dailies:tabs.shopsDescription",
       },
       {
         path: "/dailies/guild-raids",

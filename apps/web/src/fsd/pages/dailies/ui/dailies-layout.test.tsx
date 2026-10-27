@@ -169,16 +169,17 @@ describe("Dailies navigation", () => {
     ).not.toBeInTheDocument()
   }, 10_000)
 
-  it("routes /dailies/shops to the Shops recommendations page", async () => {
+  it("redirects the old /dailies/shops tab to Raids, which now shows the shop buys", async () => {
     renderDailies("/dailies/shops")
 
-    expect(await findRouteContent("shops-page")).toBeInTheDocument()
+    expect(await findRouteContent("today-shops")).toBeInTheDocument()
+    expect(screen.getByTestId("dailies-raids-layout")).toBeInTheDocument()
   })
 
-  it("starts with no project selected, so Shops covers every Active goal", async () => {
-    renderDailies("/dailies/shops")
+  it("starts with no project selected, so the Raids shop buys cover every Active goal", async () => {
+    renderDailies("/dailies/raids")
 
-    expect(await findRouteContent("shops-page")).toBeInTheDocument()
+    expect(await findRouteContent("today-shops")).toBeInTheDocument()
     expect(useShopRecommendations).toHaveBeenCalledWith(undefined)
     expect(useShopRecommendations).not.toHaveBeenCalledWith("p1")
     expect(useShopRecommendations).not.toHaveBeenCalledWith("p2")
