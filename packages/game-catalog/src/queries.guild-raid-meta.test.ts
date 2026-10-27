@@ -22,7 +22,7 @@ function metadata() {
     hash: "guild-raid-meta-h1",
     catalogVersion: "dev-1",
     gameVersion: "1.42",
-    schemaVersion: 2,
+    schemaHash: "schema-2",
     updatedAt: new Date().toISOString(),
   }
 }
@@ -114,7 +114,7 @@ describe("guild-raid-meta queries", () => {
       hash: "characters-h1",
       catalogVersion: "dev-1",
       gameVersion: "1.42",
-      schemaVersion: 2,
+      schemaHash: "schema-2",
       updatedAt: new Date().toISOString(),
     })
 

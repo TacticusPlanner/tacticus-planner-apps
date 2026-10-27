@@ -2004,8 +2004,7 @@ export interface components {
     }
     GameCatalogDatasetEnvelopeOfGameCatalogGuildRaidMetaView: {
       version: string
-      /** Format: int32 */
-      schemaVersion: number
+      schemaHash: string
       gameVersion: string
       sourceHash: string
       datasetKey: string
@@ -2014,8 +2013,7 @@ export interface components {
     }
     GameCatalogDatasetEnvelopeOfGameCatalogRaidBossesView: {
       version: string
-      /** Format: int32 */
-      schemaVersion: number
+      schemaHash: string
       gameVersion: string
       sourceHash: string
       datasetKey: string
@@ -2024,8 +2022,7 @@ export interface components {
     }
     GameCatalogDatasetEnvelopeOfIReadOnlyDictionaryOfStringAndIReadOnlyListOfGameCatalogEventsCalendarEntry: {
       version: string
-      /** Format: int32 */
-      schemaVersion: number
+      schemaHash: string
       gameVersion: string
       sourceHash: string
       datasetKey: string
@@ -2036,8 +2033,7 @@ export interface components {
     }
     GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogAscensionCostView: {
       version: string
-      /** Format: int32 */
-      schemaVersion: number
+      schemaHash: string
       gameVersion: string
       sourceHash: string
       datasetKey: string
@@ -2048,8 +2044,7 @@ export interface components {
     }
     GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogCampaignBattleView: {
       version: string
-      /** Format: int32 */
-      schemaVersion: number
+      schemaHash: string
       gameVersion: string
       sourceHash: string
       datasetKey: string
@@ -2060,8 +2055,7 @@ export interface components {
     }
     GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogCampaignDefinitionView: {
       version: string
-      /** Format: int32 */
-      schemaVersion: number
+      schemaHash: string
       gameVersion: string
       sourceHash: string
       datasetKey: string
@@ -2072,8 +2066,7 @@ export interface components {
     }
     GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogCharacterAbilityCostView: {
       version: string
-      /** Format: int32 */
-      schemaVersion: number
+      schemaHash: string
       gameVersion: string
       sourceHash: string
       datasetKey: string
@@ -2084,8 +2077,7 @@ export interface components {
     }
     GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogCharacterView: {
       version: string
-      /** Format: int32 */
-      schemaVersion: number
+      schemaHash: string
       gameVersion: string
       sourceHash: string
       datasetKey: string
@@ -2095,8 +2087,7 @@ export interface components {
     }
     GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogDamageType: {
       version: string
-      /** Format: int32 */
-      schemaVersion: number
+      schemaHash: string
       gameVersion: string
       sourceHash: string
       datasetKey: string
@@ -2105,8 +2096,7 @@ export interface components {
     }
     GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogEquipmentView: {
       version: string
-      /** Format: int32 */
-      schemaVersion: number
+      schemaHash: string
       gameVersion: string
       sourceHash: string
       datasetKey: string
@@ -2116,8 +2106,7 @@ export interface components {
     }
     GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogEventDefinition: {
       version: string
-      /** Format: int32 */
-      schemaVersion: number
+      schemaHash: string
       gameVersion: string
       sourceHash: string
       datasetKey: string
@@ -2128,8 +2117,7 @@ export interface components {
     }
     GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogFaction: {
       version: string
-      /** Format: int32 */
-      schemaVersion: number
+      schemaHash: string
       gameVersion: string
       sourceHash: string
       datasetKey: string
@@ -2138,8 +2126,7 @@ export interface components {
     }
     GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogGlobalValues: {
       version: string
-      /** Format: int32 */
-      schemaVersion: number
+      schemaHash: string
       gameVersion: string
       sourceHash: string
       datasetKey: string
@@ -2149,8 +2136,7 @@ export interface components {
     }
     GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogHordeModeTiers: {
       version: string
-      /** Format: int32 */
-      schemaVersion: number
+      schemaHash: string
       gameVersion: string
       sourceHash: string
       datasetKey: string
@@ -2160,8 +2146,7 @@ export interface components {
     }
     GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogHre: {
       version: string
-      /** Format: int32 */
-      schemaVersion: number
+      schemaHash: string
       gameVersion: string
       sourceHash: string
       datasetKey: string
@@ -2170,8 +2155,7 @@ export interface components {
     }
     GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogLreBattleView: {
       version: string
-      /** Format: int32 */
-      schemaVersion: number
+      schemaHash: string
       gameVersion: string
       sourceHash: string
       datasetKey: string
@@ -2181,8 +2165,7 @@ export interface components {
     }
     GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogLreView: {
       version: string
-      /** Format: int32 */
-      schemaVersion: number
+      schemaHash: string
       gameVersion: string
       sourceHash: string
       datasetKey: string
@@ -2191,8 +2174,7 @@ export interface components {
     }
     GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogMow: {
       version: string
-      /** Format: int32 */
-      schemaVersion: number
+      schemaHash: string
       gameVersion: string
       sourceHash: string
       datasetKey: string
@@ -2201,8 +2183,7 @@ export interface components {
     }
     GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogMowUpgradeCostView: {
       version: string
-      /** Format: int32 */
-      schemaVersion: number
+      schemaHash: string
       gameVersion: string
       sourceHash: string
       datasetKey: string
@@ -2213,8 +2194,7 @@ export interface components {
     }
     GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogMythicQuestsView: {
       version: string
-      /** Format: int32 */
-      schemaVersion: number
+      schemaHash: string
       gameVersion: string
       sourceHash: string
       datasetKey: string
@@ -2225,8 +2205,7 @@ export interface components {
     }
     GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogNpc: {
       version: string
-      /** Format: int32 */
-      schemaVersion: number
+      schemaHash: string
       gameVersion: string
       sourceHash: string
       datasetKey: string
@@ -2235,8 +2214,7 @@ export interface components {
     }
     GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogOnslaughtReward: {
       version: string
-      /** Format: int32 */
-      schemaVersion: number
+      schemaHash: string
       gameVersion: string
       sourceHash: string
       datasetKey: string
@@ -2247,8 +2225,7 @@ export interface components {
     }
     GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogProgressionRules: {
       version: string
-      /** Format: int32 */
-      schemaVersion: number
+      schemaHash: string
       gameVersion: string
       sourceHash: string
       datasetKey: string
@@ -2259,8 +2236,7 @@ export interface components {
     }
     GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogQuestCrate: {
       version: string
-      /** Format: int32 */
-      schemaVersion: number
+      schemaHash: string
       gameVersion: string
       sourceHash: string
       datasetKey: string
@@ -2269,8 +2245,7 @@ export interface components {
     }
     GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogQuestEventView: {
       version: string
-      /** Format: int32 */
-      schemaVersion: number
+      schemaHash: string
       gameVersion: string
       sourceHash: string
       datasetKey: string
@@ -2280,8 +2255,7 @@ export interface components {
     }
     GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogShopView: {
       version: string
-      /** Format: int32 */
-      schemaVersion: number
+      schemaHash: string
       gameVersion: string
       sourceHash: string
       datasetKey: string
@@ -2290,8 +2264,7 @@ export interface components {
     }
     GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogUnitPower: {
       version: string
-      /** Format: int32 */
-      schemaVersion: number
+      schemaHash: string
       gameVersion: string
       sourceHash: string
       datasetKey: string
@@ -2300,8 +2273,7 @@ export interface components {
     }
     GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogUnlockShardCostView: {
       version: string
-      /** Format: int32 */
-      schemaVersion: number
+      schemaHash: string
       gameVersion: string
       sourceHash: string
       datasetKey: string
@@ -2312,8 +2284,7 @@ export interface components {
     }
     GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogUpgradeView: {
       version: string
-      /** Format: int32 */
-      schemaVersion: number
+      schemaHash: string
       gameVersion: string
       sourceHash: string
       datasetKey: string
@@ -2740,8 +2711,7 @@ export interface components {
     }
     GameCatalogManifest: {
       version: string
-      /** Format: int32 */
-      schemaVersion: number
+      schemaHash: string
       gameVersion: string
       sourceHash: string
       datasets: components["schemas"]["IReadOnlyListOfGameCatalogManifestDataset"]

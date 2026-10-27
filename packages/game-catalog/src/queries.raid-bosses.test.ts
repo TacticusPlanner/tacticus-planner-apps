@@ -17,7 +17,7 @@ function metadata(key: string) {
     hash: `${key}-h1`,
     catalogVersion: "dev-1",
     gameVersion: "1.42",
-    schemaVersion: 2,
+    schemaHash: "schema-2",
     updatedAt: new Date().toISOString(),
   }
 }

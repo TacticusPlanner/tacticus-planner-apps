@@ -175,7 +175,7 @@ function createManifest(
 ): GameCatalogManifest {
   return {
     version: "dev-1",
-    schemaVersion: 11,
+    schemaHash: "schema-11",
     gameVersion: "1.40",
     sourceHash: `source-${Object.values(hashes).join("-") || "base"}`,
     datasets: servedDatasetKeys.map((key) => ({
@@ -222,7 +222,7 @@ class FakeGameCatalogClient implements GameCatalogClient {
 
     return Promise.resolve({
       version: this.manifest.version,
-      schemaVersion: this.manifest.schemaVersion,
+      schemaHash: this.manifest.schemaHash,
       gameVersion: this.manifest.gameVersion,
       sourceHash: this.manifest.sourceHash,
       datasetKey: dataset.key,
@@ -298,7 +298,7 @@ function seedSyncedDbBeforeStores(
       const row = {
         catalogVersion: "dev-1",
         gameVersion: "1.40",
-        schemaVersion: 11,
+        schemaHash: "schema-11",
         updatedAt: "2026-10-01T00:00:00Z",
       }
 
