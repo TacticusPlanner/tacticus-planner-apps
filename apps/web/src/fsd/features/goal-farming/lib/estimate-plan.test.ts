@@ -658,6 +658,70 @@ describe("shop schedule entries (add-shop-purchases-to-schedule)", () => {
   })
 })
 
+describe("Onslaught tokens shared across goals (share-onslaught-tokens-across-goals)", () => {
+  const KHARN = upgradeId("shards_kharn")
+  const CALGAR = upgradeId("shards_calgar")
+  // 1.5 runs/day at each unit's own shards per run.
+  const onslaught = (resourceId: typeof KHARN, shardsPerRun: number) => ({
+    key: "onslaught:regular",
+    resourceId,
+    supplyOnDay: () => 1.5 * shardsPerRun,
+    shardsPerRun,
+  })
+  const plan = (kharnShards: number) =>
+    estimatePlanSchedule({
+      goals: [
+        {
+          goalId: "kharn",
+          priority: 1,
+          needs: [{ id: KHARN, count: kharnShards }],
+          flatSuppliers: [onslaught(KHARN, 4)],
+        },
+        {
+          goalId: "calgar",
+          priority: 2,
+          needs: [{ id: CALGAR, count: 6 }],
+          flatSuppliers: [onslaught(CALGAR, 2)],
+        },
+      ],
+      inventory: [],
+      upgradesById: new Map(),
+      battlesById: new Map(),
+      dailyEnergy: 100,
+      referenceDate,
+    })
+
+  it("gives the first goal every run: Calgar completes on Day 4, not Day 2", () => {
+    const result = plan(12)
+
+    expect(result.days.map((day) => day.onslaughtEntries)).toEqual([
+      [{ goalId: "kharn", expectedShards: 6, runs: 1.5 }],
+      [{ goalId: "kharn", expectedShards: 6, runs: 1.5 }],
+      [{ goalId: "calgar", expectedShards: 3, runs: 1.5 }],
+      [{ goalId: "calgar", expectedShards: 3, runs: 1.5 }],
+    ])
+    expect(result.outcomes.get("kharn")).toMatchObject({
+      days: 2,
+      onslaughtTokens: 3,
+    })
+    expect(result.outcomes.get("calgar")).toMatchObject({
+      days: 4,
+      onslaughtTokens: 3,
+    })
+  })
+
+  it("passes the runs a finishing goal leaves to the next goal that day", () => {
+    const result = plan(8)
+
+    expect(result.days[1]!.onslaughtEntries).toEqual([
+      { goalId: "kharn", expectedShards: 2, runs: 0.5 },
+      { goalId: "calgar", expectedShards: 2, runs: 1 },
+    ])
+    expect(result.outcomes.get("kharn")).toMatchObject({ days: 2 })
+    expect(result.outcomes.get("calgar")).toMatchObject({ days: 4 })
+  })
+})
+
 describe("shop offers shared across goals (add-mythic-material-shop-sources)", () => {
   // Venerable Battle Mark's real offers for a roster owning a blue-star unit (spec worked examples).
   const VENERABLE = upgradeId("upgHpM004")

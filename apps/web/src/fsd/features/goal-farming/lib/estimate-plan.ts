@@ -158,9 +158,10 @@ function runPlanSchedule(
     days++
     let energy = dailyEnergy
     const attemptsUsedByBattle = new Map<BattleId, number>()
-    // Shop offers' daily caps are per account: goals draw on them in priority order (spec: *A shop
-    // offer's daily capacity is shared across goals in priority order*).
-    const shopSupplyUsed = new Map<string, number>()
+    // Shop offers' daily caps and Onslaught tokens are per account: goals draw on them in priority
+    // order (spec: *A shop offer's daily capacity is shared across goals in priority order*, *Onslaught
+    // tokens are shared across goals in priority order*).
+    const dailySupplyUsed = new Map<string, number>()
     const entries: RaidBreakdownEntry[] = []
     const shopEntries: ShopScheduleEntry[] = []
     const onslaughtEntries: OnslaughtScheduleEntry[] = []
@@ -180,7 +181,7 @@ function runPlanSchedule(
           stages[0]!.remaining,
           flatSuppliersByGoal.get(goal.goalId),
           days - 1,
-          shopSupplyUsed
+          dailySupplyUsed
         )
         if (appliedToday.byResource.size > 0) {
           const goalTotals =

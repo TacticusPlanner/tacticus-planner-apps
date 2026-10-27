@@ -45,6 +45,47 @@ const MAX_DAYS = 1000
  * farming against one shared remaining requirement (plan: acquisition-source picker,
  * tacticus-planner-apps#103), rather than as a separate estimate combined afterward.
  */
+/** Key of the per-day Onslaught runs pool in `applyFlatSuppliers`' `dailySupplyUsed` (shop offer ids
+ *  are `<shopId>:<rewardType>`, so it can't collide with one). */
+const ONSLAUGHT_RUNS_POOL_KEY = "onslaught:runs"
+
+/** What `supplier` can give toward `need` today after higher-priority goals' draws, recording the
+ *  draw in `pool`. A shop offer pools its own amount by `key`; Onslaught pools runs (its supply over
+ *  `shardsPerRun`) across every Onslaught supplier, since each unit yields different shards per run
+ *  (spec: *Onslaught tokens are shared across goals in priority order*). */
+function takeFromPool(
+  supplier: FlatSupplier,
+  dayIndex: number,
+  need: number,
+  pool: Map<string, number> | undefined
+): number {
+  const supply = Math.max(0, supplier.supplyOnDay(dayIndex))
+  if (pool && supplier.shardsPerRun) {
+    const runsLeft = Math.max(
+      0,
+      supply / supplier.shardsPerRun - (pool.get(ONSLAUGHT_RUNS_POOL_KEY) ?? 0)
+    )
+    const amount = Math.min(runsLeft * supplier.shardsPerRun, need)
+    if (amount > 0) {
+      pool.set(
+        ONSLAUGHT_RUNS_POOL_KEY,
+        (pool.get(ONSLAUGHT_RUNS_POOL_KEY) ?? 0) +
+          amount / supplier.shardsPerRun
+      )
+    }
+    return amount
+  }
+  const pooled = pool && supplier.shop ? pool : undefined
+  const amount = Math.min(
+    Math.max(0, supply - (pooled?.get(supplier.key) ?? 0)),
+    need
+  )
+  if (amount > 0) {
+    pooled?.set(supplier.key, (pooled.get(supplier.key) ?? 0) + amount)
+  }
+  return amount
+}
+
 /** `{ shopSpend }` when a shop offer contributed, else nothing — so outcomes without a shop supplier
  *  keep their exact shape. */
 export function shopSpendField(
@@ -59,10 +100,12 @@ export function applyFlatSuppliers(
   remaining: Map<EstimateResourceId, number>,
   suppliers: readonly FlatSupplier[] | undefined,
   dayIndex: number,
-  /** Today's shop-offer purchases already taken by higher-priority goals, by supplier `key` (an offer
-   *  id) — mutated in place. A shop offer's daily cap is per account, so `estimatePlan` passes one map
-   *  per day across every goal; a single-goal estimate passes none and owns its offers outright. */
-  shopSupplyUsed?: Map<string, number>
+  /** Today's account-wide supply already taken by higher-priority goals — mutated in place. Shop
+   *  purchases are keyed by supplier `key` (an offer id); Onslaught runs, shared by every Onslaught
+   *  supplier, under `ONSLAUGHT_RUNS_POOL_KEY`. Shop caps and Onslaught tokens are per account, so
+   *  `estimatePlan` passes one map per day across every goal; a single-goal estimate passes none and
+   *  owns its sources outright. */
+  dailySupplyUsed?: Map<string, number>
 ): {
   byResource: Map<EstimateResourceId, number>
   bySupplier: Map<string, number>
@@ -82,14 +125,11 @@ export function applyFlatSuppliers(
     const need = remaining.get(supplier.resourceId)
     if (!need || need <= 0) continue
 
-    const pooled = shopSupplyUsed && supplier.shop ? shopSupplyUsed : undefined
-    const supply = Math.max(
-      0,
-      supplier.supplyOnDay(dayIndex) - (pooled?.get(supplier.key) ?? 0)
+    const amount = Math.min(
+      takeFromPool(supplier, dayIndex, need, dailySupplyUsed),
+      need
     )
-    const amount = Math.min(supply, need)
     if (amount <= 0) continue
-    pooled?.set(supplier.key, (pooled.get(supplier.key) ?? 0) + amount)
 
     const next = need - amount
     if (next <= 0) {

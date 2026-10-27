@@ -84,7 +84,9 @@ export interface FlatSupplier {
   resourceId: EstimateResourceId
   supplyOnDay: (dayIndex: number) => number
   /** Set only on an Onslaught source: the average shards one token (run) yields, so a consumer can
-   *  turn the shards it supplied into projected tokens (V1's `oTokensTotal`). */
+   *  turn the shards it supplied into projected tokens (V1's `oTokensTotal`). In `estimatePlan`
+   *  every Onslaught source draws on one account-wide daily pool of runs (`supplyOnDay` over this),
+   *  in goal priority order (spec: *Onslaught tokens are shared across goals in priority order*). */
   shardsPerRun?: number
   /** Set only on a shop offer: what one purchase yields and costs, so a consumer can turn the amount
    *  it supplied into currency spent (display only — the cost never enters the estimate). A supplier
