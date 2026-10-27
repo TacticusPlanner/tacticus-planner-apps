@@ -20,6 +20,20 @@ Assumptions:
   (`raw/gameconfig/units/abilities.json`) and the game's language files
   (`raw/languages/{en,de,es,fr}.json`, key `Abilities/<id>_CurrentLevelDescription`).
 
+#### Scenario: Coverage after this change
+
+- **WHEN** the namespace is generated from the catalog at game version 1.43 and V1 `develop` at 02b7166
+- **THEN** it holds 434 entries in all four languages: 301 of the 302 it held before, plus 34 relic
+  abilities (every relic but Maugetar, which it already had), 22 MoW primary and secondary abilities, 11 MoW
+  mythic abilities, 37 character abilities and 29 abilities of NPC records outside the NPC Library's list
+  (for example `HaywireMineSteppable`)
+- **AND** 297 of the kept entries are byte-identical; `DarkTalonStrike` and `Foehammer` take V1 `develop`'s
+  newer values and text; `Loki_SwoopingHawk` and `SlashingDive` gain the `dmg`
+  variable (and `scaled: ["dmg"]`) that the earlier port dropped because their description uses split-index
+  tokens (`{[dmg[0]]}`), which rendered as a raw `{dmg}` before
+- **AND** the orphan entry `LionHelm` is gone: no catalog record references it (Azrael's passive is
+  `MasterfulTactician` at 1.43), and it is not the Lion Helm relic's text (`LionHelmRelic`, 10 levels)
+
 #### Scenario: Coverage after moving to the datamine
 
 - **WHEN** the namespace is generated from data-mines `v1.43.157.2989`
