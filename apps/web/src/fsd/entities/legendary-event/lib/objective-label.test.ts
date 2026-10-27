@@ -22,7 +22,7 @@ describe("describeUnitFilter", () => {
     })
     expect(describeUnitFilter(filter("Faction", "Orks"))).toEqual({
       label: { type: "entry", key: "factions:Orks", negate: false },
-      icon: { src: expect.stringContaining("factions/Orks.webp") },
+      icon: { src: expect.stringContaining("ui_icon_faction_orks_01.webp") },
     })
   })
 
