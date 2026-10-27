@@ -100,7 +100,8 @@ const goldRewards = [
 
 function ascensionWithOnslaught(
   rewards: OnslaughtRewardStorageModel[],
-  isSet = true
+  isSet = true,
+  mythicShards = 0
 ) {
   return computeGoalAcquisition({
     detail: {
@@ -110,7 +111,7 @@ function ascensionWithOnslaught(
         progression: { start: "Legendary:0", target: "Legendary:3" },
       },
     } as unknown as GoalDetail,
-    need: { shards: 100, mythicShards: 0 },
+    need: { shards: 100, mythicShards },
     mowsById: new Map(),
     charactersById: new Map(),
     playerCharacterById: new Map(),
@@ -134,6 +135,21 @@ describe("computeGoalAcquisition — Onslaught source (harden-app-against-stale-
     expect(result.flatSuppliers.map((s) => s.key)).toEqual([
       "onslaught:regular",
     ])
+    expect(result.mythicShardNeed).toBeUndefined()
+  })
+
+  it("adds a Mythic supplier and the Mythic shard need when the goal needs Mythic shards (share-onslaught-tokens-across-goals)", () => {
+    const result = ascensionWithOnslaught(goldRewards, true, 4)
+
+    expect(result.flatSuppliers.map((s) => s.key)).toEqual([
+      "onslaught:regular",
+      "onslaught:mythic",
+    ])
+    const mythic = result.flatSuppliers[1]!
+    expect(mythic.shardsPerRun).toBe(1)
+    expect(result.mythicShardNeed).toEqual({ id: mythic.resourceId, count: 4 })
+    // 6 regular runs + 4 Mythic runs.
+    expect(result.onslaughtTokensDelta).toBe(10)
   })
 
   it("supplies nothing, without throwing, when the row for the player's sector and tier is missing", () => {

@@ -25,7 +25,7 @@ import {
 } from "@/entities/player-data-override"
 
 import { projectOnslaughtSupply, projectShopSupply } from "./shop-supply"
-import type { FlatSupplier } from "../model/estimate.domain"
+import type { FlatSupplier, UpgradeNeed } from "../model/estimate.domain"
 
 type PlayerCharacter = PlayerDataChunkDto<"characters">[number]
 type PlayerMow = PlayerDataChunkDto<"mows">[number]
@@ -149,6 +149,11 @@ export function computeGoalAcquisition(params: {
    *  consumer can show their cost and shop without re-resolving. */
   shopOffers: ShopRewardOffer[]
   onslaughtTokensDelta: number
+  /** The goal's Mythic shard demand for the shared day-loop, set only when a Mythic Onslaught
+   *  supplier covers it (spec: *Onslaught tokens are shared across goals in priority order*) — a
+   *  consumer adds it to the goal's needs beside the regular shard need. Without Onslaught, Mythic
+   *  shards stay count-only here, as before. */
+  mythicShardNeed?: UpgradeNeed
 } {
   const { detail, need } = params
 
@@ -172,6 +177,7 @@ export function computeGoalAcquisition(params: {
   const flatSuppliers: FlatSupplier[] = []
   const shopOffers: ShopRewardOffer[] = []
   let onslaughtTokensDelta = 0
+  let mythicShardNeed: UpgradeNeed | undefined
 
   // An alliance the player never saved supplies nothing (no silent Stone 1 yield).
   const onslaughtEntity = isMowDetail(detail)
@@ -210,9 +216,6 @@ export function computeGoalAcquisition(params: {
     )
     onslaughtTokensDelta += tokensFor(need.shards, regularReward)
     onslaughtTokensDelta += tokensFor(need.mythicShards, mythicReward)
-    // Only the regular-shard resource enters the shared day-loop estimate below (mythic shards stay
-    // count-only here, as they always have for this consumer); the aggregate onslaughtTokens figure
-    // above still covers both.
     if (regularReward && params.onslaughtRunsPerDay !== undefined) {
       flatSuppliers.push(
         projectOnslaughtSupply({
@@ -223,16 +226,32 @@ export function computeGoalAcquisition(params: {
         })
       )
     }
+    // Mythic shards enter the day-loop only through Onslaught, so their runs come out of the same
+    // shared token pool as the regular ones (campaign Mythic nodes stay outside this consumer's
+    // farm-location set).
+    if (
+      need.mythicShards > 0 &&
+      mythicReward &&
+      params.onslaughtRunsPerDay !== undefined
+    ) {
+      const supplier = projectOnslaughtSupply({
+        entityId: detail.entityId,
+        isMythic: true,
+        avgShardsPerRun: (mythicReward.min + mythicReward.max) / 2,
+        runsPerDay: params.onslaughtRunsPerDay,
+      })
+      flatSuppliers.push(supplier)
+      mythicShardNeed = { id: supplier.resourceId, count: need.mythicShards }
+    }
   }
 
   if (shopSource && params.shops?.length) {
     const offers = resolveUnitShardShopOffers(params.shops, detail.entityId)
     for (const offer of offers) {
-      // Today/Insights/Raids Plan track mythic shards as a count only, never as day-loop demand
-      // (`need.shardId` covers the regular resource alone; campaign mythic locations aren't fed into
-      // this consumer's farm-location set either) — pre-existing scope this change doesn't extend, so
-      // a selected mythic Shop offer is intentionally excluded from `flatSuppliers` here.
-      if (offer.isMythic || !shopSource.ids.includes(offer.offerId)) continue
+      // A selected mythic Shop offer feeds the day-loop only when Onslaught already put the goal's
+      // mythic shard demand there (`mythicShardNeed`); otherwise mythic shards stay count-only.
+      if (offer.isMythic && !mythicShardNeed) continue
+      if (!shopSource.ids.includes(offer.offerId)) continue
       flatSuppliers.push(projectShopSupply(offer, params.referenceDate))
       shopOffers.push(offer)
     }
@@ -274,5 +293,6 @@ export function computeGoalAcquisition(params: {
     flatSuppliers,
     shopOffers,
     onslaughtTokensDelta,
+    mythicShardNeed,
   }
 }
