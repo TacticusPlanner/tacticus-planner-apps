@@ -18,6 +18,9 @@ import {
   RaidState,
   ResourceIconWithTooltip,
   selectTodayRaids,
+  TodayQuickFilterChips,
+  todayQuickFilterOptions,
+  useTodayQuickFilters,
   type DailyRaidBattleResource,
   type DailyRaidLocationViewModel,
   type DailyRaidsReadyViewModel,
@@ -40,14 +43,18 @@ const BONUS_LIMIT = 3
  * Dailies > Raids is the Today page itself (the multi-day plan is Plan > Schedule). Above the
  * schedule sits the Dailies-wide project selector (default: all goals) with the shared Planning
  * Settings trigger trailing it (`planning-settings-access`) - the same dialog Plan > Goals opens - and
- * the Raids Filters trigger before it (filters constrain Today and Bonus Raids only). Today's shop
+ * the Raids Filters trigger before it (filters constrain Today and Bonus Raids only). Below them, the
+ * quick filters (Fewer raids, Bottlenecks; URL state) also change Today and Bonus Raids only. Today's shop
  * buys for the same project close the page (the former Shops tab).
  */
 export function TodayPage() {
   const context = useOutletContext<DailiesOutletContext>()
   const { t } = useTranslation("dailies")
   const [settingsOpen, setSettingsOpen] = useState(false)
-  const raids = useDailyRaids(context.projectId)
+  const [quickFilters, setQuickFilters] = useTodayQuickFilters()
+  const raids = useDailyRaids(context.projectId, {
+    quickFilters: todayQuickFilterOptions(quickFilters),
+  })
   useTodayTutorial()
 
   return (
@@ -67,6 +74,7 @@ export function TodayPage() {
           testId="raids-planning-settings"
         />
       </div>
+      <TodayQuickFilterChips value={quickFilters} onChange={setQuickFilters} />
       {raids.status === "ready" ? (
         <TodaySchedule raids={raids} />
       ) : (

@@ -39,6 +39,7 @@ import type {
 } from "./daily-raids.domain"
 import type { MissionRaidPlan, MissionRaidsRequest } from "./mission-raids"
 import { planHookMissionRaids } from "./plan-hook-mission-raids"
+import type { TodayQuickFilterOptions } from "./today-quick-filters/today-quick-filters"
 
 /**
  * Today, Bonus Raids and Raids Plan: one run over every Active goal in global order
@@ -62,10 +63,13 @@ export function useDailyRaids(
     homeScreenEventRule?: HseRaidRule
     eventFarm?: boolean
     missionRaids?: MissionRaidsRequest
+    quickFilters?: TodayQuickFilterOptions
   }
 ): DailyRaidsViewModel {
   const homeScreenEventRule = options?.homeScreenEventRule
   const missionRequest = options?.missionRaids
+  const fewerRaids = options?.quickFilters?.fewerRaids ?? false
+  const combineGoals = options?.quickFilters?.combineGoals ?? false
   const { t } = useTranslation(["dailies", "characters", "upgrades"])
   const {
     name: campaignDisplayName,
@@ -384,6 +388,7 @@ export function useDailyRaids(
       dailyEnergy,
       raidsFilters,
       filterBattlesById,
+      quickFilters: { fewerRaids, combineGoals },
       attemptsLeftByBattle,
       eventFarm: farm
         ? {
@@ -417,12 +422,14 @@ export function useDailyRaids(
     battlesById,
     campaignDefinitions,
     charactersById,
+    combineGoals,
     dailyEnergy,
     eligibilityReady,
     enemyStatsByBattleId,
     eventFarmOff,
     eventPointsByBattleId,
     failed,
+    fewerRaids,
     filterBattlesById,
     goalEntries,
     inventoryShardById,

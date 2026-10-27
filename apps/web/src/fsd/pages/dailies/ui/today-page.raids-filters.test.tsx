@@ -127,10 +127,13 @@ describe("Today page Raids Filters", () => {
     renderToday()
 
     expect(activeEventSpy).not.toHaveBeenCalled()
-    // Only the project id is passed; the HSE tab alone passes `homeScreenEventRule`.
-    expect(dailyRaidsArgs.every(([, options]) => options === undefined)).toBe(
-      true
-    )
+    // Only the project id and the quick filters are passed; the HSE tab alone passes `homeScreenEventRule`.
+    expect(
+      dailyRaidsArgs.every(
+        ([, options]) =>
+          Object.keys(options as object).join() === "quickFilters"
+      )
+    ).toBe(true)
     expect(document.querySelector('[data-testid^="hse-"]')).toBeNull()
   })
 

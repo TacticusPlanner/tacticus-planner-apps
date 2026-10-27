@@ -496,6 +496,21 @@
       "reset": "Réinitialiser les filtres"
     }
   },
+  "quickFilters": {
+    "label": "Filtres rapides",
+    "chip": {
+      "fewerRaids": "Moins de raids",
+      "bottlenecks": "Goulots"
+    },
+    "help": {
+      "fewerRaids": "Quand plusieurs lieux coûtent la même énergie par objet, ne raider que ceux qui coûtent le plus d'énergie par combat. Mêmes matériaux pour la même énergie, en moins de raids. Utile quand il vous reste peu de tickets de raid.",
+      "bottlenecks": "Ignore aujourd'hui la priorité des objectifs : combine les matériaux restants de tous les objectifs et farme d'abord les plus lents, souvent des matériaux légendaires. Utile pour commencer tôt les longs farms."
+    },
+    "note": {
+      "fewerRaids": "Moins de raids : les lieux à égalité qui coûtent plus d'énergie par combat sont utilisés, donc les mêmes matériaux demandent moins de raids.",
+      "bottlenecks": "Goulots : les raids du jour farment d'abord les matériaux les plus lents de tous les objectifs. Les dates de Plan et Objectifs suivent toujours la priorité des objectifs."
+    }
+  },
   "hse": {
     "title": "Événement d'écran d'accueil",
     "switcher": {
