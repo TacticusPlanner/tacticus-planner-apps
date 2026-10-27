@@ -1,0 +1,11 @@
+{
+  "RevoltinglyResilient": {
+    "description": "En cas d'attaque, chaque <style=\"Stat_Hits\">coup</style> porté après <style=\"Stat_Hits\">{[nrOfHits]} coups</style> dans la même séquence d'attaque inflige <style=\"Stat_Damage\">{[dmgPctReduction]} % de dégâts de moins</style> que le coup précédent. <i>Les {[nrOfHits]} premiers coups de chaque attaque infligent des dégâts normaux, le suivant 50 % de dégâts, le suivant 25 %, etc.</i>",
+    "variables": {},
+    "constants": {
+      "dmgPctReduction": "50",
+      "nrOfHits": "1"
+    },
+    "scaled": []
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "MyWillBeDone": {
+    "description": "Jede verbündete <style=\"Faction_Necrons\">Necron</style>-Einheit auf dem Schlachtfeld führt sofort einen Angriff von ihrem aktuellen Feld aus, sofern ein Ziel in Reichweite ist.",
+    "variables": {},
+    "constants": {
+      "cooldownTurns": "2"
+    },
+    "scaled": []
+  }
+}

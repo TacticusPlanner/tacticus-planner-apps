@@ -21,7 +21,7 @@ const stormOfWrath = text("StormOfWrath")
 
 describe("buildAbilitySeries", () => {
   it("turns a {min}-{max} pair into one range series and keeps other values", () => {
-    const series = buildAbilitySeries(stormOfWrath, "Mythic")
+    const series = buildAbilitySeries(stormOfWrath, 2)
 
     expect(series.map((entry) => entry.names)).toEqual([
       ["minDmg", "maxDmg"],
@@ -36,7 +36,7 @@ describe("buildAbilitySeries", () => {
   it("titles a value by the words after it, else the words before it", () => {
     const psychicFortress = text("PsychicFortress")
     expect(
-      buildAbilitySeries(psychicFortress, "Mythic").map((entry) => [
+      buildAbilitySeries(psychicFortress, 2).map((entry) => [
         entry.names[0],
         entry.label,
       ])
@@ -45,13 +45,13 @@ describe("buildAbilitySeries", () => {
       ["blockDmg", "Damage"],
       ["dmgReduction", "Incoming Psychic Damage"],
     ])
-    expect(at(buildAbilitySeries(stormOfWrath, "Mythic"), 1).label).toBe(
+    expect(at(buildAbilitySeries(stormOfWrath, 2), 1).label).toBe(
       "Adjacent units"
     )
   })
 
   it("scales values exactly as the rendered rules text does", () => {
-    const series = buildAbilitySeries(stormOfWrath, "Legendary")
+    const series = buildAbilitySeries(stormOfWrath, 1.8)
     const minDmg = parseAbilityText("{[minDmg]}")[0]
     if (minDmg?.type !== "var") throw new Error("expected a variable")
 
@@ -61,7 +61,7 @@ describe("buildAbilitySeries", () => {
         variables: stormOfWrath.variables,
         constants: stormOfWrath.constants,
         scaledVariableNames: new Set(stormOfWrath.scaled),
-        rarity: "Legendary",
+        rarityFactor: 1.8,
         unitName: "Tigurius",
         factionId: "Ultramarines",
       })
@@ -69,7 +69,7 @@ describe("buildAbilitySeries", () => {
     }
     // Rarity scaling applies: Mythic (×2) is above Legendary (×1.8).
     expect(
-      at(at(buildAbilitySeries(stormOfWrath, "Mythic"), 0).values, 59)[0]
+      at(at(buildAbilitySeries(stormOfWrath, 2), 0).values, 59)[0]
     ).toBeGreaterThan(at(at(at(series, 0).values, 59), 0))
   })
 
@@ -83,7 +83,7 @@ describe("buildAbilitySeries", () => {
       constants: {},
       scaled: [],
     }
-    const series = buildAbilitySeries(entry, "Common")
+    const series = buildAbilitySeries(entry, 1)
 
     expect(series.map((value) => [value.names[0], value.constant])).toEqual([
       ["dmg", false],
@@ -103,9 +103,7 @@ describe("buildAbilitySeries", () => {
       scaled: [],
     }
     expect(
-      chartedSeries(buildAbilitySeries(entry, "Common")).map(
-        (value) => value.names[0]
-      )
+      chartedSeries(buildAbilitySeries(entry, 1)).map((value) => value.names[0])
     ).toEqual(["a", "b"])
   })
 
@@ -119,8 +117,8 @@ describe("buildAbilitySeries", () => {
       constants: {},
       scaled: [],
     }
-    expect(
-      buildAbilitySeries(entry, "Common").map((value) => value.names)
-    ).toEqual([["hp"]])
+    expect(buildAbilitySeries(entry, 1).map((value) => value.names)).toEqual([
+      ["hp"],
+    ])
   })
 })

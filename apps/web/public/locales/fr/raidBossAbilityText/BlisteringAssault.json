@@ -1,0 +1,8 @@
+{
+  "BlisteringAssault": {
+    "description": "Les <style=\"NormalAttack\">attaques normales</style> du <style=\"Faction_Tyranids\">Tueur-hurleur</style> affectent également tous les ennemis adjacents à la cible.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

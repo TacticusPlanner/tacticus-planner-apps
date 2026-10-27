@@ -1,0 +1,11 @@
+{
+  "ReinforcedHiveNode": {
+    "description": "Jede zweite Runde – beginnend mit der ersten Runde, in der der <style=\"Faction_Tyranids\">Tyranidenkrieger</style> im Spiel ist – besitzt der <style=\"Faction_Tyranids\">Tyranidenkrieger</style> <style=\"Stat_Armor\">+100 % Rüstung</style> und – wenn er <style=\"Stat_Block\">blocken</style> kann – 100 % <style=\"Stat_Block\">Block<style=\"Stat_Chance\">-Chance</style></style>.",
+    "variables": {},
+    "constants": {
+      "extraArmorPct": "100",
+      "blockChance": "100"
+    },
+    "scaled": []
+  }
+}

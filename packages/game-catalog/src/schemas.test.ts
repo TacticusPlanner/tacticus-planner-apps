@@ -2,6 +2,8 @@ import { describe, expect, expectTypeOf, it } from "vitest"
 import type { BattleId, FactionId } from "@workspace/game-domain"
 
 import globalValues from "./schemas/global-values.fixture.json"
+import progressionRules from "./schemas/progression-rules.fixture.json"
+import hre from "./schemas/hre.fixture.json"
 import questCrates from "./schemas/quest-crates.fixture.json"
 import questEvents from "./schemas/quest-events.fixture.json"
 import {
@@ -734,7 +736,7 @@ describe("catalog schemas", () => {
   it("validates a manifest", () => {
     const result = manifestSchema.safeParse({
       version: "dev-1",
-      schemaVersion: 11,
+      schemaHash: "schema-11",
       gameVersion: "1.40",
       sourceHash: "abc",
       datasets: [
@@ -744,6 +746,18 @@ describe("catalog schemas", () => {
           url: "/api/v1/game-catalog/characters",
         },
       ],
+    })
+
+    expect(result.success).toBe(true)
+  })
+
+  it("accepts a manifest from an API release that still serves schemaVersion", () => {
+    const result = manifestSchema.safeParse({
+      version: "dev-1",
+      schemaVersion: 15,
+      gameVersion: "1.40",
+      sourceHash: "abc",
+      datasets: [],
     })
 
     expect(result.success).toBe(true)
@@ -880,6 +894,73 @@ describe("global-values schema", () => {
     expect(
       datasetPayloadSchemas["global-values"].safeParse([
         { ...values, staminaShopTiers: undefined },
+      ]).success
+    ).toBe(false)
+  })
+})
+
+describe("progression-rules schema", () => {
+  it("parses the served record", () => {
+    const [rules] =
+      datasetPayloadSchemas["progression-rules"].parse(progressionRules)
+    expect(rules?.xpLevels.at(-1)).toBe(7_360_200)
+    expect(rules?.xpBooks.find((book) => book.rarity === "Legendary")).toEqual({
+      id: "xpLegendary",
+      rarity: "Legendary",
+      xpIncrease: 12_500,
+      gold: 500,
+    })
+    expect(
+      rules?.upgradeSlots.find((row) => row.rank === "Diamond2")
+        ?.xpLevelRequirements
+    ).toEqual([47, 48, 47, 49, 47, 50])
+    expect(rules?.heroProgressionSteps[0]).toMatchObject({
+      progression: "Common:None",
+      maxXpLevel: 8,
+      maxRank: "Iron1",
+      hreShards: 25,
+    })
+  })
+
+  it("rejects an upgrade slot row without six levels", () => {
+    const [rules] = progressionRules
+    expect(
+      datasetPayloadSchemas["progression-rules"].safeParse([
+        {
+          ...rules,
+          upgradeSlots: [{ rank: "Stone1", xpLevelRequirements: [1, 1, 1] }],
+        },
+      ]).success
+    ).toBe(false)
+  })
+})
+
+describe("hre schema", () => {
+  it("parses the served records", () => {
+    const [weirdboy] = datasetPayloadSchemas.hre.parse(hre)
+    expect(weirdboy?.heroId).toBe("orksWeirdboy")
+    expect(weirdboy?.missions).toHaveLength(21)
+    expect(weirdboy?.missions[1]?.tasks[1]).toEqual({
+      name: "SlayEnemiesWithFactionTrait",
+      target: 10,
+      parameters: { factionTrait: "Xenos" },
+    })
+    expect(weirdboy?.leaderboard.phases[0]?.tiers[0]).toMatchObject({
+      position: 0,
+      currency: 550,
+      shards: 33,
+    })
+    expect(weirdboy?.chestShop[0]).toMatchObject({ cost: 100, minShards: 10 })
+  })
+
+  it("rejects a mission without two tasks", () => {
+    const [weirdboy] = hre
+    expect(
+      datasetPayloadSchemas.hre.safeParse([
+        {
+          ...weirdboy,
+          missions: [{ ...weirdboy!.missions[0], tasks: [] }],
+        },
       ]).success
     ).toBe(false)
   })

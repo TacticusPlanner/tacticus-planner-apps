@@ -1,8 +1,11 @@
 import { describe, expect, it } from "vitest"
+import { progressionRulesFixture } from "@workspace/game-catalog/testing"
 
-import { rarityFromStars } from "./rarity-from-stars"
+import { rarityFromStars, toMaxStarsByRarity } from "./rarity-from-stars"
 
 describe("rarityFromStars", () => {
+  const maxStars = toMaxStarsByRarity([progressionRulesFixture])
+
   it.each([
     [0, "Common"],
     [2, "Common"],
@@ -17,10 +20,14 @@ describe("rarityFromStars", () => {
     [12, "Mythic"],
     [14, "Mythic"],
   ])("maps %i stars to %s", (stars, rarity) => {
-    expect(rarityFromStars(stars)).toBe(rarity)
+    expect(rarityFromStars(stars, maxStars)).toBe(rarity)
   })
 
   it("clamps a star index beyond the ladder to Mythic", () => {
-    expect(rarityFromStars(99)).toBe("Mythic")
+    expect(rarityFromStars(99, maxStars)).toBe("Mythic")
+  })
+
+  it("is undefined until the ladder has loaded", () => {
+    expect(rarityFromStars(3, toMaxStarsByRarity([]))).toBeUndefined()
   })
 })

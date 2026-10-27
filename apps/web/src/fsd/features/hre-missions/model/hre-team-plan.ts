@@ -1,11 +1,12 @@
 import {
-  HRE_MISSIONS,
+  hreAllDone,
   hreMission,
+  type HreMission,
   type HreObjective,
   type HreObjectiveKind,
 } from "./hre-missions"
 import { isManualObjective } from "./hre-objectives"
-import { HRE_ALL_DONE, type HreProgress } from "./hre-progress"
+import type { HreProgress } from "./hre-progress"
 
 /** The lineup the mission's manual objectives ask for (hre-mission-teams). */
 export type HreTeamRule =
@@ -95,10 +96,11 @@ function ruleFor(objectives: readonly HreObjective[]): HreTeamRule {
  */
 export function selectTeamPlans(
   state: HreProgress,
+  missions: readonly HreMission[],
   arenaSurplus = 0
 ): HreTeamPlan[] {
-  if (state.mission >= HRE_ALL_DONE) return []
-  const objectives = hreMission(state.mission).objectives
+  if (state.mission >= hreAllDone(missions)) return []
+  const objectives = hreMission(missions, state.mission).objectives
   const open = objectives.filter(
     (objective, index) => state.progress[index]! < objective.target
   )
@@ -117,7 +119,7 @@ export function selectTeamPlans(
     preferPsychic: open.some(
       (item) => item.kind === "damageType" && item.qualifier === "Psychic"
     ),
-    reserve: reserveFor(mode, state.mission),
+    reserve: reserveFor(mode, state.mission, missions),
   })
   const plans: HreTeamPlan[] = []
   if (manual.length > 0) plans.push(plan(manual, "battle"))
@@ -143,21 +145,23 @@ export function selectTeamPlans(
  * or 0 when Arena tokens are unknown. */
 export function arenaSurplus(
   state: HreProgress,
+  missions: readonly HreMission[],
   tokens: number | null
 ): number {
   if (tokens === null) return 0
-  const reserve = reserveFor("arena", state.mission)
+  const reserve = reserveFor("arena", state.mission, missions)
   return Math.max(0, tokens - (reserve?.tokens ?? 0))
 }
 
 /** The next later mission's need for `mode`'s tokens (mission 6's Arena: 4 for mission 10). */
 function reserveFor(
   mode: HreTeamMode,
-  current: number
+  current: number,
+  missions: readonly HreMission[]
 ): HreTeamPlan["reserve"] {
   const kind = MODE_KINDS[mode]
   if (!kind) return null
-  for (const mission of HRE_MISSIONS) {
+  for (const mission of missions) {
     if (mission.number <= current) continue
     const objective = mission.objectives.find((item) => item.kind === kind)
     if (objective) {

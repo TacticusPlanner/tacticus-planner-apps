@@ -34,7 +34,7 @@ function AbilityChip({
   id: string
   abilityLevel: number
   unitName: string
-  rarity: Rarity
+  rarity: Rarity | undefined
 }) {
   const { t } = useTranslation("abilities")
   // Per chip, so only the shown abilities' rules text is fetched, after the page paints.
@@ -120,7 +120,7 @@ function AbilityColumn({
   testId: string
   abilityLevel: number
   unitName: string
-  rarity: Rarity
+  rarity: Rarity | undefined
 }) {
   if (ids.length === 0) return null
 
@@ -156,7 +156,7 @@ export function NpcAbilities({
   abilityLevel: number
   unitName: string
   /** Derived from the selected level's star index; scales rarity-affected ability variables. */
-  rarity: Rarity
+  rarity: Rarity | undefined
   /** Mobile: stack the two columns instead of placing them side by side. */
   compact?: boolean
 }) {

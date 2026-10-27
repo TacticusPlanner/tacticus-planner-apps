@@ -2,6 +2,13 @@
 # gitignored cache (node_modules/.cache/datamine) for the generators. Relative to that repo's root;
 # a trailing `/` takes the whole folder. List a path only when a generator reads it. Sorted.
 raw/VERSION
+raw/gameconfig/globalValues.json
+raw/gameconfig/items.json
+raw/gameconfig/units/abilities.json
+raw/gameconfig/units/lineup.json
+raw/gameconfig/units/npc.json
+raw/globalconfig/guildBoss/unitSets.json
+raw/languages/
 sprites-webp/abilities/
 sprites-webp/abilties/
 sprites-webp/atlases/

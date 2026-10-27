@@ -1,0 +1,10 @@
+{
+  "IntegratedCircuits": {
+    "description": "Chaque fois qu'une unité alliée est <style=\"Overkill\">exterminée</style>, le <style=\"Faction_Necrons\">menhir</style> subit les mêmes dégâts sous forme de <style=\"DMG_Direct\">dégâts directs</style>.",
+    "variables": {},
+    "constants": {
+      "damageProfile": "DirectDamage"
+    },
+    "scaled": []
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "KardiocoreGalvanus": {
+    "description": "Le porteur de relique inflige maintenant <style=\"Stat_CritDamage\">+{[extraCritDmg]} dégâts critiques</style> pour chaque unité <style=\"Mechanical\">mécanique</style> alliée adjacente.",
+    "variables": {
+      "extraCritDmg": [295, 311, 327, 343, 359, 375, 391, 406, 422, 438]
+    },
+    "constants": {},
+    "scaled": []
+  }
+}

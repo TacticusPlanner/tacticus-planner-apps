@@ -1,0 +1,8 @@
+{
+  "BlisteringAssault": {
+    "description": "Los <style=\"NormalAttack\">ataques normales</style> del <style=\"Faction_Tyranids\">Matagritos</style> también afectan a todos los enemigos adyacentes al objetivo del ataque.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

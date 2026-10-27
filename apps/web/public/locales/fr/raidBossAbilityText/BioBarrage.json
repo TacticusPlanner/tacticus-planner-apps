@@ -1,0 +1,10 @@
+{
+  "BioBarrage": {
+    "description": "Le Tervigon et toutes les unités alliées infligent +{[extraDmgPct]} % de <style=\"Stat_Damage\">dégâts</style> à distance s'ils ne se sont pas déplacés pendant leur tour.",
+    "variables": {},
+    "constants": {
+      "extraDmgPct": "25"
+    },
+    "scaled": []
+  }
+}

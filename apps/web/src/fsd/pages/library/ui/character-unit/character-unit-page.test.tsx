@@ -1,4 +1,5 @@
 import { useLocation } from "react-router"
+import { progressionRulesFixture } from "@workspace/game-catalog/testing"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
 import { unitOriginState } from "@/entities/unit"
@@ -205,6 +206,7 @@ async function seedUnitData() {
             env.mythicQuestRecords ?? mythicQuestsFixture.records,
         }
       : {}),
+    "progression-rules": [progressionRulesFixture],
     "unlock-shard-costs": [
       { rarity: "Uncommon", shards: 80 },
       { rarity: "Legendary", shards: 500 },

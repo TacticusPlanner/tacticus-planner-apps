@@ -3,12 +3,12 @@
     "description": "At the start of the battle, creates a copy of the enemy team to fight for him. Copies have the same stats and ability levels as the original units. As long as one of these copies is on the battlefield, reduce all incoming damage to <style=\"Faction_ThousandSons\">Thaumachus</style> by <style=\"Stat_Damage\">{[dmgReductionPct]}%</style>. Each time a copied character is defeated for the first time, Thaumachus loses <style=\"Stat_Health\">{[hp]} Health</style>.",
     "variables": {
       "hp": [
-        101, 107, 113, 132, 151, 170, 189, 284, 315, 368, 420, 473, 525, 578,
-        630, 790, 1105, 1080, 1215, 1350, 1485, 1620, 1755, 1890, 2320, 3175,
-        3150, 3545, 3940, 4330, 4725, 5120, 5515, 6040, 6565, 7780, 9720, 11665,
-        13610, 15555, 17500, 19445, 21390, 23335, 25280, 27220, 29165, 31110,
-        33055, 35000, 37800, 44100, 63000, 63000, 63000, 65000, 65001, 65002,
-        65003, 65004, 65005, 65006, 65007, 65008, 65009
+        101, 126, 151, 176, 202, 227, 252, 378, 504, 588, 672, 756, 840, 924,
+        1008, 1345, 1680, 2015, 2270, 2520, 2770, 3025, 3275, 3530, 4590, 5655,
+        6720, 7560, 8400, 9240, 10080, 10920, 11760, 12880, 14000, 18665, 23335,
+        28000, 32665, 37335, 42000, 46665, 51335, 56000, 60665, 65335, 70000,
+        74665, 79335, 84000, 112000, 140000, 168000, 182000, 196000, 210000,
+        224000, 238000, 252000, 266000, 280000, 294000, 317335, 340665, 364000
       ],
       "dmgReductionPct": [
         25, 25, 25, 25, 25, 25, 25, 25, 33, 33, 33, 33, 33, 33, 33, 33, 33, 40,
@@ -18,6 +18,6 @@
       ]
     },
     "constants": {},
-    "scaled": ["hp"]
+    "scaled": []
   }
 }

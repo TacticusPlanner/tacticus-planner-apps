@@ -1,0 +1,15 @@
+{
+  "ImpossibleForm": {
+    "description": "En cada turno, el noveno ataque y todos los novenos ataques adicionales contra <style=\"Faction_ThousandSons\">Magnus</style> infligen <style=\"Stat_Damage\">-{[dmgReductionPct]} % de Daño</style>.",
+    "variables": {
+      "dmgReductionPct": [
+        54, 54, 54, 54, 54, 54, 54, 54, 63, 63, 63, 63, 63, 63, 63, 63, 63, 72,
+        72, 72, 72, 72, 72, 72, 72, 72, 81, 81, 81, 81, 81, 81, 81, 81, 81, 90,
+        90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90,
+        90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90
+      ]
+    },
+    "constants": {},
+    "scaled": []
+  }
+}

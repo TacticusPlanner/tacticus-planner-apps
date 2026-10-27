@@ -64,7 +64,7 @@ function byNumber(data: unknown): Record<string, unknown>[] {
   return asArray(data).map((row) => ({ id: row.number, ...row }))
 }
 
-// global-values is a one-record list with no id of its own; stored under the dataset key.
+// global-values and progression-rules are one-record lists with no id of its own; stored under the dataset key.
 function asFixedIdRow(id: string, data: unknown): Record<string, unknown>[] {
   return asArray(data).map((row) => ({ id, ...row }))
 }
@@ -112,6 +112,8 @@ export const datasetToStorageModels: Record<
   factions: asArray,
   "damage-types": asArray,
   "global-values": (data) => asFixedIdRow("global-values", data),
+  "progression-rules": (data) => asFixedIdRow("progression-rules", data),
+  hre: asArray,
 }
 
 export function mapDatasetRowToStorageModel<T extends Record<string, unknown>>(

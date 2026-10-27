@@ -1,0 +1,23 @@
+{
+  "VulnerableToFlameAndBlast": {
+    "description": "Chaque fois que cette unité subit des <style=\"DMG_Flame\">dégâts de feu</style> ou des <style=\"DMG_Blast\">dégâts d'explosion</style>, elle perd <style=\"Stat_Health\">{[hp]} santé</style> en plus des dégâts subis. Cette unité subit <style=\"Stat_Damage\">-{[dmgReductionPct]} % de dégâts</style> des coups qui n'infligent pas de <style=\"DMG_Flame\">dégâts de feu</style> ou de <style=\"DMG_Blast\">dégâts d'explosion</style>.",
+    "variables": {
+      "hp": [
+        20, 25, 30, 35, 40, 45, 50, 76, 101, 118, 134, 151, 168, 185, 202, 270,
+        335, 405, 455, 505, 555, 605, 655, 705, 920, 1130, 1345, 1510, 1680,
+        1850, 2015, 2185, 2350, 2575, 2800, 3735, 4665, 5600, 6535, 7465, 8400,
+        9335, 10265, 11200, 12135, 13065, 14000, 14935, 15865, 16800, 22400,
+        28000, 33600, 36400, 39200, 42000, 44800, 47600, 50400, 53200, 56000,
+        58800, 63465, 68135, 72800
+      ],
+      "dmgReductionPct": [
+        25, 25, 25, 25, 25, 25, 25, 25, 33, 33, 33, 33, 33, 33, 33, 33, 33, 40,
+        40, 40, 40, 40, 40, 40, 40, 40, 50, 50, 50, 50, 50, 50, 50, 50, 50, 66,
+        66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66,
+        66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66
+      ]
+    },
+    "constants": {},
+    "scaled": []
+  }
+}

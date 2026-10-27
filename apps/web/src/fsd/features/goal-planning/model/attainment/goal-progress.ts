@@ -13,7 +13,10 @@ import type { UnlockShardCostStorageModel } from "@workspace/game-catalog"
 import type { PlayerDataChunkDto } from "@workspace/player-data"
 
 import { rankTargetSlots } from "@/entities/goal"
-import { reachableRankProgress } from "@/features/goal-farming/@x/goal-planning"
+import {
+  reachableRankProgress,
+  type LevelRules,
+} from "@/features/goal-farming/@x/goal-planning"
 
 import { abilityTrackLevel, type GoalAttainmentParams } from "./goal-attainment"
 
@@ -132,6 +135,29 @@ export type GoalProgressParams = GoalAttainmentParams & {
     UpgradeId,
     { label: string; rarity: Rarity; crafted: boolean }
   >
+  /** The game's level rules; absent (still loading) leaves a Rank goal without its reachable marker. */
+  levelRules?: LevelRules
+}
+
+/** What rarity and level let a Rank goal reach right now, when that falls short of its `totalSlots`
+ *  span from `startRank`; `null` when nothing restricts it or the level rules haven't loaded. */
+function rankRestriction(
+  xpLevel: number,
+  rarityMaxRank: Rank,
+  startRank: number,
+  totalSlots: number,
+  levelRules: LevelRules | undefined
+) {
+  if (!levelRules || totalSlots <= 0) return null
+  const combined = reachableRankProgress(xpLevel, rarityMaxRank, levelRules)
+  const reachableContinuousSlots =
+    (rankIndex(combined.rank) - startRank) * 6 + combined.appliedSlots
+  if (reachableContinuousSlots >= totalSlots) return null
+  return {
+    combined,
+    levelUnrestricted: reachableRankProgress(xpLevel, lastRank, levelRules),
+    ratio: clampRatio(reachableContinuousSlots, totalSlots),
+  }
 }
 
 export function computeGoalProgress(params: GoalProgressParams): GoalProgress {
@@ -172,21 +198,13 @@ export function computeGoalProgress(params: GoalProgressParams): GoalProgress {
       const rarityMaxRank = maxRankForProgression(
         params.playerCharacter.progressionIndex
       )
-      const levelUnrestricted = reachableRankProgress(
+      const restriction = rankRestriction(
         params.playerCharacter.xpLevel,
-        lastRank
+        rarityMaxRank,
+        target.start,
+        totalSlots,
+        params.levelRules
       )
-      const combined = reachableRankProgress(
-        params.playerCharacter.xpLevel,
-        rarityMaxRank
-      )
-      const reachableContinuousSlots =
-        (rankIndex(combined.rank) - target.start) * 6 + combined.appliedSlots
-      const isRestricted =
-        totalSlots > 0 && reachableContinuousSlots < totalSlots
-      const reachableRatio = isRestricted
-        ? clampRatio(reachableContinuousSlots, totalSlots)
-        : null
       return {
         kind: "Rank",
         // Never displayed past the goal's own target, even once the player's live rank has
@@ -203,14 +221,15 @@ export function computeGoalProgress(params: GoalProgressParams): GoalProgress {
               ? 1
               : 0
             : clampRatio(completedSlots, totalSlots),
-        reachableRatio,
-        reachableRank: isRestricted ? combined.rank : null,
-        reachableAppliedSlots: isRestricted ? combined.appliedSlots : null,
-        reachableRankLimitedBy: !isRestricted
+        reachableRatio: restriction?.ratio ?? null,
+        reachableRank: restriction?.combined.rank ?? null,
+        reachableAppliedSlots: restriction?.combined.appliedSlots ?? null,
+        reachableRankLimitedBy: !restriction
           ? null
-          : combined.rank !== levelUnrestricted.rank
+          : restriction.combined.rank !== restriction.levelUnrestricted.rank
             ? "rarity"
-            : rankIndex(rarityMaxRank) === rankIndex(levelUnrestricted.rank)
+            : rankIndex(rarityMaxRank) ===
+                rankIndex(restriction.levelUnrestricted.rank)
               ? "both"
               : "level",
       }

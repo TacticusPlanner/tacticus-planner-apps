@@ -1,0 +1,11 @@
+{
+  "ProphetOfGorkAndMork": {
+    "description": "Nachdem <style=\"Faction_Orks\">Ghazghkull</style> <style=\"Stat\">{[nrOfAttacks]}</style>-mal in einem Zug angegriffen wurde, erleidet er bis zum Ende des Zugs <style=\"Stat_Damage\">-{[dmgPctReduction]} % Schaden</style>.",
+    "variables": {},
+    "constants": {
+      "dmgPctReduction": "90",
+      "nrOfAttacks": "4"
+    },
+    "scaled": []
+  }
+}

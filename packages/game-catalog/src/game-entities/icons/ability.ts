@@ -1,11 +1,9 @@
+import overrides from "./ability-icon-overrides.json"
 import { datamineAssetUrl, gameAssetUrl } from "./asset-path"
 
 // Ability ids whose game icon is spelled differently, or sits in the game's misspelled `abilties/`.
-const abilityIconOverrides: Record<string, string> = {
-  DaemonfleshPlate: "abilities/ui_icon_ability2_DaemonFleshPlate.webp",
-  EctoplasmaCannon: "abilties/ui_icon_ability2_EctoplasmaCannon.webp",
-  NetherRealmCasket: "abilities/ui_icon_ability2_NetherrealmCasket.webp",
-}
+// A JSON file so apps/web's ability-text generator checks icons against the same paths.
+const abilityIconOverrides: Record<string, string> = overrides
 
 /**
  * Ability icon URL, derived directly from the ability id (`AdaptiveStrategy` →

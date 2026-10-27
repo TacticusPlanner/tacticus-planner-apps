@@ -21,7 +21,7 @@ export async function seedGameCatalog(
       hash: `${key}-test`,
       catalogVersion: "test",
       gameVersion: "test",
-      schemaVersion: 1,
+      schemaHash: "test",
       updatedAt,
     })
   }

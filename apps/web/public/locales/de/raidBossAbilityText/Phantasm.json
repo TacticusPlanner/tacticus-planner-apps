@@ -1,0 +1,25 @@
+{
+  "Phantasm": {
+    "description": "Solange ein Phantasma existiert, wird jeglicher Schaden um <style=\"Stat_Damage\">{[dmgReductionPct]} %</style> reduziert. Wenn <style=\"Faction_Aeldari\">Eldryon</style> das Ziel eines Angriffs wird und kein Phantasma vorhanden ist, bewegt er sich auf ein zufälliges freies Feld und lässt ein Phantasma zurück. Dabei bevorzugt er Felder innerhalb von <style=\"Stat\">3</style> Feldern Reichweite (wenn möglich). Diese Bewegung kann über unpassierbare Felder, Gegner und jedes Terrain erfolgen. Begibt sich eine Einheit auf das Feld des Phantasmas, wird es zerstört und <style=\"Faction_Aeldari\">Eldryon</style> verliert <style=\"Stat_Health\">{[hp]} Lebenspunkte</style>.",
+    "variables": {
+      "dmgReductionPct": [
+        25, 25, 25, 25, 25, 25, 25, 25, 33, 33, 33, 33, 33, 33, 33, 33, 33, 40,
+        40, 40, 40, 40, 40, 40, 40, 40, 50, 50, 50, 50, 50, 50, 50, 50, 50, 66,
+        66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66,
+        66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66
+      ],
+      "hp": [
+        40, 50, 60, 71, 81, 91, 101, 151, 202, 235, 269, 302, 336, 370, 403,
+        540, 670, 805, 905, 1010, 1110, 1210, 1310, 1410, 1835, 2260, 2690,
+        3025, 3360, 3695, 4030, 4370, 4705, 5150, 5600, 7465, 9335, 11200,
+        13065, 14935, 16800, 18665, 20535, 22400, 24265, 26135, 28000, 29865,
+        31735, 33600, 44800, 56000, 67200, 72800, 78400, 84000, 89600, 95200,
+        100800, 106400, 112000, 117600, 126935, 136265, 145600
+      ]
+    },
+    "constants": {
+      "range": "2"
+    },
+    "scaled": []
+  }
+}

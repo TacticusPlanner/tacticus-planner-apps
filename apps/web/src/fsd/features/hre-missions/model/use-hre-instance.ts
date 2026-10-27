@@ -7,6 +7,7 @@ import { combineReadStates, useReadState } from "@/shared/lib"
 import { toById, useCatalogDataset } from "@/shared/local-data"
 
 import { selectHreInstance, type HreInstance } from "./hre-instance"
+import { toHreRules, type HreRules } from "./hre-rules"
 
 const DAY_MS = 86_400_000
 /** An HRE lasts 14 days; reading a little further back finds one that is still running. */
@@ -31,6 +32,9 @@ export type HreInstanceState =
       status: "ready"
       instance: HreInstance<EventsCalendarStorageModel> | null
       hero: HreFeaturedHero | null
+      /** The event's served missions and reward rules; null when the served data lacks a part the
+       *  tracker needs (an unknown mission task, say). */
+      rules: HreRules | null
       /** The instant the selection was made at, for countdowns (render stays pure). */
       nowMs: number
     }
@@ -48,7 +52,7 @@ function entriesAround(
   )
 }
 
-/** The running Hero Release Event, else the next one, with its featured hero. */
+/** The running Hero Release Event, else the next one, with its featured hero and served rules. */
 export function useHreInstance(): HreInstanceState {
   // A coarse tick re-selects from the cached calendar across an event boundary without a reload.
   const [nowMs, setNowMs] = useState(() => Date.now())
@@ -64,16 +68,33 @@ export function useHreInstance(): HreInstanceState {
   const definitions = useCatalogDataset("event-definitions", toById)
   const calendar = useCatalogDataset("events-calendar")
   const characters = useCatalogDataset("characters", toById)
+  const hre = useCatalogDataset("hre")
+  const progression = useCatalogDataset("progression-rules")
   // Each read is stable while unchanged, so the combination is too.
   const read = useMemo(
-    () => combineReadStates(synced, definitions, calendar, characters),
-    [synced, definitions, calendar, characters]
+    () =>
+      combineReadStates(
+        synced,
+        definitions,
+        calendar,
+        characters,
+        hre,
+        progression
+      ),
+    [synced, definitions, calendar, characters, hre, progression]
   )
 
   return useMemo((): HreInstanceState => {
     if (read.status === "error") return { status: "error", retry: read.retry }
     if (read.status === "loading") return { status: "loading" }
-    const [isSynced, definitionsById, entries, charactersById] = read.data
+    const [
+      isSynced,
+      definitionsById,
+      entries,
+      charactersById,
+      hreRecords,
+      progressionRules,
+    ] = read.data
     if (!isSynced) return { status: "loading" }
     const instance = selectHreInstance(
       entriesAround(entries, nowMs),
@@ -92,7 +113,13 @@ export function useHreInstance(): HreInstanceState {
           initialRarity: character.initialRarity,
         }
       : null
-    return { status: "ready", instance, hero, nowMs }
+    const rules =
+      toHreRules(
+        hreRecords,
+        progressionRules,
+        instance?.featuredCharacterId ?? null
+      ) ?? null
+    return { status: "ready", instance, hero, rules, nowMs }
   }, [read, nowMs])
 }
 

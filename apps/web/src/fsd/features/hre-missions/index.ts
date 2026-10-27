@@ -4,6 +4,8 @@
 export { useHreInstance, useIsHreLive } from "./model/use-hre-instance"
 export { useHreProgress } from "./model/use-hre-progress"
 export { DEFAULT_HRE_PROGRESS } from "./model/hre-progress"
+export type { HreMission } from "./model/hre-missions"
+export { toHreRules, type HreRules } from "./model/hre-rules"
 export { useHreTokens } from "./model/use-hre-tokens"
 export {
   campaignObjectiveState,

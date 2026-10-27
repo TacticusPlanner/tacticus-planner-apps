@@ -13,7 +13,10 @@ import type {
   EstimateOutcome,
   RankSlotAllocation,
 } from "@/features/goal-farming/@x/goal-planning"
-import { calculateGoalResourceNeed } from "@/features/goal-farming/@x/goal-planning"
+import {
+  calculateGoalResourceNeed,
+  useLevelRules,
+} from "@/features/goal-farming/@x/goal-planning"
 import type {
   AbilityMaterials,
   ResourceNeed,
@@ -140,6 +143,8 @@ function useComputedGoalsOverviewMetrics(
     !catalogLoading &&
     !!(mowsById && ascensionCostsById && unlockShardCostsById)
 
+  const levelRules = useLevelRules()
+
   // Everything below is pure in the reads above: memoised so a re-render that changes none of them
   // (a toggle elsewhere on the page, a sync progress tick) skips the per-goal resource maths.
   return useMemo(() => {
@@ -216,6 +221,7 @@ function useComputedGoalsOverviewMetrics(
         unlockShardCostsById: unlockShardCostsById ?? new Map(),
         inventoryShard,
         upgradesById,
+        levelRules,
       })
       const progress = withMilestoneStart(liveProgress, siblings)
 
@@ -317,6 +323,7 @@ function useComputedGoalsOverviewMetrics(
           detail,
           playerUnit,
           chainedFrom: planNet?.levelChainedFrom,
+          levelRules,
         }),
       })
     })
@@ -347,6 +354,7 @@ function useComputedGoalsOverviewMetrics(
     rankSlotsByGoalId,
     abilityMaterialsByGoalId,
     planNetByGoalId,
+    levelRules,
   ])
 }
 

@@ -530,6 +530,40 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  "/api/v1/game-catalog/hre": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Gets the Hero Release Events. */
+    get: operations["TacticusPlannerApiFeaturesGameCatalogGetGameCatalogHreEndpoint1"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/game-catalog/hre/{envelopeHash}": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Gets the Hero Release Events. */
+    get: operations["TacticusPlannerApiFeaturesGameCatalogGetGameCatalogHreEndpoint2"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   "/api/v1/game-catalog/lre-battles": {
     parameters: {
       query?: never
@@ -1870,6 +1904,8 @@ export interface components {
       enemiesTotal: number
       enemiesTypes: components["schemas"]["IReadOnlyListOfString"]
       detailedEnemyTypes: components["schemas"]["IReadOnlyListOfGameCatalogCampaignDetailedEnemy"]
+      /** Format: int32 */
+      lightningVictoryTurns: null | number
     }
     GameCatalogCampaignDefinitionView: {
       groupId: string
@@ -1878,6 +1914,8 @@ export interface components {
       coreCharacters: components["schemas"]["IReadOnlyListOfString"]
       types: components["schemas"]["IReadOnlyListOfString"]
       battleIds: components["schemas"]["IReadOnlyListOfString"]
+      /** Format: int32 */
+      number: number
     }
     GameCatalogCampaignDetailedEnemy: {
       id: string
@@ -1966,8 +2004,7 @@ export interface components {
     }
     GameCatalogDatasetEnvelopeOfGameCatalogGuildRaidMetaView: {
       version: string
-      /** Format: int32 */
-      schemaVersion: number
+      schemaHash: string
       gameVersion: string
       sourceHash: string
       datasetKey: string
@@ -1976,8 +2013,7 @@ export interface components {
     }
     GameCatalogDatasetEnvelopeOfGameCatalogRaidBossesView: {
       version: string
-      /** Format: int32 */
-      schemaVersion: number
+      schemaHash: string
       gameVersion: string
       sourceHash: string
       datasetKey: string
@@ -1986,8 +2022,7 @@ export interface components {
     }
     GameCatalogDatasetEnvelopeOfIReadOnlyDictionaryOfStringAndIReadOnlyListOfGameCatalogEventsCalendarEntry: {
       version: string
-      /** Format: int32 */
-      schemaVersion: number
+      schemaHash: string
       gameVersion: string
       sourceHash: string
       datasetKey: string
@@ -1998,8 +2033,7 @@ export interface components {
     }
     GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogAscensionCostView: {
       version: string
-      /** Format: int32 */
-      schemaVersion: number
+      schemaHash: string
       gameVersion: string
       sourceHash: string
       datasetKey: string
@@ -2010,8 +2044,7 @@ export interface components {
     }
     GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogCampaignBattleView: {
       version: string
-      /** Format: int32 */
-      schemaVersion: number
+      schemaHash: string
       gameVersion: string
       sourceHash: string
       datasetKey: string
@@ -2022,8 +2055,7 @@ export interface components {
     }
     GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogCampaignDefinitionView: {
       version: string
-      /** Format: int32 */
-      schemaVersion: number
+      schemaHash: string
       gameVersion: string
       sourceHash: string
       datasetKey: string
@@ -2034,8 +2066,7 @@ export interface components {
     }
     GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogCharacterAbilityCostView: {
       version: string
-      /** Format: int32 */
-      schemaVersion: number
+      schemaHash: string
       gameVersion: string
       sourceHash: string
       datasetKey: string
@@ -2046,8 +2077,7 @@ export interface components {
     }
     GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogCharacterView: {
       version: string
-      /** Format: int32 */
-      schemaVersion: number
+      schemaHash: string
       gameVersion: string
       sourceHash: string
       datasetKey: string
@@ -2057,8 +2087,7 @@ export interface components {
     }
     GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogDamageType: {
       version: string
-      /** Format: int32 */
-      schemaVersion: number
+      schemaHash: string
       gameVersion: string
       sourceHash: string
       datasetKey: string
@@ -2067,8 +2096,7 @@ export interface components {
     }
     GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogEquipmentView: {
       version: string
-      /** Format: int32 */
-      schemaVersion: number
+      schemaHash: string
       gameVersion: string
       sourceHash: string
       datasetKey: string
@@ -2078,8 +2106,7 @@ export interface components {
     }
     GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogEventDefinition: {
       version: string
-      /** Format: int32 */
-      schemaVersion: number
+      schemaHash: string
       gameVersion: string
       sourceHash: string
       datasetKey: string
@@ -2090,8 +2117,7 @@ export interface components {
     }
     GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogFaction: {
       version: string
-      /** Format: int32 */
-      schemaVersion: number
+      schemaHash: string
       gameVersion: string
       sourceHash: string
       datasetKey: string
@@ -2100,8 +2126,7 @@ export interface components {
     }
     GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogGlobalValues: {
       version: string
-      /** Format: int32 */
-      schemaVersion: number
+      schemaHash: string
       gameVersion: string
       sourceHash: string
       datasetKey: string
@@ -2111,8 +2136,7 @@ export interface components {
     }
     GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogHordeModeTiers: {
       version: string
-      /** Format: int32 */
-      schemaVersion: number
+      schemaHash: string
       gameVersion: string
       sourceHash: string
       datasetKey: string
@@ -2120,10 +2144,18 @@ export interface components {
       data:
         null | components["schemas"]["IReadOnlyListOfGameCatalogHordeModeTiers"]
     }
+    GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogHre: {
+      version: string
+      schemaHash: string
+      gameVersion: string
+      sourceHash: string
+      datasetKey: string
+      datasetHash: string
+      data: null | components["schemas"]["IReadOnlyListOfGameCatalogHre"]
+    }
     GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogLreBattleView: {
       version: string
-      /** Format: int32 */
-      schemaVersion: number
+      schemaHash: string
       gameVersion: string
       sourceHash: string
       datasetKey: string
@@ -2133,8 +2165,7 @@ export interface components {
     }
     GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogLreView: {
       version: string
-      /** Format: int32 */
-      schemaVersion: number
+      schemaHash: string
       gameVersion: string
       sourceHash: string
       datasetKey: string
@@ -2143,8 +2174,7 @@ export interface components {
     }
     GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogMow: {
       version: string
-      /** Format: int32 */
-      schemaVersion: number
+      schemaHash: string
       gameVersion: string
       sourceHash: string
       datasetKey: string
@@ -2153,8 +2183,7 @@ export interface components {
     }
     GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogMowUpgradeCostView: {
       version: string
-      /** Format: int32 */
-      schemaVersion: number
+      schemaHash: string
       gameVersion: string
       sourceHash: string
       datasetKey: string
@@ -2165,8 +2194,7 @@ export interface components {
     }
     GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogMythicQuestsView: {
       version: string
-      /** Format: int32 */
-      schemaVersion: number
+      schemaHash: string
       gameVersion: string
       sourceHash: string
       datasetKey: string
@@ -2177,8 +2205,7 @@ export interface components {
     }
     GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogNpc: {
       version: string
-      /** Format: int32 */
-      schemaVersion: number
+      schemaHash: string
       gameVersion: string
       sourceHash: string
       datasetKey: string
@@ -2187,8 +2214,7 @@ export interface components {
     }
     GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogOnslaughtReward: {
       version: string
-      /** Format: int32 */
-      schemaVersion: number
+      schemaHash: string
       gameVersion: string
       sourceHash: string
       datasetKey: string
@@ -2199,8 +2225,7 @@ export interface components {
     }
     GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogProgressionRules: {
       version: string
-      /** Format: int32 */
-      schemaVersion: number
+      schemaHash: string
       gameVersion: string
       sourceHash: string
       datasetKey: string
@@ -2211,8 +2236,7 @@ export interface components {
     }
     GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogQuestCrate: {
       version: string
-      /** Format: int32 */
-      schemaVersion: number
+      schemaHash: string
       gameVersion: string
       sourceHash: string
       datasetKey: string
@@ -2221,8 +2245,7 @@ export interface components {
     }
     GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogQuestEventView: {
       version: string
-      /** Format: int32 */
-      schemaVersion: number
+      schemaHash: string
       gameVersion: string
       sourceHash: string
       datasetKey: string
@@ -2232,8 +2255,7 @@ export interface components {
     }
     GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogShopView: {
       version: string
-      /** Format: int32 */
-      schemaVersion: number
+      schemaHash: string
       gameVersion: string
       sourceHash: string
       datasetKey: string
@@ -2242,8 +2264,7 @@ export interface components {
     }
     GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogUnitPower: {
       version: string
-      /** Format: int32 */
-      schemaVersion: number
+      schemaHash: string
       gameVersion: string
       sourceHash: string
       datasetKey: string
@@ -2252,8 +2273,7 @@ export interface components {
     }
     GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogUnlockShardCostView: {
       version: string
-      /** Format: int32 */
-      schemaVersion: number
+      schemaHash: string
       gameVersion: string
       sourceHash: string
       datasetKey: string
@@ -2264,8 +2284,7 @@ export interface components {
     }
     GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogUpgradeView: {
       version: string
-      /** Format: int32 */
-      schemaVersion: number
+      schemaHash: string
       gameVersion: string
       sourceHash: string
       datasetKey: string
@@ -2471,6 +2490,90 @@ export interface components {
       tiers: components["schemas"]["IReadOnlyListOfGameCatalogHordeModeTier"]
       characters: components["schemas"]["IReadOnlyListOfGameCatalogHordeModeCharacter"]
     }
+    GameCatalogHre: {
+      id: string
+      heroId: string
+      baseRarity: string
+      maxRarity: string
+      featuredFaction: string
+      gameModes: components["schemas"]["IReadOnlyListOfString"]
+      scorePoints: components["schemas"]["GameCatalogHreScorePoints"]
+      milestones: components["schemas"]["IReadOnlyListOfGameCatalogHreMilestone"]
+      missions: components["schemas"]["IReadOnlyListOfGameCatalogHreMission"]
+      leaderboard: components["schemas"]["GameCatalogHreLeaderboard"]
+      chestShop: components["schemas"]["IReadOnlyListOfGameCatalogHreChest"]
+      ohSoCloseOffer: components["schemas"]["GameCatalogOhSoCloseOffer"]
+    }
+    GameCatalogHreChest: {
+      chestId: string
+      /** Format: int32 */
+      cost: number
+      /** Format: int32 */
+      minShards: number
+      /** Format: int32 */
+      maxShards: number
+    }
+    GameCatalogHreDailyReward: {
+      /** Format: int32 */
+      position: number
+      /** Format: int32 */
+      currency: number
+    }
+    GameCatalogHreLeaderboard: {
+      id: string
+      dailyRewards: components["schemas"]["IReadOnlyListOfGameCatalogHreDailyReward"]
+      phases: components["schemas"]["IReadOnlyListOfGameCatalogHrePhase"]
+    }
+    GameCatalogHreMilestone: {
+      /** Format: int32 */
+      scorePoints: number
+      /** Format: int32 */
+      currency: number
+    }
+    GameCatalogHreMission: {
+      /** Format: int32 */
+      index: number
+      id: string
+      bonus: boolean
+      /** Format: int32 */
+      currency: number
+      rewards: components["schemas"]["IReadOnlyListOfString"]
+      tasks: components["schemas"]["IReadOnlyListOfGameCatalogHreMissionTask"]
+    }
+    GameCatalogHreMissionTask: {
+      name: string
+      /** Format: int32 */
+      target: number
+      parameters: components["schemas"]["IReadOnlyDictionaryOfStringAndString"]
+    }
+    GameCatalogHrePhase: {
+      /** Format: int32 */
+      endOffsetDays: null | number
+      tiers: components["schemas"]["IReadOnlyListOfGameCatalogHrePhaseChest"]
+    }
+    GameCatalogHrePhaseChest: {
+      /** Format: int32 */
+      position: number
+      chestId: string
+      /** Format: int32 */
+      currency: number
+      /** Format: int32 */
+      shards: number
+    }
+    GameCatalogHreScorePoints: {
+      /** Format: int32 */
+      campaignScorePointsDifficultyMultiplier: number
+      /** Format: int32 */
+      campaignScorePointsLightningVictoryDifficultyMultiplier: number
+      /** Format: int32 */
+      campaignScorePointsMainUnitsDeadMultiplier: number
+      /** Format: int32 */
+      campaignScorePointsStaminaMultiplier: number
+      /** Format: int32 */
+      pvpScorePointsDifficultyMultiplier: number
+      scorePointsEnemyPowerTable: components["schemas"]["IReadOnlyListOfInt64"]
+      guildBossScorePointsDamageTableByRarity: components["schemas"]["IReadOnlyDictionaryOfStringAndIReadOnlyListOfInt32"]
+    }
     GameCatalogLreBattleView: {
       id: string
       lreId: string
@@ -2552,6 +2655,18 @@ export interface components {
       /** Format: int32 */
       shardsPerChest: number
     }
+    GameCatalogLreTokens: {
+      /** Format: int32 */
+      start: number
+      /** Format: int32 */
+      max: number
+      /** Format: int32 */
+      regenSeconds: number
+      /** Format: int32 */
+      regenAmount: number
+      /** Format: int32 */
+      dailyRefreshes: number
+    }
     GameCatalogLreTrackEnemies: {
       label: string
       link: string
@@ -2582,6 +2697,10 @@ export interface components {
       beta: components["schemas"]["GameCatalogLreTrackView"]
       gamma: components["schemas"]["GameCatalogLreTrackView"]
       rewards: components["schemas"]["GameCatalogLreRewards"]
+      tokens: components["schemas"]["GameCatalogLreTokens"]
+      /** Format: int32 */
+      maxRuns: number
+      ohSoCloseOffer: components["schemas"]["GameCatalogOhSoCloseOffer"]
     }
     GameCatalogLreWave: {
       /** Format: int32 */
@@ -2592,8 +2711,7 @@ export interface components {
     }
     GameCatalogManifest: {
       version: string
-      /** Format: int32 */
-      schemaVersion: number
+      schemaHash: string
       gameVersion: string
       sourceHash: string
       datasets: components["schemas"]["IReadOnlyListOfGameCatalogManifestDataset"]
@@ -2719,6 +2837,16 @@ export interface components {
       /** Format: int32 */
       stars: number
     }
+    GameCatalogOhSoCloseOffer: {
+      unlock: components["schemas"]["GameCatalogOhSoCloseOfferPrice"]
+      ascension: components["schemas"]["GameCatalogOhSoCloseOfferPrice"]
+    }
+    GameCatalogOhSoCloseOfferPrice: {
+      /** Format: int32 */
+      base: number
+      /** Format: int32 */
+      multiplier: number
+    }
     GameCatalogOnslaughtReward: {
       id: string
       sector: string
@@ -2780,6 +2908,8 @@ export interface components {
       allowedFactionIds: components["schemas"]["IReadOnlyListOfString"]
       enemyFactionIds: components["schemas"]["IReadOnlyListOfString"]
       battles: components["schemas"]["IReadOnlyListOfGameCatalogQuestBattleView"]
+      tokens: components["schemas"]["GameCatalogQuestTokens"]
+      scorePoints: components["schemas"]["GameCatalogQuestScorePoints"]
     }
     GameCatalogQuestLootView: {
       upgradeId: string
@@ -2793,6 +2923,22 @@ export interface components {
       target: null | string
       /** Format: int32 */
       score: number
+    }
+    GameCatalogQuestScorePoints: {
+      /** Format: int32 */
+      pointsPerStar: number
+      /** Format: int32 */
+      maxPointsForLightningVictory: number
+    }
+    GameCatalogQuestTokens: {
+      /** Format: int32 */
+      max: number
+      /** Format: int32 */
+      regenSeconds: number
+      /** Format: int32 */
+      regenAmount: number
+      /** Format: int32 */
+      refillGemsCost: number
     }
     GameCatalogRaidBossEncounterModifierView: {
       /** Format: double */
@@ -3220,6 +3366,9 @@ export interface components {
         key: string
       ]: components["schemas"]["IReadOnlyListOfGameCatalogEventsCalendarEntry"]
     }
+    IReadOnlyDictionaryOfStringAndIReadOnlyListOfInt32: {
+      [key: string]: components["schemas"]["IReadOnlyListOfInt32"]
+    }
     IReadOnlyDictionaryOfStringAndJsonElement: Record<string, never>
     IReadOnlyDictionaryOfStringAndString: {
       [key: string]: string
@@ -3259,6 +3408,14 @@ export interface components {
     IReadOnlyListOfGameCatalogHordeModeRelic: components["schemas"]["GameCatalogHordeModeRelic"][]
     IReadOnlyListOfGameCatalogHordeModeTier: components["schemas"]["GameCatalogHordeModeTier"][]
     IReadOnlyListOfGameCatalogHordeModeTiers: components["schemas"]["GameCatalogHordeModeTiers"][]
+    IReadOnlyListOfGameCatalogHre: components["schemas"]["GameCatalogHre"][]
+    IReadOnlyListOfGameCatalogHreChest: components["schemas"]["GameCatalogHreChest"][]
+    IReadOnlyListOfGameCatalogHreDailyReward: components["schemas"]["GameCatalogHreDailyReward"][]
+    IReadOnlyListOfGameCatalogHreMilestone: components["schemas"]["GameCatalogHreMilestone"][]
+    IReadOnlyListOfGameCatalogHreMission: components["schemas"]["GameCatalogHreMission"][]
+    IReadOnlyListOfGameCatalogHreMissionTask: components["schemas"]["GameCatalogHreMissionTask"][]
+    IReadOnlyListOfGameCatalogHrePhase: components["schemas"]["GameCatalogHrePhase"][]
+    IReadOnlyListOfGameCatalogHrePhaseChest: components["schemas"]["GameCatalogHrePhaseChest"][]
     IReadOnlyListOfGameCatalogLreBattleView: components["schemas"]["GameCatalogLreBattleView"][]
     IReadOnlyListOfGameCatalogLreChestsMilestone: components["schemas"]["GameCatalogLreChestsMilestone"][]
     IReadOnlyListOfGameCatalogLreEnemy: components["schemas"]["GameCatalogLreEnemy"][]
@@ -3312,6 +3469,7 @@ export interface components {
     IReadOnlyListOfGuildRaidModifierStatusResponse: components["schemas"]["GuildRaidModifierStatusResponse"][]
     IReadOnlyListOfGuildRaidPrimeStatusResponse: components["schemas"]["GuildRaidPrimeStatusResponse"][]
     IReadOnlyListOfInt32: number[]
+    IReadOnlyListOfInt64: number[]
     IReadOnlyListOfIReadOnlyListOfInt32: components["schemas"]["IReadOnlyListOfInt32"][]
     IReadOnlyListOfIReadOnlyListOfString: components["schemas"]["IReadOnlyListOfString"][]
     IReadOnlyListOfLegendaryEventObjectiveAnnotationResponse: components["schemas"]["LegendaryEventObjectiveAnnotationResponse"][]
@@ -5385,6 +5543,98 @@ export interface operations {
         }
         content: {
           "application/json": components["schemas"]["GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogHordeModeTiers"]
+        }
+      }
+      /** @description The dataset has not changed. */
+      304: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description The envelope hash is not the current release's. */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+    }
+  }
+  TacticusPlannerApiFeaturesGameCatalogGetGameCatalogHreEndpoint1: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description One record per Hero Release Event, named as the game names it: the unlockable hero and featured faction, how battles score points, the points milestones (event currency each), the mission chain (game task names, targets and parameters), the leaderboard's daily currency and phase chests per position bracket, the chest shop (currency cost and shard range per chest) and the Oh So Close offer pricing. */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogHre"]
+        }
+      }
+      /** @description The dataset has not changed. */
+      304: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description The envelope hash is not the current release's. */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+    }
+  }
+  TacticusPlannerApiFeaturesGameCatalogGetGameCatalogHreEndpoint2: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        envelopeHash: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description One record per Hero Release Event, named as the game names it: the unlockable hero and featured faction, how battles score points, the points milestones (event currency each), the mission chain (game task names, targets and parameters), the leaderboard's daily currency and phase chests per position bracket, the chest shop (currency cost and shard range per chest) and the Oh So Close offer pricing. */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogHre"]
         }
       }
       /** @description The dataset has not changed. */

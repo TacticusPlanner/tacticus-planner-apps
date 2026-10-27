@@ -4,6 +4,7 @@ import { act, fireEvent, render, screen, within } from "@/test/render"
 import userEvent from "@testing-library/user-event"
 
 import { setTestAuth } from "@/test/auth"
+import { progressionRulesFixture } from "@workspace/game-catalog/testing"
 import { seedGameCatalog, seedPlayerData } from "@/test/seed"
 
 vi.mock("@/shared/tour", () => ({
@@ -639,6 +640,7 @@ describe("GoalsPage", () => {
     await seedPlayerData({
       characters: [ownedHero({ xpLevel: 31, xp: 82_000 })],
     })
+    await seedGameCatalog({ "progression-rules": [progressionRulesFixture] })
     // 94,200 - 82,000 = 12,200 XP charged; a 100,000-XP pool at the default Legendary rarity
     // (12,500/book) is floor(100,000 / 12,500) = 8 available against ceil(12,200 / 12,500) = 1 needed.
     insightsResult.value = {

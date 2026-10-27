@@ -1,6 +1,7 @@
 import {
   allocateLevelXp,
   requiredLevelForGoal,
+  type LevelRules,
   type LevelXpNeed,
 } from "@/features/goal-farming/@x/goal-planning"
 import type { GoalDetail } from "@/entities/goal"
@@ -34,7 +35,8 @@ export type LevelPotentialProgress = {
  *  the account's owned XP books could take the character toward the required level *right now*, spent in
  *  priority order through the one shared `allocateLevelXp` so overlapping Rank milestones (and an Ability
  *  goal) of one unit count the same levels and books once. Only a goal whose character is below its
- *  required level gets an entry. Potential is never attainment: the goal's Actual level is unchanged. */
+ *  required level gets an entry, and none does without the level rules. Potential is never attainment:
+ *  the goal's Actual level is unchanged. */
 export function buildLevelPotentialProgress(params: {
   orderedDetails: readonly GoalDetail[]
   priorityByGoalId: ReadonlyMap<string, number>
@@ -44,10 +46,14 @@ export function buildLevelPotentialProgress(params: {
   >
   inventoryXpBooks: readonly { xpBookId: string; amount: number }[] | undefined
   xpBookRarity?: string | null
+  levelRules: LevelRules | undefined
 }): LevelPotentialProgress {
+  const { levelRules } = params
   const needs: LevelXpNeed[] = []
   for (const detail of params.orderedDetails) {
-    const requiredLevel = requiredLevelForGoal(detail)
+    const requiredLevel = levelRules
+      ? requiredLevelForGoal(detail, levelRules)
+      : null
     const priority = params.priorityByGoalId.get(detail.goalId)
     const unit = params.playerCharacterById.get(detail.entityId)
     if (requiredLevel === null || priority === undefined || !unit) continue
@@ -61,11 +67,14 @@ export function buildLevelPotentialProgress(params: {
     })
   }
 
-  const allocation = allocateLevelXp(
-    needs,
-    params.inventoryXpBooks,
-    params.xpBookRarity
-  )
+  const allocation = levelRules
+    ? allocateLevelXp(
+        needs,
+        params.inventoryXpBooks,
+        levelRules,
+        params.xpBookRarity
+      )
+    : new Map<string, never>()
   const ratioByGoalId = new Map<string, number>()
   const chargedXpByGoalId = new Map<string, number>()
   const poolXpAvailableByGoalId = new Map<string, number>()

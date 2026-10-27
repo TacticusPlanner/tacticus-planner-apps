@@ -25,6 +25,7 @@ import {
   useHreProgress,
   useHreTokens,
   useObjectiveText,
+  type HreMission,
 } from "@/features/hre-missions"
 
 import { useHreTeamRecommendations } from "@/features/team-recommendations"
@@ -32,6 +33,8 @@ import { useRunningHse } from "../model/use-running-hse"
 import { HreCampaignTeams } from "./hre/hre-campaign-teams"
 import { HreTeamCard } from "./hre/hre-team-card"
 import { useHreTutorial } from "./hre-page.tutorial"
+
+const NO_MISSIONS: readonly HreMission[] = []
 
 /**
  * Dailies > HRE: the running Hero Release Event (or the next one as a read-only preview). On a
@@ -55,8 +58,15 @@ export function HrePage() {
   const ready = state.status === "ready" ? state : null
   const instance = ready?.instance ?? null
   const hero = ready?.hero ?? null
-  const running = instance?.status === "running"
-  const [progress, actions] = useHreProgress(running ? instance.key : null)
+  const rules = ready?.rules ?? null
+  const missions = rules?.missions ?? NO_MISSIONS
+  // Without the served rules the event shows only its header and a notice.
+  const event = rules ? instance : null
+  const running = event?.status === "running"
+  const [progress, actions] = useHreProgress(
+    running ? event.key : null,
+    missions
+  )
   const shown = running ? progress : DEFAULT_HRE_PROGRESS
   const objectiveText = useObjectiveText(
     hero,
@@ -73,7 +83,9 @@ export function HrePage() {
         defaultValue: hero.alliance,
       }) as string)
     : null
-  const surplus = running ? arenaSurplus(progress, tokens?.arena ?? null) : 0
+  const surplus = running
+    ? arenaSurplus(progress, missions, tokens?.arena ?? null)
+    : 0
   // Only the mission and its objective progress shape the raids request: typing points, rank or a
   // target keeps the request (and the raids engine below) as it was.
   const mission = progress.mission
@@ -87,12 +99,15 @@ export function HrePage() {
               mission,
               progress: [firstProgress, secondProgress],
             },
+            missions,
             surplus
           )
         : null,
-    [running, mission, firstProgress, secondProgress, surplus]
+    [running, mission, firstProgress, secondProgress, missions, surplus]
   )
-  const allTeamPlans = running ? selectTeamPlans(progress, surplus) : []
+  const allTeamPlans = running
+    ? selectTeamPlans(progress, missions, surplus)
+    : []
   // The campaign team plays the battles to fight by hand: it is built per campaign under that list.
   const battlePlan = allTeamPlans.find((plan) => plan.mode === "battle") ?? null
   const teamPlans = allTeamPlans.filter((plan) => plan.mode !== "battle")
@@ -105,8 +120,8 @@ export function HrePage() {
   })
   const firstTeam = teams.findIndex((view) => view.status !== "hidden")
   const pace =
-    instance && ready
-      ? hrePaceFor({
+    instance && ready && rules
+      ? hrePaceFor(rules.rewards, {
           running,
           startUtc: instance.entry.startUtc,
           endUtc: instance.entry.endUtc,
@@ -122,7 +137,7 @@ export function HrePage() {
       : null
 
   const tokenRows = running
-    ? tokenNeedRows(progress, {
+    ? tokenNeedRows(progress, missions, {
         arena: tokens?.arena ?? null,
         guildRaid: tokens?.guildRaid ?? null,
         onslaught: tokens?.onslaught ?? null,
@@ -131,7 +146,7 @@ export function HrePage() {
     : []
 
   useHreTutorial({
-    hasEvent: !!instance,
+    hasEvent: !!event,
     running,
     hasTeam: firstTeam >= 0,
     hasTokens: tokenRows.length > 0,
@@ -139,12 +154,12 @@ export function HrePage() {
 
   const notice = (() => {
     if (!running) return t("hre:raids.notice.preview")
-    if (campaignObjectiveState(progress) === "met")
+    if (campaignObjectiveState(progress, missions) === "met")
       return t("hre:raids.notice.met")
-    const next = nextCampaignMission(progress)
+    const next = nextCampaignMission(progress, missions)
     return next
       ? t("hre:raids.notice.next", {
-          mission: missionName(t, next.missionNumber),
+          mission: missionName(t, next.missionNumber, missions),
           objective: objectiveText(next.objective),
         })
       : t("hre:raids.notice.noneLeft")
@@ -157,7 +172,7 @@ export function HrePage() {
     () =>
       campaignPlan
         ? {
-            missionLabel: missionName(t, campaignPlan.missionNumber),
+            missionLabel: missionName(t, campaignPlan.missionNumber, missions),
             raids: campaignPlan.raids,
             // Alliance-restricted nodes wait for the featured hero's alliance.
             manual:
@@ -198,22 +213,30 @@ export function HrePage() {
                 : null,
           }
         : null,
-    [campaignPlan, heroAlliance, heroFaction, hasHero, allianceName, t]
+    [
+      campaignPlan,
+      heroAlliance,
+      heroFaction,
+      hasHero,
+      allianceName,
+      missions,
+      t,
+    ]
   )
-  const raids = instance ? (
+  const raids = event ? (
     <HreRaidsSection
       notice={notice}
       daysLeft={
         ready
           ? hreDaysLeft({
               running,
-              startUtc: instance.entry.startUtc,
-              endUtc: instance.entry.endUtc,
+              startUtc: event.entry.startUtc,
+              endUtc: event.entry.endUtc,
               nowMs: ready.nowMs,
             })
           : 0
       }
-      remainingBattles={remainingCampaignBattles(shown)}
+      remainingBattles={remainingCampaignBattles(shown, missions)}
       renderTeams={
         battlePlan
           ? (groups) => (
@@ -224,6 +247,7 @@ export function HrePage() {
                 groups={groups}
                 hero={heroName}
                 hse={hse}
+                missions={missions}
                 plan={battlePlan}
               />
             )
@@ -241,6 +265,7 @@ export function HrePage() {
         hero={heroName}
         hseEvent={hse?.name ?? null}
         key={plan?.mode ?? index}
+        missions={missions}
         plan={plan}
         testId={
           index === firstTeam ? "hre-team" : `hre-team-${plan?.mode ?? index}`
@@ -256,20 +281,22 @@ export function HrePage() {
     tokenRows.length > 0 ? (
       <TokensNeededCard rows={tokenRows} synced={!!tokens} />
     ) : null
-  const paceCard = running ? (
-    <div
-      className="scroll-mt-[calc(var(--mobile-header-height)+3rem)] md:scroll-mt-4"
-      data-testid="hre-pace-section"
-      ref={paceRef}
-    >
-      <PaceCard
-        actions={actions}
-        pace={pace}
-        startRarity={hero?.initialRarity ?? null}
-        state={progress}
-      />
-    </div>
-  ) : null
+  const paceCard =
+    running && rules ? (
+      <div
+        className="scroll-mt-[calc(var(--mobile-header-height)+3rem)] md:scroll-mt-4"
+        data-testid="hre-pace-section"
+        ref={paceRef}
+      >
+        <PaceCard
+          actions={actions}
+          pace={pace}
+          rules={rules.rewards}
+          startRarity={hero?.initialRarity ?? null}
+          state={progress}
+        />
+      </div>
+    ) : null
   // Mobile only (design D4): the pace card sits far below, so its summary follows the tracker.
   const paceSummary =
     running && isMobile ? (
@@ -291,15 +318,17 @@ export function HrePage() {
     <div data-testid="hre-tracker">
       <MissionTracker
         actions={actions}
+        missions={missions}
         objectiveText={objectiveText}
         state={progress}
       />
     </div>
   ) : null
-  const missions = instance ? (
+  const missionList = event ? (
     <AllMissions
       collapsed={isMobile}
       current={running ? progress.mission : null}
+      missions={missions}
       objectiveText={objectiveText}
     />
   ) : null
@@ -316,7 +345,15 @@ export function HrePage() {
         <div data-testid="hre-status">
           <HreEventHeader state={state} />
         </div>
-        {instance && !running ? (
+        {instance && !rules ? (
+          <p
+            className="text-sm text-muted-foreground"
+            data-testid="hre-rules-missing"
+          >
+            {t("hre:status.error")}
+          </p>
+        ) : null}
+        {event && !running ? (
           <p
             className="text-sm text-muted-foreground"
             data-testid="hre-preview-note"
@@ -325,7 +362,7 @@ export function HrePage() {
           </p>
         ) : null}
       </div>
-      {instance ? (
+      {event ? (
         isMobile ? (
           <div className="space-y-5" data-testid="hre-sections">
             {tracker}
@@ -334,7 +371,7 @@ export function HrePage() {
             {teamCard}
             {tokensCard}
             {paceCard}
-            {missions}
+            {missionList}
           </div>
         ) : (
           <div
@@ -343,7 +380,7 @@ export function HrePage() {
           >
             <div className="space-y-5">
               {tracker}
-              {missions}
+              {missionList}
             </div>
             <div className="space-y-5">
               {raids}

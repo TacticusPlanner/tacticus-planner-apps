@@ -1,0 +1,11 @@
+{
+  "ProphetOfGorkAndMork": {
+    "description": "Après avoir subi <style=\"Stat\">{[nrOfAttacks]}</style> attaques pendant un tour, <style=\"Faction_Orks\">Ghazghkull</style> subit <style=\"Stat_Damage\">-{[dmgPctReduction]} % de dégâts</style> jusqu'à la fin de ce tour.",
+    "variables": {},
+    "constants": {
+      "dmgPctReduction": "90",
+      "nrOfAttacks": "4"
+    },
+    "scaled": []
+  }
+}

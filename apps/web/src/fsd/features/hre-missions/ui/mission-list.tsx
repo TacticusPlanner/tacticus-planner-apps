@@ -2,7 +2,7 @@ import { Check, Lock } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { cn } from "@workspace/ui/lib/utils"
 
-import { HRE_MISSIONS, type HreObjective } from "../model/hre-missions"
+import type { HreMission, HreObjective } from "../model/hre-missions"
 import { missionStatus } from "../model/hre-progress"
 import { missionName } from "./mission-name"
 import { ObjectiveTips } from "./objective-tips"
@@ -13,15 +13,17 @@ import { ObjectiveTips } from "./objective-tips"
  */
 export function MissionList({
   current,
+  missions,
   objectiveText,
 }: {
   current: number | null
+  missions: readonly HreMission[]
   objectiveText: (objective: HreObjective) => string
 }) {
   const { t } = useTranslation("hre")
   return (
     <ol className="grid gap-1.5" data-testid="hre-mission-list">
-      {HRE_MISSIONS.map((mission) => {
+      {missions.map((mission) => {
         const status = missionStatus(mission.number, current)
         const testId = `hre-mission-${mission.number}`
         return (
@@ -35,7 +37,7 @@ export function MissionList({
             >
               <summary className="flex cursor-pointer list-none items-start gap-2">
                 <span className="w-22 shrink-0 text-sm font-medium whitespace-nowrap">
-                  {missionName(t, mission.number)}
+                  {missionName(t, mission.number, missions)}
                 </span>
                 <span className="min-w-0 flex-1 text-sm">
                   {mission.objectives.map((objective) => (
@@ -61,6 +63,7 @@ export function MissionList({
               <div className="mt-2 pl-24">
                 <ObjectiveTips
                   missionNumber={mission.number}
+                  missions={missions}
                   objectives={mission.objectives}
                   testId={`${testId}-tips`}
                 />

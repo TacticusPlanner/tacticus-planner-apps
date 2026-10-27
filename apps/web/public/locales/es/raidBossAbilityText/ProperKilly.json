@@ -1,0 +1,12 @@
+{
+  "ProperKilly": {
+    "description": "Siempre deseoso de enfrentarse a los enemigos más brutales, el ataque cuerpo a cuerpo de <style=\"Faction_Orks\">Ghazghkull</style>prioriza a la unidad que tenga el total de Salud más alto en ese momento. Con su Garra de Gorko ataca a todos los enemigos que estén en los 3 hexágonos que se encuentren frente a él. Cada objetivo recibe <style=\"Stat_Hits\">{[nrOfHits]} impactos</style> que infligen un {[dmgPct]} % de su <style=\"Stat_Health\">Salud máxima</style> como <style=\"DMG_Power\">Daño de poder</style>. Al infligir daño de esta forma, cada objetivo impactado también queda <style=\"Debuff_Stunned\">aturdido</style> durante 1 ronda. Luego, cada objetivo recibe un impacto del <style=\"NormalAttack\">ataque cuerpo a cuerpo normal</style> de<style=\"Faction_Orks\"> Ghazghkull</style>.",
+    "variables": {},
+    "constants": {
+      "damageProfile": "Power",
+      "nrOfHits": "1",
+      "dmgPct": "60"
+    },
+    "scaled": []
+  }
+}

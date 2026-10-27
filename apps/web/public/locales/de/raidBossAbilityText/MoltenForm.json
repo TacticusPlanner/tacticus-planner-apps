@@ -1,0 +1,10 @@
+{
+  "MoltenForm": {
+    "description": "Der <style=\"Faction_Aeldari\">Avatar des Khaine</style> erleidet <style=\"Stat_Damage\">{[dmgPctReduction]}%</style> weniger <style=\"DMG_Flame\">Flammen-</style>, <style=\"DMG_Plasma\">Plasma-</style> und <style=\"DMG_Melta\">Melter-</style>Schaden.",
+    "variables": {},
+    "constants": {
+      "dmgPctReduction": "66"
+    },
+    "scaled": []
+  }
+}

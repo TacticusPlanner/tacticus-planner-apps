@@ -1,0 +1,15 @@
+{
+  "WeakerRearArmour": {
+    "description": "Wenn sich Gegner hinter dem <style=\"Faction_AstraMilitarum\">Kampfpanzer Rogal Dorn</style> befinden, verfügen ihre Angriffe gegen ihn über <style=\"Stat\">+{[extraCritChance]} % Kritische Chance</style>.",
+    "variables": {
+      "extraCritChance": [
+        30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
+        30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
+        30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
+        30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30
+      ]
+    },
+    "constants": {},
+    "scaled": []
+  }
+}

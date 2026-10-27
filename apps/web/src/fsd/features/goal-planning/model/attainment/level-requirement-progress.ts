@@ -7,6 +7,7 @@ import type { GoalDetail } from "@/entities/goal"
 import {
   requiredLevelForGoal,
   xpNeededForLevelRange,
+  type LevelRules,
 } from "@/features/goal-farming/@x/goal-planning"
 
 import type { GoalProgress } from "./goal-progress"
@@ -48,8 +49,8 @@ export function levelPotentialRatio(
  *  relocated "level requirement" display of what used to be a separate Level goal
  *  (integrate-level-progression-into-rank-goals). `null` when the goal has no level requirement, the
  *  character isn't owned, the level is already sufficient, or the goal is no longer in flight (a Paused
- *  goal still shows it; Completed and Archived ones don't). Never a blocker or a dependency: reaching
- *  the level alone completes nothing. */
+ *  goal still shows it; Completed and Archived ones don't) or the level rules haven't loaded. Never a
+ *  blocker or a dependency: reaching the level alone completes nothing. */
 export function computeLevelRequirementProgress(params: {
   detail: Pick<GoalDetail, "goalType" | "entityType" | "config" | "status">
   playerUnit:
@@ -57,9 +58,11 @@ export function computeLevelRequirementProgress(params: {
   /** The level a higher-priority goal of the same unit already covers up to, from the plan's level
    *  allocation (`PlanNetResources.levelChainedFrom`): the line then reads from it, not the current level. */
   chainedFrom?: number
+  levelRules: LevelRules | undefined
 }): LevelRequirementProgress | null {
-  const { detail, playerUnit } = params
-  const required = requiredLevelForGoal(detail)
+  const { detail, playerUnit, levelRules } = params
+  if (!levelRules) return null
+  const required = requiredLevelForGoal(detail, levelRules)
   const inFlight = detail.status === "Active" || detail.status === "Paused"
   if (
     !inFlight ||
@@ -84,7 +87,8 @@ export function computeLevelRequirementProgress(params: {
     remainingXp: xpNeededForLevelRange(
       playerUnit.xpLevel,
       playerUnit.xp,
-      required
+      required,
+      levelRules
     ),
   }
 }

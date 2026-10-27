@@ -78,7 +78,7 @@ export type GameCatalogDatasetMetadata = {
   hash: string
   catalogVersion: string
   gameVersion: string
-  schemaVersion: number
+  schemaHash?: string
   updatedAt: string
   etag?: string | null
   url?: string

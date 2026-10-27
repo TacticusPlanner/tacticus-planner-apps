@@ -1,6 +1,6 @@
 {
   "SpiritualLeader": {
-    "description": "After moving, places a <style=\"Decoy\">decoy</style> on an empty adjacent hex. Then, if there are 2 or more decoys adjacent to <style=\"Faction_Genestealers\">Xybia</style>, summons a <style=\"Summon\"><style=\"Faction_Genestealers\">Neophyte Hybrid</style></style> on one adjacent decoy. If <style=\"Faction_Genestealers\">Xybia</style> does not move, then this ability triggers at the end of her turn.\n\nNeophyte Hybrid stats:\n<style=\"Stat_Health\">{[summonHp]} Health</style>\n<style=\"Stat_Damage\">{[summonDmg]} Damage</style>\n<style=\"Stat_Armor\">{[summonArmor]} Armour</style>",
+    "description": "After moving, places a <style=\"Decoy\">decoy</style> on an empty adjacent hex. Then, if there are 2 or more decoys adjacent to <Style=\"Faction_Genestealers\">Xybia</style>, summons a <style=\"Summon\"><style=\"Faction_Genestealers\">Neophyte Hybrid</style></style> on one adjacent decoy. If <Style=\"Faction_Genestealers\">Xybia</style> does not move, then this ability triggers at the end of her turn.\n\nNeophyte Hybrid stats:\n<style=\"Stat_Health\">{[summonHp]} Health</style>\n<style=\"Stat_Damage\">{[summonDmg]} Damage</style>\n<style=\"Stat_Armor\">{[summonArmor]} Armour</style>",
     "variables": {
       "summonHp": [
         30, 36, 42, 48, 54, 61, 68, 75, 82, 89, 95, 102, 109, 116, 123, 130,
