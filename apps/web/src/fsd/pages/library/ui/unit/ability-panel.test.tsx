@@ -2,7 +2,8 @@ import { useState, type ReactNode } from "react"
 import { fireEvent, render, screen, within } from "@testing-library/react"
 import { I18nextProvider } from "react-i18next"
 import type { i18n as I18n } from "i18next"
-import { beforeAll, describe, expect, it } from "vitest"
+import { beforeAll, describe, expect, it, vi } from "vitest"
+import { progressionRulesFixture } from "@workspace/game-catalog/testing"
 
 import { createTestI18n } from "@/test/i18n"
 import type { AbilityTextEntry, RulesText } from "@/shared/ability-text"
@@ -10,6 +11,19 @@ import type { AbilityTextEntry, RulesText } from "@/shared/ability-text"
 import enLibrary from "../../../../../../public/locales/en/library.json"
 import stormOfWrathFile from "../../../../../../public/locales/en/npcAbilityText/StormOfWrath.json"
 import { AbilityPanel } from "./ability-panel"
+
+// The served progression rules (rarity factors), without the catalog read behind them.
+vi.mock("@/shared/local-data", async (importOriginal) => ({
+  ...(await importOriginal<object>()),
+  useCatalogDataset: (
+    _key: string,
+    select: (records: (typeof progressionRulesFixture)[]) => unknown
+  ) => ({
+    status: "ready",
+    data: select([progressionRulesFixture]),
+    retry: () => {},
+  }),
+}))
 
 const stormOfWrath = stormOfWrathFile.StormOfWrath as AbilityTextEntry
 

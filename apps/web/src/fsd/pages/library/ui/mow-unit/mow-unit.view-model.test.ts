@@ -1,22 +1,30 @@
 import { describe, expect, it } from "vitest"
+import { progressionRulesFixture } from "@workspace/game-catalog/testing"
 
 import type { ReadState } from "@/shared/lib"
 import type { UnitPowerContext } from "@/shared/unit-power"
 import { unitPowerContextFixture } from "@/test/fixtures/unit-power"
 
-import { mowPowerFigure, mythicLevel } from "./mow-unit.view-model"
+import {
+  mowPowerFigure,
+  mythicLevel,
+  toMythicLevels,
+} from "./mow-unit.view-model"
 
 describe("mythicLevel", () => {
+  const levels = toMythicLevels([progressionRulesFixture])
+
   it("follows the blue stars, 1 to 4", () => {
-    expect(mythicLevel("Mythic:OneBlueStar")).toBe(1)
-    expect(mythicLevel("Mythic:TwoBlueStars")).toBe(2)
-    expect(mythicLevel("Mythic:ThreeBlueStars")).toBe(3)
-    expect(mythicLevel("Mythic:MythicWings")).toBe(4)
+    expect(mythicLevel("Mythic:OneBlueStar", levels)).toBe(1)
+    expect(mythicLevel("Mythic:TwoBlueStars", levels)).toBe(2)
+    expect(mythicLevel("Mythic:ThreeBlueStars", levels)).toBe(3)
+    expect(mythicLevel("Mythic:MythicWings", levels)).toBe(4)
+    expect(levels.size).toBe(4)
   })
 
   it("is not unlocked below Mythic", () => {
-    expect(mythicLevel("Legendary:RedFiveStars")).toBeUndefined()
-    expect(mythicLevel("Common:None")).toBeUndefined()
+    expect(mythicLevel("Legendary:RedFiveStars", levels)).toBeUndefined()
+    expect(mythicLevel("Common:None", levels)).toBeUndefined()
   })
 })
 

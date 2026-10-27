@@ -21,7 +21,13 @@ import { RulesTextNote } from "../unit/rules-text-note"
  * untouched, and unlike the previous hover tooltip it works on touch. Trait values are global
  * constants rather than per-level tables, so the text does not change with the selected level.
  */
-function TraitChip({ trait, rarity }: { trait: string; rarity: Rarity }) {
+function TraitChip({
+  trait,
+  rarity,
+}: {
+  trait: string
+  rarity: Rarity | undefined
+}) {
   const { t } = useTranslation(["library", "traits"])
   const rules = useNpcTraitText()
   const label = t(`traits:${trait}`, { defaultValue: trait })
@@ -84,7 +90,7 @@ export function NpcTraits({
 }: {
   traits: readonly string[]
   /** Only used for rarity-scaled tokens; trait values are global constants. */
-  rarity: Rarity
+  rarity: Rarity | undefined
 }) {
   const { t } = useTranslation("library")
 

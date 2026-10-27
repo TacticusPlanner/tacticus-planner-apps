@@ -1,5 +1,3 @@
-import type { Rarity } from "@workspace/game-domain"
-
 import {
   parseAbilityText,
   resolveVariable,
@@ -82,7 +80,8 @@ function labelFor(tokens: Token[], first: number, last: number): string {
  */
 export function buildAbilitySeries(
   entry: AbilityTextEntry,
-  rarity: Rarity,
+  /** The unit's rarity factor (`useRarityFactor`). */
+  rarityFactor: number,
   levels = 60
 ): AbilitySeries[] {
   const context = (level: number): AbilityContext => ({
@@ -90,7 +89,7 @@ export function buildAbilitySeries(
     variables: entry.variables,
     constants: entry.constants,
     scaledVariableNames: new Set(entry.scaled),
-    rarity,
+    rarityFactor,
     unitName: "",
     factionId: "",
   })
