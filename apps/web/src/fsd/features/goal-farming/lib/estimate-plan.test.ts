@@ -147,6 +147,7 @@ describe("raid schedule breakdown", () => {
       totalRaids: 5,
       daysWithUnusedEnergy: 3,
       completionDate: "2026-01-03",
+      excludedGoalIds: [],
     })
   })
 
@@ -375,6 +376,63 @@ describe("partial plans: blocked needs do not discard actionable peers (PLAN-014
       actionableResourceIds: [A],
     })
     expect(plan.summary.completionDate).toBeNull()
+  })
+
+  it("dates the plan past a blocked goal flagged excludeFromCompletion", () => {
+    const plan = estimatePlanSchedule({
+      ...base,
+      goals: [
+        { goalId: "rank", priority: 1, needs: [{ id: A, count: 1 }] },
+        {
+          goalId: "unlock",
+          priority: 2,
+          needs: [{ id: B, count: 3 }],
+          excludeFromCompletion: true,
+        },
+      ],
+      inventory: [],
+    })
+
+    expect(plan.outcomes.get("unlock")?.status).toBe("Blocked")
+    expect(plan.summary.completionDate).toBe("2026-01-01")
+    expect(plan.summary.excludedGoalIds).toEqual(["unlock"])
+  })
+
+  it("gives no date when every goal is an excluded blocked one", () => {
+    const plan = estimatePlanSchedule({
+      ...base,
+      goals: [
+        {
+          goalId: "unlock",
+          priority: 1,
+          needs: [{ id: B, count: 3 }],
+          excludeFromCompletion: true,
+        },
+      ],
+      inventory: [],
+    })
+
+    expect(plan.summary.completionDate).toBeNull()
+    expect(plan.summary.excludedGoalIds).toEqual(["unlock"])
+  })
+
+  it("still withholds completion when an unflagged goal is blocked", () => {
+    const plan = estimatePlanSchedule({
+      ...base,
+      goals: [
+        mixed,
+        {
+          goalId: "unlock",
+          priority: 2,
+          needs: [{ id: B, count: 3 }],
+          excludeFromCompletion: true,
+        },
+      ],
+      inventory: [],
+    })
+
+    expect(plan.summary.completionDate).toBeNull()
+    expect(plan.summary.excludedGoalIds).toEqual(["unlock"])
   })
 
   it("all-blocked goal schedules nothing and reports every requirement", () => {

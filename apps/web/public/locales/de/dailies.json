@@ -209,7 +209,9 @@
       "raids": "Raid-Versuche",
       "unusedDays": "Ungenutzte Tage",
       "completion": "Abschlussdatum",
-      "noCompletion": "Nicht verfügbar"
+      "noCompletion": "Nicht verfügbar",
+      "excludedShopOnly_one": "Das Abschlussdatum ignoriert {{count}} Freischaltungsziel nur aus dem Shop ({{units}}): Seine Splitter stammen aus Shops, nicht aus Raids.",
+      "excludedShopOnly_other": "Das Abschlussdatum ignoriert {{count}} Freischaltungsziele nur aus dem Shop ({{units}}): Ihre Splitter stammen aus Shops, nicht aus Raids."
     },
     "today": "Heute",
     "day": "Tag {{day}}",

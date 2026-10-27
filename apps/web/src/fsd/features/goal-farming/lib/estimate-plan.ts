@@ -316,6 +316,17 @@ function runPlanSchedule(
     )
   }
 
+  const isBlocked = (goalId: string) =>
+    results.get(goalId)?.status === "Blocked"
+  const excludedGoalIds = ordered
+    .filter((goal) => goal.excludeFromCompletion && isBlocked(goal.goalId))
+    .map((goal) => goal.goalId)
+  // A date needs some goal behind it: one whose goals are all excluded would only date Today.
+  const completes =
+    (excludedGoalIds.length === 0 || excludedGoalIds.length < ordered.length) &&
+    !ordered.some(
+      (goal) => !goal.excludeFromCompletion && isBlocked(goal.goalId)
+    )
   const totalEnergy = scheduleDays.reduce(
     (total, day) => total + day.energyTotal,
     0
@@ -335,13 +346,12 @@ function runPlanSchedule(
       daysWithUnusedEnergy: scheduleDays.filter(
         (day) => dailyEnergy - day.energyTotal > UNUSED_ENERGY_THRESHOLD
       ).length,
-      completionDate: [...results.values()].some(
-        (outcome) => outcome.status === "Blocked"
-      )
-        ? null
-        : formatDate(
+      completionDate: completes
+        ? formatDate(
             inclusiveCompletionDate(referenceDate, scheduleDays.length)
-          ),
+          )
+        : null,
+      excludedGoalIds,
     },
   }
 }

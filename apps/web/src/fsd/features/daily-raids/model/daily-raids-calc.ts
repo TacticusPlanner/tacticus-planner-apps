@@ -121,6 +121,20 @@ export function activeProjectMembers(members: GoalPlanEntry[]) {
     .sort((left, right) => globalPriorityOf(left) - globalPriorityOf(right))
 }
 
+/** An Unlock goal for a character no campaign node drops shards for (Kharn, Ragnar): its shards come
+ *  from shops, so the Schedule's completion date leaves it out rather than showing none at all. */
+export function isShopOnlyUnlock(
+  detail: GoalDetail,
+  character: Pick<CharacterStorageModel, "shardLocations"> | undefined
+) {
+  return (
+    detail.goalType === "Unlock" &&
+    detail.entityType !== "Mow" &&
+    !!character &&
+    character.shardLocations.length === 0
+  )
+}
+
 export function calculateDailyRaids(
   params: DailyRaidsCalculationInput
 ): DailyRaidsCalculationViewModel | null {
@@ -266,6 +280,10 @@ export function calculateDailyRaids(
         ? campaignSource?.ids
         : (detail.config.farmingLocationIds ?? undefined),
       flatSuppliers: flatSuppliers.length > 0 ? flatSuppliers : undefined,
+      excludeFromCompletion: isShopOnlyUnlock(
+        detail,
+        params.charactersById.get(detail.entityId)
+      ),
     })
     goalsById.set(detail.goalId, {
       goalId: detail.goalId,

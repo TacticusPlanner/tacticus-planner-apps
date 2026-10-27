@@ -156,8 +156,12 @@ export interface RaidPlanSummary {
   totalRaids: number
   daysWithUnusedEnergy: number
   /** `null` while any goal still has a blocker or hit the simulation limit: the schedule's last day
-   *  is then only the end of the obtainable work, never a completion. */
+   *  is then only the end of the obtainable work, never a completion. A blocked goal flagged
+   *  `excludeFromCompletion` does not suppress it; it is listed in `excludedGoalIds` instead. */
   completionDate: string | null
+  /** Blocked goals flagged `excludeFromCompletion`, in plan order: left out of `completionDate`, so a
+   *  surface showing the date can say which goals it does not cover. */
+  excludedGoalIds: string[]
 }
 
 export interface RaidPlanSchedule {
@@ -185,6 +189,9 @@ export interface GoalNeed extends InventoryAllocationGoal<EstimateResourceId> {
   /** This goal's selected non-campaign acquisition sources (shop offers, Onslaught), if any — see
    *  `FlatSupplier`. */
   flatSuppliers?: readonly FlatSupplier[]
+  /** When this goal is blocked, leave it out of the plan's `completionDate` instead of suppressing
+   *  the date (a shop-only unit's Unlock goal: its shards are bought, never raided). */
+  excludeFromCompletion?: boolean
 }
 
 interface InventoryAllocationStage<TId extends string> {

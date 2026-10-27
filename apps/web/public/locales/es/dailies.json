@@ -209,7 +209,9 @@
       "raids": "Intentos",
       "unusedDays": "Días sin usar",
       "completion": "Fecha final",
-      "noCompletion": "No disponible"
+      "noCompletion": "No disponible",
+      "excludedShopOnly_one": "La fecha final ignora {{count}} objetivo de desbloqueo solo de tienda ({{units}}): sus fragmentos vienen de tiendas, no de incursiones.",
+      "excludedShopOnly_other": "La fecha final ignora {{count}} objetivos de desbloqueo solo de tienda ({{units}}): sus fragmentos vienen de tiendas, no de incursiones."
     },
     "today": "Hoy",
     "day": "Día {{day}}",
