@@ -163,7 +163,9 @@ describe("UserJotProvider", () => {
       vi.resetModules()
       await import("./userjot-provider")
 
-      const init = window.$ujq?.find(([method]) => method === "init")
+      // Re-read: TS narrows `window.$ujq` to never after the `delete` above.
+      const queued = window.$ujq as unknown[][] | undefined
+      const init = queued?.find(([method]) => method === "init")
       expect(init?.[2]).toMatchObject({
         widget: { notifications: { updates: "full" } },
       })
