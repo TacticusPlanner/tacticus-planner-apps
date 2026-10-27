@@ -1,0 +1,12 @@
+{
+  "ProperKilly": {
+    "description": "Toujours enclin à affronter le plus redoutable des ennemis, l'attaque au corps à corps de <style=\"Faction_Orks\">Ghazghkull</style> cible en priorité l'unité dotée du maximum de santé le plus élevé. Il attaque avec la Pince de Gork qui lacère tous les ennemis situés sur les 3 hexagones devant lui. Chaque cible subit <style=\"Stat_Hits\">{[nrOfHits]} coup,</style> infligeant {[dmgPct]} % de leur <style=\"Stat_Health\">santé maximum</style> sous forme de <style=\"DMG_Power\">dégâts d'intensité</style>. Lorsque des dégâts sont infligés de cette façon, chaque cible touchée subit également l'<style=\"Debuff_Stunned\">étourdissement</style> pendant 1 manche. Ensuite, chaque cible subit l'<style=\"NormalAttack\">attaque au corps à corps normale</style> de <style=\"Faction_Orks\">Ghazghkull</style>.",
+    "variables": {},
+    "constants": {
+      "damageProfile": "Power",
+      "nrOfHits": "1",
+      "dmgPct": "60"
+    },
+    "scaled": []
+  }
+}

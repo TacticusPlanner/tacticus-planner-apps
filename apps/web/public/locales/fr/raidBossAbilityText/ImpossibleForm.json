@@ -1,0 +1,15 @@
+{
+  "ImpossibleForm": {
+    "description": "Chaque tour, la 9e attaque et toutes les 9e attaques subséquentes contre <style=\"Faction_ThousandSons\">Magnus</style> infligent <style=\"Stat_Damage\">-{[dmgReductionPct]} % de dégâts</style>.",
+    "variables": {
+      "dmgReductionPct": [
+        54, 54, 54, 54, 54, 54, 54, 54, 63, 63, 63, 63, 63, 63, 63, 63, 63, 72,
+        72, 72, 72, 72, 72, 72, 72, 72, 81, 81, 81, 81, 81, 81, 81, 81, 81, 90,
+        90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90,
+        90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90
+      ]
+    },
+    "constants": {},
+    "scaled": []
+  }
+}

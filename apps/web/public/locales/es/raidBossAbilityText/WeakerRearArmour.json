@@ -1,0 +1,15 @@
+{
+  "WeakerRearArmour": {
+    "description": "Si los enemigos se encuentran en el arco trasero del <style=\"Faction_AstraMilitarum\">Tanque de Batalla Rogal Dorn</style>, sus ataques obtienen un <style=\"Stat\">+{[extraCritChance]} % de Probabilidad de Crítico</style> contra este.",
+    "variables": {
+      "extraCritChance": [
+        30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
+        30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
+        30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
+        30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30
+      ]
+    },
+    "constants": {},
+    "scaled": []
+  }
+}

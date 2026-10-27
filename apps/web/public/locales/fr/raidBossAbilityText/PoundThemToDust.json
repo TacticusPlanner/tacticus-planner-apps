@@ -1,0 +1,26 @@
+{
+  "PoundThemToDust": {
+    "description": "Effectue une <style=\"NormalAttack\">attaque normale</style> puis marque une zone comprenant jusqu'à 7 hexagones. Au début de son prochain tour, le <style=\"Faction_AstraMilitarum\">Char de Combat Rogal Dorn</style> inflige <style=\"Stat_Hits\">{[nrOfHits]}x</style> <style=\"DMG_Heavy\">{[minDmg]}-{[maxDmg]} dégâts de gros calibre</style> à toutes les unités de la zone marquée.",
+    "variables": {
+      "minDmg": [
+        50, 60, 70, 80, 90, 102, 113, 125, 136, 148, 159, 171, 182, 194, 205,
+        217, 228, 240, 251, 263, 278, 300, 345, 391, 436, 482, 527, 573, 618,
+        664, 709, 755, 800, 846, 891, 937, 982, 1028, 1073, 1137, 1227, 1322,
+        1424, 1537, 1742, 1948, 2153, 2359, 2564, 2770, 2996, 3093, 3191, 3305,
+        3421, 3539, 3659, 3796, 3936, 4078, 4239, 4402, 4569, 4738, 4911
+      ],
+      "maxDmg": [
+        60, 72, 84, 96, 108, 122, 136, 149, 163, 177, 191, 205, 218, 232, 246,
+        260, 274, 287, 301, 315, 334, 359, 414, 469, 523, 578, 632, 687, 742,
+        796, 851, 905, 960, 1015, 1069, 1124, 1178, 1233, 1288, 1364, 1472,
+        1586, 1708, 1844, 2090, 2337, 2584, 2830, 3077, 3324, 3595, 3711, 3830,
+        3966, 4106, 4247, 4391, 4556, 4723, 4894, 5086, 5283, 5482, 5686, 5893
+      ]
+    },
+    "constants": {
+      "damageProfile": "HeavyRound",
+      "nrOfHits": "3"
+    },
+    "scaled": ["minDmg", "maxDmg"]
+  }
+}

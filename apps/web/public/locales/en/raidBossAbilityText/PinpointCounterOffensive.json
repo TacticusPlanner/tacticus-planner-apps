@@ -1,6 +1,6 @@
 {
   "PinpointCounterOffensive": {
-    "description": "<style=\"Faction_Tau\">Re'vas</style> can use her active ability {[maxNrOfActivations]} times per Battle. Additionally, she takes <style=\"Stat_Damage\">-{[dmgReductionPct]}% Damage</style> from all attacks, but loses <style=\"Stat_Health\">{[hp]} Health</style> each time she is attacked by a unit with either the <style=\"Infiltrate\">Infiltrate</style> or <style=\"Terminator_Armor\">Terminator Armour</style> traits, or by a unit that has <style=\"Buff_Infiltrate\">Infiltrate</style> from an ability.",
+    "description": "<style=\"Faction_Tau\">Re'vas</style> can use her active ability {[maxNrOfActivations]} times per Battle. Additionally, she takes <style=\"Stat_Damage\">-{[dmgReductionPct]}% Damage</style> from all attacks, but loses <style=\"Stat_Health\">{[hp]} Health</style> each time she is attacked by a unit with either the <style=\"Infiltrate\">Infiltrate</style> or <style=\"Terminator_Armor\">Terminator Armour</style> traits, or by a unit that has <style=Buff_Infiltrate\">Infiltrate</style> from an ability.",
     "variables": {
       "maxNrOfActivations": [
         2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4,
@@ -14,12 +14,12 @@
         66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66
       ],
       "hp": [
-        25, 27, 28, 33, 38, 43, 47, 71, 79, 92, 105, 118, 131, 144, 158, 195,
-        275, 270, 305, 340, 370, 405, 440, 475, 580, 795, 790, 885, 985, 1085,
-        1180, 1280, 1380, 1510, 1640, 1945, 2430, 2915, 3405, 3890, 4375, 4860,
-        5345, 5835, 6320, 6805, 7290, 7780, 8265, 7875, 9450, 11025, 15750,
-        15750, 15750, 16500, 16501, 16502, 16503, 16504, 16505, 16506, 16507,
-        16508, 16509
+        11, 13, 16, 18, 21, 24, 26, 39, 53, 61, 70, 79, 88, 96, 105, 140, 175,
+        210, 235, 265, 290, 315, 340, 370, 480, 590, 700, 790, 875, 965, 1050,
+        1140, 1225, 1340, 1460, 1945, 2430, 2915, 3405, 3890, 4375, 4860, 5345,
+        5835, 6320, 6805, 7290, 7780, 8265, 8750, 11665, 14585, 17500, 18960,
+        20415, 21875, 23335, 24790, 26250, 27710, 29165, 30625, 33055, 35485,
+        37915
       ]
     },
     "constants": {},

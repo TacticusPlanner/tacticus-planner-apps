@@ -1,0 +1,10 @@
+{
+  "BioBarrage": {
+    "description": "Der Tervigon und alle verbündeten Einheiten verursachen +{[extraDmgPct]} % <style=\"Stat_Damage\">Fernkampfschaden</style>, wenn sie sich in ihrem Zug nicht bewegt haben.",
+    "variables": {},
+    "constants": {
+      "extraDmgPct": "25"
+    },
+    "scaled": []
+  }
+}

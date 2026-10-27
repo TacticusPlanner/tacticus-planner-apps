@@ -1,0 +1,10 @@
+{
+  "DaBossIsWatchin": {
+    "description": "Los <style=\"Faction_Orks\">orkos</style> adyacentes ignoran la <style=\"Battle_Fatigue\">Fatiga de batalla</style> e infligen <style=\"Stat_Damage\">+{[extraDmgPct]}% de Daño</style>.",
+    "variables": {},
+    "constants": {
+      "extraDmgPct": "20"
+    },
+    "scaled": []
+  }
+}

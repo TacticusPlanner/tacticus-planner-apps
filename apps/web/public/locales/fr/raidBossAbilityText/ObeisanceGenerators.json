@@ -1,0 +1,11 @@
+{
+  "ObeisanceGenerators": {
+    "description": "Les unités ennemies qui <style=\"Charging\">chargent</style> <style=\"Faction_Necrons\">Szarekh</style> ont <style=\"Stat_Hits\">-{[hitsReduction]}</style> coups, jusqu'à un minimum de 1 coup.\nLes <style=\"Summon\">invocations</style> qui <style=\"Charging\">chargent</style> <style=\"Faction_Necrons\">Szarekh</style> ont <style=\"Stat_Hits\">-{[hitsReduction_2]}</style> coups, jusqu'à un minimum de 1 coup.",
+    "variables": {},
+    "constants": {
+      "hitsReduction": "2",
+      "hitsReduction_2": "3"
+    },
+    "scaled": []
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "ControlEdict": {
+    "description": "Mientras el Imperativo Protector está activo: Después de que <style=\"Faction_AdeptusMechanicus\">Tan Gi’da</style> ataque, invoca una <style=\"Summon\"><style=\"Faction_AdeptusMechanicus\">Vanguardia Skitarii</style></style> en un hexágono libre adyacente. No puedes tener más de <style=\"Stat\">{[maxSummons]}</style> <style=\"Summon\"><style=\"Faction_AdeptusMechanicus\">Vanguardias Skitarii</style></style> invocadas de esta forma al mismo tiempo.\n\nMientras el Imperativo Conquistador está activo: Después de que <style=\"Faction_AdeptusMechanicus\">Tan Gi’da</style> ataque, todas las <style=\"Summon\">Invocaciones</style> <style=\"Mechanical\">Mecánicas</style> aliadas también atacarán a su objetivo inmediatamente si está dentro del alcance.\n\nAtributos de Vanguardia Skitarii:\n<style=\"Stat_Health\">{[summonHp]} de Salud</style>\n<style=\"Stat_Damage\">{[summonDmg]} de Daño</style>\n<style=\"Stat_Armor\">{[summonArmor]} de Armadura</style>",
+    "variables": {
+      "maxSummons": [
+        3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
+        3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+        5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5
+      ],
+      "summonHp": [
+        35, 42, 49, 56, 63, 71, 79, 87, 95, 103, 111, 119, 127, 135, 144, 152,
+        160, 168, 176, 184, 195, 210, 242, 273, 305, 337, 369, 401, 433, 464,
+        496, 528, 560, 592, 624, 656, 687, 719, 751, 796, 859, 925, 996, 1076,
+        1219, 1363, 1507, 1651, 1795, 1939, 1960, 1986, 2013, 2048, 2083, 2118,
+        2153, 2196, 2240, 2284, 2336, 2389, 2441, 2494, 2546
+      ],
+      "summonDmg": [
+        7, 8, 10, 11, 13, 14, 16, 17, 19, 21, 22, 24, 25, 27, 29, 30, 32, 34,
+        35, 37, 39, 42, 48, 55, 61, 67, 74, 80, 87, 93, 99, 106, 112, 118, 125,
+        131, 137, 144, 150, 159, 172, 185, 199, 215, 244, 273, 301, 330, 359,
+        388, 392, 397, 403, 410, 417, 424, 431, 439, 448, 457, 467, 478, 488,
+        499, 509
+      ],
+      "summonArmor": [
+        15, 18, 21, 24, 27, 30, 34, 37, 41, 44, 48, 51, 55, 58, 62, 65, 68, 72,
+        75, 79, 83, 90, 104, 117, 131, 144, 158, 172, 185, 199, 213, 226, 240,
+        254, 267, 281, 295, 308, 322, 341, 368, 396, 427, 461, 523, 584, 646,
+        708, 769, 831, 840, 851, 863, 878, 893, 908, 923, 941, 960, 979, 1001,
+        1024, 1046, 1069, 1091
+      ]
+    },
+    "constants": {
+      "unitId": "admecSmnVanguard"
+    },
+    "scaled": ["summonHp", "summonDmg", "summonArmor"]
+  }
+}

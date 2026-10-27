@@ -1,0 +1,15 @@
+{
+  "ImpossibleForm": {
+    "description": "Pro Zug verursachen der 9. Angriff und jeder 9. Zusatzangriff auf <style=\"Faction_ThousandSons\">Magnus</style> <style=\"Stat_Damage\">-{[dmgReductionPct]} % Schaden</style>.",
+    "variables": {
+      "dmgReductionPct": [
+        54, 54, 54, 54, 54, 54, 54, 54, 63, 63, 63, 63, 63, 63, 63, 63, 63, 72,
+        72, 72, 72, 72, 72, 72, 72, 72, 81, 81, 81, 81, 81, 81, 81, 81, 81, 90,
+        90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90,
+        90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90
+      ]
+    },
+    "constants": {},
+    "scaled": []
+  }
+}

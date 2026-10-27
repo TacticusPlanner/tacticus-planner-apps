@@ -1,0 +1,28 @@
+{
+  "PinpointCounterOffensive": {
+    "description": "<style=\"Faction_Tau\">Re’vas</style> kann ihre aktive Fähigkeit {[maxNrOfActivations]}-mal pro Kampf einsetzen. Außerdem erleidet sie <style=\"Stat_Damage\">-{[dmgReductionPct]} % Schaden</style> von allen Angriffen, verliert aber jedes Mal <style=\"Stat_Health\">{[hp]} Lebenspunkte</style>, wenn sie von einer Einheit mit der Eigenschaft <style=\"Infiltrate\">Infiltrieren</style> oder <style=\"Terminator_Armor\">Terminatorrüstung</style> oder von einer Einheit, die aufgrund einer Fähigkeit über <style=Buff_Infiltrate\">Infiltrieren</style> verfügt, angegriffen wird.",
+    "variables": {
+      "maxNrOfActivations": [
+        2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4,
+        4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+        5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5
+      ],
+      "dmgReductionPct": [
+        25, 25, 25, 25, 25, 25, 25, 25, 33, 33, 33, 33, 33, 33, 33, 33, 33, 40,
+        40, 40, 40, 40, 40, 40, 40, 40, 50, 50, 50, 50, 50, 50, 50, 50, 50, 66,
+        66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66,
+        66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66
+      ],
+      "hp": [
+        11, 13, 16, 18, 21, 24, 26, 39, 53, 61, 70, 79, 88, 96, 105, 140, 175,
+        210, 235, 265, 290, 315, 340, 370, 480, 590, 700, 790, 875, 965, 1050,
+        1140, 1225, 1340, 1460, 1945, 2430, 2915, 3405, 3890, 4375, 4860, 5345,
+        5835, 6320, 6805, 7290, 7780, 8265, 8750, 11665, 14585, 17500, 18960,
+        20415, 21875, 23335, 24790, 26250, 27710, 29165, 30625, 33055, 35485,
+        37915
+      ]
+    },
+    "constants": {},
+    "scaled": []
+  }
+}

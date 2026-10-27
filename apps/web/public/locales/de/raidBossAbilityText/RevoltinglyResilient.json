@@ -1,0 +1,11 @@
+{
+  "RevoltinglyResilient": {
+    "description": "Bei einem erlittenen Angriff verursacht jeder <style=\"Stat_Hits\">Treffer</style> nach den ersten <style=\"Stat_Hits\">{[nrOfHits]} Treffern</style> desselben Angriffs <style=\"Stat_Damage\">{[dmgPctReduction]} % weniger Schaden</style> als der vorherige Treffer. <i>Die ersten {[nrOfHits]} Treffer jedes Angriffs verursachen normalen Schaden, der nächste 50 % Schaden, der nächste 25 % Schaden usw.</i>",
+    "variables": {},
+    "constants": {
+      "dmgPctReduction": "50",
+      "nrOfHits": "1"
+    },
+    "scaled": []
+  }
+}

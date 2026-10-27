@@ -1,0 +1,11 @@
+{
+  "ReinforcedHiveNode": {
+    "description": "Toutes les deux manches (en partant de celle de l'arrivée en jeu du <style=\"Faction_Tyranids\">Guerrier Tyranide</style>), le <style=\"Faction_Tyranids\">Guerrier Tyranide</style> a <style=\"Stat_Armor\">+100 % d'armure</style> et (s'il a <style=\"Stat_Block\">Blocage</style>) 100 % de <style=\"Stat_Chance\">chances</style> de <style=\"Stat_Block\">blocage</style>.",
+    "variables": {},
+    "constants": {
+      "extraArmorPct": "100",
+      "blockChance": "100"
+    },
+    "scaled": []
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "NoctilithBeacons": {
+    "description": "<style=\"Faction_Necrons\">Szarekh</style> y todos los <style=\"Faction_Necrons\">Necrones</style> adyacentes a él reciben <style=\"Stat_Damage\">-{[dmgPctReduction]} % de Daño</style> de todos los enemigos con el rasgo <style=\"Psyker\">Psíquico</style>.",
+    "variables": {},
+    "constants": {
+      "dmgPctReduction": "40"
+    },
+    "scaled": []
+  }
+}

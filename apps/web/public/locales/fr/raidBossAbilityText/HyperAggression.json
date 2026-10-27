@@ -1,0 +1,8 @@
+{
+  "HyperAggression": {
+    "description": "À partir de son second tour, le <style=\"Faction_Tyranids\">Tueur-hurleur</style> effectue également une <style=\"NormalAttack\">attaque normale</style> après avoir utilisé une capacité active.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

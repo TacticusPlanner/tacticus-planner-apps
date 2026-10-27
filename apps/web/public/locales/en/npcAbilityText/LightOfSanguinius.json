@@ -1,6 +1,6 @@
 {
   "LightOfSanguinius": {
-    "description": "If <style=\"Faction_BloodAngels\">Dante</style> has not moved, he gains <style=\"Buff_Infiltrate\">Infiltrate</style> until the end of this turn, then <style=\"Charging\">charges</style> an enemy target that has a free adjacent hex within movement range {[range]} and deals <style=\"Stat_Hits\">{[nrOfHits]}x</style> <style=\"DMG_Melta\">{[minDmg]}-{[maxDmg]} Melta Damage</style> to it. The target and enemy units surrounding it deal <style=\"Stat_Damage\">-{[dmgReductionPct]}% Damage</style> for {[nrOfRounds]} round. This effect is doubled if they attack friendly units that are at or below <style=\"Stat_Health\">{[healthPct]}% Health</style>.",
+    "description": "If <style=\"Faction_BloodAngels\">Dante</style> has not moved, he gains <style=Buff_Infiltrate\">Infiltrate</style> until the end of this turn, then <style=\"Charging\">charges</style> an enemy target that has a free adjacent hex within movement range {[range]} and deals <style=\"Stat_Hits\">{[nrOfHits]}x</style> <style=\"DMG_Melta\">{[minDmg]}-{[maxDmg]} Melta Damage</style> to it. The target and enemy units surrounding it deal <style=\"Stat_Damage\">-{[dmgReductionPct]}% Damage</style> for {[nrOfRounds]} round. This effect is doubled if they attack friendly units that are at or below <style=\"Stat_Health\">{[healthPct]}% Health</style>.",
     "variables": {
       "minDmg": [
         9, 11, 13, 14, 16, 18, 20, 22, 24, 27, 29, 31, 33, 35, 37, 39, 41, 43,

@@ -1,0 +1,10 @@
+{
+  "MyWillBeDone": {
+    "description": "Déclenche immédiatement une attaque de chaque unité alliée <style=\"Faction_Necrons\">Nécron</style> sur le champ de bataille à partir de leur hexagone actuel et tant qu'une cible est à leur portée.",
+    "variables": {},
+    "constants": {
+      "cooldownTurns": "2"
+    },
+    "scaled": []
+  }
+}

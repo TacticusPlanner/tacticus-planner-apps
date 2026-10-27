@@ -16,6 +16,8 @@
     "bundle:budget": "node scripts/bundle-budget.mjs",
     "api:pull": "node scripts/api-spec.mjs pull",
     "api:types": "node scripts/api-spec.mjs",
+    "datamine:pull": "node scripts/datamine.mjs pull",
+    "datamine:sync": "node scripts/datamine.mjs sync",
     "lint": "eslint && knip",
     "lint:fsd": "steiger ./src/fsd",
     "format": "prettier --write \"**/*.{ts,tsx}\"",

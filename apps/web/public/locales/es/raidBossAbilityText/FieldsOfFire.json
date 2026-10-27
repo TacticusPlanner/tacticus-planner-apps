@@ -1,0 +1,25 @@
+{
+  "FieldsOfFire": {
+    "description": "Las unidades aliadas con el rasgo <style=\"Emplacement\">Emplazamiento</style> infligen <style=\"Stat_Damage\">+{[extraDmgPct]} % de Daño</style> a las unidades que estén a {[range]} o más hexágonos de distancia de su propio hexágono. Cada vez que <style=\"Faction_AstraMilitarum\">Thaddeus Noble</style> reciba un ataque <style=\"Stat_Melee\">cuerpo a cuerpo</style> o que deba quedar <style=\"Debuff_Stunned\">Aturdido</style>, pierde <style=\"Stat_Health\">{[hp]} de Salud</style> además del daño causado. En cada ronda, la primera vez que pierda <style=\"Stat_Health\">Salud</style> de esta forma, todas las unidades aliadas con <style=\"Emplacement\">Emplazamiento</style> sufren <style=\"Debuff_Pinned\">Supresión</style> por 1 ronda.",
+    "variables": {
+      "extraDmgPct": [
+        30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
+        30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
+        30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
+        30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30
+      ],
+      "hp": [
+        10, 13, 15, 18, 20, 23, 25, 38, 50, 59, 67, 76, 84, 92, 101, 135, 170,
+        200, 225, 250, 275, 300, 330, 355, 460, 565, 670, 755, 840, 925, 1010,
+        1090, 1175, 1290, 1400, 1865, 2335, 2800, 3265, 3735, 4200, 4665, 5135,
+        5600, 6065, 6535, 7000, 7465, 7935, 8400, 11200, 14000, 16800, 18200,
+        19600, 21000, 22400, 23800, 25200, 26600, 28000, 29400, 31735, 34065,
+        36400
+      ]
+    },
+    "constants": {
+      "range": "4"
+    },
+    "scaled": []
+  }
+}

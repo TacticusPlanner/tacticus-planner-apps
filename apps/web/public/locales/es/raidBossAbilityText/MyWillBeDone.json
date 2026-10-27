@@ -1,0 +1,10 @@
+{
+  "MyWillBeDone": {
+    "description": "Desencadena inmediatamente un ataque de cada unidad <style=\"Faction_Necrons\">Necrón</style> aliada en el campo de batalla desde su hexágono actual siempre que tenga un objetivo al alcance.",
+    "variables": {},
+    "constants": {
+      "cooldownTurns": "2"
+    },
+    "scaled": []
+  }
+}

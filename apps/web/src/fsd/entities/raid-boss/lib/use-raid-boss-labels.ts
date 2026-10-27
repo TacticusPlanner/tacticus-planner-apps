@@ -3,8 +3,8 @@ import { useTranslation } from "react-i18next"
 
 /**
  * id -> display label resolution for raid-boss game data, via dedicated id-keyed namespaces
- * (`raidBosses`, `raidBossAbilities`, `raidBossTraits`). English carries real values; other locales
- * fall back to English (the namespaces are en-only, like `traits`/`characters`). `raidBossTraits` only
+ * (`raidBosses`, `raidBossAbilities`, `raidBossTraits`). Ability and trait names come from the game's
+ * own language files in every locale; boss names are English-only and fall back. `raidBossTraits` only
  * carries ids that resolve to a real game trait — `hasTraitName` lets a caller drop the `Boss`
  * pseudo-trait that V1 also hides.
  */
