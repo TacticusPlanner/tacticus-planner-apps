@@ -1,5 +1,5 @@
 import type { ReactNode } from "react"
-import { beforeEach, describe, expect, it, vi } from "vitest"
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import { act, fireEvent, render, screen, within } from "@/test/render"
 import userEvent from "@testing-library/user-event"
 
@@ -580,6 +580,16 @@ describe("GoalsPage", () => {
     }
   })
 
+  it("wraps the mobile icon row so the Season fit trigger does not push the page wider than a 390px phone", async () => {
+    mobile.value = true
+    listGoals.mockReturnValue(new Promise(() => undefined))
+    renderPage()
+
+    expect(await screen.findByTestId("goals-page-loading")).toBeInTheDocument()
+    // jsdom has no layout; the wrap class is what keeps the row inside 358px.
+    expect(screen.getByTestId("goals-filter-group")).toHaveClass("flex-wrap")
+  })
+
   it("moves a goal to the Reached tab once its rank target is met", async () => {
     listGoals.mockResolvedValue({
       goals: [
@@ -1087,6 +1097,166 @@ describe("GoalsPage", () => {
       await screen.findByTestId("goals-page-filtered-empty")
     ).toBeInTheDocument()
     expect(screen.queryByTestId("goals-page-empty-project")).toBeNull()
+  })
+
+  describe("Season fit", () => {
+    /** Battle Pass is Fixed (35 days from 2 Aug, season 40 there); Guild Raid has no dates. */
+    const seasonDefinitions = [
+      {
+        id: "battle-pass",
+        type: "BattlePass",
+        recurrence: {
+          kind: "Fixed",
+          intervalDays: 35,
+          durationDays: 34,
+          anchorUtc: "2026-08-02T00:00:00Z",
+        },
+        requiredParameters: [],
+        config: { seasonNumberAtAnchor: 40 },
+      },
+      {
+        id: "guild-raid-season",
+        type: "GuildRaidSeason",
+        recurrence: {
+          kind: "None",
+          intervalDays: null,
+          durationDays: null,
+          anchorUtc: null,
+        },
+        requiredParameters: [],
+        config: null,
+      },
+    ]
+
+    beforeEach(async () => {
+      await seedGameCatalog({
+        "event-definitions": seasonDefinitions,
+        "events-calendar": {},
+      })
+      vi.useFakeTimers({ toFake: ["Date"] })
+      vi.setSystemTime(new Date("2026-10-27T12:00:00Z"))
+      // goal-1 is done before Battle Pass season 42 ends on Nov 15, goal-b after it.
+      insightsResult.value = {
+        ...insightsResult.emptyResult,
+        estimates: new Map([
+          [
+            activeGoal.goalId,
+            { days: 14, date: "2026-11-09", energyTotal: 0, raidsTotal: 0 },
+          ],
+          [
+            goalB.goalId,
+            { days: 35, date: "2026-11-30", energyTotal: 0, raidsTotal: 0 },
+          ],
+        ]),
+      }
+      twoProjects()
+    })
+
+    afterEach(() => {
+      vi.useRealTimers()
+      window.localStorage.removeItem("goals.overview.seasonFit")
+      window.localStorage.removeItem("goals.overview.group")
+    })
+
+    const fitOf = (goalId: string) =>
+      document
+        .querySelector(`[data-goal-id="${goalId}"]`)
+        ?.getAttribute("data-season-fit")
+
+    it("is off by default and shows no labels or divider", async () => {
+      renderPage()
+
+      await vi.waitFor(() =>
+        expect(screen.getAllByTestId("goal-row")).toHaveLength(2)
+      )
+      expect(
+        document.getElementById("goals-season-fit-value")
+      ).toHaveTextContent("No season fit")
+      expect(screen.queryByTestId("goal-season-fit")).toBeNull()
+      expect(screen.queryByTestId("goals-season-cutoff")).toBeNull()
+    })
+
+    it("labels each goal and marks the cut-off once Battle Pass is chosen, and remembers the choice", async () => {
+      const user = userEvent.setup()
+      const view = renderPage()
+      await vi.waitFor(() =>
+        expect(screen.getAllByTestId("goal-row")).toHaveLength(2)
+      )
+
+      await user.click(screen.getByTestId("goals-season-fit"))
+      expect(
+        await screen.findByRole("option", { name: /Guild Raid/ })
+      ).toHaveAttribute("aria-disabled", "true")
+      expect(
+        screen.getByRole("option", { name: /Guild Raid/ })
+      ).toHaveTextContent("No season dates available yet")
+      await user.click(screen.getByRole("option", { name: "Battle Pass" }))
+
+      await vi.waitFor(() => expect(fitOf(activeGoal.goalId)).toBe("0"))
+      expect(fitOf(goalB.goalId)).toBe("1")
+      const labels = screen
+        .getAllByTestId("goal-season-fit")
+        .map((label) => label.textContent)
+      expect(labels.toSorted()).toEqual(["Next season", "This season"])
+      const cutoff = screen.getByTestId("goals-season-cutoff")
+      expect(cutoff).toHaveTextContent(
+        "Battle Pass season 42 ends Nov 15. The next goal finishes later."
+      )
+      expect(cutoff.nextElementSibling).toHaveAttribute(
+        "data-goal-id",
+        goalB.goalId
+      )
+      expect(within(cutoff).queryByRole("button")).toBeNull()
+
+      view.unmount()
+      renderPage()
+      await vi.waitFor(() => expect(fitOf(goalB.goalId)).toBe("1"))
+      expect(
+        document.getElementById("goals-season-fit-value")
+      ).toHaveTextContent("Battle Pass")
+    })
+
+    it("keeps the fit in a project scope and places the divider among that project's goals", async () => {
+      window.localStorage.setItem("goals.overview.seasonFit", "battlePass")
+      renderPage("/plan/goals?project=proj-2")
+
+      await vi.waitFor(() =>
+        expect(screen.getAllByTestId("goal-row")).toHaveLength(1)
+      )
+      await vi.waitFor(() => expect(fitOf(goalB.goalId)).toBe("1"))
+      expect(
+        screen.getByTestId("goals-season-cutoff").nextElementSibling
+      ).toHaveAttribute("data-goal-id", goalB.goalId)
+    })
+
+    it("drops the divider but keeps the labels when the list is grouped", async () => {
+      window.localStorage.setItem("goals.overview.seasonFit", "battlePass")
+      window.localStorage.setItem("goals.overview.group", "type")
+      renderPage()
+
+      await vi.waitFor(() => expect(fitOf(goalB.goalId)).toBe("1"))
+      expect(screen.getAllByTestId("goal-season-fit")).toHaveLength(2)
+      expect(screen.queryByTestId("goals-season-cutoff")).toBeNull()
+    })
+
+    it("shows the same labels and divider on mobile cards", async () => {
+      mobile.value = true
+      window.localStorage.setItem("goals.overview.seasonFit", "battlePass")
+      renderPage()
+
+      await vi.waitFor(() =>
+        expect(screen.getAllByTestId("goal-season-fit")).toHaveLength(2)
+      )
+      // Icon-only trigger: the value is announced but not shown.
+      expect(
+        screen
+          .getByRole("combobox", { name: "Season fit" })
+          .querySelector('[data-slot="select-value"]')
+      ).toBeNull()
+      const cutoff = screen.getByTestId("goals-season-cutoff")
+      expect(cutoff.tagName).toBe("LI")
+      expect(cutoff.nextElementSibling).toHaveAttribute("data-season-fit", "1")
+    })
   })
 
   describe("URL state", () => {

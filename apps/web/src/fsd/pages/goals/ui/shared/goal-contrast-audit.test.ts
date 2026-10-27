@@ -397,6 +397,24 @@ const CASES: Case[] = [
     (c) => c.tok("primary"),
     (c) => over(c.tok("primary"), 0.25, c.background)
   ),
+  // --- Season fit accents (goal-season-fit): left accent on rows (background, hovered) and cards ---
+  ...(["on-track", "caution", "urgent"] as const).flatMap((accent) => [
+    graphic(
+      `season fit ${accent} accent on row (background)`,
+      (c) => c.tok(`season-fit-${accent}`),
+      (c) => c.background
+    ),
+    graphic(
+      `season fit ${accent} accent on hovered row (muted/50)`,
+      (c) => c.tok(`season-fit-${accent}`),
+      (c) => c.rowHover
+    ),
+    graphic(
+      `season fit ${accent} accent on card`,
+      (c) => c.tok(`season-fit-${accent}`),
+      (c) => c.card
+    ),
+  ]),
 ]
 
 const measured = (["light", "dark"] as const).flatMap((theme) => {

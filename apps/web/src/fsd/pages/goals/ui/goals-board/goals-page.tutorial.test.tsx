@@ -28,6 +28,7 @@ describe("useGoalsOverviewTutorial", () => {
       '[data-testid="goals-project-scope"]',
       '[data-testid="goals-status-filter"]',
       '[data-testid="goals-type-filter"]',
+      '[data-testid="goals-season-fit"]',
       '[data-testid="goal-row-drag-handle"]',
       '[data-testid="goals-select-all"]',
       '[data-testid="goals-bulk-actions"]',
@@ -52,6 +53,10 @@ describe("useGoalsOverviewTutorial", () => {
     expect(
       steps.desktop.map((step) => `${step.title} ${step.content}`).join(" ")
     ).toContain("How the order works")
+    expect(steps.desktop[3]).toMatchObject({
+      title: "Season fit",
+      content: expect.stringContaining("which goals finish in time"),
+    })
     for (const list of [steps.desktop, steps.mobile]) {
       expect(list[0]).toMatchObject({
         title: "Scope by project",

@@ -18,6 +18,7 @@ export function useGoalsOverviewTutorial() {
         | "projectScope"
         | "statusFilter"
         | "filters"
+        | "seasonFit"
         | "select"
         | "bulkActions"
         | "createGoal"
@@ -35,6 +36,7 @@ export function useGoalsOverviewTutorial() {
       createStep('[data-testid="goals-project-scope"]', "projectScope"),
       createStep('[data-testid="goals-status-filter"]', "statusFilter"),
       createStep('[data-testid="goals-type-filter"]', "filters"),
+      createStep('[data-testid="goals-season-fit"]', "seasonFit"),
     ]
     const after = [
       createStep('[data-testid="goals-order-hint"]', "orderHint"),

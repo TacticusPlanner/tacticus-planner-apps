@@ -1320,6 +1320,36 @@
       "groupByUnit": "Group by unit",
       "reachedIndicatorLabel": "Reached goals are waiting to be viewed"
     },
+    "seasonFit": {
+      "label": "Season fit",
+      "options": {
+        "off": "No season fit",
+        "battlePass": "Battle Pass",
+        "guildRaid": "Guild Raid",
+        "guildWar": "Guild War"
+      },
+      "unavailable": "No season dates available yet",
+      "fit": {
+        "thisSeason": "This season",
+        "nextSeason": "Next season",
+        "inTwoSeasons": "In 2 seasons",
+        "later": "Later"
+      },
+      "season": {
+        "battlePass": "Battle Pass season",
+        "battlePassNumbered": "Battle Pass season {{number}}",
+        "guildRaid": "Guild Raid season",
+        "guildRaidNumbered": "Guild Raid season {{number}}",
+        "guildWar": "Guild War season",
+        "guildWarNumbered": "Guild War season {{number}}"
+      },
+      "tooltipEnds": "Done by {{date}}, before {{season}} ends on {{deadline}}",
+      "tooltipStarts": "Done by {{date}}, before {{season}} starts on {{deadline}}",
+      "tooltipAfterEnds": "Done by {{date}}, after {{season}} ends on {{deadline}}",
+      "tooltipAfterStarts": "Done by {{date}}, after {{season}} starts on {{deadline}}",
+      "dividerEnds": "{{season}} ends {{deadline}}. The next goal finishes later.",
+      "dividerStarts": "{{season}} starts {{deadline}}. The next goal finishes after it."
+    },
     "detail": {
       "notes": "Notes",
       "projectsTitle": "Projects",
@@ -1662,6 +1692,10 @@
         "list": {
           "title": "Your goals",
           "content": "Every goal appears below in your priority order — active and paused goals first, then reached ones. Use a goal's Edit action to change its target, priority, notes, or projects. A unit can have several Rank, Ascension, Ability or Upgrade goals, each labelled with its own target."
+        },
+        "seasonFit": {
+          "title": "Season fit",
+          "content": "Pick a Battle Pass, Guild Raid or Guild War season to see which goals finish in time. A line marks where goals start spilling into the next season."
         }
       }
     },

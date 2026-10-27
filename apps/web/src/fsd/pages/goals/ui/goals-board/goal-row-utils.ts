@@ -3,7 +3,10 @@ import type { SyntheticEvent } from "react"
 import type { Rarity } from "@workspace/game-domain"
 
 import type { GoalStatus } from "@/entities/goal"
-import type { GoalOverviewMetrics } from "@/features/goal-planning"
+import type {
+  ActiveSeasonFit,
+  GoalOverviewMetrics,
+} from "@/features/goal-planning"
 import {
   levelBookAvailability,
   type EstimateOutcome,
@@ -77,6 +80,10 @@ export function toggleGoalStatus(
 
 export type GoalsListProps = {
   rows: GoalRow[]
+  /** The Season fit being shown (goal-season-fit), null or absent while Off. */
+  seasonFit?: ActiveSeasonFit | null
+  /** The goal the season cut-off divider sits before, null for none. */
+  seasonCutoffGoalId?: string | null
   actions: ReturnType<typeof useGoalActions>
   /** Ids of the selected goals (the page owns the selection). Absent renders nothing selected. */
   selection?: ReadonlySet<string>

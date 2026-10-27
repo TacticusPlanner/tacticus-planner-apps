@@ -1,4 +1,4 @@
-import { memo } from "react"
+import { Fragment, memo } from "react"
 import { useTranslation } from "react-i18next"
 import { GripVertical } from "lucide-react"
 import { cn } from "@workspace/ui/lib/utils"
@@ -17,6 +17,8 @@ import { CoveredByNote } from "../shared/covered-by-note"
 import { GoalProjectBadges, GoalUnitIcon } from "@/features/goal-create"
 import { LevelRequirementLine } from "../shared/level-requirement-display"
 import { SortableList, type SortableRenderProps } from "@/shared/ui"
+import { SEASON_FIT_CARD_ACCENT } from "./season-fit-copy"
+import { SeasonCutoffItem, SeasonFitLabel } from "./season-fit-ui"
 import { BlockedIndicator, StatusBadge } from "../shared/status-badge"
 import {
   EstimateCell,
@@ -41,6 +43,7 @@ type ReorderCardBodyProps = {
   row: NonNullable<GoalsListProps["rows"]>[number]
   progress: Parameters<typeof GoalTargetDisplay>[0]["progress"]
   reached: boolean
+  seasonFit: GoalsListProps["seasonFit"]
   /** Stable across drag-state changes, so a drag moving other cards never re-renders this body. */
   dragHandle: SortableRenderProps["dragHandle"]
 }
@@ -51,6 +54,7 @@ const ReorderCardBody = memo(function ReorderCardBody({
   row,
   progress,
   reached,
+  seasonFit,
   dragHandle,
 }: ReorderCardBodyProps) {
   const { t } = useTranslation()
@@ -80,6 +84,7 @@ const ReorderCardBody = memo(function ReorderCardBody({
       <div className="min-w-0 flex-1">
         <p className="truncate font-medium">{name}</p>
         <GoalTargetDisplay entityType={row.entityType} progress={progress} />
+        <SeasonFitLabel goalId={row.goalId} seasonFit={seasonFit} />
       </div>
       {/* State stays readable as text in this mode too (a Paused row would otherwise look like an Active one). */}
       <StatusBadge reached={reached} status={row.status} />
@@ -108,9 +113,15 @@ export function GoalsMobileCards({
   selection,
   onToggleSelected,
   selectActive = false,
+  seasonFit,
+  seasonCutoffGoalId,
 }: GoalsListProps) {
   const { t, i18n } = useTranslation()
   const { getEntityName } = useGoalCatalog()
+  const seasonFitAccent = (goalId: string) => {
+    const fit = seasonFit?.fits.get(goalId)
+    return fit ? SEASON_FIT_CARD_ACCENT[fit.offset] : null
+  }
 
   if (reorderEnabled && mobileReorderActive) {
     // Only in-flight rows are worth showing in reorder mode — a historical row has nothing to
@@ -131,23 +142,31 @@ export function GoalsMobileCards({
           items={reorderableRows}
           onReorder={(orderedIds, movedId) => onReorder?.(orderedIds, movedId)}
           renderItem={(row, sortable) => (
-            <li
-              className="flex items-center gap-3 rounded-2xl border bg-card p-3 data-[dragging]:relative data-[dragging]:z-10 data-[dragging]:border-ring data-[dragging]:shadow-lg"
-              data-dragging={sortable.isDragging || undefined}
-              data-testid="goal-row-reorder-card"
-              key={row.goalId}
-              ref={sortable.setNodeRef}
-              style={sortable.style}
-            >
-              <ReorderCardBody
-                dragHandle={sortable.dragHandle}
-                progress={
-                  metrics?.get(row.goalId)?.progress ?? UNKNOWN_PROGRESS
-                }
-                reached={isReachedRow(row, reachedByGoalId)}
-                row={row}
-              />
-            </li>
+            <Fragment key={row.goalId}>
+              {seasonFit && seasonCutoffGoalId === row.goalId ? (
+                <SeasonCutoffItem seasonFit={seasonFit} />
+              ) : null}
+              <li
+                className={cn(
+                  "flex items-center gap-3 rounded-2xl border bg-card p-3 data-[dragging]:relative data-[dragging]:z-10 data-[dragging]:border-ring data-[dragging]:shadow-lg",
+                  seasonFitAccent(row.goalId)
+                )}
+                data-dragging={sortable.isDragging || undefined}
+                data-testid="goal-row-reorder-card"
+                ref={sortable.setNodeRef}
+                style={sortable.style}
+              >
+                <ReorderCardBody
+                  dragHandle={sortable.dragHandle}
+                  progress={
+                    metrics?.get(row.goalId)?.progress ?? UNKNOWN_PROGRESS
+                  }
+                  reached={isReachedRow(row, reachedByGoalId)}
+                  row={row}
+                  seasonFit={seasonFit}
+                />
+              </li>
+            </Fragment>
           )}
         />
       </ul>
@@ -184,125 +203,149 @@ export function GoalsMobileCards({
           )
 
           return (
-            <li
-              className={cn(
-                "flex flex-col gap-2 rounded-2xl border p-3 text-sm",
-                reached && REACHED_ROW_CLASS
-              )}
-              data-reached={reached || undefined}
-              data-testid="goal-row"
-              key={row.goalId}
-            >
-              <div className="flex items-center justify-between gap-2">
-                <div className="flex min-w-0 items-center gap-2">
-                  {selectActive ? (
+            <Fragment key={row.goalId}>
+              {seasonFit && seasonCutoffGoalId === row.goalId ? (
+                <SeasonCutoffItem seasonFit={seasonFit} />
+              ) : null}
+              <li
+                className={cn(
+                  "flex flex-col gap-2 rounded-2xl border p-3 text-sm",
+                  reached && REACHED_ROW_CLASS,
+                  seasonFitAccent(row.goalId)
+                )}
+                data-reached={reached || undefined}
+                data-season-fit={seasonFit?.fits.get(row.goalId)?.offset}
+                data-testid="goal-row"
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex min-w-0 items-center gap-2">
+                    {selectActive ? (
+                      <div
+                        role="presentation"
+                        onClick={stopRowNavigation}
+                        onKeyDown={stopRowNavigation}
+                      >
+                        <Checkbox
+                          aria-label={t("goals.bulk.selectRow", {
+                            entity: getEntityName(row.entityType, row.entityId),
+                          })}
+                          checked={selection?.has(row.goalId) ?? false}
+                          data-testid={`goal-row-select-${row.goalId}`}
+                          onCheckedChange={() => onToggleSelected?.(row.goalId)}
+                        />
+                      </div>
+                    ) : null}
+                    <GoalPriorityNumber row={row} />
+                    <GoalUnitIcon
+                      className="size-8"
+                      entityId={row.entityId}
+                      entityType={row.entityType}
+                      name={getEntityName(row.entityType, row.entityId)}
+                    />
+                    <div className="min-w-0">
+                      <GoalNameLink remainingText={remainingText} row={row} />
+                      {reached ? (
+                        <ReachedDash />
+                      ) : estimates ? (
+                        <div className="flex flex-wrap items-center gap-x-2">
+                          <EstimateCell estimate={estimates.get(row.goalId)} />
+                          <SeasonFitLabel
+                            goalId={row.goalId}
+                            seasonFit={seasonFit}
+                          />
+                        </div>
+                      ) : null}
+                    </div>
+                  </div>
+                  <div className="flex flex-wrap items-center justify-end gap-1">
+                    <StatusBadge
+                      disabled={actions.pendingIds.has(row.goalId)}
+                      onToggle={(next) =>
+                        void toggleGoalStatus(
+                          actions,
+                          row,
+                          next,
+                          cascadeContext
+                        )
+                      }
+                      reached={reached}
+                      status={row.status}
+                    />
+                    <BlockedIndicator
+                      blockers={
+                        metrics?.get(row.goalId)?.blockers ?? NO_BLOCKERS
+                      }
+                      estimate={estimates?.get(row.goalId)}
+                      progress={progress}
+                    />
+                    <div
+                      data-testid="goal-row-actions"
+                      role="presentation"
+                      onClick={stopRowNavigation}
+                      onKeyDown={stopRowNavigation}
+                    >
+                      <GoalRowActions
+                        actions={actions}
+                        onEdit={onEdit}
+                        cascadeContext={cascadeContext}
+                        projectRemoval={projectRemoval}
+                        reached={reached}
+                        row={row}
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between gap-2">
+                  <GoalTargetDisplay
+                    entityType={row.entityType}
+                    progress={progress}
+                  />
+                </div>
+                <CoveredByNote
+                  coveredBy={metrics?.get(row.goalId)?.coveredBy}
+                />
+                {reached ? (
+                  <ReachedDash />
+                ) : (
+                  <>
                     <div
                       role="presentation"
                       onClick={stopRowNavigation}
                       onKeyDown={stopRowNavigation}
                     >
-                      <Checkbox
-                        aria-label={t("goals.bulk.selectRow", {
-                          entity: getEntityName(row.entityType, row.entityId),
-                        })}
-                        checked={selection?.has(row.goalId) ?? false}
-                        data-testid={`goal-row-select-${row.goalId}`}
-                        onCheckedChange={() => onToggleSelected?.(row.goalId)}
+                      <GoalProgressDisplay
+                        energy={energy}
+                        potentialRatio={potentialProgress?.get(row.goalId)}
+                        progress={progress}
+                        remaining={remaining}
                       />
                     </div>
-                  ) : null}
-                  <GoalPriorityNumber row={row} />
-                  <GoalUnitIcon
-                    className="size-8"
-                    entityId={row.entityId}
-                    entityType={row.entityType}
-                    name={getEntityName(row.entityType, row.entityId)}
-                  />
-                  <div className="min-w-0">
-                    <GoalNameLink remainingText={remainingText} row={row} />
-                    {reached ? (
-                      <ReachedDash />
-                    ) : estimates ? (
-                      <EstimateCell estimate={estimates.get(row.goalId)} />
-                    ) : null}
-                  </div>
-                </div>
-                <div className="flex flex-wrap items-center justify-end gap-1">
-                  <StatusBadge
-                    disabled={actions.pendingIds.has(row.goalId)}
-                    onToggle={(next) =>
-                      void toggleGoalStatus(actions, row, next, cascadeContext)
-                    }
-                    reached={reached}
-                    status={row.status}
-                  />
-                  <BlockedIndicator
-                    blockers={metrics?.get(row.goalId)?.blockers ?? NO_BLOCKERS}
-                    estimate={estimates?.get(row.goalId)}
-                    progress={progress}
-                  />
-                  <div
-                    data-testid="goal-row-actions"
-                    role="presentation"
-                    onClick={stopRowNavigation}
-                    onKeyDown={stopRowNavigation}
-                  >
-                    <GoalRowActions
-                      actions={actions}
-                      onEdit={onEdit}
-                      cascadeContext={cascadeContext}
-                      projectRemoval={projectRemoval}
-                      reached={reached}
-                      row={row}
+                    <LevelRequirementLine
+                      levelRequirement={levelRequirement}
+                      potentialRatio={levelPotentialProgress?.get(row.goalId)}
+                      xpBooks={xpBooks}
                     />
-                  </div>
-                </div>
-              </div>
-              <div className="flex items-center justify-between gap-2">
-                <GoalTargetDisplay
-                  entityType={row.entityType}
-                  progress={progress}
-                />
-              </div>
-              <CoveredByNote coveredBy={metrics?.get(row.goalId)?.coveredBy} />
-              {reached ? (
-                <ReachedDash />
-              ) : (
-                <>
-                  <div
-                    role="presentation"
-                    onClick={stopRowNavigation}
-                    onKeyDown={stopRowNavigation}
-                  >
-                    <GoalProgressDisplay
+                    <GoalResourceChips
+                      onslaughtTokens={onslaughtTokens}
+                      shopSpend={shopSpend}
                       energy={energy}
-                      potentialRatio={potentialProgress?.get(row.goalId)}
-                      progress={progress}
+                      entityType={row.entityType}
+                      goalType={row.goalType}
                       remaining={remaining}
                     />
-                  </div>
-                  <LevelRequirementLine
-                    levelRequirement={levelRequirement}
-                    potentialRatio={levelPotentialProgress?.get(row.goalId)}
-                    xpBooks={xpBooks}
-                  />
-                  <GoalResourceChips
-                    onslaughtTokens={onslaughtTokens}
-                    shopSpend={shopSpend}
-                    energy={energy}
-                    entityType={row.entityType}
-                    goalType={row.goalType}
-                    remaining={remaining}
-                  />
-                </>
-              )}
-              {row.notes ? (
-                <p className="truncate text-muted-foreground" title={row.notes}>
-                  {row.notes}
-                </p>
-              ) : null}
-              <GoalProjectBadges projects={row.projects ?? []} />
-            </li>
+                  </>
+                )}
+                {row.notes ? (
+                  <p
+                    className="truncate text-muted-foreground"
+                    title={row.notes}
+                  >
+                    {row.notes}
+                  </p>
+                ) : null}
+                <GoalProjectBadges projects={row.projects ?? []} />
+              </li>
+            </Fragment>
           )
         })}
       </ul>

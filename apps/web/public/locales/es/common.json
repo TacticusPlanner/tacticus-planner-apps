@@ -1320,6 +1320,36 @@
       "groupByUnit": "Agrupar por unidad",
       "reachedIndicatorLabel": "Hay objetivos alcanzados esperando ser vistos"
     },
+    "seasonFit": {
+      "label": "Ajuste a temporada",
+      "options": {
+        "off": "Sin ajuste a temporada",
+        "battlePass": "Pase de batalla",
+        "guildRaid": "Incursión de gremio",
+        "guildWar": "Guerra de gremios"
+      },
+      "unavailable": "Aún no hay fechas de temporada",
+      "fit": {
+        "thisSeason": "Esta temporada",
+        "nextSeason": "Próxima temporada",
+        "inTwoSeasons": "En 2 temporadas",
+        "later": "Más adelante"
+      },
+      "season": {
+        "battlePass": "temporada del Pase de batalla",
+        "battlePassNumbered": "temporada {{number}} del Pase de batalla",
+        "guildRaid": "temporada de Incursión de gremio",
+        "guildRaidNumbered": "temporada {{number}} de Incursión de gremio",
+        "guildWar": "temporada de Guerra de gremios",
+        "guildWarNumbered": "temporada {{number}} de Guerra de gremios"
+      },
+      "tooltipEnds": "Listo el {{date}}, antes de que termine la {{season}} el {{deadline}}",
+      "tooltipStarts": "Listo el {{date}}, antes de que empiece la {{season}} el {{deadline}}",
+      "tooltipAfterEnds": "Listo el {{date}}, después de que termine la {{season}} el {{deadline}}",
+      "tooltipAfterStarts": "Listo el {{date}}, después de que empiece la {{season}} el {{deadline}}",
+      "dividerEnds": "La {{season}} termina el {{deadline}}. El siguiente objetivo termina después.",
+      "dividerStarts": "La {{season}} empieza el {{deadline}}. El siguiente objetivo termina después."
+    },
     "detail": {
       "notes": "Notas",
       "projectsTitle": "Proyectos",
@@ -1662,6 +1692,10 @@
         "list": {
           "title": "Tus objetivos",
           "content": "Cada meta aparece abajo según tu orden de prioridad: primero las activas y pausadas, luego las alcanzadas. Usa la acción Editar de una meta para cambiar su objetivo, prioridad, notas o proyectos. Una unidad puede tener varias metas de rango, ascensión, habilidad o mejora, cada una etiquetada con su propio objetivo."
+        },
+        "seasonFit": {
+          "title": "Ajuste a temporada",
+          "content": "Elige una temporada del Pase de batalla, de Incursión de gremio o de Guerra de gremios para ver qué objetivos terminan a tiempo. Una línea marca dónde los objetivos pasan a la siguiente temporada."
         }
       }
     },

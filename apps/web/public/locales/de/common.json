@@ -1320,6 +1320,36 @@
       "groupByUnit": "Nach Einheit gruppieren",
       "reachedIndicatorLabel": "Erreichte Ziele warten darauf, angesehen zu werden"
     },
+    "seasonFit": {
+      "label": "Saison-Passung",
+      "options": {
+        "off": "Keine Saison-Passung",
+        "battlePass": "Battle Pass",
+        "guildRaid": "Gildenraid",
+        "guildWar": "Gildenkrieg"
+      },
+      "unavailable": "Noch keine Saisondaten verfügbar",
+      "fit": {
+        "thisSeason": "Diese Saison",
+        "nextSeason": "Nächste Saison",
+        "inTwoSeasons": "In 2 Saisons",
+        "later": "Später"
+      },
+      "season": {
+        "battlePass": "Battle-Pass-Saison",
+        "battlePassNumbered": "Battle-Pass-Saison {{number}}",
+        "guildRaid": "Gildenraid-Saison",
+        "guildRaidNumbered": "Gildenraid-Saison {{number}}",
+        "guildWar": "Gildenkriegs-Saison",
+        "guildWarNumbered": "Gildenkriegs-Saison {{number}}"
+      },
+      "tooltipEnds": "Fertig am {{date}}, bevor die {{season}} am {{deadline}} endet",
+      "tooltipStarts": "Fertig am {{date}}, bevor die {{season}} am {{deadline}} beginnt",
+      "tooltipAfterEnds": "Fertig am {{date}}, nachdem die {{season}} am {{deadline}} endet",
+      "tooltipAfterStarts": "Fertig am {{date}}, nachdem die {{season}} am {{deadline}} beginnt",
+      "dividerEnds": "{{season}} endet am {{deadline}} – das nächste Ziel wird später fertig.",
+      "dividerStarts": "{{season}} beginnt am {{deadline}} – das nächste Ziel wird danach fertig."
+    },
     "detail": {
       "notes": "Notizen",
       "projectsTitle": "Projekte",
@@ -1662,6 +1692,10 @@
         "list": {
           "title": "Deine Ziele",
           "content": "Jedes Ziel erscheint unten in deiner Prioritätsreihenfolge – aktive und pausierte zuerst, danach erreichte. Mit der Aktion „Bearbeiten“ eines Ziels änderst du Zielwert, Priorität, Notizen oder Projekte. Eine Einheit kann mehrere Rang-, Aufstiegs-, Fähigkeits- oder Upgrade-Ziele haben, jedes mit eigenem Ziel gekennzeichnet."
+        },
+        "seasonFit": {
+          "title": "Saison-Passung",
+          "content": "Wähle eine Battle-Pass-, Gildenraid- oder Gildenkriegs-Saison, um zu sehen, welche Ziele rechtzeitig fertig werden. Eine Linie zeigt, ab wo Ziele in die nächste Saison rutschen."
         }
       }
     },
