@@ -3,3 +3,4 @@ export { AccountCard } from "./ui/account-card"
 
 export { GuestAccountMenu, GuestPreferencesCard } from "./ui/guest-account-menu"
 export { PlayerDataSyncButton } from "./ui/player-data-sync-button"
+export { UnreadDot } from "./ui/account-menu-parts"

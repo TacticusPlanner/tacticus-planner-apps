@@ -157,32 +157,16 @@ describe("UserJotProvider", () => {
       expect(open).toHaveBeenCalledOnce()
     })
 
-    async function queuedInit(isMobile: boolean) {
-      vi.stubGlobal(
-        "matchMedia",
-        vi.fn((query: string) => ({
-          matches: isMobile && query === "(max-width: 767px)",
-        }))
-      )
+    it("inits the widget never to pop updates open by itself", async () => {
       delete window.uj
       delete window.$ujq
       vi.resetModules()
       await import("./userjot-provider")
-      vi.unstubAllGlobals()
 
       // Re-read: TS narrows `window.$ujq` to never after the `delete` above.
       const queued = window.$ujq as unknown[][] | undefined
-      return queued?.find(([method]) => method === "init")?.[2]
-    }
-
-    it("inits the widget on desktop to open the newest unseen update itself, so the unread dot can clear", async () => {
-      expect(await queuedInit(false)).toMatchObject({
-        widget: { notifications: { updates: "full" } },
-      })
-    })
-
-    it("keeps updates quiet on mobile, which shows no unread dot", async () => {
-      expect(await queuedInit(true)).toMatchObject({
+      const init = queued?.find(([method]) => method === "init")
+      expect(init?.[2]).toMatchObject({
         widget: { notifications: { updates: "none" } },
       })
     })

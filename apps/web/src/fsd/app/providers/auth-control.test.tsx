@@ -115,8 +115,9 @@ vi.mock("@/widgets/account-menu/ui/catalog-sync-status-badge", () => ({
   CatalogSyncStatusBadge: () => <div data-testid="catalog-sync-status-badge" />,
 }))
 const openUserJot = vi.fn()
+const unreadCount = vi.fn(() => 0)
 vi.mock("./userjot-provider", () => ({
-  useUserJot: () => ({ open: openUserJot, unreadCount: 0 }),
+  useUserJot: () => ({ open: openUserJot, unreadCount: unreadCount() }),
 }))
 vi.mock("@/shared/tour", () => ({
   TourButton: () => <div data-testid="tour-button" />,
@@ -172,6 +173,7 @@ describe("AuthControl", () => {
     useCurrentUser.mockReturnValue({ state: { status: "loading" } })
     silentSignInStatus.mockReturnValue("idle")
     openUserJot.mockClear()
+    unreadCount.mockReturnValue(0)
     changeLanguage.mockClear()
   })
 
@@ -511,6 +513,33 @@ describe("AuthControl", () => {
 
     expect(openUserJot).toHaveBeenCalledTimes(1)
     expect(screen.queryByTestId("auth-account-drawer")).not.toBeInTheDocument()
+  })
+
+  it("marks the mobile avatar and the drawer's Changelog row while the widget reports unread activity", () => {
+    isMobile.mockReturnValue(true)
+    unreadCount.mockReturnValue(1)
+    renderAuthControl()
+
+    expect(
+      screen.getByTestId("auth-account-unread-indicator")
+    ).toBeInTheDocument()
+    fireEvent.click(screen.getByTestId("auth-account-trigger"))
+    expect(
+      screen.getByTestId("auth-changelog-unread-indicator")
+    ).toBeInTheDocument()
+  })
+
+  it("shows no unread dots on the mobile avatar or Changelog row without unread activity", () => {
+    isMobile.mockReturnValue(true)
+    renderAuthControl()
+
+    expect(
+      screen.queryByTestId("auth-account-unread-indicator")
+    ).not.toBeInTheDocument()
+    fireEvent.click(screen.getByTestId("auth-account-trigger"))
+    expect(
+      screen.queryByTestId("auth-changelog-unread-indicator")
+    ).not.toBeInTheDocument()
   })
 
   it("closes the mobile drawer when the Roadmap row is activated", () => {

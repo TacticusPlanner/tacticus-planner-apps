@@ -19,6 +19,7 @@ import {
   MenuLinkRow,
   MenuRow,
   PreferencesSection,
+  UnreadDot,
   type AccountMenuView,
 } from "./account-menu-parts"
 import { CatalogSyncStatusBadge } from "./catalog-sync-status-badge"
@@ -38,6 +39,7 @@ export function AccountCard({
   onEditName,
   onFeedback,
   onChangelog,
+  changelogUnread = false,
   feedbackUnavailable,
   onImportV1,
   onOpenAccountSettings,
@@ -57,6 +59,8 @@ export function AccountCard({
   onFeedback: () => void
   /** Opens the widget's Updates, so reading there clears the feedback button's unread dot. */
   onChangelog: () => void
+  /** The widget reports unread activity: mark the Changelog row with a dot. */
+  changelogUnread?: boolean
   /** Why the feedback row is disabled (the widget failed to load), or undefined when it works. */
   feedbackUnavailable?: string
   onImportV1: () => void
@@ -154,6 +158,11 @@ export function AccountCard({
           label={t("feedback.changelog")}
           onClick={onChangelog}
           title={feedbackUnavailable}
+          trailing={
+            changelogUnread ? (
+              <UnreadDot data-testid="auth-changelog-unread-indicator" />
+            ) : undefined
+          }
         />
       </div>
       <Separator />
