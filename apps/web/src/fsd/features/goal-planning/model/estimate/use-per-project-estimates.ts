@@ -102,7 +102,8 @@ export function usePerProjectEstimates({
         `${detail.goalId}:${detail.goalType}:${JSON.stringify(detail.config)}`
     )
     .join(",")
-  const currentKey = `${memberKey}|${newDetailsKey}|${selectedProjectIds.join(",")}`
+  // The Onslaught cadence too, so a catalog refresh that changes it re-estimates.
+  const currentKey = `${memberKey}|${newDetailsKey}|${selectedProjectIds.join(",")}|${onslaughtRunsPerDay}`
 
   const [state, setState] = useState<{
     key: string
@@ -227,6 +228,7 @@ export function usePerProjectEstimates({
     memberKey,
     newDetailsKey,
     dailyEnergy,
+    onslaughtRunsPerDay,
   ])
 
   if (!hasQuery || newDetails.length === 0) return new Map()

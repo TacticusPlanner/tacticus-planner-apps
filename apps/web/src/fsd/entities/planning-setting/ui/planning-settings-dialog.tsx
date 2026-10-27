@@ -51,12 +51,11 @@ export function PlanningSettingsDialog({
   const { settings, save } = usePlanningSettings()
   const tiersRead = useCatalogDataset("global-values", toDailyEnergyTiers)
   const tiers = tiersRead.status === "ready" ? tiersRead.data : null
+  // The saved value until the slider moves, even when the ladder no longer offers it.
   const [dailyEnergy, setDailyEnergy] = useState(settings.dailyEnergy)
-  const tierIndex = Math.max(
-    0,
-    tiers?.findIndex((tier) => tier.energy === dailyEnergy) ?? 0
-  )
-  const tier = tiers?.[tierIndex]
+  const tier = tiers?.find((candidate) => candidate.energy === dailyEnergy)
+  // An energy value off the ladder only parks the slider at its first tier.
+  const tierIndex = tier && tiers ? tiers.indexOf(tier) : 0
   const [xpBookRarity, setXpBookRarity] = useState<Rarity>(() =>
     normalizeXpBookRarity(settings.xpBookRarity)
   )
@@ -68,8 +67,7 @@ export function PlanningSettingsDialog({
     setError(null)
     try {
       await save({
-        // Unchanged while the tiers haven't loaded (the slider isn't shown then).
-        dailyEnergy: tier?.energy ?? settings.dailyEnergy,
+        dailyEnergy,
         xpBookRarity,
         revision: settings.revision,
       })
@@ -108,7 +106,7 @@ export function PlanningSettingsDialog({
               />
               {tier
                 ? `${tier.energy} · ${energySourceLabel(tier.source)}`
-                : settings.dailyEnergy}
+                : dailyEnergy}
             </p>
             {tiers ? (
               <>

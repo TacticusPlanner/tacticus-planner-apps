@@ -124,7 +124,8 @@ export function usePlanInsights(scopeGoalIds?: readonly string[] | null) {
       planningSettings.xpBookRarity,
     ]
   )
-  const calculationKey = `${scopeKey}:${memberKey}:${inventoryKey}`
+  // The Onslaught cadence too, so a catalog refresh that changes it recomputes.
+  const calculationKey = `${scopeKey}:${memberKey}:${inventoryKey}:${onslaughtRunsPerDay}`
   // A project scope that holds none of the plan's Active goals has nothing to report.
   const hasQuery = Boolean(
     isAuthenticated &&

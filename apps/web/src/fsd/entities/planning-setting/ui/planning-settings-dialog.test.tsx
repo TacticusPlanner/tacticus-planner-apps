@@ -9,6 +9,11 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 
 const save = vi.fn()
 const onOpenChange = vi.fn()
+const settings = vi.hoisted(() => ({
+  dailyEnergy: 538,
+  xpBookRarity: "Epic",
+  revision: 7,
+}))
 
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
@@ -31,7 +36,7 @@ vi.mock("@/entities/planning-setting", () => ({
       ? rarity
       : "Legendary",
   usePlanningSettings: () => ({
-    settings: { dailyEnergy: 538, xpBookRarity: "Epic", revision: 7 },
+    settings,
     save,
   }),
 }))
@@ -57,6 +62,7 @@ describe("PlanningSettingsDialog", () => {
   beforeEach(() => {
     save.mockReset().mockResolvedValue(undefined)
     onOpenChange.mockReset()
+    settings.dailyEnergy = 538
   })
 
   it("loads synchronized energy and rarity, and saves with the current revision", async () => {
@@ -95,6 +101,24 @@ describe("PlanningSettingsDialog", () => {
       expect(save).toHaveBeenCalledWith({
         dailyEnergy: 538,
         xpBookRarity: "Legendary",
+        revision: 7,
+      })
+    })
+  })
+
+  it("keeps a saved energy value the ladder no longer offers", async () => {
+    settings.dailyEnergy = 500
+    render(<PlanningSettingsDialog open onOpenChange={onOpenChange} />)
+
+    expect(
+      screen.getByTestId("planning-settings-energy-value")
+    ).toHaveTextContent("500")
+    fireEvent.click(screen.getByTestId("planning-settings-save"))
+
+    await waitFor(() => {
+      expect(save).toHaveBeenCalledWith({
+        dailyEnergy: 500,
+        xpBookRarity: "Epic",
         revision: 7,
       })
     })
