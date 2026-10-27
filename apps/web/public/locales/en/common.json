@@ -1306,7 +1306,7 @@
         "InsufficientDailyEnergy": "Daily energy is below the cost of the cheapest usable node.",
         "SimulationLimit": "The goal could not complete within the planning horizon.",
         "UnsupportedCost": "Detailed costing is not supported for this goal.",
-        "FilteredOut": "Every preferred location is excluded by your Raids Filters."
+        "FilteredOut": "Every farming location is excluded by your Raids Filters."
       }
     },
     "unlockFlavor": "Gather the character's shards and prepare them to join your roster.",

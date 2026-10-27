@@ -297,6 +297,10 @@
           "title": "Raids Filters",
           "content": "Limit Today and Bonus Raids to the campaign locations you want, for example only 5-slot Elite nodes or a specific enemy faction. The badge shows how many filters are active."
         },
+        "quickFilters": {
+          "title": "Quick filters",
+          "content": "Switch today's plan for a day. Fewer raids uses the locations that need fewer raid tickets for the same materials. Bottlenecks farms the slowest materials across all goals first. Plan and Goals dates are not affected."
+        },
         "onslaught": {
           "title": "Onslaught",
           "content": "Today's Onslaught tokens, by unit: the runs are shared across your goals in priority order, the same way Plan > Schedule spends them."
@@ -494,6 +498,21 @@
       "pinned_one": "{{count}} goal is pinned to a location excluded by your Raids Filters. Reset the filters or change the pin.",
       "pinned_other": "{{count}} goals are pinned to a location excluded by your Raids Filters. Reset the filters or change the pin.",
       "reset": "Reset filters"
+    }
+  },
+  "quickFilters": {
+    "label": "Quick filters",
+    "chip": {
+      "fewerRaids": "Fewer raids",
+      "bottlenecks": "Bottlenecks"
+    },
+    "help": {
+      "fewerRaids": "When several locations cost the same energy per item, raid only the ones with the highest energy per battle. Same materials for the same energy, in fewer raids. Useful when you're low on raid tickets.",
+      "bottlenecks": "Ignore goal priority today: combine the remaining materials of all goals and farm the slowest ones first, usually Legendary materials. Useful for starting long farms early."
+    },
+    "note": {
+      "fewerRaids": "Fewer raids: tied locations with more energy per battle are used, so the same materials take fewer raids.",
+      "bottlenecks": "Bottlenecks: today's raids farm the slowest materials across all goals first. Plan and Goals dates still follow goal priority."
     }
   },
   "hse": {

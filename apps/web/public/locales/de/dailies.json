@@ -297,6 +297,10 @@
           "title": "Raid-Filter",
           "content": "Beschränke Heute und Bonus-Raids auf die gewünschten Kampagnenorte, z. B. nur Elite-Orte mit 5 Slots oder eine bestimmte Gegnerfraktion. Das Abzeichen zeigt, wie viele Filter aktiv sind."
         },
+        "quickFilters": {
+          "title": "Schnellfilter",
+          "content": "Ändere den heutigen Plan für einen Tag. Weniger Raids nutzt die Orte, die für dieselben Materialien weniger Raid-Tickets brauchen. Engpässe farmt zuerst die langsamsten Materialien aller Ziele. Daten in Plan und Ziele ändern sich nicht."
+        },
         "onslaught": {
           "title": "Onslaught",
           "content": "Deine heutigen Onslaught-Marken nach Einheit: Die Läufe werden in Prioritätsreihenfolge auf deine Ziele verteilt, genau wie in Planen > Zeitplan."
@@ -494,6 +498,21 @@
       "pinned_one": "{{count}} Ziel ist an einen Ort angeheftet, den deine Raid-Filter ausschließen. Setze die Filter zurück oder ändere die Anheftung.",
       "pinned_other": "{{count}} Ziele sind an einen Ort angeheftet, den deine Raid-Filter ausschließen. Setze die Filter zurück oder ändere die Anheftung.",
       "reset": "Filter zurücksetzen"
+    }
+  },
+  "quickFilters": {
+    "label": "Schnellfilter",
+    "chip": {
+      "fewerRaids": "Weniger Raids",
+      "bottlenecks": "Engpässe"
+    },
+    "help": {
+      "fewerRaids": "Wenn mehrere Orte gleich viel Energie pro Gegenstand kosten, nur die mit der meisten Energie pro Kampf raiden. Gleiche Materialien für gleiche Energie, mit weniger Raids. Praktisch, wenn Raid-Tickets knapp sind.",
+      "bottlenecks": "Ignoriert heute die Zielpriorität: Die restlichen Materialien aller Ziele werden zusammengefasst und die langsamsten zuerst gefarmt, meist legendäre Materialien. Praktisch, um lange Farmphasen früh zu beginnen."
+    },
+    "note": {
+      "fewerRaids": "Weniger Raids: Gleichwertige Orte mit mehr Energie pro Kampf werden genutzt, damit dieselben Materialien weniger Raids brauchen.",
+      "bottlenecks": "Engpässe: Die heutigen Raids farmen zuerst die langsamsten Materialien aller Ziele. Daten in Plan und Ziele folgen weiter der Zielpriorität."
     }
   },
   "hse": {

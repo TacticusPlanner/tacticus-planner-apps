@@ -30,7 +30,7 @@ export function dropRate(location: FarmLocation): number {
 /**
  * The farm node(s) to raid for one material need: every location restricted to `farmingLocationIds`
  * when the goal pins specific nodes, otherwise the least-`energyPerItem` node(s) across all its drop
- * locations, every node tied on two-decimal `energyPerItem`, ordered higher `expectedGold` first (a port of V1
+ * locations that pass `nodeFilter`, every node tied on two-decimal `energyPerItem`, ordered higher `expectedGold` first (a port of V1
  * `CampaignsService.selectBestLocations`, which sorts `['energyPerItem', 'expectedGold']` ascending
  * then descending — a location with no `expectedGold` sorts lowest for this tie-break, never winning
  * over one that reports a value). Locations with no energy cost or no drop chance are never
@@ -53,20 +53,23 @@ export function selectFarmNodes(
 }
 
 /**
- * `selectFarmNodes` with its intermediate: `picked` is the preferred set before `nodeFilter`, `nodes`
- * what survives it. The filter runs after the pick, so a restrictive filter never promotes a pricier
- * node (a material whose picked nodes all fail is filtered out, not rerouted) and a goal's pinned
- * locations are filtered like any other set.
+ * `selectFarmNodes` with its intermediate: `candidates` is every node before `nodeFilter`, `nodes`
+ * the pick among those that pass it. The filter runs before the pick, so excluding the cheapest node
+ * falls back to the cheapest node that passes (V1's Custom locations: e.g. Mirror instead of Elite for
+ * Common materials). A goal's pinned locations are filtered like any other set; a material is only
+ * filtered out when no candidate passes. `fewerRaids` (Today's "Fewer raids" quick filter) keeps only
+ * the costliest per battle of the tied cheapest nodes; pinned locations are used as chosen.
  */
 function pickFarmNodes(
   need: UpgradeNeed,
   upgradesById: ReadonlyMap<EstimateResourceId, EstimateUpgrade>,
   battlesById: ReadonlyMap<BattleId, Battle>,
   farmingLocationIds?: readonly string[] | null,
-  nodeFilter?: FarmNodeFilter
-): { picked: FarmNode[]; nodes: FarmNode[] } {
+  nodeFilter?: FarmNodeFilter,
+  fewerRaids = false
+): { candidates: FarmNode[]; nodes: FarmNode[] } {
   const upgrade = upgradesById.get(need.id)
-  if (!upgrade) return { picked: [], nodes: [] }
+  if (!upgrade) return { candidates: [], nodes: [] }
 
   const restricted = !!farmingLocationIds && farmingLocationIds.length > 0
   const candidates = collectFarmNodes(
@@ -74,21 +77,27 @@ function pickFarmNodes(
     battlesById,
     restricted ? farmingLocationIds : undefined
   )
-  let picked = candidates
-  if (candidates.length > 0 && !restricted) {
-    // Tie test only: two-decimal efficiency as V1 (`campaigns.service.ts`); nodes keep their real dropRate.
-    const efficiency = (c: FarmNode) =>
-      Number((c.energyCost / c.dropRate).toFixed(2))
-    const minEnergyPerItem = Math.min(...candidates.map(efficiency))
-    picked = candidates
-      .filter((c) => efficiency(c) === minEnergyPerItem)
-      .sort((a, b) => (b.expectedGold ?? -1) - (a.expectedGold ?? -1))
+  const passing = nodeFilter
+    ? candidates.filter((node) => nodeFilter(node.battleId, need.id))
+    : candidates
+  if (passing.length === 0 || restricted) return { candidates, nodes: passing }
+
+  // Tie test only: two-decimal efficiency as V1 (`campaigns.service.ts`); nodes keep their real dropRate.
+  const efficiency = (c: FarmNode) =>
+    Number((c.energyCost / c.dropRate).toFixed(2))
+  const minEnergyPerItem = Math.min(...passing.map(efficiency))
+  let cheapest = passing.filter((c) => efficiency(c) === minEnergyPerItem)
+  if (fewerRaids) {
+    // V1 `leastEnergyFewestTickets`: at equal energy per item, a costlier battle yields more items
+    // per raid, so the same items take fewer raids (tickets).
+    const maxEnergyCost = Math.max(...cheapest.map((c) => c.energyCost))
+    cheapest = cheapest.filter((c) => c.energyCost === maxEnergyCost)
   }
   return {
-    picked,
-    nodes: nodeFilter
-      ? picked.filter((node) => nodeFilter(node.battleId, need.id))
-      : picked,
+    candidates,
+    nodes: cheapest.sort(
+      (a, b) => (b.expectedGold ?? -1) - (a.expectedGold ?? -1)
+    ),
   }
 }
 
@@ -144,7 +153,8 @@ export function classifyNeed(
   battlesById: ReadonlyMap<BattleId, Battle>,
   farmingLocationIds: readonly string[] | null | undefined,
   dailyEnergy: number,
-  nodeFilter?: FarmNodeFilter
+  nodeFilter?: FarmNodeFilter,
+  fewerRaids = false
 ): {
   nodes: FarmNode[]
   blocker: EstimateBlockedReason | null
@@ -159,17 +169,18 @@ export function classifyNeed(
     dailyEnergy
   )
   if (unavailable && !hasSupplier) return { nodes: [], blocker: unavailable }
-  const { picked, nodes } = unavailable
-    ? { picked: [], nodes: [] }
+  const { candidates, nodes } = unavailable
+    ? { candidates: [], nodes: [] }
     : pickFarmNodes(
         need,
         upgradesById,
         battlesById,
         farmingLocationIds,
-        nodeFilter
+        nodeFilter,
+        fewerRaids
       )
   if (nodes.length === 0 && !unavailable && !hasSupplier) {
-    if (picked.length > 0) {
+    if (candidates.length > 0) {
       return {
         nodes,
         blocker: "FilteredOut",

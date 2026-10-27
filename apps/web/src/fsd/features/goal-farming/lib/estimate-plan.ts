@@ -45,11 +45,88 @@ export type EstimatePlanParams = {
   /** The player's real attempts left today per node. Only `estimateRaidsLeftToday` passes it; it
    *  caps day 1's raids at each node to what is left (later days start fresh). */
   attemptsLeftByBattle?: ReadonlyMap<BattleId, number>
+  /** Today quick filter "Fewer raids": among nodes tied on least energy per item, keep only the
+   *  costliest per battle. Only Today and Bonus Raids pass it. */
+  fewerRaids?: boolean
+  /** Today quick filter "Bottlenecks": spend each day's energy on one pool of every goal's
+   *  remaining need (all stages), longest-to-finish first, instead of goal by goal in priority
+   *  order. Only Today and Bonus Raids pass it. */
+  combineGoals?: boolean
 }
 
 type StageState = {
   remaining: Map<EstimateResourceId, number>
   nodesById: Map<EstimateResourceId, FarmNode[]>
+}
+
+/**
+ * One day of the "Bottlenecks" quick filter: every pending goal's remaining need, summed per resource
+ * across all its stages, is spent as one pool by `spendDay` (longest-to-finish resource first). A
+ * resource is farmed at the nodes picked for the highest-priority goal that needs it; what it yields
+ * is taken off the goals' stages in priority order, and each raid entry is credited to that same
+ * highest-priority goal so Today keeps its per-goal grouping. Stages a day empties are dropped.
+ */
+function spendPooledDay(
+  goals: readonly GoalNeed[],
+  stagesByGoal: ReadonlyMap<string, StageState[]>,
+  energy: number,
+  dailyEnergy: number,
+  attemptsUsedByBattle: Map<BattleId, number>,
+  attemptsLeftByBattle: ReadonlyMap<BattleId, number> | undefined
+): { energySpent: number; entries: RaidBreakdownEntry[] } {
+  const pool = new Map<EstimateResourceId, number>()
+  const nodesById = new Map<EstimateResourceId, FarmNode[]>()
+  const ownerById = new Map<EstimateResourceId, string>()
+  for (const goal of goals) {
+    for (const stage of stagesByGoal.get(goal.goalId) ?? []) {
+      for (const [id, count] of stage.remaining) {
+        pool.set(id, (pool.get(id) ?? 0) + count)
+        if (!ownerById.has(id)) {
+          ownerById.set(id, goal.goalId)
+          nodesById.set(id, stage.nodesById.get(id) ?? [])
+        }
+      }
+    }
+  }
+  if (energy <= 0 || pool.size === 0) return { energySpent: 0, entries: [] }
+
+  const before = new Map(pool)
+  const spent = spendDay(
+    pool,
+    nodesById,
+    energy,
+    dailyEnergy,
+    attemptsUsedByBattle,
+    attemptsLeftByBattle
+  )
+  for (const [id, count] of before) {
+    let farmed = count - (pool.get(id) ?? 0)
+    for (const goal of goals) {
+      if (farmed <= 0) break
+      for (const stage of stagesByGoal.get(goal.goalId) ?? []) {
+        const need = stage.remaining.get(id)
+        if (!need) continue
+        const taken = Math.min(need, farmed)
+        farmed -= taken
+        if (need - taken <= 0) stage.remaining.delete(id)
+        else stage.remaining.set(id, need - taken)
+        if (farmed <= 0) break
+      }
+    }
+  }
+  for (const goal of goals) {
+    const stages = stagesByGoal.get(goal.goalId)
+    if (!stages) continue
+    const left = stages.filter((stage) => stage.remaining.size > 0)
+    stages.splice(0, stages.length, ...left)
+  }
+  return {
+    energySpent: spent.energySpent,
+    entries: spent.breakdown.map((entry) => ({
+      goalId: ownerById.get(entry.resourceId)!,
+      ...entry,
+    })),
+  }
 }
 
 function runPlanSchedule(
@@ -62,6 +139,8 @@ function runPlanSchedule(
     referenceDate = new Date(),
     nodeFilter,
     attemptsLeftByBattle,
+    fewerRaids = false,
+    combineGoals = false,
   }: EstimatePlanParams,
   maxDays: number
 ): RaidPlanSchedule & { filteredOut: FilteredOutNeed[] } {
@@ -93,7 +172,8 @@ function runPlanSchedule(
           battlesById,
           goal.farmingLocationIds,
           dailyEnergy,
-          nodeFilter
+          nodeFilter,
+          fewerRaids
         )
         if (blocker) {
           blockers.push({
@@ -157,6 +237,53 @@ function runPlanSchedule(
     ordered.map((goal) => [goal.goalId, goal.flatSuppliers])
   )
   const scheduleDays: RaidDaySchedule[] = []
+
+  const addGoalTotals = (
+    goalId: string,
+    energySpent: number,
+    raids: number
+  ) => {
+    energyTotalByGoal.set(
+      goalId,
+      (energyTotalByGoal.get(goalId) ?? 0) + energySpent
+    )
+    raidsTotalByGoal.set(goalId, (raidsTotalByGoal.get(goalId) ?? 0) + raids)
+  }
+  const completeIfDone = (goal: GoalNeed) => {
+    const stages = stagesByGoal.get(goal.goalId)!
+    if (stages.length === 0) {
+      const goalBlockers = blockersByGoal.get(goal.goalId) ?? []
+      // Obtainable work is done; a remaining blocker means the goal never completes.
+      results.set(
+        goal.goalId,
+        goalBlockers.length > 0
+          ? partiallyBlocked(
+              goalBlockers,
+              actionableByGoal.get(goal.goalId) ?? []
+            )
+          : {
+              status: "Estimated",
+              days,
+              date: formatDate(inclusiveCompletionDate(referenceDate, days)),
+              energyTotal: energyTotalByGoal.get(goal.goalId) ?? 0,
+              raidsTotal: raidsTotalByGoal.get(goal.goalId) ?? 0,
+              flatSupplyTotal:
+                flatSupplyTotalByGoal.get(goal.goalId) ?? new Map(),
+              flatSupplyBySupplier:
+                flatSupplyBySupplierByGoal.get(goal.goalId) ?? new Map(),
+              onslaughtTokens: onslaughtTokensFromSupply(
+                flatSupplyBySupplierByGoal.get(goal.goalId) ?? new Map(),
+                goal.flatSuppliers
+              ),
+              ...shopSpendField(
+                flatSupplyBySupplierByGoal.get(goal.goalId) ?? new Map(),
+                goal.flatSuppliers
+              ),
+            }
+      )
+      pending.delete(goal.goalId)
+    }
+  }
 
   while (pending.size > 0 && days < maxDays) {
     days++
@@ -236,7 +363,7 @@ function runPlanSchedule(
         }
       }
 
-      while (stages.length > 0 && energy > 0) {
+      while (!combineGoals && stages.length > 0 && energy > 0) {
         const stage = stages[0]!
         const spent = spendDay(
           stage.remaining,
@@ -255,45 +382,26 @@ function runPlanSchedule(
         if (stage.remaining.size > 0) break
         stages.shift()
       }
-      energyTotalByGoal.set(
-        goal.goalId,
-        (energyTotalByGoal.get(goal.goalId) ?? 0) + goalEnergySpent
+      addGoalTotals(goal.goalId, goalEnergySpent, goalRaids)
+      if (!combineGoals) completeIfDone(goal)
+    }
+
+    if (combineGoals) {
+      const spent = spendPooledDay(
+        ordered.filter((goal) => pending.has(goal.goalId)),
+        stagesByGoal,
+        energy,
+        dailyEnergy,
+        attemptsUsedByBattle,
+        days === 1 ? attemptsLeftByBattle : undefined
       )
-      raidsTotalByGoal.set(
-        goal.goalId,
-        (raidsTotalByGoal.get(goal.goalId) ?? 0) + goalRaids
-      )
-      if (stages.length === 0) {
-        const goalBlockers = blockersByGoal.get(goal.goalId) ?? []
-        // Obtainable work is done; a remaining blocker means the goal never completes.
-        results.set(
-          goal.goalId,
-          goalBlockers.length > 0
-            ? partiallyBlocked(
-                goalBlockers,
-                actionableByGoal.get(goal.goalId) ?? []
-              )
-            : {
-                status: "Estimated",
-                days,
-                date: formatDate(inclusiveCompletionDate(referenceDate, days)),
-                energyTotal: energyTotalByGoal.get(goal.goalId) ?? 0,
-                raidsTotal: raidsTotalByGoal.get(goal.goalId) ?? 0,
-                flatSupplyTotal:
-                  flatSupplyTotalByGoal.get(goal.goalId) ?? new Map(),
-                flatSupplyBySupplier:
-                  flatSupplyBySupplierByGoal.get(goal.goalId) ?? new Map(),
-                onslaughtTokens: onslaughtTokensFromSupply(
-                  flatSupplyBySupplierByGoal.get(goal.goalId) ?? new Map(),
-                  goal.flatSuppliers
-                ),
-                ...shopSpendField(
-                  flatSupplyBySupplierByGoal.get(goal.goalId) ?? new Map(),
-                  goal.flatSuppliers
-                ),
-              }
-        )
-        pending.delete(goal.goalId)
+      energy -= spent.energySpent
+      for (const entry of spent.entries) {
+        addGoalTotals(entry.goalId, entry.energySpent, entry.raidsPerformed)
+      }
+      entries.push(...spent.entries)
+      for (const goal of ordered) {
+        if (pending.has(goal.goalId)) completeIfDone(goal)
       }
     }
 
@@ -374,7 +482,7 @@ export function estimatePlan(
   return estimatePlanSchedule(params).outcomes
 }
 
-/** Today's schedule plus the needs `params.nodeFilter` removed every preferred node of. */
+/** Today's schedule plus the needs `params.nodeFilter` removed every farm node of. */
 export function estimateTodayRun(params: EstimatePlanParams): {
   today: RaidDaySchedule
   filteredOut: FilteredOutNeed[]

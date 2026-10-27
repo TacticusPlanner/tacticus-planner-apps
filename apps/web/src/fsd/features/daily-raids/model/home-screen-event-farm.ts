@@ -87,7 +87,7 @@ type Candidate = {
  * per energy (then points per raid, goal priority, battle id) until the budget is used: each gets the
  * raids its attempts, the budget and the still-unmet need allow, and a location that does not fit is
  * skipped, not a stop. This is a filter-then-pick (an implicit "earns points" filter): it prefers a
- * point-earning node over a cheaper node without points, unlike Today's pick-then-drop.
+ * point-earning node over a cheaper node without points, where Today picks the cheapest passing node.
  *
  * ponytail: greedy by ratio, not an optimal packing; shop/Onslaught suppliers and stage order are
  * ignored. A knapsack over (raids, energy) would be the upgrade if the greedy fill proves too loose.

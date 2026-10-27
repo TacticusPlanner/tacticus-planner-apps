@@ -297,6 +297,10 @@
           "title": "Filtros de incursiones",
           "content": "Limita Hoy y las incursiones extra a las ubicaciones de campaña que quieras, por ejemplo solo nodos Élite de 5 espacios o una facción enemiga concreta. La insignia muestra cuántos filtros están activos."
         },
+        "quickFilters": {
+          "title": "Filtros rápidos",
+          "content": "Cambia el plan de hoy durante un día. Menos incursiones usa los lugares que necesitan menos tickets de incursión para los mismos materiales. Cuellos de botella farmea primero los materiales más lentos de todos los objetivos. Las fechas de Plan y Objetivos no cambian."
+        },
         "onslaught": {
           "title": "Onslaught",
           "content": "Tus fichas de Onslaught de hoy, por unidad: las partidas se reparten entre tus objetivos por orden de prioridad, igual que en Plan > Calendario."
@@ -494,6 +498,21 @@
       "pinned_one": "{{count}} objetivo está fijado a una ubicación excluida por tus filtros de incursiones. Restablece los filtros o cambia la ubicación fijada.",
       "pinned_other": "{{count}} objetivos están fijados a una ubicación excluida por tus filtros de incursiones. Restablece los filtros o cambia la ubicación fijada.",
       "reset": "Restablecer filtros"
+    }
+  },
+  "quickFilters": {
+    "label": "Filtros rápidos",
+    "chip": {
+      "fewerRaids": "Menos incursiones",
+      "bottlenecks": "Cuellos de botella"
+    },
+    "help": {
+      "fewerRaids": "Cuando varios lugares cuestan la misma energía por objeto, incursiona solo en los de más energía por batalla. Mismos materiales con la misma energía, en menos incursiones. Útil cuando te quedan pocos tickets de incursión.",
+      "bottlenecks": "Ignora hoy la prioridad de los objetivos: combina los materiales restantes de todos los objetivos y farmea primero los más lentos, normalmente materiales legendarios. Útil para empezar pronto los farmeos largos."
+    },
+    "note": {
+      "fewerRaids": "Menos incursiones: se usan los lugares empatados con más energía por batalla, así los mismos materiales requieren menos incursiones.",
+      "bottlenecks": "Cuellos de botella: las incursiones de hoy farmean primero los materiales más lentos de todos los objetivos. Las fechas de Plan y Objetivos siguen la prioridad de los objetivos."
     }
   },
   "hse": {

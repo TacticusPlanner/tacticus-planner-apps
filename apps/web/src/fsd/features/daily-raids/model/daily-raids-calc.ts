@@ -63,6 +63,7 @@ import type {
 } from "./daily-raids.domain"
 import { dailyRaidResourceKey, shardResourceLabel } from "./daily-raids.domain"
 import type { DailyRaidResourceLabels } from "./daily-raids.domain"
+import type { TodayQuickFilterOptions } from "./today-quick-filters/today-quick-filters"
 
 type PlayerCharacter = PlayerDataChunkDto<"characters">[number]
 type PlayerMow = PlayerDataChunkDto<"mows">[number]
@@ -90,6 +91,9 @@ export type DailyRaidsCalculationInput = {
    *  Today and Bonus Raids only; the Plan, blockers and urgency are always computed unfiltered. */
   raidsFilters?: RaidsFilters
   filterBattlesById?: ReadonlyMap<string, RaidsFilterBattle>
+  /** Today's quick filters (Fewer raids, Bottlenecks). Like the Raids Filters they change Today and
+   *  Bonus Raids only. */
+  quickFilters?: TodayQuickFilterOptions
   /** The player's real attempts left today per node (none synced: every node is fresh). Only the
    *  raids left today read it. */
   attemptsLeftByBattle?: ReadonlyMap<BattleId, number>
@@ -340,6 +344,8 @@ export function calculateDailyRaids(
   const filteredCalculation: EstimatePlanParams = {
     ...calculation,
     nodeFilter,
+    fewerRaids: params.quickFilters?.fewerRaids,
+    combineGoals: params.quickFilters?.combineGoals,
   }
   const { today, filteredOut } = estimateTodayRun(filteredCalculation)
   const bonus = estimateBonusRaids(filteredCalculation)
