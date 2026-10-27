@@ -1,6 +1,6 @@
 {
   "Nightshroud": {
-    "description": "Les unités alliées commençant leur tour adjacentes à <style=\"Faction_AstraMilitarum\">Sibyll Devine</style> gagnent <style=\"Buff_Infiltrate\">Infiltration</style> pour ce tour et subissent <style=\"Stat_Damage\">-{[dmgReduction]} dégâts</style> à chaque coup au cours de leur tour et du tour ennemi suivant.",
+    "description": "Les unités alliées commençant leur tour adjacentes à <style=\"Faction_AstraMilitarum\">Sibyll Devine</style> gagnent <style=Buff_Infiltrate\">Infiltration</style> pour ce tour et subissent <style=\"Stat_Damage\">-{[dmgReduction]} dégâts</style> à chaque coup au cours de leur tour et du tour ennemi suivant.",
     "variables": {
       "dmgReduction": [
         5, 6, 7, 8, 9, 10, 11, 12, 14, 15, 16, 17, 18, 19, 21, 22, 23, 24, 25,

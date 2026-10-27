@@ -1,7 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import userEvent from "@testing-library/user-event"
 import { render, screen, waitFor } from "@/test/render"
-import { globalValuesFixture } from "@workspace/game-catalog/testing"
+import {
+  globalValuesFixture,
+  progressionRulesFixture,
+} from "@workspace/game-catalog/testing"
 import { seedGameCatalog, seedPlayerData } from "@/test/seed"
 import { TooltipProvider } from "@workspace/ui/components/tooltip"
 
@@ -205,6 +208,7 @@ describe("InsightsPage", () => {
   beforeEach(async () => {
     await seedGameCatalog({
       "global-values": [globalValuesFixture],
+      "progression-rules": [progressionRulesFixture],
       characters,
       upgrades,
       "campaign-battles": battles,

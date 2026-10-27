@@ -1,0 +1,19 @@
+{
+  "HazeOfCorruption": {
+    "description": "Cuando <style=\"Faction_DeathGuard\">{[UnitName]}</style> ataca y derrota a una unidad, el <style=\"Stat_Damage\">Daño</style> restante y <style=\"DMG_Toxic\">{[extraDmg]} de Daño tóxico</style> <style=\"Stat_Hits\">x{[nrOfHits]}</style> adicional se infligen a un enemigo aleatorio adyacente tanto a {[UnitName]} como al objetivo inicial. Si esta unidad también es derrotada, esta habilidad se activa de nuevo e inflige <style=\"Stat_Damage\">Daño</style> a una unidad adicional adyacente tanto a {[UnitName]} como a su objetivo inicial.",
+    "variables": {
+      "extraDmg": [
+        14, 17, 20, 22, 25, 28, 32, 35, 38, 41, 45, 48, 51, 54, 57, 61, 64, 67,
+        70, 74, 78, 84, 97, 109, 122, 135, 148, 160, 173, 186, 199, 211, 224,
+        237, 249, 262, 275, 288, 300, 318, 344, 370, 399, 430, 488, 545, 603,
+        660, 718, 776, 784, 795, 805, 819, 833, 847, 861, 879, 896, 914, 935,
+        956, 977, 998, 1019
+      ]
+    },
+    "constants": {
+      "nrOfHits": "1",
+      "damageProfile": "Toxic"
+    },
+    "scaled": ["extraDmg"]
+  }
+}

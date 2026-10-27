@@ -1,0 +1,27 @@
+{
+  "SolarAtomizer": {
+    "description": "Überträgt alle Stufen von <style=\"Buff_MachineVengeance\">Maschinenrache</style> von anderen verbündeten <style=\"Mechanical\">mechanischen</style> Einheiten auf <style=\"Faction_AdeptusMechanicus\">Belisarius Cawl</style>. Außerdem dreht sich <style=\"Faction_AdeptusMechanicus\">Belisarius Cawl</style> in eine von 6 Richtungen und markiert alle Felder in einer 2 Felder breiten Linie. Zu Beginn des nächsten Zuges verursacht er <style=\"Stat_Hits\">{[nrOfHits]}x</style> <style=\"DMG_Melta\">{[minDmg]}–{[maxDmg]} Melter-Schaden</style> an allen Gegnern auf betroffenen Feldern.",
+    "variables": {
+      "minDmg": [
+        50, 60, 70, 80, 90, 102, 113, 125, 136, 148, 159, 171, 182, 194, 205,
+        217, 228, 240, 251, 263, 278, 300, 345, 391, 436, 482, 527, 573, 618,
+        664, 709, 755, 800, 846, 891, 937, 982, 1028, 1073, 1137, 1227, 1322,
+        1424, 1537, 1742, 1948, 2153, 2359, 2564, 2770, 2800, 2838, 2875, 2925,
+        2975, 3025, 3075, 3138, 3200, 3263, 3338, 3413, 3488, 3563, 3638
+      ],
+      "maxDmg": [
+        66, 79, 92, 106, 119, 134, 149, 164, 180, 195, 210, 225, 240, 255, 271,
+        286, 301, 316, 331, 347, 367, 395, 455, 515, 576, 636, 696, 756, 816,
+        876, 936, 996, 1056, 1116, 1176, 1236, 1296, 1356, 1416, 1501, 1620,
+        1744, 1879, 2028, 2299, 2571, 2842, 3113, 3384, 3656, 3696, 3746, 3795,
+        3861, 3927, 3993, 4059, 4142, 4224, 4307, 4406, 4505, 4604, 4703, 4802
+      ]
+    },
+    "constants": {
+      "nrOfHits": "3",
+      "damageProfile": "Melta",
+      "cooldownTurns": "1"
+    },
+    "scaled": ["minDmg", "maxDmg"]
+  }
+}

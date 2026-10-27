@@ -1,0 +1,30 @@
+{
+  "NeedsMoreDakka": {
+    "description": "<style=\"Faction_Orks\">Ghazghkull</style> mira en una de las 6 direcciones y carga Rugido de Mork mientras se prepara para abrir fuego en una zona {[range]} delante de él. Al principio de su siguiente turno, todas las unidades del área marcada reciben <style=\"Stat_Hits\">{[nrOfHits]}x</style> <style=\"DMG_Projectile\">{[minDmg]}-{[maxDmg]} de Daño de proyectil</style> mientras él desata una intensa lluvia de balas. Los objetivos adyacentes a <style=\"Faction_Orks\">Ghazghkull</style> reciben <style=\"Stat_Hits\">{[nrOfHits_2]}x</style> impactos adicionales. Los orcos aliados reciben <style=\"Stat_Hits\">{[hitsReductionPct]} %</style> de impactos menos. ",
+    "variables": {
+      "minDmg": [
+        20, 24, 28, 32, 36, 41, 45, 50, 54, 59, 64, 68, 73, 77, 82, 87, 91, 96,
+        100, 105, 111, 120, 138, 156, 174, 193, 211, 229, 247, 265, 284, 302,
+        320, 338, 356, 375, 393, 411, 429, 455, 491, 529, 569, 615, 697, 779,
+        861, 943, 1026, 1109, 1198, 1237, 1277, 1322, 1369, 1416, 1464, 1519,
+        1574, 1631, 1695, 1761, 1827, 1895, 1964
+      ],
+      "maxDmg": [
+        30, 36, 42, 48, 54, 61, 68, 75, 82, 89, 95, 102, 109, 116, 123, 130,
+        137, 144, 151, 158, 167, 180, 207, 234, 262, 289, 316, 344, 371, 398,
+        425, 453, 480, 507, 535, 562, 589, 617, 644, 682, 736, 793, 854, 922,
+        1045, 1169, 1292, 1415, 1538, 1662, 1798, 1856, 1915, 1983, 2053, 2124,
+        2196, 2278, 2362, 2447, 2543, 2641, 2741, 2843, 2946
+      ]
+    },
+    "constants": {
+      "damageProfile": "Projectile",
+      "nrOfHits": "8",
+      "nrOfHits_2": "4",
+      "hitsReductionPct": "50",
+      "range": "3",
+      "cooldownTurns": "2"
+    },
+    "scaled": ["minDmg", "maxDmg"]
+  }
+}

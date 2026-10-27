@@ -149,6 +149,7 @@ export {
   type FactionStorageModel,
   type DamageTypeStorageModel,
   type GlobalValuesStorageModel,
+  type ProgressionRulesStorageModel,
 } from "./game-catalog.storage"
 
 export {

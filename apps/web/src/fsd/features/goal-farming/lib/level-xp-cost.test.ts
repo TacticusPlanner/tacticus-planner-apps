@@ -11,6 +11,7 @@ import {
   xpBookEquivalent,
   xpNeededForLevelRange,
 } from "./level-xp-cost"
+import { levelRules } from "@/test/fixtures/level-rules"
 
 describe("xpNeededForLevelRange", () => {
   it("computes the gap to the target level's own total-xp threshold, net of total xp already gained", () => {
@@ -19,109 +20,118 @@ describe("xpNeededForLevelRange", () => {
     // gained for character" — not a per-level-reset partial amount), so it subtracts directly
     // against the target level's own cumulative threshold, with no separate "current level's
     // threshold" term.
-    expect(xpNeededForLevelRange(31, 0, 42)).toBe(809200)
-    expect(xpNeededForLevelRange(31, 50000, 42)).toBe(759200)
+    expect(xpNeededForLevelRange(31, 0, 42, levelRules)).toBe(809200)
+    expect(xpNeededForLevelRange(31, 50000, 42, levelRules)).toBe(759200)
   })
 
   it("is 0 for an already-reached or inverted range", () => {
-    expect(xpNeededForLevelRange(42, 0, 42)).toBe(0)
-    expect(xpNeededForLevelRange(42, 0, 31)).toBe(0)
+    expect(xpNeededForLevelRange(42, 0, 42, levelRules)).toBe(0)
+    expect(xpNeededForLevelRange(42, 0, 31, levelRules)).toBe(0)
   })
 
   it("is 0 when total xp already gained covers the target level's own threshold", () => {
-    expect(xpNeededForLevelRange(31, 999_999_999, 32)).toBe(0)
+    expect(xpNeededForLevelRange(31, 999_999_999, 32, levelRules)).toBe(0)
   })
 })
 
 describe("netXpAgainstOwnedBooks", () => {
   it("spends highest-value books first, most XP-efficiently", () => {
     // 22000 xp needed, owns 2 Legendary (12500 each) — 1 covers most, second covers the rest.
-    expect(netXpAgainstOwnedBooks(22_000, { Legendary: 2 })).toBe(0)
+    expect(netXpAgainstOwnedBooks(22_000, { Legendary: 2 }, levelRules)).toBe(0)
   })
 
   it("spends a whole extra book to finish off a remainder the floor-division pass couldn't cover", () => {
     // 25 xp needed, 2 Common (20 xp) books owned: the first pass floor-divides to 1 book (used,
     // remainder 5), the second pass then spends a second whole book to clear that remainder.
-    expect(netXpAgainstOwnedBooks(25, { Common: 2 })).toBe(0)
+    expect(netXpAgainstOwnedBooks(25, { Common: 2 }, levelRules)).toBe(0)
   })
 
   it("leaves a positive remainder once owned books run out", () => {
-    expect(netXpAgainstOwnedBooks(50_000, { Legendary: 1 })).toBe(37_500)
+    expect(netXpAgainstOwnedBooks(50_000, { Legendary: 1 }, levelRules)).toBe(
+      37_500
+    )
   })
 
   it("doesn't mutate the input map", () => {
     const owned = { Legendary: 2 }
-    netXpAgainstOwnedBooks(12_500, owned)
+    netXpAgainstOwnedBooks(12_500, owned, levelRules)
     expect(owned).toEqual({ Legendary: 2 })
   })
 })
 
 describe("consumeOwnedBooks", () => {
   it("returns the updated pool with spent books removed, for allocating the same pool across goals", () => {
-    const result = consumeOwnedBooks(12_500, { Legendary: 2, Common: 5 })
+    const result = consumeOwnedBooks(
+      12_500,
+      { Legendary: 2, Common: 5 },
+      levelRules
+    )
     expect(result.remainingXp).toBe(0)
     expect(result.remainingOwned.Legendary).toBe(1)
     expect(result.remainingOwned.Common).toBe(5)
   })
 
   it("lets a second goal's allocation see what a first goal already spent", () => {
-    const first = consumeOwnedBooks(12_500, { Legendary: 1 })
+    const first = consumeOwnedBooks(12_500, { Legendary: 1 }, levelRules)
     expect(first.remainingXp).toBe(0)
-    const second = consumeOwnedBooks(12_500, first.remainingOwned)
+    const second = consumeOwnedBooks(12_500, first.remainingOwned, levelRules)
     expect(second.remainingXp).toBe(12_500)
   })
 
   it("doesn't mutate the input map", () => {
     const owned = { Legendary: 2 }
-    consumeOwnedBooks(12_500, owned)
+    consumeOwnedBooks(12_500, owned, levelRules)
     expect(owned).toEqual({ Legendary: 2 })
   })
 })
 
 describe("maxLevelReachableWithXp", () => {
   it("returns currentLevel when no xp is available", () => {
-    expect(maxLevelReachableWithXp(31, 0, 42, 0)).toBe(31)
+    expect(maxLevelReachableWithXp(31, 0, 42, 0, levelRules)).toBe(31)
   })
 
   it("walks up to the highest level the available xp fully covers", () => {
     // level32's own total-xp threshold is 94200, level33's is 122200 (ported xp.json thresholds).
-    expect(maxLevelReachableWithXp(31, 0, 42, 94_199)).toBe(31)
-    expect(maxLevelReachableWithXp(31, 0, 42, 94_200)).toBe(32)
-    expect(maxLevelReachableWithXp(31, 0, 42, 122_199)).toBe(32)
-    expect(maxLevelReachableWithXp(31, 0, 42, 122_200)).toBe(33)
+    expect(maxLevelReachableWithXp(31, 0, 42, 94_199, levelRules)).toBe(31)
+    expect(maxLevelReachableWithXp(31, 0, 42, 94_200, levelRules)).toBe(32)
+    expect(maxLevelReachableWithXp(31, 0, 42, 122_199, levelRules)).toBe(32)
+    expect(maxLevelReachableWithXp(31, 0, 42, 122_200, levelRules)).toBe(33)
   })
 
   it("caps at targetLevel even with far more xp available", () => {
-    expect(maxLevelReachableWithXp(31, 0, 32, 999_999_999)).toBe(32)
+    expect(maxLevelReachableWithXp(31, 0, 32, 999_999_999, levelRules)).toBe(32)
   })
 
   it("credits total xp already gained toward the next level, not just a from-scratch amount", () => {
     // level32's own threshold is 94200 total xp; a character already at 80000 total only needs
     // 14200 more (94200-80000), not the full 94200 a from-scratch calculation would imply.
-    expect(maxLevelReachableWithXp(31, 80_000, 32, 14_199)).toBe(31)
-    expect(maxLevelReachableWithXp(31, 80_000, 32, 14_200)).toBe(32)
+    expect(maxLevelReachableWithXp(31, 80_000, 32, 14_199, levelRules)).toBe(31)
+    expect(maxLevelReachableWithXp(31, 80_000, 32, 14_200, levelRules)).toBe(32)
   })
 })
 
 describe("ownedBooksByRarity", () => {
   it("collapses a raw xpBooks inventory into owned-by-rarity via the real synced id map", () => {
     expect(
-      ownedBooksByRarity([
-        { xpBookId: "xpLegendary", amount: 3 },
-        { xpBookId: "xpCommon", amount: 10 },
-      ])
+      ownedBooksByRarity(
+        [
+          { xpBookId: "xpLegendary", amount: 3 },
+          { xpBookId: "xpCommon", amount: 10 },
+        ],
+        levelRules
+      )
     ).toEqual({ Legendary: 3, Common: 10 })
   })
 
   it("skips unrecognized ids rather than miscounting", () => {
     expect(
-      ownedBooksByRarity([{ xpBookId: "not-a-real-id", amount: 5 }])
+      ownedBooksByRarity([{ xpBookId: "not-a-real-id", amount: 5 }], levelRules)
     ).toEqual({})
   })
 
   it("is empty for undefined/empty inventory", () => {
-    expect(ownedBooksByRarity(undefined)).toEqual({})
-    expect(ownedBooksByRarity([])).toEqual({})
+    expect(ownedBooksByRarity(undefined, levelRules)).toEqual({})
+    expect(ownedBooksByRarity([], levelRules)).toEqual({})
   })
 })
 
@@ -140,23 +150,24 @@ describe("normalizeXpBookRarity", () => {
 
 describe("xpBookEquivalent", () => {
   it("rounds a 12,200 XP gap up to 1 Legendary book (default/fallback rarity)", () => {
-    expect(xpBookEquivalent(12_200)).toBe(1)
-    expect(xpBookEquivalent(12_200, "Legendary")).toBe(1)
+    expect(xpBookEquivalent(12_200, levelRules)).toBe(1)
+    expect(xpBookEquivalent(12_200, levelRules, "Legendary")).toBe(1)
   })
 
   it("rounds the same gap up to 5 Epic books", () => {
-    expect(xpBookEquivalent(12_200, "Epic")).toBe(5)
+    expect(xpBookEquivalent(12_200, levelRules, "Epic")).toBe(5)
   })
 
   it("is 0 for a non-positive amount", () => {
-    expect(xpBookEquivalent(0, "Epic")).toBe(0)
-    expect(xpBookEquivalent(-100, "Epic")).toBe(0)
+    expect(xpBookEquivalent(0, levelRules, "Epic")).toBe(0)
+    expect(xpBookEquivalent(-100, levelRules, "Epic")).toBe(0)
   })
 })
 
 describe("computeLevelGoalCost", () => {
   it("expresses the netted remainder as a Legendary-equivalent book count plus gold to apply", () => {
     const cost = computeLevelGoalCost({
+      rules: levelRules,
       currentLevel: 31,
       currentXp: 0,
       targetLevel: 42,
@@ -168,6 +179,7 @@ describe("computeLevelGoalCost", () => {
 
   it("nets against owned books before converting to a book count", () => {
     const cost = computeLevelGoalCost({
+      rules: levelRules,
       currentLevel: 31,
       currentXp: 0,
       targetLevel: 32,
@@ -180,6 +192,7 @@ describe("computeLevelGoalCost", () => {
   it("is null once nothing further is needed", () => {
     expect(
       computeLevelGoalCost({
+        rules: levelRules,
         currentLevel: 42,
         currentXp: 0,
         targetLevel: 42,
@@ -193,6 +206,7 @@ describe("computeLevelGoalCost", () => {
   it("follows the selected XP-book rarity (default Legendary: 1 book, 500 gold)", () => {
     expect(
       computeLevelGoalCost({
+        rules: levelRules,
         currentLevel: 31,
         currentXp: 82_000,
         targetLevel: 32,
@@ -204,6 +218,7 @@ describe("computeLevelGoalCost", () => {
   it("prices each book at its own rarity's apply gold (Epic: 5 books x 150 = 750 gold)", () => {
     expect(
       computeLevelGoalCost({
+        rules: levelRules,
         currentLevel: 31,
         currentXp: 82_000,
         targetLevel: 32,
@@ -216,6 +231,7 @@ describe("computeLevelGoalCost", () => {
   it("falls back to Legendary for a missing or unsupported stored rarity", () => {
     expect(
       computeLevelGoalCost({
+        rules: levelRules,
         currentLevel: 31,
         currentXp: 82_000,
         targetLevel: 32,
@@ -228,76 +244,31 @@ describe("computeLevelGoalCost", () => {
 
 describe("levelBookAvailability", () => {
   // Design's worked example: a 100,000-XP pool, a goal charged 12,200 XP.
-  it("floors available and ceils needed, uncapped, at the default Legendary rarity", () => {
-    expect(levelBookAvailability(12_200, 100_000)).toEqual({
+  it("floors available and ceils needed, uncapped, in Legendary books", () => {
+    expect(levelBookAvailability(12_200, 100_000, 12_500)).toEqual({
       available: 8, // floor(100,000 / 12,500)
       needed: 1, // ceil(12,200 / 12,500)
     })
   })
 
-  it("scales both counts to a selected rarity's book value", () => {
-    expect(levelBookAvailability(12_200, 100_000, "Epic")).toEqual({
+  it("scales both counts to another rarity's book value", () => {
+    expect(levelBookAvailability(12_200, 100_000, 2_500)).toEqual({
       available: 40, // floor(100,000 / 2,500)
       needed: 5, // ceil(12,200 / 2,500)
     })
   })
 
   it("reports zero available when the pool is exhausted", () => {
-    expect(levelBookAvailability(12_200, 0)).toEqual({
+    expect(levelBookAvailability(12_200, 0, 12_500)).toEqual({
       available: 0,
       needed: 1,
     })
   })
 
   it("reports zero needed once the goal has no further charged XP", () => {
-    expect(levelBookAvailability(0, 100_000)).toEqual({
+    expect(levelBookAvailability(0, 100_000, 12_500)).toEqual({
       available: 8,
       needed: 0,
-    })
-  })
-
-  it("falls back to Legendary for a missing or unsupported stored rarity", () => {
-    expect(levelBookAvailability(12_200, 100_000, "not-a-rarity")).toEqual({
-      available: 8,
-      needed: 1,
-    })
-  })
-})
-
-describe("levelBookAvailability", () => {
-  // Design's worked example: a 100,000-XP pool, a goal charged 12,200 XP.
-  it("floors available and ceils needed, uncapped, at the default Legendary rarity", () => {
-    expect(levelBookAvailability(12_200, 100_000)).toEqual({
-      available: 8, // floor(100,000 / 12,500)
-      needed: 1, // ceil(12,200 / 12,500)
-    })
-  })
-
-  it("scales both counts to a selected rarity's book value", () => {
-    expect(levelBookAvailability(12_200, 100_000, "Epic")).toEqual({
-      available: 40, // floor(100,000 / 2,500)
-      needed: 5, // ceil(12,200 / 2,500)
-    })
-  })
-
-  it("reports zero available when the pool is exhausted", () => {
-    expect(levelBookAvailability(12_200, 0)).toEqual({
-      available: 0,
-      needed: 1,
-    })
-  })
-
-  it("reports zero needed once the goal has no further charged XP", () => {
-    expect(levelBookAvailability(0, 100_000)).toEqual({
-      available: 8,
-      needed: 0,
-    })
-  })
-
-  it("falls back to Legendary for a missing or unsupported stored rarity", () => {
-    expect(levelBookAvailability(12_200, 100_000, "not-a-rarity")).toEqual({
-      available: 8,
-      needed: 1,
     })
   })
 })

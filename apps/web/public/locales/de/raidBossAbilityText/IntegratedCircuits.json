@@ -1,0 +1,10 @@
+{
+  "IntegratedCircuits": {
+    "description": "Jedes Mal, wenn eine verbündete Einheit einen <style=\"Overkill\">Overkill</style> erleidet, nimmt der <style=\"Faction_Necrons\">Menhir</style> die gleiche Schadensmenge als <style=\"DMG_Direct\">Direkten Schaden</style>.",
+    "variables": {},
+    "constants": {
+      "damageProfile": "DirectDamage"
+    },
+    "scaled": []
+  }
+}

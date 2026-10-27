@@ -16,3 +16,6 @@ export { questCratesFixture, questEventsFixture } from "./quests.fixtures"
 
 // The served `global-values` record, parsed through the catalog schema and keyed as the store keys it.
 export { globalValuesFixture } from "./global-values.fixtures"
+
+// The served `progression-rules` record, parsed through the catalog schema and keyed as the store keys it.
+export { progressionRulesFixture } from "./progression-rules.fixtures"

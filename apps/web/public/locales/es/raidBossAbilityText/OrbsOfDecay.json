@@ -1,0 +1,15 @@
+{
+  "OrbsOfDecay": {
+    "description": "Los <style=\"NormalAttack\">ataques normales</style> del portador de la reliquia infligen <style=\"DMG_Toxic\">{[minDmg]}-{[maxDmg]} de Daño tóxico</style> <style=\"Stat_Hits\">x{[nrOfHits]}</style> adicional a unidades enemigas que tengan la <style=\"Stat_Armor\">Armadura</style> reducida un {[armorReductionPct]} % o más y que también estén sobre el hexágono del objetivo o uno adyacente. Además, el hexágono del objetivo recibe <style=\"Tile_Contamination\">Contaminación</style>.",
+    "variables": {
+      "minDmg": [685, 722, 759, 796, 833, 870, 907, 944, 981, 1018],
+      "maxDmg": [1370, 1444, 1518, 1592, 1666, 1740, 1814, 1888, 1962, 2036]
+    },
+    "constants": {
+      "nrOfHits": "2",
+      "damageProfile": "Toxic",
+      "armorReductionPct": "30"
+    },
+    "scaled": []
+  }
+}

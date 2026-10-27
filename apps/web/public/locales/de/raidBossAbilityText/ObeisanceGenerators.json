@@ -1,0 +1,11 @@
+{
+  "ObeisanceGenerators": {
+    "description": "Gegnerische Einheiten, die einen <style=\"Charging\">Ansturm</style> auf <style=\"Faction_Necrons\">Szarekh</style> ausführen, erzielen <style=\"Stat_Hits\">-{[hitsReduction]}</style> Treffer, bis zu einem Minimum von 1 Treffer.\n<style=\"Summon\">Beschwörungen</style>, die einen <style=\"Charging\">Ansturm</style> auf <style=\"Faction_Necrons\">Szarekh</style> ausführen, erzielen <style=\"Stat_Hits\">-{[hitsReduction_2]}</style> Treffer, bis zu einem Minimum von 1 Treffer.",
+    "variables": {},
+    "constants": {
+      "hitsReduction": "2",
+      "hitsReduction_2": "3"
+    },
+    "scaled": []
+  }
+}

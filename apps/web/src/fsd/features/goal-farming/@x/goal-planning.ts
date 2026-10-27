@@ -23,6 +23,7 @@ export {
   type GoalNeed,
   type InventoryAllocationGoal,
   isMowDetail,
+  type LevelRules,
   type LevelXpNeed,
   mowAbilityTrackLevel,
   rankSlotAllocation,
@@ -36,4 +37,5 @@ export {
   type UpgradeNeed,
   xpNeededForLevelRange,
   toOnslaughtRunsPerDay,
+  useLevelRules,
 } from "../index"

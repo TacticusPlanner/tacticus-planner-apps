@@ -2,6 +2,7 @@ import { describe, expect, expectTypeOf, it } from "vitest"
 import type { BattleId, FactionId } from "@workspace/game-domain"
 
 import globalValues from "./schemas/global-values.fixture.json"
+import progressionRules from "./schemas/progression-rules.fixture.json"
 import questCrates from "./schemas/quest-crates.fixture.json"
 import questEvents from "./schemas/quest-events.fixture.json"
 import {
@@ -892,6 +893,42 @@ describe("global-values schema", () => {
     expect(
       datasetPayloadSchemas["global-values"].safeParse([
         { ...values, staminaShopTiers: undefined },
+      ]).success
+    ).toBe(false)
+  })
+})
+
+describe("progression-rules schema", () => {
+  it("parses the served record", () => {
+    const [rules] =
+      datasetPayloadSchemas["progression-rules"].parse(progressionRules)
+    expect(rules?.xpLevels.at(-1)).toBe(7_360_200)
+    expect(rules?.xpBooks.find((book) => book.rarity === "Legendary")).toEqual({
+      id: "xpLegendary",
+      rarity: "Legendary",
+      xpIncrease: 12_500,
+      gold: 500,
+    })
+    expect(
+      rules?.upgradeSlots.find((row) => row.rank === "Diamond2")
+        ?.xpLevelRequirements
+    ).toEqual([47, 48, 47, 49, 47, 50])
+    expect(rules?.heroProgressionSteps[0]).toMatchObject({
+      progression: "Common:None",
+      maxXpLevel: 8,
+      maxRank: "Iron1",
+      hreShards: 25,
+    })
+  })
+
+  it("rejects an upgrade slot row without six levels", () => {
+    const [rules] = progressionRules
+    expect(
+      datasetPayloadSchemas["progression-rules"].safeParse([
+        {
+          ...rules,
+          upgradeSlots: [{ rank: "Stone1", xpLevelRequirements: [1, 1, 1] }],
+        },
       ]).success
     ).toBe(false)
   })

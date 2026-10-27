@@ -1,0 +1,15 @@
+{
+  "OrbsOfDecay": {
+    "description": "Die <style=\"NormalAttack\">normalen Angriffe</style> des Reliktträgers verursachen zusätzlich<style=\"Stat_Hits\">{[nrOfHits]}x</style> <style=\"DMG_Toxic\">{[minDmg]}–{[maxDmg]} Toxischen Schaden</style> an gegnerischen Einheiten, deren <style=\"Stat_Armor\">Rüstung</style> um {[armorReductionPct]} % oder mehr reduziert wurde und sich ebenfalls auf dem Feld des Ziels bzw. auf einem angrenzenden Feld befinden. Das Zielfeld wird außerdem <style=\"Tile_Contamination\">Kontaminiert</style>.",
+    "variables": {
+      "minDmg": [685, 722, 759, 796, 833, 870, 907, 944, 981, 1018],
+      "maxDmg": [1370, 1444, 1518, 1592, 1666, 1740, 1814, 1888, 1962, 2036]
+    },
+    "constants": {
+      "nrOfHits": "2",
+      "damageProfile": "Toxic",
+      "armorReductionPct": "30"
+    },
+    "scaled": []
+  }
+}

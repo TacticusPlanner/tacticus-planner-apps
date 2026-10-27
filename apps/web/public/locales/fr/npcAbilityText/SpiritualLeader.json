@@ -1,6 +1,6 @@
 {
   "SpiritualLeader": {
-    "description": "Après un déplacement, place un <style=\"Decoy\">leurre</style> sur un hexagone vide adjacent. Si 2 leurres ou plus se retrouvent adjacents à <style=\"Faction_Genestealers\">Xybia</style>, invoque un <style=\"Summon\"><style=\"Faction_Genestealers\">Hybride Néophyte</style></style> sur l'un des leurres adjacents. Si <style=\"Faction_Genestealers\">Xybia</style> ne se déplace pas, sa capacité se déclenche à la fin de son tour.\n\nStats de l'Hybride Néophyte :\n<style=\"Stat_Health\">{[summonHp]} santé</style>\n<style=\"Stat_Damage\">{[summonDmg]} dégâts</style>\n<style=\"Stat_Armor\">{[summonArmor]} armure</style>",
+    "description": "Après un déplacement, place un <style=\"Decoy\">leurre</style> sur un hexagone vide adjacent. Si 2 leurres ou plus se retrouvent adjacents à <Style=\"Faction_Genestealers\">Xybia</style>, invoque un <style=\"Summon\"><style=\"Faction_Genestealers\">Hybride Néophyte</style></style> sur l'un des leurres adjacents. Si <Style=\"Faction_Genestealers\">Xybia</style> ne se déplace pas, sa capacité se déclenche à la fin de son tour.\n\nStats de l'Hybride Néophyte :\n<style=\"Stat_Health\">{[summonHp]} santé</style>\n<style=\"Stat_Damage\">{[summonDmg]} dégâts</style>\n<style=\"Stat_Armor\">{[summonArmor]} armure</style>",
     "variables": {
       "summonHp": [
         30, 36, 42, 48, 54, 61, 68, 75, 82, 89, 95, 102, 109, 116, 123, 130,

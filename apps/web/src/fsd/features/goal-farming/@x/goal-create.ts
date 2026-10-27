@@ -16,6 +16,7 @@ export {
   type FlatSupplier,
   isMythicProgression,
   type LevelGoalCost,
+  type LevelRules,
   mowAbilityTrackLevel,
   mowAbilityUpgradeIds,
   type MythicMaterialCatalog,
@@ -35,4 +36,5 @@ export {
   useMythicMaterialShopOffers,
   useUnitShopShardSupply,
   xpNeededForLevelRange,
+  useLevelRules,
 } from "../index"

@@ -1,0 +1,10 @@
+{
+  "BioBarrage": {
+    "description": "El propio Tervigón y todas las unidades aliadas infligen +{[extraDmgPct]} % <style=\"Stat_Damage\">de Daño</style> a distancia si no se movieron en su turno.",
+    "variables": {},
+    "constants": {
+      "extraDmgPct": "25"
+    },
+    "scaled": []
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "AblativePlating": {
+    "description": "Cualquier <style=\"Stat_Damage\">Daño</style> entrante con menos de <style=\"Piercing_Ratio\">{[pierceRatio]} % de tasa de perforación</style> debe atravesar la <style=\"Stat_Armor\">Armadura</style> tres veces. Esto no aplica a <style=\"Stat_CritDamage\">Golpes Críticos</style>.",
+    "variables": {
+      "pierceRatio": [
+        60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60,
+        60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60,
+        60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60,
+        60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60
+      ]
+    },
+    "constants": {},
+    "scaled": []
+  }
+}

@@ -7,7 +7,9 @@ import {
   requiredLevelForRankTarget,
   xpNeededForLevelRange,
   type LevelGoalCost,
+  type LevelRules,
   type RankAdditionalTarget,
+  useLevelRules,
 } from "@/features/goal-farming/@x/goal-create"
 
 /** What a Rank or Ability target needs in character level, previewed on that goal's own creation
@@ -30,18 +32,25 @@ function preview(
   currentLevel: number,
   currentXp: number,
   ownedXpBooks: readonly { xpBookId: string; amount: number }[] | undefined,
-  rarity: string | undefined
+  rarity: string | undefined,
+  rules: LevelRules
 ): LevelRequirementPreview | undefined {
   if (requiredLevel <= currentLevel) return undefined
   return {
     requiredLevel,
     currentLevel,
-    remainingXp: xpNeededForLevelRange(currentLevel, currentXp, requiredLevel),
+    remainingXp: xpNeededForLevelRange(
+      currentLevel,
+      currentXp,
+      requiredLevel,
+      rules
+    ),
     cost: computeLevelGoalCost({
       currentLevel,
       currentXp,
       targetLevel: requiredLevel,
       ownedXpBooks,
+      rules,
       rarity,
     }),
   }
@@ -50,7 +59,8 @@ function preview(
 /**
  * The level requirement of the enabled Rank and Ability targets — Character-only (a Mow's `xpLevel` is
  * never targeted). A locked character has no synced level, so a freshly-unlocked unit's level 1 and no
- * XP are assumed, the same conservative posture as the Ascension suggestion.
+ * XP are assumed, the same conservative posture as the Ascension suggestion. Empty until the level
+ * rules (`progression-rules`) have loaded.
  */
 export function useLevelRequirementPreviews({
   entityType,
@@ -76,18 +86,20 @@ export function useLevelRequirementPreviews({
   /** The user's selected XP-book equivalent rarity (Planning settings); default/fallback Legendary. */
   rarity?: string
 }): LevelRequirementPreviews {
+  const rules = useLevelRules()
   return useMemo(() => {
-    if (entityType !== "Character") return {}
+    if (entityType !== "Character" || !rules) return {}
     const level = currentLevel ?? 1
     const xp = currentXp ?? 0
     return {
       Rank: enabledTypes.has("Rank")
         ? preview(
-            requiredLevelForRankTarget(rankEnd, rankAdditionalTarget),
+            requiredLevelForRankTarget(rankEnd, rankAdditionalTarget, rules),
             level,
             xp,
             inventoryXpBooks,
-            rarity
+            rarity,
+            rules
           )
         : undefined,
       Ability: enabledTypes.has("Ability")
@@ -96,7 +108,8 @@ export function useLevelRequirementPreviews({
             level,
             xp,
             inventoryXpBooks,
-            rarity
+            rarity,
+            rules
           )
         : undefined,
     }
@@ -111,5 +124,6 @@ export function useLevelRequirementPreviews({
     currentXp,
     inventoryXpBooks,
     rarity,
+    rules,
   ])
 }

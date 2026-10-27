@@ -1,0 +1,10 @@
+{
+  "IntegratedCircuits": {
+    "description": "Cada vez que una unidad aliada es <style=\"Overkill\">Arrasada</style>, el <style=\"Faction_Necrons\">Menhir</style> también recibe la misma cantidad de Daño como <style=\"DMG_Direct\">Daño directo</style>.",
+    "variables": {},
+    "constants": {
+      "damageProfile": "DirectDamage"
+    },
+    "scaled": []
+  }
+}

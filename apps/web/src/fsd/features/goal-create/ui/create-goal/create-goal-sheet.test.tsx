@@ -4,7 +4,10 @@ import type { RenderOptions } from "@testing-library/react"
 import { MemoryRouter } from "react-router"
 import { fireEvent, render as baseRender, screen, within } from "@/test/render"
 import { setTestAuth } from "@/test/auth"
-import { globalValuesFixture } from "@workspace/game-catalog/testing"
+import {
+  globalValuesFixture,
+  progressionRulesFixture,
+} from "@workspace/game-catalog/testing"
 import { seedGameCatalog, seedPlayerData } from "@/test/seed"
 import { lastRank } from "@workspace/game-domain"
 
@@ -289,6 +292,7 @@ const mows = new Map([
 function seedCatalog() {
   return seedGameCatalog({
     "global-values": [globalValuesFixture],
+    "progression-rules": [progressionRulesFixture],
     characters: [...characters.values()],
     mows: [...mows.values()],
     upgrades,

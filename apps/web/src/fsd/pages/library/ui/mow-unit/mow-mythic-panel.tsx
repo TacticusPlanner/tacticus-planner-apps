@@ -6,7 +6,6 @@ import type { Rarity } from "@workspace/game-domain"
 import type { AbilityTextEntry, RulesText } from "@/shared/ability-text"
 
 import { AbilityPanel } from "../unit/ability-panel"
-import { MYTHIC_MAX_LEVEL } from "./mow-unit.view-model"
 
 /**
  * The Mythic ability panel: the ability panel at the level the blue stars give (no stepper), or an
@@ -22,6 +21,7 @@ export function MowMythicPanel({
   text,
   rules,
   level,
+  maxLevel,
   rarity,
   unitName,
   factionId,
@@ -33,6 +33,8 @@ export function MowMythicPanel({
   rules?: RulesText<unknown>
   /** `undefined` below Mythic. */
   level: number | undefined
+  /** The mythic ability's highest level (`MythicLevels`' size). */
+  maxLevel: number
   rarity: Rarity
   unitName: string
   factionId: string
@@ -54,7 +56,7 @@ export function MowMythicPanel({
       factionId={factionId}
       level={level ?? 1}
       onLevelChange={() => undefined}
-      maxLevel={MYTHIC_MAX_LEVEL}
+      maxLevel={maxLevel}
       levelControl={
         level === undefined ? (
           <span

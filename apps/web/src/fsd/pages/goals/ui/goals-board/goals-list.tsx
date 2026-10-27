@@ -52,7 +52,7 @@ function GoalsTable({
   levelPotentialProgress,
   levelChargedXp,
   levelPoolXpAvailable,
-  xpBookRarity,
+  xpBook,
   reachedByGoalId,
   cascadeContext,
   projectRemoval,
@@ -145,7 +145,7 @@ function GoalsTable({
                   reorderEnabled={reorderEnabled}
                   row={row}
                   setOpenPopoverGoalId={setOpenPopoverGoalId}
-                  xpBookRarity={xpBookRarity}
+                  xpBook={xpBook}
                 />
               </TableRow>
             )

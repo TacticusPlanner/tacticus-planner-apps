@@ -10,6 +10,7 @@ import {
 import { MobileReorderBar, OrderConflictBanner } from "@/features/goal-planning"
 import { PendingMaterialSteps } from "@/features/v1-import"
 import {
+  normalizeXpBookRarity,
   PlanningSettingsDialog,
   PlanningSettingsTrigger,
   usePlanningSettings,
@@ -46,7 +47,8 @@ import { MobileSelectBar } from "./mobile-select-bar"
 import { GoalsOrderHint } from "./goals-order-hint"
 import { GoalsProjectScope } from "./goals-project-scope"
 import { useGoalsProjectScope } from "@/features/goal-planning"
-import { buildCascadeContext } from "./goal-row-utils"
+import { useLevelRules } from "@/features/goal-farming"
+import { buildCascadeContext, type SelectedXpBook } from "./goal-row-utils"
 import { GoalEditDialog } from "@/features/goal-create"
 import { PageTourButton } from "@/shared/tour"
 import { useGoalsOverviewTutorial } from "./goals-page.tutorial"
@@ -80,6 +82,12 @@ export function GoalsPage() {
   const insights = insightsRun.result
   const stableEstimates = useStableMap(insights.estimates)
   const { settings: planningSettings } = usePlanningSettings()
+  const levelRules = useLevelRules()
+  const xpBook = useMemo((): SelectedXpBook | undefined => {
+    if (!levelRules) return undefined
+    const rarity = normalizeXpBookRarity(planningSettings.xpBookRarity)
+    return { rarity, xp: levelRules.xpBooks[rarity].xp }
+  }, [levelRules, planningSettings.xpBookRarity])
   useGoalsOverviewTutorial()
 
   const projects = useProjects()
@@ -426,7 +434,7 @@ export function GoalsPage() {
                 selectActive={selectActive}
                 selection={selection}
                 visibleIds={visibleIds}
-                xpBookRarity={planningSettings.xpBookRarity}
+                xpBook={xpBook}
               />
             </section>
           ) : null

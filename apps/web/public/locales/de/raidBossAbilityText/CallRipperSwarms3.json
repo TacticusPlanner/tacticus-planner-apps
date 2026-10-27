@@ -1,0 +1,34 @@
+{
+  "CallRipperSwarms3": {
+    "description": "Beschwört <style=\"Stat\">{[nrOfSummons]}</style> grabende <style=\"Summon\">Absorberschwärme</style>, die zu Beginn des nächsten Zugs des Schwarmtyranten aus dem Boden kriechen, wenn ihr Feld nicht von einer anderen Einheit blockiert wird.\n\nWerte des Absorberschwarms:\n<style=\"Stat_Health\">{[summonHp]} Lebenspunkte</style>\n<style=\"Stat_Damage\">{[summonDmg]} Schaden</style>\n<style=\"Stat_Armor\">{[summonArmor]} Rüstung</style>",
+    "variables": {
+      "summonHp": [
+        65, 78, 91, 104, 117, 132, 147, 162, 177, 192, 207, 222, 237, 252, 267,
+        281, 296, 311, 326, 341, 361, 389, 449, 508, 567, 626, 685, 744, 803,
+        863, 922, 981, 1040, 1099, 1158, 1217, 1277, 1336, 1395, 1478, 1595,
+        1718, 1851, 1997, 2265, 2532, 2799, 3066, 3333, 3600, 3640, 3689, 3738,
+        3803, 3868, 3933, 3998, 4079, 4160, 4241, 4339, 4436, 4534, 4631, 4729
+      ],
+      "summonDmg": [
+        11, 13, 15, 18, 20, 22, 25, 27, 30, 32, 35, 38, 40, 43, 45, 48, 50, 53,
+        55, 58, 61, 66, 76, 86, 96, 106, 116, 126, 136, 146, 156, 166, 176, 186,
+        196, 206, 216, 226, 236, 250, 270, 291, 313, 338, 383, 428, 474, 519,
+        564, 609, 616, 624, 633, 644, 655, 666, 677, 690, 704, 718, 734, 751,
+        767, 784, 800
+      ],
+      "summonArmor": [
+        15, 18, 21, 24, 27, 30, 34, 37, 41, 44, 48, 51, 55, 58, 62, 65, 68, 72,
+        75, 79, 83, 90, 104, 117, 131, 144, 158, 172, 185, 199, 213, 226, 240,
+        254, 267, 281, 295, 308, 322, 341, 368, 396, 427, 461, 523, 584, 646,
+        708, 769, 831, 840, 851, 863, 878, 893, 908, 923, 941, 960, 979, 1001,
+        1024, 1046, 1069, 1091
+      ]
+    },
+    "constants": {
+      "nrOfSummons": "4",
+      "unitId": "GuildBoss2Npc3TyranRipperSwarmGorgon",
+      "cooldownTurns": "2"
+    },
+    "scaled": ["summonHp", "summonDmg", "summonArmor"]
+  }
+}

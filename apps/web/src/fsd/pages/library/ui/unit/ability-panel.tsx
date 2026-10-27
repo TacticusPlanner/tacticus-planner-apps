@@ -6,6 +6,7 @@ import {
   AbilityText,
   rulesTextPending,
   buildAbilitySeries,
+  useRarityFactor,
   chartedSeries,
   type AbilityTextEntry,
   type RulesText,
@@ -82,9 +83,13 @@ export function AbilityPanel({
   const { t, i18n } = useTranslation("library")
   const locale = i18n.language
   const Heading = headingLevel
+  const rarityFactor = useRarityFactor(rarity)
   const series = useMemo(
-    () => (text ? buildAbilitySeries(text, rarity, maxLevel) : []),
-    [text, rarity, maxLevel]
+    () =>
+      text && rarityFactor !== undefined
+        ? buildAbilitySeries(text, rarityFactor, maxLevel)
+        : [],
+    [text, rarityFactor, maxLevel]
   )
   const charted = useMemo(() => chartedSeries(series), [series])
   const changing = series.filter((entry) => !entry.constant)

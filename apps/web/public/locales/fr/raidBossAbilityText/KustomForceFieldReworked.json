@@ -1,0 +1,23 @@
+{
+  "KustomForceFieldReworked": {
+    "description": "Toutes les unités alliées adjacentes ont <style=\"Stat_Armor\">+{[extraArmor]} armure</style>. <style=\"Faction_Orks\">Gibbascrapz</style> et les autres <style=\"Faction_Orks\">Orks</style> alliés adjacents ont <style=\"Stat_Armor\">+{[extraArmor_2]} armure</style> et ignorent l'<style=\"Battle_Fatigue\">épuisement du combat</style> s'ils en sont dotés.",
+    "variables": {
+      "extraArmor": [
+        8, 10, 11, 13, 14, 16, 18, 20, 22, 24, 25, 27, 29, 31, 33, 35, 36, 38,
+        40, 42, 44, 48, 55, 62, 70, 77, 84, 92, 99, 106, 113, 121, 128, 135,
+        143, 150, 157, 164, 172, 182, 196, 211, 228, 246, 279, 312, 344, 377,
+        410, 443, 448, 454, 460, 468, 476, 484, 492, 502, 512, 522, 534, 546,
+        558, 570, 582
+      ],
+      "extraArmor_2": [
+        12, 14, 17, 19, 22, 24, 27, 30, 33, 35, 38, 41, 44, 46, 49, 52, 55, 57,
+        60, 63, 67, 72, 83, 94, 105, 116, 126, 137, 148, 159, 170, 181, 192,
+        203, 214, 225, 236, 247, 258, 273, 294, 317, 342, 369, 418, 467, 517,
+        566, 615, 665, 672, 681, 690, 702, 714, 726, 738, 753, 768, 783, 801,
+        819, 837, 855, 873
+      ]
+    },
+    "constants": {},
+    "scaled": ["extraArmor", "extraArmor_2"]
+  }
+}

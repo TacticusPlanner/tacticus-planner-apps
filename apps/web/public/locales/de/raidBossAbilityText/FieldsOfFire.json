@@ -1,0 +1,25 @@
+{
+  "FieldsOfFire": {
+    "description": "Verbündete Einheiten mit der Eigenschaft <style=\"Emplacement\">Stellung</style> verursachen <style=\"Stat_Damage\">+{[extraDmgPct]} % Schaden</style> gegen Einheiten, die {[range]} oder mehr Felder von ihrem eigenen Feld entfernt stehen. Jedes Mal, wenn <style=\"Faction_AstraMilitarum\">Thaddeus Noble</style> im <style=\"Stat_Melee\">Nahkampf</style> angegriffen wird oder <style=\"Debuff_Stunned\">Betäubt</style> würde, verliert er zusätzlich zum verursachten Schaden <style=\"Stat_Health\">{[hp]} Lebenspunkte</style>. In der ersten Runde, in der er auf diese Weise <style=\"Stat_Health\">Lebenspunkte</style> verliert, werden alle verbündeten Einheiten mit der Eigenschaft <style=\"Emplacement\">Stellung</style> für 1 Runde <style=\"Debuff_Pinned\">Unterdrückt</style>.",
+    "variables": {
+      "extraDmgPct": [
+        30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
+        30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
+        30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
+        30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30
+      ],
+      "hp": [
+        10, 13, 15, 18, 20, 23, 25, 38, 50, 59, 67, 76, 84, 92, 101, 135, 170,
+        200, 225, 250, 275, 300, 330, 355, 460, 565, 670, 755, 840, 925, 1010,
+        1090, 1175, 1290, 1400, 1865, 2335, 2800, 3265, 3735, 4200, 4665, 5135,
+        5600, 6065, 6535, 7000, 7465, 7935, 8400, 11200, 14000, 16800, 18200,
+        19600, 21000, 22400, 23800, 25200, 26600, 28000, 29400, 31735, 34065,
+        36400
+      ]
+    },
+    "constants": {
+      "range": "4"
+    },
+    "scaled": []
+  }
+}

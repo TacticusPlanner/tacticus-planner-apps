@@ -30,6 +30,7 @@ import {
   type EstimateResourceId,
   type EstimateUpgrade,
   type GoalNeed,
+  type LevelRules,
   type UpgradeNeed,
 } from "@/features/goal-farming/@x/goal-planning"
 import {
@@ -96,6 +97,8 @@ export function computePlanInsights(params: {
   abilityInventory?: Parameters<typeof createAbilityMaterialsPlan>[1]
   /** The user's selected XP-book rarity, pricing the books a Rank goal still needs (Rank gold). */
   xpBookRarity?: string | null
+  /** The game's level rules; omitted, no goal gets a level Potential ratio or level-up gold. */
+  levelRules?: LevelRules
   releaseTypeByGroupId: ReadonlyMap<CampaignId, string>
   getCharacter: (unitId: UnitId) => Character | undefined
   campaignName: (descriptor: Pick<CampaignDescriptor, "nameKey">) => string
@@ -354,6 +357,7 @@ export function computePlanInsights(params: {
     playerCharacterById: params.playerCharacterById,
     inventoryXpBooks: params.inventoryXpBooks,
     xpBookRarity: params.xpBookRarity,
+    levelRules: params.levelRules,
   })
   // What each active goal still needs once the plan's orb and shard stock is spent in priority order,
   // plus the gold to apply a Rank goal's level-up books (goal-remaining-resources).
@@ -433,11 +437,13 @@ export function computePlanInsights(params: {
     benefitingGoalIdsByInsightId.set(insight.id, [...goalIds])
   }
 
+  // The token wait runs at the served Onslaught cadence (1.5 runs a day until it loads), so it
+  // matches the shard supply above.
   const planOnslaughtDays =
     Math.max(
       0,
       planOnslaughtTokens - Math.max(0, params.currentOnslaughtTokens ?? 0)
-    ) / 1.5
+    ) / (params.onslaughtRunsPerDay ?? 1.5)
   // A scoped view reports the wait only when its own goals need tokens, but the date below always
   // extends by the plan's wait: the project's goals queue behind everything ranked above them.
   const onslaughtDays = onslaughtTokens > 0 ? planOnslaughtDays : 0

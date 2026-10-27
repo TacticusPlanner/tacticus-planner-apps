@@ -1,7 +1,8 @@
 import type { SyntheticEvent } from "react"
 
+import type { Rarity } from "@workspace/game-domain"
+
 import type { GoalStatus } from "@/entities/goal"
-import { normalizeXpBookRarity } from "@/entities/planning-setting"
 import type { GoalOverviewMetrics } from "@/features/goal-planning"
 import {
   levelBookAvailability,
@@ -120,9 +121,10 @@ export type GoalsListProps = {
   /** The shared owned-book pool's raw XP total at each Rank/Ability goal's own turn in priority order,
    *  keyed by goal id (`PlanInsightsResult.levelPoolXpAvailableByGoalId`). */
   levelPoolXpAvailable?: ReadonlyMap<string, number>
-  /** The user's selected XP-book rarity, used to express `levelChargedXp`/`levelPoolXpAvailable` as
-   *  book-equivalent counts. Absent renders no book count even when the maps above have entries. */
-  xpBookRarity?: string
+  /** The user's selected XP-book rarity and the XP one such book gives, used to express
+   *  `levelChargedXp`/`levelPoolXpAvailable` as book-equivalent counts. Absent (or still loading)
+   *  renders no book count even when the maps above have entries. */
+  xpBook?: SelectedXpBook
   /** Whether each row's target has been reached (attainment-computed) — drives the completed-row
    *  presentation (`goal-list-layout`) and hides pause/resume. Absent renders every row as
    *  not-reached. */
@@ -143,20 +145,23 @@ export function isReachedRow(
   return reachedByGoalId?.get(row.goalId) ?? false
 }
 
+/** The user's selected XP-book rarity and the XP one book of it gives. */
+export type SelectedXpBook = { rarity: Rarity; xp: number }
+
 /** The XP-book available/needed figure for a goal's chip (`LevelRequirementLine`), in the
- *  selected rarity; `undefined` when the goal needs no level-up books. */
+ *  selected rarity; `undefined` when the goal needs no level-up books or no book is known yet. */
 export function goalXpBookFigure(
   chargedXp: number | undefined,
   poolXpAvailable: number | undefined,
-  xpBookRarity: string | undefined
+  xpBook: SelectedXpBook | undefined
 ): XpBookFigure | undefined {
-  const rarity = normalizeXpBookRarity(xpBookRarity)
+  if (!xpBook) return undefined
   const { available, needed } = levelBookAvailability(
     chargedXp ?? 0,
     poolXpAvailable ?? 0,
-    rarity
+    xpBook.xp
   )
-  return needed > 0 ? { available, needed, rarity } : undefined
+  return needed > 0 ? { available, needed, rarity: xpBook.rarity } : undefined
 }
 
 /** Shared classes for the green Reached tint (theme token, so the contrast audit covers it). */

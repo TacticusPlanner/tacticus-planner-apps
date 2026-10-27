@@ -73,6 +73,31 @@ document. Never hand-write a wire type; alias the generated schema instead.
 - `pnpm --filter web api:types` regenerates `schema.d.ts` from the committed
   copy, offline.
 
+### Game data from the datamine
+
+Generated game text (`apps/web/public/locales`) and images
+(`apps/web/public/game_catalog`) come from one commit of the private
+`TacticusPlanner/tacticus-planner-data-mines` repo. Only the generated output is
+committed; the raw files are fetched into a gitignored cache.
+
+- `apps/web/datamine/REF` records the pin: a data-mines release tag and its
+  full SHA (the SHA is what counts; a forced datamine re-run moves the tag).
+- `apps/web/datamine/files.txt` lists the data-mines paths the generators read
+  (a trailing `/` takes a whole folder). List a path only when a generator
+  reads it.
+- `pnpm --filter web datamine:pull <tag|sha>` pins that commit and fetches the
+  listed paths into `apps/web/node_modules/.cache/datamine` using your own git
+  credentials. Keep it on the same tag as the API's `Data/datamine/REF`.
+- `pnpm --filter web datamine:pull --local [dir]` copies from a data-mines
+  checkout (default: the sibling workspace checkout) and sets the pin to
+  `local`; CI rejects a `local` pin.
+- Generators call `ensureDatamine()` from `apps/web/scripts/datamine.mjs`,
+  which re-fetches when the pin or the list changed (`pnpm --filter web
+datamine:sync` does the same by hand).
+- Datamine generators, re-run from `apps/web` after each pull and commit their
+  output: `node scripts/generate-ability-text-i18n.mjs` (`npcAbilityText`) and
+  `node scripts/generate-raid-boss-i18n.mjs` (`raidBoss*`).
+
 ## Coding Style & Naming Conventions
 
 Use TypeScript and React function components. Follow the existing 2-space indentation, no semicolons, double quotes, LF line endings, and 80-column print width from `.prettierrc`. Prettier includes `prettier-plugin-tailwindcss`, so prefer letting formatting sort Tailwind classes.

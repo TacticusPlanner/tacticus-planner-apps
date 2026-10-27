@@ -1,0 +1,15 @@
+{
+  "AblativePlating": {
+    "description": "Eingehender <style=\"Stat_Damage\">Schaden</style> mit weniger als <style=\"Piercing_Ratio\">{[pierceRatio]} % Durchschlagchance</style> muss die <style=\"Stat_Armor\">Rüstung</style> dreimal durchdringen. Gilt nicht bei <style=\"Stat_CritDamage\">Kritischen Treffern</style>.",
+    "variables": {
+      "pierceRatio": [
+        60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60,
+        60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60,
+        60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60,
+        60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60
+      ]
+    },
+    "constants": {},
+    "scaled": []
+  }
+}

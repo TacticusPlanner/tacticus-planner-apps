@@ -1,0 +1,43 @@
+{
+  "LivingBatteringRam": {
+    "description": "Inflige <style=\"DMG_Physical\">{[minDmg]}-{[maxDmg]} de Daño físico</style> <style=\"Stat_Hits\">x{[nrOfHits]}</style> a un objetivo adyacente con un <style=\"Stat\">{[stunChance]} % de probabilidad</style> de <style=\"Debuff_Stunned\">aturdirlo</style> durante 1 ronda. Además, el objetivo es <style=\"Displacement\">arrojado</style> 2 hexágonos lejos del <style=\"Faction_Tyranids\">Matagritos</style>. Si el hexágono en el que cae el objetivo está ocupado, la unidad que lo ocupa será <style=\"Displacement\">empujada</style> 1 hexágono en dirección aleatoria. El objetivo recibe entonces <style=\"DMG_Direct\">{[minDmg_2]}-{[maxDmg_2]} de Daño directo</style> <style=\"Stat_Hits\">x{[nrOfHits_2]}</style> adicional, sin importar si fue arrojado o no.",
+    "variables": {
+      "minDmg": [
+        20, 24, 28, 32, 36, 41, 45, 50, 54, 59, 64, 68, 73, 77, 82, 87, 91, 96,
+        100, 105, 111, 120, 138, 156, 174, 193, 211, 229, 247, 265, 284, 302,
+        320, 338, 356, 375, 393, 411, 429, 455, 491, 529, 569, 615, 697, 779,
+        861, 943, 1026, 1109, 1120, 1135, 1150, 1170, 1190, 1210, 1230, 1255,
+        1280, 1305, 1335, 1365, 1395, 1425, 1455
+      ],
+      "maxDmg": [
+        30, 36, 42, 48, 54, 61, 68, 75, 82, 89, 95, 102, 109, 116, 123, 130,
+        137, 144, 151, 158, 167, 180, 207, 234, 262, 289, 316, 344, 371, 398,
+        425, 453, 480, 507, 535, 562, 589, 617, 644, 682, 736, 793, 854, 922,
+        1045, 1169, 1292, 1415, 1538, 1662, 1680, 1703, 1725, 1755, 1785, 1815,
+        1845, 1883, 1920, 1958, 2003, 2048, 2093, 2138, 2183
+      ],
+      "minDmg_2": [
+        10, 12, 14, 16, 18, 20, 23, 25, 27, 30, 32, 34, 36, 39, 41, 43, 46, 48,
+        50, 53, 56, 60, 69, 78, 87, 96, 105, 115, 124, 133, 142, 151, 160, 169,
+        178, 187, 196, 206, 215, 227, 245, 264, 285, 307, 348, 390, 431, 472,
+        513, 554, 560, 568, 575, 585, 595, 605, 615, 628, 640, 653, 668, 683,
+        698, 713, 728
+      ],
+      "maxDmg_2": [
+        15, 18, 21, 24, 27, 30, 34, 37, 41, 44, 48, 51, 55, 58, 62, 65, 68, 72,
+        75, 79, 83, 90, 104, 117, 131, 144, 158, 172, 185, 199, 213, 226, 240,
+        254, 267, 281, 295, 308, 322, 341, 368, 396, 427, 461, 523, 584, 646,
+        708, 769, 831, 840, 851, 863, 878, 893, 908, 923, 941, 960, 979, 1001,
+        1024, 1046, 1069, 1091
+      ]
+    },
+    "constants": {
+      "damageProfile": "Physical",
+      "damageProfile_2": "DirectDamage",
+      "nrOfHits": "2",
+      "nrOfHits_2": "1",
+      "stunChance": "100"
+    },
+    "scaled": ["minDmg", "maxDmg", "minDmg_2", "maxDmg_2"]
+  }
+}
