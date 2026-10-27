@@ -1,6 +1,11 @@
+## RENAMED Requirements
+
+- FROM: `### Requirement: Planning Settings is a Goals-only control`
+- TO: `### Requirement: Planning Settings appears on Goals, not on Projects or Insights`
+
 ## MODIFIED Requirements
 
-### Requirement: Planning Settings is a Goals-only control
+### Requirement: Planning Settings appears on Goals, not on Projects or Insights
 
 The Plan section SHALL render its Planning Settings entry point on the Goals subpage. Projects and Insights SHALL NOT render a Planning Settings entry point of their own. The Schedule and Raids entry points are defined by `planning-settings-access`; every entry point opens the same dialog over the same persisted setting.
 

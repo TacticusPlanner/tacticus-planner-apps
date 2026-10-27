@@ -1,5 +1,7 @@
 # OpenSpec main-spec compaction audit — tacticus-planner-apps
 
+> Final dispositions: entries listed in `skipped.md` were not applied as written here (e.g. D12 keeps its requirement and only rewords it). `skipped.md` and the delta files override this audit.
+
 Scope: `tacticus-planner-apps/openspec/specs/*/spec.md`. Paths below are relative to that directory. Line numbers are as of 2026-10-28.
 
 Read-only. Every entry was checked against the spec text.

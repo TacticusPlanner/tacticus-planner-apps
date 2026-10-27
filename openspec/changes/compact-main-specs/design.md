@@ -42,3 +42,18 @@ No FSD slice, page, tour, i18n namespace or desktop/mobile split changes. The co
 - [A MODIFIED block copied from a spec that changes before archive silently reverts that change] → Archive soon after approval. A task re-diffs every MODIFIED block against the current main spec right before archive.
 - [Removing a "duplicate" that carried a unique clause] → Every REMOVED entry names its canonical copy. The apply step greps each removed requirement's key terms in the canonical spec before archive.
 - [The audit was split across four reviewers, so an overlap could be read twice with different actions] → Entries hitting the same requirement are merged into one MODIFIED block. Where two actions conflict, the narrower cut wins.
+
+## Review adjustments
+
+Changes made after the CodeRabbit review on PR #336. Each one is either a fix to this change, or a one-line clarification of copied text, checked against the code:
+
+- `dailies-navigation` "Dailies has a Quest tab" keeps "Direct navigation", because dropping both of its scenarios would have left it with none.
+- Two leftover requirement names are RENAMED: `api-contract-sync` "Failure handling is unchanged" becomes "Failed responses surface as typed API errors", and `goals-navigation` "Planning Settings is a Goals-only control" becomes "Planning Settings appears on Goals, not on Projects or Insights". `current`/`errors` are read only when the problem body carries them.
+- Clarifications that match the code:
+  - A locked character's power is 0 even without power data (`rosterCharacterPower`).
+  - Capped tokens use `current >= max` (`tokenCountdown`).
+  - Quest calibration counts only usable samples, those with B > 0 (`calibrateQuestPowerRatio`).
+  - The four-action project menu excludes the Default project.
+  - The collapsed-menu header keeps its reopen button and breadcrumb.
+- `tasks.md` now matches scenario titles exactly, and commits the direct edits before the archive dry run.
+- Two comments describe contradictions already recorded in `audit.md`, and are left for a behavior change: X1 (public-board link placement) and X16 (target-collision uniqueness).

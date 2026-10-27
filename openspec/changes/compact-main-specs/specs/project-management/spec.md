@@ -53,11 +53,11 @@ Project actions SHALL NOT render as an always-visible inline icon cluster. Edit 
 
 ### Requirement: The Projects row menu hosts every project-specific action
 
-Each non-archived project row's overflow menu on `/plan/projects` SHALL offer, in order: **Create goal**, **Manage goals**, **Edit**, then **Archive**. An archived project row's menu SHALL offer **Edit** and **Restore** only. Create goal SHALL open goal creation with that row's project preselected (see `goal-creation-entry-points`). Manage goals SHALL open the bulk membership surface for that row's project. Activating Create goal or Manage goals SHALL NOT navigate away from the Projects page.
+Each non-archived project row's overflow menu on `/plan/projects` SHALL offer, in order: **Create goal**, **Manage goals**, **Edit**, then **Archive** (the Default project offers no Archive; see "The Default project is permanent"). An archived project row's menu SHALL offer **Edit** and **Restore** only. Create goal SHALL open goal creation with that row's project preselected (see `goal-creation-entry-points`). Manage goals SHALL open the bulk membership surface for that row's project. Activating Create goal or Manage goals SHALL NOT navigate away from the Projects page.
 
 #### Scenario: A live project's menu lists the four actions
 
-- **WHEN** the user opens the overflow menu of a non-archived project row
+- **WHEN** the user opens the overflow menu of a non-archived, non-Default project row
 - **THEN** Create goal, Manage goals, Edit, and Archive appear, in that order, with text labels
 
 #### Scenario: Manage goals opens for that row's project

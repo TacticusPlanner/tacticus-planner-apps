@@ -51,8 +51,7 @@ OpenSpec rejects a MODIFIED block that omits or renames an existing scenario, so
 
 ### Requirement: Dailies has a Quest tab
 
-- Drop scenario "Tab order"
-- Drop scenario "Direct navigation"
+- Drop scenario "Tab order" (keep "Direct navigation" so the requirement keeps a scenario)
 
 ### Requirement: Shops is not a Dailies tab
 

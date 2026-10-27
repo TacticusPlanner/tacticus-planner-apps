@@ -1,8 +1,13 @@
+## RENAMED Requirements
+
+- FROM: `### Requirement: Failure handling is unchanged`
+- TO: `### Requirement: Failed responses surface as typed API errors`
+
 ## MODIFIED Requirements
 
-### Requirement: Failure handling is unchanged
+### Requirement: Failed responses surface as typed API errors
 
-A failed API response SHALL still surface as the same typed API error, with status, issue code, `current`, field `errors` and extensions read from the problem body. Transient-failure classification SHALL be unchanged.
+A failed API response SHALL still surface as the same typed API error, with status and issue code, plus `current`, field `errors` and extensions when the problem body carries them. Transient-failure classification SHALL be unchanged.
 
 #### Scenario: Conflict still adopts current state
 

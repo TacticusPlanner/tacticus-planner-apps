@@ -53,7 +53,7 @@ Each capability below has a delta file. Scenario drops and renames cannot be exp
 
 - `account-display-name`: drop the restated feedback-identity refresh and loading identity, pointing to `userjot-widget` and `account-menu` (D8, D9, D10)
 - `account-menu`: drop the duplicated sidebar-trigger sentence, the "out of scope for this change" paragraph and "remain unchanged" wording (D3, L5b–e)
-- `api-contract-sync`: drop "exactly as before the change" from the failure-handling scenario (L5l)
+- `api-contract-sync`: rename "Failure handling is unchanged" to "Failed responses surface as typed API errors", read optional problem fields only when present, and drop "exactly as before the change" (L5l)
 - `app-navigation`: drop the repeated Dailies live-indicator rule and the "supersedes", "unchanged" and "this capability" wording (D4, D5, L5f–k)
 - `character-combat-power`: drop the "single power figure" rule, which `unit-power` owns (D14)
 - `dailies-guild-raid-status`: drop the "in this change" wording (L5n–o)
@@ -75,7 +75,7 @@ Each capability below has a delta file. Scenario drops and renames cannot be exp
 - `goal-project-membership`: REMOVED the superseded membership-filter requirement; drop restated row-menu rules (D46, D51, L5am)
 - `goal-season-fit`: drop "as today" (L5ai)
 - `goal-visual-accessibility`: point to `goal-list-layout` instead of an archived change name (L6)
-- `goals-navigation`: point to `planning-settings-access` and `global-goal-priority`; replace an archived change name and "as before this change" (D53, D54, L7, L5ad)
+- `goals-navigation`: rename "Planning Settings is a Goals-only control" to match its Goals-plus-entry-points scope; point to `planning-settings-access` and `global-goal-priority`; replace an archived change name and "as before this change" (D53, D54, L7, L5ad)
 - `home-raids-widget`: place Daily Raids by pointing to `home-projects-widget` (D29)
 - `home-token-availability`: REMOVED the shared-row requirement in favour of `home-events-widget`, re-point its citation, and replace the implementation note (D28, L5au, S9)
 - `hre-mission-teams`: point to the Onslaught pool rule (D40)

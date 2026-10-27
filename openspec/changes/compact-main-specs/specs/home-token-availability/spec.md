@@ -16,7 +16,7 @@ The authenticated home page SHALL render a Token Availability section, sourced f
 
 ### Requirement: Each token card shows its per-type icon, with a distinct capped treatment
 
-Each token card SHALL show that token type's icon alongside its label and count. A capped token (`current === max`) SHALL be visually distinguished from a counting-down one: its icon SHALL use a pulsing/glowing treatment and its status text SHALL use a distinct, attention-drawing style, rather than the same muted styling as a counting-down token.
+Each token card SHALL show that token type's icon alongside its label and count. A capped token (`current >= max`) SHALL be visually distinguished from a counting-down one: its icon SHALL use a pulsing/glowing treatment and its status text SHALL use a distinct, attention-drawing style, rather than the same muted styling as a counting-down token.
 
 No informational or sync-prompting banner is shown for stale or capped data; the widget only reflects the last-synced snapshot.
 

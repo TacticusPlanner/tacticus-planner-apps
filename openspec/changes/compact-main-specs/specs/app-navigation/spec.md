@@ -51,7 +51,7 @@ On desktop, the header does not host a child-page picker at all — a section's 
 #### Scenario: Desktop header offers no child-picker
 
 - **WHEN** a user is on any page within a section that has child pages, on desktop
-- **THEN** the shared header shows only the page title (and, beneath it, the active page's description) — no tab row, dropdown, or other interactive picker is rendered in the header
+- **THEN** the shared header shows only the page title (and, beneath it, the active page's description; while the section menu is collapsed, also the reopen button and "{Section} ›" breadcrumb) — no tab row, dropdown, or other interactive picker is rendered in the header
 
 #### Scenario: No third-level tab row anywhere
 
