@@ -40,7 +40,7 @@ Data states needed: a signed-in account with a synced roster that has at least o
 ## 7. Desktop verification (viewport ≥ 768px)
 
 - [x] 7.1 On `/my-game/collection` at 1280px, confirm search, Sort and Filters share one row, Filters expands the inline grid without covering the faction cards, and the active count and Clear filters behave as specified.
-- [ ] 7.2 Set Xenos, Can ascend and sort Shards, reload, then press Back from a unit's Library page and confirm the state is restored both times. Open the copied URL in a new tab and confirm the same view.
+- [x] 7.2 Set Xenos, Can ascend and sort Shards, reload, then press Back from a unit's Library page and confirm the state is restored both times. Open the copied URL in a new tab and confirm the same view. Result (2026-10-27): reload restored the view; Back from a Library page restored it (checked with Need to level, since no Xenos unit can ascend on the test roster). The copied URL in a new tab opened signed out (new tabs start signed out) and applied Xenos and Shards with Can ascend waiting for a roster; after signing in there, the tab showed Xenos, Can ascend selected and sort Shards, with the correct empty result.
 - [x] 7.3 Navigate away and back through the navigation with no query, and confirm the remembered sort applies with no filters.
 - [x] 7.4 Run the page tour at desktop width with filters active and with filters matching nothing, and confirm every step highlights a visible element.
 
