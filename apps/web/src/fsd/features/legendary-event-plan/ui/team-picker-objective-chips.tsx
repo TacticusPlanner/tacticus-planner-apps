@@ -49,8 +49,8 @@ export function TeamPickerObjectiveChips({
             className={cn(
               "flex min-h-8 items-center gap-1.5 rounded-full border py-1 pr-2.5 pl-1.5 text-xs transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring",
               isSelected
-                ? "border-primary bg-primary/10"
-                : "bg-transparent hover:bg-muted/60"
+                ? "border-primary bg-primary/20 text-foreground ring-1 ring-primary"
+                : "bg-transparent text-muted-foreground hover:bg-muted/60 hover:text-foreground"
             )}
             data-count={count}
             data-index={objective.index}
@@ -66,7 +66,12 @@ export function TeamPickerObjectiveChips({
             </span>
             <span
               aria-hidden="true"
-              className="rounded-full bg-muted px-1.5 text-muted-foreground tabular-nums"
+              className={cn(
+                "rounded-full px-1.5 tabular-nums",
+                isSelected
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-muted text-muted-foreground"
+              )}
               data-testid="team-picker-objective-count"
             >
               {number.format(count)}

@@ -292,9 +292,16 @@ export function TeamUnitPicker({
               <li
                 className={cn(
                   "relative flex min-w-0 flex-col items-stretch rounded-xl border bg-card",
-                  isMember && "border-primary ring-2 ring-primary/40",
-                  isReserve && "border-dashed border-primary",
-                  dimmed && !isMember && !isReserve && "bg-muted/40"
+                  isMember &&
+                    "border-primary bg-primary/15 ring-2 ring-primary",
+                  isReserve && "border-dashed border-primary bg-primary/5",
+                  // Fade the whole tile (not a background tint, which reads lighter than
+                  // `bg-card` in dark mode) so not-matching units clearly recede; hover and
+                  // focus bring a tile back so it stays readable while choosing it.
+                  dimmed &&
+                    !isMember &&
+                    !isReserve &&
+                    "opacity-45 transition-opacity focus-within:opacity-100 hover:opacity-100"
                 )}
                 data-dimmed={dimmed ? "true" : undefined}
                 data-locked={tile.owned === false ? "true" : undefined}
@@ -323,7 +330,7 @@ export function TeamUnitPicker({
                       })}
                     </span>
                   ) : null}
-                  <span className={cn("relative", dimmed && "opacity-60")}>
+                  <span className="relative">
                     <EntityIcon
                       alt=""
                       className={cn(

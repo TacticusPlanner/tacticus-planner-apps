@@ -37,6 +37,6 @@ describe("ObjectiveIcon", () => {
     render(<ObjectiveIcon icon={{ src: "/trait.png" }} muted />)
     const icon = screen.getByTestId("objective-icon")
     expect(icon).toHaveAttribute("data-muted", "true")
-    expect(icon).toHaveClass("opacity-35", "grayscale")
+    expect(icon).toHaveClass("opacity-25", "grayscale")
   })
 })
