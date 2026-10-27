@@ -104,10 +104,22 @@ const allow =
     ids.includes(battleId)
 
 describe("nodeFilter in the Today/Bonus engine run", () => {
-  it("blocks a material whose cheapest node is filtered out, without falling back to a pricier node", () => {
+  it("falls back to the cheapest passing node when the cheapest node is filtered out", () => {
     for (const resource of ["mat", "shard:hero"]) {
       const { today, filteredOut } = estimateTodayRun(
         params([goal("g", resource)], allow("PRICEY"))
+      )
+      expect(today.entries.map((entry) => entry.battleId)).toEqual([
+        battle("PRICEY"),
+      ])
+      expect(filteredOut).toEqual([])
+    }
+  })
+
+  it("reports a material as filtered out only when no node passes", () => {
+    for (const resource of ["mat", "shard:hero"]) {
+      const { today, filteredOut } = estimateTodayRun(
+        params([goal("g", resource)], allow("NONE"))
       )
       expect(today.entries).toEqual([])
       expect(filteredOut).toEqual([
@@ -177,10 +189,16 @@ describe("nodeFilter in the Today/Bonus engine run", () => {
     expect(
       estimateBonusRaids(small()).entries.map((e) => e.resourceId)
     ).toEqual(["tied"])
-    expect(estimateBonusRaids(small(allow("PRICEY"))).entries).toEqual([])
+    expect(
+      estimateBonusRaids(small(allow("PRICEY"))).entries.map((e) => [
+        e.resourceId,
+        e.battleId,
+      ])
+    ).toEqual([["tied", battle("PRICEY")]])
+    expect(estimateBonusRaids(small(allow("NONE"))).entries).toEqual([])
   })
 
-  it("selectFarmNodes picks the cheapest set first, then drops failing nodes", () => {
+  it("selectFarmNodes drops failing nodes first, then picks the cheapest of the rest", () => {
     const need = { id: upgrade("tied"), count: 1 }
     const ids = (nodes: { battleId: string }[]) =>
       nodes.map((n) => n.battleId).sort()
@@ -200,7 +218,12 @@ describe("nodeFilter in the Today/Bonus engine run", () => {
       )
     ).toEqual(["TIED"])
     expect(
-      selectFarmNodes(need, upgradesById, battlesById, null, allow("PRICEY"))
+      ids(
+        selectFarmNodes(need, upgradesById, battlesById, null, allow("PRICEY"))
+      )
+    ).toEqual(["PRICEY"])
+    expect(
+      selectFarmNodes(need, upgradesById, battlesById, null, allow("NONE"))
     ).toEqual([])
   })
 })

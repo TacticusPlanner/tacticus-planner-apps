@@ -1306,7 +1306,7 @@
         "InsufficientDailyEnergy": "Die tägliche Energie liegt unter den Kosten des günstigsten nutzbaren Knotens.",
         "SimulationLimit": "Das Ziel konnte innerhalb des Planungshorizonts nicht abgeschlossen werden.",
         "UnsupportedCost": "Für dieses Ziel wird keine detaillierte Kostenberechnung unterstützt.",
-        "FilteredOut": "Jeder bevorzugte Ort wird von deinen Raid-Filtern ausgeschlossen."
+        "FilteredOut": "Jeder Farm-Ort wird von deinen Raid-Filtern ausgeschlossen."
       }
     },
     "unlockFlavor": "Sammle die Scherben des Charakters und bereite ihn darauf vor, deinem Kader beizutreten.",

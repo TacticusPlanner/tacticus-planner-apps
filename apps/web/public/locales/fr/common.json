@@ -1306,7 +1306,7 @@
         "InsufficientDailyEnergy": "L'énergie quotidienne est inférieure au coût du nœud utilisable le moins cher.",
         "SimulationLimit": "L'objectif n'a pas pu être terminé dans l'horizon de planification.",
         "UnsupportedCost": "Le calcul détaillé du coût n'est pas pris en charge pour cet objectif.",
-        "FilteredOut": "Tous les lieux préférés sont exclus par vos filtres de raids."
+        "FilteredOut": "Tous les lieux de farming sont exclus par vos filtres de raids."
       }
     },
     "unlockFlavor": "Rassemblez les éclats du personnage et préparez-le à rejoindre votre effectif.",

@@ -374,7 +374,7 @@ export function estimatePlan(
   return estimatePlanSchedule(params).outcomes
 }
 
-/** Today's schedule plus the needs `params.nodeFilter` removed every preferred node of. */
+/** Today's schedule plus the needs `params.nodeFilter` removed every farm node of. */
 export function estimateTodayRun(params: EstimatePlanParams): {
   today: RaidDaySchedule
   filteredOut: FilteredOutNeed[]

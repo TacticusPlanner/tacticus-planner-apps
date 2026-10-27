@@ -1306,7 +1306,7 @@
         "InsufficientDailyEnergy": "La energía diaria es inferior al coste del nodo utilizable más barato.",
         "SimulationLimit": "El objetivo no pudo completarse dentro del horizonte de planificación.",
         "UnsupportedCost": "El cálculo detallado de coste no es compatible con este objetivo.",
-        "FilteredOut": "Todas las ubicaciones preferidas están excluidas por tus filtros de incursiones."
+        "FilteredOut": "Todos los lugares de farmeo están excluidos por tus filtros de incursiones."
       }
     },
     "unlockFlavor": "Reúne los fragmentos del personaje y prepáralo para unirse a tu plantel.",
