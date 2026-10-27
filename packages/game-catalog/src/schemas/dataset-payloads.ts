@@ -4,6 +4,7 @@ import type { GameCatalogDatasetKey } from "../dataset-keys"
 import { campaignBattleViewSchema, campaignDefinitionSchema } from "./campaign"
 import { characterViewSchema } from "./character"
 import { equipmentSchema } from "./equipment"
+import { damageTypeSchema, factionSchema } from "./factions"
 import {
   eventDefinitionSchema,
   eventsCalendarPayloadSchema,
@@ -55,6 +56,8 @@ export const datasetPayloadSchemas = {
   "unit-power": z.array(unitPowerSchema),
   "quest-events": z.array(questEventSchema),
   "quest-crates": z.array(questCrateSchema),
+  factions: z.array(factionSchema),
+  "damage-types": z.array(damageTypeSchema),
 } satisfies Record<GameCatalogDatasetKey, z.ZodType>
 
 // Record (per-item) type for each dataset. Every dataset is a plain array, so the record type is the
@@ -87,4 +90,6 @@ export type GameCatalogRecordByKey = {
   "unit-power": z.infer<typeof unitPowerSchema>
   "quest-events": z.infer<typeof questEventSchema>
   "quest-crates": z.infer<typeof questCrateSchema>
+  factions: z.infer<typeof factionSchema>
+  "damage-types": z.infer<typeof damageTypeSchema>
 }

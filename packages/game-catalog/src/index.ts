@@ -146,6 +146,8 @@ export {
   type UnitPowerStorageModel,
   type QuestEventStorageModel,
   type QuestCrateStorageModel,
+  type FactionStorageModel,
+  type DamageTypeStorageModel,
 } from "./game-catalog.storage"
 
 export {

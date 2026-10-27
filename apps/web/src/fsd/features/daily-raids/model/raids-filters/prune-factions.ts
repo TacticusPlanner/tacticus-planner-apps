@@ -9,3 +9,10 @@ export function pruneFactions(
     alliances.includes(factionAlliance.get(faction) ?? "")
   )
 }
+
+/** Each faction's alliance, from the catalog's `factions`; a module-level selector. */
+export function toFactionAlliance(
+  factions: readonly { id: string; alliance: string }[]
+): Map<string, string> {
+  return new Map(factions.map((faction) => [faction.id, faction.alliance]))
+}

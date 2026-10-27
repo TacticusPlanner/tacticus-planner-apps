@@ -104,6 +104,8 @@ export const datasetToStorageModels: Record<
   "unit-power": asArray,
   "quest-events": byFeaturedCharacterId,
   "quest-crates": byNumber,
+  factions: asArray,
+  "damage-types": asArray,
 }
 
 export function mapDatasetRowToStorageModel<T extends Record<string, unknown>>(

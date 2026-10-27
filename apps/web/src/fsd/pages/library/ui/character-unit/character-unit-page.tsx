@@ -23,6 +23,7 @@ import { toById, useCatalogDataset, usePlayerChunk } from "@/shared/local-data"
 import { useTourPageSteps } from "@/shared/tour"
 
 import { buildRadarPopulation, buildStatRadar } from "../../model/stat-radar"
+import { usePierceRatios } from "../../model/use-pierce-ratios"
 import { CharacterRankUpTab } from "../character/character-rank-up-tab"
 import { useCharacterListItems } from "../characters/use-character-list-items"
 import { useCharactersCatalog } from "../characters/use-characters-catalog"
@@ -178,11 +179,18 @@ function CharacterUnit({
   const [relicLevel, setRelicLevel] = useState<number | undefined>()
 
   // --- Comparison and stats ----------------------------------------------------------------------
+  const pierceRatios = usePierceRatios()
   const population = useMemo(
-    () => buildRadarPopulation(catalog.characters),
-    [catalog.characters]
+    () =>
+      pierceRatios
+        ? buildRadarPopulation(catalog.characters, pierceRatios)
+        : undefined,
+    [catalog.characters, pierceRatios]
   )
-  const radar = buildStatRadar(character, population)
+  const radar =
+    population && pierceRatios
+      ? buildStatRadar(character, population, pierceRatios)
+      : undefined
   const shownRelicLevel = relicLevel ?? relic?.equippedLevel ?? 1
   const { view: powerView, unitPower } = useCharacterPowerView({
     characterId: unitId,

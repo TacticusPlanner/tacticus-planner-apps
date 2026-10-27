@@ -11,6 +11,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@workspace/ui/components/accordion"
+import { Skeleton } from "@workspace/ui/components/skeleton"
 
 import type { RadarAxisResult } from "../../model/stat-radar"
 import {
@@ -51,7 +52,8 @@ export function CharacterUnitDetails({
   name: string
   /** The stats before equipment at the shown values, and by rank (see `characterPowerView`). */
   stats: StatsFigure
-  radar: readonly RadarAxisResult[]
+  /** Undefined while the damage types the radar needs are still loading. */
+  radar: readonly RadarAxisResult[] | undefined
   shownRank: Rank
   /** The highest rank the shown rarity and stars allow. */
   rankCap: Rank
@@ -105,8 +107,13 @@ export function CharacterUnitDetails({
     character.traits.length > 0 ? (
       <TraitsList traits={character.traits} />
     ) : null
-  const compare = (
+  const compare = radar ? (
     <StatRadarCard radar={radar} unitName={name} size={isMobile ? 240 : 280} />
+  ) : (
+    <Skeleton
+      className="aspect-square w-full max-w-70"
+      data-testid="unit-compare-loading"
+    />
   )
   const statsByRank = (
     <StatsByRank

@@ -30,11 +30,16 @@ import {
   RAIDS_UPGRADE_RARITIES,
   type RaidsFilters,
 } from "../../model/raids-filters/raids-filters.domain"
-import { pruneFactions } from "../../model/raids-filters/prune-factions"
+import {
+  pruneFactions,
+  toFactionAlliance,
+} from "../../model/raids-filters/prune-factions"
 import { useRaidsFilters } from "../../model/raids-filters/use-raids-filters"
 import { LabeledField, Section } from "./raids-filters-fields"
 
 const ALLIANCES = ["Imperial", "Chaos", "Xenos"] as const
+
+const noFactionAlliance: ReadonlyMap<string, string> = new Map()
 
 /** "PermaDeath" -> "Perma Death": the label of a trait the `traits` namespace has no entry for. */
 const humanizeId = (id: string) => id.replace(/([a-z])([A-Z])/g, "$1 $2")
@@ -62,11 +67,9 @@ export function RaidsFiltersDialog({
   const [draft, setDraft] = useState<RaidsFilters>(applied)
   // The option lists fill in once each dataset is read; the dialog has no loading state of its own.
   const battlesRead = useCatalogDataset("campaign-battles")
-  const charactersRead = useCatalogDataset("characters", toById)
+  const factionAllianceRead = useCatalogDataset("factions", toFactionAlliance)
   const npcsRead = useCatalogDataset("npcs", toById)
   const battles = battlesRead.status === "ready" ? battlesRead.data : undefined
-  const characters =
-    charactersRead.status === "ready" ? charactersRead.data : undefined
   const npcs = npcsRead.status === "ready" ? npcsRead.data : undefined
   const patch = (next: Partial<RaidsFilters>) =>
     setDraft((current) => ({ ...current, ...next }))
@@ -86,18 +89,12 @@ export function RaidsFiltersDialog({
       })),
     [t]
   )
-  const factionAlliance = useMemo(
-    () =>
-      new Map(
-        [...(characters?.values() ?? [])].map((character) => [
-          character.faction as string,
-          character.alliance as string,
-        ])
-      ),
-    [characters]
-  )
+  const factionAlliance =
+    factionAllianceRead.status === "ready"
+      ? factionAllianceRead.data
+      : noFactionAlliance
   // A faction picker offers only the factions of the alliances selected beside it (all of them
-  // while none is selected, or while the roster that maps factions to alliances is still loading).
+  // while none is selected, or while the factions that map to alliances are still loading).
   const factionOptions = (
     alliances: readonly string[]
   ): SelectOption<string>[] =>

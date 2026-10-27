@@ -836,3 +836,32 @@ describe("unit-power schema", () => {
     ).toBe(false)
   })
 })
+
+describe("factions and damage-types schemas", () => {
+  it("parses a served faction and rejects an unknown alliance", () => {
+    const faction = {
+      id: "AdeptusAstartes",
+      alliance: "Imperial",
+      unlockDateUtc: "2022-01-01T00:00:00Z",
+      collectionFaction: true,
+    }
+    expect(datasetPayloadSchemas.factions.parse([faction])).toEqual([faction])
+    expect(
+      datasetPayloadSchemas.factions.safeParse([
+        { ...faction, alliance: "Tyranid" },
+      ]).success
+    ).toBe(false)
+  })
+
+  it("parses a served damage type and rejects a ratio above 100", () => {
+    const flame = { id: "Flame", piercingRatio: 25, traits: ["OnFire"] }
+    expect(datasetPayloadSchemas["damage-types"].parse([flame])).toEqual([
+      flame,
+    ])
+    expect(
+      datasetPayloadSchemas["damage-types"].safeParse([
+        { ...flame, piercingRatio: 125 },
+      ]).success
+    ).toBe(false)
+  })
+})
