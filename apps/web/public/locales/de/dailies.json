@@ -175,7 +175,8 @@
       "unnamedWithTime": "Aktiv · Name nicht verfügbar · endet {{time}}",
       "unnamedUnconfirmed": "Aktiv · Name nicht verfügbar · Endzeit nicht bestätigt",
       "inactive": "Nicht aktiv"
-    }
+    },
+    "onslaughtSummary": "Heute etwa {{runs}} Onslaught-Läufe für deine Ziele"
   },
   "schedule": {
     "raids_one": "{{count}} Versuch verbraucht",
@@ -295,6 +296,10 @@
         "filters": {
           "title": "Raid-Filter",
           "content": "Beschränke Heute und Bonus-Raids auf die gewünschten Kampagnenorte, z. B. nur Elite-Orte mit 5 Slots oder eine bestimmte Gegnerfraktion. Das Abzeichen zeigt, wie viele Filter aktiv sind."
+        },
+        "onslaught": {
+          "title": "Onslaught",
+          "content": "Deine heutigen Onslaught-Marken nach Einheit: Die Läufe werden in Prioritätsreihenfolge auf deine Ziele verteilt, genau wie in Planen > Zeitplan."
         }
       }
     },

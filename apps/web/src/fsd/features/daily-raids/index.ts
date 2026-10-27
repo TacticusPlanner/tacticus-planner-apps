@@ -48,8 +48,13 @@ export { LocationRow } from "./ui/location-row"
 export { RaidSchedule } from "./ui/raid-schedule"
 export { RaidState } from "./ui/raid-state"
 
-export { buildPlanDayCells, buildPlanUnitRanges } from "./model/plan-day-cells"
+export {
+  buildOnslaughtRuns,
+  buildPlanDayCells,
+  buildPlanUnitRanges,
+} from "./model/plan-day-cells"
 export { PLAN_DAY_LIMIT, PlanDayStrip } from "./ui/plan/plan-day-strip"
+export { OnslaughtRunList } from "./ui/plan/plan-onslaught-runs"
 export { PlanUnitFilter } from "./ui/plan/plan-unit-filter"
 export { PlanBlockers } from "./ui/plan-blockers"
 // Dailies > HRE: where to raid today for the current mission's campaign objective.

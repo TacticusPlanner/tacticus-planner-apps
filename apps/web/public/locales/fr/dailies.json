@@ -175,7 +175,8 @@
       "unnamedWithTime": "Actif · nom indisponible · se termine {{time}}",
       "unnamedUnconfirmed": "Actif · nom indisponible · heure de fin non confirmée",
       "inactive": "Inactif"
-    }
+    },
+    "onslaughtSummary": "Environ {{runs}} parties d'Onslaught pour vos objectifs aujourd'hui"
   },
   "schedule": {
     "raids_one": "{{count}} tentative utilisée",
@@ -295,6 +296,10 @@
         "filters": {
           "title": "Filtres de raids",
           "content": "Limitez Aujourd'hui et les raids bonus aux lieux de campagne souhaités, par exemple uniquement les nœuds Élite à 5 emplacements ou une faction ennemie précise. Le badge indique le nombre de filtres actifs."
+        },
+        "onslaught": {
+          "title": "Onslaught",
+          "content": "Vos jetons d'Onslaught du jour, par unité : les parties sont réparties entre vos objectifs par ordre de priorité, comme dans Plan > Calendrier."
         }
       }
     },

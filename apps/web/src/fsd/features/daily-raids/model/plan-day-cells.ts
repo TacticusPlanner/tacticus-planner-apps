@@ -96,8 +96,8 @@ function buildShopPurchases(
 
 const UNKNOWN_GOAL_PRIORITY = Number.MAX_SAFE_INTEGER
 
-/** Merges a day's per-goal entries into one cell per material and splits them by V1's Raided rule. */
-function buildOnslaughtRuns(
+/** Merges a day's per-goal Onslaught entries into one run per unit, in goal-priority order. */
+export function buildOnslaughtRuns(
   day: RaidDaySchedule,
   source: PlanSource
 ): PlanOnslaughtRun[] {
