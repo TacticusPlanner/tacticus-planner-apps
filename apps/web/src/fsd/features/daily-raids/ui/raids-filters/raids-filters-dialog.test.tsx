@@ -70,10 +70,10 @@ describe("Raids Filters trigger and dialog", () => {
         { id: "imp", traits: ["Daemon", "PermaDeath"] },
         { id: "unused", traits: ["Healer"] },
       ],
-      characters: [
-        { id: "a", faction: "Orks", alliance: "Xenos" },
-        { id: "b", faction: "Necrons", alliance: "Xenos" },
-        { id: "c", faction: "Ultramarines", alliance: "Imperial" },
+      factions: [
+        { id: "Orks", alliance: "Xenos" },
+        { id: "Necrons", alliance: "Xenos" },
+        { id: "Ultramarines", alliance: "Imperial" },
       ],
     })
     window.localStorage.clear()
@@ -168,7 +168,7 @@ describe("Raids Filters trigger and dialog", () => {
     await user.keyboard("{Escape}")
 
     await open("raids-filters-enemies-factions")
-    // Every faction is offered until the roster mapping factions to alliances has loaded.
+    // Every faction is offered until the factions mapping to alliances have loaded.
     await waitFor(() =>
       expect(optionIds()).not.toContain("option-Ultramarines")
     )

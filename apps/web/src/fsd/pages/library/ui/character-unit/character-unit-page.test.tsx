@@ -209,6 +209,12 @@ async function seedUnitData() {
       { rarity: "Uncommon", shards: 80 },
       { rarity: "Legendary", shards: 500 },
     ],
+    "damage-types": [
+      { id: "Physical", piercingRatio: 1, traits: [] },
+      { id: "Psychic", piercingRatio: 100, traits: ["NoBlocking"] },
+      { id: "Gauss", piercingRatio: 60, traits: [] },
+      { id: "Eviscerate", piercingRatio: 50, traits: [] },
+    ],
   })
   if (env.roster) {
     await seedPlayerData({ characters: env.roster })

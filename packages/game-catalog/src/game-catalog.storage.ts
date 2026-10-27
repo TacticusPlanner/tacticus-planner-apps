@@ -38,3 +38,5 @@ export type HordeModeTiersStorageModel = StorageModel<"horde-mode-tiers">
 export type UnitPowerStorageModel = StorageModel<"unit-power">
 export type QuestEventStorageModel = StorageModel<"quest-events">
 export type QuestCrateStorageModel = StorageModel<"quest-crates">
+export type FactionStorageModel = StorageModel<"factions">
+export type DamageTypeStorageModel = StorageModel<"damage-types">

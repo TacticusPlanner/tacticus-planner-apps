@@ -155,6 +155,15 @@ const datasetData: Record<string, unknown> = {
     },
   ],
   "quest-crates": [{ number: 1, points: 1000, rewards: [] }],
+  factions: [
+    {
+      id: "Ultramarines",
+      alliance: "Imperial",
+      unlockDateUtc: "2022-01-01T00:00:00Z",
+      collectionFaction: false,
+    },
+  ],
+  "damage-types": [{ id: "Flame", piercingRatio: 25, traits: ["OnFire"] }],
 }
 
 function createManifest(
@@ -438,6 +447,16 @@ describe("syncGameCatalog", () => {
       })
     )
     expect(result.status).toBe("ready")
+  })
+
+  it("keys factions and damage-types by their game id", async () => {
+    await syncGameCatalog(new FakeGameCatalogClient(createManifest()))
+    expect(await getDatasetRecords("factions")).toEqual([
+      expect.objectContaining({ id: "Ultramarines", alliance: "Imperial" }),
+    ])
+    expect(await getDatasetRecords("damage-types")).toEqual([
+      expect.objectContaining({ id: "Flame", piercingRatio: 25 }),
+    ])
   })
 
   it("is ready when the manifest does not list the optional horde-mode-tiers dataset", async () => {
