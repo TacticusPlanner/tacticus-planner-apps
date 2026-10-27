@@ -1,6 +1,6 @@
 ## Purpose
 
-Defines the Home page Home Screen Events card shown beside Token Availability: which events it lists (live first, then upcoming, up to two), whole-card navigation to the HSE tab, distinct loading, error and empty states, and its Home tour step.
+Defines the Home page Home Screen Events card shown beside Token Availability: which Home Screen Events and Legendary Events it lists (live first, then upcoming, up to three), whole-card navigation to the HSE tab, distinct loading, error and empty states, and its Home tour step.
 
 ## Requirements
 
@@ -38,7 +38,7 @@ Assumptions:
 - **WHEN** the card renders at 2026-10-03T12:00Z
 - **THEN** it shows Machine Hunt (LIVE), Lysander (LIVE, with run and points when synced), then Training Rush with its local start and "starts in …", and Uthar is not shown
 
-#### Scenario: Cap of two
+#### Scenario: Cap of three
 
 - **GIVEN** one live Home Screen Event, one live Legendary Event and three upcoming events
 - **WHEN** the card renders

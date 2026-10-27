@@ -90,7 +90,7 @@ Completed and Archived goals SHALL remain discoverable through the status filter
 
 ### Requirement: The Default project is permanent
 
-Every account SHALL have exactly one Default project. It SHALL be renamable and editable like any project, SHALL NOT be archived or deleted (no control offers either), and SHALL be the relocation destination defined by `goal-project-membership` ("Every goal retains at least one project membership"). It SHALL be listed first wherever projects are listed and SHALL carry a Default marker. No other project SHALL carry a special status: there is no Active or Current plan project.
+Every account SHALL have exactly one Default project. It SHALL be renamable and editable like any project, SHALL NOT be archived or deleted (no control offers either), and SHALL be the relocation destination defined by `goal-project-membership` ("Every goal retains at least one project membership"). It SHALL be listed first wherever projects are listed and SHALL carry a Default marker in project selectors and on the Projects page; the Goals page's scope chips list it first without a marker (see `goals-navigation`). No other project SHALL carry a special status: there is no Active or Current plan project.
 
 #### Scenario: Default project cannot be archived
 

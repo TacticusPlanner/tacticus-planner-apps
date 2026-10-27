@@ -152,11 +152,6 @@ Each lane tab SHALL render an Eligibility leaderboard section after the Synced p
 - **WHEN** the leaderboard renders below 768px
 - **THEN** each unit is a row card: portrait, name, rarity and rank badges, the row of objective icons, the points figure and "Objectives: N · Clears: ~n"; the filter and toggle controls sit in one compact bar above the list
 
-#### Scenario: Tour step
-
-- **WHEN** the event page tour runs on either form
-- **THEN** a step highlights the Alpha leaderboard after the progress grid step, and an earlier step highlights the cross-lane leaderboard on Overview
-
 ### Requirement: Remaining points per unit on a lane
 
 For an allowed unit on a lane, **remaining points** SHALL equal, summed over every battle of the lane, the scores of the objectives the unit satisfies that are not yet cleared in that battle according to the synced progress, where defeat-all counts as an objective the unit satisfies with score `killPoints`. Deduction is per objective per battle: a battle with some objectives cleared deducts only those. Without a synced entry for the event (or a null lane) nothing is cleared, so remaining points equal points per battle × the battle count. Remaining points are a client calculation and are never stored.

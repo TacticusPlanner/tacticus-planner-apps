@@ -77,12 +77,12 @@ When two or more in-scope goals each plan a raid at the same battle location tod
 
 ### Requirement: Activating the widget navigates to Today
 
-Activating the widget (outside any per-row control) SHALL navigate to `/dailies/raids/today`.
+Activating the widget (outside any per-row control) SHALL navigate to Today (`/dailies/raids`).
 
 #### Scenario: Widget opens Today
 
 - **WHEN** the user activates the Daily Raids widget
-- **THEN** `/dailies/raids/today` opens, scoped to the same Active/Default project the widget showed
+- **THEN** Today (`/dailies/raids`) opens; the widget passes no project to it
 
 ### Requirement: The widget scopes to all Active goals, matching Today
 

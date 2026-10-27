@@ -81,11 +81,9 @@ No informational or sync-prompting banner is shown for stale or capped data; the
 - **WHEN** Token Availability renders that token's card
 - **THEN** its icon and countdown text use the plain (non-capped) styling
 
-### Requirement: Distinct loading and empty states
+### Requirement: Distinct loading, failure and empty states
 
-The widget SHALL present a distinct state for each of: player data still loading, and no token data available for the account at all.
-
-Implementation note: a distinct "failed to load" state is not implemented separately from "no data yet." The data source is a local IndexedDB read (`getLiveProgress`/`getPlayerDataMetadata`, not a network call the widget itself makes), which does not fail the way a network request does; the only load-failure signal that exists (the app shell's sync-status context) lives in the `app` layer, which a page cannot import (see the previous requirement's note). A widget-local read failure is realistically indistinguishable from "never synced yet," so both surface as the empty state.
+The widget SHALL present a distinct state for each of: player data still loading, a failed local read (the shared failure presentation with Retry, per `local-data-read-state`), and no token data available for the account at all.
 
 #### Scenario: Player data is loading
 
@@ -96,3 +94,8 @@ Implementation note: a distinct "failed to load" state is not implemented separa
 
 - **WHEN** the player's synced data has loaded but `gameModeTokens` has no data for any token type
 - **THEN** Token Availability shows an explicit empty state rather than an empty row
+
+#### Scenario: Local read fails
+
+- **WHEN** the local read of the player's synced data fails or times out
+- **THEN** Token Availability shows the shared read-failure state with a Retry that re-issues the read, not the empty state

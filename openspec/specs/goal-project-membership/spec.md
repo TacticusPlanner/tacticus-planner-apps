@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Defines how canonical Character/MoW goals participate in one or more projects, including searchable membership and project-scoped in-flight goal-type uniqueness.
+Defines how canonical Character/MoW goals participate in one or more projects, including searchable membership and account-wide in-flight goal uniqueness per unit, type and target.
 
 ## Requirements
 
@@ -95,9 +95,9 @@ An existing archived membership SHALL remain visible and marked Archived, but ar
 - **WHEN** that membership is removed in the membership editor
 - **THEN** the goal belongs to the Default project and is no longer reachable only through an archived project
 
-### Requirement: In-flight goal-type uniqueness is scoped to a project
+### Requirement: In-flight goal uniqueness is per unit, type and target, account-wide
 
-Across the account, at most one Active/Paused non-Rank goal SHALL exist per `(entityType, entityId, goalType)`. For Rank, at most one Active/Paused goal SHALL exist per `(entityType, entityId, normalizedEndTarget)`; different Rank targets MAY coexist. Completed/Archived goals SHALL not occupy a slot. Project membership SHALL NOT affect a slot: one in-flight goal MAY belong to any number of projects, and adding a goal to or removing it from a project SHALL never be rejected for a slot.
+Across the account, at most one Active/Paused goal SHALL exist per `(entityType, entityId, goalType, target key)`, where the target key is the API's canonical end target for the type (Rank: normalized end target; Ascension: end progression; Ability: active and passive ends; Upgrade: the target set; Unlock has none, so one per unit). Goals of the same type with different targets MAY coexist. Completed/Archived goals SHALL not occupy a slot. Project membership SHALL NOT affect a slot: one in-flight goal MAY belong to any number of projects, and adding a goal to or removing it from a project SHALL never be rejected for a slot.
 
 #### Scenario: Different projects have different targets
 
@@ -189,7 +189,7 @@ Wherever a goal is presented as a member of a specific project, the system SHALL
 
 ### Requirement: The goal row's project-removal action offers a chosen destination when relocation is needed
 
-When a goal's viewed project is its only membership, the row's project-removal action ("Move to project") SHALL let the user choose the destination rather than relocating automatically: it SHALL list the account's other existing projects, and SHALL offer creating a new project as an additional option. Selecting an existing project SHALL move the goal there; the move is never rejected for an occupied slot (see "In-flight goal-type uniqueness is scoped to a project"). Choosing to create a new project SHALL open project creation; once the new project is saved, the goal SHALL move into it.
+When a goal's viewed project is its only membership, the row's project-removal action ("Move to project") SHALL let the user choose the destination rather than relocating automatically: it SHALL list the account's other existing projects, and SHALL offer creating a new project as an additional option. Selecting an existing project SHALL move the goal there; the move is never rejected for an occupied slot (see "In-flight goal uniqueness is per unit, type and target, account-wide"). Choosing to create a new project SHALL open project creation; once the new project is saved, the goal SHALL move into it.
 
 When the goal's viewed project is not its only membership, the row's project-removal action SHALL remain a plain removal with no destination to choose, leaving the goal a member of its other project(s).
 
@@ -282,7 +282,7 @@ In both new-goal and goal-edit forms, when a user searches for a project name wi
 
 ### Requirement: Project membership changes never alter a goal's status
 
-A project organizes goals; it does not activate or deactivate them. Adding a goal to a project, removing it from one, and relocating it to the Default project SHALL all leave the goal's status unchanged. Pausing and resuming a goal SHALL remain available per goal and SHALL remain the only way a user changes whether a goal is active. No membership surface SHALL present membership as activating, deactivating, pausing, or resuming a goal.
+A project organizes goals; it does not activate or deactivate them. Adding a goal to a project, removing it from one, and relocating it to the Default project SHALL all leave the goal's status unchanged. Pausing and resuming — per goal, or for a selection through `goal-bulk-actions` — SHALL remain the only way a user changes whether a goal is active. No membership surface SHALL present membership as activating, deactivating, pausing, or resuming a goal.
 
 #### Scenario: Editing membership leaves status alone
 

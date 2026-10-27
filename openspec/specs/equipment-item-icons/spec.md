@@ -10,11 +10,13 @@ including case-sensitive ones, with a defined fallback for items the game ships 
 ### Requirement: Item and relic ability icons load by exact catalog id
 
 For every named catalog equipment id (an id whose English name in the `equipmentItems` namespace is a real
-name, not the `_<id>` placeholder of the 12 unnamed items), the client SHALL resolve its icon to
-`game_catalog/equipment/ui_icon_item_<id>.png`. For every relic's ability id it SHALL resolve to
-`game_catalog/abilities/ui_icon_ability2_<abilityId>.png`. A file with exactly that name, including letter case,
-SHALL ship in `apps/web/public`, except for a listed set of known gaps. A known-gap equipment item SHALL show
-the existing unknown-item icon.
+name, not the `_<id>` placeholder of the 12 unnamed items), the client SHALL resolve its icon to the pinned game
+sprite `game_catalog/datamines/items/ui_icon_item_<id>.webp`, using the game's spelling where it differs only in
+letter case (e.g. `R_Block_DaemonfleshPlate` → `R_Block_DaemonFleshPlate`). For every relic's ability id it SHALL
+resolve to `game_catalog/datamines/abilities/ui_icon_ability2_<abilityId>.webp`, again using the game's spelling or
+folder where it differs (e.g. `DaemonfleshPlate` → `DaemonFleshPlate`). A file with exactly that path, including
+letter case, SHALL ship in `apps/web/public`, except for a listed set of known gaps. A known-gap equipment item
+SHALL show the unknown-item icon (`game_catalog/datamines/items/ui_icon_item_unknown.webp`).
 
 The known gaps are the equipment items `I_Block_E005` (Master-Crafted Power Field) and
 `I_Block_L005` (Artificer Power Field), for which neither V1 nor the game data ships an asset.
@@ -25,7 +27,7 @@ The known gaps are the equipment items `I_Block_E005` (Master-Crafted Power Fiel
 - **WHEN** the client requests the item icons for `R_Block_DaemonfleshPlate` and
   `R_Crit_Dw02AdvancedBurstCannon`, or the ability icons for `DaemonfleshPlate`, `NetherRealmCasket`,
   `Helspear` and `PhasalSubjugator`
-- **THEN** each URL it builds from the id resolves to a shipped file, not the fallback and not a broken image
+- **THEN** each URL it resolves for the id points at a shipped file, not the fallback and not a broken image
 
 #### Scenario: No asset in the game
 
@@ -36,10 +38,4 @@ The known gaps are the equipment items `I_Block_E005` (Master-Crafted Power Fiel
 
 - **WHEN** the apps test suite runs
 - **THEN** a test takes the named ids from the `equipmentItems` namespace and fails for any id, outside the
-  known gaps, whose `ui_icon_item_<id>.png` is not present with exactly matching case
-
-#### Scenario: Relic ability icon coverage is checked on regeneration
-
-- **WHEN** the ability rules-text generator runs (it reads the catalog's relic ability ids)
-- **THEN** it reports and fails for any relic ability id whose `ui_icon_ability2_<abilityId>.png` is not present
-  with exactly matching case
+  known gaps, whose resolved `ui_icon_item_<id>.webp` is not present with exactly matching case

@@ -73,7 +73,7 @@ Each card and the editor SHALL expose the clear depth of the current run as a st
 
 - **GIVEN** the worked Uthar Alpha team with an estimated depth of 6 and no manual depth for the current run
 - **WHEN** the card renders
-- **THEN** the stepper shows 6 marked "estimated" with "21% above battle 6 · 32% short of battle 7", and nothing is written
+- **THEN** the stepper shows 6 marked "estimated" with "12% above battle 6 · 37% short of battle 7", and nothing is written
 
 #### Scenario: Override from the estimate
 

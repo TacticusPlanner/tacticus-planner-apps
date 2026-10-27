@@ -23,7 +23,7 @@ current validation state, rather than treating the earlier request as active.
 
 ### Requirement: Create-another success remains immediately usable
 
-The system SHALL retain the existing create-another flow: after a successful creation with "Create another" enabled, the sheet remains open in an idle submission state for a new goal. It SHALL retain compatible project and goal-type context from the preceding creation while resetting entity-specific targets and start-paused state. The user SHALL be able to edit the retained choices before the next submission.
+After a successful creation with "Create another" enabled, the sheet SHALL remain open in an idle submission state for a new goal, carrying over only the context "Consecutive creation retains compatible context" allows.
 
 #### Scenario: Create another after success
 
@@ -167,7 +167,7 @@ The create-goal sheet SHALL show every reason the submit action is disabled at t
 
 ### Requirement: Goal creation offers an explicit start-paused option
 
-The creation sheet SHALL offer a control that creates the goal in the Paused status instead of the Active one. The control SHALL default to off, SHALL be visible in the form rather than reached through a menu or a hover-only affordance, and SHALL state what choosing it means — that the goal is created but left out of daily planning until it is resumed. Its value SHALL be sent with the submission so that the created goal's status reflects the user's choice, and SHALL apply to every goal a single submission creates, including the prerequisite goals of a combined creation. The control SHALL reset to off whenever the form resets for a subsequent creation.
+The creation sheet SHALL offer a control that creates the goal in the Paused status instead of the Active one. The control SHALL default to off, SHALL be visible in the form (labelled "Create paused") rather than reached through a menu or a hover-only affordance, and SHALL explain what choosing it means — that the goal is created but left out of daily planning until it is resumed — as an accessible tooltip on its label, not a helper paragraph. Its value SHALL be sent with the submission so that the created goal's status reflects the user's choice, and SHALL apply to every goal a single submission creates, including the prerequisite goals of a combined creation. The control SHALL reset to off whenever the form resets for a subsequent creation.
 
 #### Scenario: Default creation is active
 
@@ -188,7 +188,7 @@ The creation sheet SHALL offer a control that creates the goal in the Paused sta
 #### Scenario: The control is discoverable
 
 - **WHEN** the creation sheet renders at either breakpoint
-- **THEN** the start-paused control and its explanation are visible in the form without hovering, focusing, or opening another control
+- **THEN** the start-paused control is visible in the form without opening another control, and its label carries the explanation as an accessible tooltip
 
 #### Scenario: The choice does not carry into the next creation
 
@@ -303,7 +303,7 @@ At or above 768px, launching goal creation (from any entry point in `goal-creati
 
 ### Requirement: Goal creation preselects a character and keeps a compact layout
 
-When goal creation opens without a launch that carries a unit, the dialog SHALL preselect the first Character in the unit picker's list order (Mows skipped), once the catalog is available if it is still loading. A launch that carries a unit (prefill) SHALL keep that unit, and a unit the user has chosen SHALL never be replaced. After a "create another" submission clears the form, the same rule SHALL apply again (the first Character is preselected, the remembered projects and goal types are offered as before). With a unit preselected, the current-status section and the goal-type selector SHALL appear immediately. The creation form SHALL NOT show helper paragraphs for project membership or for "Create paused". On desktop the "Create paused" checkbox SHALL sit in the footer beside "Create another goal" on the left, and the footer's buttons SHALL be Close (outline) then the primary "Create goal" as the rightmost button. Below 768px creation SHALL follow the mobile step flow requirement. The form SHALL follow the compact-layout requirement of `goal-edit-dialog`.
+When goal creation opens without a launch that carries a unit, the dialog SHALL preselect the first Character in the unit picker's list order (Mows skipped), once the catalog is available if it is still loading. A launch that carries a unit (prefill) SHALL keep that unit, and a unit the user has chosen SHALL never be replaced. After a "create another" submission clears the form, the same rule SHALL apply again (the first Character is preselected, the remembered projects and goal types are offered as before). With a unit preselected, the current-status section and the goal-type selector SHALL appear immediately. On desktop the "Create paused" checkbox SHALL sit in the footer beside "Create another goal" on the left, and the footer's buttons SHALL be Close (outline) then the primary "Create goal" as the rightmost button. Below 768px creation SHALL follow the mobile step flow requirement. The form SHALL follow the compact-layout requirement of `goal-edit-dialog`.
 
 #### Scenario: First character preselected
 

@@ -18,7 +18,7 @@ On the desktop Goals list, the computed estimate column SHALL be labeled "Done B
 
 ### Requirement: The Done By cell shows a formatted date and day count, with blocked detail in the indicator tooltip
 
-For a successfully estimated goal, the Done By cell SHALL show a calendar icon, a short localized date, and an "in {{days}} days" caption from the same estimate result. Desktop and mobile presentations SHALL contain the same content. A Blocked goal SHALL show its blocked indicator and no date; the per-material detail of the block (each material with no supported source, its remaining quantity and the reason) SHALL be available in that indicator's tooltip, beneath the blocker reasons, and SHALL NOT render as visible lines in the cell or card. A goal with no computed estimate SHALL show the unavailable placeholder. A project filter SHALL show the goal's global-plan date, not a project-only recalculation. Dates retain `goal-farming-estimates`' inclusive Day-1 semantics and UTC-safe formatting.
+For a successfully estimated goal, the Done By cell SHALL show a calendar icon, a short localized date, and an "in {{days}} days" caption from the same estimate result. Desktop and mobile presentations SHALL contain the same content. A Blocked goal SHALL show its blocked indicator and no date; the per-material detail of the block (each material with no supported source, its remaining quantity and the reason) SHALL be available in that indicator's tooltip, beneath the blocker reasons, and SHALL NOT render as visible lines in the cell or card. A goal with no computed estimate SHALL show no date and no placeholder (see `goal-list-layout`). A project filter SHALL show the goal's global-plan date, not a project-only recalculation. Dates retain `goal-farming-estimates`' inclusive Day-1 semantics and UTC-safe formatting.
 
 #### Scenario: A goal 12 days from completion shows its date and day count
 
@@ -35,4 +35,4 @@ For a successfully estimated goal, the Done By cell SHALL show a calendar icon, 
 #### Scenario: A goal with no estimate is unaffected
 
 - **WHEN** no estimate exists because the goal is non-farmable or planning data is unavailable
-- **THEN** Done By shows the unavailable placeholder, not a fabricated date
+- **THEN** Done By shows nothing — no date, no placeholder such as "—", and never a fabricated date

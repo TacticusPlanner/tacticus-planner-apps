@@ -60,7 +60,7 @@ The Edit goal dialog has one Save. When the target changed, Save SHALL submit it
 
 ### Requirement: Conflicts preserve the draft
 
-If the server rejects a target edit because the goal revision is stale or a Rank target collides with another in-flight Rank goal of the same unit anywhere in the account (same `(entityType, entityId, normalizedEndTarget)`; a non-Rank target edit keeps its `(entityType, entityId, goalType)` slot and cannot collide, see `goal-project-membership`), the Edit goal dialog SHALL stay open, retain the proposed target and the rest of the draft, explain the conflict, and offer a way to refresh the current goal before retrying. It SHALL not claim success or overwrite the newer server state.
+If the server rejects a target edit because the goal revision is stale or the new target collides with another in-flight goal of the same unit, type and target anywhere in the account (see `goal-project-membership`), the Edit goal dialog SHALL stay open, retain the proposed target and the rest of the draft, explain the conflict, and offer a way to refresh the current goal before retrying. It SHALL not claim success or overwrite the newer server state.
 
 #### Scenario: Stale revision
 

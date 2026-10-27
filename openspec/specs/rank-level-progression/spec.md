@@ -8,7 +8,7 @@ Makes the character level a Rank or Ability target needs visible and costed on t
 
 ### Requirement: A Rank or Ability goal shows the level it needs
 
-For a Character Rank goal, the goal, its detail, and the creation preview SHALL derive the level required by its end rank and partial upgrade slots; for a Character Ability goal, the level implied by the higher of its two ability targets. When the character's current level is below that requirement, the goal SHALL show the required level, the current level, the remaining XP, and Potential progress from owned XP books, presented as ordinary progress on that goal. It SHALL NOT be presented as a separate goal, a dependency, or a restriction. Creation SHALL NOT suggest, create, or accept a Level goal for either kind; genuine Unlock and Ascension prerequisites are still suggested.
+For a Character Rank goal, the goal, its detail, and the creation preview SHALL derive the level required by its end rank and partial upgrade slots; for a Character Ability goal, the level implied by the higher of its two ability targets. When the character's current level is below that requirement, the goal SHALL show the required level, the current level, and Potential progress from owned XP books, presented as ordinary progress on that goal; the remaining XP SHALL appear in the creation preview and the goal's progress explanation, not on the goal row. It SHALL NOT be presented as a separate goal, a dependency, or a restriction. Creation SHALL NOT suggest, create, or accept a Level goal for either kind; genuine Unlock and Ascension prerequisites are still suggested.
 
 #### Scenario: Rank target needs a higher level
 

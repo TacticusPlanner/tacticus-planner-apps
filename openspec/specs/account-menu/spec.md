@@ -6,20 +6,6 @@ Defines the account menu: its global-bar trigger, the account card's position an
 
 ## Requirements
 
-### Requirement: Desktop account menu shows the signed-in user's identity above its actions
-
-Opening the desktop account menu SHALL show the signed-in user's account avatar, display name, and email address as an identity header above the menu's existing actions (importing from V1, managing the account, and signing out). This identity header SHALL NOT be interactive.
-
-#### Scenario: Opening the menu shows the user's identity
-
-- **WHEN** a signed-in user opens the desktop account menu
-- **THEN** the menu shows their account avatar, display name, and email address above its list of actions
-
-#### Scenario: Existing menu actions are unaffected
-
-- **WHEN** a signed-in user opens the desktop account menu
-- **THEN** the same actions available before this change (import from V1, manage account, sign out) are still present and still behave as they did before
-
 ### Requirement: Desktop global bar account trigger shows the account avatar
 
 The desktop global bar SHALL show the signed-in user's account avatar at the far right, with their display name when space permits. The trigger SHALL be independent of sidebar expansion and SHALL have an accessible account-menu label. At narrow desktop widths the name SHALL truncate or hide without losing access to the menu.
