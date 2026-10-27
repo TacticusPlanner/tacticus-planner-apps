@@ -37,7 +37,7 @@ export function TeamPickerSort({
         variant="outline"
       >
         <ToggleGroupItem
-          className="max-md:h-11"
+          className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground max-md:h-11"
           data-testid="team-picker-sort-points"
           size="sm"
           value="pointsLeft"
@@ -46,7 +46,7 @@ export function TeamPickerSort({
         </ToggleGroupItem>
         <ToggleGroupItem
           aria-describedby={powerAvailable ? undefined : reasonId}
-          className="max-md:h-11"
+          className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground max-md:h-11"
           data-testid="team-picker-sort-power"
           disabled={!powerAvailable}
           size="sm"

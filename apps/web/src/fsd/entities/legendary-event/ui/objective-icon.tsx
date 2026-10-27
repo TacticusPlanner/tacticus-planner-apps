@@ -36,7 +36,7 @@ export function ObjectiveIcon({
       aria-hidden="true"
       className={cn(
         "relative inline-flex size-5 shrink-0",
-        muted && "opacity-35 grayscale",
+        muted && "opacity-25 grayscale",
         className
       )}
       data-muted={muted ? "true" : undefined}
