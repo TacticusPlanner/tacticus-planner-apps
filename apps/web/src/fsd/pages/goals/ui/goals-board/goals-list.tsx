@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { Fragment, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { cn } from "@workspace/ui/lib/utils"
 import { Checkbox } from "@workspace/ui/components/checkbox"
@@ -20,6 +20,8 @@ import {
   type GoalsListProps,
 } from "./goal-row-utils"
 import { GoalsMobileCards } from "./goals-mobile-cards"
+import { SEASON_FIT_ROW_ACCENT } from "./season-fit-copy"
+import { SeasonCutoffRow } from "./season-fit-ui"
 
 /** Desktop table + mobile card list for a tab's goal rows — mirrors `guild-members-list.tsx`'s
  * responsive split. The row itself opens nothing; its Edit action opens the Edit goal dialog, and the actions
@@ -38,6 +40,8 @@ export function GoalsList(props: GoalsListProps) {
 }
 
 const EMPTY_SELECTION: ReadonlySet<string> = new Set()
+/** Header columns in `GoalsTable`, spanned by the season cut-off row. */
+const COLUMN_COUNT = 7
 
 function GoalsTable({
   rows,
@@ -60,6 +64,8 @@ function GoalsTable({
   onToggleSelected,
   visibleIds,
   onSelectAllVisible,
+  seasonFit,
+  seasonCutoffGoalId,
 }: GoalsListProps) {
   const { t } = useTranslation()
   const { getEntityName } = useGoalCatalog()
@@ -112,42 +118,53 @@ function GoalsTable({
           onReorder={(orderedIds, movedId) => onReorder?.(orderedIds, movedId)}
           renderItem={(row, sortable) => {
             const reached = isReachedRow(row, reachedByGoalId)
+            const fit = seasonFit?.fits.get(row.goalId)
             return (
-              <TableRow
-                className={cn(
-                  "h-14 data-[dragging]:relative data-[dragging]:z-10 data-[dragging]:bg-card data-[dragging]:outline-2 data-[dragging]:-outline-offset-2 data-[dragging]:outline-ring",
-                  reached && REACHED_ROW_CLASS
-                )}
-                data-dragging={sortable.isDragging || undefined}
-                data-goal-id={row.goalId}
-                data-reached={reached || undefined}
-                data-testid="goal-row"
-                key={row.goalId}
-                ref={sortable.setNodeRef}
-                style={sortable.style}
-              >
-                <GoalRowCells
-                  actions={actions}
-                  cascadeContext={cascadeContext}
-                  projectRemoval={projectRemoval}
-                  dragHandle={sortable.dragHandle}
-                  estimates={estimates}
-                  levelChargedXp={levelChargedXp}
-                  levelPoolXpAvailable={levelPoolXpAvailable}
-                  levelPotentialProgress={levelPotentialProgress}
-                  metrics={metrics}
-                  onEdit={onEdit}
-                  popoverOpen={openPopoverGoalId === row.goalId}
-                  potentialProgress={potentialProgress}
-                  onToggleSelected={onToggleSelected}
-                  selected={selection.has(row.goalId)}
-                  reachedByGoalId={reachedByGoalId}
-                  reorderEnabled={reorderEnabled}
-                  row={row}
-                  setOpenPopoverGoalId={setOpenPopoverGoalId}
-                  xpBook={xpBook}
-                />
-              </TableRow>
+              <Fragment key={row.goalId}>
+                {seasonFit && seasonCutoffGoalId === row.goalId ? (
+                  <SeasonCutoffRow
+                    colSpan={COLUMN_COUNT}
+                    seasonFit={seasonFit}
+                  />
+                ) : null}
+                <TableRow
+                  className={cn(
+                    "h-14 data-[dragging]:relative data-[dragging]:z-10 data-[dragging]:bg-card data-[dragging]:outline-2 data-[dragging]:-outline-offset-2 data-[dragging]:outline-ring",
+                    reached && REACHED_ROW_CLASS,
+                    fit && SEASON_FIT_ROW_ACCENT[fit.offset]
+                  )}
+                  data-dragging={sortable.isDragging || undefined}
+                  data-goal-id={row.goalId}
+                  data-reached={reached || undefined}
+                  data-season-fit={fit?.offset}
+                  data-testid="goal-row"
+                  ref={sortable.setNodeRef}
+                  style={sortable.style}
+                >
+                  <GoalRowCells
+                    actions={actions}
+                    cascadeContext={cascadeContext}
+                    projectRemoval={projectRemoval}
+                    dragHandle={sortable.dragHandle}
+                    estimates={estimates}
+                    levelChargedXp={levelChargedXp}
+                    levelPoolXpAvailable={levelPoolXpAvailable}
+                    levelPotentialProgress={levelPotentialProgress}
+                    metrics={metrics}
+                    onEdit={onEdit}
+                    popoverOpen={openPopoverGoalId === row.goalId}
+                    potentialProgress={potentialProgress}
+                    onToggleSelected={onToggleSelected}
+                    selected={selection.has(row.goalId)}
+                    reachedByGoalId={reachedByGoalId}
+                    reorderEnabled={reorderEnabled}
+                    row={row}
+                    setOpenPopoverGoalId={setOpenPopoverGoalId}
+                    seasonFit={seasonFit}
+                    xpBook={xpBook}
+                  />
+                </TableRow>
+              </Fragment>
             )
           }}
         />

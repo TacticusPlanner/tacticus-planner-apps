@@ -8,6 +8,7 @@ export function GoalsToolbar({
   projectScope,
   statusFilter,
   filters,
+  seasonFit,
   createGoal,
   bulkActions,
   planningSettings,
@@ -18,6 +19,8 @@ export function GoalsToolbar({
   projectScope: ReactNode
   statusFilter: ReactNode
   filters: ReactNode
+  /** The Season fit select (goal-season-fit), after the Type/Group filters on both layouts. */
+  seasonFit: ReactNode
   createGoal: ReactNode
   bulkActions: (compact: boolean) => ReactNode
   planningSettings: ReactNode
@@ -39,6 +42,7 @@ export function GoalsToolbar({
           data-testid="goals-filter-group"
         >
           {filters}
+          {seasonFit}
           {reorderToggle}
           {selectToggle}
           {orderHint}
@@ -70,6 +74,7 @@ export function GoalsToolbar({
           data-testid="goals-filter-group"
         >
           {filters}
+          {seasonFit}
           {orderHint}
         </div>
       </div>

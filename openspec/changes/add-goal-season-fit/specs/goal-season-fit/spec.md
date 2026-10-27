@@ -33,7 +33,7 @@ For a mode, the client SHALL resolve the season's **cycle starts** from the cata
 
 The **current season** is the cycle containing now. Its **deadline** is the next cycle start (for `Fixed`) or the current occurrence's `endUtc` (non-`Fixed`). For Guild War the deadline is therefore the start of the next Guild War season, so "this season" means "ready before the next war season starts". A season number SHALL be shown when the definition's config carries `seasonNumberAtAnchor` (number = `seasonNumberAtAnchor + k`) or the occurrence carries a `season` parameter; otherwise it is omitted.
 
-A mode whose definition is missing, or yields no current season, SHALL be disabled in the select with the reason "No season dates available yet". While the catalog loads, the modes SHALL be disabled without a reason; on a catalog read failure Season fit SHALL behave as Off and the select SHALL show the existing local-read failure affordance.
+A mode whose definition is missing, or yields no current season, SHALL be disabled in the select with the reason "No season dates available yet". While the catalog loads, and on a catalog read failure, the season modes SHALL be disabled without a reason and Season fit SHALL behave as Off (Off stays selectable).
 
 Assumptions:
 

@@ -167,6 +167,10 @@
   --event-bar-foreground: oklch(0.243 0.015 261.655);
   --success: oklch(0.93 0.05 150);
   --success-foreground: oklch(0.37 0.09 150);
+  /* Goals Season fit accents (this season / next / two out): >= 3:1 against background and card. */
+  --season-fit-on-track: oklch(0.55 0.13 150);
+  --season-fit-caution: oklch(0.6 0.14 65);
+  --season-fit-urgent: oklch(0.52 0.17 35);
 
   /* Collection unit tiles: overlays on portraits (star pill, lock badge, shard counts), the
      portrait backdrop while art loads, unlock bars and the sign-in/sync banner. */
@@ -300,6 +304,9 @@
   --event-bar-foreground: oklch(0.97 0.005 264.532);
   --success: oklch(0.29 0.055 150);
   --success-foreground: oklch(0.87 0.11 150);
+  --season-fit-on-track: oklch(0.72 0.14 150);
+  --season-fit-caution: oklch(0.78 0.14 75);
+  --season-fit-urgent: oklch(0.7 0.17 35);
 
   --portrait: #232933;
   --progress: #4b8ef0;

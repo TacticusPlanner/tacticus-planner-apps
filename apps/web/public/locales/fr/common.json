@@ -1320,6 +1320,36 @@
       "groupByUnit": "Regrouper par unité",
       "reachedIndicatorLabel": "Des objectifs atteints attendent d'être consultés"
     },
+    "seasonFit": {
+      "label": "Calage sur la saison",
+      "options": {
+        "off": "Aucun calage",
+        "battlePass": "Passe de combat",
+        "guildRaid": "Raid de guilde",
+        "guildWar": "Guerre de guilde"
+      },
+      "unavailable": "Pas encore de dates de saison",
+      "fit": {
+        "thisSeason": "Cette saison",
+        "nextSeason": "Saison suivante",
+        "inTwoSeasons": "Dans 2 saisons",
+        "later": "Plus tard"
+      },
+      "season": {
+        "battlePass": "saison du Passe de combat",
+        "battlePassNumbered": "saison {{number}} du Passe de combat",
+        "guildRaid": "saison de Raid de guilde",
+        "guildRaidNumbered": "saison {{number}} de Raid de guilde",
+        "guildWar": "saison de Guerre de guilde",
+        "guildWarNumbered": "saison {{number}} de Guerre de guilde"
+      },
+      "tooltipEnds": "Terminé le {{date}}, avant la fin de la {{season}} le {{deadline}}",
+      "tooltipStarts": "Terminé le {{date}}, avant le début de la {{season}} le {{deadline}}",
+      "tooltipAfterEnds": "Terminé le {{date}}, après la fin de la {{season}} le {{deadline}}",
+      "tooltipAfterStarts": "Terminé le {{date}}, après le début de la {{season}} le {{deadline}}",
+      "dividerEnds": "La {{season}} se termine le {{deadline}}. Les objectifs ci-dessous finissent plus tard.",
+      "dividerStarts": "La {{season}} commence le {{deadline}}. Les objectifs ci-dessous finissent après."
+    },
     "detail": {
       "notes": "Notes",
       "projectsTitle": "Projets",
@@ -1655,6 +1685,10 @@
         "list": {
           "title": "Vos objectifs",
           "content": "Chaque objectif apparaît ci-dessous selon votre ordre de priorité : les actifs et en pause d'abord, puis les atteints. Utilisez l'action Modifier d'un objectif pour changer sa cible, sa priorité, ses notes ou ses projets. Une unité peut avoir plusieurs objectifs de rang, d'ascension, de capacité ou d'amélioration, chacun étiqueté avec sa propre cible."
+        },
+        "seasonFit": {
+          "title": "Calage sur la saison",
+          "content": "Choisissez une saison de Passe de combat, de Raid de guilde ou de Guerre de guilde pour voir quels objectifs seront terminés à temps. Une ligne indique où les objectifs débordent sur la saison suivante."
         }
       }
     },

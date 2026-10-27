@@ -41,6 +41,20 @@ export {
 export { isOnlyMemberOf } from "./model/projects/project-removal"
 export { useGoalsProjectScope } from "./model/projects/use-goals-project-scope"
 export { useProjectsByGoalId } from "./model/projects/use-projects-by-goal-id"
+export {
+  isSeasonFitMode,
+  seasonCutoffGoalId,
+  SEASON_FIT_MODES,
+  type GoalSeasonFit,
+  type SeasonFitMode,
+  type SeasonFitOffset,
+} from "./model/season-fit/season-fit"
+export { type SeasonFitSeason } from "./model/season-fit/season-windows"
+export {
+  useSeasonFit,
+  type ActiveSeasonFit,
+  type SeasonFitState,
+} from "./model/season-fit/use-season-fit"
 export { orderRowsByGlobalPriority } from "./model/shared/goal-row-order"
 export { groupRows } from "./model/shared/row-groups"
 export { goalRowFromSummary, type GoalRow } from "./model/shared/types"

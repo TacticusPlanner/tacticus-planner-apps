@@ -18,6 +18,7 @@ import { GoalProjectBadges, GoalUnitIcon } from "@/features/goal-create"
 import { LevelRequirementLine } from "../shared/level-requirement-display"
 import type { SortableRenderProps } from "@/shared/ui"
 import { BlockedIndicator, StatusBadge } from "../shared/status-badge"
+import { SeasonFitLabel } from "./season-fit-ui"
 import {
   EstimateCell,
   GoalNameLink,
@@ -51,6 +52,7 @@ type GoalRowCellsProps = Pick<
   | "reachedByGoalId"
   | "cascadeContext"
   | "projectRemoval"
+  | "seasonFit"
 > & {
   row: NonNullable<GoalsListProps["rows"]>[number]
   selected: boolean
@@ -78,6 +80,7 @@ export const GoalRowCells = memo(function GoalRowCells({
   reachedByGoalId,
   cascadeContext,
   projectRemoval,
+  seasonFit,
   onToggleSelected,
   selected,
   reorderEnabled,
@@ -248,8 +251,9 @@ export const GoalRowCells = memo(function GoalRowCells({
             <ReachedDash />
           ) : estimates ? (
             // Fixed slot: a Paused goal has no estimate and must not collapse the row.
-            <div className="min-h-4">
+            <div className="flex min-h-4 flex-wrap items-center gap-x-2">
               <EstimateCell estimate={estimates.get(row.goalId)} />
+              <SeasonFitLabel goalId={row.goalId} seasonFit={seasonFit} />
             </div>
           ) : null}
         </div>
@@ -298,6 +302,10 @@ function sameRowProps(a: GoalRowCellsProps, b: GoalRowCellsProps) {
     props.levelChargedXp?.get(id),
     props.levelPoolXpAvailable?.get(id),
     props.reachedByGoalId?.get(id),
+    props.seasonFit?.fits.get(id),
+    props.seasonFit?.season,
+    props.seasonFit?.seasonNumber,
+    props.seasonFit?.deadlineMs,
     ...(a.row.dependsOn ?? []).flatMap((dep) => [
       props.cascadeContext?.statusById.get(dep),
       props.cascadeContext?.dependentCountById.get(dep),

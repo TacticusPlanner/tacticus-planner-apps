@@ -41,12 +41,18 @@ import { GoalsBulkControls } from "./goals-bulk-controls"
 import { useProjectRemovalFlow } from "./project-removal-flow"
 import { GoalsCreateButton } from "./goals-create-button"
 import { GoalsToolbar } from "./goals-toolbar"
+import { SeasonFitSelect } from "./season-fit-select"
 import { GoalsMobileReorderToggle } from "./goals-mobile-reorder-toggle"
 import { GoalsMobileSelectToggle } from "./goals-mobile-select-toggle"
 import { MobileSelectBar } from "./mobile-select-bar"
 import { GoalsOrderHint } from "./goals-order-hint"
 import { GoalsProjectScope } from "./goals-project-scope"
 import { useGoalsProjectScope } from "@/features/goal-planning"
+import {
+  isSeasonFitMode,
+  seasonCutoffGoalId,
+  useSeasonFit,
+} from "@/features/goal-planning"
 import { useLevelRules } from "@/features/goal-farming"
 import { buildCascadeContext, type SelectedXpBook } from "./goal-row-utils"
 import { GoalEditDialog } from "@/features/goal-create"
@@ -75,6 +81,12 @@ export function GoalsPage() {
     "goals.overview.group",
     isGoalGroupValue,
     "none"
+  )
+  // Per browser like Group, and shared by the unscoped and project-scoped list (goal-season-fit).
+  const [seasonFitMode, setSeasonFitMode] = usePersistedSelection(
+    "goals.overview.seasonFit",
+    isSeasonFitMode,
+    "off"
   )
   const [settingsOpen, setSettingsOpen] = useState(false)
   const { getEntityName } = useGoalCatalog()
@@ -234,6 +246,21 @@ export function GoalsPage() {
       .length,
   }
   const rowGroups = groupRows(rows, group)
+  const seasonFit = useSeasonFit(
+    seasonFitMode,
+    nonArchivedRows,
+    stableEstimates,
+    reachedByGoalId
+  )
+  const activeSeasonFit = seasonFit.status === "ready" ? seasonFit.active : null
+  // The divider follows the one account-wide priority order, which only an ungrouped list shows.
+  const cutoffGoalId =
+    activeSeasonFit && group === "none"
+      ? seasonCutoffGoalId(
+          rows.map((row) => row.goalId),
+          activeSeasonFit.fits
+        )
+      : null
 
   // Selection is page-local and discarded whenever what the list shows changes by user control.
   const {
@@ -364,6 +391,13 @@ export function GoalsPage() {
           />
         }
         orderHint={orderHint}
+        seasonFit={
+          <SeasonFitSelect
+            onValueChange={setSeasonFitMode}
+            state={seasonFit}
+            value={seasonFitMode}
+          />
+        }
         planningSettings={
           <PlanningSettingsTrigger
             onClick={() => setSettingsOpen(true)}
@@ -431,6 +465,8 @@ export function GoalsPage() {
                 reorderEnabled={reorderAvailable}
                 reorderPending={orderActions.pending}
                 rows={rowGroup.rows}
+                seasonCutoffGoalId={cutoffGoalId}
+                seasonFit={activeSeasonFit}
                 selectActive={selectActive}
                 selection={selection}
                 visibleIds={visibleIds}
