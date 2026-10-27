@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest"
+import { questEventsFixture } from "@workspace/game-catalog/testing"
 
 import { crateTrack, questShards, shardMeaning } from "./quest-rewards"
 import { questTokenPlan } from "./quest-token-plan"
@@ -96,12 +97,14 @@ describe("shardMeaning", () => {
 })
 
 describe("questTokenPlan", () => {
+  const bank = questEventsFixture[0]!.tokens
   const startMs = Date.parse("2026-10-21T00:00:00Z")
   const endMs = Date.parse("2026-10-24T00:00:00Z")
 
   it("counts tokens held plus the regen to the end, and when the bank fills", () => {
     const plan = questTokenPlan({
       phase: "running",
+      bank,
       startMs,
       endMs,
       nowMs: Date.parse("2026-10-23T14:00:00Z"),
@@ -111,6 +114,7 @@ describe("questTokenPlan", () => {
 
     expect(plan).toEqual({
       kind: "running",
+      bankMax: 6,
       attempts: 10,
       assumedFull: false,
       battlesToImprove: 4,
@@ -119,10 +123,30 @@ describe("questTokenPlan", () => {
     })
   })
 
+  it("plans from the quest's served bank and caps an entry at it", () => {
+    const plan = questTokenPlan({
+      phase: "running",
+      bank: { max: 4, regenSeconds: 3600, regenAmount: 2 },
+      startMs,
+      endMs,
+      nowMs: Date.parse("2026-10-23T20:00:00Z"),
+      tokens: { count: 9, atUtc: "2026-10-23T20:00:00Z" },
+      battlesToImprove: 0,
+    })
+
+    // 4 held (the entry capped at the bank) plus 4 hourly ticks of 2.
+    expect(plan).toMatchObject({
+      bankMax: 4,
+      attempts: 12,
+      bankFullMs: Date.parse("2026-10-23T20:00:00Z"),
+    })
+  })
+
   it("assumes a full bank without an entry", () => {
     expect(
       questTokenPlan({
         phase: "running",
+        bank,
         startMs,
         endMs,
         nowMs: startMs,
@@ -134,6 +158,7 @@ describe("questTokenPlan", () => {
 
   it("previews the whole quest's attempts and closes in the claim window", () => {
     const params = {
+      bank,
       startMs,
       endMs,
       nowMs: startMs,

@@ -46,6 +46,20 @@ export const questEventSchema = z.looseObject({
   allowedFactionIds: z.array(factionIdSchema),
   enemyFactionIds: z.array(factionIdSchema),
   battles: z.array(questBattleSchema),
+  // The quest's token bank (the game's stamina): at most `max`, regaining `regenAmount` every
+  // `regenSeconds` while below it; `refillGemsCost` is the gem price of a refill.
+  tokens: z.looseObject({
+    max: z.number().int().positive(),
+    regenSeconds: z.number().int().positive(),
+    regenAmount: z.number().int().positive(),
+    refillGemsCost: z.number().int().nonnegative(),
+  }),
+  // How a battle scores, as the game ships it: `pointsPerStar` for each medal won and at most
+  // `maxPointsForLightningVictory` for a Lightning Victory.
+  scorePoints: z.looseObject({
+    pointsPerStar: z.number().int().positive(),
+    maxPointsForLightningVictory: z.number().int().nonnegative(),
+  }),
 })
 
 // The 17-crate reward track shared by every quest (quest-crates dataset), keyed by `number`.

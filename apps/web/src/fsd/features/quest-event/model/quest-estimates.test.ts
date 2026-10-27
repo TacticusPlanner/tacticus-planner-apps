@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest"
 
+import { questEventsFixture } from "@workspace/game-catalog/testing"
+
 import type { NpcRecord, NpcStatRow } from "@/entities/npc"
 
 import type { QuestBattle } from "./quest-battles"
@@ -12,6 +14,8 @@ import {
   type QuestBattleEstimate,
 } from "./quest-estimates"
 import type { QuestObjectiveBadge, QuestTeam } from "./quest-team"
+
+const scoring = questEventsFixture[0]!.scorePoints
 
 const row = (power: number): NpcStatRow => ({
   abilityLevel: 1,
@@ -108,6 +112,7 @@ describe("estimateQuestBattle", () => {
   it("clears comfortably for the full points without a second team", () => {
     let built = false
     const estimate = estimateQuestBattle({
+      scoring,
       battle: psykerBattle,
       battlePower: 50_000,
       team: team([{ unitId: "hero" }, { unitId: "a" }], 60_000, [
@@ -135,6 +140,7 @@ describe("estimateQuestBattle", () => {
 
   it("marks a margin under 15% as close and shows the second team", () => {
     const estimate = estimateQuestBattle({
+      scoring,
       battle: psykerBattle,
       battlePower: 50_000,
       team: team([{ unitId: "hero" }, { unitId: "a" }], 54_000, [
@@ -162,6 +168,7 @@ describe("estimateQuestBattle", () => {
 
   it("trades the objective for a clear when only the hard-rules team clears", () => {
     const estimate = estimateQuestBattle({
+      scoring,
       battle: psykerBattle,
       battlePower: 50_000,
       team: team([{ unitId: "hero" }, { unitId: "a" }], 40_000, [
@@ -191,6 +198,7 @@ describe("estimateQuestBattle", () => {
     ])
     expect(
       estimateQuestBattle({
+        scoring,
         battle: psykerBattle,
         battlePower: 50_000,
         team: same,
@@ -207,6 +215,7 @@ describe("estimateQuestBattle", () => {
     }))
     const gains: Record<string, number> = { a: 100, b: 400, c: 300, d: 200 }
     const estimate = estimateQuestBattle({
+      scoring,
       battle: psykerBattle,
       battlePower: 50_000,
       team: team([{ unitId: "hero" }, ...below], 40_000, [{ kind: "met" }]),
@@ -230,6 +239,7 @@ describe("estimateQuestBattle", () => {
   it("is unknown without the battle power", () => {
     expect(
       estimateQuestBattle({
+        scoring,
         battle: psykerBattle,
         battlePower: null,
         team: team([{ unitId: "hero" }], 1000),
@@ -300,9 +310,9 @@ describe("projectQuest", () => {
       [16, ready(false, true)],
       [17, ready(false, false)],
     ])
-    const projection = projectQuest(battles, entries, estimates, [])
+    const projection = projectQuest(battles, entries, estimates, [], scoring)
 
-    const entered = projectQuest(battles, entries, new Map(), [])
+    const entered = projectQuest(battles, entries, new Map(), [], scoring)
     expect(entered.score.total).toBe(4600)
     expect(entered.medals).toBe(28)
     expect(projection.score.total).toBe(4600 + 5 * 500 + 400)

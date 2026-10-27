@@ -9,6 +9,7 @@ import {
   isBoardPickup,
   ObjectiveChips,
   type QuestBattle,
+  type QuestScoring,
   type QuestObjectiveBadge,
   type QuestTierCap,
 } from "@/features/quest-event"
@@ -41,6 +42,7 @@ export function QuestBattleDetail({
   onBoardOpenChange,
   team,
   badges,
+  scoring,
 }: {
   battle: QuestBattle
   heroName: string
@@ -55,6 +57,7 @@ export function QuestBattleDetail({
   /** The suggested team, under the header (desktop); null where the page shows it elsewhere. */
   team: ReactNode
   badges: readonly QuestObjectiveBadge[] | undefined
+  scoring: QuestScoring
 }) {
   const { t, i18n } = useTranslation(["quest", "progression", "upgrades"])
   const number = new Intl.NumberFormat(i18n.language)
@@ -174,7 +177,7 @@ export function QuestBattleDetail({
           </li>
           <li data-testid="quest-battle-max">
             {t("quest:detail.maxPoints", {
-              points: number.format(battleMax(battle)),
+              points: number.format(battleMax(battle, scoring)),
             })}
           </li>
         </ul>

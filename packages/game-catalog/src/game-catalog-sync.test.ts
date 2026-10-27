@@ -155,6 +155,13 @@ const datasetData: Record<string, unknown> = {
       allowedFactionIds: ["AdeptusAstartes"],
       enemyFactionIds: ["Necrons"],
       battles: [],
+      tokens: {
+        max: 6,
+        regenSeconds: 7200,
+        regenAmount: 1,
+        refillGemsCost: 50,
+      },
+      scorePoints: { pointsPerStar: 100, maxPointsForLightningVictory: 100 },
     },
   ],
   "quest-crates": [{ number: 1, points: 1000, rewards: [] }],

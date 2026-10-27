@@ -2,11 +2,7 @@ import { useTranslation } from "react-i18next"
 
 import { NumberStepper } from "@/shared/ui"
 
-import {
-  TOKEN_BANK,
-  type QuestTokenPlan,
-  type QuestTokens,
-} from "../model/quest-token-plan"
+import type { QuestTokenPlan, QuestTokens } from "../model/quest-token-plan"
 
 /**
  * The attempts left against the battles still below their maximum (spec: quest-event-token-plan),
@@ -55,7 +51,7 @@ export function TokenPlanCard({
                   increase: t("tokens.nowIncrease"),
                   clear: t("tokens.clear"),
                 }}
-                max={TOKEN_BANK}
+                max={plan.bankMax}
                 min={0}
                 onChange={onTokensChange}
                 touch

@@ -717,7 +717,17 @@
           "chanceDenominator": 6
         }
       }
-    ]
+    ],
+    "tokens": {
+      "max": 6,
+      "regenSeconds": 7200,
+      "regenAmount": 1,
+      "refillGemsCost": 50
+    },
+    "scorePoints": {
+      "pointsPerStar": 100,
+      "maxPointsForLightningVictory": 100
+    }
   },
   {
     "featuredCharacterId": "astarEradicator",
@@ -1437,7 +1447,17 @@
           "chanceDenominator": 6
         }
       }
-    ]
+    ],
+    "tokens": {
+      "max": 6,
+      "regenSeconds": 7200,
+      "regenAmount": 1,
+      "refillGemsCost": 50
+    },
+    "scorePoints": {
+      "pointsPerStar": 100,
+      "maxPointsForLightningVictory": 100
+    }
   },
   {
     "featuredCharacterId": "votanChampion",
@@ -2162,6 +2182,16 @@
           "chanceDenominator": 6
         }
       }
-    ]
+    ],
+    "tokens": {
+      "max": 6,
+      "regenSeconds": 7200,
+      "regenAmount": 1,
+      "refillGemsCost": 50
+    },
+    "scorePoints": {
+      "pointsPerStar": 100,
+      "maxPointsForLightningVictory": 100
+    }
   }
 ]

@@ -8,13 +8,14 @@ import {
   parseQuestProgress,
   type QuestProgress,
 } from "./quest-progress"
+import type { QuestEventStorageModel } from "@workspace/game-catalog"
+
 import {
   EMPTY_BATTLE_ENTRY,
-  MAX_LIGHTNING_POINTS,
   MAX_MEDALS,
   type QuestBattleEntry,
 } from "./quest-score"
-import { TOKEN_BANK, type QuestTokens } from "./quest-token-plan"
+import type { QuestTokens } from "./quest-token-plan"
 
 // Design D4: one entry per quest occurrence, per browser. Every storage access is guarded, so a
 // private window or blocked site data degrades to in-memory progress, and the tab says so.
@@ -45,14 +46,25 @@ export type QuestProgressActions = {
   setTokens: (count: number | null, atUtc: string) => void
 }
 
+/** The served limits the edits are capped to: the Lightning Victory's maximum and the token bank. */
+type QuestProgressLimits = {
+  scorePoints: Pick<
+    QuestEventStorageModel["scorePoints"],
+    "maxPointsForLightningVictory"
+  >
+  tokens: Pick<QuestEventStorageModel["tokens"], "max">
+}
+
 /**
  * The stored progress of one quest occurrence and its edits. `key` null (a preview, or a browsed
- * quest) keeps it empty and read-only. `objectiveCounts` fits each entry's ticks to the served
- * battle. `saveFailed` turns true once a write did not land; the entries still apply this visit.
+ * quest) keeps it empty and read-only, and so do `limits` null (the served quest not read yet).
+ * `objectiveCounts` fits each entry's ticks to the served battle. `saveFailed` turns true once a
+ * write did not land; the entries still apply this visit.
  */
 export function useQuestProgress(
   key: string | null,
-  objectiveCounts: ReadonlyMap<number, number>
+  objectiveCounts: ReadonlyMap<number, number>,
+  limits: QuestProgressLimits | null
 ): {
   entries: Record<number, QuestBattleEntry>
   bundle: boolean
@@ -75,7 +87,7 @@ export function useQuestProgress(
 
   const updateProgress = useCallback(
     (change: (current: QuestProgress) => QuestProgress) => {
-      if (!key) return
+      if (!key || !limits) return
       const next = {
         ...all,
         [key]: change(all[key] ?? EMPTY_QUEST_PROGRESS),
@@ -84,7 +96,7 @@ export function useQuestProgress(
       if (!safeStorage.trySet(QUEST_PROGRESS_STORAGE_KEY, JSON.stringify(next)))
         setSaveFailed(true)
     },
-    [all, key]
+    [all, key, limits]
   )
   const update = useCallback(
     (battle: number, change: (current: QuestBattleEntry) => QuestBattleEntry) =>
@@ -115,7 +127,7 @@ export function useQuestProgress(
           ...current,
           lightning: Math.min(
             Math.max(Math.round(points), 0),
-            MAX_LIGHTNING_POINTS
+            limits?.scorePoints.maxPointsForLightningVictory ?? 0
           ),
         })),
       setObjective: (battle, index, ticked) =>
@@ -137,13 +149,16 @@ export function useQuestProgress(
           return {
             ...progress,
             tokens: {
-              count: Math.min(Math.max(Math.round(count), 0), TOKEN_BANK),
+              count: Math.min(
+                Math.max(Math.round(count), 0),
+                limits?.tokens.max ?? 0
+              ),
               atUtc,
             },
           }
         }),
     }),
-    [update, updateProgress]
+    [update, updateProgress, limits]
   )
   return {
     entries,
