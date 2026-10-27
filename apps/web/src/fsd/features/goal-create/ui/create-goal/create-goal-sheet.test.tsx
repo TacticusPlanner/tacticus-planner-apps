@@ -62,7 +62,6 @@ vi.mock("@/entities/player-data-override", () => ({
 }))
 
 vi.mock("@/entities/planning-setting", () => ({
-  dailyEnergyTiers: [288, 378, 438, 538, 638, 738, 838, 938],
   xpBookRarityOptions: [
     "Common",
     "Uncommon",

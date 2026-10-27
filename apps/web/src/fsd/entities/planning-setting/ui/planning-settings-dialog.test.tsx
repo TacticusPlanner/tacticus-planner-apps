@@ -15,7 +15,6 @@ vi.mock("react-i18next", () => ({
 }))
 
 vi.mock("@/entities/planning-setting", () => ({
-  dailyEnergyTiers: [288, 378, 438, 538, 638, 738, 838, 938],
   xpBookRarityOptions: [
     "Common",
     "Uncommon",
@@ -36,6 +35,17 @@ vi.mock("@/entities/planning-setting", () => ({
     save,
   }),
 }))
+
+vi.mock("@/shared/local-data", async () => {
+  const { globalValuesFixture } =
+    await import("@workspace/game-catalog/testing")
+  return {
+    useCatalogDataset: (
+      _key: string,
+      select: (records: unknown[]) => unknown
+    ) => ({ status: "ready", data: select([globalValuesFixture]) }),
+  }
+})
 
 vi.mock("@/shared/api", () => ({
   ApiError: class ApiError extends Error {},

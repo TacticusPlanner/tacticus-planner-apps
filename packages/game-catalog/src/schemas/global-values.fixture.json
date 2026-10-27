@@ -1,0 +1,121 @@
+[
+  {
+    "maxStamina": 60,
+    "staminaRegenerationTime": 300,
+    "staminaRegenerationAmount": 1,
+    "wavesMaxStamina": 3,
+    "wavesStaminaRegenerationTime": 57600,
+    "wavesStaminaRegenerationAmount": 1,
+    "campaignLevelMaxStamina": 3,
+    "campaignLevelStaminaRegenerationTime": 86400,
+    "campaignLevelStaminaRegenerationAmount": 3,
+    "minUnitsNeededForBattle": 3,
+    "maxUnitsPossibleForBattle": 5,
+    "terrifyingBonus": -30,
+    "battleFatigueFleeChance": 10,
+    "battleFatigueFleeChanceOverkill": 40,
+    "traitVariables": {
+      "LetTheGalaxyBurnChancePct": 33,
+      "ambushUnitToSpawn": "genesSmnDecoy",
+      "beastSlayerBlockAsMaxArmorPct": 100,
+      "beastSlayerBlockChance": 10,
+      "beastSlayerExtraDmgPct": 20,
+      "beastSnaggaBlockChance": 10,
+      "beastSnaggaDmgAsMaxHpPct": 20,
+      "beastSnaggaDmgBonus": 20,
+      "blessingsOfKhorneDmgPctReduction": 8,
+      "blessingsOfKhorneExtraDmgPct": 3,
+      "blessingsOfKhorneMaxDefeatedUnits": 8,
+      "bossAdjutantDmgPct": 1,
+      "bossAdjutantDmgReductionPct": 66,
+      "camouflageHitReduction_1": 1,
+      "camouflageHitReduction_2": 2,
+      "camouflageHitReduction_3": 3,
+      "closeCombatWeaknessMeleeDmgPctReduction": -50,
+      "closeCombatWeaknessRangeDmgPctReduction": -25,
+      "contagionsOfNurgleArmorOneAura": -20,
+      "contagionsOfNurgleArmorTwoOrMoreAuras": -40,
+      "crushingStrikeExtraDmgPct": 50,
+      "daemonBlockChance": 25,
+      "daemonBlockDamagePercentage": 50,
+      "dakkaExtraHits": 2,
+      "deathToTheFalseEmperorExtraHitChance": 50,
+      "diminutiveHitReduction": 1,
+      "emplacementMeleeDmgModifier": -50,
+      "emplacementRangedDmgModifier": 50,
+      "explodesDmg": 25,
+      "getStuckInChance": 30,
+      "getStuckInChance_2": 100,
+      "heavyWeaponExtraDmg": 25,
+      "livingMetalHp": 10,
+      "martialKatahDmgReductionPct": 20,
+      "martialKatahExtraDmgPct": 100,
+      "parryHitReduction": 1,
+      "prioritisedEfficiencyDmgReductionPct": 25,
+      "prioritisedEfficiencyExtraDmgPct": 25,
+      "prioritisedEfficiencyMovement": 3,
+      "psykerExtraDmg": 50,
+      "putridExplosionDamageProfile": "Toxic",
+      "putridExplosionDmgPct": 25,
+      "putridExplosionFactionId": "DeathGuard",
+      "rangedSpecialistDmgPct": 33,
+      "rapidAssaultExtraDmgPct": 25,
+      "shadowInTheWarpDmgModifier": -25,
+      "shadowInTheWarpRange": 2,
+      "terminatorArmourDmgReduction": -75,
+      "terminatorArmourExcludedDmgProfiles": "Psychic,DirectDamage",
+      "thrillSeekersExtraCritChance": 15,
+      "thrillSeekersNrOfRounds": 1
+    },
+    "staminaShopTiers": [
+      {
+        "productId": "product_stamina_00",
+        "stamina": 60,
+        "raidTickets": 10,
+        "gems": 25
+      },
+      {
+        "productId": "product_stamina_00_2",
+        "stamina": 60,
+        "raidTickets": 15,
+        "gems": 25
+      },
+      {
+        "productId": "product_stamina_01",
+        "stamina": 100,
+        "raidTickets": 15,
+        "gems": 50
+      },
+      {
+        "productId": "product_stamina_02",
+        "stamina": 100,
+        "raidTickets": 15,
+        "gems": 110
+      },
+      {
+        "productId": "product_stamina_03",
+        "stamina": 100,
+        "raidTickets": 15,
+        "gems": 250
+      },
+      {
+        "productId": "product_stamina_04",
+        "stamina": 100,
+        "raidTickets": 15,
+        "gems": 500
+      },
+      {
+        "productId": "product_stamina_05",
+        "stamina": 100,
+        "raidTickets": 15,
+        "gems": 1000
+      },
+      {
+        "productId": "product_stamina_06",
+        "stamina": 100,
+        "raidTickets": 15,
+        "gems": 1500
+      }
+    ]
+  }
+]

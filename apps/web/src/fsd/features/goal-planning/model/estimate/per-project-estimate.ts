@@ -112,6 +112,7 @@ export function estimateNewGoalsForProject(
     | "dailyEnergy"
     | "onslaughtProgress"
     | "onslaughtRewards"
+    | "onslaughtRunsPerDay"
     | "shops"
   >
 ): EstimateOutcome | null {

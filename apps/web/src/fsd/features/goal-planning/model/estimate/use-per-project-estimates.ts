@@ -13,7 +13,10 @@ import { onslaughtProgressQueries } from "@/entities/player-data-override"
 import { useCatalogDataset } from "@/shared/local-data"
 
 import { estimateNewGoalsForProject } from "./per-project-estimate"
-import type { EstimateOutcome } from "@/features/goal-farming/@x/goal-planning"
+import {
+  toOnslaughtRunsPerDay,
+  type EstimateOutcome,
+} from "@/features/goal-farming/@x/goal-planning"
 import { useGoalCatalog } from "../shared/use-goal-catalog"
 import { readyData } from "../shared/read-data"
 
@@ -60,6 +63,9 @@ export function usePerProjectEstimates({
   // `useProgressionPreview`'s own fetch of the same three, deduped against it by the query cache.
   const shops = readyData(useCatalogDataset("shops"))
   const onslaughtRewards = readyData(useCatalogDataset("onslaught-rewards"))
+  const onslaughtRunsPerDay = readyData(
+    useCatalogDataset("global-values", toOnslaughtRunsPerDay)
+  )
   const { data: onslaughtProgress } = useQuery({
     ...onslaughtProgressQueries.current(),
     enabled: isAuthenticated,
@@ -81,6 +87,7 @@ export function usePerProjectEstimates({
     !!charactersById &&
     !!mowsById &&
     !!onslaughtRewards?.length &&
+    onslaughtRunsPerDay !== undefined &&
     !!ascensionCostsById &&
     !!unlockShardCostsById
 
@@ -187,6 +194,7 @@ export function usePerProjectEstimates({
           dailyEnergy,
           onslaughtProgress,
           onslaughtRewards,
+          onslaughtRunsPerDay,
           shops,
         })
 

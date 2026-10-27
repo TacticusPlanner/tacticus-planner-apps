@@ -135,6 +135,9 @@ export function computeGoalAcquisition(params: {
   playerMowById: ReadonlyMap<string, PlayerMow | undefined>
   onslaughtProgress?: OnslaughtProgress
   onslaughtRewards?: readonly OnslaughtRewardStorageModel[]
+  /** The game's Onslaught runs per day; without it (global-values not served) no Onslaught supply
+   *  enters the estimate, as without the rewards table. */
+  onslaughtRunsPerDay?: number
   shops?: readonly GameCatalogShop[]
   referenceDate: Date
 }): {
@@ -210,12 +213,13 @@ export function computeGoalAcquisition(params: {
     // Only the regular-shard resource enters the shared day-loop estimate below (mythic shards stay
     // count-only here, as they always have for this consumer); the aggregate onslaughtTokens figure
     // above still covers both.
-    if (regularReward) {
+    if (regularReward && params.onslaughtRunsPerDay !== undefined) {
       flatSuppliers.push(
         projectOnslaughtSupply({
           entityId: detail.entityId,
           isMythic: false,
           avgShardsPerRun: (regularReward.min + regularReward.max) / 2,
+          runsPerDay: params.onslaughtRunsPerDay,
         })
       )
     }

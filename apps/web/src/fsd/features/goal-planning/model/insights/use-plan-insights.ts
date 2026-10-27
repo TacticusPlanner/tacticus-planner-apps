@@ -11,6 +11,7 @@ import {
 import { useGlobalGoalPlan } from "@/entities/goal"
 import { onslaughtProgressQueries } from "@/entities/player-data-override"
 import { usePlanningSettings } from "@/entities/planning-setting"
+import { toOnslaughtRunsPerDay } from "@/features/goal-farming/@x/goal-planning"
 import { useCampaignDisplay } from "@/shared/lib"
 import { useCatalogDataset, usePlayerChunk } from "@/shared/local-data"
 
@@ -84,6 +85,9 @@ export function usePlanInsights(scopeGoalIds?: readonly string[] | null) {
     usePlayerChunk("live-progress", chunkOrUndefined)
   )
   const onslaughtRewards = readyData(useCatalogDataset("onslaught-rewards"))
+  const onslaughtRunsPerDay = readyData(
+    useCatalogDataset("global-values", toOnslaughtRunsPerDay)
+  )
   const shops = readyData(useCatalogDataset("shops"))
   const { settings: planningSettings } = usePlanningSettings()
 
@@ -150,6 +154,7 @@ export function usePlanInsights(scopeGoalIds?: readonly string[] | null) {
     !!charactersById &&
     !!mowsById &&
     !!onslaughtRewards?.length &&
+    onslaughtRunsPerDay !== undefined &&
     !!shops &&
     !!ascensionCostsById &&
     !!unlockShardCostsById
@@ -250,6 +255,7 @@ export function usePlanInsights(scopeGoalIds?: readonly string[] | null) {
             currentOnslaughtTokens:
               liveProgress?.gameModeTokens.onslaught?.current ?? 0,
             onslaughtRewards: onslaughtRewards,
+            onslaughtRunsPerDay,
             shops,
           })
 

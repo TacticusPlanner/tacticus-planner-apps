@@ -22,24 +22,15 @@ import { Slider } from "@workspace/ui/components/slider"
 import { Spinner } from "@workspace/ui/components/spinner"
 
 import {
-  dailyEnergyTiers,
   normalizeXpBookRarity,
   usePlanningSettings,
   xpBookRarityOptions,
 } from "@/entities/planning-setting"
 import { ApiError } from "@/shared/api"
+import { useCatalogDataset } from "@/shared/local-data"
 import { energyIconUrl, EntityIcon } from "@/shared/ui"
 
-const tierLabels = [
-  "Free",
-  "Ad",
-  "25 BS",
-  "50 BS",
-  "110 BS",
-  "250 BS",
-  "500 BS",
-  "1000 BS",
-]
+import { energySourceLabel, toDailyEnergyTiers } from "../model/energy-tiers"
 
 /**
  * The one Planning Settings dialog, reused from both Plan > Goals (`/plan/goals`) and Dailies >
@@ -57,14 +48,14 @@ export function PlanningSettingsDialog({
 }) {
   const { t } = useTranslation(["common", "progression"])
   const { settings, save } = usePlanningSettings()
-  const [tierIndex, setTierIndex] = useState(() =>
-    Math.max(
-      0,
-      dailyEnergyTiers.indexOf(
-        settings.dailyEnergy as (typeof dailyEnergyTiers)[number]
-      )
-    )
+  const tiersRead = useCatalogDataset("global-values", toDailyEnergyTiers)
+  const tiers = tiersRead.status === "ready" ? tiersRead.data : null
+  const [dailyEnergy, setDailyEnergy] = useState(settings.dailyEnergy)
+  const tierIndex = Math.max(
+    0,
+    tiers?.findIndex((tier) => tier.energy === dailyEnergy) ?? 0
   )
+  const tier = tiers?.[tierIndex]
   const [xpBookRarity, setXpBookRarity] = useState<Rarity>(() =>
     normalizeXpBookRarity(settings.xpBookRarity)
   )
@@ -76,7 +67,8 @@ export function PlanningSettingsDialog({
     setError(null)
     try {
       await save({
-        dailyEnergy: dailyEnergyTiers[tierIndex] ?? dailyEnergyTiers[0],
+        // Unchanged while the tiers haven't loaded (the slider is disabled then).
+        dailyEnergy: tier?.energy ?? settings.dailyEnergy,
         xpBookRarity,
         revision: settings.revision,
       })
@@ -113,23 +105,29 @@ export function PlanningSettingsDialog({
                 className="size-5 shrink-0"
                 src={energyIconUrl}
               />
-              {dailyEnergyTiers[tierIndex]} · {tierLabels[tierIndex]}
+              {tier
+                ? `${tier.energy} · ${energySourceLabel(tier.source)}`
+                : settings.dailyEnergy}
             </p>
             <Slider
               aria-label={t("goals.planningSettings.dailyEnergy")}
               data-testid="planning-settings-energy"
               min={0}
-              max={dailyEnergyTiers.length - 1}
+              max={Math.max(0, (tiers?.length ?? 1) - 1)}
               step={1}
+              disabled={!tiers}
               value={[tierIndex]}
               onValueChange={([value]) => {
-                if (value !== undefined) setTierIndex(value)
+                const next = value === undefined ? undefined : tiers?.[value]
+                if (next) setDailyEnergy(next.energy)
               }}
             />
-            <div className="flex justify-between text-xs text-muted-foreground">
-              <span>288</span>
-              <span>938</span>
-            </div>
+            {tiers ? (
+              <div className="flex justify-between text-xs text-muted-foreground">
+                <span>{tiers[0]?.energy}</span>
+                <span>{tiers.at(-1)?.energy}</span>
+              </div>
+            ) : null}
           </Field>
 
           <Field>
