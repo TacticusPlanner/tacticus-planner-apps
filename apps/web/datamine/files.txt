@@ -1,0 +1,4 @@
+# Paths in TacticusPlanner/tacticus-planner-data-mines that `pnpm datamine:pull` fetches into the
+# gitignored cache (node_modules/.cache/datamine) for the generators. Relative to that repo's root;
+# a trailing `/` takes the whole folder. List a path only when a generator reads it. Sorted.
+raw/VERSION
