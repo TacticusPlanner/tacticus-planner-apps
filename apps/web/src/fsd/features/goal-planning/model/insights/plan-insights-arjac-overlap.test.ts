@@ -25,6 +25,7 @@ import { filterUnlockedBattles } from "@/shared/lib"
 
 import catalog from "./__fixtures__/arjac-catalog.json"
 import { computePlanInsights } from "./plan-insights-calc"
+import { levelRules } from "@/test/fixtures/level-rules"
 
 /**
  * goals-overview-v1-parity 8.1: why is a second Arjac Rank goal's energy 3,224 in V1 but 971 in V2?
@@ -214,6 +215,7 @@ function simulate({
   )
 
   const result = computePlanInsights({
+    levelRules,
     details,
     priorityByGoalId: new Map(
       goals.map(([goalId, , priority]) => [goalId, priority])

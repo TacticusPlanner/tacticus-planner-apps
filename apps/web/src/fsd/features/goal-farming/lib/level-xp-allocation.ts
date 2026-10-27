@@ -6,17 +6,19 @@ import {
   maxLevelReachableWithXp,
   ownedBooksByRarity,
   pickXpBookRarity,
-  xpBookGoldByRarity,
-  xpBookValueByRarity,
   xpNeededForLevelRange,
 } from "./level-xp-cost"
+import type { LevelRules } from "./level-rules"
 
 /** Sums a book pool's raw XP value across every rarity — used to report the shared pool's size at a
  *  point in the priority-ordered allocation below (surface-goal-farming-guidance's available/needed
  *  book display), independent of which rarities actually make up the pool. */
-function poolXpTotal(pool: Partial<Record<Rarity, number>>): number {
+function poolXpTotal(
+  pool: Partial<Record<Rarity, number>>,
+  rules: LevelRules
+): number {
   return rarityOrder.reduce(
-    (sum, rarity) => sum + (pool[rarity] ?? 0) * xpBookValueByRarity[rarity],
+    (sum, rarity) => sum + (pool[rarity] ?? 0) * rules.xpBooks[rarity].xp,
     0
   )
 }
@@ -70,10 +72,11 @@ export type LevelXpAllocation = {
 export function allocateLevelXp(
   needs: readonly LevelXpNeed[],
   ownedXpBooks: readonly { xpBookId: string; amount: number }[] | undefined,
+  rules: LevelRules,
   /** The user's selected XP-book rarity, used only to price the books still to be obtained. */
   xpBookRarity?: string | null
 ): Map<string, LevelXpAllocation> {
-  let pool = ownedBooksByRarity(ownedXpBooks)
+  let pool = ownedBooksByRarity(ownedXpBooks, rules)
   const coveredXpByUnit = new Map<string, number>()
   const spentXpByUnit = new Map<string, number>()
   const coveredLevelByUnit = new Map<string, number>()
@@ -83,29 +86,35 @@ export function allocateLevelXp(
     const xpToRequired = xpNeededForLevelRange(
       need.currentLevel,
       need.currentXp,
-      need.requiredLevel
+      need.requiredLevel,
+      rules
     )
     if (xpToRequired <= 0) continue
 
     const alreadyCovered = coveredXpByUnit.get(need.unitKey) ?? 0
     const chargedXp = Math.max(0, xpToRequired - alreadyCovered)
-    const poolXpAvailable = poolXpTotal(pool)
-    const { remainingXp, remainingOwned } = consumeOwnedBooks(chargedXp, pool)
+    const poolXpAvailable = poolXpTotal(pool, rules)
+    const { remainingXp, remainingOwned } = consumeOwnedBooks(
+      chargedXp,
+      pool,
+      rules
+    )
     const heldGold = rarityOrder.reduce(
       (sum, rarity) =>
         sum +
         ((pool[rarity] ?? 0) - (remainingOwned[rarity] ?? 0)) *
-          xpBookGoldByRarity[rarity],
+          rules.xpBooks[rarity].gold,
       0
     )
     const displayRarity = pickXpBookRarity(
       chargedXp,
-      normalizeXpBookRarity(xpBookRarity)
+      normalizeXpBookRarity(xpBookRarity),
+      rules
     )
     const gold =
       heldGold +
-      Math.ceil(remainingXp / xpBookValueByRarity[displayRarity]) *
-        xpBookGoldByRarity[displayRarity]
+      Math.ceil(remainingXp / rules.xpBooks[displayRarity].xp) *
+        rules.xpBooks[displayRarity].gold
     pool = remainingOwned
 
     const spentXp =
@@ -128,7 +137,8 @@ export function allocateLevelXp(
         need.currentLevel,
         need.currentXp,
         need.requiredLevel,
-        spentXp
+        spentXp,
+        rules
       ),
       remainingXp,
       poolXpAvailable,

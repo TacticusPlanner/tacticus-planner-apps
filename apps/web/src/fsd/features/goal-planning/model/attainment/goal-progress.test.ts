@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest"
 import type { GoalDetail } from "@/entities/goal"
 
 import { computeGoalProgress } from "./goal-progress"
+import { levelRules } from "@/test/fixtures/level-rules"
 
 function rankDetail(start: number, end: number, endAppliedUpgrades = 0) {
   return {
@@ -29,6 +30,7 @@ describe("computeGoalProgress Rank", () => {
   it("measures a same-rank partial target by applied slots", () => {
     expect(
       computeGoalProgress({
+        levelRules,
         detail: rankDetail(1, 1, 2),
         playerCharacter: {
           rank: "Stone2",
@@ -42,6 +44,7 @@ describe("computeGoalProgress Rank", () => {
   it("includes applied slots between full rank boundaries", () => {
     expect(
       computeGoalProgress({
+        levelRules,
         detail: rankDetail(0, 2),
         playerCharacter: {
           rank: "Stone1",
@@ -55,6 +58,7 @@ describe("computeGoalProgress Rank", () => {
   it("does not complete an ahead-of-player clean rank target with a zero configured span", () => {
     expect(
       computeGoalProgress({
+        levelRules,
         detail: rankDetail(2, 2),
         playerCharacter: {
           rank: "Stone1",
@@ -68,6 +72,7 @@ describe("computeGoalProgress Rank", () => {
   it("clamps the displayed current to the target once the player's live rank has overtaken it (fix-goal-progress-consistency)", () => {
     expect(
       computeGoalProgress({
+        levelRules,
         detail: rankDetail(0, 15),
         playerCharacter: {
           rank: "Diamond3",
@@ -81,6 +86,7 @@ describe("computeGoalProgress Rank", () => {
   it("never raises the displayed current above the player's true rank when it's below the target's configured start (fix-goal-progress-consistency)", () => {
     expect(
       computeGoalProgress({
+        levelRules,
         detail: rankDetail(5, 15),
         playerCharacter: {
           rank: "Stone1",
@@ -94,6 +100,7 @@ describe("computeGoalProgress Rank", () => {
   it("returns null reachableRatio and reachableRank when rarity and level both already cover the target", () => {
     expect(
       computeGoalProgress({
+        levelRules,
         detail: rankDetail(0, 5),
         playerCharacter: {
           rank: "Stone1",
@@ -114,6 +121,7 @@ describe("computeGoalProgress Rank", () => {
     // that Silver1's own slots are maxed out (6/6) — rarity blocks ranking any further, not level.
     expect(
       computeGoalProgress({
+        levelRules,
         detail: rankDetail(0, 15),
         playerCharacter: {
           rank: "Stone1",
@@ -136,6 +144,7 @@ describe("computeGoalProgress Rank", () => {
     // the level just reached); rarity (Mythic) is unrestricted.
     expect(
       computeGoalProgress({
+        levelRules,
         detail: rankDetail(0, 15),
         playerCharacter: {
           rank: "Stone1",
@@ -157,6 +166,7 @@ describe("computeGoalProgress Rank", () => {
     // Rare caps at Silver1 (index 9); level 26 also just reaches Silver1 (its own 3 free slots).
     expect(
       computeGoalProgress({
+        levelRules,
         detail: rankDetail(0, 15),
         playerCharacter: {
           rank: "Stone1",
@@ -182,6 +192,7 @@ describe("computeGoalProgress Rank", () => {
     // accounted for.
     expect(
       computeGoalProgress({
+        levelRules,
         detail: rankDetail(0, 15),
         playerCharacter: {
           rank: "Stone1",
@@ -205,6 +216,7 @@ describe("computeGoalProgress Rank", () => {
     // placing the ceiling marker *behind* the actual-progress fill. `reachableAppliedSlots` must
     // credit the same partial-rank progress the actual ratio itself already does.
     const result = computeGoalProgress({
+      levelRules,
       detail: rankDetail(15, 17), // Diamond1 -> Diamond3
       playerCharacter: {
         rank: "Diamond1",
@@ -228,6 +240,7 @@ describe("computeGoalProgress Rank", () => {
   it("returns null reachableRatio and reachableRank for a zero-span target regardless of rarity/level", () => {
     expect(
       computeGoalProgress({
+        levelRules,
         detail: rankDetail(2, 2),
         playerCharacter: {
           rank: "Stone1",
@@ -252,6 +265,7 @@ describe("computeGoalProgress Ascension", () => {
   it("clamps the displayed current to the target once the player's live progression has overtaken it (fix-goal-progress-consistency)", () => {
     expect(
       computeGoalProgress({
+        levelRules,
         detail: ascensionDetail("Common:None", "Rare:FiveStars"),
         playerCharacter: { progressionIndex: "Epic:RedOneStar" },
       } as never)
@@ -265,6 +279,7 @@ describe("computeGoalProgress Ascension", () => {
   it("never raises the displayed current above the player's true progression when it's below the target's configured start (fix-goal-progress-consistency)", () => {
     expect(
       computeGoalProgress({
+        levelRules,
         detail: ascensionDetail("Uncommon:FourStars", "Rare:FiveStars"),
         playerCharacter: { progressionIndex: "Common:TwoStars" },
       } as never)
@@ -284,6 +299,7 @@ describe("computeGoalProgress Upgrade", () => {
   it("lists each targeted material with its catalog name, rarity and owned count", () => {
     expect(
       computeGoalProgress({
+        levelRules,
         detail: upgradeDetail([
           { upgradeId: "upgA", quantity: 10 },
           { upgradeId: "upgB", quantity: 4 },
@@ -320,6 +336,7 @@ describe("computeGoalProgress Upgrade", () => {
   it("keeps the materials but no ratio while the inventory hasn't loaded", () => {
     expect(
       computeGoalProgress({
+        levelRules,
         detail: upgradeDetail([{ upgradeId: "upgA", quantity: 10 }]),
         inventoryUpgrades: undefined,
       } as never)
