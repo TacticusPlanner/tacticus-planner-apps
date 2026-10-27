@@ -294,6 +294,7 @@ export function usePlanInsights(scopeGoalIds?: readonly string[] | null) {
     calculationKey,
     planningSettings.dailyEnergy,
     liveProgress?.gameModeTokens.onslaught?.current,
+    levelRules,
   ])
 
   const isCurrent =
