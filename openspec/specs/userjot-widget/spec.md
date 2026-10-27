@@ -29,6 +29,11 @@ On desktop, the app SHALL show a feedback entry-point button in the section head
 - **WHEN** the widget reports unread updates or activity
 - **THEN** the desktop header button shows an unread indicator, and the indicator clears once that activity has been seen
 
+#### Scenario: A new changelog update clears once shown
+
+- **WHEN** a changelog update is published that the user has not yet opened in the widget
+- **THEN** the widget opens that update once, while the page is focused, so it counts as seen and stops holding the unread indicator
+
 ### Requirement: Mobile entry point lives in the account drawer
 
 On mobile, the app SHALL show a "Feedback" row inside the existing account drawer, alongside the theme switch, language switch, and account actions, in place of UserJot's default floating launcher and in place of a separate header button.

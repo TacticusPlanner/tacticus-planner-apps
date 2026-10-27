@@ -157,6 +157,18 @@ describe("UserJotProvider", () => {
       expect(open).toHaveBeenCalledOnce()
     })
 
+    it("inits the widget to open the newest unseen update itself, so reading it clears the unread dot", async () => {
+      delete window.uj
+      delete window.$ujq
+      vi.resetModules()
+      await import("./userjot-provider")
+
+      const init = window.$ujq?.find(([method]) => method === "init")
+      expect(init?.[2]).toMatchObject({
+        widget: { notifications: { updates: "full" } },
+      })
+    })
+
     it("reports failed without throwing when the SDK cannot load", async () => {
       await freshProvider()
 
