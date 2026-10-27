@@ -42,6 +42,9 @@ export type EstimatePlanParams = {
   /** Restricts the farm nodes picked per material (Raids Filters). Only Today and Bonus Raids pass
    *  it; every other caller of this engine stays unfiltered. */
   nodeFilter?: FarmNodeFilter
+  /** The player's real attempts left today per node. Only `estimateRaidsLeftToday` passes it; it
+   *  caps day 1's raids at each node to what is left (later days start fresh). */
+  attemptsLeftByBattle?: ReadonlyMap<BattleId, number>
 }
 
 type StageState = {
@@ -58,6 +61,7 @@ function runPlanSchedule(
     inventory,
     referenceDate = new Date(),
     nodeFilter,
+    attemptsLeftByBattle,
   }: EstimatePlanParams,
   maxDays: number
 ): RaidPlanSchedule & { filteredOut: FilteredOutNeed[] } {
@@ -238,7 +242,8 @@ function runPlanSchedule(
           stage.nodesById,
           energy,
           dailyEnergy,
-          attemptsUsedByBattle
+          attemptsUsedByBattle,
+          days === 1 ? attemptsLeftByBattle : undefined
         )
         energy -= spent.energySpent
         goalEnergySpent += spent.energySpent
@@ -399,9 +404,35 @@ export function estimateBonusRaids(
   const raidedResourceIds = new Set(
     real.entries.map((entry) => entry.resourceId)
   )
-  const entries = unlimited.entries.filter(
-    (entry) => !raidedResourceIds.has(entry.resourceId)
+  return withEntries(
+    unlimited,
+    unlimited.entries.filter(
+      (entry) => !raidedResourceIds.has(entry.resourceId)
+    )
   )
+}
+
+/**
+ * Every raid still open today once the daily energy limit is spent: today's schedule with unlimited
+ * energy and each node capped at the player's real attempts left, so the plan's partly-raided
+ * materials keep their remaining farming in goal-priority order (Bonus Raids after the limit).
+ */
+export function estimateRaidsLeftToday(
+  params: EstimatePlanParams & {
+    attemptsLeftByBattle: ReadonlyMap<BattleId, number>
+  }
+): RaidDaySchedule {
+  return estimateTodaySchedule({
+    ...params,
+    dailyEnergy: UNLIMITED_DAILY_ENERGY,
+  })
+}
+
+/** `schedule` narrowed to `entries`, its attempt and energy totals recomputed from them. */
+function withEntries(
+  schedule: RaidDaySchedule,
+  entries: RaidBreakdownEntry[]
+): RaidDaySchedule {
   const attemptsUsedByBattle = new Map<BattleId, number>()
   for (const entry of entries) {
     attemptsUsedByBattle.set(
@@ -410,7 +441,7 @@ export function estimateBonusRaids(
     )
   }
   return {
-    ...unlimited,
+    ...schedule,
     entries,
     attemptsUsedByBattle,
     energyTotal: entries.reduce((total, entry) => total + entry.energySpent, 0),

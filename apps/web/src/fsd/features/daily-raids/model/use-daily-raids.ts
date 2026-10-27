@@ -384,6 +384,7 @@ export function useDailyRaids(
       dailyEnergy,
       raidsFilters,
       filterBattlesById,
+      attemptsLeftByBattle,
       eventFarm: farm
         ? {
             pointsByBattleId: farm,

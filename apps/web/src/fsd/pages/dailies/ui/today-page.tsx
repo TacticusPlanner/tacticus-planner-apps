@@ -88,6 +88,7 @@ function TodaySchedule({ raids }: { raids: DailyRaidsReadyViewModel }) {
   const selection = selectTodayRaids({
     todayEntries: raids.today.entries,
     bonusEntries: raids.bonus.entries,
+    raidsLeftTodayEntries: raids.raidsLeftToday.entries,
     attemptsLeftByBattle: raids.attemptsLeftByBattle,
     dailyEnergy: raids.dailyEnergy,
     realEnergyUsedToday: raids.realEnergyUsedToday,

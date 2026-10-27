@@ -343,8 +343,9 @@ describe("Dailies raid pages", () => {
     renderPage(<TodayPage />)
 
     expect(screen.queryByTestId("today-lane")).not.toBeInTheDocument()
-    expect(screen.queryByTestId("raid-card-g1-U1")).not.toBeInTheDocument()
     const bonusLane = within(screen.getByTestId("bonus-lane"))
+    // The plan's own material keeps its remaining farming, ahead of the bonus materials.
+    expect(bonusLane.getByTestId("raid-card-g1-U1")).toBeInTheDocument()
     expect(bonusLane.getByText("bonus.title")).toBeInTheDocument()
     expect(
       bonusLane.getByTestId("bonus-energy-limit-reached")
@@ -374,7 +375,7 @@ describe("Dailies raid pages", () => {
       ready({
         dailyEnergy: 100,
         realEnergyUsedToday: 150,
-        bonus: { ...base.bonus, entries: [] },
+        raidsLeftToday: { ...base.raidsLeftToday, entries: [] },
       })
     )
     renderPage(<TodayPage />)

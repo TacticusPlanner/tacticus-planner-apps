@@ -84,6 +84,21 @@ export function ready(
       energyTotal: 48,
       raidsTotal: 8,
     },
+    raidsLeftToday: {
+      day: 1,
+      shopEntries: [],
+      onslaughtEntries: [],
+      entries: [
+        ...todayEntries,
+        entry("g1", "B1"),
+        entry("g1", "B2"),
+        entry("g2", "B3"),
+        entry("g2", "B4"),
+      ],
+      attemptsUsedByBattle: new Map([[battle, 15]]),
+      energyTotal: 90,
+      raidsTotal: 15,
+    },
     planDays: [day(1), day(2), day(3), day(4), day(5)],
     planSummary: {
       totalDays: 5,

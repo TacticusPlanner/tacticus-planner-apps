@@ -22,11 +22,18 @@ const planNode = "plan-node" as BattleId
 const bonusNode = "bonus-node" as BattleId
 const today = [entry({ battleId: planNode })]
 const bonus = [entry({ battleId: bonusNode, resourceId: "bonus-1" as never })]
+// Unlimited energy at the real attempts left: the plan's material keeps farming ahead of the bonus.
+const raidsLeft = [
+  entry({ battleId: planNode, raidsPerformed: 3 }),
+  entry({ battleId: "plan-node-2" as BattleId }),
+  ...bonus,
+]
 
 function input(overrides: Partial<TodayRaidsInput> = {}): TodayRaidsInput {
   return {
     todayEntries: today,
     bonusEntries: bonus,
+    raidsLeftTodayEntries: raidsLeft,
     attemptsLeftByBattle: new Map(),
     dailyEnergy: 288,
     realEnergyUsedToday: 120,
@@ -50,10 +57,11 @@ describe("selectTodayRaids", () => {
     expect(result.planEntries).toEqual(today)
   })
 
-  it("drops the plan so Bonus Raids are the only list once the limit is reached", () => {
+  it("drops the plan and lists every raid left today once the limit is reached", () => {
+    // The plan's material (higher priority) stays ahead of the lower-priority bonus material.
     expect(selectTodayRaids(input({ realEnergyUsedToday: 288 }))).toEqual({
       planEntries: [],
-      bonusEntries: bonus,
+      bonusEntries: raidsLeft,
       energyLimitReached: true,
     })
   })
@@ -85,6 +93,18 @@ describe("selectTodayRaids", () => {
     const result = selectTodayRaids(
       input({
         bonusEntries: [spent, ...bonus],
+        attemptsLeftByBattle: new Map([["spent" as BattleId, 0]]),
+      })
+    )
+
+    expect(result.bonusEntries).toEqual(bonus)
+  })
+
+  it("drops raids left today whose node is exhausted after the limit", () => {
+    const spent = entry({ battleId: "spent" as BattleId })
+    const result = selectTodayRaids(
+      input({
+        raidsLeftTodayEntries: [spent, ...bonus],
         attemptsLeftByBattle: new Map([["spent" as BattleId, 0]]),
         realEnergyUsedToday: 300,
       })

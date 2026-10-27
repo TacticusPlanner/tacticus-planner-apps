@@ -108,17 +108,19 @@ Today's raid schedule and Bonus Raids SHALL group their entries by the goal(s) t
 
 ### Requirement: Bonus Raids
 
-Below a visible separator, Today SHALL show a Bonus Raids section: upgrades or shards that receive zero raids under the real daily energy budget but would receive at least one raid if energy were unlimited. An upgrade or shard that already receives at least one raid in the real schedule SHALL NOT appear in Bonus Raids. Bonus Raids SHALL be ordered by the same goal-priority order the main schedule uses.
+Below a visible separator, Today SHALL show a Bonus Raids section: upgrades or shards that receive zero raids under the real daily energy budget but would receive at least one raid if energy were unlimited. While the daily energy limit is not spent, an upgrade or shard that already receives at least one raid in the real schedule SHALL NOT appear in Bonus Raids; once it is spent, the rule below applies instead. Bonus Raids SHALL be ordered by the same goal-priority order the main schedule uses.
 
 Bonus Raids SHALL initially display only the top 3 qualifying entries in that order. When more than 3 entries qualify, Today SHALL show a "Show more" control beneath the visible entries; activating it reveals the remaining entries (still in the same order, still grouped by goal per the grouping requirement above).
 
-Once the real energy spent today (from the player's synced attempts, the same figure Today's energy-usage bar shows) reaches or exceeds the daily energy limit (`planningSettings.dailyEnergy`), Bonus Raids SHALL be the only raids list on Today: the Today's-plan lane SHALL NOT be shown, and the Bonus Raids section SHALL be shown with a short caption stating that the daily energy limit has been reached. The Bonus Raids entries keep the same goal grouping, goal-priority order, exhausted-node exclusion, and top-3 truncation with a "Show more" control described above. When the limit is reached and no Bonus Raids entry remains, the Bonus Raids section SHALL still be shown, with a caption stating that the limit is reached and no bonus raids are left. Below the limit, Today's plan and Bonus Raids render unchanged. When no synced attempt data is available the energy spent is 0, so Today renders unchanged; a daily energy limit of 0 or less is treated as no limit. The Raids Plan tab is unaffected.
+Once the real energy spent today (from the player's synced attempts, the same figure Today's energy-usage bar shows) reaches or exceeds the daily energy limit (`planningSettings.dailyEnergy`), Bonus Raids SHALL be the only raids list on Today: the Today's-plan lane SHALL NOT be shown, and the Bonus Raids section SHALL be shown with a short caption stating that the daily energy limit has been reached. Bonus Raids SHALL then list every raid still open today rather than only the upgrades and shards the real schedule left unraided: today's schedule recomputed with unlimited energy and with each node's raids capped at the player's real attempts left today, so an upgrade or shard the real schedule already raided keeps its remaining farming, in goal-priority order ahead of lower-priority goals. A node whose real attempts-left data is unavailable keeps its full daily attempt cap. For such a capped node, the attempts left stand in for its daily attempt cap when the row decides whether to show "N upgrades left" (Today's raid schedule shows what is left to farm). The Bonus Raids entries keep the same goal grouping, goal-priority order, exhausted-node exclusion, and top-3 truncation with a "Show more" control described above. When the limit is reached and no Bonus Raids entry remains, the Bonus Raids section SHALL still be shown, with a caption stating that the limit is reached and no bonus raids are left. Below the limit, Today's plan and Bonus Raids render unchanged. When no synced attempt data is available the energy spent is 0, so Today renders unchanged; a daily energy limit of 0 or less is treated as no limit. The Raids Plan tab is unaffected.
 
 Assumptions:
 
 - Energy spent today is the account-wide real spend from synced attempts at standing campaign nodes (Today's "Today shows real daily energy usage" requirement); it is not capped at the limit.
 - The daily energy limit is `planningSettings.dailyEnergy` (default 288 when unset).
-- Bonus Raids are computed from an unlimited energy budget and are not recomputed when the limit is reached; the header's energy and raid totals keep describing the real schedule.
+- Below the limit, Bonus Raids are computed from an unlimited energy budget at each node's full daily attempt cap. Once the limit is reached they are the raids left today: an unlimited energy budget with each node capped at the player's real attempts left (`live-progress.battleAttempts[].attemptsLeft`, standing and event-campaign nodes alike). The header's energy and raid totals keep describing the real schedule.
+- A node's daily attempt cap is shared by every goal and material raided there, in goal-priority order; the real attempts left lower that shared cap.
+- Upgrades already farmed today are counted through the synced inventory, so each goal's remaining need already reflects them.
 
 #### Scenario: A zero-raid upgrade appears as a bonus raid
 
@@ -128,7 +130,7 @@ Assumptions:
 
 #### Scenario: A partially-raided upgrade is excluded from Bonus Raids
 
-- **GIVEN** an upgrade receives at least one raid in the real schedule but not enough to fully clear its need
+- **GIVEN** an upgrade receives at least one raid in the real schedule but not enough to fully clear its need, and the daily energy limit is not yet spent
 - **WHEN** Today loads
 - **THEN** that upgrade does not appear in Bonus Raids, even though additional energy would raid it further
 
@@ -191,6 +193,27 @@ Assumptions:
 - **GIVEN** the energy limit is spent and no Bonus Raids entry remains
 - **WHEN** Today loads
 - **THEN** the Today's-plan lane is not shown, and the Bonus Raids section says the daily energy limit is reached and no bonus raids are left
+
+#### Scenario: Worked example, the top goal keeps its farming after the limit
+
+- **GIVEN** the daily energy limit is 30 and the player's synced attempts today have spent 30 energy (3 raids at node B1, 10 energy each, daily cap 5, so 2 attempts are left)
+- **AND** the top-priority goal (Snappa, Rank D1) still needs 8 of upgrade U1, dropped at B1 (1 per raid), and the second goal (Patermine, Rank B1) needs 2 of upgrade U2, dropped at node B2 (10 energy, cap 5, 1 per raid, no attempts used)
+- **WHEN** Today loads
+- **THEN** the real schedule at 30 energy would raid B1 3 times for U1 (30 energy), so the below-limit Bonus Raids would list only U2
+- **AND** because the limit is spent, Bonus Raids instead list the raids left today: Snappa first with U1 at B1 for min(5 cap, 2 left) = 2 raids (8 − 2 = 6 still needed afterwards), then Patermine with U2 at B2 for min(5 cap, ⌈2 ÷ 1⌉ = 2) = 2 raids, 40 energy in all
+- **AND** B1 shows no "N upgrades left" label, since its 2 planned raids reach its 2 attempts left
+
+#### Scenario: A partly-raided upgrade stays in Bonus Raids after the limit
+
+- **GIVEN** the energy limit is spent, and an upgrade received at least one raid in the real schedule but its node still has real attempts left today
+- **WHEN** Today loads
+- **THEN** that upgrade appears in Bonus Raids under its goal, at that node
+
+#### Scenario: Raids left today respect the real attempts left
+
+- **GIVEN** the energy limit is spent and a node with a daily cap of 5 has 2 real attempts left today
+- **WHEN** Today loads
+- **THEN** Bonus Raids plan at most 2 raids there across all goals, and a node with no real attempts left gets none
 
 ### Requirement: Campaign locations use the Character Lookup presentation
 

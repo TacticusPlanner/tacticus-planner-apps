@@ -8,6 +8,7 @@ export {
 } from "./lib/estimate"
 export {
   estimateBonusRaids,
+  estimateRaidsLeftToday,
   estimatePlan,
   estimatePlanSchedule,
   estimateTodayRun,
