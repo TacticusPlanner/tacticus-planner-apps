@@ -4,18 +4,32 @@ import { beforeEach, describe, expect, it } from "vitest"
 import { act, renderHook } from "@/test/render"
 
 import { defaultCollectionQuery } from "./collection-query"
+import type { CollectionOptions } from "./use-collection-options"
 import { useCollectionQuery } from "./use-collection-query"
 
-const factionIds = new Set(["Ultramarines", "BlackLegion", "Aeldari"])
+const named = (...ids: string[]) => ids.map((id) => ({ id, name: id }))
+const options: CollectionOptions = {
+  factions: ["Ultramarines", "BlackLegion", "Aeldari"].map((id) => ({
+    id,
+    name: id,
+    alliance: "Imperial",
+  })),
+  hits: [1, 2, 3, 4],
+  movements: [2, 3, 4],
+  ranges: [2, 3],
+  damageTypes: named("Bolter", "Psychic"),
+  traits: named("Psyker", "Flying", "Mechanical"),
+  shardSources: ["Standard", "Elite", "none"],
+}
 
 function renderAt(
   entry: string,
   { catalogLoading = false }: { catalogLoading?: boolean } = {}
 ) {
-  const factions = catalogLoading ? undefined : factionIds
+  const catalog = catalogLoading ? undefined : options
   return renderHook(
     () => ({
-      state: useCollectionQuery(factions),
+      state: useCollectionQuery(catalog),
       location: useLocation(),
       navigationType: useNavigationType(),
     }),
@@ -38,6 +52,7 @@ describe("useCollectionQuery", () => {
       "/my-game/collection?q=ti&alliance=Xenos&faction=Aeldari,Ultramarines&rarity=Epic,Legendary&rankMin=Gold1&rankMax=Diamond3&owned=owned&kind=mow&quick=canAscend&sort=shards"
     )
     expect(result.current.state.query).toEqual({
+      ...defaultCollectionQuery,
       search: "ti",
       alliance: "Xenos",
       factions: ["Aeldari", "Ultramarines"],
@@ -49,6 +64,58 @@ describe("useCollectionQuery", () => {
       quick: "canAscend",
       sort: "shards",
     })
+  })
+
+  it("reads the stars range and the combat filters", () => {
+    const { result } = renderAt(
+      "/my-game/collection?starsMin=Legendary:RedThreeStars&attack=ranged&hitsMin=2&hitsMax=3&move=3&rangeMax=2&damage=Bolter,Psychic&trait=Psyker&source=Elite,none"
+    )
+    expect(result.current.state.query).toMatchObject({
+      starsMin: "Legendary:RedThreeStars",
+      starsMax: null,
+      attack: "ranged",
+      hitsMin: 2,
+      hitsMax: 3,
+      movement: 3,
+      rangeMin: null,
+      rangeMax: 2,
+      damageTypes: ["Bolter", "Psychic"],
+      traits: ["Psyker"],
+      shardSources: ["Elite", "none"],
+    })
+    expect(result.current.location.search).toContain("source=Elite")
+  })
+
+  it("drops an unknown trait and a number the catalog does not offer", () => {
+    const { result } = renderAt(
+      "/my-game/collection?trait=Psyker,Teleporter&move=9&hitsMin=x"
+    )
+    expect(result.current.state.query).toMatchObject({
+      traits: ["Psyker"],
+      movement: null,
+      hitsMin: null,
+    })
+    expect(result.current.location.search).toBe("?trait=Psyker")
+  })
+
+  it("swaps a hits range set backwards", () => {
+    const { result } = renderAt("/my-game/collection?hitsMin=4&hitsMax=2")
+    expect(result.current.state.query).toMatchObject({
+      hitsMin: 2,
+      hitsMax: 4,
+    })
+    expect(result.current.location.search).toBe("?hitsMin=2&hitsMax=4")
+  })
+
+  it("keeps catalog-checked values while the catalog loads", () => {
+    const { result } = renderAt("/my-game/collection?trait=Psyker&move=3", {
+      catalogLoading: true,
+    })
+    expect(result.current.state.query).toMatchObject({
+      traits: [],
+      movement: null,
+    })
+    expect(result.current.location.search).toBe("?trait=Psyker&move=3")
   })
 
   it("writes changes to the URL so a reload restores them", () => {

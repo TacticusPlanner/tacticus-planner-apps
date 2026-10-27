@@ -41,11 +41,19 @@ vi.mock("../../model/use-collection-view", () => ({
     viewState.build?.(query) ?? viewState.current,
 }))
 
-vi.mock("../../model/use-collection-factions", () => ({
-  useCollectionFactions: () => [
-    { id: "Ultramarines", name: "Ultramarines", alliance: "Imperial" },
-    { id: "BlackLegion", name: "Black Legion", alliance: "Chaos" },
-  ],
+vi.mock("../../model/use-collection-options", () => ({
+  useCollectionOptions: () => ({
+    factions: [
+      { id: "Ultramarines", name: "Ultramarines", alliance: "Imperial" },
+      { id: "BlackLegion", name: "Black Legion", alliance: "Chaos" },
+    ],
+    hits: [1, 2, 3],
+    movements: [3],
+    ranges: [2],
+    damageTypes: [{ id: "Bolter", name: "Bolter" }],
+    traits: [{ id: "Psyker", name: "Psyker" }],
+    shardSources: ["Elite", "none"],
+  }),
 }))
 
 const sync = vi.hoisted(() => ({
@@ -75,21 +83,40 @@ import { CollectionPage } from "./collection-page"
 
 type PlayerCharacter = PlayerDataChunkDto<"characters">[number]
 
+// Every character's combat properties; the toolbar tests only filter on name, alliance and rarity.
+const combat = {
+  meleeDamage: "Bolter",
+  meleeHits: 2,
+  rangedDamage: null,
+  rangedHits: null,
+  rangeDistance: null,
+  movement: 3,
+  traits: [],
+  activeAbilityDamage: [],
+  passiveAbilityDamage: [],
+  shardLocations: [],
+  equipmentSlots: ["I_Crit", "I_Block", "I_Defensive"],
+}
+
 const catalog = {
   characters: [
     {
+      ...combat,
       id: "ultraTitus",
       faction: "Ultramarines",
       alliance: "Imperial",
       initialRarity: "Epic",
     },
     {
+      ...combat,
       id: "ultraCalgar",
       faction: "Ultramarines",
       alliance: "Imperial",
       initialRarity: "Legendary",
     },
     {
+      ...combat,
+      traits: ["Psyker"],
       id: "blackHaarken",
       faction: "BlackLegion",
       alliance: "Chaos",
@@ -151,6 +178,8 @@ function quickFilters(
     canAscend: availability,
     needToLevel: availability,
     blueStarReady: availability,
+    missingEquipment: availability,
+    abilitiesBehindLevel: availability,
     ...overrides,
   }
 }
@@ -685,7 +714,7 @@ describe("CollectionPage toolbar on desktop", () => {
     expect(
       within(fields).getByRole("group", { name: "Rank range" })
     ).toHaveAccessibleDescription(
-      "Rank and ownership filters need a synced roster."
+      "Rank, stars and ownership filters need a synced roster."
     )
     expect(
       within(fields).getByRole("combobox", { name: "Lowest rank" })
@@ -738,6 +767,18 @@ describe("CollectionPage toolbar on desktop", () => {
     expect(
       screen.queryByRole("button", { name: "Try again" })
     ).not.toBeInTheDocument()
+  })
+
+  it("applies a combat filter signed out, leaving out Machines of War", () => {
+    ready({ state: "anonymous" })
+    renderPage(1280, "/my-game/collection?trait=Psyker")
+
+    expect(screen.getAllByRole("link")).toHaveLength(1)
+    expect(factionsShown()).toEqual(["BlackLegion"])
+    expect(
+      screen.getByRole("button", { name: "Filters (1)" })
+    ).toBeInTheDocument()
+    expect(screen.getByRole("region", { name: "Combat" })).toBeInTheDocument()
   })
 
   it("shows no toolbar while loading or after a catalog failure", () => {

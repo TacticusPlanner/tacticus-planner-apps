@@ -28,11 +28,25 @@ import type {
   CollectionFactionGroup,
   CollectionRosterState,
 } from "../../model/collection-view"
-import { useCollectionFactions } from "../../model/use-collection-factions"
+import {
+  useCollectionOptions,
+  type CollectionOptions,
+} from "../../model/use-collection-options"
 import { useCollectionQuery } from "../../model/use-collection-query"
 import { useCollectionView } from "../../model/use-collection-view"
 import { useCollectionTutorial } from "./collection.tutorial"
 import { CollectionToolbar } from "./collection-toolbar"
+
+// Before the catalog is read the toolbar is hidden anyway; this only keeps its props total.
+const EMPTY_OPTIONS: CollectionOptions = {
+  factions: [],
+  hits: [],
+  movements: [],
+  ranges: [],
+  damageTypes: [],
+  traits: [],
+  shardSources: [],
+}
 
 // Equal-width faction cards that add a column as the window widens; rows stretch so cards in a row
 // share one height. Inside a card, fixed unit slots (5 on mobile, 7 on desktop) line portraits up
@@ -51,13 +65,8 @@ const unitSlots =
  */
 export function CollectionPage() {
   const { t } = useTranslation("common")
-  const factions = useCollectionFactions()
-  const factionIds = useMemo(
-    () =>
-      factions ? new Set(factions.map((faction) => faction.id)) : undefined,
-    [factions]
-  )
-  const { query, update, clear } = useCollectionQuery(factionIds)
+  const options = useCollectionOptions()
+  const { query, update, clear } = useCollectionQuery(options)
   const state = useCollectionView(query)
   const hasGroups = state.status === "ready" && state.view.groups.length > 0
   const hasSummary = hasGroups && state.view.rosterState === "available"
@@ -103,7 +112,7 @@ export function CollectionPage() {
         query={view.query}
         update={update}
         clear={clear}
-        factions={factions ?? []}
+        options={options ?? EMPTY_OPTIONS}
         rosterAvailable={rosterAvailable}
         quickFilters={quickFilters}
         onRetry={retry}

@@ -29,7 +29,7 @@ import {
   type CollectionQuery,
   type CollectionQuickFilter,
 } from "../../model/collection-query"
-import type { CollectionFactionOption } from "../../model/use-collection-factions"
+import type { CollectionOptions } from "../../model/use-collection-options"
 import type { QuickFilterAvailability } from "../../model/use-collection-view"
 import { CollectionFilterFields } from "./collection-filter-fields"
 import { QuickFilterChips } from "./quick-filter-chips"
@@ -38,7 +38,7 @@ export interface CollectionToolbarProps {
   query: CollectionQuery
   update: (patch: Partial<CollectionQuery>) => void
   clear: () => void
-  factions: readonly CollectionFactionOption[]
+  options: CollectionOptions
   rosterAvailable: boolean
   quickFilters: Record<CollectionQuickFilter, QuickFilterAvailability>
   /** Reads the quick filters' data again after it failed to load. */
@@ -61,7 +61,7 @@ function DesktopToolbar(props: CollectionToolbarProps) {
     query,
     update,
     clear,
-    factions,
+    options,
     rosterAvailable,
     quickFilters,
     onRetry,
@@ -102,9 +102,9 @@ function DesktopToolbar(props: CollectionToolbarProps) {
           <CollectionFilterFields
             query={query}
             update={update}
-            factions={factions}
+            options={options}
             rosterAvailable={rosterAvailable}
-            className="sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7"
+            layout="panel"
           />
         </div>
       ) : null}
@@ -123,7 +123,7 @@ function MobileToolbar(props: CollectionToolbarProps) {
     query,
     update,
     clear,
-    factions,
+    options,
     rosterAvailable,
     quickFilters,
     onRetry,
@@ -175,8 +175,9 @@ function MobileToolbar(props: CollectionToolbarProps) {
           <CollectionFilterFields
             query={query}
             update={update}
-            factions={factions}
+            options={options}
             rosterAvailable={rosterAvailable}
+            layout="sheet"
           />
         </ResponsiveDialogBody>
         <ResponsiveDialogFooter>

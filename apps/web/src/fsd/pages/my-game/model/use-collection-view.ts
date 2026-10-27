@@ -49,6 +49,14 @@ export type CollectionViewState =
       retry: () => void
     }
 
+/** Quick filters that read only the roster and the catalog's units, so need no extra data. */
+const rosterOnlyQuickFilters = new Set<CollectionQuickFilter>([
+  "needToAscend",
+  "needToLevel",
+  "missingEquipment",
+  "abilitiesBehindLevel",
+])
+
 const ANONYMOUS: CollectionRoster = { state: "anonymous" }
 const ROSTER_ERROR: CollectionRoster = { state: "error" }
 
@@ -130,7 +138,7 @@ export function useCollectionView(
     return Object.fromEntries(
       collectionQuickFilters.map((quick) => [
         quick,
-        quick === "needToAscend" || quick === "needToLevel"
+        rosterOnlyQuickFilters.has(quick)
           ? rosterAvailable
             ? "available"
             : "needsRoster"

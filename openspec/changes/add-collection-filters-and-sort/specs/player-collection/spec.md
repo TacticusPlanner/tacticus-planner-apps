@@ -67,7 +67,7 @@ The Collection page SHALL register a page tour, startable from the page's tour c
 
 ### Requirement: Collection has a toolbar with search, sort, filters and quick filters
 
-The Collection page SHALL show a toolbar above the faction groups whenever the catalog has loaded, with a name search, a Sort control, a Filters control and a row of quick-filter chips. The toolbar SHALL show how many filters are active (search, each standalone filter that is set, and the quick filter each count as one), and while any is active it SHALL offer a Clear filters action that removes the search, every standalone filter and the quick filter in one step and leaves the sort unchanged. The quick-filter chips SHALL be a single-select group: selecting a chip selects that quick filter, selecting the selected chip again clears it. While the catalog is loading or has failed to load, the toolbar SHALL NOT be shown.
+The Collection page SHALL show a toolbar above the faction groups whenever the catalog has loaded, with a name search, a Sort control, a Filters control and a row of quick-filter chips. The toolbar SHALL show how many filters are active (search, each standalone filter that is set, and the quick filter each count as one; a range with a lowest and a highest end counts as one), and while any is active it SHALL offer a Clear filters action that removes the search, every standalone filter and the quick filter in one step and leaves the sort unchanged. The quick-filter chips SHALL be a single-select group: selecting a chip selects that quick filter, selecting the selected chip again clears it. While the catalog is loading or has failed to load, the toolbar SHALL NOT be shown.
 
 On desktop (at least 768px) the search, Sort and Filters controls SHALL sit on one row; the Filters control SHALL expand and collapse the standalone filter controls inline below that row, opening expanded when a standalone filter is already active; the quick-filter chips SHALL sit below, wrapping onto further rows rather than scrolling horizontally.
 
@@ -141,8 +141,21 @@ The Filters control SHALL offer these standalone filters; every set filter SHALL
 - **Faction:** any number of factions, each shown with its icon; a unit matches when its faction is one of them.
 - **Rarity:** any number of rarities; an owned unit matches on its current rarity, an unowned character on the rarity it starts at, and an unowned Machine of War (which has no starting rarity in the catalog) never matches while this filter is set.
 - **Rank range:** a lowest and a highest rank (inclusive, either end optional); only owned characters can match while it is set. A range whose lowest rank is above its highest is read with its ends swapped.
+- **Stars range:** a lowest and a highest progression step (rarity and stars, inclusive, either end optional); only owned units, characters and Machines of War, can match while it is set. A range set backwards is read with its ends swapped.
 - **Ownership:** owned, not owned, or all.
 - **Unit kind:** characters, Machines of War, or all.
+
+The Filters control SHALL also offer these combat filters, ported from V1's characters page. They read only the catalog, so they apply to owned and unowned characters alike and work without a roster. A Machine of War, which has none of these properties, SHALL NOT match while any of them is set. Each control offers only the values that occur in the catalog.
+
+- **Attack type:** melee or ranged, or any. Melee matches a character with no ranged attack; ranged matches a character with one.
+- **Hits:** a lowest and a highest number of hits per attack (inclusive, either end optional). With attack type melee the melee hit count must be in range; with ranged, the ranged hit count; with neither, either count.
+- **Movement:** one movement value; a character matches when its movement equals it.
+- **Range:** a lowest and a highest attack range (inclusive, either end optional); a character with no ranged attack never matches while it is set.
+- **Damage types:** any number of damage types, each shown with its icon; a character matches when every picked type is among the damage types of its melee attack, ranged attack, active ability and passive ability.
+- **Traits:** any number of traits, each shown with its icon; a character matches when it has every picked trait. Mechanical is also met by Living Metal, as in V1.
+- **Shard source:** any number of shard sources (the campaign types Standard, Elite, Mirror, Elite Mirror and Extremis, and "not in a campaign"); a character matches when its shards drop in at least one picked campaign type, or, for "not in a campaign", when they drop in none.
+
+Assumption: a character's damage types come from the catalog's melee and ranged damage and its ability damage lists. Some characters' ability damage is not in the served data yet, so for them only attack damage counts.
 
 #### Scenario: Search by localized name
 
@@ -168,6 +181,36 @@ The Filters control SHALL offer these standalone filters; every set filter SHALL
 - **WHEN** the list updates
 - **THEN** the same characters are listed as for Gold 1 to Diamond 3, and the two selects show Gold 1 to Diamond 3
 
+#### Scenario: Hits with an attack type
+
+- **GIVEN** two characters: A with 4 melee hits and no ranged attack, B with 1 melee hit and 3 ranged hits
+- **WHEN** hits is set to 3 to 4, first with no attack type, then with attack type ranged
+- **THEN** first both are listed (A on melee hits, B on ranged hits), then only B
+
+#### Scenario: Damage types and traits need every picked value
+
+- **GIVEN** character A deals Bolter and Psychic damage and has Psyker and Flying, character B deals Bolter damage and has Psyker
+- **WHEN** damage types Bolter and Psychic are picked, then cleared and traits Psyker and Flying are picked
+- **THEN** only A is listed both times
+
+#### Scenario: Mechanical matches Living Metal
+
+- **GIVEN** a Necron character with the Living Metal trait and no Mechanical trait
+- **WHEN** the Mechanical trait is picked
+- **THEN** that character is listed
+
+#### Scenario: Combat filters leave out Machines of War
+
+- **GIVEN** the attack type filter is set to melee and the user is signed out
+- **WHEN** the list updates
+- **THEN** greyed-out characters without a ranged attack are listed and no Machine of War is
+
+#### Scenario: Shard source
+
+- **GIVEN** character A's shards drop in Elite and Mirror battles, character B's in no campaign
+- **WHEN** the user picks Mirror, then instead picks "not in a campaign"
+- **THEN** first A is listed and B is not, then B is listed and A is not
+
 #### Scenario: Faction with no match is hidden
 
 - **GIVEN** the search matches only Ultramarines units
@@ -182,12 +225,14 @@ The Filters control SHALL offer these standalone filters; every set filter SHALL
 
 ### Requirement: Collection quick filters follow defined progression rules
 
-The quick filters SHALL be Ready to rank up, Need to ascend, Can ascend, Need to level and Blue star ready. A quick filter SHALL match only owned units and SHALL be evaluated for each unit on its own, against the player's whole synced inventory (the same items count toward every unit). Each SHALL follow exactly the rule below; "maximum rank for its rarity" is Iron 1 for Common, Bronze 1 for Uncommon, Silver 1 for Rare, Gold 1 for Epic, Diamond 3 for Legendary and Adamantine 2 for Mythic, and "level cap for its rarity" is 8, 17, 26, 35, 50 and 60 respectively.
+The quick filters SHALL be Ready to rank up, Need to ascend, Can ascend, Need to level, Blue star ready, Missing equipment and Abilities behind level. A quick filter SHALL match only owned units and SHALL be evaluated for each unit on its own, against the player's whole synced inventory (the same items count toward every unit). Each SHALL follow exactly the rule below; "maximum rank for its rarity" is Iron 1 for Common, Bronze 1 for Uncommon, Silver 1 for Rare, Gold 1 for Epic, Diamond 3 for Legendary and Adamantine 2 for Mythic, and "level cap for its rarity" is 8, 17, 26, 35, 50 and 60 respectively.
 
 - **Need to ascend** (V1 rule extended to Mythic): an owned character whose rank equals the maximum rank for its rarity and that still has an ascension step ahead (every unit except one at Mythic wings). A Mythic character at Adamantine 2 below Mythic wings matches. Machines of War never match.
 - **Need to level** (V1 rule, with V2's caps): an owned character that does not need to ascend and whose XP level is below the level cap for its rarity. Machines of War never match.
 - **Can ascend** (V1 rule extended to Mythic, with orbs): an owned character or Machine of War with an ascension step ahead whose held shards, mythic shards and ascension orbs all cover the ascension cost from its current step up to and including the target step. Below Mythic the target is the first step of the next rarity; for a Mythic unit it is the next Mythic step (two blue stars, three blue stars, then Mythic wings). A unit at Mythic wings never matches.
 - **Blue star ready** (V1 rule, with orbs): an owned character or Machine of War below Legendary one blue star (and not Mythic) whose held shards and ascension orbs cover the ascension cost from its current step up to and including Legendary one blue star.
+- **Missing equipment** (new in V2): an owned character with fewer equipped items than the equipment slots the catalog gives it. Machines of War never match.
+- **Abilities behind level** (new in V2): an owned character with an active or passive ability level below its XP level, which is the cap on ability levels. Machines of War never match.
 - **Ready to rank up** (new in V2; V1 has no such filter): an owned character below the maximum rank for its rarity, for which the player's upgrade inventory covers every base material needed by the upgrades of its current rank that are not applied yet. Each needed upgrade and each owned upgrade is broken down through its crafting recipe (recursively) into base materials before they are compared, so an already-crafted upgrade counts toward its materials. A character with all six slots of its current rank applied matches; a character whose current rank has no upgrade list in the catalog does not, since nothing could be checked. XP level is not checked.
 
 Assumptions:
@@ -247,6 +292,12 @@ Assumptions:
 - **WHEN** the Ready to rank up quick filter is selected
 - **THEN** the needed base materials are 9 Beast Hide, 6 Subdermal Plating, 6 Ceramite Lump and 6 Fine Purity Seal; the owned base materials are 9 Beast Hide (from the crafted Ice Troll Hide), 6, 6 and 6; every need is covered and Arjac is listed; with 5 Fine Purity Seal he is not
 
+#### Scenario: Missing equipment and Abilities behind level
+
+- **GIVEN** owned character A at XP level 45 with abilities 45 and 40 and two of its three equipment slots filled, and owned character B at XP level 30 with abilities 30 and 30 and every slot filled
+- **WHEN** Missing equipment is selected, then Abilities behind level
+- **THEN** both times only A is listed
+
 #### Scenario: Quick filters skip unowned units
 
 - **GIVEN** the player does not own Calgar but holds enough Calgar shards to cover the ascension cost from his starting step
@@ -255,7 +306,7 @@ Assumptions:
 
 ### Requirement: Roster-dependent controls are disabled without the data they need
 
-While no synced roster is available (signed out, not synced, only part of the roster synced, or roster read failure), the rank range filter, the ownership filter and every quick filter SHALL be shown disabled with a short explanation that they need a synced roster, and SHALL NOT narrow the list even if their values are present in the URL; the name search, alliance, faction, rarity and unit kind filters and the Sort control SHALL keep working. While the player's upgrade inventory has not synced or could not be read, the Ready to rank up chip SHALL be disabled with an explanation that it needs the synced inventory. While the player's general inventory (which holds the ascension orbs) has not synced or could not be read, the Can ascend and Blue star ready chips SHALL be disabled with the same explanation. Once the missing data arrives, the controls SHALL become available and any of their values held in the URL SHALL apply without a reload. While the data a quick filter needs (ascension costs, upgrade recipes, inventory) is still loading, its chip SHALL be disabled, so selecting it never replaces the toolbar with loading placeholders. When a quick filter already in the URL is waiting for that data, the page SHALL show the loading placeholders rather than an unfiltered or empty list. If that catalog data fails to load, only the quick filters that need it SHALL be disabled, with an explanation that their data could not be loaded and a control to try loading it again, and the rest of the page SHALL keep working.
+While no synced roster is available (signed out, not synced, only part of the roster synced, or roster read failure), the rank range filter, the stars range filter, the ownership filter and every quick filter SHALL be shown disabled with a short explanation that they need a synced roster, and SHALL NOT narrow the list even if their values are present in the URL; the name search, alliance, faction, rarity, unit kind, combat and shard source filters and the Sort control SHALL keep working. While the player's upgrade inventory has not synced or could not be read, the Ready to rank up chip SHALL be disabled with an explanation that it needs the synced inventory. While the player's general inventory (which holds the ascension orbs) has not synced or could not be read, the Can ascend and Blue star ready chips SHALL be disabled with the same explanation. Once the missing data arrives, the controls SHALL become available and any of their values held in the URL SHALL apply without a reload. While the data a quick filter needs (ascension costs, upgrade recipes, inventory) is still loading, its chip SHALL be disabled, so selecting it never replaces the toolbar with loading placeholders. When a quick filter already in the URL is waiting for that data, the page SHALL show the loading placeholders rather than an unfiltered or empty list. If that catalog data fails to load, only the quick filters that need it SHALL be disabled, with an explanation that their data could not be loaded and a control to try loading it again, and the rest of the page SHALL keep working.
 
 #### Scenario: Quick-filter catalog data fails to load
 
@@ -283,7 +334,7 @@ While no synced roster is available (signed out, not synced, only part of the ro
 
 ### Requirement: Collection toolbar state lives in the URL and the sort is remembered
 
-The search text, every standalone filter, the quick filter and the sort SHALL be held in the page URL's query parameters, so that reload, Back and a shared link restore them; a value equal to its default (empty search, unset filter, no quick filter) SHALL NOT appear in the URL. Changing them SHALL replace the current history entry rather than add one. A query value that is not valid (an unknown faction, rarity, rank, quick filter or sort) SHALL be dropped from the URL and treated as unset; in a list of factions or rarities only the unknown items SHALL be dropped, and the valid ones SHALL still apply. A rank range set backwards SHALL be rewritten in the URL with its ends swapped. The search SHALL update the URL once typing pauses, without delaying or dropping typed characters. The sort the user last selected SHALL also be remembered in this browser and SHALL apply when the URL carries no sort; the default sort, Rarity, applies when neither does. Search, filters and quick filter SHALL NOT be remembered beyond the URL: opening `/my-game/collection` without query parameters shows every unit.
+The search text, every standalone filter, the quick filter and the sort SHALL be held in the page URL's query parameters, so that reload, Back and a shared link restore them; a value equal to its default (empty search, unset filter, no quick filter) SHALL NOT appear in the URL. Changing them SHALL replace the current history entry rather than add one. A query value that is not valid (an unknown faction, rarity, rank, progression step, damage type, trait, shard source, quick filter or sort, or a number the catalog does not offer) SHALL be dropped from the URL and treated as unset; in a list of factions, rarities, damage types, traits or shard sources only the unknown items SHALL be dropped, and the valid ones SHALL still apply. A range set backwards SHALL be rewritten in the URL with its ends swapped. The search SHALL update the URL once typing pauses, without delaying or dropping typed characters. The sort the user last selected SHALL also be remembered in this browser and SHALL apply when the URL carries no sort; the default sort, Rarity, applies when neither does. Search, filters and quick filter SHALL NOT be remembered beyond the URL: opening `/my-game/collection` without query parameters shows every unit.
 
 #### Scenario: Reload keeps the view
 

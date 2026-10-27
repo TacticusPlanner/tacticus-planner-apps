@@ -107,6 +107,17 @@ describe("useCollectionView", () => {
           faction: "Ultramarines",
           alliance: "Imperial",
           initialRarity: "Epic",
+          meleeDamage: "Bolter",
+          meleeHits: 2,
+          rangedDamage: "Bolter",
+          rangedHits: 2,
+          rangeDistance: 2,
+          movement: 3,
+          traits: [],
+          activeAbilityDamage: [],
+          passiveAbilityDamage: [],
+          shardLocations: [],
+          equipmentSlots: ["I_Crit", "I_Block", "I_Defensive"],
         },
       ],
       mows: [],
@@ -211,6 +222,8 @@ describe("useCollectionView", () => {
       canAscend: "available",
       needToLevel: "available",
       blueStarReady: "available",
+      missingEquipment: "available",
+      abilitiesBehindLevel: "available",
     })
   })
 
@@ -220,7 +233,7 @@ describe("useCollectionView", () => {
 
     await waitFor(() => expect(result.current.status).toBe("ready"))
     expect(Object.values(ready(result.current)?.quickFilters ?? {})).toEqual(
-      Array(5).fill("needsRoster")
+      Array(7).fill("needsRoster")
     )
   })
 

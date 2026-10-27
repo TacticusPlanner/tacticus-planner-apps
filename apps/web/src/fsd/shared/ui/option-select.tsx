@@ -1,7 +1,8 @@
-import { useRef, useState, type ReactNode } from "react"
+import { useLayoutEffect, useRef, useState, type ReactNode } from "react"
 import { ChevronsUpDown, X } from "lucide-react"
 import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
+import { cn } from "@workspace/ui/lib/utils"
 import {
   Command,
   CommandEmpty,
@@ -112,7 +113,7 @@ function SelectShell({
         if (next) setPortalContainer(closestOverlayContent(triggerRef.current))
       }}
     >
-      <div className="relative">
+      <div className="relative min-w-0">
         <PopoverTrigger asChild>
           <Button
             ref={triggerRef}
@@ -121,11 +122,17 @@ function SelectShell({
             aria-expanded={open}
             aria-controls={listId}
             aria-label={ariaLabel}
-            className="h-9 w-full justify-between gap-2 pr-2 font-normal"
+            className="h-9 w-full min-w-0 justify-between gap-2 pr-2 font-normal"
             data-testid={testId}
             disabled={disabled}
           >
-            <span className="flex min-w-0 flex-1 items-center gap-1 overflow-hidden">
+            {/* Ends before a clear button, which sits between it and the chevron. */}
+            <span
+              className={cn(
+                "flex min-w-0 flex-1 items-center gap-1 overflow-hidden",
+                trailing && "pr-7"
+              )}
+            >
               {summary}
             </span>
             <ChevronsUpDown className="shrink-0 opacity-50" />
@@ -145,7 +152,9 @@ function SelectShell({
 
 /**
  * Multi-select with checkmarks: an empty selection reads as `placeholder` ("All ..."), a selection
- * as one icon chip per chosen option (label chips when an option has no icon).
+ * as one icon chip per chosen option (label chips when an option has no icon), as many as fit and
+ * then a "+N" chip naming the rest in its tooltip. With `clearLabel`, a clear button in the trigger
+ * empties the selection in one step.
  */
 export function MultiSelect<TValue extends string | number>({
   options,
@@ -156,10 +165,13 @@ export function MultiSelect<TValue extends string | number>({
   searchPlaceholder,
   emptyText,
   disabled,
+  clearLabel,
   "data-testid": testId,
 }: CommonProps<TValue> & {
   value: readonly TValue[]
   onChange: (next: TValue[]) => void
+  /** The clear button's accessible name; without it there is no clear button. */
+  clearLabel?: string
 }) {
   const selected = options.filter((option) => value.includes(option.value))
 
@@ -172,16 +184,17 @@ export function MultiSelect<TValue extends string | number>({
         selected.length === 0 ? (
           <span className="truncate text-muted-foreground">{placeholder}</span>
         ) : (
-          selected.map((option) => (
-            <Badge
-              key={option.value}
-              variant="secondary"
-              className="h-6 shrink-0 gap-1 px-1.5"
-            >
-              {option.icon ?? option.label}
-            </Badge>
-          ))
+          <FittingChips options={selected} />
         )
+      }
+      trailing={
+        clearLabel && value.length > 0 && !disabled ? (
+          <ClearButton
+            label={clearLabel}
+            testId={testId}
+            onClick={() => onChange([])}
+          />
+        ) : null
       }
     >
       {(_close, listRef) => (
@@ -201,6 +214,120 @@ export function MultiSelect<TValue extends string | number>({
         />
       )}
     </SelectShell>
+  )
+}
+
+const CHIP_GAP = 4
+/** Room kept for the "+N" chip while some chips are hidden. */
+const MORE_CHIP_WIDTH = 32
+
+function Chip({ option }: { option: SelectOption<string | number> }) {
+  return (
+    <Badge variant="secondary" className="h-6 shrink-0 gap-1 px-1.5">
+      {option.icon ?? option.label}
+    </Badge>
+  )
+}
+
+/**
+ * The selected options as chips, as many as fit the trigger, then "+N" for the rest (named in its
+ * tooltip). Widths come from an invisible copy of every chip, measured again whenever the trigger
+ * resizes; before layout (width 0) every chip shows.
+ */
+function FittingChips({
+  options,
+}: {
+  options: readonly SelectOption<string | number>[]
+}) {
+  const boxRef = useRef<HTMLSpanElement>(null)
+  const measureRef = useRef<HTMLSpanElement>(null)
+  const [shown, setShown] = useState(options.length)
+  const key = options.map((option) => option.value).join("\u0000")
+
+  useLayoutEffect(() => {
+    const box = boxRef.current
+    const measure = measureRef.current
+    if (!box || !measure) return
+    const fit = () => {
+      const width = box.clientWidth
+      if (width === 0) {
+        setShown(options.length)
+        return
+      }
+      const chips = [...measure.children] as HTMLElement[]
+      let used = 0
+      let count = 0
+      for (const [index, chip] of chips.entries()) {
+        const next = used + (index > 0 ? CHIP_GAP : 0) + chip.offsetWidth
+        const isLast = index === chips.length - 1
+        if (next + (isLast ? 0 : CHIP_GAP + MORE_CHIP_WIDTH) > width) break
+        used = next
+        count++
+      }
+      setShown(count)
+    }
+    fit()
+    if (typeof ResizeObserver === "undefined") return
+    const observer = new ResizeObserver(fit)
+    observer.observe(box)
+    return () => observer.disconnect()
+    // `key` stands for `options`, whose array is new on every render.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [key])
+
+  const hidden = options.slice(shown)
+  return (
+    <span
+      ref={boxRef}
+      className="relative flex min-w-0 flex-1 items-center gap-1 overflow-hidden"
+    >
+      {options.slice(0, shown).map((option) => (
+        <Chip key={option.value} option={option} />
+      ))}
+      {hidden.length > 0 ? (
+        <Badge
+          variant="secondary"
+          className="h-6 shrink-0 px-1.5"
+          title={hidden.map((option) => option.label).join(", ")}
+          data-testid="select-more-chip"
+        >
+          +{hidden.length}
+        </Badge>
+      ) : null}
+      <span
+        ref={measureRef}
+        aria-hidden="true"
+        className="pointer-events-none invisible absolute top-0 left-0 flex gap-1"
+      >
+        {options.map((option) => (
+          <Chip key={option.value} option={option} />
+        ))}
+      </span>
+    </span>
+  )
+}
+
+/** The clear button that sits inside a select's trigger, left of its chevron. */
+function ClearButton({
+  label,
+  testId,
+  onClick,
+}: {
+  label: string
+  testId?: string
+  onClick: () => void
+}) {
+  return (
+    <Button
+      aria-label={label}
+      className="absolute top-1/2 right-8 size-6 -translate-y-1/2"
+      data-testid={testId ? `${testId}-clear` : undefined}
+      onClick={onClick}
+      size="icon"
+      variant="ghost"
+    >
+      <X />
+    </Button>
   )
 }
 
@@ -239,16 +366,11 @@ export function SearchableSelect<TValue extends string | number>({
       }
       trailing={
         value !== undefined && !disabled ? (
-          <Button
-            aria-label={clearLabel}
-            className="absolute top-1/2 right-8 size-6 -translate-y-1/2"
-            data-testid={testId ? `${testId}-clear` : undefined}
+          <ClearButton
+            label={clearLabel}
+            testId={testId}
             onClick={() => onChange(undefined)}
-            size="icon"
-            variant="ghost"
-          >
-            <X />
-          </Button>
+          />
         ) : null
       }
     >

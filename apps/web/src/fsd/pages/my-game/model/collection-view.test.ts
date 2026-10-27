@@ -24,11 +24,16 @@ type PlayerMow = PlayerDataChunkDto<"mows">[number]
 // character starts Epic here except the few the tests pin explicitly.
 const initialRarity: Record<string, Rarity> = { ultraCalgar: "Legendary" }
 const characters = legendaryEventCharacters.map((character) => ({
+  ...character,
   id: character.id as UnitId,
-  faction: character.faction,
   alliance: character.alliance as Alliance,
   initialRarity: initialRarity[character.id] ?? "Epic",
-})) as CollectionCatalog["characters"]
+  // Not in the fixture; the combat-filter tests build their own characters.
+  rangeDistance: character.rangedHits ? 2 : null,
+  movement: 3,
+  shardLocations: [],
+  equipmentSlots: ["I_Crit", "I_Block", "I_Defensive"],
+})) as unknown as CollectionCatalog["characters"]
 const mows = [
   {
     id: "ultraDreadnought" as UnitId,
@@ -806,5 +811,183 @@ describe("buildCollectionView with a query", () => {
         rankUpReady: new Set(["ultraTitus", "ultraCalgar"]),
       })
     ).toEqual(["ultraTitus"])
+  })
+})
+
+describe("buildCollectionView combat filters", () => {
+  type CatalogCharacter = CollectionCatalog["characters"][number]
+  const unit = (
+    id: string,
+    overrides: Partial<CatalogCharacter> = {}
+  ): CatalogCharacter =>
+    ({
+      id: id as UnitId,
+      name: id,
+      faction: "Ultramarines",
+      alliance: "Imperial",
+      initialRarity: "Epic",
+      meleeDamage: "Physical",
+      meleeHits: 1,
+      rangedDamage: null,
+      rangedHits: null,
+      rangeDistance: null,
+      movement: 3,
+      traits: [],
+      activeAbilityDamage: [],
+      passiveAbilityDamage: [],
+      shardLocations: [],
+      equipmentSlots: ["I_Crit", "I_Block", "I_Defensive"],
+      ...overrides,
+    }) as CatalogCharacter
+  const location = (type: string, isMythic = false) =>
+    ({ type, isMythic }) as CatalogCharacter["shardLocations"][number]
+
+  const listed = (
+    units: CatalogCharacter[],
+    overrides: Partial<CollectionQuery>,
+    roster: CollectionRoster = { state: "anonymous" }
+  ) =>
+    buildCollectionView({ ...catalog, characters: units }, roster, labels, {
+      ...defaultCollectionQuery,
+      ...overrides,
+    })
+      .groups.flatMap((group) => group.units)
+      .filter((tile) => tile.kind === "character")
+      .map((tile) => tile.unitId)
+      .sort()
+
+  it("reads hits per the attack type, either count without one", () => {
+    const units = [
+      unit("a", { meleeHits: 4 }),
+      unit("b", {
+        meleeHits: 1,
+        rangedHits: 3,
+        rangedDamage: "Bolter",
+        rangeDistance: 2,
+      }),
+    ]
+    expect(listed(units, { hitsMin: 3, hitsMax: 4 })).toEqual(["a", "b"])
+    expect(listed(units, { hitsMin: 3, hitsMax: 4, attack: "ranged" })).toEqual(
+      ["b"]
+    )
+    expect(listed(units, { attack: "melee" })).toEqual(["a"])
+    // A backwards hits range is read with its ends swapped.
+    expect(listed(units, { hitsMin: 4, hitsMax: 3 })).toEqual(["a", "b"])
+  })
+
+  it("needs every picked damage type and trait", () => {
+    const units = [
+      unit("a", {
+        meleeDamage: "Bolter",
+        activeAbilityDamage: ["Psychic"],
+        traits: ["Psyker", "Flying"],
+      }),
+      unit("b", { meleeDamage: "Bolter", traits: ["Psyker"] }),
+    ]
+    expect(listed(units, { damageTypes: ["Bolter", "Psychic"] })).toEqual(["a"])
+    expect(listed(units, { traits: ["Psyker", "Flying"] })).toEqual(["a"])
+    expect(listed(units, { damageTypes: ["Bolter"] })).toEqual(["a", "b"])
+  })
+
+  it("matches Mechanical on Living Metal", () => {
+    const units = [
+      unit("necron", { traits: ["LivingMetal"] }),
+      unit("marine", { traits: ["Resilient"] }),
+    ]
+    expect(listed(units, { traits: ["Mechanical"] })).toEqual(["necron"])
+  })
+
+  it("matches movement exactly and range only for ranged characters", () => {
+    const units = [
+      unit("a", { movement: 4 }),
+      unit("b", { rangedHits: 2, rangedDamage: "Las", rangeDistance: 3 }),
+    ]
+    expect(listed(units, { movement: 4 })).toEqual(["a"])
+    expect(listed(units, { rangeMin: 2, rangeMax: 3 })).toEqual(["b"])
+  })
+
+  it("matches any picked shard source, or none", () => {
+    const units = [
+      unit("a", {
+        shardLocations: [location("Elite"), location("Mirror")],
+      }),
+      unit("b"),
+      unit("c", { shardLocations: [location("Extremis", true)] }),
+    ]
+    expect(listed(units, { shardSources: ["Mirror"] })).toEqual(["a"])
+    expect(listed(units, { shardSources: ["Standard", "Elite"] })).toEqual([
+      "a",
+    ])
+    // Mythic shard locations do not count as a source.
+    expect(listed(units, { shardSources: ["none"] })).toEqual(["b", "c"])
+  })
+
+  it("applies signed out and leaves out Machines of War", () => {
+    const view = buildCollectionView(
+      { ...catalog, characters: [unit("a")] },
+      { state: "anonymous" },
+      labels,
+      { ...defaultCollectionQuery, attack: "melee" }
+    )
+    expect(view.groups.flatMap((group) => group.units)).toEqual([
+      expect.objectContaining({ unitId: "a", kind: "character" }),
+    ])
+    expect(view.query.attack).toBe("melee")
+  })
+
+  it("lists only owned units in a stars range, ends swapped when backwards", () => {
+    const roster = signedIn({
+      characters: [
+        character("a", { progressionIndex: "Legendary:RedThreeStars" }),
+        character("b", { progressionIndex: "Epic:RedThreeStars" }),
+      ],
+      mows: [],
+      shards: [],
+    })
+    const units = [unit("a"), unit("b"), unit("c")]
+    const range = {
+      starsMin: "Legendary:RedFiveStars" as const,
+      starsMax: "Legendary:RedThreeStars" as const,
+    }
+    expect(listed(units, range, roster)).toEqual(["a"])
+    // Without a roster the stars range does not apply.
+    expect(listed(units, range)).toEqual(["a", "b", "c"])
+  })
+
+  it("selects Missing equipment and Abilities behind level", () => {
+    const roster = signedIn({
+      characters: [
+        character("a", {
+          xpLevel: 45,
+          abilities: [
+            { abilityId: "a1", level: 45 },
+            { abilityId: "a2", level: 40 },
+          ] as PlayerCharacter["abilities"],
+          equippedItems: [
+            { slotId: "Slot1", equipmentId: "I_Crit_L001", level: 1 },
+            { slotId: "Slot2", equipmentId: "I_Block_L001", level: 1 },
+          ] as PlayerCharacter["equippedItems"],
+        }),
+        character("b", {
+          xpLevel: 30,
+          abilities: [
+            { abilityId: "b1", level: 30 },
+            { abilityId: "b2", level: 30 },
+          ] as PlayerCharacter["abilities"],
+          equippedItems: [
+            { slotId: "Slot1", equipmentId: "I_Crit_L001", level: 1 },
+            { slotId: "Slot2", equipmentId: "I_Block_L001", level: 1 },
+            { slotId: "Slot3", equipmentId: "I_Defensive_L001", level: 1 },
+          ] as PlayerCharacter["equippedItems"],
+        }),
+      ],
+      mows: [],
+      shards: [],
+    })
+    const units = [unit("a"), unit("b")]
+    expect(listed(units, { quick: "missingEquipment" }, roster)).toEqual(["a"])
+    expect(listed(units, { quick: "abilitiesBehindLevel" }, roster)).toEqual([
+      "a",
+    ])
   })
 })

@@ -4,8 +4,10 @@ import type { Progression, Rarity } from "@workspace/game-domain"
 
 import {
   ascensionLadder,
+  abilitiesBehindLevel,
   blueStarReady,
   canAscend,
+  missingEquipment,
   needToAscend,
   needToLevel,
   orbsForAlliance,
@@ -229,5 +231,37 @@ describe("orbsForAlliance", () => {
   it("holds nothing for an alliance with no orb inventory or no synced inventory", () => {
     expect(orbsForAlliance(orbs, "Neutral")).toEqual({})
     expect(orbsForAlliance(undefined, "Imperial")).toEqual({})
+  })
+})
+
+describe("missingEquipment and abilitiesBehindLevel", () => {
+  const owned = character({
+    progression: "Legendary:RedThreeStars",
+    xpLevel: 45,
+    abilityLevels: [45, 40],
+    equipped: 2,
+    equipmentSlots: 3,
+  })
+
+  it("lists a character with an empty slot or an ability below its level", () => {
+    expect(missingEquipment(owned)).toBe(true)
+    expect(abilitiesBehindLevel(owned)).toBe(true)
+  })
+
+  it("does not list a fully equipped character with abilities at its level", () => {
+    const done = { ...owned, abilityLevels: [45, 45], equipped: 3 }
+    expect(missingEquipment(done)).toBe(false)
+    expect(abilitiesBehindLevel(done)).toBe(false)
+  })
+
+  it("never lists a Machine of War", () => {
+    const mow: QuickFilterUnit = {
+      kind: "mow",
+      progression: "Legendary:RedThreeStars",
+      shards: 0,
+      mythicShards: 0,
+    }
+    expect(missingEquipment(mow)).toBe(false)
+    expect(abilitiesBehindLevel(mow)).toBe(false)
   })
 })

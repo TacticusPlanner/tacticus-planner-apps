@@ -27,6 +27,11 @@ export interface QuickFilterUnit {
   xpLevel?: number
   shards: number
   mythicShards: number
+  /** Characters only: active then passive ability level. */
+  abilityLevels?: readonly number[]
+  /** Characters only: items equipped, and the slots the catalog gives the character. */
+  equipped?: number
+  equipmentSlots?: number
 }
 
 /** The catalog's ascension cost ladder, keyed by the step each entry reaches. */
@@ -82,6 +87,26 @@ export function needToLevel(unit: QuickFilterUnit): boolean {
     unit.xpLevel !== undefined &&
     !needToAscend(unit) &&
     unit.xpLevel < levelCapForProgression(unit.progression)
+  )
+}
+
+/** An owned character with an equipment slot left empty. */
+export function missingEquipment(unit: QuickFilterUnit): boolean {
+  return (
+    unit.kind === "character" &&
+    unit.equipped !== undefined &&
+    unit.equipmentSlots !== undefined &&
+    unit.equipped < unit.equipmentSlots
+  )
+}
+
+/** An owned character with an ability below its XP level, the cap on ability levels. */
+export function abilitiesBehindLevel(unit: QuickFilterUnit): boolean {
+  const { xpLevel } = unit
+  return (
+    unit.kind === "character" &&
+    xpLevel !== undefined &&
+    (unit.abilityLevels ?? []).some((level) => level < xpLevel)
   )
 }
 

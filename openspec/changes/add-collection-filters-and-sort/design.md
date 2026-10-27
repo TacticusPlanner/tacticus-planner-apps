@@ -15,7 +15,7 @@ The building blocks this change needs already exist:
 
 - One canonical result. Filtering and sorting are steps inside `buildCollectionView`, so the groups, summary, faction counts and the Library origin order all come from the same rows.
 - Quick-filter rules are pure, unit-tested functions, each with the spec's worked examples as tests.
-- Toolbar state lives in the URL through the existing shared hook, with no new URL-state primitive.
+- Toolbar state lives in the URL, read through `useSearchParams` in one validation pass, with no new shared URL-state primitive.
 
 **Non-Goals:**
 
@@ -23,6 +23,8 @@ The building blocks this change needs already exist:
 - Changing the Library origin contract. It already carries "the units of that kind in the order Collection showed them", which with filters is the visible, filtered order. Units the filters hide are not part of that sequence.
 - Server-side preferences or any API change.
 - Making `useCatalogDataset` lazy (see Decision 4).
+- Filters that need data from other features: "has a goal", "used in the current Legendary Event", "in the guild-raid meta". Each needs its own read and gets its own change.
+- Exclusion filters ("not Mechanical") and V1's "no forced summons", which the served character data has no field for.
 
 ## Decisions
 
@@ -64,7 +66,7 @@ _Alternative:_ add `enabled` to `useCatalogDataset`. Deferred, because it is a s
 
 ### 5. Desktop and mobile toolbar forms differ in structure
 
-- **Desktop (768px and wider):** a single row with search, Sort and Filters. The Filters button toggles an inline grid of controls below it (Alliance, Faction, Rarity, Rank range, Ownership, Kind, Clear filters). The grid starts open when a standalone filter is active, as in the NPC panel. Quick-filter chips are a single-select `ToggleGroup` below the row and wrap.
+- **Desktop (768px and wider):** a single row with search, Sort and Filters. The Filters button toggles an inline panel below it with two labelled groups: Unit (Alliance, Faction, Rarity, Rank range, Stars range, Ownership, Kind) and Combat (Attack type, Hits, Movement, Attack range, Damage types, Traits, Shard source), then Clear filters. Each range is one cell with both ends side by side, so a pair never splits across rows; each group's grid fits as many columns of at least 10rem as the panel allows (a range takes two), rather than fixed breakpoint column counts, so it adapts to monitor width and the sidebar. In the mobile sheet every cell takes its own row. The grid starts open when a standalone filter is active, as in the NPC panel. Quick-filter chips are a single-select `ToggleGroup` below the row and wrap.
 - **Mobile (below 768px):** full-width search, then Sort and Filters side by side. Filters opens a `ResponsiveDialog` (a bottom sheet at this width) holding the same controls stacked, with Clear filters and Done in its footer. Chips wrap below.
 - The controls are one `CollectionFilterFields` component rendered in either container, so both forms stay in step.
 - Tour targets: `collection-toolbar` (search, sort and Filters on both forms) and `collection-quick-filters`. On mobile the toolbar step points at the button row, never at the closed sheet. Faction and tile steps are left out when `groups` is empty.
@@ -75,6 +77,18 @@ _Alternative:_ use a bottom sheet on desktop too. Rejected because desktop has t
 
 The match uses `normalize("NFD")`, strips combining marks, applies `toLocaleLowerCase(locale)` and then a substring check against the localized name and the catalog (English) name. This is a small helper in the Collection model. The Library's `searchUnits` is page-local and case-only, so it is neither imported nor changed.
 
+### 7. Combat filters read a per-character profile built from the catalog
+
+Every character row gets a `combat` profile built once from the `characters` dataset: `meleeHits`, `rangedHits`, `rangeDistance`, `movement`, the trait set, the damage-type set (`meleeDamage`, `rangedDamage`, `activeAbilityDamage`, `passiveAbilityDamage`) and the set of shard source campaign types (from non-mythic `shardLocations[].type`). Machine of War rows have no profile, so any set combat filter rejects them. The matcher applies V1's `passesRosterFilter` rules one to one (attack type, hits with attack type, exact movement, range excluding melee-only, every damage type, every trait with Mechanical also met by `LivingMetal`). Shard source matches any picked type.
+
+The options come from the same catalog read (`use-collection-factions` grows into a `use-collection-options` hook): sorted distinct hit counts, movements and ranges, and the damage types, traits and campaign types that occur. Labels and icons reuse `damageTypes:`/`traits:` translations and `damageTypeIcon`/`traitIcon`.
+
+URL parameters: `attack` (`melee` | `ranged`), `hitsMin`, `hitsMax`, `move`, `rangeMin`, `rangeMax`, `damage`, `trait` and `source` (comma lists), plus `starsMin`/`starsMax` (progression ids) for the stars range. They go through the same single validation pass as the rest: each value is checked against the catalog option lists, and while those are still loading the raw value is kept and not applied, as `faction` already works. Backwards hits, range and stars ranges are swapped like the rank range.
+
+Missing equipment compares the roster's `equippedItems` count with the catalog's `equipmentSlots` length; Abilities behind level compares each `abilities[].level` with `xpLevel`. Both only need the roster, so their availability is `available` or `needsRoster`, like Need to level.
+
+_Alternative:_ derive the combat profile in `entities/unit` for reuse by the Library and team pages. Not done yet; Collection is the only V2 consumer.
+
 ## Risks / Trade-offs
 
 - [The `ascension-costs` dataset could disagree with V1's table, which the worked examples quote] → The rule tests use the catalog fixture's ladder. Implementation checks the served dataset against the spec's numbers and stops to report any difference rather than editing the examples silently.
@@ -83,7 +97,9 @@ The match uses `normalize("NFD")`, strips combining marks, applies `toLocaleLowe
 - [Ready to rank up ignores XP level, so a character can be listed and still be unable to apply its bottom-row upgrades] → Stated in the spec. Need to level is the complementary filter. Revisit if players report confusion.
 - [Inventory is not reserved: two characters needing the same materials can both show as ready although only one can rank up] → Stated in the spec's evaluation rule. A "plan-aware" readiness belongs to Goals, not Collection.
 - [Readiness over ~100 owned characters with recursive recipe expansion on each toggle] → Memoised per inventory and roster snapshot and computed only while the chip is selected. Measure with the existing render-hot-path test harness, and cache per-upgrade base expansion if it shows up.
-- [Long comma-separated URL values with many factions selected] → At most about 25 faction ids, well within URL limits.
+- [Long comma-separated URL values with many factions selected] → At most about 25 faction ids, and about 40 traits, well within URL limits.
+- [Character ability damage is only partly served: 73 of 119 characters list active-ability damage and 30 passive] → The damage-type filter then sees only attack damage for the rest. Stated in the spec; filling the data server-side fixes it with no frontend change.
+- [The filter panel grows to fourteen controls] → Two labelled groups on desktop and in the mobile sheet keep it scannable; the panel still starts closed unless a filter is active.
 - [`persist-view-state-in-url` is still in progress] → This change only consumes the already-merged `useSearchParamState`. It touches none of that change's files.
 
 ## Migration Plan
