@@ -48,6 +48,7 @@ const MAX_DAYS = 1000
 /** Key of the per-day Onslaught runs pool in `applyFlatSuppliers`' `dailySupplyUsed` (shop offer ids
  *  are `<shopId>:<rewardType>`, so it can't collide with one). */
 const ONSLAUGHT_RUNS_POOL_KEY = "onslaught:runs"
+const MYTHIC_ONSLAUGHT_KEY = "onslaught:mythic"
 
 /** What `supplier` can give toward `need` today after higher-priority goals' draws, recording the
  *  draw in `pool`. A shop offer pools its own amount by `key`; Onslaught pools runs (its supply over
@@ -117,8 +118,13 @@ export function applyFlatSuppliers(
   // Allocate in a stable order (by key), not caller array order: on the day the shared need is
   // exhausted, whichever supplier is consulted first absorbs the remainder, so array order would
   // otherwise make each source's attributed total depend on selection order.
-  const ordered = [...suppliers].sort((a, b) =>
-    a.key < b.key ? -1 : a.key > b.key ? 1 : 0
+  // Mythic Onslaught runs come after regular ones: a run yields regular shards until the unit
+  // reaches Mythic, so the shared run pool goes to the regular need first.
+  const ordered = [...suppliers].sort(
+    (a, b) =>
+      Number(a.key === MYTHIC_ONSLAUGHT_KEY) -
+        Number(b.key === MYTHIC_ONSLAUGHT_KEY) ||
+      (a.key < b.key ? -1 : a.key > b.key ? 1 : 0)
   )
 
   for (const supplier of ordered) {

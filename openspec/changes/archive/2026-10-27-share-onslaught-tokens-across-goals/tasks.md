@@ -6,6 +6,11 @@
       through `shardsPerRun`; rename the pool parameter to `dailySupplyUsed`.
 - [x] 1.2 Update the `FlatSupplier` doc comment to describe the shared Onslaught pool.
 
+- [x] 1.3 Review follow-up: `computeGoalAcquisition` emits a Mythic Onslaught supplier and
+      `mythicShardNeed` for an Ascension goal needing Mythic shards (and lets its selected Mythic
+      shop offers through); Today/Schedule and Insights add that need to the day-loop.
+      `applyFlatSuppliers` spends a goal's runs on regular shards before Mythic.
+
 ## 2. Tests
 
 - [x] 2.1 `estimate-plan.test.ts`: two Onslaught goals — the first gets all runs, the second gets

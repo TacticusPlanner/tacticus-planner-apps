@@ -220,6 +220,7 @@ export function computePlanInsights(params: {
       campaignShardsEnabled,
       flatSuppliers,
       onslaughtTokensDelta,
+      mythicShardNeed,
     } = computeGoalAcquisition({
       detail,
       need,
@@ -288,6 +289,9 @@ export function computePlanInsights(params: {
         })
       }
     }
+
+    // Onslaught-only, so it adds nothing to the campaign insights above.
+    if (mythicShardNeed) needs.push(mythicShardNeed)
 
     const priority = params.priorityByGoalId.get(detail.goalId)
     if (detail.goalType === "Ascension") {

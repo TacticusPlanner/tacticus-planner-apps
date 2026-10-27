@@ -710,6 +710,38 @@ describe("Onslaught tokens shared across goals (share-onslaught-tokens-across-go
     })
   })
 
+  it("spends a goal's runs on its regular shards before its Mythic shards", () => {
+    const MYTHIC = upgradeId("mythicShards_kharn")
+    const result = estimatePlanSchedule({
+      goals: [
+        {
+          goalId: "kharn",
+          priority: 1,
+          needs: [
+            { id: KHARN, count: 6 },
+            { id: MYTHIC, count: 2 },
+          ],
+          flatSuppliers: [
+            onslaught(KHARN, 4),
+            { ...onslaught(MYTHIC, 1), key: "onslaught:mythic" },
+          ],
+        },
+      ],
+      inventory: [],
+      upgradesById: new Map(),
+      battlesById: new Map(),
+      dailyEnergy: 100,
+      referenceDate,
+    })
+
+    expect(result.days.map((day) => day.onslaughtEntries)).toEqual([
+      [{ goalId: "kharn", expectedShards: 6, runs: 1.5 }],
+      [{ goalId: "kharn", expectedShards: 1.5, runs: 1.5 }],
+      [{ goalId: "kharn", expectedShards: 0.5, runs: 0.5 }],
+    ])
+    expect(result.outcomes.get("kharn")).toMatchObject({ days: 3 })
+  })
+
   it("passes the runs a finishing goal leaves to the next goal that day", () => {
     const result = plan(8)
 

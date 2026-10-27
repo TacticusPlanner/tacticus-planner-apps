@@ -196,6 +196,7 @@ export function calculateDailyRaids(
       campaignShardsEnabled,
       flatSuppliers,
       shopOffers,
+      mythicShardNeed,
     } = computeGoalAcquisition({
       detail,
       need,
@@ -238,6 +239,7 @@ export function calculateDailyRaids(
         })
       }
     }
+    if (mythicShardNeed) needs.push(mythicShardNeed)
     if (needs.length === 0 && stages === null) continue
     for (const needEntry of need.upgrades) {
       const upgradeId = needEntry.id as UpgradeId
