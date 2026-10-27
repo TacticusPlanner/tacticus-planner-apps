@@ -45,6 +45,7 @@ const workedPoints = [240, 248, 252, 191, 140, 65].map((points) => ({ points }))
 /** The worked forecast: Uthar in run 2 (32 tokens left), run 3 planned (68), Stage 3's inputs. */
 const worked = (overrides: Partial<ForecastInput> = {}): ForecastInput => ({
   rewards: utharEvent.rewards,
+  ohSoCloseOffer: utharEvent.ohSoCloseOffer,
   progress: {
     currentPoints: 5000,
     currentCurrency: 120,
@@ -318,6 +319,7 @@ describe("forecastRuns", () => {
     const v1 = (overrides: Partial<ForecastInput> = {}) =>
       forecastRuns({
         rewards: dante,
+        ohSoCloseOffer: utharEvent.ohSoCloseOffer,
         progress: {
           currentPoints: 0,
           currentCurrency: 0,
@@ -384,7 +386,8 @@ describe("ohSoCloseHint", () => {
           shardsTowardStep: 340,
           stepSize: 400,
         },
-        340
+        340,
+        utharEvent.ohSoCloseOffer
       )
     ).toEqual({ shards: 60, blackstone: 6500 })
     expect(
@@ -395,9 +398,28 @@ describe("ohSoCloseHint", () => {
           shardsTowardStep: 300,
           stepSize: 400,
         },
-        300
+        300,
+        utharEvent.ohSoCloseOffer
       )
     ).toBeNull()
-    expect(ohSoCloseHint({ step: "fullyAscended" }, 1300)).toBeNull()
+    expect(
+      ohSoCloseHint({ step: "fullyAscended" }, 1300, utharEvent.ohSoCloseOffer)
+    ).toBeNull()
+  })
+
+  it("prices the gap by the event's served offer", () => {
+    const offer = {
+      unlock: { base: 200, multiplier: 80 },
+      ascension: { base: 300, multiplier: 40 },
+    }
+    const goal = { threshold: 400, shardsTowardStep: 350, stepSize: 400 }
+    expect(ohSoCloseHint({ ...goal, step: "unlock" }, 350, offer)).toEqual({
+      shards: 50,
+      blackstone: 4200,
+    })
+    expect(ohSoCloseHint({ ...goal, step: "fourStars" }, 350, offer)).toEqual({
+      shards: 50,
+      blackstone: 2300,
+    })
   })
 })

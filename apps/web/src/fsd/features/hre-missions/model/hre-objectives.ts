@@ -1,10 +1,11 @@
 import {
-  HRE_MISSIONS,
+  hreAllDone,
   hreMission,
+  type HreMission,
   type HreObjective,
   type HreObjectiveKind,
 } from "./hre-missions"
-import { HRE_ALL_DONE, type HreProgress } from "./hre-progress"
+import type { HreProgress } from "./hre-progress"
 
 const CAMPAIGN_KINDS: ReadonlySet<HreObjectiveKind> = new Set([
   "campaignWins",
@@ -102,8 +103,8 @@ export const isManualObjective = (kind: HreObjectiveKind) =>
   kind in MANUAL_YIELD
 
 /** The current mission's open objectives with what is left of each. */
-function openObjectives(state: HreProgress) {
-  return hreMission(state.mission)
+function openObjectives(state: HreProgress, missions: readonly HreMission[]) {
+  return hreMission(missions, state.mission)
     .objectives.map((objective, index) => ({
       objective,
       toGo: objective.target - state.progress[index]!,
@@ -121,10 +122,11 @@ function openObjectives(state: HreProgress) {
  */
 export function selectCampaignPlan(
   state: HreProgress,
+  missions: readonly HreMission[],
   arenaSurplus = 0
 ): HreCampaignPlan | null {
-  if (state.mission >= HRE_ALL_DONE) return null
-  const open = openObjectives(state)
+  if (state.mission >= hreAllDone(missions)) return null
+  const open = openObjectives(state, missions)
   const raid = open.find((item) => RAID_KINDS.has(item.objective.kind))
   const needs = open.flatMap((item): HreManualNeed[] => {
     const kind = item.objective.kind
@@ -173,10 +175,11 @@ export function selectCampaignPlan(
 
 /** Whether the current mission has a campaign objective at all (met or not). */
 export function campaignObjectiveState(
-  state: HreProgress
+  state: HreProgress,
+  missions: readonly HreMission[]
 ): "open" | "met" | "none" {
-  if (state.mission >= HRE_ALL_DONE) return "none"
-  const objectives = hreMission(state.mission).objectives
+  if (state.mission >= hreAllDone(missions)) return "none"
+  const objectives = hreMission(missions, state.mission).objectives
   const index = objectives.findIndex(
     (objective) =>
       CAMPAIGN_KINDS.has(objective.kind) ||
@@ -188,9 +191,10 @@ export function campaignObjectiveState(
 
 /** The next mission after the current one that has a campaign objective, with that objective. */
 export function nextCampaignMission(
-  state: HreProgress
+  state: HreProgress,
+  missions: readonly HreMission[]
 ): { missionNumber: number; objective: HreObjective } | null {
-  for (const mission of HRE_MISSIONS) {
+  for (const mission of missions) {
     if (mission.number <= state.mission) continue
     const objective = mission.objectives.find((item) =>
       CAMPAIGN_KINDS.has(item.kind)
@@ -201,9 +205,12 @@ export function nextCampaignMission(
 }
 
 /** Campaign battles still needed over the current mission (less its progress) and every later one. */
-export function remainingCampaignBattles(state: HreProgress): number {
+export function remainingCampaignBattles(
+  state: HreProgress,
+  missions: readonly HreMission[]
+): number {
   let total = 0
-  for (const mission of HRE_MISSIONS) {
+  for (const mission of missions) {
     if (mission.number < state.mission) continue
     mission.objectives.forEach((objective, index) => {
       if (!CAMPAIGN_KINDS.has(objective.kind)) return
@@ -230,9 +237,12 @@ const TOKEN_KIND: Record<HreTokenMode, HreObjectiveKind> = {
 }
 
 /** Battles of each token mode the current mission (less its progress) and every later one need. */
-export function tokenNeeds(state: HreProgress): Record<HreTokenMode, number> {
+export function tokenNeeds(
+  state: HreProgress,
+  missions: readonly HreMission[]
+): Record<HreTokenMode, number> {
   const needs = { arena: 0, guildRaid: 0, onslaught: 0, salvageRun: 0 }
-  for (const mission of HRE_MISSIONS) {
+  for (const mission of missions) {
     if (mission.number < state.mission) continue
     mission.objectives.forEach((objective, index) => {
       const mode = HRE_TOKEN_MODES.find(
@@ -253,9 +263,10 @@ export const isTokenObjective = (kind: HreObjectiveKind) =>
 /** The first token mission after `missionNumber`, with the tokens it needs, for the reserve tip shown
  * on the missions before it (a token mission's own tip would tell you to keep what it spends). */
 export function nextTokenReserve(
-  missionNumber: number
+  missionNumber: number,
+  missions: readonly HreMission[]
 ): { mode: HreTokenMode; tokens: number; missionNumber: number } | null {
-  for (const mission of HRE_MISSIONS) {
+  for (const mission of missions) {
     if (mission.number <= missionNumber) continue
     for (const objective of mission.objectives) {
       const mode = HRE_TOKEN_MODES.find(
@@ -280,9 +291,10 @@ export type HreTokenNeedRow = {
 /** The tokens-needed rows: modes with a remaining need, compared with the synced tokens. */
 export function tokenNeedRows(
   state: HreProgress,
+  missions: readonly HreMission[],
   tokens: Record<HreTokenMode, number | null>
 ): HreTokenNeedRow[] {
-  const needs = tokenNeeds(state)
+  const needs = tokenNeeds(state, missions)
   return HRE_TOKEN_MODES.filter((mode) => needs[mode] > 0).map((mode) => {
     const have = tokens[mode]
     return {

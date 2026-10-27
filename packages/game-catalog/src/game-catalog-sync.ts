@@ -120,7 +120,7 @@ export async function syncGameCatalog(
         hash: envelope.datasetHash,
         catalogVersion: envelope.version,
         gameVersion: envelope.gameVersion,
-        schemaVersion: envelope.schemaVersion,
+        schemaHash: envelope.schemaHash,
         updatedAt: new Date().toISOString(),
         url: dataset.url,
       })
@@ -143,7 +143,7 @@ export async function syncGameCatalog(
         hash: manifest.sourceHash,
         catalogVersion: manifest.version,
         gameVersion: manifest.gameVersion,
-        schemaVersion: manifest.schemaVersion,
+        schemaHash: manifest.schemaHash,
         updatedAt: new Date().toISOString(),
         etag,
       })

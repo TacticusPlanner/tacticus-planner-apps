@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next"
 
 import type { MissionDeployGroup } from "@/features/daily-raids"
-import type { HreTeamPlan } from "@/features/hre-missions"
+import type { HreMission, HreTeamPlan } from "@/features/hre-missions"
 
 import { useHreTeamRecommendations } from "@/features/team-recommendations"
 import type { RunningHse } from "../../model/use-running-hse"
@@ -20,6 +20,7 @@ export function HreCampaignTeams({
   featuredCharacterId,
   hero,
   hse,
+  missions,
 }: {
   groups: readonly MissionDeployGroup[]
   plan: HreTeamPlan
@@ -28,6 +29,7 @@ export function HreCampaignTeams({
   featuredCharacterId: string | null
   hero: string
   hse: RunningHse | null
+  missions: readonly HreMission[]
 }) {
   const { t } = useTranslation(["hre"])
   const teams = useHreTeamRecommendations({
@@ -54,6 +56,7 @@ export function HreCampaignTeams({
             hero={hero}
             hseEvent={hse?.name ?? null}
             key={group.factions.join("|")}
+            missions={missions}
             note={
               group.fewestSlots < fielded
                 ? t("hre:teams.fewerSlots", { slots: group.fewestSlots })

@@ -113,6 +113,7 @@ export const datasetToStorageModels: Record<
   "damage-types": asArray,
   "global-values": (data) => asFixedIdRow("global-values", data),
   "progression-rules": (data) => asFixedIdRow("progression-rules", data),
+  hre: asArray,
 }
 
 export function mapDatasetRowToStorageModel<T extends Record<string, unknown>>(

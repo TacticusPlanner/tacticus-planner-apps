@@ -50,7 +50,7 @@ declare module "i18next" {
       // Sorted ability ids whose English rules text summons a unit (generated with the rules text);
       // read via `i18n.getResourceBundle` by the HRE team recommender.
       npcAbilitySummoners: Record<string, unknown>
-      // Mythic quest task templates (loca key -> template), ported from V1. English-only; read via
+      // Mythic quest task templates (loca key -> template), generated from the datamine; read via
       // `i18n.getResource` — see the library character unit page.
       mythicQuestTasks: Record<string, string>
       // Raid-boss game-data namespaces (unitSet / ability / trait ids as keys), in every locale except

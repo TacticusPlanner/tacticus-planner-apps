@@ -116,7 +116,7 @@ describe("LegendaryEventsHubPage", () => {
     ])
     expect(
       names(screen.getByTestId("legendary-events-group-upcoming"))
-    ).toEqual(["Uthar", "Farsight"])
+    ).toEqual(["Ûthar", "Farsight"])
     expect(
       names(screen.getByTestId("legendary-events-group-archived"))
     ).toEqual(["Dante"])
@@ -167,7 +167,7 @@ describe("LegendaryEventsHubPage", () => {
     const uthar = within(
       screen.getByTestId("legendary-events-group-upcoming")
     ).getAllByTestId("legendary-event-card")[0]!
-    expect(uthar).toHaveTextContent("Uthar")
+    expect(uthar).toHaveTextContent("Ûthar")
     // 2026-10-04T00:00Z is 03:00 in Kyiv (UTC+3 in October).
     expect(within(uthar).getByTestId("event-timing-date")).toHaveTextContent(
       /Starts Oct 4, 2026, 3:00\sAM/

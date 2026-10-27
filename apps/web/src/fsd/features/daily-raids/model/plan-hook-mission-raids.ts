@@ -37,6 +37,8 @@ export function planHookMissionRaids(input: {
     campaignGroupId: string
     type: string
     nodeNumber: number
+    /** The lightning victory's turn limit, or null when the node has none. */
+    lightningVictoryTurns: number | null
     enemyPower?: number
     alliesFactions?: readonly string[]
     slots?: number
@@ -80,7 +82,7 @@ export function planHookMissionRaids(input: {
       dailyAttempts: battle.dailyAttempts,
       isEvent: eventCampaignIds.has(battle.campaignGroupId),
       expectedGold: expectedGold(battle.rewards.guaranteed),
-      lightningCondition: hasLightningCondition(battle),
+      lightningCondition: battle.lightningVictoryTurns !== null,
       enemyPower: battle.enemyPower ?? 0,
       ...(battle.alliesFactions
         ? {
@@ -144,17 +146,6 @@ export function planHookMissionRaids(input: {
 /** Ability uses one battle fought by hand with five units yields: one each (Severyn: mission 7 at
  * 12 / 20 still needs 2 battles). */
 const ABILITY_USES_PER_BATTLE = 5
-
-/** Indomitus, whose nodes below 19 have no lightning-victory condition (Severyn, 2026-10). */
-const INDOMITUS_GROUP_ID = "campaign1"
-const FIRST_LIGHTNING_INDOMITUS_NODE = 19
-
-const hasLightningCondition = (battle: {
-  campaignGroupId: string
-  nodeNumber: number
-}) =>
-  battle.campaignGroupId !== INDOMITUS_GROUP_ID ||
-  battle.nodeNumber >= FIRST_LIGHTNING_INDOMITUS_NODE
 
 const expectedGold = (
   guaranteed: readonly { id: string; min: number; max: number }[]

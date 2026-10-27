@@ -2,8 +2,12 @@ import { PartyPopper } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Card, CardContent } from "@workspace/ui/components/card"
 
-import type { HreObjective } from "../model/hre-missions"
-import { HRE_ALL_DONE, type HreProgress } from "../model/hre-progress"
+import {
+  hreAllDone,
+  type HreMission,
+  type HreObjective,
+} from "../model/hre-missions"
+import type { HreProgress } from "../model/hre-progress"
 import type { HreProgressActions } from "../model/use-hre-progress"
 import { CurrentMissionCard } from "./current-mission-card"
 import { MissionList } from "./mission-list"
@@ -11,15 +15,17 @@ import { MissionList } from "./mission-list"
 /** The current mission card on a running event, or "All missions complete" once the Bonus is done. */
 export function MissionTracker({
   state,
+  missions,
   actions,
   objectiveText,
 }: {
   state: HreProgress
+  missions: readonly HreMission[]
   actions: HreProgressActions
   objectiveText: (objective: HreObjective) => string
 }) {
   const { t } = useTranslation("hre")
-  if (state.mission >= HRE_ALL_DONE) {
+  if (state.mission >= hreAllDone(missions)) {
     return (
       <Card data-testid="hre-all-done">
         <CardContent className="flex items-center gap-3 py-6">
@@ -32,6 +38,7 @@ export function MissionTracker({
   return (
     <CurrentMissionCard
       actions={actions}
+      missions={missions}
       objectiveText={objectiveText}
       state={state}
     />
@@ -45,14 +52,22 @@ export function MissionTracker({
 export function AllMissions({
   current,
   collapsed,
+  missions,
   objectiveText,
 }: {
   current: number | null
   collapsed: boolean
+  missions: readonly HreMission[]
   objectiveText: (objective: HreObjective) => string
 }) {
   const { t } = useTranslation("hre")
-  const list = <MissionList current={current} objectiveText={objectiveText} />
+  const list = (
+    <MissionList
+      current={current}
+      missions={missions}
+      objectiveText={objectiveText}
+    />
+  )
   return collapsed ? (
     <details data-testid="hre-all-missions">
       <summary
