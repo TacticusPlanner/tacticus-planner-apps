@@ -18,6 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@workspace/ui/components/select"
+import { Skeleton } from "@workspace/ui/components/skeleton"
 import { Slider } from "@workspace/ui/components/slider"
 import { Spinner } from "@workspace/ui/components/spinner"
 
@@ -67,7 +68,7 @@ export function PlanningSettingsDialog({
     setError(null)
     try {
       await save({
-        // Unchanged while the tiers haven't loaded (the slider is disabled then).
+        // Unchanged while the tiers haven't loaded (the slider isn't shown then).
         dailyEnergy: tier?.energy ?? settings.dailyEnergy,
         xpBookRarity,
         revision: settings.revision,
@@ -109,25 +110,32 @@ export function PlanningSettingsDialog({
                 ? `${tier.energy} · ${energySourceLabel(tier.source)}`
                 : settings.dailyEnergy}
             </p>
-            <Slider
-              aria-label={t("goals.planningSettings.dailyEnergy")}
-              data-testid="planning-settings-energy"
-              min={0}
-              max={Math.max(0, (tiers?.length ?? 1) - 1)}
-              step={1}
-              disabled={!tiers}
-              value={[tierIndex]}
-              onValueChange={([value]) => {
-                const next = value === undefined ? undefined : tiers?.[value]
-                if (next) setDailyEnergy(next.energy)
-              }}
-            />
             {tiers ? (
-              <div className="flex justify-between text-xs text-muted-foreground">
-                <span>{tiers[0]?.energy}</span>
-                <span>{tiers.at(-1)?.energy}</span>
-              </div>
-            ) : null}
+              <>
+                <Slider
+                  aria-label={t("goals.planningSettings.dailyEnergy")}
+                  data-testid="planning-settings-energy"
+                  min={0}
+                  max={tiers.length - 1}
+                  step={1}
+                  value={[tierIndex]}
+                  onValueChange={([value]) => {
+                    const next = value === undefined ? undefined : tiers[value]
+                    if (next) setDailyEnergy(next.energy)
+                  }}
+                />
+                <div className="flex justify-between text-xs text-muted-foreground">
+                  <span>{tiers[0]?.energy}</span>
+                  <span>{tiers.at(-1)?.energy}</span>
+                </div>
+              </>
+            ) : (
+              // Until global-values loads there are no tiers to slide between.
+              <Skeleton
+                className="h-9 w-full"
+                data-testid="planning-settings-energy-loading"
+              />
+            )}
           </Field>
 
           <Field>
