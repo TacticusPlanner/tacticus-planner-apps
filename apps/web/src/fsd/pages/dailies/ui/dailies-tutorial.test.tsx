@@ -15,7 +15,13 @@ vi.mock("@/shared/tour", () => ({
 describe("Dailies tutorials", () => {
   beforeEach(() => register.mockClear())
 
-  it.each([["Today", useTodayTutorial, "tour.today.steps"]] as const)(
+  it.each([
+    [
+      "Today",
+      useTodayTutorial,
+      /^localized:(tour\.today|shops:tour\.shops)\.steps/,
+    ],
+  ] as const)(
     "registers localized desktop and mobile %s steps",
     (_name, hook, keyPrefix) => {
       renderHook(() => hook())
@@ -32,8 +38,8 @@ describe("Dailies tutorials", () => {
       ).toBe(false)
       for (const step of steps.desktop) {
         expect(step.target).toMatch(/^\[data-testid="[a-z-]+"\]$/)
-        expect(step.title).toContain(`localized:${keyPrefix}`)
-        expect(step.content).toContain(`localized:${keyPrefix}`)
+        expect(step.title).toMatch(keyPrefix)
+        expect(step.content).toMatch(keyPrefix)
       }
     }
   )
@@ -54,4 +60,20 @@ describe("Dailies tutorials", () => {
       ).toBeLessThan(targets.indexOf('[data-testid="energy-usage"]'))
     }
   )
+
+  it("ends with the shop steps folded in from the former Shops tab", () => {
+    renderHook(() => useTodayTutorial())
+    const steps = register.mock.lastCall?.[0] as {
+      desktop: { target: string; title: string }[]
+    }
+
+    expect(steps.desktop.slice(-3).map((step) => step.target)).toEqual([
+      '[data-testid="today-shops"]',
+      '[data-testid="shop-group-guaranteed"]',
+      '[data-testid="shop-group-possible"]',
+    ])
+    expect(steps.desktop.at(-3)?.title).toBe(
+      "localized:shops:tour.shops.steps.purpose.title"
+    )
+  })
 })

@@ -28,9 +28,6 @@ const loadGuildRaidsPage = () =>
     default: module.GuildRaidsPage,
   }))
 const GuildRaidsPage = lazy(loadGuildRaidsPage)
-const loadShopsPage = () =>
-  import("./ui/shops-page").then((module) => ({ default: module.ShopsPage }))
-const ShopsPage = lazy(loadShopsPage)
 
 export const routes: RouteObject[] = [
   { index: true, element: <Navigate replace to="/dailies/raids" /> },
@@ -47,11 +44,8 @@ export const routes: RouteObject[] = [
     element: <QuestPage />,
     loader: preloadOnMatch(loadQuestPage),
   },
-  {
-    path: "shops",
-    element: <ShopsPage />,
-    loader: preloadOnMatch(loadShopsPage),
-  },
+  // Shop recommendations now sit on the Raids tab; old Shops links and bookmarks land there.
+  { path: "shops", element: <Navigate replace to="/dailies/raids" /> },
   {
     path: "guild-raids",
     element: <GuildRaidsPage />,

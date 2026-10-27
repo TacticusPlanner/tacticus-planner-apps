@@ -49,12 +49,12 @@ describe("useSectionEntryPath", () => {
   it("treats Dailies as a multi-child section too, once it has children", () => {
     const { rerender, result } = renderHook(
       ({ pathname }) => useSectionEntryPath(navItems, pathname),
-      { initialProps: { pathname: "/dailies/shops" } }
+      { initialProps: { pathname: "/dailies/guild-raids" } }
     )
     rerender({ pathname: "/home" })
 
     const dailies = navItems.find((item) => item.path === "/dailies")!
-    expect(result.current.getEntryPath(dailies)).toBe("/dailies/shops")
+    expect(result.current.getEntryPath(dailies)).toBe("/dailies/guild-raids")
   })
 
   it("always returns the item's own path for single-child or no-children items", () => {

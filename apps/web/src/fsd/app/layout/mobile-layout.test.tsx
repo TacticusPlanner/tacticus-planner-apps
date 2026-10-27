@@ -225,7 +225,7 @@ describe("MobileBottomNav actions", () => {
     // Dailies is `mobilePlacement: "primary"` (also a direct bottom-bar link) but, now that it has
     // children too, still gets the same nested-in-drawer treatment as every other section.
     expect(drawer.getByText("dailies:tabs.raids")).toBeVisible()
-    expect(drawer.getByText("dailies:tabs.shops")).toBeVisible()
+    expect(drawer.getByText("dailies:tabs.guild-raids")).toBeVisible()
 
     fireEvent.change(screen.getByLabelText("nav.search"), {
       target: { value: "events" },

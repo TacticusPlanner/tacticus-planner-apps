@@ -25,9 +25,9 @@ export function ShopsDesktop({
           className="space-y-4"
           data-testid={`shop-section-${section.shopId}`}
         >
-          <h2 className="text-lg font-semibold">
+          <h3 className="text-base font-semibold">
             {t(`shopName.${section.shopId}`, { defaultValue: section.shopId })}
-          </h2>
+          </h3>
           {section.guaranteed.length > 0 ? (
             <Group label={t("group.guaranteed")} testId="guaranteed">
               {section.guaranteed.map((card) => (
@@ -67,7 +67,7 @@ function Group({
 }) {
   return (
     <div className="space-y-2" data-testid={`shop-group-${testId}`}>
-      <h3 className="text-sm font-medium text-muted-foreground">{label}</h3>
+      <h4 className="text-sm font-medium text-muted-foreground">{label}</h4>
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {children}
       </div>

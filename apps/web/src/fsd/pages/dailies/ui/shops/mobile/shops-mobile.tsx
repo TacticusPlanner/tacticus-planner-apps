@@ -26,14 +26,14 @@ export function ShopsMobile({
           className="space-y-3"
           data-testid={`shop-section-${section.shopId}`}
         >
-          <h2 className="text-base font-semibold">
+          <h3 className="text-base font-semibold">
             {t(`shopName.${section.shopId}`, { defaultValue: section.shopId })}
-          </h2>
+          </h3>
           {section.guaranteed.length > 0 ? (
             <div className="space-y-1.5" data-testid="shop-group-guaranteed">
-              <h3 className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
+              <h4 className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
                 {t("group.guaranteed")}
-              </h3>
+              </h4>
               {section.guaranteed.map((card) => (
                 <ShopRecommendationCard
                   key={card.rewardType}
@@ -45,9 +45,9 @@ export function ShopsMobile({
           ) : null}
           {section.possible.length > 0 ? (
             <div className="space-y-1.5" data-testid="shop-group-possible">
-              <h3 className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
+              <h4 className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
                 {t("group.possible")}
-              </h3>
+              </h4>
               {section.possible.map((card) => (
                 <ShopRecommendationCard
                   key={card.rewardType}

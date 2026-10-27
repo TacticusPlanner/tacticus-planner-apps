@@ -2,21 +2,22 @@ import { useOutletContext } from "react-router"
 import { useTranslation } from "react-i18next"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
-import { ProjectSelect } from "@/entities/project"
-
 import { useShopRecommendations } from "@/features/shop-recommendations"
 import type { DailiesOutletContext } from "./dailies-layout"
 import { ShopsDesktop } from "./shops/desktop/shops-desktop"
 import { ShopsMobile } from "./shops/mobile/shops-mobile"
 import { ShopsState } from "./shops/shops-state"
-import { useShopsTutorial } from "./shops-page.tutorial"
 
-export function ShopsPage() {
+/**
+ * Today's shop buys, shown on Dailies > Raids under the raid lanes (the separate Shops tab was folded
+ * in here). It reads the same Dailies-wide project as the raids above it, so the Raids project
+ * selector narrows both.
+ */
+export function TodayShops() {
   const context = useOutletContext<DailiesOutletContext>()
-  const { t } = useTranslation(["shops", "dailies"])
+  const { t } = useTranslation("shops")
   const isMobile = useIsMobile()
   const recommendations = useShopRecommendations(context.projectId)
-  useShopsTutorial()
 
   const project = context.projects.find(
     (candidate) => candidate.projectId === context.projectId
@@ -49,29 +50,16 @@ export function ShopsPage() {
   }
 
   return (
-    <div className="space-y-5 md:space-y-7" data-testid="shops-page">
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div className="space-y-1">
-          <h2 className="text-lg font-semibold">{t("title")}</h2>
-          {/* Offers are recommended for every Active goal unless a project narrows them; the
-              account-wide raid plan (Today, Raids Plan) is not affected by it. */}
-          <p className="text-sm text-muted-foreground">
-            {project
-              ? t("subtitle", { project: project.name })
-              : t("subtitleAll")}
-          </p>
-        </div>
-        <ProjectSelect
-          allowAll
-          compact={false}
-          onProjectIdChange={context.setProjectId}
-          placeholder={t("dailies:project.placeholder")}
-          projectId={context.projectId}
-          projects={context.projects}
-          testId="shops-project-select"
-        />
+    <section className="space-y-3 md:space-y-4" data-testid="today-shops">
+      <div className="space-y-1">
+        <h2 className="text-lg font-semibold">{t("title")}</h2>
+        <p className="text-sm text-muted-foreground">
+          {project
+            ? t("subtitle", { project: project.name })
+            : t("subtitleAll")}
+        </p>
       </div>
       {body}
-    </div>
+    </section>
   )
 }
