@@ -31,8 +31,9 @@ On desktop, the app SHALL show a feedback entry-point button in the section head
 
 #### Scenario: A new changelog update clears once shown
 
-- **WHEN** a changelog update is published that the user has not yet opened in the widget
+- **WHEN** a changelog update is published that a desktop user has not yet opened in the widget
 - **THEN** the widget opens that update once, while the page is focused, so it counts as seen and stops holding the unread indicator
+- **AND** on mobile, which shows no unread indicator, the widget does not open updates by itself
 
 ### Requirement: Mobile entry point lives in the account drawer
 

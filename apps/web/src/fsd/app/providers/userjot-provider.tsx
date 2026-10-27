@@ -43,6 +43,21 @@ declare global {
 // v3 is the only pin the vendor offers (accepted vendor risk).
 const USERJOT_SDK_URL = "https://cdn.userjot.com/sdk/v3/uj.js"
 
+// Matches `useIsMobile` in @workspace/ui.
+const MOBILE_QUERY = "(max-width: 767px)"
+
+/**
+ * The unread count includes the newest update until its own page is opened in the widget. On
+ * desktop, "full" opens it once while the page is focused so the feedback-button dot can clear.
+ * Mobile shows no dot, so it stays quiet ("none") rather than popping the widget open.
+ */
+function updatesMode(): "full" | "none" {
+  return typeof window.matchMedia === "function" &&
+    window.matchMedia(MOBILE_QUERY).matches
+    ? "none"
+    : "full"
+}
+
 // The vendor's queueing stub: every call made before the SDK loads is recorded and replayed by it.
 // Installed at import (before any render), so the provider can call the SDK unconditionally.
 if (!window.uj) {
@@ -60,9 +75,7 @@ if (!window.uj) {
       widget: {
         launcher: false,
         whispers: false,
-        // The unread count includes the newest update until its own page is opened in the
-        // widget; "full" opens it once when the page is focused, so the feedback dot can clear.
-        notifications: { updates: "full" },
+        notifications: { updates: updatesMode() },
       },
     }
   )
