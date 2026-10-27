@@ -8,7 +8,7 @@ Gives players a compact, location-first view of what's still worth raiding today
 
 ### Requirement: Home page renders Daily Raids after Your Projects
 
-The authenticated home page SHALL render a Daily Raids section after Your Projects and before the events calendar. At or above the 768px breakpoint it SHALL render side by side with Your Projects. Below 768px it SHALL render as its own full-width stacked section, after Your Projects and before the events calendar.
+The authenticated home page SHALL render a Daily Raids section in the position defined by `home-projects-widget` "Home page renders Your Projects after Token Availability".
 
 #### Scenario: Desktop shows Daily Raids beside Projects
 

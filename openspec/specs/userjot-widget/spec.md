@@ -143,7 +143,7 @@ The widget's displayed language SHALL track the app's currently active UI langua
 
 ### Requirement: Search quick action opens the feedback widget
 
-Desktop navigation search and mobile Menu search SHALL offer Submit Feedback as an explicit widget entry point for signed-in and anonymous users. Activation SHALL dismiss search before opening the same feedback/roadmap/updates widget, retaining verified identity, anonymous fallback, theme, language, and suppression of proactive UI. It SHALL not submit feedback or open Conversations. If the widget is unavailable, the result SHALL be disabled with an explanation.
+The Submit Feedback quick action in desktop navigation search and mobile Menu search (availability and search hand-off: see `app-navigation`) SHALL open the same feedback/roadmap/updates widget, retaining verified identity, anonymous fallback, theme, language, and suppression of proactive UI, and SHALL NOT open Conversations.
 
 #### Scenario: Identification failure preserves anonymous feedback
 
@@ -158,7 +158,7 @@ The feedback widget SDK SHALL be loaded by the application after first paint, fr
 
 - **GIVEN** a user signs in
 - **WHEN** the authenticated shell renders
-- **THEN** the SDK starts loading after first paint and, once loaded, is identified with the signed identity token as today
+- **THEN** the SDK starts loading after first paint and, once loaded, is identified with the signed identity token
 
 #### Scenario: Anonymous user opens feedback from search
 

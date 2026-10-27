@@ -269,7 +269,7 @@ During the current app session in one browser tab, the creation sheet SHALL offe
 
 #### Scenario: Project-scoped launch wins
 
-- **WHEN** the user launches creation from Project Detail after previously choosing different projects
+- **WHEN** the user launches creation from the Goals page scoped to a project after previously choosing different projects
 - **THEN** the viewed project is preselected instead of remembered memberships
 
 #### Scenario: Incompatible type is dropped
@@ -393,11 +393,11 @@ layout on desktop (dialog) and mobile (sheet).
 #### Scenario: Machine of War with no track set
 
 - **WHEN** a user sets neither track
-- **THEN** the card offers the whole ladder as today and the goal is created without a range
+- **THEN** the card offers the whole ladder and the goal is created without a range
 
 ### Requirement: The slot pre-check compares each goal's target
 
-Before submission, the create sheet SHALL check each spec it would create against the account's in-flight goals of the same unit and type using that type's target key (`support-multiple-goals-per-unit` in the API). A conflict SHALL block submission and name the existing goal with its target. Unlock SHALL still conflict with any in-flight Unlock goal of the unit.
+Before submission, the create sheet SHALL check each spec it would create against the account's in-flight goals of the same unit and type using that type's target key (the API's per-target uniqueness rule). A conflict SHALL block submission and name the existing goal with its target. Unlock SHALL still conflict with any in-flight Unlock goal of the unit.
 
 #### Scenario: A second Ascension with a new target is allowed
 

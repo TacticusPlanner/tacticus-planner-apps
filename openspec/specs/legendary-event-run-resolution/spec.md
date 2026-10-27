@@ -94,9 +94,9 @@ The Next token card of an upcoming event SHALL end its reason line with "for whe
 
 ### Requirement: The unknown state plans one conservative run
 
-In the unknown state the token supply SHALL be one **Next** run with the planned token count (no Done or later runs), the run forecast header SHALL read "By the end of the next run: …", the reward projection SHALL count no future run inputs, and clear depths SHALL be read from and written to run 1. No figure SHALL show a run number.
+In the unknown state the run forecast header SHALL read "By the end of the next run: …". The token supply (`legendary-event-run-forecast`), reward projection (`legendary-event-reward-projection`) and clear depths (`legendary-event-teams`) follow their own unknown-run rules.
 
 #### Scenario: Forecast for an unknown run
 
 - **WHEN** the Overview renders for an event in the unknown state
-- **THEN** the forecast shows one Next run of 68 tokens, its header reads "By the end of the next run: …", and no run number appears on the Overview
+- **THEN** its header reads "By the end of the next run: …", and no run number appears on the Overview

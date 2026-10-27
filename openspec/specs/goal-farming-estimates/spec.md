@@ -301,7 +301,7 @@ For a Machine-of-War Ability goal, the farming demand and resource-cost derivati
 account for **every** ability track whose target is above its start, not only the first.
 When both the primary and secondary tracks advance in one goal, the derived material needs,
 farming stages, and any day-by-day estimate SHALL include the level transitions of both
-tracks. A goal that advances only one track SHALL be unaffected by this requirement.
+tracks. A goal that advances only one track SHALL be costed for that track only.
 
 #### Scenario: Both tracks advance
 
@@ -316,8 +316,7 @@ tracks. A goal that advances only one track SHALL be unaffected by this requirem
 - **GIVEN** a Machine-of-War Ability goal whose primary track runs from level 3 to level 6
   and whose secondary track starts and ends at level 2
 - **WHEN** the goal's material needs are derived
-- **THEN** the result covers only the primary 3→6 transitions, unchanged from prior
-  behavior
+- **THEN** the result covers only the primary 3→6 transitions
 
 #### Scenario: Estimate reflects both tracks
 
@@ -346,7 +345,7 @@ Assumptions:
 
 - **GIVEN** the same Unlock goal, the same 40-shard catalog cost, and the same 5 owned shards, but the character is not present in the player's owned roster
 - **WHEN** the goal's resource need is derived
-- **THEN** the derived shard need is 35 (40 required minus 5 owned), unchanged from today
+- **THEN** the derived shard need is 35 (40 required minus 5 owned)
 
 ### Requirement: A plan estimate spends one shared daily energy budget in configured priority order
 
@@ -430,7 +429,7 @@ Assumption: the daily energy budget used for time to finish is `planningSettings
 
 - **GIVEN** two materials with equal time to finish
 - **WHEN** a day is simulated
-- **THEN** they are farmed in the order they were before this requirement
+- **THEN** they are farmed in their existing material order
 
 #### Scenario: Cross-goal order and shared caps are unchanged
 
@@ -569,7 +568,7 @@ Assumption: a shop's daily purchase cap is per account, not per goal.
 
 - **GIVEN** two goals for different units, each using its own unit's shard shop offer
 - **WHEN** the plan is computed
-- **THEN** each goal's shard supply is the same as before this change
+- **THEN** each goal draws only on its own unit's shard offer, unreduced by the other goal
 
 ### Requirement: Upgrade goals contribute farming demand
 

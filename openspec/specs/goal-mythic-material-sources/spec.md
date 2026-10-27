@@ -96,8 +96,8 @@ Assumptions:
 
 A goal with no saved Mythic-material selection SHALL use every offer the control currently lists
 for each needed material, and the control SHALL show those offers checked. This default SHALL be
-resolved when the goal is estimated or displayed, not written to the goal, so goals created before
-this control existed get it too. Unchecking or checking any offer SHALL save an explicit
+resolved when the goal is estimated or displayed, not written to the goal, so a goal saved without a selection gets it
+too. Unchecking or checking any offer SHALL save an explicit
 selection, which is then used as-is. Unchecking every offer SHALL save an explicit empty selection,
 under which no shop supplies the goal's Mythic materials.
 
@@ -110,9 +110,9 @@ under which no shop supplies the goal's Mythic materials.
 
 #### Scenario: Goal without a saved selection uses the default
 
-- **GIVEN** a Ragnar Rank Adamantine 2 goal created before this change, with no saved selection
+- **GIVEN** a Ragnar Rank Adamantine 2 goal with no saved selection
 - **WHEN** Goals, Today, or Raids Plan estimate it
-- **THEN** every listed Venerable Battle Mark offer supplies it, and it is no longer reported as
+- **THEN** every listed Venerable Battle Mark offer supplies it, and it is not reported as
   blocked for Venerable Battle Mark
 
 #### Scenario: Explicit selection is used as-is

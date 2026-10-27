@@ -16,18 +16,7 @@ name, not the `_<id>` placeholder of the 12 unnamed items), the client SHALL res
 SHALL ship in `apps/web/public`, except for a listed set of known gaps. A known-gap equipment item SHALL show
 the existing unknown-item icon.
 
-This change SHALL close these gaps:
-
-| Id                                    | Today                                          | Fix                  |
-| ------------------------------------- | ---------------------------------------------- | -------------------- |
-| item `R_Block_DaemonfleshPlate`       | file is `…_R_Block_DaemonFleshPlate.png`       | rename to exact case |
-| item `R_Crit_Dw02AdvancedBurstCannon` | file is `…_R_Crit_DW02AdvancedBurstCannon.png` | rename to exact case |
-| relic ability `DaemonfleshPlate`      | file is `…_ability2_DaemonFleshPlate.png`      | rename to exact case |
-| relic ability `NetherRealmCasket`     | file is `…_ability2_NetherrealmCasket.png`     | rename to exact case |
-| relic ability `Helspear`              | no file                                        | copy from V1 assets  |
-| relic ability `PhasalSubjugator`      | no file                                        | copy from V1 assets  |
-
-The known gaps after this change are the equipment items `I_Block_E005` (Master-Crafted Power Field) and
+The known gaps are the equipment items `I_Block_E005` (Master-Crafted Power Field) and
 `I_Block_L005` (Artificer Power Field), for which neither V1 nor the game data ships an asset.
 
 #### Scenario: Case-sensitive host

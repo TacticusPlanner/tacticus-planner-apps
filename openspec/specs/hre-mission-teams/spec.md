@@ -64,7 +64,7 @@ Severyn chose one combined team (2026-10): no mission's two objectives ask for t
 
 ### Requirement: Every token objective gets a team for its mode
 
-Every open `arenaBattles`, `salvageRuns`, `onslaught` or `guildRaids` objective SHALL get its own team card titled by its mode (Arena, Salvage Run, Onslaught, Guild Raid), following the rule of the mission's other open objective when that one is manual, so its battles count for both. A token objective open alone SHALL get the player's strongest units. An Onslaught team SHALL hold up to 8 units from one alliance, so fallen units can be replaced; the card SHALL count the units it holds and say there are no spares when fewer than 5 qualify.
+Every open `arenaBattles`, `salvageRuns`, `onslaught` or `guildRaids` objective SHALL get its own team card titled by its mode (Arena, Salvage Run, Onslaught, Guild Raid), following the rule of the mission's other open objective when that one is manual, so its battles count for both. A token objective open alone SHALL get the player's strongest units. An Onslaught team is a pool (see "Onslaught pools keep to one alliance"); the card SHALL count the units it holds and say there are no spares when fewer than 5 qualify.
 
 Besides those cards:
 

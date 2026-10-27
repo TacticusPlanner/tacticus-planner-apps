@@ -302,7 +302,7 @@ Assumptions this requirement depends on:
 
 - An event campaign's non-challenge nodes are numbered sequentially starting at 1 within each `{campaignGroupId, type}` track, and `completedBattleCount` counts consecutively from that start — reaching node N requires having completed nodes 1..N-1. A manual override's `completedBattleCount` is interpreted the same way.
 - A standing campaign's `battleIndex` is assigned sequentially starting at 0 within each `{campaignGroupId, type}` track (covering both challenge and non-challenge battles), and `highestCompletedBattleIndex` counts consecutively from that start the same way `campaign-progress` already reports to the Progress page.
-- `campaign-events-progress` and `live-progress.battleAttempts` are independent signals: the former reliably distinguishes Standard from Extremis (unlike the latter, which is deliberately not used for this eligibility check — see "Today's raid schedule" and "Today shows real daily energy usage" for why). The same independence holds between `campaign-progress` and `live-progress.battleAttempts` for standing campaigns — this eligibility check SHALL NOT be used as the signal for whether a real synced attempt exists at a battle; "Today's Attempts section" and "Today shows real daily energy usage" are governed only by `live-progress.battleAttempts`, independent of whether this requirement currently judges that battle reached.
+- `campaign-events-progress` and `live-progress.battleAttempts` are independent signals: the former reliably distinguishes Standard from Extremis (unlike the latter, which is deliberately not used for this eligibility check — see "Today's raid schedule shows what is left to farm" and "Today shows real daily energy usage" for why). The same independence holds between `campaign-progress` and `live-progress.battleAttempts` for standing campaigns — this eligibility check SHALL NOT be used as the signal for whether a real synced attempt exists at a battle; "Today's Attempts section" and "Today shows real daily energy usage" are governed only by `live-progress.battleAttempts`, independent of whether this requirement currently judges that battle reached.
 - A manual override is the player's own statement of progress and is trusted over synced data even when it is lower than the synced value (for example after a sync that is known to be stale).
 
 #### Scenario: One campaign event is active
@@ -614,7 +614,7 @@ Assumptions this requirement depends on:
 
 ### Requirement: Today's project selector defaults to all goals
 
-Today SHALL provide its own project selector that defaults to all goals; it is not shared with Schedule (see `daily-raids-plan` "Schedule owns its project selection"). With no project selected Today SHALL use the account-wide Active-goal sequence and SHALL NOT derive its scope from Current plan or Default. Selecting a project SHALL narrow the run to that project's Active goals, still in canonical global priority order. The selection SHALL NOT be persisted across a full page reload. A failed goal load SHALL show retry; a successful empty set SHALL show a no-active-goals state.
+Today SHALL provide its own project selector that defaults to all goals; it is not shared with Schedule (see `daily-raids-plan` "Schedule owns its project selection"). With no project selected Today SHALL NOT derive its scope from Default; the scope with and without a selection is defined by "Today's schedule scope". The selection SHALL NOT be persisted across a full page reload. A failed goal load SHALL show retry; a successful empty set SHALL show a no-active-goals state.
 
 #### Scenario: Default selection is all goals
 
@@ -647,12 +647,12 @@ Today SHALL provide its own project selector that defaults to all goals; it is n
 
 ### Requirement: Today is not event-optimised
 
-Today (the Raids tab) SHALL build its schedule without any Home Screen Event scoring: the schedule SHALL be identical whether or not an HSE is active, and Today SHALL NOT show an event status line, upcoming-event notice, event-points figure or event switch. Event-point optimisation lives only on the HSE tab (`daily-raids-home-screen-event`).
+Today (the Raids tab) SHALL build its schedule without any Home Screen Event scoring: its schedule is event-agnostic (see `daily-raids-home-screen-event` "Event points affect only the HSE tab's farm list"), and Today SHALL NOT show an event status line, upcoming-event notice, event-points figure or event switch. Event-point optimisation lives only on the HSE tab (`daily-raids-home-screen-event`).
 
 #### Scenario: Active event does not change Today
 
 - **GIVEN** Machine Hunt is active
-- **THEN** Today's schedule and ordering equal the schedule with no active event, and no event UI is shown on Today
+- **THEN** no event UI is shown on Today
 
 ### Requirement: Today lays out its groups side by side when there is room
 

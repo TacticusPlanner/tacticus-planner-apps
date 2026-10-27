@@ -8,7 +8,7 @@ Defines the minimal Edit goal dialog that replaces the read-only goal detail: on
 
 ### Requirement: Each goal offers an Edit action that opens the Edit goal dialog
 
-Wherever the Goals list renders (desktop table and mobile cards, on Overview and on a project's detail route), each goal SHALL offer an Edit action that opens the Edit goal dialog for that goal. Activating the goal's name, its row, or its card SHALL NOT open any panel. The read-only goal detail (history, dependencies, blockers, estimate, farming guidance, progress, and its view/edit mode switch) SHALL NOT exist.
+Wherever the Goals list renders (desktop table and mobile cards, with or without a project scope), each goal SHALL offer an Edit action that opens the Edit goal dialog for that goal. Activating the goal's name, its row, or its card SHALL NOT open any panel. The read-only goal detail (history, dependencies, blockers, estimate, farming guidance, progress, and its view/edit mode switch) SHALL NOT exist.
 
 #### Scenario: Edit from the desktop table
 
@@ -168,7 +168,7 @@ On desktop (at or above 768px) the Edit goal dialog and the Create goal dialog S
 
 - **GIVEN** a viewport below 768px
 - **WHEN** either dialog opens
-- **THEN** it is the bottom-anchored sheet with one column, as before this change
+- **THEN** it is the bottom-anchored sheet with one column
 
 #### Scenario: Compact Edit dialog
 
@@ -240,7 +240,7 @@ For a goal of a given kind, the Edit goal dialog SHALL show its target, sources 
 
 ### Requirement: Edit omits creation-only controls
 
-The Edit goal dialog SHALL show the unit and goal type read-only. It SHALL NOT show prerequisite suggestions, milestones, "Create paused" or "Create another goal".
+It SHALL NOT show prerequisite suggestions, milestones, "Create paused" or "Create another goal".
 
 #### Scenario: Creation-only controls absent
 

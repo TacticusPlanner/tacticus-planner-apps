@@ -131,7 +131,7 @@ Assumptions:
 - **GIVEN** Lysander Alpha (18 battles, `killPoints` 32, Flying 80, No Resilient 40) with synced progress where battles 1–13 have defeat-all and No Resilient cleared and Flying open, and battles 14–18 are untouched
 - **AND** Dante satisfies Flying and No Resilient
 - **WHEN** the picker renders
-- **THEN** battles 1–13 each add 80 (Flying only) = 1,040 and battles 14–18 each add 32 + 80 + 40 = 152, so 760; Dante's tile reads "1,800 pts left" (previously "152 pts")
+- **THEN** battles 1–13 each add 80 (Flying only) = 1,040 and battles 14–18 each add 32 + 80 + 40 = 152, so 760; Dante's tile reads "1,800 pts left"
 
 #### Scenario: Unit with nothing left
 

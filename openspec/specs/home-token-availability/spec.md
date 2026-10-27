@@ -8,7 +8,7 @@ Shows the player's current game-mode token status (Arena, Guild Raid plus Bomb t
 
 ### Requirement: Home page renders Token Availability as its first section
 
-The authenticated home page SHALL render a Token Availability section, sourced from the player's synced `gameModeTokens` data, as the first section on the page — above Your Projects, Daily Raids, and the events calendar — full width on mobile; on desktop it shares its row with the Home Screen Events card (see "Token Availability shares its row with the Home Screen Events card").
+The authenticated home page SHALL render a Token Availability section, sourced from the player's synced `gameModeTokens` data, as the first section on the page — above Your Projects, Daily Raids, and the events calendar — full width on mobile; on desktop it shares its row with the Home Screen Events card (see `home-events-widget` "Home renders a Home Screen Events card beside Token Availability").
 
 #### Scenario: Authenticated user opens home on desktop
 
@@ -65,9 +65,9 @@ Assumptions:
 
 ### Requirement: Each token card shows its per-type icon, with a distinct capped treatment
 
-Each token card SHALL show that token type's icon alongside its label and count. A capped token (`current === max`) SHALL be visually distinguished from a counting-down one: its icon SHALL use a pulsing/glowing treatment and its status text SHALL use a distinct, attention-drawing style, rather than the same muted styling as a counting-down token.
+Each token card SHALL show that token type's icon alongside its label and count. A capped token (`current >= max`) SHALL be visually distinguished from a counting-down one: its icon SHALL use a pulsing/glowing treatment and its status text SHALL use a distinct, attention-drawing style, rather than the same muted styling as a counting-down token.
 
-Implementation note: no informational or sync-prompting banner is shown for stale/capped data. `pages/home` cannot import the app shell's sync-status/trigger context (it lives in the `app` layer, which this repo's FSD layering forbids a page from importing), and duplicating that provider's auth/coalescing logic at a lower layer was judged out of scope for this widget. The existing app-shell sync control (now inside the sidebar's user menu) remains the way to trigger a sync; this widget only reflects the last-synced snapshot's data.
+No informational or sync-prompting banner is shown for stale or capped data; the widget only reflects the last-synced snapshot.
 
 #### Scenario: Capped token gets a distinct visual treatment
 
@@ -96,17 +96,3 @@ Implementation note: a distinct "failed to load" state is not implemented separa
 
 - **WHEN** the player's synced data has loaded but `gameModeTokens` has no data for any token type
 - **THEN** Token Availability shows an explicit empty state rather than an empty row
-
-### Requirement: Token Availability shares its row with the Home Screen Events card
-
-Token Availability SHALL remain the first section of the home page but, at or above 768px, SHALL occupy half of its row alongside the Home Screen Events card (see `home-events-widget`) instead of the full width; its token entries SHALL wrap so none is clipped. Below 768px it remains full width, with the Home Screen Events card stacked directly after it. This supersedes the "full width on both desktop and mobile" wording of "Home page renders Token Availability as its first section" for desktop.
-
-#### Scenario: Desktop half-width
-
-- **WHEN** a signed-in user opens `/home` at or above 768px
-- **THEN** Token Availability is the first section, side by side with Home Screen Events, and every token entry is visible
-
-#### Scenario: Mobile full width
-
-- **WHEN** a signed-in user opens `/home` below 768px
-- **THEN** Token Availability is full width and first, followed directly by Home Screen Events

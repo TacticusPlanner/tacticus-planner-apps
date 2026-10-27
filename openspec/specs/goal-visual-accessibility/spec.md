@@ -36,7 +36,7 @@ Active, Paused, Blocked/Restricted, Reached, and Archived states SHALL be distin
 
 ### Requirement: Reorder controls and states are perceivable
 
-Reordering affordances on the Goals page and Project Detail SHALL meet the contrast targets and SHALL be identifiable without color. The account-wide priority number on Active and Paused rows (see `consolidate-goals-into-plan-and-remove-active-project`) is text and SHALL meet the 4.5:1 text target in both themes and both densities, including on a row being dragged, and SHALL NOT be conveyed by color alone. The drag handle SHALL have an accessible name and at least 3:1 boundary contrast; a row being dragged SHALL remain legible to the 4.5:1 text target; the mobile reorder mode and its bar SHALL identify their state by text, not only by color; and the order-conflict banner's message and actions SHALL meet the text target and be announced to assistive technology.
+Reordering affordances on the Goals page and Project Detail SHALL meet the contrast targets and SHALL be identifiable without color. The account-wide priority number on Active and Paused rows (see `goal-list-layout`) is text and SHALL meet the 4.5:1 text target in both themes and both densities, including on a row being dragged, and SHALL NOT be conveyed by color alone. The drag handle SHALL have an accessible name and at least 3:1 boundary contrast; a row being dragged SHALL remain legible to the 4.5:1 text target; the mobile reorder mode and its bar SHALL identify their state by text, not only by color; and the order-conflict banner's message and actions SHALL meet the text target and be announced to assistive technology.
 
 #### Scenario: Drag handle without color
 

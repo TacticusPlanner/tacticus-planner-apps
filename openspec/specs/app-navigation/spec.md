@@ -8,17 +8,17 @@ Defines the behavior of the app-wide navigation shell — the desktop sidebar, t
 
 ### Requirement: Mobile menu drawer lists top-level sections with their child pages nested beneath them
 
-The mobile bottom navigation's "Menu" drawer SHALL continue to list every top-level navigation section, with each section's child pages (if any) shown nested beneath it as direct links — unchanged from its behavior before this capability. This capability does not remove or restructure anything from the mobile drawer.
+The mobile bottom navigation's "Menu" drawer SHALL list every top-level navigation section, with each section's child pages (if any) shown nested beneath it as direct links.
 
 #### Scenario: Drawer keeps listing child pages
 
 - **WHEN** the mobile menu drawer opens, for a section that has child pages
-- **THEN** both the section's own entry and its child pages are shown as direct links in the drawer, exactly as before this change
+- **THEN** both the section's own entry and its child pages are shown as direct links in the drawer
 
 #### Scenario: Mobile bottom bar keeps primary destinations unchanged
 
 - **WHEN** the mobile bottom navigation bar renders
-- **THEN** it continues to show only the sections and primary actions already designated `mobilePlacement: "primary"`, unaffected by this capability
+- **THEN** it shows only the sections and primary actions designated `mobilePlacement: "primary"`
 
 ### Requirement: Navigation search indexes every route and matches on label or description
 
@@ -231,9 +231,9 @@ This applies to the desktop sidebar only. On mobile, sections reachable via the 
 
 ### Requirement: The shared page header hosts each section's child-page picker
 
-On mobile, each top-level section that has child pages (`NavItem.children`) SHALL expose them via a routed tab row directly beneath the header's title and description, replacing any tab row a page previously rendered on its own. This applies to every multi-child section, including Dailies and Plan (whose children are Goals, Projects, Insights, and Schedule). No child page renders a further level of tabs inside its own content.
+On mobile, each top-level section that has child pages (`NavItem.children`) SHALL expose them via a routed tab row directly beneath the header's title and description. This applies to every multi-child section, including Dailies and Plan (whose children are Goals, Projects, Insights, and Schedule). No child page renders a further level of tabs inside its own content.
 
-On desktop, the header does not host a child-page picker at all — a section's child pages are discovered through the desktop section menu instead (see the persistent desktop section menu requirement), and the desktop header shows only the active page's title, plus a reopen button and "{Section} ›" breadcrumb while the section menu is collapsed (see the header title requirement). On mobile, the menu drawer also lists a section's child pages, per the drawer requirement — that duplication with the mobile header's tab row is intentional and out of scope for this capability to remove.
+On desktop, the header does not host a child-page picker at all — a section's child pages are discovered through the desktop section menu instead (see the persistent desktop section menu requirement), and the desktop header shows only the active page's title, plus a reopen button and "{Section} ›" breadcrumb while the section menu is collapsed (see the header title requirement). On mobile, the menu drawer also lists a section's child pages, per the drawer requirement — that duplication with the mobile header's tab row is intentional.
 
 #### Scenario: The header's child-picker lists all of a section's child pages
 
@@ -243,7 +243,7 @@ On desktop, the header does not host a child-page picker at all — a section's 
 #### Scenario: Desktop header offers no child-picker
 
 - **WHEN** a user is on any page within a section that has child pages, on desktop
-- **THEN** the shared header shows only the page title (and, beneath it, the active page's description) — no tab row, dropdown, or other interactive picker is rendered in the header
+- **THEN** the shared header shows only the page title (and, beneath it, the active page's description; while the section menu is collapsed, also the reopen button and "{Section} ›" breadcrumb) — no tab row, dropdown, or other interactive picker is rendered in the header
 
 #### Scenario: No third-level tab row anywhere
 
@@ -745,7 +745,7 @@ The Legendary Events section SHALL list two more static children, **Master table
 
 ### Requirement: Navigation shows a live indicator for a running Hero Release Event
 
-While an HRE is running, the HRE navigation entry SHALL show the same live indicator as the HSE entry, in the same renderers and with the same accessibility rules. The parent Dailies entry SHALL show the indicator while an HSE or an HRE is running. Activity SHALL be decided in UTC, with the HRE tab's own selection of the running HRE. Loading and calendar errors SHALL show no indicator.
+While an HRE is running, the HRE navigation entry SHALL show the same live indicator as the HSE entry, in the same renderers and with the same accessibility rules. Activity SHALL be decided in UTC, with the HRE tab's own selection of the running HRE. Loading and calendar errors SHALL show no indicator.
 
 #### Scenario: Only an HRE running
 
@@ -759,7 +759,7 @@ While an HRE is running, the HRE navigation entry SHALL show the same live indic
 
 ### Requirement: Navigation shows a live indicator for a running Quest Event
 
-While a quest is running, the Quest navigation entry SHALL show the same live indicator as the HSE and HRE entries, in the same renderers and with the same accessibility rules. The parent Dailies entry SHALL show the indicator while an HSE, an HRE or a quest is running; this supersedes the HSE-or-HRE rule. Activity SHALL be decided in UTC with the Quest tab's own "running" rule. Loading and calendar errors SHALL show no indicator.
+While a quest is running, the Quest navigation entry SHALL show the same live indicator as the HSE and HRE entries, in the same renderers and with the same accessibility rules. The parent Dailies entry SHALL show the indicator while an HSE, an HRE or a quest is running. Activity SHALL be decided in UTC with the Quest tab's own "running" rule. Loading and calendar errors SHALL show no indicator.
 
 #### Scenario: Only a quest running
 

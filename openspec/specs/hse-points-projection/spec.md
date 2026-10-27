@@ -14,7 +14,7 @@ For a running or upcoming instance whose resolved variant is `Personal` and has 
   - `tokens = held + (next < end ? 1 + floor((end - next) / regenDelay) : 0)`.
 - Upcoming: `tokens = max + floor((end - start) / regenDelay)`.
 
-A mode whose synced bucket is null (not unlocked) SHALL be left out with a note naming it. Past instances SHALL NOT be projected.
+A mode whose synced bucket is null (not unlocked) SHALL be left out with a note naming it.
 
 Assumptions:
 

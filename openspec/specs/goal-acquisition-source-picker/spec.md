@@ -256,7 +256,7 @@ selection SHALL be retained even if its offer row is briefly unavailable during 
 
 #### Scenario: Goal saved with a single source choice
 
-- **WHEN** a goal whose farming config predates this control is opened for editing
+- **WHEN** a goal whose farming config holds a single source choice and no group selection is opened for editing
 - **THEN** its previous single source choice is presented as the equivalent group selection
   (campaign nodes and/or Onslaught) with no data loss
 
@@ -264,8 +264,8 @@ selection SHALL be retained even if its offer row is briefly unavailable during 
 
 On a newly configured Unlock or Ascension goal, the control SHALL default to the Campaigns
 group selected with the lowest-energy node(s) of each needed shard type pre-checked, and the
-Onslaught and Shops groups unselected, so a goal the user does not further configure produces
-the same estimate it would have produced before this control existed.
+Onslaught and Shops groups unselected, so a goal the user does not further configure is estimated
+from its lowest-energy campaign node(s) only.
 
 #### Scenario: Fresh goal default
 

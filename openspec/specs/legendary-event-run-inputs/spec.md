@@ -52,7 +52,7 @@ Assumptions:
 
 ### Requirement: Run inputs save per run through the plan revision
 
-A change to a run's inputs SHALL show at once and SHALL be saved as one write of that run (`PUT /api/v1/legendary-event-plans/{eventId}/runs/{run}` with the cached plan revision) once changes to that run settle; a run whose settled values equal the stored ones SHALL send nothing. Writes SHALL go through the same queue as team writes, so they never race a team edit in the same tab. On success the returned plan SHALL replace the cached plan. On a stale-revision conflict the plan from the response SHALL replace the cached plan, the "plan reloaded" toast SHALL show, and the drawer SHALL show the adopted values. Any other failure SHALL restore the stored values and show a translated error toast. Paid values stored while Show paid options is off SHALL be kept, not cleared.
+A change to a run's inputs SHALL show at once and SHALL be saved as one write of that run (`PUT /api/v1/legendary-event-plans/{eventId}/runs/{run}` with the cached plan revision) once changes to that run settle; a run whose settled values equal the stored ones SHALL send nothing. Writes SHALL go through the same queue as team writes, so they never race a team edit in the same tab. Success, conflict and failure SHALL follow the plan write queue (`legendary-event-teams`, "The plan is persisted through the API with one revision"); after a conflict the drawer SHALL show the adopted values. Paid values stored while Show paid options is off SHALL be kept, not cleared.
 
 #### Scenario: Quick edits save once
 

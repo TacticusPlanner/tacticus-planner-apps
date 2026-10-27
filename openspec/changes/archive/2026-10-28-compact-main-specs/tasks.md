@@ -14,7 +14,7 @@
 
 ## 3. Archive dry check
 
-- [ ] 3.1 Commit the section 2 edits first, then in a throwaway `git worktree` of that commit, run `openspec archive compact-main-specs -y` and diff against `main`. Verify all of the following:
+- [x] 3.1 Commit the section 2 edits first, then in a throwaway `git worktree` of that commit, run `openspec archive compact-main-specs -y` and diff against `main`. Verify all of the following:
   - The only spec files touched are those listed in proposal.md.
   - No `## ADDED/MODIFIED/REMOVED` headers are left in `openspec/specs/`.
   - The requirement count drops from 960 by exactly the 5 REMOVED, checked with `grep -rh '^### Requirement:' openspec/specs | wc -l`.
