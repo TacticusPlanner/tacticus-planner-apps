@@ -37,6 +37,7 @@ export { usePlanInsights } from "./model/insights/use-plan-insights"
 export {
   type PlanInsightsBottleneck,
   type PlanInsightsTotals,
+  type PlanMissingResources,
 } from "./model/insights/use-plan-insights.domain"
 export { isOnlyMemberOf } from "./model/projects/project-removal"
 export { useGoalsProjectScope } from "./model/projects/use-goals-project-scope"

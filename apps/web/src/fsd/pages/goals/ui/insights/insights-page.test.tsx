@@ -9,6 +9,7 @@ import { seedGameCatalog, seedPlayerData } from "@/test/seed"
 import { TooltipProvider } from "@workspace/ui/components/tooltip"
 
 vi.mock("@/entities/planning-setting", () => ({
+  normalizeXpBookRarity: () => "Legendary",
   usePlanningSettings: () => ({
     settings: { dailyEnergy: 288, revision: 1 },
     save: vi.fn(),
