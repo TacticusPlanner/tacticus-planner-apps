@@ -209,7 +209,9 @@
       "raids": "Tentatives",
       "unusedDays": "Jours inutilisés",
       "completion": "Date de fin",
-      "noCompletion": "Indisponible"
+      "noCompletion": "Indisponible",
+      "excludedShopOnly_one": "La date de fin ignore {{count}} objectif de déblocage uniquement en boutique ({{units}}) : ses éclats viennent des boutiques, pas des raids.",
+      "excludedShopOnly_other": "La date de fin ignore {{count}} objectifs de déblocage uniquement en boutique ({{units}}) : leurs éclats viennent des boutiques, pas des raids."
     },
     "today": "Aujourd'hui",
     "day": "Jour {{day}}",

@@ -80,6 +80,14 @@ Above the day columns, Raids Plan SHALL show: the total number of days until eve
 - **WHEN** Raids Plan loads
 - **THEN** the displayed completion date is N - 1 days after today's date, so a one-day plan completes Today
 
+#### Scenario: Completion date ignores shop-only Unlock goals
+
+- **GIVEN** an in-scope Unlock goal for a character no campaign node drops shards for (a shop-only unit such as Kharn or Ragnar) is blocked, and every other in-scope goal can complete
+- **WHEN** Raids Plan loads
+- **THEN** the completion date is the plan's last day, as if that goal were not in scope, and a note under the summary names each such goal's unit and says the date ignores it
+- **AND** that goal is still listed among the plan's blockers
+- **AND** when every in-scope goal is such a goal, no completion date is shown
+
 ### Requirement: Raids Plan shares Today's campaign eligibility and location presentation
 
 Every Raids Plan day SHALL use the same filtered battle catalog as Today, including only the currently active campaign event when one exists. Raids Plan SHALL NOT render inline location chips; each scheduled node SHALL instead be listed in its material cell's tooltip using the same localized campaign name and node label as Today.

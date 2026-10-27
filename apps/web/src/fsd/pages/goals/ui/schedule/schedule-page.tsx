@@ -146,6 +146,20 @@ function SchedulePlan({ raids }: { raids: DailyRaidsReadyViewModel }) {
             </div>
           ))}
         </div>
+        {raids.planSummary.excludedGoalIds.length > 0 ? (
+          <p
+            className="mt-2 text-xs text-muted-foreground"
+            data-testid="plan-summary-excluded"
+          >
+            {t("plan.summary.excludedShopOnly", {
+              count: raids.planSummary.excludedGoalIds.length,
+              units: raids.planSummary.excludedGoalIds
+                .map((goalId) => raids.goalsById.get(goalId)?.unitLabel)
+                .filter(Boolean)
+                .join(", "),
+            })}
+          </p>
+        ) : null}
       </section>
       <PlanBlockers raids={raids} />
       <PlanUnitFilter

@@ -91,6 +91,7 @@ export function ready(
       totalRaids: 30,
       daysWithUnusedEnergy: 2,
       completionDate: "2026-01-06",
+      excludedGoalIds: [],
     },
     dailyEnergy: 288,
     goalsById,

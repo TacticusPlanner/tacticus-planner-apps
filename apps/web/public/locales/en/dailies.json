@@ -209,7 +209,9 @@
       "raids": "Raid attempts",
       "unusedDays": "Days unused",
       "completion": "Completion date",
-      "noCompletion": "Not available"
+      "noCompletion": "Not available",
+      "excludedShopOnly_one": "Completion date ignores {{count}} shop-only unlock goal ({{units}}): its shards come from shops, not raids.",
+      "excludedShopOnly_other": "Completion date ignores {{count}} shop-only unlock goals ({{units}}): their shards come from shops, not raids."
     },
     "today": "Today",
     "day": "Day {{day}}",

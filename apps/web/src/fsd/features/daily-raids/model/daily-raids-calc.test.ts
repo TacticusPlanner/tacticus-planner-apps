@@ -699,6 +699,75 @@ describe("daily raid derivation", () => {
     ).toEqual({ owned: 5, target: 40 })
   })
 
+  it("dates the plan past a blocked shop-only Unlock goal and lists it as excluded", () => {
+    const heroId = unitIdSchema.parse("hero1")
+    const shopOnlyId = unitIdSchema.parse("kharn")
+    const nodeId = battleIdSchema.parse("B1")
+    const farmable = goalDetail({ goalId: "farmable", entityId: heroId })
+    const shopOnly = goalDetail({ goalId: "shop-only", entityId: shopOnlyId })
+    const character = (id: string, battleIds: BattleId[]) =>
+      ({
+        id,
+        name: id,
+        initialRarity: "Common",
+        shardLocations: battleIds.map((battleId) => ({
+          battleId,
+          guaranteed: true,
+          effectiveRate: null,
+          numerator: null,
+          denominator: null,
+          isMythic: false,
+        })),
+      }) as unknown as CharacterStorageModel
+
+    const result = calculateDailyRaids({
+      members: [
+        { goal: { ...farmable, globalPriority: 1 } },
+        { goal: { ...shopOnly, globalPriority: 2 } },
+      ],
+      details: [farmable, shopOnly],
+      playerCharacterById: new Map(),
+      playerMowById: new Map(),
+      inventoryShardById: new Map(),
+      inventoryUpgrades: [],
+      upgradesById: new Map(),
+      battlesById: new Map([
+        [
+          nodeId,
+          {
+            campaignGroupId: campaignIdSchema.parse("CG1"),
+            type: "Normal",
+            challenge: false,
+            nodeNumber: 1,
+            battleIndex: 0,
+            energyCost: 6,
+            dailyAttempts: 10,
+          },
+        ],
+      ]),
+      charactersById: new Map([
+        [heroId, character(heroId, [nodeId])],
+        [shopOnlyId, character(shopOnlyId, [])],
+      ]),
+      mowsById: new Map(),
+      ascensionCostsById: new Map(),
+      unlockShardCostsById: new Map<string, UnlockShardCostStorageModel>([
+        ["Common", { id: "Common", rarity: "Common", shards: 10 }],
+      ]),
+      getCharacter: () => undefined,
+      dailyEnergy: 60,
+      referenceDate: new Date("2026-01-01T00:00:00.000Z"),
+    })
+
+    expect(result?.status).toBe("ready")
+    if (!result || result.status !== "ready") return
+    expect(result.blockedGoals.map((goal) => goal.goalId)).toEqual([
+      "shop-only",
+    ])
+    expect(result.planSummary.completionDate).toBe("2026-01-01")
+    expect(result.planSummary.excludedGoalIds).toEqual(["shop-only"])
+  })
+
   it("drops an already-owned Unlock goal from the plan instead of farming it (fix-goal-progress-consistency)", () => {
     const heroId = unitIdSchema.parse("hero1")
     const nodeId = battleIdSchema.parse("B1")

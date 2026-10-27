@@ -207,6 +207,7 @@ describe("Schedule page", () => {
           totalRaids: 30,
           daysWithUnusedEnergy: 2,
           completionDate: null,
+          excludedGoalIds: [],
         },
       })
     )
@@ -215,6 +216,28 @@ describe("Schedule page", () => {
     const summary = within(screen.getByTestId("plan-summary"))
     expect(summary.getByText("Not available")).toBeInTheDocument()
     expect(summary.queryByText("2026-01-06")).not.toBeInTheDocument()
+  })
+
+  it("says which shop-only unlock goals the completion date ignores", () => {
+    const base = ready()
+    const [goalId, goal] = [...base.goalsById][0]!
+    useDailyRaids.mockReturnValue(
+      ready({
+        planSummary: {
+          ...base.planSummary,
+          excludedGoalIds: [goalId],
+        },
+      })
+    )
+    render(<SchedulePage />)
+
+    const summary = within(screen.getByTestId("plan-summary"))
+    expect(summary.getByText("2026-01-06")).toBeInTheDocument()
+    expect(
+      summary.getByText(
+        `Completion date ignores 1 shop-only unlock goal (${goal.unitLabel}): its shards come from shops, not raids.`
+      )
+    ).toBeInTheDocument()
   })
 
   describe("Raids Plan day strip", () => {
