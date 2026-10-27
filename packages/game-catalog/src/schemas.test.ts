@@ -1,6 +1,9 @@
 import { describe, expect, expectTypeOf, it } from "vitest"
 import type { BattleId, FactionId } from "@workspace/game-domain"
 
+import globalValues from "./schemas/global-values.fixture.json"
+import progressionRules from "./schemas/progression-rules.fixture.json"
+import hre from "./schemas/hre.fixture.json"
 import questCrates from "./schemas/quest-crates.fixture.json"
 import questEvents from "./schemas/quest-events.fixture.json"
 import {
@@ -73,6 +76,18 @@ const baseLre = {
   alpha: lreTrack,
   beta: lreTrack,
   gamma: lreTrack,
+  tokens: {
+    start: 6,
+    max: 12,
+    regenSeconds: 10_800,
+    regenAmount: 1,
+    dailyRefreshes: 1,
+  },
+  maxRuns: 3,
+  ohSoCloseOffer: {
+    unlock: { base: 500, multiplier: 100 },
+    ascension: { base: 500, multiplier: 50 },
+  },
 }
 
 const lreBattle = {
@@ -548,6 +563,22 @@ describe("catalog schemas", () => {
     )
   })
 
+  it("reads an lres record's token bank, run count and Oh So Close offer", () => {
+    const [lre] = datasetPayloadSchemas.lres.parse([baseLre])
+    expect(lre?.tokens.regenSeconds).toBe(10_800)
+    expect(lre?.maxRuns).toBe(3)
+    expect(lre?.ohSoCloseOffer.ascension).toEqual({ base: 500, multiplier: 50 })
+
+    const withoutTokens: Partial<typeof baseLre> = { ...baseLre }
+    delete withoutTokens.tokens
+    expect(datasetPayloadSchemas.lres.safeParse([withoutTokens]).success).toBe(
+      false
+    )
+    expect(
+      datasetPayloadSchemas.lres.safeParse([{ ...baseLre, maxRuns: 0 }]).success
+    ).toBe(false)
+  })
+
   it("rejects a reward points milestone of the wrong type", () => {
     const result = datasetPayloadSchemas.lres.safeParse([
       {
@@ -589,6 +620,7 @@ describe("catalog schemas", () => {
         enemiesTotal: 5,
         enemiesTypes: [],
         detailedEnemyTypes: [],
+        lightningVictoryTurns: null,
       },
     ])
     const definitions = datasetPayloadSchemas["campaign-definitions"].safeParse(
@@ -616,6 +648,9 @@ describe("catalog schemas", () => {
     ).toEqualTypeOf<FactionId>()
     expectTypeOf(definitions.data[0]!.battleIds[0]!).toEqualTypeOf<BattleId>()
     expectTypeOf(definitions.data[0]!.faction).toEqualTypeOf<FactionId>()
+    expectTypeOf(battles.data[0]!.lightningVictoryTurns).toEqualTypeOf<
+      number | null
+    >()
   })
 
   it("validates an upgrade, including its recursively-nested craft recipe", () => {
@@ -733,7 +768,7 @@ describe("catalog schemas", () => {
   it("validates a manifest", () => {
     const result = manifestSchema.safeParse({
       version: "dev-1",
-      schemaVersion: 11,
+      schemaHash: "schema-11",
       gameVersion: "1.40",
       sourceHash: "abc",
       datasets: [
@@ -743,6 +778,18 @@ describe("catalog schemas", () => {
           url: "/api/v1/game-catalog/characters",
         },
       ],
+    })
+
+    expect(result.success).toBe(true)
+  })
+
+  it("accepts a manifest from an API release that still serves schemaVersion", () => {
+    const result = manifestSchema.safeParse({
+      version: "dev-1",
+      schemaVersion: 15,
+      gameVersion: "1.40",
+      sourceHash: "abc",
+      datasets: [],
     })
 
     expect(result.success).toBe(true)
@@ -821,6 +868,25 @@ describe("unit-power schema", () => {
     })
   })
 
+  it("reads each quest's token bank and scoring, and rejects a quest without them", () => {
+    const [cyrus] = datasetPayloadSchemas["quest-events"].parse(questEvents)
+    expect(cyrus?.tokens).toEqual({
+      max: 6,
+      regenSeconds: 7200,
+      regenAmount: 1,
+      refillGemsCost: 50,
+    })
+    expect(cyrus?.scorePoints).toEqual({
+      pointsPerStar: 100,
+      maxPointsForLightningVictory: 100,
+    })
+    const withoutScoring: Partial<NonNullable<typeof cyrus>> = { ...cyrus }
+    delete withoutScoring.scorePoints
+    expect(
+      datasetPayloadSchemas["quest-events"].safeParse([withoutScoring]).success
+    ).toBe(false)
+  })
+
   it("parses the quest-crates track and rejects an unknown reward type", () => {
     const crates = datasetPayloadSchemas["quest-crates"].parse(questCrates)
     expect(crates).toHaveLength(17)
@@ -861,6 +927,91 @@ describe("factions and damage-types schemas", () => {
     expect(
       datasetPayloadSchemas["damage-types"].safeParse([
         { ...flame, piercingRatio: 125 },
+      ]).success
+    ).toBe(false)
+  })
+})
+
+describe("global-values schema", () => {
+  it("parses the served record and keeps string trait constants", () => {
+    const [values] = datasetPayloadSchemas["global-values"].parse(globalValues)
+    expect(values?.staminaRegenerationTime).toBe(300)
+    expect(values?.staminaShopTiers).toHaveLength(8)
+    expect(values?.traitVariables.putridExplosionFactionId).toBe("DeathGuard")
+  })
+
+  it("rejects a record without its stamina shop", () => {
+    const [values] = globalValues
+    expect(
+      datasetPayloadSchemas["global-values"].safeParse([
+        { ...values, staminaShopTiers: undefined },
+      ]).success
+    ).toBe(false)
+  })
+})
+
+describe("progression-rules schema", () => {
+  it("parses the served record", () => {
+    const [rules] =
+      datasetPayloadSchemas["progression-rules"].parse(progressionRules)
+    expect(rules?.xpLevels.at(-1)).toBe(7_360_200)
+    expect(rules?.xpBooks.find((book) => book.rarity === "Legendary")).toEqual({
+      id: "xpLegendary",
+      rarity: "Legendary",
+      xpIncrease: 12_500,
+      gold: 500,
+    })
+    expect(
+      rules?.upgradeSlots.find((row) => row.rank === "Diamond2")
+        ?.xpLevelRequirements
+    ).toEqual([47, 48, 47, 49, 47, 50])
+    expect(rules?.heroProgressionSteps[0]).toMatchObject({
+      progression: "Common:None",
+      maxXpLevel: 8,
+      maxRank: "Iron1",
+      hreShards: 25,
+    })
+  })
+
+  it("rejects an upgrade slot row without six levels", () => {
+    const [rules] = progressionRules
+    expect(
+      datasetPayloadSchemas["progression-rules"].safeParse([
+        {
+          ...rules,
+          upgradeSlots: [{ rank: "Stone1", xpLevelRequirements: [1, 1, 1] }],
+        },
+      ]).success
+    ).toBe(false)
+  })
+})
+
+describe("hre schema", () => {
+  it("parses the served records", () => {
+    const [weirdboy] = datasetPayloadSchemas.hre.parse(hre)
+    expect(weirdboy?.heroId).toBe("orksWeirdboy")
+    expect(weirdboy?.missions).toHaveLength(21)
+    expect(weirdboy?.missions[1]?.tasks[1]).toEqual({
+      name: "SlayEnemiesWithFactionTrait",
+      target: 10,
+      parameters: { factionTrait: "Xenos" },
+    })
+    expect(weirdboy?.leaderboard.phases[0]?.tiers[0]).toMatchObject({
+      position: 0,
+      currency: 550,
+      shards: 33,
+    })
+    expect(weirdboy?.chestShop[0]).toMatchObject({ cost: 100, minShards: 10 })
+  })
+
+  it("rejects a mission without two tasks", () => {
+    const [weirdboy] = hre
+    expect(
+      datasetPayloadSchemas.hre.safeParse([
+        {
+          ...weirdboy,
+          missions: [{ ...weirdboy!.missions[0], tasks: [] }],
+        },
       ]).success
     ).toBe(false)
   })

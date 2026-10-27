@@ -1,0 +1,28 @@
+{
+  "ArchContaminator": {
+    "description": "Au début de son tour, tous les ennemis adjacents subissent <style=\"Stat_Hits\">{[nrOfHits]}x</style> <style=\"DMG_Toxic\">{[minDmg]}-{[maxDmg]} dégâts toxiques</style> et chaque <style=\"Stat_Hits\">coup</style> inflige également des <style=\"Stat_Damage\">dégâts</style> supplémentaires équivalents à {[extraDmgPct]}-{[extraDmgPct_2]} % de la <style=\"Stat_Health\">santé</style> maximale de l'unité. Les <style=\"Summon\">invocations</style> subissent le double de dégâts.\n\n{[S/AbilityDamageExplanation]}",
+    "variables": {
+      "minDmg": [
+        25, 30, 35, 40, 45, 51, 57, 62, 68, 74, 80, 85, 91, 97, 103, 108, 114,
+        120, 126, 131, 139, 150, 173, 195, 218, 241, 264, 286, 309, 332, 355,
+        377, 400, 423, 446, 468, 491, 514, 537, 569, 614, 661, 712, 768, 871,
+        974, 1077, 1179, 1282, 1385, 1498, 1546, 1596, 1653, 1711, 1770, 1830,
+        1898, 1968, 2039, 2119, 2201, 2284, 2369, 2455
+      ],
+      "maxDmg": [
+        35, 42, 49, 56, 63, 71, 79, 87, 95, 103, 111, 119, 127, 135, 144, 152,
+        160, 168, 176, 184, 195, 210, 242, 273, 305, 337, 369, 401, 433, 464,
+        496, 528, 560, 592, 624, 656, 687, 719, 751, 796, 859, 925, 996, 1076,
+        1219, 1363, 1507, 1651, 1795, 1939, 2097, 2165, 2234, 2314, 2395, 2477,
+        2561, 2657, 2755, 2855, 2967, 3081, 3198, 3317, 3437
+      ]
+    },
+    "constants": {
+      "damageProfile": "Toxic",
+      "nrOfHits": "7",
+      "extraDmgPct": "15",
+      "extraDmgPct_2": "20"
+    },
+    "scaled": ["minDmg", "maxDmg"]
+  }
+}

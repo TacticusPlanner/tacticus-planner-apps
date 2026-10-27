@@ -1,0 +1,26 @@
+{
+  "HostOfPlagues": {
+    "description": "Jedes Mal, wenn eine nicht-<style=\"Mechanical\">mechanische</style> gegnerische Einheit stirbt, besteht eine <style=\"Stat_Chance\">Chance von {[chance]} %</style>, dass ein <style=\"Summon\"><style=\"Faction_DeathGuard\">Seuchenwandler</style></style> auf dem Feld der verstorbenen Einheit erscheint.",
+    "variables": {
+      "summonHp": [
+        30, 36, 42, 48, 54, 61, 68, 75, 82, 89, 95, 102, 109, 116, 123, 130,
+        137, 144, 151, 158, 167, 180, 207, 234, 262, 289, 316, 344, 371, 398,
+        425, 453, 480, 507, 535, 562, 589, 617, 644, 682, 736, 793, 854, 922,
+        1045, 1169, 1292, 1415, 1538, 1662, 1798, 1856, 1915, 1983, 2053, 2124,
+        2196, 2278, 2362, 2447, 2543, 2641, 2741, 2843, 2946
+      ],
+      "summonDmg": [
+        35, 42, 49, 56, 63, 71, 79, 87, 95, 103, 111, 119, 127, 135, 144, 152,
+        160, 168, 176, 184, 195, 210, 242, 273, 305, 337, 369, 401, 433, 464,
+        496, 528, 560, 592, 624, 656, 687, 719, 751, 796, 859, 925, 996, 1076,
+        1219, 1363, 1507, 1651, 1795, 1939, 2097, 2165, 2234, 2314, 2395, 2477,
+        2561, 2657, 2755, 2855, 2967, 3081, 3198, 3317, 3437
+      ]
+    },
+    "constants": {
+      "unitId": "GuildBoss5Npc2PoxwalkerSummon",
+      "chance": "100"
+    },
+    "scaled": ["summonHp", "summonDmg"]
+  }
+}

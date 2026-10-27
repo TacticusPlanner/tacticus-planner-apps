@@ -1,4 +1,9 @@
-import { gameAssetUrl } from "./asset-path"
+import overrides from "./ability-icon-overrides.json"
+import { datamineAssetUrl, gameAssetUrl } from "./asset-path"
+
+// Ability ids whose game icon is spelled differently, or sits in the game's misspelled `abilties/`.
+// A JSON file so apps/web's ability-text generator checks icons against the same paths.
+const abilityIconOverrides: Record<string, string> = overrides
 
 /**
  * Ability icon URL, derived directly from the ability id (`AdaptiveStrategy` →
@@ -6,5 +11,11 @@ import { gameAssetUrl } from "./asset-path"
  * has none for them — so callers render through `EntityIcon`, which drops a missing image.
  */
 export function abilityIcon(id: string): string {
-  return gameAssetUrl(`abilities/ui_icon_ability2_${id}.webp`)
+  // The game ships this one as `LionHelmRelic`; until it is mapped, the planner's own copy is used.
+  if (id === "LionHelm") {
+    return gameAssetUrl(`abilities/ui_icon_ability2_LionHelm.webp`)
+  }
+  return datamineAssetUrl(
+    abilityIconOverrides[id] ?? `abilities/ui_icon_ability2_${id}.webp`
+  )
 }

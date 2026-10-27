@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { render, renderHook, waitFor } from "@/test/render"
+import { globalValuesFixture } from "@workspace/game-catalog/testing"
 import { seedGameCatalog, seedPlayerData } from "@/test/seed"
 
 import { useDailyRaids } from "./use-daily-raids"
@@ -72,7 +73,10 @@ describe("useDailyRaids readiness — Onslaught rewards dataset", () => {
   })
 
   it("stays loading when the rewards dataset is present but empty", async () => {
-    await seedGameCatalog({ "onslaught-rewards": [] })
+    await seedGameCatalog({
+      "global-values": [globalValuesFixture],
+      "onslaught-rewards": [],
+    })
     const { result } = renderDailyRaids()
     await settle()
     expect(result.current.status).toBe("loading")
@@ -80,6 +84,7 @@ describe("useDailyRaids readiness — Onslaught rewards dataset", () => {
 
   it("proceeds once the rewards dataset has rows", async () => {
     await seedGameCatalog({
+      "global-values": [globalValuesFixture],
       "onslaught-rewards": [
         { id: "Stone-1", sector: "Stone", tier: 1, regular: [], mythic: {} },
       ],
@@ -109,6 +114,7 @@ describe("useDailyRaids memo boundary", () => {
     scoped.entries = []
     await seedPlayerData({ "inventory-upgrades": [] })
     await seedGameCatalog({
+      "global-values": [globalValuesFixture],
       "onslaught-rewards": [
         { id: "Stone-1", sector: "Stone", tier: 1, regular: [], mythic: {} },
       ],

@@ -1,0 +1,12 @@
+{
+  "SynapticBacklash": {
+    "description": "Siempre que el Tervigón recibe un <style=\"Stat_CritDamage\">Golpe Crítico</style>, los Termagantes aliados en el rango de {[range]} hexágonos también reciben un {[dmgPct]} % del <style=\"Stat_Damage\">Daño</style> de ese ataque.",
+    "variables": {},
+    "constants": {
+      "range": "2",
+      "dmgPct": "50",
+      "unitIds": "tyranNpc3Termagant,tyranSmnTermagant,GuildBoss1Npc1TyranTermagantLeviathan,GuildBoss1Npc2TyranTermagantKronos,GuildBoss1Npc3TyranTermagantGorgon"
+    },
+    "scaled": []
+  }
+}

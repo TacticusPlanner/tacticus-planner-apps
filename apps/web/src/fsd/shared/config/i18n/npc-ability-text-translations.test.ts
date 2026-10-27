@@ -173,9 +173,16 @@ describe("Ability rules text", () => {
 describe("Raid-boss ability rules text", () => {
   const tables = tablesOf(raidBossFiles)
 
-  it("is English-only, one file per ability, with no file for a listed gap", () => {
-    expect(Object.keys(tables)).toEqual(["en"])
-    expect(Object.keys(tables.en ?? {}).length).toBe(152)
-    expect(raidBossGaps.filter((id) => tables.en?.[id])).toEqual([])
+  it("covers the same abilities in every locale, with no file for a listed gap", () => {
+    expect(Object.keys(tables).sort()).toEqual(["de", "en", "es", "fr"])
+    const enKeys = Object.keys(tables.en ?? {}).sort()
+    expect(enKeys.length).toBe(152)
+    for (const [code, locale] of Object.entries(tables)) {
+      expect(Object.keys(locale).sort(), code).toEqual(enKeys)
+      expect(
+        raidBossGaps.filter((id) => locale[id]),
+        code
+      ).toEqual([])
+    }
   })
 })

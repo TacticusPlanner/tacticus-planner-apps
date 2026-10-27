@@ -43,7 +43,7 @@ async function renderLanes(
   }: { potentials?: LanePotentialsViewModel; isMobile?: boolean } = {}
 ) {
   const i18n = await createTestI18n(lng, {
-    // Game-data namespaces ship English-only; seed one German trait to show it is followed.
+    // Only English game data is loaded; seed one German trait to show it is followed.
     de: { traits: { Resilient: "Widerstandsfähig" } },
   })
   return render(

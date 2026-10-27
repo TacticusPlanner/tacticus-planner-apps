@@ -1,4 +1,4 @@
-import { gameAssetUrl } from "./asset-path"
+import { datamineAssetUrl } from "./asset-path"
 
 // Trait ids come off the characters dataset as PascalCase keys (e.g. "ActOfFaith",
 // "TeleportStrike"), while the shipped asset filenames are snake_case — mostly a direct
@@ -33,5 +33,5 @@ function pascalToSnake(id: string): string {
 
 export function traitIcon(id: string): string {
   const slug = traitIconOverrides[id] ?? pascalToSnake(id)
-  return gameAssetUrl(`traits/ui_icon_trait_${slug}_01.webp`)
+  return datamineAssetUrl(`atlases/ui_icon_trait_${slug}_01.webp`)
 }

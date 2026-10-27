@@ -1,6 +1,8 @@
 import { act, renderHook } from "@testing-library/react"
 import { afterEach, describe, expect, it, vi } from "vitest"
 
+import { hreMissions } from "@/test/fixtures/hre-rules"
+
 import { HRE_PROGRESS_STORAGE_KEY, useHreProgress } from "./use-hre-progress"
 
 afterEach(() => {
@@ -9,12 +11,14 @@ afterEach(() => {
 
 describe("useHreProgress", () => {
   it("keeps mission 5 at 37 wins across a reload", () => {
-    const first = renderHook(() => useHreProgress("occ-zapspitta"))
+    const first = renderHook(() => useHreProgress("occ-zapspitta", hreMissions))
     act(() => first.result.current[1].setMission(5))
     act(() => first.result.current[1].setObjectiveProgress(1, 37))
     first.unmount()
 
-    const reloaded = renderHook(() => useHreProgress("occ-zapspitta"))
+    const reloaded = renderHook(() =>
+      useHreProgress("occ-zapspitta", hreMissions)
+    )
     expect(reloaded.result.current[0]).toMatchObject({
       mission: 5,
       progress: [0, 37],
@@ -22,7 +26,9 @@ describe("useHreProgress", () => {
   })
 
   it("clamps progress to the target and advances on Mission complete", () => {
-    const { result } = renderHook(() => useHreProgress("occ-zapspitta"))
+    const { result } = renderHook(() =>
+      useHreProgress("occ-zapspitta", hreMissions)
+    )
     act(() => result.current[1].setMission(5))
     act(() => result.current[1].setObjectiveProgress(1, 140))
     expect(result.current[0].progress).toEqual([0, 100])
@@ -36,13 +42,17 @@ describe("useHreProgress", () => {
       HRE_PROGRESS_STORAGE_KEY,
       JSON.stringify({ "occ-sekhetar": { mission: 12, progress: [1, 0] } })
     )
-    const { result } = renderHook(() => useHreProgress("occ-zapspitta"))
+    const { result } = renderHook(() =>
+      useHreProgress("occ-zapspitta", hreMissions)
+    )
     expect(result.current[0]).toMatchObject({ mission: 1, progress: [0, 0] })
   })
 
   it("drops invalid stored data", () => {
     window.localStorage.setItem(HRE_PROGRESS_STORAGE_KEY, "{not json")
-    const { result } = renderHook(() => useHreProgress("occ-zapspitta"))
+    const { result } = renderHook(() =>
+      useHreProgress("occ-zapspitta", hreMissions)
+    )
     expect(result.current[0].mission).toBe(1)
   })
 
@@ -53,13 +63,17 @@ describe("useHreProgress", () => {
     vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => {
       throw new Error("blocked")
     })
-    const { result } = renderHook(() => useHreProgress("occ-zapspitta"))
+    const { result } = renderHook(() =>
+      useHreProgress("occ-zapspitta", hreMissions)
+    )
     act(() => result.current[1].setMission(5))
     expect(result.current[0].mission).toBe(5)
   })
 
   it("keeps each mission's progress when switching and restores it", () => {
-    const { result } = renderHook(() => useHreProgress("occ-zapspitta"))
+    const { result } = renderHook(() =>
+      useHreProgress("occ-zapspitta", hreMissions)
+    )
     act(() => result.current[1].setMission(20))
     act(() => result.current[1].setObjectiveProgress(1, 70))
     act(() => result.current[1].setMission(21))
@@ -69,7 +83,9 @@ describe("useHreProgress", () => {
   })
 
   it("restores the entry before Mission complete", () => {
-    const { result } = renderHook(() => useHreProgress("occ-zapspitta"))
+    const { result } = renderHook(() =>
+      useHreProgress("occ-zapspitta", hreMissions)
+    )
     act(() => result.current[1].setMission(5))
     act(() => result.current[1].setObjectiveProgress(0, 10_000))
     act(() => result.current[1].setObjectiveProgress(1, 100))
@@ -85,7 +101,9 @@ describe("useHreProgress", () => {
 
   it("dates the rank only when it changes", () => {
     vi.spyOn(Date, "now").mockReturnValue(1000)
-    const { result } = renderHook(() => useHreProgress("occ-zapspitta"))
+    const { result } = renderHook(() =>
+      useHreProgress("occ-zapspitta", hreMissions)
+    )
     act(() => result.current[1].setRank(26_602))
     expect(result.current[0].rankAt).toBe(1000)
     vi.spyOn(Date, "now").mockReturnValue(2000)
@@ -96,7 +114,7 @@ describe("useHreProgress", () => {
   })
 
   it("stores the owned inputs and reloads them", () => {
-    const first = renderHook(() => useHreProgress("occ-zapspitta"))
+    const first = renderHook(() => useHreProgress("occ-zapspitta", hreMissions))
     act(() =>
       first.result.current[1].setOwned({
         currency: 372,
@@ -106,7 +124,9 @@ describe("useHreProgress", () => {
       })
     )
     first.unmount()
-    const reloaded = renderHook(() => useHreProgress("occ-zapspitta"))
+    const reloaded = renderHook(() =>
+      useHreProgress("occ-zapspitta", hreMissions)
+    )
     expect(reloaded.result.current[0].owned).toEqual({
       currency: 372,
       nextTier: 17,
@@ -128,7 +148,9 @@ describe("useHreProgress", () => {
         },
       })
     )
-    const { result } = renderHook(() => useHreProgress("occ-zapspitta"))
+    const { result } = renderHook(() =>
+      useHreProgress("occ-zapspitta", hreMissions)
+    )
     expect(result.current[0]).toMatchObject({
       mission: 20,
       progress: [0, 70],
@@ -151,11 +173,13 @@ describe("useHreProgress", () => {
           order: 2,
           rankAt: "yesterday",
           byMission: "broken",
-          owned: { currency: 372, nextTier: 99, step: "mythic", toNext: 17 },
+          owned: { currency: 372, nextTier: 0, step: "mythic", toNext: 17 },
         },
       })
     )
-    const { result } = renderHook(() => useHreProgress("occ-zapspitta"))
+    const { result } = renderHook(() =>
+      useHreProgress("occ-zapspitta", hreMissions)
+    )
     expect(result.current[0]).toMatchObject({
       mission: 20,
       progress: [0, 70],
@@ -167,7 +191,9 @@ describe("useHreProgress", () => {
   })
 
   it("stores points and rank with the mission progress", () => {
-    const { result } = renderHook(() => useHreProgress("occ-zapspitta"))
+    const { result } = renderHook(() =>
+      useHreProgress("occ-zapspitta", hreMissions)
+    )
     act(() => result.current[1].setPoints(14_500))
     act(() => result.current[1].setRank(3200))
     const stored = JSON.parse(

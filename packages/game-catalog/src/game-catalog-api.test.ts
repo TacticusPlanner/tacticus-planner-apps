@@ -42,7 +42,7 @@ const validCharacter = {
 function envelope(data: unknown) {
   return {
     version: "dev-1",
-    schemaVersion: 9,
+    schemaHash: "schema-9",
     gameVersion: "1.40",
     sourceHash: "abc",
     datasetKey: "characters",
@@ -124,7 +124,7 @@ describe("GameCatalogHttpClient", () => {
   it("validates the manifest", async () => {
     stubFetch({
       version: "dev-1",
-      schemaVersion: 9,
+      schemaHash: "schema-9",
       gameVersion: "1.40",
       sourceHash: "abc",
       datasets: [charactersDataset],

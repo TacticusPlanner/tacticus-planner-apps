@@ -4,26 +4,25 @@
 //   public/locales/en/npcAbilitySummoners.json  sorted ids whose English text summons a unit
 //   public/locales/en/npcAbilityTextGaps.json   sorted referenced ids with no rules text (never fetched)
 //
-// Covers every ability id the game catalog references: NPC active/passive abilities (all npc records),
-// character active/passive abilities, relic abilities (`abilityId` of relic equipment) and each MoW's
-// primary, secondary and mythic ability. Source: the catalog's raw data in the sibling
-// `tacticus-planner-api` checkout and V1's ability table plus localized descriptions in the sibling
-// `tacticusplanner` checkout (develop). Re-run after every game-catalog refresh (see the api repo's
-// `game-catalog-data` skill) and commit the four locale directories and the two lists. Each locale
+// Covers every ability id the game config references: NPC active/passive abilities (all npc records),
+// character active/passive abilities, each MoW's active (primary, secondary) and mythic abilities, and
+// relic abilities (`abilityId` of relic items). Source: the pinned data-mines commit (datamine/REF, see
+// scripts/datamine.mjs): the game config's ability tables and the game's own language files. Re-run
+// after every `pnpm datamine:pull` and commit the four locale directories and the two lists. Each locale
 // directory is emptied first, so a dropped ability's file disappears.
 //
 // An entry is written only when the English description resolves completely: every `{[token]}` is one of
-// the ability's variables or constants (keys compared trimmed — V1 has trailing-space keys), a
+// the ability's variables or constants (keys compared trimmed — the game has trailing-space keys), a
 // `DamageProfileType…` token backed by a `damageProfile…` constant, `UnitName`, or an `S/…` reference (the
 // renderer drops those). Tables are pruned to what the description references (plus every
-// `damageProfile*` constant); de/es/fr use V1's localized description with the same tables.
+// `damageProfile*` constant); de/es/fr use the game's localized description with the same tables.
 //
 // The script prints every referenced id it could not cover and exits non-zero when that set differs from
 // KNOWN_GAPS, or when a relic ability icon is missing (exact filename case), so a refresh notices both.
 import {
+  existsSync,
   mkdirSync,
   readFileSync,
-  readdirSync,
   rmSync,
   writeFileSync,
 } from "node:fs"
@@ -31,19 +30,20 @@ import { resolve, dirname } from "node:path"
 import { fileURLToPath } from "node:url"
 import { format, resolveConfig } from "prettier"
 
+import abilityIconOverrides from "../../../packages/game-catalog/src/game-entities/icons/ability-icon-overrides.json" with { type: "json" }
+import { ensureDatamine } from "./datamine.mjs"
+
 const here = dirname(fileURLToPath(import.meta.url))
-const workspace = resolve(here, "../../../..")
-const catalogData = `${workspace}/tacticus-planner-api/src/TacticusPlanner.GameCatalog/Data`
-const v1 = `${workspace}/tacticusplanner/src/fsd`
+const datamine = ensureDatamine()
 const localesDir = resolve(here, "../public/locales")
-const abilityIconDir = resolve(here, "../public/game_catalog/abilities")
+const catalogImageDir = resolve(here, "../public/game_catalog")
 
 const LOCALES = ["en", "de", "es", "fr"]
 
-// Referenced ids with no complete V1 rules text, checked against what this run finds uncovered. Update it
+// Referenced ids with no complete rules text, checked against what this run finds uncovered. Update it
 // deliberately when a refresh adds or fixes one.
 const KNOWN_GAPS = new Set([
-  // NPC-only: V1's "Coming soon!" placeholder.
+  // NPC-only: no description in the game's language files.
   "BossEndFightUndefeated",
   "RepairEnthusiast",
   "RunsAround",
@@ -51,11 +51,7 @@ const KNOWN_GAPS = new Set([
 ])
 
 const readJson = (path) => JSON.parse(readFileSync(path, "utf8"))
-const readDir = (dir) =>
-  readdirSync(dir)
-    .filter((file) => file.endsWith(".json"))
-    .sort()
-    .map((file) => readJson(`${dir}/${file}`))
+const config = (path) => readJson(`${datamine}/raw/gameconfig/${path}`)
 
 // ---- referenced ability ids --------------------------------------------------------------------------
 
@@ -65,44 +61,33 @@ const add = (id) => {
   if (id) referenced.add(id)
 }
 
-for (const faction of readDir(`${catalogData}/units`)) {
-  for (const character of faction.characters ?? []) {
-    for (const id of character.activeAbilityNames ?? []) add(id)
-    for (const id of character.passiveAbilityNames ?? []) add(id)
-  }
-  for (const mow of faction.mows ?? []) {
-    add(mow.primaryAbility?.name)
-    add(mow.secondaryAbility?.name)
-    add(mow.mythicAbility?.name)
-  }
+// Characters and MoWs: a MoW's `activeAbilities` are its primary and secondary ability.
+for (const unit of Object.values(config("units/lineup.json"))) {
+  for (const id of unit.activeAbilities ?? []) add(id)
+  for (const id of unit.passiveAbilities ?? []) add(id)
+  for (const id of unit.mythicAbilities ?? []) add(id)
 }
-for (const faction of readDir(`${catalogData}/npcs`)) {
-  for (const npc of faction.npcs ?? []) {
-    for (const id of npc.activeAbilities ?? []) add(id)
-    for (const id of npc.passiveAbilities ?? []) add(id)
-  }
+for (const npc of Object.values(config("units/npc.json"))) {
+  for (const id of npc.activeAbilities ?? []) add(id)
+  for (const id of npc.passiveAbilities ?? []) add(id)
 }
-for (const items of readDir(`${catalogData}/equipment`)) {
-  for (const item of items) {
-    if (!item.isRelic || !item.abilityId) continue
-    add(item.abilityId)
-    relicAbilityIds.add(item.abilityId)
-  }
+for (const item of Object.values(config("items.json"))) {
+  if (!item.isRelic || !item.abilityId) continue
+  add(item.abilityId)
+  relicAbilityIds.add(item.abilityId)
 }
 
-// ---- V1 sources ------------------------------------------------------------------------------------
+// ---- datamine sources --------------------------------------------------------------------------------
 
-const abilityById = new Map(
-  readJson(`${v1}/4-entities/abilities/data/new-ability-data.json`).map(
-    (ability) => [ability.id, ability]
-  )
-)
-const localizedDescriptions = Object.fromEntries(
-  LOCALES.filter((locale) => locale !== "en").map((locale) => [
+const abilityById = new Map(Object.entries(config("units/abilities.json")))
+const languages = Object.fromEntries(
+  LOCALES.map((locale) => [
     locale,
-    readJson(`${v1}/5-shared/l10n/data/${locale}/ability_descriptions.json`),
+    readJson(`${datamine}/raw/languages/${locale}.json`),
   ])
 )
+const descriptionOf = (locale, id) =>
+  languages[locale][`Abilities/${id}_CurrentLevelDescription`]
 
 // ---- entry rule --------------------------------------------------------------------------------------
 
@@ -144,9 +129,9 @@ const uncovered = new Map()
 
 for (const id of [...referenced].sort()) {
   const ability = abilityById.get(id)
-  const english = ability?.text?.currentLevelDescription ?? ""
+  const english = descriptionOf("en", id) ?? ""
   if (!ability) {
-    uncovered.set(id, "no V1 ability entry")
+    uncovered.set(id, "no ability entry")
     continue
   }
   if (PLACEHOLDER_DESCRIPTIONS.has(english.trim())) {
@@ -170,7 +155,7 @@ for (const id of [...referenced].sort()) {
   )
   for (const locale of LOCALES) {
     const description =
-      locale === "en" ? english : (localizedDescriptions[locale][id] ?? english)
+      locale === "en" ? english : (descriptionOf(locale, id) ?? english)
     text[locale][id] = {
       description: description.trim(),
       variables,
@@ -237,9 +222,15 @@ await writeJson(
 
 // ---- report ------------------------------------------------------------------------------------------
 
-const abilityIcons = new Set(readdirSync(abilityIconDir))
+// The paths game-catalog's abilityIcon() serves: the game's sprite (by id, or its override), else the
+// planner's own copy.
+const hasAbilityIcon = (id) =>
+  [
+    `datamines/${abilityIconOverrides[id] ?? `abilities/ui_icon_ability2_${id}.webp`}`,
+    `abilities/ui_icon_ability2_${id}.webp`,
+  ].some((path) => existsSync(resolve(catalogImageDir, path)))
 const missingRelicIcons = [...relicAbilityIds]
-  .filter((id) => !abilityIcons.has(`ui_icon_ability2_${id}.png`))
+  .filter((id) => !hasAbilityIcon(id))
   .sort()
 
 const newGaps = [...uncovered.keys()].filter((id) => !KNOWN_GAPS.has(id))
@@ -257,7 +248,7 @@ for (const id of closedGaps)
   console.log(`  CLOSED    ${id}: now covered, remove it from KNOWN_GAPS`)
 for (const id of missingRelicIcons) {
   console.log(
-    `  NO ICON   relic ability ${id}: ui_icon_ability2_${id}.png (exact case)`
+    `  NO ICON   relic ability ${id}: ui_icon_ability2_${id}.webp (exact case)`
   )
 }
 

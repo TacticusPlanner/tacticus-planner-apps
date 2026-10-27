@@ -120,6 +120,7 @@ function ascensionWithOnslaught(
       imperial: { sector: "Gold", tier: 4, isSet },
     } as unknown as OnslaughtProgress,
     onslaughtRewards: rewards,
+    onslaughtRunsPerDay: 1.5,
     referenceDate: monday,
   })
 }

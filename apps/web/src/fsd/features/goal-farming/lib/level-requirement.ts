@@ -6,6 +6,7 @@ import {
   additionalTargetFromWire,
   requiredLevelForRankTarget,
 } from "./rank-additional-target"
+import type { LevelRules } from "./level-rules"
 
 /** The character level a goal's own target needs — a derived property of the target, never a goal of
  * its own (integrate-level-progression-into-rank-goals). A Character Rank goal needs the level of its
@@ -13,14 +14,16 @@ import {
  * higher of its two ability targets (ability levels and character levels share one scale). `null`
  * for every other goal kind and for a Mow, whose own `xpLevel` is never targeted. */
 export function requiredLevelForGoal(
-  goal: Pick<GoalDetail, "goalType" | "entityType" | "config">
+  goal: Pick<GoalDetail, "goalType" | "entityType" | "config">,
+  rules: LevelRules
 ): number | null {
   if (goal.entityType !== "Character") return null
   if (goal.goalType === "Rank" && goal.config.rank) {
     const targetRank = rankAt(goal.config.rank.end)
     return requiredLevelForRankTarget(
       targetRank,
-      additionalTargetFromWire(targetRank, goal.config.rank)
+      additionalTargetFromWire(targetRank, goal.config.rank),
+      rules
     )
   }
   if (goal.goalType === "Ability" && goal.config.ability) {

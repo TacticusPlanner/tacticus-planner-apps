@@ -6,23 +6,16 @@ import { abilityIcon, factionIcon, npcPortrait } from "@workspace/game-catalog"
 import { npcPortraitOverrides } from "../../../../../../../packages/game-catalog/src/game-entities/npc-portrait-overrides"
 import npcAbilityIds from "@/test/fixtures/npc-ability-ids.json"
 
-// Vite's glob lists the shipped assets at build time, so the audit runs without node's fs.
-const shippedPortraits = new Set(
+// Vite's glob lists the shipped assets at build time, so the audit runs without node's fs. Each entry
+// is the asset's URL path (`/game_catalog/...`), the form the icon helpers return in tests.
+const shippedCatalogImages = new Set(
   Object.keys(
-    import.meta.glob("/public/game_catalog/characters/*.webp", {
-      query: "?url",
-    })
-  ).map((path) => path.split("/").pop()!)
+    import.meta.glob("/public/game_catalog/**/*.webp", { query: "?url" })
+  ).map((path) => path.replace(/^\/public/, ""))
 )
 const shippedEmblems = new Set(
   Object.keys(
     import.meta.glob("/public/game_catalog/factions/*.webp", { query: "?url" })
-  ).map((path) => path.split("/").pop()!)
-)
-
-const shippedAbilityIcons = new Set(
-  Object.keys(
-    import.meta.glob("/public/game_catalog/abilities/*.webp", { query: "?url" })
   ).map((path) => path.split("/").pop()!)
 )
 
@@ -32,12 +25,11 @@ const isObjectId = (id: string) => /^(LootObj_|powup)/.test(id)
 
 describe("NPC portrait assets", () => {
   it("ships a portrait file for every mapped unit variation", () => {
-    expect(shippedPortraits.size).toBeGreaterThan(100)
+    expect(shippedCatalogImages.size).toBeGreaterThan(2000)
 
-    const missing = Object.entries(npcPortraitOverrides)
-      .filter(([id]) => !isObjectId(id))
-      .filter(([, file]) => !shippedPortraits.has(file))
-      .map(([id, file]) => `${id} -> ${file}`)
+    const missing = Object.keys(npcPortraitOverrides)
+      .filter((id) => !isObjectId(id))
+      .filter((id) => !shippedCatalogImages.has(npcPortrait(id)!))
 
     expect(missing).toEqual([])
   })
@@ -45,7 +37,7 @@ describe("NPC portrait assets", () => {
   it("resolves through the public helper to a shipped file", () => {
     const url = npcPortrait("necroBossWarden")
     expect(url).toBeDefined()
-    expect(shippedPortraits.has(url!.split("/").pop()!)).toBe(true)
+    expect(shippedCatalogImages.has(url!)).toBe(true)
   })
 })
 
@@ -93,12 +85,10 @@ describe("ability icon assets", () => {
   ]
 
   it("ships an icon for every NPC ability except the known-absent ids", () => {
-    expect(shippedAbilityIcons.size).toBeGreaterThan(400)
+    expect(shippedCatalogImages.size).toBeGreaterThan(2000)
 
     const missing = npcAbilityIds
-      .filter(
-        (id) => !shippedAbilityIcons.has(abilityIcon(id).split("/").pop()!)
-      )
+      .filter((id) => !shippedCatalogImages.has(abilityIcon(id)))
       .sort()
 
     expect(missing).toEqual(knownAbsent)

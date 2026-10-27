@@ -1,0 +1,29 @@
+# Paths in TacticusPlanner/tacticus-planner-data-mines that `pnpm datamine:pull` fetches into the
+# gitignored cache (node_modules/.cache/datamine) for the generators. Relative to that repo's root;
+# a trailing `/` takes the whole folder. List a path only when a generator reads it. Sorted.
+raw/VERSION
+raw/gameconfig/globalValues.json
+raw/gameconfig/items.json
+raw/gameconfig/quests/groups.json
+raw/gameconfig/units/abilities.json
+raw/gameconfig/units/factions.json
+raw/gameconfig/units/lineup.json
+raw/gameconfig/units/npc.json
+raw/gameconfig/upgrades.json
+raw/globalconfig/guildBoss/unitSets.json
+raw/languages/
+sprites-webp/abilities/
+sprites-webp/abilties/
+sprites-webp/atlases/
+sprites-webp/avatars/
+sprites-webp/chests/
+sprites-webp/damage_profiles2/
+sprites-webp/droptables/
+sprites-webp/fonts/
+sprites-webp/guildboss/
+sprites-webp/items/
+sprites-webp/liveevenst/
+sprites-webp/liveevents/
+sprites-webp/root/
+sprites-webp/ui/
+sprites-webp/upgrades/

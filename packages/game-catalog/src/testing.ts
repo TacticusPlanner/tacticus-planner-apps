@@ -13,3 +13,12 @@ export function deleteGameCatalogDatabase() {
 // The served `quest-events` and `quest-crates` payloads for the shipped quests (Cyrus, Nubari, Kîmm),
 // parsed through the catalog schemas, so feature tests read the same shapes the sync stores.
 export { questCratesFixture, questEventsFixture } from "./quests.fixtures"
+
+// The served `global-values` record, parsed through the catalog schema and keyed as the store keys it.
+export { globalValuesFixture } from "./global-values.fixtures"
+
+// The served `progression-rules` record, parsed through the catalog schema and keyed as the store keys it.
+export { progressionRulesFixture } from "./progression-rules.fixtures"
+
+// The served `hre` records (both Hero Release Events), parsed through the catalog schema.
+export { hreFixture } from "./hre.fixtures"

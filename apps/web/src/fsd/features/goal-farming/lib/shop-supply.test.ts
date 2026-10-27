@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest"
 import type { ShopRewardOffer, ShopShardOffer } from "@workspace/game-catalog"
+import { globalValuesFixture } from "@workspace/game-catalog/testing"
 
 import {
   mythicShardResourceId,
@@ -10,6 +11,7 @@ import {
   projectShopSupply,
   shopOfferPerDay,
   shopSpendFromSupply,
+  toOnslaughtRunsPerDay,
 } from "./shop-supply"
 
 // 2026-09-01 is a Tuesday (UTC).
@@ -153,6 +155,7 @@ describe("projectOnslaughtSupply", () => {
       entityId: "hero1",
       isMythic: false,
       avgShardsPerRun: 4.5,
+      runsPerDay: 1.5,
     })
 
     expect(supplier.key).toBe("onslaught:regular")
@@ -166,10 +169,29 @@ describe("projectOnslaughtSupply", () => {
       entityId: "hero1",
       isMythic: true,
       avgShardsPerRun: -5,
+      runsPerDay: 1.5,
     })
 
     expect(supplier.key).toBe("onslaught:mythic")
     expect(supplier.supplyOnDay(0)).toBe(0)
+  })
+})
+
+describe("toOnslaughtRunsPerDay", () => {
+  it("reads the game's Onslaught token regeneration as runs per day", () => {
+    expect(toOnslaughtRunsPerDay([globalValuesFixture])).toBe(1.5)
+    expect(
+      toOnslaughtRunsPerDay([
+        {
+          wavesStaminaRegenerationTime: 43_200,
+          wavesStaminaRegenerationAmount: 1,
+        },
+      ])
+    ).toBe(2)
+  })
+
+  it("is undefined until global-values is served", () => {
+    expect(toOnslaughtRunsPerDay([])).toBeUndefined()
   })
 })
 
@@ -196,6 +218,7 @@ describe("shopSpendFromSupply", () => {
         entityId: "hero1",
         isMythic: false,
         avgShardsPerRun: 4,
+        runsPerDay: 1.5,
       }),
     ]
     const spend = shopSpendFromSupply(

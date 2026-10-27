@@ -27,10 +27,10 @@ import {
 } from "@/features/goal-farming/@x/goal-create"
 import { estimateRemainingShardEnergy } from "@/features/goal-farming/@x/goal-create"
 import {
-  ONSLAUGHT_RUNS_PER_DAY,
   projectOnslaughtSupply,
   projectShopSupply,
   shopOfferPerDay,
+  toOnslaughtRunsPerDay,
 } from "@/features/goal-farming/@x/goal-create"
 import type { FlatSupplier } from "@/features/goal-farming/@x/goal-create"
 import type { GoalAcquisitionPlan } from "./acquisition-plan"
@@ -69,6 +69,9 @@ export function useProgressionPreview(params: {
     ? shardsByUnitId?.get(params.entityId)
     : undefined
   const rewards = readyData(useCatalogDataset("onslaught-rewards"))
+  const onslaughtRunsPerDay = readyData(
+    useCatalogDataset("global-values", toOnslaughtRunsPerDay)
+  )
   const { data: onslaughtProgress } = useQuery({
     ...onslaughtProgressQueries.current(),
     enabled: isAuthenticated,
@@ -161,7 +164,8 @@ export function useProgressionPreview(params: {
       params.ascensionEnabled &&
       params.entityType === "Character" &&
       onslaughtProgress &&
-      rewards?.length
+      rewards?.length &&
+      onslaughtRunsPerDay !== undefined
     ) {
       // No row for this sector/tier → Onslaught is unavailable for the preview (0 shards/run).
       const yieldPerRun = onslaughtShardsPerRunFor({
@@ -177,11 +181,13 @@ export function useProgressionPreview(params: {
             entityId: params.entityId,
             isMythic: onslaughtCurrentIsMythic,
             avgShardsPerRun: onslaughtShardsPerRun,
+            runsPerDay: onslaughtRunsPerDay,
           })
         )
       }
     }
-    const onslaughtShardsPerDay = onslaughtShardsPerRun * ONSLAUGHT_RUNS_PER_DAY
+    const onslaughtShardsPerDay =
+      onslaughtShardsPerRun * (onslaughtRunsPerDay ?? 0)
 
     const suppliedResourceIds = new Set(
       flatSuppliers.map((supplier) => supplier.resourceId)
@@ -333,7 +339,13 @@ export function useProgressionPreview(params: {
       onslaughtTokens,
       shopCurrencySpend,
     }
-  }, [params, inventoryShard?.amount, onslaughtProgress, rewards])
+  }, [
+    params,
+    inventoryShard?.amount,
+    onslaughtProgress,
+    rewards,
+    onslaughtRunsPerDay,
+  ])
 }
 
 /** One day's expected shard yield from a set of farm nodes at `dailyEnergy` — cheapest node first,

@@ -1,0 +1,26 @@
+{
+  "OptimizedGait": {
+    "description": "Wenn ein Gegner, der an <style=\"Faction_AdeptusMechanicus\">Exitor-Rho</style> angrenzt, von einer anderen verbündeten, <style=\"Mechanical\">mechanischen</style> Einheit angegriffen wird, verursacht <style=\"Faction_AdeptusMechanicus\">Exitor-Rho</style> <style=\"Stat_Hits\">{[nrOfHits]}x</style> <style=\"DMG_Energy\">{[minDmg]}–{[maxDmg]} Strahlenschaden</style>. Wenn ein Gegner, der an <style=\"Faction_AdeptusMechanicus\">Exitor-Rho</style> angrenzt, von einer anderen verbündeten, <style=\"Mechanical\">mechanischen</style> Einheit oder von einem durch diese Fähigkeit ausgelösten Angriff besiegt wird, bewegt sich <style=\"Faction_AdeptusMechanicus\">Exitor-Rho</style> auf das Feld des Gegners.",
+    "variables": {
+      "minDmg": [
+        21, 25, 29, 34, 38, 43, 47, 52, 57, 62, 67, 72, 76, 81, 86, 91, 96, 101,
+        105, 110, 117, 126, 145, 164, 183, 202, 221, 240, 260, 279, 298, 317,
+        336, 355, 374, 393, 412, 432, 451, 478, 515, 555, 598, 645, 732, 818,
+        904, 991, 1077, 1163, 1176, 1192, 1208, 1229, 1250, 1271, 1292, 1318,
+        1344, 1370, 1402, 1433, 1465, 1496, 1528
+      ],
+      "maxDmg": [
+        30, 36, 42, 48, 54, 61, 68, 75, 82, 89, 95, 102, 109, 116, 123, 130,
+        137, 144, 151, 158, 167, 180, 207, 234, 262, 289, 316, 344, 371, 398,
+        425, 453, 480, 507, 535, 562, 589, 617, 644, 682, 736, 793, 854, 922,
+        1045, 1169, 1292, 1415, 1538, 1662, 1680, 1703, 1725, 1755, 1785, 1815,
+        1845, 1883, 1920, 1958, 2003, 2048, 2093, 2138, 2183
+      ]
+    },
+    "constants": {
+      "nrOfHits": "2",
+      "damageProfile": "Energy"
+    },
+    "scaled": ["minDmg", "maxDmg"]
+  }
+}

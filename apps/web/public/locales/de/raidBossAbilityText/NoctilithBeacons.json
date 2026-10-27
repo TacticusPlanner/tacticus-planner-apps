@@ -1,0 +1,10 @@
+{
+  "NoctilithBeacons": {
+    "description": "<style=\"Faction_Necrons\">Szarekh</style> und alle <style=\"Faction_Necrons\">Necrons</style> auf angrenzenden Feldern um ihn herum nehmen <style=\"Stat_Damage\">-{[dmgPctReduction]} % Schaden</style> von allen Gegnern mit der Eigenschaft <style=\"Psyker\">Psioniker</style>.",
+    "variables": {},
+    "constants": {
+      "dmgPctReduction": "40"
+    },
+    "scaled": []
+  }
+}

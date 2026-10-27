@@ -42,6 +42,7 @@ import {
   questTierCap,
   type QuestBattle,
   type QuestHeroOwnership,
+  type QuestScoring,
 } from "@/features/quest-event"
 import { useCreateGoalLauncher, useGlobalGoalPlan } from "@/entities/goal"
 import { useNpcsById } from "@/entities/npc"
@@ -83,11 +84,18 @@ export function QuestPage() {
   const counts = useMemo(() => objectiveCounts(battles), [battles])
   const editable =
     !browsing && (instance?.phase === "running" || instance?.phase === "claim")
-  const progress = useQuestProgress(editable ? instance.key : null, counts)
+  const progress = useQuestProgress(
+    editable ? instance.key : null,
+    counts,
+    quest ?? null
+  )
   const entries = editable ? progress.entries : EMPTY_ENTRIES
   const crateList = crates.status === "ready" ? crates.data : undefined
   const score = useMemo(
-    () => (quest ? scoreQuest(battles, entries, crateList ?? []) : null),
+    () =>
+      quest
+        ? scoreQuest(battles, entries, crateList ?? [], quest.scorePoints)
+        : null,
     [quest, battles, entries, crateList]
   )
 
@@ -165,6 +173,7 @@ export function QuestPage() {
     featuredCharacterId: heroId,
     allowedFactionIds: quest?.allowedFactionIds ?? NO_FACTIONS,
     equipment: equipmentList,
+    scoring: quest?.scorePoints ?? null,
   })
   const teamView = questTeamView(plan, selected?.number ?? null)
   const selectedPlan =
@@ -192,8 +201,14 @@ export function QuestPage() {
         : undefined
   // A projection needs entered scores: none in a preview or a browsed quest.
   const projection =
-    editable && estimates.size > 0
-      ? projectQuest(battles, entries, estimates, crateList ?? [])
+    editable && quest && estimates.size > 0
+      ? projectQuest(
+          battles,
+          entries,
+          estimates,
+          crateList ?? [],
+          quest.scorePoints
+        )
       : null
   const unitName = (id: string) =>
     t(`characters:${id}` as never, {
@@ -270,9 +285,10 @@ export function QuestPage() {
       })
     : null
   const tokenPlan =
-    instance && state.status === "ready" && !browsing && score
+    instance && state.status === "ready" && !browsing && quest && score
       ? questTokenPlan({
           phase: instance.phase,
+          bank: quest.tokens,
           startMs: Date.parse(instance.entry.startUtc),
           endMs: Date.parse(instance.entry.endUtc),
           nowMs: state.nowMs,
@@ -328,7 +344,7 @@ export function QuestPage() {
               : { kind: "none" as const }
           )
         : undefined
-  const detail = (battle: QuestBattle) => (
+  const detail = (battle: QuestBattle, scoring: QuestScoring) => (
     <QuestBattleDetail
       battle={battle}
       boardOpen={boardOpen}
@@ -340,17 +356,19 @@ export function QuestPage() {
       npcs={npcs}
       onBoardOpenChange={setBoardOpen}
       retryNpcs={npcsRead.status === "error" ? npcsRead.retry : undefined}
+      scoring={scoring}
       team={isMobile ? null : team}
       upgrade={upgradesById?.get(battle.loot.upgradeId)}
     />
   )
   // A browsed quest shows no inputs at all; a preview shows them read-only.
-  const scoreEntry = (battle: QuestBattle) =>
+  const scoreEntry = (battle: QuestBattle, scoring: QuestScoring) =>
     browsing ? null : (
       <ScoreEntry
         actions={editable ? editActions : null}
         battle={battle}
         entry={entries[battle.number]}
+        scoring={scoring}
       />
     )
 
@@ -476,11 +494,11 @@ export function QuestPage() {
                   {t("quest:entry.title")}
                 </SheetDescription>
               </SheetHeader>
-              {selected ? (
+              {selected && quest ? (
                 <div className="flex flex-col gap-4 overflow-y-auto px-4 pb-4">
-                  {scoreEntry(selected)}
+                  {scoreEntry(selected, quest.scorePoints)}
                   {team}
-                  {detail(selected)}
+                  {detail(selected, quest.scorePoints)}
                 </div>
               ) : null}
             </SheetContent>
@@ -499,10 +517,10 @@ export function QuestPage() {
           {list}
         </div>
         <div className="space-y-5">
-          {selected ? (
+          {selected && quest ? (
             <div className="space-y-4" data-testid="quest-selected">
-              {scoreEntry(selected)}
-              {detail(selected)}
+              {scoreEntry(selected, quest.scorePoints)}
+              {detail(selected, quest.scorePoints)}
             </div>
           ) : null}
           {rewardsCard}

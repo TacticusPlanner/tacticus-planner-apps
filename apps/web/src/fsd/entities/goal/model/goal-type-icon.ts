@@ -1,9 +1,9 @@
-import { gameAssetUrl } from "@workspace/game-catalog"
+import { datamineAssetUrl, gameAssetUrl } from "@workspace/game-catalog"
 
 import type { GoalKind } from "./types"
 
-const genericUpgradeIcon = gameAssetUrl(
-  `upgrade_materials/ui_icon_upgrade_generic.webp`
+const genericUpgradeIcon = datamineAssetUrl(
+  `atlases/ui_icon_upgrade_generic.webp`
 )
 
 /** The goal-type badge/card icon — a generic per-kind symbol representing the concept, not any one

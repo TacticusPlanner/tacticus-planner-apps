@@ -9,6 +9,7 @@ import {
   runInputValues,
   type AscensionGoal,
   type AscensionStep,
+  type LegendaryEvent,
   type LegendaryEventProgress,
   type LegendaryEventRewards,
   type LegendaryEventRun,
@@ -23,13 +24,12 @@ import type { RunSupply, RunSupplyState } from "./token-supply"
 // milestone markers of `TokenEstimationService.getTokenDisplays` (design D6), reading the event's
 // own ladder and Stage 3's input semantics (design D3 f, g).
 
-/** "Oh So Close" price: 500 blackstone plus 100 per shard for Unlock, 50 for later steps (V1). */
-const OH_SO_CLOSE_BASE_COST = 500
-const OH_SO_CLOSE_UNLOCK_COST_PER_SHARD = 100
-const OH_SO_CLOSE_PROMOTION_COST_PER_SHARD = 50
+/** The event's served "Oh So Close" pricing: base plus a per-shard price, for Unlock and later steps. */
+export type OhSoCloseOffer = LegendaryEvent["ohSoCloseOffer"]
 
 export interface ForecastInput {
   rewards: LegendaryEventRewards
+  ohSoCloseOffer: OhSoCloseOffer
   /** The account's synced entry; `undefined` starts from zero. */
   progress:
     | Pick<
@@ -93,18 +93,16 @@ export interface Forecast {
 /** The blackstone price of closing a gap of `shards` with Oh So Close, or null when not offered. */
 export function ohSoCloseHint(
   goal: AscensionGoal,
-  shards: number
+  shards: number,
+  offer: OhSoCloseOffer
 ): OhSoCloseHint | null {
   if (goal.step === "fullyAscended") return null
   const missing = goal.threshold - shards
   if (missing <= 0 || missing > MAX_CLOSE_SHARDS) return null
-  const perShard =
-    goal.step === "unlock"
-      ? OH_SO_CLOSE_UNLOCK_COST_PER_SHARD
-      : OH_SO_CLOSE_PROMOTION_COST_PER_SHARD
+  const price = goal.step === "unlock" ? offer.unlock : offer.ascension
   return {
     shards: missing,
-    blackstone: OH_SO_CLOSE_BASE_COST + perShard * missing,
+    blackstone: price.base + price.multiplier * missing,
   }
 }
 
@@ -117,6 +115,7 @@ const stepIndex = (goal: AscensionGoal, steps: readonly AscensionStep[]) =>
  */
 export function forecastRuns({
   rewards,
+  ohSoCloseOffer,
   progress,
   supply,
   fromStep,
@@ -266,7 +265,9 @@ export function forecastRuns({
       shardsMissing:
         next.step === "fullyAscended" ? 0 : next.threshold - shards,
       ohSoClose:
-        runSupply.state === "done" ? null : ohSoCloseHint(next, shards),
+        runSupply.state === "done"
+          ? null
+          : ohSoCloseHint(next, shards, ohSoCloseOffer),
     }
   })
 

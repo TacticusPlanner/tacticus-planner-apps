@@ -33,7 +33,7 @@ describe("entity icon mapping", () => {
 
   it("derives the upgrade-material icon from the upgrade id", () => {
     expect(UpgradeIcons.icon(upgradeIdSchema.parse("upgArmC001"))).toBe(
-      "/game_catalog/upgrade_materials/ui_icon_upgrade_upgArmC001.webp"
+      "/game_catalog/datamines/upgrades/ui_icon_upgrade_upgArmC001.webp"
     )
   })
 

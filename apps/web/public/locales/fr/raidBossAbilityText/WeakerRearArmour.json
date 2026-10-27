@@ -1,0 +1,15 @@
+{
+  "WeakerRearArmour": {
+    "description": "Si des ennemis se tiennent dans le cône arrière du <style=\"Faction_AstraMilitarum\">Char de Combat Rogal Dorn</style>, leurs attaques ont <style=\"Stat\">+{[extraCritChance]} % de chances de coup critique</style> contre lui.",
+    "variables": {
+      "extraCritChance": [
+        30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
+        30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
+        30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
+        30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30
+      ]
+    },
+    "constants": {},
+    "scaled": []
+  }
+}

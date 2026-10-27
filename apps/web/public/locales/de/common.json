@@ -32,6 +32,7 @@
       "firstTimeDescription": "Erste Verwendung auf diesem Gerät — das kann etwas länger dauern.",
       "updatingTitle": "Spielkatalog wird aktualisiert",
       "updatingDescription": "Spielkatalogdaten werden auf Version {{version}} aktualisiert.",
+      "updatingDescriptionNoVersion": "Spielkatalogdaten werden aktualisiert.",
       "preparing": "Spielkatalog wird vorbereitet…",
       "progress": "{{done}} / {{total}} werden heruntergeladen…",
       "errorTitle": "Spieldaten konnten nicht geladen werden",

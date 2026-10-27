@@ -17,3 +17,12 @@ export function gameAssetUrl(path: string): string {
   const url = `${ASSET_BASE_PATH}/${path}`
   return assetsVersion ? `${url}?v=${assetsVersion}` : url
 }
+
+/**
+ * URL of a game sprite copied from the pinned data-mines commit, by its path under data-mines
+ * `sprites-webp/` (e.g. `datamineAssetUrl("atlases/ui_icon_trait_flying_01.webp")`). The files live in
+ * apps/web/public/game_catalog/datamines/ (spec: datamine-source).
+ */
+export function datamineAssetUrl(path: string): string {
+  return gameAssetUrl(`datamines/${path}`)
+}

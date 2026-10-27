@@ -1,0 +1,10 @@
+{
+  "SupaCyborkBody": {
+    "description": "Le porteur de relique peut bénéficier de <style=\"Healing\">soins</style> et de <style=\"Repairing\">réparations</style>. Il subit également <style=\"Stat_CritDamage\">-{[critDmgReduction]} dégâts critiques</style> pour chaque unité ennemie adjacente.",
+    "variables": {
+      "critDmgReduction": [390, 411, 432, 453, 474, 495, 516, 537, 558, 579]
+    },
+    "constants": {},
+    "scaled": []
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "TreasonOfTzeentch": {
+    "description": "Crée un clone d'un personnage ennemi dans un hexagone aléatoire à moins de 3 hexagones de <style=\"Faction_ThousandSons\">Magnus</style>. Le clone combat aux côtés de Magnus et possède <style=\"Stat\">{[hpPct]}%</style> de la <style=\"Stat_Health\">Santé</style> maximale du personnage d'origine. Toutes les autres stats et les niveaux de capacités sont identiques. Lorsqu'un personnage attaque Magnus alors que le clone de ce personnage est sur le champ de bataille, le personnage et le clone échangent leurs places.",
+    "variables": {
+      "hpPct": [
+        80, 80, 80, 80, 80, 80, 80, 80, 85, 85, 85, 85, 85, 85, 85, 85, 85, 90,
+        90, 90, 90, 90, 90, 90, 90, 90, 95, 95, 95, 95, 95, 95, 95, 95, 95, 100,
+        100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
+        100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
+        100
+      ]
+    },
+    "constants": {
+      "range": "3",
+      "maxUse": "3"
+    },
+    "scaled": []
+  }
+}

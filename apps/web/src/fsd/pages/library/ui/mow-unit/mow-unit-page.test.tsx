@@ -7,6 +7,7 @@ import type { ReadState } from "@/shared/lib"
 import type { UnitPowerContext } from "@/shared/unit-power"
 import { unitPowerContextFixture } from "@/test/fixtures/unit-power"
 import {
+  act,
   cleanup,
   fireEvent,
   render,
@@ -17,6 +18,8 @@ import {
 import { seedGameCatalog, seedPlayerData } from "@/test/seed"
 
 import { enNpcAbilityText } from "@/test/rules-text"
+
+import { progressionRulesFixture } from "@workspace/game-catalog/testing"
 
 import { MowUnitPage } from "./mow-unit-page"
 
@@ -189,6 +192,7 @@ async function seedCatalog({
     ...(costsSynced ? { "mow-upgrade-costs": costs } : {}),
     upgrades,
     "unlock-shard-costs": [{ rarity: "Common", shards: 40 }],
+    "progression-rules": [progressionRulesFixture],
   })
 }
 
@@ -248,7 +252,7 @@ async function renderUnit(
     search: search ? `?${search}` : "",
     state,
   }
-  render(
+  const { queryClient } = render(
     <>
       <MowUnitPage />
       <Where />
@@ -265,6 +269,12 @@ async function renderUnit(
       expect(screen.queryByTestId("mow-unit-loading")).not.toBeInTheDocument()
     )
   }
+  // Let the page's other catalog reads (the progression rules) settle before the test looks; a
+  // settled read renders on a later timer tick.
+  await waitFor(() =>
+    expect(queryClient.isFetching({ queryKey: ["local", "catalog"] })).toBe(0)
+  )
+  await act(() => new Promise((resolve) => setTimeout(resolve, 0)))
   if (player && player !== "pending") {
     // The player's reads have settled once the header states ownership either way.
     await waitFor(() =>

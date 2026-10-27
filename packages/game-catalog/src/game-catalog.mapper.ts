@@ -64,6 +64,11 @@ function byNumber(data: unknown): Record<string, unknown>[] {
   return asArray(data).map((row) => ({ id: row.number, ...row }))
 }
 
+// global-values and progression-rules are one-record lists with no id of its own; stored under the dataset key.
+function asFixedIdRow(id: string, data: unknown): Record<string, unknown>[] {
+  return asArray(data).map((row) => ({ id, ...row }))
+}
+
 // raid-bosses is the second non-array payload (after events-calendar): a single object
 // ({ seasonConfigRotation, bosses[], primes[], seasons{} }) the Library always reads whole. Stored as
 // one row under a fixed id rather than flattened, since nothing queries it by sub-key.
@@ -106,6 +111,9 @@ export const datasetToStorageModels: Record<
   "quest-crates": byNumber,
   factions: asArray,
   "damage-types": asArray,
+  "global-values": (data) => asFixedIdRow("global-values", data),
+  "progression-rules": (data) => asFixedIdRow("progression-rules", data),
+  hre: asArray,
 }
 
 export function mapDatasetRowToStorageModel<T extends Record<string, unknown>>(

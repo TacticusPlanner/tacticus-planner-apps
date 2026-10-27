@@ -1,15 +1,22 @@
+import type { QuestEventStorageModel } from "@workspace/game-catalog"
 import type { Rarity } from "@workspace/game-domain"
 
-/** The points rules of a quest battle (design D3): three constants, so a game change is one edit. */
-const MEDAL_POINTS = 100
+/** A battle awards at most three medals (stars); the points per medal and the Lightning Victory's
+ *  maximum are served per quest (design D3). */
 export const MAX_MEDALS = 3
-export const MAX_LIGHTNING_POINTS = 100
+
+/** How the quest scores a battle, as served: points per medal and the Lightning Victory's maximum. */
+export type QuestScoring = QuestEventStorageModel["scorePoints"]
+
+/** A won battle's points before objectives: every medal and a full Lightning Victory. */
+export const fullClearPoints = (scoring: QuestScoring) =>
+  MAX_MEDALS * scoring.pointsPerStar + scoring.maxPointsForLightningVictory
 
 /** The player's best attempt at one battle, as entered. */
 export type QuestBattleEntry = {
   /** 0 to 3; 0 means not won. */
   medals: number
-  /** Lightning Victory points, 0 to 100 (the game awards 1 to 100 by HP left). */
+  /** Lightning Victory points, 0 to the served maximum (the game awards them by HP left). */
   lightning: number
   /** One tick per served objective, in served order. */
   objectives: boolean[]
@@ -50,10 +57,9 @@ export type QuestScore = {
 }
 
 /** A battle's maximum: three medals, full Lightning Victory and every objective. */
-export function battleMax(battle: ScoredBattle): number {
+export function battleMax(battle: ScoredBattle, scoring: QuestScoring): number {
   return (
-    MAX_MEDALS * MEDAL_POINTS +
-    MAX_LIGHTNING_POINTS +
+    fullClearPoints(scoring) +
     battle.objectives.reduce((sum, objective) => sum + objective.score, 0)
   )
 }
@@ -61,12 +67,16 @@ export function battleMax(battle: ScoredBattle): number {
 /** A battle's points: 0 when not won, else medals, Lightning Victory and ticked objective scores. */
 function battlePoints(
   battle: ScoredBattle,
-  entry: QuestBattleEntry | undefined
+  entry: QuestBattleEntry | undefined,
+  scoring: QuestScoring
 ): number {
   if (!entry || entry.medals <= 0) return 0
   return (
-    Math.min(entry.medals, MAX_MEDALS) * MEDAL_POINTS +
-    Math.min(Math.max(entry.lightning, 0), MAX_LIGHTNING_POINTS) +
+    Math.min(entry.medals, MAX_MEDALS) * scoring.pointsPerStar +
+    Math.min(
+      Math.max(entry.lightning, 0),
+      scoring.maxPointsForLightningVictory
+    ) +
     battle.objectives.reduce(
       (sum, objective, index) =>
         sum + (entry.objectives[index] ? objective.score : 0),
@@ -83,11 +93,12 @@ function battlePoints(
 export function scoreQuest(
   battles: readonly ScoredBattle[],
   entries: Readonly<Record<number, QuestBattleEntry | undefined>>,
-  crates: readonly { number: number; points: number }[]
+  crates: readonly { number: number; points: number }[],
+  scoring: QuestScoring
 ): QuestScore {
   const scores = battles.map((battle): BattleScore => {
-    const max = battleMax(battle)
-    const points = battlePoints(battle, entries[battle.number])
+    const max = battleMax(battle, scoring)
+    const points = battlePoints(battle, entries[battle.number], scoring)
     return { number: battle.number, points, max, left: max - points }
   })
   const tiers: QuestScore["tiers"] = []

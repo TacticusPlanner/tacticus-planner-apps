@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest"
 
 import type { GoalDetail } from "@/entities/goal"
+import { levelRules } from "@/test/fixtures/level-rules"
 import { buildLevelPotentialProgress } from "./level-potential-progress"
 
 // Silver3 (rank end 11) needs level 32 in the rank-level ladder — same fixture convention as
@@ -44,6 +45,7 @@ describe("buildLevelPotentialProgress", () => {
     ])
 
     const result = buildLevelPotentialProgress({
+      levelRules,
       orderedDetails,
       priorityByGoalId,
       playerCharacterById,
@@ -62,6 +64,7 @@ describe("buildLevelPotentialProgress", () => {
     // goal's available/needed count exposed (a near-max-level character showed a misleadingly high
     // Potential % purely from being close to the target already, unrelated to book availability).
     const result = buildLevelPotentialProgress({
+      levelRules,
       orderedDetails: [rankGoal("near", "solo")],
       priorityByGoalId: new Map([["near", 1]]),
       playerCharacterById: new Map([["solo", { xpLevel: 31, xp: 94199 }]]),
@@ -73,6 +76,7 @@ describe("buildLevelPotentialProgress", () => {
 
   it("gives no entries for a goal already at its required level", () => {
     const result = buildLevelPotentialProgress({
+      levelRules,
       orderedDetails: [rankGoal("done", "one")],
       priorityByGoalId: new Map([["done", 1]]),
       playerCharacterById: new Map([["one", { xpLevel: 42, xp: 400000 }]]),

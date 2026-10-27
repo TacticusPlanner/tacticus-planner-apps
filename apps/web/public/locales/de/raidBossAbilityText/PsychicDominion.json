@@ -1,0 +1,21 @@
+{
+  "PsychicDominion": {
+    "description": "<style=\"Faction_ThousandSons\">Magnus</style> erleidet <style=\"DMG_Psychic\">–{[dmgReductionPct]} % Psi-Schaden</style> und <style=\"Psyker\">Psioniker</style> erleiden <style=\"Stat_Damage\">+{[dmgPct]} % Schaden</style> durch seine Angriffe.",
+    "variables": {
+      "dmgReductionPct": [
+        25, 25, 25, 25, 25, 25, 25, 25, 33, 33, 33, 33, 33, 33, 33, 33, 33, 40,
+        40, 40, 40, 40, 40, 40, 40, 40, 50, 50, 50, 50, 50, 50, 50, 50, 50, 66,
+        66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66,
+        66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66
+      ],
+      "dmgPct": [
+        25, 25, 25, 25, 25, 25, 25, 25, 33, 33, 33, 33, 33, 33, 33, 33, 33, 40,
+        40, 40, 40, 40, 40, 40, 40, 40, 50, 50, 50, 50, 50, 50, 50, 50, 50, 66,
+        66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66,
+        66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66
+      ]
+    },
+    "constants": {},
+    "scaled": []
+  }
+}

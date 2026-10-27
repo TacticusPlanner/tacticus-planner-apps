@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest"
 
 import { allocateLevelXp, type LevelXpNeed } from "./level-xp-allocation"
+import { levelRules } from "@/test/fixtures/level-rules"
 
 const bellator = (
   goalId: string,
@@ -21,7 +22,8 @@ describe("allocateLevelXp", () => {
   it("returns no entry for a goal already at its required level", () => {
     const result = allocateLevelXp(
       [bellator("done", 1, 31, { currentLevel: 42, currentXp: 400000 })],
-      undefined
+      undefined,
+      levelRules
     )
     expect(result.has("done")).toBe(false)
   })
@@ -31,7 +33,8 @@ describe("allocateLevelXp", () => {
     // covers it whole, so Potential reaches 32 while the raw gap stays 12,200.
     const result = allocateLevelXp(
       [bellator("silver3", 1, 32)],
-      [{ xpBookId: "xpLegendary", amount: 1 }]
+      [{ xpBookId: "xpLegendary", amount: 1 }],
+      levelRules
     )
     expect(result.get("silver3")).toEqual({
       chargedXp: 12200,
@@ -51,13 +54,19 @@ describe("allocateLevelXp", () => {
       const result = allocateLevelXp(
         [bellator("g", 1, 32)],
         [{ xpBookId: "xpRare", amount: 2 }],
+        levelRules,
         "Legendary"
       )
       expect(result.get("g")?.gold).toBe(2 * 50 + 5 * 150)
     })
 
     it("prices the whole need at the selected rarity when no books are owned", () => {
-      const result = allocateLevelXp([bellator("g", 1, 32)], [], "Epic")
+      const result = allocateLevelXp(
+        [bellator("g", 1, 32)],
+        [],
+        levelRules,
+        "Epic"
+      )
       // 12,200 XP -> 5 Epic books (2,500 XP each) at 150 gold.
       expect(result.get("g")?.gold).toBe(5 * 150)
     })
@@ -66,6 +75,7 @@ describe("allocateLevelXp", () => {
       const result = allocateLevelXp(
         [bellator("high", 1, 33), bellator("low", 2, 32)],
         [],
+        levelRules,
         "Legendary"
       )
       expect(result.get("low")?.gold).toBe(0)
@@ -75,7 +85,8 @@ describe("allocateLevelXp", () => {
   it("stays at the current level when books fall short of the first level, and reports the unmet remainder", () => {
     const result = allocateLevelXp(
       [bellator("silver3", 1, 32, { currentXp: 0 })],
-      [{ xpBookId: "xpLegendary", amount: 1 }] // 12,500 of the 94,200 needed
+      [{ xpBookId: "xpLegendary", amount: 1 }],
+      levelRules // 12,500 of the 94,200 needed
     )
     expect(result.get("silver3")?.potentialLevel).toBe(31)
     // 94,200 needed - 12,500 spent = 81,700 still unmet (the "additional equivalent" input).
@@ -86,7 +97,8 @@ describe("allocateLevelXp", () => {
     // 20 Legendary books = 250,000 XP covers levels 32 through 35 (200,200) but not 36 (252,200).
     const result = allocateLevelXp(
       [bellator("far", 1, 42, { currentXp: 0 })],
-      [{ xpBookId: "xpLegendary", amount: 20 }]
+      [{ xpBookId: "xpLegendary", amount: 20 }],
+      levelRules
     )
     expect(result.get("far")?.potentialLevel).toBe(35)
   })
@@ -97,7 +109,8 @@ describe("allocateLevelXp", () => {
         bellator("low", 2, 32, { unitKey: "Character:other", currentXp: 0 }),
         bellator("high", 1, 32, { currentXp: 0 }),
       ],
-      [{ xpBookId: "xpLegendary", amount: 8 }] // 100,000 XP: one goal's 94,200, none left for the other
+      [{ xpBookId: "xpLegendary", amount: 8 }],
+      levelRules // 100,000 XP: one goal's 94,200, none left for the other
     )
     expect(result.get("high")?.potentialLevel).toBe(32)
     expect(result.get("low")?.potentialLevel).toBe(31)
@@ -108,7 +121,8 @@ describe("allocateLevelXp", () => {
     // 82,000): B is charged only the 28,000 XP beyond A's interval.
     const result = allocateLevelXp(
       [bellator("b", 2, 33), bellator("a", 1, 32)],
-      [{ xpBookId: "xpLegendary", amount: 4 }]
+      [{ xpBookId: "xpLegendary", amount: 4 }],
+      levelRules
     )
     expect(result.get("a")?.chargedXp).toBe(12200)
     expect(result.get("b")?.chargedXp).toBe(28000)
@@ -124,12 +138,14 @@ describe("allocateLevelXp", () => {
     // books for B alone.
     const four = allocateLevelXp(
       [bellator("a", 1, 32), bellator("b", 2, 33), other],
-      [{ xpBookId: "xpLegendary", amount: 4 }]
+      [{ xpBookId: "xpLegendary", amount: 4 }],
+      levelRules
     )
     expect(four.get("other")?.potentialLevel).toBe(31)
     const five = allocateLevelXp(
       [bellator("a", 1, 32), bellator("b", 2, 33), other],
-      [{ xpBookId: "xpLegendary", amount: 5 }]
+      [{ xpBookId: "xpLegendary", amount: 5 }],
+      levelRules
     )
     expect(five.get("other")?.potentialLevel).toBe(32)
   })
@@ -137,7 +153,8 @@ describe("allocateLevelXp", () => {
   it("charges a lower-priority goal nothing when a higher-priority goal already covers it", () => {
     const result = allocateLevelXp(
       [bellator("high", 1, 33), bellator("low", 2, 32)],
-      [{ xpBookId: "xpLegendary", amount: 4 }]
+      [{ xpBookId: "xpLegendary", amount: 4 }],
+      levelRules
     )
     expect(result.get("low")).toEqual({
       chargedXp: 0,
@@ -162,12 +179,12 @@ describe("allocateLevelXp", () => {
     ]
 
     it("reports the full pool for the first goal in priority order", () => {
-      const result = allocateLevelXp(needs, pool)
+      const result = allocateLevelXp(needs, pool, levelRules)
       expect(result.get("p1")?.poolXpAvailable).toBe(100000)
     })
 
     it("reports the pool net of an earlier goal's spend for the next goal", () => {
-      const result = allocateLevelXp(needs, pool)
+      const result = allocateLevelXp(needs, pool, levelRules)
       // p1 charges 12,200 and spends one 12,500 Legendary book (rounds up to a whole book).
       expect(result.get("p2")?.poolXpAvailable).toBe(87500)
     })
@@ -179,9 +196,11 @@ describe("allocateLevelXp", () => {
           currentXp: 82000,
         }),
       ]
-      const result = allocateLevelXp(depleting, [
-        { xpBookId: "xpLegendary", amount: 1 },
-      ])
+      const result = allocateLevelXp(
+        depleting,
+        [{ xpBookId: "xpLegendary", amount: 1 }],
+        levelRules
+      )
       expect(result.get("only")?.poolXpAvailable).toBe(12500)
       expect(result.get("only")?.remainingXp).toBe(0)
 
@@ -196,7 +215,8 @@ describe("allocateLevelXp", () => {
             currentXp: 82000,
           }),
         ],
-        [{ xpBookId: "xpLegendary", amount: 1 }]
+        [{ xpBookId: "xpLegendary", amount: 1 }],
+        levelRules
       )
       expect(exhausted.get("second")?.poolXpAvailable).toBe(0)
     })
@@ -211,7 +231,8 @@ describe("allocateLevelXp", () => {
           }),
           bellator("big", 2, 33, { unitKey: "Character:b", currentXp: 82000 }),
         ],
-        [{ xpBookId: "xpLegendary", amount: 2 }]
+        [{ xpBookId: "xpLegendary", amount: 2 }],
+        levelRules
       )
       expect(result.get("big")?.chargedXp).toBe(40200)
       expect(result.get("big")?.poolXpAvailable).toBe(12500)

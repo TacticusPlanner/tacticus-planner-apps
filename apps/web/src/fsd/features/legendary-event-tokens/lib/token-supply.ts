@@ -1,5 +1,7 @@
 import {
+  LEGENDARY_EVENT_RUN_DURATION_MS,
   runInputValues,
+  type LegendaryEvent,
   type LegendaryEventLifecycle,
   type LegendaryEventProgress,
   type LegendaryEventRun,
@@ -10,16 +12,25 @@ import {
 // Ported from V1 `LeTokenService` and `LeRoundOutcomeForecastService` token counts (design D6),
 // with V2's lifecycle for the run window and the synced bucket's observation instant for timing.
 
-const HOUR_MS = 60 * 60 * 1000
-const DAY_MS = 24 * HOUR_MS
-/** A full run regenerates one token every 3 hours for 7 days (7 × 8 − 1) plus 6 extra. */
-const FULL_RUN_FREE_TOKENS = 7 * 8 - 1 + 6
+const DAY_MS = 24 * 60 * 60 * 1000
 /** One ad token a day. */
 const FULL_RUN_AD_TOKENS = 7
 /** Buying the premium track (bonus delivery) for a run grants 6 tokens in that run. */
 const BONUS_DELIVERY_TOKENS = 6
-/** V1's regeneration delay when the bucket is unknown. */
-const DEFAULT_REGEN_DELAY_SECONDS = 3 * 60 * 60
+
+/** The event's served token bank, as the supply reads it. */
+type LegendaryEventTokenBank = Pick<
+  LegendaryEvent["tokens"],
+  "start" | "regenSeconds" | "regenAmount"
+>
+
+/** A full run starts with the bank's opening tokens and regenerates every tick of the run but the
+ *  last (V1: 7 × 8 − 1 ticks of 3 hours plus 6). */
+const fullRunFreeTokens = (bank: LegendaryEventTokenBank) =>
+  bank.start +
+  (Math.floor(LEGENDARY_EVENT_RUN_DURATION_MS / (bank.regenSeconds * 1000)) -
+    1) *
+    bank.regenAmount
 
 const RUNS: readonly LegendaryEventRun[] = [1, 2, 3]
 
@@ -39,6 +50,8 @@ export interface RunSupply {
 }
 
 export interface TokenSupplyInput {
+  /** The event's served token bank. */
+  bank: LegendaryEventTokenBank
   lifecycle: LegendaryEventLifecycle
   /** The event's resolved runs (`resolveLegendaryEventRuns`), not the synced run alone. */
   resolution: LegendaryEventRunResolution
@@ -90,20 +103,21 @@ function currentRunSupply(
   runEndMs: number,
   input: TokenSupplyInput
 ): RunSupply {
-  const { progress, progressObservedAtMs, nowMs } = input
+  const { bank, progress, progressObservedAtMs, nowMs } = input
   const bucket = progress?.currentEventTokens ?? null
   const regenMs =
     (bucket && bucket.regenDelayInSeconds > 0
       ? bucket.regenDelayInSeconds
-      : DEFAULT_REGEN_DELAY_SECONDS) * 1000
+      : bank.regenSeconds) * 1000
   const nextTokenMs = bucket
     ? (progressObservedAtMs ?? nowMs) +
       Math.max(0, bucket.nextTokenInSeconds) * 1000
     : nowMs
   const free =
     (bucket?.current ?? 0) +
-    (bucket && nextTokenMs < runEndMs ? 1 : 0) +
-    Math.max(0, Math.floor((runEndMs - nextTokenMs) / regenMs))
+    ((bucket && nextTokenMs < runEndMs ? 1 : 0) +
+      Math.max(0, Math.floor((runEndMs - nextTokenMs) / regenMs))) *
+      bank.regenAmount
   const remainingMs = runEndMs - nowMs - 1
   const ad =
     remainingMs <= 0
@@ -125,22 +139,21 @@ function currentRunSupply(
  * first of them labelled Next. Unknown run: one Next run of the Planned count, without run inputs.
  */
 export function runTokenSupply(input: TokenSupplyInput): RunSupply[] | null {
-  const { lifecycle, resolution, runs, showPaidOptions } = input
+  const { bank, lifecycle, resolution, runs, showPaidOptions } = input
   if (lifecycle.state === "archived") return null
+  const fullRunFree = fullRunFreeTokens(bank)
 
   const planned = (run: LegendaryEventRun, state: RunSupplyState) =>
     supply(
       run,
       state,
-      FULL_RUN_FREE_TOKENS,
+      fullRunFree,
       FULL_RUN_AD_TOKENS,
       premiumPlanned(runs, run, showPaidOptions) ? BONUS_DELIVERY_TOKENS : 0
     )
 
   if (resolution.kind === "unknown") {
-    return [
-      supply(1, "next", FULL_RUN_FREE_TOKENS, FULL_RUN_AD_TOKENS, 0, true),
-    ]
+    return [supply(1, "next", fullRunFree, FULL_RUN_AD_TOKENS, 0, true)]
   }
 
   if (lifecycle.state === "active") {

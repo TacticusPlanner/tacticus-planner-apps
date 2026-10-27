@@ -1,50 +1,21 @@
 import { rarityOrder, type Rarity } from "@workspace/game-domain"
 import { normalizeXpBookRarity } from "@/entities/planning-setting"
 
+import type { LevelRules } from "./level-rules"
+
 export { normalizeXpBookRarity }
-
-// Ported from V1's `src/data/xp.json` (`xpLevelThresholds`) — the cumulative XP required to reach
-// each character level, 0 through 65 (V1's own table max; V2's level requirements only ever reach
-// `maxCharacterLevel` (game-domain), but the full curve is kept for completeness/library
-// symmetry with V1). `totalXp` is cumulative from level 0, `xpToNextLevel` unused here.
-const xpTotalAtLevel: readonly number[] = [
-  0, 25, 60, 120, 200, 300, 420, 560, 720, 900, 1100, 1350, 1650, 2000, 2400,
-  2850, 3350, 3950, 4700, 5600, 6700, 8100, 9900, 12200, 15200, 19200, 24700,
-  32200, 42200, 55200, 72200, 94200, 122200, 157200, 200200, 252200, 314200,
-  387200, 472200, 570200, 682200, 809200, 952200, 1112200, 1290200, 1487200,
-  1704200, 1942200, 2202200, 2485200, 2775200, 3070200, 3370200, 3675200,
-  3985200, 4300200, 4620200, 4945200, 5275200, 5610200, 5950200, 6295200,
-  6645200, 7000200, 7360200,
-]
-
-/** Ported from V1's `XP_BOOK_VALUE` (`rarity.enum.ts`) — the XP a single book of each rarity is
- * worth when applied. */
-export const xpBookValueByRarity: Record<Rarity, number> = {
-  Common: 20,
-  Uncommon: 100,
-  Rare: 500,
-  Epic: 2_500,
-  Legendary: 12_500,
-  Mythic: 62_500,
-}
-
-/** Ported from V1's `XP_BOOK_GOLD_COST` � the gold paid to apply one book of each rarity. */
-export const xpBookGoldByRarity: Record<Rarity, number> = {
-  Common: 5,
-  Uncommon: 15,
-  Rare: 50,
-  Epic: 150,
-  Legendary: 500,
-  Mythic: 2_000,
-}
 
 /** V1's `pickXpBookRarity`: the preferred rarity, or the largest whose book fits inside `xp` when a
  * single preferred book would overshoot (the smallest rarity if even that overshoots). */
-export function pickXpBookRarity(xp: number, preferred: Rarity): Rarity {
-  if (xpBookValueByRarity[preferred] <= xp) return preferred
+export function pickXpBookRarity(
+  xp: number,
+  preferred: Rarity,
+  rules: LevelRules
+): Rarity {
+  if (rules.xpBooks[preferred].xp <= xp) return preferred
   const fitting = [...rarityOrder]
     .reverse()
-    .find((rarity) => xpBookValueByRarity[rarity] <= xp)
+    .find((rarity) => rules.xpBooks[rarity].xp <= xp)
   return fitting ?? rarityOrder[0] ?? "Common"
 }
 
@@ -52,11 +23,12 @@ export function pickXpBookRarity(xp: number, preferred: Rarity): Rarity {
  * `normalizeXpBookRarity`). 0 for a non-positive amount. */
 export function xpBookEquivalent(
   remainingXp: number,
+  rules: LevelRules,
   rarity?: string | null
 ): number {
   if (remainingXp <= 0) return 0
   return Math.ceil(
-    remainingXp / xpBookValueByRarity[normalizeXpBookRarity(rarity)]
+    remainingXp / rules.xpBooks[normalizeXpBookRarity(rarity)].xp
   )
 }
 
@@ -77,34 +49,13 @@ export type LevelBookAvailability = {
 export function levelBookAvailability(
   chargedXp: number,
   poolXpAvailable: number,
-  rarity?: string | null
+  /** The XP one book of the selected rarity gives. */
+  bookXp: number
 ): LevelBookAvailability {
-  const bookXp = xpBookValueByRarity[normalizeXpBookRarity(rarity)]
   return {
     available: Math.max(0, Math.floor(poolXpAvailable / bookXp)),
     needed: Math.max(0, Math.ceil(chargedXp / bookXp)),
   }
-}
-
-/** `xpBookId` -> rarity mapping, confirmed against a real synced account's own `inventory:summary`
- * record (`xpCommon`/`xpUncommon`/`xpRare`/`xpEpic`/`xpLegendary`/`xpMythic`) — an earlier best-guess
- * mapping here used a `"book"` prefix instead of `"xp"` (a plausible but wrong guess made before any
- * real synced ids were known), which silently zeroed out every owned book in `ownedBooksByRarity`
- * (no id ever matched) without erroring, so it went unnoticed until this was checked against real
- * data. An unrecognized id still simply contributes nothing to netting (see
- * `netXpAgainstOwnedBooks`), so an id that turns out wrong again degrades to "don't net that book"
- * rather than miscounting — but this exact set is now verified, not guessed. */
-const xpBookIdRarity: Record<string, Rarity> = {
-  xpCommon: "Common",
-  xpUncommon: "Uncommon",
-  xpRare: "Rare",
-  xpEpic: "Epic",
-  xpLegendary: "Legendary",
-  xpMythic: "Mythic",
-}
-
-function totalXpAtLevel(level: number): number | undefined {
-  return xpTotalAtLevel[level]
 }
 
 /** The XP still needed to reach `targetLevel`, given `currentXp` — the character's *total* XP
@@ -117,10 +68,11 @@ function totalXpAtLevel(level: number): number | undefined {
 export function xpNeededForLevelRange(
   currentLevel: number,
   currentXp: number,
-  targetLevel: number
+  targetLevel: number,
+  rules: LevelRules
 ): number {
   if (currentLevel >= targetLevel) return 0
-  const targetLevelTotalXp = totalXpAtLevel(targetLevel - 1)
+  const targetLevelTotalXp = rules.xpTotalAtLevel[targetLevel - 1]
   if (targetLevelTotalXp === undefined) return 0
   const xpLeft = targetLevelTotalXp - currentXp
   return xpLeft > 0 ? xpLeft : 0
@@ -134,7 +86,8 @@ export function xpNeededForLevelRange(
  * `remainingOwned` into the next. */
 export function consumeOwnedBooks(
   xpNeeded: number,
-  ownedByRarity: Partial<Record<Rarity, number>>
+  ownedByRarity: Partial<Record<Rarity, number>>,
+  rules: LevelRules
 ): { remainingXp: number; remainingOwned: Partial<Record<Rarity, number>> } {
   const remainingOwned = { ...ownedByRarity }
   const highestValueFirst = [...rarityOrder].reverse()
@@ -142,7 +95,7 @@ export function consumeOwnedBooks(
   let remaining = xpNeeded
   for (const rarity of highestValueFirst) {
     const owned = remainingOwned[rarity] ?? 0
-    const value = xpBookValueByRarity[rarity]
+    const value = rules.xpBooks[rarity].xp
     const usable = Math.min(Math.floor(remaining / value), owned)
     remainingOwned[rarity] = owned - usable
     remaining -= usable * value
@@ -152,7 +105,7 @@ export function consumeOwnedBooks(
     for (const rarity of rarityOrder) {
       let owned = remainingOwned[rarity] ?? 0
       while (remaining > 0 && owned > 0) {
-        remaining = Math.max(0, remaining - xpBookValueByRarity[rarity])
+        remaining = Math.max(0, remaining - rules.xpBooks[rarity].xp)
         owned -= 1
       }
       remainingOwned[rarity] = owned
@@ -167,9 +120,10 @@ export function consumeOwnedBooks(
  * `consumeOwnedBooks` for that). `ownedByRarity` isn't mutated. */
 export function netXpAgainstOwnedBooks(
   xpNeeded: number,
-  ownedByRarity: Partial<Record<Rarity, number>>
+  ownedByRarity: Partial<Record<Rarity, number>>,
+  rules: LevelRules
 ): number {
-  return consumeOwnedBooks(xpNeeded, ownedByRarity).remainingXp
+  return consumeOwnedBooks(xpNeeded, ownedByRarity, rules).remainingXp
 }
 
 /** How far (level, not levels-since-current) `availableXp` gets a character from
@@ -181,25 +135,33 @@ export function maxLevelReachableWithXp(
   currentLevel: number,
   currentXp: number,
   targetLevel: number,
-  availableXp: number
+  availableXp: number,
+  rules: LevelRules
 ): number {
   let reachable = currentLevel
   for (let level = currentLevel + 1; level <= targetLevel; level++) {
-    if (xpNeededForLevelRange(currentLevel, currentXp, level) > availableXp)
+    if (
+      xpNeededForLevelRange(currentLevel, currentXp, level, rules) > availableXp
+    )
       break
     reachable = level
   }
   return reachable
 }
 
-/** Collapses a `{xpBookId, amount}[]` inventory into owned-by-rarity, via the `xpBookIdRarity` map
- * (see its own doc comment) — an unrecognized id is simply skipped. */
+/** Collapses a `{xpBookId, amount}[]` inventory into owned-by-rarity, matching each id against the
+ * game's XP book ids (`xpCommon` … `xpMythic`, the same ids a synced account's inventory uses). An
+ * unrecognized id is simply skipped, so it degrades to "don't net that book" rather than miscounting. */
 export function ownedBooksByRarity(
-  inventory: readonly { xpBookId: string; amount: number }[] | undefined
+  inventory: readonly { xpBookId: string; amount: number }[] | undefined,
+  rules: LevelRules
 ): Partial<Record<Rarity, number>> {
+  const rarityById = new Map(
+    rarityOrder.map((rarity) => [rules.xpBooks[rarity].id, rarity])
+  )
   const owned: Partial<Record<Rarity, number>> = {}
   for (const entry of inventory ?? []) {
-    const rarity = xpBookIdRarity[entry.xpBookId]
+    const rarity = rarityById.get(entry.xpBookId)
     if (!rarity) continue
     owned[rarity] = (owned[rarity] ?? 0) + entry.amount
   }
@@ -222,24 +184,28 @@ export function computeLevelGoalCost(params: {
   currentXp: number
   targetLevel: number
   ownedXpBooks: readonly { xpBookId: string; amount: number }[] | undefined
+  rules: LevelRules
   rarity?: string | null
 }): LevelGoalCost | null {
+  const { rules } = params
   const xpNeeded = xpNeededForLevelRange(
     params.currentLevel,
     params.currentXp,
-    params.targetLevel
+    params.targetLevel,
+    rules
   )
   if (xpNeeded <= 0) return null
 
   const remaining = netXpAgainstOwnedBooks(
     xpNeeded,
-    ownedBooksByRarity(params.ownedXpBooks)
+    ownedBooksByRarity(params.ownedXpBooks, rules),
+    rules
   )
   if (remaining <= 0) return null
 
-  const books = xpBookEquivalent(remaining, params.rarity)
-  // Each book costs its own rarity's apply gold (game config `consumables.xpBooks[].gold`); V1's flat
-  // 500 was only the Legendary price.
-  const gold = books * xpBookGoldByRarity[normalizeXpBookRarity(params.rarity)]
+  const books = xpBookEquivalent(remaining, rules, params.rarity)
+  // Each book costs its own rarity's apply gold (`consumables.xpBooks[].gold`); V1's flat 500 was
+  // only the Legendary price.
+  const gold = books * rules.xpBooks[normalizeXpBookRarity(params.rarity)].gold
   return { books, gold }
 }

@@ -1,0 +1,27 @@
+{
+  "GazeOfMagnus": {
+    "description": "Al final de cada uno de sus turnos, <style=\"Faction_ThousandSons\">Magnus</style> voltea su Mirada hacia un <style=\"Character\">personaje</style> enemigo, de ser posible hacia un <style=\"Psyker\">Psíquico</style>. Al inicio del siguiente turno de Magnus, si ese personaje es un Psíquico o si atacó a Magnus estando bajo su Mirada, recibe <style=\"DMG_Psychic\">{[minDmg]}-{[maxDmg]} de Daño psíquico</style> <style=\"Stat_Hits\">x{[nrOfHits]}</style> y, si es un Psíquico, queda <style=\"Debuff_Stunned\">Aturdido</style> por 1 ronda. Asesta <style=\"Stat_Hits\">+{[extraHit]} impacto</style> por cada turno consecutivo que Magnus fije como objetivo al mismo personaje con su Mirada.\n\n{[S/AbilityDamageExplanation]}",
+    "variables": {
+      "minDmg": [
+        63, 76, 88, 101, 113, 128, 142, 157, 171, 186, 200, 215, 229, 244, 258,
+        273, 287, 302, 316, 331, 350, 377, 435, 492, 549, 607, 664, 721, 779,
+        836, 893, 951, 1008, 1065, 1123, 1180, 1237, 1295, 1352, 1433, 1546,
+        1665, 1794, 1936, 2195, 2454, 2713, 2972, 3231, 3490, 3775, 3897, 4021,
+        4165, 4311, 4459, 4611, 4783, 4959, 5138, 5341, 5547, 5756, 5970, 6187
+      ],
+      "maxDmg": [
+        72, 86, 101, 115, 130, 146, 163, 179, 196, 212, 229, 246, 262, 279, 295,
+        312, 328, 345, 361, 378, 400, 431, 497, 562, 628, 693, 759, 824, 890,
+        955, 1021, 1086, 1152, 1218, 1283, 1349, 1414, 1480, 1545, 1637, 1767,
+        1903, 2050, 2213, 2508, 2804, 3100, 3396, 3692, 3988, 4314, 4454, 4595,
+        4760, 4927, 5097, 5269, 5467, 5668, 5873, 6104, 6339, 6579, 6823, 7071
+      ]
+    },
+    "constants": {
+      "damageProfile": "Psychic",
+      "nrOfHits": "1",
+      "extraHit": "1"
+    },
+    "scaled": ["minDmg", "maxDmg"]
+  }
+}

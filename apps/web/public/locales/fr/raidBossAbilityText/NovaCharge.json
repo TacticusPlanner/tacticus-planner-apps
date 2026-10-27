@@ -1,0 +1,44 @@
+{
+  "NovaCharge": {
+    "description": "Se tourne vers l'une des 6 directions et marque les hexagones sur une ligne de 3 hexagones de large partant de la <style=\"Faction_Tau\">Riptide</style>. Marque également {[nrOfTargets]} hexagones non présents sur cette ligne. Les <style=\"Tile_Trench\">tranchées</style> ne peuvent être marquées. Au début du prochain tour de la Riptide, elle inflige <style=\"Stat_Hits\">{[nrOfHits]}x</style> <style=\"DMG_Particle\">{[minDmg]}-{[maxDmg]} dégâts d'antimatière</style> à tous les ennemis situés sur les hexagones marqués de la ligne, et <style=\"Stat_Hits\">{[nrOfHits_2]}x</style> <style=\"DMG_Blast\">{[minDmg_2]}-{[maxDmg_2]} dégâts d'explosion</style> à tous les ennemis situés sur les autres hexagones marqués.",
+    "variables": {
+      "minDmg": [
+        48, 58, 67, 77, 86, 97, 108, 120, 131, 142, 153, 164, 175, 186, 197,
+        208, 219, 230, 241, 252, 267, 288, 331, 375, 419, 462, 506, 550, 593,
+        637, 681, 724, 768, 812, 855, 899, 943, 986, 1030, 1092, 1178, 1269,
+        1367, 1475, 1672, 1870, 2067, 2264, 2461, 2659, 2876, 2969, 3064, 3173,
+        3284, 3398, 3513, 3645, 3779, 3915, 4069, 4226, 4386, 4549, 4714
+      ],
+      "maxDmg": [
+        60, 72, 84, 96, 108, 122, 136, 149, 163, 177, 191, 205, 218, 232, 246,
+        260, 274, 287, 301, 315, 334, 359, 414, 469, 523, 578, 632, 687, 742,
+        796, 851, 905, 960, 1015, 1069, 1124, 1178, 1233, 1288, 1364, 1472,
+        1586, 1708, 1844, 2090, 2337, 2584, 2830, 3077, 3324, 3595, 3711, 3830,
+        3966, 4106, 4247, 4391, 4556, 4723, 4894, 5086, 5283, 5482, 5686, 5893
+      ],
+      "minDmg_2": [
+        18, 22, 25, 29, 32, 37, 41, 45, 49, 53, 57, 61, 66, 70, 74, 78, 82, 86,
+        90, 95, 100, 108, 124, 141, 157, 173, 190, 206, 222, 239, 255, 272, 288,
+        304, 321, 337, 354, 370, 386, 409, 442, 476, 512, 553, 627, 701, 775,
+        849, 923, 997, 1079, 1113, 1149, 1190, 1232, 1274, 1317, 1367, 1417,
+        1468, 1526, 1585, 1645, 1706, 1768
+      ],
+      "maxDmg_2": [
+        22, 26, 31, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100,
+        105, 110, 116, 122, 132, 152, 172, 192, 212, 232, 252, 272, 292, 312,
+        332, 352, 372, 392, 412, 432, 452, 472, 500, 540, 581, 626, 676, 766,
+        857, 947, 1038, 1128, 1219, 1318, 1361, 1404, 1454, 1505, 1557, 1610,
+        1670, 1732, 1794, 1865, 1937, 2010, 2085, 2161
+      ]
+    },
+    "constants": {
+      "damageProfile": "Particle",
+      "nrOfHits": "6",
+      "nrOfTargets": "8",
+      "damageProfile_2": "Blast",
+      "nrOfHits_2": "3",
+      "cooldownTurns": "2"
+    },
+    "scaled": ["minDmg", "maxDmg", "minDmg_2", "maxDmg_2"]
+  }
+}

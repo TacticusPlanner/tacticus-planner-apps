@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next"
 
 import {
   HRE_OBJECTIVE_KINDS,
+  type HreMission,
   type HreObjective,
   type HreObjectiveKind,
 } from "../model/hre-missions"
@@ -25,10 +26,12 @@ const hasTip = (kind: HreObjectiveKind): kind is TipKind =>
  */
 export function ObjectiveTips({
   missionNumber,
+  missions,
   objectives,
   testId,
 }: {
   missionNumber: number
+  missions: readonly HreMission[]
   objectives: readonly HreObjective[]
   testId: string
 }) {
@@ -36,7 +39,7 @@ export function ObjectiveTips({
   const kinds = [
     ...new Set(objectives.map((objective) => objective.kind).filter(hasTip)),
   ]
-  const reserve = nextTokenReserve(missionNumber)
+  const reserve = nextTokenReserve(missionNumber, missions)
   if (kinds.length === 0 && !reserve) return null
   return (
     <ul className="space-y-1" data-testid={testId}>
@@ -50,7 +53,7 @@ export function ObjectiveTips({
           {t("tips.reserve", {
             count: reserve.tokens,
             mode: t(`tokens.modes.${reserve.mode}`),
-            mission: missionName(t, reserve.missionNumber),
+            mission: missionName(t, reserve.missionNumber, missions),
           })}
         </Tip>
       ) : null}

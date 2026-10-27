@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
 
-import { rarityFromStars, useNpcLabels } from "@/entities/npc"
+import { useNpcLabels, useRarityFromStars } from "@/entities/npc"
 
 import { NpcAbilities } from "./npc-abilities"
 import { NpcAttacks } from "./npc-attacks"
@@ -44,6 +44,7 @@ export function NpcDetail({
 }: NpcDetailProps) {
   const { t } = useTranslation("library")
   const { factionName } = useNpcLabels()
+  const rarity = useRarityFromStars(selectedLevel?.row.stars ?? 0)
 
   if (!selectedGroup) return null
 
@@ -87,13 +88,10 @@ export function NpcDetail({
         passiveAbilities={selectedVariation.passiveAbilities}
         abilityLevel={selectedLevel.row.abilityLevel}
         unitName={selectedName}
-        rarity={rarityFromStars(selectedLevel.row.stars)}
+        rarity={rarity}
         compact={compact}
       />
-      <NpcTraits
-        traits={selectedVariation.traits}
-        rarity={rarityFromStars(selectedLevel.row.stars)}
-      />
+      <NpcTraits traits={selectedVariation.traits} rarity={rarity} />
     </div>
   )
 }

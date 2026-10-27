@@ -8,6 +8,7 @@ import {
   rowCount,
   rowLevel,
 } from "./rank-additional-target"
+import { levelRules } from "@/test/fixtures/level-rules"
 
 describe("additionalTargetOptions", () => {
   it("offers only None and the full top row below Adamantine", () => {
@@ -135,9 +136,9 @@ describe("rowCount", () => {
 
 describe("rowLevel", () => {
   it("adds count-1 to the rank's base XP level", () => {
-    expect(rowLevel("Diamond3", 1)).toBe(50)
-    expect(rowLevel("Diamond3", 5)).toBe(54)
-    expect(rowLevel("Stone1", 2)).toBe(2)
+    expect(rowLevel("Diamond3", 1, levelRules)).toBe(50)
+    expect(rowLevel("Diamond3", 5, levelRules)).toBe(54)
+    expect(rowLevel("Stone1", 2, levelRules)).toBe(2)
   })
 })
 
@@ -146,19 +147,19 @@ describe("reachableRankProgress", () => {
     // Diamond1 (level 44) to Diamond2 (level 47) is a 3-level gap: 3 slots free at 44, one more
     // per level at 45/46, and the 47th level ranks up to Diamond2's own fresh 3/6 — matching what
     // was observed live for a real Diamond1 character mid-way through its bottom row.
-    expect(reachableRankProgress(44, "Diamond3")).toEqual({
+    expect(reachableRankProgress(44, "Diamond3", levelRules)).toEqual({
       rank: "Diamond1",
       appliedSlots: 3,
     })
-    expect(reachableRankProgress(45, "Diamond3")).toEqual({
+    expect(reachableRankProgress(45, "Diamond3", levelRules)).toEqual({
       rank: "Diamond1",
       appliedSlots: 4,
     })
-    expect(reachableRankProgress(46, "Diamond3")).toEqual({
+    expect(reachableRankProgress(46, "Diamond3", levelRules)).toEqual({
       rank: "Diamond1",
       appliedSlots: 5,
     })
-    expect(reachableRankProgress(47, "Diamond3")).toEqual({
+    expect(reachableRankProgress(47, "Diamond3", levelRules)).toEqual({
       rank: "Diamond2",
       appliedSlots: 3,
     })
@@ -166,15 +167,15 @@ describe("reachableRankProgress", () => {
 
   it("derives free vs. gated slots from the table's own gap, not a hardcoded 3 (Stone tier's shorter 2-level gaps)", () => {
     // Stone1 (level 1) to Stone2 (level 3) is only a 2-level gap: 4 slots free, 2 gated.
-    expect(reachableRankProgress(1, "Stone3")).toEqual({
+    expect(reachableRankProgress(1, "Stone3", levelRules)).toEqual({
       rank: "Stone1",
       appliedSlots: 4,
     })
-    expect(reachableRankProgress(2, "Stone3")).toEqual({
+    expect(reachableRankProgress(2, "Stone3", levelRules)).toEqual({
       rank: "Stone1",
       appliedSlots: 5,
     })
-    expect(reachableRankProgress(3, "Stone3")).toEqual({
+    expect(reachableRankProgress(3, "Stone3", levelRules)).toEqual({
       rank: "Stone2",
       appliedSlots: 4,
     })
@@ -183,14 +184,14 @@ describe("reachableRankProgress", () => {
   it("caps at the rarity ceiling's own slots rather than rolling into a rank rarity forbids", () => {
     // Level 60 alone would roll all the way to Adamantine2, but a Rare-rarity character can't rank
     // past Silver1 — the result stays at Silver1, maxed out (6/6), not the next rank.
-    expect(reachableRankProgress(60, "Silver1")).toEqual({
+    expect(reachableRankProgress(60, "Silver1", levelRules)).toEqual({
       rank: "Silver1",
       appliedSlots: 6,
     })
   })
 
   it("returns the ladder's first rank with zero slots below its own base level", () => {
-    expect(reachableRankProgress(0, "Diamond3")).toEqual({
+    expect(reachableRankProgress(0, "Diamond3", levelRules)).toEqual({
       rank: "Stone1",
       appliedSlots: 0,
     })

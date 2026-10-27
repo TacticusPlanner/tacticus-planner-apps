@@ -1,0 +1,10 @@
+{
+  "DaBossIsWatchin": {
+    "description": "Les <style=\"Faction_Orks\">Orks</style> adjacents ignorent l'<style=\"Battle_Fatigue\">Épuisement du combat</style> et infligent <style=\"Stat_Damage\">+{[extraDmgPct]} % de dégâts</style>.",
+    "variables": {},
+    "constants": {
+      "extraDmgPct": "20"
+    },
+    "scaled": []
+  }
+}

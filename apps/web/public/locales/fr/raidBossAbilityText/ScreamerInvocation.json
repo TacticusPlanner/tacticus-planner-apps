@@ -1,0 +1,40 @@
+{
+  "ScreamerInvocation": {
+    "description": "La première fois qu'aucun <style=\"Daemon\">Démon</style> n'est présent sur le champ de bataille à la fin de son tour, <style=\"Faction_ThousandSons\">Abraxas</style> invoque <style=\"Stat\">{[nrOfSummons]}</style> <style=\"Summon\"><style=\"Faction_ThousandSons\">Hurleurs</style></style> sur des hexagones aléatoires du champ de bataille. Lorsqu'un Démon allié est vaincu, Abraxas perd <style=\"Stat_Health\">{[hp]} santé</style>. Tant que des Démons alliés sont présents sur le champ de bataille, tous les dégâts subis par Abraxas sont réduits de <style=\"Stat_Damage\">{[dmgReductionPct]} %</style>.\n\nStats du Hurleur de Tzeentch :\n<style=\"Stat_Health\">{[summonHp]} santé</style>\n<style=\"Stat_Damage\">{[summonDmg]} dégâts</style>",
+    "variables": {
+      "hp": [
+        24, 30, 36, 42, 48, 54, 60, 90, 120, 140, 160, 180, 200, 220, 240, 320,
+        400, 480, 540, 600, 660, 720, 780, 840, 1095, 1345, 1600, 1800, 2000,
+        2200, 2400, 2600, 2800, 3065, 3335, 4445, 5555, 6665, 7780, 8890, 10000,
+        11110, 12220, 13335, 14445, 15555, 16665, 17780, 18890, 20000, 26665,
+        33335, 40000, 43335, 46665, 50000, 53335, 56665, 60000, 63335, 66665,
+        70000, 75555, 81110, 86665
+      ],
+      "dmgReductionPct": [
+        25, 25, 25, 25, 25, 25, 25, 25, 33, 33, 33, 33, 33, 33, 33, 33, 33, 40,
+        40, 40, 40, 40, 40, 40, 40, 40, 50, 50, 50, 50, 50, 50, 50, 50, 50, 66,
+        66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66,
+        66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66
+      ],
+      "summonHp": [
+        45, 54, 63, 72, 81, 91, 102, 112, 122, 133, 143, 153, 164, 174, 185,
+        195, 205, 216, 226, 236, 250, 270, 311, 351, 392, 433, 474, 515, 556,
+        597, 638, 679, 720, 761, 802, 843, 884, 925, 966, 1023, 1104, 1189,
+        1281, 1383, 1568, 1753, 1938, 2123, 2308, 2493, 2696, 2784, 2872, 2975,
+        3079, 3185, 3293, 3417, 3542, 3670, 3815, 3962, 4112, 4264, 4420
+      ],
+      "summonDmg": [
+        18, 22, 25, 29, 32, 37, 41, 45, 49, 53, 57, 61, 66, 70, 74, 78, 82, 86,
+        90, 95, 100, 108, 124, 141, 157, 173, 190, 206, 222, 239, 255, 272, 288,
+        304, 321, 337, 354, 370, 386, 409, 442, 476, 512, 553, 627, 701, 775,
+        849, 923, 997, 1079, 1113, 1149, 1190, 1232, 1274, 1317, 1367, 1417,
+        1468, 1526, 1585, 1645, 1706, 1768
+      ]
+    },
+    "constants": {
+      "nrOfSummons": "9",
+      "unitId": "GuildBoss9Npc5ThousScreamerSummon"
+    },
+    "scaled": ["summonHp", "summonDmg"]
+  }
+}

@@ -1,9 +1,9 @@
 import {
-  progressionRarity,
   startingProgression,
   type Progression,
   type Rarity,
 } from "@workspace/game-domain"
+import type { ProgressionRulesStorageModel } from "@workspace/game-catalog"
 import type { PlayerDataChunkDto } from "@workspace/player-data"
 
 import { mowAbilityTrackLevel } from "@/features/goal-farming"
@@ -35,20 +35,28 @@ export function mowAbilityLevels(
   }
 }
 
-/** Blue stars give the mythic ability its level: 1 blue star is 1 … Mythic Wings is 4. */
-const MYTHIC_LEVEL_BY_STARS: Partial<Record<Progression, number>> = {
-  "Mythic:OneBlueStar": 1,
-  "Mythic:TwoBlueStars": 2,
-  "Mythic:ThreeBlueStars": 3,
-  "Mythic:MythicWings": 4,
+/** The mythic ability's level at each Mythic progression, by the MoW ascension steps that carry a
+ *  mythic ability multiplier, in step order: 1 blue star is 1 … Mythic Wings is 4 today. */
+export type MythicLevels = ReadonlyMap<Progression, number>
+
+/** A module-level selector for `useCatalogDataset("progression-rules", …)`. */
+export function toMythicLevels(
+  records: readonly Pick<ProgressionRulesStorageModel, "mowProgressionSteps">[]
+): MythicLevels {
+  const mythicSteps = (records[0]?.mowProgressionSteps ?? []).filter(
+    (step) => step.mythicAbilityStatMultiplierPct !== null
+  )
+  return new Map(
+    mythicSteps.map((step, index) => [step.progression, index + 1])
+  )
 }
 
-export const MYTHIC_MAX_LEVEL = 4
-
 /** The mythic ability's level at a progression, or `undefined` below Mythic (not unlocked). */
-export function mythicLevel(progression: Progression): number | undefined {
-  if (progressionRarity(progression) !== "Mythic") return undefined
-  return MYTHIC_LEVEL_BY_STARS[progression]
+export function mythicLevel(
+  progression: Progression,
+  levels: MythicLevels
+): number | undefined {
+  return levels.get(progression)
 }
 
 /** The highest ability level the shared upgrade-cost ladder reaches (60 today). */

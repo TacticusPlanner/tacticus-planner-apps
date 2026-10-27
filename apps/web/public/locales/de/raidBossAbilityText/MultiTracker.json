@@ -1,0 +1,10 @@
+{
+  "MultiTracker": {
+    "description": "Alle gegnerischen Einheiten, die sich während ihres Zuges nicht bewegt haben, erhalten ein <style=\"Debuff_Markerlight\">Markierungslicht</style>.",
+    "variables": {},
+    "constants": {
+      "nrOfRounds": "1"
+    },
+    "scaled": []
+  }
+}

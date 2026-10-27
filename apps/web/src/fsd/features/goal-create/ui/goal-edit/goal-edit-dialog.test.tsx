@@ -5,6 +5,7 @@ import { useLocation, useNavigate, useSearchParams } from "react-router"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { setTestAuth } from "@/test/auth"
+import { globalValuesFixture } from "@workspace/game-catalog/testing"
 import { seedGameCatalog, seedPlayerData } from "@/test/seed"
 
 const getGoal = vi.fn()
@@ -338,7 +339,10 @@ describe("GoalEditDialog", () => {
   beforeEach(async () => {
     accountGoals.clear()
     setTestAuth({ authenticated: true })
-    await seedGameCatalog({ "onslaught-rewards": onslaughtRewards })
+    await seedGameCatalog({
+      "global-values": [globalValuesFixture],
+      "onslaught-rewards": onslaughtRewards,
+    })
     await seedPlayerData({
       characters: [],
       mows: [],

@@ -1,9 +1,5 @@
-import { TOKEN_BANK, type QuestTokens } from "./quest-token-plan"
-import {
-  MAX_LIGHTNING_POINTS,
-  MAX_MEDALS,
-  type QuestBattleEntry,
-} from "./quest-score"
+import type { QuestTokens } from "./quest-token-plan"
+import { MAX_MEDALS, type QuestBattleEntry } from "./quest-score"
 
 /** The player's own record of one quest occurrence, kept in this browser only (design D4). */
 export type QuestProgress = {
@@ -25,11 +21,12 @@ const clampWhole = (value: unknown, max: number): number | null =>
     ? Math.min(Math.max(Math.round(value), 0), max)
     : null
 
-/** One stored battle entry, clamped (medals 0..3, lightning 0..100), or null when invalid. */
+/** One stored battle entry, clamped (medals 0..3, lightning from 0), or null when invalid. Lightning
+ *  points and token counts are capped where the served quest is read, not here. */
 export function parseBattleEntry(value: unknown): QuestBattleEntry | null {
   if (!isRecord(value)) return null
   const medals = clampWhole(value.medals, MAX_MEDALS)
-  const lightning = clampWhole(value.lightning, MAX_LIGHTNING_POINTS)
+  const lightning = clampWhole(value.lightning, Infinity)
   if (medals === null || lightning === null) return null
   if (!Array.isArray(value.objectives)) return null
   return {
@@ -61,7 +58,7 @@ export function parseQuestProgress(value: unknown): QuestProgress | null {
 
 function parseTokens(value: unknown): QuestTokens | null {
   if (!isRecord(value)) return null
-  const count = clampWhole(value.count, TOKEN_BANK)
+  const count = clampWhole(value.count, Infinity)
   if (count === null || typeof value.atUtc !== "string") return null
   if (Number.isNaN(Date.parse(value.atUtc))) return null
   return { count, atUtc: value.atUtc }

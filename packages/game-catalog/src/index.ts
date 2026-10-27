@@ -148,11 +148,15 @@ export {
   type QuestCrateStorageModel,
   type FactionStorageModel,
   type DamageTypeStorageModel,
+  type GlobalValuesStorageModel,
+  type ProgressionRulesStorageModel,
+  type HreStorageModel,
 } from "./game-catalog.storage"
 
 export {
   rarityClass,
   ASSET_BASE_PATH,
+  datamineAssetUrl,
   gameAssetUrl,
   UpgradeIcons,
   rarityIcon,

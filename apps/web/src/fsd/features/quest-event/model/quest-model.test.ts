@@ -12,6 +12,8 @@ import {
 } from "./quest-progress"
 import { scoreQuest, type QuestBattleEntry } from "./quest-score"
 
+const scoring = questEventsFixture[0]!.scorePoints
+
 const definitions = new Map([
   [
     "quest",
@@ -113,11 +115,21 @@ const full = (objectives: boolean[]): QuestBattleEntry => ({
 })
 
 describe("scoreQuest", () => {
+  it("scores by the quest's served medal points and Lightning Victory cap", () => {
+    const battle = { number: 1, tier: "Common" as const, objectives: [] }
+    const entry = { medals: 2, lightning: 140, objectives: [] }
+    expect(scoreQuest([battle], { 1: entry }, [], scoring).total).toBe(300)
+    const custom = { pointsPerStar: 50, maxPointsForLightningVictory: 120 }
+    const score = scoreQuest([battle], { 1: entry }, [], custom)
+    expect([score.total, score.max]).toEqual([220, 270])
+  })
+
   it("scores Nubari battle 1 at 500 / 600 with one of two objectives", () => {
     const score = scoreQuest(
       nubariQuest.battles,
       { 1: full([false, true]) },
-      questCratesFixture
+      questCratesFixture,
+      scoring
     )
     expect(score.battles[0]).toEqual({
       number: 1,
@@ -132,7 +144,8 @@ describe("scoreQuest", () => {
     const score = scoreQuest(
       nubariQuest.battles,
       { 8: { medals: 3, lightning: 99, objectives: [true] } },
-      questCratesFixture
+      questCratesFixture,
+      scoring
     )
     expect(score.battles[7]).toMatchObject({ points: 499, max: 500 })
   })
@@ -141,7 +154,8 @@ describe("scoreQuest", () => {
     const score = scoreQuest(
       nubariQuest.battles,
       { 1: { medals: 0, lightning: 100, objectives: [true, true] } },
-      questCratesFixture
+      questCratesFixture,
+      scoring
     )
     expect(score.battles[0]?.points).toBe(0)
     expect(score.total).toBe(0)
@@ -159,7 +173,8 @@ describe("scoreQuest", () => {
         { number: 2, tier: "Common", objectives: [] },
       ],
       { 1: full([true]), 2: { medals: 2, lightning: 0, objectives: [] } },
-      crates
+      crates,
+      scoring
     )
     expect(score.total).toBe(2600)
     expect(score.cratesOpened).toBe(3)
@@ -167,7 +182,8 @@ describe("scoreQuest", () => {
     const lower = scoreQuest(
       [{ number: 1, tier: "Common", objectives: [{ score: 1900 }] }],
       { 1: full([true]) },
-      crates
+      crates,
+      scoring
     )
     expect(lower.total).toBe(2300)
     expect(lower.cratesOpened).toBe(2)
@@ -185,7 +201,12 @@ describe("scoreQuest", () => {
         full(battle.objectives.map(() => true)),
       ])
     )
-    const score = scoreQuest(nubariQuest.battles, entries, questCratesFixture)
+    const score = scoreQuest(
+      nubariQuest.battles,
+      entries,
+      questCratesFixture,
+      scoring
+    )
     expect(score.total).toBe(8800)
     expect(score.max).toBe(8800)
     expect(score.cratesOpened).toBe(17)
@@ -194,7 +215,12 @@ describe("scoreQuest", () => {
   })
 
   it("lists points left by most left, then by number", () => {
-    const score = scoreQuest(nubariQuest.battles, {}, questCratesFixture)
+    const score = scoreQuest(
+      nubariQuest.battles,
+      {},
+      questCratesFixture,
+      scoring
+    )
     const left = score.pointsLeft.map((battle) => battle.left)
     expect(left).toEqual([...left].sort((a, b) => b - a))
     expect(score.pointsLeft).toHaveLength(17)
@@ -202,10 +228,13 @@ describe("scoreQuest", () => {
 })
 
 describe("quest progress parsing", () => {
-  it("clamps medals and Lightning Victory, and drops invalid entries", () => {
+  it("clamps medals, leaves Lightning Victory to the served cap, and drops invalid entries", () => {
     expect(
       parseBattleEntry({ medals: 7, lightning: 140, objectives: [true, 1] })
-    ).toEqual({ medals: 3, lightning: 100, objectives: [true, false] })
+    ).toEqual({ medals: 3, lightning: 140, objectives: [true, false] })
+    expect(
+      parseBattleEntry({ medals: 1, lightning: -5, objectives: [] })?.lightning
+    ).toBe(0)
     expect(parseBattleEntry({ medals: "3" })).toBeNull()
     expect(
       parseQuestProgress({

@@ -1,14 +1,16 @@
-import { useCallback, useState } from "react"
+import { useCallback, useMemo, useState } from "react"
 
 import {
   advanceMission,
   clampProgress,
   DEFAULT_HRE_PROGRESS,
   HRE_PROGRESS_ORDER,
+  normalizeHreProgress,
   parseHreProgress,
   switchMission,
   type HreProgress,
 } from "./hre-progress"
+import type { HreMission } from "./hre-missions"
 import type { HreOwnedInput } from "./hre-pace"
 import { safeStorage } from "@/shared/lib"
 
@@ -60,41 +62,52 @@ export type HreProgressActions = {
   setOwned: (owned: Partial<HreOwnedInput>) => void
 }
 
-/** The stored progress of one HRE instance and its edits; `key` null keeps defaults in memory. */
+/**
+ * The stored progress of one HRE instance, fitted to the event's served `missions`, and its edits;
+ * `key` null keeps defaults in memory. Edits wait for the missions (none while they load).
+ */
 export function useHreProgress(
-  key: string | null
+  key: string | null,
+  missions: readonly HreMission[]
 ): [HreProgress, HreProgressActions] {
   const [all, setAll] = useState(readAll)
-  const state = (key && all[key]) || DEFAULT_HRE_PROGRESS
+  const stored = (key && all[key]) || DEFAULT_HRE_PROGRESS
+  const state = useMemo(
+    () =>
+      missions.length > 0 ? normalizeHreProgress(stored, missions) : stored,
+    [stored, missions]
+  )
 
   const update = useCallback(
     (change: (current: HreProgress) => HreProgress) => {
-      if (!key) return
+      if (!key || missions.length === 0) return
       setAll((previous) => {
-        const next = {
-          ...previous,
-          [key]: change(previous[key] ?? DEFAULT_HRE_PROGRESS),
-        }
+        const current = normalizeHreProgress(
+          previous[key] ?? DEFAULT_HRE_PROGRESS,
+          missions
+        )
+        const next = { ...previous, [key]: change(current) }
         writeAll(next)
         return next
       })
     },
-    [key]
+    [key, missions]
   )
 
   const actions: HreProgressActions = {
     setMission: (mission) =>
-      update((current) => switchMission(current, mission)),
+      update((current) => switchMission(current, missions, mission)),
     setObjectiveProgress: (index, value) =>
       update((current) => {
         const progress: [number, number] = [...current.progress]
         progress[index] = value
         return {
           ...current,
-          progress: clampProgress(current.mission, progress),
+          progress: clampProgress(missions, current.mission, progress),
         }
       }),
-    completeMission: () => update(advanceMission),
+    completeMission: () =>
+      update((current) => advanceMission(current, missions)),
     restore: (entry) => update(() => entry),
     setPoints: (points) => update((current) => ({ ...current, points })),
     setRank: (rank) =>

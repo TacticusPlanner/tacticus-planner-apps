@@ -176,7 +176,7 @@ For each ability shown in the detail's ability panel, the view SHALL render the 
 
 Traits SHALL render their rules-text the same way where the catalog resolves one; a trait id that resolves to a name but no text SHALL continue to show the name only. An ability id that resolves to no description SHALL show its name only, with no empty text block.
 
-The description strings are game data resolved from the ability/trait id (English only, consistent with the existing `raidBossAbilities` / `raidBossTraits` namespaces); the served `raid-bosses` dataset carries ids only.
+The description strings are game data resolved from the ability/trait id, generated from the pinned data-mines commit in English, German, Spanish and French, like the `raidBossAbilities` / `raidBossTraits` names; a language without the game's text for an id falls back to English. The served `raid-bosses` dataset carries ids only.
 
 #### Scenario: Ability text scales with the step
 
@@ -192,6 +192,11 @@ The description strings are game data resolved from the ability/trait id (Englis
 
 - **WHEN** a trait id resolves to both a name and rules-text
 - **THEN** the trait shows its name and the rules-text; a trait that resolves to a name only shows just the name
+
+#### Scenario: Rules text follows the language
+
+- **WHEN** the user views a raid boss with the app in German
+- **THEN** its ability and trait names and rules-text are the game's German text, with the same resolved values as in English
 
 ### Requirement: The detail view shows field enemies and prime modifiers
 

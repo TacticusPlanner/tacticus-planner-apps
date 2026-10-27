@@ -1,6 +1,6 @@
 import type { Rarity } from "@workspace/game-domain"
 
-import { gameAssetUrl } from "./asset-path"
+import { datamineAssetUrl, gameAssetUrl } from "./asset-path"
 
 // Id-based icons for the goal-cost resources (ability badges, forge badges, MoW components, orbs,
 // gold, XP books). Every asset is a Snowprint file already shipped under /game_catalog; the shop
@@ -16,26 +16,28 @@ export function abilityBadgeIcon(rarity: Rarity, alliance: string): string {
 }
 
 export function forgeBadgeIcon(rarity: Rarity): string {
-  return gameAssetUrl(`resources/ui_forge_badges_${rarity.toLowerCase()}.webp`)
+  return datamineAssetUrl(
+    `atlases/ui_forge_badges_${rarity.toLowerCase()}.webp`
+  )
 }
 
 /** Machine of War component art per alliance (V1's `ComponentImage`). */
 export function mowComponentIcon(alliance: string): string {
-  return gameAssetUrl(
-    `resources/ui_machines_of_war_tokens_${allianceKey(alliance)}.webp`
+  return datamineAssetUrl(
+    `atlases/ui_machines_of_war_tokens_${allianceKey(alliance)}.webp`
   )
 }
 
 /** Ascension orb: the rarity orb, with `orbAllianceIcon` overlaid (V1's `OrbIcon`). */
 export function orbIcon(rarity: Rarity): string {
-  return gameAssetUrl(
-    `resources/ui_hero_ascension_orbs_${rarity.toLowerCase()}.webp`
+  return datamineAssetUrl(
+    `atlases/ui_hero_ascension_orbs_${rarity.toLowerCase()}.webp`
   )
 }
 
 export function orbAllianceIcon(alliance: string): string {
-  return gameAssetUrl(
-    `resources/ui_hero_ascension_orbs_${allianceKey(alliance)}.webp`
+  return datamineAssetUrl(
+    `atlases/ui_hero_ascension_orbs_${allianceKey(alliance)}.webp`
   )
 }
 
@@ -58,7 +60,7 @@ export function raidTicketIcon(): string {
 }
 
 export function salvageIcon(): string {
-  return gameAssetUrl(`resources/ui_icon_resource_salvage.webp`)
+  return datamineAssetUrl(`atlases/ui_icon_resource_salvage.webp`)
 }
 
 const XP_BOOK_INDEX: Record<Rarity, number> = {
@@ -71,7 +73,7 @@ const XP_BOOK_INDEX: Record<Rarity, number> = {
 }
 
 export function xpBookIcon(rarity: Rarity): string {
-  return gameAssetUrl(
-    `books/ui_icon_consumable_xp_book_${XP_BOOK_INDEX[rarity]}.webp`
+  return datamineAssetUrl(
+    `atlases/ui_icon_consumable_xp_book_${XP_BOOK_INDEX[rarity]}.webp`
   )
 }

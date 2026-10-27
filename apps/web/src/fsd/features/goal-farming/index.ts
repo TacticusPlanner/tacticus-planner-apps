@@ -32,6 +32,8 @@ export {
 } from "./lib/level-xp-cost"
 export { allocateLevelXp, type LevelXpNeed } from "./lib/level-xp-allocation"
 export { requiredLevelForGoal } from "./lib/level-requirement"
+export { toLevelRules, type LevelRules } from "./lib/level-rules"
+export { useLevelRules } from "./model/use-level-rules"
 export {
   additionalTargetFromWire,
   additionalTargetSelection,
@@ -58,10 +60,10 @@ export {
 } from "./lib/ability-materials"
 export { estimateRemainingShardEnergy } from "./lib/shard-energy-estimate"
 export {
-  ONSLAUGHT_RUNS_PER_DAY,
   projectOnslaughtSupply,
   projectShopSupply,
   shopOfferPerDay,
+  toOnslaughtRunsPerDay,
 } from "./lib/shop-supply"
 export {
   computeGoalAcquisition,

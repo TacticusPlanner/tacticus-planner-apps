@@ -1,0 +1,33 @@
+{
+  "$comment": "Game-text overrides for scripts/generate-game-names-i18n.mjs: ids the game has no term for, and terms the game gets wrong. Keep it small; each entry says why.",
+  "characters": {
+    "extraIds": {
+      "tauBroadside": "Not in the game's lineup yet (an upcoming MoW the home screen can feature); its name comes from the game's Units/ terms."
+    }
+  },
+  "traits": {
+    "values": {
+      "Mounted": {
+        "why": "No Traits/ term in the game.",
+        "en": "Mounted"
+      }
+    }
+  },
+  "mythicQuestTasks": {
+    "values": {
+      "SlayEnemiesWithHeroToTraitInOneBattle_description": {
+        "why": "The game's singular form drops \"in one battle\" (en, es, fr).",
+        "en": "[i2p_Plural]Defeat {[KILL_AMOUNT]} enemies that have the {[TRAIT]} trait with {[HERO_NAME]} in one battle[i2p_One]Defeat {[KILL_AMOUNT]} enemy that has the {[TRAIT]} trait with {[HERO_NAME]} in one battle",
+        "es": "[i2p_Plural]Derrota a {[KILL_AMOUNT]} enemigos que tengan el rasgo de {[TRAIT]} con {[HERO_NAME]} en una batalla.[i2p_One]Derrota a {[KILL_AMOUNT]} enemigo que tenga el rasgo de {[TRAIT]} con {[HERO_NAME]} en una batalla.",
+        "fr": "[i2p_Plural]Vaincre {[KILL_AMOUNT]} ennemis dotés du trait {[TRAIT]} avec {[HERO_NAME]} en un seul combat[i2p_One]Vaincre {[KILL_AMOUNT]} ennemi doté du trait {[TRAIT]} avec {[HERO_NAME]} en un seul combat"
+      },
+      "SlayEnemiesWithHeroToUnitEffectInOneBattle_UnitEffect_ArmourOfShriekingSouls_description": {
+        "why": "Every locale of the game names the effect twice and never the hero; de/es/fr follow the wording of their own UnitEffect_description template.",
+        "en": "Defeat {[KILL_AMOUNT]} enemies with {[HERO_NAME]} while under the <i>{[UNIT_EFFECT]}</i> effect in one battle",
+        "de": "Besiege mit {[HERO_NAME]} unter dem Effekt <i>„{[UNIT_EFFECT]}“</i> in einem Kampf {[KILL_AMOUNT]} Gegner",
+        "es": "Derrota a {[KILL_AMOUNT]} enemigos con {[HERO_NAME]} bajo el efecto de <i>{[UNIT_EFFECT]}</i> en una batalla.",
+        "fr": "Vaincre {[KILL_AMOUNT]} ennemis avec {[HERO_NAME]} sous l'effet <i>{[UNIT_EFFECT]}</i> en un seul combat"
+      }
+    }
+  }
+}

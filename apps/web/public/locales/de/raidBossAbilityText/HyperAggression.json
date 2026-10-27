@@ -1,0 +1,8 @@
+{
+  "HyperAggression": {
+    "description": "Ab dem zweiten Zug, nachdem er eine aktive Fähigkeit eingesetzt hat, führt der <style=\"Faction_Tyranids\">Kreischer-Killer</style> auch einen <style=\"NormalAttack\">normalen Angriff</style> aus.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

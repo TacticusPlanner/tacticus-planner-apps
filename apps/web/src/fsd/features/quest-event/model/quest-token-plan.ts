@@ -1,6 +1,10 @@
-/** The quest token bank: at most 6, one more every 2 hours while below the cap (wiki). */
-export const TOKEN_BANK = 6
-const REGEN_MS = 2 * 3_600_000
+import type { QuestEventStorageModel } from "@workspace/game-catalog"
+
+/** The quest's served token bank: at most `max`, `regenAmount` more every `regenSeconds` below it. */
+export type QuestTokenBank = Pick<
+  QuestEventStorageModel["tokens"],
+  "max" | "regenSeconds" | "regenAmount"
+>
 
 export type QuestTokens = { count: number; atUtc: string }
 
@@ -9,6 +13,8 @@ export type QuestTokenPlan =
   | { kind: "preview"; attempts: number }
   | {
       kind: "running"
+      /** The served bank's capacity, which a "tokens now" entry cannot exceed. */
+      bankMax: number
       attempts: number
       /** True without an entry: the plan assumes a full bank now. */
       assumedFull: boolean
@@ -25,26 +31,34 @@ export type QuestTokenPlan =
  */
 export function questTokenPlan(params: {
   phase: "running" | "claim" | "preview"
+  bank: QuestTokenBank
   startMs: number
   endMs: number
   nowMs: number
   tokens: QuestTokens | null
   battlesToImprove: number
 }): QuestTokenPlan {
-  const { phase, startMs, endMs, nowMs, tokens, battlesToImprove } = params
+  const { phase, bank, startMs, endMs, nowMs, tokens, battlesToImprove } =
+    params
   if (phase === "claim") return { kind: "closed" }
+  const regenMs = bank.regenSeconds * 1000
+  const regenerated = (fromMs: number) =>
+    Math.max(0, Math.floor((endMs - fromMs) / regenMs)) * bank.regenAmount
   if (phase === "preview") {
     return {
       kind: "preview",
-      attempts: TOKEN_BANK + Math.floor((endMs - startMs) / REGEN_MS),
+      attempts: bank.max + regenerated(startMs),
     }
   }
   const atMs = tokens ? Date.parse(tokens.atUtc) : nowMs
-  const count = tokens ? tokens.count : TOKEN_BANK
-  const attempts = count + Math.max(0, Math.floor((endMs - atMs) / REGEN_MS))
-  const bankFullMs = tokens ? atMs + (TOKEN_BANK - count) * REGEN_MS : null
+  const count = tokens ? Math.min(tokens.count, bank.max) : bank.max
+  const attempts = count + regenerated(atMs)
+  const bankFullMs = tokens
+    ? atMs + Math.ceil((bank.max - count) / bank.regenAmount) * regenMs
+    : null
   return {
     kind: "running",
+    bankMax: bank.max,
     attempts,
     assumedFull: !tokens,
     battlesToImprove,

@@ -88,7 +88,7 @@ describe("resolveVariable", () => {
     variables: { dmg: ["100,80,60", "110,90,70"], hits: [3, 4] },
     constants: { damageProfile: "Bolter", nrOfHits: "1" },
     scaledVariableNames: new Set(["hits"]),
-    rarity: "Common",
+    rarityFactor: 1,
     unitName: "Marneus Calgar",
     factionId: "Ultramarines",
   }
@@ -130,16 +130,25 @@ describe("resolveVariable", () => {
     expect(
       resolveVariable(
         { type: "var", name: "hits" },
-        { ...context, rarity: "Epic" }
+        { ...context, rarityFactor: 1.6 }
       )
     ).toBe("5")
+  })
+
+  it("reads a scaled variable as pending until the rarity factor loads", () => {
+    expect(
+      resolveVariable(
+        { type: "var", name: "hits" },
+        { ...context, rarityFactor: undefined }
+      )
+    ).toBe("…")
   })
 
   it("does not scale variables outside scaledVariableNames", () => {
     expect(
       resolveVariable(
         { type: "var", name: "dmg", splitIndex: 0 },
-        { ...context, rarity: "Epic" }
+        { ...context, rarityFactor: 1.6 }
       )
     ).toBe("100")
   })

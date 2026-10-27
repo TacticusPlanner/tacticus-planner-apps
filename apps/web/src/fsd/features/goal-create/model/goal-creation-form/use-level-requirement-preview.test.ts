@@ -1,9 +1,17 @@
 import { renderHook } from "@testing-library/react"
-import { describe, expect, it } from "vitest"
+import { describe, expect, it, vi } from "vitest"
 
 import type { GoalKind } from "@/entities/goal"
+import { levelRules } from "@/test/fixtures/level-rules"
 
 import { useLevelRequirementPreviews } from "./use-level-requirement-preview"
+
+vi.mock("@/features/goal-farming/@x/goal-create", async (importOriginal) => ({
+  ...(await importOriginal<
+    typeof import("@/features/goal-farming/@x/goal-create")
+  >()),
+  useLevelRules: () => levelRules,
+}))
 
 function types(...kinds: GoalKind[]): ReadonlySet<GoalKind> {
   return new Set(kinds)

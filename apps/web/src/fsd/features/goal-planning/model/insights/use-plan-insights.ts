@@ -11,6 +11,10 @@ import {
 import { useGlobalGoalPlan } from "@/entities/goal"
 import { onslaughtProgressQueries } from "@/entities/player-data-override"
 import { usePlanningSettings } from "@/entities/planning-setting"
+import {
+  toOnslaughtRunsPerDay,
+  useLevelRules,
+} from "@/features/goal-farming/@x/goal-planning"
 import { useCampaignDisplay } from "@/shared/lib"
 import { useCatalogDataset, usePlayerChunk } from "@/shared/local-data"
 
@@ -84,7 +88,11 @@ export function usePlanInsights(scopeGoalIds?: readonly string[] | null) {
     usePlayerChunk("live-progress", chunkOrUndefined)
   )
   const onslaughtRewards = readyData(useCatalogDataset("onslaught-rewards"))
+  const onslaughtRunsPerDay = readyData(
+    useCatalogDataset("global-values", toOnslaughtRunsPerDay)
+  )
   const shops = readyData(useCatalogDataset("shops"))
+  const levelRules = useLevelRules()
   const { settings: planningSettings } = usePlanningSettings()
 
   const [fetchState, setFetchState] = useState<FetchState>({ status: "idle" })
@@ -120,7 +128,8 @@ export function usePlanInsights(scopeGoalIds?: readonly string[] | null) {
       planningSettings.xpBookRarity,
     ]
   )
-  const calculationKey = `${scopeKey}:${memberKey}:${inventoryKey}`
+  // The Onslaught cadence too, so a catalog refresh that changes it recomputes.
+  const calculationKey = `${scopeKey}:${memberKey}:${inventoryKey}:${onslaughtRunsPerDay}`
   // A project scope that holds none of the plan's Active goals has nothing to report.
   const hasQuery = Boolean(
     isAuthenticated &&
@@ -150,6 +159,8 @@ export function usePlanInsights(scopeGoalIds?: readonly string[] | null) {
     !!charactersById &&
     !!mowsById &&
     !!onslaughtRewards?.length &&
+    onslaughtRunsPerDay !== undefined &&
+    !!levelRules &&
     !!shops &&
     !!ascensionCostsById &&
     !!unlockShardCostsById
@@ -231,6 +242,7 @@ export function usePlanInsights(scopeGoalIds?: readonly string[] | null) {
             inventoryXpBooks,
             abilityInventory,
             xpBookRarity: planningSettings.xpBookRarity,
+            levelRules,
             upgradesById,
             battlesById,
             charactersById: charactersById,
@@ -250,6 +262,7 @@ export function usePlanInsights(scopeGoalIds?: readonly string[] | null) {
             currentOnslaughtTokens:
               liveProgress?.gameModeTokens.onslaught?.current ?? 0,
             onslaughtRewards: onslaughtRewards,
+            onslaughtRunsPerDay,
             shops,
           })
 
@@ -281,6 +294,7 @@ export function usePlanInsights(scopeGoalIds?: readonly string[] | null) {
     calculationKey,
     planningSettings.dailyEnergy,
     liveProgress?.gameModeTokens.onslaught?.current,
+    levelRules,
   ])
 
   const isCurrent =

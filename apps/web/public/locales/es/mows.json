@@ -1,13 +1,13 @@
 {
-  "ultraDreadnought": "Galatian",
   "adeptExorcist": "Exorcista",
-  "necroReanimator": "Reanimador",
   "astraOrdnanceBattery": "Lanzacohetes Malleus",
   "blackForgefiend": "Diablo de la Forja",
+  "darkaStormSpeeder": "Storm Speeder",
   "deathCrawler": "Reptador Revientaplagas",
+  "necroReanimator": "Reanimador",
   "orksRukkatrukk": "Garrapatoneta",
   "tauBroadside": "Tson'ji",
   "thousDaemonPrince": "Z'Kar",
-  "darkaStormSpeeder": "Storm Speeder",
-  "tyranBiovore": "Biovoro"
+  "tyranBiovore": "Biovoro",
+  "ultraDreadnought": "Galatian"
 }

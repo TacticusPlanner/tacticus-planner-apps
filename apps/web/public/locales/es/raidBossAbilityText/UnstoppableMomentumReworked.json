@@ -1,0 +1,35 @@
+{
+  "UnstoppableMomentumReworked": {
+    "description": "Avanza en una de las 6 direcciones y sigue moviéndose en línea recta hasta que choca con un obstáculo o con un <style=\"Big_Target\">Gran objetivo</style>. Los enemigos impactados por la carga reciben <style=\"DMG_Direct\">{[minDmg]}-{[maxDmg]} de Daño directo</style> <style=\"Stat_Hits\">x{[nrOfHits]}</style>, el cual aumenta en <style=\"Stat_Damage\">{[extraDmg]} de Daño</style> por cada hexágono recorrido desde el primer hexágono hasta el enemigo. Los enemigos afectados son <style=\"Displacement\">empujados</style> y sufren <style=\"Debuff_Pinned\">Supresión</style> por 1 ronda. Un <style=\"Big_Target\">Gran objetivo</style>, en cambio, queda <style=\"Debuff_Stunned\">Aturdido</style> por 1 ronda. Las unidades aliadas también son desplazadas, pero no reciben daño ni ningún efecto negativo.\n\n<style=\"Cooldown\">Tiempo de recuperación inicial: {[initialCooldownTurns]} ronda</style>. ",
+    "variables": {
+      "minDmg": [
+        12, 14, 17, 19, 22, 24, 27, 30, 33, 35, 38, 41, 44, 46, 49, 52, 55, 57,
+        60, 63, 67, 72, 83, 94, 105, 116, 126, 137, 148, 159, 170, 181, 192,
+        203, 214, 225, 236, 247, 258, 273, 294, 317, 342, 369, 418, 467, 517,
+        566, 615, 665, 672, 681, 690, 702, 714, 726, 738, 753, 768, 783, 801,
+        819, 837, 855, 873
+      ],
+      "maxDmg": [
+        15, 18, 21, 24, 27, 30, 34, 37, 41, 44, 48, 51, 55, 58, 62, 65, 68, 72,
+        75, 79, 83, 90, 104, 117, 131, 144, 158, 172, 185, 199, 213, 226, 240,
+        254, 267, 281, 295, 308, 322, 341, 368, 396, 427, 461, 523, 584, 646,
+        708, 769, 831, 840, 851, 863, 878, 893, 908, 923, 941, 960, 979, 1001,
+        1024, 1046, 1069, 1091
+      ],
+      "extraDmg": [
+        1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 6, 6, 7, 8,
+        9, 10, 11, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 21, 23, 25, 26,
+        28, 31, 35, 39, 43, 47, 51, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65,
+        67, 68, 70, 71, 73
+      ]
+    },
+    "constants": {
+      "damageProfile": "DirectDamage",
+      "nrOfHits": "1",
+      "initialCooldownTurns": "1",
+      "effectTurns": "1",
+      "effectTurns_2": "1"
+    },
+    "scaled": ["minDmg", "maxDmg", "extraDmg"]
+  }
+}

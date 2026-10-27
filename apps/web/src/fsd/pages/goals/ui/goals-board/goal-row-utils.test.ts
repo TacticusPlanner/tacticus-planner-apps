@@ -121,22 +121,23 @@ describe("cascadeTargets", () => {
 })
 
 describe("goalXpBookFigure", () => {
+  const legendary = { rarity: "Legendary", xp: 12_500 } as const
+
   it("expresses charged XP and pool XP as needed/available books in the rarity", () => {
     // 12,200 charged / 12,500 per Legendary book = 1 needed; 100,000 pool = 8 available.
-    expect(goalXpBookFigure(12_200, 100_000, "Legendary")).toEqual({
+    expect(goalXpBookFigure(12_200, 100_000, legendary)).toEqual({
       available: 8,
       needed: 1,
       rarity: "Legendary",
     })
   })
 
-  it("falls back to Legendary for a missing or unknown rarity", () => {
-    expect(goalXpBookFigure(12_500, 0, undefined)?.rarity).toBe("Legendary")
-    expect(goalXpBookFigure(12_500, 0, "Bogus")?.rarity).toBe("Legendary")
+  it("is undefined until the selected book is known", () => {
+    expect(goalXpBookFigure(12_500, 0, undefined)).toBeUndefined()
   })
 
   it("is undefined when the goal needs no level-up", () => {
-    expect(goalXpBookFigure(undefined, 100_000, "Legendary")).toBeUndefined()
-    expect(goalXpBookFigure(0, 100_000, "Legendary")).toBeUndefined()
+    expect(goalXpBookFigure(undefined, 100_000, legendary)).toBeUndefined()
+    expect(goalXpBookFigure(0, 100_000, legendary)).toBeUndefined()
   })
 })

@@ -7,31 +7,7 @@ import {
   type Rank as RankType,
 } from "@workspace/game-domain"
 
-// Ported from V1's `rank-goal-select.tsx` / `rankToLevel` (tacticusplanner's `models/constants.ts`)
-// — restricted to ranks that exist in this domain model's ladder (no `Locked`, no unreachable
-// `Adamantine3`).
-const rankToLevel: Record<RankType, number> = {
-  Stone1: 1,
-  Stone2: 3,
-  Stone3: 5,
-  Iron1: 8,
-  Iron2: 11,
-  Iron3: 14,
-  Bronze1: 17,
-  Bronze2: 20,
-  Bronze3: 23,
-  Silver1: 26,
-  Silver2: 29,
-  Silver3: 32,
-  Gold1: 35,
-  Gold2: 38,
-  Gold3: 41,
-  Diamond1: 44,
-  Diamond2: 47,
-  Diamond3: 50,
-  Adamantine1: 55,
-  Adamantine2: 60,
-}
+import type { LevelRules } from "./level-rules"
 
 /** True from Adamantine1 onward, where partial targets use numbered upgrade slots. A
  * character rank's 6 upgrade slots are 2 rows of 3 (1 Health + 1 Damage + 1 Armour per row): before
@@ -45,8 +21,12 @@ function usesNumberedUpgradeTargets(rank: RankType): boolean {
 
 /** The XP-level label for a numbered partial-upgrade count at `rank` — ported from V1's
  * `mythicLevelLabel`. */
-export function rowLevel(rank: RankType, count: number): number {
-  return rankToLevel[rank] + count - 1
+export function rowLevel(
+  rank: RankType,
+  count: number,
+  rules: LevelRules
+): number {
+  return rules.rankToLevel[rank] + count - 1
 }
 
 /**
@@ -127,23 +107,24 @@ export function additionalTargetSelection(value: RankAdditionalTarget): {
 
 /** The character level required to reach `rank` with `additionalTarget` applied — ranking up (and
  * applying each upgrade slot beyond a clean rank boundary) requires having already reached a
- * specific level, per V1's `rankToLevel` table. Shown as the level requirement of a Rank
+ * specific level (`LevelRules.rankToLevel`). Shown as the level requirement of a Rank
  * goal (see `requiredLevelForGoal`) whenever the target exceeds the character's current level. */
 export function requiredLevelForRankTarget(
   rank: RankType,
-  additionalTarget: RankAdditionalTarget
+  additionalTarget: RankAdditionalTarget,
+  rules: LevelRules
 ): number {
   switch (additionalTarget) {
     case "None":
-      return rankToLevel[rank]
+      return rules.rankToLevel[rank]
     case "TopRow1":
-      return rowLevel(rank, 1)
+      return rowLevel(rank, 1, rules)
     case "TopRow2":
-      return rowLevel(rank, 2)
+      return rowLevel(rank, 2, rules)
     case "TopRow":
-      return rowLevel(rank, 3)
+      return rowLevel(rank, 3, rules)
     default:
-      return rowLevel(rank, rowCount(additionalTarget) ?? 1)
+      return rowLevel(rank, rowCount(additionalTarget) ?? 1, rules)
   }
 }
 
@@ -156,11 +137,15 @@ export function requiredLevelForRankTarget(
  *  fall out of the same formula (4 free, 2 gated) without special-casing. The ladder's last rank has
  *  no next-rank gap to derive from, so every slot there is treated as individually gated (mirrors
  *  the already-numbered-per-slot Adamantine model `rowLevel`/`RowN` targets use). */
-function appliableSlotsAtLevel(rank: RankType, level: number): number {
-  const base = rankToLevel[rank]
+function appliableSlotsAtLevel(
+  rank: RankType,
+  level: number,
+  rules: LevelRules
+): number {
+  const base = rules.rankToLevel[rank]
   if (level < base) return 0
   const nextRank = rankOrder[rankIndex(rank) + 1]
-  const gatedSlots = nextRank ? rankToLevel[nextRank] - base : 6
+  const gatedSlots = nextRank ? rules.rankToLevel[nextRank] - base : 6
   const freeSlots = Math.max(0, 6 - gatedSlots)
   return Math.min(6, freeSlots + (level - base))
 }
@@ -175,7 +160,8 @@ function appliableSlotsAtLevel(rank: RankType, level: number): number {
  *  permits. Used to mark a Rank goal's progress bar with what's actually reachable right now. */
 export function reachableRankProgress(
   level: number,
-  rarityMaxRank: RankType
+  rarityMaxRank: RankType,
+  rules: LevelRules
 ): { rank: RankType; appliedSlots: number } {
   const rarityMaxIndex = rankIndex(rarityMaxRank)
   let rank: RankType = firstRank
@@ -183,9 +169,9 @@ export function reachableRankProgress(
   for (let index = 0; index <= rarityMaxIndex; index++) {
     const candidate = rankOrder[index]
     if (candidate === undefined) break
-    if (level < rankToLevel[candidate]) break
+    if (level < rules.rankToLevel[candidate]) break
     rank = candidate
-    appliedSlots = appliableSlotsAtLevel(candidate, level)
+    appliedSlots = appliableSlotsAtLevel(candidate, level, rules)
   }
   return { rank, appliedSlots }
 }

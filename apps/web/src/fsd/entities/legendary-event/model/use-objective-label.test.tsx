@@ -28,8 +28,8 @@ async function createI18n(lng: "en" | "de") {
         damageTypes: enDamageTypes,
         factions: enFactions,
       },
-      // The game-data namespaces ship English-only; a German trait entry is seeded here to show
-      // the label follows the active language.
+      // Only English game data is loaded here; a German trait entry is seeded to show the label
+      // follows the active language.
       de: {
         common: deCommon,
         legendaryEvents: deLegendaryEvents,

@@ -1,6 +1,6 @@
 {
   "SpiritualLeader": {
-    "description": "Platziert nach der Bewegung einen <style=\"Decoy\">Köder</style> auf einem leeren angrenzenden Feld. Grenzen 2 oder mehr Köder an <style=\"Faction_Genestealers\">Xybia</style> an, wird ein <style=\"Summon\"><style=\"Faction_Genestealers\">Neophyten-Hybride</style></style> auf dem Feld eines angrenzenden Köders beschworen. Wenn sich <style=\"Faction_Genestealers\">Xybia</style> nicht bewegt, wird diese Fähigkeit am Ende ihres Zuges ausgelöst.\n\nWerte des Neophyten-Hybriden:\n<style=\"Stat_Health\">{[summonHp]} Lebenspunkte</style>\n<style=\"Stat_Damage\">{[summonDmg]} Schaden</style>\n<style=\"Stat_Armor\">{[summonArmor]} Rüstung</style>",
+    "description": "Platziert nach der Bewegung einen <style=\"Decoy\">Köder</style> auf einem leeren angrenzenden Feld. Grenzen 2 oder mehr Köder an <Style=\"Faction_Genestealers\">Xybia</style> an, wird ein <style=\"Summon\"><style=\"Faction_Genestealers\">Neophyten-Hybride</style></style> auf dem Feld eines angrenzenden Köders beschworen. Wenn sich <Style=\"Faction_Genestealers\">Xybia</style> nicht bewegt, wird diese Fähigkeit am Ende ihres Zuges ausgelöst.\n\nWerte des Neophyten-Hybriden:\n<style=\"Stat_Health\">{[summonHp]} Lebenspunkte</style>\n<style=\"Stat_Damage\">{[summonDmg]} Schaden</style>\n<style=\"Stat_Armor\">{[summonArmor]} Rüstung</style>",
     "variables": {
       "summonHp": [
         30, 36, 42, 48, 54, 61, 68, 75, 82, 89, 95, 102, 109, 116, 123, 130,

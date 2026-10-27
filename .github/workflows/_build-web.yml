@@ -127,6 +127,26 @@ jobs:
             exit 1
           fi
 
+      # Generated game text and images come from one data-mines commit (spec: datamine-source).
+      - name: Check the datamine is pinned to a commit
+        if: ${{ inputs.run-validation }}
+        run: |
+          if [ "$(cat apps/web/datamine/REF)" = "local" ]; then
+            echo "::error::apps/web/datamine/REF is 'local'. Run 'pnpm --filter web datamine:pull <data-mines-tag>' before merging."
+            exit 1
+          fi
+
+      # public/game_catalog/datamines holds exactly the sprites datamine/sprites.txt lists.
+      - name: Check the copied datamine sprites match their list
+        if: ${{ inputs.run-validation }}
+        working-directory: apps/web
+        run: |
+          if ! diff <(grep -v '^#' datamine/sprites.txt | sed '/^$/d') \
+            <(cd public/game_catalog/datamines && find . -type f | sed 's|^\./||' | LC_ALL=C sort); then
+            echo "::error::public/game_catalog/datamines differs from datamine/sprites.txt. Run 'pnpm --filter web datamine:sprites'."
+            exit 1
+          fi
+
       - name: Check formatting
         if: ${{ inputs.run-validation }}
         run: pnpm exec prettier --check "**/*.{ts,tsx}"
