@@ -27,6 +27,9 @@ export type LevelPotentialProgress = {
    *  levels below (`LevelXpAllocation.chainedFromLevel`): the display reads "Lv 35 -> 38" from it. Only
    *  goals partly covered get an entry. */
   chainedFromLevelByGoalId: Map<string, number>
+  /** XP each goal still lacks once the owned books are spent in priority order
+   *  (`LevelXpAllocation.remainingXp`) — the Insights "still missing" XP. */
+  remainingXpByGoalId: Map<string, number>
   /** Gold to apply each goal's needed books (`LevelXpAllocation.gold`) � V1's Rank "Gold". */
   goldByGoalId: Map<string, number>
 }
@@ -79,6 +82,7 @@ export function buildLevelPotentialProgress(params: {
   const chargedXpByGoalId = new Map<string, number>()
   const poolXpAvailableByGoalId = new Map<string, number>()
   const goldByGoalId = new Map<string, number>()
+  const remainingXpByGoalId = new Map<string, number>()
   const chainedFromLevelByGoalId = new Map<string, number>()
   for (const need of needs) {
     const result = allocation.get(need.goalId)
@@ -94,6 +98,7 @@ export function buildLevelPotentialProgress(params: {
     chargedXpByGoalId.set(need.goalId, result.chargedXp)
     poolXpAvailableByGoalId.set(need.goalId, result.poolXpAvailable)
     goldByGoalId.set(need.goalId, result.gold)
+    remainingXpByGoalId.set(need.goalId, result.remainingXp)
     if (result.chainedFromLevel !== null) {
       chainedFromLevelByGoalId.set(need.goalId, result.chainedFromLevel)
     }
@@ -103,6 +108,7 @@ export function buildLevelPotentialProgress(params: {
     chargedXpByGoalId,
     poolXpAvailableByGoalId,
     goldByGoalId,
+    remainingXpByGoalId,
     chainedFromLevelByGoalId,
   }
 }

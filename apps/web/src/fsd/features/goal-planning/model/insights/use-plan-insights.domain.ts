@@ -19,6 +19,19 @@ export interface PlanInsightsTotals {
   mythicShards: number
 }
 
+/** What the plan still lacks once the account's stock is spent in priority order (V1's "Total
+ *  Resources Missing"). Alliance keys are `Imperial`/`Xenos`/`Chaos`. */
+export interface PlanMissingResources {
+  abilityBadges: Partial<Record<string, Partial<Record<Rarity, number>>>>
+  orbs: Partial<Record<string, Partial<Record<Rarity, number>>>>
+  forgeBadges: Partial<Record<Rarity, number>>
+  components: Partial<Record<string, number>>
+  /** Raw level XP the owned XP books don't cover. */
+  xp: number
+  /** `xp` as whole books of the user's selected XP-book rarity; `null` without the level rules. */
+  xpBooks: { rarity: Rarity; count: number } | null
+}
+
 export interface PlanInsightsBottleneck {
   id: EstimateResourceId
   label: string
@@ -42,6 +55,7 @@ export interface PlanNetResources {
 
 export interface PlanInsightsResult {
   totals: PlanInsightsTotals
+  missing: PlanMissingResources
   energyTotal: number
   onslaughtTokens: number
   onslaughtDays: number
@@ -88,6 +102,14 @@ export interface PlanInsightsResult {
 
 export const EMPTY_PLAN_INSIGHTS_RESULT: PlanInsightsResult = {
   totals: { upgradesByRarity: {}, orbsByType: {}, shards: 0, mythicShards: 0 },
+  missing: {
+    abilityBadges: {},
+    orbs: {},
+    forgeBadges: {},
+    components: {},
+    xp: 0,
+    xpBooks: null,
+  },
   energyTotal: 0,
   onslaughtTokens: 0,
   onslaughtDays: 0,

@@ -13,6 +13,7 @@ import { useGlobalGoalPlan } from "@/entities/goal"
 import { ProjectSelect, useProjects } from "@/entities/project"
 import { usePlanInsights } from "@/features/goal-planning"
 import { InsightsEvents } from ".//insights-events"
+import { InsightsMissing } from ".//insights-missing"
 import { InsightsSummary } from ".//insights-summary"
 
 /**
@@ -111,6 +112,7 @@ export function InsightsPage() {
             onslaughtDays={result.onslaughtDays}
             totals={result.totals}
           />
+          <InsightsMissing missing={result.missing} />
           <InsightsEvents
             benefitingGoalIdsByInsightId={result.benefitingGoalIdsByInsightId}
             goalEntityById={goalEntityById}

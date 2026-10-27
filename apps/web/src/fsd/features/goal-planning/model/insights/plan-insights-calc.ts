@@ -53,6 +53,7 @@ import {
 } from "./orb-potential-allocation"
 import { buildLevelPotentialProgress } from "./level-potential-progress"
 import { computeBottlenecks } from "./plan-bottlenecks"
+import { createPlanMissingResources } from "./plan-missing-resources"
 import { createPlanNetResources } from "./plan-net-resources"
 import { createStandaloneEstimates } from "./plan-standalone-estimates"
 import type {
@@ -136,6 +137,7 @@ export function computePlanInsights(params: {
     params.abilityInventory
   )
   const planNet = createPlanNetResources()
+  const missing = createPlanMissingResources()
   const standalone = createStandaloneEstimates(
     params.inventoryUpgrades,
     params.upgradesById
@@ -190,13 +192,16 @@ export function computePlanInsights(params: {
       ascensionCoverage: coverage,
       craftedInventory,
     }
-    abilityMaterials.add(detail, {
-      ...needParams,
-      alliance: (isMowDetail(detail)
-        ? params.mowsById
-        : params.charactersById
-      ).get(detail.entityId)?.alliance,
-    })
+    const alliance = (
+      isMowDetail(detail) ? params.mowsById : params.charactersById
+    ).get(detail.entityId)?.alliance
+    abilityMaterials.add(detail, { ...needParams, alliance })
+    if (inScope(detail.goalId)) {
+      missing.addAbilityMaterials(
+        abilityMaterials.byGoalId.get(detail.goalId),
+        alliance
+      )
+    }
     planNet.add(detail, needParams, params.priorityByGoalId.get(detail.goalId))
     const slots =
       detail.goalType === "Rank" ? rankSlotAllocation(needParams) : null
@@ -363,6 +368,11 @@ export function computePlanInsights(params: {
     xpBookRarity: params.xpBookRarity,
     levelRules: params.levelRules,
   })
+  for (const detail of orderedDetails) {
+    if (!inScope(detail.goalId)) continue
+    missing.addOrbAllocation(orbAllocations.get(detail.goalId))
+    missing.addXp(levelPotential.remainingXpByGoalId.get(detail.goalId))
+  }
   // What each active goal still needs once the plan's orb and shard stock is spent in priority order,
   // plus the gold to apply a Rank goal's level-up books (goal-remaining-resources).
   const planNetByGoalId = planNet.resolve({
@@ -465,6 +475,7 @@ export function computePlanInsights(params: {
 
   return {
     totals,
+    missing: missing.resolve(params.levelRules, params.xpBookRarity),
     energyTotal,
     onslaughtTokens,
     onslaughtDays,
