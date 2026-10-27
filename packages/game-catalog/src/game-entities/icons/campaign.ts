@@ -1,6 +1,7 @@
 import type { CampaignId } from "@workspace/game-domain"
 
-import { gameAssetUrl } from "./asset-path"
+import { curatedAssetUrl, datamineAssetUrl } from "./asset-path"
+import { factionIcon } from "./faction"
 
 // Storyline base names, indexed 1-4 — the asset/i18n-name-key stem shared by all four of a
 // storyline's tiers (`campaign1`/`mirror1`/`elite1`/`eliteMirror1` all name-key to "indomitus").
@@ -24,6 +25,16 @@ const eventNames: Record<string, string> = {
   "4": "adepta-sororitas-vs-death-guard",
   "5": "world-eaters-vs-adepta-sororitas",
   "6": "necrons-vs-dark-angels",
+}
+
+// The faction an event's Standard tier shows: the second side of its name.
+const eventStandardFactions: Record<string, string> = {
+  "death-guard-vs-admech": "AdeptusMechanicus",
+  "ultramarines-vs-tyranids": "Tyranids",
+  "genestealers-vs-tau-empire": "Tau",
+  "adepta-sororitas-vs-death-guard": "DeathGuard",
+  "world-eaters-vs-adepta-sororitas": "Sisterhood",
+  "necrons-vs-dark-angels": "DarkAngels",
 }
 
 const STORYLINE_GROUP_ID = /^(campaign|mirror|elite|eliteMirror)([1-4])$/
@@ -96,10 +107,10 @@ export function campaignDescriptor(
   return undefined
 }
 
-// Filenames follow "{nameKey}[-mirror]-{difficultyToken}.webp" for storylines (e.g.
-// "indomitus-standard.webp", "indomitus-mirror-elite.webp") and "{nameKey}-{difficultyToken}.webp"
-// for events (e.g. "death-guard-vs-admech-eventExtremis.webp"); challenge tiers reuse their base
-// Standard/Extremis image (see `campaignDescriptor`'s `challenge` flag).
+// Storylines use the game's own campaign icons, `atlases/ui_icon_campaign_0<n>[_mirror][_elite]`.
+// An event's Standard tier is its faction's emblem; its Extremis icon has no game file, so the
+// planner's copy `curated/campaigns/<nameKey>-eventExtremis.webp` is used. Challenge tiers reuse
+// their base Standard/Extremis image (see `campaignDescriptor`'s `challenge` flag).
 export function campaignIcon(
   groupId: CampaignId,
   type: string,
@@ -107,10 +118,15 @@ export function campaignIcon(
 ): string | undefined {
   const descriptor = campaignDescriptor(groupId, type, challenge)
   if (!descriptor) return undefined
-  const stem = descriptor.isEvent
-    ? descriptor.nameKey
-    : descriptor.isMirror
-      ? `${descriptor.nameKey}-mirror`
-      : descriptor.nameKey
-  return gameAssetUrl(`campaigns/${stem}-${descriptor.difficultyToken}.webp`)
+  if (descriptor.isEvent) {
+    return descriptor.difficultyToken === "eventStandard"
+      ? factionIcon(eventStandardFactions[descriptor.nameKey] ?? "")
+      : curatedAssetUrl(`campaigns/${descriptor.nameKey}-eventExtremis.webp`)
+  }
+  const index = STORYLINE_GROUP_ID.exec(groupId)?.[2]
+  const mirror = descriptor.isMirror ? "_mirror" : ""
+  const elite = descriptor.difficultyToken === "elite" ? "_elite" : ""
+  return datamineAssetUrl(
+    `atlases/ui_icon_campaign_0${index}${mirror}${elite}.webp`
+  )
 }

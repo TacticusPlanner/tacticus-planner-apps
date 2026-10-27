@@ -1,8 +1,8 @@
 import type { Rarity } from "@workspace/game-domain"
 
-import { gameAssetUrl } from "./asset-path"
+import { curatedAssetUrl } from "./asset-path"
 
-// Rarity badge icon (not a Snowprint asset — a custom app icon, same as V1's rarity/resized/*.webp).
+// Rarity markers are the planner's own art (kept curated by choice), not a game sprite.
 export function rarityIcon(rarity: Rarity): string {
-  return gameAssetUrl(`rarity/${rarity.toLowerCase()}.webp`)
+  return curatedAssetUrl(`rarity/${rarity.toLowerCase()}.webp`)
 }

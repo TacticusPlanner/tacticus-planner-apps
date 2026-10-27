@@ -136,14 +136,20 @@ jobs:
             exit 1
           fi
 
-      # public/game_catalog/datamines holds exactly the sprites datamine/sprites.txt lists.
-      - name: Check the copied datamine sprites match their list
+      # public/game_catalog/datamines holds exactly the sprites datamine/sprites.txt lists, and
+      # nothing but datamines/ and curated/ sits directly under public/game_catalog.
+      - name: Check the catalog image folders
         if: ${{ inputs.run-validation }}
         working-directory: apps/web
         run: |
           if ! diff <(grep -v '^#' datamine/sprites.txt | sed '/^$/d') \
             <(cd public/game_catalog/datamines && find . -type f | sed 's|^\./||' | LC_ALL=C sort); then
             echo "::error::public/game_catalog/datamines differs from datamine/sprites.txt. Run 'pnpm --filter web datamine:sprites'."
+            exit 1
+          fi
+          extra=$(cd public/game_catalog && find . -mindepth 1 -maxdepth 1 ! -name datamines ! -name curated)
+          if [ -n "$extra" ]; then
+            echo "::error::public/game_catalog holds only datamines/ and curated/; move these: $extra"
             exit 1
           fi
 

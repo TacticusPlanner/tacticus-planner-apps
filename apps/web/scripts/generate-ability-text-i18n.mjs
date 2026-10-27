@@ -227,7 +227,7 @@ await writeJson(
 const hasAbilityIcon = (id) =>
   [
     `datamines/${abilityIconOverrides[id] ?? `abilities/ui_icon_ability2_${id}.webp`}`,
-    `abilities/ui_icon_ability2_${id}.webp`,
+    `curated/abilities/ui_icon_ability2_${id}.webp`,
   ].some((path) => existsSync(resolve(catalogImageDir, path)))
 const missingRelicIcons = [...relicAbilityIds]
   .filter((id) => !hasAbilityIcon(id))

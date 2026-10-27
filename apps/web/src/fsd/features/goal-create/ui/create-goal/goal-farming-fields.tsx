@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next"
-import { datamineAssetUrl, gameAssetUrl } from "@workspace/game-catalog"
+import { datamineAssetUrl, shardIcon } from "@workspace/game-catalog"
 
 import { shopCurrencyIcon } from "@/features/shop-rewards/@x/goal-create"
 import { energyIconUrl, EntityIcon } from "@/shared/ui"
@@ -20,11 +20,7 @@ export function ProgressionPreview({
     >
       <p className="font-medium">{t("goals.create.previewTitle")}</p>
       <p className="flex items-center gap-1.5">
-        <EntityIcon
-          alt=""
-          className="size-5"
-          src={gameAssetUrl(`misc/ui_icon_character_shard_empty.webp`)}
-        />
+        <EntityIcon alt="" className="size-5" src={shardIcon("Regular")} />
         {t("goals.create.ascension.shards", {
           regular: preview.regularShards,
           mythic: preview.mythicShards,
@@ -50,11 +46,7 @@ export function ProgressionPreview({
           className="flex items-center gap-1.5"
           data-testid="create-goal-preview-onslaught-tokens"
         >
-          <EntityIcon
-            alt=""
-            className="size-5"
-            src={gameAssetUrl(`misc/ui_icon_character_shard_empty.webp`)}
-          />
+          <EntityIcon alt="" className="size-5" src={shardIcon("Regular")} />
           {t("goals.create.acquisitionSources.onslaughtTokens", {
             count: preview.onslaughtTokens,
           })}

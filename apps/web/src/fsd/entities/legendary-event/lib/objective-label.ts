@@ -1,12 +1,14 @@
-import { damageTypeIcon, factionIcon, traitIcon } from "@workspace/game-catalog"
+import {
+  damageTypeIcon,
+  factionIcon,
+  statIcon,
+  traitIcon,
+} from "@workspace/game-catalog"
 
 import defeatAllSrc from "../assets/defeat-all.png"
-import statHitSrc from "../assets/stat-hit.png"
-import statMeleeSrc from "../assets/stat-melee.png"
-import statRangedSrc from "../assets/stat-ranged.png"
 import type { LegendaryEventUnitFilter } from "../model/types"
 
-/** The V1 icon set shipped with the entity (design D6). */
+/** The defeat-all star, planner art bundled with the entity (design D6); the game has no sprite for it. */
 export const defeatAllIcon = defeatAllSrc
 
 /** An objective's icon: a game asset plus an optional badge (red X for a negated filter, "≥" / "≤"
@@ -78,7 +80,7 @@ export function describeUnitFilter(
     case "MaxHits": {
       const count = Number(target)
       const icon: ObjectiveIcon = {
-        src: statHitSrc,
+        src: statIcon("hits"),
         badge: kind === "MinHits" ? "min" : "max",
       }
       return Number.isFinite(count)
@@ -97,7 +99,7 @@ export function describeUnitFilter(
       const melee = target === "Ranged" ? exclude : !exclude
       return {
         label: { type: "attackType", template: melee ? "melee" : "ranged" },
-        icon: { src: melee ? statMeleeSrc : statRangedSrc },
+        icon: { src: statIcon(melee ? "melee" : "ranged") },
       }
     }
     default: {

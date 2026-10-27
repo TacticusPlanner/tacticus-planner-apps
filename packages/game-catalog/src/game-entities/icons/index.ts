@@ -1,4 +1,10 @@
-export { ASSET_BASE_PATH, datamineAssetUrl, gameAssetUrl } from "./asset-path"
+export {
+  ASSET_BASE_PATH,
+  curatedAssetUrl,
+  datamineAssetUrl,
+  gameAssetUrl,
+} from "./asset-path"
+export type { GameIcon, IconLayer, LayeredIcon } from "./layered"
 export { UpgradeIcons } from "./upgrade"
 export { rarityIcon } from "./rarity"
 export { rankIcon } from "./rank"
@@ -48,4 +54,6 @@ export {
   salvageIcon,
   raidTicketIcon,
   xpBookIcon,
+  gameModeTokenIcon,
+  type GameModeToken,
 } from "./resource"

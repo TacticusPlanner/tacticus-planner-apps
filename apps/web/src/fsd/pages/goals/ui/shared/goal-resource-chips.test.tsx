@@ -169,8 +169,8 @@ describe("GoalResourceChips", () => {
       img.getAttribute("src")
     )
     expect(sources).toEqual([
-      "/game_catalog/misc/energy.webp",
-      "/game_catalog/misc/ui_icon_resource_coin.webp",
+      "/game_catalog/datamines/atlases/ui_icon_resource_stamina_small.webp",
+      "/game_catalog/datamines/atlases/ui_icon_resource_coin_small.webp",
       "/game_catalog/badges/xenos-epic.webp",
       "/game_catalog/datamines/atlases/ui_forge_badges_rare.webp",
       "/game_catalog/datamines/atlases/ui_machines_of_war_tokens_xenos.webp",

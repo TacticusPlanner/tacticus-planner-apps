@@ -9,6 +9,7 @@ import {
   orbAllianceIcon,
   orbIcon,
   shardIcon,
+  type GameIcon,
 } from "@workspace/game-catalog"
 import { rarityOrder, type Rarity } from "@workspace/game-domain"
 
@@ -25,7 +26,7 @@ const EMPTY_AVAILABLE = {
 
 type Chip = {
   key: string
-  icon: string | undefined
+  icon: GameIcon | undefined
   /** Alliance emblem drawn over the icon (V1's orb: rarity orb with the alliance on top). */
   overlay?: string
   /** Full localized resource name, used in the tooltip and the accessible name. */
@@ -68,7 +69,7 @@ export function GoalResourceChips({
   const chips: Chip[] = []
   const add = (
     key: string,
-    icon: string | undefined,
+    icon: GameIcon | undefined,
     name: string,
     quantity: number | undefined,
     overlay?: string
@@ -79,7 +80,7 @@ export function GoalResourceChips({
   }
   const addPool = (
     key: string,
-    icon: string,
+    icon: GameIcon,
     name: string,
     needed: number | undefined,
     available: number | undefined
@@ -97,7 +98,7 @@ export function GoalResourceChips({
   const addByRarity = (
     kind: "orbs" | "abilityBadges" | "forgeBadges",
     amounts: Partial<Record<Rarity, number>> | undefined,
-    icon: (rarity: Rarity) => string,
+    icon: (rarity: Rarity) => GameIcon,
     overlay?: string,
     available?: Partial<Record<Rarity, number>>
   ) => {

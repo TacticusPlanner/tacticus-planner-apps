@@ -8,7 +8,7 @@ import { battleBoardImage } from "./battle-board"
 
 const QUEST_MAPS_DIR = fileURLToPath(
   new URL(
-    "../../../../../apps/web/public/game_catalog/quest_maps/",
+    "../../../../../apps/web/public/game_catalog/curated/quest_maps/",
     import.meta.url
   )
 )
@@ -16,12 +16,14 @@ const QUEST_MAPS_DIR = fileURLToPath(
 describe("battleBoardImage", () => {
   it("resolves a quest board under quest_maps/", () => {
     expect(battleBoardImage("MC2_01")).toBe(
-      "/game_catalog/quest_maps/MC2_01.webp"
+      "/game_catalog/curated/quest_maps/MC2_01.webp"
     )
   })
 
   it("falls through to le_maps/ for a board only shipped there", () => {
-    expect(battleBoardImage("LE1_26")).toBe("/game_catalog/le_maps/LE1_26.webp")
+    expect(battleBoardImage("LE1_26")).toBe(
+      "/game_catalog/curated/le_maps/LE1_26.webp"
+    )
   })
 
   it("returns undefined for a board with no shipped image", () => {

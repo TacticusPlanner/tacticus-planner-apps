@@ -5,15 +5,16 @@ import {
   equipmentSlotIcon,
   mowIcon,
   UpgradeIcons,
+  curatedAssetUrl,
   datamineAssetUrl,
-  gameAssetUrl,
+  goldIcon,
 } from "@workspace/game-catalog"
 import { unitIdSchema } from "@workspace/game-domain"
 
 // The V2 equivalent of V1's `3-features/shop-rewards` `rewardInfo` / `summarizeSlotItems`: resolves a
 // shop reward-type string to a display label + best-effort icon, keyed entirely by id. Shared by the
 // Dailies recommendations page and the public Library browsing page. Icons come from
-// `@workspace/game-catalog`'s helpers and the app's `public/game_catalog/**` assets, ported to cover
+// `@workspace/game-catalog`'s helpers and the app's `public/game_catalog/**` images, ported to cover
 // every reward vocabulary the four daily shops use (V1 `reward-icon.ts` + `reward-info.tsx`); anything
 // still without a V2 asset falls back to a prettified text label (EntityIcon hides a missing src).
 
@@ -140,7 +141,7 @@ export function shopRewardDisplay(
   if (rewardType === "gold") {
     return {
       kind: "gold",
-      iconUrl: gameAssetUrl(`misc/ui_icon_resource_coin.webp`),
+      iconUrl: goldIcon(),
       label: t("shops:reward.gold"),
     }
   }
@@ -197,7 +198,7 @@ export function shopRewardDisplay(
         ? datamineAssetUrl(
             `atlases/ui_forge_badges_${rarity.toLowerCase()}.webp`
           )
-        : gameAssetUrl(`misc/forge_badges_generic.webp`),
+        : curatedAssetUrl(`misc/forge_badges_generic.webp`),
       label: t("shops:reward.forgeBadge", {
         rarity: rarity ?? prettifyRewardType(rewardType),
       }),

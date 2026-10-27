@@ -29,7 +29,7 @@ describe("abilityIcon", () => {
 
   it("keeps the planner's own LionHelm icon", () => {
     expect(abilityIcon("LionHelm")).toBe(
-      "/game_catalog/abilities/ui_icon_ability2_LionHelm.webp"
+      "/game_catalog/curated/abilities/ui_icon_ability2_LionHelm.webp"
     )
   })
 })

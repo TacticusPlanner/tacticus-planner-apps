@@ -7,6 +7,7 @@ import {
   shardIcon,
   xpBookIcon,
   type EquipmentStorageModel,
+  type GameIcon,
 } from "@workspace/game-catalog"
 
 import { AbilityText } from "@/shared/ability-text"
@@ -31,7 +32,7 @@ function RewardChip({
     "characters",
     "equipmentItems",
   ])
-  let icon: string | undefined
+  let icon: GameIcon | undefined
   let label: string
   switch (reward.kind) {
     case "mythicShards":

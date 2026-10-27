@@ -1,5 +1,5 @@
 import { LE_MAP_IDS } from "../le-map-ids"
-import { gameAssetUrl } from "./asset-path"
+import { curatedAssetUrl } from "./asset-path"
 
 /**
  * Full URL of a Legendary Event battle's tactical map for its served `mapId`, or `undefined` when no
@@ -7,6 +7,6 @@ import { gameAssetUrl } from "./asset-path"
  */
 export function legendaryEventMap(mapId: string): string | undefined {
   return LE_MAP_IDS.has(mapId)
-    ? gameAssetUrl(`le_maps/${mapId}.webp`)
+    ? curatedAssetUrl(`le_maps/${mapId}.webp`)
     : undefined
 }

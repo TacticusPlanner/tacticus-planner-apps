@@ -7,7 +7,11 @@ import {
 } from "@workspace/ui/components/card"
 
 import type { Rarity } from "@workspace/game-domain"
-import { datamineAssetUrl, gameAssetUrl } from "@workspace/game-catalog"
+import {
+  curatedAssetUrl,
+  datamineAssetUrl,
+  shardIcon,
+} from "@workspace/game-catalog"
 
 import { formatEstimateDate } from "@/shared/lib"
 import { energyIconUrl, EntityIcon, RarityIcon } from "@/shared/ui"
@@ -57,7 +61,7 @@ export function InsightsSummary({
             <EntityIcon
               alt=""
               className="size-6"
-              src={gameAssetUrl(`upgrade-crafted-badge.webp`)}
+              src={curatedAssetUrl(`upgrade-crafted-badge.webp`)}
             />
             {t("goals.insights.upgradesTitle")}
           </CardTitle>
@@ -83,11 +87,7 @@ export function InsightsSummary({
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <EntityIcon
-              alt=""
-              className="size-6"
-              src={gameAssetUrl(`misc/ui_icon_character_shard_empty.webp`)}
-            />
+            <EntityIcon alt="" className="size-6" src={shardIcon("Regular")} />
             {t("goals.insights.shardsTitle")}
           </CardTitle>
         </CardHeader>

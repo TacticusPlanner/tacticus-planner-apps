@@ -1,6 +1,6 @@
-// All asset paths (including the app's own custom icons — rarity badges, gold/red stars, the
-// crafted-upgrade badge) are relative to the web app's /public/game_catalog/ root. These
-// helpers return URL strings; the actual files live in apps/web/public/game_catalog/.
+// Catalog images live in apps/web/public/game_catalog/, in two folders: `datamines/` (game sprites
+// copied unchanged from the pinned data-mines commit) and `curated/` (images the game has no file for:
+// battle maps, rarity markers, a few planner-made icons). These helpers return URL strings.
 // ASSET_BASE_PATH is the single source of truth for that root — change it here to relocate assets.
 export const ASSET_BASE_PATH = "/game_catalog"
 
@@ -9,7 +9,7 @@ export const ASSET_BASE_PATH = "/game_catalog"
 const assetsVersion = import.meta.env.VITE_GAME_ASSETS_VERSION
 
 /**
- * URL of a file under the catalog image root, e.g. `gameAssetUrl("stars/gold.webp")`. In a build it
+ * URL of a file under the catalog image root, e.g. `gameAssetUrl("curated/rarity/epic.webp")`. In a build it
  * carries `?v=<asset version>`, which lets the host serve catalog images immutably while a changed
  * image still reaches every client (spec: static-asset-caching).
  */
@@ -25,4 +25,12 @@ export function gameAssetUrl(path: string): string {
  */
 export function datamineAssetUrl(path: string): string {
   return gameAssetUrl(`datamines/${path}`)
+}
+
+/**
+ * URL of an image the game ships no file for, by its path under apps/web/public/game_catalog/curated/
+ * (e.g. `curatedAssetUrl("rarity/epic.webp")`).
+ */
+export function curatedAssetUrl(path: string): string {
+  return gameAssetUrl(`curated/${path}`)
 }
