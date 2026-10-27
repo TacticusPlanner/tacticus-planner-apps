@@ -43,6 +43,7 @@ type ReorderCardBodyProps = {
   row: NonNullable<GoalsListProps["rows"]>[number]
   progress: Parameters<typeof GoalTargetDisplay>[0]["progress"]
   reached: boolean
+  seasonFit: GoalsListProps["seasonFit"]
   /** Stable across drag-state changes, so a drag moving other cards never re-renders this body. */
   dragHandle: SortableRenderProps["dragHandle"]
 }
@@ -53,6 +54,7 @@ const ReorderCardBody = memo(function ReorderCardBody({
   row,
   progress,
   reached,
+  seasonFit,
   dragHandle,
 }: ReorderCardBodyProps) {
   const { t } = useTranslation()
@@ -82,6 +84,7 @@ const ReorderCardBody = memo(function ReorderCardBody({
       <div className="min-w-0 flex-1">
         <p className="truncate font-medium">{name}</p>
         <GoalTargetDisplay entityType={row.entityType} progress={progress} />
+        <SeasonFitLabel goalId={row.goalId} seasonFit={seasonFit} />
       </div>
       {/* State stays readable as text in this mode too (a Paused row would otherwise look like an Active one). */}
       <StatusBadge reached={reached} status={row.status} />
@@ -160,6 +163,7 @@ export function GoalsMobileCards({
                   }
                   reached={isReachedRow(row, reachedByGoalId)}
                   row={row}
+                  seasonFit={seasonFit}
                 />
               </li>
             </Fragment>

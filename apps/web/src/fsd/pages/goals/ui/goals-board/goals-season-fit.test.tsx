@@ -99,7 +99,10 @@ describe("GoalsList season fit", () => {
       "data-testid",
       "goal-row-reorder-card"
     )
-    expect(screen.getAllByTestId("goal-row-reorder-card")).toHaveLength(3)
+    const [a, b, c] = screen.getAllByTestId("goal-row-reorder-card")
+    expect(a).toHaveTextContent("This season")
+    expect(b).toHaveTextContent("In 2 seasons")
+    expect(c).not.toHaveTextContent("season")
   })
 
   it("renders no divider or label without a season fit", async () => {
