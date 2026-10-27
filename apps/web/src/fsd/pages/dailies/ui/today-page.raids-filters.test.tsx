@@ -127,7 +127,7 @@ describe("Today page Raids Filters", () => {
     renderToday()
 
     expect(activeEventSpy).not.toHaveBeenCalled()
-    // Only the project id is passed; the HSE tab alone passes `homeScreenEventId`.
+    // Only the project id is passed; the HSE tab alone passes `homeScreenEventRule`.
     expect(dailyRaidsArgs.every(([, options]) => options === undefined)).toBe(
       true
     )

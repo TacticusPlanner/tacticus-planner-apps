@@ -1,6 +1,9 @@
 import { afterEach, describe, expect, it, vi } from "vitest"
 
+import { homeScreenEventDefinition } from "@/test/fixtures/home-screen-event"
+
 import {
+  homeScreenEventEntryRule,
   homeScreenEventInstanceKey,
   listHomeScreenEventInstances,
   resolveHomeScreenEventSelection,
@@ -21,9 +24,9 @@ const definitions = new Map(
     "hse-global-operation-imperator",
     "hse-trait-boost-psyker",
     "hse-against-the-tide",
-  ].map((id) => [id, { type: "HomeScreenEvent" }])
+  ].map((id) => [id, homeScreenEventDefinition(id)])
 )
-definitions.set("campaign-event", { type: "CampaignEvent" })
+definitions.set("campaign-event", { type: "CampaignEvent", config: undefined })
 const entry = (definitionId: string, startUtc: string, endUtc: string) => ({
   definitionId,
   startUtc,
@@ -357,6 +360,7 @@ describe("selectListTarget", () => {
     key: homeScreenEventInstanceKey(entryValue),
     entry: entryValue,
     status,
+    raidRule: homeScreenEventEntryRule(entryValue, definitions),
   })
   const warp = entry(
     "hse-warp-surge",
@@ -373,6 +377,7 @@ describe("selectListTarget", () => {
     expect(selectListTarget(instance(warp, "running"))).toEqual({
       entry: warp,
       live: true,
+      rule: homeScreenEventEntryRule(warp, definitions),
     })
   })
 
@@ -384,6 +389,7 @@ describe("selectListTarget", () => {
     expect(selectListTarget(instance(warp, "upcoming"))).toEqual({
       entry: warp,
       live: false,
+      rule: homeScreenEventEntryRule(warp, definitions),
     })
   })
 
@@ -412,6 +418,6 @@ describe("selectListTarget", () => {
       selectActiveHomeScreenEvent([machineHunt, warp], definitions, now),
       null
     )
-    expect(selectListTarget(shown)).toEqual({ entry: warp, live: false })
+    expect(selectListTarget(shown)).toMatchObject({ entry: warp, live: false })
   })
 })

@@ -9,6 +9,7 @@ import type {
   DailyRaidLocationViewModel,
 } from "../../model/daily-raids.domain"
 import type { TopEventLocation } from "../../model/home-screen-event-locations"
+import type { HseRaidRule } from "../../model/home-screen-event-rules"
 import { useHomeScreenEventLocations } from "../../model/use-home-screen-event-locations"
 import { countActiveFilterGroups } from "../../model/raids-filters/raids-filters.domain"
 import { emptyRaidsFilters } from "../../model/raids-filters/raids-filters.domain"
@@ -20,9 +21,9 @@ import { EventLocationRow } from "./event-location-row"
  * The overall best locations for event points and, while a campaign event is active, the best
  * locations of that event's campaign. Goals are ignored, the Raids Filters are not.
  */
-export function EventTopLocations({ definitionId }: { definitionId: string }) {
+export function EventTopLocations({ rule }: { rule: HseRaidRule }) {
   const { t } = useTranslation("dailies")
-  const state = useHomeScreenEventLocations(definitionId)
+  const state = useHomeScreenEventLocations(rule)
 
   if (state.status === "loading") {
     return (

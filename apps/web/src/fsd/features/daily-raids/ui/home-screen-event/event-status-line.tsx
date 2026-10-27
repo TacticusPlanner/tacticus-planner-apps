@@ -7,7 +7,6 @@ import { Spinner } from "@workspace/ui/components/spinner"
 import { eventBarClass, formatRelativeTime } from "@/shared/lib"
 import { EventTypeIcon } from "@/shared/ui"
 
-import { hasHomeScreenEventRule } from "../../model/home-screen-event-rules"
 import {
   homeScreenEventInstanceKey,
   type HomeScreenEventEntry,
@@ -67,7 +66,7 @@ export function EventStatusLine({
           {t("dailies:hse.status.endsIn", { when })}
         </p>
         <p className="text-sm">
-          {hasHomeScreenEventRule(instance.entry.definitionId)
+          {instance.raidRule
             ? t("dailies:hse.status.earnsPoints")
             : t("dailies:hse.status.noRaidPoints")}
         </p>

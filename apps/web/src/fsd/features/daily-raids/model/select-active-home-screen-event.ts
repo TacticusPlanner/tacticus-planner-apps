@@ -1,4 +1,7 @@
-import { hasHomeScreenEventRule } from "./home-screen-event-rules"
+import {
+  homeScreenEventRaidRule,
+  type HseRaidRule,
+} from "./home-screen-event-rules"
 
 /** What the selection reads of a calendar entry (`EventsCalendarStorageModel` satisfies it). */
 export type HomeScreenEventEntry = {
@@ -11,7 +14,19 @@ export type HomeScreenEventEntry = {
   parameters?: Record<string, unknown> | null
 }
 
-type DefinitionTypes = ReadonlyMap<string, { type: string }>
+/** What the selection reads of an event definition: its type and its served `config` (`config.hse`). */
+type DefinitionTypes = ReadonlyMap<string, { type: string; config?: unknown }>
+
+/** The raid-point rule of a calendar entry, from its definition's served `config.hse`. */
+export function homeScreenEventEntryRule(
+  entry: HomeScreenEventEntry,
+  definitionsById: DefinitionTypes
+): HseRaidRule | null {
+  return homeScreenEventRaidRule(
+    definitionsById.get(entry.definitionId)?.config,
+    entry.parameters
+  )
+}
 
 const compareIds = (a: string, b: string) => (a < b ? -1 : a > b ? 1 : 0)
 
@@ -42,6 +57,8 @@ export function selectActiveHomeScreenEvent<
     (entry) =>
       definitionsById.get(entry.definitionId)?.type === "HomeScreenEvent"
   )
+  const hasRule = (entry: TEntry) =>
+    Number(homeScreenEventEntryRule(entry, definitionsById) !== null)
   const active = events
     .filter(
       (entry) =>
@@ -49,8 +66,7 @@ export function selectActiveHomeScreenEvent<
     )
     .sort(
       (a, b) =>
-        Number(hasHomeScreenEventRule(b.definitionId)) -
-          Number(hasHomeScreenEventRule(a.definitionId)) ||
+        hasRule(b) - hasRule(a) ||
         Date.parse(b.startUtc) - Date.parse(a.startUtc) ||
         compareIds(a.definitionId, b.definitionId)
     )[0]
@@ -72,6 +88,8 @@ export type HomeScreenEventInstance<TEntry extends HomeScreenEventEntry> = {
   key: string
   entry: TEntry
   status: HomeScreenEventStatus
+  /** The raid-point rule from the definition's served `config.hse`, or null when it earns none. */
+  raidRule: HseRaidRule | null
 }
 
 /**
@@ -108,7 +126,12 @@ export function listHomeScreenEventInstances<
       continue
     const key = homeScreenEventInstanceKey(entry)
     if (!byKey.has(key))
-      byKey.set(key, { key, entry, status: statusAt(entry, nowMs) })
+      byKey.set(key, {
+        key,
+        entry,
+        status: statusAt(entry, nowMs),
+        raidRule: homeScreenEventEntryRule(entry, definitionsById),
+      })
   }
   return [...byKey.values()].sort(
     (a, b) =>
@@ -121,6 +144,7 @@ export type HomeScreenEventListTarget<TEntry> = {
   entry: TEntry
   /** True when the event is running; false when the lists are a preview of an upcoming one. */
   live: boolean
+  rule: HseRaidRule
 }
 
 /**
@@ -132,8 +156,12 @@ export function selectListTarget<TEntry extends HomeScreenEventEntry>(
   instance: HomeScreenEventInstance<TEntry> | null
 ): HomeScreenEventListTarget<TEntry> | null {
   if (!instance || instance.status === "past") return null
-  if (!hasHomeScreenEventRule(instance.entry.definitionId)) return null
-  return { entry: instance.entry, live: instance.status === "running" }
+  if (!instance.raidRule) return null
+  return {
+    entry: instance.entry,
+    live: instance.status === "running",
+    rule: instance.raidRule,
+  }
 }
 
 export type HomeScreenEventSelectionResult<

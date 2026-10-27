@@ -5,7 +5,9 @@ import { hasEventsCalendarSynced } from "@workspace/game-catalog/queries"
 import { useReadState } from "@/shared/lib"
 import { toById, useCatalogDataset } from "@/shared/local-data"
 
+import type { HseRaidRule } from "./home-screen-event-rules"
 import {
+  homeScreenEventEntryRule,
   listHomeScreenEventInstances,
   selectActiveHomeScreenEvent,
   type HomeScreenEventInstance,
@@ -19,6 +21,8 @@ const TICK_MS = 60_000
 type Ready = {
   status: "ready"
   active: EventsCalendarStorageModel | null
+  /** The active event's raid-point rule, or null when none is active or it earns no raid points. */
+  activeRaidRule: HseRaidRule | null
   next: EventsCalendarStorageModel | null
   /** Every not-yet-started event, ascending by start (`next` is the first). */
   upcoming: EventsCalendarStorageModel[]
@@ -86,6 +90,9 @@ export function useActiveHomeScreenEvent(): ActiveHomeScreenEventState {
       definitions.data,
       nowMs
     )
-    return { status: "ready", ...selection, instances, nowMs }
+    const activeRaidRule = selection.active
+      ? homeScreenEventEntryRule(selection.active, definitions.data)
+      : null
+    return { status: "ready", ...selection, activeRaidRule, instances, nowMs }
   }, [synced, definitions, calendar, nowMs])
 }
