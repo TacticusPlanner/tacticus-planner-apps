@@ -9,7 +9,10 @@ const instance = {}
 const signOut = vi.fn().mockResolvedValue(undefined)
 
 vi.mock("react-i18next", () => ({
-  useTranslation: () => ({ t: (key: string) => key }),
+  useTranslation: () => ({
+    t: (key: string, options?: { version?: string }) =>
+      options?.version === undefined ? key : `${key}:${options.version}`,
+  }),
 }))
 
 vi.mock("@/shared/game-catalog-status", () => ({
@@ -44,7 +47,12 @@ describe("GameCatalogInitGate", () => {
     setStatus({
       status: "syncing",
       firstTime: true,
-      progress: { downloaded: 1, total: 7 },
+      progress: {
+        downloaded: 1,
+        total: 7,
+        gameVersion: "1.43",
+        firstTime: true,
+      },
     })
 
     render(
@@ -55,6 +63,47 @@ describe("GameCatalogInitGate", () => {
 
     expect(screen.getByTestId("catalog-init-overlay")).toBeVisible()
     expect(screen.getByTestId("home-content")).toBeInTheDocument()
+  })
+
+  it("names the version being synced to while an update downloads", () => {
+    // The sync result (and its gameVersion) isn't in yet; the version comes from the progress report.
+    setStatus({
+      status: "syncing",
+      gameVersion: null,
+      progress: {
+        downloaded: 3,
+        total: 15,
+        gameVersion: "1.43",
+        firstTime: false,
+      },
+    })
+
+    render(
+      <GameCatalogInitGate>
+        <div data-testid="home-content" />
+      </GameCatalogInitGate>
+    )
+
+    expect(
+      screen.getByText("catalog.init.updatingDescription:1.43")
+    ).toBeVisible()
+  })
+
+  it("omits the version when none is known", () => {
+    setStatus({
+      status: "syncing",
+      progress: { downloaded: 3, total: 15, gameVersion: "", firstTime: false },
+    })
+
+    render(
+      <GameCatalogInitGate>
+        <div data-testid="home-content" />
+      </GameCatalogInitGate>
+    )
+
+    expect(
+      screen.getByText("catalog.init.updatingDescriptionNoVersion")
+    ).toBeVisible()
   })
 
   it("reveals the app without overlay while only the manifest is being checked", () => {

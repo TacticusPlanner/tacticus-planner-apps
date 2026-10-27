@@ -39,6 +39,11 @@ export function GameCatalogInitGate({ children }: { children: ReactNode }) {
     return <>{children}</>
   }
 
+  // The sync result (and so `gameVersion`/`firstTime`) only lands once downloads finish; while they
+  // run, take both from the progress report so the dialog names the version it is syncing to.
+  const targetVersion = progress?.gameVersion || gameVersion
+  const isFirstTime = progress?.firstTime ?? firstTime
+
   const percent =
     progress && progress.total > 0
       ? Math.round((progress.downloaded / progress.total) * 100)
@@ -88,16 +93,18 @@ export function GameCatalogInitGate({ children }: { children: ReactNode }) {
             <>
               <Spinner aria-hidden="true" className="size-8 text-primary" />
               <h2 className="text-lg font-semibold">
-                {firstTime
+                {isFirstTime
                   ? t("catalog.init.firstTimeTitle")
                   : t("catalog.init.updatingTitle")}
               </h2>
               <p className="text-sm text-muted-foreground">
-                {firstTime
+                {isFirstTime
                   ? t("catalog.init.firstTimeDescription")
-                  : t("catalog.init.updatingDescription", {
-                      version: gameVersion ?? "",
-                    })}
+                  : targetVersion
+                    ? t("catalog.init.updatingDescription", {
+                        version: targetVersion,
+                      })
+                    : t("catalog.init.updatingDescriptionNoVersion")}
               </p>
               {progress && progress.total > 0 ? (
                 <div className="flex w-full flex-col gap-2">

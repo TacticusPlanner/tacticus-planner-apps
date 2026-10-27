@@ -32,6 +32,7 @@
       "firstTimeDescription": "Première utilisation sur cet appareil — cela peut prendre un peu plus de temps.",
       "updatingTitle": "Mise à jour du catalogue de jeu",
       "updatingDescription": "Mise à jour des données du catalogue de jeu vers la version {{version}}.",
+      "updatingDescriptionNoVersion": "Mise à jour des données du catalogue de jeu.",
       "preparing": "Préparation du catalogue de jeu…",
       "progress": "Téléchargement de {{done}} / {{total}}…",
       "errorTitle": "Impossible de charger les données de jeu",
