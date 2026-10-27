@@ -2,10 +2,9 @@ import { useCatalogDataset } from "@/shared/local-data"
 
 import { toPierceRatios, type PierceRatios } from "./pierce-ratios"
 
-const noPierceRatios: PierceRatios = new Map()
-
-/** The catalog's pierce ratios by damage type; empty until the `damage-types` dataset is read. */
-export function usePierceRatios(): PierceRatios {
+/** The catalog's pierce ratios by damage type; undefined until the `damage-types` dataset is read
+ *  (and while it has not synced), so callers show a placeholder rather than computing 0 pierce. */
+export function usePierceRatios(): PierceRatios | undefined {
   const read = useCatalogDataset("damage-types", toPierceRatios)
-  return read.status === "ready" ? read.data : noPierceRatios
+  return read.status === "ready" && read.data.size > 0 ? read.data : undefined
 }

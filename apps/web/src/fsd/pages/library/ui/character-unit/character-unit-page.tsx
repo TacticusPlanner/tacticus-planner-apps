@@ -181,10 +181,16 @@ function CharacterUnit({
   // --- Comparison and stats ----------------------------------------------------------------------
   const pierceRatios = usePierceRatios()
   const population = useMemo(
-    () => buildRadarPopulation(catalog.characters, pierceRatios),
+    () =>
+      pierceRatios
+        ? buildRadarPopulation(catalog.characters, pierceRatios)
+        : undefined,
     [catalog.characters, pierceRatios]
   )
-  const radar = buildStatRadar(character, population, pierceRatios)
+  const radar =
+    population && pierceRatios
+      ? buildStatRadar(character, population, pierceRatios)
+      : undefined
   const shownRelicLevel = relicLevel ?? relic?.equippedLevel ?? 1
   const { view: powerView, unitPower } = useCharacterPowerView({
     characterId: unitId,
