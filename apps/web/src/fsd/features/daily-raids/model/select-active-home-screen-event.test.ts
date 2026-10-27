@@ -2,8 +2,9 @@ import { afterEach, describe, expect, it, vi } from "vitest"
 
 import { homeScreenEventDefinition } from "@/test/fixtures/home-screen-event"
 
+import { homeScreenEventEntryRule } from "./home-screen-event-raid-rule"
+
 import {
-  homeScreenEventEntryRule,
   homeScreenEventInstanceKey,
   listHomeScreenEventInstances,
   resolveHomeScreenEventSelection,
@@ -42,7 +43,12 @@ const activeOf = (
   entries: ReturnType<typeof entry>[],
   now: string
 ): ReturnType<typeof entry> | null =>
-  selectActiveHomeScreenEvent(entries, definitions, at(now)).active
+  selectActiveHomeScreenEvent(
+    entries,
+    definitions,
+    at(now),
+    homeScreenEventEntryRule
+  ).active
 
 describe("selectActiveHomeScreenEvent", () => {
   afterEach(() => vi.unstubAllEnvs())
@@ -131,14 +137,17 @@ describe("selectActiveHomeScreenEvent", () => {
     const selection = selectActiveHomeScreenEvent(
       [later, campaign, machineHunt],
       definitions,
-      at("2026-10-01T10:00:00Z")
+      at("2026-10-01T10:00:00Z"),
+      homeScreenEventEntryRule
     )
     expect(selection.active).toBeNull()
     expect(selection.next).toBe(machineHunt)
   })
 
   it("has neither with an empty calendar or only unknown definitions", () => {
-    expect(selectActiveHomeScreenEvent([], definitions, 0)).toEqual({
+    expect(
+      selectActiveHomeScreenEvent([], definitions, 0, homeScreenEventEntryRule)
+    ).toEqual({
       active: null,
       next: null,
       upcoming: [],
@@ -165,7 +174,8 @@ describe("selectActiveHomeScreenEvent", () => {
     const selection = selectActiveHomeScreenEvent(
       [warp, training, machineHunt],
       definitions,
-      at("2026-10-03T00:00:00Z")
+      at("2026-10-03T00:00:00Z"),
+      homeScreenEventEntryRule
     )
     expect(selection.active).toBe(machineHunt)
     expect(selection.upcoming).toEqual([training, warp])
@@ -190,6 +200,32 @@ describe("homeScreenEventInstanceKey", () => {
     expect(homeScreenEventInstanceKey(machineHunt)).toBe(
       "hse-machine-hunt@2026-10-02T08:00:00Z"
     )
+  })
+})
+
+describe("rule lookup", () => {
+  const now = at("2026-10-03T00:00:00Z")
+
+  it("gives each instance its served raid-point rule", () => {
+    const [instance] = listHomeScreenEventInstances(
+      [machineHunt],
+      definitions,
+      now,
+      homeScreenEventEntryRule
+    )
+    expect(instance?.raidRule?.trackers.length).toBeGreaterThan(0)
+  })
+
+  it("reads every event as rule-free without a lookup (the app shell's live signal)", () => {
+    const [instance] = listHomeScreenEventInstances(
+      [machineHunt],
+      definitions,
+      now
+    )
+    expect(instance?.raidRule).toBeNull()
+    expect(
+      selectActiveHomeScreenEvent([machineHunt], definitions, now).active
+    ).toBe(machineHunt)
   })
 })
 
@@ -237,7 +273,12 @@ describe("listHomeScreenEventInstances", () => {
   }
   const calendar = [placeholder, imperator, campaign, focus, psyker, tide]
   const list = (now: string, entries = calendar) =>
-    listHomeScreenEventInstances(entries, definitions, at(now))
+    listHomeScreenEventInstances(
+      entries,
+      definitions,
+      at(now),
+      homeScreenEventEntryRule
+    )
 
   it("orders every HSE by start, a same start by definition id, and skips other event types", () => {
     expect(
@@ -281,7 +322,8 @@ describe("listHomeScreenEventInstances", () => {
     const selection = selectActiveHomeScreenEvent(
       instances.map((instance) => instance.entry),
       definitions,
-      at("2026-10-27T00:00:00Z")
+      at("2026-10-27T00:00:00Z"),
+      homeScreenEventEntryRule
     )
     // Neither has a raid-point rule and both start together: the lowest definition id wins.
     expect(selection.active).toBe(focus)
@@ -299,12 +341,14 @@ describe("resolveHomeScreenEventSelection", () => {
   const instances = listHomeScreenEventInstances(
     [running, later],
     definitions,
-    at(now)
+    at(now),
+    homeScreenEventEntryRule
   )
   const defaults = selectActiveHomeScreenEvent(
     [running, later],
     definitions,
-    at(now)
+    at(now),
+    homeScreenEventEntryRule
   )
 
   it("shows the default instance without a key", () => {
@@ -334,7 +378,8 @@ describe("resolveHomeScreenEventSelection", () => {
     const pastOnly = listHomeScreenEventInstances(
       [running],
       definitions,
-      at("2026-11-01T00:00:00Z")
+      at("2026-11-01T00:00:00Z"),
+      homeScreenEventEntryRule
     )
     const result = resolveHomeScreenEventSelection(
       pastOnly,
@@ -411,11 +456,17 @@ describe("selectListTarget", () => {
     const instances = listHomeScreenEventInstances(
       [machineHunt, warp],
       definitions,
-      now
+      now,
+      homeScreenEventEntryRule
     )
     const { instance: shown } = resolveHomeScreenEventSelection(
       instances,
-      selectActiveHomeScreenEvent([machineHunt, warp], definitions, now),
+      selectActiveHomeScreenEvent(
+        [machineHunt, warp],
+        definitions,
+        now,
+        homeScreenEventEntryRule
+      ),
       null
     )
     expect(selectListTarget(shown)).toMatchObject({ entry: warp, live: false })

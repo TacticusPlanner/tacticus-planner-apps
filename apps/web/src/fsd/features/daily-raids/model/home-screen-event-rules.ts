@@ -1,12 +1,9 @@
-import {
-  hseRestrictionPasses,
-  parseHseConfig,
-  resolveHseVariant,
-  type GameCatalogHseConfig,
-  type GameCatalogHseRestriction,
-  type GameCatalogHseTracker,
-  type GameCatalogHseUnitFilter,
-  type GameCatalogHseVariant,
+// Type-only: the catalog's HSE values pull in zod, and this module is on the Today and Home raids
+// path. Reading the rule from `config.hse` lives in `home-screen-event-raid-rule.ts`.
+import type {
+  GameCatalogHseRestriction,
+  GameCatalogHseTracker,
+  GameCatalogHseUnitFilter,
 } from "@workspace/game-catalog"
 
 /** What a rule reads of an npc record (the catalog `npcs` dataset). */
@@ -31,7 +28,7 @@ export type HseRaidRule = {
   trackers: readonly GameCatalogHseTracker[]
 }
 
-const CAMPAIGN_GAME_MODES = [
+export const CAMPAIGN_GAME_MODES = [
   "Campaign",
   "MirrorCampaign",
   "EliteCampaign",
@@ -70,42 +67,12 @@ export function eventCampaignGroupIds(
   )
 }
 
-// The served config and its variants keep their identity while the dataset is unchanged, so the
-// parse and the rule are cached per object: a re-render or a minute tick keeps the same rule.
-const parsedByConfig = new WeakMap<object, GameCatalogHseConfig | null>()
-const ruleByVariant = new WeakMap<GameCatalogHseVariant, HseRaidRule | null>()
-
-function cachedHseConfig(config: unknown): GameCatalogHseConfig | null {
-  if (typeof config !== "object" || config === null) return null
-  if (!parsedByConfig.has(config))
-    parsedByConfig.set(config, parseHseConfig(config))
-  return parsedByConfig.get(config) ?? null
-}
-
-const scoresInCampaign = (tracker: GameCatalogHseTracker) =>
-  tracker.kind === "KillUnits" &&
-  tracker.player === null &&
-  CAMPAIGN_GAME_MODES.some((mode) =>
-    hseRestrictionPasses(tracker.gameModes, mode)
-  )
-
-/**
- * The raid-point rule of an occurrence, from its definition's served `config` and its parameters
- * (which pick the variant). Null when the definition has no `config.hse`, no variant applies, or no
- * tracker scores campaign raids (Faction Boost, Squig Smash, the 11th-edition weeks, ...).
- */
-export function homeScreenEventRaidRule(
-  config: unknown,
-  parameters: Readonly<Record<string, unknown>> | null | undefined
-): HseRaidRule | null {
-  const hse = cachedHseConfig(config)
-  const variant = hse ? resolveHseVariant(hse, parameters) : null
-  if (!variant) return null
-  if (!ruleByVariant.has(variant)) {
-    const trackers = variant.trackers.filter(scoresInCampaign)
-    ruleByVariant.set(variant, trackers.length > 0 ? { trackers } : null)
-  }
-  return ruleByVariant.get(variant) ?? null
+/** True when `value` passes the restriction (null passes everything), as the catalog's own check. */
+export function restrictionPasses(
+  restriction: GameCatalogHseRestriction | null,
+  value: string
+): boolean {
+  return restrictionPassesAny(restriction, [value])
 }
 
 /** True when any of `values` is allowed and none is disallowed (null passes everything). */
@@ -131,7 +98,7 @@ function enemyMatches(
   if (filter.unitIds && !filter.unitIds.includes(id)) return false
   return (
     restrictionPassesAny(filter.tags, [...npc.traits, npc.alliance]) &&
-    hseRestrictionPasses(filter.factionIds, npc.factionId)
+    restrictionPasses(filter.factionIds, npc.factionId)
   )
 }
 
@@ -150,7 +117,7 @@ export function battleEventPoints(
   const gameMode = campaignBattleGameMode(battle, eventGroupIds)
   if (!gameMode) return 0
   const trackers = rule.trackers.filter((tracker) =>
-    hseRestrictionPasses(tracker.gameModes, gameMode)
+    restrictionPasses(tracker.gameModes, gameMode)
   )
   let points = 0
   for (const enemy of battle.detailedEnemyTypes) {

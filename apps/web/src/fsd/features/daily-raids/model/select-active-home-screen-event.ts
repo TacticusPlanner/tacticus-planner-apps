@@ -1,7 +1,6 @@
-import {
-  homeScreenEventRaidRule,
-  type HseRaidRule,
-} from "./home-screen-event-rules"
+// Type-only: the rule lookup parses `config.hse` with zod, which must stay out of the app shell's
+// startup graph (it reads the active event too), so callers that need rules pass the lookup in.
+import type { HseRaidRule } from "./home-screen-event-rules"
 
 /** What the selection reads of a calendar entry (`EventsCalendarStorageModel` satisfies it). */
 export type HomeScreenEventEntry = {
@@ -15,18 +14,19 @@ export type HomeScreenEventEntry = {
 }
 
 /** What the selection reads of an event definition: its type and its served `config` (`config.hse`). */
-type DefinitionTypes = ReadonlyMap<string, { type: string; config?: unknown }>
+export type HomeScreenEventDefinitions = ReadonlyMap<
+  string,
+  { type: string; config?: unknown }
+>
 
-/** The raid-point rule of a calendar entry, from its definition's served `config.hse`. */
-export function homeScreenEventEntryRule(
+/** Looks up a calendar entry's raid-point rule (`homeScreenEventEntryRule`). */
+export type HomeScreenEventRuleOf = (
   entry: HomeScreenEventEntry,
-  definitionsById: DefinitionTypes
-): HseRaidRule | null {
-  return homeScreenEventRaidRule(
-    definitionsById.get(entry.definitionId)?.config,
-    entry.parameters
-  )
-}
+  definitionsById: HomeScreenEventDefinitions
+) => HseRaidRule | null
+
+/** No rule lookup: every event reads as earning no raid points. */
+const noRules: HomeScreenEventRuleOf = () => null
 
 const compareIds = (a: string, b: string) => (a < b ? -1 : a > b ? 1 : 0)
 
@@ -50,15 +50,16 @@ export function selectActiveHomeScreenEvent<
   TEntry extends HomeScreenEventEntry,
 >(
   entries: readonly TEntry[],
-  definitionsById: DefinitionTypes,
-  nowMs: number
+  definitionsById: HomeScreenEventDefinitions,
+  nowMs: number,
+  ruleOf: HomeScreenEventRuleOf = noRules
 ): HomeScreenEventSelection<TEntry> {
   const events = entries.filter(
     (entry) =>
       definitionsById.get(entry.definitionId)?.type === "HomeScreenEvent"
   )
   const hasRule = (entry: TEntry) =>
-    Number(homeScreenEventEntryRule(entry, definitionsById) !== null)
+    Number(ruleOf(entry, definitionsById) !== null)
   const active = events
     .filter(
       (entry) =>
@@ -117,8 +118,9 @@ export function listHomeScreenEventInstances<
   TEntry extends HomeScreenEventEntry,
 >(
   entries: readonly TEntry[],
-  definitionsById: DefinitionTypes,
-  nowMs: number
+  definitionsById: HomeScreenEventDefinitions,
+  nowMs: number,
+  ruleOf: HomeScreenEventRuleOf = noRules
 ): HomeScreenEventInstance<TEntry>[] {
   const byKey = new Map<string, HomeScreenEventInstance<TEntry>>()
   for (const entry of entries) {
@@ -130,7 +132,7 @@ export function listHomeScreenEventInstances<
         key,
         entry,
         status: statusAt(entry, nowMs),
-        raidRule: homeScreenEventEntryRule(entry, definitionsById),
+        raidRule: ruleOf(entry, definitionsById),
       })
   }
   return [...byKey.values()].sort(

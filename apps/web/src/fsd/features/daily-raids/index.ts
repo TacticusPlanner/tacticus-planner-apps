@@ -13,6 +13,10 @@ export { useRaidsFilters } from "./model/raids-filters/use-raids-filters"
 // Dailies > HSE: the active event, the instance switcher, its raid-point rules and the tab's sections.
 export { useActiveHomeScreenEvent } from "./model/use-active-home-screen-event"
 export {
+  useHomeScreenEventCalendar,
+  useIsHomeScreenEventLive,
+} from "./model/use-home-screen-event-calendar"
+export {
   resolveHomeScreenEventSelection,
   selectListTarget,
 } from "./model/select-active-home-screen-event"

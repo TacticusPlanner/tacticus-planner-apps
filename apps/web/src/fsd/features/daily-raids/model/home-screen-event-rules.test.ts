@@ -10,10 +10,10 @@ import {
   battleEventPoints,
   campaignBattleGameMode,
   eventCampaignGroupIds,
-  homeScreenEventRaidRule,
   type RuleBattle,
   type RuleNpc,
 } from "./home-screen-event-rules"
+import { homeScreenEventRaidRule } from "./home-screen-event-raid-rule"
 
 const npc = (partial: Partial<RuleNpc> = {}): RuleNpc => ({
   factionId: "Necrons",

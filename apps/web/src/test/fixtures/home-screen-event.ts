@@ -1,6 +1,8 @@
-import { homeScreenEventRaidRule } from "@/features/daily-raids/model/home-screen-event-rules"
 import {
   homeScreenEventEntryRule,
+  homeScreenEventRaidRule,
+} from "@/features/daily-raids/model/home-screen-event-raid-rule"
+import {
   listHomeScreenEventInstances,
   selectActiveHomeScreenEvent,
   type HomeScreenEventEntry,
@@ -54,7 +56,8 @@ export function homeScreenEventReadyAt<TEntry extends HomeScreenEventEntry>(
   const selection = selectActiveHomeScreenEvent(
     entries,
     homeScreenEventDefinitions,
-    nowMs
+    nowMs,
+    homeScreenEventEntryRule
   )
   return {
     status: "ready" as const,
@@ -65,7 +68,8 @@ export function homeScreenEventReadyAt<TEntry extends HomeScreenEventEntry>(
     instances: listHomeScreenEventInstances(
       entries,
       homeScreenEventDefinitions,
-      nowMs
+      nowMs,
+      homeScreenEventEntryRule
     ),
     nowMs,
   }

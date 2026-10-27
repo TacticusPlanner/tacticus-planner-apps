@@ -21,7 +21,10 @@ vi.mock("./hse-live-context", async (importOriginal) => {
   }
 })
 vi.mock("@/features/daily-raids", () => ({
-  useActiveHomeScreenEvent: () => hseState.current,
+  useIsHomeScreenEventLive: () => {
+    const state = hseState.current as { status: string; active?: unknown }
+    return state.status === "ready" && !!state.active
+  },
 }))
 vi.mock("@/features/hre-missions", () => ({
   useIsHreLive: () => hreLive.current,
