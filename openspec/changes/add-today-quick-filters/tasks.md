@@ -21,10 +21,20 @@ All paths are under `apps/web/src/fsd` unless stated. Commands run from the repo
 
 - [x] 4.1 Run targeted tests, `pnpm typecheck`, ESLint on changed files, `pnpm lint:fsd` and `git diff --check`.
 
+## 5. Manual verification and tour
+
+- [x] 5.1 Chip row at 1280px and 420px (iframe emulation) in en, de and fr: caption and chips under the controls row, tooltips, one note per active chip, both on together, `?quick=` updates and survives reload, plain Raids link shows both off, no horizontal scroll or clipped labels, Space/Enter/arrow keys toggle and move between chips.
+- [x] 5.2 Two toggles less than the URL commit time apart (about 1.2 s on a large account) both stick. Verify: `today-quick-filter-chips.test.tsx`.
+- [x] 5.3 Bottlenecks puts lower-priority goals' Legendary materials on Today and Bonus Raids under their goal groups; Home raids widget unchanged.
+- [x] 5.4 Raids Filters excluding Elite move a material to its cheapest passing node (Plasma Cell: Saim-Hann Elite 1 to Mirror nodes); the filtered-out notice, its pinned-goal line and Reset still work.
+- [ ] 5.5 Fewer raids changes a pick. Blocked: no material in the current catalog has tied cheapest nodes at different energy costs, so the chip has no visible effect today (same as V1's setting). Covered by `estimate-quick-filters.test.ts`.
+- [ ] 5.6 HSE tab farm list. Not applicable this week: the live event (Faction Focus) earns no points from campaign raids.
+- [x] 5.7 Today tour step for the chip row (`today-quick-filters`), strings in `tour.today.steps.quickFilters`. Verify: `dailies-tutorial.test.tsx`.
+
 ## Notes (as built)
 
 - Engine tests: `features/goal-farming/lib/estimate-node-filter.test.ts` (filter-then-pick, Bonus Raids) and the new `estimate-quick-filters.test.ts` (Fewer raids, Bottlenecks, shared materials, stages).
 - Page test: `pages/dailies/ui/today-page.quick-filters.test.tsx` (chips, notes, URL, restore). `today-page.raids-filters.test.tsx` now expects Today to pass `quickFilters` to `useDailyRaids`.
 - In Bottlenecks mode a row's "N upgrades left" (`remainingBefore`) is the pooled remaining across goals, since the raid serves all of them.
-- No tour step was added for the chip row.
-- Visual check on desktop and mobile is still open.
+- The Today tour has a step for the chip row, right after Raids Filters.
+- Manual check 2026-10-27 on a synced account (several projects and goals, Legendary rank goals): see section 5. The `FilteredOut` reason string is not shown on Today (the notice has its own copy); its wording was checked in the four `common.json` files.

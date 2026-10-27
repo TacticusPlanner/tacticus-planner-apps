@@ -12,6 +12,7 @@ export function useTodayTutorial() {
       key:
         | "navigation"
         | "filters"
+        | "quickFilters"
         | "schedule"
         | "campaignEvent"
         | "energyUsage"
@@ -33,6 +34,7 @@ export function useTodayTutorial() {
     const shared = [
       createStep('[data-testid="dailies-primary-tabs"]', "navigation"),
       createStep('[data-testid="raids-filters"]', "filters"),
+      createStep('[data-testid="today-quick-filters"]', "quickFilters"),
       createStep('[data-testid="campaign-event-status"]', "campaignEvent"),
       createStep('[data-testid="energy-usage"]', "energyUsage"),
       createStep('[data-testid="today-lanes"]', "schedule"),

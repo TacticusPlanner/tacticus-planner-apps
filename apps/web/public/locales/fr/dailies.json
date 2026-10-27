@@ -297,6 +297,10 @@
           "title": "Filtres de raids",
           "content": "Limitez Aujourd'hui et les raids bonus aux lieux de campagne souhaités, par exemple uniquement les nœuds Élite à 5 emplacements ou une faction ennemie précise. Le badge indique le nombre de filtres actifs."
         },
+        "quickFilters": {
+          "title": "Filtres rapides",
+          "content": "Modifiez le plan du jour pour une journée. Moins de raids utilise les lieux qui demandent moins de tickets de raid pour les mêmes matériaux. Goulots farme d'abord les matériaux les plus lents de tous les objectifs. Les dates de Plan et Objectifs ne changent pas."
+        },
         "onslaught": {
           "title": "Onslaught",
           "content": "Vos jetons d'Onslaught du jour, par unité : les parties sont réparties entre vos objectifs par ordre de priorité, comme dans Plan > Calendrier."

@@ -297,6 +297,10 @@
           "title": "Filtros de incursiones",
           "content": "Limita Hoy y las incursiones extra a las ubicaciones de campaña que quieras, por ejemplo solo nodos Élite de 5 espacios o una facción enemiga concreta. La insignia muestra cuántos filtros están activos."
         },
+        "quickFilters": {
+          "title": "Filtros rápidos",
+          "content": "Cambia el plan de hoy durante un día. Menos incursiones usa los lugares que necesitan menos tickets de incursión para los mismos materiales. Cuellos de botella farmea primero los materiales más lentos de todos los objetivos. Las fechas de Plan y Objetivos no cambian."
+        },
         "onslaught": {
           "title": "Onslaught",
           "content": "Tus fichas de Onslaught de hoy, por unidad: las partidas se reparten entre tus objetivos por orden de prioridad, igual que en Plan > Calendario."

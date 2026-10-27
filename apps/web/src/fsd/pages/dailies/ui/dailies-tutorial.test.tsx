@@ -61,6 +61,18 @@ describe("Dailies tutorials", () => {
     }
   )
 
+  it("walks the quick-filter row right after Raids Filters", () => {
+    renderHook(() => useTodayTutorial())
+    const steps = register.mock.lastCall?.[0] as {
+      desktop: { target: string; title: string }[]
+    }
+    const targets = steps.desktop.map((step) => step.target)
+
+    expect(targets.indexOf('[data-testid="today-quick-filters"]')).toBe(
+      targets.indexOf('[data-testid="raids-filters"]') + 1
+    )
+  })
+
   it("ends with the shop steps folded in from the former Shops tab", () => {
     renderHook(() => useTodayTutorial())
     const steps = register.mock.lastCall?.[0] as {

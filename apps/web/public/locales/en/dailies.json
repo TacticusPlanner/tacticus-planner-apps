@@ -297,6 +297,10 @@
           "title": "Raids Filters",
           "content": "Limit Today and Bonus Raids to the campaign locations you want, for example only 5-slot Elite nodes or a specific enemy faction. The badge shows how many filters are active."
         },
+        "quickFilters": {
+          "title": "Quick filters",
+          "content": "Switch today's plan for a day. Fewer raids uses the locations that need fewer raid tickets for the same materials. Bottlenecks farms the slowest materials across all goals first. Plan and Goals dates are not affected."
+        },
         "onslaught": {
           "title": "Onslaught",
           "content": "Today's Onslaught tokens, by unit: the runs are shared across your goals in priority order, the same way Plan > Schedule spends them."

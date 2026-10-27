@@ -297,6 +297,10 @@
           "title": "Raid-Filter",
           "content": "Beschränke Heute und Bonus-Raids auf die gewünschten Kampagnenorte, z. B. nur Elite-Orte mit 5 Slots oder eine bestimmte Gegnerfraktion. Das Abzeichen zeigt, wie viele Filter aktiv sind."
         },
+        "quickFilters": {
+          "title": "Schnellfilter",
+          "content": "Ändere den heutigen Plan für einen Tag. Weniger Raids nutzt die Orte, die für dieselben Materialien weniger Raid-Tickets brauchen. Engpässe farmt zuerst die langsamsten Materialien aller Ziele. Daten in Plan und Ziele ändern sich nicht."
+        },
         "onslaught": {
           "title": "Onslaught",
           "content": "Deine heutigen Onslaught-Marken nach Einheit: Die Läufe werden in Prioritätsreihenfolge auf deine Ziele verteilt, genau wie in Planen > Zeitplan."
