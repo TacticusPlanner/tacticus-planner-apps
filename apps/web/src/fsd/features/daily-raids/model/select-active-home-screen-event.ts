@@ -1,4 +1,6 @@
-import { hasHomeScreenEventRule } from "./home-screen-event-rules"
+// Type-only: the rule lookup parses `config.hse` with zod, which must stay out of the app shell's
+// startup graph (it reads the active event too), so callers that need rules pass the lookup in.
+import type { HseRaidRule } from "./home-screen-event-rules"
 
 /** What the selection reads of a calendar entry (`EventsCalendarStorageModel` satisfies it). */
 export type HomeScreenEventEntry = {
@@ -11,7 +13,20 @@ export type HomeScreenEventEntry = {
   parameters?: Record<string, unknown> | null
 }
 
-type DefinitionTypes = ReadonlyMap<string, { type: string }>
+/** What the selection reads of an event definition: its type and its served `config` (`config.hse`). */
+export type HomeScreenEventDefinitions = ReadonlyMap<
+  string,
+  { type: string; config?: unknown }
+>
+
+/** Looks up a calendar entry's raid-point rule (`homeScreenEventEntryRule`). */
+export type HomeScreenEventRuleOf = (
+  entry: HomeScreenEventEntry,
+  definitionsById: HomeScreenEventDefinitions
+) => HseRaidRule | null
+
+/** No rule lookup: every event reads as earning no raid points. */
+const noRules: HomeScreenEventRuleOf = () => null
 
 const compareIds = (a: string, b: string) => (a < b ? -1 : a > b ? 1 : 0)
 
@@ -35,13 +50,16 @@ export function selectActiveHomeScreenEvent<
   TEntry extends HomeScreenEventEntry,
 >(
   entries: readonly TEntry[],
-  definitionsById: DefinitionTypes,
-  nowMs: number
+  definitionsById: HomeScreenEventDefinitions,
+  nowMs: number,
+  ruleOf: HomeScreenEventRuleOf = noRules
 ): HomeScreenEventSelection<TEntry> {
   const events = entries.filter(
     (entry) =>
       definitionsById.get(entry.definitionId)?.type === "HomeScreenEvent"
   )
+  const hasRule = (entry: TEntry) =>
+    Number(ruleOf(entry, definitionsById) !== null)
   const active = events
     .filter(
       (entry) =>
@@ -49,8 +67,7 @@ export function selectActiveHomeScreenEvent<
     )
     .sort(
       (a, b) =>
-        Number(hasHomeScreenEventRule(b.definitionId)) -
-          Number(hasHomeScreenEventRule(a.definitionId)) ||
+        hasRule(b) - hasRule(a) ||
         Date.parse(b.startUtc) - Date.parse(a.startUtc) ||
         compareIds(a.definitionId, b.definitionId)
     )[0]
@@ -72,6 +89,8 @@ export type HomeScreenEventInstance<TEntry extends HomeScreenEventEntry> = {
   key: string
   entry: TEntry
   status: HomeScreenEventStatus
+  /** The raid-point rule from the definition's served `config.hse`, or null when it earns none. */
+  raidRule: HseRaidRule | null
 }
 
 /**
@@ -99,8 +118,9 @@ export function listHomeScreenEventInstances<
   TEntry extends HomeScreenEventEntry,
 >(
   entries: readonly TEntry[],
-  definitionsById: DefinitionTypes,
-  nowMs: number
+  definitionsById: HomeScreenEventDefinitions,
+  nowMs: number,
+  ruleOf: HomeScreenEventRuleOf = noRules
 ): HomeScreenEventInstance<TEntry>[] {
   const byKey = new Map<string, HomeScreenEventInstance<TEntry>>()
   for (const entry of entries) {
@@ -108,7 +128,12 @@ export function listHomeScreenEventInstances<
       continue
     const key = homeScreenEventInstanceKey(entry)
     if (!byKey.has(key))
-      byKey.set(key, { key, entry, status: statusAt(entry, nowMs) })
+      byKey.set(key, {
+        key,
+        entry,
+        status: statusAt(entry, nowMs),
+        raidRule: ruleOf(entry, definitionsById),
+      })
   }
   return [...byKey.values()].sort(
     (a, b) =>
@@ -121,6 +146,7 @@ export type HomeScreenEventListTarget<TEntry> = {
   entry: TEntry
   /** True when the event is running; false when the lists are a preview of an upcoming one. */
   live: boolean
+  rule: HseRaidRule
 }
 
 /**
@@ -132,8 +158,12 @@ export function selectListTarget<TEntry extends HomeScreenEventEntry>(
   instance: HomeScreenEventInstance<TEntry> | null
 ): HomeScreenEventListTarget<TEntry> | null {
   if (!instance || instance.status === "past") return null
-  if (!hasHomeScreenEventRule(instance.entry.definitionId)) return null
-  return { entry: instance.entry, live: instance.status === "running" }
+  if (!instance.raidRule) return null
+  return {
+    entry: instance.entry,
+    live: instance.status === "running",
+    rule: instance.raidRule,
+  }
 }
 
 export type HomeScreenEventSelectionResult<

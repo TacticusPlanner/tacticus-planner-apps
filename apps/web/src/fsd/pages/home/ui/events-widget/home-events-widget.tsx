@@ -15,7 +15,7 @@ import {
   useLegendaryEventsProgress,
   useMinuteNow,
 } from "@/entities/legendary-event"
-import { useActiveHomeScreenEvent } from "@/features/daily-raids"
+import { useHomeScreenEventCalendar } from "@/features/daily-raids"
 import { eventBarClass, formatEventCountdown } from "@/shared/lib"
 import { EventTypeIcon } from "@/shared/ui"
 import { useUnitName } from "@/shared/unit-name"
@@ -30,7 +30,8 @@ import {
  *  Each row is a link to its own destination; the card itself does not navigate. */
 export function HomeEventsWidget() {
   const { t } = useTranslation(["common", "events"])
-  const homeScreen = useActiveHomeScreenEvent()
+  // No raid-point rules: the card needs none, and their zod-backed parse would join the Home bundle.
+  const homeScreen = useHomeScreenEventCalendar()
   const legendary = useLegendaryEvents()
   const progress = useLegendaryEventsProgress()
   // The rows count down; `legendary` re-renders only on a lifecycle flip.

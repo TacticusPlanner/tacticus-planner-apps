@@ -27,7 +27,7 @@ vi.mock("react-i18next", () => ({
 }))
 vi.mock("@/features/daily-raids", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@/features/daily-raids")>()
-  return { ...actual, useActiveHomeScreenEvent: () => hseMock() }
+  return { ...actual, useHomeScreenEventCalendar: () => hseMock() }
 })
 vi.mock("@/entities/legendary-event", async (importOriginal) => {
   const actual =

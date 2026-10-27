@@ -5,6 +5,7 @@ import { Button } from "@workspace/ui/components/button"
 
 import type { DailyRaidGoalViewModel } from "../../model/daily-raids.domain"
 import type { EventFarmEmptyReason } from "../../model/home-screen-event-farm"
+import type { HseRaidRule } from "../../model/home-screen-event-rules"
 import { emptyRaidsFilters } from "../../model/raids-filters/raids-filters.domain"
 import { useRaidsFilters } from "../../model/raids-filters/use-raids-filters"
 import { useDailyRaids } from "../../model/use-daily-raids"
@@ -29,14 +30,15 @@ const EMPTY_KEYS = {
  * HSE page re-renders on every projection keystroke, which changes none of its props.
  */
 export const EventFarmSection = memo(function EventFarmSection({
-  definitionId,
+  rule,
   projectId,
 }: {
-  definitionId: string
+  /** The shown event's raid-point rule. */
+  rule: HseRaidRule
   projectId?: string
 }) {
   const { t } = useTranslation("dailies")
-  const raids = useDailyRaids(projectId, { homeScreenEventId: definitionId })
+  const raids = useDailyRaids(projectId, { homeScreenEventRule: rule })
   const view = raids.status === "ready" ? raids : null
   const farm = view?.eventFarm
   const emptyReason: EventFarmEmptyReason | null =

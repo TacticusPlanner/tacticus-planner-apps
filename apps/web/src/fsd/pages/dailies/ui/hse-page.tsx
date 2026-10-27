@@ -52,7 +52,7 @@ export function HsePage() {
   const instance = selection?.instance ?? null
   // A running or upcoming rule-bearing instance has lists (live, or a labelled preview).
   const target = selectListTarget(instance)
-  const ruleEventId = target?.entry.definitionId ?? null
+  const raidRule = target?.rule ?? null
   const stale = selection?.stale ?? false
   const eventName = useHomeScreenEventName()
   const points = useHseProjection(instance)
@@ -122,21 +122,21 @@ export function HsePage() {
           data-testid="hse-event-row"
         >
           <EventDetails eventName={eventName(instance.entry)} state={points} />
-          <PointsProjection hasRaidLists={!!ruleEventId} state={points} />
+          <PointsProjection hasRaidLists={!!raidRule} state={points} />
         </div>
       ) : null}
       <HseTeamsSection view={teams} />
       {target && !target.live ? (
         <EventPreviewBanner entry={target.entry} />
       ) : null}
-      {ruleEventId ? (
+      {raidRule ? (
         <div
           className="space-y-5 md:grid md:grid-cols-2 md:items-start md:gap-6 md:space-y-0"
           data-testid="hse-sections"
         >
-          <EventFarmSection definitionId={ruleEventId} />
+          <EventFarmSection rule={raidRule} />
           <div data-testid="hse-top-lists">
-            <EventTopLocations definitionId={ruleEventId} />
+            <EventTopLocations rule={raidRule} />
           </div>
         </div>
       ) : null}

@@ -17,6 +17,7 @@ import { useCampaignDisplay, type ReadState } from "@/shared/lib"
 import { toById, useCatalogDataset, usePlayerChunk } from "@/shared/local-data"
 
 import { buildResourceByBattle } from "./daily-raid-battle-resources"
+import type { HseRaidRule } from "./home-screen-event-rules"
 import { useBattleMaps } from "./use-battle-maps"
 import { useEligibleCampaignBattles } from "./use-eligible-campaign-battles"
 import { activeProjectMembers, calculateDailyRaids } from "./daily-raids-calc"
@@ -44,7 +45,7 @@ import { planHookMissionRaids } from "./plan-hook-mission-raids"
  * narrows the run to that project's goals (still in global order); without it the run covers the
  * whole account.
  *
- * `options.homeScreenEventId` (the Dailies > HSE tab, and the HRE tab while an HSE runs)
+ * `options.homeScreenEventRule` (the Dailies > HSE tab, and the HRE tab while an HSE runs)
  * additionally returns `eventFarm`: the schedule-wide, energy-capped list of point-earning locations
  * that feed the goals (see `planEventFarm`), unless `options.eventFarm` is false, and with
  * `missionRaids` ranks the HRE suggestions by its points among equal energy costs. It changes
@@ -57,12 +58,12 @@ import { planHookMissionRaids } from "./plan-hook-mission-raids"
 export function useDailyRaids(
   projectId?: string,
   options?: {
-    homeScreenEventId?: string
+    homeScreenEventRule?: HseRaidRule
     eventFarm?: boolean
     missionRaids?: MissionRaidsRequest
   }
 ): DailyRaidsViewModel {
-  const homeScreenEventId = options?.homeScreenEventId
+  const homeScreenEventRule = options?.homeScreenEventRule
   const missionRequest = options?.missionRaids
   const { t } = useTranslation(["dailies", "characters", "upgrades"])
   const {
@@ -143,9 +144,10 @@ export function useDailyRaids(
   )
 
   const { eventPointsByBattleId, enemyStatsByBattleId } = useBattleMaps({
-    homeScreenEventId,
+    homeScreenEventRule,
     enemyStats: !!missionRequest?.manual,
     battles,
+    campaignDefinitions,
     npcsById,
   })
 

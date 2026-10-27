@@ -13,7 +13,10 @@ import { act, render, screen, within } from "@/test/render"
 import { battle, offPlanBattle, ready } from "@/test/fixtures/daily-raids"
 import { emptyRaidsFilters } from "@/features/daily-raids"
 import type { HseTeamsRead } from "@/features/team-recommendations"
-import { homeScreenEventReadyAt } from "@/test/fixtures/home-screen-event"
+import {
+  homeScreenEventRaidRuleOf,
+  homeScreenEventReadyAt,
+} from "@/test/fixtures/home-screen-event"
 import { hseTeamsFixtureRead } from "@/test/fixtures/hse-teams"
 
 import type { DailiesOutletContext } from "./dailies-layout"
@@ -357,7 +360,7 @@ describe("HSE tab states", () => {
     // The lists are computed for the upcoming event's rule.
     expect(mocks.raidsArgs.at(-1)).toEqual([
       undefined,
-      { homeScreenEventId: "hse-warp-surge" },
+      { homeScreenEventRule: homeScreenEventRaidRuleOf("hse-warp-surge") },
     ])
   })
 
@@ -438,7 +441,7 @@ describe("HSE tab header", () => {
 
     expect(mocks.raidsArgs.at(-1)).toEqual([
       undefined,
-      { homeScreenEventId: "hse-machine-hunt" },
+      { homeScreenEventRule: homeScreenEventRaidRuleOf("hse-machine-hunt") },
     ])
   })
 
@@ -939,7 +942,7 @@ describe("HSE selected instance states", () => {
     )
     expect(mocks.raidsArgs.at(-1)).toEqual([
       undefined,
-      { homeScreenEventId: "hse-warp-surge" },
+      { homeScreenEventRule: homeScreenEventRaidRuleOf("hse-warp-surge") },
     ])
 
     await user.click(screen.getByTestId("hse-event-previous"))
@@ -947,7 +950,7 @@ describe("HSE selected instance states", () => {
     expect(screen.queryByTestId("hse-preview-banner")).not.toBeInTheDocument()
     expect(mocks.raidsArgs.at(-1)).toEqual([
       undefined,
-      { homeScreenEventId: "hse-machine-hunt" },
+      { homeScreenEventRule: homeScreenEventRaidRuleOf("hse-machine-hunt") },
     ])
   })
 
