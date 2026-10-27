@@ -113,6 +113,8 @@ export function statAtRank(
   )
 }
 
+// The per-rarity caps below are pinned to the served `progression-rules` dataset by
+// game-catalog's `progression-rules.contract.test.ts`.
 const maxRankByRarity: Record<Rarity, RankType> = {
   Common: Rank.Iron1,
   Uncommon: Rank.Bronze1,

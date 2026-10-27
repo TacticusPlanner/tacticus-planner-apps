@@ -1,5 +1,6 @@
 export { AbilityText } from "./ability-text-renderer"
 export { buildAbilitySeries, chartedSeries } from "./ability-series"
+export { useRarityFactor } from "./rarity-factor"
 export {
   useAbilityText,
   useTraitText,

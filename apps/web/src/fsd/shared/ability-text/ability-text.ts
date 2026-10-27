@@ -1,5 +1,3 @@
-import { type Rarity } from "@workspace/game-domain"
-
 // Ported from V1 `3-features/character-details/ability-text.ts`. The parser and variable resolver are
 // faithful; the style layer is reduced to color/underline/italic/gradient — V2 does not bundle the
 // per-token icon set, and the raid-boss spec accepts a plain-text rendering that still substitutes
@@ -362,16 +360,8 @@ export function parseAbilityText(text: string): AstNode[] {
   return stack[0] ?? []
 }
 
-// ── Rarity scaling ────────────────────────────────────────────────────────────
-
-const RARITY_FACTOR: Record<Rarity, number> = {
-  Common: 1,
-  Uncommon: 1.2,
-  Rare: 1.4,
-  Epic: 1.6,
-  Legendary: 1.8,
-  Mythic: 2,
-}
+/** Stands in for a rarity-scaled value until the rarity factors have loaded. */
+const SCALED_VALUE_PENDING = "…"
 
 // ── Variable resolver ─────────────────────────────────────────────────────────
 
@@ -384,7 +374,9 @@ export interface AbilityContext {
   constants: Record<string, string>
   /** Variable names multiplied by the rarity factor */
   scaledVariableNames: ReadonlySet<string>
-  rarity: Rarity
+  /** The unit's rarity factor (`useRarityFactor`); undefined while it loads, when scaled values read
+   *  as a placeholder rather than an unscaled number. */
+  rarityFactor: number | undefined
   unitName: string
   factionId: string
 }
@@ -439,7 +431,9 @@ export function resolveVariable(
   if (context.scaledVariableNames.has(node.name)) {
     const numeric = Number(part)
     if (!Number.isNaN(numeric)) {
-      return String(Math.round(numeric * RARITY_FACTOR[context.rarity]))
+      return context.rarityFactor === undefined
+        ? SCALED_VALUE_PENDING
+        : String(Math.round(numeric * context.rarityFactor))
     }
   }
 

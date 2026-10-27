@@ -18,6 +18,7 @@ import {
   unitOriginState,
 } from "@/entities/unit"
 import { useAbilityText } from "@/shared/ability-text"
+import { useCatalogDataset } from "@/shared/local-data"
 import { useTourPageSteps } from "@/shared/tour"
 import { ProgressionSelect } from "@/shared/ui"
 import { useUnitPowerContext } from "@/shared/unit-power"
@@ -42,6 +43,8 @@ import {
   mowMaxAbilityLevel,
   mowPowerFigure,
   mythicLevel,
+  toMythicLevels,
+  type MythicLevels,
 } from "./mow-unit.view-model"
 import {
   calculateMowUpgrades,
@@ -56,6 +59,8 @@ import { useMowUpgradeRanges } from "./use-mow-upgrade-ranges"
 const TABS = ["details", "upgrades"] as const
 
 /** `/library/machines-of-war/:entityId`: one Machine of War's unit page. */
+const noMythicLevels: MythicLevels = new Map()
+
 export function MowUnitPage() {
   const { entityId } = useParams()
   const catalog = useMowsCatalog()
@@ -188,7 +193,13 @@ function MowUnit({
   const mythicName = mythicKey
     ? t(`abilities:${mythicKey}`, { defaultValue: mythicKey })
     : t("mowUnit.mythic.unnamed")
-  const mythic = mythicLevel(shown)
+  const mythicLevelsRead = useCatalogDataset(
+    "progression-rules",
+    toMythicLevels
+  )
+  const mythicLevels =
+    mythicLevelsRead.status === "ready" ? mythicLevelsRead.data : noMythicLevels
+  const mythic = mythicLevel(shown, mythicLevels)
   const power = mowPowerFigure(
     unitId,
     shown,
@@ -282,6 +293,7 @@ function MowUnit({
       text={mythicKey ? abilityText.text(mythicKey) : undefined}
       rules={mythicKey ? abilityText : undefined}
       level={mythic}
+      maxLevel={Math.max(1, mythicLevels.size)}
       rarity={rarity}
       unitName={name}
       factionId={mow.faction}

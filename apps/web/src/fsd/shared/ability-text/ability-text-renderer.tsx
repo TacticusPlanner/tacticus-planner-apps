@@ -14,6 +14,7 @@ import {
   type StyledNode,
   type VariableNode,
 } from "./ability-text"
+import { useRarityFactor } from "./rarity-factor"
 
 // Ported from V1 `ability-text-renderer.tsx`, minus the per-token `<img>` icons (V2 does not bundle
 // that icon set). Styled tokens keep their color / underline / italic so stat and damage terms still
@@ -119,7 +120,8 @@ export interface AbilityTextProps {
   variables: Record<string, (string | number)[]>
   constants?: Record<string, string>
   scaledVariableNames?: readonly string[]
-  rarity: Rarity
+  /** Scales rarity-affected values; undefined (still loading) shows them as pending. */
+  rarity: Rarity | undefined
   unitName?: string
   factionId?: string
   /** Highlight values that depend on the ability level. */
@@ -140,6 +142,7 @@ export function AbilityText({
   highlightValues = false,
   className = "text-xs leading-relaxed text-muted-foreground",
 }: AbilityTextProps) {
+  const rarityFactor = useRarityFactor(rarity)
   const ast = useMemo(
     () => parseAbilityText(resolveI2p(text, level, variables)),
     [text, level, variables]
@@ -153,7 +156,7 @@ export function AbilityText({
     variables,
     constants,
     scaledVariableNames: scaledSet,
-    rarity,
+    rarityFactor,
     unitName,
     factionId,
   }

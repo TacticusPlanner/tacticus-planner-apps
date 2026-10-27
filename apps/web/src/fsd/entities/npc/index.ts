@@ -9,7 +9,7 @@ export type {
 } from "./model/types"
 export { buildNpcGroups } from "./lib/build-npc-groups"
 
-export { rarityFromStars } from "./lib/rarity-from-stars"
+export { useRarityFromStars } from "./lib/rarity-from-stars"
 export { orderLevels } from "./lib/order-levels"
 export {
   activeNpcFilterCount,
