@@ -15,9 +15,7 @@ The recommendations SHALL render as a "Shop recommendations" section on the Raid
 - **AND** a daily shop offers a resource an Active goal still needs
 - **THEN** the shop recommendations section still shows that offer
 
-## MODIFIED Requirements
-
-### Requirement: Shops page has an onboarding tour
+### Requirement: The Today tour covers the shop section
 
 The Today tour on the Raids tab SHALL end with the shop recommendation steps, covering the section's purpose (shop recommendations for the selected project), the guaranteed-vs-possible distinction, and how a card's cost/needed-by detail is read. Their titles and content SHALL come from the `shops` namespace's existing `tour.shops.steps.*` keys. Desktop and mobile step sets SHALL both include them.
 
@@ -25,6 +23,8 @@ The Today tour on the Raids tab SHALL end with the shop recommendation steps, co
 
 - **WHEN** a signed-in user triggers the onboarding tour on the Raids tab
 - **THEN** after the raid steps, the tour runs against the shop recommendations section with localized step content, for the current viewport's step set
+
+## MODIFIED Requirements
 
 ### Requirement: Shops is a Dailies page defaulting to all goals with an optional project filter
 
@@ -44,3 +44,11 @@ The shop recommendations section on the Raids tab SHALL compute its recommendati
 
 - **WHEN** Raids loads and no project has been selected this session
 - **THEN** the shop recommendations cover all Active goals without requiring the user to pick a project
+
+## REMOVED Requirements
+
+### Requirement: Shops page has an onboarding tour
+
+**Reason**: The Shops page is folded into the Raids tab, so it has no tour of its own.
+
+**Migration**: Replaced by "The Today tour covers the shop section".

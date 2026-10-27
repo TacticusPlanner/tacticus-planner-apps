@@ -143,18 +143,30 @@ Indomitus battles with `energyCost` below 5 (no raid rewards) belong to no optio
 
 The applied filter SHALL constrain the node(s) the daily-raids engine schedules for Today and Bonus Raids, the candidate locations of the HSE tab's farm list and the locations listed in the HSE tab's two top-10 lists, and nothing else. Raids Plan / Schedule, Goals page estimates and dates, goal-creation previews and Insights SHALL be computed without the filter and SHALL be identical whether or not a filter is applied. The Home raids widget, which shows the Today list, SHALL reflect the same filtered Today.
 
-For every material (upgrades and character shards alike) the engine SHALL first choose the preferred nodes exactly as it does with no filter (least energy per item among eligible nodes), then remove nodes that fail the filter, and SHALL NOT fall back to a less preferred node that passes. A material with at least one preferred node that passes stays scheduled on the passing node(s). A material whose preferred nodes are all removed SHALL be reported on Today as filtered out, with a reason distinct from "no farm location", and offered a Reset action. The filter wins over a goal's pinned farm locations: pinned locations are filtered exactly like auto-picked ones, so a goal pinned to a location that fails the filter is reported as filtered out. The filtered-out notice SHALL state, for such goals, that their pinned location is excluded by the Raids Filters and that the filter or the pin must change. With an empty filter, results are identical to current behavior. This pick-then-drop rule and the filtered-out reporting apply to Today and Bonus Raids; the HSE tab's farm list instead treats the filter as a candidate rule (filter-then-pick, below).
+For every material (upgrades and character shards alike) the engine SHALL first remove the eligible nodes that fail the filter, then choose the preferred nodes among the nodes that pass exactly as it does with no filter (least energy per item, with the same tie and value rules). A material whose cheapest node fails the filter SHALL therefore be scheduled on the cheapest node(s) that pass. A material none of whose nodes pass SHALL be reported on Today as filtered out, with a reason distinct from "no farm location", and offered a Reset action. The filter wins over a goal's pinned farm locations: pinned locations are filtered exactly like auto-picked ones, so a goal whose pinned locations all fail the filter is reported as filtered out. The filtered-out notice SHALL state, for such goals, that their pinned location is excluded by the Raids Filters and that the filter or the pin must change. With an empty filter, results are identical to current behavior. Today, Bonus Raids and the HSE tab's farm list therefore all treat the filter as a candidate rule (filter-then-pick).
 
 #### Scenario: Filter removes the cheapest node
 
 - **GIVEN** the least-energy node for a material fails the filter and another, pricier node passes
 - **WHEN** Today is computed
-- **THEN** the material is reported as filtered out and is not moved to the pricier node
+- **THEN** the material is scheduled on the pricier node and is not reported as filtered out
+
+#### Scenario: Custom locations by rarity
+
+- **GIVEN** the filter allows campaign types Mirror and Standard but not Elite, and a Common material's cheapest node is an Elite node while a Mirror node also drops it
+- **WHEN** Today is computed
+- **THEN** the material is scheduled on the Mirror node
+
+#### Scenario: No node passes
+
+- **GIVEN** every eligible node for a material fails the filter
+- **WHEN** Today is computed
+- **THEN** the material is reported as filtered out with a Reset action
 
 #### Scenario: Character shards behave the same as upgrades
 
 - **GIVEN** the least-energy node for a character's shards fails the filter and another node passes
-- **THEN** the shards are reported as filtered out, not moved to the passing node
+- **THEN** the shards are scheduled on the passing node
 
 #### Scenario: A tied node passes
 

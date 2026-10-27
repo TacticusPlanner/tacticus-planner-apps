@@ -208,8 +208,8 @@ This applies to the desktop sidebar only. On mobile, sections reachable via the 
 
 #### Scenario: Dailies follows the same multi-child behavior as any other section
 
-- **WHEN** a user visits `/dailies/shops` (via the section menu, the mobile drawer, or search), then navigates to a different top-level section, then clicks the Dailies entry in the desktop sidebar
-- **THEN** they land on `/dailies/shops`, not Dailies' default child (`/dailies/raids`) — Dailies is not special-cased once it has more than one child route
+- **WHEN** a user visits `/dailies/guild-raids` (via the section menu, the mobile drawer, or search), then navigates to a different top-level section, then clicks the Dailies entry in the desktop sidebar
+- **THEN** they land on `/dailies/guild-raids`, not Dailies' default child (`/dailies/raids`) — Dailies is not special-cased once it has more than one child route
 
 #### Scenario: Plan's default is Goals
 

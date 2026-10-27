@@ -817,3 +817,93 @@ The schedule SHALL respect, in this order of application:
 - **GIVEN** a goal still needs 7 shards of a unit when the plan reaches a node, planned below that node's daily cap, and a full day of attempts there is expected to drop at least 7 shards
 - **WHEN** Today loads
 - **THEN** that node's listing shows "7 shards left"
+
+### Requirement: Schedule location labels are shown in full
+
+Campaign names and node labels in Today's schedule rows, and in the shared location row reused by the Home raids widget, SHALL be rendered in full in every supported locale (en, de, es, fr) at every supported viewport width. When a label does not fit on one line it SHALL wrap rather than be cut off with an ellipsis.
+
+#### Scenario: Long localized campaign name on mobile
+
+- **WHEN** the app language is de or fr and a schedule row's campaign name is wider than the label column below 768px
+- **THEN** the full campaign name is visible, wrapped onto additional lines, and the row's icons and raid-count badge remain aligned
+
+#### Scenario: English labels are unchanged
+
+- **WHEN** the app language is en and every label fits on one line
+- **THEN** rows render on a single line exactly as before
+
+### Requirement: Today quick filters
+
+Today SHALL show a quick-filter chip row, captioned "Quick filters", next to the Raids Filters trigger, with two chips: **Fewer raids** and **Bottlenecks**. Either, both or neither MAY be on. Each chip SHALL carry a tooltip explaining what it does, and while a chip is on Today SHALL show one line under the row stating what it changes. The state SHALL live in the URL (`quick` search parameter, a comma-separated list; unknown values are ignored) so reload and shared links restore it, and it SHALL NOT be stored anywhere else, so leaving Today without the parameter shows the defaults.
+
+The chips SHALL change only Today's plan and Bonus Raids (including the raids-left list after the daily energy limit). Plan > Schedule, Goals estimates and dates, Insights, the HSE and HRE tabs and the Home raids widget SHALL be computed as if both chips were off. The chips combine with the applied Raids Filters.
+
+**Fewer raids**: after the preferred nodes are chosen (least energy per item among nodes that pass the Raids Filters), only the node(s) with the highest energy cost per battle SHALL be kept. Tied nodes left after that keep the expected-gold ordering. A goal's pinned farm locations SHALL be used as chosen.
+
+**Bottlenecks**: Today SHALL ignore goal priority when spending energy. Inventory SHALL still be allocated to goals in priority order, and shop and Onslaught supply SHALL still be applied per goal in priority order. The remaining need of every in-scope goal, summed per resource across all of the goal's stages, SHALL form one pool, and the day's energy SHALL be spent on that pool longest-to-finish resource first (then greatest energy cost), with each node's daily attempt cap shared as usual. A resource SHALL be farmed at the nodes chosen for the highest-priority goal that needs it. Each raid entry SHALL be credited to the highest-priority goal still needing that resource, so Today keeps its per-goal grouping; goal groups SHALL stay in goal-priority order. This overrides "Today and Bonus Raids prioritize long-running resources" and goal-by-goal spending while the chip is on.
+
+#### Scenario: Chips off
+
+- **GIVEN** the URL has no `quick` parameter
+- **WHEN** Today loads
+- **THEN** the schedule is identical to the schedule without this requirement
+
+#### Scenario: Fewer raids picks the costlier tied node
+
+- **GIVEN** a material's two cheapest nodes tie on energy per item, one at 6 energy per battle and one at 12
+- **WHEN** Fewer raids is on
+- **THEN** Today raids only the 12-energy node for that material, and the note under the row explains that tied locations with more energy per battle are used to save raids
+
+#### Scenario: Bottlenecks farms a lower-priority goal's slow material first
+
+- **GIVEN** goal A (priority 1) needs a material that finishes in 2 days and goal B (priority 2) needs a Legendary material that takes 9 days, and the day's energy covers only one of them
+- **WHEN** Bottlenecks is on
+- **THEN** Today raids goal B's Legendary material, listed under goal B's group, and the note under the row says Plan and Goals dates still follow goal priority
+
+#### Scenario: Bottlenecks combines all stages
+
+- **GIVEN** a rank goal over several ranks whose later stage needs a slow material
+- **WHEN** Bottlenecks is on
+- **THEN** that later-stage material is part of the pool and can be raided today
+
+#### Scenario: Both chips on
+
+- **WHEN** Fewer raids and Bottlenecks are both on
+- **THEN** the pooled schedule uses the Fewer raids node choice
+
+#### Scenario: Other surfaces ignore the chips
+
+- **GIVEN** a chip is on
+- **THEN** Plan > Schedule, Goals, Insights, the HSE and HRE tabs and the Home raids widget are unchanged
+
+#### Scenario: State in the URL
+
+- **WHEN** the player turns on Bottlenecks
+- **THEN** the URL gains `quick=bottlenecks`; reloading keeps the chip on, and opening Today from the navigation shows both chips off
+
+### Requirement: Today lists today's Onslaught runs
+
+The Raids tab SHALL show an "Onslaught" section after the raid lanes, listing one row per unit that today's plan spends Onslaught tokens on, with its expected runs and shards, in goal-priority order. The runs SHALL come from the same plan run as Today's raids, so tokens are shared across goals in priority order exactly as Plan > Schedule's day 1 shows them. The section header SHALL show the whole tokens to spend today: the sum of the rows' expected runs, rounded up. When no goal needs an Onslaught run today, the section SHALL NOT be shown. Raids Filters SHALL NOT affect it.
+
+Assumptions:
+
+- One Onslaught run costs one token, and the plan spends at most the catalog's Onslaught runs per day.
+- Expected runs are fractional because shard drops per run are an expectation, not a guarantee.
+
+Worked example: goal g1 (priority 1, Bellator) is planned 1.2 runs for 6 expected shards and goal g2 (priority 2, Aleph-Null) 0.5 runs for 2 expected shards. The rows are Bellator "≈1.2 runs · 6 shards", then Aleph-Null "≈0.5 runs · 2 shards", and the header shows 1.2 + 0.5 = 1.7, rounded up to 2 tokens.
+
+#### Scenario: Runs are listed in goal priority
+
+- **GIVEN** today's plan spends Onslaught tokens on two goals' units
+- **WHEN** the user opens Raids
+- **THEN** the Onslaught section lists the higher-priority goal's unit first, each row with its expected runs and shards
+
+#### Scenario: Nothing to run
+
+- **GIVEN** no goal needs an Onslaught run today
+- **THEN** the Raids tab has no Onslaught section
+
+#### Scenario: Tour step
+
+- **WHEN** the user runs the Today tour with the Onslaught section shown
+- **THEN** a localized step explains the section, on desktop and mobile
