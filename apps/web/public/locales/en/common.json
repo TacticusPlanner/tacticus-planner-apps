@@ -340,7 +340,123 @@
       "catalogErrorTitle": "The unit catalog couldn't be loaded",
       "catalogErrorBody": "The collection can't be shown without it. Try again.",
       "retry": "Try again",
-      "factionOwned": "{{owned}} of {{total}} owned"
+      "factionOwned": "{{owned}} of {{total}} owned",
+      "summaryFiltered": "{{owned}} of {{total}} matching units owned",
+      "toolbar": {
+        "label": "Search, sort and filter units",
+        "search": "Search units",
+        "searchPlaceholder": "Search by name",
+        "sort": "Sort",
+        "sortOptions": {
+          "rarity": "Rarity",
+          "rank": "Rank",
+          "abilities": "Abilities",
+          "shards": "Shards"
+        },
+        "filters": "Filters",
+        "filtersCount_one": "Filters ({{count}})",
+        "filtersCount_other": "Filters ({{count}})",
+        "clearFilters": "Clear filters",
+        "done": "Done",
+        "alliance": "Alliance",
+        "allAlliances": "All alliances",
+        "faction": "Faction",
+        "allFactions": "All factions",
+        "searchFactions": "Search factions",
+        "noFactions": "No faction matches",
+        "rarity": "Rarity",
+        "allRarities": "All rarities",
+        "rankFrom": "Lowest rank",
+        "rankTo": "Highest rank",
+        "anyRank": "Any rank",
+        "clearRankFrom": "Clear lowest rank",
+        "clearRankTo": "Clear highest rank",
+        "searchRanks": "Search ranks",
+        "noRanks": "No rank matches",
+        "ownership": "Ownership",
+        "ownershipAll": "All units",
+        "owned": "Owned",
+        "unowned": "Not owned",
+        "kind": "Unit type",
+        "kindAll": "All unit types",
+        "character": "Characters",
+        "mow": "Machines of War",
+        "needsRoster": "Rank, stars and ownership filters need a synced roster.",
+        "quickFilters": "Quick filters",
+        "quick": {
+          "readyToRankUp": "Ready to rank up",
+          "needToAscend": "Need to ascend",
+          "canAscend": "Can ascend",
+          "needToLevel": "Need to level",
+          "blueStarReady": "Blue star ready",
+          "missingEquipment": "Missing equipment",
+          "abilitiesBehindLevel": "Abilities behind level"
+        },
+        "quickHelp": {
+          "readyToRankUp": "Your upgrade inventory covers every material still needed at the current rank.",
+          "needToAscend": "At the highest rank for its rarity, with an ascension still ahead.",
+          "canAscend": "Your shards and orbs pay for the next rarity (the next star at Mythic).",
+          "needToLevel": "Below the level cap for its rarity.",
+          "blueStarReady": "Your shards and orbs pay for every step up to one blue star.",
+          "missingEquipment": "At least one equipment slot is empty.",
+          "abilitiesBehindLevel": "An ability is below the character's level, so it can still be raised."
+        },
+        "quickNeedsRoster": "Quick filters need a synced roster.",
+        "quickNeedsInventory": "{{filters}}: needs your synced inventory.",
+        "quickFailed": "{{filters}}: its game data couldn't be loaded.",
+        "rankRange": "Rank range",
+        "groupUnit": "Unit",
+        "groupCombat": "Combat",
+        "starsRange": "Stars range",
+        "starsFrom": "Lowest stars",
+        "starsTo": "Highest stars",
+        "anyStars": "Any stars",
+        "clearStarsFrom": "Clear lowest stars",
+        "clearStarsTo": "Clear highest stars",
+        "searchStars": "Search stars",
+        "noStars": "No step matches",
+        "attackType": "Attack type",
+        "attackAny": "Melee and ranged",
+        "attackTypes": {
+          "melee": "Melee only",
+          "ranged": "Ranged"
+        },
+        "hitsFrom": "Fewest hits",
+        "hitsTo": "Most hits",
+        "movement": "Movement",
+        "rangeFrom": "Shortest range",
+        "rangeTo": "Longest range",
+        "anyValue": "Any",
+        "damageTypes": "Damage types",
+        "allDamageTypes": "Any damage type",
+        "searchDamageTypes": "Search damage types",
+        "traits": "Traits",
+        "allTraits": "Any trait",
+        "searchTraits": "Search traits",
+        "noMatch": "Nothing matches",
+        "shardSource": "Shard source",
+        "allShardSources": "Any source",
+        "shardSources": {
+          "Standard": "Standard",
+          "Elite": "Elite",
+          "Mirror": "Mirror",
+          "EliteMirror": "Elite Mirror",
+          "Extremis": "Extremis",
+          "none": "Not in a campaign"
+        },
+        "hitsRange": "Hits",
+        "attackRange": "Attack range",
+        "rangeJoin": "to",
+        "clearFactions": "Clear factions",
+        "clearRarities": "Clear rarities",
+        "clearDamageTypes": "Clear damage types",
+        "clearTraits": "Clear traits",
+        "clearShardSources": "Clear shard sources"
+      },
+      "empty": {
+        "title": "No unit matches these filters",
+        "body": "Change or clear the filters to see more units."
+      }
     }
   },
   "unitTile": {
@@ -1628,6 +1744,14 @@
         "unowned": {
           "title": "Not unlocked yet",
           "content": "Greyed-out units aren't in your roster. The bar shows how close you are to unlocking them. Select a unit to open its details in the Library."
+        },
+        "toolbar": {
+          "title": "Search, sort and filter",
+          "content": "Find a unit by name, change the order inside each faction, and narrow the list with Filters. Your choices stay in the page address, so you can reload or share them."
+        },
+        "quickFilters": {
+          "title": "Quick filters",
+          "content": "One tap shows the units to work on next: ready to rank up, need to ascend, can ascend, need to level or blue star ready. Select a chip again to clear it."
         }
       }
     },

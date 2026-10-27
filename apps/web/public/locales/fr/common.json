@@ -340,7 +340,123 @@
       "catalogErrorTitle": "Le catalogue des unités n'a pas pu être chargé",
       "catalogErrorBody": "La collection ne peut pas s'afficher sans lui. Réessayez.",
       "retry": "Réessayer",
-      "factionOwned": "{{owned}} possédées sur {{total}}"
+      "factionOwned": "{{owned}} possédées sur {{total}}",
+      "summaryFiltered": "{{owned}} unités correspondantes possédées sur {{total}}",
+      "toolbar": {
+        "label": "Rechercher, trier et filtrer les unités",
+        "search": "Rechercher des unités",
+        "searchPlaceholder": "Rechercher par nom",
+        "sort": "Tri",
+        "sortOptions": {
+          "rarity": "Rareté",
+          "rank": "Rang",
+          "abilities": "Capacités",
+          "shards": "Éclats"
+        },
+        "filters": "Filtres",
+        "filtersCount_one": "Filtres ({{count}})",
+        "filtersCount_other": "Filtres ({{count}})",
+        "clearFilters": "Effacer les filtres",
+        "done": "Terminé",
+        "alliance": "Alliance",
+        "allAlliances": "Toutes les alliances",
+        "faction": "Faction",
+        "allFactions": "Toutes les factions",
+        "searchFactions": "Rechercher des factions",
+        "noFactions": "Aucune faction ne correspond",
+        "rarity": "Rareté",
+        "allRarities": "Toutes les raretés",
+        "rankFrom": "Rang minimum",
+        "rankTo": "Rang maximum",
+        "anyRank": "N'importe quel rang",
+        "clearRankFrom": "Retirer le rang minimum",
+        "clearRankTo": "Retirer le rang maximum",
+        "searchRanks": "Rechercher des rangs",
+        "noRanks": "Aucun rang ne correspond",
+        "ownership": "Possession",
+        "ownershipAll": "Toutes les unités",
+        "owned": "Possédées",
+        "unowned": "Non possédées",
+        "kind": "Type d'unité",
+        "kindAll": "Tous les types",
+        "character": "Personnages",
+        "mow": "Machines de guerre",
+        "needsRoster": "Les filtres de rang, d'étoiles et de possession nécessitent un effectif synchronisé.",
+        "quickFilters": "Filtres rapides",
+        "quick": {
+          "readyToRankUp": "Prête à monter en rang",
+          "needToAscend": "Doit être ascensionnée",
+          "canAscend": "Peut être ascensionnée",
+          "needToLevel": "Doit monter de niveau",
+          "blueStarReady": "Prête pour l'étoile bleue",
+          "missingEquipment": "Équipement manquant",
+          "abilitiesBehindLevel": "Capacités sous le niveau"
+        },
+        "quickHelp": {
+          "readyToRankUp": "Votre inventaire d'améliorations couvre tous les matériaux encore nécessaires au rang actuel.",
+          "needToAscend": "Au rang maximum de sa rareté, avec une Ascension encore à venir.",
+          "canAscend": "Vos éclats et orbes suffisent pour la rareté suivante (l'étoile suivante en Mythique).",
+          "needToLevel": "Sous le niveau maximum de sa rareté.",
+          "blueStarReady": "Vos éclats et orbes suffisent pour toutes les étapes jusqu'à la première étoile bleue.",
+          "missingEquipment": "Au moins un emplacement d'équipement est vide.",
+          "abilitiesBehindLevel": "Une capacité est sous le niveau du personnage et peut encore monter."
+        },
+        "quickNeedsRoster": "Les filtres rapides nécessitent un effectif synchronisé.",
+        "quickNeedsInventory": "{{filters}} : nécessite votre inventaire synchronisé.",
+        "quickFailed": "{{filters}} : ses données de jeu n'ont pas pu être chargées.",
+        "rankRange": "Plage de rangs",
+        "groupUnit": "Unité",
+        "groupCombat": "Combat",
+        "starsRange": "Plage d'étoiles",
+        "starsFrom": "Étoiles minimum",
+        "starsTo": "Étoiles maximum",
+        "anyStars": "N'importe quelles étoiles",
+        "clearStarsFrom": "Effacer les étoiles minimum",
+        "clearStarsTo": "Effacer les étoiles maximum",
+        "searchStars": "Rechercher des étoiles",
+        "noStars": "Aucune étape ne correspond",
+        "attackType": "Type d'attaque",
+        "attackAny": "Corps à corps et distance",
+        "attackTypes": {
+          "melee": "Corps à corps uniquement",
+          "ranged": "À distance"
+        },
+        "hitsFrom": "Coups minimum",
+        "hitsTo": "Coups maximum",
+        "movement": "Déplacement",
+        "rangeFrom": "Portée minimum",
+        "rangeTo": "Portée maximum",
+        "anyValue": "Indifférent",
+        "damageTypes": "Types de dégâts",
+        "allDamageTypes": "N'importe quel type de dégâts",
+        "searchDamageTypes": "Rechercher des types de dégâts",
+        "traits": "Traits",
+        "allTraits": "N'importe quel trait",
+        "searchTraits": "Rechercher des traits",
+        "noMatch": "Aucun résultat",
+        "shardSource": "Source des fragments",
+        "allShardSources": "N'importe quelle source",
+        "shardSources": {
+          "Standard": "Standard",
+          "Elite": "Élite",
+          "Mirror": "Miroir",
+          "EliteMirror": "Miroir élite",
+          "Extremis": "Extremis",
+          "none": "Dans aucune campagne"
+        },
+        "hitsRange": "Coups",
+        "attackRange": "Portée d'attaque",
+        "rangeJoin": "à",
+        "clearFactions": "Effacer les factions",
+        "clearRarities": "Effacer les raretés",
+        "clearDamageTypes": "Effacer les types de dégâts",
+        "clearTraits": "Effacer les traits",
+        "clearShardSources": "Effacer les sources de fragments"
+      },
+      "empty": {
+        "title": "Aucune unité ne correspond à ces filtres",
+        "body": "Modifiez ou effacez les filtres pour voir plus d'unités."
+      }
     }
   },
   "unitTile": {
@@ -1628,6 +1744,14 @@
         "unowned": {
           "title": "Pas encore débloquée",
           "content": "Les unités en grisé ne font pas partie de votre effectif. La barre montre à quel point vous êtes proche de les débloquer. Sélectionnez une unité pour ouvrir ses détails dans la Bibliothèque."
+        },
+        "toolbar": {
+          "title": "Rechercher, trier et filtrer",
+          "content": "Trouvez une unité par son nom, changez l'ordre dans chaque faction et affinez la liste avec les filtres. Vos choix restent dans l'adresse de la page : vous pouvez la recharger ou la partager."
+        },
+        "quickFilters": {
+          "title": "Filtres rapides",
+          "content": "D'un geste, affichez les unités à faire progresser ensuite : prête à monter en rang, doit être ascensionnée, peut être ascensionnée, doit monter de niveau ou prête pour l'étoile bleue. Sélectionnez à nouveau un filtre pour le retirer."
         }
       }
     },

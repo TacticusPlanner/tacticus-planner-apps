@@ -1,5 +1,5 @@
 import { useMemo } from "react"
-import { AlertTriangle, LogIn, RefreshCw } from "lucide-react"
+import { AlertTriangle, LogIn, RefreshCw, SearchX, X } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 import { AuthError } from "@azure/msal-browser"
@@ -28,8 +28,25 @@ import type {
   CollectionFactionGroup,
   CollectionRosterState,
 } from "../../model/collection-view"
+import {
+  useCollectionOptions,
+  type CollectionOptions,
+} from "../../model/use-collection-options"
+import { useCollectionQuery } from "../../model/use-collection-query"
 import { useCollectionView } from "../../model/use-collection-view"
 import { useCollectionTutorial } from "./collection.tutorial"
+import { CollectionToolbar } from "./collection-toolbar"
+
+// Before the catalog is read the toolbar is hidden anyway; this only keeps its props total.
+const EMPTY_OPTIONS: CollectionOptions = {
+  factions: [],
+  hits: [],
+  movements: [],
+  ranges: [],
+  damageTypes: [],
+  traits: [],
+  shardSources: [],
+}
 
 // Equal-width faction cards that add a column as the window widens; rows stretch so cards in a row
 // share one height. Inside a card, fixed unit slots (5 on mobile, 7 on desktop) line portraits up
@@ -42,18 +59,23 @@ const unitSlots =
 /**
  * My Game's Collection: every catalog unit grouped by faction, owned units with their synced
  * progression and the rest greyed out. Without a roster (signed out, not synced yet, or unreadable)
- * the whole catalog shows greyed out under a prompt explaining how to see it. Laid out per the
- * Cards view of the design handoff (tacticus-planner-docs/ux/wireframes/collection-handoff.md).
+ * the whole catalog shows greyed out under a prompt explaining how to see it. A toolbar searches,
+ * sorts and filters the list; its state lives in the URL. Laid out per the Cards view of the
+ * design handoff (tacticus-planner-docs/ux/wireframes/collection-handoff.md).
  */
 export function CollectionPage() {
   const { t } = useTranslation("common")
-  const state = useCollectionView()
-  const hasSummary =
-    state.status === "ready" && state.view.rosterState === "available"
+  const options = useCollectionOptions()
+  const { query, update, clear } = useCollectionQuery(options)
+  const state = useCollectionView(query)
+  const hasGroups = state.status === "ready" && state.view.groups.length > 0
+  const hasSummary = hasGroups && state.view.rosterState === "available"
   const hasOwned = state.status === "ready" && state.view.owned > 0
   const hasUnowned =
     state.status === "ready" && state.view.owned < state.view.total
-  useTourPageSteps(useCollectionTutorial({ hasSummary, hasOwned, hasUnowned }))
+  useTourPageSteps(
+    useCollectionTutorial({ hasSummary, hasGroups, hasOwned, hasUnowned })
+  )
   const groups = state.status === "ready" ? state.view.groups : undefined
   const origins = useMemo(() => collectionOrigins(groups ?? []), [groups])
 
@@ -76,33 +98,77 @@ export function CollectionPage() {
     )
   }
 
-  const { view, retry } = state
+  const { view, quickFilters, retry } = state
+  const rosterAvailable = view.rosterState === "available"
 
   return (
     <div className="space-y-6" data-testid="collection-page">
-      {view.rosterState === "available" ? (
+      {view.rosterState === "available" ? null : (
+        <RosterPrompt rosterState={view.rosterState} onRetry={retry} />
+      )}
+      <CollectionToolbar
+        // The applied query: a value the page cannot apply yet (no roster, or a quick filter whose
+        // data is missing) stays in the URL for later but is not shown as selected.
+        query={view.query}
+        update={update}
+        clear={clear}
+        options={options ?? EMPTY_OPTIONS}
+        rosterAvailable={rosterAvailable}
+        quickFilters={quickFilters}
+        onRetry={retry}
+      />
+      {rosterAvailable && view.groups.length > 0 ? (
         <p
           className="text-sm text-muted-foreground"
           data-testid="collection-summary"
         >
-          {t("myGame.collection.summary", {
-            owned: view.owned,
-            total: view.total,
-          })}
+          {t(
+            view.filtered
+              ? "myGame.collection.summaryFiltered"
+              : "myGame.collection.summary",
+            { owned: view.owned, total: view.total }
+          )}
         </p>
+      ) : null}
+      {view.groups.length > 0 ? (
+        <div className={factionGrid}>
+          {view.groups.map((group) => (
+            <FactionGroupCard
+              key={group.factionId}
+              group={group}
+              showOwned={rosterAvailable}
+              origins={origins}
+            />
+          ))}
+        </div>
       ) : (
-        <RosterPrompt rosterState={view.rosterState} onRetry={retry} />
+        <NoMatches onClear={clear} />
       )}
-      <div className={factionGrid}>
-        {view.groups.map((group) => (
-          <FactionGroupCard
-            key={group.factionId}
-            group={group}
-            showOwned={view.rosterState === "available"}
-            origins={origins}
-          />
-        ))}
+    </div>
+  )
+}
+
+/** Shown instead of a blank area when the search and filters match no unit. */
+function NoMatches({ onClear }: { onClear: () => void }) {
+  const { t } = useTranslation("common")
+
+  return (
+    <div
+      className="flex flex-col items-center gap-3 rounded-[10px] border border-dashed px-4 py-10 text-center"
+      role="status"
+      data-testid="collection-empty"
+    >
+      <SearchX aria-hidden className="size-8 text-muted-foreground" />
+      <div className="space-y-1">
+        <p className="font-semibold">{t("myGame.collection.empty.title")}</p>
+        <p className="text-sm text-muted-foreground">
+          {t("myGame.collection.empty.body")}
+        </p>
       </div>
+      <Button variant="outline" size="sm" onClick={onClear}>
+        <X aria-hidden />
+        {t("myGame.collection.toolbar.clearFilters")}
+      </Button>
     </div>
   )
 }

@@ -5,6 +5,8 @@ export {
   aggregateBaseUpgradeAmounts,
   aggregateOwnedBaseUpgrades,
   appliedUpgradeIds,
+  inventoryBaseUpgrades,
+  rankUpReadiness,
   type Character,
   type RecipeIngredient,
 } from "./lib/rank-lookup-calc"

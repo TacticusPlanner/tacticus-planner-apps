@@ -16,21 +16,44 @@ import type { PlayerDataChunkDto } from "@workspace/player-data"
 import { readUnitOrigin } from "@/entities/unit"
 import type { TourPageSteps } from "@/shared/tour"
 import { createTestI18n } from "@/test/i18n"
-import { fireEvent, render, screen, within } from "@/test/render"
+import { fireEvent, render, screen, waitFor, within } from "@/test/render"
 import { setViewportWidth } from "@/test/viewport"
 
+import type { CollectionQuery } from "../../model/collection-query"
 import {
   buildCollectionView,
   type CollectionCatalog,
   type CollectionRoster,
 } from "../../model/collection-view"
-import type { CollectionViewState } from "../../model/use-collection-view"
+import type {
+  CollectionViewState,
+  QuickFilterAvailability,
+} from "../../model/use-collection-view"
 
+// `build` lists the page's own query, so toolbar changes reach the rendered list.
 const viewState = vi.hoisted(() => ({
   current: { status: "loading" } as CollectionViewState,
+  build: undefined as
+    ((query: CollectionQuery) => CollectionViewState) | undefined,
 }))
 vi.mock("../../model/use-collection-view", () => ({
-  useCollectionView: () => viewState.current,
+  useCollectionView: (query: CollectionQuery) =>
+    viewState.build?.(query) ?? viewState.current,
+}))
+
+vi.mock("../../model/use-collection-options", () => ({
+  useCollectionOptions: () => ({
+    factions: [
+      { id: "Ultramarines", name: "Ultramarines", alliance: "Imperial" },
+      { id: "BlackLegion", name: "Black Legion", alliance: "Chaos" },
+    ],
+    hits: [1, 2, 3],
+    movements: [3],
+    ranges: [2],
+    damageTypes: [{ id: "Bolter", name: "Bolter" }],
+    traits: [{ id: "Psyker", name: "Psyker" }],
+    shardSources: ["Elite", "none"],
+  }),
 }))
 
 const sync = vi.hoisted(() => ({
@@ -60,21 +83,40 @@ import { CollectionPage } from "./collection-page"
 
 type PlayerCharacter = PlayerDataChunkDto<"characters">[number]
 
+// Every character's combat properties; the toolbar tests only filter on name, alliance and rarity.
+const combat = {
+  meleeDamage: "Bolter",
+  meleeHits: 2,
+  rangedDamage: null,
+  rangedHits: null,
+  rangeDistance: null,
+  movement: 3,
+  traits: [],
+  activeAbilityDamage: [],
+  passiveAbilityDamage: [],
+  shardLocations: [],
+  equipmentSlots: ["I_Crit", "I_Block", "I_Defensive"],
+}
+
 const catalog = {
   characters: [
     {
+      ...combat,
       id: "ultraTitus",
       faction: "Ultramarines",
       alliance: "Imperial",
       initialRarity: "Epic",
     },
     {
+      ...combat,
       id: "ultraCalgar",
       faction: "Ultramarines",
       alliance: "Imperial",
       initialRarity: "Legendary",
     },
     {
+      ...combat,
+      traits: ["Psyker"],
       id: "blackHaarken",
       faction: "BlackLegion",
       alliance: "Chaos",
@@ -114,18 +156,53 @@ const titus = {
   equippedItems: [],
 } as unknown as PlayerCharacter
 
-function ready(roster: CollectionRoster) {
-  viewState.current = {
-    status: "ready",
-    retry: vi.fn(),
-    view: buildCollectionView(catalog, roster, {
-      unitName: (_kind, id) => names[id] ?? id,
-      factionName: (id) =>
-        ({ Ultramarines: "Ultramarines", BlackLegion: "Black Legion" })[id] ??
-        id,
-      locale: "en",
-    }),
+const labels = {
+  unitName: (_kind: string, id: string) => names[id] ?? id,
+  factionName: (id: string) =>
+    ({ Ultramarines: "Ultramarines", BlackLegion: "Black Legion" })[id] ?? id,
+  locale: "en",
+}
+
+type QuickFilters = Extract<
+  CollectionViewState,
+  { status: "ready" }
+>["quickFilters"]
+
+function quickFilters(
+  availability: QuickFilterAvailability,
+  overrides: Partial<QuickFilters> = {}
+): QuickFilters {
+  return {
+    readyToRankUp: availability,
+    needToAscend: availability,
+    canAscend: availability,
+    needToLevel: availability,
+    blueStarReady: availability,
+    missingEquipment: availability,
+    abilitiesBehindLevel: availability,
+    ...overrides,
   }
+}
+
+function ready(
+  roster: CollectionRoster,
+  quick: QuickFilters = quickFilters(
+    roster.state === "signedIn" && roster.characters && roster.mows
+      ? "available"
+      : "needsRoster"
+  )
+) {
+  const state = {
+    status: "ready" as const,
+    retry: vi.fn(),
+    quickFilters: quick,
+    view: buildCollectionView(catalog, roster, labels),
+  }
+  viewState.current = state
+  viewState.build = (query) => ({
+    ...state,
+    view: buildCollectionView(catalog, roster, labels, query),
+  })
 }
 
 const synced: CollectionRoster = {
@@ -140,6 +217,8 @@ beforeAll(async () => {
   i18n = await createTestI18n("en")
 })
 beforeEach(() => {
+  viewState.build = undefined
+  localStorage.clear()
   tour.steps = undefined
   sync.isSyncing = false
   sync.syncNow.mockReset()
@@ -158,11 +237,11 @@ function UnitPageProbe() {
   )
 }
 
-function renderPage(width: number) {
+function renderPage(width: number, entry = "/my-game/collection") {
   setViewportWidth(width)
   return render(
     <I18nextProvider i18n={i18n}>
-      <MemoryRouter initialEntries={["/my-game/collection"]}>
+      <MemoryRouter initialEntries={[entry]}>
         <Routes>
           <Route path="/my-game/collection" element={<CollectionPage />} />
           <Route path="/library/*" element={<UnitPageProbe />} />
@@ -235,6 +314,8 @@ describe.each([
 
     expectTourTargetsExist(form)
     expect(tour.steps?.[form]?.map((step) => step.target)).toEqual([
+      '[data-testid="collection-toolbar"]',
+      '[data-testid="collection-quick-filters"]',
       '[data-testid="collection-summary"]',
       '[data-testid="collection-faction-group"]',
       '[data-testid="collection-owned-tile"]',
@@ -263,6 +344,8 @@ describe.each([
     expect(screen.queryByTestId("collection-unowned-tile")).toBeNull()
     expectTourTargetsExist(form)
     expect(tour.steps?.[form]?.map((step) => step.target)).toEqual([
+      '[data-testid="collection-toolbar"]',
+      '[data-testid="collection-quick-filters"]',
       '[data-testid="collection-summary"]',
       '[data-testid="collection-faction-group"]',
       '[data-testid="collection-owned-tile"]',
@@ -291,6 +374,8 @@ describe.each([
     // Without a roster the summary and owned-tile steps are left out.
     expectTourTargetsExist(form)
     expect(tour.steps?.[form]?.map((step) => step.target)).toEqual([
+      '[data-testid="collection-toolbar"]',
+      '[data-testid="collection-quick-filters"]',
       '[data-testid="collection-faction-group"]',
       '[data-testid="collection-unowned-tile"]',
     ])
@@ -447,5 +532,297 @@ describe("CollectionPage states", () => {
     expect(
       viewState.current.status === "ready" && viewState.current.retry
     ).toHaveBeenCalledTimes(1)
+  })
+})
+
+const factionsShown = () =>
+  screen
+    .queryAllByTestId("collection-faction-group")
+    .map((group) => group.getAttribute("data-faction"))
+
+describe("CollectionPage toolbar on desktop", () => {
+  it("keeps search, Sort and Filters on one row with the filters collapsed", () => {
+    ready(synced)
+    renderPage(1280)
+
+    const toolbar = screen.getByRole("search", {
+      name: "Search, sort and filter units",
+    })
+    expect(
+      within(toolbar).getByRole("searchbox", { name: "Search units" })
+    ).toBeInTheDocument()
+    expect(
+      within(toolbar).getByRole("combobox", { name: "Sort: Rarity" })
+    ).toBeInTheDocument()
+    const filters = within(toolbar).getByRole("button", { name: "Filters" })
+    expect(filters).toHaveAttribute("aria-expanded", "false")
+    expect(
+      screen.queryByRole("group", { name: "Filters" })
+    ).not.toBeInTheDocument()
+
+    fireEvent.click(filters)
+
+    expect(filters).toHaveAttribute("aria-expanded", "true")
+    const fields = screen.getByRole("group", { name: "Filters" })
+    expect(within(fields).getByText("Alliance")).toBeInTheDocument()
+    expect(within(fields).getByText("Unit type")).toBeInTheDocument()
+  })
+
+  it("applies a chosen sort and remembers it for the next visit", () => {
+    ready(synced)
+    renderPage(1280)
+
+    const sort = screen.getByRole("combobox", { name: "Sort: Rarity" })
+    sort.focus()
+    fireEvent.keyDown(sort, { key: "Enter" })
+    fireEvent.click(screen.getByRole("option", { name: "Rank" }))
+
+    expect(
+      screen.getByRole("combobox", { name: "Sort: Rank" })
+    ).toBeInTheDocument()
+    expect(localStorage.getItem("collection.sort")).toBe("rank")
+  })
+
+  it("opens the filters when a standalone filter is already set", () => {
+    ready(synced)
+    renderPage(1280, "/my-game/collection?alliance=Imperial")
+
+    expect(screen.getByRole("group", { name: "Filters" })).toBeInTheDocument()
+  })
+
+  it("reports the active filters and clears them in one action, keeping the sort", () => {
+    ready(synced)
+    renderPage(
+      1280,
+      "/my-game/collection?q=ti&alliance=Imperial&quick=needToLevel&sort=rank"
+    )
+
+    expect(
+      screen.getByRole("button", { name: "Filters (3)" })
+    ).toBeInTheDocument()
+    expect(screen.getAllByRole("link")).toHaveLength(1)
+
+    fireEvent.click(screen.getByRole("button", { name: "Clear filters" }))
+
+    expect(screen.getByRole("button", { name: "Filters" })).toBeInTheDocument()
+    expect(
+      screen.queryByRole("button", { name: "Clear filters" })
+    ).not.toBeInTheDocument()
+    expect(screen.getByRole("searchbox", { name: "Search units" })).toHaveValue(
+      ""
+    )
+    expect(
+      screen.getByRole("combobox", { name: "Sort: Rank" })
+    ).toBeInTheDocument()
+    expect(screen.getAllByRole("link")).toHaveLength(4)
+    expect(screen.getByTestId("collection-summary")).toHaveTextContent(
+      "1 of 4 units owned"
+    )
+  })
+
+  it("counts only matching units and hides factions without a match", () => {
+    ready(synced)
+    renderPage(1280, "/my-game/collection?alliance=Imperial")
+
+    expect(screen.getByTestId("collection-summary")).toHaveTextContent(
+      "1 of 3 matching units owned"
+    )
+    expect(factionsShown()).toEqual(["Ultramarines"])
+  })
+
+  it("narrows the list once the user pauses typing a name", async () => {
+    ready(synced)
+    renderPage(1280)
+
+    const search = screen.getByRole("searchbox", { name: "Search units" })
+    fireEvent.change(search, { target: { value: "HAAR" } })
+
+    // The text shows at once; the list follows when typing pauses.
+    expect(search).toHaveValue("HAAR")
+    expect(screen.getAllByRole("link")).toHaveLength(4)
+    await waitFor(() => expect(screen.getAllByRole("link")).toHaveLength(1))
+    expect(factionsShown()).toEqual(["BlackLegion"])
+    expect(search).toHaveValue("HAAR")
+
+    // Clear filters, a change from outside the box, replaces the typed text.
+    fireEvent.click(screen.getByRole("button", { name: "Clear filters" }))
+    expect(search).toHaveValue("")
+    expect(screen.getAllByRole("link")).toHaveLength(4)
+  })
+
+  it("shows an empty state with Clear filters instead of a blank page", () => {
+    ready(synced)
+    renderPage(1280, "/my-game/collection?q=zzz")
+
+    const empty = screen.getByTestId("collection-empty")
+    expect(empty).toHaveTextContent("No unit matches these filters")
+    expect(screen.queryByTestId("collection-summary")).not.toBeInTheDocument()
+    expect(screen.queryByRole("link")).not.toBeInTheDocument()
+
+    fireEvent.click(
+      within(empty).getByRole("button", { name: "Clear filters" })
+    )
+
+    expect(screen.getAllByRole("link")).toHaveLength(4)
+  })
+
+  it("selects one quick filter at a time and clears it when selected again", () => {
+    ready(synced)
+    renderPage(1280)
+
+    const quick = screen.getByRole("radiogroup", { name: "Quick filters" })
+    const needToLevel = within(quick).getByRole("radio", {
+      name: "Need to level",
+    })
+    fireEvent.click(within(quick).getByRole("radio", { name: "Can ascend" }))
+    fireEvent.click(needToLevel)
+
+    expect(needToLevel).toHaveAttribute("aria-checked", "true")
+    expect(
+      within(quick).getByRole("radio", { name: "Can ascend" })
+    ).toHaveAttribute("aria-checked", "false")
+    expect(screen.getAllByRole("link")).toHaveLength(1)
+
+    fireEvent.click(needToLevel)
+
+    expect(needToLevel).toHaveAttribute("aria-checked", "false")
+    expect(screen.getAllByRole("link")).toHaveLength(4)
+  })
+
+  it("disables the roster-dependent controls without a roster and says why", () => {
+    ready({ state: "anonymous" })
+    renderPage(1280, "/my-game/collection?quick=canAscend&alliance=Imperial")
+
+    const quick = screen.getByRole("radiogroup", { name: "Quick filters" })
+    for (const chip of within(quick).getAllByRole("radio")) {
+      expect(chip).toBeDisabled()
+      expect(chip).toHaveAccessibleDescription(
+        "Quick filters need a synced roster."
+      )
+    }
+    // The alliance applies; the quick filter from the link does not.
+    expect(factionsShown()).toEqual(["Ultramarines"])
+    expect(screen.getAllByRole("link")).toHaveLength(3)
+    expect(
+      within(quick).getByRole("radio", { name: "Can ascend" })
+    ).toHaveAttribute("aria-checked", "false")
+    expect(
+      screen.getByRole("button", { name: "Filters (1)" })
+    ).toBeInTheDocument()
+
+    const fields = screen.getByRole("group", { name: "Filters" })
+    expect(
+      within(fields).getByRole("group", { name: "Rank range" })
+    ).toHaveAccessibleDescription(
+      "Rank, stars and ownership filters need a synced roster."
+    )
+    expect(
+      within(fields).getByRole("combobox", { name: "Lowest rank" })
+    ).toBeDisabled()
+    expect(within(fields).getByLabelText("Ownership")).toBeDisabled()
+  })
+
+  it("explains a quick filter that needs the synced inventory", () => {
+    ready(
+      synced,
+      quickFilters("available", {
+        readyToRankUp: "needsInventory",
+        blueStarReady: "failed",
+      })
+    )
+    renderPage(1280)
+
+    const quick = screen.getByRole("radiogroup", { name: "Quick filters" })
+    expect(
+      within(quick).getByRole("radio", { name: "Ready to rank up" })
+    ).toHaveAccessibleDescription(
+      "Ready to rank up: needs your synced inventory."
+    )
+    expect(
+      within(quick).getByRole("radio", { name: "Blue star ready" })
+    ).toHaveAccessibleDescription(
+      "Blue star ready: its game data couldn't be loaded."
+    )
+    expect(
+      within(quick).getByRole("radio", { name: "Can ascend" })
+    ).toBeEnabled()
+
+    fireEvent.click(screen.getByRole("button", { name: "Try again" }))
+    expect(
+      viewState.current.status === "ready" && viewState.current.retry
+    ).toHaveBeenCalledOnce()
+  })
+
+  it("keeps a chip disabled while its data is still loading", () => {
+    ready(synced, quickFilters("available", { canAscend: "loading" }))
+    renderPage(1280)
+
+    const quick = screen.getByRole("radiogroup", { name: "Quick filters" })
+    expect(
+      within(quick).getByRole("radio", { name: "Can ascend" })
+    ).toBeDisabled()
+    expect(
+      within(quick).getByRole("radio", { name: "Need to level" })
+    ).toBeEnabled()
+    expect(
+      screen.queryByRole("button", { name: "Try again" })
+    ).not.toBeInTheDocument()
+  })
+
+  it("applies a combat filter signed out, leaving out Machines of War", () => {
+    ready({ state: "anonymous" })
+    renderPage(1280, "/my-game/collection?trait=Psyker")
+
+    expect(screen.getAllByRole("link")).toHaveLength(1)
+    expect(factionsShown()).toEqual(["BlackLegion"])
+    expect(
+      screen.getByRole("button", { name: "Filters (1)" })
+    ).toBeInTheDocument()
+    expect(screen.getByRole("region", { name: "Combat" })).toBeInTheDocument()
+  })
+
+  it("shows no toolbar while loading or after a catalog failure", () => {
+    viewState.current = { status: "loading" }
+    const { unmount } = renderPage(1280)
+    expect(screen.queryByRole("search")).not.toBeInTheDocument()
+    unmount()
+
+    viewState.current = { status: "catalogError", retry: vi.fn() }
+    renderPage(1280)
+    expect(screen.queryByRole("search")).not.toBeInTheDocument()
+  })
+})
+
+describe("CollectionPage toolbar on mobile", () => {
+  it("stacks the toolbar and opens the filters in a sheet", () => {
+    ready(synced)
+    renderPage(420)
+
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument()
+    fireEvent.click(screen.getByRole("button", { name: "Filters" }))
+
+    const sheet = screen.getByRole("dialog", { name: "Filters" })
+    expect(within(sheet).getByText("Alliance")).toBeInTheDocument()
+
+    fireEvent.click(within(sheet).getByRole("button", { name: "Done" }))
+
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument()
+  })
+
+  it("narrows the list by a rarity set in the sheet", () => {
+    ready(synced)
+    renderPage(420)
+
+    fireEvent.click(screen.getByRole("button", { name: "Filters" }))
+    const sheet = screen.getByRole("dialog", { name: "Filters" })
+    fireEvent.click(within(sheet).getByRole("combobox", { name: "Rarity" }))
+    fireEvent.click(screen.getByRole("option", { name: /Legendary/ }))
+    fireEvent.click(within(sheet).getByRole("button", { name: "Done" }))
+
+    // Titus is owned at Legendary; Calgar is unowned but starts Legendary.
+    expect(screen.getAllByRole("link")).toHaveLength(2)
+    expect(
+      screen.getByRole("button", { name: "Filters (1)" })
+    ).toBeInTheDocument()
   })
 })

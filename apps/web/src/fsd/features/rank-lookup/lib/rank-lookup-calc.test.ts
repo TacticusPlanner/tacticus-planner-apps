@@ -6,6 +6,8 @@ import {
   aggregateOwnedBaseUpgrades,
   appliedUpgradeIds,
   groupUpgradesByRank,
+  inventoryBaseUpgrades,
+  rankUpReadiness,
   rankUpUpgradeIds,
   type Character,
   type Upgrade,
@@ -261,5 +263,106 @@ describe("appliedUpgradeIds", () => {
 
   it("returns [] when currentRank is the very first rank with no slots applied", () => {
     expect(appliedUpgradeIds(character, "Stone1", [])).toEqual([])
+  })
+})
+
+describe("rankUpReadiness", () => {
+  // Arjac's Silver 1 rank and the recipes of its two Armour upgrades, copied from the served catalog
+  // (goal-planning's `arjac-catalog.json`): the spec's "Ready to rank up — worked example".
+  const base = (id: string, label: string): Upgrade => ({
+    id: upgradeId(id),
+    label,
+    rarity: "Rare",
+    stat: "Armour",
+    crafted: false,
+    recipe: [],
+  })
+  const crafted = (
+    id: string,
+    label: string,
+    recipe: { material: string; count: number }[]
+  ): Upgrade => ({
+    ...base(id, label),
+    crafted: true,
+    recipe: recipe.map((ingredient) => ({
+      material: upgradeId(ingredient.material),
+      count: ingredient.count,
+    })),
+  })
+  const upgrades = new Map(
+    [
+      base("upgArmR031", "Beast Hide"),
+      base("upgArmR015", "Subdermal Plating"),
+      base("upgArmU005", "Ceramite Lump"),
+      base("upgArmC002", "Fine Purity Seal"),
+      crafted("upgArmE031C", "Ice Troll Hide", [
+        { material: "upgArmR031", count: 9 },
+      ]),
+      crafted("upgArmU010C", "Blessed Ceramite", [
+        { material: "upgArmC002", count: 6 },
+      ]),
+      crafted("upgArmE004C", "Ceramite Sheet", [
+        { material: "upgArmR015", count: 6 },
+        { material: "upgArmU010C", count: 1 },
+        { material: "upgArmU005", count: 6 },
+      ]),
+    ].map((upgrade) => [upgrade.id, upgrade])
+  )
+  const arjac: Character = {
+    id: unitIdSchema.parse("spaceArjac"),
+    name: "Arjac",
+    rankUpUpgrades: [
+      {
+        rank: "Silver1",
+        upgradeIds: upgradeIds([
+          "upgHpE031C",
+          "upgHpE012",
+          "upgDmgE031C",
+          "upgDmgE009C",
+          "upgArmE031C",
+          "upgArmE004C",
+        ]),
+      },
+    ],
+  }
+  const inventory = (fineSeals: number) =>
+    inventoryBaseUpgrades(
+      [
+        { id: upgradeId("upgArmE031C"), amount: 1 },
+        { id: upgradeId("upgArmR015"), amount: 6 },
+        { id: upgradeId("upgArmU005"), amount: 6 },
+        { id: upgradeId("upgArmC002"), amount: fineSeals },
+      ],
+      upgrades
+    )
+
+  it("is ready when the inventory covers the unfilled slots' base materials", () => {
+    expect(
+      rankUpReadiness(arjac, "Silver1", [0, 1, 2, 3], inventory(6), upgrades)
+    ).toBe(true)
+  })
+
+  it("is not ready when one base material is short", () => {
+    expect(
+      rankUpReadiness(arjac, "Silver1", [0, 1, 2, 3], inventory(5), upgrades)
+    ).toBe(false)
+  })
+
+  it("is ready with every slot of the rank filled", () => {
+    expect(
+      rankUpReadiness(arjac, "Silver1", [0, 1, 2, 3, 4, 5], new Map(), upgrades)
+    ).toBe(true)
+  })
+
+  it("is not ready at a rank the catalog lists no upgrades for", () => {
+    expect(rankUpReadiness(arjac, "Silver2", [], inventory(6), upgrades)).toBe(
+      false
+    )
+  })
+
+  it("does not cover an upgrade the catalog does not know", () => {
+    expect(
+      rankUpReadiness(arjac, "Silver1", [1, 2, 3, 4, 5], inventory(6), upgrades)
+    ).toBe(false)
   })
 })

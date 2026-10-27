@@ -221,3 +221,41 @@ export function appliedUpgradeIds(
   )
   return ids
 }
+
+/**
+ * The inventory as base-upgrade totals, the form `rankUpReadiness` compares against: crafted
+ * upgrades are reduced through their recipes, so an already-crafted upgrade counts toward its
+ * ingredients. Compute it once and reuse it across characters.
+ */
+export function inventoryBaseUpgrades(
+  inventoryUpgrades: UpgradeAmount[],
+  upgradesById: ReadonlyMap<UpgradeId, Upgrade>
+): ReadonlyMap<UpgradeId, number> {
+  return reduceToBaseUpgrades(inventoryUpgrades, upgradesById)
+}
+
+/**
+ * Whether the inventory (`ownedBase`, from `inventoryBaseUpgrades`) covers every base material
+ * still needed to fill `currentRank`'s upgrade slots: the slots not in `appliedSlotIndices` are
+ * reduced to base upgrades and every need must be met. A rank with every slot filled is ready; a
+ * rank the catalog lists no upgrades for is not, since nothing could be checked. The inventory is
+ * not reserved, so two characters can both be ready on the same materials; whether `currentRank` is
+ * below the rarity's cap is the caller's concern.
+ */
+export function rankUpReadiness(
+  character: Character,
+  currentRank: Rank,
+  appliedSlotIndices: readonly number[],
+  ownedBase: ReadonlyMap<UpgradeId, number>,
+  upgradesById: ReadonlyMap<UpgradeId, Upgrade>
+): boolean {
+  const slots = rankUpgradeMap(character).get(currentRank)
+  if (!slots) return false
+  const remaining = slots.filter(
+    (_, index) => !appliedSlotIndices.includes(index)
+  )
+  if (remaining.length === 0) return true
+  return aggregateBaseUpgrades(remaining, upgradesById).every(
+    (need) => (ownedBase.get(need.id) ?? 0) >= need.count
+  )
+}
