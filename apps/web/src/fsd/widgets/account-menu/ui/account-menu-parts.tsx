@@ -51,6 +51,20 @@ export function MenuLinkRow({
 }
 
 /** One full-width row of the desktop account card; `chevron` marks rows that open a sub-view. */
+/** Small red dot marking unread activity, matching the feedback button's indicator. */
+export function UnreadDot({
+  className,
+  ...props
+}: React.ComponentProps<"span">) {
+  return (
+    <span
+      aria-hidden="true"
+      className={cn("block size-2 rounded-full bg-destructive", className)}
+      {...props}
+    />
+  )
+}
+
 export function MenuRow({
   chevron,
   className,

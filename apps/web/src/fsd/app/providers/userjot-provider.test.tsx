@@ -157,7 +157,7 @@ describe("UserJotProvider", () => {
       expect(open).toHaveBeenCalledOnce()
     })
 
-    it("inits the widget to open the newest unseen update itself, so reading it clears the unread dot", async () => {
+    it("inits the widget never to pop updates open by itself", async () => {
       delete window.uj
       delete window.$ujq
       vi.resetModules()
@@ -167,7 +167,7 @@ describe("UserJotProvider", () => {
       const queued = window.$ujq as unknown[][] | undefined
       const init = queued?.find(([method]) => method === "init")
       expect(init?.[2]).toMatchObject({
-        widget: { notifications: { updates: "full" } },
+        widget: { notifications: { updates: "none" } },
       })
     })
 

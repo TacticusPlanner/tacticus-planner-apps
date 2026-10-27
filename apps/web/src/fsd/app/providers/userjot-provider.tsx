@@ -60,9 +60,9 @@ if (!window.uj) {
       widget: {
         launcher: false,
         whispers: false,
-        // The unread count includes the newest update until its own page is opened in the
-        // widget; "full" opens it once when the page is focused, so the feedback dot can clear.
-        notifications: { updates: "full" },
+        // Never pop updates open: an unread newest update instead shows a dot that leads to the
+        // Changelog (desktop feedback button, mobile avatar and Changelog row).
+        notifications: { updates: "none" },
       },
     }
   )

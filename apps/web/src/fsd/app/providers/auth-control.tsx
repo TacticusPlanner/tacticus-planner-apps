@@ -28,6 +28,7 @@ import {
   AccountAvatar,
   AccountCard,
   GuestAccountMenu,
+  UnreadDot,
 } from "@/widgets/account-menu"
 import { ManageAccountDialog, type ManageAccountTab } from "@/features/account"
 import { useCurrentUser } from "@/entities/account"
@@ -78,7 +79,12 @@ export function AuthControl() {
   const isInteractionInProgress = inProgress !== InteractionStatus.None
   const account = instance.getActiveAccount() ?? accounts[0]
   const { state: accountState } = useCurrentUser()
-  const { open: openUserJot, status: feedbackStatus } = useUserJot()
+  const {
+    open: openUserJot,
+    status: feedbackStatus,
+    unreadCount,
+  } = useUserJot()
+  const hasUnread = unreadCount > 0
   const feedbackUnavailable =
     feedbackStatus === "failed"
       ? t("nav.quickActions.feedbackUnavailable")
@@ -180,6 +186,7 @@ export function AuthControl() {
         setMenuOpen(false)
         openUserJot({ to: "updates" })
       }}
+      changelogUnread={hasUnread}
       feedbackUnavailable={feedbackUnavailable}
       onImportV1={goToV1Import}
       onOpenAccountSettings={() => openManageAccount("integration")}
@@ -199,7 +206,7 @@ export function AuthControl() {
               type="button"
               aria-busy={identityPending || undefined}
               aria-label={t("auth.userMenu")}
-              className="rounded-full outline-hidden focus-visible:ring-2 focus-visible:ring-ring"
+              className="relative rounded-full outline-hidden focus-visible:ring-2 focus-visible:ring-ring"
               data-testid="auth-account-trigger"
             >
               <AccountAvatar
@@ -208,6 +215,14 @@ export function AuthControl() {
                 displayName={accountName}
                 pending={identityPending}
               />
+              {/* Mobile has no feedback button, so unread changelog activity shows here and on
+                  the drawer's Changelog row. */}
+              {hasUnread ? (
+                <UnreadDot
+                  className="absolute top-0 right-0 size-2.5 ring-2 ring-topbar"
+                  data-testid="auth-account-unread-indicator"
+                />
+              ) : null}
             </button>
           </DrawerTrigger>
           <DrawerContent

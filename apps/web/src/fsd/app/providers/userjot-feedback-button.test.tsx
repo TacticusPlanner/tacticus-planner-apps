@@ -14,14 +14,28 @@ vi.mock("./userjot-provider", () => ({
 import { UserJotFeedbackButton } from "./userjot-feedback-button"
 
 describe("UserJotFeedbackButton", () => {
-  it("opens the widget's default view on click, regardless of unread activity", () => {
+  it("opens the widget's default view on click when there is no unread activity", () => {
     const open = vi.fn()
-    useUserJotMock.mockReturnValue({ open, unreadCount: 3 })
+    useUserJotMock.mockReturnValue({ open, unreadCount: 0 })
     render(<UserJotFeedbackButton />)
 
-    fireEvent.click(screen.getByTestId("userjot-feedback-button"))
+    const button = screen.getByTestId("userjot-feedback-button")
+    expect(button).toHaveAccessibleName("feedback.button")
+    fireEvent.click(button)
 
     expect(open).toHaveBeenCalledWith()
+  })
+
+  it("opens the Changelog on click while there is unread activity, so it can be read and cleared", () => {
+    const open = vi.fn()
+    useUserJotMock.mockReturnValue({ open, unreadCount: 1 })
+    render(<UserJotFeedbackButton />)
+
+    const button = screen.getByTestId("userjot-feedback-button")
+    expect(button).toHaveAccessibleName("feedback.changelog")
+    fireEvent.click(button)
+
+    expect(open).toHaveBeenCalledWith({ to: "updates" })
   })
 
   it("shows no unread indicator when there is no unread activity", () => {

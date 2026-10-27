@@ -29,10 +29,17 @@ On desktop, the app SHALL show a feedback entry-point button in the section head
 - **WHEN** the widget reports unread updates or activity
 - **THEN** the desktop header button shows an unread indicator, and the indicator clears once that activity has been seen
 
-#### Scenario: A new changelog update clears once shown
+#### Scenario: The unread indicator leads to the changelog
 
-- **WHEN** a changelog update is published that the user has not yet opened in the widget
-- **THEN** the widget opens that update once, while the page is focused, so it counts as seen and stops holding the unread indicator
+- **WHEN** the widget reports unread activity (for example a changelog update the user has not opened)
+- **THEN** clicking the desktop feedback button opens the widget's Updates instead of its home, so the update can be read and the indicator cleared
+- **AND** with no unread activity the button opens the widget's home as before
+- **AND** the widget never opens updates by itself
+
+#### Scenario: Unread activity is reflected on mobile
+
+- **WHEN** the widget reports unread activity on mobile
+- **THEN** the account avatar in the header and the drawer's Changelog row each show an unread indicator
 
 ### Requirement: Mobile entry point lives in the account drawer
 
