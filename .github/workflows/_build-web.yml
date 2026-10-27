@@ -127,6 +127,15 @@ jobs:
             exit 1
           fi
 
+      # Generated game text and images come from one data-mines commit (spec: datamine-source).
+      - name: Check the datamine is pinned to a commit
+        if: ${{ inputs.run-validation }}
+        run: |
+          if [ "$(cat apps/web/datamine/REF)" = "local" ]; then
+            echo "::error::apps/web/datamine/REF is 'local'. Run 'pnpm --filter web datamine:pull <data-mines-tag>' before merging."
+            exit 1
+          fi
+
       - name: Check formatting
         if: ${{ inputs.run-validation }}
         run: pnpm exec prettier --check "**/*.{ts,tsx}"
