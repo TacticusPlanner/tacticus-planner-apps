@@ -1,0 +1,22 @@
+{
+  "Neuroparasite": {
+    "description": "Jeder Gegner, der <style=\"DMG_Psychic\">Psi-Schaden</style> durch den <style=\"Faction_Tyranids\">Neurotrophen</style> erleidet, wird mit einem <style=\"Debuff_Neuroparasite\">Neuroparasiten</style> infiziert, bis die Einheit entweder geheilt wird oder der <style=\"Faction_Tyranids\">Neurotroph</style> besiegt ist. Immer, wenn eine mit einem <style=\"Debuff_Neuroparasite\">Neuroparasiten</style> infizierte Einheit <style=\"DMG_Psychic\">Psi-Schaden</style> erleidet oder durch einen Angriff oder eine Fähigkeit <style=\"Debuff_Pinned\">unterdrückt</style> wird, erhöht sich die Stufe des <style=\"Debuff_Neuroparasite\">Neuroparasiten</style> um 1, bis zu einem Maximum von <style=\"STAT\">{[buffMaxLevel]}</style>.\n\nDer durch den <style=\"Faction_Tyranids\">Neurotrophen</style> verursachte <style=\"DMG_Psychic\">Psi-Schaden</style> wird für jede Stufe des <style=\"Debuff_Neuroparasite\">Neuroparasiten</style> am Ziel um <style=\"Stat_Damage\">+{[extraDmg]} Schaden</style> erhöht.",
+    "variables": {
+      "extraDmg": [
+        17, 20, 24, 27, 31, 35, 38, 42, 46, 50, 54, 58, 62, 66, 70, 74, 78, 81,
+        85, 89, 95, 102, 117, 133, 148, 164, 179, 195, 210, 226, 241, 257, 272,
+        287, 303, 318, 334, 349, 365, 387, 417, 449, 484, 522, 592, 662, 732,
+        802, 872, 942, 952, 965, 978, 995, 1012, 1029, 1046, 1067, 1088, 1109,
+        1135, 1160, 1186, 1211, 1237
+      ],
+      "buffMaxLevel": [
+        10, 10, 10, 10, 10, 10, 10, 10, 12, 12, 12, 12, 12, 12, 12, 12, 12, 13,
+        13, 13, 13, 13, 13, 13, 13, 13, 14, 14, 14, 14, 14, 14, 14, 14, 14, 15,
+        15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15,
+        15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15
+      ]
+    },
+    "constants": {},
+    "scaled": ["extraDmg"]
+  }
+}

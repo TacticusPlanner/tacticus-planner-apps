@@ -94,6 +94,9 @@ committed; the raw files are fetched into a gitignored cache.
 - Generators call `ensureDatamine()` from `apps/web/scripts/datamine.mjs`,
   which re-fetches when the pin or the list changed (`pnpm --filter web
 datamine:sync` does the same by hand).
+- Datamine generators, re-run from `apps/web` after each pull and commit their
+  output: `node scripts/generate-ability-text-i18n.mjs` (`npcAbilityText`) and
+  `node scripts/generate-raid-boss-i18n.mjs` (`raidBoss*`).
 
 ## Coding Style & Naming Conventions
 

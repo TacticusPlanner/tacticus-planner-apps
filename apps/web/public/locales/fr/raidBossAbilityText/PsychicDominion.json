@@ -1,0 +1,21 @@
+{
+  "PsychicDominion": {
+    "description": "<style=\"Faction_ThousandSons\">Magnus</style> subit <style=\"DMG_Psychic\">-{[dmgReductionPct]} % de dégâts psychiques</style> et ses attaques infligent <style=\"Stat_Damage\">+{[dmgPct]} % de dégâts</style> aux <style=\"Psyker\">Psykers</style>.",
+    "variables": {
+      "dmgReductionPct": [
+        25, 25, 25, 25, 25, 25, 25, 25, 33, 33, 33, 33, 33, 33, 33, 33, 33, 40,
+        40, 40, 40, 40, 40, 40, 40, 40, 50, 50, 50, 50, 50, 50, 50, 50, 50, 66,
+        66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66,
+        66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66
+      ],
+      "dmgPct": [
+        25, 25, 25, 25, 25, 25, 25, 25, 33, 33, 33, 33, 33, 33, 33, 33, 33, 40,
+        40, 40, 40, 40, 40, 40, 40, 40, 50, 50, 50, 50, 50, 50, 50, 50, 50, 66,
+        66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66,
+        66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66
+      ]
+    },
+    "constants": {},
+    "scaled": []
+  }
+}

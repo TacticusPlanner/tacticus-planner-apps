@@ -1,0 +1,26 @@
+{
+  "TargetLock": {
+    "description": "Zu Beginn seines Zuges verursacht der <style=\"Faction_Tau\">Kampfanzug Sturmflut</style> <style=\"Stat_Hits\">{[nrOfHits]}x</style> <style=\"DMG_Blast\">{[minDmg]}–{[maxDmg]} Explosionsschaden</style> an allen gegnerischen Einheiten mit einem <style=\"Debuff_Markerlight\">Markierungslicht</style>.",
+    "variables": {
+      "minDmg": [
+        18, 22, 25, 29, 32, 37, 41, 45, 49, 53, 57, 61, 66, 70, 74, 78, 82, 86,
+        90, 95, 100, 108, 124, 141, 157, 173, 190, 206, 222, 239, 255, 272, 288,
+        304, 321, 337, 354, 370, 386, 409, 442, 476, 512, 553, 627, 701, 775,
+        849, 923, 997, 1079, 1113, 1149, 1190, 1232, 1274, 1317, 1367, 1417,
+        1468, 1526, 1585, 1645, 1706, 1768
+      ],
+      "maxDmg": [
+        22, 26, 31, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100,
+        105, 110, 116, 122, 132, 152, 172, 192, 212, 232, 252, 272, 292, 312,
+        332, 352, 372, 392, 412, 432, 452, 472, 500, 540, 581, 626, 676, 766,
+        857, 947, 1038, 1128, 1219, 1318, 1361, 1404, 1454, 1505, 1557, 1610,
+        1670, 1732, 1794, 1865, 1937, 2010, 2085, 2161
+      ]
+    },
+    "constants": {
+      "damageProfile": "Blast",
+      "nrOfHits": "3"
+    },
+    "scaled": ["minDmg", "maxDmg"]
+  }
+}

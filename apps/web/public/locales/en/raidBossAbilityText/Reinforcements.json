@@ -1,18 +1,19 @@
 {
   "Reinforcements": {
-    "description": "At the start of <style=\"Faction_AstraMilitarum\">Sibyll Devine’s</style> turn, <style=\"STAT\">{[nrOfSummons]}</style> <style=\"Summon\"><style=\"Faction_AstraMilitarum\">Cadian Guardsmen</style></style> are summoned at the top of the map and immediately take a turn. Each time a friendly <style=\"Summon\"><style=\"Faction_AstraMilitarum\">Cadian Guardsman</style></style> is defeated, <style=\"Faction_AstraMilitarum\">Sibyll Devine</style> is dealt <style=\"DMG_Psychic\">{[dmg]} Psychic Damage</style>.",
+    "description": "At the start of <style=\"Faction_AstraMilitarum\">Sibyll Devine’s</style> turn, <style=\"STAT\">{[nrOfSummons]}</style> <style=\"Summon\"><style=\"Faction_AstraMilitarum\">Cadian Guardsmen</style></style> are summoned at the top of the map and immediately take a turn. Each time a friendly <style=\"Summon\"><style=\"Faction_AstraMilitarum\">Cadian Guardsman</style></style> is defeated, <style=\"Faction_AstraMilitarum\">Sibyll Devine</style> loses <style=\"Stat_Health\">{[hp]} Health</style>.",
     "variables": {
       "nrOfSummons": [
         6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
         6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
         6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6
       ],
-      "dmg": [
-        5, 6, 7, 8, 10, 11, 12, 18, 20, 23, 27, 30, 33, 37, 40, 50, 70, 70, 75,
-        85, 95, 105, 110, 120, 145, 200, 200, 225, 250, 275, 300, 325, 350, 385,
-        415, 495, 615, 740, 865, 990, 1110, 1235, 1360, 1480, 1605, 1730, 1850,
-        1975, 2100, 2220, 2400, 2800, 4000, 4000, 4000, 4250, 4251, 4252, 4253,
-        4254, 4255, 4256, 4257, 4258, 4259
+      "hp": [
+        14, 18, 22, 25, 29, 32, 36, 54, 72, 84, 96, 108, 120, 132, 144, 190,
+        240, 290, 325, 360, 395, 430, 470, 505, 655, 810, 960, 1080, 1200, 1320,
+        1440, 1560, 1680, 1840, 2000, 2665, 3335, 4000, 4665, 5335, 6000, 6665,
+        7335, 8000, 8665, 9335, 10000, 10665, 11335, 12000, 16000, 20000, 24000,
+        26000, 28000, 30000, 32000, 34000, 36000, 38000, 40000, 42000, 45335,
+        48665, 52000
       ],
       "summonHp": [
         25, 30, 35, 40, 45, 51, 57, 62, 68, 74, 80, 85, 91, 97, 103, 108, 114,
@@ -36,9 +37,8 @@
       ]
     },
     "constants": {
-      "unitId": "GuildBoss7Npc1AstraGuardsmanSummon",
-      "damageProfile": "Psychic"
+      "unitId": "GuildBoss7Npc1AstraGuardsmanSummon"
     },
-    "scaled": ["dmg", "summonHp", "summonDmg", "summonArmor"]
+    "scaled": ["summonHp", "summonDmg", "summonArmor"]
   }
 }

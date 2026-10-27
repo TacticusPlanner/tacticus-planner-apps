@@ -1,49 +1,53 @@
-// One-off generator for the English raid-boss game-data i18n namespaces, keyed by entity id:
-//   public/locales/en/raidBosses.json         unitSetId -> display name
-//   public/locales/en/raidBossAbilities.json  abilityId -> ability name (referenced ids only)
-//   public/locales/en/raidBossTraits.json     traitId   -> trait name (referenced ids only)
-//   public/locales/en/raidBossAbilityText/<abilityId>.json { <abilityId>: { description, variables, constants, scaled } }
-//   public/locales/en/raidBossAbilityTextGaps.json         sorted referenced ability ids with no rules text
-//   public/locales/en/raidBossTraitText.json  traitId   -> { description, styledName, variables }
+// Generator for the raid-boss game-data i18n namespaces, keyed by entity id:
+//   public/locales/en/raidBosses.json                        unitSetId -> display name
+//   public/locales/{en,de,es,fr}/raidBossAbilities.json     abilityId -> ability name (referenced ids only)
+//   public/locales/{en,de,es,fr}/raidBossTraits.json        traitId   -> trait name (referenced ids only)
+//   public/locales/{en,de,es,fr}/raidBossAbilityText/<abilityId>.json
+//     { <abilityId>: { description, variables, constants, scaled } }
+//   public/locales/en/raidBossAbilityTextGaps.json          sorted referenced ability ids with no rules text
+//   public/locales/{en,de,es,fr}/raidBossTraitText.json     traitId   -> { description, styledName, variables }
 //
-// Source: tacticusplanner (develop) datamine. Other locales fall back to en (i18next fallbackLng),
-// matching the existing `traits`/`characters` game-data namespaces which are en-only. Re-run on a
-// game-version refresh. Names are derived with V1's own `getUnitDisplayName` formatting; ability/trait
-// rules-text carries `{[variable]}` tokens the client resolves per progression step (see the
-// `add-raid-boss-ability-text` OpenSpec change).
+// Source: the pinned data-mines commit (datamine/REF, see scripts/datamine.mjs): the guild-boss unit
+// sets, the ability tables, the global trait constants and the game's own language files. Boss names are
+// derived from the unit-set ids with V1's `getUnitDisplayName` formatting (the game has no localized
+// name for them), so `raidBosses` is en-only and other locales fall back to it. Re-run after every
+// `pnpm datamine:pull`. Ability/trait rules-text carries `{[variable]}` tokens the client resolves per
+// progression step (see the `add-raid-boss-ability-text` OpenSpec change).
 import { mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs"
 import { resolve, dirname } from "node:path"
 import { fileURLToPath } from "node:url"
 import { format, resolveConfig } from "prettier"
 
-const here = dirname(fileURLToPath(import.meta.url))
-const v1 = resolve(here, "../../../../tacticusplanner/src/fsd/4-entities")
-const outDir = resolve(here, "../public/locales/en")
+import { ensureDatamine } from "./datamine.mjs"
 
-const guildBoss = JSON.parse(
-  readFileSync(`${v1}/guild_boss/data/guild_boss.json`, "utf8")
+const here = dirname(fileURLToPath(import.meta.url))
+const datamine = ensureDatamine()
+const localesDir = resolve(here, "../public/locales")
+
+const LOCALES = ["en", "de", "es", "fr"]
+
+const readJson = (path) => JSON.parse(readFileSync(path, "utf8"))
+const unitSets = readJson(
+  `${datamine}/raw/globalconfig/guildBoss/unitSets.json`
 )
-const abilityData = JSON.parse(
-  readFileSync(`${v1}/abilities/data/new-ability-data.json`, "utf8")
+const abilityById = new Map(
+  Object.entries(readJson(`${datamine}/raw/gameconfig/units/abilities.json`))
 )
-const traitData = JSON.parse(
-  readFileSync(`${v1}/traits/data/new-traits-data.json`, "utf8")
+const languages = Object.fromEntries(
+  LOCALES.map((locale) => [
+    locale,
+    readJson(`${datamine}/raw/languages/${locale}.json`),
+  ])
 )
+/** The game's text for a language key, falling back to English. */
+const term = (locale, key) => languages[locale][key] ?? languages.en[key]
 
 // Trait descriptions carry `{[varName]}` placeholders whose values come from global game constants
 // (traits do not level, so each resolves to a single-element array). Build-time only, so shipped app
-// code reads already-resolved values. They come from the served `global-values` record (the game's
-// `globalValues.traitVariables`, plus three of its top-level values under V1's names); the game
-// config has no source for the last three, which keep V1's values.
-const globalValues = JSON.parse(
-  readFileSync(
-    resolve(
-      here,
-      "../../../packages/game-catalog/src/schemas/global-values.fixture.json"
-    ),
-    "utf8"
-  )
-)[0]
+// code reads already-resolved values. They come from the game's `globalValues.traitVariables`, plus
+// three of its top-level values under V1's names; the game config has no source for the last three,
+// which keep V1's values.
+const globalValues = readJson(`${datamine}/raw/gameconfig/globalValues.json`)
 const TRAIT_GLOBAL_VARIABLES = {
   ...globalValues.traitVariables,
   battleFatigueChance: globalValues.battleFatigueFleeChance,
@@ -184,7 +188,11 @@ const raidBosses = {}
 const referencedAbilityIds = new Set()
 const referencedTraitIds = new Set()
 
-for (const [id, unitSet] of Object.entries(guildBoss.unitSets)) {
+// The game keeps several unit-set variants; a boss's referenced ids are the union over them.
+const unitSetEntries = Object.values(unitSets).flatMap((set) =>
+  Object.entries(set)
+)
+for (const [id, unitSet] of unitSetEntries) {
   if (!BOSS_RE.test(id) && !PRIME_RE.test(id)) continue
   raidBosses[id] = unitDisplayName(id)
   for (const abilityId of [
@@ -197,52 +205,71 @@ for (const [id, unitSet] of Object.entries(guildBoss.unitSets)) {
   for (const traitId of unitSet.traits ?? []) referencedTraitIds.add(traitId)
 }
 
-const abilityById = new Map(abilityData.map((a) => [a.id, a]))
-const traitById = new Map(traitData.map((t) => [t.id, t]))
+const traitIds = new Set(
+  Object.keys(languages.en)
+    .map((key) => /^Traits\/(.+)_Name$/.exec(key)?.[1])
+    .filter(Boolean)
+)
 
-// Abilities: keep a readable label for every referenced id (falling back to a formatted token when
-// the datamine has no name), then let the page hide the handful of internal ids via its own set.
 const raidBossAbilities = {}
-for (const abilityId of [...referencedAbilityIds].sort()) {
-  const name = abilityById.get(abilityId)?.text?.name
-  raidBossAbilities[abilityId] = name || formatWords(abilityId)
-}
-
-// Traits: emit an entry ONLY when the id resolves to a real game trait. An unresolved id (e.g. the
-// `Boss` pseudo-trait) is dropped so the page can skip it, matching V1's `if (!trait) return`.
 const raidBossTraits = {}
-for (const traitId of [...referencedTraitIds].sort()) {
-  const name = traitById.get(traitId)?.name
-  if (name) raidBossTraits[traitId] = name
-}
-
-// Ability rules-text: for every referenced ability that has a real, non-placeholder description,
-// carry the text plus the per-level variable/constant tables and the rarity-scaled variable names.
-// `nrOfHits` etc. are resolved client-side per the selected progression step's ability level.
-const PLACEHOLDER_DESCRIPTIONS = new Set(["", "Coming soon!"])
 const raidBossAbilityText = {}
-for (const abilityId of [...referencedAbilityIds].sort()) {
-  const ability = abilityById.get(abilityId)
-  const description = ability?.text?.currentLevelDescription ?? ""
-  if (!ability || PLACEHOLDER_DESCRIPTIONS.has(description.trim())) continue
-  raidBossAbilityText[abilityId] = {
-    description,
-    variables: ability.variables ?? {},
-    constants: ability.constants ?? {},
-    scaled: ability.variablesAffectedByRarityBonus ?? [],
-  }
-}
-
-// Trait rules-text: the styled name and description, with `{[var]}` placeholders resolved from the
-// global trait constants at build time (traits do not level).
 const raidBossTraitText = {}
-for (const traitId of [...referencedTraitIds].sort()) {
-  const trait = traitById.get(traitId)
-  if (!trait?.description) continue
-  raidBossTraitText[traitId] = {
-    description: trait.description,
-    styledName: trait.styledName ?? trait.name ?? traitId,
-    variables: getTraitVariables(traitId),
+const PLACEHOLDER_DESCRIPTIONS = new Set(["", "Coming soon!"])
+
+for (const locale of LOCALES) {
+  // Abilities: keep a readable label for every referenced id (falling back to a formatted token when
+  // the game has no name), then let the page hide the handful of internal ids via its own set.
+  raidBossAbilities[locale] = {}
+  for (const abilityId of [...referencedAbilityIds].sort()) {
+    raidBossAbilities[locale][abilityId] =
+      term(locale, `Abilities/${abilityId}_Name`) || formatWords(abilityId)
+  }
+
+  // Traits: emit an entry ONLY when the id resolves to a real game trait. An unresolved id (e.g. the
+  // `Boss` pseudo-trait) is dropped so the page can skip it, matching V1's `if (!trait) return`.
+  raidBossTraits[locale] = {}
+  for (const traitId of [...referencedTraitIds].sort()) {
+    const name = traitIds.has(traitId) && term(locale, `Traits/${traitId}_Name`)
+    if (name) raidBossTraits[locale][traitId] = name
+  }
+
+  // Ability rules-text: for every referenced ability whose English description is real (not a
+  // placeholder), carry the text plus the per-level variable/constant tables and the rarity-scaled
+  // variable names. `nrOfHits` etc. are resolved client-side per the selected progression step's
+  // ability level. Every locale covers the same ids, so the gaps list holds for all of them.
+  raidBossAbilityText[locale] = {}
+  for (const abilityId of [...referencedAbilityIds].sort()) {
+    const ability = abilityById.get(abilityId)
+    const key = `Abilities/${abilityId}_CurrentLevelDescription`
+    if (
+      !ability ||
+      PLACEHOLDER_DESCRIPTIONS.has((languages.en[key] ?? "").trim())
+    )
+      continue
+    raidBossAbilityText[locale][abilityId] = {
+      description: term(locale, key),
+      variables: ability.variables ?? {},
+      constants: ability.constants ?? {},
+      scaled: ability.variablesAffectedByRarityBonus ?? [],
+    }
+  }
+
+  // Trait rules-text: the styled name and description, with `{[var]}` placeholders resolved from the
+  // global trait constants at build time (traits do not level).
+  raidBossTraitText[locale] = {}
+  for (const traitId of [...referencedTraitIds].sort()) {
+    const description =
+      traitIds.has(traitId) && term(locale, `Traits/${traitId}_Description`)
+    if (!description) continue
+    raidBossTraitText[locale][traitId] = {
+      description,
+      styledName:
+        term(locale, `Traits/${traitId}_StyledName`) ??
+        term(locale, `Traits/${traitId}_Name`) ??
+        traitId,
+      variables: getTraitVariables(traitId),
+    }
   }
 }
 
@@ -253,7 +280,7 @@ const sortObject = (obj) =>
 // file systems.
 const SAFE_ID_RE = /^[A-Za-z0-9_-]+$/
 const lowerIds = new Map()
-for (const id of Object.keys(raidBossAbilityText)) {
+for (const id of Object.keys(raidBossAbilityText.en)) {
   if (!SAFE_ID_RE.test(id))
     throw new Error(`ability id is not a safe file name: ${id}`)
   const other = lowerIds.get(id.toLowerCase())
@@ -261,7 +288,7 @@ for (const id of Object.keys(raidBossAbilityText)) {
   lowerIds.set(id.toLowerCase(), id)
 }
 
-const prettierOptions = await resolveConfig(`${outDir}/common.json`)
+const prettierOptions = await resolveConfig(`${localesDir}/en/common.json`)
 // Formatted as the pre-commit hook would, so a second run leaves the committed files unchanged.
 const writeJson = async (path, value) =>
   writeFileSync(
@@ -272,33 +299,35 @@ const writeJson = async (path, value) =>
     })
   )
 
-await writeJson(`${outDir}/raidBosses.json`, sortObject(raidBosses))
-await writeJson(`${outDir}/raidBossAbilities.json`, raidBossAbilities)
-await writeJson(`${outDir}/raidBossTraits.json`, raidBossTraits)
-await writeJson(
-  `${outDir}/raidBossTraitText.json`,
-  sortObject(raidBossTraitText)
-)
+await writeJson(`${localesDir}/en/raidBosses.json`, sortObject(raidBosses))
+for (const locale of LOCALES) {
+  const outDir = `${localesDir}/${locale}`
+  await writeJson(`${outDir}/raidBossAbilities.json`, raidBossAbilities[locale])
+  await writeJson(`${outDir}/raidBossTraits.json`, raidBossTraits[locale])
+  await writeJson(
+    `${outDir}/raidBossTraitText.json`,
+    sortObject(raidBossTraitText[locale])
+  )
 
-// Ability rules text: one file (and i18next namespace) per ability id, so the detail view fetches only
-// the abilities it shows. The directory is emptied first, so a dropped ability's file disappears; the
-// referenced ids without text are listed so the client never requests them.
-rmSync(`${outDir}/raidBossAbilityText.json`, { force: true })
-const abilityTextDir = `${outDir}/raidBossAbilityText`
-rmSync(abilityTextDir, { recursive: true, force: true })
-mkdirSync(abilityTextDir)
-for (const id of Object.keys(raidBossAbilityText).sort()) {
-  await writeJson(`${abilityTextDir}/${id}.json`, {
-    [id]: raidBossAbilityText[id],
-  })
+  // Ability rules text: one file (and i18next namespace) per ability id, so the detail view fetches
+  // only the abilities it shows. The directory is emptied first, so a dropped ability's file disappears.
+  const abilityTextDir = `${outDir}/raidBossAbilityText`
+  rmSync(abilityTextDir, { recursive: true, force: true })
+  mkdirSync(abilityTextDir)
+  for (const id of Object.keys(raidBossAbilityText[locale]).sort()) {
+    await writeJson(`${abilityTextDir}/${id}.json`, {
+      [id]: raidBossAbilityText[locale][id],
+    })
+  }
 }
+// The referenced ids without text, so the client never requests them.
 await writeJson(
-  `${outDir}/raidBossAbilityTextGaps.json`,
-  [...referencedAbilityIds].filter((id) => !raidBossAbilityText[id]).sort()
+  `${localesDir}/en/raidBossAbilityTextGaps.json`,
+  [...referencedAbilityIds].filter((id) => !raidBossAbilityText.en[id]).sort()
 )
 
 console.log("raidBosses:", Object.keys(raidBosses).length)
-console.log("raidBossAbilities:", Object.keys(raidBossAbilities).length)
-console.log("raidBossTraits:", Object.keys(raidBossTraits).length)
-console.log("raidBossAbilityText:", Object.keys(raidBossAbilityText).length)
-console.log("raidBossTraitText:", Object.keys(raidBossTraitText).length)
+console.log("raidBossAbilities:", Object.keys(raidBossAbilities.en).length)
+console.log("raidBossTraits:", Object.keys(raidBossTraits.en).length)
+console.log("raidBossAbilityText:", Object.keys(raidBossAbilityText.en).length)
+console.log("raidBossTraitText:", Object.keys(raidBossTraitText.en).length)

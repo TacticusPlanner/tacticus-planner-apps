@@ -1,0 +1,10 @@
+{
+  "SupaCyborkBody": {
+    "description": "Der Reliktträger kann <style=\"Healing\">geheilt</style> und <style=\"Repairing\">repariert</style> werden und erleidet zusätzlich <style=\"Stat_CritDamage\">–{[critDmgReduction]} Kritischen Schaden</style> pro angrenzender gegnerischer Einheit.",
+    "variables": {
+      "critDmgReduction": [390, 411, 432, 453, 474, 495, 516, 537, 558, 579]
+    },
+    "constants": {},
+    "scaled": []
+  }
+}

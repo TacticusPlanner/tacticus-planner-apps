@@ -1,6 +1,6 @@
 {
   "SpiritualLeader": {
-    "description": "Tras moverse, coloca un <style=\"Decoy\">señuelo</style> en un hexágono adyacente vacío. Luego, si hay 2 o más señuelos adyacentes a <style=\"Faction_Genestealers\">Xybia</style>, invoca a un <style=\"Summon\"><style=\"Faction_Genestealers\">Híbrido Neófito</style></style> sobre un señuelo adyacente. Si <style=\"Faction_Genestealers\">Xybia</style> no se mueve, su habilidad se activa al final de su turno.\n\nAtributos del Híbrido Neófito:\n<style=\"Stat_Health\">{[summonHp]} de Salud</style>\n<style=\"Stat_Damage\">{[summonDmg]} de Daño</style>\n<style=\"Stat_Armor\">{[summonArmor]} de Armadura</style>",
+    "description": "Tras moverse, coloca un <style=\"Decoy\">señuelo</style> en un hexágono adyacente vacío. Luego, si hay 2 o más señuelos adyacentes a <Style=\"Faction_Genestealers\">Xybia</style>, invoca a un <style=\"Summon\"><style=\"Faction_Genestealers\">Híbrido Neófito</style></style> sobre un señuelo adyacente. Si <Style=\"Faction_Genestealers\">Xybia</style> no se mueve, su habilidad se activa al final de su turno.\n\nAtributos del Híbrido Neófito:\n<style=\"Stat_Health\">{[summonHp]} de Salud</style>\n<style=\"Stat_Damage\">{[summonDmg]} de Daño</style>\n<style=\"Stat_Armor\">{[summonArmor]} de Armadura</style>",
     "variables": {
       "summonHp": [
         30, 36, 42, 48, 54, 61, 68, 75, 82, 89, 95, 102, 109, 116, 123, 130,

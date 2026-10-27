@@ -1,0 +1,30 @@
+{
+  "NeedsMoreDakka": {
+    "description": "<style=\"Faction_Orks\">Ghazghkull</style> se tourne dans l'une des 6 directions et charge le Rugissement de Mork tandis qu'il se prépare à canarder une zone de {[range]} de portée devant lui. Au début de son prochain tour, toutes les unités dans la zone concernée subissent <style=\"Stat_Hits\">{[nrOfHits]}x</style> <style=\"DMG_Projectile\">{[minDmg]}-{[maxDmg]} dégâts de projectile</style> infligés par son déluge de balles. Les cibles adjacentes à <style=\"Faction_Orks\">Ghazghkull</style> subissent <style=\"Stat_Hits\">{[nrOfHits_2]}x</style> coups supplémentaires. Les Orks alliés subissent <style=\"Stat_Hits\">{[hitsReductionPct]} %</style> de coups en moins. ",
+    "variables": {
+      "minDmg": [
+        20, 24, 28, 32, 36, 41, 45, 50, 54, 59, 64, 68, 73, 77, 82, 87, 91, 96,
+        100, 105, 111, 120, 138, 156, 174, 193, 211, 229, 247, 265, 284, 302,
+        320, 338, 356, 375, 393, 411, 429, 455, 491, 529, 569, 615, 697, 779,
+        861, 943, 1026, 1109, 1198, 1237, 1277, 1322, 1369, 1416, 1464, 1519,
+        1574, 1631, 1695, 1761, 1827, 1895, 1964
+      ],
+      "maxDmg": [
+        30, 36, 42, 48, 54, 61, 68, 75, 82, 89, 95, 102, 109, 116, 123, 130,
+        137, 144, 151, 158, 167, 180, 207, 234, 262, 289, 316, 344, 371, 398,
+        425, 453, 480, 507, 535, 562, 589, 617, 644, 682, 736, 793, 854, 922,
+        1045, 1169, 1292, 1415, 1538, 1662, 1798, 1856, 1915, 1983, 2053, 2124,
+        2196, 2278, 2362, 2447, 2543, 2641, 2741, 2843, 2946
+      ]
+    },
+    "constants": {
+      "damageProfile": "Projectile",
+      "nrOfHits": "8",
+      "nrOfHits_2": "4",
+      "hitsReductionPct": "50",
+      "range": "3",
+      "cooldownTurns": "2"
+    },
+    "scaled": ["minDmg", "maxDmg"]
+  }
+}

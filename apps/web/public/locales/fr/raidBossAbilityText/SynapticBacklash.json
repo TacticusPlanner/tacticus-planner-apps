@@ -1,0 +1,12 @@
+{
+  "SynapticBacklash": {
+    "description": "Lorsque le Tervigon encaisse un <style=\"Stat_CritDamage\">coup critique</style>, les Termagants alliés distants de {[range]} hexagones subissent aussi {[dmgPct]} % des <style=\"Stat_Damage\">dégâts</style> de cette attaque.",
+    "variables": {},
+    "constants": {
+      "range": "2",
+      "dmgPct": "50",
+      "unitIds": "tyranNpc3Termagant,tyranSmnTermagant,GuildBoss1Npc1TyranTermagantLeviathan,GuildBoss1Npc2TyranTermagantKronos,GuildBoss1Npc3TyranTermagantGorgon"
+    },
+    "scaled": []
+  }
+}

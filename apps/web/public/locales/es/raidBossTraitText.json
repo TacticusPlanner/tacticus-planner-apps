@@ -1,0 +1,198 @@
+{
+  "BeastSlayer": {
+    "description": "Esta unidad inflige un <style=\"Stat_Damage\">+{[extraDmgPct]} % de daño</style> con ataques cuerpo a cuerpo a <style=\"Big_Target\">Grandes objetivos</style> y <style=\"Vehicle\">vehículos</style>. También tiene un <style=\"Stat_Chance\">{[blockChance]} % de probabilidad</style> adicional de <style=\"Stat_Block\">bloquear</style> Daño igual a su <style=\"Stat_Armor\">Armadura</style> actual.",
+    "styledName": "<style=\"Beast_Snagga\">Matabestias</style>",
+    "variables": {
+      "extraDmgPct": [20],
+      "blockChance": [10]
+    }
+  },
+  "BigTarget": {
+    "description": "Debido a su tamaño, esta unidad se no se beneficia tanto de la cobertura, pero a la vez provee una obstrucción de la línea visual del enemigo. No obtiene ninguna bonificación de <style=\"Tile_Grass\">Hierba alta</style> y <style=\"Tile_Trench\">Trincheras</style>. Las unidades aliadas adyacentes reciben <style=\"Stat_Hits\">-1 impacto</style> de ataques <style=\"Stat_Range\">a distancia</style>, hasta alcance un mínimo de 1. No se puede desplazar.",
+    "styledName": "<style=\"Big_Target\">Gran objetivo</style>",
+    "variables": {}
+  },
+  "Camouflage": {
+    "description": "Los ataques <style=\"Stat_Range\">a distancia</style> contra este personaje asestan <style=\"Stat_Hits\">-1 impacto</style>. Esto aumenta a <style=\"Stat_Hits\">-2 impactos</style> si este personaje está a más de 2 hexágonos del atacante o a <style=\"Stat_Hits\">-3 impactos</style> si está en <style=\"Tile_Grass\">Hierba alta</style>. Los atacantes siempre asestan al menos <style=\"Stat_Hits\">1 impacto</style>.",
+    "styledName": "<style=\"Camouflage\">Camuflaje</style>",
+    "variables": {}
+  },
+  "ContagionsOfNurgle": {
+    "description": "Esta unidad está rodeada de un aura que se expande con el tiempo. Mientras estén en ella, los enemigos tienen {[armorReduction]} % de <style=\"Stat_Armor\">Armadura</style>. Si se encuentran en dos o más auras enemigas superpuestas, tienen {[armorReduction2]} % de <style=\"Stat_Armor\">Armadura</style> en su lugar.\n\nAura:\nRonda 1-2: <style=\"Stat_Range\">Alcance 1</style>\nRonda 3-4: <style=\"Stat_Range\">Alcance 2</style>\nRonda 5+: <style=\"Stat_Range\">Alcance 3</style>",
+    "styledName": "<style=\"ContagionsOfNurgle\">Contagios de Nurgle</style>",
+    "variables": {
+      "armorReduction": [-20],
+      "armorReduction2": [-40]
+    }
+  },
+  "CrushingStrike": {
+    "description": "Esta unidad inflige <style=\"Stat_Damage\">+{[extraDmgPct]} % de Daño</style> con ataques <style=\"Stat_Melee\">cuerpo a cuerpo</style> normales si no se movió durante este turno.",
+    "styledName": "<style=\"CrushingStrike\">Ataque aplastante</style>",
+    "variables": {
+      "extraDmgPct": [50]
+    }
+  },
+  "Daemon": {
+    "description": "Esta unidad tiene un <style=\"Stat_Chance\">{[blockChance]} % probabilidad adicional</style> de <style=\"Stat_Block\">Bloquear</style> hasta un {[blockDmgPct]} % de su actual atributo de <style=\"Stat_Damage\">Daño</style>.",
+    "styledName": "<style=\"Daemon\">Daemon</style>",
+    "variables": {
+      "blockChance": [25],
+      "blockDmgPct": [50]
+    }
+  },
+  "Dakka": {
+    "description": "Para ataques con <style=\"Stat_Range\">Alcance 3</style> o superior, tiene <style=\"Stat_Hits\">+{[extraHit]} impactos</style> si el objetivo está en <style=\"Stat_Range\">Alcance 2</style>.",
+    "styledName": "<style=\"Dakka\">Dakka</style>",
+    "variables": {
+      "extraHit": [2]
+    }
+  },
+  "Explodes": {
+    "description": "Esta unidad <style=\"Explodes\">estalla</style> al morir e inflige <style=\"Stat\">25 %</style> de su <style=\"Stat_Health\">Salud</style> máxima como <style=\"DMG_Direct\">Daño directo</style> a todas las unidades adyacentes",
+    "styledName": "<style=\"Explodes\">Explosión</style>",
+    "variables": {}
+  },
+  "FinalJustice": {
+    "description": "Cuando esta unidad pierde lo último de su <style=\"Stat_Health\">Salud</style>, realiza de inmediato un <style=\"NormalAttack\">ataque normal</style> contra un objetivo elegible y luego es derrotada de manera normal, a menos que sea <style=\"Overkill\">Arrasada</style>.",
+    "styledName": "<style=\"FinalJustice\">Venganza final</style>",
+    "variables": {}
+  },
+  "Flying": {
+    "description": "Puede atravesar hexágonos intransitables y enemigos, además de moverse entre cualquier elevación.",
+    "styledName": "<style=\"Flying\">Vuelo</style>",
+    "variables": {}
+  },
+  "GetStuckIn": {
+    "description": "Por cada 2 impactos que aseste esta unidad con un ataque contra un enemigo en un rango de 2 hexágonos, tiene un <style=\"STAT\">{[chance]} %</style> de probabilidad de asestar un <style=\"Stat_Hits\">impacto</style> adicional. Si 2 o más <style=\"Faction_Orks\">Orkos</style> aliados o 4 o más unidades aliadas están adyacentes al objetivo, la probabilidad aumenta a un <style=\"STAT\">{[chance_2]} %</style>.",
+    "styledName": "<style=\"GetStuckIn\">¡Al lío Chikoz!</style>",
+    "variables": {
+      "chance": [30],
+      "chance_2": [100]
+    }
+  },
+  "Healer": {
+    "description": "Puede <style=\"Healing\">curar</style> a una unidad aliada como su acción.\nLa cantidad de <style=\"Stat_Health\">Salud</style> restaurada equivale al <style=\"Stat_Damage\">Daño</style> del Sanador multiplicado por la cantidad máxima de <style=\"Stat_Hits\">impactos</style> de cualquiera de sus armas. ",
+    "styledName": "<style=\"Healer\">Sanador</style>",
+    "variables": {}
+  },
+  "HeavyWeapon": {
+    "description": "Si esta unidad no se movió en este turno, inflige <style=\"Stat_Damage\">+{[extraDmgPct]} % de Daño</style> con ataques a distancia.",
+    "styledName": "<style=\"Heavy_Weapon\">Arma pesada</style>",
+    "variables": {
+      "extraDmgPct": [25]
+    }
+  },
+  "Immune": {
+    "description": "Esta unidad es inmune a los hexágonos especiales y a los <style=\"HexEffect\">efectos de hexágono</style> y no se le puede reducir la <style=\"Stat_Armor\">Armadura</style>, los <style=\"Stat_Hits\">impactos</style>, el <style=\"Stat_Movement\">movimiento</style> ni el <style=\"Stat_Range\">alcance</style>.\n\nAdemás, esta unidad no puede sufrir <style=\"Debuff_Stunned\">Aturdimiento</style>, <style=\"Debuff_Pinned\">Supresión</style> ni <style=\"Debuff_Taunted\">Provocación</style> y no recibe Daño de retroceso.",
+    "styledName": "<style=\"Immune\">Inmune</style>",
+    "variables": {}
+  },
+  "IndirectFire": {
+    "description": "Puede disparar sobre hexágonos <style=\"Out_Of_Sight\">desconocidos</style> e impactar objetivos que estén en <style=\"Tile_Trench\">Trincheras</style>.",
+    "styledName": "<style=\"Indirect_Fire\">Fuego indirecto</style>",
+    "variables": {}
+  },
+  "Infiltrate": {
+    "description": "Esta unidad no activa <style=\"Overwatch\">Vigilancia</style>.",
+    "styledName": "<style=\"Infiltrate\">Infiltración</style>",
+    "variables": {}
+  },
+  "InstinctiveBehaviour": {
+    "description": "Esta unidad siempre intenta atacar a la unidad enemiga más cercana. Si hay objetivos al alcance, esta unidad no se mueve antes de atacar.",
+    "styledName": "<style=\"Instinctive_Behaviour\">Comportamiento instintivo</style>",
+    "variables": {}
+  },
+  "LivingMetal": {
+    "description": "<style=\"Regenerate\">Regenera</style> un <style=\"Stat\">{[hpPct]} %</style> de su <style=\"Stat_Health\">Salud</style> máxima al comienzo del turno de los jugadores. Esta unidad también es <style=\"Mechanical\">Mecánica</style>.",
+    "styledName": "<style=\"Living_Metal\">Metal viviente</style>",
+    "variables": {
+      "hpPct": [10]
+    }
+  },
+  "Mechanic": {
+    "description": "Puede <style=\"Repairing\">reparar</style> una unidad <style=\"Mechanical\">Mecánica</style> aliada como su acción.\nLa cantidad de <style=\"Stat_Health\">Salud</style> restaurada equivale al Daño del <style=\"Mechanic\">Reparador</style> multiplicado por la cantidad máxima de <style=\"Stat_Hits\">impactos</style> de cualquiera de sus armas.",
+    "styledName": "<style=\"Mechanic\">Reparador</style>",
+    "variables": {}
+  },
+  "Mechanical": {
+    "description": "No se puede <style=\"Healing\">curar</style>, pero sí se puede <style=\"Repairing\">reparar</style>.\n<i>Nota: las unidades con el rasgo <style=\"Living_Metal\">Metal viviente</style> también cuentan como si fueran <style=\"Mechanical\">Mecánicas</style></i>.",
+    "styledName": "<style=\"Mechanical\">Mecánica</style>",
+    "variables": {}
+  },
+  "Overwatch": {
+    "description": "Si esta unidad no ha atacado durante su turno ni después, atacará cuando un enemigo se mueva dentro de su alcance durante el turno del enemigo.",
+    "styledName": "<style=\"Overwatch\">Vigilancia</style>",
+    "variables": {}
+  },
+  "Parry": {
+    "description": "Esta unidad reduce los impactos múltiples de los ataques <style=\"Stat_Melee\">cuerpo a cuerpo</style> que recibe en <style=\"Stat_Hits\">{[hitsReduction]} impactos</style>, hasta un mínimo de 1.",
+    "styledName": "<style=\"Parry\">Desviar</style>",
+    "variables": {
+      "hitsReduction": [1]
+    }
+  },
+  "Psyker": {
+    "description": "Cuando esta unidad realiza un <style=\"NormalAttack\">ataque a distancia normal</style>, también inflige un {[extraDmgPct]} % de su <style=\"Stat_Damage\">Daño</style> a un enemigo aleatorio adyacente al objetivo.",
+    "styledName": "<style=\"Psyker\">Psíquico</style>",
+    "variables": {
+      "extraDmgPct": [50]
+    }
+  },
+  "RangedSpecialist": {
+    "description": "Si esta unidad no empezó su turno adyacente a una unidad enemiga, inflige un <style=\"Stat_Damage\">+{[extraDmgPct]} % de Daño</style> con ataques a distancia.",
+    "styledName": "<style=\"RangedSpecialist\">Especialista a distancia</style>",
+    "variables": {
+      "extraDmgPct": [33]
+    }
+  },
+  "Resilient": {
+    "description": "Si esta unidad no tiene <style=\"Stat_Health\">1 de Salud</style> y sería derrotada, en su lugar su <style=\"Stat_Health\">Salud</style> disminuye a <style=\"Stat_Health\">1 de Salud</style>, a menos que sea <style=\"Overkill\">Arrasada</style>.",
+    "styledName": "<style=\"Resilient\">Resistente</style>",
+    "variables": {}
+  },
+  "ShadowInTheWarp": {
+    "description": "Los <style=\"Psyker\">Psíquicos</style> enemigos en un radio de {[range]} hexágonos infligen un {[dmgPct]} % de <style=\"DMG_Psychic\">Daño psíquico</style>. No afecta a los <style=\"Psyker\">Psíquicos</style> <style=\"Faction_Tyranids\">Tiránidos</style>.",
+    "styledName": "<style=\"Shadow_In_The_Warp\">Sombra en la disformidad</style>",
+    "variables": {
+      "range": [2],
+      "dmgPct": [-25]
+    }
+  },
+  "SuppressiveFire": {
+    "description": "Un enemigo impactado por los ataques a distancia de esta unidad recibe el efecto <style=\"Debuff_Pinned\">Supresión</style>.",
+    "styledName": "<style=\"Suppressive_Fire\">Fuego de supresión</style>",
+    "variables": {}
+  },
+  "Synapse": {
+    "description": "Las unidades aliadas dentro de 2 hexágonos de distancia son inmunes a los efectos de <style=\"Instinctive_Behaviour\">Comportamiento instintivo</style> y <style=\"Battle_Fatigue\">Fatiga de batalla</style>.",
+    "styledName": "<style=\"Synapse\">Sinapsis</style>",
+    "variables": {}
+  },
+  "TeleportStrike": {
+    "description": "Esta unidad empieza la batalla en Ataque profundo. Las unidades en Ataque profundo pueden moverse a cualquier hexágono libre del campo de batalla que no esté adyacente a un enemigo, pero entonces no pueden realizar ataques a distancia hasta el final de su turno, o pueden moverse normalmente desde su posición actual. Las unidades en Ataque profundo no pueden ser seleccionadas como objetivo ni recibir daño hasta que hayan realizado una acción o hayan terminado su turno.",
+    "styledName": "<style=\"Teleport_Strike\">Ataque profundo</style>",
+    "variables": {}
+  },
+  "TerminatorArmour": {
+    "description": "El primer ataque en cada turno contra esta unidad inflige un <style=\"Stat\">{[dmgPctReduction]} % de Daño</style>. Los <style=\"Stat_Hits\">impactos</style> que inflijan Daño <style=\"DMG_Psychic\">psíquico</style> o <style=\"DMG_Direct\">directo</style> quedan excluidos. Esta unidad no puede ser afectada por <style=\"Debuff_Pinned\">Supresión</style>.",
+    "styledName": "<style=\"Terminator_Armor\">Armadura de Exterminador</style>",
+    "variables": {
+      "dmgPctReduction": [-75]
+    }
+  },
+  "Unstoppable": {
+    "description": "Esta unidad no se detiene en hexágonos especiales ni por <style=\"HexEffect\">efectos de hexágono</style> que normalmente obligan a la unidad a interrumpir su <style=\"Stat_Movement\">movimiento</style>.",
+    "styledName": "<style=\"Unstoppable\">Imparable</style>",
+    "variables": {}
+  },
+  "Vehicle": {
+    "description": "Esta unidad no se detiene en hexágonos especiales ni por <style=\"HexEffect\">efectos de hexágono</style> que normalmente obligan a la unidad a interrumpir su <style=\"Stat_Movement\">movimiento</style>. No obtiene ninguna bonificación de <style=\"Tile_Grass\">Hierba alta</style> ni de <style=\"Tile_Trench\">Trincheras</style>. Esta unidad también es <style=\"Mechanical\">Mecánica</style>.",
+    "styledName": "<style=\"Vehicle\">Vehículo</style>",
+    "variables": {}
+  },
+  "WeaverOfFate": {
+    "description": "En cualquier turno en el que 3 o más unidades enemigas hayan recibido <style=\"DMG_Psychic\">Daño psíquico</style>, esta unidad inflige el máximo de <style=\"Stat_Damage\">Daño</style> posible con sus ataques y habilidades durante dicho turno.",
+    "styledName": "<style=\"WeaverOfFate\">Tejedestinos</style>",
+    "variables": {}
+  }
+}

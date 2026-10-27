@@ -1,0 +1,37 @@
+{
+  "HuntTheFallen": {
+    "description": "Au début du combat, une unité ennemie du <style=\"Aliance_Chaos\">Chaos</style> aléatoire est identifiée comme <i>Déchu</i>. En cas d'absence d'unité du Chaos, une unité ennemie aléatoire est désignée comme <i>proie de la Deathwing</i>. Tous les <style=\"Faction_DarkAngels\">Dark Angels</style> alliés infligent <style=\"Stat_Damage\">+{[extraDmgPct]} % de dégâts</style> aux <i>Déchus</i>. Chaque fois que <style=\"Faction_DarkAngels\">Baraqiel</style> est attaqué par un <i>Déchu</i>, il perd <style=\"Stat_Health\">{[hp_2]} santé</style> en plus des dégâts subis, ou <style=\"Stat_Health\">{[hp]} santé</style> s'il s'agit d'une <i>proie de la Deathwing</i>. Baraqiel subit <style=\"Stat_Damage\">-{[dmgReductionPct]} % de dégâts</style> de toutes les autres attaques.",
+    "variables": {
+      "hp": [
+        21, 26, 32, 37, 42, 47, 53, 79, 105, 123, 140, 158, 175, 193, 210, 280,
+        350, 420, 475, 525, 580, 630, 685, 735, 955, 1180, 1400, 1575, 1750,
+        1925, 2100, 2275, 2450, 2685, 2915, 3890, 4860, 5835, 6805, 7780, 8750,
+        9720, 10695, 11665, 12640, 13610, 14585, 15555, 16530, 17500, 23335,
+        29165, 35000, 37915, 40835, 43750, 46665, 49585, 52500, 55415, 58335,
+        61250, 66110, 70970, 75835
+      ],
+      "hp_2": [
+        42, 53, 63, 74, 84, 95, 105, 158, 210, 245, 280, 315, 350, 385, 420,
+        560, 700, 840, 945, 1050, 1155, 1260, 1365, 1470, 1915, 2355, 2800,
+        3150, 3500, 3850, 4200, 4550, 4900, 5365, 5835, 7780, 9720, 11665,
+        13610, 15555, 17500, 19445, 21390, 23335, 25280, 27220, 29165, 31110,
+        33055, 35000, 46665, 58335, 70000, 75835, 81665, 87500, 93335, 99165,
+        105000, 110835, 116665, 122500, 132220, 141945, 151665
+      ],
+      "extraDmgPct": [
+        25, 25, 25, 25, 25, 25, 25, 25, 27, 27, 27, 27, 27, 27, 27, 27, 27, 29,
+        29, 29, 29, 29, 29, 29, 29, 29, 31, 31, 31, 31, 31, 31, 31, 31, 31, 33,
+        33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33,
+        33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33
+      ],
+      "dmgReductionPct": [
+        25, 25, 25, 25, 25, 25, 25, 25, 33, 33, 33, 33, 33, 33, 33, 33, 33, 40,
+        40, 40, 40, 40, 40, 40, 40, 40, 50, 50, 50, 50, 50, 50, 50, 50, 50, 66,
+        66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66,
+        66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66
+      ]
+    },
+    "constants": {},
+    "scaled": []
+  }
+}

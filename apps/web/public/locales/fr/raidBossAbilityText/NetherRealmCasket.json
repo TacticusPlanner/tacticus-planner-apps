@@ -1,0 +1,11 @@
+{
+  "NetherRealmCasket": {
+    "description": "Le porteur de relique subit <style=\"Stat_CritDamage\">-{[critDmgReduction]} dégâts critiques</style> pour chaque unité <style=\"Mechanical\">mécanique</style> alliée adjacente et <style=\"Regenerate\">régénère</style> <style=\"Stat_Health\">{[hpToHeal]} santé</style> supplémentaire grâce au <style=\"Living_Metal\">Métal vivant</style>.",
+    "variables": {
+      "critDmgReduction": [390, 411, 432, 453, 474, 495, 516, 537, 558, 579],
+      "hpToHeal": [980, 1033, 1086, 1139, 1192, 1244, 1297, 1350, 1403, 1456]
+    },
+    "constants": {},
+    "scaled": []
+  }
+}

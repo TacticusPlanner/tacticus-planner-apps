@@ -1,0 +1,8 @@
+{
+  "HyperAggression": {
+    "description": "A partir del segundo turno, después de que el <style=\"Faction_Tyranids\">Matagritos</style> use una habilidad activa, también ejecutará un <style=\"NormalAttack\">ataque normal</style>.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

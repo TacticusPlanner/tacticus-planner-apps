@@ -1,0 +1,10 @@
+{
+  "KardiocoreGalvanus": {
+    "description": "El portador de la reliquia inflige <style=\"Stat_CritDamage\">+{[extraCritDmg]} de Daño Crítico</style> por cada unidad <style=\"Mechanical\">mecánica</style> aliada adyacente.",
+    "variables": {
+      "extraCritDmg": [295, 311, 327, 343, 359, 375, 391, 406, 422, 438]
+    },
+    "constants": {},
+    "scaled": []
+  }
+}
