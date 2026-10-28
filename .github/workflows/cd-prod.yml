@@ -17,19 +17,40 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  # The build only reads apps/web/.env.production, and the app throws at runtime on an empty
+  # required value, so stop before deploying a build that cannot sign in.
+  check-config:
+    name: Check production config
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.ref }}
+
+      - name: Check required values
+        shell: bash
+        run: |
+          missing=0
+          for name in VITE_API_BASE_URL VITE_API_SCOPE VITE_MSAL_AUTHORITY VITE_MSAL_CLIENT_ID VITE_MSAL_TENANT_ID; do
+            value="$(grep -E "^${name}=" apps/web/.env.production | cut -d= -f2- | tr -d '[:space:]')"
+            if [ -z "$value" ]; then
+              echo "::error::${name} is empty in apps/web/.env.production."
+              missing=1
+            fi
+          done
+          exit "$missing"
+
   build:
     name: Build
+    needs: check-config
     uses: ./.github/workflows/_build-web.yml
     with:
       run-validation: false
       upload-artifact: true
       ref: ${{ inputs.ref }}
       vite-mode: production
-      vite-api-base-url: ${{ vars.PROD_API_BASE_URL }}
-      vite-api-scope: ${{ vars.PROD_API_SCOPE }}
-      vite-msal-authority: ${{ vars.PROD_MSAL_AUTHORITY }}
-      vite-msal-client-id: ${{ vars.PROD_MSAL_CLIENT_ID }}
-      vite-msal-tenant-id: ${{ vars.PROD_MSAL_TENANT_ID }}
 
   deploy:
     name: Deploy Production

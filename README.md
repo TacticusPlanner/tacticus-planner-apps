@@ -65,28 +65,17 @@ Set `VITE_API_BASE_URL` to the planner API origin and `VITE_API_SCOPE` to the
 API permission scope used by the SPA, for example
 `api://<api-application-id>/access_as_user`.
 
-For deployments, define these public configuration values under **Settings →
-Secrets and variables → Actions → Variables** in GitHub:
+Deployment configuration is committed per environment in `apps/web/.env.staging`
+and `apps/web/.env.production`; the build mode picks the file. These values are
+embedded in browser JavaScript and must not contain secrets.
 
-- `STAGE_MSAL_AUTHORITY`
-- `STAGE_API_BASE_URL`
-- `STAGE_API_SCOPE`
-- `STAGE_MSAL_CLIENT_ID`
-- `STAGE_MSAL_TENANT_ID`
-- `STAGE_API_BASE_URL`
-- `STAGE_API_SCOPE`
-- `PROD_MSAL_AUTHORITY`
-- `PROD_API_BASE_URL`
-- `PROD_API_SCOPE`
-- `PROD_MSAL_CLIENT_ID`
-- `PROD_MSAL_TENANT_ID`
-- `PROD_API_BASE_URL`
-- `PROD_API_SCOPE`
+- `CD Stage` deploys `main` to `staging.tacticusplanner.app` on every push.
+- `CD Prod` is run by hand with a ref and deploys to `new.tacticusplanner.app`.
+  It refuses to deploy while a required value in `.env.production` is empty.
 
-The CD workflows pass the appropriate values into Vite before building the
-stage or production artifact. These values are embedded in browser JavaScript
-and must not contain secrets. Keep the Azure Static Web Apps deployment tokens
-in GitHub Secrets.
+Each workflow uses a GitHub environment (`stage`, `production`) holding its
+Azure Static Web Apps deployment token (`AZURE_STATIC_WEB_APPS_API_TOKEN_STAGE`,
+`AZURE_STATIC_WEB_APPS_API_TOKEN_PROD`) as a secret.
 
 ## Adding components
 
