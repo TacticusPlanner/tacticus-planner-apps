@@ -605,6 +605,9 @@ atlases/ui_icon_itemtype_booster_block.webp
 atlases/ui_icon_itemtype_booster_crit.webp
 atlases/ui_icon_itemtype_crit.webp
 atlases/ui_icon_itemtype_defensive.webp
+atlases/ui_icon_menu_achievements.webp
+atlases/ui_icon_menu_guildboss.webp
+atlases/ui_icon_menu_quests.webp
 atlases/ui_icon_resource_coin_small.webp
 atlases/ui_icon_resource_elder_shop_currency_large.webp
 atlases/ui_icon_resource_guild_credits_large.webp
@@ -633,6 +636,9 @@ atlases/ui_icon_stat_melee_01.webp
 atlases/ui_icon_stat_move_01.webp
 atlases/ui_icon_stat_outofrange_01.webp
 atlases/ui_icon_stat_rangedattack_01.webp
+atlases/ui_icon_tabs_battle.webp
+atlases/ui_icon_tabs_heroes.webp
+atlases/ui_icon_tabs_shop.webp
 atlases/ui_icon_trait_2_man_team_01.webp
 atlases/ui_icon_trait_act_of_faith_01.webp
 atlases/ui_icon_trait_ambush_01.webp
@@ -1601,8 +1607,10 @@ liveevents/ui_icon_requisition_blood_june_2026.webp
 liveevents/ui_icon_requisition_orkss_june_2026.webp
 root/ui_avatar_frame_space_wolves.webp
 ui/ui_homescreen_background_spacevista_01.webp
+ui/ui_homescreen_planet_01.webp
 ui/ui_icon_resource_crusade_currency_large.webp
 ui/ui_icon_resource_guild_war_currency_large.webp
+ui/ui_image_background_desktop.webp
 ui/ui_image_portrait_concealed_01.webp
 ui/ui_image_portrait_generic_01.webp
 ui/ui_image_portrait_generic_empty_01.webp

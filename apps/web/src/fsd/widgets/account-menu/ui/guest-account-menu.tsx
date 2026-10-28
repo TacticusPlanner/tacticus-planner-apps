@@ -31,8 +31,9 @@ export function GuestPreferencesCard({
   children?: ReactNode
   /** Why the Changelog row is disabled (the widget failed to load), or undefined when it works. */
   changelogUnavailable?: string
-  /** Opens the widget's Updates (and closes the surrounding menu), so reading there clears the unread dot. */
-  onChangelog: () => void
+  /** Opens the widget's Updates (and closes the surrounding menu), so reading there clears the unread dot.
+   *  Omitted outside the app shell (public pages), where the UserJot widget is not mounted: no Changelog row. */
+  onChangelog?: () => void
 }) {
   const { t } = useTranslation()
   const [view, setView] = useState<AccountMenuView>("main")
@@ -50,14 +51,16 @@ export function GuestPreferencesCard({
         icon={MapIcon}
         label={t("feedback.roadmap")}
       />
-      <MenuRow
-        data-testid="auth-changelog"
-        disabled={Boolean(changelogUnavailable)}
-        icon={Newspaper}
-        label={t("feedback.changelog")}
-        onClick={onChangelog}
-        title={changelogUnavailable}
-      />
+      {onChangelog ? (
+        <MenuRow
+          data-testid="auth-changelog"
+          disabled={Boolean(changelogUnavailable)}
+          icon={Newspaper}
+          label={t("feedback.changelog")}
+          onClick={onChangelog}
+          title={changelogUnavailable}
+        />
+      ) : null}
       {children}
     </>
   )

@@ -8,6 +8,7 @@ import { useIsAuthenticated, useMsal } from "@azure/msal-react"
 
 import { LandingPage } from "@/pages/landing"
 
+import { PublicLayout } from "./layout/public-layout"
 import { resolveNextPath } from "./resolve-next-path"
 
 // msal-react's MsalProvider always mounts with `accounts: []`/`inProgress: Startup`, even when the
@@ -73,5 +74,11 @@ export function LandingRoute() {
     return <Navigate replace to={destination} />
   }
 
-  return <LandingPage />
+  // Only the signed-out branch gets the public chrome, so neither the resolving spinner nor a
+  // signed-in visitor's redirect flashes the landing top bar and footer.
+  return (
+    <PublicLayout>
+      <LandingPage />
+    </PublicLayout>
+  )
 }

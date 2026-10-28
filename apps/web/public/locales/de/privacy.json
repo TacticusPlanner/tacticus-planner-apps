@@ -1,0 +1,39 @@
+{
+  "title": "Datenschutz",
+  "lastUpdated": "Zuletzt aktualisiert am {{date}}",
+  "intro": "Tacticus Planner ist ein inoffizielles Open-Source-Fanprojekt für das Spiel Tacticus. Diese Seite erklärt, was der Planer über dich speichert, warum, und wie du es entfernen kannst.",
+  "sections": {
+    "signIn": {
+      "title": "Anmeldung",
+      "body": "Die Anmeldung läuft über Microsoft Entra External ID. Der Planer sieht dein Passwort nie. Er speichert die Anmeldekennung, die Microsoft zurückgibt, den Planer-Namen, den du wählst, und wann du den Planer zuletzt genutzt hast."
+    },
+    "apiKey": {
+      "title": "Dein Tacticus-API-Schlüssel",
+      "body": "Wenn du einen Tacticus-API-Schlüssel hinzufügst, wird er verschlüsselt gespeichert und nur verwendet, um deine Spiel- und Gildendaten über die Tacticus-API abzurufen. Du kannst ihn jederzeit in den Kontoeinstellungen ersetzen."
+    },
+    "plannerData": {
+      "title": "Planer-Daten",
+      "body": "Damit der Planer auf all deinen Geräten funktioniert, speichert er deine synchronisierten Spieldaten, Ziele, Projekte, Event-Pläne, Gildendaten und Einstellungen auf seinem Server. Eine Kopie liegt im lokalen Speicher deines Browsers, damit Seiten schnell laden; beim Abmelden wird diese Kopie gelöscht."
+    },
+    "analytics": {
+      "title": "Analysen und Fehlerberichte",
+      "body": "Wer ohne Konto stöbert, sendet keine Analysedaten. Für angemeldete Nutzer werden Nutzungsereignisse und unbehandelte Fehler unter einer pseudonymen ID an PostHog gesendet. Es gibt keine automatische Erfassung und keine Sitzungsaufzeichnung, und die Berichte enthalten nie, was du in den Planer eingibst, deine E-Mail-Adresse oder deinen Planer-Namen."
+    },
+    "feedback": {
+      "title": "Feedback-Board",
+      "body": "Das Feedback-Board läuft auf UserJot. Wenn du es angemeldet über den Feedback-Button oder das Kontomenü des Planers öffnest, identifiziert dich der Planer gegenüber UserJot mit einem signierten Token für dein Planer-Konto und deinen Planer-Namen, damit deine Beiträge und Stimmen dir zugeordnet werden. Wenn du den öffentlichen Board-Link öffnest, etwa den in der Fußzeile, sendet der Planer nichts."
+    },
+    "noSale": {
+      "title": "Keine Werbung, kein Verkauf",
+      "body": "Der Planer zeigt keine Werbung und verkauft oder teilt deine Daten mit niemandem außer den auf dieser Seite genannten Diensten."
+    },
+    "deletion": {
+      "title": "Deine Daten löschen",
+      "body": "Du kannst dein Konto und alle zugehörigen Planer-Daten in den Kontoeinstellungen im Tab „Konto“ mit „Mein Konto löschen“ entfernen. Das wirkt sofort und kann nicht rückgängig gemacht werden."
+    },
+    "contact": {
+      "title": "Kontakt",
+      "body": "Fragen zu dieser Seite oder zu deinen Daten kannst du gern auf unserem Discord-Server oder auf GitHub stellen."
+    }
+  }
+}

@@ -2,6 +2,7 @@
 // "only export components" rule does not apply.
 /* eslint-disable react-refresh/only-export-components */
 import { lazy, type ReactNode } from "react"
+import { useTranslation } from "react-i18next"
 import { Navigate, type RouteObject } from "react-router"
 
 import { InteractionStatus } from "@azure/msal-browser"
@@ -49,6 +50,7 @@ import {
 } from "./auth-route-guards"
 import { AccountSetupLayout } from "./layout/account-setup-layout"
 import { AppShell } from "./layout/app-shell"
+import { PublicLayout } from "./layout/public-layout"
 import { OnboardingGate } from "./onboarding-gate"
 import { RouteErrorBoundary } from "./route-error-boundary"
 
@@ -78,6 +80,21 @@ const loadAccountSetupRoute = () =>
     default: m.AccountSetupRoute,
   }))
 const AccountSetupRoute = lazy(loadAccountSetupRoute)
+const loadPrivacyPage = () =>
+  import("@/pages/privacy").then((m) => ({ default: m.PrivacyPage }))
+const PrivacyPage = lazy(loadPrivacyPage)
+
+// Public for every visitor, signed in or not: no auth guard and no onboarding gate (a user mid-setup
+// may still need to read it). `privacy` is fetched here, not only by the page, for the browser title.
+function PrivacyRoute() {
+  const { t } = useTranslation("privacy")
+
+  return (
+    <PublicLayout pageTitle={t("title")}>
+      <PrivacyPage />
+    </PublicLayout>
+  )
+}
 
 function ProtectedRoute({ children }: { children: ReactNode }) {
   return (
@@ -109,6 +126,11 @@ function NotFoundRedirect() {
 // is contained inside the shell. Both reload once on a stale-build failure (see route-error-boundary).
 const appRoutes: RouteObject[] = [
   { path: "/", element: <LandingRoute /> },
+  {
+    path: "/privacy",
+    element: <PrivacyRoute />,
+    loader: preloadOnMatch(loadPrivacyPage),
+  },
   // Account setup sits outside AppShell on purpose. A user here has no configured API key, so every
   // shell affordance is a trap or noise — nav links bounce straight back here, the catalog init gate
   // covers the form, and the player-data provider parks a "sync failed" badge on the screen asking

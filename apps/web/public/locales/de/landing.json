@@ -1,9 +1,56 @@
 {
-  "appName": "Tacticus Planner",
   "authError": "Die Authentifizierung konnte nicht abgeschlossen werden. Bitte versuche es erneut.",
-  "title": "Plane deinen Tacticus-Kader",
-  "subtitle": "Sieh, was sich heute lohnt — und was es für deine Ziele bedeutet.",
-  "getStarted": "Anmelden / Loslegen",
+  "hero": {
+    "eyebrow": "Kostenloser Fan-Planer für Tacticus",
+    "title": "Wisse, was heute zu tun ist, und warum.",
+    "subtitle": "Setze Ziele für deinen Kader und erhalte einen Tagesplan für Raids, Events und Verbesserungen, synchronisiert mit deinem Spielkonto.",
+    "getStarted": "Kostenlos loslegen",
+    "browseLibrary": "Bibliothek durchsuchen",
+    "trust": {
+      "apiKey": "Synchronisiert per Tacticus-API-Schlüssel",
+      "mobile": "Funktioniert auf dem Handy",
+      "openSource": "Open Source"
+    }
+  },
+  "preview": {
+    "title": "Plan für heute · Beispiel",
+    "rows": {
+      "ascend": {
+        "label": "Celestine → Legendär",
+        "detail": "12 / 40 Scherben · 6 Tage"
+      },
+      "rankUp": {
+        "label": "Dominus → Diamant 1",
+        "detail": "3 Raids heute"
+      },
+      "legendaryEvent": {
+        "label": "Legendäres Event · Spur A",
+        "detail": "Nächste Freischaltung in 2 Läufen"
+      }
+    }
+  },
+  "features": {
+    "title": "Plane jeden Teil deines Kontos",
+    "subtitle": "Ein Ort für alles, was du sonst in einer Tabelle verfolgen würdest.",
+    "items": {
+      "goals": {
+        "title": "Ziele",
+        "description": "Aufsteigen, befördern und Rang erhöhen, mit einem Zeitplan, der alles zusammenrechnet."
+      },
+      "dailyRaids": {
+        "title": "Tägliche Raids",
+        "description": "Welche Knoten du heute mit deiner Energie angreifen solltest."
+      },
+      "legendaryEvents": {
+        "title": "Legendäre Events",
+        "description": "Wähle Teams pro Spur und sieh, wie nah jede Stufe ist."
+      },
+      "guildRaids": {
+        "title": "Gildenraids",
+        "description": "Boss-Modifikatoren, Aufstellungen und Einblicke in Gildenmitglieder."
+      }
+    }
+  },
   "library": {
     "title": "Bibliothek",
     "subtitle": "Durchsuche Spieldaten ohne Konto.",
@@ -18,7 +65,7 @@
     "shops": {
       "title": "Tages-Shops",
       "description": "Sieh dir an, was jeder Tages-Shop an jedem Wochentag anbieten kann."
-    }
-  },
-  "uiKitLink": "UI-Kit ansehen"
+    },
+    "more": "Außerdem in der Bibliothek:"
+  }
 }
