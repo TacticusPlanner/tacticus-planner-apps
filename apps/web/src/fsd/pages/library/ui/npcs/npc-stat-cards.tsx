@@ -1,7 +1,7 @@
 import { useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
-import { Info, Zap } from "lucide-react"
-import { statIcon, type StatIconKind } from "@workspace/game-catalog"
+import { Info } from "lucide-react"
+import { powerIcon, statIcon, type StatIconKind } from "@workspace/game-catalog"
 import { Button } from "@workspace/ui/components/button"
 import {
   Popover,
@@ -128,7 +128,7 @@ function PowerCard({
         />
       ) : (
         <span className="flex items-center gap-2">
-          <Zap aria-hidden className="size-5 text-muted-foreground" />
+          <EntityIcon src={powerIcon()} alt="" className="size-5" />
           <span className={valueClass} data-testid="npc-stat-power-value">
             {format.format(power.value)}
           </span>

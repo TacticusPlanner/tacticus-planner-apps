@@ -1,7 +1,13 @@
 import { useTranslation } from "react-i18next"
-import { shopDaysOfWeek, type ShopDayOfWeek } from "@workspace/game-catalog"
+import {
+  shopDaysOfWeek,
+  shopIcon,
+  type ShopDayOfWeek,
+} from "@workspace/game-catalog"
 import { Tabs, TabsList, TabsTrigger } from "@workspace/ui/components/tabs"
 import { cn } from "@workspace/ui/lib/utils"
+
+import { EntityIcon } from "@/shared/ui"
 
 import {
   LIBRARY_SHOP_IDS,
@@ -66,6 +72,11 @@ export function ShopsBrowseDesktop({
         >
           {LIBRARY_SHOP_IDS.map((value) => (
             <TabsTrigger key={value} value={value}>
+              <EntityIcon
+                alt=""
+                className="size-5 shrink-0"
+                src={shopIcon(value)}
+              />
               {t(`shops.shopName.${value}`)}
             </TabsTrigger>
           ))}

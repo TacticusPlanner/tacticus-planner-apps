@@ -1,6 +1,5 @@
 {
-  "title": "Privacy",
-  "lastUpdated": "Last updated {{date}}",
+  "title": "Privacy & cookies",
   "intro": "Tacticus Planner is an unofficial, open-source fan project for the game Tacticus. This page explains what the planner stores about you, why, and how to remove it.",
   "sections": {
     "signIn": {
@@ -14,6 +13,10 @@
     "plannerData": {
       "title": "Planner data",
       "body": "To work across your devices, the planner stores your synced game data, goals, projects, event plans, guild data and settings on its server. A copy is kept in your browser's local storage so pages load quickly; signing out deletes that copy."
+    },
+    "cookies": {
+      "title": "Cookies and browser storage",
+      "body": "The planner sets no advertising cookies. It keeps what it needs in your browser's storage: your sign-in session, your language and theme, and the local copy of your planner data. For signed-in users only, PostHog analytics keeps its pseudonymous id in a first-party cookie and local storage. Microsoft's sign-in pages set their own cookies to keep you signed in, under Microsoft's privacy statement."
     },
     "analytics": {
       "title": "Analytics and error reports",

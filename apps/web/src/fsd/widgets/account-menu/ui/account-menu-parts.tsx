@@ -5,9 +5,12 @@ import {
   ChevronRight,
   ExternalLink,
   Languages,
+  ScrollText,
+  ShieldCheck,
 } from "lucide-react"
 import type { LucideIcon } from "lucide-react"
 import { useTranslation } from "react-i18next"
+import { Link } from "react-router"
 import { Button } from "@workspace/ui/components/button"
 import { cn } from "@workspace/ui/lib/utils"
 
@@ -47,6 +50,37 @@ export function MenuLinkRow({
         className="size-3.5 shrink-0 text-muted-foreground"
       />
     </a>
+  )
+}
+
+/** Privacy & cookies and Terms of use rows, so the legal pages are reachable from inside the app (the
+ *  public footer that links them is only on the public pages). `onNavigate` closes the surrounding menu. */
+export function LegalLinkRows({ onNavigate }: { onNavigate?: () => void }) {
+  const { t } = useTranslation()
+
+  return (
+    <>
+      <Link
+        className={menuRowClass}
+        data-testid="account-privacy"
+        onClick={onNavigate}
+        to="/privacy"
+      >
+        <ShieldCheck className="size-4 shrink-0" />
+        <span className="min-w-0 flex-1 truncate">
+          {t("publicSite.privacy")}
+        </span>
+      </Link>
+      <Link
+        className={menuRowClass}
+        data-testid="account-terms"
+        onClick={onNavigate}
+        to="/terms"
+      >
+        <ScrollText className="size-4 shrink-0" />
+        <span className="min-w-0 flex-1 truncate">{t("publicSite.terms")}</span>
+      </Link>
+    </>
   )
 }
 

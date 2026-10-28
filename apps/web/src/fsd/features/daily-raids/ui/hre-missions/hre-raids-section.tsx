@@ -2,6 +2,13 @@ import { useMemo, type ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
+import {
+  battleGlyphIcon,
+  energyIcon,
+  raidTicketIcon,
+} from "@workspace/game-catalog"
+
+import { EntityIcon } from "@/shared/ui"
 
 import type {
   MissionBattlesRequest,
@@ -138,6 +145,11 @@ export function HreRaidsSection({
         </h2>
         {request?.raids ? (
           <Badge data-testid="hre-raids-to-go" variant="secondary">
+            <EntityIcon
+              alt=""
+              className="size-3.5"
+              src={battleGlyphIcon("campaignBattle")}
+            />
             {t("raids.toGo", { count: request.raids.battlesToGo })}
           </Badge>
         ) : null}
@@ -247,9 +259,11 @@ function RaidsList({
             data-testid="hre-raids-totals"
           >
             <Badge variant="secondary">
+              <EntityIcon alt="" className="size-3.5" src={raidTicketIcon()} />
               {t("raids.raidCount", { count: plan.totalRaids })}
             </Badge>
             <Badge variant="outline">
+              <EntityIcon alt="" className="size-3.5" src={energyIcon()} />
               {t("raids.energy", { energy: plan.totalEnergy })}
             </Badge>
             {plan.remainingAfter > 0 ? (

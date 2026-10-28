@@ -1,0 +1,42 @@
+{
+  "title": "Nutzungsbedingungen",
+  "intro": "Diese Bedingungen regeln deine Nutzung von Tacticus Planner, einem inoffiziellen Open-Source-Fanprojekt für das Spiel Tacticus. Mit der Nutzung des Planers stimmst du ihnen zu; wenn nicht, nutze ihn bitte nicht.",
+  "sections": {
+    "fanProject": {
+      "title": "Ein kostenloses Fanprojekt",
+      "body": "Der Planer ist kostenlos und wird von Freiwilligen betrieben. Er steht in keiner Verbindung zu Snowprint Studios oder Games Workshop und wird von ihnen weder unterstützt noch gesponsert."
+    },
+    "account": {
+      "title": "Dein Konto",
+      "body": "Du meldest dich über Microsoft Entra External ID an und bist dafür verantwortlich, diese Anmeldung zu schützen. Füge nur einen Tacticus-API-Schlüssel hinzu, der dir gehört oder dessen Inhaber es dir erlaubt hat. Du kannst dein Konto jederzeit in den Kontoeinstellungen löschen."
+    },
+    "acceptableUse": {
+      "title": "Zulässige Nutzung",
+      "body": "Nutze den Planer nicht, um gegen Gesetze oder die Bedingungen des Spiels zu verstoßen, auf Daten anderer Nutzer zuzugreifen, den Dienst zu stören oder zu überlasten oder ihn automatisiert auszulesen. Planer-Namen dürfen nicht beleidigend sein oder sich als jemand anderes ausgeben."
+    },
+    "gameContent": {
+      "title": "Spielinhalte",
+      "body": "Namen, Grafiken und Spieldaten von Tacticus gehören Snowprint Studios, Warhammer 40.000 gehört Games Workshop. Sie werden nur gezeigt, um Spielern bei der Planung zu helfen; alle Rechte verbleiben bei ihren Inhabern."
+    },
+    "openSource": {
+      "title": "Open Source",
+      "body": "Der Quellcode des Planers ist auf GitHub unter der im jeweiligen Repository angegebenen Lizenz veröffentlicht. Diese Bedingungen gelten für den gehosteten Planer und schränken deine Rechte aus dieser Lizenz nicht ein."
+    },
+    "noWarranty": {
+      "title": "Keine Gewährleistung",
+      "body": "Der Planer wird ohne jegliche Gewährleistung bereitgestellt, so wie er ist. Pläne, Schätzungen und Empfehlungen beruhen auf Spiel- und Community-Daten, die unvollständig oder veraltet sein können; prüfe sie also, bevor du Ressourcen im Spiel ausgibst. Soweit gesetzlich zulässig, haften die Betreuer nicht für Schäden aus der Nutzung des Planers."
+    },
+    "availability": {
+      "title": "Verfügbarkeit",
+      "body": "Funktionen können sich ändern, und der Planer kann zeitweise nicht erreichbar sein oder eingestellt werden. Konten, die gegen diese Bedingungen verstoßen, können gesperrt oder entfernt werden."
+    },
+    "changes": {
+      "title": "Änderungen dieser Bedingungen",
+      "body": "Diese Bedingungen können aktualisiert werden; das Datum oben zeigt die aktuelle Fassung. Wer den Planer nach einer Änderung weiter nutzt, akzeptiert die aktualisierten Bedingungen."
+    },
+    "contact": {
+      "title": "Kontakt",
+      "body": "Fragen zu diesen Bedingungen sind auf unserem Discord-Server oder auf GitHub willkommen."
+    }
+  }
+}

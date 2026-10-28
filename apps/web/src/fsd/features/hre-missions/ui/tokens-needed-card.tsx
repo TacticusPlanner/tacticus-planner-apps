@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next"
+import { gameModeTokenIcon } from "@workspace/game-catalog"
 import { Badge } from "@workspace/ui/components/badge"
 import {
   Card,
@@ -7,6 +8,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@workspace/ui/components/card"
+
+import { EntityIcon } from "@/shared/ui"
 
 import type { HreTokenNeedRow } from "../model/hre-objectives"
 
@@ -38,7 +41,12 @@ export function TokensNeededCard({
               className="flex flex-wrap items-center justify-between gap-2 text-sm"
               data-testid={`hre-tokens-${row.mode}`}
             >
-              <span className="font-medium">
+              <span className="flex items-center gap-1.5 font-medium">
+                <EntityIcon
+                  alt=""
+                  className="size-5 shrink-0"
+                  src={gameModeTokenIcon(row.mode)}
+                />
                 {t(`tokens.modes.${row.mode}`)}
               </span>
               <span className="flex items-center gap-2 tabular-nums">

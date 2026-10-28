@@ -1,7 +1,7 @@
 import { useMemo } from "react"
 import { useTranslation } from "react-i18next"
-import { Gift, Infinity as InfinityIcon } from "lucide-react"
-import type { GameCatalogHseTier } from "@workspace/game-catalog"
+import { Infinity as InfinityIcon } from "lucide-react"
+import { chestIcon, type GameCatalogHseTier } from "@workspace/game-catalog"
 import {
   Tooltip,
   TooltipContent,
@@ -14,6 +14,8 @@ import { hseMilestoneCells } from "../lib/hse-milestones"
 import { hseRewardDisplay } from "../lib/hse-reward"
 
 const NO_UNITS = new Map<string, { name: string }>()
+// A reward the display has no art for shows the game's plain reward crate.
+const genericRewardIcon = chestIcon("wood")
 
 /**
  * The tier's milestone grid, after V1's Learn > HSEs page: each cell shows the points it adds, the
@@ -22,8 +24,11 @@ const NO_UNITS = new Map<string, { name: string }>()
  */
 export function MilestoneGrid({
   tier,
+  pointsIcon,
 }: {
   tier: Pick<GameCatalogHseTier, "milestones" | "repeat">
+  /** The event's points icon, beside each cell's points. */
+  pointsIcon?: string
 }) {
   const { t, i18n } = useTranslation([
     "shops",
@@ -84,19 +89,11 @@ export function MilestoneGrid({
                       </span>
                     ) : null}
                     <span className="flex items-center gap-1">
-                      {cell.reward.iconUrl ? (
-                        <EntityIcon
-                          alt=""
-                          className="size-8"
-                          src={cell.reward.iconUrl}
-                        />
-                      ) : (
-                        <Gift
-                          aria-hidden="true"
-                          className="size-8 p-1 text-muted-foreground"
-                          data-testid="hse-milestone-generic-icon"
-                        />
-                      )}
+                      <EntityIcon
+                        alt=""
+                        className="size-8"
+                        src={cell.reward.iconUrl ?? genericRewardIcon}
+                      />
                       <span className="text-xs font-semibold text-muted-foreground tabular-nums">
                         {td("hse.details.milestoneQuantity", {
                           quantity: cell.quantity,
@@ -104,9 +101,16 @@ export function MilestoneGrid({
                       </span>
                     </span>
                     <span
-                      className="rounded bg-muted px-1.5 py-0.5 text-[11px] font-semibold tabular-nums"
+                      className="inline-flex items-center gap-1 rounded bg-muted px-1.5 py-0.5 text-[11px] font-semibold tabular-nums"
                       data-testid="hse-milestone-points"
                     >
+                      {pointsIcon ? (
+                        <EntityIcon
+                          alt=""
+                          className="size-3.5 shrink-0"
+                          src={pointsIcon}
+                        />
+                      ) : null}
                       {td("hse.details.milestonePoints", {
                         points: numbers.format(cell.points),
                       })}

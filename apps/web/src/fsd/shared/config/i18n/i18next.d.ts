@@ -1,6 +1,7 @@
 import type enCommon from "../../../../../public/locales/en/common.json"
 import type enLanding from "../../../../../public/locales/en/landing.json"
 import type enPrivacy from "../../../../../public/locales/en/privacy.json"
+import type enTerms from "../../../../../public/locales/en/terms.json"
 import type enProgression from "../../../../../public/locales/en/progression.json"
 import type enCampaigns from "../../../../../public/locales/en/campaigns.json"
 import type enEquipment from "../../../../../public/locales/en/equipment.json"
@@ -20,6 +21,7 @@ declare module "i18next" {
       common: typeof enCommon
       landing: typeof enLanding
       privacy: typeof enPrivacy
+      terms: typeof enTerms
       // Nested static namespaces (progression: stars/ranks/rarities; campaigns: names/difficulties/codes).
       progression: typeof enProgression
       campaigns: typeof enCampaigns

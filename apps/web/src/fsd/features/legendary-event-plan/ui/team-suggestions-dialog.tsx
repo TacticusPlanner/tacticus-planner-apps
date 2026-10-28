@@ -7,8 +7,8 @@ import {
   type ReactNode,
 } from "react"
 import { useTranslation } from "react-i18next"
-import { Check, Lock } from "lucide-react"
-import { characterIcon } from "@workspace/game-catalog"
+import { Check } from "lucide-react"
+import { characterIcon, lockIcon } from "@workspace/game-catalog"
 import type { UnitId } from "@workspace/game-domain"
 import { Button } from "@workspace/ui/components/button"
 import { Skeleton } from "@workspace/ui/components/skeleton"
@@ -236,9 +236,10 @@ export function TeamSuggestionsDialog({
                             {nameOf({ id: unitId })}
                           </span>
                           {locked ? (
-                            <Lock
-                              aria-label={t("teams.picker.locked")}
-                              className="size-3.5 text-muted-foreground"
+                            <EntityIcon
+                              src={lockIcon()}
+                              alt={t("teams.picker.locked")}
+                              className="size-3.5"
                             />
                           ) : null}
                           <UnitGoalBadge

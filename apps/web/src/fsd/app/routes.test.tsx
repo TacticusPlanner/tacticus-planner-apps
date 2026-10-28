@@ -45,20 +45,20 @@ function renderSection(path: string, element: ReactNode, entry: string) {
 }
 
 describe("app routes", () => {
-  it("serves /privacy beside the landing page, outside the app shell and its guards", () => {
-    const publicRoutes = routes[0]?.children ?? []
-    const privacy = publicRoutes.find((route) => route.path === "/privacy")
+  it.each(["/privacy", "/terms"])(
+    "serves %s beside the landing page, outside the app shell and its guards",
+    (path) => {
+      const publicRoutes = routes[0]?.children ?? []
 
-    expect(privacy).toBeDefined()
-    expect(publicRoutes.map((route) => route.path)).toContain("/")
-    // The shell route is pathless; /privacy must not be nested under it (that would add the gate).
-    const shell = publicRoutes.find(
-      (route) => route.path === undefined && route.errorElement !== undefined
-    )
-    expect(shell?.children?.some((route) => route.path === "/privacy")).toBe(
-      false
-    )
-  })
+      expect(publicRoutes.map((route) => route.path)).toContain(path)
+      expect(publicRoutes.map((route) => route.path)).toContain("/")
+      // The shell route is pathless; the page must not be nested under it (that would add the gate).
+      const shell = publicRoutes.find(
+        (route) => route.path === undefined && route.errorElement !== undefined
+      )
+      expect(shell?.children?.some((route) => route.path === path)).toBe(false)
+    }
+  )
 
   it("registers /legendary-events with the hub and the event page as children", () => {
     const section = findRoute(routes, "/legendary-events")

@@ -27,6 +27,7 @@ import { Spinner } from "@workspace/ui/components/spinner"
 import { cn } from "@workspace/ui/lib/utils"
 
 import { usePlayerDataSyncStatus } from "@/features/player-data-sync"
+import { NavItemIcon } from "./nav-child-icon"
 import { matchesNavPath } from "./find-active-child"
 import { MobileDrawerSubItem } from "./mobile-drawer-sub-item"
 import { MobileHeader } from "./mobile-header"
@@ -317,13 +318,13 @@ function MobileBottomNav({
                           className={cn(
                             "group/nav-row flex min-h-12 items-center gap-3 rounded-lg px-3 py-2 font-medium transition-colors",
                             isActive
-                              ? "bg-accent text-accent-foreground shadow-[inset_3px_0_0_0_var(--accent-foreground)]"
-                              : "hover:bg-accent hover:text-accent-foreground"
+                              ? "bg-accent/15 font-semibold text-foreground shadow-[inset_3px_0_0_0_var(--accent)]"
+                              : "hover:bg-muted"
                           )}
                           onClick={closeForNavigation}
                           to={item.path}
                         >
-                          <item.icon className="size-5 shrink-0" />
+                          <NavItemIcon item={item} />
                           <span className="flex min-w-0 flex-col">
                             <span className="flex items-center">
                               <span className="truncate">
@@ -335,8 +336,8 @@ function MobileBottomNav({
                               className={cn(
                                 "truncate text-xs font-normal",
                                 isActive
-                                  ? "text-accent-foreground"
-                                  : "text-muted-foreground group-hover/nav-row:text-accent-foreground"
+                                  ? "text-muted-foreground"
+                                  : "text-muted-foreground"
                               )}
                             >
                               {t(item.descriptionKey)}

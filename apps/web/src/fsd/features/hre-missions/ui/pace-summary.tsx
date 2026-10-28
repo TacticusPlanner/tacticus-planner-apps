@@ -1,5 +1,8 @@
 import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
+import { heroReleaseEventResourceIcon } from "@workspace/game-catalog"
+
+import { EntityIcon } from "@/shared/ui"
 
 import type { HrePace } from "../model/hre-pace"
 
@@ -23,7 +26,12 @@ export function PaceSummary({
       className="flex items-center justify-between gap-3 rounded-lg border bg-card px-4 py-3 text-sm text-card-foreground"
       data-testid="hre-pace-summary"
     >
-      <p className="tabular-nums">
+      <p className="flex items-center gap-2 tabular-nums">
+        <EntityIcon
+          alt=""
+          className="size-5 shrink-0"
+          src={heroReleaseEventResourceIcon("points")}
+        />
         {pace && points !== null
           ? t("pace.summary", {
               points: n(points),

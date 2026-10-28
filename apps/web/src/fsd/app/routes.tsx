@@ -83,15 +83,29 @@ const AccountSetupRoute = lazy(loadAccountSetupRoute)
 const loadPrivacyPage = () =>
   import("@/pages/privacy").then((m) => ({ default: m.PrivacyPage }))
 const PrivacyPage = lazy(loadPrivacyPage)
+const loadTermsPage = () =>
+  import("@/pages/terms").then((m) => ({ default: m.TermsPage }))
+const TermsPage = lazy(loadTermsPage)
 
 // Public for every visitor, signed in or not: no auth guard and no onboarding gate (a user mid-setup
-// may still need to read it). `privacy` is fetched here, not only by the page, for the browser title.
+// may still need to read them). Each page's namespace is fetched here, not only by the page, for
+// the browser title. Both URLs are also linked from the Entra ID sign-in branding.
 function PrivacyRoute() {
   const { t } = useTranslation("privacy")
 
   return (
     <PublicLayout pageTitle={t("title")}>
       <PrivacyPage />
+    </PublicLayout>
+  )
+}
+
+function TermsRoute() {
+  const { t } = useTranslation("terms")
+
+  return (
+    <PublicLayout pageTitle={t("title")}>
+      <TermsPage />
     </PublicLayout>
   )
 }
@@ -130,6 +144,11 @@ const appRoutes: RouteObject[] = [
     path: "/privacy",
     element: <PrivacyRoute />,
     loader: preloadOnMatch(loadPrivacyPage),
+  },
+  {
+    path: "/terms",
+    element: <TermsRoute />,
+    loader: preloadOnMatch(loadTermsPage),
   },
   // Account setup sits outside AppShell on purpose. A user here has no configured API key, so every
   // shell affordance is a trap or noise — nav links bounce straight back here, the catalog init gate

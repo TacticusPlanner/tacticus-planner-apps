@@ -13,9 +13,6 @@ import {
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 import { cn } from "@workspace/ui/lib/utils"
 
-import { eventBarClass } from "@/shared/lib"
-import { EventTypeIcon } from "@/shared/ui"
-
 import type {
   HseDetailsView,
   HseEventPointsState,
@@ -24,18 +21,19 @@ import { MilestoneGrid } from "./milestone-grid"
 import { useHseText } from "./use-hse-text"
 
 /**
- * The selected instance's event details, after V1's Learn > HSEs page without paid offers: icon and
- * name, the power level and resolved tier (with the tier rules in a tooltip) when the event has more
+ * The selected instance's event details, after V1's Learn > HSEs page without paid offers (the
+ * status line above names the event and shows its medallion): the power level and resolved tier (with the tier rules in a tooltip) when the event has more
  * than one tier, the description lines, a community note for a Global event, and the milestone grid.
  * On mobile the description shows its first line with Show more.
  */
 export function EventDetails({
   state,
-  eventName,
+  pointsIcon,
   className,
 }: {
   state: HseEventPointsState
-  eventName: string
+  /** The event's points icon, beside each milestone's points. */
+  pointsIcon?: string
   className?: string
 }) {
   const { t } = useTranslation("dailies")
@@ -65,7 +63,7 @@ export function EventDetails({
           </p>
         )
       case "ready":
-        return <ReadyDetails details={state.details} />
+        return <ReadyDetails details={state.details} pointsIcon={pointsIcon} />
     }
   })()
 
@@ -74,29 +72,19 @@ export function EventDetails({
       className={cn("space-y-3 rounded-xl border p-4", className)}
       data-testid="hse-event-details"
     >
-      <div className="flex items-center gap-3">
-        <span
-          aria-hidden="true"
-          className={cn(
-            "flex size-8 shrink-0 items-center justify-center rounded-lg",
-            eventBarClass("homeScreen")
-          )}
-        >
-          <EventTypeIcon className="size-4" definitionType="HomeScreenEvent" />
-        </span>
-        <div className="min-w-0">
-          <p className="text-xs text-muted-foreground">
-            {t("hse.details.title")}
-          </p>
-          <h2 className="truncate font-semibold">{eventName}</h2>
-        </div>
-      </div>
+      <h2 className="font-semibold">{t("hse.details.title")}</h2>
       {body}
     </section>
   )
 }
 
-function ReadyDetails({ details }: { details: HseDetailsView }) {
+function ReadyDetails({
+  details,
+  pointsIcon,
+}: {
+  details: HseDetailsView
+  pointsIcon?: string
+}) {
   const { t } = useTranslation("dailies")
   return (
     <>
@@ -109,7 +97,7 @@ function ReadyDetails({ details }: { details: HseDetailsView }) {
         </p>
       ) : null}
       <Description details={details} />
-      <MilestoneGrid tier={details.tier} />
+      <MilestoneGrid pointsIcon={pointsIcon} tier={details.tier} />
     </>
   )
 }

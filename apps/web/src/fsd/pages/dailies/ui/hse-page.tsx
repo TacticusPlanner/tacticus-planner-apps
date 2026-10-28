@@ -1,6 +1,7 @@
 import { useEffect } from "react"
 import { useSearchParams } from "react-router"
 import { useTranslation } from "react-i18next"
+import { homeScreenEventPointsIcon } from "@workspace/game-catalog"
 
 import {
   EventFarmSection,
@@ -11,7 +12,6 @@ import {
   resolveHomeScreenEventSelection,
   selectListTarget,
   useActiveHomeScreenEvent,
-  useHomeScreenEventName,
 } from "@/features/daily-raids"
 import {
   EventDetails,
@@ -54,8 +54,13 @@ export function HsePage() {
   const target = selectListTarget(instance)
   const raidRule = target?.rule ?? null
   const stale = selection?.stale ?? false
-  const eventName = useHomeScreenEventName()
   const points = useHseProjection(instance)
+  const pointsIcon = instance
+    ? homeScreenEventPointsIcon(
+        instance.entry.definitionId,
+        instance.entry.parameters
+      )
+    : undefined
   const shown = hseSectionsShown(points)
   const teams = useHseTeamRecommendations(instance, points)
 
@@ -121,8 +126,12 @@ export function HsePage() {
           }
           data-testid="hse-event-row"
         >
-          <EventDetails eventName={eventName(instance.entry)} state={points} />
-          <PointsProjection hasRaidLists={!!raidRule} state={points} />
+          <EventDetails pointsIcon={pointsIcon} state={points} />
+          <PointsProjection
+            hasRaidLists={!!raidRule}
+            pointsIcon={pointsIcon}
+            state={points}
+          />
         </div>
       ) : null}
       <HseTeamsSection view={teams} />
@@ -134,7 +143,7 @@ export function HsePage() {
           className="space-y-5 md:grid md:grid-cols-2 md:items-start md:gap-6 md:space-y-0"
           data-testid="hse-sections"
         >
-          <EventFarmSection rule={raidRule} />
+          <EventFarmSection pointsIcon={pointsIcon} rule={raidRule} />
           <div data-testid="hse-top-lists">
             <EventTopLocations rule={raidRule} />
           </div>

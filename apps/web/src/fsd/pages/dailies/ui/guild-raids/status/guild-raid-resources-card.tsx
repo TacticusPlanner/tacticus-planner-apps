@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next"
+import { gameModeTokenIcon } from "@workspace/game-catalog"
 import {
   Card,
   CardContent,
@@ -7,6 +8,7 @@ import {
 } from "@workspace/ui/components/card"
 
 import { formatRelativeTime } from "@/shared/lib"
+import { EntityIcon } from "@/shared/ui"
 
 import type {
   GuildRaidResourceView,
@@ -16,10 +18,13 @@ import type {
 function ResourceRow({
   testId,
   label,
+  icon,
   resource,
 }: {
   testId: string
   label: string
+  /** The game's token or bomb icon; decorative, the label names it. */
+  icon: string
   resource: GuildRaidResourceView
 }) {
   const { t, i18n } = useTranslation("dailies")
@@ -46,7 +51,10 @@ function ResourceRow({
 
   return (
     <div className="flex flex-col gap-0.5" data-testid={testId}>
-      <span className="text-sm text-muted-foreground">{label}</span>
+      <span className="flex items-center gap-1.5 text-sm text-muted-foreground">
+        <EntityIcon alt="" className="size-5 shrink-0" src={icon} />
+        {label}
+      </span>
       <span className="text-lg font-semibold">
         {resource.current} / {resource.max}
       </span>
@@ -86,11 +94,13 @@ export function GuildRaidResourcesCard({
           <div className="flex flex-row gap-6 sm:gap-8">
             <ResourceRow
               testId="guild-raid-resource-tokens"
+              icon={gameModeTokenIcon("guildRaid")}
               label={t("guildRaids.resources.tokens")}
               resource={resources.tokens}
             />
             <ResourceRow
               testId="guild-raid-resource-bombs"
+              icon={gameModeTokenIcon("bombTokens")}
               label={t("guildRaids.resources.bombs")}
               resource={resources.bombs}
             />

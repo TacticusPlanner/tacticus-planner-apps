@@ -42,6 +42,8 @@
     "orb": "{{rarity}}-Aufstiegskugel",
     "expeditionSpeedUp": "Expeditions-Beschleunigung",
     "equipmentPool": "{{rarity}}-{{type}}-Gegenstand",
+    "seasonalEventCurrency": "Event-Währung",
+    "energy": "Energie",
     "generic": "{{name}}"
   },
   "state": {

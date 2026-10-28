@@ -1,4 +1,5 @@
 import type {
+  GameIcon,
   ResolvedShopOffer,
   ResolvedShopSlot,
 } from "@workspace/game-catalog"
@@ -12,7 +13,7 @@ export interface LibraryShopRewardView {
   maxPerDay: number
   freeOfferType?: string
   label: string
-  iconUrl?: string
+  iconUrl?: GameIcon
 }
 
 /**
@@ -30,7 +31,7 @@ export interface LibraryShopSlotView {
 
 export type ResolveRewardDisplay = (offer: ResolvedShopOffer) => {
   label: string
-  iconUrl?: string
+  iconUrl?: GameIcon
 }
 
 /**

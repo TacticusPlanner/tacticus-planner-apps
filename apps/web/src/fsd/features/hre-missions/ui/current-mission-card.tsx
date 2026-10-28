@@ -25,6 +25,8 @@ import {
 } from "../model/hre-missions"
 import { isMissionComplete, type HreProgress } from "../model/hre-progress"
 import type { HreProgressActions } from "../model/use-hre-progress"
+import { EntityIcon } from "@/shared/ui"
+
 import { missionName } from "./mission-name"
 import { ObjectiveTips } from "./objective-tips"
 
@@ -42,11 +44,14 @@ export function CurrentMissionCard({
   missions,
   actions,
   objectiveText,
+  objectiveIcon,
 }: {
   state: HreProgress
   missions: readonly HreMission[]
   actions: HreProgressActions
   objectiveText: (objective: HreObjective) => string
+  /** The game glyph shown before each objective. */
+  objectiveIcon?: (objective: HreObjective) => string | undefined
 }) {
   const { t, i18n } = useTranslation("hre")
   const mission = hreMission(missions, state.mission)
@@ -84,7 +89,12 @@ export function CurrentMissionCard({
           return (
             <div key={index} className="space-y-1.5" data-testid={testId}>
               <div className="flex items-start justify-between gap-2">
-                <p className="text-sm font-medium">
+                <p className="flex items-center gap-2 text-sm font-medium">
+                  <EntityIcon
+                    alt=""
+                    className="size-5 shrink-0"
+                    src={objectiveIcon?.(objective)}
+                  />
                   {objectiveText(objective)}
                 </p>
                 {done ? (

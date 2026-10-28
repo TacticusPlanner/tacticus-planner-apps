@@ -1906,7 +1906,9 @@
     "discord": "Discord",
     "github": "GitHub",
     "feedback": "Feedback board",
-    "privacy": "Privacy",
-    "uiKit": "UI Kit"
+    "privacy": "Privacy & cookies",
+    "terms": "Terms of use",
+    "uiKit": "UI Kit",
+    "lastUpdated": "Last updated {{date}}"
   }
 }

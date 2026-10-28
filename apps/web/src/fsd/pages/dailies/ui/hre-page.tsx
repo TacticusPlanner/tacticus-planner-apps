@@ -9,6 +9,7 @@ import {
   campaignObjectiveState,
   DEFAULT_HRE_PROGRESS,
   HreEventHeader,
+  hreObjectiveIcon,
   hreDaysLeft,
   hrePaceFor,
   MissionTracker,
@@ -72,6 +73,8 @@ export function HrePage() {
     hero,
     instance?.featuredCharacterId ?? null
   )
+  const objectiveIcon = (objective: Parameters<typeof hreObjectiveIcon>[0]) =>
+    hreObjectiveIcon(objective, hero?.alliance ?? null)
   const tokens = useHreTokens()
   const paceRef = useRef<HTMLDivElement>(null)
 
@@ -290,6 +293,7 @@ export function HrePage() {
       >
         <PaceCard
           actions={actions}
+          factionId={hero?.faction ?? null}
           pace={pace}
           rules={rules.rewards}
           startRarity={hero?.initialRarity ?? null}
@@ -320,6 +324,7 @@ export function HrePage() {
         actions={actions}
         missions={missions}
         objectiveText={objectiveText}
+        objectiveIcon={objectiveIcon}
         state={progress}
       />
     </div>
@@ -330,6 +335,7 @@ export function HrePage() {
       current={running ? progress.mission : null}
       missions={missions}
       objectiveText={objectiveText}
+      objectiveIcon={objectiveIcon}
     />
   ) : null
 

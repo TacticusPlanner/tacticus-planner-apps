@@ -1,6 +1,13 @@
 import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import {
+  heroReleaseChestIcon,
+  heroReleaseCurrencyIcon,
+  heroReleaseEventResourceIcon,
+  leaderboardIcon,
+} from "@workspace/game-catalog"
+import type { Progression } from "@workspace/game-domain"
+import {
   Card,
   CardContent,
   CardDescription,
@@ -17,6 +24,8 @@ import {
   SelectValue,
 } from "@workspace/ui/components/select"
 
+import { EntityIcon, ProgressionBadge } from "@/shared/ui"
+
 import {
   bracketRange,
   ownedFrom,
@@ -25,7 +34,10 @@ import {
   type HreOwnedStep,
   type HrePace,
 } from "../model/hre-pace"
-import type { HreRarityStepId } from "../model/hre-reward-tables"
+import {
+  hreStepProgression,
+  type HreRarityStepId,
+} from "../model/hre-reward-tables"
 import type { HreRewardRules } from "../model/hre-rules"
 import type { HreProgress } from "../model/hre-progress"
 import type { HreProgressActions } from "../model/use-hre-progress"
@@ -48,6 +60,7 @@ export function PaceCard({
   pace,
   rules,
   startRarity,
+  factionId = null,
 }: {
   state: HreProgress
   actions: HreProgressActions
@@ -56,6 +69,8 @@ export function PaceCard({
   /** The projection, or null until points are entered. */
   pace: HrePace | null
   startRarity: string | null
+  /** The featured hero's faction, which picks the event's currency and chest art. */
+  factionId?: string | null
 }) {
   const { t, i18n } = useTranslation("hre")
   const n = (value: number) => value.toLocaleString(i18n.language)
@@ -66,6 +81,10 @@ export function PaceCard({
   const gap = ownedStep ? stepGap(rules, ownedStep, startRarity) : null
   const ownedSet = ownedFrom(rules, owned, startRarity) !== null
   const lastTier = rules.chests.length
+  const currencyIcon = factionId
+    ? heroReleaseCurrencyIcon(factionId)
+    : undefined
+  const chestIcon = heroReleaseChestIcon(factionId ?? undefined)
   const ownedStarted = Object.values(owned).some((value) => value !== null)
 
   const rankAge = (() => {
@@ -85,6 +104,7 @@ export function PaceCard({
         <div className="grid grid-cols-2 gap-3">
           <NumberField
             id="hre-pace-points"
+            icon={heroReleaseEventResourceIcon("points")}
             label={t("pace.points")}
             min={0}
             onChange={actions.setPoints}
@@ -92,6 +112,7 @@ export function PaceCard({
           />
           <NumberField
             id="hre-pace-rank"
+            icon={leaderboardIcon()}
             label={t("pace.rank")}
             min={1}
             onChange={actions.setRank}
@@ -104,6 +125,7 @@ export function PaceCard({
           <div className="grid grid-cols-2 gap-3">
             <NumberField
               id="hre-pace-owned-currency"
+              icon={currencyIcon}
               label={t("pace.ownedCurrency")}
               min={0}
               onChange={(currency) => actions.setOwned({ currency })}
@@ -112,6 +134,7 @@ export function PaceCard({
             />
             <NumberField
               id="hre-pace-next-tier"
+              icon={chestIcon}
               label={t("pace.nextTier")}
               max={lastTier}
               min={1}
@@ -141,7 +164,10 @@ export function PaceCard({
                   <SelectItem value="none">{t("pace.stepNone")}</SelectItem>
                   {stepsFor(rules, startRarity).map((step) => (
                     <SelectItem key={step.id} value={step.id}>
-                      {stepName(step.id)}
+                      <StepLabel
+                        name={stepName(step.id)}
+                        progression={hreStepProgression(step.id)}
+                      />
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -150,6 +176,7 @@ export function PaceCard({
             {ownedStep && gap === null ? null : (
               <NumberField
                 id="hre-pace-to-next"
+                icon={heroReleaseEventResourceIcon("shards")}
                 label={t("pace.toNext")}
                 max={gap === null ? undefined : gap - 1}
                 min={0}
@@ -201,7 +228,15 @@ export function PaceCard({
               {pace.rankKnown ? rankAge : ` ${t("pace.noRank")}`}
             </p>
             <div className="space-y-1 text-sm" data-testid="hre-pace-next">
-              <p data-testid="hre-pace-next-milestone">
+              <p
+                className="flex items-center gap-1.5"
+                data-testid="hre-pace-next-milestone"
+              >
+                <EntityIcon
+                  alt=""
+                  className="size-4 shrink-0"
+                  src={heroReleaseEventResourceIcon("points")}
+                />
                 {pace.nextMilestone
                   ? t("pace.nextMilestone", {
                       points: n(pace.nextMilestone.points),
@@ -210,7 +245,15 @@ export function PaceCard({
                   : t("pace.allMilestones")}
               </p>
               {pace.nextChest ? (
-                <p data-testid="hre-pace-next-chest">
+                <p
+                  className="flex items-center gap-1.5"
+                  data-testid="hre-pace-next-chest"
+                >
+                  <EntityIcon
+                    alt=""
+                    className="size-6 shrink-0"
+                    src={chestIcon}
+                  />
                   {pace.nextChest.missing > 0
                     ? t("pace.nextChest", {
                         tier: pace.nextChest.tier,
@@ -225,13 +268,21 @@ export function PaceCard({
               ) : null}
             </div>
             <dl className="grid gap-2 text-sm">
-              <PaceRow label={t("pace.projected")} testId="hre-pace-projected">
+              <PaceRow
+                icon={heroReleaseEventResourceIcon("points")}
+                label={t("pace.projected")}
+                testId="hre-pace-projected"
+              >
                 {t("pace.projectedValue", {
                   points: n(pace.projectedPoints),
                   perDay: n(pace.averagePerDay),
                 })}
               </PaceRow>
-              <PaceRow label={t("pace.currency")} testId="hre-pace-currency">
+              <PaceRow
+                icon={currencyIcon}
+                label={t("pace.currency")}
+                testId="hre-pace-currency"
+              >
                 {t(
                   pace.currency.owned === null
                     ? "pace.currencyValue"
@@ -246,7 +297,11 @@ export function PaceCard({
                   }
                 )}
               </PaceRow>
-              <PaceRow label={t("pace.chest")} testId="hre-pace-chest">
+              <PaceRow
+                icon={chestIcon}
+                label={t("pace.chest")}
+                testId="hre-pace-chest"
+              >
                 {pace.chest.tier < pace.chest.from
                   ? t("pace.chestNone", { left: n(pace.chest.left) })
                   : t(
@@ -261,7 +316,11 @@ export function PaceCard({
                       }
                     )}
               </PaceRow>
-              <PaceRow label={t("pace.shards")} testId="hre-pace-shards">
+              <PaceRow
+                icon={heroReleaseEventResourceIcon("shards")}
+                label={t("pace.shards")}
+                testId="hre-pace-shards"
+              >
                 {t(
                   pace.shards.held === null
                     ? "pace.shardsValue"
@@ -328,7 +387,10 @@ export function PaceCard({
             <SelectContent>
               {stepsFor(rules, startRarity).map((step) => (
                 <SelectItem key={step.id} value={step.id}>
-                  {stepName(step.id)}
+                  <StepLabel
+                    name={stepName(step.id)}
+                    progression={hreStepProgression(step.id)}
+                  />
                 </SelectItem>
               ))}
             </SelectContent>
@@ -386,8 +448,28 @@ function TargetNeeds({
   )
 }
 
+/** A hero step as the game draws it (rarity badge and stars) beside its name. */
+function StepLabel({
+  name,
+  progression,
+}: {
+  name: string
+  progression: string | undefined
+}) {
+  if (!progression) return name
+  return (
+    <span className="inline-flex items-center gap-2">
+      <span aria-hidden="true" className="inline-flex">
+        <ProgressionBadge value={progression as Progression} />
+      </span>
+      {name}
+    </span>
+  )
+}
+
 function NumberField({
   id,
+  icon,
   label,
   min,
   max,
@@ -396,6 +478,8 @@ function NumberField({
   onChange,
 }: {
   id: string
+  /** The game's glyph for the value; decorative, the label names it. */
+  icon?: string
   label: string
   min: number
   max?: number
@@ -405,7 +489,10 @@ function NumberField({
 }) {
   return (
     <div className="space-y-1">
-      <Label htmlFor={id}>{label}</Label>
+      <Label className="flex items-center gap-1.5" htmlFor={id}>
+        <EntityIcon alt="" className="size-4 shrink-0" src={icon} />
+        {label}
+      </Label>
       <Input
         data-testid={id}
         id={id}
@@ -423,16 +510,24 @@ function NumberField({
 
 function PaceRow({
   label,
+  icon,
   testId,
   children,
 }: {
   label: string
+  /** The game's glyph for the resource the row counts; decorative, the label names it. */
+  icon?: string
   testId: string
   children: ReactNode
 }) {
   return (
     <div className="grid gap-0.5 sm:grid-cols-[8rem_1fr]" data-testid={testId}>
-      <dt className="text-muted-foreground">{label}</dt>
+      <dt className="flex items-center gap-1.5 text-muted-foreground">
+        {icon ? (
+          <EntityIcon alt="" className="size-4 shrink-0" src={icon} />
+        ) : null}
+        {label}
+      </dt>
       <dd className="tabular-nums">{children}</dd>
     </div>
   )

@@ -1,6 +1,10 @@
 import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import {
+  legendaryEventResourceIcon,
+  type LegendaryEventResource,
+} from "@workspace/game-catalog"
+import {
   Card,
   CardAction,
   CardContent,
@@ -15,6 +19,7 @@ import type {
 } from "@/entities/legendary-event"
 import { RunInputsDrawer } from "@/features/legendary-event-plan"
 import { formatEventCountdown, formatRelativeTime } from "@/shared/lib"
+import { IconLine } from "@/shared/ui"
 
 import { EventTimingLines } from "../shared/event-timing-lines"
 import type {
@@ -94,7 +99,7 @@ export function RunStatusCard({
           </Value>
         )}
         {tokens && tokensText ? (
-          <Value testId="run-status-tokens">
+          <Value icon="tokens" testId="run-status-tokens">
             {tokens.next === null
               ? tokensText
               : tokens.next.kind === "due"
@@ -109,7 +114,7 @@ export function RunStatusCard({
                   })}
           </Value>
         ) : null}
-        <Value testId="run-status-points">
+        <Value icon="points" testId="run-status-points">
           {t("points", { points: number.format(runStatus.points) })}
         </Value>
         <Value testId="run-status-currency">
@@ -117,12 +122,12 @@ export function RunStatusCard({
             value: number.format(runStatus.currency),
           })}
         </Value>
-        <Value testId="run-status-chests">
+        <Value icon="chests" testId="run-status-chests">
           {t("runStatus.chests", {
             value: number.format(runStatus.chestsClaimed),
           })}
         </Value>
-        <Value testId="run-status-shards">
+        <Value icon="shards" testId="run-status-shards">
           {t("runStatus.shards", { value: number.format(runStatus.shards) })}
         </Value>
         <Value className="sm:col-span-2" testId="run-status-milestone">
@@ -181,12 +186,26 @@ export function RunStatusCard({
 function Value({
   children,
   className,
+  icon,
   testId,
 }: {
   children: ReactNode
   className?: string
+  /** The game's glyph for the resource this line counts. */
+  icon?: LegendaryEventResource
   testId: string
 }) {
+  if (icon) {
+    return (
+      <IconLine
+        className={className}
+        icon={legendaryEventResourceIcon(icon)}
+        testId={testId}
+      >
+        {children}
+      </IconLine>
+    )
+  }
   return (
     <li className={className} data-testid={testId}>
       {children}

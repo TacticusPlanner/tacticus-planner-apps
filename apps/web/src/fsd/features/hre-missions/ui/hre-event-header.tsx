@@ -1,14 +1,13 @@
 import { useTranslation } from "react-i18next"
-import { characterIcon } from "@workspace/game-catalog"
+import { characterIcon, onslaughtAllianceIcon } from "@workspace/game-catalog"
 import type { UnitId } from "@workspace/game-domain"
 import { Alert, AlertDescription } from "@workspace/ui/components/alert"
 import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
 import { Skeleton } from "@workspace/ui/components/skeleton"
-import { cn } from "@workspace/ui/lib/utils"
 
-import { eventBarClass, formatEventCountdown } from "@/shared/lib"
-import { EntityIcon, EventTypeIcon } from "@/shared/ui"
+import { formatEventCountdown } from "@/shared/lib"
+import { EntityIcon, EventIcon } from "@/shared/ui"
 
 import type { HreInstanceState } from "../model/use-hre-instance"
 
@@ -66,18 +65,11 @@ export function HreEventHeader({ state }: { state: HreInstanceState }) {
           src={icon}
         />
       ) : (
-        <span
-          aria-hidden="true"
-          className={cn(
-            "flex size-12 shrink-0 items-center justify-center rounded-full",
-            eventBarClass("newCharacter")
-          )}
-        >
-          <EventTypeIcon
-            className="size-6"
-            definitionType="NewCharacterEvent"
-          />
-        </span>
+        <EventIcon
+          className="size-12 shrink-0"
+          definitionId={instance.entry.definitionId}
+          definitionType="NewCharacterEvent"
+        />
       )}
       <div className="min-w-0 space-y-0.5">
         <div className="flex flex-wrap items-center gap-2">
@@ -86,6 +78,13 @@ export function HreEventHeader({ state }: { state: HreInstanceState }) {
           </p>
           {hero ? (
             <Badge data-testid="hre-header-alliance" variant="secondary">
+              {hero.alliance === "Neutral" ? null : (
+                <EntityIcon
+                  alt=""
+                  className="h-3.5 w-auto"
+                  src={onslaughtAllianceIcon(hero.alliance)}
+                />
+              )}
               {t(`common:alliances.${hero.alliance}` as never, {
                 defaultValue: hero.alliance,
               })}

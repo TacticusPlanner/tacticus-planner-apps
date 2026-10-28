@@ -1,4 +1,6 @@
-import { render, screen } from "@testing-library/react"
+import { render as rtlRender, screen } from "@testing-library/react"
+import type { ReactElement } from "react"
+import { MemoryRouter } from "react-router"
 import { describe, expect, it, vi } from "vitest"
 
 vi.mock("react-i18next", () => ({
@@ -11,6 +13,10 @@ vi.mock("./account-menu-parts", async (importOriginal) => ({
 }))
 
 import { GuestPreferencesCard } from "./guest-account-menu"
+
+function render(ui: ReactElement) {
+  return rtlRender(<MemoryRouter>{ui}</MemoryRouter>)
+}
 
 describe("GuestPreferencesCard", () => {
   it("shows the Changelog row when the caller can open the widget", () => {
@@ -29,5 +35,16 @@ describe("GuestPreferencesCard", () => {
       screen.queryByRole("button", { name: "feedback.changelog" })
     ).not.toBeInTheDocument()
     expect(screen.getByRole("link", { name: /feedback.roadmap/ })).toBeVisible()
+  })
+
+  it("links the privacy and terms pages", () => {
+    render(<GuestPreferencesCard />)
+
+    expect(
+      screen.getByRole("link", { name: "publicSite.privacy" })
+    ).toHaveAttribute("href", "/privacy")
+    expect(
+      screen.getByRole("link", { name: "publicSite.terms" })
+    ).toHaveAttribute("href", "/terms")
   })
 })

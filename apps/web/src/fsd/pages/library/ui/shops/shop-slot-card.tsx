@@ -1,5 +1,4 @@
 import { useTranslation } from "react-i18next"
-import { Dices } from "lucide-react"
 import { Badge } from "@workspace/ui/components/badge"
 import {
   Dialog,
@@ -9,6 +8,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@workspace/ui/components/dialog"
+import { chanceIcon } from "@workspace/game-catalog"
 
 import { shopCurrencyIcon } from "@/features/shop-rewards"
 import { EntityIcon } from "@/shared/ui"
@@ -95,7 +95,7 @@ export function ShopSlotCard({
               {t("shops.randomSlot", { count: slot.rewards.length })}
             </span>
             <Badge className="shrink-0 gap-1" variant="outline">
-              <Dices className="size-3" />
+              <EntityIcon src={chanceIcon()} alt="" className="size-3.5" />
               {t("shops.randomBadge")}
             </Badge>
           </div>

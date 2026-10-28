@@ -14,6 +14,7 @@ import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 import { cn } from "@workspace/ui/lib/utils"
 
 import { formatRelativeTime } from "@/shared/lib"
+import { EntityIcon } from "@/shared/ui"
 
 import type { HseProjectionMode } from "../lib/hse-projection"
 import type {
@@ -25,6 +26,7 @@ import {
   ProgressInput,
   TokensCell,
 } from "./points-projection-inputs"
+import { hseModeIcon } from "../lib/hse-mode-icon"
 import { useModeName } from "./use-mode-name"
 
 type ReadyProjection = Extract<HseProjectionView, { status: "ready" }>
@@ -39,11 +41,14 @@ type ReadyProjection = Extract<HseProjectionView, { status: "ready" }>
 export function PointsProjection({
   state,
   hasRaidLists,
+  pointsIcon,
   className,
 }: {
   state: HseEventPointsState
   /** True when the farm list is shown below (the campaign-raid hint points to it). */
   hasRaidLists: boolean
+  /** The event's points icon, beside the title. */
+  pointsIcon?: string
   className?: string
 }) {
   const { t } = useTranslation("dailies")
@@ -52,7 +57,12 @@ export function PointsProjection({
       className={cn("space-y-3 rounded-xl border p-4", className)}
       data-testid="hse-projection"
     >
-      <h2 className="font-semibold">{t("hse.projection.title")}</h2>
+      <h2 className="flex items-center gap-2 font-semibold">
+        {pointsIcon ? (
+          <EntityIcon alt="" className="size-5 shrink-0" src={pointsIcon} />
+        ) : null}
+        {t("hse.projection.title")}
+      </h2>
       {children}
     </section>
   )
@@ -317,7 +327,14 @@ function ReadyProjectionBody({
               key={mode.mode}
             >
               <div className="flex items-baseline justify-between gap-2">
-                <span className="font-medium">{modeName(mode.mode)}</span>
+                <span className="flex items-center gap-2 font-medium">
+                  <EntityIcon
+                    alt=""
+                    className="size-5 shrink-0"
+                    src={hseModeIcon(mode.mode)}
+                  />
+                  {modeName(mode.mode)}
+                </span>
                 {mode.manualTokens ? (
                   <TokensCell mode={mode} onChange={inputs.setTokens} />
                 ) : (
@@ -362,7 +379,14 @@ function ReadyProjectionBody({
                 key={mode.mode}
               >
                 <TableCell className="font-medium">
-                  {modeName(mode.mode)}
+                  <span className="flex items-center gap-2">
+                    <EntityIcon
+                      alt=""
+                      className="size-5 shrink-0"
+                      src={hseModeIcon(mode.mode)}
+                    />
+                    {modeName(mode.mode)}
+                  </span>
                 </TableCell>
                 <TableCell className="text-right tabular-nums">
                   <TokensCell mode={mode} onChange={inputs.setTokens} />
