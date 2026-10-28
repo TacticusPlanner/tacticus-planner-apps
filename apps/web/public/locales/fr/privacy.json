@@ -21,7 +21,7 @@
     },
     "feedback": {
       "title": "Tableau de suggestions",
-      "body": "Le tableau de suggestions est hébergé par UserJot. Si vous l'ouvrez en étant connecté, le planificateur vous identifie auprès d'UserJot par un jeton signé pour votre compte et votre nom de planificateur, afin que vos messages et vos votes vous soient attribués."
+      "body": "Le tableau de suggestions est hébergé par UserJot. Si vous l'ouvrez depuis le bouton de suggestions ou le menu du compte du planificateur en étant connecté, le planificateur vous identifie auprès d'UserJot par un jeton signé pour votre compte et votre nom de planificateur, afin que vos messages et vos votes vous soient attribués. Ouvrir le lien public du tableau, comme celui du pied de page, n'envoie rien depuis le planificateur."
     },
     "noSale": {
       "title": "Ni publicité, ni revente",

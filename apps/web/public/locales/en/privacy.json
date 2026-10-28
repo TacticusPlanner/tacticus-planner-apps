@@ -21,7 +21,7 @@
     },
     "feedback": {
       "title": "Feedback board",
-      "body": "The feedback board is run on UserJot. If you open it while signed in, the planner identifies you to UserJot with a signed token for your planner account and planner name, so your posts and votes are attributed to you."
+      "body": "The feedback board is run on UserJot. When you open it from the planner's own feedback button or account menu while signed in, the planner identifies you to UserJot with a signed token for your planner account and planner name, so your posts and votes are attributed to you. Opening the public board link, such as the one in the footer, sends nothing from the planner."
     },
     "noSale": {
       "title": "No ads, no selling",

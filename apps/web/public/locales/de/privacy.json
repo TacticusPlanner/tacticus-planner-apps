@@ -21,7 +21,7 @@
     },
     "feedback": {
       "title": "Feedback-Board",
-      "body": "Das Feedback-Board läuft auf UserJot. Wenn du es angemeldet öffnest, identifiziert dich der Planer gegenüber UserJot mit einem signierten Token für dein Planer-Konto und deinen Planer-Namen, damit deine Beiträge und Stimmen dir zugeordnet werden."
+      "body": "Das Feedback-Board läuft auf UserJot. Wenn du es angemeldet über den Feedback-Button oder das Kontomenü des Planers öffnest, identifiziert dich der Planer gegenüber UserJot mit einem signierten Token für dein Planer-Konto und deinen Planer-Namen, damit deine Beiträge und Stimmen dir zugeordnet werden. Wenn du den öffentlichen Board-Link öffnest, etwa den in der Fußzeile, sendet der Planer nichts."
     },
     "noSale": {
       "title": "Keine Werbung, kein Verkauf",

@@ -21,7 +21,7 @@
     },
     "feedback": {
       "title": "Tablero de sugerencias",
-      "body": "El tablero de sugerencias funciona con UserJot. Si lo abres con la sesión iniciada, el planificador te identifica ante UserJot con un token firmado de tu cuenta y tu nombre de planificador, para que tus publicaciones y votos se te atribuyan."
+      "body": "El tablero de sugerencias funciona con UserJot. Si lo abres desde el botón de sugerencias o el menú de la cuenta del planificador con la sesión iniciada, el planificador te identifica ante UserJot con un token firmado de tu cuenta y tu nombre de planificador, para que tus publicaciones y votos se te atribuyan. Abrir el enlace público del tablero, como el del pie de página, no envía nada desde el planificador."
     },
     "noSale": {
       "title": "Sin anuncios ni venta de datos",
