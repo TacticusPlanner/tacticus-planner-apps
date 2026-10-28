@@ -8,7 +8,7 @@
     },
     "account": {
       "title": "Votre compte",
-      "body": "Vous vous connectez avec Microsoft Entra External ID et êtes responsable de la sécurité de cette connexion. N'ajoutez qu'une clé API Tacticus qui vous appartient ou que son propriétaire vous a autorisé à utiliser. Vous pouvez supprimer votre compte à tout moment dans les Paramètres du compte."
+      "body": "Vous vous connectez avec Microsoft Entra External ID et êtes responsable de la sécurité de cette connexion. Chaque adresse e-mail fonctionne avec une seule méthode de connexion, celle utilisée lors de l'inscription (e-mail et mot de passe, ou Google) ; se connecter avec une autre méthode pour la même adresse ne fonctionnera pas, et les comptes ne peuvent pas être fusionnés. N'ajoutez qu'une clé API Tacticus qui vous appartient ou que son propriétaire vous a autorisé à utiliser. Vous pouvez supprimer votre compte à tout moment dans les Paramètres du compte."
     },
     "acceptableUse": {
       "title": "Utilisation acceptable",

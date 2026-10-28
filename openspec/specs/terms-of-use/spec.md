@@ -25,7 +25,7 @@ The app SHALL serve a terms of use page at `/terms` that renders for signed-out 
 The page SHALL be localized in every supported locale and SHALL state, in plain language, with a "last updated" date:
 
 - that the planner is a free, volunteer-run, unofficial fan project not affiliated with, endorsed or sponsored by Snowprint Studios or Games Workshop, and that using it means accepting the terms;
-- that the user signs in with Microsoft Entra External ID, is responsible for that sign-in, should only add a Tacticus API key they own or may use, and can delete their account in Account settings;
+- that the user signs in with Microsoft Entra External ID, is responsible for that sign-in, that each email address works with only the sign-in method it signed up with (no linking or merging of accounts across methods), should only add a Tacticus API key they own or may use, and can delete their account in Account settings;
 - what use is not allowed (breaking the law or the game's terms, reaching other users' data, disrupting or overloading the service, automated scraping, offensive or impersonating planner names);
 - that Tacticus and Warhammer 40,000 names, art and data belong to their owners;
 - that the source code is open source under each repository's licence, which the terms do not limit;

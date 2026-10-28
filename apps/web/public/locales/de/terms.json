@@ -8,7 +8,7 @@
     },
     "account": {
       "title": "Dein Konto",
-      "body": "Du meldest dich über Microsoft Entra External ID an und bist dafür verantwortlich, diese Anmeldung zu schützen. Füge nur einen Tacticus-API-Schlüssel hinzu, der dir gehört oder dessen Inhaber es dir erlaubt hat. Du kannst dein Konto jederzeit in den Kontoeinstellungen löschen."
+      "body": "Du meldest dich über Microsoft Entra External ID an und bist dafür verantwortlich, diese Anmeldung zu schützen. Jede E-Mail-Adresse funktioniert nur mit einer Anmeldemethode, nämlich der, mit der du dich registriert hast (E-Mail und Passwort oder Google); eine andere Methode mit derselben E-Mail-Adresse funktioniert nicht, und Konten können nicht zusammengeführt werden. Füge nur einen Tacticus-API-Schlüssel hinzu, der dir gehört oder dessen Inhaber es dir erlaubt hat. Du kannst dein Konto jederzeit in den Kontoeinstellungen löschen."
     },
     "acceptableUse": {
       "title": "Zulässige Nutzung",
