@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import { tokenCountdown } from "./token-countdown"
+import { tokenCountdown, tokenFullAtMs } from "./token-countdown"
 
 const NOW = new Date("2026-07-12T12:00:00.000Z").getTime()
 
@@ -45,5 +45,34 @@ describe("tokenCountdown", () => {
     expect(
       tokenCountdown({ current: 1, max: 5, nextTokenInSeconds: -1 }, NOW, NOW)
     ).toEqual({ kind: "unavailable" })
+  })
+})
+
+describe("tokenFullAtMs", () => {
+  it("adds one regen interval per missing token after the next one", () => {
+    // Guild Raid 1/3, next in 0:49:20, 12 h per token: 2,960 + 43,200 = 46,160 s.
+    expect(
+      tokenFullAtMs(
+        {
+          current: 1,
+          max: 3,
+          nextTokenInSeconds: 2960,
+          regenDelayInSeconds: 43_200,
+        },
+        NOW
+      )
+    ).toBe(NOW + 46_160_000)
+  })
+
+  it("is undefined when capped or the regen interval is missing", () => {
+    expect(
+      tokenFullAtMs(
+        { current: 3, max: 3, nextTokenInSeconds: 0, regenDelayInSeconds: 60 },
+        NOW
+      )
+    ).toBeUndefined()
+    expect(
+      tokenFullAtMs({ current: 1, max: 3, nextTokenInSeconds: 60 }, NOW)
+    ).toBeUndefined()
   })
 })

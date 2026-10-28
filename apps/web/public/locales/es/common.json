@@ -550,6 +550,7 @@
       "title": "Disponibilidad de fichas",
       "full": "Completo",
       "due": "Disponible ahora",
+      "fullIn": "Lleno en {{hours}}h {{minutes}}m",
       "nextLabel": "Próximo en {{time}}",
       "loading": "Cargando el estado de las fichas…",
       "empty": "Aún no hay datos de fichas disponibles.",

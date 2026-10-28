@@ -28,17 +28,19 @@ function useEventDisplayName(entry: EventEntryViewModel): string {
 }
 
 /** Shared look of every calendar entry: neutral surface, family-colored left stripe, dashed when
- *  projected, ringed while live. */
+ *  projected, ringed (inset) while live. */
 function entrySurfaceClass(entry: EventEntryViewModel): string {
   return cn(
-    "border border-l-4 bg-muted/50 text-foreground transition-colors hover:bg-muted",
+    // `relative` anchors the sr-only state text: without it, inside the Ongoing strip's scroller it
+    // positions against the page and widens the document (pushing the fixed bottom nav off-screen).
+    "relative border border-l-4 bg-muted/50 text-foreground transition-colors hover:bg-muted",
     "focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none",
     eventFamilyStripeClass(resolveEventFamily(entry.definitionType)),
     entry.confirmed
       ? "border-y-transparent border-r-transparent"
       : "border-dashed",
-    entry.isActiveNow &&
-      "ring-2 ring-primary ring-offset-1 ring-offset-background"
+    // Inset so a live entry stays inside its column instead of overhanging the card's padding.
+    entry.isActiveNow && "ring-2 ring-primary ring-inset"
   )
 }
 

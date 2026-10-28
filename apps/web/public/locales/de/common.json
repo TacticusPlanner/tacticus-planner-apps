@@ -550,6 +550,7 @@
       "title": "Token-Verfügbarkeit",
       "full": "Voll",
       "due": "Jetzt verfügbar",
+      "fullIn": "Voll in {{hours}}h {{minutes}}m",
       "nextLabel": "Nächstes in {{time}}",
       "loading": "Token-Status wird geladen …",
       "empty": "Noch keine Token-Daten verfügbar.",

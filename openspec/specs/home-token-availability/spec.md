@@ -22,7 +22,7 @@ The authenticated home page SHALL render Token Availability, sourced from the pl
 
 ### Requirement: Each available token type shows current count and regen state
 
-For each token type present in `gameModeTokens` (Arena, Guild Raid, Bomb, Onslaught, Salvage Run), the widget SHALL show that token's current/max count and either a countdown to its next regeneration or a capped indicator when it is at max. A token type absent from `gameModeTokens` (e.g. `null`) SHALL NOT render a card.
+For each token type present in `gameModeTokens` (Arena, Guild Raid, Bomb, Onslaught, Salvage Run), the widget SHALL show that token's current/max count and either a countdown to its next regeneration, followed by the time until it is full, or a capped indicator when it is at max. A token type absent from `gameModeTokens` (e.g. `null`) SHALL NOT render a card.
 
 The countdown is anchored to the player-data snapshot's observation time (when the account was last synced), not re-projected across multiple elapsed regeneration intervals: `current` is shown exactly as last synced, and the countdown targets only the next token due from that snapshot (`observedAt + nextTokenInSeconds`). This deliberately does not guess a higher current count from elapsed time the way multi-interval client-side projection would — it mirrors the existing `resourceCountdown` pattern this codebase already uses for Guild Raid's own token countdowns (`pages/dailies/ui/guild-raids/guild-raid-countdowns.ts`), chosen over the alternative for consistency with that established, deliberate convention.
 
@@ -62,6 +62,12 @@ Assumptions:
 - **GIVEN** `gameModeTokens` has no data for a given token type (`null`)
 - **WHEN** Token Availability renders
 - **THEN** no card is rendered for that token type
+
+#### Scenario: Below-max token shows when it will be full
+
+- **GIVEN** Guild Raid last synced at 1/3 with `nextTokenInSeconds: 2960` and `regenDelayInSeconds: 43200`, synced just now
+- **WHEN** Token Availability renders that token
+- **THEN** beneath its countdown it shows "Full in 12h 49m", derived as `2,960 (next token) + (3 − 1 − 1) × 43,200 (each later token) = 46,160 s = 12h 49m`, and a capped token or one without `regenDelayInSeconds` shows no such line
 
 ### Requirement: Each token card shows its per-type icon, with a distinct capped treatment
 

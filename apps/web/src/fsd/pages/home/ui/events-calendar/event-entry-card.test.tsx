@@ -44,6 +44,9 @@ describe("EventBar", () => {
       "/game_catalog/datamines/atlases/ui_icon_menu_battlepass.webp"
     )
     expect(bar).toHaveTextContent("battle-pass")
+    // Anchors the sr-only state text, which otherwise escapes the mobile Ongoing scroller and
+    // widens the page.
+    expect(bar).toHaveClass("relative")
   })
 
   it("keeps a one-day bar's name for assistive tech only", () => {
