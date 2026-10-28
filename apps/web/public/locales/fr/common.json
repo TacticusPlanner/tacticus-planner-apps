@@ -550,6 +550,7 @@
       "title": "Disponibilité des jetons",
       "full": "Plein",
       "due": "Disponible maintenant",
+      "fullIn": "Plein dans {{hours}}h {{minutes}}m",
       "nextLabel": "Prochain dans {{time}}",
       "loading": "Chargement du statut des jetons…",
       "empty": "Aucune donnée de jeton disponible pour le moment.",

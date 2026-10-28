@@ -130,6 +130,10 @@ describe("TokenAvailability", () => {
     const row = await screen.findByTestId("token-row-arena")
     expect(row).toHaveTextContent("0:15:00")
     expect(row).not.toHaveTextContent(/Next in/)
+    // 1,200 s to the next token + 1 × 3,600 s for the last − 300 s since the sync = 1h 15m.
+    expect(screen.getByTestId("token-full-in-arena")).toHaveTextContent(
+      "Full in 1h 15m"
+    )
     dateNowSpy.mockRestore()
   })
 
@@ -148,6 +152,7 @@ describe("TokenAvailability", () => {
     const row = await screen.findByTestId("token-row-arena")
     expect(row).toHaveTextContent("Capped")
     expect(row).toHaveAttribute("data-capped", "true")
+    expect(screen.queryByTestId("token-full-in-arena")).toBeNull()
     // No pulsing: a capped ring is marked by color and the "Capped" label alone.
     expect(row.querySelector(".animate-pulse")).toBeNull()
   })

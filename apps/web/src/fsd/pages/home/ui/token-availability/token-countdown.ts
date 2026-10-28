@@ -8,6 +8,8 @@ export type TokenBucketData = {
   current: number
   max: number
   nextTokenInSeconds: number
+  /** Seconds between tokens; with it the bucket's full-at time can be shown. */
+  regenDelayInSeconds?: number
 }
 
 /**
@@ -51,4 +53,28 @@ export function cappedFirst<T extends { bucket: TokenBucketData }>(
 ): T[] {
   const isCapped = (entry: T) => entry.bucket.current >= entry.bucket.max
   return [...entries.filter(isCapped), ...entries.filter((e) => !isCapped(e))]
+}
+
+/**
+ * When the bucket is full, anchored like `tokenCountdown` to the snapshot: the next token arrives
+ * after `nextTokenInSeconds`, each later one after another `regenDelayInSeconds`. `undefined` when
+ * already full or the regen data is missing. E.g. Guild Raid 1/3, next in 0:49:20 (2,960 s),
+ * 43,200 s per token: 2,960 + (3 − 1 − 1) × 43,200 = 46,160 s ≈ full in 12h 49m.
+ */
+export function tokenFullAtMs(
+  bucket: TokenBucketData,
+  observedAtMs: number
+): number | undefined {
+  const missing = bucket.max - bucket.current
+  const regen = bucket.regenDelayInSeconds
+  if (missing <= 0 || regen === undefined || !(regen > 0)) return undefined
+  if (
+    !Number.isFinite(bucket.nextTokenInSeconds) ||
+    bucket.nextTokenInSeconds < 0
+  ) {
+    return undefined
+  }
+  return (
+    observedAtMs + (bucket.nextTokenInSeconds + (missing - 1) * regen) * 1000
+  )
 }

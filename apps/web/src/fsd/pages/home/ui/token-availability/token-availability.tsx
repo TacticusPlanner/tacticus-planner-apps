@@ -16,6 +16,7 @@ import {
   cappedFirst,
   tokenCountdown,
   tokenFillPercent,
+  tokenFullAtMs,
   type TokenBucketData,
 } from "./token-countdown"
 
@@ -98,6 +99,9 @@ function TokenRow({
   })()
 
   const isCapped = countdown.kind === "full"
+  const fullAtMs = tokenFullAtMs(entry.bucket, observedAtMs)
+  const fullInSeconds =
+    fullAtMs === undefined ? 0 : Math.ceil((fullAtMs - nowMs) / 1000)
 
   // A ring meter: the conic fill is current/max, red once capped (state by color and text, not motion).
   return (
@@ -142,6 +146,20 @@ function TokenRow({
           )}
         >
           {countdownText}
+        </span>
+      ) : null}
+      {fullInSeconds > 0 ? (
+        <span
+          className="text-[10px] leading-tight text-muted-foreground uppercase tabular-nums"
+          data-testid={`token-full-in-${entry.key}`}
+        >
+          {t("home.tokens.fullIn", {
+            hours: Math.floor(fullInSeconds / 3600),
+            minutes: String(Math.floor((fullInSeconds % 3600) / 60)).padStart(
+              2,
+              "0"
+            ),
+          })}
         </span>
       ) : null}
     </div>
