@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react"
-import { Outlet } from "react-router"
+import { Outlet, useMatch } from "react-router"
 
 import { useProjects, type ProjectSummary } from "@/entities/project"
 import { PageContainer } from "@/widgets/page-container"
@@ -37,8 +37,14 @@ export function DailiesLayout() {
     [fetchState.status, loading, projectId, projects, retry]
   )
 
+  // Raids is a dashboard that uses wide monitors, so it alone gets a wider cap than the app default.
+  const isRaids = useMatch("/dailies/raids") !== null
+
   return (
-    <PageContainer data-testid="dailies-layout">
+    <PageContainer
+      className={isRaids ? "max-w-[150rem]" : undefined}
+      data-testid="dailies-layout"
+    >
       <Outlet context={context} />
     </PageContainer>
   )

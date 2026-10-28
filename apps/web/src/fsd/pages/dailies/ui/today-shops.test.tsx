@@ -186,28 +186,43 @@ describe("TodayShops", () => {
     expect(retry).toHaveBeenCalledOnce()
   })
 
-  it("shows the nothing-to-buy state when every section is empty", () => {
+  it("shows the nothing-to-buy state as one line, not a card, when every section is empty", () => {
     useShopRecommendations.mockReturnValue({ status: "ready", sections: [] })
     renderPage()
-    expect(screen.getByTestId("shops-nothing")).toBeInTheDocument()
+    const nothing = screen.getByTestId("shops-nothing")
+    expect(nothing.tagName).toBe("P")
+    expect(nothing).toHaveTextContent("state.nothingToBuy")
+    expect(nothing).not.toHaveAttribute("data-slot", "card")
   })
 
-  it("renders the desktop layout with a card per recommendation and its detail", () => {
+  it("is a named card region with its own h2", () => {
+    renderPage()
+    expect(screen.getByRole("region", { name: "title" })).toHaveAttribute(
+      "data-testid",
+      "today-shops"
+    )
+    expect(
+      screen.getByRole("heading", { level: 2, name: "title" })
+    ).toBeInTheDocument()
+  })
+
+  it("uses the compact layout at a desktop width too, with a card per recommendation and its detail", () => {
     useShopRecommendations.mockReturnValue({
       status: "ready",
       sections: [section()],
     })
     renderPage()
 
-    expect(screen.getByTestId("shops-desktop")).toBeInTheDocument()
+    // The dashboard column is ~400-575px wide, so the compact layout is used at every width.
+    expect(screen.getByTestId("shops-mobile")).toBeInTheDocument()
     expect(
       screen.getByTestId("shop-card-guild-shards_eldarFarseer")
     ).toHaveTextContent("Farseer shards")
     // progress + cost detail
-    expect(screen.getByTestId("shops-desktop")).toHaveTextContent(
+    expect(screen.getByTestId("shops-mobile")).toHaveTextContent(
       'card.progress:{"acquired":30,"required":130}'
     )
-    expect(screen.getByTestId("shops-desktop")).toHaveTextContent(
+    expect(screen.getByTestId("shops-mobile")).toHaveTextContent(
       "card.neededByLabel"
     )
     // the possible group carries the randomized-slot card
@@ -232,7 +247,6 @@ describe("TodayShops", () => {
     renderPage()
 
     expect(screen.getByTestId("shops-mobile")).toBeInTheDocument()
-    expect(screen.queryByTestId("shops-desktop")).not.toBeInTheDocument()
     const card = screen.getByTestId("shop-card-guild-shards_eldarFarseer")
     expect(card).toHaveTextContent("Farseer shards")
     expect(card).toHaveTextContent(

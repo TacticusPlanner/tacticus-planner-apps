@@ -157,6 +157,21 @@ describe("Dailies navigation", () => {
     expect(screen.queryByTestId("hse-raids")).not.toBeInTheDocument()
   })
 
+  it("widens the content cap on Raids only", async () => {
+    renderDailies("/dailies/raids")
+    await findRouteContent("dailies-no-farmable")
+    expect(screen.getByTestId("dailies-layout")).toHaveClass("max-w-[150rem]")
+  })
+
+  it("keeps the default content cap on the other Dailies tabs", async () => {
+    renderDailies("/dailies/hse")
+    await findRouteContent("hse-page")
+    expect(screen.getByTestId("dailies-layout")).not.toHaveClass(
+      "max-w-[150rem]"
+    )
+    expect(screen.getByTestId("dailies-layout")).toHaveClass("max-w-400")
+  })
+
   it("routes Guild Raids to its access-aware page", async () => {
     renderDailies("/dailies/guild-raids")
 

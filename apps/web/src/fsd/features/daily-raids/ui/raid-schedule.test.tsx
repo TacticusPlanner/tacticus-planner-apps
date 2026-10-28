@@ -550,3 +550,45 @@ describe("RaidSchedule location emphasis", () => {
     expect(screen.queryByTestId("bonus-raids-heading")).not.toBeInTheDocument()
   })
 })
+
+describe("RaidSchedule card layout", () => {
+  function renderLayout(cardLayout?: "stacked" | "grid") {
+    render(
+      <RaidSchedule
+        attemptsUsedByBattle={new Map()}
+        cardLayout={cardLayout}
+        emphasis="location"
+        entries={[entry(b1, 3), entry(b2, 2)]}
+        goalsById={new Map([["g1", goal]])}
+        locationsByBattleId={
+          new Map([
+            [b1, location("B1", "Indomitus", "Elite 4")],
+            [b2, location("B2", "Indomitus", "Elite 5")],
+          ])
+        }
+        resourceLabels={new Map([["upgrade1", "Ceramite"]])}
+        resourceProgress={new Map()}
+        resourceVisuals={new Map()}
+        testId="schedule"
+      />
+    )
+  }
+
+  it("flows whole goal groups through columns by default, each group's cards in one column", () => {
+    renderLayout()
+
+    expect(screen.getByTestId("schedule")).toHaveClass("md:columns-[20rem]")
+    expect(screen.getByTestId("raid-resource-grid-g1").className).not.toMatch(
+      /grid-cols/
+    )
+  })
+
+  it("spreads one goal group's cards over 20rem columns in the grid layout", () => {
+    renderLayout("grid")
+
+    expect(screen.getByTestId("schedule").className).not.toMatch(/columns-/)
+    expect(screen.getByTestId("raid-resource-grid-g1")).toHaveClass(
+      "md:grid-cols-[repeat(auto-fill,minmax(20rem,1fr))]"
+    )
+  })
+})

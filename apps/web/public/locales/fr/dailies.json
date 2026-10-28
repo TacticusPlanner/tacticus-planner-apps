@@ -159,8 +159,9 @@
     "noGoals": "Vous n'avez aucun objectif actif. Créez ou reprenez un objectif dans Objectifs pour planifier vos raids."
   },
   "today": {
-    "title": "Raids du jour",
     "plan": "Plan du jour",
+    "planMeta_one": "{{count}} nœud · par priorité d'objectif",
+    "planMeta_other": "{{count}} nœuds · par priorité d'objectif",
     "summary": "{{energy}} énergie · {{raids}} tentatives",
     "energyUsage": {
       "label": "Énergie quotidienne utilisée",
@@ -176,7 +177,14 @@
       "unnamedUnconfirmed": "Actif · nom indisponible · heure de fin non confirmée",
       "inactive": "Inactif"
     },
-    "onslaughtSummary": "Environ {{runs}} parties d'Onslaught pour vos objectifs aujourd'hui"
+    "onslaughtSummary": "Environ {{runs}} parties d'Onslaught pour vos objectifs aujourd'hui",
+    "glance": {
+      "label": "Aujourd'hui en un coup d'œil",
+      "energyOver": "Limite d'énergie atteinte",
+      "planned": "Prévu aujourd'hui",
+      "tokens_one": "{{count}} jeton",
+      "tokens_other": "{{count}} jetons"
+    }
   },
   "schedule": {
     "raids_one": "{{count}} tentative utilisée",
@@ -190,13 +198,20 @@
   },
   "bonus": {
     "title": "Raids bonus",
+    "meta": "s'il reste de l'énergie",
     "showMore": "Afficher plus",
+    "showLess": "Afficher moins",
     "limitReached": "Limite d'énergie quotidienne atteinte — ces raids bonus valent encore la peine.",
     "limitReachedEmpty": "Limite d'énergie quotidienne atteinte. Plus de raids bonus aujourd'hui."
   },
   "todaysAttempts": {
     "title": "Tentatives du jour",
-    "empty": "Aucune tentative réelle enregistrée aujourd'hui pour le moment."
+    "empty": "Aucune tentative réelle enregistrée aujourd'hui pour le moment.",
+    "meta_one": "{{count}} nœud · {{attempts}}",
+    "meta_other": "{{count}} nœuds · {{attempts}}",
+    "count_one": "{{count}} tentative",
+    "count_other": "{{count}} tentatives",
+    "rowLabel": "{{material}}, {{campaign}} {{node}}, {{attempts}}"
   },
   "resource": {
     "shards": "Fragments de {{unit}}"
@@ -279,7 +294,7 @@
         },
         "schedule": {
           "title": "Plan du jour",
-          "content": "Attaquez ces nœuds avec l'énergie du jour — des suggestions supplémentaires apparaissent ici aussi une fois vos besoins budgétés couverts."
+          "content": "Attaquez ces nœuds avec l'énergie du jour. Les raids bonus à côté indiquent ce qui vaut la peine s'il reste de l'énergie."
         },
         "campaignEvent": {
           "title": "Événement de campagne actif",

@@ -159,8 +159,9 @@
     "noGoals": "Du hast keine aktiven Ziele. Erstelle unter Ziele ein Ziel oder setze eines fort, um deine Raids zu planen."
   },
   "today": {
-    "title": "Heutige Raids",
     "plan": "Heutiger Plan",
+    "planMeta_one": "{{count}} Knoten · nach Zielpriorität",
+    "planMeta_other": "{{count}} Knoten · nach Zielpriorität",
     "summary": "{{energy}} Energie · {{raids}} Raid-Versuche",
     "energyUsage": {
       "label": "Genutzte Tagesenergie",
@@ -176,7 +177,14 @@
       "unnamedUnconfirmed": "Aktiv · Name nicht verfügbar · Endzeit nicht bestätigt",
       "inactive": "Nicht aktiv"
     },
-    "onslaughtSummary": "Heute etwa {{runs}} Onslaught-Läufe für deine Ziele"
+    "onslaughtSummary": "Heute etwa {{runs}} Onslaught-Läufe für deine Ziele",
+    "glance": {
+      "label": "Heute auf einen Blick",
+      "energyOver": "Energielimit erreicht",
+      "planned": "Heute geplant",
+      "tokens_one": "{{count}} Marke",
+      "tokens_other": "{{count}} Marken"
+    }
   },
   "schedule": {
     "raids_one": "{{count}} Versuch verbraucht",
@@ -190,13 +198,20 @@
   },
   "bonus": {
     "title": "Bonus-Raids",
+    "meta": "falls Energie übrig ist",
     "showMore": "Mehr anzeigen",
+    "showLess": "Weniger anzeigen",
     "limitReached": "Tägliches Energielimit erreicht – diese Bonus-Raids lohnen sich noch.",
     "limitReachedEmpty": "Tägliches Energielimit erreicht. Heute keine Bonus-Raids mehr."
   },
   "todaysAttempts": {
     "title": "Heutige Versuche",
-    "empty": "Noch keine echten Versuche heute erfasst."
+    "empty": "Noch keine echten Versuche heute erfasst.",
+    "meta_one": "{{count}} Knoten · {{attempts}}",
+    "meta_other": "{{count}} Knoten · {{attempts}}",
+    "count_one": "{{count}} Versuch",
+    "count_other": "{{count}} Versuche",
+    "rowLabel": "{{material}}, {{campaign}} {{node}}, {{attempts}}"
   },
   "resource": {
     "shards": "{{unit}}-Splitter"
@@ -279,7 +294,7 @@
         },
         "schedule": {
           "title": "Heutiger Plan",
-          "content": "Raide diese Kampagnenknoten mit der heutigen Energie — zusätzliche Vorschläge erscheinen hier auch, sobald dein Budget gedeckt ist."
+          "content": "Raide diese Kampagnenknoten mit der heutigen Energie. Die Bonus-Raids daneben zeigen, was sich lohnt, falls Energie übrig ist."
         },
         "campaignEvent": {
           "title": "Aktives Kampagnen-Event",

@@ -42,6 +42,7 @@
   --color-overlay-foreground: var(--overlay-foreground);
   --color-portrait: var(--portrait);
   --color-progress: var(--progress);
+  --color-energy-over: var(--energy-over);
   --color-info-bg: var(--info-bg);
   --color-accent-foreground: var(--accent-foreground);
   --color-accent: var(--accent);
@@ -184,6 +185,7 @@
   --overlay-foreground: #ffffff;
   --portrait: #d9dde4;
   --progress: #2a6fcc;
+  --energy-over: #9a6a00;
   --info-bg: #e8eef9;
 
   /* Faction header bars (Collection), keyed by catalog faction id. Shared by both themes; each
@@ -321,6 +323,7 @@
 
   --portrait: #232933;
   --progress: #4b8ef0;
+  --energy-over: #d9a032;
   --info-bg: #16202e;
 }
 

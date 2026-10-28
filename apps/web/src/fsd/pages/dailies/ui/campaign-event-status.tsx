@@ -3,14 +3,19 @@ import { useTranslation } from "react-i18next"
 import { formatRelativeTime } from "@/shared/lib"
 import { EntityIcon } from "@/shared/ui"
 
+import { GlanceTile } from "./today/glance-tile"
 import { useCampaignEventStatus } from "./use-campaign-event-status"
 
 /**
- * States which campaign event Today detected and when it ends. It reports detection, not the game's
- * global calendar: when no event id is synced the schedule farms no event node either, so the line
- * says "not active" even if the calendar has a window open right now.
+ * Which campaign event Today detected and when it ends, as one localized line. It reports
+ * detection, not the game's global calendar: when no event id is synced the schedule farms no event
+ * node either, so the line says "not active" even if the calendar has a window open right now.
  */
-export function CampaignEventStatusLine({ className }: { className?: string }) {
+function useCampaignEventDetail(): {
+  active: boolean
+  icon: string | undefined
+  detail: string
+} {
   const { t, i18n } = useTranslation("dailies")
   const { active, name, icon, endStatus } = useCampaignEventStatus()
 
@@ -34,17 +39,26 @@ export function CampaignEventStatusLine({ className }: { className?: string }) {
           ? t("today.campaignEvent.unnamedUnconfirmed")
           : t("today.campaignEvent.unnamed")
 
+  return { active, icon, detail }
+}
+
+/** Today's Campaign event glance tile. The status wraps instead of truncating. */
+export function CampaignEventTile() {
+  const { t } = useTranslation("dailies")
+  const { active, icon, detail } = useCampaignEventDetail()
+
   return (
-    <div className={className} data-testid="campaign-event-status">
-      <h2 className="text-lg font-semibold">
-        {t("today.campaignEvent.title")}
-      </h2>
-      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+    <GlanceTile
+      label={t("today.campaignEvent.title")}
+      testId="campaign-event-status"
+      valueClassName="text-sm font-medium"
+    >
+      <span className="flex items-start gap-2">
         {active && icon ? (
           <EntityIcon alt="" className="size-5 shrink-0" src={icon} />
         ) : null}
-        <span className="truncate">{detail}</span>
-      </div>
-    </div>
+        <span className="min-w-0 break-words">{detail}</span>
+      </span>
+    </GlanceTile>
   )
 }

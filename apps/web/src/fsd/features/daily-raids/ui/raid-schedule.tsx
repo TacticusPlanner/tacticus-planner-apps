@@ -1,5 +1,6 @@
 import type { ReactNode } from "react"
 import type { BattleId } from "@workspace/game-domain"
+import { cn } from "@workspace/ui/lib/utils"
 
 import type { RaidBreakdownEntry } from "@/features/goal-farming/@x/daily-raids"
 
@@ -36,6 +37,7 @@ export function RaidSchedule({
   resourceUrgencyByGoalAndResource = NO_RESOURCE_URGENCY_DATA,
   resourceVisuals,
   emphasis = "material",
+  cardLayout = "stacked",
   testId,
 }: {
   entries: RaidBreakdownEntry[]
@@ -60,8 +62,13 @@ export function RaidSchedule({
   >
   resourceVisuals: ReadonlyMap<string, DailyRaidResourceVisual>
   emphasis?: "material" | "location"
+  // "stacked" (Plan > Schedule): whole goal groups flow through CSS columns and each group's cards
+  // sit in one column. "grid" (Today): groups stack full width and each group's cards fill as many
+  // 20rem columns as fit, so a day with a single goal group still uses the whole width.
+  cardLayout?: "stacked" | "grid"
   testId: string
 }) {
+  const isGrid = cardLayout === "grid"
   const grouped = groupEntries(
     entries,
     goalsById,
@@ -103,12 +110,18 @@ export function RaidSchedule({
     return (
       <section
         key={`${keyPrefix}-${goal.goalId}`}
-        className="space-y-2 md:mb-5 md:break-inside-avoid-column md:space-y-3"
+        className={cn(
+          "space-y-2 md:space-y-3",
+          !isGrid && "md:mb-5 md:break-inside-avoid-column"
+        )}
       >
         {header}
         {!combinesShardIdentity ? <GoalHeader goal={goal} /> : null}
         <div
-          className="grid gap-2 md:gap-3"
+          className={cn(
+            "grid gap-2 md:gap-3",
+            isGrid && "md:grid-cols-[repeat(auto-fill,minmax(20rem,1fr))]"
+          )}
           data-testid={`raid-resource-grid-${goal.goalId}`}
         >
           {resources.map(({ resourceId, entries: resourceEntries }) => (
@@ -138,9 +151,13 @@ export function RaidSchedule({
     // "wide" layout uses CSS multi-column (not grid-template-columns) so shorter goal groups don't
     // get stretched to match a taller one in the same grid row — grid sizes each row to its tallest
     // cell, which left dead space beneath short cards; columns instead pack items top-to-bottom
-    // per column, masonry-style, with no such gap.
+    // per column, masonry-style, with no such gap. "grid" drops the columns: a group must be free to
+    // span the whole container so its own cards can spread out.
     <div
-      className="flex flex-col gap-4 md:block md:columns-[20rem] md:gap-5 md:gap-x-5"
+      className={cn(
+        "flex flex-col gap-4",
+        isGrid ? "md:gap-5" : "md:block md:columns-[20rem] md:gap-5 md:gap-x-5"
+      )}
       data-testid={testId}
     >
       {grouped.map((group) => renderGroup(group, "today"))}
@@ -166,7 +183,7 @@ export function RaidSchedule({
         // heading/footer (e.g. "Show more") must still surface — there's no visible group section
         // left to attach them to, so render them as their own flow item instead of dropping them.
         <div
-          className="md:break-inside-avoid-column"
+          className={cn(!isGrid && "md:break-inside-avoid-column")}
           key="bonus-raids-fallback"
         >
           <h3

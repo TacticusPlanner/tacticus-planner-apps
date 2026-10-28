@@ -23,7 +23,7 @@ vi.mock("@/features/daily-raids", async (importOriginal) => {
   }
 })
 vi.mock("./campaign-event-status", () => ({
-  CampaignEventStatusLine: () => null,
+  CampaignEventTile: () => null,
 }))
 vi.mock("./today-shops", () => ({ TodayShops: () => null }))
 vi.mock("@/shared/tour", () => ({ useTourPageSteps: vi.fn() }))

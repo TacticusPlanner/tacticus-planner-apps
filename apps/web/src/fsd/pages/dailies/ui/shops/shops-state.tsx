@@ -13,9 +13,12 @@ export type ShopsStateKind =
 export function ShopsState({
   state,
   onRetry,
+  compact = false,
 }: {
   state: ShopsStateKind
   onRetry?: () => void
+  // The nothing-to-buy state as one line of text, for a host that is already a card.
+  compact?: boolean
 }) {
   const { t } = useTranslation("shops")
 
@@ -38,6 +41,17 @@ export function ShopsState({
         : state === "no-goals"
           ? t("state.noGoals")
           : t("state.nothingToBuy")
+
+  if (compact && state === "nothing") {
+    return (
+      <p
+        className="text-sm text-muted-foreground"
+        data-testid={`shops-${state}`}
+      >
+        {message}
+      </p>
+    )
+  }
 
   return (
     <Card data-testid={`shops-${state}`}>
