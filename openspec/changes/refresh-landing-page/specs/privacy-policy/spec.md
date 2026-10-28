@@ -28,7 +28,7 @@ The page SHALL be localized in every supported locale and SHALL state, in plain 
 - that sign-in is handled by Microsoft Entra External ID, and the planner keeps only the sign-in identifier it returns, a display name, and a last-seen time, not a password;
 - that a Tacticus API key the user provides is stored encrypted and used only to read the user's game and guild data from the Tacticus API;
 - that the planner stores the user's synced game data, goals, projects, event plans, guild data and settings so the planner works across devices, and keeps a copy in the browser's local storage;
-- that browsing without an account sends no analytics, and that for signed-in users in the production app, usage events and uncaught errors are sent to PostHog under a pseudonymous id, without autocapture, session replay, typed planner content, email or display name;
+- that browsing without an account sends no analytics, and that for signed-in users, usage events and uncaught errors are sent to PostHog under a pseudonymous id, without autocapture, session replay, typed planner content, email or display name;
 - that the feedback board (UserJot) identifies a signed-in user by a signed token for their planner account and display name only when they open it through the in-app feedback entry points, and that opening the public board link (as from the public footer) sends nothing from the planner;
 - that the planner does not sell data or show ads;
 - how to delete the account and all its planner data (Account settings, Account tab, "Purge my account"), and that the browser's local copy is deleted when the user signs out.

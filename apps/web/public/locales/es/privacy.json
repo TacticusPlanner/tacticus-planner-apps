@@ -9,7 +9,7 @@
     },
     "apiKey": {
       "title": "Tu clave API de Tacticus",
-      "body": "Si añades una clave API de Tacticus, se guarda cifrada y solo se usa para leer tus datos de juego y de gremio desde la API de Tacticus. Puedes cambiarla o quitarla cuando quieras en Ajustes de la cuenta."
+      "body": "Si añades una clave API de Tacticus, se guarda cifrada y solo se usa para leer tus datos de juego y de gremio desde la API de Tacticus. Puedes cambiarla cuando quieras en Ajustes de la cuenta."
     },
     "plannerData": {
       "title": "Datos del planificador",
@@ -17,7 +17,7 @@
     },
     "analytics": {
       "title": "Analíticas e informes de errores",
-      "body": "Navegar sin cuenta no envía ninguna analítica. Para los usuarios con sesión iniciada en la aplicación de producción, los eventos de uso y los errores no controlados se envían a PostHog con un identificador seudónimo. No hay captura automática ni grabación de sesiones, y los informes nunca incluyen lo que escribes en el planificador, tu correo electrónico ni tu nombre de planificador."
+      "body": "Navegar sin cuenta no envía ninguna analítica. Para los usuarios con sesión iniciada, los eventos de uso y los errores no controlados se envían a PostHog con un identificador seudónimo. No hay captura automática ni grabación de sesiones, y los informes nunca incluyen lo que escribes en el planificador, tu correo electrónico ni tu nombre de planificador."
     },
     "feedback": {
       "title": "Tablero de sugerencias",

@@ -9,7 +9,7 @@
     },
     "apiKey": {
       "title": "Votre clé API Tacticus",
-      "body": "Si vous ajoutez une clé API Tacticus, elle est stockée chiffrée et sert uniquement à lire vos données de jeu et de guilde via l'API Tacticus. Vous pouvez la remplacer ou la retirer à tout moment dans les Paramètres du compte."
+      "body": "Si vous ajoutez une clé API Tacticus, elle est stockée chiffrée et sert uniquement à lire vos données de jeu et de guilde via l'API Tacticus. Vous pouvez la remplacer à tout moment dans les Paramètres du compte."
     },
     "plannerData": {
       "title": "Données du planificateur",
@@ -17,7 +17,7 @@
     },
     "analytics": {
       "title": "Statistiques et rapports d'erreurs",
-      "body": "Naviguer sans compte n'envoie aucune statistique. Pour les utilisateurs connectés de l'application de production, les événements d'utilisation et les erreurs non gérées sont envoyés à PostHog sous un identifiant pseudonyme. Il n'y a ni capture automatique ni enregistrement de session, et les rapports n'incluent jamais ce que vous saisissez dans le planificateur, votre adresse e-mail ni votre nom de planificateur."
+      "body": "Naviguer sans compte n'envoie aucune statistique. Pour les utilisateurs connectés, les événements d'utilisation et les erreurs non gérées sont envoyés à PostHog sous un identifiant pseudonyme. Il n'y a ni capture automatique ni enregistrement de session, et les rapports n'incluent jamais ce que vous saisissez dans le planificateur, votre adresse e-mail ni votre nom de planificateur."
     },
     "feedback": {
       "title": "Tableau de suggestions",

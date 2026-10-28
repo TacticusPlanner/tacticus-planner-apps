@@ -9,7 +9,7 @@
     },
     "apiKey": {
       "title": "Dein Tacticus-API-Schlüssel",
-      "body": "Wenn du einen Tacticus-API-Schlüssel hinzufügst, wird er verschlüsselt gespeichert und nur verwendet, um deine Spiel- und Gildendaten über die Tacticus-API abzurufen. Du kannst ihn jederzeit in den Kontoeinstellungen ersetzen oder entfernen."
+      "body": "Wenn du einen Tacticus-API-Schlüssel hinzufügst, wird er verschlüsselt gespeichert und nur verwendet, um deine Spiel- und Gildendaten über die Tacticus-API abzurufen. Du kannst ihn jederzeit in den Kontoeinstellungen ersetzen."
     },
     "plannerData": {
       "title": "Planer-Daten",
@@ -17,7 +17,7 @@
     },
     "analytics": {
       "title": "Analysen und Fehlerberichte",
-      "body": "Wer ohne Konto stöbert, sendet keine Analysedaten. Für angemeldete Nutzer der Produktions-App werden Nutzungsereignisse und unbehandelte Fehler unter einer pseudonymen ID an PostHog gesendet. Es gibt keine automatische Erfassung und keine Sitzungsaufzeichnung, und die Berichte enthalten nie, was du in den Planer eingibst, deine E-Mail-Adresse oder deinen Planer-Namen."
+      "body": "Wer ohne Konto stöbert, sendet keine Analysedaten. Für angemeldete Nutzer werden Nutzungsereignisse und unbehandelte Fehler unter einer pseudonymen ID an PostHog gesendet. Es gibt keine automatische Erfassung und keine Sitzungsaufzeichnung, und die Berichte enthalten nie, was du in den Planer eingibst, deine E-Mail-Adresse oder deinen Planer-Namen."
     },
     "feedback": {
       "title": "Feedback-Board",
