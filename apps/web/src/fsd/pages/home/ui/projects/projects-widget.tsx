@@ -69,7 +69,7 @@ export function ProjectsWidget() {
     return (
       <div className="flex flex-col gap-3">
         <ul
-          className="grid grid-cols-1 gap-2 md:grid-cols-2 xl:grid-cols-3"
+          className="grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-1"
           data-testid="home-projects-list"
         >
           {result.projects.map((project) => (

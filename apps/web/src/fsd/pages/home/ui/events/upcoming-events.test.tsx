@@ -190,7 +190,7 @@ describe("Home events (Right now + Upcoming events)", () => {
     const items = upcomingItems()
     expect(items).toHaveLength(2)
     expect(items[0]).toHaveTextContent("definitions.hse-training-rush")
-    expect(items[0]).toHaveTextContent("home.events.startsIn:6 days")
+    expect(items[0]).toHaveTextContent("home.events.startsIn:5 days 20 hr")
     expect(items[1]).toHaveTextContent("Uthar")
     expect(
       within(screen.getByTestId("home-events-widget")).queryByTestId(
@@ -206,7 +206,9 @@ describe("Home events (Right now + Upcoming events)", () => {
     })
     renderWidget()
 
-    expect(upcomingItems()[0]).toHaveTextContent("home.events.startsIn:6 days")
+    expect(upcomingItems()[0]).toHaveTextContent(
+      "home.events.startsIn:5 days 20 hr"
+    )
   })
 
   it("omits run and points for a live Legendary Event without a synced entry", () => {
@@ -307,7 +309,9 @@ describe("Home events (Right now + Upcoming events)", () => {
     )
     expect(upcomingItems()).toHaveLength(1)
     expect(upcomingItems()[0]).toHaveTextContent("Uthar")
-    expect(upcomingItems()[0]).toHaveTextContent("home.events.startsIn:8 days")
+    expect(upcomingItems()[0]).toHaveTextContent(
+      "home.events.startsIn:7 days 12 hr"
+    )
   })
 
   it("keeps Home Screen Event rows and notes the failed catalog read", () => {
@@ -357,7 +361,8 @@ describe("Home events (Right now + Upcoming events)", () => {
     const rows = screen.getAllByTestId("home-events-row")
 
     expect(rows.map((row) => row.tagName)).toEqual(["A", "A", "A", "A"])
-    expect(rows[0]).toHaveAttribute("href", "/dailies/hse")
+    // An HSE row opens the HSE tab on that very instance.
+    expect(rows[0]!.getAttribute("href")).toMatch(/^\/dailies\/hse\?event=/)
     expect(rows[1]).toHaveAttribute("href", "/legendary-events/astarLysander")
   })
 

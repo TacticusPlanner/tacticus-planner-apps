@@ -22,8 +22,8 @@ import {
  * goals in global order (the same run as Today) — or, once today's real energy spend reaches the daily
  * limit, the Bonus Raids that Today then lists alone (`selectTodayRaids`) — flattened to one row per battle location regardless
  * of which goal it's for, with already-raided/exhausted locations excluded (home-raids-widget spec).
- * The list shows the first ten locations, expandable in place; the header link opens the full Today page. */
-const VISIBLE_LOCATIONS = 10
+ * The list shows the first five locations, one per row,, expandable in place; the header link opens the full Today page. */
+const VISIBLE_LOCATIONS = 5
 
 export function RaidsWidget() {
   const { t } = useTranslation("common")
@@ -113,10 +113,7 @@ export function RaidsWidget() {
     const shown = expanded ? locations : locations.slice(0, VISIBLE_LOCATIONS)
     const list = (
       <div className="flex flex-col gap-2">
-        <div
-          className="grid grid-cols-1 gap-2 sm:grid-cols-2"
-          data-testid="home-raids-list"
-        >
+        <div className="flex flex-col gap-2" data-testid="home-raids-list">
           {shown.map((entry) => (
             <LocationRow
               entry={entry}

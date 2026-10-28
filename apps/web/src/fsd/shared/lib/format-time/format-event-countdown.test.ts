@@ -40,6 +40,24 @@ describe("formatEventCountdown", () => {
     expect(formatEventCountdown(after(-HOUR), NOW, "en")).toBe("1 min")
   })
 
+  it("keeps whole hours from a day out with withHours", () => {
+    const withHours = { withHours: true }
+    expect(
+      formatEventCountdown(
+        after(5 * DAY + 11 * HOUR + 50 * MIN),
+        NOW,
+        "en",
+        withHours
+      )
+    ).toBe("5 days 11 hr")
+    expect(
+      formatEventCountdown(after(DAY + 30 * MIN), NOW, "en", withHours)
+    ).toBe("1 day")
+    expect(
+      formatEventCountdown(after(3 * HOUR + 20 * MIN), NOW, "en", withHours)
+    ).toBe("3 hr 20 min")
+  })
+
   it("is localized", () => {
     expect(formatEventCountdown(after(5 * DAY), NOW, "de")).toBe("5 Tage")
     expect(

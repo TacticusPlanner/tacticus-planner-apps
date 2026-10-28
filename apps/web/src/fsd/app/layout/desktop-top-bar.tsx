@@ -7,7 +7,7 @@ import { isMacPlatform } from "@/shared/lib"
 
 import { AuthControl } from "../providers/auth-control"
 import { UserJotFeedbackButton } from "../providers/userjot-feedback-button"
-import { AppLogo } from "./app-logo"
+import { AppLogo, AppLogoHomeLink } from "./app-logo"
 import { DesktopNavigationDialog } from "./desktop-navigation-dialog"
 import type { NavItem } from "./nav-items"
 import type { QuickActionsController } from "./quick-actions"
@@ -15,10 +15,12 @@ import type { QuickActionsController } from "./quick-actions"
 /** Slim global bar: app identity, navigation search (Ctrl/Cmd+K), and the account/preferences menu. */
 export function DesktopTopBar({
   getEntryPath,
+  isAuthenticated,
   quickActions,
   visibleItems,
 }: {
   getEntryPath: (item: NavItem) => string
+  isAuthenticated: boolean
   quickActions: QuickActionsController
   visibleItems: NavItem[]
 }) {
@@ -45,12 +47,15 @@ export function DesktopTopBar({
       className="sticky top-0 z-30 flex h-12 shrink-0 items-center gap-3 border-b bg-topbar px-3"
       data-testid="desktop-top-bar"
     >
-      <div className="flex min-w-0 shrink-0 items-center gap-2">
+      <AppLogoHomeLink
+        className="flex min-w-0 shrink-0 items-center gap-2 rounded-md outline-hidden focus-visible:ring-2 focus-visible:ring-ring"
+        isAuthenticated={isAuthenticated}
+      >
         <AppLogo className="size-8 shrink-0" />
         <span className="hidden truncate text-sm font-semibold tracking-tight lg:inline">
           {t("app.name")}
         </span>
-      </div>
+      </AppLogoHomeLink>
       <div className="flex min-w-0 flex-1 justify-center">
         <button
           aria-label={t("nav.search")}

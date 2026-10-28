@@ -6,16 +6,16 @@ Defines Home's event cards: the live half of the "Right now" card and the "Upcom
 
 ### Requirement: Home renders Right now and Upcoming events cards
 
-The authenticated home page SHALL render, as its first card, a "Right now" card (localized) holding Token Availability and the live events, and a separate "Upcoming events" card (localized) for events that have not started. Both are distinct from, and do not replace, the "Events calendar". At or above the 768px (`md`) breakpoint Upcoming events SHALL share a row with Daily Raids, Daily Raids in the wider column (3 of 5) and Upcoming events in the narrower (2 of 5). Below 768px the cards SHALL stack in the order Right now, Daily Raids, Upcoming events, Your Projects, Events calendar.
+The authenticated home page SHALL render, as its first card, a "Right now" card (localized) holding Token Availability and the live events, and a separate "Upcoming events" card (localized) for events that have not started. Both are distinct from, and do not replace, the "Events calendar". The page SHALL use the shared page container, so it has the same padding and maximum width as every other page. At or above the 1024px (`lg`) breakpoint Daily Raids, Your Projects and Upcoming events SHALL share one row of three equal columns, in that order. Below 1024px the cards SHALL stack in the order Right now, Daily Raids, Upcoming events, Your Projects, Events calendar.
 
 #### Scenario: Desktop layout
 
-- **WHEN** a signed-in user opens `/home` at or above 768px
-- **THEN** Right now spans the full width first, then Daily Raids and Upcoming events share one row with Daily Raids wider, then Your Projects, then the calendar
+- **WHEN** a signed-in user opens `/home` at or above 1024px
+- **THEN** Right now spans the full width first, then Daily Raids, Your Projects and Upcoming events share one row, then the calendar
 
 #### Scenario: Mobile layout
 
-- **WHEN** a signed-in user opens `/home` below 768px
+- **WHEN** a signed-in user opens `/home` below 1024px
 - **THEN** Right now, Daily Raids, Upcoming events, Your Projects and the calendar render full width in that order
 
 #### Scenario: Calendar is not the same card
@@ -51,7 +51,7 @@ Assumptions:
 
 ### Requirement: Upcoming events lists the next three, the Legendary Event always among them
 
-Upcoming events SHALL show at most three rows of events that have not started, Home Screen Events (same selection as the HSE tab) and Legendary Events (catalog `lres`, lifecycle per `legendary-events-hub`) together, in ascending start order, each with its local start date and time and a "starts in …" countdown. When no Legendary Event is live and the next upcoming Legendary Event would not be among the first three, it SHALL replace the third row, so a Legendary Event is always visible in either Right now or Upcoming events. Ordering uses UTC instants; the device timezone only affects the displayed start text, and rows and countdowns use the same instant.
+Upcoming events SHALL show at most three rows of events that have not started, Home Screen Events (same selection as the HSE tab) and Legendary Events (catalog `lres`, lifecycle per `legendary-events-hub`) together, in ascending start order, each with its local start date and time and a "starts in …" countdown. When no Legendary Event is live and the next upcoming Legendary Event would not be among the first three, it SHALL replace the third row, so a Legendary Event is always visible in either Right now or Upcoming events. Ordering uses UTC instants; the device timezone only affects the displayed start text, and rows and countdowns use the same instant. The countdowns in Right now, Upcoming events and the calendar's Ongoing list SHALL keep the hours from a day out ("3 days 12 hr", whole days and hours, zero hours dropped), and use hours and minutes under a day.
 
 Assumptions:
 
@@ -61,7 +61,7 @@ Assumptions:
 
 - **GIVEN** Machine Hunt and Lysander are live, Training Rush starts 2026-10-09T08:00Z and Uthar starts 2026-10-11T00:00Z
 - **WHEN** Home renders at 2026-10-03T12:00Z
-- **THEN** Upcoming events lists Training Rush ("starts in 6 days") then Uthar, and neither Machine Hunt nor Lysander
+- **THEN** Upcoming events lists Training Rush ("starts in 5 days 20 hr") then Uthar, and neither Machine Hunt nor Lysander
 
 #### Scenario: Legendary Event pinned to the third row
 
@@ -153,12 +153,12 @@ The Home page tour SHALL include a step targeting Right now (tokens and live eve
 
 ### Requirement: Each row opens its own destination
 
-Each event row and tile SHALL contain a link (activatable by click, tap and Enter, and openable in a new tab): a Home Screen Event navigates to `/dailies/hse`; a Legendary Event navigates to `/legendary-events/:eventId`. Neither card SHALL navigate as a whole, and the plan action is a separate control.
+Each event row and tile SHALL contain a link (activatable by click, tap and Enter, and openable in a new tab): a Home Screen Event navigates to `/dailies/hse?event=<instance key>` (the HSE tab's switcher key: the occurrence id, else `definitionId@startUtc`), so the tab opens on that very instance; a Legendary Event navigates to `/legendary-events/:eventId`. Neither card SHALL navigate as a whole, and the plan action is a separate control.
 
 #### Scenario: HSE row opens the HSE tab
 
 - **WHEN** the user activates the Machine Hunt tile
-- **THEN** the app navigates to `/dailies/hse`
+- **THEN** the app navigates to `/dailies/hse?event=<Machine Hunt's instance key>` and the HSE tab shows Machine Hunt
 
 #### Scenario: Legendary Event row opens the event page
 

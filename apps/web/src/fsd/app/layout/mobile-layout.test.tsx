@@ -138,6 +138,20 @@ describe("MobileHeader", () => {
     expect(screen.queryByTestId("auth-changelog")).not.toBeInTheDocument()
   })
 
+  it("links the logo to Home only when signed in", () => {
+    renderShell(vi.fn(), true, "/plan")
+    expect(screen.getByTestId("app-logo-home-link")).toHaveAttribute(
+      "href",
+      "/home"
+    )
+  })
+
+  it("leaves the logo inert when signed out", () => {
+    renderShell()
+    expect(screen.queryByTestId("app-logo-home-link")).not.toBeInTheDocument()
+    expect(screen.getByTestId("app-header-logo")).toBeInTheDocument()
+  })
+
   it("renders the page description beneath the page title", () => {
     renderShell()
 

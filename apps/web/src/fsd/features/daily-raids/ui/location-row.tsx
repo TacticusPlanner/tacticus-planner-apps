@@ -25,13 +25,13 @@ export function LocationRow({
 }) {
   return (
     <div
-      className="flex items-center gap-2 rounded-lg border px-2 py-1.5"
+      className="flex flex-wrap items-center gap-2 rounded-lg border p-2"
       data-testid={`home-raid-location-${entry.battleId}`}
     >
       {location?.icon ? (
-        <EntityIcon alt="" className="size-6 shrink-0" src={location.icon} />
+        <EntityIcon alt="" className="size-10 shrink-0" src={location.icon} />
       ) : null}
-      <div className="min-w-0 flex-1 leading-tight">
+      <div className="min-w-24 flex-1 leading-tight">
         <div className="text-sm font-medium break-words">
           {location?.campaignName ?? entry.battleId}
         </div>
@@ -51,7 +51,7 @@ export function LocationRow({
         })}
       />
       <ResourceIconWithTooltip
-        className="size-6"
+        className="size-10"
         label={resourceLabel}
         visual={resourceVisual}
       />

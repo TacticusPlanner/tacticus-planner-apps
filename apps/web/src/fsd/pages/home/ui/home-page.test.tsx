@@ -27,7 +27,16 @@ vi.mock("./events-calendar/events-calendar", () => ({
 }))
 
 describe("HomePage layout", () => {
-  it("orders Right now, then Raids beside Upcoming events, then Projects, then the calendar", () => {
+  it("uses the shared page container, so it gets the same padding as other pages", () => {
+    render(<HomePage />)
+    const page = screen.getByTestId("home-page")
+
+    // The shell owns the main landmark; the container must not add a second one.
+    expect(page.tagName).toBe("DIV")
+    expect(page).toHaveClass("p-4", "sm:p-6")
+  })
+
+  it("orders Right now, then the widgets row, then the calendar", () => {
     render(<HomePage />)
     const order = [...screen.getByTestId("home-page").children].map((section) =>
       section.getAttribute("data-testid")
@@ -35,21 +44,24 @@ describe("HomePage layout", () => {
 
     expect(order).toEqual([
       "home-right-now",
-      "home-raids-row",
-      "home-projects-widget",
+      "home-widgets-row",
       "events-calendar",
     ])
   })
 
-  it("gives Raids the wider of two md columns and stacks them on mobile in source order", () => {
+  it("stacks Raids, Upcoming, Projects on mobile and shows Raids, Projects, Upcoming in one lg row", () => {
     render(<HomePage />)
-    const row = screen.getByTestId("home-raids-row")
+    const row = screen.getByTestId("home-widgets-row")
 
-    expect(row).toHaveClass("grid", "grid-cols-1", "md:grid-cols-5")
-    const [raids, upcoming] = [...row.children]
+    expect(row).toHaveClass("grid", "grid-cols-1", "lg:grid-cols-3")
+    const [raids, upcoming, projects] = [...row.children]
     expect(raids).toContainElement(screen.getByTestId("home-raids-widget"))
-    expect(raids).toHaveClass("md:col-span-3")
+    expect(raids).toHaveClass("lg:order-1")
+    expect(projects).toContainElement(
+      screen.getByTestId("home-projects-widget")
+    )
+    expect(projects).toHaveClass("lg:order-2")
     expect(upcoming).toContainElement(screen.getByTestId("home-events-widget"))
-    expect(upcoming).toHaveClass("md:col-span-2")
+    expect(upcoming).toHaveClass("lg:order-3")
   })
 })

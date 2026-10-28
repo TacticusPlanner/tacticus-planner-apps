@@ -44,6 +44,7 @@ function LoadingFill() {
 
 export function DesktopShell({
   activeSection,
+  isAuthenticated = false,
   visibleItems,
   pageDescription,
   sectionTitle,
@@ -56,6 +57,7 @@ export function DesktopShell({
   onSectionExpandedChange,
 }: {
   activeSection: NavItem | undefined
+  isAuthenticated?: boolean
   visibleItems: NavItem[]
   pageDescription: string | undefined
   sectionTitle: string | undefined
@@ -115,6 +117,7 @@ export function DesktopShell({
       <SkipLink />
       <DesktopTopBar
         getEntryPath={getEntryPath}
+        isAuthenticated={isAuthenticated}
         quickActions={quickActions}
         visibleItems={visibleItems}
       />
