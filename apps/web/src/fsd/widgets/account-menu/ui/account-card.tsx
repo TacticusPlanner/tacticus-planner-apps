@@ -5,6 +5,7 @@ import {
   LogOut,
   MapIcon,
   MessageSquareText,
+  MonitorSmartphone,
   Newspaper,
   User,
 } from "lucide-react"
@@ -43,6 +44,7 @@ export function AccountCard({
   changelogUnread = false,
   feedbackUnavailable,
   onImportV1,
+  onInstallApp,
   onOpenAccountSettings,
   onExternalLink,
   onSignOut,
@@ -65,6 +67,8 @@ export function AccountCard({
   /** Why the feedback row is disabled (the widget failed to load), or undefined when it works. */
   feedbackUnavailable?: string
   onImportV1: () => void
+  /** Opens the install guide; the row is left out where the app is installed or cannot be. */
+  onInstallApp?: () => void
   onOpenAccountSettings: () => void
   /** Closes the menu when a row leaves it (Roadmap, Privacy & cookies, Terms of use). */
   onExternalLink?: () => void
@@ -137,6 +141,14 @@ export function AccountCard({
           label={t("goals.v1Import.menu")}
           onClick={onImportV1}
         />
+        {onInstallApp ? (
+          <MenuRow
+            data-testid="auth-install-app"
+            icon={MonitorSmartphone}
+            label={t("appInstall.menu")}
+            onClick={onInstallApp}
+          />
+        ) : null}
         <MenuRow
           data-testid="auth-feedback"
           disabled={Boolean(feedbackUnavailable)}

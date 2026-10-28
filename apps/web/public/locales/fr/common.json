@@ -1910,5 +1910,54 @@
     "terms": "Conditions d'utilisation",
     "uiKit": "Kit UI",
     "lastUpdated": "Dernière mise à jour le {{date}}"
+  },
+  "appInstall": {
+    "menu": "Installer l'app",
+    "install": "Installer",
+    "card": {
+      "title": "Installez l'app",
+      "body": "Ajoutez Tacticus Planner à votre écran d'accueil. Il s'ouvre dans sa propre fenêtre, et un appui long sur son icône mène directement aux Raids quotidiens, aux Objectifs ou aux Événements légendaires.",
+      "howTo": "Montrez-moi",
+      "notNow": "Plus tard",
+      "installedTitle": "Tacticus Planner est installé",
+      "installedBody": "Ouvrez-le depuis votre écran d'accueil ou votre liste d'apps. Appuyez longuement sur son icône (clic droit sur ordinateur) pour accéder aux raccourcis Raids quotidiens, Objectifs et Événements légendaires.",
+      "gotIt": "Compris"
+    },
+    "dialog": {
+      "title": "Installer Tacticus Planner",
+      "description": "Ouvrez le planificateur comme une app, dans sa propre fenêtre, depuis votre écran d'accueil, le Dock ou le menu Démarrer.",
+      "stepsHeading": "Comment l'installer",
+      "maybeInstalled": "Pas d'option d'installation dans le menu ? L'app est sans doute déjà installée : ouvrez-la depuis votre écran d'accueil ou votre liste d'apps.",
+      "unsupported": "Ce navigateur ne peut pas installer d'apps web. Ouvrez le planificateur dans Chrome, Edge ou Safari pour l'installer.",
+      "installed": "Vous utilisez l'app installée."
+    },
+    "steps": {
+      "ios": {
+        "share": "Touchez Partager dans la barre d'outils de Safari (dans Chrome ou Edge, Partager se trouve dans la barre d'adresse).",
+        "add": "Faites défiler et touchez Sur l'écran d'accueil.",
+        "confirm": "Touchez Ajouter."
+      },
+      "macSafari": {
+        "addToDock": "Dans la barre des menus de Safari, choisissez Fichier, puis Ajouter au Dock.",
+        "confirm": "Cliquez sur Ajouter."
+      },
+      "android": {
+        "menu": "Ouvrez le menu du navigateur (⋮).",
+        "install": "Touchez Installer l'application ou Ajouter à l'écran d'accueil.",
+        "confirm": "Confirmez avec Installer."
+      },
+      "desktop": {
+        "menu": "Cliquez sur l'icône d'installation à droite de la barre d'adresse, ou ouvrez le menu du navigateur (⋮ ou …).",
+        "install": "Choisissez Installer Tacticus Planner (dans Edge : Applications, puis Installer ce site en tant qu'application).",
+        "confirm": "Cliquez sur Installer."
+      }
+    },
+    "shortcuts": {
+      "heading": "Raccourcis",
+      "body": "Une fois l'app installée, appuyez longuement sur son icône (clic droit sur ordinateur) pour aller directement à :",
+      "dailyRaids": "Raids quotidiens",
+      "goals": "Objectifs",
+      "legendaryEvents": "Événements légendaires"
+    }
   }
 }

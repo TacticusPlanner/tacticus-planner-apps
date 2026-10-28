@@ -212,6 +212,35 @@ type LegendaryEventTierListUnitOpenedEvent = {
   tier: string
 }
 
+/** Where the install offer was opened from. */
+type AppInstallSource = "homeCard" | "accountMenu"
+
+/** How this browser installs the app (widgets/app-install's InstallPlatform). */
+type AppInstallPlatform =
+  "ios" | "macSafari" | "android" | "desktop" | "unsupported"
+
+/** The install guide opened, from the Home card or the account menu. `canPrompt` is whether the
+ *  browser offered its one-tap install prompt, rather than manual steps only. */
+type AppInstallGuideOpenedEvent = {
+  type: "app_install_guide_opened"
+  source: AppInstallSource
+  platform: AppInstallPlatform
+  canPrompt: boolean
+}
+
+/** The browser's install prompt was answered. */
+type AppInstallPromptAnsweredEvent = {
+  type: "app_install_prompt_answered"
+  source: AppInstallSource
+  outcome: "accepted" | "dismissed"
+}
+
+/** The Home install card was dismissed with Not now. */
+type AppInstallCardDismissedEvent = {
+  type: "app_install_card_dismissed"
+  platform: AppInstallPlatform
+}
+
 /** An error nothing else handled (spec: client-error-reporting). Message and stack have URL query
  *  strings removed; the route is reported as its nav section, never the URL. */
 type ClientErrorEvent = {
@@ -253,4 +282,7 @@ export type AnalyticsEvent =
   | LegendaryEventEarlierRunsExpandedEvent
   | LegendaryEventTierListViewedEvent
   | LegendaryEventTierListUnitOpenedEvent
+  | AppInstallGuideOpenedEvent
+  | AppInstallPromptAnsweredEvent
+  | AppInstallCardDismissedEvent
   | ClientErrorEvent
