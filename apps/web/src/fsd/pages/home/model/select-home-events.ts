@@ -1,3 +1,4 @@
+import { homeScreenEventInstanceKey } from "@/features/daily-raids"
 import {
   deriveLegendaryEventLifecycle,
   type LegendaryEventProgress,
@@ -5,6 +6,8 @@ import {
 
 /** The fields the rows read from a Home Screen Event calendar entry. */
 export interface HomeScreenEventEntry {
+  /** Set on an authored occurrence; with the start it keys the HSE tab's `event` parameter. */
+  occurrenceId?: string | null
   definitionId: string
   startUtc: string
   endUtc: string
@@ -87,7 +90,8 @@ export function selectHomeEvents({
     live,
     startMs: Date.parse(entry.startUtc),
     endMs: Date.parse(entry.endUtc),
-    destination: "/dailies/hse",
+    // Opens the HSE tab on this instance, not on whatever it shows by default.
+    destination: `/dailies/hse?event=${encodeURIComponent(homeScreenEventInstanceKey(entry))}`,
   })
 
   const live: HomeEventRow[] = []

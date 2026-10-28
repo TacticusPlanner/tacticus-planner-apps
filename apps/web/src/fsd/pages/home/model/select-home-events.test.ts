@@ -85,7 +85,25 @@ describe("selectHomeEvents", () => {
       points: 3410,
       endMs: Date.parse("2026-10-06T00:00:00Z"),
     })
-    expect(rows[0]).toMatchObject({ destination: "/dailies/hse" })
+    // The HSE row opens the HSE tab on that instance (a placeholder's key is definitionId@startUtc).
+    expect(rows[0]).toMatchObject({
+      destination: `/dailies/hse?event=${encodeURIComponent("hse-machine-hunt@2026-10-01T08:00:00Z")}`,
+    })
+  })
+
+  it("keys an authored HSE occurrence by its occurrence id", () => {
+    const events = selectHomeEvents({
+      homeScreen: {
+        active: { ...machineHunt, occurrenceId: "occ-machine-hunt" },
+        upcoming: [],
+      },
+      legendary: { events: [], progress: [] },
+      nowMs: Date.parse("2026-10-03T12:00:00Z"),
+    })
+
+    expect(events.live[0]).toMatchObject({
+      destination: "/dailies/hse?event=occ-machine-hunt",
+    })
   })
 
   it("orders only-upcoming events across both types by start", () => {

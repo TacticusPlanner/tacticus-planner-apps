@@ -50,7 +50,8 @@ export function EventsCalendarMobile({ agenda }: { agenda: EventsAgenda }) {
                   when: formatEventCountdown(
                     Date.parse(entry.endUtc),
                     nowMs,
-                    i18n.language
+                    i18n.language,
+                    { withHours: true }
                   ),
                 })}
                 entry={entry}

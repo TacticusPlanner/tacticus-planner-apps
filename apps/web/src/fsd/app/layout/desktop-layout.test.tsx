@@ -760,6 +760,28 @@ describe("DesktopShell", () => {
     ).not.toBeInTheDocument()
   })
 
+  it("links the top-bar logo to Home when signed in", () => {
+    render(
+      <MemoryRouter initialEntries={["/plan"]}>
+        <TooltipProvider>
+          <DesktopShell
+            visibleItems={navItems}
+            activeSection={homeItem}
+            pageDescription="Home"
+            sectionTitle="Home"
+            onCreateGoal={vi.fn()}
+            getEntryPath={identityEntryPath}
+            isAuthenticated
+          />
+        </TooltipProvider>
+      </MemoryRouter>
+    )
+
+    const link = screen.getByTestId("app-logo-home-link")
+    expect(link).toHaveAttribute("href", "/home")
+    expect(link).toContainElement(screen.getByTestId("app-header-logo"))
+  })
+
   it("still finds and searches the full hierarchy via navigation search", () => {
     render(
       <MemoryRouter initialEntries={["/library/machines-of-war"]}>

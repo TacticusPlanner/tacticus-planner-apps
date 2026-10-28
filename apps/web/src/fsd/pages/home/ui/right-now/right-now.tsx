@@ -83,7 +83,9 @@ function LiveEventTile({ row, nowMs }: { row: HomeEventRow; nowMs: number }) {
       ? homeScreenEventBanner(row.definitionId, row.parameters)
       : undefined
   const endsIn = t("home.events.endsIn", {
-    when: formatEventCountdown(row.endMs, nowMs, i18n.language),
+    when: formatEventCountdown(row.endMs, nowMs, i18n.language, {
+      withHours: true,
+    }),
   })
 
   return (

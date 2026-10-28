@@ -1,3 +1,4 @@
+import { PageContainer } from "@/widgets/page-container"
 import { useAutoStartTourOnce } from "@/shared/tour"
 
 import { useHomeEvents } from "../model/use-home-events"
@@ -17,24 +18,26 @@ export function HomePage() {
   // Read once: Right now shows the live events, Upcoming events what starts next.
   const events = useHomeEvents()
 
-  // Mobile stacks in source order (Right now, Daily Raids, Upcoming, Projects, Calendar); desktop puts
-  // Raids beside Upcoming, Raids taking the wider column.
+  // Mobile stacks in source order (Right now, Daily Raids, Upcoming, Projects, Calendar); from lg the
+  // middle row puts Raids, Projects and Upcoming side by side, in that order.
   return (
-    <div className="flex flex-col gap-6" data-testid="home-page">
+    <PageContainer data-testid="home-page">
       <RightNow events={events} />
       <div
-        className="grid grid-cols-1 gap-4 md:grid-cols-5"
-        data-testid="home-raids-row"
+        className="grid grid-cols-1 items-start gap-4 lg:grid-cols-3"
+        data-testid="home-widgets-row"
       >
-        <div className="min-w-0 md:col-span-3">
+        <div className="min-w-0 lg:order-1">
           <RaidsWidget />
         </div>
-        <div className="min-w-0 md:col-span-2">
+        <div className="min-w-0 lg:order-3">
           <UpcomingEvents events={events} />
         </div>
+        <div className="min-w-0 lg:order-2">
+          <ProjectsWidget />
+        </div>
       </div>
-      <ProjectsWidget />
       <EventsCalendar />
-    </div>
+    </PageContainer>
   )
 }

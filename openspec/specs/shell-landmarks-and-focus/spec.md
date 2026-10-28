@@ -20,6 +20,21 @@ Both the desktop and the mobile shell SHALL render the routed page inside exactl
 - **WHEN** any page renders in the mobile shell
 - **THEN** the page content is inside one `main` landmark and the header and bottom navigation are outside it
 
+### Requirement: The header logo links home when signed in
+
+For a signed-in user, the app logo in the desktop top bar (with the app name beside it) and in the mobile header SHALL be a link to `/home` with the accessible name "Home" (localized). For a signed-out visitor it SHALL NOT be a link.
+
+#### Scenario: Signed-in logo click
+
+- **GIVEN** a signed-in user on `/plan`
+- **WHEN** they activate the header logo
+- **THEN** the app navigates to `/home`
+
+#### Scenario: Signed-out logo
+
+- **WHEN** a signed-out visitor views the shell
+- **THEN** the logo is not a link
+
 ### Requirement: A skip link is the first focusable element
 
 Each shell SHALL render a localized "Skip to content" link as the first element in tab order. It SHALL be visually hidden until focused and, when activated, SHALL move focus into the `main` landmark.

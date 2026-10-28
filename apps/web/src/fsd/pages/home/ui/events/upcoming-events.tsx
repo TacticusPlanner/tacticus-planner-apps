@@ -113,7 +113,9 @@ function UpcomingEventRow({
   const { t, i18n } = useTranslation("common")
   const eventName = useHomeEventName()
   const startsIn = t("home.events.startsIn", {
-    when: formatEventCountdown(row.startMs, nowMs, i18n.language),
+    when: formatEventCountdown(row.startMs, nowMs, i18n.language, {
+      withHours: true,
+    }),
   })
 
   return (

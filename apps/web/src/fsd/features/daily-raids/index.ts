@@ -21,6 +21,7 @@ export {
   useIsHomeScreenEventLive,
 } from "./model/use-home-screen-event-calendar"
 export {
+  homeScreenEventInstanceKey,
   resolveHomeScreenEventSelection,
   selectListTarget,
 } from "./model/select-active-home-screen-event"

@@ -5,7 +5,7 @@ import { Alert, AlertDescription } from "@workspace/ui/components/alert"
 import { Spinner } from "@workspace/ui/components/spinner"
 
 import { eventBarClass, formatRelativeTime } from "@/shared/lib"
-import { EventTypeIcon } from "@/shared/ui"
+import { EventIcon, EventTypeIcon } from "@/shared/ui"
 
 import {
   homeScreenEventInstanceKey,
@@ -60,7 +60,7 @@ export function EventStatusLine({
       i18n.language
     )
     return (
-      <StatusFrame testId="hse-status-active">
+      <StatusFrame entry={instance.entry} testId="hse-status-active">
         <p className="font-semibold">{eventName(instance.entry)}</p>
         <p className="text-sm text-muted-foreground">
           {t("dailies:hse.status.endsIn", { when })}
@@ -84,7 +84,7 @@ export function EventStatusLine({
       homeScreenEventInstanceKey(state.next) === instance.key
     const name = eventName(instance.entry)
     return (
-      <StatusFrame testId="hse-status-upcoming">
+      <StatusFrame entry={instance.entry} testId="hse-status-upcoming">
         {noneRunning ? (
           <p className="text-sm text-muted-foreground">
             {t("dailies:hse.status.noneRunning")}
@@ -105,7 +105,7 @@ export function EventStatusLine({
 
   if (instance?.status === "past") {
     return (
-      <StatusFrame testId="hse-status-past">
+      <StatusFrame entry={instance.entry} testId="hse-status-past">
         <p className="font-semibold">{eventName(instance.entry)}</p>
         <p className="text-sm text-muted-foreground">
           {t("dailies:hse.status.endedOn", {
@@ -126,23 +126,35 @@ export function EventStatusLine({
 }
 
 function StatusFrame({
+  entry,
   testId,
   children,
 }: {
+  /** The shown instance, for its game medallion; none falls back to the generic HSE icon. */
+  entry?: HomeScreenEventEntry
   testId: string
   children: ReactNode
 }) {
   return (
     <div className="flex items-start gap-3" data-testid={testId}>
-      <span
-        aria-hidden="true"
-        className={cn(
-          "flex size-9 shrink-0 items-center justify-center rounded-lg",
-          eventBarClass("homeScreen")
-        )}
-      >
-        <EventTypeIcon className="size-5" definitionType="HomeScreenEvent" />
-      </span>
+      {entry ? (
+        <EventIcon
+          className="size-12 shrink-0"
+          definitionId={entry.definitionId}
+          definitionType="HomeScreenEvent"
+          parameters={entry.parameters ?? null}
+        />
+      ) : (
+        <span
+          aria-hidden="true"
+          className={cn(
+            "flex size-9 shrink-0 items-center justify-center rounded-lg",
+            eventBarClass("homeScreen")
+          )}
+        >
+          <EventTypeIcon className="size-5" definitionType="HomeScreenEvent" />
+        </span>
+      )}
       <div className="min-w-0 space-y-0.5">{children}</div>
     </div>
   )

@@ -8,12 +8,12 @@ Gives players a glanceable summary of their projects on the home page — the De
 
 ### Requirement: Home page renders Your Projects after Token Availability
 
-The authenticated home page SHALL render Your Projects full width after the Daily Raids / Upcoming events row and before the events calendar, on both desktop and mobile. Cards SHALL be laid out in a grid of one column below 768px, two at or above 768px and three at the `xl` breakpoint. The header SHALL carry an "All projects" link to `/plan/projects`.
+The authenticated home page SHALL render Your Projects after Upcoming events and before the events calendar below the 1024px (`lg`) breakpoint, full width; at or above 1024px it SHALL sit in the middle column of the Daily Raids / Your Projects / Upcoming events row. Cards SHALL be laid out in one column below 768px, two from 768px, and one again from 1024px, where the widget is a narrow column. The header SHALL carry an "All projects" link to `/plan/projects`.
 
 #### Scenario: Desktop shows Projects in a grid
 
-- **WHEN** a signed-in user opens `/home` at or above the 768px breakpoint
-- **THEN** Your Projects renders full width below the Daily Raids / Upcoming events row and above the calendar, its cards in two or three columns
+- **WHEN** a signed-in user opens `/home` at or above the 1024px breakpoint
+- **THEN** Your Projects renders in the middle column between Daily Raids and Upcoming events, above the calendar, its cards in one column
 
 #### Scenario: Mobile stacks all sections in order
 

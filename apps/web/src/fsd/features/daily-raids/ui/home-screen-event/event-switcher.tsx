@@ -12,6 +12,8 @@ import {
 } from "@workspace/ui/components/select"
 import { cn } from "@workspace/ui/lib/utils"
 
+import { EventIcon } from "@/shared/ui"
+
 import {
   adjacentHomeScreenEventKeys,
   groupHomeScreenEventInstances,
@@ -94,6 +96,12 @@ export function EventSwitcher({
                     data-testid={`hse-event-option-${instance.key}`}
                     value={instance.key}
                   >
+                    <EventIcon
+                      className="size-6 shrink-0"
+                      definitionId={instance.entry.definitionId}
+                      definitionType="HomeScreenEvent"
+                      parameters={instance.entry.parameters ?? null}
+                    />
                     {t("hse.switcher.option", {
                       name: eventName(instance.entry),
                       dates: formatHomeScreenEventDates(

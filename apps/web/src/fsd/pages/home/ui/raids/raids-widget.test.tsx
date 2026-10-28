@@ -314,7 +314,7 @@ describe("RaidsWidget", () => {
     )
   })
 
-  it("shows the first 10 locations and reveals the rest on demand", async () => {
+  it("shows the first 5 locations and reveals the rest on demand", async () => {
     const user = userEvent.setup()
     useDailyRaidsMock.mockReturnValue({
       status: "ready",
@@ -333,10 +333,10 @@ describe("RaidsWidget", () => {
 
     render(<RaidsWidget />, { route: "/" })
 
-    expect(screen.getAllByTestId(/^home-raid-location-/)).toHaveLength(10)
+    expect(screen.getAllByTestId(/^home-raid-location-/)).toHaveLength(5)
     const toggle = screen.getByTestId("home-raids-toggle")
     expect(toggle).toHaveAttribute("aria-expanded", "false")
-    expect(toggle).toHaveTextContent('home.raids.showMore:{"count":2}')
+    expect(toggle).toHaveTextContent('home.raids.showMore:{"count":7}')
 
     await user.click(toggle)
 
