@@ -85,7 +85,8 @@ embedded in browser JavaScript and must not contain secrets.
 
 Each workflow uses a GitHub environment (`stage`, `production`) holding its
 Azure Static Web Apps deployment token (`AZURE_STATIC_WEB_APPS_API_TOKEN_STAGE`,
-`AZURE_STATIC_WEB_APPS_API_TOKEN_PROD`) as a secret.
+`AZURE_STATIC_WEB_APPS_API_TOKEN_PROD`) as a secret. Limit the `production`
+environment's deployment branches to `main` and `release/**`.
 
 ## Adding components
 
