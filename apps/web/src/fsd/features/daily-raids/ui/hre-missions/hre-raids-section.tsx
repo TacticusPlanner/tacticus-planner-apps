@@ -2,7 +2,11 @@ import { useMemo, type ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
-import { energyIcon, raidTicketIcon } from "@workspace/game-catalog"
+import {
+  battleGlyphIcon,
+  energyIcon,
+  raidTicketIcon,
+} from "@workspace/game-catalog"
 
 import { EntityIcon } from "@/shared/ui"
 
@@ -141,7 +145,11 @@ export function HreRaidsSection({
         </h2>
         {request?.raids ? (
           <Badge data-testid="hre-raids-to-go" variant="secondary">
-            <EntityIcon alt="" className="size-3.5" src={raidTicketIcon()} />
+            <EntityIcon
+              alt=""
+              className="size-3.5"
+              src={battleGlyphIcon("campaignBattle")}
+            />
             {t("raids.toGo", { count: request.raids.battlesToGo })}
           </Badge>
         ) : null}
