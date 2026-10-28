@@ -31,7 +31,8 @@ describe("HomePage layout", () => {
     render(<HomePage />)
     const page = screen.getByTestId("home-page")
 
-    expect(page.tagName).toBe("MAIN")
+    // The shell owns the main landmark; the container must not add a second one.
+    expect(page.tagName).toBe("DIV")
     expect(page).toHaveClass("p-4", "sm:p-6")
   })
 

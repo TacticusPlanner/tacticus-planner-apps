@@ -28,7 +28,8 @@ export function AppLogoHomeLink({
   if (!isAuthenticated) return <div className={className}>{children}</div>
   return (
     <Link
-      aria-label={t("nav.home")}
+      // Names the visible app name too, so speech input can activate it by what it shows.
+      aria-label={`${t("app.name")}, ${t("nav.home")}`}
       className={className}
       data-testid="app-logo-home-link"
       to="/home"

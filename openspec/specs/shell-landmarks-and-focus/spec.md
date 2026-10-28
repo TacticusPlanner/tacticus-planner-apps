@@ -22,7 +22,7 @@ Both the desktop and the mobile shell SHALL render the routed page inside exactl
 
 ### Requirement: The header logo links home when signed in
 
-For a signed-in user, the app logo in the desktop top bar (with the app name beside it) and in the mobile header SHALL be a link to `/home` with the accessible name "Home" (localized). For a signed-out visitor it SHALL NOT be a link.
+For a signed-in user, the app logo in the desktop top bar (with the app name beside it) and in the mobile header SHALL be a link to `/home` with an accessible name holding the app name and "Home" (localized). For a signed-out visitor it SHALL NOT be a link.
 
 #### Scenario: Signed-in logo click
 
