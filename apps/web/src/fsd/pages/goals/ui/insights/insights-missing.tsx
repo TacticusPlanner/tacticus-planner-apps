@@ -11,6 +11,7 @@ import {
   abilityBadgeIcon,
   forgeBadgeIcon,
   mowComponentIcon,
+  onslaughtAllianceIcon,
   orbAllianceIcon,
   orbIcon,
   xpBookIcon,
@@ -59,9 +60,16 @@ export function InsightsMissing({
         ...item(rarity),
       }))
 
-  const rows: { key: string; title: string; items: Item[] }[] = [
+  const rows: {
+    key: string
+    title: string
+    /** The alliance emblem of an alliance-split row. */
+    titleIcon?: string
+    items: Item[]
+  }[] = [
     ...ALLIANCES.map((alliance) => ({
       key: `badges:${alliance}`,
+      titleIcon: onslaughtAllianceIcon(alliance),
       title: t("goals.insights.missingBadges", {
         alliance: t(`alliances.${alliance}`),
       }),
@@ -74,6 +82,7 @@ export function InsightsMissing({
     })),
     ...ALLIANCES.map((alliance) => ({
       key: `orbs:${alliance}`,
+      titleIcon: onslaughtAllianceIcon(alliance),
       title: t("goals.insights.missingOrbs", {
         alliance: t(`alliances.${alliance}`),
       }),
@@ -145,7 +154,16 @@ export function InsightsMissing({
                 data-testid="insights-missing-row"
                 key={row.key}
               >
-                <dt className="text-xs font-medium text-muted-foreground uppercase">
+                <dt className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground uppercase">
+                  {row.titleIcon ? (
+                    <EntityIcon
+                      alt=""
+                      className="h-4 w-auto shrink-0"
+                      height={16}
+                      src={row.titleIcon}
+                      width={16}
+                    />
+                  ) : null}
                   {row.title}
                 </dt>
                 <dd>

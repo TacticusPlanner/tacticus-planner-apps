@@ -1,7 +1,9 @@
 import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
+import { legendaryEventResourceIcon } from "@workspace/game-catalog"
 
 import type { LegendaryEvent } from "@/entities/legendary-event"
+import { EntityIcon } from "@/shared/ui"
 
 import type { TokenMarker } from "../lib/run-forecast"
 import { groupTokensByTeam } from "../lib/token-groups"
@@ -135,7 +137,12 @@ function TokenRow({
   const lane = t(`lanes.${token.laneId}`)
   const battle = t("tokenPlan.plan.battle", { battle: token.battleIndex + 1 })
   const points = (
-    <span className="font-medium tabular-nums">
+    <span className="inline-flex items-center gap-1 font-medium tabular-nums">
+      <EntityIcon
+        alt=""
+        className="size-3.5 shrink-0"
+        src={legendaryEventResourceIcon("points")}
+      />
       {t("tokenPlan.plan.points", { points: number.format(token.points) })}
     </span>
   )

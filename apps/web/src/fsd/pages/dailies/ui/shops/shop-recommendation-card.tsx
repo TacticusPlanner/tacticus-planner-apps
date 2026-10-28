@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next"
-import { Dices } from "lucide-react"
 import { Badge } from "@workspace/ui/components/badge"
+import { chanceIcon } from "@workspace/game-catalog"
 
 import { shopCurrencyIcon } from "@/features/shop-rewards"
 import { EntityIcon } from "@/shared/ui"
@@ -98,9 +98,10 @@ export function ShopRecommendationCard({
               {card.rewardName}
             </span>
             {!card.isGuaranteed ? (
-              <Dices
-                aria-label={text.randomHint}
-                className="size-3.5 shrink-0 text-muted-foreground"
+              <EntityIcon
+                src={chanceIcon()}
+                alt={text.randomHint}
+                className="size-4 shrink-0"
               />
             ) : null}
           </div>
@@ -154,7 +155,7 @@ export function ShopRecommendationCard({
                 variant="outline"
                 title={text.randomHint}
               >
-                <Dices className="size-3" />
+                <EntityIcon src={chanceIcon()} alt="" className="size-3.5" />
               </Badge>
             ) : null}
           </div>

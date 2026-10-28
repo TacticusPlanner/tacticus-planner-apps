@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react"
-import { BatteryLow, CalendarClock, CalendarDays, Swords } from "lucide-react"
+import { BatteryLow, CalendarClock, CalendarDays } from "lucide-react"
+import { raidTicketIcon } from "@workspace/game-catalog"
 import { useTranslation } from "react-i18next"
 
 import {
@@ -110,7 +111,12 @@ function SchedulePlan({ raids }: { raids: DailyRaidsReadyViewModel }) {
               [
                 "plan.summary.raids",
                 raids.planSummary.totalRaids,
-                <Swords key="raids" />,
+                <EntityIcon
+                  key="raids"
+                  alt=""
+                  className="size-5"
+                  src={raidTicketIcon()}
+                />,
               ],
               [
                 "plan.summary.unusedDays",

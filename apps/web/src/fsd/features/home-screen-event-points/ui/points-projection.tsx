@@ -14,6 +14,7 @@ import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 import { cn } from "@workspace/ui/lib/utils"
 
 import { formatRelativeTime } from "@/shared/lib"
+import { EntityIcon } from "@/shared/ui"
 
 import type { HseProjectionMode } from "../lib/hse-projection"
 import type {
@@ -39,11 +40,14 @@ type ReadyProjection = Extract<HseProjectionView, { status: "ready" }>
 export function PointsProjection({
   state,
   hasRaidLists,
+  pointsIcon,
   className,
 }: {
   state: HseEventPointsState
   /** True when the farm list is shown below (the campaign-raid hint points to it). */
   hasRaidLists: boolean
+  /** The event's points icon, beside the title. */
+  pointsIcon?: string
   className?: string
 }) {
   const { t } = useTranslation("dailies")
@@ -52,7 +56,12 @@ export function PointsProjection({
       className={cn("space-y-3 rounded-xl border p-4", className)}
       data-testid="hse-projection"
     >
-      <h2 className="font-semibold">{t("hse.projection.title")}</h2>
+      <h2 className="flex items-center gap-2 font-semibold">
+        {pointsIcon ? (
+          <EntityIcon alt="" className="size-5 shrink-0" src={pointsIcon} />
+        ) : null}
+        {t("hse.projection.title")}
+      </h2>
       {children}
     </section>
   )

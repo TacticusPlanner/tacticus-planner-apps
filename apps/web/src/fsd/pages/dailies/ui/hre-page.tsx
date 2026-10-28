@@ -290,6 +290,7 @@ export function HrePage() {
       >
         <PaceCard
           actions={actions}
+          factionId={hero?.faction ?? null}
           pace={pace}
           rules={rules.rewards}
           startRarity={hero?.initialRarity ?? null}

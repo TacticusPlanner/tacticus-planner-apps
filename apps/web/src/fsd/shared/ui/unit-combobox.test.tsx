@@ -124,7 +124,9 @@ describe("UnitCombobox", () => {
     const lockedOption = screen.getByRole("option", { name: "Imotekh" })
     const unlockedOption = screen.getByRole("option", { name: "Cato Sicarius" })
 
-    expect(lockedOption.querySelector("svg.lucide-lock")).not.toBeNull()
-    expect(unlockedOption.querySelector("svg.lucide-lock")).toBeNull()
+    expect(
+      lockedOption.querySelector('img[src*="ui_icon_lock"]')
+    ).not.toBeNull()
+    expect(unlockedOption.querySelector('img[src*="ui_icon_lock"]')).toBeNull()
   })
 })

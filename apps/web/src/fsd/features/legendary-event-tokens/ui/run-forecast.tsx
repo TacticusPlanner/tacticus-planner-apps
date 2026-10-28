@@ -1,16 +1,23 @@
 import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import { ChevronDown } from "lucide-react"
+import { legendaryEventResourceIcon } from "@workspace/game-catalog"
 import { Button } from "@workspace/ui/components/button"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { cn } from "@workspace/ui/lib/utils"
 
 import { useAnalyticsActions } from "@/shared/analytics"
+import { IconLine } from "@/shared/ui"
 
 import type { RunForecast } from "../lib/run-forecast"
 import type { TokenPlanView } from "../lib/token-plan-view"
 import { useStoredOpen } from "../model/use-stored-open"
 import type { OpenTeamsHandler } from "./next-token-card"
+
+const tokensIcon = legendaryEventResourceIcon("tokens")
+const pointsIcon = legendaryEventResourceIcon("points")
+const chestsIcon = legendaryEventResourceIcon("chests")
+const shardsIcon = legendaryEventResourceIcon("shards")
 
 const OPEN_KEY = "legendaryEvents.runForecast.open"
 const REGION_ID = "legendary-event-run-forecast-runs"
@@ -163,43 +170,43 @@ function RunBlock({ run, isMobile }: { run: RunForecast; isMobile: boolean }) {
       </p>
     ) : (
       <ul className="flex flex-col gap-0.5 text-sm">
-        <li data-testid="run-forecast-supply">
+        <IconLine icon={tokensIcon} testId="run-forecast-supply">
           {t("tokenPlan.forecast.supply", {
             total: run.supply.total,
             free: run.supply.free,
             ad: run.supply.ad,
             bonus: run.supply.bonusDelivery,
           })}
-        </li>
+        </IconLine>
         <li data-testid="run-forecast-uses">
           {t("tokenPlan.forecast.uses", {
             used: run.tokensUsed,
             left: run.tokensLeftOver,
           })}
         </li>
-        <li data-testid="run-forecast-points">
+        <IconLine icon={pointsIcon} testId="run-forecast-points">
           {t("tokenPlan.forecast.points", {
             points: number.format(run.endingPoints),
             earned: number.format(run.pointsEarned),
           })}
-        </li>
+        </IconLine>
         <li>
           {t("tokenPlan.forecast.currency", {
             currency: number.format(run.endingCurrency),
             earned: number.format(run.currencyEarned),
           })}
         </li>
-        <li>
+        <IconLine icon={chestsIcon}>
           {t("tokenPlan.forecast.chests", {
             claimed: run.chestsClaimed,
             opened: run.chestsOpened,
           })}
-        </li>
-        <li>
+        </IconLine>
+        <IconLine icon={shardsIcon}>
           {t("tokenPlan.forecast.shards", {
             shards: number.format(run.endingShards),
           })}
-        </li>
+        </IconLine>
         {run.stepsReached.length > 0 ? (
           <li data-testid="run-forecast-reached">
             {t("tokenPlan.forecast.reached", {

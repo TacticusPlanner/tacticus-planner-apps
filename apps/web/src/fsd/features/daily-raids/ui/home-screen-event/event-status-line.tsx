@@ -1,11 +1,11 @@
 import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
-import { cn } from "@workspace/ui/lib/utils"
+import { gameMenuIcon } from "@workspace/game-catalog"
 import { Alert, AlertDescription } from "@workspace/ui/components/alert"
 import { Spinner } from "@workspace/ui/components/spinner"
 
-import { eventBarClass, formatRelativeTime } from "@/shared/lib"
-import { EventIcon, EventTypeIcon } from "@/shared/ui"
+import { formatRelativeTime } from "@/shared/lib"
+import { EntityIcon, EventIcon } from "@/shared/ui"
 
 import {
   homeScreenEventInstanceKey,
@@ -145,15 +145,11 @@ function StatusFrame({
           parameters={entry.parameters ?? null}
         />
       ) : (
-        <span
-          aria-hidden="true"
-          className={cn(
-            "flex size-9 shrink-0 items-center justify-center rounded-lg",
-            eventBarClass("homeScreen")
-          )}
-        >
-          <EventTypeIcon className="size-5" definitionType="HomeScreenEvent" />
-        </span>
+        <EntityIcon
+          alt=""
+          className="size-9 shrink-0"
+          src={gameMenuIcon("homeScreenEvent")}
+        />
       )}
       <div className="min-w-0 space-y-0.5">{children}</div>
     </div>

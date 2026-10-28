@@ -202,6 +202,14 @@
     },
     "tierSet": "Stufe {{tier}} · Satz {{set}}",
     "chest": "Truhe: {{chest}}",
+    "chestTiers": {
+      "wood": "Holz",
+      "bronze": "Bronze",
+      "silver": "Silber",
+      "gold": "Gold",
+      "diamond": "Diamant",
+      "mythic": "Mythisch"
+    },
     "guildXp": "{{xp}} Gilden-XP",
     "turns": "{{count}} Züge",
     "meta": {

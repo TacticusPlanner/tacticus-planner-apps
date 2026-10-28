@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next"
 import {
   computeShopLockContext,
   todayDow,
+  type GameIcon,
   type RosterUnit,
   type ShopStorageModel,
   type UpgradeStorageModel,
@@ -31,7 +32,7 @@ import {
 
 export interface ShopRecommendationCardView extends ShopRecommendationCard {
   rewardName: string
-  rewardIconUrl?: string
+  rewardIconUrl?: GameIcon
   rewardKind: ShopRewardKind
 }
 

@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest"
 
-import { countdownIcon, eventIcon, homeScreenEventBanner } from "./event"
+import {
+  countdownIcon,
+  eventIcon,
+  homeScreenEventBanner,
+  homeScreenEventPointsIcon,
+} from "./event"
 
 const base = "/game_catalog/datamines"
 
@@ -76,5 +81,29 @@ describe("homeScreenEventBanner", () => {
 describe("countdownIcon", () => {
   it("is the game's timer icon", () => {
     expect(countdownIcon()).toBe(`${base}/atlases/ui_icon_timer.webp`)
+  })
+})
+
+describe("homeScreenEventPointsIcon", () => {
+  it("uses the event's own points currency", () => {
+    expect(homeScreenEventPointsIcon("hse-purge-order")).toBe(
+      `${base}/liveevents/ui_icon_resource_event_killtyranids.webp`
+    )
+    expect(
+      homeScreenEventPointsIcon("hse-faction-boost", {
+        targetFactionId: "DarkAngels",
+      })
+    ).toBe(
+      `${base}/liveevents/ui_icon_resource_event_faction_boost_dark_angels.webp`
+    )
+  })
+
+  it("falls back to the generic event points icon", () => {
+    expect(
+      homeScreenEventPointsIcon("hse-faction-boost", { targetFactionId: "Tau" })
+    ).toBe(`${base}/liveevents/ui_icon_resource_event_points_generic.webp`)
+    expect(homeScreenEventPointsIcon("hse-against-the-tide")).toBe(
+      `${base}/liveevents/ui_icon_resource_event_points_generic.webp`
+    )
   })
 })

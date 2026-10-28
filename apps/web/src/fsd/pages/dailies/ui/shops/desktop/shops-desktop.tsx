@@ -1,6 +1,8 @@
 import { useTranslation } from "react-i18next"
+import { shopIcon } from "@workspace/game-catalog"
 
 import type { ShopRecommendationSectionView } from "@/features/shop-recommendations"
+import { EntityIcon } from "@/shared/ui"
 import { ShopRecommendationCard } from "../shop-recommendation-card"
 
 /**
@@ -25,7 +27,12 @@ export function ShopsDesktop({
           className="space-y-4"
           data-testid={`shop-section-${section.shopId}`}
         >
-          <h3 className="text-base font-semibold">
+          <h3 className="flex items-center gap-2 text-base font-semibold">
+            <EntityIcon
+              alt=""
+              className="size-6 shrink-0"
+              src={shopIcon(section.shopId)}
+            />
             {t(`shopName.${section.shopId}`, { defaultValue: section.shopId })}
           </h3>
           {section.guaranteed.length > 0 ? (

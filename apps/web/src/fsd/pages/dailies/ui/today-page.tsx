@@ -1,6 +1,5 @@
 import { useState, type ReactNode } from "react"
-import { Swords } from "lucide-react"
-import { onslaughtTokenIcon } from "@workspace/game-catalog"
+import { onslaughtTokenIcon, raidTicketIcon } from "@workspace/game-catalog"
 import { useOutletContext } from "react-router"
 import { useTranslation } from "react-i18next"
 import type { BattleId } from "@workspace/game-domain"
@@ -185,7 +184,13 @@ function TodaySchedule({ raids }: { raids: DailyRaidsReadyViewModel }) {
                   value={raids.today.energyTotal}
                 />
                 <BadgeStat
-                  icon={<Swords className="size-4 text-muted-foreground" />}
+                  icon={
+                    <EntityIcon
+                      alt=""
+                      className="size-4"
+                      src={raidTicketIcon()}
+                    />
+                  }
                   value={raids.today.raidsTotal}
                 />
               </div>

@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next"
+import { legendaryEventResourceIcon } from "@workspace/game-catalog"
 import { cn } from "@workspace/ui/lib/utils"
 
 import {
@@ -6,6 +7,7 @@ import {
   type LegendaryEvent,
   type LegendaryEventMissionRef,
 } from "@/entities/legendary-event"
+import { EntityIcon } from "@/shared/ui"
 
 import type { MissionAlternative } from "../lib/token-missions"
 import type { MarkTokenHandler } from "./next-token-card"
@@ -89,9 +91,14 @@ export function MissionAlternativeView({
             })}
           </span>
           <span
-            className="tabular-nums"
+            className="inline-flex items-center gap-1 tabular-nums"
             data-testid="next-token-missions-points"
           >
+            <EntityIcon
+              alt=""
+              className="size-3.5 shrink-0"
+              src={legendaryEventResourceIcon("points")}
+            />
             {t("tokenPlan.nextToken.missions.points", {
               points: number.format(token.points),
               difference: number.format(pointsDifference),
