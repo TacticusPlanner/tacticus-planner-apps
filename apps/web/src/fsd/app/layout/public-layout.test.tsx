@@ -108,6 +108,9 @@ describe("PublicLayout", () => {
       within(footer).getByRole("link", { name: "publicSite.privacy" })
     ).toHaveAttribute("href", "/privacy")
     expect(
+      within(footer).getByRole("link", { name: "publicSite.terms" })
+    ).toHaveAttribute("href", "/terms")
+    expect(
       within(footer).getByRole("link", { name: "publicSite.uiKit" })
     ).toHaveAttribute("href", "/ui-kit")
   })

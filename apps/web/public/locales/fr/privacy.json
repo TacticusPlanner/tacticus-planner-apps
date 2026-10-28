@@ -1,6 +1,5 @@
 {
-  "title": "Confidentialité",
-  "lastUpdated": "Dernière mise à jour le {{date}}",
+  "title": "Confidentialité et cookies",
   "intro": "Tacticus Planner est un projet de fans non officiel et open source pour le jeu Tacticus. Cette page explique ce que le planificateur conserve à votre sujet, pourquoi, et comment le supprimer.",
   "sections": {
     "signIn": {
@@ -14,6 +13,10 @@
     "plannerData": {
       "title": "Données du planificateur",
       "body": "Pour fonctionner sur tous vos appareils, le planificateur conserve sur son serveur vos données de jeu synchronisées, vos objectifs, projets, plans d'événements, données de guilde et paramètres. Une copie est gardée dans le stockage local de votre navigateur pour que les pages se chargent vite ; la déconnexion supprime cette copie."
+    },
+    "cookies": {
+      "title": "Cookies et stockage du navigateur",
+      "body": "Le planificateur ne dépose aucun cookie publicitaire ni de suivi. Il conserve ce dont il a besoin dans le stockage de votre navigateur : votre session de connexion, votre langue et votre thème, ainsi que la copie locale de vos données. Pour les utilisateurs connectés, PostHog conserve son identifiant pseudonyme dans un cookie propriétaire et dans le stockage local. Les pages de connexion de Microsoft déposent leurs propres cookies pour vous garder connecté, selon la déclaration de confidentialité de Microsoft."
     },
     "analytics": {
       "title": "Statistiques et rapports d'erreurs",

@@ -26,7 +26,7 @@ import { documentTitle } from "./document-title"
 import { SkipLink } from "./skip-link"
 
 /**
- * Chrome for the public pages (landing, privacy), deliberately NOT the app shell: a visitor here
+ * Chrome for the public pages (landing, privacy, terms), deliberately NOT the app shell: a visitor here
  * may have no account, so the shell's navigation, search and sync controls would all lead to
  * sign-in. The top bar carries identity, a Library shortcut, preferences and one account action;
  * the footer carries the fan-project disclaimer and the project's external links.
@@ -188,6 +188,11 @@ function PublicFooter() {
             <li>
               <Link className={internalLinkClass} to="/privacy">
                 {t("publicSite.privacy")}
+              </Link>
+            </li>
+            <li>
+              <Link className={internalLinkClass} to="/terms">
+                {t("publicSite.terms")}
               </Link>
             </li>
             {isUiKitEnabled ? (

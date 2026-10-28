@@ -8,7 +8,7 @@ Defines what a signed-out visitor sees on the landing page at `/`, the public to
 
 ### Requirement: Public pages share a top bar and a footer
 
-The landing page and every other public page (currently `/privacy`) SHALL render inside one public layout with a top bar, a single `main` landmark holding the page, and a footer. The top bar SHALL show the app logo and name (linking to `/`), a Library link to `/library/characters`, a preferences menu, and one account action. The preferences menu SHALL offer the theme switch, the language picker and the Roadmap link, and SHALL NOT offer the UserJot Changelog, since the UserJot widget is not mounted outside the app shell. The account action SHALL be Sign in, starting the sign-in redirect, for a signed-out visitor, and "Open planner", linking to `/home`, for a signed-in one.
+The landing page and every other public page (currently `/privacy` and `/terms`) SHALL render inside one public layout with a top bar, a single `main` landmark holding the page, and a footer. The top bar SHALL show the app logo and name (linking to `/`), a Library link to `/library/characters`, a preferences menu, and one account action. The preferences menu SHALL offer the theme switch, the language picker and the Roadmap link, and SHALL NOT offer the UserJot Changelog, since the UserJot widget is not mounted outside the app shell. The account action SHALL be Sign in, starting the sign-in redirect, for a signed-out visitor, and "Open planner", linking to `/home`, for a signed-in one.
 
 #### Scenario: Desktop top bar
 
@@ -32,12 +32,12 @@ The landing page and every other public page (currently `/privacy`) SHALL render
 
 ### Requirement: The footer carries the disclaimer and project links
 
-The footer SHALL state that Tacticus Planner is an unofficial fan project not affiliated with Snowprint Studios or Games Workshop, and SHALL link to the project's Discord invite, the TacticusPlanner GitHub organization and the public UserJot feedback board (each opening in a new tab), and to `/privacy` (in the same tab). Outside production builds it SHALL also link to `/ui-kit`. It SHALL NOT embed the UserJot widget or any other feedback entry point.
+The footer SHALL state that Tacticus Planner is an unofficial fan project not affiliated with Snowprint Studios or Games Workshop, and SHALL link to the project's Discord invite, the TacticusPlanner GitHub organization and the public UserJot feedback board (each opening in a new tab), and to `/privacy` (labelled "Privacy & cookies") and `/terms` ("Terms of use"), both in the same tab. Outside production builds it SHALL also link to `/ui-kit`. It SHALL NOT embed the UserJot widget or any other feedback entry point.
 
 #### Scenario: Footer links on the landing page
 
 - **WHEN** a signed-out visitor scrolls to the end of `/`
-- **THEN** the disclaimer and the Discord, GitHub, Feedback board and Privacy links are present, external links open in a new tab with `rel="noopener noreferrer"`, and no UserJot launcher, toast or popup appears
+- **THEN** the disclaimer and the Discord, GitHub, Feedback board, Privacy & cookies and Terms of use links are present, external links open in a new tab with `rel="noopener noreferrer"`, and no UserJot launcher, toast or popup appears
 
 #### Scenario: Production build hides the UI Kit link
 

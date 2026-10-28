@@ -1,6 +1,5 @@
 {
-  "title": "Privacidad",
-  "lastUpdated": "Última actualización: {{date}}",
+  "title": "Privacidad y cookies",
   "intro": "Tacticus Planner es un proyecto no oficial y de código abierto hecho por fans para el juego Tacticus. Esta página explica qué guarda el planificador sobre ti, por qué y cómo eliminarlo.",
   "sections": {
     "signIn": {
@@ -14,6 +13,10 @@
     "plannerData": {
       "title": "Datos del planificador",
       "body": "Para funcionar en todos tus dispositivos, el planificador guarda en su servidor tus datos de juego sincronizados, objetivos, proyectos, planes de eventos, datos de gremio y ajustes. Se guarda una copia en el almacenamiento local de tu navegador para que las páginas carguen rápido; al cerrar sesión se borra esa copia."
+    },
+    "cookies": {
+      "title": "Cookies y almacenamiento del navegador",
+      "body": "El planificador no usa cookies de publicidad ni de seguimiento. Guarda lo que necesita en el almacenamiento de tu navegador: tu sesión iniciada, tu idioma y tema, y la copia local de tus datos del planificador. Para los usuarios con sesión iniciada, PostHog guarda su identificador seudónimo en una cookie propia y en el almacenamiento local. Las páginas de inicio de sesión de Microsoft usan sus propias cookies para mantener tu sesión, según la declaración de privacidad de Microsoft."
     },
     "analytics": {
       "title": "Analíticas e informes de errores",

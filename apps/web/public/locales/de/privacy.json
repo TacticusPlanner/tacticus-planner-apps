@@ -1,6 +1,5 @@
 {
-  "title": "Datenschutz",
-  "lastUpdated": "Zuletzt aktualisiert am {{date}}",
+  "title": "Datenschutz & Cookies",
   "intro": "Tacticus Planner ist ein inoffizielles Open-Source-Fanprojekt für das Spiel Tacticus. Diese Seite erklärt, was der Planer über dich speichert, warum, und wie du es entfernen kannst.",
   "sections": {
     "signIn": {
@@ -14,6 +13,10 @@
     "plannerData": {
       "title": "Planer-Daten",
       "body": "Damit der Planer auf all deinen Geräten funktioniert, speichert er deine synchronisierten Spieldaten, Ziele, Projekte, Event-Pläne, Gildendaten und Einstellungen auf seinem Server. Eine Kopie liegt im lokalen Speicher deines Browsers, damit Seiten schnell laden; beim Abmelden wird diese Kopie gelöscht."
+    },
+    "cookies": {
+      "title": "Cookies und Browserspeicher",
+      "body": "Der Planer setzt keine Werbe- oder Tracking-Cookies. Was er braucht, legt er im Speicher deines Browsers ab: deine Anmeldesitzung, Sprache und Design sowie die lokale Kopie deiner Planerdaten. Für angemeldete Nutzer speichert PostHog seine pseudonyme Kennung in einem Erstanbieter-Cookie und im lokalen Speicher. Die Anmeldeseiten von Microsoft setzen eigene Cookies, damit du angemeldet bleibst; dafür gilt die Datenschutzerklärung von Microsoft."
     },
     "analytics": {
       "title": "Analysen und Fehlerberichte",

@@ -1,0 +1,42 @@
+{
+  "title": "Terms of use",
+  "intro": "These terms cover your use of Tacticus Planner, an unofficial, open-source fan project for the game Tacticus. By using the planner you agree to them; if you do not, please do not use it.",
+  "sections": {
+    "fanProject": {
+      "title": "A free fan project",
+      "body": "The planner is free and run by volunteers. It is not affiliated with, endorsed by or sponsored by Snowprint Studios or Games Workshop."
+    },
+    "account": {
+      "title": "Your account",
+      "body": "You sign in with Microsoft Entra External ID and are responsible for keeping that sign-in safe. Only add a Tacticus API key that is yours or that its owner allowed you to use. You can delete your account at any time in Account settings."
+    },
+    "acceptableUse": {
+      "title": "Acceptable use",
+      "body": "Do not use the planner to break the law or the game's terms, try to reach other users' data, disrupt or overload the service, or scrape it automatically. Planner names must not be offensive or impersonate someone else."
+    },
+    "gameContent": {
+      "title": "Game content",
+      "body": "Tacticus names, artwork and game data belong to Snowprint Studios, and Warhammer 40,000 belongs to Games Workshop. They are shown only to help players plan, and all rights stay with their owners."
+    },
+    "openSource": {
+      "title": "Open source",
+      "body": "The planner's source code is published on GitHub under the licence stated in each repository. These terms cover the hosted planner and do not limit your rights under that licence."
+    },
+    "noWarranty": {
+      "title": "No warranty",
+      "body": "The planner is provided as is, without warranty of any kind. Plans, estimates and recommendations rely on game and community data that can be incomplete or out of date, so double-check before spending in-game resources. To the extent the law allows, the maintainers are not liable for any loss from using the planner."
+    },
+    "availability": {
+      "title": "Availability",
+      "body": "Features may change, and the planner may be unavailable at times or shut down. Accounts that break these terms may be suspended or removed."
+    },
+    "changes": {
+      "title": "Changes to these terms",
+      "body": "These terms may be updated; the date at the top shows the current version. Using the planner after a change means you accept the updated terms."
+    },
+    "contact": {
+      "title": "Contact",
+      "body": "Questions about these terms are welcome on our Discord server or on GitHub."
+    }
+  }
+}
