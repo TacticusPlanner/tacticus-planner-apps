@@ -16,7 +16,7 @@
     },
     "cookies": {
       "title": "Cookies und Browserspeicher",
-      "body": "Der Planer setzt keine Werbe- oder Tracking-Cookies. Was er braucht, legt er im Speicher deines Browsers ab: deine Anmeldesitzung, Sprache und Design sowie die lokale Kopie deiner Planerdaten. Für angemeldete Nutzer speichert PostHog seine pseudonyme Kennung in einem Erstanbieter-Cookie und im lokalen Speicher. Die Anmeldeseiten von Microsoft setzen eigene Cookies, damit du angemeldet bleibst; dafür gilt die Datenschutzerklärung von Microsoft."
+      "body": "Der Planer setzt keine Werbe-Cookies. Was er braucht, legt er im Speicher deines Browsers ab: deine Anmeldesitzung, Sprache und Design sowie die lokale Kopie deiner Planerdaten. Nur für angemeldete Nutzer speichert die PostHog-Analyse seine pseudonyme Kennung in einem Erstanbieter-Cookie und im lokalen Speicher. Die Anmeldeseiten von Microsoft setzen eigene Cookies, damit du angemeldet bleibst; dafür gilt die Datenschutzerklärung von Microsoft."
     },
     "analytics": {
       "title": "Analysen und Fehlerberichte",

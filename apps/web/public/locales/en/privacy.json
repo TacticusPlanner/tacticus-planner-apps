@@ -16,7 +16,7 @@
     },
     "cookies": {
       "title": "Cookies and browser storage",
-      "body": "The planner sets no advertising or tracking cookies. It keeps what it needs in your browser's storage: your sign-in session, your language and theme, and the local copy of your planner data. For signed-in users, PostHog keeps its pseudonymous id in a first-party cookie and local storage. Microsoft's sign-in pages set their own cookies to keep you signed in, under Microsoft's privacy statement."
+      "body": "The planner sets no advertising cookies. It keeps what it needs in your browser's storage: your sign-in session, your language and theme, and the local copy of your planner data. For signed-in users only, PostHog analytics keeps its pseudonymous id in a first-party cookie and local storage. Microsoft's sign-in pages set their own cookies to keep you signed in, under Microsoft's privacy statement."
     },
     "analytics": {
       "title": "Analytics and error reports",

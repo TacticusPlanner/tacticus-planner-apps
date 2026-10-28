@@ -16,7 +16,7 @@
     },
     "cookies": {
       "title": "Cookies et stockage du navigateur",
-      "body": "Le planificateur ne dépose aucun cookie publicitaire ni de suivi. Il conserve ce dont il a besoin dans le stockage de votre navigateur : votre session de connexion, votre langue et votre thème, ainsi que la copie locale de vos données. Pour les utilisateurs connectés, PostHog conserve son identifiant pseudonyme dans un cookie propriétaire et dans le stockage local. Les pages de connexion de Microsoft déposent leurs propres cookies pour vous garder connecté, selon la déclaration de confidentialité de Microsoft."
+      "body": "Le planificateur ne dépose aucun cookie publicitaire. Il conserve ce dont il a besoin dans le stockage de votre navigateur : votre session de connexion, votre langue et votre thème, ainsi que la copie locale de vos données. Pour les utilisateurs connectés uniquement, l'analyse PostHog conserve son identifiant pseudonyme dans un cookie propriétaire et dans le stockage local. Les pages de connexion de Microsoft déposent leurs propres cookies pour vous garder connecté, selon la déclaration de confidentialité de Microsoft."
     },
     "analytics": {
       "title": "Statistiques et rapports d'erreurs",
