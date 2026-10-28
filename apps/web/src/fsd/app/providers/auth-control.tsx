@@ -31,6 +31,11 @@ import {
   UnreadDot,
 } from "@/widgets/account-menu"
 import { ManageAccountDialog, type ManageAccountTab } from "@/features/account"
+import {
+  InstallAppDialog,
+  useAppInstall,
+  useInstallGuide,
+} from "@/widgets/app-install"
 import { useCurrentUser } from "@/entities/account"
 import {
   loginRequest,
@@ -94,6 +99,8 @@ export function AuthControl() {
   const [manageAccountTab, setManageAccountTab] =
     useState<ManageAccountTab>("integration")
   const [menuOpen, setMenuOpen] = useTourControlledPopoverOpen()
+  const install = useAppInstall()
+  const installGuide = useInstallGuide("accountMenu", install)
   const silentSignInStatus = useSilentSignInStatus()
   const isCheckingSilentSignIn = silentSignInStatus === "checking"
 
@@ -151,11 +158,19 @@ export function AuthControl() {
   const applicationAccountId = currentUser?.applicationUserId ?? null
 
   const dialogs = (
-    <ManageAccountDialog
-      initialTab={manageAccountTab}
-      onOpenChange={setIsManageAccountOpen}
-      open={isManageAccountOpen}
-    />
+    <>
+      <ManageAccountDialog
+        initialTab={manageAccountTab}
+        onOpenChange={setIsManageAccountOpen}
+        open={isManageAccountOpen}
+      />
+      <InstallAppDialog
+        install={install}
+        onOpenChange={installGuide.setGuideOpen}
+        open={installGuide.guideOpen}
+        runPrompt={installGuide.runPrompt}
+      />
+    </>
   )
 
   const openManageAccount = (tab: ManageAccountTab) => {
@@ -189,6 +204,14 @@ export function AuthControl() {
       changelogUnread={hasUnread}
       feedbackUnavailable={feedbackUnavailable}
       onImportV1={goToV1Import}
+      onInstallApp={
+        install.canInstall
+          ? () => {
+              setMenuOpen(false)
+              installGuide.openGuide()
+            }
+          : undefined
+      }
       onOpenAccountSettings={() => openManageAccount("integration")}
       onExternalLink={() => setMenuOpen(false)}
       onSignOut={handleSignOut}
