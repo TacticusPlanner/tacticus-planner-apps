@@ -1,37 +1,16 @@
-import { fireEvent, render, screen } from "@testing-library/react"
+import { fireEvent, render, screen, within } from "@testing-library/react"
 import { MemoryRouter } from "react-router"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
-import { InteractionStatus } from "@azure/msal-browser"
-
-const loginRedirect = vi.fn().mockResolvedValue(undefined)
-const isUiKitEnabled = vi.fn(() => true)
+const signIn = vi.fn()
+const signInState = vi.fn(() => ({ checkingSignIn: false, disabled: false }))
 
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
 }))
 
-vi.mock("@azure/msal-react", () => ({
-  useMsal: () => ({
-    inProgress: InteractionStatus.None,
-    instance: { loginRedirect },
-  }),
-}))
-
-const silentSignInStatus = vi.fn(() => "idle")
-
 vi.mock("@/shared/auth", () => ({
-  loginRequest: { scopes: ["api"] },
-  useSilentSignInStatus: () => silentSignInStatus(),
-}))
-
-// The real module re-exports `@/shared/config`'s i18n setup, which calls `initReactI18next` at
-// import time вЂ” incompatible with the plain `useTranslation` mock above (see auth-control.test.tsx
-// for the same issue). Only `isUiKitEnabled`'s value is used by the component under test.
-vi.mock("@/shared/config", () => ({
-  get isUiKitEnabled() {
-    return isUiKitEnabled()
-  },
+  useSignInRedirect: () => ({ ...signInState(), signIn }),
 }))
 
 import { LandingPage } from "./landing-page"
@@ -46,58 +25,96 @@ function renderLanding() {
 
 describe("LandingPage", () => {
   beforeEach(() => {
-    silentSignInStatus.mockReturnValue("idle")
-    loginRedirect.mockClear().mockResolvedValue(undefined)
+    signIn.mockClear()
+    signInState.mockReturnValue({ checkingSignIn: false, disabled: false })
   })
 
-  it("renders the combined sign-in button and starts the login redirect on click", () => {
+  it("has one level-1 headline", () => {
     renderLanding()
 
-    const button = screen.getByTestId("landing-get-started")
-    expect(button).toBeVisible()
-
-    fireEvent.click(button)
-    expect(loginRedirect).toHaveBeenCalledWith({ scopes: ["api"] })
+    expect(screen.getAllByRole("heading", { level: 1 })).toHaveLength(1)
+    expect(
+      screen.getByRole("heading", { level: 1, name: "hero.title" })
+    ).toBeVisible()
   })
 
-  it("shows a 'checking' label while a silent restore is in progress, and still signs in manually on click", () => {
-    silentSignInStatus.mockReturnValue("checking")
+  it("starts sign-in from the primary hero action", () => {
     renderLanding()
 
-    const button = screen.getByTestId("landing-get-started")
-    expect(button).toHaveTextContent("common:auth.checkingSignIn")
+    fireEvent.click(screen.getByRole("button", { name: "hero.getStarted" }))
 
-    fireEvent.click(button)
-    expect(loginRedirect).toHaveBeenCalledWith({ scopes: ["api"] })
+    expect(signIn).toHaveBeenCalledOnce()
   })
 
-  it("links to the public Library collections", () => {
+  it("shows the checking label while a silent restore runs", () => {
+    signInState.mockReturnValue({ checkingSignIn: true, disabled: false })
     renderLanding()
 
     expect(
-      screen.getByTestId("landing-library-characters-link")
+      screen.getByRole("button", { name: "common:auth.checkingSignIn" })
+    ).toBeEnabled()
+  })
+
+  it("disables the primary action during an MSAL interaction", () => {
+    signInState.mockReturnValue({ checkingSignIn: false, disabled: true })
+    renderLanding()
+
+    expect(
+      screen.getByRole("button", { name: "hero.getStarted" })
+    ).toBeDisabled()
+  })
+
+  it("links the secondary action to the Library", () => {
+    renderLanding()
+
+    expect(
+      screen.getByRole("link", { name: "hero.browseLibrary" })
     ).toHaveAttribute("href", "/library/characters")
-    expect(
-      screen.getByTestId("landing-library-raid-bosses-link")
-    ).toHaveAttribute("href", "/library/raid-bosses")
-    expect(screen.getByTestId("landing-library-shops-link")).toHaveAttribute(
-      "href",
-      "/library/shops"
-    )
   })
 
-  it("links to the UI Kit when enabled for this environment", () => {
-    isUiKitEnabled.mockReturnValue(true)
+  it("labels the example plan as an example", () => {
     renderLanding()
 
-    const link = screen.getByTestId("landing-ui-kit-link")
-    expect(link).toHaveAttribute("href", "/ui-kit")
+    const preview = screen.getByRole("figure", { name: "preview.title" })
+    expect(within(preview).getAllByRole("listitem")).toHaveLength(3)
   })
 
-  it("hides the UI Kit link when disabled for this environment (e.g. production)", () => {
-    isUiKitEnabled.mockReturnValue(false)
+  it("lists the four planning features in order", () => {
     renderLanding()
 
-    expect(screen.queryByTestId("landing-ui-kit-link")).not.toBeInTheDocument()
+    const titles = screen
+      .getAllByRole("heading", { level: 3 })
+      .map((heading) => heading.textContent)
+      .slice(0, 4)
+    expect(titles).toEqual([
+      "features.items.goals.title",
+      "features.items.dailyRaids.title",
+      "features.items.legendaryEvents.title",
+      "features.items.guildRaids.title",
+    ])
+  })
+
+  it("links every public Library collection", () => {
+    renderLanding()
+
+    const library = screen.getByTestId("landing-library")
+    const hrefs = within(library)
+      .getAllByRole("link")
+      .map((link) => link.getAttribute("href"))
+    expect(hrefs).toEqual([
+      "/library/characters",
+      "/library/raid-bosses",
+      "/library/shops",
+      "/library/machines-of-war",
+      "/library/npcs",
+    ])
+  })
+
+  it("keeps all game art decorative", () => {
+    const { container } = renderLanding()
+
+    const images = container.querySelectorAll("img")
+    expect(images.length).toBeGreaterThan(0)
+    images.forEach((image) => expect(image).toHaveAttribute("alt", ""))
   })
 })

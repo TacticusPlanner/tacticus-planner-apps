@@ -1,9 +1,56 @@
 {
-  "appName": "Tacticus Planner",
   "authError": "Authentication could not be completed. Please try again.",
-  "title": "Plan your Tacticus roster",
-  "subtitle": "Know what's worth your time today — and what it means for your goals.",
-  "getStarted": "Sign in / Get started",
+  "hero": {
+    "eyebrow": "Free fan-made planner for Tacticus",
+    "title": "Know what to do today, and why it matters.",
+    "subtitle": "Set goals for your roster and get a daily plan for raids, events and upgrades, synced from your game account.",
+    "getStarted": "Get started, it's free",
+    "browseLibrary": "Browse the library",
+    "trust": {
+      "apiKey": "Syncs via Tacticus API key",
+      "mobile": "Works on phone",
+      "openSource": "Open source"
+    }
+  },
+  "preview": {
+    "title": "Today's plan · example",
+    "rows": {
+      "ascend": {
+        "label": "Celestine → Legendary",
+        "detail": "12 / 40 shards · 6 days"
+      },
+      "rankUp": {
+        "label": "Dominus → Diamond 1",
+        "detail": "3 raids today"
+      },
+      "legendaryEvent": {
+        "label": "Legendary Event · Track A",
+        "detail": "Next unlock in 2 runs"
+      }
+    }
+  },
+  "features": {
+    "title": "Plan every part of your account",
+    "subtitle": "One place for the things you'd otherwise track in a spreadsheet.",
+    "items": {
+      "goals": {
+        "title": "Goals",
+        "description": "Ascend, promote and rank up with a timeline that adds it all up."
+      },
+      "dailyRaids": {
+        "title": "Daily raids",
+        "description": "Which nodes to hit today with the energy you have."
+      },
+      "legendaryEvents": {
+        "title": "Legendary Events",
+        "description": "Pick teams per track and see how close each tier is."
+      },
+      "guildRaids": {
+        "title": "Guild raids",
+        "description": "Boss modifiers, rosters and guild member insights."
+      }
+    }
+  },
   "library": {
     "title": "Library",
     "subtitle": "Browse game data without an account.",
@@ -18,7 +65,7 @@
     "shops": {
       "title": "Daily Shops",
       "description": "See what each daily shop offers, any day of the week."
-    }
-  },
-  "uiKitLink": "View the UI Kit"
+    },
+    "more": "Also in the library:"
+  }
 }
