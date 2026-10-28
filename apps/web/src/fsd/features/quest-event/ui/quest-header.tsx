@@ -8,7 +8,7 @@ import { Button } from "@workspace/ui/components/button"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 
 import { formatEventCountdown } from "@/shared/lib"
-import { EntityIcon, EventTypeIcon } from "@/shared/ui"
+import { EntityIcon, EventIcon } from "@/shared/ui"
 
 import type { QuestInstanceState } from "../model/use-quest-instance"
 
@@ -118,12 +118,11 @@ export function QuestHeader({
             src={icon}
           />
         ) : (
-          <span
-            aria-hidden="true"
-            className="flex size-14 shrink-0 items-center justify-center rounded-full bg-muted"
-          >
-            <EventTypeIcon className="size-6" definitionType="Quest" />
-          </span>
+          <EventIcon
+            className="size-14 shrink-0"
+            definitionId={instance?.entry.definitionId ?? ""}
+            definitionType="Quest"
+          />
         )}
         <div className="min-w-0 flex-1 space-y-0.5">
           <div className="flex flex-wrap items-center gap-2">

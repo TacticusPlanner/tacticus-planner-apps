@@ -5,6 +5,7 @@ import {
   AccordionTrigger,
 } from "@workspace/ui/components/accordion"
 import { Button } from "@workspace/ui/components/button"
+import { chestIcon, guildRaidChestTier } from "@workspace/game-catalog"
 import { useTranslation } from "react-i18next"
 
 import {
@@ -13,6 +14,19 @@ import {
 } from "@/entities/guild-raid-meta"
 import type { RaidBossesPayload } from "@/entities/raid-boss"
 import { EntityIcon } from "@/shared/ui/entity-icon"
+
+/** A set's reward chest: the game's chest art and its tier, or the raw id for an unknown chest. */
+function ChestLabel({ chestId }: { chestId: string }) {
+  const { t } = useTranslation("library")
+  const tier = guildRaidChestTier(chestId)
+  if (!tier) return <span>{t("raidBosses.chest", { chest: chestId })}</span>
+  return (
+    <span className="flex items-center gap-1">
+      <EntityIcon src={chestIcon(tier)} alt="" className="size-5" />
+      {t("raidBosses.chest", { chest: t(`raidBosses.chestTiers.${tier}`) })}
+    </span>
+  )
+}
 
 function Unit({ unit }: { unit: GuildRaidMetaUnitPresentation }) {
   return (
@@ -57,7 +71,7 @@ export function GuildRaidSeasonsView({
       <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground">
         <span>{t("raidBosses.tier", { tier })}</span>
         <span>{t("raidBosses.set", { set: set.set + 1 })}</span>
-        <span>{t("raidBosses.chest", { chest: set.chestId })}</span>
+        <ChestLabel chestId={set.chestId} />
         <span>{t("raidBosses.guildXp", { xp: set.guildXp })}</span>
       </div>
       <div className="grid gap-2 sm:grid-cols-2">

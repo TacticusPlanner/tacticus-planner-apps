@@ -1,10 +1,10 @@
 import type { CSSProperties } from "react"
 import { Link, type To } from "react-router"
-import { Lock } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import {
   characterIcon,
   EquipmentIcons,
+  lockIcon,
   mowIcon,
   progressionVisual,
   rankIcon,
@@ -92,7 +92,7 @@ export function UnitTile({
           <PortraitOverlays kind={unit.kind} data={owned} />
         ) : (
           <span className="absolute -top-1 -right-1 grid size-5.5 place-items-center rounded-full bg-overlay text-overlay-foreground">
-            <Lock aria-hidden="true" className="size-3" />
+            <EntityIcon src={lockIcon()} alt="" className="size-3.5" />
           </span>
         )}
       </div>

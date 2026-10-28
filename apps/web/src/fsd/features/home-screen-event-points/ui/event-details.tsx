@@ -14,11 +14,12 @@ import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 import { cn } from "@workspace/ui/lib/utils"
 
 import { eventBarClass } from "@/shared/lib"
-import { EventTypeIcon } from "@/shared/ui"
+import { EventIcon, EventTypeIcon } from "@/shared/ui"
 
 import type {
   HseDetailsView,
   HseEventPointsState,
+  HseInstance,
 } from "../model/hse-event-points"
 import { MilestoneGrid } from "./milestone-grid"
 import { useHseText } from "./use-hse-text"
@@ -32,10 +33,16 @@ import { useHseText } from "./use-hse-text"
 export function EventDetails({
   state,
   eventName,
+  entry,
+  pointsIcon,
   className,
 }: {
   state: HseEventPointsState
   eventName: string
+  /** The shown instance, for its game medallion; none keeps the generic HSE icon. */
+  entry?: HseInstance["entry"]
+  /** The event's points icon, beside each milestone's points. */
+  pointsIcon?: string
   className?: string
 }) {
   const { t } = useTranslation("dailies")
@@ -65,7 +72,7 @@ export function EventDetails({
           </p>
         )
       case "ready":
-        return <ReadyDetails details={state.details} />
+        return <ReadyDetails details={state.details} pointsIcon={pointsIcon} />
     }
   })()
 
@@ -75,15 +82,27 @@ export function EventDetails({
       data-testid="hse-event-details"
     >
       <div className="flex items-center gap-3">
-        <span
-          aria-hidden="true"
-          className={cn(
-            "flex size-8 shrink-0 items-center justify-center rounded-lg",
-            eventBarClass("homeScreen")
-          )}
-        >
-          <EventTypeIcon className="size-4" definitionType="HomeScreenEvent" />
-        </span>
+        {entry ? (
+          <EventIcon
+            className="size-10 shrink-0"
+            definitionId={entry.definitionId}
+            definitionType="HomeScreenEvent"
+            parameters={entry.parameters ?? null}
+          />
+        ) : (
+          <span
+            aria-hidden="true"
+            className={cn(
+              "flex size-8 shrink-0 items-center justify-center rounded-lg",
+              eventBarClass("homeScreen")
+            )}
+          >
+            <EventTypeIcon
+              className="size-4"
+              definitionType="HomeScreenEvent"
+            />
+          </span>
+        )}
         <div className="min-w-0">
           <p className="text-xs text-muted-foreground">
             {t("hse.details.title")}
@@ -96,7 +115,13 @@ export function EventDetails({
   )
 }
 
-function ReadyDetails({ details }: { details: HseDetailsView }) {
+function ReadyDetails({
+  details,
+  pointsIcon,
+}: {
+  details: HseDetailsView
+  pointsIcon?: string
+}) {
   const { t } = useTranslation("dailies")
   return (
     <>
@@ -109,7 +134,7 @@ function ReadyDetails({ details }: { details: HseDetailsView }) {
         </p>
       ) : null}
       <Description details={details} />
-      <MilestoneGrid tier={details.tier} />
+      <MilestoneGrid pointsIcon={pointsIcon} tier={details.tier} />
     </>
   )
 }

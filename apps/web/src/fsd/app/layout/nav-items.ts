@@ -12,6 +12,8 @@ import {
   Users,
 } from "lucide-react"
 
+import { gameMenuIcon } from "@workspace/game-catalog"
+
 import { isUiKitEnabled } from "@/shared/config"
 
 type NavLabelKey =
@@ -92,11 +94,13 @@ interface NavSubItemBase {
   anonymousAllowed?: boolean
 }
 
-/** A static child, labelled through i18n keys like its section, with an optional icon. */
+/** A static child, labelled through i18n keys like its section, with an optional icon: the game's
+ *  own art for the screen it opens (`artSrc`), else a lucide glyph. */
 interface StaticNavSubItem extends NavSubItemBase {
   labelKey: NavLabelKey
   descriptionKey: NavDescriptionKey
   icon?: LucideIcon
+  artSrc?: string
 }
 
 /** A child resolved from data by `use-nav-items.ts` (design D1): already-localized text and an
@@ -156,11 +160,13 @@ export const navItems: NavItem[] = [
     children: [
       {
         path: "/library/characters",
+        artSrc: gameMenuIcon("heroes"),
         labelKey: "library:collections.characters.label",
         descriptionKey: "library:collections.characters.description",
       },
       {
         path: "/library/machines-of-war",
+        artSrc: gameMenuIcon("machinesOfWar"),
         labelKey: "library:collections.machinesOfWar.label",
         descriptionKey: "library:collections.machinesOfWar.description",
       },
@@ -171,6 +177,7 @@ export const navItems: NavItem[] = [
       },
       {
         path: "/library/raid-bosses",
+        artSrc: gameMenuIcon("guildRaid"),
         labelKey: "library:collections.raidBosses.label",
         descriptionKey: "library:collections.raidBosses.description",
         // Unlike its sibling collections, this one renders its own picker with no entity selected -
@@ -179,6 +186,7 @@ export const navItems: NavItem[] = [
       },
       {
         path: "/library/shops",
+        artSrc: gameMenuIcon("shop"),
         labelKey: "library:collections.shops.label",
         descriptionKey: "library:collections.shops.description",
       },
@@ -225,29 +233,34 @@ export const navItems: NavItem[] = [
     children: [
       {
         path: "/dailies/raids",
+        artSrc: gameMenuIcon("raids"),
         labelKey: "dailies:tabs.raids",
         descriptionKey: "dailies:tabs.raidsDescription",
       },
       {
         path: "/dailies/hse",
+        artSrc: gameMenuIcon("homeScreenEvent"),
         labelKey: "dailies:tabs.hse",
         descriptionKey: "dailies:tabs.hseDescription",
         liveIndicator: "hse",
       },
       {
         path: "/dailies/hre",
+        artSrc: gameMenuIcon("heroReleaseEvent"),
         labelKey: "dailies:tabs.hre",
         descriptionKey: "dailies:tabs.hreDescription",
         liveIndicator: "hre",
       },
       {
         path: "/dailies/quest",
+        artSrc: gameMenuIcon("quests"),
         labelKey: "dailies:tabs.quest",
         descriptionKey: "dailies:tabs.questDescription",
         liveIndicator: "quest",
       },
       {
         path: "/dailies/guild-raids",
+        artSrc: gameMenuIcon("guildRaid"),
         labelKey: "dailies:tabs.guild-raids",
         descriptionKey: "dailies:tabs.guild-raidsDescription",
       },
@@ -265,23 +278,27 @@ export const navItems: NavItem[] = [
     children: [
       {
         path: "/my-game/collection",
+        artSrc: gameMenuIcon("heroes"),
         labelKey: "myGame.tabs.collection",
         descriptionKey: "myGame.tabs.collectionDescription",
       },
       {
         path: "/my-game/onslaught",
+        artSrc: gameMenuIcon("onslaught"),
         labelKey: "myGame.tabs.onslaught",
         descriptionKey: "myGame.tabs.onslaughtDescription",
         anonymousAllowed: false,
       },
       {
         path: "/my-game/campaigns",
+        artSrc: gameMenuIcon("battle"),
         labelKey: "myGame.tabs.campaigns",
         descriptionKey: "myGame.tabs.campaignsDescription",
         anonymousAllowed: false,
       },
       {
         path: "/my-game/campaign-events",
+        artSrc: gameMenuIcon("campaignEvent"),
         labelKey: "myGame.tabs.campaign-events",
         descriptionKey: "myGame.tabs.campaign-eventsDescription",
         anonymousAllowed: false,
@@ -301,6 +318,7 @@ export const navItems: NavItem[] = [
       {
         path: "/legendary-events",
         labelKey: "legendaryEvents.tabs.allEvents",
+        artSrc: gameMenuIcon("legendaryEvent"),
         descriptionKey: "legendaryEvents.tabs.allEventsDescription",
         // The hub is a destination of its own; archived and upcoming event pages nest below it.
         isLandingPage: true,
@@ -329,6 +347,7 @@ export const navItems: NavItem[] = [
     children: [
       {
         path: "/guild/members",
+        artSrc: gameMenuIcon("guild"),
         labelKey: "guild.tabs.members",
         descriptionKey: "guild.tabs.membersDescription",
       },

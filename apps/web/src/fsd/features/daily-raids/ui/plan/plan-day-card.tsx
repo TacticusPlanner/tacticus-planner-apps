@@ -1,5 +1,5 @@
-import { Swords } from "lucide-react"
 import { useTranslation } from "react-i18next"
+import { raidTicketIcon } from "@workspace/game-catalog"
 import { cn } from "@workspace/ui/lib/utils"
 
 import type { DailyRaidsReadyViewModel } from "../../model/daily-raids.domain"
@@ -75,7 +75,7 @@ export function PlanDayCard({
             {day.energyTotal}/{raids.dailyEnergy}
           </span>
           <span className="flex items-center gap-1 text-xs tabular-nums">
-            <Swords className="size-3.5 text-muted-foreground" />
+            <EntityIcon alt="" className="size-4" src={raidTicketIcon()} />
             {day.raidsTotal}
           </span>
         </div>

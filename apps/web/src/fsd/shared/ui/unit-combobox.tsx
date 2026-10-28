@@ -1,5 +1,5 @@
 import { useMemo, useRef, useState } from "react"
-import { Bot, Check, ChevronsUpDown, Lock } from "lucide-react"
+import { Bot, Check, ChevronsUpDown } from "lucide-react"
 import { Button } from "@workspace/ui/components/button"
 import {
   Command,
@@ -16,10 +16,11 @@ import {
 } from "@workspace/ui/components/popover"
 import { cn } from "@workspace/ui/lib/utils"
 
-import { characterIcon } from "@workspace/game-catalog"
+import { characterIcon, lockIcon } from "@workspace/game-catalog"
 import type { FactionGroup, UnitId } from "@workspace/game-domain"
 
 import { useCommandListId } from "./command-list-id"
+import { EntityIcon } from "./entity-icon"
 import { closestOverlayContent } from "./overlay-content"
 
 // Fixed-size avatar slot shared by the trigger and every list item, so Character and MoW rows line
@@ -65,7 +66,7 @@ function ComboboxAvatar({
       )}
       {locked ? (
         <span className="absolute inset-0 flex items-center justify-center rounded-full bg-background/50">
-          <Lock aria-hidden className="size-1/2 text-foreground/80" />
+          <EntityIcon src={lockIcon()} alt="" className="size-1/2" />
         </span>
       ) : null}
     </span>

@@ -2,6 +2,9 @@ import { useMemo, type ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
+import { energyIcon } from "@workspace/game-catalog"
+
+import { EntityIcon } from "@/shared/ui"
 
 import type {
   MissionBattlesRequest,
@@ -250,6 +253,7 @@ function RaidsList({
               {t("raids.raidCount", { count: plan.totalRaids })}
             </Badge>
             <Badge variant="outline">
+              <EntityIcon alt="" className="size-3.5" src={energyIcon()} />
               {t("raids.energy", { energy: plan.totalEnergy })}
             </Badge>
             {plan.remainingAfter > 0 ? (

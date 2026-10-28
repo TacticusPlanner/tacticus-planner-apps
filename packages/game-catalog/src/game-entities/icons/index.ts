@@ -21,7 +21,41 @@ export { npcPortrait } from "./npc"
 export { legendaryEventMap } from "./le-map"
 export { battleBoardImage } from "./battle-board"
 export { factionIcon } from "./faction"
-export { countdownIcon, eventIcon, homeScreenEventBanner } from "./event"
+export {
+  countdownIcon,
+  eventIcon,
+  homeScreenEventBanner,
+  homeScreenEventPointsIcon,
+} from "./event"
+export {
+  chestIcon,
+  guildRaidChestTier,
+  heroReleaseChestIcon,
+  heroReleaseCurrencyIcon,
+  heroReleaseEventResourceIcon,
+  legendaryEventResourceIcon,
+  questEventPointsIcon,
+  type ChestTier,
+  type HeroReleaseEventResource,
+  type LegendaryEventResource,
+} from "./event-resource"
+export {
+  chanceIcon,
+  gameMenuIcon,
+  lockIcon,
+  powerIcon,
+  shopIcon,
+  type GameMenuIcon,
+} from "./menu"
+export {
+  equipmentPoolIcon,
+  heroShardPoolIcon,
+  isResourceGlyph,
+  itemPoolIcon,
+  resourceGlyphIcon,
+  seasonalEventCurrencyIcon,
+  type ResourceGlyph,
+} from "./reward"
 export { abilityIcon } from "./ability"
 export {
   raidBossPortrait,
@@ -39,6 +73,7 @@ export { damageTypeIcon } from "./damage-type"
 export { equipmentSlotIcon, EquipmentIcons } from "./equipment"
 export { statIcon, type StatIconKind } from "./stat"
 export {
+  heroStarIcon,
   progressionVisual,
   starsVisual,
   type ProgressionVisual,

@@ -2,11 +2,11 @@ import {
   shopRewardDisplay,
   type ShopRewardDisplayContext,
 } from "@/features/shop-rewards/@x/home-screen-event-points"
-import { datamineAssetUrl } from "@workspace/game-catalog"
+import { datamineAssetUrl, type GameIcon } from "@workspace/game-catalog"
 
 export type HseRewardDisplay = {
   /** Absent for a reward without art: the grid shows a generic reward icon. */
-  iconUrl?: string
+  iconUrl?: GameIcon
   label: string
 }
 

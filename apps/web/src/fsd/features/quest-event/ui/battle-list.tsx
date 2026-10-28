@@ -1,10 +1,14 @@
 import { useTranslation } from "react-i18next"
-import { ChevronDownIcon, StarIcon } from "lucide-react"
-import type { UpgradeStorageModel } from "@workspace/game-catalog"
+import { ChevronDownIcon } from "lucide-react"
+import {
+  heroStarIcon,
+  rarityIcon,
+  type UpgradeStorageModel,
+} from "@workspace/game-catalog"
 import type { Rarity } from "@workspace/game-domain"
 import { cn } from "@workspace/ui/lib/utils"
 
-import { UpgradeIcon } from "@/shared/ui"
+import { EntityIcon, UpgradeIcon } from "@/shared/ui"
 
 import { battlesByTier, type QuestBattle } from "../model/quest-battles"
 import type { QuestVerdict } from "../model/quest-estimates"
@@ -55,7 +59,14 @@ export function BattleList({
         const headingId = `quest-tier-${group.tier}`
         const heading = (
           <span className="flex min-w-0 flex-1 items-baseline justify-between gap-2">
-            <span className="font-semibold">{tierName}</span>
+            <span className="flex items-center gap-1.5 font-semibold">
+              <EntityIcon
+                alt=""
+                className="size-5 shrink-0"
+                src={rarityIcon(group.tier)}
+              />
+              {tierName}
+            </span>
             {tierScore ? (
               <span
                 className="text-sm text-muted-foreground tabular-nums"
@@ -182,9 +193,10 @@ export function BattleList({
                               >
                                 {perfect ? (
                                   <>
-                                    <StarIcon
-                                      aria-hidden
-                                      className="size-3.5 fill-current text-amber-500"
+                                    <EntityIcon
+                                      alt=""
+                                      className="size-3.5"
+                                      src={heroStarIcon()}
                                     />
                                     <span className="sr-only">
                                       {t("quest:battles.perfect")}

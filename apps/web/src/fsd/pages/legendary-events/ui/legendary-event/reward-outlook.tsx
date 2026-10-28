@@ -1,7 +1,12 @@
 import { useTranslation } from "react-i18next"
+import {
+  legendaryEventResourceIcon,
+  type LegendaryEventResource,
+} from "@workspace/game-catalog"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 
 import type { RewardProjection } from "@/entities/legendary-event"
+import { IconLine } from "@/shared/ui"
 
 import type { RewardOutlookViewModel } from "./legendary-event-page.view-model"
 
@@ -48,7 +53,11 @@ function OutlookBody({ projection }: { projection: RewardProjection }) {
   })
   const { goal, chests, currency, points, base } = projection
 
-  const lines: { testId: string; text: string }[] = []
+  const lines: {
+    testId: string
+    text: string
+    icon?: LegendaryEventResource
+  }[] = []
   if (goal.step === "fullyAscended") {
     lines.push({
       testId: "reward-outlook-complete",
@@ -57,6 +66,7 @@ function OutlookBody({ projection }: { projection: RewardProjection }) {
   } else {
     lines.push({
       testId: "reward-outlook-next",
+      icon: "shards",
       text: t("outlook.next", {
         step: t(`outlook.steps.${goal.step}`),
         shards: number.format(base.shards),
@@ -75,6 +85,7 @@ function OutlookBody({ projection }: { projection: RewardProjection }) {
   } else if (chests && currency) {
     lines.push({
       testId: "reward-outlook-chests",
+      icon: "chests",
       text: t("outlook.chests", {
         count: chests.toGo,
         chests: number.format(chests.toGo),
@@ -90,6 +101,7 @@ function OutlookBody({ projection }: { projection: RewardProjection }) {
   } else if (points?.state === "milestone") {
     lines.push({
       testId: "reward-outlook-points",
+      icon: "points",
       text: t("outlook.points", {
         points: number.format(points.pointsToGo),
         target: number.format(points.cumulativePoints),
@@ -117,9 +129,13 @@ function OutlookBody({ projection }: { projection: RewardProjection }) {
       )}
       <ul className="flex flex-col gap-1 text-sm">
         {lines.map((line) => (
-          <li data-testid={line.testId} key={line.testId}>
+          <IconLine
+            icon={line.icon && legendaryEventResourceIcon(line.icon)}
+            key={line.testId}
+            testId={line.testId}
+          >
             {line.text}
-          </li>
+          </IconLine>
         ))}
       </ul>
       <details

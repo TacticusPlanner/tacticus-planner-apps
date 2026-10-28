@@ -227,15 +227,15 @@ describe("MilestoneGrid", () => {
     expect(cells().at(-1)).toHaveTextContent("up to 200 times")
   })
 
-  it("shows a generic icon and the id for a reward it does not know", () => {
+  it("shows the game's shard pool art for an alliance shard reward", () => {
     renderHse(i18n, hseInstance("hse-global-operation-imperator", "running"))
-    const unknown = cells().find((cell) =>
-      cell.getAttribute("aria-label")?.startsWith("ShardsImperial ")
+    const shards = cells().find((cell) =>
+      cell.getAttribute("aria-label")?.startsWith("Imperial shards ")
     )
-    expect(unknown).toBeDefined()
+    expect(shards).toBeDefined()
     expect(
-      within(unknown!).getByTestId("hse-milestone-generic-icon")
-    ).toBeInTheDocument()
+      shards!.querySelector('img[src*="HeroShard_Imperial_Medium"]')
+    ).not.toBeNull()
   })
 
   it("uses 3 columns on mobile and 5 from 768px", () => {

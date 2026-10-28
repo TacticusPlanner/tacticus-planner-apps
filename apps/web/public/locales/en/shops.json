@@ -42,6 +42,8 @@
     "orb": "{{rarity}} ascension orb",
     "expeditionSpeedUp": "Expedition speed-up",
     "equipmentPool": "{{rarity}} {{type}} item",
+    "seasonalEventCurrency": "Event currency",
+    "energy": "Energy",
     "generic": "{{name}}"
   },
   "state": {
