@@ -1,9 +1,56 @@
 {
-  "appName": "Tacticus Planner",
   "authError": "No se pudo completar la autenticación. Inténtalo de nuevo.",
-  "title": "Planifica tu plantilla de Tacticus",
-  "subtitle": "Descubre qué merece tu tiempo hoy y qué significa para tus objetivos.",
-  "getStarted": "Iniciar sesión / Empezar",
+  "hero": {
+    "eyebrow": "Planificador gratuito hecho por fans para Tacticus",
+    "title": "Sabe qué hacer hoy, y por qué importa.",
+    "subtitle": "Fija objetivos para tu plantilla y obtén un plan diario de incursiones, eventos y mejoras, sincronizado con tu cuenta del juego.",
+    "getStarted": "Empieza gratis",
+    "browseLibrary": "Explorar la biblioteca",
+    "trust": {
+      "apiKey": "Se sincroniza con tu clave API de Tacticus",
+      "mobile": "Funciona en el móvil",
+      "openSource": "Código abierto"
+    }
+  },
+  "preview": {
+    "title": "Plan de hoy · ejemplo",
+    "rows": {
+      "ascend": {
+        "label": "Celestine → Legendario",
+        "detail": "12 / 40 fragmentos · 6 días"
+      },
+      "rankUp": {
+        "label": "Dominus → Diamante 1",
+        "detail": "3 incursiones hoy"
+      },
+      "legendaryEvent": {
+        "label": "Evento Legendario · Pista A",
+        "detail": "Próximo desbloqueo en 2 partidas"
+      }
+    }
+  },
+  "features": {
+    "title": "Planifica cada parte de tu cuenta",
+    "subtitle": "Un solo lugar para todo lo que, si no, llevarías en una hoja de cálculo.",
+    "items": {
+      "goals": {
+        "title": "Objetivos",
+        "description": "Asciende, promociona y sube de rango con un calendario que lo suma todo."
+      },
+      "dailyRaids": {
+        "title": "Incursiones diarias",
+        "description": "Qué nodos atacar hoy con la energía que tienes."
+      },
+      "legendaryEvents": {
+        "title": "Eventos Legendarios",
+        "description": "Elige equipos por pista y mira cuánto te falta para cada nivel."
+      },
+      "guildRaids": {
+        "title": "Incursiones de gremio",
+        "description": "Modificadores de jefes, alineaciones y datos de los miembros del gremio."
+      }
+    }
+  },
   "library": {
     "title": "Biblioteca",
     "subtitle": "Explora los datos del juego sin una cuenta.",
@@ -18,7 +65,7 @@
     "shops": {
       "title": "Tiendas diarias",
       "description": "Consulta lo que cada tienda diaria puede ofrecer en cualquier día de la semana."
-    }
-  },
-  "uiKitLink": "Ver el kit de UI"
+    },
+    "more": "También en la biblioteca:"
+  }
 }

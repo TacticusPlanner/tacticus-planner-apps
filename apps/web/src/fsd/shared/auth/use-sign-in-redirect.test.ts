@@ -1,0 +1,74 @@
+import { act, renderHook, waitFor } from "@testing-library/react"
+import { beforeEach, describe, expect, it, vi } from "vitest"
+
+import { AuthError, InteractionStatus } from "@azure/msal-browser"
+
+const loginRedirect = vi.fn()
+const inProgress = vi.fn(() => InteractionStatus.None as InteractionStatus)
+const silentSignInStatus = vi.fn(() => "idle")
+const toastError = vi.fn()
+
+vi.mock("react-i18next", () => ({
+  useTranslation: () => ({ t: (key: string) => key }),
+}))
+
+vi.mock("sonner", () => ({
+  toast: { error: (message: string) => toastError(message) },
+}))
+
+vi.mock("@azure/msal-react", () => ({
+  useMsal: () => ({ inProgress: inProgress(), instance: { loginRedirect } }),
+}))
+
+vi.mock("./authentication", () => ({ loginRequest: { scopes: ["api"] } }))
+
+vi.mock("./silent-sign-in", () => ({
+  useSilentSignInStatus: () => silentSignInStatus(),
+}))
+
+import { useSignInRedirect } from "./use-sign-in-redirect"
+
+describe("useSignInRedirect", () => {
+  beforeEach(() => {
+    loginRedirect.mockReset().mockResolvedValue(undefined)
+    inProgress.mockReturnValue(InteractionStatus.None)
+    silentSignInStatus.mockReturnValue("idle")
+    toastError.mockReset()
+    vi.spyOn(console, "error").mockImplementation(() => {})
+  })
+
+  it("starts the login redirect with the app's login request", () => {
+    const { result } = renderHook(() => useSignInRedirect())
+
+    act(() => result.current.signIn())
+
+    expect(loginRedirect).toHaveBeenCalledWith({ scopes: ["api"] })
+    expect(result.current.disabled).toBe(false)
+    expect(result.current.checkingSignIn).toBe(false)
+  })
+
+  it("is disabled while an MSAL interaction is in progress", () => {
+    inProgress.mockReturnValue(InteractionStatus.HandleRedirect)
+
+    const { result } = renderHook(() => useSignInRedirect())
+
+    expect(result.current.disabled).toBe(true)
+  })
+
+  it("reports the silent sign-in check", () => {
+    silentSignInStatus.mockReturnValue("checking")
+
+    const { result } = renderHook(() => useSignInRedirect())
+
+    expect(result.current.checkingSignIn).toBe(true)
+  })
+
+  it("toasts the localized error when the redirect fails", async () => {
+    loginRedirect.mockRejectedValue(new AuthError("popup_window_error", "x"))
+
+    const { result } = renderHook(() => useSignInRedirect())
+    act(() => result.current.signIn())
+
+    await waitFor(() => expect(toastError).toHaveBeenCalledWith("auth.error"))
+  })
+})

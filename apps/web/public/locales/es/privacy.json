@@ -1,0 +1,39 @@
+{
+  "title": "Privacidad",
+  "lastUpdated": "Última actualización: {{date}}",
+  "intro": "Tacticus Planner es un proyecto no oficial y de código abierto hecho por fans para el juego Tacticus. Esta página explica qué guarda el planificador sobre ti, por qué y cómo eliminarlo.",
+  "sections": {
+    "signIn": {
+      "title": "Inicio de sesión",
+      "body": "El inicio de sesión lo gestiona Microsoft Entra External ID. El planificador nunca ve tu contraseña. Guarda el identificador de inicio de sesión que devuelve Microsoft, el nombre de planificador que elijas y cuándo usaste el planificador por última vez."
+    },
+    "apiKey": {
+      "title": "Tu clave API de Tacticus",
+      "body": "Si añades una clave API de Tacticus, se guarda cifrada y solo se usa para leer tus datos de juego y de gremio desde la API de Tacticus. Puedes cambiarla cuando quieras en Ajustes de la cuenta."
+    },
+    "plannerData": {
+      "title": "Datos del planificador",
+      "body": "Para funcionar en todos tus dispositivos, el planificador guarda en su servidor tus datos de juego sincronizados, objetivos, proyectos, planes de eventos, datos de gremio y ajustes. Se guarda una copia en el almacenamiento local de tu navegador para que las páginas carguen rápido; al cerrar sesión se borra esa copia."
+    },
+    "analytics": {
+      "title": "Analíticas e informes de errores",
+      "body": "Navegar sin cuenta no envía ninguna analítica. Para los usuarios con sesión iniciada, los eventos de uso y los errores no controlados se envían a PostHog con un identificador seudónimo. No hay captura automática ni grabación de sesiones, y los informes nunca incluyen lo que escribes en el planificador, tu correo electrónico ni tu nombre de planificador."
+    },
+    "feedback": {
+      "title": "Tablero de sugerencias",
+      "body": "El tablero de sugerencias funciona con UserJot. Si lo abres desde el botón de sugerencias o el menú de la cuenta del planificador con la sesión iniciada, el planificador te identifica ante UserJot con un token firmado de tu cuenta y tu nombre de planificador, para que tus publicaciones y votos se te atribuyan. Abrir el enlace público del tablero, como el del pie de página, no envía nada desde el planificador."
+    },
+    "noSale": {
+      "title": "Sin anuncios ni venta de datos",
+      "body": "El planificador no muestra anuncios y no vende ni comparte tus datos con nadie aparte de los servicios mencionados en esta página."
+    },
+    "deletion": {
+      "title": "Eliminar tus datos",
+      "body": "Puedes eliminar tu cuenta y todos sus datos del planificador en Ajustes de la cuenta, pestaña Cuenta, con «Purgar mi cuenta». Surte efecto de inmediato y no se puede deshacer."
+    },
+    "contact": {
+      "title": "Contacto",
+      "body": "Las preguntas sobre esta página o sobre tus datos son bienvenidas en nuestro servidor de Discord o en GitHub."
+    }
+  }
+}

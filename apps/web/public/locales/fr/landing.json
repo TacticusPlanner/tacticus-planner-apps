@@ -1,9 +1,56 @@
 {
-  "appName": "Tacticus Planner",
   "authError": "L'authentification n'a pas pu aboutir. Veuillez réessayer.",
-  "title": "Planifiez votre effectif Tacticus",
-  "subtitle": "Voyez ce qui vaut votre temps aujourd'hui, et ce que cela change pour vos objectifs.",
-  "getStarted": "Se connecter / Commencer",
+  "hero": {
+    "eyebrow": "Planificateur gratuit fait par des fans pour Tacticus",
+    "title": "Sachez quoi faire aujourd'hui, et pourquoi.",
+    "subtitle": "Fixez des objectifs pour votre roster et obtenez un plan quotidien pour les raids, les événements et les améliorations, synchronisé avec votre compte de jeu.",
+    "getStarted": "Commencer, c'est gratuit",
+    "browseLibrary": "Parcourir la bibliothèque",
+    "trust": {
+      "apiKey": "Synchronisé via une clé API Tacticus",
+      "mobile": "Fonctionne sur mobile",
+      "openSource": "Open source"
+    }
+  },
+  "preview": {
+    "title": "Plan du jour · exemple",
+    "rows": {
+      "ascend": {
+        "label": "Celestine → Légendaire",
+        "detail": "12 / 40 éclats · 6 jours"
+      },
+      "rankUp": {
+        "label": "Dominus → Diamant 1",
+        "detail": "3 raids aujourd'hui"
+      },
+      "legendaryEvent": {
+        "label": "Événement Légendaire · Piste A",
+        "detail": "Prochain déblocage dans 2 parties"
+      }
+    }
+  },
+  "features": {
+    "title": "Planifiez chaque aspect de votre compte",
+    "subtitle": "Un seul endroit pour tout ce que vous suivriez sinon dans un tableur.",
+    "items": {
+      "goals": {
+        "title": "Objectifs",
+        "description": "Ascensions, promotions et rangs, avec un calendrier qui fait tous les calculs."
+      },
+      "dailyRaids": {
+        "title": "Raids quotidiens",
+        "description": "Les nœuds à attaquer aujourd'hui avec l'énergie dont vous disposez."
+      },
+      "legendaryEvents": {
+        "title": "Événements Légendaires",
+        "description": "Choisissez vos équipes par piste et voyez où en est chaque palier."
+      },
+      "guildRaids": {
+        "title": "Raids de guilde",
+        "description": "Modificateurs des boss, compositions et statistiques des membres de la guilde."
+      }
+    }
+  },
   "library": {
     "title": "Bibliothèque",
     "subtitle": "Parcourez les données du jeu sans compte.",
@@ -18,7 +65,7 @@
     "shops": {
       "title": "Boutiques quotidiennes",
       "description": "Découvrez ce que propose chaque boutique quotidienne, selon le jour de la semaine."
-    }
-  },
-  "uiKitLink": "Voir le kit d'interface"
+    },
+    "more": "Aussi dans la bibliothèque :"
+  }
 }

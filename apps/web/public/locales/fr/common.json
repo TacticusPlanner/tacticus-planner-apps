@@ -1897,5 +1897,15 @@
   "localData": {
     "readFailed": "Nous n'avons pas pu lire ces données sur votre appareil.",
     "retry": "Réessayer"
+  },
+  "publicSite": {
+    "openPlanner": "Ouvrir le planificateur",
+    "disclaimer": "Projet de fans non officiel. Sans lien avec Snowprint Studios ni Games Workshop.",
+    "footerNav": "Liens du projet",
+    "discord": "Discord",
+    "github": "GitHub",
+    "feedback": "Tableau de suggestions",
+    "privacy": "Confidentialité",
+    "uiKit": "Kit UI"
   }
 }
