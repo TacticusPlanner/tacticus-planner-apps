@@ -8,7 +8,7 @@ Defines the public terms of use page: where it lives, who can reach it, and what
 
 ### Requirement: A terms of use page is public at /terms
 
-The app SHALL serve a terms of use page at `/terms` that renders for signed-out and signed-in visitors alike, without the onboarding gate, inside the public layout (see `landing-page`). It SHALL be linked from the public footer. Its route chunk SHALL load lazily so the landing page bundle does not grow by its text. Its browser title SHALL name the page. It SHALL share its page structure (title, "last updated" date, intro, titled sections, contact links) with the privacy page.
+The app SHALL serve a terms of use page at `/terms` that renders for signed-out and signed-in visitors alike, without the onboarding gate, inside the public layout (see `landing-page`). It SHALL be linked from the public footer and, with the privacy page, from the signed-in account menu and the guest preferences menu, so it is reachable from inside the app. Its route chunk SHALL load lazily so the landing page bundle does not grow by its text. Its browser title SHALL name the page. It SHALL share its page structure (title, "last updated" date, intro, titled sections, contact links) with the privacy page.
 
 #### Scenario: Signed-out visitor opens the terms page
 

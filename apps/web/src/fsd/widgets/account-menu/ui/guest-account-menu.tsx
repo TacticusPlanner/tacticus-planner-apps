@@ -13,6 +13,7 @@ import { USERJOT_ROADMAP_URL } from "../model/userjot-links"
 
 import {
   LanguagePickerView,
+  LegalLinkRows,
   MenuLinkRow,
   MenuRow,
   PreferencesSection,
@@ -61,6 +62,7 @@ export function GuestPreferencesCard({
           title={changelogUnavailable}
         />
       ) : null}
+      <LegalLinkRows />
       {children}
     </>
   )

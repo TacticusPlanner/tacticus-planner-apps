@@ -16,6 +16,7 @@ import { cn } from "@workspace/ui/lib/utils"
 import { AccountAvatar } from "./account-avatar"
 import {
   LanguagePickerView,
+  LegalLinkRows,
   MenuLinkRow,
   MenuRow,
   PreferencesSection,
@@ -65,6 +66,7 @@ export function AccountCard({
   feedbackUnavailable?: string
   onImportV1: () => void
   onOpenAccountSettings: () => void
+  /** Closes the menu when a row leaves it (Roadmap, Privacy & cookies, Terms of use). */
   onExternalLink?: () => void
   onSignOut: () => void
   signOutDisabled: boolean
@@ -164,6 +166,7 @@ export function AccountCard({
             ) : undefined
           }
         />
+        <LegalLinkRows onNavigate={onExternalLink} />
       </div>
       <Separator />
       <MenuRow

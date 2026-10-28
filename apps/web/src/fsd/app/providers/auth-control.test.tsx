@@ -229,6 +229,8 @@ describe("AuthControl", () => {
       "auth-feedback",
       "auth-roadmap",
       "auth-changelog",
+      "account-privacy",
+      "account-terms",
       "auth-sign-out",
       "catalog-sync-status-badge",
     ]
@@ -256,6 +258,22 @@ describe("AuthControl", () => {
     expect(roadmap).toHaveAttribute("target", "_blank")
     expect(roadmap).toHaveAttribute("rel", "noopener noreferrer")
     expect(roadmap).toHaveTextContent("feedback.roadmap")
+  })
+
+  it("links Privacy & cookies and Terms of use and closes the desktop menu", () => {
+    renderAuthControl()
+
+    fireEvent.click(screen.getByTestId("auth-account-trigger"))
+
+    expect(screen.getByTestId("account-privacy")).toHaveAttribute(
+      "href",
+      "/privacy"
+    )
+    const terms = screen.getByTestId("account-terms")
+    expect(terms).toHaveAttribute("href", "/terms")
+    fireEvent.click(terms)
+
+    expect(screen.queryByTestId("account-terms")).not.toBeInTheDocument()
   })
 
   // Reading updates inside the widget is what marks them seen and clears the feedback button's
