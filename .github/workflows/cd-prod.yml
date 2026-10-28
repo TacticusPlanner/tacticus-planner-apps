@@ -1,13 +1,20 @@
 name: CD Prod
 
+# Release (release.yml) calls this with the tag it just created. Run it by hand only to redeploy
+# an existing release tag.
 on:
   workflow_dispatch:
     inputs:
       ref:
-        description: Git ref to deploy.
-        required: false
+        description: Release tag to deploy, such as v1.4.0.
+        required: true
         type: string
-        default: main
+  workflow_call:
+    inputs:
+      ref:
+        description: Release tag to deploy.
+        required: true
+        type: string
 
 permissions:
   contents: read

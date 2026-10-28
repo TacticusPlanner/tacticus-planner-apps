@@ -70,8 +70,18 @@ and `apps/web/.env.production`; the build mode picks the file. These values are
 embedded in browser JavaScript and must not contain secrets.
 
 - `CD Stage` deploys `main` to `staging.tacticusplanner.app` on every push.
-- `CD Prod` is run by hand with a ref and deploys to `new.tacticusplanner.app`.
-  It refuses to deploy while a required value in `.env.production` is empty.
+- `Release` ships to production (`new.tacticusplanner.app`), run by hand from
+  the Actions tab:
+  - From `main` with `minor` (or `major`): creates `release/X.Y` from `main`,
+    tags `vX.Y.0`, creates a GitHub release with generated notes, and deploys
+    the tag.
+  - From `release/X.Y` with `patch`: tags the next `vX.Y.Z` on that branch,
+    creates its release (notes since the previous `vX.Y.*`), and deploys it.
+    Land a fix on `main` first, then cherry-pick it into the release branch
+    with a PR (CI runs on PRs to `release/**`) before running the patch.
+- `CD Prod` deploys a release tag. `Release` calls it; run it by hand only to
+  redeploy an existing tag. It refuses to deploy while a required value in
+  `.env.production` is empty.
 
 Each workflow uses a GitHub environment (`stage`, `production`) holding its
 Azure Static Web Apps deployment token (`AZURE_STATIC_WEB_APPS_API_TOKEN_STAGE`,
