@@ -1,0 +1,42 @@
+{
+  "title": "Condiciones de uso",
+  "intro": "Estas condiciones regulan tu uso de Tacticus Planner, un proyecto no oficial y de código abierto hecho por fans para el juego Tacticus. Al usar el planificador las aceptas; si no estás de acuerdo, no lo uses.",
+  "sections": {
+    "fanProject": {
+      "title": "Un proyecto de fans gratuito",
+      "body": "El planificador es gratuito y lo mantienen voluntarios. No está afiliado a Snowprint Studios ni a Games Workshop, ni cuenta con su respaldo o patrocinio."
+    },
+    "account": {
+      "title": "Tu cuenta",
+      "body": "Inicias sesión con Microsoft Entra External ID y eres responsable de mantener segura esa cuenta. Añade solo una clave API de Tacticus que sea tuya o que su propietario te haya permitido usar. Puedes eliminar tu cuenta cuando quieras en Ajustes de la cuenta."
+    },
+    "acceptableUse": {
+      "title": "Uso aceptable",
+      "body": "No uses el planificador para infringir la ley o las condiciones del juego, intentar acceder a datos de otros usuarios, interrumpir o sobrecargar el servicio, ni extraer datos de forma automatizada. Los nombres de planificador no pueden ser ofensivos ni suplantar a otra persona."
+    },
+    "gameContent": {
+      "title": "Contenido del juego",
+      "body": "Los nombres, ilustraciones y datos de Tacticus pertenecen a Snowprint Studios, y Warhammer 40,000 pertenece a Games Workshop. Se muestran solo para ayudar a los jugadores a planificar, y todos los derechos siguen siendo de sus propietarios."
+    },
+    "openSource": {
+      "title": "Código abierto",
+      "body": "El código fuente del planificador se publica en GitHub bajo la licencia indicada en cada repositorio. Estas condiciones cubren el planificador alojado y no limitan tus derechos bajo esa licencia."
+    },
+    "noWarranty": {
+      "title": "Sin garantía",
+      "body": "El planificador se ofrece tal cual, sin garantía de ningún tipo. Los planes, estimaciones y recomendaciones se basan en datos del juego y de la comunidad que pueden estar incompletos o desactualizados, así que compruébalos antes de gastar recursos en el juego. En la medida en que la ley lo permita, los responsables no se hacen cargo de ninguna pérdida derivada del uso del planificador."
+    },
+    "availability": {
+      "title": "Disponibilidad",
+      "body": "Las funciones pueden cambiar, y el planificador puede no estar disponible a veces o cerrar. Las cuentas que incumplan estas condiciones pueden suspenderse o eliminarse."
+    },
+    "changes": {
+      "title": "Cambios en estas condiciones",
+      "body": "Estas condiciones pueden actualizarse; la fecha de arriba indica la versión vigente. Seguir usando el planificador tras un cambio significa que aceptas las condiciones actualizadas."
+    },
+    "contact": {
+      "title": "Contacto",
+      "body": "Las preguntas sobre estas condiciones son bienvenidas en nuestro servidor de Discord o en GitHub."
+    }
+  }
+}
