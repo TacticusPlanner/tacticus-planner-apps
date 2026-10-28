@@ -12,7 +12,6 @@ import {
   resolveHomeScreenEventSelection,
   selectListTarget,
   useActiveHomeScreenEvent,
-  useHomeScreenEventName,
 } from "@/features/daily-raids"
 import {
   EventDetails,
@@ -55,7 +54,6 @@ export function HsePage() {
   const target = selectListTarget(instance)
   const raidRule = target?.rule ?? null
   const stale = selection?.stale ?? false
-  const eventName = useHomeScreenEventName()
   const points = useHseProjection(instance)
   const pointsIcon = instance
     ? homeScreenEventPointsIcon(
@@ -128,12 +126,7 @@ export function HsePage() {
           }
           data-testid="hse-event-row"
         >
-          <EventDetails
-            entry={instance.entry}
-            eventName={eventName(instance.entry)}
-            pointsIcon={pointsIcon}
-            state={points}
-          />
+          <EventDetails pointsIcon={pointsIcon} state={points} />
           <PointsProjection
             hasRaidLists={!!raidRule}
             pointsIcon={pointsIcon}

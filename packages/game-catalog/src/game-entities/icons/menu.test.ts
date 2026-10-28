@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import { gameMenuIcon, shopIcon } from "./menu"
+import { battleGlyphIcon, gameMenuIcon, shopIcon } from "./menu"
 
 const base = "/game_catalog/datamines"
 
@@ -21,5 +21,14 @@ describe("shopIcon", () => {
 
   it("is undefined for an unknown shop", () => {
     expect(shopIcon("October2026EventShop")).toBeUndefined()
+  })
+})
+
+describe("battleGlyphIcon", () => {
+  it("maps a battle outcome to the game's glyph", () => {
+    expect(battleGlyphIcon("lightningVictory")).toBe(
+      `${base}/atlases/ui_icon_lightning_victory.webp`
+    )
+    expect(battleGlyphIcon("summon")).toBe(`${base}/fonts/summon.webp`)
   })
 })

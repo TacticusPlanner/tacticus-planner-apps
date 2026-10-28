@@ -1,6 +1,13 @@
 import { useTranslation } from "react-i18next"
 import type { BattleId } from "@workspace/game-domain"
 import { Badge } from "@workspace/ui/components/badge"
+import {
+  battleGlyphIcon,
+  energyIcon,
+  raidTicketIcon,
+} from "@workspace/game-catalog"
+
+import { EntityIcon } from "@/shared/ui"
 
 import { campaignOutlook } from "../../model/campaign-outlook"
 import type {
@@ -81,16 +88,27 @@ export function RaidRows({
             ) : null}
             {openEnded ? (
               <Badge className="tabular-nums" variant="secondary">
+                <EntityIcon alt="" className="size-3.5" src={energyIcon()} />
                 {t("raids.energyPerBattle", { energy: row.energyCost })}
               </Badge>
             ) : (
               <>
                 <Badge className="tabular-nums" variant="outline">
+                  <EntityIcon
+                    alt=""
+                    className="size-3.5"
+                    src={
+                      battles
+                        ? battleGlyphIcon("campaignBattle")
+                        : raidTicketIcon()
+                    }
+                  />
                   {t(battles ? "raids.battleCount" : "raids.raidCount", {
                     count: row.raids,
                   })}
                 </Badge>
                 <Badge className="tabular-nums" variant="secondary">
+                  <EntityIcon alt="" className="size-3.5" src={energyIcon()} />
                   {t("raids.energy", { energy: row.energy })}
                 </Badge>
               </>
@@ -126,9 +144,13 @@ export function HreNoDropRaids({
         data-testid="hre-raids-no-drop-totals"
       >
         <Badge variant="secondary">
+          <EntityIcon alt="" className="size-3.5" src={raidTicketIcon()} />
           {t("raids.raidCount", { count: raids })}
         </Badge>
-        <Badge variant="outline">{t("raids.energy", { energy })}</Badge>
+        <Badge variant="outline">
+          <EntityIcon alt="" className="size-3.5" src={energyIcon()} />
+          {t("raids.energy", { energy })}
+        </Badge>
       </div>
     </div>
   )

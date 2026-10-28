@@ -14,6 +14,7 @@ import {
 import { Input } from "@workspace/ui/components/input"
 import { cn } from "@workspace/ui/lib/utils"
 
+import { NavItemIcon } from "./nav-child-icon"
 import { NavChildRow } from "./nav-child-row"
 import { filterNavigationItems } from "./navigation-filter"
 import { NavLiveDot } from "./nav-live-dot"
@@ -115,13 +116,13 @@ export function DesktopNavigationDialog({
                         className={cn(
                           "group/nav-row flex min-h-11 items-center gap-3 rounded-lg px-3 py-2 font-medium transition-colors",
                           isActive
-                            ? "bg-accent text-accent-foreground shadow-[inset_3px_0_0_0_var(--accent-foreground)]"
-                            : "hover:bg-accent hover:text-accent-foreground"
+                            ? "bg-accent/15 font-semibold text-foreground shadow-[inset_3px_0_0_0_var(--accent)]"
+                            : "hover:bg-muted"
                         )}
                         onClick={() => handleOpenChange(false)}
                         to={getEntryPath(item)}
                       >
-                        <item.icon className="size-5 shrink-0" />
+                        <NavItemIcon item={item} />
                         <span className="flex min-w-0 flex-col">
                           <span className="flex items-center">
                             <span className="truncate">{t(item.labelKey)}</span>
@@ -131,8 +132,8 @@ export function DesktopNavigationDialog({
                             className={cn(
                               "truncate text-xs font-normal",
                               isActive
-                                ? "text-accent-foreground"
-                                : "text-muted-foreground group-hover/nav-row:text-accent-foreground"
+                                ? "text-muted-foreground"
+                                : "text-muted-foreground"
                             )}
                           >
                             {t(item.descriptionKey)}

@@ -44,7 +44,7 @@ function Harness({
   const state = useFixtureHseProjection(instance, reads)
   return (
     <>
-      <EventDetails eventName="Event" state={state} />
+      <EventDetails state={state} />
       <PointsProjection hasRaidLists={hasRaidLists} state={state} />
     </>
   )

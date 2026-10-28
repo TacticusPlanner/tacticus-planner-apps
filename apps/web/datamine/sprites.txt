@@ -576,6 +576,7 @@ atlases/ui_icon_consumable_xp_book_2.webp
 atlases/ui_icon_consumable_xp_book_3.webp
 atlases/ui_icon_consumable_xp_book_4.webp
 atlases/ui_icon_consumable_xp_book_5.webp
+atlases/ui_icon_dmg_prediction_skull.webp
 atlases/ui_icon_event_HRE.webp
 atlases/ui_icon_event_lhe.webp
 atlases/ui_icon_faction_adeptas_01.webp
@@ -609,11 +610,13 @@ atlases/ui_icon_itemtype_booster_block.webp
 atlases/ui_icon_itemtype_booster_crit.webp
 atlases/ui_icon_itemtype_crit.webp
 atlases/ui_icon_itemtype_defensive.webp
+atlases/ui_icon_lightning_victory.webp
 atlases/ui_icon_lock.webp
 atlases/ui_icon_menu_achievements.webp
 atlases/ui_icon_menu_battle_onslaught.webp
 atlases/ui_icon_menu_battlepass.webp
 atlases/ui_icon_menu_guildboss.webp
+atlases/ui_icon_menu_inventory.webp
 atlases/ui_icon_menu_news.webp
 atlases/ui_icon_menu_quests.webp
 atlases/ui_icon_resource_coin_small.webp
@@ -647,6 +650,7 @@ atlases/ui_icon_stat_outofrange_01.webp
 atlases/ui_icon_stat_rangedattack_01.webp
 atlases/ui_icon_tabs_battle.webp
 atlases/ui_icon_tabs_heroes.webp
+atlases/ui_icon_tabs_home.webp
 atlases/ui_icon_tabs_shop.webp
 atlases/ui_icon_tabs_social.webp
 atlases/ui_icon_timer.webp
@@ -1417,6 +1421,7 @@ droptables/ui_icon_droptable_itemsUncommon_I_Booster_Crit.webp
 droptables/ui_icon_droptable_itemsUncommon_I_Crit.webp
 droptables/ui_icon_droptable_itemsUncommon_I_Defensive.webp
 fonts/ElderShop.webp
+fonts/Gold_Medal.webp
 fonts/GuildShop.webp
 fonts/Hre_Currency_Aeldari.webp
 fonts/Hre_Currency_DarkAngels.webp
@@ -1457,6 +1462,7 @@ fonts/Resource_Intel.webp
 fonts/SE_Currency_june_26.webp
 fonts/chance.webp
 fonts/crusadeShop.webp
+fonts/healer.webp
 fonts/hre_points.webp
 fonts/hre_shards.webp
 fonts/lhe_points.webp
@@ -1464,6 +1470,7 @@ fonts/lhe_tokens.webp
 fonts/power_level.webp
 fonts/raids.webp
 fonts/spacewolves.webp
+fonts/summon.webp
 guildboss/ui_image_portraitRound_GuildBoss10Boss1AdmecBelisarius.webp
 guildboss/ui_image_portraitRound_GuildBoss10MiniBoss1AdmecMarshall.webp
 guildboss/ui_image_portraitRound_GuildBoss10MiniBoss2AdmecManipulus.webp

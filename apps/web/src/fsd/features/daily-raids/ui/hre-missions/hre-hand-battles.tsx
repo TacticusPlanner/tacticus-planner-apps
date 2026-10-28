@@ -1,5 +1,8 @@
 import { useTranslation } from "react-i18next"
 import { Badge } from "@workspace/ui/components/badge"
+import { battleGlyphIcon, energyIcon } from "@workspace/game-catalog"
+
+import { EntityIcon } from "@/shared/ui"
 
 import type { MissionBattlesPlan } from "../../model/mission-raids"
 import { RaidRows, type RaidRowsView } from "./hre-raids-extras"
@@ -85,9 +88,15 @@ export function HreHandBattles({
               data-testid="hre-battles-totals"
             >
               <Badge variant="secondary">
+                <EntityIcon
+                  alt=""
+                  className="size-3.5"
+                  src={battleGlyphIcon("campaignBattle")}
+                />
                 {t("raids.battleCount", { count: plan.totalBattles })}
               </Badge>
               <Badge variant="outline">
+                <EntityIcon alt="" className="size-3.5" src={energyIcon()} />
                 {t("raids.energy", { energy: plan.totalEnergy })}
               </Badge>
               {plan.moreNeeded ? (

@@ -15,7 +15,6 @@ export {
 } from "./stale-build"
 export {
   EVENT_FAMILIES_IN_LEGEND_ORDER,
-  eventBarClass,
   eventFamilyStripeClass,
   eventFamilySwatchClass,
   resolveEventFamily,
