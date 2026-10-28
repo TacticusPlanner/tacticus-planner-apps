@@ -14,6 +14,11 @@ const mythicWingsIcon = datamineAssetUrl(
   `atlases/ui_icon_star_mythic_large_01.webp`
 )
 
+/** The game's gold hero star, alone (e.g. a perfect-battle mark). */
+export function heroStarIcon(): string {
+  return goldStarIcon
+}
+
 export type ProgressionVisual =
   | { kind: "none" }
   | { kind: "stars"; icon: string; count: number }

@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next"
+import { rarityIcon } from "@workspace/game-catalog"
 import { Badge } from "@workspace/ui/components/badge"
 import {
   Card,
@@ -11,6 +12,7 @@ import { Progress } from "@workspace/ui/components/progress"
 
 import { RaidBossPortrait } from "@/entities/raid-boss"
 import { formatRelativeTime } from "@/shared/lib"
+import { EntityIcon } from "@/shared/ui"
 import type { GuildRaidDifficulty } from "@/entities/guild-raid-status"
 
 import type { GuildRaidSeasonView } from "../guild-raid-status-view-model"
@@ -68,6 +70,11 @@ export function GuildRaidBossCard({
 
   const difficultyBadge = (
     <Badge data-testid="guild-raid-difficulty-badge" variant="outline">
+      <EntityIcon
+        alt=""
+        className="size-3.5"
+        src={rarityIcon(season.difficulty)}
+      />
       {t(`guildRaids.status.difficulty.${difficultyKeys[season.difficulty]}`)}
     </Badge>
   )

@@ -1,6 +1,9 @@
 import { useTranslation } from "react-i18next"
+import { questEventPointsIcon } from "@workspace/game-catalog"
 import { Alert, AlertDescription } from "@workspace/ui/components/alert"
 import { Progress } from "@workspace/ui/components/progress"
+
+import { EntityIcon } from "@/shared/ui"
 
 import type { QuestScore } from "../model/quest-score"
 
@@ -35,9 +38,14 @@ export function QuestSummary({
         {t("summary.title")}
       </h3>
       <p
-        className="text-2xl font-semibold tabular-nums"
+        className="flex items-center gap-2 text-2xl font-semibold tabular-nums"
         data-testid="quest-summary-total"
       >
+        <EntityIcon
+          alt=""
+          className="size-7 shrink-0"
+          src={questEventPointsIcon()}
+        />
         {t("summary.total", {
           total: number.format(score.total),
           max: number.format(score.max),

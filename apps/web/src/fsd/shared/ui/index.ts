@@ -1,4 +1,5 @@
 export { EntityIcon } from "./entity-icon"
+export { IconLine } from "./icon-line"
 export { energyIconUrl } from "./energy-icon"
 export { UpgradeIcon } from "./upgrade-icon"
 export { RankBadge } from "./rank-badge"

@@ -2,6 +2,7 @@ import { useTranslation } from "react-i18next"
 import { cn } from "@workspace/ui/lib/utils"
 
 import { shopCurrencyIcon } from "@/features/shop-rewards/@x/daily-raids"
+import { shopIcon } from "@workspace/game-catalog"
 import type { UpgradeId } from "@workspace/game-domain"
 
 import { EntityIcon, UpgradeIcon } from "@/shared/ui"
@@ -89,7 +90,14 @@ export function PlanShopPurchases({
             >
               <UnitIcon className="size-8 rounded-full" goal={purchase.unit} />
               <div className="min-w-0 flex-1 text-xs">
-                <div className="truncate font-medium">{shop}</div>
+                <div className="flex items-center gap-1 font-medium">
+                  <EntityIcon
+                    alt=""
+                    className="size-4 shrink-0"
+                    src={shopIcon(purchase.shopId)}
+                  />
+                  <span className="truncate">{shop}</span>
+                </div>
                 <div className="flex items-center gap-1 truncate text-muted-foreground tabular-nums">
                   {material ? (
                     <UpgradeIcon

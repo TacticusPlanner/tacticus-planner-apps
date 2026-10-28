@@ -1,7 +1,7 @@
 import { useId, useMemo, useState, type Ref } from "react"
 import { useTranslation } from "react-i18next"
-import { Lock, ShieldPlus } from "lucide-react"
-import { characterIcon } from "@workspace/game-catalog"
+import { ShieldPlus } from "lucide-react"
+import { characterIcon, lockIcon } from "@workspace/game-catalog"
 import { Button } from "@workspace/ui/components/button"
 import { Input } from "@workspace/ui/components/input"
 import { Switch } from "@workspace/ui/components/switch"
@@ -340,8 +340,9 @@ export function TeamUnitPicker({
                       src={characterIcon(id)}
                     />
                     {tile.owned === false ? (
-                      <Lock
-                        aria-label={t("teams.picker.locked")}
+                      <EntityIcon
+                        src={lockIcon()}
+                        alt={t("teams.picker.locked")}
                         className="absolute -right-1 -bottom-1 size-3.5 rounded-full bg-background p-0.5"
                       />
                     ) : null}

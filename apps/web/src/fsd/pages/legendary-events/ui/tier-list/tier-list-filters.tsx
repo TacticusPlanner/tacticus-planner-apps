@@ -1,6 +1,7 @@
 import { useId } from "react"
 import { useTranslation } from "react-i18next"
 import { Search, SlidersHorizontal } from "lucide-react"
+import { onslaughtAllianceIcon } from "@workspace/game-catalog"
 import { Button } from "@workspace/ui/components/button"
 import { Input } from "@workspace/ui/components/input"
 import { Label } from "@workspace/ui/components/label"
@@ -20,7 +21,7 @@ import {
 import { cn } from "@workspace/ui/lib/utils"
 
 import type { HordeTierAlliance } from "@/entities/legendary-event"
-import { FILTER_CHIP_CLASS_NAME } from "@/shared/ui"
+import { EntityIcon, FILTER_CHIP_CLASS_NAME } from "@/shared/ui"
 
 import {
   TIER_LIST_ALLIANCES,
@@ -131,9 +132,20 @@ function AllianceFilter({
           key={item}
           value={item}
         >
-          {item === "all"
-            ? t("tierList.allianceAll")
-            : t(`common:alliances.${item}`)}
+          {item === "all" ? (
+            t("tierList.allianceAll")
+          ) : (
+            <>
+              <EntityIcon
+                alt=""
+                className="h-4 w-auto shrink-0"
+                height={16}
+                src={onslaughtAllianceIcon(item)}
+                width={16}
+              />
+              {t(`common:alliances.${item}`)}
+            </>
+          )}
         </ToggleGroupItem>
       ))}
     </ToggleGroup>

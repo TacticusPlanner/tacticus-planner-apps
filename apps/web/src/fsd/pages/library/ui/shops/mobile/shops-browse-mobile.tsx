@@ -1,5 +1,9 @@
 import { useTranslation } from "react-i18next"
-import { shopDaysOfWeek, type ShopDayOfWeek } from "@workspace/game-catalog"
+import {
+  shopDaysOfWeek,
+  shopIcon,
+  type ShopDayOfWeek,
+} from "@workspace/game-catalog"
 import {
   Select,
   SelectContent,
@@ -7,6 +11,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@workspace/ui/components/select"
+
+import { EntityIcon } from "@/shared/ui"
 
 import {
   LIBRARY_SHOP_IDS,
@@ -68,6 +74,11 @@ export function ShopsBrowseMobile({
             <SelectContent>
               {LIBRARY_SHOP_IDS.map((value) => (
                 <SelectItem key={value} value={value}>
+                  <EntityIcon
+                    alt=""
+                    className="size-5 shrink-0"
+                    src={shopIcon(value)}
+                  />
                   {t(`shops.shopName.${value}`)}
                 </SelectItem>
               ))}

@@ -147,10 +147,57 @@ describe("shopRewardDisplay", () => {
     expect(display.label).toBe("shops:reward.equipmentPool")
   })
 
-  it("maps a generic equipment pool to its slot-type icon", () => {
+  it("maps a generic equipment pool to the game's pool art", () => {
     const display = shopRewardDisplay("itemsLegendary_I_Block", undefined, ctx)
     expect(display.kind).toBe("equipment")
-    expect(display.iconUrl).toContain("ui_icon_itemtype_block")
+    expect(display.iconUrl).toContain(
+      "droptables/ui_icon_droptable_itemsLegendary_I_Block.webp"
+    )
+  })
+
+  it("maps an alliance item crate to the rarity crate", () => {
+    const display = shopRewardDisplay("itemsChaosEpic", undefined, ctx)
+    expect(display.kind).toBe("equipment")
+    expect(display.iconUrl).toContain("ui_icon_droptable_item_epic.webp")
+  })
+
+  it("layers an alliance ability badge and maps an alliance orb", () => {
+    const badge = shopRewardDisplay(
+      "abilityTokenLegendary_Imperial",
+      undefined,
+      ctx
+    )
+    expect(badge.kind).toBe("abilityBadge")
+    expect(badge.iconUrl).toMatchObject({ layers: expect.any(Array) })
+    const orb = shopRewardDisplay(
+      "heroAscensionOrbEpic_Imperial",
+      undefined,
+      ctx
+    )
+    expect(orb.kind).toBe("orb")
+    expect(orb.iconUrl).toContain("ui_hero_ascension_orbs_epic.webp")
+  })
+
+  it("maps shard pools, seasonal currency and event resources", () => {
+    expect(shopRewardDisplay("ShardsOrks", undefined, ctx).iconUrl).toContain(
+      "HeroShard_Orks_Medium"
+    )
+    expect(shopRewardDisplay("ShardsAll", undefined, ctx).iconUrl).toContain(
+      "HeroShard_Generic_Medium"
+    )
+    expect(
+      shopRewardDisplay("seasonalEventCurrencyMarch2026", undefined, ctx)
+        .iconUrl
+    ).toContain("liveevents/ui_icon_resource_event_currency.webp")
+    expect(shopRewardDisplay("crusadeBomb", undefined, ctx).iconUrl).toContain(
+      "fonts/Resource_CrusadeBomb.webp"
+    )
+    expect(shopRewardDisplay("stamina", undefined, ctx).iconUrl).toContain(
+      "ui_icon_resource_stamina_small"
+    )
+    expect(
+      shopRewardDisplay("eventSummoningToken_Orks", undefined, ctx).iconUrl
+    ).toContain("ui_icon_resource_summoning_token")
   })
 
   it("gives expedition speed-ups their V1 resource icon", () => {

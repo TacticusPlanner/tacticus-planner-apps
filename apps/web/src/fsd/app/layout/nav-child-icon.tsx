@@ -2,7 +2,7 @@ import { cn } from "@workspace/ui/lib/utils"
 
 import type { NavSubItem } from "./nav-items"
 
-/** A child's leading icon: a dynamic child's portrait, or a static child's lucide icon. */
+/** A child's leading icon: a dynamic child's portrait, else a static child's game art or lucide icon. */
 export function NavChildIcon({
   child,
   className,
@@ -17,6 +17,16 @@ export function NavChildIcon({
         aria-hidden="true"
         className={cn("size-5 shrink-0 rounded-full object-cover", className)}
         src={child.iconSrc}
+      />
+    )
+  }
+  if ("artSrc" in child && child.artSrc) {
+    return (
+      <img
+        alt=""
+        aria-hidden="true"
+        className={cn("size-5 shrink-0 object-contain", className)}
+        src={child.artSrc}
       />
     )
   }

@@ -1,13 +1,23 @@
 import type { TFunction } from "i18next"
 import {
+  abilityBadgeIcon,
   characterIcon,
   EquipmentIcons,
+  energyIcon,
+  equipmentPoolIcon,
   equipmentSlotIcon,
+  heroShardPoolIcon,
+  isResourceGlyph,
+  itemPoolIcon,
   mowIcon,
+  orbIcon,
+  resourceGlyphIcon,
+  seasonalEventCurrencyIcon,
   UpgradeIcons,
   curatedAssetUrl,
   datamineAssetUrl,
   goldIcon,
+  type GameIcon,
 } from "@workspace/game-catalog"
 import { unitIdSchema } from "@workspace/game-domain"
 
@@ -34,7 +44,8 @@ export type ShopRewardKind =
 
 export interface ShopRewardDisplay {
   kind: ShopRewardKind
-  iconUrl?: string
+  /** A sprite URL, or a layered icon (an alliance ability badge). */
+  iconUrl?: GameIcon
   label: string
 }
 
@@ -268,7 +279,8 @@ export function shopRewardDisplay(
     const slotType = pool[2]!
     return {
       kind: "equipment",
-      iconUrl: equipmentSlotIcon(slotType),
+      iconUrl:
+        equipmentPoolIcon(rarity, slotType) ?? equipmentSlotIcon(slotType),
       label: t("shops:reward.equipmentPool", {
         rarity,
         type: prettifyRewardType(slotType),
@@ -287,6 +299,87 @@ export function shopRewardDisplay(
             ctx.equipmentById.get(rewardType)?.name ??
             prettifyRewardType(rewardType),
         }),
+      }),
+    }
+  }
+
+  // Event-ladder loot: random items, badges, orbs and shards of an alliance or faction, and the
+  // seasonal, crusade and summoning resources. Labels reuse the shop vocabulary.
+  const alliancePool = new RegExp(
+    `^items(Imperial|Chaos|Xenos)(${RARITY_SUFFIXES.join("|")})$`
+  ).exec(rewardType)
+  if (alliancePool) {
+    const alliance = alliancePool[1]!
+    const rarity = alliancePool[2] as RaritySuffix
+    return {
+      kind: "equipment",
+      iconUrl: itemPoolIcon(rarity),
+      label: t("shops:reward.equipmentPool", { rarity, type: alliance }),
+    }
+  }
+
+  const allianceResource = new RegExp(
+    `^(abilityToken|heroAscensionOrb)(${RARITY_SUFFIXES.join("|")})_(\\w+)$`
+  ).exec(rewardType)
+  if (allianceResource) {
+    const resource = allianceResource[1]
+    const rarity = allianceResource[2] as RaritySuffix
+    const alliance = allianceResource[3]!
+    const qualified = `${alliance} ${rarity}`
+    return resource === "abilityToken"
+      ? {
+          kind: "abilityBadge",
+          iconUrl: abilityBadgeIcon(rarity, alliance),
+          label: t("shops:reward.abilityBadge", { rarity: qualified }),
+        }
+      : {
+          kind: "orb",
+          iconUrl: orbIcon(rarity),
+          label: t("shops:reward.orb", { rarity: qualified }),
+        }
+  }
+
+  if (/^Shards[A-Z]/.test(rewardType)) {
+    const group = rewardType.slice("Shards".length)
+    return {
+      kind: "shard",
+      iconUrl: heroShardPoolIcon(group),
+      label: t("shops:reward.shards", { unit: prettifyRewardType(group) }),
+    }
+  }
+
+  if (rewardType.startsWith("seasonalEventCurrency")) {
+    return {
+      kind: "other",
+      iconUrl: seasonalEventCurrencyIcon(rewardType),
+      label: t("shops:reward.seasonalEventCurrency"),
+    }
+  }
+
+  if (rewardType === "stamina") {
+    return {
+      kind: "other",
+      iconUrl: energyIcon(),
+      label: t("shops:reward.energy"),
+    }
+  }
+
+  if (rewardType.startsWith("eventSummoningToken")) {
+    return {
+      kind: "other",
+      iconUrl: resourceGlyphIcon("summoningToken"),
+      label: t("shops:reward.generic", {
+        name: prettifyRewardType(rewardType),
+      }),
+    }
+  }
+
+  if (isResourceGlyph(rewardType)) {
+    return {
+      kind: "other",
+      iconUrl: resourceGlyphIcon(rewardType),
+      label: t("shops:reward.generic", {
+        name: prettifyRewardType(rewardType),
       }),
     }
   }

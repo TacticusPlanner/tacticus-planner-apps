@@ -202,6 +202,14 @@
     },
     "tierSet": "Tier {{tier}} · Set {{set}}",
     "chest": "Chest: {{chest}}",
+    "chestTiers": {
+      "wood": "Wood",
+      "bronze": "Bronze",
+      "silver": "Silver",
+      "gold": "Gold",
+      "diamond": "Diamond",
+      "mythic": "Mythic"
+    },
     "guildXp": "{{xp}} Guild XP",
     "turns": "{{count}} turns",
     "meta": {

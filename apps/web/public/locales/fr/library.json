@@ -202,6 +202,14 @@
     },
     "tierSet": "Palier {{tier}} · Ensemble {{set}}",
     "chest": "Coffre : {{chest}}",
+    "chestTiers": {
+      "wood": "Bois",
+      "bronze": "Bronze",
+      "silver": "Argent",
+      "gold": "Or",
+      "diamond": "Diamant",
+      "mythic": "Mythique"
+    },
     "guildXp": "{{xp}} EXP de guilde",
     "turns": "{{count}} tours",
     "meta": {

@@ -2,6 +2,9 @@ import { memo } from "react"
 import { useTranslation } from "react-i18next"
 import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
+import { energyIcon } from "@workspace/game-catalog"
+
+import { EntityIcon } from "@/shared/ui"
 
 import type { DailyRaidGoalViewModel } from "../../model/daily-raids.domain"
 import type { EventFarmEmptyReason } from "../../model/home-screen-event-farm"
@@ -32,10 +35,13 @@ const EMPTY_KEYS = {
 export const EventFarmSection = memo(function EventFarmSection({
   rule,
   projectId,
+  pointsIcon,
 }: {
   /** The shown event's raid-point rule. */
   rule: HseRaidRule
   projectId?: string
+  /** The shown event's points icon. */
+  pointsIcon?: string
 }) {
   const { t } = useTranslation("dailies")
   const raids = useDailyRaids(projectId, { homeScreenEventRule: rule })
@@ -57,9 +63,13 @@ export const EventFarmSection = memo(function EventFarmSection({
         {farm && farm.rows.length > 0 ? (
           <div className="flex flex-wrap gap-2">
             <Badge data-testid="hse-raids-total" variant="secondary">
+              {pointsIcon ? (
+                <EntityIcon alt="" className="size-3.5" src={pointsIcon} />
+              ) : null}
               {t("hse.raids.total", { points: farm.totalPoints })}
             </Badge>
             <Badge data-testid="hse-raids-energy" variant="outline">
+              <EntityIcon alt="" className="size-3.5" src={energyIcon()} />
               {t("hse.raids.energy", { energy: farm.totalEnergy })}
             </Badge>
           </div>
@@ -92,9 +102,13 @@ export const EventFarmSection = memo(function EventFarmSection({
                   {t("hse.raids.raidCount", { count: row.raids })}
                 </Badge>
                 <Badge className="tabular-nums" variant="secondary">
+                  {pointsIcon ? (
+                    <EntityIcon alt="" className="size-3.5" src={pointsIcon} />
+                  ) : null}
                   {t("hse.raids.points", { points: row.points })}
                 </Badge>
                 <Badge className="tabular-nums" variant="outline">
+                  <EntityIcon alt="" className="size-3.5" src={energyIcon()} />
                   {t("hse.raids.energy", { energy: row.energy })}
                 </Badge>
                 <span className="flex items-center gap-1">
