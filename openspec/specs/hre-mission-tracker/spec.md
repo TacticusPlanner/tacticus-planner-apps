@@ -148,10 +148,10 @@ Mission progress SHALL be stored in the browser's local storage, keyed by the ca
 - **GIVEN** local storage throws on access
 - **THEN** the tab still lets the player set progress for the session, with no error shown
 
-#### Scenario: Entry stored before this change
+#### Scenario: Entry without the optional fields
 
-- **GIVEN** a stored entry with mission 20, its progress, points and rank, and none of the new fields
-- **THEN** it loads as before, with no owned inputs, no rank time, and the other missions at 0 and 0
+- **GIVEN** a stored entry with mission 20, its progress, points and rank, and no owned inputs, rank time or target
+- **THEN** it loads with no owned inputs, no rank time, and the other missions at 0 and 0
 
 ### Requirement: Progress stored in the old objective order is migrated
 

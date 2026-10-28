@@ -23,7 +23,7 @@ current validation state, rather than treating the earlier request as active.
 
 ### Requirement: Create-another success remains immediately usable
 
-The system SHALL retain the existing create-another flow: after a successful creation with "Create another" enabled, the sheet remains open in an idle submission state for a new goal. It SHALL retain compatible project and goal-type context from the preceding creation while resetting entity-specific targets and start-paused state. The user SHALL be able to edit the retained choices before the next submission.
+After a successful creation with "Create another" enabled, the sheet SHALL remain open in an idle submission state for a new goal, carrying over only the context "Consecutive creation retains compatible context" allows.
 
 #### Scenario: Create another after success
 
@@ -54,12 +54,6 @@ validation message and block submission.
   level, both above their current levels
 - **THEN** the goal is valid and each track's submitted range independently runs from its
   current level to its own chosen target
-
-#### Scenario: Neither track advances
-
-- **WHEN** both target selectors are at or below their respective current levels
-- **THEN** the submit action is blocked and the sheet shows the ability "nothing to do"
-  validation message
 
 #### Scenario: Targets seed from current levels
 
@@ -173,7 +167,7 @@ The create-goal sheet SHALL show every reason the submit action is disabled at t
 
 ### Requirement: Goal creation offers an explicit start-paused option
 
-The creation sheet SHALL offer a control that creates the goal in the Paused status instead of the Active one. The control SHALL default to off, SHALL be visible in the form rather than reached through a menu or a hover-only affordance, and SHALL state what choosing it means — that the goal is created but left out of daily planning until it is resumed. Its value SHALL be sent with the submission so that the created goal's status reflects the user's choice, and SHALL apply to every goal a single submission creates, including the prerequisite goals of a combined creation. The control SHALL reset to off whenever the form resets for a subsequent creation.
+The creation sheet SHALL offer a control that creates the goal in the Paused status instead of the Active one. The control SHALL default to off, SHALL be visible in the form (labelled "Create paused") rather than reached through a menu or a hover-only affordance, and SHALL explain what choosing it means — that the goal is created but left out of daily planning until it is resumed — as an accessible tooltip on its label, not a helper paragraph. Its value SHALL be sent with the submission so that the created goal's status reflects the user's choice, and SHALL apply to every goal a single submission creates, including the prerequisite goals of a combined creation. The control SHALL reset to off whenever the form resets for a subsequent creation.
 
 #### Scenario: Default creation is active
 
@@ -194,7 +188,7 @@ The creation sheet SHALL offer a control that creates the goal in the Paused sta
 #### Scenario: The control is discoverable
 
 - **WHEN** the creation sheet renders at either breakpoint
-- **THEN** the start-paused control and its explanation are visible in the form without hovering, focusing, or opening another control
+- **THEN** the start-paused control is visible in the form without opening another control, and its label carries the explanation as an accessible tooltip
 
 #### Scenario: The choice does not carry into the next creation
 
@@ -275,7 +269,7 @@ During the current app session in one browser tab, the creation sheet SHALL offe
 
 #### Scenario: Project-scoped launch wins
 
-- **WHEN** the user launches creation from Project Detail after previously choosing different projects
+- **WHEN** the user launches creation from the Goals page scoped to a project after previously choosing different projects
 - **THEN** the viewed project is preselected instead of remembered memberships
 
 #### Scenario: Incompatible type is dropped
@@ -302,11 +296,6 @@ At or above 768px, launching goal creation (from any entry point in `goal-creati
 - **WHEN** the user activates Create Goal at or above 768px
 - **THEN** a centered dialog opens with the same unit and goal-kind form as before
 
-#### Scenario: Mobile presentation unchanged
-
-- **WHEN** the user activates Create Goal below 768px
-- **THEN** the bottom-anchored sheet opens as before
-
 #### Scenario: Prefill and create another
 
 - **WHEN** creation is launched with a prefilled unit and the user submits with "create another" checked
@@ -314,7 +303,7 @@ At or above 768px, launching goal creation (from any entry point in `goal-creati
 
 ### Requirement: Goal creation preselects a character and keeps a compact layout
 
-When goal creation opens without a launch that carries a unit, the dialog SHALL preselect the first Character in the unit picker's list order (Mows skipped), once the catalog is available if it is still loading. A launch that carries a unit (prefill) SHALL keep that unit, and a unit the user has chosen SHALL never be replaced. After a "create another" submission clears the form, the same rule SHALL apply again (the first Character is preselected, the remembered projects and goal types are offered as before). With a unit preselected, the current-status section and the goal-type selector SHALL appear immediately. The creation form SHALL NOT show helper paragraphs for project membership or for "Create paused". On desktop the "Create paused" checkbox SHALL sit in the footer beside "Create another goal" on the left, and the footer's buttons SHALL be Close (outline) then the primary "Create goal" as the rightmost button. Below 768px creation SHALL follow the mobile step flow requirement. The form SHALL follow the compact-layout requirement of `goal-edit-dialog`.
+When goal creation opens without a launch that carries a unit, the dialog SHALL preselect the first Character in the unit picker's list order (Mows skipped), once the catalog is available if it is still loading. A launch that carries a unit (prefill) SHALL keep that unit, and a unit the user has chosen SHALL never be replaced. After a "create another" submission clears the form, the same rule SHALL apply again (the first Character is preselected, the remembered projects and goal types are offered as before). With a unit preselected, the current-status section and the goal-type selector SHALL appear immediately. On desktop the "Create paused" checkbox SHALL sit in the footer beside "Create another goal" on the left, and the footer's buttons SHALL be Close (outline) then the primary "Create goal" as the rightmost button. Below 768px creation SHALL follow the mobile step flow requirement. The form SHALL follow the compact-layout requirement of `goal-edit-dialog`.
 
 #### Scenario: First character preselected
 
@@ -404,11 +393,11 @@ layout on desktop (dialog) and mobile (sheet).
 #### Scenario: Machine of War with no track set
 
 - **WHEN** a user sets neither track
-- **THEN** the card offers the whole ladder as today and the goal is created without a range
+- **THEN** the card offers the whole ladder and the goal is created without a range
 
 ### Requirement: The slot pre-check compares each goal's target
 
-Before submission, the create sheet SHALL check each spec it would create against the account's in-flight goals of the same unit and type using that type's target key (`support-multiple-goals-per-unit` in the API). A conflict SHALL block submission and name the existing goal with its target. Unlock SHALL still conflict with any in-flight Unlock goal of the unit.
+Before submission, the create sheet SHALL check each spec it would create against the account's in-flight goals of the same unit and type using that type's target key (the API's per-target uniqueness rule). A conflict SHALL block submission and name the existing goal with its target. Unlock SHALL still conflict with any in-flight Unlock goal of the unit.
 
 #### Scenario: A second Ascension with a new target is allowed
 

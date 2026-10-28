@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Defines how canonical Character/MoW goals participate in one or more projects, including searchable membership and project-scoped in-flight goal-type uniqueness.
+Defines how canonical Character/MoW goals participate in one or more projects, including searchable membership and account-wide in-flight goal uniqueness per unit, type and target.
 
 ## Requirements
 
@@ -95,9 +95,9 @@ An existing archived membership SHALL remain visible and marked Archived, but ar
 - **WHEN** that membership is removed in the membership editor
 - **THEN** the goal belongs to the Default project and is no longer reachable only through an archived project
 
-### Requirement: In-flight goal-type uniqueness is scoped to a project
+### Requirement: In-flight goal uniqueness is per unit, type and target, account-wide
 
-Across the account, at most one Active/Paused non-Rank goal SHALL exist per `(entityType, entityId, goalType)`. For Rank, at most one Active/Paused goal SHALL exist per `(entityType, entityId, normalizedEndTarget)`; different Rank targets MAY coexist. Completed/Archived goals SHALL not occupy a slot. Project membership SHALL NOT affect a slot: one in-flight goal MAY belong to any number of projects, and adding a goal to or removing it from a project SHALL never be rejected for a slot.
+Across the account, at most one Active/Paused goal SHALL exist per `(entityType, entityId, goalType, target key)`, where the target key is the API's canonical end target for the type (Rank: normalized end target; Ascension: end progression; Ability: active and passive ends; Upgrade: the target set; Unlock has none, so one per unit). Goals of the same type with different targets MAY coexist. Completed/Archived goals SHALL not occupy a slot. Project membership SHALL NOT affect a slot: one in-flight goal MAY belong to any number of projects, and adding a goal to or removing it from a project SHALL never be rejected for a slot.
 
 #### Scenario: Different projects have different targets
 
@@ -189,23 +189,11 @@ Wherever a goal is presented as a member of a specific project, the system SHALL
 
 ### Requirement: The goal row's project-removal action offers a chosen destination when relocation is needed
 
-When a goal's viewed project is its only membership, the row's project-removal action ("Move to project") SHALL let the user choose the destination rather than relocating automatically: it SHALL list the account's other existing projects, and SHALL offer creating a new project as an additional option. Selecting an existing project SHALL move the goal there; the move is never rejected for an occupied slot (see "In-flight goal-type uniqueness is scoped to a project"). Choosing to create a new project SHALL open project creation; once the new project is saved, the goal SHALL move into it.
+When a goal's viewed project is its only membership, the row's project-removal action ("Move to project") SHALL let the user choose the destination rather than relocating automatically: it SHALL list the account's other existing projects, and SHALL offer creating a new project as an additional option. Selecting an existing project SHALL move the goal there; the move is never rejected for an occupied slot (see "In-flight goal uniqueness is per unit, type and target, account-wide"). Choosing to create a new project SHALL open project creation; once the new project is saved, the goal SHALL move into it.
 
-When the goal's viewed project is not its only membership, the row's project-removal action SHALL remain a plain removal with no destination to choose, leaving the goal a member of its other project(s) — unchanged from today's behavior.
+When the goal's viewed project is not its only membership, the row's project-removal action SHALL remain a plain removal with no destination to choose, leaving the goal a member of its other project(s).
 
 This requirement governs the goal row's own project-removal action specifically. The goal's membership editor (its edit form's project chips) is a separate surface and keeps its own last-membership behavior — see "Every goal retains at least one project membership".
-
-#### Scenario: Removal without a destination when other memberships exist
-
-- **GIVEN** a goal belongs to projects A and B
-- **WHEN** it is removed from A via its row action
-- **THEN** it remains a member of B, and no destination picker is shown
-
-#### Scenario: Moving to an existing project
-
-- **GIVEN** a goal's only membership is project A, and the account also has project B
-- **WHEN** the user opens the row's "Move to project" action and selects project B
-- **THEN** the goal belongs to project B and no longer belongs to A
 
 #### Scenario: Moving to a newly created project
 
@@ -258,33 +246,6 @@ A control that deletes a goal from the account SHALL state that its effect is ac
 - **WHEN** both actions are offered for the same goal
 - **THEN** deletion is presented as destructive and confirmed, while removal is presented as an ordinary action
 
-### Requirement: Goals can be filtered by project membership
-
-The Goals Overview SHALL offer filtering the goal list by project membership, including an option that applies no membership filter. The filter SHALL narrow only the displayed list. It SHALL NOT change any goal's status, membership, or priority, and SHALL NOT change which project any calculating view uses.
-
-#### Scenario: Filtering narrows the list to one project's goals
-
-- **GIVEN** goals belonging to several projects
-- **WHEN** the user filters Overview by one project
-- **THEN** only goals belonging to that project are listed
-
-#### Scenario: Unfiltered is available and is the initial state
-
-- **WHEN** Overview is first opened
-- **THEN** no membership filter is applied and every goal remains eligible for display
-
-#### Scenario: Filtering applies on every status tab
-
-- **GIVEN** a project contains goals in Archived status as well as in-flight ones
-- **WHEN** the user filters Overview by that project and selects the Archived status filter
-- **THEN** that project's archived goals are listed rather than an empty list
-
-#### Scenario: Filtering does not affect planning
-
-- **GIVEN** a project is selected in the Overview membership filter
-- **WHEN** the user opens a project-aware Dailies or Insights view
-- **THEN** that view's project selection is unchanged by the Overview filter
-
 ### Requirement: Membership picker can explicitly create and select a project
 
 In both new-goal and goal-edit forms, when a user searches for a project name with no existing match, the membership picker SHALL offer an explicit Create action using that name. Creation SHALL respect existing project naming validation. On success the returned project SHALL immediately become selected membership without submitting or closing the goal form. Merely typing or leaving the search field SHALL NOT create a project.
@@ -321,7 +282,7 @@ In both new-goal and goal-edit forms, when a user searches for a project name wi
 
 ### Requirement: Project membership changes never alter a goal's status
 
-A project organizes goals; it does not activate or deactivate them. Adding a goal to a project, removing it from one, and relocating it to the Default project SHALL all leave the goal's status unchanged. Pausing and resuming a goal SHALL remain available per goal and SHALL remain the only way a user changes whether a goal is active. No membership surface SHALL present membership as activating, deactivating, pausing, or resuming a goal.
+A project organizes goals; it does not activate or deactivate them. Adding a goal to a project, removing it from one, and relocating it to the Default project SHALL all leave the goal's status unchanged. Pausing and resuming — per goal, or for a selection through `goal-bulk-actions` — SHALL remain the only way a user changes whether a goal is active. No membership surface SHALL present membership as activating, deactivating, pausing, or resuming a goal.
 
 #### Scenario: Editing membership leaves status alone
 
@@ -356,7 +317,7 @@ Creating a goal SHALL produce a goal with the same status whichever projects are
 
 ### Requirement: The scoped Goals page's row menu hosts project removal
 
-When the Goals page is scoped to a project, each goal row's "⋯" menu, on desktop and mobile alike, SHALL offer that project's removal action between Pause/Resume and Delete: "Remove from this project" when the goal belongs to another project as well, and "Move to project" when the scoped project is its only one (see "The goal row's project-removal action offers a chosen destination when relocation is needed"). The goal's memberships are known from the goals list itself; the item SHALL be disabled only while the account's projects are not loaded. Without a project scope the menu SHALL offer no project-removal item. While scoped, the row's delete confirmation SHALL name removal from the scoped project as the alternative.
+When the Goals page is scoped to a project, each goal row's "⋯" menu, on desktop and mobile alike, SHALL offer that project's removal action between Pause/Resume and Delete: "Remove from this project" when the goal belongs to another project as well, and "Move to project" when the scoped project is its only one (see "The goal row's project-removal action offers a chosen destination when relocation is needed"). The goal's memberships are known from the goals list itself; the item SHALL be disabled only while the account's projects are not loaded.
 
 #### Scenario: Scoped row menu offers removal
 
@@ -381,14 +342,3 @@ When the Goals page is scoped to a project, each goal row's "⋯" menu, on deskt
 - **GIVEN** the Goals page is scoped to project A, the goals have loaded and the project list is still loading
 - **WHEN** a goal's row menu is opened
 - **THEN** the project-removal item is disabled until the project list loads, and is then enabled at once; no member-list request is ever issued
-
-#### Scenario: Unscoped menu has no removal
-
-- **WHEN** a row menu is opened on the Goals page without a project scope
-- **THEN** it offers no project-removal item
-
-#### Scenario: Delete confirmation names the alternative while scoped
-
-- **GIVEN** the Goals page is scoped to project A
-- **WHEN** a row's delete confirmation opens
-- **THEN** it says the deletion is account-wide and names removal from A as the alternative

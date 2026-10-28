@@ -8,7 +8,7 @@ Defines the minimal Edit goal dialog that replaces the read-only goal detail: on
 
 ### Requirement: Each goal offers an Edit action that opens the Edit goal dialog
 
-Wherever the Goals list renders (desktop table and mobile cards, on Overview and on a project's detail route), each goal SHALL offer an Edit action that opens the Edit goal dialog for that goal. Activating the goal's name, its row, or its card SHALL NOT open any panel. The read-only goal detail (history, dependencies, blockers, estimate, farming guidance, progress, and its view/edit mode switch) SHALL NOT exist.
+Wherever the Goals list renders (desktop table and mobile cards, with or without a project scope), each goal SHALL offer an Edit action that opens the Edit goal dialog for that goal. Activating the goal's name, its row, or its card SHALL NOT open any panel. The read-only goal detail (history, dependencies, blockers, estimate, farming guidance, progress, and its view/edit mode switch) SHALL NOT exist.
 
 #### Scenario: Edit from the desktop table
 
@@ -27,11 +27,6 @@ Wherever the Goals list renders (desktop table and mobile cards, on Overview and
 - **WHEN** the user activates a goal's name or clicks its row outside the row's controls
 - **THEN** no dialog or panel opens
 
-#### Scenario: Same action on Overview and Project Detail
-
-- **WHEN** the user opens a project's detail route
-- **THEN** its goals offer the same Edit action and dialog as Overview
-
 ### Requirement: The Edit goal dialog contains only editable fields
 
 The Edit goal dialog SHALL show the goal's unit and kind as read-only text (the goal type SHALL NOT be changeable), followed by only these editable fields: the goal target (for kinds that have one, per `goal-target-editing`), the goal's priority, notes, project memberships, and the farming preferences that apply to the goal's kind (rank farming strategy; Unlock/Ascension acquisition sources per `goal-acquisition-source-picker`; farming locations for the remaining kinds; and, for Character Rank, Upgrade, and Machine-of-War Ability goals whose target needs a Mythic upgrade material, the Mythic materials control per `goal-mythic-material-sources`). For a goal with an editable target it SHALL also show a read-only estimate of the resources needed and the estimated days from the goal's start to the draft target, computed as the create preview computes it and refreshed when the draft target or farming preferences change. It SHALL NOT show history, dependencies or prerequisites, blockers, progress, or farming guidance. An Unlock goal, which has no editable target, SHALL show no target section and no estimate.
@@ -46,16 +41,6 @@ The Edit goal dialog SHALL show the goal's unit and kind as read-only text (the 
 - **GIVEN** the dialog is open for Arjac's Rank goal with a saved target of Gold I
 - **WHEN** the user changes the target to Diamond I
 - **THEN** the estimate shows the resources and days for the range up to Diamond I
-
-#### Scenario: Rank goal needing a Mythic material
-
-- **WHEN** the dialog opens for an Active Rank goal whose target is Adamantine 2 and needs Venerable Battle Mark
-- **THEN** it also shows the Mythic materials control with that goal's selection (or every available offer checked when it has none)
-
-#### Scenario: Editing the target updates the control
-
-- **WHEN** the user lowers that goal's target so that no Mythic material is needed
-- **THEN** the Mythic materials control is hidden
 
 #### Scenario: Goal type is fixed
 
@@ -123,11 +108,6 @@ The dialog SHALL have one Save button and a Cancel. Save SHALL be enabled only w
 - **WHEN** the request is rejected because the new target is already held by another in-flight goal of the same unit
 - **THEN** the dialog stays open with the whole draft and a conflict message naming that goal, and neither the target nor the projects were saved
 
-#### Scenario: Stale target revision
-
-- **WHEN** the goal changed elsewhere and the request is rejected as stale
-- **THEN** the dialog keeps the draft, saves nothing, and offers refresh-and-retry per `goal-target-editing`
-
 ### Requirement: Closing with unsaved changes asks for confirmation
 
 Closing the dialog by Cancel, the close control, or Escape while any field differs from the loaded goal SHALL first ask for confirmation to discard the changes; with no changes it SHALL close immediately. Clicking outside the dialog SHALL NOT close it.
@@ -188,7 +168,7 @@ On desktop (at or above 768px) the Edit goal dialog and the Create goal dialog S
 
 - **GIVEN** a viewport below 768px
 - **WHEN** either dialog opens
-- **THEN** it is the bottom-anchored sheet with one column, as before this change
+- **THEN** it is the bottom-anchored sheet with one column
 
 #### Scenario: Compact Edit dialog
 
@@ -260,7 +240,7 @@ For a goal of a given kind, the Edit goal dialog SHALL show its target, sources 
 
 ### Requirement: Edit omits creation-only controls
 
-The Edit goal dialog SHALL show the unit and goal type read-only. It SHALL NOT show prerequisite suggestions, milestones, "Create paused" or "Create another goal".
+It SHALL NOT show prerequisite suggestions, milestones, "Create paused" or "Create another goal".
 
 #### Scenario: Creation-only controls absent
 

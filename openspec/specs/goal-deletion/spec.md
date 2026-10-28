@@ -23,13 +23,6 @@ request's response.
 - **THEN** the goal's row disappears from that list immediately, before the
   underlying delete request has resolved
 
-#### Scenario: The goal disappears everywhere it was cached
-
-- **GIVEN** a goal is visible in both Goals Overview and a project's detail
-  route at the same time
-- **WHEN** the user confirms deleting it from either view
-- **THEN** it disappears from both immediately
-
 ### Requirement: A failed deletion restores the goal and reports the failure
 
 If the underlying delete request fails, the system SHALL restore the goal

@@ -8,7 +8,7 @@ Shows a guild member the current raid position and personal raid resources neede
 
 ### Requirement: Ready guild members see current raid status
 
-The Guild Raids page SHALL request status only after shared guild access is ready. For an active season it SHALL show season number, current boss, zero-based source tier/set as localized one-based labels, difficulty, remaining and maximum HP, progress through the current tier, current prime modifiers and remaining thresholds, remaining season time when known, observation freshness, and last guild synchronization time. It SHALL NOT calculate or display a subsequent-boss preview in this change.
+The Guild Raids page SHALL request status only after shared guild access is ready. For an active season it SHALL show season number, current boss, zero-based source tier/set as localized one-based labels, difficulty, remaining and maximum HP, progress through the current tier, current prime modifiers and remaining thresholds, remaining season time when known, observation freshness, and last guild synchronization time. It SHALL NOT calculate or display a subsequent-boss preview.
 
 The app SHALL resolve boss/prime names, portraits, difficulty labels, and modifier descriptions from the raid-boss catalog and localized resources using server-supplied ids. It SHALL not render raw hit history.
 
@@ -17,7 +17,7 @@ When a prime's HP or modifier activation values are null, the page SHALL label t
 #### Scenario: Active raid status loads
 
 - **WHEN** a ready guild member opens Guild Raids and the API returns an active mapped season
-- **THEN** the page shows all available current-position fields and no team recommendation section is required by this change
+- **THEN** the page shows all available current-position fields
 
 #### Scenario: Season end is unknown
 

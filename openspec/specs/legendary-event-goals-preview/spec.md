@@ -19,7 +19,6 @@ A preview SHALL never lower any value. A unit with no such goal keeps its synced
 
 Assumptions:
 
-- Unlocking a character gives it rank Stone1, ability levels 1 and its initial rarity with that rarity's lowest star count.
 - Which objectives a unit satisfies depends only on static catalog data (faction, alliance, traits, damage types, hits, attack type), so a preview never changes objective matching or points.
 - Power (the `character-combat-power` estimate) and the horde-mode multiplier are computed exactly as `legendary-event-clear-estimates` specifies, from the preview state. Equipped items are the synced ones (none for a unit the roster lacks): goals do not change equipment.
 

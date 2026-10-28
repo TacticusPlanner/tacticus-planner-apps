@@ -152,11 +152,6 @@ Each lane tab SHALL render an Eligibility leaderboard section after the Synced p
 - **WHEN** the leaderboard renders below 768px
 - **THEN** each unit is a row card: portrait, name, rarity and rank badges, the row of objective icons, the points figure and "Objectives: N · Clears: ~n"; the filter and toggle controls sit in one compact bar above the list
 
-#### Scenario: Tour step
-
-- **WHEN** the event page tour runs on either form
-- **THEN** a step highlights the Alpha leaderboard after the progress grid step, and an earlier step highlights the cross-lane leaderboard on Overview
-
 ### Requirement: Remaining points per unit on a lane
 
 For an allowed unit on a lane, **remaining points** SHALL equal, summed over every battle of the lane, the scores of the objectives the unit satisfies that are not yet cleared in that battle according to the synced progress, where defeat-all counts as an objective the unit satisfies with score `killPoints`. Deduction is per objective per battle: a battle with some objectives cleared deducts only those. Without a synced entry for the event (or a null lane) nothing is cleared, so remaining points equal points per battle × the battle count. Remaining points are a client calculation and are never stored.
@@ -186,7 +181,7 @@ Assumptions:
 
 ### Requirement: Deduct scored points toggle
 
-The leaderboard controls SHALL include a **Deduct scored points** switch, on by default, shared by the three lanes and the Overview leaderboard. While on, every points figure on the leaderboards is the unit's remaining points, labelled "remaining"; while off, it is points per battle, labelled "per battle". The order follows the shown figure. The toggle persists while on the page and resets to on when leaving it.
+The leaderboard controls SHALL include a **Deduct scored points** switch, on by default. While on, every points figure on the leaderboards is the unit's remaining points, labelled "remaining"; while off, it is points per battle, labelled "per battle". The order follows the shown figure.
 
 #### Scenario: Default shows remaining points
 
@@ -206,7 +201,7 @@ The leaderboard controls SHALL include a **Deduct scored points** switch, on by 
 
 ### Requirement: Objective multi-select filter
 
-The leaderboard controls SHALL include an objective filter listing the current lane's objectives (icon and label) as multi-select chips in the lane's objective order; on the Overview leaderboard the chips SHALL be grouped per lane under Alpha, Beta and Gamma headings in that order, each group listing that lane's objectives, so an objective shared by two lanes appears in each lane's group. When synced progress is available every chip's label SHALL be followed by "cleared / battles" for that lane's objective (the number of the lane's battles whose synced progress has the objective cleared, of the lane's battle count; 0 for a lane with no synced record); when the progress read failed the chips carry no count. A chip's selection is the objective's filter identity, so selecting a shared objective in one group selects it in every group. A unit stays listed only when it satisfies every selected objective (on Overview, on at least one lane for each selected objective). The selection is shared by the lane and Overview leaderboards, persists while on the page and resets on leaving it. A selection that matches no unit SHALL show a "no unit satisfies these objectives" body with a clear-filter action.
+The leaderboard controls SHALL include an objective filter listing the current lane's objectives (icon and label) as multi-select chips in the lane's objective order; on the Overview leaderboard the chips SHALL be grouped per lane under Alpha, Beta and Gamma headings in that order, each group listing that lane's objectives, so an objective shared by two lanes appears in each lane's group. When synced progress is available every chip's label SHALL be followed by "cleared / battles" for that lane's objective (the number of the lane's battles whose synced progress has the objective cleared, of the lane's battle count; 0 for a lane with no synced record); when the progress read failed the chips carry no count. A chip's selection is the objective's filter identity, so selecting a shared objective in one group selects it in every group. A unit stays listed only when it satisfies every selected objective (on Overview, on at least one lane for each selected objective). A selection that matches no unit SHALL show a "no unit satisfies these objectives" body with a clear-filter action.
 
 #### Scenario: Two objectives selected
 

@@ -2,7 +2,7 @@
 
 ## Purpose
 
-TBD - created by archiving change add-goal-season-fit. Update Purpose after archive.
+Lets the Goals page show, for a chosen season type (Battle Pass, Guild Raid or Guild War), how many season boundaries each eligible goal's estimated completion falls beyond, using season windows from the events catalog, and marks the season cut-off with a divider.
 
 ## Requirements
 
@@ -93,7 +93,7 @@ Assumptions:
 #### Scenario: Blocked goal
 
 - **WHEN** an Active Rank goal's estimate is Blocked
-- **THEN** it shows its blocked indicator as today and no fit label or accent
+- **THEN** it shows its blocked indicator and no fit label or accent
 
 ### Requirement: A divider marks the season cut-off
 

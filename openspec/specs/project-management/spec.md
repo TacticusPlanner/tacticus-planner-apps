@@ -65,7 +65,7 @@ The list route SHALL NOT render its own "Projects" (or equivalent) page title �
 
 ### Requirement: Project cards communicate planning value
 
-Every project card SHALL show color, name, description when present, and a goal/unit summary derived from the project's `goalIds` joined with the loaded goals list — no per-project read. Where summary data is available, the Default project card only SHALL also show reached, blocked, and estimate/progress information (completion date and unestimated goals), as the Current plan project did before it was removed, computed from the one global run; other project cards show the goal/unit summary only. Identity and actions SHALL remain usable while the goals list or a summary calculation loads or fails.
+Every project card SHALL show color, name, description when present, and a goal/unit summary derived from the project's `goalIds` joined with the loaded goals list — no per-project read. Where summary data is available, the Default project card only SHALL also show reached, blocked, and estimate/progress information (completion date and unestimated goals), computed from the one global run; other project cards show the goal/unit summary only. Identity and actions SHALL remain usable while the goals list or a summary calculation loads or fails.
 
 #### Scenario: Summary loads progressively
 
@@ -77,37 +77,6 @@ Every project card SHALL show color, name, description when present, and a goal/
 
 - **WHEN** the goals list read fails
 - **THEN** every card shows its identity with an unavailable/retry summary state, and one retry re-reads the goals list
-
-### Requirement: Goal order drives priority-sensitive calculations
-
-The project-goal list SHALL be a filtered projection of the canonical global order. Dailies, Raids Plan, Insights, and farming estimates SHALL run over all Active goals globally once; project views SHALL show filtered results from that run without independently sorting or reallocating resources.
-
-#### Scenario: Shared inventory follows goal order across units
-
-- **GIVEN** two Active goals in different projects need the same resource and owned inventory covers only the globally higher-priority goal
-- **WHEN** planning is calculated
-- **THEN** that goal receives the inventory first regardless of unit or project
-
-### Requirement: Project goal rows offer removal alongside deletion
-
-Wherever a goal row renders with project memberships, its actions SHALL offer removing that goal from a project in addition to deleting it. When the Goals page is scoped to a project, removal from that project SHALL take effect on that project only, the row SHALL leave the scoped list, and the outcome SHALL be reported naming the goal and, when the goal was relocated, its destination project.
-
-#### Scenario: A goal row offers both actions
-
-- **WHEN** a goal row's actions are examined on the Goals page scoped to a project
-- **THEN** both a project-removal action and an account-wide delete action are offered
-
-#### Scenario: Removed goal leaves the viewed list
-
-- **GIVEN** a goal is listed on the Goals page scoped to project A
-- **WHEN** it is removed from project A
-- **THEN** it no longer appears in the scoped list and the outcome is reported
-
-#### Scenario: Relocation destination is reported
-
-- **GIVEN** the removed goal's only membership was project A
-- **WHEN** the removal completes
-- **THEN** the reported outcome names the project the goal was relocated to
 
 ### Requirement: Historical goals stay outside the in-flight ordering
 
@@ -121,7 +90,7 @@ Completed and Archived goals SHALL remain discoverable through the status filter
 
 ### Requirement: The Default project is permanent
 
-Every account SHALL have exactly one Default project. It SHALL be renamable and editable like any project, SHALL NOT be archived or deleted (no control offers either), and SHALL be the fallback home of a goal whose last other membership is removed. It SHALL be listed first wherever projects are listed and SHALL carry a Default marker. No other project SHALL carry a special status: there is no Active or Current plan project.
+Every account SHALL have exactly one Default project. It SHALL be renamable and editable like any project, SHALL NOT be archived or deleted (no control offers either), and SHALL be the relocation destination defined by `goal-project-membership` ("Every goal retains at least one project membership"). It SHALL be listed first wherever projects are listed and SHALL carry a Default marker in project selectors and on the Projects page; the Goals page's scope chips list it first without a marker (see `goals-navigation`). No other project SHALL carry a special status: there is no Active or Current plan project.
 
 #### Scenario: Default project cannot be archived
 
@@ -137,11 +106,6 @@ Every account SHALL have exactly one Default project. It SHALL be renamable and 
 
 - **WHEN** any project surface renders
 - **THEN** it shows no Active, Current plan, or Make current label or control for any project
-
-#### Scenario: A goal's last membership is removed
-
-- **WHEN** a goal's last non-Default membership is removed
-- **THEN** the client has already added the Default project membership (the API itself rejects removing a goal's only remaining membership), so the goal remains a member of the Default project
 
 ### Requirement: The list route shows every project, Default first, without its goal table
 
@@ -175,7 +139,7 @@ The dashboard SHALL show the Default project first, other non-archived projects 
 
 ### Requirement: Project lifecycle actions are Edit and Archive/Restore in an overflow menu
 
-Project actions SHALL no longer render as an always-visible inline icon cluster. Edit and Archive/Restore SHALL appear in an accessible overflow menu. Archive SHALL be unavailable with explanatory text for the Default project, which is permanent (see "The Default project is permanent").
+Project actions SHALL NOT render as an always-visible inline icon cluster. Edit and Archive/Restore SHALL appear in an accessible overflow menu. Archive SHALL be unavailable with explanatory text for the Default project, which is permanent (see "The Default project is permanent").
 
 #### Scenario: Secondary actions are labeled
 
@@ -194,20 +158,9 @@ Project actions SHALL no longer render as an always-visible inline icon cluster.
 - **WHEN** the user activates Restore from its action menu
 - **THEN** the project returns to the available-project section
 
-#### Scenario: Archive is unavailable for the Default project
-
-- **GIVEN** the Default project
-- **WHEN** its action menu renders
-- **THEN** Archive is unavailable and explanatory text identifies the restriction
-
 ### Requirement: A project is viewed on the Goals page scoped to that project
 
 The system SHALL NOT present a per-project goal detail route. A project's goals SHALL be viewed on the Goals page (`/plan/goals`) with that project selected in its project scope (see `goals-navigation`, "Goals project scope is URL state"). `/plan/projects/{id}` SHALL NOT be a route; it falls through to the app's existing not-found handling. Wherever another spec says "project detail route", "Project Detail", "a project's page", or "the detail route", it means the Goals page scoped to that project.
-
-#### Scenario: A project opens on Goals
-
-- **WHEN** the user activates a project anywhere it is listed (Projects page row, home page card)
-- **THEN** the Goals page opens at `/plan/goals?project={id}` scoped to that project
 
 #### Scenario: The former detail path is not a route
 
@@ -216,11 +169,11 @@ The system SHALL NOT present a per-project goal detail route. A project's goals 
 
 ### Requirement: The Projects row menu hosts every project-specific action
 
-Each non-archived project row's overflow menu on `/plan/projects` SHALL offer, in order: **Create goal**, **Manage goals**, **Edit**, then **Archive**. An archived project row's menu SHALL offer **Edit** and **Restore** only. Create goal SHALL open goal creation with that row's project preselected (see `goal-creation-entry-points`). Manage goals SHALL open the bulk membership surface for that row's project. Activating Create goal or Manage goals SHALL NOT navigate away from the Projects page. Archive SHALL remain unavailable, with explanatory text, for the Default project.
+Each non-archived project row's overflow menu on `/plan/projects` SHALL offer, in order: **Create goal**, **Manage goals**, **Edit**, then **Archive** (the Default project offers no Archive; see "The Default project is permanent"). An archived project row's menu SHALL offer **Edit** and **Restore** only. Create goal SHALL open goal creation with that row's project preselected (see `goal-creation-entry-points`). Manage goals SHALL open the bulk membership surface for that row's project. Activating Create goal or Manage goals SHALL NOT navigate away from the Projects page.
 
 #### Scenario: A live project's menu lists the four actions
 
-- **WHEN** the user opens the overflow menu of a non-archived project row
+- **WHEN** the user opens the overflow menu of a non-archived, non-Default project row
 - **THEN** Create goal, Manage goals, Edit, and Archive appear, in that order, with text labels
 
 #### Scenario: Manage goals opens for that row's project

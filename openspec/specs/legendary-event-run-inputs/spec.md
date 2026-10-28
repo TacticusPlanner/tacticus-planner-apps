@@ -8,7 +8,7 @@ Defines the run inputs drawer on a Legendary Event page: the per-run economy inp
 
 ### Requirement: The Run status card opens a run inputs drawer
 
-The Run status card SHALL carry an **Inputs** button (`data-testid="legendary-event-run-inputs"`) for signed-in users. It SHALL open a drawer listing runs 1, 2 and 3 in order, each labelled "Done" (before the current run), "Now" (the current run) or "Planned" (after it), where the current run is the synced `currentEventRun` clamped to 1..3, or 1 when the account has no synced entry for the event. Each run SHALL show **Regular missions** as a checklist of the event's regular missions, each with a **Done** tick, and a **Plan to complete** count (0..the catalog regular mission count) that is never below the ticked count. When **Show paid options** is on, each run SHALL also show **Premium missions** as the same checklist with its own Plan to complete count, **Bought the 300 currency bundle** (on/off) and **Oh So Close shards** (0..75). Ticking a mission when the count equals the ticked count SHALL raise the count by one; unticking SHALL leave the count. The drawer SHALL carry the **Show paid options** switch, reflecting the plan's `showPaidOptions`. A run with no stored inputs SHALL show nothing ticked, zeros and off. Every run SHALL be editable at any time; the Now run's checklist SHALL be expanded and the others collapsed.
+The Run status card SHALL carry an **Inputs** button (`data-testid="legendary-event-run-inputs"`) for signed-in users. It SHALL open a drawer listing runs 1, 2 and 3 in order, each labelled "Done" (a run that has ended), "Now" (the current run) or "Planned" (a later run), against the runs resolved by `legendary-event-run-resolution`; while the run is unknown no run carries a label. Each run SHALL show **Regular missions** as a checklist of the event's regular missions, each with a **Done** tick, and a **Plan to complete** count (0..the catalog regular mission count) that is never below the ticked count. When **Show paid options** is on, each run SHALL also show **Premium missions** as the same checklist with its own Plan to complete count, **Bought the 300 currency bundle** (on/off) and **Oh So Close shards** (0..75). Ticking a mission when the count equals the ticked count SHALL raise the count by one; unticking SHALL leave the count. The drawer SHALL carry the **Show paid options** switch, reflecting the plan's `showPaidOptions`. A run with no stored inputs SHALL show nothing ticked, zeros and off. Every run SHALL be editable at any time; the Now run's checklist SHALL be expanded and the others collapsed (all collapsed while the run is unknown).
 
 Assumptions:
 
@@ -52,7 +52,7 @@ Assumptions:
 
 ### Requirement: Run inputs save per run through the plan revision
 
-A change to a run's inputs SHALL show at once and SHALL be saved as one write of that run (`PUT /api/v1/legendary-event-plans/{eventId}/runs/{run}` with the cached plan revision) once changes to that run settle; a run whose settled values equal the stored ones SHALL send nothing. Writes SHALL go through the same queue as team writes, so they never race a team edit in the same tab. On success the returned plan SHALL replace the cached plan. On a stale-revision conflict the plan from the response SHALL replace the cached plan, the "plan reloaded" toast SHALL show, and the drawer SHALL show the adopted values. Any other failure SHALL restore the stored values and show a translated error toast. Paid values stored while Show paid options is off SHALL be kept, not cleared.
+A change to a run's inputs SHALL show at once and SHALL be saved as one write of that run (`PUT /api/v1/legendary-event-plans/{eventId}/runs/{run}` with the cached plan revision) once changes to that run settle; a run whose settled values equal the stored ones SHALL send nothing. Writes SHALL go through the same queue as team writes, so they never race a team edit in the same tab. Success, conflict and failure SHALL follow the plan write queue (`legendary-event-teams`, "The plan is persisted through the API with one revision"); after a conflict the drawer SHALL show the adopted values. Paid values stored while Show paid options is off SHALL be kept, not cleared.
 
 #### Scenario: Quick edits save once
 
@@ -73,9 +73,9 @@ A change to a run's inputs SHALL show at once and SHALL be saved as one write of
 
 ### Requirement: The run inputs drawer is in the event page tour
 
-The event page tour SHALL include a step on the Inputs button, after the Run status step, on desktop and mobile, with translated title and content explaining that missions and packs the game does not report feed the reward outlook.
+The event page tour's Run inputs step (its place in the order: `legendary-events-hub`) SHALL have translated title and content explaining that missions and packs the game does not report feed the reward outlook.
 
-#### Scenario: Tour step order
+#### Scenario: Run inputs step copy
 
-- **WHEN** the event page tour runs on either form
-- **THEN** the step after Run status highlights the Inputs button
+- **WHEN** the event page tour reaches the Run inputs step on either form
+- **THEN** it highlights the Inputs button and its copy says that missions and packs the game does not report feed the reward outlook

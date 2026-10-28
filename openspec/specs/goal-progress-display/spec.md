@@ -18,7 +18,7 @@ The Actual Progress and Potential Progress explanations SHALL state only what ea
 
 ### Requirement: Progress renders as one stacked bar with an actual fill over a potential fill
 
-Wherever a goal's progress previously rendered as two separate progress bars (an Actual Progress bar and, when applicable, a Potential Progress bar), it SHALL instead render as a single bar with up to two layers over a track: a striped fill from 0 to the Potential Progress ratio (when present and greater than the Actual Progress ratio), and a solid fill from 0 to the Actual Progress ratio on top of it. Both ratios SHALL be clamped to the 0–100% range before rendering. When no Potential Progress ratio is present, or it is not greater than the Actual Progress ratio, only the solid actual fill SHALL render (no striped layer).
+A goal's progress (Actual Progress and, when applicable, Potential Progress) SHALL render as a single bar with up to two layers over a track: a striped fill from 0 to the Potential Progress ratio (when present and greater than the Actual Progress ratio), and a solid fill from 0 to the Actual Progress ratio on top of it. Both ratios SHALL be clamped to the 0–100% range before rendering. When no Potential Progress ratio is present, or it is not greater than the Actual Progress ratio, only the solid actual fill SHALL render (no striped layer).
 
 #### Scenario: Actual progress with no potential data
 
@@ -102,7 +102,7 @@ Assumptions:
 
 ### Requirement: The Unlock goal's flavor text moves from an inline row caption to a name tooltip
 
-The Unlock goal's descriptive caption ("Gather the character's shards and prepare them to join your roster.") SHALL no longer render as a persistent line under the goal row/card. It SHALL instead be available as a tooltip on the character's name, shown on hover or keyboard focus (desktop) or on tap (mobile), consistent with this app's shared `Tooltip` component's existing touch behavior.
+The Unlock goal's descriptive caption ("Gather the character's shards and prepare them to join your roster.") SHALL NOT render as a persistent line under the goal row/card; it SHALL be available as a tooltip on the character's name, shown on hover or keyboard focus (desktop) or on tap (mobile), consistent with this app's shared `Tooltip` component's existing touch behavior.
 
 #### Scenario: Desktop hover reveals the flavor text
 
@@ -208,7 +208,7 @@ Assumptions:
 
 - **GIVEN** an Ascension goal configured with a target of `Rare:FiveStars` and the player's character is currently at `Uncommon:FourStars`
 - **WHEN** the goal's progress is displayed
-- **THEN** the current badge shows `Uncommon:FourStars` unchanged and the progress bar reads proportionally between 0% and 100%, unchanged from today
+- **THEN** the current badge shows `Uncommon:FourStars` unchanged and the progress bar reads proportionally between 0% and 100%
 
 #### Scenario: Live progression is below the goal's configured start
 
@@ -229,11 +229,6 @@ Where Actual and Potential ratios render together, their explanation SHALL be re
 
 - **WHEN** a desktop project goal has both ratios
 - **THEN** it uses the same info disclosure and global-priority explanation as Global Plan
-
-#### Scenario: Both bars render in the goal-detail sheet
-
-- **WHEN** the Edit goal dialog is open, which replaced the former goal-detail sheet
-- **THEN** it renders no progress bars and no progress explanation (the read-only goal detail no longer exists)
 
 #### Scenario: Desktop — activating the info trigger reveals both lines
 

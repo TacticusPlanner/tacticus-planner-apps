@@ -50,8 +50,8 @@ When a 409 carries `current`, the cached resource SHALL be replaced by it at onc
 
 #### Scenario: Stale plan revision in a Legendary Event plan write
 
-- **WHEN** a plan write fails with `planRevisionStale` and a `current` plan
-- **THEN** the current plan replaces the cached one, one "reloaded" notice is shown, and queued writes are discarded as before
+- **WHEN** a plan write fails with `legendaryEventPlanStale` and a `current` plan
+- **THEN** the current plan replaces the cached one, one "reloaded" notice is shown, and queued writes are discarded
 
 #### Scenario: Slot conflict names the goal
 

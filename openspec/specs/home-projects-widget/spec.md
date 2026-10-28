@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Gives players a glanceable summary of their projects on the home page — Current plan first, plus a few others — so they can jump straight into a project's detail without visiting the Projects dashboard first.
+Gives players a glanceable summary of their projects on the home page — the Default project first, then the others — so they can open a project on the Goals page without visiting the Projects page first.
 
 ## Requirements
 

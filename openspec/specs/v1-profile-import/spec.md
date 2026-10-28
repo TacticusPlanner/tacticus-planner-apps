@@ -2,7 +2,7 @@
 
 ## Purpose
 
-TBD - created by archiving change rewrite-v1-goal-import. Update Purpose after archive.
+Defines the V1 profile import dialog: it takes V1 credentials and a selection of profile parts, leaves goal and Legendary Event plan creation to the import operation, and reports each selected part's outcome — per-goal and per-event outcomes in four buckets with translated reasons — without silent no-ops or retained credentials.
 
 ## Requirements
 
@@ -197,7 +197,7 @@ active project or Current plan.
 ### Requirement: An unselected part occupies no row in the result
 
 A part the user did not select SHALL NOT occupy a row in the result. The result
-SHALL list only the parts the import was asked to process, so a cleared part
+SHALL report an outcome for every part the import was asked to process, and only those parts, so a cleared part
 cannot be mistaken for one that was attempted and skipped.
 
 #### Scenario: A cleared part has no row
@@ -310,18 +310,6 @@ the dialog does not close on its own.
 - **GIVEN** an import failed because the credentials were rejected
 - **WHEN** the user enters a different password
 - **THEN** the submit control is available and submitting starts a new import
-
-### Requirement: Each selected part's outcome is reported
-
-The dialog SHALL report an outcome for every part the user selected. A part
-that was not selected SHALL NOT be reported as an import outcome.
-
-#### Scenario: Unselected parts are absent from the report
-
-- **GIVEN** the user selected only the personal API key part
-- **WHEN** the import completes
-- **THEN** the result reports the personal API key part and does not report an outcome for the
-  parts that were not selected
 
 ### Requirement: Legendary Event import outcomes are reported per event
 

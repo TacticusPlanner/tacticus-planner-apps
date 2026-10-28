@@ -154,9 +154,7 @@ be keyboard-operable.
 The Details tab SHALL show a **Primary** and a **Secondary** ability panel, behaving as the character unit
 page's ability panels: icon, kind and localized name, a level stepper from 1 to the highest MoW ability
 level the catalog's upgrade costs reach (60 today), rules text at that level, a next-level line with
-"· Yours: level <n>" for an owned MoW, and growth charts. When the game text has no complete rules text for
-the ability, the panel SHALL show icon, kind, name, the player's level when owned, and the note "Rules text
-isn't in the planner yet.", with no stepper, no next-level line and no chart. The Details tab SHALL NOT show
+"· Yours: level <n>" for an owned MoW, and growth charts. A panel without complete rules text SHALL show the character unit page's missing-text state. The Details tab SHALL NOT show
 stats, a comparison radar, stats by rank, a relic or mythic quests.
 
 Assumptions:

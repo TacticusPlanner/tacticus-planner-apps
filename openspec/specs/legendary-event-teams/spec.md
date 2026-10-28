@@ -8,7 +8,7 @@ Defines the per-lane Teams section of a Legendary Event page: the team card, the
 
 ### Requirement: Each lane tab has a Teams section with one card per team
 
-A lane tab SHALL show a Teams section, between the lane overview and the synced progress grid, listing that lane's teams in their stored order as one card per team. A card SHALL show the team name, its members as unit portraits in position order with a count badge ("N/5") whenever fewer than five members, the reserve member marked as such when present, the covered objectives as chips (objective icon, label and points; a stored objective the current members no longer derive shows muted and does not count toward points, and one already cleared through the team's depth shows as already cleared), the team's **points left** (see the points-left requirement), the team's **total power**, the clear depth (or a "Set depth" prompt when null), and an actions menu with Edit, Delete and, on mobile, Move up / Move down. The same team SHALL never be rendered more than once, whatever the number of objectives it covers. The section SHALL carry an explicit **Add team** button; no scroll, swipe or other gesture SHALL create or open a team.
+A lane tab SHALL show a Teams section, between the lane overview and the synced progress grid, listing that lane's teams in their stored order as one card per team. A card SHALL show the team name, its members as unit portraits in position order with a count badge ("N/5") whenever fewer than five members, the reserve member marked as such when present, the covered objectives as chips (objective icon, label and points; a stored objective the current members no longer derive shows muted and does not count toward points), the team's **points left** (see the points-left requirement), the team's **total power**, the clear depth (or a "Set depth" prompt when null), and an actions menu with Edit, Delete and, on mobile, Move up / Move down. The same team SHALL never be rendered more than once, whatever the number of objectives it covers. The section SHALL carry an explicit **Add team** button; no scroll, swipe or other gesture SHALL create or open a team.
 
 #### Scenario: Teams render in order on a lane
 
@@ -73,7 +73,7 @@ Each card and the editor SHALL expose the clear depth of the current run as a st
 
 - **GIVEN** the worked Uthar Alpha team with an estimated depth of 6 and no manual depth for the current run
 - **WHEN** the card renders
-- **THEN** the stepper shows 6 marked "estimated" with "21% above battle 6 · 32% short of battle 7", and nothing is written
+- **THEN** the stepper shows 6 marked "estimated" with "12% above battle 6 · 37% short of battle 7", and nothing is written
 
 #### Scenario: Override from the estimate
 
@@ -224,8 +224,7 @@ Assumptions:
 - **GIVEN** Lysander Alpha (battle points 32, 28, 33, 37, 44, 48, 45, 48, 44, 46, 48, 47, 48, 49, ...; defeat-all 32; Eviscerate 75, Suppressive Fire 95, Flying 80, Min 5 Hits 85, No Resilient 40) with synced progress where battles 1–13 have defeat-all and No Resilient cleared and full kill and high scores, Eviscerate cleared in battles 5 and 6, Flying cleared nowhere, and battle 14 onward untouched
 - **AND** a team "Flying · No Resilient" covering Flying and No Resilient with an estimated depth of 11
 - **WHEN** its card renders
-- **THEN** each of battles 1–11 has kill score 0, high score 0, defeat-all 0, No Resilient 0 and Flying 80 left, so it shows "880 points left · battles 1–11" (previously "152 points per battle")
-- **AND** the No Resilient chip shows as already cleared
+- **THEN** each of battles 1–11 has kill score 0, high score 0, defeat-all 0, No Resilient 0 and Flying 80 left, so it shows "880 points left · battles 1–11"
 
 #### Scenario: A deeper team earns from the battles past the cleared ones
 

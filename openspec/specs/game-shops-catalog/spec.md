@@ -30,7 +30,7 @@ database version with a new complete `stores()` block).
 
 #### Scenario: Existing databases upgrade without data loss
 
-- **WHEN** a client with an earlier game-catalog database version loads the app after this change
+- **WHEN** a client whose game-catalog database predates the `shops` store loads the app
 - **THEN** the database upgrades to the new version, the `shops` store is created, and the other datasets' stored records are preserved
 
 ### Requirement: A stored shop exposes structured slots, variants, rewards, costs, days, and conditions

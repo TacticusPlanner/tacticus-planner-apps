@@ -326,7 +326,7 @@ Above the day strip, Raids Plan SHALL show a bar of the distinct unit portraits 
 
 ### Requirement: Schedule is a Plan section page
 
-The multi-day plan formerly presented as Dailies › Raids › Raids Plan SHALL be the Plan section's **Schedule** page at `/plan/schedule`, listed after Insights in the Plan section's child pages. `/dailies/raids/plan` SHALL NOT be a route. Wherever another spec says "Raids Plan", it means Schedule; the page's content, calculations, density toggle, day paging, and Raided split are unchanged by the move.
+The multi-day plan SHALL be the Plan section's **Schedule** page at `/plan/schedule`, listed after Insights in the Plan section's child pages. `/dailies/raids/plan` SHALL NOT be a route. Wherever another spec says "Raids Plan", it means Schedule.
 
 #### Scenario: Schedule is reachable from the Plan section
 
@@ -346,7 +346,7 @@ The multi-day plan formerly presented as Dailies › Raids › Raids Plan SHALL 
 
 ### Requirement: Schedule owns its project selection
 
-Schedule SHALL provide its own project selector using the shared project-selector component, right-aligned in its own row with the Planning Settings trigger trailing after it. It SHALL default to "All goals" (the account-wide plan), SHALL NOT be persisted across a full page reload, and SHALL be independent of Today's selection, of every other Dailies page's selection, and of the Goals page's project scope. Selecting a project SHALL narrow the plan to that project's Active goals, still in canonical global priority order and from the one global run. A failed project-list load SHALL NOT be reported as a plan failure; with no projects the page SHALL derive its state from Active goals.
+Schedule SHALL provide its own project selector using the shared project-selector component, right-aligned in its own row with the Planning Settings trigger trailing after it. It SHALL default to "All goals" (the account-wide plan), SHALL NOT be persisted across a full page reload, and SHALL be independent of Today's selection, of every other Dailies page's selection, and of the Goals page's project scope. A failed project-list load SHALL NOT be reported as a plan failure; with no projects the page SHALL derive its state from Active goals.
 
 #### Scenario: Default is all goals
 
@@ -384,12 +384,12 @@ Schedule SHALL provide its own project selector using the shared project-selecto
 
 ### Requirement: Raids Plan is not event-optimised
 
-The Raids Plan SHALL schedule days without any Home Screen Event scoring and SHALL NOT show event points or event names on day cards, whether or not an HSE is active or scheduled within the plan horizon.
+The Raids Plan SHALL NOT show event points or event names on day cards, whether or not an HSE is active or scheduled within the plan horizon; its schedule is event-agnostic (see `daily-raids-home-screen-event` "Event points affect only the HSE tab's farm list").
 
 #### Scenario: Event inside the plan horizon
 
 - **GIVEN** an HSE window covers Days 2-4 of the plan
-- **THEN** every day's schedule and cards equal those with no event
+- **THEN** no day card shows event points or event names
 
 ### Requirement: Day cards list shop purchases after the raided materials
 

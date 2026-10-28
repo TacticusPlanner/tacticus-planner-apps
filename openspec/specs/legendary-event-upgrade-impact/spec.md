@@ -40,7 +40,7 @@ Assumptions:
 
 For a unit, the planner SHALL list its **next steps**:
 
-- **Unlock**, when the synced roster lacks the unit, to its base state (the first progression step of its catalog `initialRarity`, rank Stone1, no applied upgrades, abilities 1/1);
+- **Unlock**, when the synced roster lacks the unit, to its base state (`legendary-event-goals-preview`);
 - **Rank**, when owned, to the next rank on the ladder with 0 applied upgrades, only when that rank is at most `maxRankForProgression` of the unit's current progression;
 - **Ascension**, when owned, to the next step of `progressionOrder`, unless the unit is at the last step.
 

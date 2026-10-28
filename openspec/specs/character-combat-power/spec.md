@@ -11,7 +11,7 @@ strength without re-deriving the formula. Ported from V1's
 
 ### Requirement: Character in-game power
 
-The capability SHALL expose, for one character at a given state, a non-negative integer **combat power** equal to the game's own power score, reproducing V1's `calculateRosterCharacterPower` (`4-entities/unit/character-power`) for the same inputs. A character that is not unlocked SHALL have a combat power of 0. It is the single character power figure in the app: every feature that shows, sums, ranks or compares character power SHALL read it.
+The capability SHALL expose, for one character at a given state, a non-negative integer **combat power** equal to the game's own power score, reproducing V1's `calculateRosterCharacterPower` (`4-entities/unit/character-power`) for the same inputs. A character that is not unlocked SHALL have a combat power of 0, whether or not power data is available.
 
 Inputs: the character's **rank**, its **progression step** (as the progression index 0..19), the **slots applied** at the current rank, its **active** and **passive** ability levels, and its **equipped items** with their levels. Game data comes from the catalog unit record (base Health/Damage/Armour, weapons, movement, traits, first active and first passive ability, rank-up upgrade ids), the equipment and upgrade datasets, and the `unit-power` dataset.
 
@@ -58,6 +58,6 @@ Assumptions:
 
 #### Scenario: Power data missing for a unit
 
-- **GIVEN** the `unit-power` dataset has no entry for a character, or is absent
+- **GIVEN** an unlocked character, and the `unit-power` dataset has no entry for it or is absent
 - **WHEN** combat power is requested for it
 - **THEN** no power is returned (unavailable), never 0 or a partial figure, and the caller shows its unavailable state

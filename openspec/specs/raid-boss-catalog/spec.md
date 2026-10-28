@@ -22,7 +22,7 @@ The client SHALL treat `raid-bosses` as a served game-catalog dataset: it partic
 
 #### Scenario: Existing databases upgrade without data loss
 
-- **WHEN** a client with an earlier game-catalog database version loads the app after this change
+- **WHEN** a client whose game-catalog database predates the raid-boss store(s) loads the app
 - **THEN** the database upgrades, the raid-boss store(s) are created, and the other datasets' stored records are preserved
 
 ### Requirement: The query surface exposes bosses and primes as separate ordered lists

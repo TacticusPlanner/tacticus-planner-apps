@@ -68,7 +68,7 @@ Assumptions:
 
 - **GIVEN** the `unit-power` dataset failed to load
 - **WHEN** the lane renders
-- **THEN** no team or unit estimate is shown, leaderboard estimated clears show "—", and team depths behave as manual-only depths
+- **THEN** no team or unit estimate is shown, leaderboard rows show no Clears figure, and team depths behave as manual-only depths
 
 ### Requirement: The power ratio is calibrated from manual depths
 
@@ -88,7 +88,7 @@ The planner SHALL provide a calibration that takes samples (a lane's battle powe
 
 ### Requirement: Estimates degrade by data state
 
-When the `horde-mode-tiers` dataset is absent, estimates SHALL still be shown with every character untiered. When it failed to load, no estimate SHALL be shown anywhere and team depths SHALL behave exactly as manual-only depths. While the dataset or the lane's battle powers are loading, no estimate SHALL be shown and leaderboard rows SHALL show a placeholder dash. When the roster could not be read, no estimate SHALL be shown and the existing "roster not synced" note applies. A unit that is not owned SHALL show "—" for its estimated clears.
+When the `horde-mode-tiers` dataset is absent, estimates SHALL still be shown with every character untiered. When it failed to load, no estimate SHALL be shown anywhere and team depths SHALL behave exactly as manual-only depths. While the dataset or the lane's battle powers are loading, or when the roster could not be read, no estimate SHALL be shown. Each surface's rendering of these states (leaderboard: `legendary-event-eligibility`) is specified with that surface.
 
 #### Scenario: Tier list failed to load
 
@@ -101,11 +101,6 @@ When the `horde-mode-tiers` dataset is absent, estimates SHALL still be shown wi
 - **GIVEN** the catalog has no `horde-mode-tiers` dataset
 - **WHEN** the event page renders
 - **THEN** estimates show, computed with every character untiered (multiplier 1.0)
-
-#### Scenario: Locked unit on the leaderboard
-
-- **WHEN** a unit that is not owned is listed on a lane leaderboard
-- **THEN** its Clears figure reads "—"
 
 ### Requirement: An equipped relic sets the horde-mode multiplier
 

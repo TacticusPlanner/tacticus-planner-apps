@@ -2,23 +2,18 @@
 
 ## Purpose
 
-Gives players a compact, location-first view of what's still worth raiding today for their Active project, without leaving the home page or wading through Today's per-goal grouping.
+Gives players a compact, location-first view of what's still worth raiding today for all their Active goals, without leaving the home page or wading through Today's per-goal grouping.
 
 ## Requirements
 
 ### Requirement: Home page renders Daily Raids after Your Projects
 
-The authenticated home page SHALL render a Daily Raids section after Your Projects and before the events calendar. At or above the 768px breakpoint it SHALL render side by side with Your Projects. Below 768px it SHALL render as its own full-width stacked section, after Your Projects and before the events calendar.
+The authenticated home page SHALL render a Daily Raids section in the position defined by `home-projects-widget` "Home page renders Your Projects after Token Availability".
 
 #### Scenario: Desktop shows Daily Raids beside Projects
 
 - **WHEN** a signed-in user opens `/home` at or above the 768px breakpoint
 - **THEN** Daily Raids renders side by side with Your Projects, below Token Availability and above the events calendar
-
-#### Scenario: Mobile stacks Daily Raids after Projects
-
-- **WHEN** a signed-in user opens `/home` below the 768px breakpoint
-- **THEN** Daily Raids renders as its own full-width section, after Your Projects and before the events calendar
 
 ### Requirement: The widget shows the real (energy-budget) schedule only, one row per location
 
@@ -82,12 +77,12 @@ When two or more in-scope goals each plan a raid at the same battle location tod
 
 ### Requirement: Activating the widget navigates to Today
 
-Activating the widget (outside any per-row control) SHALL navigate to `/dailies/raids/today`.
+Activating the widget (outside any per-row control) SHALL navigate to Today (`/dailies/raids`).
 
 #### Scenario: Widget opens Today
 
 - **WHEN** the user activates the Daily Raids widget
-- **THEN** `/dailies/raids/today` opens, scoped to the same Active/Default project the widget showed
+- **THEN** Today (`/dailies/raids`) opens; the widget passes no project to it
 
 ### Requirement: The widget scopes to all Active goals, matching Today
 

@@ -2,12 +2,7 @@
 
 ## Purpose
 
-Tells a player which of today's daily-shop offers are worth buying for one selected project's active
-goals — matching each shop's currently-rotating rewards against the project's outstanding
-character-shard, mythic-shard, and mythic uncraftable upgrade-material needs — a first cut of the shop
-recommendations V1 shows on its Daily Raids → Today page, on a dedicated Shops page under Dailies.
-(V1 additionally matches forge badges and machine-of-war components; V2's goal model has no need
-derivation for those yet, so they are tracked as a follow-up (TacticusPlanner/tacticus-planner-apps#104) and out of scope here.)
+Tells a player which of today's daily-shop offers are worth buying for their goals (optionally one project's) — matching each shop's rotating rewards against outstanding character-shard, mythic-shard and mythic uncraftable upgrade-material needs — as a section of the Dailies Raids tab. Forge badges and machine-of-war components are not matched.
 
 ## Requirements
 
@@ -184,12 +179,7 @@ scope for this page's own states.
 
 ### Requirement: Shop recommendations are a section of the Raids tab
 
-The recommendations SHALL render as a "Shop recommendations" section on the Raids tab (`/dailies/raids`), after the raid lanes, in place of a separate Shops page. The section SHALL be shown whatever the raids' own state is (loading, nothing to farm, or ready). It SHALL have no project selector of its own: it reads the Dailies project that the Raids tab's selector sets, so one selection narrows both the raids and the shop buys. Its subtitle SHALL name the selected project, or say that it covers every Active goal when none is selected. Shop names and their Guaranteed/Possible groups SHALL be headings nested under the section's own h2.
-
-#### Scenario: One selector narrows raids and shops
-
-- **WHEN** the user picks a project in the Raids tab's project selector
-- **THEN** both the raid lanes and the shop recommendations reflect that project's goals
+The recommendations SHALL render as a "Shop recommendations" section on the Raids tab (`/dailies/raids`), after the raid lanes, in place of a separate Shops page. The section SHALL be shown whatever the raids' own state is (loading, nothing to farm, or ready). It SHALL have no project selector of its own; its scope follows "Shops is a Dailies page defaulting to all goals with an optional project filter". Its subtitle SHALL name the selected project, or say that it covers every Active goal when none is selected. Shop names and their Guaranteed/Possible groups SHALL be headings nested under the section's own h2.
 
 #### Scenario: Shops show while raids have nothing to farm
 

@@ -2,23 +2,18 @@
 
 ## Purpose
 
-Defines the Goals section's shared header/toolbar behavior — where Planning Settings lives, the shared status filter control, and how the project selector is presented — so Overview, Projects, and Insights read as one consistent surface instead of three independently-built header layouts.
+Defines the Goals section's shared header/toolbar behavior — where Planning Settings lives, the shared status filter control, and how the project selector is presented — so Goals, Projects, and Insights read as one consistent surface instead of three independently-built header layouts.
 
 ## Requirements
 
-### Requirement: Planning Settings is a Goals-only control
+### Requirement: Planning Settings appears on Goals, not on Projects or Insights
 
-The Plan section SHALL render its Planning Settings entry point on the Goals subpage and on the Schedule subpage (trailing Schedule's project selector). Projects and Insights SHALL NOT render a Planning Settings entry point of their own. Every entry point opens the same dialog over the same persisted setting.
+The Plan section SHALL render its Planning Settings entry point on the Goals subpage. Projects and Insights SHALL NOT render a Planning Settings entry point of their own. The Schedule and Raids entry points are defined by `planning-settings-access`; every entry point opens the same dialog over the same persisted setting.
 
 #### Scenario: Planning Settings visible on Overview
 
 - **WHEN** the user opens Goals
 - **THEN** a Planning Settings control is visible and opens the planning settings dialog
-
-#### Scenario: Planning Settings visible on Schedule
-
-- **WHEN** the user opens Schedule
-- **THEN** a Planning Settings control is visible after the project selector and opens the same planning settings dialog
 
 #### Scenario: Planning Settings absent from Projects and Insights
 
@@ -74,7 +69,7 @@ When there is at least one goal in the Reached status and the status filter's cu
 
 ### Requirement: Goals controls compress on mobile
 
-Below the 768px mobile breakpoint, Goals SHALL render the project scope chip row first, then keep the status filter (with its reached-indicator) in its own row. The Type/Group filters, the reorder-mode toggle (always present; disabled while goals load or when reordering is unavailable), the select-mode toggle (`goal-bulk-actions`; always present, disabled while goals load or when no row is visible), the order info affordance, the contextual Create Goal action, and the Planning Settings control SHALL render as icon-only triggers in a third row, each retaining an accessible name for its full label. Because every control in this row is present from the first render, the row SHALL NOT shift when goals finish loading. The bulk actions themselves SHALL NOT render in this row; they live in the select-mode bottom bar. When the controls do not fit one line (for example at 360px, and with the density control from `add-goals-overview-density-option`), the row SHALL wrap onto a further line rather than clip, scroll horizontally, or hide a control.
+Below the 768px mobile breakpoint, Goals SHALL render the project scope chip row first, then keep the status filter (with its reached-indicator) in its own row. The Type/Group filters, the reorder-mode toggle (always present; disabled while goals load or when reordering is unavailable), the select-mode toggle (`goal-bulk-actions`; always present, disabled while goals load or when no row is visible), the order info affordance, the contextual Create Goal action, and the Planning Settings control SHALL render as icon-only triggers in a third row, each retaining an accessible name for its full label. Because every control in this row is present from the first render, the row SHALL NOT shift when goals finish loading. The bulk actions themselves SHALL NOT render in this row; they live in the select-mode bottom bar. When the controls do not fit one line (for example at 360px, and with the density control (`goal-list-layout`)), the row SHALL wrap onto a further line rather than clip, scroll horizontally, or hide a control.
 
 #### Scenario: Mobile Overview keeps the status filter on its own row
 
@@ -104,18 +99,13 @@ Below the 768px mobile breakpoint, Goals SHALL render the project scope chip row
 
 ### Requirement: Project-aware browsing defaults to all goals
 
-Insights and every Dailies page that offers the shared project selector (Shops, Arena, Onslaught, Salvage Run) SHALL initially show all goals ("All goals"), using the global priority order and the one account-wide allocation. Choosing a project SHALL only filter or summarize that project's goals from the global result; clearing it SHALL restore "All goals". The choice SHALL NOT be persisted across a full page reload and SHALL NOT be changed by the Goals page's project scope. No project SHALL be pre-selected because of any project's type or status, including the Default project.
+Insights and every Dailies page that offers the shared project selector (Shops, Arena, Onslaught, Salvage Run) SHALL initially show all goals ("All goals"), using the global priority order and the one account-wide allocation. Choosing a project narrows the global result as `global-goal-priority` ("One global active sequence drives all execution surfaces") requires; clearing it SHALL restore "All goals". The choice SHALL NOT be persisted across a full page reload and SHALL NOT be changed by the Goals page's project scope. No project SHALL be pre-selected because of any project's type or status, including the Default project.
 
 #### Scenario: Insights opens on all goals
 
 - **GIVEN** the account has a Default project and other projects
 - **WHEN** the user opens Insights with no earlier selection this session
 - **THEN** Insights shows all goals with "All goals" selected in its project selector
-
-#### Scenario: A project filter narrows without re-planning
-
-- **WHEN** the user selects project B on Insights or Shops
-- **THEN** results shown are project B's goals' outcomes from the global run, and Today's schedule is unchanged
 
 #### Scenario: Browsing a project does not set the filter
 
@@ -374,4 +364,4 @@ The Goals status filter and Type filter SHALL be the `status` and `type` query p
 #### Scenario: Fresh load without parameters uses the defaults
 
 - **WHEN** the user opens `/plan/goals` with no `status` or `type` parameter
-- **THEN** the status filter reads Unfulfilled and the Type filter all types, exactly as before this change
+- **THEN** the status filter reads Unfulfilled and the Type filter all types

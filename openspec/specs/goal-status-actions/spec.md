@@ -2,7 +2,7 @@
 
 ## Purpose
 
-How a user changes a goal's lifecycle status from the goals list: the primary pause/resume action available on every goal row, when Archive becomes available, the prerequisite cascade pause/resume triggers, and the project-scoped bulk pause/resume action. This is the same behavior on desktop and mobile — both render the same row-actions control (`GoalRowActions`), not platform-specific variants.
+How a user pauses or resumes one goal from the goals list: the pause/resume action in each goal row's menu and the prerequisite cascade it triggers. Desktop and mobile render the same row-actions control (`GoalRowActions`). Bulk status changes are owned by `goal-bulk-actions`.
 
 ## Requirements
 
@@ -45,12 +45,6 @@ Using a goal's row-menu Pause SHALL also pause every goal listed in its `depends
 - **GIVEN** goal B lists Paused goal A in its `dependsOn`, and another in-flight goal now holds A's slot
 - **WHEN** the user resumes goal B via its row menu
 - **THEN** neither B nor A is resumed, both rows show Paused, and one error names A and the goal holding its slot
-
-#### Scenario: Bulk pause does not cascade
-
-- **GIVEN** goal B lists goal A in its `dependsOn`, both are Active, and only B is selected
-- **WHEN** the user runs the bulk Pause action
-- **THEN** B is paused and A remains Active
 
 ### Requirement: Pause and resume live in the row menu
 

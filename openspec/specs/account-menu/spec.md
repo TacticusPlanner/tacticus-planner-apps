@@ -2,27 +2,13 @@
 
 ## Purpose
 
-Defines how the signed-in user's account menu presents itself and its identity on desktop — its trigger, its position and shape relative to that trigger, and the identity information shown when it opens — so it reads as a self-contained "account card" rather than a plain unlabeled dropdown. This capability covers the authenticated desktop account menu only; the sign-in button shown when signed out, and the mobile account drawer, are unaffected and out of scope.
+Defines the account menu: its global-bar trigger, the account card's position and sections (shared by the desktop popover and the mobile drawer), preference access for signed-out users, and the loading identity shown until the planner account is known.
 
 ## Requirements
 
-### Requirement: Desktop account menu shows the signed-in user's identity above its actions
-
-Opening the desktop account menu SHALL show the signed-in user's account avatar, display name, and email address as an identity header above the menu's existing actions (importing from V1, managing the account, and signing out). This identity header SHALL NOT be interactive.
-
-#### Scenario: Opening the menu shows the user's identity
-
-- **WHEN** a signed-in user opens the desktop account menu
-- **THEN** the menu shows their account avatar, display name, and email address above its list of actions
-
-#### Scenario: Existing menu actions are unaffected
-
-- **WHEN** a signed-in user opens the desktop account menu
-- **THEN** the same actions available before this change (import from V1, manage account, sign out) are still present and still behave as they did before
-
 ### Requirement: Desktop global bar account trigger shows the account avatar
 
-The desktop global bar SHALL show the signed-in user's account avatar at the far right, with their display name when space permits. The trigger SHALL be independent of sidebar expansion and SHALL have an accessible account-menu label. At narrow desktop widths the name SHALL truncate or hide without losing access to the menu. No duplicate account trigger SHALL remain in the sidebar.
+The desktop global bar SHALL show the signed-in user's account avatar at the far right, with their display name when space permits. The trigger SHALL be independent of sidebar expansion and SHALL have an accessible account-menu label. At narrow desktop widths the name SHALL truncate or hide without losing access to the menu.
 
 #### Scenario: Wide desktop trigger shows identity
 
@@ -36,7 +22,7 @@ The desktop global bar SHALL show the signed-in user's account avatar at the far
 
 ### Requirement: Desktop account card opens below its top-right trigger
 
-The desktop account card SHALL now open below the top-right global-bar trigger, aligned to its right edge, with a visible pointer and collision handling to stay within the viewport. The trigger SHALL remain visibly highlighted while open. Escape and outside click SHALL dismiss the card, and Escape SHALL return focus to the trigger.
+The desktop account card SHALL open below the top-right global-bar trigger, aligned to its right edge, with a visible pointer and collision handling to stay within the viewport. The trigger SHALL remain visibly highlighted while open. Escape and outside click SHALL dismiss the card, and Escape SHALL return focus to the trigger.
 
 #### Scenario: Opening the menu positions it below the trigger
 
@@ -55,9 +41,7 @@ The desktop account card SHALL now open below the top-right global-bar trigger, 
 
 ### Requirement: Desktop account card is organised into identity, preferences, account, and session sections
 
-The account card (desktop popover and mobile drawer share the same layout) SHALL present, top to bottom: (1) an identity header with the account avatar, display name, email, and an edit button that opens Account settings on its profile tab; (2) a Preferences section with the Light/System/Dark theme as an inline three-icon switch using the existing theme preference and persistence, and a Language row that shows the current language on its right with a chevron and opens an in-card language picker; (3) an "Account settings" row that opens the existing Account settings dialog, an "Import from V1" row that navigates to the existing V1 import page, a "Send feedback" row that opens the existing UserJot widget, and a "Roadmap" row that opens the public UserJot roadmap (`https://tacticusplanner.userjot.com/roadmap`) in a new tab with `rel="noopener noreferrer"`; (4) a "Sign out" row; and (5) the game catalog version from the existing catalog status as a quiet footer line. The card SHALL NOT have an Import & export submenu. The language picker SHALL list the supported languages, mark the current one, apply a selection immediately through the existing language logic, and return to the main card. Selecting a row that navigates or opens a dialog SHALL close the card. Changing theme SHALL apply immediately without navigation. Existing loading states, fallbacks, and authentication guards SHALL remain. Mobile account and theme behavior SHALL remain unchanged.
-
-Export backup, Restore from backup, a Keyboard shortcuts list, and Delete account rows (and any Import & export submenu) are out of scope for this change; they are follow-up work that needs their own behavior and specs, and this change SHALL NOT add them.
+The account card (desktop popover and mobile drawer share the same layout) SHALL present, top to bottom: (1) an identity header with the account avatar, display name, email, and an edit button that opens Account settings on its profile tab; (2) a Preferences section with the Light/System/Dark theme as an inline three-icon switch using the existing theme preference and persistence, and a Language row that shows the current language on its right with a chevron and opens an in-card language picker; (3) an "Account settings" row that opens the existing Account settings dialog, an "Import from V1" row that navigates to the existing V1 import page, a "Send feedback" row that opens the existing UserJot widget, and a "Roadmap" row that opens the public UserJot roadmap (`https://tacticusplanner.userjot.com/roadmap`) in a new tab with `rel="noopener noreferrer"`; (4) a "Sign out" row; and (5) the game catalog version from the existing catalog status as a quiet footer line. The card SHALL NOT have an Import & export submenu. The language picker SHALL list the supported languages, mark the current one, apply a selection immediately through the existing language logic, and return to the main card. Selecting a row that navigates or opens a dialog SHALL close the card. Changing theme SHALL apply immediately without navigation.
 
 #### Scenario: Card sections appear in order
 
@@ -112,7 +96,7 @@ Export backup, Restore from backup, a Keyboard shortcuts list, and Delete accoun
 #### Scenario: Mobile drawer keeps the tour reachable
 
 - **WHEN** a signed-in user opens the mobile account drawer
-- **THEN** a "Take a tour" row appears after Send feedback and before Roadmap, starts the general tour, and closes the drawer, and the mobile tour's drawer orchestration and test targets are unchanged
+- **THEN** a "Take a tour" row appears after Send feedback and before Roadmap, starts the general tour, and closes the drawer
 
 #### Scenario: Mobile guest settings match
 

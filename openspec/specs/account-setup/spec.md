@@ -11,7 +11,7 @@ succeeds without yielding a usable key, and how a user who wants neither path ca
 
 ### Requirement: Account setup blocks protected content until a Tacticus API key is configured
 
-A signed-in user without a configured Tacticus API key or without an application display name SHALL be sent to account setup instead of protected route content. Once both are present, protected content SHALL be shown and setup SHALL NOT reappear. While account state is being determined, the system SHALL show neither protected content nor setup, and SHALL NOT navigate; if account state cannot be determined, the system SHALL fail open, show protected content, and SHALL NOT navigate.
+A signed-in user without a configured Tacticus API key or without an application display name SHALL be sent to account setup instead of protected route content. Once both are present, protected content SHALL be shown and setup SHALL NOT reappear. While account state is being determined, the system SHALL show neither protected content nor setup, and SHALL NOT navigate; if account state cannot be determined, the system SHALL show neither and SHALL NOT navigate; retrying and the error card follow `onboarding-gate`.
 
 #### Scenario: Unconfigured user is sent to setup instead of protected content
 
@@ -31,7 +31,7 @@ A signed-in user without a configured Tacticus API key or without an application
 #### Scenario: Account state cannot be determined
 
 - **WHEN** the request for the signed-in user's account state fails
-- **THEN** the route's content is shown rather than setup, and no navigation occurs, so a transient failure does not lock the user out of the app
+- **THEN** neither the route's content nor setup is shown and no navigation occurs; the gate retries, then shows its error card with Retry (see `onboarding-gate`)
 
 #### Scenario: Key exists but no name is set
 
