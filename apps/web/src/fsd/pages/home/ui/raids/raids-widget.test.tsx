@@ -1,3 +1,4 @@
+import userEvent from "@testing-library/user-event"
 import { describe, expect, it, vi } from "vitest"
 import type { BattleId } from "@workspace/game-domain"
 
@@ -5,8 +6,7 @@ import { render, screen } from "@/test/render"
 
 import { RaidsWidget } from "./raids-widget"
 
-const { navigateMock, useDailyRaidsMock } = vi.hoisted(() => ({
-  navigateMock: vi.fn(),
+const { useDailyRaidsMock } = vi.hoisted(() => ({
   useDailyRaidsMock: vi.fn(),
 }))
 
@@ -16,10 +16,6 @@ vi.mock("react-i18next", () => ({
     t: (key: string, values?: Record<string, unknown>) =>
       values ? `${key}:${JSON.stringify(values)}` : key,
   }),
-}))
-vi.mock("react-router", async (importOriginal) => ({
-  ...(await importOriginal<typeof import("react-router")>()),
-  useNavigate: () => navigateMock,
 }))
 vi.mock("@/features/daily-raids", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@/features/daily-raids")>()
@@ -43,7 +39,7 @@ describe("RaidsWidget", () => {
   it("shows no-goals guidance when the account has no active goals", () => {
     useDailyRaidsMock.mockReturnValue({ status: "no-goals" })
 
-    render(<RaidsWidget />)
+    render(<RaidsWidget />, { route: "/" })
 
     expect(screen.getByTestId("home-raids-no-goals")).toBeInTheDocument()
   })
@@ -51,7 +47,7 @@ describe("RaidsWidget", () => {
   it("shows a distinct error when the plan fails to load, not no-goals guidance", () => {
     useDailyRaidsMock.mockReturnValue({ status: "error" })
 
-    render(<RaidsWidget />)
+    render(<RaidsWidget />, { route: "/" })
 
     expect(screen.getByTestId("home-raids-schedule-error")).toBeInTheDocument()
     expect(screen.queryByTestId("home-raids-no-goals")).not.toBeInTheDocument()
@@ -60,7 +56,7 @@ describe("RaidsWidget", () => {
   it("shows a loading state", () => {
     useDailyRaidsMock.mockReturnValue({ status: "loading" })
 
-    render(<RaidsWidget />)
+    render(<RaidsWidget />, { route: "/" })
 
     expect(screen.getByTestId("home-raids-loading")).toBeInTheDocument()
   })
@@ -68,7 +64,7 @@ describe("RaidsWidget", () => {
   it("shows an empty state when there is nothing to raid", () => {
     useDailyRaidsMock.mockReturnValue({ status: "no-farmable" })
 
-    render(<RaidsWidget />)
+    render(<RaidsWidget />, { route: "/" })
 
     expect(screen.getByTestId("home-raids-empty")).toBeInTheDocument()
   })
@@ -103,7 +99,7 @@ describe("RaidsWidget", () => {
       resourceVisuals: new Map(),
     })
 
-    render(<RaidsWidget />)
+    render(<RaidsWidget />, { route: "/" })
 
     expect(screen.getByTestId("home-raid-location-node-1")).toBeInTheDocument()
     expect(screen.getByTestId("home-raid-location-node-2")).toBeInTheDocument()
@@ -124,7 +120,7 @@ describe("RaidsWidget", () => {
       resourceVisuals: new Map(),
     })
 
-    render(<RaidsWidget />)
+    render(<RaidsWidget />, { route: "/" })
 
     expect(screen.getByTestId("home-raid-location-node-1")).toBeInTheDocument()
     expect(
@@ -147,7 +143,7 @@ describe("RaidsWidget", () => {
       resourceVisuals: new Map(),
     })
 
-    render(<RaidsWidget />)
+    render(<RaidsWidget />, { route: "/" })
 
     expect(screen.getByTestId("home-raids-empty")).toBeInTheDocument()
   })
@@ -173,7 +169,7 @@ describe("RaidsWidget", () => {
       resourceVisuals: new Map(),
     })
 
-    render(<RaidsWidget />)
+    render(<RaidsWidget />, { route: "/" })
 
     expect(
       screen.getByTestId("home-raids-energy-limit-reached")
@@ -206,7 +202,7 @@ describe("RaidsWidget", () => {
       resourceVisuals: new Map(),
     })
 
-    render(<RaidsWidget />)
+    render(<RaidsWidget />, { route: "/" })
 
     expect(
       screen.getByTestId("home-raids-energy-limit-reached")
@@ -231,7 +227,7 @@ describe("RaidsWidget", () => {
       resourceVisuals: new Map(),
     })
 
-    render(<RaidsWidget />)
+    render(<RaidsWidget />, { route: "/" })
 
     expect(
       screen.queryByTestId("home-raids-energy-limit-reached")
@@ -266,7 +262,7 @@ describe("RaidsWidget", () => {
       resourceVisuals: new Map(),
     })
 
-    render(<RaidsWidget />)
+    render(<RaidsWidget />, { route: "/" })
 
     const row = screen.getByTestId("home-raid-location-node-1")
     expect(row).toHaveTextContent("Indomitus")
@@ -298,7 +294,7 @@ describe("RaidsWidget", () => {
       resourceVisuals: new Map(),
     })
 
-    render(<RaidsWidget />)
+    render(<RaidsWidget />, { route: "/" })
 
     const lines = screen
       .getByTestId("home-raid-location-node-1")
@@ -306,12 +302,46 @@ describe("RaidsWidget", () => {
     expect([...lines].map((line) => line.textContent)).toEqual(["node-1"])
   })
 
-  it("navigates to Today when activated", () => {
+  it("links to Today from the header instead of making the whole card a button", () => {
     useDailyRaidsMock.mockReturnValue({ status: "no-farmable" })
 
-    render(<RaidsWidget />)
+    render(<RaidsWidget />, { route: "/" })
 
-    screen.getByTestId("home-raids-widget").click()
-    expect(navigateMock).toHaveBeenCalledWith("/dailies/raids")
+    expect(screen.getByTestId("home-raids-widget")).not.toHaveAttribute("role")
+    expect(screen.getByTestId("home-raids-open-today")).toHaveAttribute(
+      "href",
+      "/dailies/raids"
+    )
+  })
+
+  it("shows the first 10 locations and reveals the rest on demand", async () => {
+    const user = userEvent.setup()
+    useDailyRaidsMock.mockReturnValue({
+      status: "ready",
+      today: {
+        entries: Array.from({ length: 12 }, (_, index) =>
+          entry({ battleId: `node-${index}` })
+        ),
+      },
+      bonus: { entries: [] },
+      raidsLeftToday: { entries: [] },
+      attemptsLeftByBattle: new Map(),
+      locationsByBattleId: new Map(),
+      resourceLabels: new Map(),
+      resourceVisuals: new Map(),
+    })
+
+    render(<RaidsWidget />, { route: "/" })
+
+    expect(screen.getAllByTestId(/^home-raid-location-/)).toHaveLength(10)
+    const toggle = screen.getByTestId("home-raids-toggle")
+    expect(toggle).toHaveAttribute("aria-expanded", "false")
+    expect(toggle).toHaveTextContent('home.raids.showMore:{"count":2}')
+
+    await user.click(toggle)
+
+    expect(screen.getAllByTestId(/^home-raid-location-/)).toHaveLength(12)
+    expect(toggle).toHaveAttribute("aria-expanded", "true")
+    expect(toggle).toHaveTextContent("home.raids.showLess")
   })
 })

@@ -542,6 +542,10 @@
     }
   },
   "home": {
+    "rightNow": {
+      "title": "Gerade jetzt",
+      "nothingLive": "Gerade läuft kein Event."
+    },
     "tokens": {
       "title": "Token-Verfügbarkeit",
       "full": "Voll",
@@ -565,17 +569,22 @@
       "emptyDescription": "Projekte fassen deine Ziele zusammen, damit du sie getrennt durchsuchen kannst.",
       "emptyAction": "Projekt erstellen",
       "error": "Deine Projekte konnten nicht geladen werden.",
-      "retry": "Erneut versuchen"
+      "retry": "Erneut versuchen",
+      "viewAll": "Alle Projekte"
     },
     "raids": {
       "title": "Tägliche Raids",
       "empty": "Heute gibt es nichts zu erobern.",
       "error": "Die heutigen Raids konnten nicht geladen werden.",
       "noGoals": "Noch keine aktiven Ziele. Füge Ziele hinzu, um deine Raids zu planen.",
-      "limitReached": "Tägliches Energielimit erreicht – Bonus-Raids:"
+      "limitReached": "Tägliches Energielimit erreicht – Bonus-Raids:",
+      "openToday": "Heute öffnen",
+      "showMore_one": "{{count}} weitere anzeigen",
+      "showMore_other": "{{count}} weitere anzeigen",
+      "showLess": "Weniger anzeigen"
     },
     "events": {
-      "title": "Events",
+      "title": "Kommende Events",
       "live": "LIVE",
       "endsIn": "Endet in {{when}}",
       "startsIn": "Beginnt in {{when}}",
@@ -586,7 +595,11 @@
       "points": "{{points}} Punkte",
       "sourceFailed": "{{type}} konnten nicht geladen werden.",
       "openHse": "Startbildschirm-Events",
-      "openLegendaryEvents": "Legendäre Events"
+      "openLegendaryEvents": "Legendäre Events",
+      "openProject": "Projekt öffnen",
+      "projects_one": "{{count}} Projekt",
+      "projects_other": "{{count}} Projekte",
+      "planEvent": "Event planen"
     },
     "calendar": {
       "title": "Ereigniskalender"

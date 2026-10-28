@@ -1,155 +1,253 @@
+import type { ReactNode } from "react"
 import { ExternalLink } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
+import {
+  Popover,
+  PopoverContent,
+  PopoverDescription,
+  PopoverHeader,
+  PopoverTitle,
+  PopoverTrigger,
+} from "@workspace/ui/components/popover"
 import { cn } from "@workspace/ui/lib/utils"
 
-import { EventTypeIcon } from "@/shared/ui"
+import { eventFamilyStripeClass, resolveEventFamily } from "@/shared/lib"
+import { EventIcon } from "@/shared/ui"
 
-import {
-  eventAccentClass,
-  eventBarClass,
-  resolveEventColorKey,
-} from "@/shared/lib"
 import type { EventEntryViewModel } from "../../model/events-calendar.types"
 import { resolveEventDisplayName } from "../../model/resolve-event-display"
 import { resolveEventWikiUrl } from "../../model/event-wiki-links"
 
-export function EventEntryCard({
+const NAMESPACES = ["events", "characters", "factions", "progression"] as const
+
+function useEventDisplayName(entry: EventEntryViewModel): string {
+  const { t } = useTranslation(NAMESPACES)
+  return resolveEventDisplayName(t, entry)
+}
+
+/** Shared look of every calendar entry: neutral surface, family-colored left stripe, dashed when
+ *  projected, ringed while live. */
+function entrySurfaceClass(entry: EventEntryViewModel): string {
+  return cn(
+    "border border-l-4 bg-muted/50 text-foreground transition-colors hover:bg-muted",
+    "focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none",
+    eventFamilyStripeClass(resolveEventFamily(entry.definitionType)),
+    entry.confirmed
+      ? "border-y-transparent border-r-transparent"
+      : "border-dashed",
+    entry.isActiveNow &&
+      "ring-2 ring-primary ring-offset-1 ring-offset-background"
+  )
+}
+
+/** Screen-reader-only state the surface shows visually (live ring, dashed projected border). */
+function EntryStateText({ entry }: { entry: EventEntryViewModel }) {
+  const { t } = useTranslation("events")
+  return (
+    <>
+      {entry.isActiveNow ? (
+        <span className="sr-only" data-testid="event-active-badge">
+          {t("badges.active")}
+        </span>
+      ) : null}
+      <span className="sr-only" data-testid="event-confirmed-badge">
+        {entry.confirmed ? t("badges.confirmed") : t("badges.projected")}
+      </span>
+    </>
+  )
+}
+
+/** Opens an entry's details: full name, local dates, live/projected state and its Wiki link. The
+ *  trigger is the entry itself, so the Wiki action no longer crowds the bar. */
+function EventDetailsPopover({
   entry,
-  isOccurrenceEnd = false,
-  isOccurrenceStart = false,
-  variant = "list",
+  children,
 }: {
   entry: EventEntryViewModel
-  isOccurrenceEnd?: boolean
-  isOccurrenceStart?: boolean
-  /** "list" (default): mobile's stacked cards. "bar": desktop's colored Gantt-lane bars. */
-  variant?: "list" | "bar"
+  children: ReactNode
 }) {
-  const { t } = useTranslation([
-    "events",
-    "characters",
-    "factions",
-    "progression",
-  ])
-  const displayName = resolveEventDisplayName(t, entry)
-  const colorKey = resolveEventColorKey(
-    entry.definitionId,
-    entry.definitionType
-  )
+  const { t, i18n } = useTranslation("events")
+  const displayName = useEventDisplayName(entry)
   const wikiUrl = resolveEventWikiUrl(entry.definitionId)
+  const range = new Intl.DateTimeFormat(i18n.resolvedLanguage, {
+    dateStyle: "medium",
+    timeStyle: "short",
+  }).formatRange(new Date(entry.startUtc), new Date(entry.endUtc))
 
-  if (variant === "bar") {
-    return (
-      <div
+  return (
+    <Popover>
+      <PopoverTrigger asChild>{children}</PopoverTrigger>
+      <PopoverContent
+        align="start"
+        className="w-72"
+        data-testid="event-details"
+      >
+        <PopoverHeader>
+          <div className="flex items-center gap-3">
+            <EventIcon
+              className="size-10 shrink-0"
+              definitionId={entry.definitionId}
+              definitionType={entry.definitionType}
+              parameters={entry.parameters}
+            />
+            <PopoverTitle>{displayName}</PopoverTitle>
+          </div>
+          <PopoverDescription>{range}</PopoverDescription>
+        </PopoverHeader>
+        <div className="mt-2 flex flex-wrap items-center gap-2">
+          {entry.isActiveNow ? <Badge>{t("badges.active")}</Badge> : null}
+          {entry.confirmed ? null : (
+            <Badge variant="outline">{t("badges.projected")}</Badge>
+          )}
+          {wikiUrl ? (
+            <Button asChild className="ml-auto" size="xs" variant="outline">
+              <a href={wikiUrl} rel="noopener noreferrer" target="_blank">
+                {t("wikiLink")}
+                <ExternalLink data-icon="inline-end" />
+              </a>
+            </Button>
+          ) : null}
+        </div>
+        {entry.confirmed ? null : (
+          <p className="mt-2 text-xs text-muted-foreground">
+            {t("details.projectedNote")}
+          </p>
+        )}
+      </PopoverContent>
+    </Popover>
+  )
+}
+
+/** Desktop Gantt bar. A one-day bar shows only the game icon; its name stays for assistive tech and
+ *  in the tooltip and popover. */
+export function EventBar({
+  entry,
+  iconOnly = false,
+}: {
+  entry: EventEntryViewModel
+  iconOnly?: boolean
+}) {
+  const displayName = useEventDisplayName(entry)
+
+  return (
+    <EventDetailsPopover entry={entry}>
+      <button
         className={cn(
-          "flex h-full min-w-0 items-center gap-1.5 truncate rounded-md border px-2 text-xs font-medium",
-          eventBarClass(colorKey),
-          entry.confirmed
-            ? "border-transparent"
-            : "border-dashed border-current/40 opacity-80",
-          entry.isActiveNow &&
-            "ring-2 ring-primary ring-offset-1 ring-offset-background"
+          "flex h-full w-full min-w-0 items-center gap-1.5 rounded-md pr-2 pl-0.5 text-left text-xs font-medium",
+          iconOnly && "justify-center px-0",
+          entrySurfaceClass(entry)
         )}
         data-active={entry.isActiveNow}
         data-confirmed={entry.confirmed}
         data-testid="event-entry-card"
         title={displayName}
+        type="button"
       >
-        <EventTypeIcon
-          className="size-3.5 shrink-0"
+        <EventIcon
+          className="size-7 shrink-0"
+          definitionId={entry.definitionId}
           definitionType={entry.definitionType}
+          parameters={entry.parameters}
         />
-        <span className="min-w-0 flex-1 truncate">{displayName}</span>
-        {wikiUrl ? (
-          <Button asChild size="xs" variant="outline">
-            <a
-              href={wikiUrl}
-              onClick={(event) => event.stopPropagation()}
-              rel="noopener noreferrer"
-              target="_blank"
-            >
-              {t("events:wikiLink")}
-              <ExternalLink data-icon="inline-end" />
-            </a>
-          </Button>
-        ) : null}
-        {/* Visual state is carried by border style (confirmed vs projected) and the ring (active) — these
-            stay for assistive tech and existing test coverage without cluttering the compact bar. */}
-        {entry.isActiveNow ? (
-          <span className="sr-only" data-testid="event-active-badge">
-            {t("events:badges.active")}
-          </span>
-        ) : null}
-        <span className="sr-only" data-testid="event-confirmed-badge">
-          {entry.confirmed
-            ? t("events:badges.confirmed")
-            : t("events:badges.projected")}
-        </span>
-      </div>
-    )
-  }
-
-  return (
-    <div
-      className={cn(
-        "flex flex-col gap-1 rounded-lg border border-l-4 bg-card px-2 py-1.5 text-sm",
-        // Background tint preserves the category-color left accent while the
-        // dashed border differentiates projected entries without a text chip.
-        "data-[active=true]:bg-primary/5",
-        entry.confirmed
-          ? "border-border"
-          : "border-dashed border-current/40 opacity-80",
-        eventAccentClass(colorKey)
-      )}
-      data-active={entry.isActiveNow}
-      data-testid="event-entry-card"
-    >
-      <div className="flex min-w-0 items-center gap-1.5" title={displayName}>
-        <EventTypeIcon
-          className="size-4 shrink-0 text-muted-foreground"
-          definitionType={entry.definitionType}
-        />
-        <span className="min-w-0 flex-1 truncate text-xs font-medium">
+        <span className={iconOnly ? "sr-only" : "min-w-0 flex-1 truncate"}>
           {displayName}
         </span>
-        {wikiUrl ? (
-          <Button asChild size="xs" variant="outline">
-            <a
-              href={wikiUrl}
-              onClick={(event) => event.stopPropagation()}
-              rel="noopener noreferrer"
-              target="_blank"
-            >
-              {t("events:wikiLink")}
-              <ExternalLink data-icon="inline-end" />
-            </a>
-          </Button>
-        ) : null}
-      </div>
-      <div className="flex flex-wrap items-center gap-1">
+        <EntryStateText entry={entry} />
+      </button>
+    </EventDetailsPopover>
+  )
+}
+
+/** Mobile agenda row: the entry under the day it starts or ends on (or its only day). */
+export function EventAgendaRow({
+  entry,
+  isOccurrenceEnd = false,
+  isOccurrenceStart = false,
+}: {
+  entry: EventEntryViewModel
+  isOccurrenceEnd?: boolean
+  isOccurrenceStart?: boolean
+}) {
+  const { t } = useTranslation("events")
+  const displayName = useEventDisplayName(entry)
+
+  return (
+    <EventDetailsPopover entry={entry}>
+      <button
+        className={cn(
+          "flex w-full min-w-0 items-center gap-2 rounded-lg py-1 pr-2 pl-1 text-left text-sm",
+          entrySurfaceClass(entry)
+        )}
+        data-active={entry.isActiveNow}
+        data-confirmed={entry.confirmed}
+        data-testid="event-entry-card"
+        type="button"
+      >
+        <EventIcon
+          className="size-8 shrink-0"
+          definitionId={entry.definitionId}
+          definitionType={entry.definitionType}
+          parameters={entry.parameters}
+        />
+        <span className="min-w-0 flex-1 truncate font-medium">
+          {displayName}
+        </span>
         {isOccurrenceStart ? (
-          <Badge data-testid="event-occurrence-start-badge" variant="secondary">
-            {t("events:badges.starts")}
-          </Badge>
+          <span
+            className="shrink-0 text-[11px] font-semibold tracking-wide text-primary uppercase"
+            data-testid="event-occurrence-start-badge"
+          >
+            {t("badges.starts")}
+          </span>
         ) : null}
         {isOccurrenceEnd ? (
-          <Badge data-testid="event-occurrence-end-badge" variant="secondary">
-            {t("events:badges.ends")}
-          </Badge>
+          <span
+            className="shrink-0 text-[11px] font-semibold tracking-wide text-muted-foreground uppercase"
+            data-testid="event-occurrence-end-badge"
+          >
+            {t("badges.ends")}
+          </span>
         ) : null}
-      </div>
-      {entry.isActiveNow ? (
-        <span className="sr-only" data-testid="event-active-badge">
-          {t("events:badges.active")}
-        </span>
-      ) : null}
-      <span className="sr-only" data-testid="event-confirmed-badge">
-        {entry.confirmed
-          ? t("events:badges.confirmed")
-          : t("events:badges.projected")}
-      </span>
-    </div>
+        <EntryStateText entry={entry} />
+      </button>
+    </EventDetailsPopover>
+  )
+}
+
+/** Mobile "Ongoing" tile: an occurrence carried into the range, shown once with when it ends. */
+export function OngoingEventTile({
+  entry,
+  endsInText,
+}: {
+  entry: EventEntryViewModel
+  endsInText: string
+}) {
+  const displayName = useEventDisplayName(entry)
+
+  return (
+    <EventDetailsPopover entry={entry}>
+      <button
+        className={cn(
+          "flex w-28 shrink-0 flex-col items-center gap-1 rounded-lg px-1.5 py-2 text-center text-xs leading-tight",
+          entrySurfaceClass(entry)
+        )}
+        data-active={entry.isActiveNow}
+        data-confirmed={entry.confirmed}
+        data-testid="event-entry-card"
+        type="button"
+      >
+        <EventIcon
+          className="size-10"
+          definitionId={entry.definitionId}
+          definitionType={entry.definitionType}
+          parameters={entry.parameters}
+        />
+        <span className="line-clamp-2 font-medium">{displayName}</span>
+        <span className="text-muted-foreground tabular-nums">{endsInText}</span>
+        <EntryStateText entry={entry} />
+      </button>
+    </EventDetailsPopover>
   )
 }

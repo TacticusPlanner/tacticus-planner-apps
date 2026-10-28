@@ -7,6 +7,7 @@ import { toById, useCatalogDataset } from "@/shared/local-data"
 
 import {
   addLocalDays,
+  buildEventsAgenda,
   buildEventsCalendarDays,
   buildEventsCalendarLanes,
 } from "./events-calendar-calc"
@@ -64,6 +65,11 @@ export function useEventsCalendar(): EventsCalendarViewModel {
     [entries, definitionsById, rangeStart, rangeEnd]
   )
 
+  const agenda = useMemo(
+    () => buildEventsAgenda(days, rangeStart),
+    [days, rangeStart]
+  )
+
   const lanes = useMemo(
     () =>
       entries && definitionsById
@@ -98,6 +104,7 @@ export function useEventsCalendar(): EventsCalendarViewModel {
   return {
     status,
     days,
+    agenda,
     lanes,
     rangeStart,
     rangeEnd,

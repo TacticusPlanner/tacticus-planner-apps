@@ -19,6 +19,13 @@
     "ends": "Termina"
   },
   "wikiLink": "Wiki",
+  "agenda": {
+    "ongoing": "En curso",
+    "endsIn": "Termina en {{when}}"
+  },
+  "details": {
+    "projectedNote": "Previsto según el calendario habitual. Las fechas pueden cambiar."
+  },
   "withFaction": "{{name}}: {{faction}}",
   "withCharacter": "{{name}}: {{character}}",
   "withVersion": "{{name}} {{version}}",
@@ -73,40 +80,32 @@
     "anniversary-event": "Evento de Aniversario",
     "crusade-season": "Temporada de Cruzada"
   },
-  "legend": {
-    "campaign": "Evento de campaña",
-    "incursion": "Incursión",
-    "legendary": "Evento legendario",
-    "battlePass": "Pase de batalla",
-    "guildWar": "Guerra de hermandades",
-    "guildRaid": "Asalto de hermandad",
-    "tournament": "Arena de Torneos",
-    "homeScreen": "Evento de pantalla principal",
-    "quest": "Misión",
-    "newCharacter": "Nuevo personaje",
-    "gameVersion": "Actualización",
-    "shop": "Evento de Aniversario",
-    "crusade": "Temporada de Cruzada",
-    "default": "Otro"
+  "families": {
+    "campaigns": "Campañas",
+    "heroes": "Eventos de héroes",
+    "pvp": "JcJ",
+    "guild": "Gremio",
+    "passes": "Pases y potenciadores",
+    "other": "Otros"
   },
   "tour": {
     "home": {
       "steps": {
-        "tokenAvailability": {
-          "title": "Disponibilidad de fichas",
-          "content": "Consulta de un vistazo el estado de tus fichas de Arena, Incursión de Gremio, Asalto y Carrera de Saqueo."
+        "rightNow": {
+          "title": "Ahora mismo",
+          "content": "El estado de tus fichas de un vistazo, primero las que están al máximo, y el evento de la pantalla de inicio y el Evento Legendario en curso."
         },
-        "eventsWidget": {
-          "title": "Eventos",
-          "content": "Mira el evento de la pantalla de inicio y el Evento Legendario en curso, y después lo que empieza a continuación. Selecciona una fila para abrir ese evento."
+        "raids": {
+          "title": "Incursiones diarias",
+          "content": "Consulta lo que falta por asaltar hoy para tus objetivos activos, una ubicación por fila. Despliega la lista para ver más de diez."
+        },
+        "upcoming": {
+          "title": "Próximos eventos",
+          "content": "Lo que empieza a continuación. El próximo Evento Legendario siempre aparece aquí o en Ahora mismo, con un botón a su proyecto o plan."
         },
         "projects": {
           "title": "Tus proyectos",
           "content": "Entra directamente en el plan de cualquier proyecto — el proyecto predeterminado siempre aparece primero."
-        },
-        "raids": {
-          "title": "Incursiones diarias",
-          "content": "Consulta lo que falta por asaltar hoy para tus objetivos activos, una ubicación por fila."
         },
         "navigation": {
           "title": "Explorar otras semanas",
@@ -114,7 +113,7 @@
         },
         "calendar": {
           "title": "Detalles del evento",
-          "content": "Las tarjetas distinguen eventos activos y provisionales, y marcan el primer y el último día de los eventos de varios días."
+          "content": "Cada evento muestra su icono del juego. Selecciona uno para ver sus fechas y su enlace a la Wiki. En el móvil, los eventos que ya están en curso aparecen una sola vez en En curso."
         }
       }
     }

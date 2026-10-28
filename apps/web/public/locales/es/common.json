@@ -542,6 +542,10 @@
     }
   },
   "home": {
+    "rightNow": {
+      "title": "Ahora mismo",
+      "nothingLive": "Ahora mismo no hay ningún evento en curso."
+    },
     "tokens": {
       "title": "Disponibilidad de fichas",
       "full": "Completo",
@@ -565,17 +569,22 @@
       "emptyDescription": "Los proyectos agrupan tus objetivos para que puedas consultarlos por separado.",
       "emptyAction": "Crear proyecto",
       "error": "No se pudieron cargar tus proyectos.",
-      "retry": "Reintentar"
+      "retry": "Reintentar",
+      "viewAll": "Todos los proyectos"
     },
     "raids": {
       "title": "Incursiones diarias",
       "empty": "No hay nada que asaltar hoy.",
       "error": "No se pudieron cargar las incursiones de hoy.",
       "noGoals": "Aún no hay objetivos activos. Añade objetivos para planificar tus incursiones.",
-      "limitReached": "Límite diario de energía alcanzado: incursiones extra:"
+      "limitReached": "Límite diario de energía alcanzado: incursiones extra:",
+      "openToday": "Abrir Hoy",
+      "showMore_one": "Mostrar {{count}} más",
+      "showMore_other": "Mostrar {{count}} más",
+      "showLess": "Mostrar menos"
     },
     "events": {
-      "title": "Eventos",
+      "title": "Próximos eventos",
       "live": "EN VIVO",
       "endsIn": "Termina en {{when}}",
       "startsIn": "Empieza en {{when}}",
@@ -586,7 +595,11 @@
       "points": "{{points}} puntos",
       "sourceFailed": "No se pudieron cargar los {{type}}.",
       "openHse": "Eventos de la pantalla de inicio",
-      "openLegendaryEvents": "Eventos Legendarios"
+      "openLegendaryEvents": "Eventos Legendarios",
+      "openProject": "Abrir proyecto",
+      "projects_one": "{{count}} proyecto",
+      "projects_other": "{{count}} proyectos",
+      "planEvent": "Planificar este evento"
     },
     "calendar": {
       "title": "Calendario de eventos"

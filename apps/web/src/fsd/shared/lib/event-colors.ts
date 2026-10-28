@@ -1,8 +1,7 @@
 // Color-per-category, mirroring @workspace/game-catalog's `rarityClass` convention: one CSS custom
 // property pair (light/dark values live in packages/ui/src/styles/globals.css) per category, resolved
-// here to Tailwind arbitrary-value classes. Keyed coarser than `definitionId` (one key per visual
-// "family") so the legend stays as compact as the reference calendars' — a handful of colors, not one
-// per definition.
+// here to Tailwind arbitrary-value classes. Used for the colored icon tiles of event headers (HSE,
+// HRE); the home calendar uses the coarser families below.
 export type EventColorKey =
   | "campaign"
   | "incursion"
@@ -21,46 +20,10 @@ export type EventColorKey =
   | "crusade"
   | "default"
 
-// Two definitions share the `StandingModifier` type but are visually distinct in every reference
-// calendar (Double XP vs Double Gold), so they're keyed by id rather than type.
-const colorKeyByDefinitionId: Partial<Record<string, EventColorKey>> = {
-  "always-double-xp-sunday": "doubleXp",
-  "always-double-gold-saturday": "doubleGold",
-}
-
-const colorKeyByDefinitionType: Record<string, EventColorKey> = {
-  CampaignEvent: "campaign",
-  Incursion: "incursion",
-  LegendaryEvent: "legendary",
-  HomeScreenEvent: "homeScreen",
-  TournamentArena: "tournament",
-  Quest: "quest",
-  GuildWarSeason: "guildWar",
-  GuildRaidSeason: "guildRaid",
-  BattlePass: "battlePass",
-  NewCharacterEvent: "newCharacter",
-  GameVersionRelease: "gameVersion",
-  ShopEvent: "shop",
-  CrusadeSeason: "crusade",
-}
-
-export function resolveEventColorKey(
-  definitionId: string,
-  definitionType: string | undefined
-): EventColorKey {
-  const byId = colorKeyByDefinitionId[definitionId]
-  const byType = definitionType
-    ? colorKeyByDefinitionType[definitionType]
-    : undefined
-
-  return byId ?? byType ?? "default"
-}
-
 // Every class string below is written out in full (not composed via string interpolation) because
 // Tailwind's content scanner matches literal substrings in source files — a template-built class name
 // like `` `bg-[var(--event-${key})]` `` never appears verbatim anywhere, so no CSS would be generated
-// for it. Solid colored bar/chip (desktop Gantt lanes): background + a foreground guaranteed to
-// contrast it.
+// for it. Solid colored tile: background + a foreground guaranteed to contrast it.
 const barClassByColorKey: Record<EventColorKey, string> = {
   campaign: "bg-[var(--event-campaign)] text-[var(--event-bar-foreground)]",
   incursion: "bg-[var(--event-incursion)] text-[var(--event-bar-foreground)]",
@@ -85,55 +48,75 @@ const barClassByColorKey: Record<EventColorKey, string> = {
   default: "bg-muted text-muted-foreground",
 }
 
-/** Left-accent tint (mobile list cards): a colored border stripe, card background stays neutral. */
-const accentClassByColorKey: Record<EventColorKey, string> = {
-  campaign: "border-l-[var(--event-campaign)]",
-  incursion: "border-l-[var(--event-incursion)]",
-  legendary: "border-l-[var(--event-legendary)]",
-  homeScreen: "border-l-[var(--event-home-screen)]",
-  tournament: "border-l-[var(--event-tournament)]",
-  quest: "border-l-[var(--event-quest)]",
-  guildWar: "border-l-[var(--event-guild-war)]",
-  guildRaid: "border-l-[var(--event-guild-raid)]",
-  battlePass: "border-l-[var(--event-battle-pass)]",
-  newCharacter: "border-l-[var(--event-new-character)]",
-  gameVersion: "border-l-[var(--event-game-version)]",
-  doubleXp: "border-l-[var(--event-double-xp)]",
-  doubleGold: "border-l-[var(--event-double-gold)]",
-  shop: "border-l-[var(--event-shop)]",
-  crusade: "border-l-[var(--event-crusade)]",
-  default: "border-l-border",
-}
-
 export function eventBarClass(colorKey: EventColorKey): string {
   return barClassByColorKey[colorKey]
 }
 
-export function eventAccentClass(colorKey: EventColorKey): string {
-  return accentClassByColorKey[colorKey]
+// Calendar color families (home-events-calendar): the game icon carries each event's identity, so
+// the calendar only needs a few coarse colors, shown as a stripe or swatch beside it.
+export type EventFamily =
+  "campaigns" | "heroes" | "pvp" | "guild" | "passes" | "other"
+
+const familyByDefinitionType: Record<string, EventFamily> = {
+  CampaignEvent: "campaigns",
+  Incursion: "campaigns",
+  Quest: "campaigns",
+  LegendaryEvent: "heroes",
+  NewCharacterEvent: "heroes",
+  HomeScreenEvent: "heroes",
+  TournamentArena: "pvp",
+  GuildRaidSeason: "guild",
+  GuildWarSeason: "guild",
+  CrusadeSeason: "guild",
+  BattlePass: "passes",
+  ShopEvent: "passes",
+  GameVersionRelease: "passes",
+  StandingModifier: "passes",
 }
 
-// `doubleXp`/`doubleGold` are deliberately excluded from the legend — their bars are already
-// self-explanatory ("Double XP"/"Double Gold" labels on a fixed weekday), so a legend entry would just
-// be noise. Typed (not just filtered at runtime) so `events:legend.*` lookups built from this array's
-// element type can never reference the two keys events.json's "legend" object doesn't define.
-export type LegendColorKey = Exclude<EventColorKey, "doubleXp" | "doubleGold">
+export function resolveEventFamily(
+  definitionType: string | undefined
+): EventFamily {
+  return (
+    (definitionType ? familyByDefinitionType[definitionType] : undefined) ??
+    "other"
+  )
+}
 
-// Every color key in legend display order (matches the reference calendars' left-to-right ordering:
-// broad recurring content first, then the smaller irregular events last).
-export const EVENT_COLOR_KEYS_IN_LEGEND_ORDER: LegendColorKey[] = [
-  "campaign",
-  "incursion",
-  "legendary",
-  "battlePass",
-  "guildWar",
-  "guildRaid",
-  "tournament",
-  "homeScreen",
-  "quest",
-  "newCharacter",
-  "gameVersion",
-  "shop",
-  "crusade",
-  "default",
+// Written out in full for Tailwind's scanner (see above).
+const familyStripeClass: Record<EventFamily, string> = {
+  campaigns: "border-l-[var(--event-family-campaigns)]",
+  heroes: "border-l-[var(--event-family-heroes)]",
+  pvp: "border-l-[var(--event-family-pvp)]",
+  guild: "border-l-[var(--event-family-guild)]",
+  passes: "border-l-[var(--event-family-passes)]",
+  other: "border-l-border",
+}
+
+const familySwatchClass: Record<EventFamily, string> = {
+  campaigns: "bg-[var(--event-family-campaigns)]",
+  heroes: "bg-[var(--event-family-heroes)]",
+  pvp: "bg-[var(--event-family-pvp)]",
+  guild: "bg-[var(--event-family-guild)]",
+  passes: "bg-[var(--event-family-passes)]",
+  other: "bg-muted-foreground/40",
+}
+
+/** A left border stripe in the family's color; pair it with a `border-l-*` width. */
+export function eventFamilyStripeClass(family: EventFamily): string {
+  return familyStripeClass[family]
+}
+
+export function eventFamilySwatchClass(family: EventFamily): string {
+  return familySwatchClass[family]
+}
+
+/** Legend order: recurring content first, the smaller irregular events last. */
+export const EVENT_FAMILIES_IN_LEGEND_ORDER: readonly EventFamily[] = [
+  "campaigns",
+  "heroes",
+  "pvp",
+  "guild",
+  "passes",
+  "other",
 ]

@@ -56,7 +56,7 @@ describe("ProjectsWidget", () => {
   it("requests an uncapped project list on desktop", () => {
     useHomeProjectsMock.mockReturnValue({ status: "loading" })
 
-    render(<ProjectsWidget />)
+    render(<ProjectsWidget />, { route: "/" })
 
     expect(useHomeProjectsMock).toHaveBeenCalledWith(null)
   })
@@ -65,7 +65,7 @@ describe("ProjectsWidget", () => {
     isMobileRef.current = true
     useHomeProjectsMock.mockReturnValue({ status: "loading" })
 
-    render(<ProjectsWidget />)
+    render(<ProjectsWidget />, { route: "/" })
 
     expect(useHomeProjectsMock).toHaveBeenCalledWith(3)
   })
@@ -73,7 +73,7 @@ describe("ProjectsWidget", () => {
   it("shows a loading state", () => {
     useHomeProjectsMock.mockReturnValue({ status: "loading" })
 
-    render(<ProjectsWidget />)
+    render(<ProjectsWidget />, { route: "/" })
 
     expect(screen.getByTestId("home-projects-loading")).toBeInTheDocument()
   })
@@ -82,7 +82,7 @@ describe("ProjectsWidget", () => {
     const retry = vi.fn()
     useHomeProjectsMock.mockReturnValue({ status: "error", retry })
 
-    render(<ProjectsWidget />)
+    render(<ProjectsWidget />, { route: "/" })
 
     expect(screen.getByTestId("home-projects-error")).toBeInTheDocument()
   })
@@ -90,7 +90,7 @@ describe("ProjectsWidget", () => {
   it("shows an empty state with a create-project action", () => {
     useHomeProjectsMock.mockReturnValue({ status: "empty" })
 
-    render(<ProjectsWidget />)
+    render(<ProjectsWidget />, { route: "/" })
 
     expect(screen.getByTestId("home-projects-empty")).toBeInTheDocument()
   })
@@ -103,7 +103,7 @@ describe("ProjectsWidget", () => {
       remainingCount: 0,
     })
 
-    render(<ProjectsWidget />)
+    render(<ProjectsWidget />, { route: "/" })
 
     screen.getByTestId("home-project-row-p1").click()
     expect(navigateMock).toHaveBeenCalledWith("/plan/goals?project=p1")
@@ -118,9 +118,20 @@ describe("ProjectsWidget", () => {
       remainingCount: 2,
     })
 
-    render(<ProjectsWidget />)
+    render(<ProjectsWidget />, { route: "/" })
 
     screen.getByTestId("home-projects-more").click()
     expect(navigateMock).toHaveBeenCalledWith("/plan/projects")
+  })
+
+  it("links to all projects from the header", () => {
+    useHomeProjectsMock.mockReturnValue({ status: "loading" })
+
+    render(<ProjectsWidget />, { route: "/" })
+
+    expect(screen.getByTestId("home-projects-all")).toHaveAttribute(
+      "href",
+      "/plan/projects"
+    )
   })
 })

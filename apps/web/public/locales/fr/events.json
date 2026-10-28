@@ -19,6 +19,13 @@
     "ends": "Se termine"
   },
   "wikiLink": "Wiki",
+  "agenda": {
+    "ongoing": "En cours",
+    "endsIn": "Se termine dans {{when}}"
+  },
+  "details": {
+    "projectedNote": "Estimé à partir du calendrier habituel. Les dates peuvent changer."
+  },
   "withFaction": "{{name}} : {{faction}}",
   "withCharacter": "{{name}} : {{character}}",
   "withVersion": "{{name}} {{version}}",
@@ -73,40 +80,32 @@
     "anniversary-event": "Événement Anniversaire",
     "crusade-season": "Saison de Croisade"
   },
-  "legend": {
-    "campaign": "Événement de campagne",
-    "incursion": "Incursion",
-    "legendary": "Événement légendaire",
-    "battlePass": "Passe de combat",
-    "guildWar": "Guerre de guilde",
-    "guildRaid": "Raid de guilde",
-    "tournament": "Arène des Tournois",
-    "homeScreen": "Événement d'écran d'accueil",
-    "quest": "Quête",
-    "newCharacter": "Nouveau personnage",
-    "gameVersion": "Mise à jour",
-    "shop": "Événement Anniversaire",
-    "crusade": "Saison de Croisade",
-    "default": "Autre"
+  "families": {
+    "campaigns": "Campagnes",
+    "heroes": "Événements de héros",
+    "pvp": "JcJ",
+    "guild": "Guilde",
+    "passes": "Passes et bonus",
+    "other": "Autres"
   },
   "tour": {
     "home": {
       "steps": {
-        "tokenAvailability": {
-          "title": "Disponibilité des jetons",
-          "content": "Consultez en un coup d'œil le statut de vos jetons Arène, Raid de guilde, Assaut et Course au pillage."
+        "rightNow": {
+          "title": "En ce moment",
+          "content": "L'état de vos jetons en un coup d'œil, les jetons au maximum en premier, ainsi que l'événement de l'écran d'accueil et l'Événement Légendaire en cours."
         },
-        "eventsWidget": {
-          "title": "Événements",
-          "content": "Consultez l'événement de l'écran d'accueil et l'Événement Légendaire en cours, puis ce qui commence ensuite. Sélectionnez une ligne pour ouvrir cet événement."
+        "raids": {
+          "title": "Raids quotidiens",
+          "content": "Voyez ce qu'il reste à raider aujourd'hui pour vos objectifs actifs, un emplacement par ligne. Dépliez la liste pour en voir plus de dix."
+        },
+        "upcoming": {
+          "title": "Événements à venir",
+          "content": "Ce qui commence ensuite. Le prochain Événement Légendaire apparaît toujours ici ou dans En ce moment, avec un bouton vers son projet ou son plan."
         },
         "projects": {
           "title": "Vos projets",
           "content": "Accédez directement au plan de n'importe quel projet — le projet par défaut s'affiche toujours en premier."
-        },
-        "raids": {
-          "title": "Raids quotidiens",
-          "content": "Voyez ce qu'il reste à raider aujourd'hui pour vos objectifs actifs, un emplacement par ligne."
         },
         "navigation": {
           "title": "Parcourir d'autres semaines",
@@ -114,7 +113,7 @@
         },
         "calendar": {
           "title": "Détails de l'événement",
-          "content": "Les cartes distinguent les événements actifs et provisoires, et marquent le premier et le dernier jour des événements de plusieurs jours."
+          "content": "Chaque événement affiche son icône du jeu. Sélectionnez-en un pour voir ses dates et son lien Wiki. Sur mobile, les événements déjà en cours sont listés une seule fois sous En cours."
         }
       }
     }

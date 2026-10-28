@@ -1,3 +1,4 @@
+import userEvent from "@testing-library/user-event"
 import { describe, expect, it } from "vitest"
 
 import { render, screen, waitFor } from "@/test/render"
@@ -124,7 +125,8 @@ describe("EventsCalendar", () => {
     ).toBe(true)
   })
 
-  it("links to the wiki for a definition that has an article, but not for one that doesn't", async () => {
+  it("links to the wiki from an entry's details when its definition has an article", async () => {
+    const user = userEvent.setup()
     await seedCalendar([
       {
         occurrenceId: "occ-lucius",
@@ -148,14 +150,26 @@ describe("EventsCalendar", () => {
 
     await screen.findAllByTestId("event-entry-card")
 
-    const wikiLinks = screen.getAllByRole("link", { name: "Wiki" })
-    expect(wikiLinks).toHaveLength(1)
-    expect(wikiLinks[0]).toHaveAttribute(
+    // The Wiki link moved off the bar into the entry's details popover.
+    expect(screen.queryByRole("link", { name: "Wiki" })).toBeNull()
+    const cardFor = (name: string) =>
+      screen
+        .getAllByTestId("event-entry-card")
+        .find((card) => card.textContent?.includes(name))!
+
+    await user.click(cardFor("Legendary Event"))
+    const wikiLink = await screen.findByRole("link", { name: "Wiki" })
+    expect(wikiLink).toHaveAttribute(
       "href",
       "https://tacticus.wiki.gg/wiki/Legendary_Character_Events"
     )
-    expect(wikiLinks[0]).toHaveAttribute("target", "_blank")
-    expect(wikiLinks[0]).toHaveAttribute("rel", "noopener noreferrer")
+    expect(wikiLink).toHaveAttribute("target", "_blank")
+    expect(wikiLink).toHaveAttribute("rel", "noopener noreferrer")
+
+    await user.keyboard("{Escape}")
+    await user.click(cardFor("Update"))
+    await screen.findByTestId("event-details")
+    expect(screen.queryByRole("link", { name: "Wiki" })).toBeNull()
   })
 
   it("shows a legend swatch only for color categories present in the visible range", async () => {
@@ -175,11 +189,11 @@ describe("EventsCalendar", () => {
     await screen.findAllByTestId("event-entry-card")
 
     const legend = screen.getByTestId("events-calendar-legend")
-    expect(legend).toHaveTextContent("Legendary Event")
-    expect(legend).not.toHaveTextContent("Home Screen Event")
+    expect(legend).toHaveTextContent("Hero events")
+    expect(legend).not.toHaveTextContent("Campaigns")
   })
 
-  it("omits Double XP/Double Gold from the legend even when they're in the visible range", async () => {
+  it("groups Double XP under its family swatch alongside the hero family", async () => {
     await seedCalendar([
       {
         occurrenceId: "occ-double-xp",
@@ -204,9 +218,9 @@ describe("EventsCalendar", () => {
     await screen.findAllByTestId("event-entry-card")
 
     const legend = screen.getByTestId("events-calendar-legend")
-    // Only the Legendary Event swatch: a Double XP one would render its (untranslated) key.
-    expect(legend).toHaveTextContent(/^Legendary Event$/)
-    expect(legend).not.toHaveTextContent("legend.doubleXp")
+    // Double XP is a standing modifier, so it shares the passes family swatch.
+    expect(legend).toHaveTextContent("Hero events")
+    expect(legend).toHaveTextContent("Passes & boosts")
   })
 
   it("marks an entry active when the current time falls within its window", async () => {

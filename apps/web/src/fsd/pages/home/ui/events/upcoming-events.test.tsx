@@ -4,13 +4,18 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
 import { render, screen, within } from "@/test/render"
 
-import { HomeEventsWidget } from "./home-events-widget"
+import { useHomeEvents } from "../../model/use-home-events"
+import { RightNow } from "../right-now/right-now"
+import { UpcomingEvents } from "./upcoming-events"
 
-const { hseMock, legendaryMock, progressMock } = vi.hoisted(() => ({
-  hseMock: vi.fn(),
-  legendaryMock: vi.fn(),
-  progressMock: vi.fn(),
-}))
+const { eventProjectsMock, hseMock, legendaryMock, progressMock } = vi.hoisted(
+  () => ({
+    eventProjectsMock: vi.fn(),
+    hseMock: vi.fn(),
+    legendaryMock: vi.fn(),
+    progressMock: vi.fn(),
+  })
+)
 
 vi.mock("react-i18next", () => ({
   initReactI18next: { type: "3rdParty", init: vi.fn() },
@@ -38,6 +43,18 @@ vi.mock("@/entities/legendary-event", async (importOriginal) => {
     useLegendaryEventsProgress: () => progressMock(),
   }
 })
+vi.mock("@/features/project-management", async (importOriginal) => {
+  const actual =
+    await importOriginal<typeof import("@/features/project-management")>()
+  return {
+    ...actual,
+    useEventProjects: (eventId: string) => eventProjectsMock(eventId),
+  }
+})
+// Tokens have their own tests; this file covers the events half of Right now.
+vi.mock("../token-availability/token-availability", () => ({
+  TokenAvailability: () => null,
+}))
 vi.mock("@/shared/unit-name", () => ({
   useUnitName: () => (_type: string, id: string) =>
     ({ astarLysander: "Lysander", votanUthar: "Uthar" })[id] ?? id,
@@ -95,12 +112,22 @@ function LocationProbe() {
   return <span data-testid="current-path">{pathname}</span>
 }
 
+function HomeEvents() {
+  const events = useHomeEvents()
+  return (
+    <>
+      <RightNow events={events} />
+      <UpcomingEvents events={events} />
+    </>
+  )
+}
+
 function renderWidget() {
   return render(
     <MemoryRouter initialEntries={["/home"]}>
       <LocationProbe />
       <Routes>
-        <Route element={<HomeEventsWidget />} path="/home" />
+        <Route element={<HomeEvents />} path="/home" />
         <Route element={<div data-testid="destination" />} path="*" />
       </Routes>
     </MemoryRouter>
@@ -109,9 +136,13 @@ function renderWidget() {
 
 const currentPath = () => screen.getByTestId("current-path").textContent
 
-describe("HomeEventsWidget", () => {
+const liveTiles = () => screen.queryAllByTestId("home-live-event")
+const upcomingItems = () =>
+  within(screen.getByTestId("home-events-widget")).queryAllByRole("listitem")
+
+describe("Home events (Right now + Upcoming events)", () => {
   beforeEach(() => {
-    // The minute clock the widget falls back to when the calendar read fails.
+    // The minute clock the hook falls back to when the calendar read fails.
     vi.useFakeTimers({ toFake: ["Date"] })
     vi.setSystemTime(NOW)
     hseMock.mockReturnValue(hseReady(hunt, [rush]))
@@ -121,78 +152,127 @@ describe("HomeEventsWidget", () => {
         { id: "astarLysander", currentEventRun: 2, currentPoints: 3410 },
       ])
     )
+    eventProjectsMock.mockReturnValue({
+      status: "ready",
+      projects: [],
+      archivedCount: 0,
+    })
   })
   afterEach(() => {
     vi.unstubAllEnvs()
     vi.useRealTimers()
   })
 
-  it("lists the live HSE, the live Legendary Event with run and points, then the next upcoming event", () => {
+  it("puts live events in Right now with the Legendary Event's run and points", () => {
     renderWidget()
 
-    const rows = screen.getAllByTestId("home-events-row")
-    expect(rows).toHaveLength(3)
-    expect(rows[0]).toHaveTextContent("events:definitions.hse-machine-hunt")
-    expect(rows[0]).toHaveAttribute("data-type", "homeScreen")
+    const tiles = liveTiles()
+    expect(tiles).toHaveLength(2)
+    expect(tiles[0]).toHaveAttribute("data-type", "homeScreen")
+    expect(tiles[0]).toHaveTextContent("definitions.hse-machine-hunt")
     expect(
-      within(rows[0]!).getByTestId("home-events-live-badge")
+      within(tiles[0]!).getByTestId("home-events-live-badge")
     ).toBeInTheDocument()
-    expect(rows[1]).toHaveTextContent("Lysander")
-    expect(rows[1]).toHaveAttribute("data-type", "legendaryEvent")
+    expect(tiles[1]).toHaveAttribute("data-type", "legendaryEvent")
+    expect(tiles[1]).toHaveTextContent("Lysander")
     expect(
-      within(rows[1]!).getByTestId("home-events-live-badge")
-    ).toBeInTheDocument()
+      within(tiles[1]!).getByTestId("home-events-synced")
+    ).toHaveTextContent("home.events.run:2")
     expect(
-      within(rows[1]!).getByTestId("home-events-synced")
-    ).toHaveTextContent("common:home.events.run:2")
+      within(tiles[1]!).getByTestId("home-events-synced")
+    ).toHaveTextContent("home.events.points:3,410")
+    expect(tiles[1]).toHaveTextContent("home.events.endsIn")
+  })
+
+  it("lists only not-yet-started events in Upcoming events, with countdowns", () => {
+    renderWidget()
+
+    const items = upcomingItems()
+    expect(items).toHaveLength(2)
+    expect(items[0]).toHaveTextContent("definitions.hse-training-rush")
+    expect(items[0]).toHaveTextContent("home.events.startsIn:6 days")
+    expect(items[1]).toHaveTextContent("Uthar")
     expect(
-      within(rows[1]!).getByTestId("home-events-synced")
-    ).toHaveTextContent("common:home.events.points:3,410")
-    expect(rows[2]).toHaveTextContent("events:definitions.hse-training-rush")
-    expect(rows[2]).toHaveTextContent("common:home.events.startsIn:6 days")
-    expect(within(rows[2]!).queryByTestId("home-events-live-badge")).toBeNull()
-    expect(screen.queryByText("Uthar")).toBeNull()
+      within(screen.getByTestId("home-events-widget")).queryByTestId(
+        "home-events-live-badge"
+      )
+    ).toBeNull()
   })
 
   it("selects and labels rows with one clock when the two sources tick apart", () => {
-    // The catalog hook's tick runs two days ahead of the calendar's; rows and countdowns must both
-    // follow the calendar's instant, the one the Home Screen Event rows were selected at.
     legendaryMock.mockReturnValue({
       ...legendaryReady([lysander, uthar]),
       nowMs: NOW + 2 * 86_400_000,
     })
     renderWidget()
 
-    const rows = screen.getAllByTestId("home-events-row")
-    expect(rows[2]).toHaveTextContent("common:home.events.startsIn:6 days")
+    expect(upcomingItems()[0]).toHaveTextContent("home.events.startsIn:6 days")
   })
 
   it("omits run and points for a live Legendary Event without a synced entry", () => {
     progressMock.mockReturnValue(progressReady([]))
     renderWidget()
 
-    const lysanderRow = screen.getAllByTestId("home-events-row")[1]!
-    expect(lysanderRow).toHaveTextContent("Lysander")
-    expect(within(lysanderRow).queryByTestId("home-events-synced")).toBeNull()
+    const lysanderTile = liveTiles()[1]!
+    expect(lysanderTile).toHaveTextContent("Lysander")
+    expect(within(lysanderTile).queryByTestId("home-events-synced")).toBeNull()
   })
 
-  it("orders only-upcoming events across both types by start", () => {
+  it("shows the nothing-live note when no event is running", () => {
     hseMock.mockReturnValue(hseReady(null, [rush]))
     legendaryMock.mockReturnValue(legendaryReady([uthar]))
     renderWidget()
 
-    const rows = screen.getAllByTestId("home-events-row")
-    expect(rows.map((row) => row.dataset.type)).toEqual([
-      "homeScreen",
-      "legendaryEvent",
-    ])
-    expect(screen.queryByTestId("home-events-live-badge")).toBeNull()
+    expect(screen.getByTestId("home-live-none")).toHaveTextContent(
+      "home.rightNow.nothingLive"
+    )
+    expect(
+      screen.getAllByTestId("home-events-row").map((row) => row.dataset.type)
+    ).toEqual(["homeScreen", "legendaryEvent"])
+  })
+
+  it("offers the plan wizard for a Legendary Event no project targets", () => {
+    renderWidget()
+
+    expect(eventProjectsMock).toHaveBeenCalledWith("votanUthar")
+    const [live, upcoming] = screen.getAllByTestId("home-le-plan")
+    expect(live).toHaveAttribute("href", "/legendary-events/astarLysander/plan")
+    expect(upcoming).toHaveAttribute(
+      "href",
+      "/legendary-events/votanUthar/plan"
+    )
+  })
+
+  it("opens the targeting project, or lists several in a menu", async () => {
+    const user = userEvent.setup()
+    const linked = (projectId: string, name: string) => ({
+      project: { projectId, name },
+      goals: 1,
+    })
+    eventProjectsMock.mockImplementation((eventId: string) => ({
+      status: "ready",
+      projects:
+        eventId === "astarLysander"
+          ? [linked("p1", "Lysander push")]
+          : [linked("p2", "Uthar A"), linked("p3", "Uthar B")],
+      archivedCount: 0,
+    }))
+    renderWidget()
+
+    expect(screen.getByTestId("home-le-project")).toHaveAttribute(
+      "href",
+      "/plan/goals?project=p1"
+    )
+    await user.click(screen.getByTestId("home-le-projects"))
+    expect(
+      await screen.findByRole("menuitem", { name: "Uthar B" })
+    ).toHaveAttribute("href", "/plan/goals?project=p3")
   })
 
   it.each([
     ["the calendar", "loading", "ready"],
     ["the catalog", "ready", "loading"],
-  ])("shows the loading body while %s read is pending", (_name, hse, le) => {
+  ])("shows loading bodies while %s read is pending", (_name, hse, le) => {
     hseMock.mockReturnValue(
       hse === "loading" ? { status: "loading" } : hseReady(null, [])
     )
@@ -204,6 +284,7 @@ describe("HomeEventsWidget", () => {
     renderWidget()
 
     expect(screen.getByTestId("home-events-loading")).toBeInTheDocument()
+    expect(screen.getByTestId("home-live-loading")).toBeInTheDocument()
   })
 
   it("shows the error body only when both reads fail", () => {
@@ -212,6 +293,7 @@ describe("HomeEventsWidget", () => {
     renderWidget()
 
     expect(screen.getByTestId("home-events-error")).toBeInTheDocument()
+    expect(screen.getByTestId("home-live-none")).toBeInTheDocument()
     expect(screen.queryByTestId("home-events-row")).toBeNull()
   })
 
@@ -221,13 +303,11 @@ describe("HomeEventsWidget", () => {
     renderWidget()
 
     expect(screen.getByTestId("home-events-source-failed")).toHaveTextContent(
-      "common:home.events.sourceFailed:common:home.events.openHse"
+      "home.events.sourceFailed:home.events.openHse"
     )
-    expect(screen.getAllByTestId("home-events-row")).toHaveLength(1)
-    expect(screen.getByTestId("home-events-row")).toHaveTextContent("Uthar")
-    expect(screen.getByTestId("home-events-row")).toHaveTextContent(
-      "common:home.events.startsIn:8 days"
-    )
+    expect(upcomingItems()).toHaveLength(1)
+    expect(upcomingItems()[0]).toHaveTextContent("Uthar")
+    expect(upcomingItems()[0]).toHaveTextContent("home.events.startsIn:8 days")
   })
 
   it("keeps Home Screen Event rows and notes the failed catalog read", () => {
@@ -235,11 +315,14 @@ describe("HomeEventsWidget", () => {
     renderWidget()
 
     expect(screen.getByTestId("home-events-source-failed")).toHaveTextContent(
-      "common:home.events.openLegendaryEvents"
+      "home.events.openLegendaryEvents"
     )
+    expect(liveTiles().map((tile) => tile.dataset.type)).toEqual(["homeScreen"])
     expect(
-      screen.getAllByTestId("home-events-row").map((row) => row.dataset.type)
-    ).toEqual(["homeScreen", "homeScreen"])
+      within(screen.getByTestId("home-events-widget"))
+        .getAllByTestId("home-events-row")
+        .map((row) => row.dataset.type)
+    ).toEqual(["homeScreen"])
   })
 
   it("shows the empty body with links to both destinations when nothing is scheduled", () => {
@@ -248,23 +331,23 @@ describe("HomeEventsWidget", () => {
     renderWidget()
 
     const empty = screen.getByTestId("home-events-empty")
-    expect(empty).toHaveTextContent("common:home.events.empty")
+    expect(empty).toHaveTextContent("home.events.empty")
     expect(
-      within(empty).getByRole("link", { name: "common:home.events.openHse" })
+      within(empty).getByRole("link", { name: "home.events.openHse" })
     ).toHaveAttribute("href", "/dailies/hse")
     expect(
       within(empty).getByRole("link", {
-        name: "common:home.events.openLegendaryEvents",
+        name: "home.events.openLegendaryEvents",
       })
     ).toHaveAttribute("href", "/legendary-events")
   })
 
-  it("is titled Events, not the calendar, and the card itself is not a button", () => {
+  it("is titled Upcoming events, not the calendar, and the card itself is not a button", () => {
     renderWidget()
 
     const card = screen.getByTestId("home-events-widget")
-    expect(screen.getByText("common:home.events.title")).toBeInTheDocument()
-    expect(screen.queryByText("common:home.calendar.title")).toBeNull()
+    expect(within(card).getByText("home.events.title")).toBeVisible()
+    expect(screen.queryByText("home.calendar.title")).toBeNull()
     expect(card).not.toHaveAttribute("role")
     expect(card).not.toHaveAttribute("tabindex")
   })
@@ -273,7 +356,7 @@ describe("HomeEventsWidget", () => {
     renderWidget()
     const rows = screen.getAllByTestId("home-events-row")
 
-    expect(rows.map((row) => row.tagName)).toEqual(["A", "A", "A"])
+    expect(rows.map((row) => row.tagName)).toEqual(["A", "A", "A", "A"])
     expect(rows[0]).toHaveAttribute("href", "/dailies/hse")
     expect(rows[1]).toHaveAttribute("href", "/legendary-events/astarLysander")
   })
@@ -282,7 +365,7 @@ describe("HomeEventsWidget", () => {
     const user = userEvent.setup()
     renderWidget()
 
-    await user.click(screen.getByText("common:home.events.title"))
+    await user.click(screen.getByText("home.events.title"))
     expect(currentPath()).toBe("/home")
 
     await user.click(screen.getAllByTestId("home-events-row")[1]!)
@@ -306,10 +389,7 @@ describe("HomeEventsWidget", () => {
       const { unmount } = renderWidget()
       const text = screen.getByTestId("home-events-start").textContent
       const row = screen.getByTestId("home-events-row")
-      const summary = [
-        row.getAttribute("data-live"),
-        row.textContent?.includes("startsIn"),
-      ]
+      const summary = [row.getAttribute("data-live"), row.dataset.type]
       unmount()
       return { text, summary }
     }

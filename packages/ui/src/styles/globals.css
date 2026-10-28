@@ -165,6 +165,12 @@
   --event-shop: #d9b3bc;
   --event-crusade: #b58a5c;
   --event-bar-foreground: oklch(0.243 0.015 261.655);
+  /* Calendar color families (home-events-calendar): a stripe/swatch beside the game icon. */
+  --event-family-campaigns: #2b9fb8;
+  --event-family-heroes: #d39a2c;
+  --event-family-pvp: #cf4f8f;
+  --event-family-guild: #3f9c5d;
+  --event-family-passes: #8a76d4;
   --success: oklch(0.93 0.05 150);
   --success-foreground: oklch(0.37 0.09 150);
   /* Goals Season fit accents (this season / next / two out): >= 3:1 against background and card. */
@@ -302,6 +308,11 @@
   --event-shop: #90636e;
   --event-crusade: #8a6540;
   --event-bar-foreground: oklch(0.97 0.005 264.532);
+  --event-family-campaigns: #4bb4cc;
+  --event-family-heroes: #e0ad4a;
+  --event-family-pvp: #dd6aa3;
+  --event-family-guild: #5cb87a;
+  --event-family-passes: #a291e3;
   --success: oklch(0.29 0.055 150);
   --success-foreground: oklch(0.87 0.11 150);
   --season-fit-on-track: oklch(0.72 0.14 150);

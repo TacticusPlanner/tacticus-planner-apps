@@ -13,10 +13,10 @@ export function useHomePageTutorial() {
     const createStep = (
       target: string,
       key:
-        | "tokenAvailability"
-        | "eventsWidget"
-        | "projects"
+        | "rightNow"
         | "raids"
+        | "upcoming"
+        | "projects"
         | "navigation"
         | "calendar"
     ): Step => ({
@@ -25,10 +25,10 @@ export function useHomePageTutorial() {
       content: t(`tour.home.steps.${key}.content`),
     })
     const shared: Step[] = [
-      createStep('[data-testid="token-availability"]', "tokenAvailability"),
-      createStep('[data-testid="home-events-widget"]', "eventsWidget"),
-      createStep('[data-testid="home-projects-widget"]', "projects"),
+      createStep('[data-testid="home-right-now"]', "rightNow"),
       createStep('[data-testid="home-raids-widget"]', "raids"),
+      createStep('[data-testid="home-events-widget"]', "upcoming"),
+      createStep('[data-testid="home-projects-widget"]', "projects"),
       createStep('[data-testid="events-calendar-navigation"]', "navigation"),
       createStep('[data-testid="events-calendar"]', "calendar"),
     ]

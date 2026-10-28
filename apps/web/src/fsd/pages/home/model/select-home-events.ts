@@ -8,6 +8,8 @@ export interface HomeScreenEventEntry {
   definitionId: string
   startUtc: string
   endUtc: string
+  /** Occurrence parameters (e.g. a Faction Boost's `targetFactionId`), for its game art. */
+  parameters?: Readonly<Record<string, unknown>> | null
 }
 
 /** The fields the rows read from a catalog Legendary Event. */
@@ -26,7 +28,11 @@ interface HomeEventRowBase {
 }
 
 export type HomeEventRow =
-  | (HomeEventRowBase & { type: "homeScreen"; definitionId: string })
+  | (HomeEventRowBase & {
+      type: "homeScreen"
+      definitionId: string
+      parameters: Readonly<Record<string, unknown>> | null
+    })
   | (HomeEventRowBase & {
       type: "legendaryEvent"
       /** The event unit's snowprint id, also the event id. */
@@ -36,19 +42,28 @@ export type HomeEventRow =
       points?: number
     })
 
-const HOME_EVENT_ROW_LIMIT = 3
+/** Upcoming rows on Home, the pinned Legendary Event included. */
+const UPCOMING_ROW_LIMIT = 3
+
+export interface HomeEvents {
+  /** Running now: the live Home Screen Event, then the live Legendary Event. */
+  live: HomeEventRow[]
+  /** Not started yet, by start, at most three. */
+  upcoming: HomeEventRow[]
+}
 
 /**
- * Merges the Home Screen Event selection and the Legendary Event lifecycle into one row list: the
- * live Home Screen Event, then the live Legendary Event, then upcoming events of both types by
- * start (UTC instants decide; the device timezone only changes the displayed text), capped at
- * three. Either source may be `null` when its read failed or is pending.
+ * Splits the Home Screen Event selection and the Legendary Event lifecycle into what runs now and
+ * what starts next (UTC instants decide; the device timezone only changes the displayed text). The
+ * Legendary Event is pinned: when none is live, the next one with a known start always takes an
+ * upcoming slot, replacing the latest of the three, so earlier Home Screen Events never push it off
+ * Home. Either source may be `null` when its read failed or is pending.
  */
-export function selectHomeEventRows({
+export function selectHomeEvents({
   homeScreen,
   legendary,
   nowMs,
-  limit = HOME_EVENT_ROW_LIMIT,
+  limit = UPCOMING_ROW_LIMIT,
 }: {
   homeScreen: {
     active: HomeScreenEventEntry | null
@@ -60,7 +75,7 @@ export function selectHomeEventRows({
   } | null
   nowMs: number
   limit?: number
-}): HomeEventRow[] {
+}): HomeEvents {
   const hseRow = (
     entry: HomeScreenEventEntry,
     live: boolean
@@ -68,6 +83,7 @@ export function selectHomeEventRows({
     type: "homeScreen",
     key: `hse:${entry.definitionId}:${entry.startUtc}`,
     definitionId: entry.definitionId,
+    parameters: entry.parameters ?? null,
     live,
     startMs: Date.parse(entry.startUtc),
     endMs: Date.parse(entry.endUtc),
@@ -104,7 +120,19 @@ export function selectHomeEventRows({
     else upcoming.push(row)
   }
 
-  // The live Home Screen Event was pushed first; a live Legendary Event follows it.
   upcoming.sort((a, b) => a.startMs - b.startMs)
-  return [...live, ...upcoming].slice(0, limit)
+  const shown = upcoming.slice(0, limit)
+  const hasLiveLegendary = live.some((row) => row.type === "legendaryEvent")
+  const nextLegendary = upcoming.find((row) => row.type === "legendaryEvent")
+  if (
+    !hasLiveLegendary &&
+    nextLegendary &&
+    !shown.includes(nextLegendary) &&
+    limit > 0
+  ) {
+    // Every shown row starts before it, so it stays last in start order.
+    shown.splice(limit - 1, 1, nextLegendary)
+  }
+
+  return { live, upcoming: shown }
 }

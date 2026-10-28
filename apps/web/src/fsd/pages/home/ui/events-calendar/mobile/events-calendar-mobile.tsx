@@ -1,13 +1,17 @@
 import { useMemo } from "react"
 import { useTranslation } from "react-i18next"
 
-import { parseLocalDate, toIsoDate } from "../../../model/events-calendar-calc"
-import type { EventsCalendarDay } from "../../../model/events-calendar.types"
-import { EventEntryCard } from "../event-entry-card"
+import { useMinuteNow } from "@/entities/legendary-event"
+import { formatEventCountdown } from "@/shared/lib"
 
-// Stacked day sections rather than desktop's 7-column grid — a week-wide grid doesn't fit a phone
-// viewport, and only days that actually have events are rendered, for a compact, scannable list.
-export function EventsCalendarMobile({ days }: { days: EventsCalendarDay[] }) {
+import { parseLocalDate, toIsoDate } from "../../../model/events-calendar-calc"
+import type { EventsAgenda } from "../../../model/events-calendar.types"
+import { EventAgendaRow, OngoingEventTile } from "../event-entry-card"
+
+// An agenda rather than desktop's 7-column grid: what was already running when the range starts is
+// listed once under "Ongoing", then each day lists only what starts or ends on it, plus its one-day
+// events — so a week-long event appears at most twice instead of on every day it spans.
+export function EventsCalendarMobile({ agenda }: { agenda: EventsAgenda }) {
   const { t, i18n } = useTranslation("events")
   const dayHeaderFormatter = useMemo(
     () =>
@@ -18,9 +22,10 @@ export function EventsCalendarMobile({ days }: { days: EventsCalendarDay[] }) {
       }),
     [i18n.resolvedLanguage]
   )
-  const daysWithEntries = days.filter((day) => day.entries.length > 0)
+  // Ticks each minute so the Ongoing countdowns stay current.
+  const nowMs = useMinuteNow()
 
-  if (daysWithEntries.length === 0) {
+  if (agenda.ongoing.length === 0 && agenda.days.length === 0) {
     return (
       <p
         className="py-6 text-center text-sm text-muted-foreground"
@@ -31,23 +36,44 @@ export function EventsCalendarMobile({ days }: { days: EventsCalendarDay[] }) {
     )
   }
 
+  const todayIso = toIsoDate(new Date(nowMs))
+
   return (
     <div className="flex flex-col gap-4" data-testid="events-calendar-mobile">
-      {daysWithEntries.map((day) => {
-        const date = parseLocalDate(day.date)
-        const isToday = day.date === toIsoDate(new Date())
+      {agenda.ongoing.length > 0 ? (
+        <section data-testid="events-calendar-ongoing">
+          <h3 className="mb-2 text-sm font-medium">{t("agenda.ongoing")}</h3>
+          <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
+            {agenda.ongoing.map((entry) => (
+              <OngoingEventTile
+                endsInText={t("agenda.endsIn", {
+                  when: formatEventCountdown(
+                    Date.parse(entry.endUtc),
+                    nowMs,
+                    i18n.language
+                  ),
+                })}
+                entry={entry}
+                key={entry.key}
+              />
+            ))}
+          </div>
+        </section>
+      ) : null}
+      {agenda.days.map((day) => {
+        const isToday = day.date === todayIso
 
         return (
-          <div data-testid="events-calendar-day-section" key={day.date}>
+          <section data-testid="events-calendar-day-section" key={day.date}>
             <h3
               className="mb-2 text-sm font-medium data-[today=true]:text-primary"
               data-today={isToday}
             >
-              {dayHeaderFormatter.format(date)}
+              {dayHeaderFormatter.format(parseLocalDate(day.date))}
             </h3>
-            <div className="flex flex-col gap-1">
+            <div className="flex flex-col gap-1.5">
               {day.entries.map((entry) => (
-                <EventEntryCard
+                <EventAgendaRow
                   entry={entry}
                   isOccurrenceEnd={entry.isOccurrenceEnd}
                   isOccurrenceStart={entry.isOccurrenceStart}
@@ -55,7 +81,7 @@ export function EventsCalendarMobile({ days }: { days: EventsCalendarDay[] }) {
                 />
               ))}
             </div>
-          </div>
+          </section>
         )
       })}
     </div>

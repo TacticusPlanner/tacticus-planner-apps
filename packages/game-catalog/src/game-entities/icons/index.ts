@@ -21,6 +21,7 @@ export { npcPortrait } from "./npc"
 export { legendaryEventMap } from "./le-map"
 export { battleBoardImage } from "./battle-board"
 export { factionIcon } from "./faction"
+export { countdownIcon, eventIcon, homeScreenEventBanner } from "./event"
 export { abilityIcon } from "./ability"
 export {
   raidBossPortrait,

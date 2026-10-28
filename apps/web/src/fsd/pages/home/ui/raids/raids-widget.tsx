@@ -1,7 +1,10 @@
+import { useState } from "react"
 import { useTranslation } from "react-i18next"
-import { useNavigate } from "react-router"
+import { Link } from "react-router"
+import { Button } from "@workspace/ui/components/button"
 import {
   Card,
+  CardAction,
   CardContent,
   CardHeader,
   CardTitle,
@@ -19,11 +22,13 @@ import {
  * goals in global order (the same run as Today) — or, once today's real energy spend reaches the daily
  * limit, the Bonus Raids that Today then lists alone (`selectTodayRaids`) — flattened to one row per battle location regardless
  * of which goal it's for, with already-raided/exhausted locations excluded (home-raids-widget spec).
- * Activating the widget opens the full Today page. */
+ * The list shows the first ten locations, expandable in place; the header link opens the full Today page. */
+const VISIBLE_LOCATIONS = 10
+
 export function RaidsWidget() {
   const { t } = useTranslation("common")
-  const navigate = useNavigate()
   const raids = useDailyRaids()
+  const [expanded, setExpanded] = useState(false)
 
   const body = (() => {
     if (raids.status === "loading") {
@@ -102,22 +107,42 @@ export function RaidsWidget() {
       )
     }
 
+    const hiddenCount = expanded
+      ? 0
+      : Math.max(0, locations.length - VISIBLE_LOCATIONS)
+    const shown = expanded ? locations : locations.slice(0, VISIBLE_LOCATIONS)
     const list = (
-      <div
-        className="grid grid-cols-1 gap-2 sm:grid-cols-2"
-        data-testid="home-raids-list"
-      >
-        {locations.map((entry) => (
-          <LocationRow
-            entry={entry}
-            key={entry.battleId}
-            location={raids.locationsByBattleId.get(entry.battleId)}
-            resourceLabel={
-              raids.resourceLabels.get(entry.resourceId) ?? entry.resourceId
-            }
-            resourceVisual={raids.resourceVisuals.get(entry.resourceId)}
-          />
-        ))}
+      <div className="flex flex-col gap-2">
+        <div
+          className="grid grid-cols-1 gap-2 sm:grid-cols-2"
+          data-testid="home-raids-list"
+        >
+          {shown.map((entry) => (
+            <LocationRow
+              entry={entry}
+              key={entry.battleId}
+              location={raids.locationsByBattleId.get(entry.battleId)}
+              resourceLabel={
+                raids.resourceLabels.get(entry.resourceId) ?? entry.resourceId
+              }
+              resourceVisual={raids.resourceVisuals.get(entry.resourceId)}
+            />
+          ))}
+        </div>
+        {locations.length > VISIBLE_LOCATIONS ? (
+          <Button
+            aria-expanded={expanded}
+            className="self-start"
+            data-testid="home-raids-toggle"
+            onClick={() => setExpanded((value) => !value)}
+            size="sm"
+            variant="ghost"
+          >
+            {expanded
+              ? t("home.raids.showLess")
+              : t("home.raids.showMore", { count: hiddenCount })}
+          </Button>
+        ) : null}
       </div>
     )
     if (!limitCaption) return list
@@ -130,21 +155,16 @@ export function RaidsWidget() {
   })()
 
   return (
-    <Card
-      className="cursor-pointer"
-      data-testid="home-raids-widget"
-      onClick={() => void navigate("/dailies/raids")}
-      role="button"
-      tabIndex={0}
-      onKeyDown={(event) => {
-        if (event.key === "Enter" || event.key === " ") {
-          event.preventDefault()
-          void navigate("/dailies/raids")
-        }
-      }}
-    >
+    <Card className="h-full" data-testid="home-raids-widget">
       <CardHeader>
         <CardTitle>{t("home.raids.title")}</CardTitle>
+        <CardAction>
+          <Button asChild size="sm" variant="ghost">
+            <Link data-testid="home-raids-open-today" to="/dailies/raids">
+              {t("home.raids.openToday")}
+            </Link>
+          </Button>
+        </CardAction>
       </CardHeader>
       <CardContent>{body}</CardContent>
     </Card>

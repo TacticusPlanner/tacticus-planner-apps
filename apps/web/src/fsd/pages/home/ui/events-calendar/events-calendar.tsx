@@ -38,7 +38,7 @@ export function EventsCalendar() {
           // full-width empty state instead of an empty-looking grid.
           <EventsCalendarState state="empty" />
         ) : isMobile ? (
-          <EventsCalendarMobile days={calendar.days} />
+          <EventsCalendarMobile agenda={calendar.agenda} />
         ) : (
           <EventsCalendarDesktop days={calendar.days} lanes={calendar.lanes} />
         )}
