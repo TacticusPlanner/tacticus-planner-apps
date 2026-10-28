@@ -2,6 +2,7 @@ import { Link } from "react-router"
 import { useTranslation } from "react-i18next"
 import { cn } from "@workspace/ui/lib/utils"
 
+import { NavChildIcon } from "./nav-child-icon"
 import { NavLiveDot } from "./nav-live-dot"
 import { subItemDescription, subItemLabel, type NavSubItem } from "./nav-items"
 
@@ -26,20 +27,23 @@ export function MobileDrawerSubItem({
     <Link
       aria-current={isActive ? "page" : undefined}
       className={cn(
-        "flex min-h-10 flex-col justify-center rounded-md px-3 py-2 text-sm transition-colors",
+        "flex min-h-10 items-center gap-2.5 rounded-md px-3 py-2 text-sm transition-colors",
         isActive
-          ? "bg-accent text-accent-foreground shadow-[inset_3px_0_0_0_var(--accent-foreground)]"
-          : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+          ? "bg-accent/15 font-semibold text-foreground shadow-[inset_3px_0_0_0_var(--accent)]"
+          : "text-muted-foreground hover:bg-muted hover:text-foreground"
       )}
       onClick={onSelect}
       to={item.path}
     >
-      <span className="flex items-center">
-        <span className="truncate">{subItemLabel(t, item)}</span>
-        <NavLiveDot hidden={hideLive} item={item} />
-      </span>
-      <span className="truncate text-xs font-normal opacity-80">
-        {subItemDescription(t, item)}
+      <NavChildIcon child={item} />
+      <span className="flex min-w-0 flex-col">
+        <span className="flex items-center">
+          <span className="truncate">{subItemLabel(t, item)}</span>
+          <NavLiveDot hidden={hideLive} item={item} />
+        </span>
+        <span className="truncate text-xs font-normal opacity-80">
+          {subItemDescription(t, item)}
+        </span>
       </span>
     </Link>
   )

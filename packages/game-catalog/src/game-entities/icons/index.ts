@@ -40,11 +40,14 @@ export {
   type LegendaryEventResource,
 } from "./event-resource"
 export {
+  battleGlyphIcon,
+  leaderboardIcon,
   chanceIcon,
   gameMenuIcon,
   lockIcon,
   powerIcon,
   shopIcon,
+  type BattleGlyph,
   type GameMenuIcon,
 } from "./menu"
 export {

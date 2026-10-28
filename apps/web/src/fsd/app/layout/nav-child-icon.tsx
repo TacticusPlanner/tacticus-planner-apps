@@ -1,6 +1,6 @@
 import { cn } from "@workspace/ui/lib/utils"
 
-import type { NavSubItem } from "./nav-items"
+import type { NavItem, NavSubItem } from "./nav-items"
 
 /** A child's leading icon: a dynamic child's portrait, else a static child's game art or lucide icon. */
 export function NavChildIcon({
@@ -41,4 +41,28 @@ export function NavChildIcon({
     )
   }
   return null
+}
+
+/** A section's icon: the game's own art for it, else its lucide glyph. */
+export function NavItemIcon({
+  item,
+  className,
+}: {
+  item: NavItem
+  className?: string
+}) {
+  if (item.artSrc) {
+    return (
+      <img
+        alt=""
+        aria-hidden="true"
+        className={cn("size-6 shrink-0 object-contain", className)}
+        src={item.artSrc}
+      />
+    )
+  }
+  const Icon = item.icon
+  return (
+    <Icon aria-hidden="true" className={cn("size-5 shrink-0", className)} />
+  )
 }

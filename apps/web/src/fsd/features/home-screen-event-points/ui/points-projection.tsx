@@ -26,6 +26,7 @@ import {
   ProgressInput,
   TokensCell,
 } from "./points-projection-inputs"
+import { hseModeIcon } from "../lib/hse-mode-icon"
 import { useModeName } from "./use-mode-name"
 
 type ReadyProjection = Extract<HseProjectionView, { status: "ready" }>
@@ -326,7 +327,14 @@ function ReadyProjectionBody({
               key={mode.mode}
             >
               <div className="flex items-baseline justify-between gap-2">
-                <span className="font-medium">{modeName(mode.mode)}</span>
+                <span className="flex items-center gap-2 font-medium">
+                  <EntityIcon
+                    alt=""
+                    className="size-5 shrink-0"
+                    src={hseModeIcon(mode.mode)}
+                  />
+                  {modeName(mode.mode)}
+                </span>
                 {mode.manualTokens ? (
                   <TokensCell mode={mode} onChange={inputs.setTokens} />
                 ) : (
@@ -371,7 +379,14 @@ function ReadyProjectionBody({
                 key={mode.mode}
               >
                 <TableCell className="font-medium">
-                  {modeName(mode.mode)}
+                  <span className="flex items-center gap-2">
+                    <EntityIcon
+                      alt=""
+                      className="size-5 shrink-0"
+                      src={hseModeIcon(mode.mode)}
+                    />
+                    {modeName(mode.mode)}
+                  </span>
                 </TableCell>
                 <TableCell className="text-right tabular-nums">
                   <TokensCell mode={mode} onChange={inputs.setTokens} />

@@ -51,6 +51,11 @@ export const HRE_RARITY_STEP_IDS: readonly {
 ]
 
 /** Daily payouts arrive on days 2 to 15. */
+/** The game progression (rarity and stars) a pace step reaches, for drawing it. */
+export function hreStepProgression(id: HreRarityStepId): string | undefined {
+  return HRE_RARITY_STEP_IDS.find((step) => step.id === id)?.progression
+}
+
 export const HRE_DAILY_PAYOUTS = 14
 /** The "Oh So Close" offer covers a gap of this many shards or fewer. */
 export const HRE_OH_SO_CLOSE_SHARDS = 25

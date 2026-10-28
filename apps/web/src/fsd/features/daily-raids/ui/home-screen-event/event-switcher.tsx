@@ -74,7 +74,8 @@ export function EventSwitcher({
       >
         <SelectTrigger
           aria-label={t("hse.switcher.label")}
-          className="min-w-0 flex-1 md:w-72 md:flex-none"
+          // The status line below shows the event's medallion; the trigger keeps only its name.
+          className="min-w-0 flex-1 md:w-72 md:flex-none [&_[data-slot=select-value]_img]:hidden"
           data-testid="hse-event-select"
         >
           <SelectValue
