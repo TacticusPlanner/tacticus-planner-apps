@@ -1,6 +1,7 @@
 import type {
   EventEntryViewModel,
   EventLane,
+  EventsAgenda,
   EventsCalendarDay,
   EventsCalendarDayEntry,
   PositionedEventEntry,
@@ -271,6 +272,47 @@ export function buildEventsCalendarDays(
 
     return { date: toIsoDate(date), entries: dayEntries }
   })
+}
+
+/**
+ * Mobile's agenda over the per-day buckets (home-events-calendar): an event that began before the
+ * visible range is listed once under "Ongoing" (soonest end first) instead of under every day it spans.
+ * Each day then keeps only its one-day entries and the multi-day occurrences that start or end on it,
+ * so a 7-day event shows on its first and last day, not on all seven. Days left empty are dropped.
+ */
+export function buildEventsAgenda(
+  days: readonly EventsCalendarDay[],
+  rangeStart: Date
+): EventsAgenda {
+  const rangeStartMs = rangeStart.getTime()
+  const ongoing = new Map<string, EventEntryViewModel>()
+  for (const day of days) {
+    for (const entry of day.entries) {
+      const startMs = Date.parse(entry.startUtc)
+      const isMultiDay = Date.parse(entry.endUtc) - startMs > ONE_DAY_MS
+      if (isMultiDay && startMs < rangeStartMs) ongoing.set(entry.key, entry)
+    }
+  }
+
+  return {
+    ongoing: [...ongoing.values()].sort(
+      (a, b) =>
+        Date.parse(a.endUtc) - Date.parse(b.endUtc) ||
+        a.key.localeCompare(b.key)
+    ),
+    days: days
+      .map((day) => ({
+        date: day.date,
+        entries: day.entries.filter(
+          (entry) =>
+            Date.parse(entry.endUtc) - Date.parse(entry.startUtc) <=
+              ONE_DAY_MS ||
+            entry.isOccurrenceStart ||
+            entry.isOccurrenceEnd
+        ),
+      }))
+      .filter((day) => day.entries.length > 0),
+  }
 }
 
 /**

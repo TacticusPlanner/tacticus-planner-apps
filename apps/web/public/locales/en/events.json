@@ -19,6 +19,13 @@
     "ends": "Ends"
   },
   "wikiLink": "Wiki",
+  "agenda": {
+    "ongoing": "Ongoing",
+    "endsIn": "Ends in {{when}}"
+  },
+  "details": {
+    "projectedNote": "Projected from the usual schedule. Dates can change."
+  },
   "withFaction": "{{name}}: {{faction}}",
   "withCharacter": "{{name}}: {{character}}",
   "withVersion": "{{name}} {{version}}",
@@ -73,40 +80,32 @@
     "anniversary-event": "Anniversary Event",
     "crusade-season": "Crusade Season"
   },
-  "legend": {
-    "campaign": "Campaign Event",
-    "incursion": "Incursion",
-    "legendary": "Legendary Event",
-    "battlePass": "Battle Pass",
-    "guildWar": "Guild War",
-    "guildRaid": "Guild Raid",
-    "tournament": "Tournament Arena",
-    "homeScreen": "Home Screen Event",
-    "quest": "Quest",
-    "newCharacter": "New Character",
-    "gameVersion": "Game Update",
-    "shop": "Anniversary Event",
-    "crusade": "Crusade Season",
-    "default": "Other"
+  "families": {
+    "campaigns": "Campaigns",
+    "heroes": "Hero events",
+    "pvp": "PvP",
+    "guild": "Guild",
+    "passes": "Passes & boosts",
+    "other": "Other"
   },
   "tour": {
     "home": {
       "steps": {
-        "tokenAvailability": {
-          "title": "Token Availability",
-          "content": "Check your Arena, Guild Raid, Onslaught, and Salvage Run token status at a glance."
+        "rightNow": {
+          "title": "Right now",
+          "content": "Your token status at a glance, capped tokens first, plus the Home Screen Event and Legendary Event that are live."
         },
-        "eventsWidget": {
-          "title": "Events",
-          "content": "See the Home Screen Event and Legendary Event that are live, then what starts next. Select a row to open that event."
+        "raids": {
+          "title": "Daily Raids",
+          "content": "See what's left to raid today for your Active goals, one location per row. Expand the list to see more than ten."
+        },
+        "upcoming": {
+          "title": "Upcoming events",
+          "content": "What starts next. The next Legendary Event always shows here or in Right now, with a button to its project or plan."
         },
         "projects": {
           "title": "Your Projects",
           "content": "Jump into any project's plan — the Default project always shows first."
-        },
-        "raids": {
-          "title": "Daily Raids",
-          "content": "See what's left to raid today for your Active goals, one location per row."
         },
         "navigation": {
           "title": "Browse other weeks",
@@ -114,7 +113,7 @@
         },
         "calendar": {
           "title": "Event details",
-          "content": "Cards distinguish active and tentative events, and mark the first and last days of multi-day events."
+          "content": "Each event shows its in-game icon. Select one for its dates and Wiki link. On phones, events already running are listed once under Ongoing."
         }
       }
     }

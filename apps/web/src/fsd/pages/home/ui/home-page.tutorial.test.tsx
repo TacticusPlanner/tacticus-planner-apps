@@ -27,10 +27,10 @@ describe("useHomePageTutorial", () => {
       expect(step.content).toContain("localized:tour.home.steps")
     }
     expect(steps.desktop.map((step) => step.target)).toEqual([
-      '[data-testid="token-availability"]',
+      '[data-testid="home-right-now"]',
+      '[data-testid="home-raids-widget"]',
       '[data-testid="home-events-widget"]',
       '[data-testid="home-projects-widget"]',
-      '[data-testid="home-raids-widget"]',
       '[data-testid="events-calendar-navigation"]',
       '[data-testid="events-calendar"]',
     ])

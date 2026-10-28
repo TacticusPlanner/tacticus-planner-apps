@@ -14,11 +14,12 @@ export {
   reloadOnceForStaleBuild,
 } from "./stale-build"
 export {
-  EVENT_COLOR_KEYS_IN_LEGEND_ORDER,
-  eventAccentClass,
+  EVENT_FAMILIES_IN_LEGEND_ORDER,
   eventBarClass,
-  resolveEventColorKey,
-  type EventColorKey,
+  eventFamilyStripeClass,
+  eventFamilySwatchClass,
+  resolveEventFamily,
+  type EventFamily,
 } from "./event-colors"
 export {
   combineReadStates,

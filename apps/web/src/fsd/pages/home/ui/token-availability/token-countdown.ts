@@ -36,3 +36,19 @@ export function tokenCountdown(
   const targetMs = observedAtMs + bucket.nextTokenInSeconds * 1000
   return targetMs > nowMs ? { kind: "pending", targetMs } : { kind: "due" }
 }
+
+/** How full a bucket is, 0–100, for its ring (an over-cap bucket reads as full). */
+export function tokenFillPercent(bucket: TokenBucketData): number {
+  if (bucket.max <= 0) return 0
+  return Math.round(
+    (Math.min(Math.max(bucket.current, 0), bucket.max) / bucket.max) * 100
+  )
+}
+
+/** Capped buckets first, so wasted regeneration is the first thing seen; otherwise the given order. */
+export function cappedFirst<T extends { bucket: TokenBucketData }>(
+  entries: readonly T[]
+): T[] {
+  const isCapped = (entry: T) => entry.bucket.current >= entry.bucket.max
+  return [...entries.filter(isCapped), ...entries.filter((e) => !isCapped(e))]
+}

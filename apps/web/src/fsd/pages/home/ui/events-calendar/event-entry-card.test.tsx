@@ -1,12 +1,16 @@
+import userEvent from "@testing-library/user-event"
 import { describe, expect, it, vi } from "vitest"
+
 import { render, screen } from "@/test/render"
+
 import type { EventEntryViewModel } from "../../model/events-calendar.types"
-import { EventEntryCard } from "./event-entry-card"
+import { EventAgendaRow, EventBar } from "./event-entry-card"
 
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({
     t: (key: string, opts?: { defaultValue?: string }) =>
       opts?.defaultValue ?? key,
+    i18n: { resolvedLanguage: "en", language: "en" },
   }),
 }))
 
@@ -29,69 +33,90 @@ function baseEntry(
   }
 }
 
-describe("EventEntryCard (list variant)", () => {
-  it("keeps its category-color left accent when active", () => {
-    render(<EventEntryCard entry={baseEntry({ isActiveNow: true })} />)
-    const card = screen.getByTestId("event-entry-card")
-    expect(card.className).not.toContain("border-primary")
-    expect(card.className).toContain("border-l-[var(--event-battle-pass)]")
-    expect(card.className).toContain("data-[active=true]:bg-primary/5")
-  })
+describe("EventBar", () => {
+  it("shows the game icon and the family stripe, not a solid category color", () => {
+    render(<EventBar entry={baseEntry({})} />)
 
-  it("keeps the same left accent color whether or not it's active", () => {
-    const { unmount } = render(
-      <EventEntryCard entry={baseEntry({ isActiveNow: false })} />
+    const bar = screen.getByTestId("event-entry-card")
+    expect(bar.className).toContain("border-l-[var(--event-family-passes)]")
+    expect(bar.querySelector("img")).toHaveAttribute(
+      "src",
+      "/game_catalog/datamines/atlases/ui_icon_menu_battlepass.webp"
     )
-    const inactiveClass = screen.getByTestId("event-entry-card").className
-    unmount()
-
-    render(<EventEntryCard entry={baseEntry({ isActiveNow: true })} />)
-    const activeClass = screen.getByTestId("event-entry-card").className
-
-    const accentClass = "border-l-[var(--event-battle-pass)]"
-    expect(inactiveClass).toContain(accentClass)
-    expect(activeClass).toContain(accentClass)
+    expect(bar).toHaveTextContent("battle-pass")
   })
 
-  it("shows occurrence boundary tags without visible active or projected tags", () => {
+  it("keeps a one-day bar's name for assistive tech only", () => {
     render(
-      <EventEntryCard
-        entry={baseEntry({ confirmed: false, isActiveNow: true })}
-        isOccurrenceEnd
-        isOccurrenceStart
+      <EventBar
+        entry={baseEntry({
+          definitionId: "always-double-xp-sunday",
+          definitionType: "StandingModifier",
+        })}
+        iconOnly
       />
     )
 
-    expect(
-      screen.getByTestId("event-occurrence-start-badge")
-    ).toHaveTextContent("events:badges.starts")
-    expect(screen.getByTestId("event-occurrence-end-badge")).toHaveTextContent(
-      "events:badges.ends"
+    const name = screen.getByText("always-double-xp-sunday")
+    expect(name).toHaveClass("sr-only")
+  })
+
+  it("marks projected entries with a dashed border and keeps state text screen-reader only", () => {
+    render(
+      <EventBar entry={baseEntry({ confirmed: false, isActiveNow: true })} />
+    )
+
+    expect(screen.getByTestId("event-entry-card").className).toContain(
+      "border-dashed"
     )
     expect(screen.getByTestId("event-active-badge")).toHaveClass("sr-only")
     expect(screen.getByTestId("event-confirmed-badge")).toHaveClass("sr-only")
   })
 
-  it("renders the Wiki destination as a labeled button", () => {
-    render(
-      <EventEntryCard entry={baseEntry({ definitionId: "legendary-event" })} />
-    )
+  it("opens details with the Wiki link instead of rendering it inside the bar", async () => {
+    const user = userEvent.setup()
+    render(<EventBar entry={baseEntry({ definitionId: "legendary-event" })} />)
 
-    const wikiLink = screen.getByRole("link", { name: "events:wikiLink" })
-    expect(wikiLink).toHaveTextContent("events:wikiLink")
-    expect(wikiLink).toHaveAttribute("data-slot", "button")
-    expect(wikiLink).toHaveAttribute("data-variant", "outline")
+    expect(
+      screen.queryByRole("link", { name: "wikiLink" })
+    ).not.toBeInTheDocument()
+
+    await user.click(screen.getByTestId("event-entry-card"))
+
+    const wikiLink = await screen.findByRole("link", {
+      name: "wikiLink",
+    })
     expect(wikiLink).toHaveAttribute("target", "_blank")
     expect(wikiLink).toHaveAttribute("rel", "noopener noreferrer")
+    expect(screen.getByTestId("event-details")).toHaveTextContent(
+      "legendary-event"
+    )
   })
 
-  it("does not render a Wiki action when the definition has no Wiki URL", () => {
+  it("has no Wiki action in details when the definition has no Wiki URL", async () => {
+    const user = userEvent.setup()
+    render(<EventBar entry={baseEntry({ definitionId: "unknown-event" })} />)
+
+    await user.click(screen.getByTestId("event-entry-card"))
+
+    await screen.findByTestId("event-details")
+    expect(
+      screen.queryByRole("link", { name: "wikiLink" })
+    ).not.toBeInTheDocument()
+  })
+})
+
+describe("EventAgendaRow", () => {
+  it("shows the occurrence boundary tags it is given", () => {
     render(
-      <EventEntryCard entry={baseEntry({ definitionId: "unknown-event" })} />
+      <EventAgendaRow entry={baseEntry({})} isOccurrenceEnd isOccurrenceStart />
     )
 
     expect(
-      screen.queryByRole("link", { name: "events:wikiLink" })
-    ).not.toBeInTheDocument()
+      screen.getByTestId("event-occurrence-start-badge")
+    ).toHaveTextContent("badges.starts")
+    expect(screen.getByTestId("event-occurrence-end-badge")).toHaveTextContent(
+      "badges.ends"
+    )
   })
 })

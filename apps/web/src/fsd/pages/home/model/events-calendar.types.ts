@@ -36,6 +36,13 @@ export type EventsCalendarDay = {
   entries: EventsCalendarDayEntry[]
 }
 
+/** Mobile's agenda: occurrences carried into the range listed once, then each day's starts, ends and
+ *  one-day events (see `buildEventsAgenda`). */
+export type EventsAgenda = {
+  ongoing: EventEntryViewModel[]
+  days: EventsCalendarDay[]
+}
+
 export type PositionedEventEntry = EventEntryViewModel & {
   /** 1-indexed day-column within the visible range (matches CSS grid's 1-indexed columns). */
   startColumn: number
@@ -50,6 +57,7 @@ export type EventLane = {
 export type EventsCalendarViewModel = {
   status: EventsCalendarStatus
   days: EventsCalendarDay[]
+  agenda: EventsAgenda
   lanes: EventLane[]
   rangeStart: Date
   rangeEnd: Date

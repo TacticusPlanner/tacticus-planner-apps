@@ -147,7 +147,9 @@ describe("TokenAvailability", () => {
 
     const row = await screen.findByTestId("token-row-arena")
     expect(row).toHaveTextContent("Capped")
-    expect(row.querySelector("img")).toHaveClass("animate-pulse")
+    expect(row).toHaveAttribute("data-capped", "true")
+    // No pulsing: a capped ring is marked by color and the "Capped" label alone.
+    expect(row.querySelector(".animate-pulse")).toBeNull()
   })
 
   it("does not apply capped styling to a token still counting down", async () => {
@@ -163,6 +165,7 @@ describe("TokenAvailability", () => {
     render(<TokenAvailability />)
 
     const row = await screen.findByTestId("token-row-arena")
-    expect(row.querySelector("img")).not.toHaveClass("animate-pulse")
+    expect(row).toHaveAttribute("data-capped", "false")
+    expect(row).not.toHaveTextContent("Capped")
   })
 })

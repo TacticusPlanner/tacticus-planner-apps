@@ -7,11 +7,14 @@ vi.mock("@/shared/tour", () => ({ useAutoStartTourOnce: () => undefined }))
 vi.mock("./home-page.tutorial", () => ({
   useHomePageTutorial: () => undefined,
 }))
-vi.mock("./token-availability/token-availability", () => ({
-  TokenAvailability: () => <div data-testid="token-availability" />,
+vi.mock("../model/use-home-events", () => ({
+  useHomeEvents: () => ({ status: "loading" }),
 }))
-vi.mock("./events-widget/home-events-widget", () => ({
-  HomeEventsWidget: () => <div data-testid="home-events-widget" />,
+vi.mock("./right-now/right-now", () => ({
+  RightNow: () => <div data-testid="home-right-now" />,
+}))
+vi.mock("./events/upcoming-events", () => ({
+  UpcomingEvents: () => <div data-testid="home-events-widget" />,
 }))
 vi.mock("./projects/projects-widget", () => ({
   ProjectsWidget: () => <div data-testid="home-projects-widget" />,
@@ -24,31 +27,29 @@ vi.mock("./events-calendar/events-calendar", () => ({
 }))
 
 describe("HomePage layout", () => {
-  it("puts Token Availability and Home Screen Events in one md two-column row, stacked on mobile", () => {
-    render(<HomePage />)
-    const row = screen.getByTestId("token-availability").parentElement!
-
-    expect(row).toContainElement(screen.getByTestId("home-events-widget"))
-    expect(row).toHaveClass("grid", "grid-cols-1", "md:grid-cols-2")
-    expect(
-      [...row.children].map((child) => child.getAttribute("data-testid"))
-    ).toEqual(["token-availability", "home-events-widget"])
-  })
-
-  it("keeps Projects/Raids after that row and the calendar last", () => {
+  it("orders Right now, then Raids beside Upcoming events, then Projects, then the calendar", () => {
     render(<HomePage />)
     const order = [...screen.getByTestId("home-page").children].map((section) =>
-      [...section.querySelectorAll("[data-testid]")]
-        .concat(section.matches("[data-testid]") ? [section] : [])
-        .map((el) => el.getAttribute("data-testid"))
-        .sort()
-        .join("+")
+      section.getAttribute("data-testid")
     )
 
     expect(order).toEqual([
-      "home-events-widget+token-availability",
-      "home-projects-widget+home-raids-widget",
+      "home-right-now",
+      "home-raids-row",
+      "home-projects-widget",
       "events-calendar",
     ])
+  })
+
+  it("gives Raids the wider of two md columns and stacks them on mobile in source order", () => {
+    render(<HomePage />)
+    const row = screen.getByTestId("home-raids-row")
+
+    expect(row).toHaveClass("grid", "grid-cols-1", "md:grid-cols-5")
+    const [raids, upcoming] = [...row.children]
+    expect(raids).toContainElement(screen.getByTestId("home-raids-widget"))
+    expect(raids).toHaveClass("md:col-span-3")
+    expect(upcoming).toContainElement(screen.getByTestId("home-events-widget"))
+    expect(upcoming).toHaveClass("md:col-span-2")
   })
 })

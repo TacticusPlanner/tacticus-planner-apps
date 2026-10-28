@@ -1,8 +1,9 @@
 import { useTranslation } from "react-i18next"
-import { useNavigate } from "react-router"
+import { Link, useNavigate } from "react-router"
 import { Button } from "@workspace/ui/components/button"
 import {
   Card,
+  CardAction,
   CardContent,
   CardHeader,
   CardTitle,
@@ -17,7 +18,8 @@ import {
 
 /** Home dashboard's Your Projects widget: Default project first. Mobile caps the list to 3 project
  * rows with a "+N more" link to the Projects dashboard (home-projects-widget spec); desktop has
- * room to show every non-archived project uncapped. */
+ * room to show every non-archived project uncapped, in a grid across the full-width card. The
+ * header links to the Projects dashboard. */
 export function ProjectsWidget() {
   const { t } = useTranslation("common")
   const navigate = useNavigate()
@@ -66,7 +68,10 @@ export function ProjectsWidget() {
 
     return (
       <div className="flex flex-col gap-3">
-        <ul className="flex flex-col gap-2" data-testid="home-projects-list">
+        <ul
+          className="grid grid-cols-1 gap-2 md:grid-cols-2 xl:grid-cols-3"
+          data-testid="home-projects-list"
+        >
           {result.projects.map((project) => (
             <ProjectSummaryRow
               key={project.projectId}
@@ -97,6 +102,13 @@ export function ProjectsWidget() {
     <Card data-testid="home-projects-widget">
       <CardHeader>
         <CardTitle>{t("home.projects.title")}</CardTitle>
+        <CardAction>
+          <Button asChild size="sm" variant="ghost">
+            <Link data-testid="home-projects-all" to="/plan/projects">
+              {t("home.projects.viewAll")}
+            </Link>
+          </Button>
+        </CardAction>
       </CardHeader>
       <CardContent>{body}</CardContent>
     </Card>

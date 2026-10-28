@@ -19,6 +19,13 @@
     "ends": "Endet"
   },
   "wikiLink": "Wiki",
+  "agenda": {
+    "ongoing": "Laufend",
+    "endsIn": "Endet in {{when}}"
+  },
+  "details": {
+    "projectedNote": "Aus dem üblichen Zeitplan hochgerechnet. Termine können sich ändern."
+  },
   "withFaction": "{{name}}: {{faction}}",
   "withCharacter": "{{name}}: {{character}}",
   "withVersion": "{{name}} {{version}}",
@@ -73,40 +80,32 @@
     "anniversary-event": "Jubiläums-Event",
     "crusade-season": "Kreuzzug-Saison"
   },
-  "legend": {
-    "campaign": "Kampagnen-Event",
-    "incursion": "Incursion",
-    "legendary": "Legendäres Event",
-    "battlePass": "Battle Pass",
-    "guildWar": "Gildenkrieg",
-    "guildRaid": "Gilden-Überfall",
-    "tournament": "Turnierarena",
-    "homeScreen": "Home-Screen-Event",
-    "quest": "Quest",
-    "newCharacter": "Neuer Charakter",
-    "gameVersion": "Update",
-    "shop": "Jubiläums-Event",
-    "crusade": "Kreuzzug-Saison",
-    "default": "Sonstiges"
+  "families": {
+    "campaigns": "Kampagnen",
+    "heroes": "Helden-Events",
+    "pvp": "PvP",
+    "guild": "Gilde",
+    "passes": "Pässe & Boosts",
+    "other": "Sonstiges"
   },
   "tour": {
     "home": {
       "steps": {
-        "tokenAvailability": {
-          "title": "Token-Verfügbarkeit",
-          "content": "Sieh auf einen Blick deinen Arena-, Gildenangriffs-, Ansturm- und Plünderungslauf-Token-Status."
+        "rightNow": {
+          "title": "Gerade jetzt",
+          "content": "Dein Token-Status auf einen Blick, volle Token zuerst, dazu das laufende Startbildschirm-Event und Legendäre Event."
         },
-        "eventsWidget": {
-          "title": "Events",
-          "content": "Sieh das laufende Startbildschirm-Event und Legendäre Event und danach, was als Nächstes beginnt. Wähle eine Zeile, um dieses Event zu öffnen."
+        "raids": {
+          "title": "Tägliche Raids",
+          "content": "Sieh, was für deine aktiven Ziele heute noch zu erledigen ist, eine Zeile pro Ort. Klappe die Liste auf, um mehr als zehn zu sehen."
+        },
+        "upcoming": {
+          "title": "Kommende Events",
+          "content": "Was als Nächstes beginnt. Das nächste Legendäre Event steht immer hier oder unter „Gerade jetzt“, mit einer Schaltfläche zu seinem Projekt oder Plan."
         },
         "projects": {
           "title": "Deine Projekte",
           "content": "Steige direkt in den Plan eines Projekts ein — das Standardprojekt wird immer zuerst angezeigt."
-        },
-        "raids": {
-          "title": "Tägliche Raids",
-          "content": "Sieh, was für deine aktiven Ziele heute noch zu erledigen ist — eine Zeile pro Ort."
         },
         "navigation": {
           "title": "Andere Wochen ansehen",
@@ -114,7 +113,7 @@
         },
         "calendar": {
           "title": "Event-Details",
-          "content": "Karten unterscheiden aktive und vorläufige Events und markieren den ersten und letzten Tag mehrtägiger Events."
+          "content": "Jedes Event zeigt sein Spielsymbol. Wähle eines für seine Termine und den Wiki-Link. Auf dem Handy stehen bereits laufende Events einmal unter „Laufend“."
         }
       }
     }

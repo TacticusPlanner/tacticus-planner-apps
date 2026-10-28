@@ -542,6 +542,10 @@
     }
   },
   "home": {
+    "rightNow": {
+      "title": "En ce moment",
+      "nothingLive": "Aucun événement n'est en cours."
+    },
     "tokens": {
       "title": "Disponibilité des jetons",
       "full": "Plein",
@@ -565,17 +569,22 @@
       "emptyDescription": "Les projets regroupent vos objectifs pour que vous puissiez les parcourir séparément.",
       "emptyAction": "Créer un projet",
       "error": "Impossible de charger vos projets.",
-      "retry": "Réessayer"
+      "retry": "Réessayer",
+      "viewAll": "Tous les projets"
     },
     "raids": {
       "title": "Raids quotidiens",
       "empty": "Rien à raider aujourd'hui.",
       "error": "Impossible de charger les raids du jour.",
       "noGoals": "Aucun objectif actif pour l'instant. Ajoutez des objectifs pour planifier vos raids.",
-      "limitReached": "Limite d'énergie quotidienne atteinte — raids bonus :"
+      "limitReached": "Limite d'énergie quotidienne atteinte — raids bonus :",
+      "openToday": "Ouvrir Aujourd'hui",
+      "showMore_one": "Afficher {{count}} de plus",
+      "showMore_other": "Afficher {{count}} de plus",
+      "showLess": "Afficher moins"
     },
     "events": {
-      "title": "Événements",
+      "title": "Événements à venir",
       "live": "EN COURS",
       "endsIn": "Se termine dans {{when}}",
       "startsIn": "Commence dans {{when}}",
@@ -586,7 +595,11 @@
       "points": "{{points}} points",
       "sourceFailed": "Impossible de charger les {{type}}.",
       "openHse": "Événements de l'écran d'accueil",
-      "openLegendaryEvents": "Événements Légendaires"
+      "openLegendaryEvents": "Événements Légendaires",
+      "openProject": "Ouvrir le projet",
+      "projects_one": "{{count}} projet",
+      "projects_other": "{{count}} projets",
+      "planEvent": "Planifier cet événement"
     },
     "calendar": {
       "title": "Calendrier des événements"

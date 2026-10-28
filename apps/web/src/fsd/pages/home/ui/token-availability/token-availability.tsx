@@ -5,12 +5,6 @@ import {
   getPlayerDataMetadata,
   type PlayerDataChunkDto,
 } from "@workspace/player-data"
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@workspace/ui/components/card"
 import { cn } from "@workspace/ui/lib/utils"
 
 import { combineReadStates, useReadState } from "@/shared/lib"
@@ -18,7 +12,12 @@ import { usePlayerChunk } from "@/shared/local-data"
 import { EntityIcon, LocalReadFailure } from "@/shared/ui"
 
 import { formatExactCountdown } from "./format-exact-countdown"
-import { tokenCountdown, type TokenBucketData } from "./token-countdown"
+import {
+  cappedFirst,
+  tokenCountdown,
+  tokenFillPercent,
+  type TokenBucketData,
+} from "./token-countdown"
 
 const NOW_TICK_MS = 1000
 
@@ -100,43 +99,56 @@ function TokenRow({
 
   const isCapped = countdown.kind === "full"
 
+  // A ring meter: the conic fill is current/max, red once capped (state by color and text, not motion).
   return (
     <div
-      className="flex items-center gap-2"
+      className="flex min-w-0 flex-col items-center gap-1 text-center"
+      data-capped={isCapped}
       data-testid={`token-row-${entry.key}`}
     >
-      <EntityIcon
-        alt=""
+      <div
+        aria-hidden="true"
         className={cn(
-          "size-9 shrink-0",
-          isCapped && "animate-pulse drop-shadow-[0_0_6px_var(--destructive)]"
+          "grid size-14 place-items-center rounded-full",
+          isCapped
+            ? "[--token-ring:var(--destructive)]"
+            : "[--token-ring:var(--primary)]"
         )}
-        src={gameModeTokenIcon(entry.labelKey)}
-      />
-      <div className="flex flex-col gap-0.5">
-        <span className="text-xs text-muted-foreground">
-          {t(tokenLabelI18nKeys[entry.labelKey])}
-        </span>
-        <span className="text-base font-semibold tabular-nums">
-          {entry.bucket.current} / {entry.bucket.max}
-        </span>
-        {countdownText ? (
-          <span
-            className={cn(
-              "text-xs",
-              isCapped
-                ? "font-semibold tracking-wide text-destructive uppercase"
-                : "text-muted-foreground"
-            )}
-          >
-            {countdownText}
-          </span>
-        ) : null}
+        style={{
+          background: `conic-gradient(var(--token-ring) ${tokenFillPercent(entry.bucket)}%, var(--muted) 0)`,
+        }}
+      >
+        <div className="grid size-11 place-items-center rounded-full bg-card">
+          <EntityIcon
+            alt=""
+            className="size-8"
+            src={gameModeTokenIcon(entry.labelKey)}
+          />
+        </div>
       </div>
+      <span className="w-full truncate text-[11px] text-muted-foreground">
+        {t(tokenLabelI18nKeys[entry.labelKey])}
+      </span>
+      <span className="text-sm leading-none font-semibold tabular-nums">
+        {entry.bucket.current}/{entry.bucket.max}
+      </span>
+      {countdownText ? (
+        <span
+          className={cn(
+            "text-[11px] tabular-nums",
+            isCapped
+              ? "font-semibold tracking-wide text-destructive uppercase"
+              : "text-muted-foreground"
+          )}
+        >
+          {countdownText}
+        </span>
+      ) : null}
     </div>
   )
 }
 
+/** Token status for the Right now band: one ring per synced token type, capped ones first. */
 export function TokenAvailability() {
   const { t } = useTranslation("common")
   // `getPlayerDataMetadata` (not the app-shell's sync-status context, which `pages/home` can't
@@ -186,8 +198,8 @@ export function TokenAvailability() {
     const observedAtMs = observedAt ? Date.parse(observedAt) : nowMs
 
     return (
-      <div className="flex flex-wrap gap-4">
-        {entries.map((entry) => (
+      <div className="grid grid-cols-5 gap-1 sm:gap-3">
+        {cappedFirst(entries).map((entry) => (
           <TokenRow
             entry={entry}
             key={entry.key}
@@ -200,11 +212,11 @@ export function TokenAvailability() {
   })()
 
   return (
-    <Card data-testid="token-availability">
-      <CardHeader>
-        <CardTitle>{t("home.tokens.title")}</CardTitle>
-      </CardHeader>
-      <CardContent>{body}</CardContent>
-    </Card>
+    <section
+      aria-label={t("home.tokens.title")}
+      data-testid="token-availability"
+    >
+      {body}
+    </section>
   )
 }

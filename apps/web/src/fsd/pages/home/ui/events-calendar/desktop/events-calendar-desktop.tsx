@@ -6,12 +6,11 @@ import type {
   EventLane,
   EventsCalendarDay,
 } from "../../../model/events-calendar.types"
-import { EventEntryCard } from "../event-entry-card"
+import { EventBar } from "../event-entry-card"
 
 // A Gantt-style grid, not a day-column grid: a header row of day labels, then one row per lane, each
-// entry positioned as a colored bar spanning the day-columns it covers — matches the reference
-// calendars' layout (one horizontal bar per event, stacked into as few rows as overlaps require) rather
-// than stacking every day's events into its own column.
+// entry positioned as a bar spanning the day-columns it covers (one horizontal bar per event, stacked
+// into as few rows as overlaps require). The game icon names the event, so a one-day bar is icon-only.
 export function EventsCalendarDesktop({
   days,
   lanes,
@@ -57,7 +56,7 @@ export function EventsCalendarDesktop({
         data-testid="events-calendar-lanes"
       >
         {lanes.map((lane, laneIndex) => (
-          <div className="grid h-9 grid-cols-7 gap-2" key={laneIndex}>
+          <div className="grid h-10 grid-cols-7 gap-2" key={laneIndex}>
             {lane.entries.map((entry) => (
               <div
                 className="min-w-0"
@@ -66,7 +65,7 @@ export function EventsCalendarDesktop({
                   gridColumn: `${entry.startColumn} / span ${entry.span}`,
                 }}
               >
-                <EventEntryCard entry={entry} variant="bar" />
+                <EventBar entry={entry} iconOnly={entry.span === 1} />
               </div>
             ))}
           </div>

@@ -542,6 +542,10 @@
     }
   },
   "home": {
+    "rightNow": {
+      "title": "Right now",
+      "nothingLive": "No event is live right now."
+    },
     "tokens": {
       "title": "Token Availability",
       "full": "Capped",
@@ -565,17 +569,22 @@
       "emptyDescription": "Projects group your goals so you can browse them separately.",
       "emptyAction": "Create project",
       "error": "Couldn't load your projects.",
-      "retry": "Retry"
+      "retry": "Retry",
+      "viewAll": "All projects"
     },
     "raids": {
       "title": "Daily Raids",
       "empty": "Nothing to raid today.",
       "error": "Couldn't load today's raids.",
       "noGoals": "No active goals yet. Add goals to plan your raids.",
-      "limitReached": "Daily energy limit reached — bonus raids:"
+      "limitReached": "Daily energy limit reached — bonus raids:",
+      "openToday": "Open Today",
+      "showMore_one": "Show {{count}} more",
+      "showMore_other": "Show {{count}} more",
+      "showLess": "Show less"
     },
     "events": {
-      "title": "Events",
+      "title": "Upcoming events",
       "live": "LIVE",
       "endsIn": "Ends in {{when}}",
       "startsIn": "Starts in {{when}}",
@@ -586,7 +595,11 @@
       "points": "{{points}} points",
       "sourceFailed": "Couldn't load {{type}}.",
       "openHse": "Home Screen Events",
-      "openLegendaryEvents": "Legendary Events"
+      "openLegendaryEvents": "Legendary Events",
+      "openProject": "Open project",
+      "projects_one": "{{count}} project",
+      "projects_other": "{{count}} projects",
+      "planEvent": "Plan this event"
     },
     "calendar": {
       "title": "Events Calendar"

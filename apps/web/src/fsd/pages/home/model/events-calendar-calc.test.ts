@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
 import {
   addLocalDays,
+  buildEventsAgenda,
   buildEventsCalendarDays,
   buildEventsCalendarLanes,
 } from "./events-calendar-calc"
@@ -567,6 +568,116 @@ describe("sub-24h entries anchored at UTC midnight", () => {
 
     expect(days.every((day) => day.entries.length === 0)).toBe(true)
     expect(lanes.flatMap((lane) => lane.entries)).toHaveLength(0)
+  })
+})
+
+describe("buildEventsAgenda", () => {
+  // Week of Sun 26 Jul – Sat 1 Aug 2026 (local).
+  const rangeStart = new Date(2026, 6, 26)
+  const rangeEnd = new Date(2026, 7, 2)
+  const entry = (
+    occurrenceId: string,
+    definitionId: string,
+    start: Date,
+    end: Date
+  ) => ({
+    occurrenceId,
+    definitionId,
+    confirmed: true,
+    startUtc: start.toISOString(),
+    endUtc: end.toISOString(),
+    parameters: null,
+  })
+
+  function agendaOf(entries: ReturnType<typeof entry>[]) {
+    const days = buildEventsCalendarDays(
+      entries,
+      definitionsById,
+      rangeStart,
+      rangeEnd,
+      new Date(2026, 6, 26, 12)
+    )
+    return buildEventsAgenda(days, rangeStart)
+  }
+
+  it("lists an event that began before the range once under Ongoing, and again only on its end day", () => {
+    // Battle Pass 20 Jul – 29 Jul 00:00 (end exclusive): carried into the week, last day Tue 28 Jul.
+    const agenda = agendaOf([
+      entry(
+        "occ-bp",
+        "battle-pass",
+        new Date(2026, 6, 20),
+        new Date(2026, 6, 29)
+      ),
+    ])
+
+    expect(agenda.ongoing.map((e) => e.occurrenceId)).toEqual(["occ-bp"])
+    expect(agenda.days).toEqual([
+      expect.objectContaining({
+        date: "2026-07-28",
+        entries: [
+          expect.objectContaining({
+            occurrenceId: "occ-bp",
+            isOccurrenceEnd: true,
+          }),
+        ],
+      }),
+    ])
+  })
+
+  it("shows a multi-day event that starts in the range on its start and end days only", () => {
+    // Legendary Event Mon 27 Jul – Fri 31 Jul 00:00: four days (27–30), listed twice instead of four times.
+    const agenda = agendaOf([
+      entry(
+        "occ-le",
+        "legendary-event",
+        new Date(2026, 6, 27),
+        new Date(2026, 6, 31)
+      ),
+    ])
+
+    expect(agenda.ongoing).toEqual([])
+    expect(agenda.days.map((day) => day.date)).toEqual([
+      "2026-07-27",
+      "2026-07-30",
+    ])
+    expect(agenda.days[0]?.entries[0]?.isOccurrenceStart).toBe(true)
+    expect(agenda.days[1]?.entries[0]?.isOccurrenceEnd).toBe(true)
+  })
+
+  it("keeps one-day events on their day and drops empty days", () => {
+    const agenda = agendaOf([
+      entry(
+        "occ-xp",
+        "always-double-xp-sunday",
+        new Date(2026, 6, 26),
+        new Date(2026, 6, 27)
+      ),
+    ])
+
+    expect(agenda.days.map((day) => day.date)).toEqual(["2026-07-26"])
+  })
+
+  it("orders Ongoing by soonest end", () => {
+    const agenda = agendaOf([
+      entry(
+        "occ-bp",
+        "battle-pass",
+        new Date(2026, 6, 1),
+        new Date(2026, 7, 5)
+      ),
+      entry(
+        "occ-le",
+        "legendary-event",
+        new Date(2026, 6, 22),
+        new Date(2026, 6, 28)
+      ),
+    ])
+
+    expect(agenda.ongoing.map((e) => e.occurrenceId)).toEqual([
+      "occ-le",
+      "occ-bp",
+    ])
   })
 })
 

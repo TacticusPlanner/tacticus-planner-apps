@@ -25,12 +25,9 @@ describe("Events translations", () => {
     ["de", de],
     ["es", es],
     ["fr", fr],
-  ])("translates the Events widget tour step in %s", (locale, resource) => {
-    const step = resource.tour.home.steps.eventsWidget
-    // German keeps the loanword "Events" for the card title.
-    if (locale !== "de") {
-      expect(step.title).not.toBe(en.tour.home.steps.eventsWidget.title)
-    }
-    expect(step.content).not.toBe(en.tour.home.steps.eventsWidget.content)
+  ])("translates the Upcoming events tour step in %s", (_locale, resource) => {
+    const step = resource.tour.home.steps.upcoming
+    expect(step.title).not.toBe(en.tour.home.steps.upcoming.title)
+    expect(step.content).not.toBe(en.tour.home.steps.upcoming.content)
   })
 })
