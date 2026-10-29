@@ -31,14 +31,9 @@
       name="twitter:description"
       content="Set goals for your Tacticus roster and get a daily plan for raids, events and upgrades, synced from your game account."
     />
-    <!-- Applies the stored theme before first paint (ThemeProvider takes over after). -->
-    <script>
-      try { var t = localStorage.getItem("theme") } catch (e) {}
-      if (t !== "light" && t !== "dark") t = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"
-      document.documentElement.classList.add(t)
-      // Mirrors shared/theme's THEME_COLORS.
-      if (t === "dark") document.querySelector('meta[name="theme-color"]').content = "#191C23"
-    </script>
+    <!-- Applies the stored theme before first paint (ThemeProvider takes over after). A file, not
+         an inline script, so the Content-Security-Policy needs no hash for it. -->
+    <script src="/theme-init.js"></script>
   </head>
   <body>
     <!-- Static copy of app/boot-screen.tsx, shown until React renders over it, so the installed
