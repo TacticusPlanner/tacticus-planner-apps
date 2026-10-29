@@ -17,7 +17,7 @@ import type {
   EventsCalendarViewModel,
 } from "./events-calendar.types"
 
-export const EVENTS_CALENDAR_VIEW_KEY = "home.eventsCalendar.view"
+const EVENTS_CALENDAR_VIEW_KEY = "home.eventsCalendar.view"
 
 const isEventsCalendarView = (value: unknown): value is EventsCalendarView =>
   value === "week" || value === "month"

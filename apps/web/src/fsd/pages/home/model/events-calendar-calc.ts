@@ -40,14 +40,14 @@ export function addLocalDays(date: Date, days: number): Date {
 }
 
 /** Local midnight of `date`. */
-export function startOfLocalDay(date: Date): Date {
+function startOfLocalDay(date: Date): Date {
   const start = new Date(date)
   start.setHours(0, 0, 0, 0)
   return start
 }
 
 /** Local midnight of the Monday on or before `date` (the month grid's first column). */
-export function startOfLocalWeek(date: Date): Date {
+function startOfLocalWeek(date: Date): Date {
   const start = startOfLocalDay(date)
   return addLocalDays(start, -((start.getDay() + 6) % 7))
 }
