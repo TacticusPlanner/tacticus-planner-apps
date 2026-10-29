@@ -16,6 +16,7 @@ import {
 import type { PlayerDataChunkDto } from "@workspace/player-data"
 
 import type { UnitKind, UnitTileUnit } from "@/entities/unit"
+import { normalizeSearchText } from "@/shared/lib"
 
 import {
   collectionShardSources,
@@ -337,17 +338,12 @@ export function buildCollectionView(
   }
 }
 
-/** Case- and diacritic-insensitive form of a name or search text. */
-function searchable(text: string, locale: string): string {
-  return text.normalize("NFD").replace(/\p{M}/gu, "").toLocaleLowerCase(locale)
-}
-
 function rowMatcher(
   query: CollectionQuery,
   extras: CollectionExtras,
   locale: string
 ): (row: CollectionRow) => boolean {
-  const needle = searchable(query.search.trim(), locale)
+  const needle = normalizeSearchText(query.search, locale)
   const factions = new Set(query.factions)
   const rarities = new Set(query.rarities)
   const low = query.rankMin === null ? -1 : rankIndex(query.rankMin)
@@ -367,8 +363,8 @@ function rowMatcher(
     const isOwned = row.unit.data.state === "owned"
     if (
       needle &&
-      !searchable(row.unit.name, locale).includes(needle) &&
-      !searchable(row.catalogName, locale).includes(needle)
+      !normalizeSearchText(row.unit.name, locale).includes(needle) &&
+      !normalizeSearchText(row.catalogName, locale).includes(needle)
     ) {
       return false
     }

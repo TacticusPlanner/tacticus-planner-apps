@@ -17,6 +17,7 @@ import {
 } from "@workspace/ui/components/popover"
 import { cn } from "@workspace/ui/lib/utils"
 
+import { normalizeSearchText } from "@/shared/lib"
 import { closestOverlayContent, useCommandListId } from "@/shared/ui"
 import { RaidBossPortrait, type RaidBossListItem } from "@/entities/raid-boss"
 
@@ -62,7 +63,7 @@ export function RaidBossMobilePicker({
   // Same rationale as `UnitCombobox.filteredGroups`: a stable, case-insensitive substring filter
   // instead of cmdk's default fuzzy re-sort, so group/member order never shuffles while typing.
   const filteredGroups = useMemo(() => {
-    const query = search.trim().toLowerCase()
+    const query = normalizeSearchText(search)
     if (!query) {
       return rosterGroups.map((group) => ({
         boss: group.boss,
@@ -72,11 +73,11 @@ export function RaidBossMobilePicker({
 
     return rosterGroups
       .map((group) => {
-        const bossMatches = group.boss.name.toLowerCase().includes(query)
+        const bossMatches = normalizeSearchText(group.boss.name).includes(query)
         const members = bossMatches
           ? [group.boss, ...group.primes]
           : [group.boss, ...group.primes].filter((member) =>
-              member.name.toLowerCase().includes(query)
+              normalizeSearchText(member.name).includes(query)
             )
         return { boss: group.boss, members }
       })

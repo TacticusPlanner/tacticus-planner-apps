@@ -1,6 +1,8 @@
 import { allianceRank, factionRank } from "@workspace/game-domain"
 import type { Alliance, FactionId, UnitId } from "@workspace/game-domain"
 
+import { normalizeSearchText } from "@/shared/lib"
+
 export type UnitListItem = {
   id: UnitId
   name: string
@@ -22,15 +24,15 @@ export function orderUnits<Item extends UnitListItem>(
   )
 }
 
-/** Case-insensitive name search; an empty query keeps everything. */
+/** Loose name search (see `normalizeSearchText`); an empty query keeps everything. */
 export function searchUnits<Item extends UnitListItem>(
   items: readonly Item[],
   query: string,
   locale?: string
 ): Item[] {
-  const needle = query.trim().toLocaleLowerCase(locale)
+  const needle = normalizeSearchText(query, locale)
   if (!needle) return [...items]
   return items.filter((item) =>
-    item.name.toLocaleLowerCase(locale).includes(needle)
+    normalizeSearchText(item.name, locale).includes(needle)
   )
 }

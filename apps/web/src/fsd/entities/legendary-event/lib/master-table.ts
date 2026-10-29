@@ -1,5 +1,7 @@
 import type { Progression, Rank } from "@workspace/game-domain"
 
+import { normalizeSearchText } from "@/shared/lib"
+
 import type {
   LegendaryEventPlan,
   LegendaryEventRun,
@@ -369,17 +371,17 @@ export function buildMasterTable(input: MasterTableInput): MasterTable {
   }
 }
 
-/** Keeps rows whose localized name contains `query`, case-insensitively (blank keeps all). */
+/** Keeps rows whose localized name loosely contains `query` (see `normalizeSearchText`; blank keeps all). */
 export function filterMasterTableRows(
   rows: readonly MasterTableRow[],
   query: string,
   nameOf: (unitId: string) => string,
   locale?: string
 ): MasterTableRow[] {
-  const needle = query.trim().toLocaleLowerCase(locale)
+  const needle = normalizeSearchText(query, locale)
   if (!needle) return [...rows]
   return rows.filter((row) =>
-    nameOf(row.unitId).toLocaleLowerCase(locale).includes(needle)
+    normalizeSearchText(nameOf(row.unitId), locale).includes(needle)
   )
 }
 
