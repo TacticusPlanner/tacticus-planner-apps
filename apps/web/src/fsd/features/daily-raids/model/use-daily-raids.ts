@@ -2,10 +2,11 @@ import { useMemo } from "react"
 import { useTranslation } from "react-i18next"
 import { useQuery } from "@tanstack/react-query"
 import { useIsAuthenticated } from "@azure/msal-react"
-import { rankAt, unitIdSchema, type UnitId } from "@workspace/game-domain"
+import { unitIdSchema, type UnitId } from "@workspace/game-domain"
 import type { UpgradeStorageModel } from "@workspace/game-catalog"
 
 import type { GoalDetail } from "@/entities/goal"
+import { dailyGoalTargetLabel } from "./goal-target-label"
 import { onslaughtProgressQueries } from "@/entities/player-data-override"
 import { usePlanningSettings } from "@/entities/planning-setting"
 import {
@@ -70,7 +71,12 @@ export function useDailyRaids(
   const missionRequest = options?.missionRaids
   const fewerRaids = options?.quickFilters?.fewerRaids ?? false
   const combineGoals = options?.quickFilters?.combineGoals ?? false
-  const { t } = useTranslation(["dailies", "characters", "upgrades"])
+  const { t } = useTranslation([
+    "dailies",
+    "characters",
+    "upgrades",
+    "progression",
+  ])
   const {
     name: campaignDisplayName,
     tierLabel: campaignTierLabel,
@@ -355,36 +361,7 @@ export function useDailyRaids(
         }
         return mowsById.get(detail.entityId)?.name ?? detail.entityId
       },
-      getTargetLabel: (detail) => {
-        if (detail.goalType === "Rank" && detail.config.rank) {
-          return t("dailies:target.rank", {
-            value: rankAt(detail.config.rank.end),
-          })
-        }
-        if (detail.goalType === "Ability" && detail.config.ability) {
-          return t("dailies:target.ability", {
-            value: Math.max(
-              detail.config.ability.activeEnd,
-              detail.config.ability.passiveEnd
-            ),
-          })
-        }
-        if (detail.goalType === "Ascension" && detail.config.progression) {
-          return t("dailies:target.ascension", {
-            value: detail.config.progression.end,
-          })
-        }
-        if (detail.goalType === "Unlock") return t("dailies:target.unlock")
-        if (detail.goalType === "Upgrade" && detail.config.upgrade) {
-          return t("dailies:target.upgrade", {
-            value: detail.config.upgrade.targets.reduce(
-              (total, target) => total + target.quantity,
-              0
-            ),
-          })
-        }
-        return t("dailies:target.other", { value: detail.goalType })
-      },
+      getTargetLabel: (detail) => dailyGoalTargetLabel(t, detail),
       dailyEnergy,
       raidsFilters,
       filterBattlesById,
