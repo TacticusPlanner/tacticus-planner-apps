@@ -37,21 +37,23 @@ export function TodayGlance({ view }: { view: TodayView | undefined }) {
             labelClassName={cn(overLimit && "text-energy-over")}
             testId="energy-usage"
           >
-            <span className="flex items-center gap-2">
-              <Progress
-                aria-label={t("today.energyUsage.label")}
-                aria-valuetext={t("today.energyUsage.value", {
-                  percent: Math.round(view.energy.percent),
-                })}
-                className="h-1.5 flex-1"
-                data-testid="energy-usage-bar"
-                indicatorClassName={
-                  overLimit ? "bg-energy-over" : "bg-progress"
-                }
-                value={Math.min(view.energy.percent, 100)}
-              />
+            <span className="flex items-center justify-end gap-2 @[42rem]:justify-start">
+              {/* A daily energy of 0 means no limit: no bar, and no percentage to announce. */}
+              {view.energy.daily > 0 ? (
+                <Progress
+                  aria-label={t("today.energyUsage.label")}
+                  aria-valuetext={t("today.energyUsage.value", {
+                    percent: Math.round(view.energy.percent),
+                  })}
+                  className="h-1.5 flex-1"
+                  data-testid="energy-usage-bar"
+                  indicatorClassName={
+                    overLimit ? "bg-energy-over" : "bg-progress"
+                  }
+                  value={Math.min(view.energy.percent, 100)}
+                />
+              ) : null}
               <span className="shrink-0">
-                {/* A daily energy of 0 means no limit: there is nothing to show it against. */}
                 {view.energy.daily > 0
                   ? t("today.glance.energyValue", {
                       used: Math.round(view.energy.used),

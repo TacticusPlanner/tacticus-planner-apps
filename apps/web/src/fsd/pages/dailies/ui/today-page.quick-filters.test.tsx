@@ -116,6 +116,24 @@ describe("Today quick filters", () => {
     expect(screen.getByTestId("search")).toHaveTextContent("")
   })
 
+  it("reopens Bonus raids on its top 3 when a quick filter changes", async () => {
+    const user = userEvent.setup()
+    renderToday()
+
+    await user.click(screen.getByRole("button", { name: "Show 1 more" }))
+    expect(
+      screen.getByRole("button", { name: "Show less" })
+    ).toBeInTheDocument()
+
+    await user.click(screen.getByTestId("today-quick-filter-bottlenecks"))
+    expect(
+      screen.queryByRole("button", { name: "Show less" })
+    ).not.toBeInTheDocument()
+    expect(
+      screen.getByRole("button", { name: "Show 1 more" })
+    ).toBeInTheDocument()
+  })
+
   it("restores chips from the URL and ignores unknown values", () => {
     renderToday("/?quick=fewerRaids,nope")
     expect(lastQuickFilters()).toEqual({

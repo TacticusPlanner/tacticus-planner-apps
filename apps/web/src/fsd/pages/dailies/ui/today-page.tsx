@@ -4,6 +4,7 @@ import { useOutletContext } from "react-router"
 import {
   todayQuickFilterOptions,
   useDailyRaids,
+  useRaidsFilters,
   useTodayQuickFilters,
 } from "@/features/daily-raids"
 import { PlanningSettingsDialog } from "@/entities/planning-setting"
@@ -25,7 +26,15 @@ export function TodayPage() {
   const raids = useDailyRaids(context.projectId, {
     quickFilters: todayQuickFilterOptions(quickFilters),
   })
+  const [raidsFilters] = useRaidsFilters()
   useTodayTutorial()
+  // A new project or filter set is a new Bonus raids list, so the dashboard starts over: Bonus
+  // raids opens on its top 3 again instead of keeping the previous list's expansion.
+  const selectionKey = JSON.stringify([
+    context.projectId ?? null,
+    quickFilters,
+    raidsFilters,
+  ])
 
   return (
     <section className="space-y-3.5" data-testid="dailies-raids-layout">
@@ -35,7 +44,7 @@ export function TodayPage() {
         onQuickFiltersChange={setQuickFilters}
         quickFilters={quickFilters}
       />
-      <TodayDashboard raids={raids} />
+      <TodayDashboard key={selectionKey} raids={raids} />
       {settingsOpen ? (
         <PlanningSettingsDialog
           onOpenChange={setSettingsOpen}

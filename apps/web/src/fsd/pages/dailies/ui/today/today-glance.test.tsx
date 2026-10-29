@@ -109,6 +109,8 @@ describe("TodayGlance", () => {
     )
 
     expect(tileValue("Daily energy used")).toHaveTextContent(/^400$/)
+    // No limit, so no bar and no percentage to announce.
+    expect(screen.queryByRole("progressbar")).not.toBeInTheDocument()
   })
 
   it("shows the energy tile even when there is no plan", () => {
