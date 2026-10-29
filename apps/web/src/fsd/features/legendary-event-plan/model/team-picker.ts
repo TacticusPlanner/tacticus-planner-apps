@@ -7,6 +7,7 @@ import {
   type LegendaryEventRosterUnit,
   type LegendaryEventUnit,
 } from "@/entities/legendary-event"
+import { normalizeSearchText } from "@/shared/lib"
 
 type PickerLane = Pick<
   LegendaryEventLane,
@@ -113,11 +114,11 @@ export function filterPickerTiles(
     nameOf: (unit: LegendaryEventUnit) => string
   }
 ): PickerTile[] {
-  const needle = search.trim().toLocaleLowerCase()
+  const needle = normalizeSearchText(search)
   return tiles.filter((tile) => {
     if (selected.has(tile.unit.id)) return true
     if (onlyUnlocked && tile.owned === false) return false
-    return !needle || nameOf(tile.unit).toLocaleLowerCase().includes(needle)
+    return !needle || normalizeSearchText(nameOf(tile.unit)).includes(needle)
   })
 }
 

@@ -1,6 +1,9 @@
-export { type Battle, type FarmLocation } from "./battle.domain"
+export {
+  filterUnlockedBattles,
+  type Battle,
+  type FarmLocation,
+} from "./battles"
 export { characterDamageTypes } from "./character-damage-types"
-export { filterUnlockedBattles } from "./unlocked-battles"
 export {
   formatEstimateDate,
   formatEventCountdown,
@@ -38,3 +41,4 @@ export {
   usePersistedSelection,
   useSearchParamState,
 } from "./browser"
+export { matchesSearch, normalizeSearchText } from "./search-text"
