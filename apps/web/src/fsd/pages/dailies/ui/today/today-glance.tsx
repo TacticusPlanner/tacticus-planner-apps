@@ -28,7 +28,10 @@ export function TodayGlance({ view }: { view: TodayView | undefined }) {
       <dl className="grid grid-cols-[repeat(auto-fit,minmax(12rem,1fr))] gap-3.5">
         {view ? (
           <GlanceTile
-            className={cn(overLimit && "ring-energy-over/40")}
+            // `dark:` too: the card's own `dark:ring-foreground/10` would win over the plain class.
+            className={cn(
+              overLimit && "ring-energy-over/40 dark:ring-energy-over/40"
+            )}
             label={t(
               overLimit ? "today.glance.energyOver" : "today.energyUsage.label"
             )}

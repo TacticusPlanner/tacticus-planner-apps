@@ -7,10 +7,18 @@ function Progress({
   className,
   indicatorClassName,
   value,
+  max = 100,
   ...props
 }: React.ComponentProps<typeof ProgressPrimitive.Root> & {
   indicatorClassName?: string
 }) {
+  // Radix treats a value outside 0..max (or NaN) as indeterminate and logs an error, so clamp here
+  // once instead of in every caller.
+  const clamped =
+    value == null || Number.isNaN(value)
+      ? null
+      : Math.min(Math.max(value, 0), max)
+
   return (
     <ProgressPrimitive.Root
       data-slot="progress"
@@ -18,7 +26,8 @@ function Progress({
         "relative flex h-2 w-full items-center overflow-x-hidden rounded-2xl bg-muted",
         className
       )}
-      value={value}
+      max={max}
+      value={clamped}
       {...props}
     >
       <ProgressPrimitive.Indicator
@@ -27,7 +36,9 @@ function Progress({
           "size-full flex-1 bg-primary transition-all",
           indicatorClassName
         )}
-        style={{ transform: `translateX(-${100 - (value || 0)}%)` }}
+        style={{
+          transform: `translateX(-${100 - ((clamped ?? 0) / max) * 100}%)`,
+        }}
       />
     </ProgressPrimitive.Root>
   )

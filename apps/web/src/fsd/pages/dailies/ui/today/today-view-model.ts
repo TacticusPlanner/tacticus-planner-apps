@@ -24,8 +24,6 @@ export type TodayView = {
   scheduleProps: Omit<ComponentProps<typeof RaidSchedule>, "entries" | "testId">
   /** Location rows the plan card shows (a node with no real attempts left is not shown). */
   planNodeCount: number
-  /** Location rows across every bonus entry, not just the ones shown. */
-  bonusNodeCount: number
   attempts: { rows: number; total: number }
   planResourceByBattle: ReadonlyMap<BattleId, DailyRaidBattleResource>
   onslaughtRuns: ReturnType<typeof buildOnslaughtRuns>
@@ -110,7 +108,6 @@ export function buildTodayView(
     scheduleProps: {
       attemptsLeftByBattle: raids.attemptsLeftByBattle,
       attemptsUsedByBattle: combinedAttemptsUsedByBattle,
-      cardLayout: "grid",
       emphasis: "location",
       goalsById: raids.goalsById,
       locationsByBattleId: raids.locationsByBattleId,
@@ -120,7 +117,6 @@ export function buildTodayView(
       resourceVisuals: raids.resourceVisuals,
     },
     planNodeCount: visibleRows(selection.planEntries),
-    bonusNodeCount: visibleRows(selection.bonusEntries),
     attempts: {
       rows: raids.todaysAttempts.length,
       total: raids.todaysAttempts.reduce(

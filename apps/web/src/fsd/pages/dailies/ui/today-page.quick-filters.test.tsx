@@ -26,7 +26,10 @@ vi.mock("./campaign-event-status", () => ({
   CampaignEventTile: () => null,
 }))
 vi.mock("./today-shops", () => ({ TodayShops: () => null }))
-vi.mock("@/shared/tour", () => ({ useTourPageSteps: vi.fn() }))
+vi.mock("@/shared/tour", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/shared/tour")>()),
+  useTourPageSteps: vi.fn(),
+}))
 
 function Search() {
   return <span data-testid="search">{useLocation().search}</span>

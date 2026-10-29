@@ -524,8 +524,11 @@ describe("RaidSchedule location emphasis", () => {
     )
     expect(screen.getByTestId("raid-resource-grid-g1")).toBeInTheDocument()
     expect(screen.getByTestId("raid-resource-grid-g2")).toBeInTheDocument()
-    // Both goal groups are flow items of the same masonry container (not two separate schedules).
-    expect(screen.getByTestId("schedule")).toHaveClass("md:columns-[20rem]")
+    // Both goal groups are flow items of the same container (not two separate schedules).
+    expect(screen.getAllByTestId("schedule")).toHaveLength(1)
+    expect(screen.getByTestId("schedule")).toContainElement(
+      screen.getByTestId("raid-resource-grid-g2")
+    )
   })
 
   it("shows no bonus heading when there are no bonus entries", () => {
@@ -552,11 +555,10 @@ describe("RaidSchedule location emphasis", () => {
 })
 
 describe("RaidSchedule card layout", () => {
-  function renderLayout(cardLayout?: "stacked" | "grid") {
+  function renderLayout() {
     render(
       <RaidSchedule
         attemptsUsedByBattle={new Map()}
-        cardLayout={cardLayout}
         emphasis="location"
         entries={[entry(b1, 3), entry(b2, 2)]}
         goalsById={new Map([["g1", goal]])}
@@ -574,21 +576,12 @@ describe("RaidSchedule card layout", () => {
     )
   }
 
-  it("flows whole goal groups through columns by default, each group's cards in one column", () => {
+  it("spreads one goal group's cards over 20rem columns, never wider than the group", () => {
     renderLayout()
-
-    expect(screen.getByTestId("schedule")).toHaveClass("md:columns-[20rem]")
-    expect(screen.getByTestId("raid-resource-grid-g1").className).not.toMatch(
-      /grid-cols/
-    )
-  })
-
-  it("spreads one goal group's cards over 20rem columns in the grid layout", () => {
-    renderLayout("grid")
 
     expect(screen.getByTestId("schedule").className).not.toMatch(/columns-/)
     expect(screen.getByTestId("raid-resource-grid-g1")).toHaveClass(
-      "md:grid-cols-[repeat(auto-fill,minmax(20rem,1fr))]"
+      "md:grid-cols-[repeat(auto-fill,minmax(min(20rem,100%),1fr))]"
     )
   })
 })

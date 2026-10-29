@@ -25,7 +25,6 @@ export function TodayPlanCard({
   view: TodayView | undefined
 }) {
   const { t } = useTranslation("dailies")
-  const planEntries = view?.selection.planEntries ?? []
 
   return (
     <TodayCard
@@ -43,11 +42,11 @@ export function TodayPlanCard({
       ) : (
         <>
           <FilteredOutNotice filteredOut={raids.filteredOut} />
-          {planEntries.length > 0 && view ? (
+          {view && view.planNodeCount > 0 ? (
             <div className={INSET_CARDS_CLASS_NAME}>
               <RaidSchedule
                 {...view.scheduleProps}
-                entries={planEntries}
+                entries={view.selection.planEntries}
                 testId="today-raid-list"
               />
             </div>

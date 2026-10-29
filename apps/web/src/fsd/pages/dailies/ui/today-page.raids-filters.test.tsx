@@ -71,7 +71,10 @@ vi.mock("@/features/daily-raids/model/use-active-home-screen-event", () => ({
 vi.mock("./campaign-event-status", () => ({
   CampaignEventTile: () => null,
 }))
-vi.mock("@/shared/tour", () => ({ useTourPageSteps: vi.fn() }))
+vi.mock("@/shared/tour", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/shared/tour")>()),
+  useTourPageSteps: vi.fn(),
+}))
 vi.mock("@workspace/ui/hooks/use-mobile", () => ({
   useIsMobile: () => useIsMobileMock(),
 }))

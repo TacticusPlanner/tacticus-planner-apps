@@ -6,7 +6,7 @@ const ACCOUNT_MENU_TARGET_SELECTOR =
   '[data-testid="auth-account-drawer"], [data-testid="mobile-guest-settings-content"]'
 
 // The expanded panel, or (when it is collapsed and gone) the reopen button in the page header.
-const SECTION_NAVIGATION_SELECTOR =
+export const SECTION_NAVIGATION_SELECTOR =
   '[data-testid="desktop-section-navigation"], [data-testid="desktop-section-toggle"]'
 
 /** Drops steps flagged `data.optional` whose target is not on the page, so a tour started on a

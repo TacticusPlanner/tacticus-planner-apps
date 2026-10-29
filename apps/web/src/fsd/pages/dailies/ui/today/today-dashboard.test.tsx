@@ -116,6 +116,30 @@ describe("TodayDashboard", () => {
     expect(screen.getAllByTestId("bonus-card")).toHaveLength(1)
   })
 
+  it("puts the bonus card in the plan's place when every plan node is raided out below the limit", () => {
+    // Both plan entries sit on B1, which has no real attempts left; the bonus raids are on B2.
+    const base = ready()
+    renderDashboard(
+      ready({
+        attemptsLeftByBattle: new Map([[battle, 0]]),
+        bonus: {
+          ...base.bonus,
+          entries: base.bonus.entries.map((entry) => ({
+            ...entry,
+            battleId: offPlanBattle,
+          })),
+        },
+      })
+    )
+
+    expect(screen.queryByTestId("today-plan-card")).not.toBeInTheDocument()
+    const bonus = within(screen.getByTestId("today-plan-area")).getByTestId(
+      "bonus-card"
+    )
+    expect(bonus).not.toHaveAttribute("data-limit")
+    expect(screen.getAllByTestId("bonus-card")).toHaveLength(1)
+  })
+
   it("shows the top 3 bonus entries, Show more reveals the rest and Show less hides them again", async () => {
     const user = userEvent.setup()
     renderDashboard(ready())

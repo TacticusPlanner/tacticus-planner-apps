@@ -74,7 +74,7 @@ describe("TodayGlance", () => {
       "Energy limit reached"
     )
     expect(within(tile).getByRole("term")).toHaveClass("text-energy-over")
-    expect(tile).toHaveClass("ring-energy-over/40")
+    expect(tile).toHaveClass("ring-energy-over/40", "dark:ring-energy-over/40")
     expect(within(tile).getByText("104%")).toBeInTheDocument()
     const bar = screen.getByTestId("energy-usage-bar")
     expect(bar).toHaveAttribute("aria-valuenow", "100")

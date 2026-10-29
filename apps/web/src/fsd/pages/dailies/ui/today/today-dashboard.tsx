@@ -29,13 +29,13 @@ export function TodayDashboard({ raids }: { raids: DailyRaidsViewModel }) {
       ? buildTodayView(raids, { showAllBonus })
       : undefined
 
-  // Bonus raids take the plan's place once the energy limit is spent, and whenever the plan itself
-  // is empty but bonus raids are left (as the old lanes showed only Bonus raids then).
+  // Bonus raids take the plan's place once the energy limit is spent, and whenever the plan shows no
+  // node (empty, or every node raided out) but bonus raids are left (as the old lanes showed only
+  // Bonus raids then).
   const bonusInPlanArea =
     view !== undefined &&
     (view.selection.energyLimitReached ||
-      (view.selection.planEntries.length === 0 &&
-        view.selection.bonusEntries.length > 0))
+      (view.planNodeCount === 0 && view.selection.bonusEntries.length > 0))
   const bonusBeside =
     view !== undefined &&
     !bonusInPlanArea &&

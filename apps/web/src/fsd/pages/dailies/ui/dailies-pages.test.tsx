@@ -29,7 +29,8 @@ vi.mock("@/features/daily-raids", async (importOriginal) => {
     useDailyRaids: () => useDailyRaids(),
   }
 })
-vi.mock("@/shared/tour", () => ({
+vi.mock("@/shared/tour", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/shared/tour")>()),
   useTourPageSteps: (steps: unknown) => registeredTours.push(steps),
 }))
 vi.mock("@workspace/ui/hooks/use-mobile", () => ({
@@ -119,7 +120,9 @@ describe("Dailies raid pages", () => {
       within(screen.getByTestId("today-raid-list")).getByTestId(
         "raid-resource-grid-g1"
       )
-    ).toHaveClass("md:grid-cols-[repeat(auto-fill,minmax(20rem,1fr))]")
+    ).toHaveClass(
+      "md:grid-cols-[repeat(auto-fill,minmax(min(20rem,100%),1fr))]"
+    )
     expect(screen.queryByTestId("raid-card-g2-B4")).not.toBeInTheDocument()
     expect(screen.getByTestId("bonus-card")).toBeInTheDocument()
     expect(

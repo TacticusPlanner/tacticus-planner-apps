@@ -90,7 +90,10 @@ vi.mock(
       useShopRecommendations(projectId),
   })
 )
-vi.mock("@/shared/tour", () => ({ useTourPageSteps: vi.fn() }))
+vi.mock("@/shared/tour", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/shared/tour")>()),
+  useTourPageSteps: vi.fn(),
+}))
 vi.mock("@/features/guild-access", () => ({
   GuildAccessBoundary: () => <div data-testid="guild-unregistered" />,
 }))

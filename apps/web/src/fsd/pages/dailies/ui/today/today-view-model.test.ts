@@ -53,7 +53,6 @@ describe("buildTodayView", () => {
 
     // Two entries at B1 (one per goal), the B9 entry is spent.
     expect(view.planNodeCount).toBe(2)
-    expect(view.bonusNodeCount).toBe(4)
   })
 
   it("prefers the plan's resource for a node, first entry first", () => {
@@ -128,11 +127,10 @@ describe("buildTodayView", () => {
     expect(view.attempts).toEqual({ rows: 5, total: 29 })
   })
 
-  it("passes the plan totals and the grid card layout through", () => {
+  it("passes the plan totals and the location emphasis through", () => {
     const view = buildTodayView(ready(), { showAllBonus: false })
 
     expect(view.planned).toEqual({ energy: 42, raids: 7 })
-    expect(view.scheduleProps.cardLayout).toBe("grid")
     expect(view.scheduleProps.emphasis).toBe("location")
   })
 })

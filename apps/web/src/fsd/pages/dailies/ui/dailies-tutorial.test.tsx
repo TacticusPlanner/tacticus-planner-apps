@@ -8,7 +8,8 @@ const register = vi.fn()
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => `localized:${key}` }),
 }))
-vi.mock("@/shared/tour", () => ({
+vi.mock("@/shared/tour", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/shared/tour")>()),
   useTourPageSteps: (steps: unknown) => register(steps),
 }))
 
@@ -144,6 +145,8 @@ describe("Dailies tutorials", () => {
         .filter((step) => step.data?.optional)
         .map((step) => step.target)
     ).toEqual([
+      '[data-testid="energy-usage"]',
+      '[data-testid="todays-attempts"]',
       '[data-testid="today-onslaught"]',
       '[data-testid="shop-group-guaranteed"]',
       '[data-testid="shop-group-possible"]',

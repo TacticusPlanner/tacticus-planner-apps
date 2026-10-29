@@ -2,12 +2,10 @@ import { useMemo } from "react"
 import { useTranslation } from "react-i18next"
 import type { Step } from "react-joyride"
 
-import { useTourPageSteps } from "@/shared/tour"
+import { SECTION_NAVIGATION_SELECTOR, useTourPageSteps } from "@/shared/tour"
 
 // Dailies' child pages sit in the shell's section menu on desktop (expanded, or collapsed to its
 // reopen toggle) and in the header's section tabs on mobile.
-const DESKTOP_SECTION_NAVIGATION =
-  '[data-testid="desktop-section-navigation"], [data-testid="desktop-section-toggle"]'
 const MOBILE_SECTION_NAVIGATION = '[data-testid="section-tabs"]'
 
 export function useTodayTutorial() {
@@ -45,9 +43,15 @@ export function useTodayTutorial() {
       createStep('[data-testid="raids-filters"]', "filters"),
       createStep('[data-testid="today-quick-filters"]', "quickFilters"),
       createStep('[data-testid="campaign-event-status"]', "campaignEvent"),
-      createStep('[data-testid="energy-usage"]', "energyUsage"),
+      // The energy tile and the attempts card wait for the raids (no goals, loading or failed); the
+      // tour drops their steps then.
+      createStep('[data-testid="energy-usage"]', "energyUsage", {
+        optional: true,
+      }),
       createStep('[data-testid="today-plan-area"]', "schedule"),
-      createStep('[data-testid="todays-attempts"]', "todaysAttempts"),
+      createStep('[data-testid="todays-attempts"]', "todaysAttempts", {
+        optional: true,
+      }),
       // The Onslaught card is left out when no goal needs a run; the tour drops its step then.
       createStep('[data-testid="today-onslaught"]', "onslaught", {
         optional: true,
@@ -67,7 +71,7 @@ export function useTodayTutorial() {
         // Beside the menu: the expanded panel runs the full page height, so above or below it
         // would place the tooltip off screen.
         {
-          ...createStep(DESKTOP_SECTION_NAVIGATION, "navigation"),
+          ...createStep(SECTION_NAVIGATION_SELECTOR, "navigation"),
           placement: "right" as const,
         },
         ...pageSteps,
