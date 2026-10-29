@@ -115,6 +115,69 @@ describe("EventBar", () => {
   })
 })
 
+describe("EventBar guild seasons", () => {
+  const warSeason = baseEntry({
+    definitionId: "guild-war-season",
+    definitionType: "GuildWarSeason",
+    startUtc: "2026-10-23T09:00:00Z",
+    endUtc: "2026-10-26T09:00:00Z",
+    barStartMs: Date.parse("2026-10-23T00:00:00Z"),
+    barEndMs: Date.parse("2026-10-27T00:00:00Z"),
+    phases: [
+      {
+        kind: "preparation",
+        war: 1,
+        startUtc: "2026-10-23T09:00:00Z",
+        endUtc: "2026-10-24T09:00:00Z",
+      },
+      {
+        kind: "war",
+        war: 1,
+        startUtc: "2026-10-24T09:00:00Z",
+        endUtc: "2026-10-25T21:00:00Z",
+      },
+    ],
+  })
+
+  it("draws each war window over the bar and lists the phases in details", async () => {
+    const user = userEvent.setup()
+    render(<EventBar entry={warSeason} />)
+
+    const war = screen.getByTestId("event-war-phase")
+    // 33h after the bar's start, over a 96h bar.
+    expect(war.style.left).toBe("34.375%")
+    expect(war.style.width).toBe("37.5%")
+
+    await user.click(screen.getByTestId("event-entry-card"))
+    const phases = await screen.findByTestId("event-phases")
+    expect(phases).toHaveTextContent("details.phases.row")
+    expect(phases).toHaveTextContent("details.phases.preparation")
+    expect(phases).toHaveTextContent("details.phases.war")
+  })
+
+  it("labels a Guild Raid break even as a one-day bar", () => {
+    render(
+      <EventBar
+        entry={baseEntry({
+          definitionId: "guild-raid-break",
+          definitionType: "GuildRaidBreak",
+        })}
+        iconOnly
+      />
+    )
+
+    const bar = screen.getByTestId("event-entry-card")
+    expect(bar).toHaveTextContent("badges.break")
+    expect(screen.getByText("guild-raid-break")).toHaveClass("sr-only")
+  })
+
+  it("grays out an entry that has ended", () => {
+    render(<EventBar entry={baseEntry({ isPast: true })} />)
+
+    expect(screen.getByTestId("event-entry-card")).toHaveClass("grayscale")
+  })
+})
+
 describe("EventAgendaRow", () => {
   it("shows the occurrence boundary tags it is given", () => {
     render(
