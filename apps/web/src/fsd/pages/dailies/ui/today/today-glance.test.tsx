@@ -36,29 +36,33 @@ function withOnslaught(overrides: ReadyOverrides = {}) {
   })
 }
 
+const glance = () => screen.getByRole("region", { name: "Today at a glance" })
 const tileLabels = () =>
-  within(screen.getByTestId("today-glance"))
+  within(glance())
     .getAllByRole("term")
     .map((term) => term.textContent)
+// A tile's value is the definition right after its term.
+const tileValue = (label: string) =>
+  within(glance())
+    .queryAllByRole("term")
+    .find((term) => term.textContent === label)?.nextElementSibling
 
 describe("TodayGlance", () => {
   it("is a labelled region of tiles in order: energy, planned, Onslaught, campaign event", () => {
     render(<TodayGlance view={withOnslaught()} />)
 
-    expect(
-      screen.getByRole("region", { name: "Today at a glance" })
-    ).toBeInTheDocument()
+    expect(glance()).toBeInTheDocument()
     expect(tileLabels()).toEqual([
       "Daily energy used",
       "Planned today",
       "Onslaught",
       "Campaign event",
     ])
-    expect(screen.getByTestId("glance-planned")).toHaveTextContent(
+    expect(tileValue("Planned today")).toHaveTextContent(
       "42 energy · 7 raid attempts"
     )
     // 1.2 + 0.5 = 1.7 expected runs, rounded up to 2 whole tokens.
-    expect(screen.getByTestId("glance-onslaught")).toHaveTextContent("2 tokens")
+    expect(tileValue("Onslaught")).toHaveTextContent("2 tokens")
   })
 
   it("keeps the real percentage over 100 while the bar stops at 100, and switches to its over-limit state", () => {
@@ -96,7 +100,7 @@ describe("TodayGlance", () => {
       "Onslaught",
       "Campaign event",
     ])
-    expect(screen.queryByTestId("glance-planned")).not.toBeInTheDocument()
+    expect(tileValue("Planned today")).toBeUndefined()
   })
 
   it("hides the planned tile when there is no plan", () => {

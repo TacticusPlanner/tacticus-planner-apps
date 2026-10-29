@@ -214,15 +214,15 @@ describe("TodayShops", () => {
     renderPage()
 
     // The dashboard column is ~400-575px wide, so the compact layout is used at every width.
-    expect(screen.getByTestId("shops-mobile")).toBeInTheDocument()
+    expect(screen.getByTestId("shop-list")).toBeInTheDocument()
     expect(
       screen.getByTestId("shop-card-guild-shards_eldarFarseer")
     ).toHaveTextContent("Farseer shards")
     // progress + cost detail
-    expect(screen.getByTestId("shops-mobile")).toHaveTextContent(
+    expect(screen.getByTestId("shop-list")).toHaveTextContent(
       'card.progress:{"acquired":30,"required":130}'
     )
-    expect(screen.getByTestId("shops-mobile")).toHaveTextContent(
+    expect(screen.getByTestId("shop-list")).toHaveTextContent(
       "card.neededByLabel"
     )
     // the possible group carries the randomized-slot card
@@ -246,7 +246,7 @@ describe("TodayShops", () => {
     })
     renderPage()
 
-    expect(screen.getByTestId("shops-mobile")).toBeInTheDocument()
+    expect(screen.getByTestId("shop-list")).toBeInTheDocument()
     const card = screen.getByTestId("shop-card-guild-shards_eldarFarseer")
     expect(card).toHaveTextContent("Farseer shards")
     expect(card).toHaveTextContent(

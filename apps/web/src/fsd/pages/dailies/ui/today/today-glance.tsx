@@ -18,13 +18,13 @@ export function TodayGlance({ view }: { view: TodayView | undefined }) {
   const hasPlan = (view?.selection.planEntries.length ?? 0) > 0
 
   const onslaughtTile = view ? (
-    <GlanceTile label={t("plan.onslaught")} testId="glance-onslaught">
+    <GlanceTile label={t("plan.onslaught")}>
       {t("today.glance.tokens", { count: view.onslaughtTokens })}
     </GlanceTile>
   ) : null
 
   return (
-    <section aria-label={t("today.glance.label")} data-testid="today-glance">
+    <section aria-label={t("today.glance.label")}>
       <dl className="grid grid-cols-[repeat(auto-fit,minmax(12rem,1fr))] gap-3.5">
         {view ? (
           <GlanceTile
@@ -62,7 +62,7 @@ export function TodayGlance({ view }: { view: TodayView | undefined }) {
             onslaughtTile
           ) : null
         ) : view && hasPlan ? (
-          <GlanceTile label={t("today.glance.planned")} testId="glance-planned">
+          <GlanceTile label={t("today.glance.planned")}>
             {t("today.summary", {
               energy: view.planned.energy,
               raids: view.planned.raids,

@@ -20,7 +20,8 @@ export function TodayCard({
   children: ReactNode
   className?: string
   meta?: ReactNode
-  testId: string
+  /** Only for a tour target: tests reach the card by its region role and name. */
+  testId?: string
   title: ReactNode
   titleClassName?: string
 } & Record<`data-${string}`, string | undefined>) {

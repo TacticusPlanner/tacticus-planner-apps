@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next"
 
 import { useShopRecommendations } from "@/features/shop-recommendations"
 import type { DailiesOutletContext } from "./dailies-layout"
-import { ShopsMobile } from "./shops/mobile/shops-mobile"
+import { ShopList } from "./shops/shop-list"
 import { ShopsState } from "./shops/shops-state"
 import { TodayCard } from "./today/today-card"
 
@@ -39,7 +39,7 @@ export function TodayShops() {
       (section) => section.guaranteed.length + section.possible.length > 0
     )
     body = hasAny ? (
-      <ShopsMobile sections={recommendations.sections} />
+      <ShopList sections={recommendations.sections} />
     ) : (
       <ShopsState compact state="nothing" />
     )

@@ -124,7 +124,9 @@ describe("Dailies raid pages", () => {
       "md:grid-cols-[repeat(auto-fill,minmax(min(20rem,100%),1fr))]"
     )
     expect(screen.queryByTestId("raid-card-g2-B4")).not.toBeInTheDocument()
-    expect(screen.getByTestId("bonus-card")).toBeInTheDocument()
+    expect(
+      screen.getByRole("region", { name: "bonus.title" })
+    ).toBeInTheDocument()
     expect(
       screen.queryByTestId("bonus-energy-limit-reached")
     ).not.toBeInTheDocument()
@@ -180,10 +182,9 @@ describe("Dailies raid pages", () => {
     expect(
       screen.getByRole("heading", { level: 2, name: "today.plan" })
     ).toBeInTheDocument()
-    expect(screen.getByRole("region", { name: "today.plan" })).toHaveAttribute(
-      "data-testid",
-      "today-plan-card"
-    )
+    expect(
+      screen.getByRole("region", { name: "today.plan" })
+    ).toBeInTheDocument()
   })
 
   it("shows the real energy-usage percentage next to the title, uncapped above 100%", () => {
@@ -387,9 +388,12 @@ describe("Dailies raid pages", () => {
     )
     renderPage(<TodayPage />)
 
-    expect(screen.queryByTestId("today-plan-card")).not.toBeInTheDocument()
-    const bonusCard = within(screen.getByTestId("today-plan-area")).getByTestId(
-      "bonus-card"
+    expect(
+      screen.queryByRole("region", { name: "today.plan" })
+    ).not.toBeInTheDocument()
+    const bonusCard = within(screen.getByTestId("today-plan-area")).getByRole(
+      "region",
+      { name: "bonus.title" }
     )
     expect(bonusCard).toHaveAttribute("data-limit", "reached")
     const bonus = within(bonusCard)
@@ -417,7 +421,9 @@ describe("Dailies raid pages", () => {
     )
     renderPage(<TodayPage />)
 
-    expect(screen.getByTestId("today-plan-card")).toBeInTheDocument()
+    expect(
+      screen.getByRole("region", { name: "today.plan" })
+    ).toBeInTheDocument()
     expect(
       screen.queryByTestId("bonus-energy-limit-reached")
     ).not.toBeInTheDocument()
@@ -434,7 +440,9 @@ describe("Dailies raid pages", () => {
     )
     renderPage(<TodayPage />)
 
-    expect(screen.queryByTestId("today-plan-card")).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole("region", { name: "today.plan" })
+    ).not.toBeInTheDocument()
     expect(screen.getByTestId("bonus-energy-limit-reached")).toHaveTextContent(
       "bonus.limitReachedEmpty"
     )

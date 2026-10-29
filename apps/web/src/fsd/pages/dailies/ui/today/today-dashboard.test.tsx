@@ -22,6 +22,10 @@ function renderDashboard(raids: DailyRaidsViewModel) {
   return render(<TodayDashboard raids={raids} />)
 }
 
+const planCard = () => screen.queryByRole("region", { name: "Today's plan" })
+const bonusCards = () =>
+  screen.queryAllByRole("region", { name: "Bonus raids" })
+
 function withOnslaught() {
   const base = ready()
   return ready({
@@ -38,12 +42,12 @@ describe("TodayDashboard", () => {
     renderDashboard(withOnslaught())
 
     const order = [
-      "today-plan-card",
-      "bonus-card",
-      "today-shops",
-      "today-onslaught",
-      "todays-attempts",
-    ].map((testId) => screen.getByTestId(testId))
+      planCard(),
+      bonusCards()[0],
+      ...["today-shops", "today-onslaught", "todays-attempts"].map((testId) =>
+        screen.getByTestId(testId)
+      ),
+    ]
     for (let index = 1; index < order.length; index++) {
       expect(
         order[index - 1]!.compareDocumentPosition(order[index]!) &
@@ -81,9 +85,9 @@ describe("TodayDashboard", () => {
   it("puts the bonus card in the plan's place at the energy limit, with its caption and every entry", () => {
     renderDashboard(ready({ dailyEnergy: 288, realEnergyUsedToday: 300 }))
 
-    expect(screen.queryByTestId("today-plan-card")).not.toBeInTheDocument()
+    expect(planCard()).not.toBeInTheDocument()
     const planArea = within(screen.getByTestId("today-plan-area"))
-    const bonus = planArea.getByTestId("bonus-card")
+    const bonus = planArea.getByRole("region", { name: "Bonus raids" })
     expect(bonus).toHaveAttribute("data-limit", "reached")
     expect(
       within(bonus).getByTestId("bonus-energy-limit-reached")
@@ -99,9 +103,9 @@ describe("TodayDashboard", () => {
     const base = ready()
     renderDashboard(ready({ today: { ...base.today, entries: [] } }))
 
-    expect(screen.queryByTestId("today-plan-card")).not.toBeInTheDocument()
+    expect(planCard()).not.toBeInTheDocument()
     const planArea = within(screen.getByTestId("today-plan-area"))
-    const bonus = planArea.getByTestId("bonus-card")
+    const bonus = planArea.getByRole("region", { name: "Bonus raids" })
     expect(bonus).not.toHaveAttribute("data-limit")
     expect(
       within(bonus).queryByTestId("bonus-energy-limit-reached")
@@ -113,7 +117,7 @@ describe("TodayDashboard", () => {
       within(bonus).getByRole("button", { name: "Show more" })
     ).toBeInTheDocument()
     // Not repeated beside the plan area.
-    expect(screen.getAllByTestId("bonus-card")).toHaveLength(1)
+    expect(bonusCards()).toHaveLength(1)
   })
 
   it("puts the bonus card in the plan's place when every plan node is raided out below the limit", () => {
@@ -132,19 +136,22 @@ describe("TodayDashboard", () => {
       })
     )
 
-    expect(screen.queryByTestId("today-plan-card")).not.toBeInTheDocument()
-    const bonus = within(screen.getByTestId("today-plan-area")).getByTestId(
-      "bonus-card"
+    expect(planCard()).not.toBeInTheDocument()
+    const bonus = within(screen.getByTestId("today-plan-area")).getByRole(
+      "region",
+      {
+        name: "Bonus raids",
+      }
     )
     expect(bonus).not.toHaveAttribute("data-limit")
-    expect(screen.getAllByTestId("bonus-card")).toHaveLength(1)
+    expect(bonusCards()).toHaveLength(1)
   })
 
   it("shows the top 3 bonus entries, Show more reveals the rest and Show less hides them again", async () => {
     const user = userEvent.setup()
     renderDashboard(ready())
 
-    const bonus = within(screen.getByTestId("bonus-card"))
+    const bonus = within(bonusCards()[0]!)
     expect(bonus.getByText("if energy is left")).toBeInTheDocument()
     expect(bonus.queryByTestId("raid-card-g2-B4")).not.toBeInTheDocument()
     await user.click(bonus.getByRole("button", { name: "Show more" }))
@@ -157,7 +164,7 @@ describe("TodayDashboard", () => {
     const base = ready()
     renderDashboard(ready({ bonus: { ...base.bonus, entries: [] } }))
 
-    expect(screen.queryByTestId("bonus-card")).not.toBeInTheDocument()
+    expect(bonusCards()).toHaveLength(0)
     const sideColumn = screen.getByTestId("today-shops").parentElement!
     expect(sideColumn.firstElementChild).toBe(screen.getByTestId("today-shops"))
   })
@@ -166,7 +173,11 @@ describe("TodayDashboard", () => {
     renderDashboard(ready())
 
     expect(screen.queryByTestId("today-onslaught")).not.toBeInTheDocument()
-    expect(screen.queryByTestId("glance-onslaught")).not.toBeInTheDocument()
+    expect(
+      within(
+        screen.getByRole("region", { name: "Today at a glance" })
+      ).queryByText("Onslaught")
+    ).not.toBeInTheDocument()
     const sideColumn = screen.getByTestId("todays-attempts").parentElement!
     expect(sideColumn.firstElementChild).toBe(
       screen.getByTestId("todays-attempts")
@@ -177,12 +188,10 @@ describe("TodayDashboard", () => {
     renderDashboard({ status: "loading" })
 
     expect(
-      within(screen.getByTestId("today-plan-card")).getByTestId(
-        "dailies-loading"
-      )
+      within(planCard()!).getByTestId("dailies-loading")
     ).toBeInTheDocument()
     expect(screen.getByTestId("today-shops")).toBeInTheDocument()
-    expect(screen.queryByTestId("bonus-card")).not.toBeInTheDocument()
+    expect(bonusCards()).toHaveLength(0)
     expect(screen.queryByTestId("today-onslaught")).not.toBeInTheDocument()
     expect(screen.queryByTestId("todays-attempts")).not.toBeInTheDocument()
   })
@@ -190,9 +199,7 @@ describe("TodayDashboard", () => {
   it("shows the plan's error state inside the plan card, not as a card of its own", () => {
     renderDashboard({ status: "error" })
 
-    const error = within(screen.getByTestId("today-plan-card")).getByTestId(
-      "dailies-error"
-    )
+    const error = within(planCard()!).getByTestId("dailies-error")
     expect(error).not.toHaveAttribute("data-slot", "card")
   })
 
@@ -201,9 +208,7 @@ describe("TodayDashboard", () => {
 
     // Two plan entries at B1, which has attempts left.
     expect(
-      within(screen.getByTestId("today-plan-card")).getByText(
-        "2 nodes · goal priority order"
-      )
+      within(planCard()!).getByText("2 nodes · goal priority order")
     ).toBeInTheDocument()
   })
 

@@ -34,7 +34,6 @@ export function TodayBonusCard({
     <TodayCard
       data-limit={atLimit ? "reached" : undefined}
       meta={atLimit ? undefined : t("bonus.meta")}
-      testId="bonus-card"
       title={<span data-testid="bonus-raids-heading">{t("bonus.title")}</span>}
       titleClassName={wide ? "text-lg" : undefined}
     >

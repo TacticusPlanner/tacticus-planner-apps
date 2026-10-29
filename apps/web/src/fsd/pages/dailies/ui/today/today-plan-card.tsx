@@ -33,7 +33,6 @@ export function TodayPlanCard({
           ? t("today.planMeta", { count: view.planNodeCount })
           : undefined
       }
-      testId="today-plan-card"
       title={t("today.plan")}
       titleClassName="text-lg"
     >

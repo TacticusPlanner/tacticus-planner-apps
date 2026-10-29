@@ -3,14 +3,13 @@ import { shopIcon } from "@workspace/game-catalog"
 
 import type { ShopRecommendationSectionView } from "@/features/shop-recommendations"
 import { EntityIcon } from "@/shared/ui"
-import { ShopRecommendationCard } from "../shop-recommendation-card"
+import { ShopRecommendationCard } from "./shop-recommendation-card"
 
 /**
- * Mobile layout (<768px): per-shop sections as single-column stacks of dense rows, the Guaranteed and
- * Possible groups shown as inline sub-headers rather than a grid — genuinely distinct from the desktop
- * card grid, preserving every label, count, cost, and indicator.
+ * Per-shop sections as single-column stacks of dense rows, with the Guaranteed and Possible groups as
+ * inline sub-headers. Used at every width: the Today shop card sits in a narrow dashboard column.
  */
-export function ShopsMobile({
+export function ShopList({
   sections,
 }: {
   sections: ShopRecommendationSectionView[]
@@ -21,7 +20,7 @@ export function ShopsMobile({
   )
 
   return (
-    <div className="space-y-6" data-testid="shops-mobile">
+    <div className="space-y-6" data-testid="shop-list">
       {populated.map((section) => (
         <section
           key={section.shopId}
@@ -42,11 +41,7 @@ export function ShopsMobile({
                 {t("group.guaranteed")}
               </h4>
               {section.guaranteed.map((card) => (
-                <ShopRecommendationCard
-                  key={card.rewardType}
-                  card={card}
-                  variant="mobile"
-                />
+                <ShopRecommendationCard key={card.rewardType} card={card} />
               ))}
             </div>
           ) : null}
@@ -56,11 +51,7 @@ export function ShopsMobile({
                 {t("group.possible")}
               </h4>
               {section.possible.map((card) => (
-                <ShopRecommendationCard
-                  key={card.rewardType}
-                  card={card}
-                  variant="mobile"
-                />
+                <ShopRecommendationCard key={card.rewardType} card={card} />
               ))}
             </div>
           ) : null}
