@@ -3,7 +3,14 @@
   "navigation": {
     "previousWeek": "Semaine précédente",
     "nextWeek": "Semaine suivante",
-    "today": "Aujourd'hui"
+    "previousMonth": "Mois précédent",
+    "nextMonth": "Mois suivant",
+    "today": "Aujourd'hui",
+    "view": "Vue du calendrier",
+    "views": {
+      "week": "Semaine",
+      "month": "Mois"
+    }
   },
   "states": {
     "loading": "Chargement des événements…",
@@ -108,8 +115,8 @@
           "content": "Accédez directement au plan de n'importe quel projet — le projet par défaut s'affiche toujours en premier."
         },
         "navigation": {
-          "title": "Parcourir d'autres semaines",
-          "content": "Avancez ou reculez d'une semaine, ou revenez directement à aujourd'hui."
+          "title": "Parcourir d'autres semaines et mois",
+          "content": "Avancez ou reculez d'une semaine ou d'un mois, revenez à aujourd'hui, ou basculez entre les vues Semaine et Mois."
         },
         "calendar": {
           "title": "Détails de l'événement",

@@ -3,7 +3,14 @@
   "navigation": {
     "previousWeek": "Vorherige Woche",
     "nextWeek": "Nächste Woche",
-    "today": "Heute"
+    "previousMonth": "Vorheriger Monat",
+    "nextMonth": "Nächster Monat",
+    "today": "Heute",
+    "view": "Kalenderansicht",
+    "views": {
+      "week": "Woche",
+      "month": "Monat"
+    }
   },
   "states": {
     "loading": "Events werden geladen…",
@@ -108,8 +115,8 @@
           "content": "Steige direkt in den Plan eines Projekts ein — das Standardprojekt wird immer zuerst angezeigt."
         },
         "navigation": {
-          "title": "Andere Wochen ansehen",
-          "content": "Springe eine Woche vor oder zurück, oder kehre zu Heute zurück."
+          "title": "Andere Wochen und Monate ansehen",
+          "content": "Eine Woche oder einen Monat vor- oder zurückblättern, zu heute springen oder zwischen Wochen- und Monatsansicht wechseln."
         },
         "calendar": {
           "title": "Event-Details",

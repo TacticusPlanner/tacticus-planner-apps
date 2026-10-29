@@ -16,7 +16,7 @@ export {
 export {
   EVENT_FAMILIES_IN_LEGEND_ORDER,
   eventFamilyStripeClass,
-  eventFamilySwatchClass,
+  eventFamilySurfaceClass,
   resolveEventFamily,
   type EventFamily,
 } from "./event-colors"

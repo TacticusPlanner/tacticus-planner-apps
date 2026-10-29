@@ -3,7 +3,14 @@
   "navigation": {
     "previousWeek": "Semana anterior",
     "nextWeek": "Semana siguiente",
-    "today": "Hoy"
+    "previousMonth": "Mes anterior",
+    "nextMonth": "Mes siguiente",
+    "today": "Hoy",
+    "view": "Vista del calendario",
+    "views": {
+      "week": "Semana",
+      "month": "Mes"
+    }
   },
   "states": {
     "loading": "Cargando eventos…",
@@ -108,8 +115,8 @@
           "content": "Entra directamente en el plan de cualquier proyecto — el proyecto predeterminado siempre aparece primero."
         },
         "navigation": {
-          "title": "Explorar otras semanas",
-          "content": "Avanza o retrocede una semana, o vuelve directamente a hoy."
+          "title": "Explora otras semanas y meses",
+          "content": "Avanza o retrocede una semana o un mes, vuelve a hoy o cambia entre las vistas Semana y Mes."
         },
         "calendar": {
           "title": "Detalles del evento",

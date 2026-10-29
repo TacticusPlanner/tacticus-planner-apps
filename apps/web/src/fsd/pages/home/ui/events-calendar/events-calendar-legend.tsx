@@ -4,7 +4,8 @@ import { cn } from "@workspace/ui/lib/utils"
 
 import {
   EVENT_FAMILIES_IN_LEGEND_ORDER,
-  eventFamilySwatchClass,
+  eventFamilyStripeClass,
+  eventFamilySurfaceClass,
   resolveEventFamily,
   type EventFamily,
 } from "@/shared/lib"
@@ -41,9 +42,11 @@ export function EventsCalendarLegend({ days }: { days: EventsCalendarDay[] }) {
         <div className="flex items-center gap-1.5" key={family}>
           <span
             aria-hidden="true"
+            // A miniature entry (tinted fill, family stripe), so the legend matches the bars.
             className={cn(
-              "h-3 w-1 shrink-0 rounded-full",
-              eventFamilySwatchClass(family)
+              "size-3.5 shrink-0 rounded-[3px] border-l-4",
+              eventFamilySurfaceClass(family),
+              eventFamilyStripeClass(family)
             )}
           />
           <span className="text-xs text-muted-foreground">

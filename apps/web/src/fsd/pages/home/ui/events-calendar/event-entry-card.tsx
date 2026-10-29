@@ -13,7 +13,11 @@ import {
 } from "@workspace/ui/components/popover"
 import { cn } from "@workspace/ui/lib/utils"
 
-import { eventFamilyStripeClass, resolveEventFamily } from "@/shared/lib"
+import {
+  eventFamilyStripeClass,
+  eventFamilySurfaceClass,
+  resolveEventFamily,
+} from "@/shared/lib"
 import { EventIcon } from "@/shared/ui"
 
 import type { EventEntryViewModel } from "../../model/events-calendar.types"
@@ -27,15 +31,17 @@ function useEventDisplayName(entry: EventEntryViewModel): string {
   return resolveEventDisplayName(t, entry)
 }
 
-/** Shared look of every calendar entry: neutral surface, family-colored left stripe, dashed when
- *  projected, ringed (inset) while live. */
+/** Shared look of every calendar entry: family-tinted surface with a family-colored left stripe,
+ *  dashed when projected, ringed (inset) while live. */
 function entrySurfaceClass(entry: EventEntryViewModel): string {
+  const family = resolveEventFamily(entry.definitionType)
   return cn(
     // `relative` anchors the sr-only state text: without it, inside the Ongoing strip's scroller it
     // positions against the page and widens the document (pushing the fixed bottom nav off-screen).
-    "relative border border-l-4 bg-muted/50 text-foreground transition-colors hover:bg-muted",
+    "relative border border-l-4 text-foreground transition-colors",
     "focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none",
-    eventFamilyStripeClass(resolveEventFamily(entry.definitionType)),
+    eventFamilySurfaceClass(family),
+    eventFamilyStripeClass(family),
     entry.confirmed
       ? "border-y-transparent border-r-transparent"
       : "border-dashed",
@@ -123,13 +129,15 @@ function EventDetailsPopover({
 }
 
 /** Desktop Gantt bar. A one-day bar shows only the game icon; its name stays for assistive tech and
- *  in the tooltip and popover. */
+ *  in the tooltip and popover. `compact` is the month grid's shorter bar. */
 export function EventBar({
   entry,
   iconOnly = false,
+  compact = false,
 }: {
   entry: EventEntryViewModel
   iconOnly?: boolean
+  compact?: boolean
 }) {
   const displayName = useEventDisplayName(entry)
 
@@ -148,7 +156,7 @@ export function EventBar({
         type="button"
       >
         <EventIcon
-          className="size-7 shrink-0"
+          className={cn("shrink-0", compact ? "size-5" : "size-7")}
           definitionId={entry.definitionId}
           definitionType={entry.definitionType}
           parameters={entry.parameters}

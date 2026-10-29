@@ -2,46 +2,48 @@ import { useCallback, useMemo, useState } from "react"
 import type { EventsCalendarStorageModel } from "@workspace/game-catalog"
 import { selectUpcomingEvents } from "@workspace/game-catalog/queries"
 
-import { combineReadStates } from "@/shared/lib"
+import { combineReadStates, usePersistedSelection } from "@/shared/lib"
 import { toById, useCatalogDataset } from "@/shared/local-data"
 
 import {
-  addLocalDays,
   buildEventsAgenda,
   buildEventsCalendarDays,
   buildEventsCalendarLanes,
+  buildEventsCalendarWeeks,
+  resolveEventsCalendarRange,
 } from "./events-calendar-calc"
-import type { EventsCalendarViewModel } from "./events-calendar.types"
+import type {
+  EventsCalendarView,
+  EventsCalendarViewModel,
+} from "./events-calendar.types"
 
-const WEEK_DAYS = 7
+export const EVENTS_CALENDAR_VIEW_KEY = "home.eventsCalendar.view"
 
-function startOfDay(date: Date): Date {
-  const start = new Date(date)
-  start.setHours(0, 0, 0, 0)
-  return start
-}
+const isEventsCalendarView = (value: unknown): value is EventsCalendarView =>
+  value === "week" || value === "month"
 
 /**
- * Drives the home page's events calendar: a rolling 7-day window navigable forward (into the
- * projection horizon) and backward (into authored/archived occurrences — `selectUpcomingEvents` has no
- * lower bound, unlike the server's forward-only projection window).
+ * Drives the home page's events calendar: a rolling 7-day window or a calendar month, navigable
+ * forward (into the projection horizon) and backward (into authored/archived occurrences —
+ * `selectUpcomingEvents` has no lower bound, unlike the server's forward-only projection window).
  */
 export function useEventsCalendar(): EventsCalendarViewModel {
-  const [weekOffset, setWeekOffset] = useState(0)
-  const rangeStart = useMemo(
-    () => addLocalDays(startOfDay(new Date()), weekOffset * WEEK_DAYS),
-    [weekOffset]
+  const [view, setStoredView] = usePersistedSelection(
+    EVENTS_CALENDAR_VIEW_KEY,
+    isEventsCalendarView,
+    "week"
   )
-  const rangeEnd = useMemo(
-    () => addLocalDays(rangeStart, WEEK_DAYS),
-    [rangeStart]
+  const [offset, setOffset] = useState(0)
+  const { rangeStart, rangeEnd, gridStart, gridEnd } = useMemo(
+    () => resolveEventsCalendarRange(view, offset, new Date()),
+    [view, offset]
   )
 
-  // Both reads are cached for the session; changing week only re-selects the window (design D3).
+  // Both reads are cached for the session; changing range only re-selects the window (design D3).
   const selectRange = useCallback(
     (rows: EventsCalendarStorageModel[]) =>
-      selectUpcomingEvents(rows, rangeStart, rangeEnd),
-    [rangeStart, rangeEnd]
+      selectUpcomingEvents(rows, gridStart, gridEnd),
+    [gridStart, gridEnd]
   )
   const definitionsState = useCatalogDataset("event-definitions", toById)
   const entriesState = useCatalogDataset("events-calendar", selectRange)
@@ -72,7 +74,7 @@ export function useEventsCalendar(): EventsCalendarViewModel {
 
   const lanes = useMemo(
     () =>
-      entries && definitionsById
+      view === "week" && entries && definitionsById
         ? buildEventsCalendarLanes(
             entries,
             definitionsById,
@@ -81,7 +83,21 @@ export function useEventsCalendar(): EventsCalendarViewModel {
             new Date()
           )
         : [],
-    [entries, definitionsById, rangeStart, rangeEnd]
+    [view, entries, definitionsById, rangeStart, rangeEnd]
+  )
+
+  const weeks = useMemo(
+    () =>
+      view === "month" && entries && definitionsById
+        ? buildEventsCalendarWeeks(
+            entries,
+            definitionsById,
+            gridStart,
+            gridEnd,
+            new Date()
+          )
+        : [],
+    [view, entries, definitionsById, gridStart, gridEnd]
   )
 
   const status =
@@ -91,26 +107,31 @@ export function useEventsCalendar(): EventsCalendarViewModel {
         ? "empty"
         : "ready"
 
-  const goToPreviousWeek = useCallback(
-    () => setWeekOffset((offset) => offset - 1),
-    []
+  // A new view starts from the current week or month rather than reinterpreting the old offset.
+  const setView = useCallback(
+    (next: EventsCalendarView) => {
+      setStoredView(next)
+      setOffset(0)
+    },
+    [setStoredView]
   )
-  const goToNextWeek = useCallback(
-    () => setWeekOffset((offset) => offset + 1),
-    []
-  )
-  const goToToday = useCallback(() => setWeekOffset(0), [])
+  const goToPrevious = useCallback(() => setOffset((value) => value - 1), [])
+  const goToNext = useCallback(() => setOffset((value) => value + 1), [])
+  const goToToday = useCallback(() => setOffset(0), [])
 
   return {
     status,
+    view,
+    setView,
     days,
     agenda,
     lanes,
+    weeks,
     rangeStart,
     rangeEnd,
-    weekOffset,
-    goToPreviousWeek,
-    goToNextWeek,
+    offset,
+    goToPrevious,
+    goToNext,
     goToToday,
     retry: read.retry,
   }

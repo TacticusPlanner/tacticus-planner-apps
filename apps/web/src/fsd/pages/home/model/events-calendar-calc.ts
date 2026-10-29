@@ -4,6 +4,8 @@ import type {
   EventsAgenda,
   EventsCalendarDay,
   EventsCalendarDayEntry,
+  EventsCalendarView,
+  EventsCalendarWeek,
   PositionedEventEntry,
   RawEventDefinition,
   RawEventsCalendarEntry,
@@ -35,6 +37,58 @@ export function addLocalDays(date: Date, days: number): Date {
   const result = new Date(date)
   result.setDate(result.getDate() + days)
   return result
+}
+
+/** Local midnight of `date`. */
+export function startOfLocalDay(date: Date): Date {
+  const start = new Date(date)
+  start.setHours(0, 0, 0, 0)
+  return start
+}
+
+/** Local midnight of the Monday on or before `date` (the month grid's first column). */
+export function startOfLocalWeek(date: Date): Date {
+  const start = startOfLocalDay(date)
+  return addLocalDays(start, -((start.getDay() + 6) % 7))
+}
+
+export type EventsCalendarRange = {
+  /** The period the view is about: 7 days from today's offset, or one calendar month. */
+  rangeStart: Date
+  rangeEnd: Date
+  /** The days the grid draws: the range itself for a week, whole Monday-to-Sunday weeks for a month. */
+  gridStart: Date
+  gridEnd: Date
+}
+
+/**
+ * The visible window for `view`, `offset` steps (weeks or months) away from `today`. The week view is a
+ * rolling 7 days starting today; the month view is the calendar month, padded out to whole weeks.
+ */
+export function resolveEventsCalendarRange(
+  view: EventsCalendarView,
+  offset: number,
+  today: Date
+): EventsCalendarRange {
+  if (view === "week") {
+    const rangeStart = addLocalDays(startOfLocalDay(today), offset * 7)
+    const rangeEnd = addLocalDays(rangeStart, 7)
+    return { rangeStart, rangeEnd, gridStart: rangeStart, gridEnd: rangeEnd }
+  }
+
+  const rangeStart = new Date(today.getFullYear(), today.getMonth() + offset, 1)
+  const rangeEnd = new Date(
+    today.getFullYear(),
+    today.getMonth() + offset + 1,
+    1
+  )
+  return {
+    rangeStart,
+    rangeEnd,
+    gridStart: startOfLocalWeek(rangeStart),
+    // The Monday on or after the month's end.
+    gridEnd: startOfLocalWeek(addLocalDays(rangeEnd, 6)),
+  }
 }
 
 /** Every calendar date (local) from `rangeStart` (inclusive) to `rangeEnd` (exclusive). */
@@ -385,4 +439,39 @@ export function buildEventsCalendarLanes(
   }
 
   return lanes.map(({ entries: laneEntries }) => ({ entries: laneEntries }))
+}
+
+/** The month grid: one row per Monday-to-Sunday week from `gridStart`, each with its own Gantt lanes. */
+export function buildEventsCalendarWeeks(
+  entries: readonly RawEventsCalendarEntry[],
+  definitionsById: ReadonlyMap<string, RawEventDefinition>,
+  gridStart: Date,
+  gridEnd: Date,
+  now: Date
+): EventsCalendarWeek[] {
+  const weeks: EventsCalendarWeek[] = []
+  for (
+    let weekStart = gridStart;
+    weekStart < gridEnd;
+    weekStart = addLocalDays(weekStart, 7)
+  ) {
+    const weekEnd = addLocalDays(weekStart, 7)
+    weeks.push({
+      days: buildEventsCalendarDays(
+        entries,
+        definitionsById,
+        weekStart,
+        weekEnd,
+        now
+      ),
+      lanes: buildEventsCalendarLanes(
+        entries,
+        definitionsById,
+        weekStart,
+        weekEnd,
+        now
+      ),
+    })
+  }
+  return weeks
 }

@@ -274,18 +274,61 @@ describe("EventsCalendar", () => {
       "events-calendar-range-label"
     ).textContent
 
-    screen.getByTestId("events-calendar-next-week").click()
+    await userEvent.click(screen.getByRole("button", { name: "Next week" }))
     await waitFor(() =>
       expect(
         screen.getByTestId("events-calendar-range-label").textContent
       ).not.toBe(initialLabel)
     )
 
-    screen.getByTestId("events-calendar-previous-week").click()
+    await userEvent.click(screen.getByRole("button", { name: "Previous week" }))
     await waitFor(() =>
       expect(
         screen.getByTestId("events-calendar-range-label").textContent
       ).toBe(initialLabel)
+    )
+  })
+  it("switches to the month view, showing the whole month as weeks", async () => {
+    await seedCalendar([
+      {
+        occurrenceId: "occ-lucius",
+        definitionId: "legendary-event",
+        confirmed: true,
+        startUtc: isoDaysFromNow(0),
+        endUtc: isoDaysFromNow(7),
+        parameters: null,
+      },
+    ])
+    render(<EventsCalendar />)
+    await screen.findAllByTestId("event-entry-card")
+
+    await userEvent.click(screen.getByRole("radio", { name: "Month" }))
+
+    const monthLabel = new Intl.DateTimeFormat("en", {
+      month: "long",
+      year: "numeric",
+    }).format(new Date())
+    expect(screen.getByTestId("events-calendar-range-label")).toHaveTextContent(
+      monthLabel
+    )
+    expect(
+      await screen.findByTestId("events-calendar-month")
+    ).toBeInTheDocument()
+    const weeks = screen.getAllByTestId("events-calendar-month-week")
+    expect(weeks.length).toBeGreaterThanOrEqual(4)
+    expect(weeks.length).toBeLessThanOrEqual(6)
+    expect(
+      screen.getByRole("button", { name: "Next month" })
+    ).toBeInTheDocument()
+
+    await userEvent.click(screen.getByRole("button", { name: "Next month" }))
+    expect(
+      screen.getByTestId("events-calendar-range-label")
+    ).not.toHaveTextContent(monthLabel)
+
+    await userEvent.click(screen.getByRole("button", { name: "Today" }))
+    expect(screen.getByTestId("events-calendar-range-label")).toHaveTextContent(
+      monthLabel
     )
   })
 })

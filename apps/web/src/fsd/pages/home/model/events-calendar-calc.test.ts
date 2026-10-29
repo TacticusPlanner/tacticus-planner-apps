@@ -5,6 +5,9 @@ import {
   buildEventsAgenda,
   buildEventsCalendarDays,
   buildEventsCalendarLanes,
+  buildEventsCalendarWeeks,
+  resolveEventsCalendarRange,
+  toIsoDate,
 } from "./events-calendar-calc"
 
 const noneRecurrence = {
@@ -678,6 +681,82 @@ describe("buildEventsAgenda", () => {
       "occ-le",
       "occ-bp",
     ])
+  })
+})
+
+describe("resolveEventsCalendarRange", () => {
+  const today = new Date(2026, 9, 29, 15, 30) // Thu 29 Oct 2026, mid-afternoon local
+
+  it("keeps the week view a rolling 7 days from today, stepped by whole weeks", () => {
+    const range = resolveEventsCalendarRange("week", 1, today)
+
+    expect(toIsoDate(range.rangeStart)).toBe("2026-11-05")
+    expect(toIsoDate(range.rangeEnd)).toBe("2026-11-12")
+    expect(range.gridStart).toEqual(range.rangeStart)
+    expect(range.gridEnd).toEqual(range.rangeEnd)
+  })
+
+  it("covers the calendar month, padded out to whole Monday-to-Sunday weeks", () => {
+    const range = resolveEventsCalendarRange("month", 0, today)
+
+    expect(toIsoDate(range.rangeStart)).toBe("2026-10-01")
+    expect(toIsoDate(range.rangeEnd)).toBe("2026-11-01")
+    expect(toIsoDate(range.gridStart)).toBe("2026-09-28") // Monday
+    expect(toIsoDate(range.gridEnd)).toBe("2026-11-02") // Monday after the 31st
+  })
+
+  it("adds no padding week when the month ends on a Sunday", () => {
+    // May 2026 ends on Sunday the 31st.
+    const range = resolveEventsCalendarRange("month", -5, today)
+
+    expect(toIsoDate(range.rangeStart)).toBe("2026-05-01")
+    expect(toIsoDate(range.gridEnd)).toBe("2026-06-01")
+  })
+
+  it("steps across a year boundary", () => {
+    const range = resolveEventsCalendarRange("month", 3, today)
+
+    expect(toIsoDate(range.rangeStart)).toBe("2027-01-01")
+    expect(toIsoDate(range.rangeEnd)).toBe("2027-02-01")
+  })
+})
+
+describe("buildEventsCalendarWeeks", () => {
+  it("splits the grid into weeks and continues an event across the week boundary", () => {
+    const gridStart = new Date(2026, 6, 27) // Mon 27 Jul 2026
+    const gridEnd = new Date(2026, 7, 10) // two weeks later
+    const entries = [
+      {
+        occurrenceId: "occ-lucius",
+        definitionId: "legendary-event",
+        confirmed: true,
+        startUtc: new Date(2026, 7, 1).toISOString(), // Sat of week 1
+        endUtc: new Date(2026, 7, 5).toISOString(), // Wed of week 2
+        parameters: null,
+      },
+    ]
+
+    const weeks = buildEventsCalendarWeeks(
+      entries,
+      definitionsById,
+      gridStart,
+      gridEnd,
+      new Date(2026, 6, 27)
+    )
+
+    expect(weeks).toHaveLength(2)
+    expect(weeks.map((week) => week.days[0]?.date)).toEqual([
+      "2026-07-27",
+      "2026-08-03",
+    ])
+    expect(weeks[0]?.lanes[0]?.entries[0]).toMatchObject({
+      startColumn: 6,
+      span: 2,
+    })
+    expect(weeks[1]?.lanes[0]?.entries[0]).toMatchObject({
+      startColumn: 1,
+      span: 2,
+    })
   })
 })
 

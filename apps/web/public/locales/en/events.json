@@ -3,7 +3,14 @@
   "navigation": {
     "previousWeek": "Previous week",
     "nextWeek": "Next week",
-    "today": "Today"
+    "previousMonth": "Previous month",
+    "nextMonth": "Next month",
+    "today": "Today",
+    "view": "Calendar view",
+    "views": {
+      "week": "Week",
+      "month": "Month"
+    }
   },
   "states": {
     "loading": "Loading events…",
@@ -108,8 +115,8 @@
           "content": "Jump into any project's plan — the Default project always shows first."
         },
         "navigation": {
-          "title": "Browse other weeks",
-          "content": "Step forward or back a week, or jump back to today."
+          "title": "Browse other weeks and months",
+          "content": "Step back or forward a week or a month, jump back to today, or switch between the Week and Month views."
         },
         "calendar": {
           "title": "Event details",

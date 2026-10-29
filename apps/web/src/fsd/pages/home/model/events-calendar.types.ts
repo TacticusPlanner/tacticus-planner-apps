@@ -54,16 +54,31 @@ export type EventLane = {
   entries: PositionedEventEntry[]
 }
 
+export type EventsCalendarView = "week" | "month"
+
+/** One row of the month grid: its seven days and the Gantt lanes drawn across them. */
+export type EventsCalendarWeek = {
+  days: EventsCalendarDay[]
+  lanes: EventLane[]
+}
+
 export type EventsCalendarViewModel = {
   status: EventsCalendarStatus
+  view: EventsCalendarView
+  setView: (view: EventsCalendarView) => void
+  /** The range's own days (the month's days in the month view, not the grid's padding). */
   days: EventsCalendarDay[]
   agenda: EventsAgenda
+  /** The week view's lanes; empty in the month view. */
   lanes: EventLane[]
+  /** The month view's rows; empty in the week view. */
+  weeks: EventsCalendarWeek[]
   rangeStart: Date
   rangeEnd: Date
-  weekOffset: number
-  goToPreviousWeek: () => void
-  goToNextWeek: () => void
+  /** Weeks or months away from the current one, by `view`. */
+  offset: number
+  goToPrevious: () => void
+  goToNext: () => void
   goToToday: () => void
   retry: () => void
 }
