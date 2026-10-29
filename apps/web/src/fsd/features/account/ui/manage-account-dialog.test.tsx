@@ -281,6 +281,29 @@ describe("ManageAccountDialog", () => {
     await vi.waitFor(() => {
       expect(purgeAccount).toHaveBeenCalledTimes(1)
     })
+    expect(purgeAccount).toHaveBeenCalledWith({ deleteSignInAccount: false })
+    expect(signOut).toHaveBeenCalledTimes(1)
+  })
+
+  it("also deletes the sign-in account when that option is chosen", async () => {
+    purgeAccount.mockResolvedValue(undefined)
+
+    const user = userEvent.setup()
+    render(<ManageAccountDialog onOpenChange={vi.fn()} open />)
+
+    await user.click(screen.getByTestId("manage-account-tab-account"))
+    await user.click(
+      screen.getByTestId("manage-account-purge-scope-signInAccount")
+    )
+    fireEvent.change(
+      screen.getByTestId("manage-account-purge-confirmation-input"),
+      { target: { value: "Confirm" } }
+    )
+    await user.click(screen.getByTestId("manage-account-purge-submit"))
+
+    await vi.waitFor(() => {
+      expect(purgeAccount).toHaveBeenCalledWith({ deleteSignInAccount: true })
+    })
     expect(signOut).toHaveBeenCalledTimes(1)
   })
 

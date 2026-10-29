@@ -77,8 +77,16 @@ export function importV1Profile(request: ImportV1ProfileRequest) {
   )
 }
 
-export async function purgeAccount() {
-  await unwrap(apiClient().DELETE("/api/v1/account"))
+/** `deleteSignInAccount` also deletes the Entra External ID user the caller signs in with; otherwise only
+ *  planner data goes and the same sign-in starts a fresh planner account. */
+export async function purgeAccount({
+  deleteSignInAccount = false,
+}: { deleteSignInAccount?: boolean } = {}) {
+  await unwrap(
+    apiClient().DELETE("/api/v1/account", {
+      params: { query: { deleteSignInAccount } },
+    })
+  )
   // The account is gone, so the next sign-in must wait for GET /account to provision a new one.
   clearSetupCompleteHint()
 }

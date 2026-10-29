@@ -102,7 +102,18 @@
       "email": "E-Mail",
       "signInMethodNote": "Jede E-Mail-Adresse funktioniert nur mit einer Anmeldemethode, melde dich also immer auf diese Weise an. Konten verschiedener Methoden lassen sich nicht zusammenführen.",
       "purgeWarningTitle": "Konto löschen",
-      "purgeWarningDescription": "Dies löscht sofort und unwiderruflich alle deine Planner-Daten. Diese Aktion kann nicht rückgängig gemacht werden.",
+      "purgeWarningDescription": "Dies löscht sofort und unwiderruflich die ausgewählten Daten. Diese Aktion kann nicht rückgängig gemacht werden.",
+      "purgeScopeLabel": "Was gelöscht werden soll",
+      "purgeScopes": {
+        "plannerData": {
+          "label": "Nur Planner-Daten",
+          "description": "Löscht alles, was du im Planner gespeichert hast. Dein Anmeldekonto bleibt bestehen, sodass du bei der nächsten Anmeldung mit einem neuen, leeren Planner-Konto startest."
+        },
+        "signInAccount": {
+          "label": "Planner-Daten und Anmeldekonto",
+          "description": "Löscht zusätzlich das Konto, mit dem du dich beim Planner anmeldest. Dein Google-Konto selbst bleibt unberührt. Mit derselben E-Mail kannst du dich später erneut registrieren."
+        }
+      },
       "purgeConfirmLabel": "Gib „{{word}}“ ein, um die Löschung zu aktivieren",
       "purgeSubmit": "Mein Konto löschen",
       "purgeGenericError": "Beim Löschen deines Kontos ist ein Fehler aufgetreten. Bitte versuche es erneut."

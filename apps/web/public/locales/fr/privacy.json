@@ -32,7 +32,7 @@
     },
     "deletion": {
       "title": "Supprimer vos données",
-      "body": "Vous pouvez supprimer votre compte et toutes ses données dans les Paramètres du compte, onglet Compte, avec « Purger mon compte ». La suppression est immédiate et irréversible."
+      "body": "Vous pouvez supprimer votre compte dans les Paramètres du compte, onglet Compte, avec « Purger mon compte ». Vous choisissez de supprimer uniquement les données du planificateur ou aussi votre compte de connexion au planificateur (Microsoft Entra External ID). Votre compte Google n’est pas concerné. La suppression est immédiate et irréversible."
     },
     "contact": {
       "title": "Contact",
