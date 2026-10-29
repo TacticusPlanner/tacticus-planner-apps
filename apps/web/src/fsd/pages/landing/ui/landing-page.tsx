@@ -2,6 +2,7 @@ import { ArrowRight, Check, LogIn } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Link } from "react-router"
 import { Button } from "@workspace/ui/components/button"
+import { useIsAuthenticated } from "@azure/msal-react"
 
 import { useSignInRedirect } from "@/shared/auth"
 
@@ -15,7 +16,8 @@ import {
 const cardLinkClass =
   "group flex h-full flex-col gap-3 rounded-xl border bg-card p-5 text-left text-card-foreground transition-colors hover:border-primary/50 hover:bg-accent/40 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
 
-/** Signed-out landing page: rendered inside `PublicLayout`, which owns the top bar, footer and `main`. */
+/** The public landing page, for signed-out and signed-in visitors alike: rendered inside `PublicLayout`,
+ *  which owns the top bar, footer and `main`. Signed in, the hero's primary action opens the planner. */
 export function LandingPage() {
   return (
     <div className="flex flex-col" data-testid="landing-page">
@@ -30,6 +32,7 @@ export function LandingPage() {
 
 function LandingHero() {
   const { t } = useTranslation(["landing", "common"])
+  const isAuthenticated = useIsAuthenticated()
   const { checkingSignIn, disabled, signIn } = useSignInRedirect()
   const trustPoints = [
     t("hero.trust.apiKey"),
@@ -73,17 +76,30 @@ function LandingHero() {
             {t("hero.subtitle")}
           </p>
           <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
-            <Button
-              className="h-11 rounded-full px-6 text-base"
-              data-testid="landing-get-started"
-              disabled={disabled}
-              onClick={signIn}
-            >
-              <LogIn data-icon="inline-start" />
-              {checkingSignIn
-                ? t("common:auth.checkingSignIn")
-                : t("hero.getStarted")}
-            </Button>
+            {isAuthenticated ? (
+              <Button
+                asChild
+                className="h-11 rounded-full px-6 text-base"
+                data-testid="landing-open-planner"
+              >
+                <Link to="/home">
+                  {t("common:publicSite.openPlanner")}
+                  <ArrowRight data-icon="inline-end" />
+                </Link>
+              </Button>
+            ) : (
+              <Button
+                className="h-11 rounded-full px-6 text-base"
+                data-testid="landing-get-started"
+                disabled={disabled}
+                onClick={signIn}
+              >
+                <LogIn data-icon="inline-start" />
+                {checkingSignIn
+                  ? t("common:auth.checkingSignIn")
+                  : t("hero.getStarted")}
+              </Button>
+            )}
             <Button
               asChild
               className="h-11 rounded-full bg-card/60 px-6 text-base backdrop-blur"

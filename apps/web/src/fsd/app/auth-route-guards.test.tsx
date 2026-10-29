@@ -5,7 +5,16 @@ import { InteractionStatus } from "@azure/msal-browser"
 
 import { render, screen } from "@/test/render"
 
-const { useIsAuthenticatedMock, useMsalMock } = vi.hoisted(() => ({
+const {
+  getAllAccountsMock,
+  silentSignInStatusMock,
+  useIsAuthenticatedMock,
+  useMsalMock,
+} = vi.hoisted(() => ({
+  getAllAccountsMock: vi.fn<() => unknown[]>(() => []),
+  silentSignInStatusMock: vi.fn<() => "idle" | "checking" | "failed">(
+    () => "idle"
+  ),
   useIsAuthenticatedMock: vi.fn(() => false),
   useMsalMock: vi.fn<() => { inProgress: InteractionStatus }>(() => ({
     inProgress: InteractionStatus.None,
@@ -14,7 +23,15 @@ const { useIsAuthenticatedMock, useMsalMock } = vi.hoisted(() => ({
 
 vi.mock("@azure/msal-react", () => ({
   useIsAuthenticated: () => useIsAuthenticatedMock(),
-  useMsal: () => useMsalMock(),
+  useMsal: () => ({
+    ...useMsalMock(),
+    instance: { getAllAccounts: () => getAllAccountsMock() },
+  }),
+}))
+
+vi.mock("@/shared/auth", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/shared/auth")>()),
+  useSilentSignInStatus: () => silentSignInStatusMock(),
 }))
 
 import { AuthenticatedRoute, LandingRoute } from "./auth-route-guards"
@@ -103,6 +120,61 @@ describe("AuthenticatedRoute", () => {
   })
 })
 
+describe("AuthenticatedRoute during a silent sign-in", () => {
+  function renderProtected() {
+    render(
+      <MemoryRouter initialEntries={["/home"]}>
+        <Routes>
+          <Route element={<Probe />} path="/" />
+          <Route
+            element={
+              <AuthenticatedRoute>
+                <div data-testid="protected-content" />
+              </AuthenticatedRoute>
+            }
+            path="/home"
+          />
+        </Routes>
+      </MemoryRouter>
+    )
+  }
+
+  it("shows the boot screen instead of the landing page while the restore runs", () => {
+    useIsAuthenticatedMock.mockReturnValue(false)
+    silentSignInStatusMock.mockReturnValue("checking")
+
+    renderProtected()
+
+    expect(screen.getByTestId("app-loading")).toBeVisible()
+    expect(screen.queryByTestId("probe")).not.toBeInTheDocument()
+
+    silentSignInStatusMock.mockReturnValue("idle")
+  })
+
+  it("keeps waiting while msal-react catches up with an account the restore added", () => {
+    useIsAuthenticatedMock.mockReturnValue(false)
+    getAllAccountsMock.mockReturnValue([{ homeAccountId: "a" }])
+
+    renderProtected()
+
+    expect(screen.getByTestId("app-loading")).toBeVisible()
+    expect(screen.queryByTestId("probe")).not.toBeInTheDocument()
+
+    getAllAccountsMock.mockReturnValue([])
+  })
+
+  it("sends the visitor to sign in once the restore failed", () => {
+    useIsAuthenticatedMock.mockReturnValue(false)
+    silentSignInStatusMock.mockReturnValue("failed")
+
+    renderProtected()
+
+    expect(screen.getByTestId("probe")).toHaveTextContent("/?next=%2Fhome")
+
+    silentSignInStatusMock.mockReturnValue("idle")
+  })
+})
+
 describe("LandingRoute", () => {
   it("restores the preserved destination after sign-in, including a /setup/* address", () => {
     useIsAuthenticatedMock.mockReturnValue(true)
@@ -138,6 +210,22 @@ describe("LandingRoute", () => {
     )
 
     expect(screen.getByTestId("probe")).toHaveTextContent("/home")
+  })
+
+  it("shows the landing page to a signed-in visitor on a bare /", () => {
+    useIsAuthenticatedMock.mockReturnValue(true)
+
+    render(
+      <MemoryRouter initialEntries={["/"]}>
+        <Routes>
+          <Route element={<LandingRoute />} path="/" />
+          <Route element={<Probe />} path="/home" />
+        </Routes>
+      </MemoryRouter>
+    )
+
+    expect(screen.getByTestId("landing-page")).toBeVisible()
+    expect(screen.queryByTestId("probe")).not.toBeInTheDocument()
   })
 
   it("waits for MSAL interaction to resolve before deciding", () => {
