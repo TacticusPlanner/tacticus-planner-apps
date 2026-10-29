@@ -77,6 +77,26 @@ describe("parseAbilityText", () => {
     expect(ast[2]?.type).toBe("styled")
   })
 
+  it("tolerates a style name with a single stray quote", () => {
+    const ast = parseAbilityText(
+      'gains <style=Buff_Infiltrate">Infiltrate</style> then <style="Charging>charges</style>'
+    )
+    const styled = ast.filter((n): n is StyledNode => n.type === "styled")
+    expect(styled.map((n) => n.styleName)).toEqual([
+      "Buff_Infiltrate",
+      "Charging",
+    ])
+  })
+
+  it("matches style tags in any case", () => {
+    const ast = parseAbilityText(
+      'adjacent to <Style="Faction_Genestealers">Xybia</style>'
+    )
+    const node = ast[1] as StyledNode
+    expect(node.type).toBe("styled")
+    expect(node.styleName).toBe("Faction_Genestealers")
+  })
+
   it("throws on an unmatched closing tag", () => {
     expect(() => parseAbilityText("plain</style>")).toThrow()
   })
