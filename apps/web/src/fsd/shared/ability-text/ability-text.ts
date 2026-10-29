@@ -277,8 +277,9 @@ export type AstNode = TextNode | VariableNode | StyledNode
 // nothing to link to here, so the tags are dropped and their already-styled inner text kept.
 // Game data ships typos, so tag names match in any case (`<Style=…>`, Genestealers Xybia) and the
 // bare form tolerates a lone quote on either side (`<style=Buff_Infiltrate">`, Blood Angels Dante).
+// No style value spans `<` or `>`, so a tag missing its closing quote cannot swallow later tags.
 const TOKEN_RE =
-  /(<style="[^"]*">|<style=\{[^}]+\}>|<style="?[^"{}<>]+"?>|<\/style>|<link="[^"]*">|<link=[^"<>]+>|<\/link>|<i>|<\/i>|\{[^}]+\})/gi
+  /(<style="[^"<>]*">|<style=\{[^}]+\}>|<style="?[^"{}<>]+"?>|<\/style>|<link="[^"]*">|<link=[^"<>]+>|<\/link>|<i>|<\/i>|\{[^}]+\})/gi
 
 function parseToken(
   raw: string
@@ -292,7 +293,7 @@ function parseToken(
   // Link tags carry no styling of their own: skip the tag, keep the contents inline.
   if (tag === "</link>" || tag.startsWith("<link=")) return { skip: true }
   if (tag === "<i>") return { open: "__italic__" }
-  const openQuoted = /^<style="([^"]*)">\s*$/i.exec(raw)
+  const openQuoted = /^<style="([^"<>]*)">\s*$/i.exec(raw)
   if (openQuoted) return { open: openQuoted[1] }
   const openDynamic = /^<style=\{([^}]+)\}>\s*$/i.exec(raw)
   if (openDynamic) return { open: openDynamic[1], isDynamic: true }

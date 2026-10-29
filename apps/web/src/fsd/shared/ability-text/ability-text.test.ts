@@ -88,6 +88,17 @@ describe("parseAbilityText", () => {
     ])
   })
 
+  it("does not let a style missing its closing quote swallow later tags", () => {
+    const ast = parseAbilityText(
+      '<style="Charging>charges</style> then <style=Buff_Infiltrate">Infiltrate</style>'
+    )
+    expect(ast.map((node) => node.type)).toEqual(["styled", "text", "styled"])
+    expect((ast[0] as StyledNode).children).toEqual([
+      { type: "text", value: "charges" },
+    ])
+    expect(ast[1]).toEqual({ type: "text", value: " then " })
+  })
+
   it("matches style tags in any case", () => {
     const ast = parseAbilityText(
       'adjacent to <Style="Faction_Genestealers">Xybia</style>'

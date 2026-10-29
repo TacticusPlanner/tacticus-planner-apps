@@ -60,44 +60,59 @@ for (const section of sections) {
     const rendered = page.locator('[data-testid^="unit-ability-"]').first()
     const errorPage = page.getByTestId("app-error-page")
     const unitName = page.getByTestId("unit-header").locator("h1")
+    // Rules text arrives after the first paint and is parsed only then, so a page is not done until
+    // no ability or trait text is still loading.
+    const textLoading = page.locator('[data-testid$="-text-loading"]')
+    const textFailed = page.locator('[data-testid$="-text-failed"]')
 
     const failures: string[] = []
     let previousName = ""
     for (const path of paths) {
       errors = []
-      // After a failure the error page would still be up, so reload instead of navigating in-app.
+      const fail = (problem: string) => {
+        const logged =
+          errors.find((error) => error.startsWith("Route rendering failed")) ??
+          errors.find((error) => /Error:/.test(error)) ??
+          errors[0]
+        failures.push(
+          `${path}: ${problem} — ${logged?.split("\n")[0] ?? "no error logged"}`
+        )
+        // The next unit reloads, so a stuck page or the error page cannot carry over.
+        previousName = ""
+      }
+
       if (previousName) await navigateInApp(page, path)
       else await page.goto(path)
       // Until the new unit renders, the previous unit's panels are still on screen and would pass the
       // check, so wait for the header to name a different unit (or for the error page).
-      await expect(async () => {
+      const opened = await expect(async () => {
         if (await errorPage.isVisible()) return
         expect(await unitName.textContent({ timeout: 500 })).not.toBe(
           previousName
         )
       })
         .toPass({ timeout: 15_000 })
-        .catch(() => {})
-      await expect(rendered.or(errorPage))
-        .toBeVisible({ timeout: 5_000 })
-        .catch(() => {})
-
-      const logged =
-        errors.find((error) => error.startsWith("Route rendering failed")) ??
-        errors.find((error) => /Error:/.test(error)) ??
-        errors[0]
-      const reason = logged?.split("\n")[0]
-      if (await errorPage.isVisible()) {
-        failures.push(`${path}: error page — ${reason ?? "no error logged"}`)
-        previousName = ""
-      } else if (!(await rendered.isVisible())) {
-        failures.push(
-          `${path}: abilities did not render — ${reason ?? "no error logged"}`
+        .then(
+          () => true,
+          () => false
         )
-        previousName = ""
-      } else {
-        previousName = (await unitName.textContent()) ?? ""
+      if (!opened) {
+        fail("did not open")
+        continue
       }
+
+      const settled = await expect(rendered.or(errorPage))
+        .toBeVisible({ timeout: 5_000 })
+        .then(() => expect(textLoading).toHaveCount(0, { timeout: 15_000 }))
+        .then(
+          () => true,
+          () => false
+        )
+
+      if (await errorPage.isVisible()) fail("error page")
+      else if (!settled) fail("abilities or their text did not load")
+      else if ((await textFailed.count()) > 0) fail("rules text failed to load")
+      else previousName = (await unitName.textContent()) ?? ""
     }
 
     console.log(
