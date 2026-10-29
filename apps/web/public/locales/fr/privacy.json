@@ -4,7 +4,7 @@
   "sections": {
     "signIn": {
       "title": "Connexion",
-      "body": "La connexion est gérée par Microsoft Entra External ID. Le planificateur ne voit jamais votre mot de passe. Il conserve l'identifiant de connexion renvoyé par Microsoft, le nom de planificateur que vous choisissez et la date de votre dernière utilisation."
+      "body": "La connexion est gérée par Microsoft Entra External ID. Le planificateur ne voit jamais votre mot de passe. Il conserve l'identifiant de connexion renvoyé par Microsoft, le nom de planificateur que vous choisissez et la date de votre dernière utilisation. Si vous vous connectez avec Google, Google partage votre nom et votre adresse e-mail avec Microsoft pour vous connecter. Le menu de votre compte affiche votre e-mail et la méthode de connexion utilisée ; le planificateur les lit depuis votre connexion et ne les conserve pas."
     },
     "apiKey": {
       "title": "Votre clé API Tacticus",

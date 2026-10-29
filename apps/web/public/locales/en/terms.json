@@ -8,7 +8,7 @@
     },
     "account": {
       "title": "Your account",
-      "body": "You sign in with Microsoft Entra External ID and are responsible for keeping that sign-in safe. Only add a Tacticus API key that is yours or that its owner allowed you to use. You can delete your account at any time in Account settings."
+      "body": "You sign in with Microsoft Entra External ID and are responsible for keeping that sign-in safe. Each email address works with one sign-in method only, the one you signed up with (email and password, or Google); signing in with a different method for the same email will not work, and accounts cannot be merged. Only add a Tacticus API key that is yours or that its owner allowed you to use. You can delete your account at any time in Account settings."
     },
     "acceptableUse": {
       "title": "Acceptable use",

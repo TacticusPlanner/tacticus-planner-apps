@@ -17,7 +17,11 @@
     "signOut": "Sign out",
     "userMenu": "Account menu",
     "preferences": "Preferences",
-    "accountSettings": "Account settings"
+    "accountSettings": "Account settings",
+    "signedInWith": {
+      "google": "Signed in with Google",
+      "email": "Signed in with email"
+    }
   },
   "catalog": {
     "badge": {
@@ -90,6 +94,13 @@
       }
     },
     "account": {
+      "signInMethod": "Sign-in method",
+      "signInMethods": {
+        "google": "Google",
+        "email": "Email and password"
+      },
+      "email": "Email",
+      "signInMethodNote": "Each email works with one sign-in method only, so always sign in this way. Accounts can't be merged across methods.",
       "purgeWarningTitle": "Purge account",
       "purgeWarningDescription": "This permanently deletes all of your planner data immediately. This action cannot be undone.",
       "purgeConfirmLabel": "Type \"{{word}}\" to enable the purge action",

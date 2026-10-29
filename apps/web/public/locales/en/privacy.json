@@ -4,7 +4,7 @@
   "sections": {
     "signIn": {
       "title": "Signing in",
-      "body": "Sign-in is handled by Microsoft Entra External ID. The planner never sees your password. It keeps the sign-in identifier Microsoft returns, the planner name you choose, and when you last used the planner."
+      "body": "Sign-in is handled by Microsoft Entra External ID. The planner never sees your password. It keeps the sign-in identifier Microsoft returns, the planner name you choose, and when you last used the planner. If you sign in with Google, Google shares your name and email address with Microsoft to sign you in. Your account menu shows your email and which sign-in method you used; the planner reads them from your sign-in and does not store them."
     },
     "apiKey": {
       "title": "Your Tacticus API key",

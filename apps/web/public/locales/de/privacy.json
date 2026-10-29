@@ -4,7 +4,7 @@
   "sections": {
     "signIn": {
       "title": "Anmeldung",
-      "body": "Die Anmeldung läuft über Microsoft Entra External ID. Der Planer sieht dein Passwort nie. Er speichert die Anmeldekennung, die Microsoft zurückgibt, den Planer-Namen, den du wählst, und wann du den Planer zuletzt genutzt hast."
+      "body": "Die Anmeldung läuft über Microsoft Entra External ID. Der Planer sieht dein Passwort nie. Er speichert die Anmeldekennung, die Microsoft zurückgibt, den Planer-Namen, den du wählst, und wann du den Planer zuletzt genutzt hast. Wenn du dich mit Google anmeldest, teilt Google deinen Namen und deine E-Mail-Adresse mit Microsoft, um dich anzumelden. Dein Kontomenü zeigt deine E-Mail-Adresse und die verwendete Anmeldemethode; der Planer liest sie aus deiner Anmeldung und speichert sie nicht."
     },
     "apiKey": {
       "title": "Dein Tacticus-API-Schlüssel",

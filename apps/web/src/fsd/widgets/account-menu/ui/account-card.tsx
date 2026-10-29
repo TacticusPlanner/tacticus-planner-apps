@@ -14,6 +14,8 @@ import { Separator } from "@workspace/ui/components/separator"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { cn } from "@workspace/ui/lib/utils"
 
+import type { SignInMethod } from "@/shared/auth"
+
 import { AccountAvatar } from "./account-avatar"
 import {
   LanguagePickerView,
@@ -48,10 +50,12 @@ export function AccountCard({
   onOpenAccountSettings,
   onExternalLink,
   onSignOut,
+  signInMethod,
   signOutDisabled,
   tourRow,
 }: {
-  accountEmail: string
+  /** Null for a Google account whose token carries no `email` claim: its username is a generated id. */
+  accountEmail: string | null
   accountName: string
   applicationAccountId: string | null
   canEditName: boolean
@@ -73,6 +77,7 @@ export function AccountCard({
   /** Closes the menu when a row leaves it (Roadmap, Privacy & cookies, Terms of use). */
   onExternalLink?: () => void
   onSignOut: () => void
+  signInMethod: SignInMethod
   signOutDisabled: boolean
   /** Extra row after Send feedback (the mobile drawer has no rail, so it adds the tour here). */
   tourRow?: ReactNode
@@ -115,11 +120,19 @@ export function AccountCard({
             <div className="truncate font-medium" title={accountName}>
               {accountName}
             </div>
+            {accountEmail ? (
+              <div
+                className="truncate text-xs text-muted-foreground"
+                title={accountEmail}
+              >
+                {accountEmail}
+              </div>
+            ) : null}
             <div
               className="truncate text-xs text-muted-foreground"
-              title={accountEmail}
+              data-testid="auth-account-sign-in-method"
             >
-              {accountEmail}
+              {t(`auth.signedInWith.${signInMethod}`)}
             </div>
           </div>
         )}

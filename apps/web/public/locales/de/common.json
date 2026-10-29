@@ -17,7 +17,11 @@
     "signOut": "Abmelden",
     "userMenu": "Kontomenü",
     "preferences": "Voreinstellungen",
-    "accountSettings": "Kontoeinstellungen"
+    "accountSettings": "Kontoeinstellungen",
+    "signedInWith": {
+      "google": "Mit Google angemeldet",
+      "email": "Mit E-Mail angemeldet"
+    }
   },
   "catalog": {
     "badge": {
@@ -90,6 +94,13 @@
       }
     },
     "account": {
+      "signInMethod": "Anmeldemethode",
+      "signInMethods": {
+        "google": "Google",
+        "email": "E-Mail und Passwort"
+      },
+      "email": "E-Mail",
+      "signInMethodNote": "Jede E-Mail-Adresse funktioniert nur mit einer Anmeldemethode, melde dich also immer auf diese Weise an. Konten verschiedener Methoden lassen sich nicht zusammenführen.",
       "purgeWarningTitle": "Konto löschen",
       "purgeWarningDescription": "Dies löscht sofort und unwiderruflich alle deine Planner-Daten. Diese Aktion kann nicht rückgängig gemacht werden.",
       "purgeConfirmLabel": "Gib „{{word}}“ ein, um die Löschung zu aktivieren",

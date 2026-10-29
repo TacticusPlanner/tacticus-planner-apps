@@ -25,7 +25,7 @@ The app SHALL serve a privacy page titled "Privacy & cookies" (matching the Micr
 The page SHALL be localized in every supported locale and SHALL state, in plain language, with a "last updated" date:
 
 - that Tacticus Planner is an unofficial, open-source fan project and who to contact (the Discord server and the GitHub organization);
-- that sign-in is handled by Microsoft Entra External ID, and the planner keeps only the sign-in identifier it returns, a display name, and a last-seen time, not a password;
+- that sign-in is handled by Microsoft Entra External ID, and the planner keeps only the sign-in identifier it returns, a display name, and a last-seen time, not a password; that Google sign-in shares the user's name and email with Microsoft; and that the account menu shows the email and sign-in method read from the sign-in, which the planner does not store;
 - that a Tacticus API key the user provides is stored encrypted and used only to read the user's game and guild data from the Tacticus API;
 - that the planner stores the user's synced game data, goals, projects, event plans, guild data and settings so the planner works across devices, and keeps a copy in the browser's local storage;
 - that the planner sets no advertising cookies and keeps the sign-in session, language and theme preferences and the local copy of planner data in browser storage; that, for signed-in users only, PostHog analytics keeps its pseudonymous id in a first-party cookie and local storage; and that Microsoft's sign-in pages set their own cookies;

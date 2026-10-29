@@ -4,7 +4,7 @@
   "sections": {
     "signIn": {
       "title": "Inicio de sesión",
-      "body": "El inicio de sesión lo gestiona Microsoft Entra External ID. El planificador nunca ve tu contraseña. Guarda el identificador de inicio de sesión que devuelve Microsoft, el nombre de planificador que elijas y cuándo usaste el planificador por última vez."
+      "body": "El inicio de sesión lo gestiona Microsoft Entra External ID. El planificador nunca ve tu contraseña. Guarda el identificador de inicio de sesión que devuelve Microsoft, el nombre de planificador que elijas y cuándo usaste el planificador por última vez. Si inicias sesión con Google, Google comparte tu nombre y tu correo con Microsoft para iniciar tu sesión. El menú de tu cuenta muestra tu correo y el método de inicio de sesión que usaste; el planificador los lee de tu inicio de sesión y no los guarda."
     },
     "apiKey": {
       "title": "Tu clave API de Tacticus",

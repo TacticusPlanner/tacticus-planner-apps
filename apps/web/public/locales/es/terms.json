@@ -8,7 +8,7 @@
     },
     "account": {
       "title": "Tu cuenta",
-      "body": "Inicias sesión con Microsoft Entra External ID y eres responsable de mantener segura esa cuenta. Añade solo una clave API de Tacticus que sea tuya o que su propietario te haya permitido usar. Puedes eliminar tu cuenta cuando quieras en Ajustes de la cuenta."
+      "body": "Inicias sesión con Microsoft Entra External ID y eres responsable de mantener segura esa cuenta. Cada dirección de correo funciona con un solo método de inicio de sesión, el que usaste al registrarte (correo y contraseña, o Google); iniciar sesión con otro método para el mismo correo no funcionará y las cuentas no se pueden fusionar. Añade solo una clave API de Tacticus que sea tuya o que su propietario te haya permitido usar. Puedes eliminar tu cuenta cuando quieras en Ajustes de la cuenta."
     },
     "acceptableUse": {
       "title": "Uso aceptable",

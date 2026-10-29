@@ -144,8 +144,10 @@ function createMsalConfig(): Configuration {
 }
 
 export const loginRequest: RedirectRequest = {
+  // `email` is the OpenID scope that lets Entra put the `email` optional claim in the ID token; MSAL only adds
+  // openid/profile/offline_access on its own.
   get scopes() {
-    return [getRequiredEnvironmentValue("VITE_API_SCOPE")]
+    return [getRequiredEnvironmentValue("VITE_API_SCOPE"), "email"]
   },
 }
 
