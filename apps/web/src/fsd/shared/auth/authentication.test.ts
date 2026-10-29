@@ -94,7 +94,7 @@ describe("authentication", () => {
   })
 
   it("resolves the API scope only when it is accessed", () => {
-    expect(auth.loginRequest.scopes).toEqual(["api://planner/access"])
+    expect(auth.loginRequest.scopes).toEqual(["api://planner/access", "email"])
     expect(mocks.environment).toHaveBeenCalledWith("VITE_API_SCOPE")
   })
 
@@ -173,13 +173,13 @@ describe("authentication", () => {
     await expect(auth.acquireAccessToken()).resolves.toBe("token")
     expect(mocks.instance.acquireTokenSilent).toHaveBeenCalledWith({
       account,
-      scopes: ["api://planner/access"],
+      scopes: ["api://planner/access", "email"],
     })
 
     await auth.requestInteraction()
     expect(mocks.instance.acquireTokenRedirect).toHaveBeenCalledWith({
       account,
-      scopes: ["api://planner/access"],
+      scopes: ["api://planner/access", "email"],
     })
   })
 
@@ -238,7 +238,7 @@ describe("authentication", () => {
       await Promise.all([auth.requestInteraction(), auth.requestInteraction()])
 
       expect(mocks.instance.loginRedirect).toHaveBeenCalledExactlyOnceWith({
-        scopes: ["api://planner/access"],
+        scopes: ["api://planner/access", "email"],
         loginHint: "user@example.test",
       })
     })
@@ -315,7 +315,7 @@ describe("authentication", () => {
       await expect(token).resolves.toBe("fresh")
       expect(mocks.instance.acquireTokenSilent).toHaveBeenLastCalledWith({
         account,
-        scopes: ["api://planner/access"],
+        scopes: ["api://planner/access", "email"],
       })
     })
 
@@ -337,7 +337,7 @@ describe("authentication", () => {
       expect(mocks.instance.acquireTokenSilent).toHaveBeenLastCalledWith({
         account,
         cacheLookupPolicy: 1,
-        scopes: ["api://planner/access"],
+        scopes: ["api://planner/access", "email"],
       })
       expect(mocks.instance.ssoSilent).toHaveBeenCalledOnce()
     })
@@ -377,7 +377,7 @@ describe("authentication", () => {
       expect(mocks.instance.acquireTokenSilent).toHaveBeenCalledWith({
         account: cachedAccount,
         cacheLookupPolicy: 1,
-        scopes: ["api://planner/access"],
+        scopes: ["api://planner/access", "email"],
       })
       expect(mocks.instance.ssoSilent).not.toHaveBeenCalled()
       expect(mocks.instance.setActiveAccount).toHaveBeenCalledWith(
@@ -398,7 +398,7 @@ describe("authentication", () => {
         auth.attemptSilentSignIn(mocks.instance as never)
       ).resolves.toBe("success")
       expect(mocks.instance.ssoSilent).toHaveBeenCalledExactlyOnceWith({
-        scopes: ["api://planner/access"],
+        scopes: ["api://planner/access", "email"],
         loginHint: "user@example.test",
       })
       expect(mocks.instance.setActiveAccount).toHaveBeenCalledWith(restored)
@@ -424,7 +424,7 @@ describe("authentication", () => {
       ).resolves.toBe("success")
       expect(mocks.instance.ssoSilent).toHaveBeenCalledWith({
         account: cachedAccount,
-        scopes: ["api://planner/access"],
+        scopes: ["api://planner/access", "email"],
       })
       expect(mocks.instance.setActiveAccount).toHaveBeenCalledWith(
         restoredAccount
