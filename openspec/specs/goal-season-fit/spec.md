@@ -103,9 +103,17 @@ Assumptions:
 
 ### Requirement: A divider marks the season cut-off
 
-With a mode on and Group set to None, the list SHALL render a divider immediately before the first eligible goal in display order (account-wide priority order) whose offset is 1 or more. The divider SHALL read "{season} ends {date}. The next goal finishes later." for Battle Pass and Guild Raid, and "{season} starts {date}. The next goal finishes after it." for Guild War, where {season} includes the season number when known. When every eligible goal has offset 0 there SHALL be no divider. When no goal is eligible there SHALL be no divider. With Group set to Type or Unit there SHALL be no divider (labels and accents still show). The divider SHALL NOT be draggable or selectable and SHALL NOT change the priority order or the drag targets; during a drag it stays where it was and moves after the drop.
+With a mode on and Group set to None, the list SHALL render a divider immediately before the first eligible goal in display order (account-wide priority order) whose offset is 1 or more. The divider SHALL read "{season} ends {date}. The next goal finishes later." for Battle Pass and Guild Raid, and "{season} starts {date}. The next goal finishes after it." for Guild War, where {season} includes the season number when known.
 
-On desktop the divider SHALL be a full-width table row spanning every column. On mobile it SHALL be a list item between cards, and SHALL also appear in mobile reorder mode.
+- When every eligible goal has offset 0, or when no goal is eligible, there SHALL be no divider.
+- With Group set to Type or Unit there SHALL be no divider, though labels and accents still show.
+- The divider SHALL NOT be draggable or selectable and SHALL NOT change the priority order or the drag targets. During a drag it stays where it was, and it moves after the drop.
+
+Where the divider renders depends on the view:
+
+- In Table view, at every width, it SHALL be a full-width table row spanning every column.
+- In desktop Cards view it SHALL span the full width of the grid. The goal after it starts a new grid row, and the cards before it keep their places in the rows above.
+- In Cards view below 768px it SHALL be a list item between cards, and it SHALL also appear in mobile reorder mode.
 
 #### Scenario: Divider before the first spilling goal
 
@@ -122,7 +130,13 @@ On desktop the divider SHALL be a full-width table row spanning every column. On
 #### Scenario: Grouped list
 
 - **WHEN** Group is Type
-- **THEN** no divider renders and each eligible row still shows its label and accent
+- **THEN** no divider renders and each eligible row or card still shows its label and accent
+
+#### Scenario: Desktop Cards view divider
+
+- **GIVEN** the same goals in desktop Cards view at a width showing three cards per row
+- **WHEN** the list renders
+- **THEN** A and B sit in the first grid row, the divider spans the full grid width beneath them, and C starts the next grid row followed by D
 
 #### Scenario: Mobile divider
 

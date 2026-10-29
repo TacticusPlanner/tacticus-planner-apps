@@ -19,6 +19,7 @@ export function useGoalsOverviewTutorial() {
         | "statusFilter"
         | "filters"
         | "seasonFit"
+        | "viewToggle"
         | "select"
         | "bulkActions"
         | "createGoal"
@@ -44,11 +45,13 @@ export function useGoalsOverviewTutorial() {
       createStep('[data-testid="goals-planning-settings"]', "planningSettings"),
       createStep('[data-testid="goals-page"]', "list"),
     ]
-    // Desktop rows carry a drag handle directly; mobile has a dedicated reorder mode, so the
-    // reprioritize step targets different markup with the same content.
+    // Desktop rows and cards carry a drag handle directly; mobile has a dedicated reorder mode, so the
+    // reprioritize step targets different markup with the same content. The handle and select-all
+    // targets exist in both views.
     return {
       desktop: [
         ...before,
+        createStep('[data-testid="goals-view-toggle"]', "viewToggle"),
         createStep('[data-testid="goal-row-drag-handle"]', "reprioritize"),
         createStep('[data-testid="goals-select-all"]', "select"),
         createStep('[data-testid="goals-bulk-actions"]', "bulkActions"),
@@ -56,6 +59,7 @@ export function useGoalsOverviewTutorial() {
       ],
       mobile: [
         ...before,
+        createStep('[data-testid="goals-view-toggle"]', "viewToggle"),
         createStep(
           '[data-testid="goals-mobile-reorder-toggle"]',
           "reprioritize"

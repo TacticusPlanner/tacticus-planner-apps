@@ -46,16 +46,19 @@ function displayPercent(ratio: number): number {
 /** One pill per ability track still being raised: an uppercase label, the current level, an arrow and
  *  the emphasised target. A Machine of War's tracks are Primary/Secondary, a Character's are
  *  Active/Passive (`active*` fields hold the first track, `passive*` the second, for both). A track at
- *  or above its target gets no pill. */
+ *  or above its target gets no pill. `blocks` draws them as V1's goal card did: soft blocks sharing the
+ *  row's width, label left and levels right. */
 function AbilityTargetPills({
   progress,
   entityType,
+  blocks = false,
 }: {
   progress: Pick<
     Extract<GoalProgress, { kind: "Ability" }>,
     "currentActive" | "targetActive" | "currentPassive" | "targetPassive"
   >
   entityType?: string
+  blocks?: boolean
 }) {
   const { t } = useTranslation()
   const mow = entityType === "Mow"
@@ -73,21 +76,28 @@ function AbilityTargetPills({
   ].filter((track) => track.target > track.current)
 
   return (
-    <span className="flex flex-wrap items-center gap-1.5">
+    <span
+      className={cn("flex flex-wrap items-center gap-1.5", blocks && "w-full")}
+    >
       {tracks.map((track) => (
         <span
-          className="inline-flex items-center gap-1 rounded-md bg-muted px-1.5 py-0.5 text-xs"
+          className={cn(
+            "inline-flex items-center gap-1 rounded-md bg-muted px-1.5 py-0.5 text-xs",
+            blocks && "flex-1 justify-between rounded-lg px-2 py-1"
+          )}
           data-testid={`goal-ability-pill-${track.key}`}
           key={track.key}
         >
           <span className="font-medium tracking-wide text-muted-foreground uppercase">
             {t(`goals.overview.abilityTrack.${track.key}`)}
           </span>
-          <span className="text-muted-foreground tabular-nums">
-            {track.current}
+          <span className="inline-flex items-center gap-1">
+            <span className="text-muted-foreground tabular-nums">
+              {track.current}
+            </span>
+            <ArrowRight aria-hidden="true" className="size-3" />
+            <span className="font-semibold tabular-nums">{track.target}</span>
           </span>
-          <ArrowRight aria-hidden="true" className="size-3" />
-          <span className="font-semibold tabular-nums">{track.target}</span>
         </span>
       ))}
     </span>
@@ -181,6 +191,26 @@ function GoalTargetPreviewDisplay({
   }
 }
 
+/** The once-per-list Actual/Potential key (goal-list-layout: never repeated per row or card). */
+export function ProgressLegend() {
+  const { t } = useTranslation()
+  return (
+    <div
+      className="flex items-center gap-4 text-xs text-muted-foreground"
+      data-testid="goals-progress-legend"
+    >
+      <span className="flex items-center gap-1.5">
+        <ProgressSwatch variant="actual" />
+        {t("goals.overview.actualProgress")}
+      </span>
+      <span className="flex items-center gap-1.5">
+        <ProgressSwatch variant="potential" />
+        {t("goals.overview.potentialProgress")}
+      </span>
+    </div>
+  )
+}
+
 /** The goal's own from → target representation (Rank/Ascension badges, "Lv 44 → 50", "273 / 500
  *  shards", …) — split out from the progress bar/percent/explanation (`GoalProgressDisplay`) so a
  *  caller can lay the two out independently (the desktop table's separate Goal/Progress columns; the
@@ -191,12 +221,15 @@ export function GoalTargetDisplay({
   progress,
   entityType,
   size = "md",
+  abilityBlocks = false,
 }: {
   progress: GoalProgress
   /** Picks the Ability track labels (Machine of War: Primary/Secondary; otherwise Active/Passive). */
   entityType?: string
   /** `lg` (desktop table) enlarges the rank and rarity emblems so the target reads at a glance. */
   size?: "md" | "lg"
+  /** Ability tracks as full-width blocks (the goal card) instead of compact pills (the table). */
+  abilityBlocks?: boolean
 }) {
   const { t } = useTranslation()
   const large = size === "lg"
@@ -245,7 +278,11 @@ export function GoalTargetDisplay({
       <ProgressionBadge size={size} value={progress.target} />
     </span>
   ) : progress.kind === "Ability" ? (
-    <AbilityTargetPills entityType={entityType} progress={progress} />
+    <AbilityTargetPills
+      blocks={abilityBlocks}
+      entityType={entityType}
+      progress={progress}
+    />
   ) : progress.kind === "Unlock" ? (
     // The owned / required shard count lives in the Progress cell (`GoalProgressDisplay`).
     <span>{t("goals.create.goalTypes.Unlock")}</span>

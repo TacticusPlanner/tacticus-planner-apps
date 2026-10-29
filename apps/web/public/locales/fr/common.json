@@ -1771,6 +1771,11 @@
       "goalLimitReached": "Vous avez déjà {{max}} objectifs de type {{type}} non archivés. Archivez ou supprimez-en d'abord.",
       "goalLimitReachedGeneric": "Vous pouvez avoir au plus {{max}} objectifs non archivés d'un même type. Archivez ou supprimez-en d'abord.",
       "projectLimitReached": "Vous avez déjà {{max}} projets non archivés. Archivez-en un pour faire de la place."
+    },
+    "view": {
+      "label": "Affichage des objectifs",
+      "cards": "Cartes",
+      "table": "Tableau"
     }
   },
   "language": {
@@ -1907,6 +1912,10 @@
         "seasonFit": {
           "title": "Calage sur la saison",
           "content": "Choisissez une saison de Passe de combat, de Raid de guilde ou de Guerre de guilde pour voir quels objectifs seront terminés à temps. Une ligne indique où les objectifs débordent sur la saison suivante."
+        },
+        "viewToggle": {
+          "title": "Cartes ou tableau",
+          "content": "Passe des cartes d'objectifs au tableau compact. Ton choix est enregistré sur cet appareil."
         }
       }
     },

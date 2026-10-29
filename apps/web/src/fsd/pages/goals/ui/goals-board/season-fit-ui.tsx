@@ -75,7 +75,8 @@ export function SeasonCutoffRow({
   )
 }
 
-/** Mobile season cut-off: a list item between cards (also in reorder mode). */
+/** Card-list season cut-off: a list item between cards (also in mobile reorder mode). In the cards grid
+ *  it spans every column, so the goal after it starts a new grid row. */
 export function SeasonCutoffItem({
   seasonFit,
 }: {
@@ -83,7 +84,7 @@ export function SeasonCutoffItem({
 }) {
   const text = useCutoffText(seasonFit)
   return (
-    <li data-testid="goals-season-cutoff">
+    <li className="col-span-full" data-testid="goals-season-cutoff">
       <SeasonCutoffLine text={text} />
     </li>
   )
