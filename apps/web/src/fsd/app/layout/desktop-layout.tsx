@@ -14,7 +14,6 @@ import {
   SidebarProvider,
   useSidebar,
 } from "@workspace/ui/components/sidebar"
-import { Spinner } from "@workspace/ui/components/spinner"
 import { PlayerDataSyncButton } from "@/widgets/account-menu"
 import { isMacPlatform } from "@/shared/lib"
 import { PageTourButton, TourButton } from "@/shared/tour"
@@ -26,21 +25,9 @@ import { matchesNavPath } from "./find-active-child"
 import { NavLiveDot } from "./nav-live-dot"
 import type { NavItem } from "./nav-items"
 import type { QuickActionsController } from "./quick-actions"
+import { RouteLoadingFill } from "./route-loading-fill"
 import { SkipLink } from "./skip-link"
 import { useFocusPageHeadingOnNavigate } from "./use-focus-page-heading"
-
-function LoadingFill() {
-  const { t } = useTranslation()
-  return (
-    <div
-      aria-label={t("common.loading")}
-      className="flex flex-1 items-center justify-center"
-      role="status"
-    >
-      <Spinner aria-hidden="true" className="size-8 text-primary" />
-    </div>
-  )
-}
 
 export function DesktopShell({
   activeSection,
@@ -173,7 +160,7 @@ export function DesktopShell({
                 id="main"
                 tabIndex={-1}
               >
-                <Suspense fallback={<LoadingFill />}>
+                <Suspense fallback={<RouteLoadingFill />}>
                   <Outlet />
                 </Suspense>
               </main>

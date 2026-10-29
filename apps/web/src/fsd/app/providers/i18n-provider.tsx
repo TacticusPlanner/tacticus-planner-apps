@@ -14,7 +14,7 @@ type I18nProviderProps = {
 export function I18nProvider({ children }: I18nProviderProps) {
   return (
     <I18nextProvider i18n={i18n}>
-      {/* The same indicator as the auth check, instead of a blank page while translations load. */}
+      {/* The boot screen, as for the auth check, instead of a blank page while translations load. */}
       <React.Suspense fallback={<AuthResolving />}>{children}</React.Suspense>
     </I18nextProvider>
   )

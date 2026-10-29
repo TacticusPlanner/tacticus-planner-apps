@@ -1,11 +1,15 @@
-import type { ReactNode } from "react"
+import { useEffect, type ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import { Navigate, useLocation } from "react-router"
 import { Button } from "@workspace/ui/components/button"
-import { Spinner } from "@workspace/ui/components/spinner"
 import { useMsal } from "@azure/msal-react"
 
-import { isAccountSetupComplete, useCurrentUser } from "@/entities/account"
+import {
+  isAccountSetupComplete,
+  readSetupCompleteHint,
+  rememberSetupState,
+  useCurrentUser,
+} from "@/entities/account"
 import {
   signOut,
   useActiveAccountId,
@@ -13,6 +17,7 @@ import {
 } from "@/shared/auth"
 
 import { SETUP_STEP_PATHS } from "./account-setup-routes"
+import { BootScreen } from "./boot-screen"
 import { useDelayedFlag } from "./use-delayed-flag"
 
 // A healthy /account answers in well under a second; past this, say so rather than look frozen.
@@ -28,7 +33,7 @@ function logApiAccessError(error: unknown) {
  * because GET /api/v1/account provisions a first-time caller's Account/Profile; mounting child routes before it
  * succeeds can race their profile-scoped requests and produce misleading 404 responses.
  *
- * Only a definitive answer redirects. The loading branch renders a spinner, and the error branch blocks
+ * Only a definitive answer redirects. The loading branch renders the boot screen, and the error branch blocks
  * with a retry — neither navigates, because `/setup` sends configured users back here and two guards
  * acting on an indeterminate state would bounce the user between them. Blocking (rather than failing
  * open) on error matters because an indeterminate state must not be read as "onboarding complete": that
@@ -41,14 +46,25 @@ export function OnboardingGate({ children }: { children: ReactNode }) {
   const { state, refetch } = useCurrentUser()
   const location = useLocation()
   // An expired/revoked session is not an outage: start the in-app re-authentication redirect
-  // (which returns to this URL) and keep the spinner up instead of offering Retry / Sign out.
+  // (which returns to this URL) and keep the boot screen up instead of offering Retry / Sign out.
   const reauthenticating = useRequestApiAccessOnce(
     state.status === "error" ? state.error : undefined,
     logApiAccessError
   )
 
+  // An account that already finished setup on this device does not wait for GET /account again: it
+  // exists, so its pages cannot race the provisioning call, and the gate still redirects if the
+  // answer turns out otherwise (spec: onboarding-gate, returning users).
+  const knownComplete = readSetupCompleteHint(accountId)
+  const user = state.status === "success" ? state.user : undefined
+  useEffect(() => {
+    if (accountId && user) rememberSetupState(accountId, user)
+  }, [accountId, user])
+
   const waiting =
-    state.status === "idle" || state.status === "loading" || reauthenticating
+    ((state.status === "idle" || state.status === "loading") &&
+      !knownComplete) ||
+    reauthenticating
   const slow = useDelayedFlag(
     waiting && !reauthenticating,
     ACCOUNT_GATE_SLOW_MS
@@ -56,29 +72,21 @@ export function OnboardingGate({ children }: { children: ReactNode }) {
 
   if (waiting) {
     return (
-      <div className="flex min-h-svh items-center justify-center p-6">
-        <div
-          aria-live="polite"
-          className="flex max-w-sm flex-col items-center gap-3 text-center"
-          data-testid="account-gate-loading"
-          role="status"
-        >
-          <Spinner aria-hidden="true" className="size-8 text-primary" />
-          <p className="text-sm font-medium">
-            {reauthenticating
-              ? t("accountGate.reauthenticating")
-              : t("accountGate.loading")}
+      <BootScreen testId="account-gate-loading">
+        <p className="text-sm font-medium">
+          {reauthenticating
+            ? t("accountGate.reauthenticating")
+            : t("accountGate.loading")}
+        </p>
+        {slow ? (
+          <p
+            className="text-sm text-muted-foreground"
+            data-testid="account-gate-slow"
+          >
+            {t("accountGate.slow")}
           </p>
-          {slow ? (
-            <p
-              className="text-sm text-muted-foreground"
-              data-testid="account-gate-slow"
-            >
-              {t("accountGate.slow")}
-            </p>
-          ) : null}
-        </div>
-      </div>
+        ) : null}
+      </BootScreen>
     )
   }
 

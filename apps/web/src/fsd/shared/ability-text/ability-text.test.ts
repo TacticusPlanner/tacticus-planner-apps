@@ -77,6 +77,37 @@ describe("parseAbilityText", () => {
     expect(ast[2]?.type).toBe("styled")
   })
 
+  it("tolerates a style name with a single stray quote", () => {
+    const ast = parseAbilityText(
+      'gains <style=Buff_Infiltrate">Infiltrate</style> then <style="Charging>charges</style>'
+    )
+    const styled = ast.filter((n): n is StyledNode => n.type === "styled")
+    expect(styled.map((n) => n.styleName)).toEqual([
+      "Buff_Infiltrate",
+      "Charging",
+    ])
+  })
+
+  it("does not let a style missing its closing quote swallow later tags", () => {
+    const ast = parseAbilityText(
+      '<style="Charging>charges</style> then <style=Buff_Infiltrate">Infiltrate</style>'
+    )
+    expect(ast.map((node) => node.type)).toEqual(["styled", "text", "styled"])
+    expect((ast[0] as StyledNode).children).toEqual([
+      { type: "text", value: "charges" },
+    ])
+    expect(ast[1]).toEqual({ type: "text", value: " then " })
+  })
+
+  it("matches style tags in any case", () => {
+    const ast = parseAbilityText(
+      'adjacent to <Style="Faction_Genestealers">Xybia</style>'
+    )
+    const node = ast[1] as StyledNode
+    expect(node.type).toBe("styled")
+    expect(node.styleName).toBe("Faction_Genestealers")
+  })
+
   it("throws on an unmatched closing tag", () => {
     expect(() => parseAbilityText("plain</style>")).toThrow()
   })

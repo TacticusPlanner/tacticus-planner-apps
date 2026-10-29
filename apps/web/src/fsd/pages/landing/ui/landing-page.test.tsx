@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 
 const signIn = vi.fn()
 const signInState = vi.fn(() => ({ checkingSignIn: false, disabled: false }))
+const isAuthenticated = vi.fn(() => false)
 
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
@@ -11,6 +12,10 @@ vi.mock("react-i18next", () => ({
 
 vi.mock("@/shared/auth", () => ({
   useSignInRedirect: () => ({ ...signInState(), signIn }),
+}))
+
+vi.mock("@azure/msal-react", () => ({
+  useIsAuthenticated: () => isAuthenticated(),
 }))
 
 import { LandingPage } from "./landing-page"
@@ -27,6 +32,7 @@ describe("LandingPage", () => {
   beforeEach(() => {
     signIn.mockClear()
     signInState.mockReturnValue({ checkingSignIn: false, disabled: false })
+    isAuthenticated.mockReturnValue(false)
   })
 
   it("has one level-1 headline", () => {
@@ -62,6 +68,18 @@ describe("LandingPage", () => {
     expect(
       screen.getByRole("button", { name: "hero.getStarted" })
     ).toBeDisabled()
+  })
+
+  it("offers a signed-in visitor the planner instead of sign-in", () => {
+    isAuthenticated.mockReturnValue(true)
+    renderLanding()
+
+    expect(
+      screen.getByRole("link", { name: "common:publicSite.openPlanner" })
+    ).toHaveAttribute("href", "/home")
+    expect(
+      screen.queryByRole("button", { name: "hero.getStarted" })
+    ).not.toBeInTheDocument()
   })
 
   it("links the secondary action to the Library", () => {
