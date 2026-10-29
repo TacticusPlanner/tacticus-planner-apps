@@ -34,7 +34,7 @@ Every wait before the first real content SHALL show the same boot screen: transl
 
 ### Requirement: Home shows a skeleton while its page loads
 
-While the lazy Home page is loading, the shell SHALL show a skeleton of Home's layout in its place: Right now, then Daily raids, Projects and Upcoming events (stacked below `lg`, three columns from `lg`), then the calendar. Other pages SHALL keep the centred loading spinner.
+While the lazy Home page is loading, the shell SHALL show a skeleton of Home's layout in its place: Right now, then Daily raids, Upcoming events and Projects stacked below `lg` (Daily raids, Projects and Upcoming events in three columns from `lg`), then the calendar. Other pages SHALL keep the centred loading spinner.
 
 #### Scenario: Home chunk still downloading
 

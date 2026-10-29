@@ -51,8 +51,8 @@ function SkeletonCard({
   )
 }
 
-/** Mirrors pages/home's HomePage: Right now, then Raids / Projects / Upcoming (side by side from lg,
- *  in that order), then the calendar. */
+/** Mirrors pages/home's HomePage: Right now, then Raids / Upcoming / Projects (stacked; from lg side
+ *  by side as Raids, Projects, Upcoming), then the calendar. */
 function HomeSkeleton({ label }: { label: string }) {
   return (
     <PageContainer aria-label={label} data-testid="home-skeleton" role="status">
@@ -69,9 +69,15 @@ function HomeSkeleton({ label }: { label: string }) {
         </CardContent>
       </Card>
       <div className="grid grid-cols-1 items-start gap-4 lg:grid-cols-3">
-        <SkeletonCard rowClassName="h-12 w-full rounded-lg" rows={3} />
-        <SkeletonCard rowClassName="h-12 w-full rounded-lg" rows={2} />
-        <SkeletonCard rowClassName="h-12 w-full rounded-lg" rows={3} />
+        <div className="min-w-0 lg:order-1">
+          <SkeletonCard rowClassName="h-12 w-full rounded-lg" rows={3} />
+        </div>
+        <div className="min-w-0 lg:order-3">
+          <SkeletonCard rowClassName="h-12 w-full rounded-lg" rows={3} />
+        </div>
+        <div className="min-w-0 lg:order-2">
+          <SkeletonCard rowClassName="h-12 w-full rounded-lg" rows={2} />
+        </div>
       </div>
       <SkeletonCard rowClassName="h-40 w-full rounded-lg" rows={1} />
     </PageContainer>
