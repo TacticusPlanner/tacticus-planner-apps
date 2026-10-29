@@ -78,7 +78,11 @@ vi.mock("@/features/account", () => ({
 
 vi.mock("@/shared/auth", async () => {
   const { useEffect, useRef } = await import("react")
+  const identity =
+    await vi.importActual<typeof import("@/shared/auth")>("@/shared/auth")
   return {
+    getAccountEmail: identity.getAccountEmail,
+    getSignInMethod: identity.getSignInMethod,
     loginRequest: { scopes: ["api"] },
     signOut: (...args: unknown[]) => signOut(...args),
     useSilentSignInStatus: () => silentSignInStatus(),

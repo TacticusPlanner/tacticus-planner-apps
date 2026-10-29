@@ -6,6 +6,7 @@ import "@workspace/ui/globals.css"
 import { App } from "@/app"
 import { AuthProvider, I18nProvider, QueryProvider } from "@/app/providers"
 import { installPreloadErrorRecovery } from "@/app/stale-build-recovery"
+import { listenForInstallPrompt } from "@/widgets/app-install"
 import { initializeAuthentication, startSilentSignInOnce } from "@/shared/auth"
 import { installGlobalErrorCapture } from "@/shared/lib"
 import { ThemeProvider } from "@/shared/theme"
@@ -15,6 +16,8 @@ import { TourProvider } from "@/shared/tour"
 installPreloadErrorRecovery()
 // Every error nothing else caught is logged once and reported (spec: client-error-reporting).
 installGlobalErrorCapture()
+// Chromium offers its install prompt early, often before React mounts: hold it for the Install button.
+listenForInstallPrompt()
 
 async function bootstrap() {
   const msalInstance = await initializeAuthentication()

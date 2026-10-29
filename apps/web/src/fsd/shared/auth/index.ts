@@ -10,3 +10,8 @@ export { useRequestApiAccessOnce } from "./use-request-api-access-once"
 export { signOut } from "./sign-out"
 export { startSilentSignInOnce, useSilentSignInStatus } from "./silent-sign-in"
 export { useSignInRedirect } from "./use-sign-in-redirect"
+export {
+  getAccountEmail,
+  getSignInMethod,
+  type SignInMethod,
+} from "./account-identity"

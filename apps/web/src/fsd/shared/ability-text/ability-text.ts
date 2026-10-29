@@ -275,8 +275,11 @@ export type AstNode = TextNode | VariableNode | StyledNode
 
 // `<link="tooltip:Keywords/X">…</link>` is a keyword cross-reference in the game client. There is
 // nothing to link to here, so the tags are dropped and their already-styled inner text kept.
+// Game data ships typos, so tag names match in any case (`<Style=…>`, Genestealers Xybia) and the
+// bare form tolerates a lone quote on either side (`<style=Buff_Infiltrate">`, Blood Angels Dante).
+// No style value spans `<` or `>`, so a tag missing its closing quote cannot swallow later tags.
 const TOKEN_RE =
-  /(<style="[^"]*">|<style=\{[^}]+\}>|<style=[^"{}<>]+>|<\/style>|<link="[^"]*">|<link=[^"<>]+>|<\/link>|<i>|<\/i>|\{[^}]+\})/g
+  /(<style="[^"<>]*">|<style=\{[^}]+\}>|<style="?[^"{}<>]+"?>|<\/style>|<link="[^"]*">|<link=[^"<>]+>|<\/link>|<i>|<\/i>|\{[^}]+\})/gi
 
 function parseToken(
   raw: string
@@ -285,15 +288,16 @@ function parseToken(
   | { close: true }
   | { skip: true }
   | { variable: string } {
-  if (raw === "</style>" || raw === "</i>") return { close: true }
+  const tag = raw.toLowerCase()
+  if (tag === "</style>" || tag === "</i>") return { close: true }
   // Link tags carry no styling of their own: skip the tag, keep the contents inline.
-  if (raw === "</link>" || /^<link=/.test(raw)) return { skip: true }
-  if (raw === "<i>") return { open: "__italic__" }
-  const openQuoted = /^<style="([^"]*)">\s*$/.exec(raw)
+  if (tag === "</link>" || tag.startsWith("<link=")) return { skip: true }
+  if (tag === "<i>") return { open: "__italic__" }
+  const openQuoted = /^<style="([^"<>]*)">\s*$/i.exec(raw)
   if (openQuoted) return { open: openQuoted[1] }
-  const openDynamic = /^<style=\{([^}]+)\}>\s*$/.exec(raw)
+  const openDynamic = /^<style=\{([^}]+)\}>\s*$/i.exec(raw)
   if (openDynamic) return { open: openDynamic[1], isDynamic: true }
-  const openBare = /^<style=([^"{}<>]+)>\s*$/.exec(raw)
+  const openBare = /^<style="?([^"{}<>]+)"?>\s*$/i.exec(raw)
   if (openBare) return { open: openBare[1] }
   const variableMatch = /^\{([^}]+)\}$/.exec(raw)
   if (variableMatch) return { variable: variableMatch[1] ?? "" }

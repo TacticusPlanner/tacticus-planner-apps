@@ -7,7 +7,8 @@ export function AppLogo({ className }: { className?: string }) {
     <img
       aria-hidden="true"
       className={className}
-      src="/favicon-96x96.png"
+      // The full logo; the tab favicon is the badge without its lettering, which reads better at 16px.
+      src="/web-app-manifest-192x192.png"
       alt=""
       data-testid="app-header-logo"
     />

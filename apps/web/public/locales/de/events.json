@@ -3,7 +3,14 @@
   "navigation": {
     "previousWeek": "Vorherige Woche",
     "nextWeek": "Nächste Woche",
-    "today": "Heute"
+    "previousMonth": "Vorheriger Monat",
+    "nextMonth": "Nächster Monat",
+    "today": "Heute",
+    "view": "Kalenderansicht",
+    "views": {
+      "week": "Woche",
+      "month": "Monat"
+    }
   },
   "states": {
     "loading": "Events werden geladen…",
@@ -16,7 +23,8 @@
     "projected": "Voraussichtlich",
     "confirmed": "Bestätigt",
     "starts": "Startet",
-    "ends": "Endet"
+    "ends": "Endet",
+    "break": "Pause"
   },
   "wikiLink": "Wiki",
   "agenda": {
@@ -24,13 +32,20 @@
     "endsIn": "Endet in {{when}}"
   },
   "details": {
-    "projectedNote": "Aus dem üblichen Zeitplan hochgerechnet. Termine können sich ändern."
+    "projectedNote": "Aus dem üblichen Zeitplan hochgerechnet. Termine können sich ändern.",
+    "phases": {
+      "title": "Kriege",
+      "preparation": "Vorbereitung",
+      "war": "Krieg",
+      "row": "Krieg {{war}}"
+    }
   },
   "withFaction": "{{name}}: {{faction}}",
   "withCharacter": "{{name}}: {{character}}",
   "withVersion": "{{name}} {{version}}",
   "withIteration": "{{name}} (Iteration {{iteration}})",
   "withSeason": "{{name}} Saison {{season}}",
+  "withSeasonShort": "{{name}} S{{season}}",
   "withNewCampaign": "{{name}} (Neue Kampagne)",
   "withNewMow": "{{name}} (Neue MoW)",
   "withEventNumber": "{{name}} {{number}}",
@@ -76,6 +91,7 @@
     "battle-pass": "Battle Pass",
     "quest": "Quest",
     "guild-raid-season": "Gilden-Überfall",
+    "guild-raid-break": "Gildenraid-Pause",
     "guild-war-season": "Gildenkrieg",
     "anniversary-event": "Jubiläums-Event",
     "crusade-season": "Kreuzzug-Saison"
@@ -108,8 +124,8 @@
           "content": "Steige direkt in den Plan eines Projekts ein — das Standardprojekt wird immer zuerst angezeigt."
         },
         "navigation": {
-          "title": "Andere Wochen ansehen",
-          "content": "Springe eine Woche vor oder zurück, oder kehre zu Heute zurück."
+          "title": "Andere Wochen und Monate ansehen",
+          "content": "Eine Woche oder einen Monat vor- oder zurückblättern, zu heute springen oder zwischen Wochen- und Monatsansicht wechseln."
         },
         "calendar": {
           "title": "Event-Details",

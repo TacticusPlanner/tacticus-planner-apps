@@ -17,7 +17,11 @@
     "signOut": "Cerrar sesión",
     "userMenu": "Menú de la cuenta",
     "preferences": "Preferencias",
-    "accountSettings": "Ajustes de la cuenta"
+    "accountSettings": "Ajustes de la cuenta",
+    "signedInWith": {
+      "google": "Sesión iniciada con Google",
+      "email": "Sesión iniciada con correo"
+    }
   },
   "catalog": {
     "badge": {
@@ -90,8 +94,26 @@
       }
     },
     "account": {
+      "signInMethod": "Método de inicio de sesión",
+      "signInMethods": {
+        "google": "Google",
+        "email": "Correo y contraseña"
+      },
+      "email": "Correo",
+      "signInMethodNote": "Cada correo funciona con un solo método de inicio de sesión, así que inicia sesión siempre de esta forma. Las cuentas de métodos distintos no se pueden fusionar.",
       "purgeWarningTitle": "Purgar cuenta",
-      "purgeWarningDescription": "Esto elimina de inmediato todos tus datos del planificador. Esta acción no se puede deshacer.",
+      "purgeWarningDescription": "Esto elimina de inmediato los datos seleccionados. Esta acción no se puede deshacer.",
+      "purgeScopeLabel": "Qué eliminar",
+      "purgeScopes": {
+        "plannerData": {
+          "label": "Solo los datos del planificador",
+          "description": "Elimina todo lo que guardaste en el planificador. Tu cuenta de inicio de sesión se mantiene, así que al volver a iniciar sesión empezarás con una cuenta del planificador nueva y vacía."
+        },
+        "signInAccount": {
+          "label": "Datos del planificador y cuenta de inicio de sesión",
+          "description": "También intenta eliminar la cuenta con la que inicias sesión en el planificador. Tu cuenta de Google no se ve afectada. Si ese paso falla, tus datos del planificador se eliminan igualmente."
+        }
+      },
       "purgeConfirmLabel": "Escribe «{{word}}» para habilitar la purga",
       "purgeSubmit": "Purgar mi cuenta",
       "purgeGenericError": "Algo salió mal al purgar tu cuenta. Inténtalo de nuevo."
@@ -1473,10 +1495,14 @@
       "missingTitle": "Aún falta",
       "missingDescription": "Lo que tus objetivos necesitan además de tu inventario actual, gastando tus existencias en orden de prioridad.",
       "missingNone": "Tu inventario cubre las insignias, orbes, componentes y libros de PX de estos objetivos.",
-      "missingBadges": "Insignias de habilidad ({{alliance}})",
-      "missingOrbs": "Orbes ({{alliance}})",
+      "missingAbilityBadges": "Insignias de habilidad",
+      "missingOrbs": "Orbes",
+      "missingMachineOfWar": "Materiales de Máquina de Guerra",
       "missingForgeBadges": "Insignias de forja",
-      "missingXpBooks": "Libros de PX · {{xp}} PX",
+      "missingComponents": "Componentes",
+      "missingXpBooks": "Libros de PX",
+      "missingXp": "{{xp}} PX",
+      "missingTotal": "{{total}} en total",
       "campaignsTitle": "Campañas relevantes",
       "eventsTitle": "Eventos relevantes",
       "noBenefitingGoals": "Ningún objetivo de este plan necesita esto actualmente.",
@@ -1910,5 +1936,54 @@
     "terms": "Condiciones de uso",
     "uiKit": "Kit de UI",
     "lastUpdated": "Última actualización: {{date}}"
+  },
+  "appInstall": {
+    "menu": "Instalar app",
+    "install": "Instalar",
+    "card": {
+      "title": "Instala la app",
+      "body": "Añade Tacticus Planner a tu pantalla de inicio. Se abre en su propia ventana y, si mantienes pulsado su icono, saltas directamente a Incursiones diarias, Objetivos o Eventos legendarios.",
+      "howTo": "Enséñame cómo",
+      "notNow": "Ahora no",
+      "installedTitle": "Tacticus Planner está instalado",
+      "installedBody": "Ábrelo desde tu pantalla de inicio o tu lista de apps. Mantén pulsado su icono (clic derecho en el escritorio) para ver accesos directos a Incursiones diarias, Objetivos y Eventos legendarios.",
+      "gotIt": "Entendido"
+    },
+    "dialog": {
+      "title": "Instalar Tacticus Planner",
+      "description": "Abre el planificador como una app, en su propia ventana, desde tu pantalla de inicio, el Dock o el menú Inicio.",
+      "stepsHeading": "Cómo instalarlo",
+      "maybeInstalled": "¿No aparece la opción de instalar en el menú? Probablemente la app ya está instalada: ábrela desde tu pantalla de inicio o tu lista de apps.",
+      "unsupported": "Este navegador no puede instalar apps web. Abre el planificador en Chrome, Edge o Safari para instalarlo.",
+      "installed": "Estás usando la app instalada."
+    },
+    "steps": {
+      "ios": {
+        "share": "Toca Compartir en la barra de herramientas de Safari (en Chrome o Edge, Compartir está en la barra de direcciones).",
+        "add": "Desplázate hacia abajo y toca Añadir a pantalla de inicio.",
+        "confirm": "Toca Añadir."
+      },
+      "macSafari": {
+        "addToDock": "En la barra de menús de Safari, elige Archivo y luego Añadir al Dock.",
+        "confirm": "Haz clic en Añadir."
+      },
+      "android": {
+        "menu": "Abre el menú del navegador (⋮).",
+        "install": "Toca Instalar app o Añadir a pantalla de inicio.",
+        "confirm": "Confirma con Instalar."
+      },
+      "desktop": {
+        "menu": "Haz clic en el icono de instalar al final de la barra de direcciones o abre el menú del navegador (⋮ o …).",
+        "install": "Elige Instalar Tacticus Planner (en Edge: Aplicaciones y luego Instalar este sitio como aplicación).",
+        "confirm": "Haz clic en Instalar."
+      }
+    },
+    "shortcuts": {
+      "heading": "Accesos directos",
+      "body": "Una vez instalada, mantén pulsado el icono de la app (clic derecho en el escritorio) para ir directamente a:",
+      "dailyRaids": "Incursiones diarias",
+      "goals": "Objetivos",
+      "legendaryEvents": "Eventos legendarios"
+    }
   }
 }

@@ -17,7 +17,11 @@
     "signOut": "Sign out",
     "userMenu": "Account menu",
     "preferences": "Preferences",
-    "accountSettings": "Account settings"
+    "accountSettings": "Account settings",
+    "signedInWith": {
+      "google": "Signed in with Google",
+      "email": "Signed in with email"
+    }
   },
   "catalog": {
     "badge": {
@@ -90,8 +94,26 @@
       }
     },
     "account": {
+      "signInMethod": "Sign-in method",
+      "signInMethods": {
+        "google": "Google",
+        "email": "Email and password"
+      },
+      "email": "Email",
+      "signInMethodNote": "Each email works with one sign-in method only, so always sign in this way. Accounts can't be merged across methods.",
       "purgeWarningTitle": "Purge account",
-      "purgeWarningDescription": "This permanently deletes all of your planner data immediately. This action cannot be undone.",
+      "purgeWarningDescription": "This permanently deletes the selected data immediately. This action cannot be undone.",
+      "purgeScopeLabel": "What to delete",
+      "purgeScopes": {
+        "plannerData": {
+          "label": "Planner data only",
+          "description": "Deletes everything you saved in the planner. Your sign-in account stays, so signing in again starts a new, empty planner account."
+        },
+        "signInAccount": {
+          "label": "Planner data and sign-in account",
+          "description": "Also tries to delete the account you sign in to the planner with. Your Google account itself is not affected. If that step fails, your planner data is still deleted."
+        }
+      },
       "purgeConfirmLabel": "Type \"{{word}}\" to enable the purge action",
       "purgeSubmit": "Purge my account",
       "purgeGenericError": "Something went wrong while purging your account. Please try again."
@@ -1473,10 +1495,14 @@
       "missingTitle": "Still missing",
       "missingDescription": "What your goals need beyond your current inventory, with your stock spent in priority order.",
       "missingNone": "Your inventory covers these goals' badges, orbs, components and XP books.",
-      "missingBadges": "{{alliance}} ability badges",
-      "missingOrbs": "{{alliance}} orbs",
+      "missingAbilityBadges": "Ability badges",
+      "missingOrbs": "Orbs",
+      "missingMachineOfWar": "Machine of War materials",
       "missingForgeBadges": "Forge badges",
-      "missingXpBooks": "XP books · {{xp}} XP",
+      "missingComponents": "Components",
+      "missingXpBooks": "XP books",
+      "missingXp": "{{xp}} XP",
+      "missingTotal": "{{total}} total",
       "campaignsTitle": "Relevant campaigns",
       "eventsTitle": "Relevant events",
       "noBenefitingGoals": "No goals in this plan currently need this.",
@@ -1910,5 +1936,54 @@
     "terms": "Terms of use",
     "uiKit": "UI Kit",
     "lastUpdated": "Last updated {{date}}"
+  },
+  "appInstall": {
+    "menu": "Install app",
+    "install": "Install",
+    "card": {
+      "title": "Install the app",
+      "body": "Add Tacticus Planner to your home screen. It opens in its own window, and a long-press on its icon jumps straight to Daily raids, Goals or Legendary events.",
+      "howTo": "Show me how",
+      "notNow": "Not now",
+      "installedTitle": "Tacticus Planner is installed",
+      "installedBody": "Open it from your home screen or app list. Long-press its icon (right-click on desktop) for shortcuts to Daily raids, Goals and Legendary events.",
+      "gotIt": "Got it"
+    },
+    "dialog": {
+      "title": "Install Tacticus Planner",
+      "description": "Open the planner like an app, in its own window, from your home screen, dock or Start menu.",
+      "stepsHeading": "How to install",
+      "maybeInstalled": "No install option in the menu? The app is probably installed already: open it from your home screen or app list.",
+      "unsupported": "This browser can't install web apps. Open the planner in Chrome, Edge or Safari to install it.",
+      "installed": "You're using the installed app."
+    },
+    "steps": {
+      "ios": {
+        "share": "Tap Share in Safari's toolbar (in Chrome or Edge, Share is in the address bar).",
+        "add": "Scroll down and tap Add to Home Screen.",
+        "confirm": "Tap Add."
+      },
+      "macSafari": {
+        "addToDock": "In Safari's menu bar, choose File, then Add to Dock.",
+        "confirm": "Click Add."
+      },
+      "android": {
+        "menu": "Open the browser menu (⋮).",
+        "install": "Tap Install app or Add to Home screen.",
+        "confirm": "Confirm with Install."
+      },
+      "desktop": {
+        "menu": "Click the install icon at the right end of the address bar, or open the browser menu (⋮ or …).",
+        "install": "Choose Install Tacticus Planner (in Edge: Apps, then Install this site as an app).",
+        "confirm": "Click Install."
+      }
+    },
+    "shortcuts": {
+      "heading": "Shortcuts",
+      "body": "Once installed, long-press the app icon (right-click it on desktop) to jump straight to:",
+      "dailyRaids": "Daily raids",
+      "goals": "Goals",
+      "legendaryEvents": "Legendary events"
+    }
   }
 }

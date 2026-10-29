@@ -5,6 +5,7 @@ import {
   LogOut,
   MapIcon,
   MessageSquareText,
+  MonitorSmartphone,
   Newspaper,
   User,
 } from "lucide-react"
@@ -12,6 +13,8 @@ import { useTranslation } from "react-i18next"
 import { Separator } from "@workspace/ui/components/separator"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { cn } from "@workspace/ui/lib/utils"
+
+import type { SignInMethod } from "@/shared/auth"
 
 import { AccountAvatar } from "./account-avatar"
 import {
@@ -43,13 +46,16 @@ export function AccountCard({
   changelogUnread = false,
   feedbackUnavailable,
   onImportV1,
+  onInstallApp,
   onOpenAccountSettings,
   onExternalLink,
   onSignOut,
+  signInMethod,
   signOutDisabled,
   tourRow,
 }: {
-  accountEmail: string
+  /** Null for a Google account whose token carries no `email` claim: its username is a generated id. */
+  accountEmail: string | null
   accountName: string
   applicationAccountId: string | null
   canEditName: boolean
@@ -65,10 +71,13 @@ export function AccountCard({
   /** Why the feedback row is disabled (the widget failed to load), or undefined when it works. */
   feedbackUnavailable?: string
   onImportV1: () => void
+  /** Opens the install guide; the row is left out where the app is installed or cannot be. */
+  onInstallApp?: () => void
   onOpenAccountSettings: () => void
   /** Closes the menu when a row leaves it (Roadmap, Privacy & cookies, Terms of use). */
   onExternalLink?: () => void
   onSignOut: () => void
+  signInMethod: SignInMethod
   signOutDisabled: boolean
   /** Extra row after Send feedback (the mobile drawer has no rail, so it adds the tour here). */
   tourRow?: ReactNode
@@ -111,11 +120,19 @@ export function AccountCard({
             <div className="truncate font-medium" title={accountName}>
               {accountName}
             </div>
+            {accountEmail ? (
+              <div
+                className="truncate text-xs text-muted-foreground"
+                title={accountEmail}
+              >
+                {accountEmail}
+              </div>
+            ) : null}
             <div
               className="truncate text-xs text-muted-foreground"
-              title={accountEmail}
+              data-testid="auth-account-sign-in-method"
             >
-              {accountEmail}
+              {t(`auth.signedInWith.${signInMethod}`)}
             </div>
           </div>
         )}
@@ -137,6 +154,14 @@ export function AccountCard({
           label={t("goals.v1Import.menu")}
           onClick={onImportV1}
         />
+        {onInstallApp ? (
+          <MenuRow
+            data-testid="auth-install-app"
+            icon={MonitorSmartphone}
+            label={t("appInstall.menu")}
+            onClick={onInstallApp}
+          />
+        ) : null}
         <MenuRow
           data-testid="auth-feedback"
           disabled={Boolean(feedbackUnavailable)}

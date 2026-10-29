@@ -1,3 +1,5 @@
+import { normalizeSearchText } from "@/shared/lib"
+
 import type {
   LegendaryEventRosterUnit,
   LegendaryEventUnit,
@@ -160,11 +162,12 @@ export function buildHordeTierList(
   const owned = roster
     ? new Set(roster.map((unit) => unit.unitId as string))
     : undefined
-  const needle = filters.query.trim().toLocaleLowerCase(locale)
+  const needle = normalizeSearchText(filters.query, locale)
   const keep = (character: Pick<LegendaryEventUnit, "id" | "alliance">) =>
     (filters.alliance === "all" || character.alliance === filters.alliance) &&
     (!filters.onlyOwned || !owned || owned.has(character.id)) &&
-    (!needle || nameOf(character.id).toLocaleLowerCase(locale).includes(needle))
+    (!needle ||
+      normalizeSearchText(nameOf(character.id), locale).includes(needle))
   const byName = (a: { unitId: string }, b: { unitId: string }) =>
     nameOf(a.unitId).localeCompare(nameOf(b.unitId), locale)
   const ownedOf = (unitId: string) => (owned ? owned.has(unitId) : undefined)

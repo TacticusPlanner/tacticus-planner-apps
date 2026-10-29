@@ -15,6 +15,10 @@ export { useCurrentUser, type CurrentUserState } from "./model/use-current-user"
 export { applyTacticusIntegrationResult } from "./model/apply-tacticus-integration-result"
 export { isAccountSetupComplete, type CurrentUser } from "./model/current-user"
 export {
+  readSetupCompleteHint,
+  rememberSetupState,
+} from "./model/setup-complete-hint"
+export {
   DISPLAY_NAME_MAX_LENGTH,
   validateDisplayName,
 } from "./model/display-name"

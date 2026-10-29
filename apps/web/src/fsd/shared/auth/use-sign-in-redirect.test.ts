@@ -38,6 +38,7 @@ describe("useSignInRedirect", () => {
   })
 
   it("starts the login redirect with the app's login request", () => {
+    window.history.replaceState(null, "", "/privacy")
     const { result } = renderHook(() => useSignInRedirect())
 
     act(() => result.current.signIn())
@@ -45,6 +46,28 @@ describe("useSignInRedirect", () => {
     expect(loginRedirect).toHaveBeenCalledWith({ scopes: ["api"] })
     expect(result.current.disabled).toBe(false)
     expect(result.current.checkingSignIn).toBe(false)
+  })
+
+  it("returns to Home when sign-in starts from the bare landing page", () => {
+    window.history.replaceState(null, "", "/")
+    const { result } = renderHook(() => useSignInRedirect())
+
+    act(() => result.current.signIn())
+
+    expect(loginRedirect).toHaveBeenCalledWith({
+      scopes: ["api"],
+      redirectStartPage: `${window.location.origin}/home`,
+    })
+  })
+
+  it("returns to the landing page when it carries a preserved destination", () => {
+    window.history.replaceState(null, "", "/?next=%2Fplan%2Fgoals")
+    const { result } = renderHook(() => useSignInRedirect())
+
+    act(() => result.current.signIn())
+
+    expect(loginRedirect).toHaveBeenCalledWith({ scopes: ["api"] })
+    window.history.replaceState(null, "", "/")
   })
 
   it("is disabled while an MSAL interaction is in progress", () => {

@@ -1,3 +1,4 @@
+import { InstallAppCard } from "@/widgets/app-install"
 import { PageContainer } from "@/widgets/page-container"
 import { useAutoStartTourOnce } from "@/shared/tour"
 
@@ -22,6 +23,7 @@ export function HomePage() {
   // middle row puts Raids, Projects and Upcoming side by side, in that order.
   return (
     <PageContainer data-testid="home-page">
+      <InstallAppCard />
       <RightNow events={events} />
       <div
         className="grid grid-cols-1 items-start gap-4 lg:grid-cols-3"

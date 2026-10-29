@@ -15,6 +15,10 @@ export type EventEntryViewModel = {
   endUtc: string
   parameters: Record<string, unknown> | null
   isActiveNow: boolean
+  /** Ended before now; drawn grayed out. */
+  isPast: boolean
+  /** A Guild War season's preparation and war windows, in order; empty for every other event. */
+  phases: EventPhase[]
   /**
    * A Fixed-recurrence definition's season/event number, derived from this entry's position relative to
    * the definition's own anchor (see `deriveOrdinalFromAnchor` in events-calendar-calc.ts) — not
@@ -24,6 +28,14 @@ export type EventEntryViewModel = {
    */
   derivedSeasonNumber: number | undefined
   derivedEventNumber: number | undefined
+}
+
+export type EventPhase = {
+  kind: "preparation" | "war"
+  /** 1-based war number within the season. */
+  war: number
+  startUtc: string
+  endUtc: string
 }
 
 export type EventsCalendarDayEntry = EventEntryViewModel & {
@@ -48,22 +60,45 @@ export type PositionedEventEntry = EventEntryViewModel & {
   startColumn: number
   /** Number of day-columns this entry spans, clipped to the visible range. */
   span: number
+  /** The local-day window the bar covers (`startColumn`'s midnight to the end of its last column). */
+  barStartMs: number
+  barEndMs: number
+  /** Start and end in fractional day columns from the range start (0 to the day count, clamped). */
+  startOffset: number
+  endOffset: number
 }
 
 export type EventLane = {
   entries: PositionedEventEntry[]
+  /** Entries are placed by `startOffset`/`endOffset` (time), not whole day columns. */
+  timed?: boolean
+}
+
+export type EventsCalendarView = "week" | "month"
+
+/** One row of the month grid: its seven days and the Gantt lanes drawn across them. */
+export type EventsCalendarWeek = {
+  days: EventsCalendarDay[]
+  lanes: EventLane[]
 }
 
 export type EventsCalendarViewModel = {
   status: EventsCalendarStatus
+  view: EventsCalendarView
+  setView: (view: EventsCalendarView) => void
+  /** The range's own days (the month's days in the month view, not the grid's padding). */
   days: EventsCalendarDay[]
   agenda: EventsAgenda
+  /** The week view's lanes; empty in the month view. */
   lanes: EventLane[]
+  /** The month view's rows; empty in the week view. */
+  weeks: EventsCalendarWeek[]
   rangeStart: Date
   rangeEnd: Date
-  weekOffset: number
-  goToPreviousWeek: () => void
-  goToNextWeek: () => void
+  /** Weeks or months away from the current one, by `view`. */
+  offset: number
+  goToPrevious: () => void
+  goToNext: () => void
   goToToday: () => void
   retry: () => void
 }

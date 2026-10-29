@@ -336,6 +336,22 @@ export function useAnalyticsActions() {
             tier: event.tier,
           })
           break
+        case "app_install_guide_opened":
+          client.capture(event.type, {
+            source: event.source,
+            platform: event.platform,
+            can_prompt: event.canPrompt,
+          })
+          break
+        case "app_install_prompt_answered":
+          client.capture(event.type, {
+            source: event.source,
+            outcome: event.outcome,
+          })
+          break
+        case "app_install_card_dismissed":
+          client.capture(event.type, { platform: event.platform })
+          break
         case "client_error":
           client.capture(event.type, {
             message: event.message,

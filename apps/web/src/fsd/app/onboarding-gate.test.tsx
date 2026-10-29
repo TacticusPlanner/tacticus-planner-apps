@@ -7,6 +7,10 @@ import type { CurrentUserState } from "@/entities/account"
 
 const useCurrentUser =
   vi.fn<() => { refetch: () => void; state: CurrentUserState }>()
+const readSetupCompleteHint = vi.fn<(accountId: string | undefined) => boolean>(
+  () => false
+)
+const rememberSetupState = vi.fn<(accountId: string, user: unknown) => void>()
 
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
@@ -14,6 +18,10 @@ vi.mock("react-i18next", () => ({
 
 vi.mock("@/entities/account", () => ({
   useCurrentUser: () => useCurrentUser(),
+  readSetupCompleteHint: (accountId: string | undefined) =>
+    readSetupCompleteHint(accountId),
+  rememberSetupState: (accountId: string, user: unknown) =>
+    rememberSetupState(accountId, user),
   isAccountSetupComplete: (user: {
     hasCompletedOnboarding: boolean
     displayName: string | null
@@ -141,6 +149,27 @@ describe("OnboardingGate", () => {
     expect(screen.queryByTestId("protected-content")).not.toBeInTheDocument()
     expect(screen.queryByTestId("setup-probe")).not.toBeInTheDocument()
     expect(screen.getByRole("status")).toBeVisible()
+  })
+
+  it("lets an account that finished setup on this device through while the check reloads", () => {
+    readSetupCompleteHint.mockReturnValueOnce(true)
+    setState({ status: "loading" })
+
+    renderAt("/guild/members")
+
+    expect(readSetupCompleteHint).toHaveBeenCalledWith("home-account-1")
+    expect(screen.getByTestId("protected-content")).toBeVisible()
+  })
+
+  it("remembers the account's setup state once the check answers", () => {
+    setState({ status: "success", user: configuredUser })
+
+    renderAt("/guild/members")
+
+    expect(rememberSetupState).toHaveBeenCalledWith(
+      "home-account-1",
+      configuredUser
+    )
   })
 
   it("labels the loading state and adds a slow-loading note only after a delay", () => {

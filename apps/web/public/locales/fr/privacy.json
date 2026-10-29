@@ -4,7 +4,7 @@
   "sections": {
     "signIn": {
       "title": "Connexion",
-      "body": "La connexion est gérée par Microsoft Entra External ID. Le planificateur ne voit jamais votre mot de passe. Il conserve l'identifiant de connexion renvoyé par Microsoft, le nom de planificateur que vous choisissez et la date de votre dernière utilisation."
+      "body": "La connexion est gérée par Microsoft Entra External ID. Le planificateur ne voit jamais votre mot de passe. Il conserve l'identifiant de connexion renvoyé par Microsoft, le nom de planificateur que vous choisissez et la date de votre dernière utilisation. Si vous vous connectez avec Google, Google partage votre nom et votre adresse e-mail avec Microsoft pour vous connecter. Le menu de votre compte affiche votre e-mail et la méthode de connexion utilisée ; le planificateur les lit depuis votre connexion et ne les conserve pas."
     },
     "apiKey": {
       "title": "Votre clé API Tacticus",
@@ -32,7 +32,7 @@
     },
     "deletion": {
       "title": "Supprimer vos données",
-      "body": "Vous pouvez supprimer votre compte et toutes ses données dans les Paramètres du compte, onglet Compte, avec « Purger mon compte ». La suppression est immédiate et irréversible."
+      "body": "Vous pouvez supprimer votre compte dans les Paramètres du compte, onglet Compte, avec « Purger mon compte ». Vous choisissez de supprimer uniquement les données du planificateur ou aussi votre compte de connexion au planificateur (Microsoft Entra External ID). La suppression du compte de connexion est tentée, et vos données du planificateur sont supprimées même si cette étape échoue. Votre compte Google n’est pas concerné. La suppression est immédiate et irréversible."
     },
     "contact": {
       "title": "Contact",

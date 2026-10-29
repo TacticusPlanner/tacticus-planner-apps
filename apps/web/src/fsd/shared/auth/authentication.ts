@@ -30,7 +30,7 @@ let authentication: PublicClientApplication | undefined
 export const SILENT_FRAME_TIMEOUT_MS = 6000
 
 // The one thing about the session kept on the device (spec: silent-sign-in): which account to
-// restore, never a token. Tokens live in the tab's sessionStorage.
+// restore, kept apart from MSAL's own token cache so it survives that cache being cleared.
 const ACCOUNT_HINT_KEY = "tp.auth.accountHint"
 
 type AccountHint = { homeAccountId: string; username: string }
@@ -69,24 +69,6 @@ function activateAccount(
   }
 }
 
-// Tokens used to be cached in localStorage. Once, before MSAL starts, drop that cache: every key MSAL
-// owned there starts with `msal.` or contains the client id (`<homeAccountId>-<env>-<type>-<clientId>-…`).
-function removeLegacyTokenCache(clientId: string) {
-  try {
-    const storage = window.localStorage
-    const legacy: string[] = []
-    for (let index = 0; index < storage.length; index++) {
-      const key = storage.key(index)
-      if (key && (key.startsWith("msal.") || key.includes(clientId))) {
-        legacy.push(key)
-      }
-    }
-    legacy.forEach((key) => storage.removeItem(key))
-  } catch {
-    // Storage blocked: there is no legacy cache to remove either.
-  }
-}
-
 function createMsalConfig(): Configuration {
   const authority = getRequiredEnvironmentValue("VITE_MSAL_AUTHORITY")
   const clientId = getRequiredEnvironmentValue("VITE_MSAL_CLIENT_ID")
@@ -108,8 +90,10 @@ function createMsalConfig(): Configuration {
       redirectUri: new URL("/redirect.html", window.location.origin).href,
     },
     cache: {
-      // Tab-scoped (spec: redirect-authentication); new tabs restore through the account hint.
-      cacheLocation: BrowserCacheLocation.SessionStorage,
+      // Device-scoped (spec: redirect-authentication): a relaunched installed app or a new tab
+      // restores from the cached refresh token, with no hidden frame, which the installed app on
+      // Android often cannot complete. Signing out clears it.
+      cacheLocation: BrowserCacheLocation.LocalStorage,
     },
     system: {
       iframeBridgeTimeout: SILENT_FRAME_TIMEOUT_MS,
@@ -144,13 +128,37 @@ function createMsalConfig(): Configuration {
 }
 
 export const loginRequest: RedirectRequest = {
+  // `email` is the OpenID scope that lets Entra put the `email` optional claim in the ID token; MSAL only adds
+  // openid/profile/offline_access on its own.
   get scopes() {
-    return [getRequiredEnvironmentValue("VITE_API_SCOPE")]
+    return [getRequiredEnvironmentValue("VITE_API_SCOPE"), "email"]
   },
 }
 
+// Sign-in from the bare landing page asks to come back to /home (see use-sign-in-redirect), but the
+// redirect bridge falls back to the site root whenever it cannot read where the flow started. The
+// landing page stays browsable once signed in (spec: landing-page), so a sign-in that completes on a
+// bare "/" is moved on to Home here, before the router reads the address.
+function returnHomeAfterLandingSignIn() {
+  const { pathname, search, hash } = window.location
+  if (pathname === "/" && search === "" && hash === "") {
+    window.history.replaceState(window.history.state, "", "/home")
+  }
+}
+
+// A sign-in the user abandons at the identity provider (cancelling the Google or username step,
+// backing out of sign-up) comes back as an error response, not a result. It must not stop the app
+// from starting: the user lands signed out and can try again.
+async function completeRedirect(instance: PublicClientApplication) {
+  try {
+    return await instance.handleRedirectPromise()
+  } catch (error) {
+    console.warn("[MSAL] sign-in redirect did not complete", error)
+    return null
+  }
+}
+
 export async function initializeAuthentication() {
-  removeLegacyTokenCache(getRequiredEnvironmentValue("VITE_MSAL_CLIENT_ID"))
   const msalInstance = new PublicClientApplication(createMsalConfig())
 
   await msalInstance.initialize()
@@ -166,10 +174,11 @@ export async function initializeAuthentication() {
   // The redirect bridge (apps/web/redirect.html) already caches the response and navigates back to
   // where the flow was initiated before this ever runs, so navigateToLoginRequestUrl's default
   // (true) is a no-op safety net here, not a second navigation.
-  const redirectResult = await msalInstance.handleRedirectPromise()
+  const redirectResult = await completeRedirect(msalInstance)
 
   if (redirectResult) {
     activateAccount(msalInstance, redirectResult.account)
+    returnHomeAfterLandingSignIn()
   }
 
   if (!msalInstance.getActiveAccount()) {
@@ -304,7 +313,7 @@ async function restoreSession(
     instance.getActiveAccount() ?? instance.getAllAccounts()[0]
 
   if (!cachedAccount) {
-    // A new tab or a restarted browser holds no tokens; the account hint says whose IdP session
+    // A cleared or expired token cache holds no account; the account hint says whose IdP session
     // to check.
     const hint = readAccountHint()
     return hint

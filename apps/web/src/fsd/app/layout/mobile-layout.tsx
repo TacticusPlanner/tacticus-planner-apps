@@ -23,7 +23,6 @@ import {
   DrawerTrigger,
 } from "@workspace/ui/components/drawer"
 import { Input } from "@workspace/ui/components/input"
-import { Spinner } from "@workspace/ui/components/spinner"
 import { cn } from "@workspace/ui/lib/utils"
 
 import { usePlayerDataSyncStatus } from "@/features/player-data-sync"
@@ -42,6 +41,7 @@ import {
 } from "./quick-actions"
 import { QuickActionsGroup } from "./quick-actions-group"
 import { ScrollToTopButton } from "./scroll-to-top-button"
+import { RouteLoadingFill } from "./route-loading-fill"
 import { SkipLink } from "./skip-link"
 import {
   PAGE_HEADING_ID,
@@ -50,19 +50,6 @@ import {
 
 // Matches vaul's exit transition (TRANSITIONS.DURATION = 0.5s).
 const DRAWER_EXIT_MS = 500
-
-function LoadingFill() {
-  const { t } = useTranslation()
-  return (
-    <div
-      aria-label={t("common.loading")}
-      className="flex flex-1 items-center justify-center"
-      role="status"
-    >
-      <Spinner aria-hidden="true" className="size-8 text-primary" />
-    </div>
-  )
-}
 
 export function MobileShell({
   activeSection,
@@ -97,7 +84,7 @@ export function MobileShell({
         id="main"
         tabIndex={-1}
       >
-        <Suspense fallback={<LoadingFill />}>
+        <Suspense fallback={<RouteLoadingFill />}>
           <Outlet />
         </Suspense>
       </main>

@@ -14,13 +14,13 @@ When the application loads and a previously cached account exists on the
 device, the system SHALL attempt to restore that session automatically,
 without requiring the user to interact with a sign-in control first. The
 attempt SHALL start before the application's first API request. It SHALL
-first restore from the current tab's cached tokens (a valid access token, or a
+first restore from the device's cached tokens (a valid access token, or a
 refresh token exchanged directly with the identity provider) and SHALL only
 fall back to a hidden identity-provider session check when no cached token is
-usable. Cached tokens are scoped to the browser tab; a non-secret account hint
-(the account identifier only, never a token) persists on the device so a new
-tab or a restarted browser still counts as "a previously cached account
-exists". A hidden session check SHALL give up after at most 6 seconds.
+usable. A non-secret account hint (the account identifier only, never a
+token) also persists on the device, so a cleared token cache still counts as
+"a previously cached account exists". A hidden session check SHALL give up
+after at most 6 seconds.
 
 #### Scenario: Cached account present
 
@@ -31,27 +31,19 @@ exists". A hidden session check SHALL give up after at most 6 seconds.
 #### Scenario: Cached tokens still usable
 
 - **GIVEN** a cached account whose access token or refresh token is still
-  valid in the current tab
-- **WHEN** the application loads
+  valid on the device
+- **WHEN** the application loads, in any tab or after a relaunch
 - **THEN** the session is restored from those tokens and no hidden
   identity-provider session check runs
 
 #### Scenario: Refresh token expired
 
 - **GIVEN** a cached account whose refresh token has expired (for example the
-  user last signed in more than 24 hours ago) and whose tab holds no valid
-  access token
+  user last signed in more than 24 hours ago) and no valid access token on the
+  device
 - **WHEN** the application loads
 - **THEN** exactly one hidden identity-provider session check runs, and it
   gives up after at most 6 seconds if it cannot complete
-
-#### Scenario: New tab with an account hint
-
-- **GIVEN** the user signed in earlier in another tab, so the device holds an
-  account hint but this tab holds no tokens
-- **WHEN** the application loads in the new tab
-- **THEN** exactly one hidden identity-provider session check runs using the
-  account hint, and on success the user is signed in without interaction
 
 #### Scenario: Sign-out clears the account hint
 
@@ -155,3 +147,18 @@ as requiring interaction.
 - **WHEN** the current-user request needs a token
 - **THEN** the request fails as interaction-required without a second hidden
   session check, and re-authentication starts without further waiting
+
+### Requirement: Protected routes wait for an in-progress restore
+
+While an automatic silent restore is in progress, or the authentication library already holds a restored account that the UI has not caught up with, a protected route and the not-found redirect SHALL show the boot screen instead of sending the visitor to sign in. Once the restore fails, or when no restore was attempted, they SHALL redirect to sign in exactly as before.
+
+#### Scenario: Launching on a protected page
+
+- **GIVEN** a device with an account hint and no tokens in the tab
+- **WHEN** the user opens `/dailies/raids` and the silent restore succeeds
+- **THEN** the boot screen is shown until the restore finishes and the user lands on `/dailies/raids` without passing through the landing page
+
+#### Scenario: Restore fails on a protected page
+
+- **WHEN** the silent restore fails while the user is on a protected route
+- **THEN** the user is sent to the landing page with that route preserved as `next`

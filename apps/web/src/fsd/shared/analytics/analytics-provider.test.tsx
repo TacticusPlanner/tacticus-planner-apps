@@ -542,4 +542,37 @@ describe("useAnalyticsActions", () => {
       { unit_id: "custoBladeChampion", tier: "S" }
     )
   })
+
+  it("captures the app install events", async () => {
+    const { result } = await renderReady()
+
+    result.current.captureEvent({
+      type: "app_install_guide_opened",
+      source: "homeCard",
+      platform: "ios",
+      canPrompt: false,
+    })
+    result.current.captureEvent({
+      type: "app_install_prompt_answered",
+      source: "accountMenu",
+      outcome: "accepted",
+    })
+    result.current.captureEvent({
+      type: "app_install_card_dismissed",
+      platform: "android",
+    })
+
+    expect(sdk.client.capture).toHaveBeenCalledWith(
+      "app_install_guide_opened",
+      { source: "homeCard", platform: "ios", can_prompt: false }
+    )
+    expect(sdk.client.capture).toHaveBeenCalledWith(
+      "app_install_prompt_answered",
+      { source: "accountMenu", outcome: "accepted" }
+    )
+    expect(sdk.client.capture).toHaveBeenCalledWith(
+      "app_install_card_dismissed",
+      { platform: "android" }
+    )
+  })
 })

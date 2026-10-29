@@ -19,6 +19,8 @@ import { cn } from "@workspace/ui/lib/utils"
 import { characterIcon, lockIcon } from "@workspace/game-catalog"
 import type { FactionGroup, UnitId } from "@workspace/game-domain"
 
+import { normalizeSearchText } from "@/shared/lib"
+
 import { useCommandListId } from "./command-list-id"
 import { EntityIcon } from "./entity-icon"
 import { closestOverlayContent } from "./overlay-content"
@@ -119,20 +121,23 @@ export function UnitCombobox({
   // cmdk's default filter fuzzy-scores every item on each keystroke and reorders the DOM to match
   // (it's built for VSCode-style command palettes) — for a plain "find this character" list that
   // reshuffles items unpredictably as you type and breaks the curated faction order. Filtering
-  // ourselves with a stable, case-insensitive substring match (and `shouldFilter={false}` below to
+  // ourselves with a stable, loose substring match (case, accents and punctuation ignored, see
+  // `normalizeSearchText`) (and `shouldFilter={false}` below to
   // stop cmdk from doing its own pass) keeps groups/members in a fixed order and only hides
   // non-matches.
   const filteredGroups = useMemo(() => {
-    const query = search.trim().toLowerCase()
+    const query = normalizeSearchText(search)
     if (!query) return groups
 
     return groups
       .map((group) => {
-        const factionMatches = group.factionName.toLowerCase().includes(query)
+        const factionMatches = normalizeSearchText(group.factionName).includes(
+          query
+        )
         const members = factionMatches
           ? group.members
           : group.members.filter((member) =>
-              member.name.toLowerCase().includes(query)
+              normalizeSearchText(member.name).includes(query)
             )
         return { ...group, members }
       })
