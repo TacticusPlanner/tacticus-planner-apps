@@ -10,7 +10,7 @@ vi.mock("@/shared/tour", () => ({
 }))
 
 describe("useGoalsOverviewTutorial", () => {
-  it("registers localized desktop and mobile steps, differing only in the reprioritize, select and bulk-actions targets", () => {
+  it("registers localized desktop and mobile steps, differing only in the view toggle, reprioritize, select and bulk-actions targets", () => {
     renderHook(() => useGoalsOverviewTutorial())
     const steps = register.mock.lastCall?.[0] as {
       desktop: { target: string; title: string; content: string }[]
@@ -29,6 +29,7 @@ describe("useGoalsOverviewTutorial", () => {
       '[data-testid="goals-status-filter"]',
       '[data-testid="goals-type-filter"]',
       '[data-testid="goals-season-fit"]',
+      '[data-testid="goals-view-toggle"]',
       '[data-testid="goal-row-drag-handle"]',
       '[data-testid="goals-select-all"]',
       '[data-testid="goals-bulk-actions"]',
@@ -38,10 +39,14 @@ describe("useGoalsOverviewTutorial", () => {
       '[data-testid="goals-page"]',
     ])
     // Mobile swaps the reprioritize and select targets for the control-row toggles and has no
-    // bulk-actions step (the bar only exists inside select mode).
+    // bulk-actions step (the bar only exists inside select mode) and no view toggle (always cards).
     expect(steps.mobile.map((step) => step.target)).toEqual(
       steps.desktop
-        .filter((step) => step.target !== '[data-testid="goals-bulk-actions"]')
+        .filter(
+          (step) =>
+            step.target !== '[data-testid="goals-bulk-actions"]' &&
+            step.target !== '[data-testid="goals-view-toggle"]'
+        )
         .map((step) =>
           step.target === '[data-testid="goal-row-drag-handle"]'
             ? '[data-testid="goals-mobile-reorder-toggle"]'
@@ -56,6 +61,10 @@ describe("useGoalsOverviewTutorial", () => {
     expect(steps.desktop[3]).toMatchObject({
       title: "Season fit",
       content: expect.stringContaining("which goals finish in time"),
+    })
+    expect(steps.desktop[4]).toMatchObject({
+      title: "Cards or table",
+      content: expect.stringContaining("saved to your account"),
     })
     for (const list of [steps.desktop, steps.mobile]) {
       expect(list[0]).toMatchObject({

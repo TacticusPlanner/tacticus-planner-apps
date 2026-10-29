@@ -11179,6 +11179,10 @@
         "enum": ["Active", "Paused", "Completed", "Archived"],
         "type": "string"
       },
+      "GoalsView": {
+        "enum": ["Cards", "Table"],
+        "type": "string"
+      },
       "GoalTargetEditRequest": {
         "type": "object",
         "properties": {
@@ -13991,7 +13995,7 @@
         }
       },
       "UpdateUserSettingsRequest": {
-        "required": ["dailyEnergy", "xpBookRarity", "revision"],
+        "required": ["dailyEnergy", "xpBookRarity", "goalsView", "revision"],
         "type": "object",
         "properties": {
           "dailyEnergy": {
@@ -14000,6 +14004,9 @@
           },
           "xpBookRarity": {
             "$ref": "#/components/schemas/XpBookRarity"
+          },
+          "goalsView": {
+            "$ref": "#/components/schemas/GoalsView"
           },
           "revision": {
             "minimum": 0,
@@ -14150,7 +14157,7 @@
         }
       },
       "UserSettingsResponse": {
-        "required": ["dailyEnergy", "xpBookRarity", "revision"],
+        "required": ["dailyEnergy", "xpBookRarity", "goalsView", "revision"],
         "type": "object",
         "properties": {
           "dailyEnergy": {
@@ -14159,6 +14166,9 @@
           },
           "xpBookRarity": {
             "$ref": "#/components/schemas/XpBookRarity"
+          },
+          "goalsView": {
+            "$ref": "#/components/schemas/GoalsView"
           },
           "revision": {
             "type": "integer",

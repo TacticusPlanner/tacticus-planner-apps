@@ -12,6 +12,7 @@ const onOpenChange = vi.fn()
 const settings = vi.hoisted(() => ({
   dailyEnergy: 538,
   xpBookRarity: "Epic",
+  goalsView: "Table",
   revision: 7,
 }))
 
@@ -35,6 +36,8 @@ vi.mock("@/entities/planning-setting", () => ({
     )
       ? rarity
       : "Legendary",
+  normalizeGoalsView: (view: string | null | undefined) =>
+    view === "Table" ? "Table" : "Cards",
   usePlanningSettings: () => ({
     settings,
     save,
@@ -65,7 +68,7 @@ describe("PlanningSettingsDialog", () => {
     settings.dailyEnergy = 538
   })
 
-  it("loads synchronized energy and rarity, and saves with the current revision", async () => {
+  it("loads synchronized energy and rarity, and saves with the current revision and stored Goals view", async () => {
     render(<PlanningSettingsDialog open onOpenChange={onOpenChange} />)
 
     expect(
@@ -80,6 +83,7 @@ describe("PlanningSettingsDialog", () => {
       expect(save).toHaveBeenCalledWith({
         dailyEnergy: 538,
         xpBookRarity: "Epic",
+        goalsView: "Table",
         revision: 7,
       })
       expect(onOpenChange).toHaveBeenCalledWith(false)
@@ -101,6 +105,7 @@ describe("PlanningSettingsDialog", () => {
       expect(save).toHaveBeenCalledWith({
         dailyEnergy: 538,
         xpBookRarity: "Legendary",
+        goalsView: "Table",
         revision: 7,
       })
     })
@@ -119,6 +124,7 @@ describe("PlanningSettingsDialog", () => {
       expect(save).toHaveBeenCalledWith({
         dailyEnergy: 500,
         xpBookRarity: "Epic",
+        goalsView: "Table",
         revision: 7,
       })
     })

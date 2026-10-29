@@ -110,6 +110,7 @@ vi.mock("@/entities/planning-setting", () => ({
     settings: { dailyEnergy: 288, xpBookRarity: "Legendary", revision: 1 },
     save: vi.fn(),
   }),
+  useGoalsView: () => ({ view: "Table", loading: false, setView: vi.fn() }),
 }))
 vi.mock("./goals-list", () => ({
   GoalsList: ({

@@ -1,8 +1,21 @@
-import { describe, expect, it } from "vitest"
+import { beforeEach, describe, expect, it, vi } from "vitest"
 import { render, screen } from "@/test/render"
 import { MemoryRouter, Route, Routes } from "react-router"
 
+const goalsView = vi.hoisted(() => ({ view: "Cards" as "Cards" | "Table" }))
+vi.mock("@/entities/planning-setting", () => ({
+  useGoalsView: () => ({
+    view: goalsView.view,
+    loading: false,
+    setView: () => undefined,
+  }),
+}))
+
 import { GoalsLayout } from ".//goals-layout"
+
+beforeEach(() => {
+  goalsView.view = "Cards"
+})
 
 function renderLayout(initialEntry: string) {
   return render(
@@ -44,6 +57,27 @@ describe("GoalsLayout", () => {
 
     expect(screen.getByTestId("projects-child")).toBeInTheDocument()
     expect(screen.queryByTestId("goals-child")).not.toBeInTheDocument()
+  })
+
+  it("drops the page width cap on the Goals tab in Cards view", () => {
+    renderLayout("/plan/goals")
+
+    expect(screen.getByTestId("goals-page-container")).toHaveClass("max-w-none")
+  })
+
+  it("keeps the page width cap for the table and the other tabs", () => {
+    goalsView.view = "Table"
+    const table = renderLayout("/plan/goals")
+    expect(screen.getByTestId("goals-page-container")).not.toHaveClass(
+      "max-w-none"
+    )
+    table.unmount()
+
+    goalsView.view = "Cards"
+    renderLayout("/plan/projects")
+    expect(screen.getByTestId("goals-page-container")).not.toHaveClass(
+      "max-w-none"
+    )
   })
 
   // Tab navigation between Goals/Projects/Insights now lives in the shared app-shell header's

@@ -49,6 +49,18 @@ export type ResourceNeed = {
   /** Rank goals in a shared plan only: gold to apply the level-up books the goal still needs (V1's
    *  Rank "Gold"); never netted against inventory. */
   levelGold?: number
+  /** Ascension goals in the plan: each orb rarity the goal needs (gross) beside the player's stock of it
+   *  at the goal's turn in priority order, uncapped (V1's orb "x/y"; the Machine of War pool logic). */
+  orbPool?: {
+    neededByRarity: Partial<Record<Rarity, number>>
+    availableByRarity: Partial<Record<Rarity, number>>
+  }
+  /** Ascension goals only: owned shards applied to the goal's own steps against what those steps cost
+   *  in total (V1's "Shards 120 / 400" bars), gross of what's still to farm. */
+  shardProgress?: {
+    shards: { owned: number; needed: number }
+    mythicShards: { owned: number; needed: number }
+  }
   /** Rank goals partly covered by a higher-priority goal for the same unit: what the goal would cost
    *  alone (upgrade slots and estimated energy), shown as a tooltip beside the plan-aware figures. */
   standalone?: { slots: number; energy: number }
@@ -187,6 +199,13 @@ export function ascensionResourceNeed(params: {
     mythicShards: netMythicShards,
     orbsByType,
     upgradeSlotsRemaining: null,
+    shardProgress: {
+      shards: { owned: Math.min(shards, availableShards), needed: shards },
+      mythicShards: {
+        owned: Math.min(mythicShards, availableMythicShards),
+        needed: mythicShards,
+      },
+    },
   }
 }
 

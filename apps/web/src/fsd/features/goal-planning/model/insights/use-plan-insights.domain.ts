@@ -44,6 +44,17 @@ export interface PlanNetResources {
   orbsByType?: Partial<Record<Rarity, number>>
   shards?: number
   mythicShards?: number
+  /** Ascension goals in the plan: each orb rarity the goal needs (gross) beside the player's stock of it
+   *  at the goal's turn in priority order, uncapped (V1's orb "x/y"; the Machine of War pool logic). */
+  orbPool?: {
+    neededByRarity: Partial<Record<Rarity, number>>
+    availableByRarity: Partial<Record<Rarity, number>>
+  }
+  /** Ascension goals: owned shards the plan spends on the goal against its gross shard cost. */
+  shardProgress?: {
+    shards: { owned: number; needed: number }
+    mythicShards: { owned: number; needed: number }
+  }
   /** Rank goals: gold to apply the level-up books (V1's Rank "Gold"), never netted against stock. */
   levelGold?: number
   /** Rank goals partly covered by a higher-priority goal: the goal's standalone slots and energy. */

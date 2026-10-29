@@ -1575,6 +1575,12 @@
         "noChange": "Aucun changement",
         "quickPicks": "{{track}} : choix rapides"
       }
+    },
+    "view": {
+      "label": "Affichage des objectifs",
+      "cards": "Cartes",
+      "table": "Tableau",
+      "saveError": "Impossible d'enregistrer ton affichage des objectifs. Il a été rétabli."
     }
   },
   "language": {
@@ -1710,6 +1716,10 @@
         "seasonFit": {
           "title": "Calage sur la saison",
           "content": "Choisissez une saison de Passe de combat, de Raid de guilde ou de Guerre de guilde pour voir quels objectifs seront terminés à temps. Une ligne indique où les objectifs débordent sur la saison suivante."
+        },
+        "viewToggle": {
+          "title": "Cartes ou tableau",
+          "content": "Passe des cartes d'objectifs au tableau compact. Ton choix est enregistré dans ton compte."
         }
       }
     },

@@ -3220,6 +3220,8 @@ export interface components {
     }
     /** @enum {string} */
     GoalStatus: "Active" | "Paused" | "Completed" | "Archived"
+    /** @enum {string} */
+    GoalsView: "Cards" | "Table"
     GoalTargetEditRequest: {
       rank?: null | components["schemas"]["RankEndTargetRequest"]
       progression?: null | components["schemas"]["ProgressionEndTargetRequest"]
@@ -4017,6 +4019,7 @@ export interface components {
       /** Format: int32 */
       dailyEnergy: number
       xpBookRarity: components["schemas"]["XpBookRarity"]
+      goalsView: components["schemas"]["GoalsView"]
       /** Format: int64 */
       revision: number
     }
@@ -4061,6 +4064,7 @@ export interface components {
       /** Format: int32 */
       dailyEnergy: number
       xpBookRarity: components["schemas"]["XpBookRarity"]
+      goalsView: components["schemas"]["GoalsView"]
       /** Format: int64 */
       revision: number
     }

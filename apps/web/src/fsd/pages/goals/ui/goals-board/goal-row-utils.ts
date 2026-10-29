@@ -143,6 +143,71 @@ export type GoalsListProps = {
   projectRemoval?: ProjectRemoval
 }
 
+/** The props a memoized goal row or card compares to decide whether it must re-render. */
+export type RowSliceProps = Pick<
+  GoalsListProps,
+  | "actions"
+  | "estimates"
+  | "metrics"
+  | "potentialProgress"
+  | "levelPotentialProgress"
+  | "levelChargedXp"
+  | "levelPoolXpAvailable"
+  | "xpBook"
+  | "onToggleSelected"
+  | "reachedByGoalId"
+  | "cascadeContext"
+  | "seasonFit"
+> & {
+  row: GoalRow
+  selected: boolean
+  dragHandle: unknown
+  popoverOpen: boolean
+}
+
+/** Memo comparator for a goal row or card: maps and `actions` are rebuilt on every page render (a
+ *  pause/resume rebuilds the cascade context, estimates and `pendingIds` for the whole list), so compare
+ *  only this goal's slice of each. Functions other than `onToggleSelected` are omitted on purpose:
+ *  `actions` and `onEdit` only act on ids/state read at call time, and `setOpenPopoverGoalId` is a state
+ *  setter. `extra` adds a surface's own scalar props. */
+export function sameRowSlice<P extends RowSliceProps>(
+  a: P,
+  b: P,
+  extra: (props: P) => unknown[] = () => []
+) {
+  const id = a.row.goalId
+  if (id !== b.row.goalId || a.row !== b.row) return false
+  const scalar = (props: P) => [
+    props.selected,
+    props.popoverOpen,
+    props.xpBook,
+    props.actions.pendingIds.has(id),
+    props.onToggleSelected,
+    props.dragHandle,
+    ...extra(props),
+  ]
+  const perId = (props: P) => [
+    props.estimates?.get(id),
+    props.metrics?.get(id),
+    props.potentialProgress?.get(id),
+    props.levelPotentialProgress?.get(id),
+    props.levelChargedXp?.get(id),
+    props.levelPoolXpAvailable?.get(id),
+    props.reachedByGoalId?.get(id),
+    props.seasonFit?.fits.get(id),
+    props.seasonFit?.season,
+    props.seasonFit?.seasonNumber,
+    props.seasonFit?.deadlineMs,
+    ...(a.row.dependsOn ?? []).flatMap((dep) => [
+      props.cascadeContext?.statusById.get(dep),
+      props.cascadeContext?.dependentCountById.get(dep),
+    ]),
+  ]
+  const same = (x: unknown[], y: unknown[]) =>
+    x.length === y.length && x.every((value, k) => Object.is(value, y[k]))
+  return same(scalar(a), scalar(b)) && same(perId(a), perId(b))
+}
+
 /** Whether a row renders as a completed (Reached) row/card — a display state derived from computed
  *  attainment, never the goal's stored status. */
 export function isReachedRow(

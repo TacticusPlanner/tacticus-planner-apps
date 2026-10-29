@@ -25,7 +25,12 @@ describe("planning settings API", () => {
   beforeEach(() => vi.restoreAllMocks())
 
   it("reads the settings", async () => {
-    const settings = { dailyEnergy: 378, xpBookRarity: "Epic", revision: 2 }
+    const settings = {
+      dailyEnergy: 378,
+      xpBookRarity: "Epic",
+      goalsView: "Table",
+      revision: 2,
+    }
     const fetch = respond(settings)
 
     expect(await getPlanningSettings()).toEqual(settings)
@@ -38,6 +43,7 @@ describe("planning settings API", () => {
     const settings = {
       dailyEnergy: 288,
       xpBookRarity: "Epic" as const,
+      goalsView: "Table" as const,
       revision: 1,
     }
     const fetch = respond({ ...settings, revision: 2 })

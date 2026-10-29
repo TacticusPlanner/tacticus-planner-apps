@@ -1575,6 +1575,12 @@
         "noChange": "Keine Änderung",
         "quickPicks": "{{track}}: Schnellauswahl"
       }
+    },
+    "view": {
+      "label": "Zielansicht",
+      "cards": "Karten",
+      "table": "Tabelle",
+      "saveError": "Deine Zielansicht konnte nicht gespeichert werden. Sie wurde zurückgesetzt."
     }
   },
   "language": {
@@ -1710,6 +1716,10 @@
         "seasonFit": {
           "title": "Saison-Passung",
           "content": "Wähle eine Battle-Pass-, Gildenraid- oder Gildenkriegs-Saison, um zu sehen, welche Ziele rechtzeitig fertig werden. Eine Linie zeigt, ab wo Ziele in die nächste Saison rutschen."
+        },
+        "viewToggle": {
+          "title": "Karten oder Tabelle",
+          "content": "Wechsle zwischen Zielkarten und der kompakten Tabelle. Deine Wahl wird in deinem Konto gespeichert."
         }
       }
     },

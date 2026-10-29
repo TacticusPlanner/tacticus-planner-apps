@@ -253,7 +253,7 @@ function useComputedGoalsOverviewMetrics(
             }
           : remainingStandalone
       // Plan-wide coverage overrides the standalone ability materials (`null` = fully covered/none left).
-      // A paused Machine of War goal is outside the plan run: its standalone need against the full stock.
+      // A paused Ability goal is outside the plan run: its standalone need against the full stock.
       const standaloneMaterials = withSlots?.abilityMaterials
       const withMaterials: typeof withSlots =
         withSlots && abilityMaterialsByGoalId?.has(goalId)
@@ -262,16 +262,16 @@ function useComputedGoalsOverviewMetrics(
               abilityMaterials:
                 abilityMaterialsByGoalId.get(goalId) ?? undefined,
             }
-          : withSlots &&
-              detail.entityType === "Mow" &&
-              standaloneMaterials &&
-              abilityInventory
+          : withSlots && standaloneMaterials && abilityInventory
             ? {
                 ...withSlots,
                 abilityMaterials: withStandaloneAvailable(
                   standaloneMaterials,
                   abilityInventory,
-                  mowsById?.get(detail.entityId)?.alliance
+                  (detail.entityType === "Mow"
+                    ? mowsById
+                    : charactersById
+                  )?.get(detail.entityId)?.alliance
                 ),
               }
             : withSlots

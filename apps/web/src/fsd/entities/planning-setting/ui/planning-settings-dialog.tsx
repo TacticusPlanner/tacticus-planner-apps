@@ -23,6 +23,7 @@ import { Slider } from "@workspace/ui/components/slider"
 import { Spinner } from "@workspace/ui/components/spinner"
 
 import {
+  normalizeGoalsView,
   normalizeXpBookRarity,
   usePlanningSettings,
   xpBookRarityOptions,
@@ -66,9 +67,11 @@ export function PlanningSettingsDialog({
     setStatus("saving")
     setError(null)
     try {
+      // PUT replaces every setting, so the Goals view this dialog doesn't edit is passed through.
       await save({
         dailyEnergy,
         xpBookRarity,
+        goalsView: normalizeGoalsView(settings.goalsView),
         revision: settings.revision,
       })
       onOpenChange(false)

@@ -1,6 +1,6 @@
 import type { ReactNode } from "react"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
-import { act, fireEvent, render, screen, within } from "@/test/render"
+import { act, fireEvent, render, screen, waitFor, within } from "@/test/render"
 import userEvent from "@testing-library/user-event"
 
 import { setTestAuth } from "@/test/auth"
@@ -76,7 +76,14 @@ vi.mock("@/entities/player-data-override", () => ({
   onslaughtReward: () => ({ min: 2, max: 3, mythic: false }),
 }))
 
+const goalsViewState = vi.hoisted(() => ({
+  view: "Table" as "Cards" | "Table",
+  loading: false,
+  setView: vi.fn(),
+}))
+
 vi.mock("@/entities/planning-setting", async (importOriginal) => {
+  const React = await import("react")
   const actual =
     await importOriginal<typeof import("@/entities/planning-setting")>()
   return {
@@ -93,6 +100,19 @@ vi.mock("@/entities/planning-setting", async (importOriginal) => {
       settings: { dailyEnergy: 288, xpBookRarity: "Legendary", revision: 1 },
       save: vi.fn(),
     }),
+    // Most cases here exercise the desktop table; the Goals view cases set this themselves. Held in
+    // React state so a toggle re-renders the page like the real cached query does.
+    useGoalsView: () => {
+      const [view, setView] = React.useState(goalsViewState.view)
+      return {
+        view,
+        loading: goalsViewState.loading,
+        setView: (next: "Cards" | "Table") => {
+          goalsViewState.setView(next)
+          setView(next)
+        },
+      }
+    },
   }
 })
 
@@ -367,6 +387,9 @@ describe("GoalsPage", () => {
     mobile.value = false
     onLaunch.mockReset()
     insightsResult.value = insightsResult.emptyResult
+    goalsViewState.view = "Table"
+    goalsViewState.loading = false
+    goalsViewState.setView.mockReset()
   })
 
   it("does not render page-level creation actions", async () => {
@@ -1465,6 +1488,8 @@ describe("GoalsPage bulk actions", () => {
     mobile.value = false
     onLaunch.mockReset()
     insightsResult.value = insightsResult.emptyResult
+    goalsViewState.view = "Table"
+    goalsViewState.loading = false
     listGoals.mockResolvedValue({
       goals: [
         { ...activeGoal, globalPriority: 1 },
@@ -1530,6 +1555,37 @@ describe("GoalsPage bulk actions", () => {
     await vi.waitFor(() =>
       expect(screen.getByTestId("goals-select-all")).not.toBeChecked()
     )
+  })
+
+  it("bulk pause acts on goals selected from their cards in Cards view", async () => {
+    goalsViewState.view = "Cards"
+    const user = userEvent.setup()
+    renderPage()
+    await screen.findByTestId("goals-list-cards")
+
+    await select(user, "goal-1")
+    await select(user, "goal-b")
+    await user.click(screen.getByTestId("goals-bulk-pause"))
+
+    await vi.waitFor(() =>
+      expect(updateGoalsStatus).toHaveBeenCalledExactlyOnceWith({
+        goalIds: ["goal-1", "goal-b"],
+        status: "Paused",
+      })
+    )
+  })
+
+  it("selects every visible goal from the select-all above the cards grid", async () => {
+    goalsViewState.view = "Cards"
+    const user = userEvent.setup()
+    renderPage()
+    await screen.findByTestId("goals-list-cards")
+
+    await user.click(screen.getByTestId("goals-select-all"))
+
+    for (const id of ["goal-1", "goal-b", "goal-p"])
+      expect(screen.getByTestId(`goal-row-select-${id}`)).toBeChecked()
+    expect(screen.getByTestId("goals-bulk-delete")).toBeEnabled()
   })
 
   it("clears the selection when the status filter changes", async () => {
@@ -1779,5 +1835,126 @@ describe("GoalsPage bulk actions", () => {
       expect(screen.queryByTestId("mobile-select-bar")).toBeNull()
       expect(screen.getByTestId("mobile-reorder-bar")).toBeInTheDocument()
     })
+  })
+})
+
+describe("GoalsPage Goals view", () => {
+  beforeEach(async () => {
+    listGoals.mockReset()
+    listProjects.mockReset()
+    membership = {}
+    listProjects.mockResolvedValue({ projects: [] })
+    setTestAuth({ authenticated: true })
+    await seedGameCatalog({ characters: catalogCharacters })
+    mobile.value = false
+    insightsResult.value = insightsResult.emptyResult
+    goalsViewState.view = "Cards"
+    goalsViewState.loading = false
+    goalsViewState.setView.mockReset()
+  })
+
+  it("opens in the cards grid with Cards pressed", async () => {
+    listGoals.mockResolvedValue({ goals: [activeGoal] })
+    renderPage()
+
+    expect(await screen.findByTestId("goals-list-cards")).toBeInTheDocument()
+    expect(screen.queryByTestId("goals-list-table")).not.toBeInTheDocument()
+    expect(screen.getByTestId("goals-filters-row")).toContainElement(
+      screen.getByTestId("goals-view-toggle")
+    )
+    expect(screen.getByTestId("goals-view-cards")).toHaveAttribute(
+      "data-state",
+      "on"
+    )
+  })
+
+  it("keeps the loading skeleton instead of either view while the stored view is pending", async () => {
+    goalsViewState.view = "Table"
+    goalsViewState.loading = true
+    listGoals.mockResolvedValue({ goals: [activeGoal] })
+    renderPage()
+
+    expect(await screen.findByTestId("goals-page-loading")).toBeInTheDocument()
+    await waitFor(() => expect(listGoals).toHaveBeenCalled())
+    expect(screen.queryByTestId("goals-list-cards")).not.toBeInTheDocument()
+    expect(screen.queryByTestId("goals-list-table")).not.toBeInTheDocument()
+  })
+
+  it("renders the table for a stored Table view", async () => {
+    goalsViewState.view = "Table"
+    listGoals.mockResolvedValue({ goals: [activeGoal] })
+    renderPage()
+
+    expect(await screen.findByTestId("goals-list-table")).toBeInTheDocument()
+    expect(screen.queryByTestId("goals-list-cards")).not.toBeInTheDocument()
+  })
+
+  it("switches to the table at once and saves the choice, keeping the selection", async () => {
+    listGoals.mockResolvedValue({ goals: [activeGoal, pausedGoal] })
+    const user = userEvent.setup()
+    renderPage()
+
+    await screen.findByTestId("goals-list-cards")
+    await user.click(
+      await screen.findByTestId(`goal-row-select-${activeGoal.goalId}`)
+    )
+    await user.click(screen.getByTestId("goals-view-table"))
+
+    expect(goalsViewState.setView).toHaveBeenCalledWith("Table")
+    expect(await screen.findByTestId("goals-list-table")).toBeInTheDocument()
+    expect(
+      screen.getByTestId(`goal-row-select-${activeGoal.goalId}`)
+    ).toBeChecked()
+    expect(
+      screen.getByTestId(`goal-row-select-${pausedGoal.goalId}`)
+    ).not.toBeChecked()
+  })
+
+  it.each(["Cards", "Table"] as const)(
+    "finds every desktop tour target in %s view",
+    async (view) => {
+      goalsViewState.view = view
+      listGoals.mockResolvedValue({
+        goals: [
+          { ...activeGoal, globalPriority: 1 },
+          { ...pausedGoal, globalPriority: 2 },
+        ],
+      })
+      renderPage()
+      await screen.findByTestId(
+        view === "Cards" ? "goals-list-cards" : "goals-list-table"
+      )
+
+      for (const id of [
+        "goals-project-scope",
+        "goals-status-filter",
+        "goals-type-filter",
+        "goals-season-fit",
+        "goals-view-toggle",
+        "goals-select-all",
+        "goals-bulk-actions",
+        "goals-order-hint",
+        "goals-create-goal",
+        "goals-planning-settings",
+        "goals-page",
+      ])
+        expect(screen.getByTestId(id)).toBeInTheDocument()
+      expect(
+        screen.getAllByTestId("goal-row-drag-handle").length
+      ).toBeGreaterThan(0)
+    }
+  )
+
+  it("shows cards and no toggle on mobile, and never saves a view there", async () => {
+    mobile.value = true
+    goalsViewState.view = "Table"
+    goalsViewState.loading = true
+    listGoals.mockResolvedValue({ goals: [activeGoal] })
+    renderPage()
+
+    expect(await screen.findByTestId("goals-list-cards")).toBeInTheDocument()
+    expect(screen.queryByTestId("goals-list-table")).not.toBeInTheDocument()
+    expect(screen.queryByTestId("goals-view-toggle")).not.toBeInTheDocument()
+    expect(goalsViewState.setView).not.toHaveBeenCalled()
   })
 })

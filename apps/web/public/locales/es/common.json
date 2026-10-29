@@ -1575,6 +1575,12 @@
         "noChange": "Sin cambios",
         "quickPicks": "{{track}}: selección rápida"
       }
+    },
+    "view": {
+      "label": "Vista de objetivos",
+      "cards": "Tarjetas",
+      "table": "Tabla",
+      "saveError": "No se pudo guardar tu vista de objetivos. Se ha restablecido."
     }
   },
   "language": {
@@ -1710,6 +1716,10 @@
         "seasonFit": {
           "title": "Ajuste a temporada",
           "content": "Elige una temporada del Pase de batalla, de Incursión de gremio o de Guerra de gremios para ver qué objetivos terminan a tiempo. Una línea marca dónde los objetivos pasan a la siguiente temporada."
+        },
+        "viewToggle": {
+          "title": "Tarjetas o tabla",
+          "content": "Cambia entre las tarjetas de objetivos y la tabla compacta. Tu elección se guarda en tu cuenta."
         }
       }
     },

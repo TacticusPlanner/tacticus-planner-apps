@@ -24,8 +24,9 @@ function addTo<K extends string>(
   target[key] = (target[key] ?? 0) + count
 }
 
-/** What a goal's Ability materials still lack once the plan's stock is spent: a Character's entry is
- *  already net, a Machine of War's keeps its gross need beside the stock at its turn. */
+/** What a goal's Ability materials still lack once the plan's stock is spent: the entry keeps its gross
+ *  need beside the stock at its turn (an entry without stock, from a plan run without inventory, is
+ *  counted whole). */
 function shortfall(
   needed: Partial<Record<Rarity, number>>,
   available: Partial<Record<Rarity, number>> | undefined

@@ -11,6 +11,7 @@ import type {
   InventoryAllocationGoal,
 } from "@/features/goal-farming/@x/goal-planning"
 
+import type { InventoryOrbs } from "./orb-potential-allocation"
 import type { PlanNetResources } from "./use-plan-insights.domain"
 
 type ShardGoalNeed = InventoryAllocationGoal<string>
@@ -72,6 +73,25 @@ const shardShortfall = (
   }
 }
 
+/** Each orb rarity a goal needs beside the stock left at its turn, then spends its share of `stock`
+ *  (the allocation's needs minus what it still lacks) for the lower-priority goals. */
+function takeOrbPool(
+  allocation: GoalInventoryAllocation<string> | undefined,
+  stock: Map<string, number>
+): NonNullable<PlanNetResources["orbPool"]> {
+  const neededByRarity: Partial<Record<Rarity, number>> = {}
+  const availableByRarity: Partial<Record<Rarity, number>> = {}
+  const left = remainingById(allocation)
+  for (const need of allocation?.stages[0]?.needs ?? []) {
+    const rarity = need.id.split(":")[2] as Rarity
+    const held = stock.get(need.id) ?? 0
+    neededByRarity[rarity] = (neededByRarity[rarity] ?? 0) + need.count
+    availableByRarity[rarity] = (availableByRarity[rarity] ?? 0) + held
+    stock.set(need.id, held - (need.count - (left.get(need.id) ?? 0)))
+  }
+  return { neededByRarity, availableByRarity }
+}
+
 /** Orb ids look like `orb:<alliance>:<Rarity>`; this returns a goal's shortfall by rarity. */
 function orbShortfall(
   allocation: GoalInventoryAllocation<string> | undefined
@@ -92,6 +112,10 @@ type NeedParams = Parameters<typeof calculateGoalResourceNeed>[0]
  *  keeps its standalone need. */
 export function createPlanNetResources() {
   const goals: ShardGoalNeed[] = []
+  const grossAscensionShards = new Map<
+    string,
+    { shards: number; mythicShards: number }
+  >()
   const ownedByEntityId = new Map<string, readonly [number, number]>()
 
   const add = (
@@ -134,17 +158,30 @@ export function createPlanNetResources() {
         })
       : null
     if (goal) goals.push(goal)
+    if (gross && detail.goalType === "Ascension") {
+      grossAscensionShards.set(detail.goalId, {
+        shards: gross.shards,
+        mythicShards: gross.mythicShards,
+      })
+    }
   }
 
   const resolve = (params: {
     orderedDetails: readonly GoalDetail[]
     orbAllocations: ReadonlyMap<string, GoalInventoryAllocation<string>>
+    inventoryOrbs?: InventoryOrbs
     levelGoldByGoalId: ReadonlyMap<string, number>
     standaloneByGoalId: ReadonlyMap<string, { slots: number; energy: number }>
     chainedFromLevelByGoalId: ReadonlyMap<string, number>
   }) => {
     const shardAllocations = allocateShardInventory(goals, ownedByEntityId)
     const netByGoalId = new Map<string, PlanNetResources>()
+    const orbStock = new Map<string, number>()
+    for (const alliance of ["imperial", "xenos", "chaos"] as const) {
+      for (const entry of params.inventoryOrbs?.[alliance] ?? []) {
+        orbStock.set(`orb:${alliance}:${entry.rarity}`, entry.amount)
+      }
+    }
     for (const detail of params.orderedDetails) {
       const net: PlanNetResources = {}
       if (detail.goalType === "Ascension" || detail.goalType === "Unlock") {
@@ -153,11 +190,26 @@ export function createPlanNetResources() {
           shardShortfall(shardAllocations.get(detail.goalId), detail.entityId)
         )
       }
+      const gross = grossAscensionShards.get(detail.goalId)
+      if (gross) {
+        net.shardProgress = {
+          shards: {
+            owned: gross.shards - (net.shards ?? 0),
+            needed: gross.shards,
+          },
+          mythicShards: {
+            owned: gross.mythicShards - (net.mythicShards ?? 0),
+            needed: gross.mythicShards,
+          },
+        }
+      }
       if (
         detail.goalType === "Ascension" &&
         params.orbAllocations.has(detail.goalId)
       ) {
-        net.orbsByType = orbShortfall(params.orbAllocations.get(detail.goalId))
+        const allocation = params.orbAllocations.get(detail.goalId)
+        net.orbsByType = orbShortfall(allocation)
+        net.orbPool = takeOrbPool(allocation, orbStock)
       }
       const levelGold = params.levelGoldByGoalId.get(detail.goalId)
       if (detail.goalType === "Rank" && levelGold !== undefined) {

@@ -1575,6 +1575,12 @@
         "noChange": "No change",
         "quickPicks": "{{track}}: quick picks"
       }
+    },
+    "view": {
+      "label": "Goals view",
+      "cards": "Cards",
+      "table": "Table",
+      "saveError": "Couldn't save your Goals view. It was switched back."
     }
   },
   "language": {
@@ -1710,6 +1716,10 @@
         "seasonFit": {
           "title": "Season fit",
           "content": "Pick a Battle Pass, Guild Raid or Guild War season to see which goals finish in time. A line marks where goals start spilling into the next season."
+        },
+        "viewToggle": {
+          "title": "Cards or table",
+          "content": "Switch between goal cards and the compact table. Your choice is saved to your account."
         }
       }
     },

@@ -11,9 +11,11 @@ import {
 } from "@workspace/ui/components/table"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
+import type { GoalsView } from "@/entities/planning-setting"
 import { useGoalCatalog } from "@/features/goal-planning"
 import { SortableList } from "@/shared/ui"
 import { GoalRowCells } from "./goal-table-row"
+import { GoalsCards } from "./goals-cards"
 import {
   isReachedRow,
   REACHED_ROW_CLASS,
@@ -23,12 +25,17 @@ import { GoalsMobileCards } from "./goals-mobile-cards"
 import { SEASON_FIT_ROW_ACCENT } from "./season-fit-copy"
 import { SeasonCutoffRow } from "./season-fit-ui"
 
-/** Desktop table + mobile card list for a tab's goal rows — mirrors `guild-members-list.tsx`'s
- * responsive split. The row itself opens nothing; its Edit action opens the Edit goal dialog, and the actions
- * and nested buttons stop activation from bubbling so they keep working independently.
- * `reorderEnabled` shows a drag handle on every desktop row directly (no separate mode); mobile
- * additionally needs `mobileReorderActive` (add-inline-goal-reprioritize). */
-export function GoalsList(props: GoalsListProps) {
+/** A tab's goal rows as the goal cards or the desktop table (goal-list-layout). Below the mobile
+ * breakpoint it is always cards; at or above it, `view` picks (the page passes the account's stored
+ * Goals view; `Table` when omitted, for embeds that have no view toggle). The row itself opens nothing;
+ * its Edit action opens the Edit goal dialog, and the actions and nested buttons stop activation from
+ * bubbling so they keep working independently. `reorderEnabled` shows a drag handle on every desktop
+ * row or card directly (no separate mode); mobile additionally needs `mobileReorderActive`
+ * (add-inline-goal-reprioritize). */
+export function GoalsList({
+  view = "Table",
+  ...props
+}: GoalsListProps & { view?: GoalsView }) {
   const isMobile = useIsMobile()
   const { rows } = props
 
@@ -36,7 +43,12 @@ export function GoalsList(props: GoalsListProps) {
     return null
   }
 
-  return isMobile ? <GoalsMobileCards {...props} /> : <GoalsTable {...props} />
+  if (isMobile) return <GoalsMobileCards {...props} />
+  return view === "Cards" ? (
+    <GoalsCards {...props} isMobile={false} />
+  ) : (
+    <GoalsTable {...props} />
+  )
 }
 
 const EMPTY_SELECTION: ReadonlySet<string> = new Set()

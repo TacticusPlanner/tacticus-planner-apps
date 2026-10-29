@@ -270,7 +270,7 @@ describe("computePlanInsights", () => {
     })
   })
 
-  describe("ability materials net of inventory (goal-remaining-resources)", () => {
+  describe("ability materials against inventory (goal-remaining-resources)", () => {
     const abilityGoal = (goalId: string, start: number, end: number) =>
       goalDetail({
         goalId,
@@ -316,24 +316,35 @@ describe("computePlanInsights", () => {
         ]),
       })
 
-    it("shows no badge chip for a resource the player fully holds, and keeps gold un-netted", () => {
+    it("keeps a fully held need beside the stock at the goal's turn, and gold un-netted", () => {
       expect(run(40).abilityMaterialsByGoalId.get("first")).toEqual({
         gold: 90,
-        badgesByRarity: {},
+        badgesByRarity: { Epic: 27 },
         forgeBadgesByRarity: {},
         components: 0,
+        available: {
+          badgesByRarity: { Epic: 40 },
+          forgeBadgesByRarity: {},
+          components: 0,
+        },
       })
     })
 
-    it("shows the shortfall for a partly held resource, in priority order, from the unit's alliance", () => {
+    it("hands each goal the stock left at its turn, in priority order, from the unit's alliance", () => {
       // 30 Xenos Epic badges (the 999 Imperial ones must not count): first takes 27, second sees 3 of 5.
       const result = run(30)
       expect(result.abilityMaterialsByGoalId.get("first")).toMatchObject({
-        badgesByRarity: {},
+        badgesByRarity: { Epic: 27 },
+        available: { badgesByRarity: { Epic: 30 } },
       })
       expect(result.abilityMaterialsByGoalId.get("second")).toMatchObject({
         gold: 100,
-        badgesByRarity: { Epic: 2 },
+        badgesByRarity: { Epic: 5 },
+        available: { badgesByRarity: { Epic: 3 } },
+      })
+      // The Insights shortfall still nets: only the second goal's 2 badges are missing.
+      expect(result.missing.abilityBadges).toEqual({
+        Xenos: { Epic: 2 },
       })
     })
 
@@ -847,12 +858,30 @@ describe("computePlanInsights", () => {
       const net = computePlanInsights(params(40, 0)).planNetByGoalId
       expect(net.get("a")).toMatchObject({ shards: 0 })
       expect(net.get("b")).toMatchObject({ shards: 40 })
+      // The card's shard bars: owned shards spent on each goal against its own steps' cost.
+      expect(net.get("a")?.shardProgress?.shards).toEqual({
+        owned: 30,
+        needed: 30,
+      })
+      expect(net.get("b")?.shardProgress?.shards).toEqual({
+        owned: 10,
+        needed: 50,
+      })
     })
 
     it("shows no orb shortfall when the orbs are fully held and the shortfall otherwise", () => {
       const net = computePlanInsights(params(0, 10)).planNetByGoalId
       expect(net.get("a")?.orbsByType).toEqual({})
       expect(net.get("b")?.orbsByType).toEqual({ Uncommon: 4 })
+      // The chips' available/needed: each goal's gross need beside the stock left at its turn.
+      expect(net.get("a")?.orbPool).toEqual({
+        neededByRarity: { Uncommon: 10 },
+        availableByRarity: { Uncommon: 10 },
+      })
+      expect(net.get("b")?.orbPool).toEqual({
+        neededByRarity: { Uncommon: 4 },
+        availableByRarity: { Uncommon: 0 },
+      })
     })
   })
 

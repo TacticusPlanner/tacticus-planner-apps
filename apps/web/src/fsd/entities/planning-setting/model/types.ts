@@ -8,10 +8,19 @@ import type { ApiSchemas } from "@/shared/api"
  *  the same way (see `normalizeXpBookRarity`). */
 export type PlanningSettings = ApiSchemas["UserSettingsResponse"]
 
+export type GoalsView = PlanningSettings["goalsView"]
+
 export const defaultPlanningSettings: PlanningSettings = {
   dailyEnergy: 288,
   xpBookRarity: "Legendary",
+  goalsView: "Cards",
   revision: 0,
+}
+
+/** A missing/unrecognized stored Goals view behaves as Cards (goal-list-layout: Cards is the default),
+ *  so a bad stored value can never strand a user in a view the toggle doesn't offer. */
+export function normalizeGoalsView(view: string | null | undefined): GoalsView {
+  return view === "Table" ? "Table" : "Cards"
 }
 
 /** Every rarity the planning-settings dialog offers for `xpBookRarity`, in Common→Mythic order. */

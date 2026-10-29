@@ -80,6 +80,10 @@ describe("ascensionResourceNeed", () => {
     expect(need.shards).toBe(35)
     expect(need.orbsByType).toEqual({ Uncommon: 10 })
     expect(need.shardId).toBe("shard:hero1")
+    expect(need.shardProgress).toEqual({
+      shards: { owned: 5, needed: 40 },
+      mythicShards: { owned: 0, needed: 0 },
+    })
   })
 
   it("returns an empty need for an inverted or empty range", () => {
@@ -256,6 +260,9 @@ describe("ascensionResourceNeed plan coverage", () => {
     expect(second.shards).toBe(750)
     expect(second.orbsByType).toEqual({ Legendary: 35 })
     expect(first.shards + second.shards).toBe(960)
+    // Each goal's bar counts only its own steps and the owned shards it drew.
+    expect(first.shardProgress?.shards).toEqual({ owned: 40, needed: 250 })
+    expect(second.shardProgress?.shards).toEqual({ owned: 0, needed: 750 })
   })
 
   it("reads back the same allocation when a goal's need is computed again", () => {
