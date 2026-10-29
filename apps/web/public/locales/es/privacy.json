@@ -32,7 +32,7 @@
     },
     "deletion": {
       "title": "Eliminar tus datos",
-      "body": "Puedes eliminar tu cuenta y todos sus datos del planificador en Ajustes de la cuenta, pestaña Cuenta, con «Purgar mi cuenta». Surte efecto de inmediato y no se puede deshacer."
+      "body": "Puedes eliminar tu cuenta en Ajustes de la cuenta, pestaña Cuenta, con «Purgar mi cuenta». Puedes elegir eliminar solo los datos del planificador o también tu cuenta de inicio de sesión del planificador (Microsoft Entra External ID). Se intenta eliminar la cuenta de inicio de sesión, y tus datos del planificador se eliminan aunque ese paso falle. Tu cuenta de Google no se ve afectada. Surte efecto de inmediato y no se puede deshacer."
     },
     "contact": {
       "title": "Contacto",

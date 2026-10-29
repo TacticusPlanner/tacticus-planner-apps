@@ -102,7 +102,18 @@
       "email": "E-mail",
       "signInMethodNote": "Chaque adresse e-mail ne fonctionne qu'avec une seule méthode de connexion : connectez-vous toujours de cette façon. Les comptes de méthodes différentes ne peuvent pas être fusionnés.",
       "purgeWarningTitle": "Purger le compte",
-      "purgeWarningDescription": "Cette action supprime immédiatement et définitivement toutes vos données du planificateur. Elle est irréversible.",
+      "purgeWarningDescription": "Cette action supprime immédiatement et définitivement les données sélectionnées. Elle est irréversible.",
+      "purgeScopeLabel": "Que supprimer",
+      "purgeScopes": {
+        "plannerData": {
+          "label": "Données du planificateur uniquement",
+          "description": "Supprime tout ce que vous avez enregistré dans le planificateur. Votre compte de connexion est conservé : à la prochaine connexion, vous repartirez avec un compte de planificateur neuf et vide."
+        },
+        "signInAccount": {
+          "label": "Données du planificateur et compte de connexion",
+          "description": "Tente aussi de supprimer le compte avec lequel vous vous connectez au planificateur. Votre compte Google n’est pas concerné. Si cette étape échoue, vos données du planificateur sont tout de même supprimées."
+        }
+      },
       "purgeConfirmLabel": "Saisissez « {{word}} » pour activer la purge",
       "purgeSubmit": "Purger mon compte",
       "purgeGenericError": "Une erreur s’est produite lors de la purge de votre compte. Veuillez réessayer."

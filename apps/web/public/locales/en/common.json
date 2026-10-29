@@ -102,7 +102,18 @@
       "email": "Email",
       "signInMethodNote": "Each email works with one sign-in method only, so always sign in this way. Accounts can't be merged across methods.",
       "purgeWarningTitle": "Purge account",
-      "purgeWarningDescription": "This permanently deletes all of your planner data immediately. This action cannot be undone.",
+      "purgeWarningDescription": "This permanently deletes the selected data immediately. This action cannot be undone.",
+      "purgeScopeLabel": "What to delete",
+      "purgeScopes": {
+        "plannerData": {
+          "label": "Planner data only",
+          "description": "Deletes everything you saved in the planner. Your sign-in account stays, so signing in again starts a new, empty planner account."
+        },
+        "signInAccount": {
+          "label": "Planner data and sign-in account",
+          "description": "Also tries to delete the account you sign in to the planner with. Your Google account itself is not affected. If that step fails, your planner data is still deleted."
+        }
+      },
       "purgeConfirmLabel": "Type \"{{word}}\" to enable the purge action",
       "purgeSubmit": "Purge my account",
       "purgeGenericError": "Something went wrong while purging your account. Please try again."

@@ -102,7 +102,18 @@
       "email": "Correo",
       "signInMethodNote": "Cada correo funciona con un solo método de inicio de sesión, así que inicia sesión siempre de esta forma. Las cuentas de métodos distintos no se pueden fusionar.",
       "purgeWarningTitle": "Purgar cuenta",
-      "purgeWarningDescription": "Esto elimina de inmediato todos tus datos del planificador. Esta acción no se puede deshacer.",
+      "purgeWarningDescription": "Esto elimina de inmediato los datos seleccionados. Esta acción no se puede deshacer.",
+      "purgeScopeLabel": "Qué eliminar",
+      "purgeScopes": {
+        "plannerData": {
+          "label": "Solo los datos del planificador",
+          "description": "Elimina todo lo que guardaste en el planificador. Tu cuenta de inicio de sesión se mantiene, así que al volver a iniciar sesión empezarás con una cuenta del planificador nueva y vacía."
+        },
+        "signInAccount": {
+          "label": "Datos del planificador y cuenta de inicio de sesión",
+          "description": "También intenta eliminar la cuenta con la que inicias sesión en el planificador. Tu cuenta de Google no se ve afectada. Si ese paso falla, tus datos del planificador se eliminan igualmente."
+        }
+      },
       "purgeConfirmLabel": "Escribe «{{word}}» para habilitar la purga",
       "purgeSubmit": "Purgar mi cuenta",
       "purgeGenericError": "Algo salió mal al purgar tu cuenta. Inténtalo de nuevo."
