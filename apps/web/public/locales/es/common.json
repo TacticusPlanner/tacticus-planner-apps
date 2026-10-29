@@ -1769,6 +1769,11 @@
       "goalLimitReached": "Ya tienes {{max}} objetivos de tipo {{type}} sin archivar. Archiva o elimina algunos primero.",
       "goalLimitReachedGeneric": "Puedes tener como máximo {{max}} objetivos sin archivar de un mismo tipo. Archiva o elimina algunos primero.",
       "projectLimitReached": "Ya tienes {{max}} proyectos sin archivar. Archiva uno para hacer sitio."
+    },
+    "view": {
+      "label": "Vista de objetivos",
+      "cards": "Tarjetas",
+      "table": "Tabla"
     }
   },
   "language": {
@@ -1905,6 +1910,10 @@
         "seasonFit": {
           "title": "Ajuste a temporada",
           "content": "Elige una temporada del Pase de batalla, de Incursión de gremio o de Guerra de gremios para ver qué objetivos terminan a tiempo. Una línea marca dónde los objetivos pasan a la siguiente temporada."
+        },
+        "viewToggle": {
+          "title": "Tarjetas o tabla",
+          "content": "Cambia entre las tarjetas de objetivos y la tabla compacta. Tu elección se guarda en este dispositivo."
         }
       }
     },

@@ -382,6 +382,7 @@ export function computePlanInsights(params: {
   const planNetByGoalId = planNet.resolve({
     orderedDetails,
     orbAllocations,
+    inventoryOrbs: params.inventoryOrbs,
     levelGoldByGoalId: levelPotential.goldByGoalId,
     standaloneByGoalId,
     chainedFromLevelByGoalId: levelPotential.chainedFromLevelByGoalId,

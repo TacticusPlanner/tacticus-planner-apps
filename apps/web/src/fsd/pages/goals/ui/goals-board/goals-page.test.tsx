@@ -373,6 +373,7 @@ describe("GoalsPage", () => {
     mobile.value = false
     onLaunch.mockReset()
     insightsResult.value = insightsResult.emptyResult
+    window.localStorage.setItem("goals.overview.view", "Table")
   })
 
   it("does not render page-level creation actions", async () => {
@@ -1321,6 +1322,7 @@ describe("GoalsPage", () => {
 
     it("shows the same labels and divider on mobile cards", async () => {
       mobile.value = true
+      window.localStorage.setItem("goals.overview.view", "Cards")
       window.localStorage.setItem("goals.overview.seasonFit", "battlePass")
       renderPage()
 
@@ -1545,6 +1547,7 @@ describe("GoalsPage bulk actions", () => {
     mobile.value = false
     onLaunch.mockReset()
     insightsResult.value = insightsResult.emptyResult
+    window.localStorage.setItem("goals.overview.view", "Table")
     listGoals.mockResolvedValue({
       goals: [
         { ...activeGoal, globalPriority: 1 },
@@ -1610,6 +1613,37 @@ describe("GoalsPage bulk actions", () => {
     await vi.waitFor(() =>
       expect(screen.getByTestId("goals-select-all")).not.toBeChecked()
     )
+  })
+
+  it("bulk pause acts on goals selected from their cards in Cards view", async () => {
+    window.localStorage.setItem("goals.overview.view", "Cards")
+    const user = userEvent.setup()
+    renderPage()
+    await screen.findByTestId("goals-list-cards")
+
+    await select(user, "goal-1")
+    await select(user, "goal-b")
+    await user.click(screen.getByTestId("goals-bulk-pause"))
+
+    await vi.waitFor(() =>
+      expect(updateGoalsStatus).toHaveBeenCalledExactlyOnceWith({
+        goalIds: ["goal-1", "goal-b"],
+        status: "Paused",
+      })
+    )
+  })
+
+  it("selects every visible goal from the select-all above the cards grid", async () => {
+    window.localStorage.setItem("goals.overview.view", "Cards")
+    const user = userEvent.setup()
+    renderPage()
+    await screen.findByTestId("goals-list-cards")
+
+    await user.click(screen.getByTestId("goals-select-all"))
+
+    for (const id of ["goal-1", "goal-b", "goal-p"])
+      expect(screen.getByTestId(`goal-row-select-${id}`)).toBeChecked()
+    expect(screen.getByTestId("goals-bulk-delete")).toBeEnabled()
   })
 
   it("clears the selection when the status filter changes", async () => {
@@ -1825,6 +1859,7 @@ describe("GoalsPage bulk actions", () => {
   describe("on mobile", () => {
     beforeEach(() => {
       mobile.value = true
+      window.localStorage.setItem("goals.overview.view", "Cards")
     })
 
     it("enters select mode with a bar showing zero selected and disabled actions, and Done clears it", async () => {
@@ -1858,6 +1893,175 @@ describe("GoalsPage bulk actions", () => {
 
       expect(screen.queryByTestId("mobile-select-bar")).toBeNull()
       expect(screen.getByTestId("mobile-reorder-bar")).toBeInTheDocument()
+    })
+  })
+})
+
+describe("GoalsPage Goals view", () => {
+  beforeEach(async () => {
+    listGoals.mockReset()
+    listProjects.mockReset()
+    membership = {}
+    listProjects.mockResolvedValue({ projects: [] })
+    setTestAuth({ authenticated: true })
+    await seedGameCatalog({ characters: catalogCharacters })
+    mobile.value = false
+    insightsResult.value = insightsResult.emptyResult
+    window.localStorage.setItem("goals.overview.view", "Cards")
+  })
+
+  it("opens in the cards grid with Cards pressed", async () => {
+    listGoals.mockResolvedValue({ goals: [activeGoal] })
+    renderPage()
+
+    expect(await screen.findByTestId("goals-list-cards")).toBeInTheDocument()
+    expect(screen.queryByTestId("goals-list-table")).not.toBeInTheDocument()
+    expect(screen.getByTestId("goals-filters-row")).toContainElement(
+      screen.getByTestId("goals-view-toggle")
+    )
+    expect(screen.getByTestId("goals-view-cards")).toHaveAttribute(
+      "data-state",
+      "on"
+    )
+  })
+
+  it("renders the table for a stored Table view", async () => {
+    window.localStorage.setItem("goals.overview.view", "Table")
+    listGoals.mockResolvedValue({ goals: [activeGoal] })
+    renderPage()
+
+    expect(await screen.findByTestId("goals-list-table")).toBeInTheDocument()
+    expect(screen.queryByTestId("goals-list-cards")).not.toBeInTheDocument()
+  })
+
+  it("switches to the table at once and stores the choice on this device, keeping the selection", async () => {
+    listGoals.mockResolvedValue({ goals: [activeGoal, pausedGoal] })
+    const user = userEvent.setup()
+    renderPage()
+
+    await screen.findByTestId("goals-list-cards")
+    await user.click(
+      await screen.findByTestId(`goal-row-select-${activeGoal.goalId}`)
+    )
+    await user.click(screen.getByTestId("goals-view-table"))
+
+    expect(await screen.findByTestId("goals-list-table")).toBeInTheDocument()
+    expect(window.localStorage.getItem("goals.overview.view")).toBe("Table")
+    expect(
+      screen.getByTestId(`goal-row-select-${activeGoal.goalId}`)
+    ).toBeChecked()
+    expect(
+      screen.getByTestId(`goal-row-select-${pausedGoal.goalId}`)
+    ).not.toBeChecked()
+  })
+
+  it.each(["Cards", "Table"] as const)(
+    "finds every desktop tour target in %s view",
+    async (view) => {
+      window.localStorage.setItem("goals.overview.view", view)
+      listGoals.mockResolvedValue({
+        goals: [
+          { ...activeGoal, globalPriority: 1 },
+          { ...pausedGoal, globalPriority: 2 },
+        ],
+      })
+      renderPage()
+      await screen.findByTestId(
+        view === "Cards" ? "goals-list-cards" : "goals-list-table"
+      )
+
+      for (const id of [
+        "goals-project-scope",
+        "goals-status-filter",
+        "goals-type-filter",
+        "goals-season-fit",
+        "goals-view-toggle",
+        "goals-select-all",
+        "goals-bulk-actions",
+        "goals-order-hint",
+        "goals-create-goal",
+        "goals-planning-settings",
+        "goals-page",
+      ])
+        expect(screen.getByTestId(id)).toBeInTheDocument()
+      expect(
+        screen.getAllByTestId("goal-row-drag-handle").length
+      ).toBeGreaterThan(0)
+    }
+  )
+
+  describe("on mobile", () => {
+    beforeEach(() => {
+      mobile.value = true
+    })
+
+    it("opens in cards with the toggle in the control row", async () => {
+      listGoals.mockResolvedValue({ goals: [activeGoal] })
+      renderPage()
+
+      expect(await screen.findByTestId("goals-list-cards")).toBeInTheDocument()
+      expect(screen.getByTestId("goals-filter-group")).toContainElement(
+        screen.getByTestId("goals-view-toggle")
+      )
+    })
+
+    it("switches to the table and restores it from this device", async () => {
+      listGoals.mockResolvedValue({ goals: [activeGoal] })
+      const user = userEvent.setup()
+      const first = renderPage()
+
+      await screen.findByTestId("goals-list-cards")
+      await user.click(screen.getByTestId("goals-view-table"))
+      expect(await screen.findByTestId("goals-list-table")).toBeInTheDocument()
+
+      first.unmount()
+      renderPage()
+      expect(await screen.findByTestId("goals-list-table")).toBeInTheDocument()
+    })
+
+    it("offers no drag handle or checkbox in the table until select mode", async () => {
+      window.localStorage.setItem("goals.overview.view", "Table")
+      listGoals.mockResolvedValue({ goals: [activeGoal] })
+      const user = userEvent.setup()
+      renderPage()
+
+      await screen.findByTestId("goals-list-table")
+      expect(
+        screen.queryByTestId("goal-row-drag-handle")
+      ).not.toBeInTheDocument()
+      expect(screen.queryByTestId("goals-select-all")).not.toBeInTheDocument()
+      expect(
+        screen.queryByTestId(`goal-row-select-${activeGoal.goalId}`)
+      ).not.toBeInTheDocument()
+
+      await user.click(screen.getByTestId("goals-mobile-select-toggle"))
+
+      expect(
+        await screen.findByTestId(`goal-row-select-${activeGoal.goalId}`)
+      ).toBeInTheDocument()
+      expect(
+        screen.queryByTestId("goal-row-drag-handle")
+      ).not.toBeInTheDocument()
+    })
+
+    it("uses the collapsed reorder cards in reorder mode from the table", async () => {
+      window.localStorage.setItem("goals.overview.view", "Table")
+      listGoals.mockResolvedValue({
+        goals: [
+          { ...activeGoal, globalPriority: 1 },
+          { ...pausedGoal, globalPriority: 2 },
+        ],
+      })
+      const user = userEvent.setup()
+      renderPage()
+
+      await screen.findByTestId("goals-list-table")
+      await user.click(screen.getByTestId("goals-mobile-reorder-toggle"))
+
+      expect(
+        await screen.findByTestId("goals-list-reorder-cards")
+      ).toBeInTheDocument()
+      expect(screen.queryByTestId("goals-list-table")).not.toBeInTheDocument()
     })
   })
 })

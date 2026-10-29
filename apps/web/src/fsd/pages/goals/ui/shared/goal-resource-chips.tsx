@@ -5,6 +5,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@workspace/ui/components/popover"
+import { cn } from "@workspace/ui/lib/utils"
 import {
   abilityBadgeIcon,
   energyIcon,
@@ -54,7 +55,9 @@ type Chip = {
 }
 
 /** Icon chips for what a goal still needs, per goal kind (`goal-remaining-resources`): never upgrade
- *  materials; zero quantities omitted. The XP-book figure lives with the level line, not here. */
+ *  materials; zero quantities omitted. The XP-book figure lives with the level line, not here.
+ *  `include` keeps only the chips whose key it accepts (`energy`, `gold`, `onslaughtTokens`, ...), so a
+ *  goal card can place some figures at the end of a row and the rest in its own chip row. */
 export function GoalResourceChips({
   goalType,
   entityType,
@@ -62,6 +65,8 @@ export function GoalResourceChips({
   energy,
   onslaughtTokens,
   shopSpend,
+  include,
+  className,
 }: {
   goalType: GoalKind
   entityType: string
@@ -72,6 +77,8 @@ export function GoalResourceChips({
   /** Projected shop currency still to spend, by currency id (`goal-remaining-resources`); absent or
    *  empty shows no chip. */
   shopSpend?: ReadonlyMap<string, number>
+  include?: (chipKey: string) => boolean
+  className?: string
 }) {
   const { t, i18n } = useTranslation(["common", "shops"])
   const fmt = (value: number) =>
@@ -95,13 +102,15 @@ export function GoalResourceChips({
     icon: GameIcon,
     name: string,
     needed: number | undefined,
-    available: number | undefined
+    available: number | undefined,
+    overlay?: string
   ) => {
     if (!needed || needed <= 0) return
     const pool = { available: available ?? 0, needed }
     chips.push({
       key,
       icon,
+      overlay,
       name,
       pool,
       text: `${fmt(pool.available)}/${fmt(needed)}`,
@@ -125,7 +134,8 @@ export function GoalResourceChips({
           icon(rarity),
           name,
           amounts?.[rarity],
-          available[rarity]
+          available[rarity],
+          overlay
         )
       } else {
         add(`${kind}-${rarity}`, icon(rarity), name, amounts?.[rarity], overlay)
@@ -225,11 +235,14 @@ export function GoalResourceChips({
     addGold(remaining?.levelGold)
     addEnergy()
   } else if (goalType === "Ascension") {
+    // In the plan, orbs read available/needed like V1's "x/y"; a paused goal's stay a plain need.
+    const orbPool = remaining?.orbPool
     addByRarity(
       "orbs",
-      remaining?.orbsByType,
+      orbPool ? orbPool.neededByRarity : remaining?.orbsByType,
       orbIcon,
-      orbAllianceIcon(alliance)
+      orbAllianceIcon(alliance),
+      orbPool?.availableByRarity
     )
     addShards()
     addEnergy()
@@ -238,8 +251,11 @@ export function GoalResourceChips({
     addEnergy()
   } else if (goalType === "Ability") {
     const isMow = entityType === "Mow"
-    // Machine of War materials read available/needed; a Character's stay net-remaining.
-    const pool = isMow ? (materials?.available ?? EMPTY_AVAILABLE) : undefined
+    // Ability materials read available/needed (V1's "x/y"), Character badges as well as Machine of War
+    // materials; a Character entry without stock data stays a plain need.
+    const pool = isMow
+      ? (materials?.available ?? EMPTY_AVAILABLE)
+      : materials?.available
     addByRarity(
       "abilityBadges",
       materials?.badgesByRarity,
@@ -272,6 +288,11 @@ export function GoalResourceChips({
   addTokens()
   addShopCurrency()
 
+  if (include) {
+    const kept = chips.filter((chip) => include(chip.key))
+    chips.length = 0
+    chips.push(...kept)
+  }
   if (chips.length === 0) return null
 
   // Same leading order on every goal (energy, gold, tokens); the rest keep their per-kind order
@@ -301,7 +322,7 @@ ${chip.hint}`
       : label(chip)
   return (
     <ul
-      className="flex flex-wrap gap-x-2.5 gap-y-1 text-sm"
+      className={cn("flex flex-wrap gap-x-2.5 gap-y-1 text-sm", className)}
       data-testid="goal-resource-chips"
     >
       {chips.map((chip) => (

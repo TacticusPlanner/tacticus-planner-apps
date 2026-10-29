@@ -94,6 +94,43 @@ describe("GoalResourceChips", () => {
     expect(chipNames()).toEqual(["Energy: 50", "Rare orbs: 3", "Shards: 200"])
   })
 
+  it("Ascension in the plan: orbs read available/needed, uncapped, even when fully held", () => {
+    render(
+      <GoalResourceChips
+        energy={undefined}
+        entityType="Character"
+        goalType="Ascension"
+        remaining={need({
+          orbsByType: {},
+          orbPool: {
+            neededByRarity: { Rare: 10 },
+            availableByRarity: { Rare: 35 },
+          },
+        })}
+      />
+    )
+    expect(chipNames()).toEqual(["Rare orbs: 35 of 10"])
+  })
+
+  it("Ascension in the plan: two orb rarities fold, each counting at most what it needs", () => {
+    render(
+      <GoalResourceChips
+        energy={undefined}
+        entityType="Character"
+        goalType="Ascension"
+        remaining={need({
+          orbsByType: { Epic: 4 },
+          orbPool: {
+            neededByRarity: { Rare: 10, Epic: 20 },
+            availableByRarity: { Rare: 35, Epic: 16 },
+          },
+        })}
+      />
+    )
+    expect(chipNames()).toEqual(["Orbs: 26 of 30"])
+    expect(screen.getByTestId("goal-resource-chip")).toHaveTextContent("26/30")
+  })
+
   it("Ascension: energy, gold, then onslaught tokens lead; orbs and shards follow", () => {
     render(
       <GoalResourceChips
@@ -231,6 +268,29 @@ describe("GoalResourceChips", () => {
       />
     )
     expect(chipNames()).toEqual(["Gold: 12,000", "Epic ability badges: 4"])
+  })
+
+  it("Character Ability in the plan: badges read available/needed like V1's x/y", () => {
+    render(
+      <GoalResourceChips
+        energy={undefined}
+        entityType="Character"
+        goalType="Ability"
+        remaining={need({
+          abilityMaterials: {
+            ...abilityMaterials,
+            forgeBadgesByRarity: {},
+            components: 0,
+            available: {
+              badgesByRarity: { Epic: 3 },
+              forgeBadgesByRarity: {},
+              components: 0,
+            },
+          },
+        })}
+      />
+    )
+    expect(chipNames()).toEqual(["Gold: 12,000", "Epic ability badges: 3 of 4"])
   })
 
   it("Upgrade: energy only", () => {

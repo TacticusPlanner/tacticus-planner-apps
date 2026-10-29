@@ -1769,6 +1769,11 @@
       "goalLimitReached": "Du hast bereits {{max}} nicht archivierte Ziele vom Typ {{type}}. Archiviere oder lösche zuerst einige.",
       "goalLimitReachedGeneric": "Du kannst höchstens {{max}} nicht archivierte Ziele eines Typs haben. Archiviere oder lösche zuerst einige.",
       "projectLimitReached": "Du hast bereits {{max}} nicht archivierte Projekte. Archiviere eines, um Platz zu schaffen."
+    },
+    "view": {
+      "label": "Zielansicht",
+      "cards": "Karten",
+      "table": "Tabelle"
     }
   },
   "language": {
@@ -1905,6 +1910,10 @@
         "seasonFit": {
           "title": "Saison-Passung",
           "content": "Wähle eine Battle-Pass-, Gildenraid- oder Gildenkriegs-Saison, um zu sehen, welche Ziele rechtzeitig fertig werden. Eine Linie zeigt, ab wo Ziele in die nächste Saison rutschen."
+        },
+        "viewToggle": {
+          "title": "Karten oder Tabelle",
+          "content": "Wechsle zwischen Zielkarten und der kompakten Tabelle. Deine Wahl wird auf diesem Gerät gespeichert."
         }
       }
     },

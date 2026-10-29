@@ -1,6 +1,5 @@
 import { memo, type Dispatch, type SetStateAction } from "react"
 import { useTranslation } from "react-i18next"
-import { GripVertical } from "lucide-react"
 import { Checkbox } from "@workspace/ui/components/checkbox"
 import { TableCell } from "@workspace/ui/components/table"
 
@@ -10,6 +9,7 @@ import {
   type GoalMenuMoves,
 } from "@/features/goal-planning"
 import { useGoalCatalog } from "@/features/goal-planning"
+import { GoalDragHandle } from "./goal-drag-handle"
 import { GoalRowActions } from ".//goal-row-actions"
 import { GoalResourceChips } from "../shared/goal-resource-chips"
 import { formatGoalRemainingText } from "../shared/goal-remaining-text"
@@ -37,6 +37,7 @@ import {
   isInFlightStatus,
   isReachedRow,
   goalXpBookFigure,
+  sameRowSlice,
   stopRowNavigation,
   toggleGoalStatus,
   type GoalsListProps,
@@ -64,6 +65,8 @@ type GoalRowCellsProps = Pick<
   row: NonNullable<GoalsListProps["rows"]>[number]
   selected: boolean
   reorderEnabled: boolean
+  /** Off on mobile outside select mode, where nothing could act on a selection. */
+  showCheckbox: boolean
   /** Stable across drag-state changes (unlike the row's transform/isDragging), so a drag moving
    *  other rows never re-renders this row's cells. */
   dragHandle: SortableRenderProps["dragHandle"]
@@ -71,7 +74,7 @@ type GoalRowCellsProps = Pick<
   setOpenPopoverGoalId: Dispatch<SetStateAction<string | null>>
 }
 
-/** A desktop goal row's cells. Memoized so the drag (which re-renders every sortable row shell on
+/** A goal row's cells. Memoized so the drag (which re-renders every sortable row shell on
  *  each over-target change) only pays for the row's cheap `<tr>`, not its chips/hooks/actions. */
 export const GoalRowCells = memo(function GoalRowCells({
   row,
@@ -93,6 +96,7 @@ export const GoalRowCells = memo(function GoalRowCells({
   onToggleSelected,
   selected,
   reorderEnabled,
+  showCheckbox,
   dragHandle,
   popoverOpen,
   setOpenPopoverGoalId,
@@ -127,33 +131,26 @@ export const GoalRowCells = memo(function GoalRowCells({
           Escape keys on the document, so they must bubble. */}
       <TableCell onClick={stopRowNavigation}>
         <div className="flex items-center gap-2">
-          <Checkbox
-            aria-label={t("goals.bulk.selectRow", {
-              entity: getEntityName(row.entityType, row.entityId),
-            })}
-            checked={selected}
-            data-testid={`goal-row-select-${row.goalId}`}
-            onCheckedChange={() => onToggleSelected?.(row.goalId)}
-          />
+          {showCheckbox ? (
+            <Checkbox
+              aria-label={t("goals.bulk.selectRow", {
+                entity: getEntityName(row.entityType, row.entityId),
+              })}
+              checked={selected}
+              data-testid={`goal-row-select-${row.goalId}`}
+              onCheckedChange={() => onToggleSelected?.(row.goalId)}
+            />
+          ) : null}
           <div className="flex items-center gap-1">
             <GoalPriorityNumber row={row} />
             {/* Only an in-flight row can be dragged *from* — a historical row in the same
             sorted list has no handle, though it can still be a drop anchor (a neighbor
             another drag lands next to); see spliceGoalOrder. */}
             {reorderEnabled && isInFlightStatus(row.status) ? (
-              <button
-                {...dragHandle.attributes}
-                {...dragHandle.listeners}
-                aria-label={t("goals.columns.reorderHandle", {
-                  entity: getEntityName(row.entityType, row.entityId),
-                })}
-                className="cursor-grab touch-none rounded-md p-1 text-muted-foreground outline-none hover:bg-muted focus-visible:ring-[3px] focus-visible:ring-ring active:cursor-grabbing"
-                data-testid="goal-row-drag-handle"
-                ref={dragHandle.ref}
-                type="button"
-              >
-                <GripVertical className="size-4" />
-              </button>
+              <GoalDragHandle
+                dragHandle={dragHandle}
+                entityName={getEntityName(row.entityType, row.entityId)}
+              />
             ) : null}
           </div>
         </div>
@@ -309,44 +306,9 @@ export const GoalRowCells = memo(function GoalRowCells({
   )
 }, sameRowProps)
 
-/** Memo comparator: maps and `actions` are rebuilt on every page render (a pause/resume rebuilds the
- *  cascade context, estimates and `pendingIds` for the whole list), so compare only this row's slice
- *  of each. Functions other than `onToggleSelected` are omitted on purpose: `actions`, `onEdit` and
- *  `onMenuMove` only act on ids/state read at call time (a move's target is the compared `moves`), and `setOpenPopoverGoalId` is a state setter. */
 function sameRowProps(a: GoalRowCellsProps, b: GoalRowCellsProps) {
-  const id = a.row.goalId
-  if (id !== b.row.goalId || a.row !== b.row) return false
-  const scalar = (props: GoalRowCellsProps) => [
-    props.selected,
+  return sameRowSlice(a, b, (props) => [
     props.reorderEnabled,
-    props.popoverOpen,
-    props.xpBook,
-    props.actions.pendingIds.has(id),
-    props.onToggleSelected,
-    props.dragHandle,
-    props.moves?.top,
-    props.moves?.up,
-    props.moves?.down,
-    props.moves?.priorityOrder,
-  ]
-  const perId = (props: GoalRowCellsProps) => [
-    props.estimates?.get(id),
-    props.metrics?.get(id),
-    props.potentialProgress?.get(id),
-    props.levelPotentialProgress?.get(id),
-    props.levelChargedXp?.get(id),
-    props.levelPoolXpAvailable?.get(id),
-    props.reachedByGoalId?.get(id),
-    props.seasonFit?.fits.get(id),
-    props.seasonFit?.season,
-    props.seasonFit?.seasonNumber,
-    props.seasonFit?.deadlineMs,
-    ...(a.row.dependsOn ?? []).flatMap((dep) => [
-      props.cascadeContext?.statusById.get(dep),
-      props.cascadeContext?.dependentCountById.get(dep),
-    ]),
-  ]
-  const same = (x: unknown[], y: unknown[]) =>
-    x.length === y.length && x.every((value, k) => Object.is(value, y[k]))
-  return same(scalar(a), scalar(b)) && same(perId(a), perId(b))
+    props.showCheckbox,
+  ])
 }
