@@ -146,6 +146,18 @@ function returnHomeAfterLandingSignIn() {
   }
 }
 
+// A sign-in the user abandons at the identity provider (cancelling the Google or username step,
+// backing out of sign-up) comes back as an error response, not a result. It must not stop the app
+// from starting: the user lands signed out and can try again.
+async function completeRedirect(instance: PublicClientApplication) {
+  try {
+    return await instance.handleRedirectPromise()
+  } catch (error) {
+    console.warn("[MSAL] sign-in redirect did not complete", error)
+    return null
+  }
+}
+
 export async function initializeAuthentication() {
   const msalInstance = new PublicClientApplication(createMsalConfig())
 
@@ -162,7 +174,7 @@ export async function initializeAuthentication() {
   // The redirect bridge (apps/web/redirect.html) already caches the response and navigates back to
   // where the flow was initiated before this ever runs, so navigateToLoginRequestUrl's default
   // (true) is a no-op safety net here, not a second navigation.
-  const redirectResult = await msalInstance.handleRedirectPromise()
+  const redirectResult = await completeRedirect(msalInstance)
 
   if (redirectResult) {
     activateAccount(msalInstance, redirectResult.account)
