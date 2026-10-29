@@ -22,6 +22,13 @@ authenticated state without requiring any further manual action.
 - **THEN** the user is returned to the application already signed in, with no
   additional click or prompt required
 
+#### Scenario: Interactive sign-in abandoned at the identity provider
+
+- **WHEN** a user cancels or backs out of the identity provider's sign-in or
+  sign-up steps and is returned to the application with an error response
+- **THEN** the application still starts, the user is shown as signed out, and
+  signing in again starts a fresh interactive sign-in
+
 ### Requirement: Sign-in from the landing experience reaches the authenticated home experience
 
 When a user signs in starting from the unauthenticated landing page, the

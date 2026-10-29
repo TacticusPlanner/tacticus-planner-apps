@@ -119,6 +119,21 @@ describe("authentication", () => {
     )
   })
 
+  it("starts signed out instead of failing when the sign-in redirect returns an error", async () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {})
+    const cancelled = new Error("access_denied: user cancelled")
+    mocks.instance.handleRedirectPromise.mockRejectedValue(cancelled)
+
+    await expect(auth.initializeAuthentication()).resolves.toBe(mocks.instance)
+
+    expect(mocks.instance.setActiveAccount).not.toHaveBeenCalled()
+    expect(warn).toHaveBeenCalledWith(
+      "[MSAL] sign-in redirect did not complete",
+      cancelled
+    )
+    warn.mockRestore()
+  })
+
   it("prefers the redirect account and configures logging", async () => {
     const redirectAccount = { homeAccountId: "redirect" }
     mocks.instance.handleRedirectPromise.mockResolvedValue({
