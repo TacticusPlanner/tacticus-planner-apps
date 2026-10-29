@@ -10,7 +10,7 @@
     "client_mode": ["navigate-existing", "auto"]
   },
   "theme_color": "#FFFFFF",
-  "background_color": "#EEF0F4",
+  "background_color": "#0B1222",
   "icons": [
     {
       "src": "/web-app-manifest-192x192.png",

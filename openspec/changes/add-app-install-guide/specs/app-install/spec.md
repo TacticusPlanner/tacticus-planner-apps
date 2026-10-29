@@ -8,7 +8,7 @@ Defines how the web app presents itself to the browser for installation and how 
 
 ### Requirement: The manifest describes an installable app
 
-`site.webmanifest` SHALL declare `start_url` `/home` and `scope` `/`, keep `id` `tacticusplannerv2` so existing installs stay the same app, and list 192 and 512 pixel icons both as `any` (the transparent logo) and as `maskable` (the logo inside the central 80% safe zone on a solid background). Its theme colour SHALL be the light top bar colour and its background colour the light canvas colour.
+`site.webmanifest` SHALL declare `start_url` `/home` and `scope` `/`, keep `id` `tacticusplannerv2` so existing installs stay the same app, and list 192 and 512 pixel icons both as `any` (the transparent logo) and as `maskable` (the logo inside the central 80% safe zone on the same navy background). Its theme colour SHALL be the light top bar colour and its background colour the deep navy of the landing hero's night sky (`#0B1222`), which the maskable and shortcut icons share, so the splash screen runs into the landing page without a visible icon edge.
 
 #### Scenario: Launching the installed app
 
