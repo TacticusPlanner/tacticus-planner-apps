@@ -1,4 +1,5 @@
-import type { ReactNode } from "react"
+import { Suspense, type ReactNode } from "react"
+import { useTranslation } from "react-i18next"
 import { Navigate, useLocation, useSearchParams } from "react-router"
 
 import { InteractionStatus } from "@azure/msal-browser"
@@ -66,6 +67,18 @@ export function LandingRoute() {
   // A bare "/" is browsable signed in too (spec: landing-page): the hero and the top bar offer
   // "Open planner" instead of sending the visitor away. The silent restore is not waited for here:
   // the landing page renders either way and its sign-in button shows the check in progress.
+  return (
+    <Suspense fallback={<BootScreen />}>
+      <LandingContent />
+    </Suspense>
+  )
+}
+
+// Loads the landing namespace before the public chrome mounts, so the top bar and footer never
+// appear around an empty middle while the page's copy downloads (spec: app-startup-rendering).
+function LandingContent() {
+  useTranslation("landing")
+
   return (
     <PublicLayout>
       <LandingPage />

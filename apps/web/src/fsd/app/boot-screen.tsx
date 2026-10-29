@@ -12,7 +12,8 @@ const BOOT_BACKGROUND = "bg-[#0B1222]"
  * and it stays dark in both themes, like the splash it continues.
  *
  * `children` is an optional message under the logo (e.g. "still loading"); it is positioned out of
- * flow so the logo never moves when one appears.
+ * flow so the logo never moves when one appears. The logo matches the size and position of the
+ * Android splash icon it follows, so the hand-over does not jump.
  */
 export function BootScreen({
   children,
@@ -32,22 +33,24 @@ export function BootScreen({
       data-testid={testId}
       role="status"
     >
-      <div className="relative flex flex-col items-center">
+      {/* The logo alone sets the box, so it sits at the viewport's centre at the splash's size and
+          the pulse and any message hang below it without moving it. */}
+      <div className="relative">
         <img
           alt=""
           aria-hidden="true"
-          className="size-24"
+          className="block size-52"
           src="/web-app-manifest-192x192.png"
         />
-        <div
-          aria-hidden="true"
-          className="mt-6 h-1 w-16 animate-pulse rounded-full bg-white/30 motion-reduce:animate-none"
-        />
-        {children ? (
-          <div className="absolute top-full mt-6 flex w-72 flex-col items-center gap-2 text-center">
-            {children}
-          </div>
-        ) : null}
+        <div className="absolute top-full left-1/2 mt-6 flex w-72 -translate-x-1/2 flex-col items-center gap-6 text-center">
+          <div
+            aria-hidden="true"
+            className="h-1 w-16 animate-pulse rounded-full bg-white/30 motion-reduce:animate-none"
+          />
+          {children ? (
+            <div className="flex flex-col items-center gap-2">{children}</div>
+          ) : null}
+        </div>
       </div>
     </div>
   )
