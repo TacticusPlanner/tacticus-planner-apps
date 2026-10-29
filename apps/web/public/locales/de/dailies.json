@@ -199,7 +199,8 @@
   "bonus": {
     "title": "Bonus-Raids",
     "meta": "falls Energie übrig ist",
-    "showMore": "Mehr anzeigen",
+    "showMore": "{{count}} weitere anzeigen",
+    "fullSchedule": "Ganzer Zeitplan",
     "showLess": "Weniger anzeigen",
     "limitReached": "Tägliches Energielimit erreicht – diese Bonus-Raids lohnen sich noch.",
     "limitReachedEmpty": "Tägliches Energielimit erreicht. Heute keine Bonus-Raids mehr."

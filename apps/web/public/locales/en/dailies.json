@@ -199,7 +199,8 @@
   "bonus": {
     "title": "Bonus raids",
     "meta": "if energy is left",
-    "showMore": "Show more",
+    "showMore": "Show {{count}} more",
+    "fullSchedule": "Full schedule",
     "showLess": "Show less",
     "limitReached": "Daily energy limit reached — these bonus raids are what's left worth raiding.",
     "limitReachedEmpty": "Daily energy limit reached. No bonus raids left today."

@@ -19,7 +19,7 @@ vi.mock("../campaign-event-status", () => ({
 type ReadyOverrides = Parameters<typeof ready>[0]
 
 function viewOf(overrides: ReadyOverrides = {}) {
-  return buildTodayView(ready(overrides), { showAllBonus: false })
+  return buildTodayView(ready(overrides))
 }
 
 function withOnslaught(overrides: ReadyOverrides = {}) {

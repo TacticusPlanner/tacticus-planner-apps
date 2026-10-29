@@ -19,7 +19,7 @@ vi.mock("../campaign-event-status", () => ({
 }))
 
 function renderDashboard(raids: DailyRaidsViewModel) {
-  return render(<TodayDashboard raids={raids} />)
+  return render(<TodayDashboard raids={raids} />, { route: "/dailies/raids" })
 }
 
 const planCard = () => screen.queryByRole("region", { name: "Today's plan" })
@@ -95,7 +95,7 @@ describe("TodayDashboard", () => {
     // 2 plan entries + 4 bonus entries, all shown.
     expect(within(bonus).getByTestId("raid-card-g2-B4")).toBeInTheDocument()
     expect(
-      within(bonus).queryByRole("button", { name: "Show more" })
+      within(bonus).queryByRole("button", { name: /^Show \d+ more$/ })
     ).not.toBeInTheDocument()
   })
 
@@ -114,7 +114,7 @@ describe("TodayDashboard", () => {
       within(bonus).queryByTestId("raid-card-g2-B4")
     ).not.toBeInTheDocument()
     expect(
-      within(bonus).getByRole("button", { name: "Show more" })
+      within(bonus).getByRole("button", { name: "Show 1 more" })
     ).toBeInTheDocument()
     // Not repeated beside the plan area.
     expect(bonusCards()).toHaveLength(1)
@@ -147,17 +147,34 @@ describe("TodayDashboard", () => {
     expect(bonusCards()).toHaveLength(1)
   })
 
-  it("shows the top 3 bonus entries, Show more reveals the rest and Show less hides them again", async () => {
+  it("shows the top 3 bonus entries, Show N more reveals the rest and Show less hides them again", async () => {
     const user = userEvent.setup()
     renderDashboard(ready())
 
     const bonus = within(bonusCards()[0]!)
     expect(bonus.getByText("if energy is left")).toBeInTheDocument()
     expect(bonus.queryByTestId("raid-card-g2-B4")).not.toBeInTheDocument()
-    await user.click(bonus.getByRole("button", { name: "Show more" }))
+    // 4 entries: one more after the top 3.
+    await user.click(bonus.getByRole("button", { name: "Show 1 more" }))
     expect(bonus.getByTestId("raid-card-g2-B4")).toBeInTheDocument()
+    expect(
+      bonus.queryByRole("button", { name: /^Show \d+ more$/ })
+    ).not.toBeInTheDocument()
     await user.click(bonus.getByRole("button", { name: "Show less" }))
     expect(bonus.queryByTestId("raid-card-g2-B4")).not.toBeInTheDocument()
+  })
+
+  it("links Bonus raids to Plan > Schedule below the limit, not at the limit", () => {
+    const { unmount } = renderDashboard(ready())
+    expect(
+      within(bonusCards()[0]!).getByRole("link", { name: "Full schedule" })
+    ).toHaveAttribute("href", "/plan/schedule")
+    unmount()
+
+    renderDashboard(ready({ dailyEnergy: 288, realEnergyUsedToday: 300 }))
+    expect(
+      within(bonusCards()[0]!).queryByRole("link", { name: "Full schedule" })
+    ).not.toBeInTheDocument()
   })
 
   it("leaves the bonus card out when no entry qualifies, so Shops moves up", () => {

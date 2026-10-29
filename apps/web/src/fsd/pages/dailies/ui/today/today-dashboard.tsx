@@ -11,7 +11,7 @@ import { TodayBonusCard } from "./today-bonus-card"
 import { TodayGlance } from "./today-glance"
 import { TodayOnslaughtCard } from "./today-onslaught-card"
 import { TodayPlanCard } from "./today-plan-card"
-import { buildTodayView } from "./today-view-model"
+import { BONUS_LIMIT, BONUS_STEP, buildTodayView } from "./today-view-model"
 import { TodaysAttemptsCard } from "./todays-attempts-card"
 
 /**
@@ -23,10 +23,10 @@ import { TodaysAttemptsCard } from "./todays-attempts-card"
  * at every track count.
  */
 export function TodayDashboard({ raids }: { raids: DailyRaidsViewModel }) {
-  const [showAllBonus, setShowAllBonus] = useState(false)
+  const [bonusShownCount, setBonusShownCount] = useState(BONUS_LIMIT)
   const view =
     raids.status === "ready"
-      ? buildTodayView(raids, { showAllBonus })
+      ? buildTodayView(raids, { bonusShownCount })
       : undefined
 
   // Bonus raids take the plan's place once the energy limit is spent, and whenever the plan shows no
@@ -48,8 +48,8 @@ export function TodayDashboard({ raids }: { raids: DailyRaidsViewModel }) {
             <FilteredOutNotice filteredOut={raids.filteredOut} />
           ) : undefined
         }
-        onToggleShowAll={() => setShowAllBonus((shown) => !shown)}
-        showAll={showAllBonus}
+        onShowLess={() => setBonusShownCount(BONUS_LIMIT)}
+        onShowMore={() => setBonusShownCount((shown) => shown + BONUS_STEP)}
         view={view}
         wide={wide}
       />

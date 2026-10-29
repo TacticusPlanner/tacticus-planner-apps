@@ -3,31 +3,52 @@ import { describe, expect, it } from "vitest"
 
 import { battle, offPlanBattle, ready } from "@/test/fixtures/daily-raids"
 
-import { BONUS_LIMIT, buildTodayView } from "./today-view-model"
+import { BONUS_LIMIT, BONUS_STEP, buildTodayView } from "./today-view-model"
 
 describe("buildTodayView", () => {
-  it("shows the top 3 bonus entries below the limit, and all of them when expanded", () => {
-    const raids = ready()
+  it("shows the top 3 bonus entries below the limit, then up to 5 more per step", () => {
+    const base = ready()
+    // 12 bonus entries: 3, then 3 + 5 = 8, then the last 4.
+    const raids = ready({
+      bonus: {
+        ...base.bonus,
+        entries: Array.from({ length: 12 }, (_, index) => ({
+          ...base.bonus.entries[0]!,
+          resourceId: `B${index}` as never,
+        })),
+      },
+    })
 
-    const collapsed = buildTodayView(raids, { showAllBonus: false })
-    expect(collapsed.bonusShown).toHaveLength(BONUS_LIMIT)
-    expect(collapsed.bonusHasMore).toBe(true)
+    const first = buildTodayView(raids)
+    expect(first.bonusShown).toHaveLength(BONUS_LIMIT)
+    expect(first.bonusMoreCount).toBe(BONUS_STEP)
+    expect(first.bonusCanShowLess).toBe(false)
 
-    const expanded = buildTodayView(raids, { showAllBonus: true })
-    expect(expanded.bonusShown).toHaveLength(4)
-    expect(expanded.bonusHasMore).toBe(true)
+    const second = buildTodayView(raids, {
+      bonusShownCount: BONUS_LIMIT + BONUS_STEP,
+    })
+    expect(second.bonusShown).toHaveLength(8)
+    expect(second.bonusMoreCount).toBe(4)
+    expect(second.bonusCanShowLess).toBe(true)
+
+    const all = buildTodayView(raids, {
+      bonusShownCount: BONUS_LIMIT + 2 * BONUS_STEP,
+    })
+    expect(all.bonusShown).toHaveLength(12)
+    expect(all.bonusMoreCount).toBe(0)
+    expect(all.bonusCanShowLess).toBe(true)
   })
 
   it("shows every bonus entry once the energy limit is reached, with no Show more", () => {
     const view = buildTodayView(
-      ready({ dailyEnergy: 288, realEnergyUsedToday: 288 }),
-      { showAllBonus: false }
+      ready({ dailyEnergy: 288, realEnergyUsedToday: 288 })
     )
 
     expect(view.selection.planEntries).toEqual([])
     // raidsLeftToday: 2 plan entries + 4 bonus entries.
     expect(view.bonusShown).toHaveLength(6)
-    expect(view.bonusHasMore).toBe(false)
+    expect(view.bonusMoreCount).toBe(0)
+    expect(view.bonusCanShowLess).toBe(false)
     expect(view.energy.overLimit).toBe(true)
   })
 
@@ -47,8 +68,7 @@ describe("buildTodayView", () => {
           [battle, 3],
           [exhausted, 0],
         ]),
-      }),
-      { showAllBonus: false }
+      })
     )
 
     // Two entries at B1 (one per goal), the B9 entry is spent.
@@ -56,7 +76,7 @@ describe("buildTodayView", () => {
   })
 
   it("prefers the plan's resource for a node, first entry first", () => {
-    const view = buildTodayView(ready(), { showAllBonus: false })
+    const view = buildTodayView(ready())
 
     // B1 is farmed for U1 (Ceramite) by the first plan entry, ahead of the bonus entries there.
     expect(view.planResourceByBattle.get(battle)?.label).toBe("Ceramite")
@@ -75,8 +95,7 @@ describe("buildTodayView", () => {
             { goalId: "g2", runs: 0.5, expectedShards: 2 },
           ],
         },
-      }),
-      { showAllBonus: false }
+      })
     )
 
     expect(view.onslaughtRuns.map((run) => run.unit.unitId)).toEqual([
@@ -89,8 +108,7 @@ describe("buildTodayView", () => {
 
   it("keeps the energy percentage uncapped", () => {
     const view = buildTodayView(
-      ready({ dailyEnergy: 638, realEnergyUsedToday: 663 }),
-      { showAllBonus: false }
+      ready({ dailyEnergy: 638, realEnergyUsedToday: 663 })
     )
 
     // 663 / 638 = 103.9%.
@@ -100,8 +118,7 @@ describe("buildTodayView", () => {
 
   it("treats a daily energy of 0 as no limit", () => {
     const view = buildTodayView(
-      ready({ dailyEnergy: 0, realEnergyUsedToday: 400 }),
-      { showAllBonus: false }
+      ready({ dailyEnergy: 0, realEnergyUsedToday: 400 })
     )
 
     expect(view.energy).toEqual({
@@ -124,8 +141,7 @@ describe("buildTodayView", () => {
           attemptsUsed,
           attemptsLeft: 0,
         })),
-      }),
-      { showAllBonus: false }
+      })
     )
 
     // 6 + 6 + 10 + 5 + 2 = 29 attempts over 5 nodes.
@@ -133,7 +149,7 @@ describe("buildTodayView", () => {
   })
 
   it("passes the energy used of the daily energy and the location emphasis through", () => {
-    const view = buildTodayView(ready(), { showAllBonus: false })
+    const view = buildTodayView(ready())
 
     expect(view.energy).toMatchObject({ used: 120, daily: 288 })
     expect(view.scheduleProps.emphasis).toBe("location")

@@ -199,7 +199,8 @@
   "bonus": {
     "title": "Raids bonus",
     "meta": "s'il reste de l'énergie",
-    "showMore": "Afficher plus",
+    "showMore": "Afficher {{count}} de plus",
+    "fullSchedule": "Calendrier complet",
     "showLess": "Afficher moins",
     "limitReached": "Limite d'énergie quotidienne atteinte — ces raids bonus valent encore la peine.",
     "limitReachedEmpty": "Limite d'énergie quotidienne atteinte. Plus de raids bonus aujourd'hui."

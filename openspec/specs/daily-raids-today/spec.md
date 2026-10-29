@@ -123,9 +123,9 @@ Today's raid schedule and Bonus Raids SHALL group their entries by the goal(s) t
 
 Today SHALL show a Bonus raids card: upgrades or shards that receive zero raids under the real daily energy budget but would receive at least one raid if energy were unlimited. The card's header SHALL say that these raids apply if energy is left. While the daily energy limit is not spent, an upgrade or shard that already receives at least one raid in the real schedule SHALL NOT appear in Bonus Raids; once it is spent, the rule below applies instead. Bonus Raids SHALL be ordered by the same goal-priority order the main schedule uses. Below the limit, when no entry qualifies, the Bonus raids card SHALL NOT be rendered.
 
-Below the limit, Bonus Raids SHALL initially display only the top 3 qualifying entries in that order. When more than 3 entries qualify, Today SHALL show a "Show more" control beneath the visible entries; activating it reveals the remaining entries in place (still in the same order, still grouped by goal per the grouping requirement above) and turns the control into "Show less", which returns to the top 3. The expanded state SHALL NOT be stored in the URL.
+Below the limit, Bonus Raids SHALL initially display only the top 3 qualifying entries in that order. When more entries qualify than are shown, Today SHALL show a "Show N more" control beneath the visible entries, where N is the number the next activation reveals: 5, or fewer when fewer are left. Each activation reveals the next N entries in place (still in the same order, still grouped by goal per the grouping requirement above). Once more than the top 3 are shown, a "Show less" control SHALL return to the top 3. Below the limit the card SHALL also show a "Full schedule" link to Plan › Schedule. How many entries are shown SHALL NOT be stored in the URL.
 
-Once the real energy spent today (from the player's synced attempts, the same figure Today's energy tile shows) reaches or exceeds the daily energy limit (`planningSettings.dailyEnergy`), Bonus Raids SHALL be the only raids list on Today: the Today's plan card SHALL NOT be shown, and the Bonus raids card SHALL take its place in the dashboard (the same tracks, the same card grid inside goal groups), with a short caption as the first line of its body stating that the daily energy limit has been reached. Bonus Raids SHALL then list every raid still open today rather than only the upgrades and shards the real schedule left unraided: today's schedule recomputed with unlimited energy and with each node's raids capped at the player's real attempts left today, so an upgrade or shard the real schedule already raided keeps its remaining farming, in goal-priority order ahead of lower-priority goals. A node whose real attempts-left data is unavailable keeps its full daily attempt cap. For such a capped node, the attempts left stand in for its daily attempt cap when the row decides whether to show "N upgrades left" (Today's raid schedule shows what is left to farm). The Bonus Raids entries keep the same goal grouping, goal-priority order and exhausted-node exclusion described above, and SHALL all be shown, with no top-3 truncation and no "Show more" control. When the limit is reached and no Bonus Raids entry remains, the Bonus raids card SHALL still be shown, with a caption stating that the limit is reached and no bonus raids are left. Below the limit, Today's plan and Bonus Raids render unchanged, except that when Today's plan has no entries but Bonus Raids do, the Bonus raids card SHALL take the plan's place (top 3 with "Show more", no limit caption) instead of sitting beside an empty plan card. When no synced attempt data is available the energy spent is 0, so Today renders unchanged; a daily energy limit of 0 or less is treated as no limit. The Raids Plan tab is unaffected.
+Once the real energy spent today (from the player's synced attempts, the same figure Today's energy tile shows) reaches or exceeds the daily energy limit (`planningSettings.dailyEnergy`), Bonus Raids SHALL be the only raids list on Today: the Today's plan card SHALL NOT be shown, and the Bonus raids card SHALL take its place in the dashboard (the same tracks, the same card grid inside goal groups), with a short caption as the first line of its body stating that the daily energy limit has been reached. Bonus Raids SHALL then list every raid still open today rather than only the upgrades and shards the real schedule left unraided: today's schedule recomputed with unlimited energy and with each node's raids capped at the player's real attempts left today, so an upgrade or shard the real schedule already raided keeps its remaining farming, in goal-priority order ahead of lower-priority goals. A node whose real attempts-left data is unavailable keeps its full daily attempt cap. For such a capped node, the attempts left stand in for its daily attempt cap when the row decides whether to show "N upgrades left" (Today's raid schedule shows what is left to farm). The Bonus Raids entries keep the same goal grouping, goal-priority order and exhausted-node exclusion described above, and SHALL all be shown, with no top-3 truncation, no "Show N more" or "Show less" control and no Full schedule link. When the limit is reached and no Bonus Raids entry remains, the Bonus raids card SHALL still be shown, with a caption stating that the limit is reached and no bonus raids are left. Below the limit, Today's plan and Bonus Raids render unchanged, except that when Today's plan has no entries but Bonus Raids do, the Bonus raids card SHALL take the plan's place (top 3 with "Show N more" and the Full schedule link, no limit caption) instead of sitting beside an empty plan card. When no synced attempt data is available the energy spent is 0, so Today renders unchanged; a daily energy limit of 0 or less is treated as no limit. The Raids Plan tab is unaffected.
 
 Assumptions:
 
@@ -155,23 +155,31 @@ Assumptions:
 
 #### Scenario: Bonus Raids truncated to top 3 with a Show more control
 
-- **GIVEN** more than 3 entries qualify for Bonus Raids and the energy limit is not spent
+- **GIVEN** 12 entries qualify for Bonus Raids and the energy limit is not spent
 - **WHEN** Today loads
-- **THEN** only the first 3 entries (in goal-priority order) are shown, followed by a "Show more" control, and the remaining entries are not rendered until that control is activated
+- **THEN** only the first 3 entries (in goal-priority order) are shown, followed by a "Show 5 more" control and a "Full schedule" link, and the remaining entries are not rendered until that control is activated
 
-#### Scenario: Show more reveals the rest
+#### Scenario: Show more reveals 5 at a time
 
-- **GIVEN** Bonus Raids is showing its truncated top-3 view with a "Show more" control
-- **WHEN** the user activates "Show more"
-- **THEN** the remaining qualifying entries are revealed in place, in the same goal-priority order, still grouped by goal, and the control reads "Show less"
+- **GIVEN** Bonus Raids is showing the top 3 of 12 entries
+- **WHEN** the user activates "Show 5 more"
+- **THEN** entries 4–8 are revealed in place, in the same goal-priority order, still grouped by goal, the control reads "Show 4 more", and a "Show less" control appears
+- **AND WHEN** the user activates "Show 4 more"
+- **THEN** all 12 entries are shown, there is no "Show N more" control, and "Show less" remains
 - **AND WHEN** the user activates "Show less"
 - **THEN** only the first 3 entries are shown again
+
+#### Scenario: Full schedule opens Plan › Schedule
+
+- **GIVEN** the energy limit is not spent and Bonus Raids has entries
+- **WHEN** the user activates "Full schedule"
+- **THEN** Plan › Schedule opens
 
 #### Scenario: 3 or fewer entries need no truncation
 
 - **GIVEN** 3 or fewer entries qualify for Bonus Raids
 - **WHEN** Today loads
-- **THEN** all qualifying entries are shown and no "Show more" control is displayed
+- **THEN** all qualifying entries are shown and no "Show N more" control is displayed
 
 #### Scenario: No bonus raids available
 
@@ -189,7 +197,7 @@ Assumptions:
 
 - **GIVEN** the energy limit is spent and 6 Bonus Raids entries have a node that is not exhausted
 - **WHEN** Today loads
-- **THEN** the top-3 truncation no longer applies: Bonus Raids shows all 6 entries in goal-priority order, with no "Show more" control
+- **THEN** the top-3 truncation no longer applies: Bonus Raids shows all 6 entries in goal-priority order, with no "Show N more" control and no Full schedule link
 
 #### Scenario: Below the energy limit nothing changes
 
@@ -199,9 +207,9 @@ Assumptions:
 
 #### Scenario: Empty plan below the limit
 
-- **GIVEN** the energy limit is not spent, Today's plan has no entries, and 4 entries qualify for Bonus Raids
+- **GIVEN** the energy limit is not spent, Today's plan shows no node (it has no entries, or every plan node has no real attempts left), and 4 entries qualify for Bonus Raids
 - **WHEN** Today loads
-- **THEN** the Today's plan card is not shown, and the Bonus raids card takes its place with the top 3 entries, a "Show more" control and no limit-reached caption
+- **THEN** the Today's plan card is not shown, and the Bonus raids card takes its place with the top 3 entries, a "Show 1 more" control, the Full schedule link and no limit-reached caption
 
 #### Scenario: No synced attempts leave Today unchanged
 

@@ -130,7 +130,9 @@ describe("Dailies raid pages", () => {
     expect(
       screen.queryByTestId("bonus-energy-limit-reached")
     ).not.toBeInTheDocument()
-    await user.click(screen.getByRole("button", { name: "bonus.showMore" }))
+    await user.click(
+      screen.getByRole("button", { name: 'bonus.showMore:{"count":1}' })
+    )
     expect(screen.getByTestId("raid-card-g2-B4")).toBeInTheDocument()
     await user.click(screen.getByRole("button", { name: "bonus.showLess" }))
     expect(screen.queryByTestId("raid-card-g2-B4")).not.toBeInTheDocument()
@@ -415,7 +417,7 @@ describe("Dailies raid pages", () => {
     // Every raid left today is listed, with no Show more.
     expect(bonus.getByTestId("raid-card-g2-B4")).toBeInTheDocument()
     expect(
-      bonus.queryByRole("button", { name: "bonus.showMore" })
+      bonus.queryByRole("button", { name: /^bonus\.showMore/ })
     ).not.toBeInTheDocument()
     // The energy tile switches to its over-limit state.
     expect(

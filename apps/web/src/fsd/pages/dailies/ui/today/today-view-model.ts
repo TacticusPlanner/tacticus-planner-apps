@@ -11,16 +11,20 @@ import {
 } from "@/features/daily-raids"
 
 export const BONUS_LIMIT = 3
+/** How many more bonus entries each Show more reveals. */
+export const BONUS_STEP = 5
 
 type TodayRaidsSelection = ReturnType<typeof selectTodayRaids>
 type RaidEntry = TodayRaidsSelection["planEntries"][number]
 
 export type TodayView = {
   selection: TodayRaidsSelection
-  /** Bonus entries to render: every entry at the limit, otherwise the top 3 unless expanded. */
+  /** Bonus entries to render: every entry at the limit, otherwise the first `bonusShownCount`. */
   bonusShown: RaidEntry[]
-  /** Below the limit there are more bonus entries than the top 3 (Show more / Show less applies). */
-  bonusHasMore: boolean
+  /** Below the limit, how many entries the next Show more reveals (at most 5); 0 when none are left. */
+  bonusMoreCount: number
+  /** Below the limit, more than the top 3 are shown, so Show less applies. */
+  bonusCanShowLess: boolean
   scheduleProps: Omit<ComponentProps<typeof RaidSchedule>, "entries" | "testId">
   /** Location rows the plan card shows (a node with no real attempts left is not shown). */
   planNodeCount: number
@@ -39,7 +43,7 @@ export type TodayView = {
  */
 export function buildTodayView(
   raids: DailyRaidsReadyViewModel,
-  { showAllBonus }: { showAllBonus: boolean }
+  { bonusShownCount = BONUS_LIMIT }: { bonusShownCount?: number } = {}
 ): TodayView {
   // Exhausted bonus locations are dropped before slicing to BONUS_LIMIT — otherwise an actionable
   // entry past the limit can become unreachable if the first few entries all happen to be exhausted.
@@ -54,10 +58,9 @@ export function buildTodayView(
     realEnergyUsedToday: raids.realEnergyUsedToday,
   })
   const overLimit = selection.energyLimitReached
-  const bonusShown =
-    overLimit || showAllBonus
-      ? selection.bonusEntries
-      : selection.bonusEntries.slice(0, BONUS_LIMIT)
+  const bonusShown = overLimit
+    ? selection.bonusEntries
+    : selection.bonusEntries.slice(0, Math.max(bonusShownCount, BONUS_LIMIT))
 
   // Passed as one combined map alongside the combined entries below — only Raids Plan's own
   // (unaffected) material-emphasis rendering ever reads this for its per-node fully-raided chip;
@@ -103,7 +106,10 @@ export function buildTodayView(
   return {
     selection,
     bonusShown,
-    bonusHasMore: !overLimit && selection.bonusEntries.length > BONUS_LIMIT,
+    bonusMoreCount: overLimit
+      ? 0
+      : Math.min(BONUS_STEP, selection.bonusEntries.length - bonusShown.length),
+    bonusCanShowLess: !overLimit && bonusShown.length > BONUS_LIMIT,
     scheduleProps: {
       attemptsLeftByBattle: raids.attemptsLeftByBattle,
       attemptsUsedByBattle: combinedAttemptsUsedByBattle,

@@ -1,4 +1,5 @@
 import type { ReactNode } from "react"
+import { Link } from "react-router"
 import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
 
@@ -9,21 +10,22 @@ import { INSET_CARDS_CLASS_NAME } from "./today-plan-card"
 import type { TodayView } from "./today-view-model"
 
 /**
- * Bonus raids. Below the daily energy limit it sits next to the plan with the top 3 entries and a
- * Show more / Show less toggle. At the limit it takes the plan's place, opens with the limit caption
- * and lists every raid still open today. `notice` (the filtered-out notice) leads the body when the
- * card stands in the plan's place.
+ * Bonus raids. Below the daily energy limit it sits next to the plan with the top 3 entries: Show
+ * more reveals up to 5 more at a time, Show less returns to 3, and Full schedule opens Plan ›
+ * Schedule for everything further out. At the limit it takes the plan's place, opens with the limit
+ * caption and lists every raid still open today. `notice` (the filtered-out notice) leads the body
+ * when the card stands in the plan's place.
  */
 export function TodayBonusCard({
   notice,
-  onToggleShowAll,
-  showAll,
+  onShowLess,
+  onShowMore,
   view,
   wide,
 }: {
   notice?: ReactNode
-  onToggleShowAll: () => void
-  showAll: boolean
+  onShowLess: () => void
+  onShowMore: () => void
   view: TodayView
   wide: boolean
 }) {
@@ -59,15 +61,23 @@ export function TodayBonusCard({
           />
         </div>
       ) : null}
-      {view.bonusHasMore ? (
-        <Button
-          className="self-start"
-          variant="outline"
-          onClick={onToggleShowAll}
-        >
-          {t(showAll ? "bonus.showLess" : "bonus.showMore")}
-        </Button>
-      ) : null}
+      {atLimit ? null : (
+        <div className="flex flex-wrap items-center gap-2">
+          {view.bonusMoreCount > 0 ? (
+            <Button variant="outline" onClick={onShowMore}>
+              {t("bonus.showMore", { count: view.bonusMoreCount })}
+            </Button>
+          ) : null}
+          {view.bonusCanShowLess ? (
+            <Button variant="ghost" onClick={onShowLess}>
+              {t("bonus.showLess")}
+            </Button>
+          ) : null}
+          <Button asChild className="ms-auto" variant="link">
+            <Link to="/plan/schedule">{t("bonus.fullSchedule")}</Link>
+          </Button>
+        </div>
+      )}
     </TodayCard>
   )
 }
