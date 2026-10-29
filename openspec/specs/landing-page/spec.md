@@ -46,12 +46,17 @@ The footer SHALL state that Tacticus Planner is an unofficial fan project not af
 
 ### Requirement: The landing hero explains the product and offers sign-in
 
-The landing page SHALL open with a hero over datamined space art containing, in order: an eyebrow naming the planner as free and fan-made, a single `h1` headline, one sentence describing what the planner does, a primary "Get started, it's free" button that starts the same sign-in redirect as the top bar, a secondary "Browse the library" link to `/library/characters`, and three short trust points: syncs with a Tacticus API key, works on phone, open source. While a sign-in interaction is in progress the primary button SHALL be disabled; while a silent sign-in check is running it SHALL read the existing "Account detected — signing you in…" text. A failed sign-in redirect SHALL show the existing localized authentication error toast. The `next` destination preserved by the route guard SHALL be honoured exactly as today (see `redirect-authentication`).
+The landing page SHALL open with a hero over datamined space art containing, in order: an eyebrow naming the planner as free and fan-made, a single `h1` headline, one sentence describing what the planner does, a primary "Get started, it's free" button that starts the same sign-in redirect as the top bar, a secondary "Browse the library" link to `/library/characters`, and three short trust points: syncs with a Tacticus API key, works on phone, open source. For a signed-in visitor the primary button SHALL instead be an "Open planner" link to `/home`. While a sign-in interaction is in progress the primary button SHALL be disabled; while a silent sign-in check is running it SHALL read the existing "Account detected — signing you in…" text. A failed sign-in redirect SHALL show the existing localized authentication error toast. The `next` destination preserved by the route guard SHALL be honoured exactly as today (see `redirect-authentication`), and sign-in started from a bare `/` SHALL return to `/home`.
 
 #### Scenario: Visitor starts sign-in from the hero
 
 - **WHEN** a signed-out visitor activates "Get started, it's free"
-- **THEN** the sign-in redirect starts with the app's login request
+- **THEN** the sign-in redirect starts with the app's login request and returns to `/home` once complete
+
+#### Scenario: Signed-in visitor
+
+- **WHEN** a signed-in visitor views the landing page
+- **THEN** the primary action is an "Open planner" link to `/home`
 
 #### Scenario: Silent sign-in in progress
 
@@ -117,3 +122,26 @@ Every game image on the public pages SHALL be a datamined sprite served from `pu
 
 - **WHEN** the built `index.html` is fetched
 - **THEN** it contains `meta name="description"`, `og:title`, `og:description`, `og:type` and `twitter:card` tags
+
+### Requirement: Signed-in visitors can browse the landing page
+
+A signed-in visitor opening a bare `/` SHALL see the landing page in the public layout rather than being redirected. A signed-in visitor arriving at `/?next=…` SHALL still be sent to that destination.
+
+#### Scenario: Bare landing address
+
+- **WHEN** a signed-in visitor opens `/`
+- **THEN** the landing page is shown with "Open planner" in the top bar and the hero
+
+#### Scenario: Return from sign-in
+
+- **WHEN** a signed-in visitor arrives at `/?next=%2Fplan%2Fgoals`
+- **THEN** they are sent to `/plan/goals`
+
+### Requirement: Sign-in from the landing page ends on Home
+
+A sign-in started from a bare `/` SHALL end on `/home`, including when the identity provider's redirect returns to the site root. A sign-in started from `/?next=…` SHALL end on that destination.
+
+#### Scenario: Get started from the landing page
+
+- **WHEN** a signed-out visitor on `/` activates "Get started, it's free" and completes sign-in
+- **THEN** they land on Home without having to choose "Open planner"

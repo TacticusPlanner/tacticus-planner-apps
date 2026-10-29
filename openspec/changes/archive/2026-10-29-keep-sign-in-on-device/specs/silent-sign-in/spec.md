@@ -38,3 +38,16 @@ after at most 6 seconds.
 - **WHEN** the application loads
 - **THEN** exactly one hidden identity-provider session check runs, and it
   gives up after at most 6 seconds if it cannot complete
+
+#### Scenario: Sign-out clears the account hint
+
+- **WHEN** the user signs out
+- **THEN** the account hint is removed from the device and a new tab shows
+  the unauthenticated experience without attempting a restore
+
+#### Scenario: No cached account present
+
+- **WHEN** the application loads and no previously cached account exists on
+  the device
+- **THEN** the system does not attempt a silent session restore and shows
+  the unauthenticated experience exactly as it does today
