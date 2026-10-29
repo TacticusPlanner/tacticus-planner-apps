@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next"
 
 import { parseLocalDate, toIsoDate } from "../../../model/events-calendar-calc"
 import type { EventsCalendarWeek } from "../../../model/events-calendar.types"
-import { EventBar } from "../event-entry-card"
+import { EventLaneRow } from "./event-lane-row"
 
 // The month as whole Monday-to-Sunday weeks, each row the week view's Gantt lanes in compact form: an
 // event running across a week boundary continues as a new bar on the next row. Days outside the month
@@ -65,19 +65,7 @@ export function EventsCalendarMonth({
             })}
           </div>
           {week.lanes.map((lane, laneIndex) => (
-            <div className="grid h-7 grid-cols-7 gap-2" key={laneIndex}>
-              {lane.entries.map((entry) => (
-                <div
-                  className="min-w-0"
-                  key={entry.key}
-                  style={{
-                    gridColumn: `${entry.startColumn} / span ${entry.span}`,
-                  }}
-                >
-                  <EventBar compact entry={entry} iconOnly={entry.span === 1} />
-                </div>
-              ))}
-            </div>
+            <EventLaneRow compact key={laneIndex} lane={lane} />
           ))}
         </div>
       ))}

@@ -63,10 +63,15 @@ export type PositionedEventEntry = EventEntryViewModel & {
   /** The local-day window the bar covers (`startColumn`'s midnight to the end of its last column). */
   barStartMs: number
   barEndMs: number
+  /** Start and end in fractional day columns from the range start (0 to the day count, clamped). */
+  startOffset: number
+  endOffset: number
 }
 
 export type EventLane = {
   entries: PositionedEventEntry[]
+  /** Entries are placed by `startOffset`/`endOffset` (time), not whole day columns. */
+  timed?: boolean
 }
 
 export type EventsCalendarView = "week" | "month"

@@ -440,6 +440,23 @@ export function buildEventsAgenda(
  * doesn't overlap it, else open a new lane — which keeps same-day entries stacked in as few rows as the
  * overlap structure allows, same as the reference calendars.
  */
+const RAID_TRACK_TYPES = new Set(["GuildRaidSeason", "GuildRaidBreak"])
+
+/**
+ * `ms` as a position in day columns from the range start: the column's index plus how far into that
+ * local day it falls (0 to `dates.length`, clamped). Measured per local day, so DST days stay aligned.
+ */
+function fractionalDayOffset(ms: number, dates: readonly Date[]): number {
+  for (const [index, date] of dates.entries()) {
+    const dayStartMs = date.getTime()
+    const dayEndMs = addLocalDays(date, 1).getTime()
+    if (ms < dayStartMs) return index
+    if (ms < dayEndMs)
+      return index + (ms - dayStartMs) / (dayEndMs - dayStartMs)
+  }
+  return dates.length
+}
+
 export function buildEventsCalendarLanes(
   entries: readonly RawEventsCalendarEntry[],
   definitionsById: ReadonlyMap<string, RawEventDefinition>,
@@ -476,6 +493,8 @@ export function buildEventsCalendarLanes(
         ...entry,
         startColumn,
         span: endColumn - startColumn,
+        startOffset: fractionalDayOffset(Date.parse(entry.startUtc), dateRange),
+        endOffset: fractionalDayOffset(Date.parse(entry.endUtc), dateRange),
         barStartMs: dateRange[startColumn - 1]?.getTime() ?? 0,
         barEndMs: addLocalDays(
           dateRange[Math.max(endColumn - 2, 0)] ?? rangeStart,
@@ -489,11 +508,23 @@ export function buildEventsCalendarLanes(
     // invariant is ever broken by a future change.
     .filter((entry) => entry.span > 0)
 
-  const sortedForPacking = [...positioned].sort(
-    (a, b) => a.startColumn - b.startColumn || b.span - a.span
-  )
+  // Guild Raid seasons and the breaks between them share one row, placed by time: a season, its
+  // break and the next season meet mid-day, so day columns alone would stack them on separate rows.
+  const raidTrack = positioned
+    .filter((entry) => RAID_TRACK_TYPES.has(entry.definitionType ?? ""))
+    .sort((a, b) => Date.parse(a.startUtc) - Date.parse(b.startUtc))
+  const sortedForPacking = positioned
+    .filter((entry) => !RAID_TRACK_TYPES.has(entry.definitionType ?? ""))
+    .sort((a, b) => a.startColumn - b.startColumn || b.span - a.span)
 
-  const lanes: { entries: PositionedEventEntry[]; lastColumn: number }[] = []
+  const lanes: {
+    entries: PositionedEventEntry[]
+    lastColumn: number
+    timed?: boolean
+  }[] = []
+  if (raidTrack.length > 0) {
+    lanes.push({ entries: raidTrack, lastColumn: Infinity, timed: true })
+  }
   for (const entry of sortedForPacking) {
     const lane = lanes.find(
       (candidate) => candidate.lastColumn <= entry.startColumn
@@ -509,7 +540,9 @@ export function buildEventsCalendarLanes(
     }
   }
 
-  return lanes.map(({ entries: laneEntries }) => ({ entries: laneEntries }))
+  return lanes.map(({ entries: laneEntries, timed }) =>
+    timed ? { entries: laneEntries, timed } : { entries: laneEntries }
+  )
 }
 
 /** The month grid: one row per Monday-to-Sunday week from `gridStart`, each with its own Gantt lanes. */

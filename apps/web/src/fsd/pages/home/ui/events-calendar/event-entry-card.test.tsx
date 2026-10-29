@@ -35,6 +35,8 @@ function baseEntry(
     span: 7,
     barStartMs: Date.parse("2026-08-09T00:00:00Z"),
     barEndMs: Date.parse("2026-08-16T00:00:00Z"),
+    startOffset: 0,
+    endOffset: 7,
     ...overrides,
   }
 }

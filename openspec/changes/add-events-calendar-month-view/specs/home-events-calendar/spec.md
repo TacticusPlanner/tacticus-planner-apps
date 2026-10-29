@@ -54,6 +54,7 @@ The calendar SHALL show a "Break" entry from each Guild Raid season's end until 
 
 - **WHEN** a Guild Raid season ends a day before the next one starts
 - **THEN** that day shows a Guild Raid "Break" bar
+- **AND** on desktop the seasons and their breaks share one row, each placed by its start and end time
 
 #### Scenario: Guild War phases
 
