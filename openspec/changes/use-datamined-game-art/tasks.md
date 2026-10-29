@@ -20,7 +20,7 @@
 ## 4. Rewards, goals and raid bosses
 
 - [x] 4.1 Resolve alliance item, badge and orb rewards, shard pools, seasonal currencies, crusade resources, intel, energy, MoW ammo and summoning tokens in the shop reward display; verify with `shop-reward-display.test.ts`.
-- [x] 4.2 Use a rank badge and drop-table art for goal-type icons; remove the unused curated generics.
+- [x] 4.2 Use the upgrade glyph (Rank and Upgrade) and drop-table art for goal-type icons; remove the unused curated generics.
 - [x] 4.3 Show raid boss set chests as tier art and name.
 
 ## 5. Sprites

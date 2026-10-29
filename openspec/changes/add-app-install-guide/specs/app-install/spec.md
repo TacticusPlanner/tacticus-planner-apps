@@ -8,7 +8,7 @@ Defines how the web app presents itself to the browser for installation and how 
 
 ### Requirement: The manifest describes an installable app
 
-`site.webmanifest` SHALL declare `start_url` `/home` and `scope` `/`, keep `id` `tacticusplannerv2` so existing installs stay the same app, and list 192 and 512 pixel icons both as `any` (the transparent logo) and as `maskable` (the logo inside the central 80% safe zone on a solid background). Its theme and background colours SHALL be the light canvas colour.
+`site.webmanifest` SHALL declare `start_url` `/home` and `scope` `/`, keep `id` `tacticusplannerv2` so existing installs stay the same app, and list 192 and 512 pixel icons both as `any` (the transparent logo) and as `maskable` (the logo inside the central 80% safe zone on the same navy background). Its theme colour SHALL be the light top bar colour and its background colour the deep navy of the landing hero's night sky (`#0B1222`), which the maskable and shortcut icons share, so the splash screen runs into the landing page without a visible icon edge.
 
 #### Scenario: Launching the installed app
 
@@ -22,7 +22,7 @@ Defines how the web app presents itself to the browser for installation and how 
 
 ### Requirement: The installed app offers shortcuts
 
-The manifest SHALL declare shortcuts to Daily raids (`/dailies/raids`), Goals (`/plan/goals`) and Legendary events (`/legendary-events`), in that order, each with an icon. The install guide's shortcut list SHALL match them.
+The manifest SHALL declare shortcuts to Daily raids (`/dailies/raids`), Goals (`/plan/goals`) and Legendary events (`/legendary-events`), in that order, each with an icon usable both plain and maskable (`any maskable`), so Android fills its shortcut circle with it and desktop jump lists still show it. The install guide's shortcut list SHALL match them.
 
 #### Scenario: Long-press on the app icon
 
@@ -31,12 +31,12 @@ The manifest SHALL declare shortcuts to Daily raids (`/dailies/raids`), Goals (`
 
 ### Requirement: The browser chrome follows the theme
 
-The page SHALL carry `<meta name="theme-color">` set to the resolved theme's canvas colour before first paint, and SHALL update it whenever the resolved theme changes.
+The page SHALL carry `<meta name="theme-color">` set to the resolved theme's top bar colour before first paint, so the installed app's status bar continues the header,, and SHALL update it whenever the resolved theme changes.
 
 #### Scenario: Switching to dark
 
 - **WHEN** a user switches the theme to dark
-- **THEN** the theme-color meta changes to the dark canvas colour
+- **THEN** the theme-color meta changes to the dark top bar colour
 
 ### Requirement: Home offers installing
 

@@ -6,8 +6,8 @@ V1 showed mobile users a banner linking to an outside page about installing web 
 
 ## What Changes
 
-- Manifest: `any` icons plus real maskable icons (logo inside the safe zone on the dark canvas), `start_url: /home`, `scope: /`, `launch_handler` to reuse an open window, the canvas colour as theme and background, the landing description, `games`/`utilities`/`productivity` categories, and three shortcuts: Daily raids, Goals and Legendary events.
-- `<meta name="theme-color">` follows the resolved light or dark theme, set before first paint and on every theme change.
+- Manifest: `any` icons plus real maskable icons (logo inside the safe zone on that navy), `start_url: /home`, `scope: /`, `launch_handler` to reuse an open window, the top bar colour as theme and the landing hero's navy as background (shared by the maskable icons), the landing description, `games`/`utilities`/`productivity` categories, and three shortcuts with maskable icons: Daily raids, Goals and Legendary events.
+- `<meta name="theme-color">` follows the resolved light or dark theme's top bar colour, set before first paint and on every theme change.
 - The browser's install prompt is held from startup. Home shows a dismissible install card: Install (one tap) where the browser offers a prompt, otherwise Show me how. Once the app is installed during the visit, the card becomes a shortcuts tip.
 - The account menu gains Install app, which opens the guide: Install where available, otherwise the steps for iOS, Safari on macOS, Android or desktop Chromium, then the shortcuts the installed icon offers.
 - Three declared analytics events: `app_install_guide_opened`, `app_install_prompt_answered`, `app_install_card_dismissed`.
