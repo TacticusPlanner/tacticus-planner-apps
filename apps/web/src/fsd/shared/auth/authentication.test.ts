@@ -184,12 +184,8 @@ describe("authentication", () => {
   })
 
   describe("token cache and account hint", () => {
-    it("keeps tokens in the tab and removes the pre-deploy localStorage cache once", async () => {
+    it("keeps tokens on the device and leaves existing storage alone", async () => {
       localStorage.setItem("msal.token.keys.client-id", "[]")
-      localStorage.setItem(
-        "home-id.tenant-login.windows.net-refreshtoken-client-id--",
-        "{}"
-      )
       localStorage.setItem("theme", "dark")
 
       await auth.initializeAuthentication()
@@ -197,8 +193,43 @@ describe("authentication", () => {
       const configuration = mocks.constructor.mock.calls.at(-1)?.[0] as {
         cache: { cacheLocation: string }
       }
-      expect(configuration.cache.cacheLocation).toBe("sessionStorage")
-      expect(Object.keys(localStorage)).toEqual(["theme"])
+      expect(configuration.cache.cacheLocation).toBe("localStorage")
+      expect(localStorage.getItem("msal.token.keys.client-id")).toBe("[]")
+      expect(localStorage.getItem("theme")).toBe("dark")
+    })
+
+    it("moves a sign-in that completed on the bare landing page on to Home", async () => {
+      window.history.replaceState(null, "", "/")
+      mocks.instance.handleRedirectPromise.mockResolvedValue({
+        account: { homeAccountId: "home-id", username: "user@example.test" },
+      })
+
+      await auth.initializeAuthentication()
+
+      expect(window.location.pathname).toBe("/home")
+      window.history.replaceState(null, "", "/")
+    })
+
+    it("keeps the address when the sign-in completed anywhere else", async () => {
+      window.history.replaceState(null, "", "/?next=%2Fplan%2Fgoals")
+      mocks.instance.handleRedirectPromise.mockResolvedValue({
+        account: { homeAccountId: "home-id", username: "user@example.test" },
+      })
+
+      await auth.initializeAuthentication()
+
+      expect(`${window.location.pathname}${window.location.search}`).toBe(
+        "/?next=%2Fplan%2Fgoals"
+      )
+      window.history.replaceState(null, "", "/")
+    })
+
+    it("keeps the bare landing page when no sign-in just completed", async () => {
+      window.history.replaceState(null, "", "/")
+
+      await auth.initializeAuthentication()
+
+      expect(window.location.pathname).toBe("/")
     })
 
     it("stores only the account hint on sign-in, never a token, and forgets it on demand", async () => {

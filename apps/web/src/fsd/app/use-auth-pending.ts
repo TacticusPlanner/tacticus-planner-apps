@@ -5,8 +5,7 @@ import { useSilentSignInStatus } from "@/shared/auth"
 
 /**
  * Whether a signed-out first render may still turn into a signed-in one: MSAL is mid-interaction,
- * the silent restore from the account hint is running (a new tab or a relaunched installed app
- * holds no tokens, spec: redirect-authentication), or the instance already holds an account that
+ * the silent restore is running (spec: silent-sign-in), or the instance already holds an account that
  * msal-react's state has not caught up with. Guards wait instead of sending the visitor to the
  * landing page, so a returning user goes from the boot screen straight to their page.
  */
